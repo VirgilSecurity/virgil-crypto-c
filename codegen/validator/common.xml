@@ -126,6 +126,27 @@
 </entity>
 
 
+<entity name="lineage">
+    Keep hierarchical information about parents.
+    Lower component is a child relative to the upper component.
+
+    <allow entity="ancestor" occurs="1+"/>
+</entity>
+
+
+<entity name="ancestor">
+    Handles information about component ancestor.
+
+    <attr name="id" required="1">
+        Ancestor component name
+    </attr>
+
+    <attr name="name" required="1">
+        Ancestor name
+    </attr>
+</entity>
+
+
 <entity name="uid" abstract="1">
     <attr name="uid" resolved="1">
         Unique component identifier represents name that uniquely identifies
@@ -136,25 +157,20 @@
         Unique component identifier represents name that uniquely identifies
         component within projects hierarchy.
     </attr>
+
+    <allow entity="lineage" occurs="1" resolved="1"/>
 </entity>
 
 
 <entity name="lang" abstract="1">
-
     <attr name="lang" default="c">
         Defines target language this entity is applied to.
 
-        <restrict value="c">
-            C language.
-        </restrict>
-
-        <restrict value="java">
-            Java language.
-        </restrict>
-
-        <restrict value="csharp">
-            C# language.
-        </restrict>
+        <restrict value="c"/>
+        <restrict value="java"/>
+        <restrict value="python"/>
+        <restrict value="swift"/>
+        <restrict value="wasm"/>
     </attr>
 </entity>
 

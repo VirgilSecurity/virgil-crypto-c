@@ -3,12 +3,12 @@ function class_calculate_dependencies_fingerprint(project, class)
     check_arguments(my, "project, class")
 
     new dependencies
-        .project_prefix = my.project.prefix
-        .initial_class_fingerprint = fingerprint(my.class)
-        .license_fingerprint = fingerprint(my.project->license)
         if is_true(my.class.forcegen)
             time.now(.date, .time)
         endif
+        .project_prefix = my.project.prefix
+        .self_fingerprint = fingerprint(my.class)
+        .license_fingerprint = fingerprint(my.project->license)
 
         my.fingerprint = fingerprint(dependencies)
         delete dependencies
@@ -24,6 +24,8 @@ function class_resolve_attr_context(class, project)
     if my.class.context = "private" & string_equal(my.class.scope ?, "internal")
         my.class.context = "internal"
     endif
+
+    echo_resolved_attribute(my.class, "context", my)
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -31,6 +33,7 @@ function class_resolve_attr_of_class(class, project)
     check_arguments(my, "class, project", my)
 
     my.class.of_class ?= my.class.name
+    echo_resolved_attribute(my.class, "of_class", my)
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -38,6 +41,7 @@ function class_resolve_attr_c_prefix(class, project)
     check_arguments(my, "class, project", my)
 
     my.class.c_prefix ?= my.project.prefix
+    echo_resolved_attribute(my.class, "c_prefix", my)
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -45,6 +49,7 @@ function class_resolve_attr_uid(class, project)
     check_arguments(my, "class, project", my)
 
     my.class.uid = make_id("class", my.class.name)
+    echo_resolved_attribute(my.class, "uid", my)
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -53,6 +58,7 @@ function class_resolve_property(property, class)
 
     if string_equal(my.property.class ?, "self")
         my.property.class = my.class.name
+        echo_resolved_attribute(my.property, "class", my)
     endif
 endfunction
 
@@ -61,6 +67,8 @@ endfunction
 # ---------------------------------------------------------------------------
 function class_resolve_method(method, class)
     check_arguments(my, "method, class", my)
+
+    echo_resolving_entity(my.method, my)
 
     if string_equal(my.class.context, "none")
         my.method.is_static = "1"
@@ -97,7 +105,7 @@ endfunction
 function class_resolve(class, project)
     check_arguments(my, "class, project", my)
 
-    echo_trace("Resolving class: $(my.class.name:)", my)
+    echo_resolving_entity(my.class, my)
 
     class_resolve_attr_context(my.class, my.project)
     class_resolve_attr_c_prefix(my.class, my.project)
@@ -118,10 +126,6 @@ function class_resolve(class, project)
         component_resolve_property(property, my.class)
     endfor
 
-    for my.class.require
-        class_resolve_require(require, my.class)
-    endfor
-
     foreach_component_resolve(my.class)
 endfunction
 
@@ -134,7 +138,10 @@ function class_process(project, class_link)
 
     echo_info("[L1] Class '$(my.class_link.name:)' - start processing", my)
 
-    my.class = class_load(my.project, my.class_link.name)
+    my.class = class_load(my.project, my.class_link.name, my.class_link.[from])
+    if is_true(my.project.forcegen)
+        my.class.forcegen = "1"
+    endif
     my.cached_class = cache_load_or_invalidate(my.project, my.class) ?
     my.class.fingerprint = class_calculate_dependencies_fingerprint(my.project, my.class)
 

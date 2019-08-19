@@ -1,0 +1,1048 @@
+.template 0
+#   Copyright (C) 2015-2019 Virgil Security, Inc.
+#
+#   All rights reserved.
+#
+#   Redistribution and use in source and binary forms, with or without
+#   modification, are permitted provided that the following conditions are
+#   met:
+#
+#       (1) Redistributions of source code must retain the above copyright
+#       notice, this list of conditions and the following disclaimer.
+#
+#       (2) Redistributions in binary form must reproduce the above copyright
+#       notice, this list of conditions and the following disclaimer in
+#       the documentation and/or other materials provided with the
+#       distribution.
+#
+#       (3) Neither the name of the copyright holder nor the names of its
+#       contributors may be used to endorse or promote products derived from
+#       this software without specific prior written permission.
+#
+#   THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
+#   IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+#   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+#   DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT,
+#   INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+#   (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+#   SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+#   HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+#   STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+#   IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+#   POSSIBILITY OF SUCH DAMAGE.
+#
+#   Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
+
+# ---------------------------------------------------------------------------
+#   Perform resolution for high-level components and it's children.
+# ---------------------------------------------------------------------------
+#   This is a code generator built using the iMatix GSL code generation
+#   language. See https://github.com/zeromq/gsl for details.
+# ---------------------------------------------------------------------------
+
+gsl from "common.gsl"
+
+# ---------------------------------------------------------------------------
+#   Return instance as shortened XML string with required attributes.
+#
+#   TODO: Remove this when processing of all models will be implemented.
+#
+# ---------------------------------------------------------------------------
+function component_instance_dump(instance)
+    check_arguments(my, "instance")
+
+    my.instance_info = ""
+    my.instance_info += " name=\"$(my.instance.name)\"" ? ""
+    my.instance_info += " type=\"$(my.instance.type)\"" ? ""
+    my.instance_info += " size=\"$(my.instance.size)\"" ? ""
+    my.instance_info += " enum=\"$(my.instance.enum)\"" ? ""
+    my.instance_info += " class=\"$(my.instance.class)\"" ? ""
+    my.instance_info += " callback=\"$(my.instance.callback)\"" ? ""
+    my.instance_info += " interface=\"$(my.instance.interface)\"" ? ""
+    my.instance_info += " api=\"$(my.instance.api)\"" ? ""
+    my.instance_info += " impl=\"$(my.instance.impl)\"" ? ""
+    my.instance_info += " bits=\"$(my.instance.bits)\"" ? ""
+    my.instance_info += " access=\"$(my.instance.access)\"" ? ""
+    my.instance_info += " require_definition=\"$(my.instance.require_definition)\"" ? ""
+    my.instance_dump = "<$(name(my.instance))$(my.instance_info)/>"
+
+    return my.instance_dump
+endfunction
+
+# ###########################################################################
+#   Attribute resolution helpers.
+# ###########################################################################
+
+# ---------------------------------------------------------------------------
+#   Check required item: linage.
+# ---------------------------------------------------------------------------
+function component_require_lineage (component, caller)
+    check_argument (my, "component", my)
+
+    assert_item (my.component, "lineage", my.caller ? my)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Check required item: code.
+# ---------------------------------------------------------------------------
+function component_require_code (component, caller)
+    check_argument (my, "component", my)
+
+    assert_item (my.component, "code", my.caller ? my)
+endfunction
+
+# ---------------------------------------------------------------------------
+function component_remove_lineage(component)
+    check_arguments(my, "component", my)
+
+    for my.component.lineage
+        delete lineage
+    endfor
+
+    for my.component. as inner_component where is_item(inner_component)
+        component_remove_lineage(inner_component)
+    endfor
+endfunction
+
+# ---------------------------------------------------------------------------
+function component_copy_without_linage(component, destination, alias)
+    check_arguments(my, "component, destination", my)
+
+    my.copied_component = item_copy_to(my.component, my.destination, my.alias)
+    component_remove_lineage(my.copied_component)
+
+    return my.copied_component
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return new or existent item 'string' of the given instance component.
+#   Note, newly created string is not resolved.
+# ---------------------------------------------------------------------------
+function component_get_instance_string(instance)
+    check_arguments(my, "instance", my)
+
+    if count(my.instance.string)
+        return my.instance->string
+    else
+        new string to my.instance
+            return string
+        endnew
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return new or existent item 'array' of the given instance component.
+#   Note, newly created array is not resolved.
+# ---------------------------------------------------------------------------
+function component_get_instance_array(instance)
+    check_arguments(my, "instance", my)
+
+    if count(my.instance.array)
+        return my.instance->array
+    else
+        new array to my.instance
+            return array
+        endnew
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Check required attributes of item: landlord.
+# ---------------------------------------------------------------------------
+function component_require_landlord(component, caller)
+    check_arguments(my, "component", my)
+
+    assert_attribute_one_of(my.component, "project, library", my.caller ? my)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return true if component has one of the attributes that define landlord.
+# ---------------------------------------------------------------------------
+function component_has_landlord(component)
+    check_arguments(my, "component", my)
+
+    return has_one_of_attribute(my.component, "project, library")
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return true if given component does not belong to any class.
+# ---------------------------------------------------------------------------
+function component_is_in_global_scope(component)
+    check_arguments(my, "component", my)
+
+    return(my.component.of_class ? my.component->lineage.of_class ? "") = "global"
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return true if given component belongs to any class.
+# ---------------------------------------------------------------------------
+function component_is_in_class_scope(component)
+    check_arguments(my, "component", my)
+
+    my.of_class = my.component.of_class ? my.component->lineage.of_class ?
+
+    return defined(my.of_class) & my.of_class <> "global" & my.of_class <> ""
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Derive uid for given module or it's children.
+#
+#   Note, given component must be resolved, it means that component contains
+#   information about all ancestors within item 'lineage'.
+# ---------------------------------------------------------------------------
+function component_derive_uid(component)
+    check_arguments(my, "component", my)
+
+    component_require_lineage(my.component, my)
+
+    #   Define parents uid
+    for my.component->lineage.ancestor
+        if string_in(ancestor.id, "project, module")
+            #   Skip ancestors that add excess uniqueness
+            next
+        endif
+        my.parent_uid = make_id(my.parent_uid, ancestor.id, ancestor.name)
+    endfor
+
+    #   Define self uid
+    my.self_uid = make_id(name(my.component), my.component.name)
+
+    #   Define uid scope: class or global
+    if component_is_in_class_scope(my.component)
+        my.uid_scope = make_id ("class", my.component.of_class ? my.component->lineage.of_class)
+
+    elsif component_is_in_global_scope(my.component)
+        my.uid_scope = "global"
+    endif
+
+    #   Put it together
+    return make_id(my.uid_scope, my.parent_uid, my.self_uid)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return landlord id.
+# ---------------------------------------------------------------------------
+function component_landlord_id(component)
+    check_arguments(my, "component", my)
+
+    component_require_landlord(my.component, my)
+
+    if defined(my.component.project)
+        return "project"
+    else
+        return "library"
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return landlord name.
+# ---------------------------------------------------------------------------
+function component_landlord_name(component)
+    check_arguments(my, "component", my)
+
+    component_require_landlord(my.component, my)
+
+    if defined(my.component.project)
+        return my.component.project
+    else
+        return my.component.library
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Derive uid for item: landlord.
+# ---------------------------------------------------------------------------
+function component_derive_landlord_uid(component)
+    check_arguments(my, "component", my)
+
+    component_require_landlord(my.component, my)
+
+    return make_id(component_landlord_id(my.component), component_landlord_name(my.component))
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return component's name prefix: class name + ancestors.
+#   Rules:
+#       - no prefix if class is 'global';
+#       - class name is omitted if component's name equals to the class name.
+# ---------------------------------------------------------------------------
+function component_derive_name_prefix(component)
+    check_arguments(my, "component", my)
+
+    component_require_attr_name(my.component, my)
+    component_require_attr_of_class(my.component, my)
+    component_require_lineage(my.component, my)
+
+    my.ancestors = ""
+    for my.component->lineage.ancestor where ! string_in(id, "project, module") & name <> of_class
+        my.ancestors = cat(my.ancestors, ancestor.name)
+    endfor
+
+    if component_is_in_global_scope(my.component)
+        return ""
+
+    elsif string_equal(my.component.of_class, my.component.name)
+        return cat(my.ancestors)
+
+    else
+        return cat(my.component.of_class, my.ancestors)
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return component's full name: class name + ancestors + self name.
+#   Rules:
+#       - class name is omitted if class is 'global';
+#       - class name is omitted if component's name equals to the class name.
+# ---------------------------------------------------------------------------
+function component_derive_full_name(component)
+     check_arguments(my, "component", my)
+
+     return cat(component_derive_name_prefix(my.component), my.component.name)
+endfunction
+
+
+# ###########################################################################
+#   Attribute resolution.
+# ###########################################################################
+
+# ---------------------------------------------------------------------------
+function component_add_lineage(component, parent)
+    check_arguments(my, "component, parent", my)
+
+    if item_in(my.parent, "section")
+        echo_fatal ("Section must be already embedded as a component's property", my)
+    endif
+
+    if count(my.component.lineage)
+        #   Already there
+        return
+    endif
+
+    if count(my.parent.lineage)
+        #   Use parent's lineage
+        copy my.parent->lineage to my.component
+    else
+        #   Create new lineage
+        new lineage to my.component
+        endnew
+    endif
+
+    my.component->lineage.of_class = my.parent.of_class ?
+
+    #   Add parent as ancestor
+    new ancestor to my.component->lineage
+        .id = name(my.parent)
+        .name = my.parent.name
+    endnew
+endfunction
+
+# ---------------------------------------------------------------------------
+function component_resolve_attr_of_class(component, parent)
+    check_arguments(my, "component, parent", my)
+
+    my.component.of_class ?= my.parent.of_class ?
+endfunction
+
+# ---------------------------------------------------------------------------
+function component_resolve_attr_c_prefix(component, parent)
+    check_arguments(my, "component", my)
+
+    my.component.c_prefix ?= my.parent.c_prefix
+endfunction
+
+# ---------------------------------------------------------------------------
+function component_resolve_uid(component, parent)
+    check_arguments(my, "component, parent", my)
+
+    component_add_lineage(my.component, my.parent)
+
+    my.component.uid = component_derive_uid(my.component)
+endfunction
+
+
+
+# ---------------------------------------------------------------------------
+#   Resolve attribute: type.
+# ---------------------------------------------------------------------------
+function component_resolve_instance_attr_type(instance, parent)
+    check_arguments(my, "instance, parent")
+
+    if !item_in(my.instance, "argument") & string_equal(my.instance.type, "varargs")
+        entity_dump_file(my.instance)
+        echo_fatal ("Type 'varargs' is allowed for <argment/> only.")
+    endif
+
+    #   Resolve type shortcuts
+    if my.instance.type = "string"
+        my.instance.type = "char"
+        my.instance.access ?= "readonly"
+
+        my.string = component_get_instance_string(my.instance)
+        my.string.length ?= "null_terminated"
+        my.string.access ?= "readwrite"
+    endif
+
+    #   Check "size" attribute
+    if defined(my.instance.size) & ! string_in(my.instance.type, "integer, unsigned")
+        echo_fatal ("Attribute 'size' is not allowed for instance: $(my.instance_dump:)")
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Resolve attribute: instance.class.
+# ---------------------------------------------------------------------------
+function component_resolve_instance_attr_class(instance, parent)
+    check_arguments(my, "instance, parent", my)
+
+    component_require_attr_class(my.instance, my)
+
+    if my.instance.class = "data"
+        my.instance.project ?= "common"
+        my.instance.access ?= "readonly"
+        my.instance.is_reference = "0"
+
+    elsif my.instance.class = "buffer"
+        my.instance.project ?= "common"
+        my.instance.is_reference = "1"
+
+        if item_in(my.instance, "property, variable")
+            my.instance.access ?= "readwrite"
+
+        elsif item_in(my.instance, "argument")
+            my.instance.access ?= "writeonly"
+
+        elsif item_in(my.instance, "return")
+            my.instance.access ?= "disown"
+        endif
+    endif
+endfunction
+
+
+# ---------------------------------------------------------------------------
+#   Resolve attribute: instance.enum.
+# ---------------------------------------------------------------------------
+function component_resolve_instance_attr_enum(instance, parent)
+    check_arguments(my, "instance, parent", my)
+
+    component_require_attr_enum(my.instance, my)
+
+    if is_ref(my.instance.enum) | defined(my.instance.library)
+        return
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Resolve attribute: instance.callback.
+# ---------------------------------------------------------------------------
+function component_resolve_instance_attr_callback(instance, parent)
+    check_arguments(my, "instance, parent", my)
+
+    component_require_attr_callback(my.instance, my)
+
+    if is_ref(my.instance.callback) | defined(my.instance.library)
+        return
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Resolve attribute: instance.interface.
+# ---------------------------------------------------------------------------
+function component_resolve_instance_attr_interface(instance, parent)
+    check_arguments(my, "instance, parent", my)
+
+    assert_attribute(my.instance, "interface", my)
+
+    if is_ref(my.instance.interface) | defined(my.instance.library)
+        return
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Resolve attribute: instance.api.
+# ---------------------------------------------------------------------------
+function component_resolve_instance_attr_api(instance, parent)
+    check_arguments(my, "instance, parent", my)
+
+    assert_attribute(my.instance, "api", my)
+
+    #    Force readonly access for interface API
+    my.instance.access = "readonly"
+
+    if is_ref(my.instance.api) | defined(my.instance.library)
+        return
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Resolve attribute: instance.impl.
+# ---------------------------------------------------------------------------
+function component_resolve_instance_attr_impl(instance, parent)
+    check_arguments(my, "instance, parent", my)
+
+    assert_attribute(my.instance, "impl", my)
+
+    if is_ref(my.instance.impl) | defined(my.instance.library)
+        return
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Resolve attribute: access.
+# ---------------------------------------------------------------------------
+function component_resolve_instance_attr_access(instance, parent)
+    check_arguments(my, "instance, parent")
+
+    my.instance.access ?= "readonly"
+
+    my.valid_access_argument = "readonly, writeonly, readwrite, disown, retain"
+    my.valid_access_variable = "readonly, readwrite, retain"
+    my.valid_access_return = "readonly, readwrite, disown, retain"
+    my.instance_dump = component_instance_dump(my.instance)
+
+    if item_in(my.instance, "argument") & \
+            ! string_in(my.instance.access, my.valid_access_argument)
+
+        echo_fatal ( \
+            "Invalid value '$(my.instance.access)' of attribute '$(name(my.instance)).access'." + \
+            " Expected {$(my.valid_access_argument)}. Instance: $(my.instance_dump:)")
+
+    elsif item_in(my.instance, "variable, property") & \
+            ! string_in(my.instance.access, my.valid_access_variable)
+
+        echo_fatal ( \
+            "Invalid value '$(my.instance.access)' of attribute '$(name(my.instance)).access'." + \
+            " Expected {$(my.valid_access_variable)}. Instance: $(my.instance_dump:)")
+
+    elsif item_in(my.instance, "return") & \
+            ! string_in(my.instance.access, my.valid_access_return)
+
+        echo_fatal ( \
+            "Invalid value '$(my.instance.access)' of attribute '$(name(my.instance)).access'." + \
+            " Expected {$(my.valid_access_return)}. Instance: $(my.instance_dump:)")
+    endif
+
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Resolve attribute: instance.size.
+# ---------------------------------------------------------------------------
+function component_resolve_instance_attr_size(instance, parent)
+    check_arguments(my, "instance, parent")
+
+    if defined(my.instance.size)
+        my.instance_dump = component_instance_dump(my.instance)
+
+        my.valid_instance_type = "integer, unsigned, size"
+        if ! string_in(my.instance.type ?, my.valid_instance_type)
+            echo_fatal ("Illegal attribute 'size' for instance $(my.instance_dump)." + \
+                        " Only allowed for instance with type={$(my.valid_instance_type)}", my)
+        endif
+
+        my.valid_sizes = "1, 2, 4, 8"
+        if ! string_in(my.instance.size, my.valid_sizes)
+            echo_fatal ("Illegal attribute 'size' for instance $(my.instance_dump)." + \
+                        " Expected {$(my.valid_sizes)}", my)
+        endif
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Resolve attribute: instance.is_reference.
+#   Rules:
+#       For 'type'      - default is '0'.
+#       For 'enum'      - default is '0'.
+#       For 'callback'  - default is '0'.
+#       For 'class'     - default is '1'.
+#       For 'interface' - default is '1'.
+#       For 'api'       - default is '1'.
+#       For 'impl'      - default is '1'.
+# ---------------------------------------------------------------------------
+function component_resolve_instance_attr_is_reference(instance, parent)
+    check_arguments(my, "instance, parent")
+
+    my.instance.is_reference ?= has_one_of_attribute(my.instance, "class, interface, api, impl")
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Resolve attribute: property.bits.
+# ---------------------------------------------------------------------------
+function component_resolve_property_attr_bits(property, parent)
+    check_arguments(my, "property, parent", my)
+
+    if ! defined(my.property.bits)
+        return
+    endif
+
+    if ! defined(my.property.type) | ! string_in(my.property.type, "integer, boolean")
+        my.instance_dump = component_instance_dump(my.property)
+        echo_fatal ("Attribute 'bits' is allowed only for integral types" + \
+                ", but found in $(my.instance_dump:)", my)
+    endif
+
+    assert_attribute_number(my.property, "bits", my)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Resolve attribute: scoped_component.scope.
+# ---------------------------------------------------------------------------
+function component_resolve_scoped_component_attr_scope(component, parent)
+    check_arguments(my, "component")
+
+    # downgrade scope
+    if defined(my.parent) & defined(my.parent.scope)
+        if my.parent.scope = "private" & my.component.scope = "public"
+            my.component.scope = "public"
+        endif
+
+        if my.parent.scope = "internal" & string_in(my.component.scope, "public, private")
+            my.component.scope = "internal"
+        endif
+    endif
+endfunction
+
+# ###########################################################################
+#   Per component resolution.
+# ###########################################################################
+
+# ---------------------------------------------------------------------------
+function component_resolve_instance(instance, parent)
+    check_arguments(my, "instance, parent", my)
+
+    # Landlord MUST NOT be inherited by now.
+    # component_resolve_landlord(my.instance, my.parent)
+endfunction
+
+# ---------------------------------------------------------------------------
+function component_resolve_dependency(dependency, parent)
+    check_arguments(my, "dependency, parent", my)
+
+    assert_attribute(my.dependency, "name", my)
+    assert_attribute_one_of(my.dependency, "interface, api, class, impl")
+
+    scope my.dependency
+        .access ?= "readwrite"
+        .type_name = 0.interface ? 0.api ? 0.class ? 0.impl
+
+        my.project_uid = defined(dependency.project) ?? make_id ("project", dependency.project) ?
+
+        if defined(0.interface)
+            .uid = make_id(my.project_uid, "class impl struct impl")
+
+        elsif defined(0.api)
+            .uid = make_id(my.project_uid, "class", .type_name, "api", "struct", .type_name, "api")
+
+        elsif defined(0.class)
+            .uid = make_id(my.project_uid, "class", .type_name, "struct", .type_name)
+
+        elsif defined(0.impl)
+            .uid = make_id(my.project_uid, "class", .type_name, "struct", .type_name)
+        else
+            echo_fatal ("Unhandled dependency type within code generation.", my)
+        endif
+
+        if defined(0.interface)
+            .type_kind = "interface"
+
+        elsif defined(0.api)
+            .type_kind = "interface api"
+
+        elsif defined(0.class)
+            .type_kind = "class"
+
+        elsif defined(0.impl)
+            .type_kind = "implementation"
+        endif
+    endscope
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Resolve component: return.
+# ---------------------------------------------------------------------------
+function component_resolve_return(return, parent)
+    check_arguments(my, "return, parent", my)
+
+    echo_resolving_entity(my.return, my)
+    component_resolve_instance(my.return, my.parent)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Resolve component: component.
+# ---------------------------------------------------------------------------
+function component_resolve_component(component, parent)
+    check_arguments(my, "component, parent", my)
+
+    component_resolve_attr_of_class(my.component, my.parent)
+    component_resolve_attr_c_prefix(my.component, my.parent)
+    component_resolve_uid(my.component, my.parent)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Resolve scoped component: component.
+# ---------------------------------------------------------------------------
+function component_resolve_scoped_component(component, parent)
+    check_arguments(my, "component, parent", my)
+
+    component_resolve_component(my.component, my.parent)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Resolve component: constant.
+# ---------------------------------------------------------------------------
+function component_resolve_constant(constant, parent)
+    check_arguments(my, "constant", my)
+
+    echo_resolving_entity(my.constant, my)
+    component_resolve_scoped_component(my.constant, my.parent)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Resolve component: enum.
+# ---------------------------------------------------------------------------
+function component_resolve_enum(enum, parent)
+    check_arguments(my, "enum, parent", my)
+
+    echo_resolving_entity(my.enum, my)
+    component_resolve_scoped_component(my.enum, my.parent)
+
+    for my.enum.constant
+        component_resolve_constant(constant, my.enum)
+    endfor
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Resolve component: property.
+# ---------------------------------------------------------------------------
+function component_resolve_property(property, parent)
+    check_arguments(my, "property, parent", my)
+
+    echo_resolving_entity(my.property, my)
+    component_resolve_property_attr_bits(my.property, my.parent)
+
+    component_resolve_instance(my.property, my.parent)
+    component_resolve_uid(my.property, my.parent)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Resolve component: struct.
+# ---------------------------------------------------------------------------
+function component_resolve_struct(struct, parent)
+    check_arguments(my, "struct, parent", my)
+
+    echo_resolving_entity(my.struct, my)
+    component_resolve_scoped_component(my.struct, my.parent)
+
+    for my.struct.property
+        component_resolve_property(property, my.struct)
+    endfor
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Resolve component: cast.
+# ---------------------------------------------------------------------------
+function component_resolve_cast(cast, parent)
+    check_arguments(my, "cast, parent", my)
+
+    echo_resolving_entity(my.cast, my)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Resolve component: value.
+# ---------------------------------------------------------------------------
+function component_resolve_value(value, parent)
+    check_arguments(my, "value, parent", my)
+
+    echo_resolving_entity(my.value, my)
+
+    my.value.type ?= my.parent.type ?
+    my.value.class ?= my.parent.class ?
+    my.value.enum ?= my.parent.enum ?
+    my.value.callback ?= my.parent.callback ?
+    my.value.impl ?= my.parent.impl ?
+    my.value.interface ?= my.parent.interface ?
+
+    my.value.size ?= my.parent.size ?
+    my.value.access ?= my.parent.access ?
+
+    for my.value.cast
+        component_resolve_cast(cast, my.value)
+    endfor
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Resolve component: variable.
+# ---------------------------------------------------------------------------
+function component_resolve_variable(variable, parent)
+    check_arguments(my, "variable, parent", my)
+
+    echo_resolving_entity(my.variable, my)
+    component_resolve_scoped_component(my.variable, my.parent)
+    component_resolve_instance(my.variable, my.parent)
+
+    for my.variable.value
+        component_resolve_value(value, my.variable)
+    endfor
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Resolve component: argument.
+# ---------------------------------------------------------------------------
+function component_resolve_argument(argument, parent)
+    check_arguments(my, "argument, parent", my)
+
+    echo_resolving_entity(my.argument, my)
+
+    if string_equal(my.argument.type, "varargs")
+        my.argument.name ?= "varargs"
+    endif
+
+    component_resolve_instance(my.argument, my.parent)
+    component_resolve_uid(my.argument, my.parent)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Resolve component: method.
+# ---------------------------------------------------------------------------
+function component_resolve_method(method, parent)
+    check_arguments(my, "method, parent", my)
+
+    echo_resolving_entity(my.method, my)
+    component_resolve_scoped_component(my.method, my.parent)
+
+    for my.method.argument
+        component_resolve_argument(argument, my.method)
+    endfor
+
+    for my.method.return
+        component_resolve_return(return, my.method)
+    endfor
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Resolve component: callback.
+# ---------------------------------------------------------------------------
+function component_resolve_callback(callback, parent)
+    check_arguments(my, "callback, parent", my)
+
+    echo_resolving_entity(my.callback, my)
+    component_resolve_scoped_component(my.callback, my.parent)
+
+    for my.callback.argument
+        component_resolve_argument(argument, my.callback)
+    endfor
+
+    for my.callback.return
+        component_resolve_return(return, my.callback)
+    endfor
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Resolve component: macros.
+# ---------------------------------------------------------------------------
+function component_resolve_macros(macros, parent)
+    check_arguments(my, "macros, parent", my)
+
+    echo_resolving_entity(my.macros, my)
+    component_resolve_component(my.macros, my.parent)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Resolve component: macroses.
+# ---------------------------------------------------------------------------
+function component_resolve_macroses(macroses, parent)
+    check_arguments(my, "macroses, parent", my)
+
+    echo_resolving_entity(my.macros, my)
+    component_require_code(my.macroses, my)
+    component_resolve_attr_of_class(my.macroses, my.parent)
+
+    for my.macroses.macros
+        component_resolve_attr_of_class(macros, my.macroses)
+        component_resolve_macros(macros, my.parent)
+    endfor
+endfunction
+
+
+# ---------------------------------------------------------------------------
+#   Resolve item: landlord.
+# ---------------------------------------------------------------------------
+function component_resolve_landlord(component, parent)
+    check_arguments(my, "component, parent", my)
+
+    if component_has_landlord(my.component)
+        return
+    endif
+
+    if defined(my.parent.project)
+        my.component.project ?= my.parent.project
+
+    elsif defined(my.parent.library)
+        my.component.library ?= my.parent.library
+    endif
+endfunction
+
+
+# ---------------------------------------------------------------------------
+#   Resolve item: require_base.
+# ---------------------------------------------------------------------------
+function component_resolve_require_base(require_base, parent)
+    check_arguments(my, "require_base, parent", my)
+
+    component_resolve_landlord(my.require_base, my.parent)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Resolve item: alternative.
+# ---------------------------------------------------------------------------
+function component_resolve_alternative(alternative, parent)
+    check_arguments(my, "alternative, parent", my)
+
+    component_resolve_require_base(my.alternative, my.parent)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Resolve item: require.
+# ---------------------------------------------------------------------------
+function component_resolve_require(require, parent)
+    check_arguments(my, "require, parent", my)
+
+    for my.require.alternative
+        component_resolve_alternative(alternative, my.parent)
+    else
+        component_resolve_require_base(my.require, my.parent)
+    endfor
+endfunction
+
+
+# ---------------------------------------------------------------------------
+#   Traverse known components within source and perform complete resolution.
+# ---------------------------------------------------------------------------
+function foreach_component_resolve(source)
+    check_arguments(my, "source", my)
+
+    for my.source.require
+        component_resolve_require(require, my.source)
+    endfor
+
+    for my.source.constant
+        component_resolve_constant(constant, my.source)
+    endfor
+
+    for my.source.enum
+        component_resolve_enum(enum, my.source)
+    endfor
+
+    for my.source.variable
+        component_resolve_variable(variable, my.source)
+    endfor
+
+    for my.source.struct
+        component_resolve_struct(struct, my.source)
+    endfor
+
+    for my.source.callback
+        component_resolve_callback(callback, my.source)
+    endfor
+
+    for my.source.method
+        component_resolve_method(method, my.source)
+    endfor
+
+    for my.source.macros
+        component_resolve_macros(macros, my.source)
+    endfor
+
+    for my.source.macroses
+        component_resolve_macroses(macroses, my.source)
+    endfor
+
+    for my.source.features
+        component_resolve_features(features, my.source)
+    endfor
+
+    for my.source.dependency
+        component_resolve_dependency(dependency, my.source)
+    endfor
+endfunction
+
+# ###########################################################################
+#   Function for creation widely used components
+# ###########################################################################
+
+# ---------------------------------------------------------------------------
+#   Add 'impl' argument to the method.
+#   If method 'is_const', then 'impl' access will be 'readonly'.
+# ---------------------------------------------------------------------------
+function component_create_argument_impl(method, meta)
+    check_arguments(my, "method, meta", my)
+
+    my.names = meta_names(my.meta)
+
+    my.argument = item_prepend_new ("argument", my.method)
+    scope my.argument
+        .name = my.names.argument_impl
+        .class = my.names.type_impl
+        .access = is_true(my.method.is_const) ?? "readonly" ? "readwrite"
+    endscope
+    return my.argument
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Add 'impl' return to the method with "take" ownership.
+#   If method 'is_const', then 'impl' returned with 'readonly' access,
+#   otherwise - with 'readwrite' access.
+# ---------------------------------------------------------------------------
+function component_create_return_impl(method, meta)
+    check_arguments(my, "method, meta", my)
+
+    my.names = meta_names(my.meta)
+
+    new [return] to my.method
+        .class = my.names.type_impl
+        .access = is_true(my.method.is_const) ?? "readonly" ? "readwrite"
+        .ownership = "take"
+        return [return]
+    endnew
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Add 'impl' argument to the destination with 'disown' access.
+# ---------------------------------------------------------------------------
+function component_create_argument_impl_ref(destination, meta)
+    check_arguments(my, "destination, meta", my)
+
+    my.names = meta_names(my.meta)
+
+    new argument to my.destination
+        .name = my.names.argument_impl
+        .class = my.names.type_impl
+        .access = "disown"
+        return argument
+    endnew
+endfunction
+
+
+# ---------------------------------------------------------------------------
+#   Replace shorten refs, i.e. '.(_argument_impl)' with fully qualified ref.
+# ---------------------------------------------------------------------------
+function foreach_component_resolve_shortcut_refs(component, lang, hierarchy_uid)
+    check_arguments(my, "component")
+
+    my.lang ?= my.component.lang ?
+
+    my.hierarchy_uid = my.component.uid ? my.hierarchy_uid ?
+
+    if defined(my.component.) & defined(my.hierarchy_uid)
+        while regexp.match ("(\\.\\(_([\\w]+)\\))", my.component., my.shorten_ref, my.shorten_uid)
+            my.full_uid = make_id(my.hierarchy_uid, my.shorten_uid)
+            my.full_ref = my.lang ?? lang_ref(my.full_uid, my.lang) ? ref(my.full_uid)
+            my.component. = string.replace(my.component., "$(my.shorten_ref:)|$(my.full_ref)")
+        endwhile
+    endif
+
+    for my.component. as inner_component where is_item(inner_component)
+        foreach_component_resolve_shortcut_refs(inner_component, my.lang, my.hierarchy_uid)
+    endfor
+endfunction
+
+.endtemplate

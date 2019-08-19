@@ -45,7 +45,9 @@
     <inherit entity="uid"/>
     <inherit entity="c_prefix"/>
 
-    <allow entity="constant" occurs="0+"/>
+    <allow entity="constant" occurs="0+">
+        <attr name="value" required="0"/>
+    </allow>
     <allow entity="method" occurs="0+"/>
     <allow entity="inherit" occurs="0+"/>
 </entity>

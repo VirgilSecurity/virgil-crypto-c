@@ -154,8 +154,8 @@ function generate_function_setup_defaults(entity)
                 >    endnew
             endif
         else
-            >    for $(my.my_tag).$(my.allowed_entity_tag:)
-            >        $(entity_derive_name_of_function_setup_defaults(allow.entity))($(my.allowed_entity_tag))
+            >    for $(my.my_tag).$(my.allowed_entity_tag:) as _$(my.allowed_entity_tag:)
+            >        $(entity_derive_name_of_function_setup_defaults(allow.entity))(_$(my.allowed_entity_tag))
             >    endfor
         endfor
     endfor
@@ -317,9 +317,9 @@ function generate_validation_body_for_allow(allow, entity, resolved)
     endfor
 
     if my.resolved = "1"
-        >        $(entity_derive_name_of_function_validate_resolved(my.allow.entity))(_$(my.allowed_entity_tag), restrictions)
+        >            $(entity_derive_name_of_function_validate_resolved(my.allow.entity))(_$(my.allowed_entity_tag), restrictions)
     else
-        >        $(entity_derive_name_of_function_validate(my.allow.entity))(_$(my.allowed_entity_tag), restrictions)
+        >            $(entity_derive_name_of_function_validate(my.allow.entity))(_$(my.allowed_entity_tag), restrictions)
     endif
     >        endnew
     >    endfor

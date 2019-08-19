@@ -26,10 +26,14 @@ function model_load_from(model_type, model_name, from_subdir)
 endfunction
 
 # ---------------------------------------------------------------------------
-function class_load(project, name)
+function class_load(project, name, from_subdir)
     check_arguments(my, "project, name", my)
 
-    return model_load(my.project, "class", my.name)
+    if defined(my.from_subdir)
+        return model_load_from("class", my.name, my.from_subdir)
+    else
+        return model_load(my.project, "class", my.name)
+    endif
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -65,13 +69,6 @@ function module_load(project, name)
     check_arguments(my, "project, name", my)
 
     return model_load(my.project, "module", my.name)
-endfunction
-
-# ---------------------------------------------------------------------------
-function class_load_from(name, from_subdir)
-    check_arguments(my, "name, from_subdir", my)
-
-    return model_load_from("class", my.name, my.from_subdir)
 endfunction
 
 # ---------------------------------------------------------------------------

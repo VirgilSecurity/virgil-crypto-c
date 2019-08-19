@@ -1443,12 +1443,46 @@ endfunction
 #   Debug helpers
 # ###########################################################################
 
+# ---------------------------------------------------------------------------
 function foreach_dump (item_name, source, destination_dir)
     check_arguments (my, "item_name, source, destination_dir", my)
 
     for my.source.$(my.item_name) as item
         item_save_to_file (item, make_id (my.item_name, item.name?) + ".xml", my.destination_dir)
     endfor
+endfunction
+
+# ---------------------------------------------------------------------------
+function entity_str(entity)
+    check_argument(my, "entity", entity)
+
+    if !is_item(my.entity)
+        echo_fatal("Given entity is not an XML item.")
+    endif
+
+    if defined(my.entity.name)
+        my.entity_name_str = ' name="$(my.entity.name:)"'
+    endif
+
+    if defined(my.entity.tag)
+        my.entity_tag_str = ' tag="$(my.entity.tag:)"'
+    endif
+
+    return '<$(name(my.entity))$(my.entity_name_str?:)$(my.entity_tag_str?:)/>'
+endfunction
+
+# ---------------------------------------------------------------------------
+function echo_resolved_attribute(entity, attr_name, caller)
+    check_arguments(my, "entity, attr_name", my)
+
+    echo_trace('     Resolved attribute: $(my.attr_name:)="$(my.entity.$(my.attr_name:):)"', my.caller)
+endfunction
+
+# ---------------------------------------------------------------------------
+function echo_resolving_entity(entity, caller)
+    check_arguments(my, "entity", my)
+
+    echo_trace("[L1] Resolving entity: $(entity_str(my.entity))", my.caller)
 endfunction
 
 # ###########################################################################

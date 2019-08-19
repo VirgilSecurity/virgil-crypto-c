@@ -111,7 +111,125 @@ function c_prefix_validate_resolved(c_prefix, restrictions)
 endfunction
 
 # ---------------------------------------------------------------------------
+function ancestor_setup_defaults(ancestor, defaults)
+    my.ancestor_name = defined(my.ancestor.name) ?? " name=\"$(my.ancestor.name)\"" ? ""
+    echo_trace("[L1] Setup defaults for entity: <$(name(my.ancestor))$(my.ancestor_name)/>", my)
+    my.default_value = my.defaults.id ?
+    if defined(my.default_value) & !defined(my.ancestor.id)
+        echo_trace("       id=\"$(my.default_value:)\"", my)
+        my.ancestor.id = my.default_value
+    endif
+
+    my.default_value = my.defaults.name ?
+    if defined(my.default_value) & !defined(my.ancestor.name)
+        echo_trace("       name=\"$(my.default_value:)\"", my)
+        my.ancestor.name = my.default_value
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
+function ancestor_validate(ancestor, restrictions)
+    my.ancestor_name = defined(my.ancestor.name) ?? " name=\"$(my.ancestor.name)\"" ? ""
+    echo_trace("[L1] Validate entity: <$(name(my.ancestor))$(my.ancestor_name)/>", my)
+
+    my.restrictions ?= XML.new("restrictions")
+
+    echo_trace("     Validate attribute: id=\"$(my.ancestor.id)\"", my)
+    my.restrictions.attr_id_apply ?= "1"
+    if my.restrictions.attr_id_apply & !defined(my.ancestor.id)
+        echo_fatal_required_attr(my.ancestor, "id")
+    endif
+
+    echo_trace("     Validate attribute: name=\"$(my.ancestor.name)\"", my)
+    my.restrictions.attr_name_apply ?= "1"
+    if my.restrictions.attr_name_apply & !defined(my.ancestor.name)
+        echo_fatal_required_attr(my.ancestor, "name")
+    endif
+
+    delete my.restrictions
+endfunction
+
+# ---------------------------------------------------------------------------
+function ancestor_validate_resolved(ancestor, restrictions)
+    my.ancestor_name = defined(my.ancestor.name) ?? " name=\"$(my.ancestor.name)\"" ? ""
+    echo_trace("[L1] Validate entity: <$(name(my.ancestor))$(my.ancestor_name)/>", my)
+
+    my.restrictions ?= XML.new("restrictions")
+
+    echo_trace("     Validate attribute: id=\"$(my.ancestor.id)\"", my)
+    my.restrictions.attr_id_apply ?= "1"
+    if my.restrictions.attr_id_apply & !defined(my.ancestor.id)
+        echo_fatal_required_attr(my.ancestor, "id")
+    endif
+
+    echo_trace("     Validate attribute: name=\"$(my.ancestor.name)\"", my)
+    my.restrictions.attr_name_apply ?= "1"
+    if my.restrictions.attr_name_apply & !defined(my.ancestor.name)
+        echo_fatal_required_attr(my.ancestor, "name")
+    endif
+
+   delete my.restrictions
+endfunction
+
+# ---------------------------------------------------------------------------
+function lineage_setup_defaults(lineage, defaults)
+    my.lineage_name = defined(my.lineage.name) ?? " name=\"$(my.lineage.name)\"" ? ""
+    echo_trace("[L1] Setup defaults for entity: <$(name(my.lineage))$(my.lineage_name)/>", my)
+
+    #    Setup defaults for allowed entities
+    for my.lineage.ancestor as _ancestor
+        ancestor_setup_defaults(_ancestor)
+    endfor
+endfunction
+
+# ---------------------------------------------------------------------------
+function lineage_validate(lineage, restrictions)
+    my.lineage_name = defined(my.lineage.name) ?? " name=\"$(my.lineage.name)\"" ? ""
+    echo_trace("[L1] Validate entity: <$(name(my.lineage))$(my.lineage_name)/>", my)
+
+    #    Check allowed entities
+    my.ancestor_count = count(my.lineage.ancestor)
+    if my.ancestor_count < 1
+        my.dump_filename = entity_dump_file(my.lineage)
+        echo_fatal("Expected one or more entities: ancestor.\n" + \
+                   "But found $(my.ancestor_count).\n" + \
+                   "See dump file: $(my.dump_filename:)", my)
+    endif
+    for my.lineage.ancestor as _ancestor
+        new restrictions
+            ancestor_validate(_ancestor, restrictions)
+        endnew
+    endfor
+
+    my.restrictions ?= XML.new("restrictions")
+
+    delete my.restrictions
+endfunction
+
+# ---------------------------------------------------------------------------
+function lineage_validate_resolved(lineage, restrictions)
+    my.lineage_name = defined(my.lineage.name) ?? " name=\"$(my.lineage.name)\"" ? ""
+    echo_trace("[L1] Validate entity: <$(name(my.lineage))$(my.lineage_name)/>", my)
+
+    #    Check allowed entities
+    for my.lineage.ancestor as _ancestor
+        new restrictions
+            ancestor_validate_resolved(_ancestor, restrictions)
+        endnew
+    endfor
+
+    my.restrictions ?= XML.new("restrictions")
+
+   delete my.restrictions
+endfunction
+
+# ---------------------------------------------------------------------------
 function uid_setup_defaults(uid, defaults)
+
+    #    Setup defaults for allowed entities
+    for my.uid.lineage as _lineage
+        lineage_setup_defaults(_lineage)
+    endfor
     my.default_value = my.defaults.uid ?
     if defined(my.default_value) & !defined(my.uid.uid)
         echo_trace("       uid=\"$(my.default_value:)\"", my)
@@ -128,6 +246,13 @@ endfunction
 # ---------------------------------------------------------------------------
 function uid_validate(uid, restrictions)
 
+    #    Check allowed entities
+    for my.uid.lineage as _lineage
+        new restrictions
+            lineage_validate(_lineage, restrictions)
+        endnew
+    endfor
+
     my.restrictions ?= XML.new("restrictions")
 
     delete my.restrictions
@@ -135,6 +260,20 @@ endfunction
 
 # ---------------------------------------------------------------------------
 function uid_validate_resolved(uid, restrictions)
+
+    #    Check allowed entities
+    my.lineage_count = count(my.uid.lineage)
+    if my.lineage_count <> 1
+        my.dump_filename = entity_dump_file(my.uid)
+        echo_fatal("Expected exectly one entity: lineage.\n" + \
+                   "But found $(my.lineage_count).\n" + \
+                   "See dump file: $(my.dump_filename:)", my)
+    endif
+    for my.uid.lineage as _lineage
+        new restrictions
+            lineage_validate_resolved(_lineage, restrictions)
+        endnew
+    endfor
 
     my.restrictions ?= XML.new("restrictions")
 
@@ -533,8 +672,8 @@ function require_setup_defaults(require, defaults)
     require_base_setup_defaults(my.require)
 
     #    Setup defaults for allowed entities
-    for my.require.alternative
-        alternative_setup_defaults(alternative)
+    for my.require.alternative as _alternative
+        alternative_setup_defaults(_alternative)
     endfor
 endfunction
 
@@ -552,7 +691,7 @@ function require_validate(require, restrictions)
     my.alternative_count = count(my.require.alternative)
     for my.require.alternative as _alternative
         new restrictions
-        alternative_validate(_alternative, restrictions)
+            alternative_validate(_alternative, restrictions)
         endnew
     endfor
 
@@ -574,11 +713,688 @@ function require_validate_resolved(require, restrictions)
     #    Check allowed entities
     for my.require.alternative as _alternative
         new restrictions
-        alternative_validate_resolved(_alternative, restrictions)
+            alternative_validate_resolved(_alternative, restrictions)
         endnew
     endfor
 
     my.restrictions ?= XML.new("restrictions")
+
+   delete my.restrictions
+endfunction
+
+# ---------------------------------------------------------------------------
+function access_setup_defaults(access, defaults)
+    my.default_value = my.defaults.access ?
+    if defined(my.default_value) & !defined(my.access.access)
+        echo_trace("       access=\"$(my.default_value:)\"", my)
+        my.access.access = my.default_value
+    endif
+
+    my.default_value = my.defaults.ownership ?
+    if defined(my.default_value) & !defined(my.access.ownership)
+        echo_trace("       ownership=\"$(my.default_value:)\"", my)
+        my.access.ownership = my.default_value
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
+function access_validate(access, restrictions)
+
+    my.restrictions ?= XML.new("restrictions")
+
+    echo_trace("     Validate attribute: access=\"$(my.access.access)\"", my)
+    my.restrictions.attr_access_apply ?= "1"
+    if my.restrictions.attr_access_apply & defined(my.access.access)
+        my.access_is_valid = "0"
+        my.access_is_valid = my.access_is_valid | (my.access.access = "readonly")
+        my.access_is_valid = my.access_is_valid | (my.access.access = "writeonly")
+        my.access_is_valid = my.access_is_valid | (my.access.access = "readwrite")
+        my.access_is_valid = my.access_is_valid | (my.access.access = "disown")
+        my.access_is_valid = my.access_is_valid | (my.access.access = "retain")
+        if !my.access_is_valid
+            echo_fatal_resticted_attr(my.access, "access", "readonly, writeonly, readwrite, disown, retain")
+        endif
+    endif
+
+    echo_trace("     Validate attribute: ownership=\"$(my.access.ownership)\"", my)
+    my.restrictions.attr_ownership_apply ?= "1"
+
+    delete my.restrictions
+endfunction
+
+# ---------------------------------------------------------------------------
+function access_validate_resolved(access, restrictions)
+
+    my.restrictions ?= XML.new("restrictions")
+
+    echo_trace("     Validate attribute: access=\"$(my.access.access)\"", my)
+    my.restrictions.attr_access_apply ?= "1"
+    if my.restrictions.attr_access_apply & defined(my.access.access)
+        my.access_is_valid = "0"
+        my.access_is_valid = my.access_is_valid | (my.access.access = "readonly")
+        my.access_is_valid = my.access_is_valid | (my.access.access = "writeonly")
+        my.access_is_valid = my.access_is_valid | (my.access.access = "readwrite")
+        my.access_is_valid = my.access_is_valid | (my.access.access = "disown")
+        my.access_is_valid = my.access_is_valid | (my.access.access = "retain")
+        if !my.access_is_valid
+            echo_fatal_resticted_attr(my.access, "access", "readonly, writeonly, readwrite, disown, retain")
+        endif
+    endif
+
+    echo_trace("     Validate attribute: ownership=\"$(my.access.ownership)\"", my)
+    my.restrictions.attr_ownership_apply ?= "1"
+
+   delete my.restrictions
+endfunction
+
+# ---------------------------------------------------------------------------
+function string_setup_defaults(string, defaults)
+    my.string_name = defined(my.string.name) ?? " name=\"$(my.string.name)\"" ? ""
+    echo_trace("[L1] Setup defaults for entity: <$(name(my.string))$(my.string_name)/>", my)
+
+    #    Setup defaults for inherited attributes and entities
+    access_setup_defaults(my.string)
+    my.default_value = my.defaults.length ? "null_terminated"
+    if defined(my.default_value) & !defined(my.string.length)
+        echo_trace("       length=\"$(my.default_value:)\"", my)
+        my.string.length = my.default_value
+    endif
+
+    my.default_value = my.defaults.length_constant ?
+    if defined(my.default_value) & !defined(my.string.length_constant)
+        echo_trace("       length_constant=\"$(my.default_value:)\"", my)
+        my.string.length_constant = my.default_value
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
+function string_validate(string, restrictions)
+    my.string_name = defined(my.string.name) ?? " name=\"$(my.string.name)\"" ? ""
+    echo_trace("[L1] Validate entity: <$(name(my.string))$(my.string_name)/>", my)
+
+    #    Check inherited attributes and entities
+    new restrictions
+        access_validate(my.string, restrictions)
+    endnew
+
+    my.restrictions ?= XML.new("restrictions")
+
+    echo_trace("     Validate attribute: length=\"$(my.string.length)\"", my)
+    my.restrictions.attr_length_apply ?= "1"
+    if my.restrictions.attr_length_apply & defined(my.string.length)
+        my.length_is_valid = "0"
+        my.length_is_valid = my.length_is_valid | (my.string.length = "null_terminated")
+        my.length_is_valid = my.length_is_valid | (my.string.length = "given")
+        my.length_is_valid = my.length_is_valid | (my.string.length = "fixed")
+        my.length_is_valid = my.length_is_valid | (my.string.length = "derived")
+        if !my.length_is_valid
+            echo_fatal_resticted_attr(my.string, "length", "null_terminated, given, fixed, derived")
+        endif
+    endif
+
+    echo_trace("     Validate attribute: length_constant=\"$(my.string.length_constant)\"", my)
+    my.restrictions.attr_length_constant_apply ?= "1"
+
+    delete my.restrictions
+endfunction
+
+# ---------------------------------------------------------------------------
+function string_validate_resolved(string, restrictions)
+    my.string_name = defined(my.string.name) ?? " name=\"$(my.string.name)\"" ? ""
+    echo_trace("[L1] Validate entity: <$(name(my.string))$(my.string_name)/>", my)
+
+    #    Check inherited attributes and entities
+    new restrictions
+        access_validate_resolved(my.string, restrictions)
+    endnew
+
+    my.restrictions ?= XML.new("restrictions")
+
+    echo_trace("     Validate attribute: length=\"$(my.string.length)\"", my)
+    my.restrictions.attr_length_apply ?= "1"
+    if my.restrictions.attr_length_apply & defined(my.string.length)
+        my.length_is_valid = "0"
+        my.length_is_valid = my.length_is_valid | (my.string.length = "null_terminated")
+        my.length_is_valid = my.length_is_valid | (my.string.length = "given")
+        my.length_is_valid = my.length_is_valid | (my.string.length = "fixed")
+        my.length_is_valid = my.length_is_valid | (my.string.length = "derived")
+        if !my.length_is_valid
+            echo_fatal_resticted_attr(my.string, "length", "null_terminated, given, fixed, derived")
+        endif
+    endif
+
+    echo_trace("     Validate attribute: length_constant=\"$(my.string.length_constant)\"", my)
+    my.restrictions.attr_length_constant_apply ?= "1"
+
+   delete my.restrictions
+endfunction
+
+# ---------------------------------------------------------------------------
+function array_setup_defaults(array, defaults)
+    my.array_name = defined(my.array.name) ?? " name=\"$(my.array.name)\"" ? ""
+    echo_trace("[L1] Setup defaults for entity: <$(name(my.array))$(my.array_name)/>", my)
+
+    #    Setup defaults for inherited attributes and entities
+    access_setup_defaults(my.array)
+    my.default_value = my.defaults.length ? "given"
+    if defined(my.default_value) & !defined(my.array.length)
+        echo_trace("       length=\"$(my.default_value:)\"", my)
+        my.array.length = my.default_value
+    endif
+
+    my.default_value = my.defaults.length_constant ?
+    if defined(my.default_value) & !defined(my.array.length_constant)
+        echo_trace("       length_constant=\"$(my.default_value:)\"", my)
+        my.array.length_constant = my.default_value
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
+function array_validate(array, restrictions)
+    my.array_name = defined(my.array.name) ?? " name=\"$(my.array.name)\"" ? ""
+    echo_trace("[L1] Validate entity: <$(name(my.array))$(my.array_name)/>", my)
+
+    #    Check inherited attributes and entities
+    new restrictions
+        access_validate(my.array, restrictions)
+    endnew
+
+    my.restrictions ?= XML.new("restrictions")
+
+    echo_trace("     Validate attribute: length=\"$(my.array.length)\"", my)
+    my.restrictions.attr_length_apply ?= "1"
+    if my.restrictions.attr_length_apply & defined(my.array.length)
+        my.length_is_valid = "0"
+        my.length_is_valid = my.length_is_valid | (my.array.length = "null_terminated")
+        my.length_is_valid = my.length_is_valid | (my.array.length = "given")
+        my.length_is_valid = my.length_is_valid | (my.array.length = "known")
+        my.length_is_valid = my.length_is_valid | (my.array.length = "fixed")
+        my.length_is_valid = my.length_is_valid | (my.array.length = "derived")
+        if !my.length_is_valid
+            echo_fatal_resticted_attr(my.array, "length", "null_terminated, given, known, fixed, derived")
+        endif
+    endif
+
+    echo_trace("     Validate attribute: length_constant=\"$(my.array.length_constant)\"", my)
+    my.restrictions.attr_length_constant_apply ?= "1"
+
+    delete my.restrictions
+endfunction
+
+# ---------------------------------------------------------------------------
+function array_validate_resolved(array, restrictions)
+    my.array_name = defined(my.array.name) ?? " name=\"$(my.array.name)\"" ? ""
+    echo_trace("[L1] Validate entity: <$(name(my.array))$(my.array_name)/>", my)
+
+    #    Check inherited attributes and entities
+    new restrictions
+        access_validate_resolved(my.array, restrictions)
+    endnew
+
+    my.restrictions ?= XML.new("restrictions")
+
+    echo_trace("     Validate attribute: length=\"$(my.array.length)\"", my)
+    my.restrictions.attr_length_apply ?= "1"
+    if my.restrictions.attr_length_apply & defined(my.array.length)
+        my.length_is_valid = "0"
+        my.length_is_valid = my.length_is_valid | (my.array.length = "null_terminated")
+        my.length_is_valid = my.length_is_valid | (my.array.length = "given")
+        my.length_is_valid = my.length_is_valid | (my.array.length = "known")
+        my.length_is_valid = my.length_is_valid | (my.array.length = "fixed")
+        my.length_is_valid = my.length_is_valid | (my.array.length = "derived")
+        if !my.length_is_valid
+            echo_fatal_resticted_attr(my.array, "length", "null_terminated, given, known, fixed, derived")
+        endif
+    endif
+
+    echo_trace("     Validate attribute: length_constant=\"$(my.array.length_constant)\"", my)
+    my.restrictions.attr_length_constant_apply ?= "1"
+
+   delete my.restrictions
+endfunction
+
+# ---------------------------------------------------------------------------
+function instance_setup_defaults(instance, defaults)
+
+    #    Setup defaults for inherited attributes and entities
+    access_setup_defaults(my.instance)
+    landlord_setup_defaults(my.instance)
+
+    #    Setup defaults for allowed entities
+    for my.instance.string as _string
+        string_setup_defaults(_string)
+    endfor
+
+    for my.instance.array as _array
+        array_setup_defaults(_array)
+    endfor
+    my.default_value = my.defaults.type ?
+    if defined(my.default_value) & !defined(my.instance.type)
+        echo_trace("       type=\"$(my.default_value:)\"", my)
+        my.instance.type = my.default_value
+    endif
+
+    my.default_value = my.defaults.class ?
+    if defined(my.default_value) & !defined(my.instance.class)
+        echo_trace("       class=\"$(my.default_value:)\"", my)
+        my.instance.class = my.default_value
+    endif
+
+    my.default_value = my.defaults.enum ?
+    if defined(my.default_value) & !defined(my.instance.enum)
+        echo_trace("       enum=\"$(my.default_value:)\"", my)
+        my.instance.enum = my.default_value
+    endif
+
+    my.default_value = my.defaults.callback ?
+    if defined(my.default_value) & !defined(my.instance.callback)
+        echo_trace("       callback=\"$(my.default_value:)\"", my)
+        my.instance.callback = my.default_value
+    endif
+
+    my.default_value = my.defaults.interface ?
+    if defined(my.default_value) & !defined(my.instance.interface)
+        echo_trace("       interface=\"$(my.default_value:)\"", my)
+        my.instance.interface = my.default_value
+    endif
+
+    my.default_value = my.defaults.api ?
+    if defined(my.default_value) & !defined(my.instance.api)
+        echo_trace("       api=\"$(my.default_value:)\"", my)
+        my.instance.api = my.default_value
+    endif
+
+    my.default_value = my.defaults.impl ?
+    if defined(my.default_value) & !defined(my.instance.impl)
+        echo_trace("       impl=\"$(my.default_value:)\"", my)
+        my.instance.impl = my.default_value
+    endif
+
+    my.default_value = my.defaults.size ?
+    if defined(my.default_value) & !defined(my.instance.size)
+        echo_trace("       size=\"$(my.default_value:)\"", my)
+        my.instance.size = my.default_value
+    endif
+
+    my.default_value = my.defaults.is_reference ?
+    if defined(my.default_value) & !defined(my.instance.is_reference)
+        echo_trace("       is_reference=\"$(my.default_value:)\"", my)
+        my.instance.is_reference = my.default_value
+    endif
+
+    my.default_value = my.defaults.require_definition ?
+    if defined(my.default_value) & !defined(my.instance.require_definition)
+        echo_trace("       require_definition=\"$(my.default_value:)\"", my)
+        my.instance.require_definition = my.default_value
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
+function instance_validate(instance, restrictions)
+
+    #    Check inherited attributes and entities
+    new restrictions
+        access_validate(my.instance, restrictions)
+    endnew
+
+    new restrictions
+        landlord_validate(my.instance, restrictions)
+    endnew
+
+    #    Check allowed entities
+    my.string_count = count(my.instance.string)
+    if my.string_count > 1
+        my.dump_filename = entity_dump_file(my.instance)
+        echo_fatal("Expected zero one entity: string.\n" + \
+                   "But found $(my.string_count).\n" + \
+                   "See dump file: $(my.dump_filename:)", my)
+    endif
+    for my.instance.string as _string
+        new restrictions
+            string_validate(_string, restrictions)
+        endnew
+    endfor
+
+    my.array_count = count(my.instance.array)
+    if my.array_count > 1
+        my.dump_filename = entity_dump_file(my.instance)
+        echo_fatal("Expected zero one entity: array.\n" + \
+                   "But found $(my.array_count).\n" + \
+                   "See dump file: $(my.dump_filename:)", my)
+    endif
+    for my.instance.array as _array
+        new restrictions
+            array_validate(_array, restrictions)
+        endnew
+    endfor
+
+    my.restrictions ?= XML.new("restrictions")
+
+    echo_trace("     Validate attribute: type=\"$(my.instance.type)\"", my)
+    my.restrictions.attr_type_apply ?= "1"
+    if my.restrictions.attr_type_apply & defined(my.instance.type)
+        my.type_is_valid = "0"
+        my.type_is_valid = my.type_is_valid | (my.instance.type = "nothing")
+        my.type_is_valid = my.type_is_valid | (my.instance.type = "boolean")
+        my.type_is_valid = my.type_is_valid | (my.instance.type = "integer")
+        my.type_is_valid = my.type_is_valid | (my.instance.type = "unsigned")
+        my.type_is_valid = my.type_is_valid | (my.instance.type = "size")
+        my.type_is_valid = my.type_is_valid | (my.instance.type = "byte")
+        my.type_is_valid = my.type_is_valid | (my.instance.type = "string")
+        my.type_is_valid = my.type_is_valid | (my.instance.type = "char")
+        my.type_is_valid = my.type_is_valid | (my.instance.type = "varargs")
+        if !my.type_is_valid
+            echo_fatal_resticted_attr(my.instance, "type", "nothing, boolean, integer, unsigned, size, byte, string, char, varargs")
+        endif
+    endif
+
+    echo_trace("     Validate attribute: class=\"$(my.instance.class)\"", my)
+    my.restrictions.attr_class_apply ?= "1"
+
+    echo_trace("     Validate attribute: enum=\"$(my.instance.enum)\"", my)
+    my.restrictions.attr_enum_apply ?= "1"
+
+    echo_trace("     Validate attribute: callback=\"$(my.instance.callback)\"", my)
+    my.restrictions.attr_callback_apply ?= "1"
+
+    echo_trace("     Validate attribute: interface=\"$(my.instance.interface)\"", my)
+    my.restrictions.attr_interface_apply ?= "1"
+
+    echo_trace("     Validate attribute: api=\"$(my.instance.api)\"", my)
+    my.restrictions.attr_api_apply ?= "1"
+
+    echo_trace("     Validate attribute: impl=\"$(my.instance.impl)\"", my)
+    my.restrictions.attr_impl_apply ?= "1"
+
+    echo_trace("     Validate attribute: size=\"$(my.instance.size)\"", my)
+    my.restrictions.attr_size_apply ?= "1"
+    if my.restrictions.attr_size_apply & defined(my.instance.size)
+        my.size_is_valid = "0"
+        my.size_is_valid = my.size_is_valid | (my.instance.size = "1")
+        my.size_is_valid = my.size_is_valid | (my.instance.size = "2")
+        my.size_is_valid = my.size_is_valid | (my.instance.size = "4")
+        my.size_is_valid = my.size_is_valid | (my.instance.size = "8")
+        if !my.size_is_valid
+            echo_fatal_resticted_attr(my.instance, "size", "1, 2, 4, 8")
+        endif
+    endif
+
+    echo_trace("     Validate attribute: is_reference=\"$(my.instance.is_reference)\"", my)
+    my.restrictions.attr_is_reference_apply ?= "1"
+    if my.restrictions.attr_is_reference_apply & defined(my.instance.is_reference)
+        my.is_reference_is_valid = "0"
+        my.is_reference_is_valid = my.is_reference_is_valid | (my.instance.is_reference = "0")
+        my.is_reference_is_valid = my.is_reference_is_valid | (my.instance.is_reference = "1")
+        if !my.is_reference_is_valid
+            echo_fatal_resticted_attr(my.instance, "is_reference", "0, 1")
+        endif
+    endif
+
+    echo_trace("     Validate attribute: require_definition=\"$(my.instance.require_definition)\"", my)
+    my.restrictions.attr_require_definition_apply ?= "1"
+    if my.restrictions.attr_require_definition_apply & defined(my.instance.require_definition)
+        my.require_definition_is_valid = "0"
+        my.require_definition_is_valid = my.require_definition_is_valid | (my.instance.require_definition = "public")
+        my.require_definition_is_valid = my.require_definition_is_valid | (my.instance.require_definition = "private")
+        if !my.require_definition_is_valid
+            echo_fatal_resticted_attr(my.instance, "require_definition", "public, private")
+        endif
+    endif
+
+    echo_trace("     Validate one of: {type, class, enum, callback, interface, api, impl}", my)
+    my.typeof_found_attrs = ""
+    my.typeof_found_attrs_count = "0"
+
+    if defined(my.instance.type)
+        my.typeof_found_attrs_count += 1
+        if my.typeof_found_attrs <> ""
+            my.typeof_found_attrs += ", "
+        endif
+        my.typeof_found_attrs += "type"
+    endif
+
+    if defined(my.instance.class)
+        my.typeof_found_attrs_count += 1
+        if my.typeof_found_attrs <> ""
+            my.typeof_found_attrs += ", "
+        endif
+        my.typeof_found_attrs += "class"
+    endif
+
+    if defined(my.instance.enum)
+        my.typeof_found_attrs_count += 1
+        if my.typeof_found_attrs <> ""
+            my.typeof_found_attrs += ", "
+        endif
+        my.typeof_found_attrs += "enum"
+    endif
+
+    if defined(my.instance.callback)
+        my.typeof_found_attrs_count += 1
+        if my.typeof_found_attrs <> ""
+            my.typeof_found_attrs += ", "
+        endif
+        my.typeof_found_attrs += "callback"
+    endif
+
+    if defined(my.instance.interface)
+        my.typeof_found_attrs_count += 1
+        if my.typeof_found_attrs <> ""
+            my.typeof_found_attrs += ", "
+        endif
+        my.typeof_found_attrs += "interface"
+    endif
+
+    if defined(my.instance.api)
+        my.typeof_found_attrs_count += 1
+        if my.typeof_found_attrs <> ""
+            my.typeof_found_attrs += ", "
+        endif
+        my.typeof_found_attrs += "api"
+    endif
+
+    if defined(my.instance.impl)
+        my.typeof_found_attrs_count += 1
+        if my.typeof_found_attrs <> ""
+            my.typeof_found_attrs += ", "
+        endif
+        my.typeof_found_attrs += "impl"
+    endif
+
+    my.restrictions.oneof_typeof_apply ?= "1"
+    my.restrictions.oneof_typeof_required ?= 1
+
+    if my.restrictions.oneof_typeof_apply &   my.restrictions.oneof_typeof_required &    my.typeof_found_attrs_count = "0"
+        my.dump_filename = entity_dump_file(my.instance)
+        echo_fatal("Expected one of the attributes {type, class, enum, callback, interface, api, impl}.\n" + \
+                   "But found nothing.\n" + \
+                   "See dump file: $(my.dump_filename:)", my)
+    endif
+
+    if my.typeof_found_attrs_count > "1"
+        my.dump_filename = entity_dump_file(my.instance)
+        echo_fatal("Expected one of the attributes {type, class, enum, callback, interface, api, impl}.\n" + \
+                   "But found several {$(my.typeof_found_attrs:)}.\n" + \
+                   "See dump file: $(my.dump_filename:)", my)
+    endif
+
+    delete my.restrictions
+endfunction
+
+# ---------------------------------------------------------------------------
+function instance_validate_resolved(instance, restrictions)
+
+    #    Check inherited attributes and entities
+    new restrictions
+        access_validate_resolved(my.instance, restrictions)
+    endnew
+
+    new restrictions
+        landlord_validate_resolved(my.instance, restrictions)
+    endnew
+
+    #    Check allowed entities
+    for my.instance.string as _string
+        new restrictions
+            string_validate_resolved(_string, restrictions)
+        endnew
+    endfor
+
+    for my.instance.array as _array
+        new restrictions
+            array_validate_resolved(_array, restrictions)
+        endnew
+    endfor
+
+    my.restrictions ?= XML.new("restrictions")
+
+    echo_trace("     Validate attribute: type=\"$(my.instance.type)\"", my)
+    my.restrictions.attr_type_apply ?= "1"
+    if my.restrictions.attr_type_apply & defined(my.instance.type)
+        my.type_is_valid = "0"
+        my.type_is_valid = my.type_is_valid | (my.instance.type = "nothing")
+        my.type_is_valid = my.type_is_valid | (my.instance.type = "boolean")
+        my.type_is_valid = my.type_is_valid | (my.instance.type = "integer")
+        my.type_is_valid = my.type_is_valid | (my.instance.type = "unsigned")
+        my.type_is_valid = my.type_is_valid | (my.instance.type = "size")
+        my.type_is_valid = my.type_is_valid | (my.instance.type = "byte")
+        my.type_is_valid = my.type_is_valid | (my.instance.type = "string")
+        my.type_is_valid = my.type_is_valid | (my.instance.type = "char")
+        my.type_is_valid = my.type_is_valid | (my.instance.type = "varargs")
+        if !my.type_is_valid
+            echo_fatal_resticted_attr(my.instance, "type", "nothing, boolean, integer, unsigned, size, byte, string, char, varargs")
+        endif
+    endif
+
+    echo_trace("     Validate attribute: class=\"$(my.instance.class)\"", my)
+    my.restrictions.attr_class_apply ?= "1"
+
+    echo_trace("     Validate attribute: enum=\"$(my.instance.enum)\"", my)
+    my.restrictions.attr_enum_apply ?= "1"
+
+    echo_trace("     Validate attribute: callback=\"$(my.instance.callback)\"", my)
+    my.restrictions.attr_callback_apply ?= "1"
+
+    echo_trace("     Validate attribute: interface=\"$(my.instance.interface)\"", my)
+    my.restrictions.attr_interface_apply ?= "1"
+
+    echo_trace("     Validate attribute: api=\"$(my.instance.api)\"", my)
+    my.restrictions.attr_api_apply ?= "1"
+
+    echo_trace("     Validate attribute: impl=\"$(my.instance.impl)\"", my)
+    my.restrictions.attr_impl_apply ?= "1"
+
+    echo_trace("     Validate attribute: size=\"$(my.instance.size)\"", my)
+    my.restrictions.attr_size_apply ?= "1"
+    if my.restrictions.attr_size_apply & defined(my.instance.size)
+        my.size_is_valid = "0"
+        my.size_is_valid = my.size_is_valid | (my.instance.size = "1")
+        my.size_is_valid = my.size_is_valid | (my.instance.size = "2")
+        my.size_is_valid = my.size_is_valid | (my.instance.size = "4")
+        my.size_is_valid = my.size_is_valid | (my.instance.size = "8")
+        if !my.size_is_valid
+            echo_fatal_resticted_attr(my.instance, "size", "1, 2, 4, 8")
+        endif
+    endif
+
+    echo_trace("     Validate attribute: is_reference=\"$(my.instance.is_reference)\"", my)
+    my.restrictions.attr_is_reference_apply ?= "1"
+    if my.restrictions.attr_is_reference_apply & defined(my.instance.is_reference)
+        my.is_reference_is_valid = "0"
+        my.is_reference_is_valid = my.is_reference_is_valid | (my.instance.is_reference = "0")
+        my.is_reference_is_valid = my.is_reference_is_valid | (my.instance.is_reference = "1")
+        if !my.is_reference_is_valid
+            echo_fatal_resticted_attr(my.instance, "is_reference", "0, 1")
+        endif
+    endif
+
+    echo_trace("     Validate attribute: require_definition=\"$(my.instance.require_definition)\"", my)
+    my.restrictions.attr_require_definition_apply ?= "1"
+    if my.restrictions.attr_require_definition_apply & defined(my.instance.require_definition)
+        my.require_definition_is_valid = "0"
+        my.require_definition_is_valid = my.require_definition_is_valid | (my.instance.require_definition = "public")
+        my.require_definition_is_valid = my.require_definition_is_valid | (my.instance.require_definition = "private")
+        if !my.require_definition_is_valid
+            echo_fatal_resticted_attr(my.instance, "require_definition", "public, private")
+        endif
+    endif
+
+    echo_trace("     Validate one of: {type, class, enum, callback, interface, api, impl}", my)
+    my.typeof_found_attrs = ""
+    my.typeof_found_attrs_count = "0"
+
+    if defined(my.instance.type)
+        my.typeof_found_attrs_count += 1
+        if my.typeof_found_attrs <> ""
+            my.typeof_found_attrs += ", "
+        endif
+        my.typeof_found_attrs += "type"
+    endif
+
+    if defined(my.instance.class)
+        my.typeof_found_attrs_count += 1
+        if my.typeof_found_attrs <> ""
+            my.typeof_found_attrs += ", "
+        endif
+        my.typeof_found_attrs += "class"
+    endif
+
+    if defined(my.instance.enum)
+        my.typeof_found_attrs_count += 1
+        if my.typeof_found_attrs <> ""
+            my.typeof_found_attrs += ", "
+        endif
+        my.typeof_found_attrs += "enum"
+    endif
+
+    if defined(my.instance.callback)
+        my.typeof_found_attrs_count += 1
+        if my.typeof_found_attrs <> ""
+            my.typeof_found_attrs += ", "
+        endif
+        my.typeof_found_attrs += "callback"
+    endif
+
+    if defined(my.instance.interface)
+        my.typeof_found_attrs_count += 1
+        if my.typeof_found_attrs <> ""
+            my.typeof_found_attrs += ", "
+        endif
+        my.typeof_found_attrs += "interface"
+    endif
+
+    if defined(my.instance.api)
+        my.typeof_found_attrs_count += 1
+        if my.typeof_found_attrs <> ""
+            my.typeof_found_attrs += ", "
+        endif
+        my.typeof_found_attrs += "api"
+    endif
+
+    if defined(my.instance.impl)
+        my.typeof_found_attrs_count += 1
+        if my.typeof_found_attrs <> ""
+            my.typeof_found_attrs += ", "
+        endif
+        my.typeof_found_attrs += "impl"
+    endif
+
+    my.restrictions.oneof_typeof_apply ?= "1"
+    my.restrictions.oneof_typeof_required ?= 1
+
+    if my.restrictions.oneof_typeof_apply &   my.restrictions.oneof_typeof_required &    my.typeof_found_attrs_count = "0"
+        my.dump_filename = entity_dump_file(my.instance)
+        echo_fatal("Expected one of the attributes {type, class, enum, callback, interface, api, impl}.\n" + \
+                   "But found nothing.\n" + \
+                   "See dump file: $(my.dump_filename:)", my)
+    endif
+
+    if my.typeof_found_attrs_count > "1"
+        my.dump_filename = entity_dump_file(my.instance)
+        echo_fatal("Expected one of the attributes {type, class, enum, callback, interface, api, impl}.\n" + \
+                   "But found several {$(my.typeof_found_attrs:)}.\n" + \
+                   "See dump file: $(my.dump_filename:)", my)
+    endif
 
    delete my.restrictions
 endfunction
@@ -589,6 +1405,11 @@ function dependency_setup_defaults(dependency, defaults)
     echo_trace("[L1] Setup defaults for entity: <$(name(my.dependency))$(my.dependency_name)/>", my)
 
     #    Setup defaults for inherited attributes and entities
+    new defaults
+        .access = "readwrite"
+        instance_setup_defaults(my.dependency, defaults)
+        delete defaults
+    endnew
     landlord_setup_defaults(my.dependency)
     my.default_value = my.defaults.name ?
     if defined(my.default_value) & !defined(my.dependency.name)
@@ -637,6 +1458,18 @@ function dependency_setup_defaults(dependency, defaults)
         echo_trace("       is_observers_return_status=\"$(my.default_value:)\"", my)
         my.dependency.is_observers_return_status = my.default_value
     endif
+
+    my.default_value = my.defaults.type_name ?
+    if defined(my.default_value) & !defined(my.dependency.type_name)
+        echo_trace("       type_name=\"$(my.default_value:)\"", my)
+        my.dependency.type_name = my.default_value
+    endif
+
+    my.default_value = my.defaults.type_kind ?
+    if defined(my.default_value) & !defined(my.dependency.type_kind)
+        echo_trace("       type_kind=\"$(my.default_value:)\"", my)
+        my.dependency.type_kind = my.default_value
+    endif
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -645,6 +1478,12 @@ function dependency_validate(dependency, restrictions)
     echo_trace("[L1] Validate entity: <$(name(my.dependency))$(my.dependency_name)/>", my)
 
     #    Check inherited attributes and entities
+    new restrictions
+        .attr_access_apply = "0"
+        .attr_access_required = "0"
+        instance_validate(my.dependency, restrictions)
+    endnew
+
     new restrictions
         landlord_validate(my.dependency, restrictions)
     endnew
@@ -694,6 +1533,59 @@ function dependency_validate(dependency, restrictions)
         endif
     endif
 
+    echo_trace("     Validate one of: {interface, api, class, impl}", my)
+    my.typeof_found_attrs = ""
+    my.typeof_found_attrs_count = "0"
+
+    if defined(my.dependency.interface)
+        my.typeof_found_attrs_count += 1
+        if my.typeof_found_attrs <> ""
+            my.typeof_found_attrs += ", "
+        endif
+        my.typeof_found_attrs += "interface"
+    endif
+
+    if defined(my.dependency.api)
+        my.typeof_found_attrs_count += 1
+        if my.typeof_found_attrs <> ""
+            my.typeof_found_attrs += ", "
+        endif
+        my.typeof_found_attrs += "api"
+    endif
+
+    if defined(my.dependency.class)
+        my.typeof_found_attrs_count += 1
+        if my.typeof_found_attrs <> ""
+            my.typeof_found_attrs += ", "
+        endif
+        my.typeof_found_attrs += "class"
+    endif
+
+    if defined(my.dependency.impl)
+        my.typeof_found_attrs_count += 1
+        if my.typeof_found_attrs <> ""
+            my.typeof_found_attrs += ", "
+        endif
+        my.typeof_found_attrs += "impl"
+    endif
+
+    my.restrictions.oneof_typeof_apply ?= "1"
+    my.restrictions.oneof_typeof_required ?= 1
+
+    if my.restrictions.oneof_typeof_apply &   my.restrictions.oneof_typeof_required &    my.typeof_found_attrs_count = "0"
+        my.dump_filename = entity_dump_file(my.dependency)
+        echo_fatal("Expected one of the attributes {interface, api, class, impl}.\n" + \
+                   "But found nothing.\n" + \
+                   "See dump file: $(my.dump_filename:)", my)
+    endif
+
+    if my.typeof_found_attrs_count > "1"
+        my.dump_filename = entity_dump_file(my.dependency)
+        echo_fatal("Expected one of the attributes {interface, api, class, impl}.\n" + \
+                   "But found several {$(my.typeof_found_attrs:)}.\n" + \
+                   "See dump file: $(my.dump_filename:)", my)
+    endif
+
     delete my.restrictions
 endfunction
 
@@ -703,6 +1595,10 @@ function dependency_validate_resolved(dependency, restrictions)
     echo_trace("[L1] Validate entity: <$(name(my.dependency))$(my.dependency_name)/>", my)
 
     #    Check inherited attributes and entities
+    new restrictions
+        instance_validate_resolved(my.dependency, restrictions)
+    endnew
+
     new restrictions
         landlord_validate_resolved(my.dependency, restrictions)
     endnew
@@ -750,6 +1646,75 @@ function dependency_validate_resolved(dependency, restrictions)
         if !my.is_observers_return_status_is_valid
             echo_fatal_resticted_attr(my.dependency, "is_observers_return_status", "0, 1")
         endif
+    endif
+
+    echo_trace("     Validate attribute: type_name=\"$(my.dependency.type_name)\"", my)
+    my.restrictions.attr_type_name_apply ?= "1"
+
+    echo_trace("     Validate attribute: type_kind=\"$(my.dependency.type_kind)\"", my)
+    my.restrictions.attr_type_kind_apply ?= "1"
+    if my.restrictions.attr_type_kind_apply & defined(my.dependency.type_kind)
+        my.type_kind_is_valid = "0"
+        my.type_kind_is_valid = my.type_kind_is_valid | (my.dependency.type_kind = "interface")
+        my.type_kind_is_valid = my.type_kind_is_valid | (my.dependency.type_kind = "interface api")
+        my.type_kind_is_valid = my.type_kind_is_valid | (my.dependency.type_kind = "class")
+        my.type_kind_is_valid = my.type_kind_is_valid | (my.dependency.type_kind = "implementation")
+        if !my.type_kind_is_valid
+            echo_fatal_resticted_attr(my.dependency, "type_kind", "interface, interface api, class, implementation")
+        endif
+    endif
+
+    echo_trace("     Validate one of: {interface, api, class, impl}", my)
+    my.typeof_found_attrs = ""
+    my.typeof_found_attrs_count = "0"
+
+    if defined(my.dependency.interface)
+        my.typeof_found_attrs_count += 1
+        if my.typeof_found_attrs <> ""
+            my.typeof_found_attrs += ", "
+        endif
+        my.typeof_found_attrs += "interface"
+    endif
+
+    if defined(my.dependency.api)
+        my.typeof_found_attrs_count += 1
+        if my.typeof_found_attrs <> ""
+            my.typeof_found_attrs += ", "
+        endif
+        my.typeof_found_attrs += "api"
+    endif
+
+    if defined(my.dependency.class)
+        my.typeof_found_attrs_count += 1
+        if my.typeof_found_attrs <> ""
+            my.typeof_found_attrs += ", "
+        endif
+        my.typeof_found_attrs += "class"
+    endif
+
+    if defined(my.dependency.impl)
+        my.typeof_found_attrs_count += 1
+        if my.typeof_found_attrs <> ""
+            my.typeof_found_attrs += ", "
+        endif
+        my.typeof_found_attrs += "impl"
+    endif
+
+    my.restrictions.oneof_typeof_apply ?= "1"
+    my.restrictions.oneof_typeof_required ?= 1
+
+    if my.restrictions.oneof_typeof_apply &   my.restrictions.oneof_typeof_required &    my.typeof_found_attrs_count = "0"
+        my.dump_filename = entity_dump_file(my.dependency)
+        echo_fatal("Expected one of the attributes {interface, api, class, impl}.\n" + \
+                   "But found nothing.\n" + \
+                   "See dump file: $(my.dump_filename:)", my)
+    endif
+
+    if my.typeof_found_attrs_count > "1"
+        my.dump_filename = entity_dump_file(my.dependency)
+        echo_fatal("Expected one of the attributes {interface, api, class, impl}.\n" + \
+                   "But found several {$(my.typeof_found_attrs:)}.\n" + \
+                   "See dump file: $(my.dump_filename:)", my)
     endif
 
    delete my.restrictions
@@ -959,135 +1924,27 @@ function definition_validate_resolved(definition, restrictions)
 endfunction
 
 # ---------------------------------------------------------------------------
-function ancestor_setup_defaults(ancestor, defaults)
-    my.ancestor_name = defined(my.ancestor.name) ?? " name=\"$(my.ancestor.name)\"" ? ""
-    echo_trace("[L1] Setup defaults for entity: <$(name(my.ancestor))$(my.ancestor_name)/>", my)
-    my.default_value = my.defaults.id ?
-    if defined(my.default_value) & !defined(my.ancestor.id)
-        echo_trace("       id=\"$(my.default_value:)\"", my)
-        my.ancestor.id = my.default_value
-    endif
-
-    my.default_value = my.defaults.name ?
-    if defined(my.default_value) & !defined(my.ancestor.name)
-        echo_trace("       name=\"$(my.default_value:)\"", my)
-        my.ancestor.name = my.default_value
-    endif
-endfunction
-
-# ---------------------------------------------------------------------------
-function ancestor_validate(ancestor, restrictions)
-    my.ancestor_name = defined(my.ancestor.name) ?? " name=\"$(my.ancestor.name)\"" ? ""
-    echo_trace("[L1] Validate entity: <$(name(my.ancestor))$(my.ancestor_name)/>", my)
-
-    my.restrictions ?= XML.new("restrictions")
-
-    echo_trace("     Validate attribute: id=\"$(my.ancestor.id)\"", my)
-    my.restrictions.attr_id_apply ?= "1"
-    if my.restrictions.attr_id_apply & !defined(my.ancestor.id)
-        echo_fatal_required_attr(my.ancestor, "id")
-    endif
-
-    echo_trace("     Validate attribute: name=\"$(my.ancestor.name)\"", my)
-    my.restrictions.attr_name_apply ?= "1"
-    if my.restrictions.attr_name_apply & !defined(my.ancestor.name)
-        echo_fatal_required_attr(my.ancestor, "name")
-    endif
-
-    delete my.restrictions
-endfunction
-
-# ---------------------------------------------------------------------------
-function ancestor_validate_resolved(ancestor, restrictions)
-    my.ancestor_name = defined(my.ancestor.name) ?? " name=\"$(my.ancestor.name)\"" ? ""
-    echo_trace("[L1] Validate entity: <$(name(my.ancestor))$(my.ancestor_name)/>", my)
-
-    my.restrictions ?= XML.new("restrictions")
-
-    echo_trace("     Validate attribute: id=\"$(my.ancestor.id)\"", my)
-    my.restrictions.attr_id_apply ?= "1"
-    if my.restrictions.attr_id_apply & !defined(my.ancestor.id)
-        echo_fatal_required_attr(my.ancestor, "id")
-    endif
-
-    echo_trace("     Validate attribute: name=\"$(my.ancestor.name)\"", my)
-    my.restrictions.attr_name_apply ?= "1"
-    if my.restrictions.attr_name_apply & !defined(my.ancestor.name)
-        echo_fatal_required_attr(my.ancestor, "name")
-    endif
-
-   delete my.restrictions
-endfunction
-
-# ---------------------------------------------------------------------------
-function lineage_setup_defaults(lineage, defaults)
-    my.lineage_name = defined(my.lineage.name) ?? " name=\"$(my.lineage.name)\"" ? ""
-    echo_trace("[L1] Setup defaults for entity: <$(name(my.lineage))$(my.lineage_name)/>", my)
-
-    #    Setup defaults for allowed entities
-    for my.lineage.ancestor
-        ancestor_setup_defaults(ancestor)
-    endfor
-endfunction
-
-# ---------------------------------------------------------------------------
-function lineage_validate(lineage, restrictions)
-    my.lineage_name = defined(my.lineage.name) ?? " name=\"$(my.lineage.name)\"" ? ""
-    echo_trace("[L1] Validate entity: <$(name(my.lineage))$(my.lineage_name)/>", my)
-
-    #    Check allowed entities
-    my.ancestor_count = count(my.lineage.ancestor)
-    if my.ancestor_count < 1
-        my.dump_filename = entity_dump_file(my.lineage)
-        echo_fatal("Expected one or more entities: ancestor.\n" + \
-                   "But found $(my.ancestor_count).\n" + \
-                   "See dump file: $(my.dump_filename:)", my)
-    endif
-    for my.lineage.ancestor as _ancestor
-        new restrictions
-        ancestor_validate(_ancestor, restrictions)
-        endnew
-    endfor
-
-    my.restrictions ?= XML.new("restrictions")
-
-    delete my.restrictions
-endfunction
-
-# ---------------------------------------------------------------------------
-function lineage_validate_resolved(lineage, restrictions)
-    my.lineage_name = defined(my.lineage.name) ?? " name=\"$(my.lineage.name)\"" ? ""
-    echo_trace("[L1] Validate entity: <$(name(my.lineage))$(my.lineage_name)/>", my)
-
-    #    Check allowed entities
-    for my.lineage.ancestor as _ancestor
-        new restrictions
-        ancestor_validate_resolved(_ancestor, restrictions)
-        endnew
-    endfor
-
-    my.restrictions ?= XML.new("restrictions")
-
-   delete my.restrictions
-endfunction
-
-# ---------------------------------------------------------------------------
 function constant_setup_defaults(constant, defaults)
     my.constant_name = defined(my.constant.name) ?? " name=\"$(my.constant.name)\"" ? ""
     echo_trace("[L1] Setup defaults for entity: <$(name(my.constant))$(my.constant_name)/>", my)
 
     #    Setup defaults for inherited attributes and entities
     scoped_component_setup_defaults(my.constant)
-    definition_setup_defaults(my.constant)
-
-    #    Setup defaults for allowed entities
-    for my.constant.lineage
-        lineage_setup_defaults(lineage)
-    endfor
+    new defaults
+        .default = "public"
+        definition_setup_defaults(my.constant, defaults)
+        delete defaults
+    endnew
     my.default_value = my.defaults.name ?
     if defined(my.default_value) & !defined(my.constant.name)
         echo_trace("       name=\"$(my.default_value:)\"", my)
         my.constant.name = my.default_value
+    endif
+
+    my.default_value = my.defaults.type ? "size"
+    if defined(my.default_value) & !defined(my.constant.type)
+        echo_trace("       type=\"$(my.default_value:)\"", my)
+        my.constant.type = my.default_value
     endif
 
     my.default_value = my.defaults.value ?
@@ -1108,15 +1965,10 @@ function constant_validate(constant, restrictions)
     endnew
 
     new restrictions
+        .attr_default_apply = "0"
+        .attr_default_required = "0"
         definition_validate(my.constant, restrictions)
     endnew
-
-    #    Check allowed entities
-    for my.constant.lineage as _lineage
-        new restrictions
-        lineage_validate(_lineage, restrictions)
-        endnew
-    endfor
 
     my.restrictions ?= XML.new("restrictions")
 
@@ -1124,6 +1976,18 @@ function constant_validate(constant, restrictions)
     my.restrictions.attr_name_apply ?= "1"
     if my.restrictions.attr_name_apply & !defined(my.constant.name)
         echo_fatal_required_attr(my.constant, "name")
+    endif
+
+    echo_trace("     Validate attribute: type=\"$(my.constant.type)\"", my)
+    my.restrictions.attr_type_apply ?= "1"
+    if my.restrictions.attr_type_apply & defined(my.constant.type)
+        my.type_is_valid = "0"
+        my.type_is_valid = my.type_is_valid | (my.constant.type = "boolean")
+        my.type_is_valid = my.type_is_valid | (my.constant.type = "integer")
+        my.type_is_valid = my.type_is_valid | (my.constant.type = "size")
+        if !my.type_is_valid
+            echo_fatal_resticted_attr(my.constant, "type", "boolean, integer, size")
+        endif
     endif
 
     echo_trace("     Validate attribute: value=\"$(my.constant.value)\"", my)
@@ -1146,20 +2010,6 @@ function constant_validate_resolved(constant, restrictions)
         definition_validate_resolved(my.constant, restrictions)
     endnew
 
-    #    Check allowed entities
-    my.lineage_count = count(my.constant.lineage)
-    if my.lineage_count <> 1
-        my.dump_filename = entity_dump_file(my.constant)
-        echo_fatal("Expected exectly one entity: lineage.\n" + \
-                   "But found $(my.lineage_count).\n" + \
-                   "See dump file: $(my.dump_filename:)", my)
-    endif
-    for my.constant.lineage as _lineage
-        new restrictions
-        lineage_validate_resolved(_lineage, restrictions)
-        endnew
-    endfor
-
     my.restrictions ?= XML.new("restrictions")
 
     echo_trace("     Validate attribute: name=\"$(my.constant.name)\"", my)
@@ -1168,683 +2018,20 @@ function constant_validate_resolved(constant, restrictions)
         echo_fatal_required_attr(my.constant, "name")
     endif
 
+    echo_trace("     Validate attribute: type=\"$(my.constant.type)\"", my)
+    my.restrictions.attr_type_apply ?= "1"
+    if my.restrictions.attr_type_apply & defined(my.constant.type)
+        my.type_is_valid = "0"
+        my.type_is_valid = my.type_is_valid | (my.constant.type = "boolean")
+        my.type_is_valid = my.type_is_valid | (my.constant.type = "integer")
+        my.type_is_valid = my.type_is_valid | (my.constant.type = "size")
+        if !my.type_is_valid
+            echo_fatal_resticted_attr(my.constant, "type", "boolean, integer, size")
+        endif
+    endif
+
     echo_trace("     Validate attribute: value=\"$(my.constant.value)\"", my)
     my.restrictions.attr_value_apply ?= "1"
-
-   delete my.restrictions
-endfunction
-
-# ---------------------------------------------------------------------------
-function access_setup_defaults(access, defaults)
-    my.default_value = my.defaults.access ?
-    if defined(my.default_value) & !defined(my.access.access)
-        echo_trace("       access=\"$(my.default_value:)\"", my)
-        my.access.access = my.default_value
-    endif
-
-    my.default_value = my.defaults.ownership ?
-    if defined(my.default_value) & !defined(my.access.ownership)
-        echo_trace("       ownership=\"$(my.default_value:)\"", my)
-        my.access.ownership = my.default_value
-    endif
-endfunction
-
-# ---------------------------------------------------------------------------
-function access_validate(access, restrictions)
-
-    my.restrictions ?= XML.new("restrictions")
-
-    echo_trace("     Validate attribute: access=\"$(my.access.access)\"", my)
-    my.restrictions.attr_access_apply ?= "1"
-    if my.restrictions.attr_access_apply & defined(my.access.access)
-        my.access_is_valid = "0"
-        my.access_is_valid = my.access_is_valid | (my.access.access = "readonly")
-        my.access_is_valid = my.access_is_valid | (my.access.access = "writeonly")
-        my.access_is_valid = my.access_is_valid | (my.access.access = "readwrite")
-        my.access_is_valid = my.access_is_valid | (my.access.access = "disown")
-        if !my.access_is_valid
-            echo_fatal_resticted_attr(my.access, "access", "readonly, writeonly, readwrite, disown")
-        endif
-    endif
-
-    echo_trace("     Validate attribute: ownership=\"$(my.access.ownership)\"", my)
-    my.restrictions.attr_ownership_apply ?= "1"
-
-    delete my.restrictions
-endfunction
-
-# ---------------------------------------------------------------------------
-function access_validate_resolved(access, restrictions)
-
-    my.restrictions ?= XML.new("restrictions")
-
-    echo_trace("     Validate attribute: access=\"$(my.access.access)\"", my)
-    my.restrictions.attr_access_apply ?= "1"
-    if my.restrictions.attr_access_apply & defined(my.access.access)
-        my.access_is_valid = "0"
-        my.access_is_valid = my.access_is_valid | (my.access.access = "readonly")
-        my.access_is_valid = my.access_is_valid | (my.access.access = "writeonly")
-        my.access_is_valid = my.access_is_valid | (my.access.access = "readwrite")
-        my.access_is_valid = my.access_is_valid | (my.access.access = "disown")
-        if !my.access_is_valid
-            echo_fatal_resticted_attr(my.access, "access", "readonly, writeonly, readwrite, disown")
-        endif
-    endif
-
-    echo_trace("     Validate attribute: ownership=\"$(my.access.ownership)\"", my)
-    my.restrictions.attr_ownership_apply ?= "1"
-
-   delete my.restrictions
-endfunction
-
-# ---------------------------------------------------------------------------
-function string_setup_defaults(string, defaults)
-    my.string_name = defined(my.string.name) ?? " name=\"$(my.string.name)\"" ? ""
-    echo_trace("[L1] Setup defaults for entity: <$(name(my.string))$(my.string_name)/>", my)
-
-    #    Setup defaults for inherited attributes and entities
-    access_setup_defaults(my.string)
-    my.default_value = my.defaults.length ? "null_terminated"
-    if defined(my.default_value) & !defined(my.string.length)
-        echo_trace("       length=\"$(my.default_value:)\"", my)
-        my.string.length = my.default_value
-    endif
-
-    my.default_value = my.defaults.length_constant ?
-    if defined(my.default_value) & !defined(my.string.length_constant)
-        echo_trace("       length_constant=\"$(my.default_value:)\"", my)
-        my.string.length_constant = my.default_value
-    endif
-endfunction
-
-# ---------------------------------------------------------------------------
-function string_validate(string, restrictions)
-    my.string_name = defined(my.string.name) ?? " name=\"$(my.string.name)\"" ? ""
-    echo_trace("[L1] Validate entity: <$(name(my.string))$(my.string_name)/>", my)
-
-    #    Check inherited attributes and entities
-    new restrictions
-        access_validate(my.string, restrictions)
-    endnew
-
-    my.restrictions ?= XML.new("restrictions")
-
-    echo_trace("     Validate attribute: length=\"$(my.string.length)\"", my)
-    my.restrictions.attr_length_apply ?= "1"
-    if my.restrictions.attr_length_apply & defined(my.string.length)
-        my.length_is_valid = "0"
-        my.length_is_valid = my.length_is_valid | (my.string.length = "null_terminated")
-        my.length_is_valid = my.length_is_valid | (my.string.length = "given")
-        my.length_is_valid = my.length_is_valid | (my.string.length = "fixed")
-        my.length_is_valid = my.length_is_valid | (my.string.length = "derived")
-        if !my.length_is_valid
-            echo_fatal_resticted_attr(my.string, "length", "null_terminated, given, fixed, derived")
-        endif
-    endif
-
-    echo_trace("     Validate attribute: length_constant=\"$(my.string.length_constant)\"", my)
-    my.restrictions.attr_length_constant_apply ?= "1"
-
-    delete my.restrictions
-endfunction
-
-# ---------------------------------------------------------------------------
-function string_validate_resolved(string, restrictions)
-    my.string_name = defined(my.string.name) ?? " name=\"$(my.string.name)\"" ? ""
-    echo_trace("[L1] Validate entity: <$(name(my.string))$(my.string_name)/>", my)
-
-    #    Check inherited attributes and entities
-    new restrictions
-        access_validate_resolved(my.string, restrictions)
-    endnew
-
-    my.restrictions ?= XML.new("restrictions")
-
-    echo_trace("     Validate attribute: length=\"$(my.string.length)\"", my)
-    my.restrictions.attr_length_apply ?= "1"
-    if my.restrictions.attr_length_apply & defined(my.string.length)
-        my.length_is_valid = "0"
-        my.length_is_valid = my.length_is_valid | (my.string.length = "null_terminated")
-        my.length_is_valid = my.length_is_valid | (my.string.length = "given")
-        my.length_is_valid = my.length_is_valid | (my.string.length = "fixed")
-        my.length_is_valid = my.length_is_valid | (my.string.length = "derived")
-        if !my.length_is_valid
-            echo_fatal_resticted_attr(my.string, "length", "null_terminated, given, fixed, derived")
-        endif
-    endif
-
-    echo_trace("     Validate attribute: length_constant=\"$(my.string.length_constant)\"", my)
-    my.restrictions.attr_length_constant_apply ?= "1"
-
-   delete my.restrictions
-endfunction
-
-# ---------------------------------------------------------------------------
-function array_setup_defaults(array, defaults)
-    my.array_name = defined(my.array.name) ?? " name=\"$(my.array.name)\"" ? ""
-    echo_trace("[L1] Setup defaults for entity: <$(name(my.array))$(my.array_name)/>", my)
-
-    #    Setup defaults for inherited attributes and entities
-    access_setup_defaults(my.array)
-    my.default_value = my.defaults.length ? "given"
-    if defined(my.default_value) & !defined(my.array.length)
-        echo_trace("       length=\"$(my.default_value:)\"", my)
-        my.array.length = my.default_value
-    endif
-
-    my.default_value = my.defaults.length_constant ?
-    if defined(my.default_value) & !defined(my.array.length_constant)
-        echo_trace("       length_constant=\"$(my.default_value:)\"", my)
-        my.array.length_constant = my.default_value
-    endif
-endfunction
-
-# ---------------------------------------------------------------------------
-function array_validate(array, restrictions)
-    my.array_name = defined(my.array.name) ?? " name=\"$(my.array.name)\"" ? ""
-    echo_trace("[L1] Validate entity: <$(name(my.array))$(my.array_name)/>", my)
-
-    #    Check inherited attributes and entities
-    new restrictions
-        access_validate(my.array, restrictions)
-    endnew
-
-    my.restrictions ?= XML.new("restrictions")
-
-    echo_trace("     Validate attribute: length=\"$(my.array.length)\"", my)
-    my.restrictions.attr_length_apply ?= "1"
-    if my.restrictions.attr_length_apply & defined(my.array.length)
-        my.length_is_valid = "0"
-        my.length_is_valid = my.length_is_valid | (my.array.length = "null_terminated")
-        my.length_is_valid = my.length_is_valid | (my.array.length = "given")
-        my.length_is_valid = my.length_is_valid | (my.array.length = "known")
-        my.length_is_valid = my.length_is_valid | (my.array.length = "fixed")
-        my.length_is_valid = my.length_is_valid | (my.array.length = "derived")
-        if !my.length_is_valid
-            echo_fatal_resticted_attr(my.array, "length", "null_terminated, given, known, fixed, derived")
-        endif
-    endif
-
-    echo_trace("     Validate attribute: length_constant=\"$(my.array.length_constant)\"", my)
-    my.restrictions.attr_length_constant_apply ?= "1"
-
-    delete my.restrictions
-endfunction
-
-# ---------------------------------------------------------------------------
-function array_validate_resolved(array, restrictions)
-    my.array_name = defined(my.array.name) ?? " name=\"$(my.array.name)\"" ? ""
-    echo_trace("[L1] Validate entity: <$(name(my.array))$(my.array_name)/>", my)
-
-    #    Check inherited attributes and entities
-    new restrictions
-        access_validate_resolved(my.array, restrictions)
-    endnew
-
-    my.restrictions ?= XML.new("restrictions")
-
-    echo_trace("     Validate attribute: length=\"$(my.array.length)\"", my)
-    my.restrictions.attr_length_apply ?= "1"
-    if my.restrictions.attr_length_apply & defined(my.array.length)
-        my.length_is_valid = "0"
-        my.length_is_valid = my.length_is_valid | (my.array.length = "null_terminated")
-        my.length_is_valid = my.length_is_valid | (my.array.length = "given")
-        my.length_is_valid = my.length_is_valid | (my.array.length = "known")
-        my.length_is_valid = my.length_is_valid | (my.array.length = "fixed")
-        my.length_is_valid = my.length_is_valid | (my.array.length = "derived")
-        if !my.length_is_valid
-            echo_fatal_resticted_attr(my.array, "length", "null_terminated, given, known, fixed, derived")
-        endif
-    endif
-
-    echo_trace("     Validate attribute: length_constant=\"$(my.array.length_constant)\"", my)
-    my.restrictions.attr_length_constant_apply ?= "1"
-
-   delete my.restrictions
-endfunction
-
-# ---------------------------------------------------------------------------
-function instance_setup_defaults(instance, defaults)
-
-    #    Setup defaults for inherited attributes and entities
-    access_setup_defaults(my.instance)
-    landlord_setup_defaults(my.instance)
-
-    #    Setup defaults for allowed entities
-    for my.instance.string
-        string_setup_defaults(string)
-    endfor
-
-    for my.instance.array
-        array_setup_defaults(array)
-    endfor
-    my.default_value = my.defaults.type ?
-    if defined(my.default_value) & !defined(my.instance.type)
-        echo_trace("       type=\"$(my.default_value:)\"", my)
-        my.instance.type = my.default_value
-    endif
-
-    my.default_value = my.defaults.class ?
-    if defined(my.default_value) & !defined(my.instance.class)
-        echo_trace("       class=\"$(my.default_value:)\"", my)
-        my.instance.class = my.default_value
-    endif
-
-    my.default_value = my.defaults.enum ?
-    if defined(my.default_value) & !defined(my.instance.enum)
-        echo_trace("       enum=\"$(my.default_value:)\"", my)
-        my.instance.enum = my.default_value
-    endif
-
-    my.default_value = my.defaults.callback ?
-    if defined(my.default_value) & !defined(my.instance.callback)
-        echo_trace("       callback=\"$(my.default_value:)\"", my)
-        my.instance.callback = my.default_value
-    endif
-
-    my.default_value = my.defaults.interface ?
-    if defined(my.default_value) & !defined(my.instance.interface)
-        echo_trace("       interface=\"$(my.default_value:)\"", my)
-        my.instance.interface = my.default_value
-    endif
-
-    my.default_value = my.defaults.api ?
-    if defined(my.default_value) & !defined(my.instance.api)
-        echo_trace("       api=\"$(my.default_value:)\"", my)
-        my.instance.api = my.default_value
-    endif
-
-    my.default_value = my.defaults.impl ?
-    if defined(my.default_value) & !defined(my.instance.impl)
-        echo_trace("       impl=\"$(my.default_value:)\"", my)
-        my.instance.impl = my.default_value
-    endif
-
-    my.default_value = my.defaults.size ?
-    if defined(my.default_value) & !defined(my.instance.size)
-        echo_trace("       size=\"$(my.default_value:)\"", my)
-        my.instance.size = my.default_value
-    endif
-
-    my.default_value = my.defaults.is_reference ?
-    if defined(my.default_value) & !defined(my.instance.is_reference)
-        echo_trace("       is_reference=\"$(my.default_value:)\"", my)
-        my.instance.is_reference = my.default_value
-    endif
-
-    my.default_value = my.defaults.require_definition ?
-    if defined(my.default_value) & !defined(my.instance.require_definition)
-        echo_trace("       require_definition=\"$(my.default_value:)\"", my)
-        my.instance.require_definition = my.default_value
-    endif
-endfunction
-
-# ---------------------------------------------------------------------------
-function instance_validate(instance, restrictions)
-
-    #    Check inherited attributes and entities
-    new restrictions
-        access_validate(my.instance, restrictions)
-    endnew
-
-    new restrictions
-        landlord_validate(my.instance, restrictions)
-    endnew
-
-    #    Check allowed entities
-    my.string_count = count(my.instance.string)
-    if my.string_count > 1
-        my.dump_filename = entity_dump_file(my.instance)
-        echo_fatal("Expected zero one entity: string.\n" + \
-                   "But found $(my.string_count).\n" + \
-                   "See dump file: $(my.dump_filename:)", my)
-    endif
-    for my.instance.string as _string
-        new restrictions
-        string_validate(_string, restrictions)
-        endnew
-    endfor
-
-    my.array_count = count(my.instance.array)
-    if my.array_count > 1
-        my.dump_filename = entity_dump_file(my.instance)
-        echo_fatal("Expected zero one entity: array.\n" + \
-                   "But found $(my.array_count).\n" + \
-                   "See dump file: $(my.dump_filename:)", my)
-    endif
-    for my.instance.array as _array
-        new restrictions
-        array_validate(_array, restrictions)
-        endnew
-    endfor
-
-    my.restrictions ?= XML.new("restrictions")
-
-    echo_trace("     Validate attribute: type=\"$(my.instance.type)\"", my)
-    my.restrictions.attr_type_apply ?= "1"
-    if my.restrictions.attr_type_apply & defined(my.instance.type)
-        my.type_is_valid = "0"
-        my.type_is_valid = my.type_is_valid | (my.instance.type = "nothing")
-        my.type_is_valid = my.type_is_valid | (my.instance.type = "boolean")
-        my.type_is_valid = my.type_is_valid | (my.instance.type = "integer")
-        my.type_is_valid = my.type_is_valid | (my.instance.type = "unsigned")
-        my.type_is_valid = my.type_is_valid | (my.instance.type = "size")
-        my.type_is_valid = my.type_is_valid | (my.instance.type = "byte")
-        my.type_is_valid = my.type_is_valid | (my.instance.type = "string")
-        my.type_is_valid = my.type_is_valid | (my.instance.type = "char")
-        my.type_is_valid = my.type_is_valid | (my.instance.type = "varargs")
-        if !my.type_is_valid
-            echo_fatal_resticted_attr(my.instance, "type", "nothing, boolean, integer, unsigned, size, byte, string, char, varargs")
-        endif
-    endif
-
-    echo_trace("     Validate attribute: class=\"$(my.instance.class)\"", my)
-    my.restrictions.attr_class_apply ?= "1"
-
-    echo_trace("     Validate attribute: enum=\"$(my.instance.enum)\"", my)
-    my.restrictions.attr_enum_apply ?= "1"
-
-    echo_trace("     Validate attribute: callback=\"$(my.instance.callback)\"", my)
-    my.restrictions.attr_callback_apply ?= "1"
-
-    echo_trace("     Validate attribute: interface=\"$(my.instance.interface)\"", my)
-    my.restrictions.attr_interface_apply ?= "1"
-
-    echo_trace("     Validate attribute: api=\"$(my.instance.api)\"", my)
-    my.restrictions.attr_api_apply ?= "1"
-
-    echo_trace("     Validate attribute: impl=\"$(my.instance.impl)\"", my)
-    my.restrictions.attr_impl_apply ?= "1"
-
-    echo_trace("     Validate attribute: size=\"$(my.instance.size)\"", my)
-    my.restrictions.attr_size_apply ?= "1"
-    if my.restrictions.attr_size_apply & defined(my.instance.size)
-        my.size_is_valid = "0"
-        my.size_is_valid = my.size_is_valid | (my.instance.size = "1")
-        my.size_is_valid = my.size_is_valid | (my.instance.size = "2")
-        my.size_is_valid = my.size_is_valid | (my.instance.size = "4")
-        my.size_is_valid = my.size_is_valid | (my.instance.size = "8")
-        if !my.size_is_valid
-            echo_fatal_resticted_attr(my.instance, "size", "1, 2, 4, 8")
-        endif
-    endif
-
-    echo_trace("     Validate attribute: is_reference=\"$(my.instance.is_reference)\"", my)
-    my.restrictions.attr_is_reference_apply ?= "1"
-    if my.restrictions.attr_is_reference_apply & defined(my.instance.is_reference)
-        my.is_reference_is_valid = "0"
-        my.is_reference_is_valid = my.is_reference_is_valid | (my.instance.is_reference = "0")
-        my.is_reference_is_valid = my.is_reference_is_valid | (my.instance.is_reference = "1")
-        if !my.is_reference_is_valid
-            echo_fatal_resticted_attr(my.instance, "is_reference", "0, 1")
-        endif
-    endif
-
-    echo_trace("     Validate attribute: require_definition=\"$(my.instance.require_definition)\"", my)
-    my.restrictions.attr_require_definition_apply ?= "1"
-    if my.restrictions.attr_require_definition_apply & defined(my.instance.require_definition)
-        my.require_definition_is_valid = "0"
-        my.require_definition_is_valid = my.require_definition_is_valid | (my.instance.require_definition = "public")
-        my.require_definition_is_valid = my.require_definition_is_valid | (my.instance.require_definition = "private")
-        if !my.require_definition_is_valid
-            echo_fatal_resticted_attr(my.instance, "require_definition", "public, private")
-        endif
-    endif
-
-    echo_trace("     Validate one of: {type, class, enum, callback, interface, api, impl}", my)
-    my.typeof_found_attrs = ""
-    my.typeof_found_attrs_count = "0"
-
-    if defined(my.instance.type)
-        my.typeof_found_attrs_count += 1
-        if my.typeof_found_attrs <> ""
-            my.typeof_found_attrs += ", "
-        endif
-        my.typeof_found_attrs += "type"
-    endif
-
-    if defined(my.instance.class)
-        my.typeof_found_attrs_count += 1
-        if my.typeof_found_attrs <> ""
-            my.typeof_found_attrs += ", "
-        endif
-        my.typeof_found_attrs += "class"
-    endif
-
-    if defined(my.instance.enum)
-        my.typeof_found_attrs_count += 1
-        if my.typeof_found_attrs <> ""
-            my.typeof_found_attrs += ", "
-        endif
-        my.typeof_found_attrs += "enum"
-    endif
-
-    if defined(my.instance.callback)
-        my.typeof_found_attrs_count += 1
-        if my.typeof_found_attrs <> ""
-            my.typeof_found_attrs += ", "
-        endif
-        my.typeof_found_attrs += "callback"
-    endif
-
-    if defined(my.instance.interface)
-        my.typeof_found_attrs_count += 1
-        if my.typeof_found_attrs <> ""
-            my.typeof_found_attrs += ", "
-        endif
-        my.typeof_found_attrs += "interface"
-    endif
-
-    if defined(my.instance.api)
-        my.typeof_found_attrs_count += 1
-        if my.typeof_found_attrs <> ""
-            my.typeof_found_attrs += ", "
-        endif
-        my.typeof_found_attrs += "api"
-    endif
-
-    if defined(my.instance.impl)
-        my.typeof_found_attrs_count += 1
-        if my.typeof_found_attrs <> ""
-            my.typeof_found_attrs += ", "
-        endif
-        my.typeof_found_attrs += "impl"
-    endif
-
-    my.restrictions.oneof_typeof_apply ?= "1"
-    my.restrictions.oneof_typeof_required ?= 1
-
-    if my.restrictions.oneof_typeof_apply &   my.restrictions.oneof_typeof_required &    my.typeof_found_attrs_count = "0"
-        my.dump_filename = entity_dump_file(my.instance)
-        echo_fatal("Expected one of the attributes {type, class, enum, callback, interface, api, impl}.\n" + \
-                   "But found nothing.\n" + \
-                   "See dump file: $(my.dump_filename:)", my)
-    endif
-
-    if my.typeof_found_attrs_count > "1"
-        my.dump_filename = entity_dump_file(my.instance)
-        echo_fatal("Expected one of the attributes {type, class, enum, callback, interface, api, impl}.\n" + \
-                   "But found several {$(my.typeof_found_attrs:)}.\n" + \
-                   "See dump file: $(my.dump_filename:)", my)
-    endif
-
-    delete my.restrictions
-endfunction
-
-# ---------------------------------------------------------------------------
-function instance_validate_resolved(instance, restrictions)
-
-    #    Check inherited attributes and entities
-    new restrictions
-        access_validate_resolved(my.instance, restrictions)
-    endnew
-
-    new restrictions
-        landlord_validate_resolved(my.instance, restrictions)
-    endnew
-
-    #    Check allowed entities
-    for my.instance.string as _string
-        new restrictions
-        string_validate_resolved(_string, restrictions)
-        endnew
-    endfor
-
-    for my.instance.array as _array
-        new restrictions
-        array_validate_resolved(_array, restrictions)
-        endnew
-    endfor
-
-    my.restrictions ?= XML.new("restrictions")
-
-    echo_trace("     Validate attribute: type=\"$(my.instance.type)\"", my)
-    my.restrictions.attr_type_apply ?= "1"
-    if my.restrictions.attr_type_apply & defined(my.instance.type)
-        my.type_is_valid = "0"
-        my.type_is_valid = my.type_is_valid | (my.instance.type = "nothing")
-        my.type_is_valid = my.type_is_valid | (my.instance.type = "boolean")
-        my.type_is_valid = my.type_is_valid | (my.instance.type = "integer")
-        my.type_is_valid = my.type_is_valid | (my.instance.type = "unsigned")
-        my.type_is_valid = my.type_is_valid | (my.instance.type = "size")
-        my.type_is_valid = my.type_is_valid | (my.instance.type = "byte")
-        my.type_is_valid = my.type_is_valid | (my.instance.type = "string")
-        my.type_is_valid = my.type_is_valid | (my.instance.type = "char")
-        my.type_is_valid = my.type_is_valid | (my.instance.type = "varargs")
-        if !my.type_is_valid
-            echo_fatal_resticted_attr(my.instance, "type", "nothing, boolean, integer, unsigned, size, byte, string, char, varargs")
-        endif
-    endif
-
-    echo_trace("     Validate attribute: class=\"$(my.instance.class)\"", my)
-    my.restrictions.attr_class_apply ?= "1"
-
-    echo_trace("     Validate attribute: enum=\"$(my.instance.enum)\"", my)
-    my.restrictions.attr_enum_apply ?= "1"
-
-    echo_trace("     Validate attribute: callback=\"$(my.instance.callback)\"", my)
-    my.restrictions.attr_callback_apply ?= "1"
-
-    echo_trace("     Validate attribute: interface=\"$(my.instance.interface)\"", my)
-    my.restrictions.attr_interface_apply ?= "1"
-
-    echo_trace("     Validate attribute: api=\"$(my.instance.api)\"", my)
-    my.restrictions.attr_api_apply ?= "1"
-
-    echo_trace("     Validate attribute: impl=\"$(my.instance.impl)\"", my)
-    my.restrictions.attr_impl_apply ?= "1"
-
-    echo_trace("     Validate attribute: size=\"$(my.instance.size)\"", my)
-    my.restrictions.attr_size_apply ?= "1"
-    if my.restrictions.attr_size_apply & defined(my.instance.size)
-        my.size_is_valid = "0"
-        my.size_is_valid = my.size_is_valid | (my.instance.size = "1")
-        my.size_is_valid = my.size_is_valid | (my.instance.size = "2")
-        my.size_is_valid = my.size_is_valid | (my.instance.size = "4")
-        my.size_is_valid = my.size_is_valid | (my.instance.size = "8")
-        if !my.size_is_valid
-            echo_fatal_resticted_attr(my.instance, "size", "1, 2, 4, 8")
-        endif
-    endif
-
-    echo_trace("     Validate attribute: is_reference=\"$(my.instance.is_reference)\"", my)
-    my.restrictions.attr_is_reference_apply ?= "1"
-    if my.restrictions.attr_is_reference_apply & defined(my.instance.is_reference)
-        my.is_reference_is_valid = "0"
-        my.is_reference_is_valid = my.is_reference_is_valid | (my.instance.is_reference = "0")
-        my.is_reference_is_valid = my.is_reference_is_valid | (my.instance.is_reference = "1")
-        if !my.is_reference_is_valid
-            echo_fatal_resticted_attr(my.instance, "is_reference", "0, 1")
-        endif
-    endif
-
-    echo_trace("     Validate attribute: require_definition=\"$(my.instance.require_definition)\"", my)
-    my.restrictions.attr_require_definition_apply ?= "1"
-    if my.restrictions.attr_require_definition_apply & defined(my.instance.require_definition)
-        my.require_definition_is_valid = "0"
-        my.require_definition_is_valid = my.require_definition_is_valid | (my.instance.require_definition = "public")
-        my.require_definition_is_valid = my.require_definition_is_valid | (my.instance.require_definition = "private")
-        if !my.require_definition_is_valid
-            echo_fatal_resticted_attr(my.instance, "require_definition", "public, private")
-        endif
-    endif
-
-    echo_trace("     Validate one of: {type, class, enum, callback, interface, api, impl}", my)
-    my.typeof_found_attrs = ""
-    my.typeof_found_attrs_count = "0"
-
-    if defined(my.instance.type)
-        my.typeof_found_attrs_count += 1
-        if my.typeof_found_attrs <> ""
-            my.typeof_found_attrs += ", "
-        endif
-        my.typeof_found_attrs += "type"
-    endif
-
-    if defined(my.instance.class)
-        my.typeof_found_attrs_count += 1
-        if my.typeof_found_attrs <> ""
-            my.typeof_found_attrs += ", "
-        endif
-        my.typeof_found_attrs += "class"
-    endif
-
-    if defined(my.instance.enum)
-        my.typeof_found_attrs_count += 1
-        if my.typeof_found_attrs <> ""
-            my.typeof_found_attrs += ", "
-        endif
-        my.typeof_found_attrs += "enum"
-    endif
-
-    if defined(my.instance.callback)
-        my.typeof_found_attrs_count += 1
-        if my.typeof_found_attrs <> ""
-            my.typeof_found_attrs += ", "
-        endif
-        my.typeof_found_attrs += "callback"
-    endif
-
-    if defined(my.instance.interface)
-        my.typeof_found_attrs_count += 1
-        if my.typeof_found_attrs <> ""
-            my.typeof_found_attrs += ", "
-        endif
-        my.typeof_found_attrs += "interface"
-    endif
-
-    if defined(my.instance.api)
-        my.typeof_found_attrs_count += 1
-        if my.typeof_found_attrs <> ""
-            my.typeof_found_attrs += ", "
-        endif
-        my.typeof_found_attrs += "api"
-    endif
-
-    if defined(my.instance.impl)
-        my.typeof_found_attrs_count += 1
-        if my.typeof_found_attrs <> ""
-            my.typeof_found_attrs += ", "
-        endif
-        my.typeof_found_attrs += "impl"
-    endif
-
-    my.restrictions.oneof_typeof_apply ?= "1"
-    my.restrictions.oneof_typeof_required ?= 1
-
-    if my.restrictions.oneof_typeof_apply &   my.restrictions.oneof_typeof_required &    my.typeof_found_attrs_count = "0"
-        my.dump_filename = entity_dump_file(my.instance)
-        echo_fatal("Expected one of the attributes {type, class, enum, callback, interface, api, impl}.\n" + \
-                   "But found nothing.\n" + \
-                   "See dump file: $(my.dump_filename:)", my)
-    endif
-
-    if my.typeof_found_attrs_count > "1"
-        my.dump_filename = entity_dump_file(my.instance)
-        echo_fatal("Expected one of the attributes {type, class, enum, callback, interface, api, impl}.\n" + \
-                   "But found several {$(my.typeof_found_attrs:)}.\n" + \
-                   "See dump file: $(my.dump_filename:)", my)
-    endif
 
    delete my.restrictions
 endfunction
@@ -1861,11 +2048,6 @@ function property_setup_defaults(property, defaults)
         delete defaults
     endnew
     uid_setup_defaults(my.property)
-
-    #    Setup defaults for allowed entities
-    for my.property.lineage
-        lineage_setup_defaults(lineage)
-    endfor
     my.default_value = my.defaults.name ?
     if defined(my.default_value) & !defined(my.property.name)
         echo_trace("       name=\"$(my.default_value:)\"", my)
@@ -1895,13 +2077,6 @@ function property_validate(property, restrictions)
         uid_validate(my.property, restrictions)
     endnew
 
-    #    Check allowed entities
-    for my.property.lineage as _lineage
-        new restrictions
-        lineage_validate(_lineage, restrictions)
-        endnew
-    endfor
-
     my.restrictions ?= XML.new("restrictions")
 
     echo_trace("     Validate attribute: name=\"$(my.property.name)\"", my)
@@ -1929,20 +2104,6 @@ function property_validate_resolved(property, restrictions)
     new restrictions
         uid_validate_resolved(my.property, restrictions)
     endnew
-
-    #    Check allowed entities
-    my.lineage_count = count(my.property.lineage)
-    if my.lineage_count <> 1
-        my.dump_filename = entity_dump_file(my.property)
-        echo_fatal("Expected exectly one entity: lineage.\n" + \
-                   "But found $(my.lineage_count).\n" + \
-                   "See dump file: $(my.dump_filename:)", my)
-    endif
-    for my.property.lineage as _lineage
-        new restrictions
-        lineage_validate_resolved(_lineage, restrictions)
-        endnew
-    endfor
 
     my.restrictions ?= XML.new("restrictions")
 
@@ -2020,13 +2181,10 @@ function enum_setup_defaults(enum, defaults)
     definition_setup_defaults(my.enum)
 
     #    Setup defaults for allowed entities
-    for my.enum.constant
-        constant_setup_defaults(constant)
-    endfor
-
-    for my.enum.lineage
-        lineage_setup_defaults(lineage)
-    endfor
+    new defaults
+        constant_setup_defaults(constant, defaults)
+        delete defaults
+    endnew
     my.default_value = my.defaults.name ?
     if defined(my.default_value) & !defined(my.enum.name)
         echo_trace("       name=\"$(my.default_value:)\"", my)
@@ -2064,13 +2222,9 @@ function enum_validate(enum, restrictions)
     my.constant_count = count(my.enum.constant)
     for my.enum.constant as _constant
         new restrictions
-        constant_validate(_constant, restrictions)
-        endnew
-    endfor
-
-    for my.enum.lineage as _lineage
-        new restrictions
-        lineage_validate(_lineage, restrictions)
+            .attr_value_apply = "0"
+            .attr_value_required = "0"
+            constant_validate(_constant, restrictions)
         endnew
     endfor
 
@@ -2111,20 +2265,9 @@ function enum_validate_resolved(enum, restrictions)
     #    Check allowed entities
     for my.enum.constant as _constant
         new restrictions
-        constant_validate_resolved(_constant, restrictions)
-        endnew
-    endfor
-
-    my.lineage_count = count(my.enum.lineage)
-    if my.lineage_count <> 1
-        my.dump_filename = entity_dump_file(my.enum)
-        echo_fatal("Expected exectly one entity: lineage.\n" + \
-                   "But found $(my.lineage_count).\n" + \
-                   "See dump file: $(my.dump_filename:)", my)
-    endif
-    for my.enum.lineage as _lineage
-        new restrictions
-        lineage_validate_resolved(_lineage, restrictions)
+            .attr_value_apply = "0"
+            .attr_value_required = "0"
+            constant_validate_resolved(_constant, restrictions)
         endnew
     endfor
 
@@ -2143,11 +2286,6 @@ function return_setup_defaults(return, defaults)
 
     #    Setup defaults for inherited attributes and entities
     instance_setup_defaults(my.return)
-
-    #    Setup defaults for allowed entities
-    for my.return.lineage
-        lineage_setup_defaults(lineage)
-    endfor
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -2159,13 +2297,6 @@ function return_validate(return, restrictions)
     new restrictions
         instance_validate(my.return, restrictions)
     endnew
-
-    #    Check allowed entities
-    for my.return.lineage as _lineage
-        new restrictions
-        lineage_validate(_lineage, restrictions)
-        endnew
-    endfor
 
     my.restrictions ?= XML.new("restrictions")
 
@@ -2182,20 +2313,6 @@ function return_validate_resolved(return, restrictions)
         instance_validate_resolved(my.return, restrictions)
     endnew
 
-    #    Check allowed entities
-    my.lineage_count = count(my.return.lineage)
-    if my.lineage_count <> 1
-        my.dump_filename = entity_dump_file(my.return)
-        echo_fatal("Expected exectly one entity: lineage.\n" + \
-                   "But found $(my.lineage_count).\n" + \
-                   "See dump file: $(my.dump_filename:)", my)
-    endif
-    for my.return.lineage as _lineage
-        new restrictions
-        lineage_validate_resolved(_lineage, restrictions)
-        endnew
-    endfor
-
     my.restrictions ?= XML.new("restrictions")
 
    delete my.restrictions
@@ -2209,11 +2326,6 @@ function argument_setup_defaults(argument, defaults)
     #    Setup defaults for inherited attributes and entities
     instance_setup_defaults(my.argument)
     uid_setup_defaults(my.argument)
-
-    #    Setup defaults for allowed entities
-    for my.argument.lineage
-        lineage_setup_defaults(lineage)
-    endfor
     my.default_value = my.defaults.name ?
     if defined(my.default_value) & !defined(my.argument.name)
         echo_trace("       name=\"$(my.default_value:)\"", my)
@@ -2235,20 +2347,7 @@ function argument_validate(argument, restrictions)
         uid_validate(my.argument, restrictions)
     endnew
 
-    #    Check allowed entities
-    for my.argument.lineage as _lineage
-        new restrictions
-        lineage_validate(_lineage, restrictions)
-        endnew
-    endfor
-
     my.restrictions ?= XML.new("restrictions")
-
-    echo_trace("     Validate attribute: name=\"$(my.argument.name)\"", my)
-    my.restrictions.attr_name_apply ?= "1"
-    if my.restrictions.attr_name_apply & !defined(my.argument.name)
-        echo_fatal_required_attr(my.argument, "name")
-    endif
 
     delete my.restrictions
 endfunction
@@ -2266,20 +2365,6 @@ function argument_validate_resolved(argument, restrictions)
     new restrictions
         uid_validate_resolved(my.argument, restrictions)
     endnew
-
-    #    Check allowed entities
-    my.lineage_count = count(my.argument.lineage)
-    if my.lineage_count <> 1
-        my.dump_filename = entity_dump_file(my.argument)
-        echo_fatal("Expected exectly one entity: lineage.\n" + \
-                   "But found $(my.lineage_count).\n" + \
-                   "See dump file: $(my.dump_filename:)", my)
-    endif
-    for my.argument.lineage as _lineage
-        new restrictions
-        lineage_validate_resolved(_lineage, restrictions)
-        endnew
-    endfor
 
     my.restrictions ?= XML.new("restrictions")
 
@@ -2302,16 +2387,12 @@ function callback_setup_defaults(callback, defaults)
     declaration_setup_defaults(my.callback)
 
     #    Setup defaults for allowed entities
-    for my.callback.return
-        return_setup_defaults(return)
+    for my.callback.return as _return
+        return_setup_defaults(_return)
     endfor
 
-    for my.callback.argument
-        argument_setup_defaults(argument)
-    endfor
-
-    for my.callback.lineage
-        lineage_setup_defaults(lineage)
+    for my.callback.argument as _argument
+        argument_setup_defaults(_argument)
     endfor
     my.default_value = my.defaults.name ?
     if defined(my.default_value) & !defined(my.callback.name)
@@ -2344,20 +2425,14 @@ function callback_validate(callback, restrictions)
     endif
     for my.callback.return as _return
         new restrictions
-        return_validate(_return, restrictions)
+            return_validate(_return, restrictions)
         endnew
     endfor
 
     my.argument_count = count(my.callback.argument)
     for my.callback.argument as _argument
         new restrictions
-        argument_validate(_argument, restrictions)
-        endnew
-    endfor
-
-    for my.callback.lineage as _lineage
-        new restrictions
-        lineage_validate(_lineage, restrictions)
+            argument_validate(_argument, restrictions)
         endnew
     endfor
 
@@ -2389,26 +2464,13 @@ function callback_validate_resolved(callback, restrictions)
     #    Check allowed entities
     for my.callback.return as _return
         new restrictions
-        return_validate_resolved(_return, restrictions)
+            return_validate_resolved(_return, restrictions)
         endnew
     endfor
 
     for my.callback.argument as _argument
         new restrictions
-        argument_validate_resolved(_argument, restrictions)
-        endnew
-    endfor
-
-    my.lineage_count = count(my.callback.lineage)
-    if my.lineage_count <> 1
-        my.dump_filename = entity_dump_file(my.callback)
-        echo_fatal("Expected exectly one entity: lineage.\n" + \
-                   "But found $(my.lineage_count).\n" + \
-                   "See dump file: $(my.dump_filename:)", my)
-    endif
-    for my.callback.lineage as _lineage
-        new restrictions
-        lineage_validate_resolved(_lineage, restrictions)
+            argument_validate_resolved(_argument, restrictions)
         endnew
     endfor
 
@@ -2471,8 +2533,8 @@ function value_setup_defaults(value, defaults)
     instance_setup_defaults(my.value)
 
     #    Setup defaults for allowed entities
-    for my.value.cast
-        cast_setup_defaults(cast)
+    for my.value.cast as _cast
+        cast_setup_defaults(_cast)
     endfor
     my.default_value = my.defaults.value ?
     if defined(my.default_value) & !defined(my.value.value)
@@ -2503,7 +2565,7 @@ function value_validate(value, restrictions)
     endif
     for my.value.cast as _cast
         new restrictions
-        cast_validate(_cast, restrictions)
+            cast_validate(_cast, restrictions)
         endnew
     endfor
 
@@ -2531,7 +2593,7 @@ function value_validate_resolved(value, restrictions)
     #    Check allowed entities
     for my.value.cast as _cast
         new restrictions
-        cast_validate_resolved(_cast, restrictions)
+            cast_validate_resolved(_cast, restrictions)
         endnew
     endfor
 
@@ -2559,12 +2621,8 @@ function variable_setup_defaults(variable, defaults)
     instance_setup_defaults(my.variable)
 
     #    Setup defaults for allowed entities
-    for my.variable.value
-        value_setup_defaults(value)
-    endfor
-
-    for my.variable.lineage
-        lineage_setup_defaults(lineage)
+    for my.variable.value as _value
+        value_setup_defaults(_value)
     endfor
     my.default_value = my.defaults.name ?
     if defined(my.default_value) & !defined(my.variable.name)
@@ -2609,13 +2667,7 @@ function variable_validate(variable, restrictions)
     endif
     for my.variable.value as _value
         new restrictions
-        value_validate(_value, restrictions)
-        endnew
-    endfor
-
-    for my.variable.lineage as _lineage
-        new restrictions
-        lineage_validate(_lineage, restrictions)
+            value_validate(_value, restrictions)
         endnew
     endfor
 
@@ -2659,20 +2711,7 @@ function variable_validate_resolved(variable, restrictions)
     #    Check allowed entities
     for my.variable.value as _value
         new restrictions
-        value_validate_resolved(_value, restrictions)
-        endnew
-    endfor
-
-    my.lineage_count = count(my.variable.lineage)
-    if my.lineage_count <> 1
-        my.dump_filename = entity_dump_file(my.variable)
-        echo_fatal("Expected exectly one entity: lineage.\n" + \
-                   "But found $(my.lineage_count).\n" + \
-                   "See dump file: $(my.dump_filename:)", my)
-    endif
-    for my.variable.lineage as _lineage
-        new restrictions
-        lineage_validate_resolved(_lineage, restrictions)
+            value_validate_resolved(_value, restrictions)
         endnew
     endfor
 
@@ -2707,9 +2746,11 @@ function lang_validate(lang, restrictions)
         my.lang_is_valid = "0"
         my.lang_is_valid = my.lang_is_valid | (my.lang.lang = "c")
         my.lang_is_valid = my.lang_is_valid | (my.lang.lang = "java")
-        my.lang_is_valid = my.lang_is_valid | (my.lang.lang = "csharp")
+        my.lang_is_valid = my.lang_is_valid | (my.lang.lang = "python")
+        my.lang_is_valid = my.lang_is_valid | (my.lang.lang = "swift")
+        my.lang_is_valid = my.lang_is_valid | (my.lang.lang = "wasm")
         if !my.lang_is_valid
-            echo_fatal_resticted_attr(my.lang, "lang", "c, java, csharp")
+            echo_fatal_resticted_attr(my.lang, "lang", "c, java, python, swift, wasm")
         endif
     endif
 
@@ -2727,9 +2768,11 @@ function lang_validate_resolved(lang, restrictions)
         my.lang_is_valid = "0"
         my.lang_is_valid = my.lang_is_valid | (my.lang.lang = "c")
         my.lang_is_valid = my.lang_is_valid | (my.lang.lang = "java")
-        my.lang_is_valid = my.lang_is_valid | (my.lang.lang = "csharp")
+        my.lang_is_valid = my.lang_is_valid | (my.lang.lang = "python")
+        my.lang_is_valid = my.lang_is_valid | (my.lang.lang = "swift")
+        my.lang_is_valid = my.lang_is_valid | (my.lang.lang = "wasm")
         if !my.lang_is_valid
-            echo_fatal_resticted_attr(my.lang, "lang", "c, java, csharp")
+            echo_fatal_resticted_attr(my.lang, "lang", "c, java, python, swift, wasm")
         endif
     endif
 
@@ -2816,24 +2859,20 @@ function method_setup_defaults(method, defaults)
     definition_setup_defaults(my.method)
 
     #    Setup defaults for allowed entities
-    for my.method.return
-        return_setup_defaults(return)
+    for my.method.return as _return
+        return_setup_defaults(_return)
     endfor
 
-    for my.method.argument
-        argument_setup_defaults(argument)
+    for my.method.argument as _argument
+        argument_setup_defaults(_argument)
     endfor
 
-    for my.method.variable
-        variable_setup_defaults(variable)
+    for my.method.variable as _variable
+        variable_setup_defaults(_variable)
     endfor
 
-    for my.method.code
-        code_setup_defaults(code)
-    endfor
-
-    for my.method.lineage
-        lineage_setup_defaults(lineage)
+    for my.method.code as _code
+        code_setup_defaults(_code)
     endfor
     my.default_value = my.defaults.name ?
     if defined(my.default_value) & !defined(my.method.name)
@@ -2845,6 +2884,12 @@ function method_setup_defaults(method, defaults)
     if defined(my.default_value) & !defined(my.method.is_static)
         echo_trace("       is_static=\"$(my.default_value:)\"", my)
         my.method.is_static = my.default_value
+    endif
+
+    my.default_value = my.defaults.is_const ? "0"
+    if defined(my.default_value) & !defined(my.method.is_const)
+        echo_trace("       is_const=\"$(my.default_value:)\"", my)
+        my.method.is_const = my.default_value
     endif
 
     my.default_value = my.defaults.nodiscard ? "0"
@@ -2886,21 +2931,21 @@ function method_validate(method, restrictions)
     endif
     for my.method.return as _return
         new restrictions
-        return_validate(_return, restrictions)
+            return_validate(_return, restrictions)
         endnew
     endfor
 
     my.argument_count = count(my.method.argument)
     for my.method.argument as _argument
         new restrictions
-        argument_validate(_argument, restrictions)
+            argument_validate(_argument, restrictions)
         endnew
     endfor
 
     my.variable_count = count(my.method.variable)
     for my.method.variable as _variable
         new restrictions
-        variable_validate(_variable, restrictions)
+            variable_validate(_variable, restrictions)
         endnew
     endfor
 
@@ -2913,13 +2958,7 @@ function method_validate(method, restrictions)
     endif
     for my.method.code as _code
         new restrictions
-        code_validate(_code, restrictions)
-        endnew
-    endfor
-
-    for my.method.lineage as _lineage
-        new restrictions
-        lineage_validate(_lineage, restrictions)
+            code_validate(_code, restrictions)
         endnew
     endfor
 
@@ -2939,6 +2978,17 @@ function method_validate(method, restrictions)
         my.is_static_is_valid = my.is_static_is_valid | (my.method.is_static = "1")
         if !my.is_static_is_valid
             echo_fatal_resticted_attr(my.method, "is_static", "0, 1")
+        endif
+    endif
+
+    echo_trace("     Validate attribute: is_const=\"$(my.method.is_const)\"", my)
+    my.restrictions.attr_is_const_apply ?= "1"
+    if my.restrictions.attr_is_const_apply & defined(my.method.is_const)
+        my.is_const_is_valid = "0"
+        my.is_const_is_valid = my.is_const_is_valid | (my.method.is_const = "0")
+        my.is_const_is_valid = my.is_const_is_valid | (my.method.is_const = "1")
+        if !my.is_const_is_valid
+            echo_fatal_resticted_attr(my.method, "is_const", "0, 1")
         endif
     endif
 
@@ -2981,38 +3031,25 @@ function method_validate_resolved(method, restrictions)
     #    Check allowed entities
     for my.method.return as _return
         new restrictions
-        return_validate_resolved(_return, restrictions)
+            return_validate_resolved(_return, restrictions)
         endnew
     endfor
 
     for my.method.argument as _argument
         new restrictions
-        argument_validate_resolved(_argument, restrictions)
+            argument_validate_resolved(_argument, restrictions)
         endnew
     endfor
 
     for my.method.variable as _variable
         new restrictions
-        variable_validate_resolved(_variable, restrictions)
+            variable_validate_resolved(_variable, restrictions)
         endnew
     endfor
 
     for my.method.code as _code
         new restrictions
-        code_validate_resolved(_code, restrictions)
-        endnew
-    endfor
-
-    my.lineage_count = count(my.method.lineage)
-    if my.lineage_count <> 1
-        my.dump_filename = entity_dump_file(my.method)
-        echo_fatal("Expected exectly one entity: lineage.\n" + \
-                   "But found $(my.lineage_count).\n" + \
-                   "See dump file: $(my.dump_filename:)", my)
-    endif
-    for my.method.lineage as _lineage
-        new restrictions
-        lineage_validate_resolved(_lineage, restrictions)
+            code_validate_resolved(_code, restrictions)
         endnew
     endfor
 
@@ -3032,6 +3069,17 @@ function method_validate_resolved(method, restrictions)
         my.is_static_is_valid = my.is_static_is_valid | (my.method.is_static = "1")
         if !my.is_static_is_valid
             echo_fatal_resticted_attr(my.method, "is_static", "0, 1")
+        endif
+    endif
+
+    echo_trace("     Validate attribute: is_const=\"$(my.method.is_const)\"", my)
+    my.restrictions.attr_is_const_apply ?= "1"
+    if my.restrictions.attr_is_const_apply & defined(my.method.is_const)
+        my.is_const_is_valid = "0"
+        my.is_const_is_valid = my.is_const_is_valid | (my.method.is_const = "0")
+        my.is_const_is_valid = my.is_const_is_valid | (my.method.is_const = "1")
+        if !my.is_const_is_valid
+            echo_fatal_resticted_attr(my.method, "is_const", "0, 1")
         endif
     endif
 
@@ -3055,15 +3103,15 @@ function macros_setup_defaults(macros, defaults)
     echo_trace("[L1] Setup defaults for entity: <$(name(my.macros))$(my.macros_name)/>", my)
 
     #    Setup defaults for inherited attributes and entities
-    definition_setup_defaults(my.macros)
+    new defaults
+        .default = "public"
+        definition_setup_defaults(my.macros, defaults)
+        delete defaults
+    endnew
 
     #    Setup defaults for allowed entities
-    for my.macros.code
-        code_setup_defaults(code)
-    endfor
-
-    for my.macros.lineage
-        lineage_setup_defaults(lineage)
+    for my.macros.code as _code
+        code_setup_defaults(_code)
     endfor
     my.default_value = my.defaults.name ?
     if defined(my.default_value) & !defined(my.macros.name)
@@ -3085,6 +3133,8 @@ function macros_validate(macros, restrictions)
 
     #    Check inherited attributes and entities
     new restrictions
+        .attr_default_apply = "0"
+        .attr_default_required = "0"
         definition_validate(my.macros, restrictions)
     endnew
 
@@ -3098,13 +3148,7 @@ function macros_validate(macros, restrictions)
     endif
     for my.macros.code as _code
         new restrictions
-        code_validate(_code, restrictions)
-        endnew
-    endfor
-
-    for my.macros.lineage as _lineage
-        new restrictions
-        lineage_validate(_lineage, restrictions)
+            code_validate(_code, restrictions)
         endnew
     endfor
 
@@ -3143,20 +3187,7 @@ function macros_validate_resolved(macros, restrictions)
     #    Check allowed entities
     for my.macros.code as _code
         new restrictions
-        code_validate_resolved(_code, restrictions)
-        endnew
-    endfor
-
-    my.lineage_count = count(my.macros.lineage)
-    if my.lineage_count <> 1
-        my.dump_filename = entity_dump_file(my.macros)
-        echo_fatal("Expected exectly one entity: lineage.\n" + \
-                   "But found $(my.lineage_count).\n" + \
-                   "See dump file: $(my.dump_filename:)", my)
-    endif
-    for my.macros.lineage as _lineage
-        new restrictions
-        lineage_validate_resolved(_lineage, restrictions)
+            code_validate_resolved(_code, restrictions)
         endnew
     endfor
 
@@ -3188,15 +3219,19 @@ function macroses_setup_defaults(macroses, defaults)
     echo_trace("[L1] Setup defaults for entity: <$(name(my.macroses))$(my.macroses_name)/>", my)
 
     #    Setup defaults for inherited attributes and entities
-    definition_setup_defaults(my.macroses)
+    new defaults
+        .default = "public"
+        definition_setup_defaults(my.macroses, defaults)
+        delete defaults
+    endnew
 
     #    Setup defaults for allowed entities
-    for my.macroses.macros
-        macros_setup_defaults(macros)
+    for my.macroses.macros as _macros
+        macros_setup_defaults(_macros)
     endfor
 
-    for my.macroses.code
-        code_setup_defaults(code)
+    for my.macroses.code as _code
+        code_setup_defaults(_code)
     endfor
 endfunction
 
@@ -3207,6 +3242,8 @@ function macroses_validate(macroses, restrictions)
 
     #    Check inherited attributes and entities
     new restrictions
+        .attr_default_apply = "0"
+        .attr_default_required = "0"
         definition_validate(my.macroses, restrictions)
     endnew
 
@@ -3220,7 +3257,7 @@ function macroses_validate(macroses, restrictions)
     endif
     for my.macroses.macros as _macros
         new restrictions
-        macros_validate(_macros, restrictions)
+            macros_validate(_macros, restrictions)
         endnew
     endfor
 
@@ -3233,7 +3270,7 @@ function macroses_validate(macroses, restrictions)
     endif
     for my.macroses.code as _code
         new restrictions
-        code_validate(_code, restrictions)
+            code_validate(_code, restrictions)
         endnew
     endfor
 
@@ -3255,13 +3292,13 @@ function macroses_validate_resolved(macroses, restrictions)
     #    Check allowed entities
     for my.macroses.macros as _macros
         new restrictions
-        macros_validate_resolved(_macros, restrictions)
+            macros_validate_resolved(_macros, restrictions)
         endnew
     endfor
 
     for my.macroses.code as _code
         new restrictions
-        code_validate_resolved(_code, restrictions)
+            code_validate_resolved(_code, restrictions)
         endnew
     endfor
 
@@ -3282,12 +3319,8 @@ function struct_setup_defaults(struct, defaults)
     definition_setup_defaults(my.struct)
 
     #    Setup defaults for allowed entities
-    for my.struct.property
-        property_setup_defaults(property)
-    endfor
-
-    for my.struct.lineage
-        lineage_setup_defaults(lineage)
+    for my.struct.property as _property
+        property_setup_defaults(_property)
     endfor
     my.default_value = my.defaults.name ?
     if defined(my.default_value) & !defined(my.struct.name)
@@ -3322,13 +3355,7 @@ function struct_validate(struct, restrictions)
     my.property_count = count(my.struct.property)
     for my.struct.property as _property
         new restrictions
-        property_validate(_property, restrictions)
-        endnew
-    endfor
-
-    for my.struct.lineage as _lineage
-        new restrictions
-        lineage_validate(_lineage, restrictions)
+            property_validate(_property, restrictions)
         endnew
     endfor
 
@@ -3368,20 +3395,7 @@ function struct_validate_resolved(struct, restrictions)
     #    Check allowed entities
     for my.struct.property as _property
         new restrictions
-        property_validate_resolved(_property, restrictions)
-        endnew
-    endfor
-
-    my.lineage_count = count(my.struct.lineage)
-    if my.lineage_count <> 1
-        my.dump_filename = entity_dump_file(my.struct)
-        echo_fatal("Expected exectly one entity: lineage.\n" + \
-                   "But found $(my.lineage_count).\n" + \
-                   "See dump file: $(my.dump_filename:)", my)
-    endif
-    for my.struct.lineage as _lineage
-        new restrictions
-        lineage_validate_resolved(_lineage, restrictions)
+            property_validate_resolved(_property, restrictions)
         endnew
     endfor
 
@@ -3408,48 +3422,48 @@ function class_setup_defaults(class, defaults)
     visibility_setup_defaults(my.class)
 
     #    Setup defaults for allowed entities
-    for my.class.require
-        require_setup_defaults(require)
+    for my.class.require as _require
+        require_setup_defaults(_require)
     endfor
 
-    for my.class.dependency
-        dependency_setup_defaults(dependency)
+    for my.class.dependency as _dependency
+        dependency_setup_defaults(_dependency)
     endfor
 
-    for my.class.constant
-        constant_setup_defaults(constant)
+    for my.class.constant as _constant
+        constant_setup_defaults(_constant)
     endfor
 
-    for my.class.property
-        property_setup_defaults(property)
+    for my.class.property as _property
+        property_setup_defaults(_property)
     endfor
 
-    for my.class.enum
-        enum_setup_defaults(enum)
+    for my.class.enum as _enum
+        enum_setup_defaults(_enum)
     endfor
 
-    for my.class.callback
-        callback_setup_defaults(callback)
+    for my.class.callback as _callback
+        callback_setup_defaults(_callback)
     endfor
 
-    for my.class.method
-        method_setup_defaults(method)
+    for my.class.method as _method
+        method_setup_defaults(_method)
     endfor
 
-    for my.class.macros
-        macros_setup_defaults(macros)
+    for my.class.macros as _macros
+        macros_setup_defaults(_macros)
     endfor
 
-    for my.class.macroses
-        macroses_setup_defaults(macroses)
+    for my.class.macroses as _macroses
+        macroses_setup_defaults(_macroses)
     endfor
 
-    for my.class.struct
-        struct_setup_defaults(struct)
+    for my.class.struct as _struct
+        struct_setup_defaults(_struct)
     endfor
 
-    for my.class.variable
-        variable_setup_defaults(variable)
+    for my.class.variable as _variable
+        variable_setup_defaults(_variable)
     endfor
     my.default_value = my.defaults.name ?
     if defined(my.default_value) & !defined(my.class.name)
@@ -3502,77 +3516,77 @@ function class_validate(class, restrictions)
     my.require_count = count(my.class.require)
     for my.class.require as _require
         new restrictions
-        require_validate(_require, restrictions)
+            require_validate(_require, restrictions)
         endnew
     endfor
 
     my.dependency_count = count(my.class.dependency)
     for my.class.dependency as _dependency
         new restrictions
-        dependency_validate(_dependency, restrictions)
+            dependency_validate(_dependency, restrictions)
         endnew
     endfor
 
     my.constant_count = count(my.class.constant)
     for my.class.constant as _constant
         new restrictions
-        constant_validate(_constant, restrictions)
+            constant_validate(_constant, restrictions)
         endnew
     endfor
 
     my.property_count = count(my.class.property)
     for my.class.property as _property
         new restrictions
-        property_validate(_property, restrictions)
+            property_validate(_property, restrictions)
         endnew
     endfor
 
     my.enum_count = count(my.class.enum)
     for my.class.enum as _enum
         new restrictions
-        enum_validate(_enum, restrictions)
+            enum_validate(_enum, restrictions)
         endnew
     endfor
 
     my.callback_count = count(my.class.callback)
     for my.class.callback as _callback
         new restrictions
-        callback_validate(_callback, restrictions)
+            callback_validate(_callback, restrictions)
         endnew
     endfor
 
     my.method_count = count(my.class.method)
     for my.class.method as _method
         new restrictions
-        method_validate(_method, restrictions)
+            method_validate(_method, restrictions)
         endnew
     endfor
 
     my.macros_count = count(my.class.macros)
     for my.class.macros as _macros
         new restrictions
-        macros_validate(_macros, restrictions)
+            macros_validate(_macros, restrictions)
         endnew
     endfor
 
     my.macroses_count = count(my.class.macroses)
     for my.class.macroses as _macroses
         new restrictions
-        macroses_validate(_macroses, restrictions)
+            macroses_validate(_macroses, restrictions)
         endnew
     endfor
 
     my.struct_count = count(my.class.struct)
     for my.class.struct as _struct
         new restrictions
-        struct_validate(_struct, restrictions)
+            struct_validate(_struct, restrictions)
         endnew
     endfor
 
     my.variable_count = count(my.class.variable)
     for my.class.variable as _variable
         new restrictions
-        variable_validate(_variable, restrictions)
+            variable_validate(_variable, restrictions)
         endnew
     endfor
 
@@ -3647,67 +3661,67 @@ function class_validate_resolved(class, restrictions)
     #    Check allowed entities
     for my.class.require as _require
         new restrictions
-        require_validate_resolved(_require, restrictions)
+            require_validate_resolved(_require, restrictions)
         endnew
     endfor
 
     for my.class.dependency as _dependency
         new restrictions
-        dependency_validate_resolved(_dependency, restrictions)
+            dependency_validate_resolved(_dependency, restrictions)
         endnew
     endfor
 
     for my.class.constant as _constant
         new restrictions
-        constant_validate_resolved(_constant, restrictions)
+            constant_validate_resolved(_constant, restrictions)
         endnew
     endfor
 
     for my.class.property as _property
         new restrictions
-        property_validate_resolved(_property, restrictions)
+            property_validate_resolved(_property, restrictions)
         endnew
     endfor
 
     for my.class.enum as _enum
         new restrictions
-        enum_validate_resolved(_enum, restrictions)
+            enum_validate_resolved(_enum, restrictions)
         endnew
     endfor
 
     for my.class.callback as _callback
         new restrictions
-        callback_validate_resolved(_callback, restrictions)
+            callback_validate_resolved(_callback, restrictions)
         endnew
     endfor
 
     for my.class.method as _method
         new restrictions
-        method_validate_resolved(_method, restrictions)
+            method_validate_resolved(_method, restrictions)
         endnew
     endfor
 
     for my.class.macros as _macros
         new restrictions
-        macros_validate_resolved(_macros, restrictions)
+            macros_validate_resolved(_macros, restrictions)
         endnew
     endfor
 
     for my.class.macroses as _macroses
         new restrictions
-        macroses_validate_resolved(_macroses, restrictions)
+            macroses_validate_resolved(_macroses, restrictions)
         endnew
     endfor
 
     for my.class.struct as _struct
         new restrictions
-        struct_validate_resolved(_struct, restrictions)
+            struct_validate_resolved(_struct, restrictions)
         endnew
     endfor
 
     for my.class.variable as _variable
         new restrictions
-        variable_validate_resolved(_variable, restrictions)
+            variable_validate_resolved(_variable, restrictions)
         endnew
     endfor
 
@@ -3812,16 +3826,17 @@ function interface_setup_defaults(interface, defaults)
     c_prefix_setup_defaults(my.interface)
 
     #    Setup defaults for allowed entities
-    for my.interface.constant
-        constant_setup_defaults(constant)
+    new defaults
+        constant_setup_defaults(constant, defaults)
+        delete defaults
+    endnew
+
+    for my.interface.method as _method
+        method_setup_defaults(_method)
     endfor
 
-    for my.interface.method
-        method_setup_defaults(method)
-    endfor
-
-    for my.interface.inherit
-        inherit_setup_defaults(inherit)
+    for my.interface.inherit as _inherit
+        inherit_setup_defaults(_inherit)
     endfor
 endfunction
 
@@ -3851,21 +3866,23 @@ function interface_validate(interface, restrictions)
     my.constant_count = count(my.interface.constant)
     for my.interface.constant as _constant
         new restrictions
-        constant_validate(_constant, restrictions)
+            .attr_value_apply = "0"
+            .attr_value_required = "0"
+            constant_validate(_constant, restrictions)
         endnew
     endfor
 
     my.method_count = count(my.interface.method)
     for my.interface.method as _method
         new restrictions
-        method_validate(_method, restrictions)
+            method_validate(_method, restrictions)
         endnew
     endfor
 
     my.inherit_count = count(my.interface.inherit)
     for my.interface.inherit as _inherit
         new restrictions
-        inherit_validate(_inherit, restrictions)
+            inherit_validate(_inherit, restrictions)
         endnew
     endfor
 
@@ -3899,19 +3916,21 @@ function interface_validate_resolved(interface, restrictions)
     #    Check allowed entities
     for my.interface.constant as _constant
         new restrictions
-        constant_validate_resolved(_constant, restrictions)
+            .attr_value_apply = "0"
+            .attr_value_required = "0"
+            constant_validate_resolved(_constant, restrictions)
         endnew
     endfor
 
     for my.interface.method as _method
         new restrictions
-        method_validate_resolved(_method, restrictions)
+            method_validate_resolved(_method, restrictions)
         endnew
     endfor
 
     for my.interface.inherit as _inherit
         new restrictions
-        inherit_validate_resolved(_inherit, restrictions)
+            inherit_validate_resolved(_inherit, restrictions)
         endnew
     endfor
 
@@ -3926,12 +3945,12 @@ function context_setup_defaults(context, defaults)
     echo_trace("[L1] Setup defaults for entity: <$(name(my.context))$(my.context_name)/>", my)
 
     #    Setup defaults for allowed entities
-    for my.context.require
-        require_setup_defaults(require)
+    for my.context.require as _require
+        require_setup_defaults(_require)
     endfor
 
-    for my.context.property
-        property_setup_defaults(property)
+    for my.context.property as _property
+        property_setup_defaults(_property)
     endfor
 endfunction
 
@@ -3944,14 +3963,14 @@ function context_validate(context, restrictions)
     my.require_count = count(my.context.require)
     for my.context.require as _require
         new restrictions
-        require_validate(_require, restrictions)
+            require_validate(_require, restrictions)
         endnew
     endfor
 
     my.property_count = count(my.context.property)
     for my.context.property as _property
         new restrictions
-        property_validate(_property, restrictions)
+            property_validate(_property, restrictions)
         endnew
     endfor
 
@@ -3968,13 +3987,13 @@ function context_validate_resolved(context, restrictions)
     #    Check allowed entities
     for my.context.require as _require
         new restrictions
-        require_validate_resolved(_require, restrictions)
+            require_validate_resolved(_require, restrictions)
         endnew
     endfor
 
     for my.context.property as _property
         new restrictions
-        property_validate_resolved(_property, restrictions)
+            property_validate_resolved(_property, restrictions)
         endnew
     endfor
 
@@ -3995,20 +4014,20 @@ function implementation_setup_defaults(implementation, defaults)
     c_prefix_setup_defaults(my.implementation)
 
     #    Setup defaults for allowed entities
-    for my.implementation.context
-        context_setup_defaults(context)
+    for my.implementation.context as _context
+        context_setup_defaults(_context)
     endfor
 
-    for my.implementation.interface
-        interface_setup_defaults(interface)
+    for my.implementation.interface as _interface
+        interface_setup_defaults(_interface)
     endfor
 
-    for my.implementation.dependency
-        dependency_setup_defaults(dependency)
+    for my.implementation.dependency as _dependency
+        dependency_setup_defaults(_dependency)
     endfor
 
-    for my.implementation.require
-        require_setup_defaults(require)
+    for my.implementation.require as _require
+        require_setup_defaults(_require)
     endfor
 
     new defaults
@@ -4016,6 +4035,10 @@ function implementation_setup_defaults(implementation, defaults)
         method_setup_defaults(method, defaults)
         delete defaults
     endnew
+
+    for my.implementation.constant as _constant
+        constant_setup_defaults(_constant)
+    endfor
     my.default_value = my.defaults.name ?
     if defined(my.default_value) & !defined(my.implementation.name)
         echo_trace("       name=\"$(my.default_value:)\"", my)
@@ -4055,7 +4078,7 @@ function implementation_validate(implementation, restrictions)
     endif
     for my.implementation.context as _context
         new restrictions
-        context_validate(_context, restrictions)
+            context_validate(_context, restrictions)
         endnew
     endfor
 
@@ -4068,21 +4091,21 @@ function implementation_validate(implementation, restrictions)
     endif
     for my.implementation.interface as _interface
         new restrictions
-        interface_validate(_interface, restrictions)
+            interface_validate(_interface, restrictions)
         endnew
     endfor
 
     my.dependency_count = count(my.implementation.dependency)
     for my.implementation.dependency as _dependency
         new restrictions
-        dependency_validate(_dependency, restrictions)
+            dependency_validate(_dependency, restrictions)
         endnew
     endfor
 
     my.require_count = count(my.implementation.require)
     for my.implementation.require as _require
         new restrictions
-        require_validate(_require, restrictions)
+            require_validate(_require, restrictions)
         endnew
     endfor
 
@@ -4091,7 +4114,14 @@ function implementation_validate(implementation, restrictions)
         new restrictions
             .attr_visibility_apply = "0"
             .attr_visibility_required = "0"
-        method_validate(_method, restrictions)
+            method_validate(_method, restrictions)
+        endnew
+    endfor
+
+    my.constant_count = count(my.implementation.constant)
+    for my.implementation.constant as _constant
+        new restrictions
+            constant_validate(_constant, restrictions)
         endnew
     endfor
 
@@ -4131,25 +4161,25 @@ function implementation_validate_resolved(implementation, restrictions)
     #    Check allowed entities
     for my.implementation.context as _context
         new restrictions
-        context_validate_resolved(_context, restrictions)
+            context_validate_resolved(_context, restrictions)
         endnew
     endfor
 
     for my.implementation.interface as _interface
         new restrictions
-        interface_validate_resolved(_interface, restrictions)
+            interface_validate_resolved(_interface, restrictions)
         endnew
     endfor
 
     for my.implementation.dependency as _dependency
         new restrictions
-        dependency_validate_resolved(_dependency, restrictions)
+            dependency_validate_resolved(_dependency, restrictions)
         endnew
     endfor
 
     for my.implementation.require as _require
         new restrictions
-        require_validate_resolved(_require, restrictions)
+            require_validate_resolved(_require, restrictions)
         endnew
     endfor
 
@@ -4157,7 +4187,13 @@ function implementation_validate_resolved(implementation, restrictions)
         new restrictions
             .attr_visibility_apply = "0"
             .attr_visibility_required = "0"
-        method_validate_resolved(_method, restrictions)
+            method_validate_resolved(_method, restrictions)
+        endnew
+    endfor
+
+    for my.implementation.constant as _constant
+        new restrictions
+            constant_validate_resolved(_constant, restrictions)
         endnew
     endfor
 
@@ -4178,8 +4214,8 @@ function implementor_setup_defaults(implementor, defaults)
     echo_trace("[L1] Setup defaults for entity: <$(name(my.implementor))$(my.implementor_name)/>", my)
 
     #    Setup defaults for allowed entities
-    for my.implementor.implementation
-        implementation_setup_defaults(implementation)
+    for my.implementor.implementation as _implementation
+        implementation_setup_defaults(_implementation)
     endfor
     my.default_value = my.defaults.name ?
     if defined(my.default_value) & !defined(my.implementor.name)
@@ -4209,7 +4245,7 @@ function implementor_validate(implementor, restrictions)
     endif
     for my.implementor.implementation as _implementation
         new restrictions
-        implementation_validate(_implementation, restrictions)
+            implementation_validate(_implementation, restrictions)
         endnew
     endfor
 
@@ -4243,7 +4279,7 @@ function implementor_validate_resolved(implementor, restrictions)
     #    Check allowed entities
     for my.implementor.implementation as _implementation
         new restrictions
-        implementation_validate_resolved(_implementation, restrictions)
+            implementation_validate_resolved(_implementation, restrictions)
         endnew
     endfor
 
@@ -4275,8 +4311,8 @@ function interface_setup_defaults(interface, defaults)
     echo_trace("[L1] Setup defaults for entity: <$(name(my.interface))$(my.interface_name)/>", my)
 
     #    Setup defaults for allowed entities
-    for my.interface.constant
-        constant_setup_defaults(constant)
+    for my.interface.constant as _constant
+        constant_setup_defaults(_constant)
     endfor
     my.default_value = my.defaults.name ?
     if defined(my.default_value) & !defined(my.interface.name)
@@ -4294,7 +4330,7 @@ function interface_validate(interface, restrictions)
     my.constant_count = count(my.interface.constant)
     for my.interface.constant as _constant
         new restrictions
-        constant_validate(_constant, restrictions)
+            constant_validate(_constant, restrictions)
         endnew
     endfor
 
@@ -4317,7 +4353,7 @@ function interface_validate_resolved(interface, restrictions)
     #    Check allowed entities
     for my.interface.constant as _constant
         new restrictions
-        constant_validate_resolved(_constant, restrictions)
+            constant_validate_resolved(_constant, restrictions)
         endnew
     endfor
 
@@ -4384,8 +4420,8 @@ function feature_setup_defaults(feature, defaults)
     landlord_setup_defaults(my.feature)
 
     #    Setup defaults for allowed entities
-    for my.feature.require
-        require_setup_defaults(require)
+    for my.feature.require as _require
+        require_setup_defaults(_require)
     endfor
     my.default_value = my.defaults.name ?
     if defined(my.default_value) & !defined(my.feature.name)
@@ -4420,7 +4456,7 @@ function feature_validate(feature, restrictions)
     my.require_count = count(my.feature.require)
     for my.feature.require as _require
         new restrictions
-        require_validate(_require, restrictions)
+            require_validate(_require, restrictions)
         endnew
     endfor
 
@@ -4462,7 +4498,7 @@ function feature_validate_resolved(feature, restrictions)
     #    Check allowed entities
     for my.feature.require as _require
         new restrictions
-        require_validate_resolved(_require, restrictions)
+            require_validate_resolved(_require, restrictions)
         endnew
     endfor
 
@@ -4497,20 +4533,20 @@ function project_setup_defaults(project, defaults)
     echo_trace("[L1] Setup defaults for entity: <$(name(my.project))$(my.project_name)/>", my)
 
     #    Setup defaults for allowed entities
-    for my.project.interface
-        interface_setup_defaults(interface)
+    for my.project.interface as _interface
+        interface_setup_defaults(_interface)
     endfor
 
-    for my.project.implementor
-        implementor_setup_defaults(implementor)
+    for my.project.implementor as _implementor
+        implementor_setup_defaults(_implementor)
     endfor
 
-    for my.project.module
-        module_setup_defaults(module)
+    for my.project.module as _module
+        module_setup_defaults(_module)
     endfor
 
-    for my.project.feature
-        feature_setup_defaults(feature)
+    for my.project.feature as _feature
+        feature_setup_defaults(_feature)
     endfor
     my.default_value = my.defaults.name ?
     if defined(my.default_value) & !defined(my.project.name)
@@ -4594,28 +4630,28 @@ function project_validate(project, restrictions)
     my.interface_count = count(my.project.interface)
     for my.project.interface as _interface
         new restrictions
-        interface_validate(_interface, restrictions)
+            interface_validate(_interface, restrictions)
         endnew
     endfor
 
     my.implementor_count = count(my.project.implementor)
     for my.project.implementor as _implementor
         new restrictions
-        implementor_validate(_implementor, restrictions)
+            implementor_validate(_implementor, restrictions)
         endnew
     endfor
 
     my.module_count = count(my.project.module)
     for my.project.module as _module
         new restrictions
-        module_validate(_module, restrictions)
+            module_validate(_module, restrictions)
         endnew
     endfor
 
     my.feature_count = count(my.project.feature)
     for my.project.feature as _feature
         new restrictions
-        feature_validate(_feature, restrictions)
+            feature_validate(_feature, restrictions)
         endnew
     endfor
 
@@ -4698,25 +4734,25 @@ function project_validate_resolved(project, restrictions)
     #    Check allowed entities
     for my.project.interface as _interface
         new restrictions
-        interface_validate_resolved(_interface, restrictions)
+            interface_validate_resolved(_interface, restrictions)
         endnew
     endfor
 
     for my.project.implementor as _implementor
         new restrictions
-        implementor_validate_resolved(_implementor, restrictions)
+            implementor_validate_resolved(_implementor, restrictions)
         endnew
     endfor
 
     for my.project.module as _module
         new restrictions
-        module_validate_resolved(_module, restrictions)
+            module_validate_resolved(_module, restrictions)
         endnew
     endfor
 
     for my.project.feature as _feature
         new restrictions
-        feature_validate_resolved(_feature, restrictions)
+            feature_validate_resolved(_feature, restrictions)
         endnew
     endfor
 
@@ -4886,8 +4922,8 @@ function features_setup_defaults(features, defaults)
     landlord_setup_defaults(my.features)
 
     #    Setup defaults for allowed entities
-    for my.features.feature
-        feature_setup_defaults(feature)
+    for my.features.feature as _feature
+        feature_setup_defaults(_feature)
     endfor
     my.default_value = my.defaults.prefix ?
     if defined(my.default_value) & !defined(my.features.prefix)
@@ -4916,7 +4952,7 @@ function features_validate(features, restrictions)
     my.feature_count = count(my.features.feature)
     for my.features.feature as _feature
         new restrictions
-        feature_validate(_feature, restrictions)
+            feature_validate(_feature, restrictions)
         endnew
     endfor
 
@@ -4947,7 +4983,7 @@ function features_validate_resolved(features, restrictions)
     #    Check allowed entities
     for my.features.feature as _feature
         new restrictions
-        feature_validate_resolved(_feature, restrictions)
+            feature_validate_resolved(_feature, restrictions)
         endnew
     endfor
 
@@ -4971,8 +5007,8 @@ function library_setup_defaults(library, defaults)
     echo_trace("[L1] Setup defaults for entity: <$(name(my.library))$(my.library_name)/>", my)
 
     #    Setup defaults for allowed entities
-    for my.library.feature
-        feature_setup_defaults(feature)
+    for my.library.feature as _feature
+        feature_setup_defaults(_feature)
     endfor
     my.default_value = my.defaults.name ?
     if defined(my.default_value) & !defined(my.library.name)
@@ -5002,7 +5038,7 @@ function library_validate(library, restrictions)
     my.feature_count = count(my.library.feature)
     for my.library.feature as _feature
         new restrictions
-        feature_validate(_feature, restrictions)
+            feature_validate(_feature, restrictions)
         endnew
     endfor
 
@@ -5034,7 +5070,7 @@ function library_validate_resolved(library, restrictions)
     #    Check allowed entities
     for my.library.feature as _feature
         new restrictions
-        feature_validate_resolved(_feature, restrictions)
+            feature_validate_resolved(_feature, restrictions)
         endnew
     endfor
 
@@ -5068,40 +5104,40 @@ function module_setup_defaults(module, defaults)
     component_setup_defaults(my.module)
 
     #    Setup defaults for allowed entities
-    for my.module.require
-        require_setup_defaults(require)
+    for my.module.require as _require
+        require_setup_defaults(_require)
     endfor
 
-    for my.module.constant
-        constant_setup_defaults(constant)
+    for my.module.constant as _constant
+        constant_setup_defaults(_constant)
     endfor
 
-    for my.module.enum
-        enum_setup_defaults(enum)
+    for my.module.enum as _enum
+        enum_setup_defaults(_enum)
     endfor
 
-    for my.module.variable
-        variable_setup_defaults(variable)
+    for my.module.variable as _variable
+        variable_setup_defaults(_variable)
     endfor
 
-    for my.module.struct
-        struct_setup_defaults(struct)
+    for my.module.struct as _struct
+        struct_setup_defaults(_struct)
     endfor
 
-    for my.module.callback
-        callback_setup_defaults(callback)
+    for my.module.callback as _callback
+        callback_setup_defaults(_callback)
     endfor
 
-    for my.module.method
-        method_setup_defaults(method)
+    for my.module.method as _method
+        method_setup_defaults(_method)
     endfor
 
-    for my.module.macros
-        macros_setup_defaults(macros)
+    for my.module.macros as _macros
+        macros_setup_defaults(_macros)
     endfor
 
-    for my.module.macroses
-        macroses_setup_defaults(macroses)
+    for my.module.macroses as _macroses
+        macroses_setup_defaults(_macroses)
     endfor
     my.default_value = my.defaults.name ?
     if defined(my.default_value) & !defined(my.module.name)
@@ -5134,63 +5170,63 @@ function module_validate(module, restrictions)
     my.require_count = count(my.module.require)
     for my.module.require as _require
         new restrictions
-        require_validate(_require, restrictions)
+            require_validate(_require, restrictions)
         endnew
     endfor
 
     my.constant_count = count(my.module.constant)
     for my.module.constant as _constant
         new restrictions
-        constant_validate(_constant, restrictions)
+            constant_validate(_constant, restrictions)
         endnew
     endfor
 
     my.enum_count = count(my.module.enum)
     for my.module.enum as _enum
         new restrictions
-        enum_validate(_enum, restrictions)
+            enum_validate(_enum, restrictions)
         endnew
     endfor
 
     my.variable_count = count(my.module.variable)
     for my.module.variable as _variable
         new restrictions
-        variable_validate(_variable, restrictions)
+            variable_validate(_variable, restrictions)
         endnew
     endfor
 
     my.struct_count = count(my.module.struct)
     for my.module.struct as _struct
         new restrictions
-        struct_validate(_struct, restrictions)
+            struct_validate(_struct, restrictions)
         endnew
     endfor
 
     my.callback_count = count(my.module.callback)
     for my.module.callback as _callback
         new restrictions
-        callback_validate(_callback, restrictions)
+            callback_validate(_callback, restrictions)
         endnew
     endfor
 
     my.method_count = count(my.module.method)
     for my.module.method as _method
         new restrictions
-        method_validate(_method, restrictions)
+            method_validate(_method, restrictions)
         endnew
     endfor
 
     my.macros_count = count(my.module.macros)
     for my.module.macros as _macros
         new restrictions
-        macros_validate(_macros, restrictions)
+            macros_validate(_macros, restrictions)
         endnew
     endfor
 
     my.macroses_count = count(my.module.macroses)
     for my.module.macroses as _macroses
         new restrictions
-        macroses_validate(_macroses, restrictions)
+            macroses_validate(_macroses, restrictions)
         endnew
     endfor
 
@@ -5233,55 +5269,55 @@ function module_validate_resolved(module, restrictions)
     #    Check allowed entities
     for my.module.require as _require
         new restrictions
-        require_validate_resolved(_require, restrictions)
+            require_validate_resolved(_require, restrictions)
         endnew
     endfor
 
     for my.module.constant as _constant
         new restrictions
-        constant_validate_resolved(_constant, restrictions)
+            constant_validate_resolved(_constant, restrictions)
         endnew
     endfor
 
     for my.module.enum as _enum
         new restrictions
-        enum_validate_resolved(_enum, restrictions)
+            enum_validate_resolved(_enum, restrictions)
         endnew
     endfor
 
     for my.module.variable as _variable
         new restrictions
-        variable_validate_resolved(_variable, restrictions)
+            variable_validate_resolved(_variable, restrictions)
         endnew
     endfor
 
     for my.module.struct as _struct
         new restrictions
-        struct_validate_resolved(_struct, restrictions)
+            struct_validate_resolved(_struct, restrictions)
         endnew
     endfor
 
     for my.module.callback as _callback
         new restrictions
-        callback_validate_resolved(_callback, restrictions)
+            callback_validate_resolved(_callback, restrictions)
         endnew
     endfor
 
     for my.module.method as _method
         new restrictions
-        method_validate_resolved(_method, restrictions)
+            method_validate_resolved(_method, restrictions)
         endnew
     endfor
 
     for my.module.macros as _macros
         new restrictions
-        macros_validate_resolved(_macros, restrictions)
+            macros_validate_resolved(_macros, restrictions)
         endnew
     endfor
 
     for my.module.macroses as _macroses
         new restrictions
-        macroses_validate_resolved(_macroses, restrictions)
+            macroses_validate_resolved(_macroses, restrictions)
         endnew
     endfor
 
@@ -5873,8 +5909,8 @@ function c_enum_setup_defaults(c_enum, defaults)
     c_feature_attr_setup_defaults(my.c_enum)
 
     #    Setup defaults for allowed entities
-    for my.c_enum.c_constant
-        c_constant_setup_defaults(c_constant)
+    for my.c_enum.c_constant as _c_constant
+        c_constant_setup_defaults(_c_constant)
     endfor
     my.default_value = my.defaults.name ?
     if defined(my.default_value) & !defined(my.c_enum.name)
@@ -5919,7 +5955,7 @@ function c_enum_validate(c_enum, restrictions)
     endif
     for my.c_enum.c_constant as _c_constant
         new restrictions
-        c_constant_validate(_c_constant, restrictions)
+            c_constant_validate(_c_constant, restrictions)
         endnew
     endfor
 
@@ -5960,7 +5996,7 @@ function c_enum_validate_resolved(c_enum, restrictions)
     #    Check allowed entities
     for my.c_enum.c_constant as _c_constant
         new restrictions
-        c_constant_validate_resolved(_c_constant, restrictions)
+            c_constant_validate_resolved(_c_constant, restrictions)
         endnew
     endfor
 
@@ -6070,8 +6106,8 @@ function c_struct_setup_defaults(c_struct, defaults)
     c_feature_attr_setup_defaults(my.c_struct)
 
     #    Setup defaults for allowed entities
-    for my.c_struct.c_property
-        c_property_setup_defaults(c_property)
+    for my.c_struct.c_property as _c_property
+        c_property_setup_defaults(_c_property)
     endfor
     my.default_value = my.defaults.name ?
     if defined(my.default_value) & !defined(my.c_struct.name)
@@ -6112,7 +6148,7 @@ function c_struct_validate(c_struct, restrictions)
     endif
     for my.c_struct.c_property as _c_property
         new restrictions
-        c_property_validate(_c_property, restrictions)
+            c_property_validate(_c_property, restrictions)
         endnew
     endfor
 
@@ -6152,7 +6188,7 @@ function c_struct_validate_resolved(c_struct, restrictions)
     #    Check allowed entities
     for my.c_struct.c_property as _c_property
         new restrictions
-        c_property_validate_resolved(_c_property, restrictions)
+            c_property_validate_resolved(_c_property, restrictions)
         endnew
     endfor
 
@@ -6395,24 +6431,24 @@ function c_method_setup_defaults(c_method, defaults)
     c_feature_attr_setup_defaults(my.c_method)
 
     #    Setup defaults for allowed entities
-    for my.c_method.c_modifier
-        c_modifier_setup_defaults(c_modifier)
+    for my.c_method.c_modifier as _c_modifier
+        c_modifier_setup_defaults(_c_modifier)
     endfor
 
-    for my.c_method.c_return
-        c_return_setup_defaults(c_return)
+    for my.c_method.c_return as _c_return
+        c_return_setup_defaults(_c_return)
     endfor
 
-    for my.c_method.c_argument
-        c_argument_setup_defaults(c_argument)
+    for my.c_method.c_argument as _c_argument
+        c_argument_setup_defaults(_c_argument)
     endfor
 
-    for my.c_method.c_precondition
-        c_precondition_setup_defaults(c_precondition)
+    for my.c_method.c_precondition as _c_precondition
+        c_precondition_setup_defaults(_c_precondition)
     endfor
 
-    for my.c_method.c_attribute
-        c_attribute_setup_defaults(c_attribute)
+    for my.c_method.c_attribute as _c_attribute
+        c_attribute_setup_defaults(_c_attribute)
     endfor
     my.default_value = my.defaults.name ?
     if defined(my.default_value) & !defined(my.c_method.name)
@@ -6451,7 +6487,7 @@ function c_method_validate(c_method, restrictions)
     my.c_modifier_count = count(my.c_method.c_modifier)
     for my.c_method.c_modifier as _c_modifier
         new restrictions
-        c_modifier_validate(_c_modifier, restrictions)
+            c_modifier_validate(_c_modifier, restrictions)
         endnew
     endfor
 
@@ -6464,28 +6500,28 @@ function c_method_validate(c_method, restrictions)
     endif
     for my.c_method.c_return as _c_return
         new restrictions
-        c_return_validate(_c_return, restrictions)
+            c_return_validate(_c_return, restrictions)
         endnew
     endfor
 
     my.c_argument_count = count(my.c_method.c_argument)
     for my.c_method.c_argument as _c_argument
         new restrictions
-        c_argument_validate(_c_argument, restrictions)
+            c_argument_validate(_c_argument, restrictions)
         endnew
     endfor
 
     my.c_precondition_count = count(my.c_method.c_precondition)
     for my.c_method.c_precondition as _c_precondition
         new restrictions
-        c_precondition_validate(_c_precondition, restrictions)
+            c_precondition_validate(_c_precondition, restrictions)
         endnew
     endfor
 
     my.c_attribute_count = count(my.c_method.c_attribute)
     for my.c_method.c_attribute as _c_attribute
         new restrictions
-        c_attribute_validate(_c_attribute, restrictions)
+            c_attribute_validate(_c_attribute, restrictions)
         endnew
     endfor
 
@@ -6529,31 +6565,31 @@ function c_method_validate_resolved(c_method, restrictions)
     #    Check allowed entities
     for my.c_method.c_modifier as _c_modifier
         new restrictions
-        c_modifier_validate_resolved(_c_modifier, restrictions)
+            c_modifier_validate_resolved(_c_modifier, restrictions)
         endnew
     endfor
 
     for my.c_method.c_return as _c_return
         new restrictions
-        c_return_validate_resolved(_c_return, restrictions)
+            c_return_validate_resolved(_c_return, restrictions)
         endnew
     endfor
 
     for my.c_method.c_argument as _c_argument
         new restrictions
-        c_argument_validate_resolved(_c_argument, restrictions)
+            c_argument_validate_resolved(_c_argument, restrictions)
         endnew
     endfor
 
     for my.c_method.c_precondition as _c_precondition
         new restrictions
-        c_precondition_validate_resolved(_c_precondition, restrictions)
+            c_precondition_validate_resolved(_c_precondition, restrictions)
         endnew
     endfor
 
     for my.c_method.c_attribute as _c_attribute
         new restrictions
-        c_attribute_validate_resolved(_c_attribute, restrictions)
+            c_attribute_validate_resolved(_c_attribute, restrictions)
         endnew
     endfor
 
@@ -6578,12 +6614,12 @@ function c_callback_setup_defaults(c_callback, defaults)
     declaration_setup_defaults(my.c_callback)
 
     #    Setup defaults for allowed entities
-    for my.c_callback.c_return
-        c_return_setup_defaults(c_return)
+    for my.c_callback.c_return as _c_return
+        c_return_setup_defaults(_c_return)
     endfor
 
-    for my.c_callback.c_argument
-        c_argument_setup_defaults(c_argument)
+    for my.c_callback.c_argument as _c_argument
+        c_argument_setup_defaults(_c_argument)
     endfor
     my.default_value = my.defaults.name ?
     if defined(my.default_value) & !defined(my.c_callback.name)
@@ -6616,14 +6652,14 @@ function c_callback_validate(c_callback, restrictions)
     endif
     for my.c_callback.c_return as _c_return
         new restrictions
-        c_return_validate(_c_return, restrictions)
+            c_return_validate(_c_return, restrictions)
         endnew
     endfor
 
     my.c_argument_count = count(my.c_callback.c_argument)
     for my.c_callback.c_argument as _c_argument
         new restrictions
-        c_argument_validate(_c_argument, restrictions)
+            c_argument_validate(_c_argument, restrictions)
         endnew
     endfor
 
@@ -6655,13 +6691,13 @@ function c_callback_validate_resolved(c_callback, restrictions)
     #    Check allowed entities
     for my.c_callback.c_return as _c_return
         new restrictions
-        c_return_validate_resolved(_c_return, restrictions)
+            c_return_validate_resolved(_c_return, restrictions)
         endnew
     endfor
 
     for my.c_callback.c_argument as _c_argument
         new restrictions
-        c_argument_validate_resolved(_c_argument, restrictions)
+            c_argument_validate_resolved(_c_argument, restrictions)
         endnew
     endfor
 
@@ -6713,8 +6749,8 @@ function c_macros_setup_defaults(c_macros, defaults)
     c_feature_attr_setup_defaults(my.c_macros)
 
     #    Setup defaults for allowed entities
-    for my.c_macros.c_code
-        c_code_setup_defaults(c_code)
+    for my.c_macros.c_code as _c_code
+        c_code_setup_defaults(_c_code)
     endfor
     my.default_value = my.defaults.is_method ? "0"
     if defined(my.default_value) & !defined(my.c_macros.is_method)
@@ -6751,7 +6787,7 @@ function c_macros_validate(c_macros, restrictions)
     endif
     for my.c_macros.c_code as _c_code
         new restrictions
-        c_code_validate(_c_code, restrictions)
+            c_code_validate(_c_code, restrictions)
         endnew
     endfor
 
@@ -6792,7 +6828,7 @@ function c_macros_validate_resolved(c_macros, restrictions)
     #    Check allowed entities
     for my.c_macros.c_code as _c_code
         new restrictions
-        c_code_validate_resolved(_c_code, restrictions)
+            c_code_validate_resolved(_c_code, restrictions)
         endnew
     endfor
 
@@ -6821,12 +6857,12 @@ function c_macroses_setup_defaults(c_macroses, defaults)
     definition_setup_defaults(my.c_macroses)
 
     #    Setup defaults for allowed entities
-    for my.c_macroses.c_macros
-        c_macros_setup_defaults(c_macros)
+    for my.c_macroses.c_macros as _c_macros
+        c_macros_setup_defaults(_c_macros)
     endfor
 
-    for my.c_macroses.c_code
-        c_code_setup_defaults(c_code)
+    for my.c_macroses.c_code as _c_code
+        c_code_setup_defaults(_c_code)
     endfor
 endfunction
 
@@ -6850,7 +6886,7 @@ function c_macroses_validate(c_macroses, restrictions)
     endif
     for my.c_macroses.c_macros as _c_macros
         new restrictions
-        c_macros_validate(_c_macros, restrictions)
+            c_macros_validate(_c_macros, restrictions)
         endnew
     endfor
 
@@ -6863,7 +6899,7 @@ function c_macroses_validate(c_macroses, restrictions)
     endif
     for my.c_macroses.c_code as _c_code
         new restrictions
-        c_code_validate(_c_code, restrictions)
+            c_code_validate(_c_code, restrictions)
         endnew
     endfor
 
@@ -6885,13 +6921,13 @@ function c_macroses_validate_resolved(c_macroses, restrictions)
     #    Check allowed entities
     for my.c_macroses.c_macros as _c_macros
         new restrictions
-        c_macros_validate_resolved(_c_macros, restrictions)
+            c_macros_validate_resolved(_c_macros, restrictions)
         endnew
     endfor
 
     for my.c_macroses.c_code as _c_code
         new restrictions
-        c_code_validate_resolved(_c_code, restrictions)
+            c_code_validate_resolved(_c_code, restrictions)
         endnew
     endfor
 
@@ -6945,8 +6981,8 @@ function c_value_setup_defaults(c_value, defaults)
     echo_trace("[L1] Setup defaults for entity: <$(name(my.c_value))$(my.c_value_name)/>", my)
 
     #    Setup defaults for allowed entities
-    for my.c_value.c_cast
-        c_cast_setup_defaults(c_cast)
+    for my.c_value.c_cast as _c_cast
+        c_cast_setup_defaults(_c_cast)
     endfor
     my.default_value = my.defaults.value ?
     if defined(my.default_value) & !defined(my.c_value.value)
@@ -6970,7 +7006,7 @@ function c_value_validate(c_value, restrictions)
     endif
     for my.c_value.c_cast as _c_cast
         new restrictions
-        c_cast_validate(_c_cast, restrictions)
+            c_cast_validate(_c_cast, restrictions)
         endnew
     endfor
 
@@ -6993,7 +7029,7 @@ function c_value_validate_resolved(c_value, restrictions)
     #    Check allowed entities
     for my.c_value.c_cast as _c_cast
         new restrictions
-        c_cast_validate_resolved(_c_cast, restrictions)
+            c_cast_validate_resolved(_c_cast, restrictions)
         endnew
     endfor
 
@@ -7022,12 +7058,12 @@ function c_variable_setup_defaults(c_variable, defaults)
     c_instance_setup_defaults(my.c_variable)
 
     #    Setup defaults for allowed entities
-    for my.c_variable.c_value
-        c_value_setup_defaults(c_value)
+    for my.c_variable.c_value as _c_value
+        c_value_setup_defaults(_c_value)
     endfor
 
-    for my.c_variable.c_modifier
-        c_modifier_setup_defaults(c_modifier)
+    for my.c_variable.c_modifier as _c_modifier
+        c_modifier_setup_defaults(_c_modifier)
     endfor
     my.default_value = my.defaults.name ?
     if defined(my.default_value) & !defined(my.c_variable.name)
@@ -7076,14 +7112,14 @@ function c_variable_validate(c_variable, restrictions)
     endif
     for my.c_variable.c_value as _c_value
         new restrictions
-        c_value_validate(_c_value, restrictions)
+            c_value_validate(_c_value, restrictions)
         endnew
     endfor
 
     my.c_modifier_count = count(my.c_variable.c_modifier)
     for my.c_variable.c_modifier as _c_modifier
         new restrictions
-        c_modifier_validate(_c_modifier, restrictions)
+            c_modifier_validate(_c_modifier, restrictions)
         endnew
     endfor
 
@@ -7131,13 +7167,13 @@ function c_variable_validate_resolved(c_variable, restrictions)
     #    Check allowed entities
     for my.c_variable.c_value as _c_value
         new restrictions
-        c_value_validate_resolved(_c_value, restrictions)
+            c_value_validate_resolved(_c_value, restrictions)
         endnew
     endfor
 
     for my.c_variable.c_modifier as _c_modifier
         new restrictions
-        c_modifier_validate_resolved(_c_modifier, restrictions)
+            c_modifier_validate_resolved(_c_modifier, restrictions)
         endnew
     endfor
 
@@ -7162,40 +7198,40 @@ function c_module_setup_defaults(c_module, defaults)
     of_class_setup_defaults(my.c_module)
 
     #    Setup defaults for allowed entities
-    for my.c_module.c_include
-        c_include_setup_defaults(c_include)
+    for my.c_module.c_include as _c_include
+        c_include_setup_defaults(_c_include)
     endfor
 
-    for my.c_module.c_alias
-        c_alias_setup_defaults(c_alias)
+    for my.c_module.c_alias as _c_alias
+        c_alias_setup_defaults(_c_alias)
     endfor
 
-    for my.c_module.c_enum
-        c_enum_setup_defaults(c_enum)
+    for my.c_module.c_enum as _c_enum
+        c_enum_setup_defaults(_c_enum)
     endfor
 
-    for my.c_module.c_struct
-        c_struct_setup_defaults(c_struct)
+    for my.c_module.c_struct as _c_struct
+        c_struct_setup_defaults(_c_struct)
     endfor
 
-    for my.c_module.c_variable
-        c_variable_setup_defaults(c_variable)
+    for my.c_module.c_variable as _c_variable
+        c_variable_setup_defaults(_c_variable)
     endfor
 
-    for my.c_module.c_method
-        c_method_setup_defaults(c_method)
+    for my.c_module.c_method as _c_method
+        c_method_setup_defaults(_c_method)
     endfor
 
-    for my.c_module.c_callback
-        c_callback_setup_defaults(c_callback)
+    for my.c_module.c_callback as _c_callback
+        c_callback_setup_defaults(_c_callback)
     endfor
 
-    for my.c_module.c_macros
-        c_macros_setup_defaults(c_macros)
+    for my.c_module.c_macros as _c_macros
+        c_macros_setup_defaults(_c_macros)
     endfor
 
-    for my.c_module.c_macroses
-        c_macroses_setup_defaults(c_macroses)
+    for my.c_module.c_macroses as _c_macroses
+        c_macroses_setup_defaults(_c_macroses)
     endfor
     my.default_value = my.defaults.id ?
     if defined(my.default_value) & !defined(my.c_module.id)
@@ -7264,63 +7300,63 @@ function c_module_validate(c_module, restrictions)
     my.c_include_count = count(my.c_module.c_include)
     for my.c_module.c_include as _c_include
         new restrictions
-        c_include_validate(_c_include, restrictions)
+            c_include_validate(_c_include, restrictions)
         endnew
     endfor
 
     my.c_alias_count = count(my.c_module.c_alias)
     for my.c_module.c_alias as _c_alias
         new restrictions
-        c_alias_validate(_c_alias, restrictions)
+            c_alias_validate(_c_alias, restrictions)
         endnew
     endfor
 
     my.c_enum_count = count(my.c_module.c_enum)
     for my.c_module.c_enum as _c_enum
         new restrictions
-        c_enum_validate(_c_enum, restrictions)
+            c_enum_validate(_c_enum, restrictions)
         endnew
     endfor
 
     my.c_struct_count = count(my.c_module.c_struct)
     for my.c_module.c_struct as _c_struct
         new restrictions
-        c_struct_validate(_c_struct, restrictions)
+            c_struct_validate(_c_struct, restrictions)
         endnew
     endfor
 
     my.c_variable_count = count(my.c_module.c_variable)
     for my.c_module.c_variable as _c_variable
         new restrictions
-        c_variable_validate(_c_variable, restrictions)
+            c_variable_validate(_c_variable, restrictions)
         endnew
     endfor
 
     my.c_method_count = count(my.c_module.c_method)
     for my.c_module.c_method as _c_method
         new restrictions
-        c_method_validate(_c_method, restrictions)
+            c_method_validate(_c_method, restrictions)
         endnew
     endfor
 
     my.c_callback_count = count(my.c_module.c_callback)
     for my.c_module.c_callback as _c_callback
         new restrictions
-        c_callback_validate(_c_callback, restrictions)
+            c_callback_validate(_c_callback, restrictions)
         endnew
     endfor
 
     my.c_macros_count = count(my.c_module.c_macros)
     for my.c_module.c_macros as _c_macros
         new restrictions
-        c_macros_validate(_c_macros, restrictions)
+            c_macros_validate(_c_macros, restrictions)
         endnew
     endfor
 
     my.c_macroses_count = count(my.c_module.c_macroses)
     for my.c_module.c_macroses as _c_macroses
         new restrictions
-        c_macroses_validate(_c_macroses, restrictions)
+            c_macroses_validate(_c_macroses, restrictions)
         endnew
     endfor
 
@@ -7399,55 +7435,55 @@ function c_module_validate_resolved(c_module, restrictions)
     #    Check allowed entities
     for my.c_module.c_include as _c_include
         new restrictions
-        c_include_validate_resolved(_c_include, restrictions)
+            c_include_validate_resolved(_c_include, restrictions)
         endnew
     endfor
 
     for my.c_module.c_alias as _c_alias
         new restrictions
-        c_alias_validate_resolved(_c_alias, restrictions)
+            c_alias_validate_resolved(_c_alias, restrictions)
         endnew
     endfor
 
     for my.c_module.c_enum as _c_enum
         new restrictions
-        c_enum_validate_resolved(_c_enum, restrictions)
+            c_enum_validate_resolved(_c_enum, restrictions)
         endnew
     endfor
 
     for my.c_module.c_struct as _c_struct
         new restrictions
-        c_struct_validate_resolved(_c_struct, restrictions)
+            c_struct_validate_resolved(_c_struct, restrictions)
         endnew
     endfor
 
     for my.c_module.c_variable as _c_variable
         new restrictions
-        c_variable_validate_resolved(_c_variable, restrictions)
+            c_variable_validate_resolved(_c_variable, restrictions)
         endnew
     endfor
 
     for my.c_module.c_method as _c_method
         new restrictions
-        c_method_validate_resolved(_c_method, restrictions)
+            c_method_validate_resolved(_c_method, restrictions)
         endnew
     endfor
 
     for my.c_module.c_callback as _c_callback
         new restrictions
-        c_callback_validate_resolved(_c_callback, restrictions)
+            c_callback_validate_resolved(_c_callback, restrictions)
         endnew
     endfor
 
     for my.c_module.c_macros as _c_macros
         new restrictions
-        c_macros_validate_resolved(_c_macros, restrictions)
+            c_macros_validate_resolved(_c_macros, restrictions)
         endnew
     endfor
 
     for my.c_module.c_macroses as _c_macroses
         new restrictions
-        c_macroses_validate_resolved(_c_macroses, restrictions)
+            c_macroses_validate_resolved(_c_macroses, restrictions)
         endnew
     endfor
 
@@ -7552,8 +7588,8 @@ function c_require_setup_defaults(c_require, defaults)
     echo_trace("[L1] Setup defaults for entity: <$(name(my.c_require))$(my.c_require_name)/>", my)
 
     #    Setup defaults for allowed entities
-    for my.c_require.c_alternative
-        c_alternative_setup_defaults(c_alternative)
+    for my.c_require.c_alternative as _c_alternative
+        c_alternative_setup_defaults(_c_alternative)
     endfor
     my.default_value = my.defaults.feature ?
     if defined(my.default_value) & !defined(my.c_require.feature)
@@ -7571,7 +7607,7 @@ function c_require_validate(c_require, restrictions)
     my.c_alternative_count = count(my.c_require.c_alternative)
     for my.c_require.c_alternative as _c_alternative
         new restrictions
-        c_alternative_validate(_c_alternative, restrictions)
+            c_alternative_validate(_c_alternative, restrictions)
         endnew
     endfor
 
@@ -7591,7 +7627,7 @@ function c_require_validate_resolved(c_require, restrictions)
     #    Check allowed entities
     for my.c_require.c_alternative as _c_alternative
         new restrictions
-        c_alternative_validate_resolved(_c_alternative, restrictions)
+            c_alternative_validate_resolved(_c_alternative, restrictions)
         endnew
     endfor
 
@@ -7612,8 +7648,8 @@ function c_feature_setup_defaults(c_feature, defaults)
     uid_setup_defaults(my.c_feature)
 
     #    Setup defaults for allowed entities
-    for my.c_feature.c_require
-        c_require_setup_defaults(c_require)
+    for my.c_feature.c_require as _c_require
+        c_require_setup_defaults(_c_require)
     endfor
     my.default_value = my.defaults.name ?
     if defined(my.default_value) & !defined(my.c_feature.name)
@@ -7642,7 +7678,7 @@ function c_feature_validate(c_feature, restrictions)
     my.c_require_count = count(my.c_feature.c_require)
     for my.c_feature.c_require as _c_require
         new restrictions
-        c_require_validate(_c_require, restrictions)
+            c_require_validate(_c_require, restrictions)
         endnew
     endfor
 
@@ -7678,7 +7714,7 @@ function c_feature_validate_resolved(c_feature, restrictions)
     #    Check allowed entities
     for my.c_feature.c_require as _c_require
         new restrictions
-        c_require_validate_resolved(_c_require, restrictions)
+            c_require_validate_resolved(_c_require, restrictions)
         endnew
     endfor
 
@@ -7707,8 +7743,8 @@ function c_features_setup_defaults(c_features, defaults)
     echo_trace("[L1] Setup defaults for entity: <$(name(my.c_features))$(my.c_features_name)/>", my)
 
     #    Setup defaults for allowed entities
-    for my.c_features.c_feature
-        c_feature_setup_defaults(c_feature)
+    for my.c_features.c_feature as _c_feature
+        c_feature_setup_defaults(_c_feature)
     endfor
     my.default_value = my.defaults.name ?
     if defined(my.default_value) & !defined(my.c_features.name)
@@ -7738,7 +7774,7 @@ function c_features_validate(c_features, restrictions)
     my.c_feature_count = count(my.c_features.c_feature)
     for my.c_features.c_feature as _c_feature
         new restrictions
-        c_feature_validate(_c_feature, restrictions)
+            c_feature_validate(_c_feature, restrictions)
         endnew
     endfor
 
@@ -7781,7 +7817,7 @@ function c_features_validate_resolved(c_features, restrictions)
     #    Check allowed entities
     for my.c_features.c_feature as _c_feature
         new restrictions
-        c_feature_validate_resolved(_c_feature, restrictions)
+            c_feature_validate_resolved(_c_feature, restrictions)
         endnew
     endfor
 

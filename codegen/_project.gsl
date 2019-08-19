@@ -16,10 +16,21 @@ function project_process_class(project, class)
 endfunction
 
 # ---------------------------------------------------------------------------
-function project_calculate_dependencies_fingerprint(project)
-    check_arguments(my, "project", my)
+function project_calculate_dependencies_fingerprint(main, project)
+    check_arguments(my, "main, project", my)
 
-    return fingerprint(my.project)
+    new dependencies
+        if is_true(my.project.forcegen)
+            time.now(.date, .time)
+        endif
+        .license = fingerprint(my.project->license ? my.main->license)
+        .version = fingerprint(my.project->version ? my.main->version)
+        .self_fingerprint = fingerprint(my.project)
+
+        my.fingerprint = fingerprint(dependencies)
+        delete dependencies
+        return my.fingerprint
+    endnew
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -49,6 +60,7 @@ endfunction
 function project_setup_defaults(project)
     check_arguments(my, "project", my)
 
+    echo_trace("---------------------------------------------------------------------------", my)
     echo_trace("[L1] Project '$(my.project.name:)' - setup defaults", my)
 
     my.project.work_path ?= cat_path("generated", make_id(my.project.name))
@@ -85,15 +97,18 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Entry point
 # ---------------------------------------------------------------------------
-function project_process(project_link)
-    check_arguments(my, "project_link", my)
+function project_process(main, project_link)
+    check_arguments(my, "main, project_link", my)
     assert_attribute(my.project_link, "name", my)
 
     echo_info("[L1] Project '$(my.project_link.name:)' - start processing", my)
 
     my.project = project_load(my.project_link.name)
     my.cached_project = cache_load_or_invalidate(my.project, my.project) ?
-    my.project.fingerprint = project_calculate_dependencies_fingerprint(my.project)
+    if is_true(my.main.forcegen)
+        my.project.forcegen = "1"
+    endif
+    my.project.fingerprint = project_calculate_dependencies_fingerprint(my.main, my.project)
 
     if defined(my.cached_project)
         echo_trace("[L1] Project '$(my.project.name:)' - cache detected", my)
@@ -119,6 +134,6 @@ endfunction
 #   Multi thread entry point
 # ---------------------------------------------------------------------------
 if main.multithread
-    thread.receive(sending_thread, _project_link)
-    project_process(_project_link)
+    thread.receive(sending_thread, _main, _project_link)
+    project_process(_main, _project_link)
 endif

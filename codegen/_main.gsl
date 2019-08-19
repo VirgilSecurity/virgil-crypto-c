@@ -5,9 +5,9 @@ gsl from "common.gsl"
 gsl from "_cache.gsl"
 gsl from "_model.gsl"
 gsl from "_fingerprint.gsl"
+gsl from "_component.gsl"
 
 gsl from "validator.gsl"
-gsl from "component.gsl"
 
 if !main.multithread
     gsl from "_project.gsl"
@@ -20,9 +20,9 @@ function main_process_project(project)
     if main.multithread
         my.project_parsed_thread = create_parsed_thread("_project.gsl")
         my.project_thread = my.project_parsed_thread.run()
-        my.project_thread.send(my.project)
+        my.project_thread.send(main, my.project)
     else
-        project_process(my.project)
+        project_process(main, my.project)
     endif
 endfunction
 

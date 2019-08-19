@@ -35,28 +35,6 @@
     Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 -->
 
-
-<entity name="lineage">
-    Keep hierarchical information about parents.
-    Lower component is a child relative to the upper component.
-
-    <allow entity="ancestor" occurs="1+"/>
-</entity>
-
-
-<entity name="ancestor">
-    Handles information about component ancestor.
-
-    <attr name="id" required="1">
-        Ancestor component name
-    </attr>
-
-    <attr name="name" required="1">
-        Ancestor name
-    </attr>
-</entity>
-
-
 <entity name="c_prefix" abstract="1">
     <attr name="c_prefix">
         Prefix that is used for C name resolution.
@@ -305,6 +283,10 @@
 
             Note, primitive type can not be disowned.
         </restrict>
+
+        <restrict value="retain">
+            Reference counter of a given or returned instance is incremented.
+        </restrict>
     </attr>
 
     <attr name="ownership">
@@ -461,14 +443,31 @@
         Constant name.
     </attr>
 
+    <attr name="type" default="size">
+        Constant type.
+
+        <restrict value="boolean">
+            True / False type.
+        </restrict>
+
+        <restrict value="integer">
+            Signed integral type.
+        </restrict>
+
+        <restrict value="size">
+            Unsigned integral type for size definition.
+        </restrict>
+    </attr>
+
     <attr name="value">
         Constant value.
         Optional for enumerated constant.
     </attr>
 
     <inherit entity="scoped_component"/>
-    <inherit entity="definition"/>
-    <allow entity="lineage" occurs="1" resolved="1"/>
+    <inherit entity="definition">
+        <attr name="default" default="public"/>
+    </inherit>
 </entity>
 
 
@@ -487,7 +486,6 @@
 
     <!-- Bracer initializer is used for multiple variable_value's -->
     <allow entity="value" occurs="1+"/>
-    <allow entity="lineage" occurs="1" resolved="1"/>
 </entity>
 
 
@@ -526,8 +524,9 @@
     <inherit entity="declaration"/>
     <inherit entity="definition"/>
 
-    <allow entity="constant" occurs="0+"/>
-    <allow entity="lineage" occurs="1" resolved="1"/>
+    <allow entity="constant" occurs="0+">
+        <attr name="value" required="0"/>
+    </allow>
 </entity>
 
 
@@ -544,7 +543,6 @@
     <inherit entity="definition"/>
 
     <allow entity="property"/>
-    <allow entity="lineage" occurs="1" resolved="1"/>
 </entity>
 
 
@@ -563,8 +561,6 @@
         <attr name="access" default="readwrite"/>
     </inherit>
     <inherit entity="uid"/>
-
-    <allow entity="lineage" occurs="1" resolved="1"/>
 </entity>
 
 
@@ -584,6 +580,18 @@
 
         <restrict value="1">
             Method is an object-level method.
+        </restrict>
+    </attr>
+
+    <attr name="is_const" default="0">
+        Defines that method does not change it's invariant and is thread-safe.
+
+        <restrict value="0">
+            Method does not support "const" semantic.
+        </restrict>
+
+        <restrict value="1">
+            Method supports "const" semantic.
         </restrict>
     </attr>
 
@@ -608,7 +616,6 @@
     <allow entity="argument" occurs="0+"/>
     <allow entity="variable" occurs="0+"/>
     <allow entity="code" occurs="0/1"/>
-    <allow entity="lineage" occurs="1" resolved="1"/>
 </entity>
 
 
@@ -624,20 +631,18 @@
 
     <allow entity="return" occurs="0/1"/>
     <allow entity="argument" occurs="0+"/>
-    <allow entity="lineage" occurs="1" resolved="1"/>
 </entity>
 
 
 <entity name="argument">
     Defines argument as name, type, and usage information.
 
-    <attr name="name" required="1">
+    <attr name="name" required="1" resolved="1">
         Argument name.
     </attr>
 
     <inherit entity="instance"/>
     <inherit entity="uid"/>
-    <allow entity="lineage" occurs="1" resolved="1"/>
 </entity>
 
 
@@ -645,7 +650,6 @@
     Defines return type.
 
     <inherit entity="instance"/>
-    <allow entity="lineage" occurs="1" resolved="1"/>
 </entity>
 
 
@@ -668,17 +672,20 @@
         </restrict>
     </attr>
 
-    <inherit entity="definition"/>
+    <inherit entity="definition">
+        <attr name="default" default="public"/>
+    </inherit>
 
     <allow entity="code" occurs="0/1"/>
-    <allow entity="lineage" occurs="1" resolved="1"/>
 </entity>
 
 
 <entity name="macroses">
     Group a set of macroses with common implementation.
 
-    <inherit entity="definition"/>
+    <inherit entity="definition">
+        <attr name="default" default="public"/>
+    </inherit>
 
     <allow entity="macros" occurs="1+"/>
     <allow entity="code" occurs="1"/>
@@ -691,6 +698,13 @@
     <attr name="name" required="1">
         Dependency name - used for properties and methods names.
     </attr>
+
+    <oneof name="typeof" required="1">
+        <attr name="interface"/>
+        <attr name="api"/>
+        <attr name="class"/>
+        <attr name="impl"/>
+    </oneof>
 
     <attr name="interface">
         Defines name of the interface depends on.
@@ -740,6 +754,34 @@
             Observer methods CAN return status code.
         </restrict>
     </attr>
+
+    <attr name="type_name" resolved="1">
+        Contains one of the defined attributes' {interface, api, class, impl} value.
+    </attr>
+
+    <attr name="type_kind" resolved="1">
+        Contains kind of defined type.
+
+        <restrict value="interface">
+            If attribute "interface" is defined.
+        </restrict>
+
+        <restrict value="interface api">
+            If attribute "api" is defined.
+        </restrict>
+
+        <restrict value="class">
+            If attribute "class" is defined.
+        </restrict>
+
+        <restrict value="implementation">
+            If attribute "impl" is defined.
+        </restrict>
+    </attr>
+
+    <inherit entity="instance">
+        <attr name="access" default="readwrite"/>
+    </inherit>
 
     <inherit entity="landlord"/>
 </entity>

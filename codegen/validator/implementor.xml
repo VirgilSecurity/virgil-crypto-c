@@ -81,7 +81,7 @@
     <allow entity="method" occurs="0+">
         <attr name="visibility" default="private"/>
     </allow>
-
+    <allow entity="constant"/>
 </entity>
 
 
