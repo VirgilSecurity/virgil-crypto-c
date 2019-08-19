@@ -20,9 +20,6 @@ function project_calculate_dependencies_fingerprint(main, project)
     check_arguments(my, "main, project", my)
 
     new dependencies
-        if is_true(my.project.forcegen)
-            time.now(.date, .time)
-        endif
         .license = fingerprint(my.project->license ? my.main->license)
         .version = fingerprint(my.project->version ? my.main->version)
         .self_fingerprint = fingerprint(my.project)
@@ -104,10 +101,8 @@ function project_process(main, project_link)
     echo_info("[L1] Project '$(my.project_link.name:)' - start processing", my)
 
     my.project = project_load(my.project_link.name)
+    my.project.forcegen ?= my.main.forcegen
     my.cached_project = cache_load_or_invalidate(my.project, my.project) ?
-    if is_true(my.main.forcegen)
-        my.project.forcegen = "1"
-    endif
     my.project.fingerprint = project_calculate_dependencies_fingerprint(my.main, my.project)
 
     if defined(my.cached_project)

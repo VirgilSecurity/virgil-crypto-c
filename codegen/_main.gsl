@@ -28,6 +28,8 @@ endfunction
 
 # ---------------------------------------------------------------------------
 function _main()
+    main.forcegen ?= "0"
+
     for main.project
         main_process_project(project)
     endfor

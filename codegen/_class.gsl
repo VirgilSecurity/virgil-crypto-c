@@ -3,9 +3,6 @@ function class_calculate_dependencies_fingerprint(project, class)
     check_arguments(my, "project, class")
 
     new dependencies
-        if is_true(my.class.forcegen)
-            time.now(.date, .time)
-        endif
         .project_prefix = my.project.prefix
         .self_fingerprint = fingerprint(my.class)
         .license_fingerprint = fingerprint(my.project->license)
@@ -139,9 +136,7 @@ function class_process(project, class_link)
     echo_info("[L1] Class '$(my.class_link.name:)' - start processing", my)
 
     my.class = class_load(my.project, my.class_link.name, my.class_link.[from])
-    if is_true(my.project.forcegen)
-        my.class.forcegen = "1"
-    endif
+    my.class.forcegen ?= my.project.forcegen
     my.cached_class = cache_load_or_invalidate(my.project, my.class) ?
     my.class.fingerprint = class_calculate_dependencies_fingerprint(my.project, my.class)
 
