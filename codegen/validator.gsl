@@ -2175,14 +2175,15 @@ function enum_setup_defaults(enum, defaults)
 
     #    Setup defaults for inherited attributes and entities
     scoped_component_setup_defaults(my.enum)
-    component_setup_defaults(my.enum)
     visibility_setup_defaults(my.enum)
     declaration_setup_defaults(my.enum)
     definition_setup_defaults(my.enum)
 
     #    Setup defaults for allowed entities
     new defaults
-        constant_setup_defaults(constant, defaults)
+        for my.enum.constant as _constant
+            constant_setup_defaults(_constant, defaults)
+        endfor
         delete defaults
     endnew
     my.default_value = my.defaults.name ?
@@ -2200,10 +2201,6 @@ function enum_validate(enum, restrictions)
     #    Check inherited attributes and entities
     new restrictions
         scoped_component_validate(my.enum, restrictions)
-    endnew
-
-    new restrictions
-        component_validate(my.enum, restrictions)
     endnew
 
     new restrictions
@@ -2244,10 +2241,6 @@ function enum_validate_resolved(enum, restrictions)
     #    Check inherited attributes and entities
     new restrictions
         scoped_component_validate_resolved(my.enum, restrictions)
-    endnew
-
-    new restrictions
-        component_validate_resolved(my.enum, restrictions)
     endnew
 
     new restrictions
@@ -3827,7 +3820,9 @@ function interface_setup_defaults(interface, defaults)
 
     #    Setup defaults for allowed entities
     new defaults
-        constant_setup_defaults(constant, defaults)
+        for my.interface.constant as _constant
+            constant_setup_defaults(_constant, defaults)
+        endfor
         delete defaults
     endnew
 
@@ -4032,7 +4027,9 @@ function implementation_setup_defaults(implementation, defaults)
 
     new defaults
         .visibility = "private"
-        method_setup_defaults(method, defaults)
+        for my.implementation.method as _method
+            method_setup_defaults(_method, defaults)
+        endfor
         delete defaults
     endnew
 
