@@ -20,9 +20,9 @@ function main_process_project(project)
     if main.multithread
         my.project_parsed_thread = create_parsed_thread("_project.gsl")
         my.project_thread = my.project_parsed_thread.run()
-        my.project_thread.send(main, my.project)
+        my.project_thread.send(my.project)
     else
-        project_process(main, my.project)
+        project_process(my.project)
     endif
 endfunction
 

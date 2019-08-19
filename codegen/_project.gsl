@@ -30,12 +30,12 @@ function project_process_enum(project, enum)
 endfunction
 
 # ---------------------------------------------------------------------------
-function project_calculate_dependencies_fingerprint(main, project)
-    check_arguments(my, "main, project", my)
+function project_calculate_dependencies_fingerprint(project)
+    check_arguments(my, "project", my)
 
     new dependencies
-        .license = fingerprint(my.project->license ? my.main->license)
-        .version = fingerprint(my.project->version ? my.main->version)
+        .license = fingerprint(my.project->license ? main->license)
+        .version = fingerprint(my.project->version ? main->version)
         .self_fingerprint = fingerprint(my.project)
 
         my.fingerprint = fingerprint(dependencies)
@@ -108,16 +108,16 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Entry point
 # ---------------------------------------------------------------------------
-function project_process(main, project_link)
-    check_arguments(my, "main, project_link", my)
+function project_process(project_link)
+    check_arguments(my, "project_link", my)
     assert_attribute(my.project_link, "name", my)
 
     echo_info("[L1] Project '$(my.project_link.name:)' - start processing", my)
 
     my.project = project_load(my.project_link.name)
-    my.project.forcegen ?= my.main.forcegen
+    my.project.forcegen ?= main.forcegen
     my.cached_project = cache_load_or_invalidate(my.project, my.project) ?
-    my.project.fingerprint = project_calculate_dependencies_fingerprint(my.main, my.project)
+    my.project.fingerprint = project_calculate_dependencies_fingerprint(my.project)
 
     if defined(my.cached_project)
         echo_trace("[L1] Project '$(my.project.name:)' - cache detected", my)
@@ -147,6 +147,6 @@ endfunction
 #   Multi thread entry point
 # ---------------------------------------------------------------------------
 if main.multithread
-    thread.receive(sending_thread, _main, _project_link)
-    project_process(_main, _project_link)
+    thread.receive(sending_thread, _project_link)
+    project_process(_project_link)
 endif
