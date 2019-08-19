@@ -1,0 +1,6 @@
+<enum name="test enum" forcegen="0">
+    Test standalone enumeration type.
+
+    <constant name="constant 1"/>
+    <constant name="constant 2"/>
+</enum>

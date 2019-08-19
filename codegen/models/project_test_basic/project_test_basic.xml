@@ -27,4 +27,5 @@
     <module name="memory" from="shared"/>
 
     <class name="test data"/>
+    <enum name="test enum"/>
 </project>

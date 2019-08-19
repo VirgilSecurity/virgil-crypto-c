@@ -37,6 +37,17 @@ function class_load(project, name, from_subdir)
 endfunction
 
 # ---------------------------------------------------------------------------
+function enum_load(project, name, from_subdir)
+    check_arguments(my, "project, name", my)
+
+    if defined(my.from_subdir)
+        return model_load_from("enum", my.name, my.from_subdir)
+    else
+        return model_load(my.project, "enum", my.name)
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
 function enum(project, name)
     check_arguments(my, "project, name", my)
 

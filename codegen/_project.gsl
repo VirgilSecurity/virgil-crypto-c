@@ -1,5 +1,6 @@
 if !main.multithread
     gsl from "_class.gsl"
+    gsl from "_enum.gsl"
 endif
 
 # ---------------------------------------------------------------------------
@@ -12,6 +13,19 @@ function project_process_class(project, class)
         my.class_thread.send(my.project, my.class)
     else
         class_process(my.project, my.class)
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
+function project_process_enum(project, enum)
+    check_arguments(my, "project, enum", my)
+
+    if main.multithread
+        my.class_parsed_thread = create_parsed_thread("_enum.gsl")
+        my.class_thread = my.class_parsed_thread.run()
+        my.class_thread.send(my.project, my.enum)
+    else
+        enum_process(my.project, my.enum)
     endif
 endfunction
 
@@ -119,6 +133,10 @@ function project_process(main, project_link)
     echo_trace("[L1] Project '$(my.project.name:)' - process children", my)
     for my.project.class
         project_process_class(my.project, class)
+    endfor
+
+    for my.project.enum
+        project_process_enum(my.project, enum)
     endfor
 
     cache_store(my.project, my.project)

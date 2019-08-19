@@ -1,0 +1,65 @@
+# ---------------------------------------------------------------------------
+function enum_calculate_dependencies_fingerprint(project, enum)
+    check_arguments(my, "project, enum")
+
+    new dependencies
+        .project_prefix = my.project.prefix
+        .self_fingerprint = fingerprint(my.enum)
+        .license_fingerprint = fingerprint(my.project->license)
+
+        my.fingerprint = fingerprint(dependencies)
+        delete dependencies
+        return my.fingerprint
+    endnew
+endfunction
+
+# ---------------------------------------------------------------------------
+function enum_resolve (enum, project)
+    check_arguments (my, "enum, project", my)
+
+    echo_trace ("Resolving enum: $(my.enum.name:)", my)
+
+    assert_attribute (my.enum, "name", my)
+
+    my.enum.c_prefix ?= my.project.prefix
+    component_resolve_enum(my.enum, my.project)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Entry point
+# ---------------------------------------------------------------------------
+function enum_process(project, enum_link)
+    check_arguments(my, "project, enum_link", my)
+    assert_attribute(my.enum_link, "name", my)
+
+    echo_info("[L1] Enum '$(my.enum_link.name:)' - start processing", my)
+
+    my.enum = enum_load(my.project, my.enum_link.name, my.enum_link.[from])
+    my.enum.forcegen ?= my.project.forcegen
+    my.cached_enum = cache_load_or_invalidate(my.project, my.enum) ?
+    my.enum.fingerprint = enum_calculate_dependencies_fingerprint(my.project, my.enum)
+
+    if defined(my.cached_enum)
+        echo_trace("[L1] Enum '$(my.enum.name:)' - cache loaded", my)
+    else
+        echo_trace("[L1] Enum '$(my.enum.name:)' - full update required", my)
+    endif
+
+    if !fingerprint_is_equal(my.enum, my.cached_enum)
+        enum_setup_defaults(my.enum)
+        enum_validate(my.enum)
+        enum_resolve(my.enum, my.project)
+        enum_validate_resolved(my.enum)
+    endif
+
+    cache_store(my.project, my.enum)
+    echo_info("[L1] Enum '$(my.enum_link.name:)' - accomplished", my)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Multi-thread entry point
+# ---------------------------------------------------------------------------
+if main.multithread
+    thread.receive(sending_thread, _project, _enum_link)
+    enum_process(_project, _enum_link)
+endif
