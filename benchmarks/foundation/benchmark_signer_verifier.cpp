@@ -37,24 +37,66 @@
 
 #include "vscf_key_provider.h"
 #include "vscf_private_key.h"
-#include "vscf_recipient_cipher.h"
+#include "vscf_signer.h"
+#include "vscf_verifier.h"
+#include "vscf_ctr_drbg.h"
+#include "vscf_sha384.h"
 
 #include "benchmark_data.h"
 
 
-constexpr const char k_recipient_id_str[] = "2e8176ba-34db-4c65-b977-c5eac687c4ac";
-const vsc_data_t k_recipient_id = vsc_data_from_str(k_recipient_id_str, sizeof(k_recipient_id_str) - 1);
-
-constexpr const char k_data_str[] = "this string will be encrypted";
+constexpr const char k_data_str[] = "this string will be signed";
 const vsc_data_t k_data = vsc_data_from_str(k_data_str, sizeof(k_data_str) - 1);
 
-constexpr const size_t k_enc_len_max = 2048;
+constexpr const size_t k_signature_len_max = 1024;
 
 
 static void
-recipient_cipher_encrypt(benchmark::State &state) {
+signer_sign(benchmark::State &state) {
+    vscf_ctr_drbg_t *ctr_drbg = vscf_ctr_drbg_new();
+    (void)vscf_ctr_drbg_setup_defaults(ctr_drbg);
+    vscf_impl_t *rng = vscf_ctr_drbg_impl(ctr_drbg);
 
     vscf_key_provider_t *key_provider = vscf_key_provider_new();
+    vscf_key_provider_use_random(key_provider, rng);
+    (void)vscf_key_provider_setup_defaults(key_provider);
+
+    const vscf_alg_id_t alg_id = (vscf_alg_id_t)state.range(0);
+    if (alg_id == vscf_alg_id_RSA) {
+        const size_t bitlen = (size_t)state.range(1);
+        vscf_key_provider_set_rsa_params(key_provider, bitlen);
+    }
+
+    vscf_impl_t *private_key = vscf_key_provider_generate_private_key(key_provider, alg_id, NULL);
+
+    vscf_signer_t *signer = vscf_signer_new();
+    vscf_signer_use_random(signer, rng);
+    vscf_signer_take_hash(signer, vscf_sha384_impl(vscf_sha384_new()));
+
+    vsc_buffer_t *signature = vsc_buffer_new_with_capacity(k_signature_len_max);
+
+    for (auto _ : state) {
+        vscf_signer_reset(signer);
+        vscf_signer_append_data(signer, k_data);
+        (void)vscf_signer_sign(signer, private_key, signature);
+        vsc_buffer_reset(signature);
+    }
+
+    vsc_buffer_destroy(&signature);
+    vscf_signer_destroy(&signer);
+    vscf_impl_destroy(&private_key);
+    vscf_key_provider_destroy(&key_provider);
+    vscf_impl_destroy(&rng);
+}
+
+static void
+verifier_verify(benchmark::State &state) {
+    vscf_ctr_drbg_t *ctr_drbg = vscf_ctr_drbg_new();
+    (void)vscf_ctr_drbg_setup_defaults(ctr_drbg);
+    vscf_impl_t *rng = vscf_ctr_drbg_impl(ctr_drbg);
+
+    vscf_key_provider_t *key_provider = vscf_key_provider_new();
+    vscf_key_provider_use_random(key_provider, rng);
     (void)vscf_key_provider_setup_defaults(key_provider);
 
     const vscf_alg_id_t alg_id = (vscf_alg_id_t)state.range(0);
@@ -66,75 +108,39 @@ recipient_cipher_encrypt(benchmark::State &state) {
     vscf_impl_t *private_key = vscf_key_provider_generate_private_key(key_provider, alg_id, NULL);
     vscf_impl_t *public_key = vscf_private_key_extract_public_key(private_key);
 
-    vscf_recipient_cipher_t *cipher = vscf_recipient_cipher_new();
-    vscf_recipient_cipher_add_key_recipient(cipher, k_recipient_id, public_key);
+    vscf_signer_t *signer = vscf_signer_new();
+    vscf_signer_use_random(signer, rng);
+    vscf_signer_take_hash(signer, vscf_sha384_impl(vscf_sha384_new()));
 
-    vsc_buffer_t *enc = vsc_buffer_new_with_capacity(k_enc_len_max);
+    vsc_buffer_t *signature = vsc_buffer_new_with_capacity(k_signature_len_max);
+    vscf_signer_reset(signer);
+    vscf_signer_append_data(signer, k_data);
+    (void)vscf_signer_sign(signer, private_key, signature);
+
+    vscf_verifier_t *verifier = vscf_verifier_new();
+
+    vsc_data_t signature_data = vsc_buffer_data(signature);
     for (auto _ : state) {
-        (void)vscf_recipient_cipher_start_encryption(cipher);
-        (void)vscf_recipient_cipher_pack_message_info(cipher, enc);
-        (void)vscf_recipient_cipher_process_encryption(cipher, k_data, enc);
-        (void)vscf_recipient_cipher_finish_encryption(cipher, enc);
-        vsc_buffer_reset(enc);
+        (void)vscf_verifier_reset(verifier, signature_data);
+        vscf_verifier_append_data(verifier, k_data);
+        (void)vscf_verifier_verify(verifier, public_key);
     }
 
-    vsc_buffer_destroy(&enc);
-    vscf_recipient_cipher_destroy(&cipher);
+    vscf_verifier_destroy(&verifier);
+    vsc_buffer_destroy(&signature);
+    vscf_signer_destroy(&signer);
     vscf_impl_destroy(&public_key);
     vscf_impl_destroy(&private_key);
     vscf_key_provider_destroy(&key_provider);
+    vscf_impl_destroy(&rng);
 }
 
 
-static void
-recipient_cipher_decrypt(benchmark::State &state) {
-    vscf_key_provider_t *key_provider = vscf_key_provider_new();
-    (void)vscf_key_provider_setup_defaults(key_provider);
+BENCHMARK(signer_sign)->ArgNames({"Ed25519"})->Arg(vscf_alg_id_ED25519);
+BENCHMARK(verifier_verify)->ArgNames({"Ed25519"})->Arg(vscf_alg_id_ED25519);
 
-    const vscf_alg_id_t alg_id = (vscf_alg_id_t)state.range(0);
-    if (alg_id == vscf_alg_id_RSA) {
-        const size_t bitlen = (size_t)state.range(1);
-        vscf_key_provider_set_rsa_params(key_provider, bitlen);
-    }
+BENCHMARK(signer_sign)->ArgNames({"secp256r1"})->Arg(vscf_alg_id_SECP256R1);
+BENCHMARK(verifier_verify)->ArgNames({"secp256r1"})->Arg(vscf_alg_id_SECP256R1);
 
-    vscf_impl_t *private_key = vscf_key_provider_generate_private_key(key_provider, alg_id, NULL);
-    vscf_impl_t *public_key = vscf_private_key_extract_public_key(private_key);
-
-    vscf_recipient_cipher_t *cipher = vscf_recipient_cipher_new();
-    vscf_recipient_cipher_add_key_recipient(cipher, k_recipient_id, public_key);
-    vsc_buffer_t *enc = vsc_buffer_new_with_capacity(k_enc_len_max);
-    vsc_buffer_t *plain = vsc_buffer_new_with_capacity(k_enc_len_max);
-
-    (void)vscf_recipient_cipher_start_encryption(cipher);
-    (void)vscf_recipient_cipher_pack_message_info(cipher, enc);
-    (void)vscf_recipient_cipher_process_encryption(cipher, k_data, enc);
-    (void)vscf_recipient_cipher_finish_encryption(cipher, enc);
-
-    vsc_data_t enc_data = vsc_buffer_data(enc);
-    for (auto _ : state) {
-        (void)vscf_recipient_cipher_start_decryption_with_key(cipher, k_recipient_id, private_key, vsc_data_empty());
-        (void)vscf_recipient_cipher_process_decryption(cipher, enc_data, plain);
-        (void)vscf_recipient_cipher_finish_decryption(cipher, plain);
-        vsc_buffer_reset(plain);
-    }
-
-    vsc_buffer_destroy(&plain);
-    vsc_buffer_destroy(&enc);
-    vscf_recipient_cipher_destroy(&cipher);
-    vscf_impl_destroy(&public_key);
-    vscf_impl_destroy(&private_key);
-    vscf_key_provider_destroy(&key_provider);
-}
-
-
-BENCHMARK(recipient_cipher_encrypt)->ArgNames({"Ed25519"})->Arg(vscf_alg_id_ED25519);
-BENCHMARK(recipient_cipher_decrypt)->ArgNames({"Ed25519"})->Arg(vscf_alg_id_ED25519);
-
-BENCHMARK(recipient_cipher_encrypt)->ArgNames({"Curve25519"})->Arg(vscf_alg_id_CURVE25519);
-BENCHMARK(recipient_cipher_decrypt)->ArgNames({"Curve25519"})->Arg(vscf_alg_id_CURVE25519);
-
-BENCHMARK(recipient_cipher_encrypt)->ArgNames({"secp256r1"})->Arg(vscf_alg_id_SECP256R1);
-BENCHMARK(recipient_cipher_decrypt)->ArgNames({"secp256r1"})->Arg(vscf_alg_id_SECP256R1);
-
-BENCHMARK(recipient_cipher_encrypt)->ArgNames({"RSA"})->Args({vscf_alg_id_RSA, 4096});
-BENCHMARK(recipient_cipher_decrypt)->ArgNames({"RSA"})->Args({vscf_alg_id_RSA, 4096});
+BENCHMARK(signer_sign)->ArgNames({"RSA"})->Args({vscf_alg_id_RSA, 4096});
+BENCHMARK(verifier_verify)->ArgNames({"RSA"})->Args({vscf_alg_id_RSA, 4096});
