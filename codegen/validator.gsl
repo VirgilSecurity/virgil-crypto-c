@@ -32,10 +32,22 @@ endfunction
 
 # ---------------------------------------------------------------------------
 function scope_setup_defaults(scope, defaults)
+
+    #    Defaults should be also inherited.
+    if !defined(my.defaults)
+        my.defaults = XML.new("defaults")
+        my.is_local_defaults = "1"
+    endif
+
     my.default_value = my.defaults.scope ? "public"
     if defined(my.default_value) & !defined(my.scope.scope)
         echo_trace("       scope=\"$(my.default_value:)\"", my)
         my.scope.scope = my.default_value
+    endif
+
+    #   Cleanup
+    if is_true(my.is_local_defaults)
+        delete my.defaults
     endif
 endfunction
 
@@ -99,10 +111,22 @@ endfunction
 
 # ---------------------------------------------------------------------------
 function c_prefix_setup_defaults(c_prefix, defaults)
+
+    #    Defaults should be also inherited.
+    if !defined(my.defaults)
+        my.defaults = XML.new("defaults")
+        my.is_local_defaults = "1"
+    endif
+
     my.default_value = my.defaults.c_prefix ?
     if defined(my.default_value) & !defined(my.c_prefix.c_prefix)
         echo_trace("       c_prefix=\"$(my.default_value:)\"", my)
         my.c_prefix.c_prefix = my.default_value
+    endif
+
+    #   Cleanup
+    if is_true(my.is_local_defaults)
+        delete my.defaults
     endif
 endfunction
 
@@ -150,6 +174,13 @@ endfunction
 function ancestor_setup_defaults(ancestor, defaults)
     my.ancestor_name = defined(my.ancestor.name) ?? " name=\"$(my.ancestor.name)\"" ? ""
     echo_trace("[L1] Setup defaults for entity: <$(name(my.ancestor))$(my.ancestor_name)/>", my)
+
+    #    Defaults should be also inherited.
+    if !defined(my.defaults)
+        my.defaults = XML.new("defaults")
+        my.is_local_defaults = "1"
+    endif
+
     my.default_value = my.defaults.id ?
     if defined(my.default_value) & !defined(my.ancestor.id)
         echo_trace("       id=\"$(my.default_value:)\"", my)
@@ -160,6 +191,11 @@ function ancestor_setup_defaults(ancestor, defaults)
     if defined(my.default_value) & !defined(my.ancestor.name)
         echo_trace("       name=\"$(my.default_value:)\"", my)
         my.ancestor.name = my.default_value
+    endif
+
+    #   Cleanup
+    if is_true(my.is_local_defaults)
+        delete my.defaults
     endif
 endfunction
 
@@ -236,10 +272,21 @@ function lineage_setup_defaults(lineage, defaults)
     my.lineage_name = defined(my.lineage.name) ?? " name=\"$(my.lineage.name)\"" ? ""
     echo_trace("[L1] Setup defaults for entity: <$(name(my.lineage))$(my.lineage_name)/>", my)
 
+    #    Defaults should be also inherited.
+    if !defined(my.defaults)
+        my.defaults = XML.new("defaults")
+        my.is_local_defaults = "1"
+    endif
+
     #    Setup defaults for allowed entities
     for my.lineage.ancestor as _ancestor
         ancestor_setup_defaults(_ancestor)
     endfor
+
+    #   Cleanup
+    if is_true(my.is_local_defaults)
+        delete my.defaults
+    endif
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -286,10 +333,17 @@ endfunction
 # ---------------------------------------------------------------------------
 function uid_setup_defaults(uid, defaults)
 
+    #    Defaults should be also inherited.
+    if !defined(my.defaults)
+        my.defaults = XML.new("defaults")
+        my.is_local_defaults = "1"
+    endif
+
     #    Setup defaults for allowed entities
     for my.uid.lineage as _lineage
         lineage_setup_defaults(_lineage)
     endfor
+
     my.default_value = my.defaults.uid ?
     if defined(my.default_value) & !defined(my.uid.uid)
         echo_trace("       uid=\"$(my.default_value:)\"", my)
@@ -300,6 +354,11 @@ function uid_setup_defaults(uid, defaults)
     if defined(my.default_value) & !defined(my.uid.full_uid)
         echo_trace("       full_uid=\"$(my.default_value:)\"", my)
         my.uid.full_uid = my.default_value
+    endif
+
+    #   Cleanup
+    if is_true(my.is_local_defaults)
+        delete my.defaults
     endif
 endfunction
 
@@ -366,10 +425,22 @@ endfunction
 
 # ---------------------------------------------------------------------------
 function visibility_setup_defaults(visibility, defaults)
+
+    #    Defaults should be also inherited.
+    if !defined(my.defaults)
+        my.defaults = XML.new("defaults")
+        my.is_local_defaults = "1"
+    endif
+
     my.default_value = my.defaults.visibility ? "public"
     if defined(my.default_value) & !defined(my.visibility.visibility)
         echo_trace("       visibility=\"$(my.default_value:)\"", my)
         my.visibility.visibility = my.default_value
+    endif
+
+    #   Cleanup
+    if is_true(my.is_local_defaults)
+        delete my.defaults
     endif
 endfunction
 
@@ -431,6 +502,13 @@ endfunction
 
 # ---------------------------------------------------------------------------
 function landlord_setup_defaults(landlord, defaults)
+
+    #    Defaults should be also inherited.
+    if !defined(my.defaults)
+        my.defaults = XML.new("defaults")
+        my.is_local_defaults = "1"
+    endif
+
     my.default_value = my.defaults.project ?
     if defined(my.default_value) & !defined(my.landlord.project)
         echo_trace("       project=\"$(my.default_value:)\"", my)
@@ -441,6 +519,11 @@ function landlord_setup_defaults(landlord, defaults)
     if defined(my.default_value) & !defined(my.landlord.library)
         echo_trace("       library=\"$(my.default_value:)\"", my)
         my.landlord.library = my.default_value
+    endif
+
+    #   Cleanup
+    if is_true(my.is_local_defaults)
+        delete my.defaults
     endif
 endfunction
 
@@ -584,10 +667,22 @@ endfunction
 
 # ---------------------------------------------------------------------------
 function require_scope_setup_defaults(require_scope, defaults)
+
+    #    Defaults should be also inherited.
+    if !defined(my.defaults)
+        my.defaults = XML.new("defaults")
+        my.is_local_defaults = "1"
+    endif
+
     my.default_value = my.defaults.scope ? "private"
     if defined(my.default_value) & !defined(my.require_scope.scope)
         echo_trace("       scope=\"$(my.default_value:)\"", my)
         my.require_scope.scope = my.default_value
+    endif
+
+    #   Cleanup
+    if is_true(my.is_local_defaults)
+        delete my.defaults
     endif
 endfunction
 
@@ -652,9 +747,16 @@ endfunction
 # ---------------------------------------------------------------------------
 function require_base_setup_defaults(require_base, defaults)
 
+    #    Defaults should be also inherited.
+    if !defined(my.defaults)
+        my.defaults = XML.new("defaults")
+        my.is_local_defaults = "1"
+    endif
+
     #    Setup defaults for inherited attributes and entities
-    landlord_setup_defaults(my.require_base)
-    require_scope_setup_defaults(my.require_base)
+    landlord_setup_defaults(my.require_base, my.defaults)
+    require_scope_setup_defaults(my.require_base, my.defaults)
+
     my.default_value = my.defaults.module ?
     if defined(my.default_value) & !defined(my.require_base.module)
         echo_trace("       module=\"$(my.default_value:)\"", my)
@@ -695,6 +797,11 @@ function require_base_setup_defaults(require_base, defaults)
     if defined(my.default_value) & !defined(my.require_base.enum)
         echo_trace("       enum=\"$(my.default_value:)\"", my)
         my.require_base.enum = my.default_value
+    endif
+
+    #   Cleanup
+    if is_true(my.is_local_defaults)
+        delete my.defaults
     endif
 endfunction
 
@@ -905,8 +1012,19 @@ function alternative_setup_defaults(alternative, defaults)
     my.alternative_name = defined(my.alternative.name) ?? " name=\"$(my.alternative.name)\"" ? ""
     echo_trace("[L1] Setup defaults for entity: <$(name(my.alternative))$(my.alternative_name)/>", my)
 
+    #    Defaults should be also inherited.
+    if !defined(my.defaults)
+        my.defaults = XML.new("defaults")
+        my.is_local_defaults = "1"
+    endif
+
     #    Setup defaults for inherited attributes and entities
-    require_base_setup_defaults(my.alternative)
+    require_base_setup_defaults(my.alternative, my.defaults)
+
+    #   Cleanup
+    if is_true(my.is_local_defaults)
+        delete my.defaults
+    endif
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -944,13 +1062,24 @@ function require_setup_defaults(require, defaults)
     my.require_name = defined(my.require.name) ?? " name=\"$(my.require.name)\"" ? ""
     echo_trace("[L1] Setup defaults for entity: <$(name(my.require))$(my.require_name)/>", my)
 
+    #    Defaults should be also inherited.
+    if !defined(my.defaults)
+        my.defaults = XML.new("defaults")
+        my.is_local_defaults = "1"
+    endif
+
     #    Setup defaults for inherited attributes and entities
-    require_base_setup_defaults(my.require)
+    require_base_setup_defaults(my.require, my.defaults)
 
     #    Setup defaults for allowed entities
     for my.require.alternative as _alternative
         alternative_setup_defaults(_alternative)
     endfor
+
+    #   Cleanup
+    if is_true(my.is_local_defaults)
+        delete my.defaults
+    endif
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -1000,6 +1129,13 @@ endfunction
 
 # ---------------------------------------------------------------------------
 function access_setup_defaults(access, defaults)
+
+    #    Defaults should be also inherited.
+    if !defined(my.defaults)
+        my.defaults = XML.new("defaults")
+        my.is_local_defaults = "1"
+    endif
+
     my.default_value = my.defaults.access ?
     if defined(my.default_value) & !defined(my.access.access)
         echo_trace("       access=\"$(my.default_value:)\"", my)
@@ -1010,6 +1146,11 @@ function access_setup_defaults(access, defaults)
     if defined(my.default_value) & !defined(my.access.ownership)
         echo_trace("       ownership=\"$(my.default_value:)\"", my)
         my.access.ownership = my.default_value
+    endif
+
+    #   Cleanup
+    if is_true(my.is_local_defaults)
+        delete my.defaults
     endif
 endfunction
 
@@ -1104,8 +1245,15 @@ function string_setup_defaults(string, defaults)
     my.string_name = defined(my.string.name) ?? " name=\"$(my.string.name)\"" ? ""
     echo_trace("[L1] Setup defaults for entity: <$(name(my.string))$(my.string_name)/>", my)
 
+    #    Defaults should be also inherited.
+    if !defined(my.defaults)
+        my.defaults = XML.new("defaults")
+        my.is_local_defaults = "1"
+    endif
+
     #    Setup defaults for inherited attributes and entities
-    access_setup_defaults(my.string)
+    access_setup_defaults(my.string, my.defaults)
+
     my.default_value = my.defaults.length ? "null_terminated"
     if defined(my.default_value) & !defined(my.string.length)
         echo_trace("       length=\"$(my.default_value:)\"", my)
@@ -1116,6 +1264,11 @@ function string_setup_defaults(string, defaults)
     if defined(my.default_value) & !defined(my.string.length_constant)
         echo_trace("       length_constant=\"$(my.default_value:)\"", my)
         my.string.length_constant = my.default_value
+    endif
+
+    #   Cleanup
+    if is_true(my.is_local_defaults)
+        delete my.defaults
     endif
 endfunction
 
@@ -1222,8 +1375,15 @@ function array_setup_defaults(array, defaults)
     my.array_name = defined(my.array.name) ?? " name=\"$(my.array.name)\"" ? ""
     echo_trace("[L1] Setup defaults for entity: <$(name(my.array))$(my.array_name)/>", my)
 
+    #    Defaults should be also inherited.
+    if !defined(my.defaults)
+        my.defaults = XML.new("defaults")
+        my.is_local_defaults = "1"
+    endif
+
     #    Setup defaults for inherited attributes and entities
-    access_setup_defaults(my.array)
+    access_setup_defaults(my.array, my.defaults)
+
     my.default_value = my.defaults.length ? "given"
     if defined(my.default_value) & !defined(my.array.length)
         echo_trace("       length=\"$(my.default_value:)\"", my)
@@ -1234,6 +1394,11 @@ function array_setup_defaults(array, defaults)
     if defined(my.default_value) & !defined(my.array.length_constant)
         echo_trace("       length_constant=\"$(my.default_value:)\"", my)
         my.array.length_constant = my.default_value
+    endif
+
+    #   Cleanup
+    if is_true(my.is_local_defaults)
+        delete my.defaults
     endif
 endfunction
 
@@ -1340,9 +1505,15 @@ endfunction
 # ---------------------------------------------------------------------------
 function instance_setup_defaults(instance, defaults)
 
+    #    Defaults should be also inherited.
+    if !defined(my.defaults)
+        my.defaults = XML.new("defaults")
+        my.is_local_defaults = "1"
+    endif
+
     #    Setup defaults for inherited attributes and entities
-    access_setup_defaults(my.instance)
-    landlord_setup_defaults(my.instance)
+    access_setup_defaults(my.instance, my.defaults)
+    landlord_setup_defaults(my.instance, my.defaults)
 
     #    Setup defaults for allowed entities
     for my.instance.string as _string
@@ -1352,6 +1523,7 @@ function instance_setup_defaults(instance, defaults)
     for my.instance.array as _array
         array_setup_defaults(_array)
     endfor
+
     my.default_value = my.defaults.type ?
     if defined(my.default_value) & !defined(my.instance.type)
         echo_trace("       type=\"$(my.default_value:)\"", my)
@@ -1410,6 +1582,11 @@ function instance_setup_defaults(instance, defaults)
     if defined(my.default_value) & !defined(my.instance.require_definition)
         echo_trace("       require_definition=\"$(my.default_value:)\"", my)
         my.instance.require_definition = my.default_value
+    endif
+
+    #   Cleanup
+    if is_true(my.is_local_defaults)
+        delete my.defaults
     endif
 endfunction
 
@@ -1968,13 +2145,17 @@ function dependency_setup_defaults(dependency, defaults)
     my.dependency_name = defined(my.dependency.name) ?? " name=\"$(my.dependency.name)\"" ? ""
     echo_trace("[L1] Setup defaults for entity: <$(name(my.dependency))$(my.dependency_name)/>", my)
 
+    #    Defaults should be also inherited.
+    if !defined(my.defaults)
+        my.defaults = XML.new("defaults")
+        my.is_local_defaults = "1"
+    endif
+
     #    Setup defaults for inherited attributes and entities
-    new defaults
-        .access = "readwrite"
-        instance_setup_defaults(my.dependency, defaults)
-        delete defaults
-    endnew
-    landlord_setup_defaults(my.dependency)
+     my.defaults.access = "readwrite"
+    instance_setup_defaults(my.dependency, my.defaults)
+    landlord_setup_defaults(my.dependency, my.defaults)
+
     my.default_value = my.defaults.name ?
     if defined(my.default_value) & !defined(my.dependency.name)
         echo_trace("       name=\"$(my.default_value:)\"", my)
@@ -2033,6 +2214,11 @@ function dependency_setup_defaults(dependency, defaults)
     if defined(my.default_value) & !defined(my.dependency.type_kind)
         echo_trace("       type_kind=\"$(my.default_value:)\"", my)
         my.dependency.type_kind = my.default_value
+    endif
+
+    #   Cleanup
+    if is_true(my.is_local_defaults)
+        delete my.defaults
     endif
 endfunction
 
@@ -2442,10 +2628,22 @@ endfunction
 
 # ---------------------------------------------------------------------------
 function of_class_setup_defaults(of_class, defaults)
+
+    #    Defaults should be also inherited.
+    if !defined(my.defaults)
+        my.defaults = XML.new("defaults")
+        my.is_local_defaults = "1"
+    endif
+
     my.default_value = my.defaults.of_class ?
     if defined(my.default_value) & !defined(my.of_class.of_class)
         echo_trace("       of_class=\"$(my.default_value:)\"", my)
         my.of_class.of_class = my.default_value
+    endif
+
+    #   Cleanup
+    if is_true(my.is_local_defaults)
+        delete my.defaults
     endif
 endfunction
 
@@ -2480,14 +2678,26 @@ endfunction
 # ---------------------------------------------------------------------------
 function component_setup_defaults(component, defaults)
 
+    #    Defaults should be also inherited.
+    if !defined(my.defaults)
+        my.defaults = XML.new("defaults")
+        my.is_local_defaults = "1"
+    endif
+
     #    Setup defaults for inherited attributes and entities
-    uid_setup_defaults(my.component)
-    of_class_setup_defaults(my.component)
-    c_prefix_setup_defaults(my.component)
+    uid_setup_defaults(my.component, my.defaults)
+    of_class_setup_defaults(my.component, my.defaults)
+    c_prefix_setup_defaults(my.component, my.defaults)
+
     my.default_value = my.defaults.feature ?
     if defined(my.default_value) & !defined(my.component.feature)
         echo_trace("       feature=\"$(my.default_value:)\"", my)
         my.component.feature = my.default_value
+    endif
+
+    #   Cleanup
+    if is_true(my.is_local_defaults)
+        delete my.defaults
     endif
 endfunction
 
@@ -2560,12 +2770,24 @@ endfunction
 # ---------------------------------------------------------------------------
 function scoped_component_setup_defaults(scoped_component, defaults)
 
+    #    Defaults should be also inherited.
+    if !defined(my.defaults)
+        my.defaults = XML.new("defaults")
+        my.is_local_defaults = "1"
+    endif
+
     #    Setup defaults for inherited attributes and entities
-    component_setup_defaults(my.scoped_component)
+    component_setup_defaults(my.scoped_component, my.defaults)
+
     my.default_value = my.defaults.scope ? "public"
     if defined(my.default_value) & !defined(my.scoped_component.scope)
         echo_trace("       scope=\"$(my.default_value:)\"", my)
         my.scoped_component.scope = my.default_value
+    endif
+
+    #   Cleanup
+    if is_true(my.is_local_defaults)
+        delete my.defaults
     endif
 endfunction
 
@@ -2641,10 +2863,22 @@ endfunction
 
 # ---------------------------------------------------------------------------
 function definition_setup_defaults(definition, defaults)
+
+    #    Defaults should be also inherited.
+    if !defined(my.defaults)
+        my.defaults = XML.new("defaults")
+        my.is_local_defaults = "1"
+    endif
+
     my.default_value = my.defaults.definition ? "private"
     if defined(my.default_value) & !defined(my.definition.definition)
         echo_trace("       definition=\"$(my.default_value:)\"", my)
         my.definition.definition = my.default_value
+    endif
+
+    #   Cleanup
+    if is_true(my.is_local_defaults)
+        delete my.defaults
     endif
 endfunction
 
@@ -2711,13 +2945,17 @@ function constant_setup_defaults(constant, defaults)
     my.constant_name = defined(my.constant.name) ?? " name=\"$(my.constant.name)\"" ? ""
     echo_trace("[L1] Setup defaults for entity: <$(name(my.constant))$(my.constant_name)/>", my)
 
+    #    Defaults should be also inherited.
+    if !defined(my.defaults)
+        my.defaults = XML.new("defaults")
+        my.is_local_defaults = "1"
+    endif
+
     #    Setup defaults for inherited attributes and entities
-    scoped_component_setup_defaults(my.constant)
-    new defaults
-        .default = "public"
-        definition_setup_defaults(my.constant, defaults)
-        delete defaults
-    endnew
+    scoped_component_setup_defaults(my.constant, my.defaults)
+     my.defaults.default = "public"
+    definition_setup_defaults(my.constant, my.defaults)
+
     my.default_value = my.defaults.name ?
     if defined(my.default_value) & !defined(my.constant.name)
         echo_trace("       name=\"$(my.default_value:)\"", my)
@@ -2734,6 +2972,11 @@ function constant_setup_defaults(constant, defaults)
     if defined(my.default_value) & !defined(my.constant.value)
         echo_trace("       value=\"$(my.default_value:)\"", my)
         my.constant.value = my.default_value
+    endif
+
+    #   Cleanup
+    if is_true(my.is_local_defaults)
+        delete my.defaults
     endif
 endfunction
 
@@ -2872,13 +3115,17 @@ function property_setup_defaults(property, defaults)
     my.property_name = defined(my.property.name) ?? " name=\"$(my.property.name)\"" ? ""
     echo_trace("[L1] Setup defaults for entity: <$(name(my.property))$(my.property_name)/>", my)
 
+    #    Defaults should be also inherited.
+    if !defined(my.defaults)
+        my.defaults = XML.new("defaults")
+        my.is_local_defaults = "1"
+    endif
+
     #    Setup defaults for inherited attributes and entities
-    new defaults
-        .access = "readwrite"
-        instance_setup_defaults(my.property, defaults)
-        delete defaults
-    endnew
-    uid_setup_defaults(my.property)
+     my.defaults.access = "readwrite"
+    instance_setup_defaults(my.property, my.defaults)
+    uid_setup_defaults(my.property, my.defaults)
+
     my.default_value = my.defaults.name ?
     if defined(my.default_value) & !defined(my.property.name)
         echo_trace("       name=\"$(my.default_value:)\"", my)
@@ -2889,6 +3136,11 @@ function property_setup_defaults(property, defaults)
     if defined(my.default_value) & !defined(my.property.bits)
         echo_trace("       bits=\"$(my.default_value:)\"", my)
         my.property.bits = my.default_value
+    endif
+
+    #   Cleanup
+    if is_true(my.is_local_defaults)
+        delete my.defaults
     endif
 endfunction
 
@@ -2982,10 +3234,22 @@ endfunction
 
 # ---------------------------------------------------------------------------
 function declaration_setup_defaults(declaration, defaults)
+
+    #    Defaults should be also inherited.
+    if !defined(my.defaults)
+        my.defaults = XML.new("defaults")
+        my.is_local_defaults = "1"
+    endif
+
     my.default_value = my.defaults.declaration ? "public"
     if defined(my.default_value) & !defined(my.declaration.declaration)
         echo_trace("       declaration=\"$(my.default_value:)\"", my)
         my.declaration.declaration = my.default_value
+    endif
+
+    #   Cleanup
+    if is_true(my.is_local_defaults)
+        delete my.defaults
     endif
 endfunction
 
@@ -3052,11 +3316,17 @@ function enum_setup_defaults(enum, defaults)
     my.enum_name = defined(my.enum.name) ?? " name=\"$(my.enum.name)\"" ? ""
     echo_trace("[L1] Setup defaults for entity: <$(name(my.enum))$(my.enum_name)/>", my)
 
+    #    Defaults should be also inherited.
+    if !defined(my.defaults)
+        my.defaults = XML.new("defaults")
+        my.is_local_defaults = "1"
+    endif
+
     #    Setup defaults for inherited attributes and entities
-    scoped_component_setup_defaults(my.enum)
-    visibility_setup_defaults(my.enum)
-    declaration_setup_defaults(my.enum)
-    definition_setup_defaults(my.enum)
+    scoped_component_setup_defaults(my.enum, my.defaults)
+    visibility_setup_defaults(my.enum, my.defaults)
+    declaration_setup_defaults(my.enum, my.defaults)
+    definition_setup_defaults(my.enum, my.defaults)
 
     #    Setup defaults for allowed entities
     new defaults
@@ -3065,10 +3335,16 @@ function enum_setup_defaults(enum, defaults)
         endfor
         delete defaults
     endnew
+
     my.default_value = my.defaults.name ?
     if defined(my.default_value) & !defined(my.enum.name)
         echo_trace("       name=\"$(my.default_value:)\"", my)
         my.enum.name = my.default_value
+    endif
+
+    #   Cleanup
+    if is_true(my.is_local_defaults)
+        delete my.defaults
     endif
 endfunction
 
@@ -3174,8 +3450,19 @@ function return_setup_defaults(return, defaults)
     my.return_name = defined(my.return.name) ?? " name=\"$(my.return.name)\"" ? ""
     echo_trace("[L1] Setup defaults for entity: <$(name(my.return))$(my.return_name)/>", my)
 
+    #    Defaults should be also inherited.
+    if !defined(my.defaults)
+        my.defaults = XML.new("defaults")
+        my.is_local_defaults = "1"
+    endif
+
     #    Setup defaults for inherited attributes and entities
-    instance_setup_defaults(my.return)
+    instance_setup_defaults(my.return, my.defaults)
+
+    #   Cleanup
+    if is_true(my.is_local_defaults)
+        delete my.defaults
+    endif
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -3213,13 +3500,25 @@ function argument_setup_defaults(argument, defaults)
     my.argument_name = defined(my.argument.name) ?? " name=\"$(my.argument.name)\"" ? ""
     echo_trace("[L1] Setup defaults for entity: <$(name(my.argument))$(my.argument_name)/>", my)
 
+    #    Defaults should be also inherited.
+    if !defined(my.defaults)
+        my.defaults = XML.new("defaults")
+        my.is_local_defaults = "1"
+    endif
+
     #    Setup defaults for inherited attributes and entities
-    instance_setup_defaults(my.argument)
-    uid_setup_defaults(my.argument)
+    instance_setup_defaults(my.argument, my.defaults)
+    uid_setup_defaults(my.argument, my.defaults)
+
     my.default_value = my.defaults.name ?
     if defined(my.default_value) & !defined(my.argument.name)
         echo_trace("       name=\"$(my.default_value:)\"", my)
         my.argument.name = my.default_value
+    endif
+
+    #   Cleanup
+    if is_true(my.is_local_defaults)
+        delete my.defaults
     endif
 endfunction
 
@@ -3278,9 +3577,15 @@ function callback_setup_defaults(callback, defaults)
     my.callback_name = defined(my.callback.name) ?? " name=\"$(my.callback.name)\"" ? ""
     echo_trace("[L1] Setup defaults for entity: <$(name(my.callback))$(my.callback_name)/>", my)
 
+    #    Defaults should be also inherited.
+    if !defined(my.defaults)
+        my.defaults = XML.new("defaults")
+        my.is_local_defaults = "1"
+    endif
+
     #    Setup defaults for inherited attributes and entities
-    scoped_component_setup_defaults(my.callback)
-    declaration_setup_defaults(my.callback)
+    scoped_component_setup_defaults(my.callback, my.defaults)
+    declaration_setup_defaults(my.callback, my.defaults)
 
     #    Setup defaults for allowed entities
     for my.callback.return as _return
@@ -3290,10 +3595,16 @@ function callback_setup_defaults(callback, defaults)
     for my.callback.argument as _argument
         argument_setup_defaults(_argument)
     endfor
+
     my.default_value = my.defaults.name ?
     if defined(my.default_value) & !defined(my.callback.name)
         echo_trace("       name=\"$(my.default_value:)\"", my)
         my.callback.name = my.default_value
+    endif
+
+    #   Cleanup
+    if is_true(my.is_local_defaults)
+        delete my.defaults
     endif
 endfunction
 
@@ -3398,8 +3709,19 @@ function cast_setup_defaults(cast, defaults)
     my.cast_name = defined(my.cast.name) ?? " name=\"$(my.cast.name)\"" ? ""
     echo_trace("[L1] Setup defaults for entity: <$(name(my.cast))$(my.cast_name)/>", my)
 
+    #    Defaults should be also inherited.
+    if !defined(my.defaults)
+        my.defaults = XML.new("defaults")
+        my.is_local_defaults = "1"
+    endif
+
     #    Setup defaults for inherited attributes and entities
-    instance_setup_defaults(my.cast)
+    instance_setup_defaults(my.cast, my.defaults)
+
+    #   Cleanup
+    if is_true(my.is_local_defaults)
+        delete my.defaults
+    endif
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -3437,17 +3759,29 @@ function value_setup_defaults(value, defaults)
     my.value_name = defined(my.value.name) ?? " name=\"$(my.value.name)\"" ? ""
     echo_trace("[L1] Setup defaults for entity: <$(name(my.value))$(my.value_name)/>", my)
 
+    #    Defaults should be also inherited.
+    if !defined(my.defaults)
+        my.defaults = XML.new("defaults")
+        my.is_local_defaults = "1"
+    endif
+
     #    Setup defaults for inherited attributes and entities
-    instance_setup_defaults(my.value)
+    instance_setup_defaults(my.value, my.defaults)
 
     #    Setup defaults for allowed entities
     for my.value.cast as _cast
         cast_setup_defaults(_cast)
     endfor
+
     my.default_value = my.defaults.value ?
     if defined(my.default_value) & !defined(my.value.value)
         echo_trace("       value=\"$(my.default_value:)\"", my)
         my.value.value = my.default_value
+    endif
+
+    #   Cleanup
+    if is_true(my.is_local_defaults)
+        delete my.defaults
     endif
 endfunction
 
@@ -3533,21 +3867,33 @@ function variable_setup_defaults(variable, defaults)
     my.variable_name = defined(my.variable.name) ?? " name=\"$(my.variable.name)\"" ? ""
     echo_trace("[L1] Setup defaults for entity: <$(name(my.variable))$(my.variable_name)/>", my)
 
+    #    Defaults should be also inherited.
+    if !defined(my.defaults)
+        my.defaults = XML.new("defaults")
+        my.is_local_defaults = "1"
+    endif
+
     #    Setup defaults for inherited attributes and entities
-    scoped_component_setup_defaults(my.variable)
-    visibility_setup_defaults(my.variable)
-    declaration_setup_defaults(my.variable)
-    definition_setup_defaults(my.variable)
-    instance_setup_defaults(my.variable)
+    scoped_component_setup_defaults(my.variable, my.defaults)
+    visibility_setup_defaults(my.variable, my.defaults)
+    declaration_setup_defaults(my.variable, my.defaults)
+    definition_setup_defaults(my.variable, my.defaults)
+    instance_setup_defaults(my.variable, my.defaults)
 
     #    Setup defaults for allowed entities
     for my.variable.value as _value
         value_setup_defaults(_value)
     endfor
+
     my.default_value = my.defaults.name ?
     if defined(my.default_value) & !defined(my.variable.name)
         echo_trace("       name=\"$(my.default_value:)\"", my)
         my.variable.name = my.default_value
+    endif
+
+    #   Cleanup
+    if is_true(my.is_local_defaults)
+        delete my.defaults
     endif
 endfunction
 
@@ -3660,10 +4006,22 @@ endfunction
 
 # ---------------------------------------------------------------------------
 function lang_setup_defaults(lang, defaults)
+
+    #    Defaults should be also inherited.
+    if !defined(my.defaults)
+        my.defaults = XML.new("defaults")
+        my.is_local_defaults = "1"
+    endif
+
     my.default_value = my.defaults.lang ? "c"
     if defined(my.default_value) & !defined(my.lang.lang)
         echo_trace("       lang=\"$(my.default_value:)\"", my)
         my.lang.lang = my.default_value
+    endif
+
+    #   Cleanup
+    if is_true(my.is_local_defaults)
+        delete my.defaults
     endif
 endfunction
 
@@ -3734,12 +4092,24 @@ function code_setup_defaults(code, defaults)
     my.code_name = defined(my.code.name) ?? " name=\"$(my.code.name)\"" ? ""
     echo_trace("[L1] Setup defaults for entity: <$(name(my.code))$(my.code_name)/>", my)
 
+    #    Defaults should be also inherited.
+    if !defined(my.defaults)
+        my.defaults = XML.new("defaults")
+        my.is_local_defaults = "1"
+    endif
+
     #    Setup defaults for inherited attributes and entities
-    lang_setup_defaults(my.code)
+    lang_setup_defaults(my.code, my.defaults)
+
     my.default_value = my.defaults.type ? "generated"
     if defined(my.default_value) & !defined(my.code.type)
         echo_trace("       type=\"$(my.default_value:)\"", my)
         my.code.type = my.default_value
+    endif
+
+    #   Cleanup
+    if is_true(my.is_local_defaults)
+        delete my.defaults
     endif
 endfunction
 
@@ -3820,11 +4190,17 @@ function method_setup_defaults(method, defaults)
     my.method_name = defined(my.method.name) ?? " name=\"$(my.method.name)\"" ? ""
     echo_trace("[L1] Setup defaults for entity: <$(name(my.method))$(my.method_name)/>", my)
 
+    #    Defaults should be also inherited.
+    if !defined(my.defaults)
+        my.defaults = XML.new("defaults")
+        my.is_local_defaults = "1"
+    endif
+
     #    Setup defaults for inherited attributes and entities
-    scoped_component_setup_defaults(my.method)
-    visibility_setup_defaults(my.method)
-    declaration_setup_defaults(my.method)
-    definition_setup_defaults(my.method)
+    scoped_component_setup_defaults(my.method, my.defaults)
+    visibility_setup_defaults(my.method, my.defaults)
+    declaration_setup_defaults(my.method, my.defaults)
+    definition_setup_defaults(my.method, my.defaults)
 
     #    Setup defaults for allowed entities
     for my.method.return as _return
@@ -3842,6 +4218,7 @@ function method_setup_defaults(method, defaults)
     for my.method.code as _code
         code_setup_defaults(_code)
     endfor
+
     my.default_value = my.defaults.name ?
     if defined(my.default_value) & !defined(my.method.name)
         echo_trace("       name=\"$(my.default_value:)\"", my)
@@ -3864,6 +4241,11 @@ function method_setup_defaults(method, defaults)
     if defined(my.default_value) & !defined(my.method.nodiscard)
         echo_trace("       nodiscard=\"$(my.default_value:)\"", my)
         my.method.nodiscard = my.default_value
+    endif
+
+    #   Cleanup
+    if is_true(my.is_local_defaults)
+        delete my.defaults
     endif
 endfunction
 
@@ -4136,17 +4518,21 @@ function macros_setup_defaults(macros, defaults)
     my.macros_name = defined(my.macros.name) ?? " name=\"$(my.macros.name)\"" ? ""
     echo_trace("[L1] Setup defaults for entity: <$(name(my.macros))$(my.macros_name)/>", my)
 
+    #    Defaults should be also inherited.
+    if !defined(my.defaults)
+        my.defaults = XML.new("defaults")
+        my.is_local_defaults = "1"
+    endif
+
     #    Setup defaults for inherited attributes and entities
-    new defaults
-        .default = "public"
-        definition_setup_defaults(my.macros, defaults)
-        delete defaults
-    endnew
+     my.defaults.default = "public"
+    definition_setup_defaults(my.macros, my.defaults)
 
     #    Setup defaults for allowed entities
     for my.macros.code as _code
         code_setup_defaults(_code)
     endfor
+
     my.default_value = my.defaults.name ?
     if defined(my.default_value) & !defined(my.macros.name)
         echo_trace("       name=\"$(my.default_value:)\"", my)
@@ -4157,6 +4543,11 @@ function macros_setup_defaults(macros, defaults)
     if defined(my.default_value) & !defined(my.macros.is_method)
         echo_trace("       is_method=\"$(my.default_value:)\"", my)
         my.macros.is_method = my.default_value
+    endif
+
+    #   Cleanup
+    if is_true(my.is_local_defaults)
+        delete my.defaults
     endif
 endfunction
 
@@ -4282,12 +4673,15 @@ function macroses_setup_defaults(macroses, defaults)
     my.macroses_name = defined(my.macroses.name) ?? " name=\"$(my.macroses.name)\"" ? ""
     echo_trace("[L1] Setup defaults for entity: <$(name(my.macroses))$(my.macroses_name)/>", my)
 
+    #    Defaults should be also inherited.
+    if !defined(my.defaults)
+        my.defaults = XML.new("defaults")
+        my.is_local_defaults = "1"
+    endif
+
     #    Setup defaults for inherited attributes and entities
-    new defaults
-        .default = "public"
-        definition_setup_defaults(my.macroses, defaults)
-        delete defaults
-    endnew
+     my.defaults.default = "public"
+    definition_setup_defaults(my.macroses, my.defaults)
 
     #    Setup defaults for allowed entities
     for my.macroses.macros as _macros
@@ -4297,6 +4691,11 @@ function macroses_setup_defaults(macroses, defaults)
     for my.macroses.code as _code
         code_setup_defaults(_code)
     endfor
+
+    #   Cleanup
+    if is_true(my.is_local_defaults)
+        delete my.defaults
+    endif
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -4376,20 +4775,32 @@ function struct_setup_defaults(struct, defaults)
     my.struct_name = defined(my.struct.name) ?? " name=\"$(my.struct.name)\"" ? ""
     echo_trace("[L1] Setup defaults for entity: <$(name(my.struct))$(my.struct_name)/>", my)
 
+    #    Defaults should be also inherited.
+    if !defined(my.defaults)
+        my.defaults = XML.new("defaults")
+        my.is_local_defaults = "1"
+    endif
+
     #    Setup defaults for inherited attributes and entities
-    scoped_component_setup_defaults(my.struct)
-    visibility_setup_defaults(my.struct)
-    declaration_setup_defaults(my.struct)
-    definition_setup_defaults(my.struct)
+    scoped_component_setup_defaults(my.struct, my.defaults)
+    visibility_setup_defaults(my.struct, my.defaults)
+    declaration_setup_defaults(my.struct, my.defaults)
+    definition_setup_defaults(my.struct, my.defaults)
 
     #    Setup defaults for allowed entities
     for my.struct.property as _property
         property_setup_defaults(_property)
     endfor
+
     my.default_value = my.defaults.name ?
     if defined(my.default_value) & !defined(my.struct.name)
         echo_trace("       name=\"$(my.default_value:)\"", my)
         my.struct.name = my.default_value
+    endif
+
+    #   Cleanup
+    if is_true(my.is_local_defaults)
+        delete my.defaults
     endif
 endfunction
 
@@ -4491,11 +4902,17 @@ function class_setup_defaults(class, defaults)
     my.class_name = defined(my.class.name) ?? " name=\"$(my.class.name)\"" ? ""
     echo_trace("[L1] Setup defaults for entity: <$(name(my.class))$(my.class_name)/>", my)
 
+    #    Defaults should be also inherited.
+    if !defined(my.defaults)
+        my.defaults = XML.new("defaults")
+        my.is_local_defaults = "1"
+    endif
+
     #    Setup defaults for inherited attributes and entities
-    scope_setup_defaults(my.class)
-    c_prefix_setup_defaults(my.class)
-    uid_setup_defaults(my.class)
-    visibility_setup_defaults(my.class)
+    scope_setup_defaults(my.class, my.defaults)
+    c_prefix_setup_defaults(my.class, my.defaults)
+    uid_setup_defaults(my.class, my.defaults)
+    visibility_setup_defaults(my.class, my.defaults)
 
     #    Setup defaults for allowed entities
     for my.class.require as _require
@@ -4544,6 +4961,7 @@ function class_setup_defaults(class, defaults)
     for my.class.variable as _variable
         variable_setup_defaults(_variable)
     endfor
+
     my.default_value = my.defaults.name ?
     if defined(my.default_value) & !defined(my.class.name)
         echo_trace("       name=\"$(my.default_value:)\"", my)
@@ -4566,6 +4984,11 @@ function class_setup_defaults(class, defaults)
     if defined(my.default_value) & !defined(my.class.is_value_type)
         echo_trace("       is_value_type=\"$(my.default_value:)\"", my)
         my.class.is_value_type = my.default_value
+    endif
+
+    #   Cleanup
+    if is_true(my.is_local_defaults)
+        delete my.defaults
     endif
 endfunction
 
@@ -4924,10 +5347,22 @@ endfunction
 function inherit_setup_defaults(inherit, defaults)
     my.inherit_name = defined(my.inherit.name) ?? " name=\"$(my.inherit.name)\"" ? ""
     echo_trace("[L1] Setup defaults for entity: <$(name(my.inherit))$(my.inherit_name)/>", my)
+
+    #    Defaults should be also inherited.
+    if !defined(my.defaults)
+        my.defaults = XML.new("defaults")
+        my.is_local_defaults = "1"
+    endif
+
     my.default_value = my.defaults.interface ?
     if defined(my.default_value) & !defined(my.inherit.interface)
         echo_trace("       interface=\"$(my.default_value:)\"", my)
         my.inherit.interface = my.default_value
+    endif
+
+    #   Cleanup
+    if is_true(my.is_local_defaults)
+        delete my.defaults
     endif
 endfunction
 
@@ -4980,11 +5415,17 @@ function interface_setup_defaults(interface, defaults)
     my.interface_name = defined(my.interface.name) ?? " name=\"$(my.interface.name)\"" ? ""
     echo_trace("[L1] Setup defaults for entity: <$(name(my.interface))$(my.interface_name)/>", my)
 
+    #    Defaults should be also inherited.
+    if !defined(my.defaults)
+        my.defaults = XML.new("defaults")
+        my.is_local_defaults = "1"
+    endif
+
     #    Setup defaults for inherited attributes and entities
-    scope_setup_defaults(my.interface)
-    visibility_setup_defaults(my.interface)
-    uid_setup_defaults(my.interface)
-    c_prefix_setup_defaults(my.interface)
+    scope_setup_defaults(my.interface, my.defaults)
+    visibility_setup_defaults(my.interface, my.defaults)
+    uid_setup_defaults(my.interface, my.defaults)
+    c_prefix_setup_defaults(my.interface, my.defaults)
 
     #    Setup defaults for allowed entities
     new defaults
@@ -5001,6 +5442,11 @@ function interface_setup_defaults(interface, defaults)
     for my.interface.inherit as _inherit
         inherit_setup_defaults(_inherit)
     endfor
+
+    #   Cleanup
+    if is_true(my.is_local_defaults)
+        delete my.defaults
+    endif
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -5107,6 +5553,12 @@ function context_setup_defaults(context, defaults)
     my.context_name = defined(my.context.name) ?? " name=\"$(my.context.name)\"" ? ""
     echo_trace("[L1] Setup defaults for entity: <$(name(my.context))$(my.context_name)/>", my)
 
+    #    Defaults should be also inherited.
+    if !defined(my.defaults)
+        my.defaults = XML.new("defaults")
+        my.is_local_defaults = "1"
+    endif
+
     #    Setup defaults for allowed entities
     for my.context.require as _require
         require_setup_defaults(_require)
@@ -5115,6 +5567,11 @@ function context_setup_defaults(context, defaults)
     for my.context.property as _property
         property_setup_defaults(_property)
     endfor
+
+    #   Cleanup
+    if is_true(my.is_local_defaults)
+        delete my.defaults
+    endif
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -5170,14 +5627,26 @@ function implemented_interface_setup_defaults(interface, defaults)
     my.interface_name = defined(my.interface.name) ?? " name=\"$(my.interface.name)\"" ? ""
     echo_trace("[L1] Setup defaults for entity: <$(name(my.interface))$(my.interface_name)/>", my)
 
+    #    Defaults should be also inherited.
+    if !defined(my.defaults)
+        my.defaults = XML.new("defaults")
+        my.is_local_defaults = "1"
+    endif
+
     #    Setup defaults for allowed entities
     for my.interface.constant as _constant
         constant_setup_defaults(_constant)
     endfor
+
     my.default_value = my.defaults.name ?
     if defined(my.default_value) & !defined(my.interface.name)
         echo_trace("       name=\"$(my.default_value:)\"", my)
         my.interface.name = my.default_value
+    endif
+
+    #   Cleanup
+    if is_true(my.is_local_defaults)
+        delete my.defaults
     endif
 endfunction
 
@@ -5245,11 +5714,17 @@ function implementation_setup_defaults(implementation, defaults)
     my.implementation_name = defined(my.implementation.name) ?? " name=\"$(my.implementation.name)\"" ? ""
     echo_trace("[L1] Setup defaults for entity: <$(name(my.implementation))$(my.implementation_name)/>", my)
 
+    #    Defaults should be also inherited.
+    if !defined(my.defaults)
+        my.defaults = XML.new("defaults")
+        my.is_local_defaults = "1"
+    endif
+
     #    Setup defaults for inherited attributes and entities
-    scope_setup_defaults(my.implementation)
-    visibility_setup_defaults(my.implementation)
-    uid_setup_defaults(my.implementation)
-    c_prefix_setup_defaults(my.implementation)
+    scope_setup_defaults(my.implementation, my.defaults)
+    visibility_setup_defaults(my.implementation, my.defaults)
+    uid_setup_defaults(my.implementation, my.defaults)
+    c_prefix_setup_defaults(my.implementation, my.defaults)
 
     #    Setup defaults for allowed entities
     for my.implementation.context as _context
@@ -5270,6 +5745,8 @@ function implementation_setup_defaults(implementation, defaults)
 
     new defaults
         .visibility = "private"
+        .declaration = "private"
+        .defnition = "private"
         for my.implementation.method as _method
             method_setup_defaults(_method, defaults)
         endfor
@@ -5277,15 +5754,31 @@ function implementation_setup_defaults(implementation, defaults)
     endnew
 
     new defaults
+        .declaration = "private"
+        .defnition = "private"
+        for my.implementation.enum as _enum
+            enum_setup_defaults(_enum, defaults)
+        endfor
+        delete defaults
+    endnew
+
+    new defaults
+        .defnition = "private"
         for my.implementation.constant as _constant
             constant_setup_defaults(_constant, defaults)
         endfor
         delete defaults
     endnew
+
     my.default_value = my.defaults.name ?
     if defined(my.default_value) & !defined(my.implementation.name)
         echo_trace("       name=\"$(my.default_value:)\"", my)
         my.implementation.name = my.default_value
+    endif
+
+    #   Cleanup
+    if is_true(my.is_local_defaults)
+        delete my.defaults
     endif
 endfunction
 
@@ -5357,7 +5850,22 @@ function implementation_validate(implementation, restrictions)
         new restrictions
             .attr_visibility_apply = "1"
             .attr_visibility_required = "0"
+            .attr_declaration_apply = "1"
+            .attr_declaration_required = "0"
+            .attr_defnition_apply = "1"
+            .attr_defnition_required = "0"
             method_validate(_method, restrictions)
+        endnew
+    endfor
+
+    my.enum_count = count(my.implementation.enum)
+    for my.implementation.enum as _enum
+        new restrictions
+            .attr_declaration_apply = "1"
+            .attr_declaration_required = "0"
+            .attr_defnition_apply = "1"
+            .attr_defnition_required = "0"
+            enum_validate(_enum, restrictions)
         endnew
     endfor
 
@@ -5366,6 +5874,8 @@ function implementation_validate(implementation, restrictions)
         new restrictions
             .attr_value_apply = "1"
             .attr_value_required = "1"
+            .attr_defnition_apply = "1"
+            .attr_defnition_required = "0"
             constant_validate(_constant, restrictions)
         endnew
     endfor
@@ -5438,7 +5948,21 @@ function implementation_validate_resolved(implementation, restrictions)
         new restrictions
             .attr_visibility_apply = "1"
             .attr_visibility_required = "0"
+            .attr_declaration_apply = "1"
+            .attr_declaration_required = "0"
+            .attr_defnition_apply = "1"
+            .attr_defnition_required = "0"
             method_validate_resolved(_method, restrictions)
+        endnew
+    endfor
+
+    for my.implementation.enum as _enum
+        new restrictions
+            .attr_declaration_apply = "1"
+            .attr_declaration_required = "0"
+            .attr_defnition_apply = "1"
+            .attr_defnition_required = "0"
+            enum_validate_resolved(_enum, restrictions)
         endnew
     endfor
 
@@ -5446,6 +5970,8 @@ function implementation_validate_resolved(implementation, restrictions)
         new restrictions
             .attr_value_apply = "1"
             .attr_value_required = "1"
+            .attr_defnition_apply = "1"
+            .attr_defnition_required = "0"
             constant_validate_resolved(_constant, restrictions)
         endnew
     endfor
@@ -5472,10 +5998,17 @@ function implementor_setup_defaults(implementor, defaults)
     my.implementor_name = defined(my.implementor.name) ?? " name=\"$(my.implementor.name)\"" ? ""
     echo_trace("[L1] Setup defaults for entity: <$(name(my.implementor))$(my.implementor_name)/>", my)
 
+    #    Defaults should be also inherited.
+    if !defined(my.defaults)
+        my.defaults = XML.new("defaults")
+        my.is_local_defaults = "1"
+    endif
+
     #    Setup defaults for allowed entities
     for my.implementor.implementation as _implementation
         implementation_setup_defaults(_implementation)
     endfor
+
     my.default_value = my.defaults.name ?
     if defined(my.default_value) & !defined(my.implementor.name)
         echo_trace("       name=\"$(my.default_value:)\"", my)
@@ -5486,6 +6019,11 @@ function implementor_setup_defaults(implementor, defaults)
     if defined(my.default_value) & !defined(my.implementor.is_default)
         echo_trace("       is_default=\"$(my.default_value:)\"", my)
         my.implementor.is_default = my.default_value
+    endif
+
+    #   Cleanup
+    if is_true(my.is_local_defaults)
+        delete my.defaults
     endif
 endfunction
 
@@ -5598,10 +6136,22 @@ endfunction
 function module_setup_defaults(module, defaults)
     my.module_name = defined(my.module.name) ?? " name=\"$(my.module.name)\"" ? ""
     echo_trace("[L1] Setup defaults for entity: <$(name(my.module))$(my.module_name)/>", my)
+
+    #    Defaults should be also inherited.
+    if !defined(my.defaults)
+        my.defaults = XML.new("defaults")
+        my.is_local_defaults = "1"
+    endif
+
     my.default_value = my.defaults.name ?
     if defined(my.default_value) & !defined(my.module.name)
         echo_trace("       name=\"$(my.default_value:)\"", my)
         my.module.name = my.default_value
+    endif
+
+    #   Cleanup
+    if is_true(my.is_local_defaults)
+        delete my.defaults
     endif
 endfunction
 
@@ -5654,13 +6204,20 @@ function feature_setup_defaults(feature, defaults)
     my.feature_name = defined(my.feature.name) ?? " name=\"$(my.feature.name)\"" ? ""
     echo_trace("[L1] Setup defaults for entity: <$(name(my.feature))$(my.feature_name)/>", my)
 
+    #    Defaults should be also inherited.
+    if !defined(my.defaults)
+        my.defaults = XML.new("defaults")
+        my.is_local_defaults = "1"
+    endif
+
     #    Setup defaults for inherited attributes and entities
-    landlord_setup_defaults(my.feature)
+    landlord_setup_defaults(my.feature, my.defaults)
 
     #    Setup defaults for allowed entities
     for my.feature.require as _require
         require_setup_defaults(_require)
     endfor
+
     my.default_value = my.defaults.name ?
     if defined(my.default_value) & !defined(my.feature.name)
         echo_trace("       name=\"$(my.default_value:)\"", my)
@@ -5677,6 +6234,11 @@ function feature_setup_defaults(feature, defaults)
     if defined(my.default_value) & !defined(my.feature.default)
         echo_trace("       default=\"$(my.default_value:)\"", my)
         my.feature.default = my.default_value
+    endif
+
+    #   Cleanup
+    if is_true(my.is_local_defaults)
+        delete my.defaults
     endif
 endfunction
 
@@ -5818,6 +6380,12 @@ function project_setup_defaults(project, defaults)
     my.project_name = defined(my.project.name) ?? " name=\"$(my.project.name)\"" ? ""
     echo_trace("[L1] Setup defaults for entity: <$(name(my.project))$(my.project_name)/>", my)
 
+    #    Defaults should be also inherited.
+    if !defined(my.defaults)
+        my.defaults = XML.new("defaults")
+        my.is_local_defaults = "1"
+    endif
+
     #    Setup defaults for allowed entities
     for my.project.interface as _interface
         interface_setup_defaults(_interface)
@@ -5834,6 +6402,7 @@ function project_setup_defaults(project, defaults)
     for my.project.feature as _feature
         feature_setup_defaults(_feature)
     endfor
+
     my.default_value = my.defaults.name ?
     if defined(my.default_value) & !defined(my.project.name)
         echo_trace("       name=\"$(my.default_value:)\"", my)
@@ -5904,6 +6473,11 @@ function project_setup_defaults(project, defaults)
     if defined(my.default_value) & !defined(my.project.work_path)
         echo_trace("       work_path=\"$(my.default_value:)\"", my)
         my.project.work_path = my.default_value
+    endif
+
+    #   Cleanup
+    if is_true(my.is_local_defaults)
+        delete my.defaults
     endif
 endfunction
 
@@ -6273,10 +6847,22 @@ endfunction
 function interface_setup_defaults(interface, defaults)
     my.interface_name = defined(my.interface.name) ?? " name=\"$(my.interface.name)\"" ? ""
     echo_trace("[L1] Setup defaults for entity: <$(name(my.interface))$(my.interface_name)/>", my)
+
+    #    Defaults should be also inherited.
+    if !defined(my.defaults)
+        my.defaults = XML.new("defaults")
+        my.is_local_defaults = "1"
+    endif
+
     my.default_value = my.defaults.name ?
     if defined(my.default_value) & !defined(my.interface.name)
         echo_trace("       name=\"$(my.default_value:)\"", my)
         my.interface.name = my.default_value
+    endif
+
+    #   Cleanup
+    if is_true(my.is_local_defaults)
+        delete my.defaults
     endif
 endfunction
 
@@ -6328,10 +6914,22 @@ endfunction
 function implementor_setup_defaults(implementor, defaults)
     my.implementor_name = defined(my.implementor.name) ?? " name=\"$(my.implementor.name)\"" ? ""
     echo_trace("[L1] Setup defaults for entity: <$(name(my.implementor))$(my.implementor_name)/>", my)
+
+    #    Defaults should be also inherited.
+    if !defined(my.defaults)
+        my.defaults = XML.new("defaults")
+        my.is_local_defaults = "1"
+    endif
+
     my.default_value = my.defaults.name ?
     if defined(my.default_value) & !defined(my.implementor.name)
         echo_trace("       name=\"$(my.default_value:)\"", my)
         my.implementor.name = my.default_value
+    endif
+
+    #   Cleanup
+    if is_true(my.is_local_defaults)
+        delete my.defaults
     endif
 endfunction
 
@@ -6384,13 +6982,20 @@ function features_setup_defaults(features, defaults)
     my.features_name = defined(my.features.name) ?? " name=\"$(my.features.name)\"" ? ""
     echo_trace("[L1] Setup defaults for entity: <$(name(my.features))$(my.features_name)/>", my)
 
+    #    Defaults should be also inherited.
+    if !defined(my.defaults)
+        my.defaults = XML.new("defaults")
+        my.is_local_defaults = "1"
+    endif
+
     #    Setup defaults for inherited attributes and entities
-    landlord_setup_defaults(my.features)
+    landlord_setup_defaults(my.features, my.defaults)
 
     #    Setup defaults for allowed entities
     for my.features.feature as _feature
         feature_setup_defaults(_feature)
     endfor
+
     my.default_value = my.defaults.prefix ?
     if defined(my.default_value) & !defined(my.features.prefix)
         echo_trace("       prefix=\"$(my.default_value:)\"", my)
@@ -6401,6 +7006,11 @@ function features_setup_defaults(features, defaults)
     if defined(my.default_value) & !defined(my.features.path)
         echo_trace("       path=\"$(my.default_value:)\"", my)
         my.features.path = my.default_value
+    endif
+
+    #   Cleanup
+    if is_true(my.is_local_defaults)
+        delete my.defaults
     endif
 endfunction
 
@@ -6502,10 +7112,17 @@ function library_setup_defaults(library, defaults)
     my.library_name = defined(my.library.name) ?? " name=\"$(my.library.name)\"" ? ""
     echo_trace("[L1] Setup defaults for entity: <$(name(my.library))$(my.library_name)/>", my)
 
+    #    Defaults should be also inherited.
+    if !defined(my.defaults)
+        my.defaults = XML.new("defaults")
+        my.is_local_defaults = "1"
+    endif
+
     #    Setup defaults for allowed entities
     for my.library.feature as _feature
         feature_setup_defaults(_feature)
     endfor
+
     my.default_value = my.defaults.name ?
     if defined(my.default_value) & !defined(my.library.name)
         echo_trace("       name=\"$(my.default_value:)\"", my)
@@ -6522,6 +7139,11 @@ function library_setup_defaults(library, defaults)
     if defined(my.default_value) & !defined(my.library.path)
         echo_trace("       path=\"$(my.default_value:)\"", my)
         my.library.path = my.default_value
+    endif
+
+    #   Cleanup
+    if is_true(my.is_local_defaults)
+        delete my.defaults
     endif
 endfunction
 
@@ -6637,9 +7259,15 @@ function module_setup_defaults(module, defaults)
     my.module_name = defined(my.module.name) ?? " name=\"$(my.module.name)\"" ? ""
     echo_trace("[L1] Setup defaults for entity: <$(name(my.module))$(my.module_name)/>", my)
 
+    #    Defaults should be also inherited.
+    if !defined(my.defaults)
+        my.defaults = XML.new("defaults")
+        my.is_local_defaults = "1"
+    endif
+
     #    Setup defaults for inherited attributes and entities
-    scope_setup_defaults(my.module)
-    component_setup_defaults(my.module)
+    scope_setup_defaults(my.module, my.defaults)
+    component_setup_defaults(my.module, my.defaults)
 
     #    Setup defaults for allowed entities
     for my.module.require as _require
@@ -6677,6 +7305,7 @@ function module_setup_defaults(module, defaults)
     for my.module.macroses as _macroses
         macroses_setup_defaults(_macroses)
     endfor
+
     my.default_value = my.defaults.name ?
     if defined(my.default_value) & !defined(my.module.name)
         echo_trace("       name=\"$(my.default_value:)\"", my)
@@ -6687,6 +7316,11 @@ function module_setup_defaults(module, defaults)
     if defined(my.default_value) & !defined(my.module.has_cmakedefine)
         echo_trace("       has_cmakedefine=\"$(my.default_value:)\"", my)
         my.module.has_cmakedefine = my.default_value
+    endif
+
+    #   Cleanup
+    if is_true(my.is_local_defaults)
+        delete my.defaults
     endif
 endfunction
 
@@ -6913,6 +7547,13 @@ endfunction
 
 # ---------------------------------------------------------------------------
 function c_instance_setup_defaults(c_instance, defaults)
+
+    #    Defaults should be also inherited.
+    if !defined(my.defaults)
+        my.defaults = XML.new("defaults")
+        my.is_local_defaults = "1"
+    endif
+
     my.default_value = my.defaults.type ?
     if defined(my.default_value) & !defined(my.c_instance.type)
         echo_trace("       type=\"$(my.default_value:)\"", my)
@@ -6983,6 +7624,11 @@ function c_instance_setup_defaults(c_instance, defaults)
     if defined(my.default_value) & !defined(my.c_instance.require_definition)
         echo_trace("       require_definition=\"$(my.default_value:)\"", my)
         my.c_instance.require_definition = my.default_value
+    endif
+
+    #   Cleanup
+    if is_true(my.is_local_defaults)
+        delete my.defaults
     endif
 endfunction
 
@@ -7386,10 +8032,22 @@ endfunction
 
 # ---------------------------------------------------------------------------
 function c_feature_attr_setup_defaults(c_feature_attr, defaults)
+
+    #    Defaults should be also inherited.
+    if !defined(my.defaults)
+        my.defaults = XML.new("defaults")
+        my.is_local_defaults = "1"
+    endif
+
     my.default_value = my.defaults.feature ?
     if defined(my.default_value) & !defined(my.c_feature_attr.feature)
         echo_trace("       feature=\"$(my.default_value:)\"", my)
         my.c_feature_attr.feature = my.default_value
+    endif
+
+    #   Cleanup
+    if is_true(my.is_local_defaults)
+        delete my.defaults
     endif
 endfunction
 
@@ -7438,9 +8096,16 @@ function c_include_setup_defaults(c_include, defaults)
     my.c_include_name = defined(my.c_include.name) ?? " name=\"$(my.c_include.name)\"" ? ""
     echo_trace("[L1] Setup defaults for entity: <$(name(my.c_include))$(my.c_include_name)/>", my)
 
+    #    Defaults should be also inherited.
+    if !defined(my.defaults)
+        my.defaults = XML.new("defaults")
+        my.is_local_defaults = "1"
+    endif
+
     #    Setup defaults for inherited attributes and entities
-    c_feature_attr_setup_defaults(my.c_include)
-    scope_setup_defaults(my.c_include)
+    c_feature_attr_setup_defaults(my.c_include, my.defaults)
+    scope_setup_defaults(my.c_include, my.defaults)
+
     my.default_value = my.defaults.file ?
     if defined(my.default_value) & !defined(my.c_include.file)
         echo_trace("       file=\"$(my.default_value:)\"", my)
@@ -7451,6 +8116,11 @@ function c_include_setup_defaults(c_include, defaults)
     if defined(my.default_value) & !defined(my.c_include.is_system)
         echo_trace("       is_system=\"$(my.default_value:)\"", my)
         my.c_include.is_system = my.default_value
+    endif
+
+    #   Cleanup
+    if is_true(my.is_local_defaults)
+        delete my.defaults
     endif
 endfunction
 
@@ -7561,8 +8231,15 @@ function c_alias_setup_defaults(c_alias, defaults)
     my.c_alias_name = defined(my.c_alias.name) ?? " name=\"$(my.c_alias.name)\"" ? ""
     echo_trace("[L1] Setup defaults for entity: <$(name(my.c_alias))$(my.c_alias_name)/>", my)
 
+    #    Defaults should be also inherited.
+    if !defined(my.defaults)
+        my.defaults = XML.new("defaults")
+        my.is_local_defaults = "1"
+    endif
+
     #    Setup defaults for inherited attributes and entities
-    declaration_setup_defaults(my.c_alias)
+    declaration_setup_defaults(my.c_alias, my.defaults)
+
     my.default_value = my.defaults.name ?
     if defined(my.default_value) & !defined(my.c_alias.name)
         echo_trace("       name=\"$(my.default_value:)\"", my)
@@ -7573,6 +8250,11 @@ function c_alias_setup_defaults(c_alias, defaults)
     if defined(my.default_value) & !defined(my.c_alias.type)
         echo_trace("       type=\"$(my.default_value:)\"", my)
         my.c_alias.type = my.default_value
+    endif
+
+    #   Cleanup
+    if is_true(my.is_local_defaults)
+        delete my.defaults
     endif
 endfunction
 
@@ -7659,10 +8341,17 @@ function c_constant_setup_defaults(c_constant, defaults)
     my.c_constant_name = defined(my.c_constant.name) ?? " name=\"$(my.c_constant.name)\"" ? ""
     echo_trace("[L1] Setup defaults for entity: <$(name(my.c_constant))$(my.c_constant_name)/>", my)
 
+    #    Defaults should be also inherited.
+    if !defined(my.defaults)
+        my.defaults = XML.new("defaults")
+        my.is_local_defaults = "1"
+    endif
+
     #    Setup defaults for inherited attributes and entities
-    definition_setup_defaults(my.c_constant)
-    uid_setup_defaults(my.c_constant)
-    c_feature_attr_setup_defaults(my.c_constant)
+    definition_setup_defaults(my.c_constant, my.defaults)
+    uid_setup_defaults(my.c_constant, my.defaults)
+    c_feature_attr_setup_defaults(my.c_constant, my.defaults)
+
     my.default_value = my.defaults.name ?
     if defined(my.default_value) & !defined(my.c_constant.name)
         echo_trace("       name=\"$(my.default_value:)\"", my)
@@ -7673,6 +8362,11 @@ function c_constant_setup_defaults(c_constant, defaults)
     if defined(my.default_value) & !defined(my.c_constant.value)
         echo_trace("       value=\"$(my.default_value:)\"", my)
         my.c_constant.value = my.default_value
+    endif
+
+    #   Cleanup
+    if is_true(my.is_local_defaults)
+        delete my.defaults
     endif
 endfunction
 
@@ -7775,21 +8469,33 @@ function c_enum_setup_defaults(c_enum, defaults)
     my.c_enum_name = defined(my.c_enum.name) ?? " name=\"$(my.c_enum.name)\"" ? ""
     echo_trace("[L1] Setup defaults for entity: <$(name(my.c_enum))$(my.c_enum_name)/>", my)
 
+    #    Defaults should be also inherited.
+    if !defined(my.defaults)
+        my.defaults = XML.new("defaults")
+        my.is_local_defaults = "1"
+    endif
+
     #    Setup defaults for inherited attributes and entities
-    visibility_setup_defaults(my.c_enum)
-    declaration_setup_defaults(my.c_enum)
-    definition_setup_defaults(my.c_enum)
-    uid_setup_defaults(my.c_enum)
-    c_feature_attr_setup_defaults(my.c_enum)
+    visibility_setup_defaults(my.c_enum, my.defaults)
+    declaration_setup_defaults(my.c_enum, my.defaults)
+    definition_setup_defaults(my.c_enum, my.defaults)
+    uid_setup_defaults(my.c_enum, my.defaults)
+    c_feature_attr_setup_defaults(my.c_enum, my.defaults)
 
     #    Setup defaults for allowed entities
     for my.c_enum.c_constant as _c_constant
         c_constant_setup_defaults(_c_constant)
     endfor
+
     my.default_value = my.defaults.name ?
     if defined(my.default_value) & !defined(my.c_enum.name)
         echo_trace("       name=\"$(my.default_value:)\"", my)
         my.c_enum.name = my.default_value
+    endif
+
+    #   Cleanup
+    if is_true(my.is_local_defaults)
+        delete my.defaults
     endif
 endfunction
 
@@ -7905,10 +8611,17 @@ function c_property_setup_defaults(c_property, defaults)
     my.c_property_name = defined(my.c_property.name) ?? " name=\"$(my.c_property.name)\"" ? ""
     echo_trace("[L1] Setup defaults for entity: <$(name(my.c_property))$(my.c_property_name)/>", my)
 
+    #    Defaults should be also inherited.
+    if !defined(my.defaults)
+        my.defaults = XML.new("defaults")
+        my.is_local_defaults = "1"
+    endif
+
     #    Setup defaults for inherited attributes and entities
-    uid_setup_defaults(my.c_property)
-    c_feature_attr_setup_defaults(my.c_property)
-    c_instance_setup_defaults(my.c_property)
+    uid_setup_defaults(my.c_property, my.defaults)
+    c_feature_attr_setup_defaults(my.c_property, my.defaults)
+    c_instance_setup_defaults(my.c_property, my.defaults)
+
     my.default_value = my.defaults.name ?
     if defined(my.default_value) & !defined(my.c_property.name)
         echo_trace("       name=\"$(my.default_value:)\"", my)
@@ -7919,6 +8632,11 @@ function c_property_setup_defaults(c_property, defaults)
     if defined(my.default_value) & !defined(my.c_property.bits)
         echo_trace("       bits=\"$(my.default_value:)\"", my)
         my.c_property.bits = my.default_value
+    endif
+
+    #   Cleanup
+    if is_true(my.is_local_defaults)
+        delete my.defaults
     endif
 endfunction
 
@@ -8021,20 +8739,32 @@ function c_struct_setup_defaults(c_struct, defaults)
     my.c_struct_name = defined(my.c_struct.name) ?? " name=\"$(my.c_struct.name)\"" ? ""
     echo_trace("[L1] Setup defaults for entity: <$(name(my.c_struct))$(my.c_struct_name)/>", my)
 
+    #    Defaults should be also inherited.
+    if !defined(my.defaults)
+        my.defaults = XML.new("defaults")
+        my.is_local_defaults = "1"
+    endif
+
     #    Setup defaults for inherited attributes and entities
-    uid_setup_defaults(my.c_struct)
-    declaration_setup_defaults(my.c_struct)
-    definition_setup_defaults(my.c_struct)
-    c_feature_attr_setup_defaults(my.c_struct)
+    uid_setup_defaults(my.c_struct, my.defaults)
+    declaration_setup_defaults(my.c_struct, my.defaults)
+    definition_setup_defaults(my.c_struct, my.defaults)
+    c_feature_attr_setup_defaults(my.c_struct, my.defaults)
 
     #    Setup defaults for allowed entities
     for my.c_struct.c_property as _c_property
         c_property_setup_defaults(_c_property)
     endfor
+
     my.default_value = my.defaults.name ?
     if defined(my.default_value) & !defined(my.c_struct.name)
         echo_trace("       name=\"$(my.default_value:)\"", my)
         my.c_struct.name = my.default_value
+    endif
+
+    #   Cleanup
+    if is_true(my.is_local_defaults)
+        delete my.defaults
     endif
 endfunction
 
@@ -8141,10 +8871,22 @@ endfunction
 function c_modifier_setup_defaults(c_modifier, defaults)
     my.c_modifier_name = defined(my.c_modifier.name) ?? " name=\"$(my.c_modifier.name)\"" ? ""
     echo_trace("[L1] Setup defaults for entity: <$(name(my.c_modifier))$(my.c_modifier_name)/>", my)
+
+    #    Defaults should be also inherited.
+    if !defined(my.defaults)
+        my.defaults = XML.new("defaults")
+        my.is_local_defaults = "1"
+    endif
+
     my.default_value = my.defaults.value ?
     if defined(my.default_value) & !defined(my.c_modifier.value)
         echo_trace("       value=\"$(my.default_value:)\"", my)
         my.c_modifier.value = my.default_value
+    endif
+
+    #   Cleanup
+    if is_true(my.is_local_defaults)
+        delete my.defaults
     endif
 endfunction
 
@@ -8197,8 +8939,19 @@ function c_return_setup_defaults(c_return, defaults)
     my.c_return_name = defined(my.c_return.name) ?? " name=\"$(my.c_return.name)\"" ? ""
     echo_trace("[L1] Setup defaults for entity: <$(name(my.c_return))$(my.c_return_name)/>", my)
 
+    #    Defaults should be also inherited.
+    if !defined(my.defaults)
+        my.defaults = XML.new("defaults")
+        my.is_local_defaults = "1"
+    endif
+
     #    Setup defaults for inherited attributes and entities
-    c_instance_setup_defaults(my.c_return)
+    c_instance_setup_defaults(my.c_return, my.defaults)
+
+    #   Cleanup
+    if is_true(my.is_local_defaults)
+        delete my.defaults
+    endif
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -8236,13 +8989,25 @@ function c_argument_setup_defaults(c_argument, defaults)
     my.c_argument_name = defined(my.c_argument.name) ?? " name=\"$(my.c_argument.name)\"" ? ""
     echo_trace("[L1] Setup defaults for entity: <$(name(my.c_argument))$(my.c_argument_name)/>", my)
 
+    #    Defaults should be also inherited.
+    if !defined(my.defaults)
+        my.defaults = XML.new("defaults")
+        my.is_local_defaults = "1"
+    endif
+
     #    Setup defaults for inherited attributes and entities
-    uid_setup_defaults(my.c_argument)
-    c_instance_setup_defaults(my.c_argument)
+    uid_setup_defaults(my.c_argument, my.defaults)
+    c_instance_setup_defaults(my.c_argument, my.defaults)
+
     my.default_value = my.defaults.name ?
     if defined(my.default_value) & !defined(my.c_argument.name)
         echo_trace("       name=\"$(my.default_value:)\"", my)
         my.c_argument.name = my.default_value
+    endif
+
+    #   Cleanup
+    if is_true(my.is_local_defaults)
+        delete my.defaults
     endif
 endfunction
 
@@ -8312,10 +9077,22 @@ endfunction
 function c_precondition_setup_defaults(c_precondition, defaults)
     my.c_precondition_name = defined(my.c_precondition.name) ?? " name=\"$(my.c_precondition.name)\"" ? ""
     echo_trace("[L1] Setup defaults for entity: <$(name(my.c_precondition))$(my.c_precondition_name)/>", my)
+
+    #    Defaults should be also inherited.
+    if !defined(my.defaults)
+        my.defaults = XML.new("defaults")
+        my.is_local_defaults = "1"
+    endif
+
     my.default_value = my.defaults.position ? "0"
     if defined(my.default_value) & !defined(my.c_precondition.position)
         echo_trace("       position=\"$(my.default_value:)\"", my)
         my.c_precondition.position = my.default_value
+    endif
+
+    #   Cleanup
+    if is_true(my.is_local_defaults)
+        delete my.defaults
     endif
 endfunction
 
@@ -8367,10 +9144,22 @@ endfunction
 function c_attribute_setup_defaults(c_attribute, defaults)
     my.c_attribute_name = defined(my.c_attribute.name) ?? " name=\"$(my.c_attribute.name)\"" ? ""
     echo_trace("[L1] Setup defaults for entity: <$(name(my.c_attribute))$(my.c_attribute_name)/>", my)
+
+    #    Defaults should be also inherited.
+    if !defined(my.defaults)
+        my.defaults = XML.new("defaults")
+        my.is_local_defaults = "1"
+    endif
+
     my.default_value = my.defaults.value ?
     if defined(my.default_value) & !defined(my.c_attribute.value)
         echo_trace("       value=\"$(my.default_value:)\"", my)
         my.c_attribute.value = my.default_value
+    endif
+
+    #   Cleanup
+    if is_true(my.is_local_defaults)
+        delete my.defaults
     endif
 endfunction
 
@@ -8423,12 +9212,18 @@ function c_method_setup_defaults(c_method, defaults)
     my.c_method_name = defined(my.c_method.name) ?? " name=\"$(my.c_method.name)\"" ? ""
     echo_trace("[L1] Setup defaults for entity: <$(name(my.c_method))$(my.c_method_name)/>", my)
 
+    #    Defaults should be also inherited.
+    if !defined(my.defaults)
+        my.defaults = XML.new("defaults")
+        my.is_local_defaults = "1"
+    endif
+
     #    Setup defaults for inherited attributes and entities
-    visibility_setup_defaults(my.c_method)
-    declaration_setup_defaults(my.c_method)
-    definition_setup_defaults(my.c_method)
-    uid_setup_defaults(my.c_method)
-    c_feature_attr_setup_defaults(my.c_method)
+    visibility_setup_defaults(my.c_method, my.defaults)
+    declaration_setup_defaults(my.c_method, my.defaults)
+    definition_setup_defaults(my.c_method, my.defaults)
+    uid_setup_defaults(my.c_method, my.defaults)
+    c_feature_attr_setup_defaults(my.c_method, my.defaults)
 
     #    Setup defaults for allowed entities
     for my.c_method.c_modifier as _c_modifier
@@ -8450,10 +9245,16 @@ function c_method_setup_defaults(c_method, defaults)
     for my.c_method.c_attribute as _c_attribute
         c_attribute_setup_defaults(_c_attribute)
     endfor
+
     my.default_value = my.defaults.name ?
     if defined(my.default_value) & !defined(my.c_method.name)
         echo_trace("       name=\"$(my.default_value:)\"", my)
         my.c_method.name = my.default_value
+    endif
+
+    #   Cleanup
+    if is_true(my.is_local_defaults)
+        delete my.defaults
     endif
 endfunction
 
@@ -8621,9 +9422,15 @@ function c_callback_setup_defaults(c_callback, defaults)
     my.c_callback_name = defined(my.c_callback.name) ?? " name=\"$(my.c_callback.name)\"" ? ""
     echo_trace("[L1] Setup defaults for entity: <$(name(my.c_callback))$(my.c_callback_name)/>", my)
 
+    #    Defaults should be also inherited.
+    if !defined(my.defaults)
+        my.defaults = XML.new("defaults")
+        my.is_local_defaults = "1"
+    endif
+
     #    Setup defaults for inherited attributes and entities
-    uid_setup_defaults(my.c_callback)
-    declaration_setup_defaults(my.c_callback)
+    uid_setup_defaults(my.c_callback, my.defaults)
+    declaration_setup_defaults(my.c_callback, my.defaults)
 
     #    Setup defaults for allowed entities
     for my.c_callback.c_return as _c_return
@@ -8633,10 +9440,16 @@ function c_callback_setup_defaults(c_callback, defaults)
     for my.c_callback.c_argument as _c_argument
         c_argument_setup_defaults(_c_argument)
     endfor
+
     my.default_value = my.defaults.name ?
     if defined(my.default_value) & !defined(my.c_callback.name)
         echo_trace("       name=\"$(my.default_value:)\"", my)
         my.c_callback.name = my.default_value
+    endif
+
+    #   Cleanup
+    if is_true(my.is_local_defaults)
+        delete my.defaults
     endif
 endfunction
 
@@ -8740,6 +9553,17 @@ endfunction
 function c_code_setup_defaults(c_code, defaults)
     my.c_code_name = defined(my.c_code.name) ?? " name=\"$(my.c_code.name)\"" ? ""
     echo_trace("[L1] Setup defaults for entity: <$(name(my.c_code))$(my.c_code_name)/>", my)
+
+    #    Defaults should be also inherited.
+    if !defined(my.defaults)
+        my.defaults = XML.new("defaults")
+        my.is_local_defaults = "1"
+    endif
+
+    #   Cleanup
+    if is_true(my.is_local_defaults)
+        delete my.defaults
+    endif
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -8767,19 +9591,31 @@ function c_macros_setup_defaults(c_macros, defaults)
     my.c_macros_name = defined(my.c_macros.name) ?? " name=\"$(my.c_macros.name)\"" ? ""
     echo_trace("[L1] Setup defaults for entity: <$(name(my.c_macros))$(my.c_macros_name)/>", my)
 
+    #    Defaults should be also inherited.
+    if !defined(my.defaults)
+        my.defaults = XML.new("defaults")
+        my.is_local_defaults = "1"
+    endif
+
     #    Setup defaults for inherited attributes and entities
-    uid_setup_defaults(my.c_macros)
-    definition_setup_defaults(my.c_macros)
-    c_feature_attr_setup_defaults(my.c_macros)
+    uid_setup_defaults(my.c_macros, my.defaults)
+    definition_setup_defaults(my.c_macros, my.defaults)
+    c_feature_attr_setup_defaults(my.c_macros, my.defaults)
 
     #    Setup defaults for allowed entities
     for my.c_macros.c_code as _c_code
         c_code_setup_defaults(_c_code)
     endfor
+
     my.default_value = my.defaults.is_method ? "0"
     if defined(my.default_value) & !defined(my.c_macros.is_method)
         echo_trace("       is_method=\"$(my.default_value:)\"", my)
         my.c_macros.is_method = my.default_value
+    endif
+
+    #   Cleanup
+    if is_true(my.is_local_defaults)
+        delete my.defaults
     endif
 endfunction
 
@@ -8895,8 +9731,14 @@ function c_macroses_setup_defaults(c_macroses, defaults)
     my.c_macroses_name = defined(my.c_macroses.name) ?? " name=\"$(my.c_macroses.name)\"" ? ""
     echo_trace("[L1] Setup defaults for entity: <$(name(my.c_macroses))$(my.c_macroses_name)/>", my)
 
+    #    Defaults should be also inherited.
+    if !defined(my.defaults)
+        my.defaults = XML.new("defaults")
+        my.is_local_defaults = "1"
+    endif
+
     #    Setup defaults for inherited attributes and entities
-    definition_setup_defaults(my.c_macroses)
+    definition_setup_defaults(my.c_macroses, my.defaults)
 
     #    Setup defaults for allowed entities
     for my.c_macroses.c_macros as _c_macros
@@ -8906,6 +9748,11 @@ function c_macroses_setup_defaults(c_macroses, defaults)
     for my.c_macroses.c_code as _c_code
         c_code_setup_defaults(_c_code)
     endfor
+
+    #   Cleanup
+    if is_true(my.is_local_defaults)
+        delete my.defaults
+    endif
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -8983,8 +9830,19 @@ function c_cast_setup_defaults(c_cast, defaults)
     my.c_cast_name = defined(my.c_cast.name) ?? " name=\"$(my.c_cast.name)\"" ? ""
     echo_trace("[L1] Setup defaults for entity: <$(name(my.c_cast))$(my.c_cast_name)/>", my)
 
+    #    Defaults should be also inherited.
+    if !defined(my.defaults)
+        my.defaults = XML.new("defaults")
+        my.is_local_defaults = "1"
+    endif
+
     #    Setup defaults for inherited attributes and entities
-    c_instance_setup_defaults(my.c_cast)
+    c_instance_setup_defaults(my.c_cast, my.defaults)
+
+    #   Cleanup
+    if is_true(my.is_local_defaults)
+        delete my.defaults
+    endif
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -9022,14 +9880,26 @@ function c_value_setup_defaults(c_value, defaults)
     my.c_value_name = defined(my.c_value.name) ?? " name=\"$(my.c_value.name)\"" ? ""
     echo_trace("[L1] Setup defaults for entity: <$(name(my.c_value))$(my.c_value_name)/>", my)
 
+    #    Defaults should be also inherited.
+    if !defined(my.defaults)
+        my.defaults = XML.new("defaults")
+        my.is_local_defaults = "1"
+    endif
+
     #    Setup defaults for allowed entities
     for my.c_value.c_cast as _c_cast
         c_cast_setup_defaults(_c_cast)
     endfor
+
     my.default_value = my.defaults.value ?
     if defined(my.default_value) & !defined(my.c_value.value)
         echo_trace("       value=\"$(my.default_value:)\"", my)
         my.c_value.value = my.default_value
+    endif
+
+    #   Cleanup
+    if is_true(my.is_local_defaults)
+        delete my.defaults
     endif
 endfunction
 
@@ -9103,13 +9973,19 @@ function c_variable_setup_defaults(c_variable, defaults)
     my.c_variable_name = defined(my.c_variable.name) ?? " name=\"$(my.c_variable.name)\"" ? ""
     echo_trace("[L1] Setup defaults for entity: <$(name(my.c_variable))$(my.c_variable_name)/>", my)
 
+    #    Defaults should be also inherited.
+    if !defined(my.defaults)
+        my.defaults = XML.new("defaults")
+        my.is_local_defaults = "1"
+    endif
+
     #    Setup defaults for inherited attributes and entities
-    uid_setup_defaults(my.c_variable)
-    visibility_setup_defaults(my.c_variable)
-    declaration_setup_defaults(my.c_variable)
-    definition_setup_defaults(my.c_variable)
-    c_feature_attr_setup_defaults(my.c_variable)
-    c_instance_setup_defaults(my.c_variable)
+    uid_setup_defaults(my.c_variable, my.defaults)
+    visibility_setup_defaults(my.c_variable, my.defaults)
+    declaration_setup_defaults(my.c_variable, my.defaults)
+    definition_setup_defaults(my.c_variable, my.defaults)
+    c_feature_attr_setup_defaults(my.c_variable, my.defaults)
+    c_instance_setup_defaults(my.c_variable, my.defaults)
 
     #    Setup defaults for allowed entities
     for my.c_variable.c_value as _c_value
@@ -9119,10 +9995,16 @@ function c_variable_setup_defaults(c_variable, defaults)
     for my.c_variable.c_modifier as _c_modifier
         c_modifier_setup_defaults(_c_modifier)
     endfor
+
     my.default_value = my.defaults.name ?
     if defined(my.default_value) & !defined(my.c_variable.name)
         echo_trace("       name=\"$(my.default_value:)\"", my)
         my.c_variable.name = my.default_value
+    endif
+
+    #   Cleanup
+    if is_true(my.is_local_defaults)
+        delete my.defaults
     endif
 endfunction
 
@@ -9259,9 +10141,15 @@ function c_module_setup_defaults(c_module, defaults)
     my.c_module_name = defined(my.c_module.name) ?? " name=\"$(my.c_module.name)\"" ? ""
     echo_trace("[L1] Setup defaults for entity: <$(name(my.c_module))$(my.c_module_name)/>", my)
 
+    #    Defaults should be also inherited.
+    if !defined(my.defaults)
+        my.defaults = XML.new("defaults")
+        my.is_local_defaults = "1"
+    endif
+
     #    Setup defaults for inherited attributes and entities
-    scope_setup_defaults(my.c_module)
-    of_class_setup_defaults(my.c_module)
+    scope_setup_defaults(my.c_module, my.defaults)
+    of_class_setup_defaults(my.c_module, my.defaults)
 
     #    Setup defaults for allowed entities
     for my.c_module.c_include as _c_include
@@ -9299,6 +10187,7 @@ function c_module_setup_defaults(c_module, defaults)
     for my.c_module.c_macroses as _c_macroses
         c_macroses_setup_defaults(_c_macroses)
     endfor
+
     my.default_value = my.defaults.id ?
     if defined(my.default_value) & !defined(my.c_module.id)
         echo_trace("       id=\"$(my.default_value:)\"", my)
@@ -9345,6 +10234,11 @@ function c_module_setup_defaults(c_module, defaults)
     if defined(my.default_value) & !defined(my.c_module.has_cmakedefine)
         echo_trace("       has_cmakedefine=\"$(my.default_value:)\"", my)
         my.c_module.has_cmakedefine = my.default_value
+    endif
+
+    #   Cleanup
+    if is_true(my.is_local_defaults)
+        delete my.defaults
     endif
 endfunction
 
@@ -9717,10 +10611,22 @@ endfunction
 function c_alternative_setup_defaults(c_alternative, defaults)
     my.c_alternative_name = defined(my.c_alternative.name) ?? " name=\"$(my.c_alternative.name)\"" ? ""
     echo_trace("[L1] Setup defaults for entity: <$(name(my.c_alternative))$(my.c_alternative_name)/>", my)
+
+    #    Defaults should be also inherited.
+    if !defined(my.defaults)
+        my.defaults = XML.new("defaults")
+        my.is_local_defaults = "1"
+    endif
+
     my.default_value = my.defaults.feature ?
     if defined(my.default_value) & !defined(my.c_alternative.feature)
         echo_trace("       feature=\"$(my.default_value:)\"", my)
         my.c_alternative.feature = my.default_value
+    endif
+
+    #   Cleanup
+    if is_true(my.is_local_defaults)
+        delete my.defaults
     endif
 endfunction
 
@@ -9773,14 +10679,26 @@ function c_require_setup_defaults(c_require, defaults)
     my.c_require_name = defined(my.c_require.name) ?? " name=\"$(my.c_require.name)\"" ? ""
     echo_trace("[L1] Setup defaults for entity: <$(name(my.c_require))$(my.c_require_name)/>", my)
 
+    #    Defaults should be also inherited.
+    if !defined(my.defaults)
+        my.defaults = XML.new("defaults")
+        my.is_local_defaults = "1"
+    endif
+
     #    Setup defaults for allowed entities
     for my.c_require.c_alternative as _c_alternative
         c_alternative_setup_defaults(_c_alternative)
     endfor
+
     my.default_value = my.defaults.feature ?
     if defined(my.default_value) & !defined(my.c_require.feature)
         echo_trace("       feature=\"$(my.default_value:)\"", my)
         my.c_require.feature = my.default_value
+    endif
+
+    #   Cleanup
+    if is_true(my.is_local_defaults)
+        delete my.defaults
     endif
 endfunction
 
@@ -9848,13 +10766,20 @@ function c_feature_setup_defaults(c_feature, defaults)
     my.c_feature_name = defined(my.c_feature.name) ?? " name=\"$(my.c_feature.name)\"" ? ""
     echo_trace("[L1] Setup defaults for entity: <$(name(my.c_feature))$(my.c_feature_name)/>", my)
 
+    #    Defaults should be also inherited.
+    if !defined(my.defaults)
+        my.defaults = XML.new("defaults")
+        my.is_local_defaults = "1"
+    endif
+
     #    Setup defaults for inherited attributes and entities
-    uid_setup_defaults(my.c_feature)
+    uid_setup_defaults(my.c_feature, my.defaults)
 
     #    Setup defaults for allowed entities
     for my.c_feature.c_require as _c_require
         c_require_setup_defaults(_c_require)
     endfor
+
     my.default_value = my.defaults.name ?
     if defined(my.default_value) & !defined(my.c_feature.name)
         echo_trace("       name=\"$(my.default_value:)\"", my)
@@ -9865,6 +10790,11 @@ function c_feature_setup_defaults(c_feature, defaults)
     if defined(my.default_value) & !defined(my.c_feature.default)
         echo_trace("       default=\"$(my.default_value:)\"", my)
         my.c_feature.default = my.default_value
+    endif
+
+    #   Cleanup
+    if is_true(my.is_local_defaults)
+        delete my.defaults
     endif
 endfunction
 
@@ -9982,10 +10912,17 @@ function c_features_setup_defaults(c_features, defaults)
     my.c_features_name = defined(my.c_features.name) ?? " name=\"$(my.c_features.name)\"" ? ""
     echo_trace("[L1] Setup defaults for entity: <$(name(my.c_features))$(my.c_features_name)/>", my)
 
+    #    Defaults should be also inherited.
+    if !defined(my.defaults)
+        my.defaults = XML.new("defaults")
+        my.is_local_defaults = "1"
+    endif
+
     #    Setup defaults for allowed entities
     for my.c_features.c_feature as _c_feature
         c_feature_setup_defaults(_c_feature)
     endfor
+
     my.default_value = my.defaults.name ?
     if defined(my.default_value) & !defined(my.c_features.name)
         echo_trace("       name=\"$(my.default_value:)\"", my)
@@ -10002,6 +10939,11 @@ function c_features_setup_defaults(c_features, defaults)
     if defined(my.default_value) & !defined(my.c_features.path)
         echo_trace("       path=\"$(my.default_value:)\"", my)
         my.c_features.path = my.default_value
+    endif
+
+    #   Cleanup
+    if is_true(my.is_local_defaults)
+        delete my.defaults
     endif
 endfunction
 

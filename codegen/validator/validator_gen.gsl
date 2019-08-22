@@ -103,6 +103,13 @@ function generate_function_setup_defaults(entity)
         >    echo_trace("[L1] Setup defaults for entity: <\$\(name($(my.my_tag)\)\)\$\(my.$(my.tag:)_name\)/>", my)
     endif
 
+    >
+    >    #    Defaults should be also inherited.
+    >    if !defined(my.defaults)
+    >        my.defaults = XML.new("defaults")
+    >        my.is_local_defaults = "1"
+    >    endif
+
     #
     #   Generate "setup defaults" for inherited entities
     #
@@ -111,21 +118,10 @@ function generate_function_setup_defaults(entity)
             >
             >    #    Setup defaults for inherited attributes and entities
         endif
-        for inherit.attr
-            if first()
-                >    new defaults
-            endif
-                if defined(attr.default)
-                    >        .$(attr.name:) = "$(attr.default:)"
-                endif
-            if last()
-                >        $(entity_derive_name_of_function_setup_defaults(inherit.entity))($(my.my_tag), defaults)
-                >        delete defaults
-                >    endnew
-            endif
-        else
-                >    $(entity_derive_name_of_function_setup_defaults(inherit.entity))($(my.my_tag))
+        for inherit.attr where defined(attr.default)
+            >     my.defaults.$(attr.name:) = "$(attr.default:)"
         endfor
+        >    $(entity_derive_name_of_function_setup_defaults(inherit.entity))($(my.my_tag), my.defaults)
     endfor
 
     #
@@ -166,11 +162,15 @@ function generate_function_setup_defaults(entity)
     #   Generate "setup defaults" body for self attributes
     #
     for my.entity.attr
-        if !first()
-            >
-        endif
+        >
         generate_setup_defaults_body_for_attr(attr, my.entity)
     endfor
+
+    >
+    >    #   Cleanup
+    >    if is_true(my.is_local_defaults)
+    >        delete my.defaults
+    >    endif
 
     >endfunction
 endfunction

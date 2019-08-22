@@ -78,11 +78,21 @@
     <allow entity="implemented interface" tag="interface" occurs="1+"/>
     <allow entity="dependency" occurs="0+"/>
     <allow entity="require" occurs="0+"/>
+
     <allow entity="method" occurs="0+">
         <attr name="visibility" default="private"/>
+        <attr name="declaration" default="private"/>
+        <attr name="defnition" default="private"/>
     </allow>
+
+    <allow entity="enum">
+        <attr name="declaration" default="private"/>
+        <attr name="defnition" default="private"/>
+    </allow>
+
     <allow entity="constant">
         <attr name="value" required="1"/>
+        <attr name="defnition" default="private"/>
     </allow>
 </entity>
 
