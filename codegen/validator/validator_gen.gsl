@@ -184,14 +184,18 @@ function generate_validation_body_for_attr(attr, entity)
     my.attr_access = "$(my.my_tag:).$(my.attr.name:)"
 
     my.attr_default_str = " (default: $(my.attr_default_value:))" ? ""
-    >    echo_trace("     Validate attribute: $(my.attr.name:)=\\"\$\($(my.attr_access:)\)\\"", my)
 
     >    my.restrictions.attr_$(my.attr.name)_apply ?= "1"
-    if is_true(my.attr.required)
-        >    if my.restrictions.attr_$(my.attr.name)_apply & !defined($(my.attr_access:))
-        >        echo_fatal_required_attr($(my.my_tag:), "$(my.attr.name:)")
-        >    endif
-    endif
+    >    my.restrictions.attr_$(my.attr.name)_required ?= "$(is_true(my.attr.required))"
+    >
+    >    if my.restrictions.attr_$(my.attr.name)_apply
+    >        echo_trace("     Validate attribute: $(my.attr.name:)=\\"\$\($(my.attr_access:)?\)\\"", my)
+    >    endif
+    >
+    >    if !defined($(my.attr_access:)) & \\
+    >                my.restrictions.attr_$(my.attr.name)_apply & my.restrictions.attr_$(my.attr.name)_required
+    >        echo_fatal_required_attr($(my.my_tag:), "$(my.attr.name:)")
+    >    endif
 
     for my.attr.restrict
         my.restrict_list ?= ""
@@ -249,7 +253,7 @@ function generate_validation_body_for_oneof_attr(oneof, entity)
 
     >
     >    my.restrictions.oneof_$(my.oneof.name)_apply ?= "1"
-    >    my.restrictions.oneof_$(my.oneof.name)_required ?= $(is_true(my.oneof.required))
+    >    my.restrictions.oneof_$(my.oneof.name)_required ?= "$(is_true(my.oneof.required))"
     >
     >    if my.restrictions.oneof_$(my.oneof.name)_apply & \
     >             my.restrictions.oneof_$(my.oneof.name)_required &  \
@@ -310,11 +314,13 @@ function generate_validation_body_for_allow(allow, entity, resolved)
     >    for $(my.my_tag).$(my.allowed_entity_tag) as _$(my.allowed_entity_tag)
     >        new restrictions
     for my.allow.oneof
-        >            .oneof_$(oneof.name)_apply = "$(is_true(oneof.resolved))"
+        my.apply = my.resolved | is_false(oneof.resolved)
+        >            .oneof_$(oneof.name)_apply = "$(my.apply)"
         >            .oneof_$(oneof.name)_required = "$(is_true(oneof.required))"
     endfor
     for my.allow.attr
-        >            .attr_$(attr.name)_apply = "$(is_true(attr.resolved))"
+        my.apply = my.resolved | is_false(attr.resolved)
+        >            .attr_$(attr.name)_apply = "$(my.apply)"
         >            .attr_$(attr.name)_required = "$(is_true(attr.required))"
     endfor
 

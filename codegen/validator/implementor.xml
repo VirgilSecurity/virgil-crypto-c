@@ -75,17 +75,19 @@
     <inherit entity="c_prefix"/>
 
     <allow entity="context" occurs="0/1"/>
-    <allow entity="interface" occurs="1+"/>
+    <allow entity="implemented interface" tag="interface" occurs="1+"/>
     <allow entity="dependency" occurs="0+"/>
     <allow entity="require" occurs="0+"/>
     <allow entity="method" occurs="0+">
         <attr name="visibility" default="private"/>
     </allow>
-    <allow entity="constant"/>
+    <allow entity="constant">
+        <attr name="value" required="1"/>
+    </allow>
 </entity>
 
 
-<entity name="interface">
+<entity name="implemented interface" tag="interface">
     Provide information about implemented interface.
 
     <attr name="name" required="1">

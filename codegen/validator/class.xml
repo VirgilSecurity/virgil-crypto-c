@@ -101,7 +101,9 @@
 
     <allow entity="require"/>
     <allow entity="dependency"/>
-    <allow entity="constant"/>
+    <allow entity="constant">
+        <attr name="value" required="1"/>
+    </allow>
     <allow entity="property"/>
     <allow entity="enum"/>
     <allow entity="callback"/>
