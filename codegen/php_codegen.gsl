@@ -61,7 +61,7 @@ function php_generate_sources (php_project)
         echo_fatal ("Can not create directory: $(my.wrapper.source_dir:)")
     endif
 
-    for my.php_project.php_module where ! string_in(php_module.name, "extension_main, extension_status")
+    for my.php_project.php_module where string_in (php_module.type, "class, interface")
         php_generate_source_php (php_module)
     endfor
 
@@ -97,7 +97,25 @@ function php_insert_class (php_class)
 
     for my.php_class.php_method by is_false (php_method.is_specific_method)
         newline ()
-        php_insert_class_method (php_method)
+        php_insert_class_method (php_method, "class")
+    endfor
+
+    php_insert_code("}",0)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Insert statement: interface
+# ---------------------------------------------------------------------------
+function php_insert_interface (php_interface)
+    check_arguments (my, "php_interface", my)
+
+    php_insert_description(my.php_interface, 0)
+
+    php_insert_code("interface $(my.php_interface.name:) {", 0)
+
+    for my.php_interface.php_method
+        newline ()
+        php_insert_class_method (php_method, "interface")
     endfor
 
     php_insert_code("}",0)
@@ -168,11 +186,7 @@ endfunction
 #   
 # ---------------------------------------------------------------------------
 function php_format_c_license(license)
-    my.lic = "@ license\n"
-    my.lic += "--------------------------------------------------------------------------\n"
-    my.lic += my.license
-    my.lic += "--------------------------------------------------------------------------\n"
-    my.lic += "@end"
+    my.lic = format_left(my.license, 1)
 
     my.res = string_indent (my.lic)
     my.res = "// $(my.res:left, block, no)$(terminator)"
@@ -246,31 +260,38 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Insert statement: class.method
 # ---------------------------------------------------------------------------
-function php_insert_class_method (php_method)
-    check_arguments (my, "php_method", my)
+function php_insert_class_method (php_method, type)
+    check_arguments (my, "php_method, type", my)
 
     assert_attributes (my.php_method->high_level, "name", my)
 
-    my.class_method_header = php_format_class_method_header(my.php_method->high_level)
+    my.class_method_header = php_format_class_method_header(my.php_method->high_level, my.type)
 
     php_insert_description (my.php_method->high_level->docblock, 1)
 
     php_insert_code("$(my.class_method_header:)", 1)
-    php_insert_code("{", 1)
 
-    if count (my.php_method->high_level.php_code)
-        php_insert_code (my.php_method->high_level->php_code., 2)
+    if my.type = "class"
+        php_insert_code("{", 1)
+
+        if count (my.php_method->high_level.php_code)
+            php_insert_code (my.php_method->high_level->php_code., 2)
+        else
+            php_insert_code ("throw new Exception(\"Not implemented!\")", 2)
+        endif
+        php_insert_code ("}", 1)
+    elsif my.type = "interface"
     else
-        php_insert_code ("throw new Exception(\"Not implemented!\")", 2)
+        echo_fatal("Undefinded type: $(my.type:)", my)
     endif
-    php_insert_code ("}", 1)
+
 endfunction
 
 # ---------------------------------------------------------------------------
 #   
 # ---------------------------------------------------------------------------
-function php_format_class_method_header (php_method)
-    check_arguments (my, "php_method", my)
+function php_format_class_method_header (php_method, type)
+    check_arguments (my, "php_method, type", my)
 
     my.arguments = ""
 
@@ -281,7 +302,25 @@ function php_format_class_method_header (php_method)
         endif
     endfor
 
-    return "public function $(my.php_method.name:)($(my.arguments:)): $(my.php_method.return_type:) $(my.php_method.return_data:)"
+    if ! defined (my.php_method.return_type)
+        my.return_type = "TODO! RETURN_TYPE"
+    else
+        my.return_type = my.php_method.return_type
+    endif
+
+    if ! defined (my.php_method.return_data)
+        my.return_data = "TODO! RETURN_DATA"
+    else
+        my.return_data = my.php_method.return_data
+    endif
+
+    my._d = ""
+
+    if my.type = "interface"
+        my._d = ";"
+    endif
+
+    return "public function $(my.php_method.name:)($(my.arguments:)): $(my.return_type:)$(my._d:) $(my.return_data:)"
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -301,34 +340,34 @@ function php_generate_source_extension_main (extension_module, php_project)
 
     output my.extension_module.source_file_path
 
-    my.func_wrap = "\
+    my.func_wrap = format_left("\
     // --------------------------------------------------------------------------
     //  Functions wrapping
     // --------------------------------------------------------------------------
-    "
+    ", 0)
     
-    my.const = "\
+    my.const = format_left("\
     // --------------------------------------------------------------------------
     //  Constants
     // --------------------------------------------------------------------------
     const char $(my.extension_module.extension_name:UPPER)_VERSION[] = \"$(my.extension_module.version:)\";
     const char $(my.extension_module.extension_name:UPPER)_EXTNAME[] = \"$(my.extension_module.extension_name:)\";
-    "
+    ", 0)
 
-    my.registered_resources = "\
+    my.registered_resources = format_left("\
     // --------------------------------------------------------------------------
     //  Registered resources
     // --------------------------------------------------------------------------
-    "
+    ", 0)
 
-    my.define_function_entry = "\
-    // --------------------------------------------------------------------------
-    //  Define all function entries
-    // --------------------------------------------------------------------------
-    static zend_function_entry $(my.extension_module.extension_name:)_functions[] = {
-    "
+    my.define_function_entry = format_left("\
+        // --------------------------------------------------------------------------
+        //  Define all function entries
+        // --------------------------------------------------------------------------
+        static zend_function_entry $(my.extension_module.extension_name:)_functions[] = {
+    ")
 
-    my.module_definition = "\
+    my.module_definition = format_left("\
     // --------------------------------------------------------------------------
     //  Extension module definition
     // --------------------------------------------------------------------------
@@ -350,17 +389,17 @@ function php_generate_source_extension_main (extension_module, php_project)
     };
 
     ZEND_GET_MODULE($(my.extension_module.extension_name:))
-    "
+    ")
 
-    my.init_function_definition_p1 = "\
-    // --------------------------------------------------------------------------
-    //  Extension init functions definition
-    // --------------------------------------------------------------------------
-    "
+    my.init_function_definition_p1 = format_left("\
+        // --------------------------------------------------------------------------
+        //  Extension init functions definition
+        // --------------------------------------------------------------------------
+    ", 0)
 
-    my.init_function_definition_p2 = "\
+    my.init_function_definition_p2 = format_left("\
     PHP_MINIT_FUNCTION($(my.extension_module.extension_name:)) {
-    "
+    ")
 
     my.license = php_format_c_license(my.extension_module->license) + "\n"
     my.include = php_insert_extension_include_common(my.php_project.prefix)
@@ -369,79 +408,87 @@ function php_generate_source_extension_main (extension_module, php_project)
         for php_module.php_class as php_class
 
             my.include += php_insert_extension_include(php_class.low_level_name_c_format)
-            my.const += "const char $(php_class.low_level_name_c_format:UPPER)_RES_NAME[] = \"$(php_class.low_level_name_c_format:)_t\"\n"
-            my.registered_resources += "int le_$(php_class.low_level_name_c_format:)\n"
+            my.const += format_left("\
+                const char $(php_class.low_level_name_c_format:UPPER)_RES_NAME[] = \"$(php_class.low_level_name_c_format:)_t\"\n
+                ", 0)
+            my.registered_resources += format_left("\
+                int le_$(php_class.low_level_name_c_format:)\n
+                ", 0)
 
             #echo_debug_item(php_class)
             #echo_fatal("", my)
 
             if count(php_class.php_method) > 0
 
-                    my.r = "$(php_class.low_level_name_c_format:)"
+                my.r = "$(php_class.low_level_name_c_format:)"
 
-                    my.init_function_definition_p1 += "\
-                    static void $(my.r:)_dtor_php(zend_resource *rsrc) {
-                        $(my.r:)_delete(($(my.r:)_t *)rsrc->ptr);
-                    }
-                    "
+                my.init_function_definition_p1 += format_left("\
+                static void $(my.r:)_dtor_php(zend_resource *rsrc) {
+                    $(my.r:)_delete(($(my.r:)_t *)rsrc->ptr);
+                }
+                ", 0)
 
-                    my.init_function_definition_p2 += "\
-                    le_$(my.r:) = zend_register_list_destructors_ex($(my.r:)_dtor_php, NULL, $(php_class.low_level_name_c_format:UPPER)_RES_NAME, module_number);
-                    "
+                my.init_function_definition_p2 += format_left("\
+                le_$(my.r:) = zend_register_list_destructors_ex($(my.r:)_dtor_php, NULL, $(php_class.low_level_name_c_format:UPPER)_RES_NAME, module_number);
+                ", 1)
 
                 for php_class.php_method as php_method
 
                     #echo_debug_item(php_class)
                     #echo_fatal("", my)
 
-                    my.define_function_entry += "PHP_FE($(php_method->low_level.function_name:)_php, arginfo_$(php_method->low_level.function_name:)_php)\n"
+                    my.define_function_entry += format_left("PHP_FE($(php_method->low_level.function_name:)_php, arginfo_$(php_method->low_level.function_name:)_php)\n", 1)
 
                     my.extension_code = php_method->low_level->extension_code
+
+                    if !first()
+                        my.func_wrap += "\n"
+                    endif
                     
-                    my.func_wrap += my.extension_code->zend_header + "\n"
-                    my.func_wrap += my.extension_code->php_function + "\n"
-                    my.func_wrap += "{ \n"
+                    my.func_wrap += format_left(my.extension_code->zend_header, 0) + "\n"
+                    my.func_wrap += format_left(my.extension_code->php_function, 0) + "\n"
+                    my.func_wrap += "{"
 
                     if defined (php_method->low_level.is_constructor)
-                        my.func_wrap += my.extension_code->register_resource
+                        my.func_wrap += format_left(my.extension_code->register_resource, 1) + "\n"
                     else 
-                        my.func_wrap += my.extension_code->declaration_input + "\n"
-                        my.func_wrap += my.extension_code->parse_arguments + "\n"
+                        my.func_wrap += format_left(my.extension_code->declaration_input, 1) + "\n"
+                        my.func_wrap += format_left(my.extension_code->parse_arguments, 1) + "\n"
 
                         if defined (php_method->low_level.is_destructor)
-                            my.func_wrap += my.extension_code->fetch_type + "\n"
+                            my.func_wrap += format_left(my.extension_code->fetch_type, 1) + "\n"
                         else
-                            my.func_wrap += my.extension_code->proxy_call + "\n"
+                            my.func_wrap += format_left(my.extension_code->proxy_call, 1) + "\n"
                             my.func_wrap += my.extension_code->allocate_output_buffer + "\n"
-                            my.func_wrap += my.extension_code->status + "\n"
-                            my.func_wrap += my.extension_code->output + "\n"
+                            my.func_wrap += format_left(my.extension_code->status, 1) + "\n"
+                            my.func_wrap += format_left(my.extension_code->output, 1) + "\n"
                         endif
                     endif
-                        my.func_wrap += "} \n"
+                        my.func_wrap += "}"
                 endfor
             endif
         endfor
     endfor
 
-    my.define_function_entry += "\
+    my.define_function_entry += format_left("\
         PHP_FE_END
     };
-    "
+    ", 0)
 
-    my.init_function_definition_p2 += "\
+    my.init_function_definition_p2 += format_left("\
         return SUCCESS;
     }
-    "
+    ", 0)
 
-    my.init_function_definition_p3 = "\
-    PHP_MSHUTDOWN_FUNCTION($(my.r:)) {
+    my.init_function_definition_p3 = format_left("\
+    PHP_MSHUTDOWN_FUNCTION($(my.extension_module.extension_name:)) {
         return SUCCESS;
     }
-    "
+    ", 0)
 
     my.init_function_definition = my.init_function_definition_p1 + my.init_function_definition_p2 + my.init_function_definition_p3
 
-    my.code = my.license + my.include + my.const + my.registered_resources + my.func_wrap + my.define_function_entry + my.module_definition + my.init_function_definition
+    my.code = my.license + my.include + "\n" + my.const + "\n" + my.registered_resources + "\n" + my.func_wrap + my.define_function_entry + "\n" + my.module_definition + "\n" + my.init_function_definition
 
     php_insert_raw_code(my.code)
 
@@ -483,10 +530,17 @@ function php_generate_source_php (current_module)
     php_insert_php_open_tag()
     php_insert_prologue (my.current_module)
 
-    for my.current_module.php_class
-        newline_if (first ())
-        php_insert_class (php_class)
-    endfor
+    if my.current_module.type = "class"
+        for my.current_module.php_class
+            newline_if (first ())
+            php_insert_class (php_class)
+        endfor
+    elsif my.current_module.type = "interface"
+        php_insert_interface(my.current_module->php_interface)
+    else
+        echo_debug_item(my.current_module)
+        echo_fatal("Not implemented", my)
+    endif
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -510,13 +564,12 @@ function php_insert_extension_include_common (prefix)
 
     check_arguments (my, "prefix", my)
 
-    my.res = "\
+    my.res = format_left("\
     #include <php.h>
     #include <zend_exception.h>
     #include <zend_list.h>
-
     #include \"$(my.prefix:)_assert.h\"
-    "
+    ", 0)
 
     return my.res 
 endfunction
@@ -528,7 +581,7 @@ function php_insert_extension_include (low_level_name_c_format)
 
     check_arguments (my, "low_level_name_c_format", my)
 
-    my.res = format_left("#include \"$(my.low_level_name_c_format:).h\"\n")
+    my.res = format_left("#include \"$(my.low_level_name_c_format:).h\"\n", 0)
 
     return my.res 
 endfunction

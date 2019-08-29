@@ -45,6 +45,7 @@ gsl from "interface.gsl"
 gsl from "component.gsl"
 gsl from "c_component.gsl"
 gsl from "php_codegen.gsl"
+gsl from "php_derive.gsl"
 
 # ---------------------------------------------------------------------------
 #   
@@ -146,20 +147,77 @@ function php_create_custom_modules (source, php_project, meta)
         .source_file_path = cat_path (0.source_dir, 0.source_file_name)
         .version = my.php_project.version
         .extension_name = php_derive_extension_name (my.php_project)
+        .type = "extension"
 
         copy my.php_project->license to php_module
         
     endnew
 endfunction
 
-function php_create_interface_module (source, destination, wrapper, meta)
+function php_create_interface_module (interface, php_project, meta)
+    check_arguments (my, "interface, php_project, meta", my)
+
+    echo_info ("Create <php_module/> from interface: '$(my.interface.name:)'", my)
+
+    new php_module to my.php_project
+        .name = php_derive_module_name (my.interface, my.php_project, "Pascal")
+        .source_file_name = 0.name + ".php"
+        .source_file_path = cat_path (my.php_project.source_dir, 0.source_file_name)
+        .prefix = my.php_project.prefix
+        .type = "interface"
+
+        new php_license to php_module
+            . = php_format_license (my.php_project->license)
+        endnew
+
+        new php_interface to php_module
+            . = php_format_description (my.interface) ?
+            .name = "$(my.interface.name:Pascal)"
+
+            for my.interface.method as method
+                new php_method to php_interface
+                    new high_level to php_method
+
+                        .name = "$(method.name:Camel)"
+
+                        php_map_res_data_type(method, high_level)
+
+                        my.docblock_data = method. + "\n"
+                        if defined (method->argument)
+                            for method.argument as argument
+                                if defined (argument.class)
+                                    new php_argument to high_level
+                                        .name = php_derive_argument_name (argument, "-h")
+                                        php_map_argument_type (argument, "-h", php_argument)
+                                        my.docblock_data += "@param $(0.type:) $(0.name:)\n"
+                                    endnew
+                                endif
+                            endfor
+                        endif
+
+                        my.docblock_data += "@return $(0.res_type:)\n"
+
+                    new docblock to high_level
+                        . = php_format_docblock (my.docblock_data) ?
+                    endnew
+
+                    endnew
+                    new low_level to php_method
+                        #
+                    endnew
+                endnew
+            endfor
+        endnew
+        
+    endnew
+    echo_debug ("Done", my)
 endfunction
 
 function php_create_implementation_module (source, destination, wrapper, meta)
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Create module with PHP class from the abstract 'class' notion.
+#   
 # ---------------------------------------------------------------------------
 function php_create_class_module (class, php_project, meta)
     check_arguments (my, "class, php_project, meta", my)
@@ -177,6 +235,7 @@ function php_create_class_module (class, php_project, meta)
         .source_file_name = 0.name + ".php"
         .source_file_path = cat_path (my.php_project.source_dir, 0.source_file_name)
         .prefix = my.php_project.prefix
+        .type = "class"
 
         new php_license to php_module
             . = php_format_license (my.php_project->license)
@@ -320,19 +379,9 @@ function php_create_class_default_destructor (php_class, class, php_project, met
     endnew
 endfunction
 
-# ---------------------------------------------------------------------------
-#   Create entity <php_method/> of from the class entity <method/>.
-# ---------------------------------------------------------------------------
-function php_create_class_method (class, method, destination, php_project, meta)
-    check_arguments (my, "class, method, destination, php_project, meta", my)
+function php_map_res_data_type(method, destination)
+    check_arguments (my, "method, destination", my)
 
-    if defined (my.method->return.type) & my.method->return.type = "size"
-        return
-    endif
-
-    new php_method to my.destination
-
-        #COMMON
         my.count_in = 1 # ctx
         my.count_out = 0
         my.return_data = ""
@@ -354,19 +403,42 @@ function php_create_class_method (class, method, destination, php_project, meta)
         my.res_data = ""
 
         if my.count_out = 0
-            my.res_data = ""
-            my.res_type = "void"
+            my.destination.res_data = ""
+            my.destination.res_type = "void"
         elsif my.count_out = 1
-            my.res_data = "// $(my.return_data:)"
+            my.destination.res_data = "// $(my.return_data:)"
             # TODO! NEED TO BE CHECKED WITH OTHER TYPES
-            my.res_type = "string"
+            my.destination.res_type = "string"
         elsif my.count_out > 1
-            my.res_data = "// [$(my.return_data:)]"
-            my.res_type = "array"
+            my.destination.res_data = "// [$(my.return_data:)]"
+            my.destination.res_type = "array"
         endif
 
+        my.destination.return_type = my.destination.res_type
+        my.destination.return_data = my.destination.res_data
+
+        my.destination.count_in = my.count_in
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Create entity <php_method/> of from the class entity <method/>.
+# ---------------------------------------------------------------------------
+function php_create_class_method (class, method, destination, php_project, meta)
+    check_arguments (my, "class, method, destination, php_project, meta", my)
+
+    if defined (my.method->return.type) & my.method->return.type = "size"
+        return
+    endif
+
+    new php_method to my.destination
+
+        php_map_res_data_type(my.method, php_method)
+
         my.return_enum_status = count (my.method.return, string_equal (return.enum, "status"))
-        my.extension_return_type = php_derive_extension_return_type(my.res_type) 
+        my.extension_return_type = php_derive_extension_return_type(0.res_type)
+        my.res_data = 0.res_data
+        my.res_type = 0.res_type
+        my.count_in = 0.count_in
 
         # HIGH_LEVEL
         new high_level to php_method
@@ -512,7 +584,8 @@ function php_create_enum_module (enum, php_project, meta)
     endif
 
     if my.enum.name <> "status"
-        echo_fatal("Not implemented enum: $(my.enum.name:)", my)
+        # TODO: Need enum implementation
+        echo_info("Not implemented enum: $(my.enum.name:)", my)
     endif
 
     if my.enum.name = "status"
@@ -522,6 +595,7 @@ function php_create_enum_module (enum, php_project, meta)
             .source_file_name = 0.filename + ".c"
             .source_dir = cat_path (my.php_project.source_dir, "extension")
             .source_file_path = cat_path (0.source_dir, 0.source_file_name)
+            .type = "extension"
 
             new extension to php_module
                 .prefix = my.php_project.prefix
@@ -579,52 +653,6 @@ function php_module_resolve (php_module, php_project)
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Return formatted module name.
-# ---------------------------------------------------------------------------
-function php_derive_module_name (type, php_project, ppm)
-    check_arguments (my, "type, php_project, ppm", my)
-
-    assert_attribute (my.type, "name", my)
-
-    if ! string_in(my.ppm, "c, UPPER, Pascal, Camel")
-        echo_fatal("Undefined ppm: $(my.ppm:)", my)
-    endif
-
-    return "$(my.type.name:$(my.ppm))"
-endfunction
-
-# ---------------------------------------------------------------------------
-#   Return formatted name of the PHP class.
-# ---------------------------------------------------------------------------
-function php_derive_class_name (class, php_project)
-    check_arguments (my, "class, php_project", my)
-
-    assert_attribute_one_of (my.class, "name", my)
-
-    return php_derive_class_name_str (my.class.name, my.php_project)
-endfunction
-
-# ---------------------------------------------------------------------------
-#   Return formatted name of the PHP class.
-# ---------------------------------------------------------------------------
-function php_derive_class_name_str (name, php_project)
-    check_arguments (my, "name, php_project", my)
-
-    return "$(my.name:Pascal)"
-endfunction
-
-# ---------------------------------------------------------------------------
-#   Return C formatted low level name of the PHP class.
-# ---------------------------------------------------------------------------
-function php_derive_class_low_level_name_c_formated (class, php_project)
-    check_arguments (my, "class, php_project", my)
-
-    assert_attribute_one_of (my.class, "name", my)
-
-    return "$(my.php_project.prefix:c)_$(my.class.name:c)"
-endfunction
-
-# ---------------------------------------------------------------------------
 #   
 # ---------------------------------------------------------------------------
 function php_map_argument_type (argument, type, destination)
@@ -637,7 +665,9 @@ function php_map_argument_type (argument, type, destination)
         if my.argument.class = "data"
             my.destination.type = "string"
         else
-            echo_fatal("Undefined argument type for the class: $(my.argument.class)")
+            #TODO Need impl!
+            echo_info("Undefined argument type for the class: $(my.argument.class). ")
+            my.destination.type = "string"
         endif
     elsif my.type = "-l"
         if my.argument.class = "data"
@@ -646,7 +676,10 @@ function php_map_argument_type (argument, type, destination)
         elsif my.argument.class = "buffer"
             my.destination.type = "vsc_buffer_t"
         else
-            echo_fatal("Undefined argument class type: $(my.argument.class)", my)
+            #TODO Need impl!
+            echo_info("Undefined argument class type: $(my.argument.class)", my)
+            my.destination.type = "vsc_data_t"
+            my.destination.zend_type = "IS_STRING"
         endif
     endif
 
@@ -673,80 +706,7 @@ function php_map_extension_argument_len (argument, destination)
     endif
 endfunction
 
-# ---------------------------------------------------------------------------
-#   
-# ---------------------------------------------------------------------------
-function php_derive_extension_return_type (type)
-    check_arguments (my, "type", my)
 
-    my.res = ""
-
-    if my.type = "void"
-        my.res = "IS_VOID"
-    elsif my.type = "string"
-        my.res = "IS_STRING"
-    elsif my.type = "array"
-        my.res = "IS_ARRAY"
-    elsif my.type = "res"
-        my.res = "IS_RESOURCE"
-    else
-        echo_fatal("Undefined type: $(my.type)", my)
-    endif
-
-    return my.res
-endfunction
-
-# ---------------------------------------------------------------------------
-#   
-# ---------------------------------------------------------------------------
-function php_derive_method_name (method, type)
-    check_arguments (my, "method, type", my)
-
-    php_type_checker(my.type)
-
-    if my.type = "-h"
-        my.res = "$(my.method.name:Camel)"
-    elsif my.type = "-l"
-        my.res = "$(my.method.name:c)"
-    endif
-
-    return my.res
-endfunction
-
-# ---------------------------------------------------------------------------
-#   
-# ---------------------------------------------------------------------------
-function php_derive_function_name (function, type)
-    check_arguments (my, "function, type", my)
-
-    php_type_checker(my.type)
-
-    if my.type = "-h"
-        my.res = "$(my.function:)_php"
-    elsif my.type = "-l"
-        my.res = "$(my.function:)"
-    endif
-
-    return my.res
-endfunction
-
-# ---------------------------------------------------------------------------
-#   
-# ---------------------------------------------------------------------------
-function php_derive_argument_name (argument, type)
-    check_arguments (my, "argument, type", my)
-    assert_attribute (my.argument, "name", my)
-
-    php_type_checker(my.type)
-
-    if my.type = "-h"
-        my.res = "$$(my.argument.name:Camel)"
-    elsif my.type = "-l"
-        my.res = "$(my.argument.name:c)"
-    endif
-
-    return my.res
-endfunction
 
 # ---------------------------------------------------------------------------
 #   
@@ -759,67 +719,6 @@ function php_type_checker (type)
     endif
 
     return
-endfunction
-
-# ---------------------------------------------------------------------------
-#   
-# ---------------------------------------------------------------------------
-function php_derive_constant_formatted_string (string)
-    check_arguments (my, "string", my)
-
-    my.res = "$(my.string:c)"
-    my.res = "$(my.res:UPPER)"
-
-    return my.res
-endfunction
-
-# ---------------------------------------------------------------------------
-#   
-# ---------------------------------------------------------------------------
-function php_derive_extension_zend_function_arginfo (function_name)
-    check_arguments (my, "function_name", my)
-
-    my.res = "arginfo_$(my.function_name:)_php"
-
-    return my.res
-endfunction
-
-# ---------------------------------------------------------------------------
-#   
-# ---------------------------------------------------------------------------
-function php_derive_extension_zend_function_input_name (arg, type)
-    check_arguments (my, "arg, type", my)
-
-    if ! string_in(my.type, "-c, -l")
-        echo_fatal("Invalid type: $(my.type:)", my)
-    endif
-
-    if my.type = "-c"
-        my.res = "in_$(my.arg.name:)"
-    elsif my.type = "-l"
-        my.res = "in_$(my.arg.name:)_len"
-    endif
-
-    return my.res
-endfunction
-
-# ---------------------------------------------------------------------------
-#   
-# ---------------------------------------------------------------------------
-function php_derive_extension_zend_function_output_name (arg, type)
-    check_arguments (my, "arg, type", my)
-
-    if ! string_in(my.type, "-o, -n")
-        echo_fatal("Invalid type: $(my.type:)", my)
-    endif
-
-    if my.type = "-o"
-        my.res = "out_$(my.arg.name:)"
-    elsif my.type = "-n"
-        my.res = "new_$(my.arg.name:)"
-    endif
-
-    return my.res
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -846,7 +745,7 @@ function php_format_extension_zend_header (low_level)
     my.arg_type_info = ""
 
     if my.low_level.required_num_args > 0
-        my.arg_type_info += format_left("ZEND_ARG_INFO(0, ctx)\n")
+        my.arg_type_info += format_left("ZEND_ARG_INFO(0, ctx)", 1) + "\n"
     endif
 
     for my.low_level.extension_argument as extension_argument
@@ -856,11 +755,9 @@ function php_format_extension_zend_header (low_level)
         endif
 
         if defined (extension_argument.zend_type)
-            my.arg_type_info += format_left("ZEND_ARG_TYPE_INFO(0, $(extension_argument.name:), $(extension_argument.zend_type), 0)$(my.term:)")
+            my.arg_type_info += format_left("ZEND_ARG_TYPE_INFO(0, $(extension_argument.name:), $(extension_argument.zend_type), 0)$(my.term:)", 1)
         endif
     endfor
-
-    my.arg_type_info = format_left(my.arg_type_info)
 
     my.res = format_left("\
     //
@@ -901,13 +798,15 @@ function php_format_extension_status (low_level)
         endif
     endfor
 
-    my.status += ");"
-    my.status += "\n
+    my.status += ");\n"
+
+    my.status += format_left("\
     //
     //  Handle error
     //
     VSCE_HANDLE_STATUS(status);
-    "
+    ", 0)
+
     my.res = my.status
 
     return my.res
@@ -1037,7 +936,7 @@ endfunction
 function php_format_extension_parse_arguments (low_level)
 check_arguments (my, "low_level", my)
 
-    my.parse_arguments = "Z_PARAM_RESOURCE_EX(in_ctx, 1, 0)\n"
+    my.parse_arguments = format_left("Z_PARAM_RESOURCE_EX(in_ctx, 1, 0)\n", 1)
     my.c = 1 # ctx
 
     for my.low_level.extension_argument as extension_argument
@@ -1052,18 +951,18 @@ check_arguments (my, "low_level", my)
                 my.term = "\n"
             endif
 
-            my.parse_arguments += "Z_PARAM_STRING_EX($(my.char:), $(my.size:), 1, 0)$(my.term:)"
+            my.parse_arguments += format_left("Z_PARAM_STRING_EX($(my.char:), $(my.size:), 1, 0)$(my.term:)", 1)
         endif
     endfor
 
-    my.res = "\
+    my.res = format_left("\
     //
     //  Parse arguments
     //
     ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, $(my.c:), $(my.c:))
-    $(my.parse_arguments:)
+        $(my.parse_arguments:)
     ZEND_PARSE_PARAMETERS_END();
-    "
+    ", 0)
 
     return my.res
 endfunction
@@ -1084,7 +983,7 @@ function php_format_extension_proxy_call (low_level)
             if ! last()
                 my.term = "\n"
             endif
-            my.proxy_call += "$(extension_argument.type:) $(extension_argument.name) = vsc_data((const byte*)$(my.char:), $(my.size:));$(my.term:)"
+            my.proxy_call += format_left("$(extension_argument.type:) $(extension_argument.name) = vsc_data((const byte*)$(my.char:), $(my.size:));$(my.term:)", 1)
         endif
     endfor
 
@@ -1095,14 +994,14 @@ function php_format_extension_proxy_call (low_level)
     my._p = "$(my.low_level.prefix:)"
     my._rn = "$(my._p:UPPER)_$(my._m:UPPER)_RES_NAME"
 
-    my.res = "
+    my.res = format_left("
     //
     // Proxy call
     //
-    $(my._p)_$(my._m:)_t *$(my._m:) = zend_fetch_resource_ex(in_ctx, $(my._rn), le_$(my._p:)_$(my._m:)));
+    $(my._p)_$(my._m:)_t *$(my._m:) = zend_fetch_resource_ex(in_ctx, $(my._rn), le_$(my._p:)_$(my._m:));
     $(my._p:UPPER)_ASSERT_PTR($(my.low_level.module_name:));
     $(my.proxy_call:)
-    "
+    ", 1)
 
     return my.res
 endfunction
@@ -1130,18 +1029,16 @@ function php_format_extension_allocate_output_buffer (low_level)
                 echo_fatal("Not implemented!", my)
             endif
 
-            my.allocate_output_buffer += "\
+            my.allocate_output_buffer += format_left("\
             //  Allocate output buffer for output '$(extension_argument.name:)'
             zend_string *$(my.out:) = zend_string_alloc($(my.zend_string_alloc:), 0);
             vsc_buffer_t *$(extension_argument.name:) = vsc_buffer_new();
             vsc_buffer_use($(extension_argument.name:), (byte *)ZSTR_VAL($(my.out:)), ZSTR_LEN($(my.out:)));
-            "
+            ", 0)
         endif
     endfor
 
-    my.res = "\
-        $(my.allocate_output_buffer:)
-    "
+    my.res = format_left("$(my.allocate_output_buffer:)", 1)
 
     return my.res
 endfunction
@@ -1218,20 +1115,20 @@ function php_format_extension_fetch_type (low_level)
     my._p = "$(my.low_level.prefix:)"
     my._rn = "$(my._p:UPPER)_$(my._m:UPPER)_RES_NAME"
 
-    my.fetch_type = "\
+    my.fetch_type = format_left("\
     //
     //  Fetch for type checking and then release
     //
-    "
+    ", 0)
 
-    my.fetch_type += "\
+    my.fetch_type += format_left("\
     $(my._p:)_$(my._m:)_t *$(my._m:) = zend_fetch_resource_ex(in_ctx, $(my._rn:), le_$(my._p:)_$(my._m:));
     $(my._p:UPPER)_ASSERT_PTR($(my._m:));
     zend_list_close(Z_RES_P(in_ctx));
     RETURN_TRUE;
-    "
+    ", 0)
 
-    my.res = "$(my.fetch_type:)"
+    my.res = format_left("$(my.fetch_type:)", 0)
 
     return my.res
 endfunction

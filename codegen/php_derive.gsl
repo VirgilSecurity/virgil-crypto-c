@@ -1,0 +1,227 @@
+.template 0
+#   Copyright (C) 2015-2019 Virgil Security, Inc.
+#
+#   All rights reserved.
+#
+#   Redistribution and use in source and binary forms, with or without
+#   modification, are permitted provided that the following conditions are
+#   met:
+#
+#       (1) Redistributions of source code must retain the above copyright
+#       notice, this list of conditions and the following disclaimer.
+#
+#       (2) Redistributions in binary form must reproduce the above copyright
+#       notice, this list of conditions and the following disclaimer in
+#       the documentation and/or other materials provided with the
+#       distribution.
+#
+#       (3) Neither the name of the copyright holder nor the names of its
+#       contributors may be used to endorse or promote products derived from
+#       this software without specific prior written permission.
+#
+#   THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
+#   IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+#   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+#   DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT,
+#   INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+#   (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+#   SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+#   HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+#   STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+#   IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+#   POSSIBILITY OF SUCH DAMAGE.
+#
+#   Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
+
+# ---------------------------------------------------------------------------
+#   Functions for PHP primitives generation: protocol, class, enum, etc.
+# ---------------------------------------------------------------------------
+#   This is a code generator built using the iMatix GSL code generation
+#   language. See https://github.com/imatix/gsl for details.
+# ---------------------------------------------------------------------------
+
+gsl from "common.gsl"
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_derive_module_name (type, php_project, ppm)
+    check_arguments (my, "type, php_project, ppm", my)
+
+    assert_attribute (my.type, "name", my)
+
+    if ! string_in(my.ppm, "c, UPPER, Pascal, Camel")
+        echo_fatal("Undefined ppm: $(my.ppm:)", my)
+    endif
+
+    return "$(my.type.name:$(my.ppm))"
+endfunction
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_derive_class_name (class, php_project)
+    check_arguments (my, "class, php_project", my)
+
+    assert_attribute_one_of (my.class, "name", my)
+
+    return php_derive_class_name_str (my.class.name, my.php_project)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_derive_class_name_str (name, php_project)
+    check_arguments (my, "name, php_project", my)
+
+    return "$(my.name:Pascal)"
+endfunction
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_derive_class_low_level_name_c_formated (class, php_project)
+    check_arguments (my, "class, php_project", my)
+
+    assert_attribute_one_of (my.class, "name", my)
+
+    return "$(my.php_project.prefix:c)_$(my.class.name:c)"
+endfunction
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_derive_extension_return_type (type)
+    check_arguments (my, "type", my)
+
+    my.res = ""
+
+    if my.type = "void"
+        my.res = "IS_VOID"
+    elsif my.type = "string"
+        my.res = "IS_STRING"
+    elsif my.type = "array"
+        my.res = "IS_ARRAY"
+    elsif my.type = "res"
+        my.res = "IS_RESOURCE"
+    else
+        echo_fatal("Undefined type: $(my.type)", my)
+    endif
+
+    return my.res
+endfunction
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_derive_method_name (method, type)
+    check_arguments (my, "method, type", my)
+
+    php_type_checker(my.type)
+
+    if my.type = "-h"
+        my.res = "$(my.method.name:Camel)"
+    elsif my.type = "-l"
+        my.res = "$(my.method.name:c)"
+    endif
+
+    return my.res
+endfunction
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_derive_function_name (function, type)
+    check_arguments (my, "function, type", my)
+
+    php_type_checker(my.type)
+
+    if my.type = "-h"
+        my.res = "$(my.function:)_php"
+    elsif my.type = "-l"
+        my.res = "$(my.function:)"
+    endif
+
+    return my.res
+endfunction
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_derive_argument_name (argument, type)
+    check_arguments (my, "argument, type", my)
+    assert_attribute (my.argument, "name", my)
+
+    php_type_checker(my.type)
+
+    if my.type = "-h"
+        my.res = "$$(my.argument.name:Camel)"
+    elsif my.type = "-l"
+        my.res = "$(my.argument.name:c)"
+    endif
+
+    return my.res
+endfunction
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_derive_constant_formatted_string (string)
+    check_arguments (my, "string", my)
+
+    my.res = "$(my.string:c)"
+    my.res = "$(my.res:UPPER)"
+
+    return my.res
+endfunction
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_derive_extension_zend_function_arginfo (function_name)
+    check_arguments (my, "function_name", my)
+
+    my.res = "arginfo_$(my.function_name:)_php"
+
+    return my.res
+endfunction
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_derive_extension_zend_function_input_name (arg, type)
+    check_arguments (my, "arg, type", my)
+
+    if ! string_in(my.type, "-c, -l")
+        echo_fatal("Invalid type: $(my.type:)", my)
+    endif
+
+    if my.type = "-c"
+        my.res = "in_$(my.arg.name:)"
+    elsif my.type = "-l"
+        my.res = "in_$(my.arg.name:)_len"
+    endif
+
+    return my.res
+endfunction
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_derive_extension_zend_function_output_name (arg, type)
+    check_arguments (my, "arg, type", my)
+
+    if ! string_in(my.type, "-o, -n")
+        echo_fatal("Invalid type: $(my.type:)", my)
+    endif
+
+    if my.type = "-o"
+        my.res = "out_$(my.arg.name:)"
+    elsif my.type = "-n"
+        my.res = "new_$(my.arg.name:)"
+    endif
+
+    return my.res
+endfunction
+
+.endtemplate
