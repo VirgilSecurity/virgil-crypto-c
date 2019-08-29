@@ -65,16 +65,7 @@ function php_derive_class_name (class, php_project)
 
     assert_attribute_one_of (my.class, "name", my)
 
-    return php_derive_class_name_str (my.class.name, my.php_project)
-endfunction
-
-# ---------------------------------------------------------------------------
-#   
-# ---------------------------------------------------------------------------
-function php_derive_class_name_str (name, php_project)
-    check_arguments (my, "name, php_project", my)
-
-    return "$(my.name:Pascal)"
+    return "$(my.class.name:Pascal)"
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -117,7 +108,7 @@ endfunction
 function php_derive_method_name (method, type)
     check_arguments (my, "method, type", my)
 
-    php_type_checker(my.type)
+    php_type_check(my.type)
 
     if my.type = "-h"
         my.res = "$(my.method.name:Camel)"
@@ -134,7 +125,7 @@ endfunction
 function php_derive_function_name (function, type)
     check_arguments (my, "function, type", my)
 
-    php_type_checker(my.type)
+    php_type_check(my.type)
 
     if my.type = "-h"
         my.res = "$(my.function:)_php"
@@ -152,7 +143,7 @@ function php_derive_argument_name (argument, type)
     check_arguments (my, "argument, type", my)
     assert_attribute (my.argument, "name", my)
 
-    php_type_checker(my.type)
+    php_type_check(my.type)
 
     if my.type = "-h"
         my.res = "$$(my.argument.name:Camel)"
@@ -220,6 +211,17 @@ function php_derive_extension_zend_function_output_name (arg, type)
     elsif my.type = "-n"
         my.res = "new_$(my.arg.name:)"
     endif
+
+    return my.res
+endfunction
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_derive_extension_name (php_project)
+    check_arguments (my, "php_project", my)
+
+    my.res = my.php_project.prefix + "_" + my.php_project.name + "_php"
 
     return my.res
 endfunction

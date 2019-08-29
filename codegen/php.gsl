@@ -46,22 +46,29 @@ gsl from "component.gsl"
 gsl from "c_component.gsl"
 gsl from "php_codegen.gsl"
 gsl from "php_derive.gsl"
+gsl from "php_check.gsl"
 
 # ---------------------------------------------------------------------------
 #   
 # ---------------------------------------------------------------------------
-function php_create_toplevel_modules(wrapper) #[optional]
-    check_arguments (my, "wrapper", my)
-    #TODO
+function php_create_toplevel_modules(wrapper)
 endfunction
 
-function php_resolve_toplevel (wrapper, license) #[optional]
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_resolve_toplevel (wrapper, license)
 endfunction
 
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
 function php_resolve_project (project, wrapper, projects_api)
-    ### ?
 endfunction
 
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
 function php_create_project_module (project, wrapper)
     check_arguments (my, "project, wrapper", my)
 
@@ -96,6 +103,9 @@ function php_create_project_module (project, wrapper)
     endnew
 endfunction
 
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
 function php_create_custom_modules (source, php_project, meta)
     check_arguments (my, "source, php_project, meta", my)
 
@@ -154,6 +164,9 @@ function php_create_custom_modules (source, php_project, meta)
     endnew
 endfunction
 
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
 function php_create_interface_module (interface, php_project, meta)
     check_arguments (my, "interface, php_project, meta", my)
 
@@ -213,7 +226,17 @@ function php_create_interface_module (interface, php_project, meta)
     echo_debug ("Done", my)
 endfunction
 
-function php_create_implementation_module (source, destination, wrapper, meta)
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_create_implementation_module (source, php_project, meta)
+    check_arguments (my, "source, php_project, meta", my)
+
+    echo_info("Create <php_module/> from implementation: '$(my.source.name:)'", my)
+
+    echo_debug_item(my.source)
+    echo_fatal("", my)
+
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -321,7 +344,6 @@ endfunction
 # ---------------------------------------------------------------------------
 # Create default <php_destructor/> that destroy underlying C context.
 # ---------------------------------------------------------------------------
-
 function php_create_class_default_destructor (php_class, class, php_project, meta)
     check_arguments (my, "php_class, class, php_project, meta", my)
 
@@ -379,6 +401,9 @@ function php_create_class_default_destructor (php_class, class, php_project, met
     endnew
 endfunction
 
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
 function php_map_res_data_type(method, destination)
     check_arguments (my, "method, destination", my)
 
@@ -514,7 +539,6 @@ function php_create_class_method (class, method, destination, php_project, meta)
             #echo_debug_item(my.class)
             #echo_fatal("", my)
 
-            #.module_name = "$(my.class.name:c)"
             .prefix = "$(my.class.c_prefix:)"
             .module_name = php_derive_module_name (my.class, my.php_project, "c")
             .function_name = php_derive_function_name (my.function_name, "-l")
@@ -608,12 +632,11 @@ function php_create_enum_module (enum, php_project, meta)
     endif
 endfunction
 
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
 function php_finalize_custom_modules (source, destination, wrapper, meta) #[optional]
 endfunction
-
-# ===========================================================================
-#   Component resolution.
-# ===========================================================================
 
 # ---------------------------------------------------------------------------
 #   Resolve UIDs for given component and all inner components.
@@ -659,7 +682,7 @@ function php_map_argument_type (argument, type, destination)
     check_arguments (my, "argument, type, destination", my)
     assert_attribute (my.argument, "class", my)
 
-    php_type_checker(my.type)
+    php_type_check(my.type)
 
     if my.type = "-h"
         if my.argument.class = "data"
@@ -704,21 +727,6 @@ function php_map_extension_argument_len (argument, destination)
     else 
         echo_fatal("Undefined method argument length type for the argument: $(my.argument.name)", my)
     endif
-endfunction
-
-
-
-# ---------------------------------------------------------------------------
-#   
-# ---------------------------------------------------------------------------
-function php_type_checker (type)
-    check_arguments (my, "type", my)
-
-    if ! string_in(my.type, "-h, -l")
-        echo_fatal("Invalid type: $(my.type:)", my)
-    endif
-
-    return
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -1133,14 +1141,4 @@ function php_format_extension_fetch_type (low_level)
     return my.res
 endfunction
 
-# ---------------------------------------------------------------------------
-#   
-# ---------------------------------------------------------------------------
-function php_derive_extension_name (php_project)
-    check_arguments (my, "php_project", my)
-
-    my.res = my.php_project.prefix + "_" + my.php_project.name + "_php"
-
-    return my.res
-endfunction
 .endtemplate
