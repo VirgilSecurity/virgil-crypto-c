@@ -144,7 +144,6 @@ import VSCFoundation
         }
 
         let proxyResult = plainText.withUnsafeMutableBytes({ (plainTextPointer: UnsafeMutableRawBufferPointer) -> vscf_status_t in
-            vsc_buffer_init(plainTextBuf)
             vsc_buffer_use(plainTextBuf, plainTextPointer.bindMemory(to: byte.self).baseAddress, plainTextCount)
 
             return vscf_group_session_decrypt(self.c_ctx, message.c_ctx, publicKey.c_ctx, plainTextBuf)

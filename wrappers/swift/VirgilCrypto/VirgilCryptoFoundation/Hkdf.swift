@@ -106,7 +106,6 @@ import VSCFoundation
 
         data.withUnsafeBytes({ (dataPointer: UnsafeRawBufferPointer) -> Void in
             key.withUnsafeMutableBytes({ (keyPointer: UnsafeMutableRawBufferPointer) -> Void in
-                vsc_buffer_init(keyBuf)
                 vsc_buffer_use(keyBuf, keyPointer.bindMemory(to: byte.self).baseAddress, keyCount)
 
                 vscf_hkdf_derive(self.c_ctx, vsc_data(dataPointer.bindMemory(to: byte.self).baseAddress, data.count), keyLen, keyBuf)

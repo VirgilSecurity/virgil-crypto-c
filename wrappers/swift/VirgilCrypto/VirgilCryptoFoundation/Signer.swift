@@ -107,7 +107,6 @@ import VSCFoundation
         }
 
         let proxyResult = signature.withUnsafeMutableBytes({ (signaturePointer: UnsafeMutableRawBufferPointer) -> vscf_status_t in
-            vsc_buffer_init(signatureBuf)
             vsc_buffer_use(signatureBuf, signaturePointer.bindMemory(to: byte.self).baseAddress, signatureCount)
 
             return vscf_signer_sign(self.c_ctx, privateKey.c_ctx, signatureBuf)
