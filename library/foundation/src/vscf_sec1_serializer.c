@@ -362,11 +362,12 @@ vscf_sec1_serializer_serialized_private_key_len(
     VSCF_ASSERT(vscf_raw_private_key_is_valid(private_key));
 
     size_t wrappedKeyLen = vscf_raw_private_key_len(private_key);
-    size_t len = 1 + 1 + 2 +                    //  ECPrivateKey ::= SEQUENCE {
-                 1 + 1 + 1 +                    //      version INTEGER { ecPrivkeyVer1(1) } (ecPrivkeyVer1),
-                 1 + 1 + wrappedKeyLen +        //      privateKey OCTET STRING,
-                 1 + 1 + 1 + 1 + 8 +            //      parameters [0] ECParameters {{ NamedCurve }} OPTIONAL,
-                 1 + 1 + 2 * wrappedKeyLen + 2; //      publicKey [1] BIT STRING OPTIONAL }
+    size_t wrappedPublicKeyLen = vscf_raw_public_key_len(vscf_raw_private_key_get_public_key(private_key));
+    size_t len = 1 + 1 + 2 +                          //  ECPrivateKey ::= SEQUENCE {
+                 1 + 1 + 1 +                          //      version INTEGER { ecPrivkeyVer1(1) } (ecPrivkeyVer1),
+                 1 + 1 + wrappedKeyLen +              //      privateKey OCTET STRING,
+                 1 + 1 + 1 + 1 + 8 +                  //      parameters [0] ECParameters {{ NamedCurve }} OPTIONAL,
+                 1 + 2 + 1 + 4 + wrappedPublicKeyLen; //      publicKey [1] BIT STRING OPTIONAL }
 
     return len;
 }
