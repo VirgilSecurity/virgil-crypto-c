@@ -79,7 +79,6 @@ import VirgilCryptoFoundation
 
         let proxyResult = publicKey.withUnsafeBytes({ (publicKeyPointer: UnsafeRawBufferPointer) -> vscr_status_t in
             keyId.withUnsafeMutableBytes({ (keyIdPointer: UnsafeMutableRawBufferPointer) -> vscr_status_t in
-                vsc_buffer_init(keyIdBuf)
                 vsc_buffer_use(keyIdBuf, keyIdPointer.bindMemory(to: byte.self).baseAddress, keyIdCount)
 
                 return vscr_ratchet_key_id_compute_public_key_id(self.c_ctx, vsc_data(publicKeyPointer.bindMemory(to: byte.self).baseAddress, publicKey.count), keyIdBuf)

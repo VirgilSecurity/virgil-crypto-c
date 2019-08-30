@@ -112,7 +112,6 @@ import VSCFoundation
         key.withUnsafeBytes({ (keyPointer: UnsafeRawBufferPointer) -> Void in
             data.withUnsafeBytes({ (dataPointer: UnsafeRawBufferPointer) -> Void in
                 mac.withUnsafeMutableBytes({ (macPointer: UnsafeMutableRawBufferPointer) -> Void in
-                    vsc_buffer_init(macBuf)
                     vsc_buffer_use(macBuf, macPointer.bindMemory(to: byte.self).baseAddress, macCount)
 
                     vscf_hmac_mac(self.c_ctx, vsc_data(keyPointer.bindMemory(to: byte.self).baseAddress, key.count), vsc_data(dataPointer.bindMemory(to: byte.self).baseAddress, data.count), macBuf)
@@ -150,7 +149,6 @@ import VSCFoundation
         }
 
         mac.withUnsafeMutableBytes({ (macPointer: UnsafeMutableRawBufferPointer) -> Void in
-            vsc_buffer_init(macBuf)
             vsc_buffer_use(macBuf, macPointer.bindMemory(to: byte.self).baseAddress, macCount)
 
             vscf_hmac_finish(self.c_ctx, macBuf)
