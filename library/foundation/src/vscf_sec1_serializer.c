@@ -306,11 +306,11 @@ vscf_sec1_serializer_serialized_public_key_len(vscf_sec1_serializer_t *self, con
     VSCF_ASSERT_PTR(public_key);
     VSCF_ASSERT(vscf_raw_public_key_is_valid(public_key));
 
-    size_t wrappedKeyLen = vscf_raw_public_key_len(public_key);
-    size_t len = 1 + 4 +                //  SubjectPublicKeyInfo ::= SEQUENCE {
-                 1 + 1 + 32 +           //          algorithm AlgorithmIdentifier,
-                 1 + 4 + wrappedKeyLen; //          subjectPublicKey BIT STRING
-                                        //  }
+    size_t wrapped_key_len = vscf_raw_public_key_len(public_key);
+    size_t len = 1 + 4 +                  //  SubjectPublicKeyInfo ::= SEQUENCE {
+                 1 + 1 + 32 +             //          algorithm AlgorithmIdentifier,
+                 1 + 4 + wrapped_key_len; //          subjectPublicKey BIT STRING
+                                          //  }
 
     return len;
 }
@@ -361,12 +361,13 @@ vscf_sec1_serializer_serialized_private_key_len(
     VSCF_ASSERT_PTR(private_key);
     VSCF_ASSERT(vscf_raw_private_key_is_valid(private_key));
 
-    size_t wrappedKeyLen = vscf_raw_private_key_len(private_key);
-    size_t len = 1 + 1 + 2 +                    //  ECPrivateKey ::= SEQUENCE {
-                 1 + 1 + 1 +                    //      version INTEGER { ecPrivkeyVer1(1) } (ecPrivkeyVer1),
-                 1 + 1 + wrappedKeyLen +        //      privateKey OCTET STRING,
-                 1 + 1 + 1 + 1 + 8 +            //      parameters [0] ECParameters {{ NamedCurve }} OPTIONAL,
-                 1 + 1 + 2 * wrappedKeyLen + 2; //      publicKey [1] BIT STRING OPTIONAL }
+    size_t wrapped_key_len = vscf_raw_private_key_len(private_key);
+    size_t wrapped_public_key_len = vscf_raw_public_key_len(vscf_raw_private_key_get_public_key(private_key));
+    size_t len = 1 + 1 + 2 +                             //  ECPrivateKey ::= SEQUENCE {
+                 1 + 1 + 1 +                             //      version INTEGER { ecPrivkeyVer1(1) } (ecPrivkeyVer1),
+                 1 + 1 + wrapped_key_len +               //      privateKey OCTET STRING,
+                 1 + 1 + 1 + 1 + 8 +                     //      parameters [0] ECParameters {{ NamedCurve }} OPTIONAL,
+                 1 + 2 + 1 + 4 + wrapped_public_key_len; //      publicKey [1] BIT STRING OPTIONAL }
 
     return len;
 }
