@@ -61,7 +61,7 @@ function php_generate_sources (php_project)
         echo_fatal ("Can not create directory: $(my.wrapper.source_dir:)")
     endif
 
-    for my.php_project.php_module where string_in (php_module.type, "class, interface")
+    for my.php_project.php_module where string_in (php_module.type, "class, interface, implementation")
         php_generate_source_php (php_module)
     endfor
 
@@ -109,6 +109,8 @@ endfunction
 function php_insert_interface (php_interface)
     check_arguments (my, "php_interface", my)
 
+    echo_trace ("Generate PHP interface: " + my.php_interface.name, my)
+
     php_insert_description(my.php_interface, 0)
 
     php_insert_code("interface $(my.php_interface.name:) {", 0)
@@ -117,6 +119,40 @@ function php_insert_interface (php_interface)
         newline ()
         php_insert_class_method (php_method, "interface")
     endfor
+
+    php_insert_code("}",0)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Insert statement: implementation
+# ---------------------------------------------------------------------------
+function php_insert_implementation (php_module)
+    check_arguments (my, "php_module", my)
+
+    echo_trace ("Generate PHP implementation: " + my.php_module.name, my)
+
+    my._i = my.php_module->php_implementation->high_level
+
+    php_insert_description(my._i, 0)
+
+    my._x = ""
+
+    for my._i.interface as interface0
+        my._x += interface0.name
+
+        if ! last()
+            my._x += ", "
+        endif
+    endfor
+
+    my._c = ""
+
+    for my._i.constant as constant0
+        my._c += "const $(constant0.name:) = $(constant0.value);\n"
+    endfor
+
+    php_insert_code("class $(my._i.name:) implements $(my._x:) {", 0)
+    php_insert_code("$(my._c:)", 1)
 
     php_insert_code("}",0)
 endfunction
@@ -537,6 +573,8 @@ function php_generate_source_php (current_module)
         endfor
     elsif my.current_module.type = "interface"
         php_insert_interface(my.current_module->php_interface)
+    elsif my.current_module.type = "implementation"
+        php_insert_implementation(my.current_module)
     else
         echo_debug_item(my.current_module)
         echo_fatal("Not implemented", my)

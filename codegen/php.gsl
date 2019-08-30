@@ -173,7 +173,7 @@ function php_create_interface_module (interface, php_project, meta)
     echo_info ("Create <php_module/> from interface: '$(my.interface.name:)'", my)
 
     new php_module to my.php_project
-        .name = php_derive_module_name (my.interface, my.php_project, "Pascal")
+        .name = php_derive_module_name (my.interface, "Pascal")
         .source_file_name = 0.name + ".php"
         .source_file_path = cat_path (my.php_project.source_dir, 0.source_file_name)
         .prefix = my.php_project.prefix
@@ -229,14 +229,44 @@ endfunction
 # ---------------------------------------------------------------------------
 #   
 # ---------------------------------------------------------------------------
-function php_create_implementation_module (source, php_project, meta)
-    check_arguments (my, "source, php_project, meta", my)
+function php_create_implementation_module (implementation, php_project, meta)
+    check_arguments (my, "implementation, php_project, meta", my)
 
-    echo_info("Create <php_module/> from implementation: '$(my.source.name:)'", my)
+    echo_info("Create <php_module/> from implementation: '$(my.implementation.name:)'", my)
 
-    echo_debug_item(my.source)
-    echo_fatal("", my)
+    new php_module to my.php_project
+        .name = php_derive_module_name (my.implementation, "Pascal")
+        .source_file_name = 0.name + ".php"
+        .source_file_path = cat_path (my.php_project.source_dir, 0.source_file_name)
+        .prefix = my.php_project.prefix
+        .type = "implementation"
 
+        new php_license to php_module
+            . = php_format_license (my.php_project->license)
+        endnew
+
+        new php_implementation to php_module
+            new high_level to php_implementation
+                . = php_format_description (my.implementation) ?
+                .name = "$(my.implementation.name:Pascal)"
+
+                for my.implementation.interface as interface0
+                    new interface to high_level
+                        .name = php_derive_class_name(interface0)
+                    endnew
+
+                    for interface0.constant as constant0
+                        new constant to high_level
+                            .name = php_derive_constant_formatted_string(constant0.name)
+                            .value = constant0.value
+                        endnew
+                    endfor
+                endfor
+            endnew
+        endnew
+    endnew
+
+    echo_debug ("Done", my)
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -254,7 +284,7 @@ function php_create_class_module (class, php_project, meta)
     endif
 
     new php_module to my.php_project
-        .name = php_derive_module_name (my.class, my.php_project, "Pascal")
+        .name = php_derive_module_name (my.class, "Pascal")
         .source_file_name = 0.name + ".php"
         .source_file_path = cat_path (my.php_project.source_dir, 0.source_file_name)
         .prefix = my.php_project.prefix
@@ -266,7 +296,7 @@ function php_create_class_module (class, php_project, meta)
 
         new php_class to php_module
             . = php_format_description (my.class) ?
-            .name = php_derive_class_name (my.class, my.php_project)
+            .name = php_derive_class_name (my.class)
             .low_level_name_c_format = php_derive_class_low_level_name_c_formated (my.class, my.php_project)
 
             php_create_class_default_constructor (php_class, my.class, my.php_project, my.meta)
@@ -540,7 +570,7 @@ function php_create_class_method (class, method, destination, php_project, meta)
             #echo_fatal("", my)
 
             .prefix = "$(my.class.c_prefix:)"
-            .module_name = php_derive_module_name (my.class, my.php_project, "c")
+            .module_name = php_derive_module_name (my.class, "c")
             .function_name = php_derive_function_name (my.function_name, "-l")
             .required_num_args = my.count_in
             .throws_exception = my.return_enum_status
@@ -682,7 +712,7 @@ function php_map_argument_type (argument, type, destination)
     check_arguments (my, "argument, type, destination", my)
     assert_attribute (my.argument, "class", my)
 
-    php_type_check(my.type)
+    php_check_type(my.type)
 
     if my.type = "-h"
         if my.argument.class = "data"

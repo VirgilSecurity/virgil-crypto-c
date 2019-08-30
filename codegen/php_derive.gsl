@@ -45,23 +45,21 @@ gsl from "common.gsl"
 # ---------------------------------------------------------------------------
 #   
 # ---------------------------------------------------------------------------
-function php_derive_module_name (type, php_project, ppm)
-    check_arguments (my, "type, php_project, ppm", my)
+function php_derive_module_name (module, ppm)
+    check_arguments (my, "module, ppm", my)
 
-    assert_attribute (my.type, "name", my)
+    assert_attribute (my.module, "name", my)
 
-    if ! string_in(my.ppm, "c, UPPER, Pascal, Camel")
-        echo_fatal("Undefined ppm: $(my.ppm:)", my)
-    endif
+    php_check_ppm(my.ppm)
 
-    return "$(my.type.name:$(my.ppm))"
+    return "$(my.module.name:$(my.ppm))"
 endfunction
 
 # ---------------------------------------------------------------------------
 #   
 # ---------------------------------------------------------------------------
-function php_derive_class_name (class, php_project)
-    check_arguments (my, "class, php_project", my)
+function php_derive_class_name (class)
+    check_arguments (my, "class", my)
 
     assert_attribute_one_of (my.class, "name", my)
 
@@ -108,7 +106,7 @@ endfunction
 function php_derive_method_name (method, type)
     check_arguments (my, "method, type", my)
 
-    php_type_check(my.type)
+    php_check_type(my.type)
 
     if my.type = "-h"
         my.res = "$(my.method.name:Camel)"
@@ -125,7 +123,7 @@ endfunction
 function php_derive_function_name (function, type)
     check_arguments (my, "function, type", my)
 
-    php_type_check(my.type)
+    php_check_type(my.type)
 
     if my.type = "-h"
         my.res = "$(my.function:)_php"
@@ -143,7 +141,7 @@ function php_derive_argument_name (argument, type)
     check_arguments (my, "argument, type", my)
     assert_attribute (my.argument, "name", my)
 
-    php_type_check(my.type)
+    php_check_type(my.type)
 
     if my.type = "-h"
         my.res = "$$(my.argument.name:Camel)"

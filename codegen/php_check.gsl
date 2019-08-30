@@ -45,11 +45,24 @@ gsl from "common.gsl"
 # ---------------------------------------------------------------------------
 #   
 # ---------------------------------------------------------------------------
-function php_type_check (type)
+function php_check_type (type)
     check_arguments (my, "type", my)
 
     if ! string_in(my.type, "-h, -l")
         echo_fatal("Invalid type: $(my.type:)", my)
+    endif
+
+    return
+endfunction
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_check_ppm (ppm)
+    check_arguments (my, "ppm", my)
+
+    if ! string_in(my.ppm, "c, UPPER, Pascal, Camel")
+        echo_fatal("Invalid ppm: $(my.ppm:)", my)
     endif
 
     return
