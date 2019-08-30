@@ -62,7 +62,7 @@ function php_generate_sources (php_project)
     endif
 
     for my.php_project.php_module where string_in (php_module.type, "class, interface, implementation")
-        php_generate_source_php (php_module)
+        php_generate_source_php (php_module, my.php_project)
     endfor
 
     for my.php_project.php_module where php_module.name = "extension_main"
@@ -126,8 +126,8 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Insert statement: implementation
 # ---------------------------------------------------------------------------
-function php_insert_implementation (php_module)
-    check_arguments (my, "php_module", my)
+function php_insert_implementation (php_module, php_project)
+    check_arguments (my, "php_module, php_project", my)
 
     echo_trace ("Generate PHP implementation: " + my.php_module.name, my)
 
@@ -151,9 +151,20 @@ function php_insert_implementation (php_module)
         my._c += "const $(constant0.name:) = $(constant0.value);\n"
     endfor
 
+    my._m = ""
+
+    for my.php_project.php_module as php_module0 where php_module0.type = "interface" & php_module0.name = "Hash"
+
+        for php_module0->php_interface.php_method as php_method0
+            my._function_name = "test_php"
+
+            my._m += php_format_method_body(php_method0, my._function_name) + "\n"
+        endfor
+    endfor
+
     php_insert_code("class $(my._i.name:) implements $(my._x:) {", 0)
     php_insert_code("$(my._c:)", 1)
-
+    php_insert_code("$(my._m:)", 2)
     php_insert_code("}",0)
 endfunction
 
@@ -552,8 +563,8 @@ endfunction
 # ---------------------------------------------------------------------------
 #   
 # ---------------------------------------------------------------------------
-function php_generate_source_php (current_module)
-    check_arguments (my, "current_module", my)
+function php_generate_source_php (current_module, php_project)
+    check_arguments (my, "current_module, php_project", my)
 
     if defined (my.current_module.source_dir)
         if -1 = directory.create (my.current_module.source_dir)
@@ -574,7 +585,7 @@ function php_generate_source_php (current_module)
     elsif my.current_module.type = "interface"
         php_insert_interface(my.current_module->php_interface)
     elsif my.current_module.type = "implementation"
-        php_insert_implementation(my.current_module)
+        php_insert_implementation(my.current_module, my.php_project)
     else
         echo_debug_item(my.current_module)
         echo_fatal("Not implemented", my)

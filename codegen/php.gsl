@@ -476,6 +476,42 @@ function php_map_res_data_type(method, destination)
 endfunction
 
 # ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_format_method_body (php_method, function_name)
+    check_arguments (my, "php_method, function_name", my)
+
+    my.method_body = ""
+    my.method_argument = ""
+    my.is_void = string_in(my.php_method->high_level.return_type, "void")
+    my.ctx = "$this->ctx"
+
+    for my.php_method->high_level.php_argument as php_argument where defined (php_argument.name)
+        if first()
+            my.method_argument += ", "
+        endif
+
+        my.method_argument += "$(php_argument.name:)"
+
+        if ! last()
+            my.method_argument += ", "
+        endif
+    endfor
+
+    my.return = ""
+
+    if is_false (my.is_void)
+        my.return = "return "
+    endif
+
+    my.method_body += "$(my.return:)$(my.function_name:)($(my.ctx:)$(my.method_argument:));"
+
+    my._res = my.method_body
+
+    return my._res
+endfunction
+
+# ---------------------------------------------------------------------------
 #   Create entity <php_method/> of from the class entity <method/>.
 # ---------------------------------------------------------------------------
 function php_create_class_method (class, method, destination, php_project, meta)
@@ -531,33 +567,8 @@ function php_create_class_method (class, method, destination, php_project, meta)
             endnew
 
             new php_code to high_level
-                my.method_body = ""
-                my.method_argument = ""
-                my.extension_function = high_level.function_name
-                my.is_void = string_in(php_method.return_type, "void")
-                my.ctx = "$this->ctx"
-
-                for high_level.php_argument where defined (php_argument.name)
-                    if first()
-                        my.method_argument += ", "
-                    endif
-
-                    my.method_argument += "$(php_argument.name:)"
-
-                    if ! last()
-                        my.method_argument += ", "
-                    endif
-                endfor
-
-                my.return = ""
-
-                if is_false (my.is_void)
-                    my.return = "return "
-                endif
-
-                my.method_body += "$(my.return:)$(my.extension_function:)($(my.ctx:)$(my.method_argument:));"
-
-                . = my.method_body
+                my.function_name = high_level.function_name
+                . = php_format_method_body(php_method, my.function_name)
             endnew
         endnew
 
