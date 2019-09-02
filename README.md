@@ -58,8 +58,6 @@ Implementation of the [Double Ratchet Algorithm](https://en.wikipedia.org/wiki/D
 | phe        | all          | [C](https://cdn.virgilsecurity.com/virgil-crypto-c/c), [PHP](https://cdn.virgilsecurity.com/virgil-crypto-c/php), [Java](https://mvnrepository.com/artifact/com.virgilsecurity.crypto), [JS](https://github.com/VirgilSecurity/virgil-crypto-javascript), [Python](https://pypi.org/project/virgil-crypto-lib) |
 | ratchet    | all          | [C](https://cdn.virgilsecurity.com/virgil-crypto-c/c), [Swift](https://github.com/VirgilSecurity/virgil-cryptowrapper-x), [Java](https://mvnrepository.com/artifact/com.virgilsecurity.crypto), [JS](https://github.com/VirgilSecurity/virgil-crypto-javascript), [Python](https://pypi.org/project/virgil-crypto-lib) |
 
-
-
 ## Build from sources
 
 ### Prerequisites
@@ -82,8 +80,6 @@ cmake -Bbuild -H.
 cmake --build build
 cmake --build build --target install
 ```
-
-
 
 ## Support
 
