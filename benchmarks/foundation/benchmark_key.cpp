@@ -33,41 +33,40 @@
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
 
-#include <benchmark/benchmark.h>
+#include "benchmark/benchmark.h"
 
-#include "vscf_sha512.h"
+#include "vscf_key_provider.h"
+#include "vscf_key_alg_factory.h"
 
-constexpr benchmark::IterationCount kIterationsExact = 300000000;
-
-static void
-benchmark__shallow_copy(benchmark::State &state) {
-    vscf_sha512_t *sha512 = vscf_sha512_new();
-
-    for (auto _ : state) {
-        vscf_sha512_shallow_copy(sha512);
-    }
-
-    for (auto iterations = kIterationsExact; iterations != 0; --iterations) {
-        vscf_sha512_delete(sha512);
-    }
-
-    vscf_sha512_destroy(&sha512);
-}
 
 static void
-benchmark__delete(benchmark::State &state) {
-    vscf_sha512_t *sha512 = vscf_sha512_new();
+generate_exported_key(benchmark::State &state) {
 
-    for (auto iterations = kIterationsExact; iterations != 0; --iterations) {
-        vscf_sha512_shallow_copy(sha512);
+    vscf_key_provider_t *key_provider = vscf_key_provider_new();
+    (void)vscf_key_provider_setup_defaults(key_provider);
+
+    const vscf_alg_id_t alg_id = (vscf_alg_id_t)state.range(0);
+    if (alg_id == vscf_alg_id_RSA) {
+        const size_t bitlen = (size_t)state.range(1);
+        vscf_key_provider_set_rsa_params(key_provider, bitlen);
     }
 
     for (auto _ : state) {
-        vscf_sha512_delete(sha512);
+        vscf_impl_t *private_key = vscf_key_provider_generate_private_key(key_provider, alg_id, NULL);
+
+        const size_t key_buf_len = vscf_key_provider_exported_private_key_len(key_provider, private_key);
+        vsc_buffer_t *key_buf = vsc_buffer_new_with_capacity(key_buf_len);
+        (void)vscf_key_provider_export_private_key(key_provider, private_key, key_buf);
+
+        vsc_buffer_destroy(&key_buf);
+        vscf_impl_destroy(&private_key);
     }
 
-    vscf_sha512_destroy(&sha512);
+    vscf_key_provider_destroy(&key_provider);
+
+    state.counters["op"] = benchmark::Counter(state.iterations(), benchmark::Counter::kIsRate);
 }
 
-BENCHMARK(benchmark__shallow_copy)->Iterations(kIterationsExact);
-BENCHMARK(benchmark__delete)->Iterations(kIterationsExact);
+BENCHMARK(generate_exported_key)->ArgNames({"Ed25519"})->Arg(vscf_alg_id_ED25519);
+BENCHMARK(generate_exported_key)->ArgNames({"secp256r1"})->Arg(vscf_alg_id_SECP256R1);
+BENCHMARK(generate_exported_key)->ArgNames({"RSA"})->Args({vscf_alg_id_RSA, 4096});

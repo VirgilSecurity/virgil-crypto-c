@@ -43,7 +43,7 @@
 
 
 static void
-benchmark__hash_stream__at_once(benchmark::State &state, vscf_impl_t *hash, size_t data_size) {
+hash_data(benchmark::State &state, vscf_impl_t *hash, size_t data_size) {
 
     vsc_buffer_t *data = vsc_buffer_new_with_capacity(data_size);
     vsc_buffer_t *digest = vsc_buffer_new_with_capacity(vscf_hash_digest_len(vscf_hash_api(hash)));
@@ -63,21 +63,23 @@ benchmark__hash_stream__at_once(benchmark::State &state, vscf_impl_t *hash, size
     vscf_fake_random_destroy(&rng);
     vsc_buffer_destroy(&data);
     vsc_buffer_destroy(&digest);
+
+    state.counters["op"] = benchmark::Counter(state.iterations(), benchmark::Counter::kIsRate);
 }
 
 static void
-benchmark__hash_stream__sha256_and_8192_bytes_at_once(benchmark::State &state) {
+hash__sha256__8192_bytes(benchmark::State &state) {
     vscf_sha256_t *sha256 = vscf_sha256_new();
-    benchmark__hash_stream__at_once(state, vscf_sha256_impl(sha256), 8192);
+    hash_data(state, vscf_sha256_impl(sha256), 8192);
     vscf_sha256_destroy(&sha256);
 }
 
 static void
-benchmark__hash_stream__sha512_and_8192_bytes_at_once(benchmark::State &state) {
+hash__sha512__8192_bytes(benchmark::State &state) {
     vscf_sha512_t *sha512 = vscf_sha512_new();
-    benchmark__hash_stream__at_once(state, vscf_sha512_impl(sha512), 8192);
+    hash_data(state, vscf_sha512_impl(sha512), 8192);
     vscf_sha512_destroy(&sha512);
 }
 
-BENCHMARK(benchmark__hash_stream__sha256_and_8192_bytes_at_once);
-BENCHMARK(benchmark__hash_stream__sha512_and_8192_bytes_at_once);
+BENCHMARK(hash__sha256__8192_bytes);
+BENCHMARK(hash__sha512__8192_bytes);

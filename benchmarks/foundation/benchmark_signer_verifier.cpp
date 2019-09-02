@@ -87,6 +87,8 @@ signer_sign(benchmark::State &state) {
     vscf_impl_destroy(&private_key);
     vscf_key_provider_destroy(&key_provider);
     vscf_impl_destroy(&rng);
+
+    state.counters["op"] = benchmark::Counter(state.iterations(), benchmark::Counter::kIsRate);
 }
 
 static void
@@ -133,14 +135,15 @@ verifier_verify(benchmark::State &state) {
     vscf_impl_destroy(&private_key);
     vscf_key_provider_destroy(&key_provider);
     vscf_impl_destroy(&rng);
+
+    state.counters["op"] = benchmark::Counter(state.iterations(), benchmark::Counter::kIsRate);
 }
 
 
 BENCHMARK(signer_sign)->ArgNames({"Ed25519"})->Arg(vscf_alg_id_ED25519);
-BENCHMARK(verifier_verify)->ArgNames({"Ed25519"})->Arg(vscf_alg_id_ED25519);
-
 BENCHMARK(signer_sign)->ArgNames({"secp256r1"})->Arg(vscf_alg_id_SECP256R1);
-BENCHMARK(verifier_verify)->ArgNames({"secp256r1"})->Arg(vscf_alg_id_SECP256R1);
-
 BENCHMARK(signer_sign)->ArgNames({"RSA"})->Args({vscf_alg_id_RSA, 4096});
+
+BENCHMARK(verifier_verify)->ArgNames({"Ed25519"})->Arg(vscf_alg_id_ED25519);
+BENCHMARK(verifier_verify)->ArgNames({"secp256r1"})->Arg(vscf_alg_id_SECP256R1);
 BENCHMARK(verifier_verify)->ArgNames({"RSA"})->Args({vscf_alg_id_RSA, 4096});

@@ -83,6 +83,8 @@ recipient_cipher_encrypt(benchmark::State &state) {
     vscf_impl_destroy(&public_key);
     vscf_impl_destroy(&private_key);
     vscf_key_provider_destroy(&key_provider);
+
+    state.counters["op"] = benchmark::Counter(state.iterations(), benchmark::Counter::kIsRate);
 }
 
 
@@ -124,17 +126,17 @@ recipient_cipher_decrypt(benchmark::State &state) {
     vscf_impl_destroy(&public_key);
     vscf_impl_destroy(&private_key);
     vscf_key_provider_destroy(&key_provider);
+
+    state.counters["op"] = benchmark::Counter(state.iterations(), benchmark::Counter::kIsRate);
 }
 
 
 BENCHMARK(recipient_cipher_encrypt)->ArgNames({"Ed25519"})->Arg(vscf_alg_id_ED25519);
-BENCHMARK(recipient_cipher_decrypt)->ArgNames({"Ed25519"})->Arg(vscf_alg_id_ED25519);
-
 BENCHMARK(recipient_cipher_encrypt)->ArgNames({"Curve25519"})->Arg(vscf_alg_id_CURVE25519);
-BENCHMARK(recipient_cipher_decrypt)->ArgNames({"Curve25519"})->Arg(vscf_alg_id_CURVE25519);
-
 BENCHMARK(recipient_cipher_encrypt)->ArgNames({"secp256r1"})->Arg(vscf_alg_id_SECP256R1);
-BENCHMARK(recipient_cipher_decrypt)->ArgNames({"secp256r1"})->Arg(vscf_alg_id_SECP256R1);
-
 BENCHMARK(recipient_cipher_encrypt)->ArgNames({"RSA"})->Args({vscf_alg_id_RSA, 4096});
+
+BENCHMARK(recipient_cipher_decrypt)->ArgNames({"Ed25519"})->Arg(vscf_alg_id_ED25519);
+BENCHMARK(recipient_cipher_decrypt)->ArgNames({"Curve25519"})->Arg(vscf_alg_id_CURVE25519);
+BENCHMARK(recipient_cipher_decrypt)->ArgNames({"secp256r1"})->Arg(vscf_alg_id_SECP256R1);
 BENCHMARK(recipient_cipher_decrypt)->ArgNames({"RSA"})->Args({vscf_alg_id_RSA, 4096});

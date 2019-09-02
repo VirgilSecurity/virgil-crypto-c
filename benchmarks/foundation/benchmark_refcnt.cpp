@@ -33,27 +33,45 @@
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
 
-#include "benchmark/benchmark.h"
+#include <benchmark/benchmark.h>
 
 #include "vscf_sha512.h"
 
-#include "benchmark_data.h"
+constexpr benchmark::IterationCount kIterationsExact = 300000000;
 
 static void
-benchmark__hash_stream__512_bytes_at_once(benchmark::State &state) {
+object__shallow_copy(benchmark::State &state) {
     vscf_sha512_t *sha512 = vscf_sha512_new();
-    vsc_buffer_t *digest = vsc_buffer_new_with_capacity(vscf_sha512_DIGEST_LEN);
 
     for (auto _ : state) {
-        vscf_sha512_start(sha512);
-        vscf_sha512_update(sha512, benchmark_ANY_DATA_512_BYTES);
-        vscf_sha512_finish(sha512, digest);
-
-        vsc_buffer_reset(digest);
+        vscf_sha512_shallow_copy(sha512);
     }
 
-    vsc_buffer_destroy(&digest);
+    for (auto iterations = kIterationsExact; iterations != 0; --iterations) {
+        vscf_sha512_delete(sha512);
+    }
+
     vscf_sha512_destroy(&sha512);
+
+    state.counters["op"] = benchmark::Counter(state.iterations(), benchmark::Counter::kIsRate);
 }
 
-BENCHMARK(benchmark__hash_stream__512_bytes_at_once);
+static void
+object__delete(benchmark::State &state) {
+    vscf_sha512_t *sha512 = vscf_sha512_new();
+
+    for (auto iterations = kIterationsExact; iterations != 0; --iterations) {
+        vscf_sha512_shallow_copy(sha512);
+    }
+
+    for (auto _ : state) {
+        vscf_sha512_delete(sha512);
+    }
+
+    vscf_sha512_destroy(&sha512);
+
+    state.counters["op"] = benchmark::Counter(state.iterations(), benchmark::Counter::kIsRate);
+}
+
+BENCHMARK(object__shallow_copy)->Iterations(kIterationsExact);
+BENCHMARK(object__delete)->Iterations(kIterationsExact);
