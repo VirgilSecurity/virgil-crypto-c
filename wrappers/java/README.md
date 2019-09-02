@@ -18,6 +18,19 @@ Build Java JNI library for your platform
 mvn clean package
 ```
 
+## Run benchmarks
+
+Build artifacts with a command
+```bash
+mvn clean install
+```
+
+A JAR file with benchmarks and all dependencies will be build. You can find it at `/benchmark/target/benchmark.jar`.
+You can copy this JAR file to any other machine with install JRE and run with a command
+```bash
+java -jar <path_to_jar>
+```
+
 ## License
 
 BSD 3-Clause. See [LICENSE](../../LICENSE) for details.
