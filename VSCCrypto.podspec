@@ -1,11 +1,11 @@
 Pod::Spec.new do |s|
   s.name                        = "VSCCrypto"
-  s.version                     = "0.10.1"
+  s.version                     = "0.10.2"
   s.license                     = { :type => "BSD", :file => "Carthage/LICENSE" }
   s.summary                     = "Contains basic c functions classes for creating key pairs, encrypting/decrypting data, signing data and verifying signatures."
   s.homepage                    = "https://github.com/VirgilSecurity/virgil-crypto-c"
   s.authors                     = { "Virgil Security" => "https://virgilsecurity.com/" }
-  s.source                      = { :http => "https://github.com/VirgilSecurity/virgil-crypto-c/releases/download/v0.10.1/VSCCrypto.framework.zip" }
+  s.source                      = { :http => "https://github.com/VirgilSecurity/virgil-crypto-c/releases/download/v0.10.2/VSCCrypto.framework.zip" }
   s.ios.deployment_target       = "9.0"
   s.osx.deployment_target       = "10.9"
   s.tvos.deployment_target      = "9.0"
