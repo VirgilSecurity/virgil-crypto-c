@@ -114,7 +114,6 @@ import VirgilCryptoFoundation
         }
 
         output.withUnsafeMutableBytes({ (outputPointer: UnsafeMutableRawBufferPointer) -> Void in
-            vsc_buffer_init(outputBuf)
             vsc_buffer_use(outputBuf, outputPointer.bindMemory(to: byte.self).baseAddress, outputCount)
 
             vscr_ratchet_group_message_serialize(self.c_ctx, outputBuf)

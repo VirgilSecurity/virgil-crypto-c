@@ -200,7 +200,6 @@ import VirgilCryptoFoundation
 
         let proxyResult = senderId.withUnsafeBytes({ (senderIdPointer: UnsafeRawBufferPointer) -> vscr_status_t in
             plainText.withUnsafeMutableBytes({ (plainTextPointer: UnsafeMutableRawBufferPointer) -> vscr_status_t in
-                vsc_buffer_init(plainTextBuf)
                 vsc_buffer_use(plainTextBuf, plainTextPointer.bindMemory(to: byte.self).baseAddress, plainTextCount)
 
                 return vscr_ratchet_group_session_decrypt(self.c_ctx, message.c_ctx, vsc_data(senderIdPointer.bindMemory(to: byte.self).baseAddress, senderId.count), plainTextBuf)
