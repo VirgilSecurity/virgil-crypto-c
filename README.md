@@ -81,6 +81,18 @@ cmake --build build
 cmake --build build --target install
 ```
 
+## Run Benchmarks
+
+```bash
+cmake -DCMAKE_BUILD_TYPE=Release -DENABLE_BENCHMARKING=ON \
+      -DED25519_AMD64_RADIX_64_24K=ON -DED25519_REF10=OFF \
+      -Bbuild -H.
+
+cmake --build build -- -j10
+
+./build/benchmarks/foundation/bench
+```
+
 ## Support
 
 Our developer support team is here to help you.
