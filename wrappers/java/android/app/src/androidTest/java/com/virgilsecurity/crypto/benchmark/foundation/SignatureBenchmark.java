@@ -157,9 +157,9 @@ public class SignatureBenchmark {
 	}
 
 	private void verify() {
-		KeyProvider provider = new KeyProvider();
-		provider.setupDefaults();
-		PrivateKey p = provider.generatePrivateKey(AlgId.ED25519);
+//		KeyProvider provider = new KeyProvider();
+//		provider.setupDefaults();
+//		PrivateKey p = provider.generatePrivateKey(AlgId.ED25519);
 		long startTime = System.nanoTime();
 		for (int i = BenchmarkOptions.MEASUREMENTS; i > 0; i--) {
 //			for (int j = 10000; j > 0; j--) {
@@ -170,7 +170,7 @@ public class SignatureBenchmark {
 //					Log.i("", e.getMessage());
 //				}
 //			}
-//			Log.i("VERIFY", "" + i);
+			Log.i("VERIFY", "" + i);
 			this.verifier.reset(this.signature);
 			this.verifier.appendData(DATA);
 			this.verifier.verify(this.publicKey);
