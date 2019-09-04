@@ -49,6 +49,11 @@ public class HashBasedAlgInfo implements AutoCloseable, AlgInfo {
         this.cCtx = FoundationJNI.INSTANCE.hashBasedAlgInfo_new();
     }
 
+    /* Wrap underlying C context. */
+    HashBasedAlgInfo(FoundationContextHolder contextHolder) {
+        this.cCtx = contextHolder.cCtx;
+    }
+
     /*
     * Create algorithm info with identificator and HASH algorithm info.
     */
@@ -69,9 +74,8 @@ public class HashBasedAlgInfo implements AutoCloseable, AlgInfo {
     * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     */
     public static HashBasedAlgInfo getInstance(long cCtx) {
-        HashBasedAlgInfo newInstance = new HashBasedAlgInfo();
-        newInstance.cCtx = cCtx;
-        return newInstance;
+        FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
+        return new HashBasedAlgInfo(ctxHolder);
     }
 
     /* Close resource. */

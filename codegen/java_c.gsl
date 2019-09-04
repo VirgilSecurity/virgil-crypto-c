@@ -656,7 +656,11 @@ function java_create_class_c_default_constructor (java_class, class, java_projec
             .is_jni = "1"
 
             new c_code to c_method
-                . = "return (jlong) $(my.ctor_invocation:);"
+                . = "
+                    jlong c_ctx = 0;
+                    *($(class_derive_c_type(my.class)) **)&c_ctx = $(my.ctor_invocation:);
+                    return c_ctx;
+                "
             endnew
 
             new c_return to c_method
@@ -816,8 +820,8 @@ function java_wrap_c_method_arguments (method, java_project, meta)
             if (NULL == $(argument.name:c)_fidCtx) {
                 .(c_class_assert_macros_assert)(\"Class '$(my.class_name:)' has no field 'cCtx'.\");
             }
-            $(my.class_type:) $(argument.name:c) =\
-                    ($(my.class_type:)) (*jenv)->GetLongField(jenv, j$(argument.name:Camel), $(argument.name:c)_fidCtx);
+            jlong $(argument.name:c)_c_ctx = (*jenv)->GetLongField(jenv, j$(argument.name:Camel), $(argument.name:c)_fidCtx);
+            $(my.class_type:) $(argument.name:c) = *($(my.class_type:)*)&$(argument.name:c)_c_ctx;
         ") + terminator
     endfor
 
@@ -837,7 +841,8 @@ function java_wrap_c_method_arguments (method, java_project, meta)
             if (NULL == $(argument.name:c)_fidCtx) {
                 .(c_class_assert_macros_assert)(\"Class '$(my.class_name:)' has no field 'cCtx'.\");
             }
-            $(my.class_type:) $(argument.name:c) = ($(my.class_type:)) (*jenv)->GetLongField(jenv, j$(argument.name:Camel), $(argument.name:c)_fidCtx);
+            jlong $(argument.name:c)_c_ctx = (*jenv)->GetLongField(jenv, j$(argument.name:Camel), $(argument.name:c)_fidCtx);
+            $(my.class_type:) $(argument.name:c) = *($(my.class_type:)*) &$(argument.name:c)_c_ctx;
         ") + terminator
     endfor
 
@@ -855,7 +860,7 @@ function java_create_c_class_method_call (class, method, java_class, java_method
         my.ctx_type = java_derive_c_type (my.class)
         my.ctx_name = java_derive_c_context_variable_name (my.class)
         my.init_context += format_left("\
-            $(my.ctx_type:)* $(my.ctx_name:) = ($(my.ctx_type:)*) c_ctx;
+            $(my.ctx_type:)* $(my.ctx_name:) = *($(my.ctx_type:)**) &c_ctx;
         ") + terminator
     endif
 
@@ -1375,9 +1380,9 @@ function java_create_c_class_close (class, java_project, meta)
         # Define destuctor method implementation
         my.ctx_type = java_derive_c_type (my.class)
         if string_in (my.class.context, "public") & string_in (my.class.lifecycle, "none")
-            my.dtor_invocation = ".(c_global_method_dealloc)(($(my.ctx_type:) *) c_ctx /*4*/)"
+            my.dtor_invocation = ".(c_global_method_dealloc)(*($(my.ctx_type:) **) &c_ctx /*4*/)"
         else
-            my.dtor_invocation = "$(class_derive_c_destructor (my.class))(($(my.ctx_type:) *) c_ctx /*5*/)"
+            my.dtor_invocation = "$(class_derive_c_destructor (my.class))(*($(my.ctx_type:) **) &c_ctx /*5*/)"
         endif
 
         new c_method to my.c_module
@@ -1472,7 +1477,7 @@ function java_get_c_implementation_helper_interface_method (interface, java_proj
         .is_jni = "0"
 
         new c_argument to c_method
-            .name = "c_ctx"
+            .name = "c_obj"
             .type = my.ctx_type
             .is_const = "1"
         endnew
@@ -1486,12 +1491,12 @@ function java_get_c_implementation_helper_interface_method (interface, java_proj
             my.method_of_class = my.interface.of_class ? my.interface.name
             my.method_is_implemented = make_ref_c (make_id ("class", my.method_of_class, "method", "is_implemented"))
             .temp_code = format_left("\
-                if (!$(my.method_is_implemented:)(c_ctx)) {
+                if (!$(my.method_is_implemented:)(c_obj)) {
                     .(c_class_assert_macros_assert)(\"Given C implementation does not implement interface $(my.interface_name:).\");
                 }
                 char *classFullName = malloc(200);
                 strcpy (classFullName, \"$(my.class_path:)/\");
-                .(c_class_impl_enum_tag) implTag = .(c_class_impl_method_tag)(($(make_ref_c (make_id ("class impl struct impl")))*) c_ctx);
+                .(c_class_impl_enum_tag) implTag = .(c_class_impl_method_tag)(c_obj);
                 switch(implTag) {
             ")
         endnew
@@ -1509,7 +1514,7 @@ function java_get_c_implementation_helper_interface_method (interface, java_proj
         .is_jni = "0"
 
         new c_argument to c_method
-            .name = "c_ctx"
+            .name = "c_obj"
             .type = my.ctx_type
             .is_const = "1"
         endnew
@@ -1520,7 +1525,7 @@ function java_get_c_implementation_helper_interface_method (interface, java_proj
 
         new c_code to c_method
             . = format_left("\
-                char *classFullName = $(my.class_name_getter:)(jenv, jobj, c_ctx);
+                char *classFullName = $(my.class_name_getter:)(jenv, jobj, c_obj);
                 jclass cls = (*jenv)->FindClass(jenv, classFullName);
                 if (NULL == cls) {
                     free(classFullName);
@@ -1537,7 +1542,10 @@ function java_get_c_implementation_helper_interface_method (interface, java_proj
                 if (NULL == methodID) {
                     .(c_class_assert_macros_assert)(\"Class has no 'getInstance' method.\");
                 }
-                return (*jenv)->CallStaticObjectMethod(jenv, cls, methodID, (jlong) c_ctx);
+
+                jlong c_ctx = 0;
+                *(const $(my.ctx_type:)*) &c_ctx = c_obj;
+                return (*jenv)->CallStaticObjectMethod(jenv, cls, methodID, c_ctx);
             ")
         endnew
 
@@ -1658,7 +1666,8 @@ function java_create_c_method_from_dependency (dependency, impl, destination, ja
                     if (NULL == $(my.dependency.name:c)_fidCtx) {
                         .(c_class_assert_macros_assert)(\"Class '$(my.class_name:)' has no field 'cCtx'.\");
                     }
-                    $(my.class_type:) $(my.dependency.name:c) = ($(my.class_type:)) (*jenv)->GetLongField(jenv, j$(my.dependency.name:Camel), $(my.dependency.name:c)_fidCtx);
+                    jlong $(my.dependency.name:c)_c_ctx = (*jenv)->GetLongField(jenv, j$(my.dependency.name:Camel), $(my.dependency.name:c)_fidCtx);
+                    $(my.class_type:) $(my.dependency.name:c) = *($(my.class_type:)*) &$(my.dependency.name:c)_c_ctx;
 
                     $(class_derive_c_method_release_dependency (my.impl, my.dependency))(($(my.arg_ctx_type:) *) c_ctx);
                     $(my.result_var?:)$(class_derive_c_method_use_dependency (my.impl, my.dependency))(($(my.arg_ctx_type:) *) c_ctx,\

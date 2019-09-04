@@ -50,6 +50,11 @@ public class Sec1Serializer implements AutoCloseable, KeySerializer {
         this.cCtx = FoundationJNI.INSTANCE.sec1Serializer_new();
     }
 
+    /* Wrap underlying C context. */
+    Sec1Serializer(FoundationContextHolder contextHolder) {
+        this.cCtx = contextHolder.cCtx;
+    }
+
     public void setAsn1Writer(Asn1Writer asn1Writer) {
         FoundationJNI.INSTANCE.sec1Serializer_setAsn1Writer(this.cCtx, asn1Writer);
     }
@@ -84,9 +89,8 @@ public class Sec1Serializer implements AutoCloseable, KeySerializer {
     * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     */
     public static Sec1Serializer getInstance(long cCtx) {
-        Sec1Serializer newInstance = new Sec1Serializer();
-        newInstance.cCtx = cCtx;
-        return newInstance;
+        FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
+        return new Sec1Serializer(ctxHolder);
     }
 
     /* Close resource. */

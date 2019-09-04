@@ -52,14 +52,18 @@ public class PheServer implements AutoCloseable {
         this.cCtx = PheJNI.INSTANCE.pheServer_new();
     }
 
+    /* Wrap underlying C context. */
+    PheServer(PheContextHolder contextHolder) {
+        this.cCtx = contextHolder.cCtx;
+    }
+
     /*
     * Acquire C context.
     * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     */
     public static PheServer getInstance(long cCtx) {
-        PheServer newInstance = new PheServer();
-        newInstance.cCtx = cCtx;
-        return newInstance;
+        PheContextHolder ctxHolder = new PheContextHolder(cCtx);
+        return new PheServer(ctxHolder);
     }
 
     /* Close resource. */

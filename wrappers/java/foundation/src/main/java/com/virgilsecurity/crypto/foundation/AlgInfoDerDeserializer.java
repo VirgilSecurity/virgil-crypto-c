@@ -49,6 +49,11 @@ public class AlgInfoDerDeserializer implements AutoCloseable, AlgInfoDeserialize
         this.cCtx = FoundationJNI.INSTANCE.algInfoDerDeserializer_new();
     }
 
+    /* Wrap underlying C context. */
+    AlgInfoDerDeserializer(FoundationContextHolder contextHolder) {
+        this.cCtx = contextHolder.cCtx;
+    }
+
     public void setAsn1Reader(Asn1Reader asn1Reader) {
         FoundationJNI.INSTANCE.algInfoDerDeserializer_setAsn1Reader(this.cCtx, asn1Reader);
     }
@@ -74,9 +79,8 @@ public class AlgInfoDerDeserializer implements AutoCloseable, AlgInfoDeserialize
     * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     */
     public static AlgInfoDerDeserializer getInstance(long cCtx) {
-        AlgInfoDerDeserializer newInstance = new AlgInfoDerDeserializer();
-        newInstance.cCtx = cCtx;
-        return newInstance;
+        FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
+        return new AlgInfoDerDeserializer(ctxHolder);
     }
 
     /* Close resource. */

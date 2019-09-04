@@ -49,6 +49,11 @@ public class Pkcs8Serializer implements AutoCloseable, KeySerializer {
         this.cCtx = FoundationJNI.INSTANCE.pkcs8Serializer_new();
     }
 
+    /* Wrap underlying C context. */
+    Pkcs8Serializer(FoundationContextHolder contextHolder) {
+        this.cCtx = contextHolder.cCtx;
+    }
+
     public void setAsn1Writer(Asn1Writer asn1Writer) {
         FoundationJNI.INSTANCE.pkcs8Serializer_setAsn1Writer(this.cCtx, asn1Writer);
     }
@@ -83,9 +88,8 @@ public class Pkcs8Serializer implements AutoCloseable, KeySerializer {
     * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     */
     public static Pkcs8Serializer getInstance(long cCtx) {
-        Pkcs8Serializer newInstance = new Pkcs8Serializer();
-        newInstance.cCtx = cCtx;
-        return newInstance;
+        FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
+        return new Pkcs8Serializer(ctxHolder);
     }
 
     /* Close resource. */

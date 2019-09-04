@@ -49,14 +49,18 @@ public class Sha512 implements AutoCloseable, Alg, Hash {
         this.cCtx = FoundationJNI.INSTANCE.sha512_new();
     }
 
+    /* Wrap underlying C context. */
+    Sha512(FoundationContextHolder contextHolder) {
+        this.cCtx = contextHolder.cCtx;
+    }
+
     /*
     * Acquire C context.
     * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     */
     public static Sha512 getInstance(long cCtx) {
-        Sha512 newInstance = new Sha512();
-        newInstance.cCtx = cCtx;
-        return newInstance;
+        FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
+        return new Sha512(ctxHolder);
     }
 
     /* Close resource. */

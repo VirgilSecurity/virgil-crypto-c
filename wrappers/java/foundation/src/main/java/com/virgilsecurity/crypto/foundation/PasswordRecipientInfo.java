@@ -49,6 +49,11 @@ public class PasswordRecipientInfo implements AutoCloseable {
         this.cCtx = FoundationJNI.INSTANCE.passwordRecipientInfo_new();
     }
 
+    /* Wrap underlying C context. */
+    PasswordRecipientInfo(FoundationContextHolder contextHolder) {
+        this.cCtx = contextHolder.cCtx;
+    }
+
     /*
     * Create object and define all properties.
     */
@@ -62,9 +67,8 @@ public class PasswordRecipientInfo implements AutoCloseable {
     * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     */
     public static PasswordRecipientInfo getInstance(long cCtx) {
-        PasswordRecipientInfo newInstance = new PasswordRecipientInfo();
-        newInstance.cCtx = cCtx;
-        return newInstance;
+        FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
+        return new PasswordRecipientInfo(ctxHolder);
     }
 
     /* Close resource. */
