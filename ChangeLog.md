@@ -6,6 +6,8 @@
 ### Bugfix
 
 - Lib/Foundation: Fix crash when export secp256r1 private key with leading zero
+- Wrapper/Swift: Fix memory leaks
+- Wrapper/Java: Fix memory leaks
 
 
 ## Version 0.10.0 released 2019-08-12
