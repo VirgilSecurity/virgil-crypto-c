@@ -49,6 +49,11 @@ public class RawPublicKey implements AutoCloseable, Key, PublicKey {
         this.cCtx = FoundationJNI.INSTANCE.rawPublicKey_new();
     }
 
+    /* Wrap underlying C context. */
+    RawPublicKey(FoundationContextHolder contextHolder) {
+        this.cCtx = contextHolder.cCtx;
+    }
+
     /*
     * Return key data.
     */
@@ -61,9 +66,8 @@ public class RawPublicKey implements AutoCloseable, Key, PublicKey {
     * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     */
     public static RawPublicKey getInstance(long cCtx) {
-        RawPublicKey newInstance = new RawPublicKey();
-        newInstance.cCtx = cCtx;
-        return newInstance;
+        FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
+        return new RawPublicKey(ctxHolder);
     }
 
     /* Close resource. */

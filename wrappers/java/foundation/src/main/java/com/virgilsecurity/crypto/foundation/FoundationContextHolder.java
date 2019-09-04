@@ -36,66 +36,13 @@
 
 package com.virgilsecurity.crypto.foundation;
 
-/*
-* Handle information about password-based encryption algorithm.
-*/
-public class PbeAlgInfo implements AutoCloseable, AlgInfo {
+class FoundationContextHolder {
 
-    public long cCtx;
+    long cCtx;
 
     /* Create underlying C context. */
-    public PbeAlgInfo() {
-        super();
-        this.cCtx = FoundationJNI.INSTANCE.pbeAlgInfo_new();
-    }
-
-    /* Wrap underlying C context. */
-    PbeAlgInfo(FoundationContextHolder contextHolder) {
-        this.cCtx = contextHolder.cCtx;
-    }
-
-    /*
-    * Create algorithm info with identificator, KDF algorithm info and
-    * cipher alg info.
-    */
-    public PbeAlgInfo(AlgId algId, AlgInfo kdfAlgInfo, AlgInfo cipherAlgInfo) {
-        super();
-        this.cCtx = FoundationJNI.INSTANCE.pbeAlgInfo_new(algId, kdfAlgInfo, cipherAlgInfo);
-    }
-
-    /*
-    * Return KDF algorithm information.
-    */
-    public AlgInfo kdfAlgInfo() {
-        return FoundationJNI.INSTANCE.pbeAlgInfo_kdfAlgInfo(this.cCtx);
-    }
-
-    /*
-    * Return cipher algorithm information.
-    */
-    public AlgInfo cipherAlgInfo() {
-        return FoundationJNI.INSTANCE.pbeAlgInfo_cipherAlgInfo(this.cCtx);
-    }
-
-    /*
-    * Acquire C context.
-    * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-    */
-    public static PbeAlgInfo getInstance(long cCtx) {
-        FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
-        return new PbeAlgInfo(ctxHolder);
-    }
-
-    /* Close resource. */
-    public void close() {
-        FoundationJNI.INSTANCE.pbeAlgInfo_close(this.cCtx);
-    }
-
-    /*
-    * Provide algorithm identificator.
-    */
-    public AlgId algId() {
-        return FoundationJNI.INSTANCE.pbeAlgInfo_algId(this.cCtx);
+    FoundationContextHolder(long cCtx) {
+        this.cCtx = cCtx;
     }
 }
 

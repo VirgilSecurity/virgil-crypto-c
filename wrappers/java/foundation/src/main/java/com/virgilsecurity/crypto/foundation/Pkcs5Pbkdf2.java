@@ -49,6 +49,11 @@ public class Pkcs5Pbkdf2 implements AutoCloseable, Alg, Kdf, SaltedKdf {
         this.cCtx = FoundationJNI.INSTANCE.pkcs5Pbkdf2_new();
     }
 
+    /* Wrap underlying C context. */
+    Pkcs5Pbkdf2(FoundationContextHolder contextHolder) {
+        this.cCtx = contextHolder.cCtx;
+    }
+
     public void setHmac(Mac hmac) {
         FoundationJNI.INSTANCE.pkcs5Pbkdf2_setHmac(this.cCtx, hmac);
     }
@@ -65,9 +70,8 @@ public class Pkcs5Pbkdf2 implements AutoCloseable, Alg, Kdf, SaltedKdf {
     * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     */
     public static Pkcs5Pbkdf2 getInstance(long cCtx) {
-        Pkcs5Pbkdf2 newInstance = new Pkcs5Pbkdf2();
-        newInstance.cCtx = cCtx;
-        return newInstance;
+        FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
+        return new Pkcs5Pbkdf2(ctxHolder);
     }
 
     /* Close resource. */

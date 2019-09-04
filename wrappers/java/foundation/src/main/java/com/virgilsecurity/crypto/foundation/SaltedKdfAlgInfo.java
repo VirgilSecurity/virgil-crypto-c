@@ -49,6 +49,11 @@ public class SaltedKdfAlgInfo implements AutoCloseable, AlgInfo {
         this.cCtx = FoundationJNI.INSTANCE.saltedKdfAlgInfo_new();
     }
 
+    /* Wrap underlying C context. */
+    SaltedKdfAlgInfo(FoundationContextHolder contextHolder) {
+        this.cCtx = contextHolder.cCtx;
+    }
+
     /*
     * Create algorithm info with identificator, HASH algorithm info,
     * salt and iteration count.
@@ -85,9 +90,8 @@ public class SaltedKdfAlgInfo implements AutoCloseable, AlgInfo {
     * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     */
     public static SaltedKdfAlgInfo getInstance(long cCtx) {
-        SaltedKdfAlgInfo newInstance = new SaltedKdfAlgInfo();
-        newInstance.cCtx = cCtx;
-        return newInstance;
+        FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
+        return new SaltedKdfAlgInfo(ctxHolder);
     }
 
     /* Close resource. */

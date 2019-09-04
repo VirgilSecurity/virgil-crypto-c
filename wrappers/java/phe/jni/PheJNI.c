@@ -61,11 +61,13 @@ jint throwPheException (JNIEnv *jenv, jobject jobj, jint statusCode) {
 }
 
 JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_pheServer_1new__ (JNIEnv *jenv, jobject jobj) {
-    return (jlong) vsce_phe_server_new();
+    jlong c_ctx = 0;
+    *(vsce_phe_server_t **)&c_ctx = vsce_phe_server_new();
+    return c_ctx;
 }
 
 JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_pheServer_1close (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
-    vsce_phe_server_delete((vsce_phe_server_t /*2*/ *) c_ctx /*5*/);
+    vsce_phe_server_delete(*(vsce_phe_server_t /*2*/ **) &c_ctx /*5*/);
 }
 
 JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_pheServer_1setRandom (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jrandom) {
@@ -77,7 +79,8 @@ JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_pheServer_1setR
     if (NULL == random_fidCtx) {
         VSCE_ASSERT("Class 'Random' has no field 'cCtx'.");
     }
-    vscf_impl_t */*6*/ random = (vscf_impl_t */*6*/) (*jenv)->GetLongField(jenv, jrandom, random_fidCtx);
+    jlong random_c_ctx = (*jenv)->GetLongField(jenv, jrandom, random_fidCtx);
+    vscf_impl_t */*6*/ random = *(vscf_impl_t */*6*/*) &random_c_ctx;
 
     vsce_phe_server_release_random((vsce_phe_server_t /*2*/ *) c_ctx);
     vsce_phe_server_use_random((vsce_phe_server_t /*2*/ *) c_ctx, random);
@@ -92,7 +95,8 @@ JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_pheServer_1setO
     if (NULL == operation_random_fidCtx) {
         VSCE_ASSERT("Class 'Random' has no field 'cCtx'.");
     }
-    vscf_impl_t */*6*/ operation_random = (vscf_impl_t */*6*/) (*jenv)->GetLongField(jenv, joperationRandom, operation_random_fidCtx);
+    jlong operation_random_c_ctx = (*jenv)->GetLongField(jenv, joperationRandom, operation_random_fidCtx);
+    vscf_impl_t */*6*/ operation_random = *(vscf_impl_t */*6*/*) &operation_random_c_ctx;
 
     vsce_phe_server_release_operation_random((vsce_phe_server_t /*2*/ *) c_ctx);
     vsce_phe_server_use_operation_random((vsce_phe_server_t /*2*/ *) c_ctx, operation_random);
@@ -100,7 +104,7 @@ JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_pheServer_1setO
 
 JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_pheServer_1setupDefaults (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
     // Cast class context
-    vsce_phe_server_t /*2*/* phe_server_ctx = (vsce_phe_server_t /*2*/*) c_ctx;
+    vsce_phe_server_t /*2*/* phe_server_ctx = *(vsce_phe_server_t /*2*/**) &c_ctx;
 
     vsce_status_t status = vsce_phe_server_setup_defaults(phe_server_ctx /*a1*/);
     if (status != vsce_status_SUCCESS) {
@@ -111,7 +115,7 @@ JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_pheServer_1setu
 
 JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_pheServer_1generateServerKeyPair (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
     // Cast class context
-    vsce_phe_server_t /*2*/* phe_server_ctx = (vsce_phe_server_t /*2*/*) c_ctx;
+    vsce_phe_server_t /*2*/* phe_server_ctx = *(vsce_phe_server_t /*2*/**) &c_ctx;
 
     // Wrap input buffers
     vsc_buffer_t *server_private_key = vsc_buffer_new_with_capacity(vsce_phe_common_PHE_PRIVATE_KEY_LENGTH);
@@ -147,7 +151,7 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_pheServer_1g
 
 JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_pheServer_1enrollmentResponseLen (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
     // Cast class context
-    vsce_phe_server_t /*2*/* phe_server_ctx = (vsce_phe_server_t /*2*/*) c_ctx;
+    vsce_phe_server_t /*2*/* phe_server_ctx = *(vsce_phe_server_t /*2*/**) &c_ctx;
 
     jint ret = (jint) vsce_phe_server_enrollment_response_len(phe_server_ctx /*a1*/);
     return ret;
@@ -155,7 +159,7 @@ JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_pheServer_1enro
 
 JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_pheServer_1getEnrollment (JNIEnv *jenv, jobject jobj, jlong c_ctx, jbyteArray jserverPrivateKey, jbyteArray jserverPublicKey) {
     // Cast class context
-    vsce_phe_server_t /*2*/* phe_server_ctx = (vsce_phe_server_t /*2*/*) c_ctx;
+    vsce_phe_server_t /*2*/* phe_server_ctx = *(vsce_phe_server_t /*2*/**) &c_ctx;
 
     // Wrap input data
     byte* server_private_key_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jserverPrivateKey, NULL);
@@ -185,7 +189,7 @@ JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_pheServer
 
 JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_pheServer_1verifyPasswordResponseLen (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
     // Cast class context
-    vsce_phe_server_t /*2*/* phe_server_ctx = (vsce_phe_server_t /*2*/*) c_ctx;
+    vsce_phe_server_t /*2*/* phe_server_ctx = *(vsce_phe_server_t /*2*/**) &c_ctx;
 
     jint ret = (jint) vsce_phe_server_verify_password_response_len(phe_server_ctx /*a1*/);
     return ret;
@@ -193,7 +197,7 @@ JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_pheServer_1veri
 
 JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_pheServer_1verifyPassword (JNIEnv *jenv, jobject jobj, jlong c_ctx, jbyteArray jserverPrivateKey, jbyteArray jserverPublicKey, jbyteArray jverifyPasswordRequest) {
     // Cast class context
-    vsce_phe_server_t /*2*/* phe_server_ctx = (vsce_phe_server_t /*2*/*) c_ctx;
+    vsce_phe_server_t /*2*/* phe_server_ctx = *(vsce_phe_server_t /*2*/**) &c_ctx;
 
     // Wrap input data
     byte* server_private_key_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jserverPrivateKey, NULL);
@@ -228,7 +232,7 @@ JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_pheServer
 
 JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_pheServer_1updateTokenLen (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
     // Cast class context
-    vsce_phe_server_t /*2*/* phe_server_ctx = (vsce_phe_server_t /*2*/*) c_ctx;
+    vsce_phe_server_t /*2*/* phe_server_ctx = *(vsce_phe_server_t /*2*/**) &c_ctx;
 
     jint ret = (jint) vsce_phe_server_update_token_len(phe_server_ctx /*a1*/);
     return ret;
@@ -236,7 +240,7 @@ JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_pheServer_1upda
 
 JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_pheServer_1rotateKeys (JNIEnv *jenv, jobject jobj, jlong c_ctx, jbyteArray jserverPrivateKey) {
     // Cast class context
-    vsce_phe_server_t /*2*/* phe_server_ctx = (vsce_phe_server_t /*2*/*) c_ctx;
+    vsce_phe_server_t /*2*/* phe_server_ctx = *(vsce_phe_server_t /*2*/**) &c_ctx;
 
     // Wrap input data
     byte* server_private_key_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jserverPrivateKey, NULL);
@@ -284,11 +288,13 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_pheServer_1r
 }
 
 JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_pheClient_1new__ (JNIEnv *jenv, jobject jobj) {
-    return (jlong) vsce_phe_client_new();
+    jlong c_ctx = 0;
+    *(vsce_phe_client_t **)&c_ctx = vsce_phe_client_new();
+    return c_ctx;
 }
 
 JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_pheClient_1close (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
-    vsce_phe_client_delete((vsce_phe_client_t /*2*/ *) c_ctx /*5*/);
+    vsce_phe_client_delete(*(vsce_phe_client_t /*2*/ **) &c_ctx /*5*/);
 }
 
 JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_pheClient_1setRandom (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jrandom) {
@@ -300,7 +306,8 @@ JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_pheClient_1setR
     if (NULL == random_fidCtx) {
         VSCE_ASSERT("Class 'Random' has no field 'cCtx'.");
     }
-    vscf_impl_t */*6*/ random = (vscf_impl_t */*6*/) (*jenv)->GetLongField(jenv, jrandom, random_fidCtx);
+    jlong random_c_ctx = (*jenv)->GetLongField(jenv, jrandom, random_fidCtx);
+    vscf_impl_t */*6*/ random = *(vscf_impl_t */*6*/*) &random_c_ctx;
 
     vsce_phe_client_release_random((vsce_phe_client_t /*2*/ *) c_ctx);
     vsce_phe_client_use_random((vsce_phe_client_t /*2*/ *) c_ctx, random);
@@ -315,7 +322,8 @@ JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_pheClient_1setO
     if (NULL == operation_random_fidCtx) {
         VSCE_ASSERT("Class 'Random' has no field 'cCtx'.");
     }
-    vscf_impl_t */*6*/ operation_random = (vscf_impl_t */*6*/) (*jenv)->GetLongField(jenv, joperationRandom, operation_random_fidCtx);
+    jlong operation_random_c_ctx = (*jenv)->GetLongField(jenv, joperationRandom, operation_random_fidCtx);
+    vscf_impl_t */*6*/ operation_random = *(vscf_impl_t */*6*/*) &operation_random_c_ctx;
 
     vsce_phe_client_release_operation_random((vsce_phe_client_t /*2*/ *) c_ctx);
     vsce_phe_client_use_operation_random((vsce_phe_client_t /*2*/ *) c_ctx, operation_random);
@@ -323,7 +331,7 @@ JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_pheClient_1setO
 
 JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_pheClient_1setupDefaults (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
     // Cast class context
-    vsce_phe_client_t /*2*/* phe_client_ctx = (vsce_phe_client_t /*2*/*) c_ctx;
+    vsce_phe_client_t /*2*/* phe_client_ctx = *(vsce_phe_client_t /*2*/**) &c_ctx;
 
     vsce_status_t status = vsce_phe_client_setup_defaults(phe_client_ctx /*a1*/);
     if (status != vsce_status_SUCCESS) {
@@ -334,7 +342,7 @@ JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_pheClient_1setu
 
 JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_pheClient_1setKeys (JNIEnv *jenv, jobject jobj, jlong c_ctx, jbyteArray jclientPrivateKey, jbyteArray jserverPublicKey) {
     // Cast class context
-    vsce_phe_client_t /*2*/* phe_client_ctx = (vsce_phe_client_t /*2*/*) c_ctx;
+    vsce_phe_client_t /*2*/* phe_client_ctx = *(vsce_phe_client_t /*2*/**) &c_ctx;
 
     // Wrap input data
     byte* client_private_key_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jclientPrivateKey, NULL);
@@ -356,7 +364,7 @@ JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_pheClient_1setK
 
 JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_pheClient_1generateClientPrivateKey (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
     // Cast class context
-    vsce_phe_client_t /*2*/* phe_client_ctx = (vsce_phe_client_t /*2*/*) c_ctx;
+    vsce_phe_client_t /*2*/* phe_client_ctx = *(vsce_phe_client_t /*2*/**) &c_ctx;
 
     // Wrap input buffers
     vsc_buffer_t *client_private_key = vsc_buffer_new_with_capacity(vsce_phe_common_PHE_PRIVATE_KEY_LENGTH);
@@ -376,7 +384,7 @@ JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_pheClient
 
 JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_pheClient_1enrollmentRecordLen (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
     // Cast class context
-    vsce_phe_client_t /*2*/* phe_client_ctx = (vsce_phe_client_t /*2*/*) c_ctx;
+    vsce_phe_client_t /*2*/* phe_client_ctx = *(vsce_phe_client_t /*2*/**) &c_ctx;
 
     jint ret = (jint) vsce_phe_client_enrollment_record_len(phe_client_ctx /*a1*/);
     return ret;
@@ -384,7 +392,7 @@ JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_pheClient_1enro
 
 JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_pheClient_1enrollAccount (JNIEnv *jenv, jobject jobj, jlong c_ctx, jbyteArray jenrollmentResponse, jbyteArray jpassword) {
     // Cast class context
-    vsce_phe_client_t /*2*/* phe_client_ctx = (vsce_phe_client_t /*2*/*) c_ctx;
+    vsce_phe_client_t /*2*/* phe_client_ctx = *(vsce_phe_client_t /*2*/**) &c_ctx;
 
     // Wrap input data
     byte* enrollment_response_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jenrollmentResponse, NULL);
@@ -430,7 +438,7 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_pheClient_1e
 
 JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_pheClient_1verifyPasswordRequestLen (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
     // Cast class context
-    vsce_phe_client_t /*2*/* phe_client_ctx = (vsce_phe_client_t /*2*/*) c_ctx;
+    vsce_phe_client_t /*2*/* phe_client_ctx = *(vsce_phe_client_t /*2*/**) &c_ctx;
 
     jint ret = (jint) vsce_phe_client_verify_password_request_len(phe_client_ctx /*a1*/);
     return ret;
@@ -438,7 +446,7 @@ JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_pheClient_1veri
 
 JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_pheClient_1createVerifyPasswordRequest (JNIEnv *jenv, jobject jobj, jlong c_ctx, jbyteArray jpassword, jbyteArray jenrollmentRecord) {
     // Cast class context
-    vsce_phe_client_t /*2*/* phe_client_ctx = (vsce_phe_client_t /*2*/*) c_ctx;
+    vsce_phe_client_t /*2*/* phe_client_ctx = *(vsce_phe_client_t /*2*/**) &c_ctx;
 
     // Wrap input data
     byte* password_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jpassword, NULL);
@@ -468,7 +476,7 @@ JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_pheClient
 
 JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_pheClient_1checkResponseAndDecrypt (JNIEnv *jenv, jobject jobj, jlong c_ctx, jbyteArray jpassword, jbyteArray jenrollmentRecord, jbyteArray jverifyPasswordResponse) {
     // Cast class context
-    vsce_phe_client_t /*2*/* phe_client_ctx = (vsce_phe_client_t /*2*/*) c_ctx;
+    vsce_phe_client_t /*2*/* phe_client_ctx = *(vsce_phe_client_t /*2*/**) &c_ctx;
 
     // Wrap input data
     byte* password_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jpassword, NULL);
@@ -503,7 +511,7 @@ JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_pheClient
 
 JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_pheClient_1rotateKeys (JNIEnv *jenv, jobject jobj, jlong c_ctx, jbyteArray jupdateToken) {
     // Cast class context
-    vsce_phe_client_t /*2*/* phe_client_ctx = (vsce_phe_client_t /*2*/*) c_ctx;
+    vsce_phe_client_t /*2*/* phe_client_ctx = *(vsce_phe_client_t /*2*/**) &c_ctx;
 
     // Wrap input data
     byte* update_token_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jupdateToken, NULL);
@@ -544,7 +552,7 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_pheClient_1r
 
 JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_pheClient_1updateEnrollmentRecord (JNIEnv *jenv, jobject jobj, jlong c_ctx, jbyteArray jenrollmentRecord, jbyteArray jupdateToken) {
     // Cast class context
-    vsce_phe_client_t /*2*/* phe_client_ctx = (vsce_phe_client_t /*2*/*) c_ctx;
+    vsce_phe_client_t /*2*/* phe_client_ctx = *(vsce_phe_client_t /*2*/**) &c_ctx;
 
     // Wrap input data
     byte* enrollment_record_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jenrollmentRecord, NULL);
@@ -573,11 +581,13 @@ JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_pheClient
 }
 
 JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_pheCipher_1new__ (JNIEnv *jenv, jobject jobj) {
-    return (jlong) vsce_phe_cipher_new();
+    jlong c_ctx = 0;
+    *(vsce_phe_cipher_t **)&c_ctx = vsce_phe_cipher_new();
+    return c_ctx;
 }
 
 JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_pheCipher_1close (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
-    vsce_phe_cipher_delete((vsce_phe_cipher_t /*2*/ *) c_ctx /*5*/);
+    vsce_phe_cipher_delete(*(vsce_phe_cipher_t /*2*/ **) &c_ctx /*5*/);
 }
 
 JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_pheCipher_1setRandom (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jrandom) {
@@ -589,7 +599,8 @@ JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_pheCipher_1setR
     if (NULL == random_fidCtx) {
         VSCE_ASSERT("Class 'Random' has no field 'cCtx'.");
     }
-    vscf_impl_t */*6*/ random = (vscf_impl_t */*6*/) (*jenv)->GetLongField(jenv, jrandom, random_fidCtx);
+    jlong random_c_ctx = (*jenv)->GetLongField(jenv, jrandom, random_fidCtx);
+    vscf_impl_t */*6*/ random = *(vscf_impl_t */*6*/*) &random_c_ctx;
 
     vsce_phe_cipher_release_random((vsce_phe_cipher_t /*2*/ *) c_ctx);
     vsce_phe_cipher_use_random((vsce_phe_cipher_t /*2*/ *) c_ctx, random);
@@ -597,7 +608,7 @@ JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_pheCipher_1setR
 
 JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_pheCipher_1setupDefaults (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
     // Cast class context
-    vsce_phe_cipher_t /*2*/* phe_cipher_ctx = (vsce_phe_cipher_t /*2*/*) c_ctx;
+    vsce_phe_cipher_t /*2*/* phe_cipher_ctx = *(vsce_phe_cipher_t /*2*/**) &c_ctx;
 
     vsce_status_t status = vsce_phe_cipher_setup_defaults(phe_cipher_ctx /*a1*/);
     if (status != vsce_status_SUCCESS) {
@@ -608,7 +619,7 @@ JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_pheCipher_1setu
 
 JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_pheCipher_1encryptLen (JNIEnv *jenv, jobject jobj, jlong c_ctx, jint jplainTextLen) {
     // Cast class context
-    vsce_phe_cipher_t /*2*/* phe_cipher_ctx = (vsce_phe_cipher_t /*2*/*) c_ctx;
+    vsce_phe_cipher_t /*2*/* phe_cipher_ctx = *(vsce_phe_cipher_t /*2*/**) &c_ctx;
 
     jint ret = (jint) vsce_phe_cipher_encrypt_len(phe_cipher_ctx /*a1*/, jplainTextLen /*a9*/);
     return ret;
@@ -616,7 +627,7 @@ JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_pheCipher_1encr
 
 JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_pheCipher_1decryptLen (JNIEnv *jenv, jobject jobj, jlong c_ctx, jint jcipherTextLen) {
     // Cast class context
-    vsce_phe_cipher_t /*2*/* phe_cipher_ctx = (vsce_phe_cipher_t /*2*/*) c_ctx;
+    vsce_phe_cipher_t /*2*/* phe_cipher_ctx = *(vsce_phe_cipher_t /*2*/**) &c_ctx;
 
     jint ret = (jint) vsce_phe_cipher_decrypt_len(phe_cipher_ctx /*a1*/, jcipherTextLen /*a9*/);
     return ret;
@@ -624,7 +635,7 @@ JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_pheCipher_1decr
 
 JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_pheCipher_1encrypt (JNIEnv *jenv, jobject jobj, jlong c_ctx, jbyteArray jplainText, jbyteArray jaccountKey) {
     // Cast class context
-    vsce_phe_cipher_t /*2*/* phe_cipher_ctx = (vsce_phe_cipher_t /*2*/*) c_ctx;
+    vsce_phe_cipher_t /*2*/* phe_cipher_ctx = *(vsce_phe_cipher_t /*2*/**) &c_ctx;
 
     // Wrap input data
     byte* plain_text_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jplainText, NULL);
@@ -654,7 +665,7 @@ JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_pheCipher
 
 JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_pheCipher_1decrypt (JNIEnv *jenv, jobject jobj, jlong c_ctx, jbyteArray jcipherText, jbyteArray jaccountKey) {
     // Cast class context
-    vsce_phe_cipher_t /*2*/* phe_cipher_ctx = (vsce_phe_cipher_t /*2*/*) c_ctx;
+    vsce_phe_cipher_t /*2*/* phe_cipher_ctx = *(vsce_phe_cipher_t /*2*/**) &c_ctx;
 
     // Wrap input data
     byte* cipher_text_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jcipherText, NULL);

@@ -49,6 +49,11 @@ public class RsaPublicKey implements AutoCloseable, Key, PublicKey {
         this.cCtx = FoundationJNI.INSTANCE.rsaPublicKey_new();
     }
 
+    /* Wrap underlying C context. */
+    RsaPublicKey(FoundationContextHolder contextHolder) {
+        this.cCtx = contextHolder.cCtx;
+    }
+
     /*
     * Return public key exponent.
     */
@@ -61,9 +66,8 @@ public class RsaPublicKey implements AutoCloseable, Key, PublicKey {
     * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     */
     public static RsaPublicKey getInstance(long cCtx) {
-        RsaPublicKey newInstance = new RsaPublicKey();
-        newInstance.cCtx = cCtx;
-        return newInstance;
+        FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
+        return new RsaPublicKey(ctxHolder);
     }
 
     /* Close resource. */
