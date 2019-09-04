@@ -42,7 +42,7 @@ package com.virgilsecurity.crypto.foundation;
 */
 public class Sec1Serializer implements AutoCloseable, KeySerializer {
 
-    public long cCtx;
+    public java.nio.ByteBuffer cCtx;
 
     /* Create underlying C context. */
     public Sec1Serializer() {
@@ -88,7 +88,7 @@ public class Sec1Serializer implements AutoCloseable, KeySerializer {
     * Acquire C context.
     * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     */
-    public static Sec1Serializer getInstance(long cCtx) {
+    public static Sec1Serializer getInstance(java.nio.ByteBuffer cCtx) {
         FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
         return new Sec1Serializer(ctxHolder);
     }

@@ -42,7 +42,7 @@ package com.virgilsecurity.crypto.foundation;
 */
 public class KeyProvider implements AutoCloseable {
 
-    public long cCtx;
+    public java.nio.ByteBuffer cCtx;
 
     /* Create underlying C context. */
     public KeyProvider() {
@@ -59,7 +59,7 @@ public class KeyProvider implements AutoCloseable {
     * Acquire C context.
     * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     */
-    public static KeyProvider getInstance(long cCtx) {
+    public static KeyProvider getInstance(java.nio.ByteBuffer cCtx) {
         FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
         return new KeyProvider(ctxHolder);
     }

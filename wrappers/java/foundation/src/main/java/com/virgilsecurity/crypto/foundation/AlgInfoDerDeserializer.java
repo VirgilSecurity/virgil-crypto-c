@@ -41,7 +41,7 @@ package com.virgilsecurity.crypto.foundation;
 */
 public class AlgInfoDerDeserializer implements AutoCloseable, AlgInfoDeserializer {
 
-    public long cCtx;
+    public java.nio.ByteBuffer cCtx;
 
     /* Create underlying C context. */
     public AlgInfoDerDeserializer() {
@@ -78,7 +78,7 @@ public class AlgInfoDerDeserializer implements AutoCloseable, AlgInfoDeserialize
     * Acquire C context.
     * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     */
-    public static AlgInfoDerDeserializer getInstance(long cCtx) {
+    public static AlgInfoDerDeserializer getInstance(java.nio.ByteBuffer cCtx) {
         FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
         return new AlgInfoDerDeserializer(ctxHolder);
     }

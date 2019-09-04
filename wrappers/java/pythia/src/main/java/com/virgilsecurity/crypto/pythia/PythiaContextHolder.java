@@ -38,10 +38,10 @@ package com.virgilsecurity.crypto.pythia;
 
 class PythiaContextHolder {
 
-    long cCtx;
+    java.nio.ByteBuffer cCtx;
 
     /* Create underlying C context. */
-    PythiaContextHolder(long cCtx) {
+    PythiaContextHolder(java.nio.ByteBuffer cCtx) {
         this.cCtx = cCtx;
     }
 }

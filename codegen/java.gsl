@@ -58,7 +58,7 @@ gsl from "java_codegen.gsl"
 #   Return Java type for class context.
 # ---------------------------------------------------------------------------
 function java_derive_class_context_type (class)
-    return "long"
+    return "java.nio.ByteBuffer"
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -912,9 +912,9 @@ function java_create_jni_context_argument (destination, java_project, meta)
 
     new java_argument to my.destination
         .name = "cCtx"
-        .type = "long"
-        .is_primitive_type = "1"
-        .is_reference = "0"
+        .type = "java.nio.ByteBuffer"
+        .is_primitive_type = "0"
+        .is_reference = "1"
 
         return java_argument
     endnew
@@ -1119,7 +1119,7 @@ function java_create_class_default_constructor (java_class, class, java_project,
     new java_constructor to my.java_class
         . = "/* Wrap underlying C context. */"
         .visibility = "package"
-        
+
         new java_argument to java_constructor
             .name = "contextHolder"
             .type = java_derive_context_holder_class_name (my.java_project)
@@ -1133,7 +1133,7 @@ function java_create_class_default_constructor (java_class, class, java_project,
             "
         endnew
     endnew
-    
+
 
     new java_method to my.java_class
         . = "
@@ -1760,18 +1760,18 @@ function java_create_context_holder_class_module (java_project, meta)
             new java_field to java_class
                 . = "/// Handle underlying C context."
                 .name = "cCtx"
-                .type = "long"
+                .type = "java.nio.ByteBuffer"
                 .access = "readonly"
                 .visibility = "package"
             endnew
-            
+
             new java_constructor to java_class
                 . = "/* Create underlying C context. */"
                 .visibility = "package"
-                
+
                 new java_argument to java_constructor
                     .name = "cCtx"
-                    .type = "long"
+                    .type = "java.nio.ByteBuffer"
                     .is_enum = "0"
                     .is_reference = "0"
                 endnew

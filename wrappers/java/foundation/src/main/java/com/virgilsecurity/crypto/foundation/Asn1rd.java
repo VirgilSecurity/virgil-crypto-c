@@ -41,7 +41,7 @@ package com.virgilsecurity.crypto.foundation;
 */
 public class Asn1rd implements AutoCloseable, Asn1Reader {
 
-    public long cCtx;
+    public java.nio.ByteBuffer cCtx;
 
     /* Create underlying C context. */
     public Asn1rd() {
@@ -58,7 +58,7 @@ public class Asn1rd implements AutoCloseable, Asn1Reader {
     * Acquire C context.
     * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     */
-    public static Asn1rd getInstance(long cCtx) {
+    public static Asn1rd getInstance(java.nio.ByteBuffer cCtx) {
         FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
         return new Asn1rd(ctxHolder);
     }

@@ -38,10 +38,10 @@ package com.virgilsecurity.crypto.ratchet;
 
 class RatchetContextHolder {
 
-    long cCtx;
+    java.nio.ByteBuffer cCtx;
 
     /* Create underlying C context. */
-    RatchetContextHolder(long cCtx) {
+    RatchetContextHolder(java.nio.ByteBuffer cCtx) {
         this.cCtx = cCtx;
     }
 }

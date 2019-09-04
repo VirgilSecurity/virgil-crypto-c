@@ -43,7 +43,7 @@ import com.virgilsecurity.crypto.foundation.*;
 */
 public class RatchetGroupParticipantsInfo implements AutoCloseable {
 
-    public long cCtx;
+    public java.nio.ByteBuffer cCtx;
 
     /* Create underlying C context. */
     public RatchetGroupParticipantsInfo() {
@@ -68,7 +68,7 @@ public class RatchetGroupParticipantsInfo implements AutoCloseable {
     * Acquire C context.
     * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     */
-    public static RatchetGroupParticipantsInfo getInstance(long cCtx) {
+    public static RatchetGroupParticipantsInfo getInstance(java.nio.ByteBuffer cCtx) {
         RatchetContextHolder ctxHolder = new RatchetContextHolder(cCtx);
         return new RatchetGroupParticipantsInfo(ctxHolder);
     }

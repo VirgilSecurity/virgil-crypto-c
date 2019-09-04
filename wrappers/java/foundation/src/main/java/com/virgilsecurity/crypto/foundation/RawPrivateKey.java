@@ -41,7 +41,7 @@ package com.virgilsecurity.crypto.foundation;
 */
 public class RawPrivateKey implements AutoCloseable, Key, PrivateKey {
 
-    public long cCtx;
+    public java.nio.ByteBuffer cCtx;
 
     /* Create underlying C context. */
     public RawPrivateKey() {
@@ -86,7 +86,7 @@ public class RawPrivateKey implements AutoCloseable, Key, PrivateKey {
     * Acquire C context.
     * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     */
-    public static RawPrivateKey getInstance(long cCtx) {
+    public static RawPrivateKey getInstance(java.nio.ByteBuffer cCtx) {
         FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
         return new RawPrivateKey(ctxHolder);
     }

@@ -41,7 +41,7 @@ package com.virgilsecurity.crypto.foundation;
 */
 public class Pkcs5Pbes2 implements AutoCloseable, Alg, Encrypt, Decrypt {
 
-    public long cCtx;
+    public java.nio.ByteBuffer cCtx;
 
     /* Create underlying C context. */
     public Pkcs5Pbes2() {
@@ -73,7 +73,7 @@ public class Pkcs5Pbes2 implements AutoCloseable, Alg, Encrypt, Decrypt {
     * Acquire C context.
     * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     */
-    public static Pkcs5Pbes2 getInstance(long cCtx) {
+    public static Pkcs5Pbes2 getInstance(java.nio.ByteBuffer cCtx) {
         FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
         return new Pkcs5Pbes2(ctxHolder);
     }

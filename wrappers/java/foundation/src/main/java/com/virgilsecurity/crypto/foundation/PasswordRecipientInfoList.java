@@ -41,7 +41,7 @@ package com.virgilsecurity.crypto.foundation;
 */
 public class PasswordRecipientInfoList implements AutoCloseable {
 
-    public long cCtx;
+    public java.nio.ByteBuffer cCtx;
 
     /* Create underlying C context. */
     public PasswordRecipientInfoList() {
@@ -58,7 +58,7 @@ public class PasswordRecipientInfoList implements AutoCloseable {
     * Acquire C context.
     * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     */
-    public static PasswordRecipientInfoList getInstance(long cCtx) {
+    public static PasswordRecipientInfoList getInstance(java.nio.ByteBuffer cCtx) {
         FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
         return new PasswordRecipientInfoList(ctxHolder);
     }

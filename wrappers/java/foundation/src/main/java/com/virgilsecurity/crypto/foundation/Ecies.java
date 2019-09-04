@@ -41,7 +41,7 @@ package com.virgilsecurity.crypto.foundation;
 */
 public class Ecies implements AutoCloseable {
 
-    public long cCtx;
+    public java.nio.ByteBuffer cCtx;
 
     /* Create underlying C context. */
     public Ecies() {
@@ -58,7 +58,7 @@ public class Ecies implements AutoCloseable {
     * Acquire C context.
     * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     */
-    public static Ecies getInstance(long cCtx) {
+    public static Ecies getInstance(java.nio.ByteBuffer cCtx) {
         FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
         return new Ecies(ctxHolder);
     }

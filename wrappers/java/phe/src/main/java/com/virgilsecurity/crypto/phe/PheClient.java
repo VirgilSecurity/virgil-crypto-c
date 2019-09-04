@@ -44,7 +44,7 @@ import com.virgilsecurity.crypto.foundation.*;
 */
 public class PheClient implements AutoCloseable {
 
-    public long cCtx;
+    public java.nio.ByteBuffer cCtx;
 
     /* Create underlying C context. */
     public PheClient() {
@@ -61,7 +61,7 @@ public class PheClient implements AutoCloseable {
     * Acquire C context.
     * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     */
-    public static PheClient getInstance(long cCtx) {
+    public static PheClient getInstance(java.nio.ByteBuffer cCtx) {
         PheContextHolder ctxHolder = new PheContextHolder(cCtx);
         return new PheClient(ctxHolder);
     }

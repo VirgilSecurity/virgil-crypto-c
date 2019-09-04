@@ -38,41 +38,41 @@ package com.virgilsecurity.crypto.foundation;
 
 import android.support.test.runner.AndroidJUnit4;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import com.virgilsecurity.crypto.TestData;
+
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertNotNull;
 
 @RunWith(AndroidJUnit4.class)
-public class Asn1wrInstrumentedTest {
+public class Kdf1InstrumentedTest {
 
-    private Asn1wr asn1wr;
+    private Kdf1 kdf;
 
     @Before
-    public void setup() {
-        this.asn1wr = new Asn1wr();
+    public void init() {
+        this.kdf = new Kdf1();
     }
 
     @After
-    public void tearDown() {
-        this.asn1wr.close();
+    public void close() {
+        this.kdf.close();;
     }
 
     @Test
-    public void finish() {
-        byte[] asn1_encoded_INT_2 = new byte[]{0x02, 0x01, 0x02};
-        byte[] out = new byte[2 * asn1_encoded_INT_2.length];
-
-        this.asn1wr.reset(out, out.length);
-
-        int len = this.asn1wr.writeInt(2);
-        int writtenBytes = this.asn1wr.finish(false);
-
-        assertEquals(3, writtenBytes);
-        assertEquals(asn1_encoded_INT_2.length, len);
+    public void deriveWithSha256() {
+        this.kdf.setHash(new Sha256());
+        derive();
     }
 
+    private void derive() {
+        byte[] key = this.kdf.derive(TestData.data, 512);
+        assertEquals(512, key.length);
+    }
 }

@@ -41,7 +41,7 @@ package com.virgilsecurity.crypto.foundation;
 */
 public class Sha224 implements AutoCloseable, Alg, Hash {
 
-    public long cCtx;
+    public java.nio.ByteBuffer cCtx;
 
     /* Create underlying C context. */
     public Sha224() {
@@ -58,7 +58,7 @@ public class Sha224 implements AutoCloseable, Alg, Hash {
     * Acquire C context.
     * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     */
-    public static Sha224 getInstance(long cCtx) {
+    public static Sha224 getInstance(java.nio.ByteBuffer cCtx) {
         FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
         return new Sha224(ctxHolder);
     }

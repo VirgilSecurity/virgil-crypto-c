@@ -41,7 +41,7 @@ package com.virgilsecurity.crypto.foundation;
 */
 public class Hkdf implements AutoCloseable, Alg, Kdf, SaltedKdf {
 
-    public long cCtx;
+    public java.nio.ByteBuffer cCtx;
 
     /* Create underlying C context. */
     public Hkdf() {
@@ -66,7 +66,7 @@ public class Hkdf implements AutoCloseable, Alg, Kdf, SaltedKdf {
     * Acquire C context.
     * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     */
-    public static Hkdf getInstance(long cCtx) {
+    public static Hkdf getInstance(java.nio.ByteBuffer cCtx) {
         FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
         return new Hkdf(ctxHolder);
     }

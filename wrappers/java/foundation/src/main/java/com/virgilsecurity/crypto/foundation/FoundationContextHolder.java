@@ -38,10 +38,10 @@ package com.virgilsecurity.crypto.foundation;
 
 class FoundationContextHolder {
 
-    long cCtx;
+    java.nio.ByteBuffer cCtx;
 
     /* Create underlying C context. */
-    FoundationContextHolder(long cCtx) {
+    FoundationContextHolder(java.nio.ByteBuffer cCtx) {
         this.cCtx = cCtx;
     }
 }

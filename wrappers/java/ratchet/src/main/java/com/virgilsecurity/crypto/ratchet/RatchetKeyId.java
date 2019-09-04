@@ -43,7 +43,7 @@ import com.virgilsecurity.crypto.foundation.*;
 */
 public class RatchetKeyId implements AutoCloseable {
 
-    public long cCtx;
+    public java.nio.ByteBuffer cCtx;
 
     /* Create underlying C context. */
     public RatchetKeyId() {
@@ -60,7 +60,7 @@ public class RatchetKeyId implements AutoCloseable {
     * Acquire C context.
     * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     */
-    public static RatchetKeyId getInstance(long cCtx) {
+    public static RatchetKeyId getInstance(java.nio.ByteBuffer cCtx) {
         RatchetContextHolder ctxHolder = new RatchetContextHolder(cCtx);
         return new RatchetKeyId(ctxHolder);
     }

@@ -38,7 +38,7 @@ package com.virgilsecurity.crypto.foundation;
 
 public class BrainkeyServer implements AutoCloseable {
 
-    public long cCtx;
+    public java.nio.ByteBuffer cCtx;
 
     /* Create underlying C context. */
     public BrainkeyServer() {
@@ -63,7 +63,7 @@ public class BrainkeyServer implements AutoCloseable {
     * Acquire C context.
     * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     */
-    public static BrainkeyServer getInstance(long cCtx) {
+    public static BrainkeyServer getInstance(java.nio.ByteBuffer cCtx) {
         FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
         return new BrainkeyServer(ctxHolder);
     }

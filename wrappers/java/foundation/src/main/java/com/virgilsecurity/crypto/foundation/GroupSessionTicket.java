@@ -41,7 +41,7 @@ package com.virgilsecurity.crypto.foundation;
 */
 public class GroupSessionTicket implements AutoCloseable {
 
-    public long cCtx;
+    public java.nio.ByteBuffer cCtx;
 
     /* Create underlying C context. */
     public GroupSessionTicket() {
@@ -58,7 +58,7 @@ public class GroupSessionTicket implements AutoCloseable {
     * Acquire C context.
     * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     */
-    public static GroupSessionTicket getInstance(long cCtx) {
+    public static GroupSessionTicket getInstance(java.nio.ByteBuffer cCtx) {
         FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
         return new GroupSessionTicket(ctxHolder);
     }

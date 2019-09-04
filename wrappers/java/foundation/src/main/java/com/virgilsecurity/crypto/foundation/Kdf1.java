@@ -41,7 +41,7 @@ package com.virgilsecurity.crypto.foundation;
 */
 public class Kdf1 implements AutoCloseable, Alg, Kdf {
 
-    public long cCtx;
+    public java.nio.ByteBuffer cCtx;
 
     /* Create underlying C context. */
     public Kdf1() {
@@ -62,7 +62,7 @@ public class Kdf1 implements AutoCloseable, Alg, Kdf {
     * Acquire C context.
     * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     */
-    public static Kdf1 getInstance(long cCtx) {
+    public static Kdf1 getInstance(java.nio.ByteBuffer cCtx) {
         FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
         return new Kdf1(ctxHolder);
     }

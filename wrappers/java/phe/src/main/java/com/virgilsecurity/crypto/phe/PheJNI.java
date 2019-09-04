@@ -52,157 +52,157 @@ public class PheJNI {
     private PheJNI() {
     }
 
-    public native long pheServer_new();
+    public native java.nio.ByteBuffer pheServer_new();
 
-    public native void pheServer_close(long cCtx);
+    public native void pheServer_close(java.nio.ByteBuffer cCtx);
 
     /*
     * Random used for key generation, proofs, etc.
     */
-    public native void pheServer_setRandom(long cCtx, Random random);
+    public native void pheServer_setRandom(java.nio.ByteBuffer cCtx, Random random);
 
     /*
     * Random used for crypto operations to make them const-time
     */
-    public native void pheServer_setOperationRandom(long cCtx, Random operationRandom);
+    public native void pheServer_setOperationRandom(java.nio.ByteBuffer cCtx, Random operationRandom);
 
-    public native void pheServer_setupDefaults(long cCtx) throws PheException;
+    public native void pheServer_setupDefaults(java.nio.ByteBuffer cCtx) throws PheException;
 
     /*
     * Generates new NIST P-256 server key pair for some client
     */
-    public native PheServerGenerateServerKeyPairResult pheServer_generateServerKeyPair(long cCtx) throws PheException;
+    public native PheServerGenerateServerKeyPairResult pheServer_generateServerKeyPair(java.nio.ByteBuffer cCtx) throws PheException;
 
     /*
     * Buffer size needed to fit EnrollmentResponse
     */
-    public native int pheServer_enrollmentResponseLen(long cCtx);
+    public native int pheServer_enrollmentResponseLen(java.nio.ByteBuffer cCtx);
 
     /*
     * Generates a new random enrollment and proof for a new user
     */
-    public native byte[] pheServer_getEnrollment(long cCtx, byte[] serverPrivateKey, byte[] serverPublicKey) throws PheException;
+    public native byte[] pheServer_getEnrollment(java.nio.ByteBuffer cCtx, byte[] serverPrivateKey, byte[] serverPublicKey) throws PheException;
 
     /*
     * Buffer size needed to fit VerifyPasswordResponse
     */
-    public native int pheServer_verifyPasswordResponseLen(long cCtx);
+    public native int pheServer_verifyPasswordResponseLen(java.nio.ByteBuffer cCtx);
 
     /*
     * Verifies existing user's password and generates response with proof
     */
-    public native byte[] pheServer_verifyPassword(long cCtx, byte[] serverPrivateKey, byte[] serverPublicKey, byte[] verifyPasswordRequest) throws PheException;
+    public native byte[] pheServer_verifyPassword(java.nio.ByteBuffer cCtx, byte[] serverPrivateKey, byte[] serverPublicKey, byte[] verifyPasswordRequest) throws PheException;
 
     /*
     * Buffer size needed to fit UpdateToken
     */
-    public native int pheServer_updateTokenLen(long cCtx);
+    public native int pheServer_updateTokenLen(java.nio.ByteBuffer cCtx);
 
     /*
     * Updates server's private and public keys and issues an update token for use on client's side
     */
-    public native PheServerRotateKeysResult pheServer_rotateKeys(long cCtx, byte[] serverPrivateKey) throws PheException;
+    public native PheServerRotateKeysResult pheServer_rotateKeys(java.nio.ByteBuffer cCtx, byte[] serverPrivateKey) throws PheException;
 
-    public native long pheClient_new();
+    public native java.nio.ByteBuffer pheClient_new();
 
-    public native void pheClient_close(long cCtx);
+    public native void pheClient_close(java.nio.ByteBuffer cCtx);
 
     /*
     * Random used for key generation, proofs, etc.
     */
-    public native void pheClient_setRandom(long cCtx, Random random);
+    public native void pheClient_setRandom(java.nio.ByteBuffer cCtx, Random random);
 
     /*
     * Random used for crypto operations to make them const-time
     */
-    public native void pheClient_setOperationRandom(long cCtx, Random operationRandom);
+    public native void pheClient_setOperationRandom(java.nio.ByteBuffer cCtx, Random operationRandom);
 
-    public native void pheClient_setupDefaults(long cCtx) throws PheException;
+    public native void pheClient_setupDefaults(java.nio.ByteBuffer cCtx) throws PheException;
 
     /*
     * Sets client private and server public key
     * Call this method before any other methods except `update enrollment record` and `generate client private key`
     * This function should be called only once
     */
-    public native void pheClient_setKeys(long cCtx, byte[] clientPrivateKey, byte[] serverPublicKey) throws PheException;
+    public native void pheClient_setKeys(java.nio.ByteBuffer cCtx, byte[] clientPrivateKey, byte[] serverPublicKey) throws PheException;
 
     /*
     * Generates client private key
     */
-    public native byte[] pheClient_generateClientPrivateKey(long cCtx) throws PheException;
+    public native byte[] pheClient_generateClientPrivateKey(java.nio.ByteBuffer cCtx) throws PheException;
 
     /*
     * Buffer size needed to fit EnrollmentRecord
     */
-    public native int pheClient_enrollmentRecordLen(long cCtx);
+    public native int pheClient_enrollmentRecordLen(java.nio.ByteBuffer cCtx);
 
     /*
     * Uses fresh EnrollmentResponse from PHE server (see get enrollment func) and user's password (or its hash) to create
     * a new EnrollmentRecord which is then supposed to be stored in a database for further authentication
     * Also generates a random seed which then can be used to generate symmetric or private key to protect user's data
     */
-    public native PheClientEnrollAccountResult pheClient_enrollAccount(long cCtx, byte[] enrollmentResponse, byte[] password) throws PheException;
+    public native PheClientEnrollAccountResult pheClient_enrollAccount(java.nio.ByteBuffer cCtx, byte[] enrollmentResponse, byte[] password) throws PheException;
 
     /*
     * Buffer size needed to fit VerifyPasswordRequest
     */
-    public native int pheClient_verifyPasswordRequestLen(long cCtx);
+    public native int pheClient_verifyPasswordRequestLen(java.nio.ByteBuffer cCtx);
 
     /*
     * Creates a request for further password verification at the PHE server side.
     */
-    public native byte[] pheClient_createVerifyPasswordRequest(long cCtx, byte[] password, byte[] enrollmentRecord) throws PheException;
+    public native byte[] pheClient_createVerifyPasswordRequest(java.nio.ByteBuffer cCtx, byte[] password, byte[] enrollmentRecord) throws PheException;
 
     /*
     * Verifies PHE server's answer
     * If login succeeded, extracts account key
     * If login failed account key will be empty
     */
-    public native byte[] pheClient_checkResponseAndDecrypt(long cCtx, byte[] password, byte[] enrollmentRecord, byte[] verifyPasswordResponse) throws PheException;
+    public native byte[] pheClient_checkResponseAndDecrypt(java.nio.ByteBuffer cCtx, byte[] password, byte[] enrollmentRecord, byte[] verifyPasswordResponse) throws PheException;
 
     /*
     * Updates client's private key and server's public key using server's update token
     * Use output values to instantiate new client instance with new keys
     */
-    public native PheClientRotateKeysResult pheClient_rotateKeys(long cCtx, byte[] updateToken) throws PheException;
+    public native PheClientRotateKeysResult pheClient_rotateKeys(java.nio.ByteBuffer cCtx, byte[] updateToken) throws PheException;
 
     /*
     * Updates EnrollmentRecord using server's update token
     */
-    public native byte[] pheClient_updateEnrollmentRecord(long cCtx, byte[] enrollmentRecord, byte[] updateToken) throws PheException;
+    public native byte[] pheClient_updateEnrollmentRecord(java.nio.ByteBuffer cCtx, byte[] enrollmentRecord, byte[] updateToken) throws PheException;
 
-    public native long pheCipher_new();
+    public native java.nio.ByteBuffer pheCipher_new();
 
-    public native void pheCipher_close(long cCtx);
+    public native void pheCipher_close(java.nio.ByteBuffer cCtx);
 
     /*
     * Random used for salt generation
     */
-    public native void pheCipher_setRandom(long cCtx, Random random);
+    public native void pheCipher_setRandom(java.nio.ByteBuffer cCtx, Random random);
 
     /*
     * Setups dependencies with default values.
     */
-    public native void pheCipher_setupDefaults(long cCtx) throws PheException;
+    public native void pheCipher_setupDefaults(java.nio.ByteBuffer cCtx) throws PheException;
 
     /*
     * Returns buffer capacity needed to fit cipher text
     */
-    public native int pheCipher_encryptLen(long cCtx, int plainTextLen);
+    public native int pheCipher_encryptLen(java.nio.ByteBuffer cCtx, int plainTextLen);
 
     /*
     * Returns buffer capacity needed to fit plain text
     */
-    public native int pheCipher_decryptLen(long cCtx, int cipherTextLen);
+    public native int pheCipher_decryptLen(java.nio.ByteBuffer cCtx, int cipherTextLen);
 
     /*
     * Encrypts data using account key
     */
-    public native byte[] pheCipher_encrypt(long cCtx, byte[] plainText, byte[] accountKey) throws PheException;
+    public native byte[] pheCipher_encrypt(java.nio.ByteBuffer cCtx, byte[] plainText, byte[] accountKey) throws PheException;
 
     /*
     * Decrypts data using account key
     */
-    public native byte[] pheCipher_decrypt(long cCtx, byte[] cipherText, byte[] accountKey) throws PheException;
+    public native byte[] pheCipher_decrypt(java.nio.ByteBuffer cCtx, byte[] cipherText, byte[] accountKey) throws PheException;
 }
 

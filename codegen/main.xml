@@ -1,4 +1,4 @@
-<main script="main.gsl" work_path="generated/main" echo_level="debug">
+<main script="main.gsl" work_path="generated/main" echo_level="trace">
     <license>
         Copyright (C) 2015-2019 Virgil Security, Inc.
 
@@ -42,14 +42,14 @@
 
     <version major="0" minor="10" patch="2" label="dev1"/>
 
-    <project name="common" skip_codegen="0" skip_codegen_c="0" skip_codegen_wrappers="0"/>
-    <project name="foundation" skip_codegen="0" skip_codegen_c="0" skip_codegen_wrappers="0"/>
-    <project name="pythia" skip_codegen="0" skip_codegen_c="0" skip_codegen_wrappers="0"/>
-    <project name="ratchet" skip_codegen="0" skip_codegen_c="0" skip_codegen_wrappers="0"/>
-    <project name="phe" skip_codegen="0" skip_codegen_c="0" skip_codegen_wrappers="0"/>
+    <project name="common" skip_codegen="0" skip_codegen_c="1" skip_codegen_wrappers="0"/>
+    <project name="foundation" skip_codegen="0" skip_codegen_c="1" skip_codegen_wrappers="0"/>
+    <project name="pythia" skip_codegen="0" skip_codegen_c="1" skip_codegen_wrappers="0"/>
+    <project name="ratchet" skip_codegen="0" skip_codegen_c="1" skip_codegen_wrappers="0"/>
+    <project name="phe" skip_codegen="0" skip_codegen_c="1" skip_codegen_wrappers="0"/>
 
-    <wrapper lang="swift"/>
+    <!-- <wrapper lang="swift"/> -->
     <wrapper lang="java"/>
-    <wrapper lang="wasm"/>
-    <wrapper lang="python"/>
+    <!-- <wrapper lang="wasm"/> -->
+    <!-- <wrapper lang="python"/> -->
 </main>

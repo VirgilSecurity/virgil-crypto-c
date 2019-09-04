@@ -41,7 +41,7 @@ package com.virgilsecurity.crypto.foundation;
 */
 public class Ed25519 implements AutoCloseable, Alg, KeyAlg, KeyCipher, KeySigner, ComputeSharedKey {
 
-    public long cCtx;
+    public java.nio.ByteBuffer cCtx;
 
     /* Create underlying C context. */
     public Ed25519() {
@@ -81,7 +81,7 @@ public class Ed25519 implements AutoCloseable, Alg, KeyAlg, KeyCipher, KeySigner
     * Acquire C context.
     * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     */
-    public static Ed25519 getInstance(long cCtx) {
+    public static Ed25519 getInstance(java.nio.ByteBuffer cCtx) {
         FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
         return new Ed25519(ctxHolder);
     }

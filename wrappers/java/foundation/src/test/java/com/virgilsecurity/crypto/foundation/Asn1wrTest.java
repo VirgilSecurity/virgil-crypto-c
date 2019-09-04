@@ -50,7 +50,6 @@ public class Asn1wrTest extends SampleBasedTest {
 	@Before
 	public void setup() {
 		this.asn1wr = new Asn1wr();
-		assertTrue(this.asn1wr.cCtx > 0);
 	}
 
 	@After

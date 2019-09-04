@@ -43,7 +43,7 @@ package com.virgilsecurity.crypto.foundation;
 */
 public class Aes256Gcm implements AutoCloseable, Alg, Encrypt, Decrypt, CipherInfo, Cipher, CipherAuthInfo, AuthEncrypt, AuthDecrypt, CipherAuth {
 
-    public long cCtx;
+    public java.nio.ByteBuffer cCtx;
 
     /* Create underlying C context. */
     public Aes256Gcm() {
@@ -60,7 +60,7 @@ public class Aes256Gcm implements AutoCloseable, Alg, Encrypt, Decrypt, CipherIn
     * Acquire C context.
     * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     */
-    public static Aes256Gcm getInstance(long cCtx) {
+    public static Aes256Gcm getInstance(java.nio.ByteBuffer cCtx) {
         FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
         return new Aes256Gcm(ctxHolder);
     }

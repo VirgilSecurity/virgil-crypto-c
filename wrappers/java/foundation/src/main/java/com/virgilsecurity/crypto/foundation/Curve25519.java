@@ -41,7 +41,7 @@ package com.virgilsecurity.crypto.foundation;
 */
 public class Curve25519 implements AutoCloseable, Alg, KeyAlg, KeyCipher, ComputeSharedKey {
 
-    public long cCtx;
+    public java.nio.ByteBuffer cCtx;
 
     /* Create underlying C context. */
     public Curve25519() {
@@ -81,7 +81,7 @@ public class Curve25519 implements AutoCloseable, Alg, KeyAlg, KeyCipher, Comput
     * Acquire C context.
     * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     */
-    public static Curve25519 getInstance(long cCtx) {
+    public static Curve25519 getInstance(java.nio.ByteBuffer cCtx) {
         FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
         return new Curve25519(ctxHolder);
     }

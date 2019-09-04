@@ -41,7 +41,7 @@ package com.virgilsecurity.crypto.foundation;
 */
 public class PbeAlgInfo implements AutoCloseable, AlgInfo {
 
-    public long cCtx;
+    public java.nio.ByteBuffer cCtx;
 
     /* Create underlying C context. */
     public PbeAlgInfo() {
@@ -81,7 +81,7 @@ public class PbeAlgInfo implements AutoCloseable, AlgInfo {
     * Acquire C context.
     * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     */
-    public static PbeAlgInfo getInstance(long cCtx) {
+    public static PbeAlgInfo getInstance(java.nio.ByteBuffer cCtx) {
         FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
         return new PbeAlgInfo(ctxHolder);
     }

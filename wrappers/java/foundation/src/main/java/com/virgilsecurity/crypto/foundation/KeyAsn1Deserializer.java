@@ -41,7 +41,7 @@ package com.virgilsecurity.crypto.foundation;
 */
 public class KeyAsn1Deserializer implements AutoCloseable, KeyDeserializer {
 
-    public long cCtx;
+    public java.nio.ByteBuffer cCtx;
 
     /* Create underlying C context. */
     public KeyAsn1Deserializer() {
@@ -87,7 +87,7 @@ public class KeyAsn1Deserializer implements AutoCloseable, KeyDeserializer {
     * Acquire C context.
     * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     */
-    public static KeyAsn1Deserializer getInstance(long cCtx) {
+    public static KeyAsn1Deserializer getInstance(java.nio.ByteBuffer cCtx) {
         FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
         return new KeyAsn1Deserializer(ctxHolder);
     }

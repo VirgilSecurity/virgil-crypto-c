@@ -38,10 +38,10 @@ package com.virgilsecurity.crypto.phe;
 
 class PheContextHolder {
 
-    long cCtx;
+    java.nio.ByteBuffer cCtx;
 
     /* Create underlying C context. */
-    PheContextHolder(long cCtx) {
+    PheContextHolder(java.nio.ByteBuffer cCtx) {
         this.cCtx = cCtx;
     }
 }

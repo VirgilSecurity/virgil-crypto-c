@@ -41,7 +41,7 @@ package com.virgilsecurity.crypto.foundation;
 */
 public class RsaPublicKey implements AutoCloseable, Key, PublicKey {
 
-    public long cCtx;
+    public java.nio.ByteBuffer cCtx;
 
     /* Create underlying C context. */
     public RsaPublicKey() {
@@ -65,7 +65,7 @@ public class RsaPublicKey implements AutoCloseable, Key, PublicKey {
     * Acquire C context.
     * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     */
-    public static RsaPublicKey getInstance(long cCtx) {
+    public static RsaPublicKey getInstance(java.nio.ByteBuffer cCtx) {
         FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
         return new RsaPublicKey(ctxHolder);
     }

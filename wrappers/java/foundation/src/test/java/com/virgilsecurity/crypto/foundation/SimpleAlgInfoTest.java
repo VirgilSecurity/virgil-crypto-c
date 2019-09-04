@@ -29,7 +29,6 @@ public class SimpleAlgInfoTest {
 	@Test
 	public void instantiate() {
 		try (SimpleAlgInfo algInfo = new SimpleAlgInfo(AlgId.AES256_CBC)) {
-			assertTrue(algInfo.cCtx > 0);
 			assertEquals(AlgId.AES256_CBC, algInfo.algId());
 		}
 	}

@@ -41,7 +41,7 @@ package com.virgilsecurity.crypto.foundation;
 */
 public class Rsa implements AutoCloseable, Alg, KeyAlg, KeyCipher, KeySigner {
 
-    public long cCtx;
+    public java.nio.ByteBuffer cCtx;
 
     /* Create underlying C context. */
     public Rsa() {
@@ -77,7 +77,7 @@ public class Rsa implements AutoCloseable, Alg, KeyAlg, KeyCipher, KeySigner {
     * Acquire C context.
     * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     */
-    public static Rsa getInstance(long cCtx) {
+    public static Rsa getInstance(java.nio.ByteBuffer cCtx) {
         FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
         return new Rsa(ctxHolder);
     }

@@ -515,8 +515,8 @@ function java_derive_buffer_length_getter (class, method, argument, java_project
     if string_equal (my.class.context, "none")
         my.proxy_args = ""
     else
-        my.ctx_type = java_derive_c_type (my.class)
-        my.proxy_args ?= "($(my.ctx_type:) *) c_ctx /*3*/"
+        my.ctx_name = java_derive_c_context_variable_name (my.class)
+        my.proxy_args ?= "$(my.ctx_name:) /*3*/"
     endif
 
     for my.length.proxy
@@ -610,9 +610,9 @@ function java_create_c_context_argument (destination, java_project, meta)
 
     new c_argument to my.destination
         .name = "c_ctx"
-        .type = "jlong"
-        .is_primitive_type = "1"
-        .is_reference = "0"
+        .type = "jobject"
+        .is_primitive_type = "0"
+        .is_reference = "1"
 
         return c_argument
     endnew
@@ -639,7 +639,7 @@ function java_create_class_c_default_constructor (java_class, class, java_projec
             .is_jni = "1"
 
             new c_return to c_method
-                .type = "jlong"
+                .type = "jobject"
             endnew
         endnew
 
@@ -657,14 +657,14 @@ function java_create_class_c_default_constructor (java_class, class, java_projec
 
             new c_code to c_method
                 . = "
-                    jlong c_ctx = 0;
-                    *($(class_derive_c_type(my.class)) **)&c_ctx = $(my.ctor_invocation:);
+                    $(java_derive_c_type (my.class))* c_obj = $(my.ctor_invocation:);
+                    jobject c_ctx = (*jenv)->NewDirectByteBuffer(jenv, c_obj, 0);
                     return c_ctx;
                 "
             endnew
 
             new c_return to c_method
-                .type = "jlong"
+                .type = "jobject"
             endnew
         endnew
     endif
@@ -694,7 +694,7 @@ function java_create_c_class_constructor (class, constructor, java_class, java_m
         endfor
 
         new c_return to c_method
-            .type = "jlong"
+            .type = "jobject"
         endnew
     endnew
 
@@ -714,7 +714,7 @@ function java_create_c_class_constructor (class, constructor, java_class, java_m
         endnew
 
         new c_return to c_method
-            .type = "jlong"
+            .type = "jobject"
         endnew
     endnew
 
@@ -816,12 +816,12 @@ function java_wrap_c_method_arguments (method, java_project, meta)
             if (NULL == $(argument.name:c)_cls) {
                 .(c_class_assert_macros_assert)(\"Class $(my.class_name:) not found.\");
             }
-            jfieldID $(argument.name:c)_fidCtx = (*jenv)->GetFieldID(jenv, $(argument.name:c)_cls, \"cCtx\", \"J\");
+            jfieldID $(argument.name:c)_fidCtx = (*jenv)->GetFieldID(jenv, $(argument.name:c)_cls, \"cCtx\", \"Ljava/nio/ByteBuffer;\");
             if (NULL == $(argument.name:c)_fidCtx) {
                 .(c_class_assert_macros_assert)(\"Class '$(my.class_name:)' has no field 'cCtx'.\");
             }
-            jlong $(argument.name:c)_c_ctx = (*jenv)->GetLongField(jenv, j$(argument.name:Camel), $(argument.name:c)_fidCtx);
-            $(my.class_type:) $(argument.name:c) = *($(my.class_type:)*)&$(argument.name:c)_c_ctx;
+            jobject $(argument.name:c)_c_ctx = (*jenv)->GetObjectField(jenv, j$(argument.name:Camel), $(argument.name:c)_fidCtx);
+            $(my.class_type:) $(argument.name:c) = ($(my.class_type:)) (*jenv)->GetDirectBufferAddress(jenv, $(argument.name:c)_c_ctx);
         ") + terminator
     endfor
 
@@ -837,12 +837,12 @@ function java_wrap_c_method_arguments (method, java_project, meta)
             if (NULL == $(argument.name:c)_cls) {
                 .(c_class_assert_macros_assert)(\"Class $(my.class_name:) not found.\");
             }
-            jfieldID $(argument.name:c)_fidCtx = (*jenv)->GetFieldID(jenv, $(argument.name:c)_cls, \"cCtx\", \"J\");
+            jfieldID $(argument.name:c)_fidCtx = (*jenv)->GetFieldID(jenv, $(argument.name:c)_cls, \"cCtx\", \"Ljava/nio/ByteBuffer;\");
             if (NULL == $(argument.name:c)_fidCtx) {
                 .(c_class_assert_macros_assert)(\"Class '$(my.class_name:)' has no field 'cCtx'.\");
             }
-            jlong $(argument.name:c)_c_ctx = (*jenv)->GetLongField(jenv, j$(argument.name:Camel), $(argument.name:c)_fidCtx);
-            $(my.class_type:) $(argument.name:c) = *($(my.class_type:)*) &$(argument.name:c)_c_ctx;
+            jobject $(argument.name:c)_c_ctx = (*jenv)->GetObjectField(jenv, j$(argument.name:Camel), $(argument.name:c)_fidCtx);
+            $(my.class_type:) $(argument.name:c) = ($(my.class_type:)) (*jenv)->GetDirectBufferAddress(jenv, $(argument.name:c)_c_ctx);
         ") + terminator
     endfor
 
@@ -859,8 +859,8 @@ function java_create_c_class_method_call (class, method, java_class, java_method
         my.init_context ?= terminator + "// Cast class context"
         my.ctx_type = java_derive_c_type (my.class)
         my.ctx_name = java_derive_c_context_variable_name (my.class)
-        my.init_context += format_left("\
-            $(my.ctx_type:)* $(my.ctx_name:) = *($(my.ctx_type:)**) &c_ctx;
+        my.init_context += format_left("
+            $(my.ctx_type:)* $(my.ctx_name:) = ($(my.ctx_type:)*) (*jenv)->GetDirectBufferAddress(jenv, c_ctx);
         ") + terminator
     endif
 
@@ -1005,7 +1005,7 @@ function java_create_c_class_method_call (class, method, java_class, java_method
         if my.proxy_return_type <> "void"
             my.proxy_result = "const $(my.proxy_return_type:) proxyResult = "
         elsif item_in (my.method, "constructor")
-            my.proxy_result = "jlong proxyResult = (jlong) "
+            my.proxy_result = "$(class_derive_c_type(my.class))* proxyResult = "
         else
             my.proxy_result = ""
         endif
@@ -1098,12 +1098,13 @@ function java_create_c_class_method_call (class, method, java_class, java_method
                         if (NULL == result_cls) {
                             .(c_class_assert_macros_assert)(\"Class $(my.java_return_class_name:) not found.\");
                         }
-                        jmethodID result_methodID = (*jenv)->GetStaticMethodID(jenv, result_cls, \"getInstance\", \"(J)L$(my.class_full_name:);\");
+                        jmethodID result_methodID = (*jenv)->GetStaticMethodID(jenv, result_cls, \"getInstance\", \"(Ljava/nio/ByteBuffer;)L$(my.class_full_name:);\");
                         if (NULL == result_methodID) {
                             .(c_class_assert_macros_assert)(\"Class $(my.java_return_class_name:) has no 'getInstance' method.\");
                         }
                         $(my.proxy_shallow_copy_call?:)
-                        jobject ret = (*jenv)->CallStaticObjectMethod(jenv, result_cls, result_methodID, (jlong) proxyResult);
+                        jobject proxyResultObj = (*jenv)->NewDirectByteBuffer(jenv, ($(my.proxy_return_type:)) proxyResult, 0);
+                        jobject ret = (*jenv)->CallStaticObjectMethod(jenv, result_cls, result_methodID, proxyResultObj);
                     ")
                 elsif is_true (my.java_method->java_return.is_interface)
                     my.prepare_result = format_left("\
@@ -1136,7 +1137,8 @@ function java_create_c_class_method_call (class, method, java_class, java_method
         endif
     elsif item_in (my.method, "constructor")
         my.return_result = format_left("\
-            return proxyResult;
+            jobject proxyResultObj = (*jenv)->NewDirectByteBuffer(jenv, proxyResult, 0);
+            return proxyResultObj;
         ")
     endif
 
@@ -1373,16 +1375,22 @@ function java_create_c_class_close (class, java_project, meta)
             .is_jni = "1"
 
             new c_argument to c_method
-                .type = "jlong"
+                .type = "jobject"
             endnew
         endnew
 
         # Define destuctor method implementation
         my.ctx_type = java_derive_c_type (my.class)
         if string_in (my.class.context, "public") & string_in (my.class.lifecycle, "none")
-            my.dtor_invocation = ".(c_global_method_dealloc)(*($(my.ctx_type:) **) &c_ctx /*4*/)"
+            my.dtor_invocation = "
+                $(my.ctx_type:) *c_obj = ($(my.ctx_type:) *) (*jenv)->GetDirectBufferAddress(jenv, c_ctx);
+                .(c_global_method_dealloc)(c_obj /*4*/);
+            "
         else
-            my.dtor_invocation = "$(class_derive_c_destructor (my.class))(*($(my.ctx_type:) **) &c_ctx /*5*/)"
+            my.dtor_invocation = "
+                $(my.ctx_type:) *c_obj = ($(my.ctx_type:) *) (*jenv)->GetDirectBufferAddress(jenv, c_ctx);
+                $(class_derive_c_destructor (my.class))(c_obj /*5*/);
+            "
         endif
 
         new c_method to my.c_module
@@ -1392,11 +1400,11 @@ function java_create_c_class_close (class, java_project, meta)
 
             new c_argument to c_method
                 .name = "c_ctx"
-                .type = "jlong"
+                .type = "jobject"
             endnew
 
             new c_code to c_method
-                . = "$(my.dtor_invocation:);"
+                . = my.dtor_invocation
             endnew
         endnew
     endif
@@ -1420,7 +1428,7 @@ function java_create_c_proxy_method_from_constant (constant, interface, destinat
             .is_jni = "1"
 
             new c_argument to c_method
-                .type = "jlong"
+                .type = "jobject"
             endnew
         endnew
 
@@ -1434,7 +1442,7 @@ function java_create_c_proxy_method_from_constant (constant, interface, destinat
 
             new c_argument to c_method
                 .name = "c_ctx"
-                .type = "jlong"
+                .type = "jobject"
             endnew
 
             new c_code to c_method
@@ -1533,7 +1541,7 @@ function java_get_c_implementation_helper_interface_method (interface, java_proj
                 }
 
                 char *methodSig = malloc(200);
-                strcpy (methodSig, \"(J)L\");
+                strcpy (methodSig, \"(Ljava/nio/ByteBuffer;)L\");
                 strcat (methodSig, classFullName);
                 strcat (methodSig, \";\");
                 jmethodID methodID = (*jenv)->GetStaticMethodID(jenv, cls, \"getInstance\", methodSig);
@@ -1543,9 +1551,9 @@ function java_get_c_implementation_helper_interface_method (interface, java_proj
                     .(c_class_assert_macros_assert)(\"Class has no 'getInstance' method.\");
                 }
 
-                jlong c_ctx = 0;
-                *(const $(my.ctx_type:)*) &c_ctx = c_obj;
-                return (*jenv)->CallStaticObjectMethod(jenv, cls, methodID, c_ctx);
+                jobject c_ctx = (*jenv)->NewDirectByteBuffer(jenv, (void *)c_obj, 0);
+                jobject c_impl = (*jenv)->CallStaticObjectMethod(jenv, cls, methodID, c_ctx);
+                return c_impl;
             ")
         endnew
 
@@ -1618,7 +1626,7 @@ function java_create_c_method_from_dependency (dependency, impl, destination, ja
             .is_jni = "1"
 
             new c_argument to c_method
-                .type = "jlong"
+                .type = "jobject"
             endnew
             new c_argument to c_method
                 .type = java_derive_c_instance_type (my.dependency)
@@ -1632,7 +1640,7 @@ function java_create_c_method_from_dependency (dependency, impl, destination, ja
 
             new c_argument to c_method
                 .name = "c_ctx"
-                .type = "jlong"
+                .type = "jobject"
             endnew
 
             new c_argument to c_method
@@ -1657,21 +1665,27 @@ function java_create_c_method_from_dependency (dependency, impl, destination, ja
                 my.class_name = java_derive_dependency_type (my.dependency)
                 my.class_type = java_derive_c_type (my.dependency)
 
-                . = format_left("\
+                . = format_left("
                     jclass $(my.dependency.name:c)_cls = (*jenv)->GetObjectClass(jenv, $(my.arg_name:));
                     if (NULL == $(my.dependency.name:c)_cls) {
                         .(c_class_assert_macros_assert)(\"Class $(my.class_name:) not found.\");
                     }
-                    jfieldID $(my.dependency.name:c)_fidCtx = (*jenv)->GetFieldID(jenv, $(my.dependency.name:c)_cls, \"cCtx\", \"J\");
+
+                    jfieldID $(my.dependency.name:c)_fidCtx =\
+                            (*jenv)->GetFieldID(jenv, $(my.dependency.name:c)_cls, \"cCtx\", \"Ljava/nio/ByteBuffer;\");
+
                     if (NULL == $(my.dependency.name:c)_fidCtx) {
                         .(c_class_assert_macros_assert)(\"Class '$(my.class_name:)' has no field 'cCtx'.\");
                     }
-                    jlong $(my.dependency.name:c)_c_ctx = (*jenv)->GetLongField(jenv, j$(my.dependency.name:Camel), $(my.dependency.name:c)_fidCtx);
-                    $(my.class_type:) $(my.dependency.name:c) = *($(my.class_type:)*) &$(my.dependency.name:c)_c_ctx;
 
-                    $(class_derive_c_method_release_dependency (my.impl, my.dependency))(($(my.arg_ctx_type:) *) c_ctx);
-                    $(my.result_var?:)$(class_derive_c_method_use_dependency (my.impl, my.dependency))(($(my.arg_ctx_type:) *) c_ctx,\
-                        $(my.dependency.name:c));
+                    jobject $(my.dependency.name:c)_c_ctx =\
+                            (*jenv)->GetObjectField(jenv, j$(my.dependency.name:Camel), $(my.dependency.name:c)_fidCtx);
+                    $(my.class_type:) $(my.dependency.name:c) = \
+                            ($(my.class_type:)) (*jenv)->GetDirectBufferAddress(jenv, $(my.dependency.name:c)_c_ctx);
+                    $(my.arg_ctx_type:)* c_obj = ($(my.arg_ctx_type:)*) (*jenv)->GetDirectBufferAddress(jenv, c_ctx);
+
+                    $(class_derive_c_method_release_dependency (my.impl, my.dependency))(c_obj);
+                    $(my.result_var?:)$(class_derive_c_method_use_dependency (my.impl, my.dependency))(c_obj, $(my.dependency.name:c));
                 ")
                 . += my.impl_handle_status ? ""
             endnew

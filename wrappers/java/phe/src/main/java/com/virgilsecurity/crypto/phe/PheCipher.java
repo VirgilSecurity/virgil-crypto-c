@@ -44,7 +44,7 @@ import com.virgilsecurity.crypto.foundation.*;
 */
 public class PheCipher implements AutoCloseable {
 
-    public long cCtx;
+    public java.nio.ByteBuffer cCtx;
 
     /* Create underlying C context. */
     public PheCipher() {
@@ -73,7 +73,7 @@ public class PheCipher implements AutoCloseable {
     * Acquire C context.
     * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     */
-    public static PheCipher getInstance(long cCtx) {
+    public static PheCipher getInstance(java.nio.ByteBuffer cCtx) {
         PheContextHolder ctxHolder = new PheContextHolder(cCtx);
         return new PheCipher(ctxHolder);
     }
