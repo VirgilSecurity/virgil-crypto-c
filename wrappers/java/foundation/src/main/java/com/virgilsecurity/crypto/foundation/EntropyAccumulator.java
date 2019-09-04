@@ -49,6 +49,11 @@ public class EntropyAccumulator implements AutoCloseable, EntropySource {
         this.cCtx = FoundationJNI.INSTANCE.entropyAccumulator_new();
     }
 
+    /* Wrap underlying C context. */
+    EntropyAccumulator(FoundationContextHolder contextHolder) {
+        this.cCtx = contextHolder.cCtx;
+    }
+
     public int getSourcesMax() {
         return 15;
     }
@@ -74,9 +79,8 @@ public class EntropyAccumulator implements AutoCloseable, EntropySource {
     * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     */
     public static EntropyAccumulator getInstance(long cCtx) {
-        EntropyAccumulator newInstance = new EntropyAccumulator();
-        newInstance.cCtx = cCtx;
-        return newInstance;
+        FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
+        return new EntropyAccumulator(ctxHolder);
     }
 
     /* Close resource. */

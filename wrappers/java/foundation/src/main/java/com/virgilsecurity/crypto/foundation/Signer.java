@@ -49,14 +49,18 @@ public class Signer implements AutoCloseable {
         this.cCtx = FoundationJNI.INSTANCE.signer_new();
     }
 
+    /* Wrap underlying C context. */
+    Signer(FoundationContextHolder contextHolder) {
+        this.cCtx = contextHolder.cCtx;
+    }
+
     /*
     * Acquire C context.
     * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     */
     public static Signer getInstance(long cCtx) {
-        Signer newInstance = new Signer();
-        newInstance.cCtx = cCtx;
-        return newInstance;
+        FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
+        return new Signer(ctxHolder);
     }
 
     /* Close resource. */

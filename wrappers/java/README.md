@@ -11,11 +11,44 @@
 
 ### Build & Install
 
-Build native libraries. See [readme](https://github.com/VirgilSecurity/virgil-crypto-c/blob/master/README.md) for details.
-Build Java JNI library for your platform
+Build native libraries and JNI libraries for your platform:
+
+- linux
+- macos
+- windows
+
+From the project's root directory
+
+```bash
+export PLATFORM=linux
+
+cmake -DCMAKE_BUILD_TYPE=Release \
+      -Cconfigs/java-config.cmake \
+      -DCMAKE_INSTALL_PREFIX="wrappers/java/binaries/${PLATFORM}" \
+      -DENABLE_CLANGFORMAT=OFF \
+      -DED25519_AMD64_RADIX_64_24K=ON -DED25519_REF10=OFF \
+      -Bbuild -H.
+
+cmake --build build --target install -- -j10
+```
+
+From the `wrappers/java` directoty
 
 ```bash
 mvn clean package
+```
+
+## Run benchmarks
+
+Build artifacts with a command
+```bash
+mvn clean install
+```
+
+A JAR file with benchmarks and all dependencies will be build. You can find it at `benchmark/target/benchmark.jar`.
+You can copy this JAR file to any other machine with install JRE and run with a command
+```bash
+java -jar <path_to_jar>
 ```
 
 ## License

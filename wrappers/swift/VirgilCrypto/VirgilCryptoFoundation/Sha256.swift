@@ -105,7 +105,6 @@ import VSCFoundation
 
         data.withUnsafeBytes({ (dataPointer: UnsafeRawBufferPointer) -> Void in
             digest.withUnsafeMutableBytes({ (digestPointer: UnsafeMutableRawBufferPointer) -> Void in
-                vsc_buffer_init(digestBuf)
                 vsc_buffer_use(digestBuf, digestPointer.bindMemory(to: byte.self).baseAddress, digestCount)
 
                 vscf_sha256_hash(vsc_data(dataPointer.bindMemory(to: byte.self).baseAddress, data.count), digestBuf)
@@ -139,7 +138,6 @@ import VSCFoundation
         }
 
         digest.withUnsafeMutableBytes({ (digestPointer: UnsafeMutableRawBufferPointer) -> Void in
-            vsc_buffer_init(digestBuf)
             vsc_buffer_use(digestBuf, digestPointer.bindMemory(to: byte.self).baseAddress, digestCount)
 
             vscf_sha256_finish(self.c_ctx, digestBuf)

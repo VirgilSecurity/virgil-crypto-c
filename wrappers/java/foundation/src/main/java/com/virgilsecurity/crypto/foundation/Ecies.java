@@ -49,14 +49,18 @@ public class Ecies implements AutoCloseable {
         this.cCtx = FoundationJNI.INSTANCE.ecies_new();
     }
 
+    /* Wrap underlying C context. */
+    Ecies(FoundationContextHolder contextHolder) {
+        this.cCtx = contextHolder.cCtx;
+    }
+
     /*
     * Acquire C context.
     * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     */
     public static Ecies getInstance(long cCtx) {
-        Ecies newInstance = new Ecies();
-        newInstance.cCtx = cCtx;
-        return newInstance;
+        FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
+        return new Ecies(ctxHolder);
     }
 
     /* Close resource. */

@@ -35,25 +35,38 @@
 
 #include "benchmark/benchmark.h"
 
-#include "vscf_sha512.h"
+#include "vscf_key_provider.h"
+#include "vscf_key_alg_factory.h"
 
-#include "benchmark_data.h"
 
 static void
-benchmark__hash_stream__512_bytes_at_once(benchmark::State &state) {
-    vscf_sha512_t *sha512 = vscf_sha512_new();
-    vsc_buffer_t *digest = vsc_buffer_new_with_capacity(vscf_sha512_DIGEST_LEN);
+generate_exported_key(benchmark::State &state) {
 
-    for (auto _ : state) {
-        vscf_sha512_start(sha512);
-        vscf_sha512_update(sha512, benchmark_ANY_DATA_512_BYTES);
-        vscf_sha512_finish(sha512, digest);
+    vscf_key_provider_t *key_provider = vscf_key_provider_new();
+    (void)vscf_key_provider_setup_defaults(key_provider);
 
-        vsc_buffer_reset(digest);
+    const vscf_alg_id_t alg_id = (vscf_alg_id_t)state.range(0);
+    if (alg_id == vscf_alg_id_RSA) {
+        const size_t bitlen = (size_t)state.range(1);
+        vscf_key_provider_set_rsa_params(key_provider, bitlen);
     }
 
-    vsc_buffer_destroy(&digest);
-    vscf_sha512_destroy(&sha512);
+    for (auto _ : state) {
+        vscf_impl_t *private_key = vscf_key_provider_generate_private_key(key_provider, alg_id, NULL);
+
+        const size_t key_buf_len = vscf_key_provider_exported_private_key_len(key_provider, private_key);
+        vsc_buffer_t *key_buf = vsc_buffer_new_with_capacity(key_buf_len);
+        (void)vscf_key_provider_export_private_key(key_provider, private_key, key_buf);
+
+        vsc_buffer_destroy(&key_buf);
+        vscf_impl_destroy(&private_key);
+    }
+
+    vscf_key_provider_destroy(&key_provider);
+
+    state.counters["op"] = benchmark::Counter(state.iterations(), benchmark::Counter::kIsRate);
 }
 
-BENCHMARK(benchmark__hash_stream__512_bytes_at_once);
+BENCHMARK(generate_exported_key)->ArgNames({"Ed25519"})->Arg(vscf_alg_id_ED25519);
+BENCHMARK(generate_exported_key)->ArgNames({"secp256r1"})->Arg(vscf_alg_id_SECP256R1);
+BENCHMARK(generate_exported_key)->ArgNames({"RSA"})->Args({vscf_alg_id_RSA, 4096});

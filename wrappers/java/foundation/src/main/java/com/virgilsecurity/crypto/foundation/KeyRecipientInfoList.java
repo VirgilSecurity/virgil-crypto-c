@@ -49,14 +49,18 @@ public class KeyRecipientInfoList implements AutoCloseable {
         this.cCtx = FoundationJNI.INSTANCE.keyRecipientInfoList_new();
     }
 
+    /* Wrap underlying C context. */
+    KeyRecipientInfoList(FoundationContextHolder contextHolder) {
+        this.cCtx = contextHolder.cCtx;
+    }
+
     /*
     * Acquire C context.
     * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     */
     public static KeyRecipientInfoList getInstance(long cCtx) {
-        KeyRecipientInfoList newInstance = new KeyRecipientInfoList();
-        newInstance.cCtx = cCtx;
-        return newInstance;
+        FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
+        return new KeyRecipientInfoList(ctxHolder);
     }
 
     /* Close resource. */

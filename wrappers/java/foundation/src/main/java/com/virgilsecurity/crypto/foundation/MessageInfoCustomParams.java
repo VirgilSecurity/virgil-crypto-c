@@ -46,6 +46,11 @@ public class MessageInfoCustomParams implements AutoCloseable {
         this.cCtx = FoundationJNI.INSTANCE.messageInfoCustomParams_new();
     }
 
+    /* Wrap underlying C context. */
+    MessageInfoCustomParams(FoundationContextHolder contextHolder) {
+        this.cCtx = contextHolder.cCtx;
+    }
+
     public int getOfIntType() {
         return 1;
     }
@@ -63,9 +68,8 @@ public class MessageInfoCustomParams implements AutoCloseable {
     * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     */
     public static MessageInfoCustomParams getInstance(long cCtx) {
-        MessageInfoCustomParams newInstance = new MessageInfoCustomParams();
-        newInstance.cCtx = cCtx;
-        return newInstance;
+        FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
+        return new MessageInfoCustomParams(ctxHolder);
     }
 
     /* Close resource. */

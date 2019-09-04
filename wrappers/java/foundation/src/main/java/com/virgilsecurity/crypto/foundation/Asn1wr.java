@@ -49,14 +49,18 @@ public class Asn1wr implements AutoCloseable, Asn1Writer {
         this.cCtx = FoundationJNI.INSTANCE.asn1wr_new();
     }
 
+    /* Wrap underlying C context. */
+    Asn1wr(FoundationContextHolder contextHolder) {
+        this.cCtx = contextHolder.cCtx;
+    }
+
     /*
     * Acquire C context.
     * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     */
     public static Asn1wr getInstance(long cCtx) {
-        Asn1wr newInstance = new Asn1wr();
-        newInstance.cCtx = cCtx;
-        return newInstance;
+        FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
+        return new Asn1wr(ctxHolder);
     }
 
     /* Close resource. */

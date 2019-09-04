@@ -51,14 +51,18 @@ public class RatchetSession implements AutoCloseable {
         this.cCtx = RatchetJNI.INSTANCE.ratchetSession_new();
     }
 
+    /* Wrap underlying C context. */
+    RatchetSession(RatchetContextHolder contextHolder) {
+        this.cCtx = contextHolder.cCtx;
+    }
+
     /*
     * Acquire C context.
     * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     */
     public static RatchetSession getInstance(long cCtx) {
-        RatchetSession newInstance = new RatchetSession();
-        newInstance.cCtx = cCtx;
-        return newInstance;
+        RatchetContextHolder ctxHolder = new RatchetContextHolder(cCtx);
+        return new RatchetSession(ctxHolder);
     }
 
     /* Close resource. */

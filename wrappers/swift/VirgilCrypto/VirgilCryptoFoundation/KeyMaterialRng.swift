@@ -93,7 +93,6 @@ import VSCFoundation
         }
 
         let proxyResult = data.withUnsafeMutableBytes({ (dataPointer: UnsafeMutableRawBufferPointer) -> vscf_status_t in
-            vsc_buffer_init(dataBuf)
             vsc_buffer_use(dataBuf, dataPointer.bindMemory(to: byte.self).baseAddress, dataCount)
 
             return vscf_key_material_rng_random(self.c_ctx, dataLen, dataBuf)

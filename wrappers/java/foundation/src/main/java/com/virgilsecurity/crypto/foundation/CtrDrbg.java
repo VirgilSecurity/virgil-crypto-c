@@ -51,6 +51,11 @@ public class CtrDrbg implements AutoCloseable, Random {
         this.cCtx = FoundationJNI.INSTANCE.ctrDrbg_new();
     }
 
+    /* Wrap underlying C context. */
+    CtrDrbg(FoundationContextHolder contextHolder) {
+        this.cCtx = contextHolder.cCtx;
+    }
+
     /*
     * The interval before reseed is performed by default.
     */
@@ -106,9 +111,8 @@ public class CtrDrbg implements AutoCloseable, Random {
     * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     */
     public static CtrDrbg getInstance(long cCtx) {
-        CtrDrbg newInstance = new CtrDrbg();
-        newInstance.cCtx = cCtx;
-        return newInstance;
+        FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
+        return new CtrDrbg(ctxHolder);
     }
 
     /* Close resource. */

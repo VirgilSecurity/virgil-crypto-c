@@ -101,7 +101,6 @@ import VSCFoundation
         }
 
         out.withUnsafeMutableBytes({ (outPointer: UnsafeMutableRawBufferPointer) -> Void in
-            vsc_buffer_init(outBuf)
             vsc_buffer_use(outBuf, outPointer.bindMemory(to: byte.self).baseAddress, outCount)
 
             vscf_message_info_der_serializer_serialize(self.c_ctx, messageInfo.c_ctx, outBuf)

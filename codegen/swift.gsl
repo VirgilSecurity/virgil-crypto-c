@@ -557,7 +557,6 @@ function swift_wrap_c_proxy_call (swift_method, proxy_call, proxy_return_type, s
 
         my.buffers_init ?= ""
         my.buffers_init += terminator + format_left("\
-                .(c_project_common_class_buffer_method_init)($(my.buffer_name:)Buf)
                 .(c_project_common_class_buffer_method_use)($(my.buffer_name:)Buf, \
                         $(my.buffer_name:)Pointer.bindMemory(to: byte.self).baseAddress, $(my.buffer_name:)Count)
         ")

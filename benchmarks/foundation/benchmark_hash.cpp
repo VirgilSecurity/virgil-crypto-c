@@ -33,41 +33,53 @@
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
 
-#include <benchmark/benchmark.h>
+#include "benchmark/benchmark.h"
 
+#include "vscf_hash.h"
+#include "vscf_sha256.h"
 #include "vscf_sha512.h"
 
-constexpr benchmark::IterationCount kIterationsExact = 300000000;
+#include "vscf_fake_random.h"
+
 
 static void
-benchmark__shallow_copy(benchmark::State &state) {
-    vscf_sha512_t *sha512 = vscf_sha512_new();
+hash_data(benchmark::State &state, vscf_impl_t *hash, size_t data_size) {
+
+    vsc_buffer_t *data = vsc_buffer_new_with_capacity(data_size);
+    vsc_buffer_t *digest = vsc_buffer_new_with_capacity(vscf_hash_digest_len(vscf_hash_api(hash)));
+
+    vscf_fake_random_t *rng = vscf_fake_random_new();
+    vscf_fake_random_setup_source_byte(rng, 0x0A);
+    (void)vscf_fake_random_random(rng, data_size, data);
 
     for (auto _ : state) {
-        vscf_sha512_shallow_copy(sha512);
+        vscf_hash_start(hash);
+        vscf_hash_update(hash, vsc_buffer_data(data));
+        vscf_hash_finish(hash, digest);
+
+        vsc_buffer_reset(digest);
     }
 
-    for (auto iterations = kIterationsExact; iterations != 0; --iterations) {
-        vscf_sha512_delete(sha512);
-    }
+    vscf_fake_random_destroy(&rng);
+    vsc_buffer_destroy(&data);
+    vsc_buffer_destroy(&digest);
 
-    vscf_sha512_destroy(&sha512);
+    state.counters["op"] = benchmark::Counter(state.iterations(), benchmark::Counter::kIsRate);
 }
 
 static void
-benchmark__delete(benchmark::State &state) {
+hash__sha256__8192_bytes(benchmark::State &state) {
+    vscf_sha256_t *sha256 = vscf_sha256_new();
+    hash_data(state, vscf_sha256_impl(sha256), 8192);
+    vscf_sha256_destroy(&sha256);
+}
+
+static void
+hash__sha512__8192_bytes(benchmark::State &state) {
     vscf_sha512_t *sha512 = vscf_sha512_new();
-
-    for (auto iterations = kIterationsExact; iterations != 0; --iterations) {
-        vscf_sha512_shallow_copy(sha512);
-    }
-
-    for (auto _ : state) {
-        vscf_sha512_delete(sha512);
-    }
-
+    hash_data(state, vscf_sha512_impl(sha512), 8192);
     vscf_sha512_destroy(&sha512);
 }
 
-BENCHMARK(benchmark__shallow_copy)->Iterations(kIterationsExact);
-BENCHMARK(benchmark__delete)->Iterations(kIterationsExact);
+BENCHMARK(hash__sha256__8192_bytes);
+BENCHMARK(hash__sha512__8192_bytes);

@@ -108,10 +108,8 @@ import VSCFoundation
         let proxyResult = password.withUnsafeBytes({ (passwordPointer: UnsafeRawBufferPointer) -> vscf_status_t in
             deblindFactor.withUnsafeMutableBytes({ (deblindFactorPointer: UnsafeMutableRawBufferPointer) -> vscf_status_t in
                 blindedPoint.withUnsafeMutableBytes({ (blindedPointPointer: UnsafeMutableRawBufferPointer) -> vscf_status_t in
-                    vsc_buffer_init(deblindFactorBuf)
                     vsc_buffer_use(deblindFactorBuf, deblindFactorPointer.bindMemory(to: byte.self).baseAddress, deblindFactorCount)
 
-                    vsc_buffer_init(blindedPointBuf)
                     vsc_buffer_use(blindedPointBuf, blindedPointPointer.bindMemory(to: byte.self).baseAddress, blindedPointCount)
 
                     return vscf_brainkey_client_blind(self.c_ctx, vsc_data(passwordPointer.bindMemory(to: byte.self).baseAddress, password.count), deblindFactorBuf, blindedPointBuf)
@@ -139,7 +137,6 @@ import VSCFoundation
                 deblindFactor.withUnsafeBytes({ (deblindFactorPointer: UnsafeRawBufferPointer) -> vscf_status_t in
                     keyName.withUnsafeBytes({ (keyNamePointer: UnsafeRawBufferPointer) -> vscf_status_t in
                         seed.withUnsafeMutableBytes({ (seedPointer: UnsafeMutableRawBufferPointer) -> vscf_status_t in
-                            vsc_buffer_init(seedBuf)
                             vsc_buffer_use(seedBuf, seedPointer.bindMemory(to: byte.self).baseAddress, seedCount)
 
                             return vscf_brainkey_client_deblind(self.c_ctx, vsc_data(passwordPointer.bindMemory(to: byte.self).baseAddress, password.count), vsc_data(hardenedPointPointer.bindMemory(to: byte.self).baseAddress, hardenedPoint.count), vsc_data(deblindFactorPointer.bindMemory(to: byte.self).baseAddress, deblindFactor.count), vsc_data(keyNamePointer.bindMemory(to: byte.self).baseAddress, keyName.count), seedBuf)

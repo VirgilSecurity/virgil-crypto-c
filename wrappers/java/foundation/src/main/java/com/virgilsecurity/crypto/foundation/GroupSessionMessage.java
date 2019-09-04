@@ -49,6 +49,11 @@ public class GroupSessionMessage implements AutoCloseable {
         this.cCtx = FoundationJNI.INSTANCE.groupSessionMessage_new();
     }
 
+    /* Wrap underlying C context. */
+    GroupSessionMessage(FoundationContextHolder contextHolder) {
+        this.cCtx = contextHolder.cCtx;
+    }
+
     /*
     * Max message len
     */
@@ -68,9 +73,8 @@ public class GroupSessionMessage implements AutoCloseable {
     * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     */
     public static GroupSessionMessage getInstance(long cCtx) {
-        GroupSessionMessage newInstance = new GroupSessionMessage();
-        newInstance.cCtx = cCtx;
-        return newInstance;
+        FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
+        return new GroupSessionMessage(ctxHolder);
     }
 
     /* Close resource. */

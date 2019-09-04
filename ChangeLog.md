@@ -1,6 +1,15 @@
 # virgil-crypto-c ChangeLog (Sorted by date)
 
 
+## Version 0.10.1 released 2019-09-02
+
+### Bugfix
+
+- Lib/Foundation: Fix crash when export secp256r1 private key with leading zero
+- Wrapper/Swift: Fix memory leaks
+- Wrapper/Java: Fix memory leaks
+
+
 ## Version 0.10.0 released 2019-08-12
 
 ### Changes
