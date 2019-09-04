@@ -49,6 +49,11 @@ public class Curve25519 implements AutoCloseable, Alg, KeyAlg, KeyCipher, Comput
         this.cCtx = FoundationJNI.INSTANCE.curve25519_new();
     }
 
+    /* Wrap underlying C context. */
+    Curve25519(FoundationContextHolder contextHolder) {
+        this.cCtx = contextHolder.cCtx;
+    }
+
     public void setRandom(Random random) {
         FoundationJNI.INSTANCE.curve25519_setRandom(this.cCtx, random);
     }
@@ -77,9 +82,8 @@ public class Curve25519 implements AutoCloseable, Alg, KeyAlg, KeyCipher, Comput
     * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     */
     public static Curve25519 getInstance(long cCtx) {
-        Curve25519 newInstance = new Curve25519();
-        newInstance.cCtx = cCtx;
-        return newInstance;
+        FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
+        return new Curve25519(ctxHolder);
     }
 
     /* Close resource. */

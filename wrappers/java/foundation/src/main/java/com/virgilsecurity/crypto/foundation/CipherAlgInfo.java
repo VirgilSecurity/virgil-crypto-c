@@ -49,6 +49,11 @@ public class CipherAlgInfo implements AutoCloseable, AlgInfo {
         this.cCtx = FoundationJNI.INSTANCE.cipherAlgInfo_new();
     }
 
+    /* Wrap underlying C context. */
+    CipherAlgInfo(FoundationContextHolder contextHolder) {
+        this.cCtx = contextHolder.cCtx;
+    }
+
     /*
     * Create symmetric cipher algorithm info with identificator and input vector.
     */
@@ -69,9 +74,8 @@ public class CipherAlgInfo implements AutoCloseable, AlgInfo {
     * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     */
     public static CipherAlgInfo getInstance(long cCtx) {
-        CipherAlgInfo newInstance = new CipherAlgInfo();
-        newInstance.cCtx = cCtx;
-        return newInstance;
+        FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
+        return new CipherAlgInfo(ctxHolder);
     }
 
     /* Close resource. */

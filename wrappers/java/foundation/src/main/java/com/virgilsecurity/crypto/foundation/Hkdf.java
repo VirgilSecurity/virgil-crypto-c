@@ -49,6 +49,11 @@ public class Hkdf implements AutoCloseable, Alg, Kdf, SaltedKdf {
         this.cCtx = FoundationJNI.INSTANCE.hkdf_new();
     }
 
+    /* Wrap underlying C context. */
+    Hkdf(FoundationContextHolder contextHolder) {
+        this.cCtx = contextHolder.cCtx;
+    }
+
     public int getHashCounterMax() {
         return 255;
     }
@@ -62,9 +67,8 @@ public class Hkdf implements AutoCloseable, Alg, Kdf, SaltedKdf {
     * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     */
     public static Hkdf getInstance(long cCtx) {
-        Hkdf newInstance = new Hkdf();
-        newInstance.cCtx = cCtx;
-        return newInstance;
+        FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
+        return new Hkdf(ctxHolder);
     }
 
     /* Close resource. */

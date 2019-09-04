@@ -49,14 +49,18 @@ public class GroupSessionTicket implements AutoCloseable {
         this.cCtx = FoundationJNI.INSTANCE.groupSessionTicket_new();
     }
 
+    /* Wrap underlying C context. */
+    GroupSessionTicket(FoundationContextHolder contextHolder) {
+        this.cCtx = contextHolder.cCtx;
+    }
+
     /*
     * Acquire C context.
     * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     */
     public static GroupSessionTicket getInstance(long cCtx) {
-        GroupSessionTicket newInstance = new GroupSessionTicket();
-        newInstance.cCtx = cCtx;
-        return newInstance;
+        FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
+        return new GroupSessionTicket(ctxHolder);
     }
 
     /* Close resource. */

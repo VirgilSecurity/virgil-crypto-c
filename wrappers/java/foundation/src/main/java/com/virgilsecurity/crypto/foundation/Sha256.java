@@ -49,14 +49,18 @@ public class Sha256 implements AutoCloseable, Alg, Hash {
         this.cCtx = FoundationJNI.INSTANCE.sha256_new();
     }
 
+    /* Wrap underlying C context. */
+    Sha256(FoundationContextHolder contextHolder) {
+        this.cCtx = contextHolder.cCtx;
+    }
+
     /*
     * Acquire C context.
     * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     */
     public static Sha256 getInstance(long cCtx) {
-        Sha256 newInstance = new Sha256();
-        newInstance.cCtx = cCtx;
-        return newInstance;
+        FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
+        return new Sha256(ctxHolder);
     }
 
     /* Close resource. */

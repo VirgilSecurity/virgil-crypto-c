@@ -49,6 +49,11 @@ public class Rsa implements AutoCloseable, Alg, KeyAlg, KeyCipher, KeySigner {
         this.cCtx = FoundationJNI.INSTANCE.rsa_new();
     }
 
+    /* Wrap underlying C context. */
+    Rsa(FoundationContextHolder contextHolder) {
+        this.cCtx = contextHolder.cCtx;
+    }
+
     public void setRandom(Random random) {
         FoundationJNI.INSTANCE.rsa_setRandom(this.cCtx, random);
     }
@@ -73,9 +78,8 @@ public class Rsa implements AutoCloseable, Alg, KeyAlg, KeyCipher, KeySigner {
     * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     */
     public static Rsa getInstance(long cCtx) {
-        Rsa newInstance = new Rsa();
-        newInstance.cCtx = cCtx;
-        return newInstance;
+        FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
+        return new Rsa(ctxHolder);
     }
 
     /* Close resource. */

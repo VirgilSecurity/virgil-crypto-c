@@ -49,6 +49,11 @@ public class Ed25519 implements AutoCloseable, Alg, KeyAlg, KeyCipher, KeySigner
         this.cCtx = FoundationJNI.INSTANCE.ed25519_new();
     }
 
+    /* Wrap underlying C context. */
+    Ed25519(FoundationContextHolder contextHolder) {
+        this.cCtx = contextHolder.cCtx;
+    }
+
     public void setRandom(Random random) {
         FoundationJNI.INSTANCE.ed25519_setRandom(this.cCtx, random);
     }
@@ -77,9 +82,8 @@ public class Ed25519 implements AutoCloseable, Alg, KeyAlg, KeyCipher, KeySigner
     * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     */
     public static Ed25519 getInstance(long cCtx) {
-        Ed25519 newInstance = new Ed25519();
-        newInstance.cCtx = cCtx;
-        return newInstance;
+        FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
+        return new Ed25519(ctxHolder);
     }
 
     /* Close resource. */

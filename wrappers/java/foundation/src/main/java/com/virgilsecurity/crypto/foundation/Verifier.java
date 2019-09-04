@@ -50,14 +50,18 @@ public class Verifier implements AutoCloseable {
         this.cCtx = FoundationJNI.INSTANCE.verifier_new();
     }
 
+    /* Wrap underlying C context. */
+    Verifier(FoundationContextHolder contextHolder) {
+        this.cCtx = contextHolder.cCtx;
+    }
+
     /*
     * Acquire C context.
     * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     */
     public static Verifier getInstance(long cCtx) {
-        Verifier newInstance = new Verifier();
-        newInstance.cCtx = cCtx;
-        return newInstance;
+        FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
+        return new Verifier(ctxHolder);
     }
 
     /* Close resource. */

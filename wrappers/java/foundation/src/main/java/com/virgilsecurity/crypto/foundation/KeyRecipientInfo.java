@@ -49,6 +49,11 @@ public class KeyRecipientInfo implements AutoCloseable {
         this.cCtx = FoundationJNI.INSTANCE.keyRecipientInfo_new();
     }
 
+    /* Wrap underlying C context. */
+    KeyRecipientInfo(FoundationContextHolder contextHolder) {
+        this.cCtx = contextHolder.cCtx;
+    }
+
     /*
     * Create object and define all properties.
     */
@@ -62,9 +67,8 @@ public class KeyRecipientInfo implements AutoCloseable {
     * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     */
     public static KeyRecipientInfo getInstance(long cCtx) {
-        KeyRecipientInfo newInstance = new KeyRecipientInfo();
-        newInstance.cCtx = cCtx;
-        return newInstance;
+        FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
+        return new KeyRecipientInfo(ctxHolder);
     }
 
     /* Close resource. */

@@ -50,14 +50,18 @@ public class MessageInfo implements AutoCloseable {
         this.cCtx = FoundationJNI.INSTANCE.messageInfo_new();
     }
 
+    /* Wrap underlying C context. */
+    MessageInfo(FoundationContextHolder contextHolder) {
+        this.cCtx = contextHolder.cCtx;
+    }
+
     /*
     * Acquire C context.
     * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     */
     public static MessageInfo getInstance(long cCtx) {
-        MessageInfo newInstance = new MessageInfo();
-        newInstance.cCtx = cCtx;
-        return newInstance;
+        FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
+        return new MessageInfo(ctxHolder);
     }
 
     /* Close resource. */

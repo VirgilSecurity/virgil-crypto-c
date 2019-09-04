@@ -51,14 +51,18 @@ public class RecipientCipher implements AutoCloseable {
         this.cCtx = FoundationJNI.INSTANCE.recipientCipher_new();
     }
 
+    /* Wrap underlying C context. */
+    RecipientCipher(FoundationContextHolder contextHolder) {
+        this.cCtx = contextHolder.cCtx;
+    }
+
     /*
     * Acquire C context.
     * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     */
     public static RecipientCipher getInstance(long cCtx) {
-        RecipientCipher newInstance = new RecipientCipher();
-        newInstance.cCtx = cCtx;
-        return newInstance;
+        FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
+        return new RecipientCipher(ctxHolder);
     }
 
     /* Close resource. */

@@ -49,14 +49,18 @@ public class EccPublicKey implements AutoCloseable, Key, PublicKey {
         this.cCtx = FoundationJNI.INSTANCE.eccPublicKey_new();
     }
 
+    /* Wrap underlying C context. */
+    EccPublicKey(FoundationContextHolder contextHolder) {
+        this.cCtx = contextHolder.cCtx;
+    }
+
     /*
     * Acquire C context.
     * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     */
     public static EccPublicKey getInstance(long cCtx) {
-        EccPublicKey newInstance = new EccPublicKey();
-        newInstance.cCtx = cCtx;
-        return newInstance;
+        FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
+        return new EccPublicKey(ctxHolder);
     }
 
     /* Close resource. */

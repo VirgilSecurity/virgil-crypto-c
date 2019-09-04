@@ -51,14 +51,18 @@ public class RatchetGroupTicket implements AutoCloseable {
         this.cCtx = RatchetJNI.INSTANCE.ratchetGroupTicket_new();
     }
 
+    /* Wrap underlying C context. */
+    RatchetGroupTicket(RatchetContextHolder contextHolder) {
+        this.cCtx = contextHolder.cCtx;
+    }
+
     /*
     * Acquire C context.
     * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     */
     public static RatchetGroupTicket getInstance(long cCtx) {
-        RatchetGroupTicket newInstance = new RatchetGroupTicket();
-        newInstance.cCtx = cCtx;
-        return newInstance;
+        RatchetContextHolder ctxHolder = new RatchetContextHolder(cCtx);
+        return new RatchetGroupTicket(ctxHolder);
     }
 
     /* Close resource. */
