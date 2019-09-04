@@ -633,6 +633,15 @@
 </entity>
 
 
+<entity name="constructor">
+    Special class method.
+
+    <inherit entity="class">
+        <attr name="is_static" default="1"/>
+    </inherit>
+</entity>
+
+
 <entity name="argument">
     Defines argument as name, type, and usage information.
 

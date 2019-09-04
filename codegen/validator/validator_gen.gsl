@@ -114,12 +114,28 @@ function generate_function_setup_defaults(entity)
     #   Generate "setup defaults" for inherited entities
     #
     for my.entity.inherit
+        for inherit.allow
+            my.allowed_entity_tag = make_id(allow.tag ? allow.entity)
+            >
+            >    my.$(my.allowed_entity_tag)_defaults = my.defaults->entity(name = "$(my.allowed_entity_tag)") ?
+            >    if !defined(my.$(my.allowed_entity_tag)_defaults)
+            >        new entity to my.defaults
+            >            .name = "$(my.allowed_entity_tag)"
+            >            my.$(my.allowed_entity_tag)_defaults = entity
+            >        endnew
+            >     endif
+            >
+            for allow.attr
+            >    my.$(my.allowed_entity_tag)_defaults.$(attr.name:) = "$(attr.default:)"
+            endfor
+        endfor
+
         if first()
             >
             >    #    Setup defaults for inherited attributes and entities
         endif
         for inherit.attr where defined(attr.default)
-            >     my.defaults.$(attr.name:) = "$(attr.default:)"
+            >    my.defaults.$(attr.name:) = "$(attr.default:)"
         endfor
         >    $(entity_derive_name_of_function_setup_defaults(inherit.entity))($(my.my_tag), my.defaults)
     endfor
@@ -137,25 +153,25 @@ function generate_function_setup_defaults(entity)
 
         my.allowed_entity_tag = make_id(allow.tag ? allow.entity)
 
-        for allow.attr
-            if first()
-                >    new defaults
-            endif
-            if defined(attr.default)
-                >        .$(attr.name:) = "$(attr.default:)"
-            endif
-            if last()
-                >        for $(my.my_tag).$(my.allowed_entity_tag:) as _$(my.allowed_entity_tag:)
-                >            $(entity_derive_name_of_function_setup_defaults(allow.entity))(_$(my.allowed_entity_tag), defaults)
-                >        endfor
-                >        delete defaults
-                >    endnew
-            endif
-        else
-            >    for $(my.my_tag).$(my.allowed_entity_tag:) as _$(my.allowed_entity_tag:)
-            >        $(entity_derive_name_of_function_setup_defaults(allow.entity))(_$(my.allowed_entity_tag))
-            >    endfor
+        >
+        >    #    Defaults can be redefined by parents.
+        >    my.$(my.allowed_entity_tag:)_defaults = my.defaults->entity(name = "$(my.allowed_entity_tag)") ?
+        >    if !defined(my.$(my.allowed_entity_tag:)_defaults)
+        >        my.$(my.allowed_entity_tag:)_defaults = XML.new("defaults")
+        >        my.is_local_$(my.allowed_entity_tag:)_defaults = "1"
+        >    endif
+
+        for allow.attr where defined(attr.default)
+        >    my.$(my.allowed_entity_tag:)_defaults.$(attr.name:) ?= "$(attr.default:)"
         endfor
+        >
+        >    for $(my.my_tag).$(my.allowed_entity_tag:) as _$(my.allowed_entity_tag:)
+        >        $(entity_derive_name_of_function_setup_defaults(allow.entity))(_$(my.allowed_entity_tag), my.$(my.allowed_entity_tag:)_defaults)
+        >    endfor
+        >
+        >    if is_true(my.is_local_$(my.allowed_entity_tag:)_defaults)
+        >        delete my.$(my.allowed_entity_tag:)_defaults
+        >    endif
     endfor
 
     #

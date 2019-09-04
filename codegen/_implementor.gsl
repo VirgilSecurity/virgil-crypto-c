@@ -1,0 +1,73 @@
+if !main.multithread
+    gsl from "_implementation.gsl"
+endif
+
+# ---------------------------------------------------------------------------
+function implementor_calculate_dependencies_fingerprint(project, implementor)
+    check_arguments(my, "project, implementor")
+
+    new dependencies
+        .project_prefix = my.project.prefix
+        .self_fingerprint = fingerprint(my.implementor)
+        .license_fingerprint = fingerprint(my.project->license)
+
+        my.fingerprint = fingerprint(dependencies)
+        delete dependencies
+        return my.fingerprint
+    endnew
+endfunction
+
+# ---------------------------------------------------------------------------
+function implementor_process_implementation(project, implementor, implementation)
+    check_arguments(my, "project, implementor, implementation", my)
+
+    if main.multithread
+        my.class_parsed_thread = create_parsed_thread("_implementation.gsl")
+        my.class_thread = my.class_parsed_thread.run()
+        my.class_thread.send(my.project, my.implementor, my.implementation)
+    else
+        implementation_process(my.project, my.implementor, my.implementation)
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Entry point
+# ---------------------------------------------------------------------------
+function implementor_process(project, implementor_link)
+    check_arguments(my, "project, implementor_link", my)
+    assert_attribute(my.implementor_link, "name", my)
+
+    echo_info("[L1] Implementor '$(my.implementor_link.name:)' - start processing", my)
+
+    my.implementor = implementor_load(my.project, my.implementor_link.name)
+    my.implementor.forcegen ?= my.project.forcegen
+    my.cached_implementor = cache_load_or_invalidate(my.project, my.implementor) ?
+    my.implementor.fingerprint = implementor_calculate_dependencies_fingerprint(my.project, my.implementor)
+
+    if defined(my.cached_implementor)
+        echo_trace("[L1] Implementor '$(my.implementor.name:)' - cache loaded", my)
+    else
+        echo_trace("[L1] Implementor '$(my.implementor.name:)' - full update required", my)
+    endif
+
+    if !fingerprint_is_equal(my.implementor, my.cached_implementor)
+        implementor_setup_defaults(my.implementor)
+        implementor_validate(my.implementor)
+    endif
+
+    echo_trace("[L1] Implementor '$(my.implementor.name:)' - process children", my)
+    for my.implementor.implementation
+        implementor_process_implementation(my.project, my.implementor, implementation)
+    endfor
+
+    cache_store(my.project, my.implementor)
+    echo_info("[L1] Implementor '$(my.implementor_link.name:)' - accomplished", my)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Multi thread entry point
+# ---------------------------------------------------------------------------
+if main.multithread
+    thread.receive(sending_thread, _project, _implementor_link)
+    implementor_process(_project, _implementor_link)
+endif

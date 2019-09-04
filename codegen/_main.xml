@@ -1,4 +1,4 @@
-<main script="_main.gsl" work_path="new_generated/main" multithread="0" echo_level="trace" forcegen="1">
+<main script="_main.gsl" work_path="new_generated/main" multithread="0" echo_level="trace" forcegen="0">
 
     <license>
         Copyright (C) 2015-2019 Virgil Security, Inc.

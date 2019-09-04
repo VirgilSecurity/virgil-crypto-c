@@ -1,4 +1,4 @@
-<implementor name="mbedtls" is_default="1">
+<implementor name="mbedtls" is_default="1" forcegen="1">
     Provide implementation based on the library ARM mbedTLS.
 
 

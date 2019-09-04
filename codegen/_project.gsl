@@ -1,6 +1,7 @@
 if !main.multithread
     gsl from "_class.gsl"
     gsl from "_enum.gsl"
+    gsl from "_implementor.gsl"
 endif
 
 # ---------------------------------------------------------------------------
@@ -26,6 +27,19 @@ function project_process_class(project, class)
         my.class_thread.send(my.project, my.class)
     else
         class_process(my.project, my.class)
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
+function project_process_implementor(project, implementor)
+    check_arguments(my, "project, implementor", my)
+
+    if main.multithread
+        my.class_parsed_thread = create_parsed_thread("_implementor.gsl")
+        my.class_thread = my.class_parsed_thread.run()
+        my.class_thread.send(my.project, my.implementor)
+    else
+        implementor_process(my.project, my.implementor)
     endif
 endfunction
 
@@ -137,6 +151,10 @@ function project_process(project_link)
 
     for my.project.class
         project_process_class(my.project, class)
+    endfor
+
+    for my.project.implementor
+        project_process_implementor(my.project, implementor)
     endfor
 
     cache_store(my.project, my.project)

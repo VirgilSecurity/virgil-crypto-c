@@ -37,6 +37,7 @@
 
 <include filename="common.xml"/>
 <include filename="component.xml"/>
+<include filename="class.xml"/>
 
 <entity name="implementor">
     Defines different implementations that is based on the same underlying library
@@ -45,7 +46,7 @@
         Implementor name - underlying library name that is used for implementations.
     </attr>
 
-    <attr name="is_default" default="0">
+    <attr name="is_default" default="1">
         Defines whether implementor is default in the library.
 
         <restrict value="0">
@@ -69,31 +70,24 @@
         Implementation name.
     </attr>
 
-    <inherit entity="scope"/>
-    <inherit entity="visibility"/>
-    <inherit entity="uid"/>
-    <inherit entity="c_prefix"/>
+    <inherit entity="class">
+        <allow entity="method">
+            <attr name="visibility" default="private"/>
+            <attr name="declaration" default="private"/>
+            <attr name="definition" default="private"/>
+        </allow>
 
-    <allow entity="context" occurs="0/1"/>
+        <allow entity="enum">
+            <attr name="declaration" default="private"/>
+            <attr name="definition" default="private"/>
+        </allow>
+
+        <allow entity="constant">
+            <attr name="definition" default="private"/>
+        </allow>
+    </inherit>
+
     <allow entity="implemented interface" tag="interface" occurs="1+"/>
-    <allow entity="dependency" occurs="0+"/>
-    <allow entity="require" occurs="0+"/>
-
-    <allow entity="method" occurs="0+">
-        <attr name="visibility" default="private"/>
-        <attr name="declaration" default="private"/>
-        <attr name="defnition" default="private"/>
-    </allow>
-
-    <allow entity="enum">
-        <attr name="declaration" default="private"/>
-        <attr name="defnition" default="private"/>
-    </allow>
-
-    <allow entity="constant">
-        <attr name="value" required="1"/>
-        <attr name="defnition" default="private"/>
-    </allow>
 </entity>
 
 

@@ -1,0 +1,68 @@
+# ---------------------------------------------------------------------------
+function implementation_calculate_dependencies_fingerprint(project, implementation)
+    check_arguments(my, "project, implementation")
+
+    new dependencies
+        .project_prefix = my.project.prefix
+        .self_fingerprint = fingerprint(my.implementation)
+        .license_fingerprint = fingerprint(my.project->license)
+
+        my.fingerprint = fingerprint(dependencies)
+        delete dependencies
+        return my.fingerprint
+    endnew
+endfunction
+
+# ---------------------------------------------------------------------------
+function implementation_resolve(implementation, implementor, project)
+    check_arguments(my, "implementation, implementor, project", my)
+
+    if !my.implementor.is_default
+        my.implementation.name = cat(my.implementor.name, my.implementation.name)
+    endif
+
+    for my.implementation.interface
+        for interface.constant
+            move constant to my.implementation
+        endfor
+    endfor
+
+    class_resolve(my.implementation, my.project)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Entry point
+# ---------------------------------------------------------------------------
+function implementation_process(project, implementor, implementation)
+    check_arguments(my, "project, implementor, implementation", my)
+
+    echo_info("[L1] Class '$(my.implementation.name:)' - start processing", my)
+
+    my.implementation.forcegen ?= my.project.forcegen
+    my.cached_implementation = cache_load_or_invalidate(my.project, my.implementation) ?
+    my.implementation.fingerprint = implementation_calculate_dependencies_fingerprint(my.project, my.implementation)
+
+    if defined(my.cached_implementation)
+        echo_trace("[L1] Class '$(my.implementation.name:)' - cache loaded", my)
+    else
+        echo_trace("[L1] Class '$(my.implementation.name:)' - full update required", my)
+    endif
+
+    if !fingerprint_is_equal(my.implementation, my.cached_implementation)
+        implementation_setup_defaults(my.implementation)
+        implementation_validate(my.implementation)
+        implementation_resolve(my.implementation, my.implementor, my.project)
+        implementation_validate_resolved(my.implementation)
+    endif
+
+    cache_store(my.project, my.implementation)
+    echo_info("[L1] Class '$(my.implementation_link.name:)' - accomplished", my)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Multi-thread entry point
+# ---------------------------------------------------------------------------
+if main.multithread
+    thread.receive(sending_thread, _project, _implementor, _implementation)
+    implementation_process(_project, _implementor, _implementation)
+endif

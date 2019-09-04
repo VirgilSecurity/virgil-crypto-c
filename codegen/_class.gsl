@@ -89,14 +89,6 @@ function class_resolve_method(method, class)
     endfor
 endfunction
 
-# ---------------------------------------------------------------------------
-function class_resolve_constructor(constructor, class)
-    check_arguments(my, "constructor, class", my)
-
-    my.constructor.is_static = "1"
-    component_resolve_method(my.constructor, my.class)
-endfunction
-
 
 # ---------------------------------------------------------------------------
 function class_resolve(class, project)
@@ -109,10 +101,6 @@ function class_resolve(class, project)
     class_resolve_attr_uid(my.class, my.project)
 
     component_add_lineage(my.class, my.project)
-
-    for my.class.constructor
-        class_resolve_constructor(constructor, my.class)
-    endfor
 
     for my.class.method
         class_resolve_method(method, my.class)
@@ -152,8 +140,6 @@ function class_process(project, class_link)
         class_resolve(my.class, my.project)
         class_validate_resolved(my.class)
     endif
-
-    echo_trace("[L1] Class '$(my.class.name:)' - process children", my)
 
     cache_store(my.project, my.class)
     echo_info("[L1] Class '$(my.class_link.name:)' - accomplished", my)

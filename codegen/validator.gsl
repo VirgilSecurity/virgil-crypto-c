@@ -279,9 +279,21 @@ function lineage_setup_defaults(lineage, defaults)
     endif
 
     #    Setup defaults for allowed entities
+
+    #    Defaults can be redefined by parents.
+    my.ancestor_defaults = my.defaults->entity(name = "ancestor") ?
+    if !defined(my.ancestor_defaults)
+        my.ancestor_defaults = XML.new("defaults")
+        my.is_local_ancestor_defaults = "1"
+    endif
+
     for my.lineage.ancestor as _ancestor
-        ancestor_setup_defaults(_ancestor)
+        ancestor_setup_defaults(_ancestor, my.ancestor_defaults)
     endfor
+
+    if is_true(my.is_local_ancestor_defaults)
+        delete my.ancestor_defaults
+    endif
 
     #   Cleanup
     if is_true(my.is_local_defaults)
@@ -340,9 +352,21 @@ function uid_setup_defaults(uid, defaults)
     endif
 
     #    Setup defaults for allowed entities
+
+    #    Defaults can be redefined by parents.
+    my.lineage_defaults = my.defaults->entity(name = "lineage") ?
+    if !defined(my.lineage_defaults)
+        my.lineage_defaults = XML.new("defaults")
+        my.is_local_lineage_defaults = "1"
+    endif
+
     for my.uid.lineage as _lineage
-        lineage_setup_defaults(_lineage)
+        lineage_setup_defaults(_lineage, my.lineage_defaults)
     endfor
+
+    if is_true(my.is_local_lineage_defaults)
+        delete my.lineage_defaults
+    endif
 
     my.default_value = my.defaults.uid ?
     if defined(my.default_value) & !defined(my.uid.uid)
@@ -1072,9 +1096,21 @@ function require_setup_defaults(require, defaults)
     require_base_setup_defaults(my.require, my.defaults)
 
     #    Setup defaults for allowed entities
+
+    #    Defaults can be redefined by parents.
+    my.alternative_defaults = my.defaults->entity(name = "alternative") ?
+    if !defined(my.alternative_defaults)
+        my.alternative_defaults = XML.new("defaults")
+        my.is_local_alternative_defaults = "1"
+    endif
+
     for my.require.alternative as _alternative
-        alternative_setup_defaults(_alternative)
+        alternative_setup_defaults(_alternative, my.alternative_defaults)
     endfor
+
+    if is_true(my.is_local_alternative_defaults)
+        delete my.alternative_defaults
+    endif
 
     #   Cleanup
     if is_true(my.is_local_defaults)
@@ -1516,13 +1552,37 @@ function instance_setup_defaults(instance, defaults)
     landlord_setup_defaults(my.instance, my.defaults)
 
     #    Setup defaults for allowed entities
+
+    #    Defaults can be redefined by parents.
+    my.string_defaults = my.defaults->entity(name = "string") ?
+    if !defined(my.string_defaults)
+        my.string_defaults = XML.new("defaults")
+        my.is_local_string_defaults = "1"
+    endif
+
     for my.instance.string as _string
-        string_setup_defaults(_string)
+        string_setup_defaults(_string, my.string_defaults)
     endfor
 
+    if is_true(my.is_local_string_defaults)
+        delete my.string_defaults
+    endif
+
+
+    #    Defaults can be redefined by parents.
+    my.array_defaults = my.defaults->entity(name = "array") ?
+    if !defined(my.array_defaults)
+        my.array_defaults = XML.new("defaults")
+        my.is_local_array_defaults = "1"
+    endif
+
     for my.instance.array as _array
-        array_setup_defaults(_array)
+        array_setup_defaults(_array, my.array_defaults)
     endfor
+
+    if is_true(my.is_local_array_defaults)
+        delete my.array_defaults
+    endif
 
     my.default_value = my.defaults.type ?
     if defined(my.default_value) & !defined(my.instance.type)
@@ -2152,7 +2212,7 @@ function dependency_setup_defaults(dependency, defaults)
     endif
 
     #    Setup defaults for inherited attributes and entities
-     my.defaults.access = "readwrite"
+    my.defaults.access = "readwrite"
     instance_setup_defaults(my.dependency, my.defaults)
     landlord_setup_defaults(my.dependency, my.defaults)
 
@@ -2953,7 +3013,7 @@ function constant_setup_defaults(constant, defaults)
 
     #    Setup defaults for inherited attributes and entities
     scoped_component_setup_defaults(my.constant, my.defaults)
-     my.defaults.default = "public"
+    my.defaults.default = "public"
     definition_setup_defaults(my.constant, my.defaults)
 
     my.default_value = my.defaults.name ?
@@ -3122,7 +3182,7 @@ function property_setup_defaults(property, defaults)
     endif
 
     #    Setup defaults for inherited attributes and entities
-     my.defaults.access = "readwrite"
+    my.defaults.access = "readwrite"
     instance_setup_defaults(my.property, my.defaults)
     uid_setup_defaults(my.property, my.defaults)
 
@@ -3329,12 +3389,21 @@ function enum_setup_defaults(enum, defaults)
     definition_setup_defaults(my.enum, my.defaults)
 
     #    Setup defaults for allowed entities
-    new defaults
-        for my.enum.constant as _constant
-            constant_setup_defaults(_constant, defaults)
-        endfor
-        delete defaults
-    endnew
+
+    #    Defaults can be redefined by parents.
+    my.constant_defaults = my.defaults->entity(name = "constant") ?
+    if !defined(my.constant_defaults)
+        my.constant_defaults = XML.new("defaults")
+        my.is_local_constant_defaults = "1"
+    endif
+
+    for my.enum.constant as _constant
+        constant_setup_defaults(_constant, my.constant_defaults)
+    endfor
+
+    if is_true(my.is_local_constant_defaults)
+        delete my.constant_defaults
+    endif
 
     my.default_value = my.defaults.name ?
     if defined(my.default_value) & !defined(my.enum.name)
@@ -3588,13 +3657,37 @@ function callback_setup_defaults(callback, defaults)
     declaration_setup_defaults(my.callback, my.defaults)
 
     #    Setup defaults for allowed entities
+
+    #    Defaults can be redefined by parents.
+    my.return_defaults = my.defaults->entity(name = "return") ?
+    if !defined(my.return_defaults)
+        my.return_defaults = XML.new("defaults")
+        my.is_local_return_defaults = "1"
+    endif
+
     for my.callback.return as _return
-        return_setup_defaults(_return)
+        return_setup_defaults(_return, my.return_defaults)
     endfor
 
+    if is_true(my.is_local_return_defaults)
+        delete my.return_defaults
+    endif
+
+
+    #    Defaults can be redefined by parents.
+    my.argument_defaults = my.defaults->entity(name = "argument") ?
+    if !defined(my.argument_defaults)
+        my.argument_defaults = XML.new("defaults")
+        my.is_local_argument_defaults = "1"
+    endif
+
     for my.callback.argument as _argument
-        argument_setup_defaults(_argument)
+        argument_setup_defaults(_argument, my.argument_defaults)
     endfor
+
+    if is_true(my.is_local_argument_defaults)
+        delete my.argument_defaults
+    endif
 
     my.default_value = my.defaults.name ?
     if defined(my.default_value) & !defined(my.callback.name)
@@ -3769,9 +3862,21 @@ function value_setup_defaults(value, defaults)
     instance_setup_defaults(my.value, my.defaults)
 
     #    Setup defaults for allowed entities
+
+    #    Defaults can be redefined by parents.
+    my.cast_defaults = my.defaults->entity(name = "cast") ?
+    if !defined(my.cast_defaults)
+        my.cast_defaults = XML.new("defaults")
+        my.is_local_cast_defaults = "1"
+    endif
+
     for my.value.cast as _cast
-        cast_setup_defaults(_cast)
+        cast_setup_defaults(_cast, my.cast_defaults)
     endfor
+
+    if is_true(my.is_local_cast_defaults)
+        delete my.cast_defaults
+    endif
 
     my.default_value = my.defaults.value ?
     if defined(my.default_value) & !defined(my.value.value)
@@ -3881,9 +3986,21 @@ function variable_setup_defaults(variable, defaults)
     instance_setup_defaults(my.variable, my.defaults)
 
     #    Setup defaults for allowed entities
+
+    #    Defaults can be redefined by parents.
+    my.value_defaults = my.defaults->entity(name = "value") ?
+    if !defined(my.value_defaults)
+        my.value_defaults = XML.new("defaults")
+        my.is_local_value_defaults = "1"
+    endif
+
     for my.variable.value as _value
-        value_setup_defaults(_value)
+        value_setup_defaults(_value, my.value_defaults)
     endfor
+
+    if is_true(my.is_local_value_defaults)
+        delete my.value_defaults
+    endif
 
     my.default_value = my.defaults.name ?
     if defined(my.default_value) & !defined(my.variable.name)
@@ -4203,21 +4320,69 @@ function method_setup_defaults(method, defaults)
     definition_setup_defaults(my.method, my.defaults)
 
     #    Setup defaults for allowed entities
+
+    #    Defaults can be redefined by parents.
+    my.return_defaults = my.defaults->entity(name = "return") ?
+    if !defined(my.return_defaults)
+        my.return_defaults = XML.new("defaults")
+        my.is_local_return_defaults = "1"
+    endif
+
     for my.method.return as _return
-        return_setup_defaults(_return)
+        return_setup_defaults(_return, my.return_defaults)
     endfor
+
+    if is_true(my.is_local_return_defaults)
+        delete my.return_defaults
+    endif
+
+
+    #    Defaults can be redefined by parents.
+    my.argument_defaults = my.defaults->entity(name = "argument") ?
+    if !defined(my.argument_defaults)
+        my.argument_defaults = XML.new("defaults")
+        my.is_local_argument_defaults = "1"
+    endif
 
     for my.method.argument as _argument
-        argument_setup_defaults(_argument)
+        argument_setup_defaults(_argument, my.argument_defaults)
     endfor
+
+    if is_true(my.is_local_argument_defaults)
+        delete my.argument_defaults
+    endif
+
+
+    #    Defaults can be redefined by parents.
+    my.variable_defaults = my.defaults->entity(name = "variable") ?
+    if !defined(my.variable_defaults)
+        my.variable_defaults = XML.new("defaults")
+        my.is_local_variable_defaults = "1"
+    endif
 
     for my.method.variable as _variable
-        variable_setup_defaults(_variable)
+        variable_setup_defaults(_variable, my.variable_defaults)
     endfor
 
+    if is_true(my.is_local_variable_defaults)
+        delete my.variable_defaults
+    endif
+
+
+    #    Defaults can be redefined by parents.
+    my.code_defaults = my.defaults->entity(name = "code") ?
+    if !defined(my.code_defaults)
+        my.code_defaults = XML.new("defaults")
+        my.is_local_code_defaults = "1"
+    endif
+
     for my.method.code as _code
-        code_setup_defaults(_code)
+        code_setup_defaults(_code, my.code_defaults)
     endfor
+
+    if is_true(my.is_local_code_defaults)
+        delete my.code_defaults
+    endif
 
     my.default_value = my.defaults.name ?
     if defined(my.default_value) & !defined(my.method.name)
@@ -4525,13 +4690,25 @@ function macros_setup_defaults(macros, defaults)
     endif
 
     #    Setup defaults for inherited attributes and entities
-     my.defaults.default = "public"
+    my.defaults.default = "public"
     definition_setup_defaults(my.macros, my.defaults)
 
     #    Setup defaults for allowed entities
+
+    #    Defaults can be redefined by parents.
+    my.code_defaults = my.defaults->entity(name = "code") ?
+    if !defined(my.code_defaults)
+        my.code_defaults = XML.new("defaults")
+        my.is_local_code_defaults = "1"
+    endif
+
     for my.macros.code as _code
-        code_setup_defaults(_code)
+        code_setup_defaults(_code, my.code_defaults)
     endfor
+
+    if is_true(my.is_local_code_defaults)
+        delete my.code_defaults
+    endif
 
     my.default_value = my.defaults.name ?
     if defined(my.default_value) & !defined(my.macros.name)
@@ -4680,17 +4857,41 @@ function macroses_setup_defaults(macroses, defaults)
     endif
 
     #    Setup defaults for inherited attributes and entities
-     my.defaults.default = "public"
+    my.defaults.default = "public"
     definition_setup_defaults(my.macroses, my.defaults)
 
     #    Setup defaults for allowed entities
+
+    #    Defaults can be redefined by parents.
+    my.macros_defaults = my.defaults->entity(name = "macros") ?
+    if !defined(my.macros_defaults)
+        my.macros_defaults = XML.new("defaults")
+        my.is_local_macros_defaults = "1"
+    endif
+
     for my.macroses.macros as _macros
-        macros_setup_defaults(_macros)
+        macros_setup_defaults(_macros, my.macros_defaults)
     endfor
 
+    if is_true(my.is_local_macros_defaults)
+        delete my.macros_defaults
+    endif
+
+
+    #    Defaults can be redefined by parents.
+    my.code_defaults = my.defaults->entity(name = "code") ?
+    if !defined(my.code_defaults)
+        my.code_defaults = XML.new("defaults")
+        my.is_local_code_defaults = "1"
+    endif
+
     for my.macroses.code as _code
-        code_setup_defaults(_code)
+        code_setup_defaults(_code, my.code_defaults)
     endfor
+
+    if is_true(my.is_local_code_defaults)
+        delete my.code_defaults
+    endif
 
     #   Cleanup
     if is_true(my.is_local_defaults)
@@ -4788,9 +4989,21 @@ function struct_setup_defaults(struct, defaults)
     definition_setup_defaults(my.struct, my.defaults)
 
     #    Setup defaults for allowed entities
+
+    #    Defaults can be redefined by parents.
+    my.property_defaults = my.defaults->entity(name = "property") ?
+    if !defined(my.property_defaults)
+        my.property_defaults = XML.new("defaults")
+        my.is_local_property_defaults = "1"
+    endif
+
     for my.struct.property as _property
-        property_setup_defaults(_property)
+        property_setup_defaults(_property, my.property_defaults)
     endfor
+
+    if is_true(my.is_local_property_defaults)
+        delete my.property_defaults
+    endif
 
     my.default_value = my.defaults.name ?
     if defined(my.default_value) & !defined(my.struct.name)
@@ -4915,52 +5128,181 @@ function class_setup_defaults(class, defaults)
     visibility_setup_defaults(my.class, my.defaults)
 
     #    Setup defaults for allowed entities
+
+    #    Defaults can be redefined by parents.
+    my.require_defaults = my.defaults->entity(name = "require") ?
+    if !defined(my.require_defaults)
+        my.require_defaults = XML.new("defaults")
+        my.is_local_require_defaults = "1"
+    endif
+
     for my.class.require as _require
-        require_setup_defaults(_require)
+        require_setup_defaults(_require, my.require_defaults)
     endfor
+
+    if is_true(my.is_local_require_defaults)
+        delete my.require_defaults
+    endif
+
+
+    #    Defaults can be redefined by parents.
+    my.dependency_defaults = my.defaults->entity(name = "dependency") ?
+    if !defined(my.dependency_defaults)
+        my.dependency_defaults = XML.new("defaults")
+        my.is_local_dependency_defaults = "1"
+    endif
 
     for my.class.dependency as _dependency
-        dependency_setup_defaults(_dependency)
+        dependency_setup_defaults(_dependency, my.dependency_defaults)
     endfor
 
-    new defaults
-        for my.class.constant as _constant
-            constant_setup_defaults(_constant, defaults)
-        endfor
-        delete defaults
-    endnew
+    if is_true(my.is_local_dependency_defaults)
+        delete my.dependency_defaults
+    endif
+
+
+    #    Defaults can be redefined by parents.
+    my.constant_defaults = my.defaults->entity(name = "constant") ?
+    if !defined(my.constant_defaults)
+        my.constant_defaults = XML.new("defaults")
+        my.is_local_constant_defaults = "1"
+    endif
+
+    for my.class.constant as _constant
+        constant_setup_defaults(_constant, my.constant_defaults)
+    endfor
+
+    if is_true(my.is_local_constant_defaults)
+        delete my.constant_defaults
+    endif
+
+
+    #    Defaults can be redefined by parents.
+    my.property_defaults = my.defaults->entity(name = "property") ?
+    if !defined(my.property_defaults)
+        my.property_defaults = XML.new("defaults")
+        my.is_local_property_defaults = "1"
+    endif
 
     for my.class.property as _property
-        property_setup_defaults(_property)
+        property_setup_defaults(_property, my.property_defaults)
     endfor
+
+    if is_true(my.is_local_property_defaults)
+        delete my.property_defaults
+    endif
+
+
+    #    Defaults can be redefined by parents.
+    my.enum_defaults = my.defaults->entity(name = "enum") ?
+    if !defined(my.enum_defaults)
+        my.enum_defaults = XML.new("defaults")
+        my.is_local_enum_defaults = "1"
+    endif
 
     for my.class.enum as _enum
-        enum_setup_defaults(_enum)
+        enum_setup_defaults(_enum, my.enum_defaults)
     endfor
+
+    if is_true(my.is_local_enum_defaults)
+        delete my.enum_defaults
+    endif
+
+
+    #    Defaults can be redefined by parents.
+    my.callback_defaults = my.defaults->entity(name = "callback") ?
+    if !defined(my.callback_defaults)
+        my.callback_defaults = XML.new("defaults")
+        my.is_local_callback_defaults = "1"
+    endif
 
     for my.class.callback as _callback
-        callback_setup_defaults(_callback)
+        callback_setup_defaults(_callback, my.callback_defaults)
     endfor
+
+    if is_true(my.is_local_callback_defaults)
+        delete my.callback_defaults
+    endif
+
+
+    #    Defaults can be redefined by parents.
+    my.method_defaults = my.defaults->entity(name = "method") ?
+    if !defined(my.method_defaults)
+        my.method_defaults = XML.new("defaults")
+        my.is_local_method_defaults = "1"
+    endif
 
     for my.class.method as _method
-        method_setup_defaults(_method)
+        method_setup_defaults(_method, my.method_defaults)
     endfor
+
+    if is_true(my.is_local_method_defaults)
+        delete my.method_defaults
+    endif
+
+
+    #    Defaults can be redefined by parents.
+    my.macros_defaults = my.defaults->entity(name = "macros") ?
+    if !defined(my.macros_defaults)
+        my.macros_defaults = XML.new("defaults")
+        my.is_local_macros_defaults = "1"
+    endif
 
     for my.class.macros as _macros
-        macros_setup_defaults(_macros)
+        macros_setup_defaults(_macros, my.macros_defaults)
     endfor
+
+    if is_true(my.is_local_macros_defaults)
+        delete my.macros_defaults
+    endif
+
+
+    #    Defaults can be redefined by parents.
+    my.macroses_defaults = my.defaults->entity(name = "macroses") ?
+    if !defined(my.macroses_defaults)
+        my.macroses_defaults = XML.new("defaults")
+        my.is_local_macroses_defaults = "1"
+    endif
 
     for my.class.macroses as _macroses
-        macroses_setup_defaults(_macroses)
+        macroses_setup_defaults(_macroses, my.macroses_defaults)
     endfor
+
+    if is_true(my.is_local_macroses_defaults)
+        delete my.macroses_defaults
+    endif
+
+
+    #    Defaults can be redefined by parents.
+    my.struct_defaults = my.defaults->entity(name = "struct") ?
+    if !defined(my.struct_defaults)
+        my.struct_defaults = XML.new("defaults")
+        my.is_local_struct_defaults = "1"
+    endif
 
     for my.class.struct as _struct
-        struct_setup_defaults(_struct)
+        struct_setup_defaults(_struct, my.struct_defaults)
     endfor
 
+    if is_true(my.is_local_struct_defaults)
+        delete my.struct_defaults
+    endif
+
+
+    #    Defaults can be redefined by parents.
+    my.variable_defaults = my.defaults->entity(name = "variable") ?
+    if !defined(my.variable_defaults)
+        my.variable_defaults = XML.new("defaults")
+        my.is_local_variable_defaults = "1"
+    endif
+
     for my.class.variable as _variable
-        variable_setup_defaults(_variable)
+        variable_setup_defaults(_variable, my.variable_defaults)
     endfor
+
+    if is_true(my.is_local_variable_defaults)
+        delete my.variable_defaults
+    endif
 
     my.default_value = my.defaults.name ?
     if defined(my.default_value) & !defined(my.class.name)
@@ -5344,6 +5686,59 @@ function class_validate_resolved(class, restrictions)
 endfunction
 
 # ---------------------------------------------------------------------------
+function constructor_setup_defaults(constructor, defaults)
+    my.constructor_name = defined(my.constructor.name) ?? " name=\"$(my.constructor.name)\"" ? ""
+    echo_trace("[L1] Setup defaults for entity: <$(name(my.constructor))$(my.constructor_name)/>", my)
+
+    #    Defaults should be also inherited.
+    if !defined(my.defaults)
+        my.defaults = XML.new("defaults")
+        my.is_local_defaults = "1"
+    endif
+
+    #    Setup defaults for inherited attributes and entities
+    my.defaults.is_static = "1"
+    class_setup_defaults(my.constructor, my.defaults)
+
+    #   Cleanup
+    if is_true(my.is_local_defaults)
+        delete my.defaults
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
+function constructor_validate(constructor, restrictions)
+    my.constructor_name = defined(my.constructor.name) ?? " name=\"$(my.constructor.name)\"" ? ""
+    echo_trace("[L1] Validate entity: <$(name(my.constructor))$(my.constructor_name)/>", my)
+
+    #    Check inherited attributes and entities
+    new restrictions
+        .attr_is_static_apply = "0"
+        .attr_is_static_required = "0"
+        class_validate(my.constructor, restrictions)
+    endnew
+
+    my.restrictions ?= XML.new("restrictions")
+
+    delete my.restrictions
+endfunction
+
+# ---------------------------------------------------------------------------
+function constructor_validate_resolved(constructor, restrictions)
+    my.constructor_name = defined(my.constructor.name) ?? " name=\"$(my.constructor.name)\"" ? ""
+    echo_trace("[L1] Validate entity: <$(name(my.constructor))$(my.constructor_name)/>", my)
+
+    #    Check inherited attributes and entities
+    new restrictions
+        class_validate_resolved(my.constructor, restrictions)
+    endnew
+
+    my.restrictions ?= XML.new("restrictions")
+
+   delete my.restrictions
+endfunction
+
+# ---------------------------------------------------------------------------
 function inherit_setup_defaults(inherit, defaults)
     my.inherit_name = defined(my.inherit.name) ?? " name=\"$(my.inherit.name)\"" ? ""
     echo_trace("[L1] Setup defaults for entity: <$(name(my.inherit))$(my.inherit_name)/>", my)
@@ -5428,20 +5823,53 @@ function interface_setup_defaults(interface, defaults)
     c_prefix_setup_defaults(my.interface, my.defaults)
 
     #    Setup defaults for allowed entities
-    new defaults
-        for my.interface.constant as _constant
-            constant_setup_defaults(_constant, defaults)
-        endfor
-        delete defaults
-    endnew
+
+    #    Defaults can be redefined by parents.
+    my.constant_defaults = my.defaults->entity(name = "constant") ?
+    if !defined(my.constant_defaults)
+        my.constant_defaults = XML.new("defaults")
+        my.is_local_constant_defaults = "1"
+    endif
+
+    for my.interface.constant as _constant
+        constant_setup_defaults(_constant, my.constant_defaults)
+    endfor
+
+    if is_true(my.is_local_constant_defaults)
+        delete my.constant_defaults
+    endif
+
+
+    #    Defaults can be redefined by parents.
+    my.method_defaults = my.defaults->entity(name = "method") ?
+    if !defined(my.method_defaults)
+        my.method_defaults = XML.new("defaults")
+        my.is_local_method_defaults = "1"
+    endif
 
     for my.interface.method as _method
-        method_setup_defaults(_method)
+        method_setup_defaults(_method, my.method_defaults)
     endfor
 
+    if is_true(my.is_local_method_defaults)
+        delete my.method_defaults
+    endif
+
+
+    #    Defaults can be redefined by parents.
+    my.inherit_defaults = my.defaults->entity(name = "inherit") ?
+    if !defined(my.inherit_defaults)
+        my.inherit_defaults = XML.new("defaults")
+        my.is_local_inherit_defaults = "1"
+    endif
+
     for my.interface.inherit as _inherit
-        inherit_setup_defaults(_inherit)
+        inherit_setup_defaults(_inherit, my.inherit_defaults)
     endfor
+
+    if is_true(my.is_local_inherit_defaults)
+        delete my.inherit_defaults
+    endif
 
     #   Cleanup
     if is_true(my.is_local_defaults)
@@ -5549,80 +5977,6 @@ function interface_validate_resolved(interface, restrictions)
 endfunction
 
 # ---------------------------------------------------------------------------
-function context_setup_defaults(context, defaults)
-    my.context_name = defined(my.context.name) ?? " name=\"$(my.context.name)\"" ? ""
-    echo_trace("[L1] Setup defaults for entity: <$(name(my.context))$(my.context_name)/>", my)
-
-    #    Defaults should be also inherited.
-    if !defined(my.defaults)
-        my.defaults = XML.new("defaults")
-        my.is_local_defaults = "1"
-    endif
-
-    #    Setup defaults for allowed entities
-    for my.context.require as _require
-        require_setup_defaults(_require)
-    endfor
-
-    for my.context.property as _property
-        property_setup_defaults(_property)
-    endfor
-
-    #   Cleanup
-    if is_true(my.is_local_defaults)
-        delete my.defaults
-    endif
-endfunction
-
-# ---------------------------------------------------------------------------
-function context_validate(context, restrictions)
-    my.context_name = defined(my.context.name) ?? " name=\"$(my.context.name)\"" ? ""
-    echo_trace("[L1] Validate entity: <$(name(my.context))$(my.context_name)/>", my)
-
-    #    Check allowed entities
-    my.require_count = count(my.context.require)
-    for my.context.require as _require
-        new restrictions
-            require_validate(_require, restrictions)
-        endnew
-    endfor
-
-    my.property_count = count(my.context.property)
-    for my.context.property as _property
-        new restrictions
-            property_validate(_property, restrictions)
-        endnew
-    endfor
-
-    my.restrictions ?= XML.new("restrictions")
-
-    delete my.restrictions
-endfunction
-
-# ---------------------------------------------------------------------------
-function context_validate_resolved(context, restrictions)
-    my.context_name = defined(my.context.name) ?? " name=\"$(my.context.name)\"" ? ""
-    echo_trace("[L1] Validate entity: <$(name(my.context))$(my.context_name)/>", my)
-
-    #    Check allowed entities
-    for my.context.require as _require
-        new restrictions
-            require_validate_resolved(_require, restrictions)
-        endnew
-    endfor
-
-    for my.context.property as _property
-        new restrictions
-            property_validate_resolved(_property, restrictions)
-        endnew
-    endfor
-
-    my.restrictions ?= XML.new("restrictions")
-
-   delete my.restrictions
-endfunction
-
-# ---------------------------------------------------------------------------
 function implemented_interface_setup_defaults(interface, defaults)
     my.interface_name = defined(my.interface.name) ?? " name=\"$(my.interface.name)\"" ? ""
     echo_trace("[L1] Setup defaults for entity: <$(name(my.interface))$(my.interface_name)/>", my)
@@ -5634,9 +5988,21 @@ function implemented_interface_setup_defaults(interface, defaults)
     endif
 
     #    Setup defaults for allowed entities
+
+    #    Defaults can be redefined by parents.
+    my.constant_defaults = my.defaults->entity(name = "constant") ?
+    if !defined(my.constant_defaults)
+        my.constant_defaults = XML.new("defaults")
+        my.is_local_constant_defaults = "1"
+    endif
+
     for my.interface.constant as _constant
-        constant_setup_defaults(_constant)
+        constant_setup_defaults(_constant, my.constant_defaults)
     endfor
+
+    if is_true(my.is_local_constant_defaults)
+        delete my.constant_defaults
+    endif
 
     my.default_value = my.defaults.name ?
     if defined(my.default_value) & !defined(my.interface.name)
@@ -5720,55 +6086,58 @@ function implementation_setup_defaults(implementation, defaults)
         my.is_local_defaults = "1"
     endif
 
+    my.method_defaults = my.defaults->entity(name = "method") ?
+    if !defined(my.method_defaults)
+        new entity to my.defaults
+            .name = "method"
+            my.method_defaults = entity
+        endnew
+     endif
+
+    my.method_defaults.visibility = "private"
+    my.method_defaults.declaration = "private"
+    my.method_defaults.definition = "private"
+
+    my.enum_defaults = my.defaults->entity(name = "enum") ?
+    if !defined(my.enum_defaults)
+        new entity to my.defaults
+            .name = "enum"
+            my.enum_defaults = entity
+        endnew
+     endif
+
+    my.enum_defaults.declaration = "private"
+    my.enum_defaults.definition = "private"
+
+    my.constant_defaults = my.defaults->entity(name = "constant") ?
+    if !defined(my.constant_defaults)
+        new entity to my.defaults
+            .name = "constant"
+            my.constant_defaults = entity
+        endnew
+     endif
+
+    my.constant_defaults.definition = "private"
+
     #    Setup defaults for inherited attributes and entities
-    scope_setup_defaults(my.implementation, my.defaults)
-    visibility_setup_defaults(my.implementation, my.defaults)
-    uid_setup_defaults(my.implementation, my.defaults)
-    c_prefix_setup_defaults(my.implementation, my.defaults)
+    class_setup_defaults(my.implementation, my.defaults)
 
     #    Setup defaults for allowed entities
-    for my.implementation.context as _context
-        context_setup_defaults(_context)
-    endfor
+
+    #    Defaults can be redefined by parents.
+    my.interface_defaults = my.defaults->entity(name = "interface") ?
+    if !defined(my.interface_defaults)
+        my.interface_defaults = XML.new("defaults")
+        my.is_local_interface_defaults = "1"
+    endif
 
     for my.implementation.interface as _interface
-        implemented_interface_setup_defaults(_interface)
+        implemented_interface_setup_defaults(_interface, my.interface_defaults)
     endfor
 
-    for my.implementation.dependency as _dependency
-        dependency_setup_defaults(_dependency)
-    endfor
-
-    for my.implementation.require as _require
-        require_setup_defaults(_require)
-    endfor
-
-    new defaults
-        .visibility = "private"
-        .declaration = "private"
-        .defnition = "private"
-        for my.implementation.method as _method
-            method_setup_defaults(_method, defaults)
-        endfor
-        delete defaults
-    endnew
-
-    new defaults
-        .declaration = "private"
-        .defnition = "private"
-        for my.implementation.enum as _enum
-            enum_setup_defaults(_enum, defaults)
-        endfor
-        delete defaults
-    endnew
-
-    new defaults
-        .defnition = "private"
-        for my.implementation.constant as _constant
-            constant_setup_defaults(_constant, defaults)
-        endfor
-        delete defaults
-    endnew
+    if is_true(my.is_local_interface_defaults)
+        delete my.interface_defaults
+    endif
 
     my.default_value = my.defaults.name ?
     if defined(my.default_value) & !defined(my.implementation.name)
@@ -5789,35 +6158,10 @@ function implementation_validate(implementation, restrictions)
 
     #    Check inherited attributes and entities
     new restrictions
-        scope_validate(my.implementation, restrictions)
-    endnew
-
-    new restrictions
-        visibility_validate(my.implementation, restrictions)
-    endnew
-
-    new restrictions
-        uid_validate(my.implementation, restrictions)
-    endnew
-
-    new restrictions
-        c_prefix_validate(my.implementation, restrictions)
+        class_validate(my.implementation, restrictions)
     endnew
 
     #    Check allowed entities
-    my.context_count = count(my.implementation.context)
-    if my.context_count > 1
-        my.dump_filename = entity_dump_file(my.implementation)
-        echo_fatal("Expected zero one entity: context.\n" + \
-                   "But found $(my.context_count).\n" + \
-                   "See dump file: $(my.dump_filename:)", my)
-    endif
-    for my.implementation.context as _context
-        new restrictions
-            context_validate(_context, restrictions)
-        endnew
-    endfor
-
     my.interface_count = count(my.implementation.interface)
     if my.interface_count < 1
         my.dump_filename = entity_dump_file(my.implementation)
@@ -5828,55 +6172,6 @@ function implementation_validate(implementation, restrictions)
     for my.implementation.interface as _interface
         new restrictions
             implemented_interface_validate(_interface, restrictions)
-        endnew
-    endfor
-
-    my.dependency_count = count(my.implementation.dependency)
-    for my.implementation.dependency as _dependency
-        new restrictions
-            dependency_validate(_dependency, restrictions)
-        endnew
-    endfor
-
-    my.require_count = count(my.implementation.require)
-    for my.implementation.require as _require
-        new restrictions
-            require_validate(_require, restrictions)
-        endnew
-    endfor
-
-    my.method_count = count(my.implementation.method)
-    for my.implementation.method as _method
-        new restrictions
-            .attr_visibility_apply = "1"
-            .attr_visibility_required = "0"
-            .attr_declaration_apply = "1"
-            .attr_declaration_required = "0"
-            .attr_defnition_apply = "1"
-            .attr_defnition_required = "0"
-            method_validate(_method, restrictions)
-        endnew
-    endfor
-
-    my.enum_count = count(my.implementation.enum)
-    for my.implementation.enum as _enum
-        new restrictions
-            .attr_declaration_apply = "1"
-            .attr_declaration_required = "0"
-            .attr_defnition_apply = "1"
-            .attr_defnition_required = "0"
-            enum_validate(_enum, restrictions)
-        endnew
-    endfor
-
-    my.constant_count = count(my.implementation.constant)
-    for my.implementation.constant as _constant
-        new restrictions
-            .attr_value_apply = "1"
-            .attr_value_required = "1"
-            .attr_defnition_apply = "1"
-            .attr_defnition_required = "0"
-            constant_validate(_constant, restrictions)
         endnew
     endfor
 
@@ -5904,75 +6199,13 @@ function implementation_validate_resolved(implementation, restrictions)
 
     #    Check inherited attributes and entities
     new restrictions
-        scope_validate_resolved(my.implementation, restrictions)
-    endnew
-
-    new restrictions
-        visibility_validate_resolved(my.implementation, restrictions)
-    endnew
-
-    new restrictions
-        uid_validate_resolved(my.implementation, restrictions)
-    endnew
-
-    new restrictions
-        c_prefix_validate_resolved(my.implementation, restrictions)
+        class_validate_resolved(my.implementation, restrictions)
     endnew
 
     #    Check allowed entities
-    for my.implementation.context as _context
-        new restrictions
-            context_validate_resolved(_context, restrictions)
-        endnew
-    endfor
-
     for my.implementation.interface as _interface
         new restrictions
             implemented_interface_validate_resolved(_interface, restrictions)
-        endnew
-    endfor
-
-    for my.implementation.dependency as _dependency
-        new restrictions
-            dependency_validate_resolved(_dependency, restrictions)
-        endnew
-    endfor
-
-    for my.implementation.require as _require
-        new restrictions
-            require_validate_resolved(_require, restrictions)
-        endnew
-    endfor
-
-    for my.implementation.method as _method
-        new restrictions
-            .attr_visibility_apply = "1"
-            .attr_visibility_required = "0"
-            .attr_declaration_apply = "1"
-            .attr_declaration_required = "0"
-            .attr_defnition_apply = "1"
-            .attr_defnition_required = "0"
-            method_validate_resolved(_method, restrictions)
-        endnew
-    endfor
-
-    for my.implementation.enum as _enum
-        new restrictions
-            .attr_declaration_apply = "1"
-            .attr_declaration_required = "0"
-            .attr_defnition_apply = "1"
-            .attr_defnition_required = "0"
-            enum_validate_resolved(_enum, restrictions)
-        endnew
-    endfor
-
-    for my.implementation.constant as _constant
-        new restrictions
-            .attr_value_apply = "1"
-            .attr_value_required = "1"
-            .attr_defnition_apply = "1"
-            .attr_defnition_required = "0"
-            constant_validate_resolved(_constant, restrictions)
         endnew
     endfor
 
@@ -6005,9 +6238,21 @@ function implementor_setup_defaults(implementor, defaults)
     endif
 
     #    Setup defaults for allowed entities
+
+    #    Defaults can be redefined by parents.
+    my.implementation_defaults = my.defaults->entity(name = "implementation") ?
+    if !defined(my.implementation_defaults)
+        my.implementation_defaults = XML.new("defaults")
+        my.is_local_implementation_defaults = "1"
+    endif
+
     for my.implementor.implementation as _implementation
-        implementation_setup_defaults(_implementation)
+        implementation_setup_defaults(_implementation, my.implementation_defaults)
     endfor
+
+    if is_true(my.is_local_implementation_defaults)
+        delete my.implementation_defaults
+    endif
 
     my.default_value = my.defaults.name ?
     if defined(my.default_value) & !defined(my.implementor.name)
@@ -6015,7 +6260,7 @@ function implementor_setup_defaults(implementor, defaults)
         my.implementor.name = my.default_value
     endif
 
-    my.default_value = my.defaults.is_default ? "0"
+    my.default_value = my.defaults.is_default ? "1"
     if defined(my.default_value) & !defined(my.implementor.is_default)
         echo_trace("       is_default=\"$(my.default_value:)\"", my)
         my.implementor.is_default = my.default_value
@@ -6133,6 +6378,104 @@ function implementor_validate_resolved(implementor, restrictions)
 endfunction
 
 # ---------------------------------------------------------------------------
+function context_setup_defaults(context, defaults)
+    my.context_name = defined(my.context.name) ?? " name=\"$(my.context.name)\"" ? ""
+    echo_trace("[L1] Setup defaults for entity: <$(name(my.context))$(my.context_name)/>", my)
+
+    #    Defaults should be also inherited.
+    if !defined(my.defaults)
+        my.defaults = XML.new("defaults")
+        my.is_local_defaults = "1"
+    endif
+
+    #    Setup defaults for allowed entities
+
+    #    Defaults can be redefined by parents.
+    my.require_defaults = my.defaults->entity(name = "require") ?
+    if !defined(my.require_defaults)
+        my.require_defaults = XML.new("defaults")
+        my.is_local_require_defaults = "1"
+    endif
+
+    for my.context.require as _require
+        require_setup_defaults(_require, my.require_defaults)
+    endfor
+
+    if is_true(my.is_local_require_defaults)
+        delete my.require_defaults
+    endif
+
+
+    #    Defaults can be redefined by parents.
+    my.property_defaults = my.defaults->entity(name = "property") ?
+    if !defined(my.property_defaults)
+        my.property_defaults = XML.new("defaults")
+        my.is_local_property_defaults = "1"
+    endif
+
+    for my.context.property as _property
+        property_setup_defaults(_property, my.property_defaults)
+    endfor
+
+    if is_true(my.is_local_property_defaults)
+        delete my.property_defaults
+    endif
+
+    #   Cleanup
+    if is_true(my.is_local_defaults)
+        delete my.defaults
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
+function context_validate(context, restrictions)
+    my.context_name = defined(my.context.name) ?? " name=\"$(my.context.name)\"" ? ""
+    echo_trace("[L1] Validate entity: <$(name(my.context))$(my.context_name)/>", my)
+
+    #    Check allowed entities
+    my.require_count = count(my.context.require)
+    for my.context.require as _require
+        new restrictions
+            require_validate(_require, restrictions)
+        endnew
+    endfor
+
+    my.property_count = count(my.context.property)
+    for my.context.property as _property
+        new restrictions
+            property_validate(_property, restrictions)
+        endnew
+    endfor
+
+    my.restrictions ?= XML.new("restrictions")
+
+    delete my.restrictions
+endfunction
+
+# ---------------------------------------------------------------------------
+function context_validate_resolved(context, restrictions)
+    my.context_name = defined(my.context.name) ?? " name=\"$(my.context.name)\"" ? ""
+    echo_trace("[L1] Validate entity: <$(name(my.context))$(my.context_name)/>", my)
+
+    #    Check allowed entities
+    for my.context.require as _require
+        new restrictions
+            require_validate_resolved(_require, restrictions)
+        endnew
+    endfor
+
+    for my.context.property as _property
+        new restrictions
+            property_validate_resolved(_property, restrictions)
+        endnew
+    endfor
+
+    my.restrictions ?= XML.new("restrictions")
+
+   delete my.restrictions
+endfunction
+
+# ---------------------------------------------------------------------------
 function module_setup_defaults(module, defaults)
     my.module_name = defined(my.module.name) ?? " name=\"$(my.module.name)\"" ? ""
     echo_trace("[L1] Setup defaults for entity: <$(name(my.module))$(my.module_name)/>", my)
@@ -6214,9 +6557,21 @@ function feature_setup_defaults(feature, defaults)
     landlord_setup_defaults(my.feature, my.defaults)
 
     #    Setup defaults for allowed entities
+
+    #    Defaults can be redefined by parents.
+    my.require_defaults = my.defaults->entity(name = "require") ?
+    if !defined(my.require_defaults)
+        my.require_defaults = XML.new("defaults")
+        my.is_local_require_defaults = "1"
+    endif
+
     for my.feature.require as _require
-        require_setup_defaults(_require)
+        require_setup_defaults(_require, my.require_defaults)
     endfor
+
+    if is_true(my.is_local_require_defaults)
+        delete my.require_defaults
+    endif
 
     my.default_value = my.defaults.name ?
     if defined(my.default_value) & !defined(my.feature.name)
@@ -6387,21 +6742,69 @@ function project_setup_defaults(project, defaults)
     endif
 
     #    Setup defaults for allowed entities
+
+    #    Defaults can be redefined by parents.
+    my.interface_defaults = my.defaults->entity(name = "interface") ?
+    if !defined(my.interface_defaults)
+        my.interface_defaults = XML.new("defaults")
+        my.is_local_interface_defaults = "1"
+    endif
+
     for my.project.interface as _interface
-        interface_setup_defaults(_interface)
+        interface_setup_defaults(_interface, my.interface_defaults)
     endfor
+
+    if is_true(my.is_local_interface_defaults)
+        delete my.interface_defaults
+    endif
+
+
+    #    Defaults can be redefined by parents.
+    my.implementor_defaults = my.defaults->entity(name = "implementor") ?
+    if !defined(my.implementor_defaults)
+        my.implementor_defaults = XML.new("defaults")
+        my.is_local_implementor_defaults = "1"
+    endif
 
     for my.project.implementor as _implementor
-        implementor_setup_defaults(_implementor)
+        implementor_setup_defaults(_implementor, my.implementor_defaults)
     endfor
+
+    if is_true(my.is_local_implementor_defaults)
+        delete my.implementor_defaults
+    endif
+
+
+    #    Defaults can be redefined by parents.
+    my.module_defaults = my.defaults->entity(name = "module") ?
+    if !defined(my.module_defaults)
+        my.module_defaults = XML.new("defaults")
+        my.is_local_module_defaults = "1"
+    endif
 
     for my.project.module as _module
-        module_setup_defaults(_module)
+        module_setup_defaults(_module, my.module_defaults)
     endfor
 
+    if is_true(my.is_local_module_defaults)
+        delete my.module_defaults
+    endif
+
+
+    #    Defaults can be redefined by parents.
+    my.feature_defaults = my.defaults->entity(name = "feature") ?
+    if !defined(my.feature_defaults)
+        my.feature_defaults = XML.new("defaults")
+        my.is_local_feature_defaults = "1"
+    endif
+
     for my.project.feature as _feature
-        feature_setup_defaults(_feature)
+        feature_setup_defaults(_feature, my.feature_defaults)
     endfor
+
+    if is_true(my.is_local_feature_defaults)
+        delete my.feature_defaults
+    endif
 
     my.default_value = my.defaults.name ?
     if defined(my.default_value) & !defined(my.project.name)
@@ -6992,9 +7395,21 @@ function features_setup_defaults(features, defaults)
     landlord_setup_defaults(my.features, my.defaults)
 
     #    Setup defaults for allowed entities
+
+    #    Defaults can be redefined by parents.
+    my.feature_defaults = my.defaults->entity(name = "feature") ?
+    if !defined(my.feature_defaults)
+        my.feature_defaults = XML.new("defaults")
+        my.is_local_feature_defaults = "1"
+    endif
+
     for my.features.feature as _feature
-        feature_setup_defaults(_feature)
+        feature_setup_defaults(_feature, my.feature_defaults)
     endfor
+
+    if is_true(my.is_local_feature_defaults)
+        delete my.feature_defaults
+    endif
 
     my.default_value = my.defaults.prefix ?
     if defined(my.default_value) & !defined(my.features.prefix)
@@ -7119,9 +7534,21 @@ function library_setup_defaults(library, defaults)
     endif
 
     #    Setup defaults for allowed entities
+
+    #    Defaults can be redefined by parents.
+    my.feature_defaults = my.defaults->entity(name = "feature") ?
+    if !defined(my.feature_defaults)
+        my.feature_defaults = XML.new("defaults")
+        my.is_local_feature_defaults = "1"
+    endif
+
     for my.library.feature as _feature
-        feature_setup_defaults(_feature)
+        feature_setup_defaults(_feature, my.feature_defaults)
     endfor
+
+    if is_true(my.is_local_feature_defaults)
+        delete my.feature_defaults
+    endif
 
     my.default_value = my.defaults.name ?
     if defined(my.default_value) & !defined(my.library.name)
@@ -7270,41 +7697,149 @@ function module_setup_defaults(module, defaults)
     component_setup_defaults(my.module, my.defaults)
 
     #    Setup defaults for allowed entities
+
+    #    Defaults can be redefined by parents.
+    my.require_defaults = my.defaults->entity(name = "require") ?
+    if !defined(my.require_defaults)
+        my.require_defaults = XML.new("defaults")
+        my.is_local_require_defaults = "1"
+    endif
+
     for my.module.require as _require
-        require_setup_defaults(_require)
+        require_setup_defaults(_require, my.require_defaults)
     endfor
+
+    if is_true(my.is_local_require_defaults)
+        delete my.require_defaults
+    endif
+
+
+    #    Defaults can be redefined by parents.
+    my.constant_defaults = my.defaults->entity(name = "constant") ?
+    if !defined(my.constant_defaults)
+        my.constant_defaults = XML.new("defaults")
+        my.is_local_constant_defaults = "1"
+    endif
 
     for my.module.constant as _constant
-        constant_setup_defaults(_constant)
+        constant_setup_defaults(_constant, my.constant_defaults)
     endfor
+
+    if is_true(my.is_local_constant_defaults)
+        delete my.constant_defaults
+    endif
+
+
+    #    Defaults can be redefined by parents.
+    my.enum_defaults = my.defaults->entity(name = "enum") ?
+    if !defined(my.enum_defaults)
+        my.enum_defaults = XML.new("defaults")
+        my.is_local_enum_defaults = "1"
+    endif
 
     for my.module.enum as _enum
-        enum_setup_defaults(_enum)
+        enum_setup_defaults(_enum, my.enum_defaults)
     endfor
+
+    if is_true(my.is_local_enum_defaults)
+        delete my.enum_defaults
+    endif
+
+
+    #    Defaults can be redefined by parents.
+    my.variable_defaults = my.defaults->entity(name = "variable") ?
+    if !defined(my.variable_defaults)
+        my.variable_defaults = XML.new("defaults")
+        my.is_local_variable_defaults = "1"
+    endif
 
     for my.module.variable as _variable
-        variable_setup_defaults(_variable)
+        variable_setup_defaults(_variable, my.variable_defaults)
     endfor
+
+    if is_true(my.is_local_variable_defaults)
+        delete my.variable_defaults
+    endif
+
+
+    #    Defaults can be redefined by parents.
+    my.struct_defaults = my.defaults->entity(name = "struct") ?
+    if !defined(my.struct_defaults)
+        my.struct_defaults = XML.new("defaults")
+        my.is_local_struct_defaults = "1"
+    endif
 
     for my.module.struct as _struct
-        struct_setup_defaults(_struct)
+        struct_setup_defaults(_struct, my.struct_defaults)
     endfor
+
+    if is_true(my.is_local_struct_defaults)
+        delete my.struct_defaults
+    endif
+
+
+    #    Defaults can be redefined by parents.
+    my.callback_defaults = my.defaults->entity(name = "callback") ?
+    if !defined(my.callback_defaults)
+        my.callback_defaults = XML.new("defaults")
+        my.is_local_callback_defaults = "1"
+    endif
 
     for my.module.callback as _callback
-        callback_setup_defaults(_callback)
+        callback_setup_defaults(_callback, my.callback_defaults)
     endfor
+
+    if is_true(my.is_local_callback_defaults)
+        delete my.callback_defaults
+    endif
+
+
+    #    Defaults can be redefined by parents.
+    my.method_defaults = my.defaults->entity(name = "method") ?
+    if !defined(my.method_defaults)
+        my.method_defaults = XML.new("defaults")
+        my.is_local_method_defaults = "1"
+    endif
 
     for my.module.method as _method
-        method_setup_defaults(_method)
+        method_setup_defaults(_method, my.method_defaults)
     endfor
+
+    if is_true(my.is_local_method_defaults)
+        delete my.method_defaults
+    endif
+
+
+    #    Defaults can be redefined by parents.
+    my.macros_defaults = my.defaults->entity(name = "macros") ?
+    if !defined(my.macros_defaults)
+        my.macros_defaults = XML.new("defaults")
+        my.is_local_macros_defaults = "1"
+    endif
 
     for my.module.macros as _macros
-        macros_setup_defaults(_macros)
+        macros_setup_defaults(_macros, my.macros_defaults)
     endfor
 
+    if is_true(my.is_local_macros_defaults)
+        delete my.macros_defaults
+    endif
+
+
+    #    Defaults can be redefined by parents.
+    my.macroses_defaults = my.defaults->entity(name = "macroses") ?
+    if !defined(my.macroses_defaults)
+        my.macroses_defaults = XML.new("defaults")
+        my.is_local_macroses_defaults = "1"
+    endif
+
     for my.module.macroses as _macroses
-        macroses_setup_defaults(_macroses)
+        macroses_setup_defaults(_macroses, my.macroses_defaults)
     endfor
+
+    if is_true(my.is_local_macroses_defaults)
+        delete my.macroses_defaults
+    endif
 
     my.default_value = my.defaults.name ?
     if defined(my.default_value) & !defined(my.module.name)
@@ -8483,9 +9018,21 @@ function c_enum_setup_defaults(c_enum, defaults)
     c_feature_attr_setup_defaults(my.c_enum, my.defaults)
 
     #    Setup defaults for allowed entities
+
+    #    Defaults can be redefined by parents.
+    my.c_constant_defaults = my.defaults->entity(name = "c_constant") ?
+    if !defined(my.c_constant_defaults)
+        my.c_constant_defaults = XML.new("defaults")
+        my.is_local_c_constant_defaults = "1"
+    endif
+
     for my.c_enum.c_constant as _c_constant
-        c_constant_setup_defaults(_c_constant)
+        c_constant_setup_defaults(_c_constant, my.c_constant_defaults)
     endfor
+
+    if is_true(my.is_local_c_constant_defaults)
+        delete my.c_constant_defaults
+    endif
 
     my.default_value = my.defaults.name ?
     if defined(my.default_value) & !defined(my.c_enum.name)
@@ -8752,9 +9299,21 @@ function c_struct_setup_defaults(c_struct, defaults)
     c_feature_attr_setup_defaults(my.c_struct, my.defaults)
 
     #    Setup defaults for allowed entities
+
+    #    Defaults can be redefined by parents.
+    my.c_property_defaults = my.defaults->entity(name = "c_property") ?
+    if !defined(my.c_property_defaults)
+        my.c_property_defaults = XML.new("defaults")
+        my.is_local_c_property_defaults = "1"
+    endif
+
     for my.c_struct.c_property as _c_property
-        c_property_setup_defaults(_c_property)
+        c_property_setup_defaults(_c_property, my.c_property_defaults)
     endfor
+
+    if is_true(my.is_local_c_property_defaults)
+        delete my.c_property_defaults
+    endif
 
     my.default_value = my.defaults.name ?
     if defined(my.default_value) & !defined(my.c_struct.name)
@@ -9226,25 +9785,85 @@ function c_method_setup_defaults(c_method, defaults)
     c_feature_attr_setup_defaults(my.c_method, my.defaults)
 
     #    Setup defaults for allowed entities
+
+    #    Defaults can be redefined by parents.
+    my.c_modifier_defaults = my.defaults->entity(name = "c_modifier") ?
+    if !defined(my.c_modifier_defaults)
+        my.c_modifier_defaults = XML.new("defaults")
+        my.is_local_c_modifier_defaults = "1"
+    endif
+
     for my.c_method.c_modifier as _c_modifier
-        c_modifier_setup_defaults(_c_modifier)
+        c_modifier_setup_defaults(_c_modifier, my.c_modifier_defaults)
     endfor
+
+    if is_true(my.is_local_c_modifier_defaults)
+        delete my.c_modifier_defaults
+    endif
+
+
+    #    Defaults can be redefined by parents.
+    my.c_return_defaults = my.defaults->entity(name = "c_return") ?
+    if !defined(my.c_return_defaults)
+        my.c_return_defaults = XML.new("defaults")
+        my.is_local_c_return_defaults = "1"
+    endif
 
     for my.c_method.c_return as _c_return
-        c_return_setup_defaults(_c_return)
+        c_return_setup_defaults(_c_return, my.c_return_defaults)
     endfor
+
+    if is_true(my.is_local_c_return_defaults)
+        delete my.c_return_defaults
+    endif
+
+
+    #    Defaults can be redefined by parents.
+    my.c_argument_defaults = my.defaults->entity(name = "c_argument") ?
+    if !defined(my.c_argument_defaults)
+        my.c_argument_defaults = XML.new("defaults")
+        my.is_local_c_argument_defaults = "1"
+    endif
 
     for my.c_method.c_argument as _c_argument
-        c_argument_setup_defaults(_c_argument)
+        c_argument_setup_defaults(_c_argument, my.c_argument_defaults)
     endfor
+
+    if is_true(my.is_local_c_argument_defaults)
+        delete my.c_argument_defaults
+    endif
+
+
+    #    Defaults can be redefined by parents.
+    my.c_precondition_defaults = my.defaults->entity(name = "c_precondition") ?
+    if !defined(my.c_precondition_defaults)
+        my.c_precondition_defaults = XML.new("defaults")
+        my.is_local_c_precondition_defaults = "1"
+    endif
 
     for my.c_method.c_precondition as _c_precondition
-        c_precondition_setup_defaults(_c_precondition)
+        c_precondition_setup_defaults(_c_precondition, my.c_precondition_defaults)
     endfor
 
+    if is_true(my.is_local_c_precondition_defaults)
+        delete my.c_precondition_defaults
+    endif
+
+
+    #    Defaults can be redefined by parents.
+    my.c_attribute_defaults = my.defaults->entity(name = "c_attribute") ?
+    if !defined(my.c_attribute_defaults)
+        my.c_attribute_defaults = XML.new("defaults")
+        my.is_local_c_attribute_defaults = "1"
+    endif
+
     for my.c_method.c_attribute as _c_attribute
-        c_attribute_setup_defaults(_c_attribute)
+        c_attribute_setup_defaults(_c_attribute, my.c_attribute_defaults)
     endfor
+
+    if is_true(my.is_local_c_attribute_defaults)
+        delete my.c_attribute_defaults
+    endif
 
     my.default_value = my.defaults.name ?
     if defined(my.default_value) & !defined(my.c_method.name)
@@ -9433,13 +10052,37 @@ function c_callback_setup_defaults(c_callback, defaults)
     declaration_setup_defaults(my.c_callback, my.defaults)
 
     #    Setup defaults for allowed entities
+
+    #    Defaults can be redefined by parents.
+    my.c_return_defaults = my.defaults->entity(name = "c_return") ?
+    if !defined(my.c_return_defaults)
+        my.c_return_defaults = XML.new("defaults")
+        my.is_local_c_return_defaults = "1"
+    endif
+
     for my.c_callback.c_return as _c_return
-        c_return_setup_defaults(_c_return)
+        c_return_setup_defaults(_c_return, my.c_return_defaults)
     endfor
 
+    if is_true(my.is_local_c_return_defaults)
+        delete my.c_return_defaults
+    endif
+
+
+    #    Defaults can be redefined by parents.
+    my.c_argument_defaults = my.defaults->entity(name = "c_argument") ?
+    if !defined(my.c_argument_defaults)
+        my.c_argument_defaults = XML.new("defaults")
+        my.is_local_c_argument_defaults = "1"
+    endif
+
     for my.c_callback.c_argument as _c_argument
-        c_argument_setup_defaults(_c_argument)
+        c_argument_setup_defaults(_c_argument, my.c_argument_defaults)
     endfor
+
+    if is_true(my.is_local_c_argument_defaults)
+        delete my.c_argument_defaults
+    endif
 
     my.default_value = my.defaults.name ?
     if defined(my.default_value) & !defined(my.c_callback.name)
@@ -9603,9 +10246,21 @@ function c_macros_setup_defaults(c_macros, defaults)
     c_feature_attr_setup_defaults(my.c_macros, my.defaults)
 
     #    Setup defaults for allowed entities
+
+    #    Defaults can be redefined by parents.
+    my.c_code_defaults = my.defaults->entity(name = "c_code") ?
+    if !defined(my.c_code_defaults)
+        my.c_code_defaults = XML.new("defaults")
+        my.is_local_c_code_defaults = "1"
+    endif
+
     for my.c_macros.c_code as _c_code
-        c_code_setup_defaults(_c_code)
+        c_code_setup_defaults(_c_code, my.c_code_defaults)
     endfor
+
+    if is_true(my.is_local_c_code_defaults)
+        delete my.c_code_defaults
+    endif
 
     my.default_value = my.defaults.is_method ? "0"
     if defined(my.default_value) & !defined(my.c_macros.is_method)
@@ -9741,13 +10396,37 @@ function c_macroses_setup_defaults(c_macroses, defaults)
     definition_setup_defaults(my.c_macroses, my.defaults)
 
     #    Setup defaults for allowed entities
+
+    #    Defaults can be redefined by parents.
+    my.c_macros_defaults = my.defaults->entity(name = "c_macros") ?
+    if !defined(my.c_macros_defaults)
+        my.c_macros_defaults = XML.new("defaults")
+        my.is_local_c_macros_defaults = "1"
+    endif
+
     for my.c_macroses.c_macros as _c_macros
-        c_macros_setup_defaults(_c_macros)
+        c_macros_setup_defaults(_c_macros, my.c_macros_defaults)
     endfor
 
+    if is_true(my.is_local_c_macros_defaults)
+        delete my.c_macros_defaults
+    endif
+
+
+    #    Defaults can be redefined by parents.
+    my.c_code_defaults = my.defaults->entity(name = "c_code") ?
+    if !defined(my.c_code_defaults)
+        my.c_code_defaults = XML.new("defaults")
+        my.is_local_c_code_defaults = "1"
+    endif
+
     for my.c_macroses.c_code as _c_code
-        c_code_setup_defaults(_c_code)
+        c_code_setup_defaults(_c_code, my.c_code_defaults)
     endfor
+
+    if is_true(my.is_local_c_code_defaults)
+        delete my.c_code_defaults
+    endif
 
     #   Cleanup
     if is_true(my.is_local_defaults)
@@ -9887,9 +10566,21 @@ function c_value_setup_defaults(c_value, defaults)
     endif
 
     #    Setup defaults for allowed entities
+
+    #    Defaults can be redefined by parents.
+    my.c_cast_defaults = my.defaults->entity(name = "c_cast") ?
+    if !defined(my.c_cast_defaults)
+        my.c_cast_defaults = XML.new("defaults")
+        my.is_local_c_cast_defaults = "1"
+    endif
+
     for my.c_value.c_cast as _c_cast
-        c_cast_setup_defaults(_c_cast)
+        c_cast_setup_defaults(_c_cast, my.c_cast_defaults)
     endfor
+
+    if is_true(my.is_local_c_cast_defaults)
+        delete my.c_cast_defaults
+    endif
 
     my.default_value = my.defaults.value ?
     if defined(my.default_value) & !defined(my.c_value.value)
@@ -9988,13 +10679,37 @@ function c_variable_setup_defaults(c_variable, defaults)
     c_instance_setup_defaults(my.c_variable, my.defaults)
 
     #    Setup defaults for allowed entities
+
+    #    Defaults can be redefined by parents.
+    my.c_value_defaults = my.defaults->entity(name = "c_value") ?
+    if !defined(my.c_value_defaults)
+        my.c_value_defaults = XML.new("defaults")
+        my.is_local_c_value_defaults = "1"
+    endif
+
     for my.c_variable.c_value as _c_value
-        c_value_setup_defaults(_c_value)
+        c_value_setup_defaults(_c_value, my.c_value_defaults)
     endfor
 
+    if is_true(my.is_local_c_value_defaults)
+        delete my.c_value_defaults
+    endif
+
+
+    #    Defaults can be redefined by parents.
+    my.c_modifier_defaults = my.defaults->entity(name = "c_modifier") ?
+    if !defined(my.c_modifier_defaults)
+        my.c_modifier_defaults = XML.new("defaults")
+        my.is_local_c_modifier_defaults = "1"
+    endif
+
     for my.c_variable.c_modifier as _c_modifier
-        c_modifier_setup_defaults(_c_modifier)
+        c_modifier_setup_defaults(_c_modifier, my.c_modifier_defaults)
     endfor
+
+    if is_true(my.is_local_c_modifier_defaults)
+        delete my.c_modifier_defaults
+    endif
 
     my.default_value = my.defaults.name ?
     if defined(my.default_value) & !defined(my.c_variable.name)
@@ -10152,41 +10867,149 @@ function c_module_setup_defaults(c_module, defaults)
     of_class_setup_defaults(my.c_module, my.defaults)
 
     #    Setup defaults for allowed entities
+
+    #    Defaults can be redefined by parents.
+    my.c_include_defaults = my.defaults->entity(name = "c_include") ?
+    if !defined(my.c_include_defaults)
+        my.c_include_defaults = XML.new("defaults")
+        my.is_local_c_include_defaults = "1"
+    endif
+
     for my.c_module.c_include as _c_include
-        c_include_setup_defaults(_c_include)
+        c_include_setup_defaults(_c_include, my.c_include_defaults)
     endfor
+
+    if is_true(my.is_local_c_include_defaults)
+        delete my.c_include_defaults
+    endif
+
+
+    #    Defaults can be redefined by parents.
+    my.c_alias_defaults = my.defaults->entity(name = "c_alias") ?
+    if !defined(my.c_alias_defaults)
+        my.c_alias_defaults = XML.new("defaults")
+        my.is_local_c_alias_defaults = "1"
+    endif
 
     for my.c_module.c_alias as _c_alias
-        c_alias_setup_defaults(_c_alias)
+        c_alias_setup_defaults(_c_alias, my.c_alias_defaults)
     endfor
+
+    if is_true(my.is_local_c_alias_defaults)
+        delete my.c_alias_defaults
+    endif
+
+
+    #    Defaults can be redefined by parents.
+    my.c_enum_defaults = my.defaults->entity(name = "c_enum") ?
+    if !defined(my.c_enum_defaults)
+        my.c_enum_defaults = XML.new("defaults")
+        my.is_local_c_enum_defaults = "1"
+    endif
 
     for my.c_module.c_enum as _c_enum
-        c_enum_setup_defaults(_c_enum)
+        c_enum_setup_defaults(_c_enum, my.c_enum_defaults)
     endfor
+
+    if is_true(my.is_local_c_enum_defaults)
+        delete my.c_enum_defaults
+    endif
+
+
+    #    Defaults can be redefined by parents.
+    my.c_struct_defaults = my.defaults->entity(name = "c_struct") ?
+    if !defined(my.c_struct_defaults)
+        my.c_struct_defaults = XML.new("defaults")
+        my.is_local_c_struct_defaults = "1"
+    endif
 
     for my.c_module.c_struct as _c_struct
-        c_struct_setup_defaults(_c_struct)
+        c_struct_setup_defaults(_c_struct, my.c_struct_defaults)
     endfor
+
+    if is_true(my.is_local_c_struct_defaults)
+        delete my.c_struct_defaults
+    endif
+
+
+    #    Defaults can be redefined by parents.
+    my.c_variable_defaults = my.defaults->entity(name = "c_variable") ?
+    if !defined(my.c_variable_defaults)
+        my.c_variable_defaults = XML.new("defaults")
+        my.is_local_c_variable_defaults = "1"
+    endif
 
     for my.c_module.c_variable as _c_variable
-        c_variable_setup_defaults(_c_variable)
+        c_variable_setup_defaults(_c_variable, my.c_variable_defaults)
     endfor
+
+    if is_true(my.is_local_c_variable_defaults)
+        delete my.c_variable_defaults
+    endif
+
+
+    #    Defaults can be redefined by parents.
+    my.c_method_defaults = my.defaults->entity(name = "c_method") ?
+    if !defined(my.c_method_defaults)
+        my.c_method_defaults = XML.new("defaults")
+        my.is_local_c_method_defaults = "1"
+    endif
 
     for my.c_module.c_method as _c_method
-        c_method_setup_defaults(_c_method)
+        c_method_setup_defaults(_c_method, my.c_method_defaults)
     endfor
+
+    if is_true(my.is_local_c_method_defaults)
+        delete my.c_method_defaults
+    endif
+
+
+    #    Defaults can be redefined by parents.
+    my.c_callback_defaults = my.defaults->entity(name = "c_callback") ?
+    if !defined(my.c_callback_defaults)
+        my.c_callback_defaults = XML.new("defaults")
+        my.is_local_c_callback_defaults = "1"
+    endif
 
     for my.c_module.c_callback as _c_callback
-        c_callback_setup_defaults(_c_callback)
+        c_callback_setup_defaults(_c_callback, my.c_callback_defaults)
     endfor
+
+    if is_true(my.is_local_c_callback_defaults)
+        delete my.c_callback_defaults
+    endif
+
+
+    #    Defaults can be redefined by parents.
+    my.c_macros_defaults = my.defaults->entity(name = "c_macros") ?
+    if !defined(my.c_macros_defaults)
+        my.c_macros_defaults = XML.new("defaults")
+        my.is_local_c_macros_defaults = "1"
+    endif
 
     for my.c_module.c_macros as _c_macros
-        c_macros_setup_defaults(_c_macros)
+        c_macros_setup_defaults(_c_macros, my.c_macros_defaults)
     endfor
 
+    if is_true(my.is_local_c_macros_defaults)
+        delete my.c_macros_defaults
+    endif
+
+
+    #    Defaults can be redefined by parents.
+    my.c_macroses_defaults = my.defaults->entity(name = "c_macroses") ?
+    if !defined(my.c_macroses_defaults)
+        my.c_macroses_defaults = XML.new("defaults")
+        my.is_local_c_macroses_defaults = "1"
+    endif
+
     for my.c_module.c_macroses as _c_macroses
-        c_macroses_setup_defaults(_c_macroses)
+        c_macroses_setup_defaults(_c_macroses, my.c_macroses_defaults)
     endfor
+
+    if is_true(my.is_local_c_macroses_defaults)
+        delete my.c_macroses_defaults
+    endif
 
     my.default_value = my.defaults.id ?
     if defined(my.default_value) & !defined(my.c_module.id)
@@ -10686,9 +11509,21 @@ function c_require_setup_defaults(c_require, defaults)
     endif
 
     #    Setup defaults for allowed entities
+
+    #    Defaults can be redefined by parents.
+    my.c_alternative_defaults = my.defaults->entity(name = "c_alternative") ?
+    if !defined(my.c_alternative_defaults)
+        my.c_alternative_defaults = XML.new("defaults")
+        my.is_local_c_alternative_defaults = "1"
+    endif
+
     for my.c_require.c_alternative as _c_alternative
-        c_alternative_setup_defaults(_c_alternative)
+        c_alternative_setup_defaults(_c_alternative, my.c_alternative_defaults)
     endfor
+
+    if is_true(my.is_local_c_alternative_defaults)
+        delete my.c_alternative_defaults
+    endif
 
     my.default_value = my.defaults.feature ?
     if defined(my.default_value) & !defined(my.c_require.feature)
@@ -10776,9 +11611,21 @@ function c_feature_setup_defaults(c_feature, defaults)
     uid_setup_defaults(my.c_feature, my.defaults)
 
     #    Setup defaults for allowed entities
+
+    #    Defaults can be redefined by parents.
+    my.c_require_defaults = my.defaults->entity(name = "c_require") ?
+    if !defined(my.c_require_defaults)
+        my.c_require_defaults = XML.new("defaults")
+        my.is_local_c_require_defaults = "1"
+    endif
+
     for my.c_feature.c_require as _c_require
-        c_require_setup_defaults(_c_require)
+        c_require_setup_defaults(_c_require, my.c_require_defaults)
     endfor
+
+    if is_true(my.is_local_c_require_defaults)
+        delete my.c_require_defaults
+    endif
 
     my.default_value = my.defaults.name ?
     if defined(my.default_value) & !defined(my.c_feature.name)
@@ -10919,9 +11766,21 @@ function c_features_setup_defaults(c_features, defaults)
     endif
 
     #    Setup defaults for allowed entities
+
+    #    Defaults can be redefined by parents.
+    my.c_feature_defaults = my.defaults->entity(name = "c_feature") ?
+    if !defined(my.c_feature_defaults)
+        my.c_feature_defaults = XML.new("defaults")
+        my.is_local_c_feature_defaults = "1"
+    endif
+
     for my.c_features.c_feature as _c_feature
-        c_feature_setup_defaults(_c_feature)
+        c_feature_setup_defaults(_c_feature, my.c_feature_defaults)
     endfor
+
+    if is_true(my.is_local_c_feature_defaults)
+        delete my.c_feature_defaults
+    endif
 
     my.default_value = my.defaults.name ?
     if defined(my.default_value) & !defined(my.c_features.name)
