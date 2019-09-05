@@ -47,6 +47,7 @@ gsl from "c_component.gsl"
 gsl from "php_codegen.gsl"
 gsl from "php_derive.gsl"
 gsl from "php_check.gsl"
+gsl from "php_map.gsl"
 
 # ---------------------------------------------------------------------------
 #   
@@ -173,7 +174,7 @@ function php_create_interface_module (interface, php_project, meta)
     echo_info ("Create <php_module/> from interface: '$(my.interface.name:)'", my)
 
     new php_module to my.php_project
-        .name = php_derive_module_name (my.interface, "Pascal")
+        .name = php_derive_class_interface_name (my.interface)
         .source_file_name = 0.name + ".php"
         .source_file_path = cat_path (my.php_project.source_dir, 0.source_file_name)
         .prefix = my.php_project.prefix
@@ -235,7 +236,7 @@ function php_create_implementation_module (implementation, php_project, meta)
     echo_info("Create <php_module/> from implementation: '$(my.implementation.name:)'", my)
 
     new php_module to my.php_project
-        .name = php_derive_module_name (my.implementation, "Pascal")
+        .name = php_derive_class_interface_name (my.implementation)
         .source_file_name = 0.name + ".php"
         .source_file_path = cat_path (my.php_project.source_dir, 0.source_file_name)
         .prefix = my.php_project.prefix
@@ -245,23 +246,39 @@ function php_create_implementation_module (implementation, php_project, meta)
             . = php_format_license (my.php_project->license)
         endnew
 
-        new php_implementation to php_module
-            new high_level to php_implementation
+        new php_class to php_module
+            new high_level to php_class
                 . = php_format_description (my.implementation) ?
-                .name = "$(my.implementation.name:Pascal)"
+                .name = php_derive_class_interface_name (my.implementation)
 
                 for my.implementation.interface as interface0
                     new interface to high_level
-                        .name = php_derive_class_name(interface0)
+                        php_map_class_interface_high_level(interface0, interface)
                     endnew
 
                     for interface0.constant as constant0
                         new constant to high_level
-                            .name = php_derive_constant_formatted_string(constant0.name)
-                            .value = constant0.value
+                            php_map_class_constant_high_level(constant0, constant)
                         endnew
                     endfor
                 endfor
+
+                for my.implementation.method as method0
+                    new php_method to high_level
+                        php_map_class_method_high_level(method0, php_method)
+
+                        for method0.argument as argument0
+                            new php_argument to php_method
+                                php_map_method_argument_high_level(argument0, php_argument)
+                            endnew
+                        endfor
+
+                    endnew
+                endfor
+            endnew
+
+            new low_level to php_class
+                .name = php_derive_class_name_low_level_name_c_formated(my.implementation, my.php_project)
             endnew
         endnew
     endnew
@@ -284,7 +301,7 @@ function php_create_class_module (class, php_project, meta)
     endif
 
     new php_module to my.php_project
-        .name = php_derive_module_name (my.class, "Pascal")
+        .name = php_derive_class_interface_name (my.class)
         .source_file_name = 0.name + ".php"
         .source_file_path = cat_path (my.php_project.source_dir, 0.source_file_name)
         .prefix = my.php_project.prefix
@@ -296,8 +313,8 @@ function php_create_class_module (class, php_project, meta)
 
         new php_class to php_module
             . = php_format_description (my.class) ?
-            .name = php_derive_class_name (my.class)
-            .low_level_name_c_format = php_derive_class_low_level_name_c_formated (my.class, my.php_project)
+            .name = php_derive_name (my.class, "Camel")
+            .low_level_name_c_format = php_derive_class_name_low_level_name_c_formated (my.class, my.php_project)
 
             php_create_class_default_constructor (php_class, my.class, my.php_project, my.meta)
             php_create_class_default_destructor (php_class, my.class, my.php_project, my.meta)
@@ -434,50 +451,6 @@ endfunction
 # ---------------------------------------------------------------------------
 #   
 # ---------------------------------------------------------------------------
-function php_map_res_data_type(method, destination)
-    check_arguments (my, "method, destination", my)
-
-        my.count_in = 1 # ctx
-        my.count_out = 0
-        my.return_data = ""
-
-        for my.method.argument            
-            if string_in (argument.class, "buffer")
-                my.return_data += php_derive_argument_name(argument, "-l")
-                my.count_out = my.count_out + 1
-
-                if ! last()
-                    my.return_data += ", "
-                endif
-            else 
-                my.count_in = my.count_in + 1
-            endif
-        endfor
-
-        my.res_type = ""
-        my.res_data = ""
-
-        if my.count_out = 0
-            my.destination.res_data = ""
-            my.destination.res_type = "void"
-        elsif my.count_out = 1
-            my.destination.res_data = "// $(my.return_data:)"
-            # TODO! NEED TO BE CHECKED WITH OTHER TYPES
-            my.destination.res_type = "string"
-        elsif my.count_out > 1
-            my.destination.res_data = "// [$(my.return_data:)]"
-            my.destination.res_type = "array"
-        endif
-
-        my.destination.return_type = my.destination.res_type
-        my.destination.return_data = my.destination.res_data
-
-        my.destination.count_in = my.count_in
-endfunction
-
-# ---------------------------------------------------------------------------
-#   
-# ---------------------------------------------------------------------------
 function php_format_method_body (php_method, function_name)
     check_arguments (my, "php_method, function_name", my)
 
@@ -541,7 +514,7 @@ function php_create_class_method (class, method, destination, php_project, meta)
 
             my.function_name = class_derive_c_method (my.class, my.method)
 
-            .name = php_derive_method_name (my.method, "-h")
+            .name = php_derive_name (my.method, "Camel")
             .function_name = php_derive_function_name(my.function_name, "-h")
             .return_data = my.res_data
             .return_type = my.res_type
@@ -581,7 +554,7 @@ function php_create_class_method (class, method, destination, php_project, meta)
             #echo_fatal("", my)
 
             .prefix = "$(my.class.c_prefix:)"
-            .module_name = php_derive_module_name (my.class, "c")
+            .module_name = php_derive_name (my.class, "c")
             .function_name = php_derive_function_name (my.function_name, "-l")
             .required_num_args = my.count_in
             .throws_exception = my.return_enum_status
@@ -714,60 +687,6 @@ function php_module_resolve (php_module, php_project)
 
     #   Resolve UIDs
     php_module_resolve_uids (my.php_module)
-endfunction
-
-# ---------------------------------------------------------------------------
-#   
-# ---------------------------------------------------------------------------
-function php_map_argument_type (argument, type, destination)
-    check_arguments (my, "argument, type, destination", my)
-    assert_attribute (my.argument, "class", my)
-
-    php_check_type(my.type)
-
-    if my.type = "-h"
-        if my.argument.class = "data"
-            my.destination.type = "string"
-        else
-            #TODO Need impl!
-            echo_info("Undefined argument type for the class: $(my.argument.class). ")
-            my.destination.type = "string"
-        endif
-    elsif my.type = "-l"
-        if my.argument.class = "data"
-            my.destination.type = "vsc_data_t"
-            my.destination.zend_type = "IS_STRING"
-        elsif my.argument.class = "buffer"
-            my.destination.type = "vsc_buffer_t"
-        else
-            #TODO Need impl!
-            echo_info("Undefined argument class type: $(my.argument.class)", my)
-            my.destination.type = "vsc_data_t"
-            my.destination.zend_type = "IS_STRING"
-        endif
-    endif
-
-endfunction
-
-# ---------------------------------------------------------------------------
-#   
-# ---------------------------------------------------------------------------
-function php_map_extension_argument_len (argument, destination)
-    check_arguments (my, "argument, destination", my)
-
-    if ! defined (my.argument->length)
-        echo_fatal("Undefined argument length for argument: $(my.argument.name)", my)
-    endif
-
-    if defined (my.argument->length.method)
-        my.destination.len_type = "method"
-        my.destination.len_data = "$(my.argument->length.method:c)"
-    elsif defined (my.argument->length.constant)
-        my.destination.len_type = "constant"
-        my.destination.len_data = php_derive_constant_formatted_string("$(my.argument->length.constant:)")
-    else 
-        echo_fatal("Undefined method argument length type for the argument: $(my.argument.name)", my)
-    endif
 endfunction
 
 # ---------------------------------------------------------------------------

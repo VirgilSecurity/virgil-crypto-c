@@ -1,0 +1,202 @@
+.template 0
+#   Copyright (C) 2015-2019 Virgil Security, Inc.
+#
+#   All rights reserved.
+#
+#   Redistribution and use in source and binary forms, with or without
+#   modification, are permitted provided that the following conditions are
+#   met:
+#
+#       (1) Redistributions of source code must retain the above copyright
+#       notice, this list of conditions and the following disclaimer.
+#
+#       (2) Redistributions in binary form must reproduce the above copyright
+#       notice, this list of conditions and the following disclaimer in
+#       the documentation and/or other materials provided with the
+#       distribution.
+#
+#       (3) Neither the name of the copyright holder nor the names of its
+#       contributors may be used to endorse or promote products derived from
+#       this software without specific prior written permission.
+#
+#   THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
+#   IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+#   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+#   DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT,
+#   INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+#   (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+#   SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+#   HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+#   STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+#   IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+#   POSSIBILITY OF SUCH DAMAGE.
+#
+#   Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
+
+# ---------------------------------------------------------------------------
+#   Functions for PHP primitives generation: protocol, class, enum, etc.
+# ---------------------------------------------------------------------------
+#   This is a code generator built using the iMatix GSL code generation
+#   language. See https://github.com/imatix/gsl for details.
+# ---------------------------------------------------------------------------
+
+gsl from "common.gsl"
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_map_res_data_type(method, destination)
+    check_arguments (my, "method, destination", my)
+
+        my.count_in = 1 # ctx
+        my.count_out = 0
+        my.return_data = ""
+
+        for my.method.argument            
+            if string_in (argument.class, "buffer")
+                my.return_data += php_derive_argument_name(argument, "-l")
+                my.count_out = my.count_out + 1
+
+                if ! last()
+                    my.return_data += ", "
+                endif
+            else 
+                my.count_in = my.count_in + 1
+            endif
+        endfor
+
+        my.res_type = ""
+        my.res_data = ""
+
+        if my.count_out = 0
+            my.destination.res_data = ""
+            my.destination.res_type = "void"
+        elsif my.count_out = 1
+            my.destination.res_data = "// $(my.return_data:)"
+            # TODO! NEED TO BE CHECKED WITH OTHER TYPES
+            my.destination.res_type = "string"
+        elsif my.count_out > 1
+            my.destination.res_data = "// [$(my.return_data:)]"
+            my.destination.res_type = "array"
+        endif
+
+        my.destination.return_type = my.destination.res_type
+        my.destination.return_data = my.destination.res_data
+
+        my.destination.count_in = my.count_in
+endfunction
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_map_argument_type (argument, type, destination)
+    check_arguments (my, "argument, type, destination", my)
+    assert_attribute (my.argument, "class", my)
+
+    php_check_type(my.type)
+
+    if my.type = "-h"
+        if my.argument.class = "data"
+            my.destination.type = "string"
+        else
+            #TODO Need impl!
+            echo_info("Undefined argument type for the class: $(my.argument.class). ")
+            my.destination.type = "string"
+        endif
+    elsif my.type = "-l"
+        if my.argument.class = "data"
+            my.destination.type = "vsc_data_t"
+            my.destination.zend_type = "IS_STRING"
+        elsif my.argument.class = "buffer"
+            my.destination.type = "vsc_buffer_t"
+        else
+            #TODO Need impl!
+            echo_info("Undefined argument class type: $(my.argument.class)", my)
+            my.destination.type = "vsc_data_t"
+            my.destination.zend_type = "IS_STRING"
+        endif
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_map_extension_argument_len (argument, destination)
+    check_arguments (my, "argument, destination", my)
+
+    if ! defined (my.argument->length)
+        echo_fatal("Undefined argument length for argument: $(my.argument.name)", my)
+    endif
+
+    if defined (my.argument->length.method)
+        my.destination.len_type = "method"
+        my.destination.len_data = "$(my.argument->length.method:c)"
+    elsif defined (my.argument->length.constant)
+        my.destination.len_type = "constant"
+        my.destination.len_data = php_derive_constant_formatted_string("$(my.argument->length.constant:)")
+    else 
+        echo_fatal("Undefined method argument length type for the argument: $(my.argument.name)", my)
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_map_class_interface_high_level (in_interface, out_interface)
+    check_arguments (my, "in_interface, out_interface", my)
+
+    assert_attribute (my.in_interface, "name", my)
+
+    my.out_interface.name = php_derive_name(my.in_interface, "Camel")
+    my.out_interface.namespace = "TEMP_NAMESPACE"
+endfunction
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_map_class_constant_high_level (in_constant, out_constant)
+    check_arguments (my, "in_constant, out_constant", my)
+
+    assert_attributes (my.in_constant, "name, value", my)
+
+    my.out_constant.name = php_derive_constant_formatted_string(my.in_constant.name)
+    my.out_constant.value = my.in_constant.value
+    # TODO
+    my.out_constant.namespace = "TEMP_NAMESPACE"
+endfunction
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_map_class_method_high_level (in_method, out_php_method)
+    check_arguments (my, "in_method, out_php_method", my)
+
+        my.out_php_method.name = php_derive_name(method0, "Camel")
+        my.out_php_method.function_name = "function_name"
+        my.out_php_method.return_data = "return_data"
+        my.out_php_method.return_type = "temp_return_type"
+        my.out_php_method.throws_exception = "temp 0"
+
+        my._md = "public"
+        if my.in_method.is_static="1"
+            my._md = "static"
+        endif
+        my.out_php_method.declaration = my._md
+
+        new docblock to my.out_php_method
+            . = my.in_method. ? 
+        endnew
+endfunction
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_map_method_argument_high_level (in_argument, out_php_argument)
+    check_arguments (my, "in_argument, out_php_argument", my)
+
+    my.out_php_argument.name = php_derive_name(my.in_argument, "Camel")
+    my.out_php_argument.type = argument0.type ?
+
+endfunction
+
+.endtemplate

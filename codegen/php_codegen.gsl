@@ -55,6 +55,9 @@ endfunction
 function php_generate_sources (php_project)
     check_arguments (my, "php_project", my)
 
+    echo_info("Temp return", my)
+    return
+
     assert_attribute (my.php_project, "source_dir", my)
 
     if -1 = directory.create (my.php_project.source_dir)
@@ -131,7 +134,7 @@ function php_insert_implementation (php_module, php_project)
 
     echo_trace ("Generate PHP implementation: " + my.php_module.name, my)
 
-    my._i = my.php_module->php_implementation->high_level
+    my._i = my.php_module->php_class->high_level
 
     php_insert_description(my._i, 0)
 
@@ -158,7 +161,9 @@ function php_insert_implementation (php_module, php_project)
         for php_module0->php_interface.php_method as php_method0
             my._function_name = "test_php"
 
-            my._m += php_format_method_body(php_method0, my._function_name) + "\n"
+            my._m += format_left(php_format_class_method_header(php_method0->high_level, "class") + "{  \n" , 1)
+            my._m += format_left(php_format_method_body(php_method0, my._function_name) + "\n", 1)
+            my._m += format_left("}", 1)
         endfor
     endfor
 
@@ -328,6 +333,8 @@ function php_insert_class_method (php_method, type)
         endif
         php_insert_code ("}", 1)
     elsif my.type = "interface"
+    elsif my.type = "implementation"
+        php_insert_code("{", 1)
     else
         echo_fatal("Undefinded type: $(my.type:)", my)
     endif

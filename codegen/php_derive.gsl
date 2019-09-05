@@ -45,34 +45,35 @@ gsl from "common.gsl"
 # ---------------------------------------------------------------------------
 #   
 # ---------------------------------------------------------------------------
-function php_derive_module_name (module, ppm)
-    check_arguments (my, "module, ppm", my)
-
-    assert_attribute (my.module, "name", my)
-
+function php_derive_name(in_entity, ppm)
+    check_arguments (my, "in_entity, ppm", my)
+    assert_attribute(my.in_entity, "name")
     php_check_ppm(my.ppm)
 
-    return "$(my.module.name:$(my.ppm))"
+    my.res = "$(my.in_entity.name:$(my.ppm))"
+
+    return my.res
 endfunction
 
 # ---------------------------------------------------------------------------
 #   
 # ---------------------------------------------------------------------------
-function php_derive_class_name (class)
-    check_arguments (my, "class", my)
+function php_derive_class_interface_name(in_class_interface)
+    check_arguments (my, "in_class_interface", my)
+    assert_attribute(my.in_class_interface, "name")
 
-    assert_attribute_one_of (my.class, "name", my)
+    my.res = php_derive_name(my.in_class_interface, "Pascal")
 
-    return "$(my.class.name:Pascal)"
+    return my.res
 endfunction
 
 # ---------------------------------------------------------------------------
 #   
 # ---------------------------------------------------------------------------
-function php_derive_class_low_level_name_c_formated (class, php_project)
+function php_derive_class_name_low_level_name_c_formated (class, php_project)
     check_arguments (my, "class, php_project", my)
 
-    assert_attribute_one_of (my.class, "name", my)
+    assert_attribute (my.class, "name", my)
 
     return "$(my.php_project.prefix:c)_$(my.class.name:c)"
 endfunction
@@ -95,23 +96,6 @@ function php_derive_extension_return_type (type)
         my.res = "IS_RESOURCE"
     else
         echo_fatal("Undefined type: $(my.type)", my)
-    endif
-
-    return my.res
-endfunction
-
-# ---------------------------------------------------------------------------
-#   
-# ---------------------------------------------------------------------------
-function php_derive_method_name (method, type)
-    check_arguments (my, "method, type", my)
-
-    php_check_type(my.type)
-
-    if my.type = "-h"
-        my.res = "$(my.method.name:Camel)"
-    elsif my.type = "-l"
-        my.res = "$(my.method.name:c)"
     endif
 
     return my.res
