@@ -104,7 +104,7 @@ endfunction
 # ---------------------------------------------------------------------------
 #   
 # ---------------------------------------------------------------------------
-function php_derive_function_name (function, type)
+function php_derive_function_name_old (function, type)
     check_arguments (my, "function, type", my)
 
     php_check_type(my.type)
@@ -121,6 +121,25 @@ endfunction
 # ---------------------------------------------------------------------------
 #   
 # ---------------------------------------------------------------------------
+function php_derive_function_name (in_entity, prefix, type)
+    check_arguments (my, "in_entity, prefix, type", my)
+    assert_attribute(my.in_entity, "name")
+    php_check_type(my.type)
+
+    my._func_name = "$(my.in_entity.name:c)"
+
+    if my.type = "-h"
+        my.res = "$(my.prefix:)_$(my._func_name:)_php"
+    elsif my.type = "-l"
+        my.res = "$(my.prefix:)_$(my._func_name:)"
+    endif
+
+    return my.res
+endfunction
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
 function php_derive_argument_name (argument, type)
     check_arguments (my, "argument, type", my)
     assert_attribute (my.argument, "name", my)
@@ -128,9 +147,9 @@ function php_derive_argument_name (argument, type)
     php_check_type(my.type)
 
     if my.type = "-h"
-        my.res = "$$(my.argument.name:Camel)"
+        my.res = "$$(php_derive_name(my.argument, "Camel"))"
     elsif my.type = "-l"
-        my.res = "$(my.argument.name:c)"
+        my.res = "$(php_derive_name(my.argument, "c"))"
     endif
 
     return my.res
@@ -206,6 +225,36 @@ function php_derive_extension_name (php_project)
     my.res = my.php_project.prefix + "_" + my.php_project.name + "_php"
 
     return my.res
+endfunction
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_derive_argument_type (in_argument)
+    check_arguments (my, "in_argument", my)
+
+    my._res = ""
+
+    if defined (my.in_argument.class) & my.in_argument.class <> "error"
+        if string_in(my.in_argument.class, "data, buffer") 
+            my._res = "string"
+        else
+            my._res = php_derive_class_interface_name(my.in_argument)
+        endif
+    endif
+
+    if defined (my.in_argument.type)
+        if string_in(my.in_argument.type, "byte, size, integer")
+            my._res = "int"
+        elsif my.in_argument.type = "boolean"
+            my._res = "bool"
+        else
+            echo_debug_item(my.in_argument)
+            echo_fatal("Undefined argument type: $(my.in_argument.type:), my")
+        endif
+    endif
+
+    return my._res
 endfunction
 
 .endtemplate

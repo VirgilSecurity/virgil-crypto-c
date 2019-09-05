@@ -250,6 +250,7 @@ function php_create_implementation_module (implementation, php_project, meta)
             new high_level to php_class
                 . = php_format_description (my.implementation) ?
                 .name = php_derive_class_interface_name (my.implementation)
+                .namespace = "TEMP_NAMESPACE"
 
                 for my.implementation.interface as interface0
                     new interface to high_level
@@ -265,7 +266,7 @@ function php_create_implementation_module (implementation, php_project, meta)
 
                 for my.implementation.method as method0
                     new php_method to high_level
-                        php_map_class_method_high_level(method0, php_method)
+                        php_map_class_method_high_level(method0, php_method, my.php_project.prefix)
 
                         for method0.argument as argument0
                             new php_argument to php_method
@@ -515,7 +516,7 @@ function php_create_class_method (class, method, destination, php_project, meta)
             my.function_name = class_derive_c_method (my.class, my.method)
 
             .name = php_derive_name (my.method, "Camel")
-            .function_name = php_derive_function_name(my.function_name, "-h")
+            .function_name = php_derive_function_name_old(my.function_name, "-h")
             .return_data = my.res_data
             .return_type = my.res_type
 
@@ -555,7 +556,7 @@ function php_create_class_method (class, method, destination, php_project, meta)
 
             .prefix = "$(my.class.c_prefix:)"
             .module_name = php_derive_name (my.class, "c")
-            .function_name = php_derive_function_name (my.function_name, "-l")
+            .function_name = php_derive_function_name_old (my.function_name, "-l")
             .required_num_args = my.count_in
             .throws_exception = my.return_enum_status
             .return_type = my.extension_return_type

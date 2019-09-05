@@ -168,24 +168,26 @@ endfunction
 # ---------------------------------------------------------------------------
 #   
 # ---------------------------------------------------------------------------
-function php_map_class_method_high_level (in_method, out_php_method)
-    check_arguments (my, "in_method, out_php_method", my)
+function php_map_class_method_high_level (in_method, out_php_method, in_prefix)
+    check_arguments (my, "in_method, out_php_method, in_prefix", my)
 
-        my.out_php_method.name = php_derive_name(method0, "Camel")
-        my.out_php_method.function_name = "function_name"
-        my.out_php_method.return_data = "return_data"
-        my.out_php_method.return_type = "temp_return_type"
-        my.out_php_method.throws_exception = "temp 0"
+    my.out_php_method.name = php_derive_name(method0, "Camel")
+    my.out_php_method.function_name = php_derive_function_name(my.in_method, my.in_prefix, "-h")
+    my.out_php_method.return_data = "return_data"
+    my.out_php_method.return_type = "temp_return_type"
+    my.out_php_method.throws_exception = "temp 0"
 
-        my._md = "public"
-        if my.in_method.is_static="1"
-            my._md = "static"
-        endif
-        my.out_php_method.declaration = my._md
+    php_map_return_high_level(my.in_method, my.out_php_method)
 
-        new docblock to my.out_php_method
-            . = my.in_method. ? 
-        endnew
+    my._md = "public"
+    if my.in_method.is_static="1"
+        my._md = "static"
+    endif
+    my.out_php_method.declaration = my._md
+
+    new docblock to my.out_php_method
+        . = my.in_method. ? 
+    endnew
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -194,8 +196,63 @@ endfunction
 function php_map_method_argument_high_level (in_argument, out_php_argument)
     check_arguments (my, "in_argument, out_php_argument", my)
 
-    my.out_php_argument.name = php_derive_name(my.in_argument, "Camel")
-    my.out_php_argument.type = argument0.type ?
+    my.out_php_argument.name = php_derive_argument_name(my.in_argument, "-h")
+    my.out_php_argument.type = php_derive_argument_type(my.in_argument) ?
+
+endfunction
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_map_return_high_level (in_method, out_php_method)
+    check_arguments (my, "in_method, out_php_method", my)
+
+    my._buf_count = -1
+    my._retclass_count = 0
+    my._rettype_count = 0
+    my._rettype_data = ""
+
+
+    for my.in_method.argument as argument0 where defined (argument0.class)
+        if argument0.class = "buffer"
+            my._buf_count = my._buf_count + 1
+        endif
+    endfor
+
+    for my.in_method.return as return0
+        if defined (return0.class) & return0.class = "data"
+            my._retclass_count = my._retclass_count + 1
+        endif
+
+        if defined (return0.type)
+            if return0.type = "size"
+                my._rettype_data = "int"
+            elsif return0.type = "boolean"
+                my._rettype_data = "bool"
+            else
+                echo_fatal("Not implemented", my)
+            endif
+        endif
+    endfor
+
+    my._r = ""
+
+    if my._buf_count = 0
+        my._r = "void"
+    elsif my._buf_count = 1
+        my._r = "string_buffer"
+    elsif my._buf_count > 1
+        my._r = "array"
+    elsif my._retclass_count = 1
+        my._r = "string_return"
+    endif
+
+    if my._retclass_count > 1
+        echo_fatal("Not implemented", my)
+    endif
+
+    my.out_php_method.temp_return_type = my._r
+    my.out_php_method.temp_return_type2 = my._rettype_data
 
 endfunction
 
