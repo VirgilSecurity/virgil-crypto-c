@@ -280,8 +280,13 @@ vscf_key_recipient_info_list_remove_self(vscf_key_recipient_info_list_t *self) {
 
     vscf_key_recipient_info_destroy(&self->item);
     if (self->next) {
-        self->item = self->next->item;
-        self->next = self->next->next;
+        vscf_key_recipient_info_list_t *next = self->next;
+        self->item = next->item;
+        self->next = next->next;
+        next->next = NULL; //  prevent chain destruction
+        next->item = NULL;
+        next->prev = NULL;
+        vscf_key_recipient_info_list_destroy(&next);
     }
 }
 
