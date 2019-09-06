@@ -311,6 +311,7 @@ vscf_message_info_editor_cleanup_ctx(vscf_message_info_editor_t *self) {
     VSCF_ASSERT_PTR(self);
 
     vscf_impl_destroy(&self->message_info_serializer);
+    vscf_message_info_destroy(&self->message_info);
     vsc_buffer_destroy(&self->encryption_key);
 }
 
