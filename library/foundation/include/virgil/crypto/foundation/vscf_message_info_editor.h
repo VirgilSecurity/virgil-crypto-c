@@ -47,20 +47,30 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Handle information about an encrypted message and algorithms
-//  that was used for encryption.
+//  Add and/or remove recipients and it's paramteres within message info.
+//
+//  Usage:
+//    1. Unpack binary message info that was obtained from RecipientCipher.
+//    2. Add and/or remove key recipients.
+//    3. Pack MessagInfo to the binary data.
 // --------------------------------------------------------------------------
 
-#ifndef VSCF_MESSAGE_INFO_H_INCLUDED
-#define VSCF_MESSAGE_INFO_H_INCLUDED
+#ifndef VSCF_MESSAGE_INFO_EDITOR_H_INCLUDED
+#define VSCF_MESSAGE_INFO_EDITOR_H_INCLUDED
 
 #include "vscf_library.h"
-#include "vscf_key_recipient_info.h"
-#include "vscf_password_recipient_info.h"
-#include "vscf_key_recipient_info_list.h"
-#include "vscf_password_recipient_info_list.h"
-#include "vscf_message_info_custom_params.h"
 #include "vscf_impl.h"
+#include "vscf_status.h"
+
+#if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <virgil/crypto/common/vsc_data.h>
+#   include <virgil/crypto/common/vsc_buffer.h>
+#endif
+
+#if VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <VSCCommon/vsc_data.h>
+#   include <VSCCommon/vsc_buffer.h>
+#endif
 
 // clang-format on
 //  @end
@@ -78,116 +88,119 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Handle 'message info' context.
+//  Handle 'message info editor' context.
 //
-typedef struct vscf_message_info_t vscf_message_info_t;
+typedef struct vscf_message_info_editor_t vscf_message_info_editor_t;
 
 //
-//  Return size of 'vscf_message_info_t'.
+//  Return size of 'vscf_message_info_editor_t'.
 //
 VSCF_PUBLIC size_t
-vscf_message_info_ctx_size(void);
+vscf_message_info_editor_ctx_size(void);
 
 //
 //  Perform initialization of pre-allocated context.
 //
 VSCF_PUBLIC void
-vscf_message_info_init(vscf_message_info_t *self);
+vscf_message_info_editor_init(vscf_message_info_editor_t *self);
 
 //
 //  Release all inner resources including class dependencies.
 //
 VSCF_PUBLIC void
-vscf_message_info_cleanup(vscf_message_info_t *self);
+vscf_message_info_editor_cleanup(vscf_message_info_editor_t *self);
 
 //
 //  Allocate context and perform it's initialization.
 //
-VSCF_PUBLIC vscf_message_info_t *
-vscf_message_info_new(void);
+VSCF_PUBLIC vscf_message_info_editor_t *
+vscf_message_info_editor_new(void);
 
 //
 //  Release all inner resources and deallocate context if needed.
 //  It is safe to call this method even if the context was statically allocated.
 //
 VSCF_PUBLIC void
-vscf_message_info_delete(vscf_message_info_t *self);
+vscf_message_info_editor_delete(vscf_message_info_editor_t *self);
 
 //
 //  Delete given context and nullifies reference.
-//  This is a reverse action of the function 'vscf_message_info_new ()'.
+//  This is a reverse action of the function 'vscf_message_info_editor_new ()'.
 //
 VSCF_PUBLIC void
-vscf_message_info_destroy(vscf_message_info_t **self_ref);
+vscf_message_info_editor_destroy(vscf_message_info_editor_t **self_ref);
 
 //
 //  Copy given class context by increasing reference counter.
 //
-VSCF_PUBLIC vscf_message_info_t *
-vscf_message_info_shallow_copy(vscf_message_info_t *self);
+VSCF_PUBLIC vscf_message_info_editor_t *
+vscf_message_info_editor_shallow_copy(vscf_message_info_editor_t *self);
 
 //
-//  Add recipient that is defined by Public Key.
+//  Setup dependency to the interface 'random' with shared ownership.
 //
 VSCF_PUBLIC void
-vscf_message_info_add_key_recipient(vscf_message_info_t *self, vscf_key_recipient_info_t **key_recipient_ref);
+vscf_message_info_editor_use_random(vscf_message_info_editor_t *self, vscf_impl_t *random);
 
 //
-//  Add recipient that is defined by password.
+//  Setup dependency to the interface 'random' and transfer ownership.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
 //
 VSCF_PUBLIC void
-vscf_message_info_add_password_recipient(vscf_message_info_t *self,
-        vscf_password_recipient_info_t **password_recipient_ref);
+vscf_message_info_editor_take_random(vscf_message_info_editor_t *self, vscf_impl_t *random);
 
 //
-//  Set information about algorithm that was used for data encryption.
+//  Release dependency to the interface 'random'.
 //
 VSCF_PUBLIC void
-vscf_message_info_set_data_encryption_alg_info(vscf_message_info_t *self, vscf_impl_t **data_encryption_alg_info_ref);
+vscf_message_info_editor_release_random(vscf_message_info_editor_t *self);
 
 //
-//  Return information about algorithm that was used for the data encryption.
+//  Set depenencies to it's defaults.
 //
-VSCF_PUBLIC const vscf_impl_t *
-vscf_message_info_data_encryption_alg_info(const vscf_message_info_t *self);
+VSCF_PUBLIC vscf_status_t
+vscf_message_info_editor_setup_defaults(vscf_message_info_editor_t *self) VSCF_NODISCARD;
 
 //
-//  Return list with a "key recipient info" elements.
+//  Unpack serialized message info.
 //
-VSCF_PUBLIC const vscf_key_recipient_info_list_t *
-vscf_message_info_key_recipient_info_list(const vscf_message_info_t *self);
+VSCF_PUBLIC vscf_status_t
+vscf_message_info_editor_unpack(vscf_message_info_editor_t *self, vsc_data_t message_info_data,
+        vsc_data_t owner_recipient_id, const vscf_impl_t *owner_private_key) VSCF_NODISCARD;
 
 //
-//  Return list with a "key recipient info" elements.
+//  Add recipient defined with id and public key.
 //
-VSCF_PRIVATE vscf_key_recipient_info_list_t *
-vscf_message_info_key_recipient_info_list_modifiable(vscf_message_info_t *self);
+VSCF_PUBLIC vscf_status_t
+vscf_message_info_editor_add_key_recipient(vscf_message_info_editor_t *self, vsc_data_t recipient_id,
+        const vscf_impl_t *public_key) VSCF_NODISCARD;
 
 //
-//  Return list with a "password recipient info" elements.
+//  Remove recipient with a given id.
+//  Return false if recipient with given id was not found.
 //
-VSCF_PUBLIC const vscf_password_recipient_info_list_t *
-vscf_message_info_password_recipient_info_list(const vscf_message_info_t *self);
+VSCF_PUBLIC bool
+vscf_message_info_editor_remove_key_recipient(vscf_message_info_editor_t *self, vsc_data_t recipient_id);
 
 //
-//  Setup custom params.
+//  Remove all existent recipients.
 //
 VSCF_PUBLIC void
-vscf_message_info_set_custom_params(vscf_message_info_t *self, vscf_message_info_custom_params_t *custom_params);
+vscf_message_info_editor_remove_all(vscf_message_info_editor_t *self);
 
 //
-//  Provide access to the custom params object.
-//  The returned object can be used to add custom params or read it.
-//  If custom params object was not set then new empty object is created.
+//  Return length of serialized message info.
+//  Actual length can be obtained right after applying changes.
 //
-VSCF_PUBLIC vscf_message_info_custom_params_t *
-vscf_message_info_custom_params(vscf_message_info_t *self);
+VSCF_PUBLIC size_t
+vscf_message_info_editor_packed_len(const vscf_message_info_editor_t *self);
 
 //
-//  Remove all recipients.
+//  Return serialized message info.
+//  Precondition: this method can be called after "apply".
 //
 VSCF_PUBLIC void
-vscf_message_info_clear_recipients(vscf_message_info_t *self);
+vscf_message_info_editor_pack(vscf_message_info_editor_t *self, vsc_buffer_t *message_info);
 
 
 // --------------------------------------------------------------------------
@@ -203,5 +216,5 @@ vscf_message_info_clear_recipients(vscf_message_info_t *self);
 
 
 //  @footer
-#endif // VSCF_MESSAGE_INFO_H_INCLUDED
+#endif // VSCF_MESSAGE_INFO_EDITOR_H_INCLUDED
 //  @end

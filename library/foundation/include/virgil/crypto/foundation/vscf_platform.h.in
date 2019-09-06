@@ -510,6 +510,10 @@ extern "C" {
 #cmakedefine01 VSCF_GROUP_SESSION_EPOCH_NODE
 #endif
 
+#ifndef VSCF_MESSAGE_INFO_EDITOR
+#cmakedefine01 VSCF_MESSAGE_INFO_EDITOR
+#endif
+
 //
 //  Defines namespace include prefix for project 'common'.
 //

@@ -118,6 +118,7 @@
 #include "vscf_message_info_custom_params_defs.h"
 #include "vscf_message_info_defs.h"
 #include "vscf_message_info_der_serializer_defs.h"
+#include "vscf_message_info_editor_defs.h"
 #include "vscf_message_info_serializer_api.h"
 #include "vscf_message_padding.h"
 #include "vscf_password_recipient_info_defs.h"

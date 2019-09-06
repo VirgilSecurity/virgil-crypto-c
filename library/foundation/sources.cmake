@@ -524,6 +524,11 @@ set_property(
 )
 
 set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_message_info_editor.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
+)
+
+set_property(
     SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_oid.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
@@ -832,6 +837,8 @@ target_sources(foundation
             "$<$<BOOL:${VSCF_MESSAGE_INFO_CUSTOM_PARAMS}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_message_info_custom_params.h>"
             "${CMAKE_CURRENT_LIST_DIR}/src/vscf_message_info_custom_params_internal.h"
             "$<$<BOOL:${VSCF_MESSAGE_INFO_CUSTOM_PARAMS}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_message_info_custom_params_defs.h>"
+            "$<$<BOOL:${VSCF_MESSAGE_INFO_EDITOR}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_message_info_editor.h>"
+            "$<$<BOOL:${VSCF_MESSAGE_INFO_EDITOR}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_message_info_editor_defs.h>"
             "$<$<BOOL:${VSCF_MESSAGE_PADDING}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_message_padding.h>"
             "$<$<BOOL:${VSCF_MESSAGE_PADDING}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_message_padding_defs.h>"
             "$<$<BOOL:${VSCF_OID}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_oid.h>"
@@ -1094,6 +1101,8 @@ target_sources(foundation
             "$<$<BOOL:${VSCF_MESSAGE_INFO}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_message_info_defs.c>"
             "$<$<BOOL:${VSCF_MESSAGE_INFO_CUSTOM_PARAMS}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_message_info_custom_params.c>"
             "$<$<BOOL:${VSCF_MESSAGE_INFO_CUSTOM_PARAMS}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_message_info_custom_params_defs.c>"
+            "$<$<BOOL:${VSCF_MESSAGE_INFO_EDITOR}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_message_info_editor.c>"
+            "$<$<BOOL:${VSCF_MESSAGE_INFO_EDITOR}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_message_info_editor_defs.c>"
             "$<$<BOOL:${VSCF_MESSAGE_PADDING}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_message_padding.c>"
             "$<$<BOOL:${VSCF_MESSAGE_PADDING}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_message_padding_defs.c>"
             "$<$<BOOL:${VSCF_OID}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_oid.c>"

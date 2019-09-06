@@ -271,6 +271,21 @@ vscf_key_recipient_info_list_add(
 }
 
 //
+//  Remove current node.
+//
+VSCF_PRIVATE void
+vscf_key_recipient_info_list_remove_self(vscf_key_recipient_info_list_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+
+    vscf_key_recipient_info_destroy(&self->item);
+    if (self->next) {
+        self->item = self->next->item;
+        self->next = self->next->next;
+    }
+}
+
+//
 //  Return true if given list has item.
 //
 VSCF_PUBLIC bool
@@ -309,6 +324,17 @@ vscf_key_recipient_info_list_has_next(const vscf_key_recipient_info_list_t *self
 //
 VSCF_PUBLIC vscf_key_recipient_info_list_t *
 vscf_key_recipient_info_list_next(const vscf_key_recipient_info_list_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+
+    return self->next;
+}
+
+//
+//  Return next list node if exists, or NULL otherwise.
+//
+VSCF_PRIVATE vscf_key_recipient_info_list_t *
+vscf_key_recipient_info_list_next_modifiable(vscf_key_recipient_info_list_t *self) {
 
     VSCF_ASSERT_PTR(self);
 

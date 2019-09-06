@@ -79,6 +79,8 @@ from ._vscf_group_session_ticket import vscf_group_session_ticket_t
 from ._vscf_group_session_ticket import VscfGroupSessionTicket
 from ._vscf_group_session import vscf_group_session_t
 from ._vscf_group_session import VscfGroupSession
+from ._vscf_message_info_editor import vscf_message_info_editor_t
+from ._vscf_message_info_editor import VscfMessageInfoEditor
 from ._vscf_sha224 import vscf_sha224_t
 from ._vscf_sha224 import VscfSha224
 from ._vscf_sha256 import vscf_sha256_t
