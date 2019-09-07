@@ -42,7 +42,7 @@ mvn clean package
 
 Build artifacts with a command
 ```bash
-mvn clean install
+mvn clean package -Pall,benchmark
 ```
 
 A JAR file with benchmarks and all dependencies will be build. You can find it at `benchmark/target/benchmark.jar`.
