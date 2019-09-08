@@ -101,7 +101,7 @@ import VSCFoundation
     }
 
     /// Return buffer length required to hold message info returned by the
-    /// "start encryption" method.
+    /// "pack message info" method.
     /// Precondition: all recipients and custom parameters should be set.
     @objc public func messageInfoLen() -> Int {
         let proxyResult = vscf_recipient_cipher_message_info_len(self.c_ctx)

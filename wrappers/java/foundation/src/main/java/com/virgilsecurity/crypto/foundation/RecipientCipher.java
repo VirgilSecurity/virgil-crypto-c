@@ -102,7 +102,7 @@ public class RecipientCipher implements AutoCloseable {
 
     /*
     * Return buffer length required to hold message info returned by the
-    * "start encryption" method.
+    * "pack message info" method.
     * Precondition: all recipients and custom parameters should be set.
     */
     public int messageInfoLen() {

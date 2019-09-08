@@ -440,7 +440,7 @@ public class FoundationJNI {
 
     /*
     * Return buffer length required to hold message info returned by the
-    * "start encryption" method.
+    * "pack message info" method.
     * Precondition: all recipients and custom parameters should be set.
     */
     public native int recipientCipher_messageInfoLen(long cCtx);
@@ -800,6 +800,50 @@ public class FoundationJNI {
     * Creates ticket with new key for removing participants or proactive to rotate encryption key.
     */
     public native GroupSessionTicket groupSession_createGroupTicket(long cCtx) throws FoundationException;
+
+    public native long messageInfoEditor_new();
+
+    public native void messageInfoEditor_close(long cCtx);
+
+    public native void messageInfoEditor_setRandom(long cCtx, Random random);
+
+    /*
+    * Set depenencies to it's defaults.
+    */
+    public native void messageInfoEditor_setupDefaults(long cCtx) throws FoundationException;
+
+    /*
+    * Unpack serialized message info.
+    */
+    public native void messageInfoEditor_unpack(long cCtx, byte[] messageInfoData, byte[] ownerRecipientId, PrivateKey ownerPrivateKey) throws FoundationException;
+
+    /*
+    * Add recipient defined with id and public key.
+    */
+    public native void messageInfoEditor_addKeyRecipient(long cCtx, byte[] recipientId, PublicKey publicKey) throws FoundationException;
+
+    /*
+    * Remove recipient with a given id.
+    * Return false if recipient with given id was not found.
+    */
+    public native boolean messageInfoEditor_removeKeyRecipient(long cCtx, byte[] recipientId);
+
+    /*
+    * Remove all existent recipients.
+    */
+    public native void messageInfoEditor_removeAll(long cCtx);
+
+    /*
+    * Return length of serialized message info.
+    * Actual length can be obtained right after applying changes.
+    */
+    public native int messageInfoEditor_packedLen(long cCtx);
+
+    /*
+    * Return serialized message info.
+    * Precondition: this method can be called after "apply".
+    */
+    public native byte[] messageInfoEditor_pack(long cCtx);
 
     public native long sha224_new();
 

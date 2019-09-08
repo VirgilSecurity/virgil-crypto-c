@@ -79,7 +79,7 @@ class RecipientCipher(object):
 
     def message_info_len(self):
         """Return buffer length required to hold message info returned by the
-        "start encryption" method.
+        "pack message info" method.
         Precondition: all recipients and custom parameters should be set."""
         result = self._lib_vscf_recipient_cipher.vscf_recipient_cipher_message_info_len(self.ctx)
         return result

@@ -433,6 +433,7 @@ vsc_buffer_alloc(vsc_buffer_t *self, size_t capacity) {
     self->capacity = capacity;
     self->len = 0;
     self->bytes_dealloc_cb = vsc_dealloc;
+    self->is_owner = true;
 }
 
 //
@@ -453,7 +454,7 @@ vsc_buffer_release(vsc_buffer_t *self) {
 
     self->bytes = NULL;
     self->bytes_dealloc_cb = NULL;
-    self->is_owner = 0;
+    self->is_owner = false;
 }
 
 //
