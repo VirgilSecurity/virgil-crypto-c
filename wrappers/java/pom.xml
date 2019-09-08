@@ -87,7 +87,6 @@
 
 	<modules>
 		<module>common</module>
-		<module>benchmark</module>
 	</modules>
 
 	<dependencyManagement>
@@ -223,6 +222,12 @@
 				<module>phe</module>
 				<module>pythia</module>
 				<module>ratchet</module>
+			</modules>
+		</profile>
+		<profile>
+			<id>benchmark</id>
+			<modules>
+				<module>benchmark</module>
 			</modules>
 		</profile>
 		<profile>

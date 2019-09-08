@@ -43,6 +43,13 @@
     </method>
 
 
+    <method name="key recipient info list modifiable" visibility="private">
+        Return list with a "key recipient info" elements.
+
+        <return class="key recipient info list" access="readwrite"/>
+    </method>
+
+
     <method name="password recipient info list" is_const="1">
         Return list with a "password recipient info" elements.
 

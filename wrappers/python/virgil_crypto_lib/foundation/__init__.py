@@ -60,6 +60,7 @@ from .brainkey_server import BrainkeyServer
 from .group_session_message import GroupSessionMessage
 from .group_session_ticket import GroupSessionTicket
 from .group_session import GroupSession
+from .message_info_editor import MessageInfoEditor
 from .cipher import Cipher
 from .auth_encrypt import AuthEncrypt
 from .auth_decrypt import AuthDecrypt

@@ -139,6 +139,7 @@
     <class name="group session"/>
     <class name="group session epoch"/>
     <class name="group session epoch node"/>
+    <class name="message info editor"/>
 
     <implementor name="mbedtls"/>
     <implementor name="mbedtls pk"/>
