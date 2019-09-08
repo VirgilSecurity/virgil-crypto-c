@@ -111,6 +111,20 @@ class VscePheCipher(object):
         vsce_phe_cipher_decrypt.restype = c_int
         return vsce_phe_cipher_decrypt(ctx, cipher_text, account_key, plain_text)
 
+    def vsce_phe_cipher_auth_encrypt(self, ctx, plain_text, additional_data, account_key, cipher_text):
+        """Encrypts data (and authenticates additional data) using account key"""
+        vsce_phe_cipher_auth_encrypt = self._lib.vsce_phe_cipher_auth_encrypt
+        vsce_phe_cipher_auth_encrypt.argtypes = [POINTER(vsce_phe_cipher_t), vsc_data_t, vsc_data_t, vsc_data_t, POINTER(vsc_buffer_t)]
+        vsce_phe_cipher_auth_encrypt.restype = c_int
+        return vsce_phe_cipher_auth_encrypt(ctx, plain_text, additional_data, account_key, cipher_text)
+
+    def vsce_phe_cipher_auth_decrypt(self, ctx, cipher_text, additional_data, account_key, plain_text):
+        """Decrypts data (and verifies additional data) using account key"""
+        vsce_phe_cipher_auth_decrypt = self._lib.vsce_phe_cipher_auth_decrypt
+        vsce_phe_cipher_auth_decrypt.argtypes = [POINTER(vsce_phe_cipher_t), vsc_data_t, vsc_data_t, vsc_data_t, POINTER(vsc_buffer_t)]
+        vsce_phe_cipher_auth_decrypt.restype = c_int
+        return vsce_phe_cipher_auth_decrypt(ctx, cipher_text, additional_data, account_key, plain_text)
+
     def vsce_phe_cipher_shallow_copy(self, ctx):
         vsce_phe_cipher_shallow_copy = self._lib.vsce_phe_cipher_shallow_copy
         vsce_phe_cipher_shallow_copy.argtypes = [POINTER(vsce_phe_cipher_t)]

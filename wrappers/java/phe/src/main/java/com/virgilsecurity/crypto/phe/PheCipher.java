@@ -124,5 +124,19 @@ public class PheCipher implements AutoCloseable {
     public byte[] decrypt(byte[] cipherText, byte[] accountKey) throws PheException {
         return PheJNI.INSTANCE.pheCipher_decrypt(this.cCtx, cipherText, accountKey);
     }
+
+    /*
+    * Encrypts data (and authenticates additional data) using account key
+    */
+    public byte[] authEncrypt(byte[] plainText, byte[] additionalData, byte[] accountKey) throws PheException {
+        return PheJNI.INSTANCE.pheCipher_authEncrypt(this.cCtx, plainText, additionalData, accountKey);
+    }
+
+    /*
+    * Decrypts data (and verifies additional data) using account key
+    */
+    public byte[] authDecrypt(byte[] cipherText, byte[] additionalData, byte[] accountKey) throws PheException {
+        return PheJNI.INSTANCE.pheCipher_authDecrypt(this.cCtx, cipherText, additionalData, accountKey);
+    }
 }
 

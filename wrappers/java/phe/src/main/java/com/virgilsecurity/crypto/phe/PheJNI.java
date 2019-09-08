@@ -204,5 +204,15 @@ public class PheJNI {
     * Decrypts data using account key
     */
     public native byte[] pheCipher_decrypt(long cCtx, byte[] cipherText, byte[] accountKey) throws PheException;
+
+    /*
+    * Encrypts data (and authenticates additional data) using account key
+    */
+    public native byte[] pheCipher_authEncrypt(long cCtx, byte[] plainText, byte[] additionalData, byte[] accountKey) throws PheException;
+
+    /*
+    * Decrypts data (and verifies additional data) using account key
+    */
+    public native byte[] pheCipher_authDecrypt(long cCtx, byte[] cipherText, byte[] additionalData, byte[] accountKey) throws PheException;
 }
 
