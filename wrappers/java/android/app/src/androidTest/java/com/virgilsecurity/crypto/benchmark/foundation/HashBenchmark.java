@@ -62,7 +62,7 @@ public class HashBenchmark {
 		try {
 			((AutoCloseable) this.hash).close();
 		} catch (Exception e) {
-			Log.e("Hash", "Can't close hash resource", e);
+			Log.e(BenchmarkOptions.TAG, "Can't close hash resource", e);
 		}
 	}
 
@@ -105,6 +105,6 @@ public class HashBenchmark {
 		}
 		long endTime = System.nanoTime();
 		long avgTime = (endTime - startTime) / BenchmarkOptions.MEASUREMENTS;
-		Log.i("Benchmark", "Hash with " + this.algId + " in " + avgTime + " ns");
+		Log.i(BenchmarkOptions.TAG, "Hash with " + this.algId + " in " + avgTime + " ns");
 	}
 }

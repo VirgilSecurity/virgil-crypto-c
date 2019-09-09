@@ -112,7 +112,7 @@ public class SignatureBenchmark {
 			((AutoCloseable) this.privateKey).close();
 			((AutoCloseable) this.publicKey).close();
 		} catch (Exception e) {
-			e.printStackTrace();
+			Log.e(BenchmarkOptions.TAG, "Can't close signer resources", e);
 		}
 	}
 
@@ -152,7 +152,7 @@ public class SignatureBenchmark {
 		}
 		long endTime = System.nanoTime();
 		long avgTime = (endTime - startTime) / BenchmarkOptions.MEASUREMENTS;
-		Log.i("Benchmark", "Sign with " + this.algId + " in " + avgTime + " ns");
+		Log.i(BenchmarkOptions.TAG, "Sign with " + this.algId + " in " + avgTime + " ns");
 	}
 
 	private void verify() {
@@ -164,7 +164,7 @@ public class SignatureBenchmark {
 		}
 		long endTime = System.nanoTime();
 		long avgTime = (endTime - startTime) / BenchmarkOptions.MEASUREMENTS;
-		Log.i("Benchmark", "Verify with " + this.algId + " in " + avgTime + " ns");
+		Log.i(BenchmarkOptions.TAG, "Verify with " + this.algId + " in " + avgTime + " ns");
 	}
 
 }
