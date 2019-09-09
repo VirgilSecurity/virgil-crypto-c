@@ -4156,6 +4156,150 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
     return ret;
 }
 
+JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoEditor_1new__ (JNIEnv *jenv, jobject jobj) {
+    jlong c_ctx = 0;
+    *(vscf_message_info_editor_t **)&c_ctx = vscf_message_info_editor_new();
+    return c_ctx;
+}
+
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoEditor_1close (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    vscf_message_info_editor_delete(*(vscf_message_info_editor_t /*2*/ **) &c_ctx /*5*/);
+}
+
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoEditor_1setRandom (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jrandom) {
+    jclass random_cls = (*jenv)->GetObjectClass(jenv, jrandom);
+    if (NULL == random_cls) {
+        VSCF_ASSERT("Class Random not found.");
+    }
+    jfieldID random_fidCtx = (*jenv)->GetFieldID(jenv, random_cls, "cCtx", "J");
+    if (NULL == random_fidCtx) {
+        VSCF_ASSERT("Class 'Random' has no field 'cCtx'.");
+    }
+    jlong random_c_ctx = (*jenv)->GetLongField(jenv, jrandom, random_fidCtx);
+    vscf_impl_t */*6*/ random = *(vscf_impl_t */*6*/*) &random_c_ctx;
+
+    vscf_message_info_editor_release_random((vscf_message_info_editor_t /*2*/ *) c_ctx);
+    vscf_message_info_editor_use_random((vscf_message_info_editor_t /*2*/ *) c_ctx, random);
+}
+
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoEditor_1setupDefaults (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    // Cast class context
+    vscf_message_info_editor_t /*2*/* message_info_editor_ctx = *(vscf_message_info_editor_t /*2*/**) &c_ctx;
+
+    vscf_status_t status = vscf_message_info_editor_setup_defaults(message_info_editor_ctx /*a1*/);
+    if (status != vscf_status_SUCCESS) {
+        throwFoundationException(jenv, jobj, status);
+        return;
+    }
+}
+
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoEditor_1unpack (JNIEnv *jenv, jobject jobj, jlong c_ctx, jbyteArray jmessageInfoData, jbyteArray jownerRecipientId, jobject jownerPrivateKey) {
+    // Cast class context
+    vscf_message_info_editor_t /*2*/* message_info_editor_ctx = *(vscf_message_info_editor_t /*2*/**) &c_ctx;
+    // Wrap Java interfaces
+    jclass owner_private_key_cls = (*jenv)->GetObjectClass(jenv, jownerPrivateKey);
+    if (NULL == owner_private_key_cls) {
+        VSCF_ASSERT("Class PrivateKey not found.");
+    }
+    jfieldID owner_private_key_fidCtx = (*jenv)->GetFieldID(jenv, owner_private_key_cls, "cCtx", "J");
+    if (NULL == owner_private_key_fidCtx) {
+        VSCF_ASSERT("Class 'PrivateKey' has no field 'cCtx'.");
+    }
+    jlong owner_private_key_c_ctx = (*jenv)->GetLongField(jenv, jownerPrivateKey, owner_private_key_fidCtx);
+    vscf_impl_t */*6*/ owner_private_key = *(vscf_impl_t */*6*/*)&owner_private_key_c_ctx;
+
+    // Wrap input data
+    byte* message_info_data_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jmessageInfoData, NULL);
+    vsc_data_t message_info_data = vsc_data(message_info_data_arr, (*jenv)->GetArrayLength(jenv, jmessageInfoData));
+
+    byte* owner_recipient_id_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jownerRecipientId, NULL);
+    vsc_data_t owner_recipient_id = vsc_data(owner_recipient_id_arr, (*jenv)->GetArrayLength(jenv, jownerRecipientId));
+
+    vscf_status_t status = vscf_message_info_editor_unpack(message_info_editor_ctx /*a1*/, message_info_data /*a3*/, owner_recipient_id /*a3*/, owner_private_key /*a6*/);
+    if (status != vscf_status_SUCCESS) {
+        throwFoundationException(jenv, jobj, status);
+        return;
+    }
+    // Free resources
+    (*jenv)->ReleaseByteArrayElements(jenv, jmessageInfoData, (jbyte*) message_info_data_arr, 0);
+
+    (*jenv)->ReleaseByteArrayElements(jenv, jownerRecipientId, (jbyte*) owner_recipient_id_arr, 0);
+}
+
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoEditor_1addKeyRecipient (JNIEnv *jenv, jobject jobj, jlong c_ctx, jbyteArray jrecipientId, jobject jpublicKey) {
+    // Cast class context
+    vscf_message_info_editor_t /*2*/* message_info_editor_ctx = *(vscf_message_info_editor_t /*2*/**) &c_ctx;
+    // Wrap Java interfaces
+    jclass public_key_cls = (*jenv)->GetObjectClass(jenv, jpublicKey);
+    if (NULL == public_key_cls) {
+        VSCF_ASSERT("Class PublicKey not found.");
+    }
+    jfieldID public_key_fidCtx = (*jenv)->GetFieldID(jenv, public_key_cls, "cCtx", "J");
+    if (NULL == public_key_fidCtx) {
+        VSCF_ASSERT("Class 'PublicKey' has no field 'cCtx'.");
+    }
+    jlong public_key_c_ctx = (*jenv)->GetLongField(jenv, jpublicKey, public_key_fidCtx);
+    vscf_impl_t */*6*/ public_key = *(vscf_impl_t */*6*/*)&public_key_c_ctx;
+
+    // Wrap input data
+    byte* recipient_id_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jrecipientId, NULL);
+    vsc_data_t recipient_id = vsc_data(recipient_id_arr, (*jenv)->GetArrayLength(jenv, jrecipientId));
+
+    vscf_status_t status = vscf_message_info_editor_add_key_recipient(message_info_editor_ctx /*a1*/, recipient_id /*a3*/, public_key /*a6*/);
+    if (status != vscf_status_SUCCESS) {
+        throwFoundationException(jenv, jobj, status);
+        return;
+    }
+    // Free resources
+    (*jenv)->ReleaseByteArrayElements(jenv, jrecipientId, (jbyte*) recipient_id_arr, 0);
+}
+
+JNIEXPORT jboolean JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoEditor_1removeKeyRecipient (JNIEnv *jenv, jobject jobj, jlong c_ctx, jbyteArray jrecipientId) {
+    // Cast class context
+    vscf_message_info_editor_t /*2*/* message_info_editor_ctx = *(vscf_message_info_editor_t /*2*/**) &c_ctx;
+
+    // Wrap input data
+    byte* recipient_id_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jrecipientId, NULL);
+    vsc_data_t recipient_id = vsc_data(recipient_id_arr, (*jenv)->GetArrayLength(jenv, jrecipientId));
+
+    jboolean ret = (jboolean) vscf_message_info_editor_remove_key_recipient(message_info_editor_ctx /*a1*/, recipient_id /*a3*/);
+    // Free resources
+    (*jenv)->ReleaseByteArrayElements(jenv, jrecipientId, (jbyte*) recipient_id_arr, 0);
+
+    return ret;
+}
+
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoEditor_1removeAll (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    // Cast class context
+    vscf_message_info_editor_t /*2*/* message_info_editor_ctx = *(vscf_message_info_editor_t /*2*/**) &c_ctx;
+
+    vscf_message_info_editor_remove_all(message_info_editor_ctx /*a1*/);
+}
+
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoEditor_1packedLen (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    // Cast class context
+    vscf_message_info_editor_t /*2*/* message_info_editor_ctx = *(vscf_message_info_editor_t /*2*/**) &c_ctx;
+
+    jint ret = (jint) vscf_message_info_editor_packed_len(message_info_editor_ctx /*a1*/);
+    return ret;
+}
+
+JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoEditor_1pack (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    // Cast class context
+    vscf_message_info_editor_t /*2*/* message_info_editor_ctx = *(vscf_message_info_editor_t /*2*/**) &c_ctx;
+
+    // Wrap input buffers
+    vsc_buffer_t *message_info = vsc_buffer_new_with_capacity(vscf_message_info_editor_packed_len((vscf_message_info_editor_t /*2*/ *) c_ctx /*3*/));
+
+    vscf_message_info_editor_pack(message_info_editor_ctx /*a1*/, message_info /*a3*/);
+    jbyteArray ret = (*jenv)->NewByteArray(jenv, vsc_buffer_len(message_info));
+    (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(message_info), (jbyte*) vsc_buffer_bytes(message_info));
+    // Free resources
+    vsc_buffer_delete(message_info);
+
+    return ret;
+}
+
 JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_sha224_1new__ (JNIEnv *jenv, jobject jobj) {
     jlong c_ctx = 0;
     *(vscf_sha224_t **)&c_ctx = vscf_sha224_new();

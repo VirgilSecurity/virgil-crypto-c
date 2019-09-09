@@ -138,6 +138,84 @@ test__encrypt_decrypt__random_data__should_match(void) {
     vsce_phe_cipher_destroy(&cipher2);
 }
 
+void
+test__auth_encrypt_decrypt__random_data__should_match(void) {
+    vsce_phe_cipher_t *cipher1, *cipher2;
+
+    cipher1 = vsce_phe_cipher_new();
+    TEST_ASSERT_EQUAL(vsce_status_SUCCESS, vsce_phe_cipher_setup_defaults(cipher1));
+
+    cipher2 = vsce_phe_cipher_new();
+    TEST_ASSERT_EQUAL(vsce_status_SUCCESS, vsce_phe_cipher_setup_defaults(cipher2));
+
+    vscf_ctr_drbg_t *rng = vscf_ctr_drbg_new();
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_ctr_drbg_setup_defaults(rng));
+
+    for (int i = 0; i < 100; i++) {
+        vsc_buffer_t *account_key = vsc_buffer_new_with_capacity(vsce_phe_common_PHE_ACCOUNT_KEY_LENGTH);
+
+        TEST_ASSERT_EQUAL(
+                vscf_status_SUCCESS, vscf_ctr_drbg_random(rng, vsce_phe_common_PHE_ACCOUNT_KEY_LENGTH, account_key));
+
+        byte data_len, addata_len;
+
+        vsc_buffer_t *len_buf = vsc_buffer_new();
+        vsc_buffer_use(len_buf, &data_len, sizeof(data_len));
+
+        TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_ctr_drbg_random(rng, sizeof(data_len), len_buf));
+
+        if (data_len == 0) {
+            data_len = 10;
+        }
+
+        vsc_buffer_t *adlen_buf = vsc_buffer_new();
+        vsc_buffer_use(adlen_buf, &addata_len, sizeof(addata_len));
+
+        TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_ctr_drbg_random(rng, sizeof(addata_len), adlen_buf));
+
+        if (addata_len == 0) {
+            addata_len = 10;
+        }
+
+        vsc_buffer_t *plain_text = vsc_buffer_new_with_capacity(data_len);
+        vsc_buffer_t *addata = vsc_buffer_new_with_capacity(addata_len);
+
+        TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_ctr_drbg_random(rng, data_len, plain_text));
+        TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_ctr_drbg_random(rng, addata_len, addata));
+
+        vsc_buffer_t *cipher_text = vsc_buffer_new_with_capacity(vsce_phe_cipher_encrypt_len(cipher1, data_len));
+
+        TEST_ASSERT_EQUAL(
+                vsce_status_SUCCESS, vsce_phe_cipher_auth_encrypt(cipher1, vsc_buffer_data(plain_text),
+                                             vsc_buffer_data(addata), vsc_buffer_data(account_key), cipher_text));
+
+        vsc_buffer_t *plain_text2 =
+                vsc_buffer_new_with_capacity(vsce_phe_cipher_decrypt_len(cipher2, vsc_buffer_len(cipher_text)));
+
+        TEST_ASSERT_EQUAL(
+                vsce_status_SUCCESS, vsce_phe_cipher_auth_decrypt(cipher2, vsc_buffer_data(cipher_text),
+                                             vsc_buffer_data(addata), vsc_buffer_data(account_key), plain_text2));
+
+        TEST_ASSERT_EQUAL(vsc_buffer_len(plain_text), vsc_buffer_len(plain_text2));
+
+        TEST_ASSERT_EQUAL_MEMORY(
+                vsc_buffer_bytes(plain_text), vsc_buffer_bytes(plain_text2), vsc_buffer_len(plain_text));
+
+        vsc_buffer_destroy(&account_key);
+        vsc_buffer_destroy(&len_buf);
+        vsc_buffer_destroy(&plain_text);
+        vsc_buffer_destroy(&addata);
+        vsc_buffer_destroy(&adlen_buf);
+        vsc_buffer_destroy(&cipher_text);
+        vsc_buffer_destroy(&plain_text2);
+    }
+
+    vscf_ctr_drbg_destroy(&rng);
+
+    vsce_phe_cipher_destroy(&cipher1);
+    vsce_phe_cipher_destroy(&cipher2);
+}
+
 #endif // TEST_DEPENDENCIES_AVAILABLE
 
 
@@ -151,6 +229,7 @@ main(void) {
 #if TEST_DEPENDENCIES_AVAILABLE
     RUN_TEST(test__encrypt_decrypt__fixed_data__should_match);
     RUN_TEST(test__encrypt_decrypt__random_data__should_match);
+    RUN_TEST(test__auth_encrypt_decrypt__random_data__should_match);
 #else
     RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
 #endif

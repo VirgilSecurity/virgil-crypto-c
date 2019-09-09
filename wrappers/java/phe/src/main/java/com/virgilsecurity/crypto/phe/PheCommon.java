@@ -109,5 +109,12 @@ public class PheCommon {
     public int getPheMaxDecryptLen() {
         return 1024 * 1024;
     }
+
+    /*
+    * Maximum data to authenticate
+    */
+    public int getPheMaxAuthLen() {
+        return 1024;
+    }
 }
 

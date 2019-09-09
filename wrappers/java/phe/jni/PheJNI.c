@@ -693,3 +693,73 @@ JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_pheCipher
     return ret;
 }
 
+JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_pheCipher_1authEncrypt (JNIEnv *jenv, jobject jobj, jlong c_ctx, jbyteArray jplainText, jbyteArray jadditionalData, jbyteArray jaccountKey) {
+    // Cast class context
+    vsce_phe_cipher_t /*2*/* phe_cipher_ctx = *(vsce_phe_cipher_t /*2*/**) &c_ctx;
+
+    // Wrap input data
+    byte* plain_text_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jplainText, NULL);
+    vsc_data_t plain_text = vsc_data(plain_text_arr, (*jenv)->GetArrayLength(jenv, jplainText));
+
+    byte* additional_data_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jadditionalData, NULL);
+    vsc_data_t additional_data = vsc_data(additional_data_arr, (*jenv)->GetArrayLength(jenv, jadditionalData));
+
+    byte* account_key_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jaccountKey, NULL);
+    vsc_data_t account_key = vsc_data(account_key_arr, (*jenv)->GetArrayLength(jenv, jaccountKey));
+
+    vsc_buffer_t *cipher_text = vsc_buffer_new_with_capacity(vsce_phe_cipher_encrypt_len((vsce_phe_cipher_t /*2*/ *) c_ctx /*3*/, plain_text.len/*a*/));
+
+    vsce_status_t status = vsce_phe_cipher_auth_encrypt(phe_cipher_ctx /*a1*/, plain_text /*a3*/, additional_data /*a3*/, account_key /*a3*/, cipher_text /*a3*/);
+    if (status != vsce_status_SUCCESS) {
+        throwPheException(jenv, jobj, status);
+        return NULL;
+    }
+    jbyteArray ret = (*jenv)->NewByteArray(jenv, vsc_buffer_len(cipher_text));
+    (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(cipher_text), (jbyte*) vsc_buffer_bytes(cipher_text));
+    // Free resources
+    (*jenv)->ReleaseByteArrayElements(jenv, jplainText, (jbyte*) plain_text_arr, 0);
+
+    (*jenv)->ReleaseByteArrayElements(jenv, jadditionalData, (jbyte*) additional_data_arr, 0);
+
+    (*jenv)->ReleaseByteArrayElements(jenv, jaccountKey, (jbyte*) account_key_arr, 0);
+
+    vsc_buffer_delete(cipher_text);
+
+    return ret;
+}
+
+JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_pheCipher_1authDecrypt (JNIEnv *jenv, jobject jobj, jlong c_ctx, jbyteArray jcipherText, jbyteArray jadditionalData, jbyteArray jaccountKey) {
+    // Cast class context
+    vsce_phe_cipher_t /*2*/* phe_cipher_ctx = *(vsce_phe_cipher_t /*2*/**) &c_ctx;
+
+    // Wrap input data
+    byte* cipher_text_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jcipherText, NULL);
+    vsc_data_t cipher_text = vsc_data(cipher_text_arr, (*jenv)->GetArrayLength(jenv, jcipherText));
+
+    byte* additional_data_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jadditionalData, NULL);
+    vsc_data_t additional_data = vsc_data(additional_data_arr, (*jenv)->GetArrayLength(jenv, jadditionalData));
+
+    byte* account_key_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jaccountKey, NULL);
+    vsc_data_t account_key = vsc_data(account_key_arr, (*jenv)->GetArrayLength(jenv, jaccountKey));
+
+    vsc_buffer_t *plain_text = vsc_buffer_new_with_capacity(vsce_phe_cipher_decrypt_len((vsce_phe_cipher_t /*2*/ *) c_ctx /*3*/, cipher_text.len/*a*/));
+
+    vsce_status_t status = vsce_phe_cipher_auth_decrypt(phe_cipher_ctx /*a1*/, cipher_text /*a3*/, additional_data /*a3*/, account_key /*a3*/, plain_text /*a3*/);
+    if (status != vsce_status_SUCCESS) {
+        throwPheException(jenv, jobj, status);
+        return NULL;
+    }
+    jbyteArray ret = (*jenv)->NewByteArray(jenv, vsc_buffer_len(plain_text));
+    (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(plain_text), (jbyte*) vsc_buffer_bytes(plain_text));
+    // Free resources
+    (*jenv)->ReleaseByteArrayElements(jenv, jcipherText, (jbyte*) cipher_text_arr, 0);
+
+    (*jenv)->ReleaseByteArrayElements(jenv, jadditionalData, (jbyte*) additional_data_arr, 0);
+
+    (*jenv)->ReleaseByteArrayElements(jenv, jaccountKey, (jbyte*) account_key_arr, 0);
+
+    vsc_buffer_delete(plain_text);
+
+    return ret;
+}
+
