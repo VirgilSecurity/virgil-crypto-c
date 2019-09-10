@@ -39,7 +39,7 @@ const precondition = require('./precondition');
 
 const initMessageInfoEditor = (Module, modules) => {
     /**
-     * Add and/or remove recipients and it's paramteres within message info.
+     * Add and/or remove recipients and it's parameters within message info.
      *
      * Usage:
      * 1. Unpack binary message info that was obtained from RecipientCipher.
@@ -101,7 +101,7 @@ const initMessageInfoEditor = (Module, modules) => {
         }
 
         /**
-         * Set depenencies to it's defaults.
+         * Set dependencies to it's defaults.
          */
         setupDefaults() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
@@ -111,12 +111,13 @@ const initMessageInfoEditor = (Module, modules) => {
 
         /**
          * Unpack serialized message info.
+         *
+         * Note that recipients can only be removed but not added.
+         * Note, use "unlock" method to be able to add new recipients as well.
          */
-        unpack(messageInfoData, ownerRecipientId, ownerPrivateKey) {
+        unpack(messageInfoData) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('messageInfoData', messageInfoData);
-            precondition.ensureByteArray('ownerRecipientId', ownerRecipientId);
-            precondition.ensureImplementInterface('ownerPrivateKey', ownerPrivateKey, 'Foundation.PrivateKey', modules.FoundationInterfaceTag.PRIVATE_KEY, modules.FoundationInterface);
 
             //  Copy bytes from JS memory to the WASM memory.
             const messageInfoDataSize = messageInfoData.length * messageInfoData.BYTES_PER_ELEMENT;
@@ -129,6 +130,23 @@ const initMessageInfoEditor = (Module, modules) => {
 
             //  Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(messageInfoDataCtxPtr, messageInfoDataPtr, messageInfoDataSize);
+
+            try {
+                const proxyResult = Module._vscf_message_info_editor_unpack(this.ctxPtr, messageInfoDataCtxPtr);
+                modules.FoundationError.handleStatusCode(proxyResult);
+            } finally {
+                Module._free(messageInfoDataPtr);
+                Module._free(messageInfoDataCtxPtr);
+            }
+        }
+
+        /**
+         * Decrypt encryption key this allows adding new recipients.
+         */
+        unlock(ownerRecipientId, ownerPrivateKey) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureByteArray('ownerRecipientId', ownerRecipientId);
+            precondition.ensureImplementInterface('ownerPrivateKey', ownerPrivateKey, 'Foundation.PrivateKey', modules.FoundationInterfaceTag.PRIVATE_KEY, modules.FoundationInterface);
 
             //  Copy bytes from JS memory to the WASM memory.
             const ownerRecipientIdSize = ownerRecipientId.length * ownerRecipientId.BYTES_PER_ELEMENT;
@@ -143,11 +161,9 @@ const initMessageInfoEditor = (Module, modules) => {
             Module._vsc_data(ownerRecipientIdCtxPtr, ownerRecipientIdPtr, ownerRecipientIdSize);
 
             try {
-                const proxyResult = Module._vscf_message_info_editor_unpack(this.ctxPtr, messageInfoDataCtxPtr, ownerRecipientIdCtxPtr, ownerPrivateKey.ctxPtr);
+                const proxyResult = Module._vscf_message_info_editor_unlock(this.ctxPtr, ownerRecipientIdCtxPtr, ownerPrivateKey.ctxPtr);
                 modules.FoundationError.handleStatusCode(proxyResult);
             } finally {
-                Module._free(messageInfoDataPtr);
-                Module._free(messageInfoDataCtxPtr);
                 Module._free(ownerRecipientIdPtr);
                 Module._free(ownerRecipientIdCtxPtr);
             }

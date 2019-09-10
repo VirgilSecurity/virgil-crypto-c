@@ -393,7 +393,9 @@ JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_m
 
 JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoEditor_1setupDefaults (JNIEnv *, jobject, jlong);
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoEditor_1unpack (JNIEnv *, jobject, jlong, jbyteArray, jbyteArray, jobject);
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoEditor_1unpack (JNIEnv *, jobject, jlong, jbyteArray);
+
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoEditor_1unlock (JNIEnv *, jobject, jlong, jbyteArray, jobject);
 
 JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoEditor_1addKeyRecipient (JNIEnv *, jobject, jlong, jbyteArray, jobject);
 

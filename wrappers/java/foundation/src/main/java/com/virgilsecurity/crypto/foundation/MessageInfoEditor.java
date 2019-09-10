@@ -37,7 +37,7 @@
 package com.virgilsecurity.crypto.foundation;
 
 /*
-* Add and/or remove recipients and it's paramteres within message info.
+* Add and/or remove recipients and it's parameters within message info.
 *
 * Usage:
 * 1. Unpack binary message info that was obtained from RecipientCipher.
@@ -78,7 +78,7 @@ public class MessageInfoEditor implements AutoCloseable {
     }
 
     /*
-    * Set depenencies to it's defaults.
+    * Set dependencies to it's defaults.
     */
     public void setupDefaults() throws FoundationException {
         FoundationJNI.INSTANCE.messageInfoEditor_setupDefaults(this.cCtx);
@@ -86,9 +86,19 @@ public class MessageInfoEditor implements AutoCloseable {
 
     /*
     * Unpack serialized message info.
+    *
+    * Note that recipients can only be removed but not added.
+    * Note, use "unlock" method to be able to add new recipients as well.
     */
-    public void unpack(byte[] messageInfoData, byte[] ownerRecipientId, PrivateKey ownerPrivateKey) throws FoundationException {
-        FoundationJNI.INSTANCE.messageInfoEditor_unpack(this.cCtx, messageInfoData, ownerRecipientId, ownerPrivateKey);
+    public void unpack(byte[] messageInfoData) throws FoundationException {
+        FoundationJNI.INSTANCE.messageInfoEditor_unpack(this.cCtx, messageInfoData);
+    }
+
+    /*
+    * Decrypt encryption key this allows adding new recipients.
+    */
+    public void unlock(byte[] ownerRecipientId, PrivateKey ownerPrivateKey) throws FoundationException {
+        FoundationJNI.INSTANCE.messageInfoEditor_unlock(this.cCtx, ownerRecipientId, ownerPrivateKey);
     }
 
     /*

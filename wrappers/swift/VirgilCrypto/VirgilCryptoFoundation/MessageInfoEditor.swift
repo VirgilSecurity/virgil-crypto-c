@@ -36,7 +36,7 @@
 import Foundation
 import VSCFoundation
 
-/// Add and/or remove recipients and it's paramteres within message info.
+/// Add and/or remove recipients and it's parameters within message info.
 ///
 /// Usage:
 ///   1. Unpack binary message info that was obtained from RecipientCipher.
@@ -77,7 +77,7 @@ import VSCFoundation
         vscf_message_info_editor_use_random(self.c_ctx, random.c_ctx)
     }
 
-    /// Set depenencies to it's defaults.
+    /// Set dependencies to it's defaults.
     @objc public func setupDefaults() throws {
         let proxyResult = vscf_message_info_editor_setup_defaults(self.c_ctx)
 
@@ -85,12 +85,23 @@ import VSCFoundation
     }
 
     /// Unpack serialized message info.
-    @objc public func unpack(messageInfoData: Data, ownerRecipientId: Data, ownerPrivateKey: PrivateKey) throws {
+    ///
+    /// Note that recipients can only be removed but not added.
+    /// Note, use "unlock" method to be able to add new recipients as well.
+    @objc public func unpack(messageInfoData: Data) throws {
         let proxyResult = messageInfoData.withUnsafeBytes({ (messageInfoDataPointer: UnsafeRawBufferPointer) -> vscf_status_t in
-            ownerRecipientId.withUnsafeBytes({ (ownerRecipientIdPointer: UnsafeRawBufferPointer) -> vscf_status_t in
 
-                return vscf_message_info_editor_unpack(self.c_ctx, vsc_data(messageInfoDataPointer.bindMemory(to: byte.self).baseAddress, messageInfoData.count), vsc_data(ownerRecipientIdPointer.bindMemory(to: byte.self).baseAddress, ownerRecipientId.count), ownerPrivateKey.c_ctx)
-            })
+            return vscf_message_info_editor_unpack(self.c_ctx, vsc_data(messageInfoDataPointer.bindMemory(to: byte.self).baseAddress, messageInfoData.count))
+        })
+
+        try FoundationError.handleStatus(fromC: proxyResult)
+    }
+
+    /// Decrypt encryption key this allows adding new recipients.
+    @objc public func unlock(ownerRecipientId: Data, ownerPrivateKey: PrivateKey) throws {
+        let proxyResult = ownerRecipientId.withUnsafeBytes({ (ownerRecipientIdPointer: UnsafeRawBufferPointer) -> vscf_status_t in
+
+            return vscf_message_info_editor_unlock(self.c_ctx, vsc_data(ownerRecipientIdPointer.bindMemory(to: byte.self).baseAddress, ownerRecipientId.count), ownerPrivateKey.c_ctx)
         })
 
         try FoundationError.handleStatus(fromC: proxyResult)

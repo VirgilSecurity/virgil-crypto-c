@@ -230,6 +230,7 @@
     "_vscf_message_info_editor_use_random",
     "_vscf_message_info_editor_setup_defaults",
     "_vscf_message_info_editor_unpack",
+    "_vscf_message_info_editor_unlock",
     "_vscf_message_info_editor_add_key_recipient",
     "_vscf_message_info_editor_remove_key_recipient",
     "_vscf_message_info_editor_remove_all",

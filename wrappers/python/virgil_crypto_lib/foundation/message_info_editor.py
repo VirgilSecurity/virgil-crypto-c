@@ -41,7 +41,7 @@ from virgil_crypto_lib.common._c_bridge import Buffer
 
 
 class MessageInfoEditor(object):
-    """Add and/or remove recipients and it's paramteres within message info.
+    """Add and/or remove recipients and it's parameters within message info.
 
     Usage:
       1. Unpack binary message info that was obtained from RecipientCipher.
@@ -61,15 +61,23 @@ class MessageInfoEditor(object):
         self._lib_vscf_message_info_editor.vscf_message_info_editor_use_random(self.ctx, random.c_impl)
 
     def setup_defaults(self):
-        """Set depenencies to it's defaults."""
+        """Set dependencies to it's defaults."""
         status = self._lib_vscf_message_info_editor.vscf_message_info_editor_setup_defaults(self.ctx)
         VscfStatus.handle_status(status)
 
-    def unpack(self, message_info_data, owner_recipient_id, owner_private_key):
-        """Unpack serialized message info."""
+    def unpack(self, message_info_data):
+        """Unpack serialized message info.
+
+        Note that recipients can only be removed but not added.
+        Note, use "unlock" method to be able to add new recipients as well."""
         d_message_info_data = Data(message_info_data)
+        status = self._lib_vscf_message_info_editor.vscf_message_info_editor_unpack(self.ctx, d_message_info_data.data)
+        VscfStatus.handle_status(status)
+
+    def unlock(self, owner_recipient_id, owner_private_key):
+        """Decrypt encryption key this allows adding new recipients."""
         d_owner_recipient_id = Data(owner_recipient_id)
-        status = self._lib_vscf_message_info_editor.vscf_message_info_editor_unpack(self.ctx, d_message_info_data.data, d_owner_recipient_id.data, owner_private_key.c_impl)
+        status = self._lib_vscf_message_info_editor.vscf_message_info_editor_unlock(self.ctx, d_owner_recipient_id.data, owner_private_key.c_impl)
         VscfStatus.handle_status(status)
 
     def add_key_recipient(self, recipient_id, public_key):

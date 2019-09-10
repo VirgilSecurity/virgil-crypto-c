@@ -45,7 +45,7 @@ class vscf_message_info_editor_t(Structure):
 
 
 class VscfMessageInfoEditor(object):
-    """Add and/or remove recipients and it's paramteres within message info.
+    """Add and/or remove recipients and it's parameters within message info.
 
     Usage:
       1. Unpack binary message info that was obtained from RecipientCipher.
@@ -76,18 +76,28 @@ class VscfMessageInfoEditor(object):
         return vscf_message_info_editor_use_random(ctx, random)
 
     def vscf_message_info_editor_setup_defaults(self, ctx):
-        """Set depenencies to it's defaults."""
+        """Set dependencies to it's defaults."""
         vscf_message_info_editor_setup_defaults = self._lib.vscf_message_info_editor_setup_defaults
         vscf_message_info_editor_setup_defaults.argtypes = [POINTER(vscf_message_info_editor_t)]
         vscf_message_info_editor_setup_defaults.restype = c_int
         return vscf_message_info_editor_setup_defaults(ctx)
 
-    def vscf_message_info_editor_unpack(self, ctx, message_info_data, owner_recipient_id, owner_private_key):
-        """Unpack serialized message info."""
+    def vscf_message_info_editor_unpack(self, ctx, message_info_data):
+        """Unpack serialized message info.
+
+        Note that recipients can only be removed but not added.
+        Note, use "unlock" method to be able to add new recipients as well."""
         vscf_message_info_editor_unpack = self._lib.vscf_message_info_editor_unpack
-        vscf_message_info_editor_unpack.argtypes = [POINTER(vscf_message_info_editor_t), vsc_data_t, vsc_data_t, POINTER(vscf_impl_t)]
+        vscf_message_info_editor_unpack.argtypes = [POINTER(vscf_message_info_editor_t), vsc_data_t]
         vscf_message_info_editor_unpack.restype = c_int
-        return vscf_message_info_editor_unpack(ctx, message_info_data, owner_recipient_id, owner_private_key)
+        return vscf_message_info_editor_unpack(ctx, message_info_data)
+
+    def vscf_message_info_editor_unlock(self, ctx, owner_recipient_id, owner_private_key):
+        """Decrypt encryption key this allows adding new recipients."""
+        vscf_message_info_editor_unlock = self._lib.vscf_message_info_editor_unlock
+        vscf_message_info_editor_unlock.argtypes = [POINTER(vscf_message_info_editor_t), vsc_data_t, POINTER(vscf_impl_t)]
+        vscf_message_info_editor_unlock.restype = c_int
+        return vscf_message_info_editor_unlock(ctx, owner_recipient_id, owner_private_key)
 
     def vscf_message_info_editor_add_key_recipient(self, ctx, recipient_id, public_key):
         """Add recipient defined with id and public key."""

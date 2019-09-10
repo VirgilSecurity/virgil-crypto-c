@@ -808,14 +808,22 @@ public class FoundationJNI {
     public native void messageInfoEditor_setRandom(long cCtx, Random random);
 
     /*
-    * Set depenencies to it's defaults.
+    * Set dependencies to it's defaults.
     */
     public native void messageInfoEditor_setupDefaults(long cCtx) throws FoundationException;
 
     /*
     * Unpack serialized message info.
+    *
+    * Note that recipients can only be removed but not added.
+    * Note, use "unlock" method to be able to add new recipients as well.
     */
-    public native void messageInfoEditor_unpack(long cCtx, byte[] messageInfoData, byte[] ownerRecipientId, PrivateKey ownerPrivateKey) throws FoundationException;
+    public native void messageInfoEditor_unpack(long cCtx, byte[] messageInfoData) throws FoundationException;
+
+    /*
+    * Decrypt encryption key this allows adding new recipients.
+    */
+    public native void messageInfoEditor_unlock(long cCtx, byte[] ownerRecipientId, PrivateKey ownerPrivateKey) throws FoundationException;
 
     /*
     * Add recipient defined with id and public key.

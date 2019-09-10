@@ -82,9 +82,15 @@ test__add_key_recipient__rsa2048_to_message_info_with_ed25519__correct(void) {
     //
     //  Unpack
     //
-    vscf_status_t status = vscf_message_info_editor_unpack(message_info_editor,
-            test_data_message_info_MESSAGE_INFO_WITH_ONE_ED25519_RECIPIENT, test_data_message_info_ED25519_RECIPIENT_ID,
-            ed25519_private_key);
+    vscf_status_t status = vscf_message_info_editor_unpack(
+            message_info_editor, test_data_message_info_MESSAGE_INFO_WITH_ONE_ED25519_RECIPIENT);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, status);
+
+    //
+    //  Unlock
+    //
+    status = vscf_message_info_editor_unlock(
+            message_info_editor, test_data_message_info_ED25519_RECIPIENT_ID, ed25519_private_key);
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, status);
 
     //
@@ -148,8 +154,14 @@ test__remove_key_recipient__ed25519_from_message_info_with_ed25519_and_rsa2048__
     //  Unpack
     //
     vscf_status_t status = vscf_message_info_editor_unpack(message_info_editor,
-            test_data_message_info_MESSAGE_INFO_WITH_ONE_ED25519_RECIPIENT_AND_ONE_RSA2048_RECIPIENT,
-            test_data_message_info_RSA2048_RECIPIENT_ID, rsa2048_private_key);
+            test_data_message_info_MESSAGE_INFO_WITH_ONE_ED25519_RECIPIENT_AND_ONE_RSA2048_RECIPIENT);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, status);
+
+    //
+    //  Unlock
+    //
+    status = vscf_message_info_editor_unlock(
+            message_info_editor, test_data_message_info_RSA2048_RECIPIENT_ID, rsa2048_private_key);
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, status);
 
     //
@@ -211,8 +223,14 @@ test__remove_key_recipient__rsa2048_from_message_info_with_ed25519_and_rsa2048__
     //  Unpack
     //
     vscf_status_t status = vscf_message_info_editor_unpack(message_info_editor,
-            test_data_message_info_MESSAGE_INFO_WITH_ONE_ED25519_RECIPIENT_AND_ONE_RSA2048_RECIPIENT,
-            test_data_message_info_ED25519_RECIPIENT_ID, ed25519_private_key);
+            test_data_message_info_MESSAGE_INFO_WITH_ONE_ED25519_RECIPIENT_AND_ONE_RSA2048_RECIPIENT);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, status);
+
+    //
+    //  Unlock
+    //
+    status = vscf_message_info_editor_unlock(
+            message_info_editor, test_data_message_info_ED25519_RECIPIENT_ID, ed25519_private_key);
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, status);
 
     //
