@@ -148,7 +148,6 @@ function php_map_class_interface_high_level (in_interface, out_interface)
     assert_attribute (my.in_interface, "name", my)
 
     my.out_interface.name = php_derive_name(my.in_interface, "Camel")
-    my.out_interface.namespace = "TEMP_NAMESPACE"
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -161,8 +160,6 @@ function php_map_class_constant_high_level (in_constant, out_constant)
 
     my.out_constant.name = php_derive_constant_formatted_string(my.in_constant.name)
     my.out_constant.value = my.in_constant.value
-    # TODO
-    my.out_constant.namespace = "TEMP_NAMESPACE"
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -181,10 +178,6 @@ function php_map_class_method_high_level (in_method, out_php_method, in_prefix)
         my._md = "static"
     endif
     my.out_php_method.declaration = my._md
-
-    new docblock to my.out_php_method
-        . = my.in_method. ? 
-    endnew
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -207,35 +200,38 @@ function php_map_return_high_level (in_method, out_php_method)
     my._return_type = "void"
     my._return_data = ""
     my._throw_exception = 0
+    my._return_data_list = ""
 
     my._argument_buffer_count = 0
-    my._buffer_or_return = ""
 
     for my.in_method.argument as argument0 where defined (argument0.class)
         if argument0.class = "buffer"
             my._argument_buffer_count = my._argument_buffer_count + 1
-            my._buffer_or_return = "buffer"
+            my._return_data_list += php_derive_argument_name(argument0, "-l")
+            if ! last()
+                my._return_data_list += ", "
+            endif
         endif
     endfor
+
+    if my._argument_buffer_count = 1
+        my._return_type = "string"
+        my._return_data = "// $(my._return_data_list)"
+    elsif my._argument_buffer_count > 1
+        my._return_type = "array"
+        my._return_type = "// [$(my._return_data_list)]"
+    endif
 
     for my.in_method.return as return0
 
         if defined (return0.type)
             if return0.type = "size"
                 my._return_type = "int"
-                my._return_data = ""
             elsif return0.type = "boolean"
                 my._return_type = "bool"
-                my._return_data = ""
             else
                 echo_debug_item(my.in_method)
                 echo_fatal("Not implemented", my)
-            endif
-
-            my._buffer_or_return = "return"
-
-            if my._buffer_or_return = "buffer"
-                my._buffer_or_return = "buffer_and_return"
             endif
         endif
 
@@ -248,7 +244,6 @@ function php_map_return_high_level (in_method, out_php_method)
         if defined (return0.class) | defined (return0.interface)
             my._buffer_or_return = "return"
             my._return_type = php_derive_name_from_string(my._r, "Pascal")
-            my._return_data = php_derive_name_from_string(my._r, "Pascal")
         endif
 
         if defined (return0.enum)
@@ -262,7 +257,6 @@ function php_map_return_high_level (in_method, out_php_method)
         endif
     endfor
 
-    my.out_php_method.buffer_or_return = my._buffer_or_return
     my.out_php_method.return_type = my._return_type
     my.out_php_method.return_data = my._return_data
     my.out_php_method.throw_exception = my._throw_exception

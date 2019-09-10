@@ -266,13 +266,63 @@ function php_create_implementation_module (implementation, php_project, meta)
 
                 for my.implementation.method as method0
                     new php_method to high_level
+
+                        my._docblock_data = ""
+
+                        if defined (method0.)
+                            my._docblock_data += format_left(method0., 0) + "\n"
+                        endif
+
                         php_map_class_method_high_level(method0, php_method, my.php_project.prefix)
+                        my._method_arguments = ""
+                        my._function_arguments = ""
 
                         for method0.argument as argument0
+
+                            if last()
+                                my._d = ""
+                            else
+                                my._d = ", "
+                            endif
+
                             new php_argument to php_method
                                 php_map_method_argument_high_level(argument0, php_argument)
+                                my._docblock_data += format_left("@param $(0.type:) $(0.name:)\n", 0)
+                                my._method_arguments += "$(0.type:) $(0.name:)" + my._d
+                                my._function_arguments += "$(0.name:)" + my._d
                             endnew
                         endfor
+
+                        my._docblock_data += format_left("@return $(0.return_type)\n", 0)
+
+                        if 0.throw_exception = 1
+                            my._docblock_data = format_left("@throws Exception", 0)
+                        endif
+
+                        new docblock to php_method
+                            . = php_format_docblock(my._docblock_data)
+                        endnew
+
+                        my._declaration = 0.declaration
+                        my._name = 0.name
+                        my._return_type = 0.return_type
+                        my._return_data = 0.return_data
+                        my._function_name = 0.function_name
+
+                        new signature to php_method
+                            . = "$(my._declaration:) function $(my._name:)($(my._method_arguments:)): $(my._return_type:) $(my._return_data:)"
+                        endnew
+
+                        new body to php_method
+
+                            my._return = ""
+
+                            if my._return_type <> "void"
+                                my._return = "return"
+                            endif
+
+                            . = "$(my._return:) $(my._function_name:)($(my._function_arguments:));"
+                        endnew
 
                     endnew
                 endfor
