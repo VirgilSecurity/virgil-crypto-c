@@ -39,7 +39,7 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Add and/or remove recipients and it's paramteres within message info.
+//  Add and/or remove recipients and it's parameters within message info.
 //
 //  Usage:
 //    1. Unpack binary message info that was obtained from RecipientCipher.
@@ -316,7 +316,7 @@ vscf_message_info_editor_cleanup_ctx(vscf_message_info_editor_t *self) {
 }
 
 //
-//  Set depenencies to it's defaults.
+//  Set dependencies to it's defaults.
 //
 VSCF_PUBLIC vscf_status_t
 vscf_message_info_editor_setup_defaults(vscf_message_info_editor_t *self) {
@@ -337,14 +337,38 @@ vscf_message_info_editor_setup_defaults(vscf_message_info_editor_t *self) {
 //
 //  Unpack serialized message info.
 //
+//  Note that recipients can only be removed but not added.
+//  Note, use "unlock" method to be able to add new recipients as well.
+//
 VSCF_PUBLIC vscf_status_t
-vscf_message_info_editor_unpack(vscf_message_info_editor_t *self, vsc_data_t message_info_data,
-        vsc_data_t owner_recipient_id, const vscf_impl_t *owner_private_key) {
+vscf_message_info_editor_unpack(vscf_message_info_editor_t *self, vsc_data_t message_info_data) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(self->random);
     VSCF_ASSERT_PTR(self->message_info_serializer);
     VSCF_ASSERT(vsc_data_is_valid(message_info_data));
+
+    vscf_error_t error;
+    vscf_error_reset(&error);
+
+    vscf_message_info_destroy(&self->message_info);
+    vsc_buffer_release(self->encryption_key);
+
+    self->message_info =
+            vscf_message_info_serializer_deserialize(self->message_info_serializer, message_info_data, &error);
+
+    return vscf_error_status(&error);
+}
+
+//
+//  Decrypt encryption key this allows adding new recipients.
+//
+VSCF_PUBLIC vscf_status_t
+vscf_message_info_editor_unlock(
+        vscf_message_info_editor_t *self, vsc_data_t owner_recipient_id, const vscf_impl_t *owner_private_key) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(self->message_info);
     VSCF_ASSERT(vsc_data_is_valid(owner_recipient_id));
     VSCF_ASSERT_PTR(owner_private_key);
     VSCF_ASSERT(vscf_private_key_is_implemented(owner_private_key));
@@ -352,22 +376,8 @@ vscf_message_info_editor_unpack(vscf_message_info_editor_t *self, vsc_data_t mes
     vscf_error_t error;
     vscf_error_reset(&error);
 
-    //
-    //  Cleanup
-    //
-    vscf_message_info_destroy(&self->message_info);
     vsc_buffer_release(self->encryption_key);
 
-    self->message_info =
-            vscf_message_info_serializer_deserialize(self->message_info_serializer, message_info_data, &error);
-
-    if (vscf_error_has_error(&error)) {
-        return vscf_error_status(&error);
-    }
-
-    //
-    //  Decrypt encryption key.
-    //
     for (const vscf_key_recipient_info_list_t *curr = vscf_message_info_key_recipient_info_list(self->message_info);
             (curr != NULL) && vscf_key_recipient_info_list_has_item(curr);
             curr = vscf_key_recipient_info_list_next(curr)) {

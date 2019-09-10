@@ -1,5 +1,5 @@
 <class name="message info editor">
-    Add and/or remove recipients and it's paramteres within message info.
+    Add and/or remove recipients and it's parameters within message info.
 
     Usage:
       1. Unpack binary message info that was obtained from RecipientCipher.
@@ -24,7 +24,7 @@
     <property name="encryption key" class="buffer"/>
 
     <method name="setup defaults">
-        Set depenencies to it's defaults.
+        Set dependencies to it's defaults.
 
         <return enum="status"/>
     </method>
@@ -32,7 +32,17 @@
     <method name="unpack">
         Unpack serialized message info.
 
+        Note that recipients can only be removed but not added.
+        Note, use "unlock" method to be able to add new recipients as well.
+
         <argument name="message info data" class="data"/>
+
+        <return enum="status"/>
+    </method>
+
+    <method name="unlock">
+        Decrypt encryption key this allows adding new recipients.
+
         <argument name="owner recipient id" class="data"/>
         <argument name="owner private key" interface="private key"/>
 

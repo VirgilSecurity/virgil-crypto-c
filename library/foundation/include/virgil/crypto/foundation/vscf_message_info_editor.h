@@ -47,7 +47,7 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Add and/or remove recipients and it's paramteres within message info.
+//  Add and/or remove recipients and it's parameters within message info.
 //
 //  Usage:
 //    1. Unpack binary message info that was obtained from RecipientCipher.
@@ -156,7 +156,7 @@ VSCF_PUBLIC void
 vscf_message_info_editor_release_random(vscf_message_info_editor_t *self);
 
 //
-//  Set depenencies to it's defaults.
+//  Set dependencies to it's defaults.
 //
 VSCF_PUBLIC vscf_status_t
 vscf_message_info_editor_setup_defaults(vscf_message_info_editor_t *self) VSCF_NODISCARD;
@@ -164,9 +164,18 @@ vscf_message_info_editor_setup_defaults(vscf_message_info_editor_t *self) VSCF_N
 //
 //  Unpack serialized message info.
 //
+//  Note that recipients can only be removed but not added.
+//  Note, use "unlock" method to be able to add new recipients as well.
+//
 VSCF_PUBLIC vscf_status_t
-vscf_message_info_editor_unpack(vscf_message_info_editor_t *self, vsc_data_t message_info_data,
-        vsc_data_t owner_recipient_id, const vscf_impl_t *owner_private_key) VSCF_NODISCARD;
+vscf_message_info_editor_unpack(vscf_message_info_editor_t *self, vsc_data_t message_info_data) VSCF_NODISCARD;
+
+//
+//  Decrypt encryption key this allows adding new recipients.
+//
+VSCF_PUBLIC vscf_status_t
+vscf_message_info_editor_unlock(vscf_message_info_editor_t *self, vsc_data_t owner_recipient_id,
+        const vscf_impl_t *owner_private_key) VSCF_NODISCARD;
 
 //
 //  Add recipient defined with id and public key.

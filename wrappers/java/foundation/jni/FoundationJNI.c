@@ -4193,7 +4193,24 @@ JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_m
     }
 }
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoEditor_1unpack (JNIEnv *jenv, jobject jobj, jlong c_ctx, jbyteArray jmessageInfoData, jbyteArray jownerRecipientId, jobject jownerPrivateKey) {
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoEditor_1unpack (JNIEnv *jenv, jobject jobj, jlong c_ctx, jbyteArray jmessageInfoData) {
+    // Cast class context
+    vscf_message_info_editor_t /*2*/* message_info_editor_ctx = *(vscf_message_info_editor_t /*2*/**) &c_ctx;
+
+    // Wrap input data
+    byte* message_info_data_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jmessageInfoData, NULL);
+    vsc_data_t message_info_data = vsc_data(message_info_data_arr, (*jenv)->GetArrayLength(jenv, jmessageInfoData));
+
+    vscf_status_t status = vscf_message_info_editor_unpack(message_info_editor_ctx /*a1*/, message_info_data /*a3*/);
+    if (status != vscf_status_SUCCESS) {
+        throwFoundationException(jenv, jobj, status);
+        return;
+    }
+    // Free resources
+    (*jenv)->ReleaseByteArrayElements(jenv, jmessageInfoData, (jbyte*) message_info_data_arr, 0);
+}
+
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoEditor_1unlock (JNIEnv *jenv, jobject jobj, jlong c_ctx, jbyteArray jownerRecipientId, jobject jownerPrivateKey) {
     // Cast class context
     vscf_message_info_editor_t /*2*/* message_info_editor_ctx = *(vscf_message_info_editor_t /*2*/**) &c_ctx;
     // Wrap Java interfaces
@@ -4209,20 +4226,15 @@ JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_m
     vscf_impl_t */*6*/ owner_private_key = *(vscf_impl_t */*6*/*)&owner_private_key_c_ctx;
 
     // Wrap input data
-    byte* message_info_data_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jmessageInfoData, NULL);
-    vsc_data_t message_info_data = vsc_data(message_info_data_arr, (*jenv)->GetArrayLength(jenv, jmessageInfoData));
-
     byte* owner_recipient_id_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jownerRecipientId, NULL);
     vsc_data_t owner_recipient_id = vsc_data(owner_recipient_id_arr, (*jenv)->GetArrayLength(jenv, jownerRecipientId));
 
-    vscf_status_t status = vscf_message_info_editor_unpack(message_info_editor_ctx /*a1*/, message_info_data /*a3*/, owner_recipient_id /*a3*/, owner_private_key /*a6*/);
+    vscf_status_t status = vscf_message_info_editor_unlock(message_info_editor_ctx /*a1*/, owner_recipient_id /*a3*/, owner_private_key /*a6*/);
     if (status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, status);
         return;
     }
     // Free resources
-    (*jenv)->ReleaseByteArrayElements(jenv, jmessageInfoData, (jbyte*) message_info_data_arr, 0);
-
     (*jenv)->ReleaseByteArrayElements(jenv, jownerRecipientId, (jbyte*) owner_recipient_id_arr, 0);
 }
 

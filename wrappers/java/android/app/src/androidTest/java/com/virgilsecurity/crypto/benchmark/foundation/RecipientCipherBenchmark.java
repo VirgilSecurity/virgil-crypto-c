@@ -71,7 +71,7 @@ public class RecipientCipherBenchmark {
 			((AutoCloseable) this.privateKey).close();
 			((AutoCloseable) this.publicKey).close();
 		} catch (Exception e) {
-			e.printStackTrace();
+			Log.e(BenchmarkOptions.TAG, "Can't close cipher resources", e);
 		}
 	}
 
@@ -159,7 +159,7 @@ public class RecipientCipherBenchmark {
 		}
 		long endTime = System.nanoTime();
 		long avgTime = (endTime - startTime) / BenchmarkOptions.MEASUREMENTS;
-		Log.i("Benchmark", "Encrypt with " + this.algId + " in " + avgTime + " ns");
+		Log.i(BenchmarkOptions.TAG, "Encrypt with " + this.algId + " in " + avgTime + " ns");
 	}
 
 	private void decrypt() {
@@ -171,7 +171,7 @@ public class RecipientCipherBenchmark {
 		}
 		long endTime = System.nanoTime();
 		long avgTime = (endTime - startTime) / BenchmarkOptions.MEASUREMENTS;
-		Log.i("Benchmark", "Decrypt with " + this.algId + " in " + avgTime + " ns");
+		Log.i(BenchmarkOptions.TAG, "Decrypt with " + this.algId + " in " + avgTime + " ns");
 	}
 
 	/**

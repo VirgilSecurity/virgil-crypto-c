@@ -1,5 +1,7 @@
 apply plugin: 'com.android.application'
 
+def BENCHMARK_MEASUREMENTS = hasProperty('BENCHMARK_MEASUREMENTS') ? BENCHMARK_MEASUREMENTS : 1
+
 android {
     compileSdkVersion 28
     defaultConfig {
@@ -7,6 +9,7 @@ android {
         minSdkVersion 21
         targetSdkVersion 28
 
+        buildConfigField "Integer", "BENCHMARK_MEASUREMENTS", "$BENCHMARK_MEASUREMENTS"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
