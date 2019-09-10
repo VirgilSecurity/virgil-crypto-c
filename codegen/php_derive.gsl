@@ -45,6 +45,18 @@ gsl from "common.gsl"
 # ---------------------------------------------------------------------------
 #   
 # ---------------------------------------------------------------------------
+function php_derive_name_from_string(in_string, ppm)
+    check_arguments (my, "in_string, ppm", my)
+    php_check_ppm(my.ppm)
+
+    my.res = "$(my.in_string:$(my.ppm))"
+
+    return my.res
+endfunction
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
 function php_derive_name(in_entity, ppm)
     check_arguments (my, "in_entity, ppm", my)
     assert_attribute(my.in_entity, "name")
@@ -244,8 +256,10 @@ function php_derive_argument_type (in_argument)
     endif
 
     if defined (my.in_argument.type)
-        if string_in(my.in_argument.type, "byte, size, integer")
+        if string_in(my.in_argument.type, "size, integer")
             my._res = "int"
+        elsif my.in_argument.type = "byte"
+            my._res = "string"
         elsif my.in_argument.type = "boolean"
             my._res = "bool"
         else
