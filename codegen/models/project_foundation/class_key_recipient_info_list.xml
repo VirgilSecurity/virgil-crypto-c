@@ -13,6 +13,11 @@
     </method>
 
 
+    <method name="remove self" visibility="private">
+        Remove current node.
+    </method>
+
+
     <method name="has item" is_const="1">
         Return true if given list has item.
 
@@ -38,6 +43,13 @@
         Return next list node if exists, or NULL otherwise.
 
         <return class="self"/>
+    </method>
+
+
+    <method name="next modifiable" visibility="private">
+        Return next list node if exists, or NULL otherwise.
+
+        <return class="self" access="readwrite"/>
     </method>
 
 

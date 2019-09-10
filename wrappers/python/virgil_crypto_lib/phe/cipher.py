@@ -94,6 +94,26 @@ class Cipher(object):
         VsceStatus.handle_status(status)
         return plain_text.get_bytes()
 
+    def auth_encrypt(self, plain_text, additional_data, account_key):
+        """Encrypts data (and authenticates additional data) using account key"""
+        d_plain_text = Data(plain_text)
+        d_additional_data = Data(additional_data)
+        d_account_key = Data(account_key)
+        cipher_text = Buffer(self.encrypt_len(plain_text_len=len(plain_text)))
+        status = self._lib_vsce_phe_cipher.vsce_phe_cipher_auth_encrypt(self.ctx, d_plain_text.data, d_additional_data.data, d_account_key.data, cipher_text.c_buffer)
+        VsceStatus.handle_status(status)
+        return cipher_text.get_bytes()
+
+    def auth_decrypt(self, cipher_text, additional_data, account_key):
+        """Decrypts data (and verifies additional data) using account key"""
+        d_cipher_text = Data(cipher_text)
+        d_additional_data = Data(additional_data)
+        d_account_key = Data(account_key)
+        plain_text = Buffer(self.decrypt_len(cipher_text_len=len(cipher_text)))
+        status = self._lib_vsce_phe_cipher.vsce_phe_cipher_auth_decrypt(self.ctx, d_cipher_text.data, d_additional_data.data, d_account_key.data, plain_text.c_buffer)
+        VsceStatus.handle_status(status)
+        return plain_text.get_bytes()
+
     @classmethod
     def take_c_ctx(cls, c_ctx):
         inst = cls.__new__(cls)

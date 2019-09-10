@@ -9,7 +9,7 @@
         wrappers="swift,java,python,wasm"
         >
 
-    <version major="0" minor="10" patch="2"/>
+    <version major="0" minor="10" patch="3"/>
 
     <license>
         Copyright (C) 2015-2019 Virgil Security, Inc.
@@ -139,6 +139,7 @@
     <class name="group session"/>
     <class name="group session epoch"/>
     <class name="group session epoch node"/>
+    <class name="message info editor"/>
 
     <implementor name="mbedtls"/>
     <implementor name="mbedtls pk"/>

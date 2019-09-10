@@ -108,5 +108,7 @@
     "_vsce_phe_cipher_encrypt_len",
     "_vsce_phe_cipher_decrypt_len",
     "_vsce_phe_cipher_encrypt",
-    "_vsce_phe_cipher_decrypt"
+    "_vsce_phe_cipher_decrypt",
+    "_vsce_phe_cipher_auth_encrypt",
+    "_vsce_phe_cipher_auth_decrypt"
 ]

@@ -605,297 +605,300 @@ def build_LangPython_Windows(slave) {
     }}
 }
 
-
 // --------------------------------------------------------------------------
-//  Python packaging
+//  Packaging & Testing
 // --------------------------------------------------------------------------
-node("build-docker") {
-    stage('Build Python packages') {
-        // Clean workspace
-        docker.image('python:2.7').inside("--user root"){
-            clearContentUnix()
+def buildPythonPackages() {
+    return { node("build-docker") {
+        stage('Build Python packages') {
+            // Clean workspace
+            docker.image('python:2.7').inside("--user root") {
+                clearContentUnix()
+            }
+
+            // Linux
+            unstash 'python_wrapper_linux'
+
+            dir('wrappers/python') {
+                docker.image("python:2.7").inside("--user root") {
+                    sh "pip install wheel"
+                    cleanPythonBuildDirectoriesLinux()
+                    sh "python setup.py bdist_egg --plat-name manylinux1_x86_64"
+                    cleanPythonBuildDirectoriesLinux()
+                    sh "python setup.py bdist_wheel --plat-name manylinux1_x86_64"
+                    cleanPythonBuildDirectoriesLinux()
+                    sh "python setup.py bdist_egg --plat-name manylinux1_i686"
+                    cleanPythonBuildDirectoriesLinux()
+                    sh "python setup.py bdist_wheel --plat-name manylinux1_i686"
+                }
+
+                docker.image("python:3.4").inside("--user root") {
+                    sh "pip install wheel"
+                    cleanPythonBuildDirectoriesLinux()
+                    sh "python setup.py bdist_egg --plat-name manylinux1_x86_64"
+                    cleanPythonBuildDirectoriesLinux()
+                    sh "python setup.py bdist_wheel --plat-name manylinux1_x86_64"
+                    cleanPythonBuildDirectoriesLinux()
+                    sh "python setup.py bdist_egg --plat-name manylinux1_i686"
+                    cleanPythonBuildDirectoriesLinux()
+                    sh "python setup.py bdist_wheel --plat-name manylinux1_i686"
+                }
+
+                docker.image("python:3.5").inside("--user root") {
+                    sh "pip install wheel"
+                    cleanPythonBuildDirectoriesLinux()
+                    sh "python setup.py bdist_egg --plat-name manylinux1_x86_64"
+                    cleanPythonBuildDirectoriesLinux()
+                    sh "python setup.py bdist_wheel --plat-name manylinux1_x86_64"
+                    cleanPythonBuildDirectoriesLinux()
+                    sh "python setup.py bdist_egg --plat-name manylinux1_i686"
+                    cleanPythonBuildDirectoriesLinux()
+                    sh "python setup.py bdist_wheel --plat-name manylinux1_i686"
+                }
+
+                docker.image("python:3.6").inside("--user root") {
+                    sh "pip install wheel"
+                    cleanPythonBuildDirectoriesLinux()
+                    sh "python setup.py bdist_egg --plat-name manylinux1_x86_64"
+                    cleanPythonBuildDirectoriesLinux()
+                    sh "python setup.py bdist_wheel --plat-name manylinux1_x86_64"
+                    cleanPythonBuildDirectoriesLinux()
+                    sh "python setup.py bdist_egg --plat-name manylinux1_i686"
+                    cleanPythonBuildDirectoriesLinux()
+                    sh "python setup.py bdist_wheel --plat-name manylinux1_i686"
+                }
+
+                docker.image("python:3.7").inside("--user root") {
+                    sh "pip install wheel"
+                    cleanPythonBuildDirectoriesLinux()
+                    sh "python setup.py bdist_egg --plat-name manylinux1_x86_64"
+                    cleanPythonBuildDirectoriesLinux()
+                    sh "python setup.py bdist_wheel --plat-name manylinux1_x86_64"
+                    cleanPythonBuildDirectoriesLinux()
+                    sh "python setup.py bdist_egg --plat-name manylinux1_i686"
+                    cleanPythonBuildDirectoriesLinux()
+                    sh "python setup.py bdist_wheel --plat-name manylinux1_i686"
+                }
+            }
+
+            stash includes: 'wrappers/python/dist/**', name: 'python_linux'
+
+            // Clean workspace
+            docker.image('python:2.7').inside("--user root") {
+                clearContentUnix()
+            }
+
+            // MacOs
+            unstash 'python_wrapper_macos'
+
+            dir('wrappers/python') {
+                docker.image("python:2.7").inside("--user root") {
+                    sh "pip install wheel"
+                    cleanPythonBuildDirectoriesLinux()
+                    sh "python setup.py bdist_egg --plat-name macosx_10_12_intel"
+                    cleanPythonBuildDirectoriesLinux()
+                    sh "python setup.py bdist_wheel --plat-name macosx_10_12_intel"
+                }
+
+                docker.image("python:3.4").inside("--user root") {
+                    sh "pip install wheel"
+                    cleanPythonBuildDirectoriesLinux()
+                    sh "python setup.py bdist_egg --plat-name macosx_10_12_intel"
+                    cleanPythonBuildDirectoriesLinux()
+                    sh "python setup.py bdist_wheel --plat-name macosx_10_12_intel"
+                }
+
+                docker.image("python:3.5").inside("--user root") {
+                    sh "pip install wheel"
+                    cleanPythonBuildDirectoriesLinux()
+                    sh "python setup.py bdist_egg --plat-name macosx_10_12_intel"
+                    cleanPythonBuildDirectoriesLinux()
+                    sh "python setup.py bdist_wheel --plat-name macosx_10_12_intel"
+                }
+
+                docker.image("python:3.6").inside("--user root") {
+                    sh "pip install wheel"
+                    cleanPythonBuildDirectoriesLinux()
+                    sh "python setup.py bdist_egg --plat-name macosx_10_12_intel"
+                    cleanPythonBuildDirectoriesLinux()
+                    sh "python setup.py bdist_wheel --plat-name macosx_10_12_intel"
+                }
+
+                docker.image("python:3.7").inside("--user root") {
+                    sh "pip install wheel"
+                    cleanPythonBuildDirectoriesLinux()
+                    sh "python setup.py bdist_egg --plat-name macosx_10_12_intel"
+                    cleanPythonBuildDirectoriesLinux()
+                    sh "python setup.py bdist_wheel --plat-name macosx_10_12_intel"
+                }
+            }
+
+            //Fixing Python ABI tag
+            docker.image("python:2.7").inside("--user root") {
+                sh 'for file in wrappers/python/dist/*-cp27mu-*.whl; do echo $file | mv $file $(sed -r \'s/cp27mu/cp27m/g\'); done'
+            }
+            stash includes: 'wrappers/python/dist/**', name: 'python_macos'
+
+            // Clean workspace
+            docker.image('python:2.7').inside("--user root") {
+                clearContentUnix()
+            }
+
+            // Windows x86
+            unstash 'python_wrapper_windows_x86'
+            sh "rm -rf wrappers/python/virgil_crypto_lib/pythia"
+
+            dir('wrappers/python') {
+                docker.image("python:2.7").inside("--user root") {
+                    sh "pip install wheel"
+                    cleanPythonBuildDirectoriesLinux()
+                    sh "python setup.py bdist_egg --plat-name win32"
+                    cleanPythonBuildDirectoriesLinux()
+                    sh "python setup.py bdist_wheel --plat-name win32"
+                }
+
+                docker.image("python:3.4").inside("--user root") {
+                    sh "pip install wheel"
+                    cleanPythonBuildDirectoriesLinux()
+                    sh "python setup.py bdist_egg --plat-name win32"
+                    cleanPythonBuildDirectoriesLinux()
+                    sh "python setup.py bdist_wheel --plat-name win32"
+                }
+
+                docker.image("python:3.5").inside("--user root") {
+                    sh "pip install wheel"
+                    cleanPythonBuildDirectoriesLinux()
+                    sh "python setup.py bdist_egg --plat-name win32"
+                    cleanPythonBuildDirectoriesLinux()
+                    sh "python setup.py bdist_wheel --plat-name win32"
+                }
+
+                docker.image("python:3.6").inside("--user root") {
+                    sh "pip install wheel"
+                    cleanPythonBuildDirectoriesLinux()
+                    sh "python setup.py bdist_egg --plat-name win32"
+                    cleanPythonBuildDirectoriesLinux()
+                    sh "python setup.py bdist_wheel --plat-name win32"
+                }
+
+                docker.image("python:3.7").inside("--user root") {
+                    sh "pip install wheel"
+                    cleanPythonBuildDirectoriesLinux()
+                    sh "python setup.py bdist_egg --plat-name win32"
+                    cleanPythonBuildDirectoriesLinux()
+                    sh "python setup.py bdist_wheel --plat-name win32"
+                }
+            }
+
+            // Windows x86_64
+            unstash 'python_wrapper_windows_x86_64'
+            sh "rm -rf wrappers/python/virgil_crypto_lib/pythia"
+
+            dir('wrappers/python') {
+                docker.image("python:2.7").inside("--user root") {
+                    sh "pip install wheel"
+                    cleanPythonBuildDirectoriesLinux()
+                    sh "python setup.py bdist_egg --plat-name win_amd64"
+                    cleanPythonBuildDirectoriesLinux()
+                    sh "python setup.py bdist_wheel --plat-name win_amd64"
+                }
+
+                docker.image("python:3.4").inside("--user root") {
+                    sh "pip install wheel"
+                    cleanPythonBuildDirectoriesLinux()
+                    sh "python setup.py bdist_egg --plat-name win_amd64"
+                    cleanPythonBuildDirectoriesLinux()
+                    sh "python setup.py bdist_wheel --plat-name win_amd64"
+                }
+
+                docker.image("python:3.5").inside("--user root") {
+                    sh "pip install wheel"
+                    cleanPythonBuildDirectoriesLinux()
+                    sh "python setup.py bdist_egg --plat-name win_amd64"
+                    cleanPythonBuildDirectoriesLinux()
+                    sh "python setup.py bdist_wheel --plat-name win_amd64"
+                }
+
+                docker.image("python:3.6").inside("--user root") {
+                    sh "pip install wheel"
+                    cleanPythonBuildDirectoriesLinux()
+                    sh "python setup.py bdist_egg --plat-name win_amd64"
+                    cleanPythonBuildDirectoriesLinux()
+                    sh "python setup.py bdist_wheel --plat-name win_amd64"
+                }
+
+                docker.image("python:3.7").inside("--user root") {
+                    sh "pip install wheel"
+                    cleanPythonBuildDirectoriesLinux()
+                    sh "python setup.py bdist_egg --plat-name win_amd64"
+                    cleanPythonBuildDirectoriesLinux()
+                    sh "python setup.py bdist_wheel --plat-name win_amd64"
+                }
+            }
+
+            //Fixing Python ABI tag
+            docker.image("python:2.7").inside("--user root") {
+                sh 'for file in wrappers/python/dist/*-cp27mu-*.whl; do echo $file | mv $file $(sed -r \'s/cp27mu/cp27m/g\'); done'
+            }
+            stash includes: 'wrappers/python/dist/**', name: 'python_windows'
         }
-
-        // Linux
-        unstash 'python_wrapper_linux'
-
-        dir('wrappers/python') {
-            docker.image("python:2.7").inside("--user root"){
-                sh "pip install wheel"
-                cleanPythonBuildDirectoriesLinux()
-                sh "python setup.py bdist_egg --plat-name manylinux1_x86_64"
-                cleanPythonBuildDirectoriesLinux()
-                sh "python setup.py bdist_wheel --plat-name manylinux1_x86_64"
-                cleanPythonBuildDirectoriesLinux()
-                sh "python setup.py bdist_egg --plat-name manylinux1_i686"
-                cleanPythonBuildDirectoriesLinux()
-                sh "python setup.py bdist_wheel --plat-name manylinux1_i686"
-            }
-
-            docker.image("python:3.4").inside("--user root"){
-                sh "pip install wheel"
-                cleanPythonBuildDirectoriesLinux()
-                sh "python setup.py bdist_egg --plat-name manylinux1_x86_64"
-                cleanPythonBuildDirectoriesLinux()
-                sh "python setup.py bdist_wheel --plat-name manylinux1_x86_64"
-                cleanPythonBuildDirectoriesLinux()
-                sh "python setup.py bdist_egg --plat-name manylinux1_i686"
-                cleanPythonBuildDirectoriesLinux()
-                sh "python setup.py bdist_wheel --plat-name manylinux1_i686"
-            }
-
-            docker.image("python:3.5").inside("--user root"){
-                sh "pip install wheel"
-                cleanPythonBuildDirectoriesLinux()
-                sh "python setup.py bdist_egg --plat-name manylinux1_x86_64"
-                cleanPythonBuildDirectoriesLinux()
-                sh "python setup.py bdist_wheel --plat-name manylinux1_x86_64"
-                cleanPythonBuildDirectoriesLinux()
-                sh "python setup.py bdist_egg --plat-name manylinux1_i686"
-                cleanPythonBuildDirectoriesLinux()
-                sh "python setup.py bdist_wheel --plat-name manylinux1_i686"
-            }
-
-            docker.image("python:3.6").inside("--user root"){
-                sh "pip install wheel"
-                cleanPythonBuildDirectoriesLinux()
-                sh "python setup.py bdist_egg --plat-name manylinux1_x86_64"
-                cleanPythonBuildDirectoriesLinux()
-                sh "python setup.py bdist_wheel --plat-name manylinux1_x86_64"
-                cleanPythonBuildDirectoriesLinux()
-                sh "python setup.py bdist_egg --plat-name manylinux1_i686"
-                cleanPythonBuildDirectoriesLinux()
-                sh "python setup.py bdist_wheel --plat-name manylinux1_i686"
-            }
-
-            docker.image("python:3.7").inside("--user root"){
-                sh "pip install wheel"
-                cleanPythonBuildDirectoriesLinux()
-                sh "python setup.py bdist_egg --plat-name manylinux1_x86_64"
-                cleanPythonBuildDirectoriesLinux()
-                sh "python setup.py bdist_wheel --plat-name manylinux1_x86_64"
-                cleanPythonBuildDirectoriesLinux()
-                sh "python setup.py bdist_egg --plat-name manylinux1_i686"
-                cleanPythonBuildDirectoriesLinux()
-                sh "python setup.py bdist_wheel --plat-name manylinux1_i686"
-            }
-        }
-
-        stash includes: 'wrappers/python/dist/**', name: 'python_linux'
-
-        // Clean workspace
-        docker.image('python:2.7').inside("--user root"){
-            clearContentUnix()
-        }
-
-        // MacOs
-        unstash 'python_wrapper_macos'
-
-        dir('wrappers/python') {
-            docker.image("python:2.7").inside("--user root"){
-                sh "pip install wheel"
-                cleanPythonBuildDirectoriesLinux()
-                sh "python setup.py bdist_egg --plat-name macosx_10_12_intel"
-                cleanPythonBuildDirectoriesLinux()
-                sh "python setup.py bdist_wheel --plat-name macosx_10_12_intel"
-            }
-
-            docker.image("python:3.4").inside("--user root"){
-                sh "pip install wheel"
-                cleanPythonBuildDirectoriesLinux()
-                sh "python setup.py bdist_egg --plat-name macosx_10_12_intel"
-                cleanPythonBuildDirectoriesLinux()
-                sh "python setup.py bdist_wheel --plat-name macosx_10_12_intel"
-            }
-
-            docker.image("python:3.5").inside("--user root"){
-                sh "pip install wheel"
-                cleanPythonBuildDirectoriesLinux()
-                sh "python setup.py bdist_egg --plat-name macosx_10_12_intel"
-                cleanPythonBuildDirectoriesLinux()
-                sh "python setup.py bdist_wheel --plat-name macosx_10_12_intel"
-            }
-
-            docker.image("python:3.6").inside("--user root"){
-                sh "pip install wheel"
-                cleanPythonBuildDirectoriesLinux()
-                sh "python setup.py bdist_egg --plat-name macosx_10_12_intel"
-                cleanPythonBuildDirectoriesLinux()
-                sh "python setup.py bdist_wheel --plat-name macosx_10_12_intel"
-            }
-
-            docker.image("python:3.7").inside("--user root"){
-                sh "pip install wheel"
-                cleanPythonBuildDirectoriesLinux()
-                sh "python setup.py bdist_egg --plat-name macosx_10_12_intel"
-                cleanPythonBuildDirectoriesLinux()
-                sh "python setup.py bdist_wheel --plat-name macosx_10_12_intel"
-            }
-        }
-
-        //Fixing Python ABI tag
-        docker.image("python:2.7").inside("--user root"){
-            sh 'for file in wrappers/python/dist/*-cp27mu-*.whl; do echo $file | mv $file $(sed -r \'s/cp27mu/cp27m/g\'); done'
-        }
-        stash includes: 'wrappers/python/dist/**', name: 'python_macos'
-
-        // Clean workspace
-        docker.image('python:2.7').inside("--user root"){
-            clearContentUnix()
-        }
-
-        // Windows x86
-        unstash 'python_wrapper_windows_x86'
-        sh "rm -rf wrappers/python/virgil_crypto_lib/pythia"
-
-        dir('wrappers/python') {
-            docker.image("python:2.7").inside("--user root"){
-                sh "pip install wheel"
-                cleanPythonBuildDirectoriesLinux()
-                sh "python setup.py bdist_egg --plat-name win32"
-                cleanPythonBuildDirectoriesLinux()
-                sh "python setup.py bdist_wheel --plat-name win32"
-            }
-
-            docker.image("python:3.4").inside("--user root"){
-                sh "pip install wheel"
-                cleanPythonBuildDirectoriesLinux()
-                sh "python setup.py bdist_egg --plat-name win32"
-                cleanPythonBuildDirectoriesLinux()
-                sh "python setup.py bdist_wheel --plat-name win32"
-            }
-
-            docker.image("python:3.5").inside("--user root"){
-                sh "pip install wheel"
-                cleanPythonBuildDirectoriesLinux()
-                sh "python setup.py bdist_egg --plat-name win32"
-                cleanPythonBuildDirectoriesLinux()
-                sh "python setup.py bdist_wheel --plat-name win32"
-            }
-
-            docker.image("python:3.6").inside("--user root"){
-                sh "pip install wheel"
-                cleanPythonBuildDirectoriesLinux()
-                sh "python setup.py bdist_egg --plat-name win32"
-                cleanPythonBuildDirectoriesLinux()
-                sh "python setup.py bdist_wheel --plat-name win32"
-            }
-
-            docker.image("python:3.7").inside("--user root"){
-                sh "pip install wheel"
-                cleanPythonBuildDirectoriesLinux()
-                sh "python setup.py bdist_egg --plat-name win32"
-                cleanPythonBuildDirectoriesLinux()
-                sh "python setup.py bdist_wheel --plat-name win32"
-            }
-        }
-
-        // Windows x86_64
-        unstash 'python_wrapper_windows_x86_64'
-        sh "rm -rf wrappers/python/virgil_crypto_lib/pythia"
-
-        dir('wrappers/python') {
-            docker.image("python:2.7").inside("--user root"){
-                sh "pip install wheel"
-                cleanPythonBuildDirectoriesLinux()
-                sh "python setup.py bdist_egg --plat-name win_amd64"
-                cleanPythonBuildDirectoriesLinux()
-                sh "python setup.py bdist_wheel --plat-name win_amd64"
-            }
-
-            docker.image("python:3.4").inside("--user root"){
-                sh "pip install wheel"
-                cleanPythonBuildDirectoriesLinux()
-                sh "python setup.py bdist_egg --plat-name win_amd64"
-                cleanPythonBuildDirectoriesLinux()
-                sh "python setup.py bdist_wheel --plat-name win_amd64"
-            }
-
-            docker.image("python:3.5").inside("--user root"){
-                sh "pip install wheel"
-                cleanPythonBuildDirectoriesLinux()
-                sh "python setup.py bdist_egg --plat-name win_amd64"
-                cleanPythonBuildDirectoriesLinux()
-                sh "python setup.py bdist_wheel --plat-name win_amd64"
-            }
-
-            docker.image("python:3.6").inside("--user root"){
-                sh "pip install wheel"
-                cleanPythonBuildDirectoriesLinux()
-                sh "python setup.py bdist_egg --plat-name win_amd64"
-                cleanPythonBuildDirectoriesLinux()
-                sh "python setup.py bdist_wheel --plat-name win_amd64"
-            }
-
-            docker.image("python:3.7").inside("--user root"){
-                sh "pip install wheel"
-                cleanPythonBuildDirectoriesLinux()
-                sh "python setup.py bdist_egg --plat-name win_amd64"
-                cleanPythonBuildDirectoriesLinux()
-                sh "python setup.py bdist_wheel --plat-name win_amd64"
-            }
-        }
-
-        //Fixing Python ABI tag
-        docker.image("python:2.7").inside("--user root"){
-            sh 'for file in wrappers/python/dist/*-cp27mu-*.whl; do echo $file | mv $file $(sed -r \'s/cp27mu/cp27m/g\'); done'
-        }
-        stash includes: 'wrappers/python/dist/**', name: 'python_windows'
-    }
+    }}
 }
 
+def testAndroidArtifacts() {
+    return { node('build-os-x') {
+        stage('Test Android artifacts') {
+            echo "RUN_ANDROID_TESTS = ${params.RUN_ANDROID_TESTS}"
+            echo "DEPLOY_ANDROID_ARTIFACTS = ${params.DEPLOY_ANDROID_ARTIFACTS}"
+            if (!params.RUN_ANDROID_TESTS && !params.DEPLOY_ANDROID_ARTIFACTS) {
+                echo "Skipped due to the false parameter: RUN_ANDROID_TESTS"
+                return
+            }
+            clearContentUnix()
+            unstash "src"
+            unstash "java_android_x86"
+            unstash "java_android_x86_64"
+            unstash "java_android_armeabi_v7a"
+            unstash "java_android_arm64_v8a"
 
-// --------------------------------------------------------------------------
-//  Android tests
-// --------------------------------------------------------------------------
-node('build-os-x') {
-    stage('Test Android artifacts') {
-        echo "RUN_ANDROID_TESTS = ${params.RUN_ANDROID_TESTS}"
-        echo "DEPLOY_ANDROID_ARTIFACTS = ${params.DEPLOY_ANDROID_ARTIFACTS}"
-        if (!params.RUN_ANDROID_TESTS && !params.DEPLOY_ANDROID_ARTIFACTS) {
-            echo "Skipped due to the false parameter: RUN_ANDROID_TESTS"
-            return
+            withEnv(['ANDROID_HOME=/Users/virgil/Library/VirgilEnviroment/android-sdk']) {
+                sh '''
+                    export PATH=$ANDROID_HOME/emulator:$ANDROID_HOME/tools:$ANDROID_HOME/tools/bin:$ANDROID_HOME/platform-tools:$PATH
+                    adb devices | grep emulator | cut -f1 | while read line; do adb -s $line emu kill; done
+                '''
+                sh '''
+                    export PATH=$ANDROID_HOME/emulator:$ANDROID_HOME/tools:$ANDROID_HOME/tools/bin:$ANDROID_HOME/platform-tools:$PATH
+                    emulator -avd test_x86_64 -netdelay none -netspeed full -no-window -no-audio -gpu off &
+                    android-wait-for-emulator.sh
+                    cd wrappers/java/android
+                    ./gradlew clean connectedAndroidTest
+                    adb devices | grep emulator | cut -f1 | while read line; do adb -s $line emu kill; done
+                '''
+                sh '''
+                    export PATH=$ANDROID_HOME/emulator:$ANDROID_HOME/tools:$ANDROID_HOME/tools/bin:$ANDROID_HOME/platform-tools:$PATH
+                    emulator -avd test_x86 -netdelay none -netspeed full -no-window -no-audio -gpu off &
+                    android-wait-for-emulator.sh
+                    cd wrappers/java/android
+                    ./gradlew clean connectedAndroidTest
+                    adb devices | grep emulator | cut -f1 | while read line; do adb -s $line emu kill; done
+                '''
+                sh '''
+                    export PATH=$ANDROID_HOME/emulator:$ANDROID_HOME/tools:$ANDROID_HOME/tools/bin:$ANDROID_HOME/platform-tools:$PATH
+                    emulator -avd test_v7a -netdelay none -netspeed full -no-window -no-audio -gpu off &
+                    android-wait-for-emulator.sh
+                    cd wrappers/java/android
+                    ./gradlew clean connectedAndroidTest
+                    adb devices | grep emulator | cut -f1 | while read line; do adb -s $line emu kill; done
+                '''
+            }
         }
-        clearContentUnix()
-        unstash "src"
-        unstash "java_android_x86"
-        unstash "java_android_x86_64"
-        unstash "java_android_armeabi_v7a"
-        unstash "java_android_arm64_v8a"
-
-        withEnv(['ANDROID_HOME=/Users/virgil/Library/VirgilEnviroment/android-sdk']) {
-            sh '''
-                export PATH=$ANDROID_HOME/emulator:$ANDROID_HOME/tools:$ANDROID_HOME/tools/bin:$ANDROID_HOME/platform-tools:$PATH
-                adb devices | grep emulator | cut -f1 | while read line; do adb -s $line emu kill; done
-            '''
-            sh '''
-                export PATH=$ANDROID_HOME/emulator:$ANDROID_HOME/tools:$ANDROID_HOME/tools/bin:$ANDROID_HOME/platform-tools:$PATH
-                emulator -avd test_x86_64 -netdelay none -netspeed full -no-window -no-audio -gpu off &
-                android-wait-for-emulator.sh
-                cd wrappers/java/android
-                ./gradlew clean connectedAndroidTest
-                adb devices | grep emulator | cut -f1 | while read line; do adb -s $line emu kill; done
-            '''
-            sh '''
-                export PATH=$ANDROID_HOME/emulator:$ANDROID_HOME/tools:$ANDROID_HOME/tools/bin:$ANDROID_HOME/platform-tools:$PATH
-                emulator -avd test_x86 -netdelay none -netspeed full -no-window -no-audio -gpu off &
-                android-wait-for-emulator.sh
-                cd wrappers/java/android
-                ./gradlew clean connectedAndroidTest
-                adb devices | grep emulator | cut -f1 | while read line; do adb -s $line emu kill; done
-            '''
-            sh '''
-                export PATH=$ANDROID_HOME/emulator:$ANDROID_HOME/tools:$ANDROID_HOME/tools/bin:$ANDROID_HOME/platform-tools:$PATH
-                emulator -avd test_v7a -netdelay none -netspeed full -no-window -no-audio -gpu off &
-                android-wait-for-emulator.sh
-                cd wrappers/java/android
-                ./gradlew clean connectedAndroidTest
-                adb devices | grep emulator | cut -f1 | while read line; do adb -s $line emu kill; done
-            '''
-        }
-    }
+    }}
 }
 
+def packaging_and_testing_nodes = [:]
+packaging_and_testing_nodes['build-python-packages'] = buildPythonPackages()
+packaging_and_testing_nodes['test-android-artifacts'] = testAndroidArtifacts()
+parallel(packaging_and_testing_nodes)
 
 // --------------------------------------------------------------------------
 //  Deploy

@@ -107,7 +107,11 @@ enum {
     //
     //  Maximum data size to decrypt
     //
-    vsce_phe_common_PHE_MAX_DECRYPT_LEN = 1024 * 1024
+    vsce_phe_common_PHE_MAX_DECRYPT_LEN = 1024 * 1024,
+    //
+    //  Maximum data to authenticate
+    //
+    vsce_phe_common_PHE_MAX_AUTH_LEN = 1024
 };
 
 

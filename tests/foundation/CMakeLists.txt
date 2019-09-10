@@ -100,6 +100,7 @@ _add_test (test_brainkey_server)
 _add_test (test_simple_swu)
 _add_test (test_group_session)
 _add_test (test_group_message)
+_add_test (test_message_info_editor)
 
 # ---------------------------------------------------------------------------
 #   Multi-threading tests
