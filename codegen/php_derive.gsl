@@ -256,7 +256,7 @@ function php_derive_argument_type (in_argument)
     endif
 
     if defined (my.in_argument.type)
-        if string_in(my.in_argument.type, "size, integer")
+        if string_in(my.in_argument.type, "size, integer, unsigned")
             my._res = "int"
         elsif my.in_argument.type = "byte"
             my._res = "string"

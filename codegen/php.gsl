@@ -185,6 +185,39 @@ function php_create_interface_module (interface, php_project, meta)
         endnew
 
         new php_interface to php_module
+            new high_level to php_interface
+                php_map_high_level(my.interface, my.php_project, high_level, "interface")
+            endnew
+
+            new low_level to php_interface
+                .name = php_derive_class_name_low_level_name_c_formated(my.interface, my.php_project)
+            endnew
+        endnew
+        
+    endnew
+    echo_debug ("Done", my)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   OLD
+# ---------------------------------------------------------------------------
+function php_create_interface_module_old (interface, php_project, meta)
+    check_arguments (my, "interface, php_project, meta", my)
+
+    echo_info ("Create <php_module/> from interface: '$(my.interface.name:)'", my)
+
+    new php_module to my.php_project
+        .name = php_derive_class_interface_name (my.interface)
+        .source_file_name = 0.name + ".php"
+        .source_file_path = cat_path (my.php_project.source_dir, 0.source_file_name)
+        .prefix = my.php_project.prefix
+        .type = "interface"
+
+        new php_license to php_module
+            . = php_format_license (my.php_project->license)
+        endnew
+
+        new php_interface to php_module
             . = php_format_description (my.interface) ?
             .name = "$(my.interface.name:Pascal)"
 
@@ -248,84 +281,7 @@ function php_create_implementation_module (implementation, php_project, meta)
 
         new php_class to php_module
             new high_level to php_class
-                . = php_format_description (my.implementation) ?
-                .name = php_derive_class_interface_name (my.implementation)
-                .namespace = "TEMP_NAMESPACE"
-
-                for my.implementation.interface as interface0
-                    new interface to high_level
-                        php_map_class_interface_high_level(interface0, interface)
-                    endnew
-
-                    for interface0.constant as constant0
-                        new constant to high_level
-                            php_map_class_constant_high_level(constant0, constant)
-                        endnew
-                    endfor
-                endfor
-
-                for my.implementation.method as method0
-                    new php_method to high_level
-
-                        my._docblock_data = ""
-
-                        if defined (method0.)
-                            my._docblock_data += format_left(method0., 0) + "\n"
-                        endif
-
-                        php_map_class_method_high_level(method0, php_method, my.php_project.prefix)
-                        my._method_arguments = ""
-                        my._function_arguments = ""
-
-                        for method0.argument as argument0
-
-                            if last()
-                                my._d = ""
-                            else
-                                my._d = ", "
-                            endif
-
-                            new php_argument to php_method
-                                php_map_method_argument_high_level(argument0, php_argument)
-                                my._docblock_data += format_left("@param $(0.type:) $(0.name:)\n", 0)
-                                my._method_arguments += "$(0.type:) $(0.name:)" + my._d
-                                my._function_arguments += "$(0.name:)" + my._d
-                            endnew
-                        endfor
-
-                        my._docblock_data += format_left("@return $(0.return_type)\n", 0)
-
-                        if 0.throw_exception = 1
-                            my._docblock_data = format_left("@throws Exception", 0)
-                        endif
-
-                        new docblock to php_method
-                            . = php_format_docblock(my._docblock_data)
-                        endnew
-
-                        my._declaration = 0.declaration
-                        my._name = 0.name
-                        my._return_type = 0.return_type
-                        my._return_data = 0.return_data
-                        my._function_name = 0.function_name
-
-                        new signature to php_method
-                            . = "$(my._declaration:) function $(my._name:)($(my._method_arguments:)): $(my._return_type:) $(my._return_data:)"
-                        endnew
-
-                        new body to php_method
-
-                            my._return = ""
-
-                            if my._return_type <> "void"
-                                my._return = "return"
-                            endif
-
-                            . = "$(my._return:) $(my._function_name:)($(my._function_arguments:));"
-                        endnew
-
-                    endnew
-                endfor
+                php_map_high_level(my.implementation, my.php_project, high_level, "implementation")
             endnew
 
             new low_level to php_class
@@ -341,6 +297,43 @@ endfunction
 #   
 # ---------------------------------------------------------------------------
 function php_create_class_module (class, php_project, meta)
+    check_arguments (my, "class, php_project, meta", my)
+
+    echo_info ("Create <php_module/> from class: '$(my.class.name:)'", my)
+    
+    if my.class.scope <> "public" | my.class.name = "error" | my.class.context = "none"
+        return
+    endif
+
+    new php_module to my.php_project
+        .name = php_derive_class_interface_name (my.class)
+        .source_file_name = 0.name + ".php"
+        .source_file_path = cat_path (my.php_project.source_dir, 0.source_file_name)
+        .prefix = my.php_project.prefix
+        .type = "class"
+
+        new php_license to php_module
+            . = php_format_license (my.php_project->license)
+        endnew
+
+        new php_class to php_module
+            new high_level to php_class
+                php_map_high_level(my.class, my.php_project, high_level, "class")
+            endnew
+
+            new low_level to php_class
+                .name = php_derive_class_name_low_level_name_c_formated(my.class, my.php_project)
+            endnew
+        endnew
+        
+    endnew
+    echo_debug ("Done", my)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_create_class_module_old (class, php_project, meta)
     check_arguments (my, "class, php_project, meta", my)
 
     echo_info ("Create <php_module/> from class: '$(my.class.name:)'", my)

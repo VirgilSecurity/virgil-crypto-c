@@ -225,13 +225,16 @@ function php_map_return_high_level (in_method, out_php_method)
     for my.in_method.return as return0
 
         if defined (return0.type)
-            if return0.type = "size"
+            if return0.type = "size" | return0.type = "integer" | return0.type = "unsigned"
                 my._return_type = "int"
             elsif return0.type = "boolean"
                 my._return_type = "bool"
+            elsif return0.type = "byte"
+                my._return_type = "string"
             else
                 echo_debug_item(my.in_method)
-                echo_fatal("Not implemented", my)
+                echo_debug_item(return0)
+                echo_fatal("Not implemented. Code: 1", my)
             endif
         endif
 
@@ -252,7 +255,7 @@ function php_map_return_high_level (in_method, out_php_method)
             else
                 # TODO
                 echo_debug_item(my.in_method)
-                echo_info("Not implemented", my)
+                echo_info("Not implemented. Code: 2", my)
             endif
         endif
     endfor
@@ -261,6 +264,118 @@ function php_map_return_high_level (in_method, out_php_method)
     my.out_php_method.return_data = my._return_data
     my.out_php_method.throw_exception = my._throw_exception
 
+endfunction
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_map_high_level (in_module, in_php_project, out_high_level, type)
+    check_arguments (my, "in_module, in_php_project, out_high_level, type", my)
+
+    my.out_high_level. = php_format_description (my.in_module) ?
+    my.out_high_level.name = php_derive_class_interface_name (my.in_module)
+    my.out_high_level.namespace = "TEMP_NAMESPACE"
+
+    my._implements = ""
+
+    my._type = "class"
+
+    if my.type = "interface"
+        my._type = "interface"
+    endif
+
+    for my.in_module.interface as interface0
+
+        my._d = ""
+        if ! last()
+            my._d = ", "
+        endif
+
+        new interface to my.out_high_level
+            php_map_class_interface_high_level(interface0, interface)
+
+            my._implements += 0.name + my._d
+        endnew
+
+        for interface0.constant as constant0
+            new constant to high_level
+                php_map_class_constant_high_level(constant0, constant)
+            endnew
+        endfor
+    endfor
+
+    if my._implements <> ""
+        my._implements = "implements " + my._implements 
+    endif
+
+    for my.in_module.method as method0
+        new php_method to my.out_high_level
+
+            my._docblock_data = ""
+
+            if defined (method0.)
+                my._docblock_data += format_left(method0., 0) + "\n"
+            endif
+
+            php_map_class_method_high_level(method0, php_method, my.in_php_project.prefix)
+            my._method_arguments = ""
+            my._function_arguments = ""
+
+            for method0.argument as argument0
+
+                if last()
+                    my._d = ""
+                else
+                    my._d = ", "
+                endif
+
+                new php_argument to php_method
+                    php_map_method_argument_high_level(argument0, php_argument)
+                    my._docblock_data += format_left("@param $(0.type:) $(0.name:)\n", 0)
+                    my._method_arguments += "$(0.type:) $(0.name:)" + my._d
+                    my._function_arguments += "$(0.name:)" + my._d
+                endnew
+            endfor
+
+            my._docblock_data += format_left("@return $(0.return_type)\n", 0)
+
+            if 0.throw_exception = 1
+                my._docblock_data = format_left("@throws Exception", 0)
+            endif
+
+            new docblock to php_method
+                . = php_format_docblock(my._docblock_data)
+            endnew
+
+            my._declaration = 0.declaration
+            my._name = 0.name
+            my._return_type = 0.return_type
+            my._return_data = 0.return_data
+            my._function_name = 0.function_name
+
+            new signature to php_method
+                . = "$(my._declaration:) function $(my._name:)($(my._method_arguments:)): $(my._return_type:) $(my._return_data:)"
+            endnew
+
+            if my.type <> "interface"
+                new body to php_method
+
+                    my._return = ""
+
+                    if my._return_type <> "void"
+                        my._return = "return"
+                    endif
+
+                    . = "$(my._return:) $(my._function_name:)($(my._function_arguments:));"
+                endnew
+            endif
+
+        endnew
+    endfor
+
+    new signature to my.out_high_level
+        . = format_left("$(my._type:) $(my.out_high_level.name:) $(my._implements:)", 0)
+    endnew
 endfunction
 
 .endtemplate

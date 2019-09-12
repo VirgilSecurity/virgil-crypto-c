@@ -55,30 +55,75 @@ endfunction
 function php_generate_sources (php_project)
     check_arguments (my, "php_project", my)
 
-    echo_info("Temp return", my)
-    return
-
     assert_attribute (my.php_project, "source_dir", my)
 
     if -1 = directory.create (my.php_project.source_dir)
         echo_fatal ("Can not create directory: $(my.wrapper.source_dir:)")
     endif
 
-    for my.php_project.php_module where string_in (php_module.type, "class, interface, implementation")
-        php_generate_source_php (php_module, my.php_project)
+    for my.php_project.php_module as php_module0 where string_in (php_module0.type, "class, interface, implementation")
+        php_generate_source_php (php_module0)
     endfor
 
-    for my.php_project.php_module where php_module.name = "extension_main"
-        php_generate_source_extension_main (php_module, my.php_project)
-    endfor
+    #for my.php_project.php_module where php_module.name = "extension_main"
+    #    php_generate_source_extension_main (php_module, my.php_project)
+    #endfor
 
-    for my.php_project.php_module where php_module.name = "extension_status"
-        php_generate_source_extension_status (php_module)
-    endfor
+    #for my.php_project.php_module where php_module.name = "extension_status"
+    #    php_generate_source_extension_status (php_module)
+    #endfor
 
-    for my.php_project.json_module
-        php_generate_source_composer (json_module)
-    endfor
+    #for my.php_project.json_module
+    #    php_generate_source_composer (json_module)
+    #endfor
+endfunction
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_generate_source_php (in_php_module)
+    check_arguments (my, "in_php_module", my)
+
+    if defined (my.in_php_module.source_dir)
+        if -1 = directory.create (my.in_php_module.source_dir)
+            echo_fatal ("Can not create directory: $(my.in_php_module.source_dir:)")
+        endif
+    endif
+
+    output my.in_php_module.source_file_path
+
+    php_insert_php_open_tag()
+    #php_insert_prologue (my.current_module)
+
+    php_insert_code_from_model (my.in_php_module)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_insert_code_from_model (in_php_module)
+    check_arguments (my, "in_php_module", my)
+    assert_attributes (my.in_php_module, "type, name")
+
+    my._module_type = my.in_php_module.type
+    my._module_name = my.in_php_module.name
+
+    if my._module_type <> "interface"
+
+        echo_trace ("Generate PHP $(my._module_type:) $(my._module_name:)", my)
+
+        php_insert_code("$(my._in_php_module.php_class.high_level.signature:)", 0)
+        php_insert_code("{", 0)
+        php_insert_code("temp", 1)
+
+        #for my.php_class.php_method by is_false (php_method.is_specific_method)
+        #    newline ()
+        #    php_insert_class_method (php_method, "class")
+        #endfor
+
+        php_insert_code("}",0)
+
+    endif
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -565,38 +610,6 @@ function php_generate_source_extension_status (current_module)
     for my.current_module->extension->c_code as code
         php_insert_raw_code(code.)
     endfor
-endfunction
-
-# ---------------------------------------------------------------------------
-#   
-# ---------------------------------------------------------------------------
-function php_generate_source_php (current_module, php_project)
-    check_arguments (my, "current_module, php_project", my)
-
-    if defined (my.current_module.source_dir)
-        if -1 = directory.create (my.current_module.source_dir)
-            echo_fatal ("Can not create directory: $(my.current_module.source_dir:)")
-        endif
-    endif
-
-    output my.current_module.source_file_path
-
-    php_insert_php_open_tag()
-    php_insert_prologue (my.current_module)
-
-    if my.current_module.type = "class"
-        for my.current_module.php_class
-            newline_if (first ())
-            php_insert_class (php_class)
-        endfor
-    elsif my.current_module.type = "interface"
-        php_insert_interface(my.current_module->php_interface)
-    elsif my.current_module.type = "implementation"
-        php_insert_implementation(my.current_module, my.php_project)
-    else
-        echo_debug_item(my.current_module)
-        echo_fatal("Not implemented", my)
-    endif
 endfunction
 
 # ---------------------------------------------------------------------------
