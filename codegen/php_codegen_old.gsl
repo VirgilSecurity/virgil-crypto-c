@@ -1,0 +1,484 @@
+.template 0
+#   Copyright (C) 2015-2019 Virgil Security, Inc.
+#
+#   All rights reserved.
+#
+#   Redistribution and use in source and binary forms, with or without
+#   modification, are permitted provided that the following conditions are
+#   met:
+#
+#       (1) Redistributions of source code must retain the above copyright
+#       notice, this list of conditions and the following disclaimer.
+#
+#       (2) Redistributions in binary form must reproduce the above copyright
+#       notice, this list of conditions and the following disclaimer in
+#       the documentation and/or other materials provided with the
+#       distribution.
+#
+#       (3) Neither the name of the copyright holder nor the names of its
+#       contributors may be used to endorse or promote products derived from
+#       this software without specific prior written permission.
+#
+#   THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
+#   IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+#   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+#   DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT,
+#   INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+#   (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+#   SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+#   HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+#   STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+#   IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+#   POSSIBILITY OF SUCH DAMAGE.
+#
+#   Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
+
+# ---------------------------------------------------------------------------
+#   Functions for PHP primitives generation: protocol, class, enum, etc.
+# ---------------------------------------------------------------------------
+#   This is a code generator built using the iMatix GSL code generation
+#   language. See https://github.com/imatix/gsl for details.
+# ---------------------------------------------------------------------------
+
+gsl from "common.gsl"
+
+# ---------------------------------------------------------------------------
+#   Generate project files.
+# ---------------------------------------------------------------------------
+function php_generate_project (wrapper_project)
+    check_arguments (my, "wrapper_project", my)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Generate source files from <php_module/> entities.
+# ---------------------------------------------------------------------------
+function php_generate_sources (php_project)
+    check_arguments (my, "php_project", my)
+
+    assert_attribute (my.php_project, "source_dir", my)
+
+    if -1 = directory.create (my.php_project.source_dir)
+        echo_fatal ("Can not create directory: $(my.wrapper.source_dir:)")
+    endif
+
+    for my.php_project.php_module as php_module0 where string_in (php_module0.type, "class, interface, implementation")
+        php_generate_source_php (php_module0)
+    endfor
+
+    #for my.php_project.php_module where php_module.name = "extension_main"
+    #    php_generate_source_extension_main (php_module, my.php_project)
+    #endfor
+
+    #for my.php_project.php_module where php_module.name = "extension_status"
+    #    php_generate_source_extension_status (php_module)
+    #endfor
+
+    #for my.php_project.json_module
+    #    php_generate_source_composer (json_module)
+    #endfor
+endfunction
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_generate_source_php (in_php_module)
+    check_arguments (my, "in_php_module", my)
+
+    if defined (my.in_php_module.source_dir)
+        if -1 = directory.create (my.in_php_module.source_dir)
+            echo_fatal ("Can not create directory: $(my.in_php_module.source_dir:)")
+        endif
+    endif
+
+    echo_trace ("Generate PHP $(my.in_php_module.type:) $(my.in_php_module.name:)", my)
+
+    output my.in_php_module.source_file_path
+
+    php_insert_code ("<?php", 0)
+    php_insert_description (my.in_php_module->php_license)
+    newline()
+    php_insert_code_from_model (my.in_php_module)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_insert_code_from_model (in_php_module)
+    check_arguments (my, "in_php_module", my)
+    assert_attributes (my.in_php_module, "type, name")
+
+    my._module_type = my.in_php_module.type
+    my._module_name = my.in_php_module.name
+
+    my._s = my.in_php_module->php_entity->high_level->signature.
+
+    php_insert_code("$(my._s:)", 0)
+
+    php_insert_code("{", 0)
+
+    for my.in_php_module->php_entity->high_level.php_method as php_method0
+        newline()
+        php_insert_code(php_method0->docblock., 1)
+
+        my._signature = php_method0->signature.
+
+        if my._module_type = "interface"
+            my._signature += ";"
+        endif
+
+        php_insert_code(my._signature, 1)
+
+        if defined (php_method0->body.)
+            php_insert_code("{", 1)
+            php_insert_code(php_method0->body., 2)
+            php_insert_code("}", 1)
+        endif
+
+    endfor
+
+    php_insert_code("}",0)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Insert description of the given object.
+# ---------------------------------------------------------------------------
+function php_insert_description (obj, tab_count)
+    my.description = my.obj. ?
+    my.tab_count ?= 0
+    if string_empty (my.description)
+        return
+    endif
+    php_insert_code (my.description, my.tab_count)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Insert given multiline code.
+# ---------------------------------------------------------------------------
+function php_insert_code (code, tab_count)
+    check_argument (my, "code", my)
+
+    my.code = "$(my.code:left,no)"
+    my.code = string_trim (my.code)
+    my.code = code_collapse_spaces (my.code)
+
+    my.code = string_indent (my.code, my.tab_count)
+    my.code = string_multi_rtrim (my.code)
+
+    out (my.code)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_format_docblock(data)
+    my.str = my.data
+    my.str = string_indent (my.str)
+    my.str = "* $(my.str:left, block, no)$(terminator)"
+    my.str = string_multi_rtrim (my.str)
+    my.str = "/**$(terminator)$(my.str:)$(terminator)*/"
+
+    return my.str
+endfunction
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_format_c_license(license)
+    my.lic = format_left(my.license, 1)
+
+    my.res = string_indent (my.lic)
+    my.res = "// $(my.res:left, block, no)$(terminator)"
+    my.res = string_multi_rtrim (my.res)
+    my.res = "// $(terminator)$(my.res:)$(terminator)"
+
+    return my.res
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return multiline formatted string with license.
+# ---------------------------------------------------------------------------
+function php_format_license(license)
+    check_argument (my, "license", my)
+    
+    my.res = php_format_comment(my.license)
+
+    return my.res 
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return formatted multiline commented string.
+# ---------------------------------------------------------------------------
+function php_format_comment(comment)
+    check_argument (my, "comment", my)
+
+    if ! defined (my.comment.)
+        return
+    endif
+
+    my.str = my.comment.
+    my.str = string_indent (my.str)
+    my.str = "* $(my.str:left, block, no)$(terminator)"
+    my.str = string_multi_rtrim (my.str)
+    my.str = "/**$(terminator)$(my.str:)$(terminator)*/"
+
+    return my.str
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return multiline formatted string with description.
+# ---------------------------------------------------------------------------
+function php_format_description(description)
+    return php_format_comment(my.description) ?
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return formatted list of arguments without braces.
+# ---------------------------------------------------------------------------
+function php_format_argument_list (php_method)
+    check_arguments (my, "php_method", my)
+
+    for my.php_method.php_argument
+        my.arg_list = ""
+        my.arg_list = "$(php_argument.name:Camel)"
+        if ! last()
+            my.arg_list += ", "
+        endif
+    endfor
+
+    return my.arg_list
+endfunction
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_generate_source_extension_main (extension_module, php_project)
+    check_arguments (my, "extension_module, php_project", my)
+
+    #echo_debug_item(my.extension_module)
+    #echo_fatal("", my)
+
+    if defined (my.extension_module.source_dir)
+        if -1 = directory.create (my.extension_module.source_dir)
+            echo_fatal ("Can not create directory: $(my.extension_module.source_dir:)")
+        endif
+    endif
+
+    output my.extension_module.source_file_path
+
+    my.func_wrap = format_left("\
+    // --------------------------------------------------------------------------
+    //  Functions wrapping
+    // --------------------------------------------------------------------------
+    ", 0)
+    
+    my.const = format_left("\
+    // --------------------------------------------------------------------------
+    //  Constants
+    // --------------------------------------------------------------------------
+    const char $(my.extension_module.extension_name:UPPER)_VERSION[] = \"$(my.extension_module.version:)\";
+    const char $(my.extension_module.extension_name:UPPER)_EXTNAME[] = \"$(my.extension_module.extension_name:)\";
+    ", 0)
+
+    my.registered_resources = format_left("\
+    // --------------------------------------------------------------------------
+    //  Registered resources
+    // --------------------------------------------------------------------------
+    ", 0)
+
+    my.define_function_entry = format_left("\
+        // --------------------------------------------------------------------------
+        //  Define all function entries
+        // --------------------------------------------------------------------------
+        static zend_function_entry $(my.extension_module.extension_name:)_functions[] = {
+    ")
+
+    my.module_definition = format_left("\
+    // --------------------------------------------------------------------------
+    //  Extension module definition
+    // --------------------------------------------------------------------------
+    zend_module_entry $(my.extension_module.extension_name:)_module_entry = {
+    #if ZEND_MODULE_API_NO >= 20010901
+        STANDARD_MODULE_HEADER,
+    #endif
+        $(my.extension_module.extension_name:UPPER)_EXTNAME,
+        $(my.extension_module.extension_name:)_functions,
+        PHP_MINIT($(my.extension_module.extension_name:)),
+        PHP_MSHUTDOWN($(my.extension_module.extension_name:)),
+        NULL,
+        NULL,
+        NULL,
+    #if ZEND_MODULE_API_NO >= 20010901
+        $(my.extension_module.extension_name:UPPER)_VERSION,
+    #endif
+        STANDARD_MODULE_PROPERTIES
+    };
+
+    ZEND_GET_MODULE($(my.extension_module.extension_name:))
+    ")
+
+    my.init_function_definition_p1 = format_left("\
+        // --------------------------------------------------------------------------
+        //  Extension init functions definition
+        // --------------------------------------------------------------------------
+    ", 0)
+
+    my.init_function_definition_p2 = format_left("\
+    PHP_MINIT_FUNCTION($(my.extension_module.extension_name:)) {
+    ")
+
+    my.license = php_format_c_license(my.extension_module->license) + "\n"
+    my.include = php_insert_extension_include_common(my.php_project.prefix)
+
+    for my.php_project.php_module as php_module where ! string_in (php_module.name, "extension_status, extension_main")
+        for php_module.php_class as php_class
+
+            my.include += php_insert_extension_include(php_class.low_level_name_c_format)
+            my.const += format_left("\
+                const char $(php_class.low_level_name_c_format:UPPER)_RES_NAME[] = \"$(php_class.low_level_name_c_format:)_t\"\n
+                ", 0)
+            my.registered_resources += format_left("\
+                int le_$(php_class.low_level_name_c_format:)\n
+                ", 0)
+
+            #echo_debug_item(php_class)
+            #echo_fatal("", my)
+
+            if count(php_class.php_method) > 0
+
+                my.r = "$(php_class.low_level_name_c_format:)"
+
+                my.init_function_definition_p1 += format_left("\
+                static void $(my.r:)_dtor_php(zend_resource *rsrc) {
+                    $(my.r:)_delete(($(my.r:)_t *)rsrc->ptr);
+                }
+                ", 0)
+
+                my.init_function_definition_p2 += format_left("\
+                le_$(my.r:) = zend_register_list_destructors_ex($(my.r:)_dtor_php, NULL, $(php_class.low_level_name_c_format:UPPER)_RES_NAME, module_number);
+                ", 1)
+
+                for php_class.php_method as php_method
+
+                    #echo_debug_item(php_class)
+                    #echo_fatal("", my)
+
+                    my.define_function_entry += format_left("PHP_FE($(php_method->low_level.function_name:)_php, arginfo_$(php_method->low_level.function_name:)_php)\n", 1)
+
+                    my.extension_code = php_method->low_level->extension_code
+
+                    if !first()
+                        my.func_wrap += "\n"
+                    endif
+                    
+                    my.func_wrap += format_left(my.extension_code->zend_header, 0) + "\n"
+                    my.func_wrap += format_left(my.extension_code->php_function, 0) + "\n"
+                    my.func_wrap += "{"
+
+                    if defined (php_method->low_level.is_constructor)
+                        my.func_wrap += format_left(my.extension_code->register_resource, 1) + "\n"
+                    else 
+                        my.func_wrap += format_left(my.extension_code->declaration_input, 1) + "\n"
+                        my.func_wrap += format_left(my.extension_code->parse_arguments, 1) + "\n"
+
+                        if defined (php_method->low_level.is_destructor)
+                            my.func_wrap += format_left(my.extension_code->fetch_type, 1) + "\n"
+                        else
+                            my.func_wrap += format_left(my.extension_code->proxy_call, 1) + "\n"
+                            my.func_wrap += my.extension_code->allocate_output_buffer + "\n"
+                            my.func_wrap += format_left(my.extension_code->status, 1) + "\n"
+                            my.func_wrap += format_left(my.extension_code->output, 1) + "\n"
+                        endif
+                    endif
+                        my.func_wrap += "}"
+                endfor
+            endif
+        endfor
+    endfor
+
+    my.define_function_entry += format_left("\
+        PHP_FE_END
+    };
+    ", 0)
+
+    my.init_function_definition_p2 += format_left("\
+        return SUCCESS;
+    }
+    ", 0)
+
+    my.init_function_definition_p3 = format_left("\
+    PHP_MSHUTDOWN_FUNCTION($(my.extension_module.extension_name:)) {
+        return SUCCESS;
+    }
+    ", 0)
+
+    my.init_function_definition = my.init_function_definition_p1 + my.init_function_definition_p2 + my.init_function_definition_p3
+
+    my.code = my.license + my.include + "\n" + my.const + "\n" + my.registered_resources + "\n" + my.func_wrap + my.define_function_entry + "\n" + my.module_definition + "\n" + my.init_function_definition
+
+    php_insert_code(my.code)
+
+endfunction
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_generate_source_extension_status (current_module)
+    check_arguments (my, "current_module", my)
+
+    if defined (my.current_module.source_dir)
+        if -1 = directory.create (my.current_module.source_dir)
+            echo_fatal ("Can not create directory: $(my.current_module.source_dir:)")
+        endif
+    endif
+
+    output my.current_module.source_file_path
+
+    for my.current_module->extension->c_code as code
+        php_insert_code(code.)
+    endfor
+endfunction
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_generate_source_composer (current_module)
+    check_arguments (my, "current_module", my)
+
+    output my.current_module.source_file_path
+
+    for my.current_module.code
+        php_insert_code(code.)
+    endfor
+
+endfunction
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_insert_extension_include_common (prefix)
+
+    check_arguments (my, "prefix", my)
+
+    my.res = format_left("\
+    #include <php.h>
+    #include <zend_exception.h>
+    #include <zend_list.h>
+    #include \"$(my.prefix:)_assert.h\"
+    ", 0)
+
+    return my.res 
+endfunction
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_insert_extension_include (low_level_name_c_format)
+
+    check_arguments (my, "low_level_name_c_format", my)
+
+    my.res = format_left("#include \"$(my.low_level_name_c_format:).h\"\n", 0)
+
+    return my.res 
+endfunction
+
+.endtemplate

@@ -1,0 +1,1151 @@
+.template 0
+#   Copyright (C) 2015-2019 Virgil Security, Inc.
+#
+#   All rights reserved.
+#
+#   Redistribution and use in source and binary forms, with or without
+#   modification, are permitted provided that the following conditions are
+#   met:
+#
+#       (1) Redistributions of source code must retain the above copyright
+#       notice, this list of conditions and the following disclaimer.
+#
+#       (2) Redistributions in binary form must reproduce the above copyright
+#       notice, this list of conditions and the following disclaimer in
+#       the documentation and/or other materials provided with the
+#       distribution.
+#
+#       (3) Neither the name of the copyright holder nor the names of its
+#       contributors may be used to endorse or promote products derived from
+#       this software without specific prior written permission.
+#
+#   THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
+#   IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+#   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+#   DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT,
+#   INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+#   (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+#   SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+#   HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+#   STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+#   IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+#   POSSIBILITY OF SUCH DAMAGE.
+#
+#   Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
+
+# ---------------------------------------------------------------------------
+#   Contains API for PHP wrapper generation.
+# ---------------------------------------------------------------------------
+#   This is a code generator built using the iMatix GSL code generation
+#   language. See https://github.com/imatix/gsl for details.
+# ---------------------------------------------------------------------------
+
+gsl from "common.gsl"
+gsl from "interface.gsl"
+gsl from "component.gsl"
+gsl from "c_component.gsl"
+gsl from "php_codegen.gsl"
+gsl from "php_derive.gsl"
+gsl from "php_check.gsl"
+gsl from "php_map.gsl"
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_create_toplevel_modules(wrapper)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_resolve_toplevel (wrapper, license)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_resolve_project (project, wrapper, projects_api)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_create_project_module (project, wrapper)
+    check_arguments (my, "project, wrapper", my)
+
+    assert_attribute (my.wrapper, "lang", my)
+    assert_attributes (my.project, "name, prefix, framework", my)
+    assert_item (my.project, "license", my)
+
+    echo_info ("Create PHP project for project: '$(my.project.name:)'", my)
+
+    new php_project to my.wrapper
+        . = my.project. ?
+        .name = my.project.name
+        .description = my.project.brief
+        .prefix = my.project.prefix
+        .framework = my.project.framework
+        .namespace = "$(my.project.namespace:c)"
+        .project_name = my.project.name
+        .version = my.project.version_string
+        .source_dir = cat_path ("$(my.wrapper.main_package_dir:)", php_project.project_name)
+
+        copy my.project->license to php_project
+
+        new php_uid to php_project
+            .name = php_project.namespace
+        endnew
+
+        if directory.create (php_project.source_dir) = -1
+            echo_fatal ("Can not create directory: $(.source_dir:). ", my)
+        endif
+
+        return php_project
+    endnew
+endfunction
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_create_custom_modules (source, php_project, meta)
+    check_arguments (my, "source, php_project, meta", my)
+
+    if directory.create (my.php_project.source_dir) = -1
+        echo_fatal ("Can not create directory: $(.source_dir_path:). ", my)
+    endif
+
+    new json_module to my.php_project
+        .name = "composer"
+        .source_file_name = 0.name + ".json"
+        .source_file_path = cat_path(my.php_project.source_dir, 0.source_file_name)
+        new code to json_module
+            .= "\
+            {
+                \"name\": \"virgil/crypto-$(my.php_project.name:)\",
+                \"description\": \"$(my.php_project.description:)\",
+                \"keywords\": [],
+                \"homepage\": \"https://virgilsecurity.com\",
+                \"license\": \"BSD-3-Clause\",
+                \"authors\": [
+                    {
+                        \"name\": \"Virgil Security, Inc\",
+                        \"email\": \"support@virgilsecurity.com\",
+                        \"homepage\": \"https://virgilsecurity.com\"
+                    }
+                ],
+                \"require\": {
+                    \"php\": \"^7.2\"
+                },
+                \"autoload\": {
+                    \"psr-4\": {
+                        \"Virgil\\\\Crypto-$(my.php_project.name:Pascal)\\\\\": \"sources\"
+                    }
+                },
+                \"scripts\": {
+                    \"setup-extension\": [
+                    ]
+                }
+            }
+            "
+        endnew
+    endnew
+
+    new php_module to my.php_project
+        .name = "extension_main"
+        .filename = "extension"
+        .source_file_name = 0.filename + ".c"
+        .source_dir = cat_path (my.php_project.source_dir, "extension")
+        .source_file_path = cat_path (0.source_dir, 0.source_file_name)
+        .version = my.php_project.version
+        .extension_name = php_derive_extension_name (my.php_project)
+        .type = "extension"
+
+        copy my.php_project->license to php_module
+        
+    endnew
+endfunction
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_create_interface_module (interface, php_project, meta)
+    check_arguments (my, "interface, php_project, meta", my)
+
+    echo_info ("Create <php_module/> from interface: '$(my.interface.name:)'", my)
+
+    new php_module to my.php_project
+        .name = php_derive_class_interface_name (my.interface)
+        .low_level_name = php_derive_name(my.interface, "c")
+        .source_file_name = 0.name + ".php"
+        .source_file_path = cat_path (my.php_project.source_dir, 0.source_file_name)
+        .prefix = my.php_project.prefix
+        .type = "interface"
+
+        new php_license to php_module
+            . = php_format_license (my.php_project->license)
+        endnew
+
+        new php_entity to php_module
+            new high_level to php_entity
+                php_map_high_level(my.interface, my.php_project, high_level, "interface")
+            endnew
+
+            new low_level to php_entity
+                .name = php_derive_class_name_low_level_name_c_formated(my.interface, my.php_project)
+            endnew
+        endnew
+        
+    endnew
+    echo_debug ("Done", my)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   OLD
+# ---------------------------------------------------------------------------
+function php_create_interface_module_old (interface, php_project, meta)
+    check_arguments (my, "interface, php_project, meta", my)
+
+    echo_info ("Create <php_module/> from interface: '$(my.interface.name:)'", my)
+
+    new php_module to my.php_project
+        .name = php_derive_class_interface_name (my.interface)
+        .source_file_name = 0.name + ".php"
+        .source_file_path = cat_path (my.php_project.source_dir, 0.source_file_name)
+        .prefix = my.php_project.prefix
+        .type = "interface"
+
+        new php_license to php_module
+            . = php_format_license (my.php_project->license)
+        endnew
+
+        new php_interface to php_module
+            . = php_format_description (my.interface) ?
+            .name = "$(my.interface.name:Pascal)"
+
+            for my.interface.method as method
+                new php_method to php_interface
+                    new high_level to php_method
+
+                        .name = "$(method.name:Camel)"
+
+                        php_map_res_data_type(method, high_level)
+
+                        my.docblock_data = method. + "\n"
+                        if defined (method->argument)
+                            for method.argument as argument
+                                if defined (argument.class)
+                                    new php_argument to high_level
+                                        .name = php_derive_argument_name (argument, "-h")
+                                        php_map_argument_type (argument, "-h", php_argument)
+                                        my.docblock_data += "@param $(0.type:) $(0.name:)\n"
+                                    endnew
+                                endif
+                            endfor
+                        endif
+
+                        my.docblock_data += "@return $(0.res_type:)\n"
+
+                    new docblock to high_level
+                        . = php_format_docblock (my.docblock_data) ?
+                    endnew
+
+                    endnew
+                    new low_level to php_method
+                        #
+                    endnew
+                endnew
+            endfor
+        endnew
+        
+    endnew
+    echo_debug ("Done", my)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_create_implementation_module (implementation, php_project, meta)
+    check_arguments (my, "implementation, php_project, meta", my)
+
+    echo_info("Create <php_module/> from implementation: '$(my.implementation.name:)'", my)
+
+    new php_module to my.php_project
+        .name = php_derive_class_interface_name (my.implementation)
+        .low_level_name = php_derive_name(my.implementation, "c")
+        .source_file_name = 0.name + ".php"
+        .source_file_path = cat_path (my.php_project.source_dir, 0.source_file_name)
+        .prefix = my.php_project.prefix
+        .type = "implementation"
+
+        new php_license to php_module
+            . = php_format_license (my.php_project->license)
+        endnew
+
+        new php_entity to php_module
+            new high_level to php_entity
+                php_map_high_level(my.implementation, my.php_project, high_level, "implementation")
+            endnew
+
+            new low_level to php_entity
+                .name = php_derive_class_name_low_level_name_c_formated(my.implementation, my.php_project)
+            endnew
+        endnew
+    endnew
+
+    echo_debug ("Done", my)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_create_class_module (class, php_project, meta)
+    check_arguments (my, "class, php_project, meta", my)
+
+    echo_info ("Create <php_module/> from class: '$(my.class.name:)'", my)
+    
+    if my.class.scope <> "public" | my.class.name = "error" | my.class.context = "none"
+        return
+    endif
+
+    new php_module to my.php_project
+        .name = php_derive_class_interface_name (my.class)
+        .low_level_name = php_derive_name(my.class, "c")
+        .source_file_name = 0.name + ".php"
+        .source_file_path = cat_path (my.php_project.source_dir, 0.source_file_name)
+        .prefix = my.php_project.prefix
+        .type = "class"
+
+        new php_license to php_module
+            . = php_format_license (my.php_project->license)
+        endnew
+
+        new php_entity to php_module
+            new high_level to php_entity
+                php_map_high_level(my.class, my.php_project, high_level, "class")
+            endnew
+
+            new low_level to php_entity
+                .name = php_derive_class_name_low_level_name_c_formated(my.class, my.php_project)
+            endnew
+        endnew
+        
+    endnew
+    echo_debug ("Done", my)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_create_class_module_old (class, php_project, meta)
+    check_arguments (my, "class, php_project, meta", my)
+
+    echo_info ("Create <php_module/> from class: '$(my.class.name:)'", my)
+    
+    assert_attribute (my.class, "name", my)
+
+    if my.class.scope <> "public" | my.class.name = "error" | my.class.context = "none"
+        return
+    endif
+
+    new php_module to my.php_project
+        .name = php_derive_class_interface_name (my.class)
+        .source_file_name = 0.name + ".php"
+        .source_file_path = cat_path (my.php_project.source_dir, 0.source_file_name)
+        .prefix = my.php_project.prefix
+        .type = "class"
+
+        new php_license to php_module
+            . = php_format_license (my.php_project->license)
+        endnew
+
+        new php_class to php_module
+            . = php_format_description (my.class) ?
+            .name = php_derive_name (my.class, "Camel")
+            .low_level_name_c_format = php_derive_class_name_low_level_name_c_formated (my.class, my.php_project)
+
+            php_create_class_default_constructor (php_class, my.class, my.php_project, my.meta)
+            php_create_class_default_destructor (php_class, my.class, my.php_project, my.meta)
+            
+            for my.class.method where method.declaration = "public" & method.scope ?= "public"
+                php_create_class_method (my.class, method, php_class, my.php_project, my.meta)
+            endfor
+        endnew
+        
+    endnew
+    echo_debug ("Done", my)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Create default <php_constructor/> that initialize underlying C context.
+# ---------------------------------------------------------------------------
+function php_create_class_default_constructor (php_class, class, php_project, meta)
+    check_arguments (my, "php_class, class, php_project, meta", my)
+
+    #echo_debug_item(my.class)
+    #echo_fatal("", my)
+
+    new php_method to my.php_class
+
+        my.func_name = "$(my.php_class.low_level_name_c_format:)_new"
+        my.php_func_name = my.func_name + "_php"
+        
+        new high_level to php_method
+            .name = "__construct"
+            .function_name = my.php_func_name
+            .return_data = ""
+            .return_type = "void"
+            .throws_exception = "0"
+
+            new docblock to high_level
+                . = "\
+                Create underlying C context.
+                @return void
+                "
+                . = php_format_description (docblock)
+            endnew
+
+            new php_code to high_level
+                . = format_left ("$this->ctx = $(my.php_func_name:)();")
+            endnew
+        endnew
+
+        new low_level to php_method
+            .module_name = "$(my.class.name:c)"
+            .prefix = "$(my.class.c_prefix:)"
+            .function_name = "$(my.func_name:)"
+            .required_num_args = "0"
+            .throws_exception = "0"
+            .return_type = "IS_RESOURCE"
+            .is_constructor = "1"
+
+            new extension_code to low_level
+                new zend_header to extension_code
+                    . = php_format_extension_zend_header (low_level)
+                endnew
+
+                new php_function to extension_code
+                    . = php_format_extension_php_function (low_level)
+                endnew
+
+                new register_resource to extension_code
+                    . = php_format_extension_register_resource (low_level)
+                endnew
+            endnew
+        endnew
+    endnew
+endfunction
+
+# ---------------------------------------------------------------------------
+# Create default <php_destructor/> that destroy underlying C context.
+# ---------------------------------------------------------------------------
+function php_create_class_default_destructor (php_class, class, php_project, meta)
+    check_arguments (my, "php_class, class, php_project, meta", my)
+
+    new php_method to my.php_class
+        new high_level to php_method
+
+            my.func_name = "$(my.php_class.low_level_name_c_format:)_delete"
+            my.php_func_name = my.func_name + "_php"
+
+            .name = "__destruct"
+            .function_name = my.php_func_name
+            .return_data = ""
+            .return_type = "void"
+            .throws_exception = "0"
+
+            new docblock to high_level
+                . = "\
+                Destroy underlying C context.
+                @return void"
+                . = php_format_description (docblock)
+            endnew
+
+            new php_code to high_level
+                . = "$(my.php_func_name:)($this->ctx);"
+            endnew
+        endnew
+
+        new low_level to php_method
+            .module_name = "$(my.class.name:c)"
+            .prefix = "$(my.class.c_prefix:)"
+            .function_name = "$(my.func_name:)"
+            .required_num_args = "0"
+            .throws_exception = "0"
+            .return_type = "IS_VOID"
+            .is_destructor = "1"
+
+            new extension_code to low_level
+                new zend_header to extension_code
+                    . = php_format_extension_zend_header (low_level)
+                endnew
+                new php_function to extension_code
+                    . = php_format_extension_php_function (low_level)
+                endnew
+                new declaration_input to extension_code
+                    . = php_format_extension_declare_input (low_level)
+                endnew
+                new parse_arguments to extension_code
+                    . = php_format_extension_parse_arguments (low_level)
+                endnew
+                new fetch_type to extension_code
+                    . = php_format_extension_fetch_type (low_level)
+                endnew
+            endnew
+        endnew
+    endnew
+endfunction
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_format_method_body (php_method, function_name)
+    check_arguments (my, "php_method, function_name", my)
+
+    my.method_body = ""
+    my.method_argument = ""
+    my.is_void = string_in(my.php_method->high_level.return_type, "void")
+    my.ctx = "$this->ctx"
+
+    for my.php_method->high_level.php_argument as php_argument where defined (php_argument.name)
+        if first()
+            my.method_argument += ", "
+        endif
+
+        my.method_argument += "$(php_argument.name:)"
+
+        if ! last()
+            my.method_argument += ", "
+        endif
+    endfor
+
+    my.return = ""
+
+    if is_false (my.is_void)
+        my.return = "return "
+    endif
+
+    my.method_body += "$(my.return:)$(my.function_name:)($(my.ctx:)$(my.method_argument:));"
+
+    my._res = my.method_body
+
+    return my._res
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Create entity <php_method/> of from the class entity <method/>.
+# ---------------------------------------------------------------------------
+function php_create_class_method (class, method, destination, php_project, meta)
+    check_arguments (my, "class, method, destination, php_project, meta", my)
+
+    if defined (my.method->return.type) & my.method->return.type = "size"
+        return
+    endif
+
+    new php_method to my.destination
+
+        php_map_res_data_type(my.method, php_method)
+
+        my.return_enum_status = count (my.method.return, string_equal (return.enum, "status"))
+        my.extension_return_type = php_derive_extension_return_type(0.res_type)
+        my.res_data = 0.res_data
+        my.res_type = 0.res_type
+        my.count_in = 0.count_in
+
+        # HIGH_LEVEL
+        new high_level to php_method
+            my.docblock_data = ""
+
+            if defined (my.method.)
+                my.docblock_data += my.method.
+            endif
+
+            my.function_name = class_derive_c_method (my.class, my.method)
+
+            .name = php_derive_name (my.method, "Camel")
+            .function_name = php_derive_function_name_old(my.function_name, "-h")
+            .return_data = my.res_data
+            .return_type = my.res_type
+
+            .throws_exception = my.return_enum_status
+
+            for my.method.argument where defined (argument.class) & argument.class <> "buffer"
+                new php_argument to high_level
+                    .name = php_derive_argument_name (argument, "-h")
+                    php_map_argument_type (argument, "-h", php_argument)
+                    my.docblock_data += "@param $(0.type:) $(0.name:)\n"
+                endnew
+            endfor
+
+            if my.return_enum_status = 1
+                my.docblock_data += "@throws Exception\n"
+            endif
+
+            my.docblock_data += "@return $(my.res_type:)\n"
+
+            new docblock to high_level
+                . = php_format_docblock (my.docblock_data) ?
+            endnew
+
+            new php_code to high_level
+                my.function_name = high_level.function_name
+                . = php_format_method_body(php_method, my.function_name)
+            endnew
+        endnew
+
+        # LOW_LEVEL
+        new low_level to php_method
+
+            my.function_name = class_derive_c_method (my.class, my.method)
+
+            #echo_debug_item(my.class)
+            #echo_fatal("", my)
+
+            .prefix = "$(my.class.c_prefix:)"
+            .module_name = php_derive_name (my.class, "c")
+            .function_name = php_derive_function_name_old (my.function_name, "-l")
+            .required_num_args = my.count_in
+            .throws_exception = my.return_enum_status
+            .return_type = my.extension_return_type
+
+
+            for my.method.argument where defined (argument.class)
+                new extension_argument to low_level
+                    .name = php_derive_argument_name (argument, "-l")
+                    php_map_argument_type (argument, "-l", extension_argument)
+
+                    if defined (argument->length)
+                        php_map_extension_argument_len(argument, extension_argument)
+                    endif
+                endnew
+            endfor
+
+            new extension_code to low_level
+                if defined (low_level)
+                    new zend_header to extension_code
+                        . = php_format_extension_zend_header (low_level)
+                    endnew
+
+                    new php_function to extension_code
+                        . = php_format_extension_php_function (low_level)
+                    endnew
+
+                    new declaration_input to extension_code
+                        . = php_format_extension_declare_input (low_level)
+                    endnew
+                    new parse_arguments to extension_code
+                        . = php_format_extension_parse_arguments (low_level)
+                    endnew
+                    new proxy_call to extension_code
+                        . = php_format_extension_proxy_call (low_level)
+                    endnew
+                    new allocate_output_buffer to extension_code
+                        . = php_format_extension_allocate_output_buffer (low_level)
+                    endnew
+                    new status to extension_code
+                        . = php_format_extension_status (low_level)
+                    endnew
+                    new output to extension_code
+                        . = php_format_extension_output (low_level)
+                    endnew
+                endif
+            endnew
+        endnew
+    endnew
+
+endfunction
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_create_enum_module (enum, php_project, meta)
+    check_arguments (my, "enum, php_project, meta", my)
+
+    echo_info ("Create <php_module/> from enum: '$(my.enum.name:)'", my)
+
+    assert_attribute (my.enum, "name", my)
+
+    if my.enum.scope <> "public"
+        return
+    endif
+
+    if my.enum.name <> "status"
+        # TODO: Need enum implementation
+        echo_info("Not implemented enum: $(my.enum.name:)", my)
+    endif
+
+    if my.enum.name = "status"
+        new php_module to my.php_project
+            .name = "extension_status"
+            .filename = "status"
+            .source_file_name = 0.filename + ".c"
+            .source_dir = cat_path (my.php_project.source_dir, "extension")
+            .source_file_path = cat_path (0.source_dir, 0.source_file_name)
+            .type = "extension"
+
+            new extension to php_module
+                .prefix = my.php_project.prefix
+
+                new c_code to extension
+                    .= php_format_extension_status_exception (my.enum, my.php_project.prefix)
+                endnew
+            endnew
+        endnew
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_finalize_custom_modules (source, destination, wrapper, meta) #[optional]
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Resolve UIDs for given component and all inner components.
+# ---------------------------------------------------------------------------
+function php_module_resolve_uids (php_component, parent_uid)
+    check_arguments (my, "php_component", my)
+
+    if defined (my.parent_uid) & string.prefixed (my.parent_uid, "php_module")
+        my.parent_uid = # Undefined
+    endif
+
+    my.component_name = name (my.php_component)
+    if  defined (my.parent_uid) & string.prefixed (my.component_name, "php_")
+        regexp.match ("php_(.+)", my.component_name, my.component_name)
+    endif
+
+    my.php_component.uid = make_id (my.parent_uid, my.component_name, my.php_component.name)
+
+    for my.php_component. as inner_component where is_item (inner_component) & defined (inner_component.name)
+        php_module_resolve_uids (inner_component, my.php_component.uid)
+    endfor
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Add auto-resolving attributes:
+#       - uid.
+# ---------------------------------------------------------------------------
+function php_module_resolve (php_module, php_project)
+    check_arguments (my, "php_module, php_project", my)
+
+    echo_trace ("Resolving <$(name (my.php_module)) name=\"$(my.php_module.name:)\"/>", my)
+
+    assert_attribute (my.php_module, "name", my)
+
+    #   Resolve UIDs
+    php_module_resolve_uids (my.php_module)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_format_extension_wrap_method (low_level)
+    check_arguments (my, "low_level", my)
+
+    my.res = ""
+    
+    my.res += php_format_extension_zend_body (low_level)
+    
+    return my.res
+endfunction
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_format_extension_zend_header (low_level)
+    check_arguments (my, "low_level", my)
+
+    my.arginfo = php_derive_extension_zend_function_arginfo(my.low_level.function_name)
+
+    my.arg_type_info = ""
+
+    if my.low_level.required_num_args > 0
+        my.arg_type_info += format_left("ZEND_ARG_INFO(0, ctx)", 1) + "\n"
+    endif
+
+    for my.low_level.extension_argument as extension_argument
+        my.term = ""
+        if ! last()
+            my.term = "\n"
+        endif
+
+        if defined (extension_argument.zend_type)
+            my.arg_type_info += format_left("ZEND_ARG_TYPE_INFO(0, $(extension_argument.name:), $(extension_argument.zend_type), 0)$(my.term:)", 1)
+        endif
+    endfor
+
+    my.res = format_left("\
+    //
+    //  Wrap method: $(my.low_level.function_name)
+    //
+    ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX($(my.arginfo:), 0, $(my.low_level.required_num_args:), $(my.low_level.return_type:UPPER), 0)
+    $(my.arg_type_info:)
+    ZEND_END_ARG_INFO()
+    ")
+
+    return my.res
+endfunction
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_format_extension_php_function (low_level)
+    check_arguments (my, "low_level", my)
+
+    my.res = "PHP_FUNCTION($(my.low_level.function_name:))"
+
+    return my.res
+endfunction
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_format_extension_status (low_level)
+    check_arguments (my, "low_level", my)
+
+    my.status = "vsce_status_t status = $(my.low_level.function_name:)($(my.low_level.module_name:), "
+
+    for my.low_level.extension_argument as extension_argument
+        my.status += "$(extension_argument.name:)"
+
+        if ! last()
+            my.status += ", "
+        endif
+    endfor
+
+    my.status += ");\n"
+
+    my.status += format_left("\
+    //
+    //  Handle error
+    //
+    VSCE_HANDLE_STATUS(status);
+    ", 0)
+
+    my.res = my.status
+
+    return my.res
+endfunction
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_format_extension_output (low_level)
+    check_arguments (my, "low_level", my)
+
+    if my.low_level.return_type = "IS_STRING"
+        my.c = 0
+        for my.low_level.extension_argument
+            if extension_argument.type = "vsc_buffer_t"
+                my.c = my.c + 1
+                my.out_arg = php_derive_extension_zend_function_output_name(extension_argument, "-o")
+                my.arg = extension_argument.name
+            endif
+        endfor
+
+        if my.c > 1
+            echo_fatal("Invalid amount of the output string arguments", my)
+        endif
+
+        my.res = "\
+        //
+        //  Correct string length to the actual
+        //
+        ZSTR_LEN($(my.out_arg:)) = vsc_buffer_len($(my.arg));
+
+        //
+        //  Write returned result
+        //
+        RETVAL_STR($(my.out_arg));
+
+        goto success;
+
+        fail:
+            zend_string_free($(my.out_arg));
+        success:
+            vsc_buffer_destroy(&$(my.arg));
+        "
+    elsif my.low_level.return_type = "IS_VOID"
+        my.res = "RETURN_TRUE;"
+
+    elsif my.low_level.return_type = "IS_ARRAY"
+    my.zstr_len = ""
+    my.add_next_index_str = ""
+    my.zend_string_free = ""
+    my.vsc_buffer_destroy = ""
+
+    for my.low_level.extension_argument
+        if extension_argument.type = "vsc_buffer_t"
+
+            my.term = ""
+            if ! last()
+                my.term = "\n"
+            endif
+
+            my.out_arg = php_derive_extension_zend_function_output_name(extension_argument, "-o")
+            my.arg = extension_argument.name
+
+            my.zstr_len += "ZSTR_LEN($(my.out_arg:)) = vsc_buffer_len($(my.arg:));\n"
+            my.add_next_index_str += "add_next_index_str(return_value, $(my.out_arg:));\n"
+            my.zend_string_free += "zend_string_free($(my.out_arg:));\n"
+            my.vsc_buffer_destroy += "vsc_buffer_destroy(&$(my.arg:));$(my.term:)"
+        endif
+    endfor
+
+        my.res = "\
+    //
+    //  Correct string length to the actual
+    //
+    $(my.zstr_len:)
+
+    //
+    //  Write returned result
+    //
+    array_init(return_value);
+    $(my.add_next_index_str:)
+
+    goto success;
+
+fail:
+    $(my.zend_string_free:)
+success:
+    $(my.vsc_buffer_destroy:)
+        "
+    else 
+        echo_fatal("Not implemented return type: $(my.low_level.return_type:)", my)
+    endif
+
+    return my.res
+endfunction
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_format_extension_declare_input (low_level)
+    check_arguments (my, "low_level", my)
+
+    my.res = format_left("\
+    //
+    // Declare input arguments
+    //
+    zval *in_ctx = NULL;
+    ")
+
+    for my.low_level.extension_argument as extension_argument
+        if extension_argument.type <> "vsc_buffer_t"
+            my.char = php_derive_extension_zend_function_input_name(extension_argument, "-c")
+            my.size = php_derive_extension_zend_function_input_name(extension_argument, "-l")
+            my.res += format_left("\
+            char *$(my.char:) = NULL;
+            size_t $(my.size:) = 0;
+            ")
+        endif
+    endfor
+
+    return my.res
+endfunction
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_format_extension_parse_arguments (low_level)
+check_arguments (my, "low_level", my)
+
+    my.parse_arguments = format_left("Z_PARAM_RESOURCE_EX(in_ctx, 1, 0)\n", 1)
+    my.c = 1 # ctx
+
+    for my.low_level.extension_argument as extension_argument
+
+        if extension_argument.type <> "vsc_buffer_t"
+            my.char = php_derive_extension_zend_function_input_name(extension_argument, "-c")
+            my.size = php_derive_extension_zend_function_input_name(extension_argument, "-l")
+            my.c = my.c + 1
+
+            my.term = ""
+            if ! last()
+                my.term = "\n"
+            endif
+
+            my.parse_arguments += format_left("Z_PARAM_STRING_EX($(my.char:), $(my.size:), 1, 0)$(my.term:)", 1)
+        endif
+    endfor
+
+    my.res = format_left("\
+    //
+    //  Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, $(my.c:), $(my.c:))
+        $(my.parse_arguments:)
+    ZEND_PARSE_PARAMETERS_END();
+    ", 0)
+
+    return my.res
+endfunction
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_format_extension_proxy_call (low_level)
+    check_arguments (my, "low_level", my)
+
+    my.proxy_call = ""
+
+    for my.low_level.extension_argument as extension_argument
+        if extension_argument.type <> "vsc_buffer_t"
+            my.char = php_derive_extension_zend_function_input_name(extension_argument, "-c")
+            my.size = php_derive_extension_zend_function_input_name(extension_argument, "-l")
+            my.term = ""
+            if ! last()
+                my.term = "\n"
+            endif
+            my.proxy_call += format_left("$(extension_argument.type:) $(extension_argument.name) = vsc_data((const byte*)$(my.char:), $(my.size:));$(my.term:)", 1)
+        endif
+    endfor
+
+    #echo_debug_item(my.low_level)
+    #echo_fatal("", my)
+
+    my._m = my.low_level.module_name
+    my._p = "$(my.low_level.prefix:)"
+    my._rn = "$(my._p:UPPER)_$(my._m:UPPER)_RES_NAME"
+
+    my.res = format_left("
+    //
+    // Proxy call
+    //
+    $(my._p)_$(my._m:)_t *$(my._m:) = zend_fetch_resource_ex(in_ctx, $(my._rn), le_$(my._p:)_$(my._m:));
+    $(my._p:UPPER)_ASSERT_PTR($(my.low_level.module_name:));
+    $(my.proxy_call:)
+    ", 1)
+
+    return my.res
+endfunction
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_format_extension_allocate_output_buffer (low_level)
+    check_arguments (my, "low_level", my)
+
+    my.allocate_output_buffer = ""
+
+    for my.low_level.extension_argument as extension_argument
+
+        if extension_argument.type = "vsc_buffer_t"
+            my.out = php_derive_extension_zend_function_output_name (extension_argument, "-o")
+            if extension_argument.len_type = "method"
+                #TODO Add prefix!
+                my.zend_string_alloc = "$(extension_argument.len_data:)($(my.low_level.module_name:))"
+            elsif extension_argument.len_type = "constant"
+                #TODO Add prefix!
+                my.zend_string_alloc = "$(extension_argument.len_data:)"
+            else
+                #TODO
+                echo_fatal("Not implemented!", my)
+            endif
+
+            my.allocate_output_buffer += format_left("\
+            //  Allocate output buffer for output '$(extension_argument.name:)'
+            zend_string *$(my.out:) = zend_string_alloc($(my.zend_string_alloc:), 0);
+            vsc_buffer_t *$(extension_argument.name:) = vsc_buffer_new();
+            vsc_buffer_use($(extension_argument.name:), (byte *)ZSTR_VAL($(my.out:)), ZSTR_LEN($(my.out:)));
+            ", 0)
+        endif
+    endfor
+
+    my.res = format_left("$(my.allocate_output_buffer:)", 1)
+
+    return my.res
+endfunction
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_format_extension_status_exception (enum, prefix)
+    check_arguments (my, "enum, prefix", my)
+
+    my.macro_name = "$(my.prefix:UPPER)_HANDLE_STATUS"
+    my.func_name = "$(my.prefix:)_handle_throw_exception"
+
+    my.case = ""
+
+    for my.enum.constant as constant where constant.name <> "success"
+
+        my.const = "$(constant.name:c)"
+        my.const = "$(my.prefix:)_status_$(my.const:UPPER)"
+        my.msg = string_trim(constant.)
+
+        my.case += "
+        case $(my.const:):
+            zend_throw_exception(NULL, \"$(my.prefix:UPPER): $(my.msg:)\", $(constant.value:));
+            break;
+        "
+    endfor
+
+    my.res = "
+        #define $(my.macro_name:)(status)
+        do {
+            if(status != $(my.prefix:)_status_SUCCESS) {
+            $(my.func_name:)(status);
+                goto fail;
+            }
+        } while (false)
+
+        void
+        $(my.func_name:)($(my.prefix:)_status_t status) {
+            switch(status) {
+                $(my.case:)
+            }
+        }
+    "
+
+    return my.res
+endfunction
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_format_extension_register_resource (low_level)
+    check_arguments (my, "low_level", my)
+
+    my._m = my.low_level.module_name
+    my._p = "$(my.low_level.prefix:)"
+
+    my.res = "\
+    $(my._p:)_$(my._m:)_t *$(my._m:) = $(my.low_level.function_name:)();
+    zend_resource *$(my._m:)_res = zend_register_resource($(my._m:), le_$(my._p:)_$(my._m:));
+    RETVAL_RES($(my._m:)_res); 
+    "
+
+    return my.res
+endfunction
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_format_extension_fetch_type (low_level)
+    check_arguments (my, "low_level", my)
+
+    my._m = my.low_level.module_name
+    my._p = "$(my.low_level.prefix:)"
+    my._rn = "$(my._p:UPPER)_$(my._m:UPPER)_RES_NAME"
+
+    my.fetch_type = format_left("\
+    //
+    //  Fetch for type checking and then release
+    //
+    ", 0)
+
+    my.fetch_type += format_left("\
+    $(my._p:)_$(my._m:)_t *$(my._m:) = zend_fetch_resource_ex(in_ctx, $(my._rn:), le_$(my._p:)_$(my._m:));
+    $(my._p:UPPER)_ASSERT_PTR($(my._m:));
+    zend_list_close(Z_RES_P(in_ctx));
+    RETURN_TRUE;
+    ", 0)
+
+    my.res = format_left("$(my.fetch_type:)", 0)
+
+    return my.res
+endfunction
+
+.endtemplate

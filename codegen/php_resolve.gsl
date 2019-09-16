@@ -34,7 +34,7 @@
 #   Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
 # ---------------------------------------------------------------------------
-#   Functions for PHP primitives generation: protocol, class, enum, etc.
+#   Contains API for PHP wrapper generation.
 # ---------------------------------------------------------------------------
 #   This is a code generator built using the iMatix GSL code generation
 #   language. See https://github.com/imatix/gsl for details.
@@ -43,85 +43,51 @@
 gsl from "common.gsl"
 
 # ---------------------------------------------------------------------------
-#   Generate project files.
+#   
 # ---------------------------------------------------------------------------
-function php_generate_project (wrapper_project)
-endfunction
-
-# ---------------------------------------------------------------------------
-#   Generate source files from <php_module/> entities.
-# ---------------------------------------------------------------------------
-function php_generate_sources (php_project)
-    check_arguments (my, "php_project", my)
-
-    if -1 = directory.create (my.php_project.source_dir)
-        echo_fatal ("Can not create directory: $(my.wrapper.source_dir:)")
-    endif
-
-    for my.php_project.php_module as php_module0 where string_in (php_module0.type, "class, interface, implementation")
-        php_generate_source_php (php_module0)
-    endfor
+function php_resolve_toplevel (wrapper, license)
 endfunction
 
 # ---------------------------------------------------------------------------
 #   
 # ---------------------------------------------------------------------------
-function php_generate_source_php (in_php_module)
-    check_arguments (my, "in_php_module", my)
-
-    if defined (my.in_php_module.source_dir)
-        if -1 = directory.create (my.in_php_module.source_dir)
-            echo_fatal ("Can not create directory: $(my.in_php_module.source_dir:)")
-        endif
-    endif
-
-    echo_trace ("Generate PHP $(my.in_php_module.type:) $(my.in_php_module.name:)", my)
-
-    output my.in_php_module.source_file_path
-
-    php_insert_code ("<?php", 0)
-    php_insert_description (my.in_php_module->php_license)
-    newline()
-    php_insert_code_from_model (my.in_php_module)
+function php_resolve_project (project, wrapper, projects_api)
 endfunction
 
 # ---------------------------------------------------------------------------
-#   
+#   Resolve UIDs for given component and all inner components.
 # ---------------------------------------------------------------------------
-function php_insert_code_from_model (in_php_module)
-    check_arguments (my, "in_php_module", my)
-    assert_attributes (my.in_php_module, "type, name")
+function php_module_resolve_uids (php_component, parent_uid)
+    check_arguments (my, "php_component", my)
 
-    my._module_type = my.in_php_module.type
-    my._module_name = my.in_php_module.name
+    if defined (my.parent_uid) & string.prefixed (my.parent_uid, "php_module")
+        my.parent_uid = # Undefined
+    endif
 
-    my._s = my.in_php_module->php_entity->high_level->signature.
+    my.component_name = name (my.php_component)
+    if  defined (my.parent_uid) & string.prefixed (my.component_name, "php_")
+        regexp.match ("php_(.+)", my.component_name, my.component_name)
+    endif
 
-    php_insert_code("$(my._s:)", 0)
+    my.php_component.uid = make_id (my.parent_uid, my.component_name, my.php_component.name)
 
-    php_insert_code("{", 0)
-
-    for my.in_php_module->php_entity->high_level.php_method as php_method0
-        newline()
-        php_insert_code(php_method0->docblock., 1)
-
-        my._signature = php_method0->signature.
-
-        if my._module_type = "interface"
-            my._signature += ";"
-        endif
-
-        php_insert_code(my._signature, 1)
-
-        if defined (php_method0->body.)
-            php_insert_code("{", 1)
-            php_insert_code(php_method0->body., 2)
-            php_insert_code("}", 1)
-        endif
-
+    for my.php_component. as inner_component where is_item (inner_component) & defined (inner_component.name)
+        php_module_resolve_uids (inner_component, my.php_component.uid)
     endfor
+endfunction
 
-    php_insert_code("}",0)
+# ---------------------------------------------------------------------------
+#   Add auto-resolving attributes:
+#       - uid.
+# ---------------------------------------------------------------------------
+function php_module_resolve (php_module, php_project)
+    check_arguments (my, "php_module, php_project", my)
+
+    echo_trace ("Resolving <$(name (my.php_module)) name=\"$(my.php_module.name:)\"/>", my)
+
+    assert_attribute (my.php_module, "name", my)
+
+    php_module_resolve_uids (my.php_module)
 endfunction
 
 .endtemplate

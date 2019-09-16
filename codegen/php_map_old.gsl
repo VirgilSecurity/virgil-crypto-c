@@ -1,0 +1,406 @@
+.template 0
+#   Copyright (C) 2015-2019 Virgil Security, Inc.
+#
+#   All rights reserved.
+#
+#   Redistribution and use in source and binary forms, with or without
+#   modification, are permitted provided that the following conditions are
+#   met:
+#
+#       (1) Redistributions of source code must retain the above copyright
+#       notice, this list of conditions and the following disclaimer.
+#
+#       (2) Redistributions in binary form must reproduce the above copyright
+#       notice, this list of conditions and the following disclaimer in
+#       the documentation and/or other materials provided with the
+#       distribution.
+#
+#       (3) Neither the name of the copyright holder nor the names of its
+#       contributors may be used to endorse or promote products derived from
+#       this software without specific prior written permission.
+#
+#   THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
+#   IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+#   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+#   DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT,
+#   INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+#   (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+#   SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+#   HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+#   STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+#   IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+#   POSSIBILITY OF SUCH DAMAGE.
+#
+#   Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
+
+# ---------------------------------------------------------------------------
+#   Functions for PHP primitives generation: protocol, class, enum, etc.
+# ---------------------------------------------------------------------------
+#   This is a code generator built using the iMatix GSL code generation
+#   language. See https://github.com/imatix/gsl for details.
+# ---------------------------------------------------------------------------
+
+gsl from "common.gsl"
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_map_res_data_type(method, destination)
+    check_arguments (my, "method, destination", my)
+
+        my.count_in = 1 # ctx
+        my.count_out = 0
+        my.return_data = ""
+
+        for my.method.argument            
+            if string_in (argument.class, "buffer")
+                my.return_data += php_derive_argument_name(argument, "-l")
+                my.count_out = my.count_out + 1
+
+                if ! last()
+                    my.return_data += ", "
+                endif
+            else 
+                my.count_in = my.count_in + 1
+            endif
+        endfor
+
+        my.res_type = ""
+        my.res_data = ""
+
+        if my.count_out = 0
+            my.destination.res_data = ""
+            my.destination.res_type = "void"
+        elsif my.count_out = 1
+            my.destination.res_data = ""
+            # TODO! NEED TO BE CHECKED WITH OTHER TYPES
+            my.destination.res_type = "string"
+        elsif my.count_out > 1
+            my.destination.res_data = "// [$(my.return_data:)]"
+            my.destination.res_type = "array"
+        endif
+
+        my.destination.return_type = my.destination.res_type
+        my.destination.return_data = my.destination.res_data
+
+        my.destination.count_in = my.count_in
+endfunction
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_map_argument_type (argument, type, destination)
+    check_arguments (my, "argument, type, destination", my)
+    assert_attribute (my.argument, "class", my)
+
+    php_check_type(my.type)
+
+    if my.type = "-h"
+        if my.argument.class = "data"
+            my.destination.type = "string"
+        else
+            #TODO Need impl!
+            echo_info("Undefined argument type for the class: $(my.argument.class). ")
+            my.destination.type = "string"
+        endif
+    elsif my.type = "-l"
+        if my.argument.class = "data"
+            my.destination.type = "vsc_data_t"
+            my.destination.zend_type = "IS_STRING"
+        elsif my.argument.class = "buffer"
+            my.destination.type = "vsc_buffer_t"
+        else
+            #TODO Need impl!
+            echo_info("Undefined argument class type: $(my.argument.class)", my)
+            my.destination.type = "vsc_data_t"
+            my.destination.zend_type = "IS_STRING"
+        endif
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_map_extension_argument_len (argument, destination)
+    check_arguments (my, "argument, destination", my)
+
+    if ! defined (my.argument->length)
+        echo_fatal("Undefined argument length for argument: $(my.argument.name)", my)
+    endif
+
+    if defined (my.argument->length.method)
+        my.destination.len_type = "method"
+        my.destination.len_data = "$(my.argument->length.method:c)"
+    elsif defined (my.argument->length.constant)
+        my.destination.len_type = "constant"
+        my.destination.len_data = php_derive_constant_formatted_string("$(my.argument->length.constant:)")
+    else 
+        echo_fatal("Undefined method argument length type for the argument: $(my.argument.name)", my)
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_map_class_interface_high_level (in_interface, out_interface)
+    check_arguments (my, "in_interface, out_interface", my)
+
+    assert_attribute (my.in_interface, "name", my)
+
+    my.out_interface.name = php_derive_name(my.in_interface, "Pascal")
+endfunction
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_map_class_constant_high_level (in_constant, out_constant)
+    check_arguments (my, "in_constant, out_constant", my)
+
+    assert_attributes (my.in_constant, "name, value", my)
+
+    my.out_constant.name = php_derive_constant_formatted_string(my.in_constant.name)
+    my.out_constant.value = my.in_constant.value
+endfunction
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_map_class_method_high_level (in_method, out_php_method, in_prefix)
+    check_arguments (my, "in_method, out_php_method, in_prefix", my)
+
+    my.out_php_method.name = php_derive_name(method0, "Camel")
+    my.out_php_method.function_name = php_derive_function_name(my.in_method, my.in_prefix, "-h")
+
+    php_map_return_high_level(my.in_method, my.out_php_method)
+
+    my._md = "public"
+    if my.in_method.is_static="1"
+        my._md = "static"
+    endif
+    my.out_php_method.declaration = my._md
+endfunction
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_map_method_argument_high_level (in_argument, out_php_argument)
+    check_arguments (my, "in_argument, out_php_argument", my)
+
+    my.out_php_argument.name = php_derive_argument_name(my.in_argument, "-h")
+    my.out_php_argument.type = php_derive_argument_type(my.in_argument) ?
+
+endfunction
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_map_return_high_level (in_method, out_php_method)
+    check_arguments (my, "in_method, out_php_method", my)
+
+    my._return_type = "void"
+    my._return_data = ""
+    my._throw_exception = 0
+    my._return_data_list = ""
+
+    my._argument_buffer_count = 0
+
+    for my.in_method.argument as argument0 where defined (argument0.class)
+        if argument0.class = "buffer"
+            my._argument_buffer_count = my._argument_buffer_count + 1
+            my._return_data_list += php_derive_argument_name(argument0, "-l")
+            if ! last()
+                my._return_data_list += ", "
+            endif
+        endif
+    endfor
+
+    if my._argument_buffer_count = 1
+        my._return_type = "string"
+        my._return_data = "// $(my._return_data_list)"
+    elsif my._argument_buffer_count > 1
+        my._return_type = "array"
+        my._return_type = "// [$(my._return_data_list)]"
+    endif
+
+    for my.in_method.return as return0
+
+        if defined (return0.type)
+            if return0.type = "size" | return0.type = "integer" | return0.type = "unsigned"
+                my._return_type = "int"
+            elsif return0.type = "boolean"
+                my._return_type = "bool"
+            elsif return0.type = "byte"
+                my._return_type = "string"
+            else
+                echo_debug_item(my.in_method)
+                echo_debug_item(return0)
+                echo_fatal("Not implemented. Code: 1", my)
+            endif
+        endif
+
+        if defined (return0.class)
+            my._r = return0.class
+        elsif defined (return0.interface)
+            my._r = return0.interface
+        endif
+
+        if defined (return0.class) | defined (return0.interface)
+            my._buffer_or_return = "return"
+            my._return_type = php_derive_name_from_string(my._r, "Pascal")
+        endif
+
+        if defined (return0.enum)
+            if return0.enum = "status"
+                my._throw_exception = 1
+            else
+                # TODO
+                echo_debug_item(my.in_method)
+                echo_info("Not implemented. Code: 2", my)
+            endif
+        endif
+    endfor
+
+    my.out_php_method.return_type = my._return_type
+    my.out_php_method.return_data = my._return_data
+    my.out_php_method.throw_exception = my._throw_exception
+
+endfunction
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_map_high_level (in_module, in_php_project, out_high_level, type)
+    check_arguments (my, "in_module, in_php_project, out_high_level, type", my)
+
+    my.out_high_level. = php_format_description (my.in_module) ?
+    my.out_high_level.name = php_derive_class_interface_name (my.in_module)
+    my.out_high_level.namespace = "TEMP_NAMESPACE"
+
+    my._implements = ""
+
+    my._type = "class"
+
+    if my.type = "interface"
+        my._type = "interface"
+    endif
+
+    my._interface_methods = XML.new()
+
+    for my.in_module.interface as interface0
+
+        my._d = ""
+        if ! last()
+            my._d = ", "
+        endif
+
+        new interface to my.out_high_level
+            php_map_class_interface_high_level(interface0, interface)
+            my._name = 0.name
+
+            for my.in_php_project.php_module as php_module0 where php_module0.name = my._name
+                for php_module0->php_entity->high_level.php_method as php_method0
+                    copy php_method0 to my._interface_methods
+                endfor
+            endfor
+
+            my._implements += my._name + my._d
+        endnew
+
+        for interface0.constant as constant0
+            new constant to high_level
+                php_map_class_constant_high_level(constant0, constant)
+            endnew
+        endfor
+    endfor
+
+    if my._implements <> ""
+        my._implements = "implements $(my._implements:)"
+    endif
+
+    for my._interface_methods.php_method as php_method0
+        copy php_method0 to my.out_high_level
+    endfor
+
+    for my.in_module.method as method0 where method0.visibility = "public" & method0.declaration = "public" & method0.scope = "public"
+        new php_method to my.out_high_level
+
+            my._docblock_data = ""
+
+            if defined (method0.)
+                my._docblock_data += format_left(method0., 0) + "\n"
+            endif
+
+            php_map_class_method_high_level(method0, php_method, my.in_php_project.prefix)
+            my._method_arguments = ""
+            my._function_arguments = ""
+
+            for method0.argument as argument0
+
+                if last()
+                    my._d = ""
+                else
+                    my._d = ", "
+                endif
+
+                new php_argument to php_method
+                    php_map_method_argument_high_level(argument0, php_argument)
+                    my._docblock_data += format_left("@param $(0.type:) $(0.name:)\n", 0)
+                    my._method_arguments += "$(0.type:) $(0.name:)" + my._d
+                    my._function_arguments += "$(0.name:)" + my._d
+                endnew
+            endfor
+
+            my._docblock_data += format_left("@return $(0.return_type)\n", 0)
+
+            if 0.throw_exception = 1
+                my._docblock_data = format_left("@throws Exception", 0)
+            endif
+
+            new docblock to php_method
+                . = php_format_docblock(my._docblock_data)
+            endnew
+
+            my._declaration = 0.declaration
+            my._name = 0.name
+            my._return_type = 0.return_type
+            my._return_data = 0.return_data
+            my._function_name = 0.function_name
+
+            new signature to php_method
+                . = "$(my._declaration:) function $(my._name:)($(my._method_arguments:)): $(my._return_type:) $(my._return_data:)"
+            endnew
+
+            my._0 = 0
+
+            new body to php_method
+                #php_map_method_body(my._0)
+            endnew
+
+        endnew
+    endfor
+
+    new signature to my.out_high_level
+        . = format_left("$(my._type:) $(my.out_high_level.name:) $(my._implements:)", 0)
+    endnew
+endfunction
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_map_method_body (in_php_method)
+    check_arguments (my, "in_php_method", my)
+
+    my._return = ""
+
+    echo_debug_item(my.in_php_method)
+    echo_fatal("dasdfsdfs", my)
+
+    if my.in_php_method.return_type <> "void"
+        my._return = "return"
+    endif
+
+    my.out_body. = "$(my._return:) $(my._function_name:)($(my._function_arguments:));"
+endfunction
+
+
+.endtemplate

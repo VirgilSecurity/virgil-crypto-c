@@ -43,85 +43,29 @@
 gsl from "common.gsl"
 
 # ---------------------------------------------------------------------------
-#   Generate project files.
+#   
 # ---------------------------------------------------------------------------
-function php_generate_project (wrapper_project)
-endfunction
+function php_check_type (type)
+    check_arguments (my, "type", my)
 
-# ---------------------------------------------------------------------------
-#   Generate source files from <php_module/> entities.
-# ---------------------------------------------------------------------------
-function php_generate_sources (php_project)
-    check_arguments (my, "php_project", my)
-
-    if -1 = directory.create (my.php_project.source_dir)
-        echo_fatal ("Can not create directory: $(my.wrapper.source_dir:)")
+    if ! string_in(my.type, "-h, -l")
+        echo_fatal("Invalid type: $(my.type:)", my)
     endif
 
-    for my.php_project.php_module as php_module0 where string_in (php_module0.type, "class, interface, implementation")
-        php_generate_source_php (php_module0)
-    endfor
+    return
 endfunction
 
 # ---------------------------------------------------------------------------
 #   
 # ---------------------------------------------------------------------------
-function php_generate_source_php (in_php_module)
-    check_arguments (my, "in_php_module", my)
+function php_check_ppm (ppm)
+    check_arguments (my, "ppm", my)
 
-    if defined (my.in_php_module.source_dir)
-        if -1 = directory.create (my.in_php_module.source_dir)
-            echo_fatal ("Can not create directory: $(my.in_php_module.source_dir:)")
-        endif
+    if ! string_in(my.ppm, "c, UPPER, Pascal, Camel")
+        echo_fatal("Invalid ppm: $(my.ppm:)", my)
     endif
 
-    echo_trace ("Generate PHP $(my.in_php_module.type:) $(my.in_php_module.name:)", my)
-
-    output my.in_php_module.source_file_path
-
-    php_insert_code ("<?php", 0)
-    php_insert_description (my.in_php_module->php_license)
-    newline()
-    php_insert_code_from_model (my.in_php_module)
-endfunction
-
-# ---------------------------------------------------------------------------
-#   
-# ---------------------------------------------------------------------------
-function php_insert_code_from_model (in_php_module)
-    check_arguments (my, "in_php_module", my)
-    assert_attributes (my.in_php_module, "type, name")
-
-    my._module_type = my.in_php_module.type
-    my._module_name = my.in_php_module.name
-
-    my._s = my.in_php_module->php_entity->high_level->signature.
-
-    php_insert_code("$(my._s:)", 0)
-
-    php_insert_code("{", 0)
-
-    for my.in_php_module->php_entity->high_level.php_method as php_method0
-        newline()
-        php_insert_code(php_method0->docblock., 1)
-
-        my._signature = php_method0->signature.
-
-        if my._module_type = "interface"
-            my._signature += ";"
-        endif
-
-        php_insert_code(my._signature, 1)
-
-        if defined (php_method0->body.)
-            php_insert_code("{", 1)
-            php_insert_code(php_method0->body., 2)
-            php_insert_code("}", 1)
-        endif
-
-    endfor
-
-    php_insert_code("}",0)
+    return
 endfunction
 
 .endtemplate
