@@ -36,3 +36,7 @@
 #include "vsc_data.h"
 
 extern const vsc_data_t test_key_provider_MESSAGE_SHA512_DIGEST;
+extern const char test_bad_PRIVATE_KEY_PKCS8_PEM_1_STR[];
+extern const vsc_data_t test_bad_PRIVATE_KEY_1_PKCS8_PEM;
+extern const char test_bad_PRIVATE_KEY_PKCS8_PEM_2_STR[];
+extern const vsc_data_t test_bad_PRIVATE_KEY_2_PKCS8_PEM;

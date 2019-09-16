@@ -49,3 +49,24 @@ const byte MESSAGE_SHA512_DIGEST[] = {
 const vsc_data_t test_key_provider_MESSAGE_SHA512_DIGEST = {
     MESSAGE_SHA512_DIGEST, sizeof(MESSAGE_SHA512_DIGEST)
 };
+
+const char test_bad_PRIVATE_KEY_PKCS8_PEM_1_STR[] = {
+        "-----BEGIN PRIVATE KEY-----\n"
+        "MIIB4QIBADCCAT8GCSqGSIb3DQEHA6CCATAwggEsAgECMYH+MIH7AgECoAoECEMoiy2L\n"
+        "-----END PRIVATE KEY-----"
+};
+
+const vsc_data_t test_bad_PRIVATE_KEY_1_PKCS8_PEM = {
+        (const byte *)test_bad_PRIVATE_KEY_PKCS8_PEM_1_STR, sizeof(test_bad_PRIVATE_KEY_PKCS8_PEM_1_STR) - 1
+};
+
+
+const char test_bad_PRIVATE_KEY_PKCS8_PEM_2_STR[] = {
+        "-----BEGIN PRIVATE KEY-----\n"
+        "wdaDBuDBVWSVJHSUwtREFUQS1TSUdOQVRVUkWiVQRTMFEwDQYJYIZIAWUDBAIDBQAEQJzSCzxISGQwdUtGCwpRoWm4fef9qPL3C8txkgxg0Iwik2mHpbaAz\n"
+        "-----END PRIVATE KEY-----"
+};
+
+const vsc_data_t test_bad_PRIVATE_KEY_2_PKCS8_PEM = {
+        (const byte *)test_bad_PRIVATE_KEY_PKCS8_PEM_2_STR, sizeof(test_bad_PRIVATE_KEY_PKCS8_PEM_2_STR) - 1
+};
