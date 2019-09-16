@@ -48,7 +48,9 @@ gsl from "common.gsl"
 function php_map_high_level (in_module, in_php_project, out_high_level, in_type)
     check_arguments (my, "in_module, in_php_project, out_high_level, in_type", my)
 
-    my.out_high_level. = php_format_comment (my.in_module) ?
+    if ! string_empty(my.in_module.)
+        my.out_high_level. = php_format_comment (my.in_module.)
+    endif
     my.out_high_level.name = "$(my.in_module.name:Pascal)"
 
     my._implements = ""
@@ -69,11 +71,11 @@ function php_map_high_level (in_module, in_php_project, out_high_level, in_type)
         endif
 
         new interface to my.out_high_level
-            php_map_class_interface_high_level(interface0, interface)
-            my._name = 0.name
+            .name = "$(interface0.name:Pascal)"
+            my._name = interface.name
 
             for my.in_php_project.php_module as php_module0 where php_module0.name = my._name
-                for php_module0->php_entity->high_level.php_method as php_method0
+                for php_module0->high_level.php_method as php_method0
                     copy php_method0 to my._interface_methods
                 endfor
             endfor
@@ -83,7 +85,8 @@ function php_map_high_level (in_module, in_php_project, out_high_level, in_type)
 
         for interface0.constant as constant0
             new constant to high_level
-                php_map_class_constant_high_level(constant0, constant)
+                .name = php_derive_high_level_constant_name(constant0)
+                .value = constant0.value
             endnew
         endfor
     endfor
@@ -118,7 +121,7 @@ function php_map_high_level (in_module, in_php_project, out_high_level, in_type)
                 endif
 
                 new php_argument to php_method
-                    php_map_method_argument_high_level(argument0, php_argument)
+                    php_map_high_level_argument (argument0, php_argument)
                     my._docblock_data += format_left("@param $(0.type:) $(0.name:)\n", 0)
                     my._method_arguments += "$(0.type:) $(0.name:)" + my._d
                     my._function_arguments += "$(0.name:)" + my._d
@@ -128,11 +131,11 @@ function php_map_high_level (in_module, in_php_project, out_high_level, in_type)
             my._docblock_data += format_left("@return $(0.return_type)\n", 0)
 
             if 0.throw_exception = 1
-                my._docblock_data = format_left("@throws Exception", 0)
+                my._docblock_data += format_left("@throws Exception", 0)
             endif
 
             new docblock to php_method
-                . = php_format_docblock(my._docblock_data)
+                . = php_format_comment(my._docblock_data)
             endnew
 
             my._declaration = 0.declaration
@@ -144,13 +147,6 @@ function php_map_high_level (in_module, in_php_project, out_high_level, in_type)
             new signature to php_method
                 . = "$(my._declaration:) function $(my._name:)($(my._method_arguments:)): $(my._return_type:) $(my._return_data:)"
             endnew
-
-            my._0 = 0
-
-            new body to php_method
-                #php_map_method_body(my._0)
-            endnew
-
         endnew
     endfor
 
@@ -224,7 +220,7 @@ function php_map_return_high_level (in_method, out_php_method)
                 # TODO
                 echo_debug_item(my.in_method)
                 echo_debug_item(return0)
-                echo_fatal("Not implemented (001)", my)
+                echo_fatal("Not implemented (101)", my)
             endif
         endif
 
@@ -245,7 +241,7 @@ function php_map_return_high_level (in_method, out_php_method)
                 # TODO
                 echo_debug_item(my.in_method)
                 echo_debug_item(return0)
-                echo_info("Not implemented (002)", my)
+                echo_warning("Not implemented (102)", my)
             endif
         endif
     endfor
@@ -253,6 +249,18 @@ function php_map_return_high_level (in_method, out_php_method)
     my.out_php_method.return_type = my._return_type
     my.out_php_method.return_data = my._return_data
     my.out_php_method.throw_exception = my._throw_exception
+
+endfunction
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_map_high_level_argument (in_argument, out_php_argument)
+    check_arguments (my, "in_argument, out_php_argument", my)
+
+    my.out_php_argument.name = "$(my.in_argument.name:Camel)"
+    my.out_php_argument.type = "eeee"
+    #my.out_php_argument.type = php_derive_high_level_argument_type (my.in_argument)
 
 endfunction
 

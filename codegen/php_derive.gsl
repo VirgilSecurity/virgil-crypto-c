@@ -42,4 +42,49 @@
 
 gsl from "common.gsl"
 
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_derive_high_level_argument_type (in_argument)
+    check_arguments (my, "in_argument", my)
+
+    my._res = ""
+
+    if defined (my.in_argument.class) & my.in_argument.class <> "error"
+        if string_in(my.in_argument.class, "data, buffer") 
+            my._res = "string"
+        else
+            my._res = "$(my.in_argument.class:Pascal)"
+        endif
+    endif
+
+    if defined (my.in_argument.type)
+        if string_in(my.in_argument.type, "size, integer, unsigned")
+            my._res = "int"
+        elsif my.in_argument.type = "byte"
+            my._res = "string"
+        elsif my.in_argument.type = "boolean"
+            my._res = "bool"
+        else
+            # TODO
+            echo_debug_item(my.in_argument)
+            echo_fatal("Not implemented (301)", my)
+        endif
+    endif
+
+    return my._res
+endfunction
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_derive_high_level_constant_name (in_constant)
+    check_arguments (my, "in_constant", my)
+
+    my._res = "$(my.in_constant.name:c)"
+    my._res = "$(my._res:UPPER)"
+
+    return my._res
+endfunction
+
 .endtemplate

@@ -79,10 +79,10 @@ function php_generate_source_php (in_php_module)
 
     output my.in_php_module.source_file_path
 
-    php_insert_code ("<?php", 0)
-    php_insert_description (my.in_php_module->php_license)
-    newline()
-    php_insert_code_from_model (my.in_php_module)
+    #php_insert_code ("<?php", 0)
+    #php_insert_description (my.in_php_module->php_license)
+    #newline()
+    #php_insert_code_from_model (my.in_php_module)
 endfunction
 
 # ---------------------------------------------------------------------------

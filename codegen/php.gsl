@@ -95,7 +95,7 @@ function php_create_class_module (class, php_project, meta)
     check_arguments (my, "class, php_project, meta", my)
 
     echo_info ("Create <php_module/> from class: '$(my.class.name:)'", my)
-    
+        
     if my.class.scope <> "public" | my.class.name = "error" | my.class.context = "none"
         return
     endif
@@ -111,7 +111,7 @@ function php_create_class_module (class, php_project, meta)
         .type = my._type
 
         new php_license to php_module
-            . = php_format_comment (my.php_project->license)
+            . = php_format_comment (my.php_project->license.)
         endnew
 
         new high_level to php_module
@@ -203,7 +203,7 @@ function php_create_enum_module (enum, php_project, meta)
 
     if my.enum.name <> "status"
         echo_debug_item(my.enum)
-        echo_info("Not implemented", my)
+        echo_info("Not implemented (001)", my)
     endif
 
     if my.enum.name = "status"
