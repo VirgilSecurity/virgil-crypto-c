@@ -72,7 +72,7 @@ function php_map_res_data_type(method, destination)
             my.destination.res_data = ""
             my.destination.res_type = "void"
         elsif my.count_out = 1
-            my.destination.res_data = "// $(my.return_data:)"
+            my.destination.res_data = ""
             # TODO! NEED TO BE CHECKED WITH OTHER TYPES
             my.destination.res_type = "string"
         elsif my.count_out > 1
@@ -313,11 +313,15 @@ function php_map_high_level (in_module, in_php_project, out_high_level, type)
         endfor
     endfor
 
+    if my._implements <> ""
+        my._implements = "implements $(my._implements:)"
+    endif
+
     for my._interface_methods.php_method as php_method0
         copy php_method0 to my.out_high_level
     endfor
 
-    for my.in_module.method as method0
+    for my.in_module.method as method0 where method0.visibility = "public" & method0.declaration = "public" & method0.scope = "public"
         new php_method to my.out_high_level
 
             my._docblock_data = ""
@@ -366,18 +370,11 @@ function php_map_high_level (in_module, in_php_project, out_high_level, type)
                 . = "$(my._declaration:) function $(my._name:)($(my._method_arguments:)): $(my._return_type:) $(my._return_data:)"
             endnew
 
-            if my.type <> "interface"
-                new body to php_method
+            my._0 = 0
 
-                    my._return = ""
-
-                    if my._return_type <> "void"
-                        my._return = "return"
-                    endif
-
-                    . = "$(my._return:) $(my._function_name:)($(my._function_arguments:));"
-                endnew
-            endif
+            new body to php_method
+                #php_map_method_body(my._0)
+            endnew
 
         endnew
     endfor
@@ -386,5 +383,24 @@ function php_map_high_level (in_module, in_php_project, out_high_level, type)
         . = format_left("$(my._type:) $(my.out_high_level.name:) $(my._implements:)", 0)
     endnew
 endfunction
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_map_method_body (in_php_method)
+    check_arguments (my, "in_php_method", my)
+
+    my._return = ""
+
+    echo_debug_item(my.in_php_method)
+    echo_fatal("dasdfsdfs", my)
+
+    if my.in_php_method.return_type <> "void"
+        my._return = "return"
+    endif
+
+    my.out_body. = "$(my._return:) $(my._function_name:)($(my._function_arguments:));"
+endfunction
+
 
 .endtemplate

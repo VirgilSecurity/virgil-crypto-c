@@ -175,6 +175,7 @@ function php_create_interface_module (interface, php_project, meta)
 
     new php_module to my.php_project
         .name = php_derive_class_interface_name (my.interface)
+        .low_level_name = php_derive_name(my.interface, "c")
         .source_file_name = 0.name + ".php"
         .source_file_path = cat_path (my.php_project.source_dir, 0.source_file_name)
         .prefix = my.php_project.prefix
@@ -270,6 +271,7 @@ function php_create_implementation_module (implementation, php_project, meta)
 
     new php_module to my.php_project
         .name = php_derive_class_interface_name (my.implementation)
+        .low_level_name = php_derive_name(my.implementation, "c")
         .source_file_name = 0.name + ".php"
         .source_file_path = cat_path (my.php_project.source_dir, 0.source_file_name)
         .prefix = my.php_project.prefix
@@ -307,6 +309,7 @@ function php_create_class_module (class, php_project, meta)
 
     new php_module to my.php_project
         .name = php_derive_class_interface_name (my.class)
+        .low_level_name = php_derive_name(my.class, "c")
         .source_file_name = 0.name + ".php"
         .source_file_path = cat_path (my.php_project.source_dir, 0.source_file_name)
         .prefix = my.php_project.prefix
