@@ -70,6 +70,7 @@ function(wasm_add_common_wasm_options target)
     target_sources(${target} PRIVATE "${CMAKE_CURRENT_LIST_DIR}/exported_functions.json")
     target_link_libraries(${target}
             "-s WASM=1"
+            "-s ALLOW_MEMORY_GROWTH=1"
             "-s EXPORTED_FUNCTIONS=\"@${CMAKE_CURRENT_LIST_DIR}/exported_functions.json\""
             "-s MODULARIZE=1"
             "-s EXPORT_NAME=RatchetModule"
