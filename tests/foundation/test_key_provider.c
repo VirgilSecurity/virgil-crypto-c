@@ -43,8 +43,6 @@
     (VSCF_KEY_PROVIDER && VSCF_KEY_ALG_FACTORY && VSCF_KEY_CIPHER && VSCF_KEY_SIGNER && VSCF_KEY_MATERIAL_RNG)
 #if TEST_DEPENDENCIES_AVAILABLE
 
-#include "vsc_common_private.h"
-
 #include "vscf_alg.h"
 #include "vscf_key.h"
 #include "vscf_key_alg.h"
@@ -722,7 +720,7 @@ test__import_private_key__invalid_private_key__expected_status_bad_der_private_k
 }
 
 void
-test__import_private_key_then_export__invalid_private_key_java_crash__expected_status_bad_private_key(void) {
+test__import_private_key__invalid_private_key_java_crash__expected_status_bad_private_key(void) {
 
     vscf_error_t error;
     vscf_error_reset(&error);
@@ -734,11 +732,6 @@ test__import_private_key_then_export__invalid_private_key_java_crash__expected_s
             vscf_key_provider_import_private_key(key_provider, test_bad_PRIVATE_KEY_BAD_PKCS8_PEM, &error);
 
     TEST_ASSERT_EQUAL(vscf_status_ERROR_BAD_DER_PRIVATE_KEY, vscf_error_status(&error));
-
-    vsc_buffer_t *buffer = vsc_buffer_new_with_capacity(0);
-
-    // here is assertion we inport key with error, then trying to export it
-    TEST_ASSERT_EQUAL(vscf_key_provider_export_private_key(key_provider, private_key, buffer), private_key);
 
     vscf_impl_destroy(&private_key);
     vscf_key_provider_destroy(&key_provider);
@@ -780,7 +773,7 @@ main(void) {
     RUN_TEST(test__import_public_key__invalid_public_key__expected_status_bad_der_public_key);
     RUN_TEST(test__import_private_key__invalid_private_key__expected_status_bad_der_private_key);
 
-    RUN_TEST(test__import_private_key_then_export__invalid_private_key_java_crash__expected_status_bad_private_key);
+    RUN_TEST(test__import_private_key__invalid_private_key_java_crash__expected_status_bad_private_key);
 #else
     RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
 #endif
