@@ -90,11 +90,13 @@ function php_generate_source_php (in_php_module)
         endif
     endif
 
+    echo_trace ("Generate PHP $(my.in_php_module.type:) $(my.in_php_module.name:)", my)
+
     output my.in_php_module.source_file_path
 
-    php_insert_php_open_tag()
-    #php_insert_prologue (my.current_module)
-
+    php_insert_code ("<?php", 0)
+    php_insert_description (my.in_php_module->php_license)
+    newline()
     php_insert_code_from_model (my.in_php_module)
 endfunction
 
@@ -108,125 +110,33 @@ function php_insert_code_from_model (in_php_module)
     my._module_type = my.in_php_module.type
     my._module_name = my.in_php_module.name
 
-    if my._module_type <> "interface"
+    my._s = my.in_php_module->php_entity->high_level->signature.
 
-        echo_trace ("Generate PHP $(my._module_type:) $(my._module_name:)", my)
+    php_insert_code("$(my._s:)", 0)
 
-        php_insert_code("$(my._in_php_module.php_class.high_level.signature:)", 0)
-        php_insert_code("{", 0)
-        php_insert_code("temp", 1)
+    php_insert_code("{", 0)
 
-        #for my.php_class.php_method by is_false (php_method.is_specific_method)
-        #    newline ()
-        #    php_insert_class_method (php_method, "class")
-        #endfor
+    for my.in_php_module->php_entity->high_level.php_method as php_method0
+        newline()
+        php_insert_code(php_method0->docblock., 1)
 
-        php_insert_code("}",0)
+        my._signature = php_method0->signature.
 
-    endif
-endfunction
-
-# ---------------------------------------------------------------------------
-#   Insert statement: class
-# ---------------------------------------------------------------------------
-function php_insert_class (php_class)
-    check_arguments (my, "php_class", my)
-
-    echo_trace ("Generate PHP class: " + my.php_class.name, my)
-
-    assert_attributes (my.php_class, "name", my)
-
-    php_insert_description(my.php_class, 0)
-    php_insert_code("\
-        class $(my.php_class.name:)
-        {
-            private $ctx;
-    ", 0)
-
-    for my.php_class.php_method by is_false (php_method.is_specific_method)
-        newline ()
-        php_insert_class_method (php_method, "class")
-    endfor
-
-    php_insert_code("}",0)
-endfunction
-
-# ---------------------------------------------------------------------------
-#   Insert statement: interface
-# ---------------------------------------------------------------------------
-function php_insert_interface (php_interface)
-    check_arguments (my, "php_interface", my)
-
-    echo_trace ("Generate PHP interface: " + my.php_interface.name, my)
-
-    php_insert_description(my.php_interface, 0)
-
-    php_insert_code("interface $(my.php_interface.name:) {", 0)
-
-    for my.php_interface.php_method
-        newline ()
-        php_insert_class_method (php_method, "interface")
-    endfor
-
-    php_insert_code("}",0)
-endfunction
-
-# ---------------------------------------------------------------------------
-#   Insert statement: implementation
-# ---------------------------------------------------------------------------
-function php_insert_implementation (php_module, php_project)
-    check_arguments (my, "php_module, php_project", my)
-
-    echo_trace ("Generate PHP implementation: " + my.php_module.name, my)
-
-    my._i = my.php_module->php_class->high_level
-
-    php_insert_description(my._i, 0)
-
-    my._x = ""
-
-    for my._i.interface as interface0
-        my._x += interface0.name
-
-        if ! last()
-            my._x += ", "
+        if my._module_type = "interface"
+            my._signature += ";"
         endif
+
+        php_insert_code(my._signature, 1)
+
+        if defined (php_method0->body.)
+            php_insert_code("{", 1)
+            php_insert_code(php_method0->body., 2)
+            php_insert_code("}", 1)
+        endif
+
     endfor
 
-    my._c = ""
-
-    for my._i.constant as constant0
-        my._c += "const $(constant0.name:) = $(constant0.value);\n"
-    endfor
-
-    my._m = ""
-
-    for my.php_project.php_module as php_module0 where php_module0.type = "interface" & php_module0.name = "Hash"
-
-        for php_module0->php_interface.php_method as php_method0
-            my._function_name = "test_php"
-
-            my._m += format_left(php_format_class_method_header(php_method0->high_level, "class") + "{  \n" , 1)
-            my._m += format_left(php_format_method_body(php_method0, my._function_name) + "\n", 1)
-            my._m += format_left("}", 1)
-        endfor
-    endfor
-
-    php_insert_code("class $(my._i.name:) implements $(my._x:) {", 0)
-    php_insert_code("$(my._c:)", 1)
-    php_insert_code("$(my._m:)", 2)
     php_insert_code("}",0)
-endfunction
-
-# ---------------------------------------------------------------------------
-#   Insert: license + caution + description
-# ---------------------------------------------------------------------------
-function php_insert_prologue(php_module)
-    check_arguments (my, "php_module", my)
-
-    if defined (my.php_module.php_license)
-        php_insert_description (my.php_module->php_license)
-    endif
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -253,15 +163,6 @@ function php_insert_code (code, tab_count)
 
     my.code = string_indent (my.code, my.tab_count)
     my.code = string_multi_rtrim (my.code)
-
-    out (my.code)
-endfunction
-
-# ---------------------------------------------------------------------------
-#   
-# ---------------------------------------------------------------------------
-function php_insert_raw_code (code)
-    check_argument (my, "code", my)
 
     out (my.code)
 endfunction
@@ -331,13 +232,6 @@ function php_format_description(description)
 endfunction
 
 # ---------------------------------------------------------------------------
-#   
-# ---------------------------------------------------------------------------
-function php_insert_php_open_tag()
-    php_insert_code("<?php")
-endfunction
-
-# ---------------------------------------------------------------------------
 #   Return formatted list of arguments without braces.
 # ---------------------------------------------------------------------------
 function php_format_argument_list (php_method)
@@ -352,74 +246,6 @@ function php_format_argument_list (php_method)
     endfor
 
     return my.arg_list
-endfunction
-
-# ---------------------------------------------------------------------------
-#   Insert statement: class.method
-# ---------------------------------------------------------------------------
-function php_insert_class_method (php_method, type)
-    check_arguments (my, "php_method, type", my)
-
-    assert_attributes (my.php_method->high_level, "name", my)
-
-    my.class_method_header = php_format_class_method_header(my.php_method->high_level, my.type)
-
-    php_insert_description (my.php_method->high_level->docblock, 1)
-
-    php_insert_code("$(my.class_method_header:)", 1)
-
-    if my.type = "class"
-        php_insert_code("{", 1)
-
-        if count (my.php_method->high_level.php_code)
-            php_insert_code (my.php_method->high_level->php_code., 2)
-        else
-            php_insert_code ("throw new Exception(\"Not implemented!\")", 2)
-        endif
-        php_insert_code ("}", 1)
-    elsif my.type = "interface"
-    elsif my.type = "implementation"
-        php_insert_code("{", 1)
-    else
-        echo_fatal("Undefinded type: $(my.type:)", my)
-    endif
-
-endfunction
-
-# ---------------------------------------------------------------------------
-#   
-# ---------------------------------------------------------------------------
-function php_format_class_method_header (php_method, type)
-    check_arguments (my, "php_method, type", my)
-
-    my.arguments = ""
-
-    for my.php_method.php_argument where defined (php_argument.type) & defined (php_argument.name)
-        my.arguments += "$(php_argument.type:) $(php_argument.name:)"
-        if ! last()
-            my.arguments += ", "
-        endif
-    endfor
-
-    if ! defined (my.php_method.return_type)
-        my.return_type = "TODO! RETURN_TYPE"
-    else
-        my.return_type = my.php_method.return_type
-    endif
-
-    if ! defined (my.php_method.return_data)
-        my.return_data = "TODO! RETURN_DATA"
-    else
-        my.return_data = my.php_method.return_data
-    endif
-
-    my._d = ""
-
-    if my.type = "interface"
-        my._d = ";"
-    endif
-
-    return "public function $(my.php_method.name:)($(my.arguments:)): $(my.return_type:)$(my._d:) $(my.return_data:)"
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -589,7 +415,7 @@ function php_generate_source_extension_main (extension_module, php_project)
 
     my.code = my.license + my.include + "\n" + my.const + "\n" + my.registered_resources + "\n" + my.func_wrap + my.define_function_entry + "\n" + my.module_definition + "\n" + my.init_function_definition
 
-    php_insert_raw_code(my.code)
+    php_insert_code(my.code)
 
 endfunction
 
@@ -608,7 +434,7 @@ function php_generate_source_extension_status (current_module)
     output my.current_module.source_file_path
 
     for my.current_module->extension->c_code as code
-        php_insert_raw_code(code.)
+        php_insert_code(code.)
     endfor
 endfunction
 

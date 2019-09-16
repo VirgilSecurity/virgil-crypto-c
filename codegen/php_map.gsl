@@ -147,7 +147,7 @@ function php_map_class_interface_high_level (in_interface, out_interface)
 
     assert_attribute (my.in_interface, "name", my)
 
-    my.out_interface.name = php_derive_name(my.in_interface, "Camel")
+    my.out_interface.name = php_derive_name(my.in_interface, "Pascal")
 endfunction
 
 # ---------------------------------------------------------------------------

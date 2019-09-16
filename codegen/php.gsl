@@ -184,12 +184,12 @@ function php_create_interface_module (interface, php_project, meta)
             . = php_format_license (my.php_project->license)
         endnew
 
-        new php_interface to php_module
-            new high_level to php_interface
+        new php_entity to php_module
+            new high_level to php_entity
                 php_map_high_level(my.interface, my.php_project, high_level, "interface")
             endnew
 
-            new low_level to php_interface
+            new low_level to php_entity
                 .name = php_derive_class_name_low_level_name_c_formated(my.interface, my.php_project)
             endnew
         endnew
@@ -279,12 +279,12 @@ function php_create_implementation_module (implementation, php_project, meta)
             . = php_format_license (my.php_project->license)
         endnew
 
-        new php_class to php_module
-            new high_level to php_class
+        new php_entity to php_module
+            new high_level to php_entity
                 php_map_high_level(my.implementation, my.php_project, high_level, "implementation")
             endnew
 
-            new low_level to php_class
+            new low_level to php_entity
                 .name = php_derive_class_name_low_level_name_c_formated(my.implementation, my.php_project)
             endnew
         endnew
@@ -316,12 +316,12 @@ function php_create_class_module (class, php_project, meta)
             . = php_format_license (my.php_project->license)
         endnew
 
-        new php_class to php_module
-            new high_level to php_class
+        new php_entity to php_module
+            new high_level to php_entity
                 php_map_high_level(my.class, my.php_project, high_level, "class")
             endnew
 
-            new low_level to php_class
+            new low_level to php_entity
                 .name = php_derive_class_name_low_level_name_c_formated(my.class, my.php_project)
             endnew
         endnew
