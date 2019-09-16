@@ -284,6 +284,8 @@ function php_map_high_level (in_module, in_php_project, out_high_level, type)
         my._type = "interface"
     endif
 
+    my._interface_methods = XML.new()
+
     for my.in_module.interface as interface0
 
         my._d = ""
@@ -293,8 +295,15 @@ function php_map_high_level (in_module, in_php_project, out_high_level, type)
 
         new interface to my.out_high_level
             php_map_class_interface_high_level(interface0, interface)
+            my._name = 0.name
 
-            my._implements += 0.name + my._d
+            for my.in_php_project.php_module as php_module0 where php_module0.name = my._name
+                for php_module0->php_entity->high_level.php_method as php_method0
+                    copy php_method0 to my._interface_methods
+                endfor
+            endfor
+
+            my._implements += my._name + my._d
         endnew
 
         for interface0.constant as constant0
@@ -304,9 +313,9 @@ function php_map_high_level (in_module, in_php_project, out_high_level, type)
         endfor
     endfor
 
-    if my._implements <> ""
-        my._implements = "implements " + my._implements 
-    endif
+    for my._interface_methods.php_method as php_method0
+        copy php_method0 to my.out_high_level
+    endfor
 
     for my.in_module.method as method0
         new php_method to my.out_high_level
