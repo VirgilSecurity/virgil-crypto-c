@@ -149,6 +149,17 @@ const initPheCommon = (Module, modules) => {
         get PHE_MAX_DECRYPT_LEN() {
             return PheCommon.PHE_MAX_DECRYPT_LEN;
         }
+
+        /**
+         * Maximum data to authenticate
+         */
+        static get PHE_MAX_AUTH_LEN() {
+            return 1024;
+        }
+
+        get PHE_MAX_AUTH_LEN() {
+            return PheCommon.PHE_MAX_AUTH_LEN;
+        }
     }
 
     return PheCommon;

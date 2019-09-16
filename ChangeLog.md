@@ -1,6 +1,25 @@
 # virgil-crypto-c ChangeLog (Sorted by date)
 
 
+## Version 0.10.3 released 2019-09-10
+
+### Changes
+
+- Lib/Foundation: Added method "unlock" to the class MessageInfoEditor
+
+
+## Version 0.10.2 released 2019-09-09
+
+### Features
+
+- Lib/Foundation: Added support for managing recipients within MessageInfo
+- Lib/PHE: Added PHE Cipher additional data support
+
+### Changes
+
+- Wrapper/Java: Run java benchmark with a profile only
+
+
 ## Version 0.10.1 released 2019-09-02
 
 ### Bugfix

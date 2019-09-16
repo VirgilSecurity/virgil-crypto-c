@@ -158,6 +158,12 @@ VSCF_PUBLIC const vscf_key_recipient_info_list_t *
 vscf_message_info_key_recipient_info_list(const vscf_message_info_t *self);
 
 //
+//  Return list with a "key recipient info" elements.
+//
+VSCF_PRIVATE vscf_key_recipient_info_list_t *
+vscf_message_info_key_recipient_info_list_modifiable(vscf_message_info_t *self);
+
+//
 //  Return list with a "password recipient info" elements.
 //
 VSCF_PUBLIC const vscf_password_recipient_info_list_t *

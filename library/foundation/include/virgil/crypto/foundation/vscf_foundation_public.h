@@ -126,6 +126,7 @@
 #include "vscf_message_info.h"
 #include "vscf_message_info_custom_params.h"
 #include "vscf_message_info_der_serializer.h"
+#include "vscf_message_info_editor.h"
 #include "vscf_message_info_serializer.h"
 #include "vscf_oid.h"
 #include "vscf_oid_id.h"
