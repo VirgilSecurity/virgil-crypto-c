@@ -62,6 +62,16 @@ else()
 endif()
 
 # ---------------------------------------------------------------------------
+#   Check chache
+# ---------------------------------------------------------------------------
+get_filename_component(PROTOC_FILENAME ${PROTOC_BIN_URL} NAME)
+message("### Check cache [${CMAKE_HOME_DIRECTORY}/.depends_cache/${PROTOC_FILENAME}]")
+if(EXISTS ${CMAKE_HOME_DIRECTORY}/.depends_cache/${PROTOC_FILENAME})
+  message("### File [${PROTOC_FILENAME}] exist.")
+  set(PROTOC_BIN_URL "${CMAKE_HOME_DIRECTORY}/.depends_cache/${PROTOC_FILENAME}")
+endif()
+
+# ---------------------------------------------------------------------------
 #   Optionally load and import protobuf generator as an external project
 # ---------------------------------------------------------------------------
 include(ExternalProject)
@@ -79,7 +89,6 @@ elseif(COMMAND find_host_program)
 else()
     find_program(PROTOC_EXE NAMES protoc${EXECUTABLE_SUFFIX})
 endif()
-
 
 if(NOT PROTOC_EXE)
     ExternalProject_Add(protobuf-bin-ext
@@ -111,7 +120,43 @@ endif()
 # ---------------------------------------------------------------------------
 #   Load and build nanopb as an external project
 # ---------------------------------------------------------------------------
-ExternalProject_Add(protobuf-nanopb-ext
+# ---------------------------------------------------------------------------
+#   Check chache
+# ---------------------------------------------------------------------------
+message("### Check cache [${CMAKE_HOME_DIRECTORY}/.depends_cache/nanopb.tgz]")
+if(EXISTS ${CMAKE_HOME_DIRECTORY}/.depends_cache/nanopb.tgz)
+  message("### File [nanopb.tgz] exist.")
+  ExternalProject_Add(protobuf-nanopb-ext
+        URL
+            ${CMAKE_HOME_DIRECTORY}/.depends_cache/nanopb.tgz
+        CMAKE_ARGS
+            "${TRANSITIVE_ARGS}"
+            "-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}"
+            "-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}"
+            "-DCMAKE_INSTALL_PREFIX=${NANOPB_INSTALL_LOCATION}"
+            "-DBUILD_SHARED_LIBS=OFF"
+            "-Dnanopb_BUILD_RUNTIME=ON"
+            "-Dnanopb_BUILD_GENERATOR=OFF"
+            "-Dnanopb_MSVC_STATIC_RUNTIME=ON"
+            "-DCMAKE_INSTALL_LIBDIR=lib"
+        PATCH_COMMAND
+            ${CMAKE_COMMAND}
+                -DPB_H_FILE="${CMAKE_CURRENT_BINARY_DIR}/protobuf-nanopb-ext-prefix/src/protobuf-nanopb-ext/pb.h"
+                -DPB_ENABLE_MALLOC=${PB_ENABLE_MALLOC}
+                -DPB_NO_PACKED_STRUCTS=${PB_NO_PACKED_STRUCTS}
+                -DPB_MAX_REQUIRED_FIELDS=${PB_MAX_REQUIRED_FIELDS}
+                -DPB_FIELD_16BIT=${PB_FIELD_16BIT}
+                -DPB_FIELD_32BIT=${PB_FIELD_32BIT}
+                -DPB_NO_ERRMSG=${PB_NO_ERRMSG}
+                -DPB_BUFFER_ONLY=${PB_BUFFER_ONLY}
+                -DPB_OLD_CALLBACK_STYLE=${PB_OLD_CALLBACK_STYLE}
+                -P "${CMAKE_CURRENT_LIST_DIR}/patch_pb.h.cmake"
+        BUILD_BYPRODUCTS
+            "${NANOPB_INSTALL_LOCATION}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}protobuf-nanopb${CMAKE_STATIC_LIBRARY_SUFFIX}"
+            "${NANOPB_INSTALL_LOCATION}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}protobuf-nanopbd${CMAKE_STATIC_LIBRARY_SUFFIX}"
+        )
+else()
+  ExternalProject_Add(protobuf-nanopb-ext
         GIT_REPOSITORY
             https://github.com/nanopb/nanopb
         GIT_TAG
@@ -142,6 +187,7 @@ ExternalProject_Add(protobuf-nanopb-ext
             "${NANOPB_INSTALL_LOCATION}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}protobuf-nanopb${CMAKE_STATIC_LIBRARY_SUFFIX}"
             "${NANOPB_INSTALL_LOCATION}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}protobuf-nanopbd${CMAKE_STATIC_LIBRARY_SUFFIX}"
         )
+endif()
 
 ExternalProject_Add_Step(protobuf-nanopb-ext install-protobuf-generator
         COMMAND

@@ -81,8 +81,37 @@ configure_file(
 # ---------------------------------------------------------------------------
 #   Load library as an external project
 # ---------------------------------------------------------------------------
+
+# ---------------------------------------------------------------------------
+#   Check chache
+# ---------------------------------------------------------------------------
 include(ExternalProject)
-ExternalProject_Add(mbedtls-ext
+
+message("### Check cache [${CMAKE_HOME_DIRECTORY}/.depends_cache/mbedtls.tgz]")
+if(EXISTS ${CMAKE_HOME_DIRECTORY}/.depends_cache/mbedtls.tgz)
+  message("### File [mbedtls.tgz] exist.")
+  set(MBDTLS_URL "${CMAKE_HOME_DIRECTORY}/.depends_cache/mbedtls.tgz")
+  ExternalProject_Add(mbedtls-ext
+        URL
+            "${CMAKE_HOME_DIRECTORY}/.depends_cache/mbedtls.tgz"
+        CMAKE_ARGS
+            "${TRANSITIVE_ARGS}"
+            "-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}"
+            "-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}"
+            "-DCMAKE_INSTALL_PREFIX=${MBEDTLS_INSTALL_LOCATION}"
+            "-DENABLE_TESTING=OFF"
+            "-DENABLE_PROGRAMS=OFF"
+        PATCH_COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "${CMAKE_CURRENT_BINARY_DIR}/config.h"
+            "${CMAKE_CURRENT_BINARY_DIR}/mbedtls-ext-prefix/src/mbedtls-ext/include/mbedtls/config.h"
+        COMMAND ${CMAKE_COMMAND} -E copy
+            ${MBEDTLS_ALT_INCLUDE_FILES}
+            "${CMAKE_CURRENT_BINARY_DIR}/mbedtls-ext-prefix/src/mbedtls-ext/include/mbedtls"
+        BUILD_BYPRODUCTS
+            "${MBEDTLS_INSTALL_LOCATION}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}mbedcrypto${CMAKE_STATIC_LIBRARY_SUFFIX}"
+        )
+else()
+  ExternalProject_Add(mbedtls-ext
         GIT_REPOSITORY
             https://github.com/VirgilSecurity/mbedtls
         GIT_TAG
@@ -103,6 +132,8 @@ ExternalProject_Add(mbedtls-ext
         BUILD_BYPRODUCTS
             "${MBEDTLS_INSTALL_LOCATION}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}mbedcrypto${CMAKE_STATIC_LIBRARY_SUFFIX}"
         )
+endif()
+
 
 
 # Add dependency to the file 'config.h' to trigger patch step each time this file is changed.
