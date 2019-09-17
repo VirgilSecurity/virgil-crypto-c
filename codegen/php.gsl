@@ -71,8 +71,10 @@ function php_create_project_module (project, wrapper)
         .description = my.project.brief
         .prefix = my.project.prefix
         .version = my.project.version_string
-        .project_dir = "$(my.project.name:Pascal)"
-        .source_dir = cat_path ("$(my.wrapper.dir:)", php_project.project_dir)
+        .main_project = my.wrapper.project
+        .project = "$(my.project.name:Pascal)"
+        .project0 = my.project.name
+        .source_dir = cat_path (my.wrapper.dir, php_project.main.project, php_project.project)
 
         copy my.project->license to php_project
 
@@ -230,6 +232,60 @@ endfunction
 #   
 # ---------------------------------------------------------------------------
 function php_create_custom_modules (source, php_project, meta)
+check_arguments (my, "source, php_project, meta", my)
+
+    if directory.create (my.php_project.source_dir) = -1
+        echo_fatal ("Can not create directory: $(.source_dir_path:). ", my)
+    endif
+
+    new json_module to my.php_project
+        .name = "composer"
+        .source_file_name = 0.name + ".json"
+        .source_file_path = cat_path(my.php_project.source_dir, 0.source_file_name)
+        new code to json_module
+            .= "\
+            {
+                \"name\": \"virgil/crypto-$(my.php_project.name:)\",
+                \"description\": \"$(my.php_project.description:)\",
+                \"keywords\": [],
+                \"homepage\": \"https://virgilsecurity.com\",
+                \"license\": \"BSD-3-Clause\",
+                \"authors\": [
+                    {
+                        \"name\": \"Virgil Security, Inc\",
+                        \"email\": \"support@virgilsecurity.com\",
+                        \"homepage\": \"https://virgilsecurity.com\"
+                    }
+                ],
+                \"require\": {
+                    \"php\": \"^7.2\"
+                },
+                \"autoload\": {
+                    \"psr-4\": {
+                        \"VirgilCrypto\\\\$(my.php_project.name:Pascal)\\\\\": \"VirgilCrypto\"
+                    }
+                },
+                \"scripts\": {
+                    \"setup-extension\": [
+                    ]
+                }
+            }
+            "
+        endnew
+    endnew
+
+    #new php_module to my.php_project
+    #    .name = "extension_main"
+    #    .filename = "extension"
+    #    .source_file_name = 0.filename + ".c"
+    #    .source_dir = cat_path (my.php_project.source_dir, "extension")
+    #    .source_file_path = cat_path (0.source_dir, 0.source_file_name)
+    #    .version = my.php_project.version
+    #    .extension_name = php_derive_extension_name (my.php_project)
+    #    .type = "extension"
+
+    #    copy my.php_project->license to php_module        
+    #endnew
 endfunction
 
 # ---------------------------------------------------------------------------

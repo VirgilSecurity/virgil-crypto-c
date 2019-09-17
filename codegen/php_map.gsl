@@ -51,7 +51,13 @@ function php_map_high_level (in_module, in_php_project, out_high_level, in_type)
     if ! string_empty(my.in_module.)
         my.out_high_level. = php_format_comment (my.in_module.)
     endif
+
     my.out_high_level.name = "$(my.in_module.name:Pascal)"
+    my.out_high_level.namespace = "$(my.in_php_project.main_project:)\\$(my.in_php_project.project:)\\$(my.out_high_level.name:)"
+
+    new namespace to my.out_high_level
+        . = format_left("namespace $(my.out_high_level.namespace:);", 0)
+    endnew
 
     my._implements = ""
 
@@ -61,11 +67,13 @@ function php_map_high_level (in_module, in_php_project, out_high_level, in_type)
         my._type = "interface"
     endif
 
+    my._use = ""
+    my._d = ""
+
     my._interface_methods = XML.new()
 
     for my.in_module.interface as interface0
 
-        my._d = ""
         if ! last()
             my._d = ", "
         endif
@@ -75,6 +83,9 @@ function php_map_high_level (in_module, in_php_project, out_high_level, in_type)
             my._name = interface.name
 
             for my.in_php_project.php_module as php_module0 where php_module0.name = my._name
+
+                my._use += format_left("use $(php_module0->high_level.namespace:);", 0)
+
                 for php_module0->high_level.php_method as php_method0
                     copy php_method0 to my._interface_methods
                 endfor
@@ -91,6 +102,10 @@ function php_map_high_level (in_module, in_php_project, out_high_level, in_type)
         endfor
     endfor
 
+    new use to my.out_high_level
+        . = format_left(my._use, 0)
+    endnew
+
     if my._implements <> ""
         my._implements = "implements $(my._implements:)"
     endif
@@ -98,6 +113,8 @@ function php_map_high_level (in_module, in_php_project, out_high_level, in_type)
     for my._interface_methods.php_method as php_method0
         copy php_method0 to my.out_high_level
     endfor
+
+    my._d = ""
 
     for my.in_module.method as method0 where method0.visibility = "public" & method0.declaration = "public" & method0.scope = "public"
         new php_method to my.out_high_level
@@ -114,9 +131,7 @@ function php_map_high_level (in_module, in_php_project, out_high_level, in_type)
 
             for method0.argument as argument0
 
-                if last()
-                    my._d = ""
-                else
+                if ! last()
                     my._d = ", "
                 endif
 
@@ -258,9 +273,8 @@ endfunction
 function php_map_high_level_argument (in_argument, out_php_argument)
     check_arguments (my, "in_argument, out_php_argument", my)
 
-    my.out_php_argument.name = "$(my.in_argument.name:Camel)"
-    my.out_php_argument.type = "eeee"
-    #my.out_php_argument.type = php_derive_high_level_argument_type (my.in_argument)
+    my.out_php_argument.name = "$$(my.in_argument.name:Camel)"
+    my.out_php_argument.type = php_derive_high_level_argument_type (my.in_argument)
 
 endfunction
 
