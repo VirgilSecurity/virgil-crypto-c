@@ -118,7 +118,7 @@ function php_map_high_level (in_module, in_php_project, out_high_level, in_type)
     endnew
 
     if my.in_type <> "interface"
-        php_map_high_level_constructor_destructor (my.out_high_level)
+        php_map_high_level_constructor_destructor (my.in_module, my.out_high_level)
     endif
 
     if my._implements <> ""
@@ -139,6 +139,9 @@ function php_map_high_level (in_module, in_php_project, out_high_level, in_type)
             endif
 
             php_map_high_level_method (method0, my.in_php_project.prefix, php_method)
+            .prefix0 = "$(my.in_module.c_prefix:c)"
+            .entity0 = "$(my.in_module.name:c)"
+            .function_name = php_derive_high_level_function_name(0)
             my._method_arguments = ""
             my._function_arguments = ""
 
@@ -177,11 +180,9 @@ function php_map_high_level (in_module, in_php_project, out_high_level, in_type)
                 . = "$(my._declaration:) function $(my._name:)($(my._method_arguments:)): $(my._return_type:) $(my._return_data:)"
             endnew
 
-            if my._type <> "interface"
-                new body to php_method
-                    . = "TEMP_BODY"
-                endnew
-            endif
+            new body to php_method
+                . = php_format_high_level_method_body(php_method)
+            endnew
         endnew
     endfor
 
@@ -193,16 +194,20 @@ endfunction
 # ---------------------------------------------------------------------------
 # 
 # ---------------------------------------------------------------------------
-function php_map_high_level_constructor_destructor (out_high_level)
-    check_arguments (my, "out_high_level", my)
+function php_map_high_level_constructor_destructor (in_module, out_high_level)
+    check_arguments (my, "in_module, out_high_level", my)
 
     new php_method to my.out_high_level
         .name = "__construct"
+        .name0 = "new"
         .function_name = "TEMP_FUNCTION_NAME"
         .return_type = "void"
         .return_data = ""
         .throws_exception = "0"
         .declaration = "public"
+        .prefix0 = "$(my.in_module.c_prefix:c)"
+        .entity0 = "$(my.in_module.name:c)"
+        .function_name = php_derive_high_level_function_name(0)
 
         new docblock to php_method
             my._docblock = format_left("\
@@ -218,17 +223,21 @@ function php_map_high_level_constructor_destructor (out_high_level)
         endnew
 
         new body to php_method
-            . = "TEMP_BODY"
+            . = php_format_high_level_method_body (php_method)
         endnew
     endnew
 
     new php_method to my.out_high_level
         .name = "__destructor"
+        .name0 = "delete"
         .function_name = "TEMP_FUNCTION_NAME"
         .return_type = "void"
         .return_data = ""
         .throws_exception = "0"
         .declaration = "public"
+        .prefix0 = "$(my.in_module.c_prefix:c)"
+        .entity0 = "$(my.in_module.name:c)"
+        .function_name = php_derive_high_level_function_name(0)
 
         new docblock to php_method
             my._docblock = format_left("\
@@ -244,7 +253,7 @@ function php_map_high_level_constructor_destructor (out_high_level)
         endnew
 
         new body to php_method
-            . = "TEMP_BODY"
+            . = php_format_high_level_method_body (php_method)
         endnew
     endnew
 endfunction
@@ -256,8 +265,7 @@ function php_map_high_level_method (in_method, in_prefix, out_php_method)
     check_arguments (my, "in_method, in_prefix, out_php_method", my)
 
     my.out_php_method.name = "$(my.in_method.name:Camel)"
-    #TODO
-    my.out_php_method.function_name = "TEMP_FUNCTION_NAME"
+    my.out_php_method.name0 = "$(my.in_method.name:c)"
 
     php_map_return_high_level(my.in_method, my.out_php_method)
 

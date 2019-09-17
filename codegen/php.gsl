@@ -106,7 +106,7 @@ function php_create_class_module (class, php_project, meta)
 
     new php_module to my.php_project
         .name = "$(my.class.name:Pascal)"
-        .name0 = "$(my.class.name:)"
+        .name0 = "$(my.class.name:c)"
         .source_file_name = 0.name + ".php"
         .source_file_path = cat_path (my.php_project.source_dir, 0.source_file_name)
         .prefix = my.php_project.prefix
