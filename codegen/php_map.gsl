@@ -67,6 +67,14 @@ function php_map_high_level (in_module, in_php_project, out_high_level, in_type)
         my._type = "interface"
     endif
 
+    if my.in_type <> "interface"
+        new property to my.out_high_level
+            . = format_left("\
+                private $ctx;
+                ", 0)
+        endnew
+    endif
+
     my._use = ""
     my._d = ""
 

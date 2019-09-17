@@ -74,7 +74,7 @@ function php_create_project_module (project, wrapper)
         .main_project = my.wrapper.project
         .project = "$(my.project.name:Pascal)"
         .project0 = my.project.name
-        .source_dir = cat_path (my.wrapper.dir, php_project.main.project, php_project.project)
+        .source_dir = cat_path (my.wrapper.dir, php_project.main_project, php_project.project)
 
         copy my.project->license to php_project
 
@@ -243,7 +243,7 @@ check_arguments (my, "source, php_project, meta", my)
         .source_file_name = 0.name + ".json"
         .source_file_path = cat_path(my.php_project.source_dir, 0.source_file_name)
         new code to json_module
-            .= "\
+            .= format_left("\
             {
                 \"name\": \"virgil/crypto-$(my.php_project.name:)\",
                 \"description\": \"$(my.php_project.description:)\",
@@ -270,22 +270,23 @@ check_arguments (my, "source, php_project, meta", my)
                     ]
                 }
             }
-            "
+            ", 0)
         endnew
     endnew
 
-    #new php_module to my.php_project
-    #    .name = "extension_main"
-    #    .filename = "extension"
-    #    .source_file_name = 0.filename + ".c"
-    #    .source_dir = cat_path (my.php_project.source_dir, "extension")
-    #    .source_file_path = cat_path (0.source_dir, 0.source_file_name)
-    #    .version = my.php_project.version
-    #    .extension_name = php_derive_extension_name (my.php_project)
-    #    .type = "extension"
+    new php_module to my.php_project
+        .name = "extension_main"
+        .filename = "extension"
+        .source_file_name = 0.filename + ".c"
+        .source_dir = cat_path (my.php_project.source_dir, "extension")
+        .source_file_path = cat_path (0.source_dir, 0.source_file_name)
+        .version = my.php_project.version
+        # TODO
+        .extension_name = "TEMP_EXTENSION_NAME"
+        .type = "extension"
 
-    #    copy my.php_project->license to php_module        
-    #endnew
+        copy my.php_project->license to php_module        
+    endnew
 endfunction
 
 # ---------------------------------------------------------------------------
