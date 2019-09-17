@@ -108,7 +108,8 @@ function php_create_class_module (class, php_project, meta)
         .name = "$(my.class.name:Pascal)"
         .name0 = "$(my.class.name:c)"
         .source_file_name = 0.name + ".php"
-        .source_file_path = cat_path (my.php_project.source_dir, 0.source_file_name)
+        .source_dir = cat_path (my.php_project.source_dir, "src")
+        .source_file_path = cat_path (0.source_dir, 0.source_file_name)
         .prefix = my.php_project.prefix
         .type = my._type
 
@@ -140,7 +141,8 @@ function php_create_interface_module (interface, php_project, meta)
         .name = "$(my.interface.name:Pascal)"
         .name0 = "$(my.interface.name:)"
         .source_file_name = 0.name + ".php"
-        .source_file_path = cat_path (my.php_project.source_dir, 0.source_file_name)
+        .source_dir = cat_path (my.php_project.source_dir, "src")
+        .source_file_path = cat_path (0.source_dir, 0.source_file_name)
         .prefix = my.php_project.prefix
         .type = my._type
 
@@ -173,7 +175,8 @@ function php_create_implementation_module (implementation, php_project, meta)
         .name = "$(my.implementation.name:Pascal)"
         .name0 = "$(my.implementation.name:)"
         .source_file_name = 0.name + ".php"
-        .source_file_path = cat_path (my.php_project.source_dir, 0.source_file_name)
+        .source_dir = cat_path (my.php_project.source_dir, "src")
+        .source_file_path = cat_path (0.source_dir, 0.source_file_name)
         .prefix = my.php_project.prefix
         .type = my._type
 
@@ -235,13 +238,15 @@ function php_create_custom_modules (source, php_project, meta)
 check_arguments (my, "source, php_project, meta", my)
 
     if directory.create (my.php_project.source_dir) = -1
-        echo_fatal ("Can not create directory: $(.source_dir_path:). ", my)
+        echo_fatal ("Can not create directory: $(.source_dir:). ", my)
     endif
 
     new json_module to my.php_project
         .name = "composer"
         .source_file_name = 0.name + ".json"
-        .source_file_path = cat_path(my.php_project.source_dir, 0.source_file_name)
+        .source_dir = cat_path (my.php_project.source_dir, "extension")
+        .source_file_path = cat_path (0.source_dir, 0.source_file_name)
+
         new code to json_module
             .= format_left("\
             {
