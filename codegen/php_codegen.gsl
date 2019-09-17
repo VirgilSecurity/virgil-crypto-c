@@ -108,9 +108,11 @@ function php_generate_source_high_level (in_php_module)
 
     php_insert_code("{", 0)
 
+    newline()
+
     if defined (my.in_php_module->high_level->property.)
         my._property = my.in_php_module->high_level->property.
-        php_insert_code(my._property, 0)
+        php_insert_code(my._property, 1)
     endif
 
     for my.in_php_module->high_level.php_method as php_method0

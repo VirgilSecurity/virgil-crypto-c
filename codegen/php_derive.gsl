@@ -58,6 +58,10 @@ function php_derive_high_level_argument_type (in_argument)
         endif
     endif
 
+    if defined (my.in_argument.interface)
+        my._res = "$(my.in_argument.interface:Pascal)"
+    endif
+
     if defined (my.in_argument.type)
         if string_in(my.in_argument.type, "size, integer, unsigned")
             my._res = "int"

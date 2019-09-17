@@ -69,9 +69,12 @@ function php_map_high_level (in_module, in_php_project, out_high_level, in_type)
 
     if my.in_type <> "interface"
         new property to my.out_high_level
-            . = format_left("\
-                private $ctx;
-                ", 0)
+            my._db = php_format_comment("@var")
+            my._property = "private $ctx;"
+
+            my._res = format_left(my._db + "\n" + my._property, 0)
+
+            . = my._res
         endnew
     endif
 
@@ -137,7 +140,7 @@ function php_map_high_level (in_module, in_php_project, out_high_level, in_type)
             my._method_arguments = ""
             my._function_arguments = ""
 
-            for method0.argument as argument0
+            for method0.argument as argument0 where defined (argument0.class) & argument0.class <> "error"
 
                 if ! last()
                     my._d = ", "
@@ -151,7 +154,7 @@ function php_map_high_level (in_module, in_php_project, out_high_level, in_type)
                 endnew
             endfor
 
-            my._docblock_data += format_left("@return $(0.return_type)\n", 0)
+            my._docblock_data += format_left("@return $(0.return_type:)\n", 0)
 
             if 0.throw_exception = 1
                 my._docblock_data += format_left("@throws Exception", 0)
@@ -224,10 +227,9 @@ function php_map_return_high_level (in_method, out_php_method)
 
     if my._argument_buffer_count = 1
         my._return_type = "string"
-        my._return_data = "// $(my._return_data_list)"
     elsif my._argument_buffer_count > 1
         my._return_type = "array"
-        my._return_type = "// [$(my._return_data_list)]"
+        my._return_data = "// [$(my._return_data_list)]"
     endif
 
     for my.in_method.return as return0
