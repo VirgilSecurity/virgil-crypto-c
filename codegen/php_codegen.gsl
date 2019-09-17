@@ -94,23 +94,26 @@ function php_generate_source_high_level (in_php_module)
     if defined (my.in_php_module->high_level->use.)
         my._use = my.in_php_module->high_level->use.
         php_insert_code(my._use, 0)
+        newline()
     endif
-
-    newline()
 
     my._namespace = my.in_php_module->high_level->namespace.
     php_insert_code(my._namespace, 0)
 
     newline()
 
+    if defined (my.in_php_module->high_level.)
+        my._info = my.in_php_module->high_level.
+        php_insert_code(my._info, 0)
+    endif
+
     my._signature = my.in_php_module->high_level->signature.
     php_insert_code(my._signature, 0)
 
     php_insert_code("{", 0)
 
-    newline()
-
     if defined (my.in_php_module->high_level->property.)
+        newline()
         my._property = my.in_php_module->high_level->property.
         php_insert_code(my._property, 1)
     endif

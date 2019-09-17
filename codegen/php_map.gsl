@@ -113,10 +113,6 @@ function php_map_high_level (in_module, in_php_project, out_high_level, in_type)
         endfor
     endfor
 
-    new use to my.out_high_level
-        . = format_left(my._use, 0)
-    endnew
-
     if my.in_type <> "interface"
         php_map_high_level_constructor_destructor (my.in_module, my.out_high_level)
     endif
@@ -157,13 +153,17 @@ function php_map_high_level (in_module, in_php_project, out_high_level, in_type)
                     my._docblock_data += format_left("@param $(0.type:) $(0.name:)\n", 0)
                     my._method_arguments += "$(0.type:) $(0.name:)" + my._d
                     my._function_arguments += "$(0.name:)" + my._d
+
+                    if 0.instance = 1
+                        my._use += format_left("use $(0.namespace:);", 0)
+                    endif
                 endnew
             endfor
 
             my._docblock_data += format_left("@return $(0.return_type:)\n", 0)
 
             if 0.throw_exception = 1
-                my._docblock_data += format_left("@throws Exception", 0)
+                my._docblock_data += format_left("@throws \Exception", 0)
             endif
 
             new docblock to php_method
@@ -185,6 +185,10 @@ function php_map_high_level (in_module, in_php_project, out_high_level, in_type)
             endnew
         endnew
     endfor
+
+    new use to my.out_high_level
+        . = format_left(my._use, 0)
+    endnew
 
     new signature to my.out_high_level
         . = format_left("$(my._type:) $(my.out_high_level.name:) $(my._implements:)", 0)
@@ -223,7 +227,7 @@ function php_map_high_level_constructor_destructor (in_module, out_high_level)
         endnew
 
         new body to php_method
-            . = "$this->ctx = $(php_method.function_name:)()"
+            . = "$this->ctx = $(php_method.function_name:)();"
         endnew
     endnew
 
@@ -249,7 +253,7 @@ function php_map_high_level_constructor_destructor (in_module, out_high_level)
         endnew
 
         new signature to php_method
-            . = "$(php_method.declaration:) function $(php_method.name:)();"
+            . = "$(php_method.declaration:) function $(php_method.name:)()"
         endnew
 
         new body to php_method
@@ -286,6 +290,8 @@ function php_map_return_high_level (in_method, out_php_method)
 
     my._return_type = "void"
     my._return_data = ""
+    my._instance = 0
+    my._namespace = ""
     my._throw_exception = 0
     my._return_data_list = ""
 
@@ -360,7 +366,44 @@ function php_map_high_level_argument (in_argument, out_php_argument)
     check_arguments (my, "in_argument, out_php_argument", my)
 
     my.out_php_argument.name = "$$(my.in_argument.name:Camel)"
-    my.out_php_argument.type = php_derive_high_level_argument_type (my.in_argument)
+
+    my._type = ""
+    my._instance = 0
+    my._namespace = ""
+
+    if defined (my.in_argument.class) & my.in_argument.class <> "error"
+        if string_in(my.in_argument.class, "data, buffer") 
+            my._type = "string"
+        else
+            my._type = "$(my.in_argument.class:Pascal)"
+            my._instance = 1
+            my._namespace = "TEMP_NAMESPACE"
+        endif
+    endif
+
+    if defined (my.in_argument.interface)
+        my._type = "$(my.in_argument.interface:Pascal)"
+        my._instance = 1
+        my._namespace = "TEMP_NAMESPACE"
+    endif
+
+    if defined (my.in_argument.type)
+        if string_in(my.in_argument.type, "size, integer, unsigned")
+            my._type = "int"
+        elsif my.in_argument.type = "byte"
+            my._type = "string"
+        elsif my.in_argument.type = "boolean"
+            my._type = "bool"
+        else
+            # TODO
+            echo_debug_item(my.in_argument)
+            echo_fatal("Not implemented (301)", my)
+        endif
+    endif
+
+    my.out_php_argument.type = my._type
+    my.out_php_argument.instance = my._instance
+    my.out_php_argument.namespace = my._namespace
 
 endfunction
 
