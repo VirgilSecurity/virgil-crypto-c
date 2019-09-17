@@ -53,7 +53,7 @@ function php_map_high_level (in_module, in_php_project, out_high_level, in_type)
     endif
 
     my.out_high_level.name = "$(my.in_module.name:Pascal)"
-    my.out_high_level.namespace = "$(my.in_php_project.main_project:)\\$(my.in_php_project.project:)\\$(my.out_high_level.name:)"
+    my.out_high_level.namespace = "$(my.in_php_project.main_project:)\\\\$(my.in_php_project.project:)\\\\$(my.out_high_level.name:)"
 
     new namespace to my.out_high_level
         . = format_left("namespace $(my.out_high_level.namespace:);", 0)
@@ -122,6 +122,14 @@ function php_map_high_level (in_module, in_php_project, out_high_level, in_type)
     endif
 
     for my._interface_methods.php_method as php_method0
+
+        php_method0.entity0 = "$(my.in_module.name:c)"
+        php_method0.function_name = php_derive_high_level_function_name(0)
+
+        new body to php_method0
+            . = php_format_high_level_method_body(php_method0)
+        endnew
+
         copy php_method0 to my.out_high_level
     endfor
 
@@ -137,7 +145,11 @@ function php_map_high_level (in_module, in_php_project, out_high_level, in_type)
             php_map_high_level_method (method0, my.in_php_project.prefix, php_method)
             .prefix0 = "$(my.in_module.c_prefix:c)"
             .entity0 = "$(my.in_module.name:c)"
-            .function_name = php_derive_high_level_function_name(0)
+            if my.in_type = "interface"
+                .function_name = ""
+            else 
+                .function_name = php_derive_high_level_function_name(0)
+            endif
             my._method_arguments = ""
             my._function_arguments = ""
 
@@ -163,7 +175,7 @@ function php_map_high_level (in_module, in_php_project, out_high_level, in_type)
             my._docblock_data += format_left("@return $(0.return_type:)\n", 0)
 
             if 0.throw_exception = 1
-                my._docblock_data += format_left("@throws \Exception", 0)
+                my._docblock_data += format_left("@throws \\\\Exception", 0)
             endif
 
             new docblock to php_method
@@ -180,9 +192,11 @@ function php_map_high_level (in_module, in_php_project, out_high_level, in_type)
                 . = "$(my._declaration:) function $(my._name:)($(my._method_arguments:)): $(my._return_type:) $(my._return_data:)"
             endnew
 
-            new body to php_method
-                . = php_format_high_level_method_body(php_method)
-            endnew
+            if my.in_type <> "interface"
+                new body to php_method
+                    . = php_format_high_level_method_body(php_method)
+                endnew
+            endif
         endnew
     endfor
 
@@ -355,6 +369,8 @@ function php_map_return_high_level (in_method, out_php_method)
 
     my.out_php_method.return_type = my._return_type
     my.out_php_method.return_data = my._return_data
+    my.out_php_method.instance = my._instance
+    my.out_php_method.namespace = my._namespace
     my.out_php_method.throw_exception = my._throw_exception
 
 endfunction
