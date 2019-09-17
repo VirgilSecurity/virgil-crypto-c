@@ -244,7 +244,7 @@ check_arguments (my, "source, php_project, meta", my)
     new json_module to my.php_project
         .name = "composer"
         .source_file_name = 0.name + ".json"
-        .source_dir = cat_path (my.php_project.source_dir, "extension")
+        .source_dir = cat_path (my.php_project.source_dir)
         .source_file_path = cat_path (0.source_dir, 0.source_file_name)
 
         new code to json_module
@@ -267,7 +267,7 @@ check_arguments (my, "source, php_project, meta", my)
                 },
                 \"autoload\": {
                     \"psr-4\": {
-                        \"VirgilCrypto\\\\$(my.php_project.name:Pascal)\\\\\": \"VirgilCrypto\"
+                        \"VirgilCrypto\\\\$(my.php_project.name:Pascal)\\\\\": \"src\"
                     }
                 },
                 \"scripts\": {

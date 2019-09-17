@@ -223,7 +223,7 @@ function php_map_high_level_constructor_destructor (in_module, out_high_level)
         endnew
 
         new body to php_method
-            . = php_format_high_level_method_body (php_method)
+            . = "$this->ctx = $(php_method.function_name:)()"
         endnew
     endnew
 
@@ -249,11 +249,11 @@ function php_map_high_level_constructor_destructor (in_module, out_high_level)
         endnew
 
         new signature to php_method
-            . = "$(php_method.declaration:) function $(php_method.name:)()"
+            . = "$(php_method.declaration:) function $(php_method.name:)();"
         endnew
 
         new body to php_method
-            . = php_format_high_level_method_body (php_method)
+            . = "$(php_method.function_name:)($this->ctx);"
         endnew
     endnew
 endfunction
