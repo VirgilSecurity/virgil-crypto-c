@@ -79,12 +79,12 @@ function php_map_high_level (in_module, in_php_project, out_high_level, in_type)
     endif
 
     my._use = ""
-    my._d = ""
 
     my._interface_methods = XML.new()
 
     for my.in_module.interface as interface0
 
+        my._d = ""
         if ! last()
             my._d = ", "
         endif
@@ -117,6 +117,10 @@ function php_map_high_level (in_module, in_php_project, out_high_level, in_type)
         . = format_left(my._use, 0)
     endnew
 
+    if my.in_type <> "interface"
+        php_map_high_level_constructor_destructor (my.out_high_level)
+    endif
+
     if my._implements <> ""
         my._implements = "implements $(my._implements:)"
     endif
@@ -124,8 +128,6 @@ function php_map_high_level (in_module, in_php_project, out_high_level, in_type)
     for my._interface_methods.php_method as php_method0
         copy php_method0 to my.out_high_level
     endfor
-
-    my._d = ""
 
     for my.in_module.method as method0 where method0.visibility = "public" & method0.declaration = "public" & method0.scope = "public"
         new php_method to my.out_high_level
@@ -142,6 +144,7 @@ function php_map_high_level (in_module, in_php_project, out_high_level, in_type)
 
             for method0.argument as argument0 where defined (argument0.class) & argument0.class <> "error"
 
+                my._d = ""
                 if ! last()
                     my._d = ", "
                 endif
@@ -173,11 +176,76 @@ function php_map_high_level (in_module, in_php_project, out_high_level, in_type)
             new signature to php_method
                 . = "$(my._declaration:) function $(my._name:)($(my._method_arguments:)): $(my._return_type:) $(my._return_data:)"
             endnew
+
+            if my._type <> "interface"
+                new body to php_method
+                    . = "TEMP_BODY"
+                endnew
+            endif
         endnew
     endfor
 
     new signature to my.out_high_level
         . = format_left("$(my._type:) $(my.out_high_level.name:) $(my._implements:)", 0)
+    endnew
+endfunction
+
+# ---------------------------------------------------------------------------
+# 
+# ---------------------------------------------------------------------------
+function php_map_high_level_constructor_destructor (out_high_level)
+    check_arguments (my, "out_high_level", my)
+
+    new php_method to my.out_high_level
+        .name = "__construct"
+        .function_name = "TEMP_FUNCTION_NAME"
+        .return_type = "void"
+        .return_data = ""
+        .throws_exception = "0"
+        .declaration = "public"
+
+        new docblock to php_method
+            my._docblock = format_left("\
+            Create underlying C context.
+            @return void
+            ", 0)
+
+            . = php_format_comment (my._docblock)
+        endnew
+
+        new signature to php_method
+            . = "$(php_method.declaration:) function $(php_method.name:)()"
+        endnew
+
+        new body to php_method
+            . = "TEMP_BODY"
+        endnew
+    endnew
+
+    new php_method to my.out_high_level
+        .name = "__destructor"
+        .function_name = "TEMP_FUNCTION_NAME"
+        .return_type = "void"
+        .return_data = ""
+        .throws_exception = "0"
+        .declaration = "public"
+
+        new docblock to php_method
+            my._docblock = format_left("\
+            Destroy underlying C context.
+            @return void
+            ", 0)
+
+            . = php_format_comment (my._docblock)
+        endnew
+
+        new signature to php_method
+            . = "$(php_method.declaration:) function $(php_method.name:)()"
+        endnew
+
+        new body to php_method
+            . = "TEMP_BODY"
+        endnew
     endnew
 endfunction
 
@@ -218,7 +286,7 @@ function php_map_return_high_level (in_method, out_php_method)
     for my.in_method.argument as argument0 where defined (argument0.class)
         if argument0.class = "buffer"
             my._argument_buffer_count = my._argument_buffer_count + 1
-            my._return_data_list += "$$(argument0.name:c)"
+            my._return_data_list += "$(argument0.name:c)"
             if ! last()
                 my._return_data_list += ", "
             endif
