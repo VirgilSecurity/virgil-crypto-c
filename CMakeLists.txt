@@ -51,7 +51,7 @@ include("cmake/clangformat.cmake")
 include("cmake/helpers.cmake")
 include("cmake/TransitiveArgs.cmake")
 include("cmake/TransitiveToolchainArgs.cmake")
-include("cmake/protobuf.cmake")
+# include("cmake/protobuf.cmake")
 
 
 # ---------------------------------------------------------------------------
@@ -174,7 +174,7 @@ endif()
 #
 # Protobuf
 #
-add_subdirectory("thirdparty/nanopb")
+# add_subdirectory("thirdparty/nanopb")
 
 
 # ---------------------------------------------------------------------------
