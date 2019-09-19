@@ -226,7 +226,7 @@ function php_create_enum_module (enum, php_project, meta)
         endnew
     else
         new php_module to my.php_project
-            .name = "$(my.enum.name:Pascal)Enum"
+            .name = "$(my.enum.name:Pascal)"
             .name0 = "$(0.name:c)"
             .source_file_name = 0.name + ".php"
             .source_dir = cat_path (my.php_project.source_dir, "src")
@@ -281,7 +281,8 @@ check_arguments (my, "source, php_project, meta", my)
                     }
                 ],
                 \"require\": {
-                    \"php\": \"^7.2\"
+                    \"php\": \"^7.2\",
+                    \"myclabs/php-enum\": \"^1.7\"
                 },
                 \"autoload\": {
                     \"psr-4\": {

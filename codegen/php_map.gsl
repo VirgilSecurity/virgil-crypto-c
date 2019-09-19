@@ -158,7 +158,7 @@ function php_map_high_level (in_module, in_php_project, out_high_level, in_type)
             my._method_arguments = ""
             my._function_arguments = ""
 
-            for method0.argument as argument0 where defined (argument0.class) & argument0.class <> "error"
+            for method0.argument as argument0 where (defined (argument0.class) & argument0.class <> "error") | defined (argument0.enum)
 
                 my._d = ""
                 if ! last()
@@ -367,10 +367,8 @@ function php_map_high_level_return (in_method, in_php_project, out_php_method)
             if return0.enum = "status"
                 my._throw_exception = 1
             else
-                # TODO
-                echo_debug_item(my.in_method)
-                echo_debug_item(return0)
-                echo_warning("Not implemented (102)", my)
+                my._return_type = "$(return0.enum:Pascal)"
+                my._instance = 1
             endif
         endif
     endfor
@@ -425,6 +423,12 @@ function php_map_high_level_argument (in_argument, in_php_project, out_php_argum
         endif
     endif
 
+    if defined (my.in_argument.enum)
+        my._type = "$(my.in_argument.enum:Pascal)"
+        my._instance = 1
+        my._namespace = "TEMP"
+    endif
+
     my.out_php_argument.type = my._type
     my.out_php_argument.instance = my._instance
     my.out_php_argument.namespace = my._namespace
@@ -450,15 +454,32 @@ function php_map_high_level_enum (in_module, in_php_project, out_high_level)
     endnew
 
     new constants to my.out_high_level
-        . = format_left("const TEMP_KEY = TEMP_VALUE;", 0)
+
+        my._constants = ""
+
+        for my.in_module.constant as constant0
+            new constant to my.out_high_level
+                .name = php_derive_high_level_constant_name(constant0)
+                my._value = "$(constant0.name:c)"
+
+                if defined (constant0.value)
+                    my._value = constant0.value
+                endif
+                .value = my._value
+
+                my._constants += format_left("private const $(0.name:) = \"$(0.value:)\";", 0)
+            endnew
+        endfor
+
+        . = format_left(my._constants, 0)
     endnew
 
     new signature to my.out_high_level
-        . = format_left("class TEMP extends Enum")
+        . = format_left("class $(my.out_high_level.name:) extends Enum")
     endnew
 
     new use to my.out_high_level
-        . = "use TEMP;"
+        . = "use MyCLabs\\\\Enum\\\\Enum;"
     endnew
 
     new body to my.out_high_level
