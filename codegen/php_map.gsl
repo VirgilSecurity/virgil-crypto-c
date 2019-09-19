@@ -177,7 +177,7 @@ function php_map_high_level (in_module, in_php_project, out_high_level, in_type)
 
                     if 0.instance = 1
                         new namespace to my._use
-                            . = php_argument.namespace
+                            .namespace = php_argument.namespace
                         endnew
                     endif
                 endnew
@@ -452,4 +452,22 @@ function php_map_high_level_argument (in_argument, in_php_project, out_php_argum
 
 endfunction
 
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_map_high_level_enum (in_module, in_php_project, out_high_level)
+    check_arguments (my, "in_module, in_php_project, out_high_level", my)
+
+    if ! string_empty(my.in_module.)
+        my.out_high_level. = php_format_comment (my.in_module.)
+    endif
+
+    my.out_high_level.name = "$(my.in_module.name:Pascal)"
+    my.out_high_level.name0 = "$(my.in_module.name:c)"
+    my.out_high_level.namespace = php_derive_high_level_namespace(my.in_php_project, my.out_high_level.name)
+
+    new namespace to my.out_high_level
+        . = format_left("namespace $(my.out_high_level.namespace:);", 0)
+    endnew
+.endfunction
 .endtemplate
