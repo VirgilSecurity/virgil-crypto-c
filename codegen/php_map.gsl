@@ -53,7 +53,8 @@ function php_map_high_level (in_module, in_php_project, out_high_level, in_type)
     endif
 
     my.out_high_level.name = "$(my.in_module.name:Pascal)"
-    my.out_high_level.namespace = "$(my.in_php_project.main_project:)\\\\$(my.in_php_project.project:)\\\\$(my.out_high_level.name:)"
+    my.out_high_level.name0 = "$(my.in_module.name:c)"
+    my.out_high_level.namespace = php_derive_high_level_namespace(my.in_php_project, my.out_high_level.name)
 
     new namespace to my.out_high_level
         . = format_left("namespace $(my.out_high_level.namespace:);", 0)
@@ -78,9 +79,8 @@ function php_map_high_level (in_module, in_php_project, out_high_level, in_type)
         endnew
     endif
 
-    my._use = ""
-
     my._interface_methods = XML.new()
+    my._use = XML.new()
 
     for my.in_module.interface as interface0
 
@@ -95,7 +95,9 @@ function php_map_high_level (in_module, in_php_project, out_high_level, in_type)
 
             for my.in_php_project.php_module as php_module0 where php_module0.name = my._name
 
-                my._use += format_left("use $(php_module0->high_level.namespace:);", 0)
+                new use to my._use
+                    .namespace = php_module0->high_level.namespace
+                endnew
 
                 for php_module0->high_level.php_method as php_method0
                     copy php_method0 to my._interface_methods
@@ -142,7 +144,14 @@ function php_map_high_level (in_module, in_php_project, out_high_level, in_type)
                 my._docblock_data += format_left(method0., 0) + "\n"
             endif
 
-            php_map_high_level_method (method0, my.in_php_project.prefix, php_method)
+            php_map_high_level_method (method0, my.in_php_project, php_method)
+
+            if 0.instance = 1
+                new use to my._use
+                    .namespace = php_method.namespace
+                endnew
+            endif
+
             .prefix0 = "$(my.in_module.c_prefix:c)"
             .entity0 = "$(my.in_module.name:c)"
             if my.in_type = "interface"
@@ -161,13 +170,15 @@ function php_map_high_level (in_module, in_php_project, out_high_level, in_type)
                 endif
 
                 new php_argument to php_method
-                    php_map_high_level_argument (argument0, php_argument)
+                    php_map_high_level_argument (argument0, my.in_php_project, php_argument)
                     my._docblock_data += format_left("@param $(0.type:) $(0.name:)\n", 0)
                     my._method_arguments += "$(0.type:) $(0.name:)" + my._d
                     my._function_arguments += "$(0.name:)" + my._d
 
                     if 0.instance = 1
-                        my._use += format_left("use $(0.namespace:);", 0)
+                        new namespace to my._use
+                            . = php_argument.namespace
+                        endnew
                     endif
                 endnew
             endfor
@@ -201,7 +212,14 @@ function php_map_high_level (in_module, in_php_project, out_high_level, in_type)
     endfor
 
     new use to my.out_high_level
-        . = format_left(my._use, 0)
+
+        my._u = ""
+
+        for my._use.use as use0
+            my._u += format_left("use $(use0.namespace:);", 0)
+        endfor
+
+        . = format_left(my._u, 0)
     endnew
 
     new signature to my.out_high_level
@@ -279,13 +297,13 @@ endfunction
 # ---------------------------------------------------------------------------
 #   
 # ---------------------------------------------------------------------------
-function php_map_high_level_method (in_method, in_prefix, out_php_method)
-    check_arguments (my, "in_method, in_prefix, out_php_method", my)
+function php_map_high_level_method (in_method, in_php_project, out_php_method)
+    check_arguments (my, "in_method, in_php_project, out_php_method", my)
 
     my.out_php_method.name = "$(my.in_method.name:Camel)"
     my.out_php_method.name0 = "$(my.in_method.name:c)"
 
-    php_map_return_high_level(my.in_method, my.out_php_method)
+    php_map_high_level_return (my.in_method, my.in_php_project, my.out_php_method)
 
     my._md = "public"
 
@@ -299,8 +317,8 @@ endfunction
 # ---------------------------------------------------------------------------
 #   
 # ---------------------------------------------------------------------------
-function php_map_return_high_level (in_method, out_php_method)
-    check_arguments (my, "in_method, out_php_method", my)
+function php_map_high_level_return (in_method, in_php_project, out_php_method)
+    check_arguments (my, "in_method, in_php_project, out_php_method", my)
 
     my._return_type = "void"
     my._return_data = ""
@@ -345,13 +363,24 @@ function php_map_return_high_level (in_method, out_php_method)
             endif
         endif
 
+        my._r = "sfdfsd"
+
         if defined (return0.class)
-            my._r = return0.class
+            if return0.class = "data"
+                my._return_type = "string"
+                my._return_data = ""
+            else
+                my._r = return0.class
+                my._namespace = php_derive_high_level_namespace(my.in_php_project, return0.class)
+                my._instance = 1
+            endif
         elsif defined (return0.interface)
             my._r = return0.interface
+            my._namespace = php_derive_high_level_namespace(my.in_php_project, return0.interface)
+            my._instance = 1
         endif
 
-        if defined (return0.class) | defined (return0.interface)
+        if (defined (return0.class) & return0.class <> "data") | defined (return0.interface)
             my._return_type = "$(my._r:Pascal)"
         endif
 
@@ -378,8 +407,8 @@ endfunction
 # ---------------------------------------------------------------------------
 #   
 # ---------------------------------------------------------------------------
-function php_map_high_level_argument (in_argument, out_php_argument)
-    check_arguments (my, "in_argument, out_php_argument", my)
+function php_map_high_level_argument (in_argument, in_php_project, out_php_argument)
+    check_arguments (my, "in_argument, in_php_project, out_php_argument", my)
 
     my.out_php_argument.name = "$$(my.in_argument.name:Camel)"
 
@@ -393,14 +422,14 @@ function php_map_high_level_argument (in_argument, out_php_argument)
         else
             my._type = "$(my.in_argument.class:Pascal)"
             my._instance = 1
-            my._namespace = "TEMP_NAMESPACE"
+            my._namespace = php_derive_high_level_namespace(my.in_php_project, my._type)
         endif
     endif
 
     if defined (my.in_argument.interface)
         my._type = "$(my.in_argument.interface:Pascal)"
         my._instance = 1
-        my._namespace = "TEMP_NAMESPACE"
+        my._namespace = php_derive_high_level_namespace(my.in_php_project, my._type)
     endif
 
     if defined (my.in_argument.type)

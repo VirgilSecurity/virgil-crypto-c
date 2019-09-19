@@ -1,10 +1,6 @@
 <wrapper 
     lang="php"
-    root_project="VirgilCryptoLib"
-    wrapper_root="../wrappers/php"
-    main_package_dir="../wrappers/php/VirgilCryptoLib"
-    utils_source_dir="../wrappers/php/VirgilCryptoLib/utils"
-    libs_source_dir="../wrappers/php/VirgilCryptoLib/_libs"
-    common_source_dir="../wrappers/php/VirgilCryptoLib/common/_c_bridge">
+    dir="../wrappers/php/"
+    project="VirgilCrypto">
     Wrapper to the PHP programming language.
 </wrapper>

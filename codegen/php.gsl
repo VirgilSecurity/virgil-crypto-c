@@ -139,7 +139,7 @@ function php_create_interface_module (interface, php_project, meta)
 
     new php_module to my.php_project
         .name = "$(my.interface.name:Pascal)"
-        .name0 = "$(my.interface.name:)"
+        .name0 = "$(my.interface.name:c)"
         .source_file_name = 0.name + ".php"
         .source_dir = cat_path (my.php_project.source_dir, "src")
         .source_file_path = cat_path (0.source_dir, 0.source_file_name)
@@ -173,7 +173,7 @@ function php_create_implementation_module (implementation, php_project, meta)
 
     new php_module to my.php_project
         .name = "$(my.implementation.name:Pascal)"
-        .name0 = "$(my.implementation.name:)"
+        .name0 = "$(my.implementation.name:c)"
         .source_file_name = 0.name + ".php"
         .source_dir = cat_path (my.php_project.source_dir, "src")
         .source_file_path = cat_path (0.source_dir, 0.source_file_name)
@@ -214,6 +214,7 @@ function php_create_enum_module (enum, php_project, meta)
     if my.enum.name = "status"
         new php_module to my.php_project
             .name = "extension_status"
+            .name0 = 0.name
             .filename = "status"
             .source_file_name = 0.filename + ".c"
             .source_dir = cat_path (my.php_project.source_dir, "extension")
@@ -243,6 +244,7 @@ check_arguments (my, "source, php_project, meta", my)
 
     new json_module to my.php_project
         .name = "composer"
+        .name0 = 0.name
         .source_file_name = 0.name + ".json"
         .source_dir = cat_path (my.php_project.source_dir)
         .source_file_path = cat_path (0.source_dir, 0.source_file_name)
@@ -281,6 +283,7 @@ check_arguments (my, "source, php_project, meta", my)
 
     new php_module to my.php_project
         .name = "extension_main"
+        .name0 = 0.name
         .filename = "extension"
         .source_file_name = 0.filename + ".c"
         .source_dir = cat_path (my.php_project.source_dir, "extension")
