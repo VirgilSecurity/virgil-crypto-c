@@ -739,6 +739,24 @@ test__import_private_key__invalid_private_key_valid_message_info_with_encrypted_
     vscf_key_provider_destroy(&key_provider);
 }
 
+void
+test__import_private_key__invalid_private_key_valid_message_info___expected_status_bad_pkcs8_private_key(void) {
+
+    vscf_error_t error;
+    vscf_error_reset(&error);
+
+    vscf_key_provider_t *key_provider = vscf_key_provider_new();
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_key_provider_setup_defaults(key_provider));
+
+    vscf_impl_t *private_key = vscf_key_provider_import_private_key(
+            key_provider, test_key_provider_INVALID_PRIVATE_KEY_VALID_MESSAGE_INFO, &error);
+
+
+    TEST_ASSERT_EQUAL(vscf_status_ERROR_BAD_PKCS8_PRIVATE_KEY, vscf_error_status(&error));
+
+    vscf_impl_destroy(&private_key);
+    vscf_key_provider_destroy(&key_provider);
+}
 
 #endif // TEST_DEPENDENCIES_AVAILABLE
 
@@ -777,6 +795,7 @@ main(void) {
 
     RUN_TEST(
             test__import_private_key__invalid_private_key_valid_message_info_with_encrypted_data___expected_status_bad_pkcs8_private_key);
+    RUN_TEST(test__import_private_key__invalid_private_key_valid_message_info___expected_status_bad_pkcs8_private_key);
 #else
     RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
 #endif

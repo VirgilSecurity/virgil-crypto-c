@@ -36,5 +36,5 @@
 
 extern const vsc_data_t test_key_provider_MESSAGE_SHA512_DIGEST;
 extern const vsc_data_t test_key_provider_INVALID_PRIVATE_KEY_VALID_MESSAGE_INFO_WITH_ENCRYPTED_DATA;
-extern const vsc_data_t test_bad_PRIVATE_KEY_BAD_PKCS8_PEM;
+extern const vsc_data_t test_key_provider_INVALID_PRIVATE_KEY_VALID_MESSAGE_INFO;
 
