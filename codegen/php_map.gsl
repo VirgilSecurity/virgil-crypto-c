@@ -448,5 +448,21 @@ function php_map_high_level_enum (in_module, in_php_project, out_high_level)
     new namespace to my.out_high_level
         . = format_left("namespace $(my.out_high_level.namespace:);", 0)
     endnew
+
+    new constants to my.out_high_level
+        . = format_left("const TEMP_KEY = TEMP_VALUE;", 0)
+    endnew
+
+    new signature to my.out_high_level
+        . = format_left("class TEMP extends Enum")
+    endnew
+
+    new use to my.out_high_level
+        . = "use TEMP;"
+    endnew
+
+    new body to my.out_high_level
+    endnew
+
 .endfunction
 .endtemplate

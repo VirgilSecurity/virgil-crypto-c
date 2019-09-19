@@ -58,7 +58,7 @@ function php_generate_sources (php_project)
         echo_fatal ("Can not create directory: $(my.wrapper.source_dir:)")
     endif
 
-    for my.php_project.php_module as php_module0 where string_in (php_module0.type, "class, interface, implementation")
+    for my.php_project.php_module as php_module0 where string_in (php_module0.type, "class, interface, implementation, enum")
         php_generate_source_high_level (php_module0)
     endfor
 
@@ -95,6 +95,12 @@ function php_generate_source_high_level (in_php_module)
     php_insert_code(my._namespace, 0)
     newline()
 
+    if defined (my.in_php_module->high_level->use.)
+        my._use = my.in_php_module->high_level->use.
+        php_insert_code(my._use, 0)
+        newline()
+    endif
+
     if defined (my.in_php_module->high_level.)
         my._info = my.in_php_module->high_level.
         php_insert_code(my._info, 0)
@@ -115,7 +121,7 @@ function php_generate_source_high_level (in_php_module)
 
     if defined (my.in_php_module->high_level->constants.)
         newline()
-        
+
         my._constants = my.in_php_module->high_level->constants.
         php_insert_code(my._constants, 1)
     endif

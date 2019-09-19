@@ -73,7 +73,7 @@ endfunction
 #   
 # ---------------------------------------------------------------------------
 function php_derive_high_level_namespace (in_php_project)
-    check_arguments (my, "in_php_project, in_name", my)
+    check_arguments (my, "in_php_project", my)
 
     my._res = "$(my.in_php_project.main_project:)\\\\$(my.in_php_project.project:)"
 
