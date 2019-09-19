@@ -54,7 +54,7 @@ function php_map_high_level (in_module, in_php_project, out_high_level, in_type)
 
     my.out_high_level.name = "$(my.in_module.name:Pascal)"
     my.out_high_level.name0 = "$(my.in_module.name:c)"
-    my.out_high_level.namespace = php_derive_high_level_namespace(my.in_php_project, my.out_high_level.name)
+    my.out_high_level.namespace = php_derive_high_level_namespace(my.in_php_project)
 
     new namespace to my.out_high_level
         . = format_left("namespace $(my.out_high_level.namespace:);", 0)
@@ -80,7 +80,8 @@ function php_map_high_level (in_module, in_php_project, out_high_level, in_type)
     endif
 
     my._interface_methods = XML.new()
-    my._use = XML.new()
+    my._constant = ""
+
 
     for my.in_module.interface as interface0
 
@@ -94,11 +95,6 @@ function php_map_high_level (in_module, in_php_project, out_high_level, in_type)
             my._name = interface.name
 
             for my.in_php_project.php_module as php_module0 where php_module0.name = my._name
-
-                new use to my._use
-                    .namespace = php_module0->high_level.namespace
-                endnew
-
                 for php_module0->high_level.php_method as php_method0
                     copy php_method0 to my._interface_methods
                 endfor
@@ -111,9 +107,15 @@ function php_map_high_level (in_module, in_php_project, out_high_level, in_type)
             new constant to high_level
                 .name = php_derive_high_level_constant_name(constant0)
                 .value = constant0.value
+
+                my._constant += format_left("const $(0.name:) = $(0.value:);", 0)
             endnew
         endfor
     endfor
+
+    new constants to my.out_high_level
+        . = format_left(my._constant, 0)
+    endnew
 
     if my.in_type <> "interface"
         php_map_high_level_constructor_destructor (my.in_module, my.out_high_level)
@@ -146,12 +148,6 @@ function php_map_high_level (in_module, in_php_project, out_high_level, in_type)
 
             php_map_high_level_method (method0, my.in_php_project, php_method)
 
-            if 0.instance = 1
-                new use to my._use
-                    .namespace = php_method.namespace
-                endnew
-            endif
-
             .prefix0 = "$(my.in_module.c_prefix:c)"
             .entity0 = "$(my.in_module.name:c)"
             if my.in_type = "interface"
@@ -174,12 +170,6 @@ function php_map_high_level (in_module, in_php_project, out_high_level, in_type)
                     my._docblock_data += format_left("@param $(0.type:) $(0.name:)\n", 0)
                     my._method_arguments += "$(0.type:) $(0.name:)" + my._d
                     my._function_arguments += "$(0.name:)" + my._d
-
-                    if 0.instance = 1
-                        new namespace to my._use
-                            .namespace = php_argument.namespace
-                        endnew
-                    endif
                 endnew
             endfor
 
@@ -210,17 +200,6 @@ function php_map_high_level (in_module, in_php_project, out_high_level, in_type)
             endif
         endnew
     endfor
-
-    new use to my.out_high_level
-
-        my._u = ""
-
-        for my._use.use as use0
-            my._u += format_left("use $(use0.namespace:);", 0)
-        endfor
-
-        . = format_left(my._u, 0)
-    endnew
 
     new signature to my.out_high_level
         . = format_left("$(my._type:) $(my.out_high_level.name:) $(my._implements:)", 0)
@@ -371,12 +350,12 @@ function php_map_high_level_return (in_method, in_php_project, out_php_method)
                 my._return_data = ""
             else
                 my._r = return0.class
-                my._namespace = php_derive_high_level_namespace(my.in_php_project, return0.class)
+                my._namespace = php_derive_high_level_namespace(my.in_php_project)
                 my._instance = 1
             endif
         elsif defined (return0.interface)
             my._r = return0.interface
-            my._namespace = php_derive_high_level_namespace(my.in_php_project, return0.interface)
+            my._namespace = php_derive_high_level_namespace(my.in_php_project)
             my._instance = 1
         endif
 
@@ -422,14 +401,14 @@ function php_map_high_level_argument (in_argument, in_php_project, out_php_argum
         else
             my._type = "$(my.in_argument.class:Pascal)"
             my._instance = 1
-            my._namespace = php_derive_high_level_namespace(my.in_php_project, my._type)
+            my._namespace = php_derive_high_level_namespace(my.in_php_project)
         endif
     endif
 
     if defined (my.in_argument.interface)
         my._type = "$(my.in_argument.interface:Pascal)"
         my._instance = 1
-        my._namespace = php_derive_high_level_namespace(my.in_php_project, my._type)
+        my._namespace = php_derive_high_level_namespace(my.in_php_project)
     endif
 
     if defined (my.in_argument.type)
@@ -464,7 +443,7 @@ function php_map_high_level_enum (in_module, in_php_project, out_high_level)
 
     my.out_high_level.name = "$(my.in_module.name:Pascal)"
     my.out_high_level.name0 = "$(my.in_module.name:c)"
-    my.out_high_level.namespace = php_derive_high_level_namespace(my.in_php_project, my.out_high_level.name)
+    my.out_high_level.namespace = php_derive_high_level_namespace(my.in_php_project)
 
     new namespace to my.out_high_level
         . = format_left("namespace $(my.out_high_level.namespace:);", 0)

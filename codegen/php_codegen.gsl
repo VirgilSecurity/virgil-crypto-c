@@ -91,15 +91,8 @@ function php_generate_source_high_level (in_php_module)
     my._module_type = my.in_php_module.type
     my._module_name = my.in_php_module.name
 
-    if defined (my.in_php_module->high_level->use.)
-        my._use = my.in_php_module->high_level->use.
-        php_insert_code(my._use, 0)
-        newline()
-    endif
-
     my._namespace = my.in_php_module->high_level->namespace.
     php_insert_code(my._namespace, 0)
-
     newline()
 
     if defined (my.in_php_module->high_level.)
@@ -113,9 +106,18 @@ function php_generate_source_high_level (in_php_module)
     php_insert_code("{", 0)
 
     if defined (my.in_php_module->high_level->property.)
-        newline()
+        if ! first()
+            newline()
+        endif
         my._property = my.in_php_module->high_level->property.
         php_insert_code(my._property, 1)
+    endif
+
+    if defined (my.in_php_module->high_level->constants.)
+        newline()
+        
+        my._constants = my.in_php_module->high_level->constants.
+        php_insert_code(my._constants, 1)
     endif
 
     for my.in_php_module->high_level.php_method as php_method0
