@@ -63,7 +63,7 @@ public class KeyProviderTest extends SampleBasedTest {
 		this.keyProvider.importPrivateKey(new byte[0]);
 	}
 
-	@Test
+	@Test(expected = FoundationException.class)
 	public void importPrivateKey_wrongData() {
 		this.keyProvider.importPrivateKey(getBytes("key_provider.wrong_key"));
 	}
