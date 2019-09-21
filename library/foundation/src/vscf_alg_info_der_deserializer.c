@@ -565,10 +565,6 @@ vscf_alg_info_der_deserializer_deserialize_inplace(vscf_alg_info_der_deserialize
     }
 
     vscf_oid_id_t oid_id = vscf_oid_to_id(alg_oid);
-    if (vscf_oid_id_NONE == oid_id) {
-        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_UNSUPPORTED_ALGORITHM);
-        return NULL;
-    }
 
     //
     //  Proxy further deserialization for specific algorithm.
@@ -614,12 +610,9 @@ vscf_alg_info_der_deserializer_deserialize_inplace(vscf_alg_info_der_deserialize
     case vscf_oid_id_CMS_DATA:
     case vscf_oid_id_CMS_ENVELOPED_DATA:
     case vscf_oid_id_EC_DOMAIN_SECP256R1:
-        VSCF_ASSERT(0 && "Derived OID is not an algorithm identifier.");
-        break;
-
     case vscf_oid_id_NONE:
-        VSCF_ASSERT(0 && "Unhandled alg id.");
-        break;
+        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_UNSUPPORTED_ALGORITHM);
+        return NULL;
     }
 
     return NULL;
