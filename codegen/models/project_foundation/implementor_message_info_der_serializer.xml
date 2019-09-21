@@ -1,11 +1,24 @@
 <implementor name="virgil message info cms" is_default="1">
-    Contain CMS implementation of the class "message info" serialization.
+    Contain CMS based implementation of the class "message info" abd class "message info footer".
 
     <implementation name="message info der serializer">
-        CMS based implementation of the class "message info" serialization.
+        CMS based serialization of the class "message info".
 
         <interface name="message info serializer">
+            VirgilMessageInfo ::= SEQUENCE {
+                version INTEGER { v0(0) } DEFAULT v0,
+                cmsContent ContentInfo, -- Imports from RFC 5652
+                customParams [0] EXPLICIT VirgilCustomParams OPTIONAL,
+                signedDataInfo [1] EXPLICIT VirgilSignedDataInfo OPTIONAL
+            }
             <constant name="prefix len" value="32"/>
+        </interface>
+
+        <interface name="message info footer serializer">
+            VirgilMessageInfoFooter ::= SEQUENCE {
+                version INTEGER { v0(0) } DEFAULT v0,
+                signerInfos [0] EXPLICIT VirgilSignerInfos
+            }
         </interface>
 
         <require enum="asn1 tag"/>
@@ -51,6 +64,25 @@
                 int [0] EXPLICIT INTEGER,
                 str [1] EXPLICIT UTF8String,
                 data [2] EXPLICIT OCTET STRING
+            }
+
+            <argument name="message info" class="message info"/>
+
+            <return type="size"/>
+        </method>
+
+        <method name="serialized signed data info len" is_const="1">
+            <argument name="message info" class="message info"/>
+
+            <return type="size"/>
+        </method>
+
+        <method name="serialize signed data info">
+            VirgilSignedDataInfo ::= SEQUENCE {
+                version INTEGER { v0(0) },
+                digestAlgorithm AlgorithmIdentifier,
+                dataSize INTEGER,
+                signedParams [0] EXPLICIT VirgilCustomParams OPTIONAL
             }
 
             <argument name="message info" class="message info"/>
@@ -189,6 +221,60 @@
             <return type="size"/>
         </method>
 
+        <method name="serialized signer infos len" is_const="1">
+            VirgilSignerInfos ::= SET SIZE (1..MAX) OF VirgilSignerInfo
+
+            <argument name="message info footer" class="message info footer"/>
+
+            <return type="size"/>
+        </method>
+
+        <method name="serialize signer infos">
+            VirgilSignerInfos ::= SET SIZE (1..MAX) OF VirgilSignerInfo
+
+            <argument name="message info footer" class="message info footer"/>
+
+            <return type="size"/>
+        </method>
+
+        <method name="serialized signer info len" is_const="1">
+            VirgilSignerInfo ::= SEQUENCE {
+                version INTEGER { v0(0) } DEFAULT v0,
+                signerIdentifier VirgilSignerIdentifier,
+                signerAlgorithm VirgilSignerAlgorithm,
+                signature VirgilSignatureValue
+            }
+
+            VirgilSignerIdentifier ::= OCTET STRING
+
+            VirgilSignerAlgorithm ::= AlgorithmIdentifier
+
+            VirgilSignatureValue ::= OCTET STRING
+
+            <argument name="signer info" class="signer info"/>
+
+            <return type="size"/>
+        </method>
+
+        <method name="serialize signer info">
+            VirgilSignerInfo ::= SEQUENCE {
+                version INTEGER { v0(0) } DEFAULT v0,
+                signerIdentifier VirgilSignerIdentifier,
+                signerAlgorithm VirgilSignerAlgorithm,
+                signature VirgilSignatureValue
+            }
+
+            VirgilSignerIdentifier ::= OCTET STRING
+
+            VirgilSignerAlgorithm ::= AlgorithmIdentifier
+
+            VirgilSignatureValue ::= OCTET STRING
+
+            <argument name="signer info" class="signer info"/>
+
+            <return type="size"/>
+        </method>
+
         <method name="deserialize custom params">
             VirgilCustomParams ::= SET SIZE (1..MAX) OF KeyValue
 
@@ -203,6 +289,18 @@
                 int [0] EXPLICIT INTEGER,
                 str [1] EXPLICIT UTF8String,
                 data [2] EXPLICIT OCTET STRING
+            }
+
+            <argument name="message info" class="message info" access="readwrite"/>
+            <argument name="error" class="error" access="readwrite" />
+        </method>
+
+        <method name="deserialize signed data info">
+            VirgilSignedDataInfo ::= SEQUENCE {
+                version INTEGER { v0(0) },
+                digestAlgorithm AlgorithmIdentifier,
+                dataSize INTEGER,
+                signedParams [0] EXPLICIT VirgilCustomParams OPTIONAL
             }
 
             <argument name="message info" class="message info" access="readwrite"/>
@@ -295,6 +393,31 @@
             ContentType ::= OBJECT IDENTIFIER
 
             <argument name="message info" class="message info" access="readwrite"/>
+            <argument name="error" class="error" access="readwrite" />
+        </method>
+
+        <method name="deserialize signer infos">
+            VirgilSignerInfos ::= SET SIZE (1..MAX) OF VirgilSignerInfo
+
+            <argument name="message info footer" class="message info footer" access="readwrite"/>
+            <argument name="error" class="error" access="readwrite" />
+        </method>
+
+        <method name="deserialize signer info">
+            VirgilSignerInfo ::= SEQUENCE {
+                version INTEGER { v0(0) } DEFAULT v0,
+                signerIdentifier VirgilSignerIdentifier,
+                signerAlgorithm VirgilSignerAlgorithm,
+                signature VirgilSignatureValue
+            }
+
+            VirgilSignerIdentifier ::= OCTET STRING
+
+            VirgilSignerAlgorithm ::= AlgorithmIdentifier
+
+            VirgilSignatureValue ::= OCTET STRING
+
+            <argument name="message info footer" class="message info footer" access="readwrite"/>
             <argument name="error" class="error" access="readwrite" />
         </method>
     </implementation>

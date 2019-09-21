@@ -6,6 +6,7 @@
     <property name="password recipients" class="password recipient info list"/>
     <property name="data encryption alg info" interface="alg info"/>
     <property name="custom params" class="message info custom params"/>
+    <property name="signed data info" class="signed data info"/>
 
 
     <method name="add key recipient">
@@ -56,11 +57,13 @@
         <return class="password recipient info list"/>
     </method>
 
+
     <method name="set custom params">
         Setup custom params.
 
         <argument name="custom params" class="message info custom params" access="retain"/>
     </method>
+
 
     <method name="custom params">
         Provide access to the custom params object.
@@ -69,6 +72,21 @@
 
         <return class="message info custom params" access="readwrite"/>
     </method>
+
+
+    <method name="set signed data info">
+        Setup signed data info.
+
+        <argument name="signed data info" class="signed data info" access="retain"/>
+    </method>
+
+
+    <method name="signed data info">
+        Return signed data info.
+
+        <return class="signed data info" access="readwrite"/>
+    </method>
+
 
     <method name="clear recipients">
         Remove all recipients.

@@ -77,6 +77,7 @@ option(VSCF_ALG_INFO "Enable interface 'alg info'." ON)
 option(VSCF_ALG_INFO_SERIALIZER "Enable interface 'alg info serializer'." ON)
 option(VSCF_ALG_INFO_DESERIALIZER "Enable interface 'alg info deserializer'." ON)
 option(VSCF_MESSAGE_INFO_SERIALIZER "Enable interface 'message info serializer'." ON)
+option(VSCF_MESSAGE_INFO_FOOTER_SERIALIZER "Enable interface 'message info footer serializer'." ON)
 option(VSCF_SHA224 "Enable implementation 'sha224'." ON)
 option(VSCF_SHA256 "Enable implementation 'sha256'." ON)
 option(VSCF_SHA384 "Enable implementation 'sha384'." ON)
@@ -155,6 +156,12 @@ option(VSCF_GROUP_SESSION "Enable class 'group session'." ON)
 option(VSCF_GROUP_SESSION_EPOCH "Enable class 'group session epoch'." ON)
 option(VSCF_GROUP_SESSION_EPOCH_NODE "Enable class 'group session epoch node'." ON)
 option(VSCF_MESSAGE_INFO_EDITOR "Enable class 'message info editor'." ON)
+option(VSCF_SIGNER_INFO "Enable class 'signer info'." ON)
+option(VSCF_SIGNER_INFO_LIST "Enable class 'signer info list'." ON)
+option(VSCF_SIGNER_LIST "Enable class 'signer list'." ON)
+option(VSCF_VERIFIER_LIST "Enable class 'verifier list'." ON)
+option(VSCF_MESSAGE_INFO_FOOTER "Enable class 'message info footer'." ON)
+option(VSCF_SIGNED_DATA_INFO "Enable class 'signed data info'." ON)
 mark_as_advanced(
         VSCF_LIBRARY
         VSCF_MULTI_THREADING
@@ -188,6 +195,7 @@ mark_as_advanced(
         VSCF_ALG_INFO_SERIALIZER
         VSCF_ALG_INFO_DESERIALIZER
         VSCF_MESSAGE_INFO_SERIALIZER
+        VSCF_MESSAGE_INFO_FOOTER_SERIALIZER
         VSCF_SHA224
         VSCF_SHA256
         VSCF_SHA384
@@ -266,6 +274,12 @@ mark_as_advanced(
         VSCF_GROUP_SESSION_EPOCH
         VSCF_GROUP_SESSION_EPOCH_NODE
         VSCF_MESSAGE_INFO_EDITOR
+        VSCF_SIGNER_INFO
+        VSCF_SIGNER_INFO_LIST
+        VSCF_SIGNER_LIST
+        VSCF_VERIFIER_LIST
+        VSCF_MESSAGE_INFO_FOOTER
+        VSCF_SIGNED_DATA_INFO
         )
 
 if(VSCF_MULTI_THREADING AND NOT MBEDTLS_THREADING_C)
@@ -2293,29 +2307,29 @@ if(VSCF_RECIPIENT_CIPHER AND NOT VSCF_PRIVATE_KEY)
     message(FATAL_ERROR)
 endif()
 
-if(VSCF_RECIPIENT_CIPHER AND NOT VSCF_ENCRYPT)
-    message("-- error --")
-    message("--")
-    message("Feature VSCF_RECIPIENT_CIPHER depends on the feature:")
-    message("     VSCF_ENCRYPT - which is disabled.")
-    message("--")
-    message(FATAL_ERROR)
-endif()
-
-if(VSCF_RECIPIENT_CIPHER AND NOT VSCF_DECRYPT)
-    message("-- error --")
-    message("--")
-    message("Feature VSCF_RECIPIENT_CIPHER depends on the feature:")
-    message("     VSCF_DECRYPT - which is disabled.")
-    message("--")
-    message(FATAL_ERROR)
-endif()
-
 if(VSCF_RECIPIENT_CIPHER AND NOT VSCF_KEY_CIPHER)
     message("-- error --")
     message("--")
     message("Feature VSCF_RECIPIENT_CIPHER depends on the feature:")
     message("     VSCF_KEY_CIPHER - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_RECIPIENT_CIPHER AND NOT VSCF_KEY_SIGNER)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_RECIPIENT_CIPHER depends on the feature:")
+    message("     VSCF_KEY_SIGNER - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_RECIPIENT_CIPHER AND NOT VSCF_CIPHER_AUTH)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_RECIPIENT_CIPHER depends on the feature:")
+    message("     VSCF_CIPHER_AUTH - which is disabled.")
     message("--")
     message(FATAL_ERROR)
 endif()
@@ -2370,6 +2384,15 @@ if(VSCF_RECIPIENT_CIPHER AND NOT VSCF_KEY_ALG_FACTORY)
     message("--")
     message("Feature VSCF_RECIPIENT_CIPHER depends on the feature:")
     message("     VSCF_KEY_ALG_FACTORY - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_RECIPIENT_CIPHER AND NOT VSCF_SHA512)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_RECIPIENT_CIPHER depends on the feature:")
+    message("     VSCF_SHA512 - which is disabled.")
     message("--")
     message(FATAL_ERROR)
 endif()
@@ -2847,6 +2870,33 @@ if(VSCF_MESSAGE_INFO_EDITOR AND NOT VSCF_MESSAGE_INFO_DER_SERIALIZER)
     message("--")
     message("Feature VSCF_MESSAGE_INFO_EDITOR depends on the feature:")
     message("     VSCF_MESSAGE_INFO_DER_SERIALIZER - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_SIGNER_INFO AND NOT VSCF_ALG_INFO)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_SIGNER_INFO depends on the feature:")
+    message("     VSCF_ALG_INFO - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_SIGNER_LIST AND NOT VSCF_PRIVATE_KEY)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_SIGNER_LIST depends on the feature:")
+    message("     VSCF_PRIVATE_KEY - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_VERIFIER_LIST AND NOT VSCF_PRIVATE_KEY)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_VERIFIER_LIST depends on the feature:")
+    message("     VSCF_PRIVATE_KEY - which is disabled.")
     message("--")
     message(FATAL_ERROR)
 endif()

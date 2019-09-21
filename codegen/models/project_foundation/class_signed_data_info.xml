@@ -1,0 +1,45 @@
+<class name="signed data info">
+    Handle information about signed data.
+
+    <property name="hash algorithm" interface="alg info"/>
+    <property name="signed custom params" class="message info custom params"/>
+    <property name="data size" type="size"/>
+
+    <method name="set hash alg info">
+        Set information about algorithm that was used to produce data digest.
+
+        <argument name="hash alg info" interface="alg info" access="disown"/>
+    </method>
+
+    <method name="hash alg info" is_const="1">
+        Return information about algorithm that was used to produce data digest.
+
+        <return interface="alg info"/>
+    </method>
+
+    <method name="set custom params">
+        Setup signed custom params.
+
+        <argument name="custom params" class="message info custom params" access="disown"/>
+    </method>
+
+    <method name="custom params">
+        Provide access to the signed custom params object.
+        The returned object can be used to add custom params or read it.
+        If custom params object was not set then new empty object is created.
+
+        <return class="message info custom params" access="readwrite"/>
+    </method>
+
+    <method name="set data size">
+        Set data size.
+
+        <argument name="data size" type="size"/>
+    </method>
+
+    <method name="data size" is_const="1">
+        Return data size.
+
+        <return type="size"/>
+    </method>
+</class>

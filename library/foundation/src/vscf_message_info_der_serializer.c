@@ -66,6 +66,7 @@
 #include "vscf_message_info_der_serializer_internal.h"
 #include "vscf_key_recipient_info.h"
 #include "vscf_password_recipient_info.h"
+#include "vscf_signer_info.h"
 
 #include <virgil/crypto/common/private/vsc_buffer_defs.h>
 #include <mbedtls/asn1.h>
@@ -102,6 +103,22 @@ vscf_message_info_der_serializer_serialized_custom_params_len(const vscf_message
 //
 static size_t
 vscf_message_info_der_serializer_serialize_custom_params(vscf_message_info_der_serializer_t *self,
+        const vscf_message_info_t *message_info);
+
+static size_t
+vscf_message_info_der_serializer_serialized_signed_data_info_len(const vscf_message_info_der_serializer_t *self,
+        const vscf_message_info_t *message_info);
+
+//
+//  VirgilSignedDataInfo ::= SEQUENCE {
+//      version INTEGER { v0(0) },
+//      digestAlgorithm AlgorithmIdentifier,
+//      dataSize INTEGER,
+//      signedParams [0] EXPLICIT VirgilCustomParams OPTIONAL
+//  }
+//
+static size_t
+vscf_message_info_der_serializer_serialize_signed_data_info(vscf_message_info_der_serializer_t *self,
         const vscf_message_info_t *message_info);
 
 static size_t
@@ -218,6 +235,56 @@ vscf_message_info_der_serializer_serialize_cms_content_info(vscf_message_info_de
         const vscf_message_info_t *message_info);
 
 //
+//  VirgilSignerInfos ::= SET SIZE (1..MAX) OF VirgilSignerInfo
+//
+static size_t
+vscf_message_info_der_serializer_serialized_signer_infos_len(const vscf_message_info_der_serializer_t *self,
+        const vscf_message_info_footer_t *message_info_footer);
+
+//
+//  VirgilSignerInfos ::= SET SIZE (1..MAX) OF VirgilSignerInfo
+//
+static size_t
+vscf_message_info_der_serializer_serialize_signer_infos(vscf_message_info_der_serializer_t *self,
+        const vscf_message_info_footer_t *message_info_footer);
+
+//
+//  VirgilSignerInfo ::= SEQUENCE {
+//      version INTEGER { v0(0) } DEFAULT v0,
+//      signerIdentifier VirgilSignerIdentifier,
+//      signerAlgorithm VirgilSignerAlgorithm,
+//      signature VirgilSignatureValue
+//  }
+//
+//  VirgilSignerIdentifier ::= OCTET STRING
+//
+//  VirgilSignerAlgorithm ::= AlgorithmIdentifier
+//
+//  VirgilSignatureValue ::= OCTET STRING
+//
+static size_t
+vscf_message_info_der_serializer_serialized_signer_info_len(const vscf_message_info_der_serializer_t *self,
+        const vscf_signer_info_t *signer_info);
+
+//
+//  VirgilSignerInfo ::= SEQUENCE {
+//      version INTEGER { v0(0) } DEFAULT v0,
+//      signerIdentifier VirgilSignerIdentifier,
+//      signerAlgorithm VirgilSignerAlgorithm,
+//      signature VirgilSignatureValue
+//  }
+//
+//  VirgilSignerIdentifier ::= OCTET STRING
+//
+//  VirgilSignerAlgorithm ::= AlgorithmIdentifier
+//
+//  VirgilSignatureValue ::= OCTET STRING
+//
+static size_t
+vscf_message_info_der_serializer_serialize_signer_info(vscf_message_info_der_serializer_t *self,
+        const vscf_signer_info_t *signer_info);
+
+//
 //  VirgilCustomParams ::= SET SIZE (1..MAX) OF KeyValue
 //
 //  KeyValue ::= SEQUENCE {
@@ -235,6 +302,18 @@ vscf_message_info_der_serializer_serialize_cms_content_info(vscf_message_info_de
 //
 static void
 vscf_message_info_der_serializer_deserialize_custom_params(vscf_message_info_der_serializer_t *self,
+        vscf_message_info_t *message_info, vscf_error_t *error);
+
+//
+//  VirgilSignedDataInfo ::= SEQUENCE {
+//      version INTEGER { v0(0) },
+//      digestAlgorithm AlgorithmIdentifier,
+//      dataSize INTEGER,
+//      signedParams [0] EXPLICIT VirgilCustomParams OPTIONAL
+//  }
+//
+static void
+vscf_message_info_der_serializer_deserialize_signed_data_info(vscf_message_info_der_serializer_t *self,
         vscf_message_info_t *message_info, vscf_error_t *error);
 
 //
@@ -325,6 +404,31 @@ vscf_message_info_der_serializer_deserialize_enveloped_data(vscf_message_info_de
 static void
 vscf_message_info_der_serializer_deserialize_cms_content_info(vscf_message_info_der_serializer_t *self,
         vscf_message_info_t *message_info, vscf_error_t *error);
+
+//
+//  VirgilSignerInfos ::= SET SIZE (1..MAX) OF VirgilSignerInfo
+//
+static void
+vscf_message_info_der_serializer_deserialize_signer_infos(vscf_message_info_der_serializer_t *self,
+        vscf_message_info_footer_t *message_info_footer, vscf_error_t *error);
+
+//
+//  VirgilSignerInfo ::= SEQUENCE {
+//      version INTEGER { v0(0) } DEFAULT v0,
+//      signerIdentifier VirgilSignerIdentifier,
+//      signerAlgorithm VirgilSignerAlgorithm,
+//      signature VirgilSignatureValue
+//  }
+//
+//  VirgilSignerIdentifier ::= OCTET STRING
+//
+//  VirgilSignerAlgorithm ::= AlgorithmIdentifier
+//
+//  VirgilSignatureValue ::= OCTET STRING
+//
+static void
+vscf_message_info_der_serializer_deserialize_signer_info(vscf_message_info_der_serializer_t *self,
+        vscf_message_info_footer_t *message_info_footer, vscf_error_t *error);
 
 
 // --------------------------------------------------------------------------
@@ -541,6 +645,34 @@ vscf_message_info_der_serializer_serialize_custom_params(
     }
 
     return len;
+}
+
+static size_t
+vscf_message_info_der_serializer_serialized_signed_data_info_len(
+        const vscf_message_info_der_serializer_t *self, const vscf_message_info_t *message_info) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(message_info);
+    //  TODO: This is STUB. Implement me.
+    return 0;
+}
+
+//
+//  VirgilSignedDataInfo ::= SEQUENCE {
+//      version INTEGER { v0(0) },
+//      digestAlgorithm AlgorithmIdentifier,
+//      dataSize INTEGER,
+//      signedParams [0] EXPLICIT VirgilCustomParams OPTIONAL
+//  }
+//
+static size_t
+vscf_message_info_der_serializer_serialize_signed_data_info(
+        vscf_message_info_der_serializer_t *self, const vscf_message_info_t *message_info) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(message_info);
+    //  TODO: This is STUB. Implement me.
+    return 0;
 }
 
 static size_t
@@ -892,7 +1024,6 @@ vscf_message_info_der_serializer_serialize_enveloped_data(
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(message_info);
 
-
     //
     //  Define version.
     //
@@ -969,6 +1100,141 @@ vscf_message_info_der_serializer_serialize_cms_content_info(
 }
 
 //
+//  VirgilSignerInfos ::= SET SIZE (1..MAX) OF VirgilSignerInfo
+//
+static size_t
+vscf_message_info_der_serializer_serialized_signer_infos_len(
+        const vscf_message_info_der_serializer_t *self, const vscf_message_info_footer_t *message_info_footer) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(message_info_footer);
+
+    size_t len = 1 + 1 + 8; //  VirgilSignerInfos ::= SET SIZE (1..MAX) OF VirgilSignerInfo
+
+    for (const vscf_signer_info_list_t *list = vscf_message_info_footer_signer_infos(message_info_footer);
+            (list != NULL) && vscf_signer_info_list_has_item(list); list = vscf_signer_info_list_next(list)) {
+
+        const vscf_signer_info_t *info = vscf_signer_info_list_item(list);
+
+        len += vscf_message_info_der_serializer_serialized_signer_info_len(self, info);
+    }
+
+    return len;
+}
+
+//
+//  VirgilSignerInfos ::= SET SIZE (1..MAX) OF VirgilSignerInfo
+//
+static size_t
+vscf_message_info_der_serializer_serialize_signer_infos(
+        vscf_message_info_der_serializer_t *self, const vscf_message_info_footer_t *message_info_footer) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(message_info_footer);
+
+    size_t signer_infos_len = 0;
+
+    for (const vscf_signer_info_list_t *list = vscf_message_info_footer_signer_infos(message_info_footer);
+            (list != NULL) && vscf_signer_info_list_has_item(list); list = vscf_signer_info_list_next(list)) {
+
+        const vscf_signer_info_t *info = vscf_signer_info_list_item(list);
+
+        size_t info_len = vscf_message_info_der_serializer_serialize_signer_info(self, info);
+
+        signer_infos_len += info_len;
+    }
+
+    signer_infos_len += vscf_asn1_writer_write_set(self->asn1_writer, signer_infos_len);
+
+    return signer_infos_len;
+}
+
+//
+//  VirgilSignerInfo ::= SEQUENCE {
+//      version INTEGER { v0(0) } DEFAULT v0,
+//      signerIdentifier VirgilSignerIdentifier,
+//      signerAlgorithm VirgilSignerAlgorithm,
+//      signature VirgilSignatureValue
+//  }
+//
+//  VirgilSignerIdentifier ::= OCTET STRING
+//
+//  VirgilSignerAlgorithm ::= AlgorithmIdentifier
+//
+//  VirgilSignatureValue ::= OCTET STRING
+//
+static size_t
+vscf_message_info_der_serializer_serialized_signer_info_len(
+        const vscf_message_info_der_serializer_t *self, const vscf_signer_info_t *signer_info) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(signer_info);
+
+    const size_t signer_id_len = vscf_signer_info_signer_id(signer_info).len;
+    const size_t signature_len = vscf_signer_info_signature(signer_info).len;
+
+    const size_t len = 1 + 1 + 2 +                 //  VirgilSignerInfo ::= SEQUENCE {
+                       1 + 1 + 1 +                 //      version INTEGER { v0(0) } DEFAULT v0,
+                       1 + 1 + 2 + signer_id_len + //      signerIdentifier VirgilSignerIdentifier,
+                       1 + 1 + 32 +                //      signerAlgorithm VirgilSignerAlgorithm,
+                       1 + 1 + 2 + signature_len;  //      signature VirgilSignatureValue }
+
+    return len;
+}
+
+//
+//  VirgilSignerInfo ::= SEQUENCE {
+//      version INTEGER { v0(0) } DEFAULT v0,
+//      signerIdentifier VirgilSignerIdentifier,
+//      signerAlgorithm VirgilSignerAlgorithm,
+//      signature VirgilSignatureValue
+//  }
+//
+//  VirgilSignerIdentifier ::= OCTET STRING
+//
+//  VirgilSignerAlgorithm ::= AlgorithmIdentifier
+//
+//  VirgilSignatureValue ::= OCTET STRING
+//
+static size_t
+vscf_message_info_der_serializer_serialize_signer_info(
+        vscf_message_info_der_serializer_t *self, const vscf_signer_info_t *signer_info) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(signer_info);
+
+    size_t len = 0;
+
+    //
+    //  Write: signature
+    //
+    len += vscf_asn1_writer_write_octet_str(self->asn1_writer, vscf_signer_info_signature(signer_info));
+
+    //
+    //  Write: signerAlgorithm
+    //
+    const vscf_impl_t *signer_alg_info = vscf_signer_info_signer_alg_info(signer_info);
+    len += vscf_alg_info_der_serializer_serialize_inplace(self->alg_info_serializer, signer_alg_info);
+
+    //
+    //  Write: signerIdentifier
+    //
+    len += vscf_asn1_writer_write_octet_str(self->asn1_writer, vscf_signer_info_signer_id(signer_info));
+
+    //
+    //  Write: version
+    //
+    len += vscf_asn1_writer_write_int(self->asn1_writer, 0);
+
+    //
+    //  Write: VirgilSignerInfo
+    //
+    len += vscf_asn1_writer_write_sequence(self->asn1_writer, len);
+
+    return len;
+}
+
+//
 //  VirgilCustomParams ::= SET SIZE (1..MAX) OF KeyValue
 //
 //  KeyValue ::= SEQUENCE {
@@ -1039,6 +1305,24 @@ vscf_message_info_der_serializer_deserialize_custom_params(
             return;
         }
     }
+}
+
+//
+//  VirgilSignedDataInfo ::= SEQUENCE {
+//      version INTEGER { v0(0) },
+//      digestAlgorithm AlgorithmIdentifier,
+//      dataSize INTEGER,
+//      signedParams [0] EXPLICIT VirgilCustomParams OPTIONAL
+//  }
+//
+static void
+vscf_message_info_der_serializer_deserialize_signed_data_info(
+        vscf_message_info_der_serializer_t *self, vscf_message_info_t *message_info, vscf_error_t *error) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(message_info);
+    VSCF_UNUSED(error);
+    //  TODO: This is STUB. Implement me.
 }
 
 //
@@ -1366,6 +1650,125 @@ vscf_message_info_der_serializer_deserialize_cms_content_info(
 }
 
 //
+//  VirgilSignerInfos ::= SET SIZE (1..MAX) OF VirgilSignerInfo
+//
+static void
+vscf_message_info_der_serializer_deserialize_signer_infos(vscf_message_info_der_serializer_t *self,
+        vscf_message_info_footer_t *message_info_footer, vscf_error_t *error) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(self->asn1_reader);
+    VSCF_ASSERT_PTR(message_info_footer);
+
+    if (vscf_error_has_error(error) || vscf_asn1_reader_has_error(self->asn1_reader)) {
+        return;
+    }
+
+    const size_t signer_infos_tag_len = vscf_asn1_reader_read_context_tag(self->asn1_reader, 1);
+    if (signer_infos_tag_len == 0) {
+        return;
+    }
+
+    size_t signer_infos_len = vscf_asn1_reader_read_set(self->asn1_reader);
+    while (signer_infos_len != 0) {
+        const size_t signer_info_len = vscf_asn1_reader_get_data_len(self->asn1_reader);
+
+        if (signer_infos_len >= signer_info_len) {
+            signer_infos_len -= signer_info_len;
+        } else {
+            VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_BAD_MESSAGE_INFO_FOOTER);
+            return;
+        }
+
+        vscf_message_info_der_serializer_deserialize_signer_info(self, message_info_footer, error);
+
+        if (vscf_asn1_reader_has_error(self->asn1_reader)) {
+            return;
+        }
+    }
+}
+
+//
+//  VirgilSignerInfo ::= SEQUENCE {
+//      version INTEGER { v0(0) } DEFAULT v0,
+//      signerIdentifier VirgilSignerIdentifier,
+//      signerAlgorithm VirgilSignerAlgorithm,
+//      signature VirgilSignatureValue
+//  }
+//
+//  VirgilSignerIdentifier ::= OCTET STRING
+//
+//  VirgilSignerAlgorithm ::= AlgorithmIdentifier
+//
+//  VirgilSignatureValue ::= OCTET STRING
+//
+static void
+vscf_message_info_der_serializer_deserialize_signer_info(vscf_message_info_der_serializer_t *self,
+        vscf_message_info_footer_t *message_info_footer, vscf_error_t *error) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(self->asn1_reader);
+    VSCF_ASSERT_PTR(message_info_footer);
+
+    if (vscf_error_has_error(error) || vscf_asn1_reader_has_error(self->asn1_reader)) {
+        return;
+    }
+
+    //
+    //  Read: VirgilSignerInfo
+    //
+    vscf_asn1_reader_read_sequence(self->asn1_reader);
+
+    //
+    //  Read: version
+    //
+    const int version = vscf_asn1_reader_read_int(self->asn1_reader);
+    if (version != 0 || vscf_asn1_reader_has_error(self->asn1_reader)) {
+        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_BAD_MESSAGE_INFO_FOOTER);
+        return;
+    }
+
+    //
+    //  Read: signerIdentifier
+    //
+    vsc_data_t signer_id = vscf_asn1_reader_read_octet_str(self->asn1_reader);
+
+    //
+    //  Read: signerAlgorithm
+    //
+    vscf_impl_t *signer_alg_info =
+            vscf_alg_info_der_deserializer_deserialize_inplace(self->alg_info_deserializer, error);
+
+    //
+    //  Read: signature
+    //
+    vsc_data_t signature = vscf_asn1_reader_read_octet_str(self->asn1_reader);
+
+    //
+    //  Check errors
+    //
+    if (NULL == signer_alg_info) {
+        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_BAD_MESSAGE_INFO_FOOTER);
+        return;
+    }
+
+    if (vscf_asn1_reader_has_error(self->asn1_reader)) {
+        //  TODO: Log underlying error
+        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_BAD_MESSAGE_INFO_FOOTER);
+        vscf_impl_destroy(&signer_alg_info);
+        return;
+    }
+
+    //
+    //  Add signerInfo
+    //
+    vsc_buffer_t *signature_buf = vsc_buffer_new_with_data(signature);
+    vscf_signer_info_t *signer_info = vscf_signer_info_new_with_members(signer_id, &signer_alg_info, &signature_buf);
+
+    vscf_message_info_footer_add_signer_info(message_info_footer, &signer_info);
+}
+
+//
 //  Return buffer size enough to hold serialized message info.
 //
 VSCF_PUBLIC size_t
@@ -1376,13 +1779,14 @@ vscf_message_info_der_serializer_serialized_len(
     VSCF_ASSERT_PTR(message_info);
 
     size_t cms_content_info_len = vscf_message_info_der_serializer_serialized_cms_content_info_len(self, message_info);
-
     size_t custom_params_len = vscf_message_info_der_serializer_serialized_custom_params_len(self, message_info);
+    size_t signed_data_info = vscf_message_info_der_serializer_serialized_signed_data_info_len(self, message_info);
 
     size_t len = 1 + 1 + 8 +            //  VirgilMessageInfo ::= SEQUENCE {
-                 1 + 1 + 1 +            //      version ::= INTEGER { v0(0) },
+                 1 + 1 + 1 +            //      version INTEGER { v0(0) },
                  cms_content_info_len + //      cmsContent ContentInfo, -- Imports from RFC 5652
-                 custom_params_len;     //      customParams [0] IMPLICIT VirgilCustomParams OPTIONAL }
+                 custom_params_len +    //      customParams [0] EXPLICIT VirgilCustomParams OPTIONAL,
+                 signed_data_info;      //      signedDataInfo [1] EXPLICIT VirgilSignedDataInfo OPTIONAL }
 
     return len;
 }
@@ -1395,9 +1799,10 @@ vscf_message_info_der_serializer_serialize(
         vscf_message_info_der_serializer_t *self, const vscf_message_info_t *message_info, vsc_buffer_t *out) {
 
     //  VirgilMessageInfo ::= SEQUENCE {
-    //      version ::= INTEGER { v0(0) },
+    //      version INTEGER { v0(0) } DEFAULT v0,
     //      cmsContent ContentInfo, -- Imports from RFC 5652
-    //      customParams [0] IMPLICIT VirgilCustomParams OPTIONAL
+    //      customParams [0] EXPLICIT VirgilCustomParams OPTIONAL,
+    //      signedDataInfo [1] EXPLICIT VirgilSignedDataInfo OPTIONAL
     //  }
 
     VSCF_ASSERT_PTR(self);
@@ -1412,14 +1817,11 @@ vscf_message_info_der_serializer_serialize(
     vscf_asn1_writer_reset(self->asn1_writer, vsc_buffer_unused_bytes(out), vsc_buffer_unused_len(out));
 
     size_t message_info_len = 0;
+    message_info_len += vscf_message_info_der_serializer_serialize_signed_data_info(self, message_info);
     message_info_len += vscf_message_info_der_serializer_serialize_custom_params(self, message_info);
-
     message_info_len += vscf_message_info_der_serializer_serialize_cms_content_info(self, message_info);
-
     message_info_len += vscf_asn1_writer_write_int(self->asn1_writer, 0);
-
     message_info_len += vscf_asn1_writer_write_sequence(self->asn1_writer, message_info_len);
-
     vsc_buffer_inc_used(out, message_info_len);
 
     vsc_buffer_switch_reverse_mode(out, stored_out_mode);
@@ -1473,9 +1875,10 @@ vscf_message_info_der_serializer_deserialize(
         vscf_message_info_der_serializer_t *self, vsc_data_t data, vscf_error_t *error) {
 
     //  VirgilMessageInfo ::= SEQUENCE {
-    //      version ::= INTEGER { v0(0) },
+    //      version INTEGER { v0(0) } DEFAULT v0,
     //      cmsContent ContentInfo, -- Imports from RFC 5652
-    //      customParams [0] IMPLICIT VirgilCustomParams OPTIONAL
+    //      customParams [0] EXPLICIT VirgilCustomParams OPTIONAL,
+    //      signedDataInfo [1] EXPLICIT VirgilSignedDataInfo OPTIONAL
     //  }
 
     VSCF_ASSERT_PTR(self);
@@ -1492,20 +1895,23 @@ vscf_message_info_der_serializer_deserialize(
     const int version = vscf_asn1_reader_read_int(self->asn1_reader);
 
     if (vscf_asn1_reader_has_error(self->asn1_reader) || version != 0) {
-        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_BAD_ASN1);
+        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_BAD_MESSAGE_INFO);
         goto error;
     }
 
     vscf_message_info_der_serializer_deserialize_cms_content_info(self, message_info, &error_ctx);
     vscf_message_info_der_serializer_deserialize_custom_params(self, message_info, &error_ctx);
+    vscf_message_info_der_serializer_deserialize_signed_data_info(self, message_info, &error_ctx);
 
     if (vscf_asn1_reader_has_error(self->asn1_reader)) {
-        VSCF_ERROR_SAFE_UPDATE(error, vscf_asn1_reader_status(self->asn1_reader));
+        //  TODO: Log underlying error
+        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_BAD_MESSAGE_INFO);
         goto error;
     }
 
     if (vscf_error_has_error(&error_ctx)) {
-        VSCF_ERROR_SAFE_UPDATE(error, vscf_error_status(&error_ctx));
+        //  TODO: Log underlying error
+        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_BAD_MESSAGE_INFO);
         goto error;
     }
 
@@ -1513,5 +1919,109 @@ vscf_message_info_der_serializer_deserialize(
 
 error:
     vscf_message_info_destroy(&message_info);
+    return NULL;
+}
+
+//
+//  Return buffer size enough to hold serialized message info footer.
+//
+VSCF_PUBLIC size_t
+vscf_message_info_der_serializer_serialized_footer_len(
+        vscf_message_info_der_serializer_t *self, const vscf_message_info_footer_t *message_info_footer) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(message_info_footer);
+
+    const size_t signer_infos_len =
+            vscf_message_info_der_serializer_serialized_signer_infos_len(self, message_info_footer);
+
+    const size_t len = 1 + 1 + 8 +       //  VirgilMessageInfoFooter ::= SEQUENCE {
+                       1 + 1 + 1 +       //      version INTEGER { v0(0) } DEFAULT v0,
+                       signer_infos_len; //      signerInfos [0] EXPLICIT VirgilSignerInfos }
+
+    return len;
+}
+
+//
+//  Serialize class "message info footer".
+//
+VSCF_PUBLIC void
+vscf_message_info_der_serializer_serialize_footer(vscf_message_info_der_serializer_t *self,
+        const vscf_message_info_footer_t *message_info_footer, vsc_buffer_t *out) {
+
+    //  VirgilMessageInfoFooter ::= SEQUENCE {
+    //      version INTEGER { v0(0) } DEFAULT v0,
+    //      signerInfos [0] EXPLICIT VirgilSignerInfos
+    //  }
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(message_info_footer);
+    VSCF_ASSERT_PTR(out);
+    VSCF_ASSERT_PTR(vsc_buffer_is_valid(out));
+    VSCF_ASSERT_PTR(self->asn1_writer);
+    VSCF_ASSERT(vsc_buffer_unused_len(out) >=
+                vscf_message_info_der_serializer_serialized_footer_len(self, message_info_footer));
+
+    bool stored_out_mode = vsc_buffer_is_reverse(out);
+    vsc_buffer_switch_reverse_mode(out, true);
+    vscf_asn1_writer_reset(self->asn1_writer, vsc_buffer_unused_bytes(out), vsc_buffer_unused_len(out));
+
+    size_t len = 0;
+    len += vscf_message_info_der_serializer_serialize_signer_infos(self, message_info_footer);
+    len += vscf_asn1_writer_write_int(self->asn1_writer, 0);
+    len += vscf_asn1_writer_write_sequence(self->asn1_writer, len);
+    vsc_buffer_inc_used(out, len);
+
+    vsc_buffer_switch_reverse_mode(out, stored_out_mode);
+}
+
+//
+//  Deserialize class "message info footer".
+//
+VSCF_PUBLIC vscf_message_info_footer_t *
+vscf_message_info_der_serializer_deserialize_footer(
+        vscf_message_info_der_serializer_t *self, vsc_data_t data, vscf_error_t *error) {
+
+    //  VirgilMessageInfoFooter ::= SEQUENCE {
+    //      version INTEGER { v0(0) } DEFAULT v0,
+    //      signerInfos [0] EXPLICIT VirgilSignerInfos
+    //  }
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(self->asn1_reader);
+    VSCF_ASSERT(vsc_data_is_valid(data));
+
+    vscf_error_t error_ctx;
+    vscf_error_reset(&error_ctx);
+
+    vscf_message_info_footer_t *footer = vscf_message_info_footer_new();
+
+    vscf_asn1_reader_reset(self->asn1_reader, data);
+    vscf_asn1_reader_read_sequence(self->asn1_reader);
+    const int version = vscf_asn1_reader_read_int(self->asn1_reader);
+
+    if (vscf_asn1_reader_has_error(self->asn1_reader) || version != 0) {
+        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_BAD_MESSAGE_INFO_FOOTER);
+        goto error;
+    }
+
+    vscf_message_info_der_serializer_deserialize_signer_infos(self, footer, &error_ctx);
+
+    if (vscf_asn1_reader_has_error(self->asn1_reader)) {
+        //  TODO: Log underlying error
+        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_BAD_MESSAGE_INFO_FOOTER);
+        goto error;
+    }
+
+    if (vscf_error_has_error(&error_ctx)) {
+        //  TODO: Log underlying error
+        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_BAD_MESSAGE_INFO_FOOTER);
+        goto error;
+    }
+
+    return footer;
+
+error:
+    vscf_message_info_footer_destroy(&footer);
     return NULL;
 }

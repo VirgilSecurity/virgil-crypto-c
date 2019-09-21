@@ -1,0 +1,73 @@
+<class name="verifier list" scope="internal">
+    Handles a list of signers defined by id and public key.
+
+    <require interface="private key"/>
+
+    <property name="signer id" class="buffer"/>
+    <property name="signer public key" interface="private key"/>
+    <property name="next" class="self"/>
+    <property name="prev" class="self"/>
+
+
+    <method name="add">
+        Add new item to the list.
+        Note, ownership is transfered.
+
+        <argument name="signer id" class="data"/>
+        <argument name="signer public key" interface="public key" access="retain"/>
+    </method>
+
+
+    <method name="clear">
+        Remove all items.
+    </method>
+
+
+    <method name="has signer" is_const="1">
+        Return true if given list has signer.
+
+        <return type="boolean"/>
+    </method>
+
+
+    <method name="signer id" is_const="1">
+        Return signer identifier.
+
+        <return class="data"/>
+    </method>
+
+
+    <method name="signer public key" is_const="1">
+        Return signer public key.
+
+        <return interface="private key" access="readwrite"/>
+    </method>
+
+
+    <method name="has next" is_const="1">
+        Return true if list has next item.
+
+        <return type="boolean"/>
+    </method>
+
+
+    <method name="next" is_const="1">
+        Return next list node if exists, or NULL otherwise.
+
+        <return class="self"/>
+    </method>
+
+
+    <method name="has prev" is_const="1">
+        Return true if list has previous item.
+
+        <return type="boolean"/>
+    </method>
+
+
+    <method name="prev" is_const="1">
+        Return previous list node if exists, or NULL otherwise.
+
+        <return class="self"/>
+    </method>
+</class>

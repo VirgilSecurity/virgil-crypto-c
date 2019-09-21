@@ -47,29 +47,26 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Class 'recipient cipher' types definition.
+//  Interface 'message info footer serializer' API.
 // --------------------------------------------------------------------------
 
-#ifndef VSCF_RECIPIENT_CIPHER_DEFS_H_INCLUDED
-#define VSCF_RECIPIENT_CIPHER_DEFS_H_INCLUDED
+#ifndef VSCF_MESSAGE_INFO_FOOTER_SERIALIZER_API_H_INCLUDED
+#define VSCF_MESSAGE_INFO_FOOTER_SERIALIZER_API_H_INCLUDED
 
 #include "vscf_library.h"
-#include "vscf_atomic.h"
-#include "vscf_key_recipient_list.h"
-#include "vscf_signer_list.h"
-#include "vscf_verifier_list.h"
-#include "vscf_message_info.h"
-#include "vscf_message_info_footer.h"
+#include "vscf_api.h"
 #include "vscf_impl.h"
-#include "vscf_message_info_der_serializer.h"
-#include "vscf_recipient_cipher_decryption_state.h"
+#include "vscf_message_info_footer.h"
+#include "vscf_error.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_buffer.h>
+#   include <virgil/crypto/common/vsc_data.h>
 #endif
 
 #if VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <VSCCommon/vsc_buffer.h>
+#   include <VSCCommon/vsc_data.h>
 #endif
 
 // clang-format on
@@ -88,59 +85,48 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Handle 'recipient cipher' context.
+//  Callback. Return buffer size enough to hold serialized message info footer.
 //
-struct vscf_recipient_cipher_t {
+typedef size_t (*vscf_message_info_footer_serializer_api_serialized_footer_len_fn)(vscf_impl_t *impl,
+        const vscf_message_info_footer_t *message_info_footer);
+
+//
+//  Callback. Serialize class "message info footer".
+//
+typedef void (*vscf_message_info_footer_serializer_api_serialize_footer_fn)(vscf_impl_t *impl,
+        const vscf_message_info_footer_t *message_info_footer, vsc_buffer_t *out);
+
+//
+//  Callback. Deserialize class "message info footer".
+//
+typedef vscf_message_info_footer_t * (*vscf_message_info_footer_serializer_api_deserialize_footer_fn)(
+        vscf_impl_t *impl, vsc_data_t data, vscf_error_t *error);
+
+//
+//  Contains API requirements of the interface 'message info footer serializer'.
+//
+struct vscf_message_info_footer_serializer_api_t {
     //
-    //  Function do deallocate self context.
+    //  API's unique identifier, MUST be first in the structure.
+    //  For interface 'message_info_footer_serializer' MUST be equal to the 'vscf_api_tag_MESSAGE_INFO_FOOTER_SERIALIZER'.
     //
-    vscf_dealloc_fn self_dealloc_cb;
+    vscf_api_tag_t api_tag;
     //
-    //  Reference counter.
+    //  Implementation unique identifier, MUST be second in the structure.
     //
-    VSCF_ATOMIC size_t refcnt;
+    vscf_impl_tag_t impl_tag;
     //
-    //  Dependency to the interface 'random'.
+    //  Return buffer size enough to hold serialized message info footer.
     //
-    vscf_impl_t *random;
+    vscf_message_info_footer_serializer_api_serialized_footer_len_fn serialized_footer_len_cb;
     //
-    //  Dependency to the interface 'cipher'.
+    //  Serialize class "message info footer".
     //
-    vscf_impl_t *encryption_cipher;
+    vscf_message_info_footer_serializer_api_serialize_footer_fn serialize_footer_cb;
     //
-    //  Dependency to the interface 'hash'.
+    //  Deserialize class "message info footer".
     //
-    vscf_impl_t *signer_hash;
-
-    vscf_key_recipient_list_t *key_recipients;
-
-    vscf_signer_list_t *signers;
-
-    vscf_verifier_list_t *verifiers;
-
-    vsc_buffer_t *decryption_recipient_id;
-
-    vscf_impl_t *decryption_recipient_key;
-
-    vsc_buffer_t *decryption_password;
-
-    vscf_impl_t *decryption_cipher;
-
-    vscf_message_info_t *message_info;
-
-    vscf_message_info_der_serializer_t *message_info_der_serializer;
-
-    vsc_buffer_t *message_info_buffer;
-
-    vscf_message_info_footer_t *message_info_footer;
-
-    vsc_buffer_t *message_info_footer_buffer;
-
-    size_t message_info_expected_len;
-
-    vscf_recipient_cipher_decryption_state_t decryption_state;
-
-    bool is_signed_encryption;
+    vscf_message_info_footer_serializer_api_deserialize_footer_fn deserialize_footer_cb;
 };
 
 
@@ -157,5 +143,5 @@ struct vscf_recipient_cipher_t {
 
 
 //  @footer
-#endif // VSCF_RECIPIENT_CIPHER_DEFS_H_INCLUDED
+#endif // VSCF_MESSAGE_INFO_FOOTER_SERIALIZER_API_H_INCLUDED
 //  @end

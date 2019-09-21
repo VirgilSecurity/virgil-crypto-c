@@ -202,6 +202,10 @@ extern "C" {
 #cmakedefine01 VSCF_MESSAGE_INFO_SERIALIZER
 #endif
 
+#ifndef VSCF_MESSAGE_INFO_FOOTER_SERIALIZER
+#cmakedefine01 VSCF_MESSAGE_INFO_FOOTER_SERIALIZER
+#endif
+
 #ifndef VSCF_SHA224
 #cmakedefine01 VSCF_SHA224
 #endif
@@ -512,6 +516,30 @@ extern "C" {
 
 #ifndef VSCF_MESSAGE_INFO_EDITOR
 #cmakedefine01 VSCF_MESSAGE_INFO_EDITOR
+#endif
+
+#ifndef VSCF_SIGNER_INFO
+#cmakedefine01 VSCF_SIGNER_INFO
+#endif
+
+#ifndef VSCF_SIGNER_INFO_LIST
+#cmakedefine01 VSCF_SIGNER_INFO_LIST
+#endif
+
+#ifndef VSCF_SIGNER_LIST
+#cmakedefine01 VSCF_SIGNER_LIST
+#endif
+
+#ifndef VSCF_VERIFIER_LIST
+#cmakedefine01 VSCF_VERIFIER_LIST
+#endif
+
+#ifndef VSCF_MESSAGE_INFO_FOOTER
+#cmakedefine01 VSCF_MESSAGE_INFO_FOOTER
+#endif
+
+#ifndef VSCF_SIGNED_DATA_INFO
+#cmakedefine01 VSCF_SIGNED_DATA_INFO
 #endif
 
 //

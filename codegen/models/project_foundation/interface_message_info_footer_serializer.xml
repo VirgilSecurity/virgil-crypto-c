@@ -1,0 +1,31 @@
+<interface name="message info footer serializer">
+    Provide interface for "message info footer" class serialization.
+
+    <method name="serialized footer len">
+        Return buffer size enough to hold serialized message info footer.
+
+        <argument name="message info footer" class="message info footer"/>
+
+        <return type="size"/>
+    </method>
+
+    <method name="serialize footer">
+        Serialize class "message info footer".
+
+        <argument name="message info footer" class="message info footer"/>
+        <argument name="out" class="buffer">
+            <length method="serialized len">
+                <proxy argument="message info footer" to="message info footer"/>
+            </length>
+        </argument>
+    </method>
+
+    <method name="deserialize footer">
+        Deserialize class "message info footer".
+
+        <argument name="data" class="data"/>
+        <argument name="error" class="error" access="readwrite"/>
+
+        <return class="message info footer" access="disown"/>
+    </method>
+</interface>

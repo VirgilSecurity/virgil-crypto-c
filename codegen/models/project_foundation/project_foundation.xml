@@ -103,6 +103,7 @@
     <interface name="alg info serializer"/>
     <interface name="alg info deserializer"/>
     <interface name="message info serializer"/>
+    <interface name="message info footer serializer"/>
 
     <class name="error"/>
     <class name="mbedtls bignum asn1 writer"/>
@@ -140,6 +141,12 @@
     <class name="group session epoch"/>
     <class name="group session epoch node"/>
     <class name="message info editor"/>
+    <class name="signer info"/>
+    <class name="signer info list"/>
+    <class name="signer list"/>
+    <class name="verifier list"/>
+    <class name="message info footer"/>
+    <class name="signed data info"/>
 
     <implementor name="mbedtls"/>
     <implementor name="mbedtls pk"/>

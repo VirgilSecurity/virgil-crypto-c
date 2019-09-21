@@ -57,6 +57,8 @@
 #include "vscf_message_info_der_serializer_defs.h"
 #include "vscf_message_info_serializer.h"
 #include "vscf_message_info_serializer_api.h"
+#include "vscf_message_info_footer_serializer.h"
+#include "vscf_message_info_footer_serializer_api.h"
 #include "vscf_asn1_reader.h"
 #include "vscf_asn1_writer.h"
 #include "vscf_impl.h"
@@ -133,6 +135,33 @@ static const vscf_message_info_serializer_api_t message_info_serializer_api = {
     //
     (vscf_message_info_serializer_api_deserialize_fn)vscf_message_info_der_serializer_deserialize,
     vscf_message_info_der_serializer_PREFIX_LEN
+};
+
+//
+//  Configuration of the interface API 'message info footer serializer api'.
+//
+static const vscf_message_info_footer_serializer_api_t message_info_footer_serializer_api = {
+    //
+    //  API's unique identifier, MUST be first in the structure.
+    //  For interface 'message_info_footer_serializer' MUST be equal to the 'vscf_api_tag_MESSAGE_INFO_FOOTER_SERIALIZER'.
+    //
+    vscf_api_tag_MESSAGE_INFO_FOOTER_SERIALIZER,
+    //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_MESSAGE_INFO_DER_SERIALIZER,
+    //
+    //  Return buffer size enough to hold serialized message info footer.
+    //
+    (vscf_message_info_footer_serializer_api_serialized_footer_len_fn)vscf_message_info_der_serializer_serialized_footer_len,
+    //
+    //  Serialize class "message info footer".
+    //
+    (vscf_message_info_footer_serializer_api_serialize_footer_fn)vscf_message_info_der_serializer_serialize_footer,
+    //
+    //  Deserialize class "message info footer".
+    //
+    (vscf_message_info_footer_serializer_api_deserialize_footer_fn)vscf_message_info_der_serializer_deserialize_footer
 };
 
 //
@@ -398,6 +427,8 @@ static const vscf_api_t *
 vscf_message_info_der_serializer_find_api(vscf_api_tag_t api_tag) {
 
     switch(api_tag) {
+        case vscf_api_tag_MESSAGE_INFO_FOOTER_SERIALIZER:
+            return (const vscf_api_t *) &message_info_footer_serializer_api;
         case vscf_api_tag_MESSAGE_INFO_SERIALIZER:
             return (const vscf_api_t *) &message_info_serializer_api;
         default:

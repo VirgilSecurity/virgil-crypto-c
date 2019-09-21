@@ -47,28 +47,23 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Class 'recipient cipher' types definition.
+//  Handle information about signer that is defined by an identifer and
+//  a Public Key.
 // --------------------------------------------------------------------------
 
-#ifndef VSCF_RECIPIENT_CIPHER_DEFS_H_INCLUDED
-#define VSCF_RECIPIENT_CIPHER_DEFS_H_INCLUDED
+#ifndef VSCF_SIGNER_INFO_H_INCLUDED
+#define VSCF_SIGNER_INFO_H_INCLUDED
 
 #include "vscf_library.h"
-#include "vscf_atomic.h"
-#include "vscf_key_recipient_list.h"
-#include "vscf_signer_list.h"
-#include "vscf_verifier_list.h"
-#include "vscf_message_info.h"
-#include "vscf_message_info_footer.h"
 #include "vscf_impl.h"
-#include "vscf_message_info_der_serializer.h"
-#include "vscf_recipient_cipher_decryption_state.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <virgil/crypto/common/vsc_data.h>
 #   include <virgil/crypto/common/vsc_buffer.h>
 #endif
 
 #if VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <VSCCommon/vsc_data.h>
 #   include <VSCCommon/vsc_buffer.h>
 #endif
 
@@ -88,60 +83,87 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Handle 'recipient cipher' context.
+//  Handle 'signer info' context.
 //
-struct vscf_recipient_cipher_t {
-    //
-    //  Function do deallocate self context.
-    //
-    vscf_dealloc_fn self_dealloc_cb;
-    //
-    //  Reference counter.
-    //
-    VSCF_ATOMIC size_t refcnt;
-    //
-    //  Dependency to the interface 'random'.
-    //
-    vscf_impl_t *random;
-    //
-    //  Dependency to the interface 'cipher'.
-    //
-    vscf_impl_t *encryption_cipher;
-    //
-    //  Dependency to the interface 'hash'.
-    //
-    vscf_impl_t *signer_hash;
+typedef struct vscf_signer_info_t vscf_signer_info_t;
 
-    vscf_key_recipient_list_t *key_recipients;
+//
+//  Return size of 'vscf_signer_info_t'.
+//
+VSCF_PUBLIC size_t
+vscf_signer_info_ctx_size(void);
 
-    vscf_signer_list_t *signers;
+//
+//  Perform initialization of pre-allocated context.
+//
+VSCF_PUBLIC void
+vscf_signer_info_init(vscf_signer_info_t *self);
 
-    vscf_verifier_list_t *verifiers;
+//
+//  Release all inner resources including class dependencies.
+//
+VSCF_PUBLIC void
+vscf_signer_info_cleanup(vscf_signer_info_t *self);
 
-    vsc_buffer_t *decryption_recipient_id;
+//
+//  Allocate context and perform it's initialization.
+//
+VSCF_PUBLIC vscf_signer_info_t *
+vscf_signer_info_new(void);
 
-    vscf_impl_t *decryption_recipient_key;
+//
+//  Perform initialization of pre-allocated context.
+//  Create object and define all properties.
+//
+VSCF_PRIVATE void
+vscf_signer_info_init_with_members(vscf_signer_info_t *self, vsc_data_t signer_id, vscf_impl_t **signer_alg_info_ref,
+        vsc_buffer_t **signature_ref);
 
-    vsc_buffer_t *decryption_password;
+//
+//  Allocate class context and perform it's initialization.
+//  Create object and define all properties.
+//
+VSCF_PRIVATE vscf_signer_info_t *
+vscf_signer_info_new_with_members(vsc_data_t signer_id, vscf_impl_t **signer_alg_info_ref,
+        vsc_buffer_t **signature_ref);
 
-    vscf_impl_t *decryption_cipher;
+//
+//  Release all inner resources and deallocate context if needed.
+//  It is safe to call this method even if the context was statically allocated.
+//
+VSCF_PUBLIC void
+vscf_signer_info_delete(vscf_signer_info_t *self);
 
-    vscf_message_info_t *message_info;
+//
+//  Delete given context and nullifies reference.
+//  This is a reverse action of the function 'vscf_signer_info_new ()'.
+//
+VSCF_PUBLIC void
+vscf_signer_info_destroy(vscf_signer_info_t **self_ref);
 
-    vscf_message_info_der_serializer_t *message_info_der_serializer;
+//
+//  Copy given class context by increasing reference counter.
+//
+VSCF_PUBLIC vscf_signer_info_t *
+vscf_signer_info_shallow_copy(vscf_signer_info_t *self);
 
-    vsc_buffer_t *message_info_buffer;
+//
+//  Return signer identifier.
+//
+VSCF_PUBLIC vsc_data_t
+vscf_signer_info_signer_id(const vscf_signer_info_t *self);
 
-    vscf_message_info_footer_t *message_info_footer;
+//
+//  Return algorithm information that was used for data signing.
+//
+VSCF_PUBLIC const vscf_impl_t *
+vscf_signer_info_signer_alg_info(const vscf_signer_info_t *self);
 
-    vsc_buffer_t *message_info_footer_buffer;
-
-    size_t message_info_expected_len;
-
-    vscf_recipient_cipher_decryption_state_t decryption_state;
-
-    bool is_signed_encryption;
-};
+//
+//  Return data signature.
+//
+VSCF_PUBLIC vsc_data_t
+vscf_signer_info_signature(const vscf_signer_info_t *self);
 
 
 // --------------------------------------------------------------------------
@@ -157,5 +179,5 @@ struct vscf_recipient_cipher_t {
 
 
 //  @footer
-#endif // VSCF_RECIPIENT_CIPHER_DEFS_H_INCLUDED
+#endif // VSCF_SIGNER_INFO_H_INCLUDED
 //  @end

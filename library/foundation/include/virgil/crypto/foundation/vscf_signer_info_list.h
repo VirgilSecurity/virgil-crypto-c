@@ -47,21 +47,15 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Handle information about an encrypted message and algorithms
-//  that was used for encryption.
+//  Handles a list of "signer info" class objects.
 // --------------------------------------------------------------------------
 
-#ifndef VSCF_MESSAGE_INFO_H_INCLUDED
-#define VSCF_MESSAGE_INFO_H_INCLUDED
+#ifndef VSCF_SIGNER_INFO_LIST_H_INCLUDED
+#define VSCF_SIGNER_INFO_LIST_H_INCLUDED
 
 #include "vscf_library.h"
-#include "vscf_key_recipient_info.h"
-#include "vscf_password_recipient_info.h"
-#include "vscf_key_recipient_info_list.h"
-#include "vscf_password_recipient_info_list.h"
-#include "vscf_message_info_custom_params.h"
-#include "vscf_signed_data_info.h"
-#include "vscf_impl.h"
+#include "vscf_signer_info.h"
+#include "vscf_signer_info_list.h"
 
 // clang-format on
 //  @end
@@ -79,128 +73,108 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Handle 'message info' context.
+//  Handle 'signer info list' context.
 //
-typedef struct vscf_message_info_t vscf_message_info_t;
+typedef struct vscf_signer_info_list_t vscf_signer_info_list_t;
 
 //
-//  Return size of 'vscf_message_info_t'.
+//  Return size of 'vscf_signer_info_list_t'.
 //
 VSCF_PUBLIC size_t
-vscf_message_info_ctx_size(void);
+vscf_signer_info_list_ctx_size(void);
 
 //
 //  Perform initialization of pre-allocated context.
 //
 VSCF_PUBLIC void
-vscf_message_info_init(vscf_message_info_t *self);
+vscf_signer_info_list_init(vscf_signer_info_list_t *self);
 
 //
 //  Release all inner resources including class dependencies.
 //
 VSCF_PUBLIC void
-vscf_message_info_cleanup(vscf_message_info_t *self);
+vscf_signer_info_list_cleanup(vscf_signer_info_list_t *self);
 
 //
 //  Allocate context and perform it's initialization.
 //
-VSCF_PUBLIC vscf_message_info_t *
-vscf_message_info_new(void);
+VSCF_PUBLIC vscf_signer_info_list_t *
+vscf_signer_info_list_new(void);
 
 //
 //  Release all inner resources and deallocate context if needed.
 //  It is safe to call this method even if the context was statically allocated.
 //
 VSCF_PUBLIC void
-vscf_message_info_delete(vscf_message_info_t *self);
+vscf_signer_info_list_delete(vscf_signer_info_list_t *self);
 
 //
 //  Delete given context and nullifies reference.
-//  This is a reverse action of the function 'vscf_message_info_new ()'.
+//  This is a reverse action of the function 'vscf_signer_info_list_new ()'.
 //
 VSCF_PUBLIC void
-vscf_message_info_destroy(vscf_message_info_t **self_ref);
+vscf_signer_info_list_destroy(vscf_signer_info_list_t **self_ref);
 
 //
 //  Copy given class context by increasing reference counter.
 //
-VSCF_PUBLIC vscf_message_info_t *
-vscf_message_info_shallow_copy(vscf_message_info_t *self);
+VSCF_PUBLIC vscf_signer_info_list_t *
+vscf_signer_info_list_shallow_copy(vscf_signer_info_list_t *self);
 
 //
-//  Add recipient that is defined by Public Key.
+//  Add new item to the list.
+//  Note, ownership is transfered.
 //
 VSCF_PUBLIC void
-vscf_message_info_add_key_recipient(vscf_message_info_t *self, vscf_key_recipient_info_t **key_recipient_ref);
+vscf_signer_info_list_add(vscf_signer_info_list_t *self, vscf_signer_info_t **signer_info_ref);
 
 //
-//  Add recipient that is defined by password.
+//  Remove current node.
+//
+VSCF_PRIVATE void
+vscf_signer_info_list_remove_self(vscf_signer_info_list_t *self);
+
+//
+//  Return true if given list has item.
+//
+VSCF_PUBLIC bool
+vscf_signer_info_list_has_item(const vscf_signer_info_list_t *self);
+
+//
+//  Return list item.
+//
+VSCF_PUBLIC const vscf_signer_info_t *
+vscf_signer_info_list_item(const vscf_signer_info_list_t *self);
+
+//
+//  Return true if list has next item.
+//
+VSCF_PUBLIC bool
+vscf_signer_info_list_has_next(const vscf_signer_info_list_t *self);
+
+//
+//  Return next list node if exists, or NULL otherwise.
+//
+VSCF_PUBLIC vscf_signer_info_list_t *
+vscf_signer_info_list_next(const vscf_signer_info_list_t *self);
+
+//
+//  Return true if list has previous item.
+//
+VSCF_PUBLIC bool
+vscf_signer_info_list_has_prev(const vscf_signer_info_list_t *self);
+
+//
+//  Return previous list node if exists, or NULL otherwise.
+//
+VSCF_PUBLIC vscf_signer_info_list_t *
+vscf_signer_info_list_prev(const vscf_signer_info_list_t *self);
+
+//
+//  Remove all items.
 //
 VSCF_PUBLIC void
-vscf_message_info_add_password_recipient(vscf_message_info_t *self,
-        vscf_password_recipient_info_t **password_recipient_ref);
-
-//
-//  Set information about algorithm that was used for data encryption.
-//
-VSCF_PUBLIC void
-vscf_message_info_set_data_encryption_alg_info(vscf_message_info_t *self, vscf_impl_t **data_encryption_alg_info_ref);
-
-//
-//  Return information about algorithm that was used for the data encryption.
-//
-VSCF_PUBLIC const vscf_impl_t *
-vscf_message_info_data_encryption_alg_info(const vscf_message_info_t *self);
-
-//
-//  Return list with a "key recipient info" elements.
-//
-VSCF_PUBLIC const vscf_key_recipient_info_list_t *
-vscf_message_info_key_recipient_info_list(const vscf_message_info_t *self);
-
-//
-//  Return list with a "key recipient info" elements.
-//
-VSCF_PRIVATE vscf_key_recipient_info_list_t *
-vscf_message_info_key_recipient_info_list_modifiable(vscf_message_info_t *self);
-
-//
-//  Return list with a "password recipient info" elements.
-//
-VSCF_PUBLIC const vscf_password_recipient_info_list_t *
-vscf_message_info_password_recipient_info_list(const vscf_message_info_t *self);
-
-//
-//  Setup custom params.
-//
-VSCF_PUBLIC void
-vscf_message_info_set_custom_params(vscf_message_info_t *self, vscf_message_info_custom_params_t *custom_params);
-
-//
-//  Provide access to the custom params object.
-//  The returned object can be used to add custom params or read it.
-//  If custom params object was not set then new empty object is created.
-//
-VSCF_PUBLIC vscf_message_info_custom_params_t *
-vscf_message_info_custom_params(vscf_message_info_t *self);
-
-//
-//  Setup signed data info.
-//
-VSCF_PUBLIC void
-vscf_message_info_set_signed_data_info(vscf_message_info_t *self, vscf_signed_data_info_t *signed_data_info);
-
-//
-//  Return signed data info.
-//
-VSCF_PUBLIC vscf_signed_data_info_t *
-vscf_message_info_signed_data_info(vscf_message_info_t *self);
-
-//
-//  Remove all recipients.
-//
-VSCF_PUBLIC void
-vscf_message_info_clear_recipients(vscf_message_info_t *self);
+vscf_signer_info_list_clear(vscf_signer_info_list_t *self);
 
 
 // --------------------------------------------------------------------------
@@ -216,5 +190,5 @@ vscf_message_info_clear_recipients(vscf_message_info_t *self);
 
 
 //  @footer
-#endif // VSCF_MESSAGE_INFO_H_INCLUDED
+#endif // VSCF_SIGNER_INFO_LIST_H_INCLUDED
 //  @end
