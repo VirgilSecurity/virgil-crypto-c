@@ -485,5 +485,137 @@ function php_map_high_level_enum (in_module, in_php_project, out_high_level)
     new body to my.out_high_level
     endnew
 
-.endfunction
+endfunction
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
+    check_arguments (my, "in_module, in_php_project, out_low_level, in_type", my)
+
+    my.out_low_level.name = "$(my.in_module.name:c)"
+
+    my._interface_methods = XML.new()
+    my._constant = ""
+
+    for my.in_module.interface as interface0
+
+        echo_debug_item(interface0)
+        echo_warning("Not implemented. Code: 400")
+
+        for interface0.constant as constant0
+            echo_debug_item(constant0)
+            echo_warning("Not implemented. Code: 401")
+        endfor
+    endfor
+
+    if my.in_type <> "interface"
+        php_map_low_level_constructor_destructor (my.in_module, my.out_low_level)
+    endif
+
+    for my.in_module.method as method0 where method0.visibility = "public" & method0.declaration = "public" & method0.scope = "public"
+        new function to my.out_low_level
+
+            php_map_low_level_method (method0, my.in_php_project, function)
+
+            .prefix0 = "$(my.in_module.c_prefix:c)"
+            .entity0 = "$(my.in_module.name:c)"
+            if my.in_type = "interface"
+                .name = ""
+            else 
+                .name = php_derive_low_level_function_name(0)
+            endif
+
+            my._method_arguments = ""
+            my._function_arguments = ""
+
+            for method0.argument as argument0
+
+                my._d = ""
+                if ! last()
+                    my._d = ", "
+                endif
+
+                new argument to function
+                    php_map_low_level_argument (argument0, my.in_php_project, argument)
+                endnew
+            endfor
+        endnew
+    endfor
+endfunction
+
+# ---------------------------------------------------------------------------
+# 
+# ---------------------------------------------------------------------------
+function php_map_low_level_constructor_destructor (in_module, out_low_level)
+    check_arguments (my, "in_module, out_low_level", my)
+
+    echo_warning("Not implemented. Code: 403")
+endfunction
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_map_low_level_method (in_method, in_php_project, out_function)
+    check_arguments (my, "in_method, in_php_project, out_function", my)
+
+    my.out_function.name = "$(my.in_method.name:c)"
+
+    echo_debug_item(my.in_method)
+    echo_warning("Not implemented. Code: 404")
+
+    php_map_low_level_return (my.in_method, my.in_php_project, my.out_function)
+
+endfunction
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_map_low_level_argument (in_argument, in_php_project, out_argument)
+    check_arguments (my, "in_argument, in_php_project, out_argument", my)
+
+    my.out_argument.name = "$(my.in_argument.name:c)"
+
+    my._type = ""
+
+    if defined (my.in_argument.class)
+        my._type = "$(my.in_argument.class:c)"
+    endif
+
+    if defined (my.in_argument.interface)
+        my._type = "$(my.in_argument.interface:c)"
+    endif
+
+    if defined (my.in_argument.type)
+        if string_in(my.in_argument.type, "size, integer, unsigned")
+            my._type = "int"
+        elsif my.in_argument.type = "byte"
+            my._type = "string"
+        elsif my.in_argument.type = "boolean"
+            my._type = "bool"
+        else
+            # TODO
+            echo_debug_item(my.in_argument)
+            echo_fatal("Not implemented (405)", my)
+        endif
+    endif
+
+    if defined (my.in_argument.enum)
+        my._type = "$(my.in_argument.enum:c)"
+    endif
+
+    my.out_argument.type = my._type
+
+endfunction
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_map_low_level_return (in_method, in_php_project, out_function)
+    check_arguments (my, "in_method, in_php_project, out_function", my)
+
+    echo_debug_item(my.in_method)
+    echo_warning("Not implemented. Code: 406")
+
+endfunction
 .endtemplate

@@ -120,7 +120,9 @@ function php_generate_source_high_level (in_php_module)
     endif
 
     if defined (my.in_php_module->high_level->constants.)
-        newline()
+        if ! first()
+            newline()
+        endif
 
         my._constants = my.in_php_module->high_level->constants.
         php_insert_code(my._constants, 1)

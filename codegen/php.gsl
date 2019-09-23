@@ -122,7 +122,7 @@ function php_create_class_module (class, php_project, meta)
         endnew
 
         new low_level to php_module
-            .name = "temp_name"
+            php_map_low_level(my.class, my.php_project, low_level, my._type)
         endnew
     endnew
 endfunction
@@ -220,7 +220,7 @@ function php_create_enum_module (enum, php_project, meta)
                 .prefix = my.php_project.prefix
 
                 new code to extension
-                    .= php_format_extension_status_exception (my.enum, my.php_project.prefix)
+                    .= php_format_low_level_status_exception (my.enum, my.php_project.prefix)
                 endnew
             endnew
         endnew

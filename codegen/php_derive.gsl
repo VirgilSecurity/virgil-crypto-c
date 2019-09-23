@@ -80,4 +80,19 @@ function php_derive_high_level_namespace (in_php_project)
     return my._res
 endfunction
 
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_derive_low_level_function_name (in_php_method)
+    check_arguments (my, "in_php_method", my)
+
+    my._prefix = "$(my.in_php_method.prefix0:c)"
+    my._entity = "$(my.in_php_method.entity0:c)"
+    my._method_name = "$(my.in_php_method.name:c)"
+
+    my._res = "$(my._prefix:)_$(my._entity:)_$(my._method_name:)"
+
+    return my._res
+endfunction
+
 .endtemplate
