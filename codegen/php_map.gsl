@@ -618,4 +618,57 @@ function php_map_low_level_return (in_method, in_php_project, out_function)
     echo_warning("Not implemented. Code: 406")
 
 endfunction
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_map_low_level_extension (in_php_project, out_php_module)
+    check_arguments (my, "in_php_project, out_php_module", my)
+
+    new licence to my.out_php_module
+        my._res = php_format_extension_comment ("licence")
+        . = my._res
+    endnew
+
+    new include to my.out_php_module
+        my._res = php_format_extension_comment ("#include")
+        . = my._res
+    endnew
+
+    new constants to my.out_php_module
+        my._res = php_format_extension_comment ("Constants")
+        . = my._res
+    endnew
+
+    new registered_resources to my.out_php_module
+        my._res = php_format_extension_comment ("Registered resources")
+        . = my._res
+    endnew
+
+    new init_func_declaration to my.out_php_module
+        my._res = php_format_extension_comment ("Extension init functions declaration")
+        . = my._res
+    endnew
+
+    new func_wrapping to my.out_php_module
+        my._res = php_format_extension_comment ("Functions wrapping")
+        . = my._res
+    endnew
+
+    new define_all_func_entries to my.out_php_module
+        my._res = php_format_extension_comment ("Define all function entries")
+        . = my._res
+    endnew
+
+    new module_definitions to my.out_php_module
+        my._res = php_format_extension_comment ("Extension module definition")
+        . = my._res
+    endnew
+
+    new init_func_definitions to my.out_php_module
+        my._res = php_format_extension_comment ("Extension init functions definition")
+        . = my._res
+    endnew
+
+endfunction
 .endtemplate

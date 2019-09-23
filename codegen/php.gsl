@@ -189,7 +189,7 @@ function php_create_implementation_module (implementation, php_project, meta)
         endnew
 
         new low_level to php_module
-            .temp_name = "temp_name"
+            php_map_low_level(my.implementation, my.php_project, low_level, my._type)
         endnew
     endnew
 endfunction
@@ -215,13 +215,10 @@ function php_create_enum_module (enum, php_project, meta)
             .source_dir = cat_path (my.php_project.source_dir, "extension")
             .source_file_path = cat_path (0.source_dir, 0.source_file_name)
             .type = "extension"
+            .prefix = my.php_project.prefix
 
-            new extension to php_module
-                .prefix = my.php_project.prefix
-
-                new code to extension
-                    .= php_format_low_level_status_exception (my.enum, my.php_project.prefix)
-                endnew
+            new code to extension
+                .= php_format_low_level_status_exception (my.enum, php_module)
             endnew
         endnew
     else
@@ -299,18 +296,14 @@ check_arguments (my, "source, php_project, meta", my)
     endnew
 
     new php_module to my.php_project
-        .name = "extension_main"
-        .name0 = 0.name
-        .filename = "extension"
-        .source_file_name = 0.filename + ".c"
+        .name = "extension"
+        .source_file_name = 0.name + ".c"
         .source_dir = cat_path (my.php_project.source_dir, "extension")
         .source_file_path = cat_path (0.source_dir, 0.source_file_name)
         .version = my.php_project.version
-        # TODO
-        .extension_name = "TEMP_EXTENSION_NAME"
         .type = "extension"
 
-        copy my.php_project->license to php_module        
+        php_map_low_level_extension(my.php_project, php_module)
     endnew
 endfunction
 

@@ -60,6 +60,21 @@ endfunction
 # ---------------------------------------------------------------------------
 #   
 # ---------------------------------------------------------------------------
+function php_format_extension_comment (in_comment)
+    check_argument (my, "in_comment", my)
+
+    my.str = my.in_comment
+    my.str = string_indent (my.str)
+    my.str = "// $(my.str:left, block, no)$(terminator)"
+    my.str = string_multi_rtrim (my.str)
+    my.str = "//$(terminator)$(my.str:)$(terminator)//"
+
+    return my.str
+endfunction
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
 function php_format_high_level_method_body (in_php_method)
     check_argument (my, "in_php_method", my)
 
@@ -88,23 +103,25 @@ endfunction
 # ---------------------------------------------------------------------------
 #   
 # ---------------------------------------------------------------------------
-function php_format_low_level_status_exception (enum, prefix)
-    check_arguments (my, "enum, prefix", my)
+function php_format_low_level_status_exception (enum, php_module)
+    check_arguments (my, "enum, php_mo", my)
 
-    my.macro_name = "$(my.prefix:UPPER)_HANDLE_STATUS"
-    my.func_name = "$(my.prefix:)_handle_throw_exception"
+    my._prefix = php_module.prefix
+
+    my.macro_name = "$(my._prefix:UPPER)_HANDLE_STATUS"
+    my.func_name = "$(my._prefix:)_handle_throw_exception"
 
     my.case = ""
 
     for my.enum.constant as constant where constant.name <> "success"
 
         my.const = "$(constant.name:c)"
-        my.const = "$(my.prefix:)_status_$(my.const:UPPER)"
+        my.const = "$(my._prefix:)_status_$(my.const:UPPER)"
         my.msg = string_trim(constant.)
 
         my.case += format_left("\
         case $(my.const:):
-            zend_throw_exception(NULL, \"$(my.prefix:UPPER): $(my.msg:)\", $(constant.value:));
+            zend_throw_exception(NULL, \"$(my._prefix:UPPER): $(my.msg:)\", $(constant.value:));
             break;
         ", 0)
     endfor
@@ -112,14 +129,14 @@ function php_format_low_level_status_exception (enum, prefix)
     my.res = format_left("\
         #define $(my.macro_name:)(status)
         do {
-            if(status != $(my.prefix:)_status_SUCCESS) {
+            if(status != $(my._prefix:)_status_SUCCESS) {
             $(my.func_name:)(status);
                 goto fail;
             }
         } while (false)
 
         void
-        $(my.func_name:)($(my.prefix:)_status_t status) {
+        $(my.func_name:)($(my._prefix:)_status_t status) {
             switch(status) {
                 $(my.case:)
             }
