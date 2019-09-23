@@ -645,12 +645,13 @@ function php_map_low_level_extension (in_php_project, out_php_module)
     my._registered_resources = ""
     my._constants = ""
 
+    my._ext_name0 = "$(my.in_php_project.prefix:)_$(my.in_php_project.name:)_php"
+
     for my.in_php_project.php_module as php_module0 where string_in(php_module0.type, "class, implementation, interface")
         my._include += php_module0->low_level->include.
         my._registered_resources += php_module0->low_level->registered_resource.
         my._constants += php_module0->low_level->constant.
     endfor
-
 
     new licence to my.out_php_module
         my._res = php_format_extension_comment (my.in_php_project->license)
@@ -673,7 +674,6 @@ function php_map_low_level_extension (in_php_project, out_php_module)
 
     new constants to my.out_php_module
 
-        my._ext_name0 = "$(my.in_php_project.prefix:)_$(my.in_php_project.name:)_php"
         my._ext_name = "$(my._ext_name0:UPPER)"
 
         my._c = php_format_extension_comment ("Constants")
@@ -692,7 +692,13 @@ function php_map_low_level_extension (in_php_project, out_php_module)
     endnew
 
     new init_func_declaration to my.out_php_module
-        my._res = php_format_extension_comment ("Extension init functions declaration")
+
+        my._c = php_format_extension_comment ("Extension init functions declaration")
+        my._h = format_left("\
+            PHP_MINIT_FUNCTION($(my._ext_name0:));
+            PHP_MSHUTDOWN_FUNCTION($(my._ext_name0:));
+            ", 0)
+        my._res = my._c + my._h
         . = my._res
     endnew
 
@@ -707,7 +713,29 @@ function php_map_low_level_extension (in_php_project, out_php_module)
     endnew
 
     new module_definitions to my.out_php_module
-        my._res = php_format_extension_comment ("Extension module definition")
+        my._c = php_format_extension_comment ("Extension module definition")
+        my._h = format_left("\
+            zend_module_entry $(my._ext_name0:)_module_entry = {
+            #if ZEND_MODULE_API_NO >= 20010901
+                STANDARD_MODULE_HEADER,
+            #endif
+                $(my._ext_name0:UPPER)_EXTNAME,
+                $(my._ext_name0:)_functions,
+                PHP_MINIT($(my._ext_name0:)),
+                PHP_MSHUTDOWN($(my._ext_name0:)),
+                NULL,
+                NULL,
+                NULL,
+            #if ZEND_MODULE_API_NO >= 20010901
+                $(my._ext_name0:UPPER)_VERSION,
+            #endif
+                STANDARD_MODULE_PROPERTIES
+            };
+
+            ZEND_GET_MODULE($(my._ext_name0:))
+            ", 0)
+
+        my._res = my._c + my._h
         . = my._res
     endnew
 
