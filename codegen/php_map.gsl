@@ -511,6 +511,20 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
         . = format_left("const char $(my.out_low_level.constant:) = \"$(my._t:)_t\";", 0)
     endnew
 
+    new init_func_def_dtor to my.out_low_level
+        . = format_left("\
+            static void $(my._t:)_dtor_php(zend_resource *rsrc) {
+                $(my._t:)_delete(($(my._t:)_t *)rsrc->ptr);
+            }
+            ", 0)
+    endnew
+
+    new init_func_def_list_destr to my.out_low_level
+        . = format_left("\
+            le_$(my._t:) = zend_register_list_destructors_ex($(my._t:)_dtor_php, NULL, $(my._t:UPPER)_PHP_RES_NAME, module_number);
+            ", 0)
+    endnew
+
     my._interface_methods = XML.new()
     my._constant = ""
 
@@ -644,6 +658,8 @@ function php_map_low_level_extension (in_php_project, out_php_module)
     my._include = ""
     my._registered_resources = ""
     my._constants = ""
+    my._init_func_def_dtor = ""
+    my._init_func_def_list_destr = ""
 
     my._ext_name0 = "$(my.in_php_project.prefix:)_$(my.in_php_project.name:)_php"
 
@@ -651,6 +667,8 @@ function php_map_low_level_extension (in_php_project, out_php_module)
         my._include += php_module0->low_level->include.
         my._registered_resources += php_module0->low_level->registered_resource.
         my._constants += php_module0->low_level->constant.
+        my._init_func_def_dtor += php_module0->low_level->init_func_def_dtor.
+        my._init_func_def_list_destr += php_module0->low_level->init_func_def_list_destr.
     endfor
 
     new licence to my.out_php_module
@@ -740,7 +758,25 @@ function php_map_low_level_extension (in_php_project, out_php_module)
     endnew
 
     new init_func_definitions to my.out_php_module
-        my._res = php_format_extension_comment ("Extension init functions definition")
+        my._c = php_format_extension_comment ("Extension init functions definition")
+
+        my._h1 = format_left("$(my._init_func_def_dtor:)", 0)
+        my._h2 = format_left("PHP_MINIT_FUNCTION($(my._ext_name0:)) {", 0)
+        my._h3 = format_left("$(my._init_func_def_list_destr:)", 1)
+
+        my._h4 = format_left("\
+                return SUCCESS;
+            }
+            ", 0)
+
+        my._h5 = format_left("\
+            PHP_MSHUTDOWN_FUNCTION($(my._ext_name0:)) {
+                return SUCCESS;
+            }
+            ", 0)
+
+        my._res = my._c + my._h1 + my._h2 + my._h3 + my._h4 + my._h5
+
         . = my._res
     endnew
 
