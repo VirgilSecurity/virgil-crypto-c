@@ -225,6 +225,33 @@ class VscfAes256Gcm(object):
         vscf_aes256_gcm_auth_decrypted_len.restype = c_size_t
         return vscf_aes256_gcm_auth_decrypted_len(ctx, data_len)
 
+    def vscf_aes256_gcm_set_auth_data(self, ctx, auth_data):
+        """Set additional data for for AEAD ciphers."""
+        vscf_aes256_gcm_set_auth_data = self._lib.vscf_aes256_gcm_set_auth_data
+        vscf_aes256_gcm_set_auth_data.argtypes = [POINTER(vscf_aes256_gcm_t), vsc_data_t]
+        vscf_aes256_gcm_set_auth_data.restype = None
+        return vscf_aes256_gcm_set_auth_data(ctx, auth_data)
+
+    def vscf_aes256_gcm_finish_auth_encryption(self, ctx, out, tag):
+        """Accomplish an authenticated encryption and place tag separately.
+
+        Note, if authentication tag should be added to an encrypted data,
+        method "finish" can be used."""
+        vscf_aes256_gcm_finish_auth_encryption = self._lib.vscf_aes256_gcm_finish_auth_encryption
+        vscf_aes256_gcm_finish_auth_encryption.argtypes = [POINTER(vscf_aes256_gcm_t), POINTER(vsc_buffer_t), POINTER(vsc_buffer_t)]
+        vscf_aes256_gcm_finish_auth_encryption.restype = c_int
+        return vscf_aes256_gcm_finish_auth_encryption(ctx, out, tag)
+
+    def vscf_aes256_gcm_finish_auth_decryption(self, ctx, tag, out):
+        """Accomplish an authenticated decryption with explicitly given tag.
+
+        Note, if authentication tag is a part of an encrypted data then,
+        method "finish" can be used for simplicity."""
+        vscf_aes256_gcm_finish_auth_decryption = self._lib.vscf_aes256_gcm_finish_auth_decryption
+        vscf_aes256_gcm_finish_auth_decryption.argtypes = [POINTER(vscf_aes256_gcm_t), vsc_data_t, POINTER(vsc_buffer_t)]
+        vscf_aes256_gcm_finish_auth_decryption.restype = c_int
+        return vscf_aes256_gcm_finish_auth_decryption(ctx, tag, out)
+
     def vscf_aes256_gcm_shallow_copy(self, ctx):
         vscf_aes256_gcm_shallow_copy = self._lib.vscf_aes256_gcm_shallow_copy
         vscf_aes256_gcm_shallow_copy.argtypes = [POINTER(vscf_aes256_gcm_t)]

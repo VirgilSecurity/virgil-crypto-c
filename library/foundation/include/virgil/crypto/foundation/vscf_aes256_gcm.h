@@ -57,7 +57,6 @@
 #include "vscf_impl.h"
 #include "vscf_cipher_info.h"
 #include "vscf_cipher_auth_info.h"
-#include "vscf_cipher_auth.h"
 #include "vscf_alg_id.h"
 #include "vscf_status.h"
 
@@ -189,12 +188,6 @@ VSCF_PUBLIC const vscf_cipher_auth_info_api_t *
 vscf_aes256_gcm_cipher_auth_info_api(void);
 
 //
-//  Returns instance of the implemented interface 'cipher auth'.
-//
-VSCF_PUBLIC const vscf_cipher_auth_api_t *
-vscf_aes256_gcm_cipher_auth_api(void);
-
-//
 //  Provide algorithm identificator.
 //
 VSCF_PUBLIC vscf_alg_id_t
@@ -323,6 +316,30 @@ vscf_aes256_gcm_auth_decrypt(vscf_aes256_gcm_t *self, vsc_data_t data, vsc_data_
 //
 VSCF_PUBLIC size_t
 vscf_aes256_gcm_auth_decrypted_len(vscf_aes256_gcm_t *self, size_t data_len);
+
+//
+//  Set additional data for for AEAD ciphers.
+//
+VSCF_PUBLIC void
+vscf_aes256_gcm_set_auth_data(vscf_aes256_gcm_t *self, vsc_data_t auth_data);
+
+//
+//  Accomplish an authenticated encryption and place tag separately.
+//
+//  Note, if authentication tag should be added to an encrypted data,
+//  method "finish" can be used.
+//
+VSCF_PUBLIC vscf_status_t
+vscf_aes256_gcm_finish_auth_encryption(vscf_aes256_gcm_t *self, vsc_buffer_t *out, vsc_buffer_t *tag) VSCF_NODISCARD;
+
+//
+//  Accomplish an authenticated decryption with explicitly given tag.
+//
+//  Note, if authentication tag is a part of an encrypted data then,
+//  method "finish" can be used for simplicity.
+//
+VSCF_PUBLIC vscf_status_t
+vscf_aes256_gcm_finish_auth_decryption(vscf_aes256_gcm_t *self, vsc_data_t tag, vsc_buffer_t *out) VSCF_NODISCARD;
 
 
 // --------------------------------------------------------------------------

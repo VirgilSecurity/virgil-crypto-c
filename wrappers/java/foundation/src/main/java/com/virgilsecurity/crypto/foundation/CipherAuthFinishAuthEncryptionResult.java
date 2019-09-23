@@ -36,31 +36,39 @@
 
 package com.virgilsecurity.crypto.foundation;
 
-/*
-* Mix-in interface that provides specific functionality to authenticated
-* encryption and decryption (AEAD ciphers).
-*/
-public interface CipherAuth extends Cipher, AuthEncrypt, AuthDecrypt {
+/* Encapsulate result of method aes256 gcm.finishAuthEncryption() */
+public class CipherAuthFinishAuthEncryptionResult {
 
-    /*
-    * Set additional data for for AEAD ciphers.
-    */
-    void setAuthData(byte[] authData);
+    private byte[] out;
 
-    /*
-    * Accomplish an authenticated encryption and place tag separately.
-    *
-    * Note, if authentication tag should be added to an encrypted data,
-    * method "finish" can be used.
-    */
-    CipherAuthFinishAuthEncryptionResult finishAuthEncryption() throws FoundationException;
+    private byte[] tag;
 
-    /*
-    * Accomplish an authenticated decryption with explicitly given tag.
-    *
-    * Note, if authentication tag is a part of an encrypted data then,
-    * method "finish" can be used for simplicity.
-    */
-    byte[] finishAuthDecryption(byte[] tag) throws FoundationException;
+    /* Create new instance of CipherAuthFinishAuthEncryptionResult. */
+    CipherAuthFinishAuthEncryptionResult() {
+        super();
+    }
+
+    /** Initialize all properties. */
+    CipherAuthFinishAuthEncryptionResult(byte[] out, byte[] tag) {
+        super();
+        this.out = out;
+        this.tag = tag;
+    }
+
+    public byte[] getOut() {
+        return this.out;
+    }
+
+    public void setOut(byte[] out) {
+        this.out = out;
+    }
+
+    public byte[] getTag() {
+        return this.tag;
+    }
+
+    public void setTag(byte[] tag) {
+        this.tag = tag;
+    }
 }
 

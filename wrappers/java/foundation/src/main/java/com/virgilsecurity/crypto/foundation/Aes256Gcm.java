@@ -252,5 +252,32 @@ public class Aes256Gcm implements AutoCloseable, Alg, Encrypt, Decrypt, CipherIn
     public int authDecryptedLen(int dataLen) {
         return FoundationJNI.INSTANCE.aes256Gcm_authDecryptedLen(this.cCtx, dataLen);
     }
+
+    /*
+    * Set additional data for for AEAD ciphers.
+    */
+    public void setAuthData(byte[] authData) {
+        FoundationJNI.INSTANCE.aes256Gcm_setAuthData(this.cCtx, authData);
+    }
+
+    /*
+    * Accomplish an authenticated encryption and place tag separately.
+    *
+    * Note, if authentication tag should be added to an encrypted data,
+    * method "finish" can be used.
+    */
+    public CipherAuthFinishAuthEncryptionResult finishAuthEncryption() throws FoundationException {
+        return FoundationJNI.INSTANCE.aes256Gcm_finishAuthEncryption(this.cCtx);
+    }
+
+    /*
+    * Accomplish an authenticated decryption with explicitly given tag.
+    *
+    * Note, if authentication tag is a part of an encrypted data then,
+    * method "finish" can be used for simplicity.
+    */
+    public byte[] finishAuthDecryption(byte[] tag) throws FoundationException {
+        return FoundationJNI.INSTANCE.aes256Gcm_finishAuthDecryption(this.cCtx, tag);
+    }
 }
 

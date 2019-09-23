@@ -1121,6 +1121,27 @@ public class FoundationJNI {
     */
     public native int aes256Gcm_authDecryptedLen(long cCtx, int dataLen);
 
+    /*
+    * Set additional data for for AEAD ciphers.
+    */
+    public native void aes256Gcm_setAuthData(long cCtx, byte[] authData);
+
+    /*
+    * Accomplish an authenticated encryption and place tag separately.
+    *
+    * Note, if authentication tag should be added to an encrypted data,
+    * method "finish" can be used.
+    */
+    public native CipherAuthFinishAuthEncryptionResult aes256Gcm_finishAuthEncryption(long cCtx) throws FoundationException;
+
+    /*
+    * Accomplish an authenticated decryption with explicitly given tag.
+    *
+    * Note, if authentication tag is a part of an encrypted data then,
+    * method "finish" can be used for simplicity.
+    */
+    public native byte[] aes256Gcm_finishAuthDecryption(long cCtx, byte[] tag) throws FoundationException;
+
     public native long aes256Cbc_new();
 
     public native void aes256Cbc_close(long cCtx);
