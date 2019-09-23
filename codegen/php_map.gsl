@@ -559,6 +559,10 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
             my._method_arguments = ""
             my._function_arguments = ""
 
+            new def_func_entry to function
+                . = format_left("PHP_FE($(function.name:)_php, arginfo_$(function.name:)_php)", 0)
+            endnew
+
             for method0.argument as argument0
 
                 my._d = ""
@@ -660,6 +664,7 @@ function php_map_low_level_extension (in_php_project, out_php_module)
     my._constants = ""
     my._init_func_def_dtor = ""
     my._init_func_def_list_destr = ""
+    my._def_func_entries = ""
 
     my._ext_name0 = "$(my.in_php_project.prefix:)_$(my.in_php_project.name:)_php"
 
@@ -669,6 +674,10 @@ function php_map_low_level_extension (in_php_project, out_php_module)
         my._constants += php_module0->low_level->constant.
         my._init_func_def_dtor += php_module0->low_level->init_func_def_dtor.
         my._init_func_def_list_destr += php_module0->low_level->init_func_def_list_destr.
+
+        for php_module0->low_level.function as function0
+            my._def_func_entries += function0->def_func_entry.
+        endfor
     endfor
 
     new licence to my.out_php_module
@@ -726,7 +735,17 @@ function php_map_low_level_extension (in_php_project, out_php_module)
     endnew
 
     new define_all_func_entries to my.out_php_module
-        my._res = php_format_extension_comment ("Define all function entries")
+        my._c = php_format_extension_comment ("Define all function entries")
+
+        my._h1 = format_left("static zend_function_entry $(my._ext_name0:)_functions[] = {", 0)
+        my._h2 = format_left("$(my._def_func_entries:)", 1)
+        my._h3 = format_left("\
+                PHP_FE_END
+            };
+            ", 0)
+
+        my._res = my._c + my._h1 + my._h2 + my._h3
+
         . = my._res
     endnew
 
