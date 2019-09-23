@@ -67,7 +67,7 @@ function php_generate_sources (php_project)
     endfor
 
     for my.php_project.php_module as php_module0 where php_module0.type = "extension" & php_module0.name = "extension_status"
-        php_generate_source_low_level (php_module0)
+        php_generate_source_low_level_status (php_module0)
     endfor
 
     for my.php_project.json_module as json_module0
@@ -190,6 +190,19 @@ function php_generate_source_low_level (in_php_module)
     php_insert_code (my.in_php_module->module_definitions, 0)
     newline()
     php_insert_code (my.in_php_module->init_func_definitions, 0)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_generate_source_low_level_status (in_php_module)
+    check_arguments (my, "in_php_module", my)
+
+    echo_trace ("Generate $(my.in_php_module.name:).c", my)
+
+    output my.in_php_module.source_file_path
+
+    php_insert_code (my.in_php_module->code, 0)
 endfunction
 
 # ---------------------------------------------------------------------------

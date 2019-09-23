@@ -494,6 +494,22 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
     check_arguments (my, "in_module, in_php_project, out_low_level, in_type", my)
 
     my.out_low_level.name = "$(my.in_module.name:c)"
+    my.out_low_level.name0 = "$(my.in_module.name:c)"
+
+    my._t = "$(my.in_php_project.prefix:)_$(my.out_low_level.name0:)"
+    my.out_low_level.constant = "$(my._t:UPPER)_PHP_RES_NAME[]"
+
+    new include to my.out_low_level
+        . = format_left("#include \"$(my.in_php_project.prefix:)_$(my.out_low_level.name0:).h\"", 0)
+    endnew
+
+    new registered_resource to my.out_low_level
+        . = format_left("int le_$(my.in_php_project.prefix:)_$(my.out_low_level.name0:);", 0)
+    endnew
+
+    new constant to my.out_low_level
+        . = format_left("const char $(my.out_low_level.constant:) = \"$(my._t:)_t\";", 0)
+    endnew
 
     my._interface_methods = XML.new()
     my._constant = ""
@@ -625,23 +641,53 @@ endfunction
 function php_map_low_level_extension (in_php_project, out_php_module)
     check_arguments (my, "in_php_project, out_php_module", my)
 
+    my._include = ""
+    my._registered_resources = ""
+    my._constants = ""
+
+    for my.in_php_project.php_module as php_module0 where string_in(php_module0.type, "class, implementation, interface")
+        my._include += php_module0->low_level->include.
+        my._registered_resources += php_module0->low_level->registered_resource.
+        my._constants += php_module0->low_level->constant.
+    endfor
+
+
     new licence to my.out_php_module
-        my._res = php_format_extension_comment ("licence")
+        my._res = php_format_extension_comment (my.in_php_project->license)
         . = my._res
     endnew
 
     new include to my.out_php_module
-        my._res = php_format_extension_comment ("#include")
+        my._res = format_left("\
+            #include <php.h>
+            #include <zend_exceptions.h>
+            #include <zend_list.h>
+            #include \"vsce_assert.h\"
+            #include \"vsce_phe_common.h\"
+            ", 0)
+
+        my._res = my._res + my._include
+
         . = my._res
     endnew
 
     new constants to my.out_php_module
-        my._res = php_format_extension_comment ("Constants")
+
+        my._ext_name0 = "$(my.in_php_project.prefix:)_$(my.in_php_project.name:)_php"
+        my._ext_name = "$(my._ext_name0:UPPER)"
+
+        my._c = php_format_extension_comment ("Constants")
+        my._h = format_left("\
+            const char $(my._ext_name:)_VERSION[] = \"$(my.in_php_project.version:)\";
+            const char $(my._ext_name:)_EXTNAME[] = \"$(my._ext_name0:)\"; 
+            ", 0)
+        my._res = my._c + my._h + my._constants
         . = my._res
     endnew
 
     new registered_resources to my.out_php_module
-        my._res = php_format_extension_comment ("Registered resources")
+        my._c = php_format_extension_comment ("Registered resources")
+        my._res = my._c + my._registered_resources
         . = my._res
     endnew
 

@@ -217,7 +217,7 @@ function php_create_enum_module (enum, php_project, meta)
             .type = "extension"
             .prefix = my.php_project.prefix
 
-            new code to extension
+            new code to php_module
                 .= php_format_low_level_status_exception (my.enum, php_module)
             endnew
         endnew
@@ -249,7 +249,7 @@ endfunction
 #   
 # ---------------------------------------------------------------------------
 function php_create_custom_modules (source, php_project, meta)
-check_arguments (my, "source, php_project, meta", my)
+    check_arguments (my, "source, php_project, meta", my)
 
     if directory.create (my.php_project.source_dir) = -1
         echo_fatal ("Can not create directory: $(.source_dir:). ", my)
@@ -294,6 +294,13 @@ check_arguments (my, "source, php_project, meta", my)
             ", 0)
         endnew
     endnew
+endfunction
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_finalize_custom_modules (source, php_project, meta)
+    check_arguments (my, "source, php_project, meta", my)
 
     new php_module to my.php_project
         .name = "extension"
@@ -305,12 +312,6 @@ check_arguments (my, "source, php_project, meta", my)
 
         php_map_low_level_extension(my.php_project, php_module)
     endnew
-endfunction
-
-# ---------------------------------------------------------------------------
-#   
-# ---------------------------------------------------------------------------
-function php_finalize_custom_modules (source, destination, wrapper, meta) #[optional]
 endfunction
 
 .endtemplate

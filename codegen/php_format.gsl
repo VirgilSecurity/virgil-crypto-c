@@ -104,7 +104,7 @@ endfunction
 #   
 # ---------------------------------------------------------------------------
 function php_format_low_level_status_exception (enum, php_module)
-    check_arguments (my, "enum, php_mo", my)
+    check_arguments (my, "enum, php_module", my)
 
     my._prefix = php_module.prefix
 
