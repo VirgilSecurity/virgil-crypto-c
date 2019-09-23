@@ -37,10 +37,6 @@
 
 #include "vsc_data.h"
 
-extern const vsc_data_t test_phe_hash_data;
-extern const char test_phe_hash_x_DEC[];
-extern const char test_phe_hash_y_DEC[];
-
 extern const vsc_data_t test_phe_hash_ns1;
 extern const char test_phe_hash_hs0_x_DEC[];
 extern const char test_phe_hash_hs0_y_DEC[];

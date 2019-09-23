@@ -6,10 +6,10 @@
         prefix="vsce"
         path="../library/phe"
         work_path = "generated/phe/"
-        wrappers="java"
+        wrappers="java,python,wasm"
         >
 
-    <version major="0" minor="7" patch="0"/>
+    <version major="0" minor="10" patch="4"/>
 
     <license>
         Copyright (C) 2015-2019 Virgil Security, Inc.
@@ -48,16 +48,24 @@
     </license>
 
     <require project="common" feature="library"/>
-    <require project="foundation" feature="library"/>
+
+    <require project="foundation" feature="library">
+        <require impl="ctr drbg"/>
+        <require impl="hmac"/>
+        <require impl="hkdf"/>
+        <require impl="sha512"/>
+    </require>
+
     <require library="mbedtls" feature="library"/>
 
-    <feature name="multi thread" default="on">
+    <feature name="multi threading" default="on">
         Enable multi-threading safety for PHE library.
     </feature>
 
     <module name="assert" from="shared"/>
     <module name="library" from="shared"/>
     <module name="memory" from="shared"/>
+    <module name="atomic" from="shared"/>
 
     <module name="const"/>
 
@@ -65,7 +73,6 @@
 
     <class name="error"/>
     <class name="phe common"/>
-    <class name="simple swu"/>
     <class name="phe hash"/>
     <class name="phe server"/>
     <class name="phe client"/>

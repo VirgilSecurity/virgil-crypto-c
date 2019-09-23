@@ -108,7 +108,7 @@ vscf_message_info_new(void);
 
 //
 //  Release all inner resources and deallocate context if needed.
-//  It is safe to call this method even if context was allocated by the caller.
+//  It is safe to call this method even if the context was statically allocated.
 //
 VSCF_PUBLIC void
 vscf_message_info_delete(vscf_message_info_t *self);
@@ -156,6 +156,12 @@ vscf_message_info_data_encryption_alg_info(const vscf_message_info_t *self);
 //
 VSCF_PUBLIC const vscf_key_recipient_info_list_t *
 vscf_message_info_key_recipient_info_list(const vscf_message_info_t *self);
+
+//
+//  Return list with a "key recipient info" elements.
+//
+VSCF_PRIVATE vscf_key_recipient_info_list_t *
+vscf_message_info_key_recipient_info_list_modifiable(vscf_message_info_t *self);
 
 //
 //  Return list with a "password recipient info" elements.

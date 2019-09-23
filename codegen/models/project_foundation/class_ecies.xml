@@ -1,0 +1,109 @@
+<class name="ecies">
+    Virgil implementation of the ECIES algorithm.
+
+    <require interface="compute shared key"/>
+    <require interface="public key"/>
+    <require interface="private key"/>
+    <require interface="key alg"/>
+    <require interface="key cipher"/>
+    <require impl="kdf2"/>
+    <require impl="sha384"/>
+    <require impl="hmac"/>
+    <require impl="aes256 cbc"/>
+    <require impl="ctr drbg"/>
+    <require class="key alg factory"/>
+    <require class="ecies envelope"/>
+
+    <dependency name="random" interface="random"/>
+    <dependency name="cipher" interface="cipher"/>
+    <dependency name="mac" interface="mac"/>
+    <dependency name="kdf" interface="kdf"/>
+
+    <dependency name="ephemeral key" interface="private key">
+        Set ephemeral key that used for data encryption.
+        Public and ephemeral keys should belong to the same curve.
+        This dependency is optional.
+    </dependency>
+
+    <property name="key alg" interface="key alg" access="readonly">
+        Weak reference to the key algorithm.
+    </property>
+
+
+    <method name="set key alg">
+        Set weak reference to the key algorithm.
+        Key algorithm MUST support shared key computation as well.
+
+        <argument name="key alg" interface="key alg"/>
+    </method>
+
+
+    <method name="release key alg">
+        Release weak reference to the key algorithm.
+    </method>
+
+
+    <method name="setup defaults">
+        Setup predefined values to the uninitialized class dependencies.
+
+        <return enum="status"/>
+    </method>
+
+
+    <method name="setup defaults no random">
+        Setup predefined values to the uninitialized class dependencies
+        except random.
+    </method>
+
+
+    <method name="encrypted len" is_const="1">
+        Calculate required buffer length to hold the encrypted data.
+
+        <argument name="public key" interface="public key"/>
+        <argument name="data len" type="size"/>
+
+        <return type="size"/>
+    </method>
+
+
+    <method name="encrypt" is_const="1">
+        Encrypt data with a given public key.
+
+        <argument name="public key" interface="public key"/>
+        <argument name="data" class="data"/>
+        <argument name="out" class="buffer">
+            <length method="encrypted len">
+                <proxy argument="public key" to="public key"/>
+                <proxy argument="data" to="data len" cast="data_length"/>
+            </length>
+        </argument>
+
+        <return enum="status"/>
+    </method>
+
+
+    <method name="decrypted len" is_const="1">
+        Calculate required buffer length to hold the decrypted data.
+
+        <argument name="private key" interface="private key"/>
+        <argument name="data len" type="size"/>
+
+        <return type="size"/>
+    </method>
+
+
+    <method name="decrypt" is_const="1">
+        Decrypt given data.
+
+        <argument name="private key" interface="private key"/>
+        <argument name="data" class="data"/>
+        <argument name="out" class="buffer">
+            <length method="decrypted len">
+                <proxy argument="private key" to="private key"/>
+                <proxy argument="data" to="data len" cast="data_length"/>
+            </length>
+        </argument>
+
+        <return enum="status"/>
+    </method>
+</class>

@@ -47,6 +47,7 @@
 #include "vscf_message_info_custom_params.h"
 #include "vscf_memory.h"
 #include "vscf_assert.h"
+#include "vscf_message_info_custom_params_internal.h"
 #include "vscf_message_info_custom_params_defs.h"
 #include "vscf_list_key_value_node_defs.h"
 
@@ -86,20 +87,6 @@ static void
 vscf_message_info_custom_params_cleanup_ctx(vscf_message_info_custom_params_t *self);
 
 //
-//  Add given node to the list ending.
-//
-static void
-vscf_message_info_custom_params_add_node(vscf_message_info_custom_params_t *self,
-        vscf_list_key_value_node_t **node_ref);
-
-//
-//  Add given node to the list ending.
-//
-static const vscf_list_key_value_node_t *
-vscf_message_info_custom_params_find_node(vscf_message_info_custom_params_t *self, vsc_data_t key, int value_tag,
-        vscf_error_t *error);
-
-//
 //  Return size of 'vscf_message_info_custom_params_t'.
 //
 VSCF_PUBLIC size_t
@@ -133,15 +120,9 @@ vscf_message_info_custom_params_cleanup(vscf_message_info_custom_params_t *self)
         return;
     }
 
-    if (self->refcnt == 0) {
-        return;
-    }
+    vscf_message_info_custom_params_cleanup_ctx(self);
 
-    if (--self->refcnt == 0) {
-        vscf_message_info_custom_params_cleanup_ctx(self);
-
-        vscf_zeroize(self, sizeof(vscf_message_info_custom_params_t));
-    }
+    vscf_zeroize(self, sizeof(vscf_message_info_custom_params_t));
 }
 
 //
@@ -162,7 +143,7 @@ vscf_message_info_custom_params_new(void) {
 
 //
 //  Release all inner resources and deallocate context if needed.
-//  It is safe to call this method even if context was allocated by the caller.
+//  It is safe to call this method even if the context was statically allocated.
 //
 VSCF_PUBLIC void
 vscf_message_info_custom_params_delete(vscf_message_info_custom_params_t *self) {
@@ -171,11 +152,30 @@ vscf_message_info_custom_params_delete(vscf_message_info_custom_params_t *self) 
         return;
     }
 
+    size_t old_counter = self->refcnt;
+    VSCF_ASSERT(old_counter != 0);
+    size_t new_counter = old_counter - 1;
+
+    #if defined(VSCF_ATOMIC_COMPARE_EXCHANGE_WEAK)
+    //  CAS loop
+    while (!VSCF_ATOMIC_COMPARE_EXCHANGE_WEAK(&self->refcnt, &old_counter, new_counter)) {
+        old_counter = self->refcnt;
+        VSCF_ASSERT(old_counter != 0);
+        new_counter = old_counter - 1;
+    }
+    #else
+    self->refcnt = new_counter;
+    #endif
+
+    if (new_counter > 0) {
+        return;
+    }
+
     vscf_dealloc_fn self_dealloc_cb = self->self_dealloc_cb;
 
     vscf_message_info_custom_params_cleanup(self);
 
-    if (self->refcnt == 0 && self_dealloc_cb != NULL) {
+    if (self_dealloc_cb != NULL) {
         self_dealloc_cb(self);
     }
 }
@@ -203,7 +203,17 @@ vscf_message_info_custom_params_shallow_copy(vscf_message_info_custom_params_t *
 
     VSCF_ASSERT_PTR(self);
 
+    #if defined(VSCF_ATOMIC_COMPARE_EXCHANGE_WEAK)
+    //  CAS loop
+    size_t old_counter;
+    size_t new_counter;
+    do {
+        old_counter = self->refcnt;
+        new_counter = old_counter + 1;
+    } while (!VSCF_ATOMIC_COMPARE_EXCHANGE_WEAK(&self->refcnt, &old_counter, new_counter));
+    #else
     ++self->refcnt;
+    #endif
 
     return self;
 }
@@ -401,7 +411,7 @@ vscf_message_info_custom_params_find_data(
 //
 //  Add given node to the list ending.
 //
-static void
+VSCF_PUBLIC void
 vscf_message_info_custom_params_add_node(
         vscf_message_info_custom_params_t *self, vscf_list_key_value_node_t **node_ref) {
 
@@ -431,7 +441,7 @@ vscf_message_info_custom_params_add_node(
 //
 //  Add given node to the list ending.
 //
-static const vscf_list_key_value_node_t *
+VSCF_PUBLIC const vscf_list_key_value_node_t *
 vscf_message_info_custom_params_find_node(
         vscf_message_info_custom_params_t *self, vsc_data_t key, int value_tag, vscf_error_t *error) {
 
@@ -458,7 +468,7 @@ vscf_message_info_custom_params_find_node(
 //
 //  Return first param, or NULL if does not exist.
 //
-VSCF_PRIVATE const vscf_list_key_value_node_t *
+VSCF_PUBLIC const vscf_list_key_value_node_t *
 vscf_message_info_custom_params_first_param(const vscf_message_info_custom_params_t *self) {
 
     VSCF_ASSERT_PTR(self);
@@ -469,7 +479,7 @@ vscf_message_info_custom_params_first_param(const vscf_message_info_custom_param
 //
 //  Return next param, or NULL if does not exist.
 //
-VSCF_PRIVATE const vscf_list_key_value_node_t *
+VSCF_PUBLIC const vscf_list_key_value_node_t *
 vscf_message_info_custom_params_next_param(const vscf_list_key_value_node_t *param) {
 
     VSCF_ASSERT_PTR(param);
@@ -480,7 +490,7 @@ vscf_message_info_custom_params_next_param(const vscf_list_key_value_node_t *par
 //
 //  Return parameter's key.
 //
-VSCF_PRIVATE vsc_data_t
+VSCF_PUBLIC vsc_data_t
 vscf_message_info_custom_params_param_key(const vscf_list_key_value_node_t *param) {
 
     VSCF_ASSERT_PTR(param);
@@ -492,7 +502,7 @@ vscf_message_info_custom_params_param_key(const vscf_list_key_value_node_t *para
 //
 //  Return true if given parameter holds an integer value.
 //
-VSCF_PRIVATE bool
+VSCF_PUBLIC bool
 vscf_message_info_custom_params_is_int_param(const vscf_list_key_value_node_t *param) {
 
     VSCF_ASSERT_PTR(param);
@@ -503,7 +513,7 @@ vscf_message_info_custom_params_is_int_param(const vscf_list_key_value_node_t *p
 //
 //  Return parameter as an integer value.
 //
-VSCF_PRIVATE int
+VSCF_PUBLIC int
 vscf_message_info_custom_params_as_int_value(const vscf_list_key_value_node_t *param) {
 
     VSCF_ASSERT_PTR(param);
@@ -516,7 +526,7 @@ vscf_message_info_custom_params_as_int_value(const vscf_list_key_value_node_t *p
 //
 //  Return true if given parameter holds a string value.
 //
-VSCF_PRIVATE bool
+VSCF_PUBLIC bool
 vscf_message_info_custom_params_is_string_param(const vscf_list_key_value_node_t *param) {
 
     VSCF_ASSERT_PTR(param);
@@ -527,7 +537,7 @@ vscf_message_info_custom_params_is_string_param(const vscf_list_key_value_node_t
 //
 //  Return parameter as a string value.
 //
-VSCF_PRIVATE vsc_data_t
+VSCF_PUBLIC vsc_data_t
 vscf_message_info_custom_params_as_string_value(const vscf_list_key_value_node_t *param) {
 
     VSCF_ASSERT_PTR(param);
@@ -540,7 +550,7 @@ vscf_message_info_custom_params_as_string_value(const vscf_list_key_value_node_t
 //
 //  Return true if given parameter holds a data value.
 //
-VSCF_PRIVATE bool
+VSCF_PUBLIC bool
 vscf_message_info_custom_params_is_data_param(const vscf_list_key_value_node_t *param) {
 
     VSCF_ASSERT_PTR(param);
@@ -551,7 +561,7 @@ vscf_message_info_custom_params_is_data_param(const vscf_list_key_value_node_t *
 //
 //  Return parameter as a data value.
 //
-VSCF_PRIVATE vsc_data_t
+VSCF_PUBLIC vsc_data_t
 vscf_message_info_custom_params_as_data_value(const vscf_list_key_value_node_t *param) {
 
     VSCF_ASSERT_PTR(param);

@@ -1,21 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) 2015-2019, Virgil Security, Inc.
+  ~
+  ~ Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
+  ~
+  ~ All rights reserved.
+  ~
+  ~ Redistribution and use in source and binary forms, with or without
+  ~ modification, are permitted provided that the following conditions are met:
+  ~
+  ~     (1) Redistributions of source code must retain the above copyright notice, this
+  ~     list of conditions and the following disclaimer.
+  ~
+  ~     (2) Redistributions in binary form must reproduce the above copyright notice,
+  ~     this list of conditions and the following disclaimer in the documentation
+  ~     and/or other materials provided with the distribution.
+  ~
+  ~     (3) Neither the name of virgil nor the names of its
+  ~     contributors may be used to endorse or promote products derived from
+  ~     this software without specific prior written permission.
+  ~
+  ~ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+  ~ AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+  ~ IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+  ~ DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+  ~ FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+  ~ DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+  ~ SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+  ~ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+  ~ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+  ~ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+  -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.virgilsecurity.crypto</groupId>
 	<artifactId>parent</artifactId>
 	<packaging>pom</packaging>
-	<version>0.7.0-SNAPSHOT</version>
+	<version>0.10.4-SNAPSHOT</version>
 
-	<properties>
-		<maven.compiler.source>1.7</maven.compiler.source>
-		<maven.compiler.target>1.7</maven.compiler.target>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<jni.binaries.dir>${project.basedir}/../binaries</jni.binaries.dir>
-	</properties>
-
-	<modules>
-		<module>common</module>
-	</modules>
-
+	<name>Virgil Security Crypto Library</name>
+	<description>
+		This library is designed to be small, flexible and convenient wrapper for a variety crypto algorithms.
+		So it can be used in a small micro controller as well as in a high load server application.
+	</description>
+	<url>https://www.virgilsecurity.com/</url>
+	<scm>
+		<connection>scm:git:https://github.com/VirgilSecurity/virgil-crypto-c.git</connection>
+		<url>https://github.com/VirgilSecurity/virgil-crypto-c</url>
+	</scm>
+	<licenses>
+		<license>
+			<name>Virgil Security, Inc. license</name>
+			<url>https://github.com/VirgilSecurity/virgil-crypto-c/blob/master/LICENSE</url>
+		</license>
+	</licenses>
 	<distributionManagement>
 		<snapshotRepository>
 			<id>ossrh</id>
@@ -26,6 +64,30 @@
 			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
 		</repository>
 	</distributionManagement>
+	<developers>
+		<developer>
+			<name>Andrii Iakovenko</name>
+			<email>andrii-iakovenko@gmail.com</email>
+			<organizationUrl>https://github.com/andrii-iakovenko</organizationUrl>
+		</developer>
+		<developer>
+			<name>Danylo Oliinyk</name>
+			<email>danylo.oliinyk@gmail.com</email>
+			<organizationUrl>https://github.com/BuddahLD</organizationUrl>
+		</developer>
+	</developers>
+
+	<properties>
+		<maven.compiler.source>1.7</maven.compiler.source>
+		<maven.compiler.target>1.7</maven.compiler.target>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<jni.binaries.dir>${project.basedir}/../binaries</jni.binaries.dir>
+		<jmh.version>1.21</jmh.version>
+	</properties>
+
+	<modules>
+		<module>common</module>
+	</modules>
 
 	<dependencyManagement>
 		<dependencies>
@@ -46,6 +108,17 @@
 				<artifactId>gson</artifactId>
 				<version>2.8.5</version>
 				<scope>test</scope>
+			</dependency>
+			<!-- Benchmarks -->
+			<dependency>
+				<groupId>org.openjdk.jmh</groupId>
+				<artifactId>jmh-core</artifactId>
+				<version>${jmh.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.openjdk.jmh</groupId>
+				<artifactId>jmh-generator-annprocess</artifactId>
+				<version>${jmh.version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
@@ -149,6 +222,12 @@
 				<module>phe</module>
 				<module>pythia</module>
 				<module>ratchet</module>
+			</modules>
+		</profile>
+		<profile>
+			<id>benchmark</id>
+			<modules>
+				<module>benchmark</module>
 			</modules>
 		</profile>
 		<profile>

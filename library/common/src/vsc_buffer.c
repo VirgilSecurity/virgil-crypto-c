@@ -127,15 +127,9 @@ vsc_buffer_cleanup(vsc_buffer_t *self) {
         return;
     }
 
-    if (self->refcnt == 0) {
-        return;
-    }
+    vsc_buffer_cleanup_ctx(self);
 
-    if (--self->refcnt == 0) {
-        vsc_buffer_cleanup_ctx(self);
-
-        vsc_zeroize(self, sizeof(vsc_buffer_t));
-    }
+    vsc_zeroize(self, sizeof(vsc_buffer_t));
 }
 
 //
@@ -222,7 +216,7 @@ vsc_buffer_new_with_data(vsc_data_t data) {
 
 //
 //  Release all inner resources and deallocate context if needed.
-//  It is safe to call this method even if context was allocated by the caller.
+//  It is safe to call this method even if the context was statically allocated.
 //
 VSC_PUBLIC void
 vsc_buffer_delete(vsc_buffer_t *self) {
@@ -231,11 +225,30 @@ vsc_buffer_delete(vsc_buffer_t *self) {
         return;
     }
 
+    size_t old_counter = self->refcnt;
+    VSC_ASSERT(old_counter != 0);
+    size_t new_counter = old_counter - 1;
+
+    #if defined(VSC_ATOMIC_COMPARE_EXCHANGE_WEAK)
+    //  CAS loop
+    while (!VSC_ATOMIC_COMPARE_EXCHANGE_WEAK(&self->refcnt, &old_counter, new_counter)) {
+        old_counter = self->refcnt;
+        VSC_ASSERT(old_counter != 0);
+        new_counter = old_counter - 1;
+    }
+    #else
+    self->refcnt = new_counter;
+    #endif
+
+    if (new_counter > 0) {
+        return;
+    }
+
     vsc_dealloc_fn self_dealloc_cb = self->self_dealloc_cb;
 
     vsc_buffer_cleanup(self);
 
-    if (self->refcnt == 0 && self_dealloc_cb != NULL) {
+    if (self_dealloc_cb != NULL) {
         self_dealloc_cb(self);
     }
 }
@@ -263,7 +276,17 @@ vsc_buffer_shallow_copy(vsc_buffer_t *self) {
 
     VSC_ASSERT_PTR(self);
 
+    #if defined(VSC_ATOMIC_COMPARE_EXCHANGE_WEAK)
+    //  CAS loop
+    size_t old_counter;
+    size_t new_counter;
+    do {
+        old_counter = self->refcnt;
+        new_counter = old_counter + 1;
+    } while (!VSC_ATOMIC_COMPARE_EXCHANGE_WEAK(&self->refcnt, &old_counter, new_counter));
+    #else
     ++self->refcnt;
+    #endif
 
     return self;
 }
@@ -410,6 +433,7 @@ vsc_buffer_alloc(vsc_buffer_t *self, size_t capacity) {
     self->capacity = capacity;
     self->len = 0;
     self->bytes_dealloc_cb = vsc_dealloc;
+    self->is_owner = true;
 }
 
 //
@@ -430,7 +454,7 @@ vsc_buffer_release(vsc_buffer_t *self) {
 
     self->bytes = NULL;
     self->bytes_dealloc_cb = NULL;
-    self->is_owner = 0;
+    self->is_owner = false;
 }
 
 //

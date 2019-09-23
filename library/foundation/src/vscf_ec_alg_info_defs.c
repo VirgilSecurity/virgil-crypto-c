@@ -53,7 +53,7 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#include "vscf_ec_alg_info_defs.h"
+#include "vscf_ecc_alg_info_defs.h"
 
 // clang-format on
 //  @end

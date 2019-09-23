@@ -59,6 +59,7 @@
 #include "vscf_library.h"
 #include "vscf_impl_private.h"
 #include "vscf_aes256_gcm.h"
+#include "vscf_atomic.h"
 
 #include <mbedtls/cipher.h>
 
@@ -88,7 +89,7 @@ struct vscf_aes256_gcm_t {
     //
     //  Reference counter.
     //
-    size_t refcnt;
+    VSCF_ATOMIC size_t refcnt;
     //
     //  Implementation specific context.
     //
@@ -108,7 +109,19 @@ struct vscf_aes256_gcm_t {
     //
     //  Implementation specific context.
     //
+    byte cached_data[vscf_aes256_gcm_BLOCK_LEN];
+    //
+    //  Implementation specific context.
+    //
     byte auth_tag[vscf_aes256_gcm_AUTH_TAG_LEN];
+    //
+    //  Implementation specific context.
+    //
+    size_t cached_data_len;
+    //
+    //  Implementation specific context.
+    //
+    size_t auth_tag_len;
 };
 
 

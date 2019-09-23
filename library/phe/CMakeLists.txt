@@ -106,8 +106,10 @@ target_link_libraries(phe PUBLIC vsc::phe_pb vsc::common vsc::foundation)
 #
 # Define specific compilation and linkage flags.
 #
+target_compile_features(phe
+        PUBLIC $<IF:$<AND:$<BOOL:${VSCE_HAVE_STDATOMIC_H}>,$<BOOL:${VSCE_MULTI_THREADING}>>,c_std_11,c_std_99>)
+
 set_target_properties(phe PROPERTIES
-        C_STANDARD "99"
         DEBUG_POSTFIX "_d"
         OUTPUT_NAME vsc_phe
         )
@@ -196,6 +198,7 @@ if(VIRGIL_INSTALL_LIBS)
             LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}"
             ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}"
             FRAMEWORK DESTINATION "${CMAKE_INSTALL_LIBDIR}"
+            RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}"
             )
 endif()
 

@@ -61,14 +61,6 @@
 
 // clang-format off
 
-// VIRGIL_RATCHET_KDF_ROOT_INFO
-static const uint8_t ratchet_kdf_root_info[] = {
-        0x56, 0x49, 0x52, 0x47, 0x49, 0x4c, 0x5f, 0x52,
-        0x41, 0x54, 0x43, 0x48, 0x45, 0x54, 0x5f, 0x4b,
-        0x44, 0x46, 0x5f, 0x52, 0x4f, 0x4f, 0x54, 0x5f,
-        0x49, 0x4e, 0x46, 0x4f
-};
-
 // VIRGIL_RATCHET_KDF_RATCHET_INFO
 static const uint8_t ratchet_kdf_ratchet_info[] = {
         0xc5, 0x64, 0x95, 0x24, 0x74, 0x94, 0xc5, 0xf5,
@@ -144,15 +136,9 @@ vscr_ratchet_keys_cleanup(vscr_ratchet_keys_t *self) {
         return;
     }
 
-    if (self->refcnt == 0) {
-        return;
-    }
+    vscr_ratchet_keys_cleanup_ctx(self);
 
-    if (--self->refcnt == 0) {
-        vscr_ratchet_keys_cleanup_ctx(self);
-
-        vscr_zeroize(self, sizeof(vscr_ratchet_keys_t));
-    }
+    vscr_zeroize(self, sizeof(vscr_ratchet_keys_t));
 }
 
 //
@@ -173,7 +159,7 @@ vscr_ratchet_keys_new(void) {
 
 //
 //  Release all inner resources and deallocate context if needed.
-//  It is safe to call this method even if context was allocated by the caller.
+//  It is safe to call this method even if the context was statically allocated.
 //
 VSCR_PUBLIC void
 vscr_ratchet_keys_delete(vscr_ratchet_keys_t *self) {
@@ -182,11 +168,30 @@ vscr_ratchet_keys_delete(vscr_ratchet_keys_t *self) {
         return;
     }
 
+    size_t old_counter = self->refcnt;
+    VSCR_ASSERT(old_counter != 0);
+    size_t new_counter = old_counter - 1;
+
+    #if defined(VSCR_ATOMIC_COMPARE_EXCHANGE_WEAK)
+    //  CAS loop
+    while (!VSCR_ATOMIC_COMPARE_EXCHANGE_WEAK(&self->refcnt, &old_counter, new_counter)) {
+        old_counter = self->refcnt;
+        VSCR_ASSERT(old_counter != 0);
+        new_counter = old_counter - 1;
+    }
+    #else
+    self->refcnt = new_counter;
+    #endif
+
+    if (new_counter > 0) {
+        return;
+    }
+
     vscr_dealloc_fn self_dealloc_cb = self->self_dealloc_cb;
 
     vscr_ratchet_keys_cleanup(self);
 
-    if (self->refcnt == 0 && self_dealloc_cb != NULL) {
+    if (self_dealloc_cb != NULL) {
         self_dealloc_cb(self);
     }
 }
@@ -214,7 +219,17 @@ vscr_ratchet_keys_shallow_copy(vscr_ratchet_keys_t *self) {
 
     VSCR_ASSERT_PTR(self);
 
+    #if defined(VSCR_ATOMIC_COMPARE_EXCHANGE_WEAK)
+    //  CAS loop
+    size_t old_counter;
+    size_t new_counter;
+    do {
+        old_counter = self->refcnt;
+        new_counter = old_counter + 1;
+    } while (!VSCR_ATOMIC_COMPARE_EXCHANGE_WEAK(&self->refcnt, &old_counter, new_counter));
+    #else
     ++self->refcnt;
+    #endif
 
     return self;
 }
@@ -249,34 +264,6 @@ vscr_ratchet_keys_cleanup_ctx(vscr_ratchet_keys_t *self) {
     VSCR_ASSERT_PTR(self);
 }
 
-VSCR_PUBLIC void
-vscr_ratchet_keys_derive_initial_keys(
-        vsc_data_t shared_secret, vscr_ratchet_symmetric_key_t root_key, vscr_ratchet_symmetric_key_t chain_key) {
-
-    VSCR_ASSERT(shared_secret.len == 3 * ED25519_DH_LEN || shared_secret.len == 4 * ED25519_DH_LEN);
-
-    byte derived_secret[2 * vscr_ratchet_common_hidden_KEY_LEN];
-
-    vsc_buffer_t buffer;
-    vsc_buffer_init(&buffer);
-    vsc_buffer_use(&buffer, derived_secret, sizeof(derived_secret));
-
-    vscf_hkdf_t *hkdf = vscf_hkdf_new();
-    vscf_hkdf_take_hash(hkdf, vscf_sha512_impl(vscf_sha512_new()));
-
-    vscf_hkdf_set_info(hkdf, vsc_data(ratchet_kdf_root_info, sizeof(ratchet_kdf_root_info)));
-
-    vscf_hkdf_derive(hkdf, shared_secret, sizeof(derived_secret), &buffer);
-    vscf_hkdf_destroy(&hkdf);
-
-    vsc_buffer_delete(&buffer);
-
-    memcpy(root_key, derived_secret, vscr_ratchet_common_hidden_KEY_LEN);
-    memcpy(chain_key, derived_secret + vscr_ratchet_common_hidden_KEY_LEN, vscr_ratchet_common_hidden_KEY_LEN);
-
-    vscr_zeroize(derived_secret, sizeof(derived_secret));
-}
-
 VSCR_PUBLIC vscr_status_t
 vscr_ratchet_keys_create_chain_key(const vscr_ratchet_symmetric_key_t root_key,
         const vscr_ratchet_private_key_t private_key, const vscr_ratchet_public_key_t public_key,
@@ -297,18 +284,19 @@ vscr_ratchet_keys_create_chain_key(const vscr_ratchet_symmetric_key_t root_key,
 
     vscf_hkdf_take_hash(hkdf, vscf_sha512_impl(vscf_sha512_new()));
 
-    byte derived_secret[2 * vscr_ratchet_common_hidden_KEY_LEN];
+    byte derived_secret[2 * vscr_ratchet_common_hidden_SHARED_KEY_LEN];
     vsc_buffer_t buffer;
     vsc_buffer_init(&buffer);
     vsc_buffer_use(&buffer, derived_secret, sizeof(derived_secret));
 
-    vscf_hkdf_reset(hkdf, vsc_data(root_key, vscr_ratchet_common_hidden_KEY_LEN), 0);
+    vscf_hkdf_reset(hkdf, vsc_data(root_key, vscr_ratchet_common_hidden_SHARED_KEY_LEN), 0);
     vscf_hkdf_set_info(hkdf, vsc_data(ratchet_kdf_ratchet_info, sizeof(ratchet_kdf_ratchet_info)));
     vscf_hkdf_derive(hkdf, vsc_data(secret, sizeof(secret)), sizeof(derived_secret), &buffer);
 
-    memcpy(new_root_key, derived_secret, vscr_ratchet_common_hidden_KEY_LEN);
+    memcpy(new_root_key, derived_secret, vscr_ratchet_common_hidden_SHARED_KEY_LEN);
 
-    memcpy(chain_key->key, derived_secret + vscr_ratchet_common_hidden_KEY_LEN, vscr_ratchet_common_hidden_KEY_LEN);
+    memcpy(chain_key->key, derived_secret + vscr_ratchet_common_hidden_SHARED_KEY_LEN,
+            vscr_ratchet_common_hidden_SHARED_KEY_LEN);
     chain_key->index = 0;
 
     vscf_hkdf_destroy(&hkdf);

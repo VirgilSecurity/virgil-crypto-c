@@ -59,6 +59,7 @@
 #include "vscf_library.h"
 #include "vscf_impl_private.h"
 #include "vscf_message_info_der_serializer.h"
+#include "vscf_atomic.h"
 #include "vscf_impl.h"
 #include "vscf_alg_info_der_serializer.h"
 #include "vscf_alg_info_der_deserializer.h"
@@ -89,7 +90,7 @@ struct vscf_message_info_der_serializer_t {
     //
     //  Reference counter.
     //
-    size_t refcnt;
+    VSCF_ATOMIC size_t refcnt;
     //
     //  Dependency to the interface 'asn1 reader'.
     //

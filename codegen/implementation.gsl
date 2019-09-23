@@ -38,7 +38,7 @@
 #   Private function prefix is: P14.
 # ---------------------------------------------------------------------------
 #   This is a code generator built using the iMatix GSL code generation
-#   language. See https://github.com/imatix/gsl for details.
+#   language. See https://github.com/zeromq/gsl for details.
 # ---------------------------------------------------------------------------
 
 
@@ -232,15 +232,6 @@ function implementation_resolve_enum (enum, parent)
     my.enum.definition ?= "private"
 endfunction
 
-# ---------------------------------------------------------------------------
-#   Resolve entity: constructor.
-# ---------------------------------------------------------------------------
-function implementation_resolve_constructor (constructor, impl)
-    check_arguments (my, "constructor, impl", my)
-
-    my.constructor.is_static = "1"
-    component_resolve_method (my.constructor, my.impl)
-endfunction
 
 # ---------------------------------------------------------------------------
 #   Resolve model: implementation.method.
@@ -250,6 +241,7 @@ function implementation_resolve_method (method, impl)
 
     my.method.declaration ?= "private"
     my.method.definition ?= "private"
+    my.method.visibility ?= my.method.declaration
 
     for my.method.argument where string_equal (0.class ?, "self")
         .name ?= "ctx"
@@ -261,6 +253,19 @@ function implementation_resolve_method (method, impl)
         .access ?= "disown"
         .class = my.impl.name
     endfor
+
+    component_resolve_method (my.method, my.impl)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Resolve entity: constructor.
+# ---------------------------------------------------------------------------
+function implementation_resolve_constructor (constructor, impl)
+    check_arguments (my, "constructor, impl", my)
+
+    my.constructor.is_static = "1"
+    my.constructor.declaration ?= "public"
+    implementation_resolve_method (my.constructor, my.impl)
 endfunction
 
 # ---------------------------------------------------------------------------

@@ -101,7 +101,7 @@ import VSCFoundation
     }
 
     /// Return buffer length required to hold message info returned by the
-    /// "start encryption" method.
+    /// "pack message info" method.
     /// Precondition: all recipients and custom parameters should be set.
     @objc public func messageInfoLen() -> Int {
         let proxyResult = vscf_recipient_cipher_message_info_len(self.c_ctx)
@@ -135,7 +135,6 @@ import VSCFoundation
         }
 
         messageInfo.withUnsafeMutableBytes({ (messageInfoPointer: UnsafeMutableRawBufferPointer) -> Void in
-            vsc_buffer_init(messageInfoBuf)
             vsc_buffer_use(messageInfoBuf, messageInfoPointer.bindMemory(to: byte.self).baseAddress, messageInfoCount)
 
             vscf_recipient_cipher_pack_message_info(self.c_ctx, messageInfoBuf)
@@ -164,7 +163,6 @@ import VSCFoundation
 
         let proxyResult = data.withUnsafeBytes({ (dataPointer: UnsafeRawBufferPointer) -> vscf_status_t in
             out.withUnsafeMutableBytes({ (outPointer: UnsafeMutableRawBufferPointer) -> vscf_status_t in
-                vsc_buffer_init(outBuf)
                 vsc_buffer_use(outBuf, outPointer.bindMemory(to: byte.self).baseAddress, outCount)
 
                 return vscf_recipient_cipher_process_encryption(self.c_ctx, vsc_data(dataPointer.bindMemory(to: byte.self).baseAddress, data.count), outBuf)
@@ -187,7 +185,6 @@ import VSCFoundation
         }
 
         let proxyResult = out.withUnsafeMutableBytes({ (outPointer: UnsafeMutableRawBufferPointer) -> vscf_status_t in
-            vsc_buffer_init(outBuf)
             vsc_buffer_use(outBuf, outPointer.bindMemory(to: byte.self).baseAddress, outCount)
 
             return vscf_recipient_cipher_finish_encryption(self.c_ctx, outBuf)
@@ -232,7 +229,6 @@ import VSCFoundation
 
         let proxyResult = data.withUnsafeBytes({ (dataPointer: UnsafeRawBufferPointer) -> vscf_status_t in
             out.withUnsafeMutableBytes({ (outPointer: UnsafeMutableRawBufferPointer) -> vscf_status_t in
-                vsc_buffer_init(outBuf)
                 vsc_buffer_use(outBuf, outPointer.bindMemory(to: byte.self).baseAddress, outCount)
 
                 return vscf_recipient_cipher_process_decryption(self.c_ctx, vsc_data(dataPointer.bindMemory(to: byte.self).baseAddress, data.count), outBuf)
@@ -255,7 +251,6 @@ import VSCFoundation
         }
 
         let proxyResult = out.withUnsafeMutableBytes({ (outPointer: UnsafeMutableRawBufferPointer) -> vscf_status_t in
-            vsc_buffer_init(outBuf)
             vsc_buffer_use(outBuf, outPointer.bindMemory(to: byte.self).baseAddress, outCount)
 
             return vscf_recipient_cipher_finish_decryption(self.c_ctx, outBuf)

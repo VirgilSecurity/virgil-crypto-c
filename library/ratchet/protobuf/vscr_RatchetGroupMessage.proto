@@ -1,0 +1,26 @@
+syntax = "proto2";
+
+message vscr_MessageGroupInfo {
+    required bytes session_id = 1;
+    required uint32 epoch = 2;
+    required bytes key = 3;
+}
+
+message vscr_RegularGroupMessageHeader {
+    required bytes session_id = 1;
+    required uint32 epoch = 2;
+    repeated uint32 prev_epochs_msgs = 3;
+    required uint32 counter = 4;
+}
+
+message vscr_RegularGroupMessage {
+    required bytes header = 1;
+    required bytes signature = 2;
+    required bytes cipher_text = 3;
+}
+
+message vscr_GroupMessage {
+    required uint32 version = 1;
+    optional vscr_MessageGroupInfo group_info = 2;
+    optional vscr_RegularGroupMessage regular_message = 3;
+}

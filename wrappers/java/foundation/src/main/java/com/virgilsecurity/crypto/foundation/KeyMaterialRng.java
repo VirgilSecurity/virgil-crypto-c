@@ -51,13 +51,9 @@ public class KeyMaterialRng implements AutoCloseable, Random {
         this.cCtx = FoundationJNI.INSTANCE.keyMaterialRng_new();
     }
 
-    /*
-    * Acquire C context.
-    * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-    */
-    public KeyMaterialRng(long cCtx) {
-        super();
-        this.cCtx = cCtx;
+    /* Wrap underlying C context. */
+    KeyMaterialRng(FoundationContextHolder contextHolder) {
+        this.cCtx = contextHolder.cCtx;
     }
 
     /*
@@ -81,6 +77,15 @@ public class KeyMaterialRng implements AutoCloseable, Random {
         FoundationJNI.INSTANCE.keyMaterialRng_resetKeyMaterial(this.cCtx, keyMaterial);
     }
 
+    /*
+    * Acquire C context.
+    * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
+    */
+    public static KeyMaterialRng getInstance(long cCtx) {
+        FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
+        return new KeyMaterialRng(ctxHolder);
+    }
+
     /* Close resource. */
     public void close() {
         FoundationJNI.INSTANCE.keyMaterialRng_close(this.cCtx);
@@ -88,13 +93,14 @@ public class KeyMaterialRng implements AutoCloseable, Random {
 
     /*
     * Generate random bytes.
+    * All RNG implementations must be thread-safe.
     */
     public byte[] random(int dataLen) throws FoundationException {
         return FoundationJNI.INSTANCE.keyMaterialRng_random(this.cCtx, dataLen);
     }
 
     /*
-    * Retreive new seed data from the entropy sources.
+    * Retrieve new seed data from the entropy sources.
     */
     public void reseed() throws FoundationException {
         FoundationJNI.INSTANCE.keyMaterialRng_reseed(this.cCtx);

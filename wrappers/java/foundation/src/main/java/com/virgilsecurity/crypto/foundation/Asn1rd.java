@@ -49,13 +49,18 @@ public class Asn1rd implements AutoCloseable, Asn1Reader {
         this.cCtx = FoundationJNI.INSTANCE.asn1rd_new();
     }
 
+    /* Wrap underlying C context. */
+    Asn1rd(FoundationContextHolder contextHolder) {
+        this.cCtx = contextHolder.cCtx;
+    }
+
     /*
     * Acquire C context.
     * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     */
-    public Asn1rd(long cCtx) {
-        super();
-        this.cCtx = cCtx;
+    public static Asn1rd getInstance(long cCtx) {
+        FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
+        return new Asn1rd(ctxHolder);
     }
 
     /* Close resource. */

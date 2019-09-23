@@ -52,6 +52,26 @@
     </method>
 
 
+    <method name="len">
+        Return data length.
+
+        Note, this method can be used for wrappers where direct access
+        to the structure fields is prohibited.
+
+        <return type="size"/>
+    </method>
+
+
+    <method name="bytes" is_const="1">
+        Returns underlying data bytes.
+
+        Note, this method can be used for wrappers where direct access
+        to the structure fields is prohibited.
+
+        <return type="byte" is_reference="1"/>
+    </method>
+
+
     <method name="secure equal">
         Perform constant-time data comparison.
         The time depends on the given length but not on the data itself.

@@ -37,18 +37,34 @@
 package com.virgilsecurity.crypto.foundation;
 
 /*
-* Common information about asymmetric key.
+* Basic key type.
 */
-public interface Key extends Alg {
+public interface Key {
+
+    /*
+    * Algorithm identifier the key belongs to.
+    */
+    AlgId algId();
+
+    /*
+    * Return algorithm information that can be used for serialization.
+    */
+    AlgInfo algInfo();
 
     /*
     * Length of the key in bytes.
     */
-    int keyLen();
+    int len();
 
     /*
     * Length of the key in bits.
     */
-    int keyBitlen();
+    int bitlen();
+
+    /*
+    * Check that key is valid.
+    * Note, this operation can be slow.
+    */
+    boolean isValid();
 }
 

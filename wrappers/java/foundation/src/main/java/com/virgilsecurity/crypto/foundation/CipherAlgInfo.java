@@ -49,13 +49,9 @@ public class CipherAlgInfo implements AutoCloseable, AlgInfo {
         this.cCtx = FoundationJNI.INSTANCE.cipherAlgInfo_new();
     }
 
-    /*
-    * Acquire C context.
-    * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-    */
-    public CipherAlgInfo(long cCtx) {
-        super();
-        this.cCtx = cCtx;
+    /* Wrap underlying C context. */
+    CipherAlgInfo(FoundationContextHolder contextHolder) {
+        this.cCtx = contextHolder.cCtx;
     }
 
     /*
@@ -71,6 +67,15 @@ public class CipherAlgInfo implements AutoCloseable, AlgInfo {
     */
     public byte[] nonce() {
         return FoundationJNI.INSTANCE.cipherAlgInfo_nonce(this.cCtx);
+    }
+
+    /*
+    * Acquire C context.
+    * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
+    */
+    public static CipherAlgInfo getInstance(long cCtx) {
+        FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
+        return new CipherAlgInfo(ctxHolder);
     }
 
     /* Close resource. */

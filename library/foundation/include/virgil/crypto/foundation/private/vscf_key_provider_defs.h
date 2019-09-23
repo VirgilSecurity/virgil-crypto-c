@@ -54,6 +54,7 @@
 #define VSCF_KEY_PROVIDER_DEFS_H_INCLUDED
 
 #include "vscf_library.h"
+#include "vscf_atomic.h"
 #include "vscf_impl.h"
 #include "vscf_ecies.h"
 
@@ -83,7 +84,7 @@ struct vscf_key_provider_t {
     //
     //  Reference counter.
     //
-    size_t refcnt;
+    VSCF_ATOMIC size_t refcnt;
     //
     //  Dependency to the interface 'random'.
     //

@@ -51,13 +51,18 @@ public class RatchetGroupSession implements AutoCloseable {
         this.cCtx = RatchetJNI.INSTANCE.ratchetGroupSession_new();
     }
 
+    /* Wrap underlying C context. */
+    RatchetGroupSession(RatchetContextHolder contextHolder) {
+        this.cCtx = contextHolder.cCtx;
+    }
+
     /*
     * Acquire C context.
     * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     */
-    public RatchetGroupSession(long cCtx) {
-        super();
-        this.cCtx = cCtx;
+    public static RatchetGroupSession getInstance(long cCtx) {
+        RatchetContextHolder ctxHolder = new RatchetContextHolder(cCtx);
+        return new RatchetGroupSession(ctxHolder);
     }
 
     /* Close resource. */
@@ -96,7 +101,7 @@ public class RatchetGroupSession implements AutoCloseable {
     /*
     * Returns current epoch.
     */
-    public int getCurrentEpoch() {
+    public long getCurrentEpoch() {
         return RatchetJNI.INSTANCE.ratchetGroupSession_getCurrentEpoch(this.cCtx);
     }
 
@@ -116,7 +121,7 @@ public class RatchetGroupSession implements AutoCloseable {
     }
 
     /*
-    * Sets my id.
+    * Sets my id. Should be 32 byte
     */
     public void setMyId(byte[] myId) {
         RatchetJNI.INSTANCE.ratchetGroupSession_setMyId(this.cCtx, myId);
@@ -139,16 +144,26 @@ public class RatchetGroupSession implements AutoCloseable {
     /*
     * Returns number of participants.
     */
-    public int getParticipantsCount() {
+    public long getParticipantsCount() {
         return RatchetJNI.INSTANCE.ratchetGroupSession_getParticipantsCount(this.cCtx);
     }
 
     /*
     * Sets up session.
+    * Use this method when you have newer epoch message and know all participants info.
     * NOTE: Identity private key and my id should be set separately.
     */
-    public void setupSession(RatchetGroupMessage message) throws RatchetException {
-        RatchetJNI.INSTANCE.ratchetGroupSession_setupSession(this.cCtx, message);
+    public void setupSessionState(RatchetGroupMessage message, RatchetGroupParticipantsInfo participants) throws RatchetException {
+        RatchetJNI.INSTANCE.ratchetGroupSession_setupSessionState(this.cCtx, message, participants);
+    }
+
+    /*
+    * Sets up session.
+    * Use this method when you have message with next epoch, and you know how participants set was changed.
+    * NOTE: Identity private key and my id should be set separately.
+    */
+    public void updateSessionState(RatchetGroupMessage message, RatchetGroupParticipantsInfo addParticipants, RatchetGroupParticipantsIds removeParticipants) throws RatchetException {
+        RatchetJNI.INSTANCE.ratchetGroupSession_updateSessionState(this.cCtx, message, addParticipants, removeParticipants);
     }
 
     /*
@@ -168,15 +183,8 @@ public class RatchetGroupSession implements AutoCloseable {
     /*
     * Decrypts message
     */
-    public byte[] decrypt(RatchetGroupMessage message) throws RatchetException {
-        return RatchetJNI.INSTANCE.ratchetGroupSession_decrypt(this.cCtx, message);
-    }
-
-    /*
-    * Calculates size of buffer sufficient to store session
-    */
-    public int serializeLen() {
-        return RatchetJNI.INSTANCE.ratchetGroupSession_serializeLen(this.cCtx);
+    public byte[] decrypt(RatchetGroupMessage message, byte[] senderId) throws RatchetException {
+        return RatchetJNI.INSTANCE.ratchetGroupSession_decrypt(this.cCtx, message, senderId);
     }
 
     /*
@@ -199,18 +207,10 @@ public class RatchetGroupSession implements AutoCloseable {
     }
 
     /*
-    * Creates ticket for adding participants to this session.
-    * NOTE: This ticket is not suitable for removing participants from this session.
+    * Creates ticket with new key for adding or removing participants.
     */
-    public RatchetGroupTicket createGroupTicketForAddingParticipants() {
-        return RatchetJNI.INSTANCE.ratchetGroupSession_createGroupTicketForAddingParticipants(this.cCtx);
-    }
-
-    /*
-    * Creates ticket for adding and or removing participants to/from this session.
-    */
-    public RatchetGroupTicket createGroupTicketForAddingOrRemovingParticipants() throws RatchetException {
-        return RatchetJNI.INSTANCE.ratchetGroupSession_createGroupTicketForAddingOrRemovingParticipants(this.cCtx);
+    public RatchetGroupTicket createGroupTicket() throws RatchetException {
+        return RatchetJNI.INSTANCE.ratchetGroupSession_createGroupTicket(this.cCtx);
     }
 }
 

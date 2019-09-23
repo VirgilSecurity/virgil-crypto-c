@@ -103,7 +103,7 @@ vscf_key_recipient_info_list_new(void);
 
 //
 //  Release all inner resources and deallocate context if needed.
-//  It is safe to call this method even if context was allocated by the caller.
+//  It is safe to call this method even if the context was statically allocated.
 //
 VSCF_PUBLIC void
 vscf_key_recipient_info_list_delete(vscf_key_recipient_info_list_t *self);
@@ -130,6 +130,12 @@ vscf_key_recipient_info_list_add(vscf_key_recipient_info_list_t *self,
         vscf_key_recipient_info_t **key_recipient_info_ref);
 
 //
+//  Remove current node.
+//
+VSCF_PRIVATE void
+vscf_key_recipient_info_list_remove_self(vscf_key_recipient_info_list_t *self);
+
+//
 //  Return true if given list has item.
 //
 VSCF_PUBLIC bool
@@ -152,6 +158,12 @@ vscf_key_recipient_info_list_has_next(const vscf_key_recipient_info_list_t *self
 //
 VSCF_PUBLIC vscf_key_recipient_info_list_t *
 vscf_key_recipient_info_list_next(const vscf_key_recipient_info_list_t *self);
+
+//
+//  Return next list node if exists, or NULL otherwise.
+//
+VSCF_PRIVATE vscf_key_recipient_info_list_t *
+vscf_key_recipient_info_list_next_modifiable(vscf_key_recipient_info_list_t *self);
 
 //
 //  Return true if list has previous item.

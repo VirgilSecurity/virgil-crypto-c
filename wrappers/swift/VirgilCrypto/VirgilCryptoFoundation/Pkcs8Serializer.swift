@@ -80,7 +80,7 @@ import VSCFoundation
     /// Serialize Public Key by using internal ASN.1 writer.
     /// Note, that caller code is responsible to reset ASN.1 writer with
     /// an output buffer.
-    public func serializePublicKeyInplace(publicKey: PublicKey) throws -> Int {
+    public func serializePublicKeyInplace(publicKey: RawPublicKey) throws -> Int {
         var error: vscf_error_t = vscf_error_t()
         vscf_error_reset(&error)
 
@@ -94,14 +94,14 @@ import VSCFoundation
     /// Serialize Public Key by using internal ASN.1 writer.
     /// Note, that caller code is responsible to reset ASN.1 writer with
     /// an output buffer.
-    @objc public func serializePublicKeyInplace(publicKey: PublicKey) throws -> NSNumber {
+    @objc public func serializePublicKeyInplace(publicKey: RawPublicKey) throws -> NSNumber {
         return NSNumber(value: try self.serializePublicKeyInplace(publicKey: publicKey))
     }
 
     /// Serialize Private Key by using internal ASN.1 writer.
     /// Note, that caller code is responsible to reset ASN.1 writer with
     /// an output buffer.
-    public func serializePrivateKeyInplace(privateKey: PrivateKey) throws -> Int {
+    public func serializePrivateKeyInplace(privateKey: RawPrivateKey) throws -> Int {
         var error: vscf_error_t = vscf_error_t()
         vscf_error_reset(&error)
 
@@ -115,14 +115,14 @@ import VSCFoundation
     /// Serialize Private Key by using internal ASN.1 writer.
     /// Note, that caller code is responsible to reset ASN.1 writer with
     /// an output buffer.
-    @objc public func serializePrivateKeyInplace(privateKey: PrivateKey) throws -> NSNumber {
+    @objc public func serializePrivateKeyInplace(privateKey: RawPrivateKey) throws -> NSNumber {
         return NSNumber(value: try self.serializePrivateKeyInplace(privateKey: privateKey))
     }
 
     /// Calculate buffer size enough to hold serialized public key.
     ///
     /// Precondition: public key must be exportable.
-    @objc public func serializedPublicKeyLen(publicKey: PublicKey) -> Int {
+    @objc public func serializedPublicKeyLen(publicKey: RawPublicKey) -> Int {
         let proxyResult = vscf_pkcs8_serializer_serialized_public_key_len(self.c_ctx, publicKey.c_ctx)
 
         return proxyResult
@@ -131,7 +131,7 @@ import VSCFoundation
     /// Serialize given public key to an interchangeable format.
     ///
     /// Precondition: public key must be exportable.
-    @objc public func serializePublicKey(publicKey: PublicKey) throws -> Data {
+    @objc public func serializePublicKey(publicKey: RawPublicKey) throws -> Data {
         let outCount = self.serializedPublicKeyLen(publicKey: publicKey)
         var out = Data(count: outCount)
         var outBuf = vsc_buffer_new()
@@ -140,7 +140,6 @@ import VSCFoundation
         }
 
         let proxyResult = out.withUnsafeMutableBytes({ (outPointer: UnsafeMutableRawBufferPointer) -> vscf_status_t in
-            vsc_buffer_init(outBuf)
             vsc_buffer_use(outBuf, outPointer.bindMemory(to: byte.self).baseAddress, outCount)
 
             return vscf_pkcs8_serializer_serialize_public_key(self.c_ctx, publicKey.c_ctx, outBuf)
@@ -155,7 +154,7 @@ import VSCFoundation
     /// Calculate buffer size enough to hold serialized private key.
     ///
     /// Precondition: private key must be exportable.
-    @objc public func serializedPrivateKeyLen(privateKey: PrivateKey) -> Int {
+    @objc public func serializedPrivateKeyLen(privateKey: RawPrivateKey) -> Int {
         let proxyResult = vscf_pkcs8_serializer_serialized_private_key_len(self.c_ctx, privateKey.c_ctx)
 
         return proxyResult
@@ -164,7 +163,7 @@ import VSCFoundation
     /// Serialize given private key to an interchangeable format.
     ///
     /// Precondition: private key must be exportable.
-    @objc public func serializePrivateKey(privateKey: PrivateKey) throws -> Data {
+    @objc public func serializePrivateKey(privateKey: RawPrivateKey) throws -> Data {
         let outCount = self.serializedPrivateKeyLen(privateKey: privateKey)
         var out = Data(count: outCount)
         var outBuf = vsc_buffer_new()
@@ -173,7 +172,6 @@ import VSCFoundation
         }
 
         let proxyResult = out.withUnsafeMutableBytes({ (outPointer: UnsafeMutableRawBufferPointer) -> vscf_status_t in
-            vsc_buffer_init(outBuf)
             vsc_buffer_use(outBuf, outPointer.bindMemory(to: byte.self).baseAddress, outCount)
 
             return vscf_pkcs8_serializer_serialize_private_key(self.c_ctx, privateKey.c_ctx, outBuf)

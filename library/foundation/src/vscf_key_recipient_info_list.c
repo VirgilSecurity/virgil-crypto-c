@@ -115,15 +115,9 @@ vscf_key_recipient_info_list_cleanup(vscf_key_recipient_info_list_t *self) {
         return;
     }
 
-    if (self->refcnt == 0) {
-        return;
-    }
+    vscf_key_recipient_info_list_cleanup_ctx(self);
 
-    if (--self->refcnt == 0) {
-        vscf_key_recipient_info_list_cleanup_ctx(self);
-
-        vscf_zeroize(self, sizeof(vscf_key_recipient_info_list_t));
-    }
+    vscf_zeroize(self, sizeof(vscf_key_recipient_info_list_t));
 }
 
 //
@@ -144,7 +138,7 @@ vscf_key_recipient_info_list_new(void) {
 
 //
 //  Release all inner resources and deallocate context if needed.
-//  It is safe to call this method even if context was allocated by the caller.
+//  It is safe to call this method even if the context was statically allocated.
 //
 VSCF_PUBLIC void
 vscf_key_recipient_info_list_delete(vscf_key_recipient_info_list_t *self) {
@@ -153,11 +147,30 @@ vscf_key_recipient_info_list_delete(vscf_key_recipient_info_list_t *self) {
         return;
     }
 
+    size_t old_counter = self->refcnt;
+    VSCF_ASSERT(old_counter != 0);
+    size_t new_counter = old_counter - 1;
+
+    #if defined(VSCF_ATOMIC_COMPARE_EXCHANGE_WEAK)
+    //  CAS loop
+    while (!VSCF_ATOMIC_COMPARE_EXCHANGE_WEAK(&self->refcnt, &old_counter, new_counter)) {
+        old_counter = self->refcnt;
+        VSCF_ASSERT(old_counter != 0);
+        new_counter = old_counter - 1;
+    }
+    #else
+    self->refcnt = new_counter;
+    #endif
+
+    if (new_counter > 0) {
+        return;
+    }
+
     vscf_dealloc_fn self_dealloc_cb = self->self_dealloc_cb;
 
     vscf_key_recipient_info_list_cleanup(self);
 
-    if (self->refcnt == 0 && self_dealloc_cb != NULL) {
+    if (self_dealloc_cb != NULL) {
         self_dealloc_cb(self);
     }
 }
@@ -185,7 +198,17 @@ vscf_key_recipient_info_list_shallow_copy(vscf_key_recipient_info_list_t *self) 
 
     VSCF_ASSERT_PTR(self);
 
+    #if defined(VSCF_ATOMIC_COMPARE_EXCHANGE_WEAK)
+    //  CAS loop
+    size_t old_counter;
+    size_t new_counter;
+    do {
+        old_counter = self->refcnt;
+        new_counter = old_counter + 1;
+    } while (!VSCF_ATOMIC_COMPARE_EXCHANGE_WEAK(&self->refcnt, &old_counter, new_counter));
+    #else
     ++self->refcnt;
+    #endif
 
     return self;
 }
@@ -248,6 +271,26 @@ vscf_key_recipient_info_list_add(
 }
 
 //
+//  Remove current node.
+//
+VSCF_PRIVATE void
+vscf_key_recipient_info_list_remove_self(vscf_key_recipient_info_list_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+
+    vscf_key_recipient_info_destroy(&self->item);
+    if (self->next) {
+        vscf_key_recipient_info_list_t *next = self->next;
+        self->item = next->item;
+        self->next = next->next;
+        next->next = NULL; //  prevent chain destruction
+        next->item = NULL;
+        next->prev = NULL;
+        vscf_key_recipient_info_list_destroy(&next);
+    }
+}
+
+//
 //  Return true if given list has item.
 //
 VSCF_PUBLIC bool
@@ -286,6 +329,17 @@ vscf_key_recipient_info_list_has_next(const vscf_key_recipient_info_list_t *self
 //
 VSCF_PUBLIC vscf_key_recipient_info_list_t *
 vscf_key_recipient_info_list_next(const vscf_key_recipient_info_list_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+
+    return self->next;
+}
+
+//
+//  Return next list node if exists, or NULL otherwise.
+//
+VSCF_PRIVATE vscf_key_recipient_info_list_t *
+vscf_key_recipient_info_list_next_modifiable(vscf_key_recipient_info_list_t *self) {
 
     VSCF_ASSERT_PTR(self);
 

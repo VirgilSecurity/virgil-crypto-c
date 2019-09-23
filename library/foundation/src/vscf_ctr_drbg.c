@@ -190,9 +190,10 @@ vscf_ctr_drbg_set_entropy_len(vscf_ctr_drbg_t *self, size_t len) {
 
 //
 //  Generate random bytes.
+//  All RNG implementations must be thread-safe.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_ctr_drbg_random(vscf_ctr_drbg_t *self, size_t data_len, vsc_buffer_t *data) {
+vscf_ctr_drbg_random(const vscf_ctr_drbg_t *self, size_t data_len, vsc_buffer_t *data) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT(data_len > 0);
@@ -200,9 +201,8 @@ vscf_ctr_drbg_random(vscf_ctr_drbg_t *self, size_t data_len, vsc_buffer_t *data)
     VSCF_ASSERT(vsc_buffer_is_valid(data));
     VSCF_ASSERT(vsc_buffer_unused_len(data) >= data_len);
 
-    VSCF_ASSERT(0 && "=============================");
-
-    int status = mbedtls_ctr_drbg_random(&self->ctx, vsc_buffer_unused_bytes(data), data_len);
+    //  Underlying context is internally synchronized.
+    int status = mbedtls_ctr_drbg_random((void *)&self->ctx, vsc_buffer_unused_bytes(data), data_len);
     switch (status) {
     case 0:
         vsc_buffer_inc_used(data, data_len);
@@ -221,7 +221,7 @@ vscf_ctr_drbg_random(vscf_ctr_drbg_t *self, size_t data_len, vsc_buffer_t *data)
 }
 
 //
-//  Retreive new seed data from the entropy sources.
+//  Retrieve new seed data from the entropy sources.
 //
 VSCF_PUBLIC vscf_status_t
 vscf_ctr_drbg_reseed(vscf_ctr_drbg_t *self) {

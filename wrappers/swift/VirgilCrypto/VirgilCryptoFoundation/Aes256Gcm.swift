@@ -116,7 +116,6 @@ import VSCFoundation
 
         let proxyResult = data.withUnsafeBytes({ (dataPointer: UnsafeRawBufferPointer) -> vscf_status_t in
             out.withUnsafeMutableBytes({ (outPointer: UnsafeMutableRawBufferPointer) -> vscf_status_t in
-                vsc_buffer_init(outBuf)
                 vsc_buffer_use(outBuf, outPointer.bindMemory(to: byte.self).baseAddress, outCount)
 
                 return vscf_aes256_gcm_encrypt(self.c_ctx, vsc_data(dataPointer.bindMemory(to: byte.self).baseAddress, data.count), outBuf)
@@ -147,7 +146,6 @@ import VSCFoundation
 
         let proxyResult = data.withUnsafeBytes({ (dataPointer: UnsafeRawBufferPointer) -> vscf_status_t in
             out.withUnsafeMutableBytes({ (outPointer: UnsafeMutableRawBufferPointer) -> vscf_status_t in
-                vsc_buffer_init(outBuf)
                 vsc_buffer_use(outBuf, outPointer.bindMemory(to: byte.self).baseAddress, outCount)
 
                 return vscf_aes256_gcm_decrypt(self.c_ctx, vsc_data(dataPointer.bindMemory(to: byte.self).baseAddress, data.count), outBuf)
@@ -204,7 +202,6 @@ import VSCFoundation
 
         data.withUnsafeBytes({ (dataPointer: UnsafeRawBufferPointer) -> Void in
             out.withUnsafeMutableBytes({ (outPointer: UnsafeMutableRawBufferPointer) -> Void in
-                vsc_buffer_init(outBuf)
                 vsc_buffer_use(outBuf, outPointer.bindMemory(to: byte.self).baseAddress, outCount)
 
                 vscf_aes256_gcm_update(self.c_ctx, vsc_data(dataPointer.bindMemory(to: byte.self).baseAddress, data.count), outBuf)
@@ -252,7 +249,6 @@ import VSCFoundation
         }
 
         let proxyResult = out.withUnsafeMutableBytes({ (outPointer: UnsafeMutableRawBufferPointer) -> vscf_status_t in
-            vsc_buffer_init(outBuf)
             vsc_buffer_use(outBuf, outPointer.bindMemory(to: byte.self).baseAddress, outCount)
 
             return vscf_aes256_gcm_finish(self.c_ctx, outBuf)
@@ -285,10 +281,8 @@ import VSCFoundation
             authData.withUnsafeBytes({ (authDataPointer: UnsafeRawBufferPointer) -> vscf_status_t in
                 out.withUnsafeMutableBytes({ (outPointer: UnsafeMutableRawBufferPointer) -> vscf_status_t in
                     tag.withUnsafeMutableBytes({ (tagPointer: UnsafeMutableRawBufferPointer) -> vscf_status_t in
-                        vsc_buffer_init(outBuf)
                         vsc_buffer_use(outBuf, outPointer.bindMemory(to: byte.self).baseAddress, outCount)
 
-                        vsc_buffer_init(tagBuf)
                         vsc_buffer_use(tagBuf, tagPointer.bindMemory(to: byte.self).baseAddress, tagCount)
 
                         return vscf_aes256_gcm_auth_encrypt(self.c_ctx, vsc_data(dataPointer.bindMemory(to: byte.self).baseAddress, data.count), vsc_data(authDataPointer.bindMemory(to: byte.self).baseAddress, authData.count), outBuf, tagBuf)
@@ -325,7 +319,6 @@ import VSCFoundation
             authData.withUnsafeBytes({ (authDataPointer: UnsafeRawBufferPointer) -> vscf_status_t in
                 tag.withUnsafeBytes({ (tagPointer: UnsafeRawBufferPointer) -> vscf_status_t in
                     out.withUnsafeMutableBytes({ (outPointer: UnsafeMutableRawBufferPointer) -> vscf_status_t in
-                        vsc_buffer_init(outBuf)
                         vsc_buffer_use(outBuf, outPointer.bindMemory(to: byte.self).baseAddress, outCount)
 
                         return vscf_aes256_gcm_auth_decrypt(self.c_ctx, vsc_data(dataPointer.bindMemory(to: byte.self).baseAddress, data.count), vsc_data(authDataPointer.bindMemory(to: byte.self).baseAddress, authData.count), vsc_data(tagPointer.bindMemory(to: byte.self).baseAddress, tag.count), outBuf)

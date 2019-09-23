@@ -101,6 +101,10 @@ public class FoundationException extends RuntimeException {
 
     public static final int ERROR_BAD_DER_PRIVATE_KEY = -224;
 
+    public static final int ERROR_MISMATCH_PUBLIC_KEY_AND_ALGORITHM = -225;
+
+    public static final int ERROR_MISMATCH_PRIVATE_KEY_AND_ALGORITHM = -226;
+
     public static final int ERROR_NO_MESSAGE_INFO = -301;
 
     public static final int ERROR_BAD_MESSAGE_INFO = -302;
@@ -116,6 +120,44 @@ public class FoundationException extends RuntimeException {
     public static final int ERROR_MESSAGE_INFO_CUSTOM_PARAM_TYPE_MISMATCH = -307;
 
     public static final int ERROR_BAD_SIGNATURE = -308;
+
+    public static final int ERROR_INVALID_BRAINKEY_PASSWORD_LEN = -401;
+
+    public static final int ERROR_INVALID_BRAINKEY_FACTOR_LEN = -402;
+
+    public static final int ERROR_INVALID_BRAINKEY_POINT_LEN = -403;
+
+    public static final int ERROR_INVALID_BRAINKEY_KEY_NAME_LEN = -404;
+
+    public static final int ERROR_BRAINKEY_INTERNAL = -405;
+
+    public static final int ERROR_BRAINKEY_INVALID_POINT = -406;
+
+    public static final int ERROR_INVALID_BRAINKEY_FACTOR_BUFFER_LEN = -407;
+
+    public static final int ERROR_INVALID_BRAINKEY_POINT_BUFFER_LEN = -408;
+
+    public static final int ERROR_INVALID_BRAINKEY_SEED_BUFFER_LEN = -409;
+
+    public static final int ERROR_INVALID_IDENTITY_SECRET = -410;
+
+    public static final int ERROR_INVALID_PADDING = -501;
+
+    public static final int ERROR_PROTOBUF = -601;
+
+    public static final int ERROR_SESSION_ID_DOESNT_MATCH = -701;
+
+    public static final int ERROR_EPOCH_NOT_FOUND = -702;
+
+    public static final int ERROR_WRONG_KEY_TYPE = -703;
+
+    public static final int ERROR_INVALID_SIGNATURE = -704;
+
+    public static final int ERROR_ED25519 = -705;
+
+    public static final int ERROR_DUPLICATE_EPOCH = -706;
+
+    public static final int ERROR_PLAIN_TEXT_TOO_LONG = -707;
 
     private int statusCode;
 
@@ -191,6 +233,10 @@ public class FoundationException extends RuntimeException {
             return "ASN.1 representation of a public key is corrupted.";
         case ERROR_BAD_DER_PRIVATE_KEY:
             return "ASN.1 representation of a private key is corrupted.";
+        case ERROR_MISMATCH_PUBLIC_KEY_AND_ALGORITHM:
+            return "Key algorithm does not accept given type of public key.";
+        case ERROR_MISMATCH_PRIVATE_KEY_AND_ALGORITHM:
+            return "Key algorithm does not accept given type of private key.";
         case ERROR_NO_MESSAGE_INFO:
             return "Decryption failed, because message info was not given explicitly, and was not part of an encrypted message.";
         case ERROR_BAD_MESSAGE_INFO:
@@ -207,6 +253,44 @@ public class FoundationException extends RuntimeException {
             return "A custom parameter with a given key is found, but the requested value type does not correspond to the actual type.";
         case ERROR_BAD_SIGNATURE:
             return "Signature format is corrupted.";
+        case ERROR_INVALID_BRAINKEY_PASSWORD_LEN:
+            return "Brainkey password length is out of range.";
+        case ERROR_INVALID_BRAINKEY_FACTOR_LEN:
+            return "Brainkey number length should be 32 byte.";
+        case ERROR_INVALID_BRAINKEY_POINT_LEN:
+            return "Brainkey point length should be 65 bytes.";
+        case ERROR_INVALID_BRAINKEY_KEY_NAME_LEN:
+            return "Brainkey name is out of range.";
+        case ERROR_BRAINKEY_INTERNAL:
+            return "Brainkey internal error.";
+        case ERROR_BRAINKEY_INVALID_POINT:
+            return "Brainkey point is invalid.";
+        case ERROR_INVALID_BRAINKEY_FACTOR_BUFFER_LEN:
+            return "Brainkey number buffer length capacity should be >= 32 byte.";
+        case ERROR_INVALID_BRAINKEY_POINT_BUFFER_LEN:
+            return "Brainkey point buffer length capacity should be >= 32 byte.";
+        case ERROR_INVALID_BRAINKEY_SEED_BUFFER_LEN:
+            return "Brainkey seed buffer length capacity should be >= 32 byte.";
+        case ERROR_INVALID_IDENTITY_SECRET:
+            return "Brainkey identity secret is invalid.";
+        case ERROR_INVALID_PADDING:
+            return "Invalid padding.";
+        case ERROR_PROTOBUF:
+            return "Protobuf error.";
+        case ERROR_SESSION_ID_DOESNT_MATCH:
+            return "Session id doesnt match.";
+        case ERROR_EPOCH_NOT_FOUND:
+            return "Epoch not found.";
+        case ERROR_WRONG_KEY_TYPE:
+            return "Wrong key type.";
+        case ERROR_INVALID_SIGNATURE:
+            return "Invalid signature.";
+        case ERROR_ED25519:
+            return "Ed25519 error.";
+        case ERROR_DUPLICATE_EPOCH:
+            return "Duplicate epoch.";
+        case ERROR_PLAIN_TEXT_TOO_LONG:
+            return "Plain text too long.";
         default:
             return "Unknown error";
         }

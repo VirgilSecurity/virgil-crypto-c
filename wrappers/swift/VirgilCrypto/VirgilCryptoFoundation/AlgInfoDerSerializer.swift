@@ -103,7 +103,6 @@ import VSCFoundation
         }
 
         out.withUnsafeMutableBytes({ (outPointer: UnsafeMutableRawBufferPointer) -> Void in
-            vsc_buffer_init(outBuf)
             vsc_buffer_use(outBuf, outPointer.bindMemory(to: byte.self).baseAddress, outCount)
 
             vscf_alg_info_der_serializer_serialize(self.c_ctx, algInfo.c_ctx, outBuf)

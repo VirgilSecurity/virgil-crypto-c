@@ -54,7 +54,10 @@
 #define VSCE_PHE_CLIENT_DEFS_H_INCLUDED
 
 #include "vsce_library.h"
+#include "vsce_atomic.h"
 #include "vsce_phe_hash.h"
+
+#include <virgil/crypto/foundation/private/vscf_simple_swu.h>
 
 #if !VSCE_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
 #   include <virgil/crypto/foundation/vscf_impl.h>
@@ -90,7 +93,7 @@ struct vsce_phe_client_t {
     //
     //  Reference counter.
     //
-    size_t refcnt;
+    VSCE_ATOMIC size_t refcnt;
     //
     //  Dependency to the interface 'random'.
     //
@@ -99,6 +102,8 @@ struct vsce_phe_client_t {
     //  Dependency to the interface 'random'.
     //
     vscf_impl_t *operation_random;
+
+    vscf_simple_swu_t *simple_swu;
 
     vsce_phe_hash_t *phe_hash;
 

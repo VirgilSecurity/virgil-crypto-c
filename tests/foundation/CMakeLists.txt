@@ -38,6 +38,9 @@ project(virgil_crypto_c_foundation_tests VERSION ${virgil_crypto_c_tests_VERSION
 
 add_subdirectory(data)
 
+# ---------------------------------------------------------------------------
+#   Single thread tests
+# ---------------------------------------------------------------------------
 macro(_add_test test)
     add_executable(${test} ${test}.c)
     target_add_filename_definitions(${test})
@@ -45,6 +48,7 @@ macro(_add_test test)
     target_link_libraries(${test} test_utils test_data_foundation vsc::foundation)
     set_target_properties(${test} PROPERTIES C_STANDARD "99")
     add_test (NAME ${test} COMMAND ${test})
+    enable_target_pedantic(${test})
 
     if(COMMAND add_clangformat AND ENABLE_CLANGFORMAT)
         add_clangformat(${test})
@@ -90,3 +94,27 @@ _add_test (test_curve25519_private_key)
 _add_test (test_curve25519_public_key)
 _add_test (test_secp256r1_private_key)
 _add_test (test_secp256r1_public_key)
+_add_test (test_brainkey)
+_add_test (test_brainkey_client)
+_add_test (test_brainkey_server)
+_add_test (test_simple_swu)
+_add_test (test_group_session)
+_add_test (test_group_message)
+_add_test (test_message_info_editor)
+
+# ---------------------------------------------------------------------------
+#   Multi-threading tests
+# ---------------------------------------------------------------------------
+if (VIRGIL_C_MT_TESTING AND VSCF_MULTI_THREADING)
+    macro(_add_test_mt test)
+        _add_test(${test})
+        set_tests_properties(${test} PROPERTIES LABELS "multi-threading")
+        target_link_libraries(${test} Threads::Threads)
+    endmacro()
+
+    if(CMAKE_USE_WIN32_THREADS_INIT)
+        _add_test_mt(test_mt_win32_refcnt)
+    else()
+        _add_test_mt(test_mt_refcnt)
+    endif()
+endif()

@@ -114,6 +114,9 @@ target_link_libraries(ratchet PUBLIC vsc::ratchet_pb vsc::common vsc::foundation
 #
 # Define specific compilation and linkage flags.
 #
+target_compile_features(ratchet
+        PUBLIC $<IF:$<AND:$<BOOL:${VSCR_HAVE_STDATOMIC_H}>,$<BOOL:${VSCR_MULTI_THREADING}>>,c_std_11,c_std_99>)
+
 set_target_properties(ratchet PROPERTIES
         C_STANDARD "99"
         DEBUG_POSTFIX "_d"
@@ -196,6 +199,7 @@ if(VIRGIL_INSTALL_LIBS)
             LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}"
             ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}"
             FRAMEWORK DESTINATION "${CMAKE_INSTALL_LIBDIR}"
+            RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}"
             )
 endif()
 

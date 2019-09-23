@@ -27,7 +27,7 @@ public class NativeUtils {
 
 	public static void load(String name) {
 		try {
-			LOG.log(Level.WARNING, "Loading \"{0}\" library", name);
+			LOG.log(Level.INFO, "Loading \"{0}\" library", name);
 			NativeUtils.loadLibrary(name);
 		} catch (IOException e) {
 			LOG.log(Level.SEVERE, "Native library can't be loaded.", e);

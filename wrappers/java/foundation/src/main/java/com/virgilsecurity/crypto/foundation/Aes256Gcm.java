@@ -51,13 +51,18 @@ public class Aes256Gcm implements AutoCloseable, Alg, Encrypt, Decrypt, CipherIn
         this.cCtx = FoundationJNI.INSTANCE.aes256Gcm_new();
     }
 
+    /* Wrap underlying C context. */
+    Aes256Gcm(FoundationContextHolder contextHolder) {
+        this.cCtx = contextHolder.cCtx;
+    }
+
     /*
     * Acquire C context.
     * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     */
-    public Aes256Gcm(long cCtx) {
-        super();
-        this.cCtx = cCtx;
+    public static Aes256Gcm getInstance(long cCtx) {
+        FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
+        return new Aes256Gcm(ctxHolder);
     }
 
     /* Close resource. */

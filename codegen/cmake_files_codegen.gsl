@@ -40,7 +40,7 @@
 #   Private function prefix is: Z23.
 # ---------------------------------------------------------------------------
 #   This is a code generator built using the iMatix GSL code generation
-#   language. See https://github.com/imatix/gsl for details.
+#   language. See https://github.com/zeromq/gsl for details.
 # ---------------------------------------------------------------------------
 
 gsl from "common.gsl"
@@ -117,9 +117,15 @@ function _Z23_insert_files_configuration (source, project)
         return
     endif
 
-    cmake_insert ("configure_file(")
-
     for my.source.c_module where c_module.has_cmakedefine
+        for c_module.cmake_include_file_check as check
+            cmake_insert_if(first(), "include(CheckIncludeFiles)")
+            cmake_insert("check_include_files($(check.file:) $(check.result_variable:))")
+            newline_if(last())
+        endfor
+
+        cmake_insert_if(first(), "configure_file(")
+
         if c_module.scope = "public"
             my.relative_dir = cat_path ("include", my.project.namespace_dir)
 
@@ -137,9 +143,9 @@ function _Z23_insert_files_configuration (source, project)
             \"${CMAKE_CURRENT_LIST_DIR}/$(my.relative_dir)/$(c_module.c_include_file:).in\"
             \"${CMAKE_CURRENT_BINARY_DIR}/$(my.relative_dir)/$(c_module.c_include_file:)\"
         ", 2)
-    endfor
 
-    cmake_insert (")", 2)
+        cmake_insert_if(last(), ")", 2)
+    endfor
 
     newline ()
 endfunction

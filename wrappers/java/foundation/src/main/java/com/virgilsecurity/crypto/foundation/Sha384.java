@@ -49,13 +49,18 @@ public class Sha384 implements AutoCloseable, Alg, Hash {
         this.cCtx = FoundationJNI.INSTANCE.sha384_new();
     }
 
+    /* Wrap underlying C context. */
+    Sha384(FoundationContextHolder contextHolder) {
+        this.cCtx = contextHolder.cCtx;
+    }
+
     /*
     * Acquire C context.
     * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     */
-    public Sha384(long cCtx) {
-        super();
-        this.cCtx = cCtx;
+    public static Sha384 getInstance(long cCtx) {
+        FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
+        return new Sha384(ctxHolder);
     }
 
     /* Close resource. */

@@ -73,8 +73,10 @@ target_link_libraries(common PUBLIC vsc::platform)
 #
 # Define specific compilation and linkage flags.
 #
+target_compile_features(common
+        PUBLIC $<IF:$<AND:$<BOOL:${VSC_HAVE_STDATOMIC_H}>,$<BOOL:${VSC_MULTI_THREADING}>>,c_std_11,c_std_99>)
+
 set_target_properties(common PROPERTIES
-        C_STANDARD "99"
         DEBUG_POSTFIX "_d"
         OUTPUT_NAME vsc_common
         )
@@ -162,6 +164,7 @@ if(VIRGIL_INSTALL_LIBS)
             LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}"
             ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}"
             FRAMEWORK DESTINATION "${CMAKE_INSTALL_LIBDIR}"
+            RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}"
             )
 endif()
 

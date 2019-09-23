@@ -49,13 +49,9 @@ public class KeyRecipientInfo implements AutoCloseable {
         this.cCtx = FoundationJNI.INSTANCE.keyRecipientInfo_new();
     }
 
-    /*
-    * Acquire C context.
-    * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-    */
-    public KeyRecipientInfo(long cCtx) {
-        super();
-        this.cCtx = cCtx;
+    /* Wrap underlying C context. */
+    KeyRecipientInfo(FoundationContextHolder contextHolder) {
+        this.cCtx = contextHolder.cCtx;
     }
 
     /*
@@ -64,6 +60,15 @@ public class KeyRecipientInfo implements AutoCloseable {
     public KeyRecipientInfo(byte[] recipientId, AlgInfo keyEncryptionAlgorithm, byte[] encryptedKey) {
         super();
         this.cCtx = FoundationJNI.INSTANCE.keyRecipientInfo_new(recipientId, keyEncryptionAlgorithm, encryptedKey);
+    }
+
+    /*
+    * Acquire C context.
+    * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
+    */
+    public static KeyRecipientInfo getInstance(long cCtx) {
+        FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
+        return new KeyRecipientInfo(ctxHolder);
     }
 
     /* Close resource. */

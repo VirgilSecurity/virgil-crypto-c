@@ -49,13 +49,9 @@ public class SaltedKdfAlgInfo implements AutoCloseable, AlgInfo {
         this.cCtx = FoundationJNI.INSTANCE.saltedKdfAlgInfo_new();
     }
 
-    /*
-    * Acquire C context.
-    * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-    */
-    public SaltedKdfAlgInfo(long cCtx) {
-        super();
-        this.cCtx = cCtx;
+    /* Wrap underlying C context. */
+    SaltedKdfAlgInfo(FoundationContextHolder contextHolder) {
+        this.cCtx = contextHolder.cCtx;
     }
 
     /*
@@ -87,6 +83,15 @@ public class SaltedKdfAlgInfo implements AutoCloseable, AlgInfo {
     */
     public int iterationCount() {
         return FoundationJNI.INSTANCE.saltedKdfAlgInfo_iterationCount(this.cCtx);
+    }
+
+    /*
+    * Acquire C context.
+    * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
+    */
+    public static SaltedKdfAlgInfo getInstance(long cCtx) {
+        FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
+        return new SaltedKdfAlgInfo(ctxHolder);
     }
 
     /* Close resource. */

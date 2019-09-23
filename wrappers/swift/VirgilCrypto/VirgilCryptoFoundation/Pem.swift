@@ -59,7 +59,6 @@ import VSCFoundation
 
         data.withUnsafeBytes({ (dataPointer: UnsafeRawBufferPointer) -> Void in
             pem.withUnsafeMutableBytes({ (pemPointer: UnsafeMutableRawBufferPointer) -> Void in
-                vsc_buffer_init(pemBuf)
                 vsc_buffer_use(pemBuf, pemPointer.bindMemory(to: byte.self).baseAddress, pemCount)
 
                 vscf_pem_wrap(title, vsc_data(dataPointer.bindMemory(to: byte.self).baseAddress, data.count), pemBuf)
@@ -88,7 +87,6 @@ import VSCFoundation
 
         let proxyResult = pem.withUnsafeBytes({ (pemPointer: UnsafeRawBufferPointer) -> vscf_status_t in
             data.withUnsafeMutableBytes({ (dataPointer: UnsafeMutableRawBufferPointer) -> vscf_status_t in
-                vsc_buffer_init(dataBuf)
                 vsc_buffer_use(dataBuf, dataPointer.bindMemory(to: byte.self).baseAddress, dataCount)
 
                 return vscf_pem_unwrap(vsc_data(pemPointer.bindMemory(to: byte.self).baseAddress, pem.count), dataBuf)

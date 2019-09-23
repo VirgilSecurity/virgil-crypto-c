@@ -68,6 +68,11 @@ target_sources(test_data_foundation
             "${CMAKE_CURRENT_LIST_DIR}/include/test_data_key_provider.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/test_data_deterministic_key.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/test_data_secp256r1.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/test_data_brainkey_server.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/test_data_brainkey_client.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/test_data_simple_swu.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/test_data_group_session.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/test_data_message_info.h"
 
         PRIVATE
             "${CMAKE_CURRENT_LIST_DIR}/src/test_data_aes256_gcm.c"
@@ -99,6 +104,11 @@ target_sources(test_data_foundation
             "${CMAKE_CURRENT_LIST_DIR}/src/test_data_key_provider.c"
             "${CMAKE_CURRENT_LIST_DIR}/src/test_data_deterministic_key.c"
             "${CMAKE_CURRENT_LIST_DIR}/src/test_data_secp256r1.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/test_data_brainkey_server.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/test_data_brainkey_client.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/test_data_simple_swu.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/test_data_group_session.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/test_data_message_info.c"
         )
 
 target_include_directories(test_data_foundation

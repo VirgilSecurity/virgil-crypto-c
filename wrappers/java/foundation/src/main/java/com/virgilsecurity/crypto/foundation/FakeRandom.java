@@ -49,13 +49,9 @@ public class FakeRandom implements AutoCloseable, Random, EntropySource {
         this.cCtx = FoundationJNI.INSTANCE.fakeRandom_new();
     }
 
-    /*
-    * Acquire C context.
-    * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-    */
-    public FakeRandom(long cCtx) {
-        super();
-        this.cCtx = cCtx;
+    /* Wrap underlying C context. */
+    FakeRandom(FoundationContextHolder contextHolder) {
+        this.cCtx = contextHolder.cCtx;
     }
 
     /*
@@ -73,6 +69,15 @@ public class FakeRandom implements AutoCloseable, Random, EntropySource {
         FoundationJNI.INSTANCE.fakeRandom_setupSourceData(this.cCtx, dataSource);
     }
 
+    /*
+    * Acquire C context.
+    * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
+    */
+    public static FakeRandom getInstance(long cCtx) {
+        FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
+        return new FakeRandom(ctxHolder);
+    }
+
     /* Close resource. */
     public void close() {
         FoundationJNI.INSTANCE.fakeRandom_close(this.cCtx);
@@ -80,13 +85,14 @@ public class FakeRandom implements AutoCloseable, Random, EntropySource {
 
     /*
     * Generate random bytes.
+    * All RNG implementations must be thread-safe.
     */
     public byte[] random(int dataLen) throws FoundationException {
         return FoundationJNI.INSTANCE.fakeRandom_random(this.cCtx, dataLen);
     }
 
     /*
-    * Retreive new seed data from the entropy sources.
+    * Retrieve new seed data from the entropy sources.
     */
     public void reseed() throws FoundationException {
         FoundationJNI.INSTANCE.fakeRandom_reseed(this.cCtx);

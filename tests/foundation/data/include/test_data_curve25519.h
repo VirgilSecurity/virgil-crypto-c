@@ -41,6 +41,7 @@ extern const vsc_data_t test_curve25519_RANDOM;
 extern const vsc_data_t test_curve25519_EXPORTED_PRIVATE_KEY;
 extern const vsc_data_t test_curve25519_MESSAGE;
 extern const vsc_data_t test_curve25519_ENCRYPTED_MESSAGE;
+extern const vsc_data_t test_curve25519_ENCRYPTED_MESSAGE_WITH_AB_RANDOM;
 
 
 //

@@ -14,8 +14,10 @@
         <require class="alg info der serializer"/>
         <require class="alg info der deserializer"/>
         <require class="oid"/>
+        <require module="message info custom params internal"/>
 
         <require module="buffer defs" project="common"/>
+        <require header="mbedtls/asn1.h"/>
 
         <dependency name="asn1 reader" interface="asn1 reader" has_observers="1"/>
         <dependency name="asn1 writer" interface="asn1 writer" has_observers="1"/>

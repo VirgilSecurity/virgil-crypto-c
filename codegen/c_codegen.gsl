@@ -37,7 +37,7 @@
 #   Functions for C primitives generation: struct, function, enum, etc.
 # ---------------------------------------------------------------------------
 #   This is a code generator built using the iMatix GSL code generation
-#   language. See https://github.com/imatix/gsl for details.
+#   language. See https://github.com/zeromq/gsl for details.
 # ---------------------------------------------------------------------------
 
 
@@ -383,6 +383,14 @@ function c_insert_section_generated_end ()
     c_insert_line_comment ("@end")
 endfunction
 
+# ---------------------------------------------------------------------------
+#   Insert code as is.
+#   Use component: c_code.
+# ---------------------------------------------------------------------------
+function c_insert_code (c_code)
+    check_argument (my, "c_code", my)
+    insert_code (c_code.)
+endfunction
 
 # ###########################################################################
 #   Code generation for type: function.

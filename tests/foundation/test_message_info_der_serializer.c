@@ -63,8 +63,8 @@ test__serialize__one_rsa2048_key_recipient__returns_valid_cms(void) {
             vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_RSA));
 
     vscf_key_recipient_info_t *key_recipient =
-            vscf_key_recipient_info_new_with_members(test_message_info_cms_ONE_RSA2048_KEY_RECIPIENT.recipient_id,
-                    &key_encryption_alg_info, test_message_info_cms_ONE_RSA2048_KEY_RECIPIENT.encrypted_key);
+            vscf_key_recipient_info_new_with_data(test_message_info_cms_ONE_RSA2048_KEY_RECIPIENT.recipient_id,
+                    key_encryption_alg_info, test_message_info_cms_ONE_RSA2048_KEY_RECIPIENT.encrypted_key);
 
     vscf_impl_t *data_encryption_alg_info = vscf_cipher_alg_info_impl(vscf_cipher_alg_info_new_with_members(
             vscf_alg_id_AES256_GCM, test_message_info_cms_ONE_RSA2048_KEY_RECIPIENT.data_encryption_alg_nonce));
@@ -83,6 +83,7 @@ test__serialize__one_rsa2048_key_recipient__returns_valid_cms(void) {
 
     TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_message_info_cms_V2_COMPATIBLE_ONE_RSA2048_KEY_RECIPIENT.serialized, out);
 
+    vscf_impl_destroy(&key_encryption_alg_info);
     vsc_buffer_destroy(&out);
     vscf_message_info_der_serializer_destroy(&serializer);
     vscf_message_info_destroy(&message_info);

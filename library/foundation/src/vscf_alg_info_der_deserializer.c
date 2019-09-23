@@ -61,7 +61,7 @@
 #include "vscf_simple_alg_info.h"
 #include "vscf_salted_kdf_alg_info.h"
 #include "vscf_pbe_alg_info.h"
-#include "vscf_ec_alg_info.h"
+#include "vscf_ecc_alg_info.h"
 #include "vscf_alg_info.h"
 #include "vscf_asn1_reader.h"
 #include "vscf_alg_info_der_deserializer_defs.h"
@@ -137,7 +137,7 @@ vscf_alg_info_der_deserializer_deserialize_pbes2_alg_info(vscf_alg_info_der_dese
 //  parameters defined in the RFC 5480.
 //
 static vscf_impl_t *
-vscf_alg_info_der_deserializer_deserialize_ec_alg_info(vscf_alg_info_der_deserializer_t *self, vscf_oid_id_t oid_id,
+vscf_alg_info_der_deserializer_deserialize_ecc_alg_info(vscf_alg_info_der_deserializer_t *self, vscf_oid_id_t oid_id,
         vscf_error_t *error);
 
 
@@ -504,7 +504,7 @@ vscf_alg_info_der_deserializer_deserialize_pbes2_alg_info(
 //  parameters defined in the RFC 5480.
 //
 static vscf_impl_t *
-vscf_alg_info_der_deserializer_deserialize_ec_alg_info(
+vscf_alg_info_der_deserializer_deserialize_ecc_alg_info(
         vscf_alg_info_der_deserializer_t *self, vscf_oid_id_t oid_id, vscf_error_t *error) {
 
     //  ECParameters ::= CHOICE {
@@ -530,8 +530,8 @@ vscf_alg_info_der_deserializer_deserialize_ec_alg_info(
     }
 
     const vscf_alg_id_t ec_alg_id = vscf_oid_id_to_alg_id(named_curve_id);
-    vscf_ec_alg_info_t *alg_info = vscf_ec_alg_info_new_with_members(ec_alg_id, oid_id, named_curve_id);
-    return vscf_ec_alg_info_impl(alg_info);
+    vscf_ecc_alg_info_t *alg_info = vscf_ecc_alg_info_new_with_members(ec_alg_id, oid_id, named_curve_id);
+    return vscf_ecc_alg_info_impl(alg_info);
 }
 
 //
@@ -565,10 +565,6 @@ vscf_alg_info_der_deserializer_deserialize_inplace(vscf_alg_info_der_deserialize
     }
 
     vscf_oid_id_t oid_id = vscf_oid_to_id(alg_oid);
-    if (vscf_oid_id_NONE == oid_id) {
-        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_UNSUPPORTED_ALGORITHM);
-        return NULL;
-    }
 
     //
     //  Proxy further deserialization for specific algorithm.
@@ -584,7 +580,7 @@ vscf_alg_info_der_deserializer_deserialize_inplace(vscf_alg_info_der_deserialize
         return vscf_alg_info_der_deserializer_deserialize_simple_alg_info(self, oid_id, error);
 
     case vscf_oid_id_EC_GENERIC_KEY:
-        return vscf_alg_info_der_deserializer_deserialize_ec_alg_info(self, oid_id, error);
+        return vscf_alg_info_der_deserializer_deserialize_ecc_alg_info(self, oid_id, error);
 
     case vscf_oid_id_KDF1:
     case vscf_oid_id_KDF2:
@@ -614,12 +610,9 @@ vscf_alg_info_der_deserializer_deserialize_inplace(vscf_alg_info_der_deserialize
     case vscf_oid_id_CMS_DATA:
     case vscf_oid_id_CMS_ENVELOPED_DATA:
     case vscf_oid_id_EC_DOMAIN_SECP256R1:
-        VSCF_ASSERT(0 && "Derived OID is not an algorithm identifier.");
-        break;
-
     case vscf_oid_id_NONE:
-        VSCF_ASSERT(0 && "Unhandled alg id.");
-        break;
+        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_UNSUPPORTED_ALGORITHM);
+        return NULL;
     }
 
     return NULL;

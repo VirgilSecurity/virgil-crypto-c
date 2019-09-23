@@ -82,6 +82,14 @@ function sed_replace {
     fi
 }
 
+function sed_extended_replace {
+    if [ "$(uname -s)" == "Darwin" ]; then
+        sed -i "" -E -e "s/$1/$2/g" "$3"
+    else
+        sed -i"" -r "s/$1/$2/g" "$3"
+    fi
+}
+
 # ###########################################################################
 #   Variables.
 # ###########################################################################
@@ -121,6 +129,21 @@ sed_replace "\(VIRGIL_CRYPTO_VERSION_LABEL\) *\"[a-zA-Z0-9_]*\"" "\1 \"${VERSION
 
 
 # ###########################################################################
+show_info "Change verion within XML in the main.xml."
+
+main_xml_file="${ROOT_DIR}/codegen/main.xml"
+
+main_version_from="version major=\"[0-9]*\".*minor=\"[0-9]*\".*patch=\"[0-9]*\"(.*label=\".*\")?"
+if [ -z "${VERSION_LABEL}" ]; then
+    main_version_to="version major=\"${VERSION_MAJOR}\" minor=\"${VERSION_MINOR}\" patch=\"${VERSION_PATCH}\""
+else
+    main_version_to="version major=\"${VERSION_MAJOR}\" minor=\"${VERSION_MINOR}\" patch=\"${VERSION_PATCH}\" label=\"${VERSION_LABEL}\""
+fi
+
+sed_extended_replace "${main_version_from}" "${main_version_to}" "${main_xml_file}"
+
+
+# ###########################################################################
 show_info "Change verion within XML project files."
 
 XML_PROJECT_FILES=$(find "${ROOT_DIR}/codegen/models" -name "project_*.xml" | tr '\n' ' ')
@@ -153,6 +176,23 @@ for source_file in ${PHP_SOURCE_FILES}; do
 done
 
 # ###########################################################################
+show_info "Change verion within Python wrapper files."
+
+sed_replace "__version__ = \".*\"" "__version__ = \"${VERSION_FULL}\"" "${ROOT_DIR}/wrappers/python/virgil_crypto_lib/__init__.py"
+
+if [ ! -z "${VERSION_LABEL}" ]; then
+    if [[ $VERSION_LABEL == *"alpha"* ]]; then
+        sed_replace "\"Development Status :: .*\"" "\"Development Status :: 3 - Alpha\"" "${ROOT_DIR}/wrappers/python/setup.py"
+    elif [[ $VERSION_LABEL == *"beta"* ]] || [[ $VERSION_LABEL == *"rc"* ]]; then
+        sed_replace "\"Development Status :: .*\"" "\"Development Status :: 4 - Beta\"" "${ROOT_DIR}/wrappers/python/setup.py"
+    else
+        sed_replace "\"Development Status :: .*\"" "\"Development Status :: 2 - Pre-Alpha\"" "${ROOT_DIR}/wrappers/python/setup.py"
+    fi
+else
+    sed_replace "\"Development Status :: .*\"" "\"Development Status :: 5 - Production\/Stable\"" "${ROOT_DIR}/wrappers/python/setup.py"
+fi
+
+# ###########################################################################
 show_info "Change verion within Java project files."
 pushd ${ROOT_DIR}/wrappers/java >/dev/null
 if [ -z "${VERSION_LABEL}" ]; then
@@ -170,3 +210,12 @@ if [ -z "${VERSION_LABEL}" ]; then
 else
     sed_replace "version \".*\"" "version \"${VERSION}-SNAPSHOT\"" "${ROOT_DIR}/wrappers/java/android/build.gradle"
 fi
+
+# ###########################################################################
+show_info "Change verion within VSCCrypto.podspec file."
+sed_replace "s.version\( *= *\)\"[0-9]*\.[0-9]*\.[0-9]*\"" "s.version\1\"${VERSION}\"" "${ROOT_DIR}/VSCCrypto.podspec"
+sed_replace "\(s.source[^0-9]*\)[0-9]*\.[0-9]*\.[0-9]*" "\1${VERSION}" "${ROOT_DIR}/VSCCrypto.podspec"
+
+# ###########################################################################
+show_info "Change verion within JS package.json file."
+sed_replace "\(\"version\" *: *\)\"[0-9]*\.[0-9]*\.[0-9]*\"" "\1\"${VERSION}\"" "${ROOT_DIR}/wrappers/wasm/package.json"

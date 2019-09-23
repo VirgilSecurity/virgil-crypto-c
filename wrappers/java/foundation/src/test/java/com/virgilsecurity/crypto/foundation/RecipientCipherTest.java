@@ -1,5 +1,6 @@
 package com.virgilsecurity.crypto.foundation;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.nio.charset.StandardCharsets;
@@ -28,29 +29,93 @@ public class RecipientCipherTest extends SampleBasedTest {
 
 	@Test
 	public void encrypt_decrypt__with_ed25519() {
-		try (Ed25519PrivateKey privateKey = new Ed25519PrivateKey()) {
-			privateKey.setupDefaults();
-			privateKey.generateKey();
+		byte[] data = getBytes("data");
+		byte[] recipientId = new byte[] { 0x01, 0x02, 0x03 };
 
-			Ed25519PublicKey publicKey = (Ed25519PublicKey) privateKey.extractPublicKey();
-			byte[] recipientId = new byte[] { 0x01, 0x02, 0x03 };
+		try (Ed25519 ed = new Ed25519()) {
+			ed.setupDefaults();
 
-			this.recipientCipher.addKeyRecipient(recipientId, publicKey);
-			this.recipientCipher.customParams().addData(CUSTOM_PARAM_SIGNER_ID, CUSTOM_PARAM_SIGNER_ID);
-			this.recipientCipher.customParams().addData(CUSTOM_PARAM_SIGNATURE, CUSTOM_PARAM_SIGNATURE);
+			try (RawPrivateKey privateKey = (RawPrivateKey) ed.generateKey()) {
 
-			this.recipientCipher.startEncryption();
+				// Encrypt
+				this.recipientCipher.addKeyRecipient(recipientId, privateKey.extractPublicKey());
+				this.recipientCipher.customParams().addData(CUSTOM_PARAM_SIGNER_ID, CUSTOM_PARAM_SIGNER_ID);
+				this.recipientCipher.customParams().addData(CUSTOM_PARAM_SIGNATURE, CUSTOM_PARAM_SIGNATURE);
 
-			byte[] processEncryptionData = this.recipientCipher.processEncryption(getBytes("data"));
-			assertNotNull(processEncryptionData);
+				this.recipientCipher.startEncryption();
 
-			byte[] finishEncryptionData = this.recipientCipher.finishEncryption();
-			assertNotNull(finishEncryptionData);
+				byte[] messageInfo = this.recipientCipher.packMessageInfo();
+				assertNotNull(messageInfo);
 
-			byte[] encryptedData = ArrayUtils.addAll(processEncryptionData, finishEncryptionData);
+				byte[] processEncryptionData = this.recipientCipher.processEncryption(data);
+				assertNotNull(processEncryptionData);
 
-			this.recipientCipher.customParams().findData(CUSTOM_PARAM_SIGNER_ID);
-			this.recipientCipher.customParams().findData(CUSTOM_PARAM_SIGNATURE);
+				byte[] finishEncryptionData = this.recipientCipher.finishEncryption();
+				assertNotNull(finishEncryptionData);
+
+				byte[] encryptedData = ArrayUtils.addAll(messageInfo,
+						ArrayUtils.addAll(processEncryptionData, finishEncryptionData));
+
+				// Decrypt
+				try (RecipientCipher cipher = new RecipientCipher()) {
+					cipher.startDecryptionWithKey(recipientId, privateKey, new byte[0]);
+
+					byte[] processDecryptionData = cipher.processDecryption(encryptedData);
+					assertNotNull(processDecryptionData);
+
+					byte[] finishDecryptionData = cipher.finishDecryption();
+					assertNotNull(finishDecryptionData);
+
+					byte[] decryptedData = ArrayUtils.addAll(processDecryptionData, finishDecryptionData);
+					assertArrayEquals(data, decryptedData);
+				}
+			}
+		}
+	}
+
+	@Test
+	public void encrypt_decrypt__with_rsa() {
+		byte[] data = getBytes("data");
+		byte[] recipientId = new byte[] { 0x01, 0x02, 0x03 };
+
+		try (Rsa rsa = new Rsa()) {
+			rsa.setupDefaults();
+
+			try (RsaPrivateKey privateKey = (RsaPrivateKey) rsa.generateKey(2048)) {
+
+				// Encrypt
+				this.recipientCipher.addKeyRecipient(recipientId, privateKey.extractPublicKey());
+				this.recipientCipher.customParams().addData(CUSTOM_PARAM_SIGNER_ID, CUSTOM_PARAM_SIGNER_ID);
+				this.recipientCipher.customParams().addData(CUSTOM_PARAM_SIGNATURE, CUSTOM_PARAM_SIGNATURE);
+
+				this.recipientCipher.startEncryption();
+
+				byte[] messageInfo = this.recipientCipher.packMessageInfo();
+				assertNotNull(messageInfo);
+
+				byte[] processEncryptionData = this.recipientCipher.processEncryption(data);
+				assertNotNull(processEncryptionData);
+
+				byte[] finishEncryptionData = this.recipientCipher.finishEncryption();
+				assertNotNull(finishEncryptionData);
+
+				byte[] encryptedData = ArrayUtils.addAll(messageInfo,
+						ArrayUtils.addAll(processEncryptionData, finishEncryptionData));
+
+				// Decrypt
+				try (RecipientCipher cipher = new RecipientCipher()) {
+					cipher.startDecryptionWithKey(recipientId, privateKey, new byte[0]);
+
+					byte[] processDecryptionData = cipher.processDecryption(encryptedData);
+					assertNotNull(processDecryptionData);
+
+					byte[] finishDecryptionData = cipher.finishDecryption();
+					assertNotNull(finishDecryptionData);
+
+					byte[] decryptedData = ArrayUtils.addAll(processDecryptionData, finishDecryptionData);
+					assertArrayEquals(data, decryptedData);
+				}
+			}
 		}
 	}
 

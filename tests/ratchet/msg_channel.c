@@ -144,5 +144,4 @@ pop_msg(msg_channel_t *self) {
     return res;
 }
 
-
 #endif

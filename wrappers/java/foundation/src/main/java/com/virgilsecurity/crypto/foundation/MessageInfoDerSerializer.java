@@ -49,13 +49,9 @@ public class MessageInfoDerSerializer implements AutoCloseable, MessageInfoSeria
         this.cCtx = FoundationJNI.INSTANCE.messageInfoDerSerializer_new();
     }
 
-    /*
-    * Acquire C context.
-    * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-    */
-    public MessageInfoDerSerializer(long cCtx) {
-        super();
-        this.cCtx = cCtx;
+    /* Wrap underlying C context. */
+    MessageInfoDerSerializer(FoundationContextHolder contextHolder) {
+        this.cCtx = contextHolder.cCtx;
     }
 
     public void setAsn1Reader(Asn1Reader asn1Reader) {
@@ -71,6 +67,15 @@ public class MessageInfoDerSerializer implements AutoCloseable, MessageInfoSeria
     */
     public void setupDefaults() {
         FoundationJNI.INSTANCE.messageInfoDerSerializer_setupDefaults(this.cCtx);
+    }
+
+    /*
+    * Acquire C context.
+    * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
+    */
+    public static MessageInfoDerSerializer getInstance(long cCtx) {
+        FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
+        return new MessageInfoDerSerializer(ctxHolder);
     }
 
     /* Close resource. */

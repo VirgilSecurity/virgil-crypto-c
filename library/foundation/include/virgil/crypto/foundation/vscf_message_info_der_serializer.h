@@ -108,6 +108,12 @@ VSCF_PUBLIC vscf_impl_t *
 vscf_message_info_der_serializer_impl(vscf_message_info_der_serializer_t *self);
 
 //
+//  Cast to the const 'vscf_impl_t' type.
+//
+VSCF_PUBLIC const vscf_impl_t *
+vscf_message_info_der_serializer_impl_const(const vscf_message_info_der_serializer_t *self);
+
+//
 //  Perform initialization of preallocated implementation context.
 //
 VSCF_PUBLIC void
@@ -144,7 +150,6 @@ vscf_message_info_der_serializer_destroy(vscf_message_info_der_serializer_t **se
 
 //
 //  Copy given implementation context by increasing reference counter.
-//  If deep copy is required interface 'clonable' can be used.
 //
 VSCF_PUBLIC vscf_message_info_der_serializer_t *
 vscf_message_info_der_serializer_shallow_copy(vscf_message_info_der_serializer_t *self);

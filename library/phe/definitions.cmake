@@ -53,10 +53,9 @@ target_compile_definitions(phe
         PUBLIC
             $<BUILD_INTERFACE:VSCE_INTERNAL_BUILD>
             "VSCE_LIBRARY=$<BOOL:${VSCE_LIBRARY}>"
-            "VSCE_MULTI_THREAD=$<BOOL:${VSCE_MULTI_THREAD}>"
+            "VSCE_MULTI_THREADING=$<BOOL:${VSCE_MULTI_THREADING}>"
             "VSCE_ERROR=$<BOOL:${VSCE_ERROR}>"
             "VSCE_PHE_COMMON=$<BOOL:${VSCE_PHE_COMMON}>"
-            "VSCE_SIMPLE_SWU=$<BOOL:${VSCE_SIMPLE_SWU}>"
             "VSCE_PHE_HASH=$<BOOL:${VSCE_PHE_HASH}>"
             "VSCE_PHE_SERVER=$<BOOL:${VSCE_PHE_SERVER}>"
             "VSCE_PHE_CLIENT=$<BOOL:${VSCE_PHE_CLIENT}>"

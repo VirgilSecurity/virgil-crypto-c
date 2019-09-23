@@ -59,13 +59,14 @@
 #include "vscf_library.h"
 #include "vscf_impl_private.h"
 #include "vscf_fake_random.h"
+#include "vscf_atomic.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <virgil/crypto/common/vsc_data.h>
+#   include <virgil/crypto/common/vsc_buffer.h>
 #endif
 
 #if VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <VSCCommon/vsc_data.h>
+#   include <VSCCommon/vsc_buffer.h>
 #endif
 
 // clang-format on
@@ -94,11 +95,11 @@ struct vscf_fake_random_t {
     //
     //  Reference counter.
     //
-    size_t refcnt;
+    VSCF_ATOMIC size_t refcnt;
     //
     //  Implementation specific context.
     //
-    vsc_data_t data_source;
+    vsc_buffer_t *data_source;
     //
     //  Implementation specific context.
     //

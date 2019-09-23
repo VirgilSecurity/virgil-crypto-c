@@ -1,0 +1,42 @@
+apply plugin: 'com.android.library'
+apply plugin: 'androidx.benchmark'
+
+android {
+    compileSdkVersion 28
+
+    defaultConfig {
+        minSdkVersion 21
+        targetSdkVersion 28
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner 'androidx.benchmark.AndroidBenchmarkRunner'
+    }
+
+    buildTypes {
+        debug {
+            // Since debuggable can't be modified by gradle for library modules,
+            // it must be done in a manifest - see src/androidTest/AndroidManifest.xml
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'benchmark-proguard-rules.pro'
+        }
+    }
+}
+
+dependencies {
+    implementation project(':foundation')
+    implementation project(':phe')
+    implementation project(':pythia')
+    implementation project(':ratchet')
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    // Add your dependencies here. Note that you cannot benchmark code
+    // in an app module this way - you will need to move any code you
+    // want to benchmark to a library module:
+    // https://developer.android.com/studio/projects/android-library#Convert
+
+    androidTestImplementation 'androidx.test:runner:1.2.0'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
+    androidTestImplementation 'junit:junit:4.12'
+    androidTestImplementation 'androidx.benchmark:benchmark:1.0.0-alpha01'
+}

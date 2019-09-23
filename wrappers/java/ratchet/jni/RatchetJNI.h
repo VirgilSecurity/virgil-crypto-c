@@ -53,6 +53,8 @@ JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratchet
 
 JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratchetMessage_1getType (JNIEnv *, jobject, jlong);
 
+JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratchetMessage_1getCounter (JNIEnv *, jobject, jlong);
+
 JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratchetMessage_1getLongTermPublicKey (JNIEnv *, jobject, jlong);
 
 JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratchetMessage_1getOneTimePublicKey (JNIEnv *, jobject, jlong);
@@ -87,11 +89,17 @@ JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratchet
 
 JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratchetSession_1decrypt (JNIEnv *, jobject, jlong, jobject);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratchetSession_1serializeLen (JNIEnv *, jobject, jlong);
-
 JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratchetSession_1serialize (JNIEnv *, jobject, jlong);
 
 JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratchetSession_1deserialize (JNIEnv *, jobject, jbyteArray);
+
+JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratchetGroupParticipantsInfo_1new__ (JNIEnv *, jobject);
+
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratchetGroupParticipantsInfo_1close (JNIEnv *, jobject, jlong);
+
+JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratchetGroupParticipantsInfo_1new__J (JNIEnv *, jobject, jlong);
+
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratchetGroupParticipantsInfo_1addParticipant (JNIEnv *, jobject, jlong, jbyteArray, jbyteArray);
 
 JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratchetGroupMessage_1new__ (JNIEnv *, jobject);
 
@@ -101,11 +109,9 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratc
 
 JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratchetGroupMessage_1getSessionId (JNIEnv *, jobject, jlong);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratchetGroupMessage_1getPubKeyCount (JNIEnv *, jobject, jlong);
+JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratchetGroupMessage_1getCounter (JNIEnv *, jobject, jlong);
 
-JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratchetGroupMessage_1getPubKeyId (JNIEnv *, jobject, jlong, jbyteArray);
-
-JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratchetGroupMessage_1getSenderId (JNIEnv *, jobject, jlong);
+JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratchetGroupMessage_1getEpoch (JNIEnv *, jobject, jlong);
 
 JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratchetGroupMessage_1serializeLen (JNIEnv *, jobject, jlong);
 
@@ -121,13 +127,17 @@ JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratchet
 
 JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratchetGroupTicket_1setupDefaults (JNIEnv *, jobject, jlong);
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratchetGroupTicket_1setupTicketAsNew (JNIEnv *, jobject, jlong);
-
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratchetGroupTicket_1addNewParticipant (JNIEnv *, jobject, jlong, jbyteArray, jbyteArray);
-
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratchetGroupTicket_1removeParticipant (JNIEnv *, jobject, jlong, jbyteArray);
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratchetGroupTicket_1setupTicketAsNew (JNIEnv *, jobject, jlong, jbyteArray);
 
 JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratchetGroupTicket_1getTicketMessage (JNIEnv *, jobject, jlong);
+
+JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratchetGroupParticipantsIds_1new__ (JNIEnv *, jobject);
+
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratchetGroupParticipantsIds_1close (JNIEnv *, jobject, jlong);
+
+JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratchetGroupParticipantsIds_1new__J (JNIEnv *, jobject, jlong);
+
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratchetGroupParticipantsIds_1addId (JNIEnv *, jobject, jlong, jbyteArray);
 
 JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratchetGroupSession_1new__ (JNIEnv *, jobject);
 
@@ -141,7 +151,7 @@ JNIEXPORT jboolean JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_rat
 
 JNIEXPORT jboolean JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratchetGroupSession_1isMyIdSet (JNIEnv *, jobject, jlong);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratchetGroupSession_1getCurrentEpoch (JNIEnv *, jobject, jlong);
+JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratchetGroupSession_1getCurrentEpoch (JNIEnv *, jobject, jlong);
 
 JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratchetGroupSession_1setupDefaults (JNIEnv *, jobject, jlong);
 
@@ -153,25 +163,23 @@ JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_r
 
 JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratchetGroupSession_1getSessionId (JNIEnv *, jobject, jlong);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratchetGroupSession_1getParticipantsCount (JNIEnv *, jobject, jlong);
+JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratchetGroupSession_1getParticipantsCount (JNIEnv *, jobject, jlong);
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratchetGroupSession_1setupSession (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratchetGroupSession_1setupSessionState (JNIEnv *, jobject, jlong, jobject, jobject);
+
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratchetGroupSession_1updateSessionState (JNIEnv *, jobject, jlong, jobject, jobject, jobject);
 
 JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratchetGroupSession_1encrypt (JNIEnv *, jobject, jlong, jbyteArray);
 
 JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratchetGroupSession_1decryptLen (JNIEnv *, jobject, jlong, jobject);
 
-JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratchetGroupSession_1decrypt (JNIEnv *, jobject, jlong, jobject);
-
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratchetGroupSession_1serializeLen (JNIEnv *, jobject, jlong);
+JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratchetGroupSession_1decrypt (JNIEnv *, jobject, jlong, jobject, jbyteArray);
 
 JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratchetGroupSession_1serialize (JNIEnv *, jobject, jlong);
 
 JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratchetGroupSession_1deserialize (JNIEnv *, jobject, jbyteArray);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratchetGroupSession_1createGroupTicketForAddingParticipants (JNIEnv *, jobject, jlong);
-
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratchetGroupSession_1createGroupTicketForAddingOrRemovingParticipants (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratchetGroupSession_1createGroupTicket (JNIEnv *, jobject, jlong);
 
 #ifdef __cplusplus
 }

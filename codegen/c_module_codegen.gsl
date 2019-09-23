@@ -37,7 +37,7 @@
 #   Generate C header or source file based on the 'common' c_module.
 # ---------------------------------------------------------------------------
 #   This is a code generator built using the iMatix GSL code generation
-#   language. See https://github.com/imatix/gsl for details.
+#   language. See https://github.com/zeromq/gsl for details.
 # ---------------------------------------------------------------------------
 
 gsl from "c_codegen.gsl"
@@ -62,6 +62,11 @@ function c_module_generate_header (c_module)
     for my.c_module.c_alias where declaration = "public"
         newline ()
         c_insert_alias (c_alias)
+    endfor
+
+    for my.c_module.c_code where definition = "public"
+        newline ()
+        c_insert_code (c_code)
     endfor
 
     for my.c_module.c_macroses where definition = "public"
@@ -134,6 +139,11 @@ function c_module_generate_source (c_module)
     for my.c_module.c_alias where declaration = "private"
         newline ()
         c_insert_alias (c_alias)
+    endfor
+
+    for my.c_module.c_code where definition = "private"
+        newline ()
+        c_insert_code (c_code)
     endfor
 
     for my.c_module.c_macroses where definition = "private"

@@ -34,7 +34,7 @@
 
 cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
-project(virgil_crypto VERSION 0.7.0 LANGUAGES C)
+project(virgil_crypto VERSION 0.10.4 LANGUAGES C)
 
 
 # ---------------------------------------------------------------------------
@@ -57,7 +57,7 @@ include("cmake/protobuf.cmake")
 # ---------------------------------------------------------------------------
 #   Version options
 # ---------------------------------------------------------------------------
-set(VIRGIL_CRYPTO_VERSION_LABEL "alpha2" CACHE STRING "Version label, i.e. beta, rc1.")
+set(VIRGIL_CRYPTO_VERSION_LABEL "dev1" CACHE STRING "Version label, i.e. beta, rc1.")
 
 # ---------------------------------------------------------------------------
 #   Build options
@@ -75,6 +75,7 @@ option(ENABLE_TESTING "On/Off integration tests." ON)
 option(ENABLE_HEAVY_TESTS "On/Off execution of heavy tests." OFF)
 option(ENABLE_PROFILING "On/Off GProf compilation options." OFF)
 option(ENABLE_FUZZY_TESTING "On/Off fyzzy tests." OFF)
+option(ENABLE_BENCHMARKING "On/Off execution of benchmarks." OFF)
 
 #
 # Code formatting
@@ -82,6 +83,7 @@ option(ENABLE_FUZZY_TESTING "On/Off fyzzy tests." OFF)
 option(ENABLE_CLANGFORMAT "On/Off formatting source code with clangformat." ON)
 
 option(VIRGIL_C_TESTING "On/Off C library integration tests." ON)
+option(VIRGIL_C_MT_TESTING "On/Off C library multi-threading tests." OFF)
 option(VIRGIL_PHP_TESTING "On/Off PHP wrapper integration tests." ON)
 
 #
@@ -101,6 +103,7 @@ option(VIRGIL_WRAP_ALL "Build all available wrappers on the given platform" OFF)
 option(VIRGIL_WRAP_GO "Build 'Golang' wrapper" OFF)
 option(VIRGIL_WRAP_PHP "Build 'PHP' wrapper" OFF)
 option(VIRGIL_WRAP_JAVA "Build 'Java' wrapper" OFF)
+option(VIRGIL_WRAP_WASM "Build 'WebAssembly' wrapper" OFF)
 
 # ---------------------------------------------------------------------------
 #   Platfrom specific.
@@ -211,8 +214,16 @@ if(ENABLE_TESTING)
     include(CTest)
 endif()
 
-if(VIRGIL_C_TESTING AND NOT CMAKE_CROSSCOMPILING)
+if(ENABLE_TESTING AND VIRGIL_C_TESTING AND NOT CMAKE_CROSSCOMPILING)
     add_subdirectory(tests)
+endif()
+
+# ---------------------------------------------------------------------------
+#   Benchmarks
+# ---------------------------------------------------------------------------
+
+if(ENABLE_BENCHMARKING AND NOT CMAKE_CROSSCOMPILING)
+    add_subdirectory("benchmarks")
 endif()
 
 # ---------------------------------------------------------------------------
@@ -228,6 +239,10 @@ endif()
 
 if(VIRGIL_WRAP_ALL OR VIRGIL_WRAP_JAVA)
     add_subdirectory("wrappers/java")
+endif()
+
+if(VIRGIL_WRAP_WASM)
+    add_subdirectory("wrappers/wasm")
 endif()
 
 

@@ -54,6 +54,7 @@
 #define VSC_BUFFER_DEFS_H_INCLUDED
 
 #include "vsc_library.h"
+#include "vsc_atomic.h"
 
 // clang-format on
 //  @end
@@ -81,7 +82,7 @@ struct vsc_buffer_t {
     //
     //  Reference counter.
     //
-    size_t refcnt;
+    VSC_ATOMIC size_t refcnt;
     //
     //  Function do deallocate underlying byte array.
     //

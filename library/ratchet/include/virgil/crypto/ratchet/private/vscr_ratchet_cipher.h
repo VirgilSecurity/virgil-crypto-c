@@ -49,13 +49,13 @@
 
 #include "vscr_library.h"
 #include "vscr_ratchet_typedefs.h"
-#include "vscr_ratchet_padding.h"
 #include "vscr_ratchet_message_key.h"
 #include "vscr_status.h"
 
-#include <RatchetMessage.pb.h>
+#include <vscr_RatchetMessage.pb.h>
 #include <pb_decode.h>
 #include <pb_encode.h>
+#include <virgil/crypto/foundation/private/vscf_message_padding.h>
 
 #if !VSCR_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_data.h>
@@ -113,7 +113,7 @@ vscr_ratchet_cipher_new(void);
 
 //
 //  Release all inner resources and deallocate context if needed.
-//  It is safe to call this method even if context was allocated by the caller.
+//  It is safe to call this method even if the context was statically allocated.
 //
 VSCR_PUBLIC void
 vscr_ratchet_cipher_delete(vscr_ratchet_cipher_t *self);
@@ -146,7 +146,7 @@ vscr_ratchet_cipher_decrypt(vscr_ratchet_cipher_t *self, const vscr_ratchet_symm
         vsc_data_t additional_data, vsc_buffer_t *buffer) VSCR_NODISCARD;
 
 VSCR_PUBLIC vscr_status_t
-vscr_ratchet_cipher_pad_then_encrypt(vscr_ratchet_cipher_t *self, vscr_ratchet_padding_t *padding, vsc_data_t data,
+vscr_ratchet_cipher_pad_then_encrypt(vscr_ratchet_cipher_t *self, vscf_message_padding_t *padding, vsc_data_t data,
         const vscr_ratchet_message_key_t *key, vsc_data_t ad, vsc_buffer_t *cipher_text) VSCR_NODISCARD;
 
 VSCR_PUBLIC vscr_status_t

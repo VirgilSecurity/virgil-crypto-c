@@ -96,7 +96,7 @@ import VirgilCryptoFoundation
     }
 
     /// Returns current epoch.
-    @objc public func getCurrentEpoch() -> Int {
+    @objc public func getCurrentEpoch() -> UInt32 {
         let proxyResult = vscr_ratchet_group_session_get_current_epoch(self.c_ctx)
 
         return proxyResult
@@ -120,7 +120,7 @@ import VirgilCryptoFoundation
         try RatchetError.handleStatus(fromC: proxyResult)
     }
 
-    /// Sets my id.
+    /// Sets my id. Should be 32 byte
     @objc public func setMyId(myId: Data) {
         myId.withUnsafeBytes({ (myIdPointer: UnsafeRawBufferPointer) -> Void in
 
@@ -143,16 +143,26 @@ import VirgilCryptoFoundation
     }
 
     /// Returns number of participants.
-    @objc public func getParticipantsCount() -> Int {
+    @objc public func getParticipantsCount() -> UInt32 {
         let proxyResult = vscr_ratchet_group_session_get_participants_count(self.c_ctx)
 
         return proxyResult
     }
 
     /// Sets up session.
+    /// Use this method when you have newer epoch message and know all participants info.
     /// NOTE: Identity private key and my id should be set separately.
-    @objc public func setupSession(message: RatchetGroupMessage) throws {
-        let proxyResult = vscr_ratchet_group_session_setup_session(self.c_ctx, message.c_ctx)
+    @objc public func setupSessionState(message: RatchetGroupMessage, participants: RatchetGroupParticipantsInfo) throws {
+        let proxyResult = vscr_ratchet_group_session_setup_session_state(self.c_ctx, message.c_ctx, participants.c_ctx)
+
+        try RatchetError.handleStatus(fromC: proxyResult)
+    }
+
+    /// Sets up session.
+    /// Use this method when you have message with next epoch, and you know how participants set was changed.
+    /// NOTE: Identity private key and my id should be set separately.
+    @objc public func updateSessionState(message: RatchetGroupMessage, addParticipants: RatchetGroupParticipantsInfo, removeParticipants: RatchetGroupParticipantsIds) throws {
+        let proxyResult = vscr_ratchet_group_session_update_session_state(self.c_ctx, message.c_ctx, addParticipants.c_ctx, removeParticipants.c_ctx)
 
         try RatchetError.handleStatus(fromC: proxyResult)
     }
@@ -180,7 +190,7 @@ import VirgilCryptoFoundation
     }
 
     /// Decrypts message
-    @objc public func decrypt(message: RatchetGroupMessage) throws -> Data {
+    @objc public func decrypt(message: RatchetGroupMessage, senderId: Data) throws -> Data {
         let plainTextCount = self.decryptLen(message: message)
         var plainText = Data(count: plainTextCount)
         var plainTextBuf = vsc_buffer_new()
@@ -188,11 +198,12 @@ import VirgilCryptoFoundation
             vsc_buffer_delete(plainTextBuf)
         }
 
-        let proxyResult = plainText.withUnsafeMutableBytes({ (plainTextPointer: UnsafeMutableRawBufferPointer) -> vscr_status_t in
-            vsc_buffer_init(plainTextBuf)
-            vsc_buffer_use(plainTextBuf, plainTextPointer.bindMemory(to: byte.self).baseAddress, plainTextCount)
+        let proxyResult = senderId.withUnsafeBytes({ (senderIdPointer: UnsafeRawBufferPointer) -> vscr_status_t in
+            plainText.withUnsafeMutableBytes({ (plainTextPointer: UnsafeMutableRawBufferPointer) -> vscr_status_t in
+                vsc_buffer_use(plainTextBuf, plainTextPointer.bindMemory(to: byte.self).baseAddress, plainTextCount)
 
-            return vscr_ratchet_group_session_decrypt(self.c_ctx, message.c_ctx, plainTextBuf)
+                return vscr_ratchet_group_session_decrypt(self.c_ctx, message.c_ctx, vsc_data(senderIdPointer.bindMemory(to: byte.self).baseAddress, senderId.count), plainTextBuf)
+            })
         })
         plainText.count = vsc_buffer_len(plainTextBuf)
 
@@ -201,32 +212,16 @@ import VirgilCryptoFoundation
         return plainText
     }
 
-    /// Calculates size of buffer sufficient to store session
-    @objc public func serializeLen() -> Int {
-        let proxyResult = vscr_ratchet_group_session_serialize_len(self.c_ctx)
-
-        return proxyResult
-    }
-
     /// Serializes session to buffer
     /// NOTE: Session changes its state every encrypt/decrypt operations. Be sure to save it.
     @objc public func serialize() -> Data {
-        let outputCount = self.serializeLen()
-        var output = Data(count: outputCount)
-        var outputBuf = vsc_buffer_new()
+        let proxyResult = vscr_ratchet_group_session_serialize(self.c_ctx)
+
         defer {
-            vsc_buffer_delete(outputBuf)
+            vsc_buffer_delete(proxyResult)
         }
 
-        output.withUnsafeMutableBytes({ (outputPointer: UnsafeMutableRawBufferPointer) -> Void in
-            vsc_buffer_init(outputBuf)
-            vsc_buffer_use(outputBuf, outputPointer.bindMemory(to: byte.self).baseAddress, outputCount)
-
-            vscr_ratchet_group_session_serialize(self.c_ctx, outputBuf)
-        })
-        output.count = vsc_buffer_len(outputBuf)
-
-        return output
+        return Data.init(bytes: vsc_buffer_bytes(proxyResult), count: vsc_buffer_len(proxyResult))
     }
 
     /// Deserializes session from buffer.
@@ -248,20 +243,12 @@ import VirgilCryptoFoundation
         return RatchetGroupSession.init(take: proxyResult!)
     }
 
-    /// Creates ticket for adding participants to this session.
-    /// NOTE: This ticket is not suitable for removing participants from this session.
-    @objc public func createGroupTicketForAddingParticipants() -> RatchetGroupTicket {
-        let proxyResult = vscr_ratchet_group_session_create_group_ticket_for_adding_participants(self.c_ctx)
-
-        return RatchetGroupTicket.init(take: proxyResult!)
-    }
-
-    /// Creates ticket for adding and or removing participants to/from this session.
-    @objc public func createGroupTicketForAddingOrRemovingParticipants() throws -> RatchetGroupTicket {
+    /// Creates ticket with new key for adding or removing participants.
+    @objc public func createGroupTicket() throws -> RatchetGroupTicket {
         var error: vscr_error_t = vscr_error_t()
         vscr_error_reset(&error)
 
-        let proxyResult = vscr_ratchet_group_session_create_group_ticket_for_adding_or_removing_participants(self.c_ctx, &error)
+        let proxyResult = vscr_ratchet_group_session_create_group_ticket(self.c_ctx, &error)
 
         try RatchetError.handleStatus(fromC: error.status)
 

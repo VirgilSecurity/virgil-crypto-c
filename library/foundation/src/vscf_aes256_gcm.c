@@ -114,6 +114,63 @@ vscf_aes256_gcm_cleanup_ctx(vscf_aes256_gcm_t *self) {
 }
 
 //
+//  Process buffered encryption/decryption to ensure that data size is
+//  multiple of the block size of the cipher.
+//
+VSCF_PRIVATE void
+vscf_aes256_gcm_update_internal(vscf_aes256_gcm_t *self, vsc_data_t data, vsc_buffer_t *out) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT(vsc_data_is_valid(data));
+    VSCF_ASSERT(vsc_buffer_is_valid(out));
+
+    int status = 0;
+    size_t written_len = 0;
+
+    const size_t pending_len = vscf_aes256_gcm_BLOCK_LEN - self->cached_data_len;
+    if (self->cached_data_len > 0) {
+        //  augment cache
+        const size_t augmented_len = pending_len < data.len ? pending_len : data.len; // MIN
+        memcpy(self->cached_data + self->cached_data_len, data.bytes, augmented_len);
+        self->cached_data_len += augmented_len;
+
+        if (self->cached_data_len < vscf_aes256_gcm_BLOCK_LEN) {
+            //  not enough data to process
+            return;
+        }
+
+        //  process cache
+        VSCF_ASSERT(vscf_aes256_gcm_BLOCK_LEN == self->cached_data_len);
+        VSCF_ASSERT(vsc_buffer_unused_len(out) >= vscf_aes256_gcm_out_len(self, self->cached_data_len));
+
+        status = mbedtls_cipher_update(&self->cipher_ctx, self->cached_data, self->cached_data_len,
+                vsc_buffer_unused_bytes(out), &written_len);
+        VSCF_ASSERT_LIBRARY_MBEDTLS_SUCCESS(status);
+        vsc_buffer_inc_used(out, written_len);
+        self->cached_data_len = 0;
+
+        //  move data forward
+        data = vsc_data_slice_beg(data, augmented_len, data.len - augmented_len);
+    }
+
+    const size_t unprocessed_data_len = data.len % vscf_aes256_gcm_BLOCK_LEN;
+    vsc_data_t processed_data = vsc_data_slice_beg(data, 0, data.len - unprocessed_data_len);
+    if (!vsc_data_is_empty(processed_data)) {
+        //  process data that is aligned to the block size
+        VSCF_ASSERT(vsc_buffer_unused_len(out) >= vscf_aes256_gcm_out_len(self, processed_data.len));
+        status = mbedtls_cipher_update(&self->cipher_ctx, processed_data.bytes, processed_data.len,
+                vsc_buffer_unused_bytes(out), &written_len);
+        VSCF_ASSERT_LIBRARY_MBEDTLS_SUCCESS(status);
+        vsc_buffer_inc_used(out, written_len);
+    }
+
+    //  cache unprocessed data
+    VSCF_ASSERT(0 == self->cached_data_len);
+    memcpy(self->cached_data, data.bytes + processed_data.len, unprocessed_data_len);
+    self->cached_data_len += unprocessed_data_len;
+}
+
+//
 //  Provide algorithm identificator.
 //
 VSCF_PUBLIC vscf_alg_id_t
@@ -294,37 +351,69 @@ vscf_aes256_gcm_update(vscf_aes256_gcm_t *self, vsc_data_t data, vsc_buffer_t *o
     VSCF_ASSERT(vsc_data_is_valid(data));
     VSCF_ASSERT(vsc_buffer_is_valid(out));
 
-    vsc_data_t filtered_data = data;
+    if (vsc_data_is_empty(data)) {
+        return;
+    }
 
     //
     //  Filter auth tag from the input stream.
     //
     if (self->do_decrypt) {
-        if (data.len >= vscf_aes256_gcm_AUTH_TAG_LEN) {
-            filtered_data = vsc_data_slice_beg(data, 0, data.len - vscf_aes256_gcm_AUTH_TAG_LEN);
-            vsc_data_t tag = vsc_data_slice_end(data, 0, vscf_aes256_gcm_AUTH_TAG_LEN);
-            memcpy(self->auth_tag, tag.bytes, tag.len);
+        const size_t auth_tag_pending_len = vscf_aes256_gcm_AUTH_TAG_LEN - self->auth_tag_len;
+
+        if (data.len <= auth_tag_pending_len) {
+            //  cache data within tag
+            memcpy(self->auth_tag + self->auth_tag_len, data.bytes, data.len);
+            self->auth_tag_len += data.len;
+            return;
+        }
+
+        const size_t tail_len = data.len - auth_tag_pending_len;
+        if (tail_len < vscf_aes256_gcm_AUTH_TAG_LEN) {
+            size_t shift_len = self->auth_tag_len < tail_len ? self->auth_tag_len : tail_len; // MIN
+
+            //  process data that was cached within auth tag
+            if (shift_len > 0) {
+                vscf_aes256_gcm_update_internal(self, vsc_data(self->auth_tag, shift_len), out);
+                self->auth_tag_len -= shift_len;
+            }
+
+            //  shift auth tag
+            memmove(self->auth_tag, self->auth_tag + shift_len, vscf_aes256_gcm_AUTH_TAG_LEN - shift_len);
+
+            //  cache data within tag
+            const size_t available_len = vscf_aes256_gcm_AUTH_TAG_LEN - self->auth_tag_len;
+            if (available_len >= data.len) {
+                memcpy(self->auth_tag + self->auth_tag_len, data.bytes, data.len);
+                self->auth_tag_len += data.len;
+            } else {
+                const size_t processed_len = data.len - available_len;
+                vscf_aes256_gcm_update_internal(self, vsc_data_slice_beg(data, 0, processed_len), out);
+
+                memcpy(self->auth_tag + self->auth_tag_len, data.bytes + processed_len, available_len);
+                self->auth_tag_len += available_len;
+                VSCF_ASSERT(vscf_aes256_gcm_AUTH_TAG_LEN == self->auth_tag_len);
+            }
 
         } else {
-            filtered_data = vsc_data_empty();
-            byte *auth_tag_dst = self->auth_tag + vscf_aes256_gcm_AUTH_TAG_LEN - data.len;
-            memmove(self->auth_tag, auth_tag_dst, data.len);
-            memcpy(auth_tag_dst, data.bytes, data.len);
+            //  process all data that was cached within auth tag
+            if (self->auth_tag_len > 0) {
+                vscf_aes256_gcm_update_internal(self, vsc_data(self->auth_tag, self->auth_tag_len), out);
+            }
+
+            //  process filtered data
+            const size_t filtered_data_len = data.len - vscf_aes256_gcm_AUTH_TAG_LEN;
+            if (filtered_data_len > 0) {
+                vscf_aes256_gcm_update_internal(self, vsc_data(data.bytes, filtered_data_len), out);
+            }
+
+            //  cache data within tag
+            memcpy(self->auth_tag, data.bytes + filtered_data_len, vscf_aes256_gcm_AUTH_TAG_LEN);
+            self->auth_tag_len = vscf_aes256_gcm_AUTH_TAG_LEN;
         }
+    } else {
+        vscf_aes256_gcm_update_internal(self, data, out);
     }
-
-    //
-    //  Process.
-    //
-    VSCF_ASSERT(vsc_buffer_unused_len(out) >= vscf_aes256_gcm_out_len(self, filtered_data.len));
-
-    size_t block_len = 0;
-
-    int status = mbedtls_cipher_update(
-            &self->cipher_ctx, filtered_data.bytes, filtered_data.len, vsc_buffer_unused_bytes(out), &block_len);
-    VSCF_ASSERT_LIBRARY_MBEDTLS_SUCCESS(status);
-
-    vsc_buffer_inc_used(out, block_len);
 }
 
 //
@@ -385,10 +474,20 @@ vscf_aes256_gcm_finish(vscf_aes256_gcm_t *self, vsc_buffer_t *out) {
     VSCF_ASSERT(vsc_buffer_is_valid(out));
     VSCF_ASSERT(vsc_buffer_unused_len(out) >= vscf_aes256_gcm_out_len(self, 0));
 
-    size_t last_block_len = 0;
-    int status = mbedtls_cipher_finish(&self->cipher_ctx, vsc_buffer_unused_bytes(out), &last_block_len);
+    int status = 0;
+    size_t written_len = 0;
+
+    if (self->cached_data_len > 0) {
+        status = mbedtls_cipher_update(&self->cipher_ctx, self->cached_data, self->cached_data_len,
+                vsc_buffer_unused_bytes(out), &written_len);
+        VSCF_ASSERT_LIBRARY_MBEDTLS_SUCCESS(status);
+        vsc_buffer_inc_used(out, written_len);
+        self->cached_data_len = 0;
+    }
+
+    status = mbedtls_cipher_finish(&self->cipher_ctx, vsc_buffer_unused_bytes(out), &written_len);
     VSCF_ASSERT_LIBRARY_MBEDTLS_SUCCESS(status);
-    vsc_buffer_inc_used(out, last_block_len);
+    vsc_buffer_inc_used(out, written_len);
 
     if (self->do_decrypt) {
         int valid_tag_status =
@@ -397,7 +496,7 @@ vscf_aes256_gcm_finish(vscf_aes256_gcm_t *self, vsc_buffer_t *out) {
             return vscf_status_ERROR_AUTH_FAILED;
         }
     } else {
-        int status =
+        status =
                 mbedtls_cipher_write_tag(&self->cipher_ctx, vsc_buffer_unused_bytes(out), vscf_aes256_gcm_AUTH_TAG_LEN);
         VSCF_ASSERT_LIBRARY_MBEDTLS_SUCCESS(status);
         vsc_buffer_inc_used(out, vscf_aes256_gcm_AUTH_TAG_LEN);

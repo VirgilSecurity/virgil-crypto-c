@@ -61,7 +61,6 @@
 
 #include <stdint.h>
 #include <stddef.h>
-#include <assert.h>
 #include <string.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -94,7 +93,7 @@ extern "C" {
 #       else
 #           define VSCP_PUBLIC __declspec(dllexport)
 #       endif
-#   elsif !defined(c_global_macros_internal_build)
+#   elif !defined(VSCP_INTERNAL_BUILD)
 #       ifdef __GNUC__
 #           define VSCP_PUBLIC __attribute__ ((dllimport))
 #       else
@@ -115,9 +114,9 @@ extern "C" {
 
 #define VSCP_VERSION_MAJOR 0
 
-#define VSCP_VERSION_MINOR 7
+#define VSCP_VERSION_MINOR 10
 
-#define VSCP_VERSION_PATCH 0
+#define VSCP_VERSION_PATCH 4
 
 #define VSCP_VERSION_MAKE(major, minor, patch) ((major) * 10000 + (minor) * 100 + (patch))
 

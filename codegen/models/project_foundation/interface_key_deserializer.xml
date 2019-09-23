@@ -8,7 +8,7 @@
         <argument name="public key data" class="data"/>
         <argument name="error" class="error" access="readwrite"/>
 
-        <return class="raw key" access="disown"/>
+        <return impl="raw public key" access="disown"/>
     </method>
 
 
@@ -18,6 +18,6 @@
         <argument name="private key data" class="data"/>
         <argument name="error" class="error" access="readwrite"/>
 
-        <return class="raw key" access="disown"/>
+        <return impl="raw private key" access="disown"/>
     </method>
 </interface>

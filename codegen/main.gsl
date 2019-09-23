@@ -38,7 +38,7 @@
 #   generate code from the module files.
 # ---------------------------------------------------------------------------
 #   This is a code generator built using the iMatix GSL code generation
-#   language. See https://github.com/imatix/gsl for details.
+#   language. See https://github.com/zeromq/gsl for details.
 # ---------------------------------------------------------------------------
 
 gsl from "common.gsl"
@@ -287,15 +287,13 @@ function process_project (project, features_list, projects_api, wrappers, echo_l
                 item_save_to_file (my.type_resolution_map, "type_resolution_map.xml", my.project.work_path)
             endif
 
-            for my.wrapper_project.$(make_id (wrapper_link.lang, "module")) as wrapper_module
-                my.wrapper_module_resolved = \
-                        resolution_map_apply_to_lang_module (my.type_resolution_map, wrapper_module, my.project.work_path)
-                move my.wrapper_module_resolved before wrapper_module
-                delete wrapper_module
-            endfor
+            my.wrapper_project_resolved = \
+                    resolution_map_apply_to_lang_module (my.type_resolution_map, my.wrapper_project, my.project.work_path)
+            move my.wrapper_project_resolved before my.wrapper_project
+            delete my.wrapper_project
 
-            wrapper_generate_project (my.wrapper_project)
-            wrapper_generate_sources (my.wrapper_project)
+            wrapper_generate_project (my.wrapper_project_resolved)
+            wrapper_generate_sources (my.wrapper_project_resolved)
         endfor
     endif
 endfunction
@@ -358,6 +356,7 @@ function run_main ()
         my.loaded_wrapper = load_lang_wrapper (wrapper)
         my.loaded_wrapper.source_dir ?= cat_path ("../wrappers", wrapper.lang)
         copy main->license to my.loaded_wrapper
+        copy main->version to my.loaded_wrapper
         wrappers_update_wrapper (my.wrappers, my.loaded_wrapper)
     endfor
 
