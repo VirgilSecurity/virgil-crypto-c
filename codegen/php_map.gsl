@@ -584,7 +584,21 @@ endfunction
 function php_map_low_level_constructor_destructor (in_module, out_low_level)
     check_arguments (my, "in_module, out_low_level", my)
 
-    echo_warning("Not implemented. Code: 403")
+    new function to my.out_low_level
+        .name0 = "$(my.in_module.c_prefix:)_$(my.in_module.name:c)_new"
+        .name = "$(0.name0:)_php"
+            new def_func_entry to function
+                . = format_left("PHP_FE($(function.name0:)_php, arginfo_$(function.name0:)_php)", 0)
+            endnew
+    endnew
+
+    new function to my.out_low_level
+        .name0 = "$(my.in_module.c_prefix:)_$(my.in_module.name:c)_delete"
+        .name = "$(0.name0:)_php"
+            new def_func_entry to function
+                . = format_left("PHP_FE($(function.name0:)_php, arginfo_$(function.name0:)_php)", 0)
+            endnew
+    endnew
 endfunction
 
 # ---------------------------------------------------------------------------
