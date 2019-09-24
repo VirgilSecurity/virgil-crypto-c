@@ -101,17 +101,18 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
     for my.in_module.method as method0 where method0.visibility = "public" & method0.declaration = "public" & method0.scope = "public"
         new function to my.out_low_level
 
-            php_map_low_level_method (method0, my.in_php_project, function)
-
             .prefix0 = "$(my.in_module.c_prefix:c)"
             .entity0 = "$(my.in_module.name:c)"
+
             if my.in_type = "interface"
                 .name = ""
                 .name0 = ""
             else 
-                .name0 = php_derive_low_level_function_name(0)
+                .name0 = php_derive_low_level_function_name(0, method0)
                 .name = "$(0.name0:)_php"
             endif
+
+            .num_arguments = 0
 
             my._method_arguments = ""
             my._function_arguments = ""
@@ -121,21 +122,32 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
             endnew
 
             for method0.argument as argument0
-
                 my._d = ""
                 if ! last()
                     my._d = ", "
                 endif
 
                 new argument to function
-                    php_map_low_level_argument (argument0, my.in_php_project, argument)
+                    php_map_low_level_argument (argument0, my.in_php_project, argument, function)
                 endnew
             endfor
+
+            php_map_low_level_return (method0, my.in_php_project, function)
 
             new wrapper to function
                 new arg_info to wrapper
                     my._c = php_format_extension_comment("Wrap method: $(function.name0:)")
-                    . = my._c
+
+                    my._h = format_left("\
+                        ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+                                arginfo_$(function.name0:)_php, 
+                                0 /*return_reference*/,
+                                $(function.num_arguments:) /*required_num_args*/,
+                                $(function.return_type:) /*type*/,
+                                0 /*allow_null*/)
+                        ZEND_END_ARG_INFO()
+                    ", 0)
+                    . = my._c + my._h
                 endnew
             endnew
         endnew
@@ -151,83 +163,271 @@ function php_map_low_level_constructor_destructor (in_module, out_low_level)
     new function to my.out_low_level
         .name0 = "$(my.in_module.c_prefix:)_$(my.in_module.name:c)_new"
         .name = "$(0.name0:)_php"
-            new def_func_entry to function
-                . = format_left("PHP_FE($(function.name0:)_php, arginfo_$(function.name0:)_php)", 0)
+        .prefix0 = "$(my.in_module.c_prefix:)"
+        .entity0 = "$(my.in_module.name:)"
+        .return_type0 = ""
+        .return_type = "IS_RESOURCE"
+        .return_data = ""
+        .instance = 0
+        .throw_exception = 0
+        .num_arguments = 0
+
+        my._a = "$(0.prefix0:)_$(0.entity0)"
+
+        new def_func_entry to function
+            . = format_left("PHP_FE($(function.name0:)_php, arginfo_$(function.name0:)_php)", 0)
+        endnew
+
+        new wrapper to function
+            new arg_info to wrapper
+                my._c = php_format_extension_comment("Wrap method: $(function.name0:)")
+
+                my._h = format_left("\
+                    ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+                            arginfo_$(function.name0:)_php, 
+                            0 /*return_reference*/,
+                            $(function.num_arguments:) /*required_num_args*/,
+                            $(function.return_type:) /*type*/,
+                            0 /*allow_null*/)
+                    ZEND_END_ARG_INFO()
+                    ", 0)
+
+                my._res = my._c + my._h
+                . = my._res
             endnew
+
+            new custom_code to wrapper
+                my._custom_code = format_left("\
+                    PHP_FUNCTION($(function.name0:)) {
+                        $(my._a:)_t *$(function.entity0:) =$(function.name0:)();
+                        zend_resource *$(function.entity0:)_res = zend_register_resource($(function.entity0:), le_$(my._a:);
+                        RETVAL_RES($(function.entity0:)_res);
+                    }
+                    ", 0)
+                . = my._custom_code
+            endnew
+        endnew
     endnew
 
     new function to my.out_low_level
         .name0 = "$(my.in_module.c_prefix:)_$(my.in_module.name:c)_delete"
         .name = "$(0.name0:)_php"
-            new def_func_entry to function
-                . = format_left("PHP_FE($(function.name0:)_php, arginfo_$(function.name0:)_php)", 0)
+        .prefix0 = "$(my.in_module.c_prefix:)"
+        .entity0 = "$(my.in_module.name:)"
+        .return_type0 = ""
+        .return_type = "IS_VOID"
+        .return_data = ""
+        .instance = 0
+        .throw_exception = 0
+        .num_arguments = 1
+
+        my._a = "$(0.prefix0:)_$(0.entity0)"
+
+        new def_func_entry to function
+            . = format_left("PHP_FE($(function.name0:)_php, arginfo_$(function.name0:)_php)", 0)
+        endnew
+
+        new wrapper to function
+            new arg_info to wrapper
+                my._c = php_format_extension_comment("Wrap method: $(function.name0:)")
+
+                my._h = format_left("\
+                    ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+                            arginfo_$(function.name0:)_php, 
+                            0 /*return_reference*/,
+                            $(function.num_arguments:) /*required_num_args*/,
+                            $(function.return_type:) /*type*/,
+                            0 /*allow_null*/)
+                    ZEND_END_ARG_INFO()
+                    ", 0)
+
+                my._res = my._c + my._h
+                . = my._res
             endnew
+
+            new custom_code to wrapper
+                my._custom_code = format_left("\
+                    PHP_FUNCTION($(function.name0:)_php) {
+                        //
+                        // Declare input arguments
+                        //
+                        zval *in_ctx = NULL;
+
+                        //
+                        // Parse arguments
+                        //
+                        ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 1, 1)
+                            Z_PARAM_RESOURCE_EX(in_ctx, 1, 0)
+                        ZEND_PARSE_PARAMETERS_END();
+
+                        //
+                        // Fetch for type checking and then release
+                        //
+                        $(my._a:)_t *$(function.entity0:) = zend_fetch_resource_ex(in_ctx, $(my._a:UPPER)_PHP_RES_NAME, le_$(my._a:));
+                        $(function.prefix0:UPPER)_ASSERT_PTR($(function.entity0:));
+                        zend_list_close(Z_RES_P(in_ctx));
+                        RETURN_TRUE;
+                    }
+                    ", 0)
+
+                . = my._custom_code
+            endnew
+        endnew
     endnew
 endfunction
 
 # ---------------------------------------------------------------------------
 #   
 # ---------------------------------------------------------------------------
-function php_map_low_level_method (in_method, in_php_project, out_function)
-    check_arguments (my, "in_method, in_php_project, out_function", my)
+function php_map_low_level_argument (in_argument, in_php_project, out_php_argument, out_function)
+    check_arguments (my, "in_argument, in_php_project, out_php_argument, out_function", my)
 
-    my.out_function.name = "$(my.in_method.name:c)"
+    my.out_php_argument.name = "$(my.in_argument.name:c)"
 
-    echo_debug_item(my.in_method)
-    echo_warning("Not implemented. Code: 404")
-
-    php_map_low_level_return (my.in_method, my.in_php_project, my.out_function)
-
-endfunction
-
-# ---------------------------------------------------------------------------
-#   
-# ---------------------------------------------------------------------------
-function php_map_low_level_argument (in_argument, in_php_project, out_argument)
-    check_arguments (my, "in_argument, in_php_project, out_argument", my)
-
-    my.out_argument.name = "$(my.in_argument.name:c)"
-
+    my._type0 = ""
     my._type = ""
+    my._zend_type = ""
+    my._instance = 0
+    my._count = 1 # ctx
 
     if defined (my.in_argument.class)
-        my._type = "$(my.in_argument.class:c)"
+        if string_in(my.in_argument.class, "data, buffer") 
+            my._type0 = "string"
+            my._type = "vsc_$(my.in_argument.class:)"
+            my._zend_type = "IS_STRING"
+            my._count = my._count + 1
+        else
+            my._type0 = "class"
+            my._type = "$(my.in_argument.class:c)"
+            my._instance = 1
+            my._count = my._count + 1
+        endif
     endif
 
     if defined (my.in_argument.interface)
+        my._type0 = "interface"
         my._type = "$(my.in_argument.interface:c)"
+        my._instance = 1
+        my._count = my._count + 1
     endif
 
     if defined (my.in_argument.type)
         if string_in(my.in_argument.type, "size, integer, unsigned")
+            my._type0 = my.in_argument.type
             my._type = "int"
+            my._zend_type = "IS_LONG"
+            my._count = my._count + 1
         elsif my.in_argument.type = "byte"
+            my._type0 = my.in_argument.type
             my._type = "string"
+            my._zend_type = "IS_STRING"
+            my._count = my._count + 1
         elsif my.in_argument.type = "boolean"
+            my._type0 = my.in_argument.type
             my._type = "bool"
+            my._zend_type = "IS_BOOLEAN"
+            my._count = my._count + 1
         else
             # TODO
             echo_debug_item(my.in_argument)
-            echo_fatal("Not implemented (405)", my)
+            echo_fatal("Not implemented. Code: 601", my)
         endif
     endif
 
     if defined (my.in_argument.enum)
+        my._type0 = "enum"
         my._type = "$(my.in_argument.enum:c)"
+        my._instance = 1
+        my._count = my._count + 1
     endif
 
-    my.out_argument.type = my._type
+    my.out_php_argument.type0 = my._type0
+    my.out_php_argument.type = my._type
+    my.out_php_argument.zend_type = my._zend_type
+    my.out_php_argument.instance = my._instance
+    my.out_function.num_arguments = my._count
 
 endfunction
 
 # ---------------------------------------------------------------------------
 #   
 # ---------------------------------------------------------------------------
-function php_map_low_level_return (in_method, in_php_project, out_function)
-    check_arguments (my, "in_method, in_php_project, out_function", my)
+function php_map_low_level_return (in_method, in_php_project, out_php_method)
+    check_arguments (my, "in_method, in_php_project, out_php_method", my)
 
-    echo_debug_item(my.in_method)
-    echo_warning("Not implemented. Code: 406")
+    my._return_type0 = ""
+    my._return_type = "IS_VOID"
+    my._return_data = ""
+    my._instance = 0
+    my._throw_exception = 0
+    my._argument_buffer_count = 0
+
+    for my.in_method.argument as argument0 where defined (argument0.class)
+        if argument0.class = "buffer"
+            my._argument_buffer_count = my._argument_buffer_count + 1
+        endif
+    endfor
+
+    if my._argument_buffer_count = 1
+        my._return_type = "IS_STRING"
+    elsif my._argument_buffer_count > 1
+        my._return_type = "IS_ARRAY"
+    endif
+
+    for my.in_method.return as return0
+
+        if defined (return0.type)
+            if return0.type = "size" | return0.type = "integer" | return0.type = "unsigned"
+                my._return_type0 = return0.type
+                my._return_type = "int"
+            elsif return0.type = "boolean"
+                my._return_type0 = return0.type
+                my._return_type = "bool"
+            elsif return0.type = "byte"
+                my._return_type0 = return0.type
+                my._return_type = "string"
+            else
+                # TODO
+                echo_debug_item(my.in_method)
+                echo_debug_item(return0)
+                echo_fatal("Not implemented (101)", my)
+            endif
+        endif
+
+        my._r = ""
+
+        if defined (return0.class)
+            if return0.class = "data"
+                my._return_type0 = return0.class
+                my._return_type = "string"
+            else
+                my._r = return0.class
+                my._instance = 1
+            endif
+        elsif defined (return0.interface)
+            my._r = return0.interface
+            my._instance = 1
+        endif
+
+        if (defined (return0.class) & return0.class <> "data") | defined (return0.interface)
+            my._return_type = "$(my._r:c)"
+        endif
+
+        if defined (return0.enum)
+            if return0.enum = "status"
+                my._throw_exception = 1
+            else
+                my._return_type = "$(return0.enum:c)"
+                my._instance = 1
+            endif
+        endif
+    endfor
+
+    my.out_php_method.return_type0 = my._return_type0
+    my.out_php_method.return_type = my._return_type
+    my.out_php_method.return_data = my._return_data
+    my.out_php_method.instance = my._instance
+    my.out_php_method.throw_exception = my._throw_exception
 
 endfunction
 
@@ -255,7 +455,16 @@ function php_map_low_level_extension (in_php_project, out_php_module)
         my._init_func_def_list_destr += php_module0->low_level->init_func_def_list_destr.
 
         for php_module0->low_level.function as function0
+            my._func_wrapping += format_left(function0->wrapper->arg_info., 0)
             my._def_func_entries += function0->def_func_entry.
+
+            if defined(function0->wrapper->custom_code)
+                my._func_wrapping += "\n" + format_left(function0->wrapper->custom_code., 0)
+            else
+                my._func_wrapping += "\n" + format_left("TEMP", 0)
+            endif
+
+            my._func_wrapping += "\n"
         endfor
     endfor
 
@@ -310,6 +519,8 @@ function php_map_low_level_extension (in_php_project, out_php_module)
 
     new func_wrapping to my.out_php_module
         my._c = php_format_extension_comment ("Functions wrapping")
+        my._h = my._func_wrapping
+        my._res = my._c + my._h
         . = my._res
     endnew
 
