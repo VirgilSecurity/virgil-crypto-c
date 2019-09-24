@@ -17,7 +17,7 @@
         <interface name="message info footer serializer">
             VirgilMessageInfoFooter ::= SEQUENCE {
                 version INTEGER { v0(0) } DEFAULT v0,
-                signerInfos [0] EXPLICIT VirgilSignerInfos
+                signerInfos [0] EXPLICIT VirgilSignerInfos OPTIONAL
             }
         </interface>
 

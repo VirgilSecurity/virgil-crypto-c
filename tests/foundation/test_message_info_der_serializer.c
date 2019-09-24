@@ -40,11 +40,13 @@
 
 
 #define TEST_DEPENDENCIES_AVAILABLE                                                                                    \
-    (VSCF_MESSAGE_INFO && VSCF_MESSAGE_INFO_DER_SERIALIZER && VSCF_ALG_INFO && VSCF_SIMPLE_ALG_INFO &&                 \
-            VSCF_CIPHER_ALG_INFO && VSCF_HASH_BASED_ALG_INFO && VSCF_SALTED_KDF_ALG_INFO && VSCF_PBE_ALG_INFO)
+    (VSCF_MESSAGE_INFO && VSCF_MESSAGE_INFO_FOOTER && VSCF_MESSAGE_INFO_DER_SERIALIZER && VSCF_ALG_INFO &&             \
+            VSCF_SIMPLE_ALG_INFO && VSCF_CIPHER_ALG_INFO && VSCF_HASH_BASED_ALG_INFO && VSCF_SALTED_KDF_ALG_INFO &&    \
+            VSCF_PBE_ALG_INFO)
 #if TEST_DEPENDENCIES_AVAILABLE
 
 #include "vscf_message_info.h"
+#include "vscf_message_info_footer.h"
 #include "vscf_message_info_der_serializer.h"
 #include "vscf_cipher_alg_info.h"
 #include "vscf_alg_info.h"
@@ -162,6 +164,86 @@ test__serialize__cms_with_custom_params__returns_cms_with_no_recipients_and_3_pa
     vscf_message_info_der_serializer_destroy(&serializer);
     vscf_message_info_destroy(&message_info);
     vscf_message_info_custom_params_destroy(&custom_params);
+}
+
+void
+test__serialize__footer_with_ed25519_signer__returns_valid_cms(void) {
+
+    vsc_data_t ed25519_signer_id = test_message_info_SIGNER_INFO_ED25519_SIGNER_ID;
+    vsc_buffer_t *ed25519_signature = vsc_buffer_new_with_data(test_message_info_SIGNER_INFO_ED25519_SIGNATURE);
+    vscf_impl_t *ed25519_alg_info =
+            vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_ED25519));
+
+    vscf_signer_info_t *signer_info =
+            vscf_signer_info_new_with_members(ed25519_signer_id, &ed25519_alg_info, &ed25519_signature);
+
+    vscf_message_info_footer_t *footer = vscf_message_info_footer_new();
+    vscf_message_info_footer_add_signer_info(footer, &signer_info);
+
+    vscf_message_info_der_serializer_t *serializer = vscf_message_info_der_serializer_new();
+    vscf_message_info_der_serializer_setup_defaults(serializer);
+
+    size_t out_len = vscf_message_info_der_serializer_serialized_footer_len(serializer, footer);
+    vsc_buffer_t *out = vsc_buffer_new_with_capacity(out_len);
+    vscf_message_info_der_serializer_serialize_footer(serializer, footer, out);
+
+    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_message_info_CMS_FOOTER_WITH_ED25519_SIGNER, out);
+
+    vscf_message_info_der_serializer_destroy(&serializer);
+    vscf_message_info_footer_destroy(&footer);
+}
+
+void
+test__serialize__footer_with_ed25519_and_rsa2048_signers__returns_valid_cms(void) {
+
+    //
+    //  Ed25519 signer
+    //
+    vsc_data_t ed25519_signer_id = test_message_info_SIGNER_INFO_ED25519_SIGNER_ID;
+    vsc_buffer_t *ed25519_signature = vsc_buffer_new_with_data(test_message_info_SIGNER_INFO_ED25519_SIGNATURE);
+    vscf_impl_t *ed25519_alg_info =
+            vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_ED25519));
+
+    vscf_signer_info_t *ed25519_signer_info =
+            vscf_signer_info_new_with_members(ed25519_signer_id, &ed25519_alg_info, &ed25519_signature);
+
+    //
+    //  RSA2048 signer
+    //
+    vsc_data_t rsa2048_signer_id = test_message_info_SIGNER_INFO_RSA2048_SIGNER_ID;
+    vsc_buffer_t *rsa2048_signature = vsc_buffer_new_with_data(test_message_info_SIGNER_INFO_RSA2048_SIGNATURE);
+    vscf_impl_t *rsa2048_alg_info = vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_RSA));
+
+    vscf_signer_info_t *rsa2048_signer_info =
+            vscf_signer_info_new_with_members(rsa2048_signer_id, &rsa2048_alg_info, &rsa2048_signature);
+
+    //
+    //  Configure footer
+    //
+    vscf_message_info_footer_t *footer = vscf_message_info_footer_new();
+    vscf_message_info_footer_add_signer_info(footer, &ed25519_signer_info);
+    vscf_message_info_footer_add_signer_info(footer, &rsa2048_signer_info);
+
+    vscf_message_info_der_serializer_t *serializer = vscf_message_info_der_serializer_new();
+    vscf_message_info_der_serializer_setup_defaults(serializer);
+
+    //
+    //  Serialize footer
+    //
+    size_t out_len = vscf_message_info_der_serializer_serialized_footer_len(serializer, footer);
+    vsc_buffer_t *out = vsc_buffer_new_with_capacity(out_len);
+    vscf_message_info_der_serializer_serialize_footer(serializer, footer, out);
+
+    //
+    //  Check
+    //
+    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_message_info_CMS_FOOTER_WITH_ED25519_AND_RSA2048_SIGNERS, out);
+
+    //
+    //  Cleanp
+    //
+    vscf_message_info_der_serializer_destroy(&serializer);
+    vscf_message_info_footer_destroy(&footer);
 }
 
 void
@@ -661,6 +743,209 @@ test__deserialize__cms_with_signed_data_info_with_custom_params__is_valid_data_p
     vscf_message_info_der_serializer_destroy(&serializer);
 }
 
+void
+test__deserialize__cms_footer_with_ed25519_signer__is_valid_signer_id(void) {
+    vscf_message_info_der_serializer_t *serializer = vscf_message_info_der_serializer_new();
+    vscf_message_info_der_serializer_setup_defaults(serializer);
+
+    vscf_message_info_footer_t *footer = vscf_message_info_der_serializer_deserialize_footer(
+            serializer, test_message_info_CMS_FOOTER_WITH_ED25519_SIGNER, NULL);
+    TEST_ASSERT_NOT_NULL(footer);
+
+    const vscf_signer_info_list_t *signer_infos = vscf_message_info_footer_signer_infos(footer);
+    TEST_ASSERT_NOT_NULL(signer_infos);
+    TEST_ASSERT_TRUE(vscf_signer_info_list_has_item(signer_infos));
+
+    const vscf_signer_info_t *ed25519_signer_info = vscf_signer_info_list_item(signer_infos);
+
+    vsc_data_t ed25519_signer_id = vscf_signer_info_signer_id(ed25519_signer_info);
+    TEST_ASSERT_EQUAL_DATA(test_message_info_SIGNER_INFO_ED25519_SIGNER_ID, ed25519_signer_id);
+
+    vscf_message_info_footer_destroy(&footer);
+    vscf_message_info_der_serializer_destroy(&serializer);
+}
+
+void
+test__deserialize__cms_footer_with_ed25519_signer__is_valid_signer_alg_info(void) {
+    vscf_message_info_der_serializer_t *serializer = vscf_message_info_der_serializer_new();
+    vscf_message_info_der_serializer_setup_defaults(serializer);
+
+    vscf_message_info_footer_t *footer = vscf_message_info_der_serializer_deserialize_footer(
+            serializer, test_message_info_CMS_FOOTER_WITH_ED25519_SIGNER, NULL);
+    TEST_ASSERT_NOT_NULL(footer);
+
+    const vscf_signer_info_list_t *signer_infos = vscf_message_info_footer_signer_infos(footer);
+    TEST_ASSERT_NOT_NULL(signer_infos);
+    TEST_ASSERT_TRUE(vscf_signer_info_list_has_item(signer_infos));
+
+    const vscf_signer_info_t *ed25519_signer_info = vscf_signer_info_list_item(signer_infos);
+
+    const vscf_impl_t *signer_alg_info = vscf_signer_info_signer_alg_info(ed25519_signer_info);
+    TEST_ASSERT_EQUAL(vscf_alg_id_ED25519, vscf_alg_info_alg_id(signer_alg_info));
+
+    vscf_message_info_footer_destroy(&footer);
+    vscf_message_info_der_serializer_destroy(&serializer);
+}
+
+void
+test__deserialize__cms_footer_with_ed25519_signer__is_valid_signature(void) {
+    vscf_message_info_der_serializer_t *serializer = vscf_message_info_der_serializer_new();
+    vscf_message_info_der_serializer_setup_defaults(serializer);
+
+    vscf_message_info_footer_t *footer = vscf_message_info_der_serializer_deserialize_footer(
+            serializer, test_message_info_CMS_FOOTER_WITH_ED25519_SIGNER, NULL);
+    TEST_ASSERT_NOT_NULL(footer);
+
+    const vscf_signer_info_list_t *signer_infos = vscf_message_info_footer_signer_infos(footer);
+    TEST_ASSERT_NOT_NULL(signer_infos);
+    TEST_ASSERT_TRUE(vscf_signer_info_list_has_item(signer_infos));
+
+    const vscf_signer_info_t *ed25519_signer_info = vscf_signer_info_list_item(signer_infos);
+
+    vsc_data_t ed25519_signature = vscf_signer_info_signature(ed25519_signer_info);
+    TEST_ASSERT_EQUAL_DATA(test_message_info_SIGNER_INFO_ED25519_SIGNATURE, ed25519_signature);
+
+    vscf_message_info_footer_destroy(&footer);
+    vscf_message_info_der_serializer_destroy(&serializer);
+}
+
+void
+test__deserialize__cms_footer_with_ed25519_and_rsa2048_signers__is_valid_ed25519_signer_id(void) {
+    vscf_message_info_der_serializer_t *serializer = vscf_message_info_der_serializer_new();
+    vscf_message_info_der_serializer_setup_defaults(serializer);
+
+    vscf_message_info_footer_t *footer = vscf_message_info_der_serializer_deserialize_footer(
+            serializer, test_message_info_CMS_FOOTER_WITH_ED25519_AND_RSA2048_SIGNERS, NULL);
+    TEST_ASSERT_NOT_NULL(footer);
+
+    const vscf_signer_info_list_t *signer_infos = vscf_message_info_footer_signer_infos(footer);
+    TEST_ASSERT_NOT_NULL(signer_infos);
+    TEST_ASSERT_TRUE(vscf_signer_info_list_has_item(signer_infos));
+
+    const vscf_signer_info_t *ed25519_signer_info = vscf_signer_info_list_item(signer_infos);
+
+    vsc_data_t ed25519_signer_id = vscf_signer_info_signer_id(ed25519_signer_info);
+    TEST_ASSERT_EQUAL_DATA(test_message_info_SIGNER_INFO_ED25519_SIGNER_ID, ed25519_signer_id);
+
+    vscf_message_info_footer_destroy(&footer);
+    vscf_message_info_der_serializer_destroy(&serializer);
+}
+
+void
+test__deserialize__cms_footer_with_ed25519_and_rsa2048_signers__is_valid_ed25519_signer_alg_info(void) {
+    vscf_message_info_der_serializer_t *serializer = vscf_message_info_der_serializer_new();
+    vscf_message_info_der_serializer_setup_defaults(serializer);
+
+    vscf_message_info_footer_t *footer = vscf_message_info_der_serializer_deserialize_footer(
+            serializer, test_message_info_CMS_FOOTER_WITH_ED25519_AND_RSA2048_SIGNERS, NULL);
+    TEST_ASSERT_NOT_NULL(footer);
+
+    const vscf_signer_info_list_t *signer_infos = vscf_message_info_footer_signer_infos(footer);
+    TEST_ASSERT_NOT_NULL(signer_infos);
+    TEST_ASSERT_TRUE(vscf_signer_info_list_has_item(signer_infos));
+
+    const vscf_signer_info_t *ed25519_signer_info = vscf_signer_info_list_item(signer_infos);
+
+    const vscf_impl_t *signer_alg_info = vscf_signer_info_signer_alg_info(ed25519_signer_info);
+    TEST_ASSERT_EQUAL(vscf_alg_id_ED25519, vscf_alg_info_alg_id(signer_alg_info));
+
+    vscf_message_info_footer_destroy(&footer);
+    vscf_message_info_der_serializer_destroy(&serializer);
+}
+
+void
+test__deserialize__cms_footer_with_ed25519_and_rsa2048_signers__is_valid_ed25519_signature(void) {
+    vscf_message_info_der_serializer_t *serializer = vscf_message_info_der_serializer_new();
+    vscf_message_info_der_serializer_setup_defaults(serializer);
+
+    vscf_message_info_footer_t *footer = vscf_message_info_der_serializer_deserialize_footer(
+            serializer, test_message_info_CMS_FOOTER_WITH_ED25519_AND_RSA2048_SIGNERS, NULL);
+    TEST_ASSERT_NOT_NULL(footer);
+
+    const vscf_signer_info_list_t *signer_infos = vscf_message_info_footer_signer_infos(footer);
+    TEST_ASSERT_NOT_NULL(signer_infos);
+    TEST_ASSERT_TRUE(vscf_signer_info_list_has_item(signer_infos));
+
+    const vscf_signer_info_t *ed25519_signer_info = vscf_signer_info_list_item(signer_infos);
+
+    vsc_data_t ed25519_signature = vscf_signer_info_signature(ed25519_signer_info);
+    TEST_ASSERT_EQUAL_DATA(test_message_info_SIGNER_INFO_ED25519_SIGNATURE, ed25519_signature);
+
+    vscf_message_info_footer_destroy(&footer);
+    vscf_message_info_der_serializer_destroy(&serializer);
+}
+
+void
+test__deserialize__cms_footer_with_ed25519_and_rsa2048_signers__is_valid_rsa2048_signer_id(void) {
+    vscf_message_info_der_serializer_t *serializer = vscf_message_info_der_serializer_new();
+    vscf_message_info_der_serializer_setup_defaults(serializer);
+
+    vscf_message_info_footer_t *footer = vscf_message_info_der_serializer_deserialize_footer(
+            serializer, test_message_info_CMS_FOOTER_WITH_ED25519_AND_RSA2048_SIGNERS, NULL);
+    TEST_ASSERT_NOT_NULL(footer);
+
+    const vscf_signer_info_list_t *signer_infos = vscf_message_info_footer_signer_infos(footer);
+    TEST_ASSERT_NOT_NULL(signer_infos);
+    TEST_ASSERT_TRUE(vscf_signer_info_list_has_item(signer_infos));
+    TEST_ASSERT_TRUE(vscf_signer_info_list_has_next(signer_infos));
+
+    const vscf_signer_info_t *rsa2048_signer_info =
+            vscf_signer_info_list_item(vscf_signer_info_list_next(signer_infos));
+
+    vsc_data_t rsa2048_signer_id = vscf_signer_info_signer_id(rsa2048_signer_info);
+    TEST_ASSERT_EQUAL_DATA(test_message_info_SIGNER_INFO_RSA2048_SIGNER_ID, rsa2048_signer_id);
+
+    vscf_message_info_footer_destroy(&footer);
+    vscf_message_info_der_serializer_destroy(&serializer);
+}
+
+void
+test__deserialize__cms_footer_with_ed25519_and_rsa2048_signers__is_valid_rsa2048_signer_alg_info(void) {
+    vscf_message_info_der_serializer_t *serializer = vscf_message_info_der_serializer_new();
+    vscf_message_info_der_serializer_setup_defaults(serializer);
+
+    vscf_message_info_footer_t *footer = vscf_message_info_der_serializer_deserialize_footer(
+            serializer, test_message_info_CMS_FOOTER_WITH_ED25519_AND_RSA2048_SIGNERS, NULL);
+    TEST_ASSERT_NOT_NULL(footer);
+
+    const vscf_signer_info_list_t *signer_infos = vscf_message_info_footer_signer_infos(footer);
+    TEST_ASSERT_NOT_NULL(signer_infos);
+    TEST_ASSERT_TRUE(vscf_signer_info_list_has_item(signer_infos));
+    TEST_ASSERT_TRUE(vscf_signer_info_list_has_next(signer_infos));
+
+    const vscf_signer_info_t *rsa2048_signer_info =
+            vscf_signer_info_list_item(vscf_signer_info_list_next(signer_infos));
+
+    const vscf_impl_t *signer_alg_info = vscf_signer_info_signer_alg_info(rsa2048_signer_info);
+    TEST_ASSERT_EQUAL(vscf_alg_id_RSA, vscf_alg_info_alg_id(signer_alg_info));
+
+    vscf_message_info_footer_destroy(&footer);
+    vscf_message_info_der_serializer_destroy(&serializer);
+}
+
+void
+test__deserialize__cms_footer_with_ed25519_and_rsa2048_signers__is_valid_rsa2048_signature(void) {
+    vscf_message_info_der_serializer_t *serializer = vscf_message_info_der_serializer_new();
+    vscf_message_info_der_serializer_setup_defaults(serializer);
+
+    vscf_message_info_footer_t *footer = vscf_message_info_der_serializer_deserialize_footer(
+            serializer, test_message_info_CMS_FOOTER_WITH_ED25519_AND_RSA2048_SIGNERS, NULL);
+    TEST_ASSERT_NOT_NULL(footer);
+
+    const vscf_signer_info_list_t *signer_infos = vscf_message_info_footer_signer_infos(footer);
+    TEST_ASSERT_NOT_NULL(signer_infos);
+    TEST_ASSERT_TRUE(vscf_signer_info_list_has_item(signer_infos));
+    TEST_ASSERT_TRUE(vscf_signer_info_list_has_next(signer_infos));
+
+    const vscf_signer_info_t *rsa2048_signer_info =
+            vscf_signer_info_list_item(vscf_signer_info_list_next(signer_infos));
+
+    vsc_data_t rsa2048_signature = vscf_signer_info_signature(rsa2048_signer_info);
+    TEST_ASSERT_EQUAL_DATA(test_message_info_SIGNER_INFO_RSA2048_SIGNATURE, rsa2048_signature);
+
+    vscf_message_info_footer_destroy(&footer);
+    vscf_message_info_der_serializer_destroy(&serializer);
+}
 
 #endif // TEST_DEPENDENCIES_AVAILABLE
 
@@ -678,6 +963,8 @@ main(void) {
     RUN_TEST(test__serialize__cms_with_custom_params__returns_cms_with_no_recipients_and_3_params);
     RUN_TEST(test__serialize__signed_data_info__returns_valid_cms);
     RUN_TEST(test__serialize__signed_data_info_with_custom_params__returns_valid_cms);
+    RUN_TEST(test__serialize__footer_with_ed25519_signer__returns_valid_cms);
+    RUN_TEST(test__serialize__footer_with_ed25519_and_rsa2048_signers__returns_valid_cms);
 
     RUN_TEST(test__deserialize__cms_with_one_rsa2048_key_recipient__returns_valid_key_recipient);
     RUN_TEST(test__deserialize__cms_with_one_password_recipient__returns_valid_key_recipient);
@@ -694,6 +981,16 @@ main(void) {
     RUN_TEST(test__deserialize__cms_with_signed_data_info_with_custom_params__is_valid_int_param);
     RUN_TEST(test__deserialize__cms_with_signed_data_info_with_custom_params__is_valid_string_param);
     RUN_TEST(test__deserialize__cms_with_signed_data_info_with_custom_params__is_valid_data_param);
+
+    RUN_TEST(test__deserialize__cms_footer_with_ed25519_signer__is_valid_signer_id);
+    RUN_TEST(test__deserialize__cms_footer_with_ed25519_signer__is_valid_signer_alg_info);
+    RUN_TEST(test__deserialize__cms_footer_with_ed25519_signer__is_valid_signature);
+    RUN_TEST(test__deserialize__cms_footer_with_ed25519_and_rsa2048_signers__is_valid_ed25519_signer_id);
+    RUN_TEST(test__deserialize__cms_footer_with_ed25519_and_rsa2048_signers__is_valid_ed25519_signer_alg_info);
+    RUN_TEST(test__deserialize__cms_footer_with_ed25519_and_rsa2048_signers__is_valid_ed25519_signature);
+    RUN_TEST(test__deserialize__cms_footer_with_ed25519_and_rsa2048_signers__is_valid_rsa2048_signer_id);
+    RUN_TEST(test__deserialize__cms_footer_with_ed25519_and_rsa2048_signers__is_valid_rsa2048_signer_alg_info);
+    RUN_TEST(test__deserialize__cms_footer_with_ed25519_and_rsa2048_signers__is_valid_rsa2048_signature);
 #else
     RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
 #endif

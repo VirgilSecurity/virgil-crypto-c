@@ -1183,15 +1183,16 @@ vscf_message_info_der_serializer_serialized_signer_infos_len(
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(message_info_footer);
 
-    size_t len = 1 + 1 + 8; //  VirgilSignerInfos ::= SET SIZE (1..MAX) OF VirgilSignerInfo
-
-    for (const vscf_signer_info_list_t *list = vscf_message_info_footer_signer_infos(message_info_footer);
-            (list != NULL) && vscf_signer_info_list_has_item(list); list = vscf_signer_info_list_next(list)) {
-
-        const vscf_signer_info_t *info = vscf_signer_info_list_item(list);
-
-        len += vscf_message_info_der_serializer_serialized_signer_info_len(self, info);
+    const vscf_signer_info_list_t *list = vscf_message_info_footer_signer_infos(message_info_footer);
+    if (NULL == list || !vscf_signer_info_list_has_item(list)) {
+        return 0;
     }
+
+    size_t len = 1 + 1 + 8; //  VirgilSignerInfos ::= SET SIZE (1..MAX) OF VirgilSignerInfo
+    do {
+        const vscf_signer_info_t *info = vscf_signer_info_list_item(list);
+        len += vscf_message_info_der_serializer_serialized_signer_info_len(self, info);
+    } while ((list = vscf_signer_info_list_next(list)) != NULL);
 
     return len;
 }
@@ -1206,19 +1207,24 @@ vscf_message_info_der_serializer_serialize_signer_infos(
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(message_info_footer);
 
-    size_t signer_infos_len = 0;
+    const vscf_signer_info_list_t *list = vscf_message_info_footer_signer_infos(message_info_footer);
 
-    for (const vscf_signer_info_list_t *list = vscf_message_info_footer_signer_infos(message_info_footer);
-            (list != NULL) && vscf_signer_info_list_has_item(list); list = vscf_signer_info_list_next(list)) {
+    if (NULL == list || !vscf_signer_info_list_has_item(list)) {
+        return 0;
+    }
+
+    size_t signer_infos_len = 0;
+    do {
 
         const vscf_signer_info_t *info = vscf_signer_info_list_item(list);
 
         size_t info_len = vscf_message_info_der_serializer_serialize_signer_info(self, info);
 
         signer_infos_len += info_len;
-    }
+    } while ((list = vscf_signer_info_list_next(list)) != NULL);
 
     signer_infos_len += vscf_asn1_writer_write_set(self->asn1_writer, signer_infos_len);
+    signer_infos_len += vscf_asn1_writer_write_context_tag(self->asn1_writer, 0, signer_infos_len);
 
     return signer_infos_len;
 }
@@ -1797,7 +1803,7 @@ vscf_message_info_der_serializer_deserialize_signer_infos(vscf_message_info_der_
         return;
     }
 
-    const size_t signer_infos_tag_len = vscf_asn1_reader_read_context_tag(self->asn1_reader, 1);
+    const size_t signer_infos_tag_len = vscf_asn1_reader_read_context_tag(self->asn1_reader, 0);
     if (signer_infos_tag_len == 0) {
         return;
     }
@@ -2091,7 +2097,7 @@ vscf_message_info_der_serializer_serialized_footer_len(
 
     const size_t len = 1 + 1 + 8 +       //  VirgilMessageInfoFooter ::= SEQUENCE {
                        1 + 1 + 1 +       //      version INTEGER { v0(0) } DEFAULT v0,
-                       signer_infos_len; //      signerInfos [0] EXPLICIT VirgilSignerInfos }
+                       signer_infos_len; //      signerInfos [0] EXPLICIT VirgilSignerInfos OPTIONAL }
 
     return len;
 }
@@ -2105,7 +2111,7 @@ vscf_message_info_der_serializer_serialize_footer(vscf_message_info_der_serializ
 
     //  VirgilMessageInfoFooter ::= SEQUENCE {
     //      version INTEGER { v0(0) } DEFAULT v0,
-    //      signerInfos [0] EXPLICIT VirgilSignerInfos
+    //      signerInfos [0] EXPLICIT VirgilSignerInfos OPTIONAL
     //  }
 
     VSCF_ASSERT_PTR(self);
@@ -2116,17 +2122,15 @@ vscf_message_info_der_serializer_serialize_footer(vscf_message_info_der_serializ
     VSCF_ASSERT(vsc_buffer_unused_len(out) >=
                 vscf_message_info_der_serializer_serialized_footer_len(self, message_info_footer));
 
-    bool stored_out_mode = vsc_buffer_is_reverse(out);
-    vsc_buffer_switch_reverse_mode(out, true);
     vscf_asn1_writer_reset(self->asn1_writer, vsc_buffer_unused_bytes(out), vsc_buffer_unused_len(out));
 
     size_t len = 0;
     len += vscf_message_info_der_serializer_serialize_signer_infos(self, message_info_footer);
     len += vscf_asn1_writer_write_int(self->asn1_writer, 0);
     len += vscf_asn1_writer_write_sequence(self->asn1_writer, len);
-    vsc_buffer_inc_used(out, len);
 
-    vsc_buffer_switch_reverse_mode(out, stored_out_mode);
+    vscf_asn1_writer_finish(self->asn1_writer, vsc_buffer_is_reverse(out));
+    vsc_buffer_inc_used(out, len);
 }
 
 //
@@ -2138,7 +2142,7 @@ vscf_message_info_der_serializer_deserialize_footer(
 
     //  VirgilMessageInfoFooter ::= SEQUENCE {
     //      version INTEGER { v0(0) } DEFAULT v0,
-    //      signerInfos [0] EXPLICIT VirgilSignerInfos
+    //      signerInfos [0] EXPLICIT VirgilSignerInfos OPTIONAL
     //  }
 
     VSCF_ASSERT_PTR(self);
@@ -2148,9 +2152,8 @@ vscf_message_info_der_serializer_deserialize_footer(
     vscf_error_t error_ctx;
     vscf_error_reset(&error_ctx);
 
-    vscf_message_info_footer_t *footer = vscf_message_info_footer_new();
-
     vscf_asn1_reader_reset(self->asn1_reader, data);
+
     vscf_asn1_reader_read_sequence(self->asn1_reader);
     const int version = vscf_asn1_reader_read_int(self->asn1_reader);
 
@@ -2158,6 +2161,8 @@ vscf_message_info_der_serializer_deserialize_footer(
         VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_BAD_MESSAGE_INFO_FOOTER);
         goto error;
     }
+
+    vscf_message_info_footer_t *footer = vscf_message_info_footer_new();
 
     vscf_message_info_der_serializer_deserialize_signer_infos(self, footer, &error_ctx);
 
