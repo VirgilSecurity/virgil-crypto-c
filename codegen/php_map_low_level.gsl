@@ -168,7 +168,8 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
                     my._h1 = format_left("zval *in_ctx = NULL;")
                     my._h2 = ""
 
-                    for function.argument as argument0
+                    for function.argument as argument0 where argument0.type <> "vsc_buffer"
+
                         if argument0.zend_type = "IS_STRING"
                             my._h2 += format_left("\
                                 char *in_$(argument0.name:) = NULL;
@@ -195,7 +196,7 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
                     my._h1 = format_left("ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, $(my._num_arguments:), $(my._num_arguments:))", 0)
                     my._h2 = format_left("Z_PARAM_RESOURCE_EX(in_ctx, 1, 0)", 1)
                     my._h3 = ""
-                    for function.argument as argument0
+                    for function.argument as argument0 where argument0.type <> "vsc_data"
                         if argument0.zend_type = "IS_STRING"
                             my._h3 += format_left("Z_PARAM_STRING_EX(in_$(argument0.name:), in_$(argument0.name:)_len, 1 /*check_null*/, 0 /*deref and separate*/)", 1)
                         elsif argument0.zend_type = "IS_LONG"
@@ -263,6 +264,32 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
                             my._res += my._c + my._h1 + "\n" + my._n
                         endif
                     endfor
+                    . = format_left(my._res, 1)
+                endnew
+
+                new call_main_function to wrapper
+                    my._return = ""
+                    for function.return_argument as return_argument0 where return_argument0.type <> "buffer"
+                        if return_argument0.type = "enum"
+                            if return_argument0.name = "status"
+                                my._return = "$(function.prefix0:)_status_t status = "
+                            else
+                                echo_debug_item(return_argument0)
+                                echo_fatal("Not implemented (1003)", my)
+                            endif
+                        elsif return_argument0.type = "size"
+                            # TODO!
+                            my._return = "size_t size = "
+                        else
+                            echo_debug_item(return_argument0)
+                            echo_fatal("Not implemented (1004)", my)
+                        endif
+                    endfor
+
+                    my._func = "$(function.name:)"
+
+                    my._res = my._return + my._func
+
                     . = format_left(my._res, 1)
                 endnew
             endnew
@@ -529,10 +556,17 @@ function php_map_low_level_return (in_method, in_php_project, out_function)
                 echo_fatal("Not implemented (801)", my)
             endif
 
-            new return_argument to my.out_function
-                .name = "----------> $(return0.type:c)_TYPE"
-                .type = "return_type"
-            endnew
+            if return0.type = "size"
+                new return_argument to my.out_function
+                    .name = "$(return0.type:c)"
+                    .type = "$(return0.type:c)"
+                endnew
+            else
+                new return_argument to my.out_function
+                    .name = "----------> $(return0.type:c)_TYPE"
+                    .type = "return_type"
+                endnew
+            endif
         endif
 
         my._r = ""
@@ -565,16 +599,21 @@ function php_map_low_level_return (in_method, in_php_project, out_function)
         if defined (return0.enum)
             if return0.enum = "status"
                 my._throw_exception = 1
+
+                new return_argument to my.out_function
+                    .name = "$(return0.enum:c)"
+                    .type = "enum"
+                endnew
             else
                 my._return_type0 = return0.enum
                 my._return_type = return0.enum
                 my._return_zend_type = "NOT IMPLEMENTED ENUM"
-            endif
 
-            new return_argument to my.out_function
-                .name = "----------> $(return0.enum:c)_ENUM"
-                .type = "enum"
-            endnew
+                new return_argument to my.out_function
+                    .name = "--------> $(return0.enum:c)_ENUM"
+                    .type = "enum"
+                endnew
+            endif
         endif
     endfor
 
@@ -617,7 +656,7 @@ function php_map_low_level_extension (in_php_project, out_php_module)
             if defined(function0->wrapper->custom_code)
                 my._func_wrapping += "\n" + format_left(function0->wrapper->custom_code., 0)
             else
-                my._func_wrapping += "\n" + function0->wrapper->header. + "\n" + function0->wrapper->declare_input_arguments. + "\n" + function0->wrapper->parse_arguments. + "\n" + function0->wrapper->proxy_call. + "\n" + function0->wrapper->allocate_output_buffer.
+                my._func_wrapping += "\n" + function0->wrapper->header. + "\n" + function0->wrapper->declare_input_arguments. + "\n" + function0->wrapper->parse_arguments. + "\n" + function0->wrapper->proxy_call. + "\n" + function0->wrapper->allocate_output_buffer. + "\n" + function0->wrapper->call_main_function.
             endif
 
             my._func_wrapping += "\n"
