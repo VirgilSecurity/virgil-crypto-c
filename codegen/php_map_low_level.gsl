@@ -143,11 +143,15 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
                                 arginfo_$(function.name0:)_php, 
                                 0 /*return_reference*/,
                                 $(function.num_arguments:) /*required_num_args*/,
-                                $(function.return_type:) /*type*/,
+                                $(function.return_zend_type:) /*type*/,
                                 0 /*allow_null*/)
                         ZEND_END_ARG_INFO()
                     ", 0)
                     . = my._c + my._h
+                endnew
+
+                new header to wrapper
+                    . = format_left("PHP_FUNCTION($(function.name:)) {", 0)
                 endnew
             endnew
         endnew
@@ -284,9 +288,9 @@ function php_map_low_level_argument (in_argument, in_php_project, out_php_argume
 
     my.out_php_argument.name = "$(my.in_argument.name:c)"
 
-    my._type0 = ""
-    my._type = ""
-    my._zend_type = ""
+    my._type0 = "NOT IMPLEMENTED"
+    my._type = "NOT IMPLEMENTED"
+    my._zend_type = "NOT IMPLEMENTED"
     my._instance = 0
     my._count = 1 # ctx
 
@@ -357,6 +361,7 @@ function php_map_low_level_return (in_method, in_php_project, out_php_method)
 
     my._return_type0 = ""
     my._return_type = "IS_VOID"
+    my._return_zend_type = "NOT IMPLEMENTED"
     my._return_data = ""
     my._instance = 0
     my._throw_exception = 0
@@ -380,12 +385,15 @@ function php_map_low_level_return (in_method, in_php_project, out_php_method)
             if return0.type = "size" | return0.type = "integer" | return0.type = "unsigned"
                 my._return_type0 = return0.type
                 my._return_type = "int"
+                my._return_zend_type = "IS_LONG"
             elsif return0.type = "boolean"
                 my._return_type0 = return0.type
                 my._return_type = "bool"
+                my._return_zend_type = "IS_BOOLEAN"
             elsif return0.type = "byte"
                 my._return_type0 = return0.type
                 my._return_type = "string"
+                my._return_zend_type = "IS_STRING"
             else
                 # TODO
                 echo_debug_item(my.in_method)
@@ -425,6 +433,7 @@ function php_map_low_level_return (in_method, in_php_project, out_php_method)
 
     my.out_php_method.return_type0 = my._return_type0
     my.out_php_method.return_type = my._return_type
+    my.out_php_method.return_zend_type = my._return_zend_type
     my.out_php_method.return_data = my._return_data
     my.out_php_method.instance = my._instance
     my.out_php_method.throw_exception = my._throw_exception
@@ -461,7 +470,7 @@ function php_map_low_level_extension (in_php_project, out_php_module)
             if defined(function0->wrapper->custom_code)
                 my._func_wrapping += "\n" + format_left(function0->wrapper->custom_code., 0)
             else
-                my._func_wrapping += "\n" + format_left("TEMP", 0)
+                my._func_wrapping += "\n" + function0->wrapper->header.
             endif
 
             my._func_wrapping += "\n"
