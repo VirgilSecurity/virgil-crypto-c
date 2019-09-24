@@ -88,15 +88,17 @@ const initFoundationInterfaceTag = (Module, modules) => {
 
         MAC: 25,
 
-        MESSAGE_INFO_SERIALIZER: 26,
+        MESSAGE_INFO_FOOTER_SERIALIZER: 26,
 
-        PRIVATE_KEY: 27,
+        MESSAGE_INFO_SERIALIZER: 27,
 
-        PUBLIC_KEY: 28,
+        PRIVATE_KEY: 28,
 
-        RANDOM: 29,
+        PUBLIC_KEY: 29,
 
-        SALTED_KDF: 30
+        RANDOM: 30,
+
+        SALTED_KDF: 31
     });
 
     return FoundationInterfaceTag;

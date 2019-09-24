@@ -37,9 +37,9 @@
 package com.virgilsecurity.crypto.foundation;
 
 /*
-* CMS based implementation of the class "message info" serialization.
+* CMS based serialization of the class "message info".
 */
-public class MessageInfoDerSerializer implements AutoCloseable, MessageInfoSerializer {
+public class MessageInfoDerSerializer implements AutoCloseable, MessageInfoSerializer, MessageInfoFooterSerializer {
 
     public long cCtx;
 
@@ -117,6 +117,27 @@ public class MessageInfoDerSerializer implements AutoCloseable, MessageInfoSeria
     */
     public MessageInfo deserialize(byte[] data) throws FoundationException {
         return FoundationJNI.INSTANCE.messageInfoDerSerializer_deserialize(this.cCtx, data);
+    }
+
+    /*
+    * Return buffer size enough to hold serialized message info footer.
+    */
+    public int serializedFooterLen(MessageInfoFooter messageInfoFooter) {
+        return FoundationJNI.INSTANCE.messageInfoDerSerializer_serializedFooterLen(this.cCtx, messageInfoFooter);
+    }
+
+    /*
+    * Serialize class "message info footer".
+    */
+    public byte[] serializeFooter(MessageInfoFooter messageInfoFooter) {
+        return FoundationJNI.INSTANCE.messageInfoDerSerializer_serializeFooter(this.cCtx, messageInfoFooter);
+    }
+
+    /*
+    * Deserialize class "message info footer".
+    */
+    public MessageInfoFooter deserializeFooter(byte[] data) throws FoundationException {
+        return FoundationJNI.INSTANCE.messageInfoDerSerializer_deserializeFooter(this.cCtx, data);
     }
 }
 

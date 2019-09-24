@@ -135,13 +135,13 @@ vscf_message_info_footer_shallow_copy(vscf_message_info_footer_t *self);
 //
 //  Add signer that is defined by Private Key.
 //
-VSCF_PUBLIC void
+VSCF_PRIVATE void
 vscf_message_info_footer_add_signer_info(vscf_message_info_footer_t *self, vscf_signer_info_t **signer_info_ref);
 
 //
 //  Remove all "signer info" elements.
 //
-VSCF_PUBLIC void
+VSCF_PRIVATE void
 vscf_message_info_footer_clear_signer_infos(vscf_message_info_footer_t *self);
 
 //
@@ -153,7 +153,7 @@ vscf_message_info_footer_signer_infos(const vscf_message_info_footer_t *self);
 //
 //  Set information about algorithm that was used for data hashing.
 //
-VSCF_PUBLIC void
+VSCF_PRIVATE void
 vscf_message_info_footer_set_signer_hash_alg_info(vscf_message_info_footer_t *self,
         vscf_impl_t **signer_hash_alg_info_ref);
 
@@ -166,7 +166,7 @@ vscf_message_info_footer_signer_hash_alg_info(const vscf_message_info_footer_t *
 //
 //  Set plain text digest that was used to produce signature.
 //
-VSCF_PUBLIC void
+VSCF_PRIVATE void
 vscf_message_info_footer_set_signer_digest(vscf_message_info_footer_t *self, vsc_buffer_t **digest_ref);
 
 //

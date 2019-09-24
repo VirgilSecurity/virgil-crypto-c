@@ -39,6 +39,7 @@ from ._c_bridge import VscfImplTag
 from .key_recipient_info_list import KeyRecipientInfoList
 from .password_recipient_info_list import PasswordRecipientInfoList
 from .message_info_custom_params import MessageInfoCustomParams
+from .signed_data_info import SignedDataInfo
 
 
 class MessageInfo(object):
@@ -84,9 +85,18 @@ class MessageInfo(object):
         instance = PasswordRecipientInfoList.use_c_ctx(result)
         return instance
 
+    def clear_recipients(self):
+        """Remove all recipients."""
+        self._lib_vscf_message_info.vscf_message_info_clear_recipients(self.ctx)
+
     def set_custom_params(self, custom_params):
         """Setup custom params."""
         self._lib_vscf_message_info.vscf_message_info_set_custom_params(self.ctx, custom_params.ctx)
+
+    def has_custom_params(self):
+        """Return true if message info contains at least one custom param."""
+        result = self._lib_vscf_message_info.vscf_message_info_has_custom_params(self.ctx)
+        return result
 
     def custom_params(self):
         """Provide access to the custom params object.
@@ -96,9 +106,24 @@ class MessageInfo(object):
         instance = MessageInfoCustomParams.use_c_ctx(result)
         return instance
 
-    def clear_recipients(self):
-        """Remove all recipients."""
-        self._lib_vscf_message_info.vscf_message_info_clear_recipients(self.ctx)
+    def has_signed_data_info(self):
+        """Return true if signed data info exists."""
+        result = self._lib_vscf_message_info.vscf_message_info_has_signed_data_info(self.ctx)
+        return result
+
+    def set_signed_data_info(self, signed_data_info):
+        """Setup signed data info."""
+        self._lib_vscf_message_info.vscf_message_info_set_signed_data_info(self.ctx, signed_data_info.ctx)
+
+    def signed_data_info(self):
+        """Return signed data info."""
+        result = self._lib_vscf_message_info.vscf_message_info_signed_data_info(self.ctx)
+        instance = SignedDataInfo.use_c_ctx(result)
+        return instance
+
+    def remove_signed_data_info(self):
+        """Remove signed data info."""
+        self._lib_vscf_message_info.vscf_message_info_remove_signed_data_info(self.ctx)
 
     @classmethod
     def take_c_ctx(cls, c_ctx):

@@ -332,6 +332,19 @@ const initMessageInfoCustomParams = (Module, modules) => {
                 Module._free(dataResultCtxPtr);
             }
         }
+
+        /**
+         * Return true if at least one param exists.
+         */
+        hasParams() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
+            let proxyResult;
+            proxyResult = Module._vscf_message_info_custom_params_has_params(this.ctxPtr);
+
+            const booleanResult = !!proxyResult;
+            return booleanResult;
+        }
     }
 
     return MessageInfoCustomParams;

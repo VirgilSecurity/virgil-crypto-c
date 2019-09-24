@@ -156,12 +156,33 @@ const initMessageInfo = (Module, modules) => {
         }
 
         /**
+         * Remove all recipients.
+         */
+        clearRecipients() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            Module._vscf_message_info_clear_recipients(this.ctxPtr);
+        }
+
+        /**
          * Setup custom params.
          */
         setCustomParams(customParams) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureClass('customParams', customParams, modules.MessageInfoCustomParams);
             Module._vscf_message_info_set_custom_params(this.ctxPtr, customParams.ctxPtr);
+        }
+
+        /**
+         * Return true if message info contains at least one custom param.
+         */
+        hasCustomParams() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
+            let proxyResult;
+            proxyResult = Module._vscf_message_info_has_custom_params(this.ctxPtr);
+
+            const booleanResult = !!proxyResult;
+            return booleanResult;
         }
 
         /**
@@ -180,11 +201,46 @@ const initMessageInfo = (Module, modules) => {
         }
 
         /**
-         * Remove all recipients.
+         * Return true if signed data info exists.
          */
-        clearRecipients() {
+        hasSignedDataInfo() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-            Module._vscf_message_info_clear_recipients(this.ctxPtr);
+
+            let proxyResult;
+            proxyResult = Module._vscf_message_info_has_signed_data_info(this.ctxPtr);
+
+            const booleanResult = !!proxyResult;
+            return booleanResult;
+        }
+
+        /**
+         * Setup signed data info.
+         */
+        setSignedDataInfo(signedDataInfo) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureClass('signedDataInfo', signedDataInfo, modules.SignedDataInfo);
+            Module._vscf_message_info_set_signed_data_info(this.ctxPtr, signedDataInfo.ctxPtr);
+        }
+
+        /**
+         * Return signed data info.
+         */
+        signedDataInfo() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
+            let proxyResult;
+            proxyResult = Module._vscf_message_info_signed_data_info(this.ctxPtr);
+
+            const jsResult = modules.SignedDataInfo.newAndUseCContext(proxyResult);
+            return jsResult;
+        }
+
+        /**
+         * Remove signed data info.
+         */
+        removeSignedDataInfo() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            Module._vscf_message_info_remove_signed_data_info(this.ctxPtr);
         }
     }
 

@@ -291,4 +291,11 @@
 
         <return enum="status"/>
     </method>
+
+    <method name="set cipher auth data" declaration="private">
+        For signed encryption set serialized signed data info as
+        cipher additional data for AEAD ciphers.
+
+        <argument name="cipher" interface="cipher" access="readwrite"/>
+    </method>
 </class>

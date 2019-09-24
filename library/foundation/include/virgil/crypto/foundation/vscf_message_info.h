@@ -171,10 +171,22 @@ VSCF_PUBLIC const vscf_password_recipient_info_list_t *
 vscf_message_info_password_recipient_info_list(const vscf_message_info_t *self);
 
 //
+//  Remove all recipients.
+//
+VSCF_PUBLIC void
+vscf_message_info_clear_recipients(vscf_message_info_t *self);
+
+//
 //  Setup custom params.
 //
 VSCF_PUBLIC void
 vscf_message_info_set_custom_params(vscf_message_info_t *self, vscf_message_info_custom_params_t *custom_params);
+
+//
+//  Return true if message info contains at least one custom param.
+//
+VSCF_PUBLIC bool
+vscf_message_info_has_custom_params(const vscf_message_info_t *self);
 
 //
 //  Provide access to the custom params object.
@@ -183,6 +195,12 @@ vscf_message_info_set_custom_params(vscf_message_info_t *self, vscf_message_info
 //
 VSCF_PUBLIC vscf_message_info_custom_params_t *
 vscf_message_info_custom_params(vscf_message_info_t *self);
+
+//
+//  Return true if signed data info exists.
+//
+VSCF_PUBLIC bool
+vscf_message_info_has_signed_data_info(const vscf_message_info_t *self);
 
 //
 //  Setup signed data info.
@@ -197,10 +215,10 @@ VSCF_PUBLIC vscf_signed_data_info_t *
 vscf_message_info_signed_data_info(vscf_message_info_t *self);
 
 //
-//  Remove all recipients.
+//  Remove signed data info.
 //
 VSCF_PUBLIC void
-vscf_message_info_clear_recipients(vscf_message_info_t *self);
+vscf_message_info_remove_signed_data_info(vscf_message_info_t *self);
 
 
 // --------------------------------------------------------------------------

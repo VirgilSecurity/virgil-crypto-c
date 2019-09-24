@@ -142,6 +142,13 @@ static vscf_status_t
 vscf_recipient_cipher_extract_message_info(vscf_recipient_cipher_t *self, vsc_data_t data) VSCF_NODISCARD;
 
 //
+//  For signed encryption set serialized signed data info as
+//  cipher additional data for AEAD ciphers.
+//
+static void
+vscf_recipient_cipher_set_cipher_auth_data(vscf_recipient_cipher_t *self, vscf_impl_t *cipher);
+
+//
 //  Return size of 'vscf_recipient_cipher_t'.
 //
 VSCF_PUBLIC size_t
@@ -662,13 +669,7 @@ vscf_recipient_cipher_start_encryption(vscf_recipient_cipher_t *self) {
     //
     vscf_cipher_set_key(self->encryption_cipher, vsc_buffer_data(cipher_key));
     vscf_cipher_set_nonce(self->encryption_cipher, vsc_buffer_data(cipher_nonce));
-
-    if (self->is_signed_encryption) {
-        if (vscf_cipher_auth_is_implemented(self->encryption_cipher)) {
-            //  FIXME: Add signed data info to the cipher authenticated data.
-        }
-    }
-
+    vscf_recipient_cipher_set_cipher_auth_data(self, self->encryption_cipher);
     vscf_cipher_start_encryption(self->encryption_cipher);
 
     vsc_buffer_destroy(&cipher_key);
@@ -1227,4 +1228,31 @@ vscf_recipient_cipher_extract_message_info(vscf_recipient_cipher_t *self, vsc_da
     }
 
     return vscf_status_SUCCESS;
+}
+
+//
+//  For signed encryption set serialized signed data info as
+//  cipher additional data for AEAD ciphers.
+//
+static void
+vscf_recipient_cipher_set_cipher_auth_data(vscf_recipient_cipher_t *self, vscf_impl_t *cipher) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(cipher);
+
+    if (self->is_signed_encryption && vscf_cipher_auth_is_implemented(cipher)) {
+        const vscf_signed_data_info_t *signed_data_info = vscf_message_info_signed_data_info(self->message_info);
+
+        const size_t serialized_signed_data_info_len = vscf_message_info_der_serializer_serialized_signed_data_info_len(
+                self->message_info_der_serializer, signed_data_info);
+
+        vsc_buffer_t *serialized_signed_data_info = vsc_buffer_new_with_capacity(serialized_signed_data_info_len);
+
+        vscf_message_info_der_serializer_serialize_signed_data_info(
+                self->message_info_der_serializer, signed_data_info, serialized_signed_data_info);
+
+        vscf_cipher_auth_set_auth_data(cipher, vsc_buffer_data(serialized_signed_data_info));
+
+        vsc_buffer_destroy(&serialized_signed_data_info);
+    }
 }

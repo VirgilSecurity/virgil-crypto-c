@@ -112,10 +112,24 @@ public class MessageInfo implements AutoCloseable {
     }
 
     /*
+    * Remove all recipients.
+    */
+    public void clearRecipients() {
+        FoundationJNI.INSTANCE.messageInfo_clearRecipients(this.cCtx);
+    }
+
+    /*
     * Setup custom params.
     */
     public void setCustomParams(MessageInfoCustomParams customParams) {
         FoundationJNI.INSTANCE.messageInfo_setCustomParams(this.cCtx, customParams);
+    }
+
+    /*
+    * Return true if message info contains at least one custom param.
+    */
+    public boolean hasCustomParams() {
+        return FoundationJNI.INSTANCE.messageInfo_hasCustomParams(this.cCtx);
     }
 
     /*
@@ -128,10 +142,31 @@ public class MessageInfo implements AutoCloseable {
     }
 
     /*
-    * Remove all recipients.
+    * Return true if signed data info exists.
     */
-    public void clearRecipients() {
-        FoundationJNI.INSTANCE.messageInfo_clearRecipients(this.cCtx);
+    public boolean hasSignedDataInfo() {
+        return FoundationJNI.INSTANCE.messageInfo_hasSignedDataInfo(this.cCtx);
+    }
+
+    /*
+    * Setup signed data info.
+    */
+    public void setSignedDataInfo(SignedDataInfo signedDataInfo) {
+        FoundationJNI.INSTANCE.messageInfo_setSignedDataInfo(this.cCtx, signedDataInfo);
+    }
+
+    /*
+    * Return signed data info.
+    */
+    public SignedDataInfo signedDataInfo() {
+        return FoundationJNI.INSTANCE.messageInfo_signedDataInfo(this.cCtx);
+    }
+
+    /*
+    * Remove signed data info.
+    */
+    public void removeSignedDataInfo() {
+        FoundationJNI.INSTANCE.messageInfo_removeSignedDataInfo(this.cCtx);
     }
 }
 

@@ -115,6 +115,13 @@ class VscfMessageInfoCustomParams(object):
         vscf_message_info_custom_params_find_data.restype = vsc_data_t
         return vscf_message_info_custom_params_find_data(ctx, key, error)
 
+    def vscf_message_info_custom_params_has_params(self, ctx):
+        """Return true if at least one param exists."""
+        vscf_message_info_custom_params_has_params = self._lib.vscf_message_info_custom_params_has_params
+        vscf_message_info_custom_params_has_params.argtypes = [POINTER(vscf_message_info_custom_params_t)]
+        vscf_message_info_custom_params_has_params.restype = c_bool
+        return vscf_message_info_custom_params_has_params(ctx)
+
     def vscf_message_info_custom_params_shallow_copy(self, ctx):
         vscf_message_info_custom_params_shallow_copy = self._lib.vscf_message_info_custom_params_shallow_copy
         vscf_message_info_custom_params_shallow_copy.argtypes = [POINTER(vscf_message_info_custom_params_t)]

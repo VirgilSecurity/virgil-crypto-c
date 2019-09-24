@@ -1,7 +1,7 @@
 <class name="verifier list" scope="internal">
     Handles a list of signers defined by id and public key.
 
-    <require interface="private key"/>
+    <require interface="public key"/>
 
     <property name="signer id" class="buffer"/>
     <property name="signer public key" interface="private key"/>

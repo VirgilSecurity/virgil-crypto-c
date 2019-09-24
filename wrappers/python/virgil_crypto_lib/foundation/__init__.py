@@ -61,6 +61,10 @@ from .group_session_message import GroupSessionMessage
 from .group_session_ticket import GroupSessionTicket
 from .group_session import GroupSession
 from .message_info_editor import MessageInfoEditor
+from .signer_info import SignerInfo
+from .signer_info_list import SignerInfoList
+from .message_info_footer import MessageInfoFooter
+from .signed_data_info import SignedDataInfo
 from .cipher import Cipher
 from .auth_encrypt import AuthEncrypt
 from .auth_decrypt import AuthDecrypt
@@ -91,6 +95,7 @@ from .alg_info import AlgInfo
 from .alg_info_serializer import AlgInfoSerializer
 from .alg_info_deserializer import AlgInfoDeserializer
 from .message_info_serializer import MessageInfoSerializer
+from .message_info_footer_serializer import MessageInfoFooterSerializer
 from .sha224 import Sha224
 from .sha256 import Sha256
 from .sha384 import Sha384

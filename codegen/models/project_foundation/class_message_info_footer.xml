@@ -6,14 +6,14 @@
     <property name="signer digest" class="buffer"/>
 
 
-    <method name="add signer info">
+    <method name="add signer info" visibility="private">
         Add signer that is defined by Private Key.
 
         <argument name="signer info" class="signer info" access="disown"/>
     </method>
 
 
-    <method name="clear signer infos">
+    <method name="clear signer infos" visibility="private">
         Remove all "signer info" elements.
     </method>
 
@@ -24,7 +24,7 @@
         <return class="signer info list"/>
     </method>
 
-    <method name="set signer hash alg info">
+    <method name="set signer hash alg info" visibility="private">
         Set information about algorithm that was used for data hashing.
 
         <argument name="signer hash alg info" interface="alg info" access="disown"/>
@@ -36,7 +36,7 @@
         <return interface="alg info"/>
     </method>
 
-    <method name="set signer digest">
+    <method name="set signer digest" visibility="private">
         Set plain text digest that was used to produce signature.
 
         <argument name="digest" class="buffer" access="disown"/>

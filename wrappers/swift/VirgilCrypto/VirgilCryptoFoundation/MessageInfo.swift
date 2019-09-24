@@ -110,9 +110,21 @@ import VSCFoundation
         return PasswordRecipientInfoList.init(use: proxyResult!)
     }
 
+    /// Remove all recipients.
+    @objc public func clearRecipients() {
+        vscf_message_info_clear_recipients(self.c_ctx)
+    }
+
     /// Setup custom params.
     @objc public func setCustomParams(customParams: MessageInfoCustomParams) {
         vscf_message_info_set_custom_params(self.c_ctx, customParams.c_ctx)
+    }
+
+    /// Return true if message info contains at least one custom param.
+    @objc public func hasCustomParams() -> Bool {
+        let proxyResult = vscf_message_info_has_custom_params(self.c_ctx)
+
+        return proxyResult
     }
 
     /// Provide access to the custom params object.
@@ -124,8 +136,27 @@ import VSCFoundation
         return MessageInfoCustomParams.init(use: proxyResult!)
     }
 
-    /// Remove all recipients.
-    @objc public func clearRecipients() {
-        vscf_message_info_clear_recipients(self.c_ctx)
+    /// Return true if signed data info exists.
+    @objc public func hasSignedDataInfo() -> Bool {
+        let proxyResult = vscf_message_info_has_signed_data_info(self.c_ctx)
+
+        return proxyResult
+    }
+
+    /// Setup signed data info.
+    @objc public func setSignedDataInfo(signedDataInfo: SignedDataInfo) {
+        vscf_message_info_set_signed_data_info(self.c_ctx, signedDataInfo.c_ctx)
+    }
+
+    /// Return signed data info.
+    @objc public func signedDataInfo() -> SignedDataInfo {
+        let proxyResult = vscf_message_info_signed_data_info(self.c_ctx)
+
+        return SignedDataInfo.init(use: proxyResult!)
+    }
+
+    /// Remove signed data info.
+    @objc public func removeSignedDataInfo() {
+        vscf_message_info_remove_signed_data_info(self.c_ctx)
     }
 }

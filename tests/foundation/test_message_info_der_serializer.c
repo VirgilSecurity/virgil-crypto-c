@@ -165,6 +165,77 @@ test__serialize__cms_with_custom_params__returns_cms_with_no_recipients_and_3_pa
 }
 
 void
+test__serialize__signed_data_info__returns_valid_cms(void) {
+
+    vscf_signed_data_info_t *signed_data_info = vscf_signed_data_info_new();
+
+    vscf_signed_data_info_set_data_size(signed_data_info, 4096);
+
+    vscf_impl_t *hash_alg_info = vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_SHA512));
+    vscf_signed_data_info_set_hash_alg_info(signed_data_info, &hash_alg_info);
+
+
+    vscf_message_info_t *message_info = vscf_message_info_new();
+    vscf_impl_t *data_encryption_alg_info = vscf_cipher_alg_info_impl(vscf_cipher_alg_info_new_with_members(
+            vscf_alg_id_AES256_GCM, test_message_info_cms_ONE_RSA2048_KEY_RECIPIENT.data_encryption_alg_nonce));
+    vscf_message_info_set_data_encryption_alg_info(message_info, &data_encryption_alg_info);
+    vscf_message_info_set_signed_data_info(message_info, signed_data_info);
+
+    vscf_message_info_der_serializer_t *serializer = vscf_message_info_der_serializer_new();
+    vscf_message_info_der_serializer_setup_defaults(serializer);
+
+    vsc_buffer_t *out =
+            vsc_buffer_new_with_capacity(vscf_message_info_der_serializer_serialized_len(serializer, message_info));
+    vscf_message_info_der_serializer_serialize(serializer, message_info, out);
+
+    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_message_info_cms_NO_RECIPIENTS_AND_SIGNED_DATA_INFO, out);
+
+    vsc_buffer_destroy(&out);
+    vscf_message_info_der_serializer_destroy(&serializer);
+    vscf_message_info_destroy(&message_info);
+    vscf_signed_data_info_destroy(&signed_data_info);
+}
+
+void
+test__serialize__signed_data_info_with_custom_params__returns_valid_cms(void) {
+
+    vscf_message_info_custom_params_t *custom_params = vscf_message_info_custom_params_new();
+    vscf_message_info_custom_params_add_string(custom_params, test_message_info_cms_STRING_CUSTOM_PARAM_KEY,
+            test_message_info_cms_STRING_CUSTOM_PARAM_VALUE);
+    vscf_message_info_custom_params_add_data(
+            custom_params, test_message_info_cms_DATA_CUSTOM_PARAM_KEY, test_message_info_cms_DATA_CUSTOM_PARAM_VALUE);
+    vscf_message_info_custom_params_add_int(
+            custom_params, test_message_info_cms_INT_CUSTOM_PARAM_KEY, test_message_info_cms_INT_CUSTOM_PARAM_VALUE);
+
+    vscf_impl_t *hash_alg_info = vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_SHA512));
+
+    vscf_signed_data_info_t *signed_data_info = vscf_signed_data_info_new();
+    vscf_signed_data_info_set_data_size(signed_data_info, 4096);
+    vscf_signed_data_info_set_hash_alg_info(signed_data_info, &hash_alg_info);
+    vscf_signed_data_info_set_custom_params(signed_data_info, &custom_params);
+
+    vscf_message_info_t *message_info = vscf_message_info_new();
+    vscf_impl_t *data_encryption_alg_info = vscf_cipher_alg_info_impl(vscf_cipher_alg_info_new_with_members(
+            vscf_alg_id_AES256_GCM, test_message_info_cms_ONE_RSA2048_KEY_RECIPIENT.data_encryption_alg_nonce));
+    vscf_message_info_set_data_encryption_alg_info(message_info, &data_encryption_alg_info);
+    vscf_message_info_set_signed_data_info(message_info, signed_data_info);
+
+    vscf_message_info_der_serializer_t *serializer = vscf_message_info_der_serializer_new();
+    vscf_message_info_der_serializer_setup_defaults(serializer);
+
+    vsc_buffer_t *out =
+            vsc_buffer_new_with_capacity(vscf_message_info_der_serializer_serialized_len(serializer, message_info));
+    vscf_message_info_der_serializer_serialize(serializer, message_info, out);
+
+    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_message_info_cms_NO_RECIPIENTS_AND_SIGNED_DATA_INFO_WITH_CUSTOM_PARAMS, out);
+
+    vsc_buffer_destroy(&out);
+    vscf_message_info_der_serializer_destroy(&serializer);
+    vscf_message_info_destroy(&message_info);
+    vscf_signed_data_info_destroy(&signed_data_info);
+}
+
+void
 test__deserialize__cms_with_one_rsa2048_key_recipient__returns_valid_key_recipient(void) {
 
     vscf_message_info_der_serializer_t *serializer = vscf_message_info_der_serializer_new();
@@ -474,6 +545,123 @@ test__deserialize__cms_with_no_recipients_and_3_params__read_data_param_is_valid
     vscf_message_info_der_serializer_destroy(&serializer);
 }
 
+void
+test__deserialize__cms_with_signed_data_info__is_valid_data_size(void) {
+    vscf_message_info_der_serializer_t *serializer = vscf_message_info_der_serializer_new();
+    vscf_message_info_der_serializer_setup_defaults(serializer);
+
+    vscf_message_info_t *message_info = vscf_message_info_der_serializer_deserialize(
+            serializer, test_message_info_cms_NO_RECIPIENTS_AND_SIGNED_DATA_INFO, NULL);
+    TEST_ASSERT_NOT_NULL(message_info);
+
+    TEST_ASSERT_TRUE(vscf_message_info_has_signed_data_info(message_info));
+
+    vscf_signed_data_info_t *signed_data_info = vscf_message_info_signed_data_info(message_info);
+    const size_t data_size = vscf_signed_data_info_data_size(signed_data_info);
+    TEST_ASSERT_EQUAL(4096, data_size);
+
+    vscf_message_info_destroy(&message_info);
+    vscf_message_info_der_serializer_destroy(&serializer);
+}
+
+void
+test__deserialize__cms_with_signed_data_info__is_valid_hash_alg_info(void) {
+    vscf_message_info_der_serializer_t *serializer = vscf_message_info_der_serializer_new();
+    vscf_message_info_der_serializer_setup_defaults(serializer);
+
+    vscf_message_info_t *message_info = vscf_message_info_der_serializer_deserialize(
+            serializer, test_message_info_cms_NO_RECIPIENTS_AND_SIGNED_DATA_INFO, NULL);
+    TEST_ASSERT_NOT_NULL(message_info);
+
+    TEST_ASSERT_TRUE(vscf_message_info_has_signed_data_info(message_info));
+
+    vscf_signed_data_info_t *signed_data_info = vscf_message_info_signed_data_info(message_info);
+    const vscf_impl_t *hash_alg_info = vscf_signed_data_info_hash_alg_info(signed_data_info);
+    TEST_ASSERT_EQUAL(vscf_alg_id_SHA512, vscf_alg_info_alg_id(hash_alg_info));
+
+    vscf_message_info_destroy(&message_info);
+    vscf_message_info_der_serializer_destroy(&serializer);
+}
+
+void
+test__deserialize__cms_with_signed_data_info_with_custom_params__is_valid_int_param(void) {
+    vscf_message_info_der_serializer_t *serializer = vscf_message_info_der_serializer_new();
+    vscf_message_info_der_serializer_setup_defaults(serializer);
+
+    vscf_message_info_t *message_info = vscf_message_info_der_serializer_deserialize(
+            serializer, test_message_info_cms_NO_RECIPIENTS_AND_SIGNED_DATA_INFO_WITH_CUSTOM_PARAMS, NULL);
+    TEST_ASSERT_NOT_NULL(message_info);
+
+    TEST_ASSERT_TRUE(vscf_message_info_has_signed_data_info(message_info));
+
+    vscf_signed_data_info_t *signed_data_info = vscf_message_info_signed_data_info(message_info);
+    vscf_message_info_custom_params_t *custom_params = vscf_signed_data_info_custom_params(signed_data_info);
+
+    vscf_error_t error;
+    vscf_error_reset(&error);
+
+    int value =
+            vscf_message_info_custom_params_find_int(custom_params, test_message_info_cms_INT_CUSTOM_PARAM_KEY, &error);
+    TEST_ASSERT_FALSE(vscf_error_has_error(&error));
+    TEST_ASSERT_EQUAL(test_message_info_cms_INT_CUSTOM_PARAM_VALUE, value);
+
+    vscf_message_info_destroy(&message_info);
+    vscf_message_info_der_serializer_destroy(&serializer);
+}
+
+void
+test__deserialize__cms_with_signed_data_info_with_custom_params__is_valid_string_param(void) {
+    vscf_message_info_der_serializer_t *serializer = vscf_message_info_der_serializer_new();
+    vscf_message_info_der_serializer_setup_defaults(serializer);
+
+    vscf_message_info_t *message_info = vscf_message_info_der_serializer_deserialize(
+            serializer, test_message_info_cms_NO_RECIPIENTS_AND_SIGNED_DATA_INFO_WITH_CUSTOM_PARAMS, NULL);
+    TEST_ASSERT_NOT_NULL(message_info);
+
+    TEST_ASSERT_TRUE(vscf_message_info_has_signed_data_info(message_info));
+
+    vscf_signed_data_info_t *signed_data_info = vscf_message_info_signed_data_info(message_info);
+    vscf_message_info_custom_params_t *custom_params = vscf_signed_data_info_custom_params(signed_data_info);
+
+    vscf_error_t error;
+    vscf_error_reset(&error);
+
+    vsc_data_t value = vscf_message_info_custom_params_find_string(
+            custom_params, test_message_info_cms_STRING_CUSTOM_PARAM_KEY, &error);
+    TEST_ASSERT_FALSE(vscf_error_has_error(&error));
+    TEST_ASSERT_EQUAL_DATA(test_message_info_cms_STRING_CUSTOM_PARAM_VALUE, value);
+
+    vscf_message_info_destroy(&message_info);
+    vscf_message_info_der_serializer_destroy(&serializer);
+}
+
+void
+test__deserialize__cms_with_signed_data_info_with_custom_params__is_valid_data_param(void) {
+    vscf_message_info_der_serializer_t *serializer = vscf_message_info_der_serializer_new();
+    vscf_message_info_der_serializer_setup_defaults(serializer);
+
+    vscf_message_info_t *message_info = vscf_message_info_der_serializer_deserialize(
+            serializer, test_message_info_cms_NO_RECIPIENTS_AND_SIGNED_DATA_INFO_WITH_CUSTOM_PARAMS, NULL);
+    TEST_ASSERT_NOT_NULL(message_info);
+
+    TEST_ASSERT_TRUE(vscf_message_info_has_signed_data_info(message_info));
+
+    vscf_signed_data_info_t *signed_data_info = vscf_message_info_signed_data_info(message_info);
+    vscf_message_info_custom_params_t *custom_params = vscf_signed_data_info_custom_params(signed_data_info);
+
+    vscf_error_t error;
+    vscf_error_reset(&error);
+
+    vsc_data_t value = vscf_message_info_custom_params_find_data(
+            custom_params, test_message_info_cms_DATA_CUSTOM_PARAM_KEY, &error);
+    TEST_ASSERT_FALSE(vscf_error_has_error(&error));
+    TEST_ASSERT_EQUAL_DATA(test_message_info_cms_DATA_CUSTOM_PARAM_VALUE, value);
+
+    vscf_message_info_destroy(&message_info);
+    vscf_message_info_der_serializer_destroy(&serializer);
+}
+
+
 #endif // TEST_DEPENDENCIES_AVAILABLE
 
 
@@ -488,6 +676,8 @@ main(void) {
     RUN_TEST(test__serialize__one_rsa2048_key_recipient__returns_valid_cms);
     RUN_TEST(test__serialize__one_password_recipient__returns_valid_cms);
     RUN_TEST(test__serialize__cms_with_custom_params__returns_cms_with_no_recipients_and_3_params);
+    RUN_TEST(test__serialize__signed_data_info__returns_valid_cms);
+    RUN_TEST(test__serialize__signed_data_info_with_custom_params__returns_valid_cms);
 
     RUN_TEST(test__deserialize__cms_with_one_rsa2048_key_recipient__returns_valid_key_recipient);
     RUN_TEST(test__deserialize__cms_with_one_password_recipient__returns_valid_key_recipient);
@@ -499,6 +689,11 @@ main(void) {
     RUN_TEST(test__deserialize__cms_with_no_recipients_and_3_params__read_string_param_is_valid);
     RUN_TEST(test__deserialize__cms_with_no_recipients_and_3_params__read_data_param_is_valid);
 
+    RUN_TEST(test__deserialize__cms_with_signed_data_info__is_valid_data_size);
+    RUN_TEST(test__deserialize__cms_with_signed_data_info__is_valid_hash_alg_info);
+    RUN_TEST(test__deserialize__cms_with_signed_data_info_with_custom_params__is_valid_int_param);
+    RUN_TEST(test__deserialize__cms_with_signed_data_info_with_custom_params__is_valid_string_param);
+    RUN_TEST(test__deserialize__cms_with_signed_data_info_with_custom_params__is_valid_data_param);
 #else
     RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
 #endif

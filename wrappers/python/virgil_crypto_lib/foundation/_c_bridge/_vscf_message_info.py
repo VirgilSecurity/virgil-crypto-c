@@ -41,6 +41,7 @@ from ._vscf_impl import vscf_impl_t
 from ._vscf_key_recipient_info_list import vscf_key_recipient_info_list_t
 from ._vscf_password_recipient_info_list import vscf_password_recipient_info_list_t
 from ._vscf_message_info_custom_params import vscf_message_info_custom_params_t
+from ._vscf_signed_data_info import vscf_signed_data_info_t
 
 
 class vscf_message_info_t(Structure):
@@ -110,12 +111,26 @@ class VscfMessageInfo(object):
         vscf_message_info_password_recipient_info_list.restype = POINTER(vscf_password_recipient_info_list_t)
         return vscf_message_info_password_recipient_info_list(ctx)
 
+    def vscf_message_info_clear_recipients(self, ctx):
+        """Remove all recipients."""
+        vscf_message_info_clear_recipients = self._lib.vscf_message_info_clear_recipients
+        vscf_message_info_clear_recipients.argtypes = [POINTER(vscf_message_info_t)]
+        vscf_message_info_clear_recipients.restype = None
+        return vscf_message_info_clear_recipients(ctx)
+
     def vscf_message_info_set_custom_params(self, ctx, custom_params):
         """Setup custom params."""
         vscf_message_info_set_custom_params = self._lib.vscf_message_info_set_custom_params
         vscf_message_info_set_custom_params.argtypes = [POINTER(vscf_message_info_t), POINTER(vscf_message_info_custom_params_t)]
         vscf_message_info_set_custom_params.restype = None
         return vscf_message_info_set_custom_params(ctx, custom_params)
+
+    def vscf_message_info_has_custom_params(self, ctx):
+        """Return true if message info contains at least one custom param."""
+        vscf_message_info_has_custom_params = self._lib.vscf_message_info_has_custom_params
+        vscf_message_info_has_custom_params.argtypes = [POINTER(vscf_message_info_t)]
+        vscf_message_info_has_custom_params.restype = c_bool
+        return vscf_message_info_has_custom_params(ctx)
 
     def vscf_message_info_custom_params(self, ctx):
         """Provide access to the custom params object.
@@ -126,12 +141,33 @@ class VscfMessageInfo(object):
         vscf_message_info_custom_params.restype = POINTER(vscf_message_info_custom_params_t)
         return vscf_message_info_custom_params(ctx)
 
-    def vscf_message_info_clear_recipients(self, ctx):
-        """Remove all recipients."""
-        vscf_message_info_clear_recipients = self._lib.vscf_message_info_clear_recipients
-        vscf_message_info_clear_recipients.argtypes = [POINTER(vscf_message_info_t)]
-        vscf_message_info_clear_recipients.restype = None
-        return vscf_message_info_clear_recipients(ctx)
+    def vscf_message_info_has_signed_data_info(self, ctx):
+        """Return true if signed data info exists."""
+        vscf_message_info_has_signed_data_info = self._lib.vscf_message_info_has_signed_data_info
+        vscf_message_info_has_signed_data_info.argtypes = [POINTER(vscf_message_info_t)]
+        vscf_message_info_has_signed_data_info.restype = c_bool
+        return vscf_message_info_has_signed_data_info(ctx)
+
+    def vscf_message_info_set_signed_data_info(self, ctx, signed_data_info):
+        """Setup signed data info."""
+        vscf_message_info_set_signed_data_info = self._lib.vscf_message_info_set_signed_data_info
+        vscf_message_info_set_signed_data_info.argtypes = [POINTER(vscf_message_info_t), POINTER(vscf_signed_data_info_t)]
+        vscf_message_info_set_signed_data_info.restype = None
+        return vscf_message_info_set_signed_data_info(ctx, signed_data_info)
+
+    def vscf_message_info_signed_data_info(self, ctx):
+        """Return signed data info."""
+        vscf_message_info_signed_data_info = self._lib.vscf_message_info_signed_data_info
+        vscf_message_info_signed_data_info.argtypes = [POINTER(vscf_message_info_t)]
+        vscf_message_info_signed_data_info.restype = POINTER(vscf_signed_data_info_t)
+        return vscf_message_info_signed_data_info(ctx)
+
+    def vscf_message_info_remove_signed_data_info(self, ctx):
+        """Remove signed data info."""
+        vscf_message_info_remove_signed_data_info = self._lib.vscf_message_info_remove_signed_data_info
+        vscf_message_info_remove_signed_data_info.argtypes = [POINTER(vscf_message_info_t)]
+        vscf_message_info_remove_signed_data_info.restype = None
+        return vscf_message_info_remove_signed_data_info(ctx)
 
     def vscf_message_info_shallow_copy(self, ctx):
         vscf_message_info_shallow_copy = self._lib.vscf_message_info_shallow_copy

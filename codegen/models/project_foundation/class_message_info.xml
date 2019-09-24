@@ -58,10 +58,22 @@
     </method>
 
 
+    <method name="clear recipients">
+        Remove all recipients.
+    </method>
+
+
     <method name="set custom params">
         Setup custom params.
 
         <argument name="custom params" class="message info custom params" access="retain"/>
+    </method>
+
+
+    <method name="has custom params" is_const="1">
+        Return true if message info contains at least one custom param.
+
+        <return type="boolean"/>
     </method>
 
 
@@ -71,6 +83,13 @@
         If custom params object was not set then new empty object is created.
 
         <return class="message info custom params" access="readwrite"/>
+    </method>
+
+
+    <method name="has signed data info" is_const="1">
+        Return true if signed data info exists.
+
+        <return type="boolean"/>
     </method>
 
 
@@ -88,7 +107,7 @@
     </method>
 
 
-    <method name="clear recipients">
-        Remove all recipients.
+    <method name="remove signed data info">
+        Remove signed data info.
     </method>
 </class>

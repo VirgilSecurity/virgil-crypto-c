@@ -45,7 +45,9 @@
         </method>
 
         <method name="serialized custom params len" is_const="1">
-            <argument name="message info" class="message info"/>
+            Return size in bytes enough to hold serialized custom params.
+
+            <argument name="custom params" class="message info custom params"/>
 
             <return type="size"/>
         </method>
@@ -66,18 +68,14 @@
                 data [2] EXPLICIT OCTET STRING
             }
 
-            <argument name="message info" class="message info"/>
+            <argument name="custom params" class="message info custom params"/>
 
             <return type="size"/>
         </method>
 
-        <method name="serialized signed data info len" is_const="1">
-            <argument name="message info" class="message info"/>
+        <method name="serialized signed data info len" is_const="1" declaration="public" visibility="private">
+            Return size in bytes enough to hold serialized signed data info.
 
-            <return type="size"/>
-        </method>
-
-        <method name="serialize signed data info">
             VirgilSignedDataInfo ::= SEQUENCE {
                 version INTEGER { v0(0) },
                 digestAlgorithm AlgorithmIdentifier,
@@ -85,9 +83,42 @@
                 signedParams [0] EXPLICIT VirgilCustomParams OPTIONAL
             }
 
-            <argument name="message info" class="message info"/>
+            <argument name="signed data info" class="signed data info"/>
 
             <return type="size"/>
+        </method>
+
+        <method name="serialize signed data info inplace">
+            Serialize signed data info with internal ASN.1 writer.
+
+            VirgilSignedDataInfo ::= SEQUENCE {
+                version INTEGER { v0(0) },
+                digestAlgorithm AlgorithmIdentifier,
+                dataSize INTEGER,
+                signedParams [0] EXPLICIT VirgilCustomParams OPTIONAL
+            }
+
+            <argument name="signed data info" class="signed data info"/>
+
+            <return type="size"/>
+        </method>
+
+        <method name="serialize signed data info" declaration="public" visibility="private">
+            Serialize signed data info.
+
+            VirgilSignedDataInfo ::= SEQUENCE {
+                version INTEGER { v0(0) },
+                digestAlgorithm AlgorithmIdentifier,
+                dataSize INTEGER,
+                signedParams [0] EXPLICIT VirgilCustomParams OPTIONAL
+            }
+
+            <argument name="signed data info" class="signed data info"/>
+            <argument name="out" class="buffer">
+                <length method="serialized signed data info len">
+                    <proxy argument="signed data info" to="signed data info"/>
+                </length>
+            </argument>
         </method>
 
         <method name="serialized key recipient info len" is_const="1">
@@ -291,7 +322,7 @@
                 data [2] EXPLICIT OCTET STRING
             }
 
-            <argument name="message info" class="message info" access="readwrite"/>
+            <argument name="custom params" class="message info custom params" access="readwrite"/>
             <argument name="error" class="error" access="readwrite" />
         </method>
 

@@ -298,7 +298,10 @@ VSCF_PUBLIC vscf_message_info_custom_params_t *
 vscf_signed_data_info_custom_params(vscf_signed_data_info_t *self) {
 
     VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(self->signed_custom_params);
+
+    if (NULL == self->signed_custom_params) {
+        self->signed_custom_params = vscf_message_info_custom_params_new();
+    }
 
     return self->signed_custom_params;
 }

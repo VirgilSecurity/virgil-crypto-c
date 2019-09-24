@@ -352,6 +352,20 @@ vscf_message_info_password_recipient_info_list(const vscf_message_info_t *self) 
 }
 
 //
+//  Remove all recipients.
+//
+VSCF_PUBLIC void
+vscf_message_info_clear_recipients(vscf_message_info_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(self->key_recipients);
+    VSCF_ASSERT_PTR(self->password_recipients);
+
+    vscf_key_recipient_info_list_clear(self->key_recipients);
+    vscf_password_recipient_info_list_clear(self->password_recipients);
+}
+
+//
 //  Setup custom params.
 //
 VSCF_PUBLIC void
@@ -362,6 +376,18 @@ vscf_message_info_set_custom_params(vscf_message_info_t *self, vscf_message_info
 
     vscf_message_info_custom_params_destroy(&self->custom_params);
     self->custom_params = vscf_message_info_custom_params_shallow_copy(custom_params);
+}
+
+//
+//  Return true if message info contains at least one custom param.
+//
+VSCF_PUBLIC bool
+vscf_message_info_has_custom_params(const vscf_message_info_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+
+    const vscf_message_info_custom_params_t *params = vscf_message_info_custom_params((vscf_message_info_t *)self);
+    return vscf_message_info_custom_params_has_params(params);
 }
 
 //
@@ -379,6 +405,17 @@ vscf_message_info_custom_params(vscf_message_info_t *self) {
     }
 
     return self->custom_params;
+}
+
+//
+//  Return true if signed data info exists.
+//
+VSCF_PUBLIC bool
+vscf_message_info_has_signed_data_info(const vscf_message_info_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+
+    return self->signed_data_info != NULL;
 }
 
 //
@@ -401,21 +438,22 @@ VSCF_PUBLIC vscf_signed_data_info_t *
 vscf_message_info_signed_data_info(vscf_message_info_t *self) {
 
     VSCF_ASSERT_PTR(self);
+
+    if (NULL == self->signed_data_info) {
+        self->custom_params = vscf_message_info_custom_params_new();
+    }
     VSCF_ASSERT_PTR(self->signed_data_info);
 
     return self->signed_data_info;
 }
 
 //
-//  Remove all recipients.
+//  Remove signed data info.
 //
 VSCF_PUBLIC void
-vscf_message_info_clear_recipients(vscf_message_info_t *self) {
+vscf_message_info_remove_signed_data_info(vscf_message_info_t *self) {
 
     VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(self->key_recipients);
-    VSCF_ASSERT_PTR(self->password_recipients);
 
-    vscf_key_recipient_info_list_clear(self->key_recipients);
-    vscf_password_recipient_info_list_clear(self->password_recipients);
+    vscf_signed_data_info_destroy(&self->signed_data_info);
 }
