@@ -210,6 +210,61 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
 
                     . = format_left(my._res, 1)
                 endnew
+
+                new proxy_call to wrapper
+                    my._c = php_format_extension_comment("Proxy call")
+                    my._h1 = format_left("\
+                        $(my._t:)_t *$(my.out_low_level.name0:) = zend_fetch_resource_ex(in_ctx, $(my._t:UPPER)_PHP_RES_NAME, le_$(my._t:));
+                        $(my.in_php_project.prefix:UPPER)_ASSERT_PTR($(my.out_low_level.name0:));
+                        ", 0)
+                    my._h2 = ""
+                    for function.argument as argument0
+                        if argument0.zend_type = "IS_STRING"
+                            my._h2 += format_left("vsc_data_t $(argument0.name:) = vsc_data((const byte*)in_$(argument0.name:), in_$(argument0.name:)_len);", 0)
+                        elsif argument0.zend_type = "IS_LONG"
+                            # TODO Need to be checked!
+                            my._h2 += format_left("--------> NOT IMPLEMENTED (INT)", 0)
+                        else
+                            echo_debug_item(argument0)
+                            echo_fatal("Not implemented. Code: 701")
+                        endif
+                    endfor
+                    my._res = my._c + my._h1 + my._h2
+
+                    . = format_left(my._res, 1)
+                endnew
+
+                new allocate_output_buffer to wrapper
+                    my._res = ""
+                    for function.return_argument as return_argument0
+
+                        my._n = ""
+                        if ! last()
+                            my._n = "\n"
+                        endif
+
+                        if return_argument0.type = "buffer"
+                            my._c = php_format_extension_comment("Allocate output buffer for output '$(return_argument0.name:)'")
+
+                            if return_argument0.length_type = "constant"
+                                my._l = "$(return_argument0.length:)"
+                            elsif return_argument0.length_type = "method"
+                                my._l = "$(return_argument0.length:)($(function.entity0:))"
+                            else 
+                                echo_debug_item(return_argument0)
+                                echo_fatal("Not implemented (1001)")
+                            endif
+
+                            my._h1 = format_left("\
+                                zend_string *out_$(return_argument0.name:) = zend_string_alloc($(my._l), 0);
+                                vsc_buffer_t *$(return_argument0.name:) = vsc_buffer_new();
+                                vsc_buffer_use($(return_argument0.name:), (byte *)ZSTR_VAL(out_$(return_argument0.name:)), ZSTR_LEN(out_$(return_argument0.name:)));
+                                ", 0)
+                            my._res += my._c + my._h1 + "\n" + my._n
+                        endif
+                    endfor
+                    . = format_left(my._res, 1)
+                endnew
             endnew
         endnew
     endfor
@@ -384,7 +439,7 @@ function php_map_low_level_argument (in_argument, in_php_project, out_php_argume
         else
             # TODO
             echo_debug_item(my.in_argument)
-            echo_fatal("Not implemented. Code: 601", my)
+            echo_fatal("Not implemented (601)", my)
         endif
     endif
 
@@ -404,8 +459,8 @@ endfunction
 # ---------------------------------------------------------------------------
 #   
 # ---------------------------------------------------------------------------
-function php_map_low_level_return (in_method, in_php_project, out_php_method)
-    check_arguments (my, "in_method, in_php_project, out_php_method", my)
+function php_map_low_level_return (in_method, in_php_project, out_function)
+    check_arguments (my, "in_method, in_php_project, out_function", my)
 
     my._return_type0 = ""
     my._return_type = "IS_VOID"
@@ -418,6 +473,29 @@ function php_map_low_level_return (in_method, in_php_project, out_php_method)
     for my.in_method.argument as argument0 where defined (argument0.class)
         if argument0.class = "buffer"
             my._argument_buffer_count = my._argument_buffer_count + 1
+            new return_argument to my.out_function
+                .name = "$(argument0.name:c)"
+                .type = "buffer"
+
+                my._prefix = my.out_function.prefix0
+                my._entity = my.out_function.entity0
+
+                if defined (argument0->length.class)
+                    my._class = argument0->length.class
+                    my._constant = "$(argument0->length.constant:c)"
+                    my._constant = "$(my._constant:UPPER)"
+                    .length = "$(my._prefix:c)_$(my._class:c)_$(my._constant:)"
+                    .length_type = "constant"
+                elsif defined (argument0->length.method)
+                    my._method = "$(argument0->length.method:c)"
+                    my._function = "$(my._prefix:)_$(my._entity:)_$(argument0->length.method:c)"
+                    .length = my._function
+                    .length_type = "method"
+                else 
+                    echo_debug_item(argument0)
+                    echo_fatal("Not implemented (1000)", my)
+                endif
+            endnew
         endif
     endfor
 
@@ -450,6 +528,11 @@ function php_map_low_level_return (in_method, in_php_project, out_php_method)
                 echo_debug_item(return0)
                 echo_fatal("Not implemented (801)", my)
             endif
+
+            new return_argument to my.out_function
+                .name = "----------> $(return0.type:c)_TYPE"
+                .type = "return_type"
+            endnew
         endif
 
         my._r = ""
@@ -464,10 +547,19 @@ function php_map_low_level_return (in_method, in_php_project, out_php_method)
                 my._return_type = return0.class
                 my._return_zend_type = "NOT IMPLEMENTED CLASS"
             endif
+
+            new return_argument to my.out_function
+                .name = "----------> $(return0.class:c)_CLASS"
+            endnew
         elsif defined (return0.interface)
             my._return_type0 = return0.interface
             my._return_type = return0.interface
             my._return_zend_type = "NOT IMPLEMENTED INTERFACE"
+
+            new return_argument to my.out_function
+                .name = "----------> $(return0.interface:c)_INTERFACE"
+                .type = "class"
+            endnew
         endif
 
         if defined (return0.enum)
@@ -478,15 +570,20 @@ function php_map_low_level_return (in_method, in_php_project, out_php_method)
                 my._return_type = return0.enum
                 my._return_zend_type = "NOT IMPLEMENTED ENUM"
             endif
+
+            new return_argument to my.out_function
+                .name = "----------> $(return0.enum:c)_ENUM"
+                .type = "enum"
+            endnew
         endif
     endfor
 
-    my.out_php_method.return_type0 = my._return_type0
-    my.out_php_method.return_type = my._return_type
-    my.out_php_method.return_zend_type = my._return_zend_type
-    my.out_php_method.return_data = my._return_data
-    my.out_php_method.instance = my._instance
-    my.out_php_method.throw_exception = my._throw_exception
+    my.out_function.return_type0 = my._return_type0
+    my.out_function.return_type = my._return_type
+    my.out_function.return_zend_type = my._return_zend_type
+    my.out_function.return_data = my._return_data
+    my.out_function.instance = my._instance
+    my.out_function.throw_exception = my._throw_exception
 
 endfunction
 
@@ -520,7 +617,7 @@ function php_map_low_level_extension (in_php_project, out_php_module)
             if defined(function0->wrapper->custom_code)
                 my._func_wrapping += "\n" + format_left(function0->wrapper->custom_code., 0)
             else
-                my._func_wrapping += "\n" + function0->wrapper->header. + "\n" + function0->wrapper->declare_input_arguments. + "\n" + function0->wrapper->parse_arguments.
+                my._func_wrapping += "\n" + function0->wrapper->header. + "\n" + function0->wrapper->declare_input_arguments. + "\n" + function0->wrapper->parse_arguments. + "\n" + function0->wrapper->proxy_call. + "\n" + function0->wrapper->allocate_output_buffer.
             endif
 
             my._func_wrapping += "\n"
