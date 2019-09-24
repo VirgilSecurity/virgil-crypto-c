@@ -127,6 +127,8 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
                     my._d = ", "
                 endif
 
+                my._declare_input_arguments = ""
+
                 new argument to function
                     php_map_low_level_argument (argument0, my.in_php_project, argument, function)
                 endnew
@@ -136,13 +138,20 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
 
             new wrapper to function
                 new arg_info to wrapper
+
+                    my._num_arguments = 1 # ctx
+
+                    for function.argument as argument0
+                        my._num_arguments = my._num_arguments + 1
+                    endfor
+
                     my._c = php_format_extension_comment("Wrap method: $(function.name0:)")
 
                     my._h = format_left("\
                         ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
                                 arginfo_$(function.name0:)_php, 
                                 0 /*return_reference*/,
-                                $(function.num_arguments:) /*required_num_args*/,
+                                $(my._num_arguments:) /*required_num_args*/,
                                 $(function.return_zend_type:) /*type*/,
                                 0 /*allow_null*/)
                         ZEND_END_ARG_INFO()
@@ -152,6 +161,33 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
 
                 new header to wrapper
                     . = format_left("PHP_FUNCTION($(function.name:)) {", 0)
+                endnew
+
+                new declare_input_arguments
+                    my._c = php_format_extension_comment("Declare input argument")
+                    my._h1 = format_left("zval *in_ctx = NULL;")
+                    my._h2 = ""
+
+                    for function.argument as argument0
+                        if argument0.zend_type = "IS_STRING"
+                            my._h2 += format_left("\
+                                char *in_$(argument0.name:) = NULL;
+                                size_t in_$(argument0.name:)_len = 0;
+                                ", 0)
+                        elsif argument0.zend_type = "IS_LONG"
+                            # TODO Need to be checked
+                            my._h2 += format_left("\
+                                int in_$(argument0.name:) = 0;
+                                ", 0)
+                        else
+                            echo_debug_item(argument0)
+                            echo_fatal("Not implemented. Code: 700")
+                        endif
+                    endfor
+
+                    my._res = my._c + my._h1 + my._h2
+
+                    . = format_left(my._res, 1)
                 endnew
             endnew
         endnew
@@ -292,19 +328,16 @@ function php_map_low_level_argument (in_argument, in_php_project, out_php_argume
     my._type = "NOT IMPLEMENTED"
     my._zend_type = "NOT IMPLEMENTED"
     my._instance = 0
-    my._count = 1 # ctx
 
     if defined (my.in_argument.class)
         if string_in(my.in_argument.class, "data, buffer") 
             my._type0 = "string"
             my._type = "vsc_$(my.in_argument.class:)"
             my._zend_type = "IS_STRING"
-            my._count = my._count + 1
         else
             my._type0 = "class"
             my._type = "$(my.in_argument.class:c)"
             my._instance = 1
-            my._count = my._count + 1
         endif
     endif
 
@@ -312,7 +345,6 @@ function php_map_low_level_argument (in_argument, in_php_project, out_php_argume
         my._type0 = "interface"
         my._type = "$(my.in_argument.interface:c)"
         my._instance = 1
-        my._count = my._count + 1
     endif
 
     if defined (my.in_argument.type)
@@ -320,17 +352,14 @@ function php_map_low_level_argument (in_argument, in_php_project, out_php_argume
             my._type0 = my.in_argument.type
             my._type = "int"
             my._zend_type = "IS_LONG"
-            my._count = my._count + 1
         elsif my.in_argument.type = "byte"
             my._type0 = my.in_argument.type
             my._type = "string"
             my._zend_type = "IS_STRING"
-            my._count = my._count + 1
         elsif my.in_argument.type = "boolean"
             my._type0 = my.in_argument.type
             my._type = "bool"
             my._zend_type = "IS_BOOLEAN"
-            my._count = my._count + 1
         else
             # TODO
             echo_debug_item(my.in_argument)
@@ -342,14 +371,12 @@ function php_map_low_level_argument (in_argument, in_php_project, out_php_argume
         my._type0 = "enum"
         my._type = "$(my.in_argument.enum:c)"
         my._instance = 1
-        my._count = my._count + 1
     endif
 
     my.out_php_argument.type0 = my._type0
     my.out_php_argument.type = my._type
     my.out_php_argument.zend_type = my._zend_type
     my.out_php_argument.instance = my._instance
-    my.out_function.num_arguments = my._count
 
 endfunction
 
@@ -361,7 +388,7 @@ function php_map_low_level_return (in_method, in_php_project, out_php_method)
 
     my._return_type0 = ""
     my._return_type = "IS_VOID"
-    my._return_zend_type = "NOT IMPLEMENTED"
+    my._return_zend_type = "IS_VOID"
     my._return_data = ""
     my._instance = 0
     my._throw_exception = 0
@@ -375,8 +402,10 @@ function php_map_low_level_return (in_method, in_php_project, out_php_method)
 
     if my._argument_buffer_count = 1
         my._return_type = "IS_STRING"
+        my._return_zend_type = "IS_STRING"
     elsif my._argument_buffer_count > 1
         my._return_type = "IS_ARRAY"
+        my._return_zend_type = "IS_ARRAY"
     endif
 
     for my.in_method.return as return0
@@ -398,7 +427,7 @@ function php_map_low_level_return (in_method, in_php_project, out_php_method)
                 # TODO
                 echo_debug_item(my.in_method)
                 echo_debug_item(return0)
-                echo_fatal("Not implemented (101)", my)
+                echo_fatal("Not implemented (801)", my)
             endif
         endif
 
@@ -408,25 +437,25 @@ function php_map_low_level_return (in_method, in_php_project, out_php_method)
             if return0.class = "data"
                 my._return_type0 = return0.class
                 my._return_type = "string"
+                my._return_zend_type = "IS_STRING"
             else
-                my._r = return0.class
-                my._instance = 1
+                my._return_type0 = return0.class
+                my._return_type = return0.class
+                my._return_zend_type = "NOT IMPLEMENTED CLASS"
             endif
         elsif defined (return0.interface)
-            my._r = return0.interface
-            my._instance = 1
-        endif
-
-        if (defined (return0.class) & return0.class <> "data") | defined (return0.interface)
-            my._return_type = "$(my._r:c)"
+            my._return_type0 = return0.interface
+            my._return_type = return0.interface
+            my._return_zend_type = "NOT IMPLEMENTED INTERFACE"
         endif
 
         if defined (return0.enum)
             if return0.enum = "status"
                 my._throw_exception = 1
             else
-                my._return_type = "$(return0.enum:c)"
-                my._instance = 1
+                my._return_type0 = return0.enum
+                my._return_type = return0.enum
+                my._return_zend_type = "NOT IMPLEMENTED ENUM"
             endif
         endif
     endfor
@@ -470,7 +499,7 @@ function php_map_low_level_extension (in_php_project, out_php_module)
             if defined(function0->wrapper->custom_code)
                 my._func_wrapping += "\n" + format_left(function0->wrapper->custom_code., 0)
             else
-                my._func_wrapping += "\n" + function0->wrapper->header.
+                my._func_wrapping += "\n" + function0->wrapper->header. + "\n" + function0->wrapper->declare_input_arguments.
             endif
 
             my._func_wrapping += "\n"
