@@ -1,0 +1,382 @@
+.template 0
+#   Copyright (C) 2015-2019 Virgil Security, Inc.
+#
+#   All rights reserved.
+#
+#   Redistribution and use in source and binary forms, with or without
+#   modification, are permitted provided that the following conditions are
+#   met:
+#
+#       (1) Redistributions of source code must retain the above copyright
+#       notice, this list of conditions and the following disclaimer.
+#
+#       (2) Redistributions in binary form must reproduce the above copyright
+#       notice, this list of conditions and the following disclaimer in
+#       the documentation and/or other materials provided with the
+#       distribution.
+#
+#       (3) Neither the name of the copyright holder nor the names of its
+#       contributors may be used to endorse or promote products derived from
+#       this software without specific prior written permission.
+#
+#   THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
+#   IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+#   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+#   DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT,
+#   INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+#   (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+#   SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+#   HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+#   STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+#   IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+#   POSSIBILITY OF SUCH DAMAGE.
+#
+#   Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
+
+# ---------------------------------------------------------------------------
+#   Functions for PHP primitives generation: protocol, class, enum, etc.
+# ---------------------------------------------------------------------------
+#   This is a code generator built using the iMatix GSL code generation
+#   language. See https://github.com/imatix/gsl for details.
+# ---------------------------------------------------------------------------
+
+gsl from "common.gsl"
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
+    check_arguments (my, "in_module, in_php_project, out_low_level, in_type", my)
+
+    my.out_low_level.name = "$(my.in_module.name:c)"
+    my.out_low_level.name0 = "$(my.in_module.name:c)"
+
+    my._t = "$(my.in_php_project.prefix:)_$(my.out_low_level.name0:)"
+    my.out_low_level.constant = "$(my._t:UPPER)_PHP_RES_NAME[]"
+
+    new include to my.out_low_level
+        . = format_left("#include \"$(my.in_php_project.prefix:)_$(my.out_low_level.name0:).h\"", 0)
+    endnew
+
+    new registered_resource to my.out_low_level
+        . = format_left("int le_$(my.in_php_project.prefix:)_$(my.out_low_level.name0:);", 0)
+    endnew
+
+    new constant to my.out_low_level
+        . = format_left("const char $(my.out_low_level.constant:) = \"$(my._t:)_t\";", 0)
+    endnew
+
+    new init_func_def_dtor to my.out_low_level
+        . = format_left("\
+            static void $(my._t:)_dtor_php(zend_resource *rsrc) {
+                $(my._t:)_delete(($(my._t:)_t *)rsrc->ptr);
+            }
+            ", 0)
+    endnew
+
+    new init_func_def_list_destr to my.out_low_level
+        . = format_left("\
+            le_$(my._t:) = zend_register_list_destructors_ex($(my._t:)_dtor_php, NULL, $(my._t:UPPER)_PHP_RES_NAME, module_number);
+            ", 0)
+    endnew
+
+    my._interface_methods = XML.new()
+    my._constant = ""
+
+    for my.in_module.interface as interface0
+
+        echo_debug_item(interface0)
+        echo_warning("Not implemented. Code: 400")
+
+        for interface0.constant as constant0
+            echo_debug_item(constant0)
+            echo_warning("Not implemented. Code: 401")
+        endfor
+    endfor
+
+    if my.in_type <> "interface"
+        php_map_low_level_constructor_destructor (my.in_module, my.out_low_level)
+    endif
+
+    for my.in_module.method as method0 where method0.visibility = "public" & method0.declaration = "public" & method0.scope = "public"
+        new function to my.out_low_level
+
+            php_map_low_level_method (method0, my.in_php_project, function)
+
+            .prefix0 = "$(my.in_module.c_prefix:c)"
+            .entity0 = "$(my.in_module.name:c)"
+            if my.in_type = "interface"
+                .name = ""
+                .name0 = ""
+            else 
+                .name0 = php_derive_low_level_function_name(0)
+                .name = "$(0.name0:)_php"
+            endif
+
+            my._method_arguments = ""
+            my._function_arguments = ""
+
+            new def_func_entry to function
+                . = format_left("PHP_FE($(function.name:)_php, arginfo_$(function.name:)_php)", 0)
+            endnew
+
+            for method0.argument as argument0
+
+                my._d = ""
+                if ! last()
+                    my._d = ", "
+                endif
+
+                new argument to function
+                    php_map_low_level_argument (argument0, my.in_php_project, argument)
+                endnew
+            endfor
+
+            new wrapper to function
+                new arg_info to wrapper
+                    my._c = php_format_extension_comment("Wrap method: $(function.name0:)")
+                    . = my._c
+                endnew
+            endnew
+        endnew
+    endfor
+endfunction
+
+# ---------------------------------------------------------------------------
+# 
+# ---------------------------------------------------------------------------
+function php_map_low_level_constructor_destructor (in_module, out_low_level)
+    check_arguments (my, "in_module, out_low_level", my)
+
+    new function to my.out_low_level
+        .name0 = "$(my.in_module.c_prefix:)_$(my.in_module.name:c)_new"
+        .name = "$(0.name0:)_php"
+            new def_func_entry to function
+                . = format_left("PHP_FE($(function.name0:)_php, arginfo_$(function.name0:)_php)", 0)
+            endnew
+    endnew
+
+    new function to my.out_low_level
+        .name0 = "$(my.in_module.c_prefix:)_$(my.in_module.name:c)_delete"
+        .name = "$(0.name0:)_php"
+            new def_func_entry to function
+                . = format_left("PHP_FE($(function.name0:)_php, arginfo_$(function.name0:)_php)", 0)
+            endnew
+    endnew
+endfunction
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_map_low_level_method (in_method, in_php_project, out_function)
+    check_arguments (my, "in_method, in_php_project, out_function", my)
+
+    my.out_function.name = "$(my.in_method.name:c)"
+
+    echo_debug_item(my.in_method)
+    echo_warning("Not implemented. Code: 404")
+
+    php_map_low_level_return (my.in_method, my.in_php_project, my.out_function)
+
+endfunction
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_map_low_level_argument (in_argument, in_php_project, out_argument)
+    check_arguments (my, "in_argument, in_php_project, out_argument", my)
+
+    my.out_argument.name = "$(my.in_argument.name:c)"
+
+    my._type = ""
+
+    if defined (my.in_argument.class)
+        my._type = "$(my.in_argument.class:c)"
+    endif
+
+    if defined (my.in_argument.interface)
+        my._type = "$(my.in_argument.interface:c)"
+    endif
+
+    if defined (my.in_argument.type)
+        if string_in(my.in_argument.type, "size, integer, unsigned")
+            my._type = "int"
+        elsif my.in_argument.type = "byte"
+            my._type = "string"
+        elsif my.in_argument.type = "boolean"
+            my._type = "bool"
+        else
+            # TODO
+            echo_debug_item(my.in_argument)
+            echo_fatal("Not implemented (405)", my)
+        endif
+    endif
+
+    if defined (my.in_argument.enum)
+        my._type = "$(my.in_argument.enum:c)"
+    endif
+
+    my.out_argument.type = my._type
+
+endfunction
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_map_low_level_return (in_method, in_php_project, out_function)
+    check_arguments (my, "in_method, in_php_project, out_function", my)
+
+    echo_debug_item(my.in_method)
+    echo_warning("Not implemented. Code: 406")
+
+endfunction
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_map_low_level_extension (in_php_project, out_php_module)
+    check_arguments (my, "in_php_project, out_php_module", my)
+
+    my._include = ""
+    my._registered_resources = ""
+    my._constants = ""
+    my._init_func_def_dtor = ""
+    my._init_func_def_list_destr = ""
+    my._def_func_entries = ""
+    my._func_wrapping = ""
+
+    my._ext_name0 = "$(my.in_php_project.prefix:)_$(my.in_php_project.name:)_php"
+
+    for my.in_php_project.php_module as php_module0 where string_in(php_module0.type, "class, implementation, interface")
+        my._include += php_module0->low_level->include.
+        my._registered_resources += php_module0->low_level->registered_resource.
+        my._constants += php_module0->low_level->constant.
+        my._init_func_def_dtor += php_module0->low_level->init_func_def_dtor.
+        my._init_func_def_list_destr += php_module0->low_level->init_func_def_list_destr.
+
+        for php_module0->low_level.function as function0
+            my._def_func_entries += function0->def_func_entry.
+        endfor
+    endfor
+
+    new licence to my.out_php_module
+        my._res = php_format_extension_comment (my.in_php_project->license)
+        . = my._res
+    endnew
+
+    new include to my.out_php_module
+        my._res = format_left("\
+            #include <php.h>
+            #include <zend_exceptions.h>
+            #include <zend_list.h>
+            #include \"vsce_assert.h\"
+            #include \"vsce_phe_common.h\"
+            ", 0)
+
+        my._res = my._res + my._include
+
+        . = my._res
+    endnew
+
+    new constants to my.out_php_module
+
+        my._ext_name = "$(my._ext_name0:UPPER)"
+
+        my._c = php_format_extension_comment ("Constants")
+        my._h = format_left("\
+            const char $(my._ext_name:)_VERSION[] = \"$(my.in_php_project.version:)\";
+            const char $(my._ext_name:)_EXTNAME[] = \"$(my._ext_name0:)\"; 
+            ", 0)
+        my._res = my._c + my._h + my._constants
+        . = my._res
+    endnew
+
+    new registered_resources to my.out_php_module
+        my._c = php_format_extension_comment ("Registered resources")
+        my._res = my._c + my._registered_resources
+        . = my._res
+    endnew
+
+    new init_func_declaration to my.out_php_module
+
+        my._c = php_format_extension_comment ("Extension init functions declaration")
+        my._h = format_left("\
+            PHP_MINIT_FUNCTION($(my._ext_name0:));
+            PHP_MSHUTDOWN_FUNCTION($(my._ext_name0:));
+            ", 0)
+        my._res = my._c + my._h
+        . = my._res
+    endnew
+
+    new func_wrapping to my.out_php_module
+        my._c = php_format_extension_comment ("Functions wrapping")
+        . = my._res
+    endnew
+
+    new define_all_func_entries to my.out_php_module
+        my._c = php_format_extension_comment ("Define all function entries")
+
+        my._h1 = format_left("static zend_function_entry $(my._ext_name0:)_functions[] = {", 0)
+        my._h2 = format_left("$(my._def_func_entries:)", 1)
+        my._h3 = format_left("\
+                PHP_FE_END
+            };
+            ", 0)
+
+        my._res = my._c + my._h1 + my._h2 + my._h3
+
+        . = my._res
+    endnew
+
+    new module_definitions to my.out_php_module
+        my._c = php_format_extension_comment ("Extension module definition")
+        my._h = format_left("\
+            zend_module_entry $(my._ext_name0:)_module_entry = {
+            #if ZEND_MODULE_API_NO >= 20010901
+                STANDARD_MODULE_HEADER,
+            #endif
+                $(my._ext_name0:UPPER)_EXTNAME,
+                $(my._ext_name0:)_functions,
+                PHP_MINIT($(my._ext_name0:)),
+                PHP_MSHUTDOWN($(my._ext_name0:)),
+                NULL,
+                NULL,
+                NULL,
+            #if ZEND_MODULE_API_NO >= 20010901
+                $(my._ext_name0:UPPER)_VERSION,
+            #endif
+                STANDARD_MODULE_PROPERTIES
+            };
+
+            ZEND_GET_MODULE($(my._ext_name0:))
+            ", 0)
+
+        my._res = my._c + my._h
+        . = my._res
+    endnew
+
+    new init_func_definitions to my.out_php_module
+        my._c = php_format_extension_comment ("Extension init functions definition")
+
+        my._h1 = format_left("$(my._init_func_def_dtor:)", 0)
+        my._h2 = format_left("PHP_MINIT_FUNCTION($(my._ext_name0:)) {", 0)
+        my._h3 = format_left("$(my._init_func_def_list_destr:)", 1)
+
+        my._h4 = format_left("\
+                return SUCCESS;
+            }
+            ", 0)
+
+        my._h5 = format_left("\
+            PHP_MSHUTDOWN_FUNCTION($(my._ext_name0:)) {
+                return SUCCESS;
+            }
+            ", 0)
+
+        my._res = my._c + my._h1 + my._h2 + my._h3 + my._h4 + my._h5
+
+        . = my._res
+    endnew
+
+endfunction
+.endtemplate
