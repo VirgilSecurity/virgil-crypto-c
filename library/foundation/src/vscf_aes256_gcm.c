@@ -306,7 +306,7 @@ VSCF_PUBLIC void
 vscf_aes256_gcm_start_encryption(vscf_aes256_gcm_t *self) {
 
     VSCF_ASSERT_PTR(self);
-    // VSCF_ASSERT(!vsc_data_is_zero(vsc_data(self->key, vscf_aes256_gcm_KEY_LEN)));
+    VSCF_ASSERT(!vsc_data_is_zero(vsc_data(self->key, vscf_aes256_gcm_KEY_LEN)));
 
     self->do_decrypt = false;
 
