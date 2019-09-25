@@ -189,6 +189,7 @@ test__serialize__footer_with_ed25519_signer__returns_valid_cms(void) {
 
     TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_message_info_CMS_FOOTER_WITH_ED25519_SIGNER, out);
 
+    vsc_buffer_destroy(&out);
     vscf_message_info_der_serializer_destroy(&serializer);
     vscf_message_info_footer_destroy(&footer);
 }
@@ -242,6 +243,7 @@ test__serialize__footer_with_ed25519_and_rsa2048_signers__returns_valid_cms(void
     //
     //  Cleanp
     //
+    vsc_buffer_destroy(&out);
     vscf_message_info_der_serializer_destroy(&serializer);
     vscf_message_info_footer_destroy(&footer);
 }
