@@ -14,7 +14,7 @@ macro(_add_test test)
 
     target_compile_options(${test}
             PRIVATE
-            $<$<C_COMPILER_ID:Clang>: -Wall -Werror -g -O0 -fsanitize=fuzzer>
+            $<$<C_COMPILER_ID:Clang>: -Wall -Werror -g -O0  -fsanitize=address -fsanitize=fuzzer>
             )
 
     # enable_target_asan(${test})
@@ -25,7 +25,7 @@ macro(_add_test test)
             test_utils
             test_data_foundation
             vsc::foundation
-            $<$<C_COMPILER_ID:Clang>:-fsanitize=fuzzer>
+            $<$<C_COMPILER_ID:Clang>:-fsanitize=address,fuzzer>
             )
 
     if(COMMAND add_clangformat)
@@ -34,5 +34,5 @@ macro(_add_test test)
 endmacro()
 
 _add_test(pkcs8_test_fuzzy)
-_add_test(recipient_cipher_fuzzy)
+_add_test(key_provider_test_fuzzy)
 
