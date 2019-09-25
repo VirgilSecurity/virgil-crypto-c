@@ -144,9 +144,9 @@
     <class name="signer info"/>
     <class name="signer info list"/>
     <class name="signer list"/>
-    <class name="verifier list"/>
     <class name="message info footer"/>
     <class name="signed data info"/>
+    <class name="footer info"/>
 
     <implementor name="mbedtls"/>
     <implementor name="mbedtls pk"/>

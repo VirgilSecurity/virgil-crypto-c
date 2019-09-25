@@ -232,6 +232,7 @@ vscf_message_info_init_ctx(vscf_message_info_t *self) {
 
     VSCF_ASSERT_PTR(self);
 
+    self->version = 0;
     self->key_recipients = vscf_key_recipient_info_list_new();
     self->password_recipients = vscf_password_recipient_info_list_new();
 }
@@ -250,7 +251,32 @@ vscf_message_info_cleanup_ctx(vscf_message_info_t *self) {
     vscf_password_recipient_info_list_destroy(&self->password_recipients);
     vscf_message_info_custom_params_destroy(&self->custom_params);
     vscf_impl_destroy(&self->data_encryption_alg_info);
-    vscf_signed_data_info_destroy(&self->signed_data_info);
+    vscf_footer_info_destroy(&self->footer_info);
+}
+
+//
+//  Set message info version.
+//  Currently supported {0, 1}.
+//
+VSCF_PUBLIC void
+vscf_message_info_set_version(vscf_message_info_t *self, unsigned int version) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT(0 == version || 1 == version);
+
+    self->version = version;
+}
+
+//
+//  Return message info version.
+//  Currently supported {0, 1}.
+//
+VSCF_PUBLIC unsigned int
+vscf_message_info_version(vscf_message_info_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+
+    return self->version;
 }
 
 //
@@ -408,52 +434,63 @@ vscf_message_info_custom_params(vscf_message_info_t *self) {
 }
 
 //
-//  Return true if signed data info exists.
+//  Return true if footer info exists.
 //
 VSCF_PUBLIC bool
-vscf_message_info_has_signed_data_info(const vscf_message_info_t *self) {
+vscf_message_info_has_footer_info(const vscf_message_info_t *self) {
 
     VSCF_ASSERT_PTR(self);
 
-    return self->signed_data_info != NULL;
+    return self->footer_info != NULL;
 }
 
 //
-//  Setup signed data info.
+//  Setup footer info.
 //
 VSCF_PUBLIC void
-vscf_message_info_set_signed_data_info(vscf_message_info_t *self, vscf_signed_data_info_t *signed_data_info) {
+vscf_message_info_set_footer_info(vscf_message_info_t *self, vscf_footer_info_t *footer_info) {
 
     VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(signed_data_info);
+    VSCF_ASSERT_PTR(footer_info);
 
-    vscf_signed_data_info_destroy(&self->signed_data_info);
-    self->signed_data_info = vscf_signed_data_info_shallow_copy(signed_data_info);
+    vscf_footer_info_destroy(&self->footer_info);
+    self->footer_info = vscf_footer_info_shallow_copy(footer_info);
 }
 
 //
-//  Return signed data info.
+//  Return footer info.
 //
-VSCF_PUBLIC vscf_signed_data_info_t *
-vscf_message_info_signed_data_info(vscf_message_info_t *self) {
+VSCF_PUBLIC const vscf_footer_info_t *
+vscf_message_info_footer_info(const vscf_message_info_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(self->footer_info);
+
+    return self->footer_info;
+}
+
+//
+//  Return mutable footer info.
+//
+VSCF_PRIVATE vscf_footer_info_t *
+vscf_message_info_footer_info_m(vscf_message_info_t *self) {
 
     VSCF_ASSERT_PTR(self);
 
-    if (NULL == self->signed_data_info) {
-        self->custom_params = vscf_message_info_custom_params_new();
+    if (NULL == self->footer_info) {
+        self->footer_info = vscf_footer_info_new();
     }
-    VSCF_ASSERT_PTR(self->signed_data_info);
 
-    return self->signed_data_info;
+    return self->footer_info;
 }
 
 //
-//  Remove signed data info.
+//  Remove footer info.
 //
 VSCF_PUBLIC void
-vscf_message_info_remove_signed_data_info(vscf_message_info_t *self) {
+vscf_message_info_remove_footer_info(vscf_message_info_t *self) {
 
     VSCF_ASSERT_PTR(self);
 
-    vscf_signed_data_info_destroy(&self->signed_data_info);
+    vscf_footer_info_destroy(&self->footer_info);
 }

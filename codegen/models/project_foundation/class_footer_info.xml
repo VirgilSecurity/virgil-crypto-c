@@ -1,0 +1,46 @@
+<class name="footer info">
+    Handle meta information about footer.
+
+    <property name="signed data info" class="signed data info"/>
+    <property name="data size" type="size"/>
+
+    <method name="has signed data info" is_const="1">
+        Retrun true if signed data info present.
+
+        <return type="boolean"/>
+    </method>
+
+    <method name="set signed data info">
+        Setup signed data info.
+
+        <argument name="signed data info" class="signed data info" access="disown"/>
+    </method>
+
+    <method name="signed data info" is_const="1">
+        Return signed data info.
+
+        <return class="signed data info"/>
+    </method>
+
+    <method name="signed data info m" visibility="private">
+        Return mutable signed data info.
+
+        <return class="signed data info" access="readwrite"/>
+    </method>
+
+    <method name="remove signed data info">
+        Remove signed data info.
+    </method>
+
+    <method name="set data size">
+        Set data size.
+
+        <argument name="data size" type="size"/>
+    </method>
+
+    <method name="data size" is_const="1">
+        Return data size.
+
+        <return type="size"/>
+    </method>
+</class>

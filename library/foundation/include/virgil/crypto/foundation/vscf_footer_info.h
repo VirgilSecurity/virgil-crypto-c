@@ -47,23 +47,14 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Handles a list of signers defined by id and public key.
+//  Handle meta information about footer.
 // --------------------------------------------------------------------------
 
-#ifndef VSCF_VERIFIER_LIST_H_INCLUDED
-#define VSCF_VERIFIER_LIST_H_INCLUDED
+#ifndef VSCF_FOOTER_INFO_H_INCLUDED
+#define VSCF_FOOTER_INFO_H_INCLUDED
 
 #include "vscf_library.h"
-#include "vscf_verifier_list.h"
-#include "vscf_impl.h"
-
-#if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <virgil/crypto/common/vsc_data.h>
-#endif
-
-#if VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <VSCCommon/vsc_data.h>
-#endif
+#include "vscf_signed_data_info.h"
 
 // clang-format on
 //  @end
@@ -81,108 +72,95 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Handle 'verifier list' context.
+//  Handle 'footer info' context.
 //
-typedef struct vscf_verifier_list_t vscf_verifier_list_t;
+typedef struct vscf_footer_info_t vscf_footer_info_t;
 
 //
-//  Return size of 'vscf_verifier_list_t'.
+//  Return size of 'vscf_footer_info_t'.
 //
 VSCF_PUBLIC size_t
-vscf_verifier_list_ctx_size(void);
+vscf_footer_info_ctx_size(void);
 
 //
 //  Perform initialization of pre-allocated context.
 //
 VSCF_PUBLIC void
-vscf_verifier_list_init(vscf_verifier_list_t *self);
+vscf_footer_info_init(vscf_footer_info_t *self);
 
 //
 //  Release all inner resources including class dependencies.
 //
 VSCF_PUBLIC void
-vscf_verifier_list_cleanup(vscf_verifier_list_t *self);
+vscf_footer_info_cleanup(vscf_footer_info_t *self);
 
 //
 //  Allocate context and perform it's initialization.
 //
-VSCF_PUBLIC vscf_verifier_list_t *
-vscf_verifier_list_new(void);
+VSCF_PUBLIC vscf_footer_info_t *
+vscf_footer_info_new(void);
 
 //
 //  Release all inner resources and deallocate context if needed.
 //  It is safe to call this method even if the context was statically allocated.
 //
 VSCF_PUBLIC void
-vscf_verifier_list_delete(vscf_verifier_list_t *self);
+vscf_footer_info_delete(vscf_footer_info_t *self);
 
 //
 //  Delete given context and nullifies reference.
-//  This is a reverse action of the function 'vscf_verifier_list_new ()'.
+//  This is a reverse action of the function 'vscf_footer_info_new ()'.
 //
 VSCF_PUBLIC void
-vscf_verifier_list_destroy(vscf_verifier_list_t **self_ref);
+vscf_footer_info_destroy(vscf_footer_info_t **self_ref);
 
 //
 //  Copy given class context by increasing reference counter.
 //
-VSCF_PUBLIC vscf_verifier_list_t *
-vscf_verifier_list_shallow_copy(vscf_verifier_list_t *self);
+VSCF_PUBLIC vscf_footer_info_t *
+vscf_footer_info_shallow_copy(vscf_footer_info_t *self);
 
 //
-//  Add new item to the list.
-//  Note, ownership is transfered.
+//  Retrun true if signed data info present.
+//
+VSCF_PUBLIC bool
+vscf_footer_info_has_signed_data_info(const vscf_footer_info_t *self);
+
+//
+//  Setup signed data info.
 //
 VSCF_PUBLIC void
-vscf_verifier_list_add(vscf_verifier_list_t *self, vsc_data_t signer_id, vscf_impl_t *signer_public_key);
+vscf_footer_info_set_signed_data_info(vscf_footer_info_t *self, vscf_signed_data_info_t **signed_data_info_ref);
 
 //
-//  Remove all items.
+//  Return signed data info.
+//
+VSCF_PUBLIC const vscf_signed_data_info_t *
+vscf_footer_info_signed_data_info(const vscf_footer_info_t *self);
+
+//
+//  Return mutable signed data info.
+//
+VSCF_PRIVATE vscf_signed_data_info_t *
+vscf_footer_info_signed_data_info_m(vscf_footer_info_t *self);
+
+//
+//  Remove signed data info.
 //
 VSCF_PUBLIC void
-vscf_verifier_list_clear(vscf_verifier_list_t *self);
+vscf_footer_info_remove_signed_data_info(vscf_footer_info_t *self);
 
 //
-//  Return true if given list has signer.
+//  Set data size.
 //
-VSCF_PUBLIC bool
-vscf_verifier_list_has_signer(const vscf_verifier_list_t *self);
+VSCF_PUBLIC void
+vscf_footer_info_set_data_size(vscf_footer_info_t *self, size_t data_size);
 
 //
-//  Return signer identifier.
+//  Return data size.
 //
-VSCF_PUBLIC vsc_data_t
-vscf_verifier_list_signer_id(const vscf_verifier_list_t *self);
-
-//
-//  Return signer public key.
-//
-VSCF_PUBLIC vscf_impl_t *
-vscf_verifier_list_signer_public_key(const vscf_verifier_list_t *self);
-
-//
-//  Return true if list has next item.
-//
-VSCF_PUBLIC bool
-vscf_verifier_list_has_next(const vscf_verifier_list_t *self);
-
-//
-//  Return next list node if exists, or NULL otherwise.
-//
-VSCF_PUBLIC vscf_verifier_list_t *
-vscf_verifier_list_next(const vscf_verifier_list_t *self);
-
-//
-//  Return true if list has previous item.
-//
-VSCF_PUBLIC bool
-vscf_verifier_list_has_prev(const vscf_verifier_list_t *self);
-
-//
-//  Return previous list node if exists, or NULL otherwise.
-//
-VSCF_PUBLIC vscf_verifier_list_t *
-vscf_verifier_list_prev(const vscf_verifier_list_t *self);
+VSCF_PUBLIC size_t
+vscf_footer_info_data_size(const vscf_footer_info_t *self);
 
 
 // --------------------------------------------------------------------------
@@ -198,5 +176,5 @@ vscf_verifier_list_prev(const vscf_verifier_list_t *self);
 
 
 //  @footer
-#endif // VSCF_VERIFIER_LIST_H_INCLUDED
+#endif // VSCF_FOOTER_INFO_H_INCLUDED
 //  @end

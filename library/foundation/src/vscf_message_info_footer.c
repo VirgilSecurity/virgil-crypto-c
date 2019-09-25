@@ -250,6 +250,17 @@ vscf_message_info_footer_cleanup_ctx(vscf_message_info_footer_t *self) {
 }
 
 //
+//  Return true if at least one signer info presents.
+//
+VSCF_PUBLIC bool
+vscf_message_info_footer_has_signer_infos(const vscf_message_info_footer_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+
+    return self->signer_infos != NULL && vscf_signer_info_list_has_item(self->signer_infos);
+}
+
+//
 //  Add signer that is defined by Private Key.
 //
 VSCF_PRIVATE void

@@ -133,6 +133,12 @@ VSCF_PUBLIC vscf_message_info_footer_t *
 vscf_message_info_footer_shallow_copy(vscf_message_info_footer_t *self);
 
 //
+//  Return true if at least one signer info presents.
+//
+VSCF_PUBLIC bool
+vscf_message_info_footer_has_signer_infos(const vscf_message_info_footer_t *self);
+
+//
 //  Add signer that is defined by Private Key.
 //
 VSCF_PRIVATE void

@@ -9,7 +9,7 @@
                 version INTEGER { v0(0) } DEFAULT v0,
                 cmsContent ContentInfo, -- Imports from RFC 5652
                 customParams [0] EXPLICIT VirgilCustomParams OPTIONAL,
-                signedDataInfo [1] EXPLICIT VirgilSignedDataInfo OPTIONAL
+                footerInfo [1] EXPLICIT VirgilFooterInfo OPTIONAL
             }
             <constant name="prefix len" value="32"/>
         </interface>
@@ -17,7 +17,7 @@
         <interface name="message info footer serializer">
             VirgilMessageInfoFooter ::= SEQUENCE {
                 version INTEGER { v0(0) } DEFAULT v0,
-                signerInfos [0] EXPLICIT VirgilSignerInfos OPTIONAL
+                signerInfos [0] EXPLICIT VirgilSignerInfos OPTIONAL,
             }
         </interface>
 
@@ -73,14 +73,40 @@
             <return type="size"/>
         </method>
 
-        <method name="serialized signed data info len" is_const="1" declaration="public" visibility="private">
+        <method name="serialized footer info len" is_const="1">
+            Return size in bytes enough to hold serialized footer info.
+
+            VirgilFooterInfo ::= SEQUENCE {
+                version INTEGER { v0(0) },
+                dataSize INTEGER,
+                signedDataInfo [0] EXPLICIT VirgilSignedDataInfo OPTIONAL
+            }
+
+            <argument name="footer info" class="footer info"/>
+
+            <return type="size"/>
+        </method>
+
+        <method name="serialize footer info">
+            Serialize footer info.
+
+            VirgilFooterInfo ::= SEQUENCE {
+                version INTEGER { v0(0) },
+                dataSize INTEGER,
+                signedDataInfo [0] EXPLICIT VirgilSignedDataInfo OPTIONAL
+            }
+
+            <argument name="footer info" class="footer info"/>
+
+            <return type="size"/>
+        </method>
+
+        <method name="serialized signed data info len" is_const="1" scope="internal" visibility="private">
             Return size in bytes enough to hold serialized signed data info.
 
             VirgilSignedDataInfo ::= SEQUENCE {
-                version INTEGER { v0(0) },
-                digestAlgorithm AlgorithmIdentifier,
-                dataSize INTEGER,
-                signedParams [0] EXPLICIT VirgilCustomParams OPTIONAL
+                version INTEGER { v0(0) } DEFAULT v0,
+                digestAlgorithm AlgorithmIdentifier
             }
 
             <argument name="signed data info" class="signed data info"/>
@@ -88,37 +114,29 @@
             <return type="size"/>
         </method>
 
-        <method name="serialize signed data info inplace">
-            Serialize signed data info with internal ASN.1 writer.
+        <method name="serialize signed data info" scope="internal" visibility="private">
+            Serialized signed data info.
 
             VirgilSignedDataInfo ::= SEQUENCE {
-                version INTEGER { v0(0) },
-                digestAlgorithm AlgorithmIdentifier,
-                dataSize INTEGER,
-                signedParams [0] EXPLICIT VirgilCustomParams OPTIONAL
+                version INTEGER { v0(0) } DEFAULT v0,
+                digestAlgorithm AlgorithmIdentifier
+            }
+
+            <argument name="signed data info" class="signed data info"/>
+            <argument name="out" class="buffer"/>
+        </method>
+
+        <method name="serialize signed data info internal">
+            Serialized signed data info.
+
+            VirgilSignedDataInfo ::= SEQUENCE {
+                version INTEGER { v0(0) } DEFAULT v0,
+                digestAlgorithm AlgorithmIdentifier
             }
 
             <argument name="signed data info" class="signed data info"/>
 
             <return type="size"/>
-        </method>
-
-        <method name="serialize signed data info" declaration="public" visibility="private">
-            Serialize signed data info.
-
-            VirgilSignedDataInfo ::= SEQUENCE {
-                version INTEGER { v0(0) },
-                digestAlgorithm AlgorithmIdentifier,
-                dataSize INTEGER,
-                signedParams [0] EXPLICIT VirgilCustomParams OPTIONAL
-            }
-
-            <argument name="signed data info" class="signed data info"/>
-            <argument name="out" class="buffer">
-                <length method="serialized signed data info len">
-                    <proxy argument="signed data info" to="signed data info"/>
-                </length>
-            </argument>
         </method>
 
         <method name="serialized key recipient info len" is_const="1">
@@ -326,12 +344,21 @@
             <argument name="error" class="error" access="readwrite" />
         </method>
 
+        <method name="deserialize footer info">
+            VirgilFooterInfo ::= SEQUENCE {
+                version INTEGER { v0(0) },
+                dataSize INTEGER,
+                signedDataInfo [0] EXPLICIT VirgilSignedDataInfo OPTIONAL
+            }
+
+            <argument name="message info" class="message info" access="readwrite"/>
+            <argument name="error" class="error" access="readwrite" />
+        </method>
+
         <method name="deserialize signed data info">
             VirgilSignedDataInfo ::= SEQUENCE {
                 version INTEGER { v0(0) },
-                digestAlgorithm AlgorithmIdentifier,
-                dataSize INTEGER,
-                signedParams [0] EXPLICIT VirgilCustomParams OPTIONAL
+                digestAlgorithm AlgorithmIdentifier
             }
 
             <argument name="message info" class="message info" access="readwrite"/>

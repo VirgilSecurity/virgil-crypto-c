@@ -57,7 +57,6 @@
 #include "vscf_atomic.h"
 #include "vscf_key_recipient_list.h"
 #include "vscf_signer_list.h"
-#include "vscf_verifier_list.h"
 #include "vscf_message_info.h"
 #include "vscf_message_info_footer.h"
 #include "vscf_impl.h"
@@ -116,7 +115,9 @@ struct vscf_recipient_cipher_t {
 
     vscf_signer_list_t *signers;
 
-    vscf_verifier_list_t *verifiers;
+    vsc_buffer_t *cipher_key_material;
+
+    vsc_buffer_t *data_digest;
 
     vsc_buffer_t *decryption_recipient_id;
 
@@ -134,13 +135,13 @@ struct vscf_recipient_cipher_t {
 
     vscf_message_info_footer_t *message_info_footer;
 
-    vsc_buffer_t *message_info_footer_buffer;
+    vsc_buffer_t *message_info_footer_enc;
 
     size_t message_info_expected_len;
 
     vscf_recipient_cipher_decryption_state_t decryption_state;
 
-    bool is_signed_encryption;
+    bool is_signed_operation;
 };
 
 

@@ -60,7 +60,7 @@
 #include "vscf_key_recipient_info_list.h"
 #include "vscf_password_recipient_info_list.h"
 #include "vscf_message_info_custom_params.h"
-#include "vscf_signed_data_info.h"
+#include "vscf_footer_info.h"
 #include "vscf_impl.h"
 
 // clang-format on
@@ -126,6 +126,20 @@ vscf_message_info_destroy(vscf_message_info_t **self_ref);
 //
 VSCF_PUBLIC vscf_message_info_t *
 vscf_message_info_shallow_copy(vscf_message_info_t *self);
+
+//
+//  Set message info version.
+//  Currently supported {0, 1}.
+//
+VSCF_PUBLIC void
+vscf_message_info_set_version(vscf_message_info_t *self, unsigned int version);
+
+//
+//  Return message info version.
+//  Currently supported {0, 1}.
+//
+VSCF_PUBLIC unsigned int
+vscf_message_info_version(vscf_message_info_t *self);
 
 //
 //  Add recipient that is defined by Public Key.
@@ -197,28 +211,34 @@ VSCF_PUBLIC vscf_message_info_custom_params_t *
 vscf_message_info_custom_params(vscf_message_info_t *self);
 
 //
-//  Return true if signed data info exists.
+//  Return true if footer info exists.
 //
 VSCF_PUBLIC bool
-vscf_message_info_has_signed_data_info(const vscf_message_info_t *self);
+vscf_message_info_has_footer_info(const vscf_message_info_t *self);
 
 //
-//  Setup signed data info.
+//  Setup footer info.
 //
 VSCF_PUBLIC void
-vscf_message_info_set_signed_data_info(vscf_message_info_t *self, vscf_signed_data_info_t *signed_data_info);
+vscf_message_info_set_footer_info(vscf_message_info_t *self, vscf_footer_info_t *footer_info);
 
 //
-//  Return signed data info.
+//  Return footer info.
 //
-VSCF_PUBLIC vscf_signed_data_info_t *
-vscf_message_info_signed_data_info(vscf_message_info_t *self);
+VSCF_PUBLIC const vscf_footer_info_t *
+vscf_message_info_footer_info(const vscf_message_info_t *self);
 
 //
-//  Remove signed data info.
+//  Return mutable footer info.
+//
+VSCF_PRIVATE vscf_footer_info_t *
+vscf_message_info_footer_info_m(vscf_message_info_t *self);
+
+//
+//  Remove footer info.
 //
 VSCF_PUBLIC void
-vscf_message_info_remove_signed_data_info(vscf_message_info_t *self);
+vscf_message_info_remove_footer_info(vscf_message_info_t *self);
 
 
 // --------------------------------------------------------------------------

@@ -47,14 +47,13 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Handle information about signed data.
+//  Handle meta information about signed data.
 // --------------------------------------------------------------------------
 
 #ifndef VSCF_SIGNED_DATA_INFO_H_INCLUDED
 #define VSCF_SIGNED_DATA_INFO_H_INCLUDED
 
 #include "vscf_library.h"
-#include "vscf_message_info_custom_params.h"
 #include "vscf_impl.h"
 
 // clang-format on
@@ -132,33 +131,6 @@ vscf_signed_data_info_set_hash_alg_info(vscf_signed_data_info_t *self, vscf_impl
 //
 VSCF_PUBLIC const vscf_impl_t *
 vscf_signed_data_info_hash_alg_info(const vscf_signed_data_info_t *self);
-
-//
-//  Setup signed custom params.
-//
-VSCF_PUBLIC void
-vscf_signed_data_info_set_custom_params(vscf_signed_data_info_t *self,
-        vscf_message_info_custom_params_t **custom_params_ref);
-
-//
-//  Provide access to the signed custom params object.
-//  The returned object can be used to add custom params or read it.
-//  If custom params object was not set then new empty object is created.
-//
-VSCF_PUBLIC vscf_message_info_custom_params_t *
-vscf_signed_data_info_custom_params(vscf_signed_data_info_t *self);
-
-//
-//  Set data size.
-//
-VSCF_PUBLIC void
-vscf_signed_data_info_set_data_size(vscf_signed_data_info_t *self, size_t data_size);
-
-//
-//  Return data size.
-//
-VSCF_PUBLIC size_t
-vscf_signed_data_info_data_size(const vscf_signed_data_info_t *self);
 
 
 // --------------------------------------------------------------------------

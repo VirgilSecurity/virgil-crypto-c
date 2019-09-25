@@ -39,7 +39,7 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Handle information about signed data.
+//  Handle meta information about signed data.
 // --------------------------------------------------------------------------
 
 
@@ -243,7 +243,6 @@ vscf_signed_data_info_cleanup_ctx(vscf_signed_data_info_t *self) {
     VSCF_ASSERT_PTR(self);
 
     vscf_impl_destroy(&self->hash_algorithm);
-    vscf_message_info_custom_params_destroy(&self->signed_custom_params);
 }
 
 //
@@ -271,59 +270,4 @@ vscf_signed_data_info_hash_alg_info(const vscf_signed_data_info_t *self) {
     VSCF_ASSERT_PTR(self->hash_algorithm);
 
     return self->hash_algorithm;
-}
-
-//
-//  Setup signed custom params.
-//
-VSCF_PUBLIC void
-vscf_signed_data_info_set_custom_params(
-        vscf_signed_data_info_t *self, vscf_message_info_custom_params_t **custom_params_ref) {
-
-    VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(custom_params_ref);
-    VSCF_ASSERT_PTR(*custom_params_ref);
-
-    vscf_message_info_custom_params_destroy(&self->signed_custom_params);
-    self->signed_custom_params = *custom_params_ref;
-    *custom_params_ref = NULL;
-}
-
-//
-//  Provide access to the signed custom params object.
-//  The returned object can be used to add custom params or read it.
-//  If custom params object was not set then new empty object is created.
-//
-VSCF_PUBLIC vscf_message_info_custom_params_t *
-vscf_signed_data_info_custom_params(vscf_signed_data_info_t *self) {
-
-    VSCF_ASSERT_PTR(self);
-
-    if (NULL == self->signed_custom_params) {
-        self->signed_custom_params = vscf_message_info_custom_params_new();
-    }
-
-    return self->signed_custom_params;
-}
-
-//
-//  Set data size.
-//
-VSCF_PUBLIC void
-vscf_signed_data_info_set_data_size(vscf_signed_data_info_t *self, size_t data_size) {
-
-    VSCF_ASSERT_PTR(self);
-
-    self->data_size = data_size;
-}
-
-//
-//  Return data size.
-//
-VSCF_PUBLIC size_t
-vscf_signed_data_info_data_size(const vscf_signed_data_info_t *self) {
-
-    VSCF_ASSERT_PTR(self);
-
-    return self->data_size;
 }

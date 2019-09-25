@@ -6,7 +6,24 @@
     <property name="password recipients" class="password recipient info list"/>
     <property name="data encryption alg info" interface="alg info"/>
     <property name="custom params" class="message info custom params"/>
-    <property name="signed data info" class="signed data info"/>
+    <property name="footer info" class="footer info"/>
+    <property name="version" type="unsigned"/>
+
+
+    <method name="set version">
+        Set message info version.
+        Currently supported {0, 1}.
+
+        <argument name="version" type="unsigned"/>
+    </method>
+
+
+    <method name="version">
+        Return message info version.
+        Currently supported {0, 1}.
+
+        <return type="unsigned"/>
+    </method>
 
 
     <method name="add key recipient">
@@ -86,28 +103,34 @@
     </method>
 
 
-    <method name="has signed data info" is_const="1">
-        Return true if signed data info exists.
+    <method name="has footer info" is_const="1">
+        Return true if footer info exists.
 
         <return type="boolean"/>
     </method>
 
 
-    <method name="set signed data info">
-        Setup signed data info.
+    <method name="set footer info">
+        Setup footer info.
 
-        <argument name="signed data info" class="signed data info" access="retain"/>
+        <argument name="footer info" class="footer info" access="retain"/>
     </method>
 
 
-    <method name="signed data info">
-        Return signed data info.
+    <method name="footer info" is_const="1">
+        Return footer info.
 
-        <return class="signed data info" access="readwrite"/>
+        <return class="footer info"/>
+    </method>
+
+    <method name="footer info m" visibility="private">
+        Return mutable footer info.
+
+        <return class="footer info" access="readwrite"/>
     </method>
 
 
-    <method name="remove signed data info">
-        Remove signed data info.
+    <method name="remove footer info">
+        Remove footer info.
     </method>
 </class>

@@ -44,26 +44,10 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
+#ifndef VSCF_RECIPIENT_CIPHER_INTERNAL_H_INCLUDED
+#define VSCF_RECIPIENT_CIPHER_INTERNAL_H_INCLUDED
 
-//  @description
-// --------------------------------------------------------------------------
-//  Interface 'alg info serializer' API.
-// --------------------------------------------------------------------------
-
-#ifndef VSCF_ALG_INFO_SERIALIZER_API_H_INCLUDED
-#define VSCF_ALG_INFO_SERIALIZER_API_H_INCLUDED
-
-#include "vscf_library.h"
-#include "vscf_api.h"
-#include "vscf_impl.h"
-
-#if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <virgil/crypto/common/vsc_buffer.h>
-#endif
-
-#if VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <VSCCommon/vsc_buffer.h>
-#endif
+#include "vscf_recipient_cipher.h"
 
 // clang-format on
 //  @end
@@ -81,38 +65,26 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Callback. Return buffer size enough to hold serialized algorithm.
+//  Return buffer length required to hold message footer returned by the
+//  "pack message footer" method.
 //
-typedef size_t (*vscf_alg_info_serializer_api_serialized_len_fn)(const vscf_impl_t *impl, const vscf_impl_t *alg_info);
+//  Precondition: this should may be called after "start signed encryption".
+//
+VSCF_PRIVATE size_t
+vscf_recipient_cipher_message_info_footer_len(const vscf_recipient_cipher_t *self);
 
 //
-//  Callback. Serialize algorithm info to buffer class.
+//  Return serialized message info footer to the buffer.
 //
-typedef void (*vscf_alg_info_serializer_api_serialize_fn)(vscf_impl_t *impl, const vscf_impl_t *alg_info,
-        vsc_buffer_t *out);
-
+//  Precondition: this method should be called after "finish encryption".
 //
-//  Contains API requirements of the interface 'alg info serializer'.
+//  Note, store message info to use it for decryption process,
+//  or place it at the encrypted data ending (embedding).
 //
-struct vscf_alg_info_serializer_api_t {
-    //
-    //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'alg_info_serializer' MUST be equal to the 'vscf_api_tag_ALG_INFO_SERIALIZER'.
-    //
-    vscf_api_tag_t api_tag;
-    //
-    //  Implementation unique identifier, MUST be second in the structure.
-    //
-    vscf_impl_tag_t impl_tag;
-    //
-    //  Return buffer size enough to hold serialized algorithm.
-    //
-    vscf_alg_info_serializer_api_serialized_len_fn serialized_len_cb;
-    //
-    //  Serialize algorithm info to buffer class.
-    //
-    vscf_alg_info_serializer_api_serialize_fn serialize_cb;
-};
+//  Return message info footer - signers public information, etc.
+//
+VSCF_PRIVATE void
+vscf_recipient_cipher_pack_message_info_footer(vscf_recipient_cipher_t *self);
 
 
 // --------------------------------------------------------------------------
@@ -128,5 +100,5 @@ struct vscf_alg_info_serializer_api_t {
 
 
 //  @footer
-#endif // VSCF_ALG_INFO_SERIALIZER_API_H_INCLUDED
+#endif // VSCF_RECIPIENT_CIPHER_INTERNAL_H_INCLUDED
 //  @end

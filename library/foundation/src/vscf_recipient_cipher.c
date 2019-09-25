@@ -59,6 +59,8 @@
 #include "vscf_cipher.h"
 #include "vscf_hash.h"
 #include "vscf_recipient_cipher_defs.h"
+#include "vscf_encrypt.h"
+#include "vscf_decrypt.h"
 #include "vscf_alg_info.h"
 #include "vscf_public_key.h"
 #include "vscf_private_key.h"
@@ -72,6 +74,7 @@
 #include "vscf_alg_factory.h"
 #include "vscf_key_alg_factory.h"
 #include "vscf_sha512.h"
+#include "vscf_message_info_der_serializer_internal.h"
 
 // clang-format on
 //  @end
@@ -127,26 +130,40 @@ static vscf_status_t
 vscf_recipient_cipher_decrypt_data_encryption_key(vscf_recipient_cipher_t *self) VSCF_NODISCARD;
 
 //
-//  Read given message info from the given data or extracted data.
+//  Deserialize given message info from the given data or extracted data.
 //
 static vscf_status_t
 vscf_recipient_cipher_unpack_message_info(vscf_recipient_cipher_t *self, vsc_data_t message_info) VSCF_NODISCARD;
 
 //
-//  Deserialize given message info footer.
+//  Deserialize given message info footer from the given data or extracted data.
 //
 static vscf_status_t
-vscf_recipient_cipher_unpack_message_info_footer(vscf_recipient_cipher_t *self, vsc_data_t footer_data) VSCF_NODISCARD;
+vscf_recipient_cipher_unpack_message_info_footer(vscf_recipient_cipher_t *self, vsc_data_t message_info) VSCF_NODISCARD;
 
 static vscf_status_t
 vscf_recipient_cipher_extract_message_info(vscf_recipient_cipher_t *self, vsc_data_t data) VSCF_NODISCARD;
 
 //
-//  For signed encryption set serialized signed data info as
+//  For signed encryption set serialized footer info as
 //  cipher additional data for AEAD ciphers.
 //
 static void
 vscf_recipient_cipher_set_cipher_auth_data(vscf_recipient_cipher_t *self, vscf_impl_t *cipher);
+
+//
+//  Sign data digest.
+//  Populate message info footer.
+//  Encrypt message info footer.
+//
+static vscf_status_t
+vscf_recipient_cipher_accomplish_signed_encryption(vscf_recipient_cipher_t *self) VSCF_NODISCARD;
+
+//
+//  Optionally unpack buffered message info footer and verify data digest.
+//
+static vscf_status_t
+vscf_recipient_cipher_accomplish_verified_decryption(vscf_recipient_cipher_t *self) VSCF_NODISCARD;
 
 //
 //  Return size of 'vscf_recipient_cipher_t'.
@@ -431,7 +448,7 @@ vscf_recipient_cipher_init_ctx(vscf_recipient_cipher_t *self) {
     self->message_info = vscf_message_info_new();
     self->message_info_der_serializer = vscf_message_info_der_serializer_new();
     vscf_message_info_der_serializer_setup_defaults(self->message_info_der_serializer);
-    self->is_signed_encryption = false;
+    self->is_signed_operation = false;
 
     //  Another properties are allocated by request.
 }
@@ -446,9 +463,11 @@ vscf_recipient_cipher_cleanup_ctx(vscf_recipient_cipher_t *self) {
 
     VSCF_ASSERT_PTR(self);
 
+    vsc_buffer_destroy(&self->data_digest);
+    vsc_buffer_destroy(&self->cipher_key_material);
     vsc_buffer_destroy(&self->decryption_password);
     vsc_buffer_destroy(&self->decryption_recipient_id);
-    vsc_buffer_destroy(&self->message_info_footer_buffer);
+    vsc_buffer_destroy(&self->message_info_footer_enc);
     vscf_impl_destroy(&self->decryption_cipher);
     vscf_impl_destroy(&self->decryption_recipient_key);
     vscf_key_recipient_list_destroy(&self->key_recipients);
@@ -489,8 +508,9 @@ vscf_recipient_cipher_clear_recipients(vscf_recipient_cipher_t *self) {
 
 //
 //  Add identifier and private key to sign initial plain text.
+//  Return error if the private key can not sign.
 //
-VSCF_PUBLIC void
+VSCF_PUBLIC vscf_status_t
 vscf_recipient_cipher_add_signer(vscf_recipient_cipher_t *self, vsc_data_t signer_id, vscf_impl_t *private_key) {
 
     VSCF_ASSERT_PTR(self);
@@ -498,11 +518,28 @@ vscf_recipient_cipher_add_signer(vscf_recipient_cipher_t *self, vsc_data_t signe
     VSCF_ASSERT_PTR(private_key);
     VSCF_ASSERT(vscf_private_key_is_implemented(private_key));
 
+    vscf_error_t error;
+    vscf_error_reset(&error);
+
+    vscf_impl_t *signer = vscf_key_alg_factory_create_from_key(private_key, self->random, &error);
+
+    if (vscf_error_has_error(&error)) {
+        return vscf_error_status(&error);
+    }
+
+    const bool can_sign = vscf_key_signer_is_implemented(signer) && vscf_key_signer_can_sign(signer, private_key);
+    vscf_impl_destroy(&signer);
+    if (!can_sign) {
+        return vscf_status_ERROR_UNSUPPORTED_ALGORITHM;
+    }
+
     if (NULL == self->signers) {
         self->signers = vscf_signer_list_new();
     }
 
     vscf_signer_list_add(self->signers, signer_id, private_key);
+
+    return vscf_status_SUCCESS;
 }
 
 //
@@ -519,37 +556,6 @@ vscf_recipient_cipher_clear_signers(vscf_recipient_cipher_t *self) {
 }
 
 //
-//  Add identifier and public key to verify decrypted plain text.
-//
-VSCF_PUBLIC void
-vscf_recipient_cipher_add_verifier(vscf_recipient_cipher_t *self, vsc_data_t signer_id, vscf_impl_t *public_key) {
-
-    VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT(vsc_data_is_valid(signer_id));
-    VSCF_ASSERT_PTR(public_key);
-    VSCF_ASSERT(vscf_public_key_is_implemented(public_key));
-
-    if (NULL == self->verifiers) {
-        self->verifiers = vscf_verifier_list_new();
-    }
-
-    vscf_verifier_list_add(self->verifiers, signer_id, public_key);
-}
-
-//
-//  Remove all verifiers.
-//
-VSCF_PUBLIC void
-vscf_recipient_cipher_clear_verifiers(vscf_recipient_cipher_t *self) {
-
-    VSCF_ASSERT_PTR(self);
-
-    if (self->verifiers) {
-        vscf_verifier_list_clear(self->verifiers);
-    }
-}
-
-//
 //  Provide access to the custom params object.
 //  The returned object can be used to add custom params or read it.
 //
@@ -560,19 +566,6 @@ vscf_recipient_cipher_custom_params(vscf_recipient_cipher_t *self) {
     VSCF_ASSERT_PTR(self->message_info);
 
     return vscf_message_info_custom_params(self->message_info);
-}
-
-//
-//  Provide access to the signed custom params object.
-//  The returned object can be used to add custom signed params or read it.
-//
-VSCF_PUBLIC vscf_message_info_custom_params_t *
-vscf_recipient_cipher_signed_custom_params(vscf_recipient_cipher_t *self) {
-
-    VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(self->message_info);
-
-    return vscf_signed_data_info_custom_params(vscf_message_info_signed_data_info(self->message_info));
 }
 
 //
@@ -709,15 +702,22 @@ vscf_recipient_cipher_start_signed_encryption(vscf_recipient_cipher_t *self, siz
     VSCF_ASSERT(vscf_signer_list_has_signer(self->signers));
     VSCF_ASSERT_PTR(self->message_info);
 
-    self->is_signed_encryption = true;
+    self->is_signed_operation = true;
 
     if (NULL == self->signer_hash) {
         self->signer_hash = vscf_sha512_impl(vscf_sha512_new());
     }
 
-    vscf_signed_data_info_t *signed_data_info = vscf_message_info_signed_data_info(self->message_info);
-    vscf_signed_data_info_set_data_size(signed_data_info, data_size);
+    if (NULL == self->message_info_footer) {
+        self->message_info_footer = vscf_message_info_footer_new();
+    }
 
+    vscf_hash_start(self->signer_hash);
+
+    vscf_footer_info_t *footer_info = vscf_message_info_footer_info_m(self->message_info);
+    vscf_footer_info_set_data_size(footer_info, data_size);
+
+    vscf_signed_data_info_t *signed_data_info = vscf_footer_info_signed_data_info_m(footer_info);
     vscf_impl_t *signer_hash_alg_info = vscf_alg_produce_alg_info(self->signer_hash);
     vscf_signed_data_info_set_hash_alg_info(signed_data_info, &signer_hash_alg_info);
 
@@ -761,42 +761,6 @@ vscf_recipient_cipher_pack_message_info(vscf_recipient_cipher_t *self, vsc_buffe
 }
 
 //
-//  Return buffer length required to hold message footer returned by the
-//  "pack message footer" method.
-//  Precondition: this method should be called after "finish encryption".
-//
-VSCF_PUBLIC size_t
-vscf_recipient_cipher_message_info_footer_len(const vscf_recipient_cipher_t *self) {
-
-    VSCF_ASSERT(self);
-
-    return vscf_message_info_der_serializer_serialized_footer_len(
-            self->message_info_der_serializer, self->message_info_footer);
-}
-
-//
-//  Return serialized message info footer to the buffer.
-//
-//  Precondition: this method should be called before "finish encryption".
-//
-//  Note, store message info to use it for decryption process,
-//  or place it at the encrypted data ending (embedding).
-//
-//  Return message info footer - signers public information, etc.
-//
-VSCF_PUBLIC void
-vscf_recipient_cipher_pack_message_info_footer(vscf_recipient_cipher_t *self, vsc_buffer_t *message_info_footer) {
-
-    VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(message_info_footer);
-    VSCF_ASSERT(vsc_buffer_is_valid(message_info_footer));
-    VSCF_ASSERT(vsc_buffer_unused_len(message_info_footer) >= vscf_recipient_cipher_message_info_footer_len(self));
-
-    vscf_message_info_der_serializer_serialize_footer(
-            self->message_info_der_serializer, self->message_info_footer, message_info_footer);
-}
-
-//
 //  Return buffer length required to hold output of the method
 //  "process encryption" and method "finish" during encryption.
 //
@@ -807,7 +771,15 @@ vscf_recipient_cipher_encryption_out_len(vscf_recipient_cipher_t *self, size_t d
     VSCF_ASSERT_PTR(self->encryption_cipher);
     VSCF_UNUSED(data_len);
 
-    return vscf_cipher_encrypted_out_len(self->encryption_cipher, data_len);
+    size_t out_len = 0;
+
+    if (self->is_signed_operation && 0 == data_len) {
+        out_len += vscf_recipient_cipher_message_info_footer_len(self);
+        vscf_cipher_encrypted_out_len(self->encryption_cipher, out_len);
+    }
+
+    out_len += vscf_cipher_encrypted_out_len(self->encryption_cipher, data_len);
+    return out_len;
 }
 
 //
@@ -823,6 +795,9 @@ vscf_recipient_cipher_process_encryption(vscf_recipient_cipher_t *self, vsc_data
     VSCF_ASSERT(vsc_buffer_is_valid(out));
     VSCF_ASSERT(vsc_buffer_unused_len(out) >= vscf_recipient_cipher_encryption_out_len(self, data.len));
 
+    if (self->is_signed_operation) {
+        vscf_hash_update(self->signer_hash, data);
+    }
     vscf_cipher_update(self->encryption_cipher, data, out);
 
     return vscf_status_SUCCESS;
@@ -839,7 +814,15 @@ vscf_recipient_cipher_finish_encryption(vscf_recipient_cipher_t *self, vsc_buffe
     VSCF_ASSERT(vsc_buffer_is_valid(out));
     VSCF_ASSERT(vsc_buffer_unused_len(out) >= vscf_recipient_cipher_encryption_out_len(self, 0));
 
-    vscf_status_t status = vscf_cipher_finish(self->encryption_cipher, out);
+    vscf_status_t status = vscf_status_SUCCESS;
+
+    if (self->is_signed_operation) {
+        status = vscf_recipient_cipher_accomplish_signed_encryption(self);
+    }
+
+    if (vscf_status_SUCCESS == status) {
+        status = vscf_cipher_finish(self->encryption_cipher, out);
+    }
 
     return status;
 }
@@ -898,6 +881,7 @@ vscf_recipient_cipher_start_decryption_with_key(
 //  Initiate decryption process with a recipient private key.
 //  Message Info can be empty if it was embedded to encrypted data.
 //  Message Info footer can be empty if it was embedded to encrypted data.
+//  If footer was embedded, method "start decryption with key" can be used.
 //
 VSCF_PUBLIC vscf_status_t
 vscf_recipient_cipher_start_verified_decryption_with_key(vscf_recipient_cipher_t *self, vsc_data_t recipient_id,
@@ -908,7 +892,7 @@ vscf_recipient_cipher_start_verified_decryption_with_key(vscf_recipient_cipher_t
     VSCF_ASSERT_PTR(private_key);
     VSCF_ASSERT(vscf_private_key_is_implemented(private_key));
 
-    self->is_signed_encryption = true;
+    self->is_signed_operation = true;
 
     vscf_status_t status =
             vscf_recipient_cipher_start_decryption_with_key(self, recipient_id, private_key, message_info);
@@ -981,7 +965,7 @@ vscf_recipient_cipher_process_decryption(vscf_recipient_cipher_t *self, vsc_data
 }
 
 //
-//  Accomplish decryption and verify signatures if verifiers was added.
+//  Accomplish decryption.
 //
 VSCF_PUBLIC vscf_status_t
 vscf_recipient_cipher_finish_decryption(vscf_recipient_cipher_t *self, vsc_buffer_t *out) {
@@ -996,11 +980,97 @@ vscf_recipient_cipher_finish_decryption(vscf_recipient_cipher_t *self, vsc_buffe
     }
 
     VSCF_ASSERT_PTR(self->decryption_cipher);
-    vscf_status_t status = vscf_cipher_finish(self->decryption_cipher, out);
+
+    vscf_status_t status = vscf_status_SUCCESS;
+
+    if (self->is_signed_operation) {
+        status = vscf_recipient_cipher_accomplish_verified_decryption(self);
+    }
+
+    status = vscf_cipher_finish(self->decryption_cipher, out);
 
     vscf_impl_destroy(&self->decryption_cipher);
 
     return status;
+}
+
+//
+//  Return true if data was signed by a sender.
+//
+//  Precondition: this method should be called after "finish decryption".
+//
+VSCF_PUBLIC bool
+vscf_recipient_cipher_is_data_signed(const vscf_recipient_cipher_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+
+    return self->is_signed_operation;
+}
+
+//
+//  Return information about signers that sign data.
+//
+//  Precondition: this method should be called after "finish decryption".
+//  Precondition: method "is data signed" returns true.
+//
+VSCF_PUBLIC const vscf_signer_info_list_t *
+vscf_recipient_cipher_signer_infos(const vscf_recipient_cipher_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(self->is_signed_operation);
+    VSCF_ASSERT_PTR(self->message_info_footer);
+
+    return vscf_message_info_footer_signer_infos(self->message_info_footer);
+}
+
+//
+//  Verify given cipher info.
+//
+VSCF_PUBLIC bool
+vscf_recipient_cipher_verify_signer_info(
+        vscf_recipient_cipher_t *self, const vscf_signer_info_t *signer_info, const vscf_impl_t *public_key) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(self->message_info);
+    VSCF_ASSERT_PTR(vscf_message_info_has_footer_info(self->message_info));
+    VSCF_ASSERT_PTR(signer_info);
+    VSCF_ASSERT_PTR(public_key);
+    VSCF_ASSERT(vscf_public_key_is_implemented(public_key));
+
+    vscf_error_t error;
+    vscf_error_reset(&error);
+
+    const vscf_impl_t *public_key_alg_info = vscf_key_alg_info(public_key);
+    const vscf_impl_t *signer_alg_info = vscf_signer_info_signer_alg_info(signer_info);
+
+    const vscf_footer_info_t *footer_info = vscf_message_info_footer_info(self->message_info);
+    const vscf_signed_data_info_t *signed_data_info = vscf_footer_info_signed_data_info(footer_info);
+    const vscf_alg_id_t hash_alg_id = vscf_alg_alg_id(vscf_signed_data_info_hash_alg_info(signed_data_info));
+
+    if (vscf_alg_alg_id(public_key_alg_info) != vscf_alg_alg_id(signer_alg_info)) {
+        //  TODO: Log error - mismatch signature algorithms
+        return false;
+    }
+
+    vscf_impl_t *signer = vscf_key_alg_factory_create_from_key(public_key, self->random, &error);
+    if (vscf_error_has_error(&error)) {
+        //  TODO: Log underlying error.
+        vscf_impl_destroy(&signer);
+        return false;
+    }
+
+    if (!vscf_key_signer_is_implemented(signer) || !vscf_key_signer_can_verify(signer, public_key)) {
+        //  TODO: Log error - vscf_status_ERROR_UNSUPPORTED_ALGORITHM
+        vscf_impl_destroy(&signer);
+        return false;
+    }
+
+    const vsc_data_t digest = vsc_buffer_data(self->data_digest);
+    const vsc_data_t signature = vscf_signer_info_signature(signer_info);
+
+    const bool is_verified = vscf_key_signer_verify_hash(signer, public_key, hash_alg_id, digest, signature);
+    vscf_impl_destroy(&signer);
+    return is_verified;
 }
 
 //
@@ -1136,12 +1206,13 @@ vscf_recipient_cipher_decrypt_data_encryption_key(vscf_recipient_cipher_t *self)
 }
 
 //
-//  Read given message info from the given data or extracted data.
+//  Deserialize given message info from the given data or extracted data.
 //
 static vscf_status_t
 vscf_recipient_cipher_unpack_message_info(vscf_recipient_cipher_t *self, vsc_data_t message_info) {
 
     VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT(vsc_data_is_valid(message_info));
     VSCF_ASSERT_PTR(self->message_info_der_serializer);
 
     vscf_error_t error;
@@ -1155,23 +1226,67 @@ vscf_recipient_cipher_unpack_message_info(vscf_recipient_cipher_t *self, vsc_dat
 }
 
 //
-//  Deserialize given message info footer.
+//  Deserialize given message info footer from the given data or extracted data.
 //
 static vscf_status_t
-vscf_recipient_cipher_unpack_message_info_footer(vscf_recipient_cipher_t *self, vsc_data_t footer_data) {
+vscf_recipient_cipher_unpack_message_info_footer(vscf_recipient_cipher_t *self, vsc_data_t message_info) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(self->message_info_der_serializer);
-    VSCF_ASSERT(vsc_data_is_valid(footer_data));
+    VSCF_ASSERT(vsc_data_is_valid(message_info));
 
     vscf_error_t error;
     vscf_error_reset(&error);
 
     vscf_message_info_footer_destroy(&self->message_info_footer);
-    self->message_info_footer =
-            vscf_message_info_der_serializer_deserialize_footer(self->message_info_der_serializer, footer_data, &error);
+    self->message_info_footer = vscf_message_info_der_serializer_deserialize_footer(
+            self->message_info_der_serializer, message_info, &error);
 
     return vscf_error_status(&error);
+}
+
+//
+//  Return buffer length required to hold message footer returned by the
+//  "pack message footer" method.
+//
+//  Precondition: this method should be called after "finish encryption".
+//
+VSCF_PUBLIC size_t
+vscf_recipient_cipher_message_info_footer_len(const vscf_recipient_cipher_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT(self->is_signed_operation);
+    VSCF_ASSERT_PTR(self->message_info_footer);
+
+    const size_t plain_len = vscf_message_info_der_serializer_serialized_footer_len(
+            self->message_info_der_serializer, self->message_info_footer);
+
+    const size_t encrypted_len = vscf_encrypt_encrypted_len(self->encryption_cipher, plain_len);
+
+    return encrypted_len;
+}
+
+//
+//  Return serialized message info footer to the buffer.
+//
+//  Precondition: this method should be called after "finish encryption".
+//
+//  Note, store message info to use it for verified decryption process,
+//  or place it at the encrypted data ending (embedding).
+//
+//  Return message info footer - signers public information, etc.
+//
+VSCF_PUBLIC void
+vscf_recipient_cipher_pack_message_info_footer(vscf_recipient_cipher_t *self, vsc_buffer_t *out) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT(self->is_signed_operation);
+    VSCF_ASSERT_PTR(out);
+    VSCF_ASSERT(vsc_buffer_is_valid(out));
+    VSCF_ASSERT(vsc_buffer_unused_len(out) >= vscf_recipient_cipher_message_info_footer_len(self));
+
+    vscf_message_info_der_serializer_serialize_footer(
+            self->message_info_der_serializer, self->message_info_footer, out);
 }
 
 static vscf_status_t
@@ -1231,7 +1346,7 @@ vscf_recipient_cipher_extract_message_info(vscf_recipient_cipher_t *self, vsc_da
 }
 
 //
-//  For signed encryption set serialized signed data info as
+//  For signed encryption set serialized footer info as
 //  cipher additional data for AEAD ciphers.
 //
 static void
@@ -1240,8 +1355,9 @@ vscf_recipient_cipher_set_cipher_auth_data(vscf_recipient_cipher_t *self, vscf_i
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(cipher);
 
-    if (self->is_signed_encryption && vscf_cipher_auth_is_implemented(cipher)) {
-        const vscf_signed_data_info_t *signed_data_info = vscf_message_info_signed_data_info(self->message_info);
+    if (self->is_signed_operation && vscf_cipher_auth_is_implemented(cipher)) {
+        const vscf_footer_info_t *footer_info = vscf_message_info_footer_info(self->message_info);
+        const vscf_signed_data_info_t *signed_data_info = vscf_footer_info_signed_data_info(footer_info);
 
         const size_t serialized_signed_data_info_len = vscf_message_info_der_serializer_serialized_signed_data_info_len(
                 self->message_info_der_serializer, signed_data_info);
@@ -1255,4 +1371,92 @@ vscf_recipient_cipher_set_cipher_auth_data(vscf_recipient_cipher_t *self, vscf_i
 
         vsc_buffer_destroy(&serialized_signed_data_info);
     }
+}
+
+//
+//  Sign data digest.
+//  Populate message info footer.
+//  Encrypt message info footer.
+//
+static vscf_status_t
+vscf_recipient_cipher_accomplish_signed_encryption(vscf_recipient_cipher_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT(self->is_signed_operation);
+    VSCF_ASSERT_PTR(self->signer_hash);
+    VSCF_ASSERT_PTR(self->message_info_footer);
+    VSCF_ASSERT(vscf_signer_list_has_signer(self->signers));
+
+    vscf_error_t error;
+    vscf_error_reset(&error);
+
+    //
+    //  Cleanup previous data.
+    //
+    vscf_message_info_footer_clear_signer_infos(self->message_info_footer);
+
+    //
+    //  Calculate digest digest.
+    //
+    vsc_buffer_t *digest = vsc_buffer_new_with_capacity(vscf_hash_digest_len(vscf_hash_api(self->signer_hash)));
+    vscf_hash_finish(self->signer_hash, digest);
+    const vscf_alg_id_t hash_alg_id = vscf_alg_alg_id(self->signer_hash);
+
+    //
+    //  Sign digest and add signer infos.
+    //
+    vscf_impl_t *signer = NULL;
+    vsc_buffer_t *signature = NULL;
+    const vscf_signer_list_t *signer_iterator = self->signers;
+    do {
+        vsc_data_t signer_id = vscf_signer_list_signer_id(signer_iterator);
+        const vscf_impl_t *signer_private_key = vscf_signer_list_signer_private_key(signer_iterator);
+
+        signer = vscf_key_alg_factory_create_from_key(signer_private_key, self->random, &error);
+        if (vscf_error_has_error(&error)) {
+            goto sign_failed;
+        }
+
+        signature = vsc_buffer_new_with_capacity(vscf_key_signer_signature_len(signer, signer_private_key));
+
+        const vscf_status_t sign_status =
+                vscf_key_signer_sign_hash(signer, signer_private_key, hash_alg_id, vsc_buffer_data(digest), signature);
+
+        if (sign_status != vscf_status_SUCCESS) {
+            vscf_error_update(&error, sign_status);
+            goto sign_failed;
+        }
+
+        vscf_impl_t *signer_alg_info = vscf_impl_shallow_copy((vscf_impl_t *)vscf_key_alg_info(signer_private_key));
+        vscf_signer_info_t *signer_info = vscf_signer_info_new_with_members(signer_id, &signer_alg_info, &signature);
+        vscf_message_info_footer_add_signer_info(self->message_info_footer, &signer_info);
+    } while ((signer_iterator = vscf_signer_list_next(signer_iterator)) != NULL);
+
+    vscf_message_info_footer_set_signer_digest(self->message_info_footer, &digest);
+
+    vsc_buffer_destroy(&self->message_info_footer_enc);
+    self->message_info_footer_enc = vsc_buffer_new_with_capacity(vscf_recipient_cipher_message_info_footer_len(self));
+    vscf_recipient_cipher_pack_message_info_footer(self, self->message_info_footer_enc);
+
+    goto cleanup;
+
+sign_failed:
+    vsc_buffer_destroy(&digest);
+    vsc_buffer_destroy(&signature);
+
+cleanup:
+    vscf_impl_destroy(&signer);
+
+    return vscf_error_status(&error);
+}
+
+//
+//  Optionally unpack buffered message info footer and verify data digest.
+//
+static vscf_status_t
+vscf_recipient_cipher_accomplish_verified_decryption(vscf_recipient_cipher_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+
+    return vscf_status_SUCCESS;
 }

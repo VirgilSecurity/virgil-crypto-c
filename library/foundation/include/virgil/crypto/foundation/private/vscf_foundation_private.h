@@ -88,6 +88,7 @@
 #include "vscf_entropy_accumulator_defs.h"
 #include "vscf_entropy_source_api.h"
 #include "vscf_fake_random_defs.h"
+#include "vscf_footer_info_defs.h"
 #include "vscf_group_session_message_defs.h"
 #include "vscf_group_session_ticket_defs.h"
 #include "vscf_hash_api.h"

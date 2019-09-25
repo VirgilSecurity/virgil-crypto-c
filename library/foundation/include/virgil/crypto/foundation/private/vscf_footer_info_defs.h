@@ -37,12 +37,6 @@
 // clang-format off
 
 
-//  @description
-// --------------------------------------------------------------------------
-//  Class 'verifier list' types definition.
-// --------------------------------------------------------------------------
-
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -50,10 +44,26 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#include "vscf_verifier_list_defs.h"
+
+//  @description
+// --------------------------------------------------------------------------
+//  Class 'footer info' types definition.
+// --------------------------------------------------------------------------
+
+#ifndef VSCF_FOOTER_INFO_DEFS_H_INCLUDED
+#define VSCF_FOOTER_INFO_DEFS_H_INCLUDED
+
+#include "vscf_library.h"
+#include "vscf_atomic.h"
+#include "vscf_signed_data_info.h"
 
 // clang-format on
 //  @end
+
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 
 //  @generated
@@ -62,9 +72,37 @@
 //  Generated section start.
 // --------------------------------------------------------------------------
 
+//
+//  Handle 'footer info' context.
+//
+struct vscf_footer_info_t {
+    //
+    //  Function do deallocate self context.
+    //
+    vscf_dealloc_fn self_dealloc_cb;
+    //
+    //  Reference counter.
+    //
+    VSCF_ATOMIC size_t refcnt;
+
+    vscf_signed_data_info_t *signed_data_info;
+
+    size_t data_size;
+};
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
+//  @end
+
+
+#ifdef __cplusplus
+}
+#endif
+
+
+//  @footer
+#endif // VSCF_FOOTER_INFO_DEFS_H_INCLUDED
 //  @end

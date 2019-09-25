@@ -39,7 +39,7 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Handles a list of signers defined by id and public key.
+//  Handle meta information about footer.
 // --------------------------------------------------------------------------
 
 
@@ -50,11 +50,10 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#include "vscf_verifier_list.h"
+#include "vscf_footer_info.h"
 #include "vscf_memory.h"
 #include "vscf_assert.h"
-#include "vscf_verifier_list_defs.h"
-#include "vscf_public_key.h"
+#include "vscf_footer_info_defs.h"
 
 // clang-format on
 //  @end
@@ -68,11 +67,11 @@
 
 //
 //  Perform context specific initialization.
-//  Note, this method is called automatically when method vscf_verifier_list_init() is called.
+//  Note, this method is called automatically when method vscf_footer_info_init() is called.
 //  Note, that context is already zeroed.
 //
 static void
-vscf_verifier_list_init_ctx(vscf_verifier_list_t *self);
+vscf_footer_info_init_ctx(vscf_footer_info_t *self);
 
 //
 //  Release all inner resources.
@@ -80,57 +79,57 @@ vscf_verifier_list_init_ctx(vscf_verifier_list_t *self);
 //  Note, that context will be zeroed automatically next this method.
 //
 static void
-vscf_verifier_list_cleanup_ctx(vscf_verifier_list_t *self);
+vscf_footer_info_cleanup_ctx(vscf_footer_info_t *self);
 
 //
-//  Return size of 'vscf_verifier_list_t'.
+//  Return size of 'vscf_footer_info_t'.
 //
 VSCF_PUBLIC size_t
-vscf_verifier_list_ctx_size(void) {
+vscf_footer_info_ctx_size(void) {
 
-    return sizeof(vscf_verifier_list_t);
+    return sizeof(vscf_footer_info_t);
 }
 
 //
 //  Perform initialization of pre-allocated context.
 //
 VSCF_PUBLIC void
-vscf_verifier_list_init(vscf_verifier_list_t *self) {
+vscf_footer_info_init(vscf_footer_info_t *self) {
 
     VSCF_ASSERT_PTR(self);
 
-    vscf_zeroize(self, sizeof(vscf_verifier_list_t));
+    vscf_zeroize(self, sizeof(vscf_footer_info_t));
 
     self->refcnt = 1;
 
-    vscf_verifier_list_init_ctx(self);
+    vscf_footer_info_init_ctx(self);
 }
 
 //
 //  Release all inner resources including class dependencies.
 //
 VSCF_PUBLIC void
-vscf_verifier_list_cleanup(vscf_verifier_list_t *self) {
+vscf_footer_info_cleanup(vscf_footer_info_t *self) {
 
     if (self == NULL) {
         return;
     }
 
-    vscf_verifier_list_cleanup_ctx(self);
+    vscf_footer_info_cleanup_ctx(self);
 
-    vscf_zeroize(self, sizeof(vscf_verifier_list_t));
+    vscf_zeroize(self, sizeof(vscf_footer_info_t));
 }
 
 //
 //  Allocate context and perform it's initialization.
 //
-VSCF_PUBLIC vscf_verifier_list_t *
-vscf_verifier_list_new(void) {
+VSCF_PUBLIC vscf_footer_info_t *
+vscf_footer_info_new(void) {
 
-    vscf_verifier_list_t *self = (vscf_verifier_list_t *) vscf_alloc(sizeof (vscf_verifier_list_t));
+    vscf_footer_info_t *self = (vscf_footer_info_t *) vscf_alloc(sizeof (vscf_footer_info_t));
     VSCF_ASSERT_ALLOC(self);
 
-    vscf_verifier_list_init(self);
+    vscf_footer_info_init(self);
 
     self->self_dealloc_cb = vscf_dealloc;
 
@@ -142,7 +141,7 @@ vscf_verifier_list_new(void) {
 //  It is safe to call this method even if the context was statically allocated.
 //
 VSCF_PUBLIC void
-vscf_verifier_list_delete(vscf_verifier_list_t *self) {
+vscf_footer_info_delete(vscf_footer_info_t *self) {
 
     if (self == NULL) {
         return;
@@ -169,7 +168,7 @@ vscf_verifier_list_delete(vscf_verifier_list_t *self) {
 
     vscf_dealloc_fn self_dealloc_cb = self->self_dealloc_cb;
 
-    vscf_verifier_list_cleanup(self);
+    vscf_footer_info_cleanup(self);
 
     if (self_dealloc_cb != NULL) {
         self_dealloc_cb(self);
@@ -178,24 +177,24 @@ vscf_verifier_list_delete(vscf_verifier_list_t *self) {
 
 //
 //  Delete given context and nullifies reference.
-//  This is a reverse action of the function 'vscf_verifier_list_new ()'.
+//  This is a reverse action of the function 'vscf_footer_info_new ()'.
 //
 VSCF_PUBLIC void
-vscf_verifier_list_destroy(vscf_verifier_list_t **self_ref) {
+vscf_footer_info_destroy(vscf_footer_info_t **self_ref) {
 
     VSCF_ASSERT_PTR(self_ref);
 
-    vscf_verifier_list_t *self = *self_ref;
+    vscf_footer_info_t *self = *self_ref;
     *self_ref = NULL;
 
-    vscf_verifier_list_delete(self);
+    vscf_footer_info_delete(self);
 }
 
 //
 //  Copy given class context by increasing reference counter.
 //
-VSCF_PUBLIC vscf_verifier_list_t *
-vscf_verifier_list_shallow_copy(vscf_verifier_list_t *self) {
+VSCF_PUBLIC vscf_footer_info_t *
+vscf_footer_info_shallow_copy(vscf_footer_info_t *self) {
 
     VSCF_ASSERT_PTR(self);
 
@@ -224,11 +223,11 @@ vscf_verifier_list_shallow_copy(vscf_verifier_list_t *self) {
 
 //
 //  Perform context specific initialization.
-//  Note, this method is called automatically when method vscf_verifier_list_init() is called.
+//  Note, this method is called automatically when method vscf_footer_info_init() is called.
 //  Note, that context is already zeroed.
 //
 static void
-vscf_verifier_list_init_ctx(vscf_verifier_list_t *self) {
+vscf_footer_info_init_ctx(vscf_footer_info_t *self) {
 
     VSCF_ASSERT_PTR(self);
 }
@@ -239,126 +238,95 @@ vscf_verifier_list_init_ctx(vscf_verifier_list_t *self) {
 //  Note, that context will be zeroed automatically next this method.
 //
 static void
-vscf_verifier_list_cleanup_ctx(vscf_verifier_list_t *self) {
+vscf_footer_info_cleanup_ctx(vscf_footer_info_t *self) {
 
     VSCF_ASSERT_PTR(self);
 
-    vsc_buffer_destroy(&self->signer_id);
-    vscf_impl_destroy(&self->signer_public_key);
-    vscf_verifier_list_destroy(&self->next);
+    vscf_signed_data_info_destroy(&self->signed_data_info);
 }
 
 //
-//  Add new item to the list.
-//  Note, ownership is transfered.
+//  Retrun true if signed data info present.
 //
-VSCF_PUBLIC void
-vscf_verifier_list_add(vscf_verifier_list_t *self, vsc_data_t signer_id, vscf_impl_t *signer_public_key) {
+VSCF_PUBLIC bool
+vscf_footer_info_has_signed_data_info(const vscf_footer_info_t *self) {
 
     VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT(vsc_data_is_valid(signer_id));
-    VSCF_ASSERT_PTR(signer_public_key);
-    VSCF_ASSERT(vscf_public_key_is_implemented(signer_public_key));
 
-    if (NULL == self->signer_id) {
-        VSCF_ASSERT_NULL(self->signer_public_key);
-        self->signer_id = vsc_buffer_new_with_data(signer_id);
-        self->signer_public_key = vscf_impl_shallow_copy(signer_public_key);
-    } else {
-        if (NULL == self->next) {
-            self->next = vscf_verifier_list_new();
-            self->next->prev = self;
-        }
-        vscf_verifier_list_add(self->next, signer_id, signer_public_key);
+    return self->signed_data_info != NULL;
+}
+
+//
+//  Setup signed data info.
+//
+VSCF_PUBLIC void
+vscf_footer_info_set_signed_data_info(vscf_footer_info_t *self, vscf_signed_data_info_t **signed_data_info_ref) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(signed_data_info_ref);
+    VSCF_ASSERT_PTR(*signed_data_info_ref);
+
+    vscf_signed_data_info_destroy(&self->signed_data_info);
+    self->signed_data_info = *signed_data_info_ref;
+    *signed_data_info_ref = NULL;
+}
+
+//
+//  Return signed data info.
+//
+VSCF_PUBLIC const vscf_signed_data_info_t *
+vscf_footer_info_signed_data_info(const vscf_footer_info_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(self->signed_data_info);
+
+    return self->signed_data_info;
+}
+
+//
+//  Return mutable signed data info.
+//
+VSCF_PRIVATE vscf_signed_data_info_t *
+vscf_footer_info_signed_data_info_m(vscf_footer_info_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+
+    if (NULL == self->signed_data_info) {
+        self->signed_data_info = vscf_signed_data_info_new();
     }
+
+    return self->signed_data_info;
 }
 
 //
-//  Remove all items.
+//  Remove signed data info.
 //
 VSCF_PUBLIC void
-vscf_verifier_list_clear(vscf_verifier_list_t *self) {
+vscf_footer_info_remove_signed_data_info(vscf_footer_info_t *self) {
 
     VSCF_ASSERT_PTR(self);
 
-    vscf_verifier_list_cleanup_ctx(self);
+    vscf_signed_data_info_destroy(&self->signed_data_info);
 }
 
 //
-//  Return true if given list has signer.
+//  Set data size.
 //
-VSCF_PUBLIC bool
-vscf_verifier_list_has_signer(const vscf_verifier_list_t *self) {
+VSCF_PUBLIC void
+vscf_footer_info_set_data_size(vscf_footer_info_t *self, size_t data_size) {
 
     VSCF_ASSERT_PTR(self);
 
-    return (self->signer_id != NULL) && (self->signer_public_key != NULL);
+    self->data_size = data_size;
 }
 
 //
-//  Return signer identifier.
+//  Return data size.
 //
-VSCF_PUBLIC vsc_data_t
-vscf_verifier_list_signer_id(const vscf_verifier_list_t *self) {
-
-    VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(self->signer_id);
-
-    return vsc_buffer_data(self->signer_id);
-}
-
-//
-//  Return signer public key.
-//
-VSCF_PUBLIC vscf_impl_t *
-vscf_verifier_list_signer_public_key(const vscf_verifier_list_t *self) {
-
-    VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(self->signer_public_key);
-
-    return self->signer_public_key;
-}
-
-//
-//  Return true if list has next item.
-//
-VSCF_PUBLIC bool
-vscf_verifier_list_has_next(const vscf_verifier_list_t *self) {
+VSCF_PUBLIC size_t
+vscf_footer_info_data_size(const vscf_footer_info_t *self) {
 
     VSCF_ASSERT_PTR(self);
 
-    return self->next != NULL;
-}
-
-//
-//  Return next list node if exists, or NULL otherwise.
-//
-VSCF_PUBLIC vscf_verifier_list_t *
-vscf_verifier_list_next(const vscf_verifier_list_t *self) {
-
-    VSCF_ASSERT_PTR(self);
-
-    return self->next;
-}
-
-//
-//  Return true if list has previous item.
-//
-VSCF_PUBLIC bool
-vscf_verifier_list_has_prev(const vscf_verifier_list_t *self) {
-
-    VSCF_ASSERT_PTR(self);
-
-    return self->prev != NULL;
-}
-
-//
-//  Return previous list node if exists, or NULL otherwise.
-//
-VSCF_PUBLIC vscf_verifier_list_t *
-vscf_verifier_list_prev(const vscf_verifier_list_t *self) {
-
-    VSCF_ASSERT_PTR(self);
-
-    return self->prev;
+    return self->data_size;
 }

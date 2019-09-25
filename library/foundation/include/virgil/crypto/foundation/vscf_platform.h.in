@@ -530,16 +530,16 @@ extern "C" {
 #cmakedefine01 VSCF_SIGNER_LIST
 #endif
 
-#ifndef VSCF_VERIFIER_LIST
-#cmakedefine01 VSCF_VERIFIER_LIST
-#endif
-
 #ifndef VSCF_MESSAGE_INFO_FOOTER
 #cmakedefine01 VSCF_MESSAGE_INFO_FOOTER
 #endif
 
 #ifndef VSCF_SIGNED_DATA_INFO
 #cmakedefine01 VSCF_SIGNED_DATA_INFO
+#endif
+
+#ifndef VSCF_FOOTER_INFO
+#cmakedefine01 VSCF_FOOTER_INFO
 #endif
 
 //

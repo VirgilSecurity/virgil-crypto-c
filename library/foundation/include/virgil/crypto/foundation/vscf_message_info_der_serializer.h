@@ -54,7 +54,6 @@
 #define VSCF_MESSAGE_INFO_DER_SERIALIZER_H_INCLUDED
 
 #include "vscf_library.h"
-#include "vscf_signed_data_info.h"
 #include "vscf_message_info.h"
 #include "vscf_message_info_footer.h"
 #include "vscf_error.h"
@@ -199,34 +198,6 @@ vscf_message_info_der_serializer_release_asn1_writer(vscf_message_info_der_seria
 //
 VSCF_PUBLIC void
 vscf_message_info_der_serializer_setup_defaults(vscf_message_info_der_serializer_t *self);
-
-//
-//  Return size in bytes enough to hold serialized signed data info.
-//
-//  VirgilSignedDataInfo ::= SEQUENCE {
-//      version INTEGER { v0(0) },
-//      digestAlgorithm AlgorithmIdentifier,
-//      dataSize INTEGER,
-//      signedParams [0] EXPLICIT VirgilCustomParams OPTIONAL
-//  }
-//
-VSCF_PRIVATE size_t
-vscf_message_info_der_serializer_serialized_signed_data_info_len(const vscf_message_info_der_serializer_t *self,
-        const vscf_signed_data_info_t *signed_data_info);
-
-//
-//  Serialize signed data info.
-//
-//  VirgilSignedDataInfo ::= SEQUENCE {
-//      version INTEGER { v0(0) },
-//      digestAlgorithm AlgorithmIdentifier,
-//      dataSize INTEGER,
-//      signedParams [0] EXPLICIT VirgilCustomParams OPTIONAL
-//  }
-//
-VSCF_PRIVATE void
-vscf_message_info_der_serializer_serialize_signed_data_info(vscf_message_info_der_serializer_t *self,
-        const vscf_signed_data_info_t *signed_data_info, vsc_buffer_t *out);
 
 //
 //  Return buffer size enough to hold serialized message info.

@@ -44,6 +44,7 @@
 
 #include "vscf_recipient_cipher.h"
 #include "vscf_key_provider.h"
+#include "vscf_fake_random.h"
 
 #include "test_data_recipient_cipher.h"
 
@@ -248,6 +249,83 @@ test__decrypt__chunks_with_ed25519_key_recipient__success(void) {
     vscf_key_provider_destroy(&key_provider);
 }
 
+void
+test__sign_then_encrypt__with_self_signed_ed25519_key_recipient__success(void) {
+    //
+    //  Prepare random.
+    //
+    vscf_fake_random_t *fake_random = vscf_fake_random_new();
+    vscf_fake_random_setup_source_byte(fake_random, 0xAB);
+    vscf_impl_t *random = vscf_fake_random_impl(fake_random);
+
+    //
+    //  Prepare recipients / signers.
+    //
+    vscf_error_t error;
+    vscf_error_reset(&error);
+
+    vscf_key_provider_t *key_provider = vscf_key_provider_new();
+    vscf_key_provider_use_random(key_provider, random);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_key_provider_setup_defaults(key_provider));
+
+    vscf_impl_t *public_key =
+            vscf_key_provider_import_public_key(key_provider, test_data_recipient_cipher_ED25519_PUBLIC_KEY, &error);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
+
+    vscf_impl_t *private_key =
+            vscf_key_provider_import_private_key(key_provider, test_data_recipient_cipher_ED25519_PRIVATE_KEY, &error);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
+
+
+    vscf_recipient_cipher_t *recipient_cipher = vscf_recipient_cipher_new();
+    vscf_recipient_cipher_use_random(recipient_cipher, random);
+
+    vscf_recipient_cipher_add_key_recipient(
+            recipient_cipher, test_data_recipient_cipher_ED25519_RECIPIENT_ID, public_key);
+
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_recipient_cipher_add_signer(recipient_cipher,
+                                                   test_data_recipient_cipher_ED25519_RECIPIENT_ID, private_key));
+
+    //
+    //  Encrypt.
+    //
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS,
+            vscf_recipient_cipher_start_signed_encryption(recipient_cipher, test_data_recipient_cipher_MESSAGE.len));
+
+    size_t message_info_len = vscf_recipient_cipher_message_info_len(recipient_cipher);
+    size_t enc_msg_data_len =
+            vscf_recipient_cipher_encryption_out_len(recipient_cipher, test_data_recipient_cipher_MESSAGE.len) +
+            vscf_recipient_cipher_encryption_out_len(recipient_cipher, 0);
+
+    vsc_buffer_t *enc_msg_header = vsc_buffer_new_with_capacity(message_info_len);
+    vsc_buffer_t *enc_msg_data = vsc_buffer_new_with_capacity(enc_msg_data_len);
+
+    vscf_recipient_cipher_pack_message_info(recipient_cipher, enc_msg_header);
+
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_recipient_cipher_process_encryption(
+                                                   recipient_cipher, test_data_recipient_cipher_MESSAGE, enc_msg_data));
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_recipient_cipher_finish_encryption(recipient_cipher, enc_msg_data));
+
+    size_t message_info_footer_len = vscf_recipient_cipher_message_info_footer_len(recipient_cipher);
+    vsc_buffer_t *enc_msg_footer = vsc_buffer_new_with_capacity(message_info_footer_len);
+    vscf_recipient_cipher_pack_message_info_footer(recipient_cipher, enc_msg_footer);
+
+    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_data_recipient_cipher_SIGNED_THEN_ENCRYPTED_MESSAGE_HEADER, enc_msg_header);
+    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_data_recipient_cipher_SIGNED_THEN_ENCRYPTED_MESSAGE_DATA, enc_msg_data);
+    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_data_recipient_cipher_SIGNED_THEN_ENCRYPTED_MESSAGE_FOOTER, enc_msg_footer);
+
+    //
+    //  Cleanup.
+    //
+    vsc_buffer_destroy(&enc_msg_footer);
+    vsc_buffer_destroy(&enc_msg_data);
+    vsc_buffer_destroy(&enc_msg_header);
+    vscf_recipient_cipher_destroy(&recipient_cipher);
+    vscf_impl_destroy(&private_key);
+    vscf_impl_destroy(&public_key);
+    vscf_key_provider_destroy(&key_provider);
+    vscf_impl_destroy(&random);
+}
 
 #endif // TEST_DEPENDENCIES_AVAILABLE
 
@@ -263,6 +341,7 @@ main(void) {
     RUN_TEST(test__encrypt_decrypt__with_ed25519_key_recipient__success);
     RUN_TEST(test__decrypt__with_ed25519_private_key__success);
     RUN_TEST(test__decrypt__chunks_with_ed25519_key_recipient__success);
+    RUN_TEST(test__sign_then_encrypt__with_self_signed_ed25519_key_recipient__success);
 #else
     RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
 #endif

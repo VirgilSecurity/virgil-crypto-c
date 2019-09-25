@@ -159,9 +159,9 @@ option(VSCF_MESSAGE_INFO_EDITOR "Enable class 'message info editor'." ON)
 option(VSCF_SIGNER_INFO "Enable class 'signer info'." ON)
 option(VSCF_SIGNER_INFO_LIST "Enable class 'signer info list'." ON)
 option(VSCF_SIGNER_LIST "Enable class 'signer list'." ON)
-option(VSCF_VERIFIER_LIST "Enable class 'verifier list'." ON)
 option(VSCF_MESSAGE_INFO_FOOTER "Enable class 'message info footer'." ON)
 option(VSCF_SIGNED_DATA_INFO "Enable class 'signed data info'." ON)
+option(VSCF_FOOTER_INFO "Enable class 'footer info'." ON)
 mark_as_advanced(
         VSCF_LIBRARY
         VSCF_MULTI_THREADING
@@ -277,9 +277,9 @@ mark_as_advanced(
         VSCF_SIGNER_INFO
         VSCF_SIGNER_INFO_LIST
         VSCF_SIGNER_LIST
-        VSCF_VERIFIER_LIST
         VSCF_MESSAGE_INFO_FOOTER
         VSCF_SIGNED_DATA_INFO
+        VSCF_FOOTER_INFO
         )
 
 if(VSCF_MULTI_THREADING AND NOT MBEDTLS_THREADING_C)
@@ -2289,6 +2289,24 @@ if(VSCF_ECIES_ENVELOPE AND NOT VSCF_ALG_FACTORY)
     message(FATAL_ERROR)
 endif()
 
+if(VSCF_RECIPIENT_CIPHER AND NOT VSCF_ENCRYPT)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_RECIPIENT_CIPHER depends on the feature:")
+    message("     VSCF_ENCRYPT - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_RECIPIENT_CIPHER AND NOT VSCF_DECRYPT)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_RECIPIENT_CIPHER depends on the feature:")
+    message("     VSCF_DECRYPT - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
 if(VSCF_RECIPIENT_CIPHER AND NOT VSCF_ALG_INFO)
     message("-- error --")
     message("--")
@@ -2897,15 +2915,6 @@ if(VSCF_SIGNER_LIST AND NOT VSCF_PRIVATE_KEY)
     message("--")
     message("Feature VSCF_SIGNER_LIST depends on the feature:")
     message("     VSCF_PRIVATE_KEY - which is disabled.")
-    message("--")
-    message(FATAL_ERROR)
-endif()
-
-if(VSCF_VERIFIER_LIST AND NOT VSCF_PUBLIC_KEY)
-    message("-- error --")
-    message("--")
-    message("Feature VSCF_VERIFIER_LIST depends on the feature:")
-    message("     VSCF_PUBLIC_KEY - which is disabled.")
     message("--")
     message(FATAL_ERROR)
 endif()

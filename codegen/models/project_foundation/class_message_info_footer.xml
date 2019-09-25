@@ -6,6 +6,13 @@
     <property name="signer digest" class="buffer"/>
 
 
+    <method name="has signer infos" is_const="1">
+        Return true if at least one signer info presents.
+
+        <return type="boolean"/>
+    </method>
+
+
     <method name="add signer info" visibility="private">
         Add signer that is defined by Private Key.
 

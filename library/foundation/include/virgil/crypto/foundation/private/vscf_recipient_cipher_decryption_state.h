@@ -67,6 +67,8 @@ enum vscf_recipient_cipher_decryption_state_t {
     vscf_recipient_cipher_decryption_state_PROCESSING_DATA,
     vscf_recipient_cipher_decryption_state_MESSAGE_INFO_IS_BROKEN,
     vscf_recipient_cipher_decryption_state_MESSAGE_INFO_IS_ABSENT,
+    vscf_recipient_cipher_decryption_state_WAITING_MESSAGE_INFO_FOOTER,
+    vscf_recipient_cipher_decryption_state_FINISHED,
     vscf_recipient_cipher_decryption_state_FAILED
 };
 typedef enum vscf_recipient_cipher_decryption_state_t vscf_recipient_cipher_decryption_state_t;

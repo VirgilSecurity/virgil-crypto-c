@@ -55,7 +55,6 @@
 
 #include "vscf_library.h"
 #include "vscf_atomic.h"
-#include "vscf_message_info_custom_params.h"
 #include "vscf_impl.h"
 
 // clang-format on
@@ -87,10 +86,6 @@ struct vscf_signed_data_info_t {
     VSCF_ATOMIC size_t refcnt;
 
     vscf_impl_t *hash_algorithm;
-
-    vscf_message_info_custom_params_t *signed_custom_params;
-
-    size_t data_size;
 };
 
 

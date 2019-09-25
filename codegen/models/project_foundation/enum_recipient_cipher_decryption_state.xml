@@ -3,5 +3,7 @@
     <constant name="processing data"/>
     <constant name="message info is broken"/>
     <constant name="message info is absent"/>
+    <constant name="waiting message info footer"/>
+    <constant name="finished"/>
     <constant name="failed"/>
 </enum>

@@ -37,6 +37,12 @@
 // clang-format off
 
 
+//  @description
+// --------------------------------------------------------------------------
+//  Class 'footer info' types definition.
+// --------------------------------------------------------------------------
+
+
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -44,35 +50,10 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-
-//  @description
-// --------------------------------------------------------------------------
-//  Class 'verifier list' types definition.
-// --------------------------------------------------------------------------
-
-#ifndef VSCF_VERIFIER_LIST_DEFS_H_INCLUDED
-#define VSCF_VERIFIER_LIST_DEFS_H_INCLUDED
-
-#include "vscf_library.h"
-#include "vscf_atomic.h"
-#include "vscf_verifier_list.h"
-#include "vscf_impl.h"
-
-#if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <virgil/crypto/common/vsc_buffer.h>
-#endif
-
-#if VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <VSCCommon/vsc_buffer.h>
-#endif
+#include "vscf_footer_info_defs.h"
 
 // clang-format on
 //  @end
-
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 
 //  @generated
@@ -81,41 +62,9 @@ extern "C" {
 //  Generated section start.
 // --------------------------------------------------------------------------
 
-//
-//  Handle 'verifier list' context.
-//
-struct vscf_verifier_list_t {
-    //
-    //  Function do deallocate self context.
-    //
-    vscf_dealloc_fn self_dealloc_cb;
-    //
-    //  Reference counter.
-    //
-    VSCF_ATOMIC size_t refcnt;
-
-    vsc_buffer_t *signer_id;
-
-    vscf_impl_t *signer_public_key;
-
-    vscf_verifier_list_t *next;
-
-    vscf_verifier_list_t *prev;
-};
-
 
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
-//  @end
-
-
-#ifdef __cplusplus
-}
-#endif
-
-
-//  @footer
-#endif // VSCF_VERIFIER_LIST_DEFS_H_INCLUDED
 //  @end

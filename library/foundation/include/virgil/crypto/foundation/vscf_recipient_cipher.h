@@ -57,6 +57,8 @@
 
 #include "vscf_library.h"
 #include "vscf_message_info_custom_params.h"
+#include "vscf_signer_info_list.h"
+#include "vscf_signer_info.h"
 #include "vscf_impl.h"
 #include "vscf_status.h"
 
@@ -206,9 +208,11 @@ vscf_recipient_cipher_clear_recipients(vscf_recipient_cipher_t *self);
 
 //
 //  Add identifier and private key to sign initial plain text.
+//  Return error if the private key can not sign.
 //
-VSCF_PUBLIC void
-vscf_recipient_cipher_add_signer(vscf_recipient_cipher_t *self, vsc_data_t signer_id, vscf_impl_t *private_key);
+VSCF_PUBLIC vscf_status_t
+vscf_recipient_cipher_add_signer(vscf_recipient_cipher_t *self, vsc_data_t signer_id,
+        vscf_impl_t *private_key) VSCF_NODISCARD;
 
 //
 //  Remove all signers.
@@ -217,30 +221,11 @@ VSCF_PUBLIC void
 vscf_recipient_cipher_clear_signers(vscf_recipient_cipher_t *self);
 
 //
-//  Add identifier and public key to verify decrypted plain text.
-//
-VSCF_PUBLIC void
-vscf_recipient_cipher_add_verifier(vscf_recipient_cipher_t *self, vsc_data_t signer_id, vscf_impl_t *public_key);
-
-//
-//  Remove all verifiers.
-//
-VSCF_PUBLIC void
-vscf_recipient_cipher_clear_verifiers(vscf_recipient_cipher_t *self);
-
-//
 //  Provide access to the custom params object.
 //  The returned object can be used to add custom params or read it.
 //
 VSCF_PUBLIC vscf_message_info_custom_params_t *
 vscf_recipient_cipher_custom_params(vscf_recipient_cipher_t *self);
-
-//
-//  Provide access to the signed custom params object.
-//  The returned object can be used to add custom signed params or read it.
-//
-VSCF_PUBLIC vscf_message_info_custom_params_t *
-vscf_recipient_cipher_signed_custom_params(vscf_recipient_cipher_t *self);
 
 //
 //  Start encryption process.
@@ -281,27 +266,6 @@ VSCF_PUBLIC void
 vscf_recipient_cipher_pack_message_info(vscf_recipient_cipher_t *self, vsc_buffer_t *message_info);
 
 //
-//  Return buffer length required to hold message footer returned by the
-//  "pack message footer" method.
-//  Precondition: this method should be called after "finish encryption".
-//
-VSCF_PUBLIC size_t
-vscf_recipient_cipher_message_info_footer_len(const vscf_recipient_cipher_t *self);
-
-//
-//  Return serialized message info footer to the buffer.
-//
-//  Precondition: this method should be called before "finish encryption".
-//
-//  Note, store message info to use it for decryption process,
-//  or place it at the encrypted data ending (embedding).
-//
-//  Return message info footer - signers public information, etc.
-//
-VSCF_PUBLIC void
-vscf_recipient_cipher_pack_message_info_footer(vscf_recipient_cipher_t *self, vsc_buffer_t *message_info_footer);
-
-//
 //  Return buffer length required to hold output of the method
 //  "process encryption" and method "finish" during encryption.
 //
@@ -333,6 +297,7 @@ vscf_recipient_cipher_start_decryption_with_key(vscf_recipient_cipher_t *self, v
 //  Initiate decryption process with a recipient private key.
 //  Message Info can be empty if it was embedded to encrypted data.
 //  Message Info footer can be empty if it was embedded to encrypted data.
+//  If footer was embedded, method "start decryption with key" can be used.
 //
 VSCF_PUBLIC vscf_status_t
 vscf_recipient_cipher_start_verified_decryption_with_key(vscf_recipient_cipher_t *self, vsc_data_t recipient_id,
@@ -354,10 +319,56 @@ vscf_recipient_cipher_process_decryption(vscf_recipient_cipher_t *self, vsc_data
         vsc_buffer_t *out) VSCF_NODISCARD;
 
 //
-//  Accomplish decryption and verify signatures if verifiers was added.
+//  Accomplish decryption.
 //
 VSCF_PUBLIC vscf_status_t
 vscf_recipient_cipher_finish_decryption(vscf_recipient_cipher_t *self, vsc_buffer_t *out) VSCF_NODISCARD;
+
+//
+//  Return true if data was signed by a sender.
+//
+//  Precondition: this method should be called after "finish decryption".
+//
+VSCF_PUBLIC bool
+vscf_recipient_cipher_is_data_signed(const vscf_recipient_cipher_t *self);
+
+//
+//  Return information about signers that sign data.
+//
+//  Precondition: this method should be called after "finish decryption".
+//  Precondition: method "is data signed" returns true.
+//
+VSCF_PUBLIC const vscf_signer_info_list_t *
+vscf_recipient_cipher_signer_infos(const vscf_recipient_cipher_t *self);
+
+//
+//  Verify given cipher info.
+//
+VSCF_PUBLIC bool
+vscf_recipient_cipher_verify_signer_info(vscf_recipient_cipher_t *self, const vscf_signer_info_t *signer_info,
+        const vscf_impl_t *public_key);
+
+//
+//  Return buffer length required to hold message footer returned by the
+//  "pack message footer" method.
+//
+//  Precondition: this method should be called after "finish encryption".
+//
+VSCF_PUBLIC size_t
+vscf_recipient_cipher_message_info_footer_len(const vscf_recipient_cipher_t *self);
+
+//
+//  Return serialized message info footer to the buffer.
+//
+//  Precondition: this method should be called after "finish encryption".
+//
+//  Note, store message info to use it for verified decryption process,
+//  or place it at the encrypted data ending (embedding).
+//
+//  Return message info footer - signers public information, etc.
+//
+VSCF_PUBLIC void
+vscf_recipient_cipher_pack_message_info_footer(vscf_recipient_cipher_t *self, vsc_buffer_t *out);
 
 
 // --------------------------------------------------------------------------
