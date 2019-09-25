@@ -797,6 +797,26 @@ test__import_public_key__invalid_public_key_valid_message_info___expected_status
     vscf_key_provider_destroy(&key_provider);
 }
 
+void
+test__import_private_key__fuzzer_founded_long_zero_string___expected_status_bad_pkcs8_private_key(void) {
+    vscf_error_t error;
+    vscf_error_reset(&error);
+
+    vscf_key_provider_t *key_provider = vscf_key_provider_new();
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_key_provider_setup_defaults(key_provider));
+
+    const char str_message[] = "0000000000000000000000000000000000000000";
+
+    vscf_impl_t *private_key = vscf_key_provider_import_private_key(
+            key_provider, vsc_data_from_str(str_message, strlen(str_message)), &error);
+
+    TEST_ASSERT_EQUAL(vscf_status_ERROR_BAD_DER_PRIVATE_KEY, vscf_error_status(&error));
+
+    vscf_impl_destroy(&private_key);
+    vscf_key_provider_destroy(&key_provider);
+}
+
+
 #endif // TEST_DEPENDENCIES_AVAILABLE
 
 
@@ -838,6 +858,7 @@ main(void) {
     RUN_TEST(
             test__import_public_key__invalid_public_key_valid_message_info_with_encrypted_data___expected_status_bad_der_public_key);
     RUN_TEST(test__import_public_key__invalid_public_key_valid_message_info___expected_status_bad_der_public_key);
+    RUN_TEST(test__import_private_key__fuzzer_founded_long_zero_string___expected_status_bad_pkcs8_private_key);
 #else
     RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
 #endif
