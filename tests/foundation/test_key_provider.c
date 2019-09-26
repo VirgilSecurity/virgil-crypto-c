@@ -805,7 +805,7 @@ test__import_private_key__fuzzer_founded_NULL___expected_status_bad_pkcs8_privat
     vscf_key_provider_t *key_provider = vscf_key_provider_new();
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_key_provider_setup_defaults(key_provider));
 
-    const vsc_data_t test_data = {NULL, 0};
+    const vsc_data_t test_data = {(byte *)0x602000000170, 0};
     vscf_impl_t *private_key = vscf_key_provider_import_private_key(key_provider, test_data, &error);
 
     TEST_ASSERT_EQUAL(vscf_status_ERROR_BAD_DER_PRIVATE_KEY, vscf_error_status(&error));
