@@ -48,22 +48,39 @@
 #include "test_data_rsa.h"
 #include "test_data_secp256r1.h"
 
+// jmp_buf ebuf;
+// void
+// jump_handler(const char *message, const char *file, int line) {
+//    VSCF_UNUSED(message);
+//    VSCF_UNUSED(file);
+//    VSCF_UNUSED(line);
+//
+//    longjmp(ebuf, 1);
+//}
 int
 LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
-    vscf_error_t error;
-    vscf_error_reset(&error);
+    // if (setjmp(ebuf) == 0)
+    {
+        vscf_error_t error;
+        vscf_error_reset(&error);
 
-    vscf_key_provider_t *key_provider = vscf_key_provider_new();
-    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_key_provider_setup_defaults(key_provider));
+        vscf_key_provider_t *key_provider = vscf_key_provider_new();
+        if (vscf_key_provider_setup_defaults(key_provider) != vscf_status_SUCCESS) {
+            return -1;
+        }
 
-    const vsc_data_t test_data = {data, size};
+        const vsc_data_t test_data = {data, size};
 
-    vscf_impl_t *private_key = vscf_key_provider_import_private_key(key_provider, test_data, &error);
+        vscf_impl_t *private_key = vscf_key_provider_import_private_key(key_provider, test_data, &error);
 
 
-    TEST_ASSERT_EQUAL(vscf_status_ERROR_BAD_PKCS8_PRIVATE_KEY, vscf_error_status(&error));
-
-    vscf_impl_destroy(&private_key);
-    vscf_key_provider_destroy(&key_provider);
+        vscf_impl_destroy(&private_key);
+        vscf_key_provider_destroy(&key_provider);
+    }
+    // else
+    {
+        printf("=====================>\n");
+        return -1;
+    }
     return 0;
 }
