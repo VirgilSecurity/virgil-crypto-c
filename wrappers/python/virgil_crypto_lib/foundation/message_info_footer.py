@@ -52,6 +52,11 @@ class MessageInfoFooter(object):
         """Destroy underlying C context."""
         self._lib_vscf_message_info_footer.vscf_message_info_footer_delete(self.ctx)
 
+    def has_signer_infos(self):
+        """Return true if at least one signer info presents."""
+        result = self._lib_vscf_message_info_footer.vscf_message_info_footer_has_signer_infos(self.ctx)
+        return result
+
     def signer_infos(self):
         """Return list with a "signer info" elements."""
         result = self._lib_vscf_message_info_footer.vscf_message_info_footer_signer_infos(self.ctx)

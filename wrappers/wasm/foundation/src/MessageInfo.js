@@ -201,46 +201,97 @@ const initMessageInfo = (Module, modules) => {
         }
 
         /**
-         * Return true if signed data info exists.
+         * Return true if cipher kdf alg info exists.
          */
-        hasSignedDataInfo() {
+        hasCipherKdfAlgInfo() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
             let proxyResult;
-            proxyResult = Module._vscf_message_info_has_signed_data_info(this.ctxPtr);
+            proxyResult = Module._vscf_message_info_has_cipher_kdf_alg_info(this.ctxPtr);
 
             const booleanResult = !!proxyResult;
             return booleanResult;
         }
 
         /**
-         * Setup signed data info.
+         * Setup cipher kdf alg info.
          */
-        setSignedDataInfo(signedDataInfo) {
+        setCipherKdfAlgInfo(cipherKdfAlgInfo) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-            precondition.ensureClass('signedDataInfo', signedDataInfo, modules.SignedDataInfo);
-            Module._vscf_message_info_set_signed_data_info(this.ctxPtr, signedDataInfo.ctxPtr);
+            precondition.ensureImplementInterface('cipherKdfAlgInfo', cipherKdfAlgInfo, 'Foundation.AlgInfo', modules.FoundationInterfaceTag.ALG_INFO, modules.FoundationInterface);
+            Module._vscf_message_info_set_cipher_kdf_alg_info(this.ctxPtr, cipherKdfAlgInfo.ctxPtr);
         }
 
         /**
-         * Return signed data info.
+         * Return cipher kdf alg info.
          */
-        signedDataInfo() {
+        cipherKdfAlgInfo() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
             let proxyResult;
-            proxyResult = Module._vscf_message_info_signed_data_info(this.ctxPtr);
+            proxyResult = Module._vscf_message_info_cipher_kdf_alg_info(this.ctxPtr);
 
-            const jsResult = modules.SignedDataInfo.newAndUseCContext(proxyResult);
+            const jsResult = modules.FoundationInterface.newAndUseCContext(proxyResult);
             return jsResult;
         }
 
         /**
-         * Remove signed data info.
+         * Remove cipher kdf alg info.
          */
-        removeSignedDataInfo() {
+        removeCipherKdfAlgInfo() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-            Module._vscf_message_info_remove_signed_data_info(this.ctxPtr);
+            Module._vscf_message_info_remove_cipher_kdf_alg_info(this.ctxPtr);
+        }
+
+        /**
+         * Return true if footer info exists.
+         */
+        hasFooterInfo() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
+            let proxyResult;
+            proxyResult = Module._vscf_message_info_has_footer_info(this.ctxPtr);
+
+            const booleanResult = !!proxyResult;
+            return booleanResult;
+        }
+
+        /**
+         * Setup footer info.
+         */
+        setFooterInfo(footerInfo) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureClass('footerInfo', footerInfo, modules.FooterInfo);
+            Module._vscf_message_info_set_footer_info(this.ctxPtr, footerInfo.ctxPtr);
+        }
+
+        /**
+         * Return footer info.
+         */
+        footerInfo() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
+            let proxyResult;
+            proxyResult = Module._vscf_message_info_footer_info(this.ctxPtr);
+
+            const jsResult = modules.FooterInfo.newAndUseCContext(proxyResult);
+            return jsResult;
+        }
+
+        /**
+         * Remove footer info.
+         */
+        removeFooterInfo() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            Module._vscf_message_info_remove_footer_info(this.ctxPtr);
+        }
+
+        /**
+         * Remove all infos.
+         */
+        clear() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            Module._vscf_message_info_clear(this.ctxPtr);
         }
     }
 

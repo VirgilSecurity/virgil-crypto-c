@@ -71,6 +71,7 @@ const initSignerInfo = require('./SignerInfo');
 const initSignerInfoList = require('./SignerInfoList');
 const initMessageInfoFooter = require('./MessageInfoFooter');
 const initSignedDataInfo = require('./SignedDataInfo');
+const initFooterInfo = require('./FooterInfo');
 const initSha224 = require('./Sha224');
 const initSha256 = require('./Sha256');
 const initSha384 = require('./Sha384');
@@ -154,6 +155,7 @@ const initProject = () => {
             modules.SignerInfoList = initSignerInfoList(foundationModule, modules);
             modules.MessageInfoFooter = initMessageInfoFooter(foundationModule, modules);
             modules.SignedDataInfo = initSignedDataInfo(foundationModule, modules);
+            modules.FooterInfo = initFooterInfo(foundationModule, modules);
             modules.Sha224 = initSha224(foundationModule, modules);
             modules.Sha256 = initSha256(foundationModule, modules);
             modules.Sha384 = initSha384(foundationModule, modules);

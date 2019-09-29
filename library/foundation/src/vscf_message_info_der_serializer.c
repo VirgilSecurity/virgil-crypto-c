@@ -332,6 +332,9 @@ static void
 vscf_message_info_der_serializer_deserialize_custom_params(vscf_message_info_der_serializer_t *self,
         vscf_message_info_custom_params_t *custom_params, vscf_error_t *error);
 
+static void
+vscf_message_info_der_serializer_deserialize_cipher_kdf(vscf_message_info_der_serializer_t *self, vscf_message_info_t *message_info, vscf_error_t *error);
+
 //
 //  VirgilFooterInfo ::= SEQUENCE {
 //      version INTEGER { v0(0) },
@@ -1423,6 +1426,7 @@ vscf_message_info_der_serializer_deserialize_custom_params(vscf_message_info_der
     }
 
     if (vscf_asn1_reader_left_len(self->asn1_reader) == 0) {
+        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_BAD_MESSAGE_INFO);
         return;
     }
 
@@ -1460,6 +1464,32 @@ vscf_message_info_der_serializer_deserialize_custom_params(vscf_message_info_der
     }
 }
 
+static void
+vscf_message_info_der_serializer_deserialize_cipher_kdf(
+        vscf_message_info_der_serializer_t *self, vscf_message_info_t *message_info, vscf_error_t *error) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(self->asn1_reader);
+
+    if (vscf_error_has_error(error) || vscf_asn1_reader_has_error(self->asn1_reader)) {
+        return;
+    }
+
+    if (vscf_asn1_reader_left_len(self->asn1_reader) == 0) {
+        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_BAD_MESSAGE_INFO);
+        return;
+    }
+
+    vscf_impl_t *kdf_alg_info = vscf_alg_info_der_deserializer_deserialize_inplace(self->alg_info_deserializer, error);
+    if (NULL == kdf_alg_info) {
+        //  TODO: Log underlying error
+        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_BAD_MESSAGE_INFO);
+        return;
+    }
+
+    vscf_message_info_set_cipher_kdf_alg_info(message_info, &kdf_alg_info);
+}
+
 //
 //  VirgilFooterInfo ::= SEQUENCE {
 //      version INTEGER { v0(0) },
@@ -1480,6 +1510,7 @@ vscf_message_info_der_serializer_deserialize_footer_info(
     }
 
     if (vscf_asn1_reader_left_len(self->asn1_reader) == 0) {
+        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_BAD_MESSAGE_INFO);
         return;
     }
 
@@ -2053,7 +2084,8 @@ vscf_message_info_der_serializer_serialize(
     //      version INTEGER { v0(0) } DEFAULT v0,
     //      cmsContent ContentInfo, -- Imports from RFC 5652
     //      customParams [0] EXPLICIT VirgilCustomParams OPTIONAL,
-    //      footerInfo [1] EXPLICIT VirgilFooterInfo OPTIONAL
+    //      cipherKdf [1] EXPLICIT OPTIONAL,
+    //      footerInfo [2] EXPLICIT VirgilFooterInfo OPTIONAL
     //  }
 
     VSCF_ASSERT_PTR(self);
@@ -2066,13 +2098,25 @@ vscf_message_info_der_serializer_serialize(
     vscf_asn1_writer_reset(self->asn1_writer, vsc_buffer_unused_bytes(out), vsc_buffer_unused_len(out));
 
     //
-    //  Write: footerInfo [1] OPTIONAL
+    //  Write: footerInfo [2] OPTIONAL
     //
     size_t message_info_len = 0;
     if (vscf_message_info_has_footer_info(message_info)) {
+        VSCF_ASSERT(vscf_message_info_has_cipher_kdf_alg_info(message_info));
         const vscf_footer_info_t *footer_info = vscf_message_info_footer_info(message_info);
-        message_info_len += vscf_message_info_der_serializer_serialize_footer_info(self, footer_info);
-        message_info_len += vscf_asn1_writer_write_context_tag(self->asn1_writer, 1, message_info_len);
+        const size_t inner_len = vscf_message_info_der_serializer_serialize_footer_info(self, footer_info);
+        message_info_len += inner_len;
+        message_info_len += vscf_asn1_writer_write_context_tag(self->asn1_writer, 2, inner_len);
+    }
+
+    //
+    //  Write: cipherKdf [1] OPTIONAL
+    //
+    if (vscf_message_info_has_cipher_kdf_alg_info(message_info)) {
+        const vscf_impl_t *alg_info = vscf_message_info_cipher_kdf_alg_info(message_info);
+        const size_t inner_len = vscf_alg_info_der_serializer_serialize_inplace(self->alg_info_serializer, alg_info);
+        message_info_len += inner_len;
+        message_info_len += vscf_asn1_writer_write_context_tag(self->asn1_writer, 1, inner_len);
     }
 
     //
@@ -2081,8 +2125,9 @@ vscf_message_info_der_serializer_serialize(
     if (vscf_message_info_has_custom_params(message_info)) {
         const vscf_message_info_custom_params_t *custom_params =
                 vscf_message_info_custom_params((vscf_message_info_t *)message_info);
-        message_info_len += vscf_message_info_der_serializer_serialize_custom_params(self, custom_params);
-        message_info_len += vscf_asn1_writer_write_context_tag(self->asn1_writer, 0, message_info_len);
+        const size_t inner_len = vscf_message_info_der_serializer_serialize_custom_params(self, custom_params);
+        message_info_len += inner_len;
+        message_info_len += vscf_asn1_writer_write_context_tag(self->asn1_writer, 0, inner_len);
     }
 
     //
@@ -2093,7 +2138,13 @@ vscf_message_info_der_serializer_serialize(
     //
     //  Write: version
     //
-    message_info_len += vscf_asn1_writer_write_int(self->asn1_writer, 0);
+    int version = 0;
+    if (vscf_message_info_has_cipher_kdf_alg_info(message_info) && vscf_message_info_has_footer_info(message_info)) {
+        version = 2;
+    } else if (vscf_message_info_has_cipher_kdf_alg_info(message_info)) {
+        version = 1;
+    }
+    message_info_len += vscf_asn1_writer_write_int(self->asn1_writer, version);
 
     //
     //  Write: VirgilMessageInfo
@@ -2155,7 +2206,8 @@ vscf_message_info_der_serializer_deserialize(
     //      version INTEGER { v0(0) } DEFAULT v0,
     //      cmsContent ContentInfo, -- Imports from RFC 5652
     //      customParams [0] EXPLICIT VirgilCustomParams OPTIONAL,
-    //      signedDataInfo [1] EXPLICIT VirgilSignedDataInfo OPTIONAL
+    //      cipherKdf [1] EXPLICIT OPTIONAL,
+    //      footerInfo [2] EXPLICIT VirgilSignedDataInfo OPTIONAL
     //  }
 
     VSCF_ASSERT_PTR(self);
@@ -2164,8 +2216,6 @@ vscf_message_info_der_serializer_deserialize(
 
     vscf_error_t error_ctx;
     vscf_error_reset(&error_ctx);
-
-    vscf_message_info_t *message_info = vscf_message_info_new();
 
     //
     //  Read: VirgilMessageInfo
@@ -2178,10 +2228,12 @@ vscf_message_info_der_serializer_deserialize(
     //
     const int version = vscf_asn1_reader_read_int(self->asn1_reader);
 
-    if (vscf_asn1_reader_has_error(self->asn1_reader) || version != 0) {
+    if (vscf_asn1_reader_has_error(self->asn1_reader) || !(version == 0 || version == 1 || version == 2)) {
         VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_BAD_MESSAGE_INFO);
-        goto error;
+        return NULL;
     }
+
+    vscf_message_info_t *message_info = vscf_message_info_new();
 
     //
     //  Read: cmsContent
@@ -2200,10 +2252,20 @@ vscf_message_info_der_serializer_deserialize(
     }
 
     //
-    //  Read: signedDataInfo [1] OPTIONAL
+    //  Read: cipherKdf [1] OPTIONAL
     //
     if (vscf_asn1_reader_left_len(self->asn1_reader)) {
-        const size_t footer_info_tag_len = vscf_asn1_reader_read_context_tag(self->asn1_reader, 1);
+        const size_t cipher_kdf_tag_len = vscf_asn1_reader_read_context_tag(self->asn1_reader, 1);
+        if (cipher_kdf_tag_len != 0) {
+            vscf_message_info_der_serializer_deserialize_cipher_kdf(self, message_info, &error_ctx);
+        }
+    }
+
+    //
+    //  Read: footerInfo [2] OPTIONAL
+    //
+    if (vscf_asn1_reader_left_len(self->asn1_reader)) {
+        const size_t footer_info_tag_len = vscf_asn1_reader_read_context_tag(self->asn1_reader, 2);
         if (footer_info_tag_len != 0) {
             vscf_message_info_der_serializer_deserialize_footer_info(self, message_info, &error_ctx);
         }
@@ -2214,21 +2276,35 @@ vscf_message_info_der_serializer_deserialize(
     //
     if (vscf_asn1_reader_has_error(self->asn1_reader)) {
         //  TODO: Log underlying error
+        vscf_message_info_destroy(&message_info);
         VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_BAD_MESSAGE_INFO);
-        goto error;
+        return NULL;
     }
 
     if (vscf_error_has_error(&error_ctx)) {
         //  TODO: Log underlying error
+        vscf_message_info_destroy(&message_info);
         VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_BAD_MESSAGE_INFO);
-        goto error;
+        return NULL;
+    }
+
+    //
+    //  Check version
+    //
+    int expected_version = 0;
+    if (vscf_message_info_has_cipher_kdf_alg_info(message_info) && vscf_message_info_has_footer_info(message_info)) {
+        expected_version = 2;
+    } else if (vscf_message_info_has_cipher_kdf_alg_info(message_info)) {
+        expected_version = 1;
+    }
+
+    if (version != expected_version) {
+        vscf_message_info_destroy(&message_info);
+        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_BAD_MESSAGE_INFO);
+        return NULL;
     }
 
     return message_info;
-
-error:
-    vscf_message_info_destroy(&message_info);
-    return NULL;
 }
 
 //

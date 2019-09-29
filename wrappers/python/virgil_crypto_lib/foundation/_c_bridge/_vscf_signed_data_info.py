@@ -36,7 +36,6 @@
 from virgil_crypto_lib._libs import *
 from ctypes import *
 from ._vscf_impl import vscf_impl_t
-from ._vscf_message_info_custom_params import vscf_message_info_custom_params_t
 
 
 class vscf_signed_data_info_t(Structure):
@@ -44,7 +43,7 @@ class vscf_signed_data_info_t(Structure):
 
 
 class VscfSignedDataInfo(object):
-    """Handle information about signed data."""
+    """Handle meta information about signed data."""
 
     def __init__(self):
         """Create underlying C context."""
@@ -76,36 +75,6 @@ class VscfSignedDataInfo(object):
         vscf_signed_data_info_hash_alg_info.argtypes = [POINTER(vscf_signed_data_info_t)]
         vscf_signed_data_info_hash_alg_info.restype = POINTER(vscf_impl_t)
         return vscf_signed_data_info_hash_alg_info(ctx)
-
-    def vscf_signed_data_info_set_custom_params(self, ctx, custom_params):
-        """Setup signed custom params."""
-        vscf_signed_data_info_set_custom_params = self._lib.vscf_signed_data_info_set_custom_params
-        vscf_signed_data_info_set_custom_params.argtypes = [POINTER(vscf_signed_data_info_t), POINTER(vscf_message_info_custom_params_t)]
-        vscf_signed_data_info_set_custom_params.restype = None
-        return vscf_signed_data_info_set_custom_params(ctx, custom_params)
-
-    def vscf_signed_data_info_custom_params(self, ctx):
-        """Provide access to the signed custom params object.
-        The returned object can be used to add custom params or read it.
-        If custom params object was not set then new empty object is created."""
-        vscf_signed_data_info_custom_params = self._lib.vscf_signed_data_info_custom_params
-        vscf_signed_data_info_custom_params.argtypes = [POINTER(vscf_signed_data_info_t)]
-        vscf_signed_data_info_custom_params.restype = POINTER(vscf_message_info_custom_params_t)
-        return vscf_signed_data_info_custom_params(ctx)
-
-    def vscf_signed_data_info_set_data_size(self, ctx, data_size):
-        """Set data size."""
-        vscf_signed_data_info_set_data_size = self._lib.vscf_signed_data_info_set_data_size
-        vscf_signed_data_info_set_data_size.argtypes = [POINTER(vscf_signed_data_info_t), c_size_t]
-        vscf_signed_data_info_set_data_size.restype = None
-        return vscf_signed_data_info_set_data_size(ctx, data_size)
-
-    def vscf_signed_data_info_data_size(self, ctx):
-        """Return data size."""
-        vscf_signed_data_info_data_size = self._lib.vscf_signed_data_info_data_size
-        vscf_signed_data_info_data_size.argtypes = [POINTER(vscf_signed_data_info_t)]
-        vscf_signed_data_info_data_size.restype = c_size_t
-        return vscf_signed_data_info_data_size(ctx)
 
     def vscf_signed_data_info_shallow_copy(self, ctx):
         vscf_signed_data_info_shallow_copy = self._lib.vscf_signed_data_info_shallow_copy

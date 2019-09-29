@@ -37,20 +37,20 @@
 package com.virgilsecurity.crypto.foundation;
 
 /*
-* Handle meta information about signed data.
+* Handle meta information about footer.
 */
-public class SignedDataInfo implements AutoCloseable {
+public class FooterInfo implements AutoCloseable {
 
     public long cCtx;
 
     /* Create underlying C context. */
-    public SignedDataInfo() {
+    public FooterInfo() {
         super();
-        this.cCtx = FoundationJNI.INSTANCE.signedDataInfo_new();
+        this.cCtx = FoundationJNI.INSTANCE.footerInfo_new();
     }
 
     /* Wrap underlying C context. */
-    SignedDataInfo(FoundationContextHolder contextHolder) {
+    FooterInfo(FoundationContextHolder contextHolder) {
         this.cCtx = contextHolder.cCtx;
     }
 
@@ -58,28 +58,56 @@ public class SignedDataInfo implements AutoCloseable {
     * Acquire C context.
     * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     */
-    public static SignedDataInfo getInstance(long cCtx) {
+    public static FooterInfo getInstance(long cCtx) {
         FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
-        return new SignedDataInfo(ctxHolder);
+        return new FooterInfo(ctxHolder);
     }
 
     /* Close resource. */
     public void close() {
-        FoundationJNI.INSTANCE.signedDataInfo_close(this.cCtx);
+        FoundationJNI.INSTANCE.footerInfo_close(this.cCtx);
     }
 
     /*
-    * Set information about algorithm that was used to produce data digest.
+    * Retrun true if signed data info present.
     */
-    public void setHashAlgInfo(AlgInfo hashAlgInfo) {
-        FoundationJNI.INSTANCE.signedDataInfo_setHashAlgInfo(this.cCtx, hashAlgInfo);
+    public boolean hasSignedDataInfo() {
+        return FoundationJNI.INSTANCE.footerInfo_hasSignedDataInfo(this.cCtx);
     }
 
     /*
-    * Return information about algorithm that was used to produce data digest.
+    * Setup signed data info.
     */
-    public AlgInfo hashAlgInfo() {
-        return FoundationJNI.INSTANCE.signedDataInfo_hashAlgInfo(this.cCtx);
+    public void setSignedDataInfo(SignedDataInfo signedDataInfo) {
+        FoundationJNI.INSTANCE.footerInfo_setSignedDataInfo(this.cCtx, signedDataInfo);
+    }
+
+    /*
+    * Return signed data info.
+    */
+    public SignedDataInfo signedDataInfo() {
+        return FoundationJNI.INSTANCE.footerInfo_signedDataInfo(this.cCtx);
+    }
+
+    /*
+    * Remove signed data info.
+    */
+    public void removeSignedDataInfo() {
+        FoundationJNI.INSTANCE.footerInfo_removeSignedDataInfo(this.cCtx);
+    }
+
+    /*
+    * Set data size.
+    */
+    public void setDataSize(int dataSize) {
+        FoundationJNI.INSTANCE.footerInfo_setDataSize(this.cCtx, dataSize);
+    }
+
+    /*
+    * Return data size.
+    */
+    public int dataSize() {
+        return FoundationJNI.INSTANCE.footerInfo_dataSize(this.cCtx);
     }
 }
 

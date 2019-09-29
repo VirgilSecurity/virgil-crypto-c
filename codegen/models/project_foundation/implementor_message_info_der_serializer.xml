@@ -6,11 +6,23 @@
 
         <interface name="message info serializer">
             VirgilMessageInfo ::= SEQUENCE {
-                version INTEGER { v0(0) } DEFAULT v0,
+                version INTEGER { v0(0), v1(1), v2(2) } DEFAULT v0,
                 cmsContent ContentInfo, -- Imports from RFC 5652
                 customParams [0] EXPLICIT VirgilCustomParams OPTIONAL,
-                footerInfo [1] EXPLICIT VirgilFooterInfo OPTIONAL
+                cipherKdf [1] EXPLICIT AlgorithmIdentifier OPTIONAL,
+                footerInfo [2] EXPLICIT VirgilFooterInfo OPTIONAL
             }
+
+            version is the syntax version number. The appropriate value
+            depends on cipherKdf and footerInfo. The version MUST be
+            assigned as follows:
+                IF (cipherKdf is present) AND
+                   (footerInfo is present)
+                THEN version MUST be 2
+                ELSE
+                   IF (cipherKdf is present)
+                   THEN version MUST be 1
+                   ELSE version MUST be 0
             <constant name="prefix len" value="32"/>
         </interface>
 
@@ -341,6 +353,13 @@
             }
 
             <argument name="custom params" class="message info custom params" access="readwrite"/>
+            <argument name="error" class="error" access="readwrite" />
+        </method>
+
+        <method name="deserialize cipher kdf">
+            AlgorithmIdentifier
+
+            <argument name="message info" class="message info" access="readwrite"/>
             <argument name="error" class="error" access="readwrite" />
         </method>
 

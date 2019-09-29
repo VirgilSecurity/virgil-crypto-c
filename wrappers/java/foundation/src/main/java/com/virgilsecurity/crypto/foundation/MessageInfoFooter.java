@@ -69,6 +69,13 @@ public class MessageInfoFooter implements AutoCloseable {
     }
 
     /*
+    * Return true if at least one signer info presents.
+    */
+    public boolean hasSignerInfos() {
+        return FoundationJNI.INSTANCE.messageInfoFooter_hasSignerInfos(this.cCtx);
+    }
+
+    /*
     * Return list with a "signer info" elements.
     */
     public SignerInfoList signerInfos() {

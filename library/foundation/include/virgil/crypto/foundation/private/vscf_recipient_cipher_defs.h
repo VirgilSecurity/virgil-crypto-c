@@ -115,7 +115,9 @@ struct vscf_recipient_cipher_t {
 
     vscf_signer_list_t *signers;
 
-    vsc_buffer_t *cipher_key_material;
+    vsc_buffer_t *master_key;
+
+    vsc_buffer_t *derived_keys;
 
     vsc_buffer_t *data_digest;
 

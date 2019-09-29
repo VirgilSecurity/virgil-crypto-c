@@ -98,8 +98,9 @@ public class RecipientCipher implements AutoCloseable {
 
     /*
     * Add identifier and private key to sign initial plain text.
+    * Return error if the private key can not sign.
     */
-    public void addSigner(byte[] signerId, PrivateKey privateKey) {
+    public void addSigner(byte[] signerId, PrivateKey privateKey) throws FoundationException {
         FoundationJNI.INSTANCE.recipientCipher_addSigner(this.cCtx, signerId, privateKey);
     }
 
@@ -111,33 +112,11 @@ public class RecipientCipher implements AutoCloseable {
     }
 
     /*
-    * Add identifier and public key to verify decrypted plain text.
-    */
-    public void addVerifier(byte[] signerId, PublicKey publicKey) {
-        FoundationJNI.INSTANCE.recipientCipher_addVerifier(this.cCtx, signerId, publicKey);
-    }
-
-    /*
-    * Remove all verifiers.
-    */
-    public void clearVerifiers() {
-        FoundationJNI.INSTANCE.recipientCipher_clearVerifiers(this.cCtx);
-    }
-
-    /*
     * Provide access to the custom params object.
     * The returned object can be used to add custom params or read it.
     */
     public MessageInfoCustomParams customParams() {
         return FoundationJNI.INSTANCE.recipientCipher_customParams(this.cCtx);
-    }
-
-    /*
-    * Provide access to the signed custom params object.
-    * The returned object can be used to add custom signed params or read it.
-    */
-    public MessageInfoCustomParams signedCustomParams() {
-        return FoundationJNI.INSTANCE.recipientCipher_signedCustomParams(this.cCtx);
     }
 
     /*
@@ -183,29 +162,6 @@ public class RecipientCipher implements AutoCloseable {
     }
 
     /*
-    * Return buffer length required to hold message footer returned by the
-    * "pack message footer" method.
-    * Precondition: this method should be called after "finish encryption".
-    */
-    public int messageInfoFooterLen() {
-        return FoundationJNI.INSTANCE.recipientCipher_messageInfoFooterLen(this.cCtx);
-    }
-
-    /*
-    * Return serialized message info footer to the buffer.
-    *
-    * Precondition: this method should be called before "finish encryption".
-    *
-    * Note, store message info to use it for decryption process,
-    * or place it at the encrypted data ending (embedding).
-    *
-    * Return message info footer - signers public information, etc.
-    */
-    public byte[] packMessageInfoFooter() {
-        return FoundationJNI.INSTANCE.recipientCipher_packMessageInfoFooter(this.cCtx);
-    }
-
-    /*
     * Return buffer length required to hold output of the method
     * "process encryption" and method "finish" during encryption.
     */
@@ -239,6 +195,7 @@ public class RecipientCipher implements AutoCloseable {
     * Initiate decryption process with a recipient private key.
     * Message Info can be empty if it was embedded to encrypted data.
     * Message Info footer can be empty if it was embedded to encrypted data.
+    * If footer was embedded, method "start decryption with key" can be used.
     */
     public void startVerifiedDecryptionWithKey(byte[] recipientId, PrivateKey privateKey, byte[] messageInfo, byte[] messageInfoFooter) throws FoundationException {
         FoundationJNI.INSTANCE.recipientCipher_startVerifiedDecryptionWithKey(this.cCtx, recipientId, privateKey, messageInfo, messageInfoFooter);
@@ -261,10 +218,60 @@ public class RecipientCipher implements AutoCloseable {
     }
 
     /*
-    * Accomplish decryption and verify signatures if verifiers was added.
+    * Accomplish decryption.
     */
     public byte[] finishDecryption() throws FoundationException {
         return FoundationJNI.INSTANCE.recipientCipher_finishDecryption(this.cCtx);
+    }
+
+    /*
+    * Return true if data was signed by a sender.
+    *
+    * Precondition: this method should be called after "finish decryption".
+    */
+    public boolean isDataSigned() {
+        return FoundationJNI.INSTANCE.recipientCipher_isDataSigned(this.cCtx);
+    }
+
+    /*
+    * Return information about signers that sign data.
+    *
+    * Precondition: this method should be called after "finish decryption".
+    * Precondition: method "is data signed" returns true.
+    */
+    public SignerInfoList signerInfos() {
+        return FoundationJNI.INSTANCE.recipientCipher_signerInfos(this.cCtx);
+    }
+
+    /*
+    * Verify given cipher info.
+    */
+    public boolean verifySignerInfo(SignerInfo signerInfo, PublicKey publicKey) {
+        return FoundationJNI.INSTANCE.recipientCipher_verifySignerInfo(this.cCtx, signerInfo, publicKey);
+    }
+
+    /*
+    * Return buffer length required to hold message footer returned by the
+    * "pack message footer" method.
+    *
+    * Precondition: this method should be called after "finish encryption".
+    */
+    public int messageInfoFooterLen() {
+        return FoundationJNI.INSTANCE.recipientCipher_messageInfoFooterLen(this.cCtx);
+    }
+
+    /*
+    * Return serialized message info footer to the buffer.
+    *
+    * Precondition: this method should be called after "finish encryption".
+    *
+    * Note, store message info to use it for verified decryption process,
+    * or place it at the encrypted data ending (embedding).
+    *
+    * Return message info footer - signers public information, etc.
+    */
+    public byte[] packMessageInfoFooter() {
+        return FoundationJNI.INSTANCE.recipientCipher_packMessageInfoFooter(this.cCtx);
     }
 }
 

@@ -128,20 +128,6 @@ VSCF_PUBLIC vscf_message_info_t *
 vscf_message_info_shallow_copy(vscf_message_info_t *self);
 
 //
-//  Set message info version.
-//  Currently supported {0, 1}.
-//
-VSCF_PUBLIC void
-vscf_message_info_set_version(vscf_message_info_t *self, unsigned int version);
-
-//
-//  Return message info version.
-//  Currently supported {0, 1}.
-//
-VSCF_PUBLIC unsigned int
-vscf_message_info_version(vscf_message_info_t *self);
-
-//
 //  Add recipient that is defined by Public Key.
 //
 VSCF_PUBLIC void
@@ -194,7 +180,7 @@ vscf_message_info_clear_recipients(vscf_message_info_t *self);
 //  Setup custom params.
 //
 VSCF_PUBLIC void
-vscf_message_info_set_custom_params(vscf_message_info_t *self, vscf_message_info_custom_params_t *custom_params);
+vscf_message_info_set_custom_params(vscf_message_info_t *self, vscf_message_info_custom_params_t **custom_params_ref);
 
 //
 //  Return true if message info contains at least one custom param.
@@ -211,6 +197,30 @@ VSCF_PUBLIC vscf_message_info_custom_params_t *
 vscf_message_info_custom_params(vscf_message_info_t *self);
 
 //
+//  Return true if cipher kdf alg info exists.
+//
+VSCF_PUBLIC bool
+vscf_message_info_has_cipher_kdf_alg_info(const vscf_message_info_t *self);
+
+//
+//  Setup cipher kdf alg info.
+//
+VSCF_PUBLIC void
+vscf_message_info_set_cipher_kdf_alg_info(vscf_message_info_t *self, vscf_impl_t **cipher_kdf_alg_info_ref);
+
+//
+//  Return cipher kdf alg info.
+//
+VSCF_PUBLIC const vscf_impl_t *
+vscf_message_info_cipher_kdf_alg_info(const vscf_message_info_t *self);
+
+//
+//  Remove cipher kdf alg info.
+//
+VSCF_PUBLIC void
+vscf_message_info_remove_cipher_kdf_alg_info(vscf_message_info_t *self);
+
+//
 //  Return true if footer info exists.
 //
 VSCF_PUBLIC bool
@@ -220,7 +230,7 @@ vscf_message_info_has_footer_info(const vscf_message_info_t *self);
 //  Setup footer info.
 //
 VSCF_PUBLIC void
-vscf_message_info_set_footer_info(vscf_message_info_t *self, vscf_footer_info_t *footer_info);
+vscf_message_info_set_footer_info(vscf_message_info_t *self, vscf_footer_info_t **footer_info_ref);
 
 //
 //  Return footer info.
@@ -239,6 +249,12 @@ vscf_message_info_footer_info_m(vscf_message_info_t *self);
 //
 VSCF_PUBLIC void
 vscf_message_info_remove_footer_info(vscf_message_info_t *self);
+
+//
+//  Remove all infos.
+//
+VSCF_PUBLIC void
+vscf_message_info_clear(vscf_message_info_t *self);
 
 
 // --------------------------------------------------------------------------

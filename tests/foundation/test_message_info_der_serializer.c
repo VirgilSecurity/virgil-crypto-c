@@ -151,7 +151,7 @@ test__serialize__cms_with_custom_params__returns_cms_with_no_recipients_and_3_pa
             vscf_alg_id_AES256_GCM, test_message_info_cms_ONE_RSA2048_KEY_RECIPIENT.data_encryption_alg_nonce));
 
     vscf_message_info_t *message_info = vscf_message_info_new();
-    vscf_message_info_set_custom_params(message_info, custom_params);
+    vscf_message_info_set_custom_params(message_info, &custom_params);
     vscf_message_info_set_data_encryption_alg_info(message_info, &data_encryption_alg_info);
 
     vscf_message_info_der_serializer_t *serializer = vscf_message_info_der_serializer_new();
@@ -166,7 +166,6 @@ test__serialize__cms_with_custom_params__returns_cms_with_no_recipients_and_3_pa
     vsc_buffer_destroy(&out);
     vscf_message_info_der_serializer_destroy(&serializer);
     vscf_message_info_destroy(&message_info);
-    vscf_message_info_custom_params_destroy(&custom_params);
 }
 
 void
@@ -181,10 +180,17 @@ test__serialize__cms_with_signed_data_info__returns_valid_cms(void) {
     vscf_signed_data_info_set_hash_alg_info(signed_data_info, &hash_alg_info);
 
     vscf_message_info_t *message_info = vscf_message_info_new();
+    vscf_impl_t *kdf_hash_alg_info =
+            vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_SHA384));
+    vscf_impl_t *kdf_alg_info = vscf_hash_based_alg_info_impl(
+            vscf_hash_based_alg_info_new_with_members(vscf_alg_id_HKDF, &kdf_hash_alg_info));
+
+    vscf_message_info_set_cipher_kdf_alg_info(message_info, &kdf_alg_info);
+
     vscf_impl_t *data_encryption_alg_info = vscf_cipher_alg_info_impl(vscf_cipher_alg_info_new_with_members(
             vscf_alg_id_AES256_GCM, test_message_info_cms_ONE_RSA2048_KEY_RECIPIENT.data_encryption_alg_nonce));
     vscf_message_info_set_data_encryption_alg_info(message_info, &data_encryption_alg_info);
-    vscf_message_info_set_footer_info(message_info, footer_info);
+    vscf_message_info_set_footer_info(message_info, &footer_info);
 
     vscf_message_info_der_serializer_t *serializer = vscf_message_info_der_serializer_new();
     vscf_message_info_der_serializer_setup_defaults(serializer);
@@ -198,7 +204,6 @@ test__serialize__cms_with_signed_data_info__returns_valid_cms(void) {
     vsc_buffer_destroy(&out);
     vscf_message_info_der_serializer_destroy(&serializer);
     vscf_message_info_destroy(&message_info);
-    vscf_footer_info_destroy(&footer_info);
 }
 
 void
@@ -506,6 +511,30 @@ test__deserialize__cms_with_no_recipients_and_3_params__read_data_param_is_valid
             custom_params, test_message_info_cms_DATA_CUSTOM_PARAM_KEY, &error);
     TEST_ASSERT_FALSE(vscf_error_has_error(&error));
     TEST_ASSERT_EQUAL_DATA(test_message_info_cms_DATA_CUSTOM_PARAM_VALUE, value);
+
+    vscf_message_info_destroy(&message_info);
+    vscf_message_info_der_serializer_destroy(&serializer);
+}
+
+void
+test__deserialize__cms_with_cipher_kdf_alg_info__is_valid_kdf_alg_info(void) {
+    vscf_message_info_der_serializer_t *serializer = vscf_message_info_der_serializer_new();
+    vscf_message_info_der_serializer_setup_defaults(serializer);
+
+    vscf_message_info_t *message_info = vscf_message_info_der_serializer_deserialize(
+            serializer, test_message_info_cms_NO_RECIPIENTS_AND_SIGNED_DATA_INFO, NULL);
+    TEST_ASSERT_NOT_NULL(message_info);
+
+    TEST_ASSERT_TRUE(vscf_message_info_has_cipher_kdf_alg_info(message_info));
+    const vscf_impl_t *alg_info = vscf_message_info_cipher_kdf_alg_info(message_info);
+    const vscf_hash_based_alg_info_t *cipher_kdf_alg_info = (vscf_hash_based_alg_info_t *)alg_info;
+
+    vscf_alg_id_t kdf_alg_id = vscf_hash_based_alg_info_alg_id(cipher_kdf_alg_info);
+    TEST_ASSERT_EQUAL(vscf_alg_id_HKDF, kdf_alg_id);
+
+    const vscf_impl_t *hash_alg_info = vscf_hash_based_alg_info_hash_alg_info(cipher_kdf_alg_info);
+    vscf_alg_id_t hash_alg_id = vscf_alg_info_alg_id(hash_alg_info);
+    TEST_ASSERT_EQUAL(vscf_alg_id_SHA384, hash_alg_id);
 
     vscf_message_info_destroy(&message_info);
     vscf_message_info_der_serializer_destroy(&serializer);
@@ -868,6 +897,7 @@ main(void) {
     RUN_TEST(test__deserialize__cms_with_no_recipients_and_3_params__read_string_param_is_valid);
     RUN_TEST(test__deserialize__cms_with_no_recipients_and_3_params__read_data_param_is_valid);
 
+    RUN_TEST(test__deserialize__cms_with_cipher_kdf_alg_info__is_valid_kdf_alg_info);
     RUN_TEST(test__deserialize__cms_with_footer_info__is_valid_data_size);
     RUN_TEST(test__deserialize__cms_with_signed_data_info__is_valid_hash_alg_info);
 

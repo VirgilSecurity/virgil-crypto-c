@@ -306,8 +306,8 @@ test__sign_then_encrypt__with_self_signed_ed25519_key_recipient__success(void) {
                                                    recipient_cipher, test_data_recipient_cipher_MESSAGE, enc_msg_data));
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_recipient_cipher_finish_encryption(recipient_cipher, enc_msg_data));
 
-    size_t message_info_footer_len = vscf_recipient_cipher_message_info_footer_len(recipient_cipher);
-    vsc_buffer_t *enc_msg_footer = vsc_buffer_new_with_capacity(message_info_footer_len);
+    size_t enc_msg_info_footer_len = vscf_recipient_cipher_message_info_footer_len(recipient_cipher);
+    vsc_buffer_t *enc_msg_footer = vsc_buffer_new_with_capacity(enc_msg_info_footer_len);
     vscf_recipient_cipher_pack_message_info_footer(recipient_cipher, enc_msg_footer);
 
     TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_data_recipient_cipher_SIGNED_THEN_ENCRYPTED_MESSAGE_HEADER, enc_msg_header);

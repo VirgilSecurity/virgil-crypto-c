@@ -64,6 +64,13 @@ class VscfMessageInfoFooter(object):
         vscf_message_info_footer_delete.restype = None
         return vscf_message_info_footer_delete(ctx)
 
+    def vscf_message_info_footer_has_signer_infos(self, ctx):
+        """Return true if at least one signer info presents."""
+        vscf_message_info_footer_has_signer_infos = self._lib.vscf_message_info_footer_has_signer_infos
+        vscf_message_info_footer_has_signer_infos.argtypes = [POINTER(vscf_message_info_footer_t)]
+        vscf_message_info_footer_has_signer_infos.restype = c_bool
+        return vscf_message_info_footer_has_signer_infos(ctx)
+
     def vscf_message_info_footer_signer_infos(self, ctx):
         """Return list with a "signer info" elements."""
         vscf_message_info_footer_signer_infos = self._lib.vscf_message_info_footer_signer_infos

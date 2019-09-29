@@ -34,42 +34,60 @@
 
 
 from ctypes import *
-from ._c_bridge import VscfSignedDataInfo
-from ._c_bridge import VscfImplTag
+from ._c_bridge import VscfFooterInfo
+from .signed_data_info import SignedDataInfo
 
 
-class SignedDataInfo(object):
-    """Handle meta information about signed data."""
+class FooterInfo(object):
+    """Handle meta information about footer."""
 
     def __init__(self):
         """Create underlying C context."""
-        self._lib_vscf_signed_data_info = VscfSignedDataInfo()
-        self.ctx = self._lib_vscf_signed_data_info.vscf_signed_data_info_new()
+        self._lib_vscf_footer_info = VscfFooterInfo()
+        self.ctx = self._lib_vscf_footer_info.vscf_footer_info_new()
 
     def __delete__(self, instance):
         """Destroy underlying C context."""
-        self._lib_vscf_signed_data_info.vscf_signed_data_info_delete(self.ctx)
+        self._lib_vscf_footer_info.vscf_footer_info_delete(self.ctx)
 
-    def set_hash_alg_info(self, hash_alg_info):
-        """Set information about algorithm that was used to produce data digest."""
-        self._lib_vscf_signed_data_info.vscf_signed_data_info_set_hash_alg_info(self.ctx, hash_alg_info.c_impl)
+    def has_signed_data_info(self):
+        """Retrun true if signed data info present."""
+        result = self._lib_vscf_footer_info.vscf_footer_info_has_signed_data_info(self.ctx)
+        return result
 
-    def hash_alg_info(self):
-        """Return information about algorithm that was used to produce data digest."""
-        result = self._lib_vscf_signed_data_info.vscf_signed_data_info_hash_alg_info(self.ctx)
-        instance = VscfImplTag.get_type(result)[0].use_c_ctx(cast(result, POINTER(VscfImplTag.get_type(result)[1])))
+    def set_signed_data_info(self, signed_data_info):
+        """Setup signed data info."""
+        self._lib_vscf_footer_info.vscf_footer_info_set_signed_data_info(self.ctx, signed_data_info.ctx)
+
+    def signed_data_info(self):
+        """Return signed data info."""
+        result = self._lib_vscf_footer_info.vscf_footer_info_signed_data_info(self.ctx)
+        instance = SignedDataInfo.use_c_ctx(result)
         return instance
+
+    def remove_signed_data_info(self):
+        """Remove signed data info."""
+        self._lib_vscf_footer_info.vscf_footer_info_remove_signed_data_info(self.ctx)
+
+    def set_data_size(self, data_size):
+        """Set data size."""
+        self._lib_vscf_footer_info.vscf_footer_info_set_data_size(self.ctx, data_size)
+
+    def data_size(self):
+        """Return data size."""
+        result = self._lib_vscf_footer_info.vscf_footer_info_data_size(self.ctx)
+        return result
 
     @classmethod
     def take_c_ctx(cls, c_ctx):
         inst = cls.__new__(cls)
-        inst._lib_vscf_signed_data_info = VscfSignedDataInfo()
+        inst._lib_vscf_footer_info = VscfFooterInfo()
         inst.ctx = c_ctx
         return inst
 
     @classmethod
     def use_c_ctx(cls, c_ctx):
         inst = cls.__new__(cls)
-        inst._lib_vscf_signed_data_info = VscfSignedDataInfo()
-        inst.ctx = inst._lib_vscf_signed_data_info.vscf_signed_data_info_shallow_copy(c_ctx)
+        inst._lib_vscf_footer_info = VscfFooterInfo()
+        inst.ctx = inst._lib_vscf_footer_info.vscf_footer_info_shallow_copy(c_ctx)
         return inst

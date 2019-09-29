@@ -89,6 +89,19 @@ const initMessageInfoFooter = (Module, modules) => {
         }
 
         /**
+         * Return true if at least one signer info presents.
+         */
+        hasSignerInfos() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
+            let proxyResult;
+            proxyResult = Module._vscf_message_info_footer_has_signer_infos(this.ctxPtr);
+
+            const booleanResult = !!proxyResult;
+            return booleanResult;
+        }
+
+        /**
          * Return list with a "signer info" elements.
          */
         signerInfos() {

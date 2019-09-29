@@ -3,14 +3,15 @@
     cipher for data encryption and asymmetric cipher and password based
     cipher for symmetric key encryption.
 
-    <require interface="encrypt"/>
-    <require interface="decrypt"/>
     <require interface="alg info"/>
-    <require interface="public key"/>
-    <require interface="private key"/>
+    <require interface="cipher auth"/>
+    <require interface="decrypt"/>
+    <require interface="encrypt"/>
+    <require interface="kdf"/>
     <require interface="key cipher"/>
     <require interface="key signer"/>
-    <require interface="cipher auth"/>
+    <require interface="private key"/>
+    <require interface="public key"/>
     <require class="message info der serializer"/>
     <require class="key recipient list"/>
     <require class="aes256 gcm"/>
@@ -18,6 +19,7 @@
     <require class="alg factory"/>
     <require class="key alg factory"/>
     <require class="sha512"/>
+    <require class="hkdf"/>
     <require module="message info der serializer internal"/>
 
     <dependency name="random" interface="random"/>
@@ -26,7 +28,8 @@
 
     <property name="key recipients" class="key recipient list"/>
     <property name="signers" class="signer list"/>
-    <property name="cipher key material" class="buffer"/>
+    <property name="master key" class="buffer"/>
+    <property name="derived keys" class="buffer"/>
     <property name="data digest" class="buffer"/>
     <property name="decryption recipient id" class="buffer"/>
     <property name="decryption recipient key" interface="private key"/>
@@ -235,9 +238,24 @@
         <return type="boolean"/>
     </method>
 
+    <method name="configure cipher for data processing" is_const="1" declaration="private">
+        Set key and nonce for given symmetric cipher from key material
+        for data encryption / decryption.
+
+        <argument name="cipher" interface="cipher" access="readwrite"/>
+    </method>
+
+    <method name="configure cipher for footer processing" is_const="1" declaration="private">
+        Set key and nonce for given symmetric cipher from key material
+        for footer encryption / decryption.
+
+        <argument name="cipher" interface="cipher" access="readwrite"/>
+    </method>
+
     <method name="configure decryption cipher" declaration="private">
-        Configure symmetric cipher with decryption key.
-        Nonce is restored from the message info.
+        Configure decryption symmetric cipher with given key and
+        nonce that is restored from the message info or derived from the key.
+
         Note, this method change decryption state.
 
         <argument name="decryption key" class="data"/>
@@ -328,5 +346,18 @@
         Optionally unpack buffered message info footer and verify data digest.
 
         <return enum="status"/>
+    </method>
+
+    <method name="setup encryption defaults">
+        Setup default algorithms required for encryption.
+
+        <return enum="status"/>
+    </method>
+
+    <method name="configure encryption cipher">
+        Setup default symmetric cipher if not defined yet.
+        Return cipher key, that should be encrypted for all recipients.
+
+        <return class="buffer" access="disown"/>
     </method>
 </class>

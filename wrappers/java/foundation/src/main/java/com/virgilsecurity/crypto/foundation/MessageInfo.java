@@ -142,31 +142,66 @@ public class MessageInfo implements AutoCloseable {
     }
 
     /*
-    * Return true if signed data info exists.
+    * Return true if cipher kdf alg info exists.
     */
-    public boolean hasSignedDataInfo() {
-        return FoundationJNI.INSTANCE.messageInfo_hasSignedDataInfo(this.cCtx);
+    public boolean hasCipherKdfAlgInfo() {
+        return FoundationJNI.INSTANCE.messageInfo_hasCipherKdfAlgInfo(this.cCtx);
     }
 
     /*
-    * Setup signed data info.
+    * Setup cipher kdf alg info.
     */
-    public void setSignedDataInfo(SignedDataInfo signedDataInfo) {
-        FoundationJNI.INSTANCE.messageInfo_setSignedDataInfo(this.cCtx, signedDataInfo);
+    public void setCipherKdfAlgInfo(AlgInfo cipherKdfAlgInfo) {
+        FoundationJNI.INSTANCE.messageInfo_setCipherKdfAlgInfo(this.cCtx, cipherKdfAlgInfo);
     }
 
     /*
-    * Return signed data info.
+    * Return cipher kdf alg info.
     */
-    public SignedDataInfo signedDataInfo() {
-        return FoundationJNI.INSTANCE.messageInfo_signedDataInfo(this.cCtx);
+    public AlgInfo cipherKdfAlgInfo() {
+        return FoundationJNI.INSTANCE.messageInfo_cipherKdfAlgInfo(this.cCtx);
     }
 
     /*
-    * Remove signed data info.
+    * Remove cipher kdf alg info.
     */
-    public void removeSignedDataInfo() {
-        FoundationJNI.INSTANCE.messageInfo_removeSignedDataInfo(this.cCtx);
+    public void removeCipherKdfAlgInfo() {
+        FoundationJNI.INSTANCE.messageInfo_removeCipherKdfAlgInfo(this.cCtx);
+    }
+
+    /*
+    * Return true if footer info exists.
+    */
+    public boolean hasFooterInfo() {
+        return FoundationJNI.INSTANCE.messageInfo_hasFooterInfo(this.cCtx);
+    }
+
+    /*
+    * Setup footer info.
+    */
+    public void setFooterInfo(FooterInfo footerInfo) {
+        FoundationJNI.INSTANCE.messageInfo_setFooterInfo(this.cCtx, footerInfo);
+    }
+
+    /*
+    * Return footer info.
+    */
+    public FooterInfo footerInfo() {
+        return FoundationJNI.INSTANCE.messageInfo_footerInfo(this.cCtx);
+    }
+
+    /*
+    * Remove footer info.
+    */
+    public void removeFooterInfo() {
+        FoundationJNI.INSTANCE.messageInfo_removeFooterInfo(this.cCtx);
+    }
+
+    /*
+    * Remove all infos.
+    */
+    public void clear() {
+        FoundationJNI.INSTANCE.messageInfo_clear(this.cCtx);
     }
 }
 

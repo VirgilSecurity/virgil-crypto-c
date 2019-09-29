@@ -36,15 +36,15 @@
 import Foundation
 import VSCFoundation
 
-/// Handle meta information about signed data.
-@objc(VSCFSignedDataInfo) public class SignedDataInfo: NSObject {
+/// Handle meta information about footer.
+@objc(VSCFFooterInfo) public class FooterInfo: NSObject {
 
     /// Handle underlying C context.
     @objc public let c_ctx: OpaquePointer
 
     /// Create underlying C context.
     public override init() {
-        self.c_ctx = vscf_signed_data_info_new()
+        self.c_ctx = vscf_footer_info_new()
         super.init()
     }
 
@@ -58,26 +58,50 @@ import VSCFoundation
     /// Acquire retained C context.
     /// Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     public init(use c_ctx: OpaquePointer) {
-        self.c_ctx = vscf_signed_data_info_shallow_copy(c_ctx)
+        self.c_ctx = vscf_footer_info_shallow_copy(c_ctx)
         super.init()
     }
 
     /// Release underlying C context.
     deinit {
-        vscf_signed_data_info_delete(self.c_ctx)
+        vscf_footer_info_delete(self.c_ctx)
     }
 
-    /// Set information about algorithm that was used to produce data digest.
-    @objc public func setHashAlgInfo(hashAlgInfo: AlgInfo) {
-        var hashAlgInfoCopy = vscf_impl_shallow_copy(hashAlgInfo.c_ctx)
+    /// Retrun true if signed data info present.
+    @objc public func hasSignedDataInfo() -> Bool {
+        let proxyResult = vscf_footer_info_has_signed_data_info(self.c_ctx)
 
-        vscf_signed_data_info_set_hash_alg_info(self.c_ctx, &hashAlgInfoCopy)
+        return proxyResult
     }
 
-    /// Return information about algorithm that was used to produce data digest.
-    @objc public func hashAlgInfo() -> AlgInfo {
-        let proxyResult = vscf_signed_data_info_hash_alg_info(self.c_ctx)
+    /// Setup signed data info.
+    @objc public func setSignedDataInfo(signedDataInfo: SignedDataInfo) {
+        var signedDataInfoCopy = vscf_signed_data_info_shallow_copy(signedDataInfo.c_ctx)
 
-        return FoundationImplementation.wrapAlgInfo(take: proxyResult!)
+        vscf_footer_info_set_signed_data_info(self.c_ctx, &signedDataInfoCopy)
+    }
+
+    /// Return signed data info.
+    @objc public func signedDataInfo() -> SignedDataInfo {
+        let proxyResult = vscf_footer_info_signed_data_info(self.c_ctx)
+
+        return SignedDataInfo.init(use: proxyResult!)
+    }
+
+    /// Remove signed data info.
+    @objc public func removeSignedDataInfo() {
+        vscf_footer_info_remove_signed_data_info(self.c_ctx)
+    }
+
+    /// Set data size.
+    @objc public func setDataSize(dataSize: Int) {
+        vscf_footer_info_set_data_size(self.c_ctx, dataSize)
+    }
+
+    /// Return data size.
+    @objc public func dataSize() -> Int {
+        let proxyResult = vscf_footer_info_data_size(self.c_ctx)
+
+        return proxyResult
     }
 }

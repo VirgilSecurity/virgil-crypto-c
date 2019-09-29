@@ -37,11 +37,11 @@
 
 const precondition = require('./precondition');
 
-const initSignedDataInfo = (Module, modules) => {
+const initFooterInfo = (Module, modules) => {
     /**
-     * Handle meta information about signed data.
+     * Handle meta information about footer.
      */
-    class SignedDataInfo {
+    class FooterInfo {
 
         /**
          * Create object with underlying C context.
@@ -49,10 +49,10 @@ const initSignedDataInfo = (Module, modules) => {
          * Note. Parameter 'ctxPtr' SHOULD be passed from the generated code only.
          */
         constructor(ctxPtr) {
-            this.name = 'SignedDataInfo';
+            this.name = 'FooterInfo';
 
             if (typeof ctxPtr === 'undefined') {
-                this.ctxPtr = Module._vscf_signed_data_info_new();
+                this.ctxPtr = Module._vscf_footer_info_new();
             } else {
                 this.ctxPtr = ctxPtr;
             }
@@ -65,7 +65,7 @@ const initSignedDataInfo = (Module, modules) => {
          */
         static newAndUseCContext(ctxPtr) {
             // assert(typeof ctxPtr === 'number');
-            return new SignedDataInfo(Module._vscf_signed_data_info_shallow_copy(ctxPtr));
+            return new FooterInfo(Module._vscf_footer_info_shallow_copy(ctxPtr));
         }
 
         /**
@@ -75,7 +75,7 @@ const initSignedDataInfo = (Module, modules) => {
          */
         static newAndTakeCContext(ctxPtr) {
             // assert(typeof ctxPtr === 'number');
-            return new SignedDataInfo(ctxPtr);
+            return new FooterInfo(ctxPtr);
         }
 
         /**
@@ -83,35 +83,76 @@ const initSignedDataInfo = (Module, modules) => {
          */
         delete() {
             if (typeof this.ctxPtr !== 'undefined' && this.ctxPtr !== null) {
-                Module._vscf_signed_data_info_delete(this.ctxPtr);
+                Module._vscf_footer_info_delete(this.ctxPtr);
                 this.ctxPtr = null;
             }
         }
 
         /**
-         * Set information about algorithm that was used to produce data digest.
+         * Retrun true if signed data info present.
          */
-        setHashAlgInfo(hashAlgInfo) {
-            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-            precondition.ensureImplementInterface('hashAlgInfo', hashAlgInfo, 'Foundation.AlgInfo', modules.FoundationInterfaceTag.ALG_INFO, modules.FoundationInterface);
-            Module._vscf_signed_data_info_set_hash_alg_info(this.ctxPtr, hashAlgInfo.ctxPtr);
-        }
-
-        /**
-         * Return information about algorithm that was used to produce data digest.
-         */
-        hashAlgInfo() {
+        hasSignedDataInfo() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
             let proxyResult;
-            proxyResult = Module._vscf_signed_data_info_hash_alg_info(this.ctxPtr);
+            proxyResult = Module._vscf_footer_info_has_signed_data_info(this.ctxPtr);
 
-            const jsResult = modules.FoundationInterface.newAndUseCContext(proxyResult);
+            const booleanResult = !!proxyResult;
+            return booleanResult;
+        }
+
+        /**
+         * Setup signed data info.
+         */
+        setSignedDataInfo(signedDataInfo) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureClass('signedDataInfo', signedDataInfo, modules.SignedDataInfo);
+            Module._vscf_footer_info_set_signed_data_info(this.ctxPtr, signedDataInfo.ctxPtr);
+        }
+
+        /**
+         * Return signed data info.
+         */
+        signedDataInfo() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
+            let proxyResult;
+            proxyResult = Module._vscf_footer_info_signed_data_info(this.ctxPtr);
+
+            const jsResult = modules.SignedDataInfo.newAndUseCContext(proxyResult);
             return jsResult;
+        }
+
+        /**
+         * Remove signed data info.
+         */
+        removeSignedDataInfo() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            Module._vscf_footer_info_remove_signed_data_info(this.ctxPtr);
+        }
+
+        /**
+         * Set data size.
+         */
+        setDataSize(dataSize) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureNumber('dataSize', dataSize);
+            Module._vscf_footer_info_set_data_size(this.ctxPtr, dataSize);
+        }
+
+        /**
+         * Return data size.
+         */
+        dataSize() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
+            let proxyResult;
+            proxyResult = Module._vscf_footer_info_data_size(this.ctxPtr);
+            return proxyResult;
         }
     }
 
-    return SignedDataInfo;
+    return FooterInfo;
 };
 
-module.exports = initSignedDataInfo;
+module.exports = initFooterInfo;

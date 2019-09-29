@@ -39,6 +39,8 @@ from ._vscf_impl import vscf_impl_t
 from virgil_crypto_lib.common._c_bridge import vsc_data_t
 from ._vscf_message_info_custom_params import vscf_message_info_custom_params_t
 from virgil_crypto_lib.common._c_bridge import vsc_buffer_t
+from ._vscf_signer_info_list import vscf_signer_info_list_t
+from ._vscf_signer_info import vscf_signer_info_t
 
 
 class vscf_recipient_cipher_t(Structure):
@@ -100,10 +102,11 @@ class VscfRecipientCipher(object):
         return vscf_recipient_cipher_clear_recipients(ctx)
 
     def vscf_recipient_cipher_add_signer(self, ctx, signer_id, private_key):
-        """Add identifier and private key to sign initial plain text."""
+        """Add identifier and private key to sign initial plain text.
+        Return error if the private key can not sign."""
         vscf_recipient_cipher_add_signer = self._lib.vscf_recipient_cipher_add_signer
         vscf_recipient_cipher_add_signer.argtypes = [POINTER(vscf_recipient_cipher_t), vsc_data_t, POINTER(vscf_impl_t)]
-        vscf_recipient_cipher_add_signer.restype = None
+        vscf_recipient_cipher_add_signer.restype = c_int
         return vscf_recipient_cipher_add_signer(ctx, signer_id, private_key)
 
     def vscf_recipient_cipher_clear_signers(self, ctx):
@@ -113,20 +116,6 @@ class VscfRecipientCipher(object):
         vscf_recipient_cipher_clear_signers.restype = None
         return vscf_recipient_cipher_clear_signers(ctx)
 
-    def vscf_recipient_cipher_add_verifier(self, ctx, signer_id, public_key):
-        """Add identifier and public key to verify decrypted plain text."""
-        vscf_recipient_cipher_add_verifier = self._lib.vscf_recipient_cipher_add_verifier
-        vscf_recipient_cipher_add_verifier.argtypes = [POINTER(vscf_recipient_cipher_t), vsc_data_t, POINTER(vscf_impl_t)]
-        vscf_recipient_cipher_add_verifier.restype = None
-        return vscf_recipient_cipher_add_verifier(ctx, signer_id, public_key)
-
-    def vscf_recipient_cipher_clear_verifiers(self, ctx):
-        """Remove all verifiers."""
-        vscf_recipient_cipher_clear_verifiers = self._lib.vscf_recipient_cipher_clear_verifiers
-        vscf_recipient_cipher_clear_verifiers.argtypes = [POINTER(vscf_recipient_cipher_t)]
-        vscf_recipient_cipher_clear_verifiers.restype = None
-        return vscf_recipient_cipher_clear_verifiers(ctx)
-
     def vscf_recipient_cipher_custom_params(self, ctx):
         """Provide access to the custom params object.
         The returned object can be used to add custom params or read it."""
@@ -134,14 +123,6 @@ class VscfRecipientCipher(object):
         vscf_recipient_cipher_custom_params.argtypes = [POINTER(vscf_recipient_cipher_t)]
         vscf_recipient_cipher_custom_params.restype = POINTER(vscf_message_info_custom_params_t)
         return vscf_recipient_cipher_custom_params(ctx)
-
-    def vscf_recipient_cipher_signed_custom_params(self, ctx):
-        """Provide access to the signed custom params object.
-        The returned object can be used to add custom signed params or read it."""
-        vscf_recipient_cipher_signed_custom_params = self._lib.vscf_recipient_cipher_signed_custom_params
-        vscf_recipient_cipher_signed_custom_params.argtypes = [POINTER(vscf_recipient_cipher_t)]
-        vscf_recipient_cipher_signed_custom_params.restype = POINTER(vscf_message_info_custom_params_t)
-        return vscf_recipient_cipher_signed_custom_params(ctx)
 
     def vscf_recipient_cipher_start_encryption(self, ctx):
         """Start encryption process."""
@@ -185,29 +166,6 @@ class VscfRecipientCipher(object):
         vscf_recipient_cipher_pack_message_info.restype = None
         return vscf_recipient_cipher_pack_message_info(ctx, message_info)
 
-    def vscf_recipient_cipher_message_info_footer_len(self, ctx):
-        """Return buffer length required to hold message footer returned by the
-        "pack message footer" method.
-        Precondition: this method should be called after "finish encryption"."""
-        vscf_recipient_cipher_message_info_footer_len = self._lib.vscf_recipient_cipher_message_info_footer_len
-        vscf_recipient_cipher_message_info_footer_len.argtypes = [POINTER(vscf_recipient_cipher_t)]
-        vscf_recipient_cipher_message_info_footer_len.restype = c_size_t
-        return vscf_recipient_cipher_message_info_footer_len(ctx)
-
-    def vscf_recipient_cipher_pack_message_info_footer(self, ctx, message_info_footer):
-        """Return serialized message info footer to the buffer.
-
-        Precondition: this method should be called before "finish encryption".
-
-        Note, store message info to use it for decryption process,
-        or place it at the encrypted data ending (embedding).
-
-        Return message info footer - signers public information, etc."""
-        vscf_recipient_cipher_pack_message_info_footer = self._lib.vscf_recipient_cipher_pack_message_info_footer
-        vscf_recipient_cipher_pack_message_info_footer.argtypes = [POINTER(vscf_recipient_cipher_t), POINTER(vsc_buffer_t)]
-        vscf_recipient_cipher_pack_message_info_footer.restype = None
-        return vscf_recipient_cipher_pack_message_info_footer(ctx, message_info_footer)
-
     def vscf_recipient_cipher_encryption_out_len(self, ctx, data_len):
         """Return buffer length required to hold output of the method
         "process encryption" and method "finish" during encryption."""
@@ -241,7 +199,8 @@ class VscfRecipientCipher(object):
     def vscf_recipient_cipher_start_verified_decryption_with_key(self, ctx, recipient_id, private_key, message_info, message_info_footer):
         """Initiate decryption process with a recipient private key.
         Message Info can be empty if it was embedded to encrypted data.
-        Message Info footer can be empty if it was embedded to encrypted data."""
+        Message Info footer can be empty if it was embedded to encrypted data.
+        If footer was embedded, method "start decryption with key" can be used."""
         vscf_recipient_cipher_start_verified_decryption_with_key = self._lib.vscf_recipient_cipher_start_verified_decryption_with_key
         vscf_recipient_cipher_start_verified_decryption_with_key.argtypes = [POINTER(vscf_recipient_cipher_t), vsc_data_t, POINTER(vscf_impl_t), vsc_data_t, vsc_data_t]
         vscf_recipient_cipher_start_verified_decryption_with_key.restype = c_int
@@ -264,11 +223,61 @@ class VscfRecipientCipher(object):
         return vscf_recipient_cipher_process_decryption(ctx, data, out)
 
     def vscf_recipient_cipher_finish_decryption(self, ctx, out):
-        """Accomplish decryption and verify signatures if verifiers was added."""
+        """Accomplish decryption."""
         vscf_recipient_cipher_finish_decryption = self._lib.vscf_recipient_cipher_finish_decryption
         vscf_recipient_cipher_finish_decryption.argtypes = [POINTER(vscf_recipient_cipher_t), POINTER(vsc_buffer_t)]
         vscf_recipient_cipher_finish_decryption.restype = c_int
         return vscf_recipient_cipher_finish_decryption(ctx, out)
+
+    def vscf_recipient_cipher_is_data_signed(self, ctx):
+        """Return true if data was signed by a sender.
+
+        Precondition: this method should be called after "finish decryption"."""
+        vscf_recipient_cipher_is_data_signed = self._lib.vscf_recipient_cipher_is_data_signed
+        vscf_recipient_cipher_is_data_signed.argtypes = [POINTER(vscf_recipient_cipher_t)]
+        vscf_recipient_cipher_is_data_signed.restype = c_bool
+        return vscf_recipient_cipher_is_data_signed(ctx)
+
+    def vscf_recipient_cipher_signer_infos(self, ctx):
+        """Return information about signers that sign data.
+
+        Precondition: this method should be called after "finish decryption".
+        Precondition: method "is data signed" returns true."""
+        vscf_recipient_cipher_signer_infos = self._lib.vscf_recipient_cipher_signer_infos
+        vscf_recipient_cipher_signer_infos.argtypes = [POINTER(vscf_recipient_cipher_t)]
+        vscf_recipient_cipher_signer_infos.restype = POINTER(vscf_signer_info_list_t)
+        return vscf_recipient_cipher_signer_infos(ctx)
+
+    def vscf_recipient_cipher_verify_signer_info(self, ctx, signer_info, public_key):
+        """Verify given cipher info."""
+        vscf_recipient_cipher_verify_signer_info = self._lib.vscf_recipient_cipher_verify_signer_info
+        vscf_recipient_cipher_verify_signer_info.argtypes = [POINTER(vscf_recipient_cipher_t), POINTER(vscf_signer_info_t), POINTER(vscf_impl_t)]
+        vscf_recipient_cipher_verify_signer_info.restype = c_bool
+        return vscf_recipient_cipher_verify_signer_info(ctx, signer_info, public_key)
+
+    def vscf_recipient_cipher_message_info_footer_len(self, ctx):
+        """Return buffer length required to hold message footer returned by the
+        "pack message footer" method.
+
+        Precondition: this method should be called after "finish encryption"."""
+        vscf_recipient_cipher_message_info_footer_len = self._lib.vscf_recipient_cipher_message_info_footer_len
+        vscf_recipient_cipher_message_info_footer_len.argtypes = [POINTER(vscf_recipient_cipher_t)]
+        vscf_recipient_cipher_message_info_footer_len.restype = c_size_t
+        return vscf_recipient_cipher_message_info_footer_len(ctx)
+
+    def vscf_recipient_cipher_pack_message_info_footer(self, ctx, out):
+        """Return serialized message info footer to the buffer.
+
+        Precondition: this method should be called after "finish encryption".
+
+        Note, store message info to use it for verified decryption process,
+        or place it at the encrypted data ending (embedding).
+
+        Return message info footer - signers public information, etc."""
+        vscf_recipient_cipher_pack_message_info_footer = self._lib.vscf_recipient_cipher_pack_message_info_footer
+        vscf_recipient_cipher_pack_message_info_footer.argtypes = [POINTER(vscf_recipient_cipher_t), POINTER(vsc_buffer_t)]
+        vscf_recipient_cipher_pack_message_info_footer.restype = None
+        return vscf_recipient_cipher_pack_message_info_footer(ctx, out)
 
     def vscf_recipient_cipher_shallow_copy(self, ctx):
         vscf_recipient_cipher_shallow_copy = self._lib.vscf_recipient_cipher_shallow_copy

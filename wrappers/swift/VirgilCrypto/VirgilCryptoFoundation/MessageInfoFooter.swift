@@ -67,6 +67,13 @@ import VSCFoundation
         vscf_message_info_footer_delete(self.c_ctx)
     }
 
+    /// Return true if at least one signer info presents.
+    @objc public func hasSignerInfos() -> Bool {
+        let proxyResult = vscf_message_info_footer_has_signer_infos(self.c_ctx)
+
+        return proxyResult
+    }
+
     /// Return list with a "signer info" elements.
     @objc public func signerInfos() -> SignerInfoList {
         let proxyResult = vscf_message_info_footer_signer_infos(self.c_ctx)

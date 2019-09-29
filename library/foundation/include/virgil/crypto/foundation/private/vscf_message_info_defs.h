@@ -97,9 +97,9 @@ struct vscf_message_info_t {
 
     vscf_message_info_custom_params_t *custom_params;
 
-    vscf_footer_info_t *footer_info;
+    vscf_impl_t *cipher_kdf_alg_info;
 
-    unsigned int version;
+    vscf_footer_info_t *footer_info;
 };
 
 

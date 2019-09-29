@@ -117,7 +117,9 @@ import VSCFoundation
 
     /// Setup custom params.
     @objc public func setCustomParams(customParams: MessageInfoCustomParams) {
-        vscf_message_info_set_custom_params(self.c_ctx, customParams.c_ctx)
+        var customParamsCopy = vscf_message_info_custom_params_shallow_copy(customParams.c_ctx)
+
+        vscf_message_info_set_custom_params(self.c_ctx, &customParamsCopy)
     }
 
     /// Return true if message info contains at least one custom param.
@@ -136,27 +138,60 @@ import VSCFoundation
         return MessageInfoCustomParams.init(use: proxyResult!)
     }
 
-    /// Return true if signed data info exists.
-    @objc public func hasSignedDataInfo() -> Bool {
-        let proxyResult = vscf_message_info_has_signed_data_info(self.c_ctx)
+    /// Return true if cipher kdf alg info exists.
+    @objc public func hasCipherKdfAlgInfo() -> Bool {
+        let proxyResult = vscf_message_info_has_cipher_kdf_alg_info(self.c_ctx)
 
         return proxyResult
     }
 
-    /// Setup signed data info.
-    @objc public func setSignedDataInfo(signedDataInfo: SignedDataInfo) {
-        vscf_message_info_set_signed_data_info(self.c_ctx, signedDataInfo.c_ctx)
+    /// Setup cipher kdf alg info.
+    @objc public func setCipherKdfAlgInfo(cipherKdfAlgInfo: AlgInfo) {
+        var cipherKdfAlgInfoCopy = vscf_impl_shallow_copy(cipherKdfAlgInfo.c_ctx)
+
+        vscf_message_info_set_cipher_kdf_alg_info(self.c_ctx, &cipherKdfAlgInfoCopy)
     }
 
-    /// Return signed data info.
-    @objc public func signedDataInfo() -> SignedDataInfo {
-        let proxyResult = vscf_message_info_signed_data_info(self.c_ctx)
+    /// Return cipher kdf alg info.
+    @objc public func cipherKdfAlgInfo() -> AlgInfo {
+        let proxyResult = vscf_message_info_cipher_kdf_alg_info(self.c_ctx)
 
-        return SignedDataInfo.init(use: proxyResult!)
+        return FoundationImplementation.wrapAlgInfo(take: proxyResult!)
     }
 
-    /// Remove signed data info.
-    @objc public func removeSignedDataInfo() {
-        vscf_message_info_remove_signed_data_info(self.c_ctx)
+    /// Remove cipher kdf alg info.
+    @objc public func removeCipherKdfAlgInfo() {
+        vscf_message_info_remove_cipher_kdf_alg_info(self.c_ctx)
+    }
+
+    /// Return true if footer info exists.
+    @objc public func hasFooterInfo() -> Bool {
+        let proxyResult = vscf_message_info_has_footer_info(self.c_ctx)
+
+        return proxyResult
+    }
+
+    /// Setup footer info.
+    @objc public func setFooterInfo(footerInfo: FooterInfo) {
+        var footerInfoCopy = vscf_footer_info_shallow_copy(footerInfo.c_ctx)
+
+        vscf_message_info_set_footer_info(self.c_ctx, &footerInfoCopy)
+    }
+
+    /// Return footer info.
+    @objc public func footerInfo() -> FooterInfo {
+        let proxyResult = vscf_message_info_footer_info(self.c_ctx)
+
+        return FooterInfo.init(use: proxyResult!)
+    }
+
+    /// Remove footer info.
+    @objc public func removeFooterInfo() {
+        vscf_message_info_remove_footer_info(self.c_ctx)
+    }
+
+    /// Remove all infos.
+    @objc public func clear() {
+        vscf_message_info_clear(self.c_ctx)
     }
 }

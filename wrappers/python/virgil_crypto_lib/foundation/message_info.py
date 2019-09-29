@@ -39,7 +39,7 @@ from ._c_bridge import VscfImplTag
 from .key_recipient_info_list import KeyRecipientInfoList
 from .password_recipient_info_list import PasswordRecipientInfoList
 from .message_info_custom_params import MessageInfoCustomParams
-from .signed_data_info import SignedDataInfo
+from .footer_info import FooterInfo
 
 
 class MessageInfo(object):
@@ -106,24 +106,47 @@ class MessageInfo(object):
         instance = MessageInfoCustomParams.use_c_ctx(result)
         return instance
 
-    def has_signed_data_info(self):
-        """Return true if signed data info exists."""
-        result = self._lib_vscf_message_info.vscf_message_info_has_signed_data_info(self.ctx)
+    def has_cipher_kdf_alg_info(self):
+        """Return true if cipher kdf alg info exists."""
+        result = self._lib_vscf_message_info.vscf_message_info_has_cipher_kdf_alg_info(self.ctx)
         return result
 
-    def set_signed_data_info(self, signed_data_info):
-        """Setup signed data info."""
-        self._lib_vscf_message_info.vscf_message_info_set_signed_data_info(self.ctx, signed_data_info.ctx)
+    def set_cipher_kdf_alg_info(self, cipher_kdf_alg_info):
+        """Setup cipher kdf alg info."""
+        self._lib_vscf_message_info.vscf_message_info_set_cipher_kdf_alg_info(self.ctx, cipher_kdf_alg_info.c_impl)
 
-    def signed_data_info(self):
-        """Return signed data info."""
-        result = self._lib_vscf_message_info.vscf_message_info_signed_data_info(self.ctx)
-        instance = SignedDataInfo.use_c_ctx(result)
+    def cipher_kdf_alg_info(self):
+        """Return cipher kdf alg info."""
+        result = self._lib_vscf_message_info.vscf_message_info_cipher_kdf_alg_info(self.ctx)
+        instance = VscfImplTag.get_type(result)[0].use_c_ctx(cast(result, POINTER(VscfImplTag.get_type(result)[1])))
         return instance
 
-    def remove_signed_data_info(self):
-        """Remove signed data info."""
-        self._lib_vscf_message_info.vscf_message_info_remove_signed_data_info(self.ctx)
+    def remove_cipher_kdf_alg_info(self):
+        """Remove cipher kdf alg info."""
+        self._lib_vscf_message_info.vscf_message_info_remove_cipher_kdf_alg_info(self.ctx)
+
+    def has_footer_info(self):
+        """Return true if footer info exists."""
+        result = self._lib_vscf_message_info.vscf_message_info_has_footer_info(self.ctx)
+        return result
+
+    def set_footer_info(self, footer_info):
+        """Setup footer info."""
+        self._lib_vscf_message_info.vscf_message_info_set_footer_info(self.ctx, footer_info.ctx)
+
+    def footer_info(self):
+        """Return footer info."""
+        result = self._lib_vscf_message_info.vscf_message_info_footer_info(self.ctx)
+        instance = FooterInfo.use_c_ctx(result)
+        return instance
+
+    def remove_footer_info(self):
+        """Remove footer info."""
+        self._lib_vscf_message_info.vscf_message_info_remove_footer_info(self.ctx)
+
+    def clear(self):
+        """Remove all infos."""
+        self._lib_vscf_message_info.vscf_message_info_clear(self.ctx)
 
     @classmethod
     def take_c_ctx(cls, c_ctx):

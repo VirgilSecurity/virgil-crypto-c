@@ -41,7 +41,7 @@ from ._vscf_impl import vscf_impl_t
 from ._vscf_key_recipient_info_list import vscf_key_recipient_info_list_t
 from ._vscf_password_recipient_info_list import vscf_password_recipient_info_list_t
 from ._vscf_message_info_custom_params import vscf_message_info_custom_params_t
-from ._vscf_signed_data_info import vscf_signed_data_info_t
+from ._vscf_footer_info import vscf_footer_info_t
 
 
 class vscf_message_info_t(Structure):
@@ -141,33 +141,68 @@ class VscfMessageInfo(object):
         vscf_message_info_custom_params.restype = POINTER(vscf_message_info_custom_params_t)
         return vscf_message_info_custom_params(ctx)
 
-    def vscf_message_info_has_signed_data_info(self, ctx):
-        """Return true if signed data info exists."""
-        vscf_message_info_has_signed_data_info = self._lib.vscf_message_info_has_signed_data_info
-        vscf_message_info_has_signed_data_info.argtypes = [POINTER(vscf_message_info_t)]
-        vscf_message_info_has_signed_data_info.restype = c_bool
-        return vscf_message_info_has_signed_data_info(ctx)
+    def vscf_message_info_has_cipher_kdf_alg_info(self, ctx):
+        """Return true if cipher kdf alg info exists."""
+        vscf_message_info_has_cipher_kdf_alg_info = self._lib.vscf_message_info_has_cipher_kdf_alg_info
+        vscf_message_info_has_cipher_kdf_alg_info.argtypes = [POINTER(vscf_message_info_t)]
+        vscf_message_info_has_cipher_kdf_alg_info.restype = c_bool
+        return vscf_message_info_has_cipher_kdf_alg_info(ctx)
 
-    def vscf_message_info_set_signed_data_info(self, ctx, signed_data_info):
-        """Setup signed data info."""
-        vscf_message_info_set_signed_data_info = self._lib.vscf_message_info_set_signed_data_info
-        vscf_message_info_set_signed_data_info.argtypes = [POINTER(vscf_message_info_t), POINTER(vscf_signed_data_info_t)]
-        vscf_message_info_set_signed_data_info.restype = None
-        return vscf_message_info_set_signed_data_info(ctx, signed_data_info)
+    def vscf_message_info_set_cipher_kdf_alg_info(self, ctx, cipher_kdf_alg_info):
+        """Setup cipher kdf alg info."""
+        vscf_message_info_set_cipher_kdf_alg_info = self._lib.vscf_message_info_set_cipher_kdf_alg_info
+        vscf_message_info_set_cipher_kdf_alg_info.argtypes = [POINTER(vscf_message_info_t), POINTER(vscf_impl_t)]
+        vscf_message_info_set_cipher_kdf_alg_info.restype = None
+        return vscf_message_info_set_cipher_kdf_alg_info(ctx, cipher_kdf_alg_info)
 
-    def vscf_message_info_signed_data_info(self, ctx):
-        """Return signed data info."""
-        vscf_message_info_signed_data_info = self._lib.vscf_message_info_signed_data_info
-        vscf_message_info_signed_data_info.argtypes = [POINTER(vscf_message_info_t)]
-        vscf_message_info_signed_data_info.restype = POINTER(vscf_signed_data_info_t)
-        return vscf_message_info_signed_data_info(ctx)
+    def vscf_message_info_cipher_kdf_alg_info(self, ctx):
+        """Return cipher kdf alg info."""
+        vscf_message_info_cipher_kdf_alg_info = self._lib.vscf_message_info_cipher_kdf_alg_info
+        vscf_message_info_cipher_kdf_alg_info.argtypes = [POINTER(vscf_message_info_t)]
+        vscf_message_info_cipher_kdf_alg_info.restype = POINTER(vscf_impl_t)
+        return vscf_message_info_cipher_kdf_alg_info(ctx)
 
-    def vscf_message_info_remove_signed_data_info(self, ctx):
-        """Remove signed data info."""
-        vscf_message_info_remove_signed_data_info = self._lib.vscf_message_info_remove_signed_data_info
-        vscf_message_info_remove_signed_data_info.argtypes = [POINTER(vscf_message_info_t)]
-        vscf_message_info_remove_signed_data_info.restype = None
-        return vscf_message_info_remove_signed_data_info(ctx)
+    def vscf_message_info_remove_cipher_kdf_alg_info(self, ctx):
+        """Remove cipher kdf alg info."""
+        vscf_message_info_remove_cipher_kdf_alg_info = self._lib.vscf_message_info_remove_cipher_kdf_alg_info
+        vscf_message_info_remove_cipher_kdf_alg_info.argtypes = [POINTER(vscf_message_info_t)]
+        vscf_message_info_remove_cipher_kdf_alg_info.restype = None
+        return vscf_message_info_remove_cipher_kdf_alg_info(ctx)
+
+    def vscf_message_info_has_footer_info(self, ctx):
+        """Return true if footer info exists."""
+        vscf_message_info_has_footer_info = self._lib.vscf_message_info_has_footer_info
+        vscf_message_info_has_footer_info.argtypes = [POINTER(vscf_message_info_t)]
+        vscf_message_info_has_footer_info.restype = c_bool
+        return vscf_message_info_has_footer_info(ctx)
+
+    def vscf_message_info_set_footer_info(self, ctx, footer_info):
+        """Setup footer info."""
+        vscf_message_info_set_footer_info = self._lib.vscf_message_info_set_footer_info
+        vscf_message_info_set_footer_info.argtypes = [POINTER(vscf_message_info_t), POINTER(vscf_footer_info_t)]
+        vscf_message_info_set_footer_info.restype = None
+        return vscf_message_info_set_footer_info(ctx, footer_info)
+
+    def vscf_message_info_footer_info(self, ctx):
+        """Return footer info."""
+        vscf_message_info_footer_info = self._lib.vscf_message_info_footer_info
+        vscf_message_info_footer_info.argtypes = [POINTER(vscf_message_info_t)]
+        vscf_message_info_footer_info.restype = POINTER(vscf_footer_info_t)
+        return vscf_message_info_footer_info(ctx)
+
+    def vscf_message_info_remove_footer_info(self, ctx):
+        """Remove footer info."""
+        vscf_message_info_remove_footer_info = self._lib.vscf_message_info_remove_footer_info
+        vscf_message_info_remove_footer_info.argtypes = [POINTER(vscf_message_info_t)]
+        vscf_message_info_remove_footer_info.restype = None
+        return vscf_message_info_remove_footer_info(ctx)
+
+    def vscf_message_info_clear(self, ctx):
+        """Remove all infos."""
+        vscf_message_info_clear = self._lib.vscf_message_info_clear
+        vscf_message_info_clear.argtypes = [POINTER(vscf_message_info_t)]
+        vscf_message_info_clear.restype = None
+        return vscf_message_info_clear(ctx)
 
     def vscf_message_info_shallow_copy(self, ctx):
         vscf_message_info_shallow_copy = self._lib.vscf_message_info_shallow_copy

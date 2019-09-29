@@ -6,24 +6,8 @@
     <property name="password recipients" class="password recipient info list"/>
     <property name="data encryption alg info" interface="alg info"/>
     <property name="custom params" class="message info custom params"/>
+    <property name="cipher kdf alg info" interface="alg info"/>
     <property name="footer info" class="footer info"/>
-    <property name="version" type="unsigned"/>
-
-
-    <method name="set version">
-        Set message info version.
-        Currently supported {0, 1}.
-
-        <argument name="version" type="unsigned"/>
-    </method>
-
-
-    <method name="version">
-        Return message info version.
-        Currently supported {0, 1}.
-
-        <return type="unsigned"/>
-    </method>
 
 
     <method name="add key recipient">
@@ -83,7 +67,7 @@
     <method name="set custom params">
         Setup custom params.
 
-        <argument name="custom params" class="message info custom params" access="retain"/>
+        <argument name="custom params" class="message info custom params" access="disown"/>
     </method>
 
 
@@ -103,6 +87,32 @@
     </method>
 
 
+    <method name="has cipher kdf alg info" is_const="1">
+        Return true if cipher kdf alg info exists.
+
+        <return type="boolean"/>
+    </method>
+
+
+    <method name="set cipher kdf alg info">
+        Setup cipher kdf alg info.
+
+        <argument name="cipher kdf alg info" interface="alg info" access="disown"/>
+    </method>
+
+
+    <method name="cipher kdf alg info" is_const="1">
+        Return cipher kdf alg info.
+
+        <return interface="alg info"/>
+    </method>
+
+
+    <method name="remove cipher kdf alg info">
+        Remove cipher kdf alg info.
+    </method>
+
+
     <method name="has footer info" is_const="1">
         Return true if footer info exists.
 
@@ -113,7 +123,7 @@
     <method name="set footer info">
         Setup footer info.
 
-        <argument name="footer info" class="footer info" access="retain"/>
+        <argument name="footer info" class="footer info" access="disown"/>
     </method>
 
 
@@ -122,6 +132,7 @@
 
         <return class="footer info"/>
     </method>
+
 
     <method name="footer info m" visibility="private">
         Return mutable footer info.
@@ -132,5 +143,10 @@
 
     <method name="remove footer info">
         Remove footer info.
+    </method>
+
+
+    <method name="clear">
+        Remove all infos.
     </method>
 </class>
