@@ -75,8 +75,8 @@
 #include "vscf_key_alg_factory.h"
 #include "vscf_sha512.h"
 #include "vscf_hkdf.h"
+#include "vscf_kdf.h"
 #include "vscf_message_info_der_serializer_internal.h"
-
 // clang-format on
 //  @end
 
@@ -86,6 +86,12 @@
 // clang-format off
 //  Generated section start.
 // --------------------------------------------------------------------------
+
+static void
+vscf_recipient_cipher_derive_decryption_cipher_keys_and_nonces(vscf_recipient_cipher_t *self, vsc_data_t master_key);
+
+static void
+vscf_recipient_cipher_configure_verifier_hash(vscf_recipient_cipher_t *self);
 
 static vsc_data_t
 vscf_recipient_cipher_data_derived_key(const vscf_recipient_cipher_t *self, const vscf_impl_t *cipher);
@@ -165,7 +171,7 @@ vscf_recipient_cipher_unpack_message_info(vscf_recipient_cipher_t *self, vsc_dat
 //  Deserialize given message info footer from the given data or extracted data.
 //
 static vscf_status_t
-vscf_recipient_cipher_unpack_message_info_footer(vscf_recipient_cipher_t *self, vsc_data_t message_info) VSCF_NODISCARD;
+vscf_recipient_cipher_unpack_message_info_footer(vscf_recipient_cipher_t *self) VSCF_NODISCARD;
 
 static vscf_status_t
 vscf_recipient_cipher_extract_message_info(vscf_recipient_cipher_t *self, vsc_data_t data) VSCF_NODISCARD;
@@ -188,8 +194,8 @@ vscf_recipient_cipher_accomplish_signed_encryption(vscf_recipient_cipher_t *self
 //
 //  Optionally unpack buffered message info footer and verify data digest.
 //
-static vscf_status_t
-vscf_recipient_cipher_accomplish_verified_decryption(vscf_recipient_cipher_t *self) VSCF_NODISCARD;
+static void
+vscf_recipient_cipher_accomplish_verified_decryption(vscf_recipient_cipher_t *self);
 
 //
 //  Return size of 'vscf_recipient_cipher_t'.
@@ -727,7 +733,6 @@ vscf_recipient_cipher_encryption_out_len(vscf_recipient_cipher_t *self, size_t d
 
     if (self->is_signed_operation && 0 == data_len) {
         out_len += vscf_recipient_cipher_message_info_footer_len(self);
-        vscf_cipher_encrypted_out_len(self->encryption_cipher, out_len);
     }
 
     out_len += vscf_cipher_encrypted_out_len(self->encryption_cipher, data_len);
@@ -843,14 +848,17 @@ vscf_recipient_cipher_start_verified_decryption_with_key(vscf_recipient_cipher_t
     VSCF_ASSERT_PTR(vsc_data_is_valid(recipient_id));
     VSCF_ASSERT_PTR(private_key);
     VSCF_ASSERT(vscf_private_key_is_implemented(private_key));
+    VSCF_ASSERT(vsc_data_is_valid(message_info));
+    VSCF_ASSERT(vsc_data_is_valid(message_info_footer));
 
     self->is_signed_operation = true;
 
     vscf_status_t status =
             vscf_recipient_cipher_start_decryption_with_key(self, recipient_id, private_key, message_info);
 
-    if (vscf_status_SUCCESS == status && !vsc_data_is_empty(message_info_footer)) {
-        status = vscf_recipient_cipher_unpack_message_info_footer(self, message_info_footer);
+    vsc_buffer_destroy(&self->message_info_footer_enc);
+    if (!vsc_data_is_empty(message_info_footer)) {
+        self->message_info_footer_enc = vsc_buffer_new_with_data(message_info_footer);
     }
 
     return status;
@@ -891,11 +899,17 @@ vscf_recipient_cipher_process_decryption(vscf_recipient_cipher_t *self, vsc_data
     VSCF_ASSERT(self->decryption_state != vscf_recipient_cipher_decryption_state_FAILED);
 
     switch (self->decryption_state) {
-    case vscf_recipient_cipher_decryption_state_PROCESSING_DATA:
+    case vscf_recipient_cipher_decryption_state_PROCESSING_DATA: {
         VSCF_ASSERT_PTR(self->decryption_cipher);
+        const size_t len_before = vsc_buffer_len(out);
         vscf_cipher_update(self->decryption_cipher, data, out);
+        const size_t len_after = vsc_buffer_len(out);
+        if (self->is_signed_operation) {
+            const size_t written_len = len_after - len_before;
+            vscf_hash_update(self->verifier_hash, vsc_data_slice_beg(vsc_buffer_data(out), len_before, written_len));
+        }
         return vscf_status_SUCCESS;
-
+    }
     case vscf_recipient_cipher_decryption_state_WAITING_MESSAGE_INFO: {
         vscf_status_t status = vscf_recipient_cipher_extract_message_info(self, data);
         if (status == vscf_status_SUCCESS && (self->message_info_buffer != NULL) &&
@@ -905,7 +919,14 @@ vscf_recipient_cipher_process_decryption(vscf_recipient_cipher_t *self, vsc_data
             VSCF_ASSERT(vsc_buffer_len(self->message_info_buffer) >= self->message_info_expected_len);
             size_t tail_len = vsc_buffer_len(self->message_info_buffer) - self->message_info_expected_len;
             vsc_data_t tail = vsc_data_slice_end(vsc_buffer_data(self->message_info_buffer), 0, tail_len);
+            const size_t len_before = vsc_buffer_len(out);
             vscf_cipher_update(self->decryption_cipher, tail, out);
+            const size_t len_after = vsc_buffer_len(out);
+            if (self->is_signed_operation) {
+                const size_t written_len = len_after - len_before;
+                vscf_hash_update(
+                        self->verifier_hash, vsc_data_slice_beg(vsc_buffer_data(out), len_before, written_len));
+            }
             vsc_buffer_destroy(&self->message_info_buffer);
             self->message_info_expected_len = 0;
         }
@@ -933,15 +954,23 @@ vscf_recipient_cipher_finish_decryption(vscf_recipient_cipher_t *self, vsc_buffe
 
     VSCF_ASSERT_PTR(self->decryption_cipher);
 
-    vscf_status_t status = vscf_status_SUCCESS;
-
+    const size_t len_before = vsc_buffer_len(out);
+    vscf_status_t status = vscf_cipher_finish(self->decryption_cipher, out);
+    const size_t len_after = vsc_buffer_len(out);
     if (self->is_signed_operation) {
-        status = vscf_recipient_cipher_accomplish_verified_decryption(self);
+        const size_t written_len = len_after - len_before;
+        vscf_hash_update(self->verifier_hash, vsc_data_slice_beg(vsc_buffer_data(out), len_before, written_len));
     }
 
-    status = vscf_cipher_finish(self->decryption_cipher, out);
+    if (vscf_status_SUCCESS == status && vscf_message_info_has_footer_info(self->message_info)) {
+        status = vscf_recipient_cipher_unpack_message_info_footer(self);
+    }
 
     vscf_impl_destroy(&self->decryption_cipher);
+
+    if (self->is_signed_operation) {
+        vscf_recipient_cipher_accomplish_verified_decryption(self);
+    }
 
     return status;
 }
@@ -997,9 +1026,9 @@ vscf_recipient_cipher_verify_signer_info(
 
     const vscf_footer_info_t *footer_info = vscf_message_info_footer_info(self->message_info);
     const vscf_signed_data_info_t *signed_data_info = vscf_footer_info_signed_data_info(footer_info);
-    const vscf_alg_id_t hash_alg_id = vscf_alg_alg_id(vscf_signed_data_info_hash_alg_info(signed_data_info));
+    const vscf_alg_id_t hash_alg_id = vscf_alg_info_alg_id(vscf_signed_data_info_hash_alg_info(signed_data_info));
 
-    if (vscf_alg_alg_id(public_key_alg_info) != vscf_alg_alg_id(signer_alg_info)) {
+    if (vscf_alg_info_alg_id(public_key_alg_info) != vscf_alg_info_alg_id(signer_alg_info)) {
         //  TODO: Log error - mismatch signature algorithms
         return false;
     }
@@ -1037,13 +1066,38 @@ vscf_recipient_cipher_configure_decryption_cipher(vscf_recipient_cipher_t *self,
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(self->message_info);
 
+    //
+    //  Restore decryption cipher.
+    //
     vscf_impl_destroy(&self->decryption_cipher);
-
     const vscf_impl_t *cipher_alg_info = vscf_message_info_data_encryption_alg_info(self->message_info);
     self->decryption_cipher = vscf_alg_factory_create_cipher_from_info(cipher_alg_info);
 
-    vscf_cipher_set_key(self->decryption_cipher, decryption_key);
+    //
+    //  Cipher KDF.
+    //
+    if (vscf_message_info_has_cipher_kdf_alg_info(self->message_info)) {
+        vscf_recipient_cipher_derive_decryption_cipher_keys_and_nonces(self, decryption_key);
+
+        vsc_data_t key = vscf_recipient_cipher_data_derived_key(self, self->decryption_cipher);
+        vscf_cipher_set_key(self->decryption_cipher, key);
+
+        vsc_data_t nonce = vscf_recipient_cipher_data_derived_nonce(self, self->decryption_cipher);
+        vscf_cipher_set_nonce(self->decryption_cipher, nonce);
+    } else {
+        vscf_cipher_set_key(self->decryption_cipher, decryption_key);
+    }
+
+    //
+    //  Configure cipher additional data.
+    //
+    vscf_recipient_cipher_set_cipher_auth_data(self, self->decryption_cipher);
     vscf_cipher_start_decryption(self->decryption_cipher);
+
+    //
+    //  Configure verifier hash.
+    //
+    vscf_recipient_cipher_configure_verifier_hash(self);
 
     self->decryption_state = vscf_recipient_cipher_decryption_state_PROCESSING_DATA;
 
@@ -1182,18 +1236,50 @@ vscf_recipient_cipher_unpack_message_info(vscf_recipient_cipher_t *self, vsc_dat
 //  Deserialize given message info footer from the given data or extracted data.
 //
 static vscf_status_t
-vscf_recipient_cipher_unpack_message_info_footer(vscf_recipient_cipher_t *self, vsc_data_t message_info) {
+vscf_recipient_cipher_unpack_message_info_footer(vscf_recipient_cipher_t *self) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(self->message_info_der_serializer);
-    VSCF_ASSERT(vsc_data_is_valid(message_info));
+    VSCF_ASSERT_PTR(self->decryption_cipher);
+
+    vscf_message_info_footer_destroy(&self->message_info_footer);
+
+    if (NULL == self->message_info_footer_enc) {
+        return vscf_status_ERROR_BAD_MESSAGE_INFO_FOOTER;
+    }
+
+    //
+    //  Decrypt footer.
+    //
+    vsc_data_t key = vscf_recipient_cipher_footer_derived_key(self, self->decryption_cipher);
+    vscf_cipher_set_key(self->decryption_cipher, key);
+
+    vsc_data_t nonce = vscf_recipient_cipher_footer_derived_nonce(self, self->decryption_cipher);
+    vscf_cipher_set_nonce(self->decryption_cipher, nonce);
+
+    if (vscf_cipher_auth_is_implemented(self->decryption_cipher)) {
+        vscf_cipher_auth_set_auth_data(self->decryption_cipher, vsc_data_empty());
+    }
+
+    vsc_data_t enc_footer = vsc_buffer_data(self->message_info_footer_enc);
+
+    const size_t plain_footer_len = vscf_decrypt_decrypted_len(self->decryption_cipher, enc_footer.len);
+    vsc_buffer_t *plain_footer = vsc_buffer_new_with_capacity(plain_footer_len);
+    const vscf_status_t status = vscf_decrypt(self->decryption_cipher, enc_footer, plain_footer);
+
+    if (status != vscf_status_SUCCESS) {
+        //  TODO: Log underlying error.
+        vsc_buffer_destroy(&plain_footer);
+        return vscf_status_ERROR_BAD_MESSAGE_INFO_FOOTER;
+    }
 
     vscf_error_t error;
     vscf_error_reset(&error);
 
-    vscf_message_info_footer_destroy(&self->message_info_footer);
     self->message_info_footer = vscf_message_info_der_serializer_deserialize_footer(
-            self->message_info_der_serializer, message_info, &error);
+            self->message_info_der_serializer, vsc_buffer_data(plain_footer), &error);
+
+    vsc_buffer_destroy(&plain_footer);
 
     return vscf_error_status(&error);
 }
@@ -1208,8 +1294,10 @@ VSCF_PUBLIC size_t
 vscf_recipient_cipher_message_info_footer_len(const vscf_recipient_cipher_t *self) {
 
     VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT(self->is_signed_operation);
-    VSCF_ASSERT_PTR(self->message_info_footer);
+
+    if (NULL == self->message_info_footer) {
+        return 0;
+    }
 
     const size_t plain_len = vscf_message_info_der_serializer_serialized_footer_len(
             self->message_info_der_serializer, self->message_info_footer);
@@ -1233,10 +1321,13 @@ VSCF_PUBLIC vscf_status_t
 vscf_recipient_cipher_pack_message_info_footer(vscf_recipient_cipher_t *self, vsc_buffer_t *out) {
 
     VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT(self->is_signed_operation);
     VSCF_ASSERT_PTR(out);
     VSCF_ASSERT(vsc_buffer_is_valid(out));
     VSCF_ASSERT(vsc_buffer_unused_len(out) >= vscf_recipient_cipher_message_info_footer_len(self));
+
+    if (NULL == self->message_info_footer) {
+        return vscf_status_SUCCESS;
+    }
 
     const size_t plain_footer_len = vscf_message_info_der_serializer_serialized_footer_len(
             self->message_info_der_serializer, self->message_info_footer);
@@ -1370,7 +1461,7 @@ vscf_recipient_cipher_accomplish_signed_encryption(vscf_recipient_cipher_t *self
     vscf_message_info_footer_clear_signer_infos(self->message_info_footer);
 
     //
-    //  Calculate digest digest.
+    //  Calculate data digest.
     //
     vsc_buffer_t *digest = vsc_buffer_new_with_capacity(vscf_hash_digest_len(vscf_hash_api(self->signer_hash)));
     vscf_hash_finish(self->signer_hash, digest);
@@ -1423,12 +1514,17 @@ cleanup:
 //
 //  Optionally unpack buffered message info footer and verify data digest.
 //
-static vscf_status_t
+static void
 vscf_recipient_cipher_accomplish_verified_decryption(vscf_recipient_cipher_t *self) {
 
     VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(self->verifier_hash);
 
-    return vscf_status_SUCCESS;
+    vsc_buffer_destroy(&self->data_digest);
+    const size_t digest_len = vscf_hash_digest_len(vscf_hash_api(self->verifier_hash));
+    self->data_digest = vsc_buffer_new_with_capacity(digest_len);
+
+    vscf_hash_finish(self->verifier_hash, self->data_digest);
 }
 
 static vscf_status_t
@@ -1500,7 +1596,7 @@ vscf_recipient_cipher_configure_encryption_cipher(vscf_recipient_cipher_t *self)
     //
     vscf_cipher_set_key(self->encryption_cipher, vsc_buffer_data(self->master_key));
     vscf_cipher_set_nonce(self->encryption_cipher, vsc_buffer_data(cipher_nonce));
-    vscf_recipient_cipher_set_cipher_auth_data(self, self->encryption_cipher);
+    vscf_cipher_auth_set_auth_data(self->encryption_cipher, vsc_data_empty());
     vscf_cipher_start_encryption(self->encryption_cipher);
 
     vsc_buffer_destroy(&cipher_nonce);
@@ -1634,11 +1730,9 @@ vscf_recipient_cipher_data_derived_key(const vscf_recipient_cipher_t *self, cons
     VSCF_ASSERT(vsc_buffer_is_valid(self->derived_keys));
     VSCF_ASSERT_PTR(cipher);
 
-    const size_t cipher_key_len =
-            vscf_cipher_info_key_len(vscf_cipher_cipher_info_api(vscf_cipher_api(self->encryption_cipher)));
+    const size_t cipher_key_len = vscf_cipher_info_key_len(vscf_cipher_cipher_info_api(vscf_cipher_api(cipher)));
 
-    const size_t cipher_nonce_len =
-            vscf_cipher_info_nonce_len(vscf_cipher_cipher_info_api(vscf_cipher_api(self->encryption_cipher)));
+    const size_t cipher_nonce_len = vscf_cipher_info_nonce_len(vscf_cipher_cipher_info_api(vscf_cipher_api(cipher)));
 
     const size_t derived_keys_len = 2 * cipher_key_len + 2 * cipher_nonce_len;
 
@@ -1653,11 +1747,9 @@ vscf_recipient_cipher_data_derived_nonce(const vscf_recipient_cipher_t *self, co
     VSCF_ASSERT(vsc_buffer_is_valid(self->derived_keys));
     VSCF_ASSERT_PTR(cipher);
 
-    const size_t cipher_key_len =
-            vscf_cipher_info_key_len(vscf_cipher_cipher_info_api(vscf_cipher_api(self->encryption_cipher)));
+    const size_t cipher_key_len = vscf_cipher_info_key_len(vscf_cipher_cipher_info_api(vscf_cipher_api(cipher)));
 
-    const size_t cipher_nonce_len =
-            vscf_cipher_info_nonce_len(vscf_cipher_cipher_info_api(vscf_cipher_api(self->encryption_cipher)));
+    const size_t cipher_nonce_len = vscf_cipher_info_nonce_len(vscf_cipher_cipher_info_api(vscf_cipher_api(cipher)));
 
     const size_t derived_keys_len = 2 * cipher_key_len + 2 * cipher_nonce_len;
 
@@ -1672,11 +1764,9 @@ vscf_recipient_cipher_footer_derived_key(const vscf_recipient_cipher_t *self, co
     VSCF_ASSERT(vsc_buffer_is_valid(self->derived_keys));
     VSCF_ASSERT_PTR(cipher);
 
-    const size_t cipher_key_len =
-            vscf_cipher_info_key_len(vscf_cipher_cipher_info_api(vscf_cipher_api(self->encryption_cipher)));
+    const size_t cipher_key_len = vscf_cipher_info_key_len(vscf_cipher_cipher_info_api(vscf_cipher_api(cipher)));
 
-    const size_t cipher_nonce_len =
-            vscf_cipher_info_nonce_len(vscf_cipher_cipher_info_api(vscf_cipher_api(self->encryption_cipher)));
+    const size_t cipher_nonce_len = vscf_cipher_info_nonce_len(vscf_cipher_cipher_info_api(vscf_cipher_api(cipher)));
 
     const size_t derived_keys_len = 2 * cipher_key_len + 2 * cipher_nonce_len;
 
@@ -1691,11 +1781,9 @@ vscf_recipient_cipher_footer_derived_nonce(const vscf_recipient_cipher_t *self, 
     VSCF_ASSERT(vsc_buffer_is_valid(self->derived_keys));
     VSCF_ASSERT_PTR(cipher);
 
-    const size_t cipher_key_len =
-            vscf_cipher_info_key_len(vscf_cipher_cipher_info_api(vscf_cipher_api(self->encryption_cipher)));
+    const size_t cipher_key_len = vscf_cipher_info_key_len(vscf_cipher_cipher_info_api(vscf_cipher_api(cipher)));
 
-    const size_t cipher_nonce_len =
-            vscf_cipher_info_nonce_len(vscf_cipher_cipher_info_api(vscf_cipher_api(self->encryption_cipher)));
+    const size_t cipher_nonce_len = vscf_cipher_info_nonce_len(vscf_cipher_cipher_info_api(vscf_cipher_api(cipher)));
 
     const size_t derived_keys_len = 2 * cipher_key_len + 2 * cipher_nonce_len;
 
@@ -1703,4 +1791,54 @@ vscf_recipient_cipher_footer_derived_nonce(const vscf_recipient_cipher_t *self, 
 
     return vsc_data_slice_beg(
             vsc_buffer_data(self->derived_keys), 2 * cipher_key_len + cipher_nonce_len, cipher_nonce_len);
+}
+
+void
+vscf_recipient_cipher_derive_decryption_cipher_keys_and_nonces(vscf_recipient_cipher_t *self, vsc_data_t master_key) {
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(self->message_info);
+    VSCF_ASSERT_PTR(self->decryption_cipher);
+    VSCF_ASSERT(vscf_message_info_has_cipher_kdf_alg_info(self->message_info));
+    VSCF_ASSERT(vsc_data_is_valid(master_key));
+
+    const size_t cipher_key_len =
+            vscf_cipher_info_key_len(vscf_cipher_cipher_info_api(vscf_cipher_api(self->decryption_cipher)));
+
+    const size_t cipher_nonce_len =
+            vscf_cipher_info_nonce_len(vscf_cipher_cipher_info_api(vscf_cipher_api(self->decryption_cipher)));
+
+    const size_t derived_keys_len = 2 * cipher_key_len + 2 * cipher_nonce_len;
+    vsc_buffer_release(self->derived_keys);
+    vsc_buffer_alloc(self->derived_keys, derived_keys_len);
+
+    const vscf_impl_t *cipher_kdf_alg_info = vscf_message_info_cipher_kdf_alg_info(self->message_info);
+    vscf_impl_t *cipher_kdf = vscf_alg_factory_create_kdf_from_info(cipher_kdf_alg_info);
+
+    vscf_kdf_derive(cipher_kdf, master_key, derived_keys_len, self->derived_keys);
+
+    vscf_impl_destroy(&cipher_kdf);
+}
+
+void
+vscf_recipient_cipher_configure_verifier_hash(vscf_recipient_cipher_t *self) {
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(self->message_info);
+
+    if (!vscf_message_info_has_footer_info(self->message_info)) {
+        return;
+    }
+
+    const vscf_footer_info_t *footer_info = vscf_message_info_footer_info(self->message_info);
+    if (!vscf_footer_info_has_signed_data_info(footer_info)) {
+        return;
+    }
+
+    const vscf_signed_data_info_t *signed_data_info = vscf_footer_info_signed_data_info(footer_info);
+    const vscf_impl_t *hash_alg_info = vscf_signed_data_info_hash_alg_info(signed_data_info);
+
+    vscf_impl_destroy(&self->verifier_hash);
+    self->verifier_hash = vscf_alg_factory_create_hash_from_info(hash_alg_info);
+    vscf_hash_start(self->verifier_hash);
+
+    self->is_signed_operation = true;
 }

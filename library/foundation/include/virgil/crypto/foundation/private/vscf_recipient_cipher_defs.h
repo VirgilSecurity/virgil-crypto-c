@@ -139,6 +139,8 @@ struct vscf_recipient_cipher_t {
 
     vsc_buffer_t *message_info_footer_enc;
 
+    vscf_impl_t *verifier_hash;
+
     size_t message_info_expected_len;
 
     vscf_recipient_cipher_decryption_state_t decryption_state;
