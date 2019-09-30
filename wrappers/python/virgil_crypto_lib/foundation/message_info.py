@@ -55,18 +55,6 @@ class MessageInfo(object):
         """Destroy underlying C context."""
         self._lib_vscf_message_info.vscf_message_info_delete(self.ctx)
 
-    def add_key_recipient(self, key_recipient):
-        """Add recipient that is defined by Public Key."""
-        self._lib_vscf_message_info.vscf_message_info_add_key_recipient(self.ctx, key_recipient.ctx)
-
-    def add_password_recipient(self, password_recipient):
-        """Add recipient that is defined by password."""
-        self._lib_vscf_message_info.vscf_message_info_add_password_recipient(self.ctx, password_recipient.ctx)
-
-    def set_data_encryption_alg_info(self, data_encryption_alg_info):
-        """Set information about algorithm that was used for data encryption."""
-        self._lib_vscf_message_info.vscf_message_info_set_data_encryption_alg_info(self.ctx, data_encryption_alg_info.c_impl)
-
     def data_encryption_alg_info(self):
         """Return information about algorithm that was used for the data encryption."""
         result = self._lib_vscf_message_info.vscf_message_info_data_encryption_alg_info(self.ctx)
@@ -84,14 +72,6 @@ class MessageInfo(object):
         result = self._lib_vscf_message_info.vscf_message_info_password_recipient_info_list(self.ctx)
         instance = PasswordRecipientInfoList.use_c_ctx(result)
         return instance
-
-    def clear_recipients(self):
-        """Remove all recipients."""
-        self._lib_vscf_message_info.vscf_message_info_clear_recipients(self.ctx)
-
-    def set_custom_params(self, custom_params):
-        """Setup custom params."""
-        self._lib_vscf_message_info.vscf_message_info_set_custom_params(self.ctx, custom_params.ctx)
 
     def has_custom_params(self):
         """Return true if message info contains at least one custom param."""
@@ -111,38 +91,22 @@ class MessageInfo(object):
         result = self._lib_vscf_message_info.vscf_message_info_has_cipher_kdf_alg_info(self.ctx)
         return result
 
-    def set_cipher_kdf_alg_info(self, cipher_kdf_alg_info):
-        """Setup cipher kdf alg info."""
-        self._lib_vscf_message_info.vscf_message_info_set_cipher_kdf_alg_info(self.ctx, cipher_kdf_alg_info.c_impl)
-
     def cipher_kdf_alg_info(self):
         """Return cipher kdf alg info."""
         result = self._lib_vscf_message_info.vscf_message_info_cipher_kdf_alg_info(self.ctx)
         instance = VscfImplTag.get_type(result)[0].use_c_ctx(cast(result, POINTER(VscfImplTag.get_type(result)[1])))
         return instance
 
-    def remove_cipher_kdf_alg_info(self):
-        """Remove cipher kdf alg info."""
-        self._lib_vscf_message_info.vscf_message_info_remove_cipher_kdf_alg_info(self.ctx)
-
     def has_footer_info(self):
         """Return true if footer info exists."""
         result = self._lib_vscf_message_info.vscf_message_info_has_footer_info(self.ctx)
         return result
-
-    def set_footer_info(self, footer_info):
-        """Setup footer info."""
-        self._lib_vscf_message_info.vscf_message_info_set_footer_info(self.ctx, footer_info.ctx)
 
     def footer_info(self):
         """Return footer info."""
         result = self._lib_vscf_message_info.vscf_message_info_footer_info(self.ctx)
         instance = FooterInfo.use_c_ctx(result)
         return instance
-
-    def remove_footer_info(self):
-        """Remove footer info."""
-        self._lib_vscf_message_info.vscf_message_info_remove_footer_info(self.ctx)
 
     def clear(self):
         """Remove all infos."""

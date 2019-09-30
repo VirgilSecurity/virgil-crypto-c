@@ -76,24 +76,10 @@ public class FooterInfo implements AutoCloseable {
     }
 
     /*
-    * Setup signed data info.
-    */
-    public void setSignedDataInfo(SignedDataInfo signedDataInfo) {
-        FoundationJNI.INSTANCE.footerInfo_setSignedDataInfo(this.cCtx, signedDataInfo);
-    }
-
-    /*
     * Return signed data info.
     */
     public SignedDataInfo signedDataInfo() {
         return FoundationJNI.INSTANCE.footerInfo_signedDataInfo(this.cCtx);
-    }
-
-    /*
-    * Remove signed data info.
-    */
-    public void removeSignedDataInfo() {
-        FoundationJNI.INSTANCE.footerInfo_removeSignedDataInfo(this.cCtx);
     }
 
     /*

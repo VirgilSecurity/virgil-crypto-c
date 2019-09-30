@@ -70,27 +70,6 @@ public class MessageInfo implements AutoCloseable {
     }
 
     /*
-    * Add recipient that is defined by Public Key.
-    */
-    public void addKeyRecipient(KeyRecipientInfo keyRecipient) {
-        FoundationJNI.INSTANCE.messageInfo_addKeyRecipient(this.cCtx, keyRecipient);
-    }
-
-    /*
-    * Add recipient that is defined by password.
-    */
-    public void addPasswordRecipient(PasswordRecipientInfo passwordRecipient) {
-        FoundationJNI.INSTANCE.messageInfo_addPasswordRecipient(this.cCtx, passwordRecipient);
-    }
-
-    /*
-    * Set information about algorithm that was used for data encryption.
-    */
-    public void setDataEncryptionAlgInfo(AlgInfo dataEncryptionAlgInfo) {
-        FoundationJNI.INSTANCE.messageInfo_setDataEncryptionAlgInfo(this.cCtx, dataEncryptionAlgInfo);
-    }
-
-    /*
     * Return information about algorithm that was used for the data encryption.
     */
     public AlgInfo dataEncryptionAlgInfo() {
@@ -109,20 +88,6 @@ public class MessageInfo implements AutoCloseable {
     */
     public PasswordRecipientInfoList passwordRecipientInfoList() {
         return FoundationJNI.INSTANCE.messageInfo_passwordRecipientInfoList(this.cCtx);
-    }
-
-    /*
-    * Remove all recipients.
-    */
-    public void clearRecipients() {
-        FoundationJNI.INSTANCE.messageInfo_clearRecipients(this.cCtx);
-    }
-
-    /*
-    * Setup custom params.
-    */
-    public void setCustomParams(MessageInfoCustomParams customParams) {
-        FoundationJNI.INSTANCE.messageInfo_setCustomParams(this.cCtx, customParams);
     }
 
     /*
@@ -149,24 +114,10 @@ public class MessageInfo implements AutoCloseable {
     }
 
     /*
-    * Setup cipher kdf alg info.
-    */
-    public void setCipherKdfAlgInfo(AlgInfo cipherKdfAlgInfo) {
-        FoundationJNI.INSTANCE.messageInfo_setCipherKdfAlgInfo(this.cCtx, cipherKdfAlgInfo);
-    }
-
-    /*
     * Return cipher kdf alg info.
     */
     public AlgInfo cipherKdfAlgInfo() {
         return FoundationJNI.INSTANCE.messageInfo_cipherKdfAlgInfo(this.cCtx);
-    }
-
-    /*
-    * Remove cipher kdf alg info.
-    */
-    public void removeCipherKdfAlgInfo() {
-        FoundationJNI.INSTANCE.messageInfo_removeCipherKdfAlgInfo(this.cCtx);
     }
 
     /*
@@ -177,24 +128,10 @@ public class MessageInfo implements AutoCloseable {
     }
 
     /*
-    * Setup footer info.
-    */
-    public void setFooterInfo(FooterInfo footerInfo) {
-        FoundationJNI.INSTANCE.messageInfo_setFooterInfo(this.cCtx, footerInfo);
-    }
-
-    /*
     * Return footer info.
     */
     public FooterInfo footerInfo() {
         return FoundationJNI.INSTANCE.messageInfo_footerInfo(this.cCtx);
-    }
-
-    /*
-    * Remove footer info.
-    */
-    public void removeFooterInfo() {
-        FoundationJNI.INSTANCE.messageInfo_removeFooterInfo(this.cCtx);
     }
 
     /*

@@ -129,7 +129,7 @@ vscf_footer_info_has_signed_data_info(const vscf_footer_info_t *self);
 //
 //  Setup signed data info.
 //
-VSCF_PUBLIC void
+VSCF_PRIVATE void
 vscf_footer_info_set_signed_data_info(vscf_footer_info_t *self, vscf_signed_data_info_t **signed_data_info_ref);
 
 //
@@ -147,7 +147,7 @@ vscf_footer_info_signed_data_info_m(vscf_footer_info_t *self);
 //
 //  Remove signed data info.
 //
-VSCF_PUBLIC void
+VSCF_PRIVATE void
 vscf_footer_info_remove_signed_data_info(vscf_footer_info_t *self);
 
 //

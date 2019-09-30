@@ -10,7 +10,7 @@
         <return type="boolean"/>
     </method>
 
-    <method name="set signed data info">
+    <method name="set signed data info" visibility="private">
         Setup signed data info.
 
         <argument name="signed data info" class="signed data info" access="disown"/>
@@ -28,7 +28,7 @@
         <return class="signed data info" access="readwrite"/>
     </method>
 
-    <method name="remove signed data info">
+    <method name="remove signed data info" visibility="private">
         Remove signed data info.
     </method>
 

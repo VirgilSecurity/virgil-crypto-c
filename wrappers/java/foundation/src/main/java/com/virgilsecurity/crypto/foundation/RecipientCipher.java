@@ -270,7 +270,7 @@ public class RecipientCipher implements AutoCloseable {
     *
     * Return message info footer - signers public information, etc.
     */
-    public byte[] packMessageInfoFooter() {
+    public byte[] packMessageInfoFooter() throws FoundationException {
         return FoundationJNI.INSTANCE.recipientCipher_packMessageInfoFooter(this.cCtx);
     }
 }

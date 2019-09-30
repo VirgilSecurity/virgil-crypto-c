@@ -354,7 +354,7 @@ import VSCFoundation
     /// or place it at the encrypted data ending (embedding).
     ///
     /// Return message info footer - signers public information, etc.
-    @objc public func packMessageInfoFooter() -> Data {
+    @objc public func packMessageInfoFooter() throws -> Data {
         let outCount = self.messageInfoFooterLen()
         var out = Data(count: outCount)
         var outBuf = vsc_buffer_new()
@@ -362,12 +362,14 @@ import VSCFoundation
             vsc_buffer_delete(outBuf)
         }
 
-        out.withUnsafeMutableBytes({ (outPointer: UnsafeMutableRawBufferPointer) -> Void in
+        let proxyResult = out.withUnsafeMutableBytes({ (outPointer: UnsafeMutableRawBufferPointer) -> vscf_status_t in
             vsc_buffer_use(outBuf, outPointer.bindMemory(to: byte.self).baseAddress, outCount)
 
-            vscf_recipient_cipher_pack_message_info_footer(self.c_ctx, outBuf)
+            return vscf_recipient_cipher_pack_message_info_footer(self.c_ctx, outBuf)
         })
         out.count = vsc_buffer_len(outBuf)
+
+        try FoundationError.handleStatus(fromC: proxyResult)
 
         return out
     }

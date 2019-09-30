@@ -112,6 +112,13 @@ class VscfAes256Gcm(object):
         vscf_aes256_gcm_encrypted_len.restype = c_size_t
         return vscf_aes256_gcm_encrypted_len(ctx, data_len)
 
+    def vscf_aes256_gcm_precise_encrypted_len(self, ctx, data_len):
+        """Precise length calculation of encrypted data."""
+        vscf_aes256_gcm_precise_encrypted_len = self._lib.vscf_aes256_gcm_precise_encrypted_len
+        vscf_aes256_gcm_precise_encrypted_len.argtypes = [POINTER(vscf_aes256_gcm_t), c_size_t]
+        vscf_aes256_gcm_precise_encrypted_len.restype = c_size_t
+        return vscf_aes256_gcm_precise_encrypted_len(ctx, data_len)
+
     def vscf_aes256_gcm_decrypt(self, ctx, data, out):
         """Decrypt given data."""
         vscf_aes256_gcm_decrypt = self._lib.vscf_aes256_gcm_decrypt

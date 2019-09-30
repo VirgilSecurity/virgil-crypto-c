@@ -10,21 +10,21 @@
     <property name="footer info" class="footer info"/>
 
 
-    <method name="add key recipient">
+    <method name="add key recipient" visibility="private">
         Add recipient that is defined by Public Key.
 
         <argument name="key recipient" class="key recipient info" access="disown"/>
     </method>
 
 
-    <method name="add password recipient">
+    <method name="add password recipient" visibility="private">
         Add recipient that is defined by password.
 
         <argument name="password recipient" class="password recipient info" access="disown"/>
     </method>
 
 
-    <method name="set data encryption alg info">
+    <method name="set data encryption alg info" visibility="private">
         Set information about algorithm that was used for data encryption.
 
         <argument name="data encryption alg info" interface="alg info" access="disown"/>
@@ -59,12 +59,12 @@
     </method>
 
 
-    <method name="clear recipients">
+    <method name="clear recipients" visibility="private">
         Remove all recipients.
     </method>
 
 
-    <method name="set custom params">
+    <method name="set custom params" visibility="private">
         Setup custom params.
 
         <argument name="custom params" class="message info custom params" access="disown"/>
@@ -94,7 +94,7 @@
     </method>
 
 
-    <method name="set cipher kdf alg info">
+    <method name="set cipher kdf alg info" visibility="private">
         Setup cipher kdf alg info.
 
         <argument name="cipher kdf alg info" interface="alg info" access="disown"/>
@@ -108,7 +108,7 @@
     </method>
 
 
-    <method name="remove cipher kdf alg info">
+    <method name="remove cipher kdf alg info" visibility="private">
         Remove cipher kdf alg info.
     </method>
 
@@ -120,7 +120,7 @@
     </method>
 
 
-    <method name="set footer info">
+    <method name="set footer info" visibility="private">
         Setup footer info.
 
         <argument name="footer info" class="footer info" access="disown"/>
@@ -141,7 +141,7 @@
     </method>
 
 
-    <method name="remove footer info">
+    <method name="remove footer info" visibility="private">
         Remove footer info.
     </method>
 

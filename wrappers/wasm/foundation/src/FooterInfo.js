@@ -102,15 +102,6 @@ const initFooterInfo = (Module, modules) => {
         }
 
         /**
-         * Setup signed data info.
-         */
-        setSignedDataInfo(signedDataInfo) {
-            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-            precondition.ensureClass('signedDataInfo', signedDataInfo, modules.SignedDataInfo);
-            Module._vscf_footer_info_set_signed_data_info(this.ctxPtr, signedDataInfo.ctxPtr);
-        }
-
-        /**
          * Return signed data info.
          */
         signedDataInfo() {
@@ -121,14 +112,6 @@ const initFooterInfo = (Module, modules) => {
 
             const jsResult = modules.SignedDataInfo.newAndUseCContext(proxyResult);
             return jsResult;
-        }
-
-        /**
-         * Remove signed data info.
-         */
-        removeSignedDataInfo() {
-            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-            Module._vscf_footer_info_remove_signed_data_info(this.ctxPtr);
         }
 
         /**

@@ -42,6 +42,7 @@
     <property name="message info footer" class="message info footer"/>
     <property name="message info footer enc" class="buffer"/>
     <property name="message info expected len" type="size"/>
+    <property name="processed encrypted data len" type="size"/>
     <property name="decryption state" enum="recipient cipher decryption state"/>
     <property name="is signed operation" type="boolean"/>
 
@@ -239,20 +240,6 @@
         <return type="boolean"/>
     </method>
 
-    <method name="configure cipher for data processing" is_const="1" declaration="private">
-        Set key and nonce for given symmetric cipher from key material
-        for data encryption / decryption.
-
-        <argument name="cipher" interface="cipher" access="readwrite"/>
-    </method>
-
-    <method name="configure cipher for footer processing" is_const="1" declaration="private">
-        Set key and nonce for given symmetric cipher from key material
-        for footer encryption / decryption.
-
-        <argument name="cipher" interface="cipher" access="readwrite"/>
-    </method>
-
     <method name="configure decryption cipher" declaration="private">
         Configure decryption symmetric cipher with given key and
         nonce that is restored from the message info or derived from the key.
@@ -262,12 +249,6 @@
         <argument name="decryption key" class="data"/>
 
         <return enum="status"/>
-    </method>
-
-    <method name="derive decryption cipher keys and nonces" declaration="private">
-        Derive keys and nonces from given master.
-
-        <argument name="master key" class="data"/>
     </method>
 
     <method name="decrypt data encryption key with password" declaration="private">
@@ -324,6 +305,8 @@
         <argument name="out" class="buffer">
             <length method="message info footer len"/>
         </argument>
+
+        <return enum="status"/>
     </method>
 
     <method name="extract message info" declaration="private">
@@ -351,16 +334,62 @@
         Calculate data digest.
     </method>
 
-    <method name="setup encryption defaults">
+    <method name="derive decryption cipher keys and nonces" declaration="private">
+        Derive keys and nonces from given master.
+
+        <argument name="master key" class="data"/>
+    </method>
+
+    <method name="configure verifier hash" declaration="private">
+
+    </method>
+
+    <method name="data derived key" is_const="1" declaration="private">
+        <argument name="cipher" interface="cipher"/>
+        <return class="data"/>
+    </method>
+
+    <method name="data derived nonce" is_const="1" declaration="private">
+        <argument name="cipher" interface="cipher"/>
+        <return class="data"/>
+    </method>
+
+    <method name="footer derived key" is_const="1" declaration="private">
+        <argument name="cipher" interface="cipher"/>
+        <return class="data"/>
+    </method>
+
+    <method name="footer derived nonce" is_const="1" declaration="private">
+        <argument name="cipher" interface="cipher"/>
+        <return class="data"/>
+    </method>
+
+    <method name="setup encryption defaults" declaration="private">
         Setup default algorithms required for encryption.
 
         <return enum="status"/>
     </method>
 
-    <method name="configure encryption cipher">
-        Setup default symmetric cipher if not defined yet.
-        Return cipher key, that should be encrypted for all recipients.
+    <method name="configure encryption cipher" declaration="private">
+        <return enum="status"/>
+    </method>
 
-        <return class="buffer" access="disown"/>
+    <method name="configure kdf feeded encryption cipher" declaration="private">
+        <return enum="status"/>
+    </method>
+
+    <method name="encrypt cipher key for recipients" declaration="private">
+        <return enum="status"/>
+    </method>
+
+    <method name="filter message info footer" declaration="private">
+        <argument name="data" class="data"/>
+
+        <return class="data"/>
+    </method>
+
+    <method name="decrypt chunk" declaration="private">
+        <argument name="data" class="data"/>
+        <argument name="out" class="buffer"/>
     </method>
 </class>

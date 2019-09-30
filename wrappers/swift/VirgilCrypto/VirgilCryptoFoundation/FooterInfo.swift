@@ -74,23 +74,11 @@ import VSCFoundation
         return proxyResult
     }
 
-    /// Setup signed data info.
-    @objc public func setSignedDataInfo(signedDataInfo: SignedDataInfo) {
-        var signedDataInfoCopy = vscf_signed_data_info_shallow_copy(signedDataInfo.c_ctx)
-
-        vscf_footer_info_set_signed_data_info(self.c_ctx, &signedDataInfoCopy)
-    }
-
     /// Return signed data info.
     @objc public func signedDataInfo() -> SignedDataInfo {
         let proxyResult = vscf_footer_info_signed_data_info(self.c_ctx)
 
         return SignedDataInfo.init(use: proxyResult!)
-    }
-
-    /// Remove signed data info.
-    @objc public func removeSignedDataInfo() {
-        vscf_footer_info_remove_signed_data_info(self.c_ctx)
     }
 
     /// Set data size.

@@ -332,8 +332,12 @@ static void
 vscf_message_info_der_serializer_deserialize_custom_params(vscf_message_info_der_serializer_t *self,
         vscf_message_info_custom_params_t *custom_params, vscf_error_t *error);
 
+//
+//  AlgorithmIdentifier
+//
 static void
-vscf_message_info_der_serializer_deserialize_cipher_kdf(vscf_message_info_der_serializer_t *self, vscf_message_info_t *message_info, vscf_error_t *error);
+vscf_message_info_der_serializer_deserialize_cipher_kdf(vscf_message_info_der_serializer_t *self,
+        vscf_message_info_t *message_info, vscf_error_t *error);
 
 //
 //  VirgilFooterInfo ::= SEQUENCE {
@@ -1464,6 +1468,9 @@ vscf_message_info_der_serializer_deserialize_custom_params(vscf_message_info_der
     }
 }
 
+//
+//  AlgorithmIdentifier
+//
 static void
 vscf_message_info_der_serializer_deserialize_cipher_kdf(
         vscf_message_info_der_serializer_t *self, vscf_message_info_t *message_info, vscf_error_t *error) {

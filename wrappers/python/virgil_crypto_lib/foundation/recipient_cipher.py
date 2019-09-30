@@ -228,7 +228,8 @@ class RecipientCipher(object):
 
         Return message info footer - signers public information, etc."""
         out = Buffer(self.message_info_footer_len())
-        self._lib_vscf_recipient_cipher.vscf_recipient_cipher_pack_message_info_footer(self.ctx, out.c_buffer)
+        status = self._lib_vscf_recipient_cipher.vscf_recipient_cipher_pack_message_info_footer(self.ctx, out.c_buffer)
+        VscfStatus.handle_status(status)
         return out.get_bytes()
 
     @classmethod

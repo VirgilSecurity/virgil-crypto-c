@@ -242,6 +242,17 @@ vscf_aes256_gcm_encrypted_len(vscf_aes256_gcm_t *self, size_t data_len) {
 }
 
 //
+//  Precise length calculation of encrypted data.
+//
+VSCF_PUBLIC size_t
+vscf_aes256_gcm_precise_encrypted_len(vscf_aes256_gcm_t *self, size_t data_len) {
+
+    VSCF_ASSERT_PTR(self);
+
+    return data_len + vscf_aes256_gcm_AUTH_TAG_LEN;
+}
+
+//
 //  Decrypt given data.
 //
 VSCF_PUBLIC vscf_status_t

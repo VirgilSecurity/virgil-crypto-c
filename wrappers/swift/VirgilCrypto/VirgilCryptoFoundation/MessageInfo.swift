@@ -68,27 +68,6 @@ import VSCFoundation
         vscf_message_info_delete(self.c_ctx)
     }
 
-    /// Add recipient that is defined by Public Key.
-    @objc public func addKeyRecipient(keyRecipient: KeyRecipientInfo) {
-        var keyRecipientCopy = vscf_key_recipient_info_shallow_copy(keyRecipient.c_ctx)
-
-        vscf_message_info_add_key_recipient(self.c_ctx, &keyRecipientCopy)
-    }
-
-    /// Add recipient that is defined by password.
-    @objc public func addPasswordRecipient(passwordRecipient: PasswordRecipientInfo) {
-        var passwordRecipientCopy = vscf_password_recipient_info_shallow_copy(passwordRecipient.c_ctx)
-
-        vscf_message_info_add_password_recipient(self.c_ctx, &passwordRecipientCopy)
-    }
-
-    /// Set information about algorithm that was used for data encryption.
-    @objc public func setDataEncryptionAlgInfo(dataEncryptionAlgInfo: AlgInfo) {
-        var dataEncryptionAlgInfoCopy = vscf_impl_shallow_copy(dataEncryptionAlgInfo.c_ctx)
-
-        vscf_message_info_set_data_encryption_alg_info(self.c_ctx, &dataEncryptionAlgInfoCopy)
-    }
-
     /// Return information about algorithm that was used for the data encryption.
     @objc public func dataEncryptionAlgInfo() -> AlgInfo {
         let proxyResult = vscf_message_info_data_encryption_alg_info(self.c_ctx)
@@ -108,18 +87,6 @@ import VSCFoundation
         let proxyResult = vscf_message_info_password_recipient_info_list(self.c_ctx)
 
         return PasswordRecipientInfoList.init(use: proxyResult!)
-    }
-
-    /// Remove all recipients.
-    @objc public func clearRecipients() {
-        vscf_message_info_clear_recipients(self.c_ctx)
-    }
-
-    /// Setup custom params.
-    @objc public func setCustomParams(customParams: MessageInfoCustomParams) {
-        var customParamsCopy = vscf_message_info_custom_params_shallow_copy(customParams.c_ctx)
-
-        vscf_message_info_set_custom_params(self.c_ctx, &customParamsCopy)
     }
 
     /// Return true if message info contains at least one custom param.
@@ -145,23 +112,11 @@ import VSCFoundation
         return proxyResult
     }
 
-    /// Setup cipher kdf alg info.
-    @objc public func setCipherKdfAlgInfo(cipherKdfAlgInfo: AlgInfo) {
-        var cipherKdfAlgInfoCopy = vscf_impl_shallow_copy(cipherKdfAlgInfo.c_ctx)
-
-        vscf_message_info_set_cipher_kdf_alg_info(self.c_ctx, &cipherKdfAlgInfoCopy)
-    }
-
     /// Return cipher kdf alg info.
     @objc public func cipherKdfAlgInfo() -> AlgInfo {
         let proxyResult = vscf_message_info_cipher_kdf_alg_info(self.c_ctx)
 
         return FoundationImplementation.wrapAlgInfo(take: proxyResult!)
-    }
-
-    /// Remove cipher kdf alg info.
-    @objc public func removeCipherKdfAlgInfo() {
-        vscf_message_info_remove_cipher_kdf_alg_info(self.c_ctx)
     }
 
     /// Return true if footer info exists.
@@ -171,23 +126,11 @@ import VSCFoundation
         return proxyResult
     }
 
-    /// Setup footer info.
-    @objc public func setFooterInfo(footerInfo: FooterInfo) {
-        var footerInfoCopy = vscf_footer_info_shallow_copy(footerInfo.c_ctx)
-
-        vscf_message_info_set_footer_info(self.c_ctx, &footerInfoCopy)
-    }
-
     /// Return footer info.
     @objc public func footerInfo() -> FooterInfo {
         let proxyResult = vscf_message_info_footer_info(self.c_ctx)
 
         return FooterInfo.init(use: proxyResult!)
-    }
-
-    /// Remove footer info.
-    @objc public func removeFooterInfo() {
-        vscf_message_info_remove_footer_info(self.c_ctx)
     }
 
     /// Remove all infos.

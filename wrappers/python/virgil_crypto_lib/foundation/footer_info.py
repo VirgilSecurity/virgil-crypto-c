@@ -55,19 +55,11 @@ class FooterInfo(object):
         result = self._lib_vscf_footer_info.vscf_footer_info_has_signed_data_info(self.ctx)
         return result
 
-    def set_signed_data_info(self, signed_data_info):
-        """Setup signed data info."""
-        self._lib_vscf_footer_info.vscf_footer_info_set_signed_data_info(self.ctx, signed_data_info.ctx)
-
     def signed_data_info(self):
         """Return signed data info."""
         result = self._lib_vscf_footer_info.vscf_footer_info_signed_data_info(self.ctx)
         instance = SignedDataInfo.use_c_ctx(result)
         return instance
-
-    def remove_signed_data_info(self):
-        """Remove signed data info."""
-        self._lib_vscf_footer_info.vscf_footer_info_remove_signed_data_info(self.ctx)
 
     def set_data_size(self, data_size):
         """Set data size."""

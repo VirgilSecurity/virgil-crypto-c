@@ -69,26 +69,12 @@ class VscfFooterInfo(object):
         vscf_footer_info_has_signed_data_info.restype = c_bool
         return vscf_footer_info_has_signed_data_info(ctx)
 
-    def vscf_footer_info_set_signed_data_info(self, ctx, signed_data_info):
-        """Setup signed data info."""
-        vscf_footer_info_set_signed_data_info = self._lib.vscf_footer_info_set_signed_data_info
-        vscf_footer_info_set_signed_data_info.argtypes = [POINTER(vscf_footer_info_t), POINTER(vscf_signed_data_info_t)]
-        vscf_footer_info_set_signed_data_info.restype = None
-        return vscf_footer_info_set_signed_data_info(ctx, signed_data_info)
-
     def vscf_footer_info_signed_data_info(self, ctx):
         """Return signed data info."""
         vscf_footer_info_signed_data_info = self._lib.vscf_footer_info_signed_data_info
         vscf_footer_info_signed_data_info.argtypes = [POINTER(vscf_footer_info_t)]
         vscf_footer_info_signed_data_info.restype = POINTER(vscf_signed_data_info_t)
         return vscf_footer_info_signed_data_info(ctx)
-
-    def vscf_footer_info_remove_signed_data_info(self, ctx):
-        """Remove signed data info."""
-        vscf_footer_info_remove_signed_data_info = self._lib.vscf_footer_info_remove_signed_data_info
-        vscf_footer_info_remove_signed_data_info.argtypes = [POINTER(vscf_footer_info_t)]
-        vscf_footer_info_remove_signed_data_info.restype = None
-        return vscf_footer_info_remove_signed_data_info(ctx)
 
     def vscf_footer_info_set_data_size(self, ctx, data_size):
         """Set data size."""

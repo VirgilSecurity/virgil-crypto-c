@@ -593,7 +593,8 @@ const initRecipientCipher = (Module, modules) => {
             const outCtxPtr = Module._vsc_buffer_new_with_capacity(outCapacity);
 
             try {
-                Module._vscf_recipient_cipher_pack_message_info_footer(this.ctxPtr, outCtxPtr);
+                const proxyResult = Module._vscf_recipient_cipher_pack_message_info_footer(this.ctxPtr, outCtxPtr);
+                modules.FoundationError.handleStatusCode(proxyResult);
 
                 const outPtr = Module._vsc_buffer_bytes(outCtxPtr);
                 const outPtrLen = Module._vsc_buffer_len(outCtxPtr);

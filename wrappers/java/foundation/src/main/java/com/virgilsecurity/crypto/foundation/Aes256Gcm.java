@@ -106,6 +106,13 @@ public class Aes256Gcm implements AutoCloseable, Alg, Encrypt, Decrypt, CipherIn
     }
 
     /*
+    * Precise length calculation of encrypted data.
+    */
+    public int preciseEncryptedLen(int dataLen) {
+        return FoundationJNI.INSTANCE.aes256Gcm_preciseEncryptedLen(this.cCtx, dataLen);
+    }
+
+    /*
     * Decrypt given data.
     */
     public byte[] decrypt(byte[] data) throws FoundationException {

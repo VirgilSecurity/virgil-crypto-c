@@ -368,7 +368,7 @@ vscf_recipient_cipher_message_info_footer_len(const vscf_recipient_cipher_t *sel
 //  Return message info footer - signers public information, etc.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_recipient_cipher_pack_message_info_footer(vscf_recipient_cipher_t *self, vsc_buffer_t *out);
+vscf_recipient_cipher_pack_message_info_footer(vscf_recipient_cipher_t *self, vsc_buffer_t *out) VSCF_NODISCARD;
 
 
 // --------------------------------------------------------------------------

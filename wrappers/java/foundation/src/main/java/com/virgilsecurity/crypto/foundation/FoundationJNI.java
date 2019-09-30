@@ -133,21 +133,6 @@ public class FoundationJNI {
     public native void messageInfo_close(long cCtx);
 
     /*
-    * Add recipient that is defined by Public Key.
-    */
-    public native void messageInfo_addKeyRecipient(long cCtx, KeyRecipientInfo keyRecipient);
-
-    /*
-    * Add recipient that is defined by password.
-    */
-    public native void messageInfo_addPasswordRecipient(long cCtx, PasswordRecipientInfo passwordRecipient);
-
-    /*
-    * Set information about algorithm that was used for data encryption.
-    */
-    public native void messageInfo_setDataEncryptionAlgInfo(long cCtx, AlgInfo dataEncryptionAlgInfo);
-
-    /*
     * Return information about algorithm that was used for the data encryption.
     */
     public native AlgInfo messageInfo_dataEncryptionAlgInfo(long cCtx);
@@ -161,16 +146,6 @@ public class FoundationJNI {
     * Return list with a "password recipient info" elements.
     */
     public native PasswordRecipientInfoList messageInfo_passwordRecipientInfoList(long cCtx);
-
-    /*
-    * Remove all recipients.
-    */
-    public native void messageInfo_clearRecipients(long cCtx);
-
-    /*
-    * Setup custom params.
-    */
-    public native void messageInfo_setCustomParams(long cCtx, MessageInfoCustomParams customParams);
 
     /*
     * Return true if message info contains at least one custom param.
@@ -190,19 +165,9 @@ public class FoundationJNI {
     public native boolean messageInfo_hasCipherKdfAlgInfo(long cCtx);
 
     /*
-    * Setup cipher kdf alg info.
-    */
-    public native void messageInfo_setCipherKdfAlgInfo(long cCtx, AlgInfo cipherKdfAlgInfo);
-
-    /*
     * Return cipher kdf alg info.
     */
     public native AlgInfo messageInfo_cipherKdfAlgInfo(long cCtx);
-
-    /*
-    * Remove cipher kdf alg info.
-    */
-    public native void messageInfo_removeCipherKdfAlgInfo(long cCtx);
 
     /*
     * Return true if footer info exists.
@@ -210,19 +175,9 @@ public class FoundationJNI {
     public native boolean messageInfo_hasFooterInfo(long cCtx);
 
     /*
-    * Setup footer info.
-    */
-    public native void messageInfo_setFooterInfo(long cCtx, FooterInfo footerInfo);
-
-    /*
     * Return footer info.
     */
     public native FooterInfo messageInfo_footerInfo(long cCtx);
-
-    /*
-    * Remove footer info.
-    */
-    public native void messageInfo_removeFooterInfo(long cCtx);
 
     /*
     * Remove all infos.
@@ -620,7 +575,7 @@ public class FoundationJNI {
     *
     * Return message info footer - signers public information, etc.
     */
-    public native byte[] recipientCipher_packMessageInfoFooter(long cCtx);
+    public native byte[] recipientCipher_packMessageInfoFooter(long cCtx) throws FoundationException;
 
     public native long messageInfoCustomParams_new();
 
@@ -1089,19 +1044,9 @@ public class FoundationJNI {
     public native boolean footerInfo_hasSignedDataInfo(long cCtx);
 
     /*
-    * Setup signed data info.
-    */
-    public native void footerInfo_setSignedDataInfo(long cCtx, SignedDataInfo signedDataInfo);
-
-    /*
     * Return signed data info.
     */
     public native SignedDataInfo footerInfo_signedDataInfo(long cCtx);
-
-    /*
-    * Remove signed data info.
-    */
-    public native void footerInfo_removeSignedDataInfo(long cCtx);
 
     /*
     * Set data size.
@@ -1299,6 +1244,11 @@ public class FoundationJNI {
     public native int aes256Gcm_encryptedLen(long cCtx, int dataLen);
 
     /*
+    * Precise length calculation of encrypted data.
+    */
+    public native int aes256Gcm_preciseEncryptedLen(long cCtx, int dataLen);
+
+    /*
     * Decrypt given data.
     */
     public native byte[] aes256Gcm_decrypt(long cCtx, byte[] data) throws FoundationException;
@@ -1430,6 +1380,11 @@ public class FoundationJNI {
     * Calculate required buffer length to hold the encrypted data.
     */
     public native int aes256Cbc_encryptedLen(long cCtx, int dataLen);
+
+    /*
+    * Precise length calculation of encrypted data.
+    */
+    public native int aes256Cbc_preciseEncryptedLen(long cCtx, int dataLen);
 
     /*
     * Decrypt given data.
@@ -2585,6 +2540,11 @@ public class FoundationJNI {
     * Calculate required buffer length to hold the encrypted data.
     */
     public native int pkcs5Pbes2_encryptedLen(long cCtx, int dataLen);
+
+    /*
+    * Precise length calculation of encrypted data.
+    */
+    public native int pkcs5Pbes2_preciseEncryptedLen(long cCtx, int dataLen);
 
     /*
     * Decrypt given data.

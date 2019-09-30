@@ -90,33 +90,6 @@ const initMessageInfo = (Module, modules) => {
         }
 
         /**
-         * Add recipient that is defined by Public Key.
-         */
-        addKeyRecipient(keyRecipient) {
-            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-            precondition.ensureClass('keyRecipient', keyRecipient, modules.KeyRecipientInfo);
-            Module._vscf_message_info_add_key_recipient(this.ctxPtr, keyRecipient.ctxPtr);
-        }
-
-        /**
-         * Add recipient that is defined by password.
-         */
-        addPasswordRecipient(passwordRecipient) {
-            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-            precondition.ensureClass('passwordRecipient', passwordRecipient, modules.PasswordRecipientInfo);
-            Module._vscf_message_info_add_password_recipient(this.ctxPtr, passwordRecipient.ctxPtr);
-        }
-
-        /**
-         * Set information about algorithm that was used for data encryption.
-         */
-        setDataEncryptionAlgInfo(dataEncryptionAlgInfo) {
-            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-            precondition.ensureImplementInterface('dataEncryptionAlgInfo', dataEncryptionAlgInfo, 'Foundation.AlgInfo', modules.FoundationInterfaceTag.ALG_INFO, modules.FoundationInterface);
-            Module._vscf_message_info_set_data_encryption_alg_info(this.ctxPtr, dataEncryptionAlgInfo.ctxPtr);
-        }
-
-        /**
          * Return information about algorithm that was used for the data encryption.
          */
         dataEncryptionAlgInfo() {
@@ -153,23 +126,6 @@ const initMessageInfo = (Module, modules) => {
 
             const jsResult = modules.PasswordRecipientInfoList.newAndUseCContext(proxyResult);
             return jsResult;
-        }
-
-        /**
-         * Remove all recipients.
-         */
-        clearRecipients() {
-            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-            Module._vscf_message_info_clear_recipients(this.ctxPtr);
-        }
-
-        /**
-         * Setup custom params.
-         */
-        setCustomParams(customParams) {
-            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-            precondition.ensureClass('customParams', customParams, modules.MessageInfoCustomParams);
-            Module._vscf_message_info_set_custom_params(this.ctxPtr, customParams.ctxPtr);
         }
 
         /**
@@ -214,15 +170,6 @@ const initMessageInfo = (Module, modules) => {
         }
 
         /**
-         * Setup cipher kdf alg info.
-         */
-        setCipherKdfAlgInfo(cipherKdfAlgInfo) {
-            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-            precondition.ensureImplementInterface('cipherKdfAlgInfo', cipherKdfAlgInfo, 'Foundation.AlgInfo', modules.FoundationInterfaceTag.ALG_INFO, modules.FoundationInterface);
-            Module._vscf_message_info_set_cipher_kdf_alg_info(this.ctxPtr, cipherKdfAlgInfo.ctxPtr);
-        }
-
-        /**
          * Return cipher kdf alg info.
          */
         cipherKdfAlgInfo() {
@@ -233,14 +180,6 @@ const initMessageInfo = (Module, modules) => {
 
             const jsResult = modules.FoundationInterface.newAndUseCContext(proxyResult);
             return jsResult;
-        }
-
-        /**
-         * Remove cipher kdf alg info.
-         */
-        removeCipherKdfAlgInfo() {
-            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-            Module._vscf_message_info_remove_cipher_kdf_alg_info(this.ctxPtr);
         }
 
         /**
@@ -257,15 +196,6 @@ const initMessageInfo = (Module, modules) => {
         }
 
         /**
-         * Setup footer info.
-         */
-        setFooterInfo(footerInfo) {
-            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-            precondition.ensureClass('footerInfo', footerInfo, modules.FooterInfo);
-            Module._vscf_message_info_set_footer_info(this.ctxPtr, footerInfo.ctxPtr);
-        }
-
-        /**
          * Return footer info.
          */
         footerInfo() {
@@ -276,14 +206,6 @@ const initMessageInfo = (Module, modules) => {
 
             const jsResult = modules.FooterInfo.newAndUseCContext(proxyResult);
             return jsResult;
-        }
-
-        /**
-         * Remove footer info.
-         */
-        removeFooterInfo() {
-            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-            Module._vscf_message_info_remove_footer_info(this.ctxPtr);
         }
 
         /**

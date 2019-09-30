@@ -276,7 +276,7 @@ class VscfRecipientCipher(object):
         Return message info footer - signers public information, etc."""
         vscf_recipient_cipher_pack_message_info_footer = self._lib.vscf_recipient_cipher_pack_message_info_footer
         vscf_recipient_cipher_pack_message_info_footer.argtypes = [POINTER(vscf_recipient_cipher_t), POINTER(vsc_buffer_t)]
-        vscf_recipient_cipher_pack_message_info_footer.restype = None
+        vscf_recipient_cipher_pack_message_info_footer.restype = c_int
         return vscf_recipient_cipher_pack_message_info_footer(ctx, out)
 
     def vscf_recipient_cipher_shallow_copy(self, ctx):

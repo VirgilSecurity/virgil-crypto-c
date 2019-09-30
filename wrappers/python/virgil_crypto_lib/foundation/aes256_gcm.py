@@ -106,6 +106,11 @@ class Aes256Gcm(Alg, Encrypt, Decrypt, CipherInfo, Cipher, CipherAuthInfo, AuthE
         result = self._lib_vscf_aes256_gcm.vscf_aes256_gcm_encrypted_len(self.ctx, data_len)
         return result
 
+    def precise_encrypted_len(self, data_len):
+        """Precise length calculation of encrypted data."""
+        result = self._lib_vscf_aes256_gcm.vscf_aes256_gcm_precise_encrypted_len(self.ctx, data_len)
+        return result
+
     def decrypt(self, data):
         """Decrypt given data."""
         d_data = Data(data)
