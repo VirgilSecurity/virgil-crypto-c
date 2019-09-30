@@ -517,9 +517,11 @@ vscf_recipient_cipher_cleanup_ctx(vscf_recipient_cipher_t *self) {
     vsc_buffer_destroy(&self->decryption_password);
     vsc_buffer_destroy(&self->decryption_recipient_id);
     vsc_buffer_destroy(&self->message_info_footer_enc);
+    vscf_impl_destroy(&self->verifier_hash);
     vscf_impl_destroy(&self->decryption_cipher);
     vscf_impl_destroy(&self->decryption_recipient_key);
     vscf_key_recipient_list_destroy(&self->key_recipients);
+    vscf_signer_list_destroy(&self->signers);
     vscf_message_info_der_serializer_destroy(&self->message_info_der_serializer);
     vscf_message_info_destroy(&self->message_info);
     vscf_message_info_footer_destroy(&self->message_info_footer);
@@ -1415,7 +1417,7 @@ vscf_recipient_cipher_extract_message_info(vscf_recipient_cipher_t *self, vsc_da
 
     return vscf_status_SUCCESS;
 }
-#include <stdio.h>
+
 //
 //  For signed encryption set serialized footer info as
 //  cipher additional data for AEAD ciphers.

@@ -250,6 +250,7 @@ vscf_message_info_cleanup_ctx(vscf_message_info_t *self) {
     vscf_password_recipient_info_list_destroy(&self->password_recipients);
     vscf_message_info_custom_params_destroy(&self->custom_params);
     vscf_impl_destroy(&self->data_encryption_alg_info);
+    vscf_impl_destroy(&self->cipher_kdf_alg_info);
     vscf_footer_info_destroy(&self->footer_info);
 }
 
