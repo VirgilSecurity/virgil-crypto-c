@@ -60,11 +60,11 @@ endfunction
 function php_derive_high_level_function_name (in_php_method)
     check_arguments (my, "in_php_method", my)
 
-    my._prefix = "$(my.in_php_method.prefix0:c)"
-    my._entity = "$(my.in_php_method.entity0:c)"
+    my._prefix = "$(my.in_php_method.prefix:c)"
+    my._class = "$(my.in_php_method.class:c)"
     my._method_name = "$(my.in_php_method.name0:c)"
 
-    my._res = "$(my._prefix:)_$(my._entity:)_$(my._method_name:)_php"
+    my._res = "$(my._prefix:)_$(my._class:)_$(my._method_name:)_php"
 
     return my._res
 endfunction
@@ -72,10 +72,11 @@ endfunction
 # ---------------------------------------------------------------------------
 #   
 # ---------------------------------------------------------------------------
-function php_derive_high_level_namespace (in_php_project)
-    check_arguments (my, "in_php_project", my)
+function php_derive_high_level_namespace (in_php_module)
+    check_arguments (my, "in_php_module", my)
 
-    my._res = "$(my.in_php_project.main_project:)\\\\$(my.in_php_project.project:)"
+    #my._res = "$(my.in_php_project.main_project:)\\\\$(my.in_php_project.project:)"
+    my._res = "TEMP_NAMESPACE"
 
     return my._res
 endfunction

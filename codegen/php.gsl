@@ -119,7 +119,7 @@ function php_create_class_module (class, php_project, meta)
         endnew
 
         new high_level to php_module
-            php_map_high_level(my.class, my.php_project, high_level, my._type)
+            php_map_high_level(my.class, php_module, my.php_project, high_level, my._type)
         endnew
 
         new low_level to php_module
@@ -152,7 +152,7 @@ function php_create_interface_module (interface, php_project, meta)
         endnew
 
         new high_level to php_module
-            php_map_high_level(my.interface, my.php_project, high_level, my._type)
+            php_map_high_level(my.interface, php_module, my.php_project, high_level, my._type)
         endnew
 
         new low_level to php_module
@@ -185,7 +185,7 @@ function php_create_implementation_module (implementation, php_project, meta)
         endnew
 
         new high_level to php_module
-            php_map_high_level(my.implementation, my.php_project, high_level, my._type)
+            php_map_high_level(my.implementation, php_module, my.php_project, high_level, my._type)
         endnew
 
         new low_level to php_module
@@ -235,7 +235,7 @@ function php_create_enum_module (enum, php_project, meta)
             endnew
 
             new high_level to php_module
-                php_map_high_level_enum(my.enum, my.php_project, high_level)
+                php_map_high_level_enum(my.enum, php_module, high_level)
             endnew
 
             new low_level to php_module
@@ -328,7 +328,7 @@ function php_create_custom_modules (source, php_project, meta)
         endnew
 
         new high_level to php_module
-            php_map_high_level(my._ctx->interface, my.php_project, high_level, my._type)
+            php_map_high_level(my._ctx->interface, php_module, my.php_project, high_level, my._type)
         endnew
 
         new low_level to php_module
