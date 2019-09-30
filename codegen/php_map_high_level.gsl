@@ -82,7 +82,6 @@ function php_map_high_level (in_module, in_php_project, out_high_level, in_type)
     my._interface_methods = XML.new()
     my._constant = ""
 
-
     for my.in_module.interface as interface0
 
         my._d = ""
@@ -227,6 +226,7 @@ function php_map_high_level_constructor_destructor (in_module, out_high_level)
         new docblock to php_method
             my._docblock = format_left("\
             Create underlying C context.
+            @param Ctx|null $ctx
             @return void
             ", 0)
 
@@ -234,11 +234,17 @@ function php_map_high_level_constructor_destructor (in_module, out_high_level)
         endnew
 
         new signature to php_method
-            . = "$(php_method.declaration:) function $(php_method.name:)()"
+            . = "$(php_method.declaration:) function $(php_method.name:)(Ctx $ctx = null)"
         endnew
 
         new body to php_method
-            . = "$this->ctx = $(php_method.function_name:)();"
+            . = format_left("\
+                if (is_null($ctx)) {
+                    $this->ctx = $(php_method.function_name:)();
+                } else {
+                    $this->ctx = $ctx->getCtx();
+                }
+                ", 0)
         endnew
     endnew
 
@@ -300,6 +306,11 @@ function php_map_high_level_return (in_method, in_php_project, out_php_method)
     check_arguments (my, "in_method, in_php_project, out_php_method", my)
 
     my._return_type = "void"
+
+    if defined (my.in_method.return_type) & my.in_method.return_type = "mixed"
+        my._return_type = "mixed"
+    endif
+
     my._return_data = ""
     my._instance = 0
     my._namespace = ""
