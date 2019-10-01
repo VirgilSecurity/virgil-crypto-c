@@ -142,6 +142,48 @@ function php_map_high_level (in_module, in_php_module, in_php_project, out_high_
         copy php_method0 to my.out_high_level
     endfor
 
+    for my.in_module.dependency as dependency0
+
+        my._dep_name = dependency0.name
+
+        if defined (dependency0.interface)
+            my._dep_class = dependency0.interface
+        elsif defined (dependency0.class)
+            my._dep_class = dependency0.class
+        elsif defined (dependency0.impl)
+            my._dep_class = dependency0.impl
+        else
+            echo_debug_item(dependency0)
+            echo_fatal("Not implemented", my)
+        endif
+
+        if defined (dependency0.project)
+            echo_debug_item(dependency0)
+            echo_fatal("Not implemented", my)
+        endif
+
+        new php_method to my.out_high_level
+
+            my._dependency_method = XML.new()
+
+            new method to my._dependency_method
+                .name = "use $(my._dep_name:)"
+                .visibility = "public"
+                .scope = "public"
+                .declaration = "public"
+                .is_static = 0
+                .return_type = "void"
+
+                new argument to method
+                    .name = my._dep_name
+                    .class = my._dep_class
+                endnew
+            endnew
+
+            php_map_high_level_method (my._dependency_method->method, my.in_php_module, my.in_type, php_method)
+        endnew
+    endfor
+
     for my.in_module.method as method0 where method0.visibility = "public" & method0.declaration = "public" & method0.scope = "public"
         new php_method to my.out_high_level
             php_map_high_level_method (method0, my.in_php_module, my.in_type, php_method)
@@ -304,26 +346,6 @@ function php_map_high_level_method (in_method, in_php_module, in_type, out_php_m
             . = php_format_high_level_method_body(my.out_php_method)
         endnew
     endif
-endfunction
-
-# ---------------------------------------------------------------------------
-#   
-# ---------------------------------------------------------------------------
-function php_map_high_level_method_old (in_method, in_php_project, out_php_method)
-    check_arguments (my, "in_method, in_php_project, out_php_method", my)
-
-    my.out_php_method.name = "$(my.in_method.name:Camel)"
-    my.out_php_method.name0 = "$(my.in_method.name:c)"
-
-    php_map_high_level_return (my.in_method, my.in_php_project, my.out_php_method)
-
-    my._md = "public"
-
-    if my.in_method.is_static="1"
-        my._md = "static"
-    endif
-
-    my.out_php_method.declaration = my._md
 endfunction
 
 # ---------------------------------------------------------------------------
