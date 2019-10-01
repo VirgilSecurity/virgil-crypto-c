@@ -67,14 +67,6 @@ import VSCFoundation
         vscf_signer_info_list_delete(self.c_ctx)
     }
 
-    /// Add new item to the list.
-    /// Note, ownership is transfered.
-    @objc public func add(signerInfo: SignerInfo) {
-        var signerInfoCopy = vscf_signer_info_shallow_copy(signerInfo.c_ctx)
-
-        vscf_signer_info_list_add(self.c_ctx, &signerInfoCopy)
-    }
-
     /// Return true if given list has item.
     @objc public func hasItem() -> Bool {
         let proxyResult = vscf_signer_info_list_has_item(self.c_ctx)

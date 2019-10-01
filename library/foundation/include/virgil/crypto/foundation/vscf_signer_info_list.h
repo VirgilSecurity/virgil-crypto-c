@@ -125,7 +125,7 @@ vscf_signer_info_list_shallow_copy(vscf_signer_info_list_t *self);
 //  Add new item to the list.
 //  Note, ownership is transfered.
 //
-VSCF_PUBLIC void
+VSCF_PRIVATE void
 vscf_signer_info_list_add(vscf_signer_info_list_t *self, vscf_signer_info_t **signer_info_ref);
 
 //

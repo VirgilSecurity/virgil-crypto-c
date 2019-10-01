@@ -62,14 +62,6 @@ class VscfSignerInfoList(object):
         vscf_signer_info_list_delete.restype = None
         return vscf_signer_info_list_delete(ctx)
 
-    def vscf_signer_info_list_add(self, ctx, signer_info):
-        """Add new item to the list.
-        Note, ownership is transfered."""
-        vscf_signer_info_list_add = self._lib.vscf_signer_info_list_add
-        vscf_signer_info_list_add.argtypes = [POINTER(vscf_signer_info_list_t), POINTER(vscf_signer_info_t)]
-        vscf_signer_info_list_add.restype = None
-        return vscf_signer_info_list_add(ctx, signer_info)
-
     def vscf_signer_info_list_has_item(self, ctx):
         """Return true if given list has item."""
         vscf_signer_info_list_has_item = self._lib.vscf_signer_info_list_has_item

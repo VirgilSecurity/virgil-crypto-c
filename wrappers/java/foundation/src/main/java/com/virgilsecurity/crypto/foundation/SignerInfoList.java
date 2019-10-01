@@ -69,14 +69,6 @@ public class SignerInfoList implements AutoCloseable {
     }
 
     /*
-    * Add new item to the list.
-    * Note, ownership is transfered.
-    */
-    public void add(SignerInfo signerInfo) {
-        FoundationJNI.INSTANCE.signerInfoList_add(this.cCtx, signerInfo);
-    }
-
-    /*
     * Return true if given list has item.
     */
     public boolean hasItem() {

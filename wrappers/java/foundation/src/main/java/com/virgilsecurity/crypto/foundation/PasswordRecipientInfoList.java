@@ -69,14 +69,6 @@ public class PasswordRecipientInfoList implements AutoCloseable {
     }
 
     /*
-    * Add new item to the list.
-    * Note, ownership is transfered.
-    */
-    public void add(PasswordRecipientInfo passwordRecipientInfo) {
-        FoundationJNI.INSTANCE.passwordRecipientInfoList_add(this.cCtx, passwordRecipientInfo);
-    }
-
-    /*
     * Return true if given list has item.
     */
     public boolean hasItem() {

@@ -211,12 +211,6 @@ public class FoundationJNI {
     public native void keyRecipientInfoList_close(long cCtx);
 
     /*
-    * Add new item to the list.
-    * Note, ownership is transfered.
-    */
-    public native void keyRecipientInfoList_add(long cCtx, KeyRecipientInfo keyRecipientInfo);
-
-    /*
     * Return true if given list has item.
     */
     public native boolean keyRecipientInfoList_hasItem(long cCtx);
@@ -271,12 +265,6 @@ public class FoundationJNI {
     public native long passwordRecipientInfoList_new();
 
     public native void passwordRecipientInfoList_close(long cCtx);
-
-    /*
-    * Add new item to the list.
-    * Note, ownership is transfered.
-    */
-    public native void passwordRecipientInfoList_add(long cCtx, PasswordRecipientInfo passwordRecipientInfo);
 
     /*
     * Return true if given list has item.
@@ -954,12 +942,6 @@ public class FoundationJNI {
     public native long signerInfoList_new();
 
     public native void signerInfoList_close(long cCtx);
-
-    /*
-    * Add new item to the list.
-    * Note, ownership is transfered.
-    */
-    public native void signerInfoList_add(long cCtx, SignerInfo signerInfo);
 
     /*
     * Return true if given list has item.

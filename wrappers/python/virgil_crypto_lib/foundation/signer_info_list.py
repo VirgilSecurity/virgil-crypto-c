@@ -50,11 +50,6 @@ class SignerInfoList(object):
         """Destroy underlying C context."""
         self._lib_vscf_signer_info_list.vscf_signer_info_list_delete(self.ctx)
 
-    def add(self, signer_info):
-        """Add new item to the list.
-        Note, ownership is transfered."""
-        self._lib_vscf_signer_info_list.vscf_signer_info_list_add(self.ctx, signer_info.ctx)
-
     def has_item(self):
         """Return true if given list has item."""
         result = self._lib_vscf_signer_info_list.vscf_signer_info_list_has_item(self.ctx)

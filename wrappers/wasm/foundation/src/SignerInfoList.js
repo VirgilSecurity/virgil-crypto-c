@@ -89,16 +89,6 @@ const initSignerInfoList = (Module, modules) => {
         }
 
         /**
-         * Add new item to the list.
-         * Note, ownership is transfered.
-         */
-        add(signerInfo) {
-            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-            precondition.ensureClass('signerInfo', signerInfo, modules.SignerInfo);
-            Module._vscf_signer_info_list_add(this.ctxPtr, signerInfo.ctxPtr);
-        }
-
-        /**
          * Return true if given list has item.
          */
         hasItem() {

@@ -1988,26 +1988,6 @@ JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_k
     vscf_key_recipient_info_list_delete(*(vscf_key_recipient_info_list_t /*2*/ **) &c_ctx /*5*/);
 }
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyRecipientInfoList_1add (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jkeyRecipientInfo) {
-    // Cast class context
-    vscf_key_recipient_info_list_t /*2*/* key_recipient_info_list_ctx = *(vscf_key_recipient_info_list_t /*2*/**) &c_ctx;
-    // Wrap Java classes
-    jclass key_recipient_info_cls = (*jenv)->FindClass(jenv, "com/virgilsecurity/crypto/foundation/KeyRecipientInfo");
-    if (NULL == key_recipient_info_cls) {
-        VSCF_ASSERT("Class KeyRecipientInfo not found.");
-    }
-    jfieldID key_recipient_info_fidCtx = (*jenv)->GetFieldID(jenv, key_recipient_info_cls, "cCtx", "J");
-    if (NULL == key_recipient_info_fidCtx) {
-        VSCF_ASSERT("Class 'KeyRecipientInfo' has no field 'cCtx'.");
-    }
-    jlong key_recipient_info_c_ctx = (*jenv)->GetLongField(jenv, jkeyRecipientInfo, key_recipient_info_fidCtx);
-    vscf_key_recipient_info_t */*5*/ key_recipient_info = *(vscf_key_recipient_info_t */*5*/*) &key_recipient_info_c_ctx;
-
-    //Shallow copy
-    vscf_key_recipient_info_t */*5*/ key_recipient_info_copy = vscf_key_recipient_info_shallow_copy(key_recipient_info);
-    vscf_key_recipient_info_list_add(key_recipient_info_list_ctx /*a1*/, &key_recipient_info_copy /*a5*/);
-}
-
 JNIEXPORT jboolean JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyRecipientInfoList_1hasItem (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
     // Cast class context
     vscf_key_recipient_info_list_t /*2*/* key_recipient_info_list_ctx = *(vscf_key_recipient_info_list_t /*2*/**) &c_ctx;
@@ -2160,26 +2140,6 @@ JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_
 
 JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_passwordRecipientInfoList_1close (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
     vscf_password_recipient_info_list_delete(*(vscf_password_recipient_info_list_t /*2*/ **) &c_ctx /*5*/);
-}
-
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_passwordRecipientInfoList_1add (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jpasswordRecipientInfo) {
-    // Cast class context
-    vscf_password_recipient_info_list_t /*2*/* password_recipient_info_list_ctx = *(vscf_password_recipient_info_list_t /*2*/**) &c_ctx;
-    // Wrap Java classes
-    jclass password_recipient_info_cls = (*jenv)->FindClass(jenv, "com/virgilsecurity/crypto/foundation/PasswordRecipientInfo");
-    if (NULL == password_recipient_info_cls) {
-        VSCF_ASSERT("Class PasswordRecipientInfo not found.");
-    }
-    jfieldID password_recipient_info_fidCtx = (*jenv)->GetFieldID(jenv, password_recipient_info_cls, "cCtx", "J");
-    if (NULL == password_recipient_info_fidCtx) {
-        VSCF_ASSERT("Class 'PasswordRecipientInfo' has no field 'cCtx'.");
-    }
-    jlong password_recipient_info_c_ctx = (*jenv)->GetLongField(jenv, jpasswordRecipientInfo, password_recipient_info_fidCtx);
-    vscf_password_recipient_info_t */*5*/ password_recipient_info = *(vscf_password_recipient_info_t */*5*/*) &password_recipient_info_c_ctx;
-
-    //Shallow copy
-    vscf_password_recipient_info_t */*5*/ password_recipient_info_copy = vscf_password_recipient_info_shallow_copy(password_recipient_info);
-    vscf_password_recipient_info_list_add(password_recipient_info_list_ctx /*a1*/, &password_recipient_info_copy /*a5*/);
 }
 
 JNIEXPORT jboolean JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_passwordRecipientInfoList_1hasItem (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
@@ -4574,26 +4534,6 @@ JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_
 
 JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_signerInfoList_1close (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
     vscf_signer_info_list_delete(*(vscf_signer_info_list_t /*2*/ **) &c_ctx /*5*/);
-}
-
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_signerInfoList_1add (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jsignerInfo) {
-    // Cast class context
-    vscf_signer_info_list_t /*2*/* signer_info_list_ctx = *(vscf_signer_info_list_t /*2*/**) &c_ctx;
-    // Wrap Java classes
-    jclass signer_info_cls = (*jenv)->FindClass(jenv, "com/virgilsecurity/crypto/foundation/SignerInfo");
-    if (NULL == signer_info_cls) {
-        VSCF_ASSERT("Class SignerInfo not found.");
-    }
-    jfieldID signer_info_fidCtx = (*jenv)->GetFieldID(jenv, signer_info_cls, "cCtx", "J");
-    if (NULL == signer_info_fidCtx) {
-        VSCF_ASSERT("Class 'SignerInfo' has no field 'cCtx'.");
-    }
-    jlong signer_info_c_ctx = (*jenv)->GetLongField(jenv, jsignerInfo, signer_info_fidCtx);
-    vscf_signer_info_t */*5*/ signer_info = *(vscf_signer_info_t */*5*/*) &signer_info_c_ctx;
-
-    //Shallow copy
-    vscf_signer_info_t */*5*/ signer_info_copy = vscf_signer_info_shallow_copy(signer_info);
-    vscf_signer_info_list_add(signer_info_list_ctx /*a1*/, &signer_info_copy /*a5*/);
 }
 
 JNIEXPORT jboolean JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_signerInfoList_1hasItem (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
