@@ -142,6 +142,8 @@ function php_map_high_level (in_module, in_php_module, in_php_project, out_high_
         copy php_method0 to my.out_high_level
     endfor
 
+    my._use = ""
+
     for my.in_module.dependency as dependency0
 
         my._dep_name = dependency0.name
@@ -158,8 +160,8 @@ function php_map_high_level (in_module, in_php_module, in_php_project, out_high_
         endif
 
         if defined (dependency0.project)
-            echo_debug_item(dependency0)
-            echo_fatal("Not implemented", my)
+            my._u = php_derive_high_level_namespace_use (my.in_php_module, dependency0)
+            my._use += format_left(my._u, 0)
         endif
 
         new php_method to my.out_high_level
@@ -183,6 +185,10 @@ function php_map_high_level (in_module, in_php_module, in_php_project, out_high_
             php_map_high_level_method (my._dependency_method->method, my.in_php_module, my.in_type, php_method)
         endnew
     endfor
+
+    new use to my.out_high_level
+        . = format_left(my._use, 0)
+    endnew
 
     for my.in_module.method as method0 where method0.visibility = "public" & method0.declaration = "public" & method0.scope = "public"
         new php_method to my.out_high_level
@@ -217,7 +223,7 @@ function php_map_high_level_constructor_destructor (in_module, out_high_level)
         new docblock to php_method
             my._docblock = format_left("\
             Create underlying C context.
-            @param Ctx|null $ctx
+            @param null $ctx
             @return void
             ", 0)
 
@@ -225,7 +231,7 @@ function php_map_high_level_constructor_destructor (in_module, out_high_level)
         endnew
 
         new signature to php_method
-            . = "$(php_method.declaration:) function $(php_method.name:)(Ctx $ctx = null)"
+            . = "$(php_method.declaration:) function $(php_method.name:)($ctx = null)"
         endnew
 
         new body to php_method
@@ -233,7 +239,7 @@ function php_map_high_level_constructor_destructor (in_module, out_high_level)
                 if (is_null($ctx)) {
                     $this->ctx = $(php_method.function_name:)();
                 } else {
-                    $this->ctx = $ctx->getCtx();
+                    $this->ctx = $ctx;
                 }
                 ", 0)
         endnew

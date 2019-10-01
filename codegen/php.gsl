@@ -72,9 +72,10 @@ function php_create_project_module (project, wrapper)
         .description = my.project.brief
         .prefix = my.project.prefix
         .version = my.project.version_string
-        .main_project = my.wrapper.project
-        .project = "$(my.project.name:Pascal)"
+        .main_project0 = my.wrapper.project
+        .main_project = "$(0.main_project0:Pascal)"
         .project0 = my.project.name
+        .project = "$(0.project0:Pascal)"
         .source_dir = cat_path (my.wrapper.dir, php_project.main_project, php_project.project)
 
         copy my.project->license to php_project
@@ -113,6 +114,8 @@ function php_create_class_module (class, php_project, meta)
         .source_file_path = cat_path (0.source_dir, 0.source_file_name)
         .prefix = my.php_project.prefix
         .type = my._type
+        .main_project0 = my.php_project.main_project0
+        .project0 = my.php_project.project0
 
         new php_license to php_module
             . = php_format_comment (my.php_project->license.)
@@ -146,6 +149,8 @@ function php_create_interface_module (interface, php_project, meta)
         .source_file_path = cat_path (0.source_dir, 0.source_file_name)
         .prefix = my.php_project.prefix
         .type = my._type
+        .main_project0 = my.php_project.main_project0
+        .project0 = my.php_project.project0
 
         new php_license to php_module
             . = php_format_comment (my.php_project->license)
@@ -179,6 +184,8 @@ function php_create_implementation_module (implementation, php_project, meta)
         .source_file_path = cat_path (0.source_dir, 0.source_file_name)
         .prefix = my.php_project.prefix
         .type = my._type
+        .main_project0 = my.php_project.main_project0
+        .project0 = my.php_project.project0
 
         new php_license to php_module
             . = php_format_comment (my.php_project->license)
@@ -216,6 +223,8 @@ function php_create_enum_module (enum, php_project, meta)
             .source_file_path = cat_path (0.source_dir, 0.source_file_name)
             .type = "extension"
             .prefix = my.php_project.prefix
+            .main_project0 = my.php_project.main_project0
+            .project0 = my.php_project.project0
 
             new code to php_module
                 .= php_format_low_level_status_exception (my.enum, php_module)
@@ -229,6 +238,8 @@ function php_create_enum_module (enum, php_project, meta)
             .source_dir = cat_path (my.php_project.source_dir, "src")
             .source_file_path = cat_path (0.source_dir, 0.source_file_name)
             .type = "enum"
+            .main_project0 = my.php_project.main_project0
+            .project0 = my.php_project.project0
 
             new php_license to php_module
                 . = php_format_comment (my.php_project->license)
@@ -322,6 +333,8 @@ function php_create_custom_modules (source, php_project, meta)
         .source_file_path = cat_path (0.source_dir, 0.source_file_name)
         .prefix = my.php_project.prefix
         .type = my._type
+        .main_project0 = my.php_project.main_project0
+        .project0 = my.php_project.project0
 
         new php_license to php_module
             . = php_format_comment (my.php_project->license)

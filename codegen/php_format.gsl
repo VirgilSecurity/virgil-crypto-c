@@ -84,13 +84,10 @@ function php_format_high_level_method_body (in_php_method)
         my._return = "return "
     endif
 
-    my._arguments = ""
+    my._arguments = "$this->ctx"
     for my.in_php_method.php_argument as php_argument0
-        my._d = ""
-        if ! last()
-            my._d = ", "
-        endif
-        my._arguments += php_argument0.name + my._d
+        my._d = ", "
+        my._arguments += my._d + php_argument0.name
     endfor
 
     my._function_name = my.in_php_method.function_name
