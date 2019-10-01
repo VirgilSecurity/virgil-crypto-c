@@ -101,6 +101,7 @@ enum vscf_api_tag_t {
     vscf_api_tag_KEY_SERIALIZER,
     vscf_api_tag_KEY_SIGNER,
     vscf_api_tag_MAC,
+    vscf_api_tag_MESSAGE_INFO_FOOTER_SERIALIZER,
     vscf_api_tag_MESSAGE_INFO_SERIALIZER,
     vscf_api_tag_PRIVATE_KEY,
     vscf_api_tag_PUBLIC_KEY,

@@ -92,7 +92,7 @@ vscf_alg_info_der_serializer_is_alg_require_null_params(vscf_alg_id_t alg_id);
 //  AlgorithmIdentifier with no parameters.
 //
 static size_t
-vscf_alg_info_der_serializer_serialized_simple_alg_info_len(vscf_alg_info_der_serializer_t *self,
+vscf_alg_info_der_serializer_serialized_simple_alg_info_len(const vscf_alg_info_der_serializer_t *self,
         const vscf_impl_t *alg_info);
 
 //
@@ -108,7 +108,7 @@ vscf_alg_info_der_serializer_serialize_simple_alg_info(vscf_alg_info_der_seriali
 //  "KeyDerivationFunction" from the ISO/IEC 18033-2.
 //
 static size_t
-vscf_alg_info_der_serializer_serialized_kdf_alg_info_len(vscf_alg_info_der_serializer_t *self,
+vscf_alg_info_der_serializer_serialized_kdf_alg_info_len(const vscf_alg_info_der_serializer_t *self,
         const vscf_impl_t *alg_info);
 
 //
@@ -123,7 +123,7 @@ vscf_alg_info_der_serializer_serialize_kdf_alg_info(vscf_alg_info_der_serializer
 //  "KeyDevAlgs" from the https://tools.ietf.org/html/draft-housley-hkdf-oids-00.
 //
 static size_t
-vscf_alg_info_der_serializer_serialized_hkdf_alg_info_len(vscf_alg_info_der_serializer_t *self,
+vscf_alg_info_der_serializer_serialized_hkdf_alg_info_len(const vscf_alg_info_der_serializer_t *self,
         const vscf_impl_t *alg_info);
 
 //
@@ -138,7 +138,7 @@ vscf_alg_info_der_serializer_serialize_hkdf_alg_info(vscf_alg_info_der_serialize
 //  "DigestAlgorithm" from the RFC 4231.
 //
 static size_t
-vscf_alg_info_der_serializer_serialized_hmac_alg_info_len(vscf_alg_info_der_serializer_t *self,
+vscf_alg_info_der_serializer_serialized_hmac_alg_info_len(const vscf_alg_info_der_serializer_t *self,
         const vscf_impl_t *alg_info);
 
 //
@@ -155,7 +155,7 @@ vscf_alg_info_der_serializer_serialize_hmac_alg_info(vscf_alg_info_der_serialize
 //      - defined in the RFC 5084.
 //
 static size_t
-vscf_alg_info_der_serializer_serialized_cipher_alg_info_len(vscf_alg_info_der_serializer_t *self,
+vscf_alg_info_der_serializer_serialized_cipher_alg_info_len(const vscf_alg_info_der_serializer_t *self,
         const vscf_impl_t *alg_info);
 
 //
@@ -171,7 +171,7 @@ vscf_alg_info_der_serializer_serialize_cipher_alg_info(vscf_alg_info_der_seriali
 //  "PBKDF2Algorithm" from the RFC 8018.
 //
 static size_t
-vscf_alg_info_der_serializer_serialized_pbkdf2_alg_info_len(vscf_alg_info_der_serializer_t *self,
+vscf_alg_info_der_serializer_serialized_pbkdf2_alg_info_len(const vscf_alg_info_der_serializer_t *self,
         const vscf_impl_t *alg_info);
 
 //
@@ -187,7 +187,7 @@ vscf_alg_info_der_serializer_serialize_pbkdf2_alg_info(vscf_alg_info_der_seriali
 //  "PBESF2Algorithm" from the RFC 8018.
 //
 static size_t
-vscf_alg_info_der_serializer_serialized_pbes2_alg_info_len(vscf_alg_info_der_serializer_t *self,
+vscf_alg_info_der_serializer_serialized_pbes2_alg_info_len(const vscf_alg_info_der_serializer_t *self,
         const vscf_impl_t *alg_info);
 
 //
@@ -203,7 +203,7 @@ vscf_alg_info_der_serializer_serialize_pbes2_alg_info(vscf_alg_info_der_serializ
 //  "AlgorithmIdentifier" with "ECParameters" from the RFC 5480.
 //
 static size_t
-vscf_alg_info_der_serializer_serialized_ecc_alg_info_len(vscf_alg_info_der_serializer_t *self,
+vscf_alg_info_der_serializer_serialized_ecc_alg_info_len(const vscf_alg_info_der_serializer_t *self,
         const vscf_impl_t *alg_info);
 
 //
@@ -267,7 +267,7 @@ vscf_alg_info_der_serializer_is_alg_require_null_params(vscf_alg_id_t alg_id) {
 //
 static size_t
 vscf_alg_info_der_serializer_serialized_simple_alg_info_len(
-        vscf_alg_info_der_serializer_t *self, const vscf_impl_t *alg_info) {
+        const vscf_alg_info_der_serializer_t *self, const vscf_impl_t *alg_info) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(alg_info);
@@ -325,7 +325,7 @@ vscf_alg_info_der_serializer_serialize_simple_alg_info(
 //
 static size_t
 vscf_alg_info_der_serializer_serialized_kdf_alg_info_len(
-        vscf_alg_info_der_serializer_t *self, const vscf_impl_t *alg_info) {
+        const vscf_alg_info_der_serializer_t *self, const vscf_impl_t *alg_info) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(alg_info);
@@ -401,7 +401,7 @@ vscf_alg_info_der_serializer_serialize_kdf_alg_info(vscf_alg_info_der_serializer
 //
 static size_t
 vscf_alg_info_der_serializer_serialized_hkdf_alg_info_len(
-        vscf_alg_info_der_serializer_t *self, const vscf_impl_t *alg_info) {
+        const vscf_alg_info_der_serializer_t *self, const vscf_impl_t *alg_info) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(alg_info);
@@ -465,7 +465,7 @@ vscf_alg_info_der_serializer_serialize_hkdf_alg_info(
 //
 static size_t
 vscf_alg_info_der_serializer_serialized_hmac_alg_info_len(
-        vscf_alg_info_der_serializer_t *self, const vscf_impl_t *alg_info) {
+        const vscf_alg_info_der_serializer_t *self, const vscf_impl_t *alg_info) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(alg_info);
@@ -536,7 +536,7 @@ vscf_alg_info_der_serializer_serialize_hmac_alg_info(
 //
 static size_t
 vscf_alg_info_der_serializer_serialized_cipher_alg_info_len(
-        vscf_alg_info_der_serializer_t *self, const vscf_impl_t *alg_info) {
+        const vscf_alg_info_der_serializer_t *self, const vscf_impl_t *alg_info) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(alg_info);
@@ -619,7 +619,7 @@ vscf_alg_info_der_serializer_serialize_cipher_alg_info(
 //
 static size_t
 vscf_alg_info_der_serializer_serialized_pbkdf2_alg_info_len(
-        vscf_alg_info_der_serializer_t *self, const vscf_impl_t *alg_info) {
+        const vscf_alg_info_der_serializer_t *self, const vscf_impl_t *alg_info) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(alg_info);
@@ -713,7 +713,7 @@ vscf_alg_info_der_serializer_serialize_pbkdf2_alg_info(
 //
 static size_t
 vscf_alg_info_der_serializer_serialized_pbes2_alg_info_len(
-        vscf_alg_info_der_serializer_t *self, const vscf_impl_t *alg_info) {
+        const vscf_alg_info_der_serializer_t *self, const vscf_impl_t *alg_info) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(alg_info);
@@ -796,7 +796,7 @@ vscf_alg_info_der_serializer_serialize_pbes2_alg_info(
 //
 static size_t
 vscf_alg_info_der_serializer_serialized_ecc_alg_info_len(
-        vscf_alg_info_der_serializer_t *self, const vscf_impl_t *alg_info) {
+        const vscf_alg_info_der_serializer_t *self, const vscf_impl_t *alg_info) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(alg_info);
@@ -927,7 +927,7 @@ vscf_alg_info_der_serializer_serialize_inplace(vscf_alg_info_der_serializer_t *s
 //  Return buffer size enough to hold serialized algorithm.
 //
 VSCF_PUBLIC size_t
-vscf_alg_info_der_serializer_serialized_len(vscf_alg_info_der_serializer_t *self, const vscf_impl_t *alg_info) {
+vscf_alg_info_der_serializer_serialized_len(const vscf_alg_info_der_serializer_t *self, const vscf_impl_t *alg_info) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(alg_info);

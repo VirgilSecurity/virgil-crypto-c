@@ -257,7 +257,7 @@ class VscfAsn1rd(object):
         return vscf_asn1rd_read_data(ctx, len)
 
     def vscf_asn1rd_read_sequence(self, ctx):
-        """Read ASN.1 type: CONSTRUCTED | SEQUENCE.
+        """Read ASN.1 type: SEQUENCE.
         Return element length."""
         vscf_asn1rd_read_sequence = self._lib.vscf_asn1rd_read_sequence
         vscf_asn1rd_read_sequence.argtypes = [POINTER(vscf_asn1rd_t)]
@@ -265,7 +265,7 @@ class VscfAsn1rd(object):
         return vscf_asn1rd_read_sequence(ctx)
 
     def vscf_asn1rd_read_set(self, ctx):
-        """Read ASN.1 type: CONSTRUCTED | SET.
+        """Read ASN.1 type: SET.
         Return element length."""
         vscf_asn1rd_read_set = self._lib.vscf_asn1rd_read_set
         vscf_asn1rd_read_set.argtypes = [POINTER(vscf_asn1rd_t)]

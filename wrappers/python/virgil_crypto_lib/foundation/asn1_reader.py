@@ -184,12 +184,12 @@ class Asn1Reader(object):
 
     @abstractmethod
     def read_sequence(self):
-        """Read ASN.1 type: CONSTRUCTED | SEQUENCE.
+        """Read ASN.1 type: SEQUENCE.
         Return element length."""
         raise NotImplementedError()
 
     @abstractmethod
     def read_set(self):
-        """Read ASN.1 type: CONSTRUCTED | SET.
+        """Read ASN.1 type: SET.
         Return element length."""
         raise NotImplementedError()

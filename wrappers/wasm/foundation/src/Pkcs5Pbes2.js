@@ -186,6 +186,18 @@ const initPkcs5Pbes2 = (Module, modules) => {
         }
 
         /**
+         * Precise length calculation of encrypted data.
+         */
+        preciseEncryptedLen(dataLen) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureNumber('dataLen', dataLen);
+
+            let proxyResult;
+            proxyResult = Module._vscf_pkcs5_pbes2_precise_encrypted_len(this.ctxPtr, dataLen);
+            return proxyResult;
+        }
+
+        /**
          * Decrypt given data.
          */
         decrypt(data) {

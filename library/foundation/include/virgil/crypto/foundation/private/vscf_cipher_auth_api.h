@@ -56,8 +56,20 @@
 #include "vscf_library.h"
 #include "vscf_api.h"
 #include "vscf_impl.h"
+#include "vscf_cipher.h"
 #include "vscf_auth_encrypt.h"
 #include "vscf_auth_decrypt.h"
+#include "vscf_status.h"
+
+#if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <virgil/crypto/common/vsc_data.h>
+#   include <virgil/crypto/common/vsc_buffer.h>
+#endif
+
+#if VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <VSCCommon/vsc_data.h>
+#   include <VSCCommon/vsc_buffer.h>
+#endif
 
 // clang-format on
 //  @end
@@ -75,6 +87,29 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
+//  Callback. Set additional data for for AEAD ciphers.
+//
+typedef void (*vscf_cipher_auth_api_set_auth_data_fn)(vscf_impl_t *impl, vsc_data_t auth_data);
+
+//
+//  Callback. Accomplish an authenticated encryption and place tag separately.
+//
+//          Note, if authentication tag should be added to an encrypted data,
+//          method "finish" can be used.
+//
+typedef vscf_status_t (*vscf_cipher_auth_api_finish_auth_encryption_fn)(vscf_impl_t *impl, vsc_buffer_t *out,
+        vsc_buffer_t *tag);
+
+//
+//  Callback. Accomplish an authenticated decryption with explicitly given tag.
+//
+//          Note, if authentication tag is a part of an encrypted data then,
+//          method "finish" can be used for simplicity.
+//
+typedef vscf_status_t (*vscf_cipher_auth_api_finish_auth_decryption_fn)(vscf_impl_t *impl, vsc_data_t tag,
+        vsc_buffer_t *out);
+
+//
 //  Contains API requirements of the interface 'cipher auth'.
 //
 struct vscf_cipher_auth_api_t {
@@ -88,6 +123,10 @@ struct vscf_cipher_auth_api_t {
     //
     vscf_impl_tag_t impl_tag;
     //
+    //  Link to the inherited interface API 'cipher'.
+    //
+    const vscf_cipher_api_t *cipher_api;
+    //
     //  Link to the inherited interface API 'auth encrypt'.
     //
     const vscf_auth_encrypt_api_t *auth_encrypt_api;
@@ -95,6 +134,24 @@ struct vscf_cipher_auth_api_t {
     //  Link to the inherited interface API 'auth decrypt'.
     //
     const vscf_auth_decrypt_api_t *auth_decrypt_api;
+    //
+    //  Set additional data for for AEAD ciphers.
+    //
+    vscf_cipher_auth_api_set_auth_data_fn set_auth_data_cb;
+    //
+    //  Accomplish an authenticated encryption and place tag separately.
+    //
+    //  Note, if authentication tag should be added to an encrypted data,
+    //  method "finish" can be used.
+    //
+    vscf_cipher_auth_api_finish_auth_encryption_fn finish_auth_encryption_cb;
+    //
+    //  Accomplish an authenticated decryption with explicitly given tag.
+    //
+    //  Note, if authentication tag is a part of an encrypted data then,
+    //  method "finish" can be used for simplicity.
+    //
+    vscf_cipher_auth_api_finish_auth_decryption_fn finish_auth_decryption_cb;
 };
 
 

@@ -300,7 +300,7 @@ public class Asn1wr implements AutoCloseable, Asn1Writer {
     }
 
     /*
-    * Mark previously written data of given length as ASN.1 type: SQUENCE.
+    * Mark previously written data of given length as ASN.1 type: SEQUENCE.
     * Return count of written bytes.
     */
     public int writeSequence(int len) {

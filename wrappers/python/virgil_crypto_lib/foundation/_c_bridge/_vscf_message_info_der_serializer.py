@@ -40,6 +40,7 @@ from ._vscf_message_info import vscf_message_info_t
 from virgil_crypto_lib.common._c_bridge import vsc_buffer_t
 from virgil_crypto_lib.common._c_bridge import vsc_data_t
 from ._vscf_error import vscf_error_t
+from ._vscf_message_info_footer import vscf_message_info_footer_t
 
 
 class vscf_message_info_der_serializer_t(Structure):
@@ -47,7 +48,7 @@ class vscf_message_info_der_serializer_t(Structure):
 
 
 class VscfMessageInfoDerSerializer(object):
-    """CMS based implementation of the class "message info" serialization."""
+    """CMS based serialization of the class "message info"."""
 
     PREFIX_LEN = 32
 
@@ -111,6 +112,27 @@ class VscfMessageInfoDerSerializer(object):
         vscf_message_info_der_serializer_deserialize.argtypes = [POINTER(vscf_message_info_der_serializer_t), vsc_data_t, POINTER(vscf_error_t)]
         vscf_message_info_der_serializer_deserialize.restype = POINTER(vscf_message_info_t)
         return vscf_message_info_der_serializer_deserialize(ctx, data, error)
+
+    def vscf_message_info_der_serializer_serialized_footer_len(self, ctx, message_info_footer):
+        """Return buffer size enough to hold serialized message info footer."""
+        vscf_message_info_der_serializer_serialized_footer_len = self._lib.vscf_message_info_der_serializer_serialized_footer_len
+        vscf_message_info_der_serializer_serialized_footer_len.argtypes = [POINTER(vscf_message_info_der_serializer_t), POINTER(vscf_message_info_footer_t)]
+        vscf_message_info_der_serializer_serialized_footer_len.restype = c_size_t
+        return vscf_message_info_der_serializer_serialized_footer_len(ctx, message_info_footer)
+
+    def vscf_message_info_der_serializer_serialize_footer(self, ctx, message_info_footer, out):
+        """Serialize class "message info footer"."""
+        vscf_message_info_der_serializer_serialize_footer = self._lib.vscf_message_info_der_serializer_serialize_footer
+        vscf_message_info_der_serializer_serialize_footer.argtypes = [POINTER(vscf_message_info_der_serializer_t), POINTER(vscf_message_info_footer_t), POINTER(vsc_buffer_t)]
+        vscf_message_info_der_serializer_serialize_footer.restype = None
+        return vscf_message_info_der_serializer_serialize_footer(ctx, message_info_footer, out)
+
+    def vscf_message_info_der_serializer_deserialize_footer(self, ctx, data, error):
+        """Deserialize class "message info footer"."""
+        vscf_message_info_der_serializer_deserialize_footer = self._lib.vscf_message_info_der_serializer_deserialize_footer
+        vscf_message_info_der_serializer_deserialize_footer.argtypes = [POINTER(vscf_message_info_der_serializer_t), vsc_data_t, POINTER(vscf_error_t)]
+        vscf_message_info_der_serializer_deserialize_footer.restype = POINTER(vscf_message_info_footer_t)
+        return vscf_message_info_der_serializer_deserialize_footer(ctx, data, error)
 
     def vscf_message_info_der_serializer_setup_defaults(self, ctx):
         """Setup predefined values to the uninitialized class dependencies."""

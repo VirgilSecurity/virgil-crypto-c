@@ -187,6 +187,18 @@ vscf_aes256_cbc_encrypted_len(vscf_aes256_cbc_t *self, size_t data_len) {
 }
 
 //
+//  Precise length calculation of encrypted data.
+//
+VSCF_PUBLIC size_t
+vscf_aes256_cbc_precise_encrypted_len(vscf_aes256_cbc_t *self, size_t data_len) {
+
+    VSCF_ASSERT_PTR(self);
+
+    const size_t left = data_len % vscf_aes256_cbc_BLOCK_LEN == 0;
+    return data_len + vscf_aes256_cbc_BLOCK_LEN - left;
+}
+
+//
 //  Decrypt given data.
 //
 VSCF_PUBLIC vscf_status_t

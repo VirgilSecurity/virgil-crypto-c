@@ -146,6 +146,7 @@
 
         <require interface="alg"/>
         <require interface="alg info"/>
+        <require interface="encrypt"/>
         <require class="alg factory"/>
         <require impl="pkcs5 pbkdf2"/>
         <require impl="aes256 gcm"/>

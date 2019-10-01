@@ -218,6 +218,18 @@ const initAes256Cbc = (Module, modules) => {
         }
 
         /**
+         * Precise length calculation of encrypted data.
+         */
+        preciseEncryptedLen(dataLen) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureNumber('dataLen', dataLen);
+
+            let proxyResult;
+            proxyResult = Module._vscf_aes256_cbc_precise_encrypted_len(this.ctxPtr, dataLen);
+            return proxyResult;
+        }
+
+        /**
          * Decrypt given data.
          */
         decrypt(data) {

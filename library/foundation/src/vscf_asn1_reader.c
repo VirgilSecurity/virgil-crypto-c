@@ -422,7 +422,7 @@ vscf_asn1_reader_read_data(vscf_impl_t *impl, size_t len) {
 }
 
 //
-//  Read ASN.1 type: CONSTRUCTED | SEQUENCE.
+//  Read ASN.1 type: SEQUENCE.
 //  Return element length.
 //
 VSCF_PUBLIC size_t
@@ -436,7 +436,7 @@ vscf_asn1_reader_read_sequence(vscf_impl_t *impl) {
 }
 
 //
-//  Read ASN.1 type: CONSTRUCTED | SET.
+//  Read ASN.1 type: SET.
 //  Return element length.
 //
 VSCF_PUBLIC size_t

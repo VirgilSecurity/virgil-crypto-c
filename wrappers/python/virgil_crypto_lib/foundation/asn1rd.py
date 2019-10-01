@@ -202,13 +202,13 @@ class Asn1rd(Asn1Reader):
         return cleaned_bytes
 
     def read_sequence(self):
-        """Read ASN.1 type: CONSTRUCTED | SEQUENCE.
+        """Read ASN.1 type: SEQUENCE.
         Return element length."""
         result = self._lib_vscf_asn1rd.vscf_asn1rd_read_sequence(self.ctx)
         return result
 
     def read_set(self):
-        """Read ASN.1 type: CONSTRUCTED | SET.
+        """Read ASN.1 type: SET.
         Return element length."""
         result = self._lib_vscf_asn1rd.vscf_asn1rd_read_set(self.ctx)
         return result

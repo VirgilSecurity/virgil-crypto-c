@@ -180,7 +180,7 @@ vscf_alg_info_der_serializer_serialize_inplace(vscf_alg_info_der_serializer_t *s
 //  Return buffer size enough to hold serialized algorithm.
 //
 VSCF_PUBLIC size_t
-vscf_alg_info_der_serializer_serialized_len(vscf_alg_info_der_serializer_t *self, const vscf_impl_t *alg_info);
+vscf_alg_info_der_serializer_serialized_len(const vscf_alg_info_der_serializer_t *self, const vscf_impl_t *alg_info);
 
 //
 //  Serialize algorithm info to buffer class.

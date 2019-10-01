@@ -44,4 +44,7 @@ import VSCFoundation
 
     /// Calculate required buffer length to hold the encrypted data.
     @objc func encryptedLen(dataLen: Int) -> Int
+
+    /// Precise length calculation of encrypted data.
+    @objc func preciseEncryptedLen(dataLen: Int) -> Int
 }

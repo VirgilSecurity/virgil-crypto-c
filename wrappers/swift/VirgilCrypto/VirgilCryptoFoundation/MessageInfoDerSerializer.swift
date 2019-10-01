@@ -36,8 +36,8 @@
 import Foundation
 import VSCFoundation
 
-/// CMS based implementation of the class "message info" serialization.
-@objc(VSCFMessageInfoDerSerializer) public class MessageInfoDerSerializer: NSObject, MessageInfoSerializer {
+/// CMS based serialization of the class "message info".
+@objc(VSCFMessageInfoDerSerializer) public class MessageInfoDerSerializer: NSObject, MessageInfoSerializer, MessageInfoFooterSerializer {
 
     /// Handle underlying C context.
     @objc public let c_ctx: OpaquePointer
@@ -137,5 +137,46 @@ import VSCFoundation
         try FoundationError.handleStatus(fromC: error.status)
 
         return MessageInfo.init(take: proxyResult!)
+    }
+
+    /// Return buffer size enough to hold serialized message info footer.
+    @objc public func serializedFooterLen(messageInfoFooter: MessageInfoFooter) -> Int {
+        let proxyResult = vscf_message_info_der_serializer_serialized_footer_len(self.c_ctx, messageInfoFooter.c_ctx)
+
+        return proxyResult
+    }
+
+    /// Serialize class "message info footer".
+    @objc public func serializeFooter(messageInfoFooter: MessageInfoFooter) -> Data {
+        let outCount = self.serializedLen(messageInfoFooter: messageInfoFooter)
+        var out = Data(count: outCount)
+        var outBuf = vsc_buffer_new()
+        defer {
+            vsc_buffer_delete(outBuf)
+        }
+
+        out.withUnsafeMutableBytes({ (outPointer: UnsafeMutableRawBufferPointer) -> Void in
+            vsc_buffer_use(outBuf, outPointer.bindMemory(to: byte.self).baseAddress, outCount)
+
+            vscf_message_info_der_serializer_serialize_footer(self.c_ctx, messageInfoFooter.c_ctx, outBuf)
+        })
+        out.count = vsc_buffer_len(outBuf)
+
+        return out
+    }
+
+    /// Deserialize class "message info footer".
+    @objc public func deserializeFooter(data: Data) throws -> MessageInfoFooter {
+        var error: vscf_error_t = vscf_error_t()
+        vscf_error_reset(&error)
+
+        let proxyResult = data.withUnsafeBytes({ (dataPointer: UnsafeRawBufferPointer) in
+
+            return vscf_message_info_der_serializer_deserialize_footer(self.c_ctx, vsc_data(dataPointer.bindMemory(to: byte.self).baseAddress, data.count), &error)
+        })
+
+        try FoundationError.handleStatus(fromC: error.status)
+
+        return MessageInfoFooter.init(take: proxyResult!)
     }
 }

@@ -62,14 +62,6 @@ class VscfKeyRecipientInfoList(object):
         vscf_key_recipient_info_list_delete.restype = None
         return vscf_key_recipient_info_list_delete(ctx)
 
-    def vscf_key_recipient_info_list_add(self, ctx, key_recipient_info):
-        """Add new item to the list.
-        Note, ownership is transfered."""
-        vscf_key_recipient_info_list_add = self._lib.vscf_key_recipient_info_list_add
-        vscf_key_recipient_info_list_add.argtypes = [POINTER(vscf_key_recipient_info_list_t), POINTER(vscf_key_recipient_info_t)]
-        vscf_key_recipient_info_list_add.restype = None
-        return vscf_key_recipient_info_list_add(ctx, key_recipient_info)
-
     def vscf_key_recipient_info_list_has_item(self, ctx):
         """Return true if given list has item."""
         vscf_key_recipient_info_list_has_item = self._lib.vscf_key_recipient_info_list_has_item

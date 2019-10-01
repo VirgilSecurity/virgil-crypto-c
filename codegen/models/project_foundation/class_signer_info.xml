@@ -1,0 +1,39 @@
+<class name="signer info">
+    Handle information about signer that is defined by an identifer and
+    a Public Key.
+
+    <require interface="alg info"/>
+
+    <property name="signer id" class="buffer"/>
+    <property name="signer alg info" interface="alg info"/>
+    <property name="signature" class="buffer"/>
+
+    <constructor name="with members" visibility="private">
+        Create object and define all properties.
+
+        <argument name="signer id" class="data"/>
+        <argument name="signer alg info" interface="alg info" access="disown"/>
+        <argument name="signature" class="buffer" access="disown"/>
+    </constructor>
+
+
+    <method name="signer id" is_const="1">
+        Return signer identifier.
+
+        <return class="data"/>
+    </method>
+
+
+    <method name="signer alg info" is_const="1">
+        Return algorithm information that was used for data signing.
+
+        <return interface="alg info"/>
+    </method>
+
+
+    <method name="signature" class="data" is_const="1">
+        Return data signature.
+
+        <return class="data"/>
+    </method>
+</class>

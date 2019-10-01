@@ -232,7 +232,7 @@ class Asn1wr(Asn1Writer):
         return result
 
     def write_sequence(self, len):
-        """Mark previously written data of given length as ASN.1 type: SQUENCE.
+        """Mark previously written data of given length as ASN.1 type: SEQUENCE.
         Return count of written bytes."""
         result = self._lib_vscf_asn1wr.vscf_asn1wr_write_sequence(self.ctx, len)
         return result

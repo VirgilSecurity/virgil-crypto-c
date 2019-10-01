@@ -112,7 +112,7 @@ class Status(object):
     # Decryption failed, because message info was not given explicitly,
     # and was not part of an encrypted message.
     ERROR_NO_MESSAGE_INFO = -301
-    # Message info is corrupted.
+    # Message Info is corrupted.
     ERROR_BAD_MESSAGE_INFO = -302
     # Recipient defined with id is not found within message info
     # during data decryption.
@@ -128,6 +128,8 @@ class Status(object):
     ERROR_MESSAGE_INFO_CUSTOM_PARAM_TYPE_MISMATCH = -307
     # Signature format is corrupted.
     ERROR_BAD_SIGNATURE = -308
+    # Message Info footer is corrupted.
+    ERROR_BAD_MESSAGE_INFO_FOOTER = -309
     # Brainkey password length is out of range.
     ERROR_INVALID_BRAINKEY_PASSWORD_LEN = -401
     # Brainkey number length should be 32 byte.
@@ -201,13 +203,14 @@ class Status(object):
         -225: "Key algorithm does not accept given type of public key.",
         -226: "Key algorithm does not accept given type of private key.",
         -301: "Decryption failed, because message info was not given explicitly, and was not part of an encrypted message.",
-        -302: "Message info is corrupted.",
+        -302: "Message Info is corrupted.",
         -303: "Recipient defined with id is not found within message info during data decryption.",
         -304: "Content encryption key can not be decrypted with a given private key.",
         -305: "Content encryption key can not be decrypted with a given password.",
         -306: "Custom parameter with a given key is not found within message info.",
         -307: "A custom parameter with a given key is found, but the requested value type does not correspond to the actual type.",
         -308: "Signature format is corrupted.",
+        -309: "Message Info footer is corrupted.",
         -401: "Brainkey password length is out of range.",
         -402: "Brainkey number length should be 32 byte.",
         -403: "Brainkey point length should be 65 bytes.",

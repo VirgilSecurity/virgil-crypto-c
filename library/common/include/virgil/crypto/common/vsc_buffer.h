@@ -306,6 +306,17 @@ VSC_PUBLIC void
 vsc_buffer_write_data(vsc_buffer_t *self, vsc_data_t data);
 
 //
+//  Copy data to the buffer and reallocate if needed by coping.
+//
+//  Precondition: buffer should be an owner of the bytes.
+//
+//  Note, this operation can be slow if copy operation occurred.
+//  Note, buffer capacity is doubled.
+//
+VSC_PUBLIC void
+vsc_buffer_append_data(vsc_buffer_t *self, vsc_data_t data);
+
+//
 //  Reset to the initial state.
 //  After reset inner buffer can be re-used.
 //

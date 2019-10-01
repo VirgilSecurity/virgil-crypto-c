@@ -111,6 +111,13 @@ class VscfPkcs5Pbes2(object):
         vscf_pkcs5_pbes2_encrypted_len.restype = c_size_t
         return vscf_pkcs5_pbes2_encrypted_len(ctx, data_len)
 
+    def vscf_pkcs5_pbes2_precise_encrypted_len(self, ctx, data_len):
+        """Precise length calculation of encrypted data."""
+        vscf_pkcs5_pbes2_precise_encrypted_len = self._lib.vscf_pkcs5_pbes2_precise_encrypted_len
+        vscf_pkcs5_pbes2_precise_encrypted_len.argtypes = [POINTER(vscf_pkcs5_pbes2_t), c_size_t]
+        vscf_pkcs5_pbes2_precise_encrypted_len.restype = c_size_t
+        return vscf_pkcs5_pbes2_precise_encrypted_len(ctx, data_len)
+
     def vscf_pkcs5_pbes2_decrypt(self, ctx, data, out):
         """Decrypt given data."""
         vscf_pkcs5_pbes2_decrypt = self._lib.vscf_pkcs5_pbes2_decrypt

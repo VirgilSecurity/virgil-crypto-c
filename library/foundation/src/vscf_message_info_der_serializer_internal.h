@@ -56,6 +56,15 @@
 
 #include "vscf_library.h"
 #include "vscf_message_info_der_serializer.h"
+#include "vscf_signed_data_info.h"
+
+#if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <virgil/crypto/common/vsc_buffer.h>
+#endif
+
+#if VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <VSCCommon/vsc_buffer.h>
+#endif
 
 // clang-format on
 //  @end
@@ -87,6 +96,30 @@ vscf_message_info_der_serializer_init_ctx(vscf_message_info_der_serializer_t *se
 //
 VSCF_PRIVATE void
 vscf_message_info_der_serializer_cleanup_ctx(vscf_message_info_der_serializer_t *self);
+
+//
+//  Return size in bytes enough to hold serialized signed data info.
+//
+//  VirgilSignedDataInfo ::= SEQUENCE {
+//      version INTEGER { v0(0) } DEFAULT v0,
+//      digestAlgorithm AlgorithmIdentifier
+//  }
+//
+VSCF_PRIVATE size_t
+vscf_message_info_der_serializer_serialized_signed_data_info_len(const vscf_message_info_der_serializer_t *self,
+        const vscf_signed_data_info_t *signed_data_info);
+
+//
+//  Serialized signed data info.
+//
+//  VirgilSignedDataInfo ::= SEQUENCE {
+//      version INTEGER { v0(0) } DEFAULT v0,
+//      digestAlgorithm AlgorithmIdentifier
+//  }
+//
+VSCF_PRIVATE void
+vscf_message_info_der_serializer_serialize_signed_data_info(vscf_message_info_der_serializer_t *self,
+        const vscf_signed_data_info_t *signed_data_info, vsc_buffer_t *out);
 
 
 // --------------------------------------------------------------------------

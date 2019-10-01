@@ -727,6 +727,52 @@ vsc_buffer_write_data(vsc_buffer_t *self, vsc_data_t data) {
 }
 
 //
+//  Copy data to the buffer and reallocate if needed by coping.
+//
+//  Precondition: buffer should be an owner of the bytes.
+//
+//  Note, this operation can be slow if copy operation occurred.
+//  Note, buffer capacity is doubled.
+//
+VSC_PUBLIC void
+vsc_buffer_append_data(vsc_buffer_t *self, vsc_data_t data) {
+
+    VSC_ASSERT_PTR(self);
+    VSC_ASSERT_PTR(self->is_owner);
+    VSC_ASSERT(vsc_buffer_is_valid(self));
+    VSC_ASSERT(vsc_data_is_valid(data));
+
+    if (data.len <= vsc_buffer_unused_len(self)) {
+        vsc_buffer_write_data(self, data);
+        return;
+    }
+
+    const size_t required_unused_len = data.len - vsc_buffer_unused_len(self);
+    VSC_ASSERT_ALLOC(SIZE_MAX - required_unused_len >= self->capacity);
+
+    self->capacity += required_unused_len;
+
+    byte *new_bytes = vsc_alloc(self->capacity);
+    VSC_ASSERT_ALLOC(new_bytes);
+
+    memcpy(new_bytes, self->bytes, self->len);
+
+    if (self->is_secure) {
+        vsc_erase(self->bytes, self->len);
+    }
+
+    if (self->bytes_dealloc_cb != NULL) {
+        self->bytes_dealloc_cb(self->bytes);
+    }
+
+    self->bytes = new_bytes;
+    self->bytes_dealloc_cb = vsc_dealloc;
+    self->is_owner = true;
+
+    vsc_buffer_write_data(self, data);
+}
+
+//
 //  Reset to the initial state.
 //  After reset inner buffer can be re-used.
 //

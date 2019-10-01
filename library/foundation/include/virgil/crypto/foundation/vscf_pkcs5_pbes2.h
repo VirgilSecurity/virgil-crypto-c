@@ -222,6 +222,12 @@ VSCF_PUBLIC size_t
 vscf_pkcs5_pbes2_encrypted_len(vscf_pkcs5_pbes2_t *self, size_t data_len);
 
 //
+//  Precise length calculation of encrypted data.
+//
+VSCF_PUBLIC size_t
+vscf_pkcs5_pbes2_precise_encrypted_len(vscf_pkcs5_pbes2_t *self, size_t data_len);
+
+//
 //  Decrypt given data.
 //
 VSCF_PUBLIC vscf_status_t
