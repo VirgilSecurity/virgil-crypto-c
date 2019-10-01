@@ -915,17 +915,32 @@ function java_create_c_class_method_call (class, method, java_class, java_method
 
     # Wrap input buffers
     my.struct_buffer = ".(c_project_common_class_buffer_struct_buffer)"
-    my.method_buffer_init = ".(c_project_common_class_buffer_method_new_with_capacity)"
     my.method_buffer_len = ".(c_project_common_class_buffer_method_len)"
     my.method_buffer_bytes = ".(c_project_common_class_buffer_method_bytes)"
 
     for my.method.argument where defined (0.class) & 0.class = "buffer"
         my.init_data ?= terminator + "// Wrap input buffers"
         my.buffer_name = java_derive_c_instance_name (argument)
-        my.length_getter = java_derive_buffer_length_getter (my.class, my.method, argument, my.java_project)
-        my.init_data += format_left("\
-        $(my.struct_buffer:) *$(my.buffer_name:) = $(my.method_buffer_init:)($(my.length_getter:));
-        ") + terminator
+
+        if string_in (argument.access, "readonly, readwrite, disown")
+            my.buffer_jni_name = "j$(argument.name:Camel)"
+            my.data_name = "$(my.buffer_name:)_data"
+            my.method_buffer_init = ".(c_project_common_class_buffer_method_new_with_data)"
+
+            my.init_data += format_left("\
+                byte* $(my.data_name:)_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, $(my.buffer_jni_name:), NULL);
+                $(my.struct_data:) $(my.data_name:) = $(my.method_data_init:)($(my.data_name:)_arr, (*jenv)->GetArrayLength(jenv, $(my.buffer_jni_name:)));
+                $(my.struct_buffer:) *$(my.buffer_name:) = $(my.method_buffer_init:)($(my.data_name:));
+            ") + terminator
+        else
+            # writeonly buffer
+            my.method_buffer_init = ".(c_project_common_class_buffer_method_new_with_capacity)"
+            my.length_getter = java_derive_buffer_length_getter (my.class, my.method, argument, my.java_project)
+
+            my.init_data += format_left("\
+                $(my.struct_buffer:) *$(my.buffer_name:) = $(my.method_buffer_init:)($(my.length_getter:));
+            ") + terminator
+        endif
 
         my.free_resources ?= terminator + "// Free resources"
         my.free_resources += format_left("\
@@ -978,7 +993,7 @@ function java_create_c_class_method_call (class, method, java_class, java_method
     endfor
 
     # Create shallow copies for objects that is passed as "disown" argument.
-    for my.method.argument where argument.access = "disown"
+    for my.method.argument where argument.access = "disown" & !string_in (argument.class, "data, buffer")
         my.method_shallow_copy = java_derive_c_method_shallow_copy (argument)
         my.class_type = java_derive_c_type (argument)
 
