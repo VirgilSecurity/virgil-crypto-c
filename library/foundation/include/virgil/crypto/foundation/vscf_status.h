@@ -208,7 +208,7 @@ enum vscf_status_t {
     //
     vscf_status_ERROR_NO_MESSAGE_INFO = -301,
     //
-    //  Message info is corrupted.
+    //  Message Info is corrupted.
     //
     vscf_status_ERROR_BAD_MESSAGE_INFO = -302,
     //
@@ -237,6 +237,10 @@ enum vscf_status_t {
     //  Signature format is corrupted.
     //
     vscf_status_ERROR_BAD_SIGNATURE = -308,
+    //
+    //  Message Info footer is corrupted.
+    //
+    vscf_status_ERROR_BAD_MESSAGE_INFO_FOOTER = -309,
     //
     //  Brainkey password length is out of range.
     //

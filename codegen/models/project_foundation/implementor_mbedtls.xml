@@ -111,6 +111,8 @@
             <array length="fixed" length_constant=".(class_aes256_gcm_constant_nonce_len)"/>
         </property>
 
+        <property name="auth data" class="buffer"/>
+
         <property name="do decrypt" type="boolean"/>
 
         <property name="cached data" type="byte">

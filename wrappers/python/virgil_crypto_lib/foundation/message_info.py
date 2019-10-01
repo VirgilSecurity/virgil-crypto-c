@@ -39,6 +39,7 @@ from ._c_bridge import VscfImplTag
 from .key_recipient_info_list import KeyRecipientInfoList
 from .password_recipient_info_list import PasswordRecipientInfoList
 from .message_info_custom_params import MessageInfoCustomParams
+from .footer_info import FooterInfo
 
 
 class MessageInfo(object):
@@ -53,18 +54,6 @@ class MessageInfo(object):
     def __delete__(self, instance):
         """Destroy underlying C context."""
         self._lib_vscf_message_info.vscf_message_info_delete(self.ctx)
-
-    def add_key_recipient(self, key_recipient):
-        """Add recipient that is defined by Public Key."""
-        self._lib_vscf_message_info.vscf_message_info_add_key_recipient(self.ctx, key_recipient.ctx)
-
-    def add_password_recipient(self, password_recipient):
-        """Add recipient that is defined by password."""
-        self._lib_vscf_message_info.vscf_message_info_add_password_recipient(self.ctx, password_recipient.ctx)
-
-    def set_data_encryption_alg_info(self, data_encryption_alg_info):
-        """Set information about algorithm that was used for data encryption."""
-        self._lib_vscf_message_info.vscf_message_info_set_data_encryption_alg_info(self.ctx, data_encryption_alg_info.c_impl)
 
     def data_encryption_alg_info(self):
         """Return information about algorithm that was used for the data encryption."""
@@ -84,9 +73,10 @@ class MessageInfo(object):
         instance = PasswordRecipientInfoList.use_c_ctx(result)
         return instance
 
-    def set_custom_params(self, custom_params):
-        """Setup custom params."""
-        self._lib_vscf_message_info.vscf_message_info_set_custom_params(self.ctx, custom_params.ctx)
+    def has_custom_params(self):
+        """Return true if message info contains at least one custom param."""
+        result = self._lib_vscf_message_info.vscf_message_info_has_custom_params(self.ctx)
+        return result
 
     def custom_params(self):
         """Provide access to the custom params object.
@@ -96,9 +86,31 @@ class MessageInfo(object):
         instance = MessageInfoCustomParams.use_c_ctx(result)
         return instance
 
-    def clear_recipients(self):
-        """Remove all recipients."""
-        self._lib_vscf_message_info.vscf_message_info_clear_recipients(self.ctx)
+    def has_cipher_kdf_alg_info(self):
+        """Return true if cipher kdf alg info exists."""
+        result = self._lib_vscf_message_info.vscf_message_info_has_cipher_kdf_alg_info(self.ctx)
+        return result
+
+    def cipher_kdf_alg_info(self):
+        """Return cipher kdf alg info."""
+        result = self._lib_vscf_message_info.vscf_message_info_cipher_kdf_alg_info(self.ctx)
+        instance = VscfImplTag.get_type(result)[0].use_c_ctx(cast(result, POINTER(VscfImplTag.get_type(result)[1])))
+        return instance
+
+    def has_footer_info(self):
+        """Return true if footer info exists."""
+        result = self._lib_vscf_message_info.vscf_message_info_has_footer_info(self.ctx)
+        return result
+
+    def footer_info(self):
+        """Return footer info."""
+        result = self._lib_vscf_message_info.vscf_message_info_footer_info(self.ctx)
+        instance = FooterInfo.use_c_ctx(result)
+        return instance
+
+    def clear(self):
+        """Remove all infos."""
+        self._lib_vscf_message_info.vscf_message_info_clear(self.ctx)
 
     @classmethod
     def take_c_ctx(cls, c_ctx):

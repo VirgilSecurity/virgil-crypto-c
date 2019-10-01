@@ -78,7 +78,7 @@ function interface_resolve_inherit (inherit, source, destination)
     my.interface = interface_find (my.inherit.interface, my.source)
 
     for my.interface.inherit as upper_inherit
-        my.destination_inherit = my.destination->inherit (interface = upper_inherit.interface) ?
+        my.destination_inherit = my.destination->inherit (inherit.interface = upper_inherit.interface) ?
         if ! defined (my.destination_inherit)
             new inherit to my.destination
                 .interface = upper_inherit.interface

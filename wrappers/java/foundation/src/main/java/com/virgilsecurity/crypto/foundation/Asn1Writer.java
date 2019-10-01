@@ -217,7 +217,7 @@ public interface Asn1Writer {
     int writeOid(byte[] value);
 
     /*
-    * Mark previously written data of given length as ASN.1 type: SQUENCE.
+    * Mark previously written data of given length as ASN.1 type: SEQUENCE.
     * Return count of written bytes.
     */
     int writeSequence(int len);

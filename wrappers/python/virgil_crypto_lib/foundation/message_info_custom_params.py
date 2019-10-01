@@ -104,6 +104,11 @@ class MessageInfoCustomParams(object):
         cleaned_bytes = bytearray(instance)
         return cleaned_bytes
 
+    def has_params(self):
+        """Return true if at least one param exists."""
+        result = self._lib_vscf_message_info_custom_params.vscf_message_info_custom_params_has_params(self.ctx)
+        return result
+
     @classmethod
     def take_c_ctx(cls, c_ctx):
         inst = cls.__new__(cls)

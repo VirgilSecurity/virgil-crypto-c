@@ -466,6 +466,17 @@ vscf_message_info_custom_params_find_node(
 }
 
 //
+//  Return true if at least one param exists.
+//
+VSCF_PUBLIC bool
+vscf_message_info_custom_params_has_params(const vscf_message_info_custom_params_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+
+    return self->key_value_node != NULL;
+}
+
+//
 //  Return first param, or NULL if does not exist.
 //
 VSCF_PUBLIC const vscf_list_key_value_node_t *

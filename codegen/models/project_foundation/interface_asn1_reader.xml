@@ -200,7 +200,7 @@
 
 
     <method name="read sequence">
-        Read ASN.1 type: CONSTRUCTED | SEQUENCE.
+        Read ASN.1 type: SEQUENCE.
         Return element length.
 
         <return type="size"/>
@@ -208,7 +208,7 @@
 
 
     <method name="read set">
-        Read ASN.1 type: CONSTRUCTED | SET.
+        Read ASN.1 type: SET.
         Return element length.
 
         <return type="size"/>

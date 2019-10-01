@@ -221,13 +221,13 @@ typedef vsc_data_t (*vscf_asn1_reader_api_read_oid_fn)(vscf_impl_t *impl);
 typedef vsc_data_t (*vscf_asn1_reader_api_read_data_fn)(vscf_impl_t *impl, size_t len);
 
 //
-//  Callback. Read ASN.1 type: CONSTRUCTED | SEQUENCE.
+//  Callback. Read ASN.1 type: SEQUENCE.
 //          Return element length.
 //
 typedef size_t (*vscf_asn1_reader_api_read_sequence_fn)(vscf_impl_t *impl);
 
 //
-//  Callback. Read ASN.1 type: CONSTRUCTED | SET.
+//  Callback. Read ASN.1 type: SET.
 //          Return element length.
 //
 typedef size_t (*vscf_asn1_reader_api_read_set_fn)(vscf_impl_t *impl);
@@ -358,12 +358,12 @@ struct vscf_asn1_reader_api_t {
     //
     vscf_asn1_reader_api_read_data_fn read_data_cb;
     //
-    //  Read ASN.1 type: CONSTRUCTED | SEQUENCE.
+    //  Read ASN.1 type: SEQUENCE.
     //  Return element length.
     //
     vscf_asn1_reader_api_read_sequence_fn read_sequence_cb;
     //
-    //  Read ASN.1 type: CONSTRUCTED | SET.
+    //  Read ASN.1 type: SET.
     //  Return element length.
     //
     vscf_asn1_reader_api_read_set_fn read_set_cb;

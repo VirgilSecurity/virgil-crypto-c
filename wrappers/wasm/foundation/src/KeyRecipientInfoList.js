@@ -89,16 +89,6 @@ const initKeyRecipientInfoList = (Module, modules) => {
         }
 
         /**
-         * Add new item to the list.
-         * Note, ownership is transfered.
-         */
-        add(keyRecipientInfo) {
-            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-            precondition.ensureClass('keyRecipientInfo', keyRecipientInfo, modules.KeyRecipientInfo);
-            Module._vscf_key_recipient_info_list_add(this.ctxPtr, keyRecipientInfo.ctxPtr);
-        }
-
-        /**
          * Return true if given list has item.
          */
         hasItem() {

@@ -126,7 +126,11 @@ static const vscf_encrypt_api_t encrypt_api = {
     //
     //  Calculate required buffer length to hold the encrypted data.
     //
-    (vscf_encrypt_api_encrypted_len_fn)vscf_pkcs5_pbes2_encrypted_len
+    (vscf_encrypt_api_encrypted_len_fn)vscf_pkcs5_pbes2_encrypted_len,
+    //
+    //  Precise length calculation of encrypted data.
+    //
+    (vscf_encrypt_api_precise_encrypted_len_fn)vscf_pkcs5_pbes2_precise_encrypted_len
 };
 
 //

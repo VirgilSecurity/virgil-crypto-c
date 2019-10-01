@@ -603,4 +603,19 @@ import VSCFoundation
             fatalError("Unexpected C implementation cast to the Swift implementation.")
         }
     }
+
+    /// Wrap C implementation object to the Swift object that implements protocol MessageInfoFooterSerializer.
+    @objc static func wrapMessageInfoFooterSerializer(take c_ctx: OpaquePointer) -> MessageInfoFooterSerializer {
+        if (!vscf_message_info_footer_serializer_is_implemented(c_ctx)) {
+            fatalError("Given C implementation does not implement interface MessageInfoFooterSerializer.")
+        }
+
+        let implTag = vscf_impl_tag(c_ctx)
+        switch(implTag) {
+        case vscf_impl_tag_MESSAGE_INFO_DER_SERIALIZER:
+            return MessageInfoDerSerializer(take: c_ctx)
+        default:
+            fatalError("Unexpected C implementation cast to the Swift implementation.")
+        }
+    }
 }

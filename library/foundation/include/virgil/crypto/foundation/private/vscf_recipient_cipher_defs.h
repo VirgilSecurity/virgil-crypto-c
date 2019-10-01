@@ -56,7 +56,9 @@
 #include "vscf_library.h"
 #include "vscf_atomic.h"
 #include "vscf_key_recipient_list.h"
+#include "vscf_signer_list.h"
 #include "vscf_message_info.h"
+#include "vscf_message_info_footer.h"
 #include "vscf_impl.h"
 #include "vscf_message_info_der_serializer.h"
 #include "vscf_recipient_cipher_decryption_state.h"
@@ -104,8 +106,20 @@ struct vscf_recipient_cipher_t {
     //  Dependency to the interface 'cipher'.
     //
     vscf_impl_t *encryption_cipher;
+    //
+    //  Dependency to the interface 'hash'.
+    //
+    vscf_impl_t *signer_hash;
 
     vscf_key_recipient_list_t *key_recipients;
+
+    vscf_signer_list_t *signers;
+
+    vsc_buffer_t *master_key;
+
+    vsc_buffer_t *derived_keys;
+
+    vsc_buffer_t *data_digest;
 
     vsc_buffer_t *decryption_recipient_id;
 
@@ -115,15 +129,25 @@ struct vscf_recipient_cipher_t {
 
     vscf_impl_t *decryption_cipher;
 
+    vscf_impl_t *verifier_hash;
+
     vscf_message_info_t *message_info;
 
     vscf_message_info_der_serializer_t *message_info_der_serializer;
 
     vsc_buffer_t *message_info_buffer;
 
+    vscf_message_info_footer_t *message_info_footer;
+
+    vsc_buffer_t *message_info_footer_enc;
+
     size_t message_info_expected_len;
 
+    size_t processed_encrypted_data_len;
+
     vscf_recipient_cipher_decryption_state_t decryption_state;
+
+    bool is_signed_operation;
 };
 
 

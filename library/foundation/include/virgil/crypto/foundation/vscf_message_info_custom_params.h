@@ -165,6 +165,12 @@ vscf_message_info_custom_params_find_string(vscf_message_info_custom_params_t *s
 VSCF_PUBLIC vsc_data_t
 vscf_message_info_custom_params_find_data(vscf_message_info_custom_params_t *self, vsc_data_t key, vscf_error_t *error);
 
+//
+//  Return true if at least one param exists.
+//
+VSCF_PUBLIC bool
+vscf_message_info_custom_params_has_params(const vscf_message_info_custom_params_t *self);
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.

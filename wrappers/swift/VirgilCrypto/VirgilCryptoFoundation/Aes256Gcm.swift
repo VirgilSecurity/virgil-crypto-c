@@ -135,6 +135,13 @@ import VSCFoundation
         return proxyResult
     }
 
+    /// Precise length calculation of encrypted data.
+    @objc public func preciseEncryptedLen(dataLen: Int) -> Int {
+        let proxyResult = vscf_aes256_gcm_precise_encrypted_len(self.c_ctx, dataLen)
+
+        return proxyResult
+    }
+
     /// Decrypt given data.
     @objc public func decrypt(data: Data) throws -> Data {
         let outCount = self.decryptedLen(dataLen: data.count)
@@ -338,5 +345,75 @@ import VSCFoundation
         let proxyResult = vscf_aes256_gcm_auth_decrypted_len(self.c_ctx, dataLen)
 
         return proxyResult
+    }
+
+    /// Set additional data for for AEAD ciphers.
+    @objc public func setAuthData(authData: Data) {
+        authData.withUnsafeBytes({ (authDataPointer: UnsafeRawBufferPointer) -> Void in
+
+            vscf_aes256_gcm_set_auth_data(self.c_ctx, vsc_data(authDataPointer.bindMemory(to: byte.self).baseAddress, authData.count))
+        })
+    }
+
+    /// Accomplish an authenticated encryption and place tag separately.
+    ///
+    /// Note, if authentication tag should be added to an encrypted data,
+    /// method "finish" can be used.
+    @objc public func finishAuthEncryption() throws -> CipherAuthFinishAuthEncryptionResult {
+        let outCount = self.outLen(dataLen: 0)
+        var out = Data(count: outCount)
+        var outBuf = vsc_buffer_new()
+        defer {
+            vsc_buffer_delete(outBuf)
+        }
+
+        let tagCount = self.authTagLen
+        var tag = Data(count: tagCount)
+        var tagBuf = vsc_buffer_new()
+        defer {
+            vsc_buffer_delete(tagBuf)
+        }
+
+        let proxyResult = out.withUnsafeMutableBytes({ (outPointer: UnsafeMutableRawBufferPointer) -> vscf_status_t in
+            tag.withUnsafeMutableBytes({ (tagPointer: UnsafeMutableRawBufferPointer) -> vscf_status_t in
+                vsc_buffer_use(outBuf, outPointer.bindMemory(to: byte.self).baseAddress, outCount)
+
+                vsc_buffer_use(tagBuf, tagPointer.bindMemory(to: byte.self).baseAddress, tagCount)
+
+                return vscf_aes256_gcm_finish_auth_encryption(self.c_ctx, outBuf, tagBuf)
+            })
+        })
+        out.count = vsc_buffer_len(outBuf)
+        tag.count = vsc_buffer_len(tagBuf)
+
+        try FoundationError.handleStatus(fromC: proxyResult)
+
+        return CipherAuthFinishAuthEncryptionResult(out: out, tag: tag)
+    }
+
+    /// Accomplish an authenticated decryption with explicitly given tag.
+    ///
+    /// Note, if authentication tag is a part of an encrypted data then,
+    /// method "finish" can be used for simplicity.
+    @objc public func finishAuthDecryption(tag: Data) throws -> Data {
+        let outCount = self.outLen(dataLen: 0)
+        var out = Data(count: outCount)
+        var outBuf = vsc_buffer_new()
+        defer {
+            vsc_buffer_delete(outBuf)
+        }
+
+        let proxyResult = tag.withUnsafeBytes({ (tagPointer: UnsafeRawBufferPointer) -> vscf_status_t in
+            out.withUnsafeMutableBytes({ (outPointer: UnsafeMutableRawBufferPointer) -> vscf_status_t in
+                vsc_buffer_use(outBuf, outPointer.bindMemory(to: byte.self).baseAddress, outCount)
+
+                return vscf_aes256_gcm_finish_auth_decryption(self.c_ctx, vsc_data(tagPointer.bindMemory(to: byte.self).baseAddress, tag.count), outBuf)
+            })
+        })
+        out.count = vsc_buffer_len(outBuf)
+
+        try FoundationError.handleStatus(fromC: proxyResult)
+
+        return out
     }
 }
