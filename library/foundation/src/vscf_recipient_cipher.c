@@ -670,8 +670,7 @@ vscf_recipient_cipher_start_signed_encryption(vscf_recipient_cipher_t *self, siz
     //  Put footer info to the message info.
     //
     vscf_footer_info_t *footer_info = vscf_message_info_footer_info_m(self->message_info);
-    const size_t enc_data_size = vscf_encrypt_precise_encrypted_len(self->encryption_cipher, data_size);
-    vscf_footer_info_set_data_size(footer_info, enc_data_size);
+    vscf_footer_info_set_data_size(footer_info, data_size);
 
     vscf_signed_data_info_t *signed_data_info = vscf_footer_info_signed_data_info_m(footer_info);
     vscf_impl_t *signer_hash_alg_info = vscf_alg_produce_alg_info(self->signer_hash);
@@ -1892,13 +1891,16 @@ static vsc_data_t
 vscf_recipient_cipher_filter_message_info_footer(vscf_recipient_cipher_t *self, vsc_data_t data) {
 
     VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(self->decryption_cipher);
 
     if (!vscf_message_info_has_footer_info(self->message_info)) {
         return data;
     }
 
     const vscf_footer_info_t *footer_info = vscf_message_info_footer_info(self->message_info);
-    const size_t expected_encrypted_data_length = vscf_footer_info_data_size(footer_info);
+    const size_t data_size = vscf_footer_info_data_size(footer_info);
+    const size_t expected_encrypted_data_length =
+            vscf_encrypt_precise_encrypted_len(self->decryption_cipher, data_size);
 
     //  Data was incompletely proceeded and footer is unreachable at this moment.
     if (self->processed_encrypted_data_len + data.len <= expected_encrypted_data_length) {
