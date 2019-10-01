@@ -695,6 +695,11 @@ vscf_recipient_cipher_start_signed_encryption(vscf_recipient_cipher_t *self, siz
     //
     vscf_hash_start(self->signer_hash);
 
+    //
+    //  Remove master key.
+    //
+    vsc_buffer_release(self->master_key);
+
     return status;
 }
 
@@ -796,6 +801,8 @@ vscf_recipient_cipher_finish_encryption(vscf_recipient_cipher_t *self, vsc_buffe
     if (vscf_status_SUCCESS == status) {
         status = vscf_cipher_finish(self->encryption_cipher, out);
     }
+
+    vsc_buffer_destroy(&self->derived_keys);
 
     return status;
 }
@@ -974,6 +981,8 @@ vscf_recipient_cipher_finish_decryption(vscf_recipient_cipher_t *self, vsc_buffe
     if (self->is_signed_operation) {
         vscf_recipient_cipher_accomplish_verified_decryption(self);
     }
+
+    vsc_buffer_destroy(&self->derived_keys);
 
     return status;
 }
@@ -1345,16 +1354,6 @@ vscf_recipient_cipher_pack_message_info_footer(vscf_recipient_cipher_t *self, vs
     vscf_message_info_der_serializer_serialize_footer(
             self->message_info_der_serializer, self->message_info_footer, plain_footer);
 
-    vsc_data_t key = vscf_recipient_cipher_footer_derived_key(self, self->encryption_cipher);
-    vscf_cipher_set_key(self->encryption_cipher, key);
-
-    vsc_data_t nonce = vscf_recipient_cipher_footer_derived_nonce(self, self->encryption_cipher);
-    vscf_cipher_set_nonce(self->encryption_cipher, nonce);
-
-    if (vscf_cipher_auth_is_implemented(self->encryption_cipher)) {
-        vscf_cipher_auth_set_auth_data(self->encryption_cipher, vsc_data_empty());
-    }
-
     const vscf_status_t status = vscf_encrypt(self->encryption_cipher, vsc_buffer_data(plain_footer), out);
 
     vsc_buffer_destroy(&plain_footer);
@@ -1517,6 +1516,19 @@ vscf_recipient_cipher_accomplish_signed_encryption(vscf_recipient_cipher_t *self
     } while ((signer_iterator = vscf_signer_list_next(signer_iterator)) != NULL);
 
     vscf_message_info_footer_set_signer_digest(self->message_info_footer, &digest);
+
+    //
+    //  Configure encryption cipher for encrypting footer.
+    //
+    vsc_data_t key = vscf_recipient_cipher_footer_derived_key(self, self->encryption_cipher);
+    vscf_cipher_set_key(self->encryption_cipher, key);
+
+    vsc_data_t nonce = vscf_recipient_cipher_footer_derived_nonce(self, self->encryption_cipher);
+    vscf_cipher_set_nonce(self->encryption_cipher, nonce);
+
+    if (vscf_cipher_auth_is_implemented(self->encryption_cipher)) {
+        vscf_cipher_auth_set_auth_data(self->encryption_cipher, vsc_data_empty());
+    }
 
     goto cleanup;
 
