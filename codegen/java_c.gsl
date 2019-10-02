@@ -564,9 +564,12 @@ function java_derive_buffer_length_getter (class, method, argument, java_project
         return "$(my.proxy_method:)($(my.proxy_args?:))"
 
     elsif defined (my.length.constant)
-        my.proxy_constant = java_derive_c_real_constant_name(my.length.constant, my.proxy_object, my.java_project)
-        return "$(my.proxy_constant:)"
-
+        if regexp.match ("\\d+", my.length.constant)
+            return my.length.constant
+        else
+            my.proxy_constant = java_derive_c_real_constant_name(my.length.constant, my.proxy_object, my.java_project)
+            return "$(my.proxy_constant:)"
+        endif
     elsif defined (my.length.argument)
         my.proxy_argument = "j$(java_derive_argument_name_str (my.length.argument):)"
         return my.proxy_argument
@@ -942,9 +945,11 @@ function java_create_c_class_method_call (class, method, java_class, java_method
         endif
 
         my.free_resources ?= terminator + "// Free resources"
-        my.free_resources += format_left("\
-            .(c_project_common_class_buffer_method_delete)($(my.buffer_name:));
-        ") + terminator
+        if !string_in (argument.access, "disown")
+            my.free_resources += format_left("\
+                .(c_project_common_class_buffer_method_delete)($(my.buffer_name:));
+            ") + terminator
+        endif
     endfor
 
     # Wrap errors
