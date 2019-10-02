@@ -922,7 +922,7 @@ function java_create_c_class_method_call (class, method, java_class, java_method
         my.init_data ?= terminator + "// Wrap input buffers"
         my.buffer_name = java_derive_c_instance_name (argument)
 
-        if string_in (argument.access, "readonly, readwrite, disown")
+        if string_in (argument.access, "readonly, retain, readwrite, disown")
             my.buffer_jni_name = "j$(argument.name:Camel)"
             my.data_name = "$(my.buffer_name:)_data"
             my.method_buffer_init = ".(c_project_common_class_buffer_method_new_with_data)"
@@ -933,7 +933,6 @@ function java_create_c_class_method_call (class, method, java_class, java_method
                 $(my.struct_buffer:) *$(my.buffer_name:) = $(my.method_buffer_init:)($(my.data_name:));
             ") + terminator
         else
-            # writeonly buffer
             my.method_buffer_init = ".(c_project_common_class_buffer_method_new_with_capacity)"
             my.length_getter = java_derive_buffer_length_getter (my.class, my.method, argument, my.java_project)
 
