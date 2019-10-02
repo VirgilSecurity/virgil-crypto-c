@@ -11798,7 +11798,7 @@ JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_Foundatio
     vscf_message_info_footer_t */*5*/ message_info_footer = *(vscf_message_info_footer_t */*5*/*) &message_info_footer_c_ctx;
 
     // Wrap input buffers
-    vsc_buffer_t *out = vsc_buffer_new_with_capacity(vscf_message_info_der_serializer_serialized_len((vscf_message_info_der_serializer_t /*9*/ *) c_ctx /*3*/, message_info_footer/*a*/));
+    vsc_buffer_t *out = vsc_buffer_new_with_capacity(vscf_message_info_der_serializer_serialized_footer_len((vscf_message_info_der_serializer_t /*9*/ *) c_ctx /*3*/, message_info_footer/*a*/));
 
     vscf_message_info_der_serializer_serialize_footer(message_info_der_serializer_ctx /*a1*/, message_info_footer /*a6*/, out /*a3*/);
     jbyteArray ret = (*jenv)->NewByteArray(jenv, vsc_buffer_len(out));

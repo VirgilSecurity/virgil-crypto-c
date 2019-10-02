@@ -148,7 +148,7 @@ import VSCFoundation
 
     /// Serialize class "message info footer".
     @objc public func serializeFooter(messageInfoFooter: MessageInfoFooter) -> Data {
-        let outCount = self.serializedLen(messageInfoFooter: messageInfoFooter)
+        let outCount = self.serializedFooterLen(messageInfoFooter: messageInfoFooter)
         var out = Data(count: outCount)
         var outBuf = vsc_buffer_new()
         defer {
