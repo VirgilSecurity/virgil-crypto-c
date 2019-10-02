@@ -142,8 +142,6 @@ function php_map_high_level (in_module, in_php_module, in_php_project, out_high_
         copy php_method0 to my.out_high_level
     endfor
 
-    my._use = ""
-
     for my.in_module.dependency as dependency0
 
         my._dep_name = dependency0.name
@@ -157,11 +155,6 @@ function php_map_high_level (in_module, in_php_module, in_php_project, out_high_
         else
             echo_debug_item(dependency0)
             echo_fatal("Not implemented", my)
-        endif
-
-        if defined (dependency0.project)
-            my._u = php_derive_high_level_namespace_use (my.in_php_module, dependency0)
-            my._use += format_left(my._u, 0)
         endif
 
         new php_method to my.out_high_level
@@ -179,16 +172,16 @@ function php_map_high_level (in_module, in_php_module, in_php_project, out_high_
                 new argument to method
                     .name = my._dep_name
                     .class = my._dep_class
+
+                    if defined (dependency0.project)
+                        .class_with_namespace = "$(my.in_php_module.main_project0:Pascal)\\\\$(dependency0.project:Pascal)\\\\$(my._dep_class:Pascal)"
+                    endif
                 endnew
             endnew
 
             php_map_high_level_method (my._dependency_method->method, my.in_php_module, my.in_type, php_method)
         endnew
     endfor
-
-    new use to my.out_high_level
-        . = format_left(my._use, 0)
-    endnew
 
     for my.in_module.method as method0 where method0.visibility = "public" & method0.declaration = "public" & method0.scope = "public"
         new php_method to my.out_high_level
@@ -493,6 +486,10 @@ function php_map_high_level_argument (in_argument, in_php_module, out_php_argume
         my._type = "$(my.in_argument.enum:Pascal)"
         my._instance = 1
         my._namespace = "TEMP"
+    endif
+
+    if defined (my.in_argument.class_with_namespace)
+        my._type = my.in_argument.class_with_namespace
     endif
 
     my.out_php_argument.type = my._type
