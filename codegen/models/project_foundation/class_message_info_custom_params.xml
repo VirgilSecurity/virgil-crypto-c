@@ -76,6 +76,12 @@
         <return class="list key value node"/>
     </method>
 
+    <method name="has params" is_const="1">
+        Return true if at least one param exists.
+
+        <return type="boolean"/>
+    </method>
+
     <method name="first param" scope="internal" is_const="1">
         Return first param, or NULL if does not exist.
 

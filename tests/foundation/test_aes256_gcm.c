@@ -200,7 +200,7 @@ test__auth_decrypt__encrypted_vector_2__decrypted_len_equals_0(void) {
     vscf_aes256_gcm_t *aes256_gcm = vscf_aes256_gcm_new();
 
     vsc_buffer_t *dec = vsc_buffer_new_with_capacity(
-            vscf_aes256_gcm_auth_decrypted_len(aes256_gcm, test_aes256_gcm_VECTOR_2_DATA.len));
+            vscf_aes256_gcm_auth_decrypted_len(aes256_gcm, test_aes256_gcm_VECTOR_2_ENC.len));
 
     vscf_aes256_gcm_set_key(aes256_gcm, test_aes256_gcm_VECTOR_2_KEY);
     vscf_aes256_gcm_set_nonce(aes256_gcm, test_aes256_gcm_VECTOR_2_NONCE);

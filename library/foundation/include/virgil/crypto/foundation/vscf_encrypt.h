@@ -101,6 +101,12 @@ VSCF_PUBLIC size_t
 vscf_encrypt_encrypted_len(vscf_impl_t *impl, size_t data_len);
 
 //
+//  Precise length calculation of encrypted data.
+//
+VSCF_PUBLIC size_t
+vscf_encrypt_precise_encrypted_len(vscf_impl_t *impl, size_t data_len);
+
+//
 //  Return encrypt API, or NULL if it is not implemented.
 //
 VSCF_PUBLIC const vscf_encrypt_api_t *

@@ -136,7 +136,11 @@ static const vscf_encrypt_api_t encrypt_api = {
     //
     //  Calculate required buffer length to hold the encrypted data.
     //
-    (vscf_encrypt_api_encrypted_len_fn)vscf_aes256_gcm_encrypted_len
+    (vscf_encrypt_api_encrypted_len_fn)vscf_aes256_gcm_encrypted_len,
+    //
+    //  Precise length calculation of encrypted data.
+    //
+    (vscf_encrypt_api_precise_encrypted_len_fn)vscf_aes256_gcm_precise_encrypted_len
 };
 
 //
@@ -351,13 +355,35 @@ static const vscf_cipher_auth_api_t cipher_auth_api = {
     //
     vscf_impl_tag_AES256_GCM,
     //
+    //  Link to the inherited interface API 'cipher'.
+    //
+    &cipher_api,
+    //
     //  Link to the inherited interface API 'auth encrypt'.
     //
     &auth_encrypt_api,
     //
     //  Link to the inherited interface API 'auth decrypt'.
     //
-    &auth_decrypt_api
+    &auth_decrypt_api,
+    //
+    //  Set additional data for for AEAD ciphers.
+    //
+    (vscf_cipher_auth_api_set_auth_data_fn)vscf_aes256_gcm_set_auth_data,
+    //
+    //  Accomplish an authenticated encryption and place tag separately.
+    //
+    //  Note, if authentication tag should be added to an encrypted data,
+    //  method "finish" can be used.
+    //
+    (vscf_cipher_auth_api_finish_auth_encryption_fn)vscf_aes256_gcm_finish_auth_encryption,
+    //
+    //  Accomplish an authenticated decryption with explicitly given tag.
+    //
+    //  Note, if authentication tag is a part of an encrypted data then,
+    //  method "finish" can be used for simplicity.
+    //
+    (vscf_cipher_auth_api_finish_auth_decryption_fn)vscf_aes256_gcm_finish_auth_decryption
 };
 
 //
@@ -507,15 +533,6 @@ VSCF_PUBLIC const vscf_cipher_auth_info_api_t *
 vscf_aes256_gcm_cipher_auth_info_api(void) {
 
     return &cipher_auth_info_api;
-}
-
-//
-//  Returns instance of the implemented interface 'cipher auth'.
-//
-VSCF_PUBLIC const vscf_cipher_auth_api_t *
-vscf_aes256_gcm_cipher_auth_api(void) {
-
-    return &cipher_auth_api;
 }
 
 //

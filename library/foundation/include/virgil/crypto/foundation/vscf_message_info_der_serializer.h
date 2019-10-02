@@ -55,6 +55,7 @@
 
 #include "vscf_library.h"
 #include "vscf_message_info.h"
+#include "vscf_message_info_footer.h"
 #include "vscf_error.h"
 #include "vscf_impl.h"
 
@@ -227,6 +228,27 @@ vscf_message_info_der_serializer_read_prefix(vscf_message_info_der_serializer_t 
 //
 VSCF_PUBLIC vscf_message_info_t *
 vscf_message_info_der_serializer_deserialize(vscf_message_info_der_serializer_t *self, vsc_data_t data,
+        vscf_error_t *error);
+
+//
+//  Return buffer size enough to hold serialized message info footer.
+//
+VSCF_PUBLIC size_t
+vscf_message_info_der_serializer_serialized_footer_len(vscf_message_info_der_serializer_t *self,
+        const vscf_message_info_footer_t *message_info_footer);
+
+//
+//  Serialize class "message info footer".
+//
+VSCF_PUBLIC void
+vscf_message_info_der_serializer_serialize_footer(vscf_message_info_der_serializer_t *self,
+        const vscf_message_info_footer_t *message_info_footer, vsc_buffer_t *out);
+
+//
+//  Deserialize class "message info footer".
+//
+VSCF_PUBLIC vscf_message_info_footer_t *
+vscf_message_info_der_serializer_deserialize_footer(vscf_message_info_der_serializer_t *self, vsc_data_t data,
         vscf_error_t *error);
 
 

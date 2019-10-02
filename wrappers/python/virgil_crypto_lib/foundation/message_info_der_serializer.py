@@ -40,11 +40,13 @@ from virgil_crypto_lib.common._c_bridge import Data
 from ._c_bridge._vscf_error import vscf_error_t
 from .message_info import MessageInfo
 from ._c_bridge import VscfStatus
+from .message_info_footer import MessageInfoFooter
 from .message_info_serializer import MessageInfoSerializer
+from .message_info_footer_serializer import MessageInfoFooterSerializer
 
 
-class MessageInfoDerSerializer(MessageInfoSerializer):
-    """CMS based implementation of the class "message info" serialization."""
+class MessageInfoDerSerializer(MessageInfoSerializer, MessageInfoFooterSerializer):
+    """CMS based serialization of the class "message info"."""
 
     PREFIX_LEN = 32
 
@@ -93,6 +95,26 @@ class MessageInfoDerSerializer(MessageInfoSerializer):
         result = self._lib_vscf_message_info_der_serializer.vscf_message_info_der_serializer_deserialize(self.ctx, d_data.data, error)
         VscfStatus.handle_status(error.status)
         instance = MessageInfo.take_c_ctx(result)
+        return instance
+
+    def serialized_footer_len(self, message_info_footer):
+        """Return buffer size enough to hold serialized message info footer."""
+        result = self._lib_vscf_message_info_der_serializer.vscf_message_info_der_serializer_serialized_footer_len(self.ctx, message_info_footer.ctx)
+        return result
+
+    def serialize_footer(self, message_info_footer):
+        """Serialize class "message info footer"."""
+        out = Buffer(self.serialized_len(message_info_footer=message_info_footer))
+        self._lib_vscf_message_info_der_serializer.vscf_message_info_der_serializer_serialize_footer(self.ctx, message_info_footer.ctx, out.c_buffer)
+        return out.get_bytes()
+
+    def deserialize_footer(self, data):
+        """Deserialize class "message info footer"."""
+        d_data = Data(data)
+        error = vscf_error_t()
+        result = self._lib_vscf_message_info_der_serializer.vscf_message_info_der_serializer_deserialize_footer(self.ctx, d_data.data, error)
+        VscfStatus.handle_status(error.status)
+        instance = MessageInfoFooter.take_c_ctx(result)
         return instance
 
     def setup_defaults(self):

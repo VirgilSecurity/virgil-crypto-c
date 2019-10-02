@@ -183,13 +183,13 @@ public interface Asn1Reader {
     byte[] readData(int len);
 
     /*
-    * Read ASN.1 type: CONSTRUCTED | SEQUENCE.
+    * Read ASN.1 type: SEQUENCE.
     * Return element length.
     */
     int readSequence();
 
     /*
-    * Read ASN.1 type: CONSTRUCTED | SET.
+    * Read ASN.1 type: SET.
     * Return element length.
     */
     int readSet();

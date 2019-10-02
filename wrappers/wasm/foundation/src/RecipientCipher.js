@@ -104,6 +104,13 @@ const initRecipientCipher = (Module, modules) => {
             Module._vscf_recipient_cipher_use_encryption_cipher(this.ctxPtr, encryptionCipher.ctxPtr)
         }
 
+        set signerHash(signerHash) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureImplementInterface('signerHash', signerHash, 'Foundation.Hash', modules.FoundationInterfaceTag.HASH, modules.FoundationInterface);
+            Module._vscf_recipient_cipher_release_signer_hash(this.ctxPtr)
+            Module._vscf_recipient_cipher_use_signer_hash(this.ctxPtr, signerHash.ctxPtr)
+        }
+
         /**
          * Add recipient defined with id and public key.
          */
@@ -141,6 +148,44 @@ const initRecipientCipher = (Module, modules) => {
         }
 
         /**
+         * Add identifier and private key to sign initial plain text.
+         * Return error if the private key can not sign.
+         */
+        addSigner(signerId, privateKey) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureByteArray('signerId', signerId);
+            precondition.ensureImplementInterface('privateKey', privateKey, 'Foundation.PrivateKey', modules.FoundationInterfaceTag.PRIVATE_KEY, modules.FoundationInterface);
+
+            //  Copy bytes from JS memory to the WASM memory.
+            const signerIdSize = signerId.length * signerId.BYTES_PER_ELEMENT;
+            const signerIdPtr = Module._malloc(signerIdSize);
+            Module.HEAP8.set(signerId, signerIdPtr);
+
+            //  Create C structure vsc_data_t.
+            const signerIdCtxSize = Module._vsc_data_ctx_size();
+            const signerIdCtxPtr = Module._malloc(signerIdCtxSize);
+
+            //  Point created vsc_data_t object to the copied bytes.
+            Module._vsc_data(signerIdCtxPtr, signerIdPtr, signerIdSize);
+
+            try {
+                const proxyResult = Module._vscf_recipient_cipher_add_signer(this.ctxPtr, signerIdCtxPtr, privateKey.ctxPtr);
+                modules.FoundationError.handleStatusCode(proxyResult);
+            } finally {
+                Module._free(signerIdPtr);
+                Module._free(signerIdCtxPtr);
+            }
+        }
+
+        /**
+         * Remove all signers.
+         */
+        clearSigners() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            Module._vscf_recipient_cipher_clear_signers(this.ctxPtr);
+        }
+
+        /**
          * Provide access to the custom params object.
          * The returned object can be used to add custom params or read it.
          */
@@ -152,6 +197,28 @@ const initRecipientCipher = (Module, modules) => {
 
             const jsResult = modules.MessageInfoCustomParams.newAndUseCContext(proxyResult);
             return jsResult;
+        }
+
+        /**
+         * Start encryption process.
+         */
+        startEncryption() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            const proxyResult = Module._vscf_recipient_cipher_start_encryption(this.ctxPtr);
+            modules.FoundationError.handleStatusCode(proxyResult);
+        }
+
+        /**
+         * Start encryption process with known plain text size.
+         *
+         * Precondition: At least one signer should be added.
+         * Note, store message info footer as well.
+         */
+        startSignedEncryption(dataSize) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureNumber('dataSize', dataSize);
+            const proxyResult = Module._vscf_recipient_cipher_start_signed_encryption(this.ctxPtr, dataSize);
+            modules.FoundationError.handleStatusCode(proxyResult);
         }
 
         /**
@@ -168,19 +235,10 @@ const initRecipientCipher = (Module, modules) => {
         }
 
         /**
-         * Start encryption process.
-         */
-        startEncryption() {
-            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-            const proxyResult = Module._vscf_recipient_cipher_start_encryption(this.ctxPtr);
-            modules.FoundationError.handleStatusCode(proxyResult);
-        }
-
-        /**
          * Return serialized message info to the buffer.
          *
-         * Precondition: this method can be called after "start encryption".
-         * Precondition: this method can be called before "finish encryption".
+         * Precondition: this method should be called after "start encryption".
+         * Precondition: this method should be called before "finish encryption".
          *
          * Note, store message info to use it for decryption process,
          * or place it at the encrypted data beginning (embedding).
@@ -280,7 +338,7 @@ const initRecipientCipher = (Module, modules) => {
 
         /**
          * Initiate decryption process with a recipient private key.
-         * Message info can be empty if it was embedded to encrypted data.
+         * Message Info can be empty if it was embedded to encrypted data.
          */
         startDecryptionWithKey(recipientId, privateKey, messageInfo) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
@@ -320,6 +378,68 @@ const initRecipientCipher = (Module, modules) => {
                 Module._free(recipientIdCtxPtr);
                 Module._free(messageInfoPtr);
                 Module._free(messageInfoCtxPtr);
+            }
+        }
+
+        /**
+         * Initiate decryption process with a recipient private key.
+         * Message Info can be empty if it was embedded to encrypted data.
+         * Message Info footer can be empty if it was embedded to encrypted data.
+         * If footer was embedded, method "start decryption with key" can be used.
+         */
+        startVerifiedDecryptionWithKey(recipientId, privateKey, messageInfo, messageInfoFooter) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureByteArray('recipientId', recipientId);
+            precondition.ensureImplementInterface('privateKey', privateKey, 'Foundation.PrivateKey', modules.FoundationInterfaceTag.PRIVATE_KEY, modules.FoundationInterface);
+            precondition.ensureByteArray('messageInfo', messageInfo);
+            precondition.ensureByteArray('messageInfoFooter', messageInfoFooter);
+
+            //  Copy bytes from JS memory to the WASM memory.
+            const recipientIdSize = recipientId.length * recipientId.BYTES_PER_ELEMENT;
+            const recipientIdPtr = Module._malloc(recipientIdSize);
+            Module.HEAP8.set(recipientId, recipientIdPtr);
+
+            //  Create C structure vsc_data_t.
+            const recipientIdCtxSize = Module._vsc_data_ctx_size();
+            const recipientIdCtxPtr = Module._malloc(recipientIdCtxSize);
+
+            //  Point created vsc_data_t object to the copied bytes.
+            Module._vsc_data(recipientIdCtxPtr, recipientIdPtr, recipientIdSize);
+
+            //  Copy bytes from JS memory to the WASM memory.
+            const messageInfoSize = messageInfo.length * messageInfo.BYTES_PER_ELEMENT;
+            const messageInfoPtr = Module._malloc(messageInfoSize);
+            Module.HEAP8.set(messageInfo, messageInfoPtr);
+
+            //  Create C structure vsc_data_t.
+            const messageInfoCtxSize = Module._vsc_data_ctx_size();
+            const messageInfoCtxPtr = Module._malloc(messageInfoCtxSize);
+
+            //  Point created vsc_data_t object to the copied bytes.
+            Module._vsc_data(messageInfoCtxPtr, messageInfoPtr, messageInfoSize);
+
+            //  Copy bytes from JS memory to the WASM memory.
+            const messageInfoFooterSize = messageInfoFooter.length * messageInfoFooter.BYTES_PER_ELEMENT;
+            const messageInfoFooterPtr = Module._malloc(messageInfoFooterSize);
+            Module.HEAP8.set(messageInfoFooter, messageInfoFooterPtr);
+
+            //  Create C structure vsc_data_t.
+            const messageInfoFooterCtxSize = Module._vsc_data_ctx_size();
+            const messageInfoFooterCtxPtr = Module._malloc(messageInfoFooterCtxSize);
+
+            //  Point created vsc_data_t object to the copied bytes.
+            Module._vsc_data(messageInfoFooterCtxPtr, messageInfoFooterPtr, messageInfoFooterSize);
+
+            try {
+                const proxyResult = Module._vscf_recipient_cipher_start_verified_decryption_with_key(this.ctxPtr, recipientIdCtxPtr, privateKey.ctxPtr, messageInfoCtxPtr, messageInfoFooterCtxPtr);
+                modules.FoundationError.handleStatusCode(proxyResult);
+            } finally {
+                Module._free(recipientIdPtr);
+                Module._free(recipientIdCtxPtr);
+                Module._free(messageInfoPtr);
+                Module._free(messageInfoCtxPtr);
+                Module._free(messageInfoFooterPtr);
+                Module._free(messageInfoFooterCtxPtr);
             }
         }
 
@@ -385,6 +505,95 @@ const initRecipientCipher = (Module, modules) => {
 
             try {
                 const proxyResult = Module._vscf_recipient_cipher_finish_decryption(this.ctxPtr, outCtxPtr);
+                modules.FoundationError.handleStatusCode(proxyResult);
+
+                const outPtr = Module._vsc_buffer_bytes(outCtxPtr);
+                const outPtrLen = Module._vsc_buffer_len(outCtxPtr);
+                const out = Module.HEAPU8.slice(outPtr, outPtr + outPtrLen);
+                return out;
+            } finally {
+                Module._vsc_buffer_delete(outCtxPtr);
+            }
+        }
+
+        /**
+         * Return true if data was signed by a sender.
+         *
+         * Precondition: this method should be called after "finish decryption".
+         */
+        isDataSigned() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
+            let proxyResult;
+            proxyResult = Module._vscf_recipient_cipher_is_data_signed(this.ctxPtr);
+
+            const booleanResult = !!proxyResult;
+            return booleanResult;
+        }
+
+        /**
+         * Return information about signers that sign data.
+         *
+         * Precondition: this method should be called after "finish decryption".
+         * Precondition: method "is data signed" returns true.
+         */
+        signerInfos() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
+            let proxyResult;
+            proxyResult = Module._vscf_recipient_cipher_signer_infos(this.ctxPtr);
+
+            const jsResult = modules.SignerInfoList.newAndUseCContext(proxyResult);
+            return jsResult;
+        }
+
+        /**
+         * Verify given cipher info.
+         */
+        verifySignerInfo(signerInfo, publicKey) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureClass('signerInfo', signerInfo, modules.SignerInfo);
+            precondition.ensureImplementInterface('publicKey', publicKey, 'Foundation.PublicKey', modules.FoundationInterfaceTag.PUBLIC_KEY, modules.FoundationInterface);
+
+            let proxyResult;
+            proxyResult = Module._vscf_recipient_cipher_verify_signer_info(this.ctxPtr, signerInfo.ctxPtr, publicKey.ctxPtr);
+
+            const booleanResult = !!proxyResult;
+            return booleanResult;
+        }
+
+        /**
+         * Return buffer length required to hold message footer returned by the
+         * "pack message footer" method.
+         *
+         * Precondition: this method should be called after "finish encryption".
+         */
+        messageInfoFooterLen() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
+            let proxyResult;
+            proxyResult = Module._vscf_recipient_cipher_message_info_footer_len(this.ctxPtr);
+            return proxyResult;
+        }
+
+        /**
+         * Return serialized message info footer to the buffer.
+         *
+         * Precondition: this method should be called after "finish encryption".
+         *
+         * Note, store message info to use it for verified decryption process,
+         * or place it at the encrypted data ending (embedding).
+         *
+         * Return message info footer - signers public information, etc.
+         */
+        packMessageInfoFooter() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
+            const outCapacity = this.messageInfoFooterLen();
+            const outCtxPtr = Module._vsc_buffer_new_with_capacity(outCapacity);
+
+            try {
+                const proxyResult = Module._vscf_recipient_cipher_pack_message_info_footer(this.ctxPtr, outCtxPtr);
                 modules.FoundationError.handleStatusCode(proxyResult);
 
                 const outPtr = Module._vsc_buffer_bytes(outCtxPtr);

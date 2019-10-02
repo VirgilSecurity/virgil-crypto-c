@@ -90,33 +90,6 @@ const initMessageInfo = (Module, modules) => {
         }
 
         /**
-         * Add recipient that is defined by Public Key.
-         */
-        addKeyRecipient(keyRecipient) {
-            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-            precondition.ensureClass('keyRecipient', keyRecipient, modules.KeyRecipientInfo);
-            Module._vscf_message_info_add_key_recipient(this.ctxPtr, keyRecipient.ctxPtr);
-        }
-
-        /**
-         * Add recipient that is defined by password.
-         */
-        addPasswordRecipient(passwordRecipient) {
-            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-            precondition.ensureClass('passwordRecipient', passwordRecipient, modules.PasswordRecipientInfo);
-            Module._vscf_message_info_add_password_recipient(this.ctxPtr, passwordRecipient.ctxPtr);
-        }
-
-        /**
-         * Set information about algorithm that was used for data encryption.
-         */
-        setDataEncryptionAlgInfo(dataEncryptionAlgInfo) {
-            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-            precondition.ensureImplementInterface('dataEncryptionAlgInfo', dataEncryptionAlgInfo, 'Foundation.AlgInfo', modules.FoundationInterfaceTag.ALG_INFO, modules.FoundationInterface);
-            Module._vscf_message_info_set_data_encryption_alg_info(this.ctxPtr, dataEncryptionAlgInfo.ctxPtr);
-        }
-
-        /**
          * Return information about algorithm that was used for the data encryption.
          */
         dataEncryptionAlgInfo() {
@@ -156,12 +129,16 @@ const initMessageInfo = (Module, modules) => {
         }
 
         /**
-         * Setup custom params.
+         * Return true if message info contains at least one custom param.
          */
-        setCustomParams(customParams) {
+        hasCustomParams() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-            precondition.ensureClass('customParams', customParams, modules.MessageInfoCustomParams);
-            Module._vscf_message_info_set_custom_params(this.ctxPtr, customParams.ctxPtr);
+
+            let proxyResult;
+            proxyResult = Module._vscf_message_info_has_custom_params(this.ctxPtr);
+
+            const booleanResult = !!proxyResult;
+            return booleanResult;
         }
 
         /**
@@ -180,11 +157,63 @@ const initMessageInfo = (Module, modules) => {
         }
 
         /**
-         * Remove all recipients.
+         * Return true if cipher kdf alg info exists.
          */
-        clearRecipients() {
+        hasCipherKdfAlgInfo() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-            Module._vscf_message_info_clear_recipients(this.ctxPtr);
+
+            let proxyResult;
+            proxyResult = Module._vscf_message_info_has_cipher_kdf_alg_info(this.ctxPtr);
+
+            const booleanResult = !!proxyResult;
+            return booleanResult;
+        }
+
+        /**
+         * Return cipher kdf alg info.
+         */
+        cipherKdfAlgInfo() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
+            let proxyResult;
+            proxyResult = Module._vscf_message_info_cipher_kdf_alg_info(this.ctxPtr);
+
+            const jsResult = modules.FoundationInterface.newAndUseCContext(proxyResult);
+            return jsResult;
+        }
+
+        /**
+         * Return true if footer info exists.
+         */
+        hasFooterInfo() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
+            let proxyResult;
+            proxyResult = Module._vscf_message_info_has_footer_info(this.ctxPtr);
+
+            const booleanResult = !!proxyResult;
+            return booleanResult;
+        }
+
+        /**
+         * Return footer info.
+         */
+        footerInfo() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
+            let proxyResult;
+            proxyResult = Module._vscf_message_info_footer_info(this.ctxPtr);
+
+            const jsResult = modules.FooterInfo.newAndUseCContext(proxyResult);
+            return jsResult;
+        }
+
+        /**
+         * Remove all infos.
+         */
+        clear() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            Module._vscf_message_info_clear(this.ctxPtr);
         }
     }
 

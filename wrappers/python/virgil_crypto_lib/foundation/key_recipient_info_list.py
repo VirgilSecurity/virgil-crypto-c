@@ -50,11 +50,6 @@ class KeyRecipientInfoList(object):
         """Destroy underlying C context."""
         self._lib_vscf_key_recipient_info_list.vscf_key_recipient_info_list_delete(self.ctx)
 
-    def add(self, key_recipient_info):
-        """Add new item to the list.
-        Note, ownership is transfered."""
-        self._lib_vscf_key_recipient_info_list.vscf_key_recipient_info_list_add(self.ctx, key_recipient_info.ctx)
-
     def has_item(self):
         """Return true if given list has item."""
         result = self._lib_vscf_key_recipient_info_list.vscf_key_recipient_info_list_has_item(self.ctx)

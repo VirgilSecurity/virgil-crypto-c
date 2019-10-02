@@ -1,0 +1,17 @@
+<class name="signed data info">
+    Handle meta information about signed data.
+
+    <property name="hash algorithm" interface="alg info"/>
+
+    <method name="set hash alg info">
+        Set information about algorithm that was used to produce data digest.
+
+        <argument name="hash alg info" interface="alg info" access="disown"/>
+    </method>
+
+    <method name="hash alg info" is_const="1">
+        Return information about algorithm that was used to produce data digest.
+
+        <return interface="alg info"/>
+    </method>
+</class>

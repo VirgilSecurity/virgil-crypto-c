@@ -132,6 +132,13 @@ import VSCFoundation
         return proxyResult
     }
 
+    /// Precise length calculation of encrypted data.
+    @objc public func preciseEncryptedLen(dataLen: Int) -> Int {
+        let proxyResult = vscf_aes256_cbc_precise_encrypted_len(self.c_ctx, dataLen)
+
+        return proxyResult
+    }
+
     /// Decrypt given data.
     @objc public func decrypt(data: Data) throws -> Data {
         let outCount = self.decryptedLen(dataLen: data.count)

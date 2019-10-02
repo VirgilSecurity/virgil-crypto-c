@@ -63,6 +63,14 @@
 
 #include <mbedtls/cipher.h>
 
+#if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <virgil/crypto/common/vsc_buffer.h>
+#endif
+
+#if VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <VSCCommon/vsc_buffer.h>
+#endif
+
 // clang-format on
 //  @end
 
@@ -102,6 +110,10 @@ struct vscf_aes256_gcm_t {
     //  Implementation specific context.
     //
     byte nonce[vscf_aes256_gcm_NONCE_LEN];
+    //
+    //  Implementation specific context.
+    //
+    vsc_buffer_t *auth_data;
     //
     //  Implementation specific context.
     //

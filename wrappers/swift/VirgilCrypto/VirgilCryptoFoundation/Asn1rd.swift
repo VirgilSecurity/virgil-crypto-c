@@ -257,7 +257,7 @@ import VSCFoundation
         return Data.init(bytes: proxyResult.bytes, count: proxyResult.len)
     }
 
-    /// Read ASN.1 type: CONSTRUCTED | SEQUENCE.
+    /// Read ASN.1 type: SEQUENCE.
     /// Return element length.
     @objc public func readSequence() -> Int {
         let proxyResult = vscf_asn1rd_read_sequence(self.c_ctx)
@@ -265,7 +265,7 @@ import VSCFoundation
         return proxyResult
     }
 
-    /// Read ASN.1 type: CONSTRUCTED | SET.
+    /// Read ASN.1 type: SET.
     /// Return element length.
     @objc public func readSet() -> Int {
         let proxyResult = vscf_asn1rd_read_set(self.c_ctx)

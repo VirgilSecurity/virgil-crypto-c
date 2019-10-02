@@ -125,5 +125,12 @@ public class MessageInfoCustomParams implements AutoCloseable {
     public byte[] findData(byte[] key) throws FoundationException {
         return FoundationJNI.INSTANCE.messageInfoCustomParams_findData(this.cCtx, key);
     }
+
+    /*
+    * Return true if at least one param exists.
+    */
+    public boolean hasParams() {
+        return FoundationJNI.INSTANCE.messageInfoCustomParams_hasParams(this.cCtx);
+    }
 }
 

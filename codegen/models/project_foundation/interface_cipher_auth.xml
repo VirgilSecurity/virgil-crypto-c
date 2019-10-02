@@ -1,7 +1,50 @@
 <interface name="cipher auth">
     Mix-in interface that provides specific functionality to authenticated
-    encryption and decryption.
+    encryption and decryption (AEAD ciphers).
 
+    <inherit interface="cipher"/>
     <inherit interface="auth encrypt"/>
     <inherit interface="auth decrypt"/>
+
+    <method name="set auth data">
+        Set additional data for for AEAD ciphers.
+
+        <argument name="auth data" class="data"/>
+    </method>
+
+    <method name="finish auth encryption">
+        Accomplish an authenticated encryption and place tag separately.
+
+        Note, if authentication tag should be added to an encrypted data,
+        method "finish" can be used.
+
+        <argument name="out" class="buffer">
+            <length method="out len">
+                <proxy constant="0" to="data len"/>
+            </length>
+        </argument>
+
+        <argument name="tag" class="buffer">
+            <length constant="auth tag len"/>
+        </argument>
+
+        <return enum="status"/>
+    </method>
+
+    <method name="finish auth decryption">
+        Accomplish an authenticated decryption with explicitly given tag.
+
+        Note, if authentication tag is a part of an encrypted data then,
+        method "finish" can be used for simplicity.
+
+        <argument name="tag" class="data"/>
+
+        <argument name="out" class="buffer">
+            <length method="out len">
+                <proxy constant="0" to="data len"/>
+            </length>
+        </argument>
+
+        <return enum="status"/>
+    </method>
 </interface>

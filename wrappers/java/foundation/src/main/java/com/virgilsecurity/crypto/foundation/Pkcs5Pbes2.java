@@ -119,6 +119,13 @@ public class Pkcs5Pbes2 implements AutoCloseable, Alg, Encrypt, Decrypt {
     }
 
     /*
+    * Precise length calculation of encrypted data.
+    */
+    public int preciseEncryptedLen(int dataLen) {
+        return FoundationJNI.INSTANCE.pkcs5Pbes2_preciseEncryptedLen(this.cCtx, dataLen);
+    }
+
+    /*
     * Decrypt given data.
     */
     public byte[] decrypt(byte[] data) throws FoundationException {

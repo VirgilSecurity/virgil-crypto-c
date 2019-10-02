@@ -62,14 +62,6 @@ class VscfPasswordRecipientInfoList(object):
         vscf_password_recipient_info_list_delete.restype = None
         return vscf_password_recipient_info_list_delete(ctx)
 
-    def vscf_password_recipient_info_list_add(self, ctx, password_recipient_info):
-        """Add new item to the list.
-        Note, ownership is transfered."""
-        vscf_password_recipient_info_list_add = self._lib.vscf_password_recipient_info_list_add
-        vscf_password_recipient_info_list_add.argtypes = [POINTER(vscf_password_recipient_info_list_t), POINTER(vscf_password_recipient_info_t)]
-        vscf_password_recipient_info_list_add.restype = None
-        return vscf_password_recipient_info_list_add(ctx, password_recipient_info)
-
     def vscf_password_recipient_info_list_has_item(self, ctx):
         """Return true if given list has item."""
         vscf_password_recipient_info_list_has_item = self._lib.vscf_password_recipient_info_list_has_item

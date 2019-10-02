@@ -138,7 +138,7 @@ import VSCFoundation
     /// and was not part of an encrypted message.
     case errorNoMessageInfo = -301
 
-    /// Message info is corrupted.
+    /// Message Info is corrupted.
     case errorBadMessageInfo = -302
 
     /// Recipient defined with id is not found within message info
@@ -160,6 +160,9 @@ import VSCFoundation
 
     /// Signature format is corrupted.
     case errorBadSignature = -308
+
+    /// Message Info footer is corrupted.
+    case errorBadMessageInfoFooter = -309
 
     /// Brainkey password length is out of range.
     case errorInvalidBrainkeyPasswordLen = -401

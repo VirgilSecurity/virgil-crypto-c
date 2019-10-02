@@ -69,14 +69,6 @@ public class KeyRecipientInfoList implements AutoCloseable {
     }
 
     /*
-    * Add new item to the list.
-    * Note, ownership is transfered.
-    */
-    public void add(KeyRecipientInfo keyRecipientInfo) {
-        FoundationJNI.INSTANCE.keyRecipientInfoList_add(this.cCtx, keyRecipientInfo);
-    }
-
-    /*
     * Return true if given list has item.
     */
     public boolean hasItem() {

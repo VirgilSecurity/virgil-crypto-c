@@ -50,3 +50,8 @@ class Encrypt(object):
     def encrypted_len(self, data_len):
         """Calculate required buffer length to hold the encrypted data."""
         raise NotImplementedError()
+
+    @abstractmethod
+    def precise_encrypted_len(self, data_len):
+        """Precise length calculation of encrypted data."""
+        raise NotImplementedError()

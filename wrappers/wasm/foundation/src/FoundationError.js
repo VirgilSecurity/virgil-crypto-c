@@ -184,7 +184,7 @@ const initFoundationError = (Module, modules) => {
             }
 
             if (statusCode == -302) {
-                throw new FoundationError("Message info is corrupted.");
+                throw new FoundationError("Message Info is corrupted.");
             }
 
             if (statusCode == -303) {
@@ -209,6 +209,10 @@ const initFoundationError = (Module, modules) => {
 
             if (statusCode == -308) {
                 throw new FoundationError("Signature format is corrupted.");
+            }
+
+            if (statusCode == -309) {
+                throw new FoundationError("Message Info footer is corrupted.");
             }
 
             if (statusCode == -401) {

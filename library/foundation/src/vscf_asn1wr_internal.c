@@ -231,7 +231,7 @@ static const vscf_asn1_writer_api_t asn1_writer_api = {
     //
     (vscf_asn1_writer_api_write_oid_fn)vscf_asn1wr_write_oid,
     //
-    //  Mark previously written data of given length as ASN.1 type: SQUENCE.
+    //  Mark previously written data of given length as ASN.1 type: SEQUENCE.
     //  Return count of written bytes.
     //
     (vscf_asn1_writer_api_write_sequence_fn)vscf_asn1wr_write_sequence,

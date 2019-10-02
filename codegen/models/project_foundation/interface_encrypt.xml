@@ -22,4 +22,13 @@
 
         <return type="size"/>
     </method>
+
+
+    <method name="precise encrypted len">
+        Precise length calculation of encrypted data.
+
+        <argument name="data len" type="size"/>
+
+        <return type="size"/>
+    </method>
 </interface>
