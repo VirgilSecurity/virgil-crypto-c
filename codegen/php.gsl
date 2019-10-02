@@ -80,6 +80,14 @@ function php_create_project_module (project, wrapper)
 
         copy my.project->license to php_project
 
+        new require to php_project
+            for my.project.require as require0 where defined (require0.project)
+                new project to require
+                    .name0 = require0.project
+                endnew
+            endfor
+        endnew
+
         new php_uid to php_project
             .name = "$(my.project.namespace:c)"
         endnew
@@ -273,6 +281,14 @@ function php_create_custom_modules (source, php_project, meta)
         .source_dir = cat_path (my.php_project.source_dir)
         .source_file_path = cat_path (0.source_dir, 0.source_file_name)
 
+        my._require = ""
+
+        for my.php_project->require as require0
+            my._require += "\"virgil/crypto-$(require0.name0:)\""
+        endfor
+
+        my._require = format_left(my._require, 0)
+
         new code to json_module
             .= format_left("\
             {
@@ -291,6 +307,7 @@ function php_create_custom_modules (source, php_project, meta)
                 \"require\": {
                     \"php\": \"^7.2\",
                     \"myclabs/php-enum\": \"^1.7\"
+                    $(my._require:)
                 },
                 \"autoload\": {
                     \"psr-4\": {
