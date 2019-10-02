@@ -84,6 +84,17 @@ import VSCFoundation
         vscf_recipient_cipher_use_signer_hash(self.c_ctx, signerHash.c_ctx)
     }
 
+    /// Return true if a key recipient with a given id has been added.
+    /// Note, operation has O(N) time complexity.
+    @objc public func hasKeyRecipient(recipientId: Data) -> Bool {
+        let proxyResult = recipientId.withUnsafeBytes({ (recipientIdPointer: UnsafeRawBufferPointer) -> Bool in
+
+            return vscf_recipient_cipher_has_key_recipient(self.c_ctx, vsc_data(recipientIdPointer.bindMemory(to: byte.self).baseAddress, recipientId.count))
+        })
+
+        return proxyResult
+    }
+
     /// Add recipient defined with id and public key.
     @objc public func addKeyRecipient(recipientId: Data, publicKey: PublicKey) {
         recipientId.withUnsafeBytes({ (recipientIdPointer: UnsafeRawBufferPointer) -> Void in

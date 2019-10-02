@@ -83,6 +83,14 @@ public class RecipientCipher implements AutoCloseable {
     }
 
     /*
+    * Return true if a key recipient with a given id has been added.
+    * Note, operation has O(N) time complexity.
+    */
+    public boolean hasKeyRecipient(byte[] recipientId) {
+        return FoundationJNI.INSTANCE.recipientCipher_hasKeyRecipient(this.cCtx, recipientId);
+    }
+
+    /*
     * Add recipient defined with id and public key.
     */
     public void addKeyRecipient(byte[] recipientId, PublicKey publicKey) {

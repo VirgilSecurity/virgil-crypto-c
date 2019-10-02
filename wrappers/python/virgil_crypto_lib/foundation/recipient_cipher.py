@@ -65,6 +65,13 @@ class RecipientCipher(object):
     def set_signer_hash(self, signer_hash):
         self._lib_vscf_recipient_cipher.vscf_recipient_cipher_use_signer_hash(self.ctx, signer_hash.c_impl)
 
+    def has_key_recipient(self, recipient_id):
+        """Return true if a key recipient with a given id has been added.
+        Note, operation has O(N) time complexity."""
+        d_recipient_id = Data(recipient_id)
+        result = self._lib_vscf_recipient_cipher.vscf_recipient_cipher_has_key_recipient(self.ctx, d_recipient_id.data)
+        return result
+
     def add_key_recipient(self, recipient_id, public_key):
         """Add recipient defined with id and public key."""
         d_recipient_id = Data(recipient_id)

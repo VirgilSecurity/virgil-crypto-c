@@ -87,6 +87,14 @@ class VscfRecipientCipher(object):
         vscf_recipient_cipher_use_signer_hash.restype = None
         return vscf_recipient_cipher_use_signer_hash(ctx, signer_hash)
 
+    def vscf_recipient_cipher_has_key_recipient(self, ctx, recipient_id):
+        """Return true if a key recipient with a given id has been added.
+        Note, operation has O(N) time complexity."""
+        vscf_recipient_cipher_has_key_recipient = self._lib.vscf_recipient_cipher_has_key_recipient
+        vscf_recipient_cipher_has_key_recipient.argtypes = [POINTER(vscf_recipient_cipher_t), vsc_data_t]
+        vscf_recipient_cipher_has_key_recipient.restype = c_bool
+        return vscf_recipient_cipher_has_key_recipient(ctx, recipient_id)
+
     def vscf_recipient_cipher_add_key_recipient(self, ctx, recipient_id, public_key):
         """Add recipient defined with id and public key."""
         vscf_recipient_cipher_add_key_recipient = self._lib.vscf_recipient_cipher_add_key_recipient

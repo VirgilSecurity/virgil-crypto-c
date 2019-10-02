@@ -194,6 +194,13 @@ VSCF_PUBLIC void
 vscf_recipient_cipher_release_signer_hash(vscf_recipient_cipher_t *self);
 
 //
+//  Return true if a key recipient with a given id has been added.
+//  Note, operation has O(N) time complexity.
+//
+VSCF_PUBLIC bool
+vscf_recipient_cipher_has_key_recipient(const vscf_recipient_cipher_t *self, vsc_data_t recipient_id);
+
+//
 //  Add recipient defined with id and public key.
 //
 VSCF_PUBLIC void
