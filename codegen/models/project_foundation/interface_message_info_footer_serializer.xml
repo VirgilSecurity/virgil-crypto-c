@@ -14,7 +14,7 @@
 
         <argument name="message info footer" class="message info footer"/>
         <argument name="out" class="buffer">
-            <length method="serialized len">
+            <length method="serialized footer len">
                 <proxy argument="message info footer" to="message info footer"/>
             </length>
         </argument>
