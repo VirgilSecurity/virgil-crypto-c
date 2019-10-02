@@ -46,6 +46,15 @@
     <property name="decryption state" enum="recipient cipher decryption state"/>
     <property name="is signed operation" type="boolean"/>
 
+    <method name="has key recipient" is_const="1">
+        Return true if a key recipient with a given id has been added.
+        Note, operation has O(N) time complexity.
+
+        <argument name="recipient id" class="data"/>
+
+        <return type="boolean"/>
+    </method>
+
     <method name="add key recipient">
         Add recipient defined with id and public key.
 

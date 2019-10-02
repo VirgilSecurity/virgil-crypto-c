@@ -2756,6 +2756,21 @@ JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_r
     vscf_recipient_cipher_use_signer_hash((vscf_recipient_cipher_t /*2*/ *) c_ctx, signer_hash);
 }
 
+JNIEXPORT jboolean JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_recipientCipher_1hasKeyRecipient (JNIEnv *jenv, jobject jobj, jlong c_ctx, jbyteArray jrecipientId) {
+    // Cast class context
+    vscf_recipient_cipher_t /*2*/* recipient_cipher_ctx = *(vscf_recipient_cipher_t /*2*/**) &c_ctx;
+
+    // Wrap input data
+    byte* recipient_id_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jrecipientId, NULL);
+    vsc_data_t recipient_id = vsc_data(recipient_id_arr, (*jenv)->GetArrayLength(jenv, jrecipientId));
+
+    jboolean ret = (jboolean) vscf_recipient_cipher_has_key_recipient(recipient_cipher_ctx /*a1*/, recipient_id /*a3*/);
+    // Free resources
+    (*jenv)->ReleaseByteArrayElements(jenv, jrecipientId, (jbyte*) recipient_id_arr, 0);
+
+    return ret;
+}
+
 JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_recipientCipher_1addKeyRecipient (JNIEnv *jenv, jobject jobj, jlong c_ctx, jbyteArray jrecipientId, jobject jpublicKey) {
     // Cast class context
     vscf_recipient_cipher_t /*2*/* recipient_cipher_ctx = *(vscf_recipient_cipher_t /*2*/**) &c_ctx;

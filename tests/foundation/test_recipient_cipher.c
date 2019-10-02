@@ -571,6 +571,170 @@ test__decrypt_then_verify__with_ed25519_key_recipient_and_embedded_header_and_em
     vscf_impl_destroy(&random);
 }
 
+// --------------------------------------------------------------------------
+//  Check if key recipient has been added.
+// --------------------------------------------------------------------------
+void
+test__has_key_recipient__with_no_recipients__return_false(void) {
+    vscf_recipient_cipher_t *recipient_cipher = vscf_recipient_cipher_new();
+
+    const bool was_added =
+            vscf_recipient_cipher_has_key_recipient(recipient_cipher, test_data_recipient_cipher_ED25519_RECIPIENT_ID);
+    TEST_ASSERT_FALSE(was_added);
+
+    vscf_recipient_cipher_destroy(&recipient_cipher);
+}
+
+void
+test__has_key_recipient__with_added_ed25519_recipient_and_correct_id__return_true(void) {
+
+    //
+    //  Prepare recipients.
+    //
+    vscf_error_t error;
+    vscf_error_reset(&error);
+
+    vscf_key_provider_t *key_provider = vscf_key_provider_new();
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_key_provider_setup_defaults(key_provider));
+
+    vscf_impl_t *public_key =
+            vscf_key_provider_import_public_key(key_provider, test_data_recipient_cipher_ED25519_PUBLIC_KEY, &error);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
+
+    //
+    //  Configure cipher.
+    //
+    vscf_recipient_cipher_t *recipient_cipher = vscf_recipient_cipher_new();
+    vscf_recipient_cipher_add_key_recipient(
+            recipient_cipher, test_data_recipient_cipher_ED25519_RECIPIENT_ID, public_key);
+
+    //
+    //  Check.
+    //
+    const bool was_added =
+            vscf_recipient_cipher_has_key_recipient(recipient_cipher, test_data_recipient_cipher_ED25519_RECIPIENT_ID);
+    TEST_ASSERT_TRUE(was_added);
+
+    //
+    //  Cleanup.
+    //
+    vscf_recipient_cipher_destroy(&recipient_cipher);
+    vscf_impl_destroy(&public_key);
+    vscf_key_provider_destroy(&key_provider);
+}
+
+void
+test__has_key_recipient__with_added_ed25519_recipient_and_incorrect_id__return_false(void) {
+
+    //
+    //  Prepare recipients.
+    //
+    vscf_error_t error;
+    vscf_error_reset(&error);
+
+    vscf_key_provider_t *key_provider = vscf_key_provider_new();
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_key_provider_setup_defaults(key_provider));
+
+    vscf_impl_t *public_key =
+            vscf_key_provider_import_public_key(key_provider, test_data_recipient_cipher_ED25519_PUBLIC_KEY, &error);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
+
+    //
+    //  Configure cipher.
+    //
+    vscf_recipient_cipher_t *recipient_cipher = vscf_recipient_cipher_new();
+    vscf_recipient_cipher_add_key_recipient(
+            recipient_cipher, test_data_recipient_cipher_ED25519_RECIPIENT_ID, public_key);
+
+    //
+    //  Check.
+    //
+    const char invalid_recipient_id[] = "incorrect-recipient-id";
+    const bool was_added = vscf_recipient_cipher_has_key_recipient(
+            recipient_cipher, vsc_data_from_str(invalid_recipient_id, sizeof(invalid_recipient_id) - 1));
+    TEST_ASSERT_FALSE(was_added);
+
+    //
+    //  Cleanup.
+    //
+    vscf_recipient_cipher_destroy(&recipient_cipher);
+    vscf_impl_destroy(&public_key);
+    vscf_key_provider_destroy(&key_provider);
+}
+
+void
+test__has_key_recipient__with_added_ed25519_recipient_with_empty_and_empty_id__return_true(void) {
+
+    //
+    //  Prepare recipients.
+    //
+    vscf_error_t error;
+    vscf_error_reset(&error);
+
+    vscf_key_provider_t *key_provider = vscf_key_provider_new();
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_key_provider_setup_defaults(key_provider));
+
+    vscf_impl_t *public_key =
+            vscf_key_provider_import_public_key(key_provider, test_data_recipient_cipher_ED25519_PUBLIC_KEY, &error);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
+
+    //
+    //  Configure cipher.
+    //
+    vscf_recipient_cipher_t *recipient_cipher = vscf_recipient_cipher_new();
+    vscf_recipient_cipher_add_key_recipient(recipient_cipher, vsc_data_empty(), public_key);
+
+    //
+    //  Check.
+    //
+    const bool was_added = vscf_recipient_cipher_has_key_recipient(recipient_cipher, vsc_data_empty());
+    TEST_ASSERT_TRUE(was_added);
+
+    //
+    //  Cleanup.
+    //
+    vscf_recipient_cipher_destroy(&recipient_cipher);
+    vscf_impl_destroy(&public_key);
+    vscf_key_provider_destroy(&key_provider);
+}
+
+void
+test__has_key_recipient__with_added_ed25519_recipient_with_empty_and_non_empty_id__return_false(void) {
+
+    //
+    //  Prepare recipients.
+    //
+    vscf_error_t error;
+    vscf_error_reset(&error);
+
+    vscf_key_provider_t *key_provider = vscf_key_provider_new();
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_key_provider_setup_defaults(key_provider));
+
+    vscf_impl_t *public_key =
+            vscf_key_provider_import_public_key(key_provider, test_data_recipient_cipher_ED25519_PUBLIC_KEY, &error);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
+
+    //
+    //  Configure cipher.
+    //
+    vscf_recipient_cipher_t *recipient_cipher = vscf_recipient_cipher_new();
+    vscf_recipient_cipher_add_key_recipient(recipient_cipher, vsc_data_empty(), public_key);
+
+    //
+    //  Check.
+    //
+    const bool was_added =
+            vscf_recipient_cipher_has_key_recipient(recipient_cipher, test_data_recipient_cipher_ED25519_RECIPIENT_ID);
+    TEST_ASSERT_FALSE(was_added);
+
+    //
+    //  Cleanup.
+    //
+    vscf_recipient_cipher_destroy(&recipient_cipher);
+    vscf_impl_destroy(&public_key);
+    vscf_key_provider_destroy(&key_provider);
+}
+
 #endif // TEST_DEPENDENCIES_AVAILABLE
 
 
@@ -590,6 +754,12 @@ main(void) {
     RUN_TEST(test__decrypt_then_verify__with_ed25519_key_recipient_and_embedded_header_and_embedded_footer__success);
     RUN_TEST(
             test__decrypt_then_verify__with_ed25519_key_recipient_and_embedded_header_and_embedded_footer_by_chunks__success);
+
+    RUN_TEST(test__has_key_recipient__with_no_recipients__return_false);
+    RUN_TEST(test__has_key_recipient__with_added_ed25519_recipient_and_correct_id__return_true);
+    RUN_TEST(test__has_key_recipient__with_added_ed25519_recipient_and_incorrect_id__return_false);
+    RUN_TEST(test__has_key_recipient__with_added_ed25519_recipient_with_empty_and_empty_id__return_true);
+    RUN_TEST(test__has_key_recipient__with_added_ed25519_recipient_with_empty_and_non_empty_id__return_false);
 #else
     RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
 #endif
