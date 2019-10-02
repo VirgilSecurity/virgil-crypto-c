@@ -104,7 +104,7 @@ class MessageInfoDerSerializer(MessageInfoSerializer, MessageInfoFooterSerialize
 
     def serialize_footer(self, message_info_footer):
         """Serialize class "message info footer"."""
-        out = Buffer(self.serialized_len(message_info_footer=message_info_footer))
+        out = Buffer(self.serialized_footer_len(message_info_footer=message_info_footer))
         self._lib_vscf_message_info_der_serializer.vscf_message_info_der_serializer_serialize_footer(self.ctx, message_info_footer.ctx, out.c_buffer)
         return out.get_bytes()
 
