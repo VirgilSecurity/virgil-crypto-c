@@ -237,7 +237,7 @@ const initMessageInfoDerSerializer = (Module, modules) => {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureClass('messageInfoFooter', messageInfoFooter, modules.MessageInfoFooter);
 
-            const outCapacity = this.serializedLen(messageInfoFooter);
+            const outCapacity = this.serializedFooterLen(messageInfoFooter);
             const outCtxPtr = Module._vsc_buffer_new_with_capacity(outCapacity);
 
             try {
