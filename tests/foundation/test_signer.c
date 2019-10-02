@@ -41,7 +41,7 @@
 
 #define TEST_DEPENDENCIES_AVAILABLE                                                                                    \
     (VSCF_SIGNER && VSCF_SHA384 && VSCF_KEY_PROVIDER && VSCF_KEY && VSCF_PRIVATE_KEY && VSCF_FAKE_RANDOM &&            \
-            VSCF_RSA_PRIVATE_KEY && VSCF_ED25519_PRIVATE_KEY)
+            VSCF_RSA && VSCF_ED25519)
 #if TEST_DEPENDENCIES_AVAILABLE
 
 #include "vscf_alg.h"
@@ -49,7 +49,6 @@
 #include "vscf_key.h"
 #include "vscf_key_provider.h"
 #include "vscf_private_key.h"
-#include "vscf_rsa_private_key.h"
 #include "vscf_sha384.h"
 #include "vscf_signer.h"
 
@@ -71,7 +70,7 @@ test__sign__with_sha384_and_ed25519_private_key__returns_valid_signature(void) {
     vsc_buffer_t *signature = vsc_buffer_new_with_capacity(vscf_signer_signature_len(signer, private_key));
 
     vscf_signer_reset(signer);
-    vscf_signer_update(signer, test_signer_DATA);
+    vscf_signer_append_data(signer, test_signer_DATA);
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_signer_sign(signer, private_key, signature));
 
     TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_signer_ED25519_SHA384_SIGNATURE_V2_COMPAT, signature);
@@ -95,15 +94,14 @@ test__sign__with_sha384_and_rsa2048_private_key__returns_valid_signature(void) {
     vscf_impl_t *private_key =
             vscf_key_provider_import_private_key(key_provider, test_signer_RSA2048_PRIVATE_KEY_PKCS8, NULL);
     TEST_ASSERT_NOT_NULL(private_key);
-    vscf_rsa_private_key_release_random((vscf_rsa_private_key_t *)private_key);
-    vscf_rsa_private_key_take_random((vscf_rsa_private_key_t *)private_key, vscf_fake_random_impl(fake_random));
 
     vscf_signer_t *signer = vscf_signer_new();
     vscf_signer_take_hash(signer, vscf_sha384_impl(vscf_sha384_new()));
+    vscf_signer_take_random(signer, vscf_fake_random_impl(fake_random));
     vsc_buffer_t *signature = vsc_buffer_new_with_capacity(vscf_signer_signature_len(signer, private_key));
 
     vscf_signer_reset(signer);
-    vscf_signer_update(signer, test_signer_DATA);
+    vscf_signer_append_data(signer, test_signer_DATA);
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_signer_sign(signer, private_key, signature));
 
     TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_signer_RSA2048_SHA384_SIGNATURE_V2_COMPAT, signature);

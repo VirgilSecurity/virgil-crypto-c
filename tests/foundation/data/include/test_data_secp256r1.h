@@ -42,6 +42,7 @@ extern const vsc_data_t test_secp256r1_MESSAGE;
 extern const vsc_data_t test_secp256r1_MESSAGE_SHA256_DIGEST;
 extern const vsc_data_t test_secp256r1_SHA256_SIGNATURE;
 extern const vsc_data_t test_secp256r1_ENCRYPTED_MESSAGE;
+extern const vsc_data_t test_secp256r1_ENCRYPTED_MESSAGE_WITH_AB_RANDOM;
 
 
 //

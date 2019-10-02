@@ -2,14 +2,23 @@
     Handle information about recipient that is defined by a Public Key.
 
     <property name="recipient id" class="buffer"/>
-    <property name="key encryption algorithm" interface="alg info"/>
+    <property name="key encryption algorithm" interface="alg info" access="readonly"/>
     <property name="encrypted key" class="buffer"/>
 
-    <constructor name="with members">
+    <constructor name="with buffer" visibility="private">
         Create object and define all properties.
 
         <argument name="recipient id" class="data"/>
-        <argument name="key encryption algorithm" interface="alg info" access="disown"/>
+        <argument name="key encryption algorithm" interface="alg info"/>
+        <argument name="encrypted key" class="buffer" access="disown"/>
+    </constructor>
+
+
+    <constructor name="with data">
+        Create object and define all properties.
+
+        <argument name="recipient id" class="data"/>
+        <argument name="key encryption algorithm" interface="alg info"/>
         <argument name="encrypted key" class="data"/>
     </constructor>
 

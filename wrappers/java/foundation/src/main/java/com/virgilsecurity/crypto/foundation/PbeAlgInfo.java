@@ -49,13 +49,9 @@ public class PbeAlgInfo implements AutoCloseable, AlgInfo {
         this.cCtx = FoundationJNI.INSTANCE.pbeAlgInfo_new();
     }
 
-    /*
-    * Acquire C context.
-    * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-    */
-    public PbeAlgInfo(long cCtx) {
-        super();
-        this.cCtx = cCtx;
+    /* Wrap underlying C context. */
+    PbeAlgInfo(FoundationContextHolder contextHolder) {
+        this.cCtx = contextHolder.cCtx;
     }
 
     /*
@@ -79,6 +75,15 @@ public class PbeAlgInfo implements AutoCloseable, AlgInfo {
     */
     public AlgInfo cipherAlgInfo() {
         return FoundationJNI.INSTANCE.pbeAlgInfo_cipherAlgInfo(this.cCtx);
+    }
+
+    /*
+    * Acquire C context.
+    * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
+    */
+    public static PbeAlgInfo getInstance(long cCtx) {
+        FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
+        return new PbeAlgInfo(ctxHolder);
     }
 
     /* Close resource. */

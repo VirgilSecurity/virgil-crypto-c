@@ -51,13 +51,18 @@ public class Aes256Gcm implements AutoCloseable, Alg, Encrypt, Decrypt, CipherIn
         this.cCtx = FoundationJNI.INSTANCE.aes256Gcm_new();
     }
 
+    /* Wrap underlying C context. */
+    Aes256Gcm(FoundationContextHolder contextHolder) {
+        this.cCtx = contextHolder.cCtx;
+    }
+
     /*
     * Acquire C context.
     * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     */
-    public Aes256Gcm(long cCtx) {
-        super();
-        this.cCtx = cCtx;
+    public static Aes256Gcm getInstance(long cCtx) {
+        FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
+        return new Aes256Gcm(ctxHolder);
     }
 
     /* Close resource. */
@@ -98,6 +103,13 @@ public class Aes256Gcm implements AutoCloseable, Alg, Encrypt, Decrypt, CipherIn
     */
     public int encryptedLen(int dataLen) {
         return FoundationJNI.INSTANCE.aes256Gcm_encryptedLen(this.cCtx, dataLen);
+    }
+
+    /*
+    * Precise length calculation of encrypted data.
+    */
+    public int preciseEncryptedLen(int dataLen) {
+        return FoundationJNI.INSTANCE.aes256Gcm_preciseEncryptedLen(this.cCtx, dataLen);
     }
 
     /*
@@ -246,6 +258,33 @@ public class Aes256Gcm implements AutoCloseable, Alg, Encrypt, Decrypt, CipherIn
     */
     public int authDecryptedLen(int dataLen) {
         return FoundationJNI.INSTANCE.aes256Gcm_authDecryptedLen(this.cCtx, dataLen);
+    }
+
+    /*
+    * Set additional data for for AEAD ciphers.
+    */
+    public void setAuthData(byte[] authData) {
+        FoundationJNI.INSTANCE.aes256Gcm_setAuthData(this.cCtx, authData);
+    }
+
+    /*
+    * Accomplish an authenticated encryption and place tag separately.
+    *
+    * Note, if authentication tag should be added to an encrypted data,
+    * method "finish" can be used.
+    */
+    public CipherAuthFinishAuthEncryptionResult finishAuthEncryption() throws FoundationException {
+        return FoundationJNI.INSTANCE.aes256Gcm_finishAuthEncryption(this.cCtx);
+    }
+
+    /*
+    * Accomplish an authenticated decryption with explicitly given tag.
+    *
+    * Note, if authentication tag is a part of an encrypted data then,
+    * method "finish" can be used for simplicity.
+    */
+    public byte[] finishAuthDecryption(byte[] tag) throws FoundationException {
+        return FoundationJNI.INSTANCE.aes256Gcm_finishAuthDecryption(this.cCtx, tag);
     }
 }
 

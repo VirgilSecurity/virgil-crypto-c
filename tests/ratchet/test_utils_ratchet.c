@@ -42,13 +42,12 @@
 #include "vscr_ratchet_group_participants_info_defs.h"
 #include "vscr_ratchet_group_ticket.h"
 #include "vscr_memory.h"
-#include "vscf_curve25519_private_key.h"
-#include "vscf_curve25519_public_key.h"
 #include "vscr_ratchet_skipped_messages_defs.h"
 #include "vscf_ctr_drbg.h"
 #include "vscf_pkcs8_serializer.h"
-#include "vscf_ed25519_private_key_defs.h"
-#include "vscf_ed25519_public_key.h"
+#include "vscf_ed25519.h"
+#include "vscf_curve25519.h"
+#include "vscf_private_key.h"
 #include "vscr_ratchet_group_session.h"
 #include "test_utils_ratchet.h"
 #include "unreliable_msg_producer.h"
@@ -61,6 +60,8 @@
 #include "vscr_ratchet_sender_chain.h"
 #include "vscr_ratchet.h"
 #include "vscr_ratchet_defs.h"
+
+#include <ed25519/ed25519.h>
 
 size_t
 pick_element_uniform(vscf_ctr_drbg_t *rng, size_t size) {
@@ -154,30 +155,40 @@ generate_PKCS8_ed_keypair(vscf_ctr_drbg_t *rng, vsc_buffer_t **priv, vsc_buffer_
     vscf_pkcs8_serializer_t *pkcs8 = vscf_pkcs8_serializer_new();
     vscf_pkcs8_serializer_setup_defaults(pkcs8);
 
-    vscf_ed25519_private_key_t *ed25519_private_key = vscf_ed25519_private_key_new();
-    vscf_impl_t *private_key = vscf_ed25519_private_key_impl(ed25519_private_key);
-    vscf_ed25519_private_key_use_random(ed25519_private_key, vscf_ctr_drbg_impl(rng));
+    vscf_ed25519_t *ed25519 = vscf_ed25519_new();
+    vscf_ed25519_use_random(ed25519, vscf_ctr_drbg_impl(rng));
 
-    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_ed25519_private_key_generate_key(ed25519_private_key));
+    vscf_error_t error;
+    vscf_error_reset(&error);
 
-    size_t len_private = vscf_pkcs8_serializer_serialized_private_key_len(pkcs8, private_key);
+    vscf_impl_t *private_key = vscf_ed25519_generate_key(ed25519, &error);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
+    vscf_impl_t *public_key = vscf_private_key_extract_public_key(private_key);
 
+    vscf_raw_private_key_t *raw_private_key = vscf_ed25519_export_private_key(ed25519, private_key, &error);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
+
+    vscf_raw_public_key_t *raw_public_key = vscf_ed25519_export_public_key(ed25519, public_key, &error);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
+
+    size_t len_private = vscf_pkcs8_serializer_serialized_private_key_len(pkcs8, raw_private_key);
     *priv = vsc_buffer_new_with_capacity(len_private);
 
-    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_pkcs8_serializer_serialize_private_key(pkcs8, private_key, *priv));
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_pkcs8_serializer_serialize_private_key(pkcs8, raw_private_key, *priv));
 
-    vscf_impl_t *public_key = vscf_ed25519_private_key_extract_public_key(ed25519_private_key);
 
-    size_t len_public = vscf_pkcs8_serializer_serialized_public_key_len(pkcs8, public_key);
-
+    size_t len_public = vscf_pkcs8_serializer_serialized_public_key_len(pkcs8, raw_public_key);
     *pub = vsc_buffer_new_with_capacity(len_public);
 
-    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_pkcs8_serializer_serialize_public_key(pkcs8, public_key, *pub));
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_pkcs8_serializer_serialize_public_key(pkcs8, raw_public_key, *pub));
 
     vscf_pkcs8_serializer_destroy(&pkcs8);
 
-    vscf_ed25519_public_key_destroy((vscf_ed25519_public_key_t **)&public_key);
-    vscf_ed25519_private_key_destroy((vscf_ed25519_private_key_t **)&private_key);
+    vscf_impl_destroy(&private_key);
+    vscf_impl_destroy(&public_key);
+    vscf_raw_private_key_destroy(&raw_private_key);
+    vscf_raw_public_key_destroy(&raw_public_key);
+    vscf_ed25519_destroy((&ed25519));
 }
 
 void
@@ -185,30 +196,40 @@ generate_PKCS8_curve_keypair(vscf_ctr_drbg_t *rng, vsc_buffer_t **priv, vsc_buff
     vscf_pkcs8_serializer_t *pkcs8 = vscf_pkcs8_serializer_new();
     vscf_pkcs8_serializer_setup_defaults(pkcs8);
 
-    vscf_curve25519_private_key_t *curve25519_private_key = vscf_curve25519_private_key_new();
-    vscf_impl_t *private_key = vscf_curve25519_private_key_impl(curve25519_private_key);
-    vscf_curve25519_private_key_use_random(curve25519_private_key, vscf_ctr_drbg_impl(rng));
+    vscf_curve25519_t *curve25519 = vscf_curve25519_new();
+    vscf_curve25519_use_random(curve25519, vscf_ctr_drbg_impl(rng));
 
-    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_curve25519_private_key_generate_key(curve25519_private_key));
+    vscf_error_t error;
+    vscf_error_reset(&error);
 
-    size_t len_private = vscf_pkcs8_serializer_serialized_private_key_len(pkcs8, private_key);
+    vscf_impl_t *private_key = vscf_curve25519_generate_key(curve25519, &error);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
+    vscf_impl_t *public_key = vscf_private_key_extract_public_key(private_key);
 
+    vscf_raw_private_key_t *raw_private_key = vscf_curve25519_export_private_key(curve25519, private_key, &error);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
+
+    vscf_raw_public_key_t *raw_public_key = vscf_curve25519_export_public_key(curve25519, public_key, &error);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
+
+    size_t len_private = vscf_pkcs8_serializer_serialized_private_key_len(pkcs8, raw_private_key);
     *priv = vsc_buffer_new_with_capacity(len_private);
 
-    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_pkcs8_serializer_serialize_private_key(pkcs8, private_key, *priv));
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_pkcs8_serializer_serialize_private_key(pkcs8, raw_private_key, *priv));
 
-    vscf_impl_t *public_key = vscf_curve25519_private_key_extract_public_key(curve25519_private_key);
 
-    size_t len_public = vscf_pkcs8_serializer_serialized_public_key_len(pkcs8, public_key);
-
+    size_t len_public = vscf_pkcs8_serializer_serialized_public_key_len(pkcs8, raw_public_key);
     *pub = vsc_buffer_new_with_capacity(len_public);
 
-    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_pkcs8_serializer_serialize_public_key(pkcs8, public_key, *pub));
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_pkcs8_serializer_serialize_public_key(pkcs8, raw_public_key, *pub));
 
     vscf_pkcs8_serializer_destroy(&pkcs8);
 
-    vscf_curve25519_public_key_destroy((vscf_curve25519_public_key_t **)&public_key);
-    vscf_curve25519_private_key_destroy((vscf_curve25519_private_key_t **)&private_key);
+    vscf_impl_destroy(&private_key);
+    vscf_impl_destroy(&public_key);
+    vscf_raw_private_key_destroy(&raw_private_key);
+    vscf_raw_public_key_destroy(&raw_public_key);
+    vscf_curve25519_destroy((&curve25519));
 }
 
 void
@@ -668,9 +689,16 @@ initialize_random_group_chat(vscf_ctr_drbg_t *rng, size_t group_size, vscr_ratch
         vsc_buffer_destroy(&pub);
     }
 
+    vsc_buffer_t *session_id = vsc_buffer_new_with_capacity(vscr_ratchet_common_SESSION_ID_LEN);
+    TEST_ASSERT_EQUAL(vscr_status_SUCCESS, vscf_ctr_drbg_random(rng, vscr_ratchet_common_SESSION_ID_LEN, session_id));
+
     vscr_ratchet_group_ticket_t *ticket = vscr_ratchet_group_ticket_new();
     vscr_ratchet_group_ticket_use_rng(ticket, vscf_ctr_drbg_impl(rng));
-    TEST_ASSERT_EQUAL(vscr_status_SUCCESS, vscr_ratchet_group_ticket_setup_ticket_as_new(ticket));
+    TEST_ASSERT_EQUAL(
+            vscr_status_SUCCESS, vscr_ratchet_group_ticket_setup_ticket_as_new(ticket, vsc_buffer_data(session_id)));
+
+    vsc_buffer_destroy(&session_id);
+
     const vscr_ratchet_group_message_t *msg_start = vscr_ratchet_group_ticket_get_ticket_message(ticket);
 
     for (size_t i = 0; i < group_size; i++) {
@@ -1099,8 +1127,9 @@ encrypt_decrypt(vscf_ctr_drbg_t *rng, size_t group_size, size_t number_of_iterat
 
             vsc_buffer_t *plain_text = vsc_buffer_new_with_capacity(len);
 
-            TEST_ASSERT_EQUAL(
-                    vscr_status_SUCCESS, vscr_ratchet_group_session_decrypt(session, ratchet_msg, plain_text));
+            TEST_ASSERT_EQUAL(vscr_status_SUCCESS,
+                    vscr_ratchet_group_session_decrypt(session, ratchet_msg,
+                            vscr_ratchet_group_session_get_my_id(sessions[channel_msg->sender]), plain_text));
 
             TEST_ASSERT_EQUAL_DATA_AND_BUFFER(vsc_buffer_data(channel_msg->plain_text), plain_text);
 

@@ -131,7 +131,7 @@ vsc_buffer_new_with_data(vsc_data_t data);
 
 //
 //  Release all inner resources and deallocate context if needed.
-//  It is safe to call this method even if context was allocated by the caller.
+//  It is safe to call this method even if the context was statically allocated.
 //
 VSC_PUBLIC void
 vsc_buffer_delete(vsc_buffer_t *self);
@@ -304,6 +304,17 @@ vsc_buffer_write_str(vsc_buffer_t *self, const char *str);
 //
 VSC_PUBLIC void
 vsc_buffer_write_data(vsc_buffer_t *self, vsc_data_t data);
+
+//
+//  Copy data to the buffer and reallocate if needed by coping.
+//
+//  Precondition: buffer should be an owner of the bytes.
+//
+//  Note, this operation can be slow if copy operation occurred.
+//  Note, buffer capacity is doubled.
+//
+VSC_PUBLIC void
+vsc_buffer_append_data(vsc_buffer_t *self, vsc_data_t data);
 
 //
 //  Reset to the initial state.

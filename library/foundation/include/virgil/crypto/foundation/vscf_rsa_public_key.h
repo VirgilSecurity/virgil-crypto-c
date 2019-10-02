@@ -54,20 +54,11 @@
 #define VSCF_RSA_PUBLIC_KEY_H_INCLUDED
 
 #include "vscf_library.h"
-#include "vscf_error.h"
 #include "vscf_impl.h"
+#include "vscf_public_key.h"
+#include "vscf_raw_public_key.h"
 #include "vscf_status.h"
 #include "vscf_alg_id.h"
-
-#if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <virgil/crypto/common/vsc_data.h>
-#   include <virgil/crypto/common/vsc_buffer.h>
-#endif
-
-#if VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <VSCCommon/vsc_data.h>
-#   include <VSCCommon/vsc_buffer.h>
-#endif
 
 // clang-format on
 //  @end
@@ -85,20 +76,6 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Public integral constants.
-//
-enum {
-    //
-    //  Defines whether a public key can be imported or not.
-    //
-    vscf_rsa_public_key_CAN_IMPORT_PUBLIC_KEY = true,
-    //
-    //  Define whether a public key can be exported or not.
-    //
-    vscf_rsa_public_key_CAN_EXPORT_PUBLIC_KEY = true
-};
-
-//
 //  Handles implementation details.
 //
 typedef struct vscf_rsa_public_key_t vscf_rsa_public_key_t;
@@ -114,6 +91,12 @@ vscf_rsa_public_key_impl_size(void);
 //
 VSCF_PUBLIC vscf_impl_t *
 vscf_rsa_public_key_impl(vscf_rsa_public_key_t *self);
+
+//
+//  Cast to the const 'vscf_impl_t' type.
+//
+VSCF_PUBLIC const vscf_impl_t *
+vscf_rsa_public_key_impl_const(const vscf_rsa_public_key_t *self);
 
 //
 //  Perform initialization of preallocated implementation context.
@@ -152,173 +135,80 @@ vscf_rsa_public_key_destroy(vscf_rsa_public_key_t **self_ref);
 
 //
 //  Copy given implementation context by increasing reference counter.
-//  If deep copy is required interface 'clonable' can be used.
 //
 VSCF_PUBLIC vscf_rsa_public_key_t *
 vscf_rsa_public_key_shallow_copy(vscf_rsa_public_key_t *self);
 
 //
-//  Setup dependency to the interface 'hash' with shared ownership.
+//  Returns instance of the implemented interface 'public key'.
 //
-VSCF_PUBLIC void
-vscf_rsa_public_key_use_hash(vscf_rsa_public_key_t *self, vscf_impl_t *hash);
+VSCF_PUBLIC const vscf_public_key_api_t *
+vscf_rsa_public_key_public_key_api(void);
 
 //
-//  Setup dependency to the interface 'hash' and transfer ownership.
-//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//  Return public key exponent.
 //
-VSCF_PUBLIC void
-vscf_rsa_public_key_take_hash(vscf_rsa_public_key_t *self, vscf_impl_t *hash);
+VSCF_PUBLIC size_t
+vscf_rsa_public_key_key_exponent(vscf_rsa_public_key_t *self);
 
 //
-//  Release dependency to the interface 'hash'.
+//  Import public key from the raw binary format.
 //
-VSCF_PUBLIC void
-vscf_rsa_public_key_release_hash(vscf_rsa_public_key_t *self);
+//  RSAPublicKey ::= SEQUENCE {
+//      modulus INTEGER, -- n
+//      publicExponent INTEGER -- e
+//  }
+//
+VSCF_PRIVATE vscf_status_t
+vscf_rsa_public_key_import(vscf_rsa_public_key_t *self, const vscf_raw_public_key_t *raw_public_key) VSCF_NODISCARD;
 
 //
-//  Setup dependency to the interface 'random' with shared ownership.
+//  Export public key in the raw binary format.
 //
-VSCF_PUBLIC void
-vscf_rsa_public_key_use_random(vscf_rsa_public_key_t *self, vscf_impl_t *random);
+//  RSAPublicKey ::= SEQUENCE {
+//      modulus INTEGER, -- n
+//      publicExponent INTEGER -- e
+//  }
+//
+VSCF_PRIVATE vscf_raw_public_key_t *
+vscf_rsa_public_key_export(const vscf_rsa_public_key_t *self);
 
 //
-//  Setup dependency to the interface 'random' and transfer ownership.
-//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
-//
-VSCF_PUBLIC void
-vscf_rsa_public_key_take_random(vscf_rsa_public_key_t *self, vscf_impl_t *random);
-
-//
-//  Release dependency to the interface 'random'.
-//
-VSCF_PUBLIC void
-vscf_rsa_public_key_release_random(vscf_rsa_public_key_t *self);
-
-//
-//  Setup dependency to the interface 'asn1 reader' with shared ownership.
-//
-VSCF_PUBLIC void
-vscf_rsa_public_key_use_asn1rd(vscf_rsa_public_key_t *self, vscf_impl_t *asn1rd);
-
-//
-//  Setup dependency to the interface 'asn1 reader' and transfer ownership.
-//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
-//
-VSCF_PUBLIC void
-vscf_rsa_public_key_take_asn1rd(vscf_rsa_public_key_t *self, vscf_impl_t *asn1rd);
-
-//
-//  Release dependency to the interface 'asn1 reader'.
-//
-VSCF_PUBLIC void
-vscf_rsa_public_key_release_asn1rd(vscf_rsa_public_key_t *self);
-
-//
-//  Setup dependency to the interface 'asn1 writer' with shared ownership.
-//
-VSCF_PUBLIC void
-vscf_rsa_public_key_use_asn1wr(vscf_rsa_public_key_t *self, vscf_impl_t *asn1wr);
-
-//
-//  Setup dependency to the interface 'asn1 writer' and transfer ownership.
-//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
-//
-VSCF_PUBLIC void
-vscf_rsa_public_key_take_asn1wr(vscf_rsa_public_key_t *self, vscf_impl_t *asn1wr);
-
-//
-//  Release dependency to the interface 'asn1 writer'.
-//
-VSCF_PUBLIC void
-vscf_rsa_public_key_release_asn1wr(vscf_rsa_public_key_t *self);
-
-//
-//  Setup predefined values to the uninitialized class dependencies.
-//
-VSCF_PUBLIC vscf_status_t
-vscf_rsa_public_key_setup_defaults(vscf_rsa_public_key_t *self) VSCF_NODISCARD;
-
-//
-//  Provide algorithm identificator.
+//  Algorithm identifier the key belongs to.
 //
 VSCF_PUBLIC vscf_alg_id_t
 vscf_rsa_public_key_alg_id(const vscf_rsa_public_key_t *self);
 
 //
-//  Produce object with algorithm information and configuration parameters.
+//  Return algorithm information that can be used for serialization.
 //
-VSCF_PUBLIC vscf_impl_t *
-vscf_rsa_public_key_produce_alg_info(const vscf_rsa_public_key_t *self);
-
-//
-//  Restore algorithm configuration from the given object.
-//
-VSCF_PUBLIC vscf_status_t
-vscf_rsa_public_key_restore_alg_info(vscf_rsa_public_key_t *self, const vscf_impl_t *alg_info) VSCF_NODISCARD;
+VSCF_PUBLIC const vscf_impl_t *
+vscf_rsa_public_key_alg_info(const vscf_rsa_public_key_t *self);
 
 //
 //  Length of the key in bytes.
 //
 VSCF_PUBLIC size_t
-vscf_rsa_public_key_key_len(const vscf_rsa_public_key_t *self);
+vscf_rsa_public_key_len(const vscf_rsa_public_key_t *self);
 
 //
 //  Length of the key in bits.
 //
 VSCF_PUBLIC size_t
-vscf_rsa_public_key_key_bitlen(const vscf_rsa_public_key_t *self);
+vscf_rsa_public_key_bitlen(const vscf_rsa_public_key_t *self);
 
 //
-//  Encrypt given data.
+//  Return tag of an associated algorithm that can handle this key.
 //
-VSCF_PUBLIC vscf_status_t
-vscf_rsa_public_key_encrypt(vscf_rsa_public_key_t *self, vsc_data_t data, vsc_buffer_t *out) VSCF_NODISCARD;
+VSCF_PRIVATE vscf_impl_tag_t
+vscf_rsa_public_key_impl_tag(const vscf_rsa_public_key_t *self);
 
 //
-//  Calculate required buffer length to hold the encrypted data.
-//
-VSCF_PUBLIC size_t
-vscf_rsa_public_key_encrypted_len(vscf_rsa_public_key_t *self, size_t data_len);
-
-//
-//  Verify data with given public key and signature.
+//  Check that key is valid.
+//  Note, this operation can be slow.
 //
 VSCF_PUBLIC bool
-vscf_rsa_public_key_verify_hash(vscf_rsa_public_key_t *self, vsc_data_t hash_digest, vscf_alg_id_t hash_id,
-        vsc_data_t signature);
-
-//
-//  Export public key in the binary format.
-//
-//  Binary format must be defined in the key specification.
-//  For instance, RSA public key must be exported in format defined in
-//  RFC 3447 Appendix A.1.1.
-//
-VSCF_PUBLIC vscf_status_t
-vscf_rsa_public_key_export_public_key(const vscf_rsa_public_key_t *self, vsc_buffer_t *out) VSCF_NODISCARD;
-
-//
-//  Return length in bytes required to hold exported public key.
-//
-VSCF_PUBLIC size_t
-vscf_rsa_public_key_exported_public_key_len(const vscf_rsa_public_key_t *self);
-
-//
-//  Import public key from the binary format.
-//
-//  Binary format must be defined in the key specification.
-//  For instance, RSA public key must be imported from the format defined in
-//  RFC 3447 Appendix A.1.1.
-//
-VSCF_PUBLIC vscf_status_t
-vscf_rsa_public_key_import_public_key(vscf_rsa_public_key_t *self, vsc_data_t data) VSCF_NODISCARD;
-
-//
-//  Generate ephemeral private key of the same type.
-//
-VSCF_PUBLIC vscf_impl_t *
-vscf_rsa_public_key_generate_ephemeral_key(vscf_rsa_public_key_t *self, vscf_error_t *error);
+vscf_rsa_public_key_is_valid(const vscf_rsa_public_key_t *self);
 
 
 // --------------------------------------------------------------------------

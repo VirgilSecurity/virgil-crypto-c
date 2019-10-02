@@ -14,8 +14,8 @@
 
     <require impl="ctr drbg" project="foundation" scope="private"/>
 
-    <require header="RatchetSession.pb.h" scope="private"/>
-    <require header="RatchetMessage.pb.h" scope="private"/>
+    <require header="vscr_RatchetSession.pb.h" scope="private"/>
+    <require header="vscr_RatchetMessage.pb.h" scope="private"/>
     <require header="pb_decode.h" scope="private"/>
     <require header="pb_encode.h" scope="private"/>
 

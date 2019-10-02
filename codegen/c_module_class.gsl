@@ -39,7 +39,7 @@
 #   Private function prefix is: X13.
 # ---------------------------------------------------------------------------
 #   This is a code generator built using the iMatix GSL code generation
-#   language. See https://github.com/imatix/gsl for details.
+#   language. See https://github.com/zeromq/gsl for details.
 # ---------------------------------------------------------------------------
 
 
@@ -102,6 +102,7 @@ function _X13_add_context_struct (class, declaration, definition, destination, m
                 . = "Reference counter."
                 .name = my.names.property_ref_counter
                 .type = "size"
+                .is_atomic = "1"
             endnew
         endif
 
@@ -113,6 +114,13 @@ function _X13_add_context_struct (class, declaration, definition, destination, m
     endnew
 
     if my.definition <> "external"
+        if my.class.lifecycle <> "none" & my.class.context <> "none"
+            new require to my.destination
+                .module = my.names.module_atomic
+                .scope = my.definition
+            endnew
+        endif
+
         for my.class.require where 0.scope="context"
             my.copied_require = item_copy_to(require, my.destination)
             my.copied_require.scope = my.definition
@@ -253,15 +261,10 @@ function _X13_add_method_cleanup (class, destination, meta)
                 if ($(my.arg_ctx) == NULL) {
                     return;
                 }
-
-                if ($(my.arg_ctx)->$(my.names.c_property_ref_counter:) == 0) {
-                    return;
-                }
             "
 
             my.impl_cleanup_begin = "\
-                if (--$(my.arg_ctx)->$(my.names.c_property_ref_counter:) == 0) {
-                    $(my.refs.c_class_method_cleanup_ctx)($(my.arg_ctx));
+                $(my.refs.c_class_method_cleanup_ctx)($(my.arg_ctx));
             "
 
             for my.class.dependency
@@ -274,14 +277,13 @@ function _X13_add_method_cleanup (class, destination, meta)
             endfor
 
             my.impl_cleanup_end = "\
-                    .(c_global_method_zeroize)($(my.arg_ctx), sizeof($(my.type_ctx)));
-                }
+                .(c_global_method_zeroize)($(my.arg_ctx), sizeof($(my.type_ctx)));
             "
 
             my.method_body = ""
             my.method_body += format_left (my.impl_check_precondition) + terminator
             my.method_body += format_left (my.impl_cleanup_begin) + terminator
-            my.method_body += format_left (my.impl_cleanup_dependencies, 1) + terminator ? ""
+            my.method_body += format_left (my.impl_cleanup_dependencies) + terminator ? ""
             my.method_body += format_left (my.impl_cleanup_end) + terminator
 
             . = my.method_body
@@ -594,16 +596,36 @@ function _X13_add_method_delete (class, destination, meta)
 
         . = "\
         Release all inner resources and deallocate context if needed.
-        It is safe to call this method even if context was allocated by the caller.
+        It is safe to call this method even if the context was statically allocated.
         "
 
         _X13_add_argument_ctx (my.class, method, my.meta)
 
         new code to method
             my.arg_ctx = my.refs.class_argument_ctx
+            my.counter = "$(my.arg_ctx)->$(my.names.c_property_ref_counter:)"
 
             . = "\
             if ($(my.arg_ctx) == NULL) {
+                return;
+            }
+
+            size_t old_counter = $(my.counter:);
+            .(c_class_assert_macros_assert)(old_counter != 0);
+            size_t new_counter = old_counter - 1;
+
+            #if defined(.(c_class_atomic_macros_compare_exchange_weak))
+            //  CAS loop
+            while (!.(c_class_atomic_macros_compare_exchange_weak)(&$(my.counter:), &old_counter, new_counter)) {
+                old_counter = $(my.counter:);
+                .(c_class_assert_macros_assert)(old_counter != 0);
+                new_counter = old_counter - 1;
+            }
+            #else
+            $(my.counter:) = new_counter;
+            #endif
+
+            if (new_counter > 0) {
                 return;
             }
 
@@ -611,7 +633,7 @@ function _X13_add_method_delete (class, destination, meta)
 
             $(my.refs.c_class_method_cleanup)($(my.arg_ctx));
 
-            if ($(my.arg_ctx)->$(my.names.c_property_ref_counter:) == 0 && self_dealloc_cb != NULL) {
+            if (self_dealloc_cb != NULL) {
                 self_dealloc_cb($(my.arg_ctx));
             }
             "
@@ -666,7 +688,6 @@ function _X13_add_method_shallow_copy (class, destination, meta)
     new method to my.destination
         .name = my.names.method_shallow_copy
         .is_const = "0"
-        .is_static = "0"
 
         . = "
         Copy given class context by increasing reference counter.
@@ -677,11 +698,22 @@ function _X13_add_method_shallow_copy (class, destination, meta)
 
         new code to method
             my.arg_ctx = my.refs.class_argument_ctx
+            my.counter = "$(my.arg_ctx:)->$(my.names.c_property_ref_counter:)"
 
             . = "\
                 .(c_class_assert_macros_ptr)($(my.arg_ctx));
 
-                ++$(my.arg_ctx:)->$(my.names.c_property_ref_counter:);
+                #if defined(.(c_class_atomic_macros_compare_exchange_weak))
+                //  CAS loop
+                size_t old_counter;
+                size_t new_counter;
+                do {
+                    old_counter = $(my.counter:);
+                    new_counter = old_counter + 1;
+                } while (!.(c_class_atomic_macros_compare_exchange_weak)(&$(my.counter:), &old_counter, new_counter));
+                #else
+                ++$(my.counter:);
+                #endif
 
                 return $(my.arg_ctx);
             "

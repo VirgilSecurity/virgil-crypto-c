@@ -52,6 +52,37 @@
 //  Test functions.
 // --------------------------------------------------------------------------
 void
+test__data2point__const_hash__should_match(void) {
+    mbedtls_ecp_group group;
+    mbedtls_ecp_group_init(&group);
+    mbedtls_ecp_group_load(&group, MBEDTLS_ECP_DP_SECP256R1);
+
+    mbedtls_ecp_point p;
+    mbedtls_ecp_point_init(&p);
+
+    vscf_simple_swu_t *simple_swu = vscf_simple_swu_new();
+    vscf_simple_swu_data_to_point(simple_swu, test_simple_swu_hash_data, &p);
+
+    mbedtls_mpi x1_exp, y1_exp;
+    mbedtls_mpi_init(&x1_exp);
+    mbedtls_mpi_init(&y1_exp);
+
+    mbedtls_mpi_read_string(&x1_exp, 10, test_simple_swu_x_DEC);
+    mbedtls_mpi_read_string(&y1_exp, 10, test_simple_swu_y_DEC);
+
+    TEST_ASSERT(mbedtls_ecp_check_pubkey(&group, &p) == 0);
+    TEST_ASSERT(mbedtls_mpi_cmp_mpi(&p.X, &x1_exp) == 0);
+    TEST_ASSERT(mbedtls_mpi_cmp_mpi(&p.Y, &y1_exp) == 0);
+    TEST_ASSERT(mbedtls_mpi_cmp_int(&p.Z, 1) == 0);
+
+    vscf_simple_swu_destroy(&simple_swu);
+    mbedtls_ecp_point_free(&p);
+    mbedtls_mpi_free(&x1_exp);
+    mbedtls_mpi_free(&y1_exp);
+    mbedtls_ecp_group_free(&group);
+}
+
+void
 test__simple_swu__random_hashes__should_be_on_curve(void) {
     mbedtls_ecp_group group;
     mbedtls_ecp_group_init(&group);
@@ -184,6 +215,7 @@ main(void) {
     UNITY_BEGIN();
 
 #if TEST_DEPENDENCIES_AVAILABLE
+    RUN_TEST(test__data2point__const_hash__should_match);
     RUN_TEST(test__simple_swu__random_hashes__should_be_on_curve);
     RUN_TEST(test__simple_swu__const_hash1__should_match);
     RUN_TEST(test__simple_swu__const_hash2__should_match);

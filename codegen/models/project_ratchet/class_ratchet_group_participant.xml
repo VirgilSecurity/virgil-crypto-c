@@ -24,11 +24,11 @@
     </method>
 
     <method name="serialize" is_const="1">
-        <argument name="data pb" class="ParticipantData" library="nanopb" access="readwrite"/>
+        <argument name="data pb" class="vscr_ParticipantData" library="nanopb" access="readwrite"/>
     </method>
 
     <method name="deserialize" is_static="1">
-        <argument name="data pb" class="ParticipantData" library="nanopb"/>
+        <argument name="data pb" class="vscr_ParticipantData" library="nanopb"/>
         <argument name="data" class="self" access="readwrite"/>
     </method>
 

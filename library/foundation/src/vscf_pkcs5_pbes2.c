@@ -55,6 +55,7 @@
 #include "vscf_memory.h"
 #include "vscf_alg.h"
 #include "vscf_alg_info.h"
+#include "vscf_encrypt.h"
 #include "vscf_alg_factory.h"
 #include "vscf_pkcs5_pbkdf2.h"
 #include "vscf_aes256_gcm.h"
@@ -214,6 +215,19 @@ vscf_pkcs5_pbes2_encrypted_len(vscf_pkcs5_pbes2_t *self, size_t data_len) {
     VSCF_ASSERT_PTR(self->cipher);
 
     size_t len = vscf_cipher_encrypted_out_len(self->cipher, data_len) + vscf_cipher_encrypted_out_len(self->cipher, 0);
+    return len;
+}
+
+//
+//  Precise length calculation of encrypted data.
+//
+VSCF_PUBLIC size_t
+vscf_pkcs5_pbes2_precise_encrypted_len(vscf_pkcs5_pbes2_t *self, size_t data_len) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(self->cipher);
+
+    size_t len = vscf_encrypt_precise_encrypted_len(self->cipher, data_len);
     return len;
 }
 

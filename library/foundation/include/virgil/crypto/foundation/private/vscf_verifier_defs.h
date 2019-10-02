@@ -54,6 +54,7 @@
 #define VSCF_VERIFIER_DEFS_H_INCLUDED
 
 #include "vscf_library.h"
+#include "vscf_atomic.h"
 #include "vscf_impl.h"
 #include "vscf_asn1rd.h"
 #include "vscf_alg_info_der_deserializer.h"
@@ -92,15 +93,15 @@ struct vscf_verifier_t {
     //
     //  Reference counter.
     //
-    size_t refcnt;
+    VSCF_ATOMIC size_t refcnt;
 
     vscf_impl_t *hash;
+
+    vsc_buffer_t *raw_signature;
 
     vscf_asn1rd_t *asn1rd;
 
     vscf_alg_info_der_deserializer_t *alg_info_der_deserializer;
-
-    vsc_buffer_t *raw_signature;
 };
 
 

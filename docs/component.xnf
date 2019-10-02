@@ -296,6 +296,10 @@
             Note, primitive type can not be disowned.
         </restrict>
     </attr>
+
+    <attr name="ownership">
+
+    </attr>
 </entity>
 
 

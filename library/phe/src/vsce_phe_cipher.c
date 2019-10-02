@@ -133,17 +133,11 @@ vsce_phe_cipher_cleanup(vsce_phe_cipher_t *self) {
         return;
     }
 
-    if (self->refcnt == 0) {
-        return;
-    }
+    vsce_phe_cipher_cleanup_ctx(self);
 
-    if (--self->refcnt == 0) {
-        vsce_phe_cipher_cleanup_ctx(self);
+    vsce_phe_cipher_release_random(self);
 
-        vsce_phe_cipher_release_random(self);
-
-        vsce_zeroize(self, sizeof(vsce_phe_cipher_t));
-    }
+    vsce_zeroize(self, sizeof(vsce_phe_cipher_t));
 }
 
 //
@@ -164,7 +158,7 @@ vsce_phe_cipher_new(void) {
 
 //
 //  Release all inner resources and deallocate context if needed.
-//  It is safe to call this method even if context was allocated by the caller.
+//  It is safe to call this method even if the context was statically allocated.
 //
 VSCE_PUBLIC void
 vsce_phe_cipher_delete(vsce_phe_cipher_t *self) {
@@ -173,11 +167,30 @@ vsce_phe_cipher_delete(vsce_phe_cipher_t *self) {
         return;
     }
 
+    size_t old_counter = self->refcnt;
+    VSCE_ASSERT(old_counter != 0);
+    size_t new_counter = old_counter - 1;
+
+    #if defined(VSCE_ATOMIC_COMPARE_EXCHANGE_WEAK)
+    //  CAS loop
+    while (!VSCE_ATOMIC_COMPARE_EXCHANGE_WEAK(&self->refcnt, &old_counter, new_counter)) {
+        old_counter = self->refcnt;
+        VSCE_ASSERT(old_counter != 0);
+        new_counter = old_counter - 1;
+    }
+    #else
+    self->refcnt = new_counter;
+    #endif
+
+    if (new_counter > 0) {
+        return;
+    }
+
     vsce_dealloc_fn self_dealloc_cb = self->self_dealloc_cb;
 
     vsce_phe_cipher_cleanup(self);
 
-    if (self->refcnt == 0 && self_dealloc_cb != NULL) {
+    if (self_dealloc_cb != NULL) {
         self_dealloc_cb(self);
     }
 }
@@ -205,7 +218,17 @@ vsce_phe_cipher_shallow_copy(vsce_phe_cipher_t *self) {
 
     VSCE_ASSERT_PTR(self);
 
+    #if defined(VSCE_ATOMIC_COMPARE_EXCHANGE_WEAK)
+    //  CAS loop
+    size_t old_counter;
+    size_t new_counter;
+    do {
+        old_counter = self->refcnt;
+        new_counter = old_counter + 1;
+    } while (!VSCE_ATOMIC_COMPARE_EXCHANGE_WEAK(&self->refcnt, &old_counter, new_counter));
+    #else
     ++self->refcnt;
+    #endif
 
     return self;
 }
@@ -238,7 +261,7 @@ vsce_phe_cipher_take_random(vsce_phe_cipher_t *self, vscf_impl_t *random) {
 
     VSCE_ASSERT_PTR(self);
     VSCE_ASSERT_PTR(random);
-    VSCE_ASSERT_PTR(self->random == NULL);
+    VSCE_ASSERT(self->random == NULL);
 
     VSCE_ASSERT(vscf_random_is_implemented(random));
 
@@ -343,7 +366,31 @@ VSCE_PUBLIC vsce_status_t
 vsce_phe_cipher_encrypt(
         vsce_phe_cipher_t *self, vsc_data_t plain_text, vsc_data_t account_key, vsc_buffer_t *cipher_text) {
 
+    return vsce_phe_cipher_auth_encrypt(self, plain_text, vsc_data_empty(), account_key, cipher_text);
+}
+
+//
+//  Decrypts data using account key
+//
+VSCE_PUBLIC vsce_status_t
+vsce_phe_cipher_decrypt(
+        vsce_phe_cipher_t *self, vsc_data_t cipher_text, vsc_data_t account_key, vsc_buffer_t *plain_text) {
+
+    return vsce_phe_cipher_auth_decrypt(self, cipher_text, vsc_data_empty(), account_key, plain_text);
+}
+
+//
+//  Encrypts data (and authenticates additional data) using account key
+//
+VSCE_PUBLIC vsce_status_t
+vsce_phe_cipher_auth_encrypt(vsce_phe_cipher_t *self, vsc_data_t plain_text, vsc_data_t additional_data,
+        vsc_data_t account_key, vsc_buffer_t *cipher_text) {
+
     VSCE_ASSERT_PTR(self);
+    VSCE_ASSERT(vsc_data_is_valid(plain_text));
+    VSCE_ASSERT(vsc_data_is_valid(additional_data));
+    VSCE_ASSERT(vsc_data_is_valid(account_key));
+    VSCE_ASSERT(vsc_buffer_is_valid(cipher_text));
     VSCE_ASSERT(account_key.len == vsce_phe_common_PHE_ACCOUNT_KEY_LENGTH);
     VSCE_ASSERT(plain_text.len <= vsce_phe_common_PHE_MAX_ENCRYPT_LEN);
     VSCE_ASSERT(vsc_buffer_capacity(cipher_text) >= vsce_phe_cipher_encrypt_len(self, plain_text.len));
@@ -387,7 +434,7 @@ vsce_phe_cipher_encrypt(
     memcpy(vsc_buffer_unused_bytes(cipher_text), salt, sizeof(salt));
     vsc_buffer_inc_used(cipher_text, sizeof(salt));
 
-    f_status = vscf_aes256_gcm_encrypt(aes256_gcm, plain_text, cipher_text);
+    f_status = vscf_aes256_gcm_auth_encrypt(aes256_gcm, plain_text, additional_data, cipher_text, NULL);
 
     if (f_status != vscf_status_SUCCESS) {
         status = vsce_status_ERROR_AES_FAILED;
@@ -406,13 +453,17 @@ rng_err:
 }
 
 //
-//  Decrypts data using account key
+//  Decrypts data (and verifies additional data) using account key
 //
 VSCE_PUBLIC vsce_status_t
-vsce_phe_cipher_decrypt(
-        vsce_phe_cipher_t *self, vsc_data_t cipher_text, vsc_data_t account_key, vsc_buffer_t *plain_text) {
+vsce_phe_cipher_auth_decrypt(vsce_phe_cipher_t *self, vsc_data_t cipher_text, vsc_data_t additional_data,
+        vsc_data_t account_key, vsc_buffer_t *plain_text) {
 
     VSCE_ASSERT_PTR(self);
+    VSCE_ASSERT(vsc_data_is_valid(cipher_text));
+    VSCE_ASSERT(vsc_data_is_valid(additional_data));
+    VSCE_ASSERT(vsc_data_is_valid(account_key));
+    VSCE_ASSERT(vsc_buffer_is_valid(plain_text));
     VSCE_ASSERT(account_key.len == vsce_phe_common_PHE_ACCOUNT_KEY_LENGTH);
     VSCE_ASSERT(cipher_text.len <= vsce_phe_common_PHE_MAX_DECRYPT_LEN);
     VSCE_ASSERT(vsc_buffer_capacity(plain_text) >= vsce_phe_cipher_decrypt_len(self, cipher_text.len));
@@ -440,9 +491,9 @@ vsce_phe_cipher_decrypt(
     vscf_aes256_gcm_set_nonce(
             aes256_gcm, vsc_data_slice_end(vsc_buffer_data(&derived_secret_buf), 0, vsce_phe_cipher_NONCE_LEN));
 
-    vscf_status_t f_status = vscf_aes256_gcm_decrypt(aes256_gcm,
+    vscf_status_t f_status = vscf_aes256_gcm_auth_decrypt(aes256_gcm,
             vsc_data_slice_beg(cipher_text, vsce_phe_cipher_SALT_LEN, cipher_text.len - vsce_phe_cipher_SALT_LEN),
-            plain_text);
+            additional_data, vsc_data_empty(), plain_text);
 
     if (f_status != vscf_status_SUCCESS) {
         status = vsce_status_ERROR_AES_FAILED;

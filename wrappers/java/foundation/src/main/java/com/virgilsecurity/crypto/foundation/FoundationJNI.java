@@ -50,22 +50,6 @@ public class FoundationJNI {
     private FoundationJNI() {
     }
 
-    public native long rawKey_new();
-
-    public native void rawKey_close(long cCtx);
-
-    public native long rawKey_new(AlgId algId, byte[] rawKeyData);
-
-    /*
-    * Returns asymmetric algorithm type that raw key belongs to.
-    */
-    public native AlgId rawKey_algId(long cCtx);
-
-    /*
-    * Return raw key data.
-    */
-    public native byte[] rawKey_data(long cCtx);
-
     /*
     * Return OID for given algorithm identifier.
     */
@@ -149,21 +133,6 @@ public class FoundationJNI {
     public native void messageInfo_close(long cCtx);
 
     /*
-    * Add recipient that is defined by Public Key.
-    */
-    public native void messageInfo_addKeyRecipient(long cCtx, KeyRecipientInfo keyRecipient);
-
-    /*
-    * Add recipient that is defined by password.
-    */
-    public native void messageInfo_addPasswordRecipient(long cCtx, PasswordRecipientInfo passwordRecipient);
-
-    /*
-    * Set information about algorithm that was used for data encryption.
-    */
-    public native void messageInfo_setDataEncryptionAlgInfo(long cCtx, AlgInfo dataEncryptionAlgInfo);
-
-    /*
     * Return information about algorithm that was used for the data encryption.
     */
     public native AlgInfo messageInfo_dataEncryptionAlgInfo(long cCtx);
@@ -179,9 +148,9 @@ public class FoundationJNI {
     public native PasswordRecipientInfoList messageInfo_passwordRecipientInfoList(long cCtx);
 
     /*
-    * Setup custom params.
+    * Return true if message info contains at least one custom param.
     */
-    public native void messageInfo_setCustomParams(long cCtx, MessageInfoCustomParams customParams);
+    public native boolean messageInfo_hasCustomParams(long cCtx);
 
     /*
     * Provide access to the custom params object.
@@ -191,9 +160,29 @@ public class FoundationJNI {
     public native MessageInfoCustomParams messageInfo_customParams(long cCtx);
 
     /*
-    * Remove all recipients.
+    * Return true if cipher kdf alg info exists.
     */
-    public native void messageInfo_clearRecipients(long cCtx);
+    public native boolean messageInfo_hasCipherKdfAlgInfo(long cCtx);
+
+    /*
+    * Return cipher kdf alg info.
+    */
+    public native AlgInfo messageInfo_cipherKdfAlgInfo(long cCtx);
+
+    /*
+    * Return true if footer info exists.
+    */
+    public native boolean messageInfo_hasFooterInfo(long cCtx);
+
+    /*
+    * Return footer info.
+    */
+    public native FooterInfo messageInfo_footerInfo(long cCtx);
+
+    /*
+    * Remove all infos.
+    */
+    public native void messageInfo_clear(long cCtx);
 
     public native long keyRecipientInfo_new();
 
@@ -220,12 +209,6 @@ public class FoundationJNI {
     public native long keyRecipientInfoList_new();
 
     public native void keyRecipientInfoList_close(long cCtx);
-
-    /*
-    * Add new item to the list.
-    * Note, ownership is transfered.
-    */
-    public native void keyRecipientInfoList_add(long cCtx, KeyRecipientInfo keyRecipientInfo);
 
     /*
     * Return true if given list has item.
@@ -282,12 +265,6 @@ public class FoundationJNI {
     public native long passwordRecipientInfoList_new();
 
     public native void passwordRecipientInfoList_close(long cCtx);
-
-    /*
-    * Add new item to the list.
-    * Note, ownership is transfered.
-    */
-    public native void passwordRecipientInfoList_add(long cCtx, PasswordRecipientInfo passwordRecipientInfo);
 
     /*
     * Return true if given list has item.
@@ -350,14 +327,85 @@ public class FoundationJNI {
     public native Cipher algFactory_createCipherFromInfo(AlgInfo algInfo);
 
     /*
-    * Create algorithm that implements "public key" interface.
+    * Create a key algorithm based on an identifier.
     */
-    public native PublicKey algFactory_createPublicKeyFromRawKey(RawKey rawKey) throws FoundationException;
+    public native KeyAlg keyAlgFactory_createFromAlgId(AlgId algId, Random random) throws FoundationException;
 
     /*
-    * Create algorithm that implements "private key" interface.
+    * Create a key algorithm correspond to a specific key.
     */
-    public native PrivateKey algFactory_createPrivateKeyFromRawKey(RawKey rawKey) throws FoundationException;
+    public native KeyAlg keyAlgFactory_createFromKey(Key key, Random random) throws FoundationException;
+
+    /*
+    * Create a key algorithm that can import "raw public key".
+    */
+    public native KeyAlg keyAlgFactory_createFromRawPublicKey(RawPublicKey publicKey, Random random) throws FoundationException;
+
+    /*
+    * Create a key algorithm that can import "raw private key".
+    */
+    public native KeyAlg keyAlgFactory_createFromRawPrivateKey(RawPrivateKey privateKey, Random random) throws FoundationException;
+
+    public native long ecies_new();
+
+    public native void ecies_close(long cCtx);
+
+    public native void ecies_setRandom(long cCtx, Random random);
+
+    public native void ecies_setCipher(long cCtx, Cipher cipher);
+
+    public native void ecies_setMac(long cCtx, Mac mac);
+
+    public native void ecies_setKdf(long cCtx, Kdf kdf);
+
+    /*
+    * Set ephemeral key that used for data encryption.
+    * Public and ephemeral keys should belong to the same curve.
+    * This dependency is optional.
+    */
+    public native void ecies_setEphemeralKey(long cCtx, PrivateKey ephemeralKey);
+
+    /*
+    * Set weak reference to the key algorithm.
+    * Key algorithm MUST support shared key computation as well.
+    */
+    public native void ecies_setKeyAlg(long cCtx, KeyAlg keyAlg);
+
+    /*
+    * Release weak reference to the key algorithm.
+    */
+    public native void ecies_releaseKeyAlg(long cCtx);
+
+    /*
+    * Setup predefined values to the uninitialized class dependencies.
+    */
+    public native void ecies_setupDefaults(long cCtx) throws FoundationException;
+
+    /*
+    * Setup predefined values to the uninitialized class dependencies
+    * except random.
+    */
+    public native void ecies_setupDefaultsNoRandom(long cCtx);
+
+    /*
+    * Calculate required buffer length to hold the encrypted data.
+    */
+    public native int ecies_encryptedLen(long cCtx, PublicKey publicKey, int dataLen);
+
+    /*
+    * Encrypt data with a given public key.
+    */
+    public native byte[] ecies_encrypt(long cCtx, PublicKey publicKey, byte[] data) throws FoundationException;
+
+    /*
+    * Calculate required buffer length to hold the decrypted data.
+    */
+    public native int ecies_decryptedLen(long cCtx, PrivateKey privateKey, int dataLen);
+
+    /*
+    * Decrypt given data.
+    */
+    public native byte[] ecies_decrypt(long cCtx, PrivateKey privateKey, byte[] data) throws FoundationException;
 
     public native long recipientCipher_new();
 
@@ -366,6 +414,8 @@ public class FoundationJNI {
     public native void recipientCipher_setRandom(long cCtx, Random random);
 
     public native void recipientCipher_setEncryptionCipher(long cCtx, Cipher encryptionCipher);
+
+    public native void recipientCipher_setSignerHash(long cCtx, Hash signerHash);
 
     /*
     * Add recipient defined with id and public key.
@@ -378,17 +428,21 @@ public class FoundationJNI {
     public native void recipientCipher_clearRecipients(long cCtx);
 
     /*
+    * Add identifier and private key to sign initial plain text.
+    * Return error if the private key can not sign.
+    */
+    public native void recipientCipher_addSigner(long cCtx, byte[] signerId, PrivateKey privateKey) throws FoundationException;
+
+    /*
+    * Remove all signers.
+    */
+    public native void recipientCipher_clearSigners(long cCtx);
+
+    /*
     * Provide access to the custom params object.
     * The returned object can be used to add custom params or read it.
     */
     public native MessageInfoCustomParams recipientCipher_customParams(long cCtx);
-
-    /*
-    * Return buffer length required to hold message info returned by the
-    * "start encryption" method.
-    * Precondition: all recipients and custom parameters should be set.
-    */
-    public native int recipientCipher_messageInfoLen(long cCtx);
 
     /*
     * Start encryption process.
@@ -396,10 +450,25 @@ public class FoundationJNI {
     public native void recipientCipher_startEncryption(long cCtx) throws FoundationException;
 
     /*
+    * Start encryption process with known plain text size.
+    *
+    * Precondition: At least one signer should be added.
+    * Note, store message info footer as well.
+    */
+    public native void recipientCipher_startSignedEncryption(long cCtx, int dataSize) throws FoundationException;
+
+    /*
+    * Return buffer length required to hold message info returned by the
+    * "pack message info" method.
+    * Precondition: all recipients and custom parameters should be set.
+    */
+    public native int recipientCipher_messageInfoLen(long cCtx);
+
+    /*
     * Return serialized message info to the buffer.
     *
-    * Precondition: this method can be called after "start encryption".
-    * Precondition: this method can be called before "finish encryption".
+    * Precondition: this method should be called after "start encryption".
+    * Precondition: this method should be called before "finish encryption".
     *
     * Note, store message info to use it for decryption process,
     * or place it at the encrypted data beginning (embedding).
@@ -427,9 +496,17 @@ public class FoundationJNI {
 
     /*
     * Initiate decryption process with a recipient private key.
-    * Message info can be empty if it was embedded to encrypted data.
+    * Message Info can be empty if it was embedded to encrypted data.
     */
     public native void recipientCipher_startDecryptionWithKey(long cCtx, byte[] recipientId, PrivateKey privateKey, byte[] messageInfo) throws FoundationException;
+
+    /*
+    * Initiate decryption process with a recipient private key.
+    * Message Info can be empty if it was embedded to encrypted data.
+    * Message Info footer can be empty if it was embedded to encrypted data.
+    * If footer was embedded, method "start decryption with key" can be used.
+    */
+    public native void recipientCipher_startVerifiedDecryptionWithKey(long cCtx, byte[] recipientId, PrivateKey privateKey, byte[] messageInfo, byte[] messageInfoFooter) throws FoundationException;
 
     /*
     * Return buffer length required to hold output of the method
@@ -448,9 +525,45 @@ public class FoundationJNI {
     */
     public native byte[] recipientCipher_finishDecryption(long cCtx) throws FoundationException;
 
-    public native long listKeyValueNode_new();
+    /*
+    * Return true if data was signed by a sender.
+    *
+    * Precondition: this method should be called after "finish decryption".
+    */
+    public native boolean recipientCipher_isDataSigned(long cCtx);
 
-    public native void listKeyValueNode_close(long cCtx);
+    /*
+    * Return information about signers that sign data.
+    *
+    * Precondition: this method should be called after "finish decryption".
+    * Precondition: method "is data signed" returns true.
+    */
+    public native SignerInfoList recipientCipher_signerInfos(long cCtx);
+
+    /*
+    * Verify given cipher info.
+    */
+    public native boolean recipientCipher_verifySignerInfo(long cCtx, SignerInfo signerInfo, PublicKey publicKey);
+
+    /*
+    * Return buffer length required to hold message footer returned by the
+    * "pack message footer" method.
+    *
+    * Precondition: this method should be called after "finish encryption".
+    */
+    public native int recipientCipher_messageInfoFooterLen(long cCtx);
+
+    /*
+    * Return serialized message info footer to the buffer.
+    *
+    * Precondition: this method should be called after "finish encryption".
+    *
+    * Note, store message info to use it for verified decryption process,
+    * or place it at the encrypted data ending (embedding).
+    *
+    * Return message info footer - signers public information, etc.
+    */
+    public native byte[] recipientCipher_packMessageInfoFooter(long cCtx) throws FoundationException;
 
     public native long messageInfoCustomParams_new();
 
@@ -490,6 +603,11 @@ public class FoundationJNI {
     * Return custom parameter with octet string value.
     */
     public native byte[] messageInfoCustomParams_findData(long cCtx, byte[] key) throws FoundationException;
+
+    /*
+    * Return true if at least one param exists.
+    */
+    public native boolean messageInfoCustomParams_hasParams(long cCtx);
 
     public native long keyProvider_new();
 
@@ -558,6 +676,8 @@ public class FoundationJNI {
 
     public native void signer_setHash(long cCtx, Hash hash);
 
+    public native void signer_setRandom(long cCtx, Random random);
+
     /*
     * Start a processing a new signature.
     */
@@ -566,17 +686,17 @@ public class FoundationJNI {
     /*
     * Add given data to the signed data.
     */
-    public native void signer_update(long cCtx, byte[] data);
+    public native void signer_appendData(long cCtx, byte[] data);
 
     /*
     * Return length of the signature.
     */
-    public native int signer_signatureLen(long cCtx, SignHash privateKey);
+    public native int signer_signatureLen(long cCtx, PrivateKey privateKey);
 
     /*
     * Accomplish signing and return signature.
     */
-    public native byte[] signer_sign(long cCtx, SignHash privateKey) throws FoundationException;
+    public native byte[] signer_sign(long cCtx, PrivateKey privateKey) throws FoundationException;
 
     public native long verifier_new();
 
@@ -590,12 +710,12 @@ public class FoundationJNI {
     /*
     * Add given data to the signed data.
     */
-    public native void verifier_update(long cCtx, byte[] data);
+    public native void verifier_appendData(long cCtx, byte[] data);
 
     /*
     * Verify accumulated data.
     */
-    public native boolean verifier_verify(long cCtx, VerifyHash publicKey);
+    public native boolean verifier_verify(long cCtx, PublicKey publicKey);
 
     public native long brainkeyClient_new();
 
@@ -636,6 +756,289 @@ public class FoundationJNI {
     public native byte[] brainkeyServer_generateIdentitySecret(long cCtx) throws FoundationException;
 
     public native byte[] brainkeyServer_harden(long cCtx, byte[] identitySecret, byte[] blindedPoint) throws FoundationException;
+
+    public native long groupSessionMessage_new();
+
+    public native void groupSessionMessage_close(long cCtx);
+
+    /*
+    * Returns message type.
+    */
+    public native GroupMsgType groupSessionMessage_getType(long cCtx);
+
+    /*
+    * Returns session id.
+    * This method should be called only for group info type.
+    */
+    public native byte[] groupSessionMessage_getSessionId(long cCtx);
+
+    /*
+    * Returns message epoch.
+    */
+    public native long groupSessionMessage_getEpoch(long cCtx);
+
+    /*
+    * Buffer len to serialize this class.
+    */
+    public native int groupSessionMessage_serializeLen(long cCtx);
+
+    /*
+    * Serializes instance.
+    */
+    public native byte[] groupSessionMessage_serialize(long cCtx);
+
+    /*
+    * Deserializes instance.
+    */
+    public native GroupSessionMessage groupSessionMessage_deserialize(byte[] input) throws FoundationException;
+
+    public native long groupSessionTicket_new();
+
+    public native void groupSessionTicket_close(long cCtx);
+
+    /*
+    * Random used to generate keys
+    */
+    public native void groupSessionTicket_setRng(long cCtx, Random rng);
+
+    /*
+    * Setups default dependencies:
+    * - RNG: CTR DRBG
+    */
+    public native void groupSessionTicket_setupDefaults(long cCtx) throws FoundationException;
+
+    /*
+    * Set this ticket to start new group session.
+    */
+    public native void groupSessionTicket_setupTicketAsNew(long cCtx, byte[] sessionId) throws FoundationException;
+
+    /*
+    * Returns message that should be sent to all participants using secure channel.
+    */
+    public native GroupSessionMessage groupSessionTicket_getTicketMessage(long cCtx);
+
+    public native long groupSession_new();
+
+    public native void groupSession_close(long cCtx);
+
+    /*
+    * Random
+    */
+    public native void groupSession_setRng(long cCtx, Random rng) throws FoundationException;
+
+    /*
+    * Returns current epoch.
+    */
+    public native long groupSession_getCurrentEpoch(long cCtx);
+
+    /*
+    * Setups default dependencies:
+    * - RNG: CTR DRBG
+    */
+    public native void groupSession_setupDefaults(long cCtx) throws FoundationException;
+
+    /*
+    * Returns session id.
+    */
+    public native byte[] groupSession_getSessionId(long cCtx);
+
+    /*
+    * Adds epoch. New epoch should be generated for member removal or proactive to rotate encryption key.
+    * Epoch message should be encrypted and signed by trusted group chat member (admin).
+    */
+    public native void groupSession_addEpoch(long cCtx, GroupSessionMessage message) throws FoundationException;
+
+    /*
+    * Encrypts data
+    */
+    public native GroupSessionMessage groupSession_encrypt(long cCtx, byte[] plainText, PrivateKey privateKey) throws FoundationException;
+
+    /*
+    * Calculates size of buffer sufficient to store decrypted message
+    */
+    public native int groupSession_decryptLen(long cCtx, GroupSessionMessage message);
+
+    /*
+    * Decrypts message
+    */
+    public native byte[] groupSession_decrypt(long cCtx, GroupSessionMessage message, PublicKey publicKey) throws FoundationException;
+
+    /*
+    * Creates ticket with new key for removing participants or proactive to rotate encryption key.
+    */
+    public native GroupSessionTicket groupSession_createGroupTicket(long cCtx) throws FoundationException;
+
+    public native long messageInfoEditor_new();
+
+    public native void messageInfoEditor_close(long cCtx);
+
+    public native void messageInfoEditor_setRandom(long cCtx, Random random);
+
+    /*
+    * Set dependencies to it's defaults.
+    */
+    public native void messageInfoEditor_setupDefaults(long cCtx) throws FoundationException;
+
+    /*
+    * Unpack serialized message info.
+    *
+    * Note that recipients can only be removed but not added.
+    * Note, use "unlock" method to be able to add new recipients as well.
+    */
+    public native void messageInfoEditor_unpack(long cCtx, byte[] messageInfoData) throws FoundationException;
+
+    /*
+    * Decrypt encryption key this allows adding new recipients.
+    */
+    public native void messageInfoEditor_unlock(long cCtx, byte[] ownerRecipientId, PrivateKey ownerPrivateKey) throws FoundationException;
+
+    /*
+    * Add recipient defined with id and public key.
+    */
+    public native void messageInfoEditor_addKeyRecipient(long cCtx, byte[] recipientId, PublicKey publicKey) throws FoundationException;
+
+    /*
+    * Remove recipient with a given id.
+    * Return false if recipient with given id was not found.
+    */
+    public native boolean messageInfoEditor_removeKeyRecipient(long cCtx, byte[] recipientId);
+
+    /*
+    * Remove all existent recipients.
+    */
+    public native void messageInfoEditor_removeAll(long cCtx);
+
+    /*
+    * Return length of serialized message info.
+    * Actual length can be obtained right after applying changes.
+    */
+    public native int messageInfoEditor_packedLen(long cCtx);
+
+    /*
+    * Return serialized message info.
+    * Precondition: this method can be called after "apply".
+    */
+    public native byte[] messageInfoEditor_pack(long cCtx);
+
+    public native long signerInfo_new();
+
+    public native void signerInfo_close(long cCtx);
+
+    /*
+    * Return signer identifier.
+    */
+    public native byte[] signerInfo_signerId(long cCtx);
+
+    /*
+    * Return algorithm information that was used for data signing.
+    */
+    public native AlgInfo signerInfo_signerAlgInfo(long cCtx);
+
+    /*
+    * Return data signature.
+    */
+    public native byte[] signerInfo_signature(long cCtx);
+
+    public native long signerInfoList_new();
+
+    public native void signerInfoList_close(long cCtx);
+
+    /*
+    * Return true if given list has item.
+    */
+    public native boolean signerInfoList_hasItem(long cCtx);
+
+    /*
+    * Return list item.
+    */
+    public native SignerInfo signerInfoList_item(long cCtx);
+
+    /*
+    * Return true if list has next item.
+    */
+    public native boolean signerInfoList_hasNext(long cCtx);
+
+    /*
+    * Return next list node if exists, or NULL otherwise.
+    */
+    public native SignerInfoList signerInfoList_next(long cCtx);
+
+    /*
+    * Return true if list has previous item.
+    */
+    public native boolean signerInfoList_hasPrev(long cCtx);
+
+    /*
+    * Return previous list node if exists, or NULL otherwise.
+    */
+    public native SignerInfoList signerInfoList_prev(long cCtx);
+
+    /*
+    * Remove all items.
+    */
+    public native void signerInfoList_clear(long cCtx);
+
+    public native long messageInfoFooter_new();
+
+    public native void messageInfoFooter_close(long cCtx);
+
+    /*
+    * Return true if at least one signer info presents.
+    */
+    public native boolean messageInfoFooter_hasSignerInfos(long cCtx);
+
+    /*
+    * Return list with a "signer info" elements.
+    */
+    public native SignerInfoList messageInfoFooter_signerInfos(long cCtx);
+
+    /*
+    * Return information about algorithm that was used for data hashing.
+    */
+    public native AlgInfo messageInfoFooter_signerHashAlgInfo(long cCtx);
+
+    /*
+    * Return plain text digest that was used to produce signature.
+    */
+    public native byte[] messageInfoFooter_signerDigest(long cCtx);
+
+    public native long signedDataInfo_new();
+
+    public native void signedDataInfo_close(long cCtx);
+
+    /*
+    * Set information about algorithm that was used to produce data digest.
+    */
+    public native void signedDataInfo_setHashAlgInfo(long cCtx, AlgInfo hashAlgInfo);
+
+    /*
+    * Return information about algorithm that was used to produce data digest.
+    */
+    public native AlgInfo signedDataInfo_hashAlgInfo(long cCtx);
+
+    public native long footerInfo_new();
+
+    public native void footerInfo_close(long cCtx);
+
+    /*
+    * Retrun true if signed data info present.
+    */
+    public native boolean footerInfo_hasSignedDataInfo(long cCtx);
+
+    /*
+    * Return signed data info.
+    */
+    public native SignedDataInfo footerInfo_signedDataInfo(long cCtx);
+
+    /*
+    * Set data size.
+    */
+    public native void footerInfo_setDataSize(long cCtx, int dataSize);
+
+    /*
+    * Return data size.
+    */
+    public native int footerInfo_dataSize(long cCtx);
 
     public native long sha224_new();
 
@@ -823,6 +1226,11 @@ public class FoundationJNI {
     public native int aes256Gcm_encryptedLen(long cCtx, int dataLen);
 
     /*
+    * Precise length calculation of encrypted data.
+    */
+    public native int aes256Gcm_preciseEncryptedLen(long cCtx, int dataLen);
+
+    /*
     * Decrypt given data.
     */
     public native byte[] aes256Gcm_decrypt(long cCtx, byte[] data) throws FoundationException;
@@ -905,6 +1313,27 @@ public class FoundationJNI {
     */
     public native int aes256Gcm_authDecryptedLen(long cCtx, int dataLen);
 
+    /*
+    * Set additional data for for AEAD ciphers.
+    */
+    public native void aes256Gcm_setAuthData(long cCtx, byte[] authData);
+
+    /*
+    * Accomplish an authenticated encryption and place tag separately.
+    *
+    * Note, if authentication tag should be added to an encrypted data,
+    * method "finish" can be used.
+    */
+    public native CipherAuthFinishAuthEncryptionResult aes256Gcm_finishAuthEncryption(long cCtx) throws FoundationException;
+
+    /*
+    * Accomplish an authenticated decryption with explicitly given tag.
+    *
+    * Note, if authentication tag is a part of an encrypted data then,
+    * method "finish" can be used for simplicity.
+    */
+    public native byte[] aes256Gcm_finishAuthDecryption(long cCtx, byte[] tag) throws FoundationException;
+
     public native long aes256Cbc_new();
 
     public native void aes256Cbc_close(long cCtx);
@@ -933,6 +1362,11 @@ public class FoundationJNI {
     * Calculate required buffer length to hold the encrypted data.
     */
     public native int aes256Cbc_encryptedLen(long cCtx, int dataLen);
+
+    /*
+    * Precise length calculation of encrypted data.
+    */
+    public native int aes256Cbc_preciseEncryptedLen(long cCtx, int dataLen);
 
     /*
     * Decrypt given data.
@@ -1139,13 +1573,13 @@ public class FoundationJNI {
     public native byte[] asn1rd_readData(long cCtx, int len);
 
     /*
-    * Read ASN.1 type: CONSTRUCTED | SEQUENCE.
+    * Read ASN.1 type: SEQUENCE.
     * Return element length.
     */
     public native int asn1rd_readSequence(long cCtx);
 
     /*
-    * Read ASN.1 type: CONSTRUCTED | SET.
+    * Read ASN.1 type: SET.
     * Return element length.
     */
     public native int asn1rd_readSet(long cCtx);
@@ -1328,7 +1762,7 @@ public class FoundationJNI {
     public native int asn1wr_writeOid(long cCtx, byte[] value);
 
     /*
-    * Mark previously written data of given length as ASN.1 type: SQUENCE.
+    * Mark previously written data of given length as ASN.1 type: SEQUENCE.
     * Return count of written bytes.
     */
     public native int asn1wr_writeSequence(long cCtx, int len);
@@ -1339,373 +1773,431 @@ public class FoundationJNI {
     */
     public native int asn1wr_writeSet(long cCtx, int len);
 
-    public native void rsaPublicKey_setHash(long cCtx, Hash hash);
-
-    public native void rsaPublicKey_setRandom(long cCtx, Random random);
-
-    public native void rsaPublicKey_setAsn1rd(long cCtx, Asn1Reader asn1rd);
-
-    public native void rsaPublicKey_setAsn1wr(long cCtx, Asn1Writer asn1wr);
-
     /*
-    * Setup predefined values to the uninitialized class dependencies.
+    * Return public key exponent.
     */
-    public native void rsaPublicKey_setupDefaults(long cCtx) throws FoundationException;
+    public native int rsaPublicKey_keyExponent(long cCtx);
 
     public native long rsaPublicKey_new();
 
     public native void rsaPublicKey_close(long cCtx);
 
     /*
-    * Provide algorithm identificator.
+    * Algorithm identifier the key belongs to.
     */
     public native AlgId rsaPublicKey_algId(long cCtx);
 
     /*
-    * Produce object with algorithm information and configuration parameters.
+    * Return algorithm information that can be used for serialization.
     */
-    public native AlgInfo rsaPublicKey_produceAlgInfo(long cCtx);
-
-    /*
-    * Restore algorithm configuration from the given object.
-    */
-    public native void rsaPublicKey_restoreAlgInfo(long cCtx, AlgInfo algInfo) throws FoundationException;
+    public native AlgInfo rsaPublicKey_algInfo(long cCtx);
 
     /*
     * Length of the key in bytes.
     */
-    public native int rsaPublicKey_keyLen(long cCtx);
+    public native int rsaPublicKey_len(long cCtx);
 
     /*
     * Length of the key in bits.
     */
-    public native int rsaPublicKey_keyBitlen(long cCtx);
+    public native int rsaPublicKey_bitlen(long cCtx);
 
     /*
-    * Encrypt given data.
+    * Check that key is valid.
+    * Note, this operation can be slow.
     */
-    public native byte[] rsaPublicKey_encrypt(long cCtx, byte[] data) throws FoundationException;
-
-    /*
-    * Calculate required buffer length to hold the encrypted data.
-    */
-    public native int rsaPublicKey_encryptedLen(long cCtx, int dataLen);
-
-    /*
-    * Verify data with given public key and signature.
-    */
-    public native boolean rsaPublicKey_verifyHash(long cCtx, byte[] hashDigest, AlgId hashId, byte[] signature);
-
-    /*
-    * Export public key in the binary format.
-    *
-    * Binary format must be defined in the key specification.
-    * For instance, RSA public key must be exported in format defined in
-    * RFC 3447 Appendix A.1.1.
-    */
-    public native byte[] rsaPublicKey_exportPublicKey(long cCtx) throws FoundationException;
-
-    /*
-    * Return length in bytes required to hold exported public key.
-    */
-    public native int rsaPublicKey_exportedPublicKeyLen(long cCtx);
-
-    /*
-    * Import public key from the binary format.
-    *
-    * Binary format must be defined in the key specification.
-    * For instance, RSA public key must be imported from the format defined in
-    * RFC 3447 Appendix A.1.1.
-    */
-    public native void rsaPublicKey_importPublicKey(long cCtx, byte[] data) throws FoundationException;
-
-    /*
-    * Generate ephemeral private key of the same type.
-    */
-    public native PrivateKey rsaPublicKey_generateEphemeralKey(long cCtx) throws FoundationException;
-
-    public native void rsaPrivateKey_setRandom(long cCtx, Random random);
-
-    public native void rsaPrivateKey_setAsn1rd(long cCtx, Asn1Reader asn1rd);
-
-    public native void rsaPrivateKey_setAsn1wr(long cCtx, Asn1Writer asn1wr);
-
-    /*
-    * Setup predefined values to the uninitialized class dependencies.
-    */
-    public native void rsaPrivateKey_setupDefaults(long cCtx) throws FoundationException;
-
-    /*
-    * Setup key length in bits that is used for key generation.
-    */
-    public native void rsaPrivateKey_setKeygenParams(long cCtx, int bitlen);
+    public native boolean rsaPublicKey_isValid(long cCtx);
 
     public native long rsaPrivateKey_new();
 
     public native void rsaPrivateKey_close(long cCtx);
 
     /*
-    * Provide algorithm identificator.
+    * Algorithm identifier the key belongs to.
     */
     public native AlgId rsaPrivateKey_algId(long cCtx);
 
     /*
-    * Produce object with algorithm information and configuration parameters.
+    * Return algorithm information that can be used for serialization.
     */
-    public native AlgInfo rsaPrivateKey_produceAlgInfo(long cCtx);
-
-    /*
-    * Restore algorithm configuration from the given object.
-    */
-    public native void rsaPrivateKey_restoreAlgInfo(long cCtx, AlgInfo algInfo) throws FoundationException;
+    public native AlgInfo rsaPrivateKey_algInfo(long cCtx);
 
     /*
     * Length of the key in bytes.
     */
-    public native int rsaPrivateKey_keyLen(long cCtx);
+    public native int rsaPrivateKey_len(long cCtx);
 
     /*
     * Length of the key in bits.
     */
-    public native int rsaPrivateKey_keyBitlen(long cCtx);
+    public native int rsaPrivateKey_bitlen(long cCtx);
 
     /*
-    * Generate new private or secret key.
+    * Check that key is valid.
     * Note, this operation can be slow.
     */
-    public native void rsaPrivateKey_generateKey(long cCtx) throws FoundationException;
+    public native boolean rsaPrivateKey_isValid(long cCtx);
 
     /*
-    * Decrypt given data.
-    */
-    public native byte[] rsaPrivateKey_decrypt(long cCtx, byte[] data) throws FoundationException;
-
-    /*
-    * Calculate required buffer length to hold the decrypted data.
-    */
-    public native int rsaPrivateKey_decryptedLen(long cCtx, int dataLen);
-
-    /*
-    * Return length in bytes required to hold signature.
-    */
-    public native int rsaPrivateKey_signatureLen(long cCtx);
-
-    /*
-    * Sign data given private key.
-    */
-    public native byte[] rsaPrivateKey_signHash(long cCtx, byte[] hashDigest, AlgId hashId) throws FoundationException;
-
-    /*
-    * Extract public part of the key.
+    * Extract public key from the private key.
     */
     public native PublicKey rsaPrivateKey_extractPublicKey(long cCtx);
 
-    /*
-    * Export private key in the binary format.
-    *
-    * Binary format must be defined in the key specification.
-    * For instance, RSA private key must be exported in format defined in
-    * RFC 3447 Appendix A.1.2.
-    */
-    public native byte[] rsaPrivateKey_exportPrivateKey(long cCtx) throws FoundationException;
-
-    /*
-    * Return length in bytes required to hold exported private key.
-    */
-    public native int rsaPrivateKey_exportedPrivateKeyLen(long cCtx);
-
-    /*
-    * Import private key from the binary format.
-    *
-    * Binary format must be defined in the key specification.
-    * For instance, RSA private key must be imported from the format defined in
-    * RFC 3447 Appendix A.1.2.
-    */
-    public native void rsaPrivateKey_importPrivateKey(long cCtx, byte[] data) throws FoundationException;
-
-    public native void secp256r1PublicKey_setRandom(long cCtx, Random random);
-
-    public native void secp256r1PublicKey_setEcies(long cCtx, Ecies ecies);
+    public native void rsa_setRandom(long cCtx, Random random);
 
     /*
     * Setup predefined values to the uninitialized class dependencies.
     */
-    public native void secp256r1PublicKey_setupDefaults(long cCtx) throws FoundationException;
+    public native void rsa_setupDefaults(long cCtx) throws FoundationException;
 
-    public native long secp256r1PublicKey_new();
+    /*
+    * Generate new private key.
+    * Note, this operation might be slow.
+    */
+    public native PrivateKey rsa_generateKey(long cCtx, int bitlen) throws FoundationException;
 
-    public native void secp256r1PublicKey_close(long cCtx);
+    public native long rsa_new();
+
+    public native void rsa_close(long cCtx);
 
     /*
     * Provide algorithm identificator.
     */
-    public native AlgId secp256r1PublicKey_algId(long cCtx);
+    public native AlgId rsa_algId(long cCtx);
 
     /*
     * Produce object with algorithm information and configuration parameters.
     */
-    public native AlgInfo secp256r1PublicKey_produceAlgInfo(long cCtx);
+    public native AlgInfo rsa_produceAlgInfo(long cCtx);
 
     /*
     * Restore algorithm configuration from the given object.
     */
-    public native void secp256r1PublicKey_restoreAlgInfo(long cCtx, AlgInfo algInfo) throws FoundationException;
+    public native void rsa_restoreAlgInfo(long cCtx, AlgInfo algInfo) throws FoundationException;
 
     /*
-    * Length of the key in bytes.
+    * Generate ephemeral private key of the same type.
+    * Note, this operation might be slow.
     */
-    public native int secp256r1PublicKey_keyLen(long cCtx);
+    public native PrivateKey rsa_generateEphemeralKey(long cCtx, Key key) throws FoundationException;
 
     /*
-    * Length of the key in bits.
-    */
-    public native int secp256r1PublicKey_keyBitlen(long cCtx);
-
-    /*
-    * Encrypt given data.
-    */
-    public native byte[] secp256r1PublicKey_encrypt(long cCtx, byte[] data) throws FoundationException;
-
-    /*
-    * Calculate required buffer length to hold the encrypted data.
-    */
-    public native int secp256r1PublicKey_encryptedLen(long cCtx, int dataLen);
-
-    /*
-    * Verify data with given public key and signature.
-    */
-    public native boolean secp256r1PublicKey_verifyHash(long cCtx, byte[] hashDigest, AlgId hashId, byte[] signature);
-
-    /*
-    * Export public key in the binary format.
+    * Import public key from the raw binary format.
     *
-    * Binary format must be defined in the key specification.
-    * For instance, RSA public key must be exported in format defined in
-    * RFC 3447 Appendix A.1.1.
-    */
-    public native byte[] secp256r1PublicKey_exportPublicKey(long cCtx) throws FoundationException;
-
-    /*
-    * Return length in bytes required to hold exported public key.
-    */
-    public native int secp256r1PublicKey_exportedPublicKeyLen(long cCtx);
-
-    /*
-    * Import public key from the binary format.
+    * Return public key that is adopted and optimized to be used
+    * with this particular algorithm.
     *
     * Binary format must be defined in the key specification.
     * For instance, RSA public key must be imported from the format defined in
     * RFC 3447 Appendix A.1.1.
     */
-    public native void secp256r1PublicKey_importPublicKey(long cCtx, byte[] data) throws FoundationException;
+    public native PublicKey rsa_importPublicKey(long cCtx, RawPublicKey rawKey) throws FoundationException;
 
     /*
-    * Generate ephemeral private key of the same type.
-    */
-    public native PrivateKey secp256r1PublicKey_generateEphemeralKey(long cCtx) throws FoundationException;
-
-    public native void secp256r1PrivateKey_setRandom(long cCtx, Random random);
-
-    public native void secp256r1PrivateKey_setEcies(long cCtx, Ecies ecies);
-
-    /*
-    * Setup predefined values to the uninitialized class dependencies.
-    */
-    public native void secp256r1PrivateKey_setupDefaults(long cCtx) throws FoundationException;
-
-    public native long secp256r1PrivateKey_new();
-
-    public native void secp256r1PrivateKey_close(long cCtx);
-
-    /*
-    * Provide algorithm identificator.
-    */
-    public native AlgId secp256r1PrivateKey_algId(long cCtx);
-
-    /*
-    * Produce object with algorithm information and configuration parameters.
-    */
-    public native AlgInfo secp256r1PrivateKey_produceAlgInfo(long cCtx);
-
-    /*
-    * Restore algorithm configuration from the given object.
-    */
-    public native void secp256r1PrivateKey_restoreAlgInfo(long cCtx, AlgInfo algInfo) throws FoundationException;
-
-    /*
-    * Length of the key in bytes.
-    */
-    public native int secp256r1PrivateKey_keyLen(long cCtx);
-
-    /*
-    * Length of the key in bits.
-    */
-    public native int secp256r1PrivateKey_keyBitlen(long cCtx);
-
-    /*
-    * Generate new private or secret key.
-    * Note, this operation can be slow.
-    */
-    public native void secp256r1PrivateKey_generateKey(long cCtx) throws FoundationException;
-
-    /*
-    * Decrypt given data.
-    */
-    public native byte[] secp256r1PrivateKey_decrypt(long cCtx, byte[] data) throws FoundationException;
-
-    /*
-    * Calculate required buffer length to hold the decrypted data.
-    */
-    public native int secp256r1PrivateKey_decryptedLen(long cCtx, int dataLen);
-
-    /*
-    * Return length in bytes required to hold signature.
-    */
-    public native int secp256r1PrivateKey_signatureLen(long cCtx);
-
-    /*
-    * Sign data given private key.
-    */
-    public native byte[] secp256r1PrivateKey_signHash(long cCtx, byte[] hashDigest, AlgId hashId) throws FoundationException;
-
-    /*
-    * Extract public part of the key.
-    */
-    public native PublicKey secp256r1PrivateKey_extractPublicKey(long cCtx);
-
-    /*
-    * Export private key in the binary format.
+    * Export public key to the raw binary format.
     *
     * Binary format must be defined in the key specification.
-    * For instance, RSA private key must be exported in format defined in
-    * RFC 3447 Appendix A.1.2.
+    * For instance, RSA public key must be exported in format defined in
+    * RFC 3447 Appendix A.1.1.
     */
-    public native byte[] secp256r1PrivateKey_exportPrivateKey(long cCtx) throws FoundationException;
+    public native RawPublicKey rsa_exportPublicKey(long cCtx, PublicKey publicKey) throws FoundationException;
 
     /*
-    * Return length in bytes required to hold exported private key.
-    */
-    public native int secp256r1PrivateKey_exportedPrivateKeyLen(long cCtx);
-
-    /*
-    * Import private key from the binary format.
+    * Import private key from the raw binary format.
+    *
+    * Return private key that is adopted and optimized to be used
+    * with this particular algorithm.
     *
     * Binary format must be defined in the key specification.
     * For instance, RSA private key must be imported from the format defined in
     * RFC 3447 Appendix A.1.2.
     */
-    public native void secp256r1PrivateKey_importPrivateKey(long cCtx, byte[] data) throws FoundationException;
+    public native PrivateKey rsa_importPrivateKey(long cCtx, RawPrivateKey rawKey) throws FoundationException;
+
+    /*
+    * Export private key in the raw binary format.
+    *
+    * Binary format must be defined in the key specification.
+    * For instance, RSA private key must be exported in format defined in
+    * RFC 3447 Appendix A.1.2.
+    */
+    public native RawPrivateKey rsa_exportPrivateKey(long cCtx, PrivateKey privateKey) throws FoundationException;
+
+    /*
+    * Check if algorithm can encrypt data with a given key.
+    */
+    public native boolean rsa_canEncrypt(long cCtx, PublicKey publicKey, int dataLen);
+
+    /*
+    * Calculate required buffer length to hold the encrypted data.
+    */
+    public native int rsa_encryptedLen(long cCtx, PublicKey publicKey, int dataLen);
+
+    /*
+    * Encrypt data with a given public key.
+    */
+    public native byte[] rsa_encrypt(long cCtx, PublicKey publicKey, byte[] data) throws FoundationException;
+
+    /*
+    * Check if algorithm can decrypt data with a given key.
+    * However, success result of decryption is not guaranteed.
+    */
+    public native boolean rsa_canDecrypt(long cCtx, PrivateKey privateKey, int dataLen);
+
+    /*
+    * Calculate required buffer length to hold the decrypted data.
+    */
+    public native int rsa_decryptedLen(long cCtx, PrivateKey privateKey, int dataLen);
+
+    /*
+    * Decrypt given data.
+    */
+    public native byte[] rsa_decrypt(long cCtx, PrivateKey privateKey, byte[] data) throws FoundationException;
+
+    /*
+    * Check if algorithm can sign data digest with a given key.
+    */
+    public native boolean rsa_canSign(long cCtx, PrivateKey privateKey);
+
+    /*
+    * Return length in bytes required to hold signature.
+    * Return zero if a given private key can not produce signatures.
+    */
+    public native int rsa_signatureLen(long cCtx, Key key);
+
+    /*
+    * Sign data digest with a given private key.
+    */
+    public native byte[] rsa_signHash(long cCtx, PrivateKey privateKey, AlgId hashId, byte[] digest) throws FoundationException;
+
+    /*
+    * Check if algorithm can verify data digest with a given key.
+    */
+    public native boolean rsa_canVerify(long cCtx, PublicKey publicKey);
+
+    /*
+    * Verify data digest with a given public key and signature.
+    */
+    public native boolean rsa_verifyHash(long cCtx, PublicKey publicKey, AlgId hashId, byte[] digest, byte[] signature);
+
+    public native long eccPublicKey_new();
+
+    public native void eccPublicKey_close(long cCtx);
+
+    /*
+    * Algorithm identifier the key belongs to.
+    */
+    public native AlgId eccPublicKey_algId(long cCtx);
+
+    /*
+    * Return algorithm information that can be used for serialization.
+    */
+    public native AlgInfo eccPublicKey_algInfo(long cCtx);
+
+    /*
+    * Length of the key in bytes.
+    */
+    public native int eccPublicKey_len(long cCtx);
+
+    /*
+    * Length of the key in bits.
+    */
+    public native int eccPublicKey_bitlen(long cCtx);
+
+    /*
+    * Check that key is valid.
+    * Note, this operation can be slow.
+    */
+    public native boolean eccPublicKey_isValid(long cCtx);
+
+    public native long eccPrivateKey_new();
+
+    public native void eccPrivateKey_close(long cCtx);
+
+    /*
+    * Algorithm identifier the key belongs to.
+    */
+    public native AlgId eccPrivateKey_algId(long cCtx);
+
+    /*
+    * Return algorithm information that can be used for serialization.
+    */
+    public native AlgInfo eccPrivateKey_algInfo(long cCtx);
+
+    /*
+    * Length of the key in bytes.
+    */
+    public native int eccPrivateKey_len(long cCtx);
+
+    /*
+    * Length of the key in bits.
+    */
+    public native int eccPrivateKey_bitlen(long cCtx);
+
+    /*
+    * Check that key is valid.
+    * Note, this operation can be slow.
+    */
+    public native boolean eccPrivateKey_isValid(long cCtx);
+
+    /*
+    * Extract public key from the private key.
+    */
+    public native PublicKey eccPrivateKey_extractPublicKey(long cCtx);
+
+    public native void ecc_setRandom(long cCtx, Random random);
+
+    public native void ecc_setEcies(long cCtx, Ecies ecies) throws FoundationException;
+
+    /*
+    * Setup predefined values to the uninitialized class dependencies.
+    */
+    public native void ecc_setupDefaults(long cCtx) throws FoundationException;
+
+    /*
+    * Generate new private key.
+    * Supported algorithm ids:
+    * - secp256r1.
+    *
+    * Note, this operation might be slow.
+    */
+    public native PrivateKey ecc_generateKey(long cCtx, AlgId algId) throws FoundationException;
+
+    public native long ecc_new();
+
+    public native void ecc_close(long cCtx);
+
+    /*
+    * Provide algorithm identificator.
+    */
+    public native AlgId ecc_algId(long cCtx);
+
+    /*
+    * Produce object with algorithm information and configuration parameters.
+    */
+    public native AlgInfo ecc_produceAlgInfo(long cCtx);
+
+    /*
+    * Restore algorithm configuration from the given object.
+    */
+    public native void ecc_restoreAlgInfo(long cCtx, AlgInfo algInfo) throws FoundationException;
+
+    /*
+    * Generate ephemeral private key of the same type.
+    * Note, this operation might be slow.
+    */
+    public native PrivateKey ecc_generateEphemeralKey(long cCtx, Key key) throws FoundationException;
+
+    /*
+    * Import public key from the raw binary format.
+    *
+    * Return public key that is adopted and optimized to be used
+    * with this particular algorithm.
+    *
+    * Binary format must be defined in the key specification.
+    * For instance, RSA public key must be imported from the format defined in
+    * RFC 3447 Appendix A.1.1.
+    */
+    public native PublicKey ecc_importPublicKey(long cCtx, RawPublicKey rawKey) throws FoundationException;
+
+    /*
+    * Export public key to the raw binary format.
+    *
+    * Binary format must be defined in the key specification.
+    * For instance, RSA public key must be exported in format defined in
+    * RFC 3447 Appendix A.1.1.
+    */
+    public native RawPublicKey ecc_exportPublicKey(long cCtx, PublicKey publicKey) throws FoundationException;
+
+    /*
+    * Import private key from the raw binary format.
+    *
+    * Return private key that is adopted and optimized to be used
+    * with this particular algorithm.
+    *
+    * Binary format must be defined in the key specification.
+    * For instance, RSA private key must be imported from the format defined in
+    * RFC 3447 Appendix A.1.2.
+    */
+    public native PrivateKey ecc_importPrivateKey(long cCtx, RawPrivateKey rawKey) throws FoundationException;
+
+    /*
+    * Export private key in the raw binary format.
+    *
+    * Binary format must be defined in the key specification.
+    * For instance, RSA private key must be exported in format defined in
+    * RFC 3447 Appendix A.1.2.
+    */
+    public native RawPrivateKey ecc_exportPrivateKey(long cCtx, PrivateKey privateKey) throws FoundationException;
+
+    /*
+    * Check if algorithm can encrypt data with a given key.
+    */
+    public native boolean ecc_canEncrypt(long cCtx, PublicKey publicKey, int dataLen);
+
+    /*
+    * Calculate required buffer length to hold the encrypted data.
+    */
+    public native int ecc_encryptedLen(long cCtx, PublicKey publicKey, int dataLen);
+
+    /*
+    * Encrypt data with a given public key.
+    */
+    public native byte[] ecc_encrypt(long cCtx, PublicKey publicKey, byte[] data) throws FoundationException;
+
+    /*
+    * Check if algorithm can decrypt data with a given key.
+    * However, success result of decryption is not guaranteed.
+    */
+    public native boolean ecc_canDecrypt(long cCtx, PrivateKey privateKey, int dataLen);
+
+    /*
+    * Calculate required buffer length to hold the decrypted data.
+    */
+    public native int ecc_decryptedLen(long cCtx, PrivateKey privateKey, int dataLen);
+
+    /*
+    * Decrypt given data.
+    */
+    public native byte[] ecc_decrypt(long cCtx, PrivateKey privateKey, byte[] data) throws FoundationException;
+
+    /*
+    * Check if algorithm can sign data digest with a given key.
+    */
+    public native boolean ecc_canSign(long cCtx, PrivateKey privateKey);
+
+    /*
+    * Return length in bytes required to hold signature.
+    * Return zero if a given private key can not produce signatures.
+    */
+    public native int ecc_signatureLen(long cCtx, Key key);
+
+    /*
+    * Sign data digest with a given private key.
+    */
+    public native byte[] ecc_signHash(long cCtx, PrivateKey privateKey, AlgId hashId, byte[] digest) throws FoundationException;
+
+    /*
+    * Check if algorithm can verify data digest with a given key.
+    */
+    public native boolean ecc_canVerify(long cCtx, PublicKey publicKey);
+
+    /*
+    * Verify data digest with a given public key and signature.
+    */
+    public native boolean ecc_verifyHash(long cCtx, PublicKey publicKey, AlgId hashId, byte[] digest, byte[] signature);
 
     /*
     * Compute shared key for 2 asymmetric keys.
-    * Note, shared key can be used only for symmetric cryptography.
+    * Note, computed shared key can be used only within symmetric cryptography.
     */
-    public native byte[] secp256r1PrivateKey_computeSharedKey(long cCtx, PublicKey publicKey) throws FoundationException;
+    public native byte[] ecc_computeSharedKey(long cCtx, PublicKey publicKey, PrivateKey privateKey) throws FoundationException;
 
     /*
     * Return number of bytes required to hold shared key.
+    * Expect Public Key or Private Key.
     */
-    public native int secp256r1PrivateKey_sharedKeyLen(long cCtx);
+    public native int ecc_sharedKeyLen(long cCtx, Key key);
 
     /*
     * Setup predefined values to the uninitialized class dependencies.
@@ -1765,11 +2257,12 @@ public class FoundationJNI {
 
     /*
     * Generate random bytes.
+    * All RNG implementations must be thread-safe.
     */
     public native byte[] ctrDrbg_random(long cCtx, int dataLen) throws FoundationException;
 
     /*
-    * Retreive new seed data from the entropy sources.
+    * Retrieve new seed data from the entropy sources.
     */
     public native void ctrDrbg_reseed(long cCtx) throws FoundationException;
 
@@ -1931,11 +2424,12 @@ public class FoundationJNI {
 
     /*
     * Generate random bytes.
+    * All RNG implementations must be thread-safe.
     */
     public native byte[] fakeRandom_random(long cCtx, int dataLen) throws FoundationException;
 
     /*
-    * Retreive new seed data from the entropy sources.
+    * Retrieve new seed data from the entropy sources.
     */
     public native void fakeRandom_reseed(long cCtx) throws FoundationException;
 
@@ -2030,6 +2524,11 @@ public class FoundationJNI {
     public native int pkcs5Pbes2_encryptedLen(long cCtx, int dataLen);
 
     /*
+    * Precise length calculation of encrypted data.
+    */
+    public native int pkcs5Pbes2_preciseEncryptedLen(long cCtx, int dataLen);
+
+    /*
     * Decrypt given data.
     */
     public native byte[] pkcs5Pbes2_decrypt(long cCtx, byte[] data) throws FoundationException;
@@ -2069,13 +2568,104 @@ public class FoundationJNI {
 
     /*
     * Generate random bytes.
+    * All RNG implementations must be thread-safe.
     */
     public native byte[] keyMaterialRng_random(long cCtx, int dataLen) throws FoundationException;
 
     /*
-    * Retreive new seed data from the entropy sources.
+    * Retrieve new seed data from the entropy sources.
     */
     public native void keyMaterialRng_reseed(long cCtx) throws FoundationException;
+
+    /*
+    * Return key data.
+    */
+    public native byte[] rawPublicKey_data(long cCtx);
+
+    public native long rawPublicKey_new();
+
+    public native void rawPublicKey_close(long cCtx);
+
+    /*
+    * Algorithm identifier the key belongs to.
+    */
+    public native AlgId rawPublicKey_algId(long cCtx);
+
+    /*
+    * Return algorithm information that can be used for serialization.
+    */
+    public native AlgInfo rawPublicKey_algInfo(long cCtx);
+
+    /*
+    * Length of the key in bytes.
+    */
+    public native int rawPublicKey_len(long cCtx);
+
+    /*
+    * Length of the key in bits.
+    */
+    public native int rawPublicKey_bitlen(long cCtx);
+
+    /*
+    * Check that key is valid.
+    * Note, this operation can be slow.
+    */
+    public native boolean rawPublicKey_isValid(long cCtx);
+
+    /*
+    * Return key data.
+    */
+    public native byte[] rawPrivateKey_data(long cCtx);
+
+    /*
+    * Return true if private key contains public key.
+    */
+    public native boolean rawPrivateKey_hasPublicKey(long cCtx);
+
+    /*
+    * Setup public key related to the private key.
+    */
+    public native void rawPrivateKey_setPublicKey(long cCtx, RawPublicKey rawPublicKey);
+
+    /*
+    * Return public key related to the private key.
+    */
+    public native RawPublicKey rawPrivateKey_getPublicKey(long cCtx);
+
+    public native long rawPrivateKey_new();
+
+    public native void rawPrivateKey_close(long cCtx);
+
+    /*
+    * Algorithm identifier the key belongs to.
+    */
+    public native AlgId rawPrivateKey_algId(long cCtx);
+
+    /*
+    * Return algorithm information that can be used for serialization.
+    */
+    public native AlgInfo rawPrivateKey_algInfo(long cCtx);
+
+    /*
+    * Length of the key in bytes.
+    */
+    public native int rawPrivateKey_len(long cCtx);
+
+    /*
+    * Length of the key in bits.
+    */
+    public native int rawPrivateKey_bitlen(long cCtx);
+
+    /*
+    * Check that key is valid.
+    * Note, this operation can be slow.
+    */
+    public native boolean rawPrivateKey_isValid(long cCtx);
+
+    /*
+    * Extract public key from the private key.
+    */
+    public native PublicKey rawPrivateKey_extractPublicKey(long cCtx);
 
     public native void pkcs8Serializer_setAsn1Writer(long cCtx, Asn1Writer asn1Writer);
 
@@ -2089,14 +2679,14 @@ public class FoundationJNI {
     * Note, that caller code is responsible to reset ASN.1 writer with
     * an output buffer.
     */
-    public native int pkcs8Serializer_serializePublicKeyInplace(long cCtx, PublicKey publicKey) throws FoundationException;
+    public native int pkcs8Serializer_serializePublicKeyInplace(long cCtx, RawPublicKey publicKey) throws FoundationException;
 
     /*
     * Serialize Private Key by using internal ASN.1 writer.
     * Note, that caller code is responsible to reset ASN.1 writer with
     * an output buffer.
     */
-    public native int pkcs8Serializer_serializePrivateKeyInplace(long cCtx, PrivateKey privateKey) throws FoundationException;
+    public native int pkcs8Serializer_serializePrivateKeyInplace(long cCtx, RawPrivateKey privateKey) throws FoundationException;
 
     public native long pkcs8Serializer_new();
 
@@ -2107,28 +2697,28 @@ public class FoundationJNI {
     *
     * Precondition: public key must be exportable.
     */
-    public native int pkcs8Serializer_serializedPublicKeyLen(long cCtx, PublicKey publicKey);
+    public native int pkcs8Serializer_serializedPublicKeyLen(long cCtx, RawPublicKey publicKey);
 
     /*
     * Serialize given public key to an interchangeable format.
     *
     * Precondition: public key must be exportable.
     */
-    public native byte[] pkcs8Serializer_serializePublicKey(long cCtx, PublicKey publicKey) throws FoundationException;
+    public native byte[] pkcs8Serializer_serializePublicKey(long cCtx, RawPublicKey publicKey) throws FoundationException;
 
     /*
     * Calculate buffer size enough to hold serialized private key.
     *
     * Precondition: private key must be exportable.
     */
-    public native int pkcs8Serializer_serializedPrivateKeyLen(long cCtx, PrivateKey privateKey);
+    public native int pkcs8Serializer_serializedPrivateKeyLen(long cCtx, RawPrivateKey privateKey);
 
     /*
     * Serialize given private key to an interchangeable format.
     *
     * Precondition: private key must be exportable.
     */
-    public native byte[] pkcs8Serializer_serializePrivateKey(long cCtx, PrivateKey privateKey) throws FoundationException;
+    public native byte[] pkcs8Serializer_serializePrivateKey(long cCtx, RawPrivateKey privateKey) throws FoundationException;
 
     public native void sec1Serializer_setAsn1Writer(long cCtx, Asn1Writer asn1Writer) throws FoundationException;
 
@@ -2142,14 +2732,14 @@ public class FoundationJNI {
     * Note, that caller code is responsible to reset ASN.1 writer with
     * an output buffer.
     */
-    public native int sec1Serializer_serializePublicKeyInplace(long cCtx, PublicKey publicKey) throws FoundationException;
+    public native int sec1Serializer_serializePublicKeyInplace(long cCtx, RawPublicKey publicKey) throws FoundationException;
 
     /*
     * Serialize Private Key by using internal ASN.1 writer.
     * Note, that caller code is responsible to reset ASN.1 writer with
     * an output buffer.
     */
-    public native int sec1Serializer_serializePrivateKeyInplace(long cCtx, PrivateKey privateKey) throws FoundationException;
+    public native int sec1Serializer_serializePrivateKeyInplace(long cCtx, RawPrivateKey privateKey) throws FoundationException;
 
     public native long sec1Serializer_new();
 
@@ -2160,28 +2750,28 @@ public class FoundationJNI {
     *
     * Precondition: public key must be exportable.
     */
-    public native int sec1Serializer_serializedPublicKeyLen(long cCtx, PublicKey publicKey);
+    public native int sec1Serializer_serializedPublicKeyLen(long cCtx, RawPublicKey publicKey);
 
     /*
     * Serialize given public key to an interchangeable format.
     *
     * Precondition: public key must be exportable.
     */
-    public native byte[] sec1Serializer_serializePublicKey(long cCtx, PublicKey publicKey) throws FoundationException;
+    public native byte[] sec1Serializer_serializePublicKey(long cCtx, RawPublicKey publicKey) throws FoundationException;
 
     /*
     * Calculate buffer size enough to hold serialized private key.
     *
     * Precondition: private key must be exportable.
     */
-    public native int sec1Serializer_serializedPrivateKeyLen(long cCtx, PrivateKey privateKey);
+    public native int sec1Serializer_serializedPrivateKeyLen(long cCtx, RawPrivateKey privateKey);
 
     /*
     * Serialize given private key to an interchangeable format.
     *
     * Precondition: private key must be exportable.
     */
-    public native byte[] sec1Serializer_serializePrivateKey(long cCtx, PrivateKey privateKey) throws FoundationException;
+    public native byte[] sec1Serializer_serializePrivateKey(long cCtx, RawPrivateKey privateKey) throws FoundationException;
 
     public native void keyAsn1Serializer_setAsn1Writer(long cCtx, Asn1Writer asn1Writer) throws FoundationException;
 
@@ -2195,14 +2785,14 @@ public class FoundationJNI {
     * Note, that caller code is responsible to reset ASN.1 writer with
     * an output buffer.
     */
-    public native int keyAsn1Serializer_serializePublicKeyInplace(long cCtx, PublicKey publicKey) throws FoundationException;
+    public native int keyAsn1Serializer_serializePublicKeyInplace(long cCtx, RawPublicKey publicKey) throws FoundationException;
 
     /*
     * Serialize Private Key by using internal ASN.1 writer.
     * Note, that caller code is responsible to reset ASN.1 writer with
     * an output buffer.
     */
-    public native int keyAsn1Serializer_serializePrivateKeyInplace(long cCtx, PrivateKey privateKey) throws FoundationException;
+    public native int keyAsn1Serializer_serializePrivateKeyInplace(long cCtx, RawPrivateKey privateKey) throws FoundationException;
 
     public native long keyAsn1Serializer_new();
 
@@ -2213,28 +2803,28 @@ public class FoundationJNI {
     *
     * Precondition: public key must be exportable.
     */
-    public native int keyAsn1Serializer_serializedPublicKeyLen(long cCtx, PublicKey publicKey);
+    public native int keyAsn1Serializer_serializedPublicKeyLen(long cCtx, RawPublicKey publicKey);
 
     /*
     * Serialize given public key to an interchangeable format.
     *
     * Precondition: public key must be exportable.
     */
-    public native byte[] keyAsn1Serializer_serializePublicKey(long cCtx, PublicKey publicKey) throws FoundationException;
+    public native byte[] keyAsn1Serializer_serializePublicKey(long cCtx, RawPublicKey publicKey) throws FoundationException;
 
     /*
     * Calculate buffer size enough to hold serialized private key.
     *
     * Precondition: private key must be exportable.
     */
-    public native int keyAsn1Serializer_serializedPrivateKeyLen(long cCtx, PrivateKey privateKey);
+    public native int keyAsn1Serializer_serializedPrivateKeyLen(long cCtx, RawPrivateKey privateKey);
 
     /*
     * Serialize given private key to an interchangeable format.
     *
     * Precondition: private key must be exportable.
     */
-    public native byte[] keyAsn1Serializer_serializePrivateKey(long cCtx, PrivateKey privateKey) throws FoundationException;
+    public native byte[] keyAsn1Serializer_serializePrivateKey(long cCtx, RawPrivateKey privateKey) throws FoundationException;
 
     public native void keyAsn1Deserializer_setAsn1Reader(long cCtx, Asn1Reader asn1Reader) throws FoundationException;
 
@@ -2248,14 +2838,14 @@ public class FoundationJNI {
     * Note, that caller code is responsible to reset ASN.1 reader with
     * an input buffer.
     */
-    public native RawKey keyAsn1Deserializer_deserializePublicKeyInplace(long cCtx) throws FoundationException;
+    public native RawPublicKey keyAsn1Deserializer_deserializePublicKeyInplace(long cCtx) throws FoundationException;
 
     /*
     * Deserialize Private Key by using internal ASN.1 reader.
     * Note, that caller code is responsible to reset ASN.1 reader with
     * an input buffer.
     */
-    public native RawKey keyAsn1Deserializer_deserializePrivateKeyInplace(long cCtx) throws FoundationException;
+    public native RawPrivateKey keyAsn1Deserializer_deserializePrivateKeyInplace(long cCtx) throws FoundationException;
 
     public native long keyAsn1Deserializer_new();
 
@@ -2264,427 +2854,288 @@ public class FoundationJNI {
     /*
     * Deserialize given public key as an interchangeable format to the object.
     */
-    public native RawKey keyAsn1Deserializer_deserializePublicKey(long cCtx, byte[] publicKeyData) throws FoundationException;
+    public native RawPublicKey keyAsn1Deserializer_deserializePublicKey(long cCtx, byte[] publicKeyData) throws FoundationException;
 
     /*
     * Deserialize given private key as an interchangeable format to the object.
     */
-    public native RawKey keyAsn1Deserializer_deserializePrivateKey(long cCtx, byte[] privateKeyData) throws FoundationException;
+    public native RawPrivateKey keyAsn1Deserializer_deserializePrivateKey(long cCtx, byte[] privateKeyData) throws FoundationException;
 
-    public native void ed25519PublicKey_setRandom(long cCtx, Random random);
+    public native void ed25519_setRandom(long cCtx, Random random);
 
-    public native void ed25519PublicKey_setEcies(long cCtx, Ecies ecies);
+    public native void ed25519_setEcies(long cCtx, Ecies ecies) throws FoundationException;
 
     /*
     * Setup predefined values to the uninitialized class dependencies.
     */
-    public native void ed25519PublicKey_setupDefaults(long cCtx) throws FoundationException;
+    public native void ed25519_setupDefaults(long cCtx) throws FoundationException;
 
-    public native long ed25519PublicKey_new();
+    /*
+    * Generate new private key.
+    * Note, this operation might be slow.
+    */
+    public native PrivateKey ed25519_generateKey(long cCtx) throws FoundationException;
 
-    public native void ed25519PublicKey_close(long cCtx);
+    public native long ed25519_new();
+
+    public native void ed25519_close(long cCtx);
 
     /*
     * Provide algorithm identificator.
     */
-    public native AlgId ed25519PublicKey_algId(long cCtx);
+    public native AlgId ed25519_algId(long cCtx);
 
     /*
     * Produce object with algorithm information and configuration parameters.
     */
-    public native AlgInfo ed25519PublicKey_produceAlgInfo(long cCtx);
+    public native AlgInfo ed25519_produceAlgInfo(long cCtx);
 
     /*
     * Restore algorithm configuration from the given object.
     */
-    public native void ed25519PublicKey_restoreAlgInfo(long cCtx, AlgInfo algInfo) throws FoundationException;
+    public native void ed25519_restoreAlgInfo(long cCtx, AlgInfo algInfo) throws FoundationException;
 
     /*
-    * Length of the key in bytes.
+    * Generate ephemeral private key of the same type.
+    * Note, this operation might be slow.
     */
-    public native int ed25519PublicKey_keyLen(long cCtx);
+    public native PrivateKey ed25519_generateEphemeralKey(long cCtx, Key key) throws FoundationException;
 
     /*
-    * Length of the key in bits.
-    */
-    public native int ed25519PublicKey_keyBitlen(long cCtx);
-
-    /*
-    * Encrypt given data.
-    */
-    public native byte[] ed25519PublicKey_encrypt(long cCtx, byte[] data) throws FoundationException;
-
-    /*
-    * Calculate required buffer length to hold the encrypted data.
-    */
-    public native int ed25519PublicKey_encryptedLen(long cCtx, int dataLen);
-
-    /*
-    * Verify data with given public key and signature.
-    */
-    public native boolean ed25519PublicKey_verifyHash(long cCtx, byte[] hashDigest, AlgId hashId, byte[] signature);
-
-    /*
-    * Export public key in the binary format.
+    * Import public key from the raw binary format.
     *
-    * Binary format must be defined in the key specification.
-    * For instance, RSA public key must be exported in format defined in
-    * RFC 3447 Appendix A.1.1.
-    */
-    public native byte[] ed25519PublicKey_exportPublicKey(long cCtx) throws FoundationException;
-
-    /*
-    * Return length in bytes required to hold exported public key.
-    */
-    public native int ed25519PublicKey_exportedPublicKeyLen(long cCtx);
-
-    /*
-    * Import public key from the binary format.
+    * Return public key that is adopted and optimized to be used
+    * with this particular algorithm.
     *
     * Binary format must be defined in the key specification.
     * For instance, RSA public key must be imported from the format defined in
     * RFC 3447 Appendix A.1.1.
     */
-    public native void ed25519PublicKey_importPublicKey(long cCtx, byte[] data) throws FoundationException;
+    public native PublicKey ed25519_importPublicKey(long cCtx, RawPublicKey rawKey) throws FoundationException;
 
     /*
-    * Generate ephemeral private key of the same type.
+    * Export public key to the raw binary format.
+    *
+    * Binary format must be defined in the key specification.
+    * For instance, RSA public key must be exported in format defined in
+    * RFC 3447 Appendix A.1.1.
     */
-    public native PrivateKey ed25519PublicKey_generateEphemeralKey(long cCtx) throws FoundationException;
-
-    public native void ed25519PrivateKey_setRandom(long cCtx, Random random);
-
-    public native void ed25519PrivateKey_setEcies(long cCtx, Ecies ecies);
+    public native RawPublicKey ed25519_exportPublicKey(long cCtx, PublicKey publicKey) throws FoundationException;
 
     /*
-    * Setup predefined values to the uninitialized class dependencies.
+    * Import private key from the raw binary format.
+    *
+    * Return private key that is adopted and optimized to be used
+    * with this particular algorithm.
+    *
+    * Binary format must be defined in the key specification.
+    * For instance, RSA private key must be imported from the format defined in
+    * RFC 3447 Appendix A.1.2.
     */
-    public native void ed25519PrivateKey_setupDefaults(long cCtx) throws FoundationException;
-
-    public native long ed25519PrivateKey_new();
-
-    public native void ed25519PrivateKey_close(long cCtx);
+    public native PrivateKey ed25519_importPrivateKey(long cCtx, RawPrivateKey rawKey) throws FoundationException;
 
     /*
-    * Provide algorithm identificator.
+    * Export private key in the raw binary format.
+    *
+    * Binary format must be defined in the key specification.
+    * For instance, RSA private key must be exported in format defined in
+    * RFC 3447 Appendix A.1.2.
     */
-    public native AlgId ed25519PrivateKey_algId(long cCtx);
+    public native RawPrivateKey ed25519_exportPrivateKey(long cCtx, PrivateKey privateKey) throws FoundationException;
 
     /*
-    * Produce object with algorithm information and configuration parameters.
+    * Check if algorithm can encrypt data with a given key.
     */
-    public native AlgInfo ed25519PrivateKey_produceAlgInfo(long cCtx);
+    public native boolean ed25519_canEncrypt(long cCtx, PublicKey publicKey, int dataLen);
 
     /*
-    * Restore algorithm configuration from the given object.
+    * Calculate required buffer length to hold the encrypted data.
     */
-    public native void ed25519PrivateKey_restoreAlgInfo(long cCtx, AlgInfo algInfo) throws FoundationException;
+    public native int ed25519_encryptedLen(long cCtx, PublicKey publicKey, int dataLen);
 
     /*
-    * Length of the key in bytes.
+    * Encrypt data with a given public key.
     */
-    public native int ed25519PrivateKey_keyLen(long cCtx);
+    public native byte[] ed25519_encrypt(long cCtx, PublicKey publicKey, byte[] data) throws FoundationException;
 
     /*
-    * Length of the key in bits.
+    * Check if algorithm can decrypt data with a given key.
+    * However, success result of decryption is not guaranteed.
     */
-    public native int ed25519PrivateKey_keyBitlen(long cCtx);
-
-    /*
-    * Generate new private or secret key.
-    * Note, this operation can be slow.
-    */
-    public native void ed25519PrivateKey_generateKey(long cCtx) throws FoundationException;
-
-    /*
-    * Decrypt given data.
-    */
-    public native byte[] ed25519PrivateKey_decrypt(long cCtx, byte[] data) throws FoundationException;
+    public native boolean ed25519_canDecrypt(long cCtx, PrivateKey privateKey, int dataLen);
 
     /*
     * Calculate required buffer length to hold the decrypted data.
     */
-    public native int ed25519PrivateKey_decryptedLen(long cCtx, int dataLen);
+    public native int ed25519_decryptedLen(long cCtx, PrivateKey privateKey, int dataLen);
+
+    /*
+    * Decrypt given data.
+    */
+    public native byte[] ed25519_decrypt(long cCtx, PrivateKey privateKey, byte[] data) throws FoundationException;
+
+    /*
+    * Check if algorithm can sign data digest with a given key.
+    */
+    public native boolean ed25519_canSign(long cCtx, PrivateKey privateKey);
 
     /*
     * Return length in bytes required to hold signature.
+    * Return zero if a given private key can not produce signatures.
     */
-    public native int ed25519PrivateKey_signatureLen(long cCtx);
+    public native int ed25519_signatureLen(long cCtx, Key key);
 
     /*
-    * Sign data given private key.
+    * Sign data digest with a given private key.
     */
-    public native byte[] ed25519PrivateKey_signHash(long cCtx, byte[] hashDigest, AlgId hashId) throws FoundationException;
+    public native byte[] ed25519_signHash(long cCtx, PrivateKey privateKey, AlgId hashId, byte[] digest) throws FoundationException;
 
     /*
-    * Extract public part of the key.
+    * Check if algorithm can verify data digest with a given key.
     */
-    public native PublicKey ed25519PrivateKey_extractPublicKey(long cCtx);
+    public native boolean ed25519_canVerify(long cCtx, PublicKey publicKey);
 
     /*
-    * Export private key in the binary format.
-    *
-    * Binary format must be defined in the key specification.
-    * For instance, RSA private key must be exported in format defined in
-    * RFC 3447 Appendix A.1.2.
+    * Verify data digest with a given public key and signature.
     */
-    public native byte[] ed25519PrivateKey_exportPrivateKey(long cCtx) throws FoundationException;
-
-    /*
-    * Return length in bytes required to hold exported private key.
-    */
-    public native int ed25519PrivateKey_exportedPrivateKeyLen(long cCtx);
-
-    /*
-    * Import private key from the binary format.
-    *
-    * Binary format must be defined in the key specification.
-    * For instance, RSA private key must be imported from the format defined in
-    * RFC 3447 Appendix A.1.2.
-    */
-    public native void ed25519PrivateKey_importPrivateKey(long cCtx, byte[] data) throws FoundationException;
+    public native boolean ed25519_verifyHash(long cCtx, PublicKey publicKey, AlgId hashId, byte[] digest, byte[] signature);
 
     /*
     * Compute shared key for 2 asymmetric keys.
-    * Note, shared key can be used only for symmetric cryptography.
+    * Note, computed shared key can be used only within symmetric cryptography.
     */
-    public native byte[] ed25519PrivateKey_computeSharedKey(long cCtx, PublicKey publicKey) throws FoundationException;
+    public native byte[] ed25519_computeSharedKey(long cCtx, PublicKey publicKey, PrivateKey privateKey) throws FoundationException;
 
     /*
     * Return number of bytes required to hold shared key.
+    * Expect Public Key or Private Key.
     */
-    public native int ed25519PrivateKey_sharedKeyLen(long cCtx);
+    public native int ed25519_sharedKeyLen(long cCtx, Key key);
 
-    public native void curve25519PublicKey_setRandom(long cCtx, Random random);
+    public native void curve25519_setRandom(long cCtx, Random random);
 
-    public native void curve25519PublicKey_setEcies(long cCtx, Ecies ecies);
+    public native void curve25519_setEcies(long cCtx, Ecies ecies) throws FoundationException;
 
     /*
     * Setup predefined values to the uninitialized class dependencies.
     */
-    public native void curve25519PublicKey_setupDefaults(long cCtx) throws FoundationException;
+    public native void curve25519_setupDefaults(long cCtx) throws FoundationException;
 
-    public native long curve25519PublicKey_new();
+    /*
+    * Generate new private key.
+    * Note, this operation might be slow.
+    */
+    public native PrivateKey curve25519_generateKey(long cCtx) throws FoundationException;
 
-    public native void curve25519PublicKey_close(long cCtx);
+    public native long curve25519_new();
+
+    public native void curve25519_close(long cCtx);
 
     /*
     * Provide algorithm identificator.
     */
-    public native AlgId curve25519PublicKey_algId(long cCtx);
+    public native AlgId curve25519_algId(long cCtx);
 
     /*
     * Produce object with algorithm information and configuration parameters.
     */
-    public native AlgInfo curve25519PublicKey_produceAlgInfo(long cCtx);
+    public native AlgInfo curve25519_produceAlgInfo(long cCtx);
 
     /*
     * Restore algorithm configuration from the given object.
     */
-    public native void curve25519PublicKey_restoreAlgInfo(long cCtx, AlgInfo algInfo) throws FoundationException;
+    public native void curve25519_restoreAlgInfo(long cCtx, AlgInfo algInfo) throws FoundationException;
 
     /*
-    * Length of the key in bytes.
+    * Generate ephemeral private key of the same type.
+    * Note, this operation might be slow.
     */
-    public native int curve25519PublicKey_keyLen(long cCtx);
+    public native PrivateKey curve25519_generateEphemeralKey(long cCtx, Key key) throws FoundationException;
 
     /*
-    * Length of the key in bits.
-    */
-    public native int curve25519PublicKey_keyBitlen(long cCtx);
-
-    /*
-    * Encrypt given data.
-    */
-    public native byte[] curve25519PublicKey_encrypt(long cCtx, byte[] data) throws FoundationException;
-
-    /*
-    * Calculate required buffer length to hold the encrypted data.
-    */
-    public native int curve25519PublicKey_encryptedLen(long cCtx, int dataLen);
-
-    /*
-    * Export public key in the binary format.
+    * Import public key from the raw binary format.
     *
-    * Binary format must be defined in the key specification.
-    * For instance, RSA public key must be exported in format defined in
-    * RFC 3447 Appendix A.1.1.
-    */
-    public native byte[] curve25519PublicKey_exportPublicKey(long cCtx) throws FoundationException;
-
-    /*
-    * Return length in bytes required to hold exported public key.
-    */
-    public native int curve25519PublicKey_exportedPublicKeyLen(long cCtx);
-
-    /*
-    * Import public key from the binary format.
+    * Return public key that is adopted and optimized to be used
+    * with this particular algorithm.
     *
     * Binary format must be defined in the key specification.
     * For instance, RSA public key must be imported from the format defined in
     * RFC 3447 Appendix A.1.1.
     */
-    public native void curve25519PublicKey_importPublicKey(long cCtx, byte[] data) throws FoundationException;
+    public native PublicKey curve25519_importPublicKey(long cCtx, RawPublicKey rawKey) throws FoundationException;
 
     /*
-    * Generate ephemeral private key of the same type.
-    */
-    public native PrivateKey curve25519PublicKey_generateEphemeralKey(long cCtx) throws FoundationException;
-
-    public native void curve25519PrivateKey_setRandom(long cCtx, Random random);
-
-    public native void curve25519PrivateKey_setEcies(long cCtx, Ecies ecies);
-
-    /*
-    * Setup predefined values to the uninitialized class dependencies.
-    */
-    public native void curve25519PrivateKey_setupDefaults(long cCtx) throws FoundationException;
-
-    public native long curve25519PrivateKey_new();
-
-    public native void curve25519PrivateKey_close(long cCtx);
-
-    /*
-    * Provide algorithm identificator.
-    */
-    public native AlgId curve25519PrivateKey_algId(long cCtx);
-
-    /*
-    * Produce object with algorithm information and configuration parameters.
-    */
-    public native AlgInfo curve25519PrivateKey_produceAlgInfo(long cCtx);
-
-    /*
-    * Restore algorithm configuration from the given object.
-    */
-    public native void curve25519PrivateKey_restoreAlgInfo(long cCtx, AlgInfo algInfo) throws FoundationException;
-
-    /*
-    * Length of the key in bytes.
-    */
-    public native int curve25519PrivateKey_keyLen(long cCtx);
-
-    /*
-    * Length of the key in bits.
-    */
-    public native int curve25519PrivateKey_keyBitlen(long cCtx);
-
-    /*
-    * Generate new private or secret key.
-    * Note, this operation can be slow.
-    */
-    public native void curve25519PrivateKey_generateKey(long cCtx) throws FoundationException;
-
-    /*
-    * Decrypt given data.
-    */
-    public native byte[] curve25519PrivateKey_decrypt(long cCtx, byte[] data) throws FoundationException;
-
-    /*
-    * Calculate required buffer length to hold the decrypted data.
-    */
-    public native int curve25519PrivateKey_decryptedLen(long cCtx, int dataLen);
-
-    /*
-    * Extract public part of the key.
-    */
-    public native PublicKey curve25519PrivateKey_extractPublicKey(long cCtx);
-
-    /*
-    * Export private key in the binary format.
+    * Export public key to the raw binary format.
     *
     * Binary format must be defined in the key specification.
-    * For instance, RSA private key must be exported in format defined in
-    * RFC 3447 Appendix A.1.2.
+    * For instance, RSA public key must be exported in format defined in
+    * RFC 3447 Appendix A.1.1.
     */
-    public native byte[] curve25519PrivateKey_exportPrivateKey(long cCtx) throws FoundationException;
+    public native RawPublicKey curve25519_exportPublicKey(long cCtx, PublicKey publicKey) throws FoundationException;
 
     /*
-    * Return length in bytes required to hold exported private key.
-    */
-    public native int curve25519PrivateKey_exportedPrivateKeyLen(long cCtx);
-
-    /*
-    * Import private key from the binary format.
+    * Import private key from the raw binary format.
+    *
+    * Return private key that is adopted and optimized to be used
+    * with this particular algorithm.
     *
     * Binary format must be defined in the key specification.
     * For instance, RSA private key must be imported from the format defined in
     * RFC 3447 Appendix A.1.2.
     */
-    public native void curve25519PrivateKey_importPrivateKey(long cCtx, byte[] data) throws FoundationException;
+    public native PrivateKey curve25519_importPrivateKey(long cCtx, RawPrivateKey rawKey) throws FoundationException;
 
     /*
-    * Compute shared key for 2 asymmetric keys.
-    * Note, shared key can be used only for symmetric cryptography.
-    */
-    public native byte[] curve25519PrivateKey_computeSharedKey(long cCtx, PublicKey publicKey) throws FoundationException;
-
-    /*
-    * Return number of bytes required to hold shared key.
-    */
-    public native int curve25519PrivateKey_sharedKeyLen(long cCtx);
-
-    public native void ecies_setRandom(long cCtx, Random random);
-
-    public native void ecies_setCipher(long cCtx, Cipher cipher);
-
-    public native void ecies_setMac(long cCtx, Mac mac);
-
-    public native void ecies_setKdf(long cCtx, Kdf kdf);
-
-    /*
-    * Set public key that is used for data encryption.
+    * Export private key in the raw binary format.
     *
-    * If ephemeral key is not defined, then Public Key, must be conformed
-    * to the interface "generate ephemeral key".
-    *
-    * In turn, Ephemeral Key must be conformed to the interface
-    * "compute shared key".
+    * Binary format must be defined in the key specification.
+    * For instance, RSA private key must be exported in format defined in
+    * RFC 3447 Appendix A.1.2.
     */
-    public native void ecies_setEncryptionKey(long cCtx, PublicKey encryptionKey);
+    public native RawPrivateKey curve25519_exportPrivateKey(long cCtx, PrivateKey privateKey) throws FoundationException;
 
     /*
-    * Set private key that used for data decryption.
-    *
-    * Private Key must be conformed to the interface "compute shared key".
+    * Check if algorithm can encrypt data with a given key.
     */
-    public native void ecies_setDecryptionKey(long cCtx, PrivateKey decryptionKey);
-
-    /*
-    * Set private key that used for data decryption.
-    *
-    * Ephemeral Key must be conformed to the interface "compute shared key".
-    */
-    public native void ecies_setEphemeralKey(long cCtx, PrivateKey ephemeralKey);
-
-    /*
-    * Setup predefined values to the uninitialized class dependencies.
-    */
-    public native void ecies_setupDefaults(long cCtx) throws FoundationException;
-
-    public native long ecies_new();
-
-    public native void ecies_close(long cCtx);
-
-    /*
-    * Encrypt given data.
-    */
-    public native byte[] ecies_encrypt(long cCtx, byte[] data) throws FoundationException;
+    public native boolean curve25519_canEncrypt(long cCtx, PublicKey publicKey, int dataLen);
 
     /*
     * Calculate required buffer length to hold the encrypted data.
     */
-    public native int ecies_encryptedLen(long cCtx, int dataLen);
+    public native int curve25519_encryptedLen(long cCtx, PublicKey publicKey, int dataLen);
 
     /*
-    * Decrypt given data.
+    * Encrypt data with a given public key.
     */
-    public native byte[] ecies_decrypt(long cCtx, byte[] data) throws FoundationException;
+    public native byte[] curve25519_encrypt(long cCtx, PublicKey publicKey, byte[] data) throws FoundationException;
+
+    /*
+    * Check if algorithm can decrypt data with a given key.
+    * However, success result of decryption is not guaranteed.
+    */
+    public native boolean curve25519_canDecrypt(long cCtx, PrivateKey privateKey, int dataLen);
 
     /*
     * Calculate required buffer length to hold the decrypted data.
     */
-    public native int ecies_decryptedLen(long cCtx, int dataLen);
+    public native int curve25519_decryptedLen(long cCtx, PrivateKey privateKey, int dataLen);
+
+    /*
+    * Decrypt given data.
+    */
+    public native byte[] curve25519_decrypt(long cCtx, PrivateKey privateKey, byte[] data) throws FoundationException;
+
+    /*
+    * Compute shared key for 2 asymmetric keys.
+    * Note, computed shared key can be used only within symmetric cryptography.
+    */
+    public native byte[] curve25519_computeSharedKey(long cCtx, PublicKey publicKey, PrivateKey privateKey) throws FoundationException;
+
+    /*
+    * Return number of bytes required to hold shared key.
+    * Expect Public Key or Private Key.
+    */
+    public native int curve25519_sharedKeyLen(long cCtx, Key key);
 
     public native long simpleAlgInfo_new();
 
@@ -2780,23 +3231,23 @@ public class FoundationJNI {
     /*
     * Return EC specific algorithm identificator {unrestricted, ecDH, ecMQV}.
     */
-    public native OidId ecAlgInfo_keyId(long cCtx);
+    public native OidId eccAlgInfo_keyId(long cCtx);
 
     /*
     * Return EC domain group identificator.
     */
-    public native OidId ecAlgInfo_domainId(long cCtx);
+    public native OidId eccAlgInfo_domainId(long cCtx);
 
-    public native long ecAlgInfo_new();
+    public native long eccAlgInfo_new();
 
-    public native void ecAlgInfo_close(long cCtx);
+    public native void eccAlgInfo_close(long cCtx);
 
-    public native long ecAlgInfo_new(AlgId algId, OidId keyId, OidId domainId);
+    public native long eccAlgInfo_new(AlgId algId, OidId keyId, OidId domainId);
 
     /*
     * Provide algorithm identificator.
     */
-    public native AlgId ecAlgInfo_algId(long cCtx);
+    public native AlgId eccAlgInfo_algId(long cCtx);
 
     public native void algInfoDerSerializer_setAsn1Writer(long cCtx, Asn1Writer asn1Writer);
 
@@ -2885,5 +3336,20 @@ public class FoundationJNI {
     * Deserialize class "message info".
     */
     public native MessageInfo messageInfoDerSerializer_deserialize(long cCtx, byte[] data) throws FoundationException;
+
+    /*
+    * Return buffer size enough to hold serialized message info footer.
+    */
+    public native int messageInfoDerSerializer_serializedFooterLen(long cCtx, MessageInfoFooter messageInfoFooter);
+
+    /*
+    * Serialize class "message info footer".
+    */
+    public native byte[] messageInfoDerSerializer_serializeFooter(long cCtx, MessageInfoFooter messageInfoFooter);
+
+    /*
+    * Deserialize class "message info footer".
+    */
+    public native MessageInfoFooter messageInfoDerSerializer_deserializeFooter(long cCtx, byte[] data) throws FoundationException;
 }
 

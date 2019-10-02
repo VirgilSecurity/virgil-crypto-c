@@ -128,11 +128,17 @@ import VSCFoundation
     /// ASN.1 representation of a private key is corrupted.
     case errorBadDerPrivateKey = -224
 
+    /// Key algorithm does not accept given type of public key.
+    case errorMismatchPublicKeyAndAlgorithm = -225
+
+    /// Key algorithm does not accept given type of private key.
+    case errorMismatchPrivateKeyAndAlgorithm = -226
+
     /// Decryption failed, because message info was not given explicitly,
     /// and was not part of an encrypted message.
     case errorNoMessageInfo = -301
 
-    /// Message info is corrupted.
+    /// Message Info is corrupted.
     case errorBadMessageInfo = -302
 
     /// Recipient defined with id is not found within message info
@@ -154,6 +160,9 @@ import VSCFoundation
 
     /// Signature format is corrupted.
     case errorBadSignature = -308
+
+    /// Message Info footer is corrupted.
+    case errorBadMessageInfoFooter = -309
 
     /// Brainkey password length is out of range.
     case errorInvalidBrainkeyPasswordLen = -401
@@ -184,6 +193,33 @@ import VSCFoundation
 
     /// Brainkey identity secret is invalid.
     case errorInvalidIdentitySecret = -410
+
+    /// Invalid padding.
+    case errorInvalidPadding = -501
+
+    /// Protobuf error.
+    case errorProtobuf = -601
+
+    /// Session id doesnt match.
+    case errorSessionIdDoesntMatch = -701
+
+    /// Epoch not found.
+    case errorEpochNotFound = -702
+
+    /// Wrong key type.
+    case errorWrongKeyType = -703
+
+    /// Invalid signature.
+    case errorInvalidSignature = -704
+
+    /// Ed25519 error.
+    case errorEd25519 = -705
+
+    /// Duplicate epoch.
+    case errorDuplicateEpoch = -706
+
+    /// Plain text too long.
+    case errorPlainTextTooLong = -707
 
     /// Create enumeration value from the correspond C enumeration value.
     internal init(fromC status: vscf_status_t) {

@@ -14,7 +14,7 @@
     <require module="ratchet group participants info defs" scope="private"/>
     <require module="ratchet group participants ids defs" scope="private"/>
 
-    <require header="RatchetGroupMessage.pb.h" scope="private"/>
+    <require header="vscr_RatchetGroupMessage.pb.h" scope="private"/>
     <require header="pb_decode.h" scope="private"/>
     <require header="pb_encode.h" scope="private"/>
 
@@ -31,7 +31,7 @@
 
     <property name="key utils" class="ratchet key utils"/>
     <property name="cipher" class="ratchet cipher" access="readwrite"/>
-    <property name="padding" class="ratchet padding" access="readwrite"/>
+    <property name="padding" class="message padding" project="foundation" access="readwrite"/>
 
     <property name="is initialized" type="boolean" access="readwrite"/>
     <property name="is private key set" type="boolean" access="readwrite"/>
@@ -214,6 +214,10 @@
 
         <argument name="message" class="ratchet group message">
             Message to decrypt. Use deserialize to obtain message from data
+        </argument>
+
+        <argument name="sender id" class="data">
+            Sender identifier. 32 bytes
         </argument>
 
         <argument name="plain text" class="buffer">

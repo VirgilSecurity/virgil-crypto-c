@@ -38,7 +38,7 @@ import VSCFoundation
 
 /// Implementation of the RNG using deterministic random bit generators
 /// based on block ciphers in counter mode (CTR_DRBG from NIST SP800-90A).
-/// This class is thread-safe if the build option VSCF_MULTI_THREAD was enabled.
+/// This class is thread-safe if the build option VSCF_MULTI_THREADING was enabled.
 @objc(VSCFCtrDrbg) public class CtrDrbg: NSObject, Random {
 
     /// The interval before reseed is performed by default.
@@ -107,6 +107,7 @@ import VSCFoundation
     }
 
     /// Generate random bytes.
+    /// All RNG implementations must be thread-safe.
     @objc public func random(dataLen: Int) throws -> Data {
         let dataCount = dataLen
         var data = Data(count: dataCount)
@@ -116,7 +117,6 @@ import VSCFoundation
         }
 
         let proxyResult = data.withUnsafeMutableBytes({ (dataPointer: UnsafeMutableRawBufferPointer) -> vscf_status_t in
-            vsc_buffer_init(dataBuf)
             vsc_buffer_use(dataBuf, dataPointer.bindMemory(to: byte.self).baseAddress, dataCount)
 
             return vscf_ctr_drbg_random(self.c_ctx, dataLen, dataBuf)
@@ -128,7 +128,7 @@ import VSCFoundation
         return data
     }
 
-    /// Retreive new seed data from the entropy sources.
+    /// Retrieve new seed data from the entropy sources.
     @objc public func reseed() throws {
         let proxyResult = vscf_ctr_drbg_reseed(self.c_ctx)
 

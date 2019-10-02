@@ -48,6 +48,7 @@
 #define VSCR_RATCHET_GROUP_PARTICIPANT_H_INCLUDED
 
 #include "vscr_library.h"
+#include "vscr_atomic.h"
 #include "vscr_ratchet_typedefs.h"
 #include "vscr_ratchet_common_hidden.h"
 #include "vscr_ratchet_common.h"
@@ -84,7 +85,7 @@ struct vscr_ratchet_group_participant_t {
     //
     //  Reference counter.
     //
-    size_t refcnt;
+    VSCR_ATOMIC size_t refcnt;
 
     vscr_ratchet_group_participant_info_t info;
 
@@ -117,7 +118,7 @@ vscr_ratchet_group_participant_new(void);
 
 //
 //  Release all inner resources and deallocate context if needed.
-//  It is safe to call this method even if context was allocated by the caller.
+//  It is safe to call this method even if the context was statically allocated.
 //
 VSCR_PUBLIC void
 vscr_ratchet_group_participant_delete(vscr_ratchet_group_participant_t *self);
@@ -143,10 +144,10 @@ VSCR_PUBLIC vscr_ratchet_group_participant_epoch_t *
 vscr_ratchet_group_participant_find_epoch(const vscr_ratchet_group_participant_t *self, uint32_t epoch);
 
 VSCR_PUBLIC void
-vscr_ratchet_group_participant_serialize(const vscr_ratchet_group_participant_t *self, ParticipantData *data_pb);
+vscr_ratchet_group_participant_serialize(const vscr_ratchet_group_participant_t *self, vscr_ParticipantData *data_pb);
 
 VSCR_PUBLIC void
-vscr_ratchet_group_participant_deserialize(const ParticipantData *data_pb, vscr_ratchet_group_participant_t *data);
+vscr_ratchet_group_participant_deserialize(const vscr_ParticipantData *data_pb, vscr_ratchet_group_participant_t *data);
 
 
 // --------------------------------------------------------------------------

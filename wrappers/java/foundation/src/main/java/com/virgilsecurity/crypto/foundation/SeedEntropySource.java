@@ -49,13 +49,9 @@ public class SeedEntropySource implements AutoCloseable, EntropySource {
         this.cCtx = FoundationJNI.INSTANCE.seedEntropySource_new();
     }
 
-    /*
-    * Acquire C context.
-    * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-    */
-    public SeedEntropySource(long cCtx) {
-        super();
-        this.cCtx = cCtx;
+    /* Wrap underlying C context. */
+    SeedEntropySource(FoundationContextHolder contextHolder) {
+        this.cCtx = contextHolder.cCtx;
     }
 
     /*
@@ -70,6 +66,15 @@ public class SeedEntropySource implements AutoCloseable, EntropySource {
     */
     public void resetSeed(byte[] seed) {
         FoundationJNI.INSTANCE.seedEntropySource_resetSeed(this.cCtx, seed);
+    }
+
+    /*
+    * Acquire C context.
+    * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
+    */
+    public static SeedEntropySource getInstance(long cCtx) {
+        FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
+        return new SeedEntropySource(ctxHolder);
     }
 
     /* Close resource. */

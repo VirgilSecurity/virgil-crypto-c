@@ -51,13 +51,18 @@ public class RatchetGroupMessage implements AutoCloseable {
         this.cCtx = RatchetJNI.INSTANCE.ratchetGroupMessage_new();
     }
 
+    /* Wrap underlying C context. */
+    RatchetGroupMessage(RatchetContextHolder contextHolder) {
+        this.cCtx = contextHolder.cCtx;
+    }
+
     /*
     * Acquire C context.
     * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     */
-    public RatchetGroupMessage(long cCtx) {
-        super();
-        this.cCtx = cCtx;
+    public static RatchetGroupMessage getInstance(long cCtx) {
+        RatchetContextHolder ctxHolder = new RatchetContextHolder(cCtx);
+        return new RatchetGroupMessage(ctxHolder);
     }
 
     /* Close resource. */
@@ -81,11 +86,10 @@ public class RatchetGroupMessage implements AutoCloseable {
     }
 
     /*
-    * Returns message sender id.
-    * This method should be called only for regular message type.
+    * Returns message counter in current epoch.
     */
-    public byte[] getSenderId() {
-        return RatchetJNI.INSTANCE.ratchetGroupMessage_getSenderId(this.cCtx);
+    public long getCounter() {
+        return RatchetJNI.INSTANCE.ratchetGroupMessage_getCounter(this.cCtx);
     }
 
     /*

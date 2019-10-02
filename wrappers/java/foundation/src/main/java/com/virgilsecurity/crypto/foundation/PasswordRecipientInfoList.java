@@ -49,26 +49,23 @@ public class PasswordRecipientInfoList implements AutoCloseable {
         this.cCtx = FoundationJNI.INSTANCE.passwordRecipientInfoList_new();
     }
 
+    /* Wrap underlying C context. */
+    PasswordRecipientInfoList(FoundationContextHolder contextHolder) {
+        this.cCtx = contextHolder.cCtx;
+    }
+
     /*
     * Acquire C context.
     * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     */
-    public PasswordRecipientInfoList(long cCtx) {
-        super();
-        this.cCtx = cCtx;
+    public static PasswordRecipientInfoList getInstance(long cCtx) {
+        FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
+        return new PasswordRecipientInfoList(ctxHolder);
     }
 
     /* Close resource. */
     public void close() {
         FoundationJNI.INSTANCE.passwordRecipientInfoList_close(this.cCtx);
-    }
-
-    /*
-    * Add new item to the list.
-    * Note, ownership is transfered.
-    */
-    public void add(PasswordRecipientInfo passwordRecipientInfo) {
-        FoundationJNI.INSTANCE.passwordRecipientInfoList_add(this.cCtx, passwordRecipientInfo);
     }
 
     /*

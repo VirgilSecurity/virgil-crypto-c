@@ -61,7 +61,7 @@
 
 #include <virgil/crypto/foundation/vscf_random.h>
 #include <virgil/crypto/common/private/vsc_buffer_defs.h>
-#include <RatchetGroupMessage.pb.h>
+#include <vscr_RatchetGroupMessage.pb.h>
 #include <pb_decode.h>
 #include <pb_encode.h>
 #include <ed25519/ed25519.h>
@@ -92,6 +92,12 @@ vscr_ratchet_group_ticket_init_ctx(vscr_ratchet_group_ticket_t *self);
 //
 static void
 vscr_ratchet_group_ticket_cleanup_ctx(vscr_ratchet_group_ticket_t *self);
+
+//
+//  Set session id in case you want to use your own identifier, otherwise - id will be generated for you.
+//
+static void
+vscr_ratchet_group_ticket_set_session_id(vscr_ratchet_group_ticket_t *self, vsc_data_t session_id);
 
 static vscr_status_t
 vscr_ratchet_group_ticket_generate_key(vscr_ratchet_group_ticket_t *self) VSCR_NODISCARD;
@@ -130,17 +136,11 @@ vscr_ratchet_group_ticket_cleanup(vscr_ratchet_group_ticket_t *self) {
         return;
     }
 
-    if (self->refcnt == 0) {
-        return;
-    }
+    vscr_ratchet_group_ticket_cleanup_ctx(self);
 
-    if (--self->refcnt == 0) {
-        vscr_ratchet_group_ticket_cleanup_ctx(self);
+    vscr_ratchet_group_ticket_release_rng(self);
 
-        vscr_ratchet_group_ticket_release_rng(self);
-
-        vscr_zeroize(self, sizeof(vscr_ratchet_group_ticket_t));
-    }
+    vscr_zeroize(self, sizeof(vscr_ratchet_group_ticket_t));
 }
 
 //
@@ -161,7 +161,7 @@ vscr_ratchet_group_ticket_new(void) {
 
 //
 //  Release all inner resources and deallocate context if needed.
-//  It is safe to call this method even if context was allocated by the caller.
+//  It is safe to call this method even if the context was statically allocated.
 //
 VSCR_PUBLIC void
 vscr_ratchet_group_ticket_delete(vscr_ratchet_group_ticket_t *self) {
@@ -170,11 +170,30 @@ vscr_ratchet_group_ticket_delete(vscr_ratchet_group_ticket_t *self) {
         return;
     }
 
+    size_t old_counter = self->refcnt;
+    VSCR_ASSERT(old_counter != 0);
+    size_t new_counter = old_counter - 1;
+
+    #if defined(VSCR_ATOMIC_COMPARE_EXCHANGE_WEAK)
+    //  CAS loop
+    while (!VSCR_ATOMIC_COMPARE_EXCHANGE_WEAK(&self->refcnt, &old_counter, new_counter)) {
+        old_counter = self->refcnt;
+        VSCR_ASSERT(old_counter != 0);
+        new_counter = old_counter - 1;
+    }
+    #else
+    self->refcnt = new_counter;
+    #endif
+
+    if (new_counter > 0) {
+        return;
+    }
+
     vscr_dealloc_fn self_dealloc_cb = self->self_dealloc_cb;
 
     vscr_ratchet_group_ticket_cleanup(self);
 
-    if (self->refcnt == 0 && self_dealloc_cb != NULL) {
+    if (self_dealloc_cb != NULL) {
         self_dealloc_cb(self);
     }
 }
@@ -202,7 +221,17 @@ vscr_ratchet_group_ticket_shallow_copy(vscr_ratchet_group_ticket_t *self) {
 
     VSCR_ASSERT_PTR(self);
 
+    #if defined(VSCR_ATOMIC_COMPARE_EXCHANGE_WEAK)
+    //  CAS loop
+    size_t old_counter;
+    size_t new_counter;
+    do {
+        old_counter = self->refcnt;
+        new_counter = old_counter + 1;
+    } while (!VSCR_ATOMIC_COMPARE_EXCHANGE_WEAK(&self->refcnt, &old_counter, new_counter));
+    #else
     ++self->refcnt;
+    #endif
 
     return self;
 }
@@ -235,7 +264,7 @@ vscr_ratchet_group_ticket_take_rng(vscr_ratchet_group_ticket_t *self, vscf_impl_
 
     VSCR_ASSERT_PTR(self);
     VSCR_ASSERT_PTR(rng);
-    VSCR_ASSERT_PTR(self->rng == NULL);
+    VSCR_ASSERT(self->rng == NULL);
 
     VSCR_ASSERT(vscf_random_is_implemented(rng));
 
@@ -330,29 +359,16 @@ vscr_ratchet_group_ticket_setup_ticket_internal(
 //  Set this ticket to start new group session.
 //
 VSCR_PUBLIC vscr_status_t
-vscr_ratchet_group_ticket_setup_ticket_as_new(vscr_ratchet_group_ticket_t *self) {
+vscr_ratchet_group_ticket_setup_ticket_as_new(vscr_ratchet_group_ticket_t *self, vsc_data_t session_id) {
 
     VSCR_ASSERT(self);
     VSCR_ASSERT(self->rng);
 
-    vscr_status_t status = vscr_status_SUCCESS;
     vscr_ratchet_group_message_set_type(self->msg, vscr_group_msg_type_GROUP_INFO);
 
-    vsc_buffer_t *session_id = vsc_buffer_new_with_capacity(vscr_ratchet_common_SESSION_ID_LEN);
+    vscr_ratchet_group_ticket_set_session_id(self, session_id);
 
-    vscf_status_t f_status = vscf_random(self->rng, vscr_ratchet_common_SESSION_ID_LEN, session_id);
-
-    if (f_status != vscf_status_SUCCESS) {
-        status = vscr_status_ERROR_RNG_FAILED;
-        goto err;
-    }
-
-    vscr_ratchet_group_ticket_set_session_id(self, vsc_buffer_data(session_id));
-
-    status = vscr_ratchet_group_ticket_generate_key(self);
-
-err:
-    vsc_buffer_destroy(&session_id);
+    vscr_status_t status = vscr_ratchet_group_ticket_generate_key(self);
 
     return status;
 }
@@ -360,7 +376,7 @@ err:
 //
 //  Set session id in case you want to use your own identifier, otherwise - id will be generated for you.
 //
-VSCR_PUBLIC void
+static void
 vscr_ratchet_group_ticket_set_session_id(vscr_ratchet_group_ticket_t *self, vsc_data_t session_id) {
 
     VSCR_ASSERT(self);

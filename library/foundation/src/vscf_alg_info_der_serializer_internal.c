@@ -141,15 +141,7 @@ vscf_alg_info_der_serializer_init(vscf_alg_info_der_serializer_t *self) {
 VSCF_PUBLIC void
 vscf_alg_info_der_serializer_cleanup(vscf_alg_info_der_serializer_t *self) {
 
-    if (self == NULL || self->info == NULL) {
-        return;
-    }
-
-    if (self->refcnt == 0) {
-        return;
-    }
-
-    if (--self->refcnt > 0) {
+    if (self == NULL) {
         return;
     }
 
@@ -180,11 +172,32 @@ vscf_alg_info_der_serializer_new(void) {
 VSCF_PUBLIC void
 vscf_alg_info_der_serializer_delete(vscf_alg_info_der_serializer_t *self) {
 
+    if (self == NULL) {
+        return;
+    }
+
+    size_t old_counter = self->refcnt;
+    VSCF_ASSERT(old_counter != 0);
+    size_t new_counter = old_counter - 1;
+
+    #if defined(VSCF_ATOMIC_COMPARE_EXCHANGE_WEAK)
+    //  CAS loop
+    while (!VSCF_ATOMIC_COMPARE_EXCHANGE_WEAK(&self->refcnt, &old_counter, new_counter)) {
+        old_counter = self->refcnt;
+        VSCF_ASSERT(old_counter != 0);
+        new_counter = old_counter - 1;
+    }
+    #else
+    self->refcnt = new_counter;
+    #endif
+
+    if (new_counter > 0) {
+        return;
+    }
+
     vscf_alg_info_der_serializer_cleanup(self);
 
-    if (self && (self->refcnt == 0)) {
-        vscf_dealloc(self);
-    }
+    vscf_dealloc(self);
 }
 
 //
@@ -205,7 +218,6 @@ vscf_alg_info_der_serializer_destroy(vscf_alg_info_der_serializer_t **self_ref) 
 
 //
 //  Copy given implementation context by increasing reference counter.
-//  If deep copy is required interface 'clonable' can be used.
 //
 VSCF_PUBLIC vscf_alg_info_der_serializer_t *
 vscf_alg_info_der_serializer_shallow_copy(vscf_alg_info_der_serializer_t *self) {
@@ -234,6 +246,16 @@ vscf_alg_info_der_serializer_impl(vscf_alg_info_der_serializer_t *self) {
 }
 
 //
+//  Cast to the const 'vscf_impl_t' type.
+//
+VSCF_PUBLIC const vscf_impl_t *
+vscf_alg_info_der_serializer_impl_const(const vscf_alg_info_der_serializer_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+    return (const vscf_impl_t *)(self);
+}
+
+//
 //  Setup dependency to the interface 'asn1 writer' with shared ownership.
 //
 VSCF_PUBLIC void
@@ -257,7 +279,7 @@ vscf_alg_info_der_serializer_take_asn1_writer(vscf_alg_info_der_serializer_t *se
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(asn1_writer);
-    VSCF_ASSERT_PTR(self->asn1_writer == NULL);
+    VSCF_ASSERT(self->asn1_writer == NULL);
 
     VSCF_ASSERT(vscf_asn1_writer_is_implemented(asn1_writer));
 

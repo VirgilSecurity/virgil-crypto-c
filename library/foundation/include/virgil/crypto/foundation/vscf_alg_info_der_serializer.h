@@ -97,6 +97,12 @@ VSCF_PUBLIC vscf_impl_t *
 vscf_alg_info_der_serializer_impl(vscf_alg_info_der_serializer_t *self);
 
 //
+//  Cast to the const 'vscf_impl_t' type.
+//
+VSCF_PUBLIC const vscf_impl_t *
+vscf_alg_info_der_serializer_impl_const(const vscf_alg_info_der_serializer_t *self);
+
+//
 //  Perform initialization of preallocated implementation context.
 //
 VSCF_PUBLIC void
@@ -133,7 +139,6 @@ vscf_alg_info_der_serializer_destroy(vscf_alg_info_der_serializer_t **self_ref);
 
 //
 //  Copy given implementation context by increasing reference counter.
-//  If deep copy is required interface 'clonable' can be used.
 //
 VSCF_PUBLIC vscf_alg_info_der_serializer_t *
 vscf_alg_info_der_serializer_shallow_copy(vscf_alg_info_der_serializer_t *self);
@@ -175,7 +180,7 @@ vscf_alg_info_der_serializer_serialize_inplace(vscf_alg_info_der_serializer_t *s
 //  Return buffer size enough to hold serialized algorithm.
 //
 VSCF_PUBLIC size_t
-vscf_alg_info_der_serializer_serialized_len(vscf_alg_info_der_serializer_t *self, const vscf_impl_t *alg_info);
+vscf_alg_info_der_serializer_serialized_len(const vscf_alg_info_der_serializer_t *self, const vscf_impl_t *alg_info);
 
 //
 //  Serialize algorithm info to buffer class.

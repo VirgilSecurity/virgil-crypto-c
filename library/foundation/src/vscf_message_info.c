@@ -116,15 +116,9 @@ vscf_message_info_cleanup(vscf_message_info_t *self) {
         return;
     }
 
-    if (self->refcnt == 0) {
-        return;
-    }
+    vscf_message_info_cleanup_ctx(self);
 
-    if (--self->refcnt == 0) {
-        vscf_message_info_cleanup_ctx(self);
-
-        vscf_zeroize(self, sizeof(vscf_message_info_t));
-    }
+    vscf_zeroize(self, sizeof(vscf_message_info_t));
 }
 
 //
@@ -145,7 +139,7 @@ vscf_message_info_new(void) {
 
 //
 //  Release all inner resources and deallocate context if needed.
-//  It is safe to call this method even if context was allocated by the caller.
+//  It is safe to call this method even if the context was statically allocated.
 //
 VSCF_PUBLIC void
 vscf_message_info_delete(vscf_message_info_t *self) {
@@ -154,11 +148,30 @@ vscf_message_info_delete(vscf_message_info_t *self) {
         return;
     }
 
+    size_t old_counter = self->refcnt;
+    VSCF_ASSERT(old_counter != 0);
+    size_t new_counter = old_counter - 1;
+
+    #if defined(VSCF_ATOMIC_COMPARE_EXCHANGE_WEAK)
+    //  CAS loop
+    while (!VSCF_ATOMIC_COMPARE_EXCHANGE_WEAK(&self->refcnt, &old_counter, new_counter)) {
+        old_counter = self->refcnt;
+        VSCF_ASSERT(old_counter != 0);
+        new_counter = old_counter - 1;
+    }
+    #else
+    self->refcnt = new_counter;
+    #endif
+
+    if (new_counter > 0) {
+        return;
+    }
+
     vscf_dealloc_fn self_dealloc_cb = self->self_dealloc_cb;
 
     vscf_message_info_cleanup(self);
 
-    if (self->refcnt == 0 && self_dealloc_cb != NULL) {
+    if (self_dealloc_cb != NULL) {
         self_dealloc_cb(self);
     }
 }
@@ -186,7 +199,17 @@ vscf_message_info_shallow_copy(vscf_message_info_t *self) {
 
     VSCF_ASSERT_PTR(self);
 
+    #if defined(VSCF_ATOMIC_COMPARE_EXCHANGE_WEAK)
+    //  CAS loop
+    size_t old_counter;
+    size_t new_counter;
+    do {
+        old_counter = self->refcnt;
+        new_counter = old_counter + 1;
+    } while (!VSCF_ATOMIC_COMPARE_EXCHANGE_WEAK(&self->refcnt, &old_counter, new_counter));
+    #else
     ++self->refcnt;
+    #endif
 
     return self;
 }
@@ -227,12 +250,14 @@ vscf_message_info_cleanup_ctx(vscf_message_info_t *self) {
     vscf_password_recipient_info_list_destroy(&self->password_recipients);
     vscf_message_info_custom_params_destroy(&self->custom_params);
     vscf_impl_destroy(&self->data_encryption_alg_info);
+    vscf_impl_destroy(&self->cipher_kdf_alg_info);
+    vscf_footer_info_destroy(&self->footer_info);
 }
 
 //
 //  Add recipient that is defined by Public Key.
 //
-VSCF_PUBLIC void
+VSCF_PRIVATE void
 vscf_message_info_add_key_recipient(vscf_message_info_t *self, vscf_key_recipient_info_t **key_recipient_ref) {
 
     VSCF_ASSERT_PTR(self);
@@ -246,7 +271,7 @@ vscf_message_info_add_key_recipient(vscf_message_info_t *self, vscf_key_recipien
 //
 //  Add recipient that is defined by password.
 //
-VSCF_PUBLIC void
+VSCF_PRIVATE void
 vscf_message_info_add_password_recipient(
         vscf_message_info_t *self, vscf_password_recipient_info_t **password_recipient_ref) {
 
@@ -262,7 +287,7 @@ vscf_message_info_add_password_recipient(
 //
 //  Set information about algorithm that was used for data encryption.
 //
-VSCF_PUBLIC void
+VSCF_PRIVATE void
 vscf_message_info_set_data_encryption_alg_info(vscf_message_info_t *self, vscf_impl_t **data_encryption_alg_info_ref) {
 
     VSCF_ASSERT_PTR(self);
@@ -304,6 +329,18 @@ vscf_message_info_key_recipient_info_list(const vscf_message_info_t *self) {
 }
 
 //
+//  Return list with a "key recipient info" elements.
+//
+VSCF_PRIVATE vscf_key_recipient_info_list_t *
+vscf_message_info_key_recipient_info_list_modifiable(vscf_message_info_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(self->key_recipients);
+
+    return self->key_recipients;
+}
+
+//
 //  Return list with a "password recipient info" elements.
 //
 VSCF_PUBLIC const vscf_password_recipient_info_list_t *
@@ -316,16 +353,44 @@ vscf_message_info_password_recipient_info_list(const vscf_message_info_t *self) 
 }
 
 //
-//  Setup custom params.
+//  Remove all recipients.
 //
-VSCF_PUBLIC void
-vscf_message_info_set_custom_params(vscf_message_info_t *self, vscf_message_info_custom_params_t *custom_params) {
+VSCF_PRIVATE void
+vscf_message_info_clear_recipients(vscf_message_info_t *self) {
 
     VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(custom_params);
+    VSCF_ASSERT_PTR(self->key_recipients);
+    VSCF_ASSERT_PTR(self->password_recipients);
+
+    vscf_key_recipient_info_list_clear(self->key_recipients);
+    vscf_password_recipient_info_list_clear(self->password_recipients);
+}
+
+//
+//  Setup custom params.
+//
+VSCF_PRIVATE void
+vscf_message_info_set_custom_params(vscf_message_info_t *self, vscf_message_info_custom_params_t **custom_params_ref) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(custom_params_ref);
+    VSCF_ASSERT_PTR(*custom_params_ref);
 
     vscf_message_info_custom_params_destroy(&self->custom_params);
-    self->custom_params = vscf_message_info_custom_params_shallow_copy(custom_params);
+    self->custom_params = *custom_params_ref;
+    *custom_params_ref = NULL;
+}
+
+//
+//  Return true if message info contains at least one custom param.
+//
+VSCF_PUBLIC bool
+vscf_message_info_has_custom_params(const vscf_message_info_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+
+    const vscf_message_info_custom_params_t *params = vscf_message_info_custom_params((vscf_message_info_t *)self);
+    return vscf_message_info_custom_params_has_params(params);
 }
 
 //
@@ -346,15 +411,128 @@ vscf_message_info_custom_params(vscf_message_info_t *self) {
 }
 
 //
-//  Remove all recipients.
+//  Return true if cipher kdf alg info exists.
 //
-VSCF_PUBLIC void
-vscf_message_info_clear_recipients(vscf_message_info_t *self) {
+VSCF_PUBLIC bool
+vscf_message_info_has_cipher_kdf_alg_info(const vscf_message_info_t *self) {
 
     VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(self->key_recipients);
-    VSCF_ASSERT_PTR(self->password_recipients);
 
-    vscf_key_recipient_info_list_clear(self->key_recipients);
-    vscf_password_recipient_info_list_clear(self->password_recipients);
+    return self->cipher_kdf_alg_info != NULL;
+}
+
+//
+//  Setup cipher kdf alg info.
+//
+VSCF_PRIVATE void
+vscf_message_info_set_cipher_kdf_alg_info(vscf_message_info_t *self, vscf_impl_t **cipher_kdf_alg_info_ref) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(cipher_kdf_alg_info_ref);
+    VSCF_ASSERT_PTR(*cipher_kdf_alg_info_ref);
+
+    vscf_impl_destroy(&self->cipher_kdf_alg_info);
+    self->cipher_kdf_alg_info = *cipher_kdf_alg_info_ref;
+    *cipher_kdf_alg_info_ref = NULL;
+}
+
+//
+//  Return cipher kdf alg info.
+//
+VSCF_PUBLIC const vscf_impl_t *
+vscf_message_info_cipher_kdf_alg_info(const vscf_message_info_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(self->cipher_kdf_alg_info);
+
+    return self->cipher_kdf_alg_info;
+}
+
+//
+//  Remove cipher kdf alg info.
+//
+VSCF_PRIVATE void
+vscf_message_info_remove_cipher_kdf_alg_info(vscf_message_info_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+
+    vscf_impl_destroy(&self->cipher_kdf_alg_info);
+}
+
+//
+//  Return true if footer info exists.
+//
+VSCF_PUBLIC bool
+vscf_message_info_has_footer_info(const vscf_message_info_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+
+    return self->footer_info != NULL;
+}
+
+//
+//  Setup footer info.
+//
+VSCF_PRIVATE void
+vscf_message_info_set_footer_info(vscf_message_info_t *self, vscf_footer_info_t **footer_info_ref) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(footer_info_ref);
+    VSCF_ASSERT_PTR(*footer_info_ref);
+
+    vscf_footer_info_destroy(&self->footer_info);
+    self->footer_info = *footer_info_ref;
+    *footer_info_ref = NULL;
+}
+
+//
+//  Return footer info.
+//
+VSCF_PUBLIC const vscf_footer_info_t *
+vscf_message_info_footer_info(const vscf_message_info_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(self->footer_info);
+
+    return self->footer_info;
+}
+
+//
+//  Return mutable footer info.
+//
+VSCF_PRIVATE vscf_footer_info_t *
+vscf_message_info_footer_info_m(vscf_message_info_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+
+    if (NULL == self->footer_info) {
+        self->footer_info = vscf_footer_info_new();
+    }
+
+    return self->footer_info;
+}
+
+//
+//  Remove footer info.
+//
+VSCF_PRIVATE void
+vscf_message_info_remove_footer_info(vscf_message_info_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+
+    vscf_footer_info_destroy(&self->footer_info);
+}
+
+//
+//  Remove all infos.
+//
+VSCF_PUBLIC void
+vscf_message_info_clear(vscf_message_info_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+
+    vscf_message_info_clear_recipients(self);
+    vscf_message_info_remove_cipher_kdf_alg_info(self);
+    vscf_message_info_remove_footer_info(self);
+    vscf_message_info_custom_params_clear(vscf_message_info_custom_params(self));
 }

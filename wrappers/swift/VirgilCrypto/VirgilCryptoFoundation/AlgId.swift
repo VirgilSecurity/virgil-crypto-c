@@ -55,6 +55,8 @@ import VSCFoundation
 
     case rsa
 
+    case ecc
+
     case ed25519
 
     case curve25519

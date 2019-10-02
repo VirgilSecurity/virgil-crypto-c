@@ -48,7 +48,7 @@
 //  @description
 // --------------------------------------------------------------------------
 //  Mix-in interface that provides specific functionality to authenticated
-//  encryption and decryption.
+//  encryption and decryption (AEAD ciphers).
 // --------------------------------------------------------------------------
 
 #ifndef VSCF_CIPHER_AUTH_H_INCLUDED
@@ -56,9 +56,21 @@
 
 #include "vscf_library.h"
 #include "vscf_impl.h"
+#include "vscf_cipher.h"
 #include "vscf_auth_encrypt.h"
 #include "vscf_auth_decrypt.h"
+#include "vscf_status.h"
 #include "vscf_api.h"
+
+#if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <virgil/crypto/common/vsc_data.h>
+#   include <virgil/crypto/common/vsc_buffer.h>
+#endif
+
+#if VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <VSCCommon/vsc_data.h>
+#   include <VSCCommon/vsc_buffer.h>
+#endif
 
 // clang-format on
 //  @end
@@ -81,10 +93,40 @@ extern "C" {
 typedef struct vscf_cipher_auth_api_t vscf_cipher_auth_api_t;
 
 //
+//  Set additional data for for AEAD ciphers.
+//
+VSCF_PUBLIC void
+vscf_cipher_auth_set_auth_data(vscf_impl_t *impl, vsc_data_t auth_data);
+
+//
+//  Accomplish an authenticated encryption and place tag separately.
+//
+//  Note, if authentication tag should be added to an encrypted data,
+//  method "finish" can be used.
+//
+VSCF_PUBLIC vscf_status_t
+vscf_cipher_auth_finish_auth_encryption(vscf_impl_t *impl, vsc_buffer_t *out, vsc_buffer_t *tag) VSCF_NODISCARD;
+
+//
+//  Accomplish an authenticated decryption with explicitly given tag.
+//
+//  Note, if authentication tag is a part of an encrypted data then,
+//  method "finish" can be used for simplicity.
+//
+VSCF_PUBLIC vscf_status_t
+vscf_cipher_auth_finish_auth_decryption(vscf_impl_t *impl, vsc_data_t tag, vsc_buffer_t *out) VSCF_NODISCARD;
+
+//
 //  Return cipher auth API, or NULL if it is not implemented.
 //
 VSCF_PUBLIC const vscf_cipher_auth_api_t *
 vscf_cipher_auth_api(const vscf_impl_t *impl);
+
+//
+//  Return cipher API.
+//
+VSCF_PUBLIC const vscf_cipher_api_t *
+vscf_cipher_auth_cipher_api(const vscf_cipher_auth_api_t *cipher_auth_api);
 
 //
 //  Return auth encrypt API.

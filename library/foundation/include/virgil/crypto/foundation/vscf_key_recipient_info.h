@@ -58,10 +58,12 @@
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_data.h>
+#   include <virgil/crypto/common/vsc_buffer.h>
 #endif
 
 #if VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <VSCCommon/vsc_data.h>
+#   include <VSCCommon/vsc_buffer.h>
 #endif
 
 // clang-format on
@@ -112,21 +114,37 @@ vscf_key_recipient_info_new(void);
 //  Perform initialization of pre-allocated context.
 //  Create object and define all properties.
 //
+VSCF_PRIVATE void
+vscf_key_recipient_info_init_with_buffer(vscf_key_recipient_info_t *self, vsc_data_t recipient_id,
+        const vscf_impl_t *key_encryption_algorithm, vsc_buffer_t **encrypted_key_ref);
+
+//
+//  Allocate class context and perform it's initialization.
+//  Create object and define all properties.
+//
+VSCF_PRIVATE vscf_key_recipient_info_t *
+vscf_key_recipient_info_new_with_buffer(vsc_data_t recipient_id, const vscf_impl_t *key_encryption_algorithm,
+        vsc_buffer_t **encrypted_key_ref);
+
+//
+//  Perform initialization of pre-allocated context.
+//  Create object and define all properties.
+//
 VSCF_PUBLIC void
-vscf_key_recipient_info_init_with_members(vscf_key_recipient_info_t *self, vsc_data_t recipient_id,
-        vscf_impl_t **key_encryption_algorithm_ref, vsc_data_t encrypted_key);
+vscf_key_recipient_info_init_with_data(vscf_key_recipient_info_t *self, vsc_data_t recipient_id,
+        const vscf_impl_t *key_encryption_algorithm, vsc_data_t encrypted_key);
 
 //
 //  Allocate class context and perform it's initialization.
 //  Create object and define all properties.
 //
 VSCF_PUBLIC vscf_key_recipient_info_t *
-vscf_key_recipient_info_new_with_members(vsc_data_t recipient_id, vscf_impl_t **key_encryption_algorithm_ref,
+vscf_key_recipient_info_new_with_data(vsc_data_t recipient_id, const vscf_impl_t *key_encryption_algorithm,
         vsc_data_t encrypted_key);
 
 //
 //  Release all inner resources and deallocate context if needed.
-//  It is safe to call this method even if context was allocated by the caller.
+//  It is safe to call this method even if the context was statically allocated.
 //
 VSCF_PUBLIC void
 vscf_key_recipient_info_delete(vscf_key_recipient_info_t *self);

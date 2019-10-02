@@ -51,13 +51,18 @@ public class RatchetKeyId implements AutoCloseable {
         this.cCtx = RatchetJNI.INSTANCE.ratchetKeyId_new();
     }
 
+    /* Wrap underlying C context. */
+    RatchetKeyId(RatchetContextHolder contextHolder) {
+        this.cCtx = contextHolder.cCtx;
+    }
+
     /*
     * Acquire C context.
     * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     */
-    public RatchetKeyId(long cCtx) {
-        super();
-        this.cCtx = cCtx;
+    public static RatchetKeyId getInstance(long cCtx) {
+        RatchetContextHolder ctxHolder = new RatchetContextHolder(cCtx);
+        return new RatchetKeyId(ctxHolder);
     }
 
     /* Close resource. */

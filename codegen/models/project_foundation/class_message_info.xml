@@ -6,23 +6,25 @@
     <property name="password recipients" class="password recipient info list"/>
     <property name="data encryption alg info" interface="alg info"/>
     <property name="custom params" class="message info custom params"/>
+    <property name="cipher kdf alg info" interface="alg info"/>
+    <property name="footer info" class="footer info"/>
 
 
-    <method name="add key recipient">
+    <method name="add key recipient" visibility="private">
         Add recipient that is defined by Public Key.
 
         <argument name="key recipient" class="key recipient info" access="disown"/>
     </method>
 
 
-    <method name="add password recipient">
+    <method name="add password recipient" visibility="private">
         Add recipient that is defined by password.
 
         <argument name="password recipient" class="password recipient info" access="disown"/>
     </method>
 
 
-    <method name="set data encryption alg info">
+    <method name="set data encryption alg info" visibility="private">
         Set information about algorithm that was used for data encryption.
 
         <argument name="data encryption alg info" interface="alg info" access="disown"/>
@@ -43,17 +45,38 @@
     </method>
 
 
+    <method name="key recipient info list modifiable" visibility="private">
+        Return list with a "key recipient info" elements.
+
+        <return class="key recipient info list" access="readwrite"/>
+    </method>
+
+
     <method name="password recipient info list" is_const="1">
         Return list with a "password recipient info" elements.
 
         <return class="password recipient info list"/>
     </method>
 
-    <method name="set custom params">
+
+    <method name="clear recipients" visibility="private">
+        Remove all recipients.
+    </method>
+
+
+    <method name="set custom params" visibility="private">
         Setup custom params.
 
-        <argument name="custom params" class="message info custom params" access="retain"/>
+        <argument name="custom params" class="message info custom params" access="disown"/>
     </method>
+
+
+    <method name="has custom params" is_const="1">
+        Return true if message info contains at least one custom param.
+
+        <return type="boolean"/>
+    </method>
+
 
     <method name="custom params">
         Provide access to the custom params object.
@@ -63,7 +86,67 @@
         <return class="message info custom params" access="readwrite"/>
     </method>
 
-    <method name="clear recipients">
-        Remove all recipients.
+
+    <method name="has cipher kdf alg info" is_const="1">
+        Return true if cipher kdf alg info exists.
+
+        <return type="boolean"/>
+    </method>
+
+
+    <method name="set cipher kdf alg info" visibility="private">
+        Setup cipher kdf alg info.
+
+        <argument name="cipher kdf alg info" interface="alg info" access="disown"/>
+    </method>
+
+
+    <method name="cipher kdf alg info" is_const="1">
+        Return cipher kdf alg info.
+
+        <return interface="alg info"/>
+    </method>
+
+
+    <method name="remove cipher kdf alg info" visibility="private">
+        Remove cipher kdf alg info.
+    </method>
+
+
+    <method name="has footer info" is_const="1">
+        Return true if footer info exists.
+
+        <return type="boolean"/>
+    </method>
+
+
+    <method name="set footer info" visibility="private">
+        Setup footer info.
+
+        <argument name="footer info" class="footer info" access="disown"/>
+    </method>
+
+
+    <method name="footer info" is_const="1">
+        Return footer info.
+
+        <return class="footer info"/>
+    </method>
+
+
+    <method name="footer info m" visibility="private">
+        Return mutable footer info.
+
+        <return class="footer info" access="readwrite"/>
+    </method>
+
+
+    <method name="remove footer info" visibility="private">
+        Remove footer info.
+    </method>
+
+
+    <method name="clear">
+        Remove all infos.
     </method>
 </class>

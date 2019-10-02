@@ -98,6 +98,12 @@ VSCF_PUBLIC vscf_impl_t *
 vscf_asn1wr_impl(vscf_asn1wr_t *self);
 
 //
+//  Cast to the const 'vscf_impl_t' type.
+//
+VSCF_PUBLIC const vscf_impl_t *
+vscf_asn1wr_impl_const(const vscf_asn1wr_t *self);
+
+//
 //  Perform initialization of preallocated implementation context.
 //
 VSCF_PUBLIC void
@@ -134,7 +140,6 @@ vscf_asn1wr_destroy(vscf_asn1wr_t **self_ref);
 
 //
 //  Copy given implementation context by increasing reference counter.
-//  If deep copy is required interface 'clonable' can be used.
 //
 VSCF_PUBLIC vscf_asn1wr_t *
 vscf_asn1wr_shallow_copy(vscf_asn1wr_t *self);
@@ -342,7 +347,7 @@ VSCF_PUBLIC size_t
 vscf_asn1wr_write_oid(vscf_asn1wr_t *self, vsc_data_t value);
 
 //
-//  Mark previously written data of given length as ASN.1 type: SQUENCE.
+//  Mark previously written data of given length as ASN.1 type: SEQUENCE.
 //  Return count of written bytes.
 //
 VSCF_PUBLIC size_t

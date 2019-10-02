@@ -54,6 +54,7 @@
 #define VSCR_RATCHET_KEYS_DEFS_H_INCLUDED
 
 #include "vscr_library.h"
+#include "vscr_atomic.h"
 #include "vscr_ratchet_typedefs.h"
 #include "vscr_ratchet_common_hidden.h"
 
@@ -83,7 +84,7 @@ struct vscr_ratchet_keys_t {
     //
     //  Reference counter.
     //
-    size_t refcnt;
+    VSCR_ATOMIC size_t refcnt;
 };
 
 

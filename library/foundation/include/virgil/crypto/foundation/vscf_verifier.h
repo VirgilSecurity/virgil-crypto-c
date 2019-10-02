@@ -112,7 +112,7 @@ vscf_verifier_new(void);
 
 //
 //  Release all inner resources and deallocate context if needed.
-//  It is safe to call this method even if context was allocated by the caller.
+//  It is safe to call this method even if the context was statically allocated.
 //
 VSCF_PUBLIC void
 vscf_verifier_delete(vscf_verifier_t *self);
@@ -140,7 +140,7 @@ vscf_verifier_reset(vscf_verifier_t *self, vsc_data_t signature) VSCF_NODISCARD;
 //  Add given data to the signed data.
 //
 VSCF_PUBLIC void
-vscf_verifier_update(vscf_verifier_t *self, vsc_data_t data);
+vscf_verifier_append_data(vscf_verifier_t *self, vsc_data_t data);
 
 //
 //  Verify accumulated data.

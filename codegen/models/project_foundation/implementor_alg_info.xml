@@ -135,7 +135,7 @@
     </implementation>
 
 
-    <implementation name="ec alg info">
+    <implementation name="ecc alg info">
         Handle algorithm information about ECP.
 
         <interface name="alg info"/>

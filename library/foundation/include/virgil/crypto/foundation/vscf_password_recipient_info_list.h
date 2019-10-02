@@ -103,7 +103,7 @@ vscf_password_recipient_info_list_new(void);
 
 //
 //  Release all inner resources and deallocate context if needed.
-//  It is safe to call this method even if context was allocated by the caller.
+//  It is safe to call this method even if the context was statically allocated.
 //
 VSCF_PUBLIC void
 vscf_password_recipient_info_list_delete(vscf_password_recipient_info_list_t *self);
@@ -125,7 +125,7 @@ vscf_password_recipient_info_list_shallow_copy(vscf_password_recipient_info_list
 //  Add new item to the list.
 //  Note, ownership is transfered.
 //
-VSCF_PUBLIC void
+VSCF_PRIVATE void
 vscf_password_recipient_info_list_add(vscf_password_recipient_info_list_t *self,
         vscf_password_recipient_info_t **password_recipient_info_ref);
 

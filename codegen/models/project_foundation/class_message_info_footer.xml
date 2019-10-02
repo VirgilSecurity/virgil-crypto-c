@@ -1,0 +1,57 @@
+<class name="message info footer">
+    Handle message signatures and related information.
+
+    <property name="signer infos" class="signer info list"/>
+    <property name="signer hash alg info" interface="alg info"/>
+    <property name="signer digest" class="buffer"/>
+
+
+    <method name="has signer infos" is_const="1">
+        Return true if at least one signer info presents.
+
+        <return type="boolean"/>
+    </method>
+
+
+    <method name="add signer info" visibility="private">
+        Add signer that is defined by Private Key.
+
+        <argument name="signer info" class="signer info" access="disown"/>
+    </method>
+
+
+    <method name="clear signer infos" visibility="private">
+        Remove all "signer info" elements.
+    </method>
+
+
+    <method name="signer infos" is_const="1">
+        Return list with a "signer info" elements.
+
+        <return class="signer info list"/>
+    </method>
+
+    <method name="set signer hash alg info" visibility="private">
+        Set information about algorithm that was used for data hashing.
+
+        <argument name="signer hash alg info" interface="alg info" access="disown"/>
+    </method>
+
+    <method name="signer hash alg info" is_const="1">
+        Return information about algorithm that was used for data hashing.
+
+        <return interface="alg info"/>
+    </method>
+
+    <method name="set signer digest" visibility="private">
+        Set plain text digest that was used to produce signature.
+
+        <argument name="digest" class="buffer" access="disown"/>
+    </method>
+
+    <method name="signer digest" is_const="1">
+        Return plain text digest that was used to produce signature.
+
+        <return class="data"/>
+    </method>
+</class>

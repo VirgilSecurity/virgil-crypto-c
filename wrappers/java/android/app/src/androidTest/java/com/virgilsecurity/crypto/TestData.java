@@ -25,13 +25,18 @@ public class TestData {
                     "bmHGGA6UnFT0sxGmUAUU+uE7loa2sYQo+4Q==",
             Base64.NO_WRAP);
 
-    public static final byte[] ed25519_private_key = Base64.decode("BCC7jU3FE57s4k+DVN3G/QphrGMQ4WrHIogTBcBHQuPIRg==",
+    public static final byte[] short_data = Base64.decode("NjhmODgyYWItN2U2NS00NTk4LThkZWYtYTljNDYwMzVlZWFh",
             Base64.NO_WRAP);
-    public static final byte[] ed25519_public_key = Base64.decode("4eO0V6xoGEyBlqEVX4YckF+YmDDH99Zjm2cY1y3+A4E=",
+
+    public static final byte[] ed25519_private_key = Base64.decode("MC4CAQAwBQYDK2VwBCIEIH6c1lnY9jjHQK+C5v3EPYhZ5eh45oMDAaNZYlktuU3+",
             Base64.NO_WRAP);
-    public static final byte[] ed25519_signature = Base64.decode("CauBQA1rLw55f5Fo6VvkoglA8/EhQDtWc6nNxCxXtdoIs5M5cJVfuM30JWAIDzUj735uo98ovg/mizXFNt0fCQ==",
+    public static final byte[] ed25519_public_key = Base64.decode("MCowBQYDK2VwAyEAKl3xa1+EKi6Va3cNLXxmq4xO01PviLUx5mamNwXFgMQ=",
+            Base64.NO_WRAP);
+    public static final byte[] ed25519_signature = Base64.decode("xVuPkRQL0jTT9XaZdPMw65dXE5MZ4XokhJ3wDNlNci6kr5Wktoh0cMwPedzlA6/ECMwNzt7WwQScyq9zt1yBBg==",
             Base64.NO_WRAP);
     public static final byte[] ed25519_wrong_signature = Base64.decode("ziuGneVnQ9isQQIl6nSkOlrqNH0QUaeAWISeXAuepMCpBsY4ORYwR6ZtVGaIs8U63n4FLuiz3Q31Uzfdv15gAg==",
+            Base64.NO_WRAP);
+    public static final byte[] ed25519_encrypted_data = Base64.decode("MIHfAgEAMCowBQYDK2VwAyEAYi11g/Jg5Or+CCcdiLHzYEbR6EREgqYeyaT5sDN6fs4wGAYHKIGMcQIFAjANBglghkgBZQMEAgIFADBBMA0GCWCGSAFlAwQCAgUABDD51HF4hJVBaSVcxeFc36508R3WcF6lX+HemJFkR9TodnZleEMVzEm5G6NFL7eZrtYwUTAdBglghkgBZQMEASoEEI0T7pQDmzUiQI1H6bKXvO0EMMXE0/cWzoUqVUZ6+qbT9brt57Zr90+L3n5HV0qEMSnqkhEGwtjQnBw92xkEtJVOtA==",
             Base64.NO_WRAP);
 
     public static final byte[] aes256_cbc_key = Base64.decode("YD3rEBXKcb4rc67whX13gR81LAc7YQjXLZgQowkU3/Q=",

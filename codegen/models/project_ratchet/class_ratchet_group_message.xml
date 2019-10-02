@@ -4,13 +4,13 @@
     <require class="ratchet common hidden" scope="private"/>
     <require class="ratchet common" scope="private"/>
 
-    <require header="RatchetGroupMessage.pb.h" scope="context"/>
+    <require header="vscr_RatchetGroupMessage.pb.h" scope="context"/>
     <require header="pb_decode.h" scope="private"/>
     <require header="pb_encode.h" scope="private"/>
 
     <property name="key id" impl="ratchet key id"/>
-    <property name="message pb" class="GroupMessage" library="nanopb" access="readwrite" is_reference="0"/>
-    <property name="header pb" class="RegularGroupMessageHeader" library="nanopb" access="readwrite"/>
+    <property name="message pb" class="vscr_GroupMessage" library="nanopb" access="readwrite" is_reference="0"/>
+    <property name="header pb" class="vscr_RegularGroupMessageHeader" library="nanopb" access="readwrite"/>
 
     <method name="get type" is_const="1">
         Returns message type.
@@ -27,11 +27,12 @@
         <return class="data" access="readwrite"/>
     </method>
 
-    <method name="get sender id" is_const="1">
-        Returns message sender id.
-        This method should be called only for regular message type.
+    <method name="get counter" is_const="1">
+        Returns message counter in current epoch.
 
-        <return class="data" access="readwrite"/>
+        <return type="unsigned" size="4">
+            Message counter.
+        </return>
     </method>
 
     <method name="get epoch" is_const="1">
@@ -78,16 +79,5 @@
             Deserialized instance
         </return>
     </method>
-
-    <method name="buffer decode callback" declaration="private" is_static="1">
-        <argument name="stream" class="pb_istream_t" library="nanopb" access="readwrite"/>
-        <argument name="field" class="pb_field_t" library="nanopb"/>
-        <argument name="arg" class="void*" library="nanopb" access="readwrite"/>
-
-        <return type="boolean"/>
-    </method>
-
-    <method name="set pb encode callback" declaration="private"/>
-    <method name="set pb decode callback" declaration="private"/>
 
 </class>

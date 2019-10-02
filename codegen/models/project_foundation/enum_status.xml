@@ -123,13 +123,21 @@
         ASN.1 representation of a private key is corrupted.
     </constant>
 
+    <constant name="error mismatch public key and algorithm" value="-225">
+        Key algorithm does not accept given type of public key.
+    </constant>
+
+    <constant name="error mismatch private key and algorithm" value="-226">
+        Key algorithm does not accept given type of private key.
+    </constant>
+
     <constant name="error no message info" value="-301">
         Decryption failed, because message info was not given explicitly,
         and was not part of an encrypted message.
     </constant>
 
     <constant name="error bad message info" value="-302">
-        Message info is corrupted.
+        Message Info is corrupted.
     </constant>
 
     <constant name="error key recipient is not found" value="-303">
@@ -156,6 +164,10 @@
 
     <constant name="error bad signature" value="-308">
         Signature format is corrupted.
+    </constant>
+
+    <constant name="error bad message info footer" value="-309">
+        Message Info footer is corrupted.
     </constant>
 
     <constant name="error invalid brainkey password len" value="-401">
@@ -197,4 +209,41 @@
     <constant name="error invalid identity secret" value="-410">
         Brainkey identity secret is invalid.
     </constant>
+
+    <constant name="error invalid padding" value="-501">
+        Invalid padding.
+    </constant>
+
+    <constant name="error protobuf" value="-601">
+        Protobuf error.
+    </constant>
+
+    <constant name="error session id doesnt match" value="-701">
+        Session id doesnt match.
+    </constant>
+
+    <constant name="error epoch not found" value="-702">
+        Epoch not found.
+    </constant>
+
+    <constant name="error wrong key type" value="-703">
+        Wrong key type.
+    </constant>
+
+    <constant name="error invalid signature" value="-704">
+        Invalid signature.
+    </constant>
+
+    <constant name="error ed25519" value="-705">
+        Ed25519 error.
+    </constant>
+
+    <constant name="error duplicate epoch" value="-706">
+        Duplicate epoch.
+    </constant>
+
+    <constant name="error plain text too long" value="-707">
+        Plain text too long.
+    </constant>
+
 </enum>

@@ -115,6 +115,12 @@ VSCF_PUBLIC vscf_impl_t *
 vscf_sha512_impl(vscf_sha512_t *self);
 
 //
+//  Cast to the const 'vscf_impl_t' type.
+//
+VSCF_PUBLIC const vscf_impl_t *
+vscf_sha512_impl_const(const vscf_sha512_t *self);
+
+//
 //  Perform initialization of preallocated implementation context.
 //
 VSCF_PUBLIC void
@@ -151,7 +157,6 @@ vscf_sha512_destroy(vscf_sha512_t **self_ref);
 
 //
 //  Copy given implementation context by increasing reference counter.
-//  If deep copy is required interface 'clonable' can be used.
 //
 VSCF_PUBLIC vscf_sha512_t *
 vscf_sha512_shallow_copy(vscf_sha512_t *self);

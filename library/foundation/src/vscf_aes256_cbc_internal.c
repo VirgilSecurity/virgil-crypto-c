@@ -128,7 +128,11 @@ static const vscf_encrypt_api_t encrypt_api = {
     //
     //  Calculate required buffer length to hold the encrypted data.
     //
-    (vscf_encrypt_api_encrypted_len_fn)vscf_aes256_cbc_encrypted_len
+    (vscf_encrypt_api_encrypted_len_fn)vscf_aes256_cbc_encrypted_len,
+    //
+    //  Precise length calculation of encrypted data.
+    //
+    (vscf_encrypt_api_precise_encrypted_len_fn)vscf_aes256_cbc_precise_encrypted_len
 };
 
 //
@@ -300,15 +304,7 @@ vscf_aes256_cbc_init(vscf_aes256_cbc_t *self) {
 VSCF_PUBLIC void
 vscf_aes256_cbc_cleanup(vscf_aes256_cbc_t *self) {
 
-    if (self == NULL || self->info == NULL) {
-        return;
-    }
-
-    if (self->refcnt == 0) {
-        return;
-    }
-
-    if (--self->refcnt > 0) {
+    if (self == NULL) {
         return;
     }
 
@@ -339,11 +335,32 @@ vscf_aes256_cbc_new(void) {
 VSCF_PUBLIC void
 vscf_aes256_cbc_delete(vscf_aes256_cbc_t *self) {
 
+    if (self == NULL) {
+        return;
+    }
+
+    size_t old_counter = self->refcnt;
+    VSCF_ASSERT(old_counter != 0);
+    size_t new_counter = old_counter - 1;
+
+    #if defined(VSCF_ATOMIC_COMPARE_EXCHANGE_WEAK)
+    //  CAS loop
+    while (!VSCF_ATOMIC_COMPARE_EXCHANGE_WEAK(&self->refcnt, &old_counter, new_counter)) {
+        old_counter = self->refcnt;
+        VSCF_ASSERT(old_counter != 0);
+        new_counter = old_counter - 1;
+    }
+    #else
+    self->refcnt = new_counter;
+    #endif
+
+    if (new_counter > 0) {
+        return;
+    }
+
     vscf_aes256_cbc_cleanup(self);
 
-    if (self && (self->refcnt == 0)) {
-        vscf_dealloc(self);
-    }
+    vscf_dealloc(self);
 }
 
 //
@@ -364,7 +381,6 @@ vscf_aes256_cbc_destroy(vscf_aes256_cbc_t **self_ref) {
 
 //
 //  Copy given implementation context by increasing reference counter.
-//  If deep copy is required interface 'clonable' can be used.
 //
 VSCF_PUBLIC vscf_aes256_cbc_t *
 vscf_aes256_cbc_shallow_copy(vscf_aes256_cbc_t *self) {
@@ -399,6 +415,16 @@ vscf_aes256_cbc_impl(vscf_aes256_cbc_t *self) {
 
     VSCF_ASSERT_PTR(self);
     return (vscf_impl_t *)(self);
+}
+
+//
+//  Cast to the const 'vscf_impl_t' type.
+//
+VSCF_PUBLIC const vscf_impl_t *
+vscf_aes256_cbc_impl_const(const vscf_aes256_cbc_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+    return (const vscf_impl_t *)(self);
 }
 
 static const vscf_api_t *

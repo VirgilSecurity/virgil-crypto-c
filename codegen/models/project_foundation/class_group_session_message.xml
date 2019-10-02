@@ -1,0 +1,79 @@
+<class name="group session message" context="private">
+    Class represents group session message
+
+    <constant name="max message len" value="30188">
+        Max message len
+    </constant>
+
+    <constant name="message version" value="1">
+        Message version
+    </constant>
+
+    <require header="vscf_GroupMessage.pb.h" scope="context"/>
+    <require header="pb_decode.h" scope="private"/>
+    <require header="pb_encode.h" scope="private"/>
+
+    <property name="message pb" class="vscf_GroupMessage" library="nanopb" access="readwrite" is_reference="0"/>
+    <property name="header pb" class="vscf_RegularGroupMessageHeader" library="nanopb" access="readwrite"/>
+
+    <method name="get type" is_const="1">
+        Returns message type.
+
+        <return enum="group msg type">
+            Message type.
+        </return>
+    </method>
+
+    <method name="get session id" is_const="1">
+        Returns session id.
+        This method should be called only for group info type.
+
+        <return class="data" access="readwrite"/>
+    </method>
+
+    <method name="get epoch" is_const="1">
+        Returns message epoch.
+
+        <return type="unsigned" size="4">
+            Message epoch.
+        </return>
+    </method>
+
+    <method name="set type" scope="internal">
+        <argument name="type" enum="group msg type"/>
+    </method>
+
+    <method name="serialize len" is_const="1">
+        Buffer len to serialize this class.
+
+        <return type="size">
+            Buffer len to serialize this class.
+        </return>
+    </method>
+
+    <method name="serialize" is_const="1">
+        Serializes instance.
+
+        <argument name="output" class="buffer">
+            Buffer for result. Capacity should be >= serialize len.
+
+            <length method="serialize len"/>
+        </argument>
+    </method>
+
+    <method name="deserialize" is_static="1">
+        Deserializes instance.
+
+        <argument name="input" class="data">
+            Data with serialized instance.
+        </argument>
+        <argument name="error" class="error" access="readwrite">
+            Error context.
+        </argument>
+
+        <return class="self" access="disown">
+            Deserialized instance
+        </return>
+    </method>
+
+</class>

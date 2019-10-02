@@ -67,14 +67,6 @@ import VSCFoundation
         vscf_key_recipient_info_list_delete(self.c_ctx)
     }
 
-    /// Add new item to the list.
-    /// Note, ownership is transfered.
-    @objc public func add(keyRecipientInfo: KeyRecipientInfo) {
-        var keyRecipientInfoCopy = vscf_key_recipient_info_shallow_copy(keyRecipientInfo.c_ctx)
-
-        vscf_key_recipient_info_list_add(self.c_ctx, &keyRecipientInfoCopy)
-    }
-
     /// Return true if given list has item.
     @objc public func hasItem() -> Bool {
         let proxyResult = vscf_key_recipient_info_list_has_item(self.c_ctx)

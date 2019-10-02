@@ -98,6 +98,12 @@ VSCF_PUBLIC vscf_impl_t *
 vscf_asn1rd_impl(vscf_asn1rd_t *self);
 
 //
+//  Cast to the const 'vscf_impl_t' type.
+//
+VSCF_PUBLIC const vscf_impl_t *
+vscf_asn1rd_impl_const(const vscf_asn1rd_t *self);
+
+//
 //  Perform initialization of preallocated implementation context.
 //
 VSCF_PUBLIC void
@@ -134,7 +140,6 @@ vscf_asn1rd_destroy(vscf_asn1rd_t **self_ref);
 
 //
 //  Copy given implementation context by increasing reference counter.
-//  If deep copy is required interface 'clonable' can be used.
 //
 VSCF_PUBLIC vscf_asn1rd_t *
 vscf_asn1rd_shallow_copy(vscf_asn1rd_t *self);
@@ -306,14 +311,14 @@ VSCF_PUBLIC vsc_data_t
 vscf_asn1rd_read_data(vscf_asn1rd_t *self, size_t len);
 
 //
-//  Read ASN.1 type: CONSTRUCTED | SEQUENCE.
+//  Read ASN.1 type: SEQUENCE.
 //  Return element length.
 //
 VSCF_PUBLIC size_t
 vscf_asn1rd_read_sequence(vscf_asn1rd_t *self);
 
 //
-//  Read ASN.1 type: CONSTRUCTED | SET.
+//  Read ASN.1 type: SET.
 //  Return element length.
 //
 VSCF_PUBLIC size_t

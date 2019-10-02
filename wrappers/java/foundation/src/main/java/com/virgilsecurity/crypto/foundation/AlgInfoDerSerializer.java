@@ -49,13 +49,9 @@ public class AlgInfoDerSerializer implements AutoCloseable, AlgInfoSerializer {
         this.cCtx = FoundationJNI.INSTANCE.algInfoDerSerializer_new();
     }
 
-    /*
-    * Acquire C context.
-    * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-    */
-    public AlgInfoDerSerializer(long cCtx) {
-        super();
-        this.cCtx = cCtx;
+    /* Wrap underlying C context. */
+    AlgInfoDerSerializer(FoundationContextHolder contextHolder) {
+        this.cCtx = contextHolder.cCtx;
     }
 
     public void setAsn1Writer(Asn1Writer asn1Writer) {
@@ -76,6 +72,15 @@ public class AlgInfoDerSerializer implements AutoCloseable, AlgInfoSerializer {
     */
     public int serializeInplace(AlgInfo algInfo) {
         return FoundationJNI.INSTANCE.algInfoDerSerializer_serializeInplace(this.cCtx, algInfo);
+    }
+
+    /*
+    * Acquire C context.
+    * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
+    */
+    public static AlgInfoDerSerializer getInstance(long cCtx) {
+        FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
+        return new AlgInfoDerSerializer(ctxHolder);
     }
 
     /* Close resource. */

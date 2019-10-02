@@ -82,6 +82,7 @@ import VSCFoundation
     }
 
     /// Generate random bytes.
+    /// All RNG implementations must be thread-safe.
     @objc public func random(dataLen: Int) throws -> Data {
         let dataCount = dataLen
         var data = Data(count: dataCount)
@@ -91,7 +92,6 @@ import VSCFoundation
         }
 
         let proxyResult = data.withUnsafeMutableBytes({ (dataPointer: UnsafeMutableRawBufferPointer) -> vscf_status_t in
-            vsc_buffer_init(dataBuf)
             vsc_buffer_use(dataBuf, dataPointer.bindMemory(to: byte.self).baseAddress, dataCount)
 
             return vscf_fake_random_random(self.c_ctx, dataLen, dataBuf)
@@ -103,7 +103,7 @@ import VSCFoundation
         return data
     }
 
-    /// Retreive new seed data from the entropy sources.
+    /// Retrieve new seed data from the entropy sources.
     @objc public func reseed() throws {
         let proxyResult = vscf_fake_random_reseed(self.c_ctx)
 
@@ -127,7 +127,6 @@ import VSCFoundation
         }
 
         let proxyResult = out.withUnsafeMutableBytes({ (outPointer: UnsafeMutableRawBufferPointer) -> vscf_status_t in
-            vsc_buffer_init(outBuf)
             vsc_buffer_use(outBuf, outPointer.bindMemory(to: byte.self).baseAddress, outCount)
 
             return vscf_fake_random_gather(self.c_ctx, len, outBuf)

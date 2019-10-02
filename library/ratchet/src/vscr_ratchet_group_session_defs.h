@@ -54,13 +54,15 @@
 #define VSCR_RATCHET_GROUP_SESSION_DEFS_H_INCLUDED
 
 #include "vscr_library.h"
+#include "vscr_atomic.h"
 #include "vscr_ratchet_common_hidden.h"
 #include "vscr_ratchet_typedefs.h"
 #include "vscr_ratchet_key_utils.h"
 #include "vscr_ratchet_cipher.h"
-#include "vscr_ratchet_padding.h"
 #include "vscr_ratchet_chain_key.h"
 #include "vscr_ratchet_group_participant.h"
+
+#include <virgil/crypto/foundation/private/vscf_message_padding.h>
 
 #if !VSCR_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
 #   include <virgil/crypto/foundation/vscf_impl.h>
@@ -96,7 +98,7 @@ struct vscr_ratchet_group_session_t {
     //
     //  Reference counter.
     //
-    size_t refcnt;
+    VSCR_ATOMIC size_t refcnt;
     //
     //  Dependency to the interface 'random'.
     //
@@ -106,7 +108,7 @@ struct vscr_ratchet_group_session_t {
 
     vscr_ratchet_cipher_t *cipher;
 
-    vscr_ratchet_padding_t *padding;
+    vscf_message_padding_t *padding;
 
     bool is_initialized;
 

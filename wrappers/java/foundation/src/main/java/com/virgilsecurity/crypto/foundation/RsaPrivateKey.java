@@ -36,7 +36,10 @@
 
 package com.virgilsecurity.crypto.foundation;
 
-public class RsaPrivateKey implements AutoCloseable, Alg, Key, GenerateKey, Decrypt, SignHash, PrivateKey {
+/*
+* Handles RSA private key.
+*/
+public class RsaPrivateKey implements AutoCloseable, Key, PrivateKey {
 
     public long cCtx;
 
@@ -46,39 +49,18 @@ public class RsaPrivateKey implements AutoCloseable, Alg, Key, GenerateKey, Decr
         this.cCtx = FoundationJNI.INSTANCE.rsaPrivateKey_new();
     }
 
+    /* Wrap underlying C context. */
+    RsaPrivateKey(FoundationContextHolder contextHolder) {
+        this.cCtx = contextHolder.cCtx;
+    }
+
     /*
     * Acquire C context.
     * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     */
-    public RsaPrivateKey(long cCtx) {
-        super();
-        this.cCtx = cCtx;
-    }
-
-    public void setRandom(Random random) {
-        FoundationJNI.INSTANCE.rsaPrivateKey_setRandom(this.cCtx, random);
-    }
-
-    public void setAsn1rd(Asn1Reader asn1rd) {
-        FoundationJNI.INSTANCE.rsaPrivateKey_setAsn1rd(this.cCtx, asn1rd);
-    }
-
-    public void setAsn1wr(Asn1Writer asn1wr) {
-        FoundationJNI.INSTANCE.rsaPrivateKey_setAsn1wr(this.cCtx, asn1wr);
-    }
-
-    /*
-    * Setup predefined values to the uninitialized class dependencies.
-    */
-    public void setupDefaults() throws FoundationException {
-        FoundationJNI.INSTANCE.rsaPrivateKey_setupDefaults(this.cCtx);
-    }
-
-    /*
-    * Setup key length in bits that is used for key generation.
-    */
-    public void setKeygenParams(int bitlen) {
-        FoundationJNI.INSTANCE.rsaPrivateKey_setKeygenParams(this.cCtx, bitlen);
+    public static RsaPrivateKey getInstance(long cCtx) {
+        FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
+        return new RsaPrivateKey(ctxHolder);
     }
 
     /* Close resource. */
@@ -87,124 +69,46 @@ public class RsaPrivateKey implements AutoCloseable, Alg, Key, GenerateKey, Decr
     }
 
     /*
-    * Provide algorithm identificator.
+    * Algorithm identifier the key belongs to.
     */
     public AlgId algId() {
         return FoundationJNI.INSTANCE.rsaPrivateKey_algId(this.cCtx);
     }
 
     /*
-    * Produce object with algorithm information and configuration parameters.
+    * Return algorithm information that can be used for serialization.
     */
-    public AlgInfo produceAlgInfo() {
-        return FoundationJNI.INSTANCE.rsaPrivateKey_produceAlgInfo(this.cCtx);
-    }
-
-    /*
-    * Restore algorithm configuration from the given object.
-    */
-    public void restoreAlgInfo(AlgInfo algInfo) throws FoundationException {
-        FoundationJNI.INSTANCE.rsaPrivateKey_restoreAlgInfo(this.cCtx, algInfo);
+    public AlgInfo algInfo() {
+        return FoundationJNI.INSTANCE.rsaPrivateKey_algInfo(this.cCtx);
     }
 
     /*
     * Length of the key in bytes.
     */
-    public int keyLen() {
-        return FoundationJNI.INSTANCE.rsaPrivateKey_keyLen(this.cCtx);
+    public int len() {
+        return FoundationJNI.INSTANCE.rsaPrivateKey_len(this.cCtx);
     }
 
     /*
     * Length of the key in bits.
     */
-    public int keyBitlen() {
-        return FoundationJNI.INSTANCE.rsaPrivateKey_keyBitlen(this.cCtx);
+    public int bitlen() {
+        return FoundationJNI.INSTANCE.rsaPrivateKey_bitlen(this.cCtx);
     }
 
     /*
-    * Generate new private or secret key.
+    * Check that key is valid.
     * Note, this operation can be slow.
     */
-    public void generateKey() throws FoundationException {
-        FoundationJNI.INSTANCE.rsaPrivateKey_generateKey(this.cCtx);
+    public boolean isValid() {
+        return FoundationJNI.INSTANCE.rsaPrivateKey_isValid(this.cCtx);
     }
 
     /*
-    * Decrypt given data.
-    */
-    public byte[] decrypt(byte[] data) throws FoundationException {
-        return FoundationJNI.INSTANCE.rsaPrivateKey_decrypt(this.cCtx, data);
-    }
-
-    /*
-    * Calculate required buffer length to hold the decrypted data.
-    */
-    public int decryptedLen(int dataLen) {
-        return FoundationJNI.INSTANCE.rsaPrivateKey_decryptedLen(this.cCtx, dataLen);
-    }
-
-    /*
-    * Return length in bytes required to hold signature.
-    */
-    public int signatureLen() {
-        return FoundationJNI.INSTANCE.rsaPrivateKey_signatureLen(this.cCtx);
-    }
-
-    /*
-    * Sign data given private key.
-    */
-    public byte[] signHash(byte[] hashDigest, AlgId hashId) throws FoundationException {
-        return FoundationJNI.INSTANCE.rsaPrivateKey_signHash(this.cCtx, hashDigest, hashId);
-    }
-
-    /*
-    * Define whether a private key can be imported or not.
-    */
-    public boolean getCanImportPrivateKey() {
-        return true;
-    }
-
-    /*
-    * Define whether a private key can be exported or not.
-    */
-    public boolean getCanExportPrivateKey() {
-        return true;
-    }
-
-    /*
-    * Extract public part of the key.
+    * Extract public key from the private key.
     */
     public PublicKey extractPublicKey() {
         return FoundationJNI.INSTANCE.rsaPrivateKey_extractPublicKey(this.cCtx);
-    }
-
-    /*
-    * Export private key in the binary format.
-    *
-    * Binary format must be defined in the key specification.
-    * For instance, RSA private key must be exported in format defined in
-    * RFC 3447 Appendix A.1.2.
-    */
-    public byte[] exportPrivateKey() throws FoundationException {
-        return FoundationJNI.INSTANCE.rsaPrivateKey_exportPrivateKey(this.cCtx);
-    }
-
-    /*
-    * Return length in bytes required to hold exported private key.
-    */
-    public int exportedPrivateKeyLen() {
-        return FoundationJNI.INSTANCE.rsaPrivateKey_exportedPrivateKeyLen(this.cCtx);
-    }
-
-    /*
-    * Import private key from the binary format.
-    *
-    * Binary format must be defined in the key specification.
-    * For instance, RSA private key must be imported from the format defined in
-    * RFC 3447 Appendix A.1.2.
-    */
-    public void importPrivateKey(byte[] data) throws FoundationException {
-        FoundationJNI.INSTANCE.rsaPrivateKey_importPrivateKey(this.cCtx, data);
     }
 }
 

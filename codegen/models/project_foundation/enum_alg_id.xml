@@ -8,6 +8,7 @@
     <constant name="kdf1"/>
     <constant name="kdf2"/>
     <constant name="rsa"/>
+    <constant name="ecc"/>
     <constant name="ed25519"/>
     <constant name="curve25519"/>
     <constant name="secp256r1"/>

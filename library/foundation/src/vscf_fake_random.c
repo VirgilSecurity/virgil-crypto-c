@@ -132,9 +132,10 @@ vscf_fake_random_setup_source_data(vscf_fake_random_t *self, vsc_data_t data_sou
 
 //
 //  Generate random bytes.
+//  All RNG implementations must be thread-safe.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_fake_random_random(vscf_fake_random_t *self, size_t data_len, vsc_buffer_t *data) {
+vscf_fake_random_random(const vscf_fake_random_t *self, size_t data_len, vsc_buffer_t *data) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(data);
@@ -144,16 +145,18 @@ vscf_fake_random_random(vscf_fake_random_t *self, size_t data_len, vsc_buffer_t 
 
     const byte *end = vsc_buffer_unused_bytes(data) + data_len;
 
-    for (byte *write_ptr = vsc_buffer_unused_bytes(data); write_ptr < end; ++write_ptr) {
-        if (self->data_source != NULL) {
-            vsc_data_t data_source = vsc_buffer_data(self->data_source);
-            *write_ptr = *(data_source.bytes + self->pos);
+    vscf_fake_random_t *mutable_self = (vscf_fake_random_t *)self;
 
-            if (++self->pos >= data_source.len) {
-                self->pos = 0;
+    for (byte *write_ptr = vsc_buffer_unused_bytes(data); write_ptr < end; ++write_ptr) {
+        if (mutable_self->data_source != NULL) {
+            vsc_data_t data_source = vsc_buffer_data(self->data_source);
+            *write_ptr = *(data_source.bytes + mutable_self->pos);
+
+            if (++mutable_self->pos >= data_source.len) {
+                mutable_self->pos = 0;
             }
         } else {
-            *write_ptr = self->byte_source;
+            *write_ptr = mutable_self->byte_source;
         }
     }
 
@@ -163,7 +166,7 @@ vscf_fake_random_random(vscf_fake_random_t *self, size_t data_len, vsc_buffer_t 
 }
 
 //
-//  Retreive new seed data from the entropy sources.
+//  Retrieve new seed data from the entropy sources.
 //
 VSCF_PUBLIC vscf_status_t
 vscf_fake_random_reseed(vscf_fake_random_t *self) {

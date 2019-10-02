@@ -79,7 +79,8 @@ test__encrypt_decrypt__1_msg__decrypt_should_succeed(void) {
 
     vsc_buffer_t *plain_text =
             vsc_buffer_new_with_capacity(vscr_ratchet_group_session_decrypt_len(session2, group_msg));
-    TEST_ASSERT_EQUAL(vscr_status_SUCCESS, vscr_ratchet_group_session_decrypt(session2, group_msg, plain_text));
+    TEST_ASSERT_EQUAL(vscr_status_SUCCESS, vscr_ratchet_group_session_decrypt(session2, group_msg,
+                                                   vscr_ratchet_group_session_get_my_id(session1), plain_text));
     TEST_ASSERT_EQUAL_DATA_AND_BUFFER(vsc_buffer_data(text), plain_text);
 
     vsc_buffer_destroy(&plain_text);
@@ -130,10 +131,12 @@ test__encrypt_decrypt__random_group_chat__decrypt_should_succeed(void) {
 
             if (receiver == sender) {
                 TEST_ASSERT_EQUAL(vscr_status_ERROR_CANNOT_DECRYPT_OWN_MESSAGES,
-                        vscr_ratchet_group_session_decrypt(sessions[receiver], group_msg, plain_text));
+                        vscr_ratchet_group_session_decrypt(sessions[receiver], group_msg,
+                                vscr_ratchet_group_session_get_my_id(session), plain_text));
             } else {
-                TEST_ASSERT_EQUAL(vscr_status_SUCCESS,
-                        vscr_ratchet_group_session_decrypt(sessions[receiver], group_msg, plain_text));
+                TEST_ASSERT_EQUAL(
+                        vscr_status_SUCCESS, vscr_ratchet_group_session_decrypt(sessions[receiver], group_msg,
+                                                     vscr_ratchet_group_session_get_my_id(session), plain_text));
 
                 TEST_ASSERT_EQUAL_DATA_AND_BUFFER(vsc_buffer_data(text), plain_text);
             }
@@ -183,12 +186,14 @@ test__encrypt_decrypt__out_of_order__decrypt_should_succeed(void) {
 
     vsc_buffer_t *plain_text2 =
             vsc_buffer_new_with_capacity(vscr_ratchet_group_session_decrypt_len(session2, group_msg2));
-    TEST_ASSERT_EQUAL(vscr_status_SUCCESS, vscr_ratchet_group_session_decrypt(session2, group_msg2, plain_text2));
+    TEST_ASSERT_EQUAL(vscr_status_SUCCESS, vscr_ratchet_group_session_decrypt(session2, group_msg2,
+                                                   vscr_ratchet_group_session_get_my_id(session1), plain_text2));
     TEST_ASSERT_EQUAL_DATA_AND_BUFFER(vsc_buffer_data(text2), plain_text2);
 
     vsc_buffer_t *plain_text1 =
             vsc_buffer_new_with_capacity(vscr_ratchet_group_session_decrypt_len(session2, group_msg1));
-    TEST_ASSERT_EQUAL(vscr_status_SUCCESS, vscr_ratchet_group_session_decrypt(session2, group_msg1, plain_text1));
+    TEST_ASSERT_EQUAL(vscr_status_SUCCESS, vscr_ratchet_group_session_decrypt(session2, group_msg1,
+                                                   vscr_ratchet_group_session_get_my_id(session1), plain_text1));
     TEST_ASSERT_EQUAL_DATA_AND_BUFFER(vsc_buffer_data(text1), plain_text1);
 
     vsc_buffer_destroy(&plain_text1);

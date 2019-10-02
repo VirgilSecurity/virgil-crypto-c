@@ -101,6 +101,12 @@ VSCF_PUBLIC vscf_impl_t *
 vscf_pkcs5_pbes2_impl(vscf_pkcs5_pbes2_t *self);
 
 //
+//  Cast to the const 'vscf_impl_t' type.
+//
+VSCF_PUBLIC const vscf_impl_t *
+vscf_pkcs5_pbes2_impl_const(const vscf_pkcs5_pbes2_t *self);
+
+//
 //  Perform initialization of preallocated implementation context.
 //
 VSCF_PUBLIC void
@@ -137,7 +143,6 @@ vscf_pkcs5_pbes2_destroy(vscf_pkcs5_pbes2_t **self_ref);
 
 //
 //  Copy given implementation context by increasing reference counter.
-//  If deep copy is required interface 'clonable' can be used.
 //
 VSCF_PUBLIC vscf_pkcs5_pbes2_t *
 vscf_pkcs5_pbes2_shallow_copy(vscf_pkcs5_pbes2_t *self);
@@ -215,6 +220,12 @@ vscf_pkcs5_pbes2_encrypt(vscf_pkcs5_pbes2_t *self, vsc_data_t data, vsc_buffer_t
 //
 VSCF_PUBLIC size_t
 vscf_pkcs5_pbes2_encrypted_len(vscf_pkcs5_pbes2_t *self, size_t data_len);
+
+//
+//  Precise length calculation of encrypted data.
+//
+VSCF_PUBLIC size_t
+vscf_pkcs5_pbes2_precise_encrypted_len(vscf_pkcs5_pbes2_t *self, size_t data_len);
 
 //
 //  Decrypt given data.

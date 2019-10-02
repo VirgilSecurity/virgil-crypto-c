@@ -50,13 +50,18 @@ public class KeyProvider implements AutoCloseable {
         this.cCtx = FoundationJNI.INSTANCE.keyProvider_new();
     }
 
+    /* Wrap underlying C context. */
+    KeyProvider(FoundationContextHolder contextHolder) {
+        this.cCtx = contextHolder.cCtx;
+    }
+
     /*
     * Acquire C context.
     * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     */
-    public KeyProvider(long cCtx) {
-        super();
-        this.cCtx = cCtx;
+    public static KeyProvider getInstance(long cCtx) {
+        FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
+        return new KeyProvider(ctxHolder);
     }
 
     /* Close resource. */

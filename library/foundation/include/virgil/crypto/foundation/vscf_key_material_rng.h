@@ -114,6 +114,12 @@ VSCF_PUBLIC vscf_impl_t *
 vscf_key_material_rng_impl(vscf_key_material_rng_t *self);
 
 //
+//  Cast to the const 'vscf_impl_t' type.
+//
+VSCF_PUBLIC const vscf_impl_t *
+vscf_key_material_rng_impl_const(const vscf_key_material_rng_t *self);
+
+//
 //  Perform initialization of preallocated implementation context.
 //
 VSCF_PUBLIC void
@@ -150,7 +156,6 @@ vscf_key_material_rng_destroy(vscf_key_material_rng_t **self_ref);
 
 //
 //  Copy given implementation context by increasing reference counter.
-//  If deep copy is required interface 'clonable' can be used.
 //
 VSCF_PUBLIC vscf_key_material_rng_t *
 vscf_key_material_rng_shallow_copy(vscf_key_material_rng_t *self);
@@ -163,12 +168,13 @@ vscf_key_material_rng_reset_key_material(vscf_key_material_rng_t *self, vsc_data
 
 //
 //  Generate random bytes.
+//  All RNG implementations must be thread-safe.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_key_material_rng_random(vscf_key_material_rng_t *self, size_t data_len, vsc_buffer_t *data) VSCF_NODISCARD;
+vscf_key_material_rng_random(const vscf_key_material_rng_t *self, size_t data_len, vsc_buffer_t *data) VSCF_NODISCARD;
 
 //
-//  Retreive new seed data from the entropy sources.
+//  Retrieve new seed data from the entropy sources.
 //
 VSCF_PUBLIC vscf_status_t
 vscf_key_material_rng_reseed(vscf_key_material_rng_t *self) VSCF_NODISCARD;

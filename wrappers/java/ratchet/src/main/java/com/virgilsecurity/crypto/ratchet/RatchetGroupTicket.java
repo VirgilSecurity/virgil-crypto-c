@@ -51,13 +51,18 @@ public class RatchetGroupTicket implements AutoCloseable {
         this.cCtx = RatchetJNI.INSTANCE.ratchetGroupTicket_new();
     }
 
+    /* Wrap underlying C context. */
+    RatchetGroupTicket(RatchetContextHolder contextHolder) {
+        this.cCtx = contextHolder.cCtx;
+    }
+
     /*
     * Acquire C context.
     * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     */
-    public RatchetGroupTicket(long cCtx) {
-        super();
-        this.cCtx = cCtx;
+    public static RatchetGroupTicket getInstance(long cCtx) {
+        RatchetContextHolder ctxHolder = new RatchetContextHolder(cCtx);
+        return new RatchetGroupTicket(ctxHolder);
     }
 
     /* Close resource. */
@@ -83,15 +88,8 @@ public class RatchetGroupTicket implements AutoCloseable {
     /*
     * Set this ticket to start new group session.
     */
-    public void setupTicketAsNew() throws RatchetException {
-        RatchetJNI.INSTANCE.ratchetGroupTicket_setupTicketAsNew(this.cCtx);
-    }
-
-    /*
-    * Set session id in case you want to use your own identifier, otherwise - id will be generated for you.
-    */
-    public void setSessionId(byte[] sessionId) {
-        RatchetJNI.INSTANCE.ratchetGroupTicket_setSessionId(this.cCtx, sessionId);
+    public void setupTicketAsNew(byte[] sessionId) throws RatchetException {
+        RatchetJNI.INSTANCE.ratchetGroupTicket_setupTicketAsNew(this.cCtx, sessionId);
     }
 
     /*

@@ -127,7 +127,7 @@ vscr_ratchet_group_session_new(void);
 
 //
 //  Release all inner resources and deallocate context if needed.
-//  It is safe to call this method even if context was allocated by the caller.
+//  It is safe to call this method even if the context was statically allocated.
 //
 VSCR_PUBLIC void
 vscr_ratchet_group_session_delete(vscr_ratchet_group_session_t *self);
@@ -267,7 +267,7 @@ vscr_ratchet_group_session_decrypt_len(vscr_ratchet_group_session_t *self, const
 //
 VSCR_PUBLIC vscr_status_t
 vscr_ratchet_group_session_decrypt(vscr_ratchet_group_session_t *self, const vscr_ratchet_group_message_t *message,
-        vsc_buffer_t *plain_text) VSCR_NODISCARD;
+        vsc_data_t sender_id, vsc_buffer_t *plain_text) VSCR_NODISCARD;
 
 //
 //  Serializes session to buffer

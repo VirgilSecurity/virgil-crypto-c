@@ -38,13 +38,40 @@
 #   Private function prefix is: C20.
 # ---------------------------------------------------------------------------
 #   This is a code generator helper built using the iMatix GSL code
-#   generation language. See https://github.com/imatix/gsl for details.
+#   generation language. See https://github.com/zeromq/gsl for details.
 # ---------------------------------------------------------------------------
 
 gsl from "common.gsl"
 gsl from "component.gsl"
 gsl from "meta.gsl"
 
+
+function c_module_platform_create_cmake_include_file_check(file_name, module)
+    check_arguments(my, "file_name, module", my)
+
+    my.macros_name = make_id(cat("have", my.file_name))
+    my.macros_ref = make_ref_c(cat("global macros", my.macros_name))
+
+    new cmake_include_file_check to my.module
+        .file = my.file_name
+        .result_variable = my.macros_ref
+    endnew
+
+    new macroses to my.module
+        new macros to macroses
+            .name = my.macros_name
+        endnew
+
+        new code to macroses
+            . = "
+                #cmakedefine01 $(my.macros_ref)
+                #if $(my.macros_ref)
+                #   include <$(my.file_name)>
+                #endif
+            "
+        endnew
+    endnew
+endfunction
 
 # ---------------------------------------------------------------------------
 #   Create module with functionality common for all 'implementation' objects.
@@ -60,6 +87,27 @@ function c_module_platform_create (project, destination, meta)
         .of_class = "global"
         .has_cmakedefine = "1"
         .name = my.names.module_platform
+
+        c_module_platform_create_cmake_include_file_check("assert.h", module)
+        c_module_platform_create_cmake_include_file_check("stdatomic.h", module)
+
+        for my.project.feature
+            new macroses to module
+                new macros to macroses
+                    .name = feature.name
+                    .of_class = "global"
+                endnew
+
+                new code to macroses
+                    my.macros_c_name = make_ref_c(make_id("global macros", feature.name))
+                    . = "
+                        #ifndef $(my.macros_c_name:)
+                        #cmakedefine01 $(my.macros_c_name:)
+                        #endif
+                    "
+                endnew
+            endnew
+        endfor
 
         for my.project.require where defined (require.project) & string_equal (require.feature, "library")
             new macroses to module

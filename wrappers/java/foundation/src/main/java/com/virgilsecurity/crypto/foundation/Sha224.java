@@ -49,13 +49,18 @@ public class Sha224 implements AutoCloseable, Alg, Hash {
         this.cCtx = FoundationJNI.INSTANCE.sha224_new();
     }
 
+    /* Wrap underlying C context. */
+    Sha224(FoundationContextHolder contextHolder) {
+        this.cCtx = contextHolder.cCtx;
+    }
+
     /*
     * Acquire C context.
     * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     */
-    public Sha224(long cCtx) {
-        super();
-        this.cCtx = cCtx;
+    public static Sha224 getInstance(long cCtx) {
+        FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
+        return new Sha224(ctxHolder);
     }
 
     /* Close resource. */

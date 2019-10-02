@@ -57,6 +57,8 @@
 #include "vscf_message_info_der_serializer_defs.h"
 #include "vscf_message_info_serializer.h"
 #include "vscf_message_info_serializer_api.h"
+#include "vscf_message_info_footer_serializer.h"
+#include "vscf_message_info_footer_serializer_api.h"
 #include "vscf_asn1_reader.h"
 #include "vscf_asn1_writer.h"
 #include "vscf_impl.h"
@@ -136,6 +138,33 @@ static const vscf_message_info_serializer_api_t message_info_serializer_api = {
 };
 
 //
+//  Configuration of the interface API 'message info footer serializer api'.
+//
+static const vscf_message_info_footer_serializer_api_t message_info_footer_serializer_api = {
+    //
+    //  API's unique identifier, MUST be first in the structure.
+    //  For interface 'message_info_footer_serializer' MUST be equal to the 'vscf_api_tag_MESSAGE_INFO_FOOTER_SERIALIZER'.
+    //
+    vscf_api_tag_MESSAGE_INFO_FOOTER_SERIALIZER,
+    //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_MESSAGE_INFO_DER_SERIALIZER,
+    //
+    //  Return buffer size enough to hold serialized message info footer.
+    //
+    (vscf_message_info_footer_serializer_api_serialized_footer_len_fn)vscf_message_info_der_serializer_serialized_footer_len,
+    //
+    //  Serialize class "message info footer".
+    //
+    (vscf_message_info_footer_serializer_api_serialize_footer_fn)vscf_message_info_der_serializer_serialize_footer,
+    //
+    //  Deserialize class "message info footer".
+    //
+    (vscf_message_info_footer_serializer_api_deserialize_footer_fn)vscf_message_info_der_serializer_deserialize_footer
+};
+
+//
 //  Compile-time known information about 'message info der serializer' implementation.
 //
 static const vscf_impl_info_t info = {
@@ -181,15 +210,7 @@ vscf_message_info_der_serializer_init(vscf_message_info_der_serializer_t *self) 
 VSCF_PUBLIC void
 vscf_message_info_der_serializer_cleanup(vscf_message_info_der_serializer_t *self) {
 
-    if (self == NULL || self->info == NULL) {
-        return;
-    }
-
-    if (self->refcnt == 0) {
-        return;
-    }
-
-    if (--self->refcnt > 0) {
+    if (self == NULL) {
         return;
     }
 
@@ -223,11 +244,32 @@ vscf_message_info_der_serializer_new(void) {
 VSCF_PUBLIC void
 vscf_message_info_der_serializer_delete(vscf_message_info_der_serializer_t *self) {
 
+    if (self == NULL) {
+        return;
+    }
+
+    size_t old_counter = self->refcnt;
+    VSCF_ASSERT(old_counter != 0);
+    size_t new_counter = old_counter - 1;
+
+    #if defined(VSCF_ATOMIC_COMPARE_EXCHANGE_WEAK)
+    //  CAS loop
+    while (!VSCF_ATOMIC_COMPARE_EXCHANGE_WEAK(&self->refcnt, &old_counter, new_counter)) {
+        old_counter = self->refcnt;
+        VSCF_ASSERT(old_counter != 0);
+        new_counter = old_counter - 1;
+    }
+    #else
+    self->refcnt = new_counter;
+    #endif
+
+    if (new_counter > 0) {
+        return;
+    }
+
     vscf_message_info_der_serializer_cleanup(self);
 
-    if (self && (self->refcnt == 0)) {
-        vscf_dealloc(self);
-    }
+    vscf_dealloc(self);
 }
 
 //
@@ -248,7 +290,6 @@ vscf_message_info_der_serializer_destroy(vscf_message_info_der_serializer_t **se
 
 //
 //  Copy given implementation context by increasing reference counter.
-//  If deep copy is required interface 'clonable' can be used.
 //
 VSCF_PUBLIC vscf_message_info_der_serializer_t *
 vscf_message_info_der_serializer_shallow_copy(vscf_message_info_der_serializer_t *self) {
@@ -277,6 +318,16 @@ vscf_message_info_der_serializer_impl(vscf_message_info_der_serializer_t *self) 
 }
 
 //
+//  Cast to the const 'vscf_impl_t' type.
+//
+VSCF_PUBLIC const vscf_impl_t *
+vscf_message_info_der_serializer_impl_const(const vscf_message_info_der_serializer_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+    return (const vscf_impl_t *)(self);
+}
+
+//
 //  Setup dependency to the interface 'asn1 reader' with shared ownership.
 //
 VSCF_PUBLIC void
@@ -302,7 +353,7 @@ vscf_message_info_der_serializer_take_asn1_reader(vscf_message_info_der_serializ
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(asn1_reader);
-    VSCF_ASSERT_PTR(self->asn1_reader == NULL);
+    VSCF_ASSERT(self->asn1_reader == NULL);
 
     VSCF_ASSERT(vscf_asn1_reader_is_implemented(asn1_reader));
 
@@ -350,7 +401,7 @@ vscf_message_info_der_serializer_take_asn1_writer(vscf_message_info_der_serializ
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(asn1_writer);
-    VSCF_ASSERT_PTR(self->asn1_writer == NULL);
+    VSCF_ASSERT(self->asn1_writer == NULL);
 
     VSCF_ASSERT(vscf_asn1_writer_is_implemented(asn1_writer));
 
@@ -376,6 +427,8 @@ static const vscf_api_t *
 vscf_message_info_der_serializer_find_api(vscf_api_tag_t api_tag) {
 
     switch(api_tag) {
+        case vscf_api_tag_MESSAGE_INFO_FOOTER_SERIALIZER:
+            return (const vscf_api_t *) &message_info_footer_serializer_api;
         case vscf_api_tag_MESSAGE_INFO_SERIALIZER:
             return (const vscf_api_t *) &message_info_serializer_api;
         default:

@@ -39,7 +39,7 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Common information about asymmetric key.
+//  Basic key type.
 // --------------------------------------------------------------------------
 
 
@@ -65,29 +65,82 @@
 // --------------------------------------------------------------------------
 
 //
-//  Length of the key in bytes.
+//  Algorithm identifier the key belongs to.
 //
-VSCF_PUBLIC size_t
-vscf_key_key_len(const vscf_impl_t *impl) {
+VSCF_PUBLIC vscf_alg_id_t
+vscf_key_alg_id(const vscf_impl_t *impl) {
 
     const vscf_key_api_t *key_api = vscf_key_api(impl);
     VSCF_ASSERT_PTR (key_api);
 
-    VSCF_ASSERT_PTR (key_api->key_len_cb);
-    return key_api->key_len_cb (impl);
+    VSCF_ASSERT_PTR (key_api->alg_id_cb);
+    return key_api->alg_id_cb (impl);
+}
+
+//
+//  Return algorithm information that can be used for serialization.
+//
+VSCF_PUBLIC const vscf_impl_t *
+vscf_key_alg_info(const vscf_impl_t *impl) {
+
+    const vscf_key_api_t *key_api = vscf_key_api(impl);
+    VSCF_ASSERT_PTR (key_api);
+
+    VSCF_ASSERT_PTR (key_api->alg_info_cb);
+    return key_api->alg_info_cb (impl);
+}
+
+//
+//  Length of the key in bytes.
+//
+VSCF_PUBLIC size_t
+vscf_key_len(const vscf_impl_t *impl) {
+
+    const vscf_key_api_t *key_api = vscf_key_api(impl);
+    VSCF_ASSERT_PTR (key_api);
+
+    VSCF_ASSERT_PTR (key_api->len_cb);
+    return key_api->len_cb (impl);
 }
 
 //
 //  Length of the key in bits.
 //
 VSCF_PUBLIC size_t
-vscf_key_key_bitlen(const vscf_impl_t *impl) {
+vscf_key_bitlen(const vscf_impl_t *impl) {
 
     const vscf_key_api_t *key_api = vscf_key_api(impl);
     VSCF_ASSERT_PTR (key_api);
 
-    VSCF_ASSERT_PTR (key_api->key_bitlen_cb);
-    return key_api->key_bitlen_cb (impl);
+    VSCF_ASSERT_PTR (key_api->bitlen_cb);
+    return key_api->bitlen_cb (impl);
+}
+
+//
+//  Return tag of an associated algorithm that can handle this key.
+//
+VSCF_PRIVATE vscf_impl_tag_t
+vscf_key_impl_tag(const vscf_impl_t *impl) {
+
+    const vscf_key_api_t *key_api = vscf_key_api(impl);
+    VSCF_ASSERT_PTR (key_api);
+
+    VSCF_ASSERT_PTR (key_api->impl_tag_cb);
+    return key_api->impl_tag_cb (impl);
+}
+
+//
+//  Check that key is valid.
+//  Note, this operation can be slow.
+//
+VSCF_PUBLIC bool
+vscf_key_is_valid(const vscf_impl_t *impl) {
+
+    const vscf_key_api_t *key_api = vscf_key_api(impl);
+    VSCF_ASSERT_PTR (key_api);
+
+    VSCF_ASSERT_PTR (key_api->is_valid_cb);
+    return key_api->is_valid_cb (impl);
 }
 
 //
@@ -100,17 +153,6 @@ vscf_key_api(const vscf_impl_t *impl) {
 
     const vscf_api_t *api = vscf_impl_api(impl, vscf_api_tag_KEY);
     return (const vscf_key_api_t *) api;
-}
-
-//
-//  Return alg API.
-//
-VSCF_PUBLIC const vscf_alg_api_t *
-vscf_key_alg_api(const vscf_key_api_t *key_api) {
-
-    VSCF_ASSERT_PTR (key_api);
-
-    return key_api->alg_api;
 }
 
 //

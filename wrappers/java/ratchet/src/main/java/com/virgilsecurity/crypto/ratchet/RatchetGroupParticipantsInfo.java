@@ -51,13 +51,9 @@ public class RatchetGroupParticipantsInfo implements AutoCloseable {
         this.cCtx = RatchetJNI.INSTANCE.ratchetGroupParticipantsInfo_new();
     }
 
-    /*
-    * Acquire C context.
-    * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-    */
-    public RatchetGroupParticipantsInfo(long cCtx) {
-        super();
-        this.cCtx = cCtx;
+    /* Wrap underlying C context. */
+    RatchetGroupParticipantsInfo(RatchetContextHolder contextHolder) {
+        this.cCtx = contextHolder.cCtx;
     }
 
     /*
@@ -66,6 +62,15 @@ public class RatchetGroupParticipantsInfo implements AutoCloseable {
     public RatchetGroupParticipantsInfo(long size) {
         super();
         this.cCtx = RatchetJNI.INSTANCE.ratchetGroupParticipantsInfo_new(size);
+    }
+
+    /*
+    * Acquire C context.
+    * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
+    */
+    public static RatchetGroupParticipantsInfo getInstance(long cCtx) {
+        RatchetContextHolder ctxHolder = new RatchetContextHolder(cCtx);
+        return new RatchetGroupParticipantsInfo(ctxHolder);
     }
 
     /* Close resource. */

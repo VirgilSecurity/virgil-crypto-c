@@ -39,7 +39,7 @@ package com.virgilsecurity.crypto.foundation;
 /*
 * Virgil implementation of the ECIES algorithm.
 */
-public class Ecies implements AutoCloseable, Encrypt, Decrypt {
+public class Ecies implements AutoCloseable {
 
     public long cCtx;
 
@@ -49,13 +49,23 @@ public class Ecies implements AutoCloseable, Encrypt, Decrypt {
         this.cCtx = FoundationJNI.INSTANCE.ecies_new();
     }
 
+    /* Wrap underlying C context. */
+    Ecies(FoundationContextHolder contextHolder) {
+        this.cCtx = contextHolder.cCtx;
+    }
+
     /*
     * Acquire C context.
     * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     */
-    public Ecies(long cCtx) {
-        super();
-        this.cCtx = cCtx;
+    public static Ecies getInstance(long cCtx) {
+        FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
+        return new Ecies(ctxHolder);
+    }
+
+    /* Close resource. */
+    public void close() {
+        FoundationJNI.INSTANCE.ecies_close(this.cCtx);
     }
 
     public void setRandom(Random random) {
@@ -75,34 +85,27 @@ public class Ecies implements AutoCloseable, Encrypt, Decrypt {
     }
 
     /*
-    * Set public key that is used for data encryption.
-    *
-    * If ephemeral key is not defined, then Public Key, must be conformed
-    * to the interface "generate ephemeral key".
-    *
-    * In turn, Ephemeral Key must be conformed to the interface
-    * "compute shared key".
-    */
-    public void setEncryptionKey(PublicKey encryptionKey) {
-        FoundationJNI.INSTANCE.ecies_setEncryptionKey(this.cCtx, encryptionKey);
-    }
-
-    /*
-    * Set private key that used for data decryption.
-    *
-    * Private Key must be conformed to the interface "compute shared key".
-    */
-    public void setDecryptionKey(PrivateKey decryptionKey) {
-        FoundationJNI.INSTANCE.ecies_setDecryptionKey(this.cCtx, decryptionKey);
-    }
-
-    /*
-    * Set private key that used for data decryption.
-    *
-    * Ephemeral Key must be conformed to the interface "compute shared key".
+    * Set ephemeral key that used for data encryption.
+    * Public and ephemeral keys should belong to the same curve.
+    * This dependency is optional.
     */
     public void setEphemeralKey(PrivateKey ephemeralKey) {
         FoundationJNI.INSTANCE.ecies_setEphemeralKey(this.cCtx, ephemeralKey);
+    }
+
+    /*
+    * Set weak reference to the key algorithm.
+    * Key algorithm MUST support shared key computation as well.
+    */
+    public void setKeyAlg(KeyAlg keyAlg) {
+        FoundationJNI.INSTANCE.ecies_setKeyAlg(this.cCtx, keyAlg);
+    }
+
+    /*
+    * Release weak reference to the key algorithm.
+    */
+    public void releaseKeyAlg() {
+        FoundationJNI.INSTANCE.ecies_releaseKeyAlg(this.cCtx);
     }
 
     /*
@@ -112,37 +115,40 @@ public class Ecies implements AutoCloseable, Encrypt, Decrypt {
         FoundationJNI.INSTANCE.ecies_setupDefaults(this.cCtx);
     }
 
-    /* Close resource. */
-    public void close() {
-        FoundationJNI.INSTANCE.ecies_close(this.cCtx);
-    }
-
     /*
-    * Encrypt given data.
+    * Setup predefined values to the uninitialized class dependencies
+    * except random.
     */
-    public byte[] encrypt(byte[] data) throws FoundationException {
-        return FoundationJNI.INSTANCE.ecies_encrypt(this.cCtx, data);
+    public void setupDefaultsNoRandom() {
+        FoundationJNI.INSTANCE.ecies_setupDefaultsNoRandom(this.cCtx);
     }
 
     /*
     * Calculate required buffer length to hold the encrypted data.
     */
-    public int encryptedLen(int dataLen) {
-        return FoundationJNI.INSTANCE.ecies_encryptedLen(this.cCtx, dataLen);
+    public int encryptedLen(PublicKey publicKey, int dataLen) {
+        return FoundationJNI.INSTANCE.ecies_encryptedLen(this.cCtx, publicKey, dataLen);
     }
 
     /*
-    * Decrypt given data.
+    * Encrypt data with a given public key.
     */
-    public byte[] decrypt(byte[] data) throws FoundationException {
-        return FoundationJNI.INSTANCE.ecies_decrypt(this.cCtx, data);
+    public byte[] encrypt(PublicKey publicKey, byte[] data) throws FoundationException {
+        return FoundationJNI.INSTANCE.ecies_encrypt(this.cCtx, publicKey, data);
     }
 
     /*
     * Calculate required buffer length to hold the decrypted data.
     */
-    public int decryptedLen(int dataLen) {
-        return FoundationJNI.INSTANCE.ecies_decryptedLen(this.cCtx, dataLen);
+    public int decryptedLen(PrivateKey privateKey, int dataLen) {
+        return FoundationJNI.INSTANCE.ecies_decryptedLen(this.cCtx, privateKey, dataLen);
+    }
+
+    /*
+    * Decrypt given data.
+    */
+    public byte[] decrypt(PrivateKey privateKey, byte[] data) throws FoundationException {
+        return FoundationJNI.INSTANCE.ecies_decrypt(this.cCtx, privateKey, data);
     }
 }
 

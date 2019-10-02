@@ -79,7 +79,7 @@
 //  Returns size of written data.
 //
 VSCF_PUBLIC size_t
-vscf_mbedtls_bignum_write_asn1(vscf_impl_t *asn1wr, const mbedtls_mpi *bignum, vscf_error_t *error) {
+vscf_mbedtls_bignum_write_asn1(vscf_impl_t *asn1wr, const mbedtls_mpi *bignum) {
 
     VSCF_ASSERT_PTR(bignum);
     VSCF_ASSERT_PTR(asn1wr);
@@ -87,8 +87,7 @@ vscf_mbedtls_bignum_write_asn1(vscf_impl_t *asn1wr, const mbedtls_mpi *bignum, v
     size_t bignum_len = mbedtls_mpi_size(bignum);
     byte *bignum_start = vscf_asn1_writer_reserve(asn1wr, bignum_len);
 
-    if (NULL == bignum_start) {
-        VSCF_ERROR_SAFE_UPDATE(error, vscf_asn1_writer_status(asn1wr));
+    if (vscf_asn1_writer_has_error(asn1wr)) {
         return 0;
     }
 
@@ -99,8 +98,7 @@ vscf_mbedtls_bignum_write_asn1(vscf_impl_t *asn1wr, const mbedtls_mpi *bignum, v
     if (1 == bignum->s && *bignum_start & 0x80) {
         bignum_start = vscf_asn1_writer_reserve(asn1wr, 1);
 
-        if (NULL == bignum_start) {
-            VSCF_ERROR_SAFE_UPDATE(error, vscf_asn1_writer_status(asn1wr));
+        if (vscf_asn1_writer_has_error(asn1wr)) {
             return 0;
         }
 
@@ -113,6 +111,5 @@ vscf_mbedtls_bignum_write_asn1(vscf_impl_t *asn1wr, const mbedtls_mpi *bignum, v
     asn1_len += vscf_asn1_writer_write_len(asn1wr, bignum_len);
     asn1_len += vscf_asn1_writer_write_tag(asn1wr, vscf_asn1_tag_INTEGER);
 
-    VSCF_ERROR_SAFE_UPDATE(error, vscf_asn1_writer_status(asn1wr));
     return asn1_len;
 }

@@ -113,8 +113,10 @@ target_link_libraries(pythia PUBLIC vsc::common mbed::crypto relic)
 #
 # Define specific compilation and linkage flags.
 #
+target_compile_features(pythia
+        PUBLIC $<IF:$<AND:$<BOOL:${VSCP_HAVE_STDATOMIC_H}>,$<BOOL:${VSCP_MULTI_THREADING}>>,c_std_11,c_std_99>)
+
 set_target_properties(pythia PROPERTIES
-        C_STANDARD "99"
         DEBUG_POSTFIX "_d"
         OUTPUT_NAME vsc_pythia
         )

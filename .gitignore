@@ -1,5 +1,6 @@
 #####
 build*/
+cmake-build*/
 install*/
 .depends_cache/
 codegen/generated/
@@ -21,6 +22,10 @@ cmake-build-*/
 ####
 # Sublime Text 3
 *.sublime-workspace
+
+####
+# Visual Studio Code
+.vscode/
 
 ####
 # Visual Studio (VisualGDB)

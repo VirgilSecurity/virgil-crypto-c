@@ -37,7 +37,7 @@
 #   Functions for CMake primitives generation: license, setters, etc.
 # ---------------------------------------------------------------------------
 #   This is a code generator built using the iMatix GSL code generation
-#   language. See https:# github.com/imatix/gsl for details.
+#   language. See https://github.com/zeromq/gsl for details.
 # ---------------------------------------------------------------------------
 
 
@@ -77,6 +77,21 @@ function cmake_insert (body, tab_count)
     out (my.body)
 endfunction
 
+# ---------------------------------------------------------------------------
+#   Insert given multiline code.
+# ---------------------------------------------------------------------------
+function cmake_insert_code(code, tab_count)
+    check_argument(my, "code", my)
+
+    my.code = "$(my.code:left,no)"
+    my.code = string_trim(my.code)
+    my.code = code_collapse_spaces(my.code)
+
+    my.code = string_indent(my.code, my.tab_count)
+    my.code = string_multi_rtrim(my.code)
+
+    out(my.code)
+endfunction
 
 # ---------------------------------------------------------------------------
 #   Insert given body with given indent if condition is true.

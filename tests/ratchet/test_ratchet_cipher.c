@@ -43,7 +43,7 @@
 #include "test_utils_ratchet.h"
 #include "vscf_ctr_drbg.h"
 #include "vscf_fake_random.h"
-#include "vscr_ratchet_padding.h"
+#include "vscf_message_padding.h"
 #include "vscr_ratchet_cipher.h"
 #include "vscr_ratchet_common_hidden.h"
 #include "test_data_ratchet_cipher.h"
@@ -76,7 +76,8 @@ test__encrypt_decrypt__rnd_data__should_match(void) {
     for (size_t i = 0; i < 100; i++) {
         vsc_buffer_t *key = vsc_buffer_new_with_capacity(vscr_ratchet_common_hidden_SHARED_KEY_LEN);
 
-        TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_ctr_drbg_random(rng, vscr_ratchet_common_hidden_SHARED_KEY_LEN, key));
+        TEST_ASSERT_EQUAL(
+                vscf_status_SUCCESS, vscf_ctr_drbg_random(rng, vscr_ratchet_common_hidden_SHARED_KEY_LEN, key));
 
         vsc_buffer_t *plain_text = NULL;
         generate_random_data(rng, &plain_text);
@@ -122,16 +123,16 @@ test__padding__growing_data_size__should_add_padding(void) {
 
     size_t max_size = 320;
 
-    vscr_ratchet_padding_t *padding = vscr_ratchet_padding_new();
+    vscf_message_padding_t *padding = vscf_message_padding_new();
 
     for (size_t size = 0; size <= max_size; size++) {
         vscf_fake_random_t *fake_rng = vscf_fake_random_new();
         vscf_fake_random_setup_source_data(fake_rng, test_data_ratchet_cipher_fake_rng);
 
-        vscr_ratchet_padding_release_rng(padding);
-        vscr_ratchet_padding_use_rng(padding, vscf_fake_random_impl(fake_rng));
+        vscf_message_padding_release_rng(padding);
+        vscf_message_padding_use_rng(padding, vscf_fake_random_impl(fake_rng));
 
-        size_t len = vscr_ratchet_padding_padded_len(size);
+        size_t len = vscf_message_padding_padded_len(size);
         size_t expected_size = ((size + 4) / 160 + 1) * 160;
 
         TEST_ASSERT_EQUAL(expected_size, len);
@@ -146,7 +147,7 @@ test__padding__growing_data_size__should_add_padding(void) {
         memcpy(vsc_buffer_unused_bytes(text2), vsc_buffer_bytes(text1), size);
         vsc_buffer_inc_used(text2, size);
 
-        TEST_ASSERT_EQUAL(vscr_status_SUCCESS, vscr_ratchet_padding_add_padding(padding, text2));
+        TEST_ASSERT_EQUAL(vscr_status_SUCCESS, vscf_message_padding_add_padding(padding, text2));
 
         TEST_ASSERT_EQUAL(vsc_buffer_len(text2), expected_size);
 
@@ -163,7 +164,7 @@ test__padding__growing_data_size__should_add_padding(void) {
         vscf_fake_random_destroy(&fake_rng);
     }
 
-    vscr_ratchet_padding_destroy(&padding);
+    vscf_message_padding_destroy(&padding);
     vscf_ctr_drbg_destroy(&rng);
 }
 

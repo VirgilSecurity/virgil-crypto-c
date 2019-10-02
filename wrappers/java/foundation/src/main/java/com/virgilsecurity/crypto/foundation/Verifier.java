@@ -50,13 +50,18 @@ public class Verifier implements AutoCloseable {
         this.cCtx = FoundationJNI.INSTANCE.verifier_new();
     }
 
+    /* Wrap underlying C context. */
+    Verifier(FoundationContextHolder contextHolder) {
+        this.cCtx = contextHolder.cCtx;
+    }
+
     /*
     * Acquire C context.
     * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     */
-    public Verifier(long cCtx) {
-        super();
-        this.cCtx = cCtx;
+    public static Verifier getInstance(long cCtx) {
+        FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
+        return new Verifier(ctxHolder);
     }
 
     /* Close resource. */
@@ -74,14 +79,14 @@ public class Verifier implements AutoCloseable {
     /*
     * Add given data to the signed data.
     */
-    public void update(byte[] data) {
-        FoundationJNI.INSTANCE.verifier_update(this.cCtx, data);
+    public void appendData(byte[] data) {
+        FoundationJNI.INSTANCE.verifier_appendData(this.cCtx, data);
     }
 
     /*
     * Verify accumulated data.
     */
-    public boolean verify(VerifyHash publicKey) {
+    public boolean verify(PublicKey publicKey) {
         return FoundationJNI.INSTANCE.verifier_verify(this.cCtx, publicKey);
     }
 }

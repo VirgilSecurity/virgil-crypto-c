@@ -120,7 +120,7 @@ vscr_ratchet_group_ticket_new(void);
 
 //
 //  Release all inner resources and deallocate context if needed.
-//  It is safe to call this method even if context was allocated by the caller.
+//  It is safe to call this method even if the context was statically allocated.
 //
 VSCR_PUBLIC void
 vscr_ratchet_group_ticket_delete(vscr_ratchet_group_ticket_t *self);
@@ -172,13 +172,7 @@ vscr_ratchet_group_ticket_setup_defaults(vscr_ratchet_group_ticket_t *self) VSCR
 //  Set this ticket to start new group session.
 //
 VSCR_PUBLIC vscr_status_t
-vscr_ratchet_group_ticket_setup_ticket_as_new(vscr_ratchet_group_ticket_t *self) VSCR_NODISCARD;
-
-//
-//  Set session id in case you want to use your own identifier, otherwise - id will be generated for you.
-//
-VSCR_PUBLIC void
-vscr_ratchet_group_ticket_set_session_id(vscr_ratchet_group_ticket_t *self, vsc_data_t session_id);
+vscr_ratchet_group_ticket_setup_ticket_as_new(vscr_ratchet_group_ticket_t *self, vsc_data_t session_id) VSCR_NODISCARD;
 
 //
 //  Returns message that should be sent to all participants using secure channel.

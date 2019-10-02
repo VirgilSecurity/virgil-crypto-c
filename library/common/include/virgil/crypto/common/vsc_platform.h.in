@@ -68,6 +68,28 @@ extern "C" {
 //  Generated section start.
 // --------------------------------------------------------------------------
 
+#cmakedefine01 VSC_HAVE_ASSERT_H
+#if VSC_HAVE_ASSERT_H
+#   include <assert.h>
+#endif
+
+#cmakedefine01 VSC_HAVE_STDATOMIC_H
+#if VSC_HAVE_STDATOMIC_H
+#   include <stdatomic.h>
+#endif
+
+#ifndef VSC_MULTI_THREADING
+#cmakedefine01 VSC_MULTI_THREADING
+#endif
+
+#ifndef VSC_DATA
+#cmakedefine01 VSC_DATA
+#endif
+
+#ifndef VSC_BUFFER
+#cmakedefine01 VSC_BUFFER
+#endif
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.

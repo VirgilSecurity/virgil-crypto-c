@@ -115,6 +115,18 @@ static const vsc_data_t oid_hmac_with_sha384 = {oid_hmac_with_sha384_bytes, size
 static const byte oid_hmac_with_sha512_bytes[] = {0x2A, 0x86, 0x48, 0x86, 0xF7, 0x0D, 0x02, 0x0B};
 static const vsc_data_t oid_hmac_with_sha512 = {oid_hmac_with_sha512_bytes, sizeof(oid_hmac_with_sha512_bytes)};
 
+static const byte oid_hkdf_with_sha256_bytes[] = {
+        0x06, 0x0B, 0x2A, 0x86, 0x48, 0x86, 0xF7, 0x0D, 0x01, 0x09, 0x10, 0x03, 0x1C};
+static const vsc_data_t oid_hkdf_with_sha256 = {oid_hkdf_with_sha256_bytes, sizeof(oid_hkdf_with_sha256_bytes)};
+
+static const byte oid_hkdf_with_384_bytes[] = {
+        0x06, 0x0B, 0x2A, 0x86, 0x48, 0x86, 0xF7, 0x0D, 0x01, 0x09, 0x10, 0x03, 0x1D};
+static const vsc_data_t oid_hkdf_with_sha384 = {oid_hkdf_with_384_bytes, sizeof(oid_hkdf_with_384_bytes)};
+
+static const byte oid_hkdf_with_512_bytes[] = {
+        0x06, 0x0B, 0x2A, 0x86, 0x48, 0x86, 0xF7, 0x0D, 0x01, 0x09, 0x10, 0x03, 0x1E};
+static const vsc_data_t oid_hkdf_with_sha512 = {oid_hkdf_with_512_bytes, sizeof(oid_hkdf_with_512_bytes)};
+
 static const byte oid_ec_generic_key_bytes[] = {0x2A, 0x86, 0x48, 0xCE, 0x3D, 0x02, 0x01};
 static const vsc_data_t oid_ec_generic_key = {oid_ec_generic_key_bytes, sizeof(oid_ec_generic_key_bytes)};
 
@@ -186,7 +198,7 @@ vscf_oid_from_alg_id(vscf_alg_id_t alg_id) {
         return oid_pkcs5_pbes2;
 
     default:
-        VSCF_ASSERT(0 && "Unhanded algorithm identifier");
+        VSCF_ASSERT(0 && "Unhandled algorithm identifier");
         return vsc_data_empty();
     }
 }
@@ -267,6 +279,18 @@ vscf_oid_to_alg_id(vsc_data_t oid) {
         return vscf_alg_id_HMAC;
     }
 
+    if (vscf_oid_equal(oid, oid_hkdf_with_sha256)) {
+        return vscf_alg_id_HKDF;
+    }
+
+    if (vscf_oid_equal(oid, oid_hkdf_with_sha384)) {
+        return vscf_alg_id_HKDF;
+    }
+
+    if (vscf_oid_equal(oid, oid_hkdf_with_sha512)) {
+        return vscf_alg_id_HKDF;
+    }
+
     return vscf_alg_id_NONE;
 }
 
@@ -335,6 +359,15 @@ vscf_oid_from_id(vscf_oid_id_t oid_id) {
     case vscf_oid_id_HMAC_WITH_SHA512:
         return oid_hmac_with_sha512;
 
+    case vscf_oid_id_HKDF_WITH_SHA256:
+        return oid_hkdf_with_sha256;
+
+    case vscf_oid_id_HKDF_WITH_SHA384:
+        return oid_hkdf_with_sha384;
+
+    case vscf_oid_id_HKDF_WITH_SHA512:
+        return oid_hkdf_with_sha512;
+
     case vscf_oid_id_EC_GENERIC_KEY:
         return oid_ec_generic_key;
 
@@ -342,7 +375,7 @@ vscf_oid_from_id(vscf_oid_id_t oid_id) {
         return oid_ec_domain_secp256r1;
 
     default:
-        VSCF_ASSERT(0 && "Unhanded oid identifier");
+        VSCF_ASSERT(0 && "Unhandled oid identifier");
         return vsc_data_empty();
     }
 }
@@ -431,6 +464,18 @@ vscf_oid_to_id(vsc_data_t oid) {
         return vscf_oid_id_HMAC_WITH_SHA512;
     }
 
+    if (vscf_oid_equal(oid, oid_hkdf_with_sha256)) {
+        return vscf_oid_id_HKDF_WITH_SHA256;
+    }
+
+    if (vscf_oid_equal(oid, oid_hkdf_with_sha384)) {
+        return vscf_oid_id_HKDF_WITH_SHA384;
+    }
+
+    if (vscf_oid_equal(oid, oid_hkdf_with_sha512)) {
+        return vscf_oid_id_HKDF_WITH_SHA512;
+    }
+
     if (vscf_oid_equal(oid, oid_ec_generic_key)) {
         return vscf_oid_id_EC_GENERIC_KEY;
     }
@@ -490,16 +535,16 @@ vscf_oid_id_to_alg_id(vscf_oid_id_t oid_id) {
     case vscf_oid_id_PKCS5_PBES2:
         return vscf_alg_id_PKCS5_PBES2;
 
+    case vscf_oid_id_HMAC_WITH_SHA256:
+    case vscf_oid_id_HMAC_WITH_SHA384:
+    case vscf_oid_id_HMAC_WITH_SHA512:
+        return vscf_alg_id_HMAC;
+
     case vscf_oid_id_HMAC_WITH_SHA224:
     case vscf_oid_id_HKDF_WITH_SHA256:
     case vscf_oid_id_HKDF_WITH_SHA384:
     case vscf_oid_id_HKDF_WITH_SHA512:
         return vscf_alg_id_HKDF;
-
-    case vscf_oid_id_HMAC_WITH_SHA256:
-    case vscf_oid_id_HMAC_WITH_SHA384:
-    case vscf_oid_id_HMAC_WITH_SHA512:
-        return vscf_alg_id_HMAC;
 
     case vscf_oid_id_EC_DOMAIN_SECP256R1:
         return vscf_alg_id_SECP256R1;

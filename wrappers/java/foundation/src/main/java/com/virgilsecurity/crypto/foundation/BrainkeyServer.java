@@ -46,13 +46,9 @@ public class BrainkeyServer implements AutoCloseable {
         this.cCtx = FoundationJNI.INSTANCE.brainkeyServer_new();
     }
 
-    /*
-    * Acquire C context.
-    * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-    */
-    public BrainkeyServer(long cCtx) {
-        super();
-        this.cCtx = cCtx;
+    /* Wrap underlying C context. */
+    BrainkeyServer(FoundationContextHolder contextHolder) {
+        this.cCtx = contextHolder.cCtx;
     }
 
     public int getPointLen() {
@@ -61,6 +57,15 @@ public class BrainkeyServer implements AutoCloseable {
 
     public int getMpiLen() {
         return 32;
+    }
+
+    /*
+    * Acquire C context.
+    * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
+    */
+    public static BrainkeyServer getInstance(long cCtx) {
+        FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
+        return new BrainkeyServer(ctxHolder);
     }
 
     /* Close resource. */

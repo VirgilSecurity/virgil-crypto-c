@@ -48,6 +48,7 @@
 #define VSCR_RATCHET_GROUP_PARTICIPANT_INFO_H_INCLUDED
 
 #include "vscr_library.h"
+#include "vscr_atomic.h"
 #include "vscr_ratchet_common.h"
 #include "vscr_ratchet_typedefs.h"
 
@@ -78,7 +79,7 @@ struct vscr_ratchet_group_participant_info_t {
     //
     //  Reference counter.
     //
-    size_t refcnt;
+    VSCR_ATOMIC size_t refcnt;
 
     vscr_ratchet_participant_id_t id;
 
@@ -111,7 +112,7 @@ vscr_ratchet_group_participant_info_new(void);
 
 //
 //  Release all inner resources and deallocate context if needed.
-//  It is safe to call this method even if context was allocated by the caller.
+//  It is safe to call this method even if the context was statically allocated.
 //
 VSCR_PUBLIC void
 vscr_ratchet_group_participant_info_delete(vscr_ratchet_group_participant_info_t *self);
