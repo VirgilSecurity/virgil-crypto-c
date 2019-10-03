@@ -112,6 +112,39 @@ const initRecipientCipher = (Module, modules) => {
         }
 
         /**
+         * Return true if a key recipient with a given id has been added.
+         * Note, operation has O(N) time complexity.
+         */
+        hasKeyRecipient(recipientId) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureByteArray('recipientId', recipientId);
+
+            //  Copy bytes from JS memory to the WASM memory.
+            const recipientIdSize = recipientId.length * recipientId.BYTES_PER_ELEMENT;
+            const recipientIdPtr = Module._malloc(recipientIdSize);
+            Module.HEAP8.set(recipientId, recipientIdPtr);
+
+            //  Create C structure vsc_data_t.
+            const recipientIdCtxSize = Module._vsc_data_ctx_size();
+            const recipientIdCtxPtr = Module._malloc(recipientIdCtxSize);
+
+            //  Point created vsc_data_t object to the copied bytes.
+            Module._vsc_data(recipientIdCtxPtr, recipientIdPtr, recipientIdSize);
+
+            let proxyResult;
+
+            try {
+                proxyResult = Module._vscf_recipient_cipher_has_key_recipient(this.ctxPtr, recipientIdCtxPtr);
+
+                const booleanResult = !!proxyResult;
+                return booleanResult;
+            } finally {
+                Module._free(recipientIdPtr);
+                Module._free(recipientIdCtxPtr);
+            }
+        }
+
+        /**
          * Add recipient defined with id and public key.
          */
         addKeyRecipient(recipientId, publicKey) {

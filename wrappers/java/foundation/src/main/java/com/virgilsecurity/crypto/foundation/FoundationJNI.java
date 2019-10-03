@@ -418,6 +418,12 @@ public class FoundationJNI {
     public native void recipientCipher_setSignerHash(long cCtx, Hash signerHash);
 
     /*
+    * Return true if a key recipient with a given id has been added.
+    * Note, operation has O(N) time complexity.
+    */
+    public native boolean recipientCipher_hasKeyRecipient(long cCtx, byte[] recipientId);
+
+    /*
     * Add recipient defined with id and public key.
     */
     public native void recipientCipher_addKeyRecipient(long cCtx, byte[] recipientId, PublicKey publicKey);
