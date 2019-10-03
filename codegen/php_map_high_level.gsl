@@ -83,9 +83,7 @@ function php_map_high_level (in_module, in_php_module, in_php_project, out_high_
     my._constant = ""
 
     for my.in_module.constructor as constructor0 where constructor0.visibility = "public" & constructor0.declaration = "public" & constructor0.scope = "public"
-        echo_debug_item(constructor0)
-        echo_debug_item(my.in_type)
-        echo_fatal("dadasda", my)
+        constructor0.is_constructor = 1
         new php_method to my.out_high_level
             php_map_high_level_method (constructor0, my.in_php_module, my.in_type, php_method)
         endnew
@@ -137,6 +135,7 @@ function php_map_high_level (in_module, in_php_module, in_php_project, out_high_
 
         php_method0.entity0 = "$(my.in_module.name:c)"
         php_method0.function_name = php_derive_high_level_function_name(php_method0)
+        php_method0.is_constructor = 0
 
         new body to php_method0
             . = php_format_high_level_method_body(php_method0)
@@ -337,6 +336,12 @@ function php_map_high_level_method (in_method, in_php_module, in_type, out_php_m
     my.out_php_method.prefix = "$(my.in_php_module.prefix:c)"
     my.out_php_method.class = "$(my.in_php_module.name0:c)"
 
+    my.out_php_method.is_constructor = 0
+
+    if defined (my.in_method.is_constructor) & my.in_method.is_constructor = 1
+        my.out_php_method.is_constructor = 1
+    endif
+
     php_map_high_level_return (my.in_method, my.in_php_module, my.out_php_method)
 
     my._md = " "
@@ -412,6 +417,13 @@ function php_map_high_level_return (in_method, in_php_module, out_php_method)
     check_arguments (my, "in_method, in_php_module, out_php_method", my)
 
     my._return_type = "void"
+    my._return_data = ""
+    my._instance = 0
+    my._namespace = ""
+    my._throw_exception = 0
+    my._return_data_list = ""
+
+    my._argument_buffer_count = 0
 
     if defined (my.in_method.return_type)
         if my.in_method.return_type = "mixed"
@@ -421,13 +433,10 @@ function php_map_high_level_return (in_method, in_php_module, out_php_method)
         endif
     endif
 
-    my._return_data = ""
-    my._instance = 0
-    my._namespace = ""
-    my._throw_exception = 0
-    my._return_data_list = ""
-
-    my._argument_buffer_count = 0
+    if defined (my.in_method.is_constructor) & my.in_method.is_constructor = 1
+        my._return_type = "$(my.in_php_module.name0:Pascal)"
+        my._instance = 1
+    endif
 
     for my.in_method.argument as argument0 where defined (argument0.class)
         if argument0.class = "buffer"
