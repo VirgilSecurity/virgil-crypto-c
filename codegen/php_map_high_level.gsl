@@ -279,11 +279,7 @@ function php_map_high_level_constructor_destructor (in_module, out_high_level)
 
         new body to php_method
             . = format_left("\
-                if (is_null($ctx)) {
-                    $this->ctx = $(php_method.function_name:)();
-                } else {
-                    $this->ctx = $ctx;
-                }
+                $this->ctx = is_null($ctx) ? $(php_method.function_name:)() : $ctx;
                 ", 0)
         endnew
     endnew
@@ -335,6 +331,7 @@ function php_map_high_level_method (in_method, in_php_module, in_type, out_php_m
     my.out_php_method.name0 = "$(my.in_method.name:c)"
     my.out_php_method.prefix = "$(my.in_php_module.prefix:c)"
     my.out_php_method.class = "$(my.in_php_module.name0:c)"
+    my.out_php_method.entity0 = "$(my.in_php_module.name0:c)"
 
     my.out_php_method.is_constructor = 0
 
@@ -344,13 +341,13 @@ function php_map_high_level_method (in_method, in_php_module, in_type, out_php_m
 
     php_map_high_level_return (my.in_method, my.in_php_module, my.out_php_method)
 
-    my._md = " "
+    my._md = ""
 
     if my.in_method.is_static="1"
-        my._md = " static "
+        my._md = "static "
     endif
 
-    my.out_php_method.declaration = "public$(my._md:)"
+    my.out_php_method.declaration = "public $(my._md:)"
 
     if my.in_type = "interface"
         my.out_php_method.function_name = ""
