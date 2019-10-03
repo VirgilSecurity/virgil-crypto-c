@@ -68,7 +68,7 @@ function php_map_high_level (in_module, in_php_module, in_php_project, out_high_
         my._type = "interface"
     endif
 
-    if my.in_type <> "interface"
+    if ! string_in(my.in_type, "interface, implementation_class")
         new property to my.out_high_level
             my._db = php_format_comment("@var")
             my._property = "private $ctx;"
@@ -83,6 +83,9 @@ function php_map_high_level (in_module, in_php_module, in_php_project, out_high_
     my._constant = ""
 
     for my.in_module.constructor as constructor0 where constructor0.visibility = "public" & constructor0.declaration = "public" & constructor0.scope = "public"
+        echo_debug_item(constructor0)
+        echo_debug_item(my.in_type)
+        echo_fatal("dadasda", my)
         new php_method to my.out_high_level
             php_map_high_level_method (constructor0, my.in_php_module, my.in_type, php_method)
         endnew
@@ -122,7 +125,7 @@ function php_map_high_level (in_module, in_php_module, in_php_project, out_high_
         . = format_left(my._constant, 0)
     endnew
 
-    if my.in_type <> "interface"
+    if ! string_in (my.in_type, "interface, implementation_class")
         php_map_high_level_constructor_destructor (my.in_module, my.out_high_level)
     endif
 
@@ -183,6 +186,55 @@ function php_map_high_level (in_module, in_php_module, in_php_project, out_high_
         endnew
     endfor
 
+    if my.in_type = "implementation_class"
+
+        for my.in_php_project->interfaces.interface as interface0
+            my._custom_code = format_left("\
+                $implTag = vscf_impl_tag_php($ctx);
+
+                switch ($implTag) {
+                ", 0)
+
+            for my.in_php_project.php_module as php_module0 where php_module0.type = "implementation"
+                for php_module0->high_level.interface as interface1 where interface1.name = "$(interface0.name0:Pascal)"
+                    my._custom_code += format_left("\
+                        case \"$(php_module0.name:Pascal)\":
+                            return (new $(php_module0.name:Pascal)($ctx));
+                            break;
+                        ", 1)
+                endfor
+            endfor
+
+            my._custom_code += format_left("\
+                    default:
+                        throw new \\\\Exception(\"Unexpected C implementation cast to the PHP implementation.\");
+                        break;
+                }
+                ", 0)
+
+            new method to my.in_module
+                .name = "wrap $(interface0.name0:)"
+                .visibility = "public"
+                .declaration = "public"
+                .scope = "public"
+                .is_static = 1
+                .return_type = "$(interface0.name0:Pascal)"
+                .throws_exception = 1
+
+                new argument to method
+                    .name = "ctx"
+                    .class = "ctx"
+                endnew
+
+                new custom_code to method
+                    . = format_left(my._custom_code, 0)
+                endnew
+
+                . = "Wrap C implementation object to the PHP object that implements protocol $(interface0.name0:Pascal)."
+            endnew
+        endfor
+    endif
+
     for my.in_module.method as method0 where method0.visibility = "public" & method0.declaration = "public" & method0.scope = "public"
         new php_method to my.out_high_level
             php_map_high_level_method (method0, my.in_php_module, my.in_type, php_method)
@@ -203,7 +255,6 @@ function php_map_high_level_constructor_destructor (in_module, out_high_level)
     new php_method to my.out_high_level
         .name = "__construct"
         .name0 = "new"
-        .function_name = "TEMP_FUNCTION_NAME"
         .return_type = "void"
         .return_data = ""
         .throws_exception = "0"
@@ -241,7 +292,6 @@ function php_map_high_level_constructor_destructor (in_module, out_high_level)
     new php_method to my.out_high_level
         .name = "__destructor"
         .name0 = "delete"
-        .function_name = "TEMP_FUNCTION_NAME"
         .return_type = "void"
         .return_data = ""
         .throws_exception = "0"
@@ -289,13 +339,13 @@ function php_map_high_level_method (in_method, in_php_module, in_type, out_php_m
 
     php_map_high_level_return (my.in_method, my.in_php_module, my.out_php_method)
 
-    my._md = "public"
+    my._md = " "
 
     if my.in_method.is_static="1"
-        my._md = "static"
+        my._md = " static "
     endif
 
-    my.out_php_method.declaration = my._md
+    my.out_php_method.declaration = "public$(my._md:)"
 
     if my.in_type = "interface"
         my.out_php_method.function_name = ""
@@ -316,14 +366,18 @@ function php_map_high_level_method (in_method, in_php_module, in_type, out_php_m
         new php_argument to php_method
             php_map_high_level_argument (argument0, my.in_php_module, php_argument)
             my._docblock_data += format_left("@param $(0.type:) $(0.name:)\n", 0)
-            my._method_arguments += "$(0.type:) $(0.name:)" + my._d
+            my._type = ""
+            if 0.type <> ""
+                my._type = "$(0.type:)"
+            endif
+            my._method_arguments += "$(my._type:)$(0.name:)" + my._d
             my._function_arguments += "$(0.name:)" + my._d
         endnew
     endfor
 
     my._docblock_data += format_left("@return $(0.return_type:)\n", 0)
 
-    if 0.throw_exception = 1
+    if 0.throw_exception = 1 | (defined (my.in_method.throws_exception) & my.in_method.throws_exception = 1)
         my._docblock_data += format_left("@throws \\\\Exception", 0)
     endif
 
@@ -342,7 +396,11 @@ function php_map_high_level_method (in_method, in_php_module, in_type, out_php_m
 
     if my.in_type <> "interface"
         new body to my.out_php_method
-            . = php_format_high_level_method_body(my.out_php_method)
+            if defined (my.in_method->custom_code)
+                . = my.in_method->custom_code.
+            else
+                . = php_format_high_level_method_body(my.out_php_method)
+            endif
         endnew
     endif
 endfunction
@@ -355,8 +413,12 @@ function php_map_high_level_return (in_method, in_php_module, out_php_method)
 
     my._return_type = "void"
 
-    if defined (my.in_method.return_type) & my.in_method.return_type = "mixed"
-        my._return_type = "mixed"
+    if defined (my.in_method.return_type)
+        if my.in_method.return_type = "mixed"
+            my._return_type = "mixed"
+        else
+            my._return_type = my.in_method.return_type
+        endif
     endif
 
     my._return_data = ""
@@ -455,6 +517,8 @@ function php_map_high_level_argument (in_argument, in_php_module, out_php_argume
     if defined (my.in_argument.class) & my.in_argument.class <> "error"
         if string_in(my.in_argument.class, "data, buffer") 
             my._type = "string"
+        elsif my.in_argument.class = "ctx"
+            my._type = ""
         else
             my._type = "$(my.in_argument.class:Pascal)"
             my._instance = 1

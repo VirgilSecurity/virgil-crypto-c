@@ -80,6 +80,14 @@ function php_create_project_module (project, wrapper)
 
         copy my.project->license to php_project
 
+        new interfaces to php_project
+            for my.project.interface as interface0
+                new interface to interfaces
+                    .name0 = interface0.name
+                endnew
+            endfor
+        endnew
+
         new require to php_project
             for my.project.require as require0 where defined (require0.project)
                 new project to require
@@ -179,6 +187,10 @@ endfunction
 # ---------------------------------------------------------------------------
 function php_create_implementation_module (implementation, php_project, meta)
     check_arguments (my, "implementation, php_project, meta", my)
+
+    if defined (my.implementation)
+        my.php_project.with_implementation = 1
+    endif
 
     echo_info("Create <php_module/> from implementation: '$(my.implementation.name:)'", my)
 
@@ -331,7 +343,6 @@ function php_create_custom_modules (source, php_project, meta)
         .name = "ctx"
         .c_prefix = "c_prefix_ctx"
 
-
         new method to interface
             .name = "get ctx"
             .visibility = "public"
@@ -373,6 +384,7 @@ endfunction
 function php_finalize_custom_modules (source, php_project, meta)
     check_arguments (my, "source, php_project, meta", my)
 
+
     new php_module to my.php_project
         .name = "extension"
         .source_file_name = 0.name + ".c"
@@ -383,6 +395,42 @@ function php_finalize_custom_modules (source, php_project, meta)
 
         #php_map_low_level_extension(my.php_project, php_module)
     endnew
+
+    if defined (my.php_project.with_implementation) & my.php_project.with_implementation = "1"
+
+        my._type = "implementation_class"
+        echo_info ("Create <php_module/> from class '$(my.php_project.project0:) implementation'", my)
+
+        my._i = XML.new()
+        new class to my._i
+            .name = "$(my.php_project.project0:) implementation"
+            .c_prefix = "c_prefix_$(0.name:c)"
+        endnew
+
+        new php_module to my.php_project
+            .name = "$(my._i->class.name:Pascal)"
+            .name0 = "$(my._i->class.name:c)"
+            .source_file_name = 0.name + ".php"
+            .source_dir = cat_path (my.php_project.source_dir, "src")
+            .source_file_path = cat_path (0.source_dir, 0.source_file_name)
+            .prefix = my.php_project.prefix
+            .type = my._type
+            .main_project0 = my.php_project.main_project0
+            .project0 = my.php_project.project0
+
+            new php_license to php_module
+                . = php_format_comment (my.php_project->license)
+            endnew
+
+            new high_level to php_module
+                php_map_high_level(my._i->class, php_module, my.php_project, high_level, my._type)
+            endnew
+
+            new low_level to php_module
+                .temp_name = "temp_name"
+            endnew
+        endnew
+    endif
 endfunction
 
 .endtemplate
