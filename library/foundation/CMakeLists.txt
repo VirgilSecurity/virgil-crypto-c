@@ -86,7 +86,14 @@ include("${CMAKE_CURRENT_LIST_DIR}/definitions.cmake")
 #
 # Link to dependencies
 #
-target_link_libraries(foundation PUBLIC vsc::foundation_pb vsc::common mbed::crypto ed25519)
+target_link_libraries(foundation
+        PUBLIC
+            vsc::foundation_pb
+            vsc::common
+            mbed::crypto ed25519
+            $<$<BOOL:${VSCF_MULTI_THREADING}>:XKCP::keccak>
+            $<$<BOOL:${VSCF_MULTI_THREADING}>:round5>
+        )
 
 #
 # Define specific compilation and linkage flags.

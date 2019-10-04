@@ -104,10 +104,6 @@ option(VIRGIL_WRAP_PHP "Build 'PHP' wrapper" OFF)
 option(VIRGIL_WRAP_JAVA "Build 'Java' wrapper" OFF)
 option(VIRGIL_WRAP_WASM "Build 'WebAssembly' wrapper" OFF)
 
-#
-# Post-quantum
-#
-option(VIRGIL_POST_QUANTUM "Enable build post-quantum cryptography [experemental]" OFF)
 
 # ---------------------------------------------------------------------------
 #   Platfrom specific.
@@ -187,7 +183,7 @@ add_subdirectory("thirdparty/nanopb")
 # Post-quantum
 #
 if(VIRGIL_POST_QUANTUM)
-    add_subdirectory("thirdparty/keccack")
+    add_subdirectory("thirdparty/keccak")
     add_subdirectory("thirdparty/round5")
 endif()
 

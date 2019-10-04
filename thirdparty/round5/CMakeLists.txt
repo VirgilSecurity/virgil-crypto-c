@@ -31,19 +31,24 @@
 #   POSSIBILITY OF SUCH DAMAGE.
 
 
+# ---------------------------------------------------------------------------
+#   Options
+# ---------------------------------------------------------------------------
+include("${CMAKE_CURRENT_LIST_DIR}/features.cmake")
+
 
 # ---------------------------------------------------------------------------
 #   Check dependencies
 # ---------------------------------------------------------------------------
 #
-# keccack
+# keccak
 #
-if(NOT TARGET XKCP::keccack)
-    message(FATAL_ERROR "Required library 'keccak' is not found - looking for target 'XKCP::keccack'.")
+if(NOT TARGET XKCP::keccak)
+    message(FATAL_ERROR "Required library 'keccak' is not found - looking for target 'XKCP::keccak'.")
 endif()
 
-get_property(KECCACK_INCLUDE_DIRECTORIES TARGET XKCP::keccack PROPERTY INTERFACE_INCLUDE_DIRECTORIES)
-get_property(KECCACK_LIBRARIES TARGET XKCP::keccack PROPERTY IMPORTED_LOCATION)
+get_property(KECCAK_INCLUDE_DIRECTORIES TARGET XKCP::keccak PROPERTY INTERFACE_INCLUDE_DIRECTORIES)
+get_property(KECCAK_LIBRARIES TARGET XKCP::keccak PROPERTY IMPORTED_LOCATION)
 
 #
 # OpenSSL
@@ -57,7 +62,7 @@ find_package(OpenSSL 1.1.1 REQUIRED)
 #
 # CPATH
 #
-foreach(inc_dir IN LISTS KECCACK_INCLUDE_DIRECTORIES OPENSSL_INCLUDE_DIR)
+foreach(inc_dir IN LISTS KECCAK_INCLUDE_DIRECTORIES OPENSSL_INCLUDE_DIR)
     if(DEFINED CPATH)
         set(CPATH "${CPATH}:${inc_dir}")
     else()
@@ -68,7 +73,7 @@ endforeach()
 #
 # LIBRARY_PATH
 #
-foreach(lib IN LISTS KECCACK_LIBRARIES OPENSSL_CRYPTO_LIBRARY)
+foreach(lib IN LISTS KECCAK_LIBRARIES OPENSSL_CRYPTO_LIBRARY)
     get_filename_component(lib_dir "${lib}" DIRECTORY)
     if(DEFINED LIBRARY_PATH)
         set(LIBRARY_PATH "${LIBRARY_PATH}:${lib_dir}")
@@ -110,7 +115,6 @@ set_property(TARGET round5
             "${ROUND5_LOCATION}/build/.o/a_random.o"
             "${ROUND5_LOCATION}/build/.o/cca_encrypt.o"
             "${ROUND5_LOCATION}/build/.o/cpa_kem.o"
-            "${ROUND5_LOCATION}/build/.o/createAfixed"
             "${ROUND5_LOCATION}/build/.o/drbg.o"
             "${ROUND5_LOCATION}/build/.o/little_endian.o"
             "${ROUND5_LOCATION}/build/.o/misc.o"

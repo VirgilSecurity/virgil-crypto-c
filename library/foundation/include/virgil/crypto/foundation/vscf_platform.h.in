@@ -82,6 +82,10 @@ extern "C" {
 #cmakedefine01 VSCF_MULTI_THREADING
 #endif
 
+#ifndef VSCF_POST_QUANTUM
+#cmakedefine01 VSCF_POST_QUANTUM
+#endif
+
 #ifndef VSCF_CIPHER
 #cmakedefine01 VSCF_CIPHER
 #endif

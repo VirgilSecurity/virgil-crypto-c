@@ -56,6 +56,13 @@
         <require feature="THREADING C" library="mbedtls"/>
     </feature>
 
+    <feature name="post quantum" default="off">
+        Enable post-quantum cryptography for foundation library [experemental].
+
+        <require library="keccak" feature="library" />
+        <require library="round5" feature="library" />
+    </feature>
+
     <module name="assert" from="shared"/>
     <module name="library" from="shared"/>
     <module name="memory" from="shared"/>

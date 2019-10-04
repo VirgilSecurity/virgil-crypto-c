@@ -101,6 +101,7 @@ _add_test (test_simple_swu)
 _add_test (test_group_session)
 _add_test (test_group_message)
 _add_test (test_message_info_editor)
+_add_test (test_post_quantum_libraries)
 
 # ---------------------------------------------------------------------------
 #   Multi-threading tests

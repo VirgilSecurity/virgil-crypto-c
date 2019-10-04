@@ -34,6 +34,7 @@
 # ---------------------------------------------------------------------------
 #   Options
 # ---------------------------------------------------------------------------
+include("${CMAKE_CURRENT_LIST_DIR}/features.cmake")
 
 # ---------------------------------------------------------------------------
 #   Load library as an external project
@@ -41,7 +42,7 @@
 find_program(MAKE_EXE NAMES make)
 
 include(ExternalProject)
-ExternalProject_Add(keccack-ext
+ExternalProject_Add(keccak-ext
         GIT_REPOSITORY
             https://github.com/XKCP/XKCP
         GIT_TAG
@@ -55,32 +56,32 @@ ExternalProject_Add(keccack-ext
 # ---------------------------------------------------------------------------
 #   Import library as a target
 # ---------------------------------------------------------------------------
-set(KECCACK_INSTALL_LOCATION ${CMAKE_CURRENT_BINARY_DIR}/keccack-ext-prefix/src/keccack-ext/bin)
-set(KECCACK_LIB_NAME "${CMAKE_STATIC_LIBRARY_PREFIX}keccack${CMAKE_STATIC_LIBRARY_SUFFIX}")
+set(KECCAK_INSTALL_LOCATION ${CMAKE_CURRENT_BINARY_DIR}/keccak-ext-prefix/src/keccak-ext/bin)
+set(KECCAK_LIB_NAME "${CMAKE_STATIC_LIBRARY_PREFIX}keccak${CMAKE_STATIC_LIBRARY_SUFFIX}")
 
 
-file(MAKE_DIRECTORY ${KECCACK_INSTALL_LOCATION}/generic64)
-file(MAKE_DIRECTORY ${KECCACK_INSTALL_LOCATION}/generic64/${KECCACK_LIB_NAME}.headers)
+file(MAKE_DIRECTORY ${KECCAK_INSTALL_LOCATION}/generic64)
+file(MAKE_DIRECTORY ${KECCAK_INSTALL_LOCATION}/generic64/${KECCAK_LIB_NAME}.headers)
 
-add_library(keccack STATIC IMPORTED GLOBAL)
+add_library(keccak STATIC IMPORTED GLOBAL)
 
-add_dependencies(keccack keccack-ext)
+add_dependencies(keccak keccak-ext)
 
-set_target_properties(keccack
+set_target_properties(keccak
         PROPERTIES
         IMPORTED_LOCATION
-            "${KECCACK_INSTALL_LOCATION}/generic64/${KECCACK_LIB_NAME}"
+            "${KECCAK_INSTALL_LOCATION}/generic64/${KECCAK_LIB_NAME}"
         )
 
-set_property(TARGET keccack
+set_property(TARGET keccak
         PROPERTY INTERFACE_INCLUDE_DIRECTORIES
-            "${KECCACK_INSTALL_LOCATION}/generic64"
-            "${KECCACK_INSTALL_LOCATION}/generic64/${KECCACK_LIB_NAME}.headers"
+            "${KECCAK_INSTALL_LOCATION}/generic64"
+            "${KECCAK_INSTALL_LOCATION}/generic64/${KECCAK_LIB_NAME}.headers"
         )
 
 # ---------------------------------------------------------------------------
 #   Alias library alias
 # ---------------------------------------------------------------------------
-if(NOT TARGET XKCP::keccack)
-    add_library(XKCP::keccack ALIAS keccack)
+if(NOT TARGET XKCP::keccak)
+    add_library(XKCP::keccak ALIAS keccak)
 endif()

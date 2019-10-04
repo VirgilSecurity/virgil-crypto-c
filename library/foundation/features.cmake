@@ -47,6 +47,7 @@ include_guard()
 
 option(VSCF_LIBRARY "Enable build of the 'foundation' library" ON)
 option(VSCF_MULTI_THREADING "Enable multi-threading safety for foundation library." ON)
+option(VSCF_POST_QUANTUM "Enable post-quantum cryptography for foundation library." OFF)
 option(VSCF_CIPHER "Enable interface 'cipher'." ON)
 option(VSCF_AUTH_ENCRYPT "Enable interface 'auth encrypt'." ON)
 option(VSCF_AUTH_DECRYPT "Enable interface 'auth decrypt'." ON)
@@ -165,6 +166,7 @@ option(VSCF_FOOTER_INFO "Enable class 'footer info'." ON)
 mark_as_advanced(
         VSCF_LIBRARY
         VSCF_MULTI_THREADING
+        VSCF_POST_QUANTUM
         VSCF_CIPHER
         VSCF_AUTH_ENCRYPT
         VSCF_AUTH_DECRYPT
@@ -287,6 +289,24 @@ if(VSCF_MULTI_THREADING AND NOT MBEDTLS_THREADING_C)
     message("--")
     message("Feature VSCF_MULTI_THREADING depends on the feature:")
     message("     MBEDTLS_THREADING_C - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_POST_QUANTUM AND NOT KECCAK_LIBRARY)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_POST_QUANTUM depends on the feature:")
+    message("     KECCAK_LIBRARY - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_POST_QUANTUM AND NOT ROUND5_LIBRARY)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_POST_QUANTUM depends on the feature:")
+    message("     ROUND5_LIBRARY - which is disabled.")
     message("--")
     message(FATAL_ERROR)
 endif()
