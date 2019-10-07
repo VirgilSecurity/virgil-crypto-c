@@ -90,15 +90,6 @@ function _D25_resolve_attr_default (item, parent)
     check_arguments (my, "item", my)
 
     my.item.default ?= "on"
-
-    my.valid_defaults = "on, off"
-
-    if ! string_in (my.item.default, my.valid_defaults)
-        my.component_dump = component_dump (my.item)
-
-        echo_fatal ("Invalid item attribute 'default' '$(my.component_dump:)'. " + \
-                    "Expected {$(my.valid_defaults)}", my)
-    endif
 endfunction
 
 # ---------------------------------------------------------------------------
