@@ -43,7 +43,7 @@
 #   @end
 
 
-cmake_minimum_required(VERSION 3.12 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.15 FATAL_ERROR)
 
 project(virgil_crypto_foundation_wasm VERSION ${virgil_crypto_VERSION} LANGUAGES C)
 

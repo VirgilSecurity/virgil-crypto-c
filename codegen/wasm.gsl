@@ -1756,7 +1756,7 @@ function wasm_create_project_cmake_module(wasm_project)
 
         new cmake_code
             . = format_left('
-                cmake_minimum_required(VERSION 3.12 FATAL_ERROR)
+                cmake_minimum_required(VERSION 3.15 FATAL_ERROR)
 
                 project(virgil_crypto_$(my.wasm_project.cmake_c_target:)_wasm \
                         VERSION ${virgil_crypto_VERSION} LANGUAGES C)
@@ -2001,7 +2001,7 @@ function wasm_create_toplevel_modules(wrapper)
         endnew
 
         my.code = format_left('
-            cmake_minimum_required(VERSION 3.12 FATAL_ERROR)
+            cmake_minimum_required(VERSION 3.15 FATAL_ERROR)
 
             project(virgil_crypto_wasm VERSION ${virgil_crypto_VERSION} LANGUAGES C)
 

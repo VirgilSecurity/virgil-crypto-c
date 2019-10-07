@@ -32,7 +32,7 @@
 #
 #   Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-cmake_minimum_required(VERSION 3.12)
+cmake_minimum_required(VERSION 3.15)
 project(virgil_crypto_c_foundation_benchmarks VERSION ${virgil_crypto_c_benchmarks_VERSION} LANGUAGES CXX)
 
 add_subdirectory(data)
