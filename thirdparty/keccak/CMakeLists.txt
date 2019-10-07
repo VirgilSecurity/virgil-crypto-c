@@ -36,6 +36,11 @@
 # ---------------------------------------------------------------------------
 include("${CMAKE_CURRENT_LIST_DIR}/features.cmake")
 
+if(NOT KECCAK_LIBRARY)
+    message(STATUS "Skip building library 'keccack' - option KECCAK_LIBRARY is OFF.")
+endif()
+
+
 # ---------------------------------------------------------------------------
 #   Load library as an external project
 # ---------------------------------------------------------------------------

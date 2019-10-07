@@ -36,6 +36,10 @@
 # ---------------------------------------------------------------------------
 include("${CMAKE_CURRENT_LIST_DIR}/features.cmake")
 
+if(NOT FALCON_SIGN_LIBRARY)
+    message(STATUS "Skip building library 'falcon-sign' - option FALCON_SIGN_LIBRARY is OFF.")
+endif()
+
 # ---------------------------------------------------------------------------
 #   Load library as an external project
 # ---------------------------------------------------------------------------

@@ -36,6 +36,10 @@
 # ---------------------------------------------------------------------------
 include("${CMAKE_CURRENT_LIST_DIR}/features.cmake")
 
+if(NOT ROUND5_LIBRARY)
+    message(STATUS "Skip building library 'round5' - option ROUND5_LIBRARY is OFF.")
+endif()
+
 
 # ---------------------------------------------------------------------------
 #   Check dependencies
@@ -112,6 +116,7 @@ set(ROUND5_LOCATION "${CMAKE_CURRENT_BINARY_DIR}/round5-ext-prefix/src/round5-ex
 
 add_library(round5 OBJECT IMPORTED GLOBAL)
 
+add_dependencies(round5-ext XKCP::keccak)
 add_dependencies(round5 round5-ext)
 
 set_property(TARGET round5
