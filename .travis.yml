@@ -17,6 +17,7 @@ env:
   - OPENSSL_ROOT_DIR=/usr/local/openssl
 
 install:
+  - sudo apt-get install -y -qq xsltproc
   - travis_retry wget https://cmake.org/files/v3.15/cmake-3.15.4-Linux-x86_64.sh
   - sudo bash cmake-3.15.4-Linux-x86_64.sh --skip-license --exclude-subdir --prefix=/usr/local
   - export PATH="/usr/local/bin:$PATH"
