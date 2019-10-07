@@ -10,6 +10,7 @@
 ### Features
 
 - Lib/Foundation: Operations "sign then encrypt" and "decrypt then verify" were added to "RecipientCipher" class
+- Lib/Foundation: Method "hasKeyRecipient()" was added to class "RecipientCipher"
 - Lib/Foundation: Method "preciseEncryptedLen()" was added to interface "Encrypt"
 
 ### Changes
