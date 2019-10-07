@@ -96,6 +96,11 @@ option(VIRGIL_LIB_RATCHET "Build 'ratchet' library" ON)
 option(VIRGIL_LIB_PHE "Build 'phe' library" ON)
 
 #
+# Features
+#
+option(VIRGIL_POST_QUANTUM "Enable post-quantum cryptography [experemental]." OFF)
+
+#
 # Wrappers
 #
 option(VIRGIL_WRAP_ALL "Build all available wrappers on the given platform" OFF)

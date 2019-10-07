@@ -47,7 +47,7 @@ include_guard()
 
 option(VSCF_LIBRARY "Enable build of the 'foundation' library" ON)
 option(VSCF_MULTI_THREADING "Enable multi-threading safety for foundation library." ON)
-option(VSCF_POST_QUANTUM "Enable post-quantum cryptography for foundation library." OFF)
+option(VSCF_POST_QUANTUM "Enable post-quantum cryptography for foundation library [experemental]." ${VIRGIL_POST_QUANTUM})
 option(VSCF_CIPHER "Enable interface 'cipher'." ON)
 option(VSCF_AUTH_ENCRYPT "Enable interface 'auth encrypt'." ON)
 option(VSCF_AUTH_DECRYPT "Enable interface 'auth decrypt'." ON)

@@ -56,7 +56,7 @@
         <require feature="THREADING C" library="mbedtls"/>
     </feature>
 
-    <feature name="post quantum" default="off">
+    <feature name="post quantum" default="${VIRGIL_POST_QUANTUM}">
         Enable post-quantum cryptography for foundation library [experemental].
 
         <require library="keccak" feature="library" />
