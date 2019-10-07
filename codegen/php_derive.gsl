@@ -57,6 +57,18 @@ endfunction
 # ---------------------------------------------------------------------------
 #   
 # ---------------------------------------------------------------------------
+function php_derive_low_level_constant_name (in_constant)
+    check_arguments (my, "in_constant", my)
+
+    my._res = "$(my.in_constant.name:c)"
+    my._res = "$(my._res:UPPER)"
+
+    return my._res
+endfunction
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
 function php_derive_high_level_function_name (in_php_method)
     check_arguments (my, "in_php_method", my)
 
