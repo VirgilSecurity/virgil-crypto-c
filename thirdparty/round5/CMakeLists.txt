@@ -53,6 +53,11 @@ get_property(KECCAK_LIBRARIES TARGET XKCP::keccak PROPERTY IMPORTED_LOCATION)
 #
 # OpenSSL
 #
+if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+    if(NOT ENV{OPENSSL_ROOT_DIR} AND EXISTS "/usr/local/opt/openssl@1.1")
+        set(ENV{OPENSSL_ROOT_DIR} "/usr/local/opt/openssl@1.1")
+    endif()
+endif()
 set(OPENSSL_USE_STATIC_LIBS YES)
 find_package(OpenSSL 1.1.1 REQUIRED)
 
@@ -96,7 +101,7 @@ ExternalProject_Add(round5-ext
             24b9738b0e39ce2115cc6b1f639359f5f459bd3e
         BUILD_IN_SOURCE TRUE
         CONFIGURE_COMMAND ""
-        BUILD_COMMAND CPATH=${CPATH} LIBRARY_PATH=${LIBRARY_PATH} ${MAKE_EXE} reference
+        BUILD_COMMAND CPATH=${CPATH} LIBRARY_PATH=${LIBRARY_PATH} ${MAKE_EXE} ALG=R5ND_1KEM_0d reference
         INSTALL_COMMAND ""
         )
 
@@ -108,6 +113,11 @@ set(ROUND5_LOCATION "${CMAKE_CURRENT_BINARY_DIR}/round5-ext-prefix/src/round5-ex
 add_library(round5 OBJECT IMPORTED GLOBAL)
 
 add_dependencies(round5 round5-ext)
+
+set_property(TARGET round5
+        PROPERTY INTERFACE_COMPILE_DEFINITIONS
+            R5ND_1KEM_0d
+        )
 
 set_property(TARGET round5
         PROPERTY IMPORTED_OBJECTS
@@ -134,6 +144,8 @@ set_property(TARGET round5
             "${ROUND5_LOCATION}/build/.o/rng/true_rng.o"
         )
 
+file(MAKE_DIRECTORY "${ROUND5_LOCATION}/src")
+file(MAKE_DIRECTORY "${ROUND5_LOCATION}/src/rng")
 set_property(TARGET round5
         PROPERTY INTERFACE_INCLUDE_DIRECTORIES
             "${ROUND5_LOCATION}/src"
