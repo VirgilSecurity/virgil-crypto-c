@@ -24,6 +24,10 @@ cmake-build-*/
 *.sublime-workspace
 
 ####
+# Visual Studio Code
+.vscode/
+
+####
 # Visual Studio (VisualGDB)
 Debug*/
 gcc*

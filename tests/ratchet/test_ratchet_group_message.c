@@ -57,8 +57,8 @@
 static bool
 reg_msg_hdr_cmp(vscr_RegularGroupMessageHeader *msg1, vscr_RegularGroupMessageHeader *msg2) {
     return memcmp(msg1->session_id, msg2->session_id, sizeof(msg1->session_id)) == 0 &&
-           memcmp(msg1->sender_id, msg2->sender_id, sizeof(msg1->sender_id)) == 0 && msg1->counter == msg2->counter &&
-           msg1->epoch == msg2->epoch && msg1->prev_epochs_msgs[0] == msg2->prev_epochs_msgs[0] &&
+           msg1->counter == msg2->counter && msg1->epoch == msg2->epoch &&
+           msg1->prev_epochs_msgs[0] == msg2->prev_epochs_msgs[0] &&
            msg1->prev_epochs_msgs[1] == msg2->prev_epochs_msgs[1] &&
            msg1->prev_epochs_msgs[2] == msg2->prev_epochs_msgs[2] &&
            msg1->prev_epochs_msgs[3] == msg2->prev_epochs_msgs[3] && msg1->epoch == msg2->epoch;
@@ -125,8 +125,6 @@ test__serialize_deserialize__fixed_regular_msg__should_be_equal(void) {
             test_data_ratchet_group_message_session_id.len);
     memcpy(msg1->message_pb.regular_message.signature, test_data_ratchet_group_message_signature.bytes,
             test_data_ratchet_group_message_signature.len);
-    memcpy(msg1->header_pb->sender_id, test_data_ratchet_group_message_sender_id.bytes,
-            test_data_ratchet_group_message_sender_id.len);
 
     msg1->message_pb.regular_message.cipher_text =
             vscr_alloc(PB_BYTES_ARRAY_T_ALLOCSIZE(test_data_ratchet_group_message_data.len));
@@ -243,8 +241,6 @@ test__serialize_deserialize__regular_overflow__should_be_equal(void) {
             test_data_ratchet_group_message_session_id.len);
     memcpy(msg1->message_pb.regular_message.signature, test_data_ratchet_group_message_signature.bytes,
             test_data_ratchet_group_message_signature.len);
-    memcpy(msg1->header_pb->sender_id, test_data_ratchet_group_message_sender_id.bytes,
-            test_data_ratchet_group_message_sender_id.len);
 
     pb_ostream_t ostream = pb_ostream_from_buffer(
             msg1->message_pb.regular_message.header.bytes, sizeof(msg1->message_pb.regular_message.header.bytes));
@@ -286,14 +282,11 @@ test__methods__fixed_regular_msg__should_return_correct_values(void) {
     msg1->header_pb->epoch = 18;
     memcpy(msg1->header_pb->session_id, test_data_ratchet_group_message_session_id.bytes,
             sizeof(msg1->header_pb->session_id));
-    memcpy(msg1->header_pb->sender_id, test_data_ratchet_group_message_sender_id.bytes,
-            sizeof(msg1->header_pb->sender_id));
 
     TEST_ASSERT_EQUAL_DATA(test_data_ratchet_group_message_session_id, vscr_ratchet_group_message_get_session_id(msg1));
     TEST_ASSERT_EQUAL(vscr_group_msg_type_REGULAR, vscr_ratchet_group_message_get_type(msg1));
     TEST_ASSERT_EQUAL(msg1->header_pb->counter, vscr_ratchet_group_message_get_counter(msg1));
     TEST_ASSERT_EQUAL(msg1->header_pb->epoch, vscr_ratchet_group_message_get_epoch(msg1));
-    TEST_ASSERT_EQUAL_DATA(test_data_ratchet_group_message_sender_id, vscr_ratchet_group_message_get_sender_id(msg1));
 
     vscr_ratchet_group_message_destroy(&msg1);
 }
@@ -314,7 +307,6 @@ test__methods__fixed_group_info_msg__should_return_correct_values(void) {
     TEST_ASSERT_EQUAL(vscr_group_msg_type_GROUP_INFO, vscr_ratchet_group_message_get_type(msg1));
     TEST_ASSERT_EQUAL(0, vscr_ratchet_group_message_get_counter(msg1));
     TEST_ASSERT_EQUAL(msg1->message_pb.group_info.epoch, vscr_ratchet_group_message_get_epoch(msg1));
-    TEST_ASSERT_EQUAL_DATA(vsc_data_empty(), vscr_ratchet_group_message_get_sender_id(msg1));
 
     vscr_ratchet_group_message_destroy(&msg1);
 }

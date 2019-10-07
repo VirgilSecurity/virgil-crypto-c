@@ -267,7 +267,7 @@ vscr_ratchet_group_session_decrypt_len(vscr_ratchet_group_session_t *self, const
 //
 VSCR_PUBLIC vscr_status_t
 vscr_ratchet_group_session_decrypt(vscr_ratchet_group_session_t *self, const vscr_ratchet_group_message_t *message,
-        vsc_buffer_t *plain_text) VSCR_NODISCARD;
+        vsc_data_t sender_id, vsc_buffer_t *plain_text) VSCR_NODISCARD;
 
 //
 //  Serializes session to buffer

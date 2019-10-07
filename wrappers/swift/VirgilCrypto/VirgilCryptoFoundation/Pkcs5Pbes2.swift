@@ -117,7 +117,6 @@ import VSCFoundation
 
         let proxyResult = data.withUnsafeBytes({ (dataPointer: UnsafeRawBufferPointer) -> vscf_status_t in
             out.withUnsafeMutableBytes({ (outPointer: UnsafeMutableRawBufferPointer) -> vscf_status_t in
-                vsc_buffer_init(outBuf)
                 vsc_buffer_use(outBuf, outPointer.bindMemory(to: byte.self).baseAddress, outCount)
 
                 return vscf_pkcs5_pbes2_encrypt(self.c_ctx, vsc_data(dataPointer.bindMemory(to: byte.self).baseAddress, data.count), outBuf)
@@ -137,6 +136,13 @@ import VSCFoundation
         return proxyResult
     }
 
+    /// Precise length calculation of encrypted data.
+    @objc public func preciseEncryptedLen(dataLen: Int) -> Int {
+        let proxyResult = vscf_pkcs5_pbes2_precise_encrypted_len(self.c_ctx, dataLen)
+
+        return proxyResult
+    }
+
     /// Decrypt given data.
     @objc public func decrypt(data: Data) throws -> Data {
         let outCount = self.decryptedLen(dataLen: data.count)
@@ -148,7 +154,6 @@ import VSCFoundation
 
         let proxyResult = data.withUnsafeBytes({ (dataPointer: UnsafeRawBufferPointer) -> vscf_status_t in
             out.withUnsafeMutableBytes({ (outPointer: UnsafeMutableRawBufferPointer) -> vscf_status_t in
-                vsc_buffer_init(outBuf)
                 vsc_buffer_use(outBuf, outPointer.bindMemory(to: byte.self).baseAddress, outCount)
 
                 return vscf_pkcs5_pbes2_decrypt(self.c_ctx, vsc_data(dataPointer.bindMemory(to: byte.self).baseAddress, data.count), outBuf)

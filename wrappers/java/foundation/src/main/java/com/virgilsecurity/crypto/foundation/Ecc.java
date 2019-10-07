@@ -51,6 +51,11 @@ public class Ecc implements AutoCloseable, Alg, KeyAlg, KeyCipher, KeySigner, Co
         this.cCtx = FoundationJNI.INSTANCE.ecc_new();
     }
 
+    /* Wrap underlying C context. */
+    Ecc(FoundationContextHolder contextHolder) {
+        this.cCtx = contextHolder.cCtx;
+    }
+
     public void setRandom(Random random) {
         FoundationJNI.INSTANCE.ecc_setRandom(this.cCtx, random);
     }
@@ -82,9 +87,8 @@ public class Ecc implements AutoCloseable, Alg, KeyAlg, KeyCipher, KeySigner, Co
     * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     */
     public static Ecc getInstance(long cCtx) {
-        Ecc newInstance = new Ecc();
-        newInstance.cCtx = cCtx;
-        return newInstance;
+        FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
+        return new Ecc(ctxHolder);
     }
 
     /* Close resource. */

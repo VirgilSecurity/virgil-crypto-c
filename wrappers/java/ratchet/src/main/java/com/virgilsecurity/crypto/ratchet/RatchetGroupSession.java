@@ -51,14 +51,18 @@ public class RatchetGroupSession implements AutoCloseable {
         this.cCtx = RatchetJNI.INSTANCE.ratchetGroupSession_new();
     }
 
+    /* Wrap underlying C context. */
+    RatchetGroupSession(RatchetContextHolder contextHolder) {
+        this.cCtx = contextHolder.cCtx;
+    }
+
     /*
     * Acquire C context.
     * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     */
     public static RatchetGroupSession getInstance(long cCtx) {
-        RatchetGroupSession newInstance = new RatchetGroupSession();
-        newInstance.cCtx = cCtx;
-        return newInstance;
+        RatchetContextHolder ctxHolder = new RatchetContextHolder(cCtx);
+        return new RatchetGroupSession(ctxHolder);
     }
 
     /* Close resource. */
@@ -179,8 +183,8 @@ public class RatchetGroupSession implements AutoCloseable {
     /*
     * Decrypts message
     */
-    public byte[] decrypt(RatchetGroupMessage message) throws RatchetException {
-        return RatchetJNI.INSTANCE.ratchetGroupSession_decrypt(this.cCtx, message);
+    public byte[] decrypt(RatchetGroupMessage message, byte[] senderId) throws RatchetException {
+        return RatchetJNI.INSTANCE.ratchetGroupSession_decrypt(this.cCtx, message, senderId);
     }
 
     /*

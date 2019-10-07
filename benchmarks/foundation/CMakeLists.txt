@@ -37,21 +37,23 @@ project(virgil_crypto_c_foundation_benchmarks VERSION ${virgil_crypto_c_benchmar
 
 add_subdirectory(data)
 
+add_executable(bench)
+set_target_properties(bench PROPERTIES CXX_STANDARD 11)
+target_link_libraries(bench benchmark_data_foundation vsc::foundation benchmark::benchmark_main)
+
 macro(_add_benchmark benchmark)
+    target_sources(bench PRIVATE ${benchmark}.cpp)
     add_executable(${benchmark} ${benchmark}.cpp)
-    target_add_filename_definitions(${benchmark})
     target_link_libraries(${benchmark} benchmark_data_foundation vsc::foundation benchmark::benchmark_main)
     set_target_properties(${benchmark} PROPERTIES CXX_STANDARD 11)
-    add_test(NAME ${benchmark} COMMAND ${benchmark})
-    set_tests_properties(${benchmark} PROPERTIES LABELS "benchmark")
 
     if(COMMAND add_clangformat AND ENABLE_CLANGFORMAT)
         add_clangformat(${benchmark})
     endif()
 endmacro()
 
-_add_benchmark(benchmark_sha512)
-_add_benchmark(benchmark_sha512_refcnt)
+_add_benchmark(benchmark_refcnt)
+_add_benchmark(benchmark_key)
+_add_benchmark(benchmark_hash)
 _add_benchmark(benchmark_recipient_cipher)
-_add_benchmark(benchmark_signer)
-_add_benchmark(benchmark_verifier)
+_add_benchmark(benchmark_signer_verifier)

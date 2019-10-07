@@ -51,7 +51,7 @@
 #   Private function prefix is: L23.
 # ---------------------------------------------------------------------------
 #   This is a code generator built using the iMatix GSL code generation
-#   language. See https://github.com/imatix/gsl for details.
+#   language. See https://github.com/zeromq/gsl for details.
 # ---------------------------------------------------------------------------
 
 

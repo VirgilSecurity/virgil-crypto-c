@@ -49,6 +49,11 @@ public class Pkcs5Pbes2 implements AutoCloseable, Alg, Encrypt, Decrypt {
         this.cCtx = FoundationJNI.INSTANCE.pkcs5Pbes2_new();
     }
 
+    /* Wrap underlying C context. */
+    Pkcs5Pbes2(FoundationContextHolder contextHolder) {
+        this.cCtx = contextHolder.cCtx;
+    }
+
     public void setKdf(SaltedKdf kdf) {
         FoundationJNI.INSTANCE.pkcs5Pbes2_setKdf(this.cCtx, kdf);
     }
@@ -69,9 +74,8 @@ public class Pkcs5Pbes2 implements AutoCloseable, Alg, Encrypt, Decrypt {
     * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     */
     public static Pkcs5Pbes2 getInstance(long cCtx) {
-        Pkcs5Pbes2 newInstance = new Pkcs5Pbes2();
-        newInstance.cCtx = cCtx;
-        return newInstance;
+        FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
+        return new Pkcs5Pbes2(ctxHolder);
     }
 
     /* Close resource. */
@@ -112,6 +116,13 @@ public class Pkcs5Pbes2 implements AutoCloseable, Alg, Encrypt, Decrypt {
     */
     public int encryptedLen(int dataLen) {
         return FoundationJNI.INSTANCE.pkcs5Pbes2_encryptedLen(this.cCtx, dataLen);
+    }
+
+    /*
+    * Precise length calculation of encrypted data.
+    */
+    public int preciseEncryptedLen(int dataLen) {
+        return FoundationJNI.INSTANCE.pkcs5Pbes2_preciseEncryptedLen(this.cCtx, dataLen);
     }
 
     /*

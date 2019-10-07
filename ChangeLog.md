@@ -1,6 +1,83 @@
 # virgil-crypto-c ChangeLog (Sorted by date)
 
 
+## Version 0.11.0 released 2019-10-07
+
+### Bugfix
+
+- Lib/Foundation: Fixed crash when import private key from valid ASN.1 but not a private key
+
+### Features
+
+- Lib/Foundation: Operations "sign then encrypt" and "decrypt then verify" were added to "RecipientCipher" class
+- Lib/Foundation: Method "hasKeyRecipient()" was added to class "RecipientCipher"
+- Lib/Foundation: Method "preciseEncryptedLen()" was added to interface "Encrypt"
+
+### Changes
+
+- Lib/Foundation: Interface "CipherAuth" now inherit interface "Cipher"
+- Lib/Foundation/Wrappers: Listed methods where removed from class "MessageInfo":
+  * addKeyRecipient()
+  * addPasswordRecipient()
+  * setDataEncryptionAlgInfo()
+  * setCustomParams()
+  * clearRecipients()
+- Lib/Foundation/Wrappers: Method "add()" was removed from class "KeyRecipientInfoList"
+- Lib/Foundation/Wrappers: Method "add()" was removed from class "PasswordRecipientInfoList"
+
+
+## Version 0.10.3 released 2019-09-10
+
+### Changes
+
+- Lib/Foundation: Added method "unlock" to the class MessageInfoEditor
+
+
+## Version 0.10.2 released 2019-09-09
+
+### Features
+
+- Lib/Foundation: Added support for managing recipients within MessageInfo
+- Lib/PHE: Added PHE Cipher additional data support
+
+### Changes
+
+- Wrapper/Java: Run java benchmark with a profile only
+
+
+## Version 0.10.1 released 2019-09-02
+
+### Bugfix
+
+- Lib/Foundation: Fix crash when export secp256r1 private key with leading zero
+- Wrapper/Swift: Fix memory leaks
+- Wrapper/Java: Fix memory leaks
+
+
+## Version 0.10.0 released 2019-08-12
+
+### Changes
+
+- Lib/Foundation/Ratchet: Fix group chat encryption
+
+### Bugfix
+
+- Wrapper/Python: Fix Python 2.7 package name for macOS platform
+- Wrapper/JS: Fix npm packages
+
+
+## Version 0.9.0 released 2019-08-06
+
+### Bugfix
+
+- Lib/Foundation: Fix crash when import secp256r1 public key
+
+### Features
+
+- Wrapper/JS: Add wrapper for JavaScript (Beta)
+- Wrapper/Python: Add wrapper for Python (Beta)
+
+
 ## Version 0.8.1 released 2019-07-08
 
 ### Changes

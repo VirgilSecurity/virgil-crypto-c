@@ -51,14 +51,18 @@ public class Aes256Cbc implements AutoCloseable, Alg, Encrypt, Decrypt, CipherIn
         this.cCtx = FoundationJNI.INSTANCE.aes256Cbc_new();
     }
 
+    /* Wrap underlying C context. */
+    Aes256Cbc(FoundationContextHolder contextHolder) {
+        this.cCtx = contextHolder.cCtx;
+    }
+
     /*
     * Acquire C context.
     * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     */
     public static Aes256Cbc getInstance(long cCtx) {
-        Aes256Cbc newInstance = new Aes256Cbc();
-        newInstance.cCtx = cCtx;
-        return newInstance;
+        FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
+        return new Aes256Cbc(ctxHolder);
     }
 
     /* Close resource. */
@@ -99,6 +103,13 @@ public class Aes256Cbc implements AutoCloseable, Alg, Encrypt, Decrypt, CipherIn
     */
     public int encryptedLen(int dataLen) {
         return FoundationJNI.INSTANCE.aes256Cbc_encryptedLen(this.cCtx, dataLen);
+    }
+
+    /*
+    * Precise length calculation of encrypted data.
+    */
+    public int preciseEncryptedLen(int dataLen) {
+        return FoundationJNI.INSTANCE.aes256Cbc_preciseEncryptedLen(this.cCtx, dataLen);
     }
 
     /*

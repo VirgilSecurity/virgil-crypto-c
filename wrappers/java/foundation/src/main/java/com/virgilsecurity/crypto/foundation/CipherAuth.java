@@ -38,8 +38,29 @@ package com.virgilsecurity.crypto.foundation;
 
 /*
 * Mix-in interface that provides specific functionality to authenticated
-* encryption and decryption.
+* encryption and decryption (AEAD ciphers).
 */
-public interface CipherAuth extends AuthEncrypt, AuthDecrypt {
+public interface CipherAuth extends Cipher, AuthEncrypt, AuthDecrypt {
+
+    /*
+    * Set additional data for for AEAD ciphers.
+    */
+    void setAuthData(byte[] authData);
+
+    /*
+    * Accomplish an authenticated encryption and place tag separately.
+    *
+    * Note, if authentication tag should be added to an encrypted data,
+    * method "finish" can be used.
+    */
+    CipherAuthFinishAuthEncryptionResult finishAuthEncryption() throws FoundationException;
+
+    /*
+    * Accomplish an authenticated decryption with explicitly given tag.
+    *
+    * Note, if authentication tag is a part of an encrypted data then,
+    * method "finish" can be used for simplicity.
+    */
+    byte[] finishAuthDecryption(byte[] tag) throws FoundationException;
 }
 

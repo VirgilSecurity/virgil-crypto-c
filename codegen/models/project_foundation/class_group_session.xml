@@ -95,10 +95,6 @@
             Identity private key used for signatures.
         </argument>
 
-        <argument name="sender id" class="data">
-            Sender identifier. 32 bytes
-        </argument>
-
         <argument name="error" class="error" access="readwrite">
             Error context to return error
         </argument>
@@ -130,10 +126,6 @@
 
         <argument name="public key" interface="public key">
             Identity public key of sender used to verify signature
-        </argument>
-
-        <argument name="sender id" class="data">
-            Sender identifier. 32 bytes
         </argument>
 
         <argument name="plain text" class="buffer">

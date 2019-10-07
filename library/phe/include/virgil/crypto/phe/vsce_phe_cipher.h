@@ -195,6 +195,20 @@ VSCE_PUBLIC vsce_status_t
 vsce_phe_cipher_decrypt(vsce_phe_cipher_t *self, vsc_data_t cipher_text, vsc_data_t account_key,
         vsc_buffer_t *plain_text) VSCE_NODISCARD;
 
+//
+//  Encrypts data (and authenticates additional data) using account key
+//
+VSCE_PUBLIC vsce_status_t
+vsce_phe_cipher_auth_encrypt(vsce_phe_cipher_t *self, vsc_data_t plain_text, vsc_data_t additional_data,
+        vsc_data_t account_key, vsc_buffer_t *cipher_text) VSCE_NODISCARD;
+
+//
+//  Decrypts data (and verifies additional data) using account key
+//
+VSCE_PUBLIC vsce_status_t
+vsce_phe_cipher_auth_decrypt(vsce_phe_cipher_t *self, vsc_data_t cipher_text, vsc_data_t additional_data,
+        vsc_data_t account_key, vsc_buffer_t *plain_text) VSCE_NODISCARD;
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.

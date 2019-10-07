@@ -289,24 +289,6 @@ vscf_group_session_message_get_session_id(const vscf_group_session_message_t *se
 }
 
 //
-//  Returns message sender id.
-//  This method should be called only for regular message type.
-//
-VSCF_PUBLIC vsc_data_t
-vscf_group_session_message_get_sender_id(const vscf_group_session_message_t *self) {
-
-    VSCF_ASSERT_PTR(self);
-
-    if (!self->message_pb.has_regular_message) {
-        return vsc_data_empty();
-    }
-
-    VSCF_ASSERT_PTR(self->header_pb);
-
-    return vsc_data(self->header_pb->sender_id, sizeof(self->header_pb->sender_id));
-}
-
-//
 //  Returns message epoch.
 //
 VSCF_PUBLIC uint32_t

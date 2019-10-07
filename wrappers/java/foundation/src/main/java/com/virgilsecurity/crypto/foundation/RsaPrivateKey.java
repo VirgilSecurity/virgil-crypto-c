@@ -49,14 +49,18 @@ public class RsaPrivateKey implements AutoCloseable, Key, PrivateKey {
         this.cCtx = FoundationJNI.INSTANCE.rsaPrivateKey_new();
     }
 
+    /* Wrap underlying C context. */
+    RsaPrivateKey(FoundationContextHolder contextHolder) {
+        this.cCtx = contextHolder.cCtx;
+    }
+
     /*
     * Acquire C context.
     * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     */
     public static RsaPrivateKey getInstance(long cCtx) {
-        RsaPrivateKey newInstance = new RsaPrivateKey();
-        newInstance.cCtx = cCtx;
-        return newInstance;
+        FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
+        return new RsaPrivateKey(ctxHolder);
     }
 
     /* Close resource. */

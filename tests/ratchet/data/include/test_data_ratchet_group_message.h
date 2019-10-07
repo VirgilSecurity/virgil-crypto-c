@@ -38,7 +38,6 @@
 #include "vsc_data.h"
 
 extern const vsc_data_t test_data_ratchet_group_message_signature;
-extern const vsc_data_t test_data_ratchet_group_message_sender_id;
 extern const vsc_data_t test_data_ratchet_group_message_session_id;
 extern const vsc_data_t test_data_ratchet_group_message_id;
 extern const vsc_data_t test_data_ratchet_group_message_data;

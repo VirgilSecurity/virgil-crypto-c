@@ -193,12 +193,6 @@ public class RatchetJNI {
     public native byte[] ratchetGroupMessage_getSessionId(long cCtx);
 
     /*
-    * Returns message sender id.
-    * This method should be called only for regular message type.
-    */
-    public native byte[] ratchetGroupMessage_getSenderId(long cCtx);
-
-    /*
     * Returns message counter in current epoch.
     */
     public native long ratchetGroupMessage_getCounter(long cCtx);
@@ -346,7 +340,7 @@ public class RatchetJNI {
     /*
     * Decrypts message
     */
-    public native byte[] ratchetGroupSession_decrypt(long cCtx, RatchetGroupMessage message) throws RatchetException;
+    public native byte[] ratchetGroupSession_decrypt(long cCtx, RatchetGroupMessage message, byte[] senderId) throws RatchetException;
 
     /*
     * Serializes session to buffer

@@ -68,7 +68,7 @@
 //  Return buffer size enough to hold serialized algorithm.
 //
 VSCF_PUBLIC size_t
-vscf_alg_info_serializer_serialized_len(vscf_impl_t *impl, const vscf_impl_t *alg_info) {
+vscf_alg_info_serializer_serialized_len(const vscf_impl_t *impl, const vscf_impl_t *alg_info) {
 
     const vscf_alg_info_serializer_api_t *alg_info_serializer_api = vscf_alg_info_serializer_api(impl);
     VSCF_ASSERT_PTR (alg_info_serializer_api);

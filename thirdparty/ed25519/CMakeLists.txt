@@ -34,7 +34,11 @@
 
 cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
-project(ed25519 VERSION 1.0.0 LANGUAGES C ASM)
+if (ED25519_AMD64_RADIX_64_24K OR ED25519_AMD64_RADIX_51_30K)
+    project(ed25519 VERSION 1.0.0 LANGUAGES C ASM)
+else()
+    project(ed25519 VERSION 1.0.0 LANGUAGES C)
+endif()
 
 # ---------------------------------------------------------------------------
 #   Check dependencies

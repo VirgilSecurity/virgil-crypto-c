@@ -37,7 +37,7 @@
 #   Contains API for Java wrapper generation.
 # ---------------------------------------------------------------------------
 #   This is a code generator built using the iMatix GSL code generation
-#   language. See https://github.com/imatix/gsl for details.
+#   language. See https://github.com/zeromq/gsl for details.
 # ---------------------------------------------------------------------------
 
 gsl from "common.gsl"
@@ -53,26 +53,6 @@ gsl from "java_codegen.gsl"
 # ===========================================================================
 #   Name and type derivation.
 # ===========================================================================
-
-# ---------------------------------------------------------------------------
-#   Return .(UID) that refers to the C class method that returns
-#   context size.
-# ---------------------------------------------------------------------------
-function class_derive_class_c_method_ctx_size (class)
-    check_arguments (my, "class", my)
-
-    my.of_class = my.class.of_class ? my.class.name
-
-    if item_in (my.class, "class")
-        return make_ref_c (make_id ("class", my.of_class, "method", "ctx size"))
-
-    elsif item_in (my.class, "implementation")
-        return make_ref_c (make_id ("class", my.of_class, "method", "impl size"))
-
-    else
-        return make_ref_c (make_id ("class", my.of_class, "method", "size"))
-    endif
-endfunction
 
 # ---------------------------------------------------------------------------
 #   Return Java type for class context.
@@ -388,6 +368,16 @@ function java_derive_exception_name (enum, java_project)
     else
         return "$(my.enum.name:Pascal)Exception"
     endif
+
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return formatted name of context holder class.
+# ---------------------------------------------------------------------------
+function java_derive_context_holder_class_name (java_project)
+    check_arguments (my, "java_project", my)
+
+    return "$(my.java_project.name:Pascal)ContextHolder"
 
 endfunction
 
@@ -1126,6 +1116,25 @@ function java_create_class_default_constructor (java_class, class, java_project,
         endnew
     endnew
 
+    new java_constructor to my.java_class
+        . = "/* Wrap underlying C context. */"
+        .visibility = "package"
+        
+        new java_argument to java_constructor
+            .name = "contextHolder"
+            .type = java_derive_context_holder_class_name (my.java_project)
+            .is_enum = "0"
+            .is_reference = "0"
+        endnew
+
+        new java_code to java_constructor
+            . = "\
+                this.cCtx = contextHolder.cCtx;
+            "
+        endnew
+    endnew
+    
+
     new java_method to my.java_class
         . = "
             /*
@@ -1146,11 +1155,11 @@ function java_create_class_default_constructor (java_class, class, java_project,
             .type = my.java_class.name
         endnew
 
+        my.contextHolderClass = java_derive_context_holder_class_name (my.java_project)
         new java_code to java_method
             . = "\
-                $(my.java_class.name:) newInstance = new $(my.java_class.name:)();
-                newInstance.cCtx = cCtx;
-                return newInstance;
+                $(my.contextHolderClass:) ctxHolder = new $(my.contextHolderClass:)(cCtx);
+                return new $(my.java_class.name:)(ctxHolder);
             "
         endnew
     endnew
@@ -1724,6 +1733,60 @@ function java_create_class_module (class, java_project, meta)
 endfunction
 
 # ---------------------------------------------------------------------------
+#   Create module with Java class which holds C context.
+# ---------------------------------------------------------------------------
+function java_create_context_holder_class_module (java_project, meta)
+    check_arguments (my, "java_project, meta", my)
+
+    echo_info ("Create context holder <java_module/> for project: '$(my.java_project.name:)'", my)
+
+    new java_module to my.java_project
+        . = "This class used to hold C context and use it as a parameter."
+        .name = java_derive_context_holder_class_name (my.java_project)
+        .package = my.java_project.package
+        .package_dir = my.java_project.package_dir
+        .source_file_name = 0.name + ".java"
+        .source_file_path = cat_path (my.java_project.source_dir, 0.source_file_name)
+
+        new java_license to java_module
+            . = java_format_license (my.java_project->license) ?
+        endnew
+
+        new java_class to java_module
+            . = java_format_description (my.class) ?
+            .name = java_derive_context_holder_class_name (my.java_project)
+            .visibility = "package"
+
+            new java_field to java_class
+                . = "/// Handle underlying C context."
+                .name = "cCtx"
+                .type = "long"
+                .access = "readonly"
+                .visibility = "package"
+            endnew
+            
+            new java_constructor to java_class
+                . = "/* Create underlying C context. */"
+                .visibility = "package"
+                
+                new java_argument to java_constructor
+                    .name = "cCtx"
+                    .type = "long"
+                    .is_enum = "0"
+                    .is_reference = "0"
+                endnew
+
+                new java_code to java_constructor
+                    . = "this.cCtx = cCtx;"
+                endnew
+            endnew
+        endnew
+    endnew
+
+    echo_debug ("Done", my)
+endfunction
+
+# ---------------------------------------------------------------------------
 #   Create module with Java class from the abstract 'implementation' notion.
 # ---------------------------------------------------------------------------
 function java_create_implementation_module (implementation, java_project, meta)
@@ -1801,6 +1864,7 @@ endfunction
 function java_finalize_custom_modules (source, java_project, meta)
     check_arguments (my, "source, java_project, meta", my)
 
+    java_create_context_holder_class_module (my.java_project, my.meta)
     java_finalize_c_implementation_helper_modules (my.java_project, my.meta)
 endfunction
 

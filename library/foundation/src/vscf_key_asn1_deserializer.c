@@ -327,7 +327,12 @@ vscf_key_asn1_deserializer_deserialize_pkcs8_private_key_inplace(
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(self->asn1_reader);
-    VSCF_ASSERT_PTR(seq_left_len >= vscf_asn1_reader_left_len(self->asn1_reader));
+
+    if (seq_left_len < vscf_asn1_reader_left_len(self->asn1_reader)) {
+        // data is present after root sequence element
+        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_BAD_PKCS8_PRIVATE_KEY);
+        return NULL;
+    }
 
     //
     //  Check version

@@ -98,7 +98,6 @@ import VSCFoundation
         }
 
         let proxyResult = out.withUnsafeMutableBytes({ (outPointer: UnsafeMutableRawBufferPointer) -> vscf_status_t in
-            vsc_buffer_init(outBuf)
             vsc_buffer_use(outBuf, outPointer.bindMemory(to: byte.self).baseAddress, outCount)
 
             return vscf_entropy_accumulator_gather(self.c_ctx, len, outBuf)

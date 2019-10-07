@@ -11,7 +11,6 @@ message vscr_RegularGroupMessageHeader {
     required uint32 epoch = 2;
     repeated uint32 prev_epochs_msgs = 3;
     required uint32 counter = 4;
-    required bytes sender_id = 5;
 }
 
 message vscr_RegularGroupMessage {

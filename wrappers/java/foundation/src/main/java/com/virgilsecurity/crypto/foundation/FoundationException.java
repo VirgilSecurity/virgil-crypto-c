@@ -121,6 +121,8 @@ public class FoundationException extends RuntimeException {
 
     public static final int ERROR_BAD_SIGNATURE = -308;
 
+    public static final int ERROR_BAD_MESSAGE_INFO_FOOTER = -309;
+
     public static final int ERROR_INVALID_BRAINKEY_PASSWORD_LEN = -401;
 
     public static final int ERROR_INVALID_BRAINKEY_FACTOR_LEN = -402;
@@ -240,7 +242,7 @@ public class FoundationException extends RuntimeException {
         case ERROR_NO_MESSAGE_INFO:
             return "Decryption failed, because message info was not given explicitly, and was not part of an encrypted message.";
         case ERROR_BAD_MESSAGE_INFO:
-            return "Message info is corrupted.";
+            return "Message Info is corrupted.";
         case ERROR_KEY_RECIPIENT_IS_NOT_FOUND:
             return "Recipient defined with id is not found within message info during data decryption.";
         case ERROR_KEY_RECIPIENT_PRIVATE_KEY_IS_WRONG:
@@ -253,6 +255,8 @@ public class FoundationException extends RuntimeException {
             return "A custom parameter with a given key is found, but the requested value type does not correspond to the actual type.";
         case ERROR_BAD_SIGNATURE:
             return "Signature format is corrupted.";
+        case ERROR_BAD_MESSAGE_INFO_FOOTER:
+            return "Message Info footer is corrupted.";
         case ERROR_INVALID_BRAINKEY_PASSWORD_LEN:
             return "Brainkey password length is out of range.";
         case ERROR_INVALID_BRAINKEY_FACTOR_LEN:

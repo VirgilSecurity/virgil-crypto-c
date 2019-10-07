@@ -2,14 +2,19 @@
     Handles a list of "key recipient info" class objects.
 
     <property name="item" class="key recipient info"/>
-    <property name="next" class="key recipient info list"/>
-    <property name="prev" class="key recipient info list"/>
+    <property name="next" class="self"/>
+    <property name="prev" class="self"/>
 
-    <method name="add">
+    <method name="add" visibility="private">
         Add new item to the list.
         Note, ownership is transfered.
 
         <argument name="key recipient info" class="key recipient info" access="disown"/>
+    </method>
+
+
+    <method name="remove self" visibility="private">
+        Remove current node.
     </method>
 
 
@@ -38,6 +43,13 @@
         Return next list node if exists, or NULL otherwise.
 
         <return class="self"/>
+    </method>
+
+
+    <method name="next modifiable" visibility="private">
+        Return next list node if exists, or NULL otherwise.
+
+        <return class="self" access="readwrite"/>
     </method>
 
 

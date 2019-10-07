@@ -52,6 +52,11 @@ public class PheCipher implements AutoCloseable {
         this.cCtx = PheJNI.INSTANCE.pheCipher_new();
     }
 
+    /* Wrap underlying C context. */
+    PheCipher(PheContextHolder contextHolder) {
+        this.cCtx = contextHolder.cCtx;
+    }
+
     public int getSaltLen() {
         return 32;
     }
@@ -69,9 +74,8 @@ public class PheCipher implements AutoCloseable {
     * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     */
     public static PheCipher getInstance(long cCtx) {
-        PheCipher newInstance = new PheCipher();
-        newInstance.cCtx = cCtx;
-        return newInstance;
+        PheContextHolder ctxHolder = new PheContextHolder(cCtx);
+        return new PheCipher(ctxHolder);
     }
 
     /* Close resource. */
@@ -119,6 +123,20 @@ public class PheCipher implements AutoCloseable {
     */
     public byte[] decrypt(byte[] cipherText, byte[] accountKey) throws PheException {
         return PheJNI.INSTANCE.pheCipher_decrypt(this.cCtx, cipherText, accountKey);
+    }
+
+    /*
+    * Encrypts data (and authenticates additional data) using account key
+    */
+    public byte[] authEncrypt(byte[] plainText, byte[] additionalData, byte[] accountKey) throws PheException {
+        return PheJNI.INSTANCE.pheCipher_authEncrypt(this.cCtx, plainText, additionalData, accountKey);
+    }
+
+    /*
+    * Decrypts data (and verifies additional data) using account key
+    */
+    public byte[] authDecrypt(byte[] cipherText, byte[] additionalData, byte[] accountKey) throws PheException {
+        return PheJNI.INSTANCE.pheCipher_authDecrypt(this.cCtx, cipherText, additionalData, accountKey);
     }
 }
 

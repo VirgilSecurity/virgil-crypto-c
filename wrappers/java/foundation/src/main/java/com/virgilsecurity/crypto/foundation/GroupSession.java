@@ -49,6 +49,11 @@ public class GroupSession implements AutoCloseable {
         this.cCtx = FoundationJNI.INSTANCE.groupSession_new();
     }
 
+    /* Wrap underlying C context. */
+    GroupSession(FoundationContextHolder contextHolder) {
+        this.cCtx = contextHolder.cCtx;
+    }
+
     /*
     * Sender id len
     */
@@ -82,9 +87,8 @@ public class GroupSession implements AutoCloseable {
     * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     */
     public static GroupSession getInstance(long cCtx) {
-        GroupSession newInstance = new GroupSession();
-        newInstance.cCtx = cCtx;
-        return newInstance;
+        FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
+        return new GroupSession(ctxHolder);
     }
 
     /* Close resource. */
@@ -132,8 +136,8 @@ public class GroupSession implements AutoCloseable {
     /*
     * Encrypts data
     */
-    public GroupSessionMessage encrypt(byte[] plainText, PrivateKey privateKey, byte[] senderId) throws FoundationException {
-        return FoundationJNI.INSTANCE.groupSession_encrypt(this.cCtx, plainText, privateKey, senderId);
+    public GroupSessionMessage encrypt(byte[] plainText, PrivateKey privateKey) throws FoundationException {
+        return FoundationJNI.INSTANCE.groupSession_encrypt(this.cCtx, plainText, privateKey);
     }
 
     /*
@@ -146,8 +150,8 @@ public class GroupSession implements AutoCloseable {
     /*
     * Decrypts message
     */
-    public byte[] decrypt(GroupSessionMessage message, PublicKey publicKey, byte[] senderId) throws FoundationException {
-        return FoundationJNI.INSTANCE.groupSession_decrypt(this.cCtx, message, publicKey, senderId);
+    public byte[] decrypt(GroupSessionMessage message, PublicKey publicKey) throws FoundationException {
+        return FoundationJNI.INSTANCE.groupSession_decrypt(this.cCtx, message, publicKey);
     }
 
     /*

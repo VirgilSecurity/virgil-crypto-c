@@ -6,10 +6,10 @@
         prefix="vsc"
         path="../library/common/"
         work_path="generated/common/"
-        wrappers="none"
+        wrappers="python"
         >
 
-    <version major="0" minor="9" patch="0"/>
+    <version major="0" minor="11" patch="1"/>
 
     <license>
         Copyright (C) 2015-2019 Virgil Security, Inc.

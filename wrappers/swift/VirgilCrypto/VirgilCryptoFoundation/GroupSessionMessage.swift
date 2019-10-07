@@ -40,7 +40,7 @@ import VSCFoundation
 @objc(VSCFGroupSessionMessage) public class GroupSessionMessage: NSObject {
 
     /// Max message len
-    @objc public static let maxMessageLen: Int = 30222
+    @objc public static let maxMessageLen: Int = 30188
     /// Message version
     @objc public static let messageVersion: Int = 1
 
@@ -87,14 +87,6 @@ import VSCFoundation
         return Data.init(bytes: proxyResult.bytes, count: proxyResult.len)
     }
 
-    /// Returns message sender id.
-    /// This method should be called only for regular message type.
-    @objc public func getSenderId() -> Data {
-        let proxyResult = vscf_group_session_message_get_sender_id(self.c_ctx)
-
-        return Data.init(bytes: proxyResult.bytes, count: proxyResult.len)
-    }
-
     /// Returns message epoch.
     @objc public func getEpoch() -> UInt32 {
         let proxyResult = vscf_group_session_message_get_epoch(self.c_ctx)
@@ -119,7 +111,6 @@ import VSCFoundation
         }
 
         output.withUnsafeMutableBytes({ (outputPointer: UnsafeMutableRawBufferPointer) -> Void in
-            vsc_buffer_init(outputBuf)
             vsc_buffer_use(outputBuf, outputPointer.bindMemory(to: byte.self).baseAddress, outputCount)
 
             vscf_group_session_message_serialize(self.c_ctx, outputBuf)

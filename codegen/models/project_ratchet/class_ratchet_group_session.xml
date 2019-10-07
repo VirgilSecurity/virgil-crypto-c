@@ -216,6 +216,10 @@
             Message to decrypt. Use deserialize to obtain message from data
         </argument>
 
+        <argument name="sender id" class="data">
+            Sender identifier. 32 bytes
+        </argument>
+
         <argument name="plain text" class="buffer">
             Decrypted data
 

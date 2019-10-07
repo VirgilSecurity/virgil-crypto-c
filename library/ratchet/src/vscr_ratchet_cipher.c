@@ -267,7 +267,7 @@ vscr_ratchet_cipher_encrypt_len(vscr_ratchet_cipher_t *self, size_t plain_text_l
     VSCR_ASSERT_PTR(self);
     VSCR_ASSERT_PTR(self->aes256_gcm);
 
-    return vscf_aes256_gcm_encrypted_len(self->aes256_gcm, plain_text_len);
+    return vscf_aes256_gcm_auth_encrypted_len(self->aes256_gcm, plain_text_len);
 }
 
 VSCR_PUBLIC size_t

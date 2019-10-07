@@ -153,7 +153,6 @@ import VSCFoundation
         }
 
         let proxyResult = out.withUnsafeMutableBytes({ (outPointer: UnsafeMutableRawBufferPointer) -> vscf_status_t in
-            vsc_buffer_init(outBuf)
             vsc_buffer_use(outBuf, outPointer.bindMemory(to: byte.self).baseAddress, outCount)
 
             return vscf_key_provider_export_public_key(self.c_ctx, publicKey.c_ctx, outBuf)
@@ -186,7 +185,6 @@ import VSCFoundation
         }
 
         let proxyResult = out.withUnsafeMutableBytes({ (outPointer: UnsafeMutableRawBufferPointer) -> vscf_status_t in
-            vsc_buffer_init(outBuf)
             vsc_buffer_use(outBuf, outPointer.bindMemory(to: byte.self).baseAddress, outCount)
 
             return vscf_key_provider_export_private_key(self.c_ctx, privateKey.c_ctx, outBuf)

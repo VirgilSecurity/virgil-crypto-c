@@ -50,40 +50,23 @@ public class MessageInfo implements AutoCloseable {
         this.cCtx = FoundationJNI.INSTANCE.messageInfo_new();
     }
 
+    /* Wrap underlying C context. */
+    MessageInfo(FoundationContextHolder contextHolder) {
+        this.cCtx = contextHolder.cCtx;
+    }
+
     /*
     * Acquire C context.
     * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     */
     public static MessageInfo getInstance(long cCtx) {
-        MessageInfo newInstance = new MessageInfo();
-        newInstance.cCtx = cCtx;
-        return newInstance;
+        FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
+        return new MessageInfo(ctxHolder);
     }
 
     /* Close resource. */
     public void close() {
         FoundationJNI.INSTANCE.messageInfo_close(this.cCtx);
-    }
-
-    /*
-    * Add recipient that is defined by Public Key.
-    */
-    public void addKeyRecipient(KeyRecipientInfo keyRecipient) {
-        FoundationJNI.INSTANCE.messageInfo_addKeyRecipient(this.cCtx, keyRecipient);
-    }
-
-    /*
-    * Add recipient that is defined by password.
-    */
-    public void addPasswordRecipient(PasswordRecipientInfo passwordRecipient) {
-        FoundationJNI.INSTANCE.messageInfo_addPasswordRecipient(this.cCtx, passwordRecipient);
-    }
-
-    /*
-    * Set information about algorithm that was used for data encryption.
-    */
-    public void setDataEncryptionAlgInfo(AlgInfo dataEncryptionAlgInfo) {
-        FoundationJNI.INSTANCE.messageInfo_setDataEncryptionAlgInfo(this.cCtx, dataEncryptionAlgInfo);
     }
 
     /*
@@ -108,10 +91,10 @@ public class MessageInfo implements AutoCloseable {
     }
 
     /*
-    * Setup custom params.
+    * Return true if message info contains at least one custom param.
     */
-    public void setCustomParams(MessageInfoCustomParams customParams) {
-        FoundationJNI.INSTANCE.messageInfo_setCustomParams(this.cCtx, customParams);
+    public boolean hasCustomParams() {
+        return FoundationJNI.INSTANCE.messageInfo_hasCustomParams(this.cCtx);
     }
 
     /*
@@ -124,10 +107,38 @@ public class MessageInfo implements AutoCloseable {
     }
 
     /*
-    * Remove all recipients.
+    * Return true if cipher kdf alg info exists.
     */
-    public void clearRecipients() {
-        FoundationJNI.INSTANCE.messageInfo_clearRecipients(this.cCtx);
+    public boolean hasCipherKdfAlgInfo() {
+        return FoundationJNI.INSTANCE.messageInfo_hasCipherKdfAlgInfo(this.cCtx);
+    }
+
+    /*
+    * Return cipher kdf alg info.
+    */
+    public AlgInfo cipherKdfAlgInfo() {
+        return FoundationJNI.INSTANCE.messageInfo_cipherKdfAlgInfo(this.cCtx);
+    }
+
+    /*
+    * Return true if footer info exists.
+    */
+    public boolean hasFooterInfo() {
+        return FoundationJNI.INSTANCE.messageInfo_hasFooterInfo(this.cCtx);
+    }
+
+    /*
+    * Return footer info.
+    */
+    public FooterInfo footerInfo() {
+        return FoundationJNI.INSTANCE.messageInfo_footerInfo(this.cCtx);
+    }
+
+    /*
+    * Remove all infos.
+    */
+    public void clear() {
+        FoundationJNI.INSTANCE.messageInfo_clear(this.cCtx);
     }
 }
 
