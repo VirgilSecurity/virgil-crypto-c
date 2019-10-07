@@ -36,10 +36,10 @@ before_script:
   - valgrind --version
 
 script:
-  - cmake -H. -Bbuild \
-      -DENABLE_HEAVY_TESTS=OFF \
-      -DVIRGIL_C_MT_TESTING=OFF \
-      -DENABLE_BENCHMARKING=ON \
+  - cmake -H. -Bbuild
+      -DENABLE_HEAVY_TESTS=OFF
+      -DVIRGIL_C_MT_TESTING=OFF
+      -DENABLE_BENCHMARKING=ON
       -DVIRGIL_POST_QUANTUM=ON
   - cmake --build build -- -j8
     && pushd build
