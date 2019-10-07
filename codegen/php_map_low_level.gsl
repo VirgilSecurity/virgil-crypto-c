@@ -180,6 +180,16 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
                             my._h2 += format_left("\
                                 int in_$(argument0.name:) = 0;
                                 ", 0)
+                        elsif argument0.zend_type = "IS_RESOURCE"
+                            # TODO Need to be checked
+                            my._h2 += format_left("\
+                                vscf_impl_t in_$(argument0.name:) = NULL;
+                                ", 0)
+                        elsif argument0.zend_type = "IS_BOOLEAN"
+                            # TODO Need to be checked
+                            my._h2 += format_left("\
+                                (boolean) in_$(argument0.name:) = NULL;
+                                ", 0)
                         else
                             echo_debug_item(argument0)
                             echo_debug_item(function)
@@ -199,9 +209,15 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
                     my._h3 = ""
                     for function.argument as argument0 where argument0.type <> "vsc_data"
                         if argument0.zend_type = "IS_STRING"
-                            my._h3 += format_left("Z_PARAM_STRING_EX(in_$(argument0.name:), in_$(argument0.name:)_len, 1 /*check_null*/, 0 /*deref and separate*/)", 1)
+                            my._h3 += format_left("Z_PARAM_STRING_EX(in_$(argument0.name:), in_$(argument0.name:)_len, 1 /*check_null*/, 0 /*separate*/)", 1)
                         elsif argument0.zend_type = "IS_LONG"
-                            my._h3 += format_left("Z_PARAM_LONG_EX(in_$(argument0.name:), 0 /*is_null*/, 1 /*check_null*/, 0 /*deref and separate*/)", 1)
+                            my._h3 += format_left("Z_PARAM_LONG_EX(in_$(argument0.name:), 0 /*is_null*/, 1 /*check_null*/, 0 /*separate*/)", 1)
+                        elsif argument0.zend_type = "IS_RESOURCE"
+                            # TODO!!!
+                            my._h3 += format_left("Z_PARAM_RESOURCE_EX(in_$(argument0.name:), 1 /*check_null*/, 0 /*separate*/)", 1)
+                        elsif argument0.zend_type = "IS_BOOLEAN"
+                            # TODO!!!
+                            my._h3 += format_left("Z_PARAM_BOOL_EX(in_$(argument0.name:), 0 /*is_null*/, 1 /*check_null*/, 0 /*separate*/)", 1)
                         else
                             echo_debug_item(argument0)
                             echo_fatal("Not implemented (701)")
@@ -226,6 +242,12 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
                         elsif argument0.zend_type = "IS_LONG"
                             # TODO Need to be checked!
                             my._h2 += format_left("--------> NOT IMPLEMENTED (INT)", 0)
+                        elsif argument0.zend_type = "IS_RESOURCE"
+                            # TODO Need to be checked!
+                            my._h2 += format_left("--------> NOT IMPLEMENTED (RESOURCE)", 0)
+                        elsif argument0.zend_type = "IS_BOOLEAN"
+                            # TODO Need to be checked!
+                            my._h2 += format_left("--------> NOT IMPLEMENTED (BOOLEAN)", 0)
                         else
                             echo_debug_item(argument0)
                             echo_fatal("Not implemented (702)")
@@ -284,8 +306,8 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
                             if return_argument0.name = "status"
                                 my._return = "$(function.prefix0:)_status_t status = "
                             else
-                                echo_debug_item(return_argument0)
-                                echo_fatal("Not implemented (1003)", my)
+                                # TODO!!!
+                                my._return = "enum $(return_argument0.name:) = "
                             endif
                         elsif return_argument0.type = "size"
                             my._return = "size_t $(return_argument0.name:) = "
@@ -584,9 +606,9 @@ function php_map_low_level_argument (in_argument, in_php_project, out_php_argume
 
     my.out_php_argument.name = "$(my.in_argument.name:c)"
 
-    my._type0 = "NOT IMPLEMENTED"
-    my._type = "NOT IMPLEMENTED"
-    my._zend_type = "NOT IMPLEMENTED"
+    my._type0 = "NOT IMPLEMENTED123"
+    my._type = "NOT IMPLEMENTED123"
+    my._zend_type = "NOT IMPLEMENTED123"
     my._instance = 0
 
     if defined (my.in_argument.class)
@@ -597,6 +619,7 @@ function php_map_low_level_argument (in_argument, in_php_project, out_php_argume
         else
             my._type0 = "class"
             my._type = "$(my.in_argument.class:c)"
+            my._zend_type = "IS_RESOURCE"
             my._instance = 1
         endif
     endif
@@ -604,6 +627,8 @@ function php_map_low_level_argument (in_argument, in_php_project, out_php_argume
     if defined (my.in_argument.interface)
         my._type0 = "interface"
         my._type = "$(my.in_argument.interface:c)"
+        # TODO!!!
+        my._zend_type = "IS_RESOURCE"
         my._instance = 1
     endif
 
@@ -630,6 +655,14 @@ function php_map_low_level_argument (in_argument, in_php_project, out_php_argume
     if defined (my.in_argument.enum)
         my._type0 = "enum"
         my._type = "$(my.in_argument.enum:c)"
+        my._zend_type = "IS_STRING"
+        my._instance = 1
+    endif
+
+    if defined (my.in_argument.impl)
+        my._type0 = "$(my.in_argument.name:c)"
+        my._type = "$(my.in_argument.impl:c)"
+        my._zend_type = "IS_RESOURCE"
         my._instance = 1
     endif
 
@@ -676,8 +709,9 @@ function php_map_low_level_return (in_method, in_php_project, out_function)
                     .length = my._function
                     .length_type = "method"
                 else 
-                    echo_debug_item(argument0)
-                    echo_fatal("Not implemented (1000)", my)
+                    # TODO!!!
+                    .length = "none"
+                    .length_type = "constant"
                 endif
             endnew
         endif
@@ -766,7 +800,8 @@ function php_map_low_level_return (in_method, in_php_project, out_function)
             else
                 my._return_type0 = return0.enum
                 my._return_type = return0.enum
-                my._return_zend_type = "NOT IMPLEMENTED ENUM"
+                # TODO!!!
+                my._return_zend_type = "IS_STRING"
 
                 new return_argument to my.out_function
                     .name = "--------> $(return0.enum:c)_ENUM"
@@ -802,6 +837,10 @@ function php_map_low_level_extension (in_php_project, out_php_module)
     my._ext_name0 = "$(my.in_php_project.prefix:)_$(my.in_php_project.name:)_php"
 
     for my.in_php_project.php_module as php_module0 where string_in(php_module0.type, "class, implementation, interface")
+        if ! defined (php_module0->low_level->include)
+            echo_debug_item(php_module0->low_level)
+            echo_fatal("adfdgdg", my)
+        endif
         my._include += php_module0->low_level->include.
         my._registered_resources += php_module0->low_level->registered_resource.
         my._constants += php_module0->low_level->constant.
