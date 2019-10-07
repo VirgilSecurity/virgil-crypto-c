@@ -93,6 +93,7 @@ target_link_libraries(foundation
             mbed::crypto ed25519
             $<$<BOOL:${VSCF_POST_QUANTUM}>:XKCP::keccak>
             $<$<BOOL:${VSCF_POST_QUANTUM}>:round5>
+            $<$<BOOL:${VSCF_POST_QUANTUM}>:falcon-sign>
         )
 
 #

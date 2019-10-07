@@ -188,8 +188,15 @@ add_subdirectory("thirdparty/nanopb")
 # Post-quantum
 #
 if(VIRGIL_POST_QUANTUM)
-    add_subdirectory("thirdparty/keccak")
-    add_subdirectory("thirdparty/round5")
+    if(KECCAK_LIBRARY)
+        add_subdirectory("thirdparty/keccak")
+    endif()
+    if(ROUND5_LIBRARY)
+        add_subdirectory("thirdparty/round5")
+    endif()
+    if(FALCON_SIGN_LIBRARY)
+        add_subdirectory("thirdparty/falcon-sign")
+    endif()
 endif()
 
 # ---------------------------------------------------------------------------
