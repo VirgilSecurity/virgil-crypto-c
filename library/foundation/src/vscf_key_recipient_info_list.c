@@ -250,7 +250,7 @@ vscf_key_recipient_info_list_cleanup_ctx(vscf_key_recipient_info_list_t *self) {
 //  Add new item to the list.
 //  Note, ownership is transfered.
 //
-VSCF_PUBLIC void
+VSCF_PRIVATE void
 vscf_key_recipient_info_list_add(
         vscf_key_recipient_info_list_t *self, vscf_key_recipient_info_t **key_recipient_info_ref) {
 

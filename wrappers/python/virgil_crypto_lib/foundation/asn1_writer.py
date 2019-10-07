@@ -218,7 +218,7 @@ class Asn1Writer(object):
 
     @abstractmethod
     def write_sequence(self, len):
-        """Mark previously written data of given length as ASN.1 type: SQUENCE.
+        """Mark previously written data of given length as ASN.1 type: SEQUENCE.
         Return count of written bytes."""
         raise NotImplementedError()
 

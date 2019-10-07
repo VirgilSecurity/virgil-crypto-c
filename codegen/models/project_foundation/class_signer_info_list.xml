@@ -1,0 +1,66 @@
+<class name="signer info list">
+    Handles a list of "signer info" class objects.
+
+    <property name="item" class="signer info"/>
+    <property name="next" class="self"/>
+    <property name="prev" class="self"/>
+
+    <method name="add" visibility="private">
+        Add new item to the list.
+        Note, ownership is transfered.
+
+        <argument name="signer info" class="signer info" access="disown"/>
+    </method>
+
+
+    <method name="remove self" visibility="private">
+        Remove current node.
+    </method>
+
+
+    <method name="has item" is_const="1">
+        Return true if given list has item.
+
+        <return type="boolean"/>
+    </method>
+
+
+    <method name="item" is_const="1">
+        Return list item.
+
+        <return class="signer info"/>
+    </method>
+
+
+    <method name="has next" is_const="1">
+        Return true if list has next item.
+
+        <return type="boolean"/>
+    </method>
+
+
+    <method name="next" is_const="1">
+        Return next list node if exists, or NULL otherwise.
+
+        <return class="self"/>
+    </method>
+
+
+    <method name="has prev" is_const="1">
+        Return true if list has previous item.
+
+        <return type="boolean"/>
+    </method>
+
+
+    <method name="prev" is_const="1">
+        Return previous list node if exists, or NULL otherwise.
+
+        <return class="self"/>
+    </method>
+
+
+    <method name="clear">
+        Remove all items.
+    </method>
+</class>

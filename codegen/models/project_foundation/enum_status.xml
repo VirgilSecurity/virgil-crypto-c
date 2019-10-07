@@ -137,7 +137,7 @@
     </constant>
 
     <constant name="error bad message info" value="-302">
-        Message info is corrupted.
+        Message Info is corrupted.
     </constant>
 
     <constant name="error key recipient is not found" value="-303">
@@ -164,6 +164,10 @@
 
     <constant name="error bad signature" value="-308">
         Signature format is corrupted.
+    </constant>
+
+    <constant name="error bad message info footer" value="-309">
+        Message Info footer is corrupted.
     </constant>
 
     <constant name="error invalid brainkey password len" value="-401">
