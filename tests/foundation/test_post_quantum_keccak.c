@@ -43,8 +43,9 @@
 
 #include <KeccakHash.h>
 
+
 void
-test__keccak_hello_world__success(void) {
+test__sha3_512__success(void) {
     //
     //  Input
     //
@@ -87,7 +88,7 @@ main(void) {
     UNITY_BEGIN();
 
 #if TEST_DEPENDENCIES_AVAILABLE
-    RUN_TEST(test__keccak_hello_world__success);
+    RUN_TEST(test__sha3_512__success);
 #else
     RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
 #endif
