@@ -80,7 +80,6 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
             ", 0)
     endnew
 
-    my._interface_methods = XML.new()
     my._constant = ""
 
     for my.in_module.interface as interface0
@@ -137,7 +136,11 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
                     my._num_arguments = 1 # ctx
 
                     for function.argument as argument0
-                        my._num_arguments = my._num_arguments + 1
+                        if defined (argument0.class) & argument0.class <> "error"
+
+                        else
+                            my._num_arguments = my._num_arguments + 1
+                        endif
                     endfor
 
                     my._c = php_format_extension_comment("Wrap method: $(function.name0:)")
@@ -601,9 +604,9 @@ function php_map_low_level_argument (in_argument, in_php_project, out_php_argume
 
     my.out_php_argument.name = "$(my.in_argument.name:c)"
 
-    my._type0 = "NOT IMPLEMENTED123"
-    my._type = "NOT IMPLEMENTED123"
-    my._zend_type = "NOT IMPLEMENTED123"
+    my._type0 = "NOT IMPLEMENTED"
+    my._type = "NOT IMPLEMENTED"
+    my._zend_type = "NOT IMPLEMENTED"
     my._instance = 0
 
     if defined (my.in_argument.class)

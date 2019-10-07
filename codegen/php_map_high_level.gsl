@@ -79,7 +79,6 @@ function php_map_high_level (in_module, in_php_module, in_php_project, out_high_
         endnew
     endif
 
-    my._interface_methods = XML.new()
     my._constant = ""
 
     for my.in_module.constructor as constructor0 where constructor0.visibility = "public" & constructor0.declaration = "public" & constructor0.scope = "public"
@@ -99,13 +98,6 @@ function php_map_high_level (in_module, in_php_module, in_php_project, out_high_
         new interface to my.out_high_level
             .name = "$(interface0.name:Pascal)"
             my._name = interface.name
-
-            for my.in_php_project.php_module as php_module0 where php_module0.name = my._name
-                for php_module0->high_level.php_method as php_method0
-                    copy php_method0 to my._interface_methods
-                endfor
-            endfor
-
             my._implements += my._name + my._d
         endnew
 
@@ -130,19 +122,6 @@ function php_map_high_level (in_module, in_php_module, in_php_project, out_high_
     if my._implements <> ""
         my._implements = "implements $(my._implements:)"
     endif
-
-    for my._interface_methods.php_method as php_method0
-
-        php_method0.entity0 = "$(my.in_module.name:c)"
-        php_method0.function_name = php_derive_high_level_function_name(php_method0)
-        php_method0.is_constructor = 0
-
-        new body to php_method0
-            . = php_format_high_level_method_body(php_method0)
-        endnew
-
-        copy php_method0 to my.out_high_level
-    endfor
 
     for my.in_module.dependency as dependency0
 
@@ -233,6 +212,12 @@ function php_map_high_level (in_module, in_php_module, in_php_project, out_high_
             endnew
         endfor
     endif
+
+    for my.in_module.interface as interface0
+        for interface0.method as method0
+            copy method0 to my.in_module
+        endfor
+    endfor
 
     for my.in_module.method as method0 where method0.visibility = "public" & method0.declaration = "public" & method0.scope = "public"
         new php_method to my.out_high_level
@@ -358,23 +343,23 @@ function php_map_high_level_method (in_method, in_php_module, in_type, out_php_m
     my._method_arguments = ""
     my._function_arguments = ""
 
-    for my.in_method.argument as argument0 where (defined (argument0.class) & argument0.class <> "error") | defined (argument0.enum)
+    for my.in_method.argument as argument0 where (defined (argument0.class) & argument0.class <> "error") | defined (argument0.type) | defined (argument0.impl) | defined (argument0.interface)
 
-        my._d = ""
-        if ! last()
-            my._d = ", "
-        endif
-
-        new php_argument to php_method
-            php_map_high_level_argument (argument0, my.in_php_module, php_argument)
-            my._docblock_data += format_left("@param $(0.type:) $(0.name:)\n", 0)
-            my._type = ""
-            if 0.type <> ""
-                my._type = "$(0.type:) "
+            my._d = ""
+            if ! last()
+                my._d = ", "
             endif
-            my._method_arguments += "$(my._type:)$(0.name:)" + my._d
-            my._function_arguments += "$(0.name:)" + my._d
-        endnew
+
+            new php_argument to php_method
+                php_map_high_level_argument (argument0, my.in_php_module, php_argument)
+                my._docblock_data += format_left("@param $(0.type:) $(0.name:)\n", 0)
+                my._type = ""
+                if 0.type <> ""
+                    my._type = "$(0.type:) "
+                endif
+                my._method_arguments += "$(my._type:)$(0.name:)" + my._d
+                my._function_arguments += "$(0.name:)" + my._d
+            endnew
     endfor
 
     my._docblock_data += format_left("@return $(0.return_type:)\n", 0)
@@ -541,6 +526,12 @@ function php_map_high_level_argument (in_argument, in_php_module, out_php_argume
         my._namespace = php_derive_high_level_namespace(my.in_php_module)
     endif
 
+    if defined (my.in_argument.impl)
+        my._type = "$(my.in_argument.impl:Pascal)"
+        my._instance = 1
+        my._namespace = php_derive_high_level_namespace(my.in_php_module)
+    endif
+
     if defined (my.in_argument.type)
         if string_in(my.in_argument.type, "size, integer, unsigned")
             my._type = "int"
@@ -558,7 +549,6 @@ function php_map_high_level_argument (in_argument, in_php_module, out_php_argume
     if defined (my.in_argument.enum)
         my._type = "$(my.in_argument.enum:Pascal)"
         my._instance = 1
-        my._namespace = "TEMP"
     endif
 
     if defined (my.in_argument.class_with_namespace)
