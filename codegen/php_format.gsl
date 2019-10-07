@@ -78,12 +78,6 @@ endfunction
 function php_format_high_level_method_body (in_php_method)
     check_argument (my, "in_php_method", my)
 
-    my._return = ""
-
-    if my.in_php_method.return_type <> "void"
-        my._return = "return "
-    endif
-
     if my.in_php_method.is_constructor = 1
         my._arguments = ""
         for my.in_php_method.php_argument as php_argument0
@@ -100,7 +94,28 @@ function php_format_high_level_method_body (in_php_method)
             $ctx = $(my._function_name:)($(my._arguments:));
             return new $(my.in_php_method.class:Pascal)($ctx);
             ", 0)
+
+    elsif my.in_php_method.return_interface = 1
+
+        my._arguments = "$this->ctx"
+        for my.in_php_method.php_argument as php_argument0
+            my._d = ", "
+            my._arguments += my._d + php_argument0.name
+        endfor
+
+        my._function_name = my.in_php_method.function_name
+
+        my._res = format_left("\
+            $ctx = $(my._function_name:)($(my._arguments:));
+            return _NAME_Implementation::wrap$(my.in_php_method.return_type:Pascal)($ctx);
+            ", 0)
     else 
+        my._return = ""
+
+        if my.in_php_method.return_type <> "void"
+            my._return = "return "
+        endif
+
         my._arguments = "$this->ctx"
         for my.in_php_method.php_argument as php_argument0
             my._d = ", "

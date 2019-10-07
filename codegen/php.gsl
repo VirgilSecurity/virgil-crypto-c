@@ -142,7 +142,7 @@ function php_create_class_module (class, php_project, meta)
         endnew
 
         new low_level to php_module
-            #php_map_low_level(my.class, my.php_project, low_level, my._type)
+            php_map_low_level(my.class, my.php_project, low_level, my._type)
         endnew
     endnew
 endfunction
@@ -190,6 +190,7 @@ function php_create_implementation_module (implementation, php_project, meta)
 
     if defined (my.implementation)
         my.php_project.with_implementation = 1
+        my.php_project.implementation_class = "$(my.php_project.name:Pascal)Implementation"
     endif
 
     echo_info("Create <php_module/> from implementation: '$(my.implementation.name:)'", my)
@@ -216,7 +217,7 @@ function php_create_implementation_module (implementation, php_project, meta)
         endnew
 
         new low_level to php_module
-            #php_map_low_level(my.implementation, my.php_project, low_level, my._type)
+            php_map_low_level(my.implementation, my.php_project, low_level, my._type)
         endnew
     endnew
 endfunction
@@ -393,7 +394,7 @@ function php_finalize_custom_modules (source, php_project, meta)
         .version = my.php_project.version
         .type = "extension"
 
-        #php_map_low_level_extension(my.php_project, php_module)
+        php_map_low_level_extension(my.php_project, php_module)
     endnew
 
     if defined (my.php_project.with_implementation) & my.php_project.with_implementation = "1"

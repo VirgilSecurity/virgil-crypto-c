@@ -182,6 +182,7 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
                                 ", 0)
                         else
                             echo_debug_item(argument0)
+                            echo_debug_item(function)
                             echo_fatal("Not implemented. Code: 700")
                         endif
                     endfor
@@ -244,6 +245,12 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
                             my._n = "\n"
                         endif
 
+                        if ! defined (return_argument0.type)
+                            echo_debug_item(function)
+                            echo_debug_item(return_argument0)
+                            echo_fatal("Not implemented (14001)", my)
+                        endif
+
                         if return_argument0.type = "buffer"
                             my._c = php_format_extension_comment("Allocate output buffer for output '$(return_argument0.name:)'")
 
@@ -281,8 +288,15 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
                                 echo_fatal("Not implemented (1003)", my)
                             endif
                         elsif return_argument0.type = "size"
-                            # TODO!
                             my._return = "size_t $(return_argument0.name:) = "
+                        elsif return_argument0.type = "interface"
+                            my._return = "vscf_impl_t $(return_argument0.name:) = "
+                        elsif return_argument0.type = "class"
+                            # TODO!!!
+                            my._return = "vscf_$(return_argument0.name:)_t $(return_argument0.name:) = "
+                        elsif return_argument0.type = "boolean"
+                            # TODO!!!
+                            my._return = "boolen $(return_argument0.name:) = "
                         else
                             echo_debug_item(return_argument0)
                             echo_fatal("Not implemented (1004)", my)
@@ -323,6 +337,12 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
                             my._res += format_left("ZSTR_LEN(out_$(return_argument0.name:)) = vsc_buffer_len($(return_argument0.name:));", 0)
                         elsif return_argument0.type = "size"
 
+                        elsif return_argument0.type = "interface"
+
+                        elsif return_argument0.type = "class"
+
+                        elsif return_argument0.type = "boolean"
+
                         else
                             echo_debug_item(return_argument0)
                             echo_fatal("Not implemented (1100)", my)
@@ -360,9 +380,13 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
                         endfor
                     elsif function.return_zend_type = "IS_VOID"
 
+                    elsif function.return_zend_type = "IS_RESOURCE"
+
+                    elsif function.return_zend_type = "IS_BOOLEAN"
+
                     else
-                        echo_debug_item(return_argument0)
-                        echo_fatal("Not implemented (1200)", my)
+                        echo_debug_item(function)
+                        echo_fatal("Not implemented (12001)", my)
                     endif
 
                     if my._res <> ""
@@ -399,9 +423,28 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
                         my._p3 = format_left("success:", 0)
 
                         my._res = my._p1 + "\n" + my._p2 + my._fail + my._p3 + my._success
+                    elsif function.return_zend_type = "IS_RESOURCE"
+                        my._res = format_left("\
+                            goto sucess;
+
+                        fail:
+                            RETURN_FALSE;
+                        success:
+                            RETURN_TRUE;
+                        ", 0)
+                    # TODO!!!
+                    elsif function.return_zend_type = "IS_BOOLEAN"
+                        my._res = format_left("\
+                            goto sucess;
+
+                        fail:
+                            RETURN_FALSE;
+                        success:
+                            RETURN_TRUE;
+                        ", 0)
                     else
                         echo_debug_item(return_argument0)
-                        echo_fatal("Not implemented (1300)", my)
+                        echo_fatal("Not implemented (13001)", my)
                     endif
 
                     . = format_left(my._res, 0)
@@ -677,8 +720,9 @@ function php_map_low_level_return (in_method, in_php_project, out_function)
                 endnew
             else
                 new return_argument to my.out_function
-                    .name = "----------> $(return0.type:c)_TYPE"
-                    .type = "return_type"
+                    # TODO!!!
+                    .name = "$(return0.type:c)"
+                    .type = "boolean"
                 endnew
             endif
         endif
@@ -693,20 +737,21 @@ function php_map_low_level_return (in_method, in_php_project, out_function)
             else
                 my._return_type0 = return0.class
                 my._return_type = return0.class
-                my._return_zend_type = "NOT IMPLEMENTED CLASS"
+                my._return_zend_type = "IS_RESOURCE"
             endif
 
             new return_argument to my.out_function
                 .name = "----------> $(return0.class:c)_CLASS"
+                .type = "class"
             endnew
         elsif defined (return0.interface)
             my._return_type0 = return0.interface
             my._return_type = return0.interface
-            my._return_zend_type = "NOT IMPLEMENTED INTERFACE"
+            my._return_zend_type = "IS_RESOURCE"
 
             new return_argument to my.out_function
-                .name = "----------> $(return0.interface:c)_INTERFACE"
-                .type = "class"
+                .name = "----------> vscf_impl_t $(return0.interface:c)"
+                .type = "interface"
             endnew
         endif
 
