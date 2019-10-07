@@ -20,8 +20,8 @@ install:
   - travis_retry wget https://cmake.org/files/v3.11/cmake-3.11.1-Linux-x86_64.sh
   - sudo bash cmake-3.11.1-Linux-x86_64.sh --skip-license --exclude-subdir --prefix=/usr/local
   - export PATH="/usr/local/bin:$PATH"
-  - travis_retry wget https://github.com/openssl/openssl/archive/OpenSSL_1_1_1d.tar.gz
   - mkdir -p $HOME/openssl && pushd $HOME/openssl
+  - travis_retry wget https://github.com/openssl/openssl/archive/OpenSSL_1_1_1d.tar.gz
     && tar -zxvf OpenSSL_1_1_1d.tar.gz
     && cd openssl-OpenSSL_1_1_1d
     && ./config --prefix=/usr/local/openssl --openssldir=/usr/local/openssl shared zlib
