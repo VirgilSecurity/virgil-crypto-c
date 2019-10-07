@@ -45,7 +45,7 @@
 
 include_guard()
 
-option(FALCON_SIGN_LIBRARY "Enable build of the 'falcon sign' library" ON)
+option(FALCON_LIBRARY "Enable build of the 'falcon' library" ON)
 mark_as_advanced(
-        FALCON_SIGN_LIBRARY
+        FALCON_LIBRARY
         )

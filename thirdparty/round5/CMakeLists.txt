@@ -80,14 +80,16 @@ foreach(inc_dir IN LISTS KECCAK_INCLUDE_DIRECTORIES OPENSSL_INCLUDE_DIR)
 endforeach()
 
 #
-# LIBRARY_PATH
+# LINKER_SEARCH_PATHS
+#
+# Note, LIBRARY_PATH - does not properly work on GCC 4.8, system paths used first.
 #
 foreach(lib IN LISTS KECCAK_LIBRARIES OPENSSL_CRYPTO_LIBRARY)
     get_filename_component(lib_dir "${lib}" DIRECTORY)
-    if(DEFINED LIBRARY_PATH)
-        set(LIBRARY_PATH "${LIBRARY_PATH}:${lib_dir}")
+    if(DEFINED LINKER_SEARCH_PATHS)
+        set(LINKER_SEARCH_PATHS "${LINKER_SEARCH_PATHS} -L${lib_dir}")
     else()
-        set(LIBRARY_PATH "${lib_dir}")
+        set(LINKER_SEARCH_PATHS "-L${lib_dir}")
     endif()
     set(lib_dir)
 endforeach()
@@ -105,7 +107,7 @@ ExternalProject_Add(round5-ext
             24b9738b0e39ce2115cc6b1f639359f5f459bd3e
         BUILD_IN_SOURCE TRUE
         CONFIGURE_COMMAND ""
-        BUILD_COMMAND CPATH=${CPATH} LIBRARY_PATH=${LIBRARY_PATH} ${MAKE_EXE} ALG=R5ND_1KEM_0d reference
+        BUILD_COMMAND CPATH=${CPATH} ${MAKE_EXE} LDFLAGS=${LINKER_SEARCH_PATHS} ALG=R5ND_1KEM_0d reference
         INSTALL_COMMAND ""
         )
 

@@ -41,7 +41,7 @@
     <library name="relic"/>
     <library name="keccak"/>
     <library name="round5"/>
-    <library name="falcon sign"/>
+    <library name="falcon"/>
 
     <version major="0" minor="10" patch="4" label="dev1"/>
 

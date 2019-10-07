@@ -61,7 +61,7 @@
 
         <require library="keccak" feature="library" />
         <require library="round5" feature="library" />
-        <require library="falcon sign" feature="library" />
+        <require library="falcon" feature="library" />
     </feature>
 
     <module name="assert" from="shared"/>

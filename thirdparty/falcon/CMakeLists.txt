@@ -36,51 +36,46 @@
 # ---------------------------------------------------------------------------
 include("${CMAKE_CURRENT_LIST_DIR}/features.cmake")
 
-if(NOT FALCON_SIGN_LIBRARY)
-    message(STATUS "Skip building library 'falcon-sign' - option FALCON_SIGN_LIBRARY is OFF.")
+if(NOT FALCON_LIBRARY)
+    message(STATUS "Skip building library 'falcon' - option FALCON_LIBRARY is OFF.")
 endif()
 
 # ---------------------------------------------------------------------------
 #   Load library as an external project
 # ---------------------------------------------------------------------------
-find_program(MAKE_EXE NAMES make)
+set(FALCON_INSTALL_LOCATION ${CMAKE_CURRENT_BINARY_DIR}/falcon)
+
 
 include(ExternalProject)
-ExternalProject_Add(falcon-sign-ext
+ExternalProject_Add(falcon-ext
         URL
             https://falcon-sign.info/falcon-20190918.tar.gz
-        URL_HASH SHA256=229fca9b3116ca3ff1f0952227419fc8b2ce11ce0be74a6e92a3837bacda19a2
-        BUILD_IN_SOURCE TRUE
-        CONFIGURE_COMMAND ""
-        BUILD_COMMAND ${MAKE_EXE}
-        INSTALL_COMMAND ""
+        URL_HASH
+            SHA256=229fca9b3116ca3ff1f0952227419fc8b2ce11ce0be74a6e92a3837bacda19a2
+        PATCH_COMMAND
+            ${CMAKE_COMMAND} -E copy_if_different
+                    ${CMAKE_CURRENT_LIST_DIR}/falcon.CMakeLists.txt <SOURCE_DIR>/CMakeLists.txt
+        CMAKE_ARGS
+            "${TRANSITIVE_ARGS}"
+            "-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}"
+            "-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}"
+            "-DCMAKE_INSTALL_PREFIX=${FALCON_INSTALL_LOCATION}"
         )
 
 # ---------------------------------------------------------------------------
 #   Import library as a target
 # ---------------------------------------------------------------------------
-set(FALCON_SIGN_LOCATION "${CMAKE_CURRENT_BINARY_DIR}/falcon-sign-ext-prefix/src/falcon-sign-ext")
+file(MAKE_DIRECTORY ${FALCON_INSTALL_LOCATION}/include)
 
-add_library(falcon-sign OBJECT IMPORTED GLOBAL)
+add_library(falcon STATIC IMPORTED GLOBAL)
 
-add_dependencies(falcon-sign falcon-sign-ext)
+add_dependencies(falcon falcon-ext)
 
-set_property(TARGET falcon-sign
-        PROPERTY IMPORTED_OBJECTS
-            "${FALCON_SIGN_LOCATION}/codec.o"
-            "${FALCON_SIGN_LOCATION}/common.o"
-            "${FALCON_SIGN_LOCATION}/falcon.o"
-            "${FALCON_SIGN_LOCATION}/fft.o"
-            "${FALCON_SIGN_LOCATION}/fpr.o"
-            "${FALCON_SIGN_LOCATION}/keygen.o"
-            "${FALCON_SIGN_LOCATION}/rng.o"
-            "${FALCON_SIGN_LOCATION}/shake.o"
-            "${FALCON_SIGN_LOCATION}/sign.o"
-            "${FALCON_SIGN_LOCATION}/vrfy.o"
-        )
+set_target_properties(falcon
+        PROPERTIES
+        IMPORTED_LOCATION
+            "${FALCON_INSTALL_LOCATION}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}falcon${CMAKE_STATIC_LIBRARY_SUFFIX}"
 
-file(MAKE_DIRECTORY "${FALCON_SIGN_LOCATION}")
-set_property(TARGET falcon-sign
-        PROPERTY INTERFACE_INCLUDE_DIRECTORIES
-            "${FALCON_SIGN_LOCATION}"
+        INTERFACE_INCLUDE_DIRECTORIES
+            "${FALCON_INSTALL_LOCATION}/include"
         )

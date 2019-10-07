@@ -41,7 +41,7 @@
 #define TEST_DEPENDENCIES_AVAILABLE VSCF_POST_QUANTUM
 #if TEST_DEPENDENCIES_AVAILABLE
 
-#include <falcon.h>
+#include <falcon/falcon.h>
 
 enum { LOGN_512 = 9, LOGN_1024 = 10 };
 
