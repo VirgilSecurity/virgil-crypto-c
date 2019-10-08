@@ -62,6 +62,11 @@ else()
 endif()
 
 # ---------------------------------------------------------------------------
+#   Dependencies
+# ---------------------------------------------------------------------------
+find_package(PythonInterp 2.7 REQUIRED)
+
+# ---------------------------------------------------------------------------
 #   Optionally load and import protobuf generator as an external project
 # ---------------------------------------------------------------------------
 include(ExternalProject)
@@ -143,6 +148,17 @@ ExternalProject_Add(protobuf-nanopb-ext
             "${NANOPB_INSTALL_LOCATION}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}protobuf-nanopbd${CMAKE_STATIC_LIBRARY_SUFFIX}"
         )
 
+ExternalProject_Add_Step(protobuf-nanopb-ext patch-protobuf-generator
+        COMMAND "${CMAKE_COMMAND}"
+            -DGENERATOR_FILE=<SOURCE_DIR>/generator/nanopb_generator.py
+            -DPYTHON_EXECUTABLE=${PYTHON_EXECUTABLE}
+            -P ${CMAKE_CURRENT_LIST_DIR}/patch_nanopb_generator.py.cmake
+        COMMENT
+            "Patch protobuf generator"
+        DEPENDEES
+            install
+        )
+
 ExternalProject_Add_Step(protobuf-nanopb-ext install-protobuf-generator
         COMMAND
             "${CMAKE_COMMAND}" -E copy_directory
@@ -151,7 +167,7 @@ ExternalProject_Add_Step(protobuf-nanopb-ext install-protobuf-generator
         COMMENT
             "Install protobuf generator"
         DEPENDEES
-            install
+            patch-protobuf-generator
         )
 
 ExternalProject_Add_Step(protobuf-nanopb-ext build-protobuf-generator-model-nanopb
