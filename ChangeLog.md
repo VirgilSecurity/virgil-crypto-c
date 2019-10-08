@@ -1,6 +1,31 @@
 # virgil-crypto-c ChangeLog (Sorted by date)
 
 
+## Version 0.11.0 released 2019-10-07
+
+### Bugfix
+
+- Lib/Foundation: Fixed crash when import private key from valid ASN.1 but not a private key
+
+### Features
+
+- Lib/Foundation: Operations "sign then encrypt" and "decrypt then verify" were added to "RecipientCipher" class
+- Lib/Foundation: Method "hasKeyRecipient()" was added to class "RecipientCipher"
+- Lib/Foundation: Method "preciseEncryptedLen()" was added to interface "Encrypt"
+
+### Changes
+
+- Lib/Foundation: Interface "CipherAuth" now inherit interface "Cipher"
+- Lib/Foundation/Wrappers: Listed methods where removed from class "MessageInfo":
+  * addKeyRecipient()
+  * addPasswordRecipient()
+  * setDataEncryptionAlgInfo()
+  * setCustomParams()
+  * clearRecipients()
+- Lib/Foundation/Wrappers: Method "add()" was removed from class "KeyRecipientInfoList"
+- Lib/Foundation/Wrappers: Method "add()" was removed from class "PasswordRecipientInfoList"
+
+
 ## Version 0.10.3 released 2019-09-10
 
 ### Changes
