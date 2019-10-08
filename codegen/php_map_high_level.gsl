@@ -343,7 +343,7 @@ function php_map_high_level_method (in_method, in_php_module, in_type, out_php_m
     my._method_arguments = ""
     my._function_arguments = ""
 
-    for my.in_method.argument as argument0 where (defined (argument0.class) & argument0.class <> "error") | defined (argument0.type) | defined (argument0.impl) | defined (argument0.interface)
+    for my.in_method.argument as argument0 where (defined (argument0.class) & ! string_in(argument0.class, "error, buffer")) | defined (argument0.type) | defined (argument0.impl) | defined (argument0.interface)
 
             my._d = ""
             if ! last()
@@ -508,16 +508,16 @@ function php_map_high_level_argument (in_argument, in_php_module, out_php_argume
     my._instance = 0
     my._namespace = ""
 
-    if defined (my.in_argument.class) & my.in_argument.class <> "error"
-        if string_in(my.in_argument.class, "data, buffer") 
-            my._type = "string"
-        elsif my.in_argument.class = "ctx"
-            my._type = ""
-        else
-            my._type = "$(my.in_argument.class:Pascal)"
-            my._instance = 1
-            my._namespace = php_derive_high_level_namespace(my.in_php_module)
-        endif
+    if defined (my.in_argument.class) & ! string_in (my.in_argument.class, "error, buffer")
+            if string_in(my.in_argument.class, "data") 
+                my._type = "string"
+            elsif my.in_argument.class = "ctx"
+                my._type = ""
+            else
+                my._type = "$(my.in_argument.class:Pascal)"
+                my._instance = 1
+                my._namespace = php_derive_high_level_namespace(my.in_php_module)
+            endif
     endif
 
     if defined (my.in_argument.interface)

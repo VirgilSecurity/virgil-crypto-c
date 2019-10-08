@@ -135,7 +135,7 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
 
                     my._num_arguments = 1 # ctx
 
-                    for function.argument as argument0 where argument0.type0 <> "error"
+                    for function.argument as argument0 where ! string_in (argument0.type0, "error, buffer")
                         my._num_arguments = my._num_arguments + 1
                     endfor
 
@@ -202,8 +202,7 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
                     my._h1 = format_left("ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, $(my._num_arguments:), $(my._num_arguments:))", 0)
                     my._h2 = format_left("Z_PARAM_RESOURCE_EX(in_ctx, 1, 0)", 1)
                     my._h3 = ""
-                    for function.argument as argument0 where argument0.type <> "vsc_data"
-                        if argument0.type0 <> "error"
+                    for function.argument as argument0 where ! string_in (argument0.type0, "buffer, error")
                             if argument0.zend_type = "IS_STRING"
                                 my._h3 += format_left("Z_PARAM_STRING_EX(in_$(argument0.name:), in_$(argument0.name:)_len, 1 /*check_null*/, 0 /*separate*/)", 1)
                             elsif argument0.zend_type = "IS_LONG"
@@ -218,7 +217,6 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
                                 echo_debug_item(argument0)
                                 echo_fatal("Not implemented (701)")
                             endif
-                        endif
                     endfor
                     my._h4 = format_left("ZEND_PARSE_PARAMETERS_END();", 0)
                     my._res = my._c + my._h1 + my._h2 + my._h3 + my._h4
@@ -234,7 +232,7 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
                         ", 0)
                     my._h2 = ""
 
-                    for function.argument as argument0 where ! string_in (argument0.type0, "buffer, error, integer, enum, byte, boolean, unsigned")
+                    for function.argument as argument0 where ! string_in (argument0.type0, "buffer, integer, enum, byte, boolean, unsigned")
                         if argument0.type = "vsc_data_t"
                             my._h2 += format_left("vsc_data_t $(argument0.name:) = vsc_data((const byte*)in_$(argument0.name:), in_$(argument0.name:)_len);", 0)
                         elsif string_in (argument0.type0, "interface, class, impl") 
@@ -245,6 +243,11 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
                         elsif argument0.type0 = "size"
                             my._h2 += format_left("
                                 size_t $(argument0.name:) = in_$(argument0.name:);
+                                ", 0)
+                        elsif argument0.type0 = "error"
+                            my._h2 += format_left("
+                                vscf_error_t error;
+                                vscf_error_reset(&error);
                                 ", 0)
                         else
                             echo_debug_item(function)
@@ -257,9 +260,11 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
                     . = format_left(my._res, 1)
                 endnew
 
-                new allocate_output_buffer to wrapper
-                    my._res = ""
-                    for function.return_argument as return_argument0
+                
+
+                my._res = ""
+
+                for function.return_argument as return_argument0
 
                         my._n = ""
                         if ! last()
@@ -294,24 +299,32 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
                                 ", 0)
                             my._res += my._c + my._h1 + "\n" + my._n
                         endif
-                    endfor
-                    . = format_left(my._res, 1)
-                endnew
+                endfor
+
+                if my._res <> ""
+                    new allocate_output_buffer to wrapper
+                        . = format_left(my._res, 1)
+                    endnew
+                endif
 
                 new call_main_function to wrapper
+                    my._c = php_format_extension_comment("Call main function")
+
                     my._return = ""
                     my._args = "("
                     my._args += function.entity0
 
-                    for function.return_argument as return_argument0
+                    for function.return_argument as return_argument0 where return_argument0.type <> "buffer"
                         my._return += format_left("\
-                            $(return_argument0.type:) $(return_argument0.name:) = 
+                            $(return_argument0.type:) $(return_argument0.name:)=
                             ", 0)
                     endfor
 
+                    my._return = format_left(my._return, 0)
+
                     for function.argument as argument0
                         if argument0.name = "error"
-                            my._args += ", &$(argument0.name:)"
+                            my._args += ", $(argument0.name:)"
                         else
                             my._args += ", $(argument0.name:)"
                         endif
@@ -321,76 +334,78 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
 
                     my._func = "$(function.name:)"
 
-                    my._res = my._return + my._func + my._args
+                    my._res = my._c + my._return + my._func + my._args
 
                     . = format_left(my._res, 1)
                 endnew
 
-                new handle_error to wrapper
-                    if function.throw_exception = 1
-                        my._c = php_format_extension_comment("Handle error")
-                        my._h1 = format_left("$(function.prefix0:UPPER)_HANDLE_STATUS (status);", 0)
+                my._res = ""
 
-                        my._res = my._c + my._h1
+                if function.throw_exception = 1
+                    my._c = php_format_extension_comment("Handle error")
+                    my._h1 = format_left("$(function.prefix0:UPPER)_HANDLE_STATUS (status);", 0)
 
+                    my._res = my._c + my._h1
+                endif
+
+                if my._res <> ""
+                    new handle_error to wrapper
                         . = format_left(my._res, 1)
-                    else 
-                        . = ""
-                    endif
-                endnew
+                    endnew
+                endif
 
-                new correct_string_length to wrapper
-                    my._res = ""
+                my._res = ""
+                
+                for function.return_argument as return_argument0 where return_argument0.type = "buffer"
+                    my._res += format_left("ZSTR_LEN(out_$(return_argument0.name:)) = vsc_buffer_len($(return_argument0.name:));",)
+                endfor
 
-                    for function.return_argument as return_argument0 where return_argument0.type = "buffer"
-                        my._res += format_left("ZSTR_LEN(out_$(return_argument0.name:)) = vsc_buffer_len($(return_argument0.name:));",)
+                if my._res <> ""
+                    my._c = php_format_extension_comment("Correct string length to the actual")
+                    my._res = my._c + my._res
+
+                    new correct_string_length to wrapper
+                        . = format_left(my._res, 1)
+                    endnew
+                endif
+
+                my._res = ""
+
+                if function.return_zend_type = "IS_STRING"
+                    for function.return_argument as return_argument0 where return_argument0.name <> "status" & return_argument0.type <> "enum"
+                        my._res += format_left("RETVAL_STR(out_$(return_argument0.name:));", 0)
                     endfor
+                elsif function.return_zend_type = "IS_ARRAY"
+                    my._res += format_left("array_init(return_value);", 0)
+                    for function.return_argument as return_argument0 where return_argument0.name <> "status" & return_argument0.type <> "enum"
+                        if return_argument0.type = "buffer"
+                            my._res += format_left("add_next_index_str(return_value, out_$(return_argument0.name:));", 0)
+                        else 
+                            echo_debug_item(return_argument0)
+                            echo_fatal("Not implemented (1201)", my)
+                        endif
+                    endfor
+                elsif function.return_zend_type = "IS_LONG"
+                    for function.return_argument as return_argument0 where return_argument0.name <> "status" & return_argument0.type <> "enum"
+                        my._res += format_left("RETVAL_LONG($(return_argument0.name:));", 0)
+                    endfor
+                elsif function.return_zend_type = "IS_VOID"
 
-                    if my._res <> ""
-                        my._c = php_format_extension_comment("Correct string length to the actual")
-                        my._res = my._c + my._res
-                    endif
+                elsif function.return_zend_type = "IS_RESOURCE"
+                    my._res += format_left("RETVAL_RES($(return_argument0.name:));", 0)
+                elsif function.return_zend_type = "IS_BOOLEAN"
+                    my._res += format_left("RETVAL_BOOL($(return_argument0.name:));", 0)
+                else
+                    echo_debug_item(function)
+                    echo_fatal("Not implemented (12001)", my)
+                endif
 
-                    . = format_left(my._res, 1)
-                endnew
+                if my._res <> ""
+                    my._c = php_format_extension_comment("Write returned result")
+                    my._res = my._c + my._res
+                endif
 
                 new write_returned_result to wrapper
-                    my._res = ""
-
-                    if function.return_zend_type = "IS_STRING"
-                        for function.return_argument as return_argument0 where return_argument0.name <> "status" & return_argument0.type <> "enum"
-                            my._res += format_left("RETVAL_STR(out_$(return_argument0.name:));", 0)
-                        endfor
-                    elsif function.return_zend_type = "IS_ARRAY"
-                        my._res += format_left("array_init(return_value);", 0)
-                        for function.return_argument as return_argument0 where return_argument0.name <> "status" & return_argument0.type <> "enum"
-                            if return_argument0.type = "buffer"
-                                my._res += format_left("add_next_index_str(return_value, out_$(return_argument0.name:));", 0)
-                            else 
-                                echo_debug_item(return_argument0)
-                                echo_fatal("Not implemented (1201)", my)
-                            endif
-                        endfor
-                    elsif function.return_zend_type = "IS_LONG"
-                        for function.return_argument as return_argument0 where return_argument0.name <> "status" & return_argument0.type <> "enum"
-                            my._res += format_left("RETVAL_LONG($(return_argument0.name:));", 0)
-                        endfor
-                    elsif function.return_zend_type = "IS_VOID"
-
-                    elsif function.return_zend_type = "IS_RESOURCE"
-
-                    elsif function.return_zend_type = "IS_BOOLEAN"
-
-                    else
-                        echo_debug_item(function)
-                        echo_fatal("Not implemented (12001)", my)
-                    endif
-
-                    if my._res <> ""
-                        my._c = php_format_extension_comment("Write returned result")
-                        my._res = my._c + my._res
-                    endif
-
                     . = format_left(my._res, 1)
                 endnew
 
@@ -708,17 +723,21 @@ function php_map_low_level_return (in_method, in_php_project, out_function)
     for my.in_method.return as return0
 
         if defined (return0.type)
-            if return0.type = "size" | return0.type = "integer" | return0.type = "unsigned"
+            if return0.type = "size"
+                my._return_type0 = return0.type
+                my._return_type = "size_t"
+                my._return_zend_type = "IS_LONG"
+            elsif return0.type = "integer" | return0.type = "unsigned"
                 my._return_type0 = return0.type
                 my._return_type = "???"
                 my._return_zend_type = "IS_LONG"
             elsif return0.type = "boolean"
                 my._return_type0 = return0.type
-                my._return_type = "???"
+                my._return_type = "int"
                 my._return_zend_type = "IS_BOOLEAN"
             elsif return0.type = "byte"
                 my._return_type0 = return0.type
-                my._return_type = "???"
+                my._return_type = "char"
                 my._return_zend_type = "IS_STRING"
             else
                 echo_debug_item(my.in_method)
@@ -843,12 +862,34 @@ function php_map_low_level_extension (in_php_project, out_php_module)
                 my._2 = "\n" + function0->wrapper->declare_input_arguments.
                 my._3 = "\n" + function0->wrapper->parse_arguments.
                 my._4 = "\n" + function0->wrapper->proxy_call.
-                my._5 = "\n" + function0->wrapper->allocate_output_buffer.
+
+                my._5 = ""
+                if defined(function0->wrapper->allocate_output_buffer)
+                    my._5 = "\n" + function0->wrapper->allocate_output_buffer.
+                endif
+
                 my._6 = "\n" + function0->wrapper->call_main_function.
-                my._7 = "\n" + function0->wrapper->handle_error
-                my._8 = "\n" + function0->wrapper->correct_string_length.
-                my._9 = "\n" + function0->wrapper->write_returned_result.
-                my._10 = "\n" + function0->wrapper->fail_success.
+
+                my._7 = ""
+                if defined(function0->wrapper->handle_error)
+                    my._7 = "\n" + function0->wrapper->handle_error
+                endif
+
+                my._8 = ""
+                if defined(function0->wrapper->correct_string_length)
+                    my._8 = "\n" + function0->wrapper->correct_string_length.
+                endif
+
+                my._9 = ""
+                if defined(function0->wrapper->write_returned_result)
+                    my._9 = "\n" + function0->wrapper->write_returned_result.
+                endif
+
+                my._10 = ""
+                if function0.throw_exception = 1
+                    my._10 = "\n" + function0->wrapper->fail_success.
+                endif
+
                 my._11 = format_left("}", 0)
 
                 my._func_wrapping += my._1 + my._2 + my._3 + my._4 + my._5 + my._6 + my._7 + my._8 + my._9 + my._10 + my._11
