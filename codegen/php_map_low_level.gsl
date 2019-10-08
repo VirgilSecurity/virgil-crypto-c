@@ -162,7 +162,7 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
                     my._h1 = format_left("zval *in_ctx = NULL;")
                     my._h2 = ""
 
-                    for function.argument as argument0 where argument0.type <> "vsc_buffer"
+                    for function.argument as argument0 where argument0.type <> "vsc_buffer_t"
                         if argument0.type0 <> "error"
                             if argument0.zend_type = "IS_STRING"
                                 my._h2 += format_left("\
@@ -172,17 +172,17 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
                             elsif argument0.zend_type = "IS_LONG"
                                 # TODO Need to be checked
                                 my._h2 += format_left("\
-                                    int *in_$(argument0.name:) = 0;
+                                    zend_long in_$(argument0.name:);
                                     ", 0)
                             elsif argument0.zend_type = "IS_RESOURCE"
                                 # TODO Need to be checked
                                 my._h2 += format_left("\
-                                    vscf_impl_t *in_$(argument0.name:) = NULL;
+                                    zval *in_$(argument0.name:) = NULL;
                                     ", 0)
                             elsif argument0.zend_type = "IS_BOOLEAN"
                                 # TODO Need to be checked
                                 my._h2 += format_left("\
-                                    bool *in_$(argument0.name:) = NULL;
+                                    int *in_$(argument0.name:);
                                     ", 0)
                             else
                                 echo_debug_item(argument0)
@@ -233,12 +233,23 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
                         $(my.in_php_project.prefix:UPPER)_ASSERT_PTR($(my.out_low_level.name0:));
                         ", 0)
                     my._h2 = ""
-                    for function.argument as argument0
-                        if argument0.type0 = "data"
+
+                    for function.argument as argument0 where ! string_in (argument0.type0, "buffer, error, integer, enum, byte, boolean, unsigned")
+                        if argument0.type = "vsc_data_t"
                             my._h2 += format_left("vsc_data_t $(argument0.name:) = vsc_data((const byte*)in_$(argument0.name:), in_$(argument0.name:)_len);", 0)
+                        elsif string_in (argument0.type0, "interface, class, impl") 
+                            my._h2 += format_left("\
+                                $(argument0.type:) *$(argument0.name:) = zend_fetch_resource_ex(in_$(argument0.name:), $(my._t:UPPER)_PHP_RES_NAME, le_$(my._t:))
+                                $(my.in_php_project.prefix:UPPER)_ASSERT_PTR($(argument0.name:));
+                                ", 0)
+                        elsif argument0.type0 = "size"
+                            my._h2 += format_left("
+                                size_t $(argument0.name:) = in_$(argument0.name:);
+                                ", 0)
                         else
-                            # !!!
-                            my._h2 += format_left("-----> argument0", 0)
+                            echo_debug_item(function)
+                            echo_debug_item(argument0)
+                            echo_fatal("Not implemented (AF1000)")
                         endif
                     endfor
                     my._res = my._c + my._h1 + "\n" + my._h2
@@ -293,11 +304,17 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
                     my._args += function.entity0
 
                     for function.return_argument as return_argument0
-                        my._return += format_left("$(return_argument0.type:) $(return_argument0.name:) = ", 0)
+                        my._return += format_left("\
+                            $(return_argument0.type:) $(return_argument0.name:) = 
+                            ", 0)
                     endfor
 
                     for function.argument as argument0
-                        my._args += ", $(argument0.name:)"
+                        if argument0.name = "error"
+                            my._args += ", &$(argument0.name:)"
+                        else
+                            my._args += ", $(argument0.name:)"
+                        endif
                     endfor
 
                     my._args += ");"
@@ -564,8 +581,8 @@ function php_map_low_level_argument (in_argument, in_php_project, out_argument, 
 
     if defined (my.in_argument.class)
         if string_in(my.in_argument.class, "data, buffer") 
-            my._type0 = "string"
-            my._type = "vsc_$(my.in_argument.class:)"
+            my._type0 = my.in_argument.class
+            my._type = "vsc_$(my.in_argument.class:)_t"
             my._zend_type = "IS_STRING"
         elsif my.in_argument.class = "error"
             my._type0 = "error"
