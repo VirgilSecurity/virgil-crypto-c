@@ -32,7 +32,7 @@
 #
 #   Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-cmake_minimum_required(VERSION 3.15 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.12 FATAL_ERROR)
 
 project(test_data_foundation VERSION ${virgil_crypto_c_foundation_tests_VERSION} LANGUAGES C)
 
