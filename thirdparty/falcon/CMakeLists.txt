@@ -45,7 +45,6 @@ endif()
 # ---------------------------------------------------------------------------
 set(FALCON_INSTALL_LOCATION ${CMAKE_CURRENT_BINARY_DIR}/falcon)
 
-
 include(ExternalProject)
 ExternalProject_Add(falcon-ext
         URL
@@ -61,6 +60,7 @@ ExternalProject_Add(falcon-ext
             "-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}"
             "-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}"
             "-DCMAKE_INSTALL_PREFIX=${FALCON_INSTALL_LOCATION}"
+            "-DCMAKE_INSTALL_LIBDIR=lib"
         )
 
 # ---------------------------------------------------------------------------
