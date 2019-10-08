@@ -60,10 +60,10 @@ test__keygen__512_degree__success(void) {
     unsigned char pubkey[FALCON_PUBKEY_SIZE(LOGN_512)] = {0x00};
     unsigned char tmp[FALCON_TMPSIZE_KEYGEN(LOGN_512)] = {0x00};
 
-    shake256_context shake256;
-    shake256_init(&shake256);
-    shake256_inject(&shake256, k_rng_seed, sizeof(k_rng_seed));
-    shake256_flip(&shake256);
+    falcon_shake256_context shake256;
+    falcon_shake256_init(&shake256);
+    falcon_shake256_inject(&shake256, k_rng_seed, sizeof(k_rng_seed));
+    falcon_shake256_flip(&shake256);
 
     int status =
             falcon_keygen_make(&shake256, LOGN_512, privkey, sizeof(privkey), pubkey, sizeof(pubkey), tmp, sizeof(tmp));
