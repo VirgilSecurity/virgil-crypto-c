@@ -1,3 +1,5 @@
+//  @license
+// --------------------------------------------------------------------------
 //  Copyright (C) 2015-2019 Virgil Security, Inc.
 //
 //  All rights reserved.
@@ -31,60 +33,41 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
-
-
-#define UNITY_BEGIN() UnityBegin(__FILENAME__)
-
-#include "unity.h"
-#include "test_utils.h"
-
-#define TEST_DEPENDENCIES_AVAILABLE VSCF_POST_QUANTUM
-#if TEST_DEPENDENCIES_AVAILABLE
-
-#include <falcon/falcon.h>
-
-enum { LOGN_512 = 9, LOGN_1024 = 10 };
-
+// --------------------------------------------------------------------------
 // clang-format off
-static const unsigned char k_rng_seed[] = {
-  0x3d, 0x38, 0xc7, 0x72, 0x70, 0xff, 0xbf, 0x82, 0xaa, 0x1d, 0x0d, 0x84,
-  0xa3, 0x4f, 0xb0, 0x17, 0x3a, 0x3a, 0x56, 0x5c, 0x42, 0x56, 0xb7, 0x93,
-  0x5e, 0x95, 0x4e, 0x01, 0x3d, 0x15, 0x60, 0xa3, 0x85, 0x4c, 0x2f, 0xe3,
-  0xf2, 0xa6, 0xd9, 0x2a, 0x1e, 0x15, 0xbb, 0x84, 0xb5, 0xf8, 0x1d, 0x9f
-};
+
+
+//  @description
+// --------------------------------------------------------------------------
+//  Types of the 'falcon' implementation.
+//  This types SHOULD NOT be used directly.
+//  The only purpose of including this module is to place implementation
+//  object in the stack memory.
+// --------------------------------------------------------------------------
+
+
+//  @warning
+// --------------------------------------------------------------------------
+//  This file is partially generated.
+//  Generated blocks are enclosed between tags [@<tag>, @end].
+//  User's code can be added between tags [@end, @<tag>].
+// --------------------------------------------------------------------------
+
+#include "vscf_falcon_defs.h"
+
 // clang-format on
+//  @end
 
-void
-test__keygen__512_degree__success(void) {
-    unsigned char privkey[FALCON_PRIVKEY_SIZE(LOGN_512)] = {0x00};
-    unsigned char pubkey[FALCON_PUBKEY_SIZE(LOGN_512)] = {0x00};
-    unsigned char tmp[FALCON_TMPSIZE_KEYGEN(LOGN_512)] = {0x00};
 
-    falcon_shake256_context shake256;
-    falcon_shake256_init(&shake256);
-    falcon_shake256_inject(&shake256, k_rng_seed, sizeof(k_rng_seed));
-    falcon_shake256_flip(&shake256);
-
-    int status =
-            falcon_keygen_make(&shake256, LOGN_512, privkey, sizeof(privkey), pubkey, sizeof(pubkey), tmp, sizeof(tmp));
-    TEST_ASSERT_EQUAL(0, status);
-}
-
-#endif // TEST_DEPENDENCIES_AVAILABLE
+//  @generated
+// --------------------------------------------------------------------------
+// clang-format off
+//  Generated section start.
+// --------------------------------------------------------------------------
 
 
 // --------------------------------------------------------------------------
-// Entrypoint.
+//  Generated section end.
+// clang-format on
 // --------------------------------------------------------------------------
-int
-main(void) {
-    UNITY_BEGIN();
-
-#if TEST_DEPENDENCIES_AVAILABLE
-    RUN_TEST(test__keygen__512_degree__success);
-#else
-    RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
-#endif
-
-    return UNITY_END();
-}
+//  @end

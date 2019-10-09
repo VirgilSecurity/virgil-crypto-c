@@ -97,6 +97,19 @@ target_link_libraries(foundation
         )
 
 #
+# Third-party definitions
+#
+# TODO: Move this to the code generation
+#
+target_compile_definitions(foundation
+        PUBLIC
+            $<BUILD_INTERFACE:MBEDTLS_LIBRARY=$<BOOL:${MBEDTLS_LIBRARY}>>
+            $<BUILD_INTERFACE:ROUND5_LIBRARY=$<BOOL:${ROUND5_LIBRARY}>>
+            $<BUILD_INTERFACE:KECCAK_LIBRARY=$<BOOL:${KECCAK_LIBRARY}>>
+            $<BUILD_INTERFACE:FALCON_LIBRARY=$<BOOL:${FALCON_LIBRARY}>>
+        )
+
+#
 # Define specific compilation and linkage flags.
 #
 target_compile_features(foundation

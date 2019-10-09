@@ -324,6 +324,11 @@ set_property(
 )
 
 set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_falcon.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
+)
+
+set_property(
     SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_hash_based_alg_info.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
@@ -748,6 +753,9 @@ target_sources(foundation
             "$<$<BOOL:${VSCF_FAKE_RANDOM}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_fake_random.h>"
             "$<$<BOOL:${VSCF_FAKE_RANDOM}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_fake_random_internal.h>"
             "$<$<BOOL:${VSCF_FAKE_RANDOM}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_fake_random_defs.h>"
+            "$<$<BOOL:${VSCF_FALCON}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_falcon.h>"
+            "$<$<BOOL:${VSCF_FALCON}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_falcon_internal.h>"
+            "$<$<BOOL:${VSCF_FALCON}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_falcon_defs.h>"
             "$<$<BOOL:${VSCF_HASH_BASED_ALG_INFO}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_hash_based_alg_info.h>"
             "$<$<BOOL:${VSCF_HASH_BASED_ALG_INFO}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_hash_based_alg_info_internal.h>"
             "$<$<BOOL:${VSCF_HASH_BASED_ALG_INFO}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_hash_based_alg_info_defs.h>"
@@ -1030,6 +1038,9 @@ target_sources(foundation
             "$<$<BOOL:${VSCF_FAKE_RANDOM}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_fake_random.c>"
             "$<$<BOOL:${VSCF_FAKE_RANDOM}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_fake_random_internal.c>"
             "$<$<BOOL:${VSCF_FAKE_RANDOM}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_fake_random_defs.c>"
+            "$<$<BOOL:${VSCF_FALCON}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_falcon.c>"
+            "$<$<BOOL:${VSCF_FALCON}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_falcon_internal.c>"
+            "$<$<BOOL:${VSCF_FALCON}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_falcon_defs.c>"
             "$<$<BOOL:${VSCF_HASH_BASED_ALG_INFO}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_hash_based_alg_info.c>"
             "$<$<BOOL:${VSCF_HASH_BASED_ALG_INFO}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_hash_based_alg_info_internal.c>"
             "$<$<BOOL:${VSCF_HASH_BASED_ALG_INFO}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_hash_based_alg_info_defs.c>"

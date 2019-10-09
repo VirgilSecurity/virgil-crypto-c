@@ -203,6 +203,14 @@ enum vscf_status_t {
     //
     vscf_status_ERROR_MISMATCH_PRIVATE_KEY_AND_ALGORITHM = -226,
     //
+    //  Post-quantum Falcon-Sign public key is corrupted.
+    //
+    vscf_status_ERROR_BAD_FALCON_PUBLIC_KEY = -227,
+    //
+    //  Post-quantum Falcon-Sign private key is corrupted.
+    //
+    vscf_status_ERROR_BAD_FALCON_PRIVATE_KEY = -228,
+    //
     //  Decryption failed, because message info was not given explicitly,
     //  and was not part of an encrypted message.
     //

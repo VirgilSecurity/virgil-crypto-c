@@ -109,6 +109,10 @@ class VscfStatus(object):
     ERROR_MISMATCH_PUBLIC_KEY_AND_ALGORITHM = -225
     # Key algorithm does not accept given type of private key.
     ERROR_MISMATCH_PRIVATE_KEY_AND_ALGORITHM = -226
+    # Post-quantum Falcon-Sign public key is corrupted.
+    ERROR_BAD_FALCON_PUBLIC_KEY = -227
+    # Post-quantum Falcon-Sign private key is corrupted.
+    ERROR_BAD_FALCON_PRIVATE_KEY = -228
     # Decryption failed, because message info was not given explicitly,
     # and was not part of an encrypted message.
     ERROR_NO_MESSAGE_INFO = -301
@@ -202,6 +206,8 @@ class VscfStatus(object):
         -224: "ASN.1 representation of a private key is corrupted.",
         -225: "Key algorithm does not accept given type of public key.",
         -226: "Key algorithm does not accept given type of private key.",
+        -227: "Post-quantum Falcon-Sign public key is corrupted.",
+        -228: "Post-quantum Falcon-Sign private key is corrupted.",
         -301: "Decryption failed, because message info was not given explicitly, and was not part of an encrypted message.",
         -302: "Message Info is corrupted.",
         -303: "Recipient defined with id is not found within message info during data decryption.",

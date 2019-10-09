@@ -42,10 +42,6 @@ from ._c_bridge import VscfStatus
 
 class MessageInfoCustomParams(object):
 
-    OF_INT_TYPE = 1
-    OF_STRING_TYPE = 2
-    OF_DATA_TYPE = 3
-
     def __init__(self):
         """Create underlying C context."""
         self._lib_vscf_message_info_custom_params = VscfMessageInfoCustomParams()

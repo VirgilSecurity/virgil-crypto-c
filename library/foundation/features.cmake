@@ -112,6 +112,7 @@ option(VSCF_KEY_ASN1_SERIALIZER "Enable implementation 'key asn1 serializer'." O
 option(VSCF_KEY_ASN1_DESERIALIZER "Enable implementation 'key asn1 deserializer'." ON)
 option(VSCF_ED25519 "Enable implementation 'ed25519'." ON)
 option(VSCF_CURVE25519 "Enable implementation 'curve25519'." ON)
+option(VSCF_FALCON "Enable implementation 'falcon'." ON)
 option(VSCF_SIMPLE_ALG_INFO "Enable implementation 'simple alg info'." ON)
 option(VSCF_HASH_BASED_ALG_INFO "Enable implementation 'hash based alg info'." ON)
 option(VSCF_CIPHER_ALG_INFO "Enable implementation 'cipher alg info'." ON)
@@ -231,6 +232,7 @@ mark_as_advanced(
         VSCF_KEY_ASN1_DESERIALIZER
         VSCF_ED25519
         VSCF_CURVE25519
+        VSCF_FALCON
         VSCF_SIMPLE_ALG_INFO
         VSCF_HASH_BASED_ALG_INFO
         VSCF_CIPHER_ALG_INFO
@@ -1612,6 +1614,51 @@ if(VSCF_CURVE25519 AND NOT VSCF_CTR_DRBG)
     message("--")
     message("Feature VSCF_CURVE25519 depends on the feature:")
     message("     VSCF_CTR_DRBG - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_FALCON AND NOT FALCON_LIBRARY)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_FALCON depends on the feature:")
+    message("     FALCON_LIBRARY - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_FALCON AND NOT VSCF_PUBLIC_KEY)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_FALCON depends on the feature:")
+    message("     VSCF_PUBLIC_KEY - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_FALCON AND NOT VSCF_PRIVATE_KEY)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_FALCON depends on the feature:")
+    message("     VSCF_PRIVATE_KEY - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_FALCON AND NOT VSCF_CTR_DRBG)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_FALCON depends on the feature:")
+    message("     VSCF_CTR_DRBG - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_FALCON AND NOT VSCF_SIMPLE_ALG_INFO)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_FALCON depends on the feature:")
+    message("     VSCF_SIMPLE_ALG_INFO - which is disabled.")
     message("--")
     message(FATAL_ERROR)
 endif()

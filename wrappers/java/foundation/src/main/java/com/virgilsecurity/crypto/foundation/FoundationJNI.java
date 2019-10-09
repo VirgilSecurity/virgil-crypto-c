@@ -3143,6 +3143,107 @@ public class FoundationJNI {
     */
     public native int curve25519_sharedKeyLen(long cCtx, Key key);
 
+    public native void falcon_setRandom(long cCtx, Random random);
+
+    /*
+    * Generate new private key.
+    * Note, this operation might be slow.
+    */
+    public native PrivateKey falcon_generateKey(long cCtx) throws FoundationException;
+
+    public native long falcon_new();
+
+    public native void falcon_close(long cCtx);
+
+    /*
+    * Provide algorithm identificator.
+    */
+    public native AlgId falcon_algId(long cCtx);
+
+    /*
+    * Produce object with algorithm information and configuration parameters.
+    */
+    public native AlgInfo falcon_produceAlgInfo(long cCtx);
+
+    /*
+    * Restore algorithm configuration from the given object.
+    */
+    public native void falcon_restoreAlgInfo(long cCtx, AlgInfo algInfo) throws FoundationException;
+
+    /*
+    * Generate ephemeral private key of the same type.
+    * Note, this operation might be slow.
+    */
+    public native PrivateKey falcon_generateEphemeralKey(long cCtx, Key key) throws FoundationException;
+
+    /*
+    * Import public key from the raw binary format.
+    *
+    * Return public key that is adopted and optimized to be used
+    * with this particular algorithm.
+    *
+    * Binary format must be defined in the key specification.
+    * For instance, RSA public key must be imported from the format defined in
+    * RFC 3447 Appendix A.1.1.
+    */
+    public native PublicKey falcon_importPublicKey(long cCtx, RawPublicKey rawKey) throws FoundationException;
+
+    /*
+    * Export public key to the raw binary format.
+    *
+    * Binary format must be defined in the key specification.
+    * For instance, RSA public key must be exported in format defined in
+    * RFC 3447 Appendix A.1.1.
+    */
+    public native RawPublicKey falcon_exportPublicKey(long cCtx, PublicKey publicKey) throws FoundationException;
+
+    /*
+    * Import private key from the raw binary format.
+    *
+    * Return private key that is adopted and optimized to be used
+    * with this particular algorithm.
+    *
+    * Binary format must be defined in the key specification.
+    * For instance, RSA private key must be imported from the format defined in
+    * RFC 3447 Appendix A.1.2.
+    */
+    public native PrivateKey falcon_importPrivateKey(long cCtx, RawPrivateKey rawKey) throws FoundationException;
+
+    /*
+    * Export private key in the raw binary format.
+    *
+    * Binary format must be defined in the key specification.
+    * For instance, RSA private key must be exported in format defined in
+    * RFC 3447 Appendix A.1.2.
+    */
+    public native RawPrivateKey falcon_exportPrivateKey(long cCtx, PrivateKey privateKey) throws FoundationException;
+
+    /*
+    * Check if algorithm can sign data digest with a given key.
+    */
+    public native boolean falcon_canSign(long cCtx, PrivateKey privateKey);
+
+    /*
+    * Return length in bytes required to hold signature.
+    * Return zero if a given private key can not produce signatures.
+    */
+    public native int falcon_signatureLen(long cCtx, Key key);
+
+    /*
+    * Sign data digest with a given private key.
+    */
+    public native byte[] falcon_signHash(long cCtx, PrivateKey privateKey, AlgId hashId, byte[] digest) throws FoundationException;
+
+    /*
+    * Check if algorithm can verify data digest with a given key.
+    */
+    public native boolean falcon_canVerify(long cCtx, PublicKey publicKey);
+
+    /*
+    * Verify data digest with a given public key and signature.
+    */
+    public native boolean falcon_verifyHash(long cCtx, PublicKey publicKey, AlgId hashId, byte[] digest, byte[] signature);
+
     public native long simpleAlgInfo_new();
 
     public native void simpleAlgInfo_close(long cCtx);

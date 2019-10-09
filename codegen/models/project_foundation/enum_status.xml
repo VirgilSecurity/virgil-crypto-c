@@ -131,6 +131,14 @@
         Key algorithm does not accept given type of private key.
     </constant>
 
+    <constant name="error bad falcon public key" value="-227">
+        Post-quantum Falcon-Sign public key is corrupted.
+    </constant>
+
+    <constant name="error bad falcon private key" value="-228">
+        Post-quantum Falcon-Sign private key is corrupted.
+    </constant>
+
     <constant name="error no message info" value="-301">
         Decryption failed, because message info was not given explicitly,
         and was not part of an encrypted message.

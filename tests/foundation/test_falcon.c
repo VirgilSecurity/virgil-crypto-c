@@ -38,38 +38,44 @@
 #include "unity.h"
 #include "test_utils.h"
 
-#define TEST_DEPENDENCIES_AVAILABLE VSCF_POST_QUANTUM
+#define TEST_DEPENDENCIES_AVAILABLE (VSCF_POST_QUANTUM && FALCON_LIBRARY)
 #if TEST_DEPENDENCIES_AVAILABLE
 
-#include <r5_cpa_kem.h>
+#include "vscf_falcon.h"
+#include "vscf_fake_random.h"
+
+#include "test_data_falcon.h"
+
+#include <falcon/falcon.h>
 
 void
-test__cpa_kem_keygen__returns_success(void) {
-    unsigned char pk[CRYPTO_PUBLICKEYBYTES] = {0x00};
-    unsigned char sk[CRYPTO_SECRETKEYBYTES] = {0x00};
+test__generate_key__512_degree__success(void) {
 
-    parameters *params = set_parameters_from_api();
-    TEST_ASSERT_NOT_NULL(params);
+    vscf_fake_random_t *fake_random = vscf_fake_random_new();
+    vscf_fake_random_setup_source_data(fake_random, test_data_falcon_RNG_SEED);
 
-    int status = r5_cpa_kem_keygen(pk, sk, params);
-    TEST_ASSERT_EQUAL(0, status);
-}
+    vscf_falcon_t *falcon = vscf_falcon_new();
+    vscf_falcon_take_random(falcon, vscf_fake_random_impl(fake_random));
 
-void
-test__cpa_kem_encapsulate__returns_success(void) {
-    unsigned char pk[CRYPTO_PUBLICKEYBYTES] = {0x00};
-    unsigned char sk[CRYPTO_SECRETKEYBYTES] = {0x00};
-    unsigned char shared_secret[CRYPTO_BYTES] = {0x00};
-    unsigned char ciphertext[CRYPTO_CIPHERTEXTBYTES] = {0x00};
+    vscf_error_t error;
+    vscf_error_reset(&error);
 
-    parameters *params = set_parameters_from_api();
-    TEST_ASSERT_NOT_NULL(params);
+    vscf_impl_t *private_key = vscf_falcon_generate_key(falcon, &error);
+    TEST_ASSERT_FALSE(vscf_error_has_error(&error));
 
-    int status = r5_cpa_kem_keygen(pk, sk, params);
-    TEST_ASSERT_EQUAL(0, status);
+    vscf_raw_private_key_t *raw_private_key = vscf_falcon_export_private_key(falcon, private_key, &error);
+    TEST_ASSERT_FALSE(vscf_error_has_error(&error));
+    TEST_ASSERT_EQUAL_DATA(test_data_falcon_PRIVATE_KEY_512, vscf_raw_private_key_data(raw_private_key));
 
-    status = r5_cpa_kem_encapsulate(ciphertext, shared_secret, pk, params);
-    TEST_ASSERT_EQUAL(0, status);
+    vscf_raw_public_key_t *raw_public_key =
+            (vscf_raw_public_key_t *)vscf_raw_private_key_extract_public_key(raw_private_key);
+    TEST_ASSERT_NOT_NULL(raw_public_key);
+    TEST_ASSERT_EQUAL_DATA(test_data_falcon_PUBLIC_KEY_512, vscf_raw_public_key_data(raw_public_key));
+
+    vscf_raw_public_key_destroy(&raw_public_key);
+    vscf_raw_private_key_destroy(&raw_private_key);
+    vscf_impl_destroy(&private_key);
+    vscf_falcon_destroy(&falcon);
 }
 
 #endif // TEST_DEPENDENCIES_AVAILABLE
@@ -83,8 +89,7 @@ main(void) {
     UNITY_BEGIN();
 
 #if TEST_DEPENDENCIES_AVAILABLE
-    RUN_TEST(test__cpa_kem_keygen__returns_success);
-    RUN_TEST(test__cpa_kem_encapsulate__returns_success);
+    RUN_TEST(test__generate_key__512_degree__success);
 #else
     RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
 #endif

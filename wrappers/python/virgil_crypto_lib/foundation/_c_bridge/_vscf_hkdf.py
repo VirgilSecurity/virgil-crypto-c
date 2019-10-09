@@ -47,8 +47,6 @@ class vscf_hkdf_t(Structure):
 class VscfHkdf(object):
     """Virgil Security implementation of the HKDF (RFC 6234) algorithm."""
 
-    HASH_COUNTER_MAX = 255
-
     def __init__(self):
         """Create underlying C context."""
         self._ll = LowLevelLibs()

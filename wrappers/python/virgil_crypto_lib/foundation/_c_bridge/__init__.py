@@ -157,6 +157,8 @@ from ._vscf_ed25519 import vscf_ed25519_t
 from ._vscf_ed25519 import VscfEd25519
 from ._vscf_curve25519 import vscf_curve25519_t
 from ._vscf_curve25519 import VscfCurve25519
+from ._vscf_falcon import vscf_falcon_t
+from ._vscf_falcon import VscfFalcon
 from ._vscf_simple_alg_info import vscf_simple_alg_info_t
 from ._vscf_simple_alg_info import VscfSimpleAlgInfo
 from ._vscf_hash_based_alg_info import vscf_hash_based_alg_info_t

@@ -162,6 +162,7 @@
     <implementor name="virgil"/>
     <implementor name="virgil key serializer"/>
     <implementor name="ed25519"/>
+    <implementor name="post quantum"/>
 
     <implementor name="alg info"/>
     <implementor name="alg info der"/>

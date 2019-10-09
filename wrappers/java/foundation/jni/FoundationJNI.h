@@ -1339,6 +1339,40 @@ JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_Foundatio
 
 JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_curve25519_1sharedKeyLen (JNIEnv *, jobject, jlong, jobject);
 
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_falcon_1setRandom (JNIEnv *, jobject, jlong, jobject);
+
+JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_falcon_1generateKey (JNIEnv *, jobject, jlong);
+
+JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_falcon_1new__ (JNIEnv *, jobject);
+
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_falcon_1close (JNIEnv *, jobject, jlong);
+
+JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_falcon_1algId (JNIEnv *, jobject, jlong);
+
+JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_falcon_1produceAlgInfo (JNIEnv *, jobject, jlong);
+
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_falcon_1restoreAlgInfo (JNIEnv *, jobject, jlong, jobject);
+
+JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_falcon_1generateEphemeralKey (JNIEnv *, jobject, jlong, jobject);
+
+JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_falcon_1importPublicKey (JNIEnv *, jobject, jlong, jobject);
+
+JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_falcon_1exportPublicKey (JNIEnv *, jobject, jlong, jobject);
+
+JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_falcon_1importPrivateKey (JNIEnv *, jobject, jlong, jobject);
+
+JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_falcon_1exportPrivateKey (JNIEnv *, jobject, jlong, jobject);
+
+JNIEXPORT jboolean JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_falcon_1canSign (JNIEnv *, jobject, jlong, jobject);
+
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_falcon_1signatureLen (JNIEnv *, jobject, jlong, jobject);
+
+JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_falcon_1signHash (JNIEnv *, jobject, jlong, jobject, jobject, jbyteArray);
+
+JNIEXPORT jboolean JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_falcon_1canVerify (JNIEnv *, jobject, jlong, jobject);
+
+JNIEXPORT jboolean JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_falcon_1verifyHash (JNIEnv *, jobject, jlong, jobject, jobject, jbyteArray, jbyteArray);
+
 JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_simpleAlgInfo_1new__ (JNIEnv *, jobject);
 
 JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_simpleAlgInfo_1close (JNIEnv *, jobject, jlong);

@@ -1,5 +1,3 @@
-//  @license
-// --------------------------------------------------------------------------
 //  Copyright (C) 2015-2019 Virgil Security, Inc.
 //
 //  All rights reserved.
@@ -33,80 +31,53 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
-// --------------------------------------------------------------------------
-// clang-format off
 
 
-//  @warning
-// --------------------------------------------------------------------------
-//  This file is partially generated.
-//  Generated blocks are enclosed between tags [@<tag>, @end].
-//  User's code can be added between tags [@end, @<tag>].
-// --------------------------------------------------------------------------
+#define UNITY_BEGIN() UnityBegin(__FILENAME__)
 
+#include "unity.h"
+#include "test_utils.h"
 
-//  @description
-// --------------------------------------------------------------------------
-//  Define implemented algorithm identificator.
-// --------------------------------------------------------------------------
+#define TEST_DEPENDENCIES_AVAILABLE FALCON_LIBRARY
+#if TEST_DEPENDENCIES_AVAILABLE
 
-#ifndef VSCF_ALG_ID_H_INCLUDED
-#define VSCF_ALG_ID_H_INCLUDED
+#include <test_data_falcon.h>
 
-// clang-format on
-//  @end
+#include <falcon/falcon.h>
 
+enum { LOGN_512 = 9, LOGN_1024 = 10 };
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+void
+test__keygen__512_degree__success(void) {
+    unsigned char privkey[FALCON_PRIVKEY_SIZE(LOGN_512)] = {0x00};
+    unsigned char pubkey[FALCON_PUBKEY_SIZE(LOGN_512)] = {0x00};
+    unsigned char tmp[FALCON_TMPSIZE_KEYGEN(LOGN_512)] = {0x00};
 
+    falcon_shake256_context shake256;
+    falcon_shake256_init(&shake256);
+    falcon_shake256_inject(&shake256, test_data_falcon_RNG_SEED.bytes, test_data_falcon_RNG_SEED.len);
+    falcon_shake256_flip(&shake256);
 
-//  @generated
-// --------------------------------------------------------------------------
-// clang-format off
-//  Generated section start.
-// --------------------------------------------------------------------------
-
-//
-//  Define implemented algorithm identificator.
-//
-enum vscf_alg_id_t {
-    vscf_alg_id_NONE,
-    vscf_alg_id_SHA224,
-    vscf_alg_id_SHA256,
-    vscf_alg_id_SHA384,
-    vscf_alg_id_SHA512,
-    vscf_alg_id_KDF1,
-    vscf_alg_id_KDF2,
-    vscf_alg_id_RSA,
-    vscf_alg_id_ECC,
-    vscf_alg_id_ED25519,
-    vscf_alg_id_CURVE25519,
-    vscf_alg_id_SECP256R1,
-    vscf_alg_id_AES256_GCM,
-    vscf_alg_id_AES256_CBC,
-    vscf_alg_id_HMAC,
-    vscf_alg_id_HKDF,
-    vscf_alg_id_PKCS5_PBKDF2,
-    vscf_alg_id_PKCS5_PBES2,
-    vscf_alg_id_FALCON
-};
-typedef enum vscf_alg_id_t vscf_alg_id_t;
-
-
-// --------------------------------------------------------------------------
-//  Generated section end.
-// clang-format on
-// --------------------------------------------------------------------------
-//  @end
-
-
-#ifdef __cplusplus
+    int status =
+            falcon_keygen_make(&shake256, LOGN_512, privkey, sizeof(privkey), pubkey, sizeof(pubkey), tmp, sizeof(tmp));
+    TEST_ASSERT_EQUAL(0, status);
 }
+
+#endif // TEST_DEPENDENCIES_AVAILABLE
+
+
+// --------------------------------------------------------------------------
+// Entrypoint.
+// --------------------------------------------------------------------------
+int
+main(void) {
+    UNITY_BEGIN();
+
+#if TEST_DEPENDENCIES_AVAILABLE
+    RUN_TEST(test__keygen__512_degree__success);
+#else
+    RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
 #endif
 
-
-//  @footer
-#endif // VSCF_ALG_ID_H_INCLUDED
-//  @end
+    return UNITY_END();
+}

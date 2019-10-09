@@ -60,8 +60,7 @@ ExternalProject_Add(falcon-ext
             "-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}"
             "-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}"
             "-DCMAKE_INSTALL_PREFIX=${FALCON_INSTALL_LOCATION}"
-            "-DCMAKE_INSTALL_LIBDIR=lib"
-        )
+            "-DCMAKE_INSTALL_LIBDIR=lib"        )
 
 # ---------------------------------------------------------------------------
 #   Import library as a target

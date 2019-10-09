@@ -105,6 +105,10 @@ public class FoundationException extends RuntimeException {
 
     public static final int ERROR_MISMATCH_PRIVATE_KEY_AND_ALGORITHM = -226;
 
+    public static final int ERROR_BAD_FALCON_PUBLIC_KEY = -227;
+
+    public static final int ERROR_BAD_FALCON_PRIVATE_KEY = -228;
+
     public static final int ERROR_NO_MESSAGE_INFO = -301;
 
     public static final int ERROR_BAD_MESSAGE_INFO = -302;
@@ -239,6 +243,10 @@ public class FoundationException extends RuntimeException {
             return "Key algorithm does not accept given type of public key.";
         case ERROR_MISMATCH_PRIVATE_KEY_AND_ALGORITHM:
             return "Key algorithm does not accept given type of private key.";
+        case ERROR_BAD_FALCON_PUBLIC_KEY:
+            return "Post-quantum Falcon-Sign public key is corrupted.";
+        case ERROR_BAD_FALCON_PRIVATE_KEY:
+            return "Post-quantum Falcon-Sign private key is corrupted.";
         case ERROR_NO_MESSAGE_INFO:
             return "Decryption failed, because message info was not given explicitly, and was not part of an encrypted message.";
         case ERROR_BAD_MESSAGE_INFO:

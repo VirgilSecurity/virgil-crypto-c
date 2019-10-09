@@ -1,5 +1,3 @@
-//  @license
-// --------------------------------------------------------------------------
 //  Copyright (C) 2015-2019 Virgil Security, Inc.
 //
 //  All rights reserved.
@@ -33,80 +31,67 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
-// --------------------------------------------------------------------------
-// clang-format off
 
 
-//  @warning
-// --------------------------------------------------------------------------
-//  This file is partially generated.
-//  Generated blocks are enclosed between tags [@<tag>, @end].
-//  User's code can be added between tags [@end, @<tag>].
-// --------------------------------------------------------------------------
+#define UNITY_BEGIN() UnityBegin(__FILENAME__)
 
+#include "unity.h"
+#include "test_utils.h"
 
-//  @description
-// --------------------------------------------------------------------------
-//  Define implemented algorithm identificator.
-// --------------------------------------------------------------------------
-
-#ifndef VSCF_ALG_ID_H_INCLUDED
-#define VSCF_ALG_ID_H_INCLUDED
-
-// clang-format on
-//  @end
-
-
-#ifdef __cplusplus
-extern "C" {
+#ifndef ROUND5_LIBRARY
+#error lskdjhfkjsdhflkdsj
 #endif
 
+#define TEST_DEPENDENCIES_AVAILABLE ROUND5_LIBRARY
+#if TEST_DEPENDENCIES_AVAILABLE
 
-//  @generated
-// --------------------------------------------------------------------------
-// clang-format off
-//  Generated section start.
-// --------------------------------------------------------------------------
+#include <r5_cpa_kem.h>
 
-//
-//  Define implemented algorithm identificator.
-//
-enum vscf_alg_id_t {
-    vscf_alg_id_NONE,
-    vscf_alg_id_SHA224,
-    vscf_alg_id_SHA256,
-    vscf_alg_id_SHA384,
-    vscf_alg_id_SHA512,
-    vscf_alg_id_KDF1,
-    vscf_alg_id_KDF2,
-    vscf_alg_id_RSA,
-    vscf_alg_id_ECC,
-    vscf_alg_id_ED25519,
-    vscf_alg_id_CURVE25519,
-    vscf_alg_id_SECP256R1,
-    vscf_alg_id_AES256_GCM,
-    vscf_alg_id_AES256_CBC,
-    vscf_alg_id_HMAC,
-    vscf_alg_id_HKDF,
-    vscf_alg_id_PKCS5_PBKDF2,
-    vscf_alg_id_PKCS5_PBES2,
-    vscf_alg_id_FALCON
-};
-typedef enum vscf_alg_id_t vscf_alg_id_t;
+void
+test__cpa_kem_keygen__returns_success(void) {
+    unsigned char pk[CRYPTO_PUBLICKEYBYTES] = {0x00};
+    unsigned char sk[CRYPTO_SECRETKEYBYTES] = {0x00};
 
+    parameters *params = set_parameters_from_api();
+    TEST_ASSERT_NOT_NULL(params);
 
-// --------------------------------------------------------------------------
-//  Generated section end.
-// clang-format on
-// --------------------------------------------------------------------------
-//  @end
-
-
-#ifdef __cplusplus
+    int status = r5_cpa_kem_keygen(pk, sk, params);
+    TEST_ASSERT_EQUAL(0, status);
 }
+
+void
+test__cpa_kem_encapsulate__returns_success(void) {
+    unsigned char pk[CRYPTO_PUBLICKEYBYTES] = {0x00};
+    unsigned char sk[CRYPTO_SECRETKEYBYTES] = {0x00};
+    unsigned char shared_secret[CRYPTO_BYTES] = {0x00};
+    unsigned char ciphertext[CRYPTO_CIPHERTEXTBYTES] = {0x00};
+
+    parameters *params = set_parameters_from_api();
+    TEST_ASSERT_NOT_NULL(params);
+
+    int status = r5_cpa_kem_keygen(pk, sk, params);
+    TEST_ASSERT_EQUAL(0, status);
+
+    status = r5_cpa_kem_encapsulate(ciphertext, shared_secret, pk, params);
+    TEST_ASSERT_EQUAL(0, status);
+}
+
+#endif // TEST_DEPENDENCIES_AVAILABLE
+
+
+// --------------------------------------------------------------------------
+// Entrypoint.
+// --------------------------------------------------------------------------
+int
+main(void) {
+    UNITY_BEGIN();
+
+#if TEST_DEPENDENCIES_AVAILABLE
+    RUN_TEST(test__cpa_kem_keygen__returns_success);
+    RUN_TEST(test__cpa_kem_encapsulate__returns_success);
+#else
+    RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
 #endif
 
-
-//  @footer
-#endif // VSCF_ALG_ID_H_INCLUDED
-//  @end
+    return UNITY_END();
+}

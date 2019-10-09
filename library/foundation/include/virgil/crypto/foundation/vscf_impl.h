@@ -93,6 +93,7 @@ enum vscf_impl_tag_t {
     vscf_impl_tag_ED25519,
     vscf_impl_tag_ENTROPY_ACCUMULATOR,
     vscf_impl_tag_FAKE_RANDOM,
+    vscf_impl_tag_FALCON,
     vscf_impl_tag_HASH_BASED_ALG_INFO,
     vscf_impl_tag_HKDF,
     vscf_impl_tag_HMAC,

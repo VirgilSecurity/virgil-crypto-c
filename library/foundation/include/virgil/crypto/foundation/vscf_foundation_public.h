@@ -95,6 +95,7 @@
 #include "vscf_entropy_source.h"
 #include "vscf_error.h"
 #include "vscf_fake_random.h"
+#include "vscf_falcon.h"
 #include "vscf_footer_info.h"
 #include "vscf_group_msg_type.h"
 #include "vscf_group_session.h"

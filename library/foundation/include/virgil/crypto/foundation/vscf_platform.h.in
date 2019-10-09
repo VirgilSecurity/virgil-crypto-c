@@ -342,6 +342,10 @@ extern "C" {
 #cmakedefine01 VSCF_CURVE25519
 #endif
 
+#ifndef VSCF_FALCON
+#cmakedefine01 VSCF_FALCON
+#endif
+
 #ifndef VSCF_SIMPLE_ALG_INFO
 #cmakedefine01 VSCF_SIMPLE_ALG_INFO
 #endif

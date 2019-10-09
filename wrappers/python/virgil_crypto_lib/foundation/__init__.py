@@ -130,6 +130,7 @@ from .key_asn1_serializer import KeyAsn1Serializer
 from .key_asn1_deserializer import KeyAsn1Deserializer
 from .ed25519 import Ed25519
 from .curve25519 import Curve25519
+from .falcon import Falcon
 from .simple_alg_info import SimpleAlgInfo
 from .hash_based_alg_info import HashBasedAlgInfo
 from .cipher_alg_info import CipherAlgInfo

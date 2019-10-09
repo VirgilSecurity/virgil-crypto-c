@@ -101,9 +101,10 @@ _add_test (test_simple_swu)
 _add_test (test_group_session)
 _add_test (test_group_message)
 _add_test (test_message_info_editor)
-_add_test (test_post_quantum_keccak)
-_add_test (test_post_quantum_round5)
-_add_test (test_post_quantum_falcon_sign)
+_add_test (test_post_quantum_library_keccak)
+_add_test (test_post_quantum_library_round5)
+_add_test (test_post_quantum_library_falcon)
+_add_test (test_falcon)
 
 # ---------------------------------------------------------------------------
 #   Multi-threading tests

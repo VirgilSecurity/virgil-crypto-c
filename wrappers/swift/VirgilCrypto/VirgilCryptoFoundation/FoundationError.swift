@@ -134,6 +134,12 @@ import VSCFoundation
     /// Key algorithm does not accept given type of private key.
     case errorMismatchPrivateKeyAndAlgorithm = -226
 
+    /// Post-quantum Falcon-Sign public key is corrupted.
+    case errorBadFalconPublicKey = -227
+
+    /// Post-quantum Falcon-Sign private key is corrupted.
+    case errorBadFalconPrivateKey = -228
+
     /// Decryption failed, because message info was not given explicitly,
     /// and was not part of an encrypted message.
     case errorNoMessageInfo = -301

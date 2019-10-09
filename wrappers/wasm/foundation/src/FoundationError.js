@@ -179,6 +179,14 @@ const initFoundationError = (Module, modules) => {
                 throw new FoundationError("Key algorithm does not accept given type of private key.");
             }
 
+            if (statusCode == -227) {
+                throw new FoundationError("Post-quantum Falcon-Sign public key is corrupted.");
+            }
+
+            if (statusCode == -228) {
+                throw new FoundationError("Post-quantum Falcon-Sign private key is corrupted.");
+            }
+
             if (statusCode == -301) {
                 throw new FoundationError("Decryption failed, because message info was not given explicitly, and was not part of an encrypted message.");
             }

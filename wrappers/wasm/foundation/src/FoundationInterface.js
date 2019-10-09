@@ -146,6 +146,9 @@ const initFoundationInterface = (Module, modules) => {
                 case modules.FoundationImplTag.CURVE25519:
                     return modules.Curve25519.newAndTakeCContext(ctxPtr);
 
+                case modules.FoundationImplTag.FALCON:
+                    return modules.Falcon.newAndTakeCContext(ctxPtr);
+
                 case modules.FoundationImplTag.SIMPLE_ALG_INFO:
                     return modules.SimpleAlgInfo.newAndTakeCContext(ctxPtr);
 

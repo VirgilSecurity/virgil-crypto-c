@@ -78,6 +78,8 @@ import VSCFoundation
             return Ed25519(take: c_ctx)
         case vscf_impl_tag_CURVE25519:
             return Curve25519(take: c_ctx)
+        case vscf_impl_tag_FALCON:
+            return Falcon(take: c_ctx)
         default:
             fatalError("Unexpected C implementation cast to the Swift implementation.")
         }
@@ -345,6 +347,8 @@ import VSCFoundation
             return Ed25519(take: c_ctx)
         case vscf_impl_tag_CURVE25519:
             return Curve25519(take: c_ctx)
+        case vscf_impl_tag_FALCON:
+            return Falcon(take: c_ctx)
         default:
             fatalError("Unexpected C implementation cast to the Swift implementation.")
         }
@@ -385,6 +389,8 @@ import VSCFoundation
             return Ecc(take: c_ctx)
         case vscf_impl_tag_ED25519:
             return Ed25519(take: c_ctx)
+        case vscf_impl_tag_FALCON:
+            return Falcon(take: c_ctx)
         default:
             fatalError("Unexpected C implementation cast to the Swift implementation.")
         }
