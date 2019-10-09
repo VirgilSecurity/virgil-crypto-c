@@ -35,61 +35,79 @@
 * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 */
 
+namespace VirgilCrypto\Phe;
+
 /**
 * Class for encryption using PHE account key
 * This class is thread-safe.
 */
 class PheCipher
 {
+
+    /**
+    * @var
+    */
     private $ctx;
 
     /**
     * Create underlying C context.
+    * @param null $ctx
     * @return void
     */
-    public function __construct()
+    public function __construct($ctx = null)
     {
-        $this->ctx = vsce_phe_cipher_new_php();
+        $this->ctx = is_null($ctx) ? vsce_phe_cipher_new_php() : $ctx;
     }
 
     /**
     * Destroy underlying C context.
     * @return void
     */
-    public function __destruct()
+    public function __destructor()
     {
         vsce_phe_cipher_delete_php($this->ctx);
     }
 
     /**
+    * @param VirgilCrypto\Foundation\Random $random
+    * @return void
+    */
+    public function useRandom(VirgilCrypto\Foundation\Random $random): void
+    {
+        vsce_phe_cipher_use_random_php($this->ctx, $random);
+    }
+
+    /**
     * Setups dependencies with default values.
     *
-    * @throws Exception
     * @return void
+    * @throws \Exception
     */
     public function setupDefaults(): void
     {
-        return vsce_phe_cipher_setup_defaults_php($this->ctx);
+        vsce_phe_cipher_setup_defaults_php($this->ctx);
     }
 
     /**
     * Returns buffer capacity needed to fit cipher text
     *
-    * @return void
+    * @param int $plainTextLen
+    * @return int
     */
-    public function encryptLen(): void
+    public function encryptLen(int $plainTextLen): int
     {
-        return vsce_phe_cipher_encrypt_len_php($this->ctx);
+        return vsce_phe_cipher_encrypt_len_php($this->ctx, $plainTextLen);
     }
 
     /**
     * Returns buffer capacity needed to fit plain text
     *
-    * @return void
+    * @param int $cipherTextLen
+    * @return int
     */
-    public function decryptLen(): void
+    public function decryptLen(int $cipherTextLen): int
     {
-        return vsce_phe_cipher_decrypt_len_php($this->ctx);
+        return vsce_phe_cipher_decrypt_len_php($this->ctx, $cipherTextLen);
     }
 
     /**
@@ -97,10 +115,10 @@ class PheCipher
     *
     * @param string $plainText
     * @param string $accountKey
-    * @throws Exception
     * @return string
+    * @throws \Exception
     */
-    public function encrypt(string $plainText, string $accountKey): string // cipher_text
+    public function encrypt(string $plainText, string $accountKey): string
     {
         return vsce_phe_cipher_encrypt_php($this->ctx, $plainText, $accountKey);
     }
@@ -110,11 +128,39 @@ class PheCipher
     *
     * @param string $cipherText
     * @param string $accountKey
-    * @throws Exception
     * @return string
+    * @throws \Exception
     */
-    public function decrypt(string $cipherText, string $accountKey): string // plain_text
+    public function decrypt(string $cipherText, string $accountKey): string
     {
         return vsce_phe_cipher_decrypt_php($this->ctx, $cipherText, $accountKey);
+    }
+
+    /**
+    * Encrypts data (and authenticates additional data) using account key
+    *
+    * @param string $plainText
+    * @param string $additionalData
+    * @param string $accountKey
+    * @return string
+    * @throws \Exception
+    */
+    public function authEncrypt(string $plainText, string $additionalData, string $accountKey): string
+    {
+        return vsce_phe_cipher_auth_encrypt_php($this->ctx, $plainText, $additionalData, $accountKey);
+    }
+
+    /**
+    * Decrypts data (and verifies additional data) using account key
+    *
+    * @param string $cipherText
+    * @param string $additionalData
+    * @param string $accountKey
+    * @return string
+    * @throws \Exception
+    */
+    public function authDecrypt(string $cipherText, string $additionalData, string $accountKey): string
+    {
+        return vsce_phe_cipher_auth_decrypt_php($this->ctx, $cipherText, $additionalData, $accountKey);
     }
 }

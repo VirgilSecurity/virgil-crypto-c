@@ -112,7 +112,7 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
             my._function_arguments = ""
 
             new def_func_entry to function
-                . = format_left("PHP_FE($(function.name:)_php, arginfo_$(function.name:)_php)", 0)
+                . = format_left("PHP_FE($(function.name:), arginfo_$(function.name:))", 0)
             endnew
 
             for method0.argument as argument0
@@ -172,7 +172,7 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
                             elsif argument0.zend_type = "IS_LONG"
                                 # TODO Need to be checked
                                 my._h2 += format_left("\
-                                    zend_long in_$(argument0.name:);
+                                    zend_long in_$(argument0.name:) = 0;
                                     ", 0)
                             elsif argument0.zend_type = "IS_RESOURCE"
                                 # TODO Need to be checked
@@ -206,7 +206,7 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
                             if argument0.zend_type = "IS_STRING"
                                 my._h3 += format_left("Z_PARAM_STRING_EX(in_$(argument0.name:), in_$(argument0.name:)_len, 1 /*check_null*/, 0 /*separate*/)", 1)
                             elsif argument0.zend_type = "IS_LONG"
-                                my._h3 += format_left("Z_PARAM_LONG_EX(in_$(argument0.name:), 0 /*is_null*/, 1 /*check_null*/, 0 /*separate*/)", 1)
+                                my._h3 += format_left("Z_PARAM_LONG(in_$(argument0.name:)", 1)
                             elsif argument0.zend_type = "IS_RESOURCE"
                                 # TODO!!!
                                 my._h3 += format_left("Z_PARAM_RESOURCE_EX(in_$(argument0.name:), 1 /*check_null*/, 0 /*separate*/)", 1)
@@ -246,8 +246,8 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
                                 ", 0)
                         elsif argument0.type0 = "error"
                             my._h2 += format_left("
-                                vscf_error_t error;
-                                vscf_error_reset(&error);
+                                $(function.prefix0:)_error_t error;
+                                $(function.prefix0:)_error_reset(&error);
                                 ", 0)
                         else
                             echo_debug_item(function)
@@ -332,7 +332,7 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
 
                     my._args += ");"
 
-                    my._func = "$(function.name:)"
+                    my._func = "$(function.name0:)"
 
                     my._res = my._c + my._return + my._func + my._args
 
@@ -392,9 +392,13 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
                 elsif function.return_zend_type = "IS_VOID"
 
                 elsif function.return_zend_type = "IS_RESOURCE"
-                    my._res += format_left("RETVAL_RES($(return_argument0.name:));", 0)
+                    for function.return_argument as return_argument0
+                        my._res += format_left("RETVAL_RES($(return_argument0.name:));", 0)
+                    endfor
                 elsif function.return_zend_type = "IS_BOOLEAN"
-                    my._res += format_left("RETVAL_BOOL($(return_argument0.name:));", 0)
+                    for function.return_argument as return_argument0
+                        my._res += format_left("RETVAL_BOOL($(return_argument0.name:));", 0)
+                    endfor
                 else
                     echo_debug_item(function)
                     echo_fatal("Not implemented (12001)", my)
@@ -417,7 +421,7 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
 
                     if function.return_zend_type = "IS_VOID" | function.return_zend_type = "IS_LONG"
                         my._res = format_left("\
-                            goto sucess;
+                            goto success;
 
                         fail:
                             RETURN_FALSE;
@@ -437,7 +441,7 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
                         my._res = my._p1 + "\n" + my._p2 + my._fail + my._p3 + my._success
                     elsif function.return_zend_type = "IS_RESOURCE"
                         my._res = format_left("\
-                            goto sucess;
+                            goto success;
 
                         fail:
                             RETURN_FALSE;
@@ -447,7 +451,7 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
                     # TODO!!!
                     elsif function.return_zend_type = "IS_BOOLEAN"
                         my._res = format_left("\
-                            goto sucess;
+                            goto success;
 
                         fail:
                             RETURN_FALSE;
@@ -510,9 +514,9 @@ function php_map_low_level_constructor_destructor (in_module, out_low_level)
             new custom_code to wrapper
                 my._custom_code = format_left("\
                     PHP_FUNCTION($(function.name0:)) {
-                        $(my._a:)_t *$(function.entity0:) =$(function.name0:)();
-                        zend_resource *$(function.entity0:)_res = zend_register_resource($(function.entity0:), le_$(my._a:);
-                        RETVAL_RES($(function.entity0:)_res);
+                        $(my._a:)_t *$(function.entity0:c) = $(function.name0:)();
+                        zend_resource *$(function.entity0:c)_res = zend_register_resource($(function.entity0:c), le_$(my._a:));
+                        RETVAL_RES($(function.entity0:c)_res);
                     }
                     ", 0)
                 . = my._custom_code
@@ -592,6 +596,8 @@ endfunction
 function php_map_low_level_argument (in_argument, in_php_project, out_argument, out_function)
     check_arguments (my, "in_argument, in_php_project, out_argument, out_function", my)
 
+    my._prefix = my.out_function.prefix0
+
     my.out_argument.name = "$(my.in_argument.name:c)"
 
     if defined (my.in_argument.class)
@@ -601,18 +607,18 @@ function php_map_low_level_argument (in_argument, in_php_project, out_argument, 
             my._zend_type = "IS_STRING"
         elsif my.in_argument.class = "error"
             my._type0 = "error"
-            my._type = "vscf_error_t"
+            my._type = "$(my._prefix:)_error_t"
             my._zend_type = ""
         else
             my._type0 = "class"
-            my._type = "vscf_$(my.in_argument.class:c)_t"
+            my._type = "$(my._prefix:)_$(my.in_argument.class:c)_t"
             my._zend_type = "IS_RESOURCE"
         endif
     endif
 
     if defined (my.in_argument.interface)
         my._type0 = "interface"
-        my._type = "vscf_impl_t"
+        my._type = "$(my._prefix:)_impl_t"
         my._zend_type = "IS_RESOURCE"
     endif
 
@@ -651,7 +657,7 @@ function php_map_low_level_argument (in_argument, in_php_project, out_argument, 
 
     if defined (my.in_argument.impl)
         my._type0 = "impl"
-        my._type = "vscf_$(my.in_argument.impl:c)_t"
+        my._type = "$(my._prefix:)_$(my.in_argument.impl:c)_t"
         my._zend_type = "IS_RESOURCE"
     endif
 
@@ -666,6 +672,8 @@ endfunction
 # ---------------------------------------------------------------------------
 function php_map_low_level_return (in_method, in_php_project, out_function)
     check_arguments (my, "in_method, in_php_project, out_function", my)
+
+    my._prefix = my.out_function.prefix0
 
     my._return_type0 = "void"
     my._return_type = ""
@@ -775,7 +783,7 @@ function php_map_low_level_return (in_method, in_php_project, out_function)
                 new return_argument to my.out_function
                     .name = "$(return0.class:c)"
                     .type0 = "class"
-                    .type = "vscf_$(0.name:)_t"
+                    .type = "$(my._prefix:)_$(0.name:)_t"
                     .zend_type = my._return_zend_type
                 endnew
             endif
@@ -787,7 +795,7 @@ function php_map_low_level_return (in_method, in_php_project, out_function)
             new return_argument to my.out_function
                 .name = "$(return0.interface:c)"
                 .type0 = "interface"
-                .type = "vscf_impl_t"
+                .type = "$(my._prefix:)_impl_t"
                 .zend_type = my._return_zend_type
             endnew
         endif
@@ -799,7 +807,7 @@ function php_map_low_level_return (in_method, in_php_project, out_function)
                 new return_argument to my.out_function
                     .name = "status"
                     .type0 = "status"
-                    .type = "vscf_status_t"
+                    .type = "$(my._prefix:)_status_t"
                     .zend_type = "IS_RESOURCE"
                 endnew
             else
@@ -840,7 +848,7 @@ function php_map_low_level_extension (in_php_project, out_php_module)
 
     my._ext_name0 = "$(my.in_php_project.prefix:)_$(my.in_php_project.name:)_php"
 
-    for my.in_php_project.php_module as php_module0 where string_in(php_module0.type, "class, implementation, interface")
+    for my.in_php_project.php_module as php_module0 where string_in(php_module0.type, "class, implementation")
         if ! defined (php_module0->low_level->include)
             echo_debug_item(php_module0->low_level)
             echo_fatal("adfdgdg", my)

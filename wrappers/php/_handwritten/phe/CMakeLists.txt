@@ -34,14 +34,14 @@
 
 cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
-project(virgil_crypto_foundation_php VERSION ${virgil_crypto_php_VERSION} LANGUAGES C)
+project(virgil_crypto_phe_php VERSION ${virgil_crypto_php_VERSION} LANGUAGES C)
 
 
 # ---------------------------------------------------------------------------
 #   Check dependencies
 # ---------------------------------------------------------------------------
-if(NOT VIRGIL_LIB_FOUNDATION)
-    message(STATUS "Skip building the PHP wrapper for library 'foundation', which is not built.")
+if(NOT VIRGIL_LIB_PHE)
+    message(STATUS "Skip building the PHP wrapper for library PHE, which is not built.")
     return()
 endif()
 
@@ -49,30 +49,30 @@ endif()
 # ---------------------------------------------------------------------------
 #   Create PHP extension library
 # ---------------------------------------------------------------------------
-add_library(foundation_php SHARED "")
-set_target_properties(foundation_php PROPERTIES
+add_library(phe_php SHARED "")
+set_target_properties(phe_php PROPERTIES
         C_STANDARD 99
         DEBUG_POSTFIX "_d"
-        OUTPUT_NAME vscf_php
+        OUTPUT_NAME vsce_phe_php
         PREFIX ""
-        VERSION ${virgil_crypto_foundation_php_VERSION}
-        SOVERSION ${virgil_crypto_foundation_php_VERSION_MAJOR}
+        VERSION ${virgil_crypto_phe_php_VERSION}
+        SOVERSION ${virgil_crypto_phe_php_VERSION_MAJOR}
         )
 
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
-    set_target_properties(foundation_php PROPERTIES SUFFIX ".dll")
+    set_target_properties(phe_php PROPERTIES SUFFIX ".dll")
 else()
-    set_target_properties(foundation_php PROPERTIES SUFFIX ".so")
+    set_target_properties(phe_php PROPERTIES SUFFIX ".so")
 endif()
 
-target_sources(foundation_php
+target_sources(phe_php
         PRIVATE
-            $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/extension/extension.c>
+            $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/extension/vsce_phe_php.c>
         )
 
-target_link_libraries(foundation_php
+target_link_libraries(phe_php
     PUBLIC
-        vsc::foundation
+        vsc::phe
     PRIVATE
         phplib
         "$<$<STREQUAL:${CMAKE_SYSTEM_NAME},Darwin>:-undefined dynamic_lookup>"
@@ -83,8 +83,8 @@ target_link_libraries(foundation_php
 # ---------------------------------------------------------------------------
 if(ENABLE_TESTING AND VIRGIL_PHP_TESTING AND PHP_EXECUTABLE AND PHPUNIT_EXECUTABLE)
     add_test(
-            NAME test_foundation_php
-            COMMAND "${PHP_EXECUTABLE}" -d "extension=$<TARGET_FILE:foundation_php>" -d safe_mode=Off "${PHPUNIT_EXECUTABLE}"
+            NAME test_phe_php
+            COMMAND "${PHP_EXECUTABLE}" -d "extension=$<TARGET_FILE:phe_php>" -d safe_mode=Off "${PHPUNIT_EXECUTABLE}"
                     --include-path "${CMAKE_CURRENT_LIST_DIR}/src" "${CMAKE_CURRENT_LIST_DIR}/tests"
             )
 endif()
@@ -94,7 +94,7 @@ endif()
 #   Install
 # ---------------------------------------------------------------------------
 if(VIRGIL_INSTALL_WRAP_LIBS)
-    install(TARGETS foundation_php
+    install(TARGETS phe_php
             LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
             RUNTIME DESTINATION ${CMAKE_INSTALL_LIBDIR}
             )
@@ -105,7 +105,7 @@ if(VIRGIL_INSTALL_WRAP_SRCS)
             DIRECTORY
                 "${CMAKE_CURRENT_LIST_DIR}/src/"
             DESTINATION
-                "${VIRGIL_INSTALL_PHP_SRCDIR}/foundation"
+                "${VIRGIL_INSTALL_PHP_SRCDIR}/phe"
             FILES_MATCHING PATTERN
                 "*.php"
             )

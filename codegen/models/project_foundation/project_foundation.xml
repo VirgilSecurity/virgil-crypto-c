@@ -6,7 +6,7 @@
         prefix="vscf"
         path="../library/foundation/"
         work_path="generated/foundation/"
-        wrappers="swift,java,python,wasm"
+        wrappers="swift,java,python,wasm,php"
         >
 
     <version major="0" minor="10" patch="4"/>

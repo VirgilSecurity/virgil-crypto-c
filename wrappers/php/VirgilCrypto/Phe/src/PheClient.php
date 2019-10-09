@@ -35,39 +35,64 @@
 * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 */
 
+namespace VirgilCrypto\Phe;
+
 /**
 * Class for client-side PHE crypto operations.
-* This class is thread-safe in case if VSCE_MULTI_THREAD defined
+* This class is thread-safe in case if VSCE_MULTI_THREADING defined.
 */
 class PheClient
 {
+
+    /**
+    * @var
+    */
     private $ctx;
 
     /**
     * Create underlying C context.
+    * @param null $ctx
     * @return void
     */
-    public function __construct()
+    public function __construct($ctx = null)
     {
-        $this->ctx = vsce_phe_client_new_php();
+        $this->ctx = is_null($ctx) ? vsce_phe_client_new_php() : $ctx;
     }
 
     /**
     * Destroy underlying C context.
     * @return void
     */
-    public function __destruct()
+    public function __destructor()
     {
         vsce_phe_client_delete_php($this->ctx);
     }
 
     /**
-    * @throws Exception
+    * @param VirgilCrypto\Foundation\Random $random
     * @return void
+    */
+    public function useRandom(VirgilCrypto\Foundation\Random $random): void
+    {
+        vsce_phe_client_use_random_php($this->ctx, $random);
+    }
+
+    /**
+    * @param VirgilCrypto\Foundation\Random $operationRandom
+    * @return void
+    */
+    public function useOperationRandom(VirgilCrypto\Foundation\Random $operationRandom): void
+    {
+        vsce_phe_client_use_operation_random_php($this->ctx, $operationRandom);
+    }
+
+    /**
+    * @return void
+    * @throws \Exception
     */
     public function setupDefaults(): void
     {
-        return vsce_phe_client_setup_defaults_php($this->ctx);
+        vsce_phe_client_setup_defaults_php($this->ctx);
     }
 
     /**
@@ -77,21 +102,21 @@ class PheClient
     *
     * @param string $clientPrivateKey
     * @param string $serverPublicKey
-    * @throws Exception
     * @return void
+    * @throws \Exception
     */
     public function setKeys(string $clientPrivateKey, string $serverPublicKey): void
     {
-        return vsce_phe_client_set_keys_php($this->ctx, $clientPrivateKey, $serverPublicKey);
+        vsce_phe_client_set_keys_php($this->ctx, $clientPrivateKey, $serverPublicKey);
     }
 
     /**
     * Generates client private key
     *
-    * @throws Exception
     * @return string
+    * @throws \Exception
     */
-    public function generateClientPrivateKey(): string // client_private_key
+    public function generateClientPrivateKey(): string
     {
         return vsce_phe_client_generate_client_private_key_php($this->ctx);
     }
@@ -99,9 +124,9 @@ class PheClient
     /**
     * Buffer size needed to fit EnrollmentRecord
     *
-    * @return void
+    * @return int
     */
-    public function enrollmentRecordLen(): void
+    public function enrollmentRecordLen(): int
     {
         return vsce_phe_client_enrollment_record_len_php($this->ctx);
     }
@@ -113,8 +138,8 @@ class PheClient
     *
     * @param string $enrollmentResponse
     * @param string $password
-    * @throws Exception
     * @return array
+    * @throws \Exception
     */
     public function enrollAccount(string $enrollmentResponse, string $password): array // [enrollment_record, account_key]
     {
@@ -124,9 +149,9 @@ class PheClient
     /**
     * Buffer size needed to fit VerifyPasswordRequest
     *
-    * @return void
+    * @return int
     */
-    public function verifyPasswordRequestLen(): void
+    public function verifyPasswordRequestLen(): int
     {
         return vsce_phe_client_verify_password_request_len_php($this->ctx);
     }
@@ -136,10 +161,10 @@ class PheClient
     *
     * @param string $password
     * @param string $enrollmentRecord
-    * @throws Exception
     * @return string
+    * @throws \Exception
     */
-    public function createVerifyPasswordRequest(string $password, string $enrollmentRecord): string // verify_password_request
+    public function createVerifyPasswordRequest(string $password, string $enrollmentRecord): string
     {
         return vsce_phe_client_create_verify_password_request_php($this->ctx, $password, $enrollmentRecord);
     }
@@ -152,10 +177,10 @@ class PheClient
     * @param string $password
     * @param string $enrollmentRecord
     * @param string $verifyPasswordResponse
-    * @throws Exception
     * @return string
+    * @throws \Exception
     */
-    public function checkResponseAndDecrypt(string $password, string $enrollmentRecord, string $verifyPasswordResponse): string // account_key
+    public function checkResponseAndDecrypt(string $password, string $enrollmentRecord, string $verifyPasswordResponse): string
     {
         return vsce_phe_client_check_response_and_decrypt_php($this->ctx, $password, $enrollmentRecord, $verifyPasswordResponse);
     }
@@ -165,8 +190,8 @@ class PheClient
     * Use output values to instantiate new client instance with new keys
     *
     * @param string $updateToken
-    * @throws Exception
     * @return array
+    * @throws \Exception
     */
     public function rotateKeys(string $updateToken): array // [new_client_private_key, new_server_public_key]
     {
@@ -178,10 +203,10 @@ class PheClient
     *
     * @param string $enrollmentRecord
     * @param string $updateToken
-    * @throws Exception
     * @return string
+    * @throws \Exception
     */
-    public function updateEnrollmentRecord(string $enrollmentRecord, string $updateToken): string // new_enrollment_record
+    public function updateEnrollmentRecord(string $enrollmentRecord, string $updateToken): string
     {
         return vsce_phe_client_update_enrollment_record_php($this->ctx, $enrollmentRecord, $updateToken);
     }

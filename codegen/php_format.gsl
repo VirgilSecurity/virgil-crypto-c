@@ -159,12 +159,12 @@ function php_format_low_level_status_exception (in_enum, in_php_module)
     my._case = format_left(my._case, 2)
 
     my._res = format_left("\
-    #define $(my._macro_name:)(status)
-    do {
-        if(status != $(my._prefix:)_status_SUCCESS) {
-        $(my._func_name:)(status);
-            goto fail;
-        }
+    #define $(my._macro_name:)(status)\
+    do {\
+        if(status != $(my._prefix:)_status_SUCCESS) {\
+        $(my._func_name:)(status);\
+            goto fail;\
+        }\
     } while (false)
 
     void

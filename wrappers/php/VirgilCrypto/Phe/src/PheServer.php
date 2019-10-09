@@ -35,46 +35,71 @@
 * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 */
 
+namespace VirgilCrypto\Phe;
+
 /**
 * Class for server-side PHE crypto operations.
-* This class is thread-safe in case if VSCE_MULTI_THREAD defined
+* This class is thread-safe in case if VSCE_MULTI_THREADING defined.
 */
 class PheServer
 {
+
+    /**
+    * @var
+    */
     private $ctx;
 
     /**
     * Create underlying C context.
+    * @param null $ctx
     * @return void
     */
-    public function __construct()
+    public function __construct($ctx = null)
     {
-        $this->ctx = vsce_phe_server_new_php();
+        $this->ctx = is_null($ctx) ? vsce_phe_server_new_php() : $ctx;
     }
 
     /**
     * Destroy underlying C context.
     * @return void
     */
-    public function __destruct()
+    public function __destructor()
     {
         vsce_phe_server_delete_php($this->ctx);
     }
 
     /**
-    * @throws Exception
+    * @param VirgilCrypto\Foundation\Random $random
     * @return void
+    */
+    public function useRandom(VirgilCrypto\Foundation\Random $random): void
+    {
+        vsce_phe_server_use_random_php($this->ctx, $random);
+    }
+
+    /**
+    * @param VirgilCrypto\Foundation\Random $operationRandom
+    * @return void
+    */
+    public function useOperationRandom(VirgilCrypto\Foundation\Random $operationRandom): void
+    {
+        vsce_phe_server_use_operation_random_php($this->ctx, $operationRandom);
+    }
+
+    /**
+    * @return void
+    * @throws \Exception
     */
     public function setupDefaults(): void
     {
-        return vsce_phe_server_setup_defaults_php($this->ctx);
+        vsce_phe_server_setup_defaults_php($this->ctx);
     }
 
     /**
     * Generates new NIST P-256 server key pair for some client
     *
-    * @throws Exception
     * @return array
+    * @throws \Exception
     */
     public function generateServerKeyPair(): array // [server_private_key, server_public_key]
     {
@@ -84,9 +109,9 @@ class PheServer
     /**
     * Buffer size needed to fit EnrollmentResponse
     *
-    * @return void
+    * @return int
     */
-    public function enrollmentResponseLen(): void
+    public function enrollmentResponseLen(): int
     {
         return vsce_phe_server_enrollment_response_len_php($this->ctx);
     }
@@ -96,10 +121,10 @@ class PheServer
     *
     * @param string $serverPrivateKey
     * @param string $serverPublicKey
-    * @throws Exception
     * @return string
+    * @throws \Exception
     */
-    public function getEnrollment(string $serverPrivateKey, string $serverPublicKey): string // enrollment_response
+    public function getEnrollment(string $serverPrivateKey, string $serverPublicKey): string
     {
         return vsce_phe_server_get_enrollment_php($this->ctx, $serverPrivateKey, $serverPublicKey);
     }
@@ -107,9 +132,9 @@ class PheServer
     /**
     * Buffer size needed to fit VerifyPasswordResponse
     *
-    * @return void
+    * @return int
     */
-    public function verifyPasswordResponseLen(): void
+    public function verifyPasswordResponseLen(): int
     {
         return vsce_phe_server_verify_password_response_len_php($this->ctx);
     }
@@ -120,10 +145,10 @@ class PheServer
     * @param string $serverPrivateKey
     * @param string $serverPublicKey
     * @param string $verifyPasswordRequest
-    * @throws Exception
     * @return string
+    * @throws \Exception
     */
-    public function verifyPassword(string $serverPrivateKey, string $serverPublicKey, string $verifyPasswordRequest): string // verify_password_response
+    public function verifyPassword(string $serverPrivateKey, string $serverPublicKey, string $verifyPasswordRequest): string
     {
         return vsce_phe_server_verify_password_php($this->ctx, $serverPrivateKey, $serverPublicKey, $verifyPasswordRequest);
     }
@@ -131,9 +156,9 @@ class PheServer
     /**
     * Buffer size needed to fit UpdateToken
     *
-    * @return void
+    * @return int
     */
-    public function updateTokenLen(): void
+    public function updateTokenLen(): int
     {
         return vsce_phe_server_update_token_len_php($this->ctx);
     }
@@ -142,8 +167,8 @@ class PheServer
     * Updates server's private and public keys and issues an update token for use on client's side
     *
     * @param string $serverPrivateKey
-    * @throws Exception
     * @return array
+    * @throws \Exception
     */
     public function rotateKeys(string $serverPrivateKey): array // [new_server_private_key, new_server_public_key, update_token]
     {

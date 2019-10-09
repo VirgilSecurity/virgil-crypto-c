@@ -177,7 +177,6 @@ function php_create_interface_module (interface, php_project, meta)
         endnew
 
         new low_level to php_module
-            php_map_low_level(my.interface, my.php_project, low_level, my._type)
         endnew
     endnew
 endfunction
@@ -373,7 +372,6 @@ function php_create_custom_modules (source, php_project, meta)
         endnew
 
         new low_level to php_module
-            php_map_low_level(my._ctx->interface, my.php_project, low_level, my._type)
         endnew
     endnew
 endfunction
@@ -383,7 +381,6 @@ endfunction
 # ---------------------------------------------------------------------------
 function php_finalize_custom_modules (source, php_project, meta)
     check_arguments (my, "source, php_project, meta", my)
-
 
     new php_module to my.php_project
         .name = "extension"
