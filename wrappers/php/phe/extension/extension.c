@@ -39,10 +39,39 @@
 #include <zend_list.h>
 #include "vsce_assert.h"
 #include "vsce_phe_common.h"
-#include "status.c"
 #include "vsce_phe_server.h"
 #include "vsce_phe_client.h"
 #include "vsce_phe_cipher.h"
+
+#define VSCE_HANDLE_STATUS(status) do { if(status != vsce_status_SUCCESS) { vsce_handle_throw_exception(status); goto fail; } } while (false)
+
+void
+vsce_handle_throw_exception(vsce_status_t status) {
+    switch(status) {
+
+    case vsce_status_ERROR_INVALID_SUCCESS_PROOF:
+        zend_throw_exception(NULL, "VSCE: Success proof check failed.", -1);
+        break;
+    case vsce_status_ERROR_INVALID_FAIL_PROOF:
+        zend_throw_exception(NULL, "VSCE: Failure proof check failed.", -2);
+        break;
+    case vsce_status_ERROR_RNG_FAILED:
+        zend_throw_exception(NULL, "VSCE: RNG returned error.", -3);
+        break;
+    case vsce_status_ERROR_PROTOBUF_DECODE_FAILED:
+        zend_throw_exception(NULL, "VSCE: Protobuf decode failed.", -4);
+        break;
+    case vsce_status_ERROR_INVALID_PUBLIC_KEY:
+        zend_throw_exception(NULL, "VSCE: Invalid public key.", -5);
+        break;
+    case vsce_status_ERROR_INVALID_PRIVATE_KEY:
+        zend_throw_exception(NULL, "VSCE: Invalid private key.", -6);
+        break;
+    case vsce_status_ERROR_AES_FAILED:
+        zend_throw_exception(NULL, "VSCE: AES error occurred.", -7);
+        break;
+    }
+}
 
 //
 // Constants
@@ -80,9 +109,9 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
         0 /*allow_null*/)
 ZEND_END_ARG_INFO()
 
-PHP_FUNCTION(vsce_phe_server_new) {
-    vsce_phe server_t *phe_server = vsce_phe_server_new();
-    zend_resource *phe_server_res = zend_register_resource(phe_server, le_vsce_phe server);
+PHP_FUNCTION(vsce_phe_server_new_php) {
+    vsce_phe_server_t *phe_server = vsce_phe_server_new();
+    zend_resource *phe_server_res = zend_register_resource(phe_server, le_vsce_phe_server);
     RETVAL_RES(phe_server_res);
 }
 
@@ -113,8 +142,8 @@ PHP_FUNCTION(vsce_phe_server_delete_php) {
     //
     // Fetch for type checking and then release
     //
-    vsce_phe server_t *phe server = zend_fetch_resource_ex(in_ctx, VSCE_PHE SERVER_PHP_RES_NAME, le_vsce_phe server);
-    VSCE_ASSERT_PTR(phe server);
+    vsce_phe_server_t *phe_server = zend_fetch_resource_ex(in_ctx, VSCE_PHE_SERVER_PHP_RES_NAME, le_vsce_phe_server);
+    VSCE_ASSERT_PTR(phe_server);
     zend_list_close(Z_RES_P(in_ctx));
     RETURN_TRUE;
 }
@@ -633,9 +662,9 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
         0 /*allow_null*/)
 ZEND_END_ARG_INFO()
 
-PHP_FUNCTION(vsce_phe_client_new) {
-    vsce_phe client_t *phe_client = vsce_phe_client_new();
-    zend_resource *phe_client_res = zend_register_resource(phe_client, le_vsce_phe client);
+PHP_FUNCTION(vsce_phe_client_new_php) {
+    vsce_phe_client_t *phe_client = vsce_phe_client_new();
+    zend_resource *phe_client_res = zend_register_resource(phe_client, le_vsce_phe_client);
     RETVAL_RES(phe_client_res);
 }
 
@@ -666,8 +695,8 @@ PHP_FUNCTION(vsce_phe_client_delete_php) {
     //
     // Fetch for type checking and then release
     //
-    vsce_phe client_t *phe client = zend_fetch_resource_ex(in_ctx, VSCE_PHE CLIENT_PHP_RES_NAME, le_vsce_phe client);
-    VSCE_ASSERT_PTR(phe client);
+    vsce_phe_client_t *phe_client = zend_fetch_resource_ex(in_ctx, VSCE_PHE_CLIENT_PHP_RES_NAME, le_vsce_phe_client);
+    VSCE_ASSERT_PTR(phe_client);
     zend_list_close(Z_RES_P(in_ctx));
     RETURN_TRUE;
 }
@@ -1343,9 +1372,9 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
         0 /*allow_null*/)
 ZEND_END_ARG_INFO()
 
-PHP_FUNCTION(vsce_phe_cipher_new) {
-    vsce_phe cipher_t *phe_cipher = vsce_phe_cipher_new();
-    zend_resource *phe_cipher_res = zend_register_resource(phe_cipher, le_vsce_phe cipher);
+PHP_FUNCTION(vsce_phe_cipher_new_php) {
+    vsce_phe_cipher_t *phe_cipher = vsce_phe_cipher_new();
+    zend_resource *phe_cipher_res = zend_register_resource(phe_cipher, le_vsce_phe_cipher);
     RETVAL_RES(phe_cipher_res);
 }
 
@@ -1376,8 +1405,8 @@ PHP_FUNCTION(vsce_phe_cipher_delete_php) {
     //
     // Fetch for type checking and then release
     //
-    vsce_phe cipher_t *phe cipher = zend_fetch_resource_ex(in_ctx, VSCE_PHE CIPHER_PHP_RES_NAME, le_vsce_phe cipher);
-    VSCE_ASSERT_PTR(phe cipher);
+    vsce_phe_cipher_t *phe_cipher = zend_fetch_resource_ex(in_ctx, VSCE_PHE_CIPHER_PHP_RES_NAME, le_vsce_phe_cipher);
+    VSCE_ASSERT_PTR(phe_cipher);
     zend_list_close(Z_RES_P(in_ctx));
     RETURN_TRUE;
 }
@@ -1457,7 +1486,7 @@ PHP_FUNCTION(vsce_phe_cipher_encrypt_len_php) {
     //
     ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 2, 2)
         Z_PARAM_RESOURCE_EX(in_ctx, 1, 0)
-        Z_PARAM_LONG(in_plain_text_len
+        Z_PARAM_LONG(in_plain_text_len)
     ZEND_PARSE_PARAMETERS_END();
 
     //
@@ -1503,7 +1532,7 @@ PHP_FUNCTION(vsce_phe_cipher_decrypt_len_php) {
     //
     ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 2, 2)
         Z_PARAM_RESOURCE_EX(in_ctx, 1, 0)
-        Z_PARAM_LONG(in_cipher_text_len
+        Z_PARAM_LONG(in_cipher_text_len)
     ZEND_PARSE_PARAMETERS_END();
 
     //
@@ -1568,7 +1597,7 @@ PHP_FUNCTION(vsce_phe_cipher_encrypt_php) {
     //
     // Allocate output buffer for output 'cipher_text'
     //
-    zend_string *out_cipher_text = zend_string_alloc(vsce_phe_cipher_encrypt_len(phe_cipher), 0);
+    zend_string *out_cipher_text = zend_string_alloc(vsce_phe_cipher_encrypt_len(phe_cipher, in_plain_text_len), 0);
     vsc_buffer_t *cipher_text = vsc_buffer_new();
     vsc_buffer_use(cipher_text, (byte *)ZSTR_VAL(out_cipher_text), ZSTR_LEN(out_cipher_text));
 
@@ -1643,7 +1672,7 @@ PHP_FUNCTION(vsce_phe_cipher_decrypt_php) {
     //
     // Allocate output buffer for output 'plain_text'
     //
-    zend_string *out_plain_text = zend_string_alloc(vsce_phe_cipher_decrypt_len(phe_cipher), 0);
+    zend_string *out_plain_text = zend_string_alloc(vsce_phe_cipher_decrypt_len(phe_cipher, in_cipher_text_len), 0);
     vsc_buffer_t *plain_text = vsc_buffer_new();
     vsc_buffer_use(plain_text, (byte *)ZSTR_VAL(out_plain_text), ZSTR_LEN(out_plain_text));
 
@@ -1722,7 +1751,7 @@ PHP_FUNCTION(vsce_phe_cipher_auth_encrypt_php) {
     //
     // Allocate output buffer for output 'cipher_text'
     //
-    zend_string *out_cipher_text = zend_string_alloc(vsce_phe_cipher_encrypt_len(phe_cipher), 0);
+    zend_string *out_cipher_text = zend_string_alloc(vsce_phe_cipher_encrypt_len(phe_cipher, in_plain_text_len), 0);
     vsc_buffer_t *cipher_text = vsc_buffer_new();
     vsc_buffer_use(cipher_text, (byte *)ZSTR_VAL(out_cipher_text), ZSTR_LEN(out_cipher_text));
 
@@ -1801,7 +1830,7 @@ PHP_FUNCTION(vsce_phe_cipher_auth_decrypt_php) {
     //
     // Allocate output buffer for output 'plain_text'
     //
-    zend_string *out_plain_text = zend_string_alloc(vsce_phe_cipher_decrypt_len(phe_cipher), 0);
+    zend_string *out_plain_text = zend_string_alloc(vsce_phe_cipher_decrypt_len(phe_cipher, in_cipher_text_len), 0);
     vsc_buffer_t *plain_text = vsc_buffer_new();
     vsc_buffer_use(plain_text, (byte *)ZSTR_VAL(out_plain_text), ZSTR_LEN(out_plain_text));
 

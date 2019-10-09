@@ -35,8 +35,11 @@
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
 
-require_once 'PHEClient.php';
-require_once 'PHEServer.php';
+use VirgilCrypto\Phe\PheServer;
+use VirgilCrypto\Phe\PheClient;
+
+require_once 'PheClient.php';
+require_once 'PheServer.php';
 
 class PHEClientTest extends \PHPUnit\Framework\TestCase
 {
@@ -48,10 +51,10 @@ class PHEClientTest extends \PHPUnit\Framework\TestCase
     {
         $this->password = "password";
 
-        $this->client = new PHEClient();
+        $this->client = new PheClient();
         $this->client->setupDefaults();
 
-        $this->server = new PHEServer();
+        $this->server = new PheServer();
         $this->server->setupDefaults();
     }
 
@@ -76,7 +79,7 @@ class PHEClientTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(65, strlen($serverPublicKey));
         $this->assertEquals(32, strlen($serverPrivateKey));
 
-        $client1 = new PHEClient();
+        $client1 = new PheClient();
         $client1->setupDefaults();
         $clientPK = $client1->generateClientPrivateKey();
         $this->assertInternalType('string', $clientPK);
@@ -92,7 +95,7 @@ class PHEClientTest extends \PHPUnit\Framework\TestCase
 
         unset($client1);
 
-        $client2 = new PHEClient();
+        $client2 = new PheClient();
         $client2->setupDefaults();
         $client2->setKeys($newKeys[0], $newKeys[1]); // void
 

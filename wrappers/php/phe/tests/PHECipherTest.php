@@ -35,7 +35,9 @@
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
 
-require_once 'PHECipher.php';
+use VirgilCrypto\Phe\PheCipher;
+
+require_once 'PheCipher.php';
 
 class PHECipherTest extends \PHPUnit\Framework\TestCase
 {
@@ -43,7 +45,7 @@ class PHECipherTest extends \PHPUnit\Framework\TestCase
 
     protected function setUp()
     {
-        $this->cipher = new PHECipher();
+        $this->cipher = new PheCipher();
         $this->cipher->setupDefaults();
     }
 

@@ -235,18 +235,14 @@ function php_create_enum_module (enum, php_project, meta)
 
     if my.enum.name = "status"
         new php_module to my.php_project
-            .name = "extension_status"
-            .name0 = 0.name
-            .filename = "status"
-            .source_file_name = 0.filename + ".c"
-            .source_dir = cat_path (my.php_project.source_dir, "extension")
-            .source_file_path = cat_path (0.source_dir, 0.source_file_name)
-            .type = "extension"
+            .name0 = "extension status"
+            .name = 0.name0
             .prefix = my.php_project.prefix
             .main_project0 = my.php_project.main_project0
             .project0 = my.php_project.project0
+            .type = "extension"
 
-            new code to php_module
+            new custom_code to php_module
                 .= php_format_low_level_status_exception (my.enum, php_module)
             endnew
         endnew
@@ -384,6 +380,7 @@ function php_finalize_custom_modules (source, php_project, meta)
 
     new php_module to my.php_project
         .name = "extension"
+        .name0 = 0.name
         .source_file_name = 0.name + ".c"
         .source_dir = cat_path (my.php_project.source_dir, "extension")
         .source_file_path = cat_path (0.source_dir, 0.source_file_name)
