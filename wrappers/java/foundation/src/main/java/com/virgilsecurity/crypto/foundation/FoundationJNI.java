@@ -1969,7 +1969,7 @@ public class FoundationJNI {
     * Return length in bytes required to hold signature.
     * Return zero if a given private key can not produce signatures.
     */
-    public native int rsa_signatureLen(long cCtx, Key key);
+    public native int rsa_signatureLen(long cCtx, PrivateKey privateKey);
 
     /*
     * Sign data digest with a given private key.
@@ -2176,7 +2176,7 @@ public class FoundationJNI {
     * Return length in bytes required to hold signature.
     * Return zero if a given private key can not produce signatures.
     */
-    public native int ecc_signatureLen(long cCtx, Key key);
+    public native int ecc_signatureLen(long cCtx, PrivateKey privateKey);
 
     /*
     * Sign data digest with a given private key.
@@ -2989,7 +2989,7 @@ public class FoundationJNI {
     * Return length in bytes required to hold signature.
     * Return zero if a given private key can not produce signatures.
     */
-    public native int ed25519_signatureLen(long cCtx, Key key);
+    public native int ed25519_signatureLen(long cCtx, PrivateKey privateKey);
 
     /*
     * Sign data digest with a given private key.
@@ -3227,7 +3227,7 @@ public class FoundationJNI {
     * Return length in bytes required to hold signature.
     * Return zero if a given private key can not produce signatures.
     */
-    public native int falcon_signatureLen(long cCtx, Key key);
+    public native int falcon_signatureLen(long cCtx, PrivateKey privateKey);
 
     /*
     * Sign data digest with a given private key.

@@ -211,8 +211,8 @@ public class Falcon implements AutoCloseable, Alg, KeyAlg, KeySigner {
     * Return length in bytes required to hold signature.
     * Return zero if a given private key can not produce signatures.
     */
-    public int signatureLen(Key key) {
-        return FoundationJNI.INSTANCE.falcon_signatureLen(this.cCtx, key);
+    public int signatureLen(PrivateKey privateKey) {
+        return FoundationJNI.INSTANCE.falcon_signatureLen(this.cCtx, privateKey);
     }
 
     /*

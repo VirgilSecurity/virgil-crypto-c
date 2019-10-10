@@ -358,13 +358,13 @@ vscf_falcon_can_sign(const vscf_falcon_t *self, const vscf_impl_t *private_key) 
 //  Return zero if a given private key can not produce signatures.
 //
 VSCF_PUBLIC size_t
-vscf_falcon_signature_len(const vscf_falcon_t *self, const vscf_impl_t *key) {
+vscf_falcon_signature_len(const vscf_falcon_t *self, const vscf_impl_t *private_key) {
 
     VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(key);
+    VSCF_ASSERT_PTR(private_key);
 
-    VSCF_ASSERT(vscf_impl_tag(key) == vscf_impl_tag_RAW_PRIVATE_KEY);
-    vsc_data_t private_key_data = vscf_raw_private_key_data((vscf_raw_private_key_t *)key);
+    VSCF_ASSERT(vscf_impl_tag(private_key) == vscf_impl_tag_RAW_PRIVATE_KEY);
+    vsc_data_t private_key_data = vscf_raw_private_key_data((vscf_raw_private_key_t *)private_key);
 
     const int logn = falcon_get_logn((void *)private_key_data.bytes, private_key_data.len);
     if (logn > 0) {

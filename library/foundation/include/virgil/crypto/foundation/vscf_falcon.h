@@ -280,7 +280,7 @@ vscf_falcon_can_sign(const vscf_falcon_t *self, const vscf_impl_t *private_key);
 //  Return zero if a given private key can not produce signatures.
 //
 VSCF_PUBLIC size_t
-vscf_falcon_signature_len(const vscf_falcon_t *self, const vscf_impl_t *key);
+vscf_falcon_signature_len(const vscf_falcon_t *self, const vscf_impl_t *private_key);
 
 //
 //  Sign data digest with a given private key.

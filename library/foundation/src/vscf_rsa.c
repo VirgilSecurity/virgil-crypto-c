@@ -485,14 +485,14 @@ vscf_rsa_can_sign(const vscf_rsa_t *self, const vscf_impl_t *private_key) {
 //  Return zero if a given private key can not produce signatures.
 //
 VSCF_PUBLIC size_t
-vscf_rsa_signature_len(const vscf_rsa_t *self, const vscf_impl_t *key) {
+vscf_rsa_signature_len(const vscf_rsa_t *self, const vscf_impl_t *private_key) {
 
     VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(key);
-    VSCF_ASSERT(vscf_key_is_implemented(key));
-    VSCF_ASSERT_SAFE(vscf_key_is_valid(key));
+    VSCF_ASSERT_PTR(private_key);
+    VSCF_ASSERT(vscf_key_is_implemented(private_key));
+    VSCF_ASSERT_SAFE(vscf_key_is_valid(private_key));
 
-    return vscf_key_len(key);
+    return vscf_key_len(private_key);
 }
 
 //

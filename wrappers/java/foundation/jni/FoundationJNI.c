@@ -7037,22 +7037,22 @@ JNIEXPORT jboolean JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJ
     return ret;
 }
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_rsa_1signatureLen (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jkey) {
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_rsa_1signatureLen (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jprivateKey) {
     // Cast class context
     vscf_rsa_t /*9*/* rsa_ctx = *(vscf_rsa_t /*9*/**) &c_ctx;
     // Wrap Java interfaces
-    jclass key_cls = (*jenv)->GetObjectClass(jenv, jkey);
-    if (NULL == key_cls) {
-        VSCF_ASSERT("Class Key not found.");
+    jclass private_key_cls = (*jenv)->GetObjectClass(jenv, jprivateKey);
+    if (NULL == private_key_cls) {
+        VSCF_ASSERT("Class PrivateKey not found.");
     }
-    jfieldID key_fidCtx = (*jenv)->GetFieldID(jenv, key_cls, "cCtx", "J");
-    if (NULL == key_fidCtx) {
-        VSCF_ASSERT("Class 'Key' has no field 'cCtx'.");
+    jfieldID private_key_fidCtx = (*jenv)->GetFieldID(jenv, private_key_cls, "cCtx", "J");
+    if (NULL == private_key_fidCtx) {
+        VSCF_ASSERT("Class 'PrivateKey' has no field 'cCtx'.");
     }
-    jlong key_c_ctx = (*jenv)->GetLongField(jenv, jkey, key_fidCtx);
-    vscf_impl_t */*6*/ key = *(vscf_impl_t */*6*/*)&key_c_ctx;
+    jlong private_key_c_ctx = (*jenv)->GetLongField(jenv, jprivateKey, private_key_fidCtx);
+    vscf_impl_t */*6*/ private_key = *(vscf_impl_t */*6*/*)&private_key_c_ctx;
 
-    jint ret = (jint) vscf_rsa_signature_len(rsa_ctx /*a1*/, key /*a6*/);
+    jint ret = (jint) vscf_rsa_signature_len(rsa_ctx /*a1*/, private_key /*a6*/);
     return ret;
 }
 
@@ -7734,22 +7734,22 @@ JNIEXPORT jboolean JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJ
     return ret;
 }
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ecc_1signatureLen (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jkey) {
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ecc_1signatureLen (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jprivateKey) {
     // Cast class context
     vscf_ecc_t /*9*/* ecc_ctx = *(vscf_ecc_t /*9*/**) &c_ctx;
     // Wrap Java interfaces
-    jclass key_cls = (*jenv)->GetObjectClass(jenv, jkey);
-    if (NULL == key_cls) {
-        VSCF_ASSERT("Class Key not found.");
+    jclass private_key_cls = (*jenv)->GetObjectClass(jenv, jprivateKey);
+    if (NULL == private_key_cls) {
+        VSCF_ASSERT("Class PrivateKey not found.");
     }
-    jfieldID key_fidCtx = (*jenv)->GetFieldID(jenv, key_cls, "cCtx", "J");
-    if (NULL == key_fidCtx) {
-        VSCF_ASSERT("Class 'Key' has no field 'cCtx'.");
+    jfieldID private_key_fidCtx = (*jenv)->GetFieldID(jenv, private_key_cls, "cCtx", "J");
+    if (NULL == private_key_fidCtx) {
+        VSCF_ASSERT("Class 'PrivateKey' has no field 'cCtx'.");
     }
-    jlong key_c_ctx = (*jenv)->GetLongField(jenv, jkey, key_fidCtx);
-    vscf_impl_t */*6*/ key = *(vscf_impl_t */*6*/*)&key_c_ctx;
+    jlong private_key_c_ctx = (*jenv)->GetLongField(jenv, jprivateKey, private_key_fidCtx);
+    vscf_impl_t */*6*/ private_key = *(vscf_impl_t */*6*/*)&private_key_c_ctx;
 
-    jint ret = (jint) vscf_ecc_signature_len(ecc_ctx /*a1*/, key /*a6*/);
+    jint ret = (jint) vscf_ecc_signature_len(ecc_ctx /*a1*/, private_key /*a6*/);
     return ret;
 }
 
@@ -10399,22 +10399,22 @@ JNIEXPORT jboolean JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJ
     return ret;
 }
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ed25519_1signatureLen (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jkey) {
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ed25519_1signatureLen (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jprivateKey) {
     // Cast class context
     vscf_ed25519_t /*9*/* ed25519_ctx = *(vscf_ed25519_t /*9*/**) &c_ctx;
     // Wrap Java interfaces
-    jclass key_cls = (*jenv)->GetObjectClass(jenv, jkey);
-    if (NULL == key_cls) {
-        VSCF_ASSERT("Class Key not found.");
+    jclass private_key_cls = (*jenv)->GetObjectClass(jenv, jprivateKey);
+    if (NULL == private_key_cls) {
+        VSCF_ASSERT("Class PrivateKey not found.");
     }
-    jfieldID key_fidCtx = (*jenv)->GetFieldID(jenv, key_cls, "cCtx", "J");
-    if (NULL == key_fidCtx) {
-        VSCF_ASSERT("Class 'Key' has no field 'cCtx'.");
+    jfieldID private_key_fidCtx = (*jenv)->GetFieldID(jenv, private_key_cls, "cCtx", "J");
+    if (NULL == private_key_fidCtx) {
+        VSCF_ASSERT("Class 'PrivateKey' has no field 'cCtx'.");
     }
-    jlong key_c_ctx = (*jenv)->GetLongField(jenv, jkey, key_fidCtx);
-    vscf_impl_t */*6*/ key = *(vscf_impl_t */*6*/*)&key_c_ctx;
+    jlong private_key_c_ctx = (*jenv)->GetLongField(jenv, jprivateKey, private_key_fidCtx);
+    vscf_impl_t */*6*/ private_key = *(vscf_impl_t */*6*/*)&private_key_c_ctx;
 
-    jint ret = (jint) vscf_ed25519_signature_len(ed25519_ctx /*a1*/, key /*a6*/);
+    jint ret = (jint) vscf_ed25519_signature_len(ed25519_ctx /*a1*/, private_key /*a6*/);
     return ret;
 }
 
@@ -11330,22 +11330,22 @@ JNIEXPORT jboolean JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJ
     return ret;
 }
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_falcon_1signatureLen (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jkey) {
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_falcon_1signatureLen (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jprivateKey) {
     // Cast class context
     vscf_falcon_t /*9*/* falcon_ctx = *(vscf_falcon_t /*9*/**) &c_ctx;
     // Wrap Java interfaces
-    jclass key_cls = (*jenv)->GetObjectClass(jenv, jkey);
-    if (NULL == key_cls) {
-        VSCF_ASSERT("Class Key not found.");
+    jclass private_key_cls = (*jenv)->GetObjectClass(jenv, jprivateKey);
+    if (NULL == private_key_cls) {
+        VSCF_ASSERT("Class PrivateKey not found.");
     }
-    jfieldID key_fidCtx = (*jenv)->GetFieldID(jenv, key_cls, "cCtx", "J");
-    if (NULL == key_fidCtx) {
-        VSCF_ASSERT("Class 'Key' has no field 'cCtx'.");
+    jfieldID private_key_fidCtx = (*jenv)->GetFieldID(jenv, private_key_cls, "cCtx", "J");
+    if (NULL == private_key_fidCtx) {
+        VSCF_ASSERT("Class 'PrivateKey' has no field 'cCtx'.");
     }
-    jlong key_c_ctx = (*jenv)->GetLongField(jenv, jkey, key_fidCtx);
-    vscf_impl_t */*6*/ key = *(vscf_impl_t */*6*/*)&key_c_ctx;
+    jlong private_key_c_ctx = (*jenv)->GetLongField(jenv, jprivateKey, private_key_fidCtx);
+    vscf_impl_t */*6*/ private_key = *(vscf_impl_t */*6*/*)&private_key_c_ctx;
 
-    jint ret = (jint) vscf_falcon_signature_len(falcon_ctx /*a1*/, key /*a6*/);
+    jint ret = (jint) vscf_falcon_signature_len(falcon_ctx /*a1*/, private_key /*a6*/);
     return ret;
 }
 
