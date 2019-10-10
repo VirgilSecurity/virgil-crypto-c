@@ -166,7 +166,7 @@ function php_format_low_level_status_exception (in_enum, in_php_module)
 
         my._const = "$(constant0.name:c)"
         my._const = "$(my._prefix:)_status_$(my._const:UPPER)"
-        my._msg = string_trim(constant0.)
+        my._msg = enum_constant_format_oneline_description(constant0)
 
         my._case += format_left("\
         case $(my._const:):

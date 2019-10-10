@@ -214,12 +214,20 @@ function php_create_implementation_module (implementation, php_project, meta)
             . = php_format_comment (my.php_project->license)
         endnew
 
+        my.my_implementation = item_copy_to (my.implementation, php_module)
+
+        for my.my_implementation.interface
+            for interface.method
+                copy method to my.my_implementation
+            endfor
+        endfor
+
         new high_level to php_module
-            php_map_high_level(my.implementation, php_module, my.php_project, high_level, my._type)
+            php_map_high_level(my.my_implementation, php_module, my.php_project, high_level, my._type)
         endnew
 
         new low_level to php_module
-            php_map_low_level(my.implementation, my.php_project, low_level, my._type)
+            php_map_low_level(my.my_implementation, my.php_project, low_level, my._type)
         endnew
     endnew
 endfunction

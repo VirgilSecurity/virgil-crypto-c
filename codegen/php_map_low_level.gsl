@@ -82,17 +82,11 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
 
     my._constant = ""
 
-    for my.in_module.interface as interface0
-        for interface0.method as method0
-            copy method0 to my.in_module
-        endfor
-    endfor
-
     if my.in_type <> "interface"
         php_map_low_level_constructor_destructor (my.in_module, my.out_low_level)
     endif
 
-    for my.in_module.method as method0 where method0.visibility = "public" & method0.declaration = "public" & method0.scope = "public"
+    for my.in_module.method as method0 where wrapper_should_wrap_method(method0)
         new function to my.out_low_level
 
             .prefix0 = "$(my.in_module.c_prefix:c)"
@@ -237,7 +231,7 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
                             my._h2 += format_left("vsc_data_t $(argument0.name:) = vsc_data((const byte*)in_$(argument0.name:), in_$(argument0.name:)_len);", 0)
                         elsif string_in (argument0.type0, "interface, class, impl") 
                             my._h2 += format_left("\
-                                $(argument0.type:c) *$(argument0.name:c) = zend_fetch_resource_ex(in_$(argument0.name:), $(my._t:UPPER)_PHP_RES_NAME, le_$(my._t:))
+                                $(argument0.type:c) *$(argument0.name:c) = zend_fetch_resource_ex(in_$(argument0.name:), $(my._t:UPPER)_PHP_RES_NAME, le_$(my._t:));
                                 $(my.in_php_project.prefix:UPPER)_ASSERT_PTR($(argument0.name:c));
                                 ", 0)
                         elsif argument0.type0 = "size"
@@ -317,8 +311,14 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
                     my._args += function.entity0
 
                     for function.return_argument as return_argument0 where return_argument0.type <> "buffer"
+
+                        my._pointer = ""
+                        if defined(return_argument0.is_reference) & return_argument0.is_reference = 1
+                            my._pointer = "*"
+                        endif
+
                         my._return += format_left("\
-                            $(return_argument0.type:) $(return_argument0.name:)=
+                            $(return_argument0.type:) $(my._pointer:)$(return_argument0.name:)=
                             ", 0)
                     endfor
 
@@ -326,7 +326,7 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
 
                     for function.argument as argument0
                         if argument0.name = "error"
-                            my._args += ", $(argument0.name:)"
+                            my._args += ", &$(argument0.name:)"
                         else
                             my._args += ", $(argument0.name:)"
                         endif
@@ -695,13 +695,13 @@ function php_map_low_level_return (in_method, in_php_project, out_function)
                 my._prefix = my.out_function.prefix0
                 my._entity = my.out_function.entity0
 
-                #if defined (argument0->length->proxy)
-                #    echo_debug_item(argument0)
-                #    echo_debug_item(argument0->length->proxy)
-                #    my._t = argument0->length->proxy.to
-                #    echo_info(my._t)
-                #    echo_fatal("Test", my)
-                #endif
+                if defined (argument0->length->proxy)
+                    echo_debug_item(argument0)
+                    echo_debug_item(argument0->length->proxy)
+                    my._t = argument0->length->proxy.to
+                    echo_info(my._t)
+                    echo_fatal("Test", my)
+                endif
 
                 if defined (argument0->length->proxy)
                     my._proxy = ""
@@ -710,7 +710,7 @@ function php_map_low_level_return (in_method, in_php_project, out_function)
                             my._proxy += "in_$(argument0->length->proxy.argument:c)_len"
                         elsif defined (proxy0.argument)
                             # TODO !!!
-                            my._proxy += "in_PROXY_ARGUMENT_$(proxy0.argument:c)"
+                            my._proxy += "in_PROXY_ARGUMENT_$(proxy0.argument:)"
                         elsif defined (proxy0.constant)
                             my._proxy += "in_PROXY_CONSTANT_$(proxy0.constant:c)"
                         else
@@ -762,6 +762,8 @@ function php_map_low_level_return (in_method, in_php_project, out_function)
 
     for my.in_method.return as return0
 
+        my._is_reference = return0.is_reference
+
         if defined (return0.type)
             if return0.type = "size"
                 my._return_type0 = return0.type
@@ -790,12 +792,14 @@ function php_map_low_level_return (in_method, in_php_project, out_function)
                 .type0 = "$(return0.type:c)"
                 .type = my._return_type
                 .zend_type = my._return_zend_type
+                .is_reference = my._is_reference
             endnew
         endif
 
         my._r = ""
 
         if defined (return0.class)
+
             if return0.class = "data"
                 my._return_type0 = return0.class
                 my._return_type = "vsc_data_t"
@@ -806,6 +810,7 @@ function php_map_low_level_return (in_method, in_php_project, out_function)
                     .type0 = "data"
                     .type = my._return_type
                     .zend_type = my._return_zend_type
+                    .is_reference = my._is_reference
                 endnew
             else
                 my._return_type0 = return0.class
@@ -817,6 +822,7 @@ function php_map_low_level_return (in_method, in_php_project, out_function)
                     .type0 = "class"
                     .type = "$(my._prefix:)_$(0.name:)_t"
                     .zend_type = my._return_zend_type
+                    .is_reference = my._is_reference
                 endnew
             endif
         elsif defined (return0.interface)
@@ -829,6 +835,7 @@ function php_map_low_level_return (in_method, in_php_project, out_function)
                 .type0 = "interface"
                 .type = "$(my._prefix:)_impl_t"
                 .zend_type = my._return_zend_type
+                .is_reference = my._is_reference
             endnew
         endif
 
@@ -844,14 +851,15 @@ function php_map_low_level_return (in_method, in_php_project, out_function)
                 endnew
             else
                 my._return_type0 = "enum"
-                my._return_type = "???"
-                my._return_zend_type = "IS_STRING"
+                my._return_type = "int"
+                my._return_zend_type = "IS_LONG"
 
                 new return_argument to my.out_function
                     .name = "$(return0.enum:c)"
                     .type0 = "enum"
-                    .type = "???"
-                    .zend_type = "IS_STRING"
+                    .type = "int"
+                    .zend_type = "IS_LONG"
+                    .is_reference = my._is_reference
                 endnew
             endif
         endif
@@ -954,8 +962,7 @@ function php_map_low_level_extension (in_php_project, out_php_module)
             #include <php.h>
             #include <zend_exceptions.h>
             #include <zend_list.h>
-            #include \"vsce_assert.h\"
-            #include \"vsce_phe_common.h\"
+            #include \"vscf_assert.h\"
             ", 0)
 
         my._res = my._res + my._include
