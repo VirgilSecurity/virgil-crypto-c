@@ -164,6 +164,24 @@ function php_map_high_level (in_module, in_php_module, in_php_project, out_high_
         endnew
     endfor
 
+    if string_in (my.in_type, "class, implementation")
+        new method to my.in_module
+            .name = "get ctx"
+            .visibility = "public"
+            .declaration = "public"
+            .scope = "public"
+            .is_static = 0
+            .return_type = "resource"
+            .throws_exception = 0
+
+            new custom_code to method
+                . = format_left("return $this->ctx;", 0)
+            endnew
+
+            . = "Get C context."
+        endnew
+    endif
+
     if my.in_type = "implementation_class"
 
         for my.in_php_project->interfaces.interface as interface0
@@ -226,7 +244,13 @@ function php_map_high_level (in_module, in_php_module, in_php_project, out_high_
     endfor
 
     new signature to my.out_high_level
-        . = format_left("$(my._type:) $(my.out_high_level.name:) $(my._implements:)", 0)
+
+        my._implem = "$(my._implements:)"
+        if my._type = "interface" & my.in_php_module.name0 <> "ctx"
+            my._implem = "extends Ctx"
+        endif
+
+        . = format_left("$(my._type:) $(my.out_high_level.name:) $(my._implem:)", 0)
     endnew
 endfunction
 
@@ -318,6 +342,10 @@ function php_map_high_level_method (in_method, in_php_module, in_type, out_php_m
     my.out_php_method.class = "$(my.in_php_module.name0:c)"
     my.out_php_method.entity0 = "$(my.in_php_module.name0:c)"
 
+    if defined (my.in_php_module.implementation_class0)
+        my.out_php_method.implementation_class0 = my.in_php_module.implementation_class0
+    endif
+
     my.out_php_method.is_constructor = 0
 
     if defined (my.in_method.is_constructor) & my.in_method.is_constructor = 1
@@ -364,7 +392,7 @@ function php_map_high_level_method (in_method, in_php_module, in_type, out_php_m
 
     my._docblock_data += format_left("@return $(0.return_type:)\n", 0)
 
-    if 0.throw_exception = 1 | (defined (my.in_method.throws_exception) & my.in_method.throws_exception = 1)
+    if 0.throw_exception = 1 | (defined (my.in_method.throws_exception) & my.in_method.throws_exception = 1) | my.out_php_method.return_interface = 1
         my._docblock_data += format_left("@throws \\\\Exception", 0)
     endif
 
@@ -377,8 +405,14 @@ function php_map_high_level_method (in_method, in_php_module, in_type, out_php_m
     my._return_type = 0.return_type
     my._return_data = 0.return_data
 
+    my._return_type = ": $(my._return_type:)"
+
+    if my._return_type = ": resource"
+        my._return_type = ""
+    endif
+
     new signature to my.out_php_method
-        . = "$(my._declaration:) function $(my._name:)($(my._method_arguments:)): $(my._return_type:) $(my._return_data:)"
+        . = "$(my._declaration:) function $(my._name:)($(my._method_arguments:))$(my._return_type:) $(my._return_data:)"
     endnew
 
     if my.in_type <> "interface"
@@ -409,8 +443,8 @@ function php_map_high_level_return (in_method, in_php_module, out_php_method)
     my._argument_buffer_count = 0
 
     if defined (my.in_method.return_type)
-        if my.in_method.return_type = "mixed"
-            my._return_type = "mixed"
+        if my.in_method.return_type = "resource"
+            my._return_type = "resource"
         else
             my._return_type = my.in_method.return_type
         endif
@@ -493,6 +527,10 @@ function php_map_high_level_return (in_method, in_php_module, out_php_method)
     my.out_php_method.namespace = my._namespace
     my.out_php_method.throw_exception = my._throw_exception
     my.out_php_method.return_interface = my._return_interface
+
+    if defined (my.in_php_module.implementation_class0)
+        my.out_php_method.implementation_class0 = my.in_php_module.implementation_class0
+    endif
 
 endfunction
 

@@ -69,6 +69,7 @@ function php_create_project_module (project, wrapper)
     new php_project to my.wrapper
         . = my.project. ?
         .name = my.project.name
+        .name0 = my.project.name
         .description = my.project.brief
         .prefix = my.project.prefix
         .version = my.project.version_string
@@ -132,6 +133,7 @@ function php_create_class_module (class, php_project, meta)
         .type = my._type
         .main_project0 = my.php_project.main_project0
         .project0 = my.php_project.project0
+        .implementation_class0 = "$(my.php_project.name0:) implementation"
 
         new php_license to php_module
             . = php_format_comment (my.php_project->license.)
@@ -167,6 +169,7 @@ function php_create_interface_module (interface, php_project, meta)
         .type = my._type
         .main_project0 = my.php_project.main_project0
         .project0 = my.php_project.project0
+        .implementation_class0 = "$(my.php_project.name0:) implementation"
 
         new php_license to php_module
             . = php_format_comment (my.php_project->license)
@@ -189,7 +192,6 @@ function php_create_implementation_module (implementation, php_project, meta)
 
     if defined (my.implementation)
         my.php_project.with_implementation = 1
-        my.php_project.implementation_class = "$(my.php_project.name:Pascal)Implementation"
     endif
 
     echo_info("Create <php_module/> from implementation: '$(my.implementation.name:)'", my)
@@ -206,6 +208,7 @@ function php_create_implementation_module (implementation, php_project, meta)
         .type = my._type
         .main_project0 = my.php_project.main_project0
         .project0 = my.php_project.project0
+        .implementation_class0 = "$(my.php_project.name0:) implementation"
 
         new php_license to php_module
             . = php_format_comment (my.php_project->license)
@@ -290,11 +293,26 @@ function php_create_custom_modules (source, php_project, meta)
 
         my._require = ""
 
-        for my.php_project->require as require0
-            my._require += "\"virgil/crypto-$(require0.name0:)\""
+        for my.php_project->require as require0 where require0.name0 <> "common"
+            my._d = ""
+            if ! last()
+                my._d = ","
+            endif
+
+            my._require += "\"virgil/crypto-$(require0.name0:)\"$(my._d:)"
         endfor
 
-        my._require = format_left(my._require, 0)
+        my._r = ""
+
+        if my._require <> ""
+            my._r = ","
+        endif
+
+        my._require_block = format_left("\
+            \"php\": \"^7.2\",
+            \"myclabs/php-enum\": \"^1.7\"$(my._r:)
+            $(my._require:)
+            ", 5)
 
         new code to json_module
             .= format_left("\
@@ -311,14 +329,11 @@ function php_create_custom_modules (source, php_project, meta)
                         \"homepage\": \"https://virgilsecurity.com\"
                     }
                 ],
-                \"require\": {
-                    \"php\": \"^7.2\",
-                    \"myclabs/php-enum\": \"^1.7\"
-                    $(my._require:)
+                \"require\": {$(my._require_block:)
                 },
                 \"autoload\": {
                     \"psr-4\": {
-                        \"VirgilCrypto\\\\$(my.php_project.name:Pascal)\\\\\": \"src\"
+                        \"VirgilCrypto\\\\$(my.php_project.name:Pascal)\": \"src\"
                     }
                 },
                 \"scripts\": {
@@ -344,7 +359,7 @@ function php_create_custom_modules (source, php_project, meta)
             .declaration = "public"
             .scope = "public"
             .is_static = 0
-            .return_type = "mixed"
+            .return_type = "resource"
         endnew
     endnew
 

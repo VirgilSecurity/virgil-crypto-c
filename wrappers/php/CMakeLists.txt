@@ -87,4 +87,5 @@ endif()
 # ---------------------------------------------------------------------------
 #   Add per project extension build
 # ---------------------------------------------------------------------------
-add_subdirectory(phe)
+# add_subdirectory(phe)
+add_subdirectory(foundation)

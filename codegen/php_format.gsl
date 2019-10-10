@@ -99,15 +99,28 @@ function php_format_high_level_method_body (in_php_method)
 
         my._arguments = "$this->ctx"
         for my.in_php_method.php_argument as php_argument0
+
+            my._arg = php_argument0.name
+            if php_argument0.instance = 1
+                my._arg = "$(php_argument0.name:)->getCtx()"
+            endif
+
             my._d = ", "
-            my._arguments += my._d + php_argument0.name
+            my._arguments += my._d + my._arg
         endfor
 
         my._function_name = my.in_php_method.function_name
 
+        if ! defined (my.in_php_method.implementation_class0)
+            echo_debug_item(my.in_php_method)
+            echo_fatal("Not implemented (AH1000)")
+        endif
+
+        my._impl_class = "$(my.in_php_method.implementation_class0:Pascal)"
+
         my._res = format_left("\
             $ctx = $(my._function_name:)($(my._arguments:));
-            return _NAME_Implementation::wrap$(my.in_php_method.return_type:Pascal)($ctx);
+            return $(my._impl_class:)::wrap$(my.in_php_method.return_type:Pascal)($ctx);
             ", 0)
     else 
         my._return = ""
@@ -118,8 +131,14 @@ function php_format_high_level_method_body (in_php_method)
 
         my._arguments = "$this->ctx"
         for my.in_php_method.php_argument as php_argument0
+
+            my._arg = php_argument0.name
+            if php_argument0.instance = 1
+                my._arg = "$(php_argument0.name:)->getCtx()"
+            endif
+
             my._d = ", "
-            my._arguments += my._d + php_argument0.name
+            my._arguments += my._d + my._arg
         endfor
 
         my._function_name = my.in_php_method.function_name

@@ -704,15 +704,25 @@ function php_map_low_level_return (in_method, in_php_project, out_function)
                 #endif
 
                 if defined (argument0->length->proxy)
-                    if argument0->length->proxy.cast = "data_length"
-                        my._function = "$(my._prefix:)_$(my._entity:)_$(argument0->length.method:c)"
-                        .proxy = "in_$(argument0->length->proxy.argument:c)_len"
-                        .length = my._function
-                        .length_type = "method_proxy"
-                    else
-                        echo_debug_item(argument0->length)
-                        echo_fatal("Not implemented (AG1000)")
-                    endif
+                    my._proxy = ""
+                    for argument0->length.proxy as proxy0
+                        if defined (proxy0.cast) & proxy0.cast = "data_length"
+                            my._proxy += "in_$(argument0->length->proxy.argument:c)_len"
+                        elsif defined (proxy0.argument)
+                            # TODO !!!
+                            my._proxy += "in_PROXY_ARGUMENT_$(proxy0.argument:c)"
+                        elsif defined (proxy0.constant)
+                            my._proxy += "in_PROXY_CONSTANT_$(proxy0.constant:c)"
+                        else
+                            echo_debug_item(my.in_method)
+                            echo_debug_item(proxy0)
+                            echo_fatal("Not implemented (AG1000)")
+                        endif
+                    endfor
+                    my._function = "$(my._prefix:)_$(my._entity:)_$(argument0->length.method:c)"
+                    .proxy = my._proxy
+                    .length = my._function
+                    .length_type = "method_proxy"
                 elsif defined (argument0->length.class)
                     my._class = argument0->length.class
                     my._constant = "$(argument0->length.constant:c)"

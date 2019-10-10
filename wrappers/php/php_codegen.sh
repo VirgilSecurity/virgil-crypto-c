@@ -16,3 +16,5 @@ do
 		cp -R wrappers/php/VirgilCrypto/$project/$dir/ wrappers/php/$project/$dir
 	done
 done
+
+rm -rf wrappers/php/VirgilCrypto
