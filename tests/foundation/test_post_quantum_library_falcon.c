@@ -67,14 +67,14 @@ test__keygen__512_degree__success(void) {
 }
 
 void
-test__sign_dyn__sha512_digest_with_512_degree_key__procduce_const_signature(void) {
+test__sign_dyn__sha512_digest_with_512_degree_key__produce_const_signature(void) {
     falcon_shake256_context shake256;
     falcon_shake256_init(&shake256);
     falcon_shake256_inject(&shake256, test_data_falcon_RNG_SEED2.bytes, test_data_falcon_RNG_SEED2.len);
     falcon_shake256_flip(&shake256);
 
-    unsigned char sig[FALCON_SIG_CT_SIZE(LOGN_512)];
     unsigned char tmp[FALCON_TMPSIZE_SIGNDYN(LOGN_512)] = {0x00};
+    unsigned char sig[FALCON_SIG_CT_SIZE(LOGN_512)];
     size_t sig_len = sizeof(sig);
 
     const int status = falcon_sign_dyn(&shake256, sig, &sig_len, test_data_falcon_PRIVATE_KEY_512.bytes,
@@ -109,7 +109,7 @@ main(void) {
 
 #if TEST_DEPENDENCIES_AVAILABLE
     RUN_TEST(test__keygen__512_degree__success);
-    RUN_TEST(test__sign_dyn__sha512_digest_with_512_degree_key__procduce_const_signature);
+    RUN_TEST(test__sign_dyn__sha512_digest_with_512_degree_key__produce_const_signature);
     RUN_TEST(test__verify__sha512_digest_and_const_signature_with_512_degree_key__success);
 #else
     RUN_TEST(test__nothing__feature_disabled__must_be_ignored);

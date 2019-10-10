@@ -170,7 +170,7 @@ VSCF_PUBLIC vscf_impl_t *
 vscf_falcon_produce_alg_info(const vscf_falcon_t *self) {
 
     VSCF_ASSERT_PTR(self);
-    return vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_ED25519));
+    return vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_FALCON));
 }
 
 //
@@ -295,7 +295,7 @@ vscf_falcon_import_private_key(const vscf_falcon_t *self, const vscf_raw_private
     const int ret = falcon_make_public(vsc_buffer_unused_bytes(public_key_buf), vsc_buffer_unused_len(public_key_buf),
             vscf_raw_private_key_data(raw_key).bytes, vscf_raw_private_key_data(raw_key).len, tmp, sizeof(tmp));
     VSCF_ASSERT(ret == 0);
-    vsc_buffer_inc_used(public_key_buf, FALCON_TMPSIZE_MAKEPUB(vscf_falcon_LOGN_512));
+    vsc_buffer_inc_used(public_key_buf, FALCON_PUBKEY_SIZE(vscf_falcon_LOGN_512));
 
     vscf_impl_t *alg_info = vscf_impl_shallow_copy((vscf_impl_t *)vscf_raw_private_key_alg_info(raw_key));
     VSCF_ASSERT_PTR(alg_info);
@@ -346,7 +346,11 @@ vscf_falcon_can_sign(const vscf_falcon_t *self, const vscf_impl_t *private_key) 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(private_key);
 
-    return true;
+    VSCF_ASSERT(vscf_impl_tag(private_key) == vscf_impl_tag_RAW_PRIVATE_KEY);
+    vsc_data_t private_key_data = vscf_raw_private_key_data((vscf_raw_private_key_t *)private_key);
+
+    const int logn = falcon_get_logn((void *)private_key_data.bytes, private_key_data.len);
+    return logn > 0;
 }
 
 //
@@ -359,7 +363,15 @@ vscf_falcon_signature_len(const vscf_falcon_t *self, const vscf_impl_t *key) {
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(key);
 
-    return 0;
+    VSCF_ASSERT(vscf_impl_tag(key) == vscf_impl_tag_RAW_PRIVATE_KEY);
+    vsc_data_t private_key_data = vscf_raw_private_key_data((vscf_raw_private_key_t *)key);
+
+    const int logn = falcon_get_logn((void *)private_key_data.bytes, private_key_data.len);
+    if (logn > 0) {
+        return FALCON_SIG_CT_SIZE(logn);
+    } else {
+        return 0;
+    }
 }
 
 //
@@ -370,12 +382,52 @@ vscf_falcon_sign_hash(const vscf_falcon_t *self, const vscf_impl_t *private_key,
         vsc_data_t digest, vsc_buffer_t *signature) {
 
     VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(self->random);
     VSCF_ASSERT_PTR(private_key);
+    VSCF_ASSERT(vscf_falcon_can_sign(self, private_key));
     VSCF_ASSERT(hash_id != vscf_alg_id_NONE);
     VSCF_ASSERT(vsc_data_is_valid(digest));
     VSCF_ASSERT_PTR(signature);
     VSCF_ASSERT(vsc_buffer_is_valid(signature));
+    VSCF_ASSERT(vsc_buffer_unused_len(signature) >= vscf_falcon_signature_len(self, private_key));
 
+    //
+    //  Make random SEED
+    //
+    vsc_buffer_t *seed = vsc_buffer_new_with_capacity(vscf_falcon_SEED_LEN);
+    const vscf_status_t status = vscf_random(self->random, vscf_falcon_SEED_LEN, seed);
+    if (status != vscf_status_SUCCESS) {
+        vsc_buffer_destroy(&seed);
+        return status;
+    }
+    vsc_buffer_make_secure(seed);
+
+    //
+    //  Initialize DRBG
+    //
+    falcon_shake256_context shake256;
+    falcon_shake256_init(&shake256);
+    falcon_shake256_inject(&shake256, vsc_buffer_bytes(seed), vsc_buffer_len(seed));
+    falcon_shake256_flip(&shake256);
+    vsc_buffer_destroy(&seed);
+
+    //
+    //  Sign
+    //
+    VSCF_ASSERT(vscf_impl_tag(private_key) == vscf_impl_tag_RAW_PRIVATE_KEY);
+    vsc_data_t private_key_data = vscf_raw_private_key_data((vscf_raw_private_key_t *)private_key);
+
+    unsigned char tmp[FALCON_TMPSIZE_SIGNDYN(vscf_falcon_LOGN_512)] = {0x00};
+    size_t sig_len = vsc_buffer_unused_len(signature);
+    const int sign_status = falcon_sign_dyn(&shake256, vsc_buffer_unused_bytes(signature), &sig_len,
+            private_key_data.bytes, private_key_data.len, digest.bytes, digest.len, 1, tmp, sizeof(tmp));
+
+    if (sign_status == FALCON_ERR_FORMAT) {
+        return vscf_status_ERROR_BAD_FALCON_PRIVATE_KEY;
+    }
+
+    VSCF_ASSERT_OPT(sign_status == 0 && "Unhandled error from 'falcon' library");
+    vsc_buffer_inc_used(signature, sig_len);
     return vscf_status_SUCCESS;
 }
 
@@ -388,7 +440,11 @@ vscf_falcon_can_verify(const vscf_falcon_t *self, const vscf_impl_t *public_key)
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(public_key);
 
-    return true;
+    VSCF_ASSERT(vscf_impl_tag(public_key) == vscf_impl_tag_RAW_PUBLIC_KEY);
+    vsc_data_t public_key_data = vscf_raw_public_key_data((vscf_raw_public_key_t *)public_key);
+
+    const int logn = falcon_get_logn((void *)public_key_data.bytes, public_key_data.len);
+    return logn > 0;
 }
 
 //
@@ -400,9 +456,17 @@ vscf_falcon_verify_hash(const vscf_falcon_t *self, const vscf_impl_t *public_key
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(public_key);
+    VSCF_ASSERT(vscf_falcon_can_verify(self, public_key));
     VSCF_ASSERT(hash_id != vscf_alg_id_NONE);
     VSCF_ASSERT(vsc_data_is_valid(digest));
     VSCF_ASSERT(vsc_data_is_valid(signature));
 
-    return false;
+    VSCF_ASSERT(vscf_impl_tag(public_key) == vscf_impl_tag_RAW_PUBLIC_KEY);
+    vsc_data_t public_key_data = vscf_raw_public_key_data((vscf_raw_public_key_t *)public_key);
+
+    unsigned char tmp[FALCON_TMPSIZE_VERIFY(vscf_falcon_LOGN_512)] = {0x00};
+    const int verify_status = falcon_verify(signature.bytes, signature.len, public_key_data.bytes, public_key_data.len,
+            digest.bytes, digest.len, tmp, sizeof(tmp));
+
+    return verify_status == 0;
 }
