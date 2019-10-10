@@ -58,8 +58,42 @@ test__keygen__512_degree__success(void) {
     falcon_shake256_inject(&shake256, test_data_falcon_RNG_SEED.bytes, test_data_falcon_RNG_SEED.len);
     falcon_shake256_flip(&shake256);
 
-    int status =
+    const int status =
             falcon_keygen_make(&shake256, LOGN_512, privkey, sizeof(privkey), pubkey, sizeof(pubkey), tmp, sizeof(tmp));
+    TEST_ASSERT_EQUAL(0, status);
+
+    TEST_ASSERT_EQUAL_DATA(test_data_falcon_PRIVATE_KEY_512, vsc_data(privkey, sizeof(privkey)));
+    TEST_ASSERT_EQUAL_DATA(test_data_falcon_PUBLIC_KEY_512, vsc_data(pubkey, sizeof(pubkey)));
+}
+
+void
+test__sign_dyn__sha512_digest_with_512_degree_key__procduce_const_signature(void) {
+    falcon_shake256_context shake256;
+    falcon_shake256_init(&shake256);
+    falcon_shake256_inject(&shake256, test_data_falcon_RNG_SEED2.bytes, test_data_falcon_RNG_SEED2.len);
+    falcon_shake256_flip(&shake256);
+
+    unsigned char sig[FALCON_SIG_CT_SIZE(LOGN_512)];
+    unsigned char tmp[FALCON_TMPSIZE_SIGNDYN(LOGN_512)] = {0x00};
+    size_t sig_len = sizeof(sig);
+
+    const int status = falcon_sign_dyn(&shake256, sig, &sig_len, test_data_falcon_PRIVATE_KEY_512.bytes,
+            test_data_falcon_PRIVATE_KEY_512.len, test_data_falcon_DATA_SHA512_DIGEST.bytes,
+            test_data_falcon_DATA_SHA512_DIGEST.len, 1, tmp, sizeof(tmp));
+    TEST_ASSERT_EQUAL(0, status);
+    TEST_ASSERT_EQUAL(sizeof(sig), sig_len);
+
+    TEST_ASSERT_EQUAL_DATA(test_data_falcon_CONST_SIGNATURE, vsc_data(sig, sig_len));
+}
+
+
+void
+test__verify__sha512_digest_and_const_signature_with_512_degree_key__success(void) {
+    unsigned char tmp[FALCON_TMPSIZE_VERIFY(LOGN_512)] = {0x00};
+
+    const int status = falcon_verify(test_data_falcon_CONST_SIGNATURE.bytes, test_data_falcon_CONST_SIGNATURE.len,
+            test_data_falcon_PUBLIC_KEY_512.bytes, test_data_falcon_PUBLIC_KEY_512.len,
+            test_data_falcon_DATA_SHA512_DIGEST.bytes, test_data_falcon_DATA_SHA512_DIGEST.len, tmp, sizeof(tmp));
     TEST_ASSERT_EQUAL(0, status);
 }
 
@@ -75,6 +109,8 @@ main(void) {
 
 #if TEST_DEPENDENCIES_AVAILABLE
     RUN_TEST(test__keygen__512_degree__success);
+    RUN_TEST(test__sign_dyn__sha512_digest_with_512_degree_key__procduce_const_signature);
+    RUN_TEST(test__verify__sha512_digest_and_const_signature_with_512_degree_key__success);
 #else
     RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
 #endif
