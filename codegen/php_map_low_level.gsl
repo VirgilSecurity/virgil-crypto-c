@@ -59,7 +59,7 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
     endnew
 
     new registered_resource to my.out_low_level
-        . = format_left("int le_$(my.in_php_project.prefix:)_$(my.out_low_level.name0:);", 0)
+        . = format_left("int le_$(my.in_php_project.prefix:)_$(my.out_low_level.name0:)_t;", 0)
     endnew
 
     new constant to my.out_low_level
@@ -76,7 +76,7 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
 
     new init_func_def_list_destr to my.out_low_level
         . = format_left("\
-            le_$(my._t:) = zend_register_list_destructors_ex($(my._t:)_dtor_php, NULL, $(my._t:UPPER)_PHP_RES_NAME, module_number);
+            le_$(my._t:)_t = zend_register_list_destructors_ex($(my._t:)_dtor_php, NULL, $(my._t:UPPER)_PHP_RES_NAME, module_number);
             ", 0)
     endnew
 
@@ -86,7 +86,7 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
         php_map_low_level_constructor_destructor (my.in_module, my.out_low_level)
     endif
 
-    for my.in_module.method as method0 where wrapper_should_wrap_method(method0)
+    for my.in_module.method as method0 where wrapper_should_wrap_method(method0) & method0.name <> "get ctx"
         new function to my.out_low_level
 
             .prefix0 = "$(my.in_module.c_prefix:c)"
@@ -221,7 +221,7 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
                 new proxy_call to wrapper
                     my._c = php_format_extension_comment("Proxy call")
                     my._h1 = format_left("\
-                        $(my._t:c)_t *$(my.out_low_level.name0:c) = zend_fetch_resource_ex(in_ctx, $(my._t:UPPER)_PHP_RES_NAME, le_$(my._t:));
+                        $(my._t:c)_t *$(my.out_low_level.name0:c) = zend_fetch_resource_ex(in_ctx, $(my._t:UPPER)_PHP_RES_NAME, le_$(my._t:)_t);
                         $(my.in_php_project.prefix:UPPER)_ASSERT_PTR($(my.out_low_level.name0:c));
                         ", 0)
                     my._h2 = ""
@@ -231,7 +231,7 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
                             my._h2 += format_left("vsc_data_t $(argument0.name:) = vsc_data((const byte*)in_$(argument0.name:), in_$(argument0.name:)_len);", 0)
                         elsif string_in (argument0.type0, "interface, class, impl") 
                             my._h2 += format_left("\
-                                $(argument0.type:c) *$(argument0.name:c) = zend_fetch_resource_ex(in_$(argument0.name:), $(my._t:UPPER)_PHP_RES_NAME, le_$(my._t:));
+                                $(argument0.type:c) *$(argument0.name:c) = zend_fetch_resource_ex(in_$(argument0.name:), $(my._t:UPPER)_PHP_RES_NAME, le_$(my._t:)_t);
                                 $(my.in_php_project.prefix:UPPER)_ASSERT_PTR($(argument0.name:c));
                                 ", 0)
                         elsif argument0.type0 = "size"
@@ -279,7 +279,7 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
                             elsif return_argument0.length_type = "method"
                                 my._l = "$(return_argument0.length:)($(function.entity0:))"
                             elsif return_argument0.length_type = "method_proxy"
-                                my._l = "$(return_argument0.length:)($(function.entity0:), $(return_argument0.proxy:c))"
+                                my._l = "$(return_argument0.length:)($(function.entity0:), $(return_argument0.proxy:))"
                             elsif return_argument0.length_type = "argument"
                                 my._l = "$(return_argument0.length:c)"
                             else 
@@ -395,7 +395,16 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
 
                 elsif function.return_zend_type = "IS_RESOURCE"
                     for function.return_argument as return_argument0
-                        my._res += format_left("RETVAL_RES($(return_argument0.name:));", 0)
+                        if string_in (return_argument0.type0, "interface, class")
+                            my._res += format_left("\
+                                zend_resource *$(return_argument0.name:)_res = zend_register_resource($(return_argument0.name:), le_$(return_argument0.type:));
+                                RETVAL_RES($(return_argument0.name:)_res);
+                                ", 0)
+                        else
+                            echo_debug_item(function)
+                            echo_debug_item(return_argument0)
+                            echo_fatal("Not implemented (AK1000)", my)
+                        endif
                     endfor
                 elsif function.return_zend_type = "IS_BOOLEAN"
                     for function.return_argument as return_argument0
@@ -516,7 +525,7 @@ function php_map_low_level_constructor_destructor (in_module, out_low_level)
                 my._custom_code = format_left("\
                     PHP_FUNCTION($(function.name:)) {
                         $(my._a:)_t *$(function.entity0:c) = $(function.name0:)();
-                        zend_resource *$(function.entity0:c)_res = zend_register_resource($(function.entity0:c), le_$(my._a:));
+                        zend_resource *$(function.entity0:c)_res = zend_register_resource($(function.entity0:c), le_$(my._a:)_t);
                         RETVAL_RES($(function.entity0:c)_res);
                     }
                     ", 0)
@@ -580,7 +589,7 @@ function php_map_low_level_constructor_destructor (in_module, out_low_level)
                         //
                         // Fetch for type checking and then release
                         //
-                        $(my._a:)_t *$(function.entity0:c) = zend_fetch_resource_ex(in_ctx, $(my._a:UPPER)_PHP_RES_NAME, le_$(my._a:));
+                        $(my._a:)_t *$(function.entity0:c) = zend_fetch_resource_ex(in_ctx, $(my._a:UPPER)_PHP_RES_NAME, le_$(my._a:)_t);
                         $(function.prefix0:UPPER)_ASSERT_PTR($(function.entity0:c));
                         zend_list_close(Z_RES_P(in_ctx));
                         RETURN_TRUE;
@@ -696,27 +705,22 @@ function php_map_low_level_return (in_method, in_php_project, out_function)
                 my._entity = my.out_function.entity0
 
                 if defined (argument0->length->proxy)
-                    echo_debug_item(argument0)
-                    echo_debug_item(argument0->length->proxy)
-                    my._t = argument0->length->proxy.to
-                    echo_info(my._t)
-                    echo_fatal("Test", my)
-                endif
-
-                if defined (argument0->length->proxy)
                     my._proxy = ""
                     for argument0->length.proxy as proxy0
                         if defined (proxy0.cast) & proxy0.cast = "data_length"
-                            my._proxy += "in_$(argument0->length->proxy.argument:c)_len"
+                            my._proxy += "$(argument0->length->proxy.argument:c).len"
                         elsif defined (proxy0.argument)
-                            # TODO !!!
-                            my._proxy += "in_PROXY_ARGUMENT_$(proxy0.argument:)"
+                            my._proxy += "$(proxy0.argument:c)"
                         elsif defined (proxy0.constant)
-                            my._proxy += "in_PROXY_CONSTANT_$(proxy0.constant:c)"
+                            my._proxy += "$(proxy0.constant:)"
                         else
                             echo_debug_item(my.in_method)
                             echo_debug_item(proxy0)
                             echo_fatal("Not implemented (AG1000)")
+                        endif
+
+                        if ! last()
+                            my._proxy += ", "
                         endif
                     endfor
                     my._function = "$(my._prefix:)_$(my._entity:)_$(argument0->length.method:c)"
@@ -879,7 +883,7 @@ function php_map_low_level_extension (in_php_project, out_php_module)
     check_arguments (my, "in_php_project, out_php_module", my)
 
     my._include = ""
-    my._registered_resources = ""
+    my._registered_resources = format_left("int le_$(my.in_php_project.prefix)_impl_t;", 0)
     my._constants = ""
     my._init_func_def_dtor = ""
     my._init_func_def_list_destr = ""
@@ -962,7 +966,7 @@ function php_map_low_level_extension (in_php_project, out_php_module)
             #include <php.h>
             #include <zend_exceptions.h>
             #include <zend_list.h>
-            #include \"vscf_assert.h\"
+            #include \"$(my.in_php_project.prefix:)_assert.h\"
             ", 0)
 
         my._res = my._res + my._include
