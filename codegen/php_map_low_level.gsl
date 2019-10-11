@@ -176,10 +176,10 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
                                 my._h2 += format_left("\
                                     zval *in_$(argument0.name:) = NULL;
                                     ", 0)
-                            elsif argument0.zend_type = "IS_BOOLEAN"
+                            elsif argument0.zend_type = "_IS_BOOL"
                                 # TODO Need to be checked
                                 my._h2 += format_left("\
-                                    int *in_$(argument0.name:);
+                                    zend_bool *in_$(argument0.name:);
                                     ", 0)
                             else
                                 echo_debug_item(argument0)
@@ -206,7 +206,7 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
                                 my._h3 += format_left("Z_PARAM_LONG(in_$(argument0.name:))", 1)
                             elsif argument0.zend_type = "IS_RESOURCE"
                                 my._h3 += format_left("Z_PARAM_RESOURCE_EX(in_$(argument0.name:), 1 /*check_null*/, 0 /*separate*/)", 1)
-                            elsif argument0.zend_type = "IS_BOOLEAN"
+                            elsif argument0.zend_type = "_IS_BOOL"
                                 my._h3 += format_left("Z_PARAM_BOOL(in_$(argument0.name:))", 1)
                             else
                                 echo_debug_item(argument0)
@@ -269,7 +269,7 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
                         if ! defined (return_argument0.type)
                             echo_debug_item(function)
                             echo_debug_item(return_argument0)
-                            echo_fatal("Not implemented (14001)", my)
+                            echo_fatal("Not implemented (AI1001)", my)
                         endif
 
                         if return_argument0.type = "buffer"
@@ -286,7 +286,7 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
                             else 
                                 echo_debug_item(function)
                                 echo_debug_item(return_argument0)
-                                echo_fatal("Not implemented (1001)")
+                                echo_fatal("Not implemented (AP1001)")
                             endif
 
                             my._h1 = format_left("\
@@ -312,8 +312,11 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
                     my._return = ""
                     my._args = "("
 
+                    my._e = 0
+
                     if function.is_static = 0
-                        my._args += function.entity0
+                        my._args += "$(function.entity0)"
+                        my._e = 1
                     endif
 
                     my._access = ""
@@ -359,11 +362,47 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
 
                     my._return = format_left(my._return, 0)
 
+                    my._int_mapper = ""
+                    my._enum_mapper = ""
+                    my._bool_mapper = ""
+                    my._access_disown = ""
+
                     for function.argument as argument0
+
+                        if argument0.type = "int"
+                            my._int_mapper += format_left("$(argument0.type_c) $(argument0.name:) = in_$(argument0.name:);", 0)
+                        endif
+
+                        if argument0.type0 = "enum"
+                            my._enum_mapper += format_left("$(argument0.type_c:) $(argument0.name:) = ($(argument0.type:))in_$(argument0.name:);", 0)
+                        endif
+
+                        if argument0.type0 = "boolean"
+                            my._bool_mapper += format_left("$(argument0.type_c:) $(argument0.name:) = ($(argument0.type:))in_$(argument0.name:);", 0)
+                        endif
+
+                        if argument0.access = "disown"
+                            my._access_disown += format_left("$(argument0.type_c:) *$(argument0.name:)_tmp = $(argument0.shallow_copy:)($(argument0.name:));", 0)
+                        endif
+
+                        my._dd = ""
+                        if first() & my._e = 1
+                            my._dd = ", "
+                        endif
+
+                        my._d = ""
+                        if ! last()
+                            my._d = ", "
+                        endif
+
                         if argument0.name = "error"
-                            my._args += ", &$(argument0.name:)"
+                            my._args += my._dd + "&$(argument0.name:)" + my._d
                         else
-                            my._args += ", $(argument0.name:)"
+                            if string_in (argument0.type0, "interface, class, implementation") & argument0.access = "disown"
+                                my._args += my._dd + "&$(argument0.name:)_tmp" + my._d
+                            else
+                                my._args += my._dd + "$(argument0.name:)" + my._d
+                            endif
                         endif
                     endfor
 
@@ -371,9 +410,24 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
 
                     my._func = "$(function.name0:)"
 
-                    my._res = my._c + my._return + my._func + my._args
-
                     my._res = my._c + my._return + my._access_const + my._func + my._args
+
+                    if my._access_disown <> ""
+                        my._res = my._access_disown + my._res
+                    endif
+
+                    if my._int_mapper <> ""
+                        .debug_me = 1
+                        my._res = my._int_mapper + my._res
+                    endif
+
+                    if my._enum_mapper <> ""
+                        my._res = my._enum_mapper + my._res
+                    endif
+
+                    if my._bool_mapper <> ""
+                        my._res = my._bool_mapper + my._res
+                    endif
 
                     if my._data_string_proxy = 1
                         my._res = my._res + my._data_string_proxy_call
@@ -451,7 +505,7 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
                             echo_fatal("Not implemented (AK1000)", my)
                         endif
                     endfor
-                elsif function.return_zend_type = "IS_BOOLEAN"
+                elsif function.return_zend_type = "_IS_BOOL"
                     for function.return_argument as return_argument0
                         my._res += format_left("RETVAL_BOOL($(return_argument0.name:));", 0)
                     endfor
@@ -504,7 +558,7 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
                         success:
                             RETURN_TRUE;
                         ", 0)
-                    elsif function.return_zend_type = "IS_BOOLEAN"
+                    elsif function.return_zend_type = "_IS_BOOL"
                         my._res = format_left("\
                             goto success;
 
@@ -658,27 +712,34 @@ function php_map_low_level_argument (in_argument, in_php_project, out_argument, 
     my._prefix = my.out_function.prefix0
 
     my.out_argument.name = "$(my.in_argument.name:c)"
+    my.out_argument.access = my.in_argument.access
 
     if defined (my.in_argument.class)
         if string_in(my.in_argument.class, "data, buffer") 
             my._type0 = my.in_argument.class
             my._type = "vsc_$(my.in_argument.class:)_t"
             my._zend_type = "IS_STRING"
+            my._type_c = class_derive_c_instance_type(my.in_argument)
         elsif my.in_argument.class = "error"
             my._type0 = "error"
             my._type = "$(my._prefix:)_error_t"
             my._zend_type = ""
+            my._type_c = class_derive_c_instance_type(my.in_argument)
         else
             my._type0 = "class"
             my._type = "$(my._prefix:)_$(my.in_argument.class:c)_t"
+            my._shallow_type = "$(my._prefix:)_$(my.in_argument.class:c)"
             my._zend_type = "IS_RESOURCE"
+            my._type_c = class_derive_c_instance_type(my.in_argument)
         endif
     endif
 
     if defined (my.in_argument.interface)
         my._type0 = "interface"
         my._type = "$(my._prefix:)_impl_t"
+        my._shallow_type = "$(my._prefix:)_impl"
         my._zend_type = "IS_RESOURCE"
+        my._type_c = class_derive_c_instance_type(my.in_argument)
     endif
 
     if defined (my.in_argument.type)
@@ -686,43 +747,58 @@ function php_map_low_level_argument (in_argument, in_php_project, out_argument, 
             my._type0 = my.in_argument.type
             my._type = "vsc_size_t"
             my._zend_type = "IS_LONG"
+            my._type_c = class_derive_c_instance_type(my.in_argument)
         elsif my.in_argument.type = "integer"
             my._type0 = my.in_argument.type
             my._type = "int"
             my._zend_type = "IS_LONG"
+            my._type_c = class_derive_c_instance_type(my.in_argument)
         elsif my.in_argument.type = "unsigned"
             my._type0 = my.in_argument.type
             my._type = "int"
             my._zend_type = "IS_LONG"
+            my._type_c = class_derive_c_instance_type(my.in_argument)
         elsif my.in_argument.type = "byte"
-            my._type0 = my.in_argument.type
-            my._type = "_???"
-            my._zend_type = "IS_STRING"
+            my._type0 = "byte"
+            my._type = "int"
+            my._zend_type = "IS_LONG"
+            my._type_c = class_derive_c_instance_type(my.in_argument)
         elsif my.in_argument.type = "boolean"
             my._type0 = my.in_argument.type
-            my._type = "int"
-            my._zend_type = "IS_BOOLEAN"
+            my._type = "zend_bool"
+            my._zend_type = "_IS_BOOL"
+            my._type_c = class_derive_c_instance_type(my.in_argument)
         else
             echo_debug_item(my.in_argument)
-            echo_fatal("Not implemented (601)", my)
+            echo_fatal("Not implemented (AN1006)", my)
         endif
     endif
 
     if defined (my.in_argument.enum)
         my._type0 = "enum"
-        my._type = "__??? $(my.in_argument.enum:c)"
-        my._zend_type = "IS_STRING"
+        my._type = "$(my._prefix:)_$(my.in_argument.enum:c)_t"
+        my._zend_type = "IS_LONG"
+        my._type_c = class_derive_c_instance_type(my.in_argument)
     endif
 
     if defined (my.in_argument.impl)
         my._type0 = "impl"
         my._type = "$(my._prefix:)_$(my.in_argument.impl:c)_t"
+        my._shallow_type = "$(my._prefix:)_$(my.in_argument.impl:c)"
         my._zend_type = "IS_RESOURCE"
+        my._type_c = class_derive_c_instance_type(my.in_argument)
     endif
 
     my.out_argument.type0 = my._type0
     my.out_argument.type = my._type
     my.out_argument.zend_type = my._zend_type
+    my.out_argument.type_c = my._type_c
+
+    if defined (my._shallow_type)
+        my.out_argument.shallow_copy = "$(my._shallow_type:)_shallow_copy"
+    else
+        my.out_argument.shallow_copy = "$(0.type:)_shallow_copy"
+    endif
 
 endfunction
 
@@ -820,22 +896,18 @@ function php_map_low_level_return (in_method, in_php_project, out_function)
                 my._return_type0 = return0.type
                 my._return_type = "size_t"
                 my._return_zend_type = "IS_LONG"
-            elsif return0.type = "integer" | return0.type = "unsigned"
+            elsif return0.type = "integer" | return0.type = "unsigned" | return0.type = "byte"
                 my._return_type0 = return0.type
                 my._return_type = "int"
                 my._return_zend_type = "IS_LONG"
             elsif return0.type = "boolean"
                 my._return_type0 = return0.type
-                my._return_type = "int"
-                my._return_zend_type = "IS_BOOLEAN"
-            elsif return0.type = "byte"
-                my._return_type0 = return0.type
-                my._return_type = "char"
-                my._return_zend_type = "IS_STRING"
+                my._return_type = "zend_bool"
+                my._return_zend_type = "_IS_BOOL"
             else
                 echo_debug_item(my.in_method)
                 echo_debug_item(return0)
-                echo_fatal("Not implemented (801)", my)
+                echo_fatal("Not implemented (AV1000)", my)
             endif
 
             new return_argument to my.out_function

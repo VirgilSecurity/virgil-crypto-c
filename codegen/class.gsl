@@ -206,6 +206,14 @@ function class_resolve_method (method, class)
         .class = my.class.name
     endfor
 
+    for my.method.argument
+        for argument.length where defined(length.class)
+            if length.class = "self"
+                length.class = my.class.name
+            endif
+        endfor
+    endfor
+
     for my.method.return where string_equal (0.class ?, "self")
         .access ?= "disown"
         .class = my.class.name
