@@ -63,7 +63,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     endif()
 endif()
 set(OPENSSL_USE_STATIC_LIBS YES)
-find_package(OpenSSL 1.1.1 REQUIRED)
+find_package(OpenSSL 1.1.1 COMPONENTS Crypto REQUIRED)
 
 # ---------------------------------------------------------------------------
 #   Prpeare options for 'Make' utility
@@ -94,6 +94,13 @@ foreach(lib IN LISTS KECCAK_LIBRARIES OPENSSL_CRYPTO_LIBRARY)
     set(lib_dir)
 endforeach()
 
+#
+# Debug mode
+#
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    set(ROUND5_DEBUG_FLAG "DEBUG=1")
+endif()
+
 # ---------------------------------------------------------------------------
 #   Load library as an external project
 # ---------------------------------------------------------------------------
@@ -107,7 +114,8 @@ ExternalProject_Add(round5-ext
             24b9738b0e39ce2115cc6b1f639359f5f459bd3e
         BUILD_IN_SOURCE TRUE
         CONFIGURE_COMMAND ""
-        BUILD_COMMAND CPATH=${CPATH} ${MAKE_EXE} LDFLAGS=${LINKER_SEARCH_PATHS} ALG=R5ND_1KEM_0d reference
+        BUILD_COMMAND
+            CPATH=${CPATH} ${MAKE_EXE} LDFLAGS=${LINKER_SEARCH_PATHS} ALG=R5ND_5PKE_5d ${ROUND5_DEBUG_FLAG} reference
         INSTALL_COMMAND ""
         )
 
@@ -123,7 +131,12 @@ add_dependencies(round5 round5-ext)
 
 set_property(TARGET round5
         PROPERTY INTERFACE_COMPILE_DEFINITIONS
-            R5ND_1KEM_0d
+            R5ND_5PKE_5d
+        )
+
+set_property(TARGET round5
+        PROPERTY INTERFACE_LINK_LIBRARIES
+            OpenSSL::Crypto
         )
 
 set_property(TARGET round5

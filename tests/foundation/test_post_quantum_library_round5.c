@@ -38,17 +38,20 @@
 #include "unity.h"
 #include "test_utils.h"
 
-#ifndef ROUND5_LIBRARY
-#error lskdjhfkjsdhflkdsj
-#endif
-
 #define TEST_DEPENDENCIES_AVAILABLE ROUND5_LIBRARY
 #if TEST_DEPENDENCIES_AVAILABLE
 
+#include "test_data_round5.h"
+
 #include <r5_cpa_kem.h>
+#include <r5_cca_pke.h>
+
+#define ROUND5_KEM_EMABLED (CRYPTO_CIPHERTEXTBYTES != 0)
+#define ROUND5_PKE_EMABLED (CRYPTO_CIPHERTEXTBYTES == 0)
 
 void
 test__cpa_kem_keygen__returns_success(void) {
+#if ROUND5_KEM_EMABLED
     unsigned char pk[CRYPTO_PUBLICKEYBYTES] = {0x00};
     unsigned char sk[CRYPTO_SECRETKEYBYTES] = {0x00};
 
@@ -57,10 +60,14 @@ test__cpa_kem_keygen__returns_success(void) {
 
     int status = r5_cpa_kem_keygen(pk, sk, params);
     TEST_ASSERT_EQUAL(0, status);
+#else
+    TEST_IGNORE_MESSAGE("KEM is not available");
+#endif
 }
 
 void
 test__cpa_kem_encapsulate__returns_success(void) {
+#if ROUND5_KEM_EMABLED
     unsigned char pk[CRYPTO_PUBLICKEYBYTES] = {0x00};
     unsigned char sk[CRYPTO_SECRETKEYBYTES] = {0x00};
     unsigned char shared_secret[CRYPTO_BYTES] = {0x00};
@@ -74,6 +81,81 @@ test__cpa_kem_encapsulate__returns_success(void) {
 
     status = r5_cpa_kem_encapsulate(ciphertext, shared_secret, pk, params);
     TEST_ASSERT_EQUAL(0, status);
+#else
+    TEST_IGNORE_MESSAGE("KEM is not available");
+#endif
+}
+
+void
+test__cca_pke_keygen__return_success(void) {
+#if ROUND5_PKE_EMABLED
+    parameters *params = set_parameters_from_api();
+    TEST_ASSERT_NOT_NULL(params);
+
+    const size_t sk_len = get_crypto_secret_key_bytes(params, 1);
+    const size_t pk_len = get_crypto_public_key_bytes(params);
+
+    vsc_buffer_t *sk = vsc_buffer_new_with_capacity(sk_len);
+    vsc_buffer_t *pk = vsc_buffer_new_with_capacity(pk_len);
+
+    int status = r5_cca_pke_keygen(vsc_buffer_unused_bytes(pk), vsc_buffer_unused_bytes(sk), params);
+    TEST_ASSERT_EQUAL(0, status);
+
+    vsc_buffer_inc_used(pk, pk_len);
+    vsc_buffer_inc_used(sk, sk_len);
+
+    vsc_buffer_destroy(&pk);
+    vsc_buffer_destroy(&sk);
+#else
+    TEST_IGNORE_MESSAGE("PKE is not available");
+#endif
+}
+
+void
+test__cca_pke_encrypt__return_success(void) {
+#if ROUND5_PKE_EMABLED
+    parameters *params = set_parameters_from_api();
+    TEST_ASSERT_NOT_NULL(params);
+
+    const size_t enc_overhead_len = get_crypto_bytes(params, 1 /* is_encrypt */);
+    const size_t enc_len_max = enc_overhead_len + test_data_round5_CCA_PKE_MESSAGE.len;
+    vsc_buffer_t *enc = vsc_buffer_new_with_capacity(enc_len_max);
+
+    unsigned long long enc_len = 0;
+    int status = r5_cca_pke_encrypt(vsc_buffer_unused_bytes(enc), &enc_len, test_data_round5_CCA_PKE_MESSAGE.bytes,
+            test_data_round5_CCA_PKE_MESSAGE.len, test_data_round5_CCA_PKE_PUBLIC_KEY.bytes, params);
+    TEST_ASSERT_EQUAL(0, status);
+    vsc_buffer_inc_used(enc, enc_len);
+
+    vsc_buffer_destroy(&enc);
+#else
+    TEST_IGNORE_MESSAGE("PKE is not available");
+#endif
+}
+
+void
+test__cca_pke_decrypt__return_success(void) {
+#if ROUND5_PKE_EMABLED
+    parameters *params = set_parameters_from_api();
+    TEST_ASSERT_NOT_NULL(params);
+
+    const size_t enc_overhead_len = get_crypto_bytes(params, 1 /* is_encrypt */);
+    const size_t message_len_max = test_data_round5_CCA_PKE_ENC_MESSAGE.len - enc_overhead_len;
+    vsc_buffer_t *message = vsc_buffer_new_with_capacity(message_len_max);
+
+    unsigned long long message_len = 0;
+    int status = r5_cca_pke_decrypt(vsc_buffer_unused_bytes(message), &message_len,
+            test_data_round5_CCA_PKE_ENC_MESSAGE.bytes, test_data_round5_CCA_PKE_ENC_MESSAGE.len,
+            test_data_round5_CCA_PKE_PRIVATE_KEY.bytes, params);
+    TEST_ASSERT_EQUAL(0, status);
+    vsc_buffer_inc_used(message, message_len);
+
+    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_data_round5_CCA_PKE_MESSAGE, message);
+
+    vsc_buffer_destroy(&message);
+#else
+    TEST_IGNORE_MESSAGE("PKE is not available");
+#endif
 }
 
 #endif // TEST_DEPENDENCIES_AVAILABLE
@@ -89,6 +171,10 @@ main(void) {
 #if TEST_DEPENDENCIES_AVAILABLE
     RUN_TEST(test__cpa_kem_keygen__returns_success);
     RUN_TEST(test__cpa_kem_encapsulate__returns_success);
+
+    RUN_TEST(test__cca_pke_keygen__return_success);
+    RUN_TEST(test__cca_pke_encrypt__return_success);
+    RUN_TEST(test__cca_pke_decrypt__return_success);
 #else
     RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
 #endif
