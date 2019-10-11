@@ -87,7 +87,10 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
     endif
 
     for my.in_module.method as method0 where wrapper_should_wrap_method(method0) & method0.name <> "get ctx"
+
         new function to my.out_low_level
+
+            .is_static = method0.is_static
 
             .prefix0 = "$(my.in_module.c_prefix:c)"
             .entity0 = "$(my.in_module.name:c)"
@@ -202,11 +205,9 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
                             elsif argument0.zend_type = "IS_LONG"
                                 my._h3 += format_left("Z_PARAM_LONG(in_$(argument0.name:))", 1)
                             elsif argument0.zend_type = "IS_RESOURCE"
-                                # TODO!!!
                                 my._h3 += format_left("Z_PARAM_RESOURCE_EX(in_$(argument0.name:), 1 /*check_null*/, 0 /*separate*/)", 1)
                             elsif argument0.zend_type = "IS_BOOLEAN"
-                                # TODO!!!
-                                my._h3 += format_left("Z_PARAM_BOOL_EX(in_$(argument0.name:), 0 /*is_null*/, 1 /*check_null*/, 0 /*separate*/)", 1)
+                                my._h3 += format_left("Z_PARAM_BOOL(in_$(argument0.name:))", 1)
                             else
                                 echo_debug_item(argument0)
                                 echo_fatal("Not implemented (701)")
@@ -306,20 +307,54 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
                 new call_main_function to wrapper
                     my._c = php_format_extension_comment("Call main function")
 
+                    my._data_string_proxy = 0
+
                     my._return = ""
                     my._args = "("
-                    my._args += function.entity0
+
+                    if function.is_static = 0
+                        my._args += function.entity0
+                    endif
+
+                    my._access = ""
+                    my._access_const = ""
+                    my._access_shallow_copy = ""
 
                     for function.return_argument as return_argument0 where return_argument0.type <> "buffer"
+
+                        if defined(return_argument0.access)
+                            my._access = return_argument0.access
+                        endif
+
+                        if my._access = "readonly"
+                            my._access_const = "($(return_argument0.type_t:) *)"
+                        endif
+
+                        if my._access = "readwrite" | my._access = "readonly"
+                            my._access_const = "($(return_argument0.type_t:) *)"
+                            my._access_shallow_copy = format_left("$(return_argument0.name:) = $(return_argument0.shallow_copy:)($(return_argument0.name:));", 0)
+                        endif
 
                         my._pointer = ""
                         if defined(return_argument0.is_reference) & return_argument0.is_reference = 1
                             my._pointer = "*"
                         endif
 
-                        my._return += format_left("\
-                            $(return_argument0.type:) $(my._pointer:)$(return_argument0.name:)=
-                            ", 0)
+                        if return_argument0.type = "vsc_data_t"
+                            my._data_string_proxy = 1
+                            my._data_string_proxy_call = format_left("\
+                                zend_string *out_$(return_argument0.name:) = zend_string_init(out_$(return_argument0.name:)_temp.bytes, out_$(return_argument0.name:)_temp.len, 0);
+                                ", 0)
+
+                            my._out_name = "out_$(return_argument0.name:)"
+                            my._return += format_left("\
+                                $(return_argument0.type_t:) $(my._pointer:)out_$(return_argument0.name:)_temp = 
+                                ", 0)
+                        else 
+                            my._return += format_left("\
+                                $(return_argument0.type_t:) $(my._pointer:)$(return_argument0.name:) = 
+                                ", 0)
+                        endif
                     endfor
 
                     my._return = format_left(my._return, 0)
@@ -337,6 +372,16 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
                     my._func = "$(function.name0:)"
 
                     my._res = my._c + my._return + my._func + my._args
+
+                    my._res = my._c + my._return + my._access_const + my._func + my._args
+
+                    if my._data_string_proxy = 1
+                        my._res = my._res + my._data_string_proxy_call
+                    endif
+
+                    if my._access_shallow_copy <> ""
+                        my._res = my._res + my._access_shallow_copy
+                    endif
 
                     . = format_left(my._res, 1)
                 endnew
@@ -395,9 +440,9 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
 
                 elsif function.return_zend_type = "IS_RESOURCE"
                     for function.return_argument as return_argument0
-                        if string_in (return_argument0.type0, "interface, class")
+                        if string_in (return_argument0.type0, "interface, class, implementation")
                             my._res += format_left("\
-                                zend_resource *$(return_argument0.name:)_res = zend_register_resource($(return_argument0.name:), le_$(return_argument0.type:));
+                                zend_resource *$(return_argument0.name:)_res = zend_register_resource($(return_argument0.name:), le_$(return_argument0.type:)_t);
                                 RETVAL_RES($(return_argument0.name:)_res);
                                 ", 0)
                         else
@@ -495,6 +540,7 @@ function php_map_low_level_constructor_destructor (in_module, out_low_level)
         .return_type = "IS_RESOURCE"
         .instance = 0
         .throw_exception = 0
+        .is_static = 0
         .num_arguments = 0
 
         my._a = "$(0.prefix0:c)_$(0.entity0:c)"
@@ -544,6 +590,7 @@ function php_map_low_level_constructor_destructor (in_module, out_low_level)
         .instance = 0
         .throw_exception = 0
         .num_arguments = 1
+        .is_static = 0
 
         my._a = "$(0.prefix0:)_$(0.entity0)"
 
@@ -645,11 +692,11 @@ function php_map_low_level_argument (in_argument, in_php_project, out_argument, 
             my._zend_type = "IS_LONG"
         elsif my.in_argument.type = "unsigned"
             my._type0 = my.in_argument.type
-            my._type = "???"
+            my._type = "int"
             my._zend_type = "IS_LONG"
         elsif my.in_argument.type = "byte"
             my._type0 = my.in_argument.type
-            my._type = "???"
+            my._type = "_???"
             my._zend_type = "IS_STRING"
         elsif my.in_argument.type = "boolean"
             my._type0 = my.in_argument.type
@@ -663,7 +710,7 @@ function php_map_low_level_argument (in_argument, in_php_project, out_argument, 
 
     if defined (my.in_argument.enum)
         my._type0 = "enum"
-        my._type = "??? $(my.in_argument.enum:c)"
+        my._type = "__??? $(my.in_argument.enum:c)"
         my._zend_type = "IS_STRING"
     endif
 
@@ -700,6 +747,7 @@ function php_map_low_level_return (in_method, in_php_project, out_function)
             new return_argument to my.out_function
                 .name = "$(argument0.name:c)"
                 .type = "buffer"
+                .type_t = 0.type
 
                 my._prefix = my.out_function.prefix0
                 my._entity = my.out_function.entity0
@@ -742,11 +790,10 @@ function php_map_low_level_return (in_method, in_php_project, out_function)
                 elsif defined (argument0->length.constant)
                     my._constant = "$(argument0->length.constant:c)"
                     my._constant = "$(my._constant:UPPER)"
-                    .length = "$(my._prefix:c)_$(my._constant:)"
+                    .length = "$(my._prefix:c)_$(my._entity:)_$(my._constant:)"
                     .length_type = "constant"
                 elsif defined (argument0->length.argument)
-                    # !!!
-                    .length = "ARGUMENT_LEN $(argument0->length.argument:)"
+                    .length = "$(argument0->length.argument:)"
                     .length_type = "argument"
                 else 
                     echo_debug_item(argument0)
@@ -775,7 +822,7 @@ function php_map_low_level_return (in_method, in_php_project, out_function)
                 my._return_zend_type = "IS_LONG"
             elsif return0.type = "integer" | return0.type = "unsigned"
                 my._return_type0 = return0.type
-                my._return_type = "???"
+                my._return_type = "int"
                 my._return_zend_type = "IS_LONG"
             elsif return0.type = "boolean"
                 my._return_type0 = return0.type
@@ -795,6 +842,7 @@ function php_map_low_level_return (in_method, in_php_project, out_function)
                 .name = "res"
                 .type0 = "$(return0.type:c)"
                 .type = my._return_type
+                .type_t = 0.type
                 .zend_type = my._return_zend_type
                 .is_reference = my._is_reference
             endnew
@@ -813,6 +861,7 @@ function php_map_low_level_return (in_method, in_php_project, out_function)
                     .name = return0.class
                     .type0 = "data"
                     .type = my._return_type
+                    .type_t = 0.type
                     .zend_type = my._return_zend_type
                     .is_reference = my._is_reference
                 endnew
@@ -824,9 +873,13 @@ function php_map_low_level_return (in_method, in_php_project, out_function)
                 new return_argument to my.out_function
                     .name = "$(return0.class:c)"
                     .type0 = "class"
-                    .type = "$(my._prefix:)_$(0.name:)_t"
+                    .type_t = "$(my._prefix:)_$(0.name:)_t"
+                    .type = "$(my._prefix:)_$(0.name:)"
                     .zend_type = my._return_zend_type
                     .is_reference = my._is_reference
+                    .access = return0.access
+                    .shallow_copy = "$(0.type:)_shallow_copy"
+
                 endnew
             endif
         elsif defined (return0.interface)
@@ -837,9 +890,27 @@ function php_map_low_level_return (in_method, in_php_project, out_function)
             new return_argument to my.out_function
                 .name = "$(return0.interface:c)"
                 .type0 = "interface"
-                .type = "$(my._prefix:)_impl_t"
+                .type_t = "$(my._prefix:)_impl_t"
+                .type = "$(my._prefix:)_impl"
                 .zend_type = my._return_zend_type
                 .is_reference = my._is_reference
+                .access = return0.access
+                .shallow_copy = "$(0.type:)_shallow_copy"
+            endnew
+        elsif defined (return0.impl)
+            my._return_type0 = return0.impl
+            my._return_type = "implementation"
+            my._return_zend_type = "IS_RESOURCE"
+
+            new return_argument to my.out_function
+                .name = "$(return0.impl:c)"
+                .type0 = "implementation"
+                .type_t = "$(my._prefix:)_$(0.name:)_t"
+                .type = "$(my._prefix:)_$(0.name:)"
+                .zend_type = my._return_zend_type
+                .is_reference = my._is_reference
+                .access = return0.access
+                .shallow_copy = "$(0.type:)_shallow_copy"
             endnew
         endif
 
@@ -851,6 +922,7 @@ function php_map_low_level_return (in_method, in_php_project, out_function)
                     .name = "status"
                     .type0 = "status"
                     .type = "$(my._prefix:)_status_t"
+                    .type_t = 0.type
                     .zend_type = "IS_RESOURCE"
                 endnew
             else
@@ -862,6 +934,7 @@ function php_map_low_level_return (in_method, in_php_project, out_function)
                     .name = "$(return0.enum:c)"
                     .type0 = "enum"
                     .type = "int"
+                    .type_t = 0.type
                     .zend_type = "IS_LONG"
                     .is_reference = my._is_reference
                 endnew
