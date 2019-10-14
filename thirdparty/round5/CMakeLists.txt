@@ -62,13 +62,8 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
         set(ENV{OPENSSL_ROOT_DIR} "/usr/local/opt/openssl@1.1")
     endif()
 endif()
-set(OPENSSL_USE_STATIC_LIBS YES)
+set(OPENSSL_USE_STATIC_LIBS NO)
 find_package(OpenSSL 1.1.1 COMPONENTS Crypto REQUIRED)
-
-if((CMAKE_SYSTEM_NAME STREQUAL "Linux") AND OPENSSL_USE_STATIC_LIBS)
-    set(ROUND5_LINUX_BUILD YES)
-    find_package(Threads REQUIRED)
-endif()
 
 # ---------------------------------------------------------------------------
 #   Prpeare options for 'Make' utility
@@ -142,8 +137,6 @@ set_property(TARGET round5
 set_property(TARGET round5
         PROPERTY INTERFACE_LINK_LIBRARIES
             OpenSSL::Crypto
-            $<$<BOOL:${ROUND5_LINUX_BUILD}>:Threads::Threads>
-            $<$<BOOL:${ROUND5_LINUX_BUILD}>:-ldl>
         )
 
 set_property(TARGET round5
