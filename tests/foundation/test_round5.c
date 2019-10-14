@@ -105,6 +105,8 @@ test__encrypt__success(void) {
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, status);
 
     vsc_buffer_destroy(&enc);
+    vscf_impl_destroy(&public_key);
+    vscf_raw_public_key_destroy(&raw_public_key);
     vscf_round5_destroy(&round5);
 }
 
@@ -141,6 +143,8 @@ test__decrypt__success(void) {
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, status);
 
     vsc_buffer_destroy(&msg);
+    vscf_impl_destroy(&private_key);
+    vscf_raw_private_key_destroy(&raw_private_key);
     vscf_round5_destroy(&round5);
 }
 
