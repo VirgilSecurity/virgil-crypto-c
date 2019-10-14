@@ -18,8 +18,8 @@ env:
 
 install:
   - sudo apt-get install -y -qq xsltproc
-  - travis_retry wget https://cmake.org/files/v3.12/cmake-3.12.4-Linux-x86_64.sh
-  - sudo bash cmake-3.12.4-Linux-x86_64.sh --skip-license --exclude-subdir --prefix=/usr/local
+  - travis_retry wget https://cmake.org/files/v3.12/cmake-3.15.4-Linux-x86_64.sh
+  - sudo bash cmake-3.15.4-Linux-x86_64.sh --skip-license --exclude-subdir --prefix=/usr/local
   - export PATH="/usr/local/bin:$PATH"
   - mkdir -p $HOME/openssl && pushd $HOME/openssl
     && travis_retry wget https://github.com/openssl/openssl/archive/OpenSSL_1_1_1d.tar.gz
