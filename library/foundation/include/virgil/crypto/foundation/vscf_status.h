@@ -211,6 +211,18 @@ enum vscf_status_t {
     //
     vscf_status_ERROR_BAD_FALCON_PRIVATE_KEY = -228,
     //
+    //  Generic Round5 library error.
+    //
+    vscf_status_ERROR_ROUND5 = -229,
+    //
+    //  Post-quantum NIST Round5 public key is corrupted.
+    //
+    vscf_status_ERROR_BAD_ROUND5_PUBLIC_KEY = -230,
+    //
+    //  Post-quantum NIST Round5 private key is corrupted.
+    //
+    vscf_status_ERROR_BAD_ROUND5_PRIVATE_KEY = -231,
+    //
     //  Decryption failed, because message info was not given explicitly,
     //  and was not part of an encrypted message.
     //

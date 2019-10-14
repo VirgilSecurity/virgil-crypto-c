@@ -102,27 +102,29 @@ const initFoundationImplTag = (Module, modules) => {
 
         RAW_PUBLIC_KEY: 32,
 
-        RSA: 33,
+        ROUND5: 33,
 
-        RSA_PRIVATE_KEY: 34,
+        RSA: 34,
 
-        RSA_PUBLIC_KEY: 35,
+        RSA_PRIVATE_KEY: 35,
 
-        SALTED_KDF_ALG_INFO: 36,
+        RSA_PUBLIC_KEY: 36,
 
-        SEC1_SERIALIZER: 37,
+        SALTED_KDF_ALG_INFO: 37,
 
-        SEED_ENTROPY_SOURCE: 38,
+        SEC1_SERIALIZER: 38,
 
-        SHA224: 39,
+        SEED_ENTROPY_SOURCE: 39,
 
-        SHA256: 40,
+        SHA224: 40,
 
-        SHA384: 41,
+        SHA256: 41,
 
-        SHA512: 42,
+        SHA384: 42,
 
-        SIMPLE_ALG_INFO: 43
+        SHA512: 43,
+
+        SIMPLE_ALG_INFO: 44
     });
 
     return FoundationImplTag;

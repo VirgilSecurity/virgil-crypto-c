@@ -93,6 +93,29 @@ enum {
 
 
 //
+//  Setup predefined values to the uninitialized class dependencies.
+//
+VSCF_PUBLIC vscf_status_t
+vscf_falcon_setup_defaults(vscf_falcon_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+
+    if (NULL == self->random) {
+        vscf_ctr_drbg_t *random = vscf_ctr_drbg_new();
+        vscf_status_t status = vscf_ctr_drbg_setup_defaults(random);
+
+        if (status != vscf_status_SUCCESS) {
+            vscf_ctr_drbg_destroy(&random);
+            return status;
+        }
+
+        self->random = vscf_ctr_drbg_impl(random);
+    }
+
+    return vscf_status_SUCCESS;
+}
+
+//
 //  Generate new private key.
 //  Note, this operation might be slow.
 //
@@ -349,6 +372,10 @@ vscf_falcon_can_sign(const vscf_falcon_t *self, const vscf_impl_t *private_key) 
     VSCF_ASSERT(vscf_impl_tag(private_key) == vscf_impl_tag_RAW_PRIVATE_KEY);
     vsc_data_t private_key_data = vscf_raw_private_key_data((vscf_raw_private_key_t *)private_key);
 
+    if (vscf_key_impl_tag(private_key) != self->info->impl_tag) {
+        return false;
+    }
+
     const int logn = falcon_get_logn((void *)private_key_data.bytes, private_key_data.len);
     return logn > 0;
 }
@@ -365,6 +392,10 @@ vscf_falcon_signature_len(const vscf_falcon_t *self, const vscf_impl_t *private_
 
     VSCF_ASSERT(vscf_impl_tag(private_key) == vscf_impl_tag_RAW_PRIVATE_KEY);
     vsc_data_t private_key_data = vscf_raw_private_key_data((vscf_raw_private_key_t *)private_key);
+
+    if (vscf_key_impl_tag(private_key) != self->info->impl_tag) {
+        return 0;
+    }
 
     const int logn = falcon_get_logn((void *)private_key_data.bytes, private_key_data.len);
     if (logn > 0) {
@@ -442,6 +473,10 @@ vscf_falcon_can_verify(const vscf_falcon_t *self, const vscf_impl_t *public_key)
 
     VSCF_ASSERT(vscf_impl_tag(public_key) == vscf_impl_tag_RAW_PUBLIC_KEY);
     vsc_data_t public_key_data = vscf_raw_public_key_data((vscf_raw_public_key_t *)public_key);
+
+    if (vscf_key_impl_tag(public_key) != self->info->impl_tag) {
+        return false;
+    }
 
     const int logn = falcon_get_logn((void *)public_key_data.bytes, public_key_data.len);
     return logn > 0;

@@ -404,6 +404,11 @@ set_property(
 )
 
 set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_round5.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
+)
+
+set_property(
     SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_rsa.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
@@ -802,6 +807,9 @@ target_sources(foundation
             "$<$<BOOL:${VSCF_RAW_PUBLIC_KEY}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_raw_public_key.h>"
             "$<$<BOOL:${VSCF_RAW_PUBLIC_KEY}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_raw_public_key_internal.h>"
             "$<$<BOOL:${VSCF_RAW_PUBLIC_KEY}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_raw_public_key_defs.h>"
+            "$<$<BOOL:${VSCF_ROUND5}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_round5.h>"
+            "$<$<BOOL:${VSCF_ROUND5}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_round5_internal.h>"
+            "$<$<BOOL:${VSCF_ROUND5}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_round5_defs.h>"
             "$<$<BOOL:${VSCF_RSA}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_rsa.h>"
             "$<$<BOOL:${VSCF_RSA}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_rsa_internal.h>"
             "$<$<BOOL:${VSCF_RSA}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_rsa_defs.h>"
@@ -1086,6 +1094,9 @@ target_sources(foundation
             "$<$<BOOL:${VSCF_RAW_PUBLIC_KEY}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_raw_public_key.c>"
             "$<$<BOOL:${VSCF_RAW_PUBLIC_KEY}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_raw_public_key_internal.c>"
             "$<$<BOOL:${VSCF_RAW_PUBLIC_KEY}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_raw_public_key_defs.c>"
+            "$<$<BOOL:${VSCF_ROUND5}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_round5.c>"
+            "$<$<BOOL:${VSCF_ROUND5}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_round5_internal.c>"
+            "$<$<BOOL:${VSCF_ROUND5}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_round5_defs.c>"
             "$<$<BOOL:${VSCF_RSA}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_rsa.c>"
             "$<$<BOOL:${VSCF_RSA}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_rsa_internal.c>"
             "$<$<BOOL:${VSCF_RSA}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_rsa_defs.c>"

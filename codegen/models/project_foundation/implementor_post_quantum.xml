@@ -1,5 +1,4 @@
 <implementor name="post quantum" is_default="1">
-    <require library="round5" feature="library"/>
 
     <implementation name="falcon">
         Provide post-quantum signature based on the falcon implementation.
@@ -35,6 +34,39 @@
 
             <return enum="status"/>
         </method>
+
+        <method name="generate key" declaration="public" is_const="1">
+            Generate new private key.
+            Note, this operation might be slow.
+
+            <argument name="error" class="error" access="readwrite"/>
+
+            <return interface="private key" access="disown"/>
+        </method>
+    </implementation>
+
+
+    <implementation name="round5">
+        Provide post-quantum encryption based on the round5 implementation.
+        For algorithm details check https://github.com/round5/code
+
+        <require library="round5" feature="library"/>
+        <require header="r5_cca_pke.h"/>
+
+        <require interface="public key"/>
+        <require interface="private key"/>
+        <require impl="simple alg info"/>
+        <require module="raw public key defs"/>
+        <require module="raw private key defs"/>
+
+        <interface name="alg"/>
+        <interface name="key alg">
+            <constant name="can import public key" value="true"/>
+            <constant name="can export public key" value="true"/>
+            <constant name="can import private key" value="true"/>
+            <constant name="can export private key" value="true"/>
+        </interface>
+        <interface name="key cipher"/>
 
         <method name="generate key" declaration="public" is_const="1">
             Generate new private key.

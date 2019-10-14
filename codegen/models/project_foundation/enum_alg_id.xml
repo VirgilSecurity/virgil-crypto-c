@@ -19,4 +19,5 @@
     <constant name="pkcs5 pbkdf2"/>
     <constant name="pkcs5 pbes2"/>
     <constant name="falcon"/>
+    <constant name="round5"/>
 </enum>

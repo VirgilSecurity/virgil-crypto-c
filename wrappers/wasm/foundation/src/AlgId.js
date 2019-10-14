@@ -77,7 +77,9 @@ const initAlgId = (Module, modules) => {
 
         PKCS5_PBES2: 17,
 
-        FALCON: 18
+        FALCON: 18,
+
+        ROUND5: 19
     });
 
     return AlgId;

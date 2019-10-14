@@ -68,6 +68,7 @@ framework module VSCFoundation {
     header "vscf_pkcs8_serializer.h"
     header "vscf_raw_private_key.h"
     header "vscf_raw_public_key.h"
+    header "vscf_round5.h"
     header "vscf_rsa.h"
     header "vscf_rsa_private_key.h"
     header "vscf_rsa_public_key.h"

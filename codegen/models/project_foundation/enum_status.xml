@@ -139,6 +139,18 @@
         Post-quantum Falcon-Sign private key is corrupted.
     </constant>
 
+    <constant name="error round5" value="-229">
+        Generic Round5 library error.
+    </constant>
+
+    <constant name="error bad round5 public key" value="-230">
+        Post-quantum NIST Round5 public key is corrupted.
+    </constant>
+
+    <constant name="error bad round5 private key" value="-231">
+        Post-quantum NIST Round5 private key is corrupted.
+    </constant>
+
     <constant name="error no message info" value="-301">
         Decryption failed, because message info was not given explicitly,
         and was not part of an encrypted message.

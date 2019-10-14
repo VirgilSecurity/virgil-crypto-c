@@ -109,6 +109,7 @@ enum vscf_impl_tag_t {
     vscf_impl_tag_PKCS8_SERIALIZER,
     vscf_impl_tag_RAW_PRIVATE_KEY,
     vscf_impl_tag_RAW_PUBLIC_KEY,
+    vscf_impl_tag_ROUND5,
     vscf_impl_tag_RSA,
     vscf_impl_tag_RSA_PRIVATE_KEY,
     vscf_impl_tag_RSA_PUBLIC_KEY,

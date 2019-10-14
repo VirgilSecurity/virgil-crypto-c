@@ -148,6 +148,7 @@
 #include "vscf_raw_private_key.h"
 #include "vscf_raw_public_key.h"
 #include "vscf_recipient_cipher.h"
+#include "vscf_round5.h"
 #include "vscf_rsa.h"
 #include "vscf_rsa_private_key.h"
 #include "vscf_rsa_public_key.h"

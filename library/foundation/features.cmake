@@ -113,6 +113,7 @@ option(VSCF_KEY_ASN1_DESERIALIZER "Enable implementation 'key asn1 deserializer'
 option(VSCF_ED25519 "Enable implementation 'ed25519'." ON)
 option(VSCF_CURVE25519 "Enable implementation 'curve25519'." ON)
 option(VSCF_FALCON "Enable implementation 'falcon'." ON)
+option(VSCF_ROUND5 "Enable implementation 'round5'." ON)
 option(VSCF_SIMPLE_ALG_INFO "Enable implementation 'simple alg info'." ON)
 option(VSCF_HASH_BASED_ALG_INFO "Enable implementation 'hash based alg info'." ON)
 option(VSCF_CIPHER_ALG_INFO "Enable implementation 'cipher alg info'." ON)
@@ -233,6 +234,7 @@ mark_as_advanced(
         VSCF_ED25519
         VSCF_CURVE25519
         VSCF_FALCON
+        VSCF_ROUND5
         VSCF_SIMPLE_ALG_INFO
         VSCF_HASH_BASED_ALG_INFO
         VSCF_CIPHER_ALG_INFO
@@ -1658,6 +1660,42 @@ if(VSCF_FALCON AND NOT VSCF_SIMPLE_ALG_INFO)
     message("-- error --")
     message("--")
     message("Feature VSCF_FALCON depends on the feature:")
+    message("     VSCF_SIMPLE_ALG_INFO - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_ROUND5 AND NOT ROUND5_LIBRARY)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_ROUND5 depends on the feature:")
+    message("     ROUND5_LIBRARY - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_ROUND5 AND NOT VSCF_PUBLIC_KEY)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_ROUND5 depends on the feature:")
+    message("     VSCF_PUBLIC_KEY - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_ROUND5 AND NOT VSCF_PRIVATE_KEY)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_ROUND5 depends on the feature:")
+    message("     VSCF_PRIVATE_KEY - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_ROUND5 AND NOT VSCF_SIMPLE_ALG_INFO)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_ROUND5 depends on the feature:")
     message("     VSCF_SIMPLE_ALG_INFO - which is disabled.")
     message("--")
     message(FATAL_ERROR)

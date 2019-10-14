@@ -120,6 +120,7 @@ target_compile_definitions(foundation
             "VSCF_ED25519=$<BOOL:${VSCF_ED25519}>"
             "VSCF_CURVE25519=$<BOOL:${VSCF_CURVE25519}>"
             "VSCF_FALCON=$<BOOL:${VSCF_FALCON}>"
+            "VSCF_ROUND5=$<BOOL:${VSCF_ROUND5}>"
             "VSCF_SIMPLE_ALG_INFO=$<BOOL:${VSCF_SIMPLE_ALG_INFO}>"
             "VSCF_HASH_BASED_ALG_INFO=$<BOOL:${VSCF_HASH_BASED_ALG_INFO}>"
             "VSCF_CIPHER_ALG_INFO=$<BOOL:${VSCF_CIPHER_ALG_INFO}>"

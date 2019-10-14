@@ -916,6 +916,7 @@ vscf_alg_info_der_serializer_serialize_inplace(vscf_alg_info_der_serializer_t *s
         return vscf_alg_info_der_serializer_serialize_pbes2_alg_info(self, alg_info);
 
     case vscf_alg_id_FALCON:
+    case vscf_alg_id_ROUND5:
     case vscf_alg_id_NONE:
         VSCF_ASSERT(0 && "Unhandled alg id.");
         return 0;
@@ -974,6 +975,7 @@ vscf_alg_info_der_serializer_serialized_len(const vscf_alg_info_der_serializer_t
         return vscf_alg_info_der_serializer_serialized_pbes2_alg_info_len(self, alg_info);
 
     case vscf_alg_id_FALCON:
+    case vscf_alg_id_ROUND5:
     case vscf_alg_id_NONE:
         VSCF_ASSERT(0 && "Unhandled alg id.");
         break;

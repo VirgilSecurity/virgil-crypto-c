@@ -106,6 +106,7 @@ const initKeyAsn1Deserializer = require('./KeyAsn1Deserializer');
 const initEd25519 = require('./Ed25519');
 const initCurve25519 = require('./Curve25519');
 const initFalcon = require('./Falcon');
+const initRound5 = require('./Round5');
 const initSimpleAlgInfo = require('./SimpleAlgInfo');
 const initHashBasedAlgInfo = require('./HashBasedAlgInfo');
 const initCipherAlgInfo = require('./CipherAlgInfo');
@@ -191,6 +192,7 @@ const initProject = () => {
             modules.Ed25519 = initEd25519(foundationModule, modules);
             modules.Curve25519 = initCurve25519(foundationModule, modules);
             modules.Falcon = initFalcon(foundationModule, modules);
+            modules.Round5 = initRound5(foundationModule, modules);
             modules.SimpleAlgInfo = initSimpleAlgInfo(foundationModule, modules);
             modules.HashBasedAlgInfo = initHashBasedAlgInfo(foundationModule, modules);
             modules.CipherAlgInfo = initCipherAlgInfo(foundationModule, modules);

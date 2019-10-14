@@ -3146,6 +3146,11 @@ public class FoundationJNI {
     public native void falcon_setRandom(long cCtx, Random random);
 
     /*
+    * Setup predefined values to the uninitialized class dependencies.
+    */
+    public native void falcon_setupDefaults(long cCtx) throws FoundationException;
+
+    /*
     * Generate new private key.
     * Note, this operation might be slow.
     */
@@ -3243,6 +3248,110 @@ public class FoundationJNI {
     * Verify data digest with a given public key and signature.
     */
     public native boolean falcon_verifyHash(long cCtx, PublicKey publicKey, AlgId hashId, byte[] digest, byte[] signature);
+
+    /*
+    * Generate new private key.
+    * Note, this operation might be slow.
+    */
+    public native PrivateKey round5_generateKey(long cCtx) throws FoundationException;
+
+    public native long round5_new();
+
+    public native void round5_close(long cCtx);
+
+    /*
+    * Provide algorithm identificator.
+    */
+    public native AlgId round5_algId(long cCtx);
+
+    /*
+    * Produce object with algorithm information and configuration parameters.
+    */
+    public native AlgInfo round5_produceAlgInfo(long cCtx);
+
+    /*
+    * Restore algorithm configuration from the given object.
+    */
+    public native void round5_restoreAlgInfo(long cCtx, AlgInfo algInfo) throws FoundationException;
+
+    /*
+    * Generate ephemeral private key of the same type.
+    * Note, this operation might be slow.
+    */
+    public native PrivateKey round5_generateEphemeralKey(long cCtx, Key key) throws FoundationException;
+
+    /*
+    * Import public key from the raw binary format.
+    *
+    * Return public key that is adopted and optimized to be used
+    * with this particular algorithm.
+    *
+    * Binary format must be defined in the key specification.
+    * For instance, RSA public key must be imported from the format defined in
+    * RFC 3447 Appendix A.1.1.
+    */
+    public native PublicKey round5_importPublicKey(long cCtx, RawPublicKey rawKey) throws FoundationException;
+
+    /*
+    * Export public key to the raw binary format.
+    *
+    * Binary format must be defined in the key specification.
+    * For instance, RSA public key must be exported in format defined in
+    * RFC 3447 Appendix A.1.1.
+    */
+    public native RawPublicKey round5_exportPublicKey(long cCtx, PublicKey publicKey) throws FoundationException;
+
+    /*
+    * Import private key from the raw binary format.
+    *
+    * Return private key that is adopted and optimized to be used
+    * with this particular algorithm.
+    *
+    * Binary format must be defined in the key specification.
+    * For instance, RSA private key must be imported from the format defined in
+    * RFC 3447 Appendix A.1.2.
+    */
+    public native PrivateKey round5_importPrivateKey(long cCtx, RawPrivateKey rawKey) throws FoundationException;
+
+    /*
+    * Export private key in the raw binary format.
+    *
+    * Binary format must be defined in the key specification.
+    * For instance, RSA private key must be exported in format defined in
+    * RFC 3447 Appendix A.1.2.
+    */
+    public native RawPrivateKey round5_exportPrivateKey(long cCtx, PrivateKey privateKey) throws FoundationException;
+
+    /*
+    * Check if algorithm can encrypt data with a given key.
+    */
+    public native boolean round5_canEncrypt(long cCtx, PublicKey publicKey, int dataLen);
+
+    /*
+    * Calculate required buffer length to hold the encrypted data.
+    */
+    public native int round5_encryptedLen(long cCtx, PublicKey publicKey, int dataLen);
+
+    /*
+    * Encrypt data with a given public key.
+    */
+    public native byte[] round5_encrypt(long cCtx, PublicKey publicKey, byte[] data) throws FoundationException;
+
+    /*
+    * Check if algorithm can decrypt data with a given key.
+    * However, success result of decryption is not guaranteed.
+    */
+    public native boolean round5_canDecrypt(long cCtx, PrivateKey privateKey, int dataLen);
+
+    /*
+    * Calculate required buffer length to hold the decrypted data.
+    */
+    public native int round5_decryptedLen(long cCtx, PrivateKey privateKey, int dataLen);
+
+    /*
+    * Decrypt given data.
+    */
+    public native byte[] round5_decrypt(long cCtx, PrivateKey privateKey, byte[] data) throws FoundationException;
 
     public native long simpleAlgInfo_new();
 

@@ -47,17 +47,17 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  This module contains 'falcon' implementation.
+//  This module contains 'round5' implementation.
 // --------------------------------------------------------------------------
 
-#ifndef VSCF_FALCON_H_INCLUDED
-#define VSCF_FALCON_H_INCLUDED
+#ifndef VSCF_ROUND5_H_INCLUDED
+#define VSCF_ROUND5_H_INCLUDED
 
 #include "vscf_library.h"
 #include "vscf_error.h"
 #include "vscf_impl.h"
-#include "vscf_status.h"
 #include "vscf_alg_id.h"
+#include "vscf_status.h"
 #include "vscf_raw_public_key.h"
 #include "vscf_raw_private_key.h"
 
@@ -93,141 +93,116 @@ enum {
     //
     //  Defines whether a public key can be imported or not.
     //
-    vscf_falcon_CAN_IMPORT_PUBLIC_KEY = true,
+    vscf_round5_CAN_IMPORT_PUBLIC_KEY = true,
     //
     //  Define whether a public key can be exported or not.
     //
-    vscf_falcon_CAN_EXPORT_PUBLIC_KEY = true,
+    vscf_round5_CAN_EXPORT_PUBLIC_KEY = true,
     //
     //  Define whether a private key can be imported or not.
     //
-    vscf_falcon_CAN_IMPORT_PRIVATE_KEY = true,
+    vscf_round5_CAN_IMPORT_PRIVATE_KEY = true,
     //
     //  Define whether a private key can be exported or not.
     //
-    vscf_falcon_CAN_EXPORT_PRIVATE_KEY = true
+    vscf_round5_CAN_EXPORT_PRIVATE_KEY = true
 };
 
 //
 //  Handles implementation details.
 //
-typedef struct vscf_falcon_t vscf_falcon_t;
+typedef struct vscf_round5_t vscf_round5_t;
 
 //
-//  Return size of 'vscf_falcon_t' type.
+//  Return size of 'vscf_round5_t' type.
 //
 VSCF_PUBLIC size_t
-vscf_falcon_impl_size(void);
+vscf_round5_impl_size(void);
 
 //
 //  Cast to the 'vscf_impl_t' type.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_falcon_impl(vscf_falcon_t *self);
+vscf_round5_impl(vscf_round5_t *self);
 
 //
 //  Cast to the const 'vscf_impl_t' type.
 //
 VSCF_PUBLIC const vscf_impl_t *
-vscf_falcon_impl_const(const vscf_falcon_t *self);
+vscf_round5_impl_const(const vscf_round5_t *self);
 
 //
 //  Perform initialization of preallocated implementation context.
 //
 VSCF_PUBLIC void
-vscf_falcon_init(vscf_falcon_t *self);
+vscf_round5_init(vscf_round5_t *self);
 
 //
 //  Cleanup implementation context and release dependencies.
-//  This is a reverse action of the function 'vscf_falcon_init()'.
+//  This is a reverse action of the function 'vscf_round5_init()'.
 //
 VSCF_PUBLIC void
-vscf_falcon_cleanup(vscf_falcon_t *self);
+vscf_round5_cleanup(vscf_round5_t *self);
 
 //
 //  Allocate implementation context and perform it's initialization.
 //  Postcondition: check memory allocation result.
 //
-VSCF_PUBLIC vscf_falcon_t *
-vscf_falcon_new(void);
+VSCF_PUBLIC vscf_round5_t *
+vscf_round5_new(void);
 
 //
 //  Delete given implementation context and it's dependencies.
-//  This is a reverse action of the function 'vscf_falcon_new()'.
+//  This is a reverse action of the function 'vscf_round5_new()'.
 //
 VSCF_PUBLIC void
-vscf_falcon_delete(vscf_falcon_t *self);
+vscf_round5_delete(vscf_round5_t *self);
 
 //
 //  Destroy given implementation context and it's dependencies.
-//  This is a reverse action of the function 'vscf_falcon_new()'.
+//  This is a reverse action of the function 'vscf_round5_new()'.
 //  Given reference is nullified.
 //
 VSCF_PUBLIC void
-vscf_falcon_destroy(vscf_falcon_t **self_ref);
+vscf_round5_destroy(vscf_round5_t **self_ref);
 
 //
 //  Copy given implementation context by increasing reference counter.
 //
-VSCF_PUBLIC vscf_falcon_t *
-vscf_falcon_shallow_copy(vscf_falcon_t *self);
-
-//
-//  Setup dependency to the interface 'random' with shared ownership.
-//
-VSCF_PUBLIC void
-vscf_falcon_use_random(vscf_falcon_t *self, vscf_impl_t *random);
-
-//
-//  Setup dependency to the interface 'random' and transfer ownership.
-//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
-//
-VSCF_PUBLIC void
-vscf_falcon_take_random(vscf_falcon_t *self, vscf_impl_t *random);
-
-//
-//  Release dependency to the interface 'random'.
-//
-VSCF_PUBLIC void
-vscf_falcon_release_random(vscf_falcon_t *self);
-
-//
-//  Setup predefined values to the uninitialized class dependencies.
-//
-VSCF_PUBLIC vscf_status_t
-vscf_falcon_setup_defaults(vscf_falcon_t *self) VSCF_NODISCARD;
+VSCF_PUBLIC vscf_round5_t *
+vscf_round5_shallow_copy(vscf_round5_t *self);
 
 //
 //  Generate new private key.
 //  Note, this operation might be slow.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_falcon_generate_key(const vscf_falcon_t *self, vscf_error_t *error);
+vscf_round5_generate_key(const vscf_round5_t *self, vscf_error_t *error);
 
 //
 //  Provide algorithm identificator.
 //
 VSCF_PUBLIC vscf_alg_id_t
-vscf_falcon_alg_id(const vscf_falcon_t *self);
+vscf_round5_alg_id(const vscf_round5_t *self);
 
 //
 //  Produce object with algorithm information and configuration parameters.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_falcon_produce_alg_info(const vscf_falcon_t *self);
+vscf_round5_produce_alg_info(const vscf_round5_t *self);
 
 //
 //  Restore algorithm configuration from the given object.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_falcon_restore_alg_info(vscf_falcon_t *self, const vscf_impl_t *alg_info) VSCF_NODISCARD;
+vscf_round5_restore_alg_info(vscf_round5_t *self, const vscf_impl_t *alg_info) VSCF_NODISCARD;
 
 //
 //  Generate ephemeral private key of the same type.
 //  Note, this operation might be slow.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_falcon_generate_ephemeral_key(const vscf_falcon_t *self, const vscf_impl_t *key, vscf_error_t *error);
+vscf_round5_generate_ephemeral_key(const vscf_round5_t *self, const vscf_impl_t *key, vscf_error_t *error);
 
 //
 //  Import public key from the raw binary format.
@@ -240,7 +215,7 @@ vscf_falcon_generate_ephemeral_key(const vscf_falcon_t *self, const vscf_impl_t 
 //  RFC 3447 Appendix A.1.1.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_falcon_import_public_key(const vscf_falcon_t *self, const vscf_raw_public_key_t *raw_key, vscf_error_t *error);
+vscf_round5_import_public_key(const vscf_round5_t *self, const vscf_raw_public_key_t *raw_key, vscf_error_t *error);
 
 //
 //  Export public key to the raw binary format.
@@ -250,7 +225,7 @@ vscf_falcon_import_public_key(const vscf_falcon_t *self, const vscf_raw_public_k
 //  RFC 3447 Appendix A.1.1.
 //
 VSCF_PUBLIC vscf_raw_public_key_t *
-vscf_falcon_export_public_key(const vscf_falcon_t *self, const vscf_impl_t *public_key, vscf_error_t *error);
+vscf_round5_export_public_key(const vscf_round5_t *self, const vscf_impl_t *public_key, vscf_error_t *error);
 
 //
 //  Import private key from the raw binary format.
@@ -263,7 +238,7 @@ vscf_falcon_export_public_key(const vscf_falcon_t *self, const vscf_impl_t *publ
 //  RFC 3447 Appendix A.1.2.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_falcon_import_private_key(const vscf_falcon_t *self, const vscf_raw_private_key_t *raw_key, vscf_error_t *error);
+vscf_round5_import_private_key(const vscf_round5_t *self, const vscf_raw_private_key_t *raw_key, vscf_error_t *error);
 
 //
 //  Export private key in the raw binary format.
@@ -273,40 +248,46 @@ vscf_falcon_import_private_key(const vscf_falcon_t *self, const vscf_raw_private
 //  RFC 3447 Appendix A.1.2.
 //
 VSCF_PUBLIC vscf_raw_private_key_t *
-vscf_falcon_export_private_key(const vscf_falcon_t *self, const vscf_impl_t *private_key, vscf_error_t *error);
+vscf_round5_export_private_key(const vscf_round5_t *self, const vscf_impl_t *private_key, vscf_error_t *error);
 
 //
-//  Check if algorithm can sign data digest with a given key.
+//  Check if algorithm can encrypt data with a given key.
 //
 VSCF_PUBLIC bool
-vscf_falcon_can_sign(const vscf_falcon_t *self, const vscf_impl_t *private_key);
+vscf_round5_can_encrypt(const vscf_round5_t *self, const vscf_impl_t *public_key, size_t data_len);
 
 //
-//  Return length in bytes required to hold signature.
-//  Return zero if a given private key can not produce signatures.
+//  Calculate required buffer length to hold the encrypted data.
 //
 VSCF_PUBLIC size_t
-vscf_falcon_signature_len(const vscf_falcon_t *self, const vscf_impl_t *private_key);
+vscf_round5_encrypted_len(const vscf_round5_t *self, const vscf_impl_t *public_key, size_t data_len);
 
 //
-//  Sign data digest with a given private key.
+//  Encrypt data with a given public key.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_falcon_sign_hash(const vscf_falcon_t *self, const vscf_impl_t *private_key, vscf_alg_id_t hash_id,
-        vsc_data_t digest, vsc_buffer_t *signature) VSCF_NODISCARD;
+vscf_round5_encrypt(const vscf_round5_t *self, const vscf_impl_t *public_key, vsc_data_t data,
+        vsc_buffer_t *out) VSCF_NODISCARD;
 
 //
-//  Check if algorithm can verify data digest with a given key.
+//  Check if algorithm can decrypt data with a given key.
+//  However, success result of decryption is not guaranteed.
 //
 VSCF_PUBLIC bool
-vscf_falcon_can_verify(const vscf_falcon_t *self, const vscf_impl_t *public_key);
+vscf_round5_can_decrypt(const vscf_round5_t *self, const vscf_impl_t *private_key, size_t data_len);
 
 //
-//  Verify data digest with a given public key and signature.
+//  Calculate required buffer length to hold the decrypted data.
 //
-VSCF_PUBLIC bool
-vscf_falcon_verify_hash(const vscf_falcon_t *self, const vscf_impl_t *public_key, vscf_alg_id_t hash_id,
-        vsc_data_t digest, vsc_data_t signature);
+VSCF_PUBLIC size_t
+vscf_round5_decrypted_len(const vscf_round5_t *self, const vscf_impl_t *private_key, size_t data_len);
+
+//
+//  Decrypt given data.
+//
+VSCF_PUBLIC vscf_status_t
+vscf_round5_decrypt(const vscf_round5_t *self, const vscf_impl_t *private_key, vsc_data_t data,
+        vsc_buffer_t *out) VSCF_NODISCARD;
 
 
 // --------------------------------------------------------------------------
@@ -322,5 +303,5 @@ vscf_falcon_verify_hash(const vscf_falcon_t *self, const vscf_impl_t *public_key
 
 
 //  @footer
-#endif // VSCF_FALCON_H_INCLUDED
+#endif // VSCF_ROUND5_H_INCLUDED
 //  @end

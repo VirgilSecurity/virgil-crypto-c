@@ -105,6 +105,7 @@ _add_test (test_post_quantum_library_keccak)
 _add_test (test_post_quantum_library_round5)
 _add_test (test_post_quantum_library_falcon)
 _add_test (test_falcon)
+_add_test (test_round5)
 
 # ---------------------------------------------------------------------------
 #   Multi-threading tests

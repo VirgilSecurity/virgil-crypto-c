@@ -47,11 +47,19 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Define implemented algorithm identificator.
+//  Types of the 'round5' implementation.
+//  This types SHOULD NOT be used directly.
+//  The only purpose of including this module is to place implementation
+//  object in the stack memory.
 // --------------------------------------------------------------------------
 
-#ifndef VSCF_ALG_ID_H_INCLUDED
-#define VSCF_ALG_ID_H_INCLUDED
+#ifndef VSCF_ROUND5_DEFS_H_INCLUDED
+#define VSCF_ROUND5_DEFS_H_INCLUDED
+
+#include "vscf_library.h"
+#include "vscf_impl_private.h"
+#include "vscf_round5.h"
+#include "vscf_atomic.h"
 
 // clang-format on
 //  @end
@@ -69,31 +77,18 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Define implemented algorithm identificator.
+//  Handles implementation details.
 //
-enum vscf_alg_id_t {
-    vscf_alg_id_NONE,
-    vscf_alg_id_SHA224,
-    vscf_alg_id_SHA256,
-    vscf_alg_id_SHA384,
-    vscf_alg_id_SHA512,
-    vscf_alg_id_KDF1,
-    vscf_alg_id_KDF2,
-    vscf_alg_id_RSA,
-    vscf_alg_id_ECC,
-    vscf_alg_id_ED25519,
-    vscf_alg_id_CURVE25519,
-    vscf_alg_id_SECP256R1,
-    vscf_alg_id_AES256_GCM,
-    vscf_alg_id_AES256_CBC,
-    vscf_alg_id_HMAC,
-    vscf_alg_id_HKDF,
-    vscf_alg_id_PKCS5_PBKDF2,
-    vscf_alg_id_PKCS5_PBES2,
-    vscf_alg_id_FALCON,
-    vscf_alg_id_ROUND5
+struct vscf_round5_t {
+    //
+    //  Compile-time known information about this implementation.
+    //
+    const vscf_impl_info_t *info;
+    //
+    //  Reference counter.
+    //
+    VSCF_ATOMIC size_t refcnt;
 };
-typedef enum vscf_alg_id_t vscf_alg_id_t;
 
 
 // --------------------------------------------------------------------------
@@ -109,5 +104,5 @@ typedef enum vscf_alg_id_t vscf_alg_id_t;
 
 
 //  @footer
-#endif // VSCF_ALG_ID_H_INCLUDED
+#endif // VSCF_ROUND5_DEFS_H_INCLUDED
 //  @end

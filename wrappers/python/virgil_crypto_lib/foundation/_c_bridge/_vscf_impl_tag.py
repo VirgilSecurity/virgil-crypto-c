@@ -66,6 +66,7 @@ from virgil_crypto_lib.foundation._c_bridge import vscf_pkcs5_pbkdf2_t
 from virgil_crypto_lib.foundation._c_bridge import vscf_pkcs8_serializer_t
 from virgil_crypto_lib.foundation._c_bridge import vscf_raw_private_key_t
 from virgil_crypto_lib.foundation._c_bridge import vscf_raw_public_key_t
+from virgil_crypto_lib.foundation._c_bridge import vscf_round5_t
 from virgil_crypto_lib.foundation._c_bridge import vscf_rsa_t
 from virgil_crypto_lib.foundation._c_bridge import vscf_rsa_private_key_t
 from virgil_crypto_lib.foundation._c_bridge import vscf_rsa_public_key_t
@@ -120,17 +121,18 @@ class VscfImplTag(object):
             30: ["Pkcs8Serializer", vscf_pkcs8_serializer_t],
             31: ["RawPrivateKey", vscf_raw_private_key_t],
             32: ["RawPublicKey", vscf_raw_public_key_t],
-            33: ["Rsa", vscf_rsa_t],
-            34: ["RsaPrivateKey", vscf_rsa_private_key_t],
-            35: ["RsaPublicKey", vscf_rsa_public_key_t],
-            36: ["SaltedKdfAlgInfo", vscf_salted_kdf_alg_info_t],
-            37: ["Sec1Serializer", vscf_sec1_serializer_t],
-            38: ["SeedEntropySource", vscf_seed_entropy_source_t],
-            39: ["Sha224", vscf_sha224_t],
-            40: ["Sha256", vscf_sha256_t],
-            41: ["Sha384", vscf_sha384_t],
-            42: ["Sha512", vscf_sha512_t],
-            43: ["SimpleAlgInfo", vscf_simple_alg_info_t]
+            33: ["Round5", vscf_round5_t],
+            34: ["Rsa", vscf_rsa_t],
+            35: ["RsaPrivateKey", vscf_rsa_private_key_t],
+            36: ["RsaPublicKey", vscf_rsa_public_key_t],
+            37: ["SaltedKdfAlgInfo", vscf_salted_kdf_alg_info_t],
+            38: ["Sec1Serializer", vscf_sec1_serializer_t],
+            39: ["SeedEntropySource", vscf_seed_entropy_source_t],
+            40: ["Sha224", vscf_sha224_t],
+            41: ["Sha256", vscf_sha256_t],
+            42: ["Sha384", vscf_sha384_t],
+            43: ["Sha512", vscf_sha512_t],
+            44: ["SimpleAlgInfo", vscf_simple_alg_info_t]
         }
         tag = cls.vscf_impl_tag(impl)
 

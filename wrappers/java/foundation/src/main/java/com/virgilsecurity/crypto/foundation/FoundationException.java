@@ -109,6 +109,12 @@ public class FoundationException extends RuntimeException {
 
     public static final int ERROR_BAD_FALCON_PRIVATE_KEY = -228;
 
+    public static final int ERROR_ROUND5 = -229;
+
+    public static final int ERROR_BAD_ROUND5_PUBLIC_KEY = -230;
+
+    public static final int ERROR_BAD_ROUND5_PRIVATE_KEY = -231;
+
     public static final int ERROR_NO_MESSAGE_INFO = -301;
 
     public static final int ERROR_BAD_MESSAGE_INFO = -302;
@@ -247,6 +253,12 @@ public class FoundationException extends RuntimeException {
             return "Post-quantum Falcon-Sign public key is corrupted.";
         case ERROR_BAD_FALCON_PRIVATE_KEY:
             return "Post-quantum Falcon-Sign private key is corrupted.";
+        case ERROR_ROUND5:
+            return "Generic Round5 library error.";
+        case ERROR_BAD_ROUND5_PUBLIC_KEY:
+            return "Post-quantum NIST Round5 public key is corrupted.";
+        case ERROR_BAD_ROUND5_PRIVATE_KEY:
+            return "Post-quantum NIST Round5 private key is corrupted.";
         case ERROR_NO_MESSAGE_INFO:
             return "Decryption failed, because message info was not given explicitly, and was not part of an encrypted message.";
         case ERROR_BAD_MESSAGE_INFO:
