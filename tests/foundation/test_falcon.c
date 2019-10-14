@@ -49,7 +49,7 @@
 #include <falcon/falcon.h>
 
 void
-test__generate_key__512_degree__success(void) {
+test__generate_key__512_degree_with_fake_rng__success(void) {
 
     vscf_fake_random_t *fake_random = vscf_fake_random_new();
     vscf_fake_random_setup_source_data(fake_random, test_data_falcon_RNG_SEED);
@@ -74,6 +74,22 @@ test__generate_key__512_degree__success(void) {
 
     vscf_raw_public_key_destroy(&raw_public_key);
     vscf_raw_private_key_destroy(&raw_private_key);
+    vscf_impl_destroy(&private_key);
+    vscf_falcon_destroy(&falcon);
+}
+
+void
+test__generate_key__512_degree_with_default_rng__success(void) {
+
+    vscf_falcon_t *falcon = vscf_falcon_new();
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_falcon_setup_defaults(falcon));
+
+    vscf_error_t error;
+    vscf_error_reset(&error);
+
+    vscf_impl_t *private_key = vscf_falcon_generate_key(falcon, &error);
+    TEST_ASSERT_FALSE(vscf_error_has_error(&error));
+
     vscf_impl_destroy(&private_key);
     vscf_falcon_destroy(&falcon);
 }
@@ -166,7 +182,8 @@ main(void) {
     UNITY_BEGIN();
 
 #if TEST_DEPENDENCIES_AVAILABLE
-    RUN_TEST(test__generate_key__512_degree__success);
+    RUN_TEST(test__generate_key__512_degree_with_fake_rng__success);
+    RUN_TEST(test__generate_key__512_degree_with_default_rng__success);
     RUN_TEST(test__sign_hash__sha512_digest_with_512_degree_key__produce_const_signature);
     RUN_TEST(test__verify_hash__sha512_digest_and_const_signature_with_512_degree_key__success);
 #else

@@ -457,6 +457,15 @@ const initFalcon = (Module, modules) => {
         }
 
         /**
+         * Setup predefined values to the uninitialized class dependencies.
+         */
+        setupDefaults() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            const proxyResult = Module._vscf_falcon_setup_defaults(this.ctxPtr);
+            modules.FoundationError.handleStatusCode(proxyResult);
+        }
+
+        /**
          * Generate new private key.
          * Note, this operation might be slow.
          */

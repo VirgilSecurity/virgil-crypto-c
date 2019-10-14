@@ -184,6 +184,11 @@ class Falcon(Alg, KeyAlg, KeySigner):
         result = self._lib_vscf_falcon.vscf_falcon_verify_hash(self.ctx, public_key.c_impl, hash_id, d_digest.data, d_signature.data)
         return result
 
+    def setup_defaults(self):
+        """Setup predefined values to the uninitialized class dependencies."""
+        status = self._lib_vscf_falcon.vscf_falcon_setup_defaults(self.ctx)
+        VscfStatus.handle_status(status)
+
     def generate_key(self):
         """Generate new private key.
         Note, this operation might be slow."""

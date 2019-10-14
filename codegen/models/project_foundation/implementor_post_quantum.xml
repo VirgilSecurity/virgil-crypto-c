@@ -30,6 +30,12 @@
 
         <dependency name="random" interface="random"/>
 
+        <method name="setup defaults" declaration="public">
+            Setup predefined values to the uninitialized class dependencies.
+
+            <return enum="status"/>
+        </method>
+
         <method name="generate key" declaration="public" is_const="1">
             Generate new private key.
             Note, this operation might be slow.

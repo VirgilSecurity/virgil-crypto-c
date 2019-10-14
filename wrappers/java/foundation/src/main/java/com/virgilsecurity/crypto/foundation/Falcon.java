@@ -72,6 +72,13 @@ public class Falcon implements AutoCloseable, Alg, KeyAlg, KeySigner {
     }
 
     /*
+    * Setup predefined values to the uninitialized class dependencies.
+    */
+    public void setupDefaults() throws FoundationException {
+        FoundationJNI.INSTANCE.falcon_setupDefaults(this.cCtx);
+    }
+
+    /*
     * Generate new private key.
     * Note, this operation might be slow.
     */

@@ -198,6 +198,13 @@ class VscfFalcon(object):
         vscf_falcon_verify_hash.restype = c_bool
         return vscf_falcon_verify_hash(ctx, public_key, hash_id, digest, signature)
 
+    def vscf_falcon_setup_defaults(self, ctx):
+        """Setup predefined values to the uninitialized class dependencies."""
+        vscf_falcon_setup_defaults = self._lib.vscf_falcon_setup_defaults
+        vscf_falcon_setup_defaults.argtypes = [POINTER(vscf_falcon_t)]
+        vscf_falcon_setup_defaults.restype = c_int
+        return vscf_falcon_setup_defaults(ctx)
+
     def vscf_falcon_generate_key(self, ctx, error):
         """Generate new private key.
         Note, this operation might be slow."""
