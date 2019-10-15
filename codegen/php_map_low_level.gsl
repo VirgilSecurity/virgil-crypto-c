@@ -131,23 +131,37 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
                 new arg_info to wrapper
 
                     my._num_arguments = 1 # ctx
+                    my._zend_arg_type_info = format_left("ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)", 0)
+
+                    if function.is_static = 1
+                        my._num_arguments = 0
+                        my._zend_arg_type_info = ""
+                    endif
 
                     for function.argument as argument0 where ! string_in (argument0.type0, "error, buffer")
                         my._num_arguments = my._num_arguments + 1
+                        #ZEND_ARG_TYPE_INFO(pass_by_ref, name, type_hint, allow_null)
+                        my._zend_arg_type_info += format_left("ZEND_ARG_TYPE_INFO(0, in_$(argument0.name:), $(argument0.zend_type:), 0)", 0)
                     endfor
+
+                    my._r = format_left(my._zend_arg_type_info, 7)
 
                     my._c = php_format_extension_comment("Wrap method: $(function.name0:)")
 
                     my._h = format_left("\
                         ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
-                                arginfo_$(function.name0:)_php, 
-                                0 /*return_reference*/,
-                                $(my._num_arguments:) /*required_num_args*/,
-                                $(function.return_zend_type:) /*type*/,
-                                0 /*allow_null*/)
+                            arginfo_$(function.name0:)_php, 
+                            0 /*return_reference*/,
+                            $(my._num_arguments:) /*required_num_args*/,
+                            $(function.return_zend_type:) /*type*/,
+                            0 /*allow_null*/)
+
+                            $(my._r:)
                         ZEND_END_ARG_INFO()
                     ", 0)
-                    . = my._c + my._h
+
+                    my._res = my._c + my._h
+                    . = format_left(my._res, 0)
                 endnew
 
                 new header to wrapper
@@ -255,8 +269,6 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
                     . = format_left(my._res, 1)
                 endnew
 
-                
-
                 my._res = ""
 
                 for function.return_argument as return_argument0
@@ -280,6 +292,7 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
                             elsif return_argument0.length_type = "method"
                                 my._l = "$(return_argument0.length:)($(function.entity0:))"
                             elsif return_argument0.length_type = "method_proxy"
+                                echo_debug_item()
                                 my._l = "$(return_argument0.length:)($(function.entity0:), $(return_argument0.proxy:))"
                             elsif return_argument0.length_type = "argument"
                                 my._l = "$(return_argument0.length:c)"
@@ -305,6 +318,7 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
                 endif
 
                 new call_main_function to wrapper
+
                     my._c = php_format_extension_comment("Call main function")
 
                     my._data_string_proxy = 0
@@ -313,6 +327,12 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
                     my._args = "("
 
                     my._e = 0
+                    my._r = ""
+
+                    if function.return_self = 1
+                        echo_debug_item(function)
+                        echo_fatal("adasdasdad", my)
+                    endif
 
                     if function.is_static = 0
                         my._args += "$(function.entity0)"
@@ -323,7 +343,13 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
                     my._access_const = ""
                     my._access_shallow_copy = ""
 
+                    my._rs = ""
+
                     for function.return_argument as return_argument0 where return_argument0.type <> "buffer"
+
+                        if defined (return_argument0.class_name0) & (return_argument0.class_name0 = my.in_module.name)
+                            my._rs = "_rs"
+                        endif
 
                         if defined(return_argument0.access)
                             my._access = return_argument0.access
@@ -355,7 +381,7 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
                                 ", 0)
                         else 
                             my._return += format_left("\
-                                $(return_argument0.type_t:) $(my._pointer:)$(return_argument0.name:) = 
+                                $(return_argument0.type_t:) $(my._pointer:)$(return_argument0.name:)$(my._rs) = 
                                 ", 0)
                         endif
                     endfor
@@ -378,7 +404,7 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
                         endif
 
                         if argument0.type0 = "boolean"
-                            my._bool_mapper += format_left("$(argument0.type_c:) $(argument0.name:) = ($(argument0.type:))in_$(argument0.name:);", 0)
+                            my._bool_mapper += format_left("$(argument0.type_c:) $(argument0.name:) = ($(argument0.type_c:))in_$(argument0.name:);", 0)
                         endif
 
                         if argument0.access = "disown"
@@ -496,7 +522,7 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
                     for function.return_argument as return_argument0
                         if string_in (return_argument0.type0, "interface, class, implementation")
                             my._res += format_left("\
-                                zend_resource *$(return_argument0.name:)_res = zend_register_resource($(return_argument0.name:), le_$(return_argument0.type:)_t);
+                                zend_resource *$(return_argument0.name:)_res = zend_register_resource($(return_argument0.name:)$(my._rs), le_$(return_argument0.type:)_t);
                                 RETVAL_RES($(return_argument0.name:)_res);
                                 ", 0)
                         else
@@ -809,6 +835,7 @@ function php_map_low_level_return (in_method, in_php_project, out_function)
     check_arguments (my, "in_method, in_php_project, out_function", my)
 
     my._prefix = my.out_function.prefix0
+    my._return_self = 0
 
     my._return_type0 = "void"
     my._return_type = ""
@@ -832,7 +859,7 @@ function php_map_low_level_return (in_method, in_php_project, out_function)
                     my._proxy = ""
                     for argument0->length.proxy as proxy0
                         if defined (proxy0.cast) & proxy0.cast = "data_length"
-                            my._proxy += "$(argument0->length->proxy.argument:c).len"
+                            my._proxy += "$(proxy0.argument:c).len"
                         elsif defined (proxy0.argument)
                             my._proxy += "$(proxy0.argument:c)"
                         elsif defined (proxy0.constant)
@@ -951,7 +978,7 @@ function php_map_low_level_return (in_method, in_php_project, out_function)
                     .is_reference = my._is_reference
                     .access = return0.access
                     .shallow_copy = "$(0.type:)_shallow_copy"
-
+                    .class_name0 = "$(return0.class:)"
                 endnew
             endif
         elsif defined (return0.interface)
@@ -968,6 +995,7 @@ function php_map_low_level_return (in_method, in_php_project, out_function)
                 .is_reference = my._is_reference
                 .access = return0.access
                 .shallow_copy = "$(0.type:)_shallow_copy"
+                .class_name0 = "$(return0.interface:)"
             endnew
         elsif defined (return0.impl)
             my._return_type0 = return0.impl
@@ -983,6 +1011,7 @@ function php_map_low_level_return (in_method, in_php_project, out_function)
                 .is_reference = my._is_reference
                 .access = return0.access
                 .shallow_copy = "$(0.type:)_shallow_copy"
+                .class_name0 = "$(return0.impl:)"
             endnew
         endif
 
@@ -1018,6 +1047,7 @@ function php_map_low_level_return (in_method, in_php_project, out_function)
     my.out_function.return_type = my._return_type
     my.out_function.return_zend_type = my._return_zend_type
     my.out_function.throw_exception = my._throw_exception
+    my.out_function.return_self = my._return_self
 
 endfunction
 
