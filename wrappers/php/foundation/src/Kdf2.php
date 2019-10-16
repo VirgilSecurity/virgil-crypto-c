@@ -119,7 +119,7 @@ class Kdf2 implements Alg, Kdf
     */
     public function derive(string $data, int $keyLen): string
     {
-        return vscf_kdf2_derive_php($this->ctx, $data, , $keyLen);
+        return vscf_kdf2_derive_php($this->ctx, $data, $keyLen);
     }
 
     /**

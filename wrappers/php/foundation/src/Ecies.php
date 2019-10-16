@@ -165,7 +165,7 @@ class Ecies
     */
     public function encryptedLen(PublicKey $publicKey, int $dataLen): int
     {
-        return vscf_ecies_encrypted_len_php($this->ctx, $publicKey->getCtx(), , $dataLen);
+        return vscf_ecies_encrypted_len_php($this->ctx, $publicKey->getCtx(), $dataLen);
     }
 
     /**
@@ -178,7 +178,7 @@ class Ecies
     */
     public function encrypt(PublicKey $publicKey, string $data): string
     {
-        return vscf_ecies_encrypt_php($this->ctx, $publicKey->getCtx(), , $data);
+        return vscf_ecies_encrypt_php($this->ctx, $publicKey->getCtx(), $data);
     }
 
     /**
@@ -190,7 +190,7 @@ class Ecies
     */
     public function decryptedLen(PrivateKey $privateKey, int $dataLen): int
     {
-        return vscf_ecies_decrypted_len_php($this->ctx, $privateKey->getCtx(), , $dataLen);
+        return vscf_ecies_decrypted_len_php($this->ctx, $privateKey->getCtx(), $dataLen);
     }
 
     /**
@@ -203,7 +203,7 @@ class Ecies
     */
     public function decrypt(PrivateKey $privateKey, string $data): string
     {
-        return vscf_ecies_decrypt_php($this->ctx, $privateKey->getCtx(), , $data);
+        return vscf_ecies_decrypt_php($this->ctx, $privateKey->getCtx(), $data);
     }
 
     /**

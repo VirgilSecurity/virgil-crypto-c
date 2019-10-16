@@ -119,7 +119,7 @@ class Hkdf implements Alg, Kdf, SaltedKdf
     */
     public function derive(string $data, int $keyLen): string
     {
-        return vscf_hkdf_derive_php($this->ctx, $data, , $keyLen);
+        return vscf_hkdf_derive_php($this->ctx, $data, $keyLen);
     }
 
     /**
@@ -131,7 +131,7 @@ class Hkdf implements Alg, Kdf, SaltedKdf
     */
     public function reset(string $salt, int $iterationCount): void
     {
-        vscf_hkdf_reset_php($this->ctx, $salt, , $iterationCount);
+        vscf_hkdf_reset_php($this->ctx, $salt, $iterationCount);
     }
 
     /**

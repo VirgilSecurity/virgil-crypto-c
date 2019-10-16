@@ -105,7 +105,7 @@ class RecipientCipher
     */
     public function addKeyRecipient(string $recipientId, PublicKey $publicKey): void
     {
-        vscf_recipient_cipher_add_key_recipient_php($this->ctx, $recipientId, , $publicKey->getCtx());
+        vscf_recipient_cipher_add_key_recipient_php($this->ctx, $recipientId, $publicKey->getCtx());
     }
 
     /**
@@ -129,7 +129,7 @@ class RecipientCipher
     */
     public function addSigner(string $signerId, PrivateKey $privateKey): void
     {
-        vscf_recipient_cipher_add_signer_php($this->ctx, $signerId, , $privateKey->getCtx());
+        vscf_recipient_cipher_add_signer_php($this->ctx, $signerId, $privateKey->getCtx());
     }
 
     /**
@@ -257,7 +257,7 @@ class RecipientCipher
     */
     public function startDecryptionWithKey(string $recipientId, PrivateKey $privateKey, string $messageInfo): void
     {
-        vscf_recipient_cipher_start_decryption_with_key_php($this->ctx, $recipientId, , $privateKey->getCtx(), , $messageInfo);
+        vscf_recipient_cipher_start_decryption_with_key_php($this->ctx, $recipientId, $privateKey->getCtx(), $messageInfo);
     }
 
     /**
@@ -275,7 +275,7 @@ class RecipientCipher
     */
     public function startVerifiedDecryptionWithKey(string $recipientId, PrivateKey $privateKey, string $messageInfo, string $messageInfoFooter): void
     {
-        vscf_recipient_cipher_start_verified_decryption_with_key_php($this->ctx, $recipientId, , $privateKey->getCtx(), , $messageInfo, , $messageInfoFooter);
+        vscf_recipient_cipher_start_verified_decryption_with_key_php($this->ctx, $recipientId, $privateKey->getCtx(), $messageInfo, $messageInfoFooter);
     }
 
     /**
@@ -348,7 +348,7 @@ class RecipientCipher
     */
     public function verifySignerInfo(SignerInfo $signerInfo, PublicKey $publicKey): bool
     {
-        return vscf_recipient_cipher_verify_signer_info_php($this->ctx, $signerInfo->getCtx(), , $publicKey->getCtx());
+        return vscf_recipient_cipher_verify_signer_info_php($this->ctx, $signerInfo->getCtx(), $publicKey->getCtx());
     }
 
     /**

@@ -129,7 +129,7 @@ class Pkcs5Pbkdf2 implements Alg, Kdf, SaltedKdf
     */
     public function derive(string $data, int $keyLen): string
     {
-        return vscf_pkcs5_pbkdf2_derive_php($this->ctx, $data, , $keyLen);
+        return vscf_pkcs5_pbkdf2_derive_php($this->ctx, $data, $keyLen);
     }
 
     /**
@@ -141,7 +141,7 @@ class Pkcs5Pbkdf2 implements Alg, Kdf, SaltedKdf
     */
     public function reset(string $salt, int $iterationCount): void
     {
-        vscf_pkcs5_pbkdf2_reset_php($this->ctx, $salt, , $iterationCount);
+        vscf_pkcs5_pbkdf2_reset_php($this->ctx, $salt, $iterationCount);
     }
 
     /**

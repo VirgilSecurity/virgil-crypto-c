@@ -73,7 +73,7 @@ class MessageInfoCustomParams
     */
     public function addInt(string $key, int $value): void
     {
-        vscf_message_info_custom_params_add_int_php($this->ctx, $key, , $value);
+        vscf_message_info_custom_params_add_int_php($this->ctx, $key, $value);
     }
 
     /**
@@ -85,7 +85,7 @@ class MessageInfoCustomParams
     */
     public function addString(string $key, string $value): void
     {
-        vscf_message_info_custom_params_add_string_php($this->ctx, $key, , $value);
+        vscf_message_info_custom_params_add_string_php($this->ctx, $key, $value);
     }
 
     /**
@@ -97,7 +97,7 @@ class MessageInfoCustomParams
     */
     public function addData(string $key, string $value): void
     {
-        vscf_message_info_custom_params_add_data_php($this->ctx, $key, , $value);
+        vscf_message_info_custom_params_add_data_php($this->ctx, $key, $value);
     }
 
     /**

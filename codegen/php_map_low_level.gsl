@@ -86,6 +86,38 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
         php_map_low_level_constructor_destructor (my.in_module, my.out_low_level)
     endif
 
+
+    for my.in_module.dependency as dependency0
+
+        my._dep_name = dependency0.name
+
+        if defined (dependency0.interface)
+            my._dep_class = dependency0.interface
+        elsif defined (dependency0.class)
+            my._dep_class = dependency0.class
+        elsif defined (dependency0.impl)
+            my._dep_class = dependency0.impl
+        else
+            echo_debug_item(dependency0)
+            echo_fatal("Not implemented (AY1000)", my)
+        endif
+
+        new method_temp to my.in_module
+            .name = "use $(my._dep_name:)"
+            .visibility = "public"
+            .scope = "public"
+            .declaration = "public"
+            .is_static = 0
+            .return_type = "void"
+
+            new argument to method_temp
+                .name = my._dep_name
+                .class = my._dep_class
+                .access = "readonly"
+            endnew
+        endnew
+    endfor
+
     for my.in_module.method as method0 where wrapper_should_wrap_method(method0) & method0.name <> "get ctx"
 
         new function to my.out_low_level
@@ -224,7 +256,7 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
                                 my._h3 += format_left("Z_PARAM_BOOL(in_$(argument0.name:))", 1)
                             else
                                 echo_debug_item(argument0)
-                                echo_fatal("Not implemented (701)")
+                                echo_fatal("Not implemented (AL1002)")
                             endif
                     endfor
                     my._h4 = format_left("ZEND_PARSE_PARAMETERS_END();", 0)
@@ -317,6 +349,36 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
                     endnew
                 endif
 
+                ### Argument type mapping --->
+
+                my._mapper = ""
+
+                for function.argument as argument0
+                    if argument0.type = "int"
+                        my._mapper += format_left("$(argument0.type_c) $(argument0.name:) = in_$(argument0.name:);", 0)
+                    endif
+
+                    if argument0.type0 = "enum"
+                        my._mapper += format_left("$(argument0.type_c:) $(argument0.name:) = ($(argument0.type:))in_$(argument0.name:);", 0)
+                    endif
+
+                    if argument0.type0 = "boolean"
+                        my._mapper += format_left("$(argument0.type_c:) $(argument0.name:) = ($(argument0.type_c:))in_$(argument0.name:);", 0)
+                    endif
+                endfor
+
+                if my._mapper <> ""
+                    new argument_type_mapping to wrapper
+                        my._c = php_format_extension_comment("Argument type mapping")
+                        my._res = my._c + my._mapper
+                        . = format_left(my._res, 1)
+                    endnew
+                endif
+
+                ### <--- Argument type mapping
+
+                ### Call main function --->
+
                 new call_main_function to wrapper
 
                     my._c = php_format_extension_comment("Call main function")
@@ -328,11 +390,6 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
 
                     my._e = 0
                     my._r = ""
-
-                    if function.return_self = 1
-                        echo_debug_item(function)
-                        echo_fatal("adasdasdad", my)
-                    endif
 
                     if function.is_static = 0
                         my._args += "$(function.entity0)"
@@ -389,25 +446,9 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
 
                     my._return = format_left(my._return, 0)
 
-                    my._int_mapper = ""
-                    my._enum_mapper = ""
-                    my._bool_mapper = ""
                     my._access_disown = ""
 
                     for function.argument as argument0
-
-                        if argument0.type = "int"
-                            my._int_mapper += format_left("$(argument0.type_c) $(argument0.name:) = in_$(argument0.name:);", 0)
-                        endif
-
-                        if argument0.type0 = "enum"
-                            my._enum_mapper += format_left("$(argument0.type_c:) $(argument0.name:) = ($(argument0.type:))in_$(argument0.name:);", 0)
-                        endif
-
-                        if argument0.type0 = "boolean"
-                            my._bool_mapper += format_left("$(argument0.type_c:) $(argument0.name:) = ($(argument0.type_c:))in_$(argument0.name:);", 0)
-                        endif
-
                         if argument0.access = "disown"
                             my._access_disown += format_left("$(argument0.type_c:) *$(argument0.name:)_tmp = $(argument0.shallow_copy:)($(argument0.name:));", 0)
                         endif
@@ -443,19 +484,6 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
                         my._res = my._access_disown + my._res
                     endif
 
-                    if my._int_mapper <> ""
-                        .debug_me = 1
-                        my._res = my._int_mapper + my._res
-                    endif
-
-                    if my._enum_mapper <> ""
-                        my._res = my._enum_mapper + my._res
-                    endif
-
-                    if my._bool_mapper <> ""
-                        my._res = my._bool_mapper + my._res
-                    endif
-
                     if my._data_string_proxy = 1
                         my._res = my._res + my._data_string_proxy_call
                     endif
@@ -466,6 +494,10 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
 
                     . = format_left(my._res, 1)
                 endnew
+
+                ### <--- Call main function
+
+                ### Handle error --->
 
                 my._res = ""
 
@@ -482,6 +514,10 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
                     endnew
                 endif
 
+                ### <--- Handle error
+
+                ### Correct string length to the actual --->
+
                 my._res = ""
                 
                 for function.return_argument as return_argument0 where return_argument0.type = "buffer"
@@ -496,6 +532,10 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
                         . = format_left(my._res, 1)
                     endnew
                 endif
+
+                ### <--- Correct string length to the actual
+
+                ### Write returned result --->
 
                 my._res = ""
 
@@ -538,17 +578,19 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
                     endfor
                 else
                     echo_debug_item(function)
-                    echo_fatal("Not implemented (12001)", my)
+                    echo_fatal("Not implemented (AO1001)", my)
                 endif
 
                 if my._res <> ""
                     my._c = php_format_extension_comment("Write returned result")
                     my._res = my._c + my._res
+
+                    new write_returned_result to wrapper
+                        . = format_left(my._res, 1)
+                    endnew
                 endif
 
-                new write_returned_result to wrapper
-                    . = format_left(my._res, 1)
-                endnew
+                ### <--- Write returned result
 
                 my._fail = ""
                 my._success = ""
@@ -596,7 +638,7 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
                         ", 0)
                     else
                         echo_debug_item(return_argument0)
-                        echo_fatal("Not implemented (13001)", my)
+                        echo_fatal("Not implemented (AO1002)", my)
                     endif
 
                     . = format_left(my._res, 0)
@@ -1106,31 +1148,36 @@ function php_map_low_level_extension (in_php_project, out_php_module)
                     my._5 = "\n" + function0->wrapper->allocate_output_buffer.
                 endif
 
-                my._6 = "\n" + function0->wrapper->call_main_function.
-
-                my._7 = ""
-                if defined(function0->wrapper->handle_error)
-                    my._7 = "\n" + function0->wrapper->handle_error
+                my._6 = ""
+                if defined(function0->wrapper->argument_type_mapping)
+                    my._6  = "\n" + function0->wrapper->argument_type_mapping.
                 endif
 
+                my._7 = "\n" + function0->wrapper->call_main_function.
+
                 my._8 = ""
-                if defined(function0->wrapper->correct_string_length)
-                    my._8 = "\n" + function0->wrapper->correct_string_length.
+                if defined(function0->wrapper->handle_error)
+                    my._8 = "\n" + function0->wrapper->handle_error
                 endif
 
                 my._9 = ""
-                if defined(function0->wrapper->write_returned_result)
-                    my._9 = "\n" + function0->wrapper->write_returned_result.
+                if defined(function0->wrapper->correct_string_length)
+                    my._9 = "\n" + function0->wrapper->correct_string_length.
                 endif
 
                 my._10 = ""
-                if function0.throw_exception = 1
-                    my._10 = "\n" + function0->wrapper->fail_success.
+                if defined(function0->wrapper->write_returned_result)
+                    my._10 = "\n" + function0->wrapper->write_returned_result.
                 endif
 
-                my._11 = format_left("}", 0)
+                my._11 = ""
+                if function0.throw_exception = 1
+                    my._11 = "\n" + function0->wrapper->fail_success.
+                endif
 
-                my._func_wrapping += my._1 + my._2 + my._3 + my._4 + my._5 + my._6 + my._7 + my._8 + my._9 + my._10 + my._11
+                my._12 = format_left("}", 0)
+
+                my._func_wrapping += my._1 + my._2 + my._3 + my._4 + my._5 + my._6 + my._7 + my._8 + my._9 + my._10 + my._11 + my._12
             endif
 
             my._func_wrapping += "\n"

@@ -130,7 +130,7 @@ class GroupSession
     */
     public function encrypt(string $plainText, PrivateKey $privateKey): GroupSessionMessage
     {
-        return vscf_group_session_encrypt_php($this->ctx, $plainText, , $privateKey->getCtx());
+        return vscf_group_session_encrypt_php($this->ctx, $plainText, $privateKey->getCtx());
     }
 
     /**
@@ -154,7 +154,7 @@ class GroupSession
     */
     public function decrypt(GroupSessionMessage $message, PublicKey $publicKey): string
     {
-        return vscf_group_session_decrypt_php($this->ctx, $message->getCtx(), , $publicKey->getCtx());
+        return vscf_group_session_decrypt_php($this->ctx, $message->getCtx(), $publicKey->getCtx());
     }
 
     /**

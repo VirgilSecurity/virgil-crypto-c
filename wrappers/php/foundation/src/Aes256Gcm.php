@@ -280,7 +280,7 @@ class Aes256Gcm implements Alg, Encrypt, Decrypt, CipherInfo, Cipher, CipherAuth
     */
     public function authEncrypt(string $data, string $authData): array // [out, tag]
     {
-        return vscf_aes256_gcm_auth_encrypt_php($this->ctx, $data, , $authData);
+        return vscf_aes256_gcm_auth_encrypt_php($this->ctx, $data, $authData);
     }
 
     /**
@@ -306,7 +306,7 @@ class Aes256Gcm implements Alg, Encrypt, Decrypt, CipherInfo, Cipher, CipherAuth
     */
     public function authDecrypt(string $data, string $authData, string $tag): string
     {
-        return vscf_aes256_gcm_auth_decrypt_php($this->ctx, $data, , $authData, , $tag);
+        return vscf_aes256_gcm_auth_decrypt_php($this->ctx, $data, $authData, $tag);
     }
 
     /**

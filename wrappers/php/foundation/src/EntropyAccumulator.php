@@ -88,7 +88,7 @@ class EntropyAccumulator implements EntropySource
     */
     public function addSource(EntropySource $source, int $threshold): void
     {
-        vscf_entropy_accumulator_add_source_php($this->ctx, $source->getCtx(), , $threshold);
+        vscf_entropy_accumulator_add_source_php($this->ctx, $source->getCtx(), $threshold);
     }
 
     /**

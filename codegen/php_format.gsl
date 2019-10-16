@@ -144,23 +144,24 @@ function php_format_high_level_method_body (in_php_method)
             my._return = "return "
         endif
 
-        my._arguments = "$this->ctx"
-        my._dd = ", "
+        my._cc = count(my.in_php_method.php_argument)
+
+        if my._cc > 0
+            my._arguments = "$this->ctx, "
+        else
+            my._arguments = "$this->ctx"
+        endif
 
         if my.in_php_method.declaration = "public static "
             my._arguments = ""
-            my._dd = ""
         endif
 
         for my.in_php_method.php_argument as php_argument0
 
             my._arg = php_argument0.name
+
             if php_argument0.instance = 1
                 my._arg = "$(php_argument0.name:)->getCtx()"
-            endif
-
-            if first() & my._dd <> ""
-                my._d = ", "
             endif
 
             my._d = ""
@@ -168,7 +169,7 @@ function php_format_high_level_method_body (in_php_method)
                 my._d = ", "
             endif
 
-            my._arguments += my._dd + my._arg + my._d
+            my._arguments += my._arg + my._d
         endfor
 
         my._function_name = my.in_php_method.function_name

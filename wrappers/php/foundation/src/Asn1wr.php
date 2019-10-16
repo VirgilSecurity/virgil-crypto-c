@@ -76,7 +76,7 @@ class Asn1wr implements Asn1Writer
     */
     public function reset(int $out, int $outLen): void
     {
-        vscf_asn1wr_reset_php($this->ctx, $out, , $outLen);
+        vscf_asn1wr_reset_php($this->ctx, $out, $outLen);
     }
 
     /**
@@ -191,7 +191,7 @@ class Asn1wr implements Asn1Writer
     */
     public function writeContextTag(int $tag, int $len): int
     {
-        return vscf_asn1wr_write_context_tag_php($this->ctx, $tag, , $len);
+        return vscf_asn1wr_write_context_tag_php($this->ctx, $tag, $len);
     }
 
     /**

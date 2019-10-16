@@ -111,7 +111,7 @@ class BrainkeyClient
     */
     public function deblind(string $password, string $hardenedPoint, string $deblindFactor, string $keyName): string
     {
-        return vscf_brainkey_client_deblind_php($this->ctx, $password, , $hardenedPoint, , $deblindFactor, , $keyName);
+        return vscf_brainkey_client_deblind_php($this->ctx, $password, $hardenedPoint, $deblindFactor, $keyName);
     }
 
     /**

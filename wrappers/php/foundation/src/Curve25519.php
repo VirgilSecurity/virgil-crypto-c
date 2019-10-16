@@ -241,7 +241,7 @@ class Curve25519 implements Alg, KeyAlg, KeyCipher, ComputeSharedKey
     */
     public function canEncrypt(PublicKey $publicKey, int $dataLen): bool
     {
-        return vscf_curve25519_can_encrypt_php($this->ctx, $publicKey->getCtx(), , $dataLen);
+        return vscf_curve25519_can_encrypt_php($this->ctx, $publicKey->getCtx(), $dataLen);
     }
 
     /**
@@ -253,7 +253,7 @@ class Curve25519 implements Alg, KeyAlg, KeyCipher, ComputeSharedKey
     */
     public function encryptedLen(PublicKey $publicKey, int $dataLen): int
     {
-        return vscf_curve25519_encrypted_len_php($this->ctx, $publicKey->getCtx(), , $dataLen);
+        return vscf_curve25519_encrypted_len_php($this->ctx, $publicKey->getCtx(), $dataLen);
     }
 
     /**
@@ -266,7 +266,7 @@ class Curve25519 implements Alg, KeyAlg, KeyCipher, ComputeSharedKey
     */
     public function encrypt(PublicKey $publicKey, string $data): string
     {
-        return vscf_curve25519_encrypt_php($this->ctx, $publicKey->getCtx(), , $data);
+        return vscf_curve25519_encrypt_php($this->ctx, $publicKey->getCtx(), $data);
     }
 
     /**
@@ -279,7 +279,7 @@ class Curve25519 implements Alg, KeyAlg, KeyCipher, ComputeSharedKey
     */
     public function canDecrypt(PrivateKey $privateKey, int $dataLen): bool
     {
-        return vscf_curve25519_can_decrypt_php($this->ctx, $privateKey->getCtx(), , $dataLen);
+        return vscf_curve25519_can_decrypt_php($this->ctx, $privateKey->getCtx(), $dataLen);
     }
 
     /**
@@ -291,7 +291,7 @@ class Curve25519 implements Alg, KeyAlg, KeyCipher, ComputeSharedKey
     */
     public function decryptedLen(PrivateKey $privateKey, int $dataLen): int
     {
-        return vscf_curve25519_decrypted_len_php($this->ctx, $privateKey->getCtx(), , $dataLen);
+        return vscf_curve25519_decrypted_len_php($this->ctx, $privateKey->getCtx(), $dataLen);
     }
 
     /**
@@ -304,7 +304,7 @@ class Curve25519 implements Alg, KeyAlg, KeyCipher, ComputeSharedKey
     */
     public function decrypt(PrivateKey $privateKey, string $data): string
     {
-        return vscf_curve25519_decrypt_php($this->ctx, $privateKey->getCtx(), , $data);
+        return vscf_curve25519_decrypt_php($this->ctx, $privateKey->getCtx(), $data);
     }
 
     /**
@@ -318,7 +318,7 @@ class Curve25519 implements Alg, KeyAlg, KeyCipher, ComputeSharedKey
     */
     public function computeSharedKey(PublicKey $publicKey, PrivateKey $privateKey): string
     {
-        return vscf_curve25519_compute_shared_key_php($this->ctx, $publicKey->getCtx(), , $privateKey->getCtx());
+        return vscf_curve25519_compute_shared_key_php($this->ctx, $publicKey->getCtx(), $privateKey->getCtx());
     }
 
     /**

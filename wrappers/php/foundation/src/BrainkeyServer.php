@@ -108,7 +108,7 @@ class BrainkeyServer
     */
     public function harden(string $identitySecret, string $blindedPoint): string
     {
-        return vscf_brainkey_server_harden_php($this->ctx, $identitySecret, , $blindedPoint);
+        return vscf_brainkey_server_harden_php($this->ctx, $identitySecret, $blindedPoint);
     }
 
     /**

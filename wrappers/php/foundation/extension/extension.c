@@ -942,8 +942,6 @@ PHP_FUNCTION(vscf_message_info_clear_php) {
     // Call main function
     //
     vscf_message_info_clear(message_info);
-
-
 }
 
 //
@@ -1497,8 +1495,6 @@ PHP_FUNCTION(vscf_key_recipient_info_list_clear_php) {
     // Call main function
     //
     vscf_key_recipient_info_list_clear(key_recipient_info_list);
-
-
 }
 
 //
@@ -2006,8 +2002,6 @@ PHP_FUNCTION(vscf_password_recipient_info_list_clear_php) {
     // Call main function
     //
     vscf_password_recipient_info_list_clear(password_recipient_info_list);
-
-
 }
 
 //
@@ -2104,8 +2098,6 @@ PHP_FUNCTION(vscf_ecies_set_key_alg_php) {
     // Call main function
     //
     vscf_ecies_set_key_alg(ecies, key_alg);
-
-
 }
 
 //
@@ -2146,8 +2138,6 @@ PHP_FUNCTION(vscf_ecies_release_key_alg_php) {
     // Call main function
     //
     vscf_ecies_release_key_alg(ecies);
-
-
 }
 
 //
@@ -2193,8 +2183,6 @@ PHP_FUNCTION(vscf_ecies_setup_defaults_php) {
     // Handle error
     //
     VSCF_HANDLE_STATUS (status);
-
-
 
     goto success;
 
@@ -2242,8 +2230,6 @@ PHP_FUNCTION(vscf_ecies_setup_defaults_no_random_php) {
     // Call main function
     //
     vscf_ecies_setup_defaults_no_random(ecies);
-
-
 }
 
 //
@@ -2615,8 +2601,6 @@ PHP_FUNCTION(vscf_recipient_cipher_add_key_recipient_php) {
     // Call main function
     //
     vscf_recipient_cipher_add_key_recipient(recipient_cipher, recipient_id, public_key);
-
-
 }
 
 //
@@ -2657,8 +2641,6 @@ PHP_FUNCTION(vscf_recipient_cipher_clear_recipients_php) {
     // Call main function
     //
     vscf_recipient_cipher_clear_recipients(recipient_cipher);
-
-
 }
 
 //
@@ -2716,8 +2698,6 @@ PHP_FUNCTION(vscf_recipient_cipher_add_signer_php) {
     //
     VSCF_HANDLE_STATUS (status);
 
-
-
     goto success;
 
 fail:
@@ -2764,8 +2744,6 @@ PHP_FUNCTION(vscf_recipient_cipher_clear_signers_php) {
     // Call main function
     //
     vscf_recipient_cipher_clear_signers(recipient_cipher);
-
-
 }
 
 //
@@ -2859,8 +2837,6 @@ PHP_FUNCTION(vscf_recipient_cipher_start_encryption_php) {
     //
     VSCF_HANDLE_STATUS (status);
 
-
-
     goto success;
 
 fail:
@@ -2917,8 +2893,6 @@ PHP_FUNCTION(vscf_recipient_cipher_start_signed_encryption_php) {
     // Handle error
     //
     VSCF_HANDLE_STATUS (status);
-
-
 
     goto success;
 
@@ -3284,8 +3258,6 @@ PHP_FUNCTION(vscf_recipient_cipher_start_decryption_with_key_php) {
     //
     VSCF_HANDLE_STATUS (status);
 
-
-
     goto success;
 
 fail:
@@ -3358,8 +3330,6 @@ PHP_FUNCTION(vscf_recipient_cipher_start_verified_decryption_with_key_php) {
     // Handle error
     //
     VSCF_HANDLE_STATUS (status);
-
-
 
     goto success;
 
@@ -3918,12 +3888,15 @@ PHP_FUNCTION(vscf_message_info_custom_params_add_int_php) {
 
     vsc_data_t key = vsc_data((const byte*)in_key, in_key_len);
 
-    int value = in_value;//
+    //
+    // Argument type mapping
+    //
+    int value = in_value;
+
+    //
     // Call main function
     //
     vscf_message_info_custom_params_add_int(message_info_custom_params, key, value);
-
-
 }
 
 //
@@ -3975,8 +3948,6 @@ PHP_FUNCTION(vscf_message_info_custom_params_add_string_php) {
     // Call main function
     //
     vscf_message_info_custom_params_add_string(message_info_custom_params, key, value);
-
-
 }
 
 //
@@ -4028,8 +3999,6 @@ PHP_FUNCTION(vscf_message_info_custom_params_add_data_php) {
     // Call main function
     //
     vscf_message_info_custom_params_add_data(message_info_custom_params, key, value);
-
-
 }
 
 //
@@ -4070,8 +4039,6 @@ PHP_FUNCTION(vscf_message_info_custom_params_clear_php) {
     // Call main function
     //
     vscf_message_info_custom_params_clear(message_info_custom_params);
-
-
 }
 
 //
@@ -4374,8 +4341,6 @@ PHP_FUNCTION(vscf_key_provider_setup_defaults_php) {
     //
     VSCF_HANDLE_STATUS (status);
 
-
-
     goto success;
 
 fail:
@@ -4427,8 +4392,6 @@ PHP_FUNCTION(vscf_key_provider_set_rsa_params_php) {
     // Call main function
     //
     vscf_key_provider_set_rsa_params(key_provider, bitlen);
-
-
 }
 
 //
@@ -4471,7 +4434,12 @@ PHP_FUNCTION(vscf_key_provider_generate_private_key_php) {
     vscf_error_t error;
     vscf_error_reset(&error);
 
-    vscf_alg_id_t alg_id = (vscf_alg_id_t)in_alg_id;//
+    //
+    // Argument type mapping
+    //
+    vscf_alg_id_t alg_id = (vscf_alg_id_t)in_alg_id;
+
+    //
     // Call main function
     //
     vscf_impl_t *private_key =vscf_key_provider_generate_private_key(key_provider, alg_id, &error);
@@ -4931,8 +4899,6 @@ PHP_FUNCTION(vscf_signer_reset_php) {
     // Call main function
     //
     vscf_signer_reset(signer);
-
-
 }
 
 //
@@ -4979,8 +4945,6 @@ PHP_FUNCTION(vscf_signer_append_data_php) {
     // Call main function
     //
     vscf_signer_append_data(signer, data);
-
-
 }
 
 //
@@ -5209,8 +5173,6 @@ PHP_FUNCTION(vscf_verifier_reset_php) {
     //
     VSCF_HANDLE_STATUS (status);
 
-
-
     goto success;
 
 fail:
@@ -5263,8 +5225,6 @@ PHP_FUNCTION(vscf_verifier_append_data_php) {
     // Call main function
     //
     vscf_verifier_append_data(verifier, data);
-
-
 }
 
 //
@@ -5411,8 +5371,6 @@ PHP_FUNCTION(vscf_brainkey_client_setup_defaults_php) {
     // Handle error
     //
     VSCF_HANDLE_STATUS (status);
-
-
 
     goto success;
 
@@ -5692,8 +5650,6 @@ PHP_FUNCTION(vscf_brainkey_server_setup_defaults_php) {
     // Handle error
     //
     VSCF_HANDLE_STATUS (status);
-
-
 
     goto success;
 
@@ -6287,8 +6243,6 @@ PHP_FUNCTION(vscf_group_session_ticket_setup_defaults_php) {
     //
     VSCF_HANDLE_STATUS (status);
 
-
-
     goto success;
 
 fail:
@@ -6346,8 +6300,6 @@ PHP_FUNCTION(vscf_group_session_ticket_setup_ticket_as_new_php) {
     // Handle error
     //
     VSCF_HANDLE_STATUS (status);
-
-
 
     goto success;
 
@@ -6543,8 +6495,6 @@ PHP_FUNCTION(vscf_group_session_setup_defaults_php) {
     //
     VSCF_HANDLE_STATUS (status);
 
-
-
     goto success;
 
 fail:
@@ -6648,8 +6598,6 @@ PHP_FUNCTION(vscf_group_session_add_epoch_php) {
     // Handle error
     //
     VSCF_HANDLE_STATUS (status);
-
-
 
     goto success;
 
@@ -6992,8 +6940,6 @@ PHP_FUNCTION(vscf_message_info_editor_setup_defaults_php) {
     //
     VSCF_HANDLE_STATUS (status);
 
-
-
     goto success;
 
 fail:
@@ -7051,8 +6997,6 @@ PHP_FUNCTION(vscf_message_info_editor_unpack_php) {
     // Handle error
     //
     VSCF_HANDLE_STATUS (status);
-
-
 
     goto success;
 
@@ -7117,8 +7061,6 @@ PHP_FUNCTION(vscf_message_info_editor_unlock_php) {
     //
     VSCF_HANDLE_STATUS (status);
 
-
-
     goto success;
 
 fail:
@@ -7181,8 +7123,6 @@ PHP_FUNCTION(vscf_message_info_editor_add_key_recipient_php) {
     // Handle error
     //
     VSCF_HANDLE_STATUS (status);
-
-
 
     goto success;
 
@@ -7281,8 +7221,6 @@ PHP_FUNCTION(vscf_message_info_editor_remove_all_php) {
     // Call main function
     //
     vscf_message_info_editor_remove_all(message_info_editor);
-
-
 }
 
 //
@@ -7938,8 +7876,6 @@ PHP_FUNCTION(vscf_signer_info_list_clear_php) {
     // Call main function
     //
     vscf_signer_info_list_clear(signer_info_list);
-
-
 }
 
 //
@@ -8271,8 +8207,6 @@ PHP_FUNCTION(vscf_signed_data_info_set_hash_alg_info_php) {
     // Call main function
     //
     vscf_signed_data_info_set_hash_alg_info(signed_data_info, &hash_alg_info_tmp);
-
-
 }
 
 //
@@ -8507,8 +8441,6 @@ PHP_FUNCTION(vscf_footer_info_set_data_size_php) {
     // Call main function
     //
     vscf_footer_info_set_data_size(footer_info, data_size);
-
-
 }
 
 //
@@ -8747,8 +8679,6 @@ PHP_FUNCTION(vscf_sha224_restore_alg_info_php) {
     //
     VSCF_HANDLE_STATUS (status);
 
-
-
     goto success;
 
 fail:
@@ -8857,8 +8787,6 @@ PHP_FUNCTION(vscf_sha224_start_php) {
     // Call main function
     //
     vscf_sha224_start(sha224);
-
-
 }
 
 //
@@ -8905,8 +8833,6 @@ PHP_FUNCTION(vscf_sha224_update_php) {
     // Call main function
     //
     vscf_sha224_update(sha224, data);
-
-
 }
 
 //
@@ -9157,8 +9083,6 @@ PHP_FUNCTION(vscf_sha256_restore_alg_info_php) {
     //
     VSCF_HANDLE_STATUS (status);
 
-
-
     goto success;
 
 fail:
@@ -9267,8 +9191,6 @@ PHP_FUNCTION(vscf_sha256_start_php) {
     // Call main function
     //
     vscf_sha256_start(sha256);
-
-
 }
 
 //
@@ -9315,8 +9237,6 @@ PHP_FUNCTION(vscf_sha256_update_php) {
     // Call main function
     //
     vscf_sha256_update(sha256, data);
-
-
 }
 
 //
@@ -9567,8 +9487,6 @@ PHP_FUNCTION(vscf_sha384_restore_alg_info_php) {
     //
     VSCF_HANDLE_STATUS (status);
 
-
-
     goto success;
 
 fail:
@@ -9677,8 +9595,6 @@ PHP_FUNCTION(vscf_sha384_start_php) {
     // Call main function
     //
     vscf_sha384_start(sha384);
-
-
 }
 
 //
@@ -9725,8 +9641,6 @@ PHP_FUNCTION(vscf_sha384_update_php) {
     // Call main function
     //
     vscf_sha384_update(sha384, data);
-
-
 }
 
 //
@@ -9977,8 +9891,6 @@ PHP_FUNCTION(vscf_sha512_restore_alg_info_php) {
     //
     VSCF_HANDLE_STATUS (status);
 
-
-
     goto success;
 
 fail:
@@ -10087,8 +9999,6 @@ PHP_FUNCTION(vscf_sha512_start_php) {
     // Call main function
     //
     vscf_sha512_start(sha512);
-
-
 }
 
 //
@@ -10135,8 +10045,6 @@ PHP_FUNCTION(vscf_sha512_update_php) {
     // Call main function
     //
     vscf_sha512_update(sha512, data);
-
-
 }
 
 //
@@ -10386,8 +10294,6 @@ PHP_FUNCTION(vscf_aes256_gcm_restore_alg_info_php) {
     // Handle error
     //
     VSCF_HANDLE_STATUS (status);
-
-
 
     goto success;
 
@@ -10741,8 +10647,6 @@ PHP_FUNCTION(vscf_aes256_gcm_set_nonce_php) {
     // Call main function
     //
     vscf_aes256_gcm_set_nonce(aes256_gcm, nonce);
-
-
 }
 
 //
@@ -10789,8 +10693,6 @@ PHP_FUNCTION(vscf_aes256_gcm_set_key_php) {
     // Call main function
     //
     vscf_aes256_gcm_set_key(aes256_gcm, key);
-
-
 }
 
 //
@@ -10831,8 +10733,6 @@ PHP_FUNCTION(vscf_aes256_gcm_start_encryption_php) {
     // Call main function
     //
     vscf_aes256_gcm_start_encryption(aes256_gcm);
-
-
 }
 
 //
@@ -10873,8 +10773,6 @@ PHP_FUNCTION(vscf_aes256_gcm_start_decryption_php) {
     // Call main function
     //
     vscf_aes256_gcm_start_decryption(aes256_gcm);
-
-
 }
 
 //
@@ -11480,8 +11378,6 @@ PHP_FUNCTION(vscf_aes256_gcm_set_auth_data_php) {
     // Call main function
     //
     vscf_aes256_gcm_set_auth_data(aes256_gcm, auth_data);
-
-
 }
 
 //
@@ -11830,8 +11726,6 @@ PHP_FUNCTION(vscf_aes256_cbc_restore_alg_info_php) {
     // Handle error
     //
     VSCF_HANDLE_STATUS (status);
-
-
 
     goto success;
 
@@ -12185,8 +12079,6 @@ PHP_FUNCTION(vscf_aes256_cbc_set_nonce_php) {
     // Call main function
     //
     vscf_aes256_cbc_set_nonce(aes256_cbc, nonce);
-
-
 }
 
 //
@@ -12233,8 +12125,6 @@ PHP_FUNCTION(vscf_aes256_cbc_set_key_php) {
     // Call main function
     //
     vscf_aes256_cbc_set_key(aes256_cbc, key);
-
-
 }
 
 //
@@ -12275,8 +12165,6 @@ PHP_FUNCTION(vscf_aes256_cbc_start_encryption_php) {
     // Call main function
     //
     vscf_aes256_cbc_start_encryption(aes256_cbc);
-
-
 }
 
 //
@@ -12317,8 +12205,6 @@ PHP_FUNCTION(vscf_aes256_cbc_start_decryption_php) {
     // Call main function
     //
     vscf_aes256_cbc_start_decryption(aes256_cbc);
-
-
 }
 
 //
@@ -12697,8 +12583,6 @@ PHP_FUNCTION(vscf_asn1rd_reset_php) {
     // Call main function
     //
     vscf_asn1rd_reset(asn1rd, data);
-
-
 }
 
 //
@@ -12834,8 +12718,6 @@ PHP_FUNCTION(vscf_asn1rd_status_php) {
     // Handle error
     //
     VSCF_HANDLE_STATUS (status);
-
-
 
     goto success;
 
@@ -13017,7 +12899,12 @@ PHP_FUNCTION(vscf_asn1rd_read_tag_php) {
     vscf_asn1rd_t *asn1rd = zend_fetch_resource_ex(in_ctx, VSCF_ASN1RD_PHP_RES_NAME, le_vscf_asn1rd_t);
     VSCF_ASSERT_PTR(asn1rd);
 
-    int tag = in_tag;//
+    //
+    // Argument type mapping
+    //
+    int tag = in_tag;
+
+    //
     // Call main function
     //
     size_t res =vscf_asn1rd_read_tag(asn1rd, tag);
@@ -13065,7 +12952,12 @@ PHP_FUNCTION(vscf_asn1rd_read_context_tag_php) {
     vscf_asn1rd_t *asn1rd = zend_fetch_resource_ex(in_ctx, VSCF_ASN1RD_PHP_RES_NAME, le_vscf_asn1rd_t);
     VSCF_ASSERT_PTR(asn1rd);
 
-    int tag = in_tag;//
+    //
+    // Argument type mapping
+    //
+    int tag = in_tag;
+
+    //
     // Call main function
     //
     size_t res =vscf_asn1rd_read_context_tag(asn1rd, tag);
@@ -13609,8 +13501,6 @@ PHP_FUNCTION(vscf_asn1rd_read_null_php) {
     // Call main function
     //
     vscf_asn1rd_read_null(asn1rd);
-
-
 }
 
 //
@@ -13651,8 +13541,6 @@ PHP_FUNCTION(vscf_asn1rd_read_null_optional_php) {
     // Call main function
     //
     vscf_asn1rd_read_null_optional(asn1rd);
-
-
 }
 
 //
@@ -14072,12 +13960,15 @@ PHP_FUNCTION(vscf_asn1wr_reset_php) {
 
     size_t out_len = in_out_len;
 
-    byte out = in_out;//
+    //
+    // Argument type mapping
+    //
+    byte out = in_out;
+
+    //
     // Call main function
     //
     vscf_asn1wr_reset(asn1wr, out, out_len);
-
-
 }
 
 //
@@ -14117,7 +14008,12 @@ PHP_FUNCTION(vscf_asn1wr_finish_php) {
     vscf_asn1wr_t *asn1wr = zend_fetch_resource_ex(in_ctx, VSCF_ASN1WR_PHP_RES_NAME, le_vscf_asn1wr_t);
     VSCF_ASSERT_PTR(asn1wr);
 
-    bool do_not_adjust = (bool)in_do_not_adjust;//
+    //
+    // Argument type mapping
+    //
+    bool do_not_adjust = (bool)in_do_not_adjust;
+
+    //
     // Call main function
     //
     size_t res =vscf_asn1wr_finish(asn1wr, do_not_adjust);
@@ -14397,8 +14293,6 @@ PHP_FUNCTION(vscf_asn1wr_status_php) {
     //
     VSCF_HANDLE_STATUS (status);
 
-
-
     goto success;
 
 fail:
@@ -14494,7 +14388,12 @@ PHP_FUNCTION(vscf_asn1wr_write_tag_php) {
     vscf_asn1wr_t *asn1wr = zend_fetch_resource_ex(in_ctx, VSCF_ASN1WR_PHP_RES_NAME, le_vscf_asn1wr_t);
     VSCF_ASSERT_PTR(asn1wr);
 
-    int tag = in_tag;//
+    //
+    // Argument type mapping
+    //
+    int tag = in_tag;
+
+    //
     // Call main function
     //
     size_t res =vscf_asn1wr_write_tag(asn1wr, tag);
@@ -14547,7 +14446,12 @@ PHP_FUNCTION(vscf_asn1wr_write_context_tag_php) {
 
     size_t len = in_len;
 
-    int tag = in_tag;//
+    //
+    // Argument type mapping
+    //
+    int tag = in_tag;
+
+    //
     // Call main function
     //
     size_t res =vscf_asn1wr_write_context_tag(asn1wr, tag, len);
@@ -14645,7 +14549,12 @@ PHP_FUNCTION(vscf_asn1wr_write_int_php) {
     vscf_asn1wr_t *asn1wr = zend_fetch_resource_ex(in_ctx, VSCF_ASN1WR_PHP_RES_NAME, le_vscf_asn1wr_t);
     VSCF_ASSERT_PTR(asn1wr);
 
-    int value = in_value;//
+    //
+    // Argument type mapping
+    //
+    int value = in_value;
+
+    //
     // Call main function
     //
     size_t res =vscf_asn1wr_write_int(asn1wr, value);
@@ -14693,7 +14602,12 @@ PHP_FUNCTION(vscf_asn1wr_write_int8_php) {
     vscf_asn1wr_t *asn1wr = zend_fetch_resource_ex(in_ctx, VSCF_ASN1WR_PHP_RES_NAME, le_vscf_asn1wr_t);
     VSCF_ASSERT_PTR(asn1wr);
 
-    int8_t value = in_value;//
+    //
+    // Argument type mapping
+    //
+    int8_t value = in_value;
+
+    //
     // Call main function
     //
     size_t res =vscf_asn1wr_write_int8(asn1wr, value);
@@ -14741,7 +14655,12 @@ PHP_FUNCTION(vscf_asn1wr_write_int16_php) {
     vscf_asn1wr_t *asn1wr = zend_fetch_resource_ex(in_ctx, VSCF_ASN1WR_PHP_RES_NAME, le_vscf_asn1wr_t);
     VSCF_ASSERT_PTR(asn1wr);
 
-    int16_t value = in_value;//
+    //
+    // Argument type mapping
+    //
+    int16_t value = in_value;
+
+    //
     // Call main function
     //
     size_t res =vscf_asn1wr_write_int16(asn1wr, value);
@@ -14789,7 +14708,12 @@ PHP_FUNCTION(vscf_asn1wr_write_int32_php) {
     vscf_asn1wr_t *asn1wr = zend_fetch_resource_ex(in_ctx, VSCF_ASN1WR_PHP_RES_NAME, le_vscf_asn1wr_t);
     VSCF_ASSERT_PTR(asn1wr);
 
-    int32_t value = in_value;//
+    //
+    // Argument type mapping
+    //
+    int32_t value = in_value;
+
+    //
     // Call main function
     //
     size_t res =vscf_asn1wr_write_int32(asn1wr, value);
@@ -14837,7 +14761,12 @@ PHP_FUNCTION(vscf_asn1wr_write_int64_php) {
     vscf_asn1wr_t *asn1wr = zend_fetch_resource_ex(in_ctx, VSCF_ASN1WR_PHP_RES_NAME, le_vscf_asn1wr_t);
     VSCF_ASSERT_PTR(asn1wr);
 
-    int64_t value = in_value;//
+    //
+    // Argument type mapping
+    //
+    int64_t value = in_value;
+
+    //
     // Call main function
     //
     size_t res =vscf_asn1wr_write_int64(asn1wr, value);
@@ -14885,7 +14814,12 @@ PHP_FUNCTION(vscf_asn1wr_write_uint_php) {
     vscf_asn1wr_t *asn1wr = zend_fetch_resource_ex(in_ctx, VSCF_ASN1WR_PHP_RES_NAME, le_vscf_asn1wr_t);
     VSCF_ASSERT_PTR(asn1wr);
 
-    unsigned int value = in_value;//
+    //
+    // Argument type mapping
+    //
+    unsigned int value = in_value;
+
+    //
     // Call main function
     //
     size_t res =vscf_asn1wr_write_uint(asn1wr, value);
@@ -14933,7 +14867,12 @@ PHP_FUNCTION(vscf_asn1wr_write_uint8_php) {
     vscf_asn1wr_t *asn1wr = zend_fetch_resource_ex(in_ctx, VSCF_ASN1WR_PHP_RES_NAME, le_vscf_asn1wr_t);
     VSCF_ASSERT_PTR(asn1wr);
 
-    uint8_t value = in_value;//
+    //
+    // Argument type mapping
+    //
+    uint8_t value = in_value;
+
+    //
     // Call main function
     //
     size_t res =vscf_asn1wr_write_uint8(asn1wr, value);
@@ -14981,7 +14920,12 @@ PHP_FUNCTION(vscf_asn1wr_write_uint16_php) {
     vscf_asn1wr_t *asn1wr = zend_fetch_resource_ex(in_ctx, VSCF_ASN1WR_PHP_RES_NAME, le_vscf_asn1wr_t);
     VSCF_ASSERT_PTR(asn1wr);
 
-    uint16_t value = in_value;//
+    //
+    // Argument type mapping
+    //
+    uint16_t value = in_value;
+
+    //
     // Call main function
     //
     size_t res =vscf_asn1wr_write_uint16(asn1wr, value);
@@ -15029,7 +14973,12 @@ PHP_FUNCTION(vscf_asn1wr_write_uint32_php) {
     vscf_asn1wr_t *asn1wr = zend_fetch_resource_ex(in_ctx, VSCF_ASN1WR_PHP_RES_NAME, le_vscf_asn1wr_t);
     VSCF_ASSERT_PTR(asn1wr);
 
-    uint32_t value = in_value;//
+    //
+    // Argument type mapping
+    //
+    uint32_t value = in_value;
+
+    //
     // Call main function
     //
     size_t res =vscf_asn1wr_write_uint32(asn1wr, value);
@@ -15077,7 +15026,12 @@ PHP_FUNCTION(vscf_asn1wr_write_uint64_php) {
     vscf_asn1wr_t *asn1wr = zend_fetch_resource_ex(in_ctx, VSCF_ASN1WR_PHP_RES_NAME, le_vscf_asn1wr_t);
     VSCF_ASSERT_PTR(asn1wr);
 
-    uint64_t value = in_value;//
+    //
+    // Argument type mapping
+    //
+    uint64_t value = in_value;
+
+    //
     // Call main function
     //
     size_t res =vscf_asn1wr_write_uint64(asn1wr, value);
@@ -15125,7 +15079,12 @@ PHP_FUNCTION(vscf_asn1wr_write_bool_php) {
     vscf_asn1wr_t *asn1wr = zend_fetch_resource_ex(in_ctx, VSCF_ASN1WR_PHP_RES_NAME, le_vscf_asn1wr_t);
     VSCF_ASSERT_PTR(asn1wr);
 
-    bool value = (bool)in_value;//
+    //
+    // Argument type mapping
+    //
+    bool value = (bool)in_value;
+
+    //
     // Call main function
     //
     size_t res =vscf_asn1wr_write_bool(asn1wr, value);
@@ -16275,8 +16234,6 @@ PHP_FUNCTION(vscf_rsa_setup_defaults_php) {
     //
     VSCF_HANDLE_STATUS (status);
 
-
-
     goto success;
 
 fail:
@@ -16478,8 +16435,6 @@ PHP_FUNCTION(vscf_rsa_restore_alg_info_php) {
     // Handle error
     //
     VSCF_HANDLE_STATUS (status);
-
-
 
     goto success;
 
@@ -17296,7 +17251,12 @@ PHP_FUNCTION(vscf_rsa_sign_hash_php) {
     vsc_buffer_t *signature = vsc_buffer_new();
     vsc_buffer_use(signature, (byte *)ZSTR_VAL(out_signature), ZSTR_LEN(out_signature));
 
-    vscf_alg_id_t hash_id = (vscf_alg_id_t)in_hash_id;//
+    //
+    // Argument type mapping
+    //
+    vscf_alg_id_t hash_id = (vscf_alg_id_t)in_hash_id;
+
+    //
     // Call main function
     //
     vscf_status_t status =vscf_rsa_sign_hash(rsa, private_key, hash_id, digest, signature);
@@ -17428,7 +17388,12 @@ PHP_FUNCTION(vscf_rsa_verify_hash_php) {
     vsc_data_t digest = vsc_data((const byte*)in_digest, in_digest_len);
     vsc_data_t signature = vsc_data((const byte*)in_signature, in_signature_len);
 
-    vscf_alg_id_t hash_id = (vscf_alg_id_t)in_hash_id;//
+    //
+    // Argument type mapping
+    //
+    vscf_alg_id_t hash_id = (vscf_alg_id_t)in_hash_id;
+
+    //
     // Call main function
     //
     zend_bool res =vscf_rsa_verify_hash(rsa, public_key, hash_id, digest, signature);
@@ -18133,8 +18098,6 @@ PHP_FUNCTION(vscf_ecc_setup_defaults_php) {
     //
     VSCF_HANDLE_STATUS (status);
 
-
-
     goto success;
 
 fail:
@@ -18183,7 +18146,12 @@ PHP_FUNCTION(vscf_ecc_generate_key_php) {
     vscf_error_t error;
     vscf_error_reset(&error);
 
-    vscf_alg_id_t alg_id = (vscf_alg_id_t)in_alg_id;//
+    //
+    // Argument type mapping
+    //
+    vscf_alg_id_t alg_id = (vscf_alg_id_t)in_alg_id;
+
+    //
     // Call main function
     //
     vscf_impl_t *private_key =vscf_ecc_generate_key(ecc, alg_id, &error);
@@ -18335,8 +18303,6 @@ PHP_FUNCTION(vscf_ecc_restore_alg_info_php) {
     // Handle error
     //
     VSCF_HANDLE_STATUS (status);
-
-
 
     goto success;
 
@@ -19153,7 +19119,12 @@ PHP_FUNCTION(vscf_ecc_sign_hash_php) {
     vsc_buffer_t *signature = vsc_buffer_new();
     vsc_buffer_use(signature, (byte *)ZSTR_VAL(out_signature), ZSTR_LEN(out_signature));
 
-    vscf_alg_id_t hash_id = (vscf_alg_id_t)in_hash_id;//
+    //
+    // Argument type mapping
+    //
+    vscf_alg_id_t hash_id = (vscf_alg_id_t)in_hash_id;
+
+    //
     // Call main function
     //
     vscf_status_t status =vscf_ecc_sign_hash(ecc, private_key, hash_id, digest, signature);
@@ -19285,7 +19256,12 @@ PHP_FUNCTION(vscf_ecc_verify_hash_php) {
     vsc_data_t digest = vsc_data((const byte*)in_digest, in_digest_len);
     vsc_data_t signature = vsc_data((const byte*)in_signature, in_signature_len);
 
-    vscf_alg_id_t hash_id = (vscf_alg_id_t)in_hash_id;//
+    //
+    // Argument type mapping
+    //
+    vscf_alg_id_t hash_id = (vscf_alg_id_t)in_hash_id;
+
+    //
     // Call main function
     //
     zend_bool res =vscf_ecc_verify_hash(ecc, public_key, hash_id, digest, signature);
@@ -19515,8 +19491,6 @@ PHP_FUNCTION(vscf_entropy_accumulator_setup_defaults_php) {
     // Call main function
     //
     vscf_entropy_accumulator_setup_defaults(entropy_accumulator);
-
-
 }
 
 //
@@ -19567,8 +19541,6 @@ PHP_FUNCTION(vscf_entropy_accumulator_add_source_php) {
     // Call main function
     //
     vscf_entropy_accumulator_add_source(entropy_accumulator, source, threshold);
-
-
 }
 
 //
@@ -19784,8 +19756,6 @@ PHP_FUNCTION(vscf_ctr_drbg_setup_defaults_php) {
     //
     VSCF_HANDLE_STATUS (status);
 
-
-
     goto success;
 
 fail:
@@ -19832,8 +19802,6 @@ PHP_FUNCTION(vscf_ctr_drbg_enable_prediction_resistance_php) {
     // Call main function
     //
     vscf_ctr_drbg_enable_prediction_resistance(ctr_drbg);
-
-
 }
 
 //
@@ -19879,8 +19847,6 @@ PHP_FUNCTION(vscf_ctr_drbg_set_reseed_interval_php) {
     // Call main function
     //
     vscf_ctr_drbg_set_reseed_interval(ctr_drbg, interval);
-
-
 }
 
 //
@@ -19926,8 +19892,6 @@ PHP_FUNCTION(vscf_ctr_drbg_set_entropy_len_php) {
     // Call main function
     //
     vscf_ctr_drbg_set_entropy_len(ctr_drbg, len);
-
-
 }
 
 //
@@ -20047,8 +20011,6 @@ PHP_FUNCTION(vscf_ctr_drbg_reseed_php) {
     // Handle error
     //
     VSCF_HANDLE_STATUS (status);
-
-
 
     goto success;
 
@@ -20249,8 +20211,6 @@ PHP_FUNCTION(vscf_hmac_restore_alg_info_php) {
     //
     VSCF_HANDLE_STATUS (status);
 
-
-
     goto success;
 
 fail:
@@ -20416,8 +20376,6 @@ PHP_FUNCTION(vscf_hmac_start_php) {
     // Call main function
     //
     vscf_hmac_start(hmac, key);
-
-
 }
 
 //
@@ -20464,8 +20422,6 @@ PHP_FUNCTION(vscf_hmac_update_php) {
     // Call main function
     //
     vscf_hmac_update(hmac, data);
-
-
 }
 
 //
@@ -20563,8 +20519,6 @@ PHP_FUNCTION(vscf_hmac_reset_php) {
     // Call main function
     //
     vscf_hmac_reset(hmac);
-
-
 }
 
 //
@@ -20758,8 +20712,6 @@ PHP_FUNCTION(vscf_hkdf_restore_alg_info_php) {
     //
     VSCF_HANDLE_STATUS (status);
 
-
-
     goto success;
 
 fail:
@@ -20883,8 +20835,6 @@ PHP_FUNCTION(vscf_hkdf_reset_php) {
     // Call main function
     //
     vscf_hkdf_reset(hkdf, salt, iteration_count);
-
-
 }
 
 //
@@ -20931,8 +20881,6 @@ PHP_FUNCTION(vscf_hkdf_set_info_php) {
     // Call main function
     //
     vscf_hkdf_set_info(hkdf, info);
-
-
 }
 
 //
@@ -21125,8 +21073,6 @@ PHP_FUNCTION(vscf_kdf1_restore_alg_info_php) {
     // Handle error
     //
     VSCF_HANDLE_STATUS (status);
-
-
 
     goto success;
 
@@ -21394,8 +21340,6 @@ PHP_FUNCTION(vscf_kdf2_restore_alg_info_php) {
     //
     VSCF_HANDLE_STATUS (status);
 
-
-
     goto success;
 
 fail:
@@ -21558,12 +21502,15 @@ PHP_FUNCTION(vscf_fake_random_setup_source_byte_php) {
     vscf_fake_random_t *fake_random = zend_fetch_resource_ex(in_ctx, VSCF_FAKE_RANDOM_PHP_RES_NAME, le_vscf_fake_random_t);
     VSCF_ASSERT_PTR(fake_random);
 
-    byte byte_source = in_byte_source;//
+    //
+    // Argument type mapping
+    //
+    byte byte_source = in_byte_source;
+
+    //
     // Call main function
     //
     vscf_fake_random_setup_source_byte(fake_random, byte_source);
-
-
 }
 
 //
@@ -21610,8 +21557,6 @@ PHP_FUNCTION(vscf_fake_random_setup_source_data_php) {
     // Call main function
     //
     vscf_fake_random_setup_source_data(fake_random, data_source);
-
-
 }
 
 //
@@ -21731,8 +21676,6 @@ PHP_FUNCTION(vscf_fake_random_reseed_php) {
     // Handle error
     //
     VSCF_HANDLE_STATUS (status);
-
-
 
     goto success;
 
@@ -21949,8 +21892,6 @@ PHP_FUNCTION(vscf_pkcs5_pbkdf2_setup_defaults_php) {
     // Call main function
     //
     vscf_pkcs5_pbkdf2_setup_defaults(pkcs5_pbkdf2);
-
-
 }
 
 //
@@ -22094,8 +22035,6 @@ PHP_FUNCTION(vscf_pkcs5_pbkdf2_restore_alg_info_php) {
     //
     VSCF_HANDLE_STATUS (status);
 
-
-
     goto success;
 
 fail:
@@ -22219,8 +22158,6 @@ PHP_FUNCTION(vscf_pkcs5_pbkdf2_reset_php) {
     // Call main function
     //
     vscf_pkcs5_pbkdf2_reset(pkcs5_pbkdf2, salt, iteration_count);
-
-
 }
 
 //
@@ -22267,8 +22204,6 @@ PHP_FUNCTION(vscf_pkcs5_pbkdf2_set_info_php) {
     // Call main function
     //
     vscf_pkcs5_pbkdf2_set_info(pkcs5_pbkdf2, info);
-
-
 }
 
 //
@@ -22365,8 +22300,6 @@ PHP_FUNCTION(vscf_pkcs5_pbes2_reset_php) {
     // Call main function
     //
     vscf_pkcs5_pbes2_reset(pkcs5_pbes2, pwd);
-
-
 }
 
 //
@@ -22509,8 +22442,6 @@ PHP_FUNCTION(vscf_pkcs5_pbes2_restore_alg_info_php) {
     // Handle error
     //
     VSCF_HANDLE_STATUS (status);
-
-
 
     goto success;
 
@@ -22914,8 +22845,6 @@ PHP_FUNCTION(vscf_seed_entropy_source_reset_seed_php) {
     // Call main function
     //
     vscf_seed_entropy_source_reset_seed(seed_entropy_source, seed);
-
-
 }
 
 //
@@ -23131,8 +23060,6 @@ PHP_FUNCTION(vscf_key_material_rng_reset_key_material_php) {
     // Call main function
     //
     vscf_key_material_rng_reset_key_material(key_material_rng, key_material);
-
-
 }
 
 //
@@ -23252,8 +23179,6 @@ PHP_FUNCTION(vscf_key_material_rng_reseed_php) {
     // Handle error
     //
     VSCF_HANDLE_STATUS (status);
-
-
 
     goto success;
 
@@ -23771,8 +23696,6 @@ PHP_FUNCTION(vscf_raw_private_key_set_public_key_php) {
     // Call main function
     //
     vscf_raw_private_key_set_public_key(raw_private_key, raw_public_key);
-
-
 }
 
 //
@@ -24183,8 +24106,6 @@ PHP_FUNCTION(vscf_pkcs8_serializer_setup_defaults_php) {
     // Call main function
     //
     vscf_pkcs8_serializer_setup_defaults(pkcs8_serializer);
-
-
 }
 
 //
@@ -24633,8 +24554,6 @@ PHP_FUNCTION(vscf_sec1_serializer_setup_defaults_php) {
     // Call main function
     //
     vscf_sec1_serializer_setup_defaults(sec1_serializer);
-
-
 }
 
 //
@@ -25083,8 +25002,6 @@ PHP_FUNCTION(vscf_key_asn1_serializer_setup_defaults_php) {
     // Call main function
     //
     vscf_key_asn1_serializer_setup_defaults(key_asn1_serializer);
-
-
 }
 
 //
@@ -25533,8 +25450,6 @@ PHP_FUNCTION(vscf_key_asn1_deserializer_setup_defaults_php) {
     // Call main function
     //
     vscf_key_asn1_deserializer_setup_defaults(key_asn1_deserializer);
-
-
 }
 
 //
@@ -25837,8 +25752,6 @@ PHP_FUNCTION(vscf_ed25519_setup_defaults_php) {
     //
     VSCF_HANDLE_STATUS (status);
 
-
-
     goto success;
 
 fail:
@@ -26036,8 +25949,6 @@ PHP_FUNCTION(vscf_ed25519_restore_alg_info_php) {
     // Handle error
     //
     VSCF_HANDLE_STATUS (status);
-
-
 
     goto success;
 
@@ -26854,7 +26765,12 @@ PHP_FUNCTION(vscf_ed25519_sign_hash_php) {
     vsc_buffer_t *signature = vsc_buffer_new();
     vsc_buffer_use(signature, (byte *)ZSTR_VAL(out_signature), ZSTR_LEN(out_signature));
 
-    vscf_alg_id_t hash_id = (vscf_alg_id_t)in_hash_id;//
+    //
+    // Argument type mapping
+    //
+    vscf_alg_id_t hash_id = (vscf_alg_id_t)in_hash_id;
+
+    //
     // Call main function
     //
     vscf_status_t status =vscf_ed25519_sign_hash(ed25519, private_key, hash_id, digest, signature);
@@ -26986,7 +26902,12 @@ PHP_FUNCTION(vscf_ed25519_verify_hash_php) {
     vsc_data_t digest = vsc_data((const byte*)in_digest, in_digest_len);
     vsc_data_t signature = vsc_data((const byte*)in_signature, in_signature_len);
 
-    vscf_alg_id_t hash_id = (vscf_alg_id_t)in_hash_id;//
+    //
+    // Argument type mapping
+    //
+    vscf_alg_id_t hash_id = (vscf_alg_id_t)in_hash_id;
+
+    //
     // Call main function
     //
     zend_bool res =vscf_ed25519_verify_hash(ed25519, public_key, hash_id, digest, signature);
@@ -27222,8 +27143,6 @@ PHP_FUNCTION(vscf_curve25519_setup_defaults_php) {
     //
     VSCF_HANDLE_STATUS (status);
 
-
-
     goto success;
 
 fail:
@@ -27421,8 +27340,6 @@ PHP_FUNCTION(vscf_curve25519_restore_alg_info_php) {
     // Handle error
     //
     VSCF_HANDLE_STATUS (status);
-
-
 
     goto success;
 
@@ -29286,8 +29203,6 @@ PHP_FUNCTION(vscf_alg_info_der_serializer_setup_defaults_php) {
     // Call main function
     //
     vscf_alg_info_der_serializer_setup_defaults(alg_info_der_serializer);
-
-
 }
 
 //
@@ -29543,8 +29458,6 @@ PHP_FUNCTION(vscf_alg_info_der_deserializer_setup_defaults_php) {
     // Call main function
     //
     vscf_alg_info_der_deserializer_setup_defaults(alg_info_der_deserializer);
-
-
 }
 
 //
@@ -29738,8 +29651,6 @@ PHP_FUNCTION(vscf_message_info_der_serializer_setup_defaults_php) {
     // Call main function
     //
     vscf_message_info_der_serializer_setup_defaults(message_info_der_serializer);
-
-
 }
 
 //

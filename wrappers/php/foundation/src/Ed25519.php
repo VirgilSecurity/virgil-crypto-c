@@ -241,7 +241,7 @@ class Ed25519 implements Alg, KeyAlg, KeyCipher, KeySigner, ComputeSharedKey
     */
     public function canEncrypt(PublicKey $publicKey, int $dataLen): bool
     {
-        return vscf_ed25519_can_encrypt_php($this->ctx, $publicKey->getCtx(), , $dataLen);
+        return vscf_ed25519_can_encrypt_php($this->ctx, $publicKey->getCtx(), $dataLen);
     }
 
     /**
@@ -253,7 +253,7 @@ class Ed25519 implements Alg, KeyAlg, KeyCipher, KeySigner, ComputeSharedKey
     */
     public function encryptedLen(PublicKey $publicKey, int $dataLen): int
     {
-        return vscf_ed25519_encrypted_len_php($this->ctx, $publicKey->getCtx(), , $dataLen);
+        return vscf_ed25519_encrypted_len_php($this->ctx, $publicKey->getCtx(), $dataLen);
     }
 
     /**
@@ -266,7 +266,7 @@ class Ed25519 implements Alg, KeyAlg, KeyCipher, KeySigner, ComputeSharedKey
     */
     public function encrypt(PublicKey $publicKey, string $data): string
     {
-        return vscf_ed25519_encrypt_php($this->ctx, $publicKey->getCtx(), , $data);
+        return vscf_ed25519_encrypt_php($this->ctx, $publicKey->getCtx(), $data);
     }
 
     /**
@@ -279,7 +279,7 @@ class Ed25519 implements Alg, KeyAlg, KeyCipher, KeySigner, ComputeSharedKey
     */
     public function canDecrypt(PrivateKey $privateKey, int $dataLen): bool
     {
-        return vscf_ed25519_can_decrypt_php($this->ctx, $privateKey->getCtx(), , $dataLen);
+        return vscf_ed25519_can_decrypt_php($this->ctx, $privateKey->getCtx(), $dataLen);
     }
 
     /**
@@ -291,7 +291,7 @@ class Ed25519 implements Alg, KeyAlg, KeyCipher, KeySigner, ComputeSharedKey
     */
     public function decryptedLen(PrivateKey $privateKey, int $dataLen): int
     {
-        return vscf_ed25519_decrypted_len_php($this->ctx, $privateKey->getCtx(), , $dataLen);
+        return vscf_ed25519_decrypted_len_php($this->ctx, $privateKey->getCtx(), $dataLen);
     }
 
     /**
@@ -304,7 +304,7 @@ class Ed25519 implements Alg, KeyAlg, KeyCipher, KeySigner, ComputeSharedKey
     */
     public function decrypt(PrivateKey $privateKey, string $data): string
     {
-        return vscf_ed25519_decrypt_php($this->ctx, $privateKey->getCtx(), , $data);
+        return vscf_ed25519_decrypt_php($this->ctx, $privateKey->getCtx(), $data);
     }
 
     /**
@@ -340,7 +340,7 @@ class Ed25519 implements Alg, KeyAlg, KeyCipher, KeySigner, ComputeSharedKey
     */
     public function signHash(PrivateKey $privateKey, string $digest): string
     {
-        return vscf_ed25519_sign_hash_php($this->ctx, $privateKey->getCtx(), , $digest);
+        return vscf_ed25519_sign_hash_php($this->ctx, $privateKey->getCtx(), $digest);
     }
 
     /**
@@ -364,7 +364,7 @@ class Ed25519 implements Alg, KeyAlg, KeyCipher, KeySigner, ComputeSharedKey
     */
     public function verifyHash(PublicKey $publicKey, string $digest, string $signature): bool
     {
-        return vscf_ed25519_verify_hash_php($this->ctx, $publicKey->getCtx(), , $digest, , $signature);
+        return vscf_ed25519_verify_hash_php($this->ctx, $publicKey->getCtx(), $digest, $signature);
     }
 
     /**
@@ -378,7 +378,7 @@ class Ed25519 implements Alg, KeyAlg, KeyCipher, KeySigner, ComputeSharedKey
     */
     public function computeSharedKey(PublicKey $publicKey, PrivateKey $privateKey): string
     {
-        return vscf_ed25519_compute_shared_key_php($this->ctx, $publicKey->getCtx(), , $privateKey->getCtx());
+        return vscf_ed25519_compute_shared_key_php($this->ctx, $publicKey->getCtx(), $privateKey->getCtx());
     }
 
     /**

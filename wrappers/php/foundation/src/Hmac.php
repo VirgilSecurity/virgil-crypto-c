@@ -129,7 +129,7 @@ class Hmac implements Alg, Mac
     */
     public function mac(string $key, string $data): string
     {
-        return vscf_hmac_mac_php($this->ctx, $key, , $data);
+        return vscf_hmac_mac_php($this->ctx, $key, $data);
     }
 
     /**
