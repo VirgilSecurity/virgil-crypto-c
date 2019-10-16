@@ -35,6 +35,8 @@
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
 
+use VirgilCrypto\Foundation\KeyAsn1Deserializer;
+
 require_once 'KeyAsn1Deserializer.php';
 
 class KeyAsn1DeserializerTest extends \PHPUnit\Framework\TestCase

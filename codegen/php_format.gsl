@@ -98,6 +98,13 @@ function php_format_high_level_method_body (in_php_method)
     elsif my.in_php_method.return_interface = 1
 
         my._arguments = "$this->ctx"
+        my._dd = ", "
+
+        if my.in_php_method.declaration = "public static "
+            my._arguments = ""
+            my._dd = ""
+        endif
+
         for my.in_php_method.php_argument as php_argument0
 
             my._arg = php_argument0.name
@@ -105,8 +112,16 @@ function php_format_high_level_method_body (in_php_method)
                 my._arg = "$(php_argument0.name:)->getCtx()"
             endif
 
-            my._d = ", "
-            my._arguments += my._d + my._arg
+            if first() & my._dd <> ""
+                my._d = ", "
+            endif
+
+            my._d = ""
+            if ! last()
+                my._d = ", "
+            endif
+
+            my._arguments += my._dd + my._arg + my._d
         endfor
 
         my._function_name = my.in_php_method.function_name
@@ -130,6 +145,13 @@ function php_format_high_level_method_body (in_php_method)
         endif
 
         my._arguments = "$this->ctx"
+        my._dd = ", "
+
+        if my.in_php_method.declaration = "public static "
+            my._arguments = ""
+            my._dd = ""
+        endif
+
         for my.in_php_method.php_argument as php_argument0
 
             my._arg = php_argument0.name
@@ -137,8 +159,16 @@ function php_format_high_level_method_body (in_php_method)
                 my._arg = "$(php_argument0.name:)->getCtx()"
             endif
 
-            my._d = ", "
-            my._arguments += my._d + my._arg
+            if first() & my._dd <> ""
+                my._d = ", "
+            endif
+
+            my._d = ""
+            if ! last()
+                my._d = ", "
+            endif
+
+            my._arguments += my._dd + my._arg + my._d
         endfor
 
         my._function_name = my.in_php_method.function_name

@@ -35,6 +35,8 @@
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
 
+use VirgilCrypto\Foundation\KeyProvider;
+
 require_once 'KeyProvider.php';
 
 class KeyProviderTest extends \PHPUnit\Framework\TestCase

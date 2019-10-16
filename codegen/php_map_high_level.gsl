@@ -568,7 +568,11 @@ function php_map_high_level_argument (in_argument, in_php_module, out_php_argume
         if string_in(my.in_argument.type, "size, integer, unsigned")
             my._type = "int"
         elsif my.in_argument.type = "byte"
-            my._type = "string"
+            if my.in_argument.is_reference = 1
+                my._type = "string"
+            else 
+                my._type = "int"
+            endif
         elsif my.in_argument.type = "boolean"
             my._type = "bool"
         else

@@ -366,6 +366,7 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
 
                         my._pointer = ""
                         if defined(return_argument0.is_reference) & return_argument0.is_reference = 1
+                            #echo_debug_item(return_argument0)
                             my._pointer = "*"
                         endif
 
@@ -786,9 +787,14 @@ function php_map_low_level_argument (in_argument, in_php_project, out_argument, 
             my._type_c = class_derive_c_instance_type(my.in_argument)
         elsif my.in_argument.type = "byte"
             my._type0 = "byte"
-            my._type = "int"
-            my._zend_type = "IS_LONG"
             my._type_c = class_derive_c_instance_type(my.in_argument)
+            if my.in_argument.is_reference = 1
+                my._type = "string"
+                my._zend_type = "IS_STRING"
+            else 
+                my._type = "int"
+                my._zend_type = "IS_LONG"
+            endif
         elsif my.in_argument.type = "boolean"
             my._type0 = my.in_argument.type
             my._type = "zend_bool"
