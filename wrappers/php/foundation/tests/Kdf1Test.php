@@ -35,8 +35,7 @@
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
 
-use VirgilCrypto\Foundation\Kdf1;
-use VirgilCrypto\Foundation\Sha256;
+namespace VirgilCrypto\Foundation;
 
 require_once 'Kdf1.php';
 require_once 'Sha256.php';

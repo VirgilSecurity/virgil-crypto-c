@@ -201,6 +201,7 @@ function php_create_implementation_module (implementation, php_project, meta)
     new php_module to my.php_project
         .name = "$(my.implementation.name:Pascal)"
         .name0 = "$(my.implementation.name:c)"
+        .name_ = my.implementation.name
         .source_file_name = 0.name + ".php"
         .source_dir = cat_path (my.php_project.source_dir, "src")
         .source_file_path = cat_path (0.source_dir, 0.source_file_name)
@@ -422,6 +423,19 @@ function php_finalize_custom_modules (source, php_project, meta)
         new class to my._i
             .name = "$(my.php_project.project0:) implementation"
             .c_prefix = "c_prefix_$(0.name:c)"
+
+            if count(my.source.implementation)
+                for my.source.implementation as implementation0 by implementation0.name
+                    my.counter ?= 1
+
+                    new constant to class
+                        .name = php_derive_high_level_constant_name(implementation0)
+                        .value = my.counter
+                    endnew
+
+                    my.counter += 1
+                endfor
+            endif
         endnew
 
         new php_module to my.php_project

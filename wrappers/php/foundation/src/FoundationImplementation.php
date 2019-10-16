@@ -40,6 +40,49 @@ namespace VirgilCrypto\Foundation;
 class FoundationImplementation
 {
 
+    const AES256_CBC = 1;
+    const AES256_GCM = 2;
+    const ALG_INFO_DER_DESERIALIZER = 3;
+    const ALG_INFO_DER_SERIALIZER = 4;
+    const ASN1RD = 5;
+    const ASN1WR = 6;
+    const CIPHER_ALG_INFO = 7;
+    const CTR_DRBG = 8;
+    const CURVE25519 = 9;
+    const ECC = 10;
+    const ECC_ALG_INFO = 11;
+    const ECC_PRIVATE_KEY = 12;
+    const ECC_PUBLIC_KEY = 13;
+    const ED25519 = 14;
+    const ENTROPY_ACCUMULATOR = 15;
+    const FAKE_RANDOM = 16;
+    const HASH_BASED_ALG_INFO = 17;
+    const HKDF = 18;
+    const HMAC = 19;
+    const KDF1 = 20;
+    const KDF2 = 21;
+    const KEY_ASN1_DESERIALIZER = 22;
+    const KEY_ASN1_SERIALIZER = 23;
+    const KEY_MATERIAL_RNG = 24;
+    const MESSAGE_INFO_DER_SERIALIZER = 25;
+    const PBE_ALG_INFO = 26;
+    const PKCS5_PBES2 = 27;
+    const PKCS5_PBKDF2 = 28;
+    const PKCS8_SERIALIZER = 29;
+    const RAW_PRIVATE_KEY = 30;
+    const RAW_PUBLIC_KEY = 31;
+    const RSA = 32;
+    const RSA_PRIVATE_KEY = 33;
+    const RSA_PUBLIC_KEY = 34;
+    const SALTED_KDF_ALG_INFO = 35;
+    const SEC1_SERIALIZER = 36;
+    const SEED_ENTROPY_SOURCE = 37;
+    const SHA224 = 38;
+    const SHA256 = 39;
+    const SHA384 = 40;
+    const SHA512 = 41;
+    const SIMPLE_ALG_INFO = 42;
+
     /**
     * Wrap C implementation object to the PHP object that implements protocol Cipher.
     *
@@ -52,10 +95,10 @@ class FoundationImplementation
         $implTag = vscf_impl_tag_php($ctx);
 
         switch ($implTag) {
-            case "Aes256Gcm":
+            case self::AES256_GCM:
                 return (new Aes256Gcm($ctx));
                 break;
-            case "Aes256Cbc":
+            case self::AES256_CBC:
                 return (new Aes256Cbc($ctx));
                 break;
             default:
@@ -76,7 +119,7 @@ class FoundationImplementation
         $implTag = vscf_impl_tag_php($ctx);
 
         switch ($implTag) {
-            case "Aes256Gcm":
+            case self::AES256_GCM:
                 return (new Aes256Gcm($ctx));
                 break;
             default:
@@ -97,7 +140,7 @@ class FoundationImplementation
         $implTag = vscf_impl_tag_php($ctx);
 
         switch ($implTag) {
-            case "Aes256Gcm":
+            case self::AES256_GCM:
                 return (new Aes256Gcm($ctx));
                 break;
             default:
@@ -118,7 +161,7 @@ class FoundationImplementation
         $implTag = vscf_impl_tag_php($ctx);
 
         switch ($implTag) {
-            case "Aes256Gcm":
+            case self::AES256_GCM:
                 return (new Aes256Gcm($ctx));
                 break;
             default:
@@ -139,7 +182,7 @@ class FoundationImplementation
         $implTag = vscf_impl_tag_php($ctx);
 
         switch ($implTag) {
-            case "Aes256Gcm":
+            case self::AES256_GCM:
                 return (new Aes256Gcm($ctx));
                 break;
             default:
@@ -160,10 +203,10 @@ class FoundationImplementation
         $implTag = vscf_impl_tag_php($ctx);
 
         switch ($implTag) {
-            case "Aes256Gcm":
+            case self::AES256_GCM:
                 return (new Aes256Gcm($ctx));
                 break;
-            case "Aes256Cbc":
+            case self::AES256_CBC:
                 return (new Aes256Cbc($ctx));
                 break;
             default:
@@ -184,13 +227,13 @@ class FoundationImplementation
         $implTag = vscf_impl_tag_php($ctx);
 
         switch ($implTag) {
-            case "Aes256Gcm":
+            case self::AES256_GCM:
                 return (new Aes256Gcm($ctx));
                 break;
-            case "Aes256Cbc":
+            case self::AES256_CBC:
                 return (new Aes256Cbc($ctx));
                 break;
-            case "Pkcs5Pbes2":
+            case self::PKCS5_PBES2:
                 return (new Pkcs5Pbes2($ctx));
                 break;
             default:
@@ -211,13 +254,13 @@ class FoundationImplementation
         $implTag = vscf_impl_tag_php($ctx);
 
         switch ($implTag) {
-            case "Aes256Gcm":
+            case self::AES256_GCM:
                 return (new Aes256Gcm($ctx));
                 break;
-            case "Aes256Cbc":
+            case self::AES256_CBC:
                 return (new Aes256Cbc($ctx));
                 break;
-            case "Pkcs5Pbes2":
+            case self::PKCS5_PBES2:
                 return (new Pkcs5Pbes2($ctx));
                 break;
             default:
@@ -238,10 +281,10 @@ class FoundationImplementation
         $implTag = vscf_impl_tag_php($ctx);
 
         switch ($implTag) {
-            case "Hkdf":
+            case self::HKDF:
                 return (new Hkdf($ctx));
                 break;
-            case "Pkcs5Pbkdf2":
+            case self::PKCS5_PBKDF2:
                 return (new Pkcs5Pbkdf2($ctx));
                 break;
             default:
@@ -262,16 +305,16 @@ class FoundationImplementation
         $implTag = vscf_impl_tag_php($ctx);
 
         switch ($implTag) {
-            case "Sha224":
+            case self::SHA224:
                 return (new Sha224($ctx));
                 break;
-            case "Sha256":
+            case self::SHA256:
                 return (new Sha256($ctx));
                 break;
-            case "Sha384":
+            case self::SHA384:
                 return (new Sha384($ctx));
                 break;
-            case "Sha512":
+            case self::SHA512:
                 return (new Sha512($ctx));
                 break;
             default:
@@ -292,7 +335,7 @@ class FoundationImplementation
         $implTag = vscf_impl_tag_php($ctx);
 
         switch ($implTag) {
-            case "Hmac":
+            case self::HMAC:
                 return (new Hmac($ctx));
                 break;
             default:
@@ -313,16 +356,16 @@ class FoundationImplementation
         $implTag = vscf_impl_tag_php($ctx);
 
         switch ($implTag) {
-            case "Hkdf":
+            case self::HKDF:
                 return (new Hkdf($ctx));
                 break;
-            case "Kdf1":
+            case self::KDF1:
                 return (new Kdf1($ctx));
                 break;
-            case "Kdf2":
+            case self::KDF2:
                 return (new Kdf2($ctx));
                 break;
-            case "Pkcs5Pbkdf2":
+            case self::PKCS5_PBKDF2:
                 return (new Pkcs5Pbkdf2($ctx));
                 break;
             default:
@@ -343,13 +386,13 @@ class FoundationImplementation
         $implTag = vscf_impl_tag_php($ctx);
 
         switch ($implTag) {
-            case "CtrDrbg":
+            case self::CTR_DRBG:
                 return (new CtrDrbg($ctx));
                 break;
-            case "FakeRandom":
+            case self::FAKE_RANDOM:
                 return (new FakeRandom($ctx));
                 break;
-            case "KeyMaterialRng":
+            case self::KEY_MATERIAL_RNG:
                 return (new KeyMaterialRng($ctx));
                 break;
             default:
@@ -370,13 +413,13 @@ class FoundationImplementation
         $implTag = vscf_impl_tag_php($ctx);
 
         switch ($implTag) {
-            case "EntropyAccumulator":
+            case self::ENTROPY_ACCUMULATOR:
                 return (new EntropyAccumulator($ctx));
                 break;
-            case "FakeRandom":
+            case self::FAKE_RANDOM:
                 return (new FakeRandom($ctx));
                 break;
-            case "SeedEntropySource":
+            case self::SEED_ENTROPY_SOURCE:
                 return (new SeedEntropySource($ctx));
                 break;
             default:
@@ -397,22 +440,22 @@ class FoundationImplementation
         $implTag = vscf_impl_tag_php($ctx);
 
         switch ($implTag) {
-            case "RsaPublicKey":
+            case self::RSA_PUBLIC_KEY:
                 return (new RsaPublicKey($ctx));
                 break;
-            case "RsaPrivateKey":
+            case self::RSA_PRIVATE_KEY:
                 return (new RsaPrivateKey($ctx));
                 break;
-            case "EccPublicKey":
+            case self::ECC_PUBLIC_KEY:
                 return (new EccPublicKey($ctx));
                 break;
-            case "EccPrivateKey":
+            case self::ECC_PRIVATE_KEY:
                 return (new EccPrivateKey($ctx));
                 break;
-            case "RawPublicKey":
+            case self::RAW_PUBLIC_KEY:
                 return (new RawPublicKey($ctx));
                 break;
-            case "RawPrivateKey":
+            case self::RAW_PRIVATE_KEY:
                 return (new RawPrivateKey($ctx));
                 break;
             default:
@@ -433,16 +476,16 @@ class FoundationImplementation
         $implTag = vscf_impl_tag_php($ctx);
 
         switch ($implTag) {
-            case "Rsa":
+            case self::RSA:
                 return (new Rsa($ctx));
                 break;
-            case "Ecc":
+            case self::ECC:
                 return (new Ecc($ctx));
                 break;
-            case "Ed25519":
+            case self::ED25519:
                 return (new Ed25519($ctx));
                 break;
-            case "Curve25519":
+            case self::CURVE25519:
                 return (new Curve25519($ctx));
                 break;
             default:
@@ -463,13 +506,13 @@ class FoundationImplementation
         $implTag = vscf_impl_tag_php($ctx);
 
         switch ($implTag) {
-            case "RsaPublicKey":
+            case self::RSA_PUBLIC_KEY:
                 return (new RsaPublicKey($ctx));
                 break;
-            case "EccPublicKey":
+            case self::ECC_PUBLIC_KEY:
                 return (new EccPublicKey($ctx));
                 break;
-            case "RawPublicKey":
+            case self::RAW_PUBLIC_KEY:
                 return (new RawPublicKey($ctx));
                 break;
             default:
@@ -490,13 +533,13 @@ class FoundationImplementation
         $implTag = vscf_impl_tag_php($ctx);
 
         switch ($implTag) {
-            case "RsaPrivateKey":
+            case self::RSA_PRIVATE_KEY:
                 return (new RsaPrivateKey($ctx));
                 break;
-            case "EccPrivateKey":
+            case self::ECC_PRIVATE_KEY:
                 return (new EccPrivateKey($ctx));
                 break;
-            case "RawPrivateKey":
+            case self::RAW_PRIVATE_KEY:
                 return (new RawPrivateKey($ctx));
                 break;
             default:
@@ -517,16 +560,16 @@ class FoundationImplementation
         $implTag = vscf_impl_tag_php($ctx);
 
         switch ($implTag) {
-            case "Rsa":
+            case self::RSA:
                 return (new Rsa($ctx));
                 break;
-            case "Ecc":
+            case self::ECC:
                 return (new Ecc($ctx));
                 break;
-            case "Ed25519":
+            case self::ED25519:
                 return (new Ed25519($ctx));
                 break;
-            case "Curve25519":
+            case self::CURVE25519:
                 return (new Curve25519($ctx));
                 break;
             default:
@@ -547,13 +590,13 @@ class FoundationImplementation
         $implTag = vscf_impl_tag_php($ctx);
 
         switch ($implTag) {
-            case "Rsa":
+            case self::RSA:
                 return (new Rsa($ctx));
                 break;
-            case "Ecc":
+            case self::ECC:
                 return (new Ecc($ctx));
                 break;
-            case "Ed25519":
+            case self::ED25519:
                 return (new Ed25519($ctx));
                 break;
             default:
@@ -574,13 +617,13 @@ class FoundationImplementation
         $implTag = vscf_impl_tag_php($ctx);
 
         switch ($implTag) {
-            case "Ecc":
+            case self::ECC:
                 return (new Ecc($ctx));
                 break;
-            case "Ed25519":
+            case self::ED25519:
                 return (new Ed25519($ctx));
                 break;
-            case "Curve25519":
+            case self::CURVE25519:
                 return (new Curve25519($ctx));
                 break;
             default:
@@ -601,13 +644,13 @@ class FoundationImplementation
         $implTag = vscf_impl_tag_php($ctx);
 
         switch ($implTag) {
-            case "Pkcs8Serializer":
+            case self::PKCS8_SERIALIZER:
                 return (new Pkcs8Serializer($ctx));
                 break;
-            case "Sec1Serializer":
+            case self::SEC1_SERIALIZER:
                 return (new Sec1Serializer($ctx));
                 break;
-            case "KeyAsn1Serializer":
+            case self::KEY_ASN1_SERIALIZER:
                 return (new KeyAsn1Serializer($ctx));
                 break;
             default:
@@ -628,7 +671,7 @@ class FoundationImplementation
         $implTag = vscf_impl_tag_php($ctx);
 
         switch ($implTag) {
-            case "KeyAsn1Deserializer":
+            case self::KEY_ASN1_DESERIALIZER:
                 return (new KeyAsn1Deserializer($ctx));
                 break;
             default:
@@ -649,7 +692,7 @@ class FoundationImplementation
         $implTag = vscf_impl_tag_php($ctx);
 
         switch ($implTag) {
-            case "Asn1rd":
+            case self::ASN1RD:
                 return (new Asn1rd($ctx));
                 break;
             default:
@@ -670,7 +713,7 @@ class FoundationImplementation
         $implTag = vscf_impl_tag_php($ctx);
 
         switch ($implTag) {
-            case "Asn1wr":
+            case self::ASN1WR:
                 return (new Asn1wr($ctx));
                 break;
             default:
@@ -691,52 +734,52 @@ class FoundationImplementation
         $implTag = vscf_impl_tag_php($ctx);
 
         switch ($implTag) {
-            case "Sha224":
+            case self::SHA224:
                 return (new Sha224($ctx));
                 break;
-            case "Sha256":
+            case self::SHA256:
                 return (new Sha256($ctx));
                 break;
-            case "Sha384":
+            case self::SHA384:
                 return (new Sha384($ctx));
                 break;
-            case "Sha512":
+            case self::SHA512:
                 return (new Sha512($ctx));
                 break;
-            case "Aes256Gcm":
+            case self::AES256_GCM:
                 return (new Aes256Gcm($ctx));
                 break;
-            case "Aes256Cbc":
+            case self::AES256_CBC:
                 return (new Aes256Cbc($ctx));
                 break;
-            case "Rsa":
+            case self::RSA:
                 return (new Rsa($ctx));
                 break;
-            case "Ecc":
+            case self::ECC:
                 return (new Ecc($ctx));
                 break;
-            case "Hmac":
+            case self::HMAC:
                 return (new Hmac($ctx));
                 break;
-            case "Hkdf":
+            case self::HKDF:
                 return (new Hkdf($ctx));
                 break;
-            case "Kdf1":
+            case self::KDF1:
                 return (new Kdf1($ctx));
                 break;
-            case "Kdf2":
+            case self::KDF2:
                 return (new Kdf2($ctx));
                 break;
-            case "Pkcs5Pbkdf2":
+            case self::PKCS5_PBKDF2:
                 return (new Pkcs5Pbkdf2($ctx));
                 break;
-            case "Pkcs5Pbes2":
+            case self::PKCS5_PBES2:
                 return (new Pkcs5Pbes2($ctx));
                 break;
-            case "Ed25519":
+            case self::ED25519:
                 return (new Ed25519($ctx));
                 break;
-            case "Curve25519":
+            case self::CURVE25519:
                 return (new Curve25519($ctx));
                 break;
             default:
@@ -757,22 +800,22 @@ class FoundationImplementation
         $implTag = vscf_impl_tag_php($ctx);
 
         switch ($implTag) {
-            case "SimpleAlgInfo":
+            case self::SIMPLE_ALG_INFO:
                 return (new SimpleAlgInfo($ctx));
                 break;
-            case "HashBasedAlgInfo":
+            case self::HASH_BASED_ALG_INFO:
                 return (new HashBasedAlgInfo($ctx));
                 break;
-            case "CipherAlgInfo":
+            case self::CIPHER_ALG_INFO:
                 return (new CipherAlgInfo($ctx));
                 break;
-            case "SaltedKdfAlgInfo":
+            case self::SALTED_KDF_ALG_INFO:
                 return (new SaltedKdfAlgInfo($ctx));
                 break;
-            case "PbeAlgInfo":
+            case self::PBE_ALG_INFO:
                 return (new PbeAlgInfo($ctx));
                 break;
-            case "EccAlgInfo":
+            case self::ECC_ALG_INFO:
                 return (new EccAlgInfo($ctx));
                 break;
             default:
@@ -793,7 +836,7 @@ class FoundationImplementation
         $implTag = vscf_impl_tag_php($ctx);
 
         switch ($implTag) {
-            case "AlgInfoDerSerializer":
+            case self::ALG_INFO_DER_SERIALIZER:
                 return (new AlgInfoDerSerializer($ctx));
                 break;
             default:
@@ -814,7 +857,7 @@ class FoundationImplementation
         $implTag = vscf_impl_tag_php($ctx);
 
         switch ($implTag) {
-            case "AlgInfoDerDeserializer":
+            case self::ALG_INFO_DER_DESERIALIZER:
                 return (new AlgInfoDerDeserializer($ctx));
                 break;
             default:
@@ -835,7 +878,7 @@ class FoundationImplementation
         $implTag = vscf_impl_tag_php($ctx);
 
         switch ($implTag) {
-            case "MessageInfoDerSerializer":
+            case self::MESSAGE_INFO_DER_SERIALIZER:
                 return (new MessageInfoDerSerializer($ctx));
                 break;
             default:
@@ -856,7 +899,7 @@ class FoundationImplementation
         $implTag = vscf_impl_tag_php($ctx);
 
         switch ($implTag) {
-            case "MessageInfoDerSerializer":
+            case self::MESSAGE_INFO_DER_SERIALIZER:
                 return (new MessageInfoDerSerializer($ctx));
                 break;
             default:

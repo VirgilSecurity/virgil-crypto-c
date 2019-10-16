@@ -35,7 +35,7 @@
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
 
-use VirgilCrypto\Phe\PheCipher;
+namespace VirgilCrypto\Phe;
 
 require_once 'PheCipher.php';
 

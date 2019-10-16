@@ -35,8 +35,7 @@
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
 
-use VirgilCrypto\Phe\PheServer;
-use VirgilCrypto\Phe\PheClient;
+namespace VirgilCrypto\Phe;
 
 require_once 'PheClient.php';
 require_once 'PheServer.php';

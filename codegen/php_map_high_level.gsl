@@ -79,37 +79,47 @@ function php_map_high_level (in_module, in_php_module, in_php_project, out_high_
         endnew
     endif
 
-    my._constant = ""
-
     for my.in_module.constructor as constructor0 where constructor0.visibility = "public" & constructor0.declaration = "public" & constructor0.scope = "public"
         constructor0.is_constructor = 1
         new php_method to my.out_high_level
             php_map_high_level_method (constructor0, my.in_php_module, my.in_type, php_method)
         endnew
     endfor
-        
-    for my.in_module.interface as interface0
 
-        my._d = ""
-        if ! last()
-            my._d = ", "
-        endif
+    my._constant = ""
 
-        new interface to my.out_high_level
-            .name = "$(interface0.name:Pascal)"
-            my._name = interface.name
-            my._implements += my._name + my._d
-        endnew
-
-        for interface0.constant as constant0
+    if my.in_type = "implementation_class"
+        for my.in_module.constant as constant0
             new constant to high_level
-                .name = php_derive_high_level_constant_name(constant0)
+                .name = constant0.name
                 .value = constant0.value
 
                 my._constant += format_left("const $(0.name:) = $(0.value:);", 0)
             endnew
         endfor
-    endfor
+    else
+        for my.in_module.interface as interface0
+            my._d = ""
+            if ! last()
+                my._d = ", "
+            endif
+
+            new interface to my.out_high_level
+                .name = "$(interface0.name:Pascal)"
+                my._name = interface.name
+                my._implements += my._name + my._d
+            endnew
+
+            for interface0.constant as constant0
+                new constant to high_level
+                    .name = php_derive_high_level_constant_name(constant0)
+                    .value = constant0.value
+
+                    my._constant += format_left("const $(0.name:) = $(0.value:);", 0)
+                endnew
+            endfor
+        endfor
+    endif
 
     new constants to my.out_high_level
         . = format_left(my._constant, 0)
@@ -193,8 +203,9 @@ function php_map_high_level (in_module, in_php_module, in_php_project, out_high_
 
             for my.in_php_project.php_module as php_module0 where php_module0.type = "implementation"
                 for php_module0->high_level.interface as interface1 where interface1.name = "$(interface0.name0:Pascal)"
+                    my._n = php_derive_high_level_constant_name(php_module0)
                     my._custom_code += format_left("\
-                        case \"$(php_module0.name:Pascal)\":
+                        case self::$(my._n:):
                             return (new $(php_module0.name:Pascal)($ctx));
                             break;
                         ", 1)

@@ -48,7 +48,11 @@ gsl from "common.gsl"
 function php_derive_high_level_constant_name (in_constant)
     check_arguments (my, "in_constant", my)
 
-    my._res = "$(my.in_constant.name:c)"
+    if defined (my.in_constant.name_)
+        my._res = "$(my.in_constant.name_:c)"
+    else 
+        my._res = "$(my.in_constant.name:c)"
+    endif
     my._res = "$(my._res:UPPER)"
 
     return my._res

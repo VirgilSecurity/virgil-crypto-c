@@ -225,7 +225,7 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
                             elsif argument0.zend_type = "_IS_BOOL"
                                 # TODO Need to be checked
                                 my._h2 += format_left("\
-                                    zend_bool *in_$(argument0.name:);
+                                    zend_bool in_$(argument0.name:);
                                     ", 0)
                             else
                                 echo_debug_item(argument0)
@@ -365,6 +365,13 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
                     if argument0.type0 = "boolean"
                         my._mapper += format_left("$(argument0.type_c:) $(argument0.name:) = ($(argument0.type_c:))in_$(argument0.name:);", 0)
                     endif
+
+                    if argument0.access = "disown"
+                        my._mapper += format_left("\
+                            // Shallow copy (.access=\"disown\")
+                            $(argument0.type_c:) *$(argument0.name:)_tmp = $(argument0.shallow_copy:)($(argument0.name:));
+                            ", 0)
+                    endif
                 endfor
 
                 if my._mapper <> ""
@@ -446,13 +453,7 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
 
                     my._return = format_left(my._return, 0)
 
-                    my._access_disown = ""
-
                     for function.argument as argument0
-                        if argument0.access = "disown"
-                            my._access_disown += format_left("$(argument0.type_c:) *$(argument0.name:)_tmp = $(argument0.shallow_copy:)($(argument0.name:));", 0)
-                        endif
-
                         my._dd = ""
                         if first() & my._e = 1
                             my._dd = ", "
@@ -466,7 +467,7 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
                         if argument0.name = "error"
                             my._args += my._dd + "&$(argument0.name:)" + my._d
                         else
-                            if string_in (argument0.type0, "interface, class, implementation") & argument0.access = "disown"
+                            if string_in (argument0.type0, "interface, class, impl") & argument0.access = "disown"
                                 my._args += my._dd + "&$(argument0.name:)_tmp" + my._d
                             else
                                 my._args += my._dd + "$(argument0.name:)" + my._d
@@ -479,10 +480,6 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
                     my._func = "$(function.name0:)"
 
                     my._res = my._c + my._return + my._access_const + my._func + my._args
-
-                    if my._access_disown <> ""
-                        my._res = my._access_disown + my._res
-                    endif
 
                     if my._data_string_proxy = 1
                         my._res = my._res + my._data_string_proxy_call

@@ -35,7 +35,7 @@
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
 
-use VirgilCrypto\Foundation\KeyProvider;
+namespace VirgilCrypto\Foundation;
 
 require_once 'KeyProvider.php';
 

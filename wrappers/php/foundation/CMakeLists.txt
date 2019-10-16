@@ -67,7 +67,12 @@ endif()
 
 target_sources(foundation_php
         PRIVATE
-            $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/extension/extension.c>
+            $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/extension/extension.c>
+        )
+
+target_include_directories(foundation_php
+        PUBLIC
+            $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/extension>
         )
 
 target_link_libraries(foundation_php

@@ -8203,7 +8203,13 @@ PHP_FUNCTION(vscf_signed_data_info_set_hash_alg_info_php) {
     vscf_impl_t *hash_alg_info = zend_fetch_resource_ex(in_hash_alg_info, VSCF_SIGNED_DATA_INFO_PHP_RES_NAME, le_vscf_signed_data_info_t);
     VSCF_ASSERT_PTR(hash_alg_info);
 
-    vscf_impl_t *hash_alg_info_tmp = vscf_impl_shallow_copy(hash_alg_info);//
+    //
+    // Argument type mapping
+    //
+    // Shallow copy (.access="disown")
+    vscf_impl_t *hash_alg_info_tmp = vscf_impl_shallow_copy(hash_alg_info);
+
+    //
     // Call main function
     //
     vscf_signed_data_info_set_hash_alg_info(signed_data_info, &hash_alg_info_tmp);
@@ -13992,7 +13998,7 @@ PHP_FUNCTION(vscf_asn1wr_finish_php) {
     // Declare input argument
     //
     zval *in_ctx = NULL;
-    zend_bool *in_do_not_adjust;
+    zend_bool in_do_not_adjust;
 
     //
     // Parse arguments
@@ -15063,7 +15069,7 @@ PHP_FUNCTION(vscf_asn1wr_write_bool_php) {
     // Declare input argument
     //
     zval *in_ctx = NULL;
-    zend_bool *in_value;
+    zend_bool in_value;
 
     //
     // Parse arguments
@@ -23692,10 +23698,16 @@ PHP_FUNCTION(vscf_raw_private_key_set_public_key_php) {
     vscf_raw_public_key_t *raw_public_key = zend_fetch_resource_ex(in_raw_public_key, VSCF_RAW_PRIVATE_KEY_PHP_RES_NAME, le_vscf_raw_private_key_t);
     VSCF_ASSERT_PTR(raw_public_key);
 
-    vscf_raw_public_key_t *raw_public_key_tmp = vscf_raw_public_key_shallow_copy(raw_public_key);//
+    //
+    // Argument type mapping
+    //
+    // Shallow copy (.access="disown")
+    vscf_raw_public_key_t *raw_public_key_tmp = vscf_raw_public_key_shallow_copy(raw_public_key);
+
+    //
     // Call main function
     //
-    vscf_raw_private_key_set_public_key(raw_private_key, raw_public_key);
+    vscf_raw_private_key_set_public_key(raw_private_key, &raw_public_key_tmp);
 }
 
 //

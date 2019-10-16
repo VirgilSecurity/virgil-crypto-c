@@ -35,7 +35,7 @@
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
 
-use VirgilCrypto\Foundation\KeyAsn1Deserializer;
+namespace VirgilCrypto\Foundation;
 
 require_once 'KeyAsn1Deserializer.php';
 

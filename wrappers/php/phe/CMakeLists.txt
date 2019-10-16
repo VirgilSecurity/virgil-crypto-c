@@ -67,12 +67,18 @@ endif()
 
 target_sources(phe_php
         PRIVATE
-            $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/extension/extension.c>
+            $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/extension/extension.c>
+        )
+
+target_include_directories(phe_php
+        PUBLIC
+            $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/extension>
         )
 
 target_link_libraries(phe_php
     PUBLIC
         vsc::phe
+        foundation_php
     PRIVATE
         phplib
         "$<$<STREQUAL:${CMAKE_SYSTEM_NAME},Darwin>:-undefined dynamic_lookup>"
