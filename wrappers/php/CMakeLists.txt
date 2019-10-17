@@ -83,7 +83,6 @@ else()
     message(WARNING "PHPUnit is not found - PHP tests will be disabled!")
 endif()
 
-
 # ---------------------------------------------------------------------------
 #   Add per project extension build
 # ---------------------------------------------------------------------------

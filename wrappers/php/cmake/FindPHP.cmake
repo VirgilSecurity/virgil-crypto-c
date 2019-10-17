@@ -67,6 +67,8 @@
 #   PHPUNIT_EXECUTABLE    - the full path to the 'phpunit' executable
 #   PHPUNIT_FOUND         - TRUE if 'phpunit' executable is found
 #   PHPUNIT_VERSION       - PHPUnit version as $major[.$minor[.$patch]]
+#   COMPOSER_FOUND        - TRUE if 'composer' executable is found
+#   COMPOSER_VERSION      - composer version as $major[.$minor[.$patch]]
 #
 #
 # Note, for Unix-like systems 'php-config' utility is used to find 'Devel' components.
@@ -96,6 +98,7 @@ if(WIN32)
     #
     find_program(PHP_EXECUTABLE NAMES php.exe PATHS "${PHP_HOME}")
     find_program(PHPUNIT_EXECUTABLE NAMES phpunit phpunit.phar PATHS "${PHPUNIT_HOME}")
+    find_program(COMPOSER_EXECUTABLE NAMES composer composer.phar)
 
     #
     # Set 'PHP_HOME' and 'PHPUNIT_HOME' if executables are found and variable are not defined.
@@ -158,6 +161,7 @@ if(WIN32)
 else()
     find_program(PHP_CONFIG_EXECUTABLE NAMES php5-config php-config)
     find_program(PHPUNIT_EXECUTABLE NAMES phpunit phpunit.phar)
+    find_program(COMPOSER_EXECUTABLE NAMES composer composer.phar)
 
 
     if(PHP_CONFIG_EXECUTABLE)
@@ -329,6 +333,7 @@ if(PHP_FIND_COMPONENTS)
             if(PHPUNIT_EXECUTABLE)
                 set(PHP_Test_FOUND TRUE)
                 set(PHPUNIT_FOUND TRUE)
+                set(COMPOSER_FOUND TRUE)
             endif()
         endif()
     endforeach()
@@ -384,9 +389,8 @@ else()
             set(PHP_Devel_FOUND TRUE)
         endif()
 
-        if(PHPUNIT_EXECUTABLE)
+        if(PHPUNIT_EXECUTABLE AND COMPOSER_EXECUTABLE)
             set(PHP_Test_FOUND TRUE)
-            set(PHPUNIT_FOUND TRUE)
         endif()
     endif()
 endif()
@@ -401,6 +405,7 @@ mark_as_advanced(
         PHP_EXECUTABLE
         PHP_CONFIG_EXECUTABLE
         PHPUNIT_EXECUTABLE
+        COMPOSER_EXECUTABLE
         PHP_INCLUDE_DIR
         PHP_INCLUDE_DIRS
         PHP_LIBRARIES

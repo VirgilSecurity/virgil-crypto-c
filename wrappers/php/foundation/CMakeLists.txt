@@ -86,10 +86,20 @@ target_link_libraries(foundation_php
 # ---------------------------------------------------------------------------
 #   Test
 # ---------------------------------------------------------------------------
-if(ENABLE_TESTING AND VIRGIL_PHP_TESTING AND PHP_EXECUTABLE AND PHPUNIT_EXECUTABLE)
+if(ENABLE_TESTING AND VIRGIL_PHP_TESTING AND PHP_EXECUTABLE AND PHPUNIT_EXECUTABLE AND COMPOSER_EXECUTABLE)
+    add_custom_target(test_composer_foundation_php ALL
+            COMMAND COMPOSER=composer_dev.json "${COMPOSER_EXECUTABLE}" install
+            COMMENT "Running composer install..."
+            WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
+            )
+
     add_test(
             NAME test_foundation_php
-            COMMAND "${PHP_EXECUTABLE}" -d "extension=$<TARGET_FILE:foundation_php>" -d safe_mode=Off "${PHPUNIT_EXECUTABLE}" --bootstrap "${CMAKE_CURRENT_LIST_DIR}/vendor/autoload.php" --include-path "${CMAKE_CURRENT_LIST_DIR}/src" "${CMAKE_CURRENT_LIST_DIR}/tests"
+            COMMAND "${PHP_EXECUTABLE}" 
+                    -d "extension=$<TARGET_FILE:foundation_php>" 
+                    -d safe_mode=Off "${PHPUNIT_EXECUTABLE}"
+                    --bootstrap "${CMAKE_CURRENT_LIST_DIR}/vendor/autoload.php" 
+                    --include-path "${CMAKE_CURRENT_LIST_DIR}/src" "${CMAKE_CURRENT_LIST_DIR}/tests"
             )
 endif()
 

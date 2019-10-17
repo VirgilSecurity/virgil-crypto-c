@@ -90,8 +90,11 @@ target_link_libraries(phe_php
 if(ENABLE_TESTING AND VIRGIL_PHP_TESTING AND PHP_EXECUTABLE AND PHPUNIT_EXECUTABLE)
     add_test(
             NAME test_phe_php
-            COMMAND "${PHP_EXECUTABLE}" -d "extension=$<TARGET_FILE:phe_php>" -d safe_mode=Off "${PHPUNIT_EXECUTABLE}"
-            --bootstrap "${CMAKE_CURRENT_LIST_DIR}/vendor/autoload.php" --include-path "${CMAKE_CURRENT_LIST_DIR}/src" "${CMAKE_CURRENT_LIST_DIR}/tests"
+            COMMAND "${PHP_EXECUTABLE}" 
+                    -d "extension=$<TARGET_FILE:phe_php>" 
+                    -d safe_mode=Off "${PHPUNIT_EXECUTABLE}"
+                    --bootstrap "${CMAKE_CURRENT_LIST_DIR}/vendor/autoload.php" 
+                    --include-path "${CMAKE_CURRENT_LIST_DIR}/src" "${CMAKE_CURRENT_LIST_DIR}/tests"
             )
 endif()
 
