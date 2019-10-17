@@ -165,29 +165,41 @@ function php_generate_source_low_level (in_php_module)
         endif
     endif
 
-    echo_trace ("Generate $(my.in_php_module.name:).c", my)
+    if defined(my.in_php_module.is_header) & my.in_php_module.is_header = 1
+        echo_trace ("Generate $(my.in_php_module.name:).h", my)
 
-    output my.in_php_module.source_file_path
+        output my.in_php_module.source_file_path
 
-    php_insert_code (my.in_php_module->licence, 0)
-    newline()
-    php_insert_code (my.in_php_module->include, 0)
-    newline()
-    php_insert_code(my.in_php_module->extension_status, 0)
-    newline()
-    php_insert_code (my.in_php_module->constants, 0)
-    newline()
-    php_insert_code (my.in_php_module->registered_resources, 0)
-    newline()
-    php_insert_code (my.in_php_module->init_func_declaration, 0)
-    newline()
-    php_insert_code (my.in_php_module->func_wrapping, 0)
-    newline()
-    php_insert_code (my.in_php_module->define_all_func_entries, 0)
-    newline()
-    php_insert_code (my.in_php_module->module_definitions, 0)
-    newline()
-    php_insert_code (my.in_php_module->init_func_definitions, 0)
+        php_insert_code (my.in_php_module->licence, 0)
+        newline()
+        php_insert_code (my.in_php_module->header_constants, 0)
+        newline()
+        php_insert_code (my.in_php_module->header_registered_resources, 0)
+    else
+        echo_trace ("Generate $(my.in_php_module.name:).c", my)
+
+        output my.in_php_module.source_file_path
+
+        php_insert_code (my.in_php_module->licence, 0)
+        newline()
+        php_insert_code (my.in_php_module->include, 0)
+        newline()
+        php_insert_code(my.in_php_module->extension_status, 0)
+        newline()
+        php_insert_code (my.in_php_module->constants, 0)
+        newline()
+        php_insert_code (my.in_php_module->registered_resources, 0)
+        newline()
+        php_insert_code (my.in_php_module->init_func_declaration, 0)
+        newline()
+        php_insert_code (my.in_php_module->func_wrapping, 0)
+        newline()
+        php_insert_code (my.in_php_module->define_all_func_entries, 0)
+        newline()
+        php_insert_code (my.in_php_module->module_definitions, 0)
+        newline()
+        php_insert_code (my.in_php_module->init_func_definitions, 0)
+    endif
 endfunction
 
 # ---------------------------------------------------------------------------

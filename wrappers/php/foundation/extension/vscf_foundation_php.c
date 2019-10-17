@@ -38,6 +38,7 @@
 #include <zend_exceptions.h>
 #include <zend_list.h>
 #include "vscf_assert.h"
+#include "vscf_foundation_php.h"
 #include "vscf_message_info.h"
 #include "vscf_key_recipient_info.h"
 #include "vscf_key_recipient_info_list.h"

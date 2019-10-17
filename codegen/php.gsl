@@ -405,6 +405,19 @@ function php_finalize_custom_modules (source, php_project, meta)
     new php_module to my.php_project
         .name = "$(my.php_project.prefix:c)_$(my.php_project.name:c)_php"
         .name0 = 0.name
+        .source_file_name = 0.name + ".h"
+        .source_dir = cat_path (my.php_project.source_dir, "extension")
+        .source_file_path = cat_path (0.source_dir, 0.source_file_name)
+        .version = my.php_project.version
+        .type = "extension"
+        .is_header = 1
+
+        php_map_low_level_extension(my.php_project, php_module)
+    endnew
+
+    new php_module to my.php_project
+        .name = "$(my.php_project.prefix:c)_$(my.php_project.name:c)_php"
+        .name0 = 0.name
         .source_file_name = 0.name + ".c"
         .source_dir = cat_path (my.php_project.source_dir, "extension")
         .source_file_path = cat_path (0.source_dir, 0.source_file_name)

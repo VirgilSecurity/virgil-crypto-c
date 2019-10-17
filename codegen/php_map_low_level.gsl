@@ -63,8 +63,16 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
         . = format_left("int le_$(my.in_php_project.prefix:)_$(my.out_low_level.name0:)_t;", 0)
     endnew
 
+    new header_registered_resource to my.out_low_level
+        . = format_left("extern int le_$(my.in_php_project.prefix:)_$(my.out_low_level.name0:)_t;", 0)
+    endnew
+
     new constant to my.out_low_level
         . = format_left("const char $(my.out_low_level.constant:) = \"$(my._t:)\";", 0)
+    endnew
+
+    new header_constant to my.out_low_level
+        . = format_left("extern const char $(my.out_low_level.constant:);", 0)
     endnew
 
     new init_func_def_dtor to my.out_low_level
@@ -1176,12 +1184,16 @@ function php_map_low_level_extension (in_php_project, out_php_module)
 
     my._include = ""
     my._registered_resources = format_left("int le_$(my.in_php_project.prefix)_impl_t;", 0)
+    my._header_registered_resources = format_left("extern int le_$(my.in_php_project.prefix)_impl_t;", 0)
     my._constants = format_left("const char $(my.in_php_project.prefix:UPPER)_IMPL_T_PHP_RES_NAME[] = \"$(my.in_php_project.prefix)_impl_t\";", 0)
+    my._header_constants = format_left("extern const char $(my.in_php_project.prefix:UPPER)_IMPL_T_PHP_RES_NAME[];", 0)
+
     my._init_func_def_dtor = ""
     my._init_func_def_list_destr = ""
     my._def_func_entries = ""
     my._func_wrapping = ""
     my._extension_status = ""
+
 
     for my.in_php_project.php_module as php_module0 where php_module0.name0 = "extension status"
         my._extension_status += php_module0->custom_code.
@@ -1196,7 +1208,9 @@ function php_map_low_level_extension (in_php_project, out_php_module)
         endif
         my._include += php_module0->low_level->include.
         my._registered_resources += php_module0->low_level->registered_resource.
+        my._header_registered_resources += php_module0->low_level->header_registered_resource.
         my._constants += php_module0->low_level->constant.
+        my._header_constants += php_module0->low_level->header_constant.
         my._init_func_def_dtor += php_module0->low_level->init_func_def_dtor.
         my._init_func_def_list_destr += php_module0->low_level->init_func_def_list_destr.
 
@@ -1269,6 +1283,7 @@ function php_map_low_level_extension (in_php_project, out_php_module)
             #include <zend_exceptions.h>
             #include <zend_list.h>
             #include \"$(my.in_php_project.prefix:)_assert.h\"
+            #include \"$(my.in_php_project.prefix:)_$(my.in_php_project.name:)_php.h\"
             ", 0)
 
         my._res = my._res + my._include
@@ -1289,9 +1304,21 @@ function php_map_low_level_extension (in_php_project, out_php_module)
         . = my._res
     endnew
 
+    new header_constants to my.out_php_module
+        my._c = php_format_extension_comment ("Constants")
+        my._res = my._c + my._header_constants
+        . = my._res
+    endnew
+
     new registered_resources to my.out_php_module
         my._c = php_format_extension_comment ("Registered resources")
         my._res = my._c + my._registered_resources
+        . = my._res
+    endnew
+
+    new header_registered_resources to my.out_php_module
+        my._c = php_format_extension_comment ("Registered resources")
+        my._res = my._c + my._header_registered_resources
         . = my._res
     endnew
 
