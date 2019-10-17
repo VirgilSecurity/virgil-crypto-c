@@ -51,7 +51,8 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
     my.out_low_level.name = "$(my.in_module.name:c)"
     my.out_low_level.name0 = "$(my.in_module.name:c)"
 
-    my._t = "$(my.in_php_project.prefix:)_$(my.out_low_level.name0:)"
+    my._wot = "$(my.in_php_project.prefix:)_$(my.out_low_level.name0:)"
+    my._t = "$(my._wot:)_t"
     my.out_low_level.constant = "$(my._t:UPPER)_PHP_RES_NAME[]"
 
     new include to my.out_low_level
@@ -63,20 +64,20 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
     endnew
 
     new constant to my.out_low_level
-        . = format_left("const char $(my.out_low_level.constant:) = \"$(my._t:)_t\";", 0)
+        . = format_left("const char $(my.out_low_level.constant:) = \"$(my._t:)\";", 0)
     endnew
 
     new init_func_def_dtor to my.out_low_level
         . = format_left("\
-            static void $(my._t:)_dtor_php(zend_resource *rsrc) {
-                $(my._t:)_delete(($(my._t:)_t *)rsrc->ptr);
+            static void $(my._wot:)_dtor_php(zend_resource *rsrc) {
+                $(my._wot:)_delete(($(my._t:) *)rsrc->ptr);
             }
             ", 0)
     endnew
 
     new init_func_def_list_destr to my.out_low_level
         . = format_left("\
-            le_$(my._t:)_t = zend_register_list_destructors_ex($(my._t:)_dtor_php, NULL, $(my._t:UPPER)_PHP_RES_NAME, module_number);
+            le_$(my._t:) = zend_register_list_destructors_ex($(my._wot:)_dtor_php, NULL, $(my._t:UPPER)_PHP_RES_NAME, module_number);
             ", 0)
     endnew
 
@@ -86,35 +87,29 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
         php_map_low_level_constructor_destructor (my.in_module, my.out_low_level)
     endif
 
-
     for my.in_module.dependency as dependency0
 
         my._dep_name = dependency0.name
 
-        if defined (dependency0.interface)
-            my._dep_class = dependency0.interface
-        elsif defined (dependency0.class)
-            my._dep_class = dependency0.class
-        elsif defined (dependency0.impl)
-            my._dep_class = dependency0.impl
-        else
-            echo_debug_item(dependency0)
-            echo_fatal("Not implemented (AY1000)", my)
-        endif
-
-        new method_temp to my.in_module
+        new method to my.in_module
             .name = "use $(my._dep_name:)"
             .visibility = "public"
             .scope = "public"
             .declaration = "public"
             .is_static = 0
             .return_type = "void"
+            .is_const = 0
+            .c_prefix = "vscf"
 
-            new argument to method_temp
-                .name = my._dep_name
-                .class = my._dep_class
-                .access = "readonly"
-            endnew
+            my.argument = item_copy_to(dependency0, method, "argument")
+            my.argument.access ?= "readwrite"
+
+            if dependency0.is_observers_return_status = 1
+                new return to method
+                    .enum = "status"
+                    .is_reference = 0
+                endnew
+            endif
         endnew
     endfor
 
@@ -258,24 +253,28 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
                 new parse_arguments to wrapper
                     my._c = php_format_extension_comment("Parse arguments")
                     my._h1 = format_left("ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, $(my._num_arguments:), $(my._num_arguments:))", 0)
-                    my._h2 = format_left("Z_PARAM_RESOURCE_EX(in_ctx, 1, 0)", 1)
-                    my._h3 = ""
+
+                    my._h2 = ""
+                    if function.is_static = 0
+                        my._h2 = format_left("Z_PARAM_RESOURCE_EX(in_ctx, 1, 0)", 1)
+                    endif
+
                     for function.argument as argument0 where ! string_in (argument0.type0, "buffer, error")
                             if argument0.zend_type = "IS_STRING"
-                                my._h3 += format_left("Z_PARAM_STRING_EX(in_$(argument0.name:), in_$(argument0.name:)_len, 1 /*check_null*/, 0 /*separate*/)", 1)
+                                my._h2 += format_left("Z_PARAM_STRING_EX(in_$(argument0.name:), in_$(argument0.name:)_len, 1 /*check_null*/, 0 /*separate*/)", 1)
                             elsif argument0.zend_type = "IS_LONG"
-                                my._h3 += format_left("Z_PARAM_LONG(in_$(argument0.name:))", 1)
+                                my._h2 += format_left("Z_PARAM_LONG(in_$(argument0.name:))", 1)
                             elsif argument0.zend_type = "IS_RESOURCE"
-                                my._h3 += format_left("Z_PARAM_RESOURCE_EX(in_$(argument0.name:), 1 /*check_null*/, 0 /*separate*/)", 1)
+                                my._h2 += format_left("Z_PARAM_RESOURCE_EX(in_$(argument0.name:), 1 /*check_null*/, 0 /*separate*/)", 1)
                             elsif argument0.zend_type = "_IS_BOOL"
-                                my._h3 += format_left("Z_PARAM_BOOL(in_$(argument0.name:))", 1)
+                                my._h2 += format_left("Z_PARAM_BOOL(in_$(argument0.name:))", 1)
                             else
                                 echo_debug_item(argument0)
                                 echo_fatal("Not implemented (AL1002)")
                             endif
                     endfor
-                    my._h4 = format_left("ZEND_PARSE_PARAMETERS_END();", 0)
-                    my._res = my._c + my._h1 + my._h2 + my._h3 + my._h4
+                    my._h3 = format_left("ZEND_PARSE_PARAMETERS_END();", 0)
+                    my._res = my._c + my._h1 + my._h2 + my._h3
 
                     . = format_left(my._res, 1)
                 endnew
@@ -286,26 +285,36 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
 
                 new proxy_call to wrapper
                     my._c = php_format_extension_comment("Proxy call")
-                    my._h1 = format_left("\
-                        $(my._t:c)_t *$(my.out_low_level.name0:c) = zend_fetch_resource_ex(in_ctx, $(my._t:UPPER)_PHP_RES_NAME, le_$(my._t:)_t);
-                        $(my.in_php_project.prefix:UPPER)_ASSERT_PTR($(my.out_low_level.name0:c));
-                        ", 0)
-                    my._h2 = ""
+
+                    my._h1 = ""
+                    if function.is_static = 0
+                        my._h1 = format_left("\
+                            $(my._t:c) *$(my.out_low_level.name0:c) = zend_fetch_resource_ex(in_ctx, $(my._t:UPPER)_PHP_RES_NAME, le_$(my._t:));
+                            $(my.in_php_project.prefix:UPPER)_ASSERT_PTR($(my.out_low_level.name0:c));
+                            ", 0)
+                    endif
 
                     for function.argument as argument0 where ! string_in (argument0.type0, "buffer, integer, enum, byte, boolean, unsigned")
                         if argument0.type = "vsc_data_t"
-                            my._h2 += format_left("vsc_data_t $(argument0.name:) = vsc_data((const byte*)in_$(argument0.name:), in_$(argument0.name:)_len);", 0)
-                        elsif string_in (argument0.type0, "interface, class, impl") 
-                            my._h2 += format_left("\
-                                $(argument0.type:c) *$(argument0.name:c) = zend_fetch_resource_ex(in_$(argument0.name:), $(my._t:UPPER)_PHP_RES_NAME, le_$(my._t:)_t);
-                                $(my.in_php_project.prefix:UPPER)_ASSERT_PTR($(argument0.name:c));
-                                ", 0)
+                            my._h1 += format_left("vsc_data_t $(argument0.name:) = vsc_data((const byte*)in_$(argument0.name:), in_$(argument0.name:)_len);", 0)
+                        elsif string_in (argument0.type0, "interface, class, impl")
+                            if argument0.type0 = "interface"
+                                my._h1 += format_left("\
+                                    $(argument0.type:c) *$(argument0.name:c) = zend_fetch_resource_ex(in_$(argument0.name:), $(argument0.type:UPPER)_PHP_RES_NAME, le_$(argument0.type:c));
+                                    $(my.in_php_project.prefix:UPPER)_ASSERT_PTR($(argument0.name:c));
+                                    ", 0)
+                            else
+                                my._h1 += format_left("\
+                                    $(argument0.type:c) *$(argument0.name:c) = zend_fetch_resource_ex(in_$(argument0.name:), $(argument0.type:UPPER)_PHP_RES_NAME, le_$(argument0.type:c));
+                                    $(my.in_php_project.prefix:UPPER)_ASSERT_PTR($(argument0.name:c));
+                                    ", 0)
+                            endif
                         elsif argument0.type0 = "size"
-                            my._h2 += format_left("
+                            my._h1 += format_left("
                                 size_t $(argument0.name:) = in_$(argument0.name:);
                                 ", 0)
                         elsif argument0.type0 = "error"
-                            my._h2 += format_left("
+                            my._h1 += format_left("
                                 $(function.prefix0:)_error_t error;
                                 $(function.prefix0:)_error_reset(&error);
                                 ", 0)
@@ -315,7 +324,7 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
                             echo_fatal("Not implemented (AF1000)")
                         endif
                     endfor
-                    my._res = my._c + my._h1 + "\n" + my._h2
+                    my._res = my._c + my._h1
 
                     . = format_left(my._res, 1)
                 endnew
@@ -812,7 +821,7 @@ function php_map_low_level_constructor_destructor (in_module, out_low_level)
                         //
                         // Fetch for type checking and then release
                         //
-                        $(my._a:)_t *$(function.entity0:c) = zend_fetch_resource_ex(in_ctx, $(my._a:UPPER)_PHP_RES_NAME, le_$(my._a:)_t);
+                        $(my._a:)_t *$(function.entity0:c) = zend_fetch_resource_ex(in_ctx, $(my._a:UPPER)_T_PHP_RES_NAME, le_$(my._a:)_t);
                         $(function.prefix0:UPPER)_ASSERT_PTR($(function.entity0:c));
                         zend_list_close(Z_RES_P(in_ctx));
                         RETURN_TRUE;
@@ -1167,7 +1176,7 @@ function php_map_low_level_extension (in_php_project, out_php_module)
 
     my._include = ""
     my._registered_resources = format_left("int le_$(my.in_php_project.prefix)_impl_t;", 0)
-    my._constants = ""
+    my._constants = format_left("const char $(my.in_php_project.prefix:UPPER)_IMPL_T_PHP_RES_NAME[] = \"$(my.in_php_project.prefix)_impl_t\";", 0)
     my._init_func_def_dtor = ""
     my._init_func_def_list_destr = ""
     my._def_func_entries = ""
