@@ -67,7 +67,7 @@ endif()
 
 target_sources(foundation_php
         PRIVATE
-            $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/extension/extension.c>
+            $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/extension/vscf_foundation_php.c>
         )
 
 target_include_directories(foundation_php

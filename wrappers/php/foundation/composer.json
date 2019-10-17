@@ -17,7 +17,7 @@
     },
     "autoload": {
         "psr-4": {
-            "VirgilCrypto\\Foundation": "src"
+            "VirgilCrypto\Foundation": "src"
         }
     },
     "scripts": {

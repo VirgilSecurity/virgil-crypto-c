@@ -403,7 +403,7 @@ function php_finalize_custom_modules (source, php_project, meta)
     check_arguments (my, "source, php_project, meta", my)
 
     new php_module to my.php_project
-        .name = "extension"
+        .name = "$(my.php_project.prefix:c)_$(my.php_project.name:c)_php"
         .name0 = 0.name
         .source_file_name = 0.name + ".c"
         .source_dir = cat_path (my.php_project.source_dir, "extension")
