@@ -1,0 +1,12 @@
+{
+  "autoload": {
+    "psr-4": {
+      "VirgilCrypto\\Foundation\\": "src"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Virgil\\Foundation\\Tests\\": "tests"
+    }
+  }
+}

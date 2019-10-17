@@ -15,6 +15,6 @@ do
 	do
 		cp -R wrappers/php/VirgilCrypto/$project/$dir/ wrappers/php/$project/$dir
 	done
-done
 
-rm -rf wrappers/php/VirgilCrypto
+	cp wrappers/php/VirgilCrypto/$project/composer.json wrappers/php/$project/composer/composer.json
+done

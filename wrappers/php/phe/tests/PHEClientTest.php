@@ -35,10 +35,10 @@
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
 
-namespace VirgilCrypto\Phe;
+namespace VirgilCrypto\Phe\Tests;
 
-require_once 'PheClient.php';
-require_once 'PheServer.php';
+use VirgilCrypto\Phe\PheClient;
+use VirgilCrypto\Phe\PheServer;
 
 class PHEClientTest extends \PHPUnit\Framework\TestCase
 {

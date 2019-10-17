@@ -35,9 +35,9 @@
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
 
-namespace VirgilCrypto\Phe;
+namespace VirgilCrypto\Phe\Tests;
 
-require_once 'PheCipher.php';
+use VirgilCrypto\Phe\PHECipher;
 
 class PHECipherTest extends \PHPUnit\Framework\TestCase
 {

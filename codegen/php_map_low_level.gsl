@@ -160,6 +160,9 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
             php_map_low_level_return (method0, my.in_php_project, function)
 
             new wrapper to function
+
+                ### Arg info --->
+
                 new arg_info to wrapper
 
                     my._num_arguments = 1 # ctx
@@ -196,9 +199,17 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
                     . = format_left(my._res, 0)
                 endnew
 
+                ### <--- Arg info
+
+                #### Header --->
+
                 new header to wrapper
                     . = format_left("PHP_FUNCTION($(function.name:)) {", 0)
                 endnew
+
+                ### <--- Header
+
+                ### Declare input arguments --->
 
                 new declare_input_arguments to wrapper
                     my._c = php_format_extension_comment("Declare input argument")
@@ -240,6 +251,10 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
                     . = format_left(my._res, 1)
                 endnew
 
+                ### <--- Declare input arguments
+
+                ### Parse arguments --->
+
                 new parse_arguments to wrapper
                     my._c = php_format_extension_comment("Parse arguments")
                     my._h1 = format_left("ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, $(my._num_arguments:), $(my._num_arguments:))", 0)
@@ -264,6 +279,10 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
 
                     . = format_left(my._res, 1)
                 endnew
+
+                ### <--- Parse arguments
+
+                ### Proxy call --->
 
                 new proxy_call to wrapper
                     my._c = php_format_extension_comment("Proxy call")
@@ -300,6 +319,10 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
 
                     . = format_left(my._res, 1)
                 endnew
+
+                ### <--- Proxy call
+
+                #### Allocate output buffer --->
 
                 my._res = ""
 
@@ -349,13 +372,19 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
                     endnew
                 endif
 
+                ### <--- Allocate output buffer
+
                 ### Argument type mapping --->
 
                 my._mapper = ""
 
                 for function.argument as argument0
                     if argument0.type = "int"
-                        my._mapper += format_left("$(argument0.type_c) $(argument0.name:) = in_$(argument0.name:);", 0)
+                        if defined(argument0.byte_as_string) & argument0.byte_as_string = 1
+                            my._mapper += format_left("byte *$(argument0.name:) = (byte *)in_$(argument0.name:);", 0)
+                        else
+                            my._mapper += format_left("$(argument0.type_c) $(argument0.name:) = in_$(argument0.name:);", 0)
+                        endif
                     endif
 
                     if argument0.type0 = "enum"
@@ -532,6 +561,27 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
 
                 ### <--- Correct string length to the actual
 
+                ### Return type mapping --->
+
+                my._res = ""
+            
+                for function.return_argument as return_argument0 where return_argument0.type <> "buffer"
+                    if return_argument0.type = "byte" & return_argument0.zend_type = "IS_LONG"
+                        my._res += format_left("zend_long ret_res = (zend_long)res;", 0)
+                    endif
+                endfor
+
+                if my._res <> ""
+                    my._c = php_format_extension_comment("Return type mapping")
+                    my._res = my._c + my._res
+
+                    new return_type_mapping to wrapper
+                        . = format_left(my._res, 1)
+                    endnew
+                endif
+
+                ### <--- Return type mapping
+
                 ### Write returned result --->
 
                 my._res = ""
@@ -552,7 +602,11 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
                     endfor
                 elsif function.return_zend_type = "IS_LONG"
                     for function.return_argument as return_argument0 where return_argument0.name <> "status" & return_argument0.type <> "enum"
-                        my._res += format_left("RETVAL_LONG($(return_argument0.name:));", 0)
+                        if return_argument0.type = "byte"
+                            my._res += format_left("RETVAL_LONG(ret_$(return_argument0.name:));", 0)
+                        else
+                            my._res += format_left("RETVAL_LONG($(return_argument0.name:));", 0)
+                        endif
                     endfor
                 elsif function.return_zend_type = "IS_VOID"
 
@@ -729,6 +783,8 @@ function php_map_low_level_constructor_destructor (in_module, out_low_level)
                             $(function.num_arguments:) /*required_num_args*/,
                             $(function.return_type:) /*type*/,
                             0 /*allow_null*/)
+
+                            ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
                     ZEND_END_ARG_INFO()
                     ", 0)
 
@@ -825,6 +881,9 @@ function php_map_low_level_argument (in_argument, in_php_project, out_argument, 
             my._zend_type = "IS_LONG"
             my._type_c = class_derive_c_instance_type(my.in_argument)
         elsif my.in_argument.type = "byte"
+            if count(my.in_argument.array) > 0
+                my.out_argument.byte_as_string = 1
+            endif
             my._type0 = "byte"
             my._type_c = class_derive_c_instance_type(my.in_argument)
             if my.in_argument.is_reference = 1
@@ -968,9 +1027,13 @@ function php_map_low_level_return (in_method, in_php_project, out_function)
                 my._return_type0 = return0.type
                 my._return_type = "size_t"
                 my._return_zend_type = "IS_LONG"
-            elsif return0.type = "integer" | return0.type = "unsigned" | return0.type = "byte"
+            elsif return0.type = "integer" | return0.type = "unsigned"
                 my._return_type0 = return0.type
                 my._return_type = "int"
+                my._return_zend_type = "IS_LONG"
+            elsif return0.type = "byte"
+                my._return_type0 = return0.type
+                my._return_type = "byte"
                 my._return_zend_type = "IS_LONG"
             elsif return0.type = "boolean"
                 my._return_type0 = return0.type
@@ -1163,18 +1226,23 @@ function php_map_low_level_extension (in_php_project, out_php_module)
                 endif
 
                 my._10 = ""
-                if defined(function0->wrapper->write_returned_result)
-                    my._10 = "\n" + function0->wrapper->write_returned_result.
+                if defined(function0->wrapper->return_type_mapping)
+                    my._10 = "\n" + function0->wrapper->return_type_mapping.
                 endif
 
                 my._11 = ""
-                if function0.throw_exception = 1
-                    my._11 = "\n" + function0->wrapper->fail_success.
+                if defined(function0->wrapper->write_returned_result)
+                    my._11 = "\n" + function0->wrapper->write_returned_result.
                 endif
 
-                my._12 = format_left("}", 0)
+                my._12 = ""
+                if function0.throw_exception = 1
+                    my._12 = "\n" + function0->wrapper->fail_success.
+                endif
 
-                my._func_wrapping += my._1 + my._2 + my._3 + my._4 + my._5 + my._6 + my._7 + my._8 + my._9 + my._10 + my._11 + my._12
+                my._13 = format_left("}", 0)
+
+                my._func_wrapping += my._1 + my._2 + my._3 + my._4 + my._5 + my._6 + my._7 + my._8 + my._9 + my._10 + my._11 + my._12 + my._13
             endif
 
             my._func_wrapping += "\n"

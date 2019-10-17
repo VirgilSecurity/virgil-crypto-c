@@ -463,6 +463,8 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
         1 /*required_num_args*/,
         IS_VOID /*type*/,
         0 /*allow_null*/)
+
+        ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
 ZEND_END_ARG_INFO()
 
 PHP_FUNCTION(vscf_message_info_delete_php) {
@@ -970,6 +972,8 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
         1 /*required_num_args*/,
         IS_VOID /*type*/,
         0 /*allow_null*/)
+
+        ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
 ZEND_END_ARG_INFO()
 
 PHP_FUNCTION(vscf_key_recipient_info_delete_php) {
@@ -1159,6 +1163,8 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
         1 /*required_num_args*/,
         IS_VOID /*type*/,
         0 /*allow_null*/)
+
+        ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
 ZEND_END_ARG_INFO()
 
 PHP_FUNCTION(vscf_key_recipient_info_list_delete_php) {
@@ -1523,6 +1529,8 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
         1 /*required_num_args*/,
         IS_VOID /*type*/,
         0 /*allow_null*/)
+
+        ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
 ZEND_END_ARG_INFO()
 
 PHP_FUNCTION(vscf_password_recipient_info_delete_php) {
@@ -1666,6 +1674,8 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
         1 /*required_num_args*/,
         IS_VOID /*type*/,
         0 /*allow_null*/)
+
+        ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
 ZEND_END_ARG_INFO()
 
 PHP_FUNCTION(vscf_password_recipient_info_list_delete_php) {
@@ -2030,6 +2040,8 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
         1 /*required_num_args*/,
         IS_VOID /*type*/,
         0 /*allow_null*/)
+
+        ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
 ZEND_END_ARG_INFO()
 
 PHP_FUNCTION(vscf_ecies_delete_php) {
@@ -2528,6 +2540,8 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
         1 /*required_num_args*/,
         IS_VOID /*type*/,
         0 /*allow_null*/)
+
+        ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
 ZEND_END_ARG_INFO()
 
 PHP_FUNCTION(vscf_recipient_cipher_delete_php) {
@@ -3821,6 +3835,8 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
         1 /*required_num_args*/,
         IS_VOID /*type*/,
         0 /*allow_null*/)
+
+        ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
 ZEND_END_ARG_INFO()
 
 PHP_FUNCTION(vscf_message_info_custom_params_delete_php) {
@@ -4273,6 +4289,8 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
         1 /*required_num_args*/,
         IS_VOID /*type*/,
         0 /*allow_null*/)
+
+        ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
 ZEND_END_ARG_INFO()
 
 PHP_FUNCTION(vscf_key_provider_delete_php) {
@@ -4837,6 +4855,8 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
         1 /*required_num_args*/,
         IS_VOID /*type*/,
         0 /*allow_null*/)
+
+        ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
 ZEND_END_ARG_INFO()
 
 PHP_FUNCTION(vscf_signer_delete_php) {
@@ -5099,6 +5119,8 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
         1 /*required_num_args*/,
         IS_VOID /*type*/,
         0 /*allow_null*/)
+
+        ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
 ZEND_END_ARG_INFO()
 
 PHP_FUNCTION(vscf_verifier_delete_php) {
@@ -5304,6 +5326,8 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
         1 /*required_num_args*/,
         IS_VOID /*type*/,
         0 /*allow_null*/)
+
+        ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
 ZEND_END_ARG_INFO()
 
 PHP_FUNCTION(vscf_brainkey_client_delete_php) {
@@ -5583,6 +5607,8 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
         1 /*required_num_args*/,
         IS_VOID /*type*/,
         0 /*allow_null*/)
+
+        ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
 ZEND_END_ARG_INFO()
 
 PHP_FUNCTION(vscf_brainkey_server_delete_php) {
@@ -5834,6 +5860,8 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
         1 /*required_num_args*/,
         IS_VOID /*type*/,
         0 /*allow_null*/)
+
+        ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
 ZEND_END_ARG_INFO()
 
 PHP_FUNCTION(vscf_group_session_message_delete_php) {
@@ -6175,6 +6203,8 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
         1 /*required_num_args*/,
         IS_VOID /*type*/,
         0 /*allow_null*/)
+
+        ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
 ZEND_END_ARG_INFO()
 
 PHP_FUNCTION(vscf_group_session_ticket_delete_php) {
@@ -6382,6 +6412,8 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
         1 /*required_num_args*/,
         IS_VOID /*type*/,
         0 /*allow_null*/)
+
+        ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
 ZEND_END_ARG_INFO()
 
 PHP_FUNCTION(vscf_group_session_delete_php) {
@@ -6872,6 +6904,8 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
         1 /*required_num_args*/,
         IS_VOID /*type*/,
         0 /*allow_null*/)
+
+        ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
 ZEND_END_ARG_INFO()
 
 PHP_FUNCTION(vscf_message_info_editor_delete_php) {
@@ -7351,6 +7385,8 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
         1 /*required_num_args*/,
         IS_VOID /*type*/,
         0 /*allow_null*/)
+
+        ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
 ZEND_END_ARG_INFO()
 
 PHP_FUNCTION(vscf_signer_info_delete_php) {
@@ -7540,6 +7576,8 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
         1 /*required_num_args*/,
         IS_VOID /*type*/,
         0 /*allow_null*/)
+
+        ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
 ZEND_END_ARG_INFO()
 
 PHP_FUNCTION(vscf_signer_info_list_delete_php) {
@@ -7904,6 +7942,8 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
         1 /*required_num_args*/,
         IS_VOID /*type*/,
         0 /*allow_null*/)
+
+        ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
 ZEND_END_ARG_INFO()
 
 PHP_FUNCTION(vscf_message_info_footer_delete_php) {
@@ -8139,6 +8179,8 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
         1 /*required_num_args*/,
         IS_VOID /*type*/,
         0 /*allow_null*/)
+
+        ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
 ZEND_END_ARG_INFO()
 
 PHP_FUNCTION(vscf_signed_data_info_delete_php) {
@@ -8288,6 +8330,8 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
         1 /*required_num_args*/,
         IS_VOID /*type*/,
         0 /*allow_null*/)
+
+        ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
 ZEND_END_ARG_INFO()
 
 PHP_FUNCTION(vscf_footer_info_delete_php) {
@@ -8520,6 +8564,8 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
         1 /*required_num_args*/,
         IS_VOID /*type*/,
         0 /*allow_null*/)
+
+        ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
 ZEND_END_ARG_INFO()
 
 PHP_FUNCTION(vscf_sha224_delete_php) {
@@ -8924,6 +8970,8 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
         1 /*required_num_args*/,
         IS_VOID /*type*/,
         0 /*allow_null*/)
+
+        ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
 ZEND_END_ARG_INFO()
 
 PHP_FUNCTION(vscf_sha256_delete_php) {
@@ -9328,6 +9376,8 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
         1 /*required_num_args*/,
         IS_VOID /*type*/,
         0 /*allow_null*/)
+
+        ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
 ZEND_END_ARG_INFO()
 
 PHP_FUNCTION(vscf_sha384_delete_php) {
@@ -9732,6 +9782,8 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
         1 /*required_num_args*/,
         IS_VOID /*type*/,
         0 /*allow_null*/)
+
+        ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
 ZEND_END_ARG_INFO()
 
 PHP_FUNCTION(vscf_sha512_delete_php) {
@@ -10136,6 +10188,8 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
         1 /*required_num_args*/,
         IS_VOID /*type*/,
         0 /*allow_null*/)
+
+        ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
 ZEND_END_ARG_INFO()
 
 PHP_FUNCTION(vscf_aes256_gcm_delete_php) {
@@ -11568,6 +11622,8 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
         1 /*required_num_args*/,
         IS_VOID /*type*/,
         0 /*allow_null*/)
+
+        ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
 ZEND_END_ARG_INFO()
 
 PHP_FUNCTION(vscf_aes256_cbc_delete_php) {
@@ -12521,6 +12577,8 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
         1 /*required_num_args*/,
         IS_VOID /*type*/,
         0 /*allow_null*/)
+
+        ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
 ZEND_END_ARG_INFO()
 
 PHP_FUNCTION(vscf_asn1rd_delete_php) {
@@ -13900,6 +13958,8 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
         1 /*required_num_args*/,
         IS_VOID /*type*/,
         0 /*allow_null*/)
+
+        ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
 ZEND_END_ARG_INFO()
 
 PHP_FUNCTION(vscf_asn1wr_delete_php) {
@@ -13969,7 +14029,7 @@ PHP_FUNCTION(vscf_asn1wr_reset_php) {
     //
     // Argument type mapping
     //
-    byte out = in_out;
+    byte *out = (byte *)in_out;
 
     //
     // Call main function
@@ -14067,12 +14127,17 @@ PHP_FUNCTION(vscf_asn1wr_bytes_php) {
     //
     // Call main function
     //
-    int *res =vscf_asn1wr_bytes(asn1wr);
+    byte *res =vscf_asn1wr_bytes(asn1wr);
+
+    //
+    // Return type mapping
+    //
+    zend_long ret_res = (zend_long)res;
 
     //
     // Write returned result
     //
-    RETVAL_LONG(res);
+    RETVAL_LONG(ret_res);
 }
 
 //
@@ -14349,12 +14414,17 @@ PHP_FUNCTION(vscf_asn1wr_reserve_php) {
     //
     // Call main function
     //
-    int *res =vscf_asn1wr_reserve(asn1wr, len);
+    byte *res =vscf_asn1wr_reserve(asn1wr, len);
+
+    //
+    // Return type mapping
+    //
+    zend_long ret_res = (zend_long)res;
 
     //
     // Write returned result
     //
-    RETVAL_LONG(res);
+    RETVAL_LONG(ret_res);
 }
 
 //
@@ -15527,6 +15597,8 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
         1 /*required_num_args*/,
         IS_VOID /*type*/,
         0 /*allow_null*/)
+
+        ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
 ZEND_END_ARG_INFO()
 
 PHP_FUNCTION(vscf_rsa_public_key_delete_php) {
@@ -15849,6 +15921,8 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
         1 /*required_num_args*/,
         IS_VOID /*type*/,
         0 /*allow_null*/)
+
+        ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
 ZEND_END_ARG_INFO()
 
 PHP_FUNCTION(vscf_rsa_private_key_delete_php) {
@@ -16172,6 +16246,8 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
         1 /*required_num_args*/,
         IS_VOID /*type*/,
         0 /*allow_null*/)
+
+        ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
 ZEND_END_ARG_INFO()
 
 PHP_FUNCTION(vscf_rsa_delete_php) {
@@ -17436,6 +17512,8 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
         1 /*required_num_args*/,
         IS_VOID /*type*/,
         0 /*allow_null*/)
+
+        ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
 ZEND_END_ARG_INFO()
 
 PHP_FUNCTION(vscf_ecc_public_key_delete_php) {
@@ -17713,6 +17791,8 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
         1 /*required_num_args*/,
         IS_VOID /*type*/,
         0 /*allow_null*/)
+
+        ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
 ZEND_END_ARG_INFO()
 
 PHP_FUNCTION(vscf_ecc_private_key_delete_php) {
@@ -18036,6 +18116,8 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
         1 /*required_num_args*/,
         IS_VOID /*type*/,
         0 /*allow_null*/)
+
+        ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
 ZEND_END_ARG_INFO()
 
 PHP_FUNCTION(vscf_ecc_delete_php) {
@@ -19435,6 +19517,8 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
         1 /*required_num_args*/,
         IS_VOID /*type*/,
         0 /*allow_null*/)
+
+        ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
 ZEND_END_ARG_INFO()
 
 PHP_FUNCTION(vscf_entropy_accumulator_delete_php) {
@@ -19694,6 +19778,8 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
         1 /*required_num_args*/,
         IS_VOID /*type*/,
         0 /*allow_null*/)
+
+        ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
 ZEND_END_ARG_INFO()
 
 PHP_FUNCTION(vscf_ctr_drbg_delete_php) {
@@ -20052,6 +20138,8 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
         1 /*required_num_args*/,
         IS_VOID /*type*/,
         0 /*allow_null*/)
+
+        ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
 ZEND_END_ARG_INFO()
 
 PHP_FUNCTION(vscf_hmac_delete_php) {
@@ -20553,6 +20641,8 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
         1 /*required_num_args*/,
         IS_VOID /*type*/,
         0 /*allow_null*/)
+
+        ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
 ZEND_END_ARG_INFO()
 
 PHP_FUNCTION(vscf_hkdf_delete_php) {
@@ -20915,6 +21005,8 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
         1 /*required_num_args*/,
         IS_VOID /*type*/,
         0 /*allow_null*/)
+
+        ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
 ZEND_END_ARG_INFO()
 
 PHP_FUNCTION(vscf_kdf1_delete_php) {
@@ -21181,6 +21273,8 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
         1 /*required_num_args*/,
         IS_VOID /*type*/,
         0 /*allow_null*/)
+
+        ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
 ZEND_END_ARG_INFO()
 
 PHP_FUNCTION(vscf_kdf2_delete_php) {
@@ -21447,6 +21541,8 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
         1 /*required_num_args*/,
         IS_VOID /*type*/,
         0 /*allow_null*/)
+
+        ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
 ZEND_END_ARG_INFO()
 
 PHP_FUNCTION(vscf_fake_random_delete_php) {
@@ -21836,6 +21932,8 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
         1 /*required_num_args*/,
         IS_VOID /*type*/,
         0 /*allow_null*/)
+
+        ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
 ZEND_END_ARG_INFO()
 
 PHP_FUNCTION(vscf_pkcs5_pbkdf2_delete_php) {
@@ -22238,6 +22336,8 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
         1 /*required_num_args*/,
         IS_VOID /*type*/,
         0 /*allow_null*/)
+
+        ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
 ZEND_END_ARG_INFO()
 
 PHP_FUNCTION(vscf_pkcs5_pbes2_delete_php) {
@@ -22783,6 +22883,8 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
         1 /*required_num_args*/,
         IS_VOID /*type*/,
         0 /*allow_null*/)
+
+        ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
 ZEND_END_ARG_INFO()
 
 PHP_FUNCTION(vscf_seed_entropy_source_delete_php) {
@@ -22998,6 +23100,8 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
         1 /*required_num_args*/,
         IS_VOID /*type*/,
         0 /*allow_null*/)
+
+        ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
 ZEND_END_ARG_INFO()
 
 PHP_FUNCTION(vscf_key_material_rng_delete_php) {
@@ -23220,6 +23324,8 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
         1 /*required_num_args*/,
         IS_VOID /*type*/,
         0 /*allow_null*/)
+
+        ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
 ZEND_END_ARG_INFO()
 
 PHP_FUNCTION(vscf_raw_public_key_delete_php) {
@@ -23543,6 +23649,8 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
         1 /*required_num_args*/,
         IS_VOID /*type*/,
         0 /*allow_null*/)
+
+        ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
 ZEND_END_ARG_INFO()
 
 PHP_FUNCTION(vscf_raw_private_key_delete_php) {
@@ -24056,6 +24164,8 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
         1 /*required_num_args*/,
         IS_VOID /*type*/,
         0 /*allow_null*/)
+
+        ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
 ZEND_END_ARG_INFO()
 
 PHP_FUNCTION(vscf_pkcs8_serializer_delete_php) {
@@ -24504,6 +24614,8 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
         1 /*required_num_args*/,
         IS_VOID /*type*/,
         0 /*allow_null*/)
+
+        ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
 ZEND_END_ARG_INFO()
 
 PHP_FUNCTION(vscf_sec1_serializer_delete_php) {
@@ -24952,6 +25064,8 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
         1 /*required_num_args*/,
         IS_VOID /*type*/,
         0 /*allow_null*/)
+
+        ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
 ZEND_END_ARG_INFO()
 
 PHP_FUNCTION(vscf_key_asn1_serializer_delete_php) {
@@ -25400,6 +25514,8 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
         1 /*required_num_args*/,
         IS_VOID /*type*/,
         0 /*allow_null*/)
+
+        ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
 ZEND_END_ARG_INFO()
 
 PHP_FUNCTION(vscf_key_asn1_deserializer_delete_php) {
@@ -25696,6 +25812,8 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
         1 /*required_num_args*/,
         IS_VOID /*type*/,
         0 /*allow_null*/)
+
+        ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
 ZEND_END_ARG_INFO()
 
 PHP_FUNCTION(vscf_ed25519_delete_php) {
@@ -27087,6 +27205,8 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
         1 /*required_num_args*/,
         IS_VOID /*type*/,
         0 /*allow_null*/)
+
+        ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
 ZEND_END_ARG_INFO()
 
 PHP_FUNCTION(vscf_curve25519_delete_php) {
@@ -28168,6 +28288,8 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
         1 /*required_num_args*/,
         IS_VOID /*type*/,
         0 /*allow_null*/)
+
+        ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
 ZEND_END_ARG_INFO()
 
 PHP_FUNCTION(vscf_simple_alg_info_delete_php) {
@@ -28263,6 +28385,8 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
         1 /*required_num_args*/,
         IS_VOID /*type*/,
         0 /*allow_null*/)
+
+        ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
 ZEND_END_ARG_INFO()
 
 PHP_FUNCTION(vscf_hash_based_alg_info_delete_php) {
@@ -28405,6 +28529,8 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
         1 /*required_num_args*/,
         IS_VOID /*type*/,
         0 /*allow_null*/)
+
+        ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
 ZEND_END_ARG_INFO()
 
 PHP_FUNCTION(vscf_cipher_alg_info_delete_php) {
@@ -28546,6 +28672,8 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
         1 /*required_num_args*/,
         IS_VOID /*type*/,
         0 /*allow_null*/)
+
+        ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
 ZEND_END_ARG_INFO()
 
 PHP_FUNCTION(vscf_salted_kdf_alg_info_delete_php) {
@@ -28779,6 +28907,8 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
         1 /*required_num_args*/,
         IS_VOID /*type*/,
         0 /*allow_null*/)
+
+        ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
 ZEND_END_ARG_INFO()
 
 PHP_FUNCTION(vscf_pbe_alg_info_delete_php) {
@@ -28968,6 +29098,8 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
         1 /*required_num_args*/,
         IS_VOID /*type*/,
         0 /*allow_null*/)
+
+        ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
 ZEND_END_ARG_INFO()
 
 PHP_FUNCTION(vscf_ecc_alg_info_delete_php) {
@@ -29153,6 +29285,8 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
         1 /*required_num_args*/,
         IS_VOID /*type*/,
         0 /*allow_null*/)
+
+        ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
 ZEND_END_ARG_INFO()
 
 PHP_FUNCTION(vscf_alg_info_der_serializer_delete_php) {
@@ -29408,6 +29542,8 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
         1 /*required_num_args*/,
         IS_VOID /*type*/,
         0 /*allow_null*/)
+
+        ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
 ZEND_END_ARG_INFO()
 
 PHP_FUNCTION(vscf_alg_info_der_deserializer_delete_php) {
@@ -29601,6 +29737,8 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
         1 /*required_num_args*/,
         IS_VOID /*type*/,
         0 /*allow_null*/)
+
+        ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
 ZEND_END_ARG_INFO()
 
 PHP_FUNCTION(vscf_message_info_der_serializer_delete_php) {

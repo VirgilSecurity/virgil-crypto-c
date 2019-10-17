@@ -37,9 +37,6 @@
 
 namespace VirgilCrypto\Foundation;
 
-require_once 'Kdf1.php';
-require_once 'Sha256.php';
-
 class Kdf1Test extends \PHPUnit\Framework\TestCase
 {
     private $kdf1;
