@@ -66,6 +66,8 @@
 #include "vscf_ed25519.h"
 #include "vscf_curve25519.h"
 #include "vscf_ecc.h"
+#include "vscf_falcon.h"
+#include "vscf_round5.h"
 #include "vscf_key_asn1_deserializer.h"
 #include "vscf_key_asn1_serializer.h"
 #include "vscf_key_alg_factory.h"
@@ -133,7 +135,6 @@ vscf_key_provider_cleanup(vscf_key_provider_t *self) {
     vscf_key_provider_cleanup_ctx(self);
 
     vscf_key_provider_release_random(self);
-    vscf_key_provider_release_ecies(self);
 
     vscf_zeroize(self, sizeof(vscf_key_provider_t));
 }
@@ -273,44 +274,6 @@ vscf_key_provider_release_random(vscf_key_provider_t *self) {
     vscf_impl_destroy(&self->random);
 }
 
-//
-//  Setup dependency to the class 'ecies' with shared ownership.
-//
-VSCF_PUBLIC void
-vscf_key_provider_use_ecies(vscf_key_provider_t *self, vscf_ecies_t *ecies) {
-
-    VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(ecies);
-    VSCF_ASSERT(self->ecies == NULL);
-
-    self->ecies = vscf_ecies_shallow_copy(ecies);
-}
-
-//
-//  Setup dependency to the class 'ecies' and transfer ownership.
-//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
-//
-VSCF_PUBLIC void
-vscf_key_provider_take_ecies(vscf_key_provider_t *self, vscf_ecies_t *ecies) {
-
-    VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(ecies);
-    VSCF_ASSERT(self->ecies == NULL);
-
-    self->ecies = ecies;
-}
-
-//
-//  Release dependency to the class 'ecies'.
-//
-VSCF_PUBLIC void
-vscf_key_provider_release_ecies(vscf_key_provider_t *self) {
-
-    VSCF_ASSERT_PTR(self);
-
-    vscf_ecies_destroy(&self->ecies);
-}
-
 
 // --------------------------------------------------------------------------
 //  Generated section end.
@@ -372,17 +335,6 @@ vscf_key_provider_setup_defaults(vscf_key_provider_t *self) {
         self->random = vscf_ctr_drbg_impl(random);
     }
 
-    if (NULL == self->ecies) {
-        vscf_ecies_t *ecies = vscf_ecies_new();
-        vscf_ecies_use_random(ecies, self->random);
-        vscf_status_t status = vscf_ecies_setup_defaults(ecies);
-        if (status != vscf_status_SUCCESS) {
-            vscf_ecies_destroy(&ecies);
-            return status;
-        }
-        self->ecies = ecies;
-    }
-
     return vscf_status_SUCCESS;
 }
 
@@ -420,32 +372,41 @@ vscf_key_provider_generate_private_key(vscf_key_provider_t *self, vscf_alg_id_t 
     }
 
     case vscf_alg_id_ED25519: {
-        VSCF_ASSERT_PTR(self->ecies);
         vscf_ed25519_t *ed25519 = vscf_ed25519_new();
         vscf_ed25519_use_random(ed25519, self->random);
-        vscf_ed25519_use_ecies(ed25519, self->ecies);
         key = vscf_ed25519_generate_key(ed25519, error);
         vscf_ed25519_destroy(&ed25519);
         break;
     }
 
     case vscf_alg_id_CURVE25519: {
-        VSCF_ASSERT_PTR(self->ecies);
         vscf_curve25519_t *curve25519 = vscf_curve25519_new();
         vscf_curve25519_use_random(curve25519, self->random);
-        vscf_curve25519_use_ecies(curve25519, self->ecies);
         key = vscf_curve25519_generate_key(curve25519, error);
         vscf_curve25519_destroy(&curve25519);
         break;
     }
 
     case vscf_alg_id_SECP256R1: {
-        VSCF_ASSERT_PTR(self->ecies);
         vscf_ecc_t *ecc = vscf_ecc_new();
         vscf_ecc_use_random(ecc, self->random);
-        vscf_ecc_use_ecies(ecc, self->ecies);
         key = vscf_ecc_generate_key(ecc, alg_id, error);
         vscf_ecc_destroy(&ecc);
+        break;
+    }
+
+    case vscf_alg_id_FALCON: {
+        vscf_falcon_t *falcon = vscf_falcon_new();
+        vscf_falcon_use_random(falcon, self->random);
+        key = vscf_falcon_generate_key(falcon, error);
+        vscf_falcon_destroy(&falcon);
+        break;
+    }
+
+    case vscf_alg_id_ROUND5: {
+        vscf_round5_t *round5 = vscf_round5_new();
+        key = vscf_round5_generate_key(round5, error);
+        vscf_round5_destroy(&round5);
         break;
     }
 

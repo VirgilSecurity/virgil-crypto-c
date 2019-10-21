@@ -12,12 +12,13 @@
     <require impl="ed25519"/>
     <require impl="curve25519"/>
     <require impl="ecc"/>
+    <require impl="falcon"/>
+    <require impl="round5"/>
     <require impl="key asn1 deserializer"/>
     <require impl="key asn1 serializer"/>
     <require class="key alg factory"/>
 
     <dependency name="random" interface="random"/>
-    <dependency name="ecies" class="ecies"/>
 
     <property name="rsa bitlen" type="size"/>
     <property name="key asn1 serializer" interface="key serialzier"/>

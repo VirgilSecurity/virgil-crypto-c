@@ -1,0 +1,203 @@
+<implementor name="compound algs" is_default="1">
+    Contains algorithm implementations over "compound keys".
+
+    <implementation name="compound key alg info">
+        Handle information about compound key algorithm.
+
+        <interface name="alg info"/>
+
+        <property name="alg id" enum="alg id"/>
+        <property name="enc alg info" interface="alg info"/>
+        <property name="sign alg info" interface="alg info"/>
+
+        <constructor name="with infos" visibility="private">
+            Create compound algorithm information
+
+            Note, keys ownership is preserved.
+
+            <argument name="alg id" enum="alg id"/>
+            <argument name="enc alg info" interface="alg info"/>
+            <argument name="sign alg info" interface="alg info"/>
+        </constructor>
+
+        <constructor name="with infos disown" visibility="private">
+            Create compound algorithm information
+
+            Note, keys ownership is transferred.
+
+            <argument name="alg id" enum="alg id"/>
+            <argument name="enc alg info" interface="alg info" access="disown"/>
+            <argument name="sign alg info" interface="alg info" access="disown"/>
+        </constructor>
+
+        <method name="enc alg info" is_const="1" declaration="public">
+            Return information about encrypt/decrypt algorithm.
+
+            <return interface="alg info"/>
+        </method>
+
+        <method name="sign alg info" is_const="1" declaration="public">
+            Return information about sign/verify algorithm.
+
+            <return interface="alg info"/>
+        </method>
+    </implementation>
+
+    <implementation name="compound public key">
+        Handles compound public key.
+
+        Compound public key contains 2 public keys:
+            - encryption key;
+            - verification key;
+            - encryption key signature.
+
+        <require interface="alg info"/>
+        <require interface="public key"/>
+
+        <property name="alg info" interface="alg info"/>
+        <property name="encryption key" interface="public key"/>
+        <property name="verifying key" interface="public key"/>
+        <property name="encryption key signature" class="buffer"/>
+
+        <interface name="key"/>
+        <interface name="public key"/>
+
+        <constructor name="with members" visibility="private">
+            Create compound public key with an encryption public key and
+            a verifying public key.
+
+            Note, keys ownership is transferred.
+
+            <argument name="alg info" interface="alg info"/>
+            <argument name="encryption key" interface="public key" access="disown"/>
+            <argument name="verifying key" interface="public key" access="disown"/>
+        </constructor>
+
+        <method name="get encryption key" declaration="public" is_const="1">
+            Return public key suitable for encryption.
+
+            <return interface="public key"/>
+        </method>
+
+        <method name="get verifying key" declaration="public" is_const="1">
+            Return public key suitable for verifying.
+
+            <return interface="public key"/>
+        </method>
+
+        <method name="set encryption key signature" declaration="public">
+            Setup the encryption key signature.
+
+            <argument name="encryption key signature" class="data"/>
+        </method>
+
+        <method name="get encryption key signature" declaration="public" is_const="1">
+            Setup the encryption key signature.
+
+            <return class="data"/>
+        </method>
+    </implementation>
+
+    <implementation name="compound private key">
+        Handles compound private key.
+
+        Compound private key contains 2 private keys:
+            - decryption key;
+            - signing key.
+
+        <require interface="alg info"/>
+        <require interface="private key"/>
+        <require impl="compound public key"/>
+
+        <property name="alg info" interface="alg info"/>
+        <property name="decryption key" interface="private key"/>
+        <property name="signing key" interface="private key"/>
+
+        <interface name="key"/>
+        <interface name="private key"/>
+
+        <constructor name="with members" visibility="private">
+            Create compound private key with a decryption private key and
+            a signing private key.
+
+            Note, keys ownership is transferred.
+
+            <argument name="alg info" interface="alg info"/>
+            <argument name="decryption key" interface="private key" access="disown"/>
+            <argument name="signing key" interface="private key" access="disown"/>
+        </constructor>
+
+        <method name="get decryption key" declaration="public" is_const="1">
+            Return private key suitable for decryption.
+
+            <return interface="private key"/>
+        </method>
+
+        <method name="get signing key" declaration="public" is_const="1">
+            Return private key suitable for signing.
+
+            <return interface="private key"/>
+        </method>
+    </implementation>
+
+    <implementation name="compound key alg">
+        Implements public key cryptography over compound keys.
+
+        Compound key contains 2 keys - one for encryption/decryption and
+        one for signing/verifying.
+
+        <require class="simple alg info"/>
+        <require class="key alg factory"/>
+        <require interface="alg info"/>
+        <require interface="public key"/>
+        <require interface="private key"/>
+        <require interface="key cipher"/>
+        <require interface="key signer"/>
+        <require impl="ctr drbg"/>
+        <require impl="compound public key"/>
+        <require impl="compound private key"/>
+        <require impl="compound key alg info"/>
+
+        <interface name="alg"/>
+        <interface name="key alg">
+            <constant name="can import public key" value="true"/>
+            <constant name="can export public key" value="true"/>
+            <constant name="can import private key" value="true"/>
+            <constant name="can export private key" value="true"/>
+        </interface>
+        <interface name="key cipher"/>
+        <interface name="key signer"/>
+
+        <dependency name="random" interface="random" has_observers="1"/>
+        <property name="key provider" class="key provider"/>
+
+        <method name="setup defaults" declaration="public">
+            Setup predefined values to the uninitialized class dependencies.
+
+            <return enum="status"/>
+        </method>
+
+        <method name="generate key" declaration="public" is_const="1">
+            Generate new compound private key from given encryption algorithm
+            identifier and signing algorithm identifier.
+
+            Note, this operation might be slow.
+
+            <argument name="enc alg id" enum="alg id"/>
+            <argument name="sign alg id" enum="alg id"/>
+            <argument name="error" class="error" access="readwrite"/>
+
+            <return interface="private key" access="disown"/>
+        </method>
+
+        <method name="generate post quantum key" declaration="public" is_const="1">
+            Generate new compound private key with post-quantum algorithms.
+
+            Note, this operation might be slow.
+
+            <argument name="error" class="error" access="readwrite"/>
+
+            <return interface="private key" access="disown"/>
+        </method>
+    </implementation>
+</implementor>

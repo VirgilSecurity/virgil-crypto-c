@@ -47,11 +47,21 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Define implemented algorithm identificator.
+//  Types of the 'compound key alg info' implementation.
+//  This types SHOULD NOT be used directly.
+//  The only purpose of including this module is to place implementation
+//  object in the stack memory.
 // --------------------------------------------------------------------------
 
-#ifndef VSCF_ALG_ID_H_INCLUDED
-#define VSCF_ALG_ID_H_INCLUDED
+#ifndef VSCF_COMPOUND_KEY_ALG_INFO_DEFS_H_INCLUDED
+#define VSCF_COMPOUND_KEY_ALG_INFO_DEFS_H_INCLUDED
+
+#include "vscf_library.h"
+#include "vscf_impl_private.h"
+#include "vscf_compound_key_alg_info.h"
+#include "vscf_atomic.h"
+#include "vscf_alg_id.h"
+#include "vscf_impl.h"
 
 // clang-format on
 //  @end
@@ -69,32 +79,30 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Define implemented algorithm identificator.
+//  Handles implementation details.
 //
-enum vscf_alg_id_t {
-    vscf_alg_id_NONE,
-    vscf_alg_id_SHA224,
-    vscf_alg_id_SHA256,
-    vscf_alg_id_SHA384,
-    vscf_alg_id_SHA512,
-    vscf_alg_id_KDF1,
-    vscf_alg_id_KDF2,
-    vscf_alg_id_RSA,
-    vscf_alg_id_ECC,
-    vscf_alg_id_ED25519,
-    vscf_alg_id_CURVE25519,
-    vscf_alg_id_SECP256R1,
-    vscf_alg_id_AES256_GCM,
-    vscf_alg_id_AES256_CBC,
-    vscf_alg_id_HMAC,
-    vscf_alg_id_HKDF,
-    vscf_alg_id_PKCS5_PBKDF2,
-    vscf_alg_id_PKCS5_PBES2,
-    vscf_alg_id_FALCON,
-    vscf_alg_id_ROUND5,
-    vscf_alg_id_COMPOUND_KEY_ALG
+struct vscf_compound_key_alg_info_t {
+    //
+    //  Compile-time known information about this implementation.
+    //
+    const vscf_impl_info_t *info;
+    //
+    //  Reference counter.
+    //
+    VSCF_ATOMIC size_t refcnt;
+    //
+    //  Implementation specific context.
+    //
+    vscf_alg_id_t alg_id;
+    //
+    //  Implementation specific context.
+    //
+    vscf_impl_t *enc_alg_info;
+    //
+    //  Implementation specific context.
+    //
+    vscf_impl_t *sign_alg_info;
 };
-typedef enum vscf_alg_id_t vscf_alg_id_t;
 
 
 // --------------------------------------------------------------------------
@@ -110,5 +118,5 @@ typedef enum vscf_alg_id_t vscf_alg_id_t;
 
 
 //  @footer
-#endif // VSCF_ALG_ID_H_INCLUDED
+#endif // VSCF_COMPOUND_KEY_ALG_INFO_DEFS_H_INCLUDED
 //  @end

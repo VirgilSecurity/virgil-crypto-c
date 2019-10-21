@@ -75,6 +75,7 @@ target_sources(test_data_foundation
             "${CMAKE_CURRENT_LIST_DIR}/include/test_data_message_info.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/test_data_falcon.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/test_data_round5.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/test_data_compound_key.h"
 
         PRIVATE
             "${CMAKE_CURRENT_LIST_DIR}/src/test_data_aes256_gcm.c"
@@ -113,6 +114,7 @@ target_sources(test_data_foundation
             "${CMAKE_CURRENT_LIST_DIR}/src/test_data_message_info.c"
             "${CMAKE_CURRENT_LIST_DIR}/src/test_data_falcon.c"
             "${CMAKE_CURRENT_LIST_DIR}/src/test_data_round5.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/test_data_compound_key.c"
         )
 
 target_include_directories(test_data_foundation

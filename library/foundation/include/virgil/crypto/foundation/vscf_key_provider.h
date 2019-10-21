@@ -55,7 +55,6 @@
 #define VSCF_KEY_PROVIDER_H_INCLUDED
 
 #include "vscf_library.h"
-#include "vscf_ecies.h"
 #include "vscf_error.h"
 #include "vscf_impl.h"
 #include "vscf_status.h"
@@ -153,25 +152,6 @@ vscf_key_provider_take_random(vscf_key_provider_t *self, vscf_impl_t *random);
 //
 VSCF_PUBLIC void
 vscf_key_provider_release_random(vscf_key_provider_t *self);
-
-//
-//  Setup dependency to the class 'ecies' with shared ownership.
-//
-VSCF_PUBLIC void
-vscf_key_provider_use_ecies(vscf_key_provider_t *self, vscf_ecies_t *ecies);
-
-//
-//  Setup dependency to the class 'ecies' and transfer ownership.
-//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
-//
-VSCF_PUBLIC void
-vscf_key_provider_take_ecies(vscf_key_provider_t *self, vscf_ecies_t *ecies);
-
-//
-//  Release dependency to the class 'ecies'.
-//
-VSCF_PUBLIC void
-vscf_key_provider_release_ecies(vscf_key_provider_t *self);
 
 //
 //  Setup predefined values to the uninitialized class dependencies.

@@ -59,6 +59,8 @@
 #include "vscf_ecc.h"
 #include "vscf_ed25519.h"
 #include "vscf_curve25519.h"
+#include "vscf_falcon.h"
+#include "vscf_round5.h"
 
 // clang-format on
 //  @end
@@ -137,6 +139,19 @@ vscf_key_alg_factory_create_from_alg_id(vscf_alg_id_t alg_id, const vscf_impl_t 
         return vscf_curve25519_impl(curve25519);
     }
 
+    case vscf_alg_id_FALCON: {
+        vscf_falcon_t *falcon = vscf_falcon_new();
+        if (random) {
+            vscf_falcon_use_random(falcon, (vscf_impl_t *)random);
+        }
+        return vscf_falcon_impl(falcon);
+    }
+
+    case vscf_alg_id_ROUND5: {
+        vscf_round5_t *round5 = vscf_round5_new();
+        return vscf_round5_impl(round5);
+    }
+
     default:
         vscf_ecies_destroy(&ecies);
         VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_UNSUPPORTED_ALGORITHM);
@@ -171,6 +186,12 @@ vscf_key_alg_factory_create_from_key(const vscf_impl_t *key, const vscf_impl_t *
 
     case vscf_impl_tag_CURVE25519:
         return vscf_key_alg_factory_create_from_alg_id(vscf_alg_id_CURVE25519, random, error);
+
+    case vscf_impl_tag_FALCON:
+        return vscf_key_alg_factory_create_from_alg_id(vscf_alg_id_FALCON, random, error);
+
+    case vscf_impl_tag_ROUND5:
+        return vscf_key_alg_factory_create_from_alg_id(vscf_alg_id_ROUND5, random, error);
 
     default:
         VSCF_ASSERT(0 && "Unexpected implementation tag.");

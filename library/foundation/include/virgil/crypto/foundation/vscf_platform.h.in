@@ -350,6 +350,22 @@ extern "C" {
 #cmakedefine01 VSCF_ROUND5
 #endif
 
+#ifndef VSCF_COMPOUND_KEY_ALG_INFO
+#cmakedefine01 VSCF_COMPOUND_KEY_ALG_INFO
+#endif
+
+#ifndef VSCF_COMPOUND_PUBLIC_KEY
+#cmakedefine01 VSCF_COMPOUND_PUBLIC_KEY
+#endif
+
+#ifndef VSCF_COMPOUND_PRIVATE_KEY
+#cmakedefine01 VSCF_COMPOUND_PRIVATE_KEY
+#endif
+
+#ifndef VSCF_COMPOUND_KEY_ALG
+#cmakedefine01 VSCF_COMPOUND_KEY_ALG
+#endif
+
 #ifndef VSCF_SIMPLE_ALG_INFO
 #cmakedefine01 VSCF_SIMPLE_ALG_INFO
 #endif

@@ -7,6 +7,8 @@
     <require impl="ecc"/>
     <require impl="ed25519"/>
     <require impl="curve25519"/>
+    <require impl="falcon"/>
+    <require impl="round5"/>
 
     <method name="create from alg id" is_static="1">
         Create a key algorithm based on an identifier.

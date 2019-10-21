@@ -47,11 +47,17 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Define implemented algorithm identificator.
+//  This module contains logic for interface/implementation architecture.
+//  Do not use this module in any part of the code.
 // --------------------------------------------------------------------------
 
-#ifndef VSCF_ALG_ID_H_INCLUDED
-#define VSCF_ALG_ID_H_INCLUDED
+#ifndef VSCF_COMPOUND_KEY_ALG_INFO_INTERNAL_H_INCLUDED
+#define VSCF_COMPOUND_KEY_ALG_INFO_INTERNAL_H_INCLUDED
+
+#include "vscf_library.h"
+#include "vscf_compound_key_alg_info.h"
+#include "vscf_alg_id.h"
+#include "vscf_impl.h"
 
 // clang-format on
 //  @end
@@ -69,32 +75,38 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Define implemented algorithm identificator.
+//  Provides initialization of the implementation specific context.
+//  Note, this method is called automatically when method vscf_compound_key_alg_info_init() is called.
+//  Note, that context is already zeroed.
 //
-enum vscf_alg_id_t {
-    vscf_alg_id_NONE,
-    vscf_alg_id_SHA224,
-    vscf_alg_id_SHA256,
-    vscf_alg_id_SHA384,
-    vscf_alg_id_SHA512,
-    vscf_alg_id_KDF1,
-    vscf_alg_id_KDF2,
-    vscf_alg_id_RSA,
-    vscf_alg_id_ECC,
-    vscf_alg_id_ED25519,
-    vscf_alg_id_CURVE25519,
-    vscf_alg_id_SECP256R1,
-    vscf_alg_id_AES256_GCM,
-    vscf_alg_id_AES256_CBC,
-    vscf_alg_id_HMAC,
-    vscf_alg_id_HKDF,
-    vscf_alg_id_PKCS5_PBKDF2,
-    vscf_alg_id_PKCS5_PBES2,
-    vscf_alg_id_FALCON,
-    vscf_alg_id_ROUND5,
-    vscf_alg_id_COMPOUND_KEY_ALG
-};
-typedef enum vscf_alg_id_t vscf_alg_id_t;
+VSCF_PRIVATE void
+vscf_compound_key_alg_info_init_ctx(vscf_compound_key_alg_info_t *self);
+
+//
+//  Release resources of the implementation specific context.
+//  Note, this method is called automatically once when class is completely cleaning up.
+//  Note, that context will be zeroed automatically next this method.
+//
+VSCF_PRIVATE void
+vscf_compound_key_alg_info_cleanup_ctx(vscf_compound_key_alg_info_t *self);
+
+//
+//  Create compound algorithm information
+//
+//  Note, keys ownership is preserved.
+//
+VSCF_PUBLIC void
+vscf_compound_key_alg_info_init_ctx_with_infos(vscf_compound_key_alg_info_t *self, vscf_alg_id_t alg_id,
+        const vscf_impl_t *enc_alg_info, const vscf_impl_t *sign_alg_info);
+
+//
+//  Create compound algorithm information
+//
+//  Note, keys ownership is transferred.
+//
+VSCF_PUBLIC void
+vscf_compound_key_alg_info_init_ctx_with_infos_disown(vscf_compound_key_alg_info_t *self, vscf_alg_id_t alg_id,
+        vscf_impl_t **enc_alg_info_ref, vscf_impl_t **sign_alg_info_ref);
 
 
 // --------------------------------------------------------------------------
@@ -110,5 +122,5 @@ typedef enum vscf_alg_id_t vscf_alg_id_t;
 
 
 //  @footer
-#endif // VSCF_ALG_ID_H_INCLUDED
+#endif // VSCF_COMPOUND_KEY_ALG_INFO_INTERNAL_H_INCLUDED
 //  @end

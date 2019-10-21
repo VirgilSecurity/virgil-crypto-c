@@ -37,6 +37,15 @@
 // clang-format off
 
 
+//  @description
+// --------------------------------------------------------------------------
+//  Types of the 'compound key alg info' implementation.
+//  This types SHOULD NOT be used directly.
+//  The only purpose of including this module is to place implementation
+//  object in the stack memory.
+// --------------------------------------------------------------------------
+
+
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -44,22 +53,10 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-
-//  @description
-// --------------------------------------------------------------------------
-//  Define implemented algorithm identificator.
-// --------------------------------------------------------------------------
-
-#ifndef VSCF_ALG_ID_H_INCLUDED
-#define VSCF_ALG_ID_H_INCLUDED
+#include "vscf_compound_key_alg_info_defs.h"
 
 // clang-format on
 //  @end
-
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 
 //  @generated
@@ -68,47 +65,9 @@ extern "C" {
 //  Generated section start.
 // --------------------------------------------------------------------------
 
-//
-//  Define implemented algorithm identificator.
-//
-enum vscf_alg_id_t {
-    vscf_alg_id_NONE,
-    vscf_alg_id_SHA224,
-    vscf_alg_id_SHA256,
-    vscf_alg_id_SHA384,
-    vscf_alg_id_SHA512,
-    vscf_alg_id_KDF1,
-    vscf_alg_id_KDF2,
-    vscf_alg_id_RSA,
-    vscf_alg_id_ECC,
-    vscf_alg_id_ED25519,
-    vscf_alg_id_CURVE25519,
-    vscf_alg_id_SECP256R1,
-    vscf_alg_id_AES256_GCM,
-    vscf_alg_id_AES256_CBC,
-    vscf_alg_id_HMAC,
-    vscf_alg_id_HKDF,
-    vscf_alg_id_PKCS5_PBKDF2,
-    vscf_alg_id_PKCS5_PBES2,
-    vscf_alg_id_FALCON,
-    vscf_alg_id_ROUND5,
-    vscf_alg_id_COMPOUND_KEY_ALG
-};
-typedef enum vscf_alg_id_t vscf_alg_id_t;
-
 
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
-//  @end
-
-
-#ifdef __cplusplus
-}
-#endif
-
-
-//  @footer
-#endif // VSCF_ALG_ID_H_INCLUDED
 //  @end
