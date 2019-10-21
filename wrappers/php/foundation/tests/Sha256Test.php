@@ -42,18 +42,17 @@ use VirgilCrypto\Foundation\Sha256;
 class Sha256Test extends \PHPUnit\Framework\TestCase
 {
     private $sha256;
-    private $testVector1;
-    private $testVector2;
-    private $testVector1Base64EncodedResult;
-    private $testVector2Base64EncodedResult;
+
+    const SHA256_VECTOR_1_INPUT_BYTES = "";
+    const SHA256_VECTOR_1_DIGEST_BYTES = "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855";
+    const SHA256_VECTOR_2_INPUT_BYTES = "BD";
+    const SHA256_VECTOR_2_DIGEST_BYTES = "68325720AABD7C82F30F554B313D0570C95ACCBB7DC4B5AAE11204C08FFE732B";
+    const SHA256_VECTOR_3_INPUT_BYTES = "5FD4";
+    const SHA256_VECTOR_3_DIGEST_BYTES = "7C4FBF484498D21B487B9D61DE8914B2EADAF2698712936D47C3ADA2558F6788";
 
     protected function setUp()
     {
         $this->sha256 = new Sha256();
-        $this->testVector1 = "";
-        $this->testVector1Base64EncodedResult = "47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=";
-        $this->testVector2 = "abc";
-        $this->testVector2Base64EncodedResult = "ungWv48Bz+pBQUDeXa4iI7ADYaOWF3qctBD/YfIAFa0=";
     }
 
     protected function tearDown()
@@ -61,54 +60,71 @@ class Sha256Test extends \PHPUnit\Framework\TestCase
         unset($this->sha256);
     }
 
-    public function test_Sha256_NotNull()
+    public function test_Sha256_hashEmptyString()
     {
-        $this->assertNotNull($this->sha256);
+        $res = $this->sha256::hash(self::SHA256_VECTOR_1_INPUT_BYTES);
+        $this->assertEquals(base64_decode("47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU="), $res);
     }
 
-    public function test_Sha256_DigestLenEquals32()
-    {
-        $this->assertEquals(32, Sha256::DIGEST_LEN);
+    public function test_Sha256_hashEmptyBytes() {
+        $res = $this->sha256::hash(self::SHA256_VECTOR_1_INPUT_BYTES);
+        $this->assertEquals($res, self::unhexlify(self::SHA256_VECTOR_1_DIGEST_BYTES));
     }
 
-    public function test_Sha256_BlockLenEquals64()
+    public function test_Sha256_hashVector2()
     {
-        $this->assertEquals(64, Sha256::BLOCK_LEN);
+        $res = $this->sha256::hash(self::unhexlify(self::SHA256_VECTOR_2_INPUT_BYTES));
+        $this->assertEquals($res, self::unhexlify(self::SHA256_VECTOR_2_DIGEST_BYTES));
     }
 
-    public function test_Sha256_HashVector1_LenEquals32AndSuccess()
+    public function test_Sha256_hasgVector3Success()
     {
-        $res = $this->sha256->hash($this->testVector1);
-
-        $this->assertEquals(32, strlen($res));
-        $this->assertEquals(base64_decode($this->testVector1Base64EncodedResult), $res);
+        $res = $this->sha256::hash(self::unhexlify(self::SHA256_VECTOR_3_INPUT_BYTES));
+        $this->assertEquals($res, self::unhexlify(self::SHA256_VECTOR_3_DIGEST_BYTES));
     }
 
-    public function test_Sha256_HashVector2_LenEquals32AndSuccess()
+    public function test_Sha256_hashStreamVector1()
     {
-        $res = $this->sha256->hash($this->testVector2);
+        $sha256 = $this->sha256;
+        $sha256->start();
+        $sha256->update(self::SHA256_VECTOR_1_INPUT_BYTES);
 
-        $this->assertEquals(32, strlen($res));
-        $this->assertEquals(base64_decode($this->testVector2Base64EncodedResult), $res);
+        $digest = $sha256->finish();
+
+        $this->assertEquals(strlen(self::unhexlify(self::SHA256_VECTOR_1_DIGEST_BYTES)), strlen($digest));
+        $this->assertEquals(self::unhexlify(self::SHA256_VECTOR_1_DIGEST_BYTES), $digest);
     }
 
-    public function test_Sha256_HashSteamVector1_LenEquals32AndSuccess()
+    public function test_Sha256_hashStreamVector2()
     {
-        $this->sha256->start();
-        $this->sha256->update($this->testVector1);
-        $res = $this->sha256->finish();
+        $sha256 = $this->sha256;
+        $sha256->start();
+        $sha256->update(self::unhexlify(self::SHA256_VECTOR_2_INPUT_BYTES));
 
-        $this->assertEquals(32, strlen($res));
-        $this->assertEquals(base64_decode($this->testVector1Base64EncodedResult), $res);
+        $digest = $sha256->finish();
+
+        $this->assertEquals(strlen(self::unhexlify(self::SHA256_VECTOR_2_DIGEST_BYTES)), strlen($digest));
+        $this->assertEquals(self::unhexlify(self::SHA256_VECTOR_2_DIGEST_BYTES), $digest);
     }
 
-    public function test_Sha256_HashSteamVector2_LenEquals32AndSuccess()
+    public function test_Sha256_hashStreamVector3()
     {
-        $this->sha256->start();
-        $this->sha256->update($this->testVector2);
-        $res = $this->sha256->finish();
+        $sha256 = $this->sha256;
+        $sha256->start();
+        $sha256->update(self::unhexlify(self::SHA256_VECTOR_3_INPUT_BYTES));
 
-        $this->assertEquals(32, strlen($res));
-        $this->assertEquals(base64_decode($this->testVector2Base64EncodedResult), $res);
+        $digest = $sha256->finish();
+
+        $this->assertEquals(strlen(self::unhexlify(self::SHA256_VECTOR_3_DIGEST_BYTES)), strlen($digest));
+        $this->assertEquals(self::unhexlify(self::SHA256_VECTOR_3_DIGEST_BYTES), $digest);
+    }
+
+    /**
+     * @param string $string
+     * @return string
+     */
+    private static function unhexlify(string $string): string
+    {
+        return pack("H*", $string);
     }
 }

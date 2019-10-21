@@ -44,23 +44,11 @@ class Kdf1Test extends \PHPUnit\Framework\TestCase
 {
     private $kdf1;
     private $sha256;
-    private $testVector1;
-    private $testVector2;
-    private $testVector1KeyBase64Encoded;
-    private $testVector2KeyBase64Encoded;
-    private $keyLen1;
-    private $keyLen2;
 
     protected function setUp()
     {
         $this->kdf1 = new KDF1();
         $this->sha256 = new Sha256();
-        $this->testVector1 = "";
-        $this->testVector2 = "abc";
-        $this->keyLen1 = 32;
-        $this->keyLen2 = 64;
-        $this->testVector1KeyBase64Encoded = "07/pjo8c6JFhSFRWmiD19FCNarQCW4crezqCgu91sSo=";
-        $this->testVector2KeyBase64Encoded = "fJu7Nt0wRqF+qvXPV4sJstqLd69OYIdTOZD4JmxENNTPcbRcHS1TXNgGiDXbeyIsXazG1XmtpW5PWq2k4sYRJw==";
     }
 
     protected function tearDown()
@@ -69,25 +57,51 @@ class Kdf1Test extends \PHPUnit\Framework\TestCase
         unset($this->kdf1);
     }
 
-    public function test_Derive_WithSha256AndKeyLength32Vector1_DerivedLength32()
+    public function test_Kdf1_deriveKeyFromEmptyString()
     {
-        $this->markTestSkipped("Need to be fixed");
+        $kdf1 = $this->kdf1;
+        $kdf1->useHash($this->sha256);
+        $vector1Data = "";
+        $vector1Key = "DF3F619804A92FDB4057192DC43DD748EA778ADC52BC498CE80524C014B81119B40711A88C703975";
+        $vector1KeyBytes = self::unhexlify($vector1Key);
+        $key = $kdf1->derive($vector1Data, strlen($vector1KeyBytes));
 
-        $this->kdf1->useHash($this->sha256);
-        $hash = $this->sha256->hash($this->testVector1);
-        $key = $this->kdf1->derive($hash, $this->keyLen1);
-        $this->assertEquals($this->keyLen1, strlen($key));
-        $this->assertEquals(base64_decode($this->testVector1KeyBase64Encoded), $key);
+        $this->assertEquals(strlen($vector1KeyBytes), strlen($key));
+        $this->assertEquals($vector1KeyBytes, $key);
     }
 
-    public function test_Derive_WithSha256AndKeyLength32Vector2_DerivedLength64()
+    public function test_Kdf1_deriveVector2()
     {
-        $this->markTestSkipped("Need to be fixed");
+        $kdf1 = $this->kdf1;
+        $kdf1->useHash($this->sha256);
+        $vector2Data = self::unhexlify("BD");
+        $vector2Key = "A759B860B37FE77847406F266B7D7F1E838D814ADDF2716ECF4D824DC8B56F71823BFAE3B6E7CD29";
+        $vector2KeyBytes = self::unhexlify($vector2Key);
+        $key = $kdf1->derive($vector2Data, strlen($vector2KeyBytes));
 
-        $this->kdf1->useHash($this->sha256);
-        $hash = $this->sha256->hash($this->testVector2);
-        $key = $this->kdf1->derive($hash, $this->keyLen2);
-        $this->assertEquals($this->keyLen2, strlen($key));
-        $this->assertEquals(base64_decode($this->testVector2KeyBase64Encoded), $key);
+        $this->assertEquals(strlen($vector2KeyBytes), strlen($key));
+        $this->assertEquals($vector2KeyBytes, $key);
+    }
+
+    public function test_Kdf1_deriveVector3()
+    {
+        $kdf1 = $this->kdf1;
+        $kdf1->useHash($this->sha256);
+        $vector3Data = self::unhexlify("5FD4");
+        $vector3Key = "C6067722EE5661131D53437E649ED1220858F88164819BB867D6478714F8F3C8002422AFDD96BF48";
+        $vector3KeyBytes = self::unhexlify($vector3Key);
+        $key = $kdf1->derive($vector3Data, strlen($vector3KeyBytes));
+
+        $this->assertEquals(strlen($vector3KeyBytes), strlen($key));
+        $this->assertEquals($vector3KeyBytes, $key);
+    }
+
+    /**
+     * @param string $string
+     * @return string
+     */
+    private static function unhexlify(string $string): string
+    {
+        return pack("H*", $string);
     }
 }
