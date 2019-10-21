@@ -1,0 +1,32 @@
+package foundation
+
+import "C"
+
+type OidId int
+const (
+    OID_ID_NONE OidId = 0
+    OID_ID_RSA OidId = 1
+    OID_ID_ED25519 OidId = 2
+    OID_ID_CURVE25519 OidId = 3
+    OID_ID_SHA224 OidId = 4
+    OID_ID_SHA256 OidId = 5
+    OID_ID_SHA384 OidId = 6
+    OID_ID_SHA512 OidId = 7
+    OID_ID_KDF1 OidId = 8
+    OID_ID_KDF2 OidId = 9
+    OID_ID_AES256_GCM OidId = 10
+    OID_ID_AES256_CBC OidId = 11
+    OID_ID_PKCS5_PBKDF2 OidId = 12
+    OID_ID_PKCS5_PBES2 OidId = 13
+    OID_ID_CMS_DATA OidId = 14
+    OID_ID_CMS_ENVELOPED_DATA OidId = 15
+    OID_ID_HKDF_WITH_SHA256 OidId = 16
+    OID_ID_HKDF_WITH_SHA384 OidId = 17
+    OID_ID_HKDF_WITH_SHA512 OidId = 18
+    OID_ID_HMAC_WITH_SHA224 OidId = 19
+    OID_ID_HMAC_WITH_SHA256 OidId = 20
+    OID_ID_HMAC_WITH_SHA384 OidId = 21
+    OID_ID_HMAC_WITH_SHA512 OidId = 22
+    OID_ID_EC_GENERIC_KEY OidId = 23
+    OID_ID_EC_DOMAIN_SECP256R1 OidId = 24
+)

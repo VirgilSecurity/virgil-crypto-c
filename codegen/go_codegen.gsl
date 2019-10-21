@@ -54,7 +54,7 @@ function go_format_argument_list (go_func)
 
     for my.go_func.go_argument
         my.arg_list ?= ""
-        my.arg_list += "$(go_argument.name:) $(go_argument.type:)"
+        my.arg_list += "$(go_argument.name:) $(go_fix_type(go_argument.type):)"
         if ! last()
             my.arg_list += ", "
         endif
@@ -78,6 +78,25 @@ function go_format_description (obj)
     my.str = "/*$(terminator)$(my.str:)$(terminator)*/"
 
     return my.str
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return formatted arguments list that is used to proxy returned
+#   "result class".
+# ---------------------------------------------------------------------------
+function go_format_result_args (go_func, go_project)
+    check_arguments (my, "go_func, go_project", my)
+
+    my.init_args = ""
+
+    for my.go_func.go_return
+        my.init_args += go_wrap_c_returned_value (go_return, my.go_project)
+        if ! last ()
+            my.init_args += ", "
+        endif
+    endfor
+
+    return my.init_args
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -105,7 +124,7 @@ function go_format_return_list (go_func)
 
     for my.go_func.go_return
         my.return_list ?= ""
-        my.return_list += "$(go_return.type:)"
+        my.return_list += "$(go_fix_type(go_return.type):)"
 
         if ! last()
             my.return_list += ", "
@@ -155,34 +174,38 @@ function go_generate_sources (go_project)
         output go_module.source_file_path
 
 #TODO        go_insert_prologue (go_module)
-        newline()
+#        newline()
 
         go_insert_package (go_module)
         newline()
 
-        for go_module.go_import
-#TODO            go_insert_import (go_import)
-            newline()
+        for go_module.go_cgo_flag
+            go_insert_cgo_flag (go_cgo_flag)
         endfor
+        
+        for go_module.go_cgo_include
+            go_insert_cgo_include (go_cgo_include)
+        endfor
+
+        for go_module.go_import
+            go_insert_import (go_import)
+        endfor
+        newline()
 
         for go_module.go_struct
             go_insert_struct (go_struct)
-            newline()
         endfor
 
         for go_module.go_enum
             go_insert_enum (go_enum)
-            newline()
         endfor
 
         for go_module.go_interface
             go_insert_interface (go_interface)
-            newline()
         endfor
 
         for go_module.go_class
             go_insert_struct (go_class)
-            newline()
         endfor
 
     endfor
@@ -192,6 +215,28 @@ endfunction
 # ===========================================================================
 #   Generate Go.
 # ===========================================================================
+
+# ---------------------------------------------------------------------------
+#   Insert CGO flag code.
+# ---------------------------------------------------------------------------
+function go_insert_cgo_flag (go_cgo_flag)
+    check_arguments (my, "go_cgo_flag", my)
+
+    assert_attributes (my.go_cgo_flag, "name, value", my)
+
+    go_insert_code ("// #cgo $(my.go_cgo_flag.name:): $(my.go_cgo_flag.value:)")
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Insert CGO include code.
+# ---------------------------------------------------------------------------
+function go_insert_cgo_include (go_cgo_include)
+    check_arguments (my, "go_cgo_include", my)
+
+    assert_attribute (my.go_cgo_include, "unit_name", my)
+
+    go_insert_code ("// #include <$(my.go_cgo_include.unit_name:)>")
+endfunction
 
 # ---------------------------------------------------------------------------
 #   Insert given multiline code.
@@ -218,7 +263,7 @@ function go_insert_constant (go_constant)
     my.value = defined (my.go_constant.value) ?? " = $(my.go_constant.value:)" ? ""
     go_insert_description (my.go_constant, 1)
     go_insert_code ("\
-        $(my.go_constant.name:)$(my.value:)
+        $(my.go_constant.name:) $(my.go_constant.type:)$(my.value:)
     ", 1)
 endfunction
 
@@ -264,7 +309,7 @@ endfunction
 function go_insert_field (go_field)
     check_arguments (my, "go_field", my)
 
-    go_insert_code ("$(my.go_field.name:) $(my.go_field.type:)")
+    go_insert_code ("$(my.go_field.name:) $(go_fix_type(my.go_field.type):)", 1)
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -272,15 +317,38 @@ endfunction
 # ---------------------------------------------------------------------------
 function go_insert_func (go_instance, go_func)
     assert_attributes (my.go_instance, "name", my)
-    assert_attributes (my.go_instance, "name", my)
-    
+    assert_attributes (my.go_func, "name", my)
+
+    echo_trace ("Generate " + my.go_instance.name + "." + my.go_func.name, my)
+
     my.method_args = go_format_argument_list (my.go_func) ?
     my.method_return = go_format_return_list (my.go_func) ?
 
     go_insert_description (my.go_func)
-    go_insert_code("func ($(my.go_instance.name:)) $(my.go_func.name:) ($(my.method_args?:)) $(my.method_return?:) {")
+    if is_true (my.go_func.is_constructor)
+        go_insert_code("func New$(my.go_instance.name:)$(my.go_func.name:) ($(my.method_args?:)) $(my.method_return?:) {")
+    elsif is_true (my.go_func.is_static)
+        go_insert_code("func $(my.go_instance.name:)$(my.go_func.name:) ($(my.method_args?:)) $(my.method_return?:) {")
+    else
+        go_insert_code("func (this $(my.go_instance.name:)) $(my.go_func.name:) ($(my.method_args?:)) $(my.method_return?:) {")
+    endif
     go_insert_code (my.go_func->go_code., 1)
     go_insert_code("}")
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Insert statement: import
+# ---------------------------------------------------------------------------
+function go_insert_import (go_import)
+    check_arguments (my, "go_import", my)
+
+    assert_attribute (my.go_import, "path", my)
+    
+    if defined (my.go_import.id)
+        go_insert_code ("import $(my.go_import.id:) \"$(my.go_import.path:)\"")
+    else
+        go_insert_code ("import \"$(my.go_import.path:)\"")
+    endif
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -297,7 +365,7 @@ function go_insert_interface (go_interface)
 
     go_insert_description(my.go_interface)
     go_insert_code ("type $(my.go_interface.name:) interface {")
-    
+
     for my.go_interface.go_promoted
         newline ()
         go_insert_code ("$(go_promoted.type:)", 1)
@@ -369,13 +437,23 @@ function go_insert_struct (go_struct)
     go_insert_description(my.go_struct)
     go_insert_code ("type $(my.go_struct.name:) struct {")
     
+    for my.go_struct.go_promoted
+        go_insert_code ("$(go_promoted.type:)", 1)
+    endfor
+
     for my.go_struct.go_field
-        newline ()
         go_insert_field (go_field)
     endfor
 
     go_insert_code ("}")
-    newline ()
+
+    if count (my.go_struct.go_constant)
+        go_insert_code ("const (")
+        for my.go_struct.go_constant
+            go_insert_constant (go_constant)
+        endfor
+        go_insert_code (")")
+    endif
 
     for my.go_struct.go_func
         newline ()
@@ -390,7 +468,26 @@ endfunction
 function go_insert_type (name, type)
     check_arguments (my, "name, type", my)
 
-    go_insert_code ("type $(my.name:) $(my.type:)")
+    if string_in (my.type, "Data")
+        my.the_type = "[]byte"
+    else
+        my.the_type = my.type
+    endif
+
+    go_insert_code ("type $(my.name:) $(go_fix_type(my.the_type):)")
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Insert statement: type
+# ---------------------------------------------------------------------------
+function go_fix_type (type)
+    check_arguments (my, "type", my)
+
+    if string_in (my.type, "Data")
+        return "[]byte"
+    else
+        return my.type
+    endif
 endfunction
 
 .endtemplate
