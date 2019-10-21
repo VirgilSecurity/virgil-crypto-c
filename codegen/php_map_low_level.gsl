@@ -50,79 +50,103 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
 
     my.out_low_level.name = "$(my.in_module.name:c)"
     my.out_low_level.name0 = "$(my.in_module.name:c)"
-
     my._wot = "$(my.in_php_project.prefix:)_$(my.out_low_level.name0:)"
     my._t = "$(my._wot:)_t"
     my.out_low_level.constant = "$(my._t:UPPER)_PHP_RES_NAME[]"
-
-    new include to my.out_low_level
-        . = format_left("#include \"$(my.in_php_project.prefix:)_$(my.out_low_level.name0:).h\"", 0)
-    endnew
-
-    new registered_resource to my.out_low_level
-        . = format_left("int le_$(my.in_php_project.prefix:)_$(my.out_low_level.name0:)_t;", 0)
-    endnew
-
-    new header_registered_resource to my.out_low_level
-        . = format_left("extern int le_$(my.in_php_project.prefix:)_$(my.out_low_level.name0:)_t;", 0)
-    endnew
-
-    new constant to my.out_low_level
-        . = format_left("const char $(my.out_low_level.constant:) = \"$(my._t:)\";", 0)
-    endnew
-
-    new header_constant to my.out_low_level
-        . = format_left("extern const char $(my.out_low_level.constant:);", 0)
-    endnew
-
-    new init_func_def_dtor to my.out_low_level
-        . = format_left("\
-            static void $(my._wot:)_dtor_php(zend_resource *rsrc) {
-                $(my._wot:)_delete(($(my._t:) *)rsrc->ptr);
-            }
-            ", 0)
-    endnew
-
-    new init_func_def_list_destr to my.out_low_level
-        . = format_left("\
-            le_$(my._t:) = zend_register_list_destructors_ex($(my._wot:)_dtor_php, NULL, $(my._t:UPPER)_PHP_RES_NAME, module_number);
-            ", 0)
-    endnew
-
     my._constant = ""
 
-    if my.in_type <> "interface"
-        php_map_low_level_constructor_destructor (my.in_module, my.out_low_level)
-    endif
+    if my.in_type <> "single_function"
 
-    for my.in_module.dependency as dependency0
+        new include to my.out_low_level
+            . = format_left("#include \"$(my.in_php_project.prefix:)_$(my.out_low_level.name0:).h\"", 0)
+        endnew
 
-        my._dep_name = dependency0.name
+        new registered_resource to my.out_low_level
+            . = format_left("int le_$(my.in_php_project.prefix:)_$(my.out_low_level.name0:)_t;", 0)
+        endnew
 
+        new header_registered_resource to my.out_low_level
+            . = format_left("extern int le_$(my.in_php_project.prefix:)_$(my.out_low_level.name0:)_t;", 0)
+        endnew
+
+        new constant to my.out_low_level
+            . = format_left("const char $(my.out_low_level.constant:) = \"$(my._t:)\";", 0)
+        endnew
+
+        new header_constant to my.out_low_level
+            . = format_left("extern const char $(my.out_low_level.constant:);", 0)
+        endnew
+
+        new init_func_def_dtor to my.out_low_level
+            . = format_left("\
+                static void $(my._wot:)_dtor_php(zend_resource *rsrc) {
+                    $(my._wot:)_delete(($(my._t:) *)rsrc->ptr);
+                }
+                ", 0)
+        endnew
+
+        new init_func_def_list_destr to my.out_low_level
+            . = format_left("\
+                le_$(my._t:) = zend_register_list_destructors_ex($(my._wot:)_dtor_php, NULL, $(my._t:UPPER)_PHP_RES_NAME, module_number);
+                ", 0)
+        endnew
+
+        if my.in_type <> "interface"
+            php_map_low_level_constructor_destructor (my.in_module, my.out_low_level)
+        endif
+
+        for my.in_module.dependency as dependency0
+
+            my._dep_name = dependency0.name
+
+            new method to my.in_module
+                .name = "use $(my._dep_name:)"
+                .visibility = "public"
+                .scope = "public"
+                .declaration = "public"
+                .is_static = 0
+                .return_type = "void"
+                .is_const = 0
+                .c_prefix = my.in_php_project.prefix
+
+                my.argument = item_copy_to(dependency0, method, "argument")
+                my.argument.access ?= "readwrite"
+
+                if dependency0.is_observers_return_status = 1
+                    new return to method
+                        .enum = "status"
+                        .is_reference = 0
+                    endnew
+                endif
+            endnew
+        endfor
+    else
         new method to my.in_module
-            .name = "use $(my._dep_name:)"
+            .name = "impl tag"
             .visibility = "public"
             .scope = "public"
             .declaration = "public"
-            .is_static = 0
-            .return_type = "void"
+            .is_static = 1
+            .return_type = "int"
             .is_const = 0
-            .c_prefix = "vscf"
+            .c_prefix = my.in_php_project.prefix
 
-            my.argument = item_copy_to(dependency0, method, "argument")
-            my.argument.access ?= "readwrite"
+            new argument to method
+                .name = "ctx"
+                .interface = "ctx"
+                .access = "readonly"
+                .is_reference = 1
+            endnew
 
-            if dependency0.is_observers_return_status = 1
-                new return to method
-                    .enum = "status"
-                    .is_reference = 0
-                endnew
-            endif
+            new return to method
+                .enum = "tag"
+                .access = "readonly"
+                .is_reference = 0
+            endnew
         endnew
-    endfor
+    endif
 
     for my.in_module.method as method0 where wrapper_should_wrap_method(method0) & method0.name <> "get ctx"
-
         new function to my.out_low_level
 
             .is_static = method0.is_static
@@ -131,8 +155,11 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
             .entity0 = "$(my.in_module.name:c)"
 
             if my.in_type = "interface"
-                .name = ""
                 .name0 = ""
+                .name = ""
+            elsif my.in_type = "single_function"
+                .name0 = "$(0.prefix0:)_$(method0.name:c)"
+                .name = "$(0.name0:)_php"
             else 
                 .name0 = php_derive_low_level_function_name(0, method0)
                 .name = "$(0.name0:)_php"
@@ -148,6 +175,7 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
             endnew
 
             for method0.argument as argument0
+
                 my._d = ""
                 if ! last()
                     my._d = ", "
@@ -216,29 +244,30 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
 
                 new declare_input_arguments to wrapper
                     my._c = php_format_extension_comment("Declare input argument")
+
                     my._h1 = format_left("zval *in_ctx = NULL;")
-                    my._h2 = ""
+
+                    if function.is_static = 1
+                        my._h1 = ""
+                    endif
 
                     for function.argument as argument0 where argument0.type <> "vsc_buffer_t"
                         if argument0.type0 <> "error"
                             if argument0.zend_type = "IS_STRING"
-                                my._h2 += format_left("\
+                                my._h1 += format_left("\
                                     char *in_$(argument0.name:) = NULL;
                                     size_t in_$(argument0.name:)_len = 0;
                                     ", 0)
                             elsif argument0.zend_type = "IS_LONG"
-                                # TODO Need to be checked
-                                my._h2 += format_left("\
+                                my._h1 += format_left("\
                                     zend_long in_$(argument0.name:) = 0;
                                     ", 0)
                             elsif argument0.zend_type = "IS_RESOURCE"
-                                # TODO Need to be checked
-                                my._h2 += format_left("\
+                                my._h1 += format_left("\
                                     zval *in_$(argument0.name:) = NULL;
                                     ", 0)
                             elsif argument0.zend_type = "_IS_BOOL"
-                                # TODO Need to be checked
-                                my._h2 += format_left("\
+                                my._h1 += format_left("\
                                     zend_bool in_$(argument0.name:);
                                     ", 0)
                             else
@@ -249,7 +278,7 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
                         endif
                     endfor
 
-                    my._res = my._c + my._h1 + my._h2
+                    my._res = my._c + my._h1
 
                     . = format_left(my._res, 1)
                 endnew
@@ -1201,18 +1230,21 @@ function php_map_low_level_extension (in_php_project, out_php_module)
 
     my._ext_name0 = "$(my.in_php_project.prefix:)_$(my.in_php_project.name:)_php"
 
-    for my.in_php_project.php_module as php_module0 where string_in(php_module0.type, "class, implementation")
-        if ! defined (php_module0->low_level->include)
+    for my.in_php_project.php_module as php_module0 where string_in(php_module0.type, "class, implementation, single_function")
+        if ! defined (php_module0->low_level->include) & php_module0.type <> "single_function"
             echo_debug_item(php_module0->low_level)
-            echo_fatal("adfdgdg", my)
+            echo_fatal("========", my)
         endif
-        my._include += php_module0->low_level->include.
-        my._registered_resources += php_module0->low_level->registered_resource.
-        my._header_registered_resources += php_module0->low_level->header_registered_resource.
-        my._constants += php_module0->low_level->constant.
-        my._header_constants += php_module0->low_level->header_constant.
-        my._init_func_def_dtor += php_module0->low_level->init_func_def_dtor.
-        my._init_func_def_list_destr += php_module0->low_level->init_func_def_list_destr.
+
+        if php_module0.type <> "single_function"
+            my._include += php_module0->low_level->include.
+            my._registered_resources += php_module0->low_level->registered_resource.
+            my._header_registered_resources += php_module0->low_level->header_registered_resource.
+            my._constants += php_module0->low_level->constant.
+            my._header_constants += php_module0->low_level->header_constant.
+            my._init_func_def_dtor += php_module0->low_level->init_func_def_dtor.
+            my._init_func_def_list_destr += php_module0->low_level->init_func_def_list_destr.
+        endif
 
         for php_module0->low_level.function as function0
             my._func_wrapping += format_left(function0->wrapper->arg_info., 0)

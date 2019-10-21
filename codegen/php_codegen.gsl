@@ -62,7 +62,7 @@ function php_generate_sources (php_project)
         php_generate_source_high_level (php_module0)
     endfor
 
-    for my.php_project.php_module as php_module0 where php_module0.type = "extension" & php_module0.name <> "extension status"
+    for my.php_project.php_module as php_module0 where php_module0.type = "extension"& php_module0.name <> "extension status"
         php_generate_source_low_level (php_module0)
     endfor
 

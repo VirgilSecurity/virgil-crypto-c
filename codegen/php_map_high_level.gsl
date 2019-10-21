@@ -168,6 +168,13 @@ function php_map_high_level (in_module, in_php_module, in_php_project, out_high_
                         .class_with_namespace = "$(my.in_php_module.main_project0:Pascal)\\\\$(dependency0.project:Pascal)\\\\$(my._dep_class:Pascal)"
                     endif
                 endnew
+
+                if dependency0.is_observers_return_status = 1
+                    new return to method
+                        .enum = "status"
+                        .is_reference = 0
+                    endnew
+                endif
             endnew
 
             php_map_high_level_method (my._dependency_method->method, my.in_php_module, my.in_type, php_method)

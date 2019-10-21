@@ -440,6 +440,51 @@ PHP_MSHUTDOWN_FUNCTION(vscf_foundation_php);
 // Functions wrapping
 //
 //
+// Wrap method: vscf_impl_tag
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+    arginfo_vscf_impl_tag_php,
+    0 /*return_reference*/,
+    1 /*required_num_args*/,
+    IS_LONG /*type*/,
+    0 /*allow_null*/)
+
+
+    ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vscf_impl_tag_php) {
+
+    //
+    // Declare input argument
+    //
+    zval *in_ctx = NULL;
+
+    //
+    // Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 1, 1)
+        Z_PARAM_RESOURCE_EX(in_ctx, 1 /*check_null*/, 0 /*separate*/)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    // Proxy call
+    //
+    vscf_impl_t *ctx = zend_fetch_resource_ex(in_ctx, VSCF_IMPL_T_PHP_RES_NAME, le_vscf_impl_t);
+    VSCF_ASSERT_PTR(ctx);
+
+    //
+    // Call main function
+    //
+    int tag =vscf_impl_tag(ctx);
+
+    //
+    // Write returned result
+    //
+    RETVAL_LONG(tag);
+}
+
+//
 // Wrap method: vscf_message_info_new
 //
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
@@ -6827,7 +6872,6 @@ PHP_FUNCTION(vscf_group_session_message_deserialize_php) {
     //
     // Declare input argument
     //
-    zval *in_ctx = NULL;
     char *in_input = NULL;
     size_t in_input_len = 0;
 
@@ -9560,7 +9604,6 @@ PHP_FUNCTION(vscf_sha224_hash_php) {
     //
     // Declare input argument
     //
-    zval *in_ctx = NULL;
     char *in_data = NULL;
     size_t in_data_len = 0;
 
@@ -9960,7 +10003,6 @@ PHP_FUNCTION(vscf_sha256_hash_php) {
     //
     // Declare input argument
     //
-    zval *in_ctx = NULL;
     char *in_data = NULL;
     size_t in_data_len = 0;
 
@@ -10360,7 +10402,6 @@ PHP_FUNCTION(vscf_sha384_hash_php) {
     //
     // Declare input argument
     //
-    zval *in_ctx = NULL;
     char *in_data = NULL;
     size_t in_data_len = 0;
 
@@ -10760,7 +10801,6 @@ PHP_FUNCTION(vscf_sha512_hash_php) {
     //
     // Declare input argument
     //
-    zval *in_ctx = NULL;
     char *in_data = NULL;
     size_t in_data_len = 0;
 
@@ -31834,6 +31874,7 @@ PHP_FUNCTION(vscf_message_info_der_serializer_use_asn1_writer_php) {
 // Define all function entries
 //
 static zend_function_entry vscf_foundation_php_functions[] = {
+    PHP_FE(vscf_impl_tag_php, arginfo_vscf_impl_tag_php)
     PHP_FE(vscf_message_info_new_php, arginfo_vscf_message_info_new_php)
     PHP_FE(vscf_message_info_delete_php, arginfo_vscf_message_info_delete_php)
     PHP_FE(vscf_message_info_data_encryption_alg_info_php, arginfo_vscf_message_info_data_encryption_alg_info_php)

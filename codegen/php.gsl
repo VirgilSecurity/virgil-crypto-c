@@ -287,6 +287,7 @@ endfunction
 #   
 # ---------------------------------------------------------------------------
 function php_create_custom_modules (source, php_project, meta)
+
     check_arguments (my, "source, php_project, meta", my)
 
     if directory.create (my.php_project.source_dir) = -1
@@ -392,6 +393,28 @@ function php_create_custom_modules (source, php_project, meta)
         endnew
 
         new low_level to php_module
+        endnew
+    endnew
+
+    echo_info ("Create <php_module/> from single function: 'impl tag'", my)
+    my._type = "single_function"
+
+    my._impl_tag = XML.new()
+    new single_function to my._impl_tag
+        .name = "single_function"
+        .c_prefix = my.php_project.prefix
+    endnew
+
+    new php_module to my.php_project
+        .name = "single function"
+        .name0 = "$(0.name:c)"
+        .prefix = my.php_project.prefix
+        .type = my._type
+        .main_project0 = my.php_project.main_project0
+        .project0 = my.php_project.project0
+
+        new low_level to php_module
+            php_map_low_level(my._impl_tag->single_function, my.php_project, low_level, my._type)
         endnew
     endnew
 endfunction

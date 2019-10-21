@@ -72,6 +72,7 @@ class CtrDrbg implements Random
     /**
     * @param EntropySource $entropySource
     * @return void
+    * @throws \Exception
     */
     public function useEntropySource(EntropySource $entropySource): void
     {
