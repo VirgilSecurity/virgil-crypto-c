@@ -65,6 +65,10 @@
 #include "vscf_compound_public_key.h"
 #include "vscf_compound_private_key.h"
 #include "vscf_compound_key_alg_info.h"
+#include "vscf_asn1rd.h"
+#include "vscf_asn1rd_defs.h"
+#include "vscf_asn1wr.h"
+#include "vscf_asn1wr_defs.h"
 #include "vscf_random.h"
 #include "vscf_compound_key_alg_defs.h"
 #include "vscf_compound_key_alg_internal.h"
@@ -221,6 +225,11 @@ vscf_compound_key_alg_generate_key(
     // Sign encryption public key.
     //
     enc_key_public = vscf_private_key_extract_public_key(enc_key);
+    if (!vscf_key_alg_can_export_public_key(vscf_key_alg_api(enc_key_alg))) {
+        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_UNSUPPORTED_ALGORITHM);
+        goto cleanup;
+    }
+
     raw_enc_key_public = vscf_key_alg_export_public_key(enc_key_alg, enc_key_public, error);
     if (NULL == raw_enc_key_public) {
         goto cleanup;
@@ -381,11 +390,116 @@ vscf_compound_key_alg_export_public_key(
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(public_key);
-    VSCF_ASSERT_PTR(error);
 
-    //  TODO: This is STUB. Implement me.
+    //
+    //  Prepare keys.
+    //
+    if (vscf_key_impl_tag(public_key) != self->info->impl_tag) {
+        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_MISMATCH_PUBLIC_KEY_AND_ALGORITHM);
+        return NULL;
+    }
 
-    return NULL;
+    VSCF_ASSERT(vscf_impl_tag(public_key) == vscf_impl_tag_COMPOUND_PUBLIC_KEY);
+    const vscf_compound_public_key_t *compound_public_key = (const vscf_compound_public_key_t *)public_key;
+
+    const vscf_impl_t *encryption_key = vscf_compound_public_key_get_encryption_key(compound_public_key);
+    const vscf_impl_t *verifying_key = vscf_compound_public_key_get_verifying_key(compound_public_key);
+    const vsc_data_t signature = vscf_compound_public_key_get_encryption_key_signature(compound_public_key);
+
+    //
+    //  Prepare result variables.
+    //
+    vsc_buffer_t *raw_public_key_buf = vsc_buffer_new();
+    vscf_raw_public_key_t *raw_public_key = NULL;
+    vscf_raw_public_key_t *encryption_raw_public_key = NULL;
+    vscf_raw_public_key_t *verifying_raw_public_key = NULL;
+    vscf_asn1wr_t asn1wr;
+    size_t raw_public_key_buf_len = 0;
+    size_t raw_public_key_len = 0;
+
+    //
+    //  Create correspond algs.
+    //
+    vscf_impl_t *encryption_key_alg = vscf_key_alg_factory_create_from_key(encryption_key, self->random, error);
+    VSCF_ASSERT_PTR(encryption_key_alg);
+    vscf_impl_t *verifying_key_alg = vscf_key_alg_factory_create_from_key(verifying_key, self->random, error);
+    VSCF_ASSERT_PTR(verifying_key_alg);
+    vscf_impl_t *alg_info =
+            (vscf_impl_t *)vscf_impl_shallow_copy_const(vscf_compound_public_key_alg_info(compound_public_key));
+
+    //
+    //  Check if keys are exportable.
+    //
+    if (!vscf_key_alg_can_export_public_key(vscf_key_alg_api(encryption_key_alg))) {
+        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_UNSUPPORTED_ALGORITHM);
+        goto cleanup;
+    }
+
+    if (!vscf_key_alg_can_export_public_key(vscf_key_alg_api(verifying_key_alg))) {
+        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_UNSUPPORTED_ALGORITHM);
+        goto cleanup;
+    }
+
+    //
+    //  Export.
+    //
+    encryption_raw_public_key = vscf_key_alg_export_public_key(encryption_key_alg, encryption_key, error);
+    if (NULL == encryption_raw_public_key) {
+        goto cleanup;
+    }
+
+    verifying_raw_public_key = vscf_key_alg_export_public_key(verifying_key_alg, verifying_key, error);
+    if (NULL == verifying_raw_public_key) {
+        goto cleanup;
+    }
+
+    //
+    //  Write to the ASN.1 structure.
+    //
+    //  CompoundPublicKey ::= SEQUENCE {
+    //      version INTEGER { v0(0) } DEFAULT v0,
+    //      encKey OCTET STRING,
+    //      verKey OCTET STRING,
+    //      encKeySignature OCTET STRING
+    //  }
+    //
+    //  version is the syntax version number. The appropriate value
+    //  depends on encKeySignature. The version MUST 0 and denotes that
+    //  encKeySignature handles VirgilSignature.
+
+    raw_public_key_buf_len = 1 + 4 +                                                           //  CompoundPublicKey
+                             1 + 1 + 1 +                                                       //      version
+                             1 + 4 + vscf_raw_public_key_data(encryption_raw_public_key).len + //      encKey
+                             1 + 4 + vscf_raw_public_key_data(verifying_raw_public_key).len +  //      verKey
+                             1 + 4 + signature.len;                                            //      encKeySignature
+
+
+    vsc_buffer_alloc(raw_public_key_buf, raw_public_key_buf_len);
+    vscf_asn1wr_reset(&asn1wr, vsc_buffer_unused_bytes(raw_public_key_buf), vsc_buffer_unused_len(raw_public_key_buf));
+
+    //
+    //  Write.
+    //
+    raw_public_key_len += vscf_asn1wr_write_octet_str(&asn1wr, signature);
+    raw_public_key_len += vscf_asn1wr_write_octet_str(&asn1wr, vscf_raw_public_key_data(verifying_raw_public_key));
+    raw_public_key_len += vscf_asn1wr_write_octet_str(&asn1wr, vscf_raw_public_key_data(encryption_raw_public_key));
+    raw_public_key_len += vscf_asn1wr_write_sequence(&asn1wr, raw_public_key_len);
+    VSCF_ASSERT(!vscf_asn1wr_has_error(&asn1wr));
+
+    vscf_asn1wr_finish(&asn1wr, false);
+    vsc_buffer_inc_used(raw_public_key_buf, raw_public_key_len);
+
+    raw_public_key = vscf_raw_public_key_new_with_buffer(&raw_public_key_buf, &alg_info);
+
+cleanup:
+    vscf_raw_public_key_destroy(&verifying_raw_public_key);
+    vscf_raw_public_key_destroy(&encryption_raw_public_key);
+    vsc_buffer_destroy(&raw_public_key_buf);
+    vscf_impl_destroy(&alg_info);
+    vscf_impl_destroy(&verifying_key_alg);
+    vscf_impl_destroy(&encryption_key_alg);
+
+    return raw_public_key;
 }
 
 //
@@ -424,11 +538,113 @@ vscf_compound_key_alg_export_private_key(
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(private_key);
-    VSCF_ASSERT_PTR(error);
 
-    //  TODO: This is STUB. Implement me.
+    //
+    //  Prepare keys.
+    //
+    if (vscf_key_impl_tag(private_key) != self->info->impl_tag) {
+        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_MISMATCH_PRIVATE_KEY_AND_ALGORITHM);
+        return NULL;
+    }
 
-    return NULL;
+    VSCF_ASSERT(vscf_impl_tag(private_key) == vscf_impl_tag_COMPOUND_PRIVATE_KEY);
+    const vscf_compound_private_key_t *compound_private_key = (const vscf_compound_private_key_t *)private_key;
+
+    const vscf_impl_t *decryption_key = vscf_compound_private_key_get_decryption_key(compound_private_key);
+    const vscf_impl_t *signing_key = vscf_compound_private_key_get_signing_key(compound_private_key);
+
+    //
+    //  Prepare result variables.
+    //
+    vsc_buffer_t *raw_private_key_buf = vsc_buffer_new();
+    vscf_raw_private_key_t *raw_private_key = NULL;
+    vscf_raw_private_key_t *decryption_raw_private_key = NULL;
+    vscf_raw_private_key_t *signing_raw_private_key = NULL;
+    vscf_asn1wr_t asn1wr;
+    size_t raw_private_key_buf_len = 0;
+    size_t raw_private_key_len = 0;
+
+    //
+    //  Create correspond algs.
+    //
+    vscf_impl_t *decryption_key_alg = vscf_key_alg_factory_create_from_key(decryption_key, self->random, error);
+    VSCF_ASSERT_PTR(decryption_key_alg);
+    vscf_impl_t *signing_key_alg = vscf_key_alg_factory_create_from_key(signing_key, self->random, error);
+    VSCF_ASSERT_PTR(signing_key_alg);
+    vscf_impl_t *alg_info =
+            (vscf_impl_t *)vscf_impl_shallow_copy_const(vscf_compound_private_key_alg_info(compound_private_key));
+
+    //
+    //  Check if keys are exportable.
+    //
+    if (!vscf_key_alg_can_export_private_key(vscf_key_alg_api(decryption_key_alg))) {
+        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_UNSUPPORTED_ALGORITHM);
+        goto cleanup;
+    }
+
+    if (!vscf_key_alg_can_export_private_key(vscf_key_alg_api(signing_key_alg))) {
+        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_UNSUPPORTED_ALGORITHM);
+        goto cleanup;
+    }
+
+    //
+    //  Export.
+    //
+    decryption_raw_private_key = vscf_key_alg_export_private_key(decryption_key_alg, decryption_key, error);
+    if (NULL == decryption_raw_private_key) {
+        goto cleanup;
+    }
+
+    signing_raw_private_key = vscf_key_alg_export_private_key(signing_key_alg, signing_key, error);
+    if (NULL == signing_raw_private_key) {
+        goto cleanup;
+    }
+
+    //
+    //  Write to the ASN.1 structure.
+    //
+    //  CompoundPrivateKey ::= SEQUENCE {
+    //      version INTEGER { v0(0) } DEFAULT v0,
+    //      decKey OCTET STRING,
+    //      sigKey OCTET STRING
+    //  }
+    //
+    //  version is the syntax version number. The appropriate value
+    //  depends on a signature algorithm. The version MUST be 0
+    //  and denotes that calculated signature is VirgilSignature.
+
+    raw_private_key_buf_len = 1 + 4 +                                                             //  CompoundPublicKey
+                              1 + 1 + 1 +                                                         //      version
+                              1 + 4 + vscf_raw_private_key_data(decryption_raw_private_key).len + //      decKey
+                              1 + 4 + vscf_raw_private_key_data(signing_raw_private_key).len;     //      sigKey
+
+
+    vsc_buffer_alloc(raw_private_key_buf, raw_private_key_buf_len);
+    vscf_asn1wr_reset(
+            &asn1wr, vsc_buffer_unused_bytes(raw_private_key_buf), vsc_buffer_unused_len(raw_private_key_buf));
+
+    //
+    //  Write.
+    //
+    raw_private_key_len += vscf_asn1wr_write_octet_str(&asn1wr, vscf_raw_private_key_data(signing_raw_private_key));
+    raw_private_key_len += vscf_asn1wr_write_octet_str(&asn1wr, vscf_raw_private_key_data(decryption_raw_private_key));
+    raw_private_key_len += vscf_asn1wr_write_sequence(&asn1wr, raw_private_key_len);
+    VSCF_ASSERT(!vscf_asn1wr_has_error(&asn1wr));
+
+    vscf_asn1wr_finish(&asn1wr, false);
+    vsc_buffer_inc_used(raw_private_key_buf, raw_private_key_len);
+
+    raw_private_key = vscf_raw_private_key_new_with_buffer(&raw_private_key_buf, &alg_info);
+
+cleanup:
+    vscf_raw_private_key_destroy(&signing_raw_private_key);
+    vscf_raw_private_key_destroy(&decryption_raw_private_key);
+    vsc_buffer_destroy(&raw_private_key_buf);
+    vscf_impl_destroy(&alg_info);
+    vscf_impl_destroy(&signing_key_alg);
+    vscf_impl_destroy(&decryption_key_alg);
+
+    return raw_private_key;
 }
 
 //

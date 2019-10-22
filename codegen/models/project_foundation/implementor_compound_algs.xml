@@ -161,6 +161,10 @@
         <require impl="compound public key"/>
         <require impl="compound private key"/>
         <require impl="compound key alg info"/>
+        <require impl="asn1rd"/>
+        <require module="asn1rd defs"/>
+        <require impl="asn1wr"/>
+        <require module="asn1wr defs"/>
 
         <interface name="alg"/>
         <interface name="key alg">
