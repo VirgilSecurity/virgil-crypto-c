@@ -40,15 +40,21 @@ namespace VirgilCrypto\Phe\Tests;
 use VirgilCrypto\Phe\PheClient;
 use VirgilCrypto\Phe\PheServer;
 
-class PheClientTest extends \PHPUnit\Framework\TestCase
+class PHEClientTest extends \PHPUnit\Framework\TestCase
 {
-    private $client;
-    private $server;
+    protected $client;
+    protected $server;
+    private $password;
 
     protected function setUp()
     {
-        $this->server = new PheServer();
+        $this->password = "password";
+
         $this->client = new PheClient();
+        $this->client->setupDefaults();
+
+        $this->server = new PheServer();
+        $this->server->setupDefaults();
     }
 
     protected function tearDown()
@@ -57,54 +63,159 @@ class PheClientTest extends \PHPUnit\Framework\TestCase
         unset($this->server);
     }
 
-    public function test_PheClient_enrollAccount()
+    public function testInitNewClientWithRotatedKeysShouldSucceed()
     {
-        $server = $this->server;
-        $client = $this->client;
-        $server->setupDefault();
-        $client->setupDefaults();
-        list($serverPrivateKey, $serverPublicKey) = $server->generateServerKeyPair();
-        list($clientPrivateKey, $clientPublicKey) = $server->generateServerKeyPair();
-        $client->setKeys($clientPrivateKey, $serverPublicKey);
-        $enrollmentResponse = $server->getEnrollment($serverPrivateKey, $serverPublicKey);
-        list($enrollRecord, $enrollKey) = $client->enrollAccount($enrollmentResponse, "passw0rd");
-        $this->assertNotNull($enrollRecord);
-        $this->assertNotNull($enrollKey);
-        $this->assertTrue(is_string($enrollRecord));
-        $this->assertTrue(is_string($enrollKey));
+        $serverKeyPair = $this->server->generateServerKeyPair(); // [{privateKey}, {publicKey}]
+        $this->assertInternalType('array', $serverKeyPair);
+        $this->assertCount(2, $serverKeyPair);
+
+        $serverPrivateKey = $serverKeyPair[0];
+        $serverPublicKey = $serverKeyPair[1];
+
+        $this->assertInternalType('string', $serverPrivateKey);
+        $this->assertInternalType('string', $serverPublicKey);
+
+        $this->assertEquals(65, strlen($serverPublicKey));
+        $this->assertEquals(32, strlen($serverPrivateKey));
+
+        $client1 = new PheClient();
+        $client1->setupDefaults();
+        $clientPK = $client1->generateClientPrivateKey();
+        $this->assertInternalType('string', $clientPK);
+        $client1->setKeys($clientPK, $serverPublicKey); // void
+
+        $serverRotate = $this->server->rotateKeys($serverPrivateKey);
+        $newServerPrivateKey = $serverRotate[0];
+        $newServerPublicKey = $serverRotate[1];
+        $updateToken = $serverRotate[2];
+
+        $newKeys = $client1->rotateKeys($updateToken);
+        $this->assertInternalType('array', $newKeys);
+
+        unset($client1);
+
+        $client2 = new PheClient();
+        $client2->setupDefaults();
+        $client2->setKeys($newKeys[0], $newKeys[1]); // void
+
+        ///
+
+        $serverEnrollment = $this->server->getEnrollment($newServerPrivateKey, $newServerPublicKey);
+        $this->assertNotEmpty($serverEnrollment);
+        $this->assertInternalType('string', $serverEnrollment);
+
+        $clientEnrollAccount = $client2->enrollAccount($serverEnrollment, $this->password);
+        $this->assertInternalType('array', $clientEnrollAccount);
+        $this->assertCount(2, $clientEnrollAccount);
+
+        $clientEnrollmentRecord = $clientEnrollAccount[0];
+        $clientAccountKey = $clientEnrollAccount[1];
+        $this->assertInternalType('string', $clientEnrollmentRecord);
+        $this->assertInternalType('string', $clientAccountKey);
+
+        $clientCreateVerifyPasswordRequest = $client2->createVerifyPasswordRequest($this->password,
+            $clientEnrollmentRecord);
+        $this->assertNotEmpty($clientCreateVerifyPasswordRequest);
+        $this->assertInternalType('string', $clientCreateVerifyPasswordRequest);
+
+        $serverVerifyPassword = $this->server->verifyPassword($newServerPrivateKey, $newServerPublicKey,
+            $clientCreateVerifyPasswordRequest);
+        $this->assertInternalType('string', $serverVerifyPassword);
+
+        $clientCheckResponseAndDecrypt = $client2->checkResponseAndDecrypt($this->password,
+            $clientEnrollmentRecord, $serverVerifyPassword);
+        $this->assertInternalType('string', $clientCheckResponseAndDecrypt);
+        $this->assertEquals(32, strlen($clientAccountKey));
+        $this->assertEquals(32, strlen($clientCheckResponseAndDecrypt));
+        $this->assertEquals($clientAccountKey, $clientCheckResponseAndDecrypt);
     }
 
-    public function test_PheClient_password_verify_request()
+    public function testFullFlowRandomCorrectPwdShouldSucceed()
     {
-        $server = $this->server;
-        $client = $this->client;
-        $server->setupDefault();
-        $client->setupDefaults();
-        list($serverPrivateKey, $serverPublicKey) = $server->generateServerKeyPair();
-        list($clientPrivateKey, $clientPublicKey) = $server->generateServerKeyPair();
-        $client->setKeys($clientPrivateKey, $serverPublicKey);
-        $enrollmentResponse = $server->getEnrollment($serverPrivateKey, $serverPublicKey);
-        list($record, $enrollKey) = $client->enrollAccount($enrollmentResponse, "passw0rd");
-        $request = $client->createVerifyPasswordRequest("passw0rd", $record);
-        $this->assertNotNull($request);
-        $this->assertTrue(is_string($request));
+        $password = "password";
+
+        $serverKeyPair = $this->server->generateServerKeyPair(); // [{privateKey}, {publicKey}]
+        $this->assertInternalType('array', $serverKeyPair);
+        $this->assertCount(2, $serverKeyPair);
+
+        $serverPrivateKey = $serverKeyPair[0];
+        $serverPublicKey = $serverKeyPair[1];
+
+        $this->assertInternalType('string', $serverPrivateKey);
+        $this->assertInternalType('string', $serverPublicKey);
+
+        $this->assertEquals(65, strlen($serverPublicKey));
+        $this->assertEquals(32, strlen($serverPrivateKey));
+
+        $clientPrivateKey = $this->client->generateClientPrivateKey(); // {privateKey}
+        $this->assertInternalType('string', $clientPrivateKey);
+
+        $this->client->setKeys($clientPrivateKey, $serverPublicKey); // void
+
+        $serverEnrollment = $this->server->getEnrollment($serverPrivateKey, $serverPublicKey);
+        $this->assertNotEmpty($serverEnrollment);
+        $this->assertInternalType('string', $serverEnrollment);
+
+        $clientEnrollAccount = $this->client->enrollAccount($serverEnrollment, $password);
+        $this->assertInternalType('array', $clientEnrollAccount);
+        $this->assertCount(2, $clientEnrollAccount);
+
+        $clientEnrollmentRecord = $clientEnrollAccount[0];
+        $clientAccountKey = $clientEnrollAccount[1];
+        $this->assertInternalType('string', $clientEnrollmentRecord);
+        $this->assertInternalType('string', $clientAccountKey);
+
+        $clientCreateVerifyPasswordRequest = $this->client->createVerifyPasswordRequest($password,
+            $clientEnrollmentRecord);
+        $this->assertNotEmpty($clientCreateVerifyPasswordRequest);
+        $this->assertInternalType('string', $clientCreateVerifyPasswordRequest);
+
+        $serverVerifyPassword = $this->server->verifyPassword($serverPrivateKey, $serverPublicKey,
+            $clientCreateVerifyPasswordRequest);
+        $this->assertInternalType('string', $serverVerifyPassword);
+
+        $clientCheckResponseAndDecrypt = $this->client->checkResponseAndDecrypt($password,
+            $clientEnrollmentRecord, $serverVerifyPassword);
+        $this->assertInternalType('string', $clientCheckResponseAndDecrypt);
+        $this->assertEquals(32, strlen($clientAccountKey));
+        $this->assertEquals(32, strlen($clientCheckResponseAndDecrypt));
+        $this->assertEquals($clientAccountKey, $clientCheckResponseAndDecrypt);
     }
 
-    public function test_PheClient_verifyPasswordResponse()
+    public function testRotationRandomRotationServerPublicKeysMatch()
     {
-        $server = $this->server;
-        $client = $this->client;
-        $server->setupDefault();
-        $client->setupDefaults();
-        list($serverPrivateKey, $serverPublicKey) = $server->generateServerKeyPair();
-        list($clientPrivateKey, $clientPublicKey) = $server->generateServerKeyPair();
-        $client->setKeys($clientPrivateKey, $serverPublicKey);
-        $enrollmentResponse = $server->getEnrollment($serverPrivateKey, $serverPublicKey);
-        list($record, $enrollKey) = $client->enrollAccount($enrollmentResponse, "passw0rd");
-        $request = $client->createVerifyPasswordRequest("passw0rd", $record);
-        $response = $server->verifyPassword($serverPrivateKey, $serverPublicKey, $request);
-        $verifiedResponse = $client->checkResponseAndDecrypt("passw0rd", $record, $response);
-        $this->assertNotNull($verifiedResponse);
-        $this->isTrue(is_string($verifiedResponse));
+        $serverKeyPair = $this->server->generateServerKeyPair(); // [{privateKey}, {publicKey}]
+        $this->assertInternalType('array', $serverKeyPair);
+        $this->assertCount(2, $serverKeyPair);
+        $serverPrivateKey = $serverKeyPair[0];
+        $serverPublicKey = $serverKeyPair[1];
+        $this->assertInternalType('string', $serverPrivateKey);
+        $this->assertInternalType('string', $serverPublicKey);
+
+        $serverRotateKeys = $this->server->rotateKeys($serverPrivateKey);
+        $this->assertInternalType('array', $serverRotateKeys);
+        $serverRotatedPrivateKey = $serverRotateKeys[0];
+        $serverRotatedPublicKey = $serverRotateKeys[1];
+        $serverUpdateToken = $serverRotateKeys[2];
+        $this->assertInternalType('string', $serverRotatedPrivateKey);
+        $this->assertInternalType('string', $serverRotatedPublicKey);
+        $this->assertInternalType('string', $serverUpdateToken);
+        $this->assertNotEmpty($serverUpdateToken);
+
+        $clientPrivateKey = $this->client->generateClientPrivateKey(); // {privateKey}
+        $this->assertInternalType('string', $clientPrivateKey);
+        $this->assertNotEmpty($clientPrivateKey);
+
+        $this->client->setKeys($clientPrivateKey, $serverRotatedPublicKey);
+
+        $clientRotateKeys = $this->client->rotateKeys($serverUpdateToken);
+        $this->assertInternalType('array', $clientRotateKeys);
+        $clientNewPrivateKey = $clientRotateKeys[0];
+        $serverNewPublicKey = $clientRotateKeys[1];
+        $this->assertInternalType('string', $clientNewPrivateKey);
+        $this->assertInternalType('string', $serverNewPublicKey);
+
+        $this->assertEquals(strlen($serverPublicKey), strlen($serverNewPublicKey));
+        $this->assertEquals(strlen($clientPrivateKey), strlen($clientNewPrivateKey));
     }
 }
