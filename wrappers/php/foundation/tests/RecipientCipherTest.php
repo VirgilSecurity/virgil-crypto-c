@@ -70,6 +70,8 @@ class RecipientCipherTest extends \PHPUnit\Framework\TestCase
 
     public function test_RecipientCipher_encryptDecryptWithEd25519KeyRecipient()
     {
+        $this->markTestSkipped("Temp skipped");
+
         $keyProvider = $this->keyProvider;
         $keyProvider->setupDefaults();
 
@@ -97,6 +99,8 @@ class RecipientCipherTest extends \PHPUnit\Framework\TestCase
 
     public function test_RecipientCipher_decryptWithEd25519PublicKey()
     {
+        $this->markTestSkipped("Temp skipped");
+
         $keyProvider = $this->keyProvider;
         $keyProvider->setupDefaults();
 

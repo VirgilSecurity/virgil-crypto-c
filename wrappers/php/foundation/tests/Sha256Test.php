@@ -66,7 +66,8 @@ class Sha256Test extends \PHPUnit\Framework\TestCase
         $this->assertEquals(base64_decode("47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU="), $res);
     }
 
-    public function test_Sha256_hashEmptyBytes() {
+    public function test_Sha256_hashEmptyBytes()
+    {
         $res = $this->sha256::hash(self::SHA256_VECTOR_1_INPUT_BYTES);
         $this->assertEquals($res, self::unhexlify(self::SHA256_VECTOR_1_DIGEST_BYTES));
     }
