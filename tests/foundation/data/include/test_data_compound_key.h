@@ -31,3 +31,11 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
+
+
+#include "vsc_data.h"
+
+extern const vsc_data_t test_data_compound_key_MESSAGE;
+extern const vsc_data_t test_data_compound_key_MESSAGE_TBS;
+extern const vsc_data_t test_data_compound_key_MESSAGE_TBS_SHA512_DIGEST;
+

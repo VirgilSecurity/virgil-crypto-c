@@ -620,7 +620,7 @@ vscf_compound_key_alg_can_verify(const vscf_compound_key_alg_t *self, const vscf
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(public_key);
-    VSCF_ASSERT(vscf_impl_tag(public_key) == vscf_impl_tag_COMPOUND_PRIVATE_KEY);
+    VSCF_ASSERT(vscf_impl_tag(public_key) == vscf_impl_tag_COMPOUND_PUBLIC_KEY);
 
     const vscf_compound_public_key_t *compound_public_key = (const vscf_compound_public_key_t *)public_key;
     const vscf_impl_t *verifying_key = vscf_compound_public_key_get_verifying_key(compound_public_key);
