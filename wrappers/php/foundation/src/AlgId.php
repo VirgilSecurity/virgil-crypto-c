@@ -44,6 +44,7 @@ use MyCLabs\Enum\Enum;
 */
 class AlgId extends Enum
 {
+
     private const NONE = 0;
     private const SHA224 = 1;
     private const SHA256 = 2;

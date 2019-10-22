@@ -37,16 +37,15 @@
 
 namespace VirgilCrypto\Phe\Tests;
 
-use VirgilCrypto\Phe\PHECipher;
+use VirgilCrypto\Phe\PheCipher;
 
-class PHECipherTest extends \PHPUnit\Framework\TestCase
+class PheCipherTest extends \PHPUnit\Framework\TestCase
 {
     protected $cipher;
 
     protected function setUp()
     {
         $this->cipher = new PheCipher();
-        $this->cipher->setupDefaults();
     }
 
     protected function tearDown()
@@ -54,16 +53,15 @@ class PHECipherTest extends \PHPUnit\Framework\TestCase
         unset($this->cipher);
     }
 
-    public function testFullFlowShouldSucceed()
+    public function test_PheCipher_encryptDecrypt()
     {
-        $plainText = "plain text";
-        $accountKey = "Gjg-Ap7Qa5BjpuZ22FhZsairw^ZS5KjC"; // 32 bytes string
-
-        $this->assertEquals(32, strlen($accountKey));
-
-        $encryptedData = $this->cipher->encrypt($plainText, $accountKey);
-        $decryptedData = $this->cipher->decrypt($encryptedData, $accountKey);
-
-        $this->assertEquals($plainText, $decryptedData);
+        $someText = "plain text";
+        $accountKey = "oYeAfogdXgjgTcHWKTYUclaFnbeQFFCy";
+        $this->assertEquals(strlen($accountKey), 32);
+        $cipher = $this->cipher;
+        $cipher->setupDefaults();
+        $encryptedData = $cipher->encrypt($someText, $accountKey);
+        $decryptedData = $cipher->decrypt($encryptedData, $accountKey);
+        $this->assertEquals($someText, $decryptedData);
     }
 }

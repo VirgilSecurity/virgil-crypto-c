@@ -81,13 +81,15 @@ function php_create_project_module (project, wrapper)
 
         copy my.project->license to php_project
 
-        new interfaces to php_project
-            for my.project.interface as interface0
-                new interface to interfaces
-                    .name0 = interface0.name
-                endnew
-            endfor
-        endnew
+        if count(my.project.interface)
+            new interfaces to php_project
+                for my.project.interface as interface0
+                    new interface to interfaces
+                        .name0 = interface0.name
+                    endnew
+                endfor
+            endnew
+        endif
 
         new require to php_project
             for my.project.require as require0 where defined (require0.project)
@@ -309,7 +311,7 @@ function php_create_custom_modules (source, php_project, meta)
                 my._d = ","
             endif
 
-            my._require += "\"virgil/crypto-$(require0.name0:)\"$(my._d:)"
+            my._require += "\"virgil/crypto-$(require0.name0:)\": \"@dev\"$(my._d:)"
         endfor
 
         my._r = ""
@@ -343,7 +345,7 @@ function php_create_custom_modules (source, php_project, meta)
                 },
                 \"autoload\": {
                     \"psr-4\": {
-                        \"VirgilCrypto\\\\$(my.php_project.name:Pascal)\": \"src\"
+                        \"VirgilCrypto\\\$(my.php_project.name:Pascal)\": \"src\"
                     }
                 },
                 \"scripts\": {
@@ -355,68 +357,70 @@ function php_create_custom_modules (source, php_project, meta)
         endnew
     endnew
 
-    echo_info ("Create <php_module/> from interface: 'ctx'", my)
-    my._type = "interface"
+    if defined(my.php_project->interfaces)
+        echo_info ("Create <php_module/> from interface: 'ctx'", my)
+        my._type = "interface"
 
-    my._ctx = XML.new()
-    new interface to my._ctx
-        .name = "ctx"
-        .c_prefix = "c_prefix_ctx"
+        my._ctx = XML.new()
+        new interface to my._ctx
+            .name = "ctx"
+            .c_prefix = "c_prefix_ctx"
 
-        new method to interface
-            .name = "get ctx"
-            .visibility = "public"
-            .declaration = "public"
-            .scope = "public"
-            .is_static = 0
-            .return_type = "resource"
-        endnew
-    endnew
-
-    new php_module to my.php_project
-        .name = "$(my._ctx->interface.name:Pascal)"
-        .name0 = "$(my._ctx->interface.name:c)"
-        .source_file_name = 0.name + ".php"
-        .source_dir = cat_path (my.php_project.source_dir, "src")
-        .source_file_path = cat_path (0.source_dir, 0.source_file_name)
-        .prefix = my.php_project.prefix
-        .type = my._type
-        .main_project0 = my.php_project.main_project0
-        .project0 = my.php_project.project0
-
-        new php_license to php_module
-            . = php_format_comment (my.php_project->license)
+            new method to interface
+                .name = "get ctx"
+                .visibility = "public"
+                .declaration = "public"
+                .scope = "public"
+                .is_static = 0
+                .return_type = "resource"
+            endnew
         endnew
 
-        new high_level to php_module
-            php_map_high_level(my._ctx->interface, php_module, my.php_project, high_level, my._type)
+        new php_module to my.php_project
+            .name = "$(my._ctx->interface.name:Pascal)"
+            .name0 = "$(my._ctx->interface.name:c)"
+            .source_file_name = 0.name + ".php"
+            .source_dir = cat_path (my.php_project.source_dir, "src")
+            .source_file_path = cat_path (0.source_dir, 0.source_file_name)
+            .prefix = my.php_project.prefix
+            .type = my._type
+            .main_project0 = my.php_project.main_project0
+            .project0 = my.php_project.project0
+
+            new php_license to php_module
+                . = php_format_comment (my.php_project->license)
+            endnew
+
+            new high_level to php_module
+                php_map_high_level(my._ctx->interface, php_module, my.php_project, high_level, my._type)
+            endnew
+
+            new low_level to php_module
+            endnew
         endnew
 
-        new low_level to php_module
+        echo_info ("Create <php_module/> from single function: 'impl tag'", my)
+        my._type = "single_function"
+
+        my._impl_tag = XML.new()
+        new single_function to my._impl_tag
+            .name = "single_function"
+            .c_prefix = my.php_project.prefix
         endnew
-    endnew
 
-    echo_info ("Create <php_module/> from single function: 'impl tag'", my)
-    my._type = "single_function"
+        new php_module to my.php_project
+            .name = "single function"
+            .name0 = "$(0.name:c)"
+            .prefix = my.php_project.prefix
+            .type = my._type
+            .main_project0 = my.php_project.main_project0
+            .project0 = my.php_project.project0
 
-    my._impl_tag = XML.new()
-    new single_function to my._impl_tag
-        .name = "single_function"
-        .c_prefix = my.php_project.prefix
-    endnew
-
-    new php_module to my.php_project
-        .name = "single function"
-        .name0 = "$(0.name:c)"
-        .prefix = my.php_project.prefix
-        .type = my._type
-        .main_project0 = my.php_project.main_project0
-        .project0 = my.php_project.project0
-
-        new low_level to php_module
-            php_map_low_level(my._impl_tag->single_function, my.php_project, low_level, my._type)
-        endnew
-    endnew
+            new low_level to php_module
+                php_map_low_level(my._impl_tag->single_function, my.php_project, low_level, my._type)
+            endnew
+        endnew  
+    endif
 endfunction
 
 # ---------------------------------------------------------------------------
