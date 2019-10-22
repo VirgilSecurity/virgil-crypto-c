@@ -55,6 +55,7 @@
 #include "vscf_memory.h"
 #include "vscf_simple_alg_info.h"
 #include "vscf_key_alg_factory.h"
+#include "vscf_signer.h"
 #include "vscf_alg_info.h"
 #include "vscf_public_key.h"
 #include "vscf_private_key.h"
@@ -180,19 +181,25 @@ vscf_compound_key_alg_generate_key(
     vscf_impl_t *sign_key = NULL;
     vscf_impl_t *sign_key_alg = NULL;
     vscf_impl_t *alg_info = NULL;
-    vscf_compound_private_key_t *private_key = NULL;
+    vscf_impl_t *private_key = NULL;
+    vscf_impl_t *enc_key_public = NULL;
+    vscf_raw_public_key_t *raw_enc_key_public = NULL;
+    vscf_signer_t *signer = NULL;
+    vsc_buffer_t *signature = NULL;
+    vscf_status_t sign_status = vscf_status_SUCCESS;
+
 
     //
     //  Generate keys.
     //
     enc_key = vscf_key_provider_generate_private_key(self->key_provider, enc_alg_id, error);
     if (NULL == enc_key) {
-        goto error;
+        goto cleanup;
     }
 
     sign_key = vscf_key_provider_generate_private_key(self->key_provider, sign_alg_id, error);
     if (NULL == sign_key) {
-        goto error;
+        goto cleanup;
     }
 
     //
@@ -201,32 +208,55 @@ vscf_compound_key_alg_generate_key(
     enc_key_alg = vscf_key_alg_factory_create_from_key(enc_key, self->random, error);
     if (!vscf_key_cipher_is_implemented(enc_key_alg)) {
         VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_UNSUPPORTED_ALGORITHM);
-        goto error;
+        goto cleanup;
     }
 
     sign_key_alg = vscf_key_alg_factory_create_from_key(sign_key, self->random, error);
     if (!vscf_key_signer_is_implemented(sign_key_alg)) {
         VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_UNSUPPORTED_ALGORITHM);
-        goto error;
+        goto cleanup;
+    }
+
+    //
+    // Sign encryption public key.
+    //
+    enc_key_public = vscf_private_key_extract_public_key(enc_key);
+    raw_enc_key_public = vscf_key_alg_export_public_key(enc_key_alg, enc_key_public, error);
+    if (NULL == raw_enc_key_public) {
+        goto cleanup;
+    }
+
+    signer = vscf_signer_new();
+    vscf_signer_use_random(signer, self->random);
+
+    signature = vsc_buffer_new_with_capacity(vscf_signer_signature_len(signer, sign_key));
+    vscf_signer_reset(signer);
+    vscf_signer_append_data(signer, vscf_raw_public_key_data(raw_enc_key_public));
+    sign_status = vscf_signer_sign(signer, sign_key, signature);
+
+    if (sign_status != vscf_status_SUCCESS) {
+        VSCF_ERROR_SAFE_UPDATE(error, sign_status);
+        goto cleanup;
     }
 
     alg_info = vscf_compound_key_alg_info_impl(vscf_compound_key_alg_info_new_with_infos(
             vscf_alg_id_COMPOUND_KEY_ALG, vscf_key_alg_info(enc_key), vscf_key_alg_info(sign_key)));
 
-    private_key = vscf_compound_private_key_new_with_members(alg_info, &enc_key, &sign_key);
+    private_key = vscf_compound_private_key_impl(
+            vscf_compound_private_key_new_with_members(alg_info, &enc_key, &sign_key, &signature));
 
+cleanup:
+    vsc_buffer_destroy(&signature);
+    vscf_signer_destroy(&signer);
+    vscf_raw_public_key_destroy(&raw_enc_key_public);
+    vscf_impl_destroy(&enc_key_public);
     vscf_impl_destroy(&alg_info);
-    vscf_impl_destroy(&enc_key_alg);
     vscf_impl_destroy(&sign_key_alg);
-
-    return vscf_compound_private_key_impl(private_key);
-
-error:
-    vscf_impl_destroy(&enc_key);
-    vscf_impl_destroy(&enc_key_alg);
     vscf_impl_destroy(&sign_key);
-    vscf_impl_destroy(&sign_key_alg);
-    return NULL;
+    vscf_impl_destroy(&enc_key_alg);
+    vscf_impl_destroy(&enc_key);
+
+    return private_key;
 }
 
 //

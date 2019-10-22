@@ -110,7 +110,7 @@ vscf_compound_private_key_cleanup_ctx(vscf_compound_private_key_t *self) {
 //
 VSCF_PUBLIC void
 vscf_compound_private_key_init_ctx_with_members(vscf_compound_private_key_t *self, const vscf_impl_t *alg_info,
-        vscf_impl_t **decryption_key_ref, vscf_impl_t **signing_key_ref) {
+        vscf_impl_t **decryption_key_ref, vscf_impl_t **signing_key_ref, vsc_buffer_t **encryption_key_signature_ref) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(alg_info);
@@ -118,17 +118,22 @@ vscf_compound_private_key_init_ctx_with_members(vscf_compound_private_key_t *sel
     VSCF_ASSERT_PTR(*decryption_key_ref);
     VSCF_ASSERT_PTR(signing_key_ref);
     VSCF_ASSERT_PTR(*signing_key_ref);
+    VSCF_ASSERT_PTR(encryption_key_signature_ref);
+    VSCF_ASSERT_PTR(*encryption_key_signature_ref);
     VSCF_ASSERT(vscf_alg_info_is_implemented(alg_info));
     VSCF_ASSERT(vscf_alg_info_alg_id(alg_info) != vscf_alg_id_NONE);
     VSCF_ASSERT(vscf_private_key_is_implemented(*decryption_key_ref));
     VSCF_ASSERT(vscf_private_key_is_implemented(*signing_key_ref));
+    VSCF_ASSERT(vsc_buffer_is_valid(*encryption_key_signature_ref));
 
     self->alg_info = (vscf_impl_t *)vscf_impl_shallow_copy_const(alg_info);
     self->decryption_key = *decryption_key_ref;
     self->signing_key = *signing_key_ref;
+    self->encryption_key_signature = *encryption_key_signature_ref;
 
     *decryption_key_ref = NULL;
     *signing_key_ref = NULL;
+    *encryption_key_signature_ref = NULL;
 }
 
 //
@@ -153,6 +158,18 @@ vscf_compound_private_key_get_signing_key(const vscf_compound_private_key_t *sel
     VSCF_ASSERT_PTR(self->signing_key);
 
     return self->signing_key;
+}
+
+//
+//  Setup the encryption key signature.
+//
+VSCF_PUBLIC vsc_data_t
+vscf_compound_private_key_get_encryption_key_signature(const vscf_compound_private_key_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(self->encryption_key_signature);
+
+    return vsc_buffer_data(self->encryption_key_signature);
 }
 
 //
@@ -241,8 +258,10 @@ vscf_compound_private_key_extract_public_key(const vscf_compound_private_key_t *
 
     vscf_impl_t *encryption_key = vscf_private_key_extract_public_key(self->decryption_key);
     vscf_impl_t *verifying_key = vscf_private_key_extract_public_key(self->signing_key);
+    vsc_buffer_t *signature = vsc_buffer_shallow_copy(self->encryption_key_signature);
+
 
     vscf_compound_public_key_t *public_key =
-            vscf_compound_public_key_new_with_members(self->alg_info, &encryption_key, &verifying_key);
+            vscf_compound_public_key_new_with_members(self->alg_info, &encryption_key, &verifying_key, &signature);
     return vscf_compound_public_key_impl(public_key);
 }

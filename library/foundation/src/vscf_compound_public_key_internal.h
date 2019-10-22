@@ -58,6 +58,14 @@
 #include "vscf_compound_public_key.h"
 #include "vscf_impl.h"
 
+#if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <virgil/crypto/common/vsc_buffer.h>
+#endif
+
+#if VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <VSCCommon/vsc_buffer.h>
+#endif
+
 // clang-format on
 //  @end
 
@@ -97,7 +105,8 @@ vscf_compound_public_key_cleanup_ctx(vscf_compound_public_key_t *self);
 //
 VSCF_PUBLIC void
 vscf_compound_public_key_init_ctx_with_members(vscf_compound_public_key_t *self, const vscf_impl_t *alg_info,
-        vscf_impl_t **encryption_key_ref, vscf_impl_t **verifying_key_ref);
+        vscf_impl_t **encryption_key_ref, vscf_impl_t **verifying_key_ref,
+        vsc_buffer_t **encryption_key_signature_ref);
 
 
 // --------------------------------------------------------------------------

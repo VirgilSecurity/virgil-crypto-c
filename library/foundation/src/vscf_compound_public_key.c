@@ -110,7 +110,8 @@ vscf_compound_public_key_cleanup_ctx(vscf_compound_public_key_t *self) {
 //
 VSCF_PUBLIC void
 vscf_compound_public_key_init_ctx_with_members(vscf_compound_public_key_t *self, const vscf_impl_t *alg_info,
-        vscf_impl_t **encryption_key_ref, vscf_impl_t **verifying_key_ref) {
+        vscf_impl_t **encryption_key_ref, vscf_impl_t **verifying_key_ref,
+        vsc_buffer_t **encryption_key_signature_ref) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(alg_info);
@@ -118,16 +119,21 @@ vscf_compound_public_key_init_ctx_with_members(vscf_compound_public_key_t *self,
     VSCF_ASSERT_PTR(*encryption_key_ref);
     VSCF_ASSERT_PTR(verifying_key_ref);
     VSCF_ASSERT_PTR(*verifying_key_ref);
+    VSCF_ASSERT_PTR(encryption_key_signature_ref);
+    VSCF_ASSERT_PTR(*encryption_key_signature_ref);
     VSCF_ASSERT(vscf_alg_info_is_implemented(alg_info));
     VSCF_ASSERT(vscf_public_key_is_implemented(*encryption_key_ref));
     VSCF_ASSERT(vscf_public_key_is_implemented(*verifying_key_ref));
+    VSCF_ASSERT(vsc_buffer_is_valid(*encryption_key_signature_ref));
 
     self->alg_info = (vscf_impl_t *)vscf_impl_shallow_copy_const(alg_info);
     self->encryption_key = *encryption_key_ref;
     self->verifying_key = *verifying_key_ref;
+    self->encryption_key_signature = *encryption_key_signature_ref;
 
     *encryption_key_ref = NULL;
     *verifying_key_ref = NULL;
+    *encryption_key_signature_ref = NULL;
 }
 
 //
@@ -152,20 +158,6 @@ vscf_compound_public_key_get_verifying_key(const vscf_compound_public_key_t *sel
     VSCF_ASSERT_PTR(self->verifying_key);
 
     return self->verifying_key;
-}
-
-//
-//  Setup the encryption key signature.
-//
-VSCF_PUBLIC void
-vscf_compound_public_key_set_encryption_key_signature(
-        vscf_compound_public_key_t *self, vsc_data_t encryption_key_signature) {
-
-    VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT(vsc_data_is_valid(encryption_key_signature));
-
-    vsc_buffer_destroy(&self->encryption_key_signature);
-    self->encryption_key_signature = vsc_buffer_new_with_data(encryption_key_signature);
 }
 
 //

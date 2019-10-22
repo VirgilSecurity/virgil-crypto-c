@@ -57,6 +57,16 @@
 #include "vscf_impl.h"
 #include "vscf_alg_id.h"
 
+#if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <virgil/crypto/common/vsc_buffer.h>
+#   include <virgil/crypto/common/vsc_data.h>
+#endif
+
+#if VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <VSCCommon/vsc_buffer.h>
+#   include <VSCCommon/vsc_data.h>
+#endif
+
 // clang-format on
 //  @end
 
@@ -145,7 +155,7 @@ vscf_compound_private_key_shallow_copy(vscf_compound_private_key_t *self);
 //
 VSCF_PRIVATE void
 vscf_compound_private_key_init_with_members(vscf_compound_private_key_t *self, const vscf_impl_t *alg_info,
-        vscf_impl_t **decryption_key_ref, vscf_impl_t **signing_key_ref);
+        vscf_impl_t **decryption_key_ref, vscf_impl_t **signing_key_ref, vsc_buffer_t **encryption_key_signature_ref);
 
 //
 //  Allocate implementation context and perform it's initialization.
@@ -156,7 +166,7 @@ vscf_compound_private_key_init_with_members(vscf_compound_private_key_t *self, c
 //
 VSCF_PRIVATE vscf_compound_private_key_t *
 vscf_compound_private_key_new_with_members(const vscf_impl_t *alg_info, vscf_impl_t **decryption_key_ref,
-        vscf_impl_t **signing_key_ref);
+        vscf_impl_t **signing_key_ref, vsc_buffer_t **encryption_key_signature_ref);
 
 //
 //  Return private key suitable for decryption.
@@ -169,6 +179,12 @@ vscf_compound_private_key_get_decryption_key(const vscf_compound_private_key_t *
 //
 VSCF_PUBLIC const vscf_impl_t *
 vscf_compound_private_key_get_signing_key(const vscf_compound_private_key_t *self);
+
+//
+//  Setup the encryption key signature.
+//
+VSCF_PUBLIC vsc_data_t
+vscf_compound_private_key_get_encryption_key_signature(const vscf_compound_private_key_t *self);
 
 //
 //  Algorithm identifier the key belongs to.

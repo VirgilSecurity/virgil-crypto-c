@@ -71,6 +71,7 @@
             <argument name="alg info" interface="alg info"/>
             <argument name="encryption key" interface="public key" access="disown"/>
             <argument name="verifying key" interface="public key" access="disown"/>
+            <argument name="encryption key signature" class="buffer" access="disown"/>
         </constructor>
 
         <method name="get encryption key" declaration="public" is_const="1">
@@ -83,12 +84,6 @@
             Return public key suitable for verifying.
 
             <return interface="public key"/>
-        </method>
-
-        <method name="set encryption key signature" declaration="public">
-            Setup the encryption key signature.
-
-            <argument name="encryption key signature" class="data"/>
         </method>
 
         <method name="get encryption key signature" declaration="public" is_const="1">
@@ -112,6 +107,7 @@
         <property name="alg info" interface="alg info"/>
         <property name="decryption key" interface="private key"/>
         <property name="signing key" interface="private key"/>
+        <property name="encryption key signature" class="buffer"/>
 
         <interface name="key"/>
         <interface name="private key"/>
@@ -125,6 +121,7 @@
             <argument name="alg info" interface="alg info"/>
             <argument name="decryption key" interface="private key" access="disown"/>
             <argument name="signing key" interface="private key" access="disown"/>
+            <argument name="encryption key signature" class="buffer" access="disown"/>
         </constructor>
 
         <method name="get decryption key" declaration="public" is_const="1">
@@ -138,6 +135,12 @@
 
             <return interface="private key"/>
         </method>
+
+        <method name="get encryption key signature" declaration="public" is_const="1">
+            Setup the encryption key signature.
+
+            <return class="data"/>
+        </method>
     </implementation>
 
     <implementation name="compound key alg">
@@ -148,6 +151,7 @@
 
         <require class="simple alg info"/>
         <require class="key alg factory"/>
+        <require class="signer"/>
         <require interface="alg info"/>
         <require interface="public key"/>
         <require interface="private key"/>

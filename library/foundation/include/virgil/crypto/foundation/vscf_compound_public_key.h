@@ -59,10 +59,12 @@
 #include "vscf_alg_id.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <virgil/crypto/common/vsc_buffer.h>
 #   include <virgil/crypto/common/vsc_data.h>
 #endif
 
 #if VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <VSCCommon/vsc_buffer.h>
 #   include <VSCCommon/vsc_data.h>
 #endif
 
@@ -154,7 +156,8 @@ vscf_compound_public_key_shallow_copy(vscf_compound_public_key_t *self);
 //
 VSCF_PRIVATE void
 vscf_compound_public_key_init_with_members(vscf_compound_public_key_t *self, const vscf_impl_t *alg_info,
-        vscf_impl_t **encryption_key_ref, vscf_impl_t **verifying_key_ref);
+        vscf_impl_t **encryption_key_ref, vscf_impl_t **verifying_key_ref,
+        vsc_buffer_t **encryption_key_signature_ref);
 
 //
 //  Allocate implementation context and perform it's initialization.
@@ -165,7 +168,7 @@ vscf_compound_public_key_init_with_members(vscf_compound_public_key_t *self, con
 //
 VSCF_PRIVATE vscf_compound_public_key_t *
 vscf_compound_public_key_new_with_members(const vscf_impl_t *alg_info, vscf_impl_t **encryption_key_ref,
-        vscf_impl_t **verifying_key_ref);
+        vscf_impl_t **verifying_key_ref, vsc_buffer_t **encryption_key_signature_ref);
 
 //
 //  Returns instance of the implemented interface 'public key'.
@@ -184,13 +187,6 @@ vscf_compound_public_key_get_encryption_key(const vscf_compound_public_key_t *se
 //
 VSCF_PUBLIC const vscf_impl_t *
 vscf_compound_public_key_get_verifying_key(const vscf_compound_public_key_t *self);
-
-//
-//  Setup the encryption key signature.
-//
-VSCF_PUBLIC void
-vscf_compound_public_key_set_encryption_key_signature(vscf_compound_public_key_t *self,
-        vsc_data_t encryption_key_signature);
 
 //
 //  Setup the encryption key signature.
