@@ -111,6 +111,7 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
 
                 my.argument = item_copy_to(dependency0, method, "argument")
                 my.argument.access ?= "readwrite"
+                my.argument._c_type = class_derive_c_instance_type(my.argument)
 
                 if dependency0.is_observers_return_status = 1
                     new return to method
@@ -335,17 +336,16 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
                         if argument0.type = "vsc_data_t"
                             my._h1 += format_left("vsc_data_t $(argument0.name:) = vsc_data((const byte*)in_$(argument0.name:), in_$(argument0.name:)_len);", 0)
                         elsif string_in (argument0.type0, "interface, class, impl")
-                            if argument0.type0 = "interface"
+                            #if defined(argument0.type_c)
+                            #    my._h1 += format_left("\
+                            #        $(argument0.type_c:) *$(argument0.name:c) = zend_fetch_resource_ex(in_$(argument0.name:), $(argument0.type_c:UPPER)_PHP_RES_NAME, le_$(argument0.type_c:));
+                            #        ", 0)
+                            #else
                                 my._h1 += format_left("\
                                     $(argument0.type:c) *$(argument0.name:c) = zend_fetch_resource_ex(in_$(argument0.name:), $(argument0.type:UPPER)_PHP_RES_NAME, le_$(argument0.type:c));
                                     $(my.in_php_project.prefix:UPPER)_ASSERT_PTR($(argument0.name:c));
                                     ", 0)
-                            else
-                                my._h1 += format_left("\
-                                    $(argument0.type:c) *$(argument0.name:c) = zend_fetch_resource_ex(in_$(argument0.name:), $(argument0.type:UPPER)_PHP_RES_NAME, le_$(argument0.type:c));
-                                    $(my.in_php_project.prefix:UPPER)_ASSERT_PTR($(argument0.name:c));
-                                    ", 0)
-                            endif
+                            #endif
                         elsif argument0.type0 = "size"
                             my._h1 += format_left("
                                 size_t $(argument0.name:) = in_$(argument0.name:);
@@ -881,24 +881,23 @@ function php_map_low_level_argument (in_argument, in_php_project, out_argument, 
 
     my.out_argument.name = "$(my.in_argument.name:c)"
     my.out_argument.access = my.in_argument.access
+    
+    my._type_c = class_derive_c_instance_type(my.in_argument)
 
     if defined (my.in_argument.class)
         if string_in(my.in_argument.class, "data, buffer") 
             my._type0 = my.in_argument.class
             my._type = "vsc_$(my.in_argument.class:)_t"
             my._zend_type = "IS_STRING"
-            my._type_c = class_derive_c_instance_type(my.in_argument)
         elsif my.in_argument.class = "error"
             my._type0 = "error"
             my._type = "$(my._prefix:)_error_t"
             my._zend_type = ""
-            my._type_c = class_derive_c_instance_type(my.in_argument)
         else
             my._type0 = "class"
             my._type = "$(my._prefix:)_$(my.in_argument.class:c)_t"
             my._shallow_type = "$(my._prefix:)_$(my.in_argument.class:c)"
             my._zend_type = "IS_RESOURCE"
-            my._type_c = class_derive_c_instance_type(my.in_argument)
         endif
     endif
 
@@ -907,7 +906,6 @@ function php_map_low_level_argument (in_argument, in_php_project, out_argument, 
         my._type = "$(my._prefix:)_impl_t"
         my._shallow_type = "$(my._prefix:)_impl"
         my._zend_type = "IS_RESOURCE"
-        my._type_c = class_derive_c_instance_type(my.in_argument)
     endif
 
     if defined (my.in_argument.type)
@@ -915,23 +913,19 @@ function php_map_low_level_argument (in_argument, in_php_project, out_argument, 
             my._type0 = my.in_argument.type
             my._type = "vsc_size_t"
             my._zend_type = "IS_LONG"
-            my._type_c = class_derive_c_instance_type(my.in_argument)
         elsif my.in_argument.type = "integer"
             my._type0 = my.in_argument.type
             my._type = "int"
             my._zend_type = "IS_LONG"
-            my._type_c = class_derive_c_instance_type(my.in_argument)
         elsif my.in_argument.type = "unsigned"
             my._type0 = my.in_argument.type
             my._type = "int"
             my._zend_type = "IS_LONG"
-            my._type_c = class_derive_c_instance_type(my.in_argument)
         elsif my.in_argument.type = "byte"
             if count(my.in_argument.array) > 0
                 my.out_argument.byte_as_string = 1
             endif
             my._type0 = "byte"
-            my._type_c = class_derive_c_instance_type(my.in_argument)
             if my.in_argument.is_reference = 1
                 my._type = "string"
                 my._zend_type = "IS_STRING"
@@ -943,7 +937,6 @@ function php_map_low_level_argument (in_argument, in_php_project, out_argument, 
             my._type0 = my.in_argument.type
             my._type = "zend_bool"
             my._zend_type = "_IS_BOOL"
-            my._type_c = class_derive_c_instance_type(my.in_argument)
         else
             echo_debug_item(my.in_argument)
             echo_fatal("Not implemented (AN1006)", my)
@@ -954,7 +947,6 @@ function php_map_low_level_argument (in_argument, in_php_project, out_argument, 
         my._type0 = "enum"
         my._type = "$(my._prefix:)_$(my.in_argument.enum:c)_t"
         my._zend_type = "IS_LONG"
-        my._type_c = class_derive_c_instance_type(my.in_argument)
     endif
 
     if defined (my.in_argument.impl)
@@ -962,7 +954,6 @@ function php_map_low_level_argument (in_argument, in_php_project, out_argument, 
         my._type = "$(my._prefix:)_$(my.in_argument.impl:c)_t"
         my._shallow_type = "$(my._prefix:)_$(my.in_argument.impl:c)"
         my._zend_type = "IS_RESOURCE"
-        my._type_c = class_derive_c_instance_type(my.in_argument)
     endif
 
     my.out_argument.type0 = my._type0

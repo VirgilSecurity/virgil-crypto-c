@@ -1,7 +1,8 @@
 {
   "autoload": {
     "psr-4": {
-      "VirgilCrypto\\Phe\\": "src"
+      "VirgilCrypto\\Phe\\": "src",
+      "VirgilCrypto\\Foundation\\": "../foundation/src"
     }
   },
   "autoload-dev": {
