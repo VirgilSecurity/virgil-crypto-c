@@ -94,12 +94,20 @@ vscf_key_alg_factory_create_from_alg_id(vscf_alg_id_t alg_id, const vscf_impl_t 
 
     vscf_ecies_t *ecies = NULL;
 
-    if (alg_id != vscf_alg_id_RSA) {
+    switch (alg_id) {
+    case vscf_alg_id_ECC:
+    case vscf_alg_id_SECP256R1:
+    case vscf_alg_id_ED25519:
+    case vscf_alg_id_CURVE25519: {
         ecies = vscf_ecies_new();
         if (random) {
             vscf_ecies_use_random(ecies, (vscf_impl_t *)random);
         }
         vscf_ecies_setup_defaults_no_random(ecies);
+    } break;
+    default:
+        //  Do nothing
+        break;
     }
 
     switch (alg_id) {

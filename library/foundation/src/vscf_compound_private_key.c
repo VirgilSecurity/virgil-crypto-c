@@ -100,6 +100,7 @@ vscf_compound_private_key_cleanup_ctx(vscf_compound_private_key_t *self) {
     vscf_impl_destroy(&self->decryption_key);
     vscf_impl_destroy(&self->signing_key);
     vscf_impl_destroy(&self->alg_info);
+    vsc_buffer_destroy(&self->encryption_key_signature);
 }
 
 //
