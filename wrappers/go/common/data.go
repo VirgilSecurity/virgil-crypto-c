@@ -34,11 +34,9 @@
 
 package common
 
-// #cgo CFLAGS: -I${SRCDIR}/../../../build/library/common/include/virgil/crypto/common
-// #cgo CFLAGS: -I${SRCDIR}/../../../library/common/include/virgil/crypto/common
-// #cgo LDFLAGS: -L${SRCDIR}/../binaries/linux/lib -lvsc_common
-// #cgo LDFLAGS: -L${SRCDIR}/../binaries/linux/lib -lvsc_foundation
-// #include <vsc_common_public.h>
+// #cgo CFLAGS: -I${SRCDIR}/../binaries/include/
+// #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lvsc_common
+// #include <virgil/crypto/common/vsc_common_public.h>
 import "C"
 
 // Wrap Go byte array to the C struct
@@ -48,10 +46,11 @@ func WrapData(data []byte) C.vsc_data_t {
 
 // Extract Go byte array from the C struct
 func ExtractData(data C.vsc_data_t) []byte {
-   //TODO
-   newSize := data.len
-   if newSize < len(data.bytes) {
-       panic("Underlying C buffer corrupt the memory.")
-   }
-   return data.bytes[:newSize]
+  //TODO
+  //newSize := data.len
+  ////if newSize < len(data.bytes) {
+  ////    panic("Underlying C buffer corrupt the memory.")
+  ////}
+  //return (data.bytes)[:newSize]
+  return []byte("Go")
 }

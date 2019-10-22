@@ -868,7 +868,8 @@ function go_create_cgo_include (unit_name, go_instance)
         # already imported
     else
         new go_cgo_include to my.go_instance
-            .unit_name = my.unit_name
+            .unit_name = "virgil/crypto/foundation/$(my.unit_name:)"
+            #.unit_name = my.unit_name
         endnew
     endif
 endfunction
@@ -880,10 +881,11 @@ function go_create_cgo_instructions (go_module, go_project)
     check_arguments (my, "go_module, go_project", my)
     
     # Define CGO instructions
-    go_create_cgo_flag ("CFLAGS", "-I${SRCDIR}/../../../build/library/$(my.go_project.name:)/include/virgil/crypto/$(my.go_project.name:)", my.go_module)
-    go_create_cgo_flag ("CFLAGS", "-I${SRCDIR}/../../../library/$(my.go_project.name:)/include/virgil/crypto/$(my.go_project.name:)", my.go_module)
-    #TODO find library in another place
-    go_create_cgo_flag ("LDFLAGS", "-L${SRCDIR}/../../java/binaries/linux/lib -l$(my.go_project.prefix:)_$(my.go_project.name:)_java", my.go_module)
+    go_create_cgo_flag ("CFLAGS", "-I${SRCDIR}/../binaries/include/", my.go_module)
+    #go_create_cgo_flag ("CFLAGS", "-I${SRCDIR}/../binaries/include/virgil/crypto/$(my.go_project.name:)", my.go_module)
+    go_create_cgo_flag ("LDFLAGS", "-L${SRCDIR}/../binaries/lib -lvsc_common", my.go_module)
+    go_create_cgo_flag ("LDFLAGS", "-L${SRCDIR}/../binaries/lib -lvsc_$(my.go_project.name:)", my.go_module)
+    #go_create_cgo_flag ("LDFLAGS", "-L${SRCDIR}/../binaries/lib -l$(my.go_project.prefix:)_$(my.go_project.name:)", my.go_module)
     go_create_cgo_include (my.go_project.c_umbrella_header, my.go_module)
 endfunction
 
@@ -912,6 +914,8 @@ function go_create_custom_modules (source, go_project, meta)
         new go_license to go_module
             . = go_format_license (my.go_project->license) ?
         endnew
+        
+        go_create_cgo_instructions (go_module, my.go_project)
 
         for my.go_project.go_import
             copy go_import to go_module
@@ -1535,6 +1539,8 @@ function go_create_enum_module (enum, go_project, meta)
         endfor
         
         if my.enum.name = "status"
+            go_create_cgo_instructions (go_module, my.go_project)
+
             new go_struct to go_module
                 . = go_format_description (my.enum) ?
                 .name = go_derive_enum_name (my.enum, my.go_project)
@@ -1981,7 +1987,7 @@ function go_wrap_c_returned_value (go_return, go_project)
 
     elsif is_true (0.is_class) & is_false (0.is_buffer)
         if string_in (go_return.access, "readonly, readwrite")
-            return "$(my.type:).init(use: $(my.name:)!) /* r5 */"
+            return "$(my.type:)($(my.name:)) /* r5 */"
         else
             return "*New$(my.type:)WithCtx($(my.name:)) /* r6 */"
         endif

@@ -1,9 +1,9 @@
 package foundation
 
-// #cgo CFLAGS: -I${SRCDIR}/../../../build/library/foundation/include/virgil/crypto/foundation
-// #cgo CFLAGS: -I${SRCDIR}/../../../library/foundation/include/virgil/crypto/foundation
-// #cgo LDFLAGS: -L${SRCDIR}/../../java/binaries/linux/lib -lvscf_foundation_java
-// #include <vscf_foundation_public.h>
+// #cgo CFLAGS: -I${SRCDIR}/../binaries/include/
+// #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lvsc_common
+// #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lvsc_foundation
+// #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
 
 /*
@@ -59,7 +59,7 @@ func (this MessageInfo) DataEncryptionAlgInfo () IAlgInfo {
 func (this MessageInfo) KeyRecipientInfoList () KeyRecipientInfoList {
     proxyResult := C.vscf_message_info_key_recipient_info_list(this.ctx)
 
-    return KeyRecipientInfoList.init(use: proxyResult!) /* r5 */
+    return KeyRecipientInfoList(proxyResult) /* r5 */
 }
 
 /*
@@ -68,7 +68,7 @@ func (this MessageInfo) KeyRecipientInfoList () KeyRecipientInfoList {
 func (this MessageInfo) PasswordRecipientInfoList () PasswordRecipientInfoList {
     proxyResult := C.vscf_message_info_password_recipient_info_list(this.ctx)
 
-    return PasswordRecipientInfoList.init(use: proxyResult!) /* r5 */
+    return PasswordRecipientInfoList(proxyResult) /* r5 */
 }
 
 /*
@@ -88,7 +88,7 @@ func (this MessageInfo) HasCustomParams () bool {
 func (this MessageInfo) CustomParams () MessageInfoCustomParams {
     proxyResult := C.vscf_message_info_custom_params(this.ctx)
 
-    return MessageInfoCustomParams.init(use: proxyResult!) /* r5 */
+    return MessageInfoCustomParams(proxyResult) /* r5 */
 }
 
 /*
@@ -124,7 +124,7 @@ func (this MessageInfo) HasFooterInfo () bool {
 func (this MessageInfo) FooterInfo () FooterInfo {
     proxyResult := C.vscf_message_info_footer_info(this.ctx)
 
-    return FooterInfo.init(use: proxyResult!) /* r5 */
+    return FooterInfo(proxyResult) /* r5 */
 }
 
 /*

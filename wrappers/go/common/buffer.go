@@ -34,11 +34,9 @@
 
 package common
 
-// #cgo CFLAGS: -I${SRCDIR}/../../../build/library/common/include/virgil/crypto/common
-// #cgo CFLAGS: -I${SRCDIR}/../../../library/common/include/virgil/crypto/common
-// #cgo LDFLAGS: -L${SRCDIR}/../binaries/linux/lib -lvsc_common
-// #cgo LDFLAGS: -L${SRCDIR}/../binaries/linux/lib -lvsc_foundation
-// #include <vsc_common_public.h>
+// #cgo CFLAGS: -I${SRCDIR}/../binaries/include/
+// #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lvsc_common
+// #include <virgil/crypto/common/vsc_common_public.h>
 import "C"
 import unsafe "unsafe"
 

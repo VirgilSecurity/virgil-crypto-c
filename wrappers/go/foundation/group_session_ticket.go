@@ -1,9 +1,9 @@
 package foundation
 
-// #cgo CFLAGS: -I${SRCDIR}/../../../build/library/foundation/include/virgil/crypto/foundation
-// #cgo CFLAGS: -I${SRCDIR}/../../../library/foundation/include/virgil/crypto/foundation
-// #cgo LDFLAGS: -L${SRCDIR}/../../java/binaries/linux/lib -lvscf_foundation_java
-// #include <vscf_foundation_public.h>
+// #cgo CFLAGS: -I${SRCDIR}/../binaries/include/
+// #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lvsc_common
+// #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lvsc_foundation
+// #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
 import . "virgil/common"
 
@@ -77,5 +77,5 @@ func (this GroupSessionTicket) SetupTicketAsNew (sessionId []byte) {
 func (this GroupSessionTicket) GetTicketMessage () GroupSessionMessage {
     proxyResult := C.vscf_group_session_ticket_get_ticket_message(this.ctx)
 
-    return GroupSessionMessage.init(use: proxyResult!) /* r5 */
+    return GroupSessionMessage(proxyResult) /* r5 */
 }

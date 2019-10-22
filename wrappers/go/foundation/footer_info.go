@@ -1,9 +1,9 @@
 package foundation
 
-// #cgo CFLAGS: -I${SRCDIR}/../../../build/library/foundation/include/virgil/crypto/foundation
-// #cgo CFLAGS: -I${SRCDIR}/../../../library/foundation/include/virgil/crypto/foundation
-// #cgo LDFLAGS: -L${SRCDIR}/../../java/binaries/linux/lib -lvscf_foundation_java
-// #include <vscf_foundation_public.h>
+// #cgo CFLAGS: -I${SRCDIR}/../binaries/include/
+// #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lvsc_common
+// #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lvsc_foundation
+// #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
 
 /*
@@ -58,7 +58,7 @@ func (this FooterInfo) HasSignedDataInfo () bool {
 func (this FooterInfo) SignedDataInfo () SignedDataInfo {
     proxyResult := C.vscf_footer_info_signed_data_info(this.ctx)
 
-    return SignedDataInfo.init(use: proxyResult!) /* r5 */
+    return SignedDataInfo(proxyResult) /* r5 */
 }
 
 /*

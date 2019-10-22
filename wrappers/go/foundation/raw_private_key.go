@@ -1,9 +1,9 @@
 package foundation
 
-// #cgo CFLAGS: -I${SRCDIR}/../../../build/library/foundation/include/virgil/crypto/foundation
-// #cgo CFLAGS: -I${SRCDIR}/../../../library/foundation/include/virgil/crypto/foundation
-// #cgo LDFLAGS: -L${SRCDIR}/../../java/binaries/linux/lib -lvscf_foundation_java
-// #include <vscf_foundation_public.h>
+// #cgo CFLAGS: -I${SRCDIR}/../binaries/include/
+// #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lvsc_common
+// #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lvsc_foundation
+// #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
 import . "virgil/common"
 
@@ -49,7 +49,7 @@ func (this RawPrivateKey) SetPublicKey (rawPublicKey RawPublicKey) {
 func (this RawPrivateKey) GetPublicKey () RawPublicKey {
     proxyResult := C.vscf_raw_private_key_get_public_key(this.ctx)
 
-    return RawPublicKey.init(use: proxyResult!) /* r5 */
+    return RawPublicKey(proxyResult) /* r5 */
 }
 
 /* Handle underlying C context. */
