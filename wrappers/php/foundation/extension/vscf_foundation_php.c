@@ -104,7 +104,7 @@
 #include "vscf_alg_info_der_deserializer.h"
 #include "vscf_message_info_der_serializer.h"
 
-#define VSCF_HANDLE_STATUS(status) do { if(status != vscf_status_SUCCESS) { vscf_handle_throw_exception(status); goto fail; } } while (false)
+#define VSCF_HANDLE_STATUS(status) do { if(status != vscf_status_SUCCESS) { vscf_handle_throw_exception(status); } } while (false)
 
 void
 vscf_handle_throw_exception(vscf_status_t status) {
@@ -2116,14 +2116,9 @@ PHP_FUNCTION(vscf_ecies_setup_defaults_php) {
     //
     // Handle error
     //
-    VSCF_HANDLE_STATUS (status);
+    VSCF_HANDLE_STATUS(status);
 
-    goto success;
-
-fail:
-    RETURN_FALSE;
-success:
-    RETURN_TRUE;
+fail: ;
 }
 
 //
@@ -2274,7 +2269,7 @@ PHP_FUNCTION(vscf_ecies_encrypt_php) {
     //
     // Handle error
     //
-    VSCF_HANDLE_STATUS (status);
+    VSCF_HANDLE_STATUS(status);
 
     //
     // Correct string length to the actual
@@ -2286,12 +2281,9 @@ PHP_FUNCTION(vscf_ecies_encrypt_php) {
     //
     RETVAL_STR(out_out);
 
-    goto success;
-
+    vsc_buffer_destroy(&out);
 fail:
     zend_string_free(out_out);
-success:
-    vsc_buffer_destroy(&out);
 }
 
 //
@@ -2403,7 +2395,7 @@ PHP_FUNCTION(vscf_ecies_decrypt_php) {
     //
     // Handle error
     //
-    VSCF_HANDLE_STATUS (status);
+    VSCF_HANDLE_STATUS(status);
 
     //
     // Correct string length to the actual
@@ -2415,12 +2407,9 @@ PHP_FUNCTION(vscf_ecies_decrypt_php) {
     //
     RETVAL_STR(out_out);
 
-    goto success;
-
+    vsc_buffer_destroy(&out);
 fail:
     zend_string_free(out_out);
-success:
-    vsc_buffer_destroy(&out);
 }
 
 //
@@ -2826,14 +2815,9 @@ PHP_FUNCTION(vscf_recipient_cipher_add_signer_php) {
     //
     // Handle error
     //
-    VSCF_HANDLE_STATUS (status);
+    VSCF_HANDLE_STATUS(status);
 
-    goto success;
-
-fail:
-    RETURN_FALSE;
-success:
-    RETURN_TRUE;
+fail: ;
 }
 
 //
@@ -2962,14 +2946,9 @@ PHP_FUNCTION(vscf_recipient_cipher_start_encryption_php) {
     //
     // Handle error
     //
-    VSCF_HANDLE_STATUS (status);
+    VSCF_HANDLE_STATUS(status);
 
-    goto success;
-
-fail:
-    RETURN_FALSE;
-success:
-    RETURN_TRUE;
+fail: ;
 }
 
 //
@@ -3017,14 +2996,9 @@ PHP_FUNCTION(vscf_recipient_cipher_start_signed_encryption_php) {
     //
     // Handle error
     //
-    VSCF_HANDLE_STATUS (status);
+    VSCF_HANDLE_STATUS(status);
 
-    goto success;
-
-fail:
-    RETURN_FALSE;
-success:
-    RETURN_TRUE;
+fail: ;
 }
 
 //
@@ -3228,7 +3202,7 @@ PHP_FUNCTION(vscf_recipient_cipher_process_encryption_php) {
     //
     // Handle error
     //
-    VSCF_HANDLE_STATUS (status);
+    VSCF_HANDLE_STATUS(status);
 
     //
     // Correct string length to the actual
@@ -3240,12 +3214,9 @@ PHP_FUNCTION(vscf_recipient_cipher_process_encryption_php) {
     //
     RETVAL_STR(out_out);
 
-    goto success;
-
+    vsc_buffer_destroy(&out);
 fail:
     zend_string_free(out_out);
-success:
-    vsc_buffer_destroy(&out);
 }
 
 //
@@ -3296,7 +3267,7 @@ PHP_FUNCTION(vscf_recipient_cipher_finish_encryption_php) {
     //
     // Handle error
     //
-    VSCF_HANDLE_STATUS (status);
+    VSCF_HANDLE_STATUS(status);
 
     //
     // Correct string length to the actual
@@ -3308,12 +3279,9 @@ PHP_FUNCTION(vscf_recipient_cipher_finish_encryption_php) {
     //
     RETVAL_STR(out_out);
 
-    goto success;
-
+    vsc_buffer_destroy(&out);
 fail:
     zend_string_free(out_out);
-success:
-    vsc_buffer_destroy(&out);
 }
 
 //
@@ -3371,14 +3339,9 @@ PHP_FUNCTION(vscf_recipient_cipher_start_decryption_with_key_php) {
     //
     // Handle error
     //
-    VSCF_HANDLE_STATUS (status);
+    VSCF_HANDLE_STATUS(status);
 
-    goto success;
-
-fail:
-    RETURN_FALSE;
-success:
-    RETURN_TRUE;
+fail: ;
 }
 
 //
@@ -3441,14 +3404,9 @@ PHP_FUNCTION(vscf_recipient_cipher_start_verified_decryption_with_key_php) {
     //
     // Handle error
     //
-    VSCF_HANDLE_STATUS (status);
+    VSCF_HANDLE_STATUS(status);
 
-    goto success;
-
-fail:
-    RETURN_FALSE;
-success:
-    RETURN_TRUE;
+fail: ;
 }
 
 //
@@ -3552,7 +3510,7 @@ PHP_FUNCTION(vscf_recipient_cipher_process_decryption_php) {
     //
     // Handle error
     //
-    VSCF_HANDLE_STATUS (status);
+    VSCF_HANDLE_STATUS(status);
 
     //
     // Correct string length to the actual
@@ -3564,12 +3522,9 @@ PHP_FUNCTION(vscf_recipient_cipher_process_decryption_php) {
     //
     RETVAL_STR(out_out);
 
-    goto success;
-
+    vsc_buffer_destroy(&out);
 fail:
     zend_string_free(out_out);
-success:
-    vsc_buffer_destroy(&out);
 }
 
 //
@@ -3620,7 +3575,7 @@ PHP_FUNCTION(vscf_recipient_cipher_finish_decryption_php) {
     //
     // Handle error
     //
-    VSCF_HANDLE_STATUS (status);
+    VSCF_HANDLE_STATUS(status);
 
     //
     // Correct string length to the actual
@@ -3632,12 +3587,9 @@ PHP_FUNCTION(vscf_recipient_cipher_finish_decryption_php) {
     //
     RETVAL_STR(out_out);
 
-    goto success;
-
+    vsc_buffer_destroy(&out);
 fail:
     zend_string_free(out_out);
-success:
-    vsc_buffer_destroy(&out);
 }
 
 //
@@ -3874,7 +3826,7 @@ PHP_FUNCTION(vscf_recipient_cipher_pack_message_info_footer_php) {
     //
     // Handle error
     //
-    VSCF_HANDLE_STATUS (status);
+    VSCF_HANDLE_STATUS(status);
 
     //
     // Correct string length to the actual
@@ -3886,12 +3838,9 @@ PHP_FUNCTION(vscf_recipient_cipher_pack_message_info_footer_php) {
     //
     RETVAL_STR(out_out);
 
-    goto success;
-
+    vsc_buffer_destroy(&out);
 fail:
     zend_string_free(out_out);
-success:
-    vsc_buffer_destroy(&out);
 }
 
 //
@@ -4309,9 +4258,17 @@ PHP_FUNCTION(vscf_message_info_custom_params_find_int_php) {
     int res =vscf_message_info_custom_params_find_int(message_info_custom_params, key, &error);
 
     //
+    // Handle error
+    //
+    vscf_status_t status = vscf_error_status(&error);
+    VSCF_HANDLE_STATUS(status);
+
+    //
     // Write returned result
     //
     RETVAL_LONG(res);
+
+fail: ;
 }
 
 //
@@ -4361,9 +4318,17 @@ PHP_FUNCTION(vscf_message_info_custom_params_find_string_php) {
     zend_string *out_data = zend_string_init(out_data_temp.bytes, out_data_temp.len, 0);
 
     //
+    // Handle error
+    //
+    vscf_status_t status = vscf_error_status(&error);
+    VSCF_HANDLE_STATUS(status);
+
+    //
     // Write returned result
     //
     RETVAL_STR(out_data);
+
+fail: ;
 }
 
 //
@@ -4413,9 +4378,17 @@ PHP_FUNCTION(vscf_message_info_custom_params_find_data_php) {
     zend_string *out_data = zend_string_init(out_data_temp.bytes, out_data_temp.len, 0);
 
     //
+    // Handle error
+    //
+    vscf_status_t status = vscf_error_status(&error);
+    VSCF_HANDLE_STATUS(status);
+
+    //
     // Write returned result
     //
     RETVAL_STR(out_data);
+
+fail: ;
 }
 
 //
@@ -4554,14 +4527,9 @@ PHP_FUNCTION(vscf_key_provider_setup_defaults_php) {
     //
     // Handle error
     //
-    VSCF_HANDLE_STATUS (status);
+    VSCF_HANDLE_STATUS(status);
 
-    goto success;
-
-fail:
-    RETURN_FALSE;
-success:
-    RETURN_TRUE;
+fail: ;
 }
 
 //
@@ -4656,10 +4624,18 @@ PHP_FUNCTION(vscf_key_provider_generate_private_key_php) {
     vscf_impl_t *private_key =vscf_key_provider_generate_private_key(key_provider, alg_id, &error);
 
     //
+    // Handle error
+    //
+    vscf_status_t status = vscf_error_status(&error);
+    VSCF_HANDLE_STATUS(status);
+
+    //
     // Write returned result
     //
     zend_resource *private_key_res = zend_register_resource(private_key, le_vscf_impl_t);
     RETVAL_RES(private_key_res);
+
+fail: ;
 }
 
 //
@@ -4708,10 +4684,18 @@ PHP_FUNCTION(vscf_key_provider_import_private_key_php) {
     vscf_impl_t *private_key =vscf_key_provider_import_private_key(key_provider, key_data, &error);
 
     //
+    // Handle error
+    //
+    vscf_status_t status = vscf_error_status(&error);
+    VSCF_HANDLE_STATUS(status);
+
+    //
     // Write returned result
     //
     zend_resource *private_key_res = zend_register_resource(private_key, le_vscf_impl_t);
     RETVAL_RES(private_key_res);
+
+fail: ;
 }
 
 //
@@ -4760,10 +4744,18 @@ PHP_FUNCTION(vscf_key_provider_import_public_key_php) {
     vscf_impl_t *public_key =vscf_key_provider_import_public_key(key_provider, key_data, &error);
 
     //
+    // Handle error
+    //
+    vscf_status_t status = vscf_error_status(&error);
+    VSCF_HANDLE_STATUS(status);
+
+    //
     // Write returned result
     //
     zend_resource *public_key_res = zend_register_resource(public_key, le_vscf_impl_t);
     RETVAL_RES(public_key_res);
+
+fail: ;
 }
 
 //
@@ -4866,7 +4858,7 @@ PHP_FUNCTION(vscf_key_provider_export_public_key_php) {
     //
     // Handle error
     //
-    VSCF_HANDLE_STATUS (status);
+    VSCF_HANDLE_STATUS(status);
 
     //
     // Correct string length to the actual
@@ -4878,12 +4870,9 @@ PHP_FUNCTION(vscf_key_provider_export_public_key_php) {
     //
     RETVAL_STR(out_out);
 
-    goto success;
-
+    vsc_buffer_destroy(&out);
 fail:
     zend_string_free(out_out);
-success:
-    vsc_buffer_destroy(&out);
 }
 
 //
@@ -4986,7 +4975,7 @@ PHP_FUNCTION(vscf_key_provider_export_private_key_php) {
     //
     // Handle error
     //
-    VSCF_HANDLE_STATUS (status);
+    VSCF_HANDLE_STATUS(status);
 
     //
     // Correct string length to the actual
@@ -4998,12 +4987,9 @@ PHP_FUNCTION(vscf_key_provider_export_private_key_php) {
     //
     RETVAL_STR(out_out);
 
-    goto success;
-
+    vsc_buffer_destroy(&out);
 fail:
     zend_string_free(out_out);
-success:
-    vsc_buffer_destroy(&out);
 }
 
 //
@@ -5326,7 +5312,7 @@ PHP_FUNCTION(vscf_signer_sign_php) {
     //
     // Handle error
     //
-    VSCF_HANDLE_STATUS (status);
+    VSCF_HANDLE_STATUS(status);
 
     //
     // Correct string length to the actual
@@ -5338,12 +5324,9 @@ PHP_FUNCTION(vscf_signer_sign_php) {
     //
     RETVAL_STR(out_signature);
 
-    goto success;
-
+    vsc_buffer_destroy(&signature);
 fail:
     zend_string_free(out_signature);
-success:
-    vsc_buffer_destroy(&signature);
 }
 
 //
@@ -5529,14 +5512,9 @@ PHP_FUNCTION(vscf_verifier_reset_php) {
     //
     // Handle error
     //
-    VSCF_HANDLE_STATUS (status);
+    VSCF_HANDLE_STATUS(status);
 
-    goto success;
-
-fail:
-    RETURN_FALSE;
-success:
-    RETURN_TRUE;
+fail: ;
 }
 
 //
@@ -5723,14 +5701,9 @@ PHP_FUNCTION(vscf_brainkey_client_setup_defaults_php) {
     //
     // Handle error
     //
-    VSCF_HANDLE_STATUS (status);
+    VSCF_HANDLE_STATUS(status);
 
-    goto success;
-
-fail:
-    RETURN_FALSE;
-success:
-    RETURN_TRUE;
+fail: ;
 }
 
 //
@@ -5793,7 +5766,7 @@ PHP_FUNCTION(vscf_brainkey_client_blind_php) {
     //
     // Handle error
     //
-    VSCF_HANDLE_STATUS (status);
+    VSCF_HANDLE_STATUS(status);
 
     //
     // Correct string length to the actual
@@ -5808,14 +5781,11 @@ PHP_FUNCTION(vscf_brainkey_client_blind_php) {
     add_next_index_str(return_value, out_deblind_factor);
     add_next_index_str(return_value, out_blinded_point);
 
-    goto success;
-
+    vsc_buffer_destroy(&deblind_factor);
+    vsc_buffer_destroy(&blinded_point);
 fail:
     zend_string_free(out_deblind_factor);
     zend_string_free(out_blinded_point);
-success:
-    vsc_buffer_destroy(&deblind_factor);
-    vsc_buffer_destroy(&blinded_point);
 }
 
 //
@@ -5886,7 +5856,7 @@ PHP_FUNCTION(vscf_brainkey_client_deblind_php) {
     //
     // Handle error
     //
-    VSCF_HANDLE_STATUS (status);
+    VSCF_HANDLE_STATUS(status);
 
     //
     // Correct string length to the actual
@@ -5898,12 +5868,9 @@ PHP_FUNCTION(vscf_brainkey_client_deblind_php) {
     //
     RETVAL_STR(out_seed);
 
-    goto success;
-
+    vsc_buffer_destroy(&seed);
 fail:
     zend_string_free(out_seed);
-success:
-    vsc_buffer_destroy(&seed);
 }
 
 //
@@ -6084,14 +6051,9 @@ PHP_FUNCTION(vscf_brainkey_server_setup_defaults_php) {
     //
     // Handle error
     //
-    VSCF_HANDLE_STATUS (status);
+    VSCF_HANDLE_STATUS(status);
 
-    goto success;
-
-fail:
-    RETURN_FALSE;
-success:
-    RETURN_TRUE;
+fail: ;
 }
 
 //
@@ -6142,7 +6104,7 @@ PHP_FUNCTION(vscf_brainkey_server_generate_identity_secret_php) {
     //
     // Handle error
     //
-    VSCF_HANDLE_STATUS (status);
+    VSCF_HANDLE_STATUS(status);
 
     //
     // Correct string length to the actual
@@ -6154,12 +6116,9 @@ PHP_FUNCTION(vscf_brainkey_server_generate_identity_secret_php) {
     //
     RETVAL_STR(out_identity_secret);
 
-    goto success;
-
+    vsc_buffer_destroy(&identity_secret);
 fail:
     zend_string_free(out_identity_secret);
-success:
-    vsc_buffer_destroy(&identity_secret);
 }
 
 //
@@ -6220,7 +6179,7 @@ PHP_FUNCTION(vscf_brainkey_server_harden_php) {
     //
     // Handle error
     //
-    VSCF_HANDLE_STATUS (status);
+    VSCF_HANDLE_STATUS(status);
 
     //
     // Correct string length to the actual
@@ -6232,12 +6191,9 @@ PHP_FUNCTION(vscf_brainkey_server_harden_php) {
     //
     RETVAL_STR(out_hardened_point);
 
-    goto success;
-
+    vsc_buffer_destroy(&hardened_point);
 fail:
     zend_string_free(out_hardened_point);
-success:
-    vsc_buffer_destroy(&hardened_point);
 }
 
 //
@@ -6652,10 +6608,18 @@ PHP_FUNCTION(vscf_group_session_message_deserialize_php) {
     vscf_group_session_message_t *group_session_message_rs =vscf_group_session_message_deserialize(input, &error);
 
     //
+    // Handle error
+    //
+    vscf_status_t status = vscf_error_status(&error);
+    VSCF_HANDLE_STATUS(status);
+
+    //
     // Write returned result
     //
     zend_resource *group_session_message_res = zend_register_resource(group_session_message_rs, le_vscf_impl_t);
     RETVAL_RES(group_session_message_res);
+
+fail: ;
 }
 
 //
@@ -6750,14 +6714,9 @@ PHP_FUNCTION(vscf_group_session_ticket_setup_defaults_php) {
     //
     // Handle error
     //
-    VSCF_HANDLE_STATUS (status);
+    VSCF_HANDLE_STATUS(status);
 
-    goto success;
-
-fail:
-    RETURN_FALSE;
-success:
-    RETURN_TRUE;
+fail: ;
 }
 
 //
@@ -6806,14 +6765,9 @@ PHP_FUNCTION(vscf_group_session_ticket_setup_ticket_as_new_php) {
     //
     // Handle error
     //
-    VSCF_HANDLE_STATUS (status);
+    VSCF_HANDLE_STATUS(status);
 
-    goto success;
-
-fail:
-    RETURN_FALSE;
-success:
-    RETURN_TRUE;
+fail: ;
 }
 
 //
@@ -7041,14 +6995,9 @@ PHP_FUNCTION(vscf_group_session_setup_defaults_php) {
     //
     // Handle error
     //
-    VSCF_HANDLE_STATUS (status);
+    VSCF_HANDLE_STATUS(status);
 
-    goto success;
-
-fail:
-    RETURN_FALSE;
-success:
-    RETURN_TRUE;
+fail: ;
 }
 
 //
@@ -7141,14 +7090,9 @@ PHP_FUNCTION(vscf_group_session_add_epoch_php) {
     //
     // Handle error
     //
-    VSCF_HANDLE_STATUS (status);
+    VSCF_HANDLE_STATUS(status);
 
-    goto success;
-
-fail:
-    RETURN_FALSE;
-success:
-    RETURN_TRUE;
+fail: ;
 }
 
 //
@@ -7201,10 +7145,18 @@ PHP_FUNCTION(vscf_group_session_encrypt_php) {
     vscf_group_session_message_t *group_session_message =vscf_group_session_encrypt(group_session, plain_text, private_key, &error);
 
     //
+    // Handle error
+    //
+    vscf_status_t status = vscf_error_status(&error);
+    VSCF_HANDLE_STATUS(status);
+
+    //
     // Write returned result
     //
     zend_resource *group_session_message_res = zend_register_resource(group_session_message, le_vscf_impl_t);
     RETVAL_RES(group_session_message_res);
+
+fail: ;
 }
 
 //
@@ -7311,7 +7263,7 @@ PHP_FUNCTION(vscf_group_session_decrypt_php) {
     //
     // Handle error
     //
-    VSCF_HANDLE_STATUS (status);
+    VSCF_HANDLE_STATUS(status);
 
     //
     // Correct string length to the actual
@@ -7323,12 +7275,9 @@ PHP_FUNCTION(vscf_group_session_decrypt_php) {
     //
     RETVAL_STR(out_plain_text);
 
-    goto success;
-
+    vsc_buffer_destroy(&plain_text);
 fail:
     zend_string_free(out_plain_text);
-success:
-    vsc_buffer_destroy(&plain_text);
 }
 
 //
@@ -7372,10 +7321,18 @@ PHP_FUNCTION(vscf_group_session_create_group_ticket_php) {
     vscf_group_session_ticket_t *group_session_ticket =vscf_group_session_create_group_ticket(group_session, &error);
 
     //
+    // Handle error
+    //
+    vscf_status_t status = vscf_error_status(&error);
+    VSCF_HANDLE_STATUS(status);
+
+    //
     // Write returned result
     //
     zend_resource *group_session_ticket_res = zend_register_resource(group_session_ticket, le_vscf_impl_t);
     RETVAL_RES(group_session_ticket_res);
+
+fail: ;
 }
 
 //
@@ -7513,14 +7470,9 @@ PHP_FUNCTION(vscf_message_info_editor_setup_defaults_php) {
     //
     // Handle error
     //
-    VSCF_HANDLE_STATUS (status);
+    VSCF_HANDLE_STATUS(status);
 
-    goto success;
-
-fail:
-    RETURN_FALSE;
-success:
-    RETURN_TRUE;
+fail: ;
 }
 
 //
@@ -7569,14 +7521,9 @@ PHP_FUNCTION(vscf_message_info_editor_unpack_php) {
     //
     // Handle error
     //
-    VSCF_HANDLE_STATUS (status);
+    VSCF_HANDLE_STATUS(status);
 
-    goto success;
-
-fail:
-    RETURN_FALSE;
-success:
-    RETURN_TRUE;
+fail: ;
 }
 
 //
@@ -7629,14 +7576,9 @@ PHP_FUNCTION(vscf_message_info_editor_unlock_php) {
     //
     // Handle error
     //
-    VSCF_HANDLE_STATUS (status);
+    VSCF_HANDLE_STATUS(status);
 
-    goto success;
-
-fail:
-    RETURN_FALSE;
-success:
-    RETURN_TRUE;
+fail: ;
 }
 
 //
@@ -7689,14 +7631,9 @@ PHP_FUNCTION(vscf_message_info_editor_add_key_recipient_php) {
     //
     // Handle error
     //
-    VSCF_HANDLE_STATUS (status);
+    VSCF_HANDLE_STATUS(status);
 
-    goto success;
-
-fail:
-    RETURN_FALSE;
-success:
-    RETURN_TRUE;
+fail: ;
 }
 
 //
@@ -9266,14 +9203,9 @@ PHP_FUNCTION(vscf_sha224_restore_alg_info_php) {
     //
     // Handle error
     //
-    VSCF_HANDLE_STATUS (status);
+    VSCF_HANDLE_STATUS(status);
 
-    goto success;
-
-fail:
-    RETURN_FALSE;
-success:
-    RETURN_TRUE;
+fail: ;
 }
 
 //
@@ -9657,14 +9589,9 @@ PHP_FUNCTION(vscf_sha256_restore_alg_info_php) {
     //
     // Handle error
     //
-    VSCF_HANDLE_STATUS (status);
+    VSCF_HANDLE_STATUS(status);
 
-    goto success;
-
-fail:
-    RETURN_FALSE;
-success:
-    RETURN_TRUE;
+fail: ;
 }
 
 //
@@ -10048,14 +9975,9 @@ PHP_FUNCTION(vscf_sha384_restore_alg_info_php) {
     //
     // Handle error
     //
-    VSCF_HANDLE_STATUS (status);
+    VSCF_HANDLE_STATUS(status);
 
-    goto success;
-
-fail:
-    RETURN_FALSE;
-success:
-    RETURN_TRUE;
+fail: ;
 }
 
 //
@@ -10439,14 +10361,9 @@ PHP_FUNCTION(vscf_sha512_restore_alg_info_php) {
     //
     // Handle error
     //
-    VSCF_HANDLE_STATUS (status);
+    VSCF_HANDLE_STATUS(status);
 
-    goto success;
-
-fail:
-    RETURN_FALSE;
-success:
-    RETURN_TRUE;
+fail: ;
 }
 
 //
@@ -10830,14 +10747,9 @@ PHP_FUNCTION(vscf_aes256_gcm_restore_alg_info_php) {
     //
     // Handle error
     //
-    VSCF_HANDLE_STATUS (status);
+    VSCF_HANDLE_STATUS(status);
 
-    goto success;
-
-fail:
-    RETURN_FALSE;
-success:
-    RETURN_TRUE;
+fail: ;
 }
 
 //
@@ -10893,7 +10805,7 @@ PHP_FUNCTION(vscf_aes256_gcm_encrypt_php) {
     //
     // Handle error
     //
-    VSCF_HANDLE_STATUS (status);
+    VSCF_HANDLE_STATUS(status);
 
     //
     // Correct string length to the actual
@@ -10905,12 +10817,9 @@ PHP_FUNCTION(vscf_aes256_gcm_encrypt_php) {
     //
     RETVAL_STR(out_out);
 
-    goto success;
-
+    vsc_buffer_destroy(&out);
 fail:
     zend_string_free(out_out);
-success:
-    vsc_buffer_destroy(&out);
 }
 
 //
@@ -11062,7 +10971,7 @@ PHP_FUNCTION(vscf_aes256_gcm_decrypt_php) {
     //
     // Handle error
     //
-    VSCF_HANDLE_STATUS (status);
+    VSCF_HANDLE_STATUS(status);
 
     //
     // Correct string length to the actual
@@ -11074,12 +10983,9 @@ PHP_FUNCTION(vscf_aes256_gcm_decrypt_php) {
     //
     RETVAL_STR(out_out);
 
-    goto success;
-
+    vsc_buffer_destroy(&out);
 fail:
     zend_string_free(out_out);
-success:
-    vsc_buffer_destroy(&out);
 }
 
 //
@@ -11549,7 +11455,7 @@ PHP_FUNCTION(vscf_aes256_gcm_finish_php) {
     //
     // Handle error
     //
-    VSCF_HANDLE_STATUS (status);
+    VSCF_HANDLE_STATUS(status);
 
     //
     // Correct string length to the actual
@@ -11561,12 +11467,9 @@ PHP_FUNCTION(vscf_aes256_gcm_finish_php) {
     //
     RETVAL_STR(out_out);
 
-    goto success;
-
+    vsc_buffer_destroy(&out);
 fail:
     zend_string_free(out_out);
-success:
-    vsc_buffer_destroy(&out);
 }
 
 //
@@ -11634,7 +11537,7 @@ PHP_FUNCTION(vscf_aes256_gcm_auth_encrypt_php) {
     //
     // Handle error
     //
-    VSCF_HANDLE_STATUS (status);
+    VSCF_HANDLE_STATUS(status);
 
     //
     // Correct string length to the actual
@@ -11649,14 +11552,11 @@ PHP_FUNCTION(vscf_aes256_gcm_auth_encrypt_php) {
     add_next_index_str(return_value, out_out);
     add_next_index_str(return_value, out_tag);
 
-    goto success;
-
+    vsc_buffer_destroy(&out);
+    vsc_buffer_destroy(&tag);
 fail:
     zend_string_free(out_out);
     zend_string_free(out_tag);
-success:
-    vsc_buffer_destroy(&out);
-    vsc_buffer_destroy(&tag);
 }
 
 //
@@ -11770,7 +11670,7 @@ PHP_FUNCTION(vscf_aes256_gcm_auth_decrypt_php) {
     //
     // Handle error
     //
-    VSCF_HANDLE_STATUS (status);
+    VSCF_HANDLE_STATUS(status);
 
     //
     // Correct string length to the actual
@@ -11782,12 +11682,9 @@ PHP_FUNCTION(vscf_aes256_gcm_auth_decrypt_php) {
     //
     RETVAL_STR(out_out);
 
-    goto success;
-
+    vsc_buffer_destroy(&out);
 fail:
     zend_string_free(out_out);
-success:
-    vsc_buffer_destroy(&out);
 }
 
 //
@@ -11937,7 +11834,7 @@ PHP_FUNCTION(vscf_aes256_gcm_finish_auth_encryption_php) {
     //
     // Handle error
     //
-    VSCF_HANDLE_STATUS (status);
+    VSCF_HANDLE_STATUS(status);
 
     //
     // Correct string length to the actual
@@ -11952,14 +11849,11 @@ PHP_FUNCTION(vscf_aes256_gcm_finish_auth_encryption_php) {
     add_next_index_str(return_value, out_out);
     add_next_index_str(return_value, out_tag);
 
-    goto success;
-
+    vsc_buffer_destroy(&out);
+    vsc_buffer_destroy(&tag);
 fail:
     zend_string_free(out_out);
     zend_string_free(out_tag);
-success:
-    vsc_buffer_destroy(&out);
-    vsc_buffer_destroy(&tag);
 }
 
 //
@@ -12015,7 +11909,7 @@ PHP_FUNCTION(vscf_aes256_gcm_finish_auth_decryption_php) {
     //
     // Handle error
     //
-    VSCF_HANDLE_STATUS (status);
+    VSCF_HANDLE_STATUS(status);
 
     //
     // Correct string length to the actual
@@ -12027,12 +11921,9 @@ PHP_FUNCTION(vscf_aes256_gcm_finish_auth_decryption_php) {
     //
     RETVAL_STR(out_out);
 
-    goto success;
-
+    vsc_buffer_destroy(&out);
 fail:
     zend_string_free(out_out);
-success:
-    vsc_buffer_destroy(&out);
 }
 
 //
@@ -12220,14 +12111,9 @@ PHP_FUNCTION(vscf_aes256_cbc_restore_alg_info_php) {
     //
     // Handle error
     //
-    VSCF_HANDLE_STATUS (status);
+    VSCF_HANDLE_STATUS(status);
 
-    goto success;
-
-fail:
-    RETURN_FALSE;
-success:
-    RETURN_TRUE;
+fail: ;
 }
 
 //
@@ -12283,7 +12169,7 @@ PHP_FUNCTION(vscf_aes256_cbc_encrypt_php) {
     //
     // Handle error
     //
-    VSCF_HANDLE_STATUS (status);
+    VSCF_HANDLE_STATUS(status);
 
     //
     // Correct string length to the actual
@@ -12295,12 +12181,9 @@ PHP_FUNCTION(vscf_aes256_cbc_encrypt_php) {
     //
     RETVAL_STR(out_out);
 
-    goto success;
-
+    vsc_buffer_destroy(&out);
 fail:
     zend_string_free(out_out);
-success:
-    vsc_buffer_destroy(&out);
 }
 
 //
@@ -12452,7 +12335,7 @@ PHP_FUNCTION(vscf_aes256_cbc_decrypt_php) {
     //
     // Handle error
     //
-    VSCF_HANDLE_STATUS (status);
+    VSCF_HANDLE_STATUS(status);
 
     //
     // Correct string length to the actual
@@ -12464,12 +12347,9 @@ PHP_FUNCTION(vscf_aes256_cbc_decrypt_php) {
     //
     RETVAL_STR(out_out);
 
-    goto success;
-
+    vsc_buffer_destroy(&out);
 fail:
     zend_string_free(out_out);
-success:
-    vsc_buffer_destroy(&out);
 }
 
 //
@@ -12939,7 +12819,7 @@ PHP_FUNCTION(vscf_aes256_cbc_finish_php) {
     //
     // Handle error
     //
-    VSCF_HANDLE_STATUS (status);
+    VSCF_HANDLE_STATUS(status);
 
     //
     // Correct string length to the actual
@@ -12951,12 +12831,9 @@ PHP_FUNCTION(vscf_aes256_cbc_finish_php) {
     //
     RETVAL_STR(out_out);
 
-    goto success;
-
+    vsc_buffer_destroy(&out);
 fail:
     zend_string_free(out_out);
-success:
-    vsc_buffer_destroy(&out);
 }
 
 //
@@ -13183,14 +13060,9 @@ PHP_FUNCTION(vscf_asn1rd_status_php) {
     //
     // Handle error
     //
-    VSCF_HANDLE_STATUS (status);
+    VSCF_HANDLE_STATUS(status);
 
-    goto success;
-
-fail:
-    RETURN_FALSE;
-success:
-    RETURN_TRUE;
+fail: ;
 }
 
 //
@@ -14728,14 +14600,9 @@ PHP_FUNCTION(vscf_asn1wr_status_php) {
     //
     // Handle error
     //
-    VSCF_HANDLE_STATUS (status);
+    VSCF_HANDLE_STATUS(status);
 
-    goto success;
-
-fail:
-    RETURN_FALSE;
-success:
-    RETURN_TRUE;
+fail: ;
 }
 
 //
@@ -16631,14 +16498,9 @@ PHP_FUNCTION(vscf_rsa_setup_defaults_php) {
     //
     // Handle error
     //
-    VSCF_HANDLE_STATUS (status);
+    VSCF_HANDLE_STATUS(status);
 
-    goto success;
-
-fail:
-    RETURN_FALSE;
-success:
-    RETURN_TRUE;
+fail: ;
 }
 
 //
@@ -16686,10 +16548,18 @@ PHP_FUNCTION(vscf_rsa_generate_key_php) {
     vscf_impl_t *private_key =vscf_rsa_generate_key(rsa, bitlen, &error);
 
     //
+    // Handle error
+    //
+    vscf_status_t status = vscf_error_status(&error);
+    VSCF_HANDLE_STATUS(status);
+
+    //
     // Write returned result
     //
     zend_resource *private_key_res = zend_register_resource(private_key, le_vscf_impl_t);
     RETVAL_RES(private_key_res);
+
+fail: ;
 }
 
 //
@@ -16826,14 +16696,9 @@ PHP_FUNCTION(vscf_rsa_restore_alg_info_php) {
     //
     // Handle error
     //
-    VSCF_HANDLE_STATUS (status);
+    VSCF_HANDLE_STATUS(status);
 
-    goto success;
-
-fail:
-    RETURN_FALSE;
-success:
-    RETURN_TRUE;
+fail: ;
 }
 
 //
@@ -16881,10 +16746,18 @@ PHP_FUNCTION(vscf_rsa_generate_ephemeral_key_php) {
     vscf_impl_t *private_key =vscf_rsa_generate_ephemeral_key(rsa, key, &error);
 
     //
+    // Handle error
+    //
+    vscf_status_t status = vscf_error_status(&error);
+    VSCF_HANDLE_STATUS(status);
+
+    //
     // Write returned result
     //
     zend_resource *private_key_res = zend_register_resource(private_key, le_vscf_impl_t);
     RETVAL_RES(private_key_res);
+
+fail: ;
 }
 
 //
@@ -16932,10 +16805,18 @@ PHP_FUNCTION(vscf_rsa_import_public_key_php) {
     vscf_impl_t *public_key =vscf_rsa_import_public_key(rsa, raw_key, &error);
 
     //
+    // Handle error
+    //
+    vscf_status_t status = vscf_error_status(&error);
+    VSCF_HANDLE_STATUS(status);
+
+    //
     // Write returned result
     //
     zend_resource *public_key_res = zend_register_resource(public_key, le_vscf_impl_t);
     RETVAL_RES(public_key_res);
+
+fail: ;
 }
 
 //
@@ -16983,10 +16864,18 @@ PHP_FUNCTION(vscf_rsa_export_public_key_php) {
     vscf_raw_public_key_t *raw_public_key =vscf_rsa_export_public_key(rsa, public_key, &error);
 
     //
+    // Handle error
+    //
+    vscf_status_t status = vscf_error_status(&error);
+    VSCF_HANDLE_STATUS(status);
+
+    //
     // Write returned result
     //
     zend_resource *raw_public_key_res = zend_register_resource(raw_public_key, le_vscf_impl_t);
     RETVAL_RES(raw_public_key_res);
+
+fail: ;
 }
 
 //
@@ -17034,10 +16923,18 @@ PHP_FUNCTION(vscf_rsa_import_private_key_php) {
     vscf_impl_t *private_key =vscf_rsa_import_private_key(rsa, raw_key, &error);
 
     //
+    // Handle error
+    //
+    vscf_status_t status = vscf_error_status(&error);
+    VSCF_HANDLE_STATUS(status);
+
+    //
     // Write returned result
     //
     zend_resource *private_key_res = zend_register_resource(private_key, le_vscf_impl_t);
     RETVAL_RES(private_key_res);
+
+fail: ;
 }
 
 //
@@ -17085,10 +16982,18 @@ PHP_FUNCTION(vscf_rsa_export_private_key_php) {
     vscf_raw_private_key_t *raw_private_key =vscf_rsa_export_private_key(rsa, private_key, &error);
 
     //
+    // Handle error
+    //
+    vscf_status_t status = vscf_error_status(&error);
+    VSCF_HANDLE_STATUS(status);
+
+    //
     // Write returned result
     //
     zend_resource *raw_private_key_res = zend_register_resource(raw_private_key, le_vscf_impl_t);
     RETVAL_RES(raw_private_key_res);
+
+fail: ;
 }
 
 //
@@ -17252,7 +17157,7 @@ PHP_FUNCTION(vscf_rsa_encrypt_php) {
     //
     // Handle error
     //
-    VSCF_HANDLE_STATUS (status);
+    VSCF_HANDLE_STATUS(status);
 
     //
     // Correct string length to the actual
@@ -17264,12 +17169,9 @@ PHP_FUNCTION(vscf_rsa_encrypt_php) {
     //
     RETVAL_STR(out_out);
 
-    goto success;
-
+    vsc_buffer_destroy(&out);
 fail:
     zend_string_free(out_out);
-success:
-    vsc_buffer_destroy(&out);
 }
 
 //
@@ -17433,7 +17335,7 @@ PHP_FUNCTION(vscf_rsa_decrypt_php) {
     //
     // Handle error
     //
-    VSCF_HANDLE_STATUS (status);
+    VSCF_HANDLE_STATUS(status);
 
     //
     // Correct string length to the actual
@@ -17445,12 +17347,9 @@ PHP_FUNCTION(vscf_rsa_decrypt_php) {
     //
     RETVAL_STR(out_out);
 
-    goto success;
-
+    vsc_buffer_destroy(&out);
 fail:
     zend_string_free(out_out);
-success:
-    vsc_buffer_destroy(&out);
 }
 
 //
@@ -17614,7 +17513,7 @@ PHP_FUNCTION(vscf_rsa_sign_hash_php) {
     //
     // Handle error
     //
-    VSCF_HANDLE_STATUS (status);
+    VSCF_HANDLE_STATUS(status);
 
     //
     // Correct string length to the actual
@@ -17626,12 +17525,9 @@ PHP_FUNCTION(vscf_rsa_sign_hash_php) {
     //
     RETVAL_STR(out_signature);
 
-    goto success;
-
+    vsc_buffer_destroy(&signature);
 fail:
     zend_string_free(out_signature);
-success:
-    vsc_buffer_destroy(&signature);
 }
 
 //
@@ -18474,14 +18370,9 @@ PHP_FUNCTION(vscf_ecc_setup_defaults_php) {
     //
     // Handle error
     //
-    VSCF_HANDLE_STATUS (status);
+    VSCF_HANDLE_STATUS(status);
 
-    goto success;
-
-fail:
-    RETURN_FALSE;
-success:
-    RETURN_TRUE;
+fail: ;
 }
 
 //
@@ -18533,10 +18424,18 @@ PHP_FUNCTION(vscf_ecc_generate_key_php) {
     vscf_impl_t *private_key =vscf_ecc_generate_key(ecc, alg_id, &error);
 
     //
+    // Handle error
+    //
+    vscf_status_t status = vscf_error_status(&error);
+    VSCF_HANDLE_STATUS(status);
+
+    //
     // Write returned result
     //
     zend_resource *private_key_res = zend_register_resource(private_key, le_vscf_impl_t);
     RETVAL_RES(private_key_res);
+
+fail: ;
 }
 
 //
@@ -18673,14 +18572,9 @@ PHP_FUNCTION(vscf_ecc_restore_alg_info_php) {
     //
     // Handle error
     //
-    VSCF_HANDLE_STATUS (status);
+    VSCF_HANDLE_STATUS(status);
 
-    goto success;
-
-fail:
-    RETURN_FALSE;
-success:
-    RETURN_TRUE;
+fail: ;
 }
 
 //
@@ -18728,10 +18622,18 @@ PHP_FUNCTION(vscf_ecc_generate_ephemeral_key_php) {
     vscf_impl_t *private_key =vscf_ecc_generate_ephemeral_key(ecc, key, &error);
 
     //
+    // Handle error
+    //
+    vscf_status_t status = vscf_error_status(&error);
+    VSCF_HANDLE_STATUS(status);
+
+    //
     // Write returned result
     //
     zend_resource *private_key_res = zend_register_resource(private_key, le_vscf_impl_t);
     RETVAL_RES(private_key_res);
+
+fail: ;
 }
 
 //
@@ -18779,10 +18681,18 @@ PHP_FUNCTION(vscf_ecc_import_public_key_php) {
     vscf_impl_t *public_key =vscf_ecc_import_public_key(ecc, raw_key, &error);
 
     //
+    // Handle error
+    //
+    vscf_status_t status = vscf_error_status(&error);
+    VSCF_HANDLE_STATUS(status);
+
+    //
     // Write returned result
     //
     zend_resource *public_key_res = zend_register_resource(public_key, le_vscf_impl_t);
     RETVAL_RES(public_key_res);
+
+fail: ;
 }
 
 //
@@ -18830,10 +18740,18 @@ PHP_FUNCTION(vscf_ecc_export_public_key_php) {
     vscf_raw_public_key_t *raw_public_key =vscf_ecc_export_public_key(ecc, public_key, &error);
 
     //
+    // Handle error
+    //
+    vscf_status_t status = vscf_error_status(&error);
+    VSCF_HANDLE_STATUS(status);
+
+    //
     // Write returned result
     //
     zend_resource *raw_public_key_res = zend_register_resource(raw_public_key, le_vscf_impl_t);
     RETVAL_RES(raw_public_key_res);
+
+fail: ;
 }
 
 //
@@ -18881,10 +18799,18 @@ PHP_FUNCTION(vscf_ecc_import_private_key_php) {
     vscf_impl_t *private_key =vscf_ecc_import_private_key(ecc, raw_key, &error);
 
     //
+    // Handle error
+    //
+    vscf_status_t status = vscf_error_status(&error);
+    VSCF_HANDLE_STATUS(status);
+
+    //
     // Write returned result
     //
     zend_resource *private_key_res = zend_register_resource(private_key, le_vscf_impl_t);
     RETVAL_RES(private_key_res);
+
+fail: ;
 }
 
 //
@@ -18932,10 +18858,18 @@ PHP_FUNCTION(vscf_ecc_export_private_key_php) {
     vscf_raw_private_key_t *raw_private_key =vscf_ecc_export_private_key(ecc, private_key, &error);
 
     //
+    // Handle error
+    //
+    vscf_status_t status = vscf_error_status(&error);
+    VSCF_HANDLE_STATUS(status);
+
+    //
     // Write returned result
     //
     zend_resource *raw_private_key_res = zend_register_resource(raw_private_key, le_vscf_impl_t);
     RETVAL_RES(raw_private_key_res);
+
+fail: ;
 }
 
 //
@@ -19099,7 +19033,7 @@ PHP_FUNCTION(vscf_ecc_encrypt_php) {
     //
     // Handle error
     //
-    VSCF_HANDLE_STATUS (status);
+    VSCF_HANDLE_STATUS(status);
 
     //
     // Correct string length to the actual
@@ -19111,12 +19045,9 @@ PHP_FUNCTION(vscf_ecc_encrypt_php) {
     //
     RETVAL_STR(out_out);
 
-    goto success;
-
+    vsc_buffer_destroy(&out);
 fail:
     zend_string_free(out_out);
-success:
-    vsc_buffer_destroy(&out);
 }
 
 //
@@ -19280,7 +19211,7 @@ PHP_FUNCTION(vscf_ecc_decrypt_php) {
     //
     // Handle error
     //
-    VSCF_HANDLE_STATUS (status);
+    VSCF_HANDLE_STATUS(status);
 
     //
     // Correct string length to the actual
@@ -19292,12 +19223,9 @@ PHP_FUNCTION(vscf_ecc_decrypt_php) {
     //
     RETVAL_STR(out_out);
 
-    goto success;
-
+    vsc_buffer_destroy(&out);
 fail:
     zend_string_free(out_out);
-success:
-    vsc_buffer_destroy(&out);
 }
 
 //
@@ -19461,7 +19389,7 @@ PHP_FUNCTION(vscf_ecc_sign_hash_php) {
     //
     // Handle error
     //
-    VSCF_HANDLE_STATUS (status);
+    VSCF_HANDLE_STATUS(status);
 
     //
     // Correct string length to the actual
@@ -19473,12 +19401,9 @@ PHP_FUNCTION(vscf_ecc_sign_hash_php) {
     //
     RETVAL_STR(out_signature);
 
-    goto success;
-
+    vsc_buffer_destroy(&signature);
 fail:
     zend_string_free(out_signature);
-success:
-    vsc_buffer_destroy(&signature);
 }
 
 //
@@ -19651,7 +19576,7 @@ PHP_FUNCTION(vscf_ecc_compute_shared_key_php) {
     //
     // Handle error
     //
-    VSCF_HANDLE_STATUS (status);
+    VSCF_HANDLE_STATUS(status);
 
     //
     // Correct string length to the actual
@@ -19663,12 +19588,9 @@ PHP_FUNCTION(vscf_ecc_compute_shared_key_php) {
     //
     RETVAL_STR(out_shared_key);
 
-    goto success;
-
+    vsc_buffer_destroy(&shared_key);
 fail:
     zend_string_free(out_shared_key);
-success:
-    vsc_buffer_destroy(&shared_key);
 }
 
 //
@@ -20038,7 +19960,7 @@ PHP_FUNCTION(vscf_entropy_accumulator_gather_php) {
     //
     // Handle error
     //
-    VSCF_HANDLE_STATUS (status);
+    VSCF_HANDLE_STATUS(status);
 
     //
     // Correct string length to the actual
@@ -20050,12 +19972,9 @@ PHP_FUNCTION(vscf_entropy_accumulator_gather_php) {
     //
     RETVAL_STR(out_out);
 
-    goto success;
-
+    vsc_buffer_destroy(&out);
 fail:
     zend_string_free(out_out);
-success:
-    vsc_buffer_destroy(&out);
 }
 
 //
@@ -20150,14 +20069,9 @@ PHP_FUNCTION(vscf_ctr_drbg_setup_defaults_php) {
     //
     // Handle error
     //
-    VSCF_HANDLE_STATUS (status);
+    VSCF_HANDLE_STATUS(status);
 
-    goto success;
-
-fail:
-    RETURN_FALSE;
-success:
-    RETURN_TRUE;
+fail: ;
 }
 
 //
@@ -20337,7 +20251,7 @@ PHP_FUNCTION(vscf_ctr_drbg_random_php) {
     //
     // Handle error
     //
-    VSCF_HANDLE_STATUS (status);
+    VSCF_HANDLE_STATUS(status);
 
     //
     // Correct string length to the actual
@@ -20349,12 +20263,9 @@ PHP_FUNCTION(vscf_ctr_drbg_random_php) {
     //
     RETVAL_STR(out_data);
 
-    goto success;
-
+    vsc_buffer_destroy(&data);
 fail:
     zend_string_free(out_data);
-success:
-    vsc_buffer_destroy(&data);
 }
 
 //
@@ -20398,14 +20309,9 @@ PHP_FUNCTION(vscf_ctr_drbg_reseed_php) {
     //
     // Handle error
     //
-    VSCF_HANDLE_STATUS (status);
+    VSCF_HANDLE_STATUS(status);
 
-    goto success;
-
-fail:
-    RETURN_FALSE;
-success:
-    RETURN_TRUE;
+fail: ;
 }
 
 //
@@ -20453,14 +20359,9 @@ PHP_FUNCTION(vscf_ctr_drbg_use_entropy_source_php) {
     //
     // Handle error
     //
-    VSCF_HANDLE_STATUS (status);
+    VSCF_HANDLE_STATUS(status);
 
-    goto success;
-
-fail:
-    RETURN_FALSE;
-success:
-    RETURN_TRUE;
+fail: ;
 }
 
 //
@@ -20648,14 +20549,9 @@ PHP_FUNCTION(vscf_hmac_restore_alg_info_php) {
     //
     // Handle error
     //
-    VSCF_HANDLE_STATUS (status);
+    VSCF_HANDLE_STATUS(status);
 
-    goto success;
-
-fail:
-    RETURN_FALSE;
-success:
-    RETURN_TRUE;
+fail: ;
 }
 
 //
@@ -21179,14 +21075,9 @@ PHP_FUNCTION(vscf_hkdf_restore_alg_info_php) {
     //
     // Handle error
     //
-    VSCF_HANDLE_STATUS (status);
+    VSCF_HANDLE_STATUS(status);
 
-    goto success;
-
-fail:
-    RETURN_FALSE;
-success:
-    RETURN_TRUE;
+fail: ;
 }
 
 //
@@ -21574,14 +21465,9 @@ PHP_FUNCTION(vscf_kdf1_restore_alg_info_php) {
     //
     // Handle error
     //
-    VSCF_HANDLE_STATUS (status);
+    VSCF_HANDLE_STATUS(status);
 
-    goto success;
-
-fail:
-    RETURN_FALSE;
-success:
-    RETURN_TRUE;
+fail: ;
 }
 
 //
@@ -21877,14 +21763,9 @@ PHP_FUNCTION(vscf_kdf2_restore_alg_info_php) {
     //
     // Handle error
     //
-    VSCF_HANDLE_STATUS (status);
+    VSCF_HANDLE_STATUS(status);
 
-    goto success;
-
-fail:
-    RETURN_FALSE;
-success:
-    RETURN_TRUE;
+fail: ;
 }
 
 //
@@ -22189,7 +22070,7 @@ PHP_FUNCTION(vscf_fake_random_random_php) {
     //
     // Handle error
     //
-    VSCF_HANDLE_STATUS (status);
+    VSCF_HANDLE_STATUS(status);
 
     //
     // Correct string length to the actual
@@ -22201,12 +22082,9 @@ PHP_FUNCTION(vscf_fake_random_random_php) {
     //
     RETVAL_STR(out_data);
 
-    goto success;
-
+    vsc_buffer_destroy(&data);
 fail:
     zend_string_free(out_data);
-success:
-    vsc_buffer_destroy(&data);
 }
 
 //
@@ -22250,14 +22128,9 @@ PHP_FUNCTION(vscf_fake_random_reseed_php) {
     //
     // Handle error
     //
-    VSCF_HANDLE_STATUS (status);
+    VSCF_HANDLE_STATUS(status);
 
-    goto success;
-
-fail:
-    RETURN_FALSE;
-success:
-    RETURN_TRUE;
+fail: ;
 }
 
 //
@@ -22356,7 +22229,7 @@ PHP_FUNCTION(vscf_fake_random_gather_php) {
     //
     // Handle error
     //
-    VSCF_HANDLE_STATUS (status);
+    VSCF_HANDLE_STATUS(status);
 
     //
     // Correct string length to the actual
@@ -22368,12 +22241,9 @@ PHP_FUNCTION(vscf_fake_random_gather_php) {
     //
     RETVAL_STR(out_out);
 
-    goto success;
-
+    vsc_buffer_destroy(&out);
 fail:
     zend_string_free(out_out);
-success:
-    vsc_buffer_destroy(&out);
 }
 
 //
@@ -22600,14 +22470,9 @@ PHP_FUNCTION(vscf_pkcs5_pbkdf2_restore_alg_info_php) {
     //
     // Handle error
     //
-    VSCF_HANDLE_STATUS (status);
+    VSCF_HANDLE_STATUS(status);
 
-    goto success;
-
-fail:
-    RETURN_FALSE;
-success:
-    RETURN_TRUE;
+fail: ;
 }
 
 //
@@ -23039,14 +22904,9 @@ PHP_FUNCTION(vscf_pkcs5_pbes2_restore_alg_info_php) {
     //
     // Handle error
     //
-    VSCF_HANDLE_STATUS (status);
+    VSCF_HANDLE_STATUS(status);
 
-    goto success;
-
-fail:
-    RETURN_FALSE;
-success:
-    RETURN_TRUE;
+fail: ;
 }
 
 //
@@ -23102,7 +22962,7 @@ PHP_FUNCTION(vscf_pkcs5_pbes2_encrypt_php) {
     //
     // Handle error
     //
-    VSCF_HANDLE_STATUS (status);
+    VSCF_HANDLE_STATUS(status);
 
     //
     // Correct string length to the actual
@@ -23114,12 +22974,9 @@ PHP_FUNCTION(vscf_pkcs5_pbes2_encrypt_php) {
     //
     RETVAL_STR(out_out);
 
-    goto success;
-
+    vsc_buffer_destroy(&out);
 fail:
     zend_string_free(out_out);
-success:
-    vsc_buffer_destroy(&out);
 }
 
 //
@@ -23271,7 +23128,7 @@ PHP_FUNCTION(vscf_pkcs5_pbes2_decrypt_php) {
     //
     // Handle error
     //
-    VSCF_HANDLE_STATUS (status);
+    VSCF_HANDLE_STATUS(status);
 
     //
     // Correct string length to the actual
@@ -23283,12 +23140,9 @@ PHP_FUNCTION(vscf_pkcs5_pbes2_decrypt_php) {
     //
     RETVAL_STR(out_out);
 
-    goto success;
-
+    vsc_buffer_destroy(&out);
 fail:
     zend_string_free(out_out);
-success:
-    vsc_buffer_destroy(&out);
 }
 
 //
@@ -23616,7 +23470,7 @@ PHP_FUNCTION(vscf_seed_entropy_source_gather_php) {
     //
     // Handle error
     //
-    VSCF_HANDLE_STATUS (status);
+    VSCF_HANDLE_STATUS(status);
 
     //
     // Correct string length to the actual
@@ -23628,12 +23482,9 @@ PHP_FUNCTION(vscf_seed_entropy_source_gather_php) {
     //
     RETVAL_STR(out_out);
 
-    goto success;
-
+    vsc_buffer_destroy(&out);
 fail:
     zend_string_free(out_out);
-success:
-    vsc_buffer_destroy(&out);
 }
 
 //
@@ -23783,7 +23634,7 @@ PHP_FUNCTION(vscf_key_material_rng_random_php) {
     //
     // Handle error
     //
-    VSCF_HANDLE_STATUS (status);
+    VSCF_HANDLE_STATUS(status);
 
     //
     // Correct string length to the actual
@@ -23795,12 +23646,9 @@ PHP_FUNCTION(vscf_key_material_rng_random_php) {
     //
     RETVAL_STR(out_data);
 
-    goto success;
-
+    vsc_buffer_destroy(&data);
 fail:
     zend_string_free(out_data);
-success:
-    vsc_buffer_destroy(&data);
 }
 
 //
@@ -23844,14 +23692,9 @@ PHP_FUNCTION(vscf_key_material_rng_reseed_php) {
     //
     // Handle error
     //
-    VSCF_HANDLE_STATUS (status);
+    VSCF_HANDLE_STATUS(status);
 
-    goto success;
-
-fail:
-    RETURN_FALSE;
-success:
-    RETURN_TRUE;
+fail: ;
 }
 
 //
@@ -24809,9 +24652,17 @@ PHP_FUNCTION(vscf_pkcs8_serializer_serialize_public_key_inplace_php) {
     size_t res =vscf_pkcs8_serializer_serialize_public_key_inplace(pkcs8_serializer, public_key, &error);
 
     //
+    // Handle error
+    //
+    vscf_status_t status = vscf_error_status(&error);
+    VSCF_HANDLE_STATUS(status);
+
+    //
     // Write returned result
     //
     RETVAL_LONG(res);
+
+fail: ;
 }
 
 //
@@ -24859,9 +24710,17 @@ PHP_FUNCTION(vscf_pkcs8_serializer_serialize_private_key_inplace_php) {
     size_t res =vscf_pkcs8_serializer_serialize_private_key_inplace(pkcs8_serializer, private_key, &error);
 
     //
+    // Handle error
+    //
+    vscf_status_t status = vscf_error_status(&error);
+    VSCF_HANDLE_STATUS(status);
+
+    //
     // Write returned result
     //
     RETVAL_LONG(res);
+
+fail: ;
 }
 
 //
@@ -24964,7 +24823,7 @@ PHP_FUNCTION(vscf_pkcs8_serializer_serialize_public_key_php) {
     //
     // Handle error
     //
-    VSCF_HANDLE_STATUS (status);
+    VSCF_HANDLE_STATUS(status);
 
     //
     // Correct string length to the actual
@@ -24976,12 +24835,9 @@ PHP_FUNCTION(vscf_pkcs8_serializer_serialize_public_key_php) {
     //
     RETVAL_STR(out_out);
 
-    goto success;
-
+    vsc_buffer_destroy(&out);
 fail:
     zend_string_free(out_out);
-success:
-    vsc_buffer_destroy(&out);
 }
 
 //
@@ -25084,7 +24940,7 @@ PHP_FUNCTION(vscf_pkcs8_serializer_serialize_private_key_php) {
     //
     // Handle error
     //
-    VSCF_HANDLE_STATUS (status);
+    VSCF_HANDLE_STATUS(status);
 
     //
     // Correct string length to the actual
@@ -25096,12 +24952,9 @@ PHP_FUNCTION(vscf_pkcs8_serializer_serialize_private_key_php) {
     //
     RETVAL_STR(out_out);
 
-    goto success;
-
+    vsc_buffer_destroy(&out);
 fail:
     zend_string_free(out_out);
-success:
-    vsc_buffer_destroy(&out);
 }
 
 //
@@ -25282,9 +25135,17 @@ PHP_FUNCTION(vscf_sec1_serializer_serialize_public_key_inplace_php) {
     size_t res =vscf_sec1_serializer_serialize_public_key_inplace(sec1_serializer, public_key, &error);
 
     //
+    // Handle error
+    //
+    vscf_status_t status = vscf_error_status(&error);
+    VSCF_HANDLE_STATUS(status);
+
+    //
     // Write returned result
     //
     RETVAL_LONG(res);
+
+fail: ;
 }
 
 //
@@ -25332,9 +25193,17 @@ PHP_FUNCTION(vscf_sec1_serializer_serialize_private_key_inplace_php) {
     size_t res =vscf_sec1_serializer_serialize_private_key_inplace(sec1_serializer, private_key, &error);
 
     //
+    // Handle error
+    //
+    vscf_status_t status = vscf_error_status(&error);
+    VSCF_HANDLE_STATUS(status);
+
+    //
     // Write returned result
     //
     RETVAL_LONG(res);
+
+fail: ;
 }
 
 //
@@ -25437,7 +25306,7 @@ PHP_FUNCTION(vscf_sec1_serializer_serialize_public_key_php) {
     //
     // Handle error
     //
-    VSCF_HANDLE_STATUS (status);
+    VSCF_HANDLE_STATUS(status);
 
     //
     // Correct string length to the actual
@@ -25449,12 +25318,9 @@ PHP_FUNCTION(vscf_sec1_serializer_serialize_public_key_php) {
     //
     RETVAL_STR(out_out);
 
-    goto success;
-
+    vsc_buffer_destroy(&out);
 fail:
     zend_string_free(out_out);
-success:
-    vsc_buffer_destroy(&out);
 }
 
 //
@@ -25557,7 +25423,7 @@ PHP_FUNCTION(vscf_sec1_serializer_serialize_private_key_php) {
     //
     // Handle error
     //
-    VSCF_HANDLE_STATUS (status);
+    VSCF_HANDLE_STATUS(status);
 
     //
     // Correct string length to the actual
@@ -25569,12 +25435,9 @@ PHP_FUNCTION(vscf_sec1_serializer_serialize_private_key_php) {
     //
     RETVAL_STR(out_out);
 
-    goto success;
-
+    vsc_buffer_destroy(&out);
 fail:
     zend_string_free(out_out);
-success:
-    vsc_buffer_destroy(&out);
 }
 
 //
@@ -25755,9 +25618,17 @@ PHP_FUNCTION(vscf_key_asn1_serializer_serialize_public_key_inplace_php) {
     size_t res =vscf_key_asn1_serializer_serialize_public_key_inplace(key_asn1_serializer, public_key, &error);
 
     //
+    // Handle error
+    //
+    vscf_status_t status = vscf_error_status(&error);
+    VSCF_HANDLE_STATUS(status);
+
+    //
     // Write returned result
     //
     RETVAL_LONG(res);
+
+fail: ;
 }
 
 //
@@ -25805,9 +25676,17 @@ PHP_FUNCTION(vscf_key_asn1_serializer_serialize_private_key_inplace_php) {
     size_t res =vscf_key_asn1_serializer_serialize_private_key_inplace(key_asn1_serializer, private_key, &error);
 
     //
+    // Handle error
+    //
+    vscf_status_t status = vscf_error_status(&error);
+    VSCF_HANDLE_STATUS(status);
+
+    //
     // Write returned result
     //
     RETVAL_LONG(res);
+
+fail: ;
 }
 
 //
@@ -25910,7 +25789,7 @@ PHP_FUNCTION(vscf_key_asn1_serializer_serialize_public_key_php) {
     //
     // Handle error
     //
-    VSCF_HANDLE_STATUS (status);
+    VSCF_HANDLE_STATUS(status);
 
     //
     // Correct string length to the actual
@@ -25922,12 +25801,9 @@ PHP_FUNCTION(vscf_key_asn1_serializer_serialize_public_key_php) {
     //
     RETVAL_STR(out_out);
 
-    goto success;
-
+    vsc_buffer_destroy(&out);
 fail:
     zend_string_free(out_out);
-success:
-    vsc_buffer_destroy(&out);
 }
 
 //
@@ -26030,7 +25906,7 @@ PHP_FUNCTION(vscf_key_asn1_serializer_serialize_private_key_php) {
     //
     // Handle error
     //
-    VSCF_HANDLE_STATUS (status);
+    VSCF_HANDLE_STATUS(status);
 
     //
     // Correct string length to the actual
@@ -26042,12 +25918,9 @@ PHP_FUNCTION(vscf_key_asn1_serializer_serialize_private_key_php) {
     //
     RETVAL_STR(out_out);
 
-    goto success;
-
+    vsc_buffer_destroy(&out);
 fail:
     zend_string_free(out_out);
-success:
-    vsc_buffer_destroy(&out);
 }
 
 //
@@ -26224,10 +26097,18 @@ PHP_FUNCTION(vscf_key_asn1_deserializer_deserialize_public_key_inplace_php) {
     vscf_raw_public_key_t *raw_public_key =vscf_key_asn1_deserializer_deserialize_public_key_inplace(key_asn1_deserializer, &error);
 
     //
+    // Handle error
+    //
+    vscf_status_t status = vscf_error_status(&error);
+    VSCF_HANDLE_STATUS(status);
+
+    //
     // Write returned result
     //
     zend_resource *raw_public_key_res = zend_register_resource(raw_public_key, le_vscf_impl_t);
     RETVAL_RES(raw_public_key_res);
+
+fail: ;
 }
 
 //
@@ -26271,10 +26152,18 @@ PHP_FUNCTION(vscf_key_asn1_deserializer_deserialize_private_key_inplace_php) {
     vscf_raw_private_key_t *raw_private_key =vscf_key_asn1_deserializer_deserialize_private_key_inplace(key_asn1_deserializer, &error);
 
     //
+    // Handle error
+    //
+    vscf_status_t status = vscf_error_status(&error);
+    VSCF_HANDLE_STATUS(status);
+
+    //
     // Write returned result
     //
     zend_resource *raw_private_key_res = zend_register_resource(raw_private_key, le_vscf_impl_t);
     RETVAL_RES(raw_private_key_res);
+
+fail: ;
 }
 
 //
@@ -26323,10 +26212,18 @@ PHP_FUNCTION(vscf_key_asn1_deserializer_deserialize_public_key_php) {
     vscf_raw_public_key_t *raw_public_key =vscf_key_asn1_deserializer_deserialize_public_key(key_asn1_deserializer, public_key_data, &error);
 
     //
+    // Handle error
+    //
+    vscf_status_t status = vscf_error_status(&error);
+    VSCF_HANDLE_STATUS(status);
+
+    //
     // Write returned result
     //
     zend_resource *raw_public_key_res = zend_register_resource(raw_public_key, le_vscf_impl_t);
     RETVAL_RES(raw_public_key_res);
+
+fail: ;
 }
 
 //
@@ -26375,10 +26272,18 @@ PHP_FUNCTION(vscf_key_asn1_deserializer_deserialize_private_key_php) {
     vscf_raw_private_key_t *raw_private_key =vscf_key_asn1_deserializer_deserialize_private_key(key_asn1_deserializer, private_key_data, &error);
 
     //
+    // Handle error
+    //
+    vscf_status_t status = vscf_error_status(&error);
+    VSCF_HANDLE_STATUS(status);
+
+    //
     // Write returned result
     //
     zend_resource *raw_private_key_res = zend_register_resource(raw_private_key, le_vscf_impl_t);
     RETVAL_RES(raw_private_key_res);
+
+fail: ;
 }
 
 //
@@ -26516,14 +26421,9 @@ PHP_FUNCTION(vscf_ed25519_setup_defaults_php) {
     //
     // Handle error
     //
-    VSCF_HANDLE_STATUS (status);
+    VSCF_HANDLE_STATUS(status);
 
-    goto success;
-
-fail:
-    RETURN_FALSE;
-success:
-    RETURN_TRUE;
+fail: ;
 }
 
 //
@@ -26567,10 +26467,18 @@ PHP_FUNCTION(vscf_ed25519_generate_key_php) {
     vscf_impl_t *private_key =vscf_ed25519_generate_key(ed25519, &error);
 
     //
+    // Handle error
+    //
+    vscf_status_t status = vscf_error_status(&error);
+    VSCF_HANDLE_STATUS(status);
+
+    //
     // Write returned result
     //
     zend_resource *private_key_res = zend_register_resource(private_key, le_vscf_impl_t);
     RETVAL_RES(private_key_res);
+
+fail: ;
 }
 
 //
@@ -26707,14 +26615,9 @@ PHP_FUNCTION(vscf_ed25519_restore_alg_info_php) {
     //
     // Handle error
     //
-    VSCF_HANDLE_STATUS (status);
+    VSCF_HANDLE_STATUS(status);
 
-    goto success;
-
-fail:
-    RETURN_FALSE;
-success:
-    RETURN_TRUE;
+fail: ;
 }
 
 //
@@ -26762,10 +26665,18 @@ PHP_FUNCTION(vscf_ed25519_generate_ephemeral_key_php) {
     vscf_impl_t *private_key =vscf_ed25519_generate_ephemeral_key(ed25519, key, &error);
 
     //
+    // Handle error
+    //
+    vscf_status_t status = vscf_error_status(&error);
+    VSCF_HANDLE_STATUS(status);
+
+    //
     // Write returned result
     //
     zend_resource *private_key_res = zend_register_resource(private_key, le_vscf_impl_t);
     RETVAL_RES(private_key_res);
+
+fail: ;
 }
 
 //
@@ -26813,10 +26724,18 @@ PHP_FUNCTION(vscf_ed25519_import_public_key_php) {
     vscf_impl_t *public_key =vscf_ed25519_import_public_key(ed25519, raw_key, &error);
 
     //
+    // Handle error
+    //
+    vscf_status_t status = vscf_error_status(&error);
+    VSCF_HANDLE_STATUS(status);
+
+    //
     // Write returned result
     //
     zend_resource *public_key_res = zend_register_resource(public_key, le_vscf_impl_t);
     RETVAL_RES(public_key_res);
+
+fail: ;
 }
 
 //
@@ -26864,10 +26783,18 @@ PHP_FUNCTION(vscf_ed25519_export_public_key_php) {
     vscf_raw_public_key_t *raw_public_key =vscf_ed25519_export_public_key(ed25519, public_key, &error);
 
     //
+    // Handle error
+    //
+    vscf_status_t status = vscf_error_status(&error);
+    VSCF_HANDLE_STATUS(status);
+
+    //
     // Write returned result
     //
     zend_resource *raw_public_key_res = zend_register_resource(raw_public_key, le_vscf_impl_t);
     RETVAL_RES(raw_public_key_res);
+
+fail: ;
 }
 
 //
@@ -26915,10 +26842,18 @@ PHP_FUNCTION(vscf_ed25519_import_private_key_php) {
     vscf_impl_t *private_key =vscf_ed25519_import_private_key(ed25519, raw_key, &error);
 
     //
+    // Handle error
+    //
+    vscf_status_t status = vscf_error_status(&error);
+    VSCF_HANDLE_STATUS(status);
+
+    //
     // Write returned result
     //
     zend_resource *private_key_res = zend_register_resource(private_key, le_vscf_impl_t);
     RETVAL_RES(private_key_res);
+
+fail: ;
 }
 
 //
@@ -26966,10 +26901,18 @@ PHP_FUNCTION(vscf_ed25519_export_private_key_php) {
     vscf_raw_private_key_t *raw_private_key =vscf_ed25519_export_private_key(ed25519, private_key, &error);
 
     //
+    // Handle error
+    //
+    vscf_status_t status = vscf_error_status(&error);
+    VSCF_HANDLE_STATUS(status);
+
+    //
     // Write returned result
     //
     zend_resource *raw_private_key_res = zend_register_resource(raw_private_key, le_vscf_impl_t);
     RETVAL_RES(raw_private_key_res);
+
+fail: ;
 }
 
 //
@@ -27133,7 +27076,7 @@ PHP_FUNCTION(vscf_ed25519_encrypt_php) {
     //
     // Handle error
     //
-    VSCF_HANDLE_STATUS (status);
+    VSCF_HANDLE_STATUS(status);
 
     //
     // Correct string length to the actual
@@ -27145,12 +27088,9 @@ PHP_FUNCTION(vscf_ed25519_encrypt_php) {
     //
     RETVAL_STR(out_out);
 
-    goto success;
-
+    vsc_buffer_destroy(&out);
 fail:
     zend_string_free(out_out);
-success:
-    vsc_buffer_destroy(&out);
 }
 
 //
@@ -27314,7 +27254,7 @@ PHP_FUNCTION(vscf_ed25519_decrypt_php) {
     //
     // Handle error
     //
-    VSCF_HANDLE_STATUS (status);
+    VSCF_HANDLE_STATUS(status);
 
     //
     // Correct string length to the actual
@@ -27326,12 +27266,9 @@ PHP_FUNCTION(vscf_ed25519_decrypt_php) {
     //
     RETVAL_STR(out_out);
 
-    goto success;
-
+    vsc_buffer_destroy(&out);
 fail:
     zend_string_free(out_out);
-success:
-    vsc_buffer_destroy(&out);
 }
 
 //
@@ -27495,7 +27432,7 @@ PHP_FUNCTION(vscf_ed25519_sign_hash_php) {
     //
     // Handle error
     //
-    VSCF_HANDLE_STATUS (status);
+    VSCF_HANDLE_STATUS(status);
 
     //
     // Correct string length to the actual
@@ -27507,12 +27444,9 @@ PHP_FUNCTION(vscf_ed25519_sign_hash_php) {
     //
     RETVAL_STR(out_signature);
 
-    goto success;
-
+    vsc_buffer_destroy(&signature);
 fail:
     zend_string_free(out_signature);
-success:
-    vsc_buffer_destroy(&signature);
 }
 
 //
@@ -27685,7 +27619,7 @@ PHP_FUNCTION(vscf_ed25519_compute_shared_key_php) {
     //
     // Handle error
     //
-    VSCF_HANDLE_STATUS (status);
+    VSCF_HANDLE_STATUS(status);
 
     //
     // Correct string length to the actual
@@ -27697,12 +27631,9 @@ PHP_FUNCTION(vscf_ed25519_compute_shared_key_php) {
     //
     RETVAL_STR(out_shared_key);
 
-    goto success;
-
+    vsc_buffer_destroy(&shared_key);
 fail:
     zend_string_free(out_shared_key);
-success:
-    vsc_buffer_destroy(&shared_key);
 }
 
 //
@@ -27931,14 +27862,9 @@ PHP_FUNCTION(vscf_curve25519_setup_defaults_php) {
     //
     // Handle error
     //
-    VSCF_HANDLE_STATUS (status);
+    VSCF_HANDLE_STATUS(status);
 
-    goto success;
-
-fail:
-    RETURN_FALSE;
-success:
-    RETURN_TRUE;
+fail: ;
 }
 
 //
@@ -27982,10 +27908,18 @@ PHP_FUNCTION(vscf_curve25519_generate_key_php) {
     vscf_impl_t *private_key =vscf_curve25519_generate_key(curve25519, &error);
 
     //
+    // Handle error
+    //
+    vscf_status_t status = vscf_error_status(&error);
+    VSCF_HANDLE_STATUS(status);
+
+    //
     // Write returned result
     //
     zend_resource *private_key_res = zend_register_resource(private_key, le_vscf_impl_t);
     RETVAL_RES(private_key_res);
+
+fail: ;
 }
 
 //
@@ -28122,14 +28056,9 @@ PHP_FUNCTION(vscf_curve25519_restore_alg_info_php) {
     //
     // Handle error
     //
-    VSCF_HANDLE_STATUS (status);
+    VSCF_HANDLE_STATUS(status);
 
-    goto success;
-
-fail:
-    RETURN_FALSE;
-success:
-    RETURN_TRUE;
+fail: ;
 }
 
 //
@@ -28177,10 +28106,18 @@ PHP_FUNCTION(vscf_curve25519_generate_ephemeral_key_php) {
     vscf_impl_t *private_key =vscf_curve25519_generate_ephemeral_key(curve25519, key, &error);
 
     //
+    // Handle error
+    //
+    vscf_status_t status = vscf_error_status(&error);
+    VSCF_HANDLE_STATUS(status);
+
+    //
     // Write returned result
     //
     zend_resource *private_key_res = zend_register_resource(private_key, le_vscf_impl_t);
     RETVAL_RES(private_key_res);
+
+fail: ;
 }
 
 //
@@ -28228,10 +28165,18 @@ PHP_FUNCTION(vscf_curve25519_import_public_key_php) {
     vscf_impl_t *public_key =vscf_curve25519_import_public_key(curve25519, raw_key, &error);
 
     //
+    // Handle error
+    //
+    vscf_status_t status = vscf_error_status(&error);
+    VSCF_HANDLE_STATUS(status);
+
+    //
     // Write returned result
     //
     zend_resource *public_key_res = zend_register_resource(public_key, le_vscf_impl_t);
     RETVAL_RES(public_key_res);
+
+fail: ;
 }
 
 //
@@ -28279,10 +28224,18 @@ PHP_FUNCTION(vscf_curve25519_export_public_key_php) {
     vscf_raw_public_key_t *raw_public_key =vscf_curve25519_export_public_key(curve25519, public_key, &error);
 
     //
+    // Handle error
+    //
+    vscf_status_t status = vscf_error_status(&error);
+    VSCF_HANDLE_STATUS(status);
+
+    //
     // Write returned result
     //
     zend_resource *raw_public_key_res = zend_register_resource(raw_public_key, le_vscf_impl_t);
     RETVAL_RES(raw_public_key_res);
+
+fail: ;
 }
 
 //
@@ -28330,10 +28283,18 @@ PHP_FUNCTION(vscf_curve25519_import_private_key_php) {
     vscf_impl_t *private_key =vscf_curve25519_import_private_key(curve25519, raw_key, &error);
 
     //
+    // Handle error
+    //
+    vscf_status_t status = vscf_error_status(&error);
+    VSCF_HANDLE_STATUS(status);
+
+    //
     // Write returned result
     //
     zend_resource *private_key_res = zend_register_resource(private_key, le_vscf_impl_t);
     RETVAL_RES(private_key_res);
+
+fail: ;
 }
 
 //
@@ -28381,10 +28342,18 @@ PHP_FUNCTION(vscf_curve25519_export_private_key_php) {
     vscf_raw_private_key_t *raw_private_key =vscf_curve25519_export_private_key(curve25519, private_key, &error);
 
     //
+    // Handle error
+    //
+    vscf_status_t status = vscf_error_status(&error);
+    VSCF_HANDLE_STATUS(status);
+
+    //
     // Write returned result
     //
     zend_resource *raw_private_key_res = zend_register_resource(raw_private_key, le_vscf_impl_t);
     RETVAL_RES(raw_private_key_res);
+
+fail: ;
 }
 
 //
@@ -28548,7 +28517,7 @@ PHP_FUNCTION(vscf_curve25519_encrypt_php) {
     //
     // Handle error
     //
-    VSCF_HANDLE_STATUS (status);
+    VSCF_HANDLE_STATUS(status);
 
     //
     // Correct string length to the actual
@@ -28560,12 +28529,9 @@ PHP_FUNCTION(vscf_curve25519_encrypt_php) {
     //
     RETVAL_STR(out_out);
 
-    goto success;
-
+    vsc_buffer_destroy(&out);
 fail:
     zend_string_free(out_out);
-success:
-    vsc_buffer_destroy(&out);
 }
 
 //
@@ -28729,7 +28695,7 @@ PHP_FUNCTION(vscf_curve25519_decrypt_php) {
     //
     // Handle error
     //
-    VSCF_HANDLE_STATUS (status);
+    VSCF_HANDLE_STATUS(status);
 
     //
     // Correct string length to the actual
@@ -28741,12 +28707,9 @@ PHP_FUNCTION(vscf_curve25519_decrypt_php) {
     //
     RETVAL_STR(out_out);
 
-    goto success;
-
+    vsc_buffer_destroy(&out);
 fail:
     zend_string_free(out_out);
-success:
-    vsc_buffer_destroy(&out);
 }
 
 //
@@ -28805,7 +28768,7 @@ PHP_FUNCTION(vscf_curve25519_compute_shared_key_php) {
     //
     // Handle error
     //
-    VSCF_HANDLE_STATUS (status);
+    VSCF_HANDLE_STATUS(status);
 
     //
     // Correct string length to the actual
@@ -28817,12 +28780,9 @@ PHP_FUNCTION(vscf_curve25519_compute_shared_key_php) {
     //
     RETVAL_STR(out_shared_key);
 
-    goto success;
-
+    vsc_buffer_destroy(&shared_key);
 fail:
     zend_string_free(out_shared_key);
-success:
-    vsc_buffer_destroy(&shared_key);
 }
 
 //
@@ -30355,10 +30315,18 @@ PHP_FUNCTION(vscf_alg_info_der_deserializer_deserialize_inplace_php) {
     vscf_impl_t *alg_info =vscf_alg_info_der_deserializer_deserialize_inplace(alg_info_der_deserializer, &error);
 
     //
+    // Handle error
+    //
+    vscf_status_t status = vscf_error_status(&error);
+    VSCF_HANDLE_STATUS(status);
+
+    //
     // Write returned result
     //
     zend_resource *alg_info_res = zend_register_resource(alg_info, le_vscf_impl_t);
     RETVAL_RES(alg_info_res);
+
+fail: ;
 }
 
 //
@@ -30407,10 +30375,18 @@ PHP_FUNCTION(vscf_alg_info_der_deserializer_deserialize_php) {
     vscf_impl_t *alg_info =vscf_alg_info_der_deserializer_deserialize(alg_info_der_deserializer, data, &error);
 
     //
+    // Handle error
+    //
+    vscf_status_t status = vscf_error_status(&error);
+    VSCF_HANDLE_STATUS(status);
+
+    //
     // Write returned result
     //
     zend_resource *alg_info_res = zend_register_resource(alg_info, le_vscf_impl_t);
     RETVAL_RES(alg_info_res);
+
+fail: ;
 }
 
 //
@@ -30749,10 +30725,18 @@ PHP_FUNCTION(vscf_message_info_der_serializer_deserialize_php) {
     vscf_message_info_t *message_info =vscf_message_info_der_serializer_deserialize(message_info_der_serializer, data, &error);
 
     //
+    // Handle error
+    //
+    vscf_status_t status = vscf_error_status(&error);
+    VSCF_HANDLE_STATUS(status);
+
+    //
     // Write returned result
     //
     zend_resource *message_info_res = zend_register_resource(message_info, le_vscf_impl_t);
     RETVAL_RES(message_info_res);
+
+fail: ;
 }
 
 //
@@ -30909,10 +30893,18 @@ PHP_FUNCTION(vscf_message_info_der_serializer_deserialize_footer_php) {
     vscf_message_info_footer_t *message_info_footer =vscf_message_info_der_serializer_deserialize_footer(message_info_der_serializer, data, &error);
 
     //
+    // Handle error
+    //
+    vscf_status_t status = vscf_error_status(&error);
+    VSCF_HANDLE_STATUS(status);
+
+    //
     // Write returned result
     //
     zend_resource *message_info_footer_res = zend_register_resource(message_info_footer, le_vscf_impl_t);
     RETVAL_RES(message_info_footer_res);
+
+fail: ;
 }
 
 //

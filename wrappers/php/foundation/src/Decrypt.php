@@ -50,8 +50,7 @@ interface Decrypt extends Ctx
     * @return string
     * @throws \Exception
     */
-    public function decrypt(string $data): string
-    ;
+    public function decrypt(string $data): string;
 
     /**
     * Calculate required buffer length to hold the decrypted data.
@@ -59,6 +58,5 @@ interface Decrypt extends Ctx
     * @param int $dataLen
     * @return int
     */
-    public function decryptedLen(int $dataLen): int
-    ;
+    public function decryptedLen(int $dataLen): int;
 }

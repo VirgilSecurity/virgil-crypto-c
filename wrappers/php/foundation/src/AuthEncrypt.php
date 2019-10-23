@@ -52,8 +52,7 @@ interface AuthEncrypt extends Ctx
     * @return array
     * @throws \Exception
     */
-    public function authEncrypt(string $data, string $authData): array // [out, tag]
-    ;
+    public function authEncrypt(string $data, string $authData): array; // [out, tag]
 
     /**
     * Calculate required buffer length to hold the authenticated encrypted data.
@@ -61,6 +60,5 @@ interface AuthEncrypt extends Ctx
     * @param int $dataLen
     * @return int
     */
-    public function authEncryptedLen(int $dataLen): int
-    ;
+    public function authEncryptedLen(int $dataLen): int;
 }

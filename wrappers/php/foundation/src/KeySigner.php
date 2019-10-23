@@ -50,8 +50,7 @@ interface KeySigner extends Ctx
     * @param PrivateKey $privateKey
     * @return bool
     */
-    public function canSign(PrivateKey $privateKey): bool
-    ;
+    public function canSign(PrivateKey $privateKey): bool;
 
     /**
     * Return length in bytes required to hold signature.
@@ -60,8 +59,7 @@ interface KeySigner extends Ctx
     * @param Key $key
     * @return int
     */
-    public function signatureLen(Key $key): int
-    ;
+    public function signatureLen(Key $key): int;
 
     /**
     * Sign data digest with a given private key.
@@ -72,8 +70,7 @@ interface KeySigner extends Ctx
     * @return string
     * @throws \Exception
     */
-    public function signHash(PrivateKey $privateKey, AlgId $hashId, string $digest): string
-    ;
+    public function signHash(PrivateKey $privateKey, AlgId $hashId, string $digest): string;
 
     /**
     * Check if algorithm can verify data digest with a given key.
@@ -81,8 +78,7 @@ interface KeySigner extends Ctx
     * @param PublicKey $publicKey
     * @return bool
     */
-    public function canVerify(PublicKey $publicKey): bool
-    ;
+    public function canVerify(PublicKey $publicKey): bool;
 
     /**
     * Verify data digest with a given public key and signature.
@@ -93,6 +89,5 @@ interface KeySigner extends Ctx
     * @param string $signature
     * @return bool
     */
-    public function verifyHash(PublicKey $publicKey, AlgId $hashId, string $digest, string $signature): bool
-    ;
+    public function verifyHash(PublicKey $publicKey, AlgId $hashId, string $digest, string $signature): bool;
 }

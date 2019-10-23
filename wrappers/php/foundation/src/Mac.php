@@ -48,8 +48,7 @@ interface Mac extends Ctx
     *
     * @return int
     */
-    public function digestLen(): int
-    ;
+    public function digestLen(): int;
 
     /**
     * Calculate MAC over given data.
@@ -58,8 +57,7 @@ interface Mac extends Ctx
     * @param string $data
     * @return string
     */
-    public function mac(string $key, string $data): string
-    ;
+    public function mac(string $key, string $data): string;
 
     /**
     * Start a new MAC.
@@ -67,8 +65,7 @@ interface Mac extends Ctx
     * @param string $key
     * @return void
     */
-    public function start(string $key): void
-    ;
+    public function start(string $key): void;
 
     /**
     * Add given data to the MAC.
@@ -76,16 +73,14 @@ interface Mac extends Ctx
     * @param string $data
     * @return void
     */
-    public function update(string $data): void
-    ;
+    public function update(string $data): void;
 
     /**
     * Accomplish MAC and return it's result (a message digest).
     *
     * @return string
     */
-    public function finish(): string
-    ;
+    public function finish(): string;
 
     /**
     * Prepare to authenticate a new message with the same key
@@ -93,6 +88,5 @@ interface Mac extends Ctx
     *
     * @return void
     */
-    public function reset(): void
-    ;
+    public function reset(): void;
 }

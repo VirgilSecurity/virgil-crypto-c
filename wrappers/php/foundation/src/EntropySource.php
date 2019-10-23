@@ -48,8 +48,7 @@ interface EntropySource extends Ctx
     *
     * @return bool
     */
-    public function isStrong(): bool
-    ;
+    public function isStrong(): bool;
 
     /**
     * Gather entropy of the requested length.
@@ -58,6 +57,5 @@ interface EntropySource extends Ctx
     * @return string
     * @throws \Exception
     */
-    public function gather(int $len): string
-    ;
+    public function gather(int $len): string;
 }

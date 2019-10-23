@@ -49,8 +49,7 @@ interface AlgInfoSerializer extends Ctx
     * @param AlgInfo $algInfo
     * @return int
     */
-    public function serializedLen(AlgInfo $algInfo): int
-    ;
+    public function serializedLen(AlgInfo $algInfo): int;
 
     /**
     * Serialize algorithm info to buffer class.
@@ -58,6 +57,5 @@ interface AlgInfoSerializer extends Ctx
     * @param AlgInfo $algInfo
     * @return string
     */
-    public function serialize(AlgInfo $algInfo): string
-    ;
+    public function serialize(AlgInfo $algInfo): string;
 }

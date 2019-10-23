@@ -53,8 +53,7 @@ interface AuthDecrypt extends Ctx
     * @return string
     * @throws \Exception
     */
-    public function authDecrypt(string $data, string $authData, string $tag): string
-    ;
+    public function authDecrypt(string $data, string $authData, string $tag): string;
 
     /**
     * Calculate required buffer length to hold the authenticated decrypted data.
@@ -62,6 +61,5 @@ interface AuthDecrypt extends Ctx
     * @param int $dataLen
     * @return int
     */
-    public function authDecryptedLen(int $dataLen): int
-    ;
+    public function authDecryptedLen(int $dataLen): int;
 }

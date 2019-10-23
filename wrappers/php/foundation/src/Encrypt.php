@@ -50,8 +50,7 @@ interface Encrypt extends Ctx
     * @return string
     * @throws \Exception
     */
-    public function encrypt(string $data): string
-    ;
+    public function encrypt(string $data): string;
 
     /**
     * Calculate required buffer length to hold the encrypted data.
@@ -59,8 +58,7 @@ interface Encrypt extends Ctx
     * @param int $dataLen
     * @return int
     */
-    public function encryptedLen(int $dataLen): int
-    ;
+    public function encryptedLen(int $dataLen): int;
 
     /**
     * Precise length calculation of encrypted data.
@@ -68,6 +66,5 @@ interface Encrypt extends Ctx
     * @param int $dataLen
     * @return int
     */
-    public function preciseEncryptedLen(int $dataLen): int
-    ;
+    public function preciseEncryptedLen(int $dataLen): int;
 }

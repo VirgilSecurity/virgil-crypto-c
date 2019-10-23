@@ -51,8 +51,7 @@ interface Random extends Ctx
     * @return string
     * @throws \Exception
     */
-    public function random(int $dataLen): string
-    ;
+    public function random(int $dataLen): string;
 
     /**
     * Retrieve new seed data from the entropy sources.
@@ -60,6 +59,5 @@ interface Random extends Ctx
     * @return void
     * @throws \Exception
     */
-    public function reseed(): void
-    ;
+    public function reseed(): void;
 }

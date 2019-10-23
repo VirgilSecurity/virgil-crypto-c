@@ -48,8 +48,7 @@ interface Key extends Ctx
     *
     * @return AlgId
     */
-    public function algId(): AlgId
-    ;
+    public function algId(): AlgId;
 
     /**
     * Return algorithm information that can be used for serialization.
@@ -57,24 +56,21 @@ interface Key extends Ctx
     * @return AlgInfo
     * @throws \Exception
     */
-    public function algInfo(): AlgInfo
-    ;
+    public function algInfo(): AlgInfo;
 
     /**
     * Length of the key in bytes.
     *
     * @return int
     */
-    public function len(): int
-    ;
+    public function len(): int;
 
     /**
     * Length of the key in bits.
     *
     * @return int
     */
-    public function bitlen(): int
-    ;
+    public function bitlen(): int;
 
     /**
     * Check that key is valid.
@@ -82,6 +78,5 @@ interface Key extends Ctx
     *
     * @return bool
     */
-    public function isValid(): bool
-    ;
+    public function isValid(): bool;
 }

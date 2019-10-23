@@ -50,6 +50,5 @@ interface Kdf extends Ctx
     * @param int $keyLen
     * @return string
     */
-    public function derive(string $data, int $keyLen): string
-    ;
+    public function derive(string $data, int $keyLen): string;
 }

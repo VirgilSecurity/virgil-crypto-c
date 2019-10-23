@@ -51,8 +51,7 @@ interface KeySerializer extends Ctx
     * @param RawPublicKey $publicKey
     * @return int
     */
-    public function serializedPublicKeyLen(RawPublicKey $publicKey): int
-    ;
+    public function serializedPublicKeyLen(RawPublicKey $publicKey): int;
 
     /**
     * Serialize given public key to an interchangeable format.
@@ -63,8 +62,7 @@ interface KeySerializer extends Ctx
     * @return string
     * @throws \Exception
     */
-    public function serializePublicKey(RawPublicKey $publicKey): string
-    ;
+    public function serializePublicKey(RawPublicKey $publicKey): string;
 
     /**
     * Calculate buffer size enough to hold serialized private key.
@@ -74,8 +72,7 @@ interface KeySerializer extends Ctx
     * @param RawPrivateKey $privateKey
     * @return int
     */
-    public function serializedPrivateKeyLen(RawPrivateKey $privateKey): int
-    ;
+    public function serializedPrivateKeyLen(RawPrivateKey $privateKey): int;
 
     /**
     * Serialize given private key to an interchangeable format.
@@ -86,6 +83,5 @@ interface KeySerializer extends Ctx
     * @return string
     * @throws \Exception
     */
-    public function serializePrivateKey(RawPrivateKey $privateKey): string
-    ;
+    public function serializePrivateKey(RawPrivateKey $privateKey): string;
 }

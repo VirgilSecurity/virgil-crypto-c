@@ -43,6 +43,5 @@ interface Ctx
     /**
     * @return resource
     */
-    public function getCtx()
-    ;
+    public function getCtx();
 }

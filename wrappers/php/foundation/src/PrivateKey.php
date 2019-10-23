@@ -49,6 +49,5 @@ interface PrivateKey extends Ctx
     * @return PublicKey
     * @throws \Exception
     */
-    public function extractPublicKey(): PublicKey
-    ;
+    public function extractPublicKey(): PublicKey;
 }

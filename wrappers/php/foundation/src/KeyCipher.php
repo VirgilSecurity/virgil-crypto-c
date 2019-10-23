@@ -50,8 +50,7 @@ interface KeyCipher extends Ctx
     * @param int $dataLen
     * @return bool
     */
-    public function canEncrypt(PublicKey $publicKey, int $dataLen): bool
-    ;
+    public function canEncrypt(PublicKey $publicKey, int $dataLen): bool;
 
     /**
     * Calculate required buffer length to hold the encrypted data.
@@ -60,8 +59,7 @@ interface KeyCipher extends Ctx
     * @param int $dataLen
     * @return int
     */
-    public function encryptedLen(PublicKey $publicKey, int $dataLen): int
-    ;
+    public function encryptedLen(PublicKey $publicKey, int $dataLen): int;
 
     /**
     * Encrypt data with a given public key.
@@ -71,8 +69,7 @@ interface KeyCipher extends Ctx
     * @return string
     * @throws \Exception
     */
-    public function encrypt(PublicKey $publicKey, string $data): string
-    ;
+    public function encrypt(PublicKey $publicKey, string $data): string;
 
     /**
     * Check if algorithm can decrypt data with a given key.
@@ -82,8 +79,7 @@ interface KeyCipher extends Ctx
     * @param int $dataLen
     * @return bool
     */
-    public function canDecrypt(PrivateKey $privateKey, int $dataLen): bool
-    ;
+    public function canDecrypt(PrivateKey $privateKey, int $dataLen): bool;
 
     /**
     * Calculate required buffer length to hold the decrypted data.
@@ -92,8 +88,7 @@ interface KeyCipher extends Ctx
     * @param int $dataLen
     * @return int
     */
-    public function decryptedLen(PrivateKey $privateKey, int $dataLen): int
-    ;
+    public function decryptedLen(PrivateKey $privateKey, int $dataLen): int;
 
     /**
     * Decrypt given data.
@@ -103,6 +98,5 @@ interface KeyCipher extends Ctx
     * @return string
     * @throws \Exception
     */
-    public function decrypt(PrivateKey $privateKey, string $data): string
-    ;
+    public function decrypt(PrivateKey $privateKey, string $data): string;
 }

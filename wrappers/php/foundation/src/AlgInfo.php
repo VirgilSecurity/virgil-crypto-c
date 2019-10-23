@@ -48,6 +48,5 @@ interface AlgInfo extends Ctx
     *
     * @return AlgId
     */
-    public function algId(): AlgId
-    ;
+    public function algId(): AlgId;
 }

@@ -52,8 +52,7 @@ interface Asn1Writer extends Ctx
     * @param int $outLen
     * @return void
     */
-    public function reset(int $out, int $outLen): void
-    ;
+    public function reset(int $out, int $outLen): void;
 
     /**
     * Finalize writing and forbid further operations.
@@ -67,48 +66,42 @@ interface Asn1Writer extends Ctx
     * @param bool $doNotAdjust
     * @return int
     */
-    public function finish(bool $doNotAdjust): int
-    ;
+    public function finish(bool $doNotAdjust): int;
 
     /**
     * Returns pointer to the inner buffer.
     *
     * @return string
     */
-    public function bytes(): string
-    ;
+    public function bytes(): string;
 
     /**
     * Returns total inner buffer length.
     *
     * @return int
     */
-    public function len(): int
-    ;
+    public function len(): int;
 
     /**
     * Returns how many bytes were already written to the ASN.1 structure.
     *
     * @return int
     */
-    public function writtenLen(): int
-    ;
+    public function writtenLen(): int;
 
     /**
     * Returns how many bytes are available for writing.
     *
     * @return int
     */
-    public function unwrittenLen(): int
-    ;
+    public function unwrittenLen(): int;
 
     /**
     * Return true if status is not "success".
     *
     * @return bool
     */
-    public function hasError(): bool
-    ;
+    public function hasError(): bool;
 
     /**
     * Return error code.
@@ -116,8 +109,7 @@ interface Asn1Writer extends Ctx
     * @return void
     * @throws \Exception
     */
-    public function status(): void
-    ;
+    public function status(): void;
 
     /**
     * Move writing position backward for the given length.
@@ -126,8 +118,7 @@ interface Asn1Writer extends Ctx
     * @param int $len
     * @return string
     */
-    public function reserve(int $len): string
-    ;
+    public function reserve(int $len): string;
 
     /**
     * Write ASN.1 tag.
@@ -136,8 +127,7 @@ interface Asn1Writer extends Ctx
     * @param int $tag
     * @return int
     */
-    public function writeTag(int $tag): int
-    ;
+    public function writeTag(int $tag): int;
 
     /**
     * Write context-specific ASN.1 tag.
@@ -147,8 +137,7 @@ interface Asn1Writer extends Ctx
     * @param int $len
     * @return int
     */
-    public function writeContextTag(int $tag, int $len): int
-    ;
+    public function writeContextTag(int $tag, int $len): int;
 
     /**
     * Write length of the following data.
@@ -157,8 +146,7 @@ interface Asn1Writer extends Ctx
     * @param int $len
     * @return int
     */
-    public function writeLen(int $len): int
-    ;
+    public function writeLen(int $len): int;
 
     /**
     * Write ASN.1 type: INTEGER.
@@ -167,8 +155,7 @@ interface Asn1Writer extends Ctx
     * @param int $value
     * @return int
     */
-    public function writeInt(int $value): int
-    ;
+    public function writeInt(int $value): int;
 
     /**
     * Write ASN.1 type: INTEGER.
@@ -177,8 +164,7 @@ interface Asn1Writer extends Ctx
     * @param int $value
     * @return int
     */
-    public function writeInt8(int $value): int
-    ;
+    public function writeInt8(int $value): int;
 
     /**
     * Write ASN.1 type: INTEGER.
@@ -187,8 +173,7 @@ interface Asn1Writer extends Ctx
     * @param int $value
     * @return int
     */
-    public function writeInt16(int $value): int
-    ;
+    public function writeInt16(int $value): int;
 
     /**
     * Write ASN.1 type: INTEGER.
@@ -197,8 +182,7 @@ interface Asn1Writer extends Ctx
     * @param int $value
     * @return int
     */
-    public function writeInt32(int $value): int
-    ;
+    public function writeInt32(int $value): int;
 
     /**
     * Write ASN.1 type: INTEGER.
@@ -207,8 +191,7 @@ interface Asn1Writer extends Ctx
     * @param int $value
     * @return int
     */
-    public function writeInt64(int $value): int
-    ;
+    public function writeInt64(int $value): int;
 
     /**
     * Write ASN.1 type: INTEGER.
@@ -217,8 +200,7 @@ interface Asn1Writer extends Ctx
     * @param int $value
     * @return int
     */
-    public function writeUint(int $value): int
-    ;
+    public function writeUint(int $value): int;
 
     /**
     * Write ASN.1 type: INTEGER.
@@ -227,8 +209,7 @@ interface Asn1Writer extends Ctx
     * @param int $value
     * @return int
     */
-    public function writeUint8(int $value): int
-    ;
+    public function writeUint8(int $value): int;
 
     /**
     * Write ASN.1 type: INTEGER.
@@ -237,8 +218,7 @@ interface Asn1Writer extends Ctx
     * @param int $value
     * @return int
     */
-    public function writeUint16(int $value): int
-    ;
+    public function writeUint16(int $value): int;
 
     /**
     * Write ASN.1 type: INTEGER.
@@ -247,8 +227,7 @@ interface Asn1Writer extends Ctx
     * @param int $value
     * @return int
     */
-    public function writeUint32(int $value): int
-    ;
+    public function writeUint32(int $value): int;
 
     /**
     * Write ASN.1 type: INTEGER.
@@ -257,8 +236,7 @@ interface Asn1Writer extends Ctx
     * @param int $value
     * @return int
     */
-    public function writeUint64(int $value): int
-    ;
+    public function writeUint64(int $value): int;
 
     /**
     * Write ASN.1 type: BOOLEAN.
@@ -267,16 +245,14 @@ interface Asn1Writer extends Ctx
     * @param bool $value
     * @return int
     */
-    public function writeBool(bool $value): int
-    ;
+    public function writeBool(bool $value): int;
 
     /**
     * Write ASN.1 type: NULL.
     *
     * @return int
     */
-    public function writeNull(): int
-    ;
+    public function writeNull(): int;
 
     /**
     * Write ASN.1 type: OCTET STRING.
@@ -285,8 +261,7 @@ interface Asn1Writer extends Ctx
     * @param string $value
     * @return int
     */
-    public function writeOctetStr(string $value): int
-    ;
+    public function writeOctetStr(string $value): int;
 
     /**
     * Write ASN.1 type: BIT STRING with all zero unused bits.
@@ -296,8 +271,7 @@ interface Asn1Writer extends Ctx
     * @param string $value
     * @return int
     */
-    public function writeOctetStrAsBitstring(string $value): int
-    ;
+    public function writeOctetStrAsBitstring(string $value): int;
 
     /**
     * Write raw data directly to the ASN.1 structure.
@@ -307,8 +281,7 @@ interface Asn1Writer extends Ctx
     * @param string $data
     * @return int
     */
-    public function writeData(string $data): int
-    ;
+    public function writeData(string $data): int;
 
     /**
     * Write ASN.1 type: UTF8String.
@@ -317,8 +290,7 @@ interface Asn1Writer extends Ctx
     * @param string $value
     * @return int
     */
-    public function writeUtf8Str(string $value): int
-    ;
+    public function writeUtf8Str(string $value): int;
 
     /**
     * Write ASN.1 type: OID.
@@ -327,8 +299,7 @@ interface Asn1Writer extends Ctx
     * @param string $value
     * @return int
     */
-    public function writeOid(string $value): int
-    ;
+    public function writeOid(string $value): int;
 
     /**
     * Mark previously written data of given length as ASN.1 type: SEQUENCE.
@@ -337,8 +308,7 @@ interface Asn1Writer extends Ctx
     * @param int $len
     * @return int
     */
-    public function writeSequence(int $len): int
-    ;
+    public function writeSequence(int $len): int;
 
     /**
     * Mark previously written data of given length as ASN.1 type: SET.
@@ -347,6 +317,5 @@ interface Asn1Writer extends Ctx
     * @param int $len
     * @return int
     */
-    public function writeSet(int $len): int
-    ;
+    public function writeSet(int $len): int;
 }

@@ -49,8 +49,7 @@ interface MessageInfoFooterSerializer extends Ctx
     * @param MessageInfoFooter $messageInfoFooter
     * @return int
     */
-    public function serializedFooterLen(MessageInfoFooter $messageInfoFooter): int
-    ;
+    public function serializedFooterLen(MessageInfoFooter $messageInfoFooter): int;
 
     /**
     * Serialize class "message info footer".
@@ -58,8 +57,7 @@ interface MessageInfoFooterSerializer extends Ctx
     * @param MessageInfoFooter $messageInfoFooter
     * @return string
     */
-    public function serializeFooter(MessageInfoFooter $messageInfoFooter): string
-    ;
+    public function serializeFooter(MessageInfoFooter $messageInfoFooter): string;
 
     /**
     * Deserialize class "message info footer".
@@ -67,6 +65,5 @@ interface MessageInfoFooterSerializer extends Ctx
     * @param string $data
     * @return MessageInfoFooter
     */
-    public function deserializeFooter(string $data): MessageInfoFooter
-    ;
+    public function deserializeFooter(string $data): MessageInfoFooter;
 }

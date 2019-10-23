@@ -175,6 +175,8 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
                 . = format_left("PHP_FE($(function.name:), arginfo_$(function.name:))", 0)
             endnew
 
+            php_map_low_level_return (method0, my.in_php_project, function)
+
             for method0.argument as argument0
 
                 my._d = ""
@@ -188,8 +190,6 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
                     php_map_low_level_argument (argument0, my.in_php_project, argument, function)
                 endnew
             endfor
-
-            php_map_low_level_return (method0, my.in_php_project, function)
 
             new wrapper to function
 
@@ -582,7 +582,14 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
 
                 if function.throw_exception = 1
                     my._c = php_format_extension_comment("Handle error")
-                    my._h1 = format_left("$(function.prefix0:UPPER)_HANDLE_STATUS (status);", 0)
+
+                    my._h1 = ""
+
+                    if defined(function.check_error) & function.check_error = 1
+                        my._h1 += format_left("$(function.prefix0:c)_status_t status = $(function.prefix0:c)_error_status(&error);", 0)
+                    endif
+
+                    my._h1 += format_left("$(function.prefix0:UPPER)_HANDLE_STATUS(status);", 0)
 
                     my._res = my._c + my._h1
                 endif
@@ -701,53 +708,27 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
 
                 ### <--- Write returned result
 
-                my._fail = ""
-                my._success = ""
-
-                new fail_success to wrapper
+                new gotofail to wrapper
                     my._res = ""
-
-                    if function.return_zend_type = "IS_VOID" | function.return_zend_type = "IS_LONG"
-                        my._res = format_left("\
-                            goto success;
-
-                        fail:
-                            RETURN_FALSE;
-                        success:
-                            RETURN_TRUE;
-                        ", 0)
-                    elsif function.return_zend_type = "IS_STRING" | function.return_zend_type = "IS_ARRAY"
-                        for function.return_argument where return_argument.name <> "status" & return_argument.type <> "enum"
+                    #function.return_zend_type: "IS_VOID, IS_LONG, _IS_BOOL, IS_STRING, IS_ARRAY, IS_RESOURCE
+                    if  function.return_zend_type = "IS_STRING" | function.return_zend_type = "IS_ARRAY"
+                        my._fail = ""
+                        my._success = ""
+                        for function.return_argument where return_argument.type = "buffer"
                             my._fail += format_left("zend_string_free(out_$(return_argument.name:));", 1)
                             my._success += format_left("vsc_buffer_destroy(&$(return_argument.name:));", 1)
                         endfor
 
-                        my._p1 = format_left("goto success;", 1)
-                        my._p2 = format_left("fail:", 0)
-                        my._p3 = format_left("success:", 0)
+                        my._p1 = format_left("fail:", 0)
+                        my._res = my._success + my._p1 + my._fail
 
-                        my._res = my._p1 + "\n" + my._p2 + my._fail + my._p3 + my._success
-                    elsif function.return_zend_type = "IS_RESOURCE"
-                        my._res = format_left("\
-                            goto success;
-
-                        fail:
-                            RETURN_FALSE;
-                        success:
-                            RETURN_TRUE;
-                        ", 0)
-                    elsif function.return_zend_type = "_IS_BOOL"
-                        my._res = format_left("\
-                            goto success;
-
-                        fail:
-                            RETURN_FALSE;
-                        success:
-                            RETURN_TRUE;
-                        ", 0)
+                        if my._fail = ""
+                            my._res = format_left("\
+                                fail: ;", 0)
+                        endif
                     else
-                        echo_debug_item(return_argument0)
-                        echo_fatal("Not implemented (AO1002)", my)
+                        my._res = format_left("\
+                            fail: ;", 0)
                     endif
 
                     . = format_left(my._res, 0)
@@ -912,6 +893,8 @@ function php_map_low_level_argument (in_argument, in_php_project, out_argument, 
             my._type0 = "error"
             my._type = "$(my._prefix:)_error_t"
             my._zend_type = ""
+            my.out_function.throw_exception = 1
+            my.out_function.check_error = 1
         else
             my._type0 = "class"
             my._type = "$(my._prefix:)_$(my.in_argument.class:c)_t"
@@ -1321,7 +1304,7 @@ function php_map_low_level_extension (in_php_project, out_php_module)
 
                 my._12 = ""
                 if function0.throw_exception = 1
-                    my._12 = "\n" + function0->wrapper->fail_success.
+                    my._12 = "\n" + function0->wrapper->gotofail.
                 endif
 
                 my._13 = format_left("}", 0)

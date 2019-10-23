@@ -51,8 +51,7 @@ interface KeyAlg extends Ctx
     * @return PrivateKey
     * @throws \Exception
     */
-    public function generateEphemeralKey(Key $key): PrivateKey
-    ;
+    public function generateEphemeralKey(Key $key): PrivateKey;
 
     /**
     * Import public key from the raw binary format.
@@ -68,8 +67,7 @@ interface KeyAlg extends Ctx
     * @return PublicKey
     * @throws \Exception
     */
-    public function importPublicKey(RawPublicKey $rawKey): PublicKey
-    ;
+    public function importPublicKey(RawPublicKey $rawKey): PublicKey;
 
     /**
     * Export public key to the raw binary format.
@@ -81,8 +79,7 @@ interface KeyAlg extends Ctx
     * @param PublicKey $publicKey
     * @return RawPublicKey
     */
-    public function exportPublicKey(PublicKey $publicKey): RawPublicKey
-    ;
+    public function exportPublicKey(PublicKey $publicKey): RawPublicKey;
 
     /**
     * Import private key from the raw binary format.
@@ -98,8 +95,7 @@ interface KeyAlg extends Ctx
     * @return PrivateKey
     * @throws \Exception
     */
-    public function importPrivateKey(RawPrivateKey $rawKey): PrivateKey
-    ;
+    public function importPrivateKey(RawPrivateKey $rawKey): PrivateKey;
 
     /**
     * Export private key in the raw binary format.
@@ -111,6 +107,5 @@ interface KeyAlg extends Ctx
     * @param PrivateKey $privateKey
     * @return RawPrivateKey
     */
-    public function exportPrivateKey(PrivateKey $privateKey): RawPrivateKey
-    ;
+    public function exportPrivateKey(PrivateKey $privateKey): RawPrivateKey;
 }

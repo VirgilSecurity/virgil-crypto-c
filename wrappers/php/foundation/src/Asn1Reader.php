@@ -51,24 +51,21 @@ interface Asn1Reader extends Ctx
     * @param string $data
     * @return void
     */
-    public function reset(string $data): void
-    ;
+    public function reset(string $data): void;
 
     /**
     * Return length in bytes how many bytes are left for reading.
     *
     * @return int
     */
-    public function leftLen(): int
-    ;
+    public function leftLen(): int;
 
     /**
     * Return true if status is not "success".
     *
     * @return bool
     */
-    public function hasError(): bool
-    ;
+    public function hasError(): bool;
 
     /**
     * Return error code.
@@ -76,32 +73,28 @@ interface Asn1Reader extends Ctx
     * @return void
     * @throws \Exception
     */
-    public function status(): void
-    ;
+    public function status(): void;
 
     /**
     * Get tag of the current ASN.1 element.
     *
     * @return int
     */
-    public function getTag(): int
-    ;
+    public function getTag(): int;
 
     /**
     * Get length of the current ASN.1 element.
     *
     * @return int
     */
-    public function getLen(): int
-    ;
+    public function getLen(): int;
 
     /**
     * Get length of the current ASN.1 element with tag and length itself.
     *
     * @return int
     */
-    public function getDataLen(): int
-    ;
+    public function getDataLen(): int;
 
     /**
     * Read ASN.1 type: TAG.
@@ -110,8 +103,7 @@ interface Asn1Reader extends Ctx
     * @param int $tag
     * @return int
     */
-    public function readTag(int $tag): int
-    ;
+    public function readTag(int $tag): int;
 
     /**
     * Read ASN.1 type: context-specific TAG.
@@ -121,104 +113,91 @@ interface Asn1Reader extends Ctx
     * @param int $tag
     * @return int
     */
-    public function readContextTag(int $tag): int
-    ;
+    public function readContextTag(int $tag): int;
 
     /**
     * Read ASN.1 type: INTEGER.
     *
     * @return int
     */
-    public function readInt(): int
-    ;
+    public function readInt(): int;
 
     /**
     * Read ASN.1 type: INTEGER.
     *
     * @return int
     */
-    public function readInt8(): int
-    ;
+    public function readInt8(): int;
 
     /**
     * Read ASN.1 type: INTEGER.
     *
     * @return int
     */
-    public function readInt16(): int
-    ;
+    public function readInt16(): int;
 
     /**
     * Read ASN.1 type: INTEGER.
     *
     * @return int
     */
-    public function readInt32(): int
-    ;
+    public function readInt32(): int;
 
     /**
     * Read ASN.1 type: INTEGER.
     *
     * @return int
     */
-    public function readInt64(): int
-    ;
+    public function readInt64(): int;
 
     /**
     * Read ASN.1 type: INTEGER.
     *
     * @return int
     */
-    public function readUint(): int
-    ;
+    public function readUint(): int;
 
     /**
     * Read ASN.1 type: INTEGER.
     *
     * @return int
     */
-    public function readUint8(): int
-    ;
+    public function readUint8(): int;
 
     /**
     * Read ASN.1 type: INTEGER.
     *
     * @return int
     */
-    public function readUint16(): int
-    ;
+    public function readUint16(): int;
 
     /**
     * Read ASN.1 type: INTEGER.
     *
     * @return int
     */
-    public function readUint32(): int
-    ;
+    public function readUint32(): int;
 
     /**
     * Read ASN.1 type: INTEGER.
     *
     * @return int
     */
-    public function readUint64(): int
-    ;
+    public function readUint64(): int;
 
     /**
     * Read ASN.1 type: BOOLEAN.
     *
     * @return bool
     */
-    public function readBool(): bool
-    ;
+    public function readBool(): bool;
 
     /**
     * Read ASN.1 type: NULL.
     *
     * @return void
     */
-    public function readNull(): void
-    ;
+    public function readNull(): void;
 
     /**
     * Read ASN.1 type: NULL, only if it exists.
@@ -226,40 +205,35 @@ interface Asn1Reader extends Ctx
     *
     * @return void
     */
-    public function readNullOptional(): void
-    ;
+    public function readNullOptional(): void;
 
     /**
     * Read ASN.1 type: OCTET STRING.
     *
     * @return string
     */
-    public function readOctetStr(): string
-    ;
+    public function readOctetStr(): string;
 
     /**
     * Read ASN.1 type: BIT STRING.
     *
     * @return string
     */
-    public function readBitstringAsOctetStr(): string
-    ;
+    public function readBitstringAsOctetStr(): string;
 
     /**
     * Read ASN.1 type: UTF8String.
     *
     * @return string
     */
-    public function readUtf8Str(): string
-    ;
+    public function readUtf8Str(): string;
 
     /**
     * Read ASN.1 type: OID.
     *
     * @return string
     */
-    public function readOid(): string
-    ;
+    public function readOid(): string;
 
     /**
     * Read raw data of given length.
@@ -267,8 +241,7 @@ interface Asn1Reader extends Ctx
     * @param int $len
     * @return string
     */
-    public function readData(int $len): string
-    ;
+    public function readData(int $len): string;
 
     /**
     * Read ASN.1 type: SEQUENCE.
@@ -276,8 +249,7 @@ interface Asn1Reader extends Ctx
     *
     * @return int
     */
-    public function readSequence(): int
-    ;
+    public function readSequence(): int;
 
     /**
     * Read ASN.1 type: SET.
@@ -285,6 +257,5 @@ interface Asn1Reader extends Ctx
     *
     * @return int
     */
-    public function readSet(): int
-    ;
+    public function readSet(): int;
 }

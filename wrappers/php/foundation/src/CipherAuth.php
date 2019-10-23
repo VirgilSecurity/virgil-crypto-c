@@ -50,8 +50,7 @@ interface CipherAuth extends Ctx
     * @param string $authData
     * @return void
     */
-    public function setAuthData(string $authData): void
-    ;
+    public function setAuthData(string $authData): void;
 
     /**
     * Accomplish an authenticated encryption and place tag separately.
@@ -62,8 +61,7 @@ interface CipherAuth extends Ctx
     * @return array
     * @throws \Exception
     */
-    public function finishAuthEncryption(): array // [out, tag]
-    ;
+    public function finishAuthEncryption(): array; // [out, tag]
 
     /**
     * Accomplish an authenticated decryption with explicitly given tag.
@@ -75,6 +73,5 @@ interface CipherAuth extends Ctx
     * @return string
     * @throws \Exception
     */
-    public function finishAuthDecryption(string $tag): string
-    ;
+    public function finishAuthDecryption(string $tag): string;
 }

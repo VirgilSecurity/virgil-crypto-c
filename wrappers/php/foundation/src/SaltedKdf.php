@@ -51,8 +51,7 @@ interface SaltedKdf extends Ctx
     * @param int $iterationCount
     * @return void
     */
-    public function reset(string $salt, int $iterationCount): void
-    ;
+    public function reset(string $salt, int $iterationCount): void;
 
     /**
     * Setup application specific information (optional).
@@ -61,6 +60,5 @@ interface SaltedKdf extends Ctx
     * @param string $info
     * @return void
     */
-    public function setInfo(string $info): void
-    ;
+    public function setInfo(string $info): void;
 }

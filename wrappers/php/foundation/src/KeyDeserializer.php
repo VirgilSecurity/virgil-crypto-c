@@ -49,8 +49,7 @@ interface KeyDeserializer extends Ctx
     * @param string $publicKeyData
     * @return void
     */
-    public function deserializePublicKey(string $publicKeyData): void
-    ;
+    public function deserializePublicKey(string $publicKeyData): void;
 
     /**
     * Deserialize given private key as an interchangeable format to the object.
@@ -58,6 +57,5 @@ interface KeyDeserializer extends Ctx
     * @param string $privateKeyData
     * @return void
     */
-    public function deserializePrivateKey(string $privateKeyData): void
-    ;
+    public function deserializePrivateKey(string $privateKeyData): void;
 }

@@ -50,6 +50,5 @@ interface AlgInfoDeserializer extends Ctx
     * @return AlgInfo
     * @throws \Exception
     */
-    public function deserialize(string $data): AlgInfo
-    ;
+    public function deserialize(string $data): AlgInfo;
 }

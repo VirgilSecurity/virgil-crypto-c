@@ -52,8 +52,7 @@ interface ComputeSharedKey extends Ctx
     * @return string
     * @throws \Exception
     */
-    public function computeSharedKey(PublicKey $publicKey, PrivateKey $privateKey): string
-    ;
+    public function computeSharedKey(PublicKey $publicKey, PrivateKey $privateKey): string;
 
     /**
     * Return number of bytes required to hold shared key.
@@ -62,6 +61,5 @@ interface ComputeSharedKey extends Ctx
     * @param Key $key
     * @return int
     */
-    public function sharedKeyLen(Key $key): int
-    ;
+    public function sharedKeyLen(Key $key): int;
 }

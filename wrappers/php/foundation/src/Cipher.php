@@ -49,8 +49,7 @@ interface Cipher extends Ctx
     * @param string $nonce
     * @return void
     */
-    public function setNonce(string $nonce): void
-    ;
+    public function setNonce(string $nonce): void;
 
     /**
     * Set cipher encryption / decryption key.
@@ -58,24 +57,21 @@ interface Cipher extends Ctx
     * @param string $key
     * @return void
     */
-    public function setKey(string $key): void
-    ;
+    public function setKey(string $key): void;
 
     /**
     * Start sequential encryption.
     *
     * @return void
     */
-    public function startEncryption(): void
-    ;
+    public function startEncryption(): void;
 
     /**
     * Start sequential decryption.
     *
     * @return void
     */
-    public function startDecryption(): void
-    ;
+    public function startDecryption(): void;
 
     /**
     * Process encryption or decryption of the given data chunk.
@@ -83,8 +79,7 @@ interface Cipher extends Ctx
     * @param string $data
     * @return string
     */
-    public function update(string $data): string
-    ;
+    public function update(string $data): string;
 
     /**
     * Return buffer length required to hold an output of the methods
@@ -94,8 +89,7 @@ interface Cipher extends Ctx
     * @param int $dataLen
     * @return int
     */
-    public function outLen(int $dataLen): int
-    ;
+    public function outLen(int $dataLen): int;
 
     /**
     * Return buffer length required to hold an output of the methods
@@ -105,8 +99,7 @@ interface Cipher extends Ctx
     * @param int $dataLen
     * @return int
     */
-    public function encryptedOutLen(int $dataLen): int
-    ;
+    public function encryptedOutLen(int $dataLen): int;
 
     /**
     * Return buffer length required to hold an output of the methods
@@ -116,8 +109,7 @@ interface Cipher extends Ctx
     * @param int $dataLen
     * @return int
     */
-    public function decryptedOutLen(int $dataLen): int
-    ;
+    public function decryptedOutLen(int $dataLen): int;
 
     /**
     * Accomplish encryption or decryption process.
@@ -125,6 +117,5 @@ interface Cipher extends Ctx
     * @return string
     * @throws \Exception
     */
-    public function finish(): string
-    ;
+    public function finish(): string;
 }

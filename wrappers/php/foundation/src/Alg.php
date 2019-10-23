@@ -49,8 +49,7 @@ interface Alg extends Ctx
     *
     * @return AlgId
     */
-    public function algId(): AlgId
-    ;
+    public function algId(): AlgId;
 
     /**
     * Produce object with algorithm information and configuration parameters.
@@ -58,8 +57,7 @@ interface Alg extends Ctx
     * @return AlgInfo
     * @throws \Exception
     */
-    public function produceAlgInfo(): AlgInfo
-    ;
+    public function produceAlgInfo(): AlgInfo;
 
     /**
     * Restore algorithm configuration from the given object.
@@ -68,6 +66,5 @@ interface Alg extends Ctx
     * @return void
     * @throws \Exception
     */
-    public function restoreAlgInfo(AlgInfo $algInfo): void
-    ;
+    public function restoreAlgInfo(AlgInfo $algInfo): void;
 }

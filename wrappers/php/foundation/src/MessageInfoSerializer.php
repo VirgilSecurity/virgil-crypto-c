@@ -49,8 +49,7 @@ interface MessageInfoSerializer extends Ctx
     * @param MessageInfo $messageInfo
     * @return int
     */
-    public function serializedLen(MessageInfo $messageInfo): int
-    ;
+    public function serializedLen(MessageInfo $messageInfo): int;
 
     /**
     * Serialize class "message info".
@@ -58,8 +57,7 @@ interface MessageInfoSerializer extends Ctx
     * @param MessageInfo $messageInfo
     * @return string
     */
-    public function serialize(MessageInfo $messageInfo): string
-    ;
+    public function serialize(MessageInfo $messageInfo): string;
 
     /**
     * Read message info prefix from the given data, and if it is valid,
@@ -71,8 +69,7 @@ interface MessageInfoSerializer extends Ctx
     * @param string $data
     * @return int
     */
-    public function readPrefix(string $data): int
-    ;
+    public function readPrefix(string $data): int;
 
     /**
     * Deserialize class "message info".
@@ -80,6 +77,5 @@ interface MessageInfoSerializer extends Ctx
     * @param string $data
     * @return MessageInfo
     */
-    public function deserialize(string $data): MessageInfo
-    ;
+    public function deserialize(string $data): MessageInfo;
 }

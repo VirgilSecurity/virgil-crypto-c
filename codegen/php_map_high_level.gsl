@@ -423,7 +423,13 @@ function php_map_high_level_method (in_method, in_php_module, in_type, out_php_m
     endif
 
     new signature to my.out_php_method
-        . = "$(my._declaration:) function $(my._name:)($(my._method_arguments:))$(my._return_type:) $(my._return_data:)"
+
+        my._i = ""
+        if my.in_type = "interface"
+            my._i = ";"
+        endif
+
+        . = "$(my._declaration:) function $(my._name:)($(my._method_arguments:))$(my._return_type:)$(my._i:) $(my._return_data:)"
     endnew
 
     if my.in_type <> "interface"

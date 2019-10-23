@@ -49,16 +49,14 @@ interface Hash extends Ctx
     * @param string $data
     * @return string
     */
-    public static function hash(string $data): string
-    ;
+    public static function hash(string $data): string;
 
     /**
     * Start a new hashing.
     *
     * @return void
     */
-    public function start(): void
-    ;
+    public function start(): void;
 
     /**
     * Add given data to the hash.
@@ -66,14 +64,12 @@ interface Hash extends Ctx
     * @param string $data
     * @return void
     */
-    public function update(string $data): void
-    ;
+    public function update(string $data): void;
 
     /**
     * Accompilsh hashing and return it's result (a message digest).
     *
     * @return string
     */
-    public function finish(): string
-    ;
+    public function finish(): string;
 }
