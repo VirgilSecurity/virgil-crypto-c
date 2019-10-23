@@ -223,6 +223,14 @@ enum vscf_status_t {
     //
     vscf_status_ERROR_BAD_ROUND5_PRIVATE_KEY = -231,
     //
+    //  Compound public key is corrupted.
+    //
+    vscf_status_ERROR_BAD_COMPOUND_PUBLIC_KEY = -232,
+    //
+    //  Compound private key is corrupted.
+    //
+    vscf_status_ERROR_BAD_COMPOUND_PRIVATE_KEY = -233,
+    //
     //  Decryption failed, because message info was not given explicitly,
     //  and was not part of an encrypted message.
     //

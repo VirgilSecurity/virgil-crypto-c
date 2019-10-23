@@ -151,6 +151,14 @@
         Post-quantum NIST Round5 private key is corrupted.
     </constant>
 
+    <constant name="error bad compound public key" value="-232">
+        Compound public key is corrupted.
+    </constant>
+
+    <constant name="error bad compound private key" value="-233">
+        Compound private key is corrupted.
+    </constant>
+
     <constant name="error no message info" value="-301">
         Decryption failed, because message info was not given explicitly,
         and was not part of an encrypted message.

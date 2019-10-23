@@ -47,6 +47,8 @@
 #include "vscf_compound_private_key.h"
 #include "vscf_key.h"
 #include "vscf_private_key.h"
+#include "vscf_simple_alg_info.h"
+#include "vscf_compound_key_alg_info.h"
 #include "vscf_fake_random.h"
 
 #include "test_data_compound_key.h"
@@ -307,6 +309,260 @@ test__sign_verify__with_random_round5_and_falcon_keys__success(void) {
 #endif
 }
 
+// --------------------------------------------------------------------------
+//  Import / Export
+// --------------------------------------------------------------------------
+static void
+inner_test__import_public_key_then_export__should_match(
+        vscf_alg_id_t cipher_alg_id, vscf_alg_id_t signer_alg_id, vsc_data_t public_key_data) {
+    //
+    //  Create dependencies first.
+    //
+    vscf_error_t error;
+    vscf_error_reset(&error);
+
+    //
+    //  Prepare algs.
+    //
+    vscf_compound_key_alg_t *key_alg = vscf_compound_key_alg_new();
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_compound_key_alg_setup_defaults(key_alg));
+
+    vscf_impl_t *cipher_alg_info = vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(cipher_alg_id));
+    vscf_impl_t *signer_alg_info = vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(signer_alg_id));
+    vscf_impl_t *alg_info = vscf_compound_key_alg_info_impl(vscf_compound_key_alg_info_new_with_infos_disown(
+            vscf_alg_id_COMPOUND_KEY, &cipher_alg_info, &signer_alg_info));
+
+
+    vscf_raw_public_key_t *raw_public_key = vscf_raw_public_key_new_with_data(public_key_data, &alg_info);
+
+    //
+    //  Import key.
+    //
+    vscf_impl_t *public_key = vscf_compound_key_alg_import_public_key(key_alg, raw_public_key, &error);
+    TEST_ASSERT_FALSE(vscf_error_has_error(&error));
+    TEST_ASSERT_NOT_NULL(public_key);
+
+    //
+    //  Export key.
+    //
+    vscf_raw_public_key_t *exported_raw_public_key =
+            vscf_compound_key_alg_export_public_key(key_alg, public_key, &error);
+    TEST_ASSERT_FALSE(vscf_error_has_error(&error));
+    TEST_ASSERT_NOT_NULL(exported_raw_public_key);
+
+    //
+    //  Compare.
+    //
+    TEST_ASSERT_EQUAL_DATA(public_key_data, vscf_raw_public_key_data(exported_raw_public_key));
+
+    //
+    //  Cleanup.
+    //
+    vscf_impl_destroy(&public_key);
+    vscf_raw_public_key_destroy(&exported_raw_public_key);
+    vscf_raw_public_key_destroy(&raw_public_key);
+    vscf_compound_key_alg_destroy(&key_alg);
+}
+
+static void
+inner_test__import_private_key_then_export__should_match(
+        vscf_alg_id_t cipher_alg_id, vscf_alg_id_t signer_alg_id, vsc_data_t private_key_data) {
+    //
+    //  Create dependencies first.
+    //
+    vscf_error_t error;
+    vscf_error_reset(&error);
+
+    //
+    //  Prepare algs.
+    //
+    vscf_compound_key_alg_t *key_alg = vscf_compound_key_alg_new();
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_compound_key_alg_setup_defaults(key_alg));
+
+    vscf_impl_t *cipher_alg_info = vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(cipher_alg_id));
+    vscf_impl_t *signer_alg_info = vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(signer_alg_id));
+    vscf_impl_t *alg_info = vscf_compound_key_alg_info_impl(vscf_compound_key_alg_info_new_with_infos_disown(
+            vscf_alg_id_COMPOUND_KEY, &cipher_alg_info, &signer_alg_info));
+
+
+    vscf_raw_private_key_t *raw_private_key = vscf_raw_private_key_new_with_data(private_key_data, &alg_info);
+
+    //
+    //  Import key.
+    //
+    vscf_impl_t *private_key = vscf_compound_key_alg_import_private_key(key_alg, raw_private_key, &error);
+    TEST_ASSERT_FALSE(vscf_error_has_error(&error));
+    TEST_ASSERT_NOT_NULL(private_key);
+
+    //
+    //  Export key.
+    //
+    vscf_raw_private_key_t *exported_raw_private_key =
+            vscf_compound_key_alg_export_private_key(key_alg, private_key, &error);
+    TEST_ASSERT_FALSE(vscf_error_has_error(&error));
+    TEST_ASSERT_NOT_NULL(exported_raw_private_key);
+
+    //
+    //  Compare.
+    //
+    TEST_ASSERT_EQUAL_DATA(private_key_data, vscf_raw_private_key_data(exported_raw_private_key));
+
+    //
+    //  Cleanup.
+    //
+    vscf_impl_destroy(&private_key);
+    vscf_raw_private_key_destroy(&exported_raw_private_key);
+    vscf_raw_private_key_destroy(&raw_private_key);
+    vscf_compound_key_alg_destroy(&key_alg);
+}
+
+static void
+inner_test__import_private_key_then_export_public_key__should_match(vscf_alg_id_t cipher_alg_id,
+        vscf_alg_id_t signer_alg_id, vsc_data_t private_key_data, vsc_data_t public_key_data) {
+    //
+    //  Create dependencies first.
+    //
+    vscf_error_t error;
+    vscf_error_reset(&error);
+
+    //
+    //  Prepare algs.
+    //
+    vscf_compound_key_alg_t *key_alg = vscf_compound_key_alg_new();
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_compound_key_alg_setup_defaults(key_alg));
+
+    vscf_impl_t *cipher_alg_info = vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(cipher_alg_id));
+    vscf_impl_t *signer_alg_info = vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(signer_alg_id));
+    vscf_impl_t *alg_info = vscf_compound_key_alg_info_impl(vscf_compound_key_alg_info_new_with_infos_disown(
+            vscf_alg_id_COMPOUND_KEY, &cipher_alg_info, &signer_alg_info));
+
+
+    vscf_raw_private_key_t *raw_private_key = vscf_raw_private_key_new_with_data(private_key_data, &alg_info);
+
+    //
+    //  Import key.
+    //
+    vscf_impl_t *private_key = vscf_compound_key_alg_import_private_key(key_alg, raw_private_key, &error);
+    TEST_ASSERT_FALSE(vscf_error_has_error(&error));
+    TEST_ASSERT_NOT_NULL(private_key);
+
+    //
+    //  Extract public.
+    //
+    vscf_impl_t *public_key = vscf_private_key_extract_public_key(private_key);
+    vscf_raw_public_key_t *raw_public_key = vscf_compound_key_alg_export_public_key(key_alg, public_key, &error);
+    TEST_ASSERT_FALSE(vscf_error_has_error(&error));
+    TEST_ASSERT_NOT_NULL(raw_public_key);
+
+    //
+    //  Compare.
+    //
+    TEST_ASSERT_EQUAL_DATA(public_key_data, vscf_raw_public_key_data(raw_public_key));
+
+    //
+    //  Cleanup.
+    //
+    vscf_impl_destroy(&private_key);
+    vscf_impl_destroy(&public_key);
+    vscf_raw_private_key_destroy(&raw_private_key);
+    vscf_raw_public_key_destroy(&raw_public_key);
+    vscf_compound_key_alg_destroy(&key_alg);
+}
+
+static void
+inner_test__import_public_key__with_wrong_signature__should_fail(
+        vscf_alg_id_t cipher_alg_id, vscf_alg_id_t signer_alg_id, vsc_data_t public_key_data) {
+    //
+    //  Create dependencies first.
+    //
+    vscf_error_t error;
+    vscf_error_reset(&error);
+
+    //
+    //  Prepare algs.
+    //
+    vscf_compound_key_alg_t *key_alg = vscf_compound_key_alg_new();
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_compound_key_alg_setup_defaults(key_alg));
+
+    vscf_impl_t *cipher_alg_info = vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(cipher_alg_id));
+    vscf_impl_t *signer_alg_info = vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(signer_alg_id));
+    vscf_impl_t *alg_info = vscf_compound_key_alg_info_impl(vscf_compound_key_alg_info_new_with_infos_disown(
+            vscf_alg_id_COMPOUND_KEY, &cipher_alg_info, &signer_alg_info));
+
+
+    vscf_raw_public_key_t *raw_public_key = vscf_raw_public_key_new_with_data(public_key_data, &alg_info);
+
+    //
+    //  Import key.
+    //
+    vscf_impl_t *public_key = vscf_compound_key_alg_import_public_key(key_alg, raw_public_key, &error);
+    TEST_ASSERT_EQUAL(vscf_status_ERROR_BAD_COMPOUND_PUBLIC_KEY, vscf_error_status(&error));
+    TEST_ASSERT_NULL(public_key);
+
+    //
+    //  Cleanup.
+    //
+    vscf_impl_destroy(&public_key);
+    vscf_raw_public_key_destroy(&raw_public_key);
+    vscf_compound_key_alg_destroy(&key_alg);
+}
+
+void
+test__import_public_key_then_export__curve25519_ed25519__should_match(void) {
+    inner_test__import_public_key_then_export__should_match(
+            vscf_alg_id_CURVE25519, vscf_alg_id_ED25519, test_data_compound_key_CURVE25519_ED25519_PUBLIC_KEY);
+}
+
+void
+test__import_private_key_then_export__curve25519_ed25519__should_match(void) {
+    inner_test__import_private_key_then_export__should_match(
+            vscf_alg_id_CURVE25519, vscf_alg_id_ED25519, test_data_compound_key_CURVE25519_ED25519_PRIVATE_KEY);
+}
+
+void
+test__import_private_key_then_export_public_key__curve25519_ed25519__should_match(void) {
+    inner_test__import_private_key_then_export_public_key__should_match(vscf_alg_id_CURVE25519, vscf_alg_id_ED25519,
+            test_data_compound_key_CURVE25519_ED25519_PRIVATE_KEY,
+            test_data_compound_key_CURVE25519_ED25519_PUBLIC_KEY);
+}
+
+void
+test__import_public_key__curve25519_ed25519_with_wrong_signature__returns_error(void) {
+    inner_test__import_public_key__with_wrong_signature__should_fail(vscf_alg_id_CURVE25519, vscf_alg_id_ED25519,
+            test_data_compound_key_CURVE25519_ED25519_PUBLIC_KEY_WITH_WRONG_SIGNATURE);
+}
+
+void
+test__import_public_key_then_export__round5_falcon__should_match(void) {
+#if VSCF_POST_QUANTUM
+    inner_test__import_public_key_then_export__should_match(
+            vscf_alg_id_ROUND5, vscf_alg_id_FALCON, test_data_compound_key_ROUND5_FALCON_PUBLIC_KEY);
+#else
+    TEST_IGNORE_MESSAGE("Feature VSCF_POST_QUANTUM is disabled");
+#endif
+}
+
+void
+test__import_private_key_then_export__round5_falcon__should_match(void) {
+#if VSCF_POST_QUANTUM
+    inner_test__import_private_key_then_export__should_match(
+            vscf_alg_id_ROUND5, vscf_alg_id_FALCON, test_data_compound_key_ROUND5_FALCON_PRIVATE_KEY);
+#else
+    TEST_IGNORE_MESSAGE("Feature VSCF_POST_QUANTUM is disabled");
+#endif
+}
+
+void
+test__import_public_key__round5_falcon_with_wrong_signature__returns_error(void) {
+#if VSCF_POST_QUANTUM
+    inner_test__import_public_key__with_wrong_signature__should_fail(vscf_alg_id_ROUND5, vscf_alg_id_FALCON,
+            test_data_compound_key_ROUND5_FALCON_PUBLIC_KEY_WITH_WRONG_SIGNATURE);
+#else
+    TEST_IGNORE_MESSAGE("Feature VSCF_POST_QUANTUM is disabled");
+#endif
+}
+
+
 #endif // TEST_DEPENDENCIES_AVAILABLE
 
 
@@ -324,6 +580,13 @@ main(void) {
     RUN_TEST(test__encrypt_decrypt__with_random_round5_and_falcon_keys__message_match);
     RUN_TEST(test__sign_verify__with_random_curve25519_and_ed25519_keys__success);
     RUN_TEST(test__sign_verify__with_random_round5_and_falcon_keys__success);
+    RUN_TEST(test__import_public_key_then_export__curve25519_ed25519__should_match);
+    RUN_TEST(test__import_private_key_then_export__curve25519_ed25519__should_match);
+    RUN_TEST(test__import_private_key_then_export_public_key__curve25519_ed25519__should_match);
+    RUN_TEST(test__import_public_key__curve25519_ed25519_with_wrong_signature__returns_error);
+    RUN_TEST(test__import_public_key_then_export__round5_falcon__should_match);
+    RUN_TEST(test__import_private_key_then_export__round5_falcon__should_match);
+    RUN_TEST(test__import_public_key__round5_falcon_with_wrong_signature__returns_error);
 #else
     RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
 #endif

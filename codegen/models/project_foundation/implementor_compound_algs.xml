@@ -152,6 +152,7 @@
         <require class="simple alg info"/>
         <require class="key alg factory"/>
         <require class="signer"/>
+        <require class="verifier"/>
         <require interface="alg info"/>
         <require interface="public key"/>
         <require interface="private key"/>

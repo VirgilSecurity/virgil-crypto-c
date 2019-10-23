@@ -92,7 +92,7 @@ enum vscf_alg_id_t {
     vscf_alg_id_PKCS5_PBES2,
     vscf_alg_id_FALCON,
     vscf_alg_id_ROUND5,
-    vscf_alg_id_COMPOUND_KEY_ALG
+    vscf_alg_id_COMPOUND_KEY
 };
 typedef enum vscf_alg_id_t vscf_alg_id_t;
 

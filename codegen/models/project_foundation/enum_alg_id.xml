@@ -20,5 +20,5 @@
     <constant name="pkcs5 pbes2"/>
     <constant name="falcon"/>
     <constant name="round5"/>
-    <constant name="compound key alg"/>
+    <constant name="compound key"/>
 </enum>
