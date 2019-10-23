@@ -84,7 +84,8 @@ class FooterInfo
     */
     public function signedDataInfo(): SignedDataInfo
     {
-        return vscf_footer_info_signed_data_info_php($this->ctx);
+        $ctx = vscf_footer_info_signed_data_info_php($this->ctx);
+        return new SignedDataInfo($ctx);
     }
 
     /**

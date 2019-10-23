@@ -188,6 +188,11 @@ function php_format_high_level_method_body (in_php_method)
                 $enum = $(my._function_name:)($(my._arguments:));
                 return new $(my.in_php_method.return_type:Pascal)($enum);
                 ", 0)
+        elsif my.in_php_method.return_class_impl = 1
+            my._res = format_left("\
+                $ctx = $(my._function_name:)($(my._arguments:));
+                return new $(my.in_php_method.return_type:Pascal)($ctx);
+                ", 0)
         else
             my._res = "$(my._return:)$(my._function_name:)($(my._arguments:));"
         endif

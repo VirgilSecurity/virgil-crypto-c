@@ -84,7 +84,8 @@ class SignerInfoList
     */
     public function item(): SignerInfo
     {
-        return vscf_signer_info_list_item_php($this->ctx);
+        $ctx = vscf_signer_info_list_item_php($this->ctx);
+        return new SignerInfo($ctx);
     }
 
     /**
@@ -104,7 +105,8 @@ class SignerInfoList
     */
     public function next(): SignerInfoList
     {
-        return vscf_signer_info_list_next_php($this->ctx);
+        $ctx = vscf_signer_info_list_next_php($this->ctx);
+        return new SignerInfoList($ctx);
     }
 
     /**
@@ -124,7 +126,8 @@ class SignerInfoList
     */
     public function prev(): SignerInfoList
     {
-        return vscf_signer_info_list_prev_php($this->ctx);
+        $ctx = vscf_signer_info_list_prev_php($this->ctx);
+        return new SignerInfoList($ctx);
     }
 
     /**

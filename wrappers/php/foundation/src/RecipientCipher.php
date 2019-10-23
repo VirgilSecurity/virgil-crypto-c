@@ -150,7 +150,8 @@ class RecipientCipher
     */
     public function customParams(): MessageInfoCustomParams
     {
-        return vscf_recipient_cipher_custom_params_php($this->ctx);
+        $ctx = vscf_recipient_cipher_custom_params_php($this->ctx);
+        return new MessageInfoCustomParams($ctx);
     }
 
     /**
@@ -336,7 +337,8 @@ class RecipientCipher
     */
     public function signerInfos(): SignerInfoList
     {
-        return vscf_recipient_cipher_signer_infos_php($this->ctx);
+        $ctx = vscf_recipient_cipher_signer_infos_php($this->ctx);
+        return new SignerInfoList($ctx);
     }
 
     /**

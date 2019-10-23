@@ -127,7 +127,8 @@ class GroupSessionMessage
     */
     public static function deserialize(string $input): GroupSessionMessage
     {
-        return vscf_group_session_message_deserialize_php($input);
+        $ctx = vscf_group_session_message_deserialize_php($input);
+        return new GroupSessionMessage($ctx);
     }
 
     /**

@@ -84,7 +84,8 @@ class KeyRecipientInfoList
     */
     public function item(): KeyRecipientInfo
     {
-        return vscf_key_recipient_info_list_item_php($this->ctx);
+        $ctx = vscf_key_recipient_info_list_item_php($this->ctx);
+        return new KeyRecipientInfo($ctx);
     }
 
     /**
@@ -104,7 +105,8 @@ class KeyRecipientInfoList
     */
     public function next(): KeyRecipientInfoList
     {
-        return vscf_key_recipient_info_list_next_php($this->ctx);
+        $ctx = vscf_key_recipient_info_list_next_php($this->ctx);
+        return new KeyRecipientInfoList($ctx);
     }
 
     /**
@@ -124,7 +126,8 @@ class KeyRecipientInfoList
     */
     public function prev(): KeyRecipientInfoList
     {
-        return vscf_key_recipient_info_list_prev_php($this->ctx);
+        $ctx = vscf_key_recipient_info_list_prev_php($this->ctx);
+        return new KeyRecipientInfoList($ctx);
     }
 
     /**

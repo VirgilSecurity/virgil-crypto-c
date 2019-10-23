@@ -87,7 +87,8 @@ class MessageInfo
     */
     public function keyRecipientInfoList(): KeyRecipientInfoList
     {
-        return vscf_message_info_key_recipient_info_list_php($this->ctx);
+        $ctx = vscf_message_info_key_recipient_info_list_php($this->ctx);
+        return new KeyRecipientInfoList($ctx);
     }
 
     /**
@@ -97,7 +98,8 @@ class MessageInfo
     */
     public function passwordRecipientInfoList(): PasswordRecipientInfoList
     {
-        return vscf_message_info_password_recipient_info_list_php($this->ctx);
+        $ctx = vscf_message_info_password_recipient_info_list_php($this->ctx);
+        return new PasswordRecipientInfoList($ctx);
     }
 
     /**
@@ -119,7 +121,8 @@ class MessageInfo
     */
     public function customParams(): MessageInfoCustomParams
     {
-        return vscf_message_info_custom_params_php($this->ctx);
+        $ctx = vscf_message_info_custom_params_php($this->ctx);
+        return new MessageInfoCustomParams($ctx);
     }
 
     /**
@@ -161,7 +164,8 @@ class MessageInfo
     */
     public function footerInfo(): FooterInfo
     {
-        return vscf_message_info_footer_info_php($this->ctx);
+        $ctx = vscf_message_info_footer_info_php($this->ctx);
+        return new FooterInfo($ctx);
     }
 
     /**

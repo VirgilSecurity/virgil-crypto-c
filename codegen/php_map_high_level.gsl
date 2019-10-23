@@ -451,6 +451,7 @@ function php_map_high_level_return (in_method, in_php_module, out_php_method)
     my._return_data_list = ""
     my._return_interface = 0
     my._return_enum = 0
+    my._return_class_impl = 0
 
     my._argument_buffer_count = 0
 
@@ -511,6 +512,7 @@ function php_map_high_level_return (in_method, in_php_module, out_php_method)
                 my._r = return0.class
                 my._namespace = php_derive_high_level_namespace(my.in_php_module)
                 my._instance = 1
+                my._return_class_impl = 1
             endif
         elsif defined (return0.interface)
             my._r = return0.interface
@@ -541,6 +543,7 @@ function php_map_high_level_return (in_method, in_php_module, out_php_method)
     my.out_php_method.throw_exception = my._throw_exception
     my.out_php_method.return_interface = my._return_interface
     my.out_php_method.return_enum = my._return_enum
+    my.out_php_method.return_class_impl = my._return_class_impl
 
     if defined (my.in_php_module.implementation_class0)
         my.out_php_method.implementation_class0 = my.in_php_module.implementation_class0

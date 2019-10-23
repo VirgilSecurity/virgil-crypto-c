@@ -84,7 +84,8 @@ class MessageInfoFooter
     */
     public function signerInfos(): SignerInfoList
     {
-        return vscf_message_info_footer_signer_infos_php($this->ctx);
+        $ctx = vscf_message_info_footer_signer_infos_php($this->ctx);
+        return new SignerInfoList($ctx);
     }
 
     /**

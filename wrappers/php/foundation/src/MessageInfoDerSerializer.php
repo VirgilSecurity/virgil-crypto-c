@@ -142,7 +142,8 @@ class MessageInfoDerSerializer implements MessageInfoSerializer, MessageInfoFoot
     */
     public function deserialize(string $data): MessageInfo
     {
-        return vscf_message_info_der_serializer_deserialize_php($this->ctx, $data);
+        $ctx = vscf_message_info_der_serializer_deserialize_php($this->ctx, $data);
+        return new MessageInfo($ctx);
     }
 
     /**
@@ -175,7 +176,8 @@ class MessageInfoDerSerializer implements MessageInfoSerializer, MessageInfoFoot
     */
     public function deserializeFooter(string $data): MessageInfoFooter
     {
-        return vscf_message_info_der_serializer_deserialize_footer_php($this->ctx, $data);
+        $ctx = vscf_message_info_der_serializer_deserialize_footer_php($this->ctx, $data);
+        return new MessageInfoFooter($ctx);
     }
 
     /**

@@ -84,7 +84,8 @@ class PasswordRecipientInfoList
     */
     public function item(): PasswordRecipientInfo
     {
-        return vscf_password_recipient_info_list_item_php($this->ctx);
+        $ctx = vscf_password_recipient_info_list_item_php($this->ctx);
+        return new PasswordRecipientInfo($ctx);
     }
 
     /**
@@ -104,7 +105,8 @@ class PasswordRecipientInfoList
     */
     public function next(): PasswordRecipientInfoList
     {
-        return vscf_password_recipient_info_list_next_php($this->ctx);
+        $ctx = vscf_password_recipient_info_list_next_php($this->ctx);
+        return new PasswordRecipientInfoList($ctx);
     }
 
     /**
@@ -124,7 +126,8 @@ class PasswordRecipientInfoList
     */
     public function prev(): PasswordRecipientInfoList
     {
-        return vscf_password_recipient_info_list_prev_php($this->ctx);
+        $ctx = vscf_password_recipient_info_list_prev_php($this->ctx);
+        return new PasswordRecipientInfoList($ctx);
     }
 
     /**

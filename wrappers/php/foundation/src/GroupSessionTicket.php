@@ -107,7 +107,8 @@ class GroupSessionTicket
     */
     public function getTicketMessage(): GroupSessionMessage
     {
-        return vscf_group_session_ticket_get_ticket_message_php($this->ctx);
+        $ctx = vscf_group_session_ticket_get_ticket_message_php($this->ctx);
+        return new GroupSessionMessage($ctx);
     }
 
     /**

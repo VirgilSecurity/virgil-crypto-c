@@ -143,8 +143,6 @@ class KeyProviderTest extends \PHPUnit\Framework\TestCase
 
     public function test_KeyProvider_generatePrivateKeyEd25519WithKeyMaterialRng()
     {
-        $this->markTestSkipped("Temp skipped");
-
         $ed25519 = $this->ed25519;
         $ed25519->setupDefaults();
 
@@ -152,7 +150,7 @@ class KeyProviderTest extends \PHPUnit\Framework\TestCase
         $keyMaterialRng->resetKeyMaterial(self::unhexlify(self::DETERMINISTIC_KEY_KEY_MATERIAL));
 
         $keyProvider = $this->keyProvider;
-        $keyProvider->setRandom($keyMaterialRng);
+        $keyProvider->useRandom($keyMaterialRng);
         $keyProvider->setupDefaults();
 
         $privateKey = $keyProvider->generatePrivateKey(AlgId::ED25519());

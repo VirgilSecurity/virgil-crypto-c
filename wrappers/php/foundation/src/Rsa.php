@@ -187,7 +187,8 @@ class Rsa implements Alg, KeyAlg, KeyCipher, KeySigner
     */
     public function exportPublicKey(PublicKey $publicKey): RawPublicKey
     {
-        return vscf_rsa_export_public_key_php($this->ctx, $publicKey->getCtx());
+        $ctx = vscf_rsa_export_public_key_php($this->ctx, $publicKey->getCtx());
+        return new RawPublicKey($ctx);
     }
 
     /**
@@ -222,7 +223,8 @@ class Rsa implements Alg, KeyAlg, KeyCipher, KeySigner
     */
     public function exportPrivateKey(PrivateKey $privateKey): RawPrivateKey
     {
-        return vscf_rsa_export_private_key_php($this->ctx, $privateKey->getCtx());
+        $ctx = vscf_rsa_export_private_key_php($this->ctx, $privateKey->getCtx());
+        return new RawPrivateKey($ctx);
     }
 
     /**

@@ -130,7 +130,8 @@ class GroupSession
     */
     public function encrypt(string $plainText, PrivateKey $privateKey): GroupSessionMessage
     {
-        return vscf_group_session_encrypt_php($this->ctx, $plainText, $privateKey->getCtx());
+        $ctx = vscf_group_session_encrypt_php($this->ctx, $plainText, $privateKey->getCtx());
+        return new GroupSessionMessage($ctx);
     }
 
     /**
@@ -164,7 +165,8 @@ class GroupSession
     */
     public function createGroupTicket(): GroupSessionTicket
     {
-        return vscf_group_session_create_group_ticket_php($this->ctx);
+        $ctx = vscf_group_session_create_group_ticket_php($this->ctx);
+        return new GroupSessionTicket($ctx);
     }
 
     /**
