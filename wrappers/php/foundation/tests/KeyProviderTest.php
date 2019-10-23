@@ -164,8 +164,6 @@ class KeyProviderTest extends \PHPUnit\Framework\TestCase
 
     public function test_KeyProvider_generatePrivateKeyRsa2048()
     {
-        $this->markTestSkipped("Temp skipped");
-
         $keyProvider = $this->keyProvider;
         $keyProvider->setRsaParams(2048);
         $keyProvider->setupDefaults();
@@ -173,7 +171,6 @@ class KeyProviderTest extends \PHPUnit\Framework\TestCase
         $privateKey = $keyProvider->generatePrivateKey(AlgId::RSA());
 
         $this->assertNotNull($privateKey);
-        // TODO!
         $this->assertEquals(AlgId::RSA(), $privateKey->algId());
         $this->assertEquals(2048, $privateKey->bitlen());
     }
@@ -225,8 +222,6 @@ class KeyProviderTest extends \PHPUnit\Framework\TestCase
 
     public function test_KeyProvider_generatePrivateKeyRsa4096WithKeyMaterialRng()
     {
-        $this->markTestSkipped("Temp skipped");
-
         $rsa = $this->rsa;
         $rsa->setupDefaults();
 
@@ -269,7 +264,7 @@ class KeyProviderTest extends \PHPUnit\Framework\TestCase
         $keyProvider->setupDefaults();
 
         $testData = "Lorem Ipsum is simply dummy text of the printing and typesetting industry.";
-        // TODO!
+
         $this->expectException(\Exception::class);
         $keyProvider->importPublicKey($testData);
     }

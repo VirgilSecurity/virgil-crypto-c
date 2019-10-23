@@ -70,8 +70,6 @@ class RecipientCipherTest extends \PHPUnit\Framework\TestCase
 
     public function test_RecipientCipher_encryptDecryptWithEd25519KeyRecipient()
     {
-        $this->markTestSkipped("Temp skipped");
-
         $keyProvider = $this->keyProvider;
         $keyProvider->setupDefaults();
 
@@ -86,21 +84,19 @@ class RecipientCipherTest extends \PHPUnit\Framework\TestCase
 
         $recipientCipher->startEncryption();
         $encryptedMessage = $recipientCipher->packMessageInfo();
-        $encryptedMessage += $recipientCipher->processEncryption(self::unhexlify(self::RECIPIENT_CIPHER_MESSAGE));
-        $encryptedMessage += $recipientCipher->finishEncryption();
+        $encryptedMessage .= $recipientCipher->processEncryption(self::unhexlify(self::RECIPIENT_CIPHER_MESSAGE));
+        $encryptedMessage .= $recipientCipher->finishEncryption();
 
         $messageInfo = "";
         $recipientCipher->startDecryptionWithKey(self::unhexlify(self::RECIPIENT_CIPHER_ED25519_RECIPIENT_ID), $privateKey, $messageInfo);
         $decryptedMessage = $recipientCipher->processDecryption($encryptedMessage);
-        $decryptedMessage += $recipientCipher->finishDecryption();
+        $decryptedMessage .= $recipientCipher->finishDecryption();
 
         $this->assertEquals(self::unhexlify(self::RECIPIENT_CIPHER_MESSAGE), $decryptedMessage);
     }
 
     public function test_RecipientCipher_decryptWithEd25519PublicKey()
     {
-        $this->markTestSkipped("Temp skipped");
-
         $keyProvider = $this->keyProvider;
         $keyProvider->setupDefaults();
 
@@ -119,7 +115,7 @@ class RecipientCipherTest extends \PHPUnit\Framework\TestCase
         $decryptedMessage = $recipientCipher->processDecryption(self::unhexlify
         (self::RECIPIENT_CIPHER_ENCRYPTED_MESSAGE));
 
-        $decryptedMessage += $recipientCipher->finishDecryption();
+        $decryptedMessage .= $recipientCipher->finishDecryption();
 
         $this->assertEquals(self::unhexlify(self::RECIPIENT_CIPHER_MESSAGE_2), $decryptedMessage);
     }
