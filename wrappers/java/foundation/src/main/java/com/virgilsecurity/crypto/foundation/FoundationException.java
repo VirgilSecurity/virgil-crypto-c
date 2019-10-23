@@ -115,6 +115,10 @@ public class FoundationException extends RuntimeException {
 
     public static final int ERROR_BAD_ROUND5_PRIVATE_KEY = -231;
 
+    public static final int ERROR_BAD_COMPOUND_PUBLIC_KEY = -232;
+
+    public static final int ERROR_BAD_COMPOUND_PRIVATE_KEY = -233;
+
     public static final int ERROR_NO_MESSAGE_INFO = -301;
 
     public static final int ERROR_BAD_MESSAGE_INFO = -302;
@@ -259,6 +263,10 @@ public class FoundationException extends RuntimeException {
             return "Post-quantum NIST Round5 public key is corrupted.";
         case ERROR_BAD_ROUND5_PRIVATE_KEY:
             return "Post-quantum NIST Round5 private key is corrupted.";
+        case ERROR_BAD_COMPOUND_PUBLIC_KEY:
+            return "Compound public key is corrupted.";
+        case ERROR_BAD_COMPOUND_PRIVATE_KEY:
+            return "Compound private key is corrupted.";
         case ERROR_NO_MESSAGE_INFO:
             return "Decryption failed, because message info was not given explicitly, and was not part of an encrypted message.";
         case ERROR_BAD_MESSAGE_INFO:

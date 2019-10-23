@@ -52,79 +52,87 @@ const initFoundationImplTag = (Module, modules) => {
 
         CIPHER_ALG_INFO: 7,
 
-        CTR_DRBG: 8,
+        COMPOUND_KEY_ALG: 8,
 
-        CURVE25519: 9,
+        COMPOUND_KEY_ALG_INFO: 9,
 
-        ECC: 10,
+        COMPOUND_PRIVATE_KEY: 10,
 
-        ECC_ALG_INFO: 11,
+        COMPOUND_PUBLIC_KEY: 11,
 
-        ECC_PRIVATE_KEY: 12,
+        CTR_DRBG: 12,
 
-        ECC_PUBLIC_KEY: 13,
+        CURVE25519: 13,
 
-        ED25519: 14,
+        ECC: 14,
 
-        ENTROPY_ACCUMULATOR: 15,
+        ECC_ALG_INFO: 15,
 
-        FAKE_RANDOM: 16,
+        ECC_PRIVATE_KEY: 16,
 
-        FALCON: 17,
+        ECC_PUBLIC_KEY: 17,
 
-        HASH_BASED_ALG_INFO: 18,
+        ED25519: 18,
 
-        HKDF: 19,
+        ENTROPY_ACCUMULATOR: 19,
 
-        HMAC: 20,
+        FAKE_RANDOM: 20,
 
-        KDF1: 21,
+        FALCON: 21,
 
-        KDF2: 22,
+        HASH_BASED_ALG_INFO: 22,
 
-        KEY_ASN1_DESERIALIZER: 23,
+        HKDF: 23,
 
-        KEY_ASN1_SERIALIZER: 24,
+        HMAC: 24,
 
-        KEY_MATERIAL_RNG: 25,
+        KDF1: 25,
 
-        MESSAGE_INFO_DER_SERIALIZER: 26,
+        KDF2: 26,
 
-        PBE_ALG_INFO: 27,
+        KEY_ASN1_DESERIALIZER: 27,
 
-        PKCS5_PBES2: 28,
+        KEY_ASN1_SERIALIZER: 28,
 
-        PKCS5_PBKDF2: 29,
+        KEY_MATERIAL_RNG: 29,
 
-        PKCS8_SERIALIZER: 30,
+        MESSAGE_INFO_DER_SERIALIZER: 30,
 
-        RAW_PRIVATE_KEY: 31,
+        PBE_ALG_INFO: 31,
 
-        RAW_PUBLIC_KEY: 32,
+        PKCS5_PBES2: 32,
 
-        ROUND5: 33,
+        PKCS5_PBKDF2: 33,
 
-        RSA: 34,
+        PKCS8_SERIALIZER: 34,
 
-        RSA_PRIVATE_KEY: 35,
+        RAW_PRIVATE_KEY: 35,
 
-        RSA_PUBLIC_KEY: 36,
+        RAW_PUBLIC_KEY: 36,
 
-        SALTED_KDF_ALG_INFO: 37,
+        ROUND5: 37,
 
-        SEC1_SERIALIZER: 38,
+        RSA: 38,
 
-        SEED_ENTROPY_SOURCE: 39,
+        RSA_PRIVATE_KEY: 39,
 
-        SHA224: 40,
+        RSA_PUBLIC_KEY: 40,
 
-        SHA256: 41,
+        SALTED_KDF_ALG_INFO: 41,
 
-        SHA384: 42,
+        SEC1_SERIALIZER: 42,
 
-        SHA512: 43,
+        SEED_ENTROPY_SOURCE: 43,
 
-        SIMPLE_ALG_INFO: 44
+        SHA224: 44,
+
+        SHA256: 45,
+
+        SHA384: 46,
+
+        SHA512: 47,
+
+        SIMPLE_ALG_INFO: 48
     });
 
     return FoundationImplTag;

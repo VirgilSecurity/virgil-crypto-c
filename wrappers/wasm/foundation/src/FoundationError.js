@@ -199,6 +199,14 @@ const initFoundationError = (Module, modules) => {
                 throw new FoundationError("Post-quantum NIST Round5 private key is corrupted.");
             }
 
+            if (statusCode == -232) {
+                throw new FoundationError("Compound public key is corrupted.");
+            }
+
+            if (statusCode == -233) {
+                throw new FoundationError("Compound private key is corrupted.");
+            }
+
             if (statusCode == -301) {
                 throw new FoundationError("Decryption failed, because message info was not given explicitly, and was not part of an encrypted message.");
             }

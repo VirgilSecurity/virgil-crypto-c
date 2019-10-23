@@ -37,49 +37,56 @@
 package com.virgilsecurity.crypto.foundation;
 
 /*
-* Define implemented algorithm identificator.
+* Handle information about compound key algorithm.
 */
-public enum AlgId {
+public class CompoundKeyAlgInfo implements AutoCloseable, AlgInfo {
 
-    NONE(0),
-    SHA224(1),
-    SHA256(2),
-    SHA384(3),
-    SHA512(4),
-    KDF1(5),
-    KDF2(6),
-    RSA(7),
-    ECC(8),
-    ED25519(9),
-    CURVE25519(10),
-    SECP256R1(11),
-    AES256_GCM(12),
-    AES256_CBC(13),
-    HMAC(14),
-    HKDF(15),
-    PKCS5_PBKDF2(16),
-    PKCS5_PBES2(17),
-    FALCON(18),
-    ROUND5(19),
-    COMPOUND_KEY(20);
+    public long cCtx;
 
-    private final int code;
-
-    private AlgId(int code) {
-        this.code = code;
+    /* Create underlying C context. */
+    public CompoundKeyAlgInfo() {
+        super();
+        this.cCtx = FoundationJNI.INSTANCE.compoundKeyAlgInfo_new();
     }
 
-    public int getCode() {
-        return code;
+    /* Wrap underlying C context. */
+    CompoundKeyAlgInfo(FoundationContextHolder contextHolder) {
+        this.cCtx = contextHolder.cCtx;
     }
 
-    public static AlgId fromCode(int code) {
-        for (AlgId a : AlgId.values()) {
-            if (a.code == code) {
-                return a;
-            }
-        }
-        return null;
+    /*
+    * Return information about encrypt/decrypt algorithm.
+    */
+    public AlgInfo encAlgInfo() {
+        return FoundationJNI.INSTANCE.compoundKeyAlgInfo_encAlgInfo(this.cCtx);
+    }
+
+    /*
+    * Return information about sign/verify algorithm.
+    */
+    public AlgInfo signAlgInfo() {
+        return FoundationJNI.INSTANCE.compoundKeyAlgInfo_signAlgInfo(this.cCtx);
+    }
+
+    /*
+    * Acquire C context.
+    * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
+    */
+    public static CompoundKeyAlgInfo getInstance(long cCtx) {
+        FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
+        return new CompoundKeyAlgInfo(ctxHolder);
+    }
+
+    /* Close resource. */
+    public void close() {
+        FoundationJNI.INSTANCE.compoundKeyAlgInfo_close(this.cCtx);
+    }
+
+    /*
+    * Provide algorithm identificator.
+    */
+    public AlgId algId() {
+        return FoundationJNI.INSTANCE.compoundKeyAlgInfo_algId(this.cCtx);
     }
 }
 

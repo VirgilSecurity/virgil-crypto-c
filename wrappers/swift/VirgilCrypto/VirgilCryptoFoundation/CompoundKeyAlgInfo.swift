@@ -36,53 +36,55 @@
 import Foundation
 import VSCFoundation
 
-/// Define implemented algorithm identificator.
-@objc(VSCFAlgId) public enum AlgId: Int {
+/// Handle information about compound key algorithm.
+@objc(VSCFCompoundKeyAlgInfo) public class CompoundKeyAlgInfo: NSObject, AlgInfo {
 
-    case none
+    /// Handle underlying C context.
+    @objc public let c_ctx: OpaquePointer
 
-    case sha224
+    /// Create underlying C context.
+    public override init() {
+        self.c_ctx = vscf_compound_key_alg_info_new()
+        super.init()
+    }
 
-    case sha256
+    /// Acquire C context.
+    /// Note. This method is used in generated code only, and SHOULD NOT be used in another way.
+    public init(take c_ctx: OpaquePointer) {
+        self.c_ctx = c_ctx
+        super.init()
+    }
 
-    case sha384
+    /// Acquire retained C context.
+    /// Note. This method is used in generated code only, and SHOULD NOT be used in another way.
+    public init(use c_ctx: OpaquePointer) {
+        self.c_ctx = vscf_compound_key_alg_info_shallow_copy(c_ctx)
+        super.init()
+    }
 
-    case sha512
+    /// Release underlying C context.
+    deinit {
+        vscf_compound_key_alg_info_delete(self.c_ctx)
+    }
 
-    case kdf1
+    /// Return information about encrypt/decrypt algorithm.
+    @objc public func encAlgInfo() -> AlgInfo {
+        let proxyResult = vscf_compound_key_alg_info_enc_alg_info(self.c_ctx)
 
-    case kdf2
+        return FoundationImplementation.wrapAlgInfo(take: proxyResult!)
+    }
 
-    case rsa
+    /// Return information about sign/verify algorithm.
+    @objc public func signAlgInfo() -> AlgInfo {
+        let proxyResult = vscf_compound_key_alg_info_sign_alg_info(self.c_ctx)
 
-    case ecc
+        return FoundationImplementation.wrapAlgInfo(take: proxyResult!)
+    }
 
-    case ed25519
+    /// Provide algorithm identificator.
+    @objc public func algId() -> AlgId {
+        let proxyResult = vscf_compound_key_alg_info_alg_id(self.c_ctx)
 
-    case curve25519
-
-    case secp256r1
-
-    case aes256Gcm
-
-    case aes256Cbc
-
-    case hmac
-
-    case hkdf
-
-    case pkcs5Pbkdf2
-
-    case pkcs5Pbes2
-
-    case falcon
-
-    case round5
-
-    case compoundKey
-
-    /// Create enumeration value from the correspond C enumeration value.
-    internal init(fromC algId: vscf_alg_id_t) {
-        self.init(rawValue: Int(algId.rawValue))!
+        return AlgId.init(fromC: proxyResult)
     }
 }

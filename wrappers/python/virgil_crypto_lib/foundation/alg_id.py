@@ -59,3 +59,4 @@ class AlgId(object):
     PKCS5_PBES2 = 17
     FALCON = 18
     ROUND5 = 19
+    COMPOUND_KEY = 20

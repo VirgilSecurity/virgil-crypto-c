@@ -73,11 +73,6 @@ import VSCFoundation
         vscf_key_provider_use_random(self.c_ctx, random.c_ctx)
     }
 
-    @objc public func setEcies(ecies: Ecies) {
-        vscf_key_provider_release_ecies(self.c_ctx)
-        vscf_key_provider_use_ecies(self.c_ctx, ecies.c_ctx)
-    }
-
     /// Setup predefined values to the uninitialized class dependencies.
     @objc public func setupDefaults() throws {
         let proxyResult = vscf_key_provider_setup_defaults(self.c_ctx)

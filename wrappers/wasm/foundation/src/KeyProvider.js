@@ -96,13 +96,6 @@ const initKeyProvider = (Module, modules) => {
             Module._vscf_key_provider_use_random(this.ctxPtr, random.ctxPtr)
         }
 
-        set ecies(ecies) {
-            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-            precondition.ensureClass('ecies', ecies, modules.Ecies);
-            Module._vscf_key_provider_release_ecies(this.ctxPtr)
-            Module._vscf_key_provider_use_ecies(this.ctxPtr, ecies.ctxPtr)
-        }
-
         /**
          * Setup predefined values to the uninitialized class dependencies.
          */

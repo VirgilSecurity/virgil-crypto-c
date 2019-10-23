@@ -79,7 +79,9 @@ const initAlgId = (Module, modules) => {
 
         FALCON: 18,
 
-        ROUND5: 19
+        ROUND5: 19,
+
+        COMPOUND_KEY: 20
     });
 
     return AlgId;

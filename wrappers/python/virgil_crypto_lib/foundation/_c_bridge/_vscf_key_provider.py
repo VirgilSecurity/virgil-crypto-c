@@ -36,7 +36,6 @@
 from virgil_crypto_lib._libs import *
 from ctypes import *
 from ._vscf_impl import vscf_impl_t
-from ._vscf_ecies import vscf_ecies_t
 from ._vscf_error import vscf_error_t
 from virgil_crypto_lib.common._c_bridge import vsc_data_t
 from virgil_crypto_lib.common._c_bridge import vsc_buffer_t
@@ -72,12 +71,6 @@ class VscfKeyProvider(object):
         vscf_key_provider_use_random.argtypes = [POINTER(vscf_key_provider_t), POINTER(vscf_impl_t)]
         vscf_key_provider_use_random.restype = None
         return vscf_key_provider_use_random(ctx, random)
-
-    def vscf_key_provider_use_ecies(self, ctx, ecies):
-        vscf_key_provider_use_ecies = self._lib.vscf_key_provider_use_ecies
-        vscf_key_provider_use_ecies.argtypes = [POINTER(vscf_key_provider_t), POINTER(vscf_ecies_t)]
-        vscf_key_provider_use_ecies.restype = None
-        return vscf_key_provider_use_ecies(ctx, ecies)
 
     def vscf_key_provider_setup_defaults(self, ctx):
         """Setup predefined values to the uninitialized class dependencies."""

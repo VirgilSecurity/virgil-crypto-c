@@ -73,10 +73,6 @@ public class KeyProvider implements AutoCloseable {
         FoundationJNI.INSTANCE.keyProvider_setRandom(this.cCtx, random);
     }
 
-    public void setEcies(Ecies ecies) {
-        FoundationJNI.INSTANCE.keyProvider_setEcies(this.cCtx, ecies);
-    }
-
     /*
     * Setup predefined values to the uninitialized class dependencies.
     */

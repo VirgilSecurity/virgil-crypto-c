@@ -119,6 +119,10 @@ class VscfStatus(object):
     ERROR_BAD_ROUND5_PUBLIC_KEY = -230
     # Post-quantum NIST Round5 private key is corrupted.
     ERROR_BAD_ROUND5_PRIVATE_KEY = -231
+    # Compound public key is corrupted.
+    ERROR_BAD_COMPOUND_PUBLIC_KEY = -232
+    # Compound private key is corrupted.
+    ERROR_BAD_COMPOUND_PRIVATE_KEY = -233
     # Decryption failed, because message info was not given explicitly,
     # and was not part of an encrypted message.
     ERROR_NO_MESSAGE_INFO = -301
@@ -217,6 +221,8 @@ class VscfStatus(object):
         -229: "Generic Round5 library error.",
         -230: "Post-quantum NIST Round5 public key is corrupted.",
         -231: "Post-quantum NIST Round5 private key is corrupted.",
+        -232: "Compound public key is corrupted.",
+        -233: "Compound private key is corrupted.",
         -301: "Decryption failed, because message info was not given explicitly, and was not part of an encrypted message.",
         -302: "Message Info is corrupted.",
         -303: "Recipient defined with id is not found within message info during data decryption.",

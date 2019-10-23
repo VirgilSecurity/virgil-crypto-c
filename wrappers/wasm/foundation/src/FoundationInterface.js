@@ -152,6 +152,18 @@ const initFoundationInterface = (Module, modules) => {
                 case modules.FoundationImplTag.ROUND5:
                     return modules.Round5.newAndTakeCContext(ctxPtr);
 
+                case modules.FoundationImplTag.COMPOUND_KEY_ALG_INFO:
+                    return modules.CompoundKeyAlgInfo.newAndTakeCContext(ctxPtr);
+
+                case modules.FoundationImplTag.COMPOUND_PUBLIC_KEY:
+                    return modules.CompoundPublicKey.newAndTakeCContext(ctxPtr);
+
+                case modules.FoundationImplTag.COMPOUND_PRIVATE_KEY:
+                    return modules.CompoundPrivateKey.newAndTakeCContext(ctxPtr);
+
+                case modules.FoundationImplTag.COMPOUND_KEY_ALG:
+                    return modules.CompoundKeyAlg.newAndTakeCContext(ctxPtr);
+
                 case modules.FoundationImplTag.SIMPLE_ALG_INFO:
                     return modules.SimpleAlgInfo.newAndTakeCContext(ctxPtr);
 

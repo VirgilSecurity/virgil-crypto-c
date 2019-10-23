@@ -149,6 +149,12 @@ import VSCFoundation
     /// Post-quantum NIST Round5 private key is corrupted.
     case errorBadRound5PrivateKey = -231
 
+    /// Compound public key is corrupted.
+    case errorBadCompoundPublicKey = -232
+
+    /// Compound private key is corrupted.
+    case errorBadCompoundPrivateKey = -233
+
     /// Decryption failed, because message info was not given explicitly,
     /// and was not part of an encrypted message.
     case errorNoMessageInfo = -301

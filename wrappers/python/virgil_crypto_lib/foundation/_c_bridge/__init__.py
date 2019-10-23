@@ -161,6 +161,14 @@ from ._vscf_falcon import vscf_falcon_t
 from ._vscf_falcon import VscfFalcon
 from ._vscf_round5 import vscf_round5_t
 from ._vscf_round5 import VscfRound5
+from ._vscf_compound_key_alg_info import vscf_compound_key_alg_info_t
+from ._vscf_compound_key_alg_info import VscfCompoundKeyAlgInfo
+from ._vscf_compound_public_key import vscf_compound_public_key_t
+from ._vscf_compound_public_key import VscfCompoundPublicKey
+from ._vscf_compound_private_key import vscf_compound_private_key_t
+from ._vscf_compound_private_key import VscfCompoundPrivateKey
+from ._vscf_compound_key_alg import vscf_compound_key_alg_t
+from ._vscf_compound_key_alg import VscfCompoundKeyAlg
 from ._vscf_simple_alg_info import vscf_simple_alg_info_t
 from ._vscf_simple_alg_info import VscfSimpleAlgInfo
 from ._vscf_hash_based_alg_info import vscf_hash_based_alg_info_t

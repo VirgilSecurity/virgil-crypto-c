@@ -58,9 +58,6 @@ class KeyProvider(object):
     def set_random(self, random):
         self._lib_vscf_key_provider.vscf_key_provider_use_random(self.ctx, random.c_impl)
 
-    def set_ecies(self, ecies):
-        self._lib_vscf_key_provider.vscf_key_provider_use_ecies(self.ctx, ecies.ctx)
-
     def setup_defaults(self):
         """Setup predefined values to the uninitialized class dependencies."""
         status = self._lib_vscf_key_provider.vscf_key_provider_setup_defaults(self.ctx)
