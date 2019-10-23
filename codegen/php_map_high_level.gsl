@@ -450,6 +450,7 @@ function php_map_high_level_return (in_method, in_php_module, out_php_method)
     my._throw_exception = 0
     my._return_data_list = ""
     my._return_interface = 0
+    my._return_enum = 0
 
     my._argument_buffer_count = 0
 
@@ -528,6 +529,7 @@ function php_map_high_level_return (in_method, in_php_module, out_php_method)
             else
                 my._return_type = "$(return0.enum:Pascal)"
                 my._instance = 1
+                my._return_enum = 1
             endif
         endif
     endfor
@@ -538,6 +540,7 @@ function php_map_high_level_return (in_method, in_php_module, out_php_method)
     my.out_php_method.namespace = my._namespace
     my.out_php_method.throw_exception = my._throw_exception
     my.out_php_method.return_interface = my._return_interface
+    my.out_php_method.return_enum = my._return_enum
 
     if defined (my.in_php_module.implementation_class0)
         my.out_php_method.implementation_class0 = my.in_php_module.implementation_class0

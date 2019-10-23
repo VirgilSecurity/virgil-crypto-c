@@ -113,7 +113,8 @@ class Rsa implements Alg, KeyAlg, KeyCipher, KeySigner
     */
     public function algId(): AlgId
     {
-        return vscf_rsa_alg_id_php($this->ctx);
+        $enum = vscf_rsa_alg_id_php($this->ctx);
+        return new AlgId($enum);
     }
 
     /**

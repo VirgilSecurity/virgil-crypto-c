@@ -123,7 +123,8 @@ class SaltedKdfAlgInfo implements AlgInfo
     */
     public function algId(): AlgId
     {
-        return vscf_salted_kdf_alg_info_alg_id_php($this->ctx);
+        $enum = vscf_salted_kdf_alg_info_alg_id_php($this->ctx);
+        return new AlgId($enum);
     }
 
     /**

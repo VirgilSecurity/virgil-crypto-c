@@ -88,7 +88,8 @@ class EccAlgInfo implements AlgInfo
     */
     public function keyId(): OidId
     {
-        return vscf_ecc_alg_info_key_id_php($this->ctx);
+        $enum = vscf_ecc_alg_info_key_id_php($this->ctx);
+        return new OidId($enum);
     }
 
     /**
@@ -98,7 +99,8 @@ class EccAlgInfo implements AlgInfo
     */
     public function domainId(): OidId
     {
-        return vscf_ecc_alg_info_domain_id_php($this->ctx);
+        $enum = vscf_ecc_alg_info_domain_id_php($this->ctx);
+        return new OidId($enum);
     }
 
     /**
@@ -108,7 +110,8 @@ class EccAlgInfo implements AlgInfo
     */
     public function algId(): AlgId
     {
-        return vscf_ecc_alg_info_alg_id_php($this->ctx);
+        $enum = vscf_ecc_alg_info_alg_id_php($this->ctx);
+        return new AlgId($enum);
     }
 
     /**

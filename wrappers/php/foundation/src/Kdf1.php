@@ -83,7 +83,8 @@ class Kdf1 implements Alg, Kdf
     */
     public function algId(): AlgId
     {
-        return vscf_kdf1_alg_id_php($this->ctx);
+        $enum = vscf_kdf1_alg_id_php($this->ctx);
+        return new AlgId($enum);
     }
 
     /**

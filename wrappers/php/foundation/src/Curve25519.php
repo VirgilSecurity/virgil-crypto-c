@@ -121,7 +121,8 @@ class Curve25519 implements Alg, KeyAlg, KeyCipher, ComputeSharedKey
     */
     public function algId(): AlgId
     {
-        return vscf_curve25519_alg_id_php($this->ctx);
+        $enum = vscf_curve25519_alg_id_php($this->ctx);
+        return new AlgId($enum);
     }
 
     /**

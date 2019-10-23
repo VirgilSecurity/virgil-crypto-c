@@ -103,7 +103,8 @@ class Pkcs5Pbes2 implements Alg, Encrypt, Decrypt
     */
     public function algId(): AlgId
     {
-        return vscf_pkcs5_pbes2_alg_id_php($this->ctx);
+        $enum = vscf_pkcs5_pbes2_alg_id_php($this->ctx);
+        return new AlgId($enum);
     }
 
     /**

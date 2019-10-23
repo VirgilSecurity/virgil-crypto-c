@@ -121,7 +121,8 @@ class Ed25519 implements Alg, KeyAlg, KeyCipher, KeySigner, ComputeSharedKey
     */
     public function algId(): AlgId
     {
-        return vscf_ed25519_alg_id_php($this->ctx);
+        $enum = vscf_ed25519_alg_id_php($this->ctx);
+        return new AlgId($enum);
     }
 
     /**

@@ -83,7 +83,8 @@ class Hmac implements Alg, Mac
     */
     public function algId(): AlgId
     {
-        return vscf_hmac_alg_id_php($this->ctx);
+        $enum = vscf_hmac_alg_id_php($this->ctx);
+        return new AlgId($enum);
     }
 
     /**

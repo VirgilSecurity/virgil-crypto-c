@@ -92,8 +92,6 @@ class KeyProviderTest extends \PHPUnit\Framework\TestCase
 
     public function test_KeyProvider_generatePrivateKeyEd25519()
     {
-        $this->markTestSkipped("Temp skipped");
-
         $keyProvider = $this->keyProvider;
         $keyProvider->setupDefaults();
 
@@ -101,16 +99,12 @@ class KeyProviderTest extends \PHPUnit\Framework\TestCase
 
         $this->assertNotNull($privateKey);
 
-        // TODO!
         $this->assertEquals(AlgId::ED25519(), $privateKey->algId());
-
         $this->assertEquals(32, $privateKey->len());
     }
 
     public function test_KeyProvider_generatePrivateKeyEd25519AndThenDoEncryptDecrypt()
     {
-        $this->markTestSkipped("Temp skipped");
-
         $ed25519 = $this->ed25519;
         $ed25519->setupDefaults();
 
@@ -126,15 +120,11 @@ class KeyProviderTest extends \PHPUnit\Framework\TestCase
 
         $decryptedData = $ed25519->decrypt($privateKey, $encryptedData);
 
-        // TODO!
-        // py: decrypted_data.decode()
         $this->assertEquals($plainMessage, $decryptedData);
     }
 
     public function test_KeyProvider_generatePrivateKeyEd25519AndThenDoSignHashAndVerifyHash()
     {
-//        $this->markTestSkipped("Temp skipped");
-
         $ed25519 = $this->ed25519;
         $ed25519->setupDefaults();
 
@@ -192,8 +182,6 @@ class KeyProviderTest extends \PHPUnit\Framework\TestCase
 
     public function test_KeyProvider_generatePrivateKeyRsa2048AndThenDoEncryptDecrypt()
     {
-        $this->markTestSkipped("Temp skipped");
-
         $rsa = $this->rsa;
         $rsa->setupDefaults();
 
@@ -212,21 +200,17 @@ class KeyProviderTest extends \PHPUnit\Framework\TestCase
         $encryptedData = $rsa->encrypt($publicKey, $plainMessage);
         $decryptedData = $rsa->decrypt($privateKey, $encryptedData);
 
-        // TODO!
-        // py: decrypted_data.decode()
         $this->assertEquals($plainMessage, $decryptedData);
     }
 
     public function test_KeyProvider_generatePrivateKeyRsa2048AndThenDoSignHashAndVerifyHash()
     {
-        $this->markTestSkipped("Temp skipped");
-
         $rsa = $this->rsa;
         $rsa->setupDefaults();
 
         $keyProvider = $this->keyProvider;
         $keyProvider->setRsaParams(2048);
-        $keyProvider->setupDefauts();
+        $keyProvider->setupDefaults();
 
         $privateKey = $keyProvider->generatePrivateKey(AlgId::RSA());
         $this->assertNotNull($privateKey);
@@ -252,9 +236,9 @@ class KeyProviderTest extends \PHPUnit\Framework\TestCase
         $keyMaterialRng->resetKeyMaterial(self::unhexlify(self::DETERMINISTIC_KEY_KEY_MATERIAL));
 
         $keyProvider = $this->keyProvider;
-        $keyProvider->setRandom($keyMaterialRng);
+        $keyProvider->useRandom($keyMaterialRng);
         $keyProvider->setRsaParams(4096);
-        $keyProvider->setupDefauls();
+        $keyProvider->setupDefaults();
 
         $privateKey = $keyProvider->generatePrivateKey(AlgId::RSA());
         $this->assertNotNull($privateKey);
@@ -267,12 +251,10 @@ class KeyProviderTest extends \PHPUnit\Framework\TestCase
 
     public function test_KeyProvider_importPublicKeyEd25519AndThenExport()
     {
-        $this->markTestSkipped("Temp skipped");
-
         $keyProvider = $this->keyProvider;
         $keyProvider->setupDefaults();
 
-        $publicKey = $keyProvider->importPubliKey(self::unhexlify(self::ED25519_PUBLIC_KEY_PKCS8_DER));
+        $publicKey = $keyProvider->importPublicKey(self::unhexlify(self::ED25519_PUBLIC_KEY_PKCS8_DER));
         $this->assertNotNull($publicKey);
 
         $exportedPublicKey = $keyProvider->exportPublicKey($publicKey);
@@ -296,8 +278,6 @@ class KeyProviderTest extends \PHPUnit\Framework\TestCase
 
     public function test_KeyProvider_importPrivateKeyEd25519AndThenExport()
     {
-        $this->markTestSkipped("Temp skipped");
-
         $keyProvider = $this->keyProvider;
         $keyProvider->setupDefaults();
 
@@ -312,15 +292,13 @@ class KeyProviderTest extends \PHPUnit\Framework\TestCase
 
     public function test_KeyProvider_importPublicKeyRsa2048AndThenExport()
     {
-        $this->markTestSkipped("Temp skipped");
-
         $keyProvider = $this->keyProvider;
         $keyProvider->setupDefaults();
 
         $publicKey = $keyProvider->importPublicKey(self::unhexlify(self::RSA_PCKS8_2048_PUBLIC_KEY_DER));
         $this->assertNotNull($publicKey);
 
-        $exportedPublicKey = $keyProvider->export_publicKey($publicKey);
+        $exportedPublicKey = $keyProvider->exportPublicKey($publicKey);
         $this->assertNotNull($exportedPublicKey);
 
         $this->assertEquals(self::unhexlify(self::RSA_PCKS8_2048_PUBLIC_KEY_DER), $exportedPublicKey);
@@ -328,8 +306,6 @@ class KeyProviderTest extends \PHPUnit\Framework\TestCase
 
     public function test_KeyProvider_importPrivateKeyRsa2048AndThenExport()
     {
-        $this->markTestSkipped("Temp skipped");
-
         $keyProvider = $this->keyProvider;
         $keyProvider->setupDefaults();
 

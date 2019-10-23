@@ -127,7 +127,8 @@ class Ecc implements Alg, KeyAlg, KeyCipher, KeySigner, ComputeSharedKey
     */
     public function algId(): AlgId
     {
-        return vscf_ecc_alg_id_php($this->ctx);
+        $enum = vscf_ecc_alg_id_php($this->ctx);
+        return new AlgId($enum);
     }
 
     /**

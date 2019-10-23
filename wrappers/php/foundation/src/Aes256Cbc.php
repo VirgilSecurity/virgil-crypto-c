@@ -81,7 +81,8 @@ class Aes256Cbc implements Alg, Encrypt, Decrypt, CipherInfo, Cipher
     */
     public function algId(): AlgId
     {
-        return vscf_aes256_cbc_alg_id_php($this->ctx);
+        $enum = vscf_aes256_cbc_alg_id_php($this->ctx);
+        return new AlgId($enum);
     }
 
     /**

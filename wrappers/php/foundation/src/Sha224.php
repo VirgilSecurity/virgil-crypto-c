@@ -77,7 +77,8 @@ class Sha224 implements Alg, Hash
     */
     public function algId(): AlgId
     {
-        return vscf_sha224_alg_id_php($this->ctx);
+        $enum = vscf_sha224_alg_id_php($this->ctx);
+        return new AlgId($enum);
     }
 
     /**

@@ -74,7 +74,8 @@ class GroupSessionMessage
     */
     public function getType(): GroupMsgType
     {
-        return vscf_group_session_message_get_type_php($this->ctx);
+        $enum = vscf_group_session_message_get_type_php($this->ctx);
+        return new GroupMsgType($enum);
     }
 
     /**

@@ -99,7 +99,8 @@ class HashBasedAlgInfo implements AlgInfo
     */
     public function algId(): AlgId
     {
-        return vscf_hash_based_alg_info_alg_id_php($this->ctx);
+        $enum = vscf_hash_based_alg_info_alg_id_php($this->ctx);
+        return new AlgId($enum);
     }
 
     /**
