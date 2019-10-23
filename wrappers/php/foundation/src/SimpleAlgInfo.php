@@ -51,11 +51,12 @@ class SimpleAlgInfo implements AlgInfo
     /**
     * Create algorithm info with identificator.
     *
+    * @param AlgId $algId
     * @return SimpleAlgInfo
     */
-    public static function withAlgId(): SimpleAlgInfo
+    public static function withAlgId(AlgId $algId): SimpleAlgInfo
     {
-        $ctx = vscf_simple_alg_info_with_alg_id_php();
+        $ctx = vscf_simple_alg_info_with_alg_id_php($algId);
         return new SimpleAlgInfo($ctx);
     }
 

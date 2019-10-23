@@ -52,13 +52,14 @@ class PbeAlgInfo implements AlgInfo
     * Create algorithm info with identificator, KDF algorithm info and
     * cipher alg info.
     *
+    * @param AlgId $algId
     * @param AlgInfo $kdfAlgInfo
     * @param AlgInfo $cipherAlgInfo
     * @return PbeAlgInfo
     */
-    public static function withMembers(AlgInfo $kdfAlgInfo, AlgInfo $cipherAlgInfo): PbeAlgInfo
+    public static function withMembers(AlgId $algId, AlgInfo $kdfAlgInfo, AlgInfo $cipherAlgInfo): PbeAlgInfo
     {
-        $ctx = vscf_pbe_alg_info_with_members_php($kdfAlgInfo, $cipherAlgInfo);
+        $ctx = vscf_pbe_alg_info_with_members_php($algId, $kdfAlgInfo, $cipherAlgInfo);
         return new PbeAlgInfo($ctx);
     }
 

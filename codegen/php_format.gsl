@@ -108,8 +108,13 @@ function php_format_high_level_method_body (in_php_method)
         for my.in_php_method.php_argument as php_argument0
 
             my._arg = php_argument0.name
-            if php_argument0.instance = 1
-                my._arg = "$(php_argument0.name:)->getCtx()"
+
+            if defined(php_argument0.is_enum) & php_argument0.is_enum = 1
+                my._arg = "$(php_argument0.name:)->getValue()"
+            else
+                if php_argument0.instance = 1
+                    my._arg = "$(php_argument0.name:)->getCtx()"
+                endif
             endif
 
             if first() & my._dd <> ""
@@ -160,8 +165,12 @@ function php_format_high_level_method_body (in_php_method)
 
             my._arg = php_argument0.name
 
-            if php_argument0.instance = 1
-                my._arg = "$(php_argument0.name:)->getCtx()"
+            if defined(php_argument0.is_enum) & php_argument0.is_enum = 1
+                my._arg = "$(php_argument0.name:)->getValue()"
+            else
+                if php_argument0.instance = 1
+                    my._arg = "$(php_argument0.name:)->getCtx()"
+                endif
             endif
 
             my._d = ""

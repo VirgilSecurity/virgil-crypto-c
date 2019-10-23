@@ -51,11 +51,14 @@ class EccAlgInfo implements AlgInfo
     /**
     * Create algorithm info with EC generic key identificator, EC domain group identificator.
     *
+    * @param AlgId $algId
+    * @param OidId $keyId
+    * @param OidId $domainId
     * @return EccAlgInfo
     */
-    public static function withMembers(): EccAlgInfo
+    public static function withMembers(AlgId $algId, OidId $keyId, OidId $domainId): EccAlgInfo
     {
-        $ctx = vscf_ecc_alg_info_with_members_php();
+        $ctx = vscf_ecc_alg_info_with_members_php($algId, $keyId, $domainId);
         return new EccAlgInfo($ctx);
     }
 

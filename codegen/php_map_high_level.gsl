@@ -383,23 +383,22 @@ function php_map_high_level_method (in_method, in_php_module, in_type, out_php_m
     my._method_arguments = ""
     my._function_arguments = ""
 
-    for my.in_method.argument as argument0 where (defined (argument0.class) & ! string_in(argument0.class, "error, buffer")) | defined (argument0.type) | defined (argument0.impl) | defined (argument0.interface)
+    for my.in_method.argument as argument0 where (defined(argument0.class) & !string_in(argument0.class, "error, buffer")) | !defined(argument0.class)
+        my._d = ""
+        if ! last()
+            my._d = ", "
+        endif
 
-            my._d = ""
-            if ! last()
-                my._d = ", "
+        new php_argument to php_method
+            php_map_high_level_argument (argument0, my.in_php_module, php_argument)
+            my._docblock_data += format_left("@param $(0.type:) $(0.name:)\n", 0)
+            my._type = ""
+            if 0.type <> ""
+                my._type = "$(0.type:) "
             endif
-
-            new php_argument to php_method
-                php_map_high_level_argument (argument0, my.in_php_module, php_argument)
-                my._docblock_data += format_left("@param $(0.type:) $(0.name:)\n", 0)
-                my._type = ""
-                if 0.type <> ""
-                    my._type = "$(0.type:) "
-                endif
-                my._method_arguments += "$(my._type:)$(0.name:)" + my._d
-                my._function_arguments += "$(0.name:)" + my._d
-            endnew
+            my._method_arguments += "$(my._type:)$(0.name:)" + my._d
+            my._function_arguments += "$(0.name:)" + my._d
+        endnew
     endfor
 
     my._docblock_data += format_left("@return $(0.return_type:)\n", 0)
@@ -557,6 +556,7 @@ function php_map_high_level_argument (in_argument, in_php_module, out_php_argume
     my._type = ""
     my._instance = 0
     my._namespace = ""
+    my._is_enum = 0
 
     if defined (my.in_argument.class) & ! string_in (my.in_argument.class, "error, buffer")
             if string_in(my.in_argument.class, "data") 
@@ -603,6 +603,7 @@ function php_map_high_level_argument (in_argument, in_php_module, out_php_argume
     if defined (my.in_argument.enum)
         my._type = "$(my.in_argument.enum:Pascal)"
         my._instance = 1
+        my._is_enum = 1
     endif
 
     if defined (my.in_argument.class_with_namespace)
@@ -612,6 +613,7 @@ function php_map_high_level_argument (in_argument, in_php_module, out_php_argume
     my.out_php_argument.type = my._type
     my.out_php_argument.instance = my._instance
     my.out_php_argument.namespace = my._namespace
+    my.out_php_argument.is_enum = my._is_enum
 
 endfunction
 

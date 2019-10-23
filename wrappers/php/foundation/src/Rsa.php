@@ -326,13 +326,14 @@ class Rsa implements Alg, KeyAlg, KeyCipher, KeySigner
     * Sign data digest with a given private key.
     *
     * @param PrivateKey $privateKey
+    * @param AlgId $hashId
     * @param string $digest
     * @return string
     * @throws \Exception
     */
-    public function signHash(PrivateKey $privateKey, string $digest): string
+    public function signHash(PrivateKey $privateKey, AlgId $hashId, string $digest): string
     {
-        return vscf_rsa_sign_hash_php($this->ctx, $privateKey->getCtx(), $digest);
+        return vscf_rsa_sign_hash_php($this->ctx, $privateKey->getCtx(), $hashId->getValue(), $digest);
     }
 
     /**
@@ -350,13 +351,14 @@ class Rsa implements Alg, KeyAlg, KeyCipher, KeySigner
     * Verify data digest with a given public key and signature.
     *
     * @param PublicKey $publicKey
+    * @param AlgId $hashId
     * @param string $digest
     * @param string $signature
     * @return bool
     */
-    public function verifyHash(PublicKey $publicKey, string $digest, string $signature): bool
+    public function verifyHash(PublicKey $publicKey, AlgId $hashId, string $digest, string $signature): bool
     {
-        return vscf_rsa_verify_hash_php($this->ctx, $publicKey->getCtx(), $digest, $signature);
+        return vscf_rsa_verify_hash_php($this->ctx, $publicKey->getCtx(), $hashId->getValue(), $digest, $signature);
     }
 
     /**

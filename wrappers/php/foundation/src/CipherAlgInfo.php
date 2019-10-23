@@ -51,12 +51,13 @@ class CipherAlgInfo implements AlgInfo
     /**
     * Create symmetric cipher algorithm info with identificator and input vector.
     *
+    * @param AlgId $algId
     * @param string $nonce
     * @return CipherAlgInfo
     */
-    public static function withMembers(string $nonce): CipherAlgInfo
+    public static function withMembers(AlgId $algId, string $nonce): CipherAlgInfo
     {
-        $ctx = vscf_cipher_alg_info_with_members_php($nonce);
+        $ctx = vscf_cipher_alg_info_with_members_php($algId, $nonce);
         return new CipherAlgInfo($ctx);
     }
 

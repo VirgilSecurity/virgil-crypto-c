@@ -133,13 +133,13 @@ class KeyProviderTest extends \PHPUnit\Framework\TestCase
 
     public function test_KeyProvider_generatePrivateKeyEd25519AndThenDoSignHashAndVerifyHash()
     {
-        $this->markTestSkipped("Temp skipped");
+//        $this->markTestSkipped("Temp skipped");
 
         $ed25519 = $this->ed25519;
         $ed25519->setupDefaults();
 
         $keyProvider = $this->keyProvider;
-        $keyProvider->setupDefaults;
+        $keyProvider->setupDefaults();
 
         $privateKey = $keyProvider->generatePrivateKey(AlgId::ED25519());
         $publicKey = $privateKey->extractPublicKey();

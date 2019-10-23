@@ -51,12 +51,13 @@ class HashBasedAlgInfo implements AlgInfo
     /**
     * Create algorithm info with identificator and HASH algorithm info.
     *
+    * @param AlgId $algId
     * @param AlgInfo $hashAlgInfo
     * @return HashBasedAlgInfo
     */
-    public static function withMembers(AlgInfo $hashAlgInfo): HashBasedAlgInfo
+    public static function withMembers(AlgId $algId, AlgInfo $hashAlgInfo): HashBasedAlgInfo
     {
-        $ctx = vscf_hash_based_alg_info_with_members_php($hashAlgInfo);
+        $ctx = vscf_hash_based_alg_info_with_members_php($algId, $hashAlgInfo);
         return new HashBasedAlgInfo($ctx);
     }
 

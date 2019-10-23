@@ -111,12 +111,13 @@ class KeyProvider
     /**
     * Generate new private key from the given id.
     *
+    * @param AlgId $algId
     * @return PrivateKey
     * @throws \Exception
     */
-    public function generatePrivateKey(): PrivateKey
+    public function generatePrivateKey(AlgId $algId): PrivateKey
     {
-        $ctx = vscf_key_provider_generate_private_key_php($this->ctx);
+        $ctx = vscf_key_provider_generate_private_key_php($this->ctx, $algId->getValue());
         return FoundationImplementation::wrapPrivateKey($ctx);
     }
 

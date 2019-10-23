@@ -52,14 +52,15 @@ class SaltedKdfAlgInfo implements AlgInfo
     * Create algorithm info with identificator, HASH algorithm info,
     * salt and iteration count.
     *
+    * @param AlgId $algId
     * @param AlgInfo $hashAlgInfo
     * @param string $salt
     * @param int $iterationCount
     * @return SaltedKdfAlgInfo
     */
-    public static function withMembers(AlgInfo $hashAlgInfo, string $salt, int $iterationCount): SaltedKdfAlgInfo
+    public static function withMembers(AlgId $algId, AlgInfo $hashAlgInfo, string $salt, int $iterationCount): SaltedKdfAlgInfo
     {
-        $ctx = vscf_salted_kdf_alg_info_with_members_php($hashAlgInfo, $salt, $iterationCount);
+        $ctx = vscf_salted_kdf_alg_info_with_members_php($algId, $hashAlgInfo, $salt, $iterationCount);
         return new SaltedKdfAlgInfo($ctx);
     }
 
