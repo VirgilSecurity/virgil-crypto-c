@@ -46,6 +46,7 @@ class PheCipherTest extends \PHPUnit\Framework\TestCase
     protected function setUp()
     {
         $this->cipher = new PheCipher();
+        $this->cipher->setupDefaults();
     }
 
     protected function tearDown()
@@ -58,10 +59,8 @@ class PheCipherTest extends \PHPUnit\Framework\TestCase
         $someText = "plain text";
         $accountKey = "oYeAfogdXgjgTcHWKTYUclaFnbeQFFCy";
         $this->assertEquals(strlen($accountKey), 32);
-        $cipher = $this->cipher;
-        $cipher->setupDefaults();
-        $encryptedData = $cipher->encrypt($someText, $accountKey);
-        $decryptedData = $cipher->decrypt($encryptedData, $accountKey);
+        $encryptedData = $this->cipher->encrypt($someText, $accountKey);
+        $decryptedData = $this->cipher->decrypt($encryptedData, $accountKey);
         $this->assertEquals($someText, $decryptedData);
     }
 }

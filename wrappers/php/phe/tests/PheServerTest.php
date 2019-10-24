@@ -48,7 +48,9 @@ class PheServerTest extends \PHPUnit\Framework\TestCase
     protected function setUp()
     {
         $this->server = new PheServer();
+        $this->server->setupDefaults();
         $this->client = new PheClient();
+        $this->client->setupDefaults();
     }
 
     protected function tearDown()
@@ -59,9 +61,7 @@ class PheServerTest extends \PHPUnit\Framework\TestCase
 
     public function test_PheServer_generateKeyPair()
     {
-        $server = $this->server;
-        $server->setupDefaults();
-        list($privateKey, $publicKey) = $server->generateKeyPair();
+        list($privateKey, $publicKey) = $this->server->generateKeyPair();
         $this->assertNotNull($privateKey);
         $this->assertNotNull($publicKey);
         $this->assertTrue(is_string($privateKey));
@@ -70,27 +70,21 @@ class PheServerTest extends \PHPUnit\Framework\TestCase
 
     public function test_PheServer_getEnrollment()
     {
-        $server = $this->server;
-        $server->setupDefaults();
-        list($privateKey, $publicKey) = $server->generateKeyPair();
-        $enroll = $server->getEnrollment($privateKey, $publicKey);
+        list($privateKey, $publicKey) = $this->server->generateKeyPair();
+        $enroll = $this->server->getEnrollment($privateKey, $publicKey);
         $this->assertNotNull($enroll);
         $this->assertTrue(is_string($enroll));
     }
 
     public function test_PheServer_verifyPassword()
     {
-        $server = $this->server;
-        $client = $this->client;
-        $server->setupDefaults();
-        $client->setupDefaults();
-        list($serverPrivateKey, $serverPublicKey) = $server->generateServerKeyPair();
-        list($clientPrivateKey, $clientPublicKey) = $server->generateServerKeyPair();
-        $client->setKeys($clientPrivateKey, $serverPublicKey);
-        $enrollmentResponse = $server->getEnrollment($serverPrivateKey, $serverPublicKey);
-        list($record, $enrollKey) = $client->enrollAccount($enrollmentResponse, "passw0rd");
-        $request = $client->createVerifyPasswordRequest("passw0rd", $record);
-        $response = $server->verifyPassword($serverPrivateKey, $serverPublicKey, $request);
+        list($serverPrivateKey, $serverPublicKey) = $this->server->generateServerKeyPair();
+        list($clientPrivateKey, $clientPublicKey) = $this->server->generateServerKeyPair();
+        $this->client->setKeys($clientPrivateKey, $serverPublicKey);
+        $enrollmentResponse = $this->server->getEnrollment($serverPrivateKey, $serverPublicKey);
+        list($record, $enrollKey) = $this->client->enrollAccount($enrollmentResponse, "passw0rd");
+        $request = $this->client->createVerifyPasswordRequest("passw0rd", $record);
+        $response = $this->server->verifyPassword($serverPrivateKey, $serverPublicKey, $request);
         $this->assertNotNull($response);
         $this->assertTrue(is_string($response));
     }

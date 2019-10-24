@@ -48,7 +48,7 @@ class PHEClientTest extends \PHPUnit\Framework\TestCase
 
     protected function setUp()
     {
-        $this->password = "password";
+        $this->password = "passw0rd";
 
         $this->client = new PheClient();
         $this->client->setupDefaults();
@@ -61,6 +61,48 @@ class PHEClientTest extends \PHPUnit\Framework\TestCase
     {
         unset($this->client);
         unset($this->server);
+    }
+
+    public function test_PheClient_enrollAccount()
+    {
+        list($serverPrivateKey, $serverPublicKey) = $this->server->generateServerKeyPair();
+        list($clientPrivateKey, $clientPublicKey) = $this->server->generateServerKeyPair();
+        $this->client->setKeys($clientPrivateKey, $serverPublicKey);
+        $enrollmentResponse = $this->server->getEnrollment($serverPrivateKey, $serverPublicKey);
+        list($enrollRecord, $enrollKey) = $this->client->enrollAccount($enrollmentResponse, "passw0rd");
+        $this->assertNotNull($enrollRecord);
+        $this->assertNotNull($enrollKey);
+        $this->assertTrue(is_string($enrollRecord));
+        $this->assertTrue(is_string($enrollKey));
+    }
+
+    public function test_PheClient_passwordVerifyRequest()
+    {
+        list($serverPrivateKey, $serverPublicKey) = $this->server->generateServerKeyPair();
+        list($clientPrivateKey, $clientPublicKey) = $this->server->generateServerKeyPair();
+        $this->client->setKeys($clientPrivateKey, $serverPublicKey);
+        $enrollmentResponse = $this->server->getEnrollment($serverPrivateKey, $serverPublicKey);
+        list($enrollRecord, $enrollKey) = $this->client->enrollAccount($enrollmentResponse, "passw0rd");
+        $request = $this->client->createVerifyPasswordRequest("passw0rd", $enrollRecord);
+        $this->assertNotNull($request);
+        $this->assertTrue(is_string($request));
+    }
+
+    public function test_PheClient_verifyServerResponse()
+    {
+        list($serverPrivateKey, $serverPublicKey) = $this->server->generateServerKeyPair();
+        list($clientPrivateKey, $clientPublicKey) = $this->server->generateServerKeyPair();
+        $this->client->setKeys($clientPrivateKey, $serverPublicKey);
+        $enrollmentResponse = $this->server->getEnrollment($serverPrivateKey, $serverPublicKey);
+        list($enrollRecord, $enrollKey) = $this->client->enrollAccount($enrollmentResponse, "passw0rd");
+
+        $request = $this->client->createVerifyPasswordRequest("passw0rd", $enrollRecord);
+
+        $response = $this->server->verifyPassword($serverPrivateKey, $serverPublicKey, $request);
+        $verifiedResponse = $this->client->checkResponseAndDecrypt("passw0rd", $enrollRecord, $response);
+
+        $this->assertNotNull($verifiedResponse);
+        $this->assertTrue(is_string($verifiedResponse));
     }
 
     public function testInitNewClientWithRotatedKeysShouldSucceed()
@@ -132,7 +174,7 @@ class PHEClientTest extends \PHPUnit\Framework\TestCase
 
     public function testFullFlowRandomCorrectPwdShouldSucceed()
     {
-        $password = "password";
+        $password = "passw0rd";
 
         $serverKeyPair = $this->server->generateServerKeyPair(); // [{privateKey}, {publicKey}]
         $this->assertInternalType('array', $serverKeyPair);
