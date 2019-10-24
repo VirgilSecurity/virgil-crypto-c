@@ -37,29 +37,29 @@
 //
 // Constants
 //
-extern const char VSCF_IMPL_T_PHP_RES_NAME[];
-extern const char VSCF_MESSAGE_INFO_T_PHP_RES_NAME[];
-extern const char VSCF_KEY_RECIPIENT_INFO_T_PHP_RES_NAME[];
-extern const char VSCF_KEY_RECIPIENT_INFO_LIST_T_PHP_RES_NAME[];
-extern const char VSCF_PASSWORD_RECIPIENT_INFO_T_PHP_RES_NAME[];
-extern const char VSCF_PASSWORD_RECIPIENT_INFO_LIST_T_PHP_RES_NAME[];
-extern const char VSCF_ECIES_T_PHP_RES_NAME[];
-extern const char VSCF_RECIPIENT_CIPHER_T_PHP_RES_NAME[];
-extern const char VSCF_MESSAGE_INFO_CUSTOM_PARAMS_T_PHP_RES_NAME[];
-extern const char VSCF_KEY_PROVIDER_T_PHP_RES_NAME[];
-extern const char VSCF_SIGNER_T_PHP_RES_NAME[];
-extern const char VSCF_VERIFIER_T_PHP_RES_NAME[];
-extern const char VSCF_BRAINKEY_CLIENT_T_PHP_RES_NAME[];
-extern const char VSCF_BRAINKEY_SERVER_T_PHP_RES_NAME[];
-extern const char VSCF_GROUP_SESSION_MESSAGE_T_PHP_RES_NAME[];
-extern const char VSCF_GROUP_SESSION_TICKET_T_PHP_RES_NAME[];
-extern const char VSCF_GROUP_SESSION_T_PHP_RES_NAME[];
-extern const char VSCF_MESSAGE_INFO_EDITOR_T_PHP_RES_NAME[];
-extern const char VSCF_SIGNER_INFO_T_PHP_RES_NAME[];
-extern const char VSCF_SIGNER_INFO_LIST_T_PHP_RES_NAME[];
-extern const char VSCF_MESSAGE_INFO_FOOTER_T_PHP_RES_NAME[];
-extern const char VSCF_SIGNED_DATA_INFO_T_PHP_RES_NAME[];
-extern const char VSCF_FOOTER_INFO_T_PHP_RES_NAME[];
+extern const char vscf_impl_t_php_res_name[];
+extern const char vscf_message_info_t_php_res_name[];
+extern const char vscf_key_recipient_info_t_php_res_name[];
+extern const char vscf_key_recipient_info_list_t_php_res_name[];
+extern const char vscf_password_recipient_info_t_php_res_name[];
+extern const char vscf_password_recipient_info_list_t_php_res_name[];
+extern const char vscf_ecies_t_php_res_name[];
+extern const char vscf_recipient_cipher_t_php_res_name[];
+extern const char vscf_message_info_custom_params_t_php_res_name[];
+extern const char vscf_key_provider_t_php_res_name[];
+extern const char vscf_signer_t_php_res_name[];
+extern const char vscf_verifier_t_php_res_name[];
+extern const char vscf_brainkey_client_t_php_res_name[];
+extern const char vscf_brainkey_server_t_php_res_name[];
+extern const char vscf_group_session_message_t_php_res_name[];
+extern const char vscf_group_session_ticket_t_php_res_name[];
+extern const char vscf_group_session_t_php_res_name[];
+extern const char vscf_message_info_editor_t_php_res_name[];
+extern const char vscf_signer_info_t_php_res_name[];
+extern const char vscf_signer_info_list_t_php_res_name[];
+extern const char vscf_message_info_footer_t_php_res_name[];
+extern const char vscf_signed_data_info_t_php_res_name[];
+extern const char vscf_footer_info_t_php_res_name[];
 
 //
 // Registered resources

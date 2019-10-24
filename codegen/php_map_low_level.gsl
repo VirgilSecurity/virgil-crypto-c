@@ -52,7 +52,7 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
     my.out_low_level.name0 = "$(my.in_module.name:c)"
     my._wot = "$(my.in_php_project.prefix:)_$(my.out_low_level.name0:)"
     my._t = "$(my._wot:)_t"
-    my.out_low_level.constant = "$(my._t:UPPER)_PHP_RES_NAME[]"
+    my.out_low_level.constant = "$(my._t:)_php_res_name[]"
     my._constant = ""
 
     if my.in_type <> "single_function"
@@ -87,7 +87,7 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
 
         new init_func_def_list_destr to my.out_low_level
             . = format_left("\
-                le_$(my._t:) = zend_register_list_destructors_ex($(my._wot:)_dtor_php, NULL, $(my._t:UPPER)_PHP_RES_NAME, module_number);
+                le_$(my._t:) = zend_register_list_destructors_ex($(my._wot:)_dtor_php, NULL, $(my._t:)_php_res_name, module_number);
                 ", 0)
         endnew
 
@@ -112,6 +112,7 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
                 my.argument = item_copy_to(dependency0, method, "argument")
                 my.argument.access ?= "readwrite"
                 my.argument._c_type = class_derive_c_instance_type(my.argument)
+                my.argument.is_dependency = 1
 
                 if dependency0.is_observers_return_status = 1
                     new return to method
@@ -327,11 +328,11 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
                     my._h1 = ""
                     if function.is_static = 0
 
-                        my._res_name = "$(my._t:UPPER)_PHP_RES_NAME"
+                        my._res_name = "$(my._t:)_php_res_name"
                         my._le = "le_$(my._t:)"
 
                         if my.in_type = "implementation"
-                            my._res_name = "$(my.in_php_project.prefix:UPPER)_IMPL_T_PHP_RES_NAME"
+                            my._res_name = "$(my.in_php_project.prefix:)_impl_t_php_res_name"
                             my._le = "le_$(my.in_php_project.prefix:c)_impl_t"
                         endif
 
@@ -346,12 +347,21 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
                         elsif string_in (argument0.type0, "interface, class, impl")
                             if argument0.type = "class"
                                 my._h1 += format_left("\
-                                    $(argument0.type:c) *$(argument0.name:c) = zend_fetch_resource_ex(in_$(argument0.name:), $(argument0.type:UPPER)_PHP_RES_NAME, le_$(argument0.type:c));
+                                    $(argument0.type:c) *$(argument0.name:c) = zend_fetch_resource_ex(in_$(argument0.name:), $(argument0.type_c:)_php_res_name, le_$(argument0.type_c:));
                                     ", 0)
                             else
-                                my._h1 += format_left("\
-                                    $(argument0.type:c) *$(argument0.name:c) = zend_fetch_resource_ex(in_$(argument0.name:), $(my.in_php_project.prefix:UPPER)_IMPL_T_PHP_RES_NAME, le_$(my.in_php_project.prefix:c)_impl_t);
-                                    ", 0)
+                                if defined(argument0.is_dependency) & argument0.is_dependency = 1
+                                    my._a = argument0.type_c
+                                    my._rn = "$(my._a:)"
+                                    my._h1 += format_left("\
+                                        $(my._a:) *$(argument0.name:c) = zend_fetch_resource_ex(in_$(argument0.name:), $(my._rn:)_php_res_name, le_$(my._a:));
+                                        ", 0)
+                                else
+                                    my._a = function.prefix0
+                                    my._h1 += format_left("\
+                                        $(argument0.type:c) *$(argument0.name:c) = zend_fetch_resource_ex(in_$(argument0.name:), $(my._a:)_impl_t_php_res_name, le_$(my._a:)_impl_t);
+                                        ", 0)
+                                endif
                             endif
                         elsif argument0.type0 = "size"
                             my._h1 += format_left("
@@ -865,7 +875,7 @@ function php_map_low_level_constructor_destructor (in_module, out_low_level, in_
                         //
                         // Fetch for type checking and then release
                         //
-                        $(my._a:)_t *$(function.entity0:c) = zend_fetch_resource_ex(in_ctx, $(my._a:UPPER)_T_PHP_RES_NAME, le_$(my._a:)_t);
+                        $(my._a:)_t *$(function.entity0:c) = zend_fetch_resource_ex(in_ctx, $(my._a:)_t_php_res_name, le_$(my._a:)_t);
                         zend_list_close(Z_RES_P(in_ctx));
                         RETURN_TRUE;
                     }
@@ -884,6 +894,12 @@ function php_map_low_level_argument (in_argument, in_php_project, out_argument, 
     check_arguments (my, "in_argument, in_php_project, out_argument, out_function", my)
 
     my._prefix = my.out_function.prefix0
+
+    my.out_argument.is_dependency = 0
+
+    if defined(my.in_argument.is_dependency) & my.in_argument.is_dependency = 1
+        my.out_argument.is_dependency = 1
+    endif
 
     my.out_argument.name = "$(my.in_argument.name:c)"
     my.out_argument.access = my.in_argument.access
@@ -1211,10 +1227,18 @@ function php_map_low_level_extension (in_php_project, out_php_module)
     check_arguments (my, "in_php_project, out_php_module", my)
 
     my._include = ""
-    my._registered_resources = format_left("int le_$(my.in_php_project.prefix)_impl_t;", 0)
-    my._header_registered_resources = format_left("extern int le_$(my.in_php_project.prefix)_impl_t;", 0)
-    my._constants = format_left("const char $(my.in_php_project.prefix:UPPER)_IMPL_T_PHP_RES_NAME[] = \"$(my.in_php_project.prefix)_impl_t\";", 0)
-    my._header_constants = format_left("extern const char $(my.in_php_project.prefix:UPPER)_IMPL_T_PHP_RES_NAME[];", 0)
+
+    my._registered_resources = ""
+    my._header_registered_resources = ""
+    my._constants = ""
+    my._header_constants = ""
+
+    if defined(my.in_php_project->interfaces)
+        my._registered_resources = format_left("int le_$(my.in_php_project.prefix)_impl_t;", 0)
+        my._header_registered_resources = format_left("extern int le_$(my.in_php_project.prefix)_impl_t;", 0)
+        my._constants = format_left("const char $(my.in_php_project.prefix:)_impl_t_php_res_name[] = \"$(my.in_php_project.prefix)_impl_t\";", 0)
+        my._header_constants = format_left("extern const char $(my.in_php_project.prefix:)_impl_t_php_res_name[];", 0)
+    endif
 
     my._init_func_def_dtor = ""
     my._init_func_def_list_destr = ""
@@ -1231,7 +1255,7 @@ function php_map_low_level_extension (in_php_project, out_php_module)
 
 
         my._init_func_def_list_destr += format_left("\
-            le_$(my._p:)_impl_t = zend_register_list_destructors_ex($(my._p:)_impl_dtor_php, NULL, $(my._p:UPPER)_IMPL_T_PHP_RES_NAME, module_number);
+            le_$(my._p:)_impl_t = zend_register_list_destructors_ex($(my._p:)_impl_dtor_php, NULL, $(my._p:)_impl_t_php_res_name, module_number);
             ", 0)
     endif
 
