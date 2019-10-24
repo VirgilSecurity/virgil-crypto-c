@@ -18,7 +18,7 @@
     },
     "autoload": {
         "psr-4": {
-            "VirgilCrypto\Phe": "src"
+            "VirgilCrypto\\Phe": "src"
         }
     },
     "scripts": {

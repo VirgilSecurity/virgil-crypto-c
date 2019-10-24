@@ -345,7 +345,7 @@ function php_create_custom_modules (source, php_project, meta)
                 },
                 \"autoload\": {
                     \"psr-4\": {
-                        \"VirgilCrypto\\\\\$(my.php_project.name:Pascal)\": \"src\"
+                        \"VirgilCrypto\\\\\\\\$(my.php_project.name:Pascal)\": \"src\"
                     }
                 },
                 \"scripts\": {
