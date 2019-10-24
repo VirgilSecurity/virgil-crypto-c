@@ -233,8 +233,7 @@ function php_format_low_level_status_exception (in_enum, in_php_module)
     #define $(my._macro_name:)(status)\
     do {\
         if(status != $(my._prefix:)_status_SUCCESS) {\
-        $(my._func_name:)(status);\
-            goto fail;\
+            $(my._func_name:)(status);\
         }\
     } while (false)
 

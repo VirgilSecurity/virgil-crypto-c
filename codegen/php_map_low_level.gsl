@@ -645,16 +645,17 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
                 ### Write returned result --->
 
                 my._res = ""
+                my._ret= ""
 
                 if function.return_zend_type = "IS_STRING"
                     for function.return_argument as return_argument0 where return_argument0.name <> "status" & return_argument0.type <> "enum"
-                        my._res += format_left("RETVAL_STR(out_$(return_argument0.name:));", 0)
+                        my._ret += format_left("RETVAL_STR(out_$(return_argument0.name:));", 0)
                     endfor
                 elsif function.return_zend_type = "IS_ARRAY"
-                    my._res += format_left("array_init(return_value);", 0)
+                    my._ret += format_left("array_init(return_value);", 0)
                     for function.return_argument as return_argument0 where return_argument0.name <> "status" & return_argument0.type <> "enum"
                         if return_argument0.type = "buffer"
-                            my._res += format_left("add_next_index_str(return_value, out_$(return_argument0.name:));", 0)
+                            my._ret += format_left("add_next_index_str(return_value, out_$(return_argument0.name:));", 0)
                         else 
                             echo_debug_item(return_argument0)
                             echo_fatal("Not implemented (AZ1201)", my)
@@ -663,9 +664,9 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
                 elsif function.return_zend_type = "IS_LONG"
                     for function.return_argument as return_argument0 where return_argument0.name <> "status" & return_argument0.type <> "enum"
                         if return_argument0.type = "byte"
-                            my._res += format_left("RETVAL_LONG(ret_$(return_argument0.name:));", 0)
+                            my._ret += format_left("RETVAL_LONG(ret_$(return_argument0.name:));", 0)
                         else
-                            my._res += format_left("RETVAL_LONG($(return_argument0.name:));", 0)
+                            my._ret += format_left("RETVAL_LONG($(return_argument0.name:));", 0)
                         endif
                     endfor
                 elsif function.return_zend_type = "IS_VOID"
@@ -673,7 +674,7 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
                 elsif function.return_zend_type = "IS_RESOURCE"
                     for function.return_argument as return_argument0
                         if string_in (return_argument0.type0, "class, interface, implementation")
-                            my._res += format_left("\
+                            my._ret += format_left("\
                                 zend_resource *$(return_argument0.name:)_res = zend_register_resource($(return_argument0.name:)$(my._rs), le_$(my.in_php_project.prefix:)_impl_t);
                                 RETVAL_RES($(return_argument0.name:)_res);
                                 ", 0)
@@ -690,11 +691,42 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
                     endfor
                 elsif function.return_zend_type = "_IS_BOOL"
                     for function.return_argument as return_argument0
-                        my._res += format_left("RETVAL_BOOL($(return_argument0.name:));", 0)
+                        my._ret += format_left("RETVAL_BOOL($(return_argument0.name:));", 0)
                     endfor
                 else
                     echo_debug_item(function)
                     echo_fatal("Not implemented (AO1001)", my)
+                endif
+
+                my._res = my._ret
+
+                if function.throw_exception = 1 & function.return_zend_type <> "IS_VOID"
+                    my._fail = ""
+                    my._success = ""
+
+                    #function.return_zend_type: "IS_VOID, IS_LONG, _IS_BOOL, IS_STRING, IS_ARRAY, IS_RESOURCE
+                    if  function.return_zend_type = "IS_STRING" | function.return_zend_type = "IS_ARRAY"
+                        for function.return_argument where return_argument.type = "buffer"
+                            my._fail += format_left("zend_string_free(out_$(return_argument.name:));", 1)
+                            my._success += format_left("vsc_buffer_destroy(&$(return_argument.name:));", 0)
+                        endfor
+                    endif
+
+                    my._ret = my._ret + my._success
+
+                    my._t1 = format_left("if (status == $(function.prefix0:c)_status_SUCCESS) {", 0)
+                    my._t2 = format_left("$(my._ret:)", 1)
+                    my._t3 = format_left("}", 0)
+                    my._t4 = format_left("else {", 0)
+                    my._t5 = format_left("$(my._fail:)", 1)
+                    my._t6 = format_left("}", 0)
+
+                    if my._fail <> ""
+                        my._res = my._t1 + my._t2 + my._t3 + my._t4 + my._t5 + my._t6
+                    else
+                        my._res = my._t1 + my._t2 + my._t3
+                    endif
+
                 endif
 
                 if my._res <> ""
@@ -707,32 +739,6 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
                 endif
 
                 ### <--- Write returned result
-
-                new gotofail to wrapper
-                    my._res = ""
-                    #function.return_zend_type: "IS_VOID, IS_LONG, _IS_BOOL, IS_STRING, IS_ARRAY, IS_RESOURCE
-                    if  function.return_zend_type = "IS_STRING" | function.return_zend_type = "IS_ARRAY"
-                        my._fail = ""
-                        my._success = ""
-                        for function.return_argument where return_argument.type = "buffer"
-                            my._fail += format_left("zend_string_free(out_$(return_argument.name:));", 1)
-                            my._success += format_left("vsc_buffer_destroy(&$(return_argument.name:));", 1)
-                        endfor
-
-                        my._p1 = format_left("fail:", 0)
-                        my._res = my._success + my._p1 + my._fail
-
-                        if my._fail = ""
-                            my._res = format_left("\
-                                fail: ;", 0)
-                        endif
-                    else
-                        my._res = format_left("\
-                            fail: ;", 0)
-                    endif
-
-                    . = format_left(my._res, 0)
-                endnew
             endnew
         endnew
     endfor
@@ -1302,14 +1308,9 @@ function php_map_low_level_extension (in_php_project, out_php_module)
                     my._11 = "\n" + function0->wrapper->write_returned_result.
                 endif
 
-                my._12 = ""
-                if function0.throw_exception = 1
-                    my._12 = "\n" + function0->wrapper->gotofail.
-                endif
+                my._12 = format_left("}", 0)
 
-                my._13 = format_left("}", 0)
-
-                my._func_wrapping += my._1 + my._2 + my._3 + my._4 + my._5 + my._6 + my._7 + my._8 + my._9 + my._10 + my._11 + my._12 + my._13
+                my._func_wrapping += my._1 + my._2 + my._3 + my._4 + my._5 + my._6 + my._7 + my._8 + my._9 + my._10 + my._11 + my._12
             endif
 
             my._func_wrapping += "\n"
