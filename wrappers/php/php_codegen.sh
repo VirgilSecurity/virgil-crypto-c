@@ -1,5 +1,5 @@
 rm -rf VirgilCrypto
-for project in phe foundation
+for project in phe foundation ratchet pythia
 do
 	for dir in extension src vendor
 	do
@@ -13,7 +13,7 @@ done
 cd ../..
 ./codegen.sh
 
-for project in phe foundation
+for project in phe foundation ratchet pythia
 do
 	for dir in extension src
 	do

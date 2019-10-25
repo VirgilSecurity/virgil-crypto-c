@@ -1,0 +1,16 @@
+{
+  "require": {
+    "php": "^7.2",
+    "myclabs/php-enum": "^1.7"
+  },
+  "autoload": {
+    "psr-4": {
+      "VirgilCrypto\\Pythia\\": "src"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Virgil\\Pythia\\Tests\\": "tests"
+    }
+  }
+}
