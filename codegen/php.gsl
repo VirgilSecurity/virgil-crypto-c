@@ -81,6 +81,24 @@ function php_create_project_module (project, wrapper)
 
         copy my.project->license to php_project
 
+        new require_projects to php_project
+            for my.project.require as require0 where defined(require0.project) & require0.project <> "common"
+
+                if require0.project = "foundation"
+                    my._prefix = "vscf"
+                else
+                    echo_debug_item(my.project)
+                    echo_debug_item(require0)
+                    echo_fatal("Not implemented (AE1001)")
+                endif
+
+                new require_project to require_projects
+                    .name0 = require0.project
+                    .prefix0 = my._prefix
+                endnew
+            endfor
+        endnew
+
         if count(my.project.interface)
             new interfaces to php_project
                 for my.project.interface as interface0

@@ -39,6 +39,7 @@
 #include <zend_list.h>
 #include "vsce_assert.h"
 #include "vsce_phe_php.h"
+#include "vscf_foundation_php.h"
 #include "vsce_phe_server.h"
 #include "vsce_phe_client.h"
 #include "vsce_phe_cipher.h"

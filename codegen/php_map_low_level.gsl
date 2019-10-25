@@ -1347,6 +1347,13 @@ function php_map_low_level_extension (in_php_project, out_php_module)
     endnew
 
     new include to my.out_php_module
+
+        my._req = ""
+
+        for my.in_php_project->require_projects.require_project as require_project0
+            my._req += format_left("#include \"$(require_project0.prefix0:)_$(require_project0.name0:)_php.h\"",0)
+        endfor
+
         my._res = format_left("\
             #include <php.h>
             #include <zend_exceptions.h>
@@ -1355,7 +1362,7 @@ function php_map_low_level_extension (in_php_project, out_php_module)
             #include \"$(my.in_php_project.prefix:)_$(my.in_php_project.name:)_php.h\"
             ", 0)
 
-        my._res = my._res + my._include
+        my._res = my._res + my._req + my._include
 
         . = my._res
     endnew
