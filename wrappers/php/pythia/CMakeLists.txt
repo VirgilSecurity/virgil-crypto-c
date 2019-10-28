@@ -40,7 +40,7 @@ project(virgil_crypto_pythia_php VERSION ${virgil_crypto_php_VERSION} LANGUAGES 
 # ---------------------------------------------------------------------------
 #   Check dependencies
 # ---------------------------------------------------------------------------
-if(NOT VIRGIL_LIB_pythia)
+if(NOT VIRGIL_LIB_PYTHIA)
     message(STATUS "Skip building the PHP wrapper for library 'pythia', which is not built.")
     return()
 endif()

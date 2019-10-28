@@ -40,8 +40,8 @@ project(virgil_crypto_ratchet_php VERSION ${virgil_crypto_php_VERSION} LANGUAGES
 # ---------------------------------------------------------------------------
 #   Check dependencies
 # ---------------------------------------------------------------------------
-if(NOT VIRGIL_LIB_ratchet)
-    message(STATUS "Skip building the PHP wrapper for library 'ratchet', which is not built.")
+if(NOT VIRGIL_LIB_RATCHET)
+    message(STATUS "Skip building the PHP wrapper for library RATCHET, which is not built.")
     return()
 endif()
 
@@ -53,7 +53,7 @@ add_library(ratchet_php SHARED "")
 set_target_properties(ratchet_php PROPERTIES
         C_STANDARD 99
         DEBUG_POSTFIX "_d"
-        OUTPUT_NAME vscr_php
+        OUTPUT_NAME vscr_ratchet_php
         PREFIX ""
         VERSION ${virgil_crypto_ratchet_php_VERSION}
         SOVERSION ${virgil_crypto_ratchet_php_VERSION_MAJOR}
@@ -78,6 +78,7 @@ target_include_directories(ratchet_php
 target_link_libraries(ratchet_php
     PUBLIC
         vsc::ratchet
+        foundation_php
     PRIVATE
         phplib
         "$<$<STREQUAL:${CMAKE_SYSTEM_NAME},Darwin>:-undefined dynamic_lookup>"
@@ -95,8 +96,8 @@ if(ENABLE_TESTING AND VIRGIL_PHP_TESTING AND PHP_EXECUTABLE AND PHPUNIT_EXECUTAB
 
     add_test(
             NAME test_ratchet_php
-            COMMAND "${PHP_EXECUTABLE}" 
-                    -d "extension=$<TARGET_FILE:ratchet_php>" 
+            COMMAND "${PHP_EXECUTABLE}"
+                    -d "extension=$<TARGET_FILE:ratchet_php>"
                     -d safe_mode=Off "${PHPUNIT_EXECUTABLE}"
                     --bootstrap "${CMAKE_CURRENT_LIST_DIR}/vendor/autoload.php" 
                     --include-path "${CMAKE_CURRENT_LIST_DIR}/src" "${CMAKE_CURRENT_LIST_DIR}/tests"

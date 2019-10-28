@@ -57,7 +57,7 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
 
     if my.in_type <> "single_function"
 
-        new include to my.out_low_level
+        new [include] to my.out_low_level
             . = format_left("#include \"$(my.in_php_project.prefix:)_$(my.out_low_level.name0:).h\"", 0)
         endnew
 
@@ -91,7 +91,7 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
                 ", 0)
         endnew
 
-        if my.in_type <> "interface" & (defined(my.in_module.context) & my.in_module.context <> "none")
+        if my.in_type <> "interface" & my.in_module.context <> "none"
             php_map_low_level_constructor_destructor (my.in_module, my.out_low_level, my.in_type)
         endif
 
@@ -102,7 +102,7 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
             new method to my.in_module
                 .name = "use $(my._dep_name:)"
                 .visibility = "public"
-                .scope = "public"
+                .[scope] = "public"
                 .declaration = "public"
                 .is_static = 0
                 .return_type = "void"
@@ -126,7 +126,7 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
         new method to my.in_module
             .name = "impl tag"
             .visibility = "public"
-            .scope = "public"
+            .[scope] = "public"
             .declaration = "public"
             .is_static = 1
             .return_type = "int"
@@ -140,7 +140,7 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
                 .is_reference = 1
             endnew
 
-            new return to method
+            new [return] to method
                 .enum = "tag"
                 .access = "readonly"
                 .is_reference = 0
@@ -172,11 +172,11 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
             my._method_arguments = ""
             my._function_arguments = ""
 
-            new def_func_entry to function
-                . = format_left("PHP_FE($(function.name:), arginfo_$(function.name:))", 0)
+            new def_func_entry to [function]
+                . = format_left("PHP_FE($([function].name:), arginfo_$([function].name:))", 0)
             endnew
 
-            php_map_low_level_return (method0, my.in_php_project, function)
+            php_map_low_level_return (method0, my.in_php_project, [function])
 
             for method0.argument as argument0
 
@@ -187,12 +187,12 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
 
                 my._declare_input_arguments = ""
 
-                new argument to function
-                    php_map_low_level_argument (argument0, my.in_php_project, argument, function)
+                new argument to [function]
+                    php_map_low_level_argument (argument0, my.in_php_project, argument, [function])
                 endnew
             endfor
 
-            new wrapper to function
+            new wrapper to [function]
 
                 ### Arg info --->
 
@@ -201,12 +201,12 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
                     my._num_arguments = 1 # ctx
                     my._zend_arg_type_info = format_left("ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)", 0)
 
-                    if function.is_static = 1
+                    if [function].is_static = 1
                         my._num_arguments = 0
                         my._zend_arg_type_info = ""
                     endif
 
-                    for function.argument as argument0 where ! string_in (argument0.type0, "error, buffer")
+                    for [function].argument as argument0 where ! string_in (argument0.type0, "error, buffer")
                         my._num_arguments = my._num_arguments + 1
                         #ZEND_ARG_TYPE_INFO(pass_by_ref, name, type_hint, allow_null)
                         my._zend_arg_type_info += format_left("ZEND_ARG_TYPE_INFO(0, in_$(argument0.name:), $(argument0.zend_type:), 0)", 0)
@@ -214,11 +214,11 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
 
                     my._r = format_left(my._zend_arg_type_info, 7)
 
-                    my._c = php_format_extension_comment("Wrap method: $(function.name0:)")
+                    my._c = php_format_extension_comment("Wrap method: $([function].name0:)")
 
                     my._h = format_left("\
                         ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
-                            arginfo_$(function.name0:)_php, 
+                            arginfo_$([function].name0:)_php, 
                             0 /*return_reference*/,
                             $(my._num_arguments:) /*required_num_args*/,
                             $(function.return_zend_type:) /*type*/,
@@ -453,13 +453,13 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
                             elsif return_argument0.length_type = "method"
                                 my._l = "$(return_argument0.length:)($(function.entity0:))"
                             elsif return_argument0.length_type = "method_proxy"
-                                if defined(my.in_module.context) & my.in_module.context = "none"
+                                if string_equal(my.in_module.context, "none")
                                     my._l = "$(return_argument0.length:)($(return_argument0.proxy:))"
                                 else
                                     my._l = "$(return_argument0.length:)($(function.entity0:), $(return_argument0.proxy:))"
                                 endif
                             elsif return_argument0.length_type = "argument"
-                                my._l = "$(return_argument0.length:c)"
+                                my._l = return_argument0.length
                             else 
                                 echo_debug_item(function)
                                 echo_debug_item(return_argument0)
@@ -1020,66 +1020,58 @@ function php_map_low_level_return (in_method, in_php_project, out_function)
 
     my._argument_buffer_count = 0
 
-    for my.in_method.argument as argument0 where defined (argument0.class)
-        if argument0.class = "buffer"
-            my._argument_buffer_count = my._argument_buffer_count + 1
-            new return_argument to my.out_function
-                .name = "$(argument0.name:c)"
-                .type = "buffer"
-                .type_t = 0.type
+    for my.in_method.argument as argument0 where defined (argument0.class) & argument0.class = "buffer"
+        my._argument_buffer_count = my._argument_buffer_count + 1
+        new return_argument to my.out_function
+            .name = "$(argument0.name:c)"
+            .type = "buffer"
+            .type_t = 0.type
 
-                my._prefix = my.out_function.prefix0
-                my._entity = my.out_function.entity0
+            my._prefix = my.out_function.prefix0
+            my._entity = my.out_function.entity0
 
-                if defined (argument0->length->proxy)
-                    my._proxy = ""
-                    for argument0->length.proxy as proxy0
+            if count (argument0.length)
+                my._proxy = ""
+                for argument0->length.proxy as proxy0
+                    if defined (proxy0.argument)
+                        my._proxy += "$(proxy0.argument:c)"
                         if defined (proxy0.cast) & proxy0.cast = "data_length"
-                            my._proxy += "$(proxy0.argument:c).len"
-                        elsif defined (proxy0.argument)
-                            my._proxy += "$(proxy0.argument:c)"
-                        elsif defined (proxy0.constant)
-                            my._proxy += "$(proxy0.constant:)"
-                        else
-                            echo_debug_item(my.in_method)
-                            echo_debug_item(proxy0)
-                            echo_fatal("Not implemented (AG1000)")
+                            my._proxy += ".len"
                         endif
+                    elsif defined (proxy0.constant)
+                        my._proxy += php_lang_ref (proxy0.constant)
+                    else
+                        echo_debug_item(my.in_method)
+                        echo_debug_item(proxy0)
+                        echo_fatal("Not implemented (AG1000)")
+                    endif
 
-                        if ! last()
-                            my._proxy += ", "
-                        endif
-                    endfor
-                    my._function = "$(my._prefix:)_$(my._entity:)_$(argument0->length.method:c)"
-                    .proxy = my._proxy
-                    .length = my._function
-                    .length_type = "method_proxy"
-                elsif defined (argument0->length.class)
-                    my._class = argument0->length.class
-                    my._constant = "$(argument0->length.constant:c)"
-                    my._constant = "$(my._constant:UPPER)"
-                    .length = "$(my._prefix:c)_$(my._class:c)_$(my._constant:)"
-                    .length_type = "constant"
-                elsif defined (argument0->length.method)
-                    my._method = "$(argument0->length.method:c)"
-                    my._function = "$(my._prefix:)_$(my._entity:)_$(argument0->length.method:c)"
-                    .length = my._function
-                    .length_type = "method"
+                    if ! last()
+                        my._proxy += ", "
+                    else
+                        return_argument.proxy = my._proxy
+                    endif
+                endfor
 
+                if defined (argument0->length.method)
+                    return_argument.length = "$(my._prefix:)_$(my._entity:)_$(argument0->length.method:c)"
+                    return_argument.length_type = "method"
                 elsif defined (argument0->length.constant)
-                    my._constant = "$(argument0->length.constant:c)"
-                    my._constant = "$(my._constant:UPPER)"
-                    .length = "$(my._prefix:c)_$(my._entity:)_$(my._constant:)"
-                    .length_type = "constant"
+                    return_argument.length = "$(my._prefix:c)_$(my._entity:)_$(argument0->length.constant:c,UPPER)"
+                    return_argument.length_type = "constant"
                 elsif defined (argument0->length.argument)
-                    .length = "$(argument0->length.argument:)"
-                    .length_type = "argument"
-                else 
+                    return_argument.length = "$(argument0->length.argument:c)"
+                    return_argument.length_type = "argument"
+                else
                     echo_debug_item(argument0)
                     echo_fatal("Not implemented (AA1000)", my)
                 endif
-            endnew
-        endif
+
+                if return_argument.length_type = "method" & defined(return_argument.proxy)
+                    return_argument.length_type = "method_proxy"
+                endif
+            endif
+        endnew
     endfor
 
     if my._argument_buffer_count = 1
@@ -1289,7 +1281,7 @@ function php_map_low_level_extension (in_php_project, out_php_module)
         if php_module0.type <> "single_function"
             my._include += php_module0->low_level->include.
 
-            if php_module0.type <> "implementation" & (defined(php_module0.context) & php_module0.context = 1)
+            if (php_module0.type <> "implementation") & is_true(php_module0.context)
                 my._registered_resources += php_module0->low_level->registered_resource.
                 my._header_registered_resources += php_module0->low_level->header_registered_resource.
                 my._constants += php_module0->low_level->constant.

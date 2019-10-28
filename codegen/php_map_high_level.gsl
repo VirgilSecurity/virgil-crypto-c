@@ -69,7 +69,7 @@ function php_map_high_level (in_module, in_php_module, in_php_project, out_high_
     endif
 
     if ! string_in(my.in_type, "interface, implementation_class")
-        if (defined(my.in_module.context) & my.in_module.context <> "none") | ! defined(my.in_module.context)
+        if !string_equal(my.in_module.context, "none")
             new property to my.out_high_level
                 my._db = php_format_comment("@var")
                 my._property = "private $ctx;"
@@ -139,7 +139,7 @@ function php_map_high_level (in_module, in_php_module, in_php_project, out_high_
     endnew
 
     if ! string_in (my.in_type, "interface, implementation_class")
-        if (defined(my.in_module.context) & my.in_module.context <> "none") | !defined(my.in_module.context)
+        if !string_equal(my.in_module.context, "none")
             php_map_high_level_constructor_destructor (my.in_module, my.out_high_level)
         endif
     endif
@@ -197,7 +197,7 @@ function php_map_high_level (in_module, in_php_module, in_php_project, out_high_
     endfor
 
     if string_in (my.in_type, "class, implementation")
-        if (defined(my.in_module.context) & my.in_module.context <> "none") | ! defined(my.in_module.context)
+        if !string_equal(my.in_module.context, "none")
             new method to my.in_module
                 .name = "get ctx"
                 .visibility = "public"
