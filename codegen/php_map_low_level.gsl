@@ -91,7 +91,7 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
                 ", 0)
         endnew
 
-        if my.in_type <> "interface"
+        if my.in_type <> "interface" & (defined(my.in_module.context) & my.in_module.context <> "none")
             php_map_low_level_constructor_destructor (my.in_module, my.out_low_level, my.in_type)
         endif
 
@@ -385,58 +385,6 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
 
                 ### <--- Proxy call
 
-                #### Allocate output buffer --->
-
-                my._res = ""
-
-                for function.return_argument as return_argument0
-
-                        my._n = ""
-                        if ! last()
-                            my._n = "\n"
-                        endif
-
-                        if ! defined (return_argument0.type)
-                            echo_debug_item(function)
-                            echo_debug_item(return_argument0)
-                            echo_fatal("Not implemented (AI1001)", my)
-                        endif
-
-                        if return_argument0.type = "buffer"
-                            my._c = php_format_extension_comment("Allocate output buffer for output '$(return_argument0.name:)'")
-
-                            if return_argument0.length_type = "constant"
-                                my._l = "$(return_argument0.length:)"
-                            elsif return_argument0.length_type = "method"
-                                my._l = "$(return_argument0.length:)($(function.entity0:))"
-                            elsif return_argument0.length_type = "method_proxy"
-                                echo_debug_item()
-                                my._l = "$(return_argument0.length:)($(function.entity0:), $(return_argument0.proxy:))"
-                            elsif return_argument0.length_type = "argument"
-                                my._l = "$(return_argument0.length:c)"
-                            else 
-                                echo_debug_item(function)
-                                echo_debug_item(return_argument0)
-                                echo_fatal("Not implemented (AP1001)")
-                            endif
-
-                            my._h1 = format_left("\
-                                zend_string *out_$(return_argument0.name:) = zend_string_alloc($(my._l), 0);
-                                vsc_buffer_t *$(return_argument0.name:) = vsc_buffer_new();
-                                vsc_buffer_use($(return_argument0.name:), (byte *)ZSTR_VAL(out_$(return_argument0.name:)), ZSTR_LEN(out_$(return_argument0.name:)));
-                                ", 0)
-                            my._res += my._c + my._h1 + "\n" + my._n
-                        endif
-                endfor
-
-                if my._res <> ""
-                    new allocate_output_buffer to wrapper
-                        . = format_left(my._res, 1)
-                    endnew
-                endif
-
-                ### <--- Allocate output buffer
-
                 ### Argument type mapping --->
 
                 my._mapper = ""
@@ -448,6 +396,10 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
                         else
                             my._mapper += format_left("$(argument0.type_c) $(argument0.name:) = in_$(argument0.name:);", 0)
                         endif
+                    endif
+
+                    if argument0.type0 = "char"
+                        my._mapper += format_left("char *$(argument0.name:) = in_$(argument0.name:);", 0)
                     endif
 
                     if argument0.type0 = "enum"
@@ -475,6 +427,61 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
                 endif
 
                 ### <--- Argument type mapping
+
+                #### Allocate output buffer --->
+
+                my._res = ""
+
+                for function.return_argument as return_argument0
+
+                        my._n = ""
+                        if ! last()
+                            my._n = "\n"
+                        endif
+
+                        if ! defined (return_argument0.type)
+                            echo_debug_item(function)
+                            echo_debug_item(return_argument0)
+                            echo_fatal("Not implemented (AI1001)", my)
+                        endif
+
+                        if return_argument0.type = "buffer"
+                            my._c = php_format_extension_comment("Allocate output buffer for output '$(return_argument0.name:)'")
+
+                            if return_argument0.length_type = "constant"
+                                my._l = "$(return_argument0.length:)"
+                            elsif return_argument0.length_type = "method"
+                                my._l = "$(return_argument0.length:)($(function.entity0:))"
+                            elsif return_argument0.length_type = "method_proxy"
+                                if defined(my.in_module.context) & my.in_module.context = "none"
+                                    my._l = "$(return_argument0.length:)($(return_argument0.proxy:))"
+                                else
+                                    my._l = "$(return_argument0.length:)($(function.entity0:), $(return_argument0.proxy:))"
+                                endif
+                            elsif return_argument0.length_type = "argument"
+                                my._l = "$(return_argument0.length:c)"
+                            else 
+                                echo_debug_item(function)
+                                echo_debug_item(return_argument0)
+                                echo_fatal("Not implemented (AP1001)")
+                            endif
+
+                            my._h1 = format_left("\
+                                zend_string *out_$(return_argument0.name:) = zend_string_alloc($(my._l), 0);
+                                vsc_buffer_t *$(return_argument0.name:) = vsc_buffer_new();
+                                vsc_buffer_use($(return_argument0.name:), (byte *)ZSTR_VAL(out_$(return_argument0.name:)), ZSTR_LEN(out_$(return_argument0.name:)));
+                                ", 0)
+                            my._res += my._c + my._h1 + "\n" + my._n
+                        endif
+                endfor
+
+                if my._res <> ""
+                    new allocate_output_buffer to wrapper
+                        . = format_left(my._res, 1)
+                    endnew
+                endif
+
+                ### <--- Allocate output buffer
 
                 ### Call main function --->
 
@@ -1282,7 +1289,7 @@ function php_map_low_level_extension (in_php_project, out_php_module)
         if php_module0.type <> "single_function"
             my._include += php_module0->low_level->include.
 
-            if php_module0.type <> "implementation"
+            if php_module0.type <> "implementation" & (defined(php_module0.context) & php_module0.context = 1)
                 my._registered_resources += php_module0->low_level->registered_resource.
                 my._header_registered_resources += php_module0->low_level->header_registered_resource.
                 my._constants += php_module0->low_level->constant.
@@ -1305,13 +1312,13 @@ function php_map_low_level_extension (in_php_project, out_php_module)
                 my._4 = "\n" + function0->wrapper->proxy_call.
 
                 my._5 = ""
-                if defined(function0->wrapper->allocate_output_buffer)
-                    my._5 = "\n" + function0->wrapper->allocate_output_buffer.
+                if defined(function0->wrapper->argument_type_mapping)
+                    my._5  = "\n" + function0->wrapper->argument_type_mapping.
                 endif
 
                 my._6 = ""
-                if defined(function0->wrapper->argument_type_mapping)
-                    my._6  = "\n" + function0->wrapper->argument_type_mapping.
+                if defined(function0->wrapper->allocate_output_buffer)
+                    my._6 = "\n" + function0->wrapper->allocate_output_buffer.
                 endif
 
                 my._7 = "\n" + function0->wrapper->call_main_function.
