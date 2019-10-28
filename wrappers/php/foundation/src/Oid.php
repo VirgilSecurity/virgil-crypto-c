@@ -44,30 +44,6 @@ class Oid
 {
 
     /**
-    * @var
-    */
-    private $ctx;
-
-    /**
-    * Create underlying C context.
-    * @param null $ctx
-    * @return void
-    */
-    public function __construct($ctx = null)
-    {
-        $this->ctx = is_null($ctx) ? vscf_oid_new_php() : $ctx;
-    }
-
-    /**
-    * Destroy underlying C context.
-    * @return void
-    */
-    public function __destructor()
-    {
-        vscf_oid_delete_php($this->ctx);
-    }
-
-    /**
     * Return OID for given algorithm identifier.
     *
     * @param AlgId $algId
@@ -135,15 +111,5 @@ class Oid
     public static function equal(string $lhs, string $rhs): bool
     {
         return vscf_oid_equal_php($lhs, $rhs);
-    }
-
-    /**
-    * Get C context.
-    *
-    * @return resource
-    */
-    public function getCtx()
-    {
-        return $this->ctx;
     }
 }

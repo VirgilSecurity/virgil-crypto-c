@@ -45,6 +45,10 @@ class MessageInfoCustomParams
     */
     private $ctx;
 
+    const OF_INT_TYPE = 1;
+    const OF_STRING_TYPE = 2;
+    const OF_DATA_TYPE = 3;
+
     /**
     * Create underlying C context.
     * @param null $ctx

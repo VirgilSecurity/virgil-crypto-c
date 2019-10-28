@@ -44,30 +44,6 @@ class AlgFactory
 {
 
     /**
-    * @var
-    */
-    private $ctx;
-
-    /**
-    * Create underlying C context.
-    * @param null $ctx
-    * @return void
-    */
-    public function __construct($ctx = null)
-    {
-        $this->ctx = is_null($ctx) ? vscf_alg_factory_new_php() : $ctx;
-    }
-
-    /**
-    * Destroy underlying C context.
-    * @return void
-    */
-    public function __destructor()
-    {
-        vscf_alg_factory_delete_php($this->ctx);
-    }
-
-    /**
     * Create algorithm that implements "hash stream" interface.
     *
     * @param AlgInfo $algInfo
@@ -130,15 +106,5 @@ class AlgFactory
     {
         $ctx = vscf_alg_factory_create_cipher_from_info_php($algInfo->getCtx());
         return FoundationImplementation::wrapCipher($ctx);
-    }
-
-    /**
-    * Get C context.
-    *
-    * @return resource
-    */
-    public function getCtx()
-    {
-        return $this->ctx;
     }
 }

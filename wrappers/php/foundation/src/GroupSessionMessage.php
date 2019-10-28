@@ -48,6 +48,9 @@ class GroupSessionMessage
     */
     private $ctx;
 
+    const MAX_MESSAGE_LEN = 30188;
+    const MESSAGE_VERSION = 1;
+
     /**
     * Create underlying C context.
     * @param null $ctx

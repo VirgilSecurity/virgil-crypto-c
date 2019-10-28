@@ -45,6 +45,9 @@ class BrainkeyServer
     */
     private $ctx;
 
+    const POINT_LEN = 65;
+    const MPI_LEN = 32;
+
     /**
     * Create underlying C context.
     * @param null $ctx

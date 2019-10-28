@@ -44,30 +44,6 @@ class KeyAlgFactory
 {
 
     /**
-    * @var
-    */
-    private $ctx;
-
-    /**
-    * Create underlying C context.
-    * @param null $ctx
-    * @return void
-    */
-    public function __construct($ctx = null)
-    {
-        $this->ctx = is_null($ctx) ? vscf_key_alg_factory_new_php() : $ctx;
-    }
-
-    /**
-    * Destroy underlying C context.
-    * @return void
-    */
-    public function __destructor()
-    {
-        vscf_key_alg_factory_delete_php($this->ctx);
-    }
-
-    /**
     * Create a key algorithm based on an identifier.
     *
     * @param AlgId $algId
@@ -121,15 +97,5 @@ class KeyAlgFactory
     {
         $ctx = vscf_key_alg_factory_create_from_raw_private_key_php($privateKey->getCtx(), $random->getCtx());
         return FoundationImplementation::wrapKeyAlg($ctx);
-    }
-
-    /**
-    * Get C context.
-    *
-    * @return resource
-    */
-    public function getCtx()
-    {
-        return $this->ctx;
     }
 }

@@ -39,37 +39,15 @@ namespace VirgilCrypto\Phe;
 
 class PheCommon
 {
-    /**
-    * @var
-    */
-    private $ctx;
-
-    /**
-    * Create underlying C context.
-    * @param null $ctx
-    * @return void
-    */
-    public function __construct($ctx = null)
-    {
-        $this->ctx = is_null($ctx) ? vsce_phe_common_new_php() : $ctx;
-    }
-
-    /**
-    * Destroy underlying C context.
-    * @return void
-    */
-    public function __destructor()
-    {
-        vsce_phe_common_delete_php($this->ctx);
-    }
-
-    /**
-    * Get C context.
-    *
-    * @return resource
-    */
-    public function getCtx()
-    {
-        return $this->ctx;
-    }
+    const PHE_POINT_LENGTH = 65;
+    const PHE_MAX_PASSWORD_LENGTH = 128;
+    const PHE_SERVER_IDENTIFIER_LENGTH = 32;
+    const PHE_CLIENT_IDENTIFIER_LENGTH = 32;
+    const PHE_ACCOUNT_KEY_LENGTH = 32;
+    const PHE_PRIVATE_KEY_LENGTH = 32;
+    const PHE_PUBLIC_KEY_LENGTH = 65;
+    const PHE_HASH_LEN = 32;
+    const PHE_MAX_ENCRYPT_LEN = 1024 * 1024 - 64;
+    const PHE_MAX_DECRYPT_LEN = 1024 * 1024;
+    const PHE_MAX_AUTH_LEN = 1024;
 }

@@ -69,14 +69,16 @@ function php_map_high_level (in_module, in_php_module, in_php_project, out_high_
     endif
 
     if ! string_in(my.in_type, "interface, implementation_class")
-        new property to my.out_high_level
-            my._db = php_format_comment("@var")
-            my._property = "private $ctx;"
+        if (defined(my.in_module.context) & my.in_module.context <> "none") | ! defined(my.in_module.context)
+            new property to my.out_high_level
+                my._db = php_format_comment("@var")
+                my._property = "private $ctx;"
 
-            my._res = format_left(my._db + "\n" + my._property, 0)
+                my._res = format_left(my._db + "\n" + my._property, 0)
 
-            . = my._res
-        endnew
+                . = my._res
+            endnew
+        endif
     endif
 
     for my.in_module.constructor as constructor0 where constructor0.visibility = "public" & constructor0.declaration = "public" & constructor0.scope = "public"
@@ -87,6 +89,17 @@ function php_map_high_level (in_module, in_php_module, in_php_project, out_high_
     endfor
 
     my._constant = ""
+
+    if my.in_type = "class"
+        for my.in_module.constant as constant0
+            new constant to high_level
+                .name = php_derive_high_level_constant_name(constant0)
+                .value = constant0.value
+
+                my._constant += format_left("const $(0.name:) = $(0.value:);", 0)
+            endnew
+        endfor
+    endif
 
     if my.in_type = "implementation_class"
         for my.in_module.constant as constant0
@@ -126,7 +139,9 @@ function php_map_high_level (in_module, in_php_module, in_php_project, out_high_
     endnew
 
     if ! string_in (my.in_type, "interface, implementation_class")
-        php_map_high_level_constructor_destructor (my.in_module, my.out_high_level)
+        if (defined(my.in_module.context) & my.in_module.context <> "none") | !defined(my.in_module.context)
+            php_map_high_level_constructor_destructor (my.in_module, my.out_high_level)
+        endif
     endif
 
     if my._implements <> ""
@@ -182,21 +197,23 @@ function php_map_high_level (in_module, in_php_module, in_php_project, out_high_
     endfor
 
     if string_in (my.in_type, "class, implementation")
-        new method to my.in_module
-            .name = "get ctx"
-            .visibility = "public"
-            .declaration = "public"
-            .scope = "public"
-            .is_static = 0
-            .return_type = "resource"
-            .throws_exception = 0
+        if (defined(my.in_module.context) & my.in_module.context <> "none") | ! defined(my.in_module.context)
+            new method to my.in_module
+                .name = "get ctx"
+                .visibility = "public"
+                .declaration = "public"
+                .scope = "public"
+                .is_static = 0
+                .return_type = "resource"
+                .throws_exception = 0
 
-            new custom_code to method
-                . = format_left("return $this->ctx;", 0)
+                new custom_code to method
+                    . = format_left("return $this->ctx;", 0)
+                endnew
+
+                . = "Get C context."
             endnew
-
-            . = "Get C context."
-        endnew
+        endif
     endif
 
     if my.in_type = "implementation_class"

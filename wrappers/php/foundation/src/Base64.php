@@ -44,30 +44,6 @@ class Base64
 {
 
     /**
-    * @var
-    */
-    private $ctx;
-
-    /**
-    * Create underlying C context.
-    * @param null $ctx
-    * @return void
-    */
-    public function __construct($ctx = null)
-    {
-        $this->ctx = is_null($ctx) ? vscf_base64_new_php() : $ctx;
-    }
-
-    /**
-    * Destroy underlying C context.
-    * @return void
-    */
-    public function __destructor()
-    {
-        vscf_base64_delete_php($this->ctx);
-    }
-
-    /**
     * Calculate length in bytes required to hold an encoded base64 string.
     *
     * @param int $dataLen
@@ -111,15 +87,5 @@ class Base64
     public static function decode(string $str): string
     {
         return vscf_base64_decode_php($str);
-    }
-
-    /**
-    * Get C context.
-    *
-    * @return resource
-    */
-    public function getCtx()
-    {
-        return $this->ctx;
     }
 }

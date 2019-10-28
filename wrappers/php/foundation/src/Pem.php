@@ -44,30 +44,6 @@ class Pem
 {
 
     /**
-    * @var
-    */
-    private $ctx;
-
-    /**
-    * Create underlying C context.
-    * @param null $ctx
-    * @return void
-    */
-    public function __construct($ctx = null)
-    {
-        $this->ctx = is_null($ctx) ? vscf_pem_new_php() : $ctx;
-    }
-
-    /**
-    * Destroy underlying C context.
-    * @return void
-    */
-    public function __destructor()
-    {
-        vscf_pem_delete_php($this->ctx);
-    }
-
-    /**
     * Return length in bytes required to hold wrapped PEM format.
     *
     * @param string $title
@@ -125,15 +101,5 @@ class Pem
     public static function title(string $pem): string
     {
         return vscf_pem_title_php($pem);
-    }
-
-    /**
-    * Get C context.
-    *
-    * @return resource
-    */
-    public function getCtx()
-    {
-        return $this->ctx;
     }
 }

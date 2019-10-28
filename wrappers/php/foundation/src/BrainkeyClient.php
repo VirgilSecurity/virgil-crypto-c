@@ -45,6 +45,12 @@ class BrainkeyClient
     */
     private $ctx;
 
+    const POINT_LEN = 65;
+    const MPI_LEN = 32;
+    const SEED_LEN = 32;
+    const MAX_PASSWORD_LEN = 128;
+    const MAX_KEY_NAME_LEN = 128;
+
     /**
     * Create underlying C context.
     * @param null $ctx

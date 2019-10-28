@@ -48,6 +48,11 @@ class GroupSession
     */
     private $ctx;
 
+    const SENDER_ID_LEN = 32;
+    const MAX_PLAIN_TEXT_LEN = 30000;
+    const MAX_EPOCHS_COUNT = 50;
+    const SALT_SIZE = 32;
+
     /**
     * Create underlying C context.
     * @param null $ctx

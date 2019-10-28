@@ -49,6 +49,10 @@ class PheCipher
     */
     private $ctx;
 
+    const SALT_LEN = 32;
+    const KEY_LEN = 32;
+    const NONCE_LEN = 12;
+
     /**
     * Create underlying C context.
     * @param null $ctx
