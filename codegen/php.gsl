@@ -137,7 +137,7 @@ function php_create_class_module (class, php_project, meta)
 
     echo_info ("Create <php_module/> from class: '$(my.class.name:)'", my)
         
-    if my.class.scope <> "public" | my.class.name = "error" | my.class.context = "none"
+    if my.class.scope <> "public" | my.class.name = "error"
         return
     endif
 

@@ -37,6 +37,7 @@
 //
 // Constants
 //
+extern const char vsce_phe_common_t_php_res_name[];
 extern const char vsce_phe_server_t_php_res_name[];
 extern const char vsce_phe_client_t_php_res_name[];
 extern const char vsce_phe_cipher_t_php_res_name[];
@@ -44,6 +45,7 @@ extern const char vsce_phe_cipher_t_php_res_name[];
 //
 // Registered resources
 //
+extern int le_vsce_phe_common_t;
 extern int le_vsce_phe_server_t;
 extern int le_vsce_phe_client_t;
 extern int le_vsce_phe_cipher_t;

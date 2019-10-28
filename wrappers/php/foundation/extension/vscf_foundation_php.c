@@ -39,11 +39,16 @@
 #include <zend_list.h>
 #include "vscf_assert.h"
 #include "vscf_foundation_php.h"
+#include "vscf_oid.h"
+#include "vscf_base64.h"
+#include "vscf_pem.h"
 #include "vscf_message_info.h"
 #include "vscf_key_recipient_info.h"
 #include "vscf_key_recipient_info_list.h"
 #include "vscf_password_recipient_info.h"
 #include "vscf_password_recipient_info_list.h"
+#include "vscf_alg_factory.h"
+#include "vscf_key_alg_factory.h"
 #include "vscf_ecies.h"
 #include "vscf_recipient_cipher.h"
 #include "vscf_message_info_custom_params.h"
@@ -296,11 +301,16 @@ vscf_handle_throw_exception(vscf_status_t status) {
 const char VSCF_FOUNDATION_PHP_VERSION[] = "0.10.4";
 const char VSCF_FOUNDATION_PHP_EXTNAME[] = "vscf_foundation_php";
 const char vscf_impl_t_php_res_name[] = "vscf_impl_t";
+const char vscf_oid_t_php_res_name[] = "vscf_oid_t";
+const char vscf_base64_t_php_res_name[] = "vscf_base64_t";
+const char vscf_pem_t_php_res_name[] = "vscf_pem_t";
 const char vscf_message_info_t_php_res_name[] = "vscf_message_info_t";
 const char vscf_key_recipient_info_t_php_res_name[] = "vscf_key_recipient_info_t";
 const char vscf_key_recipient_info_list_t_php_res_name[] = "vscf_key_recipient_info_list_t";
 const char vscf_password_recipient_info_t_php_res_name[] = "vscf_password_recipient_info_t";
 const char vscf_password_recipient_info_list_t_php_res_name[] = "vscf_password_recipient_info_list_t";
+const char vscf_alg_factory_t_php_res_name[] = "vscf_alg_factory_t";
+const char vscf_key_alg_factory_t_php_res_name[] = "vscf_key_alg_factory_t";
 const char vscf_ecies_t_php_res_name[] = "vscf_ecies_t";
 const char vscf_recipient_cipher_t_php_res_name[] = "vscf_recipient_cipher_t";
 const char vscf_message_info_custom_params_t_php_res_name[] = "vscf_message_info_custom_params_t";
@@ -323,11 +333,16 @@ const char vscf_footer_info_t_php_res_name[] = "vscf_footer_info_t";
 // Registered resources
 //
 int le_vscf_impl_t;
+int le_vscf_oid_t;
+int le_vscf_base64_t;
+int le_vscf_pem_t;
 int le_vscf_message_info_t;
 int le_vscf_key_recipient_info_t;
 int le_vscf_key_recipient_info_list_t;
 int le_vscf_password_recipient_info_t;
 int le_vscf_password_recipient_info_list_t;
+int le_vscf_alg_factory_t;
+int le_vscf_key_alg_factory_t;
 int le_vscf_ecies_t;
 int le_vscf_recipient_cipher_t;
 int le_vscf_message_info_custom_params_t;
@@ -397,6 +412,925 @@ PHP_FUNCTION(vscf_impl_tag_php) {
     // Write returned result
     //
     RETVAL_LONG(tag);
+}
+
+//
+// Wrap method: vscf_oid_new
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+        arginfo_vscf_oid_new_php,
+        0 /*return_reference*/,
+        0 /*required_num_args*/,
+        IS_RESOURCE /*type*/,
+        0 /*allow_null*/)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vscf_oid_new_php) {
+    vscf_oid_t *oid = vscf_oid_new();
+    zend_resource *oid_res = zend_register_resource(oid, le_vscf_oid_t);
+    RETVAL_RES(oid_res);
+}
+
+//
+// Wrap method: vscf_oid_delete
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+        arginfo_vscf_oid_delete_php,
+        0 /*return_reference*/,
+        1 /*required_num_args*/,
+        IS_VOID /*type*/,
+        0 /*allow_null*/)
+
+        ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vscf_oid_delete_php) {
+    //
+    // Declare input arguments
+    //
+    zval *in_ctx = NULL;
+
+    //
+    // Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 1, 1)
+        Z_PARAM_RESOURCE_EX(in_ctx, 1, 0)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    // Fetch for type checking and then release
+    //
+    vscf_oid_t *oid = zend_fetch_resource_ex(in_ctx, vscf_oid_t_php_res_name, le_vscf_oid_t);
+    zend_list_close(Z_RES_P(in_ctx));
+    RETURN_TRUE;
+}
+
+//
+// Wrap method: vscf_oid_from_alg_id
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+    arginfo_vscf_oid_from_alg_id_php,
+    0 /*return_reference*/,
+    1 /*required_num_args*/,
+    IS_STRING /*type*/,
+    0 /*allow_null*/)
+
+
+    ZEND_ARG_TYPE_INFO(0, in_alg_id, IS_LONG, 0)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vscf_oid_from_alg_id_php) {
+
+    //
+    // Declare input argument
+    //
+    zend_long in_alg_id = 0;
+
+    //
+    // Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 1, 1)
+        Z_PARAM_LONG(in_alg_id)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    // Proxy call
+    //
+
+    //
+    // Argument type mapping
+    //
+    vscf_alg_id_t alg_id = (vscf_alg_id_t)in_alg_id;
+
+    //
+    // Call main function
+    //
+    vsc_data_t out_data_temp =vscf_oid_from_alg_id(alg_id);
+    zend_string *out_data = zend_string_init(out_data_temp.bytes, out_data_temp.len, 0);
+
+    //
+    // Write returned result
+    //
+    RETVAL_STR(out_data);
+}
+
+//
+// Wrap method: vscf_oid_to_alg_id
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+    arginfo_vscf_oid_to_alg_id_php,
+    0 /*return_reference*/,
+    1 /*required_num_args*/,
+    IS_LONG /*type*/,
+    0 /*allow_null*/)
+
+
+    ZEND_ARG_TYPE_INFO(0, in_oid, IS_STRING, 0)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vscf_oid_to_alg_id_php) {
+
+    //
+    // Declare input argument
+    //
+    char *in_oid = NULL;
+    size_t in_oid_len = 0;
+
+    //
+    // Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 1, 1)
+        Z_PARAM_STRING_EX(in_oid, in_oid_len, 1 /*check_null*/, 0 /*separate*/)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    // Proxy call
+    //
+    vsc_data_t oid = vsc_data((const byte*)in_oid, in_oid_len);
+
+    //
+    // Call main function
+    //
+    int alg_id =vscf_oid_to_alg_id(oid);
+
+    //
+    // Write returned result
+    //
+    RETVAL_LONG(alg_id);
+}
+
+//
+// Wrap method: vscf_oid_from_id
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+    arginfo_vscf_oid_from_id_php,
+    0 /*return_reference*/,
+    1 /*required_num_args*/,
+    IS_STRING /*type*/,
+    0 /*allow_null*/)
+
+
+    ZEND_ARG_TYPE_INFO(0, in_oid_id, IS_LONG, 0)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vscf_oid_from_id_php) {
+
+    //
+    // Declare input argument
+    //
+    zend_long in_oid_id = 0;
+
+    //
+    // Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 1, 1)
+        Z_PARAM_LONG(in_oid_id)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    // Proxy call
+    //
+
+    //
+    // Argument type mapping
+    //
+    vscf_oid_id_t oid_id = (vscf_oid_id_t)in_oid_id;
+
+    //
+    // Call main function
+    //
+    vsc_data_t out_data_temp =vscf_oid_from_id(oid_id);
+    zend_string *out_data = zend_string_init(out_data_temp.bytes, out_data_temp.len, 0);
+
+    //
+    // Write returned result
+    //
+    RETVAL_STR(out_data);
+}
+
+//
+// Wrap method: vscf_oid_to_id
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+    arginfo_vscf_oid_to_id_php,
+    0 /*return_reference*/,
+    1 /*required_num_args*/,
+    IS_LONG /*type*/,
+    0 /*allow_null*/)
+
+
+    ZEND_ARG_TYPE_INFO(0, in_oid, IS_STRING, 0)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vscf_oid_to_id_php) {
+
+    //
+    // Declare input argument
+    //
+    char *in_oid = NULL;
+    size_t in_oid_len = 0;
+
+    //
+    // Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 1, 1)
+        Z_PARAM_STRING_EX(in_oid, in_oid_len, 1 /*check_null*/, 0 /*separate*/)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    // Proxy call
+    //
+    vsc_data_t oid = vsc_data((const byte*)in_oid, in_oid_len);
+
+    //
+    // Call main function
+    //
+    int oid_id =vscf_oid_to_id(oid);
+
+    //
+    // Write returned result
+    //
+    RETVAL_LONG(oid_id);
+}
+
+//
+// Wrap method: vscf_oid_id_to_alg_id
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+    arginfo_vscf_oid_id_to_alg_id_php,
+    0 /*return_reference*/,
+    1 /*required_num_args*/,
+    IS_LONG /*type*/,
+    0 /*allow_null*/)
+
+
+    ZEND_ARG_TYPE_INFO(0, in_oid_id, IS_LONG, 0)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vscf_oid_id_to_alg_id_php) {
+
+    //
+    // Declare input argument
+    //
+    zend_long in_oid_id = 0;
+
+    //
+    // Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 1, 1)
+        Z_PARAM_LONG(in_oid_id)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    // Proxy call
+    //
+
+    //
+    // Argument type mapping
+    //
+    vscf_oid_id_t oid_id = (vscf_oid_id_t)in_oid_id;
+
+    //
+    // Call main function
+    //
+    int alg_id =vscf_oid_id_to_alg_id(oid_id);
+
+    //
+    // Write returned result
+    //
+    RETVAL_LONG(alg_id);
+}
+
+//
+// Wrap method: vscf_oid_equal
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+    arginfo_vscf_oid_equal_php,
+    0 /*return_reference*/,
+    2 /*required_num_args*/,
+    _IS_BOOL /*type*/,
+    0 /*allow_null*/)
+
+
+    ZEND_ARG_TYPE_INFO(0, in_lhs, IS_STRING, 0)
+    ZEND_ARG_TYPE_INFO(0, in_rhs, IS_STRING, 0)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vscf_oid_equal_php) {
+
+    //
+    // Declare input argument
+    //
+    char *in_lhs = NULL;
+    size_t in_lhs_len = 0;
+    char *in_rhs = NULL;
+    size_t in_rhs_len = 0;
+
+    //
+    // Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 2, 2)
+        Z_PARAM_STRING_EX(in_lhs, in_lhs_len, 1 /*check_null*/, 0 /*separate*/)
+        Z_PARAM_STRING_EX(in_rhs, in_rhs_len, 1 /*check_null*/, 0 /*separate*/)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    // Proxy call
+    //
+    vsc_data_t lhs = vsc_data((const byte*)in_lhs, in_lhs_len);
+    vsc_data_t rhs = vsc_data((const byte*)in_rhs, in_rhs_len);
+
+    //
+    // Call main function
+    //
+    zend_bool res =vscf_oid_equal(lhs, rhs);
+
+    //
+    // Write returned result
+    //
+    RETVAL_BOOL(res);
+}
+
+//
+// Wrap method: vscf_base64_new
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+        arginfo_vscf_base64_new_php,
+        0 /*return_reference*/,
+        0 /*required_num_args*/,
+        IS_RESOURCE /*type*/,
+        0 /*allow_null*/)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vscf_base64_new_php) {
+    vscf_base64_t *base64 = vscf_base64_new();
+    zend_resource *base64_res = zend_register_resource(base64, le_vscf_base64_t);
+    RETVAL_RES(base64_res);
+}
+
+//
+// Wrap method: vscf_base64_delete
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+        arginfo_vscf_base64_delete_php,
+        0 /*return_reference*/,
+        1 /*required_num_args*/,
+        IS_VOID /*type*/,
+        0 /*allow_null*/)
+
+        ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vscf_base64_delete_php) {
+    //
+    // Declare input arguments
+    //
+    zval *in_ctx = NULL;
+
+    //
+    // Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 1, 1)
+        Z_PARAM_RESOURCE_EX(in_ctx, 1, 0)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    // Fetch for type checking and then release
+    //
+    vscf_base64_t *base64 = zend_fetch_resource_ex(in_ctx, vscf_base64_t_php_res_name, le_vscf_base64_t);
+    zend_list_close(Z_RES_P(in_ctx));
+    RETURN_TRUE;
+}
+
+//
+// Wrap method: vscf_base64_encoded_len
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+    arginfo_vscf_base64_encoded_len_php,
+    0 /*return_reference*/,
+    1 /*required_num_args*/,
+    IS_LONG /*type*/,
+    0 /*allow_null*/)
+
+
+    ZEND_ARG_TYPE_INFO(0, in_data_len, IS_LONG, 0)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vscf_base64_encoded_len_php) {
+
+    //
+    // Declare input argument
+    //
+    zend_long in_data_len = 0;
+
+    //
+    // Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 1, 1)
+        Z_PARAM_LONG(in_data_len)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    // Proxy call
+    //
+    size_t data_len = in_data_len;
+
+    //
+    // Call main function
+    //
+    size_t res =vscf_base64_encoded_len(data_len);
+
+    //
+    // Write returned result
+    //
+    RETVAL_LONG(res);
+}
+
+//
+// Wrap method: vscf_base64_encode
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+    arginfo_vscf_base64_encode_php,
+    0 /*return_reference*/,
+    1 /*required_num_args*/,
+    IS_STRING /*type*/,
+    0 /*allow_null*/)
+
+
+    ZEND_ARG_TYPE_INFO(0, in_data, IS_STRING, 0)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vscf_base64_encode_php) {
+
+    //
+    // Declare input argument
+    //
+    char *in_data = NULL;
+    size_t in_data_len = 0;
+
+    //
+    // Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 1, 1)
+        Z_PARAM_STRING_EX(in_data, in_data_len, 1 /*check_null*/, 0 /*separate*/)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    // Proxy call
+    //
+    vsc_data_t data = vsc_data((const byte*)in_data, in_data_len);
+
+    //
+    // Allocate output buffer for output 'str'
+    //
+    zend_string *out_str = zend_string_alloc(vscf_base64_encoded_len(base64, data.len), 0);
+    vsc_buffer_t *str = vsc_buffer_new();
+    vsc_buffer_use(str, (byte *)ZSTR_VAL(out_str), ZSTR_LEN(out_str));
+
+    //
+    // Call main function
+    //
+    vscf_base64_encode(data, str);
+
+    //
+    // Correct string length to the actual
+    //
+    ZSTR_LEN(out_str) = vsc_buffer_len(str);
+
+    //
+    // Write returned result
+    //
+    RETVAL_STR(out_str);
+}
+
+//
+// Wrap method: vscf_base64_decoded_len
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+    arginfo_vscf_base64_decoded_len_php,
+    0 /*return_reference*/,
+    1 /*required_num_args*/,
+    IS_LONG /*type*/,
+    0 /*allow_null*/)
+
+
+    ZEND_ARG_TYPE_INFO(0, in_str_len, IS_LONG, 0)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vscf_base64_decoded_len_php) {
+
+    //
+    // Declare input argument
+    //
+    zend_long in_str_len = 0;
+
+    //
+    // Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 1, 1)
+        Z_PARAM_LONG(in_str_len)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    // Proxy call
+    //
+    size_t str_len = in_str_len;
+
+    //
+    // Call main function
+    //
+    size_t res =vscf_base64_decoded_len(str_len);
+
+    //
+    // Write returned result
+    //
+    RETVAL_LONG(res);
+}
+
+//
+// Wrap method: vscf_base64_decode
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+    arginfo_vscf_base64_decode_php,
+    0 /*return_reference*/,
+    1 /*required_num_args*/,
+    IS_STRING /*type*/,
+    0 /*allow_null*/)
+
+
+    ZEND_ARG_TYPE_INFO(0, in_str, IS_STRING, 0)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vscf_base64_decode_php) {
+
+    //
+    // Declare input argument
+    //
+    char *in_str = NULL;
+    size_t in_str_len = 0;
+
+    //
+    // Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 1, 1)
+        Z_PARAM_STRING_EX(in_str, in_str_len, 1 /*check_null*/, 0 /*separate*/)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    // Proxy call
+    //
+    vsc_data_t str = vsc_data((const byte*)in_str, in_str_len);
+
+    //
+    // Allocate output buffer for output 'data'
+    //
+    zend_string *out_data = zend_string_alloc(vscf_base64_decoded_len(base64, str.len), 0);
+    vsc_buffer_t *data = vsc_buffer_new();
+    vsc_buffer_use(data, (byte *)ZSTR_VAL(out_data), ZSTR_LEN(out_data));
+
+    //
+    // Call main function
+    //
+    vscf_status_t status =vscf_base64_decode(str, data);
+
+    //
+    // Handle error
+    //
+    VSCF_HANDLE_STATUS(status);
+
+    //
+    // Correct string length to the actual
+    //
+    ZSTR_LEN(out_data) = vsc_buffer_len(data);
+
+    //
+    // Write returned result
+    //
+    if (status == vscf_status_SUCCESS) {
+        RETVAL_STR(out_data);
+        vsc_buffer_destroy(&data);
+    }
+    else {
+        zend_string_free(out_data);
+    }
+}
+
+//
+// Wrap method: vscf_pem_new
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+        arginfo_vscf_pem_new_php,
+        0 /*return_reference*/,
+        0 /*required_num_args*/,
+        IS_RESOURCE /*type*/,
+        0 /*allow_null*/)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vscf_pem_new_php) {
+    vscf_pem_t *pem = vscf_pem_new();
+    zend_resource *pem_res = zend_register_resource(pem, le_vscf_pem_t);
+    RETVAL_RES(pem_res);
+}
+
+//
+// Wrap method: vscf_pem_delete
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+        arginfo_vscf_pem_delete_php,
+        0 /*return_reference*/,
+        1 /*required_num_args*/,
+        IS_VOID /*type*/,
+        0 /*allow_null*/)
+
+        ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vscf_pem_delete_php) {
+    //
+    // Declare input arguments
+    //
+    zval *in_ctx = NULL;
+
+    //
+    // Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 1, 1)
+        Z_PARAM_RESOURCE_EX(in_ctx, 1, 0)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    // Fetch for type checking and then release
+    //
+    vscf_pem_t *pem = zend_fetch_resource_ex(in_ctx, vscf_pem_t_php_res_name, le_vscf_pem_t);
+    zend_list_close(Z_RES_P(in_ctx));
+    RETURN_TRUE;
+}
+
+//
+// Wrap method: vscf_pem_wrapped_len
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+    arginfo_vscf_pem_wrapped_len_php,
+    0 /*return_reference*/,
+    2 /*required_num_args*/,
+    IS_LONG /*type*/,
+    0 /*allow_null*/)
+
+
+    ZEND_ARG_TYPE_INFO(0, in_title, IS_STRING, 0)
+    ZEND_ARG_TYPE_INFO(0, in_data_len, IS_LONG, 0)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vscf_pem_wrapped_len_php) {
+
+    //
+    // Declare input argument
+    //
+    char *in_title = NULL;
+    size_t in_title_len = 0;
+    zend_long in_data_len = 0;
+
+    //
+    // Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 2, 2)
+        Z_PARAM_STRING_EX(in_title, in_title_len, 1 /*check_null*/, 0 /*separate*/)
+        Z_PARAM_LONG(in_data_len)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    // Proxy call
+    //
+    size_t data_len = in_data_len;
+
+    //
+    // Call main function
+    //
+    size_t res =vscf_pem_wrapped_len(title, data_len);
+
+    //
+    // Write returned result
+    //
+    RETVAL_LONG(res);
+}
+
+//
+// Wrap method: vscf_pem_wrap
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+    arginfo_vscf_pem_wrap_php,
+    0 /*return_reference*/,
+    2 /*required_num_args*/,
+    IS_STRING /*type*/,
+    0 /*allow_null*/)
+
+
+    ZEND_ARG_TYPE_INFO(0, in_title, IS_STRING, 0)
+    ZEND_ARG_TYPE_INFO(0, in_data, IS_STRING, 0)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vscf_pem_wrap_php) {
+
+    //
+    // Declare input argument
+    //
+    char *in_title = NULL;
+    size_t in_title_len = 0;
+    char *in_data = NULL;
+    size_t in_data_len = 0;
+
+    //
+    // Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 2, 2)
+        Z_PARAM_STRING_EX(in_title, in_title_len, 1 /*check_null*/, 0 /*separate*/)
+        Z_PARAM_STRING_EX(in_data, in_data_len, 1 /*check_null*/, 0 /*separate*/)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    // Proxy call
+    //
+    vsc_data_t data = vsc_data((const byte*)in_data, in_data_len);
+
+    //
+    // Allocate output buffer for output 'pem'
+    //
+    zend_string *out_pem = zend_string_alloc(vscf_pem_wrapped_len(pem, title, data.len), 0);
+    vsc_buffer_t *pem = vsc_buffer_new();
+    vsc_buffer_use(pem, (byte *)ZSTR_VAL(out_pem), ZSTR_LEN(out_pem));
+
+    //
+    // Call main function
+    //
+    vscf_pem_wrap(title, data, pem);
+
+    //
+    // Correct string length to the actual
+    //
+    ZSTR_LEN(out_pem) = vsc_buffer_len(pem);
+
+    //
+    // Write returned result
+    //
+    RETVAL_STR(out_pem);
+}
+
+//
+// Wrap method: vscf_pem_unwrapped_len
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+    arginfo_vscf_pem_unwrapped_len_php,
+    0 /*return_reference*/,
+    1 /*required_num_args*/,
+    IS_LONG /*type*/,
+    0 /*allow_null*/)
+
+
+    ZEND_ARG_TYPE_INFO(0, in_pem_len, IS_LONG, 0)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vscf_pem_unwrapped_len_php) {
+
+    //
+    // Declare input argument
+    //
+    zend_long in_pem_len = 0;
+
+    //
+    // Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 1, 1)
+        Z_PARAM_LONG(in_pem_len)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    // Proxy call
+    //
+    size_t pem_len = in_pem_len;
+
+    //
+    // Call main function
+    //
+    size_t res =vscf_pem_unwrapped_len(pem_len);
+
+    //
+    // Write returned result
+    //
+    RETVAL_LONG(res);
+}
+
+//
+// Wrap method: vscf_pem_unwrap
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+    arginfo_vscf_pem_unwrap_php,
+    0 /*return_reference*/,
+    1 /*required_num_args*/,
+    IS_STRING /*type*/,
+    0 /*allow_null*/)
+
+
+    ZEND_ARG_TYPE_INFO(0, in_pem, IS_STRING, 0)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vscf_pem_unwrap_php) {
+
+    //
+    // Declare input argument
+    //
+    char *in_pem = NULL;
+    size_t in_pem_len = 0;
+
+    //
+    // Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 1, 1)
+        Z_PARAM_STRING_EX(in_pem, in_pem_len, 1 /*check_null*/, 0 /*separate*/)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    // Proxy call
+    //
+    vsc_data_t pem = vsc_data((const byte*)in_pem, in_pem_len);
+
+    //
+    // Allocate output buffer for output 'data'
+    //
+    zend_string *out_data = zend_string_alloc(vscf_pem_unwrapped_len(pem, pem.len), 0);
+    vsc_buffer_t *data = vsc_buffer_new();
+    vsc_buffer_use(data, (byte *)ZSTR_VAL(out_data), ZSTR_LEN(out_data));
+
+    //
+    // Call main function
+    //
+    vscf_status_t status =vscf_pem_unwrap(pem, data);
+
+    //
+    // Handle error
+    //
+    VSCF_HANDLE_STATUS(status);
+
+    //
+    // Correct string length to the actual
+    //
+    ZSTR_LEN(out_data) = vsc_buffer_len(data);
+
+    //
+    // Write returned result
+    //
+    if (status == vscf_status_SUCCESS) {
+        RETVAL_STR(out_data);
+        vsc_buffer_destroy(&data);
+    }
+    else {
+        zend_string_free(out_data);
+    }
+}
+
+//
+// Wrap method: vscf_pem_title
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+    arginfo_vscf_pem_title_php,
+    0 /*return_reference*/,
+    1 /*required_num_args*/,
+    IS_STRING /*type*/,
+    0 /*allow_null*/)
+
+
+    ZEND_ARG_TYPE_INFO(0, in_pem, IS_STRING, 0)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vscf_pem_title_php) {
+
+    //
+    // Declare input argument
+    //
+    char *in_pem = NULL;
+    size_t in_pem_len = 0;
+
+    //
+    // Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 1, 1)
+        Z_PARAM_STRING_EX(in_pem, in_pem_len, 1 /*check_null*/, 0 /*separate*/)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    // Proxy call
+    //
+    vsc_data_t pem = vsc_data((const byte*)in_pem, in_pem_len);
+
+    //
+    // Call main function
+    //
+    vsc_data_t out_data_temp =vscf_pem_title(pem);
+    zend_string *out_data = zend_string_init(out_data_temp.bytes, out_data_temp.len, 0);
+
+    //
+    // Write returned result
+    //
+    RETVAL_STR(out_data);
 }
 
 //
@@ -1940,6 +2874,573 @@ PHP_FUNCTION(vscf_password_recipient_info_list_clear_php) {
     // Call main function
     //
     vscf_password_recipient_info_list_clear(password_recipient_info_list);
+}
+
+//
+// Wrap method: vscf_alg_factory_new
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+        arginfo_vscf_alg_factory_new_php,
+        0 /*return_reference*/,
+        0 /*required_num_args*/,
+        IS_RESOURCE /*type*/,
+        0 /*allow_null*/)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vscf_alg_factory_new_php) {
+    vscf_alg_factory_t *alg_factory = vscf_alg_factory_new();
+    zend_resource *alg_factory_res = zend_register_resource(alg_factory, le_vscf_alg_factory_t);
+    RETVAL_RES(alg_factory_res);
+}
+
+//
+// Wrap method: vscf_alg_factory_delete
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+        arginfo_vscf_alg_factory_delete_php,
+        0 /*return_reference*/,
+        1 /*required_num_args*/,
+        IS_VOID /*type*/,
+        0 /*allow_null*/)
+
+        ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vscf_alg_factory_delete_php) {
+    //
+    // Declare input arguments
+    //
+    zval *in_ctx = NULL;
+
+    //
+    // Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 1, 1)
+        Z_PARAM_RESOURCE_EX(in_ctx, 1, 0)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    // Fetch for type checking and then release
+    //
+    vscf_alg_factory_t *alg_factory = zend_fetch_resource_ex(in_ctx, vscf_alg_factory_t_php_res_name, le_vscf_alg_factory_t);
+    zend_list_close(Z_RES_P(in_ctx));
+    RETURN_TRUE;
+}
+
+//
+// Wrap method: vscf_alg_factory_create_hash_from_info
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+    arginfo_vscf_alg_factory_create_hash_from_info_php,
+    0 /*return_reference*/,
+    1 /*required_num_args*/,
+    IS_RESOURCE /*type*/,
+    0 /*allow_null*/)
+
+
+    ZEND_ARG_TYPE_INFO(0, in_alg_info, IS_RESOURCE, 0)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vscf_alg_factory_create_hash_from_info_php) {
+
+    //
+    // Declare input argument
+    //
+    zval *in_alg_info = NULL;
+
+    //
+    // Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 1, 1)
+        Z_PARAM_RESOURCE_EX(in_alg_info, 1 /*check_null*/, 0 /*separate*/)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    // Proxy call
+    //
+    vscf_impl_t *alg_info = zend_fetch_resource_ex(in_alg_info, vscf_impl_t_php_res_name, le_vscf_impl_t);
+
+    //
+    // Call main function
+    //
+    vscf_impl_t *hash =vscf_alg_factory_create_hash_from_info(alg_info);
+
+    //
+    // Write returned result
+    //
+    zend_resource *hash_res = zend_register_resource(hash, le_vscf_impl_t);
+    RETVAL_RES(hash_res);
+}
+
+//
+// Wrap method: vscf_alg_factory_create_mac_from_info
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+    arginfo_vscf_alg_factory_create_mac_from_info_php,
+    0 /*return_reference*/,
+    1 /*required_num_args*/,
+    IS_RESOURCE /*type*/,
+    0 /*allow_null*/)
+
+
+    ZEND_ARG_TYPE_INFO(0, in_alg_info, IS_RESOURCE, 0)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vscf_alg_factory_create_mac_from_info_php) {
+
+    //
+    // Declare input argument
+    //
+    zval *in_alg_info = NULL;
+
+    //
+    // Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 1, 1)
+        Z_PARAM_RESOURCE_EX(in_alg_info, 1 /*check_null*/, 0 /*separate*/)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    // Proxy call
+    //
+    vscf_impl_t *alg_info = zend_fetch_resource_ex(in_alg_info, vscf_impl_t_php_res_name, le_vscf_impl_t);
+
+    //
+    // Call main function
+    //
+    vscf_impl_t *mac =vscf_alg_factory_create_mac_from_info(alg_info);
+
+    //
+    // Write returned result
+    //
+    zend_resource *mac_res = zend_register_resource(mac, le_vscf_impl_t);
+    RETVAL_RES(mac_res);
+}
+
+//
+// Wrap method: vscf_alg_factory_create_kdf_from_info
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+    arginfo_vscf_alg_factory_create_kdf_from_info_php,
+    0 /*return_reference*/,
+    1 /*required_num_args*/,
+    IS_RESOURCE /*type*/,
+    0 /*allow_null*/)
+
+
+    ZEND_ARG_TYPE_INFO(0, in_alg_info, IS_RESOURCE, 0)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vscf_alg_factory_create_kdf_from_info_php) {
+
+    //
+    // Declare input argument
+    //
+    zval *in_alg_info = NULL;
+
+    //
+    // Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 1, 1)
+        Z_PARAM_RESOURCE_EX(in_alg_info, 1 /*check_null*/, 0 /*separate*/)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    // Proxy call
+    //
+    vscf_impl_t *alg_info = zend_fetch_resource_ex(in_alg_info, vscf_impl_t_php_res_name, le_vscf_impl_t);
+
+    //
+    // Call main function
+    //
+    vscf_impl_t *kdf =vscf_alg_factory_create_kdf_from_info(alg_info);
+
+    //
+    // Write returned result
+    //
+    zend_resource *kdf_res = zend_register_resource(kdf, le_vscf_impl_t);
+    RETVAL_RES(kdf_res);
+}
+
+//
+// Wrap method: vscf_alg_factory_create_salted_kdf_from_info
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+    arginfo_vscf_alg_factory_create_salted_kdf_from_info_php,
+    0 /*return_reference*/,
+    1 /*required_num_args*/,
+    IS_RESOURCE /*type*/,
+    0 /*allow_null*/)
+
+
+    ZEND_ARG_TYPE_INFO(0, in_alg_info, IS_RESOURCE, 0)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vscf_alg_factory_create_salted_kdf_from_info_php) {
+
+    //
+    // Declare input argument
+    //
+    zval *in_alg_info = NULL;
+
+    //
+    // Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 1, 1)
+        Z_PARAM_RESOURCE_EX(in_alg_info, 1 /*check_null*/, 0 /*separate*/)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    // Proxy call
+    //
+    vscf_impl_t *alg_info = zend_fetch_resource_ex(in_alg_info, vscf_impl_t_php_res_name, le_vscf_impl_t);
+
+    //
+    // Call main function
+    //
+    vscf_impl_t *salted_kdf =vscf_alg_factory_create_salted_kdf_from_info(alg_info);
+
+    //
+    // Write returned result
+    //
+    zend_resource *salted_kdf_res = zend_register_resource(salted_kdf, le_vscf_impl_t);
+    RETVAL_RES(salted_kdf_res);
+}
+
+//
+// Wrap method: vscf_alg_factory_create_cipher_from_info
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+    arginfo_vscf_alg_factory_create_cipher_from_info_php,
+    0 /*return_reference*/,
+    1 /*required_num_args*/,
+    IS_RESOURCE /*type*/,
+    0 /*allow_null*/)
+
+
+    ZEND_ARG_TYPE_INFO(0, in_alg_info, IS_RESOURCE, 0)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vscf_alg_factory_create_cipher_from_info_php) {
+
+    //
+    // Declare input argument
+    //
+    zval *in_alg_info = NULL;
+
+    //
+    // Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 1, 1)
+        Z_PARAM_RESOURCE_EX(in_alg_info, 1 /*check_null*/, 0 /*separate*/)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    // Proxy call
+    //
+    vscf_impl_t *alg_info = zend_fetch_resource_ex(in_alg_info, vscf_impl_t_php_res_name, le_vscf_impl_t);
+
+    //
+    // Call main function
+    //
+    vscf_impl_t *cipher =vscf_alg_factory_create_cipher_from_info(alg_info);
+
+    //
+    // Write returned result
+    //
+    zend_resource *cipher_res = zend_register_resource(cipher, le_vscf_impl_t);
+    RETVAL_RES(cipher_res);
+}
+
+//
+// Wrap method: vscf_key_alg_factory_new
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+        arginfo_vscf_key_alg_factory_new_php,
+        0 /*return_reference*/,
+        0 /*required_num_args*/,
+        IS_RESOURCE /*type*/,
+        0 /*allow_null*/)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vscf_key_alg_factory_new_php) {
+    vscf_key_alg_factory_t *key_alg_factory = vscf_key_alg_factory_new();
+    zend_resource *key_alg_factory_res = zend_register_resource(key_alg_factory, le_vscf_key_alg_factory_t);
+    RETVAL_RES(key_alg_factory_res);
+}
+
+//
+// Wrap method: vscf_key_alg_factory_delete
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+        arginfo_vscf_key_alg_factory_delete_php,
+        0 /*return_reference*/,
+        1 /*required_num_args*/,
+        IS_VOID /*type*/,
+        0 /*allow_null*/)
+
+        ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vscf_key_alg_factory_delete_php) {
+    //
+    // Declare input arguments
+    //
+    zval *in_ctx = NULL;
+
+    //
+    // Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 1, 1)
+        Z_PARAM_RESOURCE_EX(in_ctx, 1, 0)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    // Fetch for type checking and then release
+    //
+    vscf_key_alg_factory_t *key_alg_factory = zend_fetch_resource_ex(in_ctx, vscf_key_alg_factory_t_php_res_name, le_vscf_key_alg_factory_t);
+    zend_list_close(Z_RES_P(in_ctx));
+    RETURN_TRUE;
+}
+
+//
+// Wrap method: vscf_key_alg_factory_create_from_alg_id
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+    arginfo_vscf_key_alg_factory_create_from_alg_id_php,
+    0 /*return_reference*/,
+    2 /*required_num_args*/,
+    IS_RESOURCE /*type*/,
+    0 /*allow_null*/)
+
+
+    ZEND_ARG_TYPE_INFO(0, in_alg_id, IS_LONG, 0)
+    ZEND_ARG_TYPE_INFO(0, in_random, IS_RESOURCE, 0)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vscf_key_alg_factory_create_from_alg_id_php) {
+
+    //
+    // Declare input argument
+    //
+    zend_long in_alg_id = 0;
+    zval *in_random = NULL;
+
+    //
+    // Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 2, 2)
+        Z_PARAM_LONG(in_alg_id)
+        Z_PARAM_RESOURCE_EX(in_random, 1 /*check_null*/, 0 /*separate*/)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    // Proxy call
+    //
+    vscf_impl_t *random = zend_fetch_resource_ex(in_random, vscf_impl_t_php_res_name, le_vscf_impl_t);
+    vscf_error_t error;
+    vscf_error_reset(&error);
+
+    //
+    // Argument type mapping
+    //
+    vscf_alg_id_t alg_id = (vscf_alg_id_t)in_alg_id;
+
+    //
+    // Call main function
+    //
+    vscf_impl_t *key_alg =vscf_key_alg_factory_create_from_alg_id(alg_id, random, &error);
+
+    //
+    // Handle error
+    //
+    vscf_status_t status = vscf_error_status(&error);
+    VSCF_HANDLE_STATUS(status);
+
+    //
+    // Write returned result
+    //
+    if (status == vscf_status_SUCCESS) {
+        zend_resource *key_alg_res = zend_register_resource(key_alg, le_vscf_impl_t);
+        RETVAL_RES(key_alg_res);
+    }
+}
+
+//
+// Wrap method: vscf_key_alg_factory_create_from_key
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+    arginfo_vscf_key_alg_factory_create_from_key_php,
+    0 /*return_reference*/,
+    2 /*required_num_args*/,
+    IS_RESOURCE /*type*/,
+    0 /*allow_null*/)
+
+
+    ZEND_ARG_TYPE_INFO(0, in_key, IS_RESOURCE, 0)
+    ZEND_ARG_TYPE_INFO(0, in_random, IS_RESOURCE, 0)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vscf_key_alg_factory_create_from_key_php) {
+
+    //
+    // Declare input argument
+    //
+    zval *in_key = NULL;
+    zval *in_random = NULL;
+
+    //
+    // Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 2, 2)
+        Z_PARAM_RESOURCE_EX(in_key, 1 /*check_null*/, 0 /*separate*/)
+        Z_PARAM_RESOURCE_EX(in_random, 1 /*check_null*/, 0 /*separate*/)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    // Proxy call
+    //
+    vscf_impl_t *key = zend_fetch_resource_ex(in_key, vscf_impl_t_php_res_name, le_vscf_impl_t);
+    vscf_impl_t *random = zend_fetch_resource_ex(in_random, vscf_impl_t_php_res_name, le_vscf_impl_t);
+    vscf_error_t error;
+    vscf_error_reset(&error);
+
+    //
+    // Call main function
+    //
+    vscf_impl_t *key_alg =vscf_key_alg_factory_create_from_key(key, random, &error);
+
+    //
+    // Handle error
+    //
+    vscf_status_t status = vscf_error_status(&error);
+    VSCF_HANDLE_STATUS(status);
+
+    //
+    // Write returned result
+    //
+    if (status == vscf_status_SUCCESS) {
+        zend_resource *key_alg_res = zend_register_resource(key_alg, le_vscf_impl_t);
+        RETVAL_RES(key_alg_res);
+    }
+}
+
+//
+// Wrap method: vscf_key_alg_factory_create_from_raw_public_key
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+    arginfo_vscf_key_alg_factory_create_from_raw_public_key_php,
+    0 /*return_reference*/,
+    2 /*required_num_args*/,
+    IS_RESOURCE /*type*/,
+    0 /*allow_null*/)
+
+
+    ZEND_ARG_TYPE_INFO(0, in_public_key, IS_RESOURCE, 0)
+    ZEND_ARG_TYPE_INFO(0, in_random, IS_RESOURCE, 0)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vscf_key_alg_factory_create_from_raw_public_key_php) {
+
+    //
+    // Declare input argument
+    //
+    zval *in_public_key = NULL;
+    zval *in_random = NULL;
+
+    //
+    // Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 2, 2)
+        Z_PARAM_RESOURCE_EX(in_public_key, 1 /*check_null*/, 0 /*separate*/)
+        Z_PARAM_RESOURCE_EX(in_random, 1 /*check_null*/, 0 /*separate*/)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    // Proxy call
+    //
+    vscf_raw_public_key_t *public_key = zend_fetch_resource_ex(in_public_key, vscf_impl_t_php_res_name, le_vscf_impl_t);
+    vscf_impl_t *random = zend_fetch_resource_ex(in_random, vscf_impl_t_php_res_name, le_vscf_impl_t);
+    vscf_error_t error;
+    vscf_error_reset(&error);
+
+    //
+    // Call main function
+    //
+    vscf_impl_t *key_alg =vscf_key_alg_factory_create_from_raw_public_key(public_key, random, &error);
+
+    //
+    // Handle error
+    //
+    vscf_status_t status = vscf_error_status(&error);
+    VSCF_HANDLE_STATUS(status);
+
+    //
+    // Write returned result
+    //
+    if (status == vscf_status_SUCCESS) {
+        zend_resource *key_alg_res = zend_register_resource(key_alg, le_vscf_impl_t);
+        RETVAL_RES(key_alg_res);
+    }
+}
+
+//
+// Wrap method: vscf_key_alg_factory_create_from_raw_private_key
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+    arginfo_vscf_key_alg_factory_create_from_raw_private_key_php,
+    0 /*return_reference*/,
+    2 /*required_num_args*/,
+    IS_RESOURCE /*type*/,
+    0 /*allow_null*/)
+
+
+    ZEND_ARG_TYPE_INFO(0, in_private_key, IS_RESOURCE, 0)
+    ZEND_ARG_TYPE_INFO(0, in_random, IS_RESOURCE, 0)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vscf_key_alg_factory_create_from_raw_private_key_php) {
+
+    //
+    // Declare input argument
+    //
+    zval *in_private_key = NULL;
+    zval *in_random = NULL;
+
+    //
+    // Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 2, 2)
+        Z_PARAM_RESOURCE_EX(in_private_key, 1 /*check_null*/, 0 /*separate*/)
+        Z_PARAM_RESOURCE_EX(in_random, 1 /*check_null*/, 0 /*separate*/)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    // Proxy call
+    //
+    vscf_raw_private_key_t *private_key = zend_fetch_resource_ex(in_private_key, vscf_impl_t_php_res_name, le_vscf_impl_t);
+    vscf_impl_t *random = zend_fetch_resource_ex(in_random, vscf_impl_t_php_res_name, le_vscf_impl_t);
+    vscf_error_t error;
+    vscf_error_reset(&error);
+
+    //
+    // Call main function
+    //
+    vscf_impl_t *key_alg =vscf_key_alg_factory_create_from_raw_private_key(private_key, random, &error);
+
+    //
+    // Handle error
+    //
+    vscf_status_t status = vscf_error_status(&error);
+    VSCF_HANDLE_STATUS(status);
+
+    //
+    // Write returned result
+    //
+    if (status == vscf_status_SUCCESS) {
+        zend_resource *key_alg_res = zend_register_resource(key_alg, le_vscf_impl_t);
+        RETVAL_RES(key_alg_res);
+    }
 }
 
 //
@@ -31014,6 +32515,27 @@ PHP_FUNCTION(vscf_message_info_der_serializer_use_asn1_writer_php) {
 //
 static zend_function_entry vscf_foundation_php_functions[] = {
     PHP_FE(vscf_impl_tag_php, arginfo_vscf_impl_tag_php)
+    PHP_FE(vscf_oid_new_php, arginfo_vscf_oid_new_php)
+    PHP_FE(vscf_oid_delete_php, arginfo_vscf_oid_delete_php)
+    PHP_FE(vscf_oid_from_alg_id_php, arginfo_vscf_oid_from_alg_id_php)
+    PHP_FE(vscf_oid_to_alg_id_php, arginfo_vscf_oid_to_alg_id_php)
+    PHP_FE(vscf_oid_from_id_php, arginfo_vscf_oid_from_id_php)
+    PHP_FE(vscf_oid_to_id_php, arginfo_vscf_oid_to_id_php)
+    PHP_FE(vscf_oid_id_to_alg_id_php, arginfo_vscf_oid_id_to_alg_id_php)
+    PHP_FE(vscf_oid_equal_php, arginfo_vscf_oid_equal_php)
+    PHP_FE(vscf_base64_new_php, arginfo_vscf_base64_new_php)
+    PHP_FE(vscf_base64_delete_php, arginfo_vscf_base64_delete_php)
+    PHP_FE(vscf_base64_encoded_len_php, arginfo_vscf_base64_encoded_len_php)
+    PHP_FE(vscf_base64_encode_php, arginfo_vscf_base64_encode_php)
+    PHP_FE(vscf_base64_decoded_len_php, arginfo_vscf_base64_decoded_len_php)
+    PHP_FE(vscf_base64_decode_php, arginfo_vscf_base64_decode_php)
+    PHP_FE(vscf_pem_new_php, arginfo_vscf_pem_new_php)
+    PHP_FE(vscf_pem_delete_php, arginfo_vscf_pem_delete_php)
+    PHP_FE(vscf_pem_wrapped_len_php, arginfo_vscf_pem_wrapped_len_php)
+    PHP_FE(vscf_pem_wrap_php, arginfo_vscf_pem_wrap_php)
+    PHP_FE(vscf_pem_unwrapped_len_php, arginfo_vscf_pem_unwrapped_len_php)
+    PHP_FE(vscf_pem_unwrap_php, arginfo_vscf_pem_unwrap_php)
+    PHP_FE(vscf_pem_title_php, arginfo_vscf_pem_title_php)
     PHP_FE(vscf_message_info_new_php, arginfo_vscf_message_info_new_php)
     PHP_FE(vscf_message_info_delete_php, arginfo_vscf_message_info_delete_php)
     PHP_FE(vscf_message_info_data_encryption_alg_info_php, arginfo_vscf_message_info_data_encryption_alg_info_php)
@@ -31053,6 +32575,19 @@ static zend_function_entry vscf_foundation_php_functions[] = {
     PHP_FE(vscf_password_recipient_info_list_has_prev_php, arginfo_vscf_password_recipient_info_list_has_prev_php)
     PHP_FE(vscf_password_recipient_info_list_prev_php, arginfo_vscf_password_recipient_info_list_prev_php)
     PHP_FE(vscf_password_recipient_info_list_clear_php, arginfo_vscf_password_recipient_info_list_clear_php)
+    PHP_FE(vscf_alg_factory_new_php, arginfo_vscf_alg_factory_new_php)
+    PHP_FE(vscf_alg_factory_delete_php, arginfo_vscf_alg_factory_delete_php)
+    PHP_FE(vscf_alg_factory_create_hash_from_info_php, arginfo_vscf_alg_factory_create_hash_from_info_php)
+    PHP_FE(vscf_alg_factory_create_mac_from_info_php, arginfo_vscf_alg_factory_create_mac_from_info_php)
+    PHP_FE(vscf_alg_factory_create_kdf_from_info_php, arginfo_vscf_alg_factory_create_kdf_from_info_php)
+    PHP_FE(vscf_alg_factory_create_salted_kdf_from_info_php, arginfo_vscf_alg_factory_create_salted_kdf_from_info_php)
+    PHP_FE(vscf_alg_factory_create_cipher_from_info_php, arginfo_vscf_alg_factory_create_cipher_from_info_php)
+    PHP_FE(vscf_key_alg_factory_new_php, arginfo_vscf_key_alg_factory_new_php)
+    PHP_FE(vscf_key_alg_factory_delete_php, arginfo_vscf_key_alg_factory_delete_php)
+    PHP_FE(vscf_key_alg_factory_create_from_alg_id_php, arginfo_vscf_key_alg_factory_create_from_alg_id_php)
+    PHP_FE(vscf_key_alg_factory_create_from_key_php, arginfo_vscf_key_alg_factory_create_from_key_php)
+    PHP_FE(vscf_key_alg_factory_create_from_raw_public_key_php, arginfo_vscf_key_alg_factory_create_from_raw_public_key_php)
+    PHP_FE(vscf_key_alg_factory_create_from_raw_private_key_php, arginfo_vscf_key_alg_factory_create_from_raw_private_key_php)
     PHP_FE(vscf_ecies_new_php, arginfo_vscf_ecies_new_php)
     PHP_FE(vscf_ecies_delete_php, arginfo_vscf_ecies_delete_php)
     PHP_FE(vscf_ecies_set_key_alg_php, arginfo_vscf_ecies_set_key_alg_php)
@@ -31719,6 +33254,15 @@ ZEND_GET_MODULE(vscf_foundation_php)
 static void vscf_impl_dtor_php(zend_resource *rsrc) {
     vscf_impl_delete((vscf_impl_t *)rsrc->ptr);
 }
+static void vscf_oid_dtor_php(zend_resource *rsrc) {
+    vscf_oid_delete((vscf_oid_t *)rsrc->ptr);
+}
+static void vscf_base64_dtor_php(zend_resource *rsrc) {
+    vscf_base64_delete((vscf_base64_t *)rsrc->ptr);
+}
+static void vscf_pem_dtor_php(zend_resource *rsrc) {
+    vscf_pem_delete((vscf_pem_t *)rsrc->ptr);
+}
 static void vscf_message_info_dtor_php(zend_resource *rsrc) {
     vscf_message_info_delete((vscf_message_info_t *)rsrc->ptr);
 }
@@ -31733,6 +33277,12 @@ static void vscf_password_recipient_info_dtor_php(zend_resource *rsrc) {
 }
 static void vscf_password_recipient_info_list_dtor_php(zend_resource *rsrc) {
     vscf_password_recipient_info_list_delete((vscf_password_recipient_info_list_t *)rsrc->ptr);
+}
+static void vscf_alg_factory_dtor_php(zend_resource *rsrc) {
+    vscf_alg_factory_delete((vscf_alg_factory_t *)rsrc->ptr);
+}
+static void vscf_key_alg_factory_dtor_php(zend_resource *rsrc) {
+    vscf_key_alg_factory_delete((vscf_key_alg_factory_t *)rsrc->ptr);
 }
 static void vscf_ecies_dtor_php(zend_resource *rsrc) {
     vscf_ecies_delete((vscf_ecies_t *)rsrc->ptr);
@@ -31787,11 +33337,16 @@ static void vscf_footer_info_dtor_php(zend_resource *rsrc) {
 }
 PHP_MINIT_FUNCTION(vscf_foundation_php) {
     le_vscf_impl_t = zend_register_list_destructors_ex(vscf_impl_dtor_php, NULL, vscf_impl_t_php_res_name, module_number);
+    le_vscf_oid_t = zend_register_list_destructors_ex(vscf_oid_dtor_php, NULL, vscf_oid_t_php_res_name, module_number);
+    le_vscf_base64_t = zend_register_list_destructors_ex(vscf_base64_dtor_php, NULL, vscf_base64_t_php_res_name, module_number);
+    le_vscf_pem_t = zend_register_list_destructors_ex(vscf_pem_dtor_php, NULL, vscf_pem_t_php_res_name, module_number);
     le_vscf_message_info_t = zend_register_list_destructors_ex(vscf_message_info_dtor_php, NULL, vscf_message_info_t_php_res_name, module_number);
     le_vscf_key_recipient_info_t = zend_register_list_destructors_ex(vscf_key_recipient_info_dtor_php, NULL, vscf_key_recipient_info_t_php_res_name, module_number);
     le_vscf_key_recipient_info_list_t = zend_register_list_destructors_ex(vscf_key_recipient_info_list_dtor_php, NULL, vscf_key_recipient_info_list_t_php_res_name, module_number);
     le_vscf_password_recipient_info_t = zend_register_list_destructors_ex(vscf_password_recipient_info_dtor_php, NULL, vscf_password_recipient_info_t_php_res_name, module_number);
     le_vscf_password_recipient_info_list_t = zend_register_list_destructors_ex(vscf_password_recipient_info_list_dtor_php, NULL, vscf_password_recipient_info_list_t_php_res_name, module_number);
+    le_vscf_alg_factory_t = zend_register_list_destructors_ex(vscf_alg_factory_dtor_php, NULL, vscf_alg_factory_t_php_res_name, module_number);
+    le_vscf_key_alg_factory_t = zend_register_list_destructors_ex(vscf_key_alg_factory_dtor_php, NULL, vscf_key_alg_factory_t_php_res_name, module_number);
     le_vscf_ecies_t = zend_register_list_destructors_ex(vscf_ecies_dtor_php, NULL, vscf_ecies_t_php_res_name, module_number);
     le_vscf_recipient_cipher_t = zend_register_list_destructors_ex(vscf_recipient_cipher_dtor_php, NULL, vscf_recipient_cipher_t_php_res_name, module_number);
     le_vscf_message_info_custom_params_t = zend_register_list_destructors_ex(vscf_message_info_custom_params_dtor_php, NULL, vscf_message_info_custom_params_t_php_res_name, module_number);

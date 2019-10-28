@@ -38,11 +38,16 @@
 // Constants
 //
 extern const char vscf_impl_t_php_res_name[];
+extern const char vscf_oid_t_php_res_name[];
+extern const char vscf_base64_t_php_res_name[];
+extern const char vscf_pem_t_php_res_name[];
 extern const char vscf_message_info_t_php_res_name[];
 extern const char vscf_key_recipient_info_t_php_res_name[];
 extern const char vscf_key_recipient_info_list_t_php_res_name[];
 extern const char vscf_password_recipient_info_t_php_res_name[];
 extern const char vscf_password_recipient_info_list_t_php_res_name[];
+extern const char vscf_alg_factory_t_php_res_name[];
+extern const char vscf_key_alg_factory_t_php_res_name[];
 extern const char vscf_ecies_t_php_res_name[];
 extern const char vscf_recipient_cipher_t_php_res_name[];
 extern const char vscf_message_info_custom_params_t_php_res_name[];
@@ -65,11 +70,16 @@ extern const char vscf_footer_info_t_php_res_name[];
 // Registered resources
 //
 extern int le_vscf_impl_t;
+extern int le_vscf_oid_t;
+extern int le_vscf_base64_t;
+extern int le_vscf_pem_t;
 extern int le_vscf_message_info_t;
 extern int le_vscf_key_recipient_info_t;
 extern int le_vscf_key_recipient_info_list_t;
 extern int le_vscf_password_recipient_info_t;
 extern int le_vscf_password_recipient_info_list_t;
+extern int le_vscf_alg_factory_t;
+extern int le_vscf_key_alg_factory_t;
 extern int le_vscf_ecies_t;
 extern int le_vscf_recipient_cipher_t;
 extern int le_vscf_message_info_custom_params_t;

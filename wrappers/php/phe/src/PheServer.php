@@ -43,6 +43,7 @@ namespace VirgilCrypto\Phe;
 */
 class PheServer
 {
+
     /**
     * @var
     */

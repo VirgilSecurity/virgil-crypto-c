@@ -40,6 +40,7 @@
 #include "vsce_assert.h"
 #include "vsce_phe_php.h"
 #include "vscf_foundation_php.h"
+#include "vsce_phe_common.h"
 #include "vsce_phe_server.h"
 #include "vsce_phe_client.h"
 #include "vsce_phe_cipher.h"
@@ -79,6 +80,7 @@ vsce_handle_throw_exception(vsce_status_t status) {
 //
 const char VSCE_PHE_PHP_VERSION[] = "0.10.4";
 const char VSCE_PHE_PHP_EXTNAME[] = "vsce_phe_php";
+const char vsce_phe_common_t_php_res_name[] = "vsce_phe_common_t";
 const char vsce_phe_server_t_php_res_name[] = "vsce_phe_server_t";
 const char vsce_phe_client_t_php_res_name[] = "vsce_phe_client_t";
 const char vsce_phe_cipher_t_php_res_name[] = "vsce_phe_cipher_t";
@@ -86,6 +88,7 @@ const char vsce_phe_cipher_t_php_res_name[] = "vsce_phe_cipher_t";
 //
 // Registered resources
 //
+int le_vsce_phe_common_t;
 int le_vsce_phe_server_t;
 int le_vsce_phe_client_t;
 int le_vsce_phe_cipher_t;
@@ -99,6 +102,57 @@ PHP_MSHUTDOWN_FUNCTION(vsce_phe_php);
 //
 // Functions wrapping
 //
+//
+// Wrap method: vsce_phe_common_new
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+        arginfo_vsce_phe_common_new_php,
+        0 /*return_reference*/,
+        0 /*required_num_args*/,
+        IS_RESOURCE /*type*/,
+        0 /*allow_null*/)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vsce_phe_common_new_php) {
+    vsce_phe_common_t *phe_common = vsce_phe_common_new();
+    zend_resource *phe_common_res = zend_register_resource(phe_common, le_vsce_phe_common_t);
+    RETVAL_RES(phe_common_res);
+}
+
+//
+// Wrap method: vsce_phe_common_delete
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+        arginfo_vsce_phe_common_delete_php,
+        0 /*return_reference*/,
+        1 /*required_num_args*/,
+        IS_VOID /*type*/,
+        0 /*allow_null*/)
+
+        ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vsce_phe_common_delete_php) {
+    //
+    // Declare input arguments
+    //
+    zval *in_ctx = NULL;
+
+    //
+    // Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 1, 1)
+        Z_PARAM_RESOURCE_EX(in_ctx, 1, 0)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    // Fetch for type checking and then release
+    //
+    vsce_phe_common_t *phe_common = zend_fetch_resource_ex(in_ctx, vsce_phe_common_t_php_res_name, le_vsce_phe_common_t);
+    zend_list_close(Z_RES_P(in_ctx));
+    RETURN_TRUE;
+}
+
 //
 // Wrap method: vsce_phe_server_new
 //
@@ -2100,6 +2154,8 @@ PHP_FUNCTION(vsce_phe_cipher_use_random_php) {
 // Define all function entries
 //
 static zend_function_entry vsce_phe_php_functions[] = {
+    PHP_FE(vsce_phe_common_new_php, arginfo_vsce_phe_common_new_php)
+    PHP_FE(vsce_phe_common_delete_php, arginfo_vsce_phe_common_delete_php)
     PHP_FE(vsce_phe_server_new_php, arginfo_vsce_phe_server_new_php)
     PHP_FE(vsce_phe_server_delete_php, arginfo_vsce_phe_server_delete_php)
     PHP_FE(vsce_phe_server_setup_defaults_php, arginfo_vsce_phe_server_setup_defaults_php)
@@ -2164,6 +2220,9 @@ ZEND_GET_MODULE(vsce_phe_php)
 //
 // Extension init functions definition
 //
+static void vsce_phe_common_dtor_php(zend_resource *rsrc) {
+    vsce_phe_common_delete((vsce_phe_common_t *)rsrc->ptr);
+}
 static void vsce_phe_server_dtor_php(zend_resource *rsrc) {
     vsce_phe_server_delete((vsce_phe_server_t *)rsrc->ptr);
 }
@@ -2174,6 +2233,7 @@ static void vsce_phe_cipher_dtor_php(zend_resource *rsrc) {
     vsce_phe_cipher_delete((vsce_phe_cipher_t *)rsrc->ptr);
 }
 PHP_MINIT_FUNCTION(vsce_phe_php) {
+    le_vsce_phe_common_t = zend_register_list_destructors_ex(vsce_phe_common_dtor_php, NULL, vsce_phe_common_t_php_res_name, module_number);
     le_vsce_phe_server_t = zend_register_list_destructors_ex(vsce_phe_server_dtor_php, NULL, vsce_phe_server_t_php_res_name, module_number);
     le_vsce_phe_client_t = zend_register_list_destructors_ex(vsce_phe_client_dtor_php, NULL, vsce_phe_client_t_php_res_name, module_number);
     le_vsce_phe_cipher_t = zend_register_list_destructors_ex(vsce_phe_cipher_dtor_php, NULL, vsce_phe_cipher_t_php_res_name, module_number);

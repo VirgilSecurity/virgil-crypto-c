@@ -341,7 +341,7 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
                             ", 0)
                     endif
 
-                    for function.argument as argument0 where ! string_in (argument0.type0, "buffer, integer, enum, byte, boolean, unsigned")
+                    for function.argument as argument0 where ! string_in (argument0.type0, "buffer, integer, enum, byte, boolean, unsigned, char")
                         if argument0.type = "vsc_data_t"
                             my._h1 += format_left("vsc_data_t $(argument0.name:) = vsc_data((const byte*)in_$(argument0.name:), in_$(argument0.name:)_len);", 0)
                         elsif string_in (argument0.type0, "interface, class, impl")
@@ -957,6 +957,10 @@ function php_map_low_level_argument (in_argument, in_php_project, out_argument, 
                 my._type = "int"
                 my._zend_type = "IS_LONG"
             endif
+        elsif my.in_argument.type = "char"
+            my._type0 = my.in_argument.type
+            my._type = "string"
+            my._zend_type = "IS_STRING"
         elsif my.in_argument.type = "boolean"
             my._type0 = my.in_argument.type
             my._type = "zend_bool"

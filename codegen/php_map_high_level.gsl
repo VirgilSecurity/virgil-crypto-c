@@ -597,6 +597,8 @@ function php_map_high_level_argument (in_argument, in_php_module, out_php_argume
     if defined (my.in_argument.type)
         if string_in(my.in_argument.type, "size, integer, unsigned")
             my._type = "int"
+        elsif my.in_argument.type = "char"
+            my._type = "string"
         elsif my.in_argument.type = "byte"
             if my.in_argument.is_reference = 1
                 my._type = "string"
@@ -606,9 +608,8 @@ function php_map_high_level_argument (in_argument, in_php_module, out_php_argume
         elsif my.in_argument.type = "boolean"
             my._type = "bool"
         else
-            # TODO
             echo_debug_item(my.in_argument)
-            echo_fatal("Not implemented (301)", my)
+            echo_fatal("Not implemented (AS2301)", my)
         endif
     endif
 
