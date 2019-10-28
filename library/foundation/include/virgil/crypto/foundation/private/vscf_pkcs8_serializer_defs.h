@@ -61,6 +61,7 @@
 #include "vscf_pkcs8_serializer.h"
 #include "vscf_atomic.h"
 #include "vscf_impl.h"
+#include "vscf_alg_info_der_serializer.h"
 
 // clang-format on
 //  @end
@@ -93,6 +94,10 @@ struct vscf_pkcs8_serializer_t {
     //  Dependency to the interface 'asn1 writer'.
     //
     vscf_impl_t *asn1_writer;
+    //
+    //  Implementation specific context.
+    //
+    vscf_alg_info_der_serializer_t *alg_info_der_serializer;
 };
 
 

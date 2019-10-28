@@ -79,6 +79,55 @@
 
 
 //
+//  Provides initialization of the implementation specific context.
+//  Note, this method is called automatically when method vscf_pkcs8_serializer_init() is called.
+//  Note, that context is already zeroed.
+//
+VSCF_PRIVATE void
+vscf_pkcs8_serializer_init_ctx(vscf_pkcs8_serializer_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+
+    self->alg_info_der_serializer = vscf_alg_info_der_serializer_new();
+}
+
+//
+//  Release resources of the implementation specific context.
+//  Note, this method is called automatically once when class is completely cleaning up.
+//  Note, that context will be zeroed automatically next this method.
+//
+VSCF_PRIVATE void
+vscf_pkcs8_serializer_cleanup_ctx(vscf_pkcs8_serializer_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+
+    vscf_alg_info_der_serializer_destroy(&self->alg_info_der_serializer);
+}
+
+//
+//  This method is called when interface 'asn1 writer' was setup.
+//
+VSCF_PRIVATE void
+vscf_pkcs8_serializer_did_setup_asn1_writer(vscf_pkcs8_serializer_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+
+    vscf_alg_info_der_serializer_release_asn1_writer(self->alg_info_der_serializer);
+    vscf_alg_info_der_serializer_use_asn1_writer(self->alg_info_der_serializer, self->asn1_writer);
+}
+
+//
+//  This method is called when interface 'asn1 writer' was released.
+//
+VSCF_PRIVATE void
+vscf_pkcs8_serializer_did_release_asn1_writer(vscf_pkcs8_serializer_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+
+    vscf_alg_info_der_serializer_release_asn1_writer(self->alg_info_der_serializer);
+}
+
+//
 //  Setup predefined values to the uninitialized class dependencies.
 //
 VSCF_PUBLIC void
@@ -126,16 +175,8 @@ vscf_pkcs8_serializer_serialize_public_key_inplace(
     //
     //  Write algorithm
     //
-    size_t algorithm_count = 0;
-
-    vscf_alg_id_t public_key_alg_id = vscf_raw_public_key_alg_id(public_key);
-    if (vscf_alg_id_RSA == public_key_alg_id) {
-        algorithm_count += vscf_asn1_writer_write_null(self->asn1_writer);
-    }
-
-    algorithm_count += vscf_asn1_writer_write_oid(self->asn1_writer, vscf_oid_from_alg_id(public_key_alg_id));
-    algorithm_count += vscf_asn1_writer_write_sequence(self->asn1_writer, algorithm_count);
-    len += algorithm_count;
+    const vscf_impl_t *alg_info = vscf_raw_public_key_alg_info(public_key);
+    len += vscf_alg_info_der_serializer_serialize_inplace(self->alg_info_der_serializer, alg_info);
 
     //
     //  Write SubjectPublicKeyInfo
