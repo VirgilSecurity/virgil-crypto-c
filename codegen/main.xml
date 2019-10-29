@@ -43,9 +43,9 @@
     <version major="0" minor="10" patch="4" label="dev1"/>
 
     <project name="common" skip_codegen="1" skip_codegen_c="1" skip_codegen_wrappers="1"/>
-    <project name="foundation" skip_codegen="0" skip_codegen_c="1" skip_codegen_wrappers="0"/>
-    <!-- <project name="pythia" skip_codegen="0" skip_codegen_c="1" skip_codegen_wrappers="0"/> -->
-    <project name="ratchet" skip_codegen="0" skip_codegen_c="1" skip_codegen_wrappers="0"/>
+    <!-- <project name="foundation" skip_codegen="0" skip_codegen_c="1" skip_codegen_wrappers="0"/> -->
+    <project name="pythia" skip_codegen="0" skip_codegen_c="1" skip_codegen_wrappers="0"/>
+    <!-- <project name="ratchet" skip_codegen="0" skip_codegen_c="1" skip_codegen_wrappers="0"/> -->
     <!-- <project name="phe" skip_codegen="0" skip_codegen_c="1" skip_codegen_wrappers="0"/> -->
 
     <!-- <wrapper lang="swift"/> -->
