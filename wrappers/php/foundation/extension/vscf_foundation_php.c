@@ -433,10 +433,6 @@ PHP_FUNCTION(vscf_oid_from_alg_id_php) {
     ZEND_PARSE_PARAMETERS_END();
 
     //
-    // Proxy call
-    //
-
-    //
     // Argument type mapping
     //
     vscf_alg_id_t alg_id = (vscf_alg_id_t)in_alg_id;
@@ -527,10 +523,6 @@ PHP_FUNCTION(vscf_oid_from_id_php) {
     ZEND_PARSE_PARAMETERS_END();
 
     //
-    // Proxy call
-    //
-
-    //
     // Argument type mapping
     //
     vscf_oid_id_t oid_id = (vscf_oid_id_t)in_oid_id;
@@ -619,10 +611,6 @@ PHP_FUNCTION(vscf_oid_id_to_alg_id_php) {
     ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 1, 1)
         Z_PARAM_LONG(in_oid_id)
     ZEND_PARSE_PARAMETERS_END();
-
-    //
-    // Proxy call
-    //
 
     //
     // Argument type mapping
