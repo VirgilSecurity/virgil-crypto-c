@@ -564,11 +564,12 @@ vscf_alg_info_der_deserializer_deserialize_inplace(vscf_alg_info_der_deserialize
         return NULL;
     }
 
-    vscf_oid_id_t oid_id = vscf_oid_to_id(alg_oid);
 
     //
     //  Proxy further deserialization for specific algorithm.
     //
+    vscf_oid_id_t oid_id = vscf_oid_to_id(alg_oid);
+
     switch (oid_id) {
     case vscf_oid_id_SHA224:
     case vscf_oid_id_SHA256:

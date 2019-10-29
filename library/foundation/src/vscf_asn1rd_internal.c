@@ -199,12 +199,12 @@ static const vscf_asn1_reader_api_t asn1_reader_api = {
     //
     (vscf_asn1_reader_api_read_data_fn)vscf_asn1rd_read_data,
     //
-    //  Read ASN.1 type: CONSTRUCTED | SEQUENCE.
+    //  Read ASN.1 type: SEQUENCE.
     //  Return element length.
     //
     (vscf_asn1_reader_api_read_sequence_fn)vscf_asn1rd_read_sequence,
     //
-    //  Read ASN.1 type: CONSTRUCTED | SET.
+    //  Read ASN.1 type: SET.
     //  Return element length.
     //
     (vscf_asn1_reader_api_read_set_fn)vscf_asn1rd_read_set

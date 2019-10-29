@@ -234,6 +234,18 @@
     </method>
 
 
+    <method name="append data">
+        Copy data to the buffer and reallocate if needed by coping.
+
+        Precondition: buffer should be an owner of the bytes.
+
+        Note, this operation can be slow if copy operation occurred.
+        Note, buffer capacity is doubled.
+
+        <argument name="data" class="data"/>
+    </method>
+
+
     <method name="reset">
         Reset to the initial state.
         After reset inner buffer can be re-used.

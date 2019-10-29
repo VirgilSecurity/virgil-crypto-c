@@ -229,6 +229,18 @@ const initAes256Gcm = (Module, modules) => {
         }
 
         /**
+         * Precise length calculation of encrypted data.
+         */
+        preciseEncryptedLen(dataLen) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureNumber('dataLen', dataLen);
+
+            let proxyResult;
+            proxyResult = Module._vscf_aes256_gcm_precise_encrypted_len(this.ctxPtr, dataLen);
+            return proxyResult;
+        }
+
+        /**
          * Decrypt given data.
          */
         decrypt(data) {
@@ -598,6 +610,106 @@ const initAes256Gcm = (Module, modules) => {
             let proxyResult;
             proxyResult = Module._vscf_aes256_gcm_auth_decrypted_len(this.ctxPtr, dataLen);
             return proxyResult;
+        }
+
+        /**
+         * Set additional data for for AEAD ciphers.
+         */
+        setAuthData(authData) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureByteArray('authData', authData);
+
+            //  Copy bytes from JS memory to the WASM memory.
+            const authDataSize = authData.length * authData.BYTES_PER_ELEMENT;
+            const authDataPtr = Module._malloc(authDataSize);
+            Module.HEAP8.set(authData, authDataPtr);
+
+            //  Create C structure vsc_data_t.
+            const authDataCtxSize = Module._vsc_data_ctx_size();
+            const authDataCtxPtr = Module._malloc(authDataCtxSize);
+
+            //  Point created vsc_data_t object to the copied bytes.
+            Module._vsc_data(authDataCtxPtr, authDataPtr, authDataSize);
+
+            try {
+                Module._vscf_aes256_gcm_set_auth_data(this.ctxPtr, authDataCtxPtr);
+            } finally {
+                Module._free(authDataPtr);
+                Module._free(authDataCtxPtr);
+            }
+        }
+
+        /**
+         * Accomplish an authenticated encryption and place tag separately.
+         *
+         * Note, if authentication tag should be added to an encrypted data,
+         * method "finish" can be used.
+         */
+        finishAuthEncryption() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
+            const outCapacity = this.outLen(0);
+            const outCtxPtr = Module._vsc_buffer_new_with_capacity(outCapacity);
+
+            const tagCapacity = this.AUTH_TAG_LEN;
+            const tagCtxPtr = Module._vsc_buffer_new_with_capacity(tagCapacity);
+
+            try {
+                const proxyResult = Module._vscf_aes256_gcm_finish_auth_encryption(this.ctxPtr, outCtxPtr, tagCtxPtr);
+                modules.FoundationError.handleStatusCode(proxyResult);
+
+                const outPtr = Module._vsc_buffer_bytes(outCtxPtr);
+                const outPtrLen = Module._vsc_buffer_len(outCtxPtr);
+                const out = Module.HEAPU8.slice(outPtr, outPtr + outPtrLen);
+
+                const tagPtr = Module._vsc_buffer_bytes(tagCtxPtr);
+                const tagPtrLen = Module._vsc_buffer_len(tagCtxPtr);
+                const tag = Module.HEAPU8.slice(tagPtr, tagPtr + tagPtrLen);
+                return { out, tag };
+            } finally {
+                Module._vsc_buffer_delete(outCtxPtr);
+                Module._vsc_buffer_delete(tagCtxPtr);
+            }
+        }
+
+        /**
+         * Accomplish an authenticated decryption with explicitly given tag.
+         *
+         * Note, if authentication tag is a part of an encrypted data then,
+         * method "finish" can be used for simplicity.
+         */
+        finishAuthDecryption(tag) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureByteArray('tag', tag);
+
+            //  Copy bytes from JS memory to the WASM memory.
+            const tagSize = tag.length * tag.BYTES_PER_ELEMENT;
+            const tagPtr = Module._malloc(tagSize);
+            Module.HEAP8.set(tag, tagPtr);
+
+            //  Create C structure vsc_data_t.
+            const tagCtxSize = Module._vsc_data_ctx_size();
+            const tagCtxPtr = Module._malloc(tagCtxSize);
+
+            //  Point created vsc_data_t object to the copied bytes.
+            Module._vsc_data(tagCtxPtr, tagPtr, tagSize);
+
+            const outCapacity = this.outLen(0);
+            const outCtxPtr = Module._vsc_buffer_new_with_capacity(outCapacity);
+
+            try {
+                const proxyResult = Module._vscf_aes256_gcm_finish_auth_decryption(this.ctxPtr, tagCtxPtr, outCtxPtr);
+                modules.FoundationError.handleStatusCode(proxyResult);
+
+                const outPtr = Module._vsc_buffer_bytes(outCtxPtr);
+                const outPtrLen = Module._vsc_buffer_len(outCtxPtr);
+                const out = Module.HEAPU8.slice(outPtr, outPtr + outPtrLen);
+                return out;
+            } finally {
+                Module._free(tagPtr);
+                Module._free(tagCtxPtr);
+                Module._vsc_buffer_delete(outCtxPtr);
+            }
         }
     }
 

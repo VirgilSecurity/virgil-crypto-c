@@ -39,7 +39,7 @@ const precondition = require('./precondition');
 
 const initMessageInfoDerSerializer = (Module, modules) => {
     /**
-     * CMS based implementation of the class "message info" serialization.
+     * CMS based serialization of the class "message info".
      */
     class MessageInfoDerSerializer {
 
@@ -210,6 +210,80 @@ const initMessageInfoDerSerializer = (Module, modules) => {
                 modules.FoundationError.handleStatusCode(errorStatus);
 
                 const jsResult = modules.MessageInfo.newAndTakeCContext(proxyResult);
+                return jsResult;
+            } finally {
+                Module._free(dataPtr);
+                Module._free(dataCtxPtr);
+                Module._free(errorCtxPtr);
+            }
+        }
+
+        /**
+         * Return buffer size enough to hold serialized message info footer.
+         */
+        serializedFooterLen(messageInfoFooter) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureClass('messageInfoFooter', messageInfoFooter, modules.MessageInfoFooter);
+
+            let proxyResult;
+            proxyResult = Module._vscf_message_info_der_serializer_serialized_footer_len(this.ctxPtr, messageInfoFooter.ctxPtr);
+            return proxyResult;
+        }
+
+        /**
+         * Serialize class "message info footer".
+         */
+        serializeFooter(messageInfoFooter) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureClass('messageInfoFooter', messageInfoFooter, modules.MessageInfoFooter);
+
+            const outCapacity = this.serializedFooterLen(messageInfoFooter);
+            const outCtxPtr = Module._vsc_buffer_new_with_capacity(outCapacity);
+
+            try {
+                Module._vscf_message_info_der_serializer_serialize_footer(this.ctxPtr, messageInfoFooter.ctxPtr, outCtxPtr);
+
+                const outPtr = Module._vsc_buffer_bytes(outCtxPtr);
+                const outPtrLen = Module._vsc_buffer_len(outCtxPtr);
+                const out = Module.HEAPU8.slice(outPtr, outPtr + outPtrLen);
+                return out;
+            } finally {
+                Module._vsc_buffer_delete(outCtxPtr);
+            }
+        }
+
+        /**
+         * Deserialize class "message info footer".
+         */
+        deserializeFooter(data) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureByteArray('data', data);
+
+            //  Copy bytes from JS memory to the WASM memory.
+            const dataSize = data.length * data.BYTES_PER_ELEMENT;
+            const dataPtr = Module._malloc(dataSize);
+            Module.HEAP8.set(data, dataPtr);
+
+            //  Create C structure vsc_data_t.
+            const dataCtxSize = Module._vsc_data_ctx_size();
+            const dataCtxPtr = Module._malloc(dataCtxSize);
+
+            //  Point created vsc_data_t object to the copied bytes.
+            Module._vsc_data(dataCtxPtr, dataPtr, dataSize);
+
+            const errorCtxSize = Module._vscf_error_ctx_size();
+            const errorCtxPtr = Module._malloc(errorCtxSize);
+            Module._vscf_error_reset(errorCtxPtr);
+
+            let proxyResult;
+
+            try {
+                proxyResult = Module._vscf_message_info_der_serializer_deserialize_footer(this.ctxPtr, dataCtxPtr, errorCtxPtr);
+
+                const errorStatus = Module._vscf_error_status(errorCtxPtr);
+                modules.FoundationError.handleStatusCode(errorStatus);
+
+                const jsResult = modules.MessageInfoFooter.newAndTakeCContext(proxyResult);
                 return jsResult;
             } finally {
                 Module._free(dataPtr);

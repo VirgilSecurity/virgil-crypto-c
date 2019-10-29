@@ -89,16 +89,6 @@ const initPasswordRecipientInfoList = (Module, modules) => {
         }
 
         /**
-         * Add new item to the list.
-         * Note, ownership is transfered.
-         */
-        add(passwordRecipientInfo) {
-            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-            precondition.ensureClass('passwordRecipientInfo', passwordRecipientInfo, modules.PasswordRecipientInfo);
-            Module._vscf_password_recipient_info_list_add(this.ctxPtr, passwordRecipientInfo.ctxPtr);
-        }
-
-        /**
          * Return true if given list has item.
          */
         hasItem() {

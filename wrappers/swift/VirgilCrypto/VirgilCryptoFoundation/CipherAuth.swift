@@ -37,6 +37,36 @@ import Foundation
 import VSCFoundation
 
 /// Mix-in interface that provides specific functionality to authenticated
-/// encryption and decryption.
-@objc(VSCFCipherAuth) public protocol CipherAuth : AuthEncrypt, AuthDecrypt {
+/// encryption and decryption (AEAD ciphers).
+@objc(VSCFCipherAuth) public protocol CipherAuth : Cipher, AuthEncrypt, AuthDecrypt {
+
+    /// Set additional data for for AEAD ciphers.
+    @objc func setAuthData(authData: Data)
+
+    /// Accomplish an authenticated encryption and place tag separately.
+    ///
+    /// Note, if authentication tag should be added to an encrypted data,
+    /// method "finish" can be used.
+    @objc func finishAuthEncryption() throws -> CipherAuthFinishAuthEncryptionResult
+
+    /// Accomplish an authenticated decryption with explicitly given tag.
+    ///
+    /// Note, if authentication tag is a part of an encrypted data then,
+    /// method "finish" can be used for simplicity.
+    @objc func finishAuthDecryption(tag: Data) throws -> Data
+}
+
+/// Encapsulate result of method CipherAuth.finishAuthEncryption()
+@objc(VSCFCipherAuthFinishAuthEncryptionResult) public class CipherAuthFinishAuthEncryptionResult: NSObject {
+
+    @objc public let out: Data
+
+    @objc public let tag: Data
+
+    /// Initialize all properties.
+    internal init(out: Data, tag: Data) {
+        self.out = out
+        self.tag = tag
+        super.init()
+    }
 }

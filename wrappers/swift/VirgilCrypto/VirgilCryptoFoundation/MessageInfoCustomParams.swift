@@ -148,4 +148,11 @@ import VSCFoundation
 
         return Data.init(bytes: proxyResult.bytes, count: proxyResult.len)
     }
+
+    /// Return true if at least one param exists.
+    @objc public func hasParams() -> Bool {
+        let proxyResult = vscf_message_info_custom_params_has_params(self.c_ctx)
+
+        return proxyResult
+    }
 }

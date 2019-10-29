@@ -93,6 +93,11 @@ class Pkcs5Pbes2(Alg, Encrypt, Decrypt):
         result = self._lib_vscf_pkcs5_pbes2.vscf_pkcs5_pbes2_encrypted_len(self.ctx, data_len)
         return result
 
+    def precise_encrypted_len(self, data_len):
+        """Precise length calculation of encrypted data."""
+        result = self._lib_vscf_pkcs5_pbes2.vscf_pkcs5_pbes2_precise_encrypted_len(self.ctx, data_len)
+        return result
+
     def decrypt(self, data):
         """Decrypt given data."""
         d_data = Data(data)

@@ -35,12 +35,11 @@
 
 from virgil_crypto_lib._libs import *
 from ctypes import *
-from ._vscf_key_recipient_info import vscf_key_recipient_info_t
-from ._vscf_password_recipient_info import vscf_password_recipient_info_t
 from ._vscf_impl import vscf_impl_t
 from ._vscf_key_recipient_info_list import vscf_key_recipient_info_list_t
 from ._vscf_password_recipient_info_list import vscf_password_recipient_info_list_t
 from ._vscf_message_info_custom_params import vscf_message_info_custom_params_t
+from ._vscf_footer_info import vscf_footer_info_t
 
 
 class vscf_message_info_t(Structure):
@@ -68,27 +67,6 @@ class VscfMessageInfo(object):
         vscf_message_info_delete.restype = None
         return vscf_message_info_delete(ctx)
 
-    def vscf_message_info_add_key_recipient(self, ctx, key_recipient):
-        """Add recipient that is defined by Public Key."""
-        vscf_message_info_add_key_recipient = self._lib.vscf_message_info_add_key_recipient
-        vscf_message_info_add_key_recipient.argtypes = [POINTER(vscf_message_info_t), POINTER(vscf_key_recipient_info_t)]
-        vscf_message_info_add_key_recipient.restype = None
-        return vscf_message_info_add_key_recipient(ctx, key_recipient)
-
-    def vscf_message_info_add_password_recipient(self, ctx, password_recipient):
-        """Add recipient that is defined by password."""
-        vscf_message_info_add_password_recipient = self._lib.vscf_message_info_add_password_recipient
-        vscf_message_info_add_password_recipient.argtypes = [POINTER(vscf_message_info_t), POINTER(vscf_password_recipient_info_t)]
-        vscf_message_info_add_password_recipient.restype = None
-        return vscf_message_info_add_password_recipient(ctx, password_recipient)
-
-    def vscf_message_info_set_data_encryption_alg_info(self, ctx, data_encryption_alg_info):
-        """Set information about algorithm that was used for data encryption."""
-        vscf_message_info_set_data_encryption_alg_info = self._lib.vscf_message_info_set_data_encryption_alg_info
-        vscf_message_info_set_data_encryption_alg_info.argtypes = [POINTER(vscf_message_info_t), POINTER(vscf_impl_t)]
-        vscf_message_info_set_data_encryption_alg_info.restype = None
-        return vscf_message_info_set_data_encryption_alg_info(ctx, data_encryption_alg_info)
-
     def vscf_message_info_data_encryption_alg_info(self, ctx):
         """Return information about algorithm that was used for the data encryption."""
         vscf_message_info_data_encryption_alg_info = self._lib.vscf_message_info_data_encryption_alg_info
@@ -110,12 +88,12 @@ class VscfMessageInfo(object):
         vscf_message_info_password_recipient_info_list.restype = POINTER(vscf_password_recipient_info_list_t)
         return vscf_message_info_password_recipient_info_list(ctx)
 
-    def vscf_message_info_set_custom_params(self, ctx, custom_params):
-        """Setup custom params."""
-        vscf_message_info_set_custom_params = self._lib.vscf_message_info_set_custom_params
-        vscf_message_info_set_custom_params.argtypes = [POINTER(vscf_message_info_t), POINTER(vscf_message_info_custom_params_t)]
-        vscf_message_info_set_custom_params.restype = None
-        return vscf_message_info_set_custom_params(ctx, custom_params)
+    def vscf_message_info_has_custom_params(self, ctx):
+        """Return true if message info contains at least one custom param."""
+        vscf_message_info_has_custom_params = self._lib.vscf_message_info_has_custom_params
+        vscf_message_info_has_custom_params.argtypes = [POINTER(vscf_message_info_t)]
+        vscf_message_info_has_custom_params.restype = c_bool
+        return vscf_message_info_has_custom_params(ctx)
 
     def vscf_message_info_custom_params(self, ctx):
         """Provide access to the custom params object.
@@ -126,12 +104,40 @@ class VscfMessageInfo(object):
         vscf_message_info_custom_params.restype = POINTER(vscf_message_info_custom_params_t)
         return vscf_message_info_custom_params(ctx)
 
-    def vscf_message_info_clear_recipients(self, ctx):
-        """Remove all recipients."""
-        vscf_message_info_clear_recipients = self._lib.vscf_message_info_clear_recipients
-        vscf_message_info_clear_recipients.argtypes = [POINTER(vscf_message_info_t)]
-        vscf_message_info_clear_recipients.restype = None
-        return vscf_message_info_clear_recipients(ctx)
+    def vscf_message_info_has_cipher_kdf_alg_info(self, ctx):
+        """Return true if cipher kdf alg info exists."""
+        vscf_message_info_has_cipher_kdf_alg_info = self._lib.vscf_message_info_has_cipher_kdf_alg_info
+        vscf_message_info_has_cipher_kdf_alg_info.argtypes = [POINTER(vscf_message_info_t)]
+        vscf_message_info_has_cipher_kdf_alg_info.restype = c_bool
+        return vscf_message_info_has_cipher_kdf_alg_info(ctx)
+
+    def vscf_message_info_cipher_kdf_alg_info(self, ctx):
+        """Return cipher kdf alg info."""
+        vscf_message_info_cipher_kdf_alg_info = self._lib.vscf_message_info_cipher_kdf_alg_info
+        vscf_message_info_cipher_kdf_alg_info.argtypes = [POINTER(vscf_message_info_t)]
+        vscf_message_info_cipher_kdf_alg_info.restype = POINTER(vscf_impl_t)
+        return vscf_message_info_cipher_kdf_alg_info(ctx)
+
+    def vscf_message_info_has_footer_info(self, ctx):
+        """Return true if footer info exists."""
+        vscf_message_info_has_footer_info = self._lib.vscf_message_info_has_footer_info
+        vscf_message_info_has_footer_info.argtypes = [POINTER(vscf_message_info_t)]
+        vscf_message_info_has_footer_info.restype = c_bool
+        return vscf_message_info_has_footer_info(ctx)
+
+    def vscf_message_info_footer_info(self, ctx):
+        """Return footer info."""
+        vscf_message_info_footer_info = self._lib.vscf_message_info_footer_info
+        vscf_message_info_footer_info.argtypes = [POINTER(vscf_message_info_t)]
+        vscf_message_info_footer_info.restype = POINTER(vscf_footer_info_t)
+        return vscf_message_info_footer_info(ctx)
+
+    def vscf_message_info_clear(self, ctx):
+        """Remove all infos."""
+        vscf_message_info_clear = self._lib.vscf_message_info_clear
+        vscf_message_info_clear.argtypes = [POINTER(vscf_message_info_t)]
+        vscf_message_info_clear.restype = None
+        return vscf_message_info_clear(ctx)
 
     def vscf_message_info_shallow_copy(self, ctx):
         vscf_message_info_shallow_copy = self._lib.vscf_message_info_shallow_copy

@@ -347,7 +347,7 @@ VSCF_PUBLIC size_t
 vscf_asn1wr_write_oid(vscf_asn1wr_t *self, vsc_data_t value);
 
 //
-//  Mark previously written data of given length as ASN.1 type: SQUENCE.
+//  Mark previously written data of given length as ASN.1 type: SEQUENCE.
 //  Return count of written bytes.
 //
 VSCF_PUBLIC size_t

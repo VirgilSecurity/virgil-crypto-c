@@ -126,11 +126,11 @@ import VSCFoundation
     /// Read raw data of given length.
     @objc func readData(len: Int) -> Data
 
-    /// Read ASN.1 type: CONSTRUCTED | SEQUENCE.
+    /// Read ASN.1 type: SEQUENCE.
     /// Return element length.
     @objc func readSequence() -> Int
 
-    /// Read ASN.1 type: CONSTRUCTED | SET.
+    /// Read ASN.1 type: SET.
     /// Return element length.
     @objc func readSet() -> Int
 }

@@ -50,5 +50,10 @@ public interface Encrypt {
     * Calculate required buffer length to hold the encrypted data.
     */
     int encryptedLen(int dataLen);
+
+    /*
+    * Precise length calculation of encrypted data.
+    */
+    int preciseEncryptedLen(int dataLen);
 }
 

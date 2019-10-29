@@ -460,7 +460,7 @@ const initAsn1rd = (Module, modules) => {
         }
 
         /**
-         * Read ASN.1 type: CONSTRUCTED | SEQUENCE.
+         * Read ASN.1 type: SEQUENCE.
          * Return element length.
          */
         readSequence() {
@@ -472,7 +472,7 @@ const initAsn1rd = (Module, modules) => {
         }
 
         /**
-         * Read ASN.1 type: CONSTRUCTED | SET.
+         * Read ASN.1 type: SET.
          * Return element length.
          */
         readSet() {

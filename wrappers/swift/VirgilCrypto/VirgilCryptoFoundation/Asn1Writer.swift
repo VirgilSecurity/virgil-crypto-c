@@ -156,7 +156,7 @@ import VSCFoundation
     /// Return count of written bytes.
     @objc func writeOid(value: Data) -> Int
 
-    /// Mark previously written data of given length as ASN.1 type: SQUENCE.
+    /// Mark previously written data of given length as ASN.1 type: SEQUENCE.
     /// Return count of written bytes.
     @objc func writeSequence(len: Int) -> Int
 

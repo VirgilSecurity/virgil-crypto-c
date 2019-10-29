@@ -133,21 +133,6 @@ public class FoundationJNI {
     public native void messageInfo_close(long cCtx);
 
     /*
-    * Add recipient that is defined by Public Key.
-    */
-    public native void messageInfo_addKeyRecipient(long cCtx, KeyRecipientInfo keyRecipient);
-
-    /*
-    * Add recipient that is defined by password.
-    */
-    public native void messageInfo_addPasswordRecipient(long cCtx, PasswordRecipientInfo passwordRecipient);
-
-    /*
-    * Set information about algorithm that was used for data encryption.
-    */
-    public native void messageInfo_setDataEncryptionAlgInfo(long cCtx, AlgInfo dataEncryptionAlgInfo);
-
-    /*
     * Return information about algorithm that was used for the data encryption.
     */
     public native AlgInfo messageInfo_dataEncryptionAlgInfo(long cCtx);
@@ -163,9 +148,9 @@ public class FoundationJNI {
     public native PasswordRecipientInfoList messageInfo_passwordRecipientInfoList(long cCtx);
 
     /*
-    * Setup custom params.
+    * Return true if message info contains at least one custom param.
     */
-    public native void messageInfo_setCustomParams(long cCtx, MessageInfoCustomParams customParams);
+    public native boolean messageInfo_hasCustomParams(long cCtx);
 
     /*
     * Provide access to the custom params object.
@@ -175,9 +160,29 @@ public class FoundationJNI {
     public native MessageInfoCustomParams messageInfo_customParams(long cCtx);
 
     /*
-    * Remove all recipients.
+    * Return true if cipher kdf alg info exists.
     */
-    public native void messageInfo_clearRecipients(long cCtx);
+    public native boolean messageInfo_hasCipherKdfAlgInfo(long cCtx);
+
+    /*
+    * Return cipher kdf alg info.
+    */
+    public native AlgInfo messageInfo_cipherKdfAlgInfo(long cCtx);
+
+    /*
+    * Return true if footer info exists.
+    */
+    public native boolean messageInfo_hasFooterInfo(long cCtx);
+
+    /*
+    * Return footer info.
+    */
+    public native FooterInfo messageInfo_footerInfo(long cCtx);
+
+    /*
+    * Remove all infos.
+    */
+    public native void messageInfo_clear(long cCtx);
 
     public native long keyRecipientInfo_new();
 
@@ -204,12 +209,6 @@ public class FoundationJNI {
     public native long keyRecipientInfoList_new();
 
     public native void keyRecipientInfoList_close(long cCtx);
-
-    /*
-    * Add new item to the list.
-    * Note, ownership is transfered.
-    */
-    public native void keyRecipientInfoList_add(long cCtx, KeyRecipientInfo keyRecipientInfo);
 
     /*
     * Return true if given list has item.
@@ -266,12 +265,6 @@ public class FoundationJNI {
     public native long passwordRecipientInfoList_new();
 
     public native void passwordRecipientInfoList_close(long cCtx);
-
-    /*
-    * Add new item to the list.
-    * Note, ownership is transfered.
-    */
-    public native void passwordRecipientInfoList_add(long cCtx, PasswordRecipientInfo passwordRecipientInfo);
 
     /*
     * Return true if given list has item.
@@ -422,6 +415,14 @@ public class FoundationJNI {
 
     public native void recipientCipher_setEncryptionCipher(long cCtx, Cipher encryptionCipher);
 
+    public native void recipientCipher_setSignerHash(long cCtx, Hash signerHash);
+
+    /*
+    * Return true if a key recipient with a given id has been added.
+    * Note, operation has O(N) time complexity.
+    */
+    public native boolean recipientCipher_hasKeyRecipient(long cCtx, byte[] recipientId);
+
     /*
     * Add recipient defined with id and public key.
     */
@@ -433,10 +434,34 @@ public class FoundationJNI {
     public native void recipientCipher_clearRecipients(long cCtx);
 
     /*
+    * Add identifier and private key to sign initial plain text.
+    * Return error if the private key can not sign.
+    */
+    public native void recipientCipher_addSigner(long cCtx, byte[] signerId, PrivateKey privateKey) throws FoundationException;
+
+    /*
+    * Remove all signers.
+    */
+    public native void recipientCipher_clearSigners(long cCtx);
+
+    /*
     * Provide access to the custom params object.
     * The returned object can be used to add custom params or read it.
     */
     public native MessageInfoCustomParams recipientCipher_customParams(long cCtx);
+
+    /*
+    * Start encryption process.
+    */
+    public native void recipientCipher_startEncryption(long cCtx) throws FoundationException;
+
+    /*
+    * Start encryption process with known plain text size.
+    *
+    * Precondition: At least one signer should be added.
+    * Note, store message info footer as well.
+    */
+    public native void recipientCipher_startSignedEncryption(long cCtx, int dataSize) throws FoundationException;
 
     /*
     * Return buffer length required to hold message info returned by the
@@ -446,15 +471,10 @@ public class FoundationJNI {
     public native int recipientCipher_messageInfoLen(long cCtx);
 
     /*
-    * Start encryption process.
-    */
-    public native void recipientCipher_startEncryption(long cCtx) throws FoundationException;
-
-    /*
     * Return serialized message info to the buffer.
     *
-    * Precondition: this method can be called after "start encryption".
-    * Precondition: this method can be called before "finish encryption".
+    * Precondition: this method should be called after "start encryption".
+    * Precondition: this method should be called before "finish encryption".
     *
     * Note, store message info to use it for decryption process,
     * or place it at the encrypted data beginning (embedding).
@@ -482,9 +502,17 @@ public class FoundationJNI {
 
     /*
     * Initiate decryption process with a recipient private key.
-    * Message info can be empty if it was embedded to encrypted data.
+    * Message Info can be empty if it was embedded to encrypted data.
     */
     public native void recipientCipher_startDecryptionWithKey(long cCtx, byte[] recipientId, PrivateKey privateKey, byte[] messageInfo) throws FoundationException;
+
+    /*
+    * Initiate decryption process with a recipient private key.
+    * Message Info can be empty if it was embedded to encrypted data.
+    * Message Info footer can be empty if it was embedded to encrypted data.
+    * If footer was embedded, method "start decryption with key" can be used.
+    */
+    public native void recipientCipher_startVerifiedDecryptionWithKey(long cCtx, byte[] recipientId, PrivateKey privateKey, byte[] messageInfo, byte[] messageInfoFooter) throws FoundationException;
 
     /*
     * Return buffer length required to hold output of the method
@@ -502,6 +530,46 @@ public class FoundationJNI {
     * Accomplish decryption.
     */
     public native byte[] recipientCipher_finishDecryption(long cCtx) throws FoundationException;
+
+    /*
+    * Return true if data was signed by a sender.
+    *
+    * Precondition: this method should be called after "finish decryption".
+    */
+    public native boolean recipientCipher_isDataSigned(long cCtx);
+
+    /*
+    * Return information about signers that sign data.
+    *
+    * Precondition: this method should be called after "finish decryption".
+    * Precondition: method "is data signed" returns true.
+    */
+    public native SignerInfoList recipientCipher_signerInfos(long cCtx);
+
+    /*
+    * Verify given cipher info.
+    */
+    public native boolean recipientCipher_verifySignerInfo(long cCtx, SignerInfo signerInfo, PublicKey publicKey);
+
+    /*
+    * Return buffer length required to hold message footer returned by the
+    * "pack message footer" method.
+    *
+    * Precondition: this method should be called after "finish encryption".
+    */
+    public native int recipientCipher_messageInfoFooterLen(long cCtx);
+
+    /*
+    * Return serialized message info footer to the buffer.
+    *
+    * Precondition: this method should be called after "finish encryption".
+    *
+    * Note, store message info to use it for verified decryption process,
+    * or place it at the encrypted data ending (embedding).
+    *
+    * Return message info footer - signers public information, etc.
+    */
+    public native byte[] recipientCipher_packMessageInfoFooter(long cCtx) throws FoundationException;
 
     public native long messageInfoCustomParams_new();
 
@@ -541,6 +609,11 @@ public class FoundationJNI {
     * Return custom parameter with octet string value.
     */
     public native byte[] messageInfoCustomParams_findData(long cCtx, byte[] key) throws FoundationException;
+
+    /*
+    * Return true if at least one param exists.
+    */
+    public native boolean messageInfoCustomParams_hasParams(long cCtx);
 
     public native long keyProvider_new();
 
@@ -853,6 +926,126 @@ public class FoundationJNI {
     */
     public native byte[] messageInfoEditor_pack(long cCtx);
 
+    public native long signerInfo_new();
+
+    public native void signerInfo_close(long cCtx);
+
+    /*
+    * Return signer identifier.
+    */
+    public native byte[] signerInfo_signerId(long cCtx);
+
+    /*
+    * Return algorithm information that was used for data signing.
+    */
+    public native AlgInfo signerInfo_signerAlgInfo(long cCtx);
+
+    /*
+    * Return data signature.
+    */
+    public native byte[] signerInfo_signature(long cCtx);
+
+    public native long signerInfoList_new();
+
+    public native void signerInfoList_close(long cCtx);
+
+    /*
+    * Return true if given list has item.
+    */
+    public native boolean signerInfoList_hasItem(long cCtx);
+
+    /*
+    * Return list item.
+    */
+    public native SignerInfo signerInfoList_item(long cCtx);
+
+    /*
+    * Return true if list has next item.
+    */
+    public native boolean signerInfoList_hasNext(long cCtx);
+
+    /*
+    * Return next list node if exists, or NULL otherwise.
+    */
+    public native SignerInfoList signerInfoList_next(long cCtx);
+
+    /*
+    * Return true if list has previous item.
+    */
+    public native boolean signerInfoList_hasPrev(long cCtx);
+
+    /*
+    * Return previous list node if exists, or NULL otherwise.
+    */
+    public native SignerInfoList signerInfoList_prev(long cCtx);
+
+    /*
+    * Remove all items.
+    */
+    public native void signerInfoList_clear(long cCtx);
+
+    public native long messageInfoFooter_new();
+
+    public native void messageInfoFooter_close(long cCtx);
+
+    /*
+    * Return true if at least one signer info presents.
+    */
+    public native boolean messageInfoFooter_hasSignerInfos(long cCtx);
+
+    /*
+    * Return list with a "signer info" elements.
+    */
+    public native SignerInfoList messageInfoFooter_signerInfos(long cCtx);
+
+    /*
+    * Return information about algorithm that was used for data hashing.
+    */
+    public native AlgInfo messageInfoFooter_signerHashAlgInfo(long cCtx);
+
+    /*
+    * Return plain text digest that was used to produce signature.
+    */
+    public native byte[] messageInfoFooter_signerDigest(long cCtx);
+
+    public native long signedDataInfo_new();
+
+    public native void signedDataInfo_close(long cCtx);
+
+    /*
+    * Set information about algorithm that was used to produce data digest.
+    */
+    public native void signedDataInfo_setHashAlgInfo(long cCtx, AlgInfo hashAlgInfo);
+
+    /*
+    * Return information about algorithm that was used to produce data digest.
+    */
+    public native AlgInfo signedDataInfo_hashAlgInfo(long cCtx);
+
+    public native long footerInfo_new();
+
+    public native void footerInfo_close(long cCtx);
+
+    /*
+    * Retrun true if signed data info present.
+    */
+    public native boolean footerInfo_hasSignedDataInfo(long cCtx);
+
+    /*
+    * Return signed data info.
+    */
+    public native SignedDataInfo footerInfo_signedDataInfo(long cCtx);
+
+    /*
+    * Set data size.
+    */
+    public native void footerInfo_setDataSize(long cCtx, int dataSize);
+
+    /*
+    * Return data size.
+    */
+    public native int footerInfo_dataSize(long cCtx);
+
     public native long sha224_new();
 
     public native void sha224_close(long cCtx);
@@ -1039,6 +1232,11 @@ public class FoundationJNI {
     public native int aes256Gcm_encryptedLen(long cCtx, int dataLen);
 
     /*
+    * Precise length calculation of encrypted data.
+    */
+    public native int aes256Gcm_preciseEncryptedLen(long cCtx, int dataLen);
+
+    /*
     * Decrypt given data.
     */
     public native byte[] aes256Gcm_decrypt(long cCtx, byte[] data) throws FoundationException;
@@ -1121,6 +1319,27 @@ public class FoundationJNI {
     */
     public native int aes256Gcm_authDecryptedLen(long cCtx, int dataLen);
 
+    /*
+    * Set additional data for for AEAD ciphers.
+    */
+    public native void aes256Gcm_setAuthData(long cCtx, byte[] authData);
+
+    /*
+    * Accomplish an authenticated encryption and place tag separately.
+    *
+    * Note, if authentication tag should be added to an encrypted data,
+    * method "finish" can be used.
+    */
+    public native CipherAuthFinishAuthEncryptionResult aes256Gcm_finishAuthEncryption(long cCtx) throws FoundationException;
+
+    /*
+    * Accomplish an authenticated decryption with explicitly given tag.
+    *
+    * Note, if authentication tag is a part of an encrypted data then,
+    * method "finish" can be used for simplicity.
+    */
+    public native byte[] aes256Gcm_finishAuthDecryption(long cCtx, byte[] tag) throws FoundationException;
+
     public native long aes256Cbc_new();
 
     public native void aes256Cbc_close(long cCtx);
@@ -1149,6 +1368,11 @@ public class FoundationJNI {
     * Calculate required buffer length to hold the encrypted data.
     */
     public native int aes256Cbc_encryptedLen(long cCtx, int dataLen);
+
+    /*
+    * Precise length calculation of encrypted data.
+    */
+    public native int aes256Cbc_preciseEncryptedLen(long cCtx, int dataLen);
 
     /*
     * Decrypt given data.
@@ -1355,13 +1579,13 @@ public class FoundationJNI {
     public native byte[] asn1rd_readData(long cCtx, int len);
 
     /*
-    * Read ASN.1 type: CONSTRUCTED | SEQUENCE.
+    * Read ASN.1 type: SEQUENCE.
     * Return element length.
     */
     public native int asn1rd_readSequence(long cCtx);
 
     /*
-    * Read ASN.1 type: CONSTRUCTED | SET.
+    * Read ASN.1 type: SET.
     * Return element length.
     */
     public native int asn1rd_readSet(long cCtx);
@@ -1544,7 +1768,7 @@ public class FoundationJNI {
     public native int asn1wr_writeOid(long cCtx, byte[] value);
 
     /*
-    * Mark previously written data of given length as ASN.1 type: SQUENCE.
+    * Mark previously written data of given length as ASN.1 type: SEQUENCE.
     * Return count of written bytes.
     */
     public native int asn1wr_writeSequence(long cCtx, int len);
@@ -2304,6 +2528,11 @@ public class FoundationJNI {
     * Calculate required buffer length to hold the encrypted data.
     */
     public native int pkcs5Pbes2_encryptedLen(long cCtx, int dataLen);
+
+    /*
+    * Precise length calculation of encrypted data.
+    */
+    public native int pkcs5Pbes2_preciseEncryptedLen(long cCtx, int dataLen);
 
     /*
     * Decrypt given data.
@@ -3113,5 +3342,20 @@ public class FoundationJNI {
     * Deserialize class "message info".
     */
     public native MessageInfo messageInfoDerSerializer_deserialize(long cCtx, byte[] data) throws FoundationException;
+
+    /*
+    * Return buffer size enough to hold serialized message info footer.
+    */
+    public native int messageInfoDerSerializer_serializedFooterLen(long cCtx, MessageInfoFooter messageInfoFooter);
+
+    /*
+    * Serialize class "message info footer".
+    */
+    public native byte[] messageInfoDerSerializer_serializeFooter(long cCtx, MessageInfoFooter messageInfoFooter);
+
+    /*
+    * Deserialize class "message info footer".
+    */
+    public native MessageInfoFooter messageInfoDerSerializer_deserializeFooter(long cCtx, byte[] data) throws FoundationException;
 }
 
