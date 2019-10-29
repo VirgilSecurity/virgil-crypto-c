@@ -31,7 +31,7 @@
     <method name="create from raw public key" is_static="1">
         Create a key algorithm that can import "raw public key".
 
-        <argument name="public key" class="raw public key"/>
+        <argument name="public key" impl="raw public key"/>
         <argument name="random" interface="random" is_optional="1"/>
         <argument name="error" class="error" access="readwrite"/>
 
@@ -41,7 +41,7 @@
     <method name="create from raw private key" is_static="1">
         Create a key algorithm that can import "raw private key".
 
-        <argument name="private key" class="raw private key"/>
+        <argument name="private key" impl="raw private key"/>
         <argument name="random" interface="random" is_optional="1"/>
         <argument name="error" class="error" access="readwrite"/>
 

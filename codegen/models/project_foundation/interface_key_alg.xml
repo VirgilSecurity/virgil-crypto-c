@@ -72,7 +72,7 @@
         For instance, RSA private key must be imported from the format defined in
         RFC 3447 Appendix A.1.2.
 
-        <argument name="raw key" class="raw private key"/>
+        <argument name="raw key" impl="raw private key"/>
         <argument name="error" class="error" access="readwrite"/>
 
         <return interface="private key" access="disown"/>

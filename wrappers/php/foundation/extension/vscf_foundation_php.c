@@ -3092,7 +3092,7 @@ PHP_FUNCTION(vscf_key_alg_factory_create_from_raw_public_key_php) {
     //
     // Proxy call
     //
-    __c_class_raw_public_key_struct_raw_public_key_ *public_key = zend_fetch_resource_ex(in_public_key, vscf_raw_public_key_t_php_res_name, le_vscf_raw_public_key_t);
+    vscf_raw_public_key_t *public_key = zend_fetch_resource_ex(in_public_key, vscf_impl_t_php_res_name, le_vscf_impl_t);
     vscf_impl_t *random = zend_fetch_resource_ex(in_random, vscf_impl_t_php_res_name, le_vscf_impl_t);
     vscf_error_t error;
     vscf_error_reset(&error);
@@ -3151,7 +3151,7 @@ PHP_FUNCTION(vscf_key_alg_factory_create_from_raw_private_key_php) {
     //
     // Proxy call
     //
-    __c_class_raw_private_key_struct_raw_private_key_ *private_key = zend_fetch_resource_ex(in_private_key, vscf_raw_private_key_t_php_res_name, le_vscf_raw_private_key_t);
+    vscf_raw_private_key_t *private_key = zend_fetch_resource_ex(in_private_key, vscf_impl_t_php_res_name, le_vscf_impl_t);
     vscf_impl_t *random = zend_fetch_resource_ex(in_random, vscf_impl_t_php_res_name, le_vscf_impl_t);
     vscf_error_t error;
     vscf_error_reset(&error);
@@ -4954,7 +4954,7 @@ PHP_FUNCTION(vscf_recipient_cipher_verify_signer_info_php) {
     // Proxy call
     //
     vscf_recipient_cipher_t *recipient_cipher = zend_fetch_resource_ex(in_ctx, vscf_recipient_cipher_t_php_res_name, le_vscf_recipient_cipher_t);
-    __c_class_signer_info_struct_signer_info_ *signer_info = zend_fetch_resource_ex(in_signer_info, vscf_signer_info_t_php_res_name, le_vscf_signer_info_t);
+    vscf_signer_info_t *signer_info = zend_fetch_resource_ex(in_signer_info, vscf_signer_info_t_php_res_name, le_vscf_signer_info_t);
     vscf_impl_t *public_key = zend_fetch_resource_ex(in_public_key, vscf_impl_t_php_res_name, le_vscf_impl_t);
 
     //
@@ -5844,7 +5844,6 @@ PHP_FUNCTION(vscf_key_provider_generate_private_key_php) {
     // Proxy call
     //
     vscf_key_provider_t *key_provider = zend_fetch_resource_ex(in_ctx, vscf_key_provider_t_php_res_name, le_vscf_key_provider_t);
-    VSCF_ASSERT_PTR(key_provider);
     vscf_error_t error;
     vscf_error_reset(&error);
 
@@ -6309,7 +6308,7 @@ PHP_FUNCTION(vscf_key_provider_use_ecies_php) {
     // Proxy call
     //
     vscf_key_provider_t *key_provider = zend_fetch_resource_ex(in_ctx, vscf_key_provider_t_php_res_name, le_vscf_key_provider_t);
-    __c_class_ecies_struct_ecies_ *ecies = zend_fetch_resource_ex(in_ecies, vscf_ecies_t_php_res_name, le_vscf_ecies_t);
+    vscf_ecies_t *ecies = zend_fetch_resource_ex(in_ecies, vscf_ecies_t_php_res_name, le_vscf_ecies_t);
 
     //
     // Call main function
@@ -8317,7 +8316,7 @@ PHP_FUNCTION(vscf_group_session_add_epoch_php) {
     // Proxy call
     //
     vscf_group_session_t *group_session = zend_fetch_resource_ex(in_ctx, vscf_group_session_t_php_res_name, le_vscf_group_session_t);
-    __c_class_group_session_message_struct_group_session_message_ *message = zend_fetch_resource_ex(in_message, vscf_group_session_message_t_php_res_name, le_vscf_group_session_message_t);
+    vscf_group_session_message_t *message = zend_fetch_resource_ex(in_message, vscf_group_session_message_t_php_res_name, le_vscf_group_session_message_t);
 
     //
     // Call main function
@@ -8429,7 +8428,7 @@ PHP_FUNCTION(vscf_group_session_decrypt_len_php) {
     // Proxy call
     //
     vscf_group_session_t *group_session = zend_fetch_resource_ex(in_ctx, vscf_group_session_t_php_res_name, le_vscf_group_session_t);
-    __c_class_group_session_message_struct_group_session_message_ *message = zend_fetch_resource_ex(in_message, vscf_group_session_message_t_php_res_name, le_vscf_group_session_message_t);
+    vscf_group_session_message_t *message = zend_fetch_resource_ex(in_message, vscf_group_session_message_t_php_res_name, le_vscf_group_session_message_t);
 
     //
     // Call main function
@@ -8480,7 +8479,7 @@ PHP_FUNCTION(vscf_group_session_decrypt_php) {
     // Proxy call
     //
     vscf_group_session_t *group_session = zend_fetch_resource_ex(in_ctx, vscf_group_session_t_php_res_name, le_vscf_group_session_t);
-    __c_class_group_session_message_struct_group_session_message_ *message = zend_fetch_resource_ex(in_message, vscf_group_session_message_t_php_res_name, le_vscf_group_session_message_t);
+    vscf_group_session_message_t *message = zend_fetch_resource_ex(in_message, vscf_group_session_message_t_php_res_name, le_vscf_group_session_message_t);
     vscf_impl_t *public_key = zend_fetch_resource_ex(in_public_key, vscf_impl_t_php_res_name, le_vscf_impl_t);
 
     //
@@ -18142,7 +18141,7 @@ PHP_FUNCTION(vscf_rsa_import_private_key_php) {
     // Proxy call
     //
     vscf_rsa_t *rsa = zend_fetch_resource_ex(in_ctx, vscf_impl_t_php_res_name, le_vscf_impl_t);
-    __c_class_raw_private_key_struct_raw_private_key_ *raw_key = zend_fetch_resource_ex(in_raw_key, vscf_raw_private_key_t_php_res_name, le_vscf_raw_private_key_t);
+    vscf_raw_private_key_t *raw_key = zend_fetch_resource_ex(in_raw_key, vscf_impl_t_php_res_name, le_vscf_impl_t);
     vscf_error_t error;
     vscf_error_reset(&error);
 
@@ -20020,7 +20019,7 @@ PHP_FUNCTION(vscf_ecc_import_private_key_php) {
     // Proxy call
     //
     vscf_ecc_t *ecc = zend_fetch_resource_ex(in_ctx, vscf_impl_t_php_res_name, le_vscf_impl_t);
-    __c_class_raw_private_key_struct_raw_private_key_ *raw_key = zend_fetch_resource_ex(in_raw_key, vscf_raw_private_key_t_php_res_name, le_vscf_raw_private_key_t);
+    vscf_raw_private_key_t *raw_key = zend_fetch_resource_ex(in_raw_key, vscf_impl_t_php_res_name, le_vscf_impl_t);
     vscf_error_t error;
     vscf_error_reset(&error);
 
@@ -20958,7 +20957,7 @@ PHP_FUNCTION(vscf_ecc_use_ecies_php) {
     // Proxy call
     //
     vscf_ecc_t *ecc = zend_fetch_resource_ex(in_ctx, vscf_impl_t_php_res_name, le_vscf_impl_t);
-    __c_class_ecies_struct_ecies_ *ecies = zend_fetch_resource_ex(in_ecies, vscf_ecies_t_php_res_name, le_vscf_ecies_t);
+    vscf_ecies_t *ecies = zend_fetch_resource_ex(in_ecies, vscf_ecies_t_php_res_name, le_vscf_ecies_t);
 
     //
     // Call main function
@@ -28073,7 +28072,7 @@ PHP_FUNCTION(vscf_ed25519_import_private_key_php) {
     // Proxy call
     //
     vscf_ed25519_t *ed25519 = zend_fetch_resource_ex(in_ctx, vscf_impl_t_php_res_name, le_vscf_impl_t);
-    __c_class_raw_private_key_struct_raw_private_key_ *raw_key = zend_fetch_resource_ex(in_raw_key, vscf_raw_private_key_t_php_res_name, le_vscf_raw_private_key_t);
+    vscf_raw_private_key_t *raw_key = zend_fetch_resource_ex(in_raw_key, vscf_impl_t_php_res_name, le_vscf_impl_t);
     vscf_error_t error;
     vscf_error_reset(&error);
 
@@ -29011,7 +29010,7 @@ PHP_FUNCTION(vscf_ed25519_use_ecies_php) {
     // Proxy call
     //
     vscf_ed25519_t *ed25519 = zend_fetch_resource_ex(in_ctx, vscf_impl_t_php_res_name, le_vscf_impl_t);
-    __c_class_ecies_struct_ecies_ *ecies = zend_fetch_resource_ex(in_ecies, vscf_ecies_t_php_res_name, le_vscf_ecies_t);
+    vscf_ecies_t *ecies = zend_fetch_resource_ex(in_ecies, vscf_ecies_t_php_res_name, le_vscf_ecies_t);
 
     //
     // Call main function
@@ -29518,7 +29517,7 @@ PHP_FUNCTION(vscf_curve25519_import_private_key_php) {
     // Proxy call
     //
     vscf_curve25519_t *curve25519 = zend_fetch_resource_ex(in_ctx, vscf_impl_t_php_res_name, le_vscf_impl_t);
-    __c_class_raw_private_key_struct_raw_private_key_ *raw_key = zend_fetch_resource_ex(in_raw_key, vscf_raw_private_key_t_php_res_name, le_vscf_raw_private_key_t);
+    vscf_raw_private_key_t *raw_key = zend_fetch_resource_ex(in_raw_key, vscf_impl_t_php_res_name, le_vscf_impl_t);
     vscf_error_t error;
     vscf_error_reset(&error);
 
@@ -30162,7 +30161,7 @@ PHP_FUNCTION(vscf_curve25519_use_ecies_php) {
     // Proxy call
     //
     vscf_curve25519_t *curve25519 = zend_fetch_resource_ex(in_ctx, vscf_impl_t_php_res_name, le_vscf_impl_t);
-    __c_class_ecies_struct_ecies_ *ecies = zend_fetch_resource_ex(in_ecies, vscf_ecies_t_php_res_name, le_vscf_ecies_t);
+    vscf_ecies_t *ecies = zend_fetch_resource_ex(in_ecies, vscf_ecies_t_php_res_name, le_vscf_ecies_t);
 
     //
     // Call main function
@@ -31808,7 +31807,7 @@ PHP_FUNCTION(vscf_message_info_der_serializer_serialized_len_php) {
     // Proxy call
     //
     vscf_message_info_der_serializer_t *message_info_der_serializer = zend_fetch_resource_ex(in_ctx, vscf_impl_t_php_res_name, le_vscf_impl_t);
-    __c_class_message_info_struct_message_info_ *message_info = zend_fetch_resource_ex(in_message_info, vscf_message_info_t_php_res_name, le_vscf_message_info_t);
+    vscf_message_info_t *message_info = zend_fetch_resource_ex(in_message_info, vscf_message_info_t_php_res_name, le_vscf_message_info_t);
 
     //
     // Call main function
@@ -31856,7 +31855,7 @@ PHP_FUNCTION(vscf_message_info_der_serializer_serialize_php) {
     // Proxy call
     //
     vscf_message_info_der_serializer_t *message_info_der_serializer = zend_fetch_resource_ex(in_ctx, vscf_impl_t_php_res_name, le_vscf_impl_t);
-    __c_class_message_info_struct_message_info_ *message_info = zend_fetch_resource_ex(in_message_info, vscf_message_info_t_php_res_name, le_vscf_message_info_t);
+    vscf_message_info_t *message_info = zend_fetch_resource_ex(in_message_info, vscf_message_info_t_php_res_name, le_vscf_message_info_t);
 
     //
     // Allocate output buffer for output 'out'
@@ -32025,7 +32024,7 @@ PHP_FUNCTION(vscf_message_info_der_serializer_serialized_footer_len_php) {
     // Proxy call
     //
     vscf_message_info_der_serializer_t *message_info_der_serializer = zend_fetch_resource_ex(in_ctx, vscf_impl_t_php_res_name, le_vscf_impl_t);
-    __c_class_message_info_footer_struct_message_info_footer_ *message_info_footer = zend_fetch_resource_ex(in_message_info_footer, vscf_message_info_footer_t_php_res_name, le_vscf_message_info_footer_t);
+    vscf_message_info_footer_t *message_info_footer = zend_fetch_resource_ex(in_message_info_footer, vscf_message_info_footer_t_php_res_name, le_vscf_message_info_footer_t);
 
     //
     // Call main function
@@ -32073,7 +32072,7 @@ PHP_FUNCTION(vscf_message_info_der_serializer_serialize_footer_php) {
     // Proxy call
     //
     vscf_message_info_der_serializer_t *message_info_der_serializer = zend_fetch_resource_ex(in_ctx, vscf_impl_t_php_res_name, le_vscf_impl_t);
-    __c_class_message_info_footer_struct_message_info_footer_ *message_info_footer = zend_fetch_resource_ex(in_message_info_footer, vscf_message_info_footer_t_php_res_name, le_vscf_message_info_footer_t);
+    vscf_message_info_footer_t *message_info_footer = zend_fetch_resource_ex(in_message_info_footer, vscf_message_info_footer_t_php_res_name, le_vscf_message_info_footer_t);
 
     //
     // Allocate output buffer for output 'out'

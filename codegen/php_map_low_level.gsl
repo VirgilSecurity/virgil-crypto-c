@@ -343,14 +343,14 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
                     if argument0.type = "vsc_data_t"
                         my._proxy_call += format_left("vsc_data_t $(argument0.name:) = vsc_data((const byte*)in_$(argument0.name:), in_$(argument0.name:)_len);", 0)
                     elsif string_in (argument0.type0, "interface, class, impl")
-                        if argument0.type0 = "class"
+                        if string_in(argument0.type0, "class, interface")
                             my._proxy_call += format_left("\
-                                $(argument0.type_c:c) *$(argument0.name:c) = zend_fetch_resource_ex(in_$(argument0.name:), $(argument0.type_c:)_php_res_name, le_$(argument0.type_c:));
+                                $(argument0.type_c:) *$(argument0.name:c) = zend_fetch_resource_ex(in_$(argument0.name:), $(argument0.type_c:)_php_res_name, le_$(argument0.type_c:));
                                 ", 0)
                         else
                             my._a = function.prefix0
                             my._proxy_call += format_left("\
-                                $(argument0.type:c) *$(argument0.name:c) = zend_fetch_resource_ex(in_$(argument0.name:), $(my._a:)_impl_t_php_res_name, le_$(my._a:)_impl_t);
+                                $(argument0.type_c:) *$(argument0.name:c) = zend_fetch_resource_ex(in_$(argument0.name:), $(my._a:)_impl_t_php_res_name, le_$(my._a:)_impl_t);
                                 ", 0)
                         endif
                     elsif argument0.type0 = "size"
@@ -539,6 +539,16 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
                             my._data_string_proxy = 1
                             my._data_string_proxy_call = format_left("\
                                 zend_string *out_$(return_argument0.name:) = zend_string_init(out_$(return_argument0.name:)_temp.bytes, out_$(return_argument0.name:)_temp.len, 0);
+                                ", 0)
+
+                            my._out_name = "out_$(return_argument0.name:)"
+                            my._return += format_left("\
+                                $(return_argument0.type_t:) $(my._pointer:)out_$(return_argument0.name:)_temp = 
+                                ", 0)
+                        elsif return_argument0.type = "vsc_buffer_t"
+                            my._data_string_proxy = 1
+                            my._data_string_proxy_call = format_left("\
+                                // zend_string *out_$(return_argument0.name:) = zend_string_init(out_$(return_argument0.name:)_temp.bytes, out_$(return_argument0.name:)_temp.len, 0);
                                 ", 0)
 
                             my._out_name = "out_$(return_argument0.name:)"
@@ -943,7 +953,7 @@ function php_map_low_level_argument (in_argument, in_php_project, out_argument, 
 
     if defined (my.in_argument.interface)
         my._type0 = "interface"
-        my._type = "$(my._prefix:)_impl_t"
+        my._type = my._type_c
         my._shallow_type = "$(my._prefix:)_impl"
         my._zend_type = "IS_RESOURCE"
     endif
@@ -1147,6 +1157,20 @@ function php_map_low_level_return (in_method, in_php_project, out_function)
                 new return_argument to my.out_function
                     .name = return0.class
                     .type0 = "data"
+                    .type = my._return_type
+                    .type_t = 0.type
+                    .zend_type = my._return_zend_type
+                    .is_reference = my._is_reference
+                endnew
+
+            elsif return0.class = "buffer"
+                my._return_type0 = return0.class
+                my._return_type = "vsc_buffer_t"
+                my._return_zend_type = "IS_STRING"
+
+                new return_argument to my.out_function
+                    .name = return0.class
+                    .type0 = "buffer"
                     .type = my._return_type
                     .type_t = 0.type
                     .zend_type = my._return_zend_type

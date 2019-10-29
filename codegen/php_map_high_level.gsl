@@ -542,9 +542,14 @@ function php_map_high_level_return (in_method, in_php_module, out_php_method)
             my._namespace = php_derive_high_level_namespace(my.in_php_module)
             my._instance = 1
             my._return_interface = 1
+        elsif defined (return0.impl)
+            my._r = return0.impl
+            my._namespace = php_derive_high_level_namespace(my.in_php_module)
+            my._instance = 1
+            my._return_class_impl = 1
         endif
 
-        if (defined (return0.class) & return0.class <> "data") | defined (return0.interface)
+        if (defined (return0.class) & return0.class <> "data") | defined (return0.interface) | defined (return0.impl)
             my._return_type = "$(my._r:Pascal)"
         endif
 

@@ -91,11 +91,12 @@ class KeyAsn1Deserializer implements KeyDeserializer
     * Note, that caller code is responsible to reset ASN.1 reader with
     * an input buffer.
     *
-    * @return void
+    * @return RawPublicKey
     */
-    public function deserializePublicKeyInplace(): void
+    public function deserializePublicKeyInplace(): RawPublicKey
     {
-        vscf_key_asn1_deserializer_deserialize_public_key_inplace_php($this->ctx);
+        $ctx = vscf_key_asn1_deserializer_deserialize_public_key_inplace_php($this->ctx);
+        return new RawPublicKey($ctx);
     }
 
     /**
@@ -103,33 +104,36 @@ class KeyAsn1Deserializer implements KeyDeserializer
     * Note, that caller code is responsible to reset ASN.1 reader with
     * an input buffer.
     *
-    * @return void
+    * @return RawPrivateKey
     */
-    public function deserializePrivateKeyInplace(): void
+    public function deserializePrivateKeyInplace(): RawPrivateKey
     {
-        vscf_key_asn1_deserializer_deserialize_private_key_inplace_php($this->ctx);
+        $ctx = vscf_key_asn1_deserializer_deserialize_private_key_inplace_php($this->ctx);
+        return new RawPrivateKey($ctx);
     }
 
     /**
     * Deserialize given public key as an interchangeable format to the object.
     *
     * @param string $publicKeyData
-    * @return void
+    * @return RawPublicKey
     */
-    public function deserializePublicKey(string $publicKeyData): void
+    public function deserializePublicKey(string $publicKeyData): RawPublicKey
     {
-        vscf_key_asn1_deserializer_deserialize_public_key_php($this->ctx, $publicKeyData);
+        $ctx = vscf_key_asn1_deserializer_deserialize_public_key_php($this->ctx, $publicKeyData);
+        return new RawPublicKey($ctx);
     }
 
     /**
     * Deserialize given private key as an interchangeable format to the object.
     *
     * @param string $privateKeyData
-    * @return void
+    * @return RawPrivateKey
     */
-    public function deserializePrivateKey(string $privateKeyData): void
+    public function deserializePrivateKey(string $privateKeyData): RawPrivateKey
     {
-        vscf_key_asn1_deserializer_deserialize_private_key_php($this->ctx, $privateKeyData);
+        $ctx = vscf_key_asn1_deserializer_deserialize_private_key_php($this->ctx, $privateKeyData);
+        return new RawPrivateKey($ctx);
     }
 
     /**

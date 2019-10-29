@@ -101,11 +101,12 @@ class RawPrivateKey implements Key, PrivateKey
     /**
     * Return public key related to the private key.
     *
-    * @return void
+    * @return RawPublicKey
     */
-    public function getPublicKey(): void
+    public function getPublicKey(): RawPublicKey
     {
-        vscf_raw_private_key_get_public_key_php($this->ctx);
+        $ctx = vscf_raw_private_key_get_public_key_php($this->ctx);
+        return new RawPublicKey($ctx);
     }
 
     /**

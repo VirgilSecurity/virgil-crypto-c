@@ -77,9 +77,9 @@ interface KeyAlg extends Ctx
     * RFC 3447 Appendix A.1.1.
     *
     * @param PublicKey $publicKey
-    * @return void
+    * @return RawPublicKey
     */
-    public function exportPublicKey(PublicKey $publicKey): void;
+    public function exportPublicKey(PublicKey $publicKey): RawPublicKey;
 
     /**
     * Import private key from the raw binary format.
@@ -105,7 +105,7 @@ interface KeyAlg extends Ctx
     * RFC 3447 Appendix A.1.2.
     *
     * @param PrivateKey $privateKey
-    * @return void
+    * @return RawPrivateKey
     */
-    public function exportPrivateKey(PrivateKey $privateKey): void;
+    public function exportPrivateKey(PrivateKey $privateKey): RawPrivateKey;
 }
