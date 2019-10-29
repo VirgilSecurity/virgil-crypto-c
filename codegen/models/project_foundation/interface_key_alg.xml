@@ -58,7 +58,7 @@
         <argument name="public key" interface="public key"/>
         <argument name="error" class="error" access="readwrite"/>
 
-        <return class="raw public key" access="disown"/>
+        <return impl="raw public key" access="disown"/>
     </method>
 
 
@@ -89,6 +89,6 @@
         <argument name="private key" interface="private key"/>
         <argument name="error" class="error" access="readwrite"/>
 
-        <return class="raw private key" access="disown"/>
+        <return impl="raw private key" access="disown"/>
     </method>
 </interface>

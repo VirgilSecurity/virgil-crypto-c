@@ -343,23 +343,15 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
                     if argument0.type = "vsc_data_t"
                         my._proxy_call += format_left("vsc_data_t $(argument0.name:) = vsc_data((const byte*)in_$(argument0.name:), in_$(argument0.name:)_len);", 0)
                     elsif string_in (argument0.type0, "interface, class, impl")
-                        if argument0.type = "class"
+                        if argument0.type0 = "class"
                             my._proxy_call += format_left("\
-                                $(argument0.type:c) *$(argument0.name:c) = zend_fetch_resource_ex(in_$(argument0.name:), $(argument0.type_c:)_php_res_name, le_$(argument0.type_c:));
+                                $(argument0.type_c:c) *$(argument0.name:c) = zend_fetch_resource_ex(in_$(argument0.name:), $(argument0.type_c:)_php_res_name, le_$(argument0.type_c:));
                                 ", 0)
                         else
-                            if defined(argument0.is_dependency) & argument0.is_dependency = 1
-                                my._a = argument0.type_c
-                                my._rn = "$(my._a:)"
-                                my._proxy_call += format_left("\
-                                    $(my._a:) *$(argument0.name:c) = zend_fetch_resource_ex(in_$(argument0.name:), $(my._rn:)_php_res_name, le_$(my._a:));
-                                    ", 0)
-                            else
-                                my._a = function.prefix0
-                                my._proxy_call += format_left("\
-                                    $(argument0.type:c) *$(argument0.name:c) = zend_fetch_resource_ex(in_$(argument0.name:), $(my._a:)_impl_t_php_res_name, le_$(my._a:)_impl_t);
-                                    ", 0)
-                            endif
+                            my._a = function.prefix0
+                            my._proxy_call += format_left("\
+                                $(argument0.type:c) *$(argument0.name:c) = zend_fetch_resource_ex(in_$(argument0.name:), $(my._a:)_impl_t_php_res_name, le_$(my._a:)_impl_t);
+                                ", 0)
                         endif
                     elsif argument0.type0 = "size"
                         my._proxy_call += format_left("
@@ -701,10 +693,17 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
                 elsif function.return_zend_type = "IS_RESOURCE"
                     for function.return_argument as return_argument0
                         if string_in (return_argument0.type0, "class, interface, implementation")
-                            my._ret += format_left("\
-                                zend_resource *$(return_argument0.name:)_res = zend_register_resource($(return_argument0.name:)$(my._rs), le_$(my.in_php_project.prefix:)_impl_t);
-                                RETVAL_RES($(return_argument0.name:)_res);
-                                ", 0)
+                            if return_argument0.type0 = "class"
+                                my._ret += format_left("\
+                                    zend_resource *$(return_argument0.name:)_res = zend_register_resource($(return_argument0.name:)$(my._rs), le_$(return_argument0.type_t:));
+                                    RETVAL_RES($(return_argument0.name:)_res);
+                                    ", 0)
+                            else
+                                my._ret += format_left("\
+                                    zend_resource *$(return_argument0.name:)_res = zend_register_resource($(return_argument0.name:)$(my._rs), le_$(my.in_php_project.prefix:)_impl_t);
+                                    RETVAL_RES($(return_argument0.name:)_res);
+                                    ", 0)
+                            endif
                         #elsif return_argument0.type0 = "class"
                         #    my._res += format_left("\
                         #        zend_resource *$(return_argument0.name:)_res = zend_register_resource($(return_argument0.name:)$(my._rs), le_$(return_argument0.type:)_t);
@@ -1067,7 +1066,14 @@ function php_map_low_level_return (in_method, in_php_project, out_function)
                     return_argument.length = "$(my._prefix:)_$(my._entity:)_$(argument0->length.method:c)"
                     return_argument.length_type = "method"
                 elsif defined (argument0->length.constant)
-                    return_argument.length = "$(my._prefix:c)_$(my._entity:)_$(argument0->length.constant:c,UPPER)"
+
+                    if defined(argument0->length.class)
+                        my._e = argument0->length.class
+                    else
+                        my._e = my._entity
+                    endif
+
+                    return_argument.length = "$(my._prefix:c)_$(my._e:c)_$(argument0->length.constant:c,UPPER)"
                     return_argument.length_type = "constant"
                 elsif defined (argument0->length.argument)
                     return_argument.length = "$(argument0->length.argument:c)"

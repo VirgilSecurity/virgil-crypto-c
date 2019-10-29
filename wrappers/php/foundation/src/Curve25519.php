@@ -191,12 +191,11 @@ class Curve25519 implements Alg, KeyAlg, KeyCipher, ComputeSharedKey
     * RFC 3447 Appendix A.1.1.
     *
     * @param PublicKey $publicKey
-    * @return RawPublicKey
+    * @return void
     */
-    public function exportPublicKey(PublicKey $publicKey): RawPublicKey
+    public function exportPublicKey(PublicKey $publicKey): void
     {
-        $ctx = vscf_curve25519_export_public_key_php($this->ctx, $publicKey->getCtx());
-        return new RawPublicKey($ctx);
+        vscf_curve25519_export_public_key_php($this->ctx, $publicKey->getCtx());
     }
 
     /**
@@ -227,12 +226,11 @@ class Curve25519 implements Alg, KeyAlg, KeyCipher, ComputeSharedKey
     * RFC 3447 Appendix A.1.2.
     *
     * @param PrivateKey $privateKey
-    * @return RawPrivateKey
+    * @return void
     */
-    public function exportPrivateKey(PrivateKey $privateKey): RawPrivateKey
+    public function exportPrivateKey(PrivateKey $privateKey): void
     {
-        $ctx = vscf_curve25519_export_private_key_php($this->ctx, $privateKey->getCtx());
-        return new RawPrivateKey($ctx);
+        vscf_curve25519_export_private_key_php($this->ctx, $privateKey->getCtx());
     }
 
     /**
