@@ -7,17 +7,17 @@ import "C"
 */
 type IHash interface {
 
-    CContext
+    context
 
     /*
     * Length of the digest (hashing output) in bytes.
     */
-    getDigestLen () int32
+    GetDigestLen () uint32
 
     /*
     * Block length of the digest function in bytes.
     */
-    getBlockLen () int32
+    GetBlockLen () uint32
 
     /*
     * Calculate hash over given data.

@@ -1,8 +1,7 @@
 package foundation
 
 // #cgo CFLAGS: -I${SRCDIR}/../binaries/include/
-// #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lvsc_common
-// #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lvsc_foundation
+// #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lmbedcrypto -led25519 -lprotobuf-nanopb -lvsc_common -lvsc_foundation -lvsc_foundation_pb
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
 
@@ -12,44 +11,49 @@ import "C"
 type RsaPrivateKey struct {
     IKey
     IPrivateKey
-    ctx *C.vscf_impl_t
+    cCtx *C.vscf_rsa_private_key_t /*ct10*/
 }
 
 /* Handle underlying C context. */
-func (this RsaPrivateKey) Ctx () *C.vscf_impl_t {
-    return this.ctx
+func (this RsaPrivateKey) ctx () *C.vscf_impl_t {
+    return (*C.vscf_impl_t)(this.cCtx)
 }
 
 func NewRsaPrivateKey () *RsaPrivateKey {
     ctx := C.vscf_rsa_private_key_new()
     return &RsaPrivateKey {
-        ctx: ctx,
+        cCtx: ctx,
     }
 }
 
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func NewRsaPrivateKeyWithCtx (ctx *C.vscf_impl_t) *RsaPrivateKey {
+func newRsaPrivateKeyWithCtx (ctx *C.vscf_rsa_private_key_t /*ct10*/) *RsaPrivateKey {
     return &RsaPrivateKey {
-        ctx: ctx,
+        cCtx: ctx,
     }
 }
 
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func NewRsaPrivateKeyCopy (ctx *C.vscf_impl_t) *RsaPrivateKey {
+func newRsaPrivateKeyCopy (ctx *C.vscf_rsa_private_key_t /*ct10*/) *RsaPrivateKey {
     return &RsaPrivateKey {
-        ctx: C.vscf_rsa_private_key_shallow_copy(ctx),
+        cCtx: C.vscf_rsa_private_key_shallow_copy(ctx),
     }
+}
+
+/// Release underlying C context.
+func (this RsaPrivateKey) close () {
+    C.vscf_rsa_private_key_delete(this.cCtx)
 }
 
 /*
 * Algorithm identifier the key belongs to.
 */
 func (this RsaPrivateKey) AlgId () AlgId {
-    proxyResult := C.vscf_rsa_private_key_alg_id(this.ctx)
+    proxyResult := /*pr4*/C.vscf_rsa_private_key_alg_id(this.cCtx)
 
     return AlgId(proxyResult) /* r8 */
 }
@@ -57,8 +61,8 @@ func (this RsaPrivateKey) AlgId () AlgId {
 /*
 * Return algorithm information that can be used for serialization.
 */
-func (this RsaPrivateKey) AlgInfo () IAlgInfo {
-    proxyResult := C.vscf_rsa_private_key_alg_info(this.ctx)
+func (this RsaPrivateKey) AlgInfo () (IAlgInfo, error) {
+    proxyResult := /*pr4*/C.vscf_rsa_private_key_alg_info(this.cCtx)
 
     return FoundationImplementationWrapIAlgInfo(proxyResult) /* r4 */
 }
@@ -66,19 +70,19 @@ func (this RsaPrivateKey) AlgInfo () IAlgInfo {
 /*
 * Length of the key in bytes.
 */
-func (this RsaPrivateKey) Len () int32 {
-    proxyResult := C.vscf_rsa_private_key_len(this.ctx)
+func (this RsaPrivateKey) Len () uint32 {
+    proxyResult := /*pr4*/C.vscf_rsa_private_key_len(this.cCtx)
 
-    return proxyResult //r9
+    return uint32(proxyResult) /* r9 */
 }
 
 /*
 * Length of the key in bits.
 */
-func (this RsaPrivateKey) Bitlen () int32 {
-    proxyResult := C.vscf_rsa_private_key_bitlen(this.ctx)
+func (this RsaPrivateKey) Bitlen () uint32 {
+    proxyResult := /*pr4*/C.vscf_rsa_private_key_bitlen(this.cCtx)
 
-    return proxyResult //r9
+    return uint32(proxyResult) /* r9 */
 }
 
 /*
@@ -86,16 +90,16 @@ func (this RsaPrivateKey) Bitlen () int32 {
 * Note, this operation can be slow.
 */
 func (this RsaPrivateKey) IsValid () bool {
-    proxyResult := C.vscf_rsa_private_key_is_valid(this.ctx)
+    proxyResult := /*pr4*/C.vscf_rsa_private_key_is_valid(this.cCtx)
 
-    return proxyResult //r9
+    return bool(proxyResult) /* r9 */
 }
 
 /*
 * Extract public key from the private key.
 */
-func (this RsaPrivateKey) ExtractPublicKey () IPublicKey {
-    proxyResult := C.vscf_rsa_private_key_extract_public_key(this.ctx)
+func (this RsaPrivateKey) ExtractPublicKey () (IPublicKey, error) {
+    proxyResult := /*pr4*/C.vscf_rsa_private_key_extract_public_key(this.cCtx)
 
     return FoundationImplementationWrapIPublicKey(proxyResult) /* r4 */
 }

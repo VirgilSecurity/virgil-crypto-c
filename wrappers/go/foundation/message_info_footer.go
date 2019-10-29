@@ -1,72 +1,75 @@
 package foundation
 
 // #cgo CFLAGS: -I${SRCDIR}/../binaries/include/
-// #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lvsc_common
-// #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lvsc_foundation
+// #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lmbedcrypto -led25519 -lprotobuf-nanopb -lvsc_common -lvsc_foundation -lvsc_foundation_pb
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
-import . "virgil/common"
 
 /*
 * Handle message signatures and related information.
 */
 type MessageInfoFooter struct {
-    ctx *C.vscf_impl_t
+    cCtx *C.vscf_message_info_footer_t /*ct2*/
 }
 
 /* Handle underlying C context. */
-func (this MessageInfoFooter) Ctx () *C.vscf_impl_t {
-    return this.ctx
+func (this MessageInfoFooter) ctx () *C.vscf_impl_t {
+    return (*C.vscf_impl_t)(this.cCtx)
 }
 
 func NewMessageInfoFooter () *MessageInfoFooter {
     ctx := C.vscf_message_info_footer_new()
     return &MessageInfoFooter {
-        ctx: ctx,
+        cCtx: ctx,
     }
 }
 
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func NewMessageInfoFooterWithCtx (ctx *C.vscf_impl_t) *MessageInfoFooter {
+func newMessageInfoFooterWithCtx (ctx *C.vscf_message_info_footer_t /*ct2*/) *MessageInfoFooter {
     return &MessageInfoFooter {
-        ctx: ctx,
+        cCtx: ctx,
     }
 }
 
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func NewMessageInfoFooterCopy (ctx *C.vscf_impl_t) *MessageInfoFooter {
+func newMessageInfoFooterCopy (ctx *C.vscf_message_info_footer_t /*ct2*/) *MessageInfoFooter {
     return &MessageInfoFooter {
-        ctx: C.vscf_message_info_footer_shallow_copy(ctx),
+        cCtx: C.vscf_message_info_footer_shallow_copy(ctx),
     }
+}
+
+/// Release underlying C context.
+func (this MessageInfoFooter) close () {
+    C.vscf_message_info_footer_delete(this.cCtx)
 }
 
 /*
 * Return true if at least one signer info presents.
 */
 func (this MessageInfoFooter) HasSignerInfos () bool {
-    proxyResult := C.vscf_message_info_footer_has_signer_infos(this.ctx)
+    proxyResult := /*pr4*/C.vscf_message_info_footer_has_signer_infos(this.cCtx)
 
-    return proxyResult //r9
+    return bool(proxyResult) /* r9 */
 }
 
 /*
 * Return list with a "signer info" elements.
 */
-func (this MessageInfoFooter) SignerInfos () SignerInfoList {
-    proxyResult := C.vscf_message_info_footer_signer_infos(this.ctx)
+func (this MessageInfoFooter) SignerInfos () *SignerInfoList {
+    proxyResult := /*pr4*/C.vscf_message_info_footer_signer_infos(this.cCtx)
 
-    return SignerInfoList(proxyResult) /* r5 */
+    return newSignerInfoListWithCtx(proxyResult) /* r5 */
 }
 
 /*
 * Return information about algorithm that was used for data hashing.
 */
-func (this MessageInfoFooter) SignerHashAlgInfo () IAlgInfo {
-    proxyResult := C.vscf_message_info_footer_signer_hash_alg_info(this.ctx)
+func (this MessageInfoFooter) SignerHashAlgInfo () (IAlgInfo, error) {
+    proxyResult := /*pr4*/C.vscf_message_info_footer_signer_hash_alg_info(this.cCtx)
 
     return FoundationImplementationWrapIAlgInfo(proxyResult) /* r4 */
 }
@@ -75,7 +78,7 @@ func (this MessageInfoFooter) SignerHashAlgInfo () IAlgInfo {
 * Return plain text digest that was used to produce signature.
 */
 func (this MessageInfoFooter) SignerDigest () []byte {
-    proxyResult := C.vscf_message_info_footer_signer_digest(this.ctx)
+    proxyResult := /*pr4*/C.vscf_message_info_footer_signer_digest(this.cCtx)
 
-    return ExtractData(proxyResult) /* r1 */
+    return helperDataToBytes(proxyResult) /* r1 */
 }

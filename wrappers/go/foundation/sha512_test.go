@@ -32,57 +32,73 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-package pythia
+package foundation
 
-// #cgo CFLAGS: -I${SRCDIR}/../include
-// #cgo LDFLAGS: -L${SRCDIR}/../lib -lvsc_common
-// #include <virgil/crypto/common/vsc_buffer.h>
-import "C"
-import unsafe "unsafe"
+import (
+    b64 "encoding/base64"
+    "github.com/stretchr/testify/assert"
+    "testing"
+)
 
-// Buf is needed to pass memory to be written within C
-type Buf struct {
-    memory []byte
-    ctx *C.vsc_buffer_t
-    data []byte
+func TestNewSha512(t *testing.T) {
+    sha := NewSha512()
+
+    assert.NotNil(t, sha)
 }
 
-// NewBuf allocates memory block of predefined capacity
-func NewBuf(capacity C.size_t) *Buf {
-    if capacity == 0 {
-        panic("Buffer with capacity zero is not allowed.");
+func TestSha512_AlgId(t *testing.T) {
+    sha := NewSha512()
+    algId := sha.AlgId()
+
+    assert.NotNil(t, algId)
+    assert.Equal(t, ALG_ID_SHA512, algId)
+}
+
+func TestSha512_GetDigestLen(t *testing.T) {
+    sha := NewSha512()
+
+    assert.Equal(t, TEST_SHA512_DIGEST_LEN, sha.GetDigestLen())
+}
+
+func TestSha512_Hash(t *testing.T) {
+    data, _ := b64.StdEncoding.DecodeString(TEST_DATA)
+    expectedHash, _ := b64.StdEncoding.DecodeString(TEST_SHA512_HASH)
+
+    sha := NewSha512()
+    hash := sha.Hash(data)
+
+    assert.NotNil(t, hash)
+    assert.Equal(t, len(expectedHash), len(hash))
+    assert.Equal(t, expectedHash, hash)
+}
+
+func TestSha512_Hash_Stream(t *testing.T) {
+    data, _ := b64.StdEncoding.DecodeString(TEST_DATA)
+    expectedHash, _ := b64.StdEncoding.DecodeString(TEST_SHA512_HASH)
+
+    sha := NewSha512()
+    sha.Start()
+    blockLen := int(sha.GetBlockLen())
+    startIndex := 0
+    for ;startIndex < len(data);  {
+        endIndex := startIndex + blockLen
+        block := data[startIndex : endIndex]
+        sha.Update(block)
+
+        startIndex += endIndex
     }
 
-    ctxLen := C.vsc_buffer_ctx_size()
-    memory := make([]byte, int(ctxLen + capacity))
-    ctx := (*C.vsc_buffer_t)(unsafe.Pointer(&memory[0]))
-    data := memory[int(ctxLen):]
+    hash := sha.Finish()
 
-    C.vsc_buffer_init(ctx)
-    C.vsc_buffer_use(ctx, (*C.byte)(unsafe.Pointer(&data[0])), capacity)
-
-    return &Buf{
-        memory: memory,
-        ctx: ctx,
-        data: data,
-    }
+    assert.NotNil(t, hash)
+    assert.Equal(t, len(expectedHash), len(hash))
+    assert.Equal(t, expectedHash, hash)
 }
 
-// GetData returns as many bytes as were written to buf by C code
-func (b *Buf) GetData() []byte {
-    newSize := int(C.vsc_buffer_len(b.ctx))
-    if newSize > len(b.data) {
-        panic("Underlying C buffer corrupt the memory.")
-    }
-    return b.data[:newSize]
-}
-
-// Cap returns buffer capacity
-func (b *Buf) Cap() int {
-    return int(C.vsc_buffer_capacity(b.ctx))
-}
-
-// Len returns buffer actual data length
-func (b *Buf) Len() int {
-    return int(C.vsc_buffer_len(b.ctx))
+func TestSha512_ProduceAlgInfo(t *testing.T) {
+    sha := NewSha512()
+    algInfo, err := sha.ProduceAlgInfo()
+    assert.Nil(t, err)
+    assert.NotNil(t, algInfo)
+    assert.Equal(t, ALG_ID_SHA512, algInfo.AlgId())
 }

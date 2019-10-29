@@ -1,86 +1,100 @@
 package foundation
 
 // #cgo CFLAGS: -I${SRCDIR}/../binaries/include/
-// #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lvsc_common
-// #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lvsc_foundation
+// #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lmbedcrypto -led25519 -lprotobuf-nanopb -lvsc_common -lvsc_foundation -lvsc_foundation_pb
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
-import . "virgil/common"
+import unsafe "unsafe"
 
 /*
 * Provide functionality for private key generation and importing that
 * relies on the software default implementations.
 */
 type KeyProvider struct {
-    ctx *C.vscf_impl_t
+    cCtx *C.vscf_key_provider_t /*ct2*/
 }
 
 /* Handle underlying C context. */
-func (this KeyProvider) Ctx () *C.vscf_impl_t {
-    return this.ctx
+func (this KeyProvider) ctx () *C.vscf_impl_t {
+    return (*C.vscf_impl_t)(this.cCtx)
 }
 
 func NewKeyProvider () *KeyProvider {
     ctx := C.vscf_key_provider_new()
     return &KeyProvider {
-        ctx: ctx,
+        cCtx: ctx,
     }
 }
 
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func NewKeyProviderWithCtx (ctx *C.vscf_impl_t) *KeyProvider {
+func newKeyProviderWithCtx (ctx *C.vscf_key_provider_t /*ct2*/) *KeyProvider {
     return &KeyProvider {
-        ctx: ctx,
+        cCtx: ctx,
     }
 }
 
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func NewKeyProviderCopy (ctx *C.vscf_impl_t) *KeyProvider {
+func newKeyProviderCopy (ctx *C.vscf_key_provider_t /*ct2*/) *KeyProvider {
     return &KeyProvider {
-        ctx: C.vscf_key_provider_shallow_copy(ctx),
+        cCtx: C.vscf_key_provider_shallow_copy(ctx),
     }
 }
 
+/// Release underlying C context.
+func (this KeyProvider) close () {
+    C.vscf_key_provider_delete(this.cCtx)
+}
+
 func (this KeyProvider) SetRandom (random IRandom) {
-    C.vscf_key_provider_release_random(this.ctx)
-    C.vscf_key_provider_use_random(this.ctx, random.Ctx())
+    C.vscf_key_provider_release_random(this.cCtx)
+    C.vscf_key_provider_use_random(this.cCtx, (*C.vscf_impl_t)(random.ctx()))
 }
 
 func (this KeyProvider) SetEcies (ecies Ecies) {
-    C.vscf_key_provider_release_ecies(this.ctx)
-    C.vscf_key_provider_use_ecies(this.ctx, ecies.Ctx())
+    C.vscf_key_provider_release_ecies(this.cCtx)
+    C.vscf_key_provider_use_ecies(this.cCtx, (*C.vscf_ecies_t)(ecies.ctx()))
 }
 
 /*
 * Setup predefined values to the uninitialized class dependencies.
 */
-func (this KeyProvider) SetupDefaults () {
-    proxyResult := C.vscf_key_provider_setup_defaults(this.ctx)
+func (this KeyProvider) SetupDefaults () error {
+    proxyResult := /*pr4*/C.vscf_key_provider_setup_defaults(this.cCtx)
 
-    FoundationErrorHandleStatus(proxyResult)
+    err := FoundationErrorHandleStatus(proxyResult)
+    if err != nil {
+        return err
+    }
+
+    return nil
 }
 
 /*
 * Setup parameters that is used during RSA key generation.
 */
-func (this KeyProvider) SetRsaParams (bitlen int32) {
-    C.vscf_key_provider_set_rsa_params(this.ctx, bitlen)
+func (this KeyProvider) SetRsaParams (bitlen uint32) {
+    C.vscf_key_provider_set_rsa_params(this.cCtx, (C.size_t)(bitlen)/*pa10*/)
+
+    return
 }
 
 /*
 * Generate new private key from the given id.
 */
-func (this KeyProvider) GeneratePrivateKey (algId AlgId) IPrivateKey {
-    error := C.vscf_error_t()
+func (this KeyProvider) GeneratePrivateKey (algId AlgId) (IPrivateKey, error) {
+    var error C.vscf_error_t
     C.vscf_error_reset(&error)
 
-    proxyResult := C.vscf_key_provider_generate_private_key(this.ctx, algId /*pa7*/, &error)
+    proxyResult := /*pr4*/C.vscf_key_provider_generate_private_key(this.cCtx, C.vscf_alg_id_t(algId) /*pa7*/, &error)
 
-    FoundationErrorHandleStatus(error.status)
+    err := FoundationErrorHandleStatus(error.status)
+    if err != nil {
+        return nil, err
+    }
 
     return FoundationImplementationWrapIPrivateKey(proxyResult) /* r4 */
 }
@@ -88,13 +102,17 @@ func (this KeyProvider) GeneratePrivateKey (algId AlgId) IPrivateKey {
 /*
 * Import private key from the PKCS#8 format.
 */
-func (this KeyProvider) ImportPrivateKey (keyData []byte) IPrivateKey {
-    error := C.vscf_error_t()
+func (this KeyProvider) ImportPrivateKey (keyData []byte) (IPrivateKey, error) {
+    var error C.vscf_error_t
     C.vscf_error_reset(&error)
+    keyDataData := C.vsc_data((*C.uint8_t)(&keyData[0]), C.size_t(len(keyData)))
 
-    proxyResult := C.vscf_key_provider_import_private_key(this.ctx, WrapData(keyData), &error)
+    proxyResult := /*pr4*/C.vscf_key_provider_import_private_key(this.cCtx, keyDataData, &error)
 
-    FoundationErrorHandleStatus(error.status)
+    err := FoundationErrorHandleStatus(error.status)
+    if err != nil {
+        return nil, err
+    }
 
     return FoundationImplementationWrapIPrivateKey(proxyResult) /* r4 */
 }
@@ -102,13 +120,17 @@ func (this KeyProvider) ImportPrivateKey (keyData []byte) IPrivateKey {
 /*
 * Import public key from the PKCS#8 format.
 */
-func (this KeyProvider) ImportPublicKey (keyData []byte) IPublicKey {
-    error := C.vscf_error_t()
+func (this KeyProvider) ImportPublicKey (keyData []byte) (IPublicKey, error) {
+    var error C.vscf_error_t
     C.vscf_error_reset(&error)
+    keyDataData := C.vsc_data((*C.uint8_t)(&keyData[0]), C.size_t(len(keyData)))
 
-    proxyResult := C.vscf_key_provider_import_public_key(this.ctx, WrapData(keyData), &error)
+    proxyResult := /*pr4*/C.vscf_key_provider_import_public_key(this.cCtx, keyDataData, &error)
 
-    FoundationErrorHandleStatus(error.status)
+    err := FoundationErrorHandleStatus(error.status)
+    if err != nil {
+        return nil, err
+    }
 
     return FoundationImplementationWrapIPublicKey(proxyResult) /* r4 */
 }
@@ -118,10 +140,10 @@ func (this KeyProvider) ImportPublicKey (keyData []byte) IPublicKey {
 *
 * Precondition: public key must be exportable.
 */
-func (this KeyProvider) ExportedPublicKeyLen (publicKey IPublicKey) int32 {
-    proxyResult := C.vscf_key_provider_exported_public_key_len(this.ctx, publicKey.Ctx())
+func (this KeyProvider) ExportedPublicKeyLen (publicKey IPublicKey) uint32 {
+    proxyResult := /*pr4*/C.vscf_key_provider_exported_public_key_len(this.cCtx, (*C.vscf_impl_t)(publicKey.ctx()))
 
-    return proxyResult //r9
+    return uint32(proxyResult) /* r9 */
 }
 
 /*
@@ -129,17 +151,24 @@ func (this KeyProvider) ExportedPublicKeyLen (publicKey IPublicKey) int32 {
 *
 * Precondition: public key must be exportable.
 */
-func (this KeyProvider) ExportPublicKey (publicKey IPublicKey) []byte {
-    outCount := this.ExportedPublicKeyLen(publicKey) /* lg2 */
-    outBuf := NewBuffer(outCount)
-    defer outBuf.Clear()
+func (this KeyProvider) ExportPublicKey (publicKey IPublicKey) ([]byte, error) {
+    outCount := C.ulong(this.ExportedPublicKeyLen(publicKey.(IPublicKey)) /* lg2 */)
+    outMemory := make([]byte, int(C.vsc_buffer_ctx_size() + outCount))
+    outBuf := (*C.vsc_buffer_t)(unsafe.Pointer(&outMemory[0]))
+    outData := outMemory[int(C.vsc_buffer_ctx_size()):]
+    C.vsc_buffer_init(outBuf)
+    C.vsc_buffer_use(outBuf, (*C.byte)(unsafe.Pointer(&outData[0])), outCount)
+    defer C.vsc_buffer_delete(outBuf)
 
 
-    proxyResult := C.vscf_key_provider_export_public_key(this.ctx, publicKey.Ctx(), outBuf)
+    proxyResult := /*pr4*/C.vscf_key_provider_export_public_key(this.cCtx, (*C.vscf_impl_t)(publicKey.ctx()), outBuf)
 
-    FoundationErrorHandleStatus(proxyResult)
+    err := FoundationErrorHandleStatus(proxyResult)
+    if err != nil {
+        return nil, err
+    }
 
-    return outBuf.GetData() /* r7 */
+    return outData[0:C.vsc_buffer_len(outBuf)] /* r7 */, nil
 }
 
 /*
@@ -147,10 +176,10 @@ func (this KeyProvider) ExportPublicKey (publicKey IPublicKey) []byte {
 *
 * Precondition: private key must be exportable.
 */
-func (this KeyProvider) ExportedPrivateKeyLen (privateKey IPrivateKey) int32 {
-    proxyResult := C.vscf_key_provider_exported_private_key_len(this.ctx, privateKey.Ctx())
+func (this KeyProvider) ExportedPrivateKeyLen (privateKey IPrivateKey) uint32 {
+    proxyResult := /*pr4*/C.vscf_key_provider_exported_private_key_len(this.cCtx, (*C.vscf_impl_t)(privateKey.ctx()))
 
-    return proxyResult //r9
+    return uint32(proxyResult) /* r9 */
 }
 
 /*
@@ -158,15 +187,22 @@ func (this KeyProvider) ExportedPrivateKeyLen (privateKey IPrivateKey) int32 {
 *
 * Precondition: private key must be exportable.
 */
-func (this KeyProvider) ExportPrivateKey (privateKey IPrivateKey) []byte {
-    outCount := this.ExportedPrivateKeyLen(privateKey) /* lg2 */
-    outBuf := NewBuffer(outCount)
-    defer outBuf.Clear()
+func (this KeyProvider) ExportPrivateKey (privateKey IPrivateKey) ([]byte, error) {
+    outCount := C.ulong(this.ExportedPrivateKeyLen(privateKey.(IPrivateKey)) /* lg2 */)
+    outMemory := make([]byte, int(C.vsc_buffer_ctx_size() + outCount))
+    outBuf := (*C.vsc_buffer_t)(unsafe.Pointer(&outMemory[0]))
+    outData := outMemory[int(C.vsc_buffer_ctx_size()):]
+    C.vsc_buffer_init(outBuf)
+    C.vsc_buffer_use(outBuf, (*C.byte)(unsafe.Pointer(&outData[0])), outCount)
+    defer C.vsc_buffer_delete(outBuf)
 
 
-    proxyResult := C.vscf_key_provider_export_private_key(this.ctx, privateKey.Ctx(), outBuf)
+    proxyResult := /*pr4*/C.vscf_key_provider_export_private_key(this.cCtx, (*C.vscf_impl_t)(privateKey.ctx()), outBuf)
 
-    FoundationErrorHandleStatus(proxyResult)
+    err := FoundationErrorHandleStatus(proxyResult)
+    if err != nil {
+        return nil, err
+    }
 
-    return outBuf.GetData() /* r7 */
+    return outData[0:C.vsc_buffer_len(outBuf)] /* r7 */, nil
 }

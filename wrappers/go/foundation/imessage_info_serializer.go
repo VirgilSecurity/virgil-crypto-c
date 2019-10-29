@@ -7,19 +7,19 @@ import "C"
 */
 type IMessageInfoSerializer interface {
 
-    CContext
+    context
 
-    getPrefixLen () int32
+    GetPrefixLen () uint32
 
     /*
     * Return buffer size enough to hold serialized message info.
     */
-    SerializedLen (messageInfo MessageInfo) int32
+    SerializedLen (messageInfo *MessageInfo) uint32
 
     /*
     * Serialize class "message info".
     */
-    Serialize (messageInfo MessageInfo) []byte
+    Serialize (messageInfo *MessageInfo) []byte
 
     /*
     * Read message info prefix from the given data, and if it is valid,
@@ -28,11 +28,11 @@ type IMessageInfoSerializer interface {
     * Zero returned if length can not be determined from the given data,
     * and this means that there is no message info at the data beginning.
     */
-    ReadPrefix (data []byte) int32
+    ReadPrefix (data []byte) uint32
 
     /*
     * Deserialize class "message info".
     */
-    Deserialize (data []byte) MessageInfo
+    Deserialize (data []byte) (*MessageInfo, error)
 }
 

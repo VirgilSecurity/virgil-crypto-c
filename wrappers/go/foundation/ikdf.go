@@ -7,11 +7,11 @@ import "C"
 */
 type IKdf interface {
 
-    CContext
+    context
 
     /*
     * Derive key of the requested length from the given data.
     */
-    Derive (data []byte, keyLen int32) []byte
+    Derive (data []byte, keyLen uint32) []byte
 }
 

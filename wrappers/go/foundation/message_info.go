@@ -1,8 +1,7 @@
 package foundation
 
 // #cgo CFLAGS: -I${SRCDIR}/../binaries/include/
-// #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lvsc_common
-// #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lvsc_foundation
+// #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lmbedcrypto -led25519 -lprotobuf-nanopb -lvsc_common -lvsc_foundation -lvsc_foundation_pb
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
 
@@ -11,44 +10,49 @@ import "C"
 * that was used for encryption.
 */
 type MessageInfo struct {
-    ctx *C.vscf_impl_t
+    cCtx *C.vscf_message_info_t /*ct2*/
 }
 
 /* Handle underlying C context. */
-func (this MessageInfo) Ctx () *C.vscf_impl_t {
-    return this.ctx
+func (this MessageInfo) ctx () *C.vscf_impl_t {
+    return (*C.vscf_impl_t)(this.cCtx)
 }
 
 func NewMessageInfo () *MessageInfo {
     ctx := C.vscf_message_info_new()
     return &MessageInfo {
-        ctx: ctx,
+        cCtx: ctx,
     }
 }
 
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func NewMessageInfoWithCtx (ctx *C.vscf_impl_t) *MessageInfo {
+func newMessageInfoWithCtx (ctx *C.vscf_message_info_t /*ct2*/) *MessageInfo {
     return &MessageInfo {
-        ctx: ctx,
+        cCtx: ctx,
     }
 }
 
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func NewMessageInfoCopy (ctx *C.vscf_impl_t) *MessageInfo {
+func newMessageInfoCopy (ctx *C.vscf_message_info_t /*ct2*/) *MessageInfo {
     return &MessageInfo {
-        ctx: C.vscf_message_info_shallow_copy(ctx),
+        cCtx: C.vscf_message_info_shallow_copy(ctx),
     }
+}
+
+/// Release underlying C context.
+func (this MessageInfo) close () {
+    C.vscf_message_info_delete(this.cCtx)
 }
 
 /*
 * Return information about algorithm that was used for the data encryption.
 */
-func (this MessageInfo) DataEncryptionAlgInfo () IAlgInfo {
-    proxyResult := C.vscf_message_info_data_encryption_alg_info(this.ctx)
+func (this MessageInfo) DataEncryptionAlgInfo () (IAlgInfo, error) {
+    proxyResult := /*pr4*/C.vscf_message_info_data_encryption_alg_info(this.cCtx)
 
     return FoundationImplementationWrapIAlgInfo(proxyResult) /* r4 */
 }
@@ -56,28 +60,28 @@ func (this MessageInfo) DataEncryptionAlgInfo () IAlgInfo {
 /*
 * Return list with a "key recipient info" elements.
 */
-func (this MessageInfo) KeyRecipientInfoList () KeyRecipientInfoList {
-    proxyResult := C.vscf_message_info_key_recipient_info_list(this.ctx)
+func (this MessageInfo) KeyRecipientInfoList () *KeyRecipientInfoList {
+    proxyResult := /*pr4*/C.vscf_message_info_key_recipient_info_list(this.cCtx)
 
-    return KeyRecipientInfoList(proxyResult) /* r5 */
+    return newKeyRecipientInfoListWithCtx(proxyResult) /* r5 */
 }
 
 /*
 * Return list with a "password recipient info" elements.
 */
-func (this MessageInfo) PasswordRecipientInfoList () PasswordRecipientInfoList {
-    proxyResult := C.vscf_message_info_password_recipient_info_list(this.ctx)
+func (this MessageInfo) PasswordRecipientInfoList () *PasswordRecipientInfoList {
+    proxyResult := /*pr4*/C.vscf_message_info_password_recipient_info_list(this.cCtx)
 
-    return PasswordRecipientInfoList(proxyResult) /* r5 */
+    return newPasswordRecipientInfoListWithCtx(proxyResult) /* r5 */
 }
 
 /*
 * Return true if message info contains at least one custom param.
 */
 func (this MessageInfo) HasCustomParams () bool {
-    proxyResult := C.vscf_message_info_has_custom_params(this.ctx)
+    proxyResult := /*pr4*/C.vscf_message_info_has_custom_params(this.cCtx)
 
-    return proxyResult //r9
+    return bool(proxyResult) /* r9 */
 }
 
 /*
@@ -85,26 +89,26 @@ func (this MessageInfo) HasCustomParams () bool {
 * The returned object can be used to add custom params or read it.
 * If custom params object was not set then new empty object is created.
 */
-func (this MessageInfo) CustomParams () MessageInfoCustomParams {
-    proxyResult := C.vscf_message_info_custom_params(this.ctx)
+func (this MessageInfo) CustomParams () *MessageInfoCustomParams {
+    proxyResult := /*pr4*/C.vscf_message_info_custom_params(this.cCtx)
 
-    return MessageInfoCustomParams(proxyResult) /* r5 */
+    return newMessageInfoCustomParamsWithCtx(proxyResult) /* r5 */
 }
 
 /*
 * Return true if cipher kdf alg info exists.
 */
 func (this MessageInfo) HasCipherKdfAlgInfo () bool {
-    proxyResult := C.vscf_message_info_has_cipher_kdf_alg_info(this.ctx)
+    proxyResult := /*pr4*/C.vscf_message_info_has_cipher_kdf_alg_info(this.cCtx)
 
-    return proxyResult //r9
+    return bool(proxyResult) /* r9 */
 }
 
 /*
 * Return cipher kdf alg info.
 */
-func (this MessageInfo) CipherKdfAlgInfo () IAlgInfo {
-    proxyResult := C.vscf_message_info_cipher_kdf_alg_info(this.ctx)
+func (this MessageInfo) CipherKdfAlgInfo () (IAlgInfo, error) {
+    proxyResult := /*pr4*/C.vscf_message_info_cipher_kdf_alg_info(this.cCtx)
 
     return FoundationImplementationWrapIAlgInfo(proxyResult) /* r4 */
 }
@@ -113,23 +117,25 @@ func (this MessageInfo) CipherKdfAlgInfo () IAlgInfo {
 * Return true if footer info exists.
 */
 func (this MessageInfo) HasFooterInfo () bool {
-    proxyResult := C.vscf_message_info_has_footer_info(this.ctx)
+    proxyResult := /*pr4*/C.vscf_message_info_has_footer_info(this.cCtx)
 
-    return proxyResult //r9
+    return bool(proxyResult) /* r9 */
 }
 
 /*
 * Return footer info.
 */
-func (this MessageInfo) FooterInfo () FooterInfo {
-    proxyResult := C.vscf_message_info_footer_info(this.ctx)
+func (this MessageInfo) FooterInfo () *FooterInfo {
+    proxyResult := /*pr4*/C.vscf_message_info_footer_info(this.cCtx)
 
-    return FooterInfo(proxyResult) /* r5 */
+    return newFooterInfoWithCtx(proxyResult) /* r5 */
 }
 
 /*
 * Remove all infos.
 */
 func (this MessageInfo) Clear () {
-    C.vscf_message_info_clear(this.ctx)
+    C.vscf_message_info_clear(this.cCtx)
+
+    return
 }

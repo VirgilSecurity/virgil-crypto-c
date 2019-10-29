@@ -1,8 +1,7 @@
 package foundation
 
 // #cgo CFLAGS: -I${SRCDIR}/../binaries/include/
-// #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lvsc_common
-// #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lvsc_foundation
+// #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lmbedcrypto -led25519 -lprotobuf-nanopb -lvsc_common -lvsc_foundation -lvsc_foundation_pb
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
 
@@ -15,8 +14,8 @@ type AlgFactory struct {
 /*
 * Create algorithm that implements "hash stream" interface.
 */
-func AlgFactoryCreateHashFromInfo (algInfo IAlgInfo) IHash {
-    proxyResult := C.vscf_alg_factory_create_hash_from_info(algInfo.Ctx())
+func AlgFactoryCreateHashFromInfo (algInfo IAlgInfo) (IHash, error) {
+    proxyResult := /*pr4*/C.vscf_alg_factory_create_hash_from_info((*C.vscf_impl_t)(algInfo.ctx()))
 
     return FoundationImplementationWrapIHash(proxyResult) /* r4 */
 }
@@ -24,8 +23,8 @@ func AlgFactoryCreateHashFromInfo (algInfo IAlgInfo) IHash {
 /*
 * Create algorithm that implements "mac stream" interface.
 */
-func AlgFactoryCreateMacFromInfo (algInfo IAlgInfo) IMac {
-    proxyResult := C.vscf_alg_factory_create_mac_from_info(algInfo.Ctx())
+func AlgFactoryCreateMacFromInfo (algInfo IAlgInfo) (IMac, error) {
+    proxyResult := /*pr4*/C.vscf_alg_factory_create_mac_from_info((*C.vscf_impl_t)(algInfo.ctx()))
 
     return FoundationImplementationWrapIMac(proxyResult) /* r4 */
 }
@@ -33,8 +32,8 @@ func AlgFactoryCreateMacFromInfo (algInfo IAlgInfo) IMac {
 /*
 * Create algorithm that implements "kdf" interface.
 */
-func AlgFactoryCreateKdfFromInfo (algInfo IAlgInfo) IKdf {
-    proxyResult := C.vscf_alg_factory_create_kdf_from_info(algInfo.Ctx())
+func AlgFactoryCreateKdfFromInfo (algInfo IAlgInfo) (IKdf, error) {
+    proxyResult := /*pr4*/C.vscf_alg_factory_create_kdf_from_info((*C.vscf_impl_t)(algInfo.ctx()))
 
     return FoundationImplementationWrapIKdf(proxyResult) /* r4 */
 }
@@ -42,8 +41,8 @@ func AlgFactoryCreateKdfFromInfo (algInfo IAlgInfo) IKdf {
 /*
 * Create algorithm that implements "salted kdf" interface.
 */
-func AlgFactoryCreateSaltedKdfFromInfo (algInfo IAlgInfo) ISaltedKdf {
-    proxyResult := C.vscf_alg_factory_create_salted_kdf_from_info(algInfo.Ctx())
+func AlgFactoryCreateSaltedKdfFromInfo (algInfo IAlgInfo) (ISaltedKdf, error) {
+    proxyResult := /*pr4*/C.vscf_alg_factory_create_salted_kdf_from_info((*C.vscf_impl_t)(algInfo.ctx()))
 
     return FoundationImplementationWrapISaltedKdf(proxyResult) /* r4 */
 }
@@ -51,8 +50,8 @@ func AlgFactoryCreateSaltedKdfFromInfo (algInfo IAlgInfo) ISaltedKdf {
 /*
 * Create algorithm that implements "cipher" interface.
 */
-func AlgFactoryCreateCipherFromInfo (algInfo IAlgInfo) ICipher {
-    proxyResult := C.vscf_alg_factory_create_cipher_from_info(algInfo.Ctx())
+func AlgFactoryCreateCipherFromInfo (algInfo IAlgInfo) (ICipher, error) {
+    proxyResult := /*pr4*/C.vscf_alg_factory_create_cipher_from_info((*C.vscf_impl_t)(algInfo.ctx()))
 
     return FoundationImplementationWrapICipher(proxyResult) /* r4 */
 }

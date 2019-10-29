@@ -8,7 +8,7 @@ import "C"
 */
 type IAlg interface {
 
-    CContext
+    context
 
     /*
     * Provide algorithm identificator.
@@ -18,11 +18,11 @@ type IAlg interface {
     /*
     * Produce object with algorithm information and configuration parameters.
     */
-    ProduceAlgInfo () IAlgInfo
+    ProduceAlgInfo () (IAlgInfo, error)
 
     /*
     * Restore algorithm configuration from the given object.
     */
-    RestoreAlgInfo (algInfo IAlgInfo)
+    RestoreAlgInfo (algInfo IAlgInfo) error
 }
 

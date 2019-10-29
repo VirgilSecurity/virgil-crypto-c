@@ -7,33 +7,33 @@ import "C"
 */
 type IKeyAlg interface {
 
-    IAlg
+    context
 
     /*
     * Defines whether a public key can be imported or not.
     */
-    getCanImportPublicKey () bool
+    GetCanImportPublicKey () bool
 
     /*
     * Define whether a public key can be exported or not.
     */
-    getCanExportPublicKey () bool
+    GetCanExportPublicKey () bool
 
     /*
     * Define whether a private key can be imported or not.
     */
-    getCanImportPrivateKey () bool
+    GetCanImportPrivateKey () bool
 
     /*
     * Define whether a private key can be exported or not.
     */
-    getCanExportPrivateKey () bool
+    GetCanExportPrivateKey () bool
 
     /*
     * Generate ephemeral private key of the same type.
     * Note, this operation might be slow.
     */
-    GenerateEphemeralKey (key IKey) IPrivateKey
+    GenerateEphemeralKey (key IKey) (IPrivateKey, error)
 
     /*
     * Import public key from the raw binary format.
@@ -45,7 +45,7 @@ type IKeyAlg interface {
     * For instance, RSA public key must be imported from the format defined in
     * RFC 3447 Appendix A.1.1.
     */
-    ImportPublicKey (rawKey RawPublicKey) IPublicKey
+    ImportPublicKey (rawKey *RawPublicKey) (IPublicKey, error)
 
     /*
     * Export public key to the raw binary format.
@@ -54,7 +54,7 @@ type IKeyAlg interface {
     * For instance, RSA public key must be exported in format defined in
     * RFC 3447 Appendix A.1.1.
     */
-    ExportPublicKey (publicKey IPublicKey) RawPublicKey
+    ExportPublicKey (publicKey IPublicKey) (*RawPublicKey, error)
 
     /*
     * Import private key from the raw binary format.
@@ -66,7 +66,7 @@ type IKeyAlg interface {
     * For instance, RSA private key must be imported from the format defined in
     * RFC 3447 Appendix A.1.2.
     */
-    ImportPrivateKey (rawKey RawPrivateKey) IPrivateKey
+    ImportPrivateKey (rawKey *RawPrivateKey) (IPrivateKey, error)
 
     /*
     * Export private key in the raw binary format.
@@ -75,6 +75,6 @@ type IKeyAlg interface {
     * For instance, RSA private key must be exported in format defined in
     * RFC 3447 Appendix A.1.2.
     */
-    ExportPrivateKey (privateKey IPrivateKey) RawPrivateKey
+    ExportPrivateKey (privateKey IPrivateKey) (*RawPrivateKey, error)
 }
 

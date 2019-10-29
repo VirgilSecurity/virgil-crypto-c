@@ -1,11 +1,10 @@
 package foundation
 
 // #cgo CFLAGS: -I${SRCDIR}/../binaries/include/
-// #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lvsc_common
-// #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lvsc_foundation
+// #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lmbedcrypto -led25519 -lprotobuf-nanopb -lvsc_common -lvsc_foundation -lvsc_foundation_pb
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
-import . "virgil/common"
+import unsafe "unsafe"
 
 /*
 * Virgil Security implementation of the HKDF (RFC 6234) algorithm.
@@ -14,53 +13,58 @@ type Hkdf struct {
     IAlg
     IKdf
     ISaltedKdf
-    ctx *C.vscf_impl_t
+    cCtx *C.vscf_hkdf_t /*ct10*/
 }
 
-func (this Hkdf) getHashCounterMax () int32 {
+func HkdfGetHashCounterMax () uint32 {
     return 255
 }
 
 func (this Hkdf) SetHash (hash IHash) {
-    C.vscf_hkdf_release_hash(this.ctx)
-    C.vscf_hkdf_use_hash(this.ctx, hash.Ctx())
+    C.vscf_hkdf_release_hash(this.cCtx)
+    C.vscf_hkdf_use_hash(this.cCtx, (*C.vscf_impl_t)(hash.ctx()))
 }
 
 /* Handle underlying C context. */
-func (this Hkdf) Ctx () *C.vscf_impl_t {
-    return this.ctx
+func (this Hkdf) ctx () *C.vscf_impl_t {
+    return (*C.vscf_impl_t)(this.cCtx)
 }
 
 func NewHkdf () *Hkdf {
     ctx := C.vscf_hkdf_new()
     return &Hkdf {
-        ctx: ctx,
+        cCtx: ctx,
     }
 }
 
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func NewHkdfWithCtx (ctx *C.vscf_impl_t) *Hkdf {
+func newHkdfWithCtx (ctx *C.vscf_hkdf_t /*ct10*/) *Hkdf {
     return &Hkdf {
-        ctx: ctx,
+        cCtx: ctx,
     }
 }
 
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func NewHkdfCopy (ctx *C.vscf_impl_t) *Hkdf {
+func newHkdfCopy (ctx *C.vscf_hkdf_t /*ct10*/) *Hkdf {
     return &Hkdf {
-        ctx: C.vscf_hkdf_shallow_copy(ctx),
+        cCtx: C.vscf_hkdf_shallow_copy(ctx),
     }
+}
+
+/// Release underlying C context.
+func (this Hkdf) close () {
+    C.vscf_hkdf_delete(this.cCtx)
 }
 
 /*
 * Provide algorithm identificator.
 */
 func (this Hkdf) AlgId () AlgId {
-    proxyResult := C.vscf_hkdf_alg_id(this.ctx)
+    proxyResult := /*pr4*/C.vscf_hkdf_alg_id(this.cCtx)
 
     return AlgId(proxyResult) /* r8 */
 }
@@ -68,8 +72,8 @@ func (this Hkdf) AlgId () AlgId {
 /*
 * Produce object with algorithm information and configuration parameters.
 */
-func (this Hkdf) ProduceAlgInfo () IAlgInfo {
-    proxyResult := C.vscf_hkdf_produce_alg_info(this.ctx)
+func (this Hkdf) ProduceAlgInfo () (IAlgInfo, error) {
+    proxyResult := /*pr4*/C.vscf_hkdf_produce_alg_info(this.cCtx)
 
     return FoundationImplementationWrapIAlgInfo(proxyResult) /* r4 */
 }
@@ -77,31 +81,44 @@ func (this Hkdf) ProduceAlgInfo () IAlgInfo {
 /*
 * Restore algorithm configuration from the given object.
 */
-func (this Hkdf) RestoreAlgInfo (algInfo IAlgInfo) {
-    proxyResult := C.vscf_hkdf_restore_alg_info(this.ctx, algInfo.Ctx())
+func (this Hkdf) RestoreAlgInfo (algInfo IAlgInfo) error {
+    proxyResult := /*pr4*/C.vscf_hkdf_restore_alg_info(this.cCtx, (*C.vscf_impl_t)(algInfo.ctx()))
 
-    FoundationErrorHandleStatus(proxyResult)
+    err := FoundationErrorHandleStatus(proxyResult)
+    if err != nil {
+        return err
+    }
+
+    return nil
 }
 
 /*
 * Derive key of the requested length from the given data.
 */
-func (this Hkdf) Derive (data []byte, keyLen int32) []byte {
-    keyCount := keyLen
-    keyBuf := NewBuffer(keyCount)
-    defer keyBuf.Clear()
+func (this Hkdf) Derive (data []byte, keyLen uint32) []byte {
+    keyCount := C.ulong(keyLen)
+    keyMemory := make([]byte, int(C.vsc_buffer_ctx_size() + keyCount))
+    keyBuf := (*C.vsc_buffer_t)(unsafe.Pointer(&keyMemory[0]))
+    keyData := keyMemory[int(C.vsc_buffer_ctx_size()):]
+    C.vsc_buffer_init(keyBuf)
+    C.vsc_buffer_use(keyBuf, (*C.byte)(unsafe.Pointer(&keyData[0])), keyCount)
+    defer C.vsc_buffer_delete(keyBuf)
+    dataData := C.vsc_data((*C.uint8_t)(&data[0]), C.size_t(len(data)))
 
+    C.vscf_hkdf_derive(this.cCtx, dataData, (C.size_t)(keyLen)/*pa10*/, keyBuf)
 
-    C.vscf_hkdf_derive(this.ctx, WrapData(data), keyLen, keyBuf)
-
-    return keyBuf.GetData() /* r7 */
+    return keyData[0:C.vsc_buffer_len(keyBuf)] /* r7 */
 }
 
 /*
 * Prepare algorithm to derive new key.
 */
-func (this Hkdf) Reset (salt []byte, iterationCount int32) {
-    C.vscf_hkdf_reset(this.ctx, WrapData(salt), iterationCount)
+func (this Hkdf) Reset (salt []byte, iterationCount uint32) {
+    saltData := C.vsc_data((*C.uint8_t)(&salt[0]), C.size_t(len(salt)))
+
+    C.vscf_hkdf_reset(this.cCtx, saltData, (C.size_t)(iterationCount)/*pa10*/)
+
+    return
 }
 
 /*
@@ -109,5 +126,9 @@ func (this Hkdf) Reset (salt []byte, iterationCount int32) {
 * Can be empty.
 */
 func (this Hkdf) SetInfo (info []byte) {
-    C.vscf_hkdf_set_info(this.ctx, WrapData(info))
+    infoData := C.vsc_data((*C.uint8_t)(&info[0]), C.size_t(len(info)))
+
+    C.vscf_hkdf_set_info(this.cCtx, infoData)
+
+    return
 }

@@ -8,12 +8,12 @@ import "C"
 */
 type ISaltedKdf interface {
 
-    IKdf
+    context
 
     /*
     * Prepare algorithm to derive new key.
     */
-    Reset (salt []byte, iterationCount int32)
+    Reset (salt []byte, iterationCount uint32)
 
     /*
     * Setup application specific information (optional).

@@ -1,67 +1,71 @@
 package foundation
 
 // #cgo CFLAGS: -I${SRCDIR}/../binaries/include/
-// #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lvsc_common
-// #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lvsc_foundation
+// #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lmbedcrypto -led25519 -lprotobuf-nanopb -lvsc_common -lvsc_foundation -lvsc_foundation_pb
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
-import . "virgil/common"
+import unsafe "unsafe"
 
 /*
 * Virgil implementation of the ECIES algorithm.
 */
 type Ecies struct {
-    ctx *C.vscf_impl_t
+    cCtx *C.vscf_ecies_t /*ct2*/
 }
 
 /* Handle underlying C context. */
-func (this Ecies) Ctx () *C.vscf_impl_t {
-    return this.ctx
+func (this Ecies) ctx () *C.vscf_impl_t {
+    return (*C.vscf_impl_t)(this.cCtx)
 }
 
 func NewEcies () *Ecies {
     ctx := C.vscf_ecies_new()
     return &Ecies {
-        ctx: ctx,
+        cCtx: ctx,
     }
 }
 
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func NewEciesWithCtx (ctx *C.vscf_impl_t) *Ecies {
+func newEciesWithCtx (ctx *C.vscf_ecies_t /*ct2*/) *Ecies {
     return &Ecies {
-        ctx: ctx,
+        cCtx: ctx,
     }
 }
 
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func NewEciesCopy (ctx *C.vscf_impl_t) *Ecies {
+func newEciesCopy (ctx *C.vscf_ecies_t /*ct2*/) *Ecies {
     return &Ecies {
-        ctx: C.vscf_ecies_shallow_copy(ctx),
+        cCtx: C.vscf_ecies_shallow_copy(ctx),
     }
 }
 
+/// Release underlying C context.
+func (this Ecies) close () {
+    C.vscf_ecies_delete(this.cCtx)
+}
+
 func (this Ecies) SetRandom (random IRandom) {
-    C.vscf_ecies_release_random(this.ctx)
-    C.vscf_ecies_use_random(this.ctx, random.Ctx())
+    C.vscf_ecies_release_random(this.cCtx)
+    C.vscf_ecies_use_random(this.cCtx, (*C.vscf_impl_t)(random.ctx()))
 }
 
 func (this Ecies) SetCipher (cipher ICipher) {
-    C.vscf_ecies_release_cipher(this.ctx)
-    C.vscf_ecies_use_cipher(this.ctx, cipher.Ctx())
+    C.vscf_ecies_release_cipher(this.cCtx)
+    C.vscf_ecies_use_cipher(this.cCtx, (*C.vscf_impl_t)(cipher.ctx()))
 }
 
 func (this Ecies) SetMac (mac IMac) {
-    C.vscf_ecies_release_mac(this.ctx)
-    C.vscf_ecies_use_mac(this.ctx, mac.Ctx())
+    C.vscf_ecies_release_mac(this.cCtx)
+    C.vscf_ecies_use_mac(this.cCtx, (*C.vscf_impl_t)(mac.ctx()))
 }
 
 func (this Ecies) SetKdf (kdf IKdf) {
-    C.vscf_ecies_release_kdf(this.ctx)
-    C.vscf_ecies_use_kdf(this.ctx, kdf.Ctx())
+    C.vscf_ecies_release_kdf(this.cCtx)
+    C.vscf_ecies_use_kdf(this.cCtx, (*C.vscf_impl_t)(kdf.ctx()))
 }
 
 /*
@@ -70,8 +74,8 @@ func (this Ecies) SetKdf (kdf IKdf) {
 * This dependency is optional.
 */
 func (this Ecies) SetEphemeralKey (ephemeralKey IPrivateKey) {
-    C.vscf_ecies_release_ephemeral_key(this.ctx)
-    C.vscf_ecies_use_ephemeral_key(this.ctx, ephemeralKey.Ctx())
+    C.vscf_ecies_release_ephemeral_key(this.cCtx)
+    C.vscf_ecies_use_ephemeral_key(this.cCtx, (*C.vscf_impl_t)(ephemeralKey.ctx()))
 }
 
 /*
@@ -79,23 +83,32 @@ func (this Ecies) SetEphemeralKey (ephemeralKey IPrivateKey) {
 * Key algorithm MUST support shared key computation as well.
 */
 func (this Ecies) SetKeyAlg (keyAlg IKeyAlg) {
-    C.vscf_ecies_set_key_alg(this.ctx, keyAlg.Ctx())
+    C.vscf_ecies_set_key_alg(this.cCtx, (*C.vscf_impl_t)(keyAlg.ctx()))
+
+    return
 }
 
 /*
 * Release weak reference to the key algorithm.
 */
 func (this Ecies) ReleaseKeyAlg () {
-    C.vscf_ecies_release_key_alg(this.ctx)
+    C.vscf_ecies_release_key_alg(this.cCtx)
+
+    return
 }
 
 /*
 * Setup predefined values to the uninitialized class dependencies.
 */
-func (this Ecies) SetupDefaults () {
-    proxyResult := C.vscf_ecies_setup_defaults(this.ctx)
+func (this Ecies) SetupDefaults () error {
+    proxyResult := /*pr4*/C.vscf_ecies_setup_defaults(this.cCtx)
 
-    FoundationErrorHandleStatus(proxyResult)
+    err := FoundationErrorHandleStatus(proxyResult)
+    if err != nil {
+        return err
+    }
+
+    return nil
 }
 
 /*
@@ -103,55 +116,71 @@ func (this Ecies) SetupDefaults () {
 * except random.
 */
 func (this Ecies) SetupDefaultsNoRandom () {
-    C.vscf_ecies_setup_defaults_no_random(this.ctx)
+    C.vscf_ecies_setup_defaults_no_random(this.cCtx)
+
+    return
 }
 
 /*
 * Calculate required buffer length to hold the encrypted data.
 */
-func (this Ecies) EncryptedLen (publicKey IPublicKey, dataLen int32) int32 {
-    proxyResult := C.vscf_ecies_encrypted_len(this.ctx, publicKey.Ctx(), dataLen)
+func (this Ecies) EncryptedLen (publicKey IPublicKey, dataLen uint32) uint32 {
+    proxyResult := /*pr4*/C.vscf_ecies_encrypted_len(this.cCtx, (*C.vscf_impl_t)(publicKey.ctx()), (C.size_t)(dataLen)/*pa10*/)
 
-    return proxyResult //r9
+    return uint32(proxyResult) /* r9 */
 }
 
 /*
 * Encrypt data with a given public key.
 */
-func (this Ecies) Encrypt (publicKey IPublicKey, data []byte) []byte {
-    outCount := this.EncryptedLen(publicKey, int32(len(data))) /* lg2 */
-    outBuf := NewBuffer(outCount)
-    defer outBuf.Clear()
+func (this Ecies) Encrypt (publicKey IPublicKey, data []byte) ([]byte, error) {
+    outCount := C.ulong(this.EncryptedLen(publicKey.(IPublicKey), uint32(len(data))) /* lg2 */)
+    outMemory := make([]byte, int(C.vsc_buffer_ctx_size() + outCount))
+    outBuf := (*C.vsc_buffer_t)(unsafe.Pointer(&outMemory[0]))
+    outData := outMemory[int(C.vsc_buffer_ctx_size()):]
+    C.vsc_buffer_init(outBuf)
+    C.vsc_buffer_use(outBuf, (*C.byte)(unsafe.Pointer(&outData[0])), outCount)
+    defer C.vsc_buffer_delete(outBuf)
+    dataData := C.vsc_data((*C.uint8_t)(&data[0]), C.size_t(len(data)))
 
+    proxyResult := /*pr4*/C.vscf_ecies_encrypt(this.cCtx, (*C.vscf_impl_t)(publicKey.ctx()), dataData, outBuf)
 
-    proxyResult := C.vscf_ecies_encrypt(this.ctx, publicKey.Ctx(), WrapData(data), outBuf)
+    err := FoundationErrorHandleStatus(proxyResult)
+    if err != nil {
+        return nil, err
+    }
 
-    FoundationErrorHandleStatus(proxyResult)
-
-    return outBuf.GetData() /* r7 */
+    return outData[0:C.vsc_buffer_len(outBuf)] /* r7 */, nil
 }
 
 /*
 * Calculate required buffer length to hold the decrypted data.
 */
-func (this Ecies) DecryptedLen (privateKey IPrivateKey, dataLen int32) int32 {
-    proxyResult := C.vscf_ecies_decrypted_len(this.ctx, privateKey.Ctx(), dataLen)
+func (this Ecies) DecryptedLen (privateKey IPrivateKey, dataLen uint32) uint32 {
+    proxyResult := /*pr4*/C.vscf_ecies_decrypted_len(this.cCtx, (*C.vscf_impl_t)(privateKey.ctx()), (C.size_t)(dataLen)/*pa10*/)
 
-    return proxyResult //r9
+    return uint32(proxyResult) /* r9 */
 }
 
 /*
 * Decrypt given data.
 */
-func (this Ecies) Decrypt (privateKey IPrivateKey, data []byte) []byte {
-    outCount := this.DecryptedLen(privateKey, int32(len(data))) /* lg2 */
-    outBuf := NewBuffer(outCount)
-    defer outBuf.Clear()
+func (this Ecies) Decrypt (privateKey IPrivateKey, data []byte) ([]byte, error) {
+    outCount := C.ulong(this.DecryptedLen(privateKey.(IPrivateKey), uint32(len(data))) /* lg2 */)
+    outMemory := make([]byte, int(C.vsc_buffer_ctx_size() + outCount))
+    outBuf := (*C.vsc_buffer_t)(unsafe.Pointer(&outMemory[0]))
+    outData := outMemory[int(C.vsc_buffer_ctx_size()):]
+    C.vsc_buffer_init(outBuf)
+    C.vsc_buffer_use(outBuf, (*C.byte)(unsafe.Pointer(&outData[0])), outCount)
+    defer C.vsc_buffer_delete(outBuf)
+    dataData := C.vsc_data((*C.uint8_t)(&data[0]), C.size_t(len(data)))
 
+    proxyResult := /*pr4*/C.vscf_ecies_decrypt(this.cCtx, (*C.vscf_impl_t)(privateKey.ctx()), dataData, outBuf)
 
-    proxyResult := C.vscf_ecies_decrypt(this.ctx, privateKey.Ctx(), WrapData(data), outBuf)
+    err := FoundationErrorHandleStatus(proxyResult)
+    if err != nil {
+        return nil, err
+    }
 
-    FoundationErrorHandleStatus(proxyResult)
-
-    return outBuf.GetData() /* r7 */
+    return outData[0:C.vsc_buffer_len(outBuf)] /* r7 */, nil
 }

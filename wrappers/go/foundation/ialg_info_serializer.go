@@ -7,12 +7,12 @@ import "C"
 */
 type IAlgInfoSerializer interface {
 
-    CContext
+    context
 
     /*
     * Return buffer size enough to hold serialized algorithm.
     */
-    SerializedLen (algInfo IAlgInfo) int32
+    SerializedLen (algInfo IAlgInfo) uint32
 
     /*
     * Serialize algorithm info to buffer class.

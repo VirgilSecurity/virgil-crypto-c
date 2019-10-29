@@ -8,7 +8,7 @@ import "C"
 */
 type IKeySigner interface {
 
-    IKeyAlg
+    context
 
     /*
     * Check if algorithm can sign data digest with a given key.
@@ -19,12 +19,12 @@ type IKeySigner interface {
     * Return length in bytes required to hold signature.
     * Return zero if a given private key can not produce signatures.
     */
-    SignatureLen (key IKey) int32
+    SignatureLen (key IKey) uint32
 
     /*
     * Sign data digest with a given private key.
     */
-    SignHash (privateKey IPrivateKey, hashId AlgId, digest []byte) []byte
+    SignHash (privateKey IPrivateKey, hashId AlgId, digest []byte) ([]byte, error)
 
     /*
     * Check if algorithm can verify data digest with a given key.

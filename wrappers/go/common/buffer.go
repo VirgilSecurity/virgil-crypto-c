@@ -48,7 +48,8 @@ type Buffer struct {
 }
 
 // NewBuffer allocates memory block of predefined capacity
-func NewBuffer(capacity C.size_t) *Buffer {
+func NewBuffer(cap int) *Buffer {
+    capacity := C.size_t(cap)
     if capacity == 0 {
         panic("Buffer with zero capacity is not allowed.");
     }

@@ -7,11 +7,7 @@ import "C"
 */
 type ICipher interface {
 
-    IEncrypt
-
-    IDecrypt
-
-    ICipherInfo
+    context
 
     /*
     * Setup IV or nonce.
@@ -43,25 +39,25 @@ type ICipher interface {
     * "update" or "finish" in an current mode.
     * Pass zero length to define buffer length of the method "finish".
     */
-    OutLen (dataLen int32) int32
+    OutLen (dataLen uint32) uint32
 
     /*
     * Return buffer length required to hold an output of the methods
     * "update" or "finish" in an encryption mode.
     * Pass zero length to define buffer length of the method "finish".
     */
-    EncryptedOutLen (dataLen int32) int32
+    EncryptedOutLen (dataLen uint32) uint32
 
     /*
     * Return buffer length required to hold an output of the methods
     * "update" or "finish" in an decryption mode.
     * Pass zero length to define buffer length of the method "finish".
     */
-    DecryptedOutLen (dataLen int32) int32
+    DecryptedOutLen (dataLen uint32) uint32
 
     /*
     * Accomplish encryption or decryption process.
     */
-    Finish () []byte
+    Finish () ([]byte, error)
 }
 

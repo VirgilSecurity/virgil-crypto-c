@@ -116,15 +116,25 @@ function go_derive_buffer_length_getter (class, method, argument)
         endif
 
         if defined (proxy.argument)
+        
+            my.arg_name = go_derive_argument_name_str (proxy.argument)
 
             if string_in (proxy.cast, "data_length")
-                my.proxy_args += "int32(len("
-            endif
+                my.proxy_args += "uint32(len($(my.arg_name:)))"
+            else
+                my.is_interface = "0"
+                for my.method.argument where string_equal (proxy.argument, argument.name)
+                  if !string_empty (argument.interface)
+                    my.is_interface = "1"
+                  endif
+                endfor
 
-            my.proxy_args += go_derive_argument_name_str (proxy.argument)
-
-            if string_in (proxy.cast, "data_length")
-                my.proxy_args += "))"
+                if is_true (my.is_interface)
+                    my.arg_interface = go_derive_interface_name_str (proxy.[to])
+                    my.proxy_args += "$(my.arg_name:)\\.($(my.arg_interface:))"
+                else
+                    my.proxy_args += my.arg_name
+                endif
             endif
 
         elsif defined (proxy.constant)
@@ -156,7 +166,11 @@ function go_derive_buffer_length_getter (class, method, argument)
 
     elsif defined (my.length.constant)
         my.proxy_constant_func = go_derive_getter_name_str (my.length.constant)
-        return "$(my.proxy_object:).$(my.proxy_constant_func:)() /* lg3 */"
+        if string_equal (my.proxy_object, "this")
+            return "$(my.proxy_object:).$(my.proxy_constant_func:)() /* lg3 */"
+        else
+            return "$(my.proxy_object:)$(my.proxy_constant_func:)() /* lg4 */"
+        endif
 
     elsif defined (my.length.argument)
         my.proxy_argument = go_derive_argument_name_str (my.length.argument)
@@ -206,6 +220,54 @@ function go_derive_constant_type (constant, instance, go_project)
         return go_derive_instance_type (my.constant)
     endif
     return "int"
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return .(UID) that refers to the C type of the class.
+# ---------------------------------------------------------------------------
+function go_derive_c_type (instance)
+    check_arguments (my, "instance", my)
+
+    if item_in (my.instance, "interface")
+        my.project_uid = c_component_derive_instance_project_uid (my.instance)
+        my.type_uid = c_component_derive_instance_type_uid ("struct", "impl", "impl")
+        return "$(make_ref_c (make_id(my.project_uid, my.type_uid)):) /*ct1*/"
+
+    elsif item_in (my.instance, "class")
+        return "$(make_ref_c (make_id ("class", my.instance.name, "struct", my.instance.name))) /*ct2*/"
+
+    elsif defined (my.instance.class)
+        if my.instance.class = "data"
+            return ".(c_project_common_class_data_struct_data) /*ct3*/"
+
+        elsif my.instance.class = "error"
+            return "$(make_ref_c (make_id ("class", my.instance.class, "struct", my.instance.class))) /*ct4*/"
+
+        else
+            my.project_uid = c_component_derive_instance_project_uid (my.instance)
+            my.type_uid = c_component_derive_instance_type_uid ("struct", my.instance.class, my.instance.class)
+            return "$(make_ref_c (make_id(my.project_uid, my.type_uid)):) */*ct5*/"
+        endif
+
+    elsif defined (my.instance.interface)
+        my.project_uid = c_component_derive_instance_project_uid (my.instance)
+        my.type_uid = c_component_derive_instance_type_uid ("struct", "impl", "impl")
+        return "$(make_ref_c (make_id(my.project_uid, my.type_uid)):) */*ct6*/"
+    elsif defined (my.instance.impl)
+        return "$(make_ref_c (make_id ("class", my.instance.impl, "struct", my.instance.impl))) * /*ct7*/"
+    elsif defined (my.instance.type)
+        if count (my.instance.array)
+            return "$(my.instance.type:) */*ct8*/"
+        else
+            return my.instance.type
+        endif
+    elsif defined (my.instance.enum)
+        my.project_uid = c_component_derive_instance_project_uid (my.instance)
+        my.type_uid = make_id ("class", my.instance.enum, "enum", my.instance.enum)
+        return "$(make_ref_c (make_id(my.project_uid, my.type_uid)):) /*ct9*/"
+    endif
+
+    return "$(make_ref_c (make_id ("class", my.instance.name, "struct", my.instance.name))) /*ct10*/"
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -339,7 +401,7 @@ endfunction
 function go_derive_getter_name_str (name)
     check_arguments (my, "name", my)
 
-    return "get$(my.name:c, Pascal)"
+    return "Get$(my.name:c, Pascal)"
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -360,6 +422,63 @@ function go_derive_instance_name (instance)
     assert_attribute (my.instance, "name", my)
 
     return "$(my.instance.name:Camel)"
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Derive C type from the <instance/> type attributes.
+# ---------------------------------------------------------------------------
+function go_derive_instance_c_type (instance)
+    check_arguments (my, "instance", my)
+
+    if defined (my.instance.type)
+        if my.instance.type = "nothing"
+            my.primitive_type = "Void"
+
+        elsif my.instance.type = "boolean"
+            my.primitive_type = "C.bool"
+
+        elsif my.instance.type = "integer"
+            my.primitive_type = go_derive_integer_c_type (my.instance.size ?)
+
+        elsif my.instance.type = "unsigned"
+            my.primitive_type = go_derive_unsigned_c_type (my.instance.size ?)
+
+        elsif my.instance.type = "byte"
+            my.primitive_type = "C.byte"
+
+        elsif my.instance.type = "size"
+            my.primitive_type = "C.size_t"
+
+        elsif my.instance.type = "char"
+            if count(my.instance.string)
+                my.primitive_type = "*C.char"
+            else
+                #TODO verify char type
+                my.primitive_type = "C.uint8"
+            endif
+        else
+            echo_fatal ("Unsupported instance type '$(my.instance.type)' for C language.", my)
+        endif
+
+        if is_true (my.instance.is_reference)
+            if string_in (my.instance.access, "readonly")
+                my.primitive_type = "*$(my.primitive_type:)"
+            else
+                my.primitive_type = "*$(my.primitive_type:)"
+            endif
+        endif
+
+        if count (my.instance.array)
+            if string_in (my.instance.access, "readonly")
+                my.primitive_type = "*$(my.primitive_type:)"
+            else
+                my.primitive_type = "*$(my.primitive_type:)"
+            endif
+        endif
+
+        return my.primitive_type
+    endif
+
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -385,7 +504,7 @@ function go_derive_instance_type (instance)
             my.primitive_type = "byte"
 
         elsif my.instance.type = "size"
-            my.primitive_type = "int32"
+            my.primitive_type = "uint32"
 
         elsif my.instance.type = "char"
             if count(my.instance.string)
@@ -400,9 +519,11 @@ function go_derive_instance_type (instance)
 
         if is_true (my.instance.is_reference)
             if string_in (my.instance.access, "readonly")
-                my.primitive_type = "*$(my.primitive_type:)"
+                my.primitive_type = "unsafe.Pointer"
+                #my.primitive_type = "[]$(my.primitive_type:)"
             else
-                my.primitive_type = "*$(my.primitive_type:)"
+                my.primitive_type = "unsafe.Pointer"
+                #my.primitive_type = "[]$(my.primitive_type:)"
             endif
         endif
 
@@ -464,6 +585,31 @@ function go_derive_instance_type (instance)
 endfunction
 
 # ---------------------------------------------------------------------------
+#   Derive C integer type correspond to it's size.
+#   Size: {1, 2, 4, 8}.
+# ---------------------------------------------------------------------------
+function go_derive_integer_c_type (size)
+    if defined (my.size)
+        if my.size = "1"
+            return "C.int8_t"
+
+        elsif my.size = "2"
+            return "C.int16_t"
+
+        elsif my.size = "4"
+            return "C.int32_t"
+
+        elsif my.size = "8"
+            return "C.int64_t"
+        else
+            echo_fatal ("Unsupported size 'my.size' for Go integers", my)
+        endif
+    else
+        return "C.int32_t"
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
 #   Derive Go integer type correspond to it's size.
 #   Size: {1, 2, 4, 8}.
 # ---------------------------------------------------------------------------
@@ -496,7 +642,16 @@ function go_derive_interface_name (interface, go_project)
 
     assert_attribute_one_of (my.interface, "name, interface", my)
 
-    return "I$(my.interface.name ? my.interface.interface:Pascal)"
+    return go_derive_interface_name_str (my.interface.name ? my.interface.interface)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return formatted name of the Go interface.
+# ---------------------------------------------------------------------------
+function go_derive_interface_name_str (name)
+    check_arguments (my, "name", my)
+
+    return "I$(my.name:Pascal)"
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -537,6 +692,32 @@ function go_derive_package_name (project, wrapper)
 endfunction
 
 # ---------------------------------------------------------------------------
+#   Return proxy C type of the method return value.
+# ---------------------------------------------------------------------------
+function go_derive_proxy_return_c_type (method)
+    check_arguments (my, "method", my)
+
+    if ! count (my.method.return)
+        return "Void"
+    endif
+
+    my.return = my.method->return
+
+    if defined (my.return.type)
+        return go_derive_instance_c_type (my.return) ?
+
+    #TODO
+    #elsif defined (my.return.enum)
+    #    return make_ref_c (make_id ("class", my.return.enum, "enum", my.return.enum))
+
+    #elsif has_one_of_attribute (my.return, "interface, class, impl")
+    #    return "auto"
+    endif
+
+    return ""
+endfunction
+
+# ---------------------------------------------------------------------------
 #   Return proxy type of the method return value.
 # ---------------------------------------------------------------------------
 function go_derive_proxy_return_type (method)
@@ -571,11 +752,26 @@ function go_derive_result_class_name (go_parent, go_func)
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Return Go type for class context.
+#   Return C type for class context.
+# ---------------------------------------------------------------------------
+function go_derive_struct_context_c_type (class)
+    return "/*sc1*/"
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return C type for class context.
 # ---------------------------------------------------------------------------
 function go_derive_struct_context_type (class)
-    #if defined (my.class) & !string_equal (my.class.context, "none")
-    #return "*C.$(class_derive_c_type(my.class))"
+    check_arguments (my, "class", my)
+
+    my.type = go_derive_c_type (my.class)
+    return "*C.$(my.type:)"
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return C type for class context.
+# ---------------------------------------------------------------------------
+function go_derive_struct_default_context_type ()
     return "*C.vscf_impl_t"
 endfunction
 
@@ -597,6 +793,31 @@ function go_derive_struct_name_str (name)
     check_arguments (my, "name", my)
 
     return "$(my.name:Pascal)"
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Derive C unsigned integer type correspond to it's size.
+#   Size: {1, 2, 4, 8}.
+# ---------------------------------------------------------------------------
+function go_derive_unsigned_c_type (size)
+    if defined (my.size)
+        if my.size = "1"
+            return "C.uchar"
+
+        elsif my.size = "2"
+            return "C.ushort"
+
+        elsif my.size = "4"
+            return "C.uint"
+
+        elsif my.size = "8"
+            return "C.ulong"
+        else
+            echo_fatal ("Unsupported size 'my.size' for Go unsigned integers", my)
+        endif
+    else
+        return "C.uint"
+    endif
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -673,20 +894,54 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Add entities specific for "status" enum.
 # ---------------------------------------------------------------------------
-function go_map_enum_status (go_struct, enum, go_project, meta)
-    check_arguments (my, "go_struct, enum, go_project, meta")
+function go_map_enum_status (go_struct, enum, go_module, go_project, meta)
+    check_arguments (my, "go_struct, enum, go_module, go_project, meta")
     
+    go_create_import ("", "fmt", my.go_module)
+
     new go_field to my.go_struct
         . = "/* Error status code. */"
-        .name = "status"
+        .name = "Code"
         .type = "int"
-        .access = "readonly"
-        .visibility = "private"
     endnew
 
+    new go_field to my.go_struct
+        . = "/* Error status message. */"
+        .name = "Message"
+        .type = "string"
+    endnew
+
+    my.switch_case = format_left ("switch (status) {")
     for my.enum.constant where 0.name <> "success"
         go_create_constant (constant, my.enum, my.go_struct, my.go_project, my.meta)
+        
+        my.case_value = \
+                make_ref_c (make_id ("class", my.enum.name, "enum", my.enum.name, "constant", constant.name))
+        my.msg = go_format_string (constant.)
+        my.switch_case += format_left ("\
+            case C.$(my.case_value:):
+                return &$(my.go_struct.name:) {int(status), $(my.msg:)}
+        ")
     endfor
+    my.switch_case += format_left ("\
+        }
+    ")
+
+    new go_func to my.go_struct
+        . = ""
+        .name = "Error"
+        .visibility = "public"
+
+        new go_code to go_func
+            . = "\
+                return fmt.Sprintf(\"$(my.go_struct.name:){code: %v message: %s}\", this.Code, this.Message)
+            "
+        endnew
+
+        new go_return to go_func
+            .type = "string"
+        endnew
+    endnew
 
     new go_func to my.go_struct
         . = "/* Check given C status, and if it's not \"success\" then raise correspond error. */"
@@ -696,7 +951,7 @@ function go_map_enum_status (go_struct, enum, go_project, meta)
         .is_static = "1"
 
         new go_argument to go_func
-            .name = "code"
+            .name = "status"
             my.arg_type = make_ref_c (make_id ("class", my.enum.name, "enum", my.enum.name))
             .type = "C.$(my.arg_type:)"
         endnew
@@ -705,20 +960,65 @@ function go_map_enum_status (go_struct, enum, go_project, meta)
                 make_ref_c (make_id ("class", my.enum.name, "enum", my.enum.name, "constant success"))
 
         new go_code to go_func
-            . = "\
-                if code != C.$(my.success_constant:) {
-                    return &$(my.go_struct.name:) {code}
+            . = format_left ("\
+                if status != C.$(my.success_constant:) {
+            ", 2)
+            . += format_left (my.switch_case, 3)
+            . += format_left ("\
                 }
                 return nil
-            "
+            ", 2)
+        endnew
+    endnew
+
+    new go_struct to my.go_module
+        . = ""
+        .name = "wrapError"
+
+        new go_field to go_struct
+            . = "/* Error. */"
+            .name = "err"
+            .type = "error"
         endnew
 
-        new go_return to go_func
-            .type = "*$(my.go_struct.name:)"
-            .access = "readonly"
-            .is_enum = "0"
-            .is_reference = "0"
+        new go_field to go_struct
+            . = "/* Error message. */"
+            .name = "msg"
+            .type = "string"
         endnew
+
+        new go_func to go_struct
+            . = ""
+            .name = "Error"
+            .visibility = "public"
+
+            new go_code to go_func
+                . = "\
+                    return fmt.Sprintf(\"%s: %v\", this.msg, this.err)
+                "
+            endnew
+
+            new go_return to go_func
+                .type = "string"
+            endnew
+        endnew
+
+        new go_func to go_struct
+            . = ""
+            .name = "Unwrap"
+            .visibility = "public"
+
+            new go_code to go_func
+                . = "\
+                    return this.err
+                "
+            endnew
+
+            new go_return to go_func
+                .type = "error"
+            endnew
+        endnew
+
     endnew
 endfunction
 
@@ -733,7 +1033,8 @@ function go_map_instance (go_instance, instance)
 
     if item_in(my.instance, "argument") & my.instance.access = "disown" & \
             has_one_of_attribute(my.instance, "interface, impl, class")
-        my.go_instance.method_shallow_copy = instance_derive_c_method_shallow_copy(my.instance)
+        my.go_instance.c_type = class_derive_c_instance_type (my.instance)
+        my.go_instance.method_shallow_copy = instance_derive_c_method_shallow_copy (my.instance)
     endif
 endfunction
 
@@ -744,6 +1045,8 @@ function go_map_instance_type (go_instance, instance)
     check_arguments (my, "go_instance, instance", my)
 
     my.go_instance.type = go_derive_instance_type (my.instance)
+    my.go_instance.c_type = go_derive_instance_c_type (my.instance) ?
+    
 
     if defined (my.instance.type)
         my.go_instance.is_primitive_type = "1"
@@ -883,8 +1186,7 @@ function go_create_cgo_instructions (go_module, go_project)
     # Define CGO instructions
     go_create_cgo_flag ("CFLAGS", "-I${SRCDIR}/../binaries/include/", my.go_module)
     #go_create_cgo_flag ("CFLAGS", "-I${SRCDIR}/../binaries/include/virgil/crypto/$(my.go_project.name:)", my.go_module)
-    go_create_cgo_flag ("LDFLAGS", "-L${SRCDIR}/../binaries/lib -lvsc_common", my.go_module)
-    go_create_cgo_flag ("LDFLAGS", "-L${SRCDIR}/../binaries/lib -lvsc_$(my.go_project.name:)", my.go_module)
+    go_create_cgo_flag ("LDFLAGS", "-L${SRCDIR}/../binaries/lib -lmbedcrypto -led25519 -lprotobuf-nanopb -lvsc_common -lvsc_$(my.go_project.name:) -lvsc_$(my.go_project.name:)_pb", my.go_module)
     #go_create_cgo_flag ("LDFLAGS", "-L${SRCDIR}/../binaries/lib -l$(my.go_project.prefix:)_$(my.go_project.name:)", my.go_module)
     go_create_cgo_include (my.go_project.c_umbrella_header, my.go_module)
 endfunction
@@ -901,7 +1203,7 @@ function go_create_custom_modules (source, go_project, meta)
         return
     endif
 
-    my.name = "CContext"
+    my.name = "context"
 
     new go_module to my.go_project
         . = "/* This is base interface for all types that wrap C interfaces. */"
@@ -927,10 +1229,10 @@ function go_create_custom_modules (source, go_project, meta)
 
             new go_func to go_interface
                 . = "/* Get C context */"
-                .name = "Ctx"
+                .name = "ctx"
                 .visibility = "public"
 
-                my.type = go_derive_struct_context_type ()
+                my.type = go_derive_struct_default_context_type ()
         
                 new go_return to go_func
                     .type = my.type
@@ -966,6 +1268,7 @@ endfunction
 # ---------------------------------------------------------------------------
 function go_create_import_to_common (method, go_module)
     check_arguments (my, "method, go_module", my)
+    return
 
     for my.method.argument
         if string_in (argument.class, "data, buffer")
@@ -1004,6 +1307,8 @@ function go_create_constant (constant, instance, go_instance, go_project, meta)
         .type = go_derive_constant_type (my.constant, my.instance, my.go_project)
         .value = the_value
     endnew
+    
+    return my.go_constant
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -1054,6 +1359,7 @@ function go_create_func_from_constant (instance, constant, destination, go_proje
         . = go_format_description (my.constant) ?
         .name = go_derive_func_name_by_constant (my.constant)
         .visibility = "public"
+        .is_static = "1"
         
         my.type = go_derive_constant_type (my.constant, my.instance, my.go_project)
 
@@ -1111,14 +1417,21 @@ function go_create_func_from_dependency (dependency, impl, destination, go_proje
             if my.dependency.has_observers & my.dependency.is_observers_return_status
                 my.result_var = "proxyResult := "
                 my.enum_status = go_derive_enum_status_name (my.go_project)
-                my.impl_handle_status = "$(my.enum_status:)HandleStatus(proxyResult)"
+                my.impl_handle_status = format_left ("
+                    err := $(my.enum_status:)HandleStatus(proxyResult)
+                    if err != nil {
+                        return $(go_format_result_nil_args ("err", go_func, my.go_project):)
+                    }
+                ")
+                my.method_return = format_left ("return nil")
             endif
 
             . = format_left("\
-                C.$(class_derive_c_method_release_dependency (my.impl, my.dependency))(this.ctx)
-                $(my.result_var?:)C.$(class_derive_c_method_use_dependency (my.impl, my.dependency))(this.ctx,\
-                        $(my.arg_name:).Ctx())
+                C.$(class_derive_c_method_release_dependency (my.impl, my.dependency))(this.cCtx)
+                $(my.result_var?:)C.$(class_derive_c_method_use_dependency (my.impl, my.dependency))(this.cCtx,\
+                        (*C.$(class_derive_c_instance_type(my.dependency)))($(my.arg_name:).ctx()))
                 $(my.impl_handle_status?:)
+                $(my.method_return?:)
             ")
         endnew
     endnew
@@ -1163,11 +1476,22 @@ endfunction
 function go_create_promoted (inherit, destination, go_project, meta)
     check_arguments (my, "inherit, destination, go_project, meta", my)
 
+    my.interface_name = go_derive_interface_name (my.inherit, my.go_project)
+    echo_info ("Promote '$(my.destination.name:)' with '$(my.interface_name:)'", my)
     new go_promoted to my.destination
-        .type = go_derive_interface_name (my.inherit, my.go_project)
-
-        return go_promoted
+        .type = my.interface_name
     endnew
+
+    #my.promoted_go_interface = my.go_project->go_interface(go_interface.name = my.interface_name) ?
+    #if defined (my.promoted_go_interface)
+    #    echo_debug ("Promote Go '$(my.destination.name:)' with '$(my.interface_name:)'", my)
+    #    for my.promoted_go_interface.go_func
+    #        echo_trace ("Copy Go function '$(go_func.name:)' to '$(my.destination.name:)'", my)
+    #        copy go_func to my.destination
+    #    endfor
+    #else
+    #    echo_debug ("Go interface '$(my.interface_name:)' not found", my)
+    #endif
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -1177,7 +1501,7 @@ function go_create_promoted_c_context (destination)
     check_arguments (my, "destination", my)
 
     new go_promoted to my.destination
-        .type = "CContext"
+        .type = "context"
 
         return go_promoted
     endnew
@@ -1192,6 +1516,12 @@ function go_create_return (return, destination, go_project, meta)
 
     new go_return to my.destination
         go_map_instance (go_return, my.return)
+
+        # When implementation wrapps an interface it could raise an error
+        if !string_empty (my.return.interface)
+            my.destination.throws = "1"
+        endif
+
         return go_return
     endnew
 endfunction
@@ -1217,6 +1547,32 @@ function go_create_return_from_argument (class, method, argument, destination, g
     endnew
 endfunction
 
+# ---------------------------------------------------------------------------
+#   Create function which free struct resources.
+# ---------------------------------------------------------------------------
+function go_create_struct_close (go_struct, class, go_project, meta)
+    check_arguments (my, "go_struct, class, go_project, meta", my)
+
+    my.self_ctx = "this.cCtx"
+
+    if string_in (my.class.context, "public") & string_in (my.class.lifecycle, "none")
+        my.dtor_invocation = "C..(c_global_method_dealloc)($(my.self_ctx:))"
+    else
+        my.dtor_invocation = "C.$(class_derive_c_destructor (my.class))($(my.self_ctx:))"
+    endif
+
+    new go_func to my.go_struct
+        . = "/// Release underlying C context."
+        .name = "close"
+
+        new go_code to go_func
+            . = "\
+                $(my.dtor_invocation:)
+            "
+        endnew
+    endnew
+endfunction
+
 
 # ---------------------------------------------------------------------------
 #   Create <go_func/> from abstract entity <constructor/>.
@@ -1227,7 +1583,7 @@ function go_create_struct_constructor (class, constructor, destination, go_modul
     my.struct_name = go_derive_struct_name (my.class, my.go_project)
     new go_func to my.destination
         . = go_format_description (my.constructor) ?
-        .name = "$(my.constructor.name:Camel)"
+        .name = "$(my.constructor.name:Pascal)"
         .is_constructor = "1"
         .visibility = "public"
 
@@ -1239,11 +1595,12 @@ function go_create_struct_constructor (class, constructor, destination, go_modul
         my.proxy_args = go_format_c_proxy_args (my.class, my.constructor)
         my.proxy_call = "C.$(class_derive_c_constructor (my.class, my.constructor.name))($(my.proxy_args:))"
         my.proxy_return_type = go_derive_struct_context_type (my.class) + "?"
-        my.proxy_invocation = go_wrap_c_proxy_call (go_func, my.proxy_call, my.proxy_return_type, my.go_module, my.go_project)
+        my.proxy_return_c_type = go_derive_struct_context_c_type (my.class) + "?"
+        my.proxy_invocation = go_wrap_c_proxy_call (go_func, my.proxy_call, my.proxy_return_type, my.proxy_return_c_type, my.go_module, my.go_project)
 
         my.context_assignment = format_left ("
             return &$(my.struct_name:) {
-                ctx: proxyResult,
+                cCtx: proxyResult,
             }")
 
         new go_code to go_func
@@ -1278,6 +1635,8 @@ function go_create_struct_default_constructor (go_struct, class, go_project, met
     endif
 
     my.struct_name = go_derive_struct_name (my.class, my.go_project)
+    my.ctx_type = go_derive_struct_context_type (my.class)
+
     new go_func to my.go_struct
         .name = ""
         .is_constructor = "1"
@@ -1286,7 +1645,7 @@ function go_create_struct_default_constructor (go_struct, class, go_project, met
             . = "
                 ctx := $(my.ctor_invocation:)
                 return &$(my.struct_name:) {
-                    ctx: ctx,
+                    cCtx: ctx,
                 }
             "
         endnew
@@ -1304,17 +1663,17 @@ function go_create_struct_default_constructor (go_struct, class, go_project, met
         "
         .name = "WithCtx"
         .is_constructor = "1"
-        .visibility = "public"
+        .visibility = "private"
 
         new go_argument to go_func
             .name = "ctx"
-            .type = go_derive_struct_context_type (my.class)
+            .type = my.ctx_type
         endnew
 
         new go_code to go_func
             . = "\
                 return &$(my.struct_name:) {
-                    ctx: ctx,
+                    cCtx: ctx,
                 }
             "
         endnew
@@ -1333,7 +1692,7 @@ function go_create_struct_default_constructor (go_struct, class, go_project, met
             "
             .name = "Copy"
             .is_constructor = "1"
-            .visibility = "public"
+            .visibility = "private"
 
             new go_argument to go_func
                 .name = "ctx"
@@ -1343,7 +1702,7 @@ function go_create_struct_default_constructor (go_struct, class, go_project, met
             new go_code to go_func
                 . = "\
                     return &$(my.struct_name:) {
-                        ctx: C.$(class_derive_c_method_shallow_copy (my.class))(ctx),
+                        cCtx: C.$(class_derive_c_method_shallow_copy (my.class))(ctx),
                     }
                 "
             endnew
@@ -1363,7 +1722,7 @@ function go_create_struct_field_context (destination, instance)
 
     new go_field to my.destination
         . = "/* Handle underlying C context. */"
-        .name = "ctx"
+        .name = "cCtx"
         .type = go_derive_struct_context_type (my.instance)
         .access = "readonly"
         .visibility = "public"
@@ -1371,15 +1730,16 @@ function go_create_struct_field_context (destination, instance)
     
     new go_func to my.destination
         . = "/* Handle underlying C context. */"
-        .name = "Ctx"
+        .name = "ctx"
         .visibility = "public"
 
+        my.type = go_derive_struct_default_context_type ()
         new go_code to go_func
-            .= "return this.ctx"
+            .= "return ($(my.type:))(this.cCtx)"
         endnew
 
         new go_return to go_func
-            .type = go_derive_struct_context_type (my.instance)
+            .type = my.type
         endnew
     endnew
 
@@ -1399,18 +1759,27 @@ function go_create_struct_func (class, method, destination, go_module, go_projec
     my.proxy_args = go_format_c_proxy_args (my.class, my.method)
     my.proxy_call = "C.$(class_derive_c_method (my.class, my.method))($(my.proxy_args:))"
     my.proxy_return_type = go_derive_proxy_return_type (my.method)
-    my.proxy_invocation = go_wrap_c_proxy_call (my.go_func, my.proxy_call, my.proxy_return_type, my.go_module, my.go_project)
+    my.proxy_return_c_type = go_derive_proxy_return_c_type (my.method) ?
+    my.proxy_invocation = go_wrap_c_proxy_call (my.go_func, my.proxy_call, my.proxy_return_type, my.proxy_return_c_type, my.go_module, my.go_project)
 
     #   Return result
     if count (my.go_func.go_return) = 1
         my.go_return = my.go_func->go_return
 
+        my.return_err = ""
+        if is_true (my.go_func.throws) & count (my.go_func.go_return, is_false (go_return.is_interface)) = 1
+            my.return_err = ", nil"
+        endif
         my.return_result = terminator + \
-                format_left ("return $(go_wrap_c_returned_value (my.go_func->go_return, my.go_project))")
+                format_left ("return $(go_wrap_c_returned_value (my.go_func->go_return, my.go_module, my.go_project))$(my.return_err:)")
 
     elsif count (my.go_func.go_return) > 1
         my.result_args = go_format_result_args (my.go_func, my.go_project)
 
+        my.return_result = terminator + \
+                format_left ("return $(my.result_args:)")
+    else
+        my.result_args = go_format_result_nil_args ("nil", my.go_func, my.go_project)
         my.return_result = terminator + \
                 format_left ("return $(my.result_args:)")
     endif
@@ -1418,7 +1787,7 @@ function go_create_struct_func (class, method, destination, go_module, go_projec
     new go_code to my.go_func
         my.method_body = ""
         my.method_body += my.proxy_invocation ? ""
-        my.method_body += my.return_result ? ""
+        my.method_body += my.return_result ? "/* no result */"
 
         . = my.method_body
     endnew
@@ -1486,7 +1855,7 @@ function go_create_class_module (class, go_project, meta)
             if my.class.context <> "none"
                 go_create_struct_field_context (go_struct, my.class)
                 go_create_struct_default_constructor (go_struct, my.class, my.go_project, my.meta)
-                #TODO go_create_struct_close (go_struct, my.class, my.go_project, my.meta)
+                go_create_struct_close (go_struct, my.class, my.go_project, my.meta)
 
                 if ! string_in (my.class.lifecycle, "none")
                     for my.class.constructor where constructor.visibility <> "private"
@@ -1545,7 +1914,7 @@ function go_create_enum_module (enum, go_project, meta)
                 . = go_format_description (my.enum) ?
                 .name = go_derive_enum_name (my.enum, my.go_project)
 
-                go_map_enum_status (go_struct, my.enum, my.go_project, my.meta)
+                go_map_enum_status (go_struct, my.enum, go_module, my.go_project, my.meta)
             endnew
         else
             new go_enum to go_module
@@ -1593,11 +1962,12 @@ function go_create_interface_module (interface, go_project, meta)
 
             go_map_attr_visibility (go_interface, my.interface)
 
-            for my.interface.inherit
-                go_create_promoted (inherit, go_interface, my.go_project, my.meta)
-            else
-                go_create_promoted_c_context (go_interface)
-            endfor
+            go_create_promoted_c_context (go_interface)
+            #for my.interface.inherit
+            #    go_create_promoted (inherit, go_interface, my.go_project, my.meta)
+            #else
+            #    go_create_promoted_c_context (go_interface)
+            #endfor
 
             for my.interface.constant
                 go_create_func_from_constant (my.interface, constant, go_interface, my.go_project, my.meta)
@@ -1610,6 +1980,14 @@ function go_create_interface_module (interface, go_project, meta)
             for go_interface.go_func where count (0.go_return) > 1
                 # TODO no needs in result class
                 #go_create_result_class (go_interface, go_field, my.go_project, my.meta)
+            endfor
+            
+            for go_interface.go_func
+                for go_func.go_return
+                    if string_equal (go_return.type, "unsafe.Pointer")
+                        go_create_import ("unsafe", "unsafe", go_module)
+                    endif
+                endfor
             endfor
         endnew
     endnew
@@ -1712,7 +2090,7 @@ function go_create_implementation_module (implementation, go_project, meta)
                 go_create_struct_field_context (go_struct, my.implementation)
 
                 go_create_struct_default_constructor (go_struct, my.implementation, my.go_project, my.meta)
-                #TODO go_create_struct_close (go_struct, my.implementation, my.go_project, my.meta)
+                go_create_struct_close (go_struct, my.implementation, my.go_project, my.meta)
 
                 if my.implementation.lifecycle <> "none"
                     for my.implementation.constructor where 0.declaration = "public" & 0.visibility = "public"
@@ -1745,13 +2123,13 @@ function go_format_c_proxy_args (class, method)
     check_arguments (my, "class, method", my)
 
     if is_false (my.method.is_static)
-        my.proxy_args = "this.ctx"
+        my.proxy_args = "this.cCtx"
 
     elsif defined (my.method.implementation)
         my.proxy_args = ""
 
     elsif defined (my.method.interface)
-        my.proxy_args = "C.$(interface_derive_c_api_method_from_name(my.method.interface))(this.ctx)"
+        my.proxy_args = "C.$(interface_derive_c_api_method_from_name(my.method.interface))(this.cCtx)"
     endif
 
     for my.method.argument
@@ -1761,11 +2139,12 @@ function go_format_c_proxy_args (class, method)
         endif
 
         my.arg_name = go_derive_instance_name (argument)
+        my.arg_c_type = go_derive_instance_c_type (argument) ?
 
         my.proxy_arg = # undefined
 
         if string_equal (argument.class, "data")
-            my.proxy_arg = "WrapData($(my.arg_name:))"
+            my.proxy_arg = "$(my.arg_name:)Data"
 
         elsif string_equal (argument.class, "buffer")
             my.proxy_arg = "$(my.arg_name:)Buf"
@@ -1777,16 +2156,27 @@ function go_format_c_proxy_args (class, method)
             if argument.access = "disown"
                 my.proxy_arg = "$(my.arg_name:)Copy"
             else
-                my.proxy_arg = "$(my.arg_name:).Ctx()"
+                my.arg_c_type = class_derive_c_instance_type (argument)
+                my.proxy_arg = "(*C.$(my.arg_c_type:))($(my.arg_name:).ctx())"
             endif
 
         elsif defined (argument.enum)
-            #my.enum_type = class_derive_c_instance_type (argument)
+            my.enum_type = class_derive_c_instance_type (argument)
             #my.proxy_arg = "$(my.enum_type:)(rawValue: UInt32($(my.arg_name:).rawValue)) /*pa7*/"
-            my.proxy_arg = "$(my.arg_name:) /*pa7*/"
+            my.proxy_arg = "C.$(my.enum_type:)($(my.arg_name:)) /*pa7*/"
 
         else
-            my.proxy_arg = "$(my.arg_name:)"
+            if defined (my.arg_c_type)
+                if string_equal (my.arg_c_type, "*C.byte")
+                    my.proxy_arg = "helperBytesToBytePtr($(my.arg_name:))/*pa8*/"
+                elsif string_equal (my.arg_c_type, "*C.char")
+                    my.proxy_arg = "$(my.arg_name:)Str/*pa9*/"
+                else
+                    my.proxy_arg = "($(my.arg_c_type:))($(my.arg_name:))/*pa10*/"
+                endif
+            else
+                my.proxy_arg = "$(my.arg_name:) /*pa11*/"
+            endif
         endif
 
         if defined (my.proxy_arg) & argument.access = "disown"
@@ -1805,41 +2195,60 @@ endfunction
 #       - proxy call
 #       - finalizing
 # ---------------------------------------------------------------------------
-function go_wrap_c_proxy_call (go_func, proxy_call, proxy_return_type, go_module, go_project)
+function go_wrap_c_proxy_call (go_func, proxy_call, proxy_return_type, proxy_return_c_type, go_module, go_project)
     check_arguments (my, "go_func, proxy_call, proxy_return_type, go_module, go_project", my)
 
-    #   Wrap errors.
+    #  Wrap errors.
     for my.go_func.go_argument where is_true (go_argument.is_error)
         my.errors_instantiation ?= terminator
         my.errors_instantiation += format_left("\
-            $(go_argument.name:) := C.$(go_argument.type:)()
+            var $(go_argument.name:) C.$(go_argument.type:)
             C.$(go_argument.method_reset:)(&$(go_argument.name:))
         ")
 
         my.errors_handling ?= terminator
         my.enum_status = go_derive_enum_status_name (my.go_argument.project ? my.go_project)
         my.errors_handling += format_left("\
-            $(my.enum_status:)HandleStatus($(go_argument.name:).status)
+            err := $(my.enum_status:)HandleStatus($(go_argument.name:).status)
+            if err != nil {
+                return $(go_format_result_nil_args ("err", my.go_func, my.go_project):)
+            }
         ")
     endfor
 
-    #   Wrap output buffers.
+    # Wrap strings.
+    for my.go_func.go_argument where is_true (0.is_string)
+        my.string_name = "$(go_argument.name:)Str"
+
+        my.strings_init ?= ""
+        my.strings_init += format_left("\
+            $(my.string_name:) := C.CString($(go_argument.name:))
+            defer C.free(unsafe.Pointer($(my.string_name:)))
+        ")
+    endfor
+
+    # Wrap output buffers.
+    my.buffer_method_init = "C..(c_project_common_class_buffer_method_init)"
+    my.buffer_method_use = "C..(c_project_common_class_buffer_method_use)"
     for my.go_func.go_return where 0.type = "Data" & is_true_both (0.is_buffer, 0.was_argument)
         if ! defined (go_return.length_getter)
             echo_debug_item (my.go_func)
         endif
         assert_attribute (go_return, "length_getter", my)
-
-        # Import 'common' package if Buffer used
-        go_create_import(".", "virgil/common", my.go_module)
+        
+        go_create_import ("unsafe", "unsafe", my.go_module)
 
         my.buffer_name = go_return.name ? "result"
 
         my.buffers_instantiation ?= ""
         my.buffers_instantiation += terminator + format_left ("\
-            $(my.buffer_name:)Count := $(go_return.length_getter:)
-            $(my.buffer_name:)Buf := NewBuffer($(my.buffer_name:)Count)
-            defer $(my.buffer_name:)Buf.Clear()
+            $(my.buffer_name:)Count := C.ulong($(go_return.length_getter:))
+            $(my.buffer_name:)Memory := make([]byte, int(C.vsc_buffer_ctx_size() + $(my.buffer_name:)Count))
+            $(my.buffer_name:)Buf := (*C.vsc_buffer_t)(unsafe.Pointer(&$(my.buffer_name:)Memory[0]))
+            $(my.buffer_name:)Data := $(my.buffer_name:)Memory[int(C.vsc_buffer_ctx_size()):]
+            $(my.buffer_method_init:)($(my.buffer_name:)Buf)
+            $(my.buffer_method_use:)($(my.buffer_name:)Buf, (*C.byte)(unsafe.Pointer(&$(my.buffer_name:)Data[0])), $(my.buffer_name:)Count)
+            defer C.vsc_buffer_delete($(my.buffer_name:)Buf)
         ")
 
         my.buffers_init ?= ""
@@ -1855,10 +2264,20 @@ function go_wrap_c_proxy_call (go_func, proxy_call, proxy_return_type, go_module
         #    $(my.buffer_name:).count := C..(c_project_common_class_buffer_method_len)($(my.buffer_name:)Buf)
         #")
     endfor
+    
+    #  Wrap input data.
+    my.data_method_data = "C..(c_project_common_class_data_method_data)"
+    for my.go_func.go_argument where 0.type = "Data" & is_true (0.is_data)
+        my.data_name = "$(go_argument.name:)Data"
+
+        my.buffers_init ?= ""
+        my.buffers_init += format_left("\
+            $(my.data_name:) := $(my.data_method_data:)((*C.uint8_t)(&$(go_argument.name:)[0]), C.size_t(len($(go_argument.name:))))
+        ")
+    endfor
 
     #   Wrap input buffers.
     my.method_new_with_data = "C..(c_project_common_class_buffer_method_new_with_data)"
-    my.method_data = "C..(c_project_common_class_data_method_data)"
 
     for my.go_func.go_argument where 0.type = "Data" & is_true (0.is_buffer)
         my.buffer_name = go_argument.name
@@ -1881,34 +2300,9 @@ function go_wrap_c_proxy_call (go_func, proxy_call, proxy_return_type, go_module
     my.scope_count = 0
 
     if my.proxy_return_type <> "Void"
-        my.result_statement = "proxyResult := "
+        my.result_statement = "proxyResult := /*pr1*/"
     endif
-    my.proxy_return_statement = (my.proxy_return_type = "auto") ?? "" ? "-> $(my.proxy_return_type:) "
-
-    #TODO
-    #for my.go_func.go_argument where 0.type = "Data"
-    #    my.opened_scope ?= terminator
-    #    my.opened_scope += format_left("\
-    #        $(my.result_statement?:)$(go_argument.name:).withUnsafeBytes({ \
-    #            ($(go_argument.name:)Pointer: UnsafeRawBufferPointer) $(my.proxy_return_statement:)in
-
-    #    ", my.scope_count)
-    #    my.result_statement = # undefined
-    #    my.scope_count += 1
-    #endfor
-
-    #TODO
-    #for my.go_func.go_return where 0.type = "Data" & is_true_both (0.is_buffer, 0.was_argument)
-    #    my.opened_scope ?= terminator
-    #    my.opened_scope += format_left("\
-    #        $(my.result_statement?:)$(go_return.name:).withUnsafeMutableBytes({ \
-    #            ($(go_return.name:)Pointer: UnsafeMutableRawBufferPointer) $(my.proxy_return_statement:)in
-
-    #    ", my.scope_count)
-
-    #    my.result_statement = # undefined
-    #    my.scope_count += 1
-    #endfor
+    my.proxy_return_statement = (my.proxy_return_type = "auto") ?? "" ? "-> $(my.proxy_return_type:) /*pr2*/"
 
     if defined (my.buffers_init)
         my.buffers_init = format_left (my.buffers_init, my.scope_count)
@@ -1917,15 +2311,16 @@ function go_wrap_c_proxy_call (go_func, proxy_call, proxy_return_type, go_module
     #   Create shallow copies for objects that is passed as "disown" argument.
     for my.go_func.go_argument where go_argument.access = "disown"
         my.shallow_copies ?= terminator
+        #(*C.$(class_derive_c_instance_type(my.dependency)))
         my.shallow_copies += format_left("\
-            $(go_argument.name:)Copy := C.$(go_argument.method_shallow_copy:)($(go_argument.name:).Ctx())
+            $(go_argument.name:)Copy := C.$(go_argument.method_shallow_copy:)((*C.$(go_argument.c_type:))($(go_argument.name:).ctx()))
         ", my.scope_count)
     endfor
 
     if my.scope_count > 0
-        my.proxy_invocation = (my.proxy_return_type <> "Void") ?? "return " ? ""
+        my.proxy_invocation = (my.proxy_return_type <> "Void") ?? "return /*pr3*/" ? ""
     else
-        my.proxy_invocation = (my.proxy_return_type <> "Void") ?? "proxyResult := " ? ""
+        my.proxy_invocation = (my.proxy_return_type <> "Void") ?? "proxyResult := /*pr4*/" ? ""
     endif
     my.proxy_invocation += my.proxy_call
     my.proxy_invocation = terminator + format_left (my.proxy_invocation, my.scope_count)
@@ -1952,20 +2347,32 @@ function go_wrap_c_proxy_call (go_func, proxy_call, proxy_return_type, go_module
         my.errors_handling ?= ""
         my.enum_status = go_derive_enum_status_name (my.go_project)
         my.errors_handling += terminator + format_left("\
-            $(my.enum_status:)HandleStatus(proxyResult)
+            err := $(my.enum_status:)HandleStatus(proxyResult)
+            if err != nil {
+                return $(go_format_result_nil_args ("err", my.go_func, my.go_project):)
+            }
         ")
     endif
 
-    return (my.errors_instantiation ? "") + (my.buffers_instantiation ? "") + (my.opened_scope ? "") + \
-            (my.buffers_init ? "") + (my.shallow_copies ? "") + my.proxy_invocation + (my.closed_scope ? "") + \
-            (my.buffers_shrink ? "") + (my.buffers_cleanup ? "") + (my.errors_handling ? "")
+    return \
+        (my.errors_instantiation ? "") + \
+        (my.strings_init ? "") + \
+        (my.buffers_instantiation ? "") + \
+        (my.opened_scope ? "") + \
+        (my.buffers_init ? "") + \
+        (my.shallow_copies ? "") + \
+        my.proxy_invocation + \
+        (my.closed_scope ? "") + \
+        (my.buffers_shrink ? "") + \
+        (my.buffers_cleanup ? "") + \
+        (my.errors_handling ? "")
 endfunction
 
 # ---------------------------------------------------------------------------
 #   Return C type wrapped to the Go type.
 # ---------------------------------------------------------------------------
-function go_wrap_c_returned_value (go_return, go_project)
-    check_arguments (my, "go_return", my)
+function go_wrap_c_returned_value (go_return, go_module, go_project)
+    check_arguments (my, "go_return, go_module", my)
 
     my.name = my.go_return.name ? "proxyResult"
     my.type = my.go_return.type
@@ -1973,34 +2380,39 @@ function go_wrap_c_returned_value (go_return, go_project)
     scope my.go_return
 
     if is_true (0.is_data)
-        return "ExtractData($(my.name:)) /* r1 */"
+        return "helperDataToBytes($(my.name:)) /* r1 */"
 
     elsif is_true (0.is_buffer) & is_false (0.was_argument)
         return "Data.init(bytes: C..(c_project_common_class_buffer_method_bytes)($(my.name:)), " + \
                          "count: C..(c_project_common_class_buffer_method_len)($(my.name:))) /* r2 */"
 
     elsif is_true (0.is_primitive_type) & is_true_any (0.is_array, 0.is_reference)
-        return "$(my.name:) /* r3 */"
+        go_create_import ("unsafe", "unsafe", my.go_module)
+        return "unsafe.Pointer($(my.name:)) /* r3 */"
 
     elsif is_true (0.is_interface)
         return "$(my.go_project.name:Pascal)ImplementationWrap$(my.go_return.type:)($(my.name:)) /* r4 */"
 
     elsif is_true (0.is_class) & is_false (0.is_buffer)
         if string_in (go_return.access, "readonly, readwrite")
-            return "$(my.type:)($(my.name:)) /* r5 */"
+            return "new$(my.type:)WithCtx($(my.name:)) /* r5 */"
         else
-            return "*New$(my.type:)WithCtx($(my.name:)) /* r6 */"
+            return "new$(my.type:)WithCtx($(my.name:)) /* r6 */"
         endif
 
     elsif is_true (0.is_class) & is_true (0.is_buffer)
-        return "$(my.name:)Buf.GetData() /* r7 */"
+        return "$(my.name:)Data[0:C.vsc_buffer_len($(my.name:)Buf)] /* r7 */"
 
     elsif is_true (0.is_enum)
         return "$(my.type:)($(my.name:)) /* r8 */"
     endif
 
     endscope
-    return "$(my.name:) //r9"
+    if defined (my.go_return.c_type)
+        return "$(my.go_return.type:)($(my.name:)) /* r9 */"
+    else
+        return "$(my.name:) /* r10 */"
+    endif
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -2065,12 +2477,13 @@ function go_get_implementation_helper_interface_func (go_struct, interface, go_p
             /* Wrap C implementation object to the Go object that implements interface $(my.interface_name:). */
         "
         .name = my.interface_func_name
+        .throws = "1"
         .is_static = "1"
 
         new go_argument to go_func
             .name = "ctx"
             #TODO
-            .type = "C.size_t"
+            .type = go_derive_struct_default_context_type()
         endnew
 
         new go_return to go_func
@@ -2082,11 +2495,11 @@ function go_get_implementation_helper_interface_func (go_struct, interface, go_p
             my.method_is_implemented = make_ref_c (make_id ("class", my.method_of_class, "method", "is_implemented"))
             .temp_code = format_left("\
                 if (!C.$(my.method_is_implemented:)(ctx)) {
-                    //TODO fatalError(\"Given C implementation does not implement interface $(my.interface_name:).\")
+                    return nil, &$(go_derive_enum_status_name (my.go_project):){-1,\"Given C implementation does not implement interface $(my.interface_name:).\"}
                 }
 
                 implTag := C..(c_class_impl_method_tag)(ctx)
-                switch(implTag) {
+                switch (implTag) {
             ")
         endnew
 
@@ -2102,6 +2515,8 @@ function go_update_implementation_helper_module (implementation, go_project, met
 
     my.helper_class = go_get_implementation_helper_struct (my.go_project, my.meta)
     my.refs = meta_refs (my.meta)
+    
+    my.c_type = go_derive_c_type (my.implementation)
 
     for my.implementation.interface
         my.wrap_interface_method = \
@@ -2109,7 +2524,7 @@ function go_update_implementation_helper_module (implementation, go_project, met
 
         my.wrap_interface_method->go_code.temp_code += format_left("\
             case C.$(my.refs.c_implementation_constant_tag):
-                return $(go_derive_struct_name (my.implementation, my.go_project))(ctx)
+                return new$(go_derive_struct_name (my.implementation, my.go_project))WithCtx((*C.$(my.c_type:))(ctx)), nil
         ")
     endfor
 endfunction
@@ -2125,13 +2540,80 @@ function go_finalize_implementation_helper_modules (go_project, meta)
     for my.helper_class.go_func
         go_func->go_code.temp_code += format_left ("\
             default:
-                //TODO fatalError(\"Unexpected C implementation cast to the Go implementation.\")
+                return nil, &$(go_derive_enum_status_name (my.go_project):){-1,\"Unexpected C implementation cast to the Go implementation.\"}
             }
         ")
 
         go_func->go_code. = go_func->go_code.temp_code
         go_func->go_code.temp_code = # undefined
     endfor
+    
+    new go_module to my.go_project
+        . = "/* Helper. */"
+        .name = "helper"
+        .package = my.go_project.package
+        .package_dir = my.go_project.package_dir
+        .source_file_name = "$(0.name:).go"
+        .source_file_path = cat_path (my.go_project.source_dir, 0.source_file_name)
+
+        new go_license to go_module
+            . = go_format_license (my.go_project->license) ?
+        endnew
+
+        go_create_cgo_instructions (go_module, my.go_project)
+
+        for my.go_project.go_import
+            copy go_import to go_module
+        endfor
+
+        new go_struct to go_module
+            .name = "helper"
+            .visibility = "private"
+
+            new go_func to go_struct
+                .name = "DataToBytes"
+                .is_static = "1"
+        
+                new go_argument to go_func
+                    .name = "data"
+                    .type = "C..(c_project_common_class_data_struct_data)"
+                endnew
+
+                new go_return to go_func
+                    .type = "[]byte"
+                endnew
+
+                #TODO
+                new go_code to go_func
+                    . = format_left("\
+                        return []byte(\"Go\")
+                    ")
+                endnew
+            endnew
+
+            new go_func to go_struct
+                .name = "BytesToBytePtr"
+                .is_static = "1"
+        
+                new go_argument to go_func
+                    .name = "data"
+                    .type = "[]byte"
+                endnew
+
+                new go_return to go_func
+                    .type = "*C.uint8_t"
+                endnew
+
+                #TODO
+                new go_code to go_func
+                    . = format_left("\
+                        return (*C.uint8_t)(&data[0])
+                    ")
+                endnew
+            endnew
+
+        endnew
+    endnew
 endfunction
 
 .endtemplate

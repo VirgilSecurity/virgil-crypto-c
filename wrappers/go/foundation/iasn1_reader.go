@@ -9,7 +9,7 @@ import "C"
 */
 type IAsn1Reader interface {
 
-    CContext
+    context
 
     /*
     * Reset all internal states and prepare to new ASN.1 reading operations.
@@ -19,7 +19,7 @@ type IAsn1Reader interface {
     /*
     * Return length in bytes how many bytes are left for reading.
     */
-    LeftLen () int32
+    LeftLen () uint32
 
     /*
     * Return true if status is not "success".
@@ -29,7 +29,7 @@ type IAsn1Reader interface {
     /*
     * Return error code.
     */
-    Status ()
+    Status () error
 
     /*
     * Get tag of the current ASN.1 element.
@@ -39,25 +39,25 @@ type IAsn1Reader interface {
     /*
     * Get length of the current ASN.1 element.
     */
-    GetLen () int32
+    GetLen () uint32
 
     /*
     * Get length of the current ASN.1 element with tag and length itself.
     */
-    GetDataLen () int32
+    GetDataLen () uint32
 
     /*
     * Read ASN.1 type: TAG.
     * Return element length.
     */
-    ReadTag (tag int32) int32
+    ReadTag (tag int32) uint32
 
     /*
     * Read ASN.1 type: context-specific TAG.
     * Return element length.
     * Return 0 if current position do not points to the requested tag.
     */
-    ReadContextTag (tag int32) int32
+    ReadContextTag (tag int32) uint32
 
     /*
     * Read ASN.1 type: INTEGER.
@@ -148,18 +148,18 @@ type IAsn1Reader interface {
     /*
     * Read raw data of given length.
     */
-    ReadData (len int32) []byte
+    ReadData (len uint32) []byte
 
     /*
     * Read ASN.1 type: SEQUENCE.
     * Return element length.
     */
-    ReadSequence () int32
+    ReadSequence () uint32
 
     /*
     * Read ASN.1 type: SET.
     * Return element length.
     */
-    ReadSet () int32
+    ReadSet () uint32
 }
 

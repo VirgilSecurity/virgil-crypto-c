@@ -7,26 +7,26 @@ import "C"
 */
 type ICipherInfo interface {
 
-    CContext
+    context
 
     /*
     * Cipher nfonce length or IV length in bytes, or 0 if nonce is not required.
     */
-    getNonceLen () int32
+    GetNonceLen () uint32
 
     /*
     * Cipher key length in bytes.
     */
-    getKeyLen () int32
+    GetKeyLen () uint32
 
     /*
     * Cipher key length in bits.
     */
-    getKeyBitlen () int32
+    GetKeyBitlen () uint32
 
     /*
     * Cipher block length in bytes.
     */
-    getBlockLen () int32
+    GetBlockLen () uint32
 }
 

@@ -7,11 +7,11 @@ import "C"
 */
 type IPrivateKey interface {
 
-    IKey
+    context
 
     /*
     * Extract public key from the private key.
     */
-    ExtractPublicKey () IPublicKey
+    ExtractPublicKey () (IPublicKey, error)
 }
 

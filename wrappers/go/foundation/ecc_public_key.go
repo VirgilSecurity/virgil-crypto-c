@@ -1,8 +1,7 @@
 package foundation
 
 // #cgo CFLAGS: -I${SRCDIR}/../binaries/include/
-// #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lvsc_common
-// #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lvsc_foundation
+// #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lmbedcrypto -led25519 -lprotobuf-nanopb -lvsc_common -lvsc_foundation -lvsc_foundation_pb
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
 
@@ -12,44 +11,49 @@ import "C"
 type EccPublicKey struct {
     IKey
     IPublicKey
-    ctx *C.vscf_impl_t
+    cCtx *C.vscf_ecc_public_key_t /*ct10*/
 }
 
 /* Handle underlying C context. */
-func (this EccPublicKey) Ctx () *C.vscf_impl_t {
-    return this.ctx
+func (this EccPublicKey) ctx () *C.vscf_impl_t {
+    return (*C.vscf_impl_t)(this.cCtx)
 }
 
 func NewEccPublicKey () *EccPublicKey {
     ctx := C.vscf_ecc_public_key_new()
     return &EccPublicKey {
-        ctx: ctx,
+        cCtx: ctx,
     }
 }
 
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func NewEccPublicKeyWithCtx (ctx *C.vscf_impl_t) *EccPublicKey {
+func newEccPublicKeyWithCtx (ctx *C.vscf_ecc_public_key_t /*ct10*/) *EccPublicKey {
     return &EccPublicKey {
-        ctx: ctx,
+        cCtx: ctx,
     }
 }
 
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func NewEccPublicKeyCopy (ctx *C.vscf_impl_t) *EccPublicKey {
+func newEccPublicKeyCopy (ctx *C.vscf_ecc_public_key_t /*ct10*/) *EccPublicKey {
     return &EccPublicKey {
-        ctx: C.vscf_ecc_public_key_shallow_copy(ctx),
+        cCtx: C.vscf_ecc_public_key_shallow_copy(ctx),
     }
+}
+
+/// Release underlying C context.
+func (this EccPublicKey) close () {
+    C.vscf_ecc_public_key_delete(this.cCtx)
 }
 
 /*
 * Algorithm identifier the key belongs to.
 */
 func (this EccPublicKey) AlgId () AlgId {
-    proxyResult := C.vscf_ecc_public_key_alg_id(this.ctx)
+    proxyResult := /*pr4*/C.vscf_ecc_public_key_alg_id(this.cCtx)
 
     return AlgId(proxyResult) /* r8 */
 }
@@ -57,8 +61,8 @@ func (this EccPublicKey) AlgId () AlgId {
 /*
 * Return algorithm information that can be used for serialization.
 */
-func (this EccPublicKey) AlgInfo () IAlgInfo {
-    proxyResult := C.vscf_ecc_public_key_alg_info(this.ctx)
+func (this EccPublicKey) AlgInfo () (IAlgInfo, error) {
+    proxyResult := /*pr4*/C.vscf_ecc_public_key_alg_info(this.cCtx)
 
     return FoundationImplementationWrapIAlgInfo(proxyResult) /* r4 */
 }
@@ -66,19 +70,19 @@ func (this EccPublicKey) AlgInfo () IAlgInfo {
 /*
 * Length of the key in bytes.
 */
-func (this EccPublicKey) Len () int32 {
-    proxyResult := C.vscf_ecc_public_key_len(this.ctx)
+func (this EccPublicKey) Len () uint32 {
+    proxyResult := /*pr4*/C.vscf_ecc_public_key_len(this.cCtx)
 
-    return proxyResult //r9
+    return uint32(proxyResult) /* r9 */
 }
 
 /*
 * Length of the key in bits.
 */
-func (this EccPublicKey) Bitlen () int32 {
-    proxyResult := C.vscf_ecc_public_key_bitlen(this.ctx)
+func (this EccPublicKey) Bitlen () uint32 {
+    proxyResult := /*pr4*/C.vscf_ecc_public_key_bitlen(this.cCtx)
 
-    return proxyResult //r9
+    return uint32(proxyResult) /* r9 */
 }
 
 /*
@@ -86,7 +90,7 @@ func (this EccPublicKey) Bitlen () int32 {
 * Note, this operation can be slow.
 */
 func (this EccPublicKey) IsValid () bool {
-    proxyResult := C.vscf_ecc_public_key_is_valid(this.ctx)
+    proxyResult := /*pr4*/C.vscf_ecc_public_key_is_valid(this.cCtx)
 
-    return proxyResult //r9
+    return bool(proxyResult) /* r9 */
 }

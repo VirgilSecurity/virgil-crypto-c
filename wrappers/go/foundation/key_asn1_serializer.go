@@ -1,11 +1,10 @@
 package foundation
 
 // #cgo CFLAGS: -I${SRCDIR}/../binaries/include/
-// #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lvsc_common
-// #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lvsc_foundation
+// #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lmbedcrypto -led25519 -lprotobuf-nanopb -lvsc_common -lvsc_foundation -lvsc_foundation_pb
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
-import . "virgil/common"
+import unsafe "unsafe"
 
 /*
 * Implements key serialization in the ASN.1 format (DER / PEM):
@@ -14,19 +13,21 @@ import . "virgil/common"
 */
 type KeyAsn1Serializer struct {
     IKeySerializer
-    ctx *C.vscf_impl_t
+    cCtx *C.vscf_key_asn1_serializer_t /*ct10*/
 }
 
 func (this KeyAsn1Serializer) SetAsn1Writer (asn1Writer IAsn1Writer) {
-    C.vscf_key_asn1_serializer_release_asn1_writer(this.ctx)
-    C.vscf_key_asn1_serializer_use_asn1_writer(this.ctx, asn1Writer.Ctx())
+    C.vscf_key_asn1_serializer_release_asn1_writer(this.cCtx)
+    C.vscf_key_asn1_serializer_use_asn1_writer(this.cCtx, (*C.vscf_impl_t)(asn1Writer.ctx()))
 }
 
 /*
 * Setup predefined values to the uninitialized class dependencies.
 */
 func (this KeyAsn1Serializer) SetupDefaults () {
-    C.vscf_key_asn1_serializer_setup_defaults(this.ctx)
+    C.vscf_key_asn1_serializer_setup_defaults(this.cCtx)
+
+    return
 }
 
 /*
@@ -34,15 +35,18 @@ func (this KeyAsn1Serializer) SetupDefaults () {
 * Note, that caller code is responsible to reset ASN.1 writer with
 * an output buffer.
 */
-func (this KeyAsn1Serializer) SerializePublicKeyInplace (publicKey RawPublicKey) int32 {
-    error := C.vscf_error_t()
+func (this KeyAsn1Serializer) SerializePublicKeyInplace (publicKey *RawPublicKey) (uint32, error) {
+    var error C.vscf_error_t
     C.vscf_error_reset(&error)
 
-    proxyResult := C.vscf_key_asn1_serializer_serialize_public_key_inplace(this.ctx, publicKey.Ctx(), &error)
+    proxyResult := /*pr4*/C.vscf_key_asn1_serializer_serialize_public_key_inplace(this.cCtx, (*C.vscf_raw_public_key_t)(publicKey.ctx()), &error)
 
-    FoundationErrorHandleStatus(error.status)
+    err := FoundationErrorHandleStatus(error.status)
+    if err != nil {
+        return 0, err
+    }
 
-    return proxyResult //r9
+    return uint32(proxyResult) /* r9 */, nil
 }
 
 /*
@@ -50,45 +54,53 @@ func (this KeyAsn1Serializer) SerializePublicKeyInplace (publicKey RawPublicKey)
 * Note, that caller code is responsible to reset ASN.1 writer with
 * an output buffer.
 */
-func (this KeyAsn1Serializer) SerializePrivateKeyInplace (privateKey RawPrivateKey) int32 {
-    error := C.vscf_error_t()
+func (this KeyAsn1Serializer) SerializePrivateKeyInplace (privateKey *RawPrivateKey) (uint32, error) {
+    var error C.vscf_error_t
     C.vscf_error_reset(&error)
 
-    proxyResult := C.vscf_key_asn1_serializer_serialize_private_key_inplace(this.ctx, privateKey.Ctx(), &error)
+    proxyResult := /*pr4*/C.vscf_key_asn1_serializer_serialize_private_key_inplace(this.cCtx, (*C.vscf_raw_private_key_t)(privateKey.ctx()), &error)
 
-    FoundationErrorHandleStatus(error.status)
+    err := FoundationErrorHandleStatus(error.status)
+    if err != nil {
+        return 0, err
+    }
 
-    return proxyResult //r9
+    return uint32(proxyResult) /* r9 */, nil
 }
 
 /* Handle underlying C context. */
-func (this KeyAsn1Serializer) Ctx () *C.vscf_impl_t {
-    return this.ctx
+func (this KeyAsn1Serializer) ctx () *C.vscf_impl_t {
+    return (*C.vscf_impl_t)(this.cCtx)
 }
 
 func NewKeyAsn1Serializer () *KeyAsn1Serializer {
     ctx := C.vscf_key_asn1_serializer_new()
     return &KeyAsn1Serializer {
-        ctx: ctx,
+        cCtx: ctx,
     }
 }
 
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func NewKeyAsn1SerializerWithCtx (ctx *C.vscf_impl_t) *KeyAsn1Serializer {
+func newKeyAsn1SerializerWithCtx (ctx *C.vscf_key_asn1_serializer_t /*ct10*/) *KeyAsn1Serializer {
     return &KeyAsn1Serializer {
-        ctx: ctx,
+        cCtx: ctx,
     }
 }
 
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func NewKeyAsn1SerializerCopy (ctx *C.vscf_impl_t) *KeyAsn1Serializer {
+func newKeyAsn1SerializerCopy (ctx *C.vscf_key_asn1_serializer_t /*ct10*/) *KeyAsn1Serializer {
     return &KeyAsn1Serializer {
-        ctx: C.vscf_key_asn1_serializer_shallow_copy(ctx),
+        cCtx: C.vscf_key_asn1_serializer_shallow_copy(ctx),
     }
+}
+
+/// Release underlying C context.
+func (this KeyAsn1Serializer) close () {
+    C.vscf_key_asn1_serializer_delete(this.cCtx)
 }
 
 /*
@@ -96,10 +108,10 @@ func NewKeyAsn1SerializerCopy (ctx *C.vscf_impl_t) *KeyAsn1Serializer {
 *
 * Precondition: public key must be exportable.
 */
-func (this KeyAsn1Serializer) SerializedPublicKeyLen (publicKey RawPublicKey) int32 {
-    proxyResult := C.vscf_key_asn1_serializer_serialized_public_key_len(this.ctx, publicKey.Ctx())
+func (this KeyAsn1Serializer) SerializedPublicKeyLen (publicKey *RawPublicKey) uint32 {
+    proxyResult := /*pr4*/C.vscf_key_asn1_serializer_serialized_public_key_len(this.cCtx, (*C.vscf_raw_public_key_t)(publicKey.ctx()))
 
-    return proxyResult //r9
+    return uint32(proxyResult) /* r9 */
 }
 
 /*
@@ -107,17 +119,24 @@ func (this KeyAsn1Serializer) SerializedPublicKeyLen (publicKey RawPublicKey) in
 *
 * Precondition: public key must be exportable.
 */
-func (this KeyAsn1Serializer) SerializePublicKey (publicKey RawPublicKey) []byte {
-    outCount := this.SerializedPublicKeyLen(publicKey) /* lg2 */
-    outBuf := NewBuffer(outCount)
-    defer outBuf.Clear()
+func (this KeyAsn1Serializer) SerializePublicKey (publicKey *RawPublicKey) ([]byte, error) {
+    outCount := C.ulong(this.SerializedPublicKeyLen(publicKey) /* lg2 */)
+    outMemory := make([]byte, int(C.vsc_buffer_ctx_size() + outCount))
+    outBuf := (*C.vsc_buffer_t)(unsafe.Pointer(&outMemory[0]))
+    outData := outMemory[int(C.vsc_buffer_ctx_size()):]
+    C.vsc_buffer_init(outBuf)
+    C.vsc_buffer_use(outBuf, (*C.byte)(unsafe.Pointer(&outData[0])), outCount)
+    defer C.vsc_buffer_delete(outBuf)
 
 
-    proxyResult := C.vscf_key_asn1_serializer_serialize_public_key(this.ctx, publicKey.Ctx(), outBuf)
+    proxyResult := /*pr4*/C.vscf_key_asn1_serializer_serialize_public_key(this.cCtx, (*C.vscf_raw_public_key_t)(publicKey.ctx()), outBuf)
 
-    FoundationErrorHandleStatus(proxyResult)
+    err := FoundationErrorHandleStatus(proxyResult)
+    if err != nil {
+        return nil, err
+    }
 
-    return outBuf.GetData() /* r7 */
+    return outData[0:C.vsc_buffer_len(outBuf)] /* r7 */, nil
 }
 
 /*
@@ -125,10 +144,10 @@ func (this KeyAsn1Serializer) SerializePublicKey (publicKey RawPublicKey) []byte
 *
 * Precondition: private key must be exportable.
 */
-func (this KeyAsn1Serializer) SerializedPrivateKeyLen (privateKey RawPrivateKey) int32 {
-    proxyResult := C.vscf_key_asn1_serializer_serialized_private_key_len(this.ctx, privateKey.Ctx())
+func (this KeyAsn1Serializer) SerializedPrivateKeyLen (privateKey *RawPrivateKey) uint32 {
+    proxyResult := /*pr4*/C.vscf_key_asn1_serializer_serialized_private_key_len(this.cCtx, (*C.vscf_raw_private_key_t)(privateKey.ctx()))
 
-    return proxyResult //r9
+    return uint32(proxyResult) /* r9 */
 }
 
 /*
@@ -136,15 +155,22 @@ func (this KeyAsn1Serializer) SerializedPrivateKeyLen (privateKey RawPrivateKey)
 *
 * Precondition: private key must be exportable.
 */
-func (this KeyAsn1Serializer) SerializePrivateKey (privateKey RawPrivateKey) []byte {
-    outCount := this.SerializedPrivateKeyLen(privateKey) /* lg2 */
-    outBuf := NewBuffer(outCount)
-    defer outBuf.Clear()
+func (this KeyAsn1Serializer) SerializePrivateKey (privateKey *RawPrivateKey) ([]byte, error) {
+    outCount := C.ulong(this.SerializedPrivateKeyLen(privateKey) /* lg2 */)
+    outMemory := make([]byte, int(C.vsc_buffer_ctx_size() + outCount))
+    outBuf := (*C.vsc_buffer_t)(unsafe.Pointer(&outMemory[0]))
+    outData := outMemory[int(C.vsc_buffer_ctx_size()):]
+    C.vsc_buffer_init(outBuf)
+    C.vsc_buffer_use(outBuf, (*C.byte)(unsafe.Pointer(&outData[0])), outCount)
+    defer C.vsc_buffer_delete(outBuf)
 
 
-    proxyResult := C.vscf_key_asn1_serializer_serialize_private_key(this.ctx, privateKey.Ctx(), outBuf)
+    proxyResult := /*pr4*/C.vscf_key_asn1_serializer_serialize_private_key(this.cCtx, (*C.vscf_raw_private_key_t)(privateKey.ctx()), outBuf)
 
-    FoundationErrorHandleStatus(proxyResult)
+    err := FoundationErrorHandleStatus(proxyResult)
+    if err != nil {
+        return nil, err
+    }
 
-    return outBuf.GetData() /* r7 */
+    return outData[0:C.vsc_buffer_len(outBuf)] /* r7 */, nil
 }

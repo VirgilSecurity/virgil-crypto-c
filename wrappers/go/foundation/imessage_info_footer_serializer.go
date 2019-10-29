@@ -7,21 +7,21 @@ import "C"
 */
 type IMessageInfoFooterSerializer interface {
 
-    CContext
+    context
 
     /*
     * Return buffer size enough to hold serialized message info footer.
     */
-    SerializedFooterLen (messageInfoFooter MessageInfoFooter) int32
+    SerializedFooterLen (messageInfoFooter *MessageInfoFooter) uint32
 
     /*
     * Serialize class "message info footer".
     */
-    SerializeFooter (messageInfoFooter MessageInfoFooter) []byte
+    SerializeFooter (messageInfoFooter *MessageInfoFooter) []byte
 
     /*
     * Deserialize class "message info footer".
     */
-    DeserializeFooter (data []byte) MessageInfoFooter
+    DeserializeFooter (data []byte) (*MessageInfoFooter, error)
 }
 

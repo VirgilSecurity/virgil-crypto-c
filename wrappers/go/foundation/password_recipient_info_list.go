@@ -1,8 +1,7 @@
 package foundation
 
 // #cgo CFLAGS: -I${SRCDIR}/../binaries/include/
-// #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lvsc_common
-// #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lvsc_foundation
+// #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lmbedcrypto -led25519 -lprotobuf-nanopb -lvsc_common -lvsc_foundation -lvsc_foundation_pb
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
 
@@ -10,96 +9,103 @@ import "C"
 * Handles a list of "password recipient info" class objects.
 */
 type PasswordRecipientInfoList struct {
-    ctx *C.vscf_impl_t
+    cCtx *C.vscf_password_recipient_info_list_t /*ct2*/
 }
 
 /* Handle underlying C context. */
-func (this PasswordRecipientInfoList) Ctx () *C.vscf_impl_t {
-    return this.ctx
+func (this PasswordRecipientInfoList) ctx () *C.vscf_impl_t {
+    return (*C.vscf_impl_t)(this.cCtx)
 }
 
 func NewPasswordRecipientInfoList () *PasswordRecipientInfoList {
     ctx := C.vscf_password_recipient_info_list_new()
     return &PasswordRecipientInfoList {
-        ctx: ctx,
+        cCtx: ctx,
     }
 }
 
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func NewPasswordRecipientInfoListWithCtx (ctx *C.vscf_impl_t) *PasswordRecipientInfoList {
+func newPasswordRecipientInfoListWithCtx (ctx *C.vscf_password_recipient_info_list_t /*ct2*/) *PasswordRecipientInfoList {
     return &PasswordRecipientInfoList {
-        ctx: ctx,
+        cCtx: ctx,
     }
 }
 
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func NewPasswordRecipientInfoListCopy (ctx *C.vscf_impl_t) *PasswordRecipientInfoList {
+func newPasswordRecipientInfoListCopy (ctx *C.vscf_password_recipient_info_list_t /*ct2*/) *PasswordRecipientInfoList {
     return &PasswordRecipientInfoList {
-        ctx: C.vscf_password_recipient_info_list_shallow_copy(ctx),
+        cCtx: C.vscf_password_recipient_info_list_shallow_copy(ctx),
     }
+}
+
+/// Release underlying C context.
+func (this PasswordRecipientInfoList) close () {
+    C.vscf_password_recipient_info_list_delete(this.cCtx)
 }
 
 /*
 * Return true if given list has item.
 */
 func (this PasswordRecipientInfoList) HasItem () bool {
-    proxyResult := C.vscf_password_recipient_info_list_has_item(this.ctx)
+    proxyResult := /*pr4*/C.vscf_password_recipient_info_list_has_item(this.cCtx)
 
-    return proxyResult //r9
+    return bool(proxyResult) /* r9 */
 }
 
 /*
 * Return list item.
 */
-func (this PasswordRecipientInfoList) Item () PasswordRecipientInfo {
-    proxyResult := C.vscf_password_recipient_info_list_item(this.ctx)
+func (this PasswordRecipientInfoList) Item () *PasswordRecipientInfo {
+    proxyResult := /*pr4*/C.vscf_password_recipient_info_list_item(this.cCtx)
 
-    return PasswordRecipientInfo(proxyResult) /* r5 */
+    return newPasswordRecipientInfoWithCtx(proxyResult) /* r5 */
 }
 
 /*
 * Return true if list has next item.
 */
 func (this PasswordRecipientInfoList) HasNext () bool {
-    proxyResult := C.vscf_password_recipient_info_list_has_next(this.ctx)
+    proxyResult := /*pr4*/C.vscf_password_recipient_info_list_has_next(this.cCtx)
 
-    return proxyResult //r9
+    return bool(proxyResult) /* r9 */
 }
 
 /*
 * Return next list node if exists, or NULL otherwise.
 */
-func (this PasswordRecipientInfoList) Next () PasswordRecipientInfoList {
-    proxyResult := C.vscf_password_recipient_info_list_next(this.ctx)
+func (this PasswordRecipientInfoList) Next () *PasswordRecipientInfoList {
+    proxyResult := /*pr4*/C.vscf_password_recipient_info_list_next(this.cCtx)
 
-    return *NewPasswordRecipientInfoListWithCtx(proxyResult) /* r6 */
+    return newPasswordRecipientInfoListWithCtx(proxyResult) /* r6 */
 }
 
 /*
 * Return true if list has previous item.
 */
 func (this PasswordRecipientInfoList) HasPrev () bool {
-    proxyResult := C.vscf_password_recipient_info_list_has_prev(this.ctx)
+    proxyResult := /*pr4*/C.vscf_password_recipient_info_list_has_prev(this.cCtx)
 
-    return proxyResult //r9
+    return bool(proxyResult) /* r9 */
 }
 
 /*
 * Return previous list node if exists, or NULL otherwise.
 */
-func (this PasswordRecipientInfoList) Prev () PasswordRecipientInfoList {
-    proxyResult := C.vscf_password_recipient_info_list_prev(this.ctx)
+func (this PasswordRecipientInfoList) Prev () *PasswordRecipientInfoList {
+    proxyResult := /*pr4*/C.vscf_password_recipient_info_list_prev(this.cCtx)
 
-    return *NewPasswordRecipientInfoListWithCtx(proxyResult) /* r6 */
+    return newPasswordRecipientInfoListWithCtx(proxyResult) /* r6 */
 }
 
 /*
 * Remove all items.
 */
 func (this PasswordRecipientInfoList) Clear () {
-    C.vscf_password_recipient_info_list_clear(this.ctx)
+    C.vscf_password_recipient_info_list_clear(this.cCtx)
+
+    return
 }

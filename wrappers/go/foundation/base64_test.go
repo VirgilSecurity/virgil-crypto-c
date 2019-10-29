@@ -35,17 +35,39 @@
 package foundation
 
 import (
+	b64 "encoding/base64"
 	"github.com/stretchr/testify/assert"
+	"reflect"
 	"testing"
 )
 
+func TestBase64Encode(t *testing.T) {
+	data, _ := b64.StdEncoding.DecodeString(TEST_DATA)
+	expectedEncodedData := []byte(TEST_DATA)
+
+	encodedData := Base64Encode(data)
+	assert.NotNil(t, encodedData)
+	assert.True(t, reflect.DeepEqual(expectedEncodedData, encodedData))
+}
+
 func TestBase64EncodedLen(t *testing.T) {
-	assert.Equal(t, 0, Base64EncodedLen(0))
-	assert.Equal(t, 5, Base64EncodedLen(1))
-	assert.Equal(t, 9, Base64EncodedLen(4))
+	assert.Equal(t, uint32(0), Base64EncodedLen(0))
+	assert.Equal(t, uint32(5), Base64EncodedLen(1))
+	assert.Equal(t, uint32(9), Base64EncodedLen(4))
+}
+
+func TestBase64Decode(t *testing.T) {
+	encodedData,_ := b64.StdEncoding.DecodeString(TEST_DATA)
+	expectedDecodedData, _ := b64.StdEncoding.DecodeString(TEST_DATA)
+
+	decodedData, err := Base64Decode(encodedData)
+
+	assert.Nil(t, err)
+	assert.NotNil(t, decodedData)
+	assert.True(t, reflect.DeepEqual(expectedDecodedData, encodedData))
 }
 
 func TestBase64DecodedLen(t *testing.T) {
-	assert.Equal(t, 0, Base64EncodedLen(0))
-	assert.Equal(t, 4, Base64EncodedLen(1))
+	assert.Equal(t, uint32(0), Base64DecodedLen(0))
+	assert.Equal(t, uint32(4), Base64DecodedLen(1))
 }

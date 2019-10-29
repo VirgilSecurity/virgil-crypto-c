@@ -1,11 +1,10 @@
 package foundation
 
 // #cgo CFLAGS: -I${SRCDIR}/../binaries/include/
-// #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lvsc_common
-// #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lvsc_foundation
+// #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lmbedcrypto -led25519 -lprotobuf-nanopb -lvsc_common -lvsc_foundation -lvsc_foundation_pb
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
-import . "virgil/common"
+import unsafe "unsafe"
 
 /*
 * Random number generator that generate deterministic sequence based
@@ -14,20 +13,20 @@ import . "virgil/common"
 */
 type KeyMaterialRng struct {
     IRandom
-    ctx *C.vscf_impl_t
+    cCtx *C.vscf_key_material_rng_t /*ct10*/
 }
 
 /*
 * Minimum length in bytes for the key material.
 */
-func (this KeyMaterialRng) getKeyMaterialLenMin () int32 {
+func KeyMaterialRngGetKeyMaterialLenMin () uint32 {
     return 32
 }
 
 /*
 * Maximum length in bytes for the key material.
 */
-func (this KeyMaterialRng) getKeyMaterialLenMax () int32 {
+func KeyMaterialRngGetKeyMaterialLenMax () uint32 {
     return 512
 }
 
@@ -35,61 +34,82 @@ func (this KeyMaterialRng) getKeyMaterialLenMax () int32 {
 * Set a new key material.
 */
 func (this KeyMaterialRng) ResetKeyMaterial (keyMaterial []byte) {
-    C.vscf_key_material_rng_reset_key_material(this.ctx, WrapData(keyMaterial))
+    keyMaterialData := C.vsc_data((*C.uint8_t)(&keyMaterial[0]), C.size_t(len(keyMaterial)))
+
+    C.vscf_key_material_rng_reset_key_material(this.cCtx, keyMaterialData)
+
+    return
 }
 
 /* Handle underlying C context. */
-func (this KeyMaterialRng) Ctx () *C.vscf_impl_t {
-    return this.ctx
+func (this KeyMaterialRng) ctx () *C.vscf_impl_t {
+    return (*C.vscf_impl_t)(this.cCtx)
 }
 
 func NewKeyMaterialRng () *KeyMaterialRng {
     ctx := C.vscf_key_material_rng_new()
     return &KeyMaterialRng {
-        ctx: ctx,
+        cCtx: ctx,
     }
 }
 
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func NewKeyMaterialRngWithCtx (ctx *C.vscf_impl_t) *KeyMaterialRng {
+func newKeyMaterialRngWithCtx (ctx *C.vscf_key_material_rng_t /*ct10*/) *KeyMaterialRng {
     return &KeyMaterialRng {
-        ctx: ctx,
+        cCtx: ctx,
     }
 }
 
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func NewKeyMaterialRngCopy (ctx *C.vscf_impl_t) *KeyMaterialRng {
+func newKeyMaterialRngCopy (ctx *C.vscf_key_material_rng_t /*ct10*/) *KeyMaterialRng {
     return &KeyMaterialRng {
-        ctx: C.vscf_key_material_rng_shallow_copy(ctx),
+        cCtx: C.vscf_key_material_rng_shallow_copy(ctx),
     }
+}
+
+/// Release underlying C context.
+func (this KeyMaterialRng) close () {
+    C.vscf_key_material_rng_delete(this.cCtx)
 }
 
 /*
 * Generate random bytes.
 * All RNG implementations must be thread-safe.
 */
-func (this KeyMaterialRng) Random (dataLen int32) []byte {
-    dataCount := dataLen
-    dataBuf := NewBuffer(dataCount)
-    defer dataBuf.Clear()
+func (this KeyMaterialRng) Random (dataLen uint32) ([]byte, error) {
+    dataCount := C.ulong(dataLen)
+    dataMemory := make([]byte, int(C.vsc_buffer_ctx_size() + dataCount))
+    dataBuf := (*C.vsc_buffer_t)(unsafe.Pointer(&dataMemory[0]))
+    dataData := dataMemory[int(C.vsc_buffer_ctx_size()):]
+    C.vsc_buffer_init(dataBuf)
+    C.vsc_buffer_use(dataBuf, (*C.byte)(unsafe.Pointer(&dataData[0])), dataCount)
+    defer C.vsc_buffer_delete(dataBuf)
 
 
-    proxyResult := C.vscf_key_material_rng_random(this.ctx, dataLen, dataBuf)
+    proxyResult := /*pr4*/C.vscf_key_material_rng_random(this.cCtx, (C.size_t)(dataLen)/*pa10*/, dataBuf)
 
-    FoundationErrorHandleStatus(proxyResult)
+    err := FoundationErrorHandleStatus(proxyResult)
+    if err != nil {
+        return nil, err
+    }
 
-    return dataBuf.GetData() /* r7 */
+    return dataData[0:C.vsc_buffer_len(dataBuf)] /* r7 */, nil
 }
 
 /*
 * Retrieve new seed data from the entropy sources.
 */
-func (this KeyMaterialRng) Reseed () {
-    proxyResult := C.vscf_key_material_rng_reseed(this.ctx)
+func (this KeyMaterialRng) Reseed () error {
+    proxyResult := /*pr4*/C.vscf_key_material_rng_reseed(this.cCtx)
 
-    FoundationErrorHandleStatus(proxyResult)
+    err := FoundationErrorHandleStatus(proxyResult)
+    if err != nil {
+        return err
+    }
+
+    return nil
 }

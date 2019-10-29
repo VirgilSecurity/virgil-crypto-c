@@ -7,16 +7,16 @@ import "C"
 */
 type IDecrypt interface {
 
-    CContext
+    context
 
     /*
     * Decrypt given data.
     */
-    Decrypt (data []byte) []byte
+    Decrypt (data []byte) ([]byte, error)
 
     /*
     * Calculate required buffer length to hold the decrypted data.
     */
-    DecryptedLen (dataLen int32) int32
+    DecryptedLen (dataLen uint32) uint32
 }
 

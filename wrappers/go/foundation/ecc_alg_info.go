@@ -1,8 +1,7 @@
 package foundation
 
 // #cgo CFLAGS: -I${SRCDIR}/../binaries/include/
-// #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lvsc_common
-// #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lvsc_foundation
+// #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lmbedcrypto -led25519 -lprotobuf-nanopb -lvsc_common -lvsc_foundation -lvsc_foundation_pb
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
 
@@ -11,14 +10,14 @@ import "C"
 */
 type EccAlgInfo struct {
     IAlgInfo
-    ctx *C.vscf_impl_t
+    cCtx *C.vscf_ecc_alg_info_t /*ct10*/
 }
 
 /*
 * Return EC specific algorithm identificator {unrestricted, ecDH, ecMQV}.
 */
 func (this EccAlgInfo) KeyId () OidId {
-    proxyResult := C.vscf_ecc_alg_info_key_id(this.ctx)
+    proxyResult := /*pr4*/C.vscf_ecc_alg_info_key_id(this.cCtx)
 
     return OidId(proxyResult) /* r8 */
 }
@@ -27,49 +26,54 @@ func (this EccAlgInfo) KeyId () OidId {
 * Return EC domain group identificator.
 */
 func (this EccAlgInfo) DomainId () OidId {
-    proxyResult := C.vscf_ecc_alg_info_domain_id(this.ctx)
+    proxyResult := /*pr4*/C.vscf_ecc_alg_info_domain_id(this.cCtx)
 
     return OidId(proxyResult) /* r8 */
 }
 
 /* Handle underlying C context. */
-func (this EccAlgInfo) Ctx () *C.vscf_impl_t {
-    return this.ctx
+func (this EccAlgInfo) ctx () *C.vscf_impl_t {
+    return (*C.vscf_impl_t)(this.cCtx)
 }
 
 func NewEccAlgInfo () *EccAlgInfo {
     ctx := C.vscf_ecc_alg_info_new()
     return &EccAlgInfo {
-        ctx: ctx,
+        cCtx: ctx,
     }
 }
 
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func NewEccAlgInfoWithCtx (ctx *C.vscf_impl_t) *EccAlgInfo {
+func newEccAlgInfoWithCtx (ctx *C.vscf_ecc_alg_info_t /*ct10*/) *EccAlgInfo {
     return &EccAlgInfo {
-        ctx: ctx,
+        cCtx: ctx,
     }
 }
 
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func NewEccAlgInfoCopy (ctx *C.vscf_impl_t) *EccAlgInfo {
+func newEccAlgInfoCopy (ctx *C.vscf_ecc_alg_info_t /*ct10*/) *EccAlgInfo {
     return &EccAlgInfo {
-        ctx: C.vscf_ecc_alg_info_shallow_copy(ctx),
+        cCtx: C.vscf_ecc_alg_info_shallow_copy(ctx),
     }
+}
+
+/// Release underlying C context.
+func (this EccAlgInfo) close () {
+    C.vscf_ecc_alg_info_delete(this.cCtx)
 }
 
 /*
 * Create algorithm info with EC generic key identificator, EC domain group identificator.
 */
-func NewEccAlgInfowithMembers (algId AlgId, keyId OidId, domainId OidId) *EccAlgInfo {
-    proxyResult := C.vscf_ecc_alg_info_new_with_members(algId /*pa7*/, keyId /*pa7*/, domainId /*pa7*/)
+func NewEccAlgInfoWithMembers (algId AlgId, keyId OidId, domainId OidId) *EccAlgInfo {
+    proxyResult := /*pr4*/C.vscf_ecc_alg_info_new_with_members(C.vscf_alg_id_t(algId) /*pa7*/, C.vscf_oid_id_t(keyId) /*pa7*/, C.vscf_oid_id_t(domainId) /*pa7*/)
 
     return &EccAlgInfo {
-        ctx: proxyResult,
+        cCtx: proxyResult,
     }
 }
 
@@ -77,7 +81,7 @@ func NewEccAlgInfowithMembers (algId AlgId, keyId OidId, domainId OidId) *EccAlg
 * Provide algorithm identificator.
 */
 func (this EccAlgInfo) AlgId () AlgId {
-    proxyResult := C.vscf_ecc_alg_info_alg_id(this.ctx)
+    proxyResult := /*pr4*/C.vscf_ecc_alg_info_alg_id(this.cCtx)
 
     return AlgId(proxyResult) /* r8 */
 }

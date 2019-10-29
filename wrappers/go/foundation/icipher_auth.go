@@ -8,11 +8,7 @@ import "C"
 */
 type ICipherAuth interface {
 
-    ICipher
-
-    IAuthEncrypt
-
-    IAuthDecrypt
+    context
 
     /*
     * Set additional data for for AEAD ciphers.
@@ -25,7 +21,7 @@ type ICipherAuth interface {
     * Note, if authentication tag should be added to an encrypted data,
     * method "finish" can be used.
     */
-    FinishAuthEncryption () ([]byte, []byte)
+    FinishAuthEncryption () ([]byte, []byte, error)
 
     /*
     * Accomplish an authenticated decryption with explicitly given tag.
@@ -33,6 +29,6 @@ type ICipherAuth interface {
     * Note, if authentication tag is a part of an encrypted data then,
     * method "finish" can be used for simplicity.
     */
-    FinishAuthDecryption (tag []byte) []byte
+    FinishAuthDecryption (tag []byte) ([]byte, error)
 }
 

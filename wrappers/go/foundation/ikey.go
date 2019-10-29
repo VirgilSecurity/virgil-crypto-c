@@ -7,7 +7,7 @@ import "C"
 */
 type IKey interface {
 
-    CContext
+    context
 
     /*
     * Algorithm identifier the key belongs to.
@@ -17,17 +17,17 @@ type IKey interface {
     /*
     * Return algorithm information that can be used for serialization.
     */
-    AlgInfo () IAlgInfo
+    AlgInfo () (IAlgInfo, error)
 
     /*
     * Length of the key in bytes.
     */
-    Len () int32
+    Len () uint32
 
     /*
     * Length of the key in bits.
     */
-    Bitlen () int32
+    Bitlen () uint32
 
     /*
     * Check that key is valid.

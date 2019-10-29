@@ -1,25 +1,23 @@
 package foundation
 
 // #cgo CFLAGS: -I${SRCDIR}/../binaries/include/
-// #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lvsc_common
-// #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lvsc_foundation
+// #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lmbedcrypto -led25519 -lprotobuf-nanopb -lvsc_common -lvsc_foundation -lvsc_foundation_pb
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
-import . "virgil/common"
 
 /*
 * Handle KDF algorithms that are configured with salt and iteration count.
 */
 type SaltedKdfAlgInfo struct {
     IAlgInfo
-    ctx *C.vscf_impl_t
+    cCtx *C.vscf_salted_kdf_alg_info_t /*ct10*/
 }
 
 /*
 * Return hash algorithm information.
 */
-func (this SaltedKdfAlgInfo) HashAlgInfo () IAlgInfo {
-    proxyResult := C.vscf_salted_kdf_alg_info_hash_alg_info(this.ctx)
+func (this SaltedKdfAlgInfo) HashAlgInfo () (IAlgInfo, error) {
+    proxyResult := /*pr4*/C.vscf_salted_kdf_alg_info_hash_alg_info(this.cCtx)
 
     return FoundationImplementationWrapIAlgInfo(proxyResult) /* r4 */
 }
@@ -28,62 +26,69 @@ func (this SaltedKdfAlgInfo) HashAlgInfo () IAlgInfo {
 * Return KDF salt.
 */
 func (this SaltedKdfAlgInfo) Salt () []byte {
-    proxyResult := C.vscf_salted_kdf_alg_info_salt(this.ctx)
+    proxyResult := /*pr4*/C.vscf_salted_kdf_alg_info_salt(this.cCtx)
 
-    return ExtractData(proxyResult) /* r1 */
+    return helperDataToBytes(proxyResult) /* r1 */
 }
 
 /*
 * Return KDF iteration count.
 * Note, can be 0 if KDF does not need the iteration count.
 */
-func (this SaltedKdfAlgInfo) IterationCount () int32 {
-    proxyResult := C.vscf_salted_kdf_alg_info_iteration_count(this.ctx)
+func (this SaltedKdfAlgInfo) IterationCount () uint32 {
+    proxyResult := /*pr4*/C.vscf_salted_kdf_alg_info_iteration_count(this.cCtx)
 
-    return proxyResult //r9
+    return uint32(proxyResult) /* r9 */
 }
 
 /* Handle underlying C context. */
-func (this SaltedKdfAlgInfo) Ctx () *C.vscf_impl_t {
-    return this.ctx
+func (this SaltedKdfAlgInfo) ctx () *C.vscf_impl_t {
+    return (*C.vscf_impl_t)(this.cCtx)
 }
 
 func NewSaltedKdfAlgInfo () *SaltedKdfAlgInfo {
     ctx := C.vscf_salted_kdf_alg_info_new()
     return &SaltedKdfAlgInfo {
-        ctx: ctx,
+        cCtx: ctx,
     }
 }
 
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func NewSaltedKdfAlgInfoWithCtx (ctx *C.vscf_impl_t) *SaltedKdfAlgInfo {
+func newSaltedKdfAlgInfoWithCtx (ctx *C.vscf_salted_kdf_alg_info_t /*ct10*/) *SaltedKdfAlgInfo {
     return &SaltedKdfAlgInfo {
-        ctx: ctx,
+        cCtx: ctx,
     }
 }
 
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func NewSaltedKdfAlgInfoCopy (ctx *C.vscf_impl_t) *SaltedKdfAlgInfo {
+func newSaltedKdfAlgInfoCopy (ctx *C.vscf_salted_kdf_alg_info_t /*ct10*/) *SaltedKdfAlgInfo {
     return &SaltedKdfAlgInfo {
-        ctx: C.vscf_salted_kdf_alg_info_shallow_copy(ctx),
+        cCtx: C.vscf_salted_kdf_alg_info_shallow_copy(ctx),
     }
+}
+
+/// Release underlying C context.
+func (this SaltedKdfAlgInfo) close () {
+    C.vscf_salted_kdf_alg_info_delete(this.cCtx)
 }
 
 /*
 * Create algorithm info with identificator, HASH algorithm info,
 * salt and iteration count.
 */
-func NewSaltedKdfAlgInfowithMembers (algId AlgId, hashAlgInfo IAlgInfo, salt []byte, iterationCount int32) *SaltedKdfAlgInfo {
-    hashAlgInfoCopy := C.vscf_impl_shallow_copy(hashAlgInfo.Ctx())
+func NewSaltedKdfAlgInfoWithMembers (algId AlgId, hashAlgInfo IAlgInfo, salt []byte, iterationCount uint32) *SaltedKdfAlgInfo {
+    saltData := C.vsc_data((*C.uint8_t)(&salt[0]), C.size_t(len(salt)))
 
-    proxyResult := C.vscf_salted_kdf_alg_info_new_with_members(algId /*pa7*/, &hashAlgInfoCopy, WrapData(salt), iterationCount)
+    hashAlgInfoCopy := C.vscf_impl_shallow_copy((*C.vscf_impl_t)(hashAlgInfo.ctx()))
+
+    proxyResult := /*pr4*/C.vscf_salted_kdf_alg_info_new_with_members(C.vscf_alg_id_t(algId) /*pa7*/, &hashAlgInfoCopy, saltData, (C.size_t)(iterationCount)/*pa10*/)
 
     return &SaltedKdfAlgInfo {
-        ctx: proxyResult,
+        cCtx: proxyResult,
     }
 }
 
@@ -91,7 +96,7 @@ func NewSaltedKdfAlgInfowithMembers (algId AlgId, hashAlgInfo IAlgInfo, salt []b
 * Provide algorithm identificator.
 */
 func (this SaltedKdfAlgInfo) AlgId () AlgId {
-    proxyResult := C.vscf_salted_kdf_alg_info_alg_id(this.ctx)
+    proxyResult := /*pr4*/C.vscf_salted_kdf_alg_info_alg_id(this.cCtx)
 
     return AlgId(proxyResult) /* r8 */
 }

@@ -7,11 +7,11 @@ import "C"
 */
 type IAlgInfoDeserializer interface {
 
-    CContext
+    context
 
     /*
     * Deserialize algorithm from the data.
     */
-    Deserialize (data []byte) IAlgInfo
+    Deserialize (data []byte) (IAlgInfo, error)
 }
 

@@ -7,7 +7,7 @@ import "C"
 */
 type IAlgInfo interface {
 
-    CContext
+    context
 
     /*
     * Provide algorithm identificator.

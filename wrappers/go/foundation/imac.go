@@ -7,12 +7,12 @@ import "C"
 */
 type IMac interface {
 
-    CContext
+    context
 
     /*
     * Size of the digest (mac output) in bytes.
     */
-    DigestLen () int32
+    DigestLen () uint32
 
     /*
     * Calculate MAC over given data.

@@ -54,7 +54,12 @@ function go_format_argument_list (go_func)
 
     for my.go_func.go_argument
         my.arg_list ?= ""
-        my.arg_list += "$(go_argument.name:) $(go_fix_type(go_argument.type):)"
+        if is_true (go_argument.is_class) & is_true (go_argument.is_reference) & !string_equal (go_argument.type, "Data")
+            my.arg_list += "$(go_argument.name:) *$(go_fix_type(go_argument.type):)"
+        else
+            my.arg_list += "$(go_argument.name:) $(go_fix_type(go_argument.type):)"
+        endif
+
         if ! last()
             my.arg_list += ", "
         endif
@@ -81,6 +86,23 @@ function go_format_description (obj)
 endfunction
 
 # ---------------------------------------------------------------------------
+#   Return formatted multiline string.
+# ---------------------------------------------------------------------------
+function go_format_string (obj)
+    if ! defined (my.obj)
+        return "\"\""
+    endif
+
+    my.str = my.obj
+    my.str = string_indent (my.str)
+    my.str = "$(my.str:left, block, no) "
+    my.str = string_multi_rtrim (my.str)
+    my.str = "\"$(my.str:)\""
+
+    return my.str
+endfunction
+
+# ---------------------------------------------------------------------------
 #   Return formatted arguments list that is used to proxy returned
 #   "result class".
 # ---------------------------------------------------------------------------
@@ -95,6 +117,46 @@ function go_format_result_args (go_func, go_project)
             my.init_args += ", "
         endif
     endfor
+    
+    if is_true (my.go_func.throws)
+        if !string_empty (my.init_args)
+            my.init_args += ", nil"
+        else
+            my.init_args = "nil"
+        endif
+    endif
+
+    return my.init_args
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return formatted arguments list that is used to proxy returned
+#   "result class".
+# ---------------------------------------------------------------------------
+function go_format_result_nil_args (err, go_func, go_project)
+    check_arguments (my, "err, go_func, go_project", my)
+
+    my.init_args = ""
+
+    for my.go_func.go_return
+        if is_true (go_return.is_primitive_type)
+            my.init_args += "0"
+        else
+            my.init_args += "nil"
+        endif
+
+        if ! last ()
+            my.init_args += ", "
+        endif
+    endfor
+    
+    if is_true (my.go_func.throws)
+        if !string_empty (my.init_args)
+            my.init_args += ", $(my.err:)"
+        else
+            my.init_args = "$(my.err:)"
+        endif
+    endif
 
     return my.init_args
 endfunction
@@ -120,11 +182,23 @@ endfunction
 function go_format_return_list (go_func)
     check_arguments (my, "go_func", my)
 
-    my.is_pair = count (my.go_func.go_return) > 1 ?? "1" ? "0"
+    if count (my.go_func.go_return) > 1
+        my.is_pair = "1"
+    elsif count (my.go_func.go_return) = 1 & is_true (my.go_func.throws)
+        my.is_pair = "1"
+    else
+        my.is_pair = "0"
+    endif
+
+    #my.is_pair = count (my.go_func.go_return) > 1 ?? "1" ? "0"
 
     for my.go_func.go_return
         my.return_list ?= ""
-        my.return_list += "$(go_fix_type(go_return.type):)"
+        if is_true (go_return.is_class) & is_true (go_return.is_reference) & is_false (go_return.is_buffer)
+            my.return_list += "*$(go_fix_type(go_return.type):)"
+        else
+            my.return_list += "$(go_fix_type(go_return.type):)"
+        endif
 
         if ! last()
             my.return_list += ", "
@@ -132,11 +206,17 @@ function go_format_return_list (go_func)
     endfor
 
     if defined (my.return_list) & my.is_pair
-        my.return_list = "(" + my.return_list + ")"
+        if is_true (my.go_func.throws)
+            my.return_list = "(" + my.return_list + ", error)"
+        else
+            my.return_list = "(" + my.return_list + ")"
+        endif
     endif
 
     if defined (my.return_list)
         my.return_list = my.return_list
+    elsif is_true (my.go_func.throws)
+        my.return_list = "error"
     else
         my.return_list = ""
     endif
@@ -326,7 +406,12 @@ function go_insert_func (go_instance, go_func)
 
     go_insert_description (my.go_func)
     if is_true (my.go_func.is_constructor)
-        go_insert_code("func New$(my.go_instance.name:)$(my.go_func.name:) ($(my.method_args?:)) $(my.method_return?:) {")
+        if string_equal(my.go_func.visibility, "private")
+            my.prefix = "new"
+        else
+            my.prefix = "New"
+        endif
+        go_insert_code("func $(my.prefix:)$(my.go_instance.name:)$(my.go_func.name:) ($(my.method_args?:)) $(my.method_return?:) {")
     elsif is_true (my.go_func.is_static)
         go_insert_code("func $(my.go_instance.name:)$(my.go_func.name:) ($(my.method_args?:)) $(my.method_return?:) {")
     else
@@ -359,9 +444,7 @@ function go_insert_interface (go_interface)
 
     echo_trace ("Generate Go interface: " + my.go_interface.name)
 
-    assert_attributes (my.go_interface, "name, visibility", my)
-
-    #my.visibility = go_format_visibility (my.go_interface.visibility)
+    assert_attributes (my.go_interface, "name", my)
 
     go_insert_description(my.go_interface)
     go_insert_code ("type $(my.go_interface.name:) interface {")
@@ -431,8 +514,6 @@ function go_insert_struct (go_struct)
     echo_trace ("Generate Go struct: " + my.go_struct.name)
 
     assert_attributes (my.go_struct, "name", my)
-
-    #my.visibility = go_format_visibility (my.go_interface.visibility)
 
     go_insert_description(my.go_struct)
     go_insert_code ("type $(my.go_struct.name:) struct {")

@@ -7,7 +7,7 @@ import "C"
 */
 type IEntropySource interface {
 
-    CContext
+    context
 
     /*
     * Defines that implemented source is strong.
@@ -17,6 +17,6 @@ type IEntropySource interface {
     /*
     * Gather entropy of the requested length.
     */
-    Gather (len int32) []byte
+    Gather (len uint32) ([]byte, error)
 }
 

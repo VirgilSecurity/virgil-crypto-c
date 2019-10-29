@@ -7,21 +7,21 @@ import "C"
 */
 type IEncrypt interface {
 
-    CContext
+    context
 
     /*
     * Encrypt given data.
     */
-    Encrypt (data []byte) []byte
+    Encrypt (data []byte) ([]byte, error)
 
     /*
     * Calculate required buffer length to hold the encrypted data.
     */
-    EncryptedLen (dataLen int32) int32
+    EncryptedLen (dataLen uint32) uint32
 
     /*
     * Precise length calculation of encrypted data.
     */
-    PreciseEncryptedLen (dataLen int32) int32
+    PreciseEncryptedLen (dataLen uint32) uint32
 }
 

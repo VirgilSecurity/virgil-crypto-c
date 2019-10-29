@@ -7,17 +7,17 @@ import "C"
 */
 type IRandom interface {
 
-    CContext
+    context
 
     /*
     * Generate random bytes.
     * All RNG implementations must be thread-safe.
     */
-    Random (dataLen int32) []byte
+    Random (dataLen uint32) ([]byte, error)
 
     /*
     * Retrieve new seed data from the entropy sources.
     */
-    Reseed ()
+    Reseed () error
 }
 

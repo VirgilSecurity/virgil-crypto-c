@@ -7,16 +7,16 @@ import "C"
 */
 type IKeyDeserializer interface {
 
-    CContext
+    context
 
     /*
     * Deserialize given public key as an interchangeable format to the object.
     */
-    DeserializePublicKey (publicKeyData []byte) RawPublicKey
+    DeserializePublicKey (publicKeyData []byte) (*RawPublicKey, error)
 
     /*
     * Deserialize given private key as an interchangeable format to the object.
     */
-    DeserializePrivateKey (privateKeyData []byte) RawPrivateKey
+    DeserializePrivateKey (privateKeyData []byte) (*RawPrivateKey, error)
 }
 

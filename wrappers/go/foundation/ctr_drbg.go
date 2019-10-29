@@ -1,11 +1,10 @@
 package foundation
 
 // #cgo CFLAGS: -I${SRCDIR}/../binaries/include/
-// #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lvsc_common
-// #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lvsc_foundation
+// #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lmbedcrypto -led25519 -lprotobuf-nanopb -lvsc_common -lvsc_foundation -lvsc_foundation_pb
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
-import . "virgil/common"
+import unsafe "unsafe"
 
 /*
 * Implementation of the RNG using deterministic random bit generators
@@ -14,36 +13,46 @@ import . "virgil/common"
 */
 type CtrDrbg struct {
     IRandom
-    ctx *C.vscf_impl_t
+    cCtx *C.vscf_ctr_drbg_t /*ct10*/
 }
 
 /*
 * The interval before reseed is performed by default.
 */
-func (this CtrDrbg) getReseedInterval () int32 {
+func CtrDrbgGetReseedInterval () uint32 {
     return 10000
 }
 
 /*
 * The amount of entropy used per seed by default.
 */
-func (this CtrDrbg) getEntropyLen () int32 {
+func CtrDrbgGetEntropyLen () uint32 {
     return 48
 }
 
-func (this CtrDrbg) SetEntropySource (entropySource IEntropySource) {
-    C.vscf_ctr_drbg_release_entropy_source(this.ctx)
-    proxyResult := C.vscf_ctr_drbg_use_entropy_source(this.ctx, entropySource.Ctx())
-    FoundationErrorHandleStatus(proxyResult)
+func (this CtrDrbg) SetEntropySource (entropySource IEntropySource) error {
+    C.vscf_ctr_drbg_release_entropy_source(this.cCtx)
+                    proxyResult := C.vscf_ctr_drbg_use_entropy_source(this.cCtx, (*C.vscf_impl_t)(entropySource.ctx()))
+
+    err := FoundationErrorHandleStatus(proxyResult)
+    if err != nil {
+        return err
+    }
+    return nil
 }
 
 /*
 * Setup predefined values to the uninitialized class dependencies.
 */
-func (this CtrDrbg) SetupDefaults () {
-    proxyResult := C.vscf_ctr_drbg_setup_defaults(this.ctx)
+func (this CtrDrbg) SetupDefaults () error {
+    proxyResult := /*pr4*/C.vscf_ctr_drbg_setup_defaults(this.cCtx)
 
-    FoundationErrorHandleStatus(proxyResult)
+    err := FoundationErrorHandleStatus(proxyResult)
+    if err != nil {
+        return err
+    }
+
+    return nil
 }
 
 /*
@@ -52,77 +61,100 @@ func (this CtrDrbg) SetupDefaults () {
 * Note, use this if your entropy source has sufficient throughput.
 */
 func (this CtrDrbg) EnablePredictionResistance () {
-    C.vscf_ctr_drbg_enable_prediction_resistance(this.ctx)
+    C.vscf_ctr_drbg_enable_prediction_resistance(this.cCtx)
+
+    return
 }
 
 /*
 * Sets the reseed interval.
 * Default value is reseed interval.
 */
-func (this CtrDrbg) SetReseedInterval (interval int32) {
-    C.vscf_ctr_drbg_set_reseed_interval(this.ctx, interval)
+func (this CtrDrbg) SetReseedInterval (interval uint32) {
+    C.vscf_ctr_drbg_set_reseed_interval(this.cCtx, (C.size_t)(interval)/*pa10*/)
+
+    return
 }
 
 /*
 * Sets the amount of entropy grabbed on each seed or reseed.
 * The default value is entropy len.
 */
-func (this CtrDrbg) SetEntropyLen (len int32) {
-    C.vscf_ctr_drbg_set_entropy_len(this.ctx, len)
+func (this CtrDrbg) SetEntropyLen (len uint32) {
+    C.vscf_ctr_drbg_set_entropy_len(this.cCtx, (C.size_t)(len)/*pa10*/)
+
+    return
 }
 
 /* Handle underlying C context. */
-func (this CtrDrbg) Ctx () *C.vscf_impl_t {
-    return this.ctx
+func (this CtrDrbg) ctx () *C.vscf_impl_t {
+    return (*C.vscf_impl_t)(this.cCtx)
 }
 
 func NewCtrDrbg () *CtrDrbg {
     ctx := C.vscf_ctr_drbg_new()
     return &CtrDrbg {
-        ctx: ctx,
+        cCtx: ctx,
     }
 }
 
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func NewCtrDrbgWithCtx (ctx *C.vscf_impl_t) *CtrDrbg {
+func newCtrDrbgWithCtx (ctx *C.vscf_ctr_drbg_t /*ct10*/) *CtrDrbg {
     return &CtrDrbg {
-        ctx: ctx,
+        cCtx: ctx,
     }
 }
 
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func NewCtrDrbgCopy (ctx *C.vscf_impl_t) *CtrDrbg {
+func newCtrDrbgCopy (ctx *C.vscf_ctr_drbg_t /*ct10*/) *CtrDrbg {
     return &CtrDrbg {
-        ctx: C.vscf_ctr_drbg_shallow_copy(ctx),
+        cCtx: C.vscf_ctr_drbg_shallow_copy(ctx),
     }
+}
+
+/// Release underlying C context.
+func (this CtrDrbg) close () {
+    C.vscf_ctr_drbg_delete(this.cCtx)
 }
 
 /*
 * Generate random bytes.
 * All RNG implementations must be thread-safe.
 */
-func (this CtrDrbg) Random (dataLen int32) []byte {
-    dataCount := dataLen
-    dataBuf := NewBuffer(dataCount)
-    defer dataBuf.Clear()
+func (this CtrDrbg) Random (dataLen uint32) ([]byte, error) {
+    dataCount := C.ulong(dataLen)
+    dataMemory := make([]byte, int(C.vsc_buffer_ctx_size() + dataCount))
+    dataBuf := (*C.vsc_buffer_t)(unsafe.Pointer(&dataMemory[0]))
+    dataData := dataMemory[int(C.vsc_buffer_ctx_size()):]
+    C.vsc_buffer_init(dataBuf)
+    C.vsc_buffer_use(dataBuf, (*C.byte)(unsafe.Pointer(&dataData[0])), dataCount)
+    defer C.vsc_buffer_delete(dataBuf)
 
 
-    proxyResult := C.vscf_ctr_drbg_random(this.ctx, dataLen, dataBuf)
+    proxyResult := /*pr4*/C.vscf_ctr_drbg_random(this.cCtx, (C.size_t)(dataLen)/*pa10*/, dataBuf)
 
-    FoundationErrorHandleStatus(proxyResult)
+    err := FoundationErrorHandleStatus(proxyResult)
+    if err != nil {
+        return nil, err
+    }
 
-    return dataBuf.GetData() /* r7 */
+    return dataData[0:C.vsc_buffer_len(dataBuf)] /* r7 */, nil
 }
 
 /*
 * Retrieve new seed data from the entropy sources.
 */
-func (this CtrDrbg) Reseed () {
-    proxyResult := C.vscf_ctr_drbg_reseed(this.ctx)
+func (this CtrDrbg) Reseed () error {
+    proxyResult := /*pr4*/C.vscf_ctr_drbg_reseed(this.cCtx)
 
-    FoundationErrorHandleStatus(proxyResult)
+    err := FoundationErrorHandleStatus(proxyResult)
+    if err != nil {
+        return err
+    }
+
+    return nil
 }

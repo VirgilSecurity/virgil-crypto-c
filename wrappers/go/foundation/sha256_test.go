@@ -32,15 +32,73 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-package pythia
+package foundation
 
-// #cgo CFLAGS:  -I${SRCDIR}/../include
-// #cgo LDFLAGS: -L${SRCDIR}/../lib -lvsc_common
-// #include <virgil/crypto/common/vsc_data.h>
-import "C"
+import (
+    b64 "encoding/base64"
+    "github.com/stretchr/testify/assert"
+    "testing"
+)
 
+func TestNewSha256(t *testing.T) {
+    sha := NewSha256()
 
-// Wrap Go byte array to the C struct
-func WrapData(data []byte) C.vsc_data_t {
-    return C.vsc_data((*C.uint8_t)(&data[0]), C.size_t(len(data)))
+    assert.NotNil(t, sha)
+}
+
+func TestSha256_AlgId(t *testing.T) {
+    sha := NewSha256()
+    algId := sha.AlgId()
+
+    assert.NotNil(t, algId)
+    assert.Equal(t, ALG_ID_SHA256, algId)
+}
+
+func TestSha256_GetDigestLen(t *testing.T) {
+    sha := NewSha256()
+
+    assert.Equal(t, TEST_SHA256_DIGEST_LEN, sha.GetDigestLen())
+}
+
+func TestSha256_Hash(t *testing.T) {
+    data, _ := b64.StdEncoding.DecodeString(TEST_DATA)
+    expectedHash, _ := b64.StdEncoding.DecodeString(TEST_SHA256_HASH)
+
+    sha := NewSha256()
+    hash := sha.Hash(data)
+
+    assert.NotNil(t, hash)
+    assert.Equal(t, len(expectedHash), len(hash))
+    assert.Equal(t, expectedHash, hash)
+}
+
+func TestSha256_Hash_Stream(t *testing.T) {
+    data, _ := b64.StdEncoding.DecodeString(TEST_DATA)
+    expectedHash, _ := b64.StdEncoding.DecodeString(TEST_SHA256_HASH)
+
+    sha := NewSha256()
+    sha.Start()
+    blockLen := int(sha.GetBlockLen())
+    startIndex := 0
+    for ;startIndex < len(data);  {
+        endIndex := startIndex + blockLen
+        block := data[startIndex : endIndex]
+        sha.Update(block)
+
+        startIndex += endIndex
+    }
+
+    hash := sha.Finish()
+
+    assert.NotNil(t, hash)
+    assert.Equal(t, len(expectedHash), len(hash))
+    assert.Equal(t, expectedHash, hash)
+}
+
+func TestSha256_ProduceAlgInfo(t *testing.T) {
+    sha := NewSha256()
+    algInfo, err := sha.ProduceAlgInfo()
+    assert.Nil(t, err)
+    assert.NotNil(t, algInfo)
+    assert.Equal(t, ALG_ID_SHA256, algInfo.AlgId())
 }

@@ -7,6 +7,6 @@ import "C"
 */
 type IPublicKey interface {
 
-    IKey
+    context
 }
 

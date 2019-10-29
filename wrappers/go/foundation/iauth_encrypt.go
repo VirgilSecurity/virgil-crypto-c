@@ -7,17 +7,17 @@ import "C"
 */
 type IAuthEncrypt interface {
 
-    ICipherAuthInfo
+    context
 
     /*
     * Encrypt given data.
     * If 'tag' is not given, then it will written to the 'enc'.
     */
-    AuthEncrypt (data []byte, authData []byte) ([]byte, []byte)
+    AuthEncrypt (data []byte, authData []byte) ([]byte, []byte, error)
 
     /*
     * Calculate required buffer length to hold the authenticated encrypted data.
     */
-    AuthEncryptedLen (dataLen int32) int32
+    AuthEncryptedLen (dataLen uint32) uint32
 }
 

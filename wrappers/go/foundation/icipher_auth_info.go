@@ -4,11 +4,11 @@ import "C"
 
 type ICipherAuthInfo interface {
 
-    CContext
+    context
 
     /*
     * Defines authentication tag length in bytes.
     */
-    getAuthTagLen () int32
+    GetAuthTagLen () uint32
 }
 

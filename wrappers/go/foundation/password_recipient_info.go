@@ -1,59 +1,64 @@
 package foundation
 
 // #cgo CFLAGS: -I${SRCDIR}/../binaries/include/
-// #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lvsc_common
-// #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lvsc_foundation
+// #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lmbedcrypto -led25519 -lprotobuf-nanopb -lvsc_common -lvsc_foundation -lvsc_foundation_pb
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
-import . "virgil/common"
 
 /*
 * Handle information about recipient that is defined by a password.
 */
 type PasswordRecipientInfo struct {
-    ctx *C.vscf_impl_t
+    cCtx *C.vscf_password_recipient_info_t /*ct2*/
 }
 
 /* Handle underlying C context. */
-func (this PasswordRecipientInfo) Ctx () *C.vscf_impl_t {
-    return this.ctx
+func (this PasswordRecipientInfo) ctx () *C.vscf_impl_t {
+    return (*C.vscf_impl_t)(this.cCtx)
 }
 
 func NewPasswordRecipientInfo () *PasswordRecipientInfo {
     ctx := C.vscf_password_recipient_info_new()
     return &PasswordRecipientInfo {
-        ctx: ctx,
+        cCtx: ctx,
     }
 }
 
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func NewPasswordRecipientInfoWithCtx (ctx *C.vscf_impl_t) *PasswordRecipientInfo {
+func newPasswordRecipientInfoWithCtx (ctx *C.vscf_password_recipient_info_t /*ct2*/) *PasswordRecipientInfo {
     return &PasswordRecipientInfo {
-        ctx: ctx,
+        cCtx: ctx,
     }
 }
 
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func NewPasswordRecipientInfoCopy (ctx *C.vscf_impl_t) *PasswordRecipientInfo {
+func newPasswordRecipientInfoCopy (ctx *C.vscf_password_recipient_info_t /*ct2*/) *PasswordRecipientInfo {
     return &PasswordRecipientInfo {
-        ctx: C.vscf_password_recipient_info_shallow_copy(ctx),
+        cCtx: C.vscf_password_recipient_info_shallow_copy(ctx),
     }
+}
+
+/// Release underlying C context.
+func (this PasswordRecipientInfo) close () {
+    C.vscf_password_recipient_info_delete(this.cCtx)
 }
 
 /*
 * Create object and define all properties.
 */
-func NewPasswordRecipientInfowithMembers (keyEncryptionAlgorithm IAlgInfo, encryptedKey []byte) *PasswordRecipientInfo {
-    keyEncryptionAlgorithmCopy := C.vscf_impl_shallow_copy(keyEncryptionAlgorithm.Ctx())
+func NewPasswordRecipientInfoWithMembers (keyEncryptionAlgorithm IAlgInfo, encryptedKey []byte) *PasswordRecipientInfo {
+    encryptedKeyData := C.vsc_data((*C.uint8_t)(&encryptedKey[0]), C.size_t(len(encryptedKey)))
 
-    proxyResult := C.vscf_password_recipient_info_new_with_members(&keyEncryptionAlgorithmCopy, WrapData(encryptedKey))
+    keyEncryptionAlgorithmCopy := C.vscf_impl_shallow_copy((*C.vscf_impl_t)(keyEncryptionAlgorithm.ctx()))
+
+    proxyResult := /*pr4*/C.vscf_password_recipient_info_new_with_members(&keyEncryptionAlgorithmCopy, encryptedKeyData)
 
     return &PasswordRecipientInfo {
-        ctx: proxyResult,
+        cCtx: proxyResult,
     }
 }
 
@@ -61,8 +66,8 @@ func NewPasswordRecipientInfowithMembers (keyEncryptionAlgorithm IAlgInfo, encry
 * Return algorithm information that was used for encryption
 * a data encryption key.
 */
-func (this PasswordRecipientInfo) KeyEncryptionAlgorithm () IAlgInfo {
-    proxyResult := C.vscf_password_recipient_info_key_encryption_algorithm(this.ctx)
+func (this PasswordRecipientInfo) KeyEncryptionAlgorithm () (IAlgInfo, error) {
+    proxyResult := /*pr4*/C.vscf_password_recipient_info_key_encryption_algorithm(this.cCtx)
 
     return FoundationImplementationWrapIAlgInfo(proxyResult) /* r4 */
 }
@@ -71,7 +76,7 @@ func (this PasswordRecipientInfo) KeyEncryptionAlgorithm () IAlgInfo {
 * Return an encrypted data encryption key.
 */
 func (this PasswordRecipientInfo) EncryptedKey () []byte {
-    proxyResult := C.vscf_password_recipient_info_encrypted_key(this.ctx)
+    proxyResult := /*pr4*/C.vscf_password_recipient_info_encrypted_key(this.cCtx)
 
-    return ExtractData(proxyResult) /* r1 */
+    return helperDataToBytes(proxyResult) /* r1 */
 }
