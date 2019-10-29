@@ -86,6 +86,7 @@ endif()
 # ---------------------------------------------------------------------------
 #   Add per project extension build
 # ---------------------------------------------------------------------------
-add_subdirectory(foundation)
-add_subdirectory(phe)
-add_subdirectory(ratchet)
+#add_subdirectory(foundation)
+#add_subdirectory(phe)
+#add_subdirectory(ratchet)
+add_subdirectory(pythia)

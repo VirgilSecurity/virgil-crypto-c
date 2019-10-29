@@ -322,66 +322,68 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
 
                 ### Proxy call --->
 
-                new proxy_call to wrapper
-                    my._c = php_format_extension_comment("Proxy call")
+                my._proxy_call = ""
 
-                    my._h1 = ""
-                    if function.is_static = 0
+                if function.is_static = 0
 
-                        my._res_name = "$(my._t:)_php_res_name"
-                        my._le = "le_$(my._t:)"
+                    my._res_name = "$(my._t:)_php_res_name"
+                    my._le = "le_$(my._t:)"
 
-                        if my.in_type = "implementation"
-                            my._res_name = "$(my.in_php_project.prefix:)_impl_t_php_res_name"
-                            my._le = "le_$(my.in_php_project.prefix:c)_impl_t"
-                        endif
-
-                        my._h1 = format_left("\
-                            $(my._t:c) *$(my.out_low_level.name0:c) = zend_fetch_resource_ex(in_ctx, $(my._res_name:), $(my._le:));
-                            ", 0)
+                    if my.in_type = "implementation"
+                        my._res_name = "$(my.in_php_project.prefix:)_impl_t_php_res_name"
+                        my._le = "le_$(my.in_php_project.prefix:c)_impl_t"
                     endif
 
-                    for function.argument as argument0 where ! string_in (argument0.type0, "buffer, integer, enum, byte, boolean, unsigned, char")
-                        if argument0.type = "vsc_data_t"
-                            my._h1 += format_left("vsc_data_t $(argument0.name:) = vsc_data((const byte*)in_$(argument0.name:), in_$(argument0.name:)_len);", 0)
-                        elsif string_in (argument0.type0, "interface, class, impl")
-                            if argument0.type = "class"
-                                my._h1 += format_left("\
-                                    $(argument0.type:c) *$(argument0.name:c) = zend_fetch_resource_ex(in_$(argument0.name:), $(argument0.type_c:)_php_res_name, le_$(argument0.type_c:));
-                                    ", 0)
-                            else
-                                if defined(argument0.is_dependency) & argument0.is_dependency = 1
-                                    my._a = argument0.type_c
-                                    my._rn = "$(my._a:)"
-                                    my._h1 += format_left("\
-                                        $(my._a:) *$(argument0.name:c) = zend_fetch_resource_ex(in_$(argument0.name:), $(my._rn:)_php_res_name, le_$(my._a:));
-                                        ", 0)
-                                else
-                                    my._a = function.prefix0
-                                    my._h1 += format_left("\
-                                        $(argument0.type:c) *$(argument0.name:c) = zend_fetch_resource_ex(in_$(argument0.name:), $(my._a:)_impl_t_php_res_name, le_$(my._a:)_impl_t);
-                                        ", 0)
-                                endif
-                            endif
-                        elsif argument0.type0 = "size"
-                            my._h1 += format_left("
-                                size_t $(argument0.name:) = in_$(argument0.name:);
-                                ", 0)
-                        elsif argument0.type0 = "error"
-                            my._h1 += format_left("
-                                $(function.prefix0:)_error_t error;
-                                $(function.prefix0:)_error_reset(&error);
+                    my._proxy_call = format_left("\
+                        $(my._t:c) *$(my.out_low_level.name0:c) = zend_fetch_resource_ex(in_ctx, $(my._res_name:), $(my._le:));
+                        ", 0)
+                endif
+
+                for function.argument as argument0 where ! string_in (argument0.type0, "buffer, integer, enum, byte, boolean, unsigned, char")
+                    if argument0.type = "vsc_data_t"
+                        my._proxy_call += format_left("vsc_data_t $(argument0.name:) = vsc_data((const byte*)in_$(argument0.name:), in_$(argument0.name:)_len);", 0)
+                    elsif string_in (argument0.type0, "interface, class, impl")
+                        if argument0.type = "class"
+                            my._proxy_call += format_left("\
+                                $(argument0.type:c) *$(argument0.name:c) = zend_fetch_resource_ex(in_$(argument0.name:), $(argument0.type_c:)_php_res_name, le_$(argument0.type_c:));
                                 ", 0)
                         else
-                            echo_debug_item(function)
-                            echo_debug_item(argument0)
-                            echo_fatal("Not implemented (AF1000)")
+                            if defined(argument0.is_dependency) & argument0.is_dependency = 1
+                                my._a = argument0.type_c
+                                my._rn = "$(my._a:)"
+                                my._proxy_call += format_left("\
+                                    $(my._a:) *$(argument0.name:c) = zend_fetch_resource_ex(in_$(argument0.name:), $(my._rn:)_php_res_name, le_$(my._a:));
+                                    ", 0)
+                            else
+                                my._a = function.prefix0
+                                my._proxy_call += format_left("\
+                                    $(argument0.type:c) *$(argument0.name:c) = zend_fetch_resource_ex(in_$(argument0.name:), $(my._a:)_impl_t_php_res_name, le_$(my._a:)_impl_t);
+                                    ", 0)
+                            endif
                         endif
-                    endfor
-                    my._res = my._c + my._h1
+                    elsif argument0.type0 = "size"
+                        my._proxy_call += format_left("
+                            size_t $(argument0.name:) = in_$(argument0.name:);
+                            ", 0)
+                    elsif argument0.type0 = "error"
+                        my._proxy_call += format_left("
+                            $(function.prefix0:)_error_t error;
+                            $(function.prefix0:)_error_reset(&error);
+                            ", 0)
+                    else
+                        echo_debug_item(function)
+                        echo_debug_item(argument0)
+                        echo_fatal("Not implemented (AF1000)")
+                    endif
+                endfor
 
-                    . = format_left(my._res, 1)
-                endnew
+                if my._proxy_call <> ""
+                    new proxy_call to wrapper
+                        my._c = php_format_extension_comment("Proxy call")
+                        my._res = my._c + my._proxy_call
+                        . = format_left(my._res, 1)
+                    endnew
+                endif
 
                 ### <--- Proxy call
 
@@ -451,12 +453,20 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
                             if return_argument0.length_type = "constant"
                                 my._l = "$(return_argument0.length:)"
                             elsif return_argument0.length_type = "method"
-                                my._l = "$(return_argument0.length:)($(function.entity0:))"
+                                if my.in_module.context = "none"
+                                    my._l = "$(return_argument0.length:)()"
+                                else
+                                    my._l = "$(return_argument0.length:)($(function.entity0:))"
+                                endif
                             elsif return_argument0.length_type = "method_proxy"
                                 if string_equal(my.in_module.context, "none")
                                     my._l = "$(return_argument0.length:)($(return_argument0.proxy:))"
                                 else
-                                    my._l = "$(return_argument0.length:)($(function.entity0:), $(return_argument0.proxy:))"
+                                    if my.in_module.context = "none"
+                                        my._l = "$(return_argument0.length:)($(return_argument0.proxy:))"
+                                    else
+                                        my._l = "$(return_argument0.length:)($(function.entity0:), $(return_argument0.proxy:))"
+                                    endif
                                 endif
                             elsif return_argument0.length_type = "argument"
                                 my._l = return_argument0.length
@@ -1301,7 +1311,11 @@ function php_map_low_level_extension (in_php_project, out_php_module)
                 my._1 = "\n" + function0->wrapper->header.
                 my._2 = "\n" + function0->wrapper->declare_input_arguments.
                 my._3 = "\n" + function0->wrapper->parse_arguments.
-                my._4 = "\n" + function0->wrapper->proxy_call.
+
+                my._4 = ""
+                if defined(function0->wrapper->proxy_call)
+                    my._4  = "\n" + function0->wrapper->proxy_call.
+                endif
 
                 my._5 = ""
                 if defined(function0->wrapper->argument_type_mapping)
