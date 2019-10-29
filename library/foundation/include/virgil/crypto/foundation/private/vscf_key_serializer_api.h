@@ -88,7 +88,7 @@ extern "C" {
 //
 //          Precondition: public key must be exportable.
 //
-typedef size_t (*vscf_key_serializer_api_serialized_public_key_len_fn)(vscf_impl_t *impl,
+typedef size_t (*vscf_key_serializer_api_serialized_public_key_len_fn)(const vscf_impl_t *impl,
         const vscf_raw_public_key_t *public_key);
 
 //
@@ -104,7 +104,7 @@ typedef vscf_status_t (*vscf_key_serializer_api_serialize_public_key_fn)(vscf_im
 //
 //          Precondition: private key must be exportable.
 //
-typedef size_t (*vscf_key_serializer_api_serialized_private_key_len_fn)(vscf_impl_t *impl,
+typedef size_t (*vscf_key_serializer_api_serialized_private_key_len_fn)(const vscf_impl_t *impl,
         const vscf_raw_private_key_t *private_key);
 
 //

@@ -62,7 +62,11 @@ public enum OidId {
     HMAC_WITH_SHA384(21),
     HMAC_WITH_SHA512(22),
     EC_GENERIC_KEY(23),
-    EC_DOMAIN_SECP256R1(24);
+    EC_DOMAIN_SECP256R1(24),
+    COMPOUND_KEY(25),
+    FALCON(26),
+    ROUND5(27),
+    ROUND5_CCA_ND_5PKE_5D(28);
 
     private final int code;
 

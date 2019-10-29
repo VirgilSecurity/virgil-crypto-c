@@ -43,6 +43,7 @@
 
 #include "vscf_round5.h"
 #include "vscf_fake_random.h"
+#include "vscf_simple_alg_info.h"
 
 #include "test_data_round5.h"
 
@@ -82,7 +83,8 @@ test__encrypt__success(void) {
     //
     //  Import public key
     //
-    vscf_impl_t *alg_info = vscf_round5_produce_alg_info(round5);
+    vscf_impl_t *alg_info =
+            vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_ROUND5_CCA_ND_5PKE_5D));
     vscf_raw_public_key_t *raw_public_key =
             vscf_raw_public_key_new_with_data(test_data_round5_CCA_PKE_PUBLIC_KEY, &alg_info);
 
@@ -121,7 +123,8 @@ test__decrypt__success(void) {
     //
     //  Import private key
     //
-    vscf_impl_t *alg_info = vscf_round5_produce_alg_info(round5);
+    vscf_impl_t *alg_info =
+            vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_ROUND5_CCA_ND_5PKE_5D));
     vscf_raw_private_key_t *raw_private_key =
             vscf_raw_private_key_new_with_data(test_data_round5_CCA_PKE_PRIVATE_KEY, &alg_info);
 

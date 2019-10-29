@@ -69,19 +69,19 @@ class VscfCompoundKeyAlgInfo(object):
         vscf_compound_key_alg_info_alg_id.restype = c_int
         return vscf_compound_key_alg_info_alg_id(ctx)
 
-    def vscf_compound_key_alg_info_enc_alg_info(self, ctx):
+    def vscf_compound_key_alg_info_cipher_alg_info(self, ctx):
         """Return information about encrypt/decrypt algorithm."""
-        vscf_compound_key_alg_info_enc_alg_info = self._lib.vscf_compound_key_alg_info_enc_alg_info
-        vscf_compound_key_alg_info_enc_alg_info.argtypes = [POINTER(vscf_compound_key_alg_info_t)]
-        vscf_compound_key_alg_info_enc_alg_info.restype = POINTER(vscf_impl_t)
-        return vscf_compound_key_alg_info_enc_alg_info(ctx)
+        vscf_compound_key_alg_info_cipher_alg_info = self._lib.vscf_compound_key_alg_info_cipher_alg_info
+        vscf_compound_key_alg_info_cipher_alg_info.argtypes = [POINTER(vscf_compound_key_alg_info_t)]
+        vscf_compound_key_alg_info_cipher_alg_info.restype = POINTER(vscf_impl_t)
+        return vscf_compound_key_alg_info_cipher_alg_info(ctx)
 
-    def vscf_compound_key_alg_info_sign_alg_info(self, ctx):
+    def vscf_compound_key_alg_info_signer_alg_info(self, ctx):
         """Return information about sign/verify algorithm."""
-        vscf_compound_key_alg_info_sign_alg_info = self._lib.vscf_compound_key_alg_info_sign_alg_info
-        vscf_compound_key_alg_info_sign_alg_info.argtypes = [POINTER(vscf_compound_key_alg_info_t)]
-        vscf_compound_key_alg_info_sign_alg_info.restype = POINTER(vscf_impl_t)
-        return vscf_compound_key_alg_info_sign_alg_info(ctx)
+        vscf_compound_key_alg_info_signer_alg_info = self._lib.vscf_compound_key_alg_info_signer_alg_info
+        vscf_compound_key_alg_info_signer_alg_info.argtypes = [POINTER(vscf_compound_key_alg_info_t)]
+        vscf_compound_key_alg_info_signer_alg_info.restype = POINTER(vscf_impl_t)
+        return vscf_compound_key_alg_info_signer_alg_info(ctx)
 
     def vscf_compound_key_alg_info_shallow_copy(self, ctx):
         vscf_compound_key_alg_info_shallow_copy = self._lib.vscf_compound_key_alg_info_shallow_copy

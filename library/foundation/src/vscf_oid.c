@@ -134,6 +134,44 @@ static const byte oid_ec_domain_secp256r1_bytes[] = {0x2A, 0x86, 0x48, 0xCE, 0x3
 static const vsc_data_t oid_ec_domain_secp256r1 = {
         oid_ec_domain_secp256r1_bytes, sizeof(oid_ec_domain_secp256r1_bytes)};
 
+// --------------------------------------------------------------------------
+//  FIXME: Fix PEN within next OIDs
+//
+//  1.3.6.1.4.1.60000.1.1
+//  iso(1) identified-organization(3) dod(6) internet(1) private(4) enterprise(1) virgil-security(60000)
+//  crypto(1) compound-key(1)
+//
+static const byte oid_compound_key_bytes[] = {0x2B, 0x06, 0x01, 0x04, 0x01, 0x83, 0xD4, 0x60, 0x01, 0x01};
+static const vsc_data_t oid_compound_key = {oid_compound_key_bytes, sizeof(oid_compound_key_bytes)};
+
+//
+//  1.3.6.1.4.1.60000.2.1
+//  iso(1) identified-organization(3) dod(6) internet(1) private(4) enterprise(1) virgil-security(60000)
+//  post-quantum-crypto(2) falcon(1)
+//
+static const byte oid_falcon_bytes[] = {0x2B, 0x06, 0x01, 0x04, 0x01, 0x83, 0xD4, 0x60, 0x02, 0x01};
+static const vsc_data_t oid_falcon = {oid_falcon_bytes, sizeof(oid_falcon_bytes)};
+
+//
+//  1.3.6.1.4.1.60000.2.2
+//  iso(1) identified-organization(3) dod(6) internet(1) private(4) enterprise(1) virgil-security(60000)
+//  post-quantum-crypto(2) round5(2)
+//
+static const byte oid_round5_bytes[] = {0x2B, 0x06, 0x01, 0x04, 0x01, 0x83, 0xD4, 0x60, 0x02, 0x02};
+static const vsc_data_t oid_round5 = {oid_round5_bytes, sizeof(oid_round5_bytes)};
+
+//
+//  1.3.6.1.4.1.60000.2.2.1.11
+//  iso(1) identified-organization(3) dod(6) internet(1) private(4) enterprise(1) virgil-security(60000)
+//  post-quantum-crypto(2) round5(2) cca(1) nd-5pke-5d(11)
+//
+static const byte oid_round5_cca_nd_5pke_5d_bytes[] = {
+        0x2B, 0x06, 0x01, 0x04, 0x01, 0x83, 0xD4, 0x60, 0x02, 0x02, 0x01, 0x0B};
+static const vsc_data_t oid_round5_cca_nd_5pke_5d = {
+        oid_round5_cca_nd_5pke_5d_bytes, sizeof(oid_round5_cca_nd_5pke_5d_bytes)};
+//
+// --------------------------------------------------------------------------
+
 
 //  @generated
 // --------------------------------------------------------------------------
@@ -196,6 +234,18 @@ vscf_oid_from_alg_id(vscf_alg_id_t alg_id) {
 
     case vscf_alg_id_PKCS5_PBES2:
         return oid_pkcs5_pbes2;
+
+    case vscf_alg_id_COMPOUND_KEY:
+        return oid_compound_key;
+
+    case vscf_alg_id_FALCON:
+        return oid_falcon;
+
+    case vscf_alg_id_ROUND5:
+        return oid_round5;
+
+    case vscf_alg_id_ROUND5_CCA_ND_5PKE_5D:
+        return oid_round5_cca_nd_5pke_5d;
 
     default:
         VSCF_ASSERT(0 && "Unhandled algorithm identifier");
@@ -291,6 +341,22 @@ vscf_oid_to_alg_id(vsc_data_t oid) {
         return vscf_alg_id_HKDF;
     }
 
+    if (vscf_oid_equal(oid, oid_compound_key)) {
+        return vscf_alg_id_COMPOUND_KEY;
+    }
+
+    if (vscf_oid_equal(oid, oid_falcon)) {
+        return vscf_alg_id_FALCON;
+    }
+
+    if (vscf_oid_equal(oid, oid_round5)) {
+        return vscf_alg_id_ROUND5;
+    }
+
+    if (vscf_oid_equal(oid, oid_round5_cca_nd_5pke_5d)) {
+        return vscf_alg_id_ROUND5_CCA_ND_5PKE_5D;
+    }
+
     return vscf_alg_id_NONE;
 }
 
@@ -373,6 +439,18 @@ vscf_oid_from_id(vscf_oid_id_t oid_id) {
 
     case vscf_oid_id_EC_DOMAIN_SECP256R1:
         return oid_ec_domain_secp256r1;
+
+    case vscf_oid_id_COMPOUND_KEY:
+        return oid_compound_key;
+
+    case vscf_oid_id_FALCON:
+        return oid_falcon;
+
+    case vscf_oid_id_ROUND5:
+        return oid_round5;
+
+    case vscf_oid_id_ROUND5_CCA_ND_5PKE_5D:
+        return oid_round5_cca_nd_5pke_5d;
 
     default:
         VSCF_ASSERT(0 && "Unhandled oid identifier");
@@ -484,6 +562,22 @@ vscf_oid_to_id(vsc_data_t oid) {
         return vscf_oid_id_EC_DOMAIN_SECP256R1;
     }
 
+    if (vscf_oid_equal(oid, oid_compound_key)) {
+        return vscf_oid_id_COMPOUND_KEY;
+    }
+
+    if (vscf_oid_equal(oid, oid_falcon)) {
+        return vscf_oid_id_FALCON;
+    }
+
+    if (vscf_oid_equal(oid, oid_round5)) {
+        return vscf_oid_id_ROUND5;
+    }
+
+    if (vscf_oid_equal(oid, oid_round5_cca_nd_5pke_5d)) {
+        return vscf_oid_id_ROUND5_CCA_ND_5PKE_5D;
+    }
+
     return vscf_oid_id_NONE;
 }
 
@@ -548,6 +642,19 @@ vscf_oid_id_to_alg_id(vscf_oid_id_t oid_id) {
 
     case vscf_oid_id_EC_DOMAIN_SECP256R1:
         return vscf_alg_id_SECP256R1;
+
+    case vscf_oid_id_COMPOUND_KEY:
+        return vscf_alg_id_COMPOUND_KEY;
+
+    case vscf_oid_id_FALCON:
+        return vscf_alg_id_FALCON;
+
+    case vscf_oid_id_ROUND5:
+        return vscf_alg_id_ROUND5;
+
+    case vscf_oid_id_ROUND5_CCA_ND_5PKE_5D:
+        return vscf_alg_id_ROUND5_CCA_ND_5PKE_5D;
+
 
     case vscf_oid_id_EC_GENERIC_KEY:
     case vscf_oid_id_CMS_ENVELOPED_DATA:

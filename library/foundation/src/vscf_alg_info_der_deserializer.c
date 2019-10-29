@@ -62,6 +62,7 @@
 #include "vscf_salted_kdf_alg_info.h"
 #include "vscf_pbe_alg_info.h"
 #include "vscf_ecc_alg_info.h"
+#include "vscf_compound_key_alg_info.h"
 #include "vscf_alg_info.h"
 #include "vscf_asn1_reader.h"
 #include "vscf_alg_info_der_deserializer_defs.h"
@@ -139,6 +140,27 @@ vscf_alg_info_der_deserializer_deserialize_pbes2_alg_info(vscf_alg_info_der_dese
 static vscf_impl_t *
 vscf_alg_info_der_deserializer_deserialize_ecc_alg_info(vscf_alg_info_der_deserializer_t *self, vscf_oid_id_t oid_id,
         vscf_error_t *error);
+
+//
+//  Parse ASN.1 structure "AlgorithmIdentifier" with
+//  "CompoundKeyParams" parameters.
+//
+//  AlgorithmIdentifier ::= SEQUENCE {
+//      algorithm OBJECT IDENTIFIER,
+//      parameters ANY DEFINED BY algorithm OPTIONAL
+//  }
+//
+//  algorithm ::= { id-CompoundKey }
+//  id-CompoundKey ::= { 1 3 6 1 4 1 60000 1 1 }
+//
+//  CompoundKeyParams ::= SEQUENCE {
+//      cipherAlgorithm AlgorithmIdentifier
+//      signerAlgorithm AlgorithmIdentifier
+//  }
+//
+static vscf_impl_t *
+vscf_alg_info_der_deserializer_deserialize_compound_key_alg_info(vscf_alg_info_der_deserializer_t *self,
+        vscf_oid_id_t oid_id, vscf_error_t *error);
 
 
 // --------------------------------------------------------------------------
@@ -535,6 +557,50 @@ vscf_alg_info_der_deserializer_deserialize_ecc_alg_info(
 }
 
 //
+//  Parse ASN.1 structure "AlgorithmIdentifier" with
+//  "CompoundKeyParams" parameters.
+//
+//  AlgorithmIdentifier ::= SEQUENCE {
+//      algorithm OBJECT IDENTIFIER,
+//      parameters ANY DEFINED BY algorithm OPTIONAL
+//  }
+//
+//  algorithm ::= { id-CompoundKey }
+//  id-CompoundKey ::= { 1 3 6 1 4 1 60000 1 1 }
+//
+//  CompoundKeyParams ::= SEQUENCE {
+//      cipherAlgorithm AlgorithmIdentifier
+//      signerAlgorithm AlgorithmIdentifier
+//  }
+//
+static vscf_impl_t *
+vscf_alg_info_der_deserializer_deserialize_compound_key_alg_info(
+        vscf_alg_info_der_deserializer_t *self, vscf_oid_id_t oid_id, vscf_error_t *error) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(self->asn1_reader);
+    VSCF_ASSERT(oid_id == vscf_oid_id_COMPOUND_KEY);
+
+    //
+    //  Read parameters.
+    //
+    vscf_asn1_reader_read_sequence(self->asn1_reader);
+    vscf_impl_t *cipher_alg_info = vscf_alg_info_der_deserializer_deserialize_inplace(self, error);
+    vscf_impl_t *signer_alg_info = vscf_alg_info_der_deserializer_deserialize_inplace(self, error);
+
+    if (vscf_asn1_reader_has_error(self->asn1_reader)) {
+        vscf_impl_destroy(&cipher_alg_info);
+        vscf_impl_destroy(&signer_alg_info);
+        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_BAD_COMPOUND_PUBLIC_KEY);
+        return NULL;
+    }
+
+    vscf_compound_key_alg_info_t *alg_info = vscf_compound_key_alg_info_new_with_infos_disown(
+            vscf_alg_id_COMPOUND_KEY, &cipher_alg_info, &signer_alg_info);
+    return vscf_compound_key_alg_info_impl(alg_info);
+}
+
+//
 //  Deserialize by using internal ASN.1 reader.
 //  Note, that caller code is responsible to reset ASN.1 reader with
 //  an input buffer.
@@ -578,6 +644,9 @@ vscf_alg_info_der_deserializer_deserialize_inplace(vscf_alg_info_der_deserialize
     case vscf_oid_id_RSA:
     case vscf_oid_id_ED25519:
     case vscf_oid_id_CURVE25519:
+    case vscf_oid_id_FALCON:
+    case vscf_oid_id_ROUND5:
+    case vscf_oid_id_ROUND5_CCA_ND_5PKE_5D:
         return vscf_alg_info_der_deserializer_deserialize_simple_alg_info(self, oid_id, error);
 
     case vscf_oid_id_EC_GENERIC_KEY:
@@ -607,6 +676,9 @@ vscf_alg_info_der_deserializer_deserialize_inplace(vscf_alg_info_der_deserialize
 
     case vscf_oid_id_PKCS5_PBES2:
         return vscf_alg_info_der_deserializer_deserialize_pbes2_alg_info(self, oid_id, error);
+
+    case vscf_oid_id_COMPOUND_KEY:
+        return vscf_alg_info_der_deserializer_deserialize_compound_key_alg_info(self, oid_id, error);
 
     case vscf_oid_id_CMS_DATA:
     case vscf_oid_id_CMS_ENVELOPED_DATA:

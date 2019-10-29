@@ -57,15 +57,15 @@ public class CompoundKeyAlgInfo implements AutoCloseable, AlgInfo {
     /*
     * Return information about encrypt/decrypt algorithm.
     */
-    public AlgInfo encAlgInfo() {
-        return FoundationJNI.INSTANCE.compoundKeyAlgInfo_encAlgInfo(this.cCtx);
+    public AlgInfo cipherAlgInfo() {
+        return FoundationJNI.INSTANCE.compoundKeyAlgInfo_cipherAlgInfo(this.cCtx);
     }
 
     /*
     * Return information about sign/verify algorithm.
     */
-    public AlgInfo signAlgInfo() {
-        return FoundationJNI.INSTANCE.compoundKeyAlgInfo_signAlgInfo(this.cCtx);
+    public AlgInfo signerAlgInfo() {
+        return FoundationJNI.INSTANCE.compoundKeyAlgInfo_signerAlgInfo(this.cCtx);
     }
 
     /*

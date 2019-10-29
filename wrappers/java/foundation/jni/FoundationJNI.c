@@ -11858,21 +11858,21 @@ JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_Foundatio
     return ret;
 }
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_compoundKeyAlgInfo_1encAlgInfo (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_compoundKeyAlgInfo_1cipherAlgInfo (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
     // Cast class context
     vscf_compound_key_alg_info_t /*9*/* compound_key_alg_info_ctx = *(vscf_compound_key_alg_info_t /*9*/**) &c_ctx;
 
-    const vscf_impl_t */*6*/ proxyResult = vscf_compound_key_alg_info_enc_alg_info(compound_key_alg_info_ctx /*a1*/);
+    const vscf_impl_t */*6*/ proxyResult = vscf_compound_key_alg_info_cipher_alg_info(compound_key_alg_info_ctx /*a1*/);
     vscf_impl_shallow_copy((vscf_impl_t */*6*/) proxyResult);
     jobject ret = wrapAlgInfo(jenv, jobj, proxyResult);
     return ret;
 }
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_compoundKeyAlgInfo_1signAlgInfo (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_compoundKeyAlgInfo_1signerAlgInfo (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
     // Cast class context
     vscf_compound_key_alg_info_t /*9*/* compound_key_alg_info_ctx = *(vscf_compound_key_alg_info_t /*9*/**) &c_ctx;
 
-    const vscf_impl_t */*6*/ proxyResult = vscf_compound_key_alg_info_sign_alg_info(compound_key_alg_info_ctx /*a1*/);
+    const vscf_impl_t */*6*/ proxyResult = vscf_compound_key_alg_info_signer_alg_info(compound_key_alg_info_ctx /*a1*/);
     vscf_impl_shallow_copy((vscf_impl_t */*6*/) proxyResult);
     jobject ret = wrapAlgInfo(jenv, jobj, proxyResult);
     return ret;

@@ -144,7 +144,7 @@ vscf_compound_key_alg_info_shallow_copy(vscf_compound_key_alg_info_t *self);
 //
 VSCF_PRIVATE void
 vscf_compound_key_alg_info_init_with_infos(vscf_compound_key_alg_info_t *self, vscf_alg_id_t alg_id,
-        const vscf_impl_t *enc_alg_info, const vscf_impl_t *sign_alg_info);
+        const vscf_impl_t *cipher_alg_info, const vscf_impl_t *signer_alg_info);
 
 //
 //  Allocate implementation context and perform it's initialization.
@@ -153,8 +153,8 @@ vscf_compound_key_alg_info_init_with_infos(vscf_compound_key_alg_info_t *self, v
 //  Note, keys ownership is preserved.
 //
 VSCF_PRIVATE vscf_compound_key_alg_info_t *
-vscf_compound_key_alg_info_new_with_infos(vscf_alg_id_t alg_id, const vscf_impl_t *enc_alg_info,
-        const vscf_impl_t *sign_alg_info);
+vscf_compound_key_alg_info_new_with_infos(vscf_alg_id_t alg_id, const vscf_impl_t *cipher_alg_info,
+        const vscf_impl_t *signer_alg_info);
 
 //
 //  Perform initialization of pre-allocated context.
@@ -164,7 +164,7 @@ vscf_compound_key_alg_info_new_with_infos(vscf_alg_id_t alg_id, const vscf_impl_
 //
 VSCF_PRIVATE void
 vscf_compound_key_alg_info_init_with_infos_disown(vscf_compound_key_alg_info_t *self, vscf_alg_id_t alg_id,
-        vscf_impl_t **enc_alg_info_ref, vscf_impl_t **sign_alg_info_ref);
+        vscf_impl_t **cipher_alg_info_ref, vscf_impl_t **signer_alg_info_ref);
 
 //
 //  Allocate implementation context and perform it's initialization.
@@ -173,20 +173,20 @@ vscf_compound_key_alg_info_init_with_infos_disown(vscf_compound_key_alg_info_t *
 //  Note, keys ownership is transferred.
 //
 VSCF_PRIVATE vscf_compound_key_alg_info_t *
-vscf_compound_key_alg_info_new_with_infos_disown(vscf_alg_id_t alg_id, vscf_impl_t **enc_alg_info_ref,
-        vscf_impl_t **sign_alg_info_ref);
+vscf_compound_key_alg_info_new_with_infos_disown(vscf_alg_id_t alg_id, vscf_impl_t **cipher_alg_info_ref,
+        vscf_impl_t **signer_alg_info_ref);
 
 //
 //  Return information about encrypt/decrypt algorithm.
 //
 VSCF_PUBLIC const vscf_impl_t *
-vscf_compound_key_alg_info_enc_alg_info(const vscf_compound_key_alg_info_t *self);
+vscf_compound_key_alg_info_cipher_alg_info(const vscf_compound_key_alg_info_t *self);
 
 //
 //  Return information about sign/verify algorithm.
 //
 VSCF_PUBLIC const vscf_impl_t *
-vscf_compound_key_alg_info_sign_alg_info(const vscf_compound_key_alg_info_t *self);
+vscf_compound_key_alg_info_signer_alg_info(const vscf_compound_key_alg_info_t *self);
 
 //
 //  Provide algorithm identificator.

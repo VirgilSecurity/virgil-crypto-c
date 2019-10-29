@@ -95,8 +95,8 @@ vscf_compound_key_alg_info_cleanup_ctx(vscf_compound_key_alg_info_t *self) {
 
     VSCF_ASSERT_PTR(self);
 
-    vscf_impl_destroy(&self->enc_alg_info);
-    vscf_impl_destroy(&self->sign_alg_info);
+    vscf_impl_destroy(&self->cipher_alg_info);
+    vscf_impl_destroy(&self->signer_alg_info);
 }
 
 //
@@ -106,16 +106,16 @@ vscf_compound_key_alg_info_cleanup_ctx(vscf_compound_key_alg_info_t *self) {
 //
 VSCF_PUBLIC void
 vscf_compound_key_alg_info_init_ctx_with_infos(vscf_compound_key_alg_info_t *self, vscf_alg_id_t alg_id,
-        const vscf_impl_t *enc_alg_info, const vscf_impl_t *sign_alg_info) {
+        const vscf_impl_t *cipher_alg_info, const vscf_impl_t *signer_alg_info) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT(alg_id != vscf_alg_id_NONE);
-    VSCF_ASSERT_PTR(enc_alg_info);
-    VSCF_ASSERT_PTR(sign_alg_info);
+    VSCF_ASSERT_PTR(cipher_alg_info);
+    VSCF_ASSERT_PTR(signer_alg_info);
 
     self->alg_id = alg_id;
-    self->enc_alg_info = vscf_impl_shallow_copy((vscf_impl_t *)enc_alg_info);
-    self->sign_alg_info = vscf_impl_shallow_copy((vscf_impl_t *)sign_alg_info);
+    self->cipher_alg_info = vscf_impl_shallow_copy((vscf_impl_t *)cipher_alg_info);
+    self->signer_alg_info = vscf_impl_shallow_copy((vscf_impl_t *)signer_alg_info);
 }
 
 //
@@ -125,46 +125,46 @@ vscf_compound_key_alg_info_init_ctx_with_infos(vscf_compound_key_alg_info_t *sel
 //
 VSCF_PUBLIC void
 vscf_compound_key_alg_info_init_ctx_with_infos_disown(vscf_compound_key_alg_info_t *self, vscf_alg_id_t alg_id,
-        vscf_impl_t **enc_alg_info_ref, vscf_impl_t **sign_alg_info_ref) {
+        vscf_impl_t **cipher_alg_info_ref, vscf_impl_t **signer_alg_info_ref) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT(alg_id != vscf_alg_id_NONE);
-    VSCF_ASSERT_PTR(enc_alg_info_ref);
-    VSCF_ASSERT_PTR(*enc_alg_info_ref);
-    VSCF_ASSERT_PTR(sign_alg_info_ref);
-    VSCF_ASSERT_PTR(*sign_alg_info_ref);
+    VSCF_ASSERT_PTR(cipher_alg_info_ref);
+    VSCF_ASSERT_PTR(*cipher_alg_info_ref);
+    VSCF_ASSERT_PTR(signer_alg_info_ref);
+    VSCF_ASSERT_PTR(*signer_alg_info_ref);
 
     self->alg_id = alg_id;
 
-    self->enc_alg_info = *enc_alg_info_ref;
-    self->sign_alg_info = *sign_alg_info_ref;
+    self->cipher_alg_info = *cipher_alg_info_ref;
+    self->signer_alg_info = *signer_alg_info_ref;
 
-    *enc_alg_info_ref = NULL;
-    *sign_alg_info_ref = NULL;
+    *cipher_alg_info_ref = NULL;
+    *signer_alg_info_ref = NULL;
 }
 
 //
 //  Return information about encrypt/decrypt algorithm.
 //
 VSCF_PUBLIC const vscf_impl_t *
-vscf_compound_key_alg_info_enc_alg_info(const vscf_compound_key_alg_info_t *self) {
+vscf_compound_key_alg_info_cipher_alg_info(const vscf_compound_key_alg_info_t *self) {
 
     VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(self->enc_alg_info);
+    VSCF_ASSERT_PTR(self->cipher_alg_info);
 
-    return self->enc_alg_info;
+    return self->cipher_alg_info;
 }
 
 //
 //  Return information about sign/verify algorithm.
 //
 VSCF_PUBLIC const vscf_impl_t *
-vscf_compound_key_alg_info_sign_alg_info(const vscf_compound_key_alg_info_t *self) {
+vscf_compound_key_alg_info_signer_alg_info(const vscf_compound_key_alg_info_t *self) {
 
     VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(self->sign_alg_info);
+    VSCF_ASSERT_PTR(self->signer_alg_info);
 
-    return self->sign_alg_info;
+    return self->signer_alg_info;
 }
 
 //

@@ -246,16 +246,8 @@ vscf_pkcs8_serializer_serialize_private_key_inplace(
     //
     //  Write algorithm
     //
-    size_t algorithm_count = 0;
-
-    vscf_alg_id_t private_key_alg_id = vscf_raw_private_key_alg_id(private_key);
-    if (vscf_alg_id_RSA == private_key_alg_id) {
-        algorithm_count += vscf_asn1_writer_write_null(self->asn1_writer);
-    }
-
-    algorithm_count += vscf_asn1_writer_write_oid(self->asn1_writer, vscf_oid_from_alg_id(private_key_alg_id));
-    algorithm_count += vscf_asn1_writer_write_sequence(self->asn1_writer, algorithm_count);
-    len += algorithm_count;
+    const vscf_impl_t *alg_info = vscf_raw_private_key_alg_info(private_key);
+    len += vscf_alg_info_der_serializer_serialize_inplace(self->alg_info_der_serializer, alg_info);
 
     //
     //  Write version
@@ -282,18 +274,19 @@ vscf_pkcs8_serializer_serialize_private_key_inplace(
 //
 VSCF_PUBLIC size_t
 vscf_pkcs8_serializer_serialized_public_key_len(
-        vscf_pkcs8_serializer_t *self, const vscf_raw_public_key_t *public_key) {
+        const vscf_pkcs8_serializer_t *self, const vscf_raw_public_key_t *public_key) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(public_key);
     VSCF_ASSERT(vscf_raw_public_key_is_valid(public_key));
 
-    size_t wrappedKeyLen = vscf_raw_public_key_data(public_key).len;
-    size_t len = 1 + 4 +                //  SubjectPublicKeyInfo ::= SEQUENCE {
-                 1 + 1 + 32 +           //          algorithm AlgorithmIdentifier,
-                 1 + 4 + wrappedKeyLen; //          subjectPublicKey BIT STRING
-                                        //  }
-
+    const vscf_impl_t *alg_info = vscf_raw_public_key_alg_info(public_key);
+    const size_t alg_info_len = vscf_alg_info_der_serializer_serialized_len(self->alg_info_der_serializer, alg_info);
+    const size_t wrapped_key_len = vscf_raw_public_key_data(public_key).len;
+    const size_t len = 1 + 8 +                  //  SubjectPublicKeyInfo ::= SEQUENCE {
+                       1 + 2 + alg_info_len +   //          algorithm AlgorithmIdentifier,
+                       1 + 8 + wrapped_key_len; //          subjectPublicKey BIT STRING
+                                                //  }
     return len;
 }
 
@@ -337,21 +330,21 @@ vscf_pkcs8_serializer_serialize_public_key(
 //
 VSCF_PUBLIC size_t
 vscf_pkcs8_serializer_serialized_private_key_len(
-        vscf_pkcs8_serializer_t *self, const vscf_raw_private_key_t *private_key) {
+        const vscf_pkcs8_serializer_t *self, const vscf_raw_private_key_t *private_key) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(private_key);
     VSCF_ASSERT(vscf_raw_private_key_is_valid(private_key));
 
-
-    size_t wrappedKeyLen = vscf_raw_private_key_data(private_key).len;
-    size_t len = 1 + 4 +                 //  PrivateKeyInfo ::= SEQUENCE {
-                 1 + 1 + 1 +             //          version Version,
-                 1 + 1 + 32 +            //          privateKeyAlgorithm PrivateKeyAlgorithmIdentifier,
-                 1 + 5 + wrappedKeyLen + //          privateKey PrivateKey,
-                 0;                      //          attributes [0] IMPLICIT Attributes OPTIONAL
-                                         //  }
-
+    const vscf_impl_t *alg_info = vscf_raw_private_key_alg_info(private_key);
+    const size_t alg_info_len = vscf_alg_info_der_serializer_serialized_len(self->alg_info_der_serializer, alg_info);
+    const size_t wrapped_key_len = vscf_raw_private_key_data(private_key).len;
+    const size_t len = 1 + 8 +                   //  PrivateKeyInfo ::= SEQUENCE {
+                       1 + 1 + 1 +               //          version Version,
+                       1 + 2 + alg_info_len +    //          privateKeyAlgorithm PrivateKeyAlgorithmIdentifier,
+                       1 + 8 + wrapped_key_len + //          privateKey PrivateKey,
+                       0;                        //          attributes [0] IMPLICIT Attributes OPTIONAL
+                                                 //  }
     return len;
 }
 

@@ -68,15 +68,15 @@ import VSCFoundation
     }
 
     /// Return information about encrypt/decrypt algorithm.
-    @objc public func encAlgInfo() -> AlgInfo {
-        let proxyResult = vscf_compound_key_alg_info_enc_alg_info(self.c_ctx)
+    @objc public func cipherAlgInfo() -> AlgInfo {
+        let proxyResult = vscf_compound_key_alg_info_cipher_alg_info(self.c_ctx)
 
         return FoundationImplementation.wrapAlgInfo(take: proxyResult!)
     }
 
     /// Return information about sign/verify algorithm.
-    @objc public func signAlgInfo() -> AlgInfo {
-        let proxyResult = vscf_compound_key_alg_info_sign_alg_info(self.c_ctx)
+    @objc public func signerAlgInfo() -> AlgInfo {
+        let proxyResult = vscf_compound_key_alg_info_signer_alg_info(self.c_ctx)
 
         return FoundationImplementation.wrapAlgInfo(take: proxyResult!)
     }

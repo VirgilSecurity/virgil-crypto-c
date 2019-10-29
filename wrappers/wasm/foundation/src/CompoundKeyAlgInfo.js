@@ -102,11 +102,11 @@ const initCompoundKeyAlgInfo = (Module, modules) => {
         /**
          * Return information about encrypt/decrypt algorithm.
          */
-        encAlgInfo() {
+        cipherAlgInfo() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
             let proxyResult;
-            proxyResult = Module._vscf_compound_key_alg_info_enc_alg_info(this.ctxPtr);
+            proxyResult = Module._vscf_compound_key_alg_info_cipher_alg_info(this.ctxPtr);
 
             const jsResult = modules.FoundationInterface.newAndUseCContext(proxyResult);
             return jsResult;
@@ -115,11 +115,11 @@ const initCompoundKeyAlgInfo = (Module, modules) => {
         /**
          * Return information about sign/verify algorithm.
          */
-        signAlgInfo() {
+        signerAlgInfo() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
             let proxyResult;
-            proxyResult = Module._vscf_compound_key_alg_info_sign_alg_info(this.ctxPtr);
+            proxyResult = Module._vscf_compound_key_alg_info_signer_alg_info(this.ctxPtr);
 
             const jsResult = modules.FoundationInterface.newAndUseCContext(proxyResult);
             return jsResult;

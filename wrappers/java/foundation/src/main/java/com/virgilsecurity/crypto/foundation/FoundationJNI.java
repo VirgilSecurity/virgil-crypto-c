@@ -2671,7 +2671,7 @@ public class FoundationJNI {
     */
     public native PublicKey rawPrivateKey_extractPublicKey(long cCtx);
 
-    public native void pkcs8Serializer_setAsn1Writer(long cCtx, Asn1Writer asn1Writer);
+    public native void pkcs8Serializer_setAsn1Writer(long cCtx, Asn1Writer asn1Writer) throws FoundationException;
 
     /*
     * Setup predefined values to the uninitialized class dependencies.
@@ -3354,12 +3354,12 @@ public class FoundationJNI {
     /*
     * Return information about encrypt/decrypt algorithm.
     */
-    public native AlgInfo compoundKeyAlgInfo_encAlgInfo(long cCtx);
+    public native AlgInfo compoundKeyAlgInfo_cipherAlgInfo(long cCtx);
 
     /*
     * Return information about sign/verify algorithm.
     */
-    public native AlgInfo compoundKeyAlgInfo_signAlgInfo(long cCtx);
+    public native AlgInfo compoundKeyAlgInfo_signerAlgInfo(long cCtx);
 
     public native long compoundKeyAlgInfo_new();
 

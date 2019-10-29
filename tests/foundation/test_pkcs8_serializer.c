@@ -46,10 +46,12 @@
 #include "vscf_asn1wr.h"
 #include "vscf_pkcs8_serializer.h"
 #include "vscf_simple_alg_info.h"
+#include "vscf_compound_key_alg_info.h"
 
 #include "test_data_rsa.h"
 #include "test_data_ed25519.h"
 #include "test_data_curve25519.h"
+#include "test_data_compound_key.h"
 
 
 // --------------------------------------------------------------------------
@@ -274,6 +276,131 @@ test__serialize_private_key__curve25519__equals_to_curve25519_private_key_pkcs8_
 }
 
 
+// --------------------------------------------------------------------------
+// PKCS#8 Compound Keys.
+// --------------------------------------------------------------------------
+void
+test__serialize_public_key__compound_curve25519_ed25519__equals_der(void) {
+    vscf_pkcs8_serializer_t *pkcs8 = vscf_pkcs8_serializer_new();
+    vscf_pkcs8_serializer_setup_defaults(pkcs8);
+
+    vscf_impl_t *curve_25519_alg_info =
+            vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_CURVE25519));
+
+    vscf_impl_t *ed25519_alg_info =
+            vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_ED25519));
+
+    vscf_impl_t *alg_info = vscf_compound_key_alg_info_impl(vscf_compound_key_alg_info_new_with_infos_disown(
+            vscf_alg_id_COMPOUND_KEY, &curve_25519_alg_info, &ed25519_alg_info));
+
+    vscf_raw_public_key_t *raw_public_key =
+            vscf_raw_public_key_new_with_data(test_data_compound_key_CURVE25519_ED25519_PUBLIC_KEY, &alg_info);
+
+    size_t len = vscf_pkcs8_serializer_serialized_public_key_len(pkcs8, raw_public_key);
+    vsc_buffer_t *out = vsc_buffer_new_with_capacity(len);
+    vscf_status_t status = vscf_pkcs8_serializer_serialize_public_key(pkcs8, raw_public_key, out);
+
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, status);
+    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_data_compound_key_CURVE25519_ED25519_PUBLIC_KEY_PKCS8_DER, out);
+
+    vsc_buffer_destroy(&out);
+    vscf_raw_public_key_destroy(&raw_public_key);
+    vscf_pkcs8_serializer_destroy(&pkcs8);
+}
+
+void
+test__serialize_private_key__compound_curve25519_ed25519__equals_der(void) {
+    vscf_pkcs8_serializer_t *pkcs8 = vscf_pkcs8_serializer_new();
+    vscf_pkcs8_serializer_setup_defaults(pkcs8);
+
+    vscf_impl_t *curve_25519_alg_info =
+            vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_CURVE25519));
+
+    vscf_impl_t *ed25519_alg_info =
+            vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_ED25519));
+
+    vscf_impl_t *alg_info = vscf_compound_key_alg_info_impl(vscf_compound_key_alg_info_new_with_infos_disown(
+            vscf_alg_id_COMPOUND_KEY, &curve_25519_alg_info, &ed25519_alg_info));
+
+    vscf_raw_private_key_t *raw_private_key =
+            vscf_raw_private_key_new_with_data(test_data_compound_key_CURVE25519_ED25519_PRIVATE_KEY, &alg_info);
+
+    size_t len = vscf_pkcs8_serializer_serialized_private_key_len(pkcs8, raw_private_key);
+    vsc_buffer_t *out = vsc_buffer_new_with_capacity(len);
+    vscf_status_t status = vscf_pkcs8_serializer_serialize_private_key(pkcs8, raw_private_key, out);
+
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, status);
+    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_data_compound_key_CURVE25519_ED25519_PRIVATE_KEY_PKCS8_DER, out);
+
+    vsc_buffer_destroy(&out);
+    vscf_raw_private_key_destroy(&raw_private_key);
+    vscf_pkcs8_serializer_destroy(&pkcs8);
+}
+
+void
+test__serialize_public_key__compound_round5_falcon__equals_der(void) {
+#if VSCF_POST_QUANTUM
+    vscf_pkcs8_serializer_t *pkcs8 = vscf_pkcs8_serializer_new();
+    vscf_pkcs8_serializer_setup_defaults(pkcs8);
+
+    vscf_impl_t *curve_25519_alg_info =
+            vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_ROUND5_CCA_ND_5PKE_5D));
+
+    vscf_impl_t *ed25519_alg_info = vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_FALCON));
+
+    vscf_impl_t *alg_info = vscf_compound_key_alg_info_impl(vscf_compound_key_alg_info_new_with_infos_disown(
+            vscf_alg_id_COMPOUND_KEY, &curve_25519_alg_info, &ed25519_alg_info));
+
+    vscf_raw_public_key_t *raw_public_key =
+            vscf_raw_public_key_new_with_data(test_data_compound_key_ROUND5_FALCON_PUBLIC_KEY, &alg_info);
+
+    size_t len = vscf_pkcs8_serializer_serialized_public_key_len(pkcs8, raw_public_key);
+    vsc_buffer_t *out = vsc_buffer_new_with_capacity(len);
+    vscf_status_t status = vscf_pkcs8_serializer_serialize_public_key(pkcs8, raw_public_key, out);
+
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, status);
+    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_data_compound_key_ROUND5_FALCON_PUBLIC_KEY_PKCS8_DER, out);
+
+    vsc_buffer_destroy(&out);
+    vscf_raw_public_key_destroy(&raw_public_key);
+    vscf_pkcs8_serializer_destroy(&pkcs8);
+#else
+    TEST_IGNORE_MESSAGE("Feature VSCF_POST_QUANTUM is disabled");
+#endif
+}
+
+void
+test__serialize_private_key__compound_round5_falcon__equals_der(void) {
+#if VSCF_POST_QUANTUM
+    vscf_pkcs8_serializer_t *pkcs8 = vscf_pkcs8_serializer_new();
+    vscf_pkcs8_serializer_setup_defaults(pkcs8);
+
+    vscf_impl_t *curve_25519_alg_info =
+            vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_ROUND5_CCA_ND_5PKE_5D));
+
+    vscf_impl_t *ed25519_alg_info = vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_FALCON));
+
+    vscf_impl_t *alg_info = vscf_compound_key_alg_info_impl(vscf_compound_key_alg_info_new_with_infos_disown(
+            vscf_alg_id_COMPOUND_KEY, &curve_25519_alg_info, &ed25519_alg_info));
+
+    vscf_raw_private_key_t *raw_private_key =
+            vscf_raw_private_key_new_with_data(test_data_compound_key_ROUND5_FALCON_PRIVATE_KEY, &alg_info);
+
+    size_t len = vscf_pkcs8_serializer_serialized_private_key_len(pkcs8, raw_private_key);
+    vsc_buffer_t *out = vsc_buffer_new_with_capacity(len);
+    vscf_status_t status = vscf_pkcs8_serializer_serialize_private_key(pkcs8, raw_private_key, out);
+
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, status);
+    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_data_compound_key_ROUND5_FALCON_PRIVATE_KEY_PKCS8_DER, out);
+
+    vsc_buffer_destroy(&out);
+    vscf_raw_private_key_destroy(&raw_private_key);
+    vscf_pkcs8_serializer_destroy(&pkcs8);
+#else
+    TEST_IGNORE_MESSAGE("Feature VSCF_POST_QUANTUM is disabled");
+#endif
+}
+
 #endif // TEST_DEPENDENCIES_AVAILABLE
 
 
@@ -299,6 +426,11 @@ main(void) {
     RUN_TEST(test__serialize_public_key__curve25519__equals_to_curve25519_public_key_pkcs8_der);
     RUN_TEST(test__serialized_private_key_len__curve25519__greater_then_48);
     RUN_TEST(test__serialize_private_key__curve25519__equals_to_curve25519_private_key_pkcs8_der);
+
+    RUN_TEST(test__serialize_public_key__compound_curve25519_ed25519__equals_der);
+    RUN_TEST(test__serialize_private_key__compound_curve25519_ed25519__equals_der);
+    RUN_TEST(test__serialize_public_key__compound_round5_falcon__equals_der);
+    RUN_TEST(test__serialize_private_key__compound_round5_falcon__equals_der);
 #else
     RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
 #endif

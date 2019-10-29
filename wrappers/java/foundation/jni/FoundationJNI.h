@@ -1407,9 +1407,9 @@ JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_r
 
 JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_round5_1decrypt (JNIEnv *, jobject, jlong, jobject, jbyteArray);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_compoundKeyAlgInfo_1encAlgInfo (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_compoundKeyAlgInfo_1cipherAlgInfo (JNIEnv *, jobject, jlong);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_compoundKeyAlgInfo_1signAlgInfo (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_compoundKeyAlgInfo_1signerAlgInfo (JNIEnv *, jobject, jlong);
 
 JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_compoundKeyAlgInfo_1new__ (JNIEnv *, jobject);
 

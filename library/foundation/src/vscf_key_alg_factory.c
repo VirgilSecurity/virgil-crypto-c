@@ -155,7 +155,8 @@ vscf_key_alg_factory_create_from_alg_id(vscf_alg_id_t alg_id, const vscf_impl_t 
         return vscf_falcon_impl(falcon);
     }
 
-    case vscf_alg_id_ROUND5: {
+    case vscf_alg_id_ROUND5:
+    case vscf_alg_id_ROUND5_CCA_ND_5PKE_5D: {
         vscf_round5_t *round5 = vscf_round5_new();
         return vscf_round5_impl(round5);
     }

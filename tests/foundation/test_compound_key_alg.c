@@ -76,7 +76,7 @@ test__generate_key__curve25519_and_ed25519_with_fake_rng__success(void) {
 
     vscf_impl_t *private_key =
             vscf_compound_key_alg_generate_key(key_alg, vscf_alg_id_CURVE25519, vscf_alg_id_ED25519, &error);
-    TEST_ASSERT_FALSE(vscf_error_has_error(&error));
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
     TEST_ASSERT_NOT_NULL(private_key);
 
     //
@@ -132,7 +132,7 @@ test__generate_post_quantum_key__with_default_rng__success(void) {
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_compound_key_alg_setup_defaults(key_alg));
 
     vscf_impl_t *private_key = vscf_compound_key_alg_generate_post_quantum_key(key_alg, &error);
-    TEST_ASSERT_FALSE(vscf_error_has_error(&error));
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
     TEST_ASSERT_NOT_NULL(private_key);
 
     //
@@ -143,7 +143,7 @@ test__generate_post_quantum_key__with_default_rng__success(void) {
 
     const vscf_impl_t *decryption_key = vscf_compound_private_key_get_decryption_key(compound_private_key);
     TEST_ASSERT_NOT_NULL(decryption_key);
-    TEST_ASSERT_EQUAL(vscf_alg_id_ROUND5, vscf_key_alg_id(decryption_key));
+    TEST_ASSERT_EQUAL(vscf_alg_id_ROUND5_CCA_ND_5PKE_5D, vscf_key_alg_id(decryption_key));
 
     const vscf_impl_t *signing_key = vscf_compound_private_key_get_signing_key(compound_private_key);
     TEST_ASSERT_NOT_NULL(signing_key);
@@ -158,7 +158,7 @@ test__generate_post_quantum_key__with_default_rng__success(void) {
 
     const vscf_impl_t *encryption_key = vscf_compound_public_key_get_encryption_key(compound_public_key);
     TEST_ASSERT_NOT_NULL(encryption_key);
-    TEST_ASSERT_EQUAL(vscf_alg_id_ROUND5, vscf_key_alg_id(encryption_key));
+    TEST_ASSERT_EQUAL(vscf_alg_id_ROUND5_CCA_ND_5PKE_5D, vscf_key_alg_id(encryption_key));
 
     const vscf_impl_t *verifying_key = vscf_compound_public_key_get_verifying_key(compound_public_key);
     TEST_ASSERT_NOT_NULL(verifying_key);
@@ -193,7 +193,7 @@ inner_test__encrypt_decrypt__with_random_keys__message_match(vscf_alg_id_t ciphe
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_compound_key_alg_setup_defaults(key_alg));
 
     vscf_impl_t *private_key = vscf_compound_key_alg_generate_key(key_alg, cipher_alg_id, signer_alg_id, &error);
-    TEST_ASSERT_FALSE(vscf_error_has_error(&error));
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
     TEST_ASSERT_NOT_NULL(private_key);
 
     vscf_impl_t *public_key = vscf_private_key_extract_public_key(private_key);
@@ -239,7 +239,7 @@ test__encrypt_decrypt__with_random_curve25519_and_ed25519_keys__message_match(vo
 void
 test__encrypt_decrypt__with_random_round5_and_falcon_keys__message_match(void) {
 #if VSCF_POST_QUANTUM
-    inner_test__encrypt_decrypt__with_random_keys__message_match(vscf_alg_id_ROUND5, vscf_alg_id_FALCON);
+    inner_test__encrypt_decrypt__with_random_keys__message_match(vscf_alg_id_ROUND5_CCA_ND_5PKE_5D, vscf_alg_id_FALCON);
 #else
     TEST_IGNORE_MESSAGE("Feature VSCF_POST_QUANTUM is disabled");
 #endif
@@ -263,7 +263,7 @@ inner_test__sign_verify__with_random_keys__success(vscf_alg_id_t cipher_alg_id, 
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_compound_key_alg_setup_defaults(key_alg));
 
     vscf_impl_t *private_key = vscf_compound_key_alg_generate_key(key_alg, cipher_alg_id, signer_alg_id, &error);
-    TEST_ASSERT_FALSE(vscf_error_has_error(&error));
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
     TEST_ASSERT_NOT_NULL(private_key);
 
     vscf_impl_t *public_key = vscf_private_key_extract_public_key(private_key);
@@ -303,7 +303,7 @@ test__sign_verify__with_random_curve25519_and_ed25519_keys__success(void) {
 void
 test__sign_verify__with_random_round5_and_falcon_keys__success(void) {
 #if VSCF_POST_QUANTUM
-    inner_test__sign_verify__with_random_keys__success(vscf_alg_id_ROUND5, vscf_alg_id_FALCON);
+    inner_test__sign_verify__with_random_keys__success(vscf_alg_id_ROUND5_CCA_ND_5PKE_5D, vscf_alg_id_FALCON);
 #else
     TEST_IGNORE_MESSAGE("Feature VSCF_POST_QUANTUM is disabled");
 #endif
@@ -339,7 +339,7 @@ inner_test__import_public_key_then_export__should_match(
     //  Import key.
     //
     vscf_impl_t *public_key = vscf_compound_key_alg_import_public_key(key_alg, raw_public_key, &error);
-    TEST_ASSERT_FALSE(vscf_error_has_error(&error));
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
     TEST_ASSERT_NOT_NULL(public_key);
 
     //
@@ -347,7 +347,7 @@ inner_test__import_public_key_then_export__should_match(
     //
     vscf_raw_public_key_t *exported_raw_public_key =
             vscf_compound_key_alg_export_public_key(key_alg, public_key, &error);
-    TEST_ASSERT_FALSE(vscf_error_has_error(&error));
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
     TEST_ASSERT_NOT_NULL(exported_raw_public_key);
 
     //
@@ -391,7 +391,7 @@ inner_test__import_private_key_then_export__should_match(
     //  Import key.
     //
     vscf_impl_t *private_key = vscf_compound_key_alg_import_private_key(key_alg, raw_private_key, &error);
-    TEST_ASSERT_FALSE(vscf_error_has_error(&error));
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
     TEST_ASSERT_NOT_NULL(private_key);
 
     //
@@ -399,7 +399,7 @@ inner_test__import_private_key_then_export__should_match(
     //
     vscf_raw_private_key_t *exported_raw_private_key =
             vscf_compound_key_alg_export_private_key(key_alg, private_key, &error);
-    TEST_ASSERT_FALSE(vscf_error_has_error(&error));
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
     TEST_ASSERT_NOT_NULL(exported_raw_private_key);
 
     //
@@ -443,7 +443,7 @@ inner_test__import_private_key_then_export_public_key__should_match(vscf_alg_id_
     //  Import key.
     //
     vscf_impl_t *private_key = vscf_compound_key_alg_import_private_key(key_alg, raw_private_key, &error);
-    TEST_ASSERT_FALSE(vscf_error_has_error(&error));
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
     TEST_ASSERT_NOT_NULL(private_key);
 
     //
@@ -451,7 +451,7 @@ inner_test__import_private_key_then_export_public_key__should_match(vscf_alg_id_
     //
     vscf_impl_t *public_key = vscf_private_key_extract_public_key(private_key);
     vscf_raw_public_key_t *raw_public_key = vscf_compound_key_alg_export_public_key(key_alg, public_key, &error);
-    TEST_ASSERT_FALSE(vscf_error_has_error(&error));
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
     TEST_ASSERT_NOT_NULL(raw_public_key);
 
     //
@@ -536,7 +536,7 @@ void
 test__import_public_key_then_export__round5_falcon__should_match(void) {
 #if VSCF_POST_QUANTUM
     inner_test__import_public_key_then_export__should_match(
-            vscf_alg_id_ROUND5, vscf_alg_id_FALCON, test_data_compound_key_ROUND5_FALCON_PUBLIC_KEY);
+            vscf_alg_id_ROUND5_CCA_ND_5PKE_5D, vscf_alg_id_FALCON, test_data_compound_key_ROUND5_FALCON_PUBLIC_KEY);
 #else
     TEST_IGNORE_MESSAGE("Feature VSCF_POST_QUANTUM is disabled");
 #endif
@@ -546,7 +546,7 @@ void
 test__import_private_key_then_export__round5_falcon__should_match(void) {
 #if VSCF_POST_QUANTUM
     inner_test__import_private_key_then_export__should_match(
-            vscf_alg_id_ROUND5, vscf_alg_id_FALCON, test_data_compound_key_ROUND5_FALCON_PRIVATE_KEY);
+            vscf_alg_id_ROUND5_CCA_ND_5PKE_5D, vscf_alg_id_FALCON, test_data_compound_key_ROUND5_FALCON_PRIVATE_KEY);
 #else
     TEST_IGNORE_MESSAGE("Feature VSCF_POST_QUANTUM is disabled");
 #endif
@@ -555,8 +555,8 @@ test__import_private_key_then_export__round5_falcon__should_match(void) {
 void
 test__import_public_key__round5_falcon_with_wrong_signature__returns_error(void) {
 #if VSCF_POST_QUANTUM
-    inner_test__import_public_key__with_wrong_signature__should_fail(vscf_alg_id_ROUND5, vscf_alg_id_FALCON,
-            test_data_compound_key_ROUND5_FALCON_PUBLIC_KEY_WITH_WRONG_SIGNATURE);
+    inner_test__import_public_key__with_wrong_signature__should_fail(vscf_alg_id_ROUND5_CCA_ND_5PKE_5D,
+            vscf_alg_id_FALCON, test_data_compound_key_ROUND5_FALCON_PUBLIC_KEY_WITH_WRONG_SIGNATURE);
 #else
     TEST_IGNORE_MESSAGE("Feature VSCF_POST_QUANTUM is disabled");
 #endif

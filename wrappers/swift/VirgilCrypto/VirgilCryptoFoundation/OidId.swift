@@ -88,6 +88,14 @@ import VSCFoundation
 
     case ecDomainSecp256r1
 
+    case compoundKey
+
+    case falcon
+
+    case round5
+
+    case round5CcaNd5pke5d
+
     /// Create enumeration value from the correspond C enumeration value.
     internal init(fromC oidId: vscf_oid_id_t) {
         self.init(rawValue: Int(oidId.rawValue))!

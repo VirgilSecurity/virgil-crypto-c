@@ -7,8 +7,8 @@
         <interface name="alg info"/>
 
         <property name="alg id" enum="alg id"/>
-        <property name="enc alg info" interface="alg info"/>
-        <property name="sign alg info" interface="alg info"/>
+        <property name="cipher alg info" interface="alg info"/>
+        <property name="signer alg info" interface="alg info"/>
 
         <constructor name="with infos" visibility="private">
             Create compound algorithm information
@@ -16,8 +16,8 @@
             Note, keys ownership is preserved.
 
             <argument name="alg id" enum="alg id"/>
-            <argument name="enc alg info" interface="alg info"/>
-            <argument name="sign alg info" interface="alg info"/>
+            <argument name="cipher alg info" interface="alg info"/>
+            <argument name="signer alg info" interface="alg info"/>
         </constructor>
 
         <constructor name="with infos disown" visibility="private">
@@ -26,17 +26,17 @@
             Note, keys ownership is transferred.
 
             <argument name="alg id" enum="alg id"/>
-            <argument name="enc alg info" interface="alg info" access="disown"/>
-            <argument name="sign alg info" interface="alg info" access="disown"/>
+            <argument name="cipher alg info" interface="alg info" access="disown"/>
+            <argument name="signer alg info" interface="alg info" access="disown"/>
         </constructor>
 
-        <method name="enc alg info" is_const="1" declaration="public">
+        <method name="cipher alg info" is_const="1" declaration="public">
             Return information about encrypt/decrypt algorithm.
 
             <return interface="alg info"/>
         </method>
 
-        <method name="sign alg info" is_const="1" declaration="public">
+        <method name="signer alg info" is_const="1" declaration="public">
             Return information about sign/verify algorithm.
 
             <return interface="alg info"/>

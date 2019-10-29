@@ -79,6 +79,8 @@ import VSCFoundation
 
     case round5
 
+    case round5CcaNd5pke5d
+
     case compoundKey
 
     /// Create enumeration value from the correspond C enumeration value.

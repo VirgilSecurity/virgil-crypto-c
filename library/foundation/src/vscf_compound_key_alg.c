@@ -412,8 +412,8 @@ vscf_compound_key_alg_import_public_key(
     //  Prepare keys to be imported.
     //
     const vscf_compound_key_alg_info_t *compound_alg_info = (const vscf_compound_key_alg_info_t *)alg_info;
-    const vscf_impl_t *enc_alg_info = vscf_compound_key_alg_info_enc_alg_info(compound_alg_info);
-    const vscf_impl_t *sign_alg_info = vscf_compound_key_alg_info_sign_alg_info(compound_alg_info);
+    const vscf_impl_t *enc_alg_info = vscf_compound_key_alg_info_cipher_alg_info(compound_alg_info);
+    const vscf_impl_t *sign_alg_info = vscf_compound_key_alg_info_signer_alg_info(compound_alg_info);
 
     vscf_impl_t *tmp_alg_info = (vscf_impl_t *)vscf_impl_shallow_copy_const(enc_alg_info);
     vscf_raw_public_key_t *encryption_raw_key = vscf_raw_public_key_new_with_data(encryption_key_data, &tmp_alg_info);
@@ -681,8 +681,8 @@ vscf_compound_key_alg_import_private_key(
     //  Prepare keys to be imported.
     //
     const vscf_compound_key_alg_info_t *compound_alg_info = (const vscf_compound_key_alg_info_t *)alg_info;
-    const vscf_impl_t *enc_alg_info = vscf_compound_key_alg_info_enc_alg_info(compound_alg_info);
-    const vscf_impl_t *sign_alg_info = vscf_compound_key_alg_info_sign_alg_info(compound_alg_info);
+    const vscf_impl_t *enc_alg_info = vscf_compound_key_alg_info_cipher_alg_info(compound_alg_info);
+    const vscf_impl_t *sign_alg_info = vscf_compound_key_alg_info_signer_alg_info(compound_alg_info);
 
     vscf_impl_t *tmp_alg_info = (vscf_impl_t *)vscf_impl_shallow_copy_const(enc_alg_info);
     vscf_raw_private_key_t *decryption_raw_key = vscf_raw_private_key_new_with_data(decryption_key_data, &tmp_alg_info);
