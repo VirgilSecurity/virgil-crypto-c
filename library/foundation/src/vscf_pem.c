@@ -241,11 +241,7 @@ vscf_pem_title(vsc_data_t pem) {
         return vsc_data_empty();
     }
 
-    if (strlen(k_footer_begin) >= pem.len) {
-        return vsc_data_empty();
-    }
-
-    const char *header_begin = strstr((const char *)pem.bytes, k_header_begin);
+    const char *header_begin = strnstr((const char *)pem.bytes, k_header_begin, pem.len);
     if (NULL == header_begin) {
         return vsc_data_empty();
     }
