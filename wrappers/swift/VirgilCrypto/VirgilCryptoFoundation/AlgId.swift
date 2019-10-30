@@ -75,13 +75,13 @@ import VSCFoundation
 
     case pkcs5Pbes2
 
+    case compoundKey
+
     case falcon
 
     case round5
 
-    case round5CcaNd5pke5d
-
-    case compoundKey
+    case round5Nd5pke5d
 
     /// Create enumeration value from the correspond C enumeration value.
     internal init(fromC algId: vscf_alg_id_t) {

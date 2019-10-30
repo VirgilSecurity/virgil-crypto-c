@@ -66,7 +66,7 @@ public enum OidId {
     COMPOUND_KEY(25),
     FALCON(26),
     ROUND5(27),
-    ROUND5_CCA_ND_5PKE_5D(28);
+    ROUND5_ND_5PKE_5D(28);
 
     private final int code;
 

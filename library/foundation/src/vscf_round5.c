@@ -111,7 +111,7 @@ vscf_round5_generate_key(const vscf_round5_t *self, vscf_error_t *error) {
     vsc_buffer_inc_used(sk, sk_len);
 
     vscf_impl_t *pub_alg_info =
-            vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_ROUND5_CCA_ND_5PKE_5D));
+            vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_ROUND5_ND_5PKE_5D));
     vscf_impl_t *priv_alg_info = vscf_impl_shallow_copy(pub_alg_info);
 
     vscf_raw_public_key_t *raw_public_key = vscf_raw_public_key_new_with_buffer(&pk, &pub_alg_info);
@@ -198,7 +198,7 @@ vscf_round5_import_public_key(const vscf_round5_t *self, const vscf_raw_public_k
     VSCF_ASSERT_PTR(raw_key);
     VSCF_ASSERT_SAFE(vscf_raw_public_key_is_valid(raw_key));
 
-    if (vscf_raw_public_key_alg_id(raw_key) != vscf_alg_id_ROUND5_CCA_ND_5PKE_5D) {
+    if (vscf_raw_public_key_alg_id(raw_key) != vscf_alg_id_ROUND5_ND_5PKE_5D) {
         VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_MISMATCH_PUBLIC_KEY_AND_ALGORITHM);
         return NULL;
     }
@@ -260,7 +260,7 @@ vscf_round5_import_private_key(const vscf_round5_t *self, const vscf_raw_private
     VSCF_ASSERT_PTR(raw_key);
     VSCF_ASSERT_SAFE(vscf_raw_private_key_is_valid(raw_key));
 
-    if (vscf_raw_private_key_alg_id(raw_key) != vscf_alg_id_ROUND5_CCA_ND_5PKE_5D) {
+    if (vscf_raw_private_key_alg_id(raw_key) != vscf_alg_id_ROUND5_ND_5PKE_5D) {
         VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_MISMATCH_PRIVATE_KEY_AND_ALGORITHM);
         return NULL;
     }

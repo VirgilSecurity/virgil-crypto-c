@@ -94,7 +94,7 @@ import VSCFoundation
 
     case round5
 
-    case round5CcaNd5pke5d
+    case round5Nd5pke5d
 
     /// Create enumeration value from the correspond C enumeration value.
     internal init(fromC oidId: vscf_oid_id_t) {

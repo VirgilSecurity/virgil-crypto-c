@@ -344,7 +344,7 @@ test__serialize_public_key__compound_round5_falcon__equals_der(void) {
     vscf_pkcs8_serializer_setup_defaults(pkcs8);
 
     vscf_impl_t *curve_25519_alg_info =
-            vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_ROUND5_CCA_ND_5PKE_5D));
+            vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_ROUND5_ND_5PKE_5D));
 
     vscf_impl_t *ed25519_alg_info = vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_FALCON));
 
@@ -376,7 +376,7 @@ test__serialize_private_key__compound_round5_falcon__equals_der(void) {
     vscf_pkcs8_serializer_setup_defaults(pkcs8);
 
     vscf_impl_t *curve_25519_alg_info =
-            vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_ROUND5_CCA_ND_5PKE_5D));
+            vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_ROUND5_ND_5PKE_5D));
 
     vscf_impl_t *ed25519_alg_info = vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_FALCON));
 

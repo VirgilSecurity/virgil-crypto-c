@@ -91,7 +91,7 @@ enum vscf_oid_id_t {
     vscf_oid_id_COMPOUND_KEY,
     vscf_oid_id_FALCON,
     vscf_oid_id_ROUND5,
-    vscf_oid_id_ROUND5_CCA_ND_5PKE_5D
+    vscf_oid_id_ROUND5_ND_5PKE_5D
 };
 typedef enum vscf_oid_id_t vscf_oid_id_t;
 

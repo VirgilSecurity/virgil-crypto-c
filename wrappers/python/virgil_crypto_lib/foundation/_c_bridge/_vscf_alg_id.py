@@ -57,7 +57,7 @@ class VscfAlgId(object):
     HKDF = 15
     PKCS5_PBKDF2 = 16
     PKCS5_PBES2 = 17
-    FALCON = 18
-    ROUND5 = 19
-    ROUND5_CCA_ND_5PKE_5D = 20
-    COMPOUND_KEY = 21
+    COMPOUND_KEY = 18
+    FALCON = 19
+    ROUND5 = 20
+    ROUND5_ND_5PKE_5D = 21
