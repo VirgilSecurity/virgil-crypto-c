@@ -224,7 +224,7 @@ vscf_alg_info_der_serializer_serialize_ecc_alg_info(vscf_alg_info_der_serializer
 //  }
 //
 //  algorithm ::= { id-CompoundKey }
-//  id-CompoundKey ::= { 1 3 6 1 4 1 60000 1 1 }
+//  id-CompoundKey ::= { 1 3 6 1 4 1 54811 1 1 }
 //
 //  CompoundKeyParams ::= SEQUENCE {
 //      cipherAlgorithm AlgorithmIdentifier
@@ -245,7 +245,7 @@ vscf_alg_info_der_serializer_serialized_compound_key_alg_info_len(const vscf_alg
 //  }
 //
 //  algorithm ::= { id-CompoundKey }
-//  id-CompoundKey ::= { 1 3 6 1 4 1 60000 1 1 }
+//  id-CompoundKey ::= { 1 3 6 1 4 1 54811 1 1 }
 //
 //  CompoundKeyParams ::= SEQUENCE {
 //      cipherAlgorithm AlgorithmIdentifier
@@ -916,7 +916,7 @@ vscf_alg_info_der_serializer_serialize_ecc_alg_info(vscf_alg_info_der_serializer
 //  }
 //
 //  algorithm ::= { id-CompoundKey }
-//  id-CompoundKey ::= { 1 3 6 1 4 1 60000 1 1 }
+//  id-CompoundKey ::= { 1 3 6 1 4 1 54811 1 1 }
 //
 //  CompoundKeyParams ::= SEQUENCE {
 //      cipherAlgorithm AlgorithmIdentifier
@@ -952,7 +952,7 @@ vscf_alg_info_der_serializer_serialized_compound_key_alg_info_len(
 //  }
 //
 //  algorithm ::= { id-CompoundKey }
-//  id-CompoundKey ::= { 1 3 6 1 4 1 60000 1 1 }
+//  id-CompoundKey ::= { 1 3 6 1 4 1 54811 1 1 }
 //
 //  CompoundKeyParams ::= SEQUENCE {
 //      cipherAlgorithm AlgorithmIdentifier
