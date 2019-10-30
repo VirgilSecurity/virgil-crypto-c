@@ -90,6 +90,7 @@ class PythiaTest extends \PHPUnit\Framework\TestCase
 
             $deblind = Pythia::deblind($transformedPassword, $blindingSecret);
             $this->assertEquals($this->kDeblindedPassword, unpack("H*", $deblind)[1]);
+
         } catch (\Exception $e) {
             $this->expectException(\Exception::class);
         }
@@ -97,6 +98,67 @@ class PythiaTest extends \PHPUnit\Framework\TestCase
 
     public function test_Pythia_proveVerify_returnsSuccess()
     {
+        try {
+            list($blindedPassword, $blindingSecret) = Pythia::blind($this->kPassword);
+            $this->assertNotNull($blindedPassword);
+            $this->assertNotNull($blindingSecret);
 
+            list($transformationPrivateKey, $transformationPublicKey) = Pythia::computeTransformationKeyPair
+            ($this->kTransformationKeyId, $this->kPythiaSecret, $this->kPythiaScopeSecret);
+
+            list($transformedPassword, $transformedTweak) = Pythia::transform($blindedPassword, $this->kTweak,
+                $transformationPrivateKey);
+
+            list($proofValueC, $proofValueU) = Pythia::prove($transformedPassword, $blindedPassword,
+                $transformedTweak, $transformationPrivateKey, $transformationPublicKey);
+
+            $isVerify = Pythia::verify($transformedPassword, $blindedPassword, $this->kTweak, $transformationPublicKey,
+                $proofValueC, $proofValueU);
+
+            $this->assertTrue($isVerify);
+
+
+        } catch (\Exception $e) {
+            $this->expectException(\Exception::class);
+        }
+    }
+
+    public function test_Pythia_updatePasswordToken_returnsSuccess()
+    {
+        try {
+            list($blindedPassword, $blindingSecret) = Pythia::blind($this->kPassword);
+
+            list($transformationPrivateKey, $transformationPublicKey) = Pythia::computeTransformationKeyPair
+            ($this->kTransformationKeyId, $this->kPythiaSecret, $this->kPythiaScopeSecret);
+
+            list($transformedPassword, $transformedTweak) = Pythia::transform($blindedPassword, $this->kTweak, $transformationPrivateKey);
+
+            $deblind = Pythia::deblind($transformedPassword, $blindingSecret);
+
+            list($newTransformationPrivateKey, $newTransformationPublicKey) = Pythia::computeTransformationKeyPair
+            ($this->kTransformationKeyId, $this->kPythiaSecret, $this->kPythiaScopeSecret);
+
+            $updateToken = Pythia::getPasswordUpdateToken($transformationPrivateKey, $newTransformationPrivateKey);
+
+            $updatedDeblindPassword = Pythia::updateDeblindedWithToken($deblind, $updateToken);
+
+            list($newTransformedPassword, $newTransformedTweak) = Pythia::transform($blindedPassword, $this->kTweak,
+                $newTransformationPrivateKey);
+
+            $newDeblind = Pythia::deblind($newTransformedPassword, $blindingSecret);
+
+            $this->assertEquals($updatedDeblindPassword, $newDeblind);
+
+            list($proofValueC, $proofValueU) = Pythia::prove($newTransformedPassword, $blindedPassword,
+                $newTransformedTweak, $newTransformationPrivateKey, $newTransformationPublicKey);
+
+            $isVerify = Pythia::verify($newTransformedPassword, $blindedPassword, $this->kTweak,
+                $newTransformationPublicKey, $proofValueC, $proofValueU);
+
+            $this->assertTrue($isVerify);
+
+        } catch (\Exception $e) {
+            $this->expectException(\Exception::class);
+        }
     }
 }
