@@ -5,7 +5,8 @@
   },
   "autoload": {
     "psr-4": {
-      "VirgilCrypto\\Ratchet\\": "src"
+      "VirgilCrypto\\Ratchet\\": "src",
+      "VirgilCrypto\\Foundation\\": "../foundation/src"
     }
   },
   "autoload-dev": {
