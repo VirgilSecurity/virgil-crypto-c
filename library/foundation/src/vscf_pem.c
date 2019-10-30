@@ -55,6 +55,8 @@
 #include "vscf_assert.h"
 #include "vscf_base64.h"
 
+#include "string.h"
+
 // clang-format on
 //  @end
 
@@ -249,7 +251,7 @@ vscf_pem_title(vsc_data_t pem) {
 
     const char *title_begin = header_begin + strlen(k_header_begin);
 
-    const char *title_end = strstr(title_begin, k_title_tail);
+    const char *title_end = strnstr(title_begin, k_title_tail, pem_len - strlen(k_header_begin));
     if (NULL == title_end) {
         return vsc_data_empty();
     }
