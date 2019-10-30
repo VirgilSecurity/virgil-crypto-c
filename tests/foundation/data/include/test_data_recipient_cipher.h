@@ -35,6 +35,7 @@
 
 #include "vsc_data.h"
 
+extern vsc_data_t test_data_recipient_cipher_RECIPIENT_ID;
 extern vsc_data_t test_data_recipient_cipher_MESSAGE;
 extern vsc_data_t test_data_recipient_cipher_MESSAGE_2;
 extern vsc_data_t test_data_recipient_cipher_ED25519_RECIPIENT_ID;
