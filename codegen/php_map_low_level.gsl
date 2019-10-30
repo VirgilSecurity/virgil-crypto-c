@@ -548,8 +548,15 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
                         elsif return_argument0.type = "vsc_buffer_t"
                             my._data_string_proxy = 1
                             my._data_string_proxy_call = format_left("\
-                                // zend_string *out_$(return_argument0.name:) = zend_string_init(out_$(return_argument0.name:)_temp.bytes, out_$(return_argument0.name:)_temp.len, 0);
+                                vsc_data_t out_data_temp = vsc_buffer_data(out_$(return_argument0.name:)_temp);
+                                zend_string *out_buffer = zend_string_init(out_data_temp.bytes, out_data_temp.len, 0);
                                 ", 0)
+
+                            if return_argument0.access = "disown"
+                                my._data_string_proxy_call += format_left("\
+                                    vsc_buffer_destroy(&out_$(return_argument0.name:)_temp);
+                                    ", 0)
+                            endif
 
                             my._out_name = "out_$(return_argument0.name:)"
                             my._return += format_left("\
@@ -1175,6 +1182,7 @@ function php_map_low_level_return (in_method, in_php_project, out_function)
                     .type_t = 0.type
                     .zend_type = my._return_zend_type
                     .is_reference = my._is_reference
+                    .access = return0.access
                 endnew
             else
                 my._return_type0 = return0.class

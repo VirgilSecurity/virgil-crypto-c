@@ -1264,7 +1264,9 @@ PHP_FUNCTION(vscr_ratchet_session_serialize_php) {
     // Call main function
     //
     vsc_buffer_t *out_buffer_temp =vscr_ratchet_session_serialize(ratchet_session);
-    // zend_string *out_buffer = zend_string_init(out_buffer_temp.bytes, out_buffer_temp.len, 0);
+    vsc_data_t out_data_temp = vsc_buffer_data(out_buffer_temp);
+    zend_string *out_buffer = zend_string_init(out_data_temp.bytes, out_data_temp.len, 0);
+    vsc_buffer_destroy(&out_buffer_temp);
 
     //
     // Write returned result
@@ -3015,7 +3017,9 @@ PHP_FUNCTION(vscr_ratchet_group_session_serialize_php) {
     // Call main function
     //
     vsc_buffer_t *out_buffer_temp =vscr_ratchet_group_session_serialize(ratchet_group_session);
-    // zend_string *out_buffer = zend_string_init(out_buffer_temp.bytes, out_buffer_temp.len, 0);
+    vsc_data_t out_data_temp = vsc_buffer_data(out_buffer_temp);
+    zend_string *out_buffer = zend_string_init(out_data_temp.bytes, out_data_temp.len, 0);
+    vsc_buffer_destroy(&out_buffer_temp);
 
     //
     // Write returned result
