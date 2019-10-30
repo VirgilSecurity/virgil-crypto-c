@@ -241,7 +241,8 @@ vscf_pem_title(vsc_data_t pem) {
         return vsc_data_empty();
     }
 
-    const char *header_begin = strnstr((const char *)pem.bytes, k_header_begin, pem.len);
+    size_t pem_len = pem.len;
+    const char *header_begin = strnstr((const char *)pem.bytes, k_header_begin, pem_len);
     if (NULL == header_begin) {
         return vsc_data_empty();
     }
