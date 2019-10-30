@@ -43,6 +43,7 @@
 
 #include "vscf_falcon.h"
 #include "vscf_fake_random.h"
+#include "vscf_private_key.h"
 
 #include "test_data_falcon.h"
 
@@ -61,10 +62,10 @@ test__generate_key__512_degree_with_fake_rng__success(void) {
     vscf_error_reset(&error);
 
     vscf_impl_t *private_key = vscf_falcon_generate_key(falcon, &error);
-    TEST_ASSERT_FALSE(vscf_error_has_error(&error));
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
 
     vscf_raw_private_key_t *raw_private_key = vscf_falcon_export_private_key(falcon, private_key, &error);
-    TEST_ASSERT_FALSE(vscf_error_has_error(&error));
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
     TEST_ASSERT_EQUAL_DATA(test_data_falcon_PRIVATE_KEY_512, vscf_raw_private_key_data(raw_private_key));
 
     vscf_raw_public_key_t *raw_public_key =
@@ -88,7 +89,7 @@ test__generate_key__512_degree_with_default_rng__success(void) {
     vscf_error_reset(&error);
 
     vscf_impl_t *private_key = vscf_falcon_generate_key(falcon, &error);
-    TEST_ASSERT_FALSE(vscf_error_has_error(&error));
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
 
     vscf_impl_destroy(&private_key);
     vscf_falcon_destroy(&falcon);
@@ -171,6 +172,88 @@ test__verify_hash__sha512_digest_and_const_signature_with_512_degree_key__succes
     vscf_falcon_destroy(&falcon);
 }
 
+void
+test__export_public_key__from_generate_key__valid_alg_and_key_data(void) {
+
+    //
+    //  Prepare algs.
+    //
+    vscf_fake_random_t *fake_random = vscf_fake_random_new();
+    vscf_fake_random_setup_source_data(fake_random, test_data_falcon_RNG_SEED);
+
+    vscf_falcon_t *falcon = vscf_falcon_new();
+    vscf_falcon_take_random(falcon, vscf_fake_random_impl(fake_random));
+
+    vscf_error_t error;
+    vscf_error_reset(&error);
+
+    //
+    //  Generate key.
+    //
+    vscf_impl_t *private_key = vscf_falcon_generate_key(falcon, &error);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
+
+    //  Export key.
+    vscf_impl_t *public_key = vscf_private_key_extract_public_key(private_key);
+    vscf_raw_public_key_t *raw_public_key = vscf_falcon_export_public_key(falcon, public_key, &error);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
+
+    //
+    //  Check.
+    //
+    const vscf_alg_id_t alg_id = vscf_raw_public_key_alg_id(raw_public_key);
+    TEST_ASSERT_EQUAL(vscf_alg_id_FALCON, alg_id);
+    TEST_ASSERT_EQUAL_DATA(test_data_falcon_PUBLIC_KEY_512, vscf_raw_public_key_data(raw_public_key));
+
+    //
+    //  Cleanup.
+    //
+    vscf_raw_public_key_destroy(&raw_public_key);
+    vscf_impl_destroy(&public_key);
+    vscf_impl_destroy(&private_key);
+    vscf_falcon_destroy(&falcon);
+}
+
+void
+test__export_private_key__from_generate_key__valid_alg_and_key_data(void) {
+
+    //
+    //  Prepare algs.
+    //
+    vscf_fake_random_t *fake_random = vscf_fake_random_new();
+    vscf_fake_random_setup_source_data(fake_random, test_data_falcon_RNG_SEED);
+
+    vscf_falcon_t *falcon = vscf_falcon_new();
+    vscf_falcon_take_random(falcon, vscf_fake_random_impl(fake_random));
+
+    vscf_error_t error;
+    vscf_error_reset(&error);
+
+    //
+    //  Generate key.
+    //
+    vscf_impl_t *private_key = vscf_falcon_generate_key(falcon, &error);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
+
+    //  Export key.
+    vscf_raw_private_key_t *raw_private_key = vscf_falcon_export_private_key(falcon, private_key, &error);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
+
+    //
+    //  Check.
+    //
+    const vscf_alg_id_t alg_id = vscf_raw_private_key_alg_id(raw_private_key);
+    TEST_ASSERT_EQUAL(vscf_alg_id_FALCON, alg_id);
+    TEST_ASSERT_EQUAL_DATA(test_data_falcon_PRIVATE_KEY_512, vscf_raw_private_key_data(raw_private_key));
+
+    //
+    //  Cleanup.
+    //
+    vscf_raw_private_key_destroy(&raw_private_key);
+    vscf_impl_destroy(&private_key);
+    vscf_falcon_destroy(&falcon);
+}
+
 #endif // TEST_DEPENDENCIES_AVAILABLE
 
 
@@ -186,6 +269,8 @@ main(void) {
     RUN_TEST(test__generate_key__512_degree_with_default_rng__success);
     RUN_TEST(test__sign_hash__sha512_digest_with_512_degree_key__produce_const_signature);
     RUN_TEST(test__verify_hash__sha512_digest_and_const_signature_with_512_degree_key__success);
+    RUN_TEST(test__export_public_key__from_generate_key__valid_alg_and_key_data);
+    RUN_TEST(test__export_private_key__from_generate_key__valid_alg_and_key_data);
 #else
     RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
 #endif
