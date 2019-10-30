@@ -59,6 +59,7 @@
 #include "vscf_ecc.h"
 #include "vscf_ed25519.h"
 #include "vscf_curve25519.h"
+#include "vscf_compound_key_alg.h"
 #include "vscf_falcon.h"
 #include "vscf_round5.h"
 
@@ -147,6 +148,14 @@ vscf_key_alg_factory_create_from_alg_id(vscf_alg_id_t alg_id, const vscf_impl_t 
         return vscf_curve25519_impl(curve25519);
     }
 
+    case vscf_alg_id_COMPOUND_KEY: {
+        vscf_compound_key_alg_t *compound_key_alg = vscf_compound_key_alg_new();
+        if (random) {
+            vscf_compound_key_alg_use_random(compound_key_alg, (vscf_impl_t *)random);
+        }
+        return vscf_compound_key_alg_impl(compound_key_alg);
+    }
+
     case vscf_alg_id_FALCON: {
         vscf_falcon_t *falcon = vscf_falcon_new();
         if (random) {
@@ -195,6 +204,9 @@ vscf_key_alg_factory_create_from_key(const vscf_impl_t *key, const vscf_impl_t *
 
     case vscf_impl_tag_CURVE25519:
         return vscf_key_alg_factory_create_from_alg_id(vscf_alg_id_CURVE25519, random, error);
+
+    case vscf_impl_tag_COMPOUND_KEY_ALG:
+        return vscf_key_alg_factory_create_from_alg_id(vscf_alg_id_COMPOUND_KEY, random, error);
 
     case vscf_impl_tag_FALCON:
         return vscf_key_alg_factory_create_from_alg_id(vscf_alg_id_FALCON, random, error);

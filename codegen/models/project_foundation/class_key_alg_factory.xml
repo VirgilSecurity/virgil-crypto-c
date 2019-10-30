@@ -7,6 +7,7 @@
     <require impl="ecc"/>
     <require impl="ed25519"/>
     <require impl="curve25519"/>
+    <require impl="compound key alg"/>
     <require impl="falcon"/>
     <require impl="round5"/>
 
