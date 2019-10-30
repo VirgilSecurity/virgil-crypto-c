@@ -1149,7 +1149,6 @@ vscf_compound_key_alg_verify_hash(const vscf_compound_key_alg_t *self, const vsc
         vscf_alg_id_t hash_id, vsc_data_t digest, vsc_data_t signature) {
 
     VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(self->random);
     VSCF_ASSERT_PTR(public_key);
     VSCF_ASSERT(vscf_compound_key_alg_can_verify(self, public_key));
     VSCF_ASSERT(hash_id != vscf_alg_id_NONE);
