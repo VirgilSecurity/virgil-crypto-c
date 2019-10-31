@@ -16,6 +16,8 @@
     <require impl="round5"/>
     <require impl="key asn1 deserializer"/>
     <require impl="key asn1 serializer"/>
+    <require impl="compound key alg"/>
+    <require module="compound key alg defs"/>
     <require class="key alg factory"/>
 
     <dependency name="random" interface="random"/>
@@ -40,6 +42,16 @@
         Generate new private key from the given id.
 
         <argument name="alg id" enum="alg id"/>
+        <argument name="error" class="error" access="readwrite"/>
+
+        <return interface="private key" access="disown"/>
+    </method>
+
+    <method name="generate compound private key">
+        Generate new compound private key from the given ids.
+
+        <argument name="cipher alg id" enum="alg id"/>
+        <argument name="signer alg id" enum="alg id"/>
         <argument name="error" class="error" access="readwrite"/>
 
         <return interface="private key" access="disown"/>

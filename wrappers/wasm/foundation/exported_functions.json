@@ -160,6 +160,7 @@
     "_vscf_key_provider_setup_defaults",
     "_vscf_key_provider_set_rsa_params",
     "_vscf_key_provider_generate_private_key",
+    "_vscf_key_provider_generate_compound_private_key",
     "_vscf_key_provider_import_private_key",
     "_vscf_key_provider_import_public_key",
     "_vscf_key_provider_exported_public_key_len",

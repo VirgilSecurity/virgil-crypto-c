@@ -70,6 +70,8 @@
 #include "vscf_round5.h"
 #include "vscf_key_asn1_deserializer.h"
 #include "vscf_key_asn1_serializer.h"
+#include "vscf_compound_key_alg.h"
+#include "vscf_compound_key_alg_defs.h"
 #include "vscf_key_alg_factory.h"
 
 // clang-format on
@@ -359,6 +361,7 @@ vscf_key_provider_generate_private_key(vscf_key_provider_t *self, vscf_alg_id_t 
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(self->random);
+    VSCF_ASSERT(alg_id != vscf_alg_id_NONE);
 
     vscf_impl_t *key = NULL;
 
@@ -416,6 +419,27 @@ vscf_key_provider_generate_private_key(vscf_key_provider_t *self, vscf_alg_id_t 
         VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_UNSUPPORTED_ALGORITHM);
         break;
     }
+
+    return key;
+}
+
+//
+//  Generate new compound private key from the given ids.
+//
+VSCF_PUBLIC vscf_impl_t *
+vscf_key_provider_generate_compound_private_key(
+        vscf_key_provider_t *self, vscf_alg_id_t cipher_alg_id, vscf_alg_id_t signer_alg_id, vscf_error_t *error) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(self->random);
+    VSCF_ASSERT(cipher_alg_id != vscf_alg_id_NONE);
+    VSCF_ASSERT(signer_alg_id != vscf_alg_id_NONE);
+
+    vscf_compound_key_alg_t compound_key_alg;
+    vscf_compound_key_alg_init(&compound_key_alg);
+    vscf_compound_key_alg_use_random(&compound_key_alg, self->random);
+    vscf_impl_t *key = vscf_compound_key_alg_generate_key(&compound_key_alg, cipher_alg_id, signer_alg_id, error);
+    vscf_compound_key_alg_cleanup(&compound_key_alg);
 
     return key;
 }

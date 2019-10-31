@@ -95,6 +95,13 @@ public class KeyProvider implements AutoCloseable {
     }
 
     /*
+    * Generate new compound private key from the given ids.
+    */
+    public PrivateKey generateCompoundPrivateKey(AlgId cipherAlgId, AlgId signerAlgId) throws FoundationException {
+        return FoundationJNI.INSTANCE.keyProvider_generateCompoundPrivateKey(this.cCtx, cipherAlgId, signerAlgId);
+    }
+
+    /*
     * Import private key from the PKCS#8 format.
     */
     public PrivateKey importPrivateKey(byte[] keyData) throws FoundationException {

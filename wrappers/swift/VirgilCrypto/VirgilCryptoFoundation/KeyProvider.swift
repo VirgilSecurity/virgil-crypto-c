@@ -97,6 +97,18 @@ import VSCFoundation
         return FoundationImplementation.wrapPrivateKey(take: proxyResult!)
     }
 
+    /// Generate new compound private key from the given ids.
+    @objc public func generateCompoundPrivateKey(cipherAlgId: AlgId, signerAlgId: AlgId) throws -> PrivateKey {
+        var error: vscf_error_t = vscf_error_t()
+        vscf_error_reset(&error)
+
+        let proxyResult = vscf_key_provider_generate_compound_private_key(self.c_ctx, vscf_alg_id_t(rawValue: UInt32(cipherAlgId.rawValue)), vscf_alg_id_t(rawValue: UInt32(signerAlgId.rawValue)), &error)
+
+        try FoundationError.handleStatus(fromC: error.status)
+
+        return FoundationImplementation.wrapPrivateKey(take: proxyResult!)
+    }
+
     /// Import private key from the PKCS#8 format.
     @objc public func importPrivateKey(keyData: Data) throws -> PrivateKey {
         var error: vscf_error_t = vscf_error_t()

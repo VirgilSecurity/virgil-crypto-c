@@ -172,6 +172,13 @@ VSCF_PUBLIC vscf_impl_t *
 vscf_key_provider_generate_private_key(vscf_key_provider_t *self, vscf_alg_id_t alg_id, vscf_error_t *error);
 
 //
+//  Generate new compound private key from the given ids.
+//
+VSCF_PUBLIC vscf_impl_t *
+vscf_key_provider_generate_compound_private_key(vscf_key_provider_t *self, vscf_alg_id_t cipher_alg_id,
+        vscf_alg_id_t signer_alg_id, vscf_error_t *error);
+
+//
 //  Import private key from the PKCS#8 format.
 //
 VSCF_PUBLIC vscf_impl_t *

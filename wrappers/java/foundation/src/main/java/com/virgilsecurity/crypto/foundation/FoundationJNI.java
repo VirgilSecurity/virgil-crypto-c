@@ -637,6 +637,11 @@ public class FoundationJNI {
     public native PrivateKey keyProvider_generatePrivateKey(long cCtx, AlgId algId) throws FoundationException;
 
     /*
+    * Generate new compound private key from the given ids.
+    */
+    public native PrivateKey keyProvider_generateCompoundPrivateKey(long cCtx, AlgId cipherAlgId, AlgId signerAlgId) throws FoundationException;
+
+    /*
     * Import private key from the PKCS#8 format.
     */
     public native PrivateKey keyProvider_importPrivateKey(long cCtx, byte[] keyData) throws FoundationException;

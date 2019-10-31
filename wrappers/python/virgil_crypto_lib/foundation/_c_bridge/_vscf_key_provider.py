@@ -93,6 +93,13 @@ class VscfKeyProvider(object):
         vscf_key_provider_generate_private_key.restype = POINTER(vscf_impl_t)
         return vscf_key_provider_generate_private_key(ctx, alg_id, error)
 
+    def vscf_key_provider_generate_compound_private_key(self, ctx, cipher_alg_id, signer_alg_id, error):
+        """Generate new compound private key from the given ids."""
+        vscf_key_provider_generate_compound_private_key = self._lib.vscf_key_provider_generate_compound_private_key
+        vscf_key_provider_generate_compound_private_key.argtypes = [POINTER(vscf_key_provider_t), c_int, c_int, POINTER(vscf_error_t)]
+        vscf_key_provider_generate_compound_private_key.restype = POINTER(vscf_impl_t)
+        return vscf_key_provider_generate_compound_private_key(ctx, cipher_alg_id, signer_alg_id, error)
+
     def vscf_key_provider_import_private_key(self, ctx, key_data, error):
         """Import private key from the PKCS#8 format."""
         vscf_key_provider_import_private_key = self._lib.vscf_key_provider_import_private_key

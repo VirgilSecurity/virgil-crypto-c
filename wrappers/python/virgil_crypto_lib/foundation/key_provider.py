@@ -75,6 +75,14 @@ class KeyProvider(object):
         instance = VscfImplTag.get_type(result)[0].take_c_ctx(cast(result, POINTER(VscfImplTag.get_type(result)[1])))
         return instance
 
+    def generate_compound_private_key(self, cipher_alg_id, signer_alg_id):
+        """Generate new compound private key from the given ids."""
+        error = vscf_error_t()
+        result = self._lib_vscf_key_provider.vscf_key_provider_generate_compound_private_key(self.ctx, cipher_alg_id, signer_alg_id, error)
+        VscfStatus.handle_status(error.status)
+        instance = VscfImplTag.get_type(result)[0].take_c_ctx(cast(result, POINTER(VscfImplTag.get_type(result)[1])))
+        return instance
+
     def import_private_key(self, key_data):
         """Import private key from the PKCS#8 format."""
         d_key_data = Data(key_data)

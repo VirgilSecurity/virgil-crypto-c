@@ -141,6 +141,33 @@ const initKeyProvider = (Module, modules) => {
         }
 
         /**
+         * Generate new compound private key from the given ids.
+         */
+        generateCompoundPrivateKey(cipherAlgId, signerAlgId) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureNumber('cipherAlgId', cipherAlgId);
+            precondition.ensureNumber('signerAlgId', signerAlgId);
+
+            const errorCtxSize = Module._vscf_error_ctx_size();
+            const errorCtxPtr = Module._malloc(errorCtxSize);
+            Module._vscf_error_reset(errorCtxPtr);
+
+            let proxyResult;
+
+            try {
+                proxyResult = Module._vscf_key_provider_generate_compound_private_key(this.ctxPtr, cipherAlgId, signerAlgId, errorCtxPtr);
+
+                const errorStatus = Module._vscf_error_status(errorCtxPtr);
+                modules.FoundationError.handleStatusCode(errorStatus);
+
+                const jsResult = modules.FoundationInterface.newAndTakeCContext(proxyResult);
+                return jsResult;
+            } finally {
+                Module._free(errorCtxPtr);
+            }
+        }
+
+        /**
          * Import private key from the PKCS#8 format.
          */
         importPrivateKey(keyData) {
