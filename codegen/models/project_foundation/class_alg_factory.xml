@@ -4,26 +4,26 @@
     <require interface="alg info"/>
     <require interface="public key"/>
     <require interface="private key"/>
-    <require impl="sha224"/>
-    <require impl="sha256"/>
-    <require impl="sha384"/>
-    <require impl="sha512"/>
-    <require impl="kdf1"/>
-    <require impl="kdf2"/>
-    <require impl="hmac"/>
-    <require impl="hkdf"/>
-    <require impl="aes256 gcm"/>
-    <require impl="aes256 cbc"/>
-    <require impl="hash based alg info"/>
-    <require impl="cipher alg info"/>
-    <require impl="salted kdf alg info"/>
-    <require impl="pbe alg info"/>
-    <require impl="pkcs5 pbkdf2"/>
-    <require impl="pkcs5 pbes2"/>
-    <require impl="rsa"/>
-    <require impl="ed25519"/>
-    <require impl="curve25519"/>
-    <require impl="ecc"/>
+    <require impl="sha224" is_optional="1"/>
+    <require impl="sha256" is_optional="1"/>
+    <require impl="sha384" is_optional="1"/>
+    <require impl="sha512" is_optional="1"/>
+    <require impl="kdf1" is_optional="1"/>
+    <require impl="kdf2" is_optional="1"/>
+    <require impl="hmac" is_optional="1"/>
+    <require impl="hkdf" is_optional="1"/>
+    <require impl="aes256 gcm" is_optional="1"/>
+    <require impl="aes256 cbc" is_optional="1"/>
+    <require impl="hash based alg info" is_optional="1"/>
+    <require impl="cipher alg info" is_optional="1"/>
+    <require impl="salted kdf alg info" is_optional="1"/>
+    <require impl="pbe alg info" is_optional="1"/>
+    <require impl="pkcs5 pbkdf2" is_optional="1"/>
+    <require impl="pkcs5 pbes2" is_optional="1"/>
+    <require impl="rsa" is_optional="1"/>
+    <require impl="ed25519" is_optional="1"/>
+    <require impl="curve25519" is_optional="1"/>
+    <require impl="ecc" is_optional="1"/>
 
     <method name="create hash from info" is_static="1">
         Create algorithm that implements "hash stream" interface.

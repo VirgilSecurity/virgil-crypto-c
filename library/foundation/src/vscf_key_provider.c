@@ -366,6 +366,7 @@ vscf_key_provider_generate_private_key(vscf_key_provider_t *self, vscf_alg_id_t 
     vscf_impl_t *key = NULL;
 
     switch (alg_id) {
+#if VSCF_RSA
     case vscf_alg_id_RSA: {
         vscf_rsa_t *rsa = vscf_rsa_new();
         vscf_rsa_use_random(rsa, self->random);
@@ -373,7 +374,9 @@ vscf_key_provider_generate_private_key(vscf_key_provider_t *self, vscf_alg_id_t 
         vscf_rsa_destroy(&rsa);
         break;
     }
+#endif // VSCF_RSA
 
+#if VSCF_ED25519
     case vscf_alg_id_ED25519: {
         vscf_ed25519_t *ed25519 = vscf_ed25519_new();
         vscf_ed25519_use_random(ed25519, self->random);
@@ -381,7 +384,9 @@ vscf_key_provider_generate_private_key(vscf_key_provider_t *self, vscf_alg_id_t 
         vscf_ed25519_destroy(&ed25519);
         break;
     }
+#endif // VSCF_ED25519
 
+#if VSCF_CURVE25519
     case vscf_alg_id_CURVE25519: {
         vscf_curve25519_t *curve25519 = vscf_curve25519_new();
         vscf_curve25519_use_random(curve25519, self->random);
@@ -389,7 +394,9 @@ vscf_key_provider_generate_private_key(vscf_key_provider_t *self, vscf_alg_id_t 
         vscf_curve25519_destroy(&curve25519);
         break;
     }
+#endif // VSCF_CURVE25519
 
+#if VSCF_ECC
     case vscf_alg_id_SECP256R1: {
         vscf_ecc_t *ecc = vscf_ecc_new();
         vscf_ecc_use_random(ecc, self->random);
@@ -397,7 +404,10 @@ vscf_key_provider_generate_private_key(vscf_key_provider_t *self, vscf_alg_id_t 
         vscf_ecc_destroy(&ecc);
         break;
     }
+#endif // VSCF_ECC
 
+#if VSCF_POST_QUANTUM
+#if VSCF_FALCON
     case vscf_alg_id_FALCON: {
         vscf_falcon_t *falcon = vscf_falcon_new();
         vscf_falcon_use_random(falcon, self->random);
@@ -405,7 +415,9 @@ vscf_key_provider_generate_private_key(vscf_key_provider_t *self, vscf_alg_id_t 
         vscf_falcon_destroy(&falcon);
         break;
     }
+#endif // VSCF_FALCON
 
+#if VSCF_ROUND5
     case vscf_alg_id_ROUND5:
     case vscf_alg_id_ROUND5_ND_5PKE_5D: {
         vscf_round5_t *round5 = vscf_round5_new();
@@ -413,6 +425,8 @@ vscf_key_provider_generate_private_key(vscf_key_provider_t *self, vscf_alg_id_t 
         vscf_round5_destroy(&round5);
         break;
     }
+#endif // VSCF_ROUND5
+#endif // VSCF_POST_QUANTUM
 
     default:
         VSCF_ASSERT(0 && "Unhandled algorithm identifier.");

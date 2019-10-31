@@ -133,19 +133,19 @@ test__generate_private_key__rsa2048__success(void) {
 
 void
 test__generate_private_key__falcon__success(void) {
-#if VSCF_POST_QUANTUM
+#if VSCF_POST_QUANTUM && VSCF_FALCON
     inner_test__generate_private_key__success(vscf_alg_id_FALCON, 10248);
 #else
-    TEST_IGNORE_MESSAGE("Feature VSCF_POST_QUANTUM is disabled");
+    TEST_IGNORE_MESSAGE("Feature VSCF_POST_QUANTUM and/or VSCF_FALCON are disabled");
 #endif
 }
 
 void
 test__generate_private_key__round5__success(void) {
-#if VSCF_POST_QUANTUM
+#if VSCF_POST_QUANTUM && VSCF_ROUND5
     inner_test__generate_private_key__success(vscf_alg_id_ROUND5_ND_5PKE_5D, 8336);
 #else
-    TEST_IGNORE_MESSAGE("Feature VSCF_POST_QUANTUM is disabled");
+    TEST_IGNORE_MESSAGE("Feature VSCF_POST_QUANTUM and/or VSCF_ROUND5 are disabled");
 #endif
 }
 
@@ -239,10 +239,10 @@ test__generate_private_key__rsa2048_and_then_do_encrypt_decrypt__plain_text_matc
 
 void
 test__generate_private_key__round5_and_then_do_encrypt_decrypt__plain_text_match(void) {
-#if VSCF_POST_QUANTUM
+#if VSCF_POST_QUANTUM && VSCF_ROUND5
     inner_test__generate_private_key__and_then_do_encrypt_decrypt__plain_text_match(vscf_alg_id_ROUND5_ND_5PKE_5D, 0);
 #else
-    TEST_IGNORE_MESSAGE("Feature VSCF_POST_QUANTUM is disabled");
+    TEST_IGNORE_MESSAGE("Feature VSCF_POST_QUANTUM and/or VSCF_ROUND5 are disabled");
 #endif
 }
 
@@ -326,7 +326,11 @@ test__generate_private_key__rsa2048_and_then_do_sign_verify__success(void) {
 
 void
 test__generate_private_key__falcon_and_then_do_sign_verify__success(void) {
+#if VSCF_POST_QUANTUM && VSCF_FALCON
     inner_test__generate_private_key__and_then_do_sign_verify__success(vscf_alg_id_FALCON, 10248);
+#else
+    TEST_IGNORE_MESSAGE("Feature VSCF_POST_QUANTUM and/or VSCF_FALCON are disabled");
+#endif
 }
 
 // --------------------------------------------------------------------------

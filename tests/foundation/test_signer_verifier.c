@@ -120,19 +120,41 @@ inner_test__sign_verify__success(vsc_data_t public_key_data, vsc_data_t private_
 
 void
 test__sign_verify__with_ed25519__success(void) {
+#if VSCF_ED25519
     inner_test__sign_verify__success(test_signer_ED25519_PUBLIC_KEY_PKCS8, test_signer_ED25519_PRIVATE_KEY_PKCS8);
+#else
+    TEST_IGNORE_MESSAGE("Feature VSCF_ED25519 is disabled");
+#endif
 }
 
 void
 test__sign_verify__with_compound_curve25519_ed25519__success(void) {
+#if !VSCF_COMPOUND_KEY_ALG
+    TEST_IGNORE_MESSAGE("Feature VSCF_COMPOUND_KEY_ALG is disabled");
+#elif !VSCF_ED25519
+    TEST_IGNORE_MESSAGE("Feature VSCF_ED25519 is disabled");
+#elif !VSCF_CURVE25519
+    TEST_IGNORE_MESSAGE("Feature VSCF_CURVE25519 is disabled");
+#else
     inner_test__sign_verify__success(test_data_compound_key_CURVE25519_ED25519_PUBLIC_KEY_PKCS8_DER,
             test_data_compound_key_CURVE25519_ED25519_PRIVATE_KEY_PKCS8_DER);
+#endif
 }
 
 void
 test__sign_verify__with_compound_round5_falcon__success(void) {
+#if !VSCF_COMPOUND_KEY_ALG
+    TEST_IGNORE_MESSAGE("Feature VSCF_COMPOUND_KEY_ALG is disabled");
+#elif !VSCF_POST_QUANTUM
+    TEST_IGNORE_MESSAGE("Feature VSCF_POST_QUANTUM is disabled");
+#elif !VSCF_ROUND5
+    TEST_IGNORE_MESSAGE("Feature VSCF_ROUND5 is disabled");
+#elif !VSCF_FALCON
+    TEST_IGNORE_MESSAGE("Feature VSCF_FALCON is disabled");
+#else
     inner_test__sign_verify__success(test_data_compound_key_ROUND5_FALCON_PUBLIC_KEY_PKCS8_PEM,
             test_data_compound_key_ROUND5_FALCON_PRIVATE_KEY_PKCS8_PEM);
+#endif
 }
 
 #endif // TEST_DEPENDENCIES_AVAILABLE

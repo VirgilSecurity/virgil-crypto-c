@@ -7,18 +7,18 @@
     <require interface="private key"/>
     <require interface="key serializer"/>
     <require interface="key deserializer"/>
+    <require class="key alg factory"/>
     <require impl="ctr drbg"/>
-    <require impl="rsa"/>
-    <require impl="ed25519"/>
-    <require impl="curve25519"/>
-    <require impl="ecc"/>
-    <require impl="falcon"/>
-    <require impl="round5"/>
     <require impl="key asn1 deserializer"/>
     <require impl="key asn1 serializer"/>
-    <require impl="compound key alg"/>
-    <require module="compound key alg defs"/>
-    <require class="key alg factory"/>
+    <require impl="rsa" is_optional="1"/>
+    <require impl="ed25519" is_optional="1"/>
+    <require impl="curve25519" is_optional="1"/>
+    <require impl="ecc" is_optional="1"/>
+    <require impl="falcon" is_optional="1"/>
+    <require impl="round5" is_optional="1"/>
+    <require impl="compound key alg" is_optional="1"/>
+    <require module="compound key alg defs" is_optional="1"/>
 
     <dependency name="random" interface="random"/>
 
