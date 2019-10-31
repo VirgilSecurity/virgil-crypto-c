@@ -306,6 +306,7 @@ inner_test__generate_private_key__and_then_do_sign_verify__success(vscf_alg_id_t
     vscf_impl_destroy(&private_key);
     vscf_key_provider_destroy(&key_provider);
     vscf_impl_destroy(&key_alg);
+    vscf_impl_destroy(&random);
 }
 
 void
