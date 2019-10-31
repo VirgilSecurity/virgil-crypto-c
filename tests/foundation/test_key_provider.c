@@ -60,6 +60,8 @@
 #include "test_data_ed25519.h"
 #include "test_data_rsa.h"
 #include "test_data_secp256r1.h"
+#include "test_data_round5.h"
+#include "test_data_falcon.h"
 
 
 // --------------------------------------------------------------------------
@@ -127,6 +129,24 @@ test__generate_private_key__secp256r1__success(void) {
 void
 test__generate_private_key__rsa2048__success(void) {
     inner_test__generate_private_key__success(vscf_alg_id_RSA, 2048);
+}
+
+void
+test__generate_private_key__falcon__success(void) {
+#if VSCF_POST_QUANTUM
+    inner_test__generate_private_key__success(vscf_alg_id_FALCON, 10248);
+#else
+    TEST_IGNORE_MESSAGE("Feature VSCF_POST_QUANTUM is disabled");
+#endif
+}
+
+void
+test__generate_private_key__round5__success(void) {
+#if VSCF_POST_QUANTUM
+    inner_test__generate_private_key__success(vscf_alg_id_ROUND5_ND_5PKE_5D, 8336);
+#else
+    TEST_IGNORE_MESSAGE("Feature VSCF_POST_QUANTUM is disabled");
+#endif
 }
 
 // --------------------------------------------------------------------------
@@ -217,6 +237,15 @@ test__generate_private_key__rsa2048_and_then_do_encrypt_decrypt__plain_text_matc
     inner_test__generate_private_key__and_then_do_encrypt_decrypt__plain_text_match(vscf_alg_id_RSA, 2048);
 }
 
+void
+test__generate_private_key__round5_and_then_do_encrypt_decrypt__plain_text_match(void) {
+#if VSCF_POST_QUANTUM
+    inner_test__generate_private_key__and_then_do_encrypt_decrypt__plain_text_match(vscf_alg_id_ROUND5_ND_5PKE_5D, 0);
+#else
+    TEST_IGNORE_MESSAGE("Feature VSCF_POST_QUANTUM is disabled");
+#endif
+}
+
 // --------------------------------------------------------------------------
 //  Sign / verify with a deterministic key.
 // --------------------------------------------------------------------------
@@ -294,6 +323,10 @@ test__generate_private_key__rsa2048_and_then_do_sign_verify__success(void) {
     inner_test__generate_private_key__and_then_do_sign_verify__success(vscf_alg_id_RSA, 2048);
 }
 
+void
+test__generate_private_key__falcon_and_then_do_sign_verify__success(void) {
+    inner_test__generate_private_key__and_then_do_sign_verify__success(vscf_alg_id_FALCON, 10248);
+}
 
 // --------------------------------------------------------------------------
 //  Generate key from a key material.
@@ -559,15 +592,19 @@ main(void) {
     RUN_TEST(test__generate_private_key__ed25519__success);
     RUN_TEST(test__generate_private_key__secp256r1__success);
     RUN_TEST(test__generate_private_key__rsa2048__success);
+    RUN_TEST(test__generate_private_key__round5__success);
+    RUN_TEST(test__generate_private_key__falcon__success);
 
     RUN_TEST(test__generate_private_key__curve25519_and_then_do_encrypt_decrypt__plain_text_match);
     RUN_TEST(test__generate_private_key__ed25519_and_then_do_encrypt_decrypt__plain_text_match);
     RUN_TEST(test__generate_private_key__secp256r1_and_then_do_encrypt_decrypt__plain_text_match);
     RUN_TEST(test__generate_private_key__rsa2048_and_then_do_encrypt_decrypt__plain_text_match);
+    RUN_TEST(test__generate_private_key__round5_and_then_do_encrypt_decrypt__plain_text_match);
 
     RUN_TEST(test__generate_private_key__ed25519_and_then_do_sign_verify__success);
     RUN_TEST(test__generate_private_key__secp256r1_and_then_do_sign_verify__success);
     RUN_TEST(test__generate_private_key__rsa2048_and_then_do_sign_verify__success);
+    RUN_TEST(test__generate_private_key__falcon_and_then_do_sign_verify__success);
 
     RUN_TEST(test__generate_private_key__ed25519_with_key_material_rng__match);
     RUN_TEST(test__generate_private_key__rsa4096_with_key_material_rng__match);
