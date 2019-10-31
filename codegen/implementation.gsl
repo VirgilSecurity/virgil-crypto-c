@@ -392,6 +392,7 @@ function implementation_create_feature (implementation, project, destination)
                 .feature = -1.class ? -1.interface ? -1.impl
                 .scope = -1.scope ?
                 .project = -1.project ?
+                .is_optional = -1.is_optional ?
             endnew
         endfor
     endnew
