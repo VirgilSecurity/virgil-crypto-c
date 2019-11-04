@@ -528,6 +528,29 @@ vscf_recipient_cipher_cleanup_ctx(vscf_recipient_cipher_t *self) {
 }
 
 //
+//  Return true if a key recipient with a given id has been added.
+//  Note, operation has O(N) time complexity.
+//
+VSCF_PUBLIC bool
+vscf_recipient_cipher_has_key_recipient(const vscf_recipient_cipher_t *self, vsc_data_t recipient_id) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT(vsc_data_is_valid(recipient_id));
+
+    for (vscf_key_recipient_list_t *curr = self->key_recipients;
+            curr != NULL && vscf_key_recipient_list_has_key_recipient(curr);
+            curr = vscf_key_recipient_list_next(curr)) {
+
+        vsc_data_t curr_recipient_id = vscf_key_recipient_list_recipient_id(curr);
+        if (vsc_data_equal(recipient_id, curr_recipient_id)) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+//
 //  Add recipient defined with id and public key.
 //
 VSCF_PUBLIC void

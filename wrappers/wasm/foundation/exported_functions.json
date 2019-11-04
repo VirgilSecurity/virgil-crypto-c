@@ -118,6 +118,7 @@
     "_vscf_recipient_cipher_use_encryption_cipher",
     "_vscf_recipient_cipher_release_signer_hash",
     "_vscf_recipient_cipher_use_signer_hash",
+    "_vscf_recipient_cipher_has_key_recipient",
     "_vscf_recipient_cipher_add_key_recipient",
     "_vscf_recipient_cipher_clear_recipients",
     "_vscf_recipient_cipher_add_signer",
