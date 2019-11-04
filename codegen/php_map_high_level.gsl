@@ -160,7 +160,7 @@ function php_map_high_level (in_module, in_php_module, in_php_project, out_high_
             my._dep_class = dependency0.impl
         else
             echo_debug_item(dependency0)
-            echo_fatal("Not implemented", my)
+            echo_fatal("Not implemented (BX1000)", my)
         endif
 
         new php_method to my.out_high_level
@@ -486,7 +486,7 @@ function php_map_high_level_return (in_method, in_php_module, out_php_method)
         endif
     endif
 
-    if defined (my.in_method.is_constructor) & my.in_method.is_constructor = 1
+    if is_true(my.in_method.is_constructor)
         my._return_type = "$(my.in_php_module.name0:Pascal)"
         my._instance = 1
     endif
@@ -518,10 +518,9 @@ function php_map_high_level_return (in_method, in_php_module, out_php_method)
             elsif return0.type = "byte"
                 my._return_type = "string"
             else
-                # TODO
                 echo_debug_item(my.in_method)
                 echo_debug_item(return0)
-                echo_fatal("Not implemented (101)", my)
+                echo_fatal("Not implemented (BA1001)", my)
             endif
         endif
 

@@ -78,7 +78,7 @@ endfunction
 function php_format_high_level_method_body (in_php_method)
     check_argument (my, "in_php_method", my)
 
-    if my.in_php_method.is_constructor = 1
+    if my.in_php_method.is_constructor = "1"
         my._arguments = ""
         for my.in_php_method.php_argument as php_argument0
             my._d = ""
@@ -95,7 +95,7 @@ function php_format_high_level_method_body (in_php_method)
             return new $(my.in_php_method.class:Pascal)($ctx);
             ", 0)
 
-    elsif my.in_php_method.return_interface = 1
+    elsif my.in_php_method.return_interface = "1"
 
         my._arguments = "$this->ctx"
         my._dd = ", "
@@ -109,10 +109,10 @@ function php_format_high_level_method_body (in_php_method)
 
             my._arg = php_argument0.name
 
-            if defined(php_argument0.is_enum) & php_argument0.is_enum = 1
+            if defined(php_argument0.is_enum) & php_argument0.is_enum = "1"
                 my._arg = "$(php_argument0.name:)->getValue()"
             else
-                if php_argument0.instance = 1
+                if php_argument0.instance = "1"
                     my._arg = "$(php_argument0.name:)->getCtx()"
                 endif
             endif
@@ -165,10 +165,10 @@ function php_format_high_level_method_body (in_php_method)
 
             my._arg = php_argument0.name
 
-            if defined(php_argument0.is_enum) & php_argument0.is_enum = 1
+            if is_true(php_argument0.is_enum)
                 my._arg = "$(php_argument0.name:)->getValue()"
             else
-                if php_argument0.instance = 1
+                if php_argument0.instance = "1"
                     my._arg = "$(php_argument0.name:)->getCtx()"
                 endif
             endif
@@ -183,12 +183,12 @@ function php_format_high_level_method_body (in_php_method)
 
         my._function_name = my.in_php_method.function_name
 
-        if my.in_php_method.return_enum = 1
+        if my.in_php_method.return_enum = "1"
             my._res = format_left("\
                 $enum = $(my._function_name:)($(my._arguments:));
                 return new $(my.in_php_method.return_type:Pascal)($enum);
                 ", 0)
-        elsif my.in_php_method.return_class_impl = 1
+        elsif my.in_php_method.return_class_impl = "1"
             my._res = format_left("\
                 $ctx = $(my._function_name:)($(my._arguments:));
                 return new $(my.in_php_method.return_type:Pascal)($ctx);

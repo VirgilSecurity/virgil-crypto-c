@@ -37,25 +37,19 @@
 
 namespace VirgilCrypto\Ratchet\Tests;
 
-use VirgilCrypto\Foundation\CtrDrbg;
-
 class RatchetTest extends \PHPUnit\Framework\TestCase
 {
     protected function setUp()
     {
+
     }
 
     protected function tearDown()
     {
     }
 
-    public function test_Ratchet_encryptDecrypt_rndData_shouldMatch()
+    public function test_temp()
     {
-        try {
-            $rnd = new CtrDrbg();
-        } catch (\Exception $e) {
-            $this->expectException(\Exception::class);
-        }
-
+        $this->assertTrue(true);
     }
 }

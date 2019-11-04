@@ -64,9 +64,7 @@ endfunction
 function php_derive_low_level_constant_name (in_constant)
     check_arguments (my, "in_constant", my)
 
-    my._res = "$(my.in_constant.name:c)"
-    my._res = "$(my._res:UPPER)"
-
+    my._res = "$(my.in_constant.name:c, UPPER)"
     return my._res
 endfunction
 
@@ -110,7 +108,7 @@ function php_derive_high_level_namespace_use (in_php_module, in_dependency)
         my._dep_class = my.in_dependency.impl
     else
         echo_debug_item(my.in_dependency)
-        echo_fatal("Not implemented", my)
+        echo_fatal("Not implemented (CZ1000)", my)
     endif
 
     my._res = "use $(my.in_php_module.main_project0:Pascal)\\\\$(my.in_dependency.project:Pascal)\\\\$(my._dep_class:Pascal);"

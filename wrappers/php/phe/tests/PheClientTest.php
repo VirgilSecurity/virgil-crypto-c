@@ -40,7 +40,7 @@ namespace VirgilCrypto\Phe\Tests;
 use VirgilCrypto\Phe\PheClient;
 use VirgilCrypto\Phe\PheServer;
 
-class PHEClientTest extends \PHPUnit\Framework\TestCase
+class PheClientTest extends \PHPUnit\Framework\TestCase
 {
     protected $client;
     protected $server;
