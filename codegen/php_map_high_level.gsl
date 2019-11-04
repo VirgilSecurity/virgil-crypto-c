@@ -63,7 +63,6 @@ function php_map_high_level (in_module, in_php_module, in_php_project, out_high_
     my._implements = ""
 
     my._type = "class"
-
     if my.in_type = "interface"
         my._type = "interface"
     endif
@@ -82,7 +81,7 @@ function php_map_high_level (in_module, in_php_module, in_php_project, out_high_
     endif
 
     for my.in_module.constructor as constructor0 where constructor0.visibility = "public" & constructor0.declaration = "public" & constructor0.scope = "public"
-        constructor0.is_constructor = 1
+        constructor0.is_constructor = "1"
         new php_method to my.out_high_level
             php_map_high_level_method (constructor0, my.in_php_module, my.in_type, php_method)
         endnew
@@ -96,7 +95,7 @@ function php_map_high_level (in_module, in_php_module, in_php_project, out_high_
                 .name = php_derive_high_level_constant_name(constant0)
                 .value = constant0.value
 
-                my._constant += format_left("const $(0.name:) = $(0.value:);", 0)
+                my._constant += format_left("const $(constant.name:) = $(constant.value:);", 0)
             endnew
         endfor
     endif
@@ -107,7 +106,7 @@ function php_map_high_level (in_module, in_php_module, in_php_project, out_high_
                 .name = constant0.name
                 .value = constant0.value
 
-                my._constant += format_left("const $(0.name:) = $(0.value:);", 0)
+                my._constant += format_left("const $(constant.name:) = $(constant.value:);", 0)
             endnew
         endfor
     else
@@ -118,17 +117,17 @@ function php_map_high_level (in_module, in_php_module, in_php_project, out_high_
             endif
 
             new interface to my.out_high_level
-                .name = "$(interface0.name:Pascal)"
+                interface.name = "$(interface0.name:Pascal)"
                 my._name = interface.name
                 my._implements += my._name + my._d
             endnew
 
             for interface0.constant as constant0
                 new constant to high_level
-                    .name = php_derive_high_level_constant_name(constant0)
-                    .value = constant0.value
+                    constant.name = php_derive_high_level_constant_name(constant0)
+                    constant.value = constant0.value
 
-                    my._constant += format_left("const $(0.name:) = $(0.value:);", 0)
+                    my._constant += format_left("const $(constant.name:) = $(constant.value:);", 0)
                 endnew
             endfor
         endfor
@@ -184,7 +183,7 @@ function php_map_high_level (in_module, in_php_module, in_php_project, out_high_
                     endif
                 endnew
 
-                if dependency0.is_observers_return_status = 1
+                if is_true(dependency0.is_observers_return_status)
                     new return to method
                         .enum = "status"
                         .is_reference = 0
@@ -203,9 +202,9 @@ function php_map_high_level (in_module, in_php_module, in_php_project, out_high_
                 .visibility = "public"
                 .declaration = "public"
                 .scope = "public"
-                .is_static = 0
+                .is_static = "0"
                 .return_type = "resource"
-                .throws_exception = 0
+                .throws_exception = "0"
 
                 new custom_code to method
                     . = format_left("return $this->ctx;", 0)
@@ -248,9 +247,9 @@ function php_map_high_level (in_module, in_php_module, in_php_project, out_high_
                 .visibility = "public"
                 .declaration = "public"
                 .scope = "public"
-                .is_static = 1
+                .is_static = "1"
                 .return_type = "$(interface0.name0:Pascal)"
-                .throws_exception = 1
+                .throws_exception = "1"
 
                 new argument to method
                     .name = "ctx"
@@ -377,8 +376,8 @@ function php_map_high_level_method (in_method, in_php_module, in_type, out_php_m
 
     my.out_php_method.is_constructor = 0
 
-    if defined (my.in_method.is_constructor) & my.in_method.is_constructor = 1
-        my.out_php_method.is_constructor = 1
+    if is_true(my.in_method.is_constructor)
+        my.out_php_method.is_constructor = "1"
     endif
 
     php_map_high_level_return (my.in_method, my.in_php_module, my.out_php_method)
@@ -420,7 +419,7 @@ function php_map_high_level_method (in_method, in_php_module, in_type, out_php_m
 
     my._docblock_data += format_left("@return $(0.return_type:)\n", 0)
 
-    if 0.throw_exception = 1 | (defined (my.in_method.throws_exception) & my.in_method.throws_exception = 1) | my.out_php_method.return_interface = 1
+    if is_true(0.throw_exception) | (is_true(my.in_method.throws_exception) | is_true(my.out_php_method.return_interface))
         my._docblock_data += format_left("@throws \\\\Exception", 0)
     endif
 
@@ -468,13 +467,13 @@ function php_map_high_level_return (in_method, in_php_module, out_php_method)
 
     my._return_type = "void"
     my._return_data = ""
-    my._instance = 0
+    my._instance = "0"
     my._namespace = ""
-    my._throw_exception = 0
+    my._throw_exception = "0"
     my._return_data_list = ""
-    my._return_interface = 0
-    my._return_enum = 0
-    my._return_class_impl = 0
+    my._return_interface = "0"
+    my._return_enum = "0"
+    my._return_class_impl = "0"
 
     my._argument_buffer_count = 0
 
@@ -488,7 +487,7 @@ function php_map_high_level_return (in_method, in_php_module, out_php_method)
 
     if is_true(my.in_method.is_constructor)
         my._return_type = "$(my.in_php_module.name0:Pascal)"
-        my._instance = 1
+        my._instance = "1"
     endif
 
     for my.in_method.argument as argument0 where defined (argument0.class)
@@ -533,19 +532,19 @@ function php_map_high_level_return (in_method, in_php_module, out_php_method)
             else
                 my._r = return0.class
                 my._namespace = php_derive_high_level_namespace(my.in_php_module)
-                my._instance = 1
-                my._return_class_impl = 1
+                my._instance = "1"
+                my._return_class_impl = "1"
             endif
         elsif defined (return0.interface)
             my._r = return0.interface
             my._namespace = php_derive_high_level_namespace(my.in_php_module)
-            my._instance = 1
-            my._return_interface = 1
+            my._instance = "1"
+            my._return_interface = "1"
         elsif defined (return0.impl)
             my._r = return0.impl
             my._namespace = php_derive_high_level_namespace(my.in_php_module)
-            my._instance = 1
-            my._return_class_impl = 1
+            my._instance = "1"
+            my._return_class_impl = "1"
         endif
 
         if (defined (return0.class) & return0.class <> "data") | defined (return0.interface) | defined (return0.impl)
@@ -554,11 +553,11 @@ function php_map_high_level_return (in_method, in_php_module, out_php_method)
 
         if defined (return0.enum)
             if return0.enum = "status"
-                my._throw_exception = 1
+                my._throw_exception = "1"
             else
                 my._return_type = "$(return0.enum:Pascal)"
-                my._instance = 1
-                my._return_enum = 1
+                my._instance = "1"
+                my._return_enum = "1"
             endif
         endif
     endfor
@@ -587,9 +586,9 @@ function php_map_high_level_argument (in_argument, in_php_module, out_php_argume
     my.out_php_argument.name = "$$(my.in_argument.name:Camel)"
 
     my._type = ""
-    my._instance = 0
+    my._instance = "0"
     my._namespace = ""
-    my._is_enum = 0
+    my._is_enum = "0"
 
     if defined (my.in_argument.class) & ! string_in (my.in_argument.class, "error, buffer")
             if string_in(my.in_argument.class, "data") 
@@ -598,20 +597,20 @@ function php_map_high_level_argument (in_argument, in_php_module, out_php_argume
                 my._type = ""
             else
                 my._type = "$(my.in_argument.class:Pascal)"
-                my._instance = 1
+                my._instance = "1"
                 my._namespace = php_derive_high_level_namespace(my.in_php_module)
             endif
     endif
 
     if defined (my.in_argument.interface)
         my._type = "$(my.in_argument.interface:Pascal)"
-        my._instance = 1
+        my._instance = "1"
         my._namespace = php_derive_high_level_namespace(my.in_php_module)
     endif
 
     if defined (my.in_argument.impl)
         my._type = "$(my.in_argument.impl:Pascal)"
-        my._instance = 1
+        my._instance = "1"
         my._namespace = php_derive_high_level_namespace(my.in_php_module)
     endif
 
@@ -621,7 +620,7 @@ function php_map_high_level_argument (in_argument, in_php_module, out_php_argume
         elsif my.in_argument.type = "char"
             my._type = "string"
         elsif my.in_argument.type = "byte"
-            if my.in_argument.is_reference = 1
+            if is_true(my.in_argument.is_reference)
                 my._type = "string"
             else 
                 my._type = "int"
@@ -636,8 +635,8 @@ function php_map_high_level_argument (in_argument, in_php_module, out_php_argume
 
     if defined (my.in_argument.enum)
         my._type = "$(my.in_argument.enum:Pascal)"
-        my._instance = 1
-        my._is_enum = 1
+        my._instance = "1"
+        my._is_enum = "1"
     endif
 
     if defined (my.in_argument.class_with_namespace)
