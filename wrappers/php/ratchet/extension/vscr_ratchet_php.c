@@ -149,7 +149,7 @@ vscr_handle_throw_exception(vscr_status_t status) {
 //
 // Constants
 //
-const char VSCR_RATCHET_PHP_VERSION[] = "0.10.4";
+const char VSCR_RATCHET_PHP_VERSION[] = "0.11.1";
 const char VSCR_RATCHET_PHP_EXTNAME[] = "vscr_ratchet_php";
 const char vscr_ratchet_key_id_t_php_res_name[] = "vscr_ratchet_key_id_t";
 const char vscr_ratchet_message_t_php_res_name[] = "vscr_ratchet_message_t";
@@ -227,7 +227,8 @@ PHP_FUNCTION(vscr_ratchet_key_id_delete_php) {
     //
     // Fetch for type checking and then release
     //
-    vscr_ratchet_key_id_t *ratchet_key_id = zend_fetch_resource_ex(in_ctx, vscr_ratchet_key_id_t_php_res_name, le_vscr_ratchet_key_id_t);
+    vscr_ratchet_key_id_t *ratchet_key_id = zend_fetch_resource_ex(in_ctx, vscr_ratchet_key_id_t_php_res_name,
+    le_vscr_ratchet_key_id_t);
     zend_list_close(Z_RES_P(in_ctx));
     RETURN_TRUE;
 }
@@ -350,7 +351,8 @@ PHP_FUNCTION(vscr_ratchet_message_delete_php) {
     //
     // Fetch for type checking and then release
     //
-    vscr_ratchet_message_t *ratchet_message = zend_fetch_resource_ex(in_ctx, vscr_ratchet_message_t_php_res_name, le_vscr_ratchet_message_t);
+    vscr_ratchet_message_t *ratchet_message = zend_fetch_resource_ex(in_ctx, vscr_ratchet_message_t_php_res_name,
+    le_vscr_ratchet_message_t);
     zend_list_close(Z_RES_P(in_ctx));
     RETURN_TRUE;
 }
@@ -735,7 +737,8 @@ PHP_FUNCTION(vscr_ratchet_session_delete_php) {
     //
     // Fetch for type checking and then release
     //
-    vscr_ratchet_session_t *ratchet_session = zend_fetch_resource_ex(in_ctx, vscr_ratchet_session_t_php_res_name, le_vscr_ratchet_session_t);
+    vscr_ratchet_session_t *ratchet_session = zend_fetch_resource_ex(in_ctx, vscr_ratchet_session_t_php_res_name,
+    le_vscr_ratchet_session_t);
     zend_list_close(Z_RES_P(in_ctx));
     RETURN_TRUE;
 }
@@ -1419,7 +1422,8 @@ PHP_FUNCTION(vscr_ratchet_group_participants_info_delete_php) {
     //
     // Fetch for type checking and then release
     //
-    vscr_ratchet_group_participants_info_t *ratchet_group_participants_info = zend_fetch_resource_ex(in_ctx, vscr_ratchet_group_participants_info_t_php_res_name, le_vscr_ratchet_group_participants_info_t);
+    vscr_ratchet_group_participants_info_t *ratchet_group_participants_info = zend_fetch_resource_ex(in_ctx, vscr_ratchet_group_participants_info_t_php_res_name,
+    le_vscr_ratchet_group_participants_info_t);
     zend_list_close(Z_RES_P(in_ctx));
     RETURN_TRUE;
 }
@@ -1524,7 +1528,8 @@ PHP_FUNCTION(vscr_ratchet_group_message_delete_php) {
     //
     // Fetch for type checking and then release
     //
-    vscr_ratchet_group_message_t *ratchet_group_message = zend_fetch_resource_ex(in_ctx, vscr_ratchet_group_message_t_php_res_name, le_vscr_ratchet_group_message_t);
+    vscr_ratchet_group_message_t *ratchet_group_message = zend_fetch_resource_ex(in_ctx, vscr_ratchet_group_message_t_php_res_name,
+    le_vscr_ratchet_group_message_t);
     zend_list_close(Z_RES_P(in_ctx));
     RETURN_TRUE;
 }
@@ -1908,7 +1913,8 @@ PHP_FUNCTION(vscr_ratchet_group_ticket_delete_php) {
     //
     // Fetch for type checking and then release
     //
-    vscr_ratchet_group_ticket_t *ratchet_group_ticket = zend_fetch_resource_ex(in_ctx, vscr_ratchet_group_ticket_t_php_res_name, le_vscr_ratchet_group_ticket_t);
+    vscr_ratchet_group_ticket_t *ratchet_group_ticket = zend_fetch_resource_ex(in_ctx, vscr_ratchet_group_ticket_t_php_res_name,
+    le_vscr_ratchet_group_ticket_t);
     zend_list_close(Z_RES_P(in_ctx));
     RETURN_TRUE;
 }
@@ -2141,7 +2147,8 @@ PHP_FUNCTION(vscr_ratchet_group_participants_ids_delete_php) {
     //
     // Fetch for type checking and then release
     //
-    vscr_ratchet_group_participants_ids_t *ratchet_group_participants_ids = zend_fetch_resource_ex(in_ctx, vscr_ratchet_group_participants_ids_t_php_res_name, le_vscr_ratchet_group_participants_ids_t);
+    vscr_ratchet_group_participants_ids_t *ratchet_group_participants_ids = zend_fetch_resource_ex(in_ctx, vscr_ratchet_group_participants_ids_t_php_res_name,
+    le_vscr_ratchet_group_participants_ids_t);
     zend_list_close(Z_RES_P(in_ctx));
     RETURN_TRUE;
 }
@@ -2236,7 +2243,8 @@ PHP_FUNCTION(vscr_ratchet_group_session_delete_php) {
     //
     // Fetch for type checking and then release
     //
-    vscr_ratchet_group_session_t *ratchet_group_session = zend_fetch_resource_ex(in_ctx, vscr_ratchet_group_session_t_php_res_name, le_vscr_ratchet_group_session_t);
+    vscr_ratchet_group_session_t *ratchet_group_session = zend_fetch_resource_ex(in_ctx, vscr_ratchet_group_session_t_php_res_name,
+    le_vscr_ratchet_group_session_t);
     zend_list_close(Z_RES_P(in_ctx));
     RETURN_TRUE;
 }

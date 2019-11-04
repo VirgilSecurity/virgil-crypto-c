@@ -36,3 +36,4 @@ bin/
 .vs/
 
 Carthage
+/wrappers/php/phe/vendor/autoload.php

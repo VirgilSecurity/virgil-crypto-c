@@ -97,6 +97,18 @@ class RecipientCipher
     }
 
     /**
+    * Return true if a key recipient with a given id has been added.
+    * Note, operation has O(N) time complexity.
+    *
+    * @param string $recipientId
+    * @return bool
+    */
+    public function hasKeyRecipient(string $recipientId): bool
+    {
+        return vscf_recipient_cipher_has_key_recipient_php($this->ctx, $recipientId);
+    }
+
+    /**
     * Add recipient defined with id and public key.
     *
     * @param string $recipientId

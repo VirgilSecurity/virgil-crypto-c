@@ -78,7 +78,7 @@ vsce_handle_throw_exception(vsce_status_t status) {
 //
 // Constants
 //
-const char VSCE_PHE_PHP_VERSION[] = "0.10.4";
+const char VSCE_PHE_PHP_VERSION[] = "0.11.1";
 const char VSCE_PHE_PHP_EXTNAME[] = "vsce_phe_php";
 const char vsce_phe_server_t_php_res_name[] = "vsce_phe_server_t";
 const char vsce_phe_client_t_php_res_name[] = "vsce_phe_client_t";
@@ -146,7 +146,8 @@ PHP_FUNCTION(vsce_phe_server_delete_php) {
     //
     // Fetch for type checking and then release
     //
-    vsce_phe_server_t *phe_server = zend_fetch_resource_ex(in_ctx, vsce_phe_server_t_php_res_name, le_vsce_phe_server_t);
+    vsce_phe_server_t *phe_server = zend_fetch_resource_ex(in_ctx, vsce_phe_server_t_php_res_name,
+    le_vsce_phe_server_t);
     zend_list_close(Z_RES_P(in_ctx));
     RETURN_TRUE;
 }
@@ -792,7 +793,8 @@ PHP_FUNCTION(vsce_phe_client_delete_php) {
     //
     // Fetch for type checking and then release
     //
-    vsce_phe_client_t *phe_client = zend_fetch_resource_ex(in_ctx, vsce_phe_client_t_php_res_name, le_vsce_phe_client_t);
+    vsce_phe_client_t *phe_client = zend_fetch_resource_ex(in_ctx, vsce_phe_client_t_php_res_name,
+    le_vsce_phe_client_t);
     zend_list_close(Z_RES_P(in_ctx));
     RETURN_TRUE;
 }
@@ -1591,7 +1593,8 @@ PHP_FUNCTION(vsce_phe_cipher_delete_php) {
     //
     // Fetch for type checking and then release
     //
-    vsce_phe_cipher_t *phe_cipher = zend_fetch_resource_ex(in_ctx, vsce_phe_cipher_t_php_res_name, le_vsce_phe_cipher_t);
+    vsce_phe_cipher_t *phe_cipher = zend_fetch_resource_ex(in_ctx, vsce_phe_cipher_t_php_res_name,
+    le_vsce_phe_cipher_t);
     zend_list_close(Z_RES_P(in_ctx));
     RETURN_TRUE;
 }
