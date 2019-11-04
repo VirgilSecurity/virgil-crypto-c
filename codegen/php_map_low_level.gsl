@@ -149,7 +149,7 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
     endif
 
     for my.in_module.method as method0 where wrapper_should_wrap_method(method0) & method0.name <> "get ctx"
-        new function to my.out_low_level
+        new [function] to my.out_low_level
 
             .is_static = method0.is_static
 
@@ -720,11 +720,6 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
                                     RETVAL_RES($(return_argument0.name:)_res);
                                     ", 0)
                             endif
-                        #elsif return_argument0.type0 = "class"
-                        #    my._res += format_left("\
-                        #        zend_resource *$(return_argument0.name:)_res = zend_register_resource($(return_argument0.name:)$(my._rs), le_$(return_argument0.type:)_t);
-                        #        RETVAL_RES($(return_argument0.name:)_res);
-                        #        ", 0)
                         else
                             echo_debug_item(function)
                             echo_debug_item(return_argument0)
@@ -792,7 +787,7 @@ endfunction
 function php_map_low_level_constructor_destructor (in_module, out_low_level, in_type)
     check_arguments (my, "in_module, out_low_level, in_type", my)
 
-    new function to my.out_low_level
+    new [function] to my.out_low_level
         .name0 = "$(my.in_module.c_prefix:)_$(my.in_module.name:c)_new"
         .name = "$(0.name0:)_php"
         .prefix0 = "$(my.in_module.c_prefix:)"
@@ -806,11 +801,11 @@ function php_map_low_level_constructor_destructor (in_module, out_low_level, in_
 
         my._a = "$(0.prefix0:c)_$(0.entity0:c)"
 
-        new def_func_entry to function
+        new def_func_entry to [function]
             . = format_left("PHP_FE($([function].name0:)_php, arginfo_$([function].name0:)_php)", 0)
         endnew
 
-        new wrapper to function
+        new wrapper to [function]
             new arg_info to wrapper
                 my._c = php_format_extension_comment("Wrap method: $([function].name0:)")
 
@@ -846,7 +841,7 @@ function php_map_low_level_constructor_destructor (in_module, out_low_level, in_
         endnew
     endnew
 
-    new function to my.out_low_level
+    new [function] to my.out_low_level
         .name0 = "$(my.in_module.c_prefix:)_$(my.in_module.name:c)_delete"
         .name = "$(0.name0:)_php"
         .prefix0 = "$(my.in_module.c_prefix:)"
@@ -860,11 +855,11 @@ function php_map_low_level_constructor_destructor (in_module, out_low_level, in_
 
         my._a = "$(0.prefix0:)_$(0.entity0)"
 
-        new def_func_entry to function
+        new def_func_entry to [function]
             . = format_left("PHP_FE($([function].name0:)_php, arginfo_$([function].name0:)_php)", 0)
         endnew
 
-        new wrapper to function
+        new wrapper to [function]
             new arg_info to wrapper
                 my._c = php_format_extension_comment("Wrap method: $([function].name0:)")
 
@@ -1080,7 +1075,7 @@ function php_map_low_level_return (in_method, in_php_project, out_function)
                     return_argument.length_type = "method"
                 elsif defined (argument0->length.constant)
 
-                    if defined(argument0->length.class)
+                    if defined (argument0->length.class)
                         my._e = argument0->length.class
                     else
                         my._e = my._entity
@@ -1120,7 +1115,7 @@ function php_map_low_level_return (in_method, in_php_project, out_function)
                 my._return_type0 = return0.type
                 my._return_type = "size_t"
                 my._return_zend_type = "IS_LONG"
-            elsif return0.type = "integer" | return0.type = "unsigned"
+            elsif string_in(return0.type, "integer, unsigned")
                 my._return_type0 = return0.type
                 my._return_type = "int"
                 my._return_zend_type = "IS_LONG"
@@ -1274,23 +1269,18 @@ function php_map_low_level_extension (in_php_project, out_php_module)
     check_arguments (my, "in_php_project, out_php_module", my)
 
     my._include = ""
-
     my._registered_resources = ""
     my._header_registered_resources = ""
     my._constants = ""
     my._header_constants = ""
+    my._init_func_def_dtor = ""
+    my._init_func_def_list_destr = ""
 
-    if defined(my.in_php_project->interfaces)
+    if count(my.in_php_project.interfaces)
         my._registered_resources = format_left("int le_$(my.in_php_project.prefix)_impl_t;", 0)
         my._header_registered_resources = format_left("extern int le_$(my.in_php_project.prefix)_impl_t;", 0)
         my._constants = format_left("const char $(my.in_php_project.prefix:)_impl_t_php_res_name[] = \"$(my.in_php_project.prefix)_impl_t\";", 0)
         my._header_constants = format_left("extern const char $(my.in_php_project.prefix:)_impl_t_php_res_name[];", 0)
-    endif
-
-    my._init_func_def_dtor = ""
-    my._init_func_def_list_destr = ""
-
-    if defined(my.in_php_project->interfaces)
 
         my._p = my.in_php_project.prefix
 
@@ -1299,7 +1289,6 @@ function php_map_low_level_extension (in_php_project, out_php_module)
                 $(my._p:)_impl_delete(($(my._p:)_impl_t *)rsrc->ptr);
             }
             ", 0)
-
 
         my._init_func_def_list_destr += format_left("\
             le_$(my._p:)_impl_t = zend_register_list_destructors_ex($(my._p:)_impl_dtor_php, NULL, $(my._p:)_impl_t_php_res_name, module_number);
@@ -1319,7 +1308,7 @@ function php_map_low_level_extension (in_php_project, out_php_module)
     for my.in_php_project.php_module as php_module0 where string_in(php_module0.type, "class, implementation, single_function")
         if ! defined (php_module0->low_level->[include]) & php_module0.type <> "single_function"
             echo_debug_item(php_module0->low_level)
-            echo_fatal("========", my)
+            echo_fatal("Not implemented (AQ2000)", my)
         endif
 
         if php_module0.type <> "single_function"
@@ -1339,7 +1328,7 @@ function php_map_low_level_extension (in_php_project, out_php_module)
             my._func_wrapping += format_left(function0->wrapper->arg_info., 0)
             my._def_func_entries += function0->def_func_entry.
 
-            if defined(function0->wrapper->custom_code)
+            if count(function0->wrapper.custom_code)
                 my._func_wrapping += "\n" + format_left(function0->wrapper->custom_code., 0)
             else
                 my._1 = "\n" + function0->wrapper->header.
@@ -1347,39 +1336,39 @@ function php_map_low_level_extension (in_php_project, out_php_module)
                 my._3 = "\n" + function0->wrapper->parse_arguments.
 
                 my._4 = ""
-                if defined(function0->wrapper->proxy_call)
+                if count(function0->wrapper.proxy_call)
                     my._4  = "\n" + function0->wrapper->proxy_call.
                 endif
 
                 my._5 = ""
-                if defined(function0->wrapper->argument_type_mapping)
+                if count(function0->wrapper.argument_type_mapping)
                     my._5  = "\n" + function0->wrapper->argument_type_mapping.
                 endif
 
                 my._6 = ""
-                if defined(function0->wrapper->allocate_output_buffer)
+                if count(function0->wrapper.allocate_output_buffer)
                     my._6 = "\n" + function0->wrapper->allocate_output_buffer.
                 endif
 
                 my._7 = "\n" + function0->wrapper->call_main_function.
 
                 my._8 = ""
-                if defined(function0->wrapper->handle_error)
+                if count(function0->wrapper.handle_error)
                     my._8 = "\n" + function0->wrapper->handle_error
                 endif
 
                 my._9 = ""
-                if defined(function0->wrapper->correct_string_length)
+                if count(function0->wrapper.correct_string_length)
                     my._9 = "\n" + function0->wrapper->correct_string_length.
                 endif
 
                 my._10 = ""
-                if defined(function0->wrapper->return_type_mapping)
+                if count(function0->wrapper.return_type_mapping)
                     my._10 = "\n" + function0->wrapper->return_type_mapping.
                 endif
 
                 my._11 = ""
-                if defined(function0->wrapper->write_returned_result)
+                if count(function0->wrapper.write_returned_result)
                     my._11 = "\n" + function0->wrapper->write_returned_result.
                 endif
 
@@ -1393,11 +1382,10 @@ function php_map_low_level_extension (in_php_project, out_php_module)
     endfor
 
     new licence to my.out_php_module
-        my._res = php_format_extension_comment (my.in_php_project->license)
-        . = my._res
+        . = php_format_extension_comment (my.in_php_project->license)
     endnew
 
-    new include to my.out_php_module
+    new [include] to my.out_php_module
 
         my._req = ""
 
@@ -1413,9 +1401,7 @@ function php_map_low_level_extension (in_php_project, out_php_module)
             #include \"$(my.in_php_project.prefix:)_$(my.in_php_project.name:)_php.h\"
             ", 0)
 
-        my._res = my._res + my._req + my._include
-
-        . = my._res
+        . = my._res + my._req + my._include
     endnew
 
     new constants to my.out_php_module
@@ -1427,26 +1413,26 @@ function php_map_low_level_extension (in_php_project, out_php_module)
             const char $(my._ext_name:)_VERSION[] = \"$(my.in_php_project.version:)\";
             const char $(my._ext_name:)_EXTNAME[] = \"$(my._ext_name0:)\"; 
             ", 0)
-        my._res = my._c + my._h + my._constants
-        . = my._res
+
+        . = my._c + my._h + my._constants
     endnew
 
     new header_constants to my.out_php_module
         my._c = php_format_extension_comment ("Constants")
-        my._res = my._c + my._header_constants
-        . = my._res
+
+        . = my._c + my._header_constants
     endnew
 
     new registered_resources to my.out_php_module
         my._c = php_format_extension_comment ("Registered resources")
-        my._res = my._c + my._registered_resources
-        . = my._res
+
+        . = my._c + my._registered_resources
     endnew
 
     new header_registered_resources to my.out_php_module
         my._c = php_format_extension_comment ("Registered resources")
-        my._res = my._c + my._header_registered_resources
-        . = my._res
+
+        . = my._c + my._header_registered_resources
     endnew
 
     new init_func_declaration to my.out_php_module
@@ -1456,15 +1442,15 @@ function php_map_low_level_extension (in_php_project, out_php_module)
             PHP_MINIT_FUNCTION($(my._ext_name0:));
             PHP_MSHUTDOWN_FUNCTION($(my._ext_name0:));
             ", 0)
-        my._res = my._c + my._h
-        . = my._res
+
+        . = my._c + my._h
     endnew
 
     new func_wrapping to my.out_php_module
         my._c = php_format_extension_comment ("Functions wrapping")
         my._h = my._func_wrapping
-        my._res = my._c + my._h
-        . = my._res
+
+        . = my._c + my._h
     endnew
 
     new define_all_func_entries to my.out_php_module
@@ -1477,9 +1463,7 @@ function php_map_low_level_extension (in_php_project, out_php_module)
             };
             ", 0)
 
-        my._res = my._c + my._h1 + my._h2 + my._h3
-
-        . = my._res
+        . = my._c + my._h1 + my._h2 + my._h3
     endnew
 
     new module_definitions to my.out_php_module
@@ -1505,8 +1489,7 @@ function php_map_low_level_extension (in_php_project, out_php_module)
             ZEND_GET_MODULE($(my._ext_name0:))
             ", 0)
 
-        my._res = my._c + my._h
-        . = my._res
+        . = my._c + my._h
     endnew
 
     new init_func_definitions to my.out_php_module
@@ -1527,9 +1510,7 @@ function php_map_low_level_extension (in_php_project, out_php_module)
             }
             ", 0)
 
-        my._res = my._c + my._h1 + my._h2 + my._h3 + my._h4 + my._h5
-
-        . = my._res
+        . = my._c + my._h1 + my._h2 + my._h3 + my._h4 + my._h5
     endnew
 
     new extension_status to my.out_php_module

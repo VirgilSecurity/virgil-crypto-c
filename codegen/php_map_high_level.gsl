@@ -80,7 +80,7 @@ function php_map_high_level (in_module, in_php_module, in_php_project, out_high_
         endif
     endif
 
-    for my.in_module.constructor as constructor0 where constructor0.visibility = "public" & constructor0.declaration = "public" & constructor0.scope = "public"
+    for my.in_module.constructor as constructor0 where constructor0.visibility = "public" & constructor0.declaration = "public" & constructor0.[scope] = "public"
         constructor0.is_constructor = "1"
         new php_method to my.out_high_level
             php_map_high_level_method (constructor0, my.in_php_module, my.in_type, php_method)
@@ -169,7 +169,7 @@ function php_map_high_level (in_module, in_php_module, in_php_project, out_high_
             new method to my._dependency_method
                 .name = "use $(my._dep_name:)"
                 .visibility = "public"
-                .scope = "public"
+                .[scope] = "public"
                 .declaration = "public"
                 .is_static = 0
                 .return_type = "void"
@@ -201,7 +201,7 @@ function php_map_high_level (in_module, in_php_module, in_php_project, out_high_
                 .name = "get ctx"
                 .visibility = "public"
                 .declaration = "public"
-                .scope = "public"
+                .[scope] = "public"
                 .is_static = "0"
                 .return_type = "resource"
                 .throws_exception = "0"
@@ -246,7 +246,7 @@ function php_map_high_level (in_module, in_php_module, in_php_project, out_high_
                 .name = "wrap $(interface0.name0:)"
                 .visibility = "public"
                 .declaration = "public"
-                .scope = "public"
+                .[scope] = "public"
                 .is_static = "1"
                 .return_type = "$(interface0.name0:Pascal)"
                 .throws_exception = "1"
@@ -265,7 +265,7 @@ function php_map_high_level (in_module, in_php_module, in_php_project, out_high_
         endfor
     endif
 
-    for my.in_module.method as method0 where method0.visibility = "public" & method0.declaration = "public" & method0.scope = "public"
+    for my.in_module.method as method0 where method0.visibility = "public" & method0.declaration = "public" & method0.[scope] = "public"
         new php_method to my.out_high_level
             php_map_high_level_method (method0, my.in_php_module, my.in_type, php_method)
         endnew
@@ -450,7 +450,7 @@ function php_map_high_level_method (in_method, in_php_module, in_type, out_php_m
 
     if my.in_type <> "interface"
         new body to my.out_php_method
-            if defined (my.in_method->custom_code)
+            if count (my.in_method.custom_code)
                 . = my.in_method->custom_code.
             else
                 . = php_format_high_level_method_body(my.out_php_method)

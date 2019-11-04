@@ -49,11 +49,10 @@ function php_derive_high_level_constant_name (in_constant)
     check_arguments (my, "in_constant", my)
 
     if defined (my.in_constant.name_)
-        my._res = "$(my.in_constant.name_:c)"
+        my._res = "$(my.in_constant.name_:c, UPPER)"
     else 
-        my._res = "$(my.in_constant.name:c)"
+        my._res = "$(my.in_constant.name:c, UPPER)"
     endif
-    my._res = "$(my._res:UPPER)"
 
     return my._res
 endfunction

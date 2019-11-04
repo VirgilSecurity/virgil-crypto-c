@@ -62,7 +62,7 @@ function php_generate_sources (php_project)
         php_generate_source_high_level (php_module0)
     endfor
 
-    for my.php_project.php_module as php_module0 where php_module0.type = "extension"& php_module0.name <> "extension status"
+    for my.php_project.php_module as php_module0 where php_module0.type = "extension" & php_module0.name <> "extension status"
         php_generate_source_low_level (php_module0)
     endfor
 
@@ -91,9 +91,6 @@ function php_generate_source_high_level (in_php_module)
     php_insert_description (my.in_php_module->php_license)
 
     newline()
-
-    my._module_type = my.in_php_module.type
-    my._module_name = my.in_php_module.name
 
     my._namespace = my.in_php_module->high_level->namespace.
     php_insert_code(my._namespace, 0)
@@ -139,7 +136,7 @@ function php_generate_source_high_level (in_php_module)
         my._signature = php_method0->signature.
         php_insert_code(my._signature, 1)
 
-        if my._module_type <> "interface"
+        if my.in_php_module.type <> "interface"
             php_insert_code("{", 1)
             php_insert_code(php_method0->body., 2)
             php_insert_code("}", 1)
@@ -162,7 +159,7 @@ function php_generate_source_low_level (in_php_module)
         endif
     endif
 
-    if defined(my.in_php_module.is_header) & my.in_php_module.is_header = 1
+    if is_true(my.in_php_module.is_header)
         echo_trace ("Generate $(my.in_php_module.name:).h", my)
 
         output my.in_php_module.source_file_path
@@ -179,7 +176,7 @@ function php_generate_source_low_level (in_php_module)
 
         php_insert_code (my.in_php_module->licence, 0)
         newline()
-        php_insert_code (my.in_php_module->include, 0)
+        php_insert_code (my.in_php_module->[include], 0)
         newline()
         php_insert_code(my.in_php_module->extension_status, 0)
         newline()
