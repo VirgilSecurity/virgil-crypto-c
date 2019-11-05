@@ -4,7 +4,7 @@ package foundation
 // #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lmbedcrypto -led25519 -lprotobuf-nanopb -lvsc_common -lvsc_foundation -lvsc_foundation_pb
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
-import unsafe "unsafe"
+
 
 /*
 * Virgil Security implementation of the PBKDF2 (RFC 8018) algorithm.
@@ -61,7 +61,7 @@ func newPkcs5Pbkdf2Copy (ctx *C.vscf_pkcs5_pbkdf2_t /*ct10*/) *Pkcs5Pbkdf2 {
 }
 
 /// Release underlying C context.
-func (this Pkcs5Pbkdf2) close () {
+func (this Pkcs5Pbkdf2) clear () {
     C.vscf_pkcs5_pbkdf2_delete(this.cCtx)
 }
 
@@ -101,25 +101,23 @@ func (this Pkcs5Pbkdf2) RestoreAlgInfo (algInfo IAlgInfo) error {
 * Derive key of the requested length from the given data.
 */
 func (this Pkcs5Pbkdf2) Derive (data []byte, keyLen uint32) []byte {
-    keyCount := C.ulong(keyLen)
-    keyMemory := make([]byte, int(C.vsc_buffer_ctx_size() + keyCount))
-    keyBuf := (*C.vsc_buffer_t)(unsafe.Pointer(&keyMemory[0]))
-    keyData := keyMemory[int(C.vsc_buffer_ctx_size()):]
-    C.vsc_buffer_init(keyBuf)
-    C.vsc_buffer_use(keyBuf, (*C.byte)(unsafe.Pointer(&keyData[0])), keyCount)
-    defer C.vsc_buffer_delete(keyBuf)
-    dataData := C.vsc_data((*C.uint8_t)(&data[0]), C.size_t(len(data)))
+    keyBuf, keyBufErr := bufferNewBuffer(int(keyLen))
+    if keyBufErr != nil {
+        return nil
+    }
+    defer keyBuf.clear()
+    dataData := helperWrapData (data)
 
-    C.vscf_pkcs5_pbkdf2_derive(this.cCtx, dataData, (C.size_t)(keyLen)/*pa10*/, keyBuf)
+    C.vscf_pkcs5_pbkdf2_derive(this.cCtx, dataData, (C.size_t)(keyLen)/*pa10*/, keyBuf.ctx)
 
-    return keyData[0:C.vsc_buffer_len(keyBuf)] /* r7 */
+    return keyBuf.getData() /* r7 */
 }
 
 /*
 * Prepare algorithm to derive new key.
 */
 func (this Pkcs5Pbkdf2) Reset (salt []byte, iterationCount uint32) {
-    saltData := C.vsc_data((*C.uint8_t)(&salt[0]), C.size_t(len(salt)))
+    saltData := helperWrapData (salt)
 
     C.vscf_pkcs5_pbkdf2_reset(this.cCtx, saltData, (C.size_t)(iterationCount)/*pa10*/)
 
@@ -131,7 +129,7 @@ func (this Pkcs5Pbkdf2) Reset (salt []byte, iterationCount uint32) {
 * Can be empty.
 */
 func (this Pkcs5Pbkdf2) SetInfo (info []byte) {
-    infoData := C.vsc_data((*C.uint8_t)(&info[0]), C.size_t(len(info)))
+    infoData := helperWrapData (info)
 
     C.vscf_pkcs5_pbkdf2_set_info(this.cCtx, infoData)
 

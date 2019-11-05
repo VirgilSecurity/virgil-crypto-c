@@ -4,7 +4,7 @@ package foundation
 // #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lmbedcrypto -led25519 -lprotobuf-nanopb -lvsc_common -lvsc_foundation -lvsc_foundation_pb
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
-import unsafe "unsafe"
+
 
 /*
 * Implementation of the symmetric cipher AES-256 bit in a CBC mode.
@@ -51,7 +51,7 @@ func newAes256CbcCopy (ctx *C.vscf_aes256_cbc_t /*ct10*/) *Aes256Cbc {
 }
 
 /// Release underlying C context.
-func (this Aes256Cbc) close () {
+func (this Aes256Cbc) clear () {
     C.vscf_aes256_cbc_delete(this.cCtx)
 }
 
@@ -91,23 +91,21 @@ func (this Aes256Cbc) RestoreAlgInfo (algInfo IAlgInfo) error {
 * Encrypt given data.
 */
 func (this Aes256Cbc) Encrypt (data []byte) ([]byte, error) {
-    outCount := C.ulong(this.EncryptedLen(uint32(len(data))) /* lg2 */)
-    outMemory := make([]byte, int(C.vsc_buffer_ctx_size() + outCount))
-    outBuf := (*C.vsc_buffer_t)(unsafe.Pointer(&outMemory[0]))
-    outData := outMemory[int(C.vsc_buffer_ctx_size()):]
-    C.vsc_buffer_init(outBuf)
-    C.vsc_buffer_use(outBuf, (*C.byte)(unsafe.Pointer(&outData[0])), outCount)
-    defer C.vsc_buffer_delete(outBuf)
-    dataData := C.vsc_data((*C.uint8_t)(&data[0]), C.size_t(len(data)))
+    outBuf, outBufErr := bufferNewBuffer(int(this.EncryptedLen(uint32(len(data))) /* lg2 */))
+    if outBufErr != nil {
+        return nil, outBufErr
+    }
+    defer outBuf.clear()
+    dataData := helperWrapData (data)
 
-    proxyResult := /*pr4*/C.vscf_aes256_cbc_encrypt(this.cCtx, dataData, outBuf)
+    proxyResult := /*pr4*/C.vscf_aes256_cbc_encrypt(this.cCtx, dataData, outBuf.ctx)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
         return nil, err
     }
 
-    return outData[0:C.vsc_buffer_len(outBuf)] /* r7 */, nil
+    return outBuf.getData() /* r7 */, nil
 }
 
 /*
@@ -132,23 +130,21 @@ func (this Aes256Cbc) PreciseEncryptedLen (dataLen uint32) uint32 {
 * Decrypt given data.
 */
 func (this Aes256Cbc) Decrypt (data []byte) ([]byte, error) {
-    outCount := C.ulong(this.DecryptedLen(uint32(len(data))) /* lg2 */)
-    outMemory := make([]byte, int(C.vsc_buffer_ctx_size() + outCount))
-    outBuf := (*C.vsc_buffer_t)(unsafe.Pointer(&outMemory[0]))
-    outData := outMemory[int(C.vsc_buffer_ctx_size()):]
-    C.vsc_buffer_init(outBuf)
-    C.vsc_buffer_use(outBuf, (*C.byte)(unsafe.Pointer(&outData[0])), outCount)
-    defer C.vsc_buffer_delete(outBuf)
-    dataData := C.vsc_data((*C.uint8_t)(&data[0]), C.size_t(len(data)))
+    outBuf, outBufErr := bufferNewBuffer(int(this.DecryptedLen(uint32(len(data))) /* lg2 */))
+    if outBufErr != nil {
+        return nil, outBufErr
+    }
+    defer outBuf.clear()
+    dataData := helperWrapData (data)
 
-    proxyResult := /*pr4*/C.vscf_aes256_cbc_decrypt(this.cCtx, dataData, outBuf)
+    proxyResult := /*pr4*/C.vscf_aes256_cbc_decrypt(this.cCtx, dataData, outBuf.ctx)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
         return nil, err
     }
 
-    return outData[0:C.vsc_buffer_len(outBuf)] /* r7 */, nil
+    return outBuf.getData() /* r7 */, nil
 }
 
 /*
@@ -163,28 +159,28 @@ func (this Aes256Cbc) DecryptedLen (dataLen uint32) uint32 {
 /*
 * Cipher nfonce length or IV length in bytes, or 0 if nonce is not required.
 */
-func Aes256CbcGetNonceLen () uint32 {
+func (this Aes256Cbc) GetNonceLen () uint32 {
     return 16
 }
 
 /*
 * Cipher key length in bytes.
 */
-func Aes256CbcGetKeyLen () uint32 {
+func (this Aes256Cbc) GetKeyLen () uint32 {
     return 32
 }
 
 /*
 * Cipher key length in bits.
 */
-func Aes256CbcGetKeyBitlen () uint32 {
+func (this Aes256Cbc) GetKeyBitlen () uint32 {
     return 256
 }
 
 /*
 * Cipher block length in bytes.
 */
-func Aes256CbcGetBlockLen () uint32 {
+func (this Aes256Cbc) GetBlockLen () uint32 {
     return 16
 }
 
@@ -192,7 +188,7 @@ func Aes256CbcGetBlockLen () uint32 {
 * Setup IV or nonce.
 */
 func (this Aes256Cbc) SetNonce (nonce []byte) {
-    nonceData := C.vsc_data((*C.uint8_t)(&nonce[0]), C.size_t(len(nonce)))
+    nonceData := helperWrapData (nonce)
 
     C.vscf_aes256_cbc_set_nonce(this.cCtx, nonceData)
 
@@ -203,7 +199,7 @@ func (this Aes256Cbc) SetNonce (nonce []byte) {
 * Set cipher encryption / decryption key.
 */
 func (this Aes256Cbc) SetKey (key []byte) {
-    keyData := C.vsc_data((*C.uint8_t)(&key[0]), C.size_t(len(key)))
+    keyData := helperWrapData (key)
 
     C.vscf_aes256_cbc_set_key(this.cCtx, keyData)
 
@@ -232,18 +228,16 @@ func (this Aes256Cbc) StartDecryption () {
 * Process encryption or decryption of the given data chunk.
 */
 func (this Aes256Cbc) Update (data []byte) []byte {
-    outCount := C.ulong(this.OutLen(uint32(len(data))) /* lg2 */)
-    outMemory := make([]byte, int(C.vsc_buffer_ctx_size() + outCount))
-    outBuf := (*C.vsc_buffer_t)(unsafe.Pointer(&outMemory[0]))
-    outData := outMemory[int(C.vsc_buffer_ctx_size()):]
-    C.vsc_buffer_init(outBuf)
-    C.vsc_buffer_use(outBuf, (*C.byte)(unsafe.Pointer(&outData[0])), outCount)
-    defer C.vsc_buffer_delete(outBuf)
-    dataData := C.vsc_data((*C.uint8_t)(&data[0]), C.size_t(len(data)))
+    outBuf, outBufErr := bufferNewBuffer(int(this.OutLen(uint32(len(data))) /* lg2 */))
+    if outBufErr != nil {
+        return nil
+    }
+    defer outBuf.clear()
+    dataData := helperWrapData (data)
 
-    C.vscf_aes256_cbc_update(this.cCtx, dataData, outBuf)
+    C.vscf_aes256_cbc_update(this.cCtx, dataData, outBuf.ctx)
 
-    return outData[0:C.vsc_buffer_len(outBuf)] /* r7 */
+    return outBuf.getData() /* r7 */
 }
 
 /*
@@ -283,21 +277,19 @@ func (this Aes256Cbc) DecryptedOutLen (dataLen uint32) uint32 {
 * Accomplish encryption or decryption process.
 */
 func (this Aes256Cbc) Finish () ([]byte, error) {
-    outCount := C.ulong(this.OutLen(0) /* lg2 */)
-    outMemory := make([]byte, int(C.vsc_buffer_ctx_size() + outCount))
-    outBuf := (*C.vsc_buffer_t)(unsafe.Pointer(&outMemory[0]))
-    outData := outMemory[int(C.vsc_buffer_ctx_size()):]
-    C.vsc_buffer_init(outBuf)
-    C.vsc_buffer_use(outBuf, (*C.byte)(unsafe.Pointer(&outData[0])), outCount)
-    defer C.vsc_buffer_delete(outBuf)
+    outBuf, outBufErr := bufferNewBuffer(int(this.OutLen(0) /* lg2 */))
+    if outBufErr != nil {
+        return nil, outBufErr
+    }
+    defer outBuf.clear()
 
 
-    proxyResult := /*pr4*/C.vscf_aes256_cbc_finish(this.cCtx, outBuf)
+    proxyResult := /*pr4*/C.vscf_aes256_cbc_finish(this.cCtx, outBuf.ctx)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
         return nil, err
     }
 
-    return outData[0:C.vsc_buffer_len(outBuf)] /* r7 */, nil
+    return outBuf.getData() /* r7 */, nil
 }

@@ -5,6 +5,7 @@ package foundation
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
 
+
 /*
 * Handle information about an encrypted message and algorithms
 * that was used for encryption.
@@ -44,7 +45,7 @@ func newMessageInfoCopy (ctx *C.vscf_message_info_t /*ct2*/) *MessageInfo {
 }
 
 /// Release underlying C context.
-func (this MessageInfo) close () {
+func (this MessageInfo) clear () {
     C.vscf_message_info_delete(this.cCtx)
 }
 

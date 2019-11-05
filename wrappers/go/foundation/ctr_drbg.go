@@ -4,7 +4,7 @@ package foundation
 // #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lmbedcrypto -led25519 -lprotobuf-nanopb -lvsc_common -lvsc_foundation -lvsc_foundation_pb
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
-import unsafe "unsafe"
+
 
 /*
 * Implementation of the RNG using deterministic random bit generators
@@ -38,6 +38,7 @@ func (this CtrDrbg) SetEntropySource (entropySource IEntropySource) error {
     if err != nil {
         return err
     }
+
     return nil
 }
 
@@ -117,7 +118,7 @@ func newCtrDrbgCopy (ctx *C.vscf_ctr_drbg_t /*ct10*/) *CtrDrbg {
 }
 
 /// Release underlying C context.
-func (this CtrDrbg) close () {
+func (this CtrDrbg) clear () {
     C.vscf_ctr_drbg_delete(this.cCtx)
 }
 
@@ -126,23 +127,21 @@ func (this CtrDrbg) close () {
 * All RNG implementations must be thread-safe.
 */
 func (this CtrDrbg) Random (dataLen uint32) ([]byte, error) {
-    dataCount := C.ulong(dataLen)
-    dataMemory := make([]byte, int(C.vsc_buffer_ctx_size() + dataCount))
-    dataBuf := (*C.vsc_buffer_t)(unsafe.Pointer(&dataMemory[0]))
-    dataData := dataMemory[int(C.vsc_buffer_ctx_size()):]
-    C.vsc_buffer_init(dataBuf)
-    C.vsc_buffer_use(dataBuf, (*C.byte)(unsafe.Pointer(&dataData[0])), dataCount)
-    defer C.vsc_buffer_delete(dataBuf)
+    dataBuf, dataBufErr := bufferNewBuffer(int(dataLen))
+    if dataBufErr != nil {
+        return nil, dataBufErr
+    }
+    defer dataBuf.clear()
 
 
-    proxyResult := /*pr4*/C.vscf_ctr_drbg_random(this.cCtx, (C.size_t)(dataLen)/*pa10*/, dataBuf)
+    proxyResult := /*pr4*/C.vscf_ctr_drbg_random(this.cCtx, (C.size_t)(dataLen)/*pa10*/, dataBuf.ctx)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
         return nil, err
     }
 
-    return dataData[0:C.vsc_buffer_len(dataBuf)] /* r7 */, nil
+    return dataBuf.getData() /* r7 */, nil
 }
 
 /*

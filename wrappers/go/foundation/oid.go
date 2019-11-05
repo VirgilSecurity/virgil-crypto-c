@@ -5,6 +5,7 @@ package foundation
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
 
+
 /*
 * Provide conversion logic between OID and algorithm tags.
 */
@@ -17,14 +18,14 @@ type Oid struct {
 func OidFromAlgId (algId AlgId) []byte {
     proxyResult := /*pr4*/C.vscf_oid_from_alg_id(C.vscf_alg_id_t(algId) /*pa7*/)
 
-    return helperDataToBytes(proxyResult) /* r1 */
+    return helperExtractData(proxyResult) /* r1 */
 }
 
 /*
 * Return algorithm identifier for given OID.
 */
 func OidToAlgId (oid []byte) AlgId {
-    oidData := C.vsc_data((*C.uint8_t)(&oid[0]), C.size_t(len(oid)))
+    oidData := helperWrapData (oid)
 
     proxyResult := /*pr4*/C.vscf_oid_to_alg_id(oidData)
 
@@ -37,14 +38,14 @@ func OidToAlgId (oid []byte) AlgId {
 func OidFromId (oidId OidId) []byte {
     proxyResult := /*pr4*/C.vscf_oid_from_id(C.vscf_oid_id_t(oidId) /*pa7*/)
 
-    return helperDataToBytes(proxyResult) /* r1 */
+    return helperExtractData(proxyResult) /* r1 */
 }
 
 /*
 * Return identifier for a given OID.
 */
 func OidToId (oid []byte) OidId {
-    oidData := C.vsc_data((*C.uint8_t)(&oid[0]), C.size_t(len(oid)))
+    oidData := helperWrapData (oid)
 
     proxyResult := /*pr4*/C.vscf_oid_to_id(oidData)
 
@@ -64,8 +65,8 @@ func OidIdToAlgId (oidId OidId) AlgId {
 * Return true if given OIDs are equal.
 */
 func OidEqual (lhs []byte, rhs []byte) bool {
-    lhsData := C.vsc_data((*C.uint8_t)(&lhs[0]), C.size_t(len(lhs)))
-    rhsData := C.vsc_data((*C.uint8_t)(&rhs[0]), C.size_t(len(rhs)))
+    lhsData := helperWrapData (lhs)
+    rhsData := helperWrapData (rhs)
 
     proxyResult := /*pr4*/C.vscf_oid_equal(lhsData, rhsData)
 

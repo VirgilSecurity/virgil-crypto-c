@@ -5,6 +5,7 @@ package foundation
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
 
+
 /*
 * Create algorithms based on the given information.
 */

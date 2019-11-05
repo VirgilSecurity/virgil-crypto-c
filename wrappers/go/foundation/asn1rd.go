@@ -5,6 +5,7 @@ package foundation
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
 
+
 /*
 * This is MbedTLS implementation of ASN.1 reader.
 */
@@ -44,7 +45,7 @@ func newAsn1rdCopy (ctx *C.vscf_asn1rd_t /*ct10*/) *Asn1rd {
 }
 
 /// Release underlying C context.
-func (this Asn1rd) close () {
+func (this Asn1rd) clear () {
     C.vscf_asn1rd_delete(this.cCtx)
 }
 
@@ -52,7 +53,7 @@ func (this Asn1rd) close () {
 * Reset all internal states and prepare to new ASN.1 reading operations.
 */
 func (this Asn1rd) Reset (data []byte) {
-    dataData := C.vsc_data((*C.uint8_t)(&data[0]), C.size_t(len(data)))
+    dataData := helperWrapData (data)
 
     C.vscf_asn1rd_reset(this.cCtx, dataData)
 
@@ -263,7 +264,7 @@ func (this Asn1rd) ReadNullOptional () {
 func (this Asn1rd) ReadOctetStr () []byte {
     proxyResult := /*pr4*/C.vscf_asn1rd_read_octet_str(this.cCtx)
 
-    return helperDataToBytes(proxyResult) /* r1 */
+    return helperExtractData(proxyResult) /* r1 */
 }
 
 /*
@@ -272,7 +273,7 @@ func (this Asn1rd) ReadOctetStr () []byte {
 func (this Asn1rd) ReadBitstringAsOctetStr () []byte {
     proxyResult := /*pr4*/C.vscf_asn1rd_read_bitstring_as_octet_str(this.cCtx)
 
-    return helperDataToBytes(proxyResult) /* r1 */
+    return helperExtractData(proxyResult) /* r1 */
 }
 
 /*
@@ -281,7 +282,7 @@ func (this Asn1rd) ReadBitstringAsOctetStr () []byte {
 func (this Asn1rd) ReadUtf8Str () []byte {
     proxyResult := /*pr4*/C.vscf_asn1rd_read_utf8_str(this.cCtx)
 
-    return helperDataToBytes(proxyResult) /* r1 */
+    return helperExtractData(proxyResult) /* r1 */
 }
 
 /*
@@ -290,7 +291,7 @@ func (this Asn1rd) ReadUtf8Str () []byte {
 func (this Asn1rd) ReadOid () []byte {
     proxyResult := /*pr4*/C.vscf_asn1rd_read_oid(this.cCtx)
 
-    return helperDataToBytes(proxyResult) /* r1 */
+    return helperExtractData(proxyResult) /* r1 */
 }
 
 /*
@@ -299,7 +300,7 @@ func (this Asn1rd) ReadOid () []byte {
 func (this Asn1rd) ReadData (len uint32) []byte {
     proxyResult := /*pr4*/C.vscf_asn1rd_read_data(this.cCtx, (C.size_t)(len)/*pa10*/)
 
-    return helperDataToBytes(proxyResult) /* r1 */
+    return helperExtractData(proxyResult) /* r1 */
 }
 
 /*

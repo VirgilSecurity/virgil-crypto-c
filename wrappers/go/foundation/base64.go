@@ -4,7 +4,7 @@ package foundation
 // #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lmbedcrypto -led25519 -lprotobuf-nanopb -lvsc_common -lvsc_foundation -lvsc_foundation_pb
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
-import unsafe "unsafe"
+
 
 /*
 * Implementation of the Base64 algorithm RFC 1421 and RFC 2045.
@@ -26,18 +26,16 @@ func Base64EncodedLen (dataLen uint32) uint32 {
 * Note, written buffer is NOT null-terminated.
 */
 func Base64Encode (data []byte) []byte {
-    strCount := C.ulong(Base64EncodedLen(uint32(len(data))) /* lg1 */)
-    strMemory := make([]byte, int(C.vsc_buffer_ctx_size() + strCount))
-    strBuf := (*C.vsc_buffer_t)(unsafe.Pointer(&strMemory[0]))
-    strData := strMemory[int(C.vsc_buffer_ctx_size()):]
-    C.vsc_buffer_init(strBuf)
-    C.vsc_buffer_use(strBuf, (*C.byte)(unsafe.Pointer(&strData[0])), strCount)
-    defer C.vsc_buffer_delete(strBuf)
-    dataData := C.vsc_data((*C.uint8_t)(&data[0]), C.size_t(len(data)))
+    strBuf, strBufErr := bufferNewBuffer(int(Base64EncodedLen(uint32(len(data))) /* lg1 */))
+    if strBufErr != nil {
+        return nil
+    }
+    defer strBuf.clear()
+    dataData := helperWrapData (data)
 
-    C.vscf_base64_encode(dataData, strBuf)
+    C.vscf_base64_encode(dataData, strBuf.ctx)
 
-    return strData[0:C.vsc_buffer_len(strBuf)] /* r7 */
+    return strBuf.getData() /* r7 */
 }
 
 /*
@@ -53,21 +51,19 @@ func Base64DecodedLen (strLen uint32) uint32 {
 * Decode given data from the base64 format.
 */
 func Base64Decode (str []byte) ([]byte, error) {
-    dataCount := C.ulong(Base64DecodedLen(uint32(len(str))) /* lg1 */)
-    dataMemory := make([]byte, int(C.vsc_buffer_ctx_size() + dataCount))
-    dataBuf := (*C.vsc_buffer_t)(unsafe.Pointer(&dataMemory[0]))
-    dataData := dataMemory[int(C.vsc_buffer_ctx_size()):]
-    C.vsc_buffer_init(dataBuf)
-    C.vsc_buffer_use(dataBuf, (*C.byte)(unsafe.Pointer(&dataData[0])), dataCount)
-    defer C.vsc_buffer_delete(dataBuf)
-    strData := C.vsc_data((*C.uint8_t)(&str[0]), C.size_t(len(str)))
+    dataBuf, dataBufErr := bufferNewBuffer(int(Base64DecodedLen(uint32(len(str))) /* lg1 */))
+    if dataBufErr != nil {
+        return nil, dataBufErr
+    }
+    defer dataBuf.clear()
+    strData := helperWrapData (str)
 
-    proxyResult := /*pr4*/C.vscf_base64_decode(strData, dataBuf)
+    proxyResult := /*pr4*/C.vscf_base64_decode(strData, dataBuf.ctx)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
         return nil, err
     }
 
-    return dataData[0:C.vsc_buffer_len(dataBuf)] /* r7 */, nil
+    return dataBuf.getData() /* r7 */, nil
 }

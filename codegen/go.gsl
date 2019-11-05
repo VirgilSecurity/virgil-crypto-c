@@ -210,7 +210,7 @@ endfunction
 function go_derive_constant_type (constant, instance, go_project)
     #check_arguments (my, "constant, instance, go_project", my)
 
-    if item_in(my.instance, "enum")
+    if item_in (my.instance, "enum")
         if my.instance.name = "status"
             return "int"
         else
@@ -1359,8 +1359,11 @@ function go_create_func_from_constant (instance, constant, destination, go_proje
         . = go_format_description (my.constant) ?
         .name = go_derive_func_name_by_constant (my.constant)
         .visibility = "public"
-        .is_static = "1"
-        
+
+        if !item_in (my.instance, "interface")
+            .is_static = "1"
+        endif
+
         my.type = go_derive_constant_type (my.constant, my.instance, my.go_project)
 
         new go_return to go_func
@@ -1563,7 +1566,7 @@ function go_create_struct_close (go_struct, class, go_project, meta)
 
     new go_func to my.go_struct
         . = "/// Release underlying C context."
-        .name = "close"
+        .name = "clear"
 
         new go_code to go_func
             . = "\
@@ -2147,7 +2150,7 @@ function go_format_c_proxy_args (class, method)
             my.proxy_arg = "$(my.arg_name:)Data"
 
         elsif string_equal (argument.class, "buffer")
-            my.proxy_arg = "$(my.arg_name:)Buf"
+            my.proxy_arg = "$(my.arg_name:)Buf.ctx"
 
         elsif string_equal (argument.class, "error")
             my.proxy_arg = "&$(my.arg_name:)"
@@ -2218,6 +2221,8 @@ function go_wrap_c_proxy_call (go_func, proxy_call, proxy_return_type, proxy_ret
 
     # Wrap strings.
     for my.go_func.go_argument where is_true (0.is_string)
+        go_create_import ("unsafe", "unsafe", go_module)
+
         my.string_name = "$(go_argument.name:)Str"
 
         my.strings_init ?= ""
@@ -2235,34 +2240,21 @@ function go_wrap_c_proxy_call (go_func, proxy_call, proxy_return_type, proxy_ret
             echo_debug_item (my.go_func)
         endif
         assert_attribute (go_return, "length_getter", my)
-        
-        go_create_import ("unsafe", "unsafe", my.go_module)
 
         my.buffer_name = go_return.name ? "result"
 
         my.buffers_instantiation ?= ""
+        my.buffer_err_args = go_format_result_nil_args ("$(my.buffer_name:)BufErr", my.go_func, my.go_project)
         my.buffers_instantiation += terminator + format_left ("\
-            $(my.buffer_name:)Count := C.ulong($(go_return.length_getter:))
-            $(my.buffer_name:)Memory := make([]byte, int(C.vsc_buffer_ctx_size() + $(my.buffer_name:)Count))
-            $(my.buffer_name:)Buf := (*C.vsc_buffer_t)(unsafe.Pointer(&$(my.buffer_name:)Memory[0]))
-            $(my.buffer_name:)Data := $(my.buffer_name:)Memory[int(C.vsc_buffer_ctx_size()):]
-            $(my.buffer_method_init:)($(my.buffer_name:)Buf)
-            $(my.buffer_method_use:)($(my.buffer_name:)Buf, (*C.byte)(unsafe.Pointer(&$(my.buffer_name:)Data[0])), $(my.buffer_name:)Count)
-            defer C.vsc_buffer_delete($(my.buffer_name:)Buf)
+            $(my.buffer_name:)Buf, $(my.buffer_name:)BufErr := bufferNewBuffer(int($(go_return.length_getter:)))
+            if $(my.buffer_name:)BufErr != nil {
+                return $(my.buffer_err_args:)
+            }
+            defer $(my.buffer_name:)Buf.clear()
         ")
 
         my.buffers_init ?= ""
-        #TODO
-        #my.buffers_init += terminator + format_left("\
-        #        C..(c_project_common_class_buffer_method_use)($(my.buffer_name:)Buf, \
-        #                $(my.buffer_name:)Pointer.bindMemory(to: byte.self).baseAddress, $(my.buffer_name:)Count)
-        #")
-
         my.buffers_shrink ?= ""
-        #TODO
-        #my.buffers_shrink += format_left ("\
-        #    $(my.buffer_name:).count := C..(c_project_common_class_buffer_method_len)($(my.buffer_name:)Buf)
-        #")
     endfor
     
     #  Wrap input data.
@@ -2272,7 +2264,7 @@ function go_wrap_c_proxy_call (go_func, proxy_call, proxy_return_type, proxy_ret
 
         my.buffers_init ?= ""
         my.buffers_init += format_left("\
-            $(my.data_name:) := $(my.data_method_data:)((*C.uint8_t)(&$(go_argument.name:)[0]), C.size_t(len($(go_argument.name:))))
+            $(my.data_name:) := helperWrapData ($(go_argument.name:))
         ")
     endfor
 
@@ -2380,7 +2372,7 @@ function go_wrap_c_returned_value (go_return, go_module, go_project)
     scope my.go_return
 
     if is_true (0.is_data)
-        return "helperDataToBytes($(my.name:)) /* r1 */"
+        return "helperExtractData($(my.name:)) /* r1 */"
 
     elsif is_true (0.is_buffer) & is_false (0.was_argument)
         return "Data.init(bytes: C..(c_project_common_class_buffer_method_bytes)($(my.name:)), " + \
@@ -2401,7 +2393,7 @@ function go_wrap_c_returned_value (go_return, go_module, go_project)
         endif
 
     elsif is_true (0.is_class) & is_true (0.is_buffer)
-        return "$(my.name:)Data[0:C.vsc_buffer_len($(my.name:)Buf)] /* r7 */"
+        return "$(my.name:)Buf.getData() /* r7 */"
 
     elsif is_true (0.is_enum)
         return "$(my.type:)($(my.name:)) /* r8 */"
@@ -2565,31 +2557,12 @@ function go_finalize_implementation_helper_modules (go_project, meta)
         for my.go_project.go_import
             copy go_import to go_module
         endfor
+        
+        go_create_import ("unsafe", "unsafe", go_module)
 
         new go_struct to go_module
             .name = "helper"
             .visibility = "private"
-
-            new go_func to go_struct
-                .name = "DataToBytes"
-                .is_static = "1"
-        
-                new go_argument to go_func
-                    .name = "data"
-                    .type = "C..(c_project_common_class_data_struct_data)"
-                endnew
-
-                new go_return to go_func
-                    .type = "[]byte"
-                endnew
-
-                #TODO
-                new go_code to go_func
-                    . = format_left("\
-                        return []byte(\"Go\")
-                    ")
-                endnew
-            endnew
 
             new go_func to go_struct
                 .name = "BytesToBytePtr"
@@ -2612,6 +2585,167 @@ function go_finalize_implementation_helper_modules (go_project, meta)
                 endnew
             endnew
 
+            new go_func to go_struct
+                .name = "WrapData"
+                .is_static = "1"
+        
+                new go_argument to go_func
+                    .name = "data"
+                    .type = "[]byte"
+                endnew
+
+                new go_return to go_func
+                    .type = "C.vsc_data_t"
+                endnew
+
+                new go_code to go_func
+                    . = format_left("\
+                        if len(data) == 0 {
+                            return C..(c_project_common_class_data_method_empty)()
+                        }
+                        return C..(c_project_common_class_data_method_data)((*C.uint8_t)(&data[0]), C.size_t(len(data)))
+                    ")
+                endnew
+            endnew
+
+            new go_func to go_struct
+                .name = "ExtractData"
+                .is_static = "1"
+        
+                new go_argument to go_func
+                    .name = "data"
+                    .type = "C.vsc_data_t"
+                endnew
+
+                new go_return to go_func
+                    .type = "[]byte"
+                endnew
+
+                new go_code to go_func
+                    . = format_left("\
+                        newSize := data.len
+                        //FIXME Verify data is not corrupted
+                        //if newSize < len(data.bytes) {
+                        //    panic(\"Underlying C buffer corrupt the memory.\")
+                        //}
+                        return C.GoBytes(unsafe.Pointer(data.bytes), C.int(newSize))
+                    ")
+                endnew
+            endnew
+        endnew
+
+        new go_struct to go_module
+            .name = "buffer"
+            .visibility = "private"
+            
+            new go_field to go_struct
+                .name = "memory"
+                .type = "[]byte"
+            endnew
+
+            new go_field to go_struct
+                .name = "ctx"
+                .type = "*C..(c_project_common_class_buffer_struct_buffer)"
+            endnew
+
+            new go_field to go_struct
+                .name = "data"
+                .type = "[]byte"
+            endnew
+
+            new go_func to go_struct
+                .name = "NewBuffer"
+                .is_static = "1"
+                .throws = "1"
+        
+                new go_argument to go_func
+                    .name = "cap"
+                    .type = "int"
+                endnew
+
+                new go_return to go_func
+                    .type = "*buffer"
+                endnew
+
+                new go_code to go_func
+                    . = format_left("\
+                        capacity := C.size_t(cap)
+                        if capacity == 0 {
+                            return nil, &$(go_derive_enum_status_name (my.go_project):){-1,\"Buffer with zero capacity is not allowed.\"}
+                        }
+
+                        ctxLen := C.vsc_buffer_ctx_size()
+                        memory := make([]byte, int(ctxLen + capacity))
+                        ctx := (*C..(c_project_common_class_buffer_struct_buffer))(unsafe.Pointer(&memory[0]))
+                        data := memory[int(ctxLen):]
+
+                        C.vsc_buffer_init(ctx)
+                        C.vsc_buffer_use(ctx, (*C.byte)(unsafe.Pointer(&data[0])), capacity)
+
+                        return &buffer {
+                            memory: memory,
+                            ctx: ctx,
+                            data: data,
+                        }, nil
+                    ")
+                endnew
+            endnew
+
+            new go_func to go_struct
+                .name = "getData"
+
+                new go_return to go_func
+                    .type = "[]byte"
+                endnew
+
+                new go_code to go_func
+                    . = format_left("\
+                        newSize := int(C..(c_project_common_class_buffer_method_len)(this.ctx))
+                        if newSize > len(this.data) {
+                            panic (\"Underlying C buffer corrupt the memory.\")
+                        }
+                        return this.data[:newSize]
+                    ")
+                endnew
+            endnew
+
+            new go_func to go_struct
+                .name = "cap"
+
+                new go_return to go_func
+                    .type = "int"
+                endnew
+
+                new go_code to go_func
+                    . = format_left("\
+                        return int(C..(c_project_common_class_buffer_method_capacity)(this.ctx))
+                    ")
+                endnew
+            endnew
+
+            new go_func to go_struct
+                .name = "len"
+
+                new go_return to go_func
+                    .type = "int"
+                endnew
+
+                new go_code to go_func
+                    . = format_left("\
+                        return int(C..(c_project_common_class_buffer_method_len)(this.ctx))
+                    ")
+                endnew
+            endnew
+
+            new go_func to go_struct
+                .name = "clear"
+
+                new go_code to go_func
+                    . = format_left("\
+                        C..(c_project_common_class_buffer_method_delete)(this.ctx)
+                    ")
+                endnew
+            endnew
         endnew
     endnew
 endfunction

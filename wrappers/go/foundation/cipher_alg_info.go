@@ -5,6 +5,7 @@ package foundation
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
 
+
 /*
 * Handle symmetric cipher algorithm information.
 */
@@ -19,7 +20,7 @@ type CipherAlgInfo struct {
 func (this CipherAlgInfo) Nonce () []byte {
     proxyResult := /*pr4*/C.vscf_cipher_alg_info_nonce(this.cCtx)
 
-    return helperDataToBytes(proxyResult) /* r1 */
+    return helperExtractData(proxyResult) /* r1 */
 }
 
 /* Handle underlying C context. */
@@ -53,7 +54,7 @@ func newCipherAlgInfoCopy (ctx *C.vscf_cipher_alg_info_t /*ct10*/) *CipherAlgInf
 }
 
 /// Release underlying C context.
-func (this CipherAlgInfo) close () {
+func (this CipherAlgInfo) clear () {
     C.vscf_cipher_alg_info_delete(this.cCtx)
 }
 
@@ -61,7 +62,7 @@ func (this CipherAlgInfo) close () {
 * Create symmetric cipher algorithm info with identificator and input vector.
 */
 func NewCipherAlgInfoWithMembers (algId AlgId, nonce []byte) *CipherAlgInfo {
-    nonceData := C.vsc_data((*C.uint8_t)(&nonce[0]), C.size_t(len(nonce)))
+    nonceData := helperWrapData (nonce)
 
     proxyResult := /*pr4*/C.vscf_cipher_alg_info_new_with_members(C.vscf_alg_id_t(algId) /*pa7*/, nonceData)
 

@@ -5,6 +5,7 @@ package foundation
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
 
+
 /*
 * Handle KDF algorithms that are configured with salt and iteration count.
 */
@@ -28,7 +29,7 @@ func (this SaltedKdfAlgInfo) HashAlgInfo () (IAlgInfo, error) {
 func (this SaltedKdfAlgInfo) Salt () []byte {
     proxyResult := /*pr4*/C.vscf_salted_kdf_alg_info_salt(this.cCtx)
 
-    return helperDataToBytes(proxyResult) /* r1 */
+    return helperExtractData(proxyResult) /* r1 */
 }
 
 /*
@@ -72,7 +73,7 @@ func newSaltedKdfAlgInfoCopy (ctx *C.vscf_salted_kdf_alg_info_t /*ct10*/) *Salte
 }
 
 /// Release underlying C context.
-func (this SaltedKdfAlgInfo) close () {
+func (this SaltedKdfAlgInfo) clear () {
     C.vscf_salted_kdf_alg_info_delete(this.cCtx)
 }
 
@@ -81,7 +82,7 @@ func (this SaltedKdfAlgInfo) close () {
 * salt and iteration count.
 */
 func NewSaltedKdfAlgInfoWithMembers (algId AlgId, hashAlgInfo IAlgInfo, salt []byte, iterationCount uint32) *SaltedKdfAlgInfo {
-    saltData := C.vsc_data((*C.uint8_t)(&salt[0]), C.size_t(len(salt)))
+    saltData := helperWrapData (salt)
 
     hashAlgInfoCopy := C.vscf_impl_shallow_copy((*C.vscf_impl_t)(hashAlgInfo.ctx()))
 

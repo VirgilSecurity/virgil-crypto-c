@@ -5,6 +5,7 @@ package foundation
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
 
+
 /*
 * Handles a list of "password recipient info" class objects.
 */
@@ -43,7 +44,7 @@ func newPasswordRecipientInfoListCopy (ctx *C.vscf_password_recipient_info_list_
 }
 
 /// Release underlying C context.
-func (this PasswordRecipientInfoList) close () {
+func (this PasswordRecipientInfoList) clear () {
     C.vscf_password_recipient_info_list_delete(this.cCtx)
 }
 

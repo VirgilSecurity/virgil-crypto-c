@@ -5,6 +5,7 @@ package foundation
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
 
+
 /*
 * Handles a list of "signer info" class objects.
 */
@@ -43,7 +44,7 @@ func newSignerInfoListCopy (ctx *C.vscf_signer_info_list_t /*ct2*/) *SignerInfoL
 }
 
 /// Release underlying C context.
-func (this SignerInfoList) close () {
+func (this SignerInfoList) clear () {
     C.vscf_signer_info_list_delete(this.cCtx)
 }
 

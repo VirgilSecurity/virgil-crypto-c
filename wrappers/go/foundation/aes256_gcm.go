@@ -4,7 +4,7 @@ package foundation
 // #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lmbedcrypto -led25519 -lprotobuf-nanopb -lvsc_common -lvsc_foundation -lvsc_foundation_pb
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
-import unsafe "unsafe"
+
 
 /*
 * Implementation of the symmetric cipher AES-256 bit in a GCM mode.
@@ -55,7 +55,7 @@ func newAes256GcmCopy (ctx *C.vscf_aes256_gcm_t /*ct10*/) *Aes256Gcm {
 }
 
 /// Release underlying C context.
-func (this Aes256Gcm) close () {
+func (this Aes256Gcm) clear () {
     C.vscf_aes256_gcm_delete(this.cCtx)
 }
 
@@ -95,23 +95,21 @@ func (this Aes256Gcm) RestoreAlgInfo (algInfo IAlgInfo) error {
 * Encrypt given data.
 */
 func (this Aes256Gcm) Encrypt (data []byte) ([]byte, error) {
-    outCount := C.ulong(this.EncryptedLen(uint32(len(data))) /* lg2 */)
-    outMemory := make([]byte, int(C.vsc_buffer_ctx_size() + outCount))
-    outBuf := (*C.vsc_buffer_t)(unsafe.Pointer(&outMemory[0]))
-    outData := outMemory[int(C.vsc_buffer_ctx_size()):]
-    C.vsc_buffer_init(outBuf)
-    C.vsc_buffer_use(outBuf, (*C.byte)(unsafe.Pointer(&outData[0])), outCount)
-    defer C.vsc_buffer_delete(outBuf)
-    dataData := C.vsc_data((*C.uint8_t)(&data[0]), C.size_t(len(data)))
+    outBuf, outBufErr := bufferNewBuffer(int(this.EncryptedLen(uint32(len(data))) /* lg2 */))
+    if outBufErr != nil {
+        return nil, outBufErr
+    }
+    defer outBuf.clear()
+    dataData := helperWrapData (data)
 
-    proxyResult := /*pr4*/C.vscf_aes256_gcm_encrypt(this.cCtx, dataData, outBuf)
+    proxyResult := /*pr4*/C.vscf_aes256_gcm_encrypt(this.cCtx, dataData, outBuf.ctx)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
         return nil, err
     }
 
-    return outData[0:C.vsc_buffer_len(outBuf)] /* r7 */, nil
+    return outBuf.getData() /* r7 */, nil
 }
 
 /*
@@ -136,23 +134,21 @@ func (this Aes256Gcm) PreciseEncryptedLen (dataLen uint32) uint32 {
 * Decrypt given data.
 */
 func (this Aes256Gcm) Decrypt (data []byte) ([]byte, error) {
-    outCount := C.ulong(this.DecryptedLen(uint32(len(data))) /* lg2 */)
-    outMemory := make([]byte, int(C.vsc_buffer_ctx_size() + outCount))
-    outBuf := (*C.vsc_buffer_t)(unsafe.Pointer(&outMemory[0]))
-    outData := outMemory[int(C.vsc_buffer_ctx_size()):]
-    C.vsc_buffer_init(outBuf)
-    C.vsc_buffer_use(outBuf, (*C.byte)(unsafe.Pointer(&outData[0])), outCount)
-    defer C.vsc_buffer_delete(outBuf)
-    dataData := C.vsc_data((*C.uint8_t)(&data[0]), C.size_t(len(data)))
+    outBuf, outBufErr := bufferNewBuffer(int(this.DecryptedLen(uint32(len(data))) /* lg2 */))
+    if outBufErr != nil {
+        return nil, outBufErr
+    }
+    defer outBuf.clear()
+    dataData := helperWrapData (data)
 
-    proxyResult := /*pr4*/C.vscf_aes256_gcm_decrypt(this.cCtx, dataData, outBuf)
+    proxyResult := /*pr4*/C.vscf_aes256_gcm_decrypt(this.cCtx, dataData, outBuf.ctx)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
         return nil, err
     }
 
-    return outData[0:C.vsc_buffer_len(outBuf)] /* r7 */, nil
+    return outBuf.getData() /* r7 */, nil
 }
 
 /*
@@ -167,28 +163,28 @@ func (this Aes256Gcm) DecryptedLen (dataLen uint32) uint32 {
 /*
 * Cipher nfonce length or IV length in bytes, or 0 if nonce is not required.
 */
-func Aes256GcmGetNonceLen () uint32 {
+func (this Aes256Gcm) GetNonceLen () uint32 {
     return 12
 }
 
 /*
 * Cipher key length in bytes.
 */
-func Aes256GcmGetKeyLen () uint32 {
+func (this Aes256Gcm) GetKeyLen () uint32 {
     return 32
 }
 
 /*
 * Cipher key length in bits.
 */
-func Aes256GcmGetKeyBitlen () uint32 {
+func (this Aes256Gcm) GetKeyBitlen () uint32 {
     return 256
 }
 
 /*
 * Cipher block length in bytes.
 */
-func Aes256GcmGetBlockLen () uint32 {
+func (this Aes256Gcm) GetBlockLen () uint32 {
     return 16
 }
 
@@ -196,7 +192,7 @@ func Aes256GcmGetBlockLen () uint32 {
 * Setup IV or nonce.
 */
 func (this Aes256Gcm) SetNonce (nonce []byte) {
-    nonceData := C.vsc_data((*C.uint8_t)(&nonce[0]), C.size_t(len(nonce)))
+    nonceData := helperWrapData (nonce)
 
     C.vscf_aes256_gcm_set_nonce(this.cCtx, nonceData)
 
@@ -207,7 +203,7 @@ func (this Aes256Gcm) SetNonce (nonce []byte) {
 * Set cipher encryption / decryption key.
 */
 func (this Aes256Gcm) SetKey (key []byte) {
-    keyData := C.vsc_data((*C.uint8_t)(&key[0]), C.size_t(len(key)))
+    keyData := helperWrapData (key)
 
     C.vscf_aes256_gcm_set_key(this.cCtx, keyData)
 
@@ -236,18 +232,16 @@ func (this Aes256Gcm) StartDecryption () {
 * Process encryption or decryption of the given data chunk.
 */
 func (this Aes256Gcm) Update (data []byte) []byte {
-    outCount := C.ulong(this.OutLen(uint32(len(data))) /* lg2 */)
-    outMemory := make([]byte, int(C.vsc_buffer_ctx_size() + outCount))
-    outBuf := (*C.vsc_buffer_t)(unsafe.Pointer(&outMemory[0]))
-    outData := outMemory[int(C.vsc_buffer_ctx_size()):]
-    C.vsc_buffer_init(outBuf)
-    C.vsc_buffer_use(outBuf, (*C.byte)(unsafe.Pointer(&outData[0])), outCount)
-    defer C.vsc_buffer_delete(outBuf)
-    dataData := C.vsc_data((*C.uint8_t)(&data[0]), C.size_t(len(data)))
+    outBuf, outBufErr := bufferNewBuffer(int(this.OutLen(uint32(len(data))) /* lg2 */))
+    if outBufErr != nil {
+        return nil
+    }
+    defer outBuf.clear()
+    dataData := helperWrapData (data)
 
-    C.vscf_aes256_gcm_update(this.cCtx, dataData, outBuf)
+    C.vscf_aes256_gcm_update(this.cCtx, dataData, outBuf.ctx)
 
-    return outData[0:C.vsc_buffer_len(outBuf)] /* r7 */
+    return outBuf.getData() /* r7 */
 }
 
 /*
@@ -287,29 +281,27 @@ func (this Aes256Gcm) DecryptedOutLen (dataLen uint32) uint32 {
 * Accomplish encryption or decryption process.
 */
 func (this Aes256Gcm) Finish () ([]byte, error) {
-    outCount := C.ulong(this.OutLen(0) /* lg2 */)
-    outMemory := make([]byte, int(C.vsc_buffer_ctx_size() + outCount))
-    outBuf := (*C.vsc_buffer_t)(unsafe.Pointer(&outMemory[0]))
-    outData := outMemory[int(C.vsc_buffer_ctx_size()):]
-    C.vsc_buffer_init(outBuf)
-    C.vsc_buffer_use(outBuf, (*C.byte)(unsafe.Pointer(&outData[0])), outCount)
-    defer C.vsc_buffer_delete(outBuf)
+    outBuf, outBufErr := bufferNewBuffer(int(this.OutLen(0) /* lg2 */))
+    if outBufErr != nil {
+        return nil, outBufErr
+    }
+    defer outBuf.clear()
 
 
-    proxyResult := /*pr4*/C.vscf_aes256_gcm_finish(this.cCtx, outBuf)
+    proxyResult := /*pr4*/C.vscf_aes256_gcm_finish(this.cCtx, outBuf.ctx)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
         return nil, err
     }
 
-    return outData[0:C.vsc_buffer_len(outBuf)] /* r7 */, nil
+    return outBuf.getData() /* r7 */, nil
 }
 
 /*
 * Defines authentication tag length in bytes.
 */
-func Aes256GcmGetAuthTagLen () uint32 {
+func (this Aes256Gcm) GetAuthTagLen () uint32 {
     return 16
 }
 
@@ -318,32 +310,28 @@ func Aes256GcmGetAuthTagLen () uint32 {
 * If 'tag' is not given, then it will written to the 'enc'.
 */
 func (this Aes256Gcm) AuthEncrypt (data []byte, authData []byte) ([]byte, []byte, error) {
-    outCount := C.ulong(this.AuthEncryptedLen(uint32(len(data))) /* lg2 */)
-    outMemory := make([]byte, int(C.vsc_buffer_ctx_size() + outCount))
-    outBuf := (*C.vsc_buffer_t)(unsafe.Pointer(&outMemory[0]))
-    outData := outMemory[int(C.vsc_buffer_ctx_size()):]
-    C.vsc_buffer_init(outBuf)
-    C.vsc_buffer_use(outBuf, (*C.byte)(unsafe.Pointer(&outData[0])), outCount)
-    defer C.vsc_buffer_delete(outBuf)
+    outBuf, outBufErr := bufferNewBuffer(int(this.AuthEncryptedLen(uint32(len(data))) /* lg2 */))
+    if outBufErr != nil {
+        return nil, nil, outBufErr
+    }
+    defer outBuf.clear()
 
-    tagCount := C.ulong(this.GetAuthTagLen() /* lg3 */)
-    tagMemory := make([]byte, int(C.vsc_buffer_ctx_size() + tagCount))
-    tagBuf := (*C.vsc_buffer_t)(unsafe.Pointer(&tagMemory[0]))
-    tagData := tagMemory[int(C.vsc_buffer_ctx_size()):]
-    C.vsc_buffer_init(tagBuf)
-    C.vsc_buffer_use(tagBuf, (*C.byte)(unsafe.Pointer(&tagData[0])), tagCount)
-    defer C.vsc_buffer_delete(tagBuf)
-    dataData := C.vsc_data((*C.uint8_t)(&data[0]), C.size_t(len(data)))
-    authDataData := C.vsc_data((*C.uint8_t)(&authData[0]), C.size_t(len(authData)))
+    tagBuf, tagBufErr := bufferNewBuffer(int(this.GetAuthTagLen() /* lg3 */))
+    if tagBufErr != nil {
+        return nil, nil, tagBufErr
+    }
+    defer tagBuf.clear()
+    dataData := helperWrapData (data)
+    authDataData := helperWrapData (authData)
 
-    proxyResult := /*pr4*/C.vscf_aes256_gcm_auth_encrypt(this.cCtx, dataData, authDataData, outBuf, tagBuf)
+    proxyResult := /*pr4*/C.vscf_aes256_gcm_auth_encrypt(this.cCtx, dataData, authDataData, outBuf.ctx, tagBuf.ctx)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
         return nil, nil, err
     }
 
-    return outData[0:C.vsc_buffer_len(outBuf)] /* r7 */, tagData[0:C.vsc_buffer_len(tagBuf)] /* r7 */, nil
+    return outBuf.getData() /* r7 */, tagBuf.getData() /* r7 */, nil
 }
 
 /*
@@ -360,25 +348,23 @@ func (this Aes256Gcm) AuthEncryptedLen (dataLen uint32) uint32 {
 * If 'tag' is not given, then it will be taken from the 'enc'.
 */
 func (this Aes256Gcm) AuthDecrypt (data []byte, authData []byte, tag []byte) ([]byte, error) {
-    outCount := C.ulong(this.AuthDecryptedLen(uint32(len(data))) /* lg2 */)
-    outMemory := make([]byte, int(C.vsc_buffer_ctx_size() + outCount))
-    outBuf := (*C.vsc_buffer_t)(unsafe.Pointer(&outMemory[0]))
-    outData := outMemory[int(C.vsc_buffer_ctx_size()):]
-    C.vsc_buffer_init(outBuf)
-    C.vsc_buffer_use(outBuf, (*C.byte)(unsafe.Pointer(&outData[0])), outCount)
-    defer C.vsc_buffer_delete(outBuf)
-    dataData := C.vsc_data((*C.uint8_t)(&data[0]), C.size_t(len(data)))
-    authDataData := C.vsc_data((*C.uint8_t)(&authData[0]), C.size_t(len(authData)))
-    tagData := C.vsc_data((*C.uint8_t)(&tag[0]), C.size_t(len(tag)))
+    outBuf, outBufErr := bufferNewBuffer(int(this.AuthDecryptedLen(uint32(len(data))) /* lg2 */))
+    if outBufErr != nil {
+        return nil, outBufErr
+    }
+    defer outBuf.clear()
+    dataData := helperWrapData (data)
+    authDataData := helperWrapData (authData)
+    tagData := helperWrapData (tag)
 
-    proxyResult := /*pr4*/C.vscf_aes256_gcm_auth_decrypt(this.cCtx, dataData, authDataData, tagData, outBuf)
+    proxyResult := /*pr4*/C.vscf_aes256_gcm_auth_decrypt(this.cCtx, dataData, authDataData, tagData, outBuf.ctx)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
         return nil, err
     }
 
-    return outData[0:C.vsc_buffer_len(outBuf)] /* r7 */, nil
+    return outBuf.getData() /* r7 */, nil
 }
 
 /*
@@ -394,7 +380,7 @@ func (this Aes256Gcm) AuthDecryptedLen (dataLen uint32) uint32 {
 * Set additional data for for AEAD ciphers.
 */
 func (this Aes256Gcm) SetAuthData (authData []byte) {
-    authDataData := C.vsc_data((*C.uint8_t)(&authData[0]), C.size_t(len(authData)))
+    authDataData := helperWrapData (authData)
 
     C.vscf_aes256_gcm_set_auth_data(this.cCtx, authDataData)
 
@@ -408,31 +394,27 @@ func (this Aes256Gcm) SetAuthData (authData []byte) {
 * method "finish" can be used.
 */
 func (this Aes256Gcm) FinishAuthEncryption () ([]byte, []byte, error) {
-    outCount := C.ulong(this.OutLen(0) /* lg2 */)
-    outMemory := make([]byte, int(C.vsc_buffer_ctx_size() + outCount))
-    outBuf := (*C.vsc_buffer_t)(unsafe.Pointer(&outMemory[0]))
-    outData := outMemory[int(C.vsc_buffer_ctx_size()):]
-    C.vsc_buffer_init(outBuf)
-    C.vsc_buffer_use(outBuf, (*C.byte)(unsafe.Pointer(&outData[0])), outCount)
-    defer C.vsc_buffer_delete(outBuf)
+    outBuf, outBufErr := bufferNewBuffer(int(this.OutLen(0) /* lg2 */))
+    if outBufErr != nil {
+        return nil, nil, outBufErr
+    }
+    defer outBuf.clear()
 
-    tagCount := C.ulong(this.GetAuthTagLen() /* lg3 */)
-    tagMemory := make([]byte, int(C.vsc_buffer_ctx_size() + tagCount))
-    tagBuf := (*C.vsc_buffer_t)(unsafe.Pointer(&tagMemory[0]))
-    tagData := tagMemory[int(C.vsc_buffer_ctx_size()):]
-    C.vsc_buffer_init(tagBuf)
-    C.vsc_buffer_use(tagBuf, (*C.byte)(unsafe.Pointer(&tagData[0])), tagCount)
-    defer C.vsc_buffer_delete(tagBuf)
+    tagBuf, tagBufErr := bufferNewBuffer(int(this.GetAuthTagLen() /* lg3 */))
+    if tagBufErr != nil {
+        return nil, nil, tagBufErr
+    }
+    defer tagBuf.clear()
 
 
-    proxyResult := /*pr4*/C.vscf_aes256_gcm_finish_auth_encryption(this.cCtx, outBuf, tagBuf)
+    proxyResult := /*pr4*/C.vscf_aes256_gcm_finish_auth_encryption(this.cCtx, outBuf.ctx, tagBuf.ctx)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
         return nil, nil, err
     }
 
-    return outData[0:C.vsc_buffer_len(outBuf)] /* r7 */, tagData[0:C.vsc_buffer_len(tagBuf)] /* r7 */, nil
+    return outBuf.getData() /* r7 */, tagBuf.getData() /* r7 */, nil
 }
 
 /*
@@ -442,21 +424,19 @@ func (this Aes256Gcm) FinishAuthEncryption () ([]byte, []byte, error) {
 * method "finish" can be used for simplicity.
 */
 func (this Aes256Gcm) FinishAuthDecryption (tag []byte) ([]byte, error) {
-    outCount := C.ulong(this.OutLen(0) /* lg2 */)
-    outMemory := make([]byte, int(C.vsc_buffer_ctx_size() + outCount))
-    outBuf := (*C.vsc_buffer_t)(unsafe.Pointer(&outMemory[0]))
-    outData := outMemory[int(C.vsc_buffer_ctx_size()):]
-    C.vsc_buffer_init(outBuf)
-    C.vsc_buffer_use(outBuf, (*C.byte)(unsafe.Pointer(&outData[0])), outCount)
-    defer C.vsc_buffer_delete(outBuf)
-    tagData := C.vsc_data((*C.uint8_t)(&tag[0]), C.size_t(len(tag)))
+    outBuf, outBufErr := bufferNewBuffer(int(this.OutLen(0) /* lg2 */))
+    if outBufErr != nil {
+        return nil, outBufErr
+    }
+    defer outBuf.clear()
+    tagData := helperWrapData (tag)
 
-    proxyResult := /*pr4*/C.vscf_aes256_gcm_finish_auth_decryption(this.cCtx, tagData, outBuf)
+    proxyResult := /*pr4*/C.vscf_aes256_gcm_finish_auth_decryption(this.cCtx, tagData, outBuf.ctx)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
         return nil, err
     }
 
-    return outData[0:C.vsc_buffer_len(outBuf)] /* r7 */, nil
+    return outBuf.getData() /* r7 */, nil
 }

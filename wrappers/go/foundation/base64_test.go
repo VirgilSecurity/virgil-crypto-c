@@ -57,14 +57,14 @@ func TestBase64EncodedLen(t *testing.T) {
 }
 
 func TestBase64Decode(t *testing.T) {
-	encodedData,_ := b64.StdEncoding.DecodeString(TEST_DATA)
+	encodedData := []byte(TEST_DATA)
 	expectedDecodedData, _ := b64.StdEncoding.DecodeString(TEST_DATA)
 
 	decodedData, err := Base64Decode(encodedData)
 
 	assert.Nil(t, err)
 	assert.NotNil(t, decodedData)
-	assert.True(t, reflect.DeepEqual(expectedDecodedData, encodedData))
+	assert.Equal(t, expectedDecodedData, decodedData)
 }
 
 func TestBase64DecodedLen(t *testing.T) {

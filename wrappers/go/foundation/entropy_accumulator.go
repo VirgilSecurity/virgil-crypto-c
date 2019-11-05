@@ -4,7 +4,7 @@ package foundation
 // #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lmbedcrypto -led25519 -lprotobuf-nanopb -lvsc_common -lvsc_foundation -lvsc_foundation_pb
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
-import unsafe "unsafe"
+
 
 /*
 * Implementation based on a simple entropy accumulator.
@@ -69,7 +69,7 @@ func newEntropyAccumulatorCopy (ctx *C.vscf_entropy_accumulator_t /*ct10*/) *Ent
 }
 
 /// Release underlying C context.
-func (this EntropyAccumulator) close () {
+func (this EntropyAccumulator) clear () {
     C.vscf_entropy_accumulator_delete(this.cCtx)
 }
 
@@ -86,21 +86,19 @@ func (this EntropyAccumulator) IsStrong () bool {
 * Gather entropy of the requested length.
 */
 func (this EntropyAccumulator) Gather (len uint32) ([]byte, error) {
-    outCount := C.ulong(len)
-    outMemory := make([]byte, int(C.vsc_buffer_ctx_size() + outCount))
-    outBuf := (*C.vsc_buffer_t)(unsafe.Pointer(&outMemory[0]))
-    outData := outMemory[int(C.vsc_buffer_ctx_size()):]
-    C.vsc_buffer_init(outBuf)
-    C.vsc_buffer_use(outBuf, (*C.byte)(unsafe.Pointer(&outData[0])), outCount)
-    defer C.vsc_buffer_delete(outBuf)
+    outBuf, outBufErr := bufferNewBuffer(int(len))
+    if outBufErr != nil {
+        return nil, outBufErr
+    }
+    defer outBuf.clear()
 
 
-    proxyResult := /*pr4*/C.vscf_entropy_accumulator_gather(this.cCtx, (C.size_t)(len)/*pa10*/, outBuf)
+    proxyResult := /*pr4*/C.vscf_entropy_accumulator_gather(this.cCtx, (C.size_t)(len)/*pa10*/, outBuf.ctx)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
         return nil, err
     }
 
-    return outData[0:C.vsc_buffer_len(outBuf)] /* r7 */, nil
+    return outBuf.getData() /* r7 */, nil
 }

@@ -4,7 +4,7 @@ package foundation
 // #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lmbedcrypto -led25519 -lprotobuf-nanopb -lvsc_common -lvsc_foundation -lvsc_foundation_pb
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
-import unsafe "unsafe"
+
 
 type BrainkeyClient struct {
     cCtx *C.vscf_brainkey_client_t /*ct2*/
@@ -41,7 +41,7 @@ func newBrainkeyClientCopy (ctx *C.vscf_brainkey_client_t /*ct2*/) *BrainkeyClie
 }
 
 /// Release underlying C context.
-func (this BrainkeyClient) close () {
+func (this BrainkeyClient) clear () {
     C.vscf_brainkey_client_delete(this.cCtx)
 }
 
@@ -93,52 +93,46 @@ func (this BrainkeyClient) SetupDefaults () error {
 }
 
 func (this BrainkeyClient) Blind (password []byte) ([]byte, []byte, error) {
-    deblindFactorCount := C.ulong(BrainkeyClientGetMpiLen() /* lg4 */)
-    deblindFactorMemory := make([]byte, int(C.vsc_buffer_ctx_size() + deblindFactorCount))
-    deblindFactorBuf := (*C.vsc_buffer_t)(unsafe.Pointer(&deblindFactorMemory[0]))
-    deblindFactorData := deblindFactorMemory[int(C.vsc_buffer_ctx_size()):]
-    C.vsc_buffer_init(deblindFactorBuf)
-    C.vsc_buffer_use(deblindFactorBuf, (*C.byte)(unsafe.Pointer(&deblindFactorData[0])), deblindFactorCount)
-    defer C.vsc_buffer_delete(deblindFactorBuf)
+    deblindFactorBuf, deblindFactorBufErr := bufferNewBuffer(int(BrainkeyClientGetMpiLen() /* lg4 */))
+    if deblindFactorBufErr != nil {
+        return nil, nil, deblindFactorBufErr
+    }
+    defer deblindFactorBuf.clear()
 
-    blindedPointCount := C.ulong(BrainkeyClientGetPointLen() /* lg4 */)
-    blindedPointMemory := make([]byte, int(C.vsc_buffer_ctx_size() + blindedPointCount))
-    blindedPointBuf := (*C.vsc_buffer_t)(unsafe.Pointer(&blindedPointMemory[0]))
-    blindedPointData := blindedPointMemory[int(C.vsc_buffer_ctx_size()):]
-    C.vsc_buffer_init(blindedPointBuf)
-    C.vsc_buffer_use(blindedPointBuf, (*C.byte)(unsafe.Pointer(&blindedPointData[0])), blindedPointCount)
-    defer C.vsc_buffer_delete(blindedPointBuf)
-    passwordData := C.vsc_data((*C.uint8_t)(&password[0]), C.size_t(len(password)))
+    blindedPointBuf, blindedPointBufErr := bufferNewBuffer(int(BrainkeyClientGetPointLen() /* lg4 */))
+    if blindedPointBufErr != nil {
+        return nil, nil, blindedPointBufErr
+    }
+    defer blindedPointBuf.clear()
+    passwordData := helperWrapData (password)
 
-    proxyResult := /*pr4*/C.vscf_brainkey_client_blind(this.cCtx, passwordData, deblindFactorBuf, blindedPointBuf)
+    proxyResult := /*pr4*/C.vscf_brainkey_client_blind(this.cCtx, passwordData, deblindFactorBuf.ctx, blindedPointBuf.ctx)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
         return nil, nil, err
     }
 
-    return deblindFactorData[0:C.vsc_buffer_len(deblindFactorBuf)] /* r7 */, blindedPointData[0:C.vsc_buffer_len(blindedPointBuf)] /* r7 */, nil
+    return deblindFactorBuf.getData() /* r7 */, blindedPointBuf.getData() /* r7 */, nil
 }
 
 func (this BrainkeyClient) Deblind (password []byte, hardenedPoint []byte, deblindFactor []byte, keyName []byte) ([]byte, error) {
-    seedCount := C.ulong(BrainkeyClientGetPointLen() /* lg4 */)
-    seedMemory := make([]byte, int(C.vsc_buffer_ctx_size() + seedCount))
-    seedBuf := (*C.vsc_buffer_t)(unsafe.Pointer(&seedMemory[0]))
-    seedData := seedMemory[int(C.vsc_buffer_ctx_size()):]
-    C.vsc_buffer_init(seedBuf)
-    C.vsc_buffer_use(seedBuf, (*C.byte)(unsafe.Pointer(&seedData[0])), seedCount)
-    defer C.vsc_buffer_delete(seedBuf)
-    passwordData := C.vsc_data((*C.uint8_t)(&password[0]), C.size_t(len(password)))
-    hardenedPointData := C.vsc_data((*C.uint8_t)(&hardenedPoint[0]), C.size_t(len(hardenedPoint)))
-    deblindFactorData := C.vsc_data((*C.uint8_t)(&deblindFactor[0]), C.size_t(len(deblindFactor)))
-    keyNameData := C.vsc_data((*C.uint8_t)(&keyName[0]), C.size_t(len(keyName)))
+    seedBuf, seedBufErr := bufferNewBuffer(int(BrainkeyClientGetPointLen() /* lg4 */))
+    if seedBufErr != nil {
+        return nil, seedBufErr
+    }
+    defer seedBuf.clear()
+    passwordData := helperWrapData (password)
+    hardenedPointData := helperWrapData (hardenedPoint)
+    deblindFactorData := helperWrapData (deblindFactor)
+    keyNameData := helperWrapData (keyName)
 
-    proxyResult := /*pr4*/C.vscf_brainkey_client_deblind(this.cCtx, passwordData, hardenedPointData, deblindFactorData, keyNameData, seedBuf)
+    proxyResult := /*pr4*/C.vscf_brainkey_client_deblind(this.cCtx, passwordData, hardenedPointData, deblindFactorData, keyNameData, seedBuf.ctx)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
         return nil, err
     }
 
-    return seedData[0:C.vsc_buffer_len(seedBuf)] /* r7 */, nil
+    return seedBuf.getData() /* r7 */, nil
 }

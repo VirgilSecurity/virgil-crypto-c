@@ -4,7 +4,7 @@ package foundation
 // #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lmbedcrypto -led25519 -lprotobuf-nanopb -lvsc_common -lvsc_foundation -lvsc_foundation_pb
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
-import unsafe "unsafe"
+
 
 /*
 * This is MbedTLS implementation of SHA224.
@@ -46,7 +46,7 @@ func newSha224Copy (ctx *C.vscf_sha224_t /*ct10*/) *Sha224 {
 }
 
 /// Release underlying C context.
-func (this Sha224) close () {
+func (this Sha224) clear () {
     C.vscf_sha224_delete(this.cCtx)
 }
 
@@ -85,14 +85,14 @@ func (this Sha224) RestoreAlgInfo (algInfo IAlgInfo) error {
 /*
 * Length of the digest (hashing output) in bytes.
 */
-func Sha224GetDigestLen () uint32 {
+func (this Sha224) GetDigestLen () uint32 {
     return 28
 }
 
 /*
 * Block length of the digest function in bytes.
 */
-func Sha224GetBlockLen () uint32 {
+func (this Sha224) GetBlockLen () uint32 {
     return 64
 }
 
@@ -100,18 +100,16 @@ func Sha224GetBlockLen () uint32 {
 * Calculate hash over given data.
 */
 func (this Sha224) Hash (data []byte) []byte {
-    digestCount := C.ulong(this.GetDigestLen() /* lg3 */)
-    digestMemory := make([]byte, int(C.vsc_buffer_ctx_size() + digestCount))
-    digestBuf := (*C.vsc_buffer_t)(unsafe.Pointer(&digestMemory[0]))
-    digestData := digestMemory[int(C.vsc_buffer_ctx_size()):]
-    C.vsc_buffer_init(digestBuf)
-    C.vsc_buffer_use(digestBuf, (*C.byte)(unsafe.Pointer(&digestData[0])), digestCount)
-    defer C.vsc_buffer_delete(digestBuf)
-    dataData := C.vsc_data((*C.uint8_t)(&data[0]), C.size_t(len(data)))
+    digestBuf, digestBufErr := bufferNewBuffer(int(this.GetDigestLen() /* lg3 */))
+    if digestBufErr != nil {
+        return nil
+    }
+    defer digestBuf.clear()
+    dataData := helperWrapData (data)
 
-    C.vscf_sha224_hash(dataData, digestBuf)
+    C.vscf_sha224_hash(dataData, digestBuf.ctx)
 
-    return digestData[0:C.vsc_buffer_len(digestBuf)] /* r7 */
+    return digestBuf.getData() /* r7 */
 }
 
 /*
@@ -127,7 +125,7 @@ func (this Sha224) Start () {
 * Add given data to the hash.
 */
 func (this Sha224) Update (data []byte) {
-    dataData := C.vsc_data((*C.uint8_t)(&data[0]), C.size_t(len(data)))
+    dataData := helperWrapData (data)
 
     C.vscf_sha224_update(this.cCtx, dataData)
 
@@ -138,16 +136,14 @@ func (this Sha224) Update (data []byte) {
 * Accompilsh hashing and return it's result (a message digest).
 */
 func (this Sha224) Finish () []byte {
-    digestCount := C.ulong(this.GetDigestLen() /* lg3 */)
-    digestMemory := make([]byte, int(C.vsc_buffer_ctx_size() + digestCount))
-    digestBuf := (*C.vsc_buffer_t)(unsafe.Pointer(&digestMemory[0]))
-    digestData := digestMemory[int(C.vsc_buffer_ctx_size()):]
-    C.vsc_buffer_init(digestBuf)
-    C.vsc_buffer_use(digestBuf, (*C.byte)(unsafe.Pointer(&digestData[0])), digestCount)
-    defer C.vsc_buffer_delete(digestBuf)
+    digestBuf, digestBufErr := bufferNewBuffer(int(this.GetDigestLen() /* lg3 */))
+    if digestBufErr != nil {
+        return nil
+    }
+    defer digestBuf.clear()
 
 
-    C.vscf_sha224_finish(this.cCtx, digestBuf)
+    C.vscf_sha224_finish(this.cCtx, digestBuf.ctx)
 
-    return digestData[0:C.vsc_buffer_len(digestBuf)] /* r7 */
+    return digestBuf.getData() /* r7 */
 }

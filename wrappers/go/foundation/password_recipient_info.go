@@ -5,6 +5,7 @@ package foundation
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
 
+
 /*
 * Handle information about recipient that is defined by a password.
 */
@@ -43,7 +44,7 @@ func newPasswordRecipientInfoCopy (ctx *C.vscf_password_recipient_info_t /*ct2*/
 }
 
 /// Release underlying C context.
-func (this PasswordRecipientInfo) close () {
+func (this PasswordRecipientInfo) clear () {
     C.vscf_password_recipient_info_delete(this.cCtx)
 }
 
@@ -51,7 +52,7 @@ func (this PasswordRecipientInfo) close () {
 * Create object and define all properties.
 */
 func NewPasswordRecipientInfoWithMembers (keyEncryptionAlgorithm IAlgInfo, encryptedKey []byte) *PasswordRecipientInfo {
-    encryptedKeyData := C.vsc_data((*C.uint8_t)(&encryptedKey[0]), C.size_t(len(encryptedKey)))
+    encryptedKeyData := helperWrapData (encryptedKey)
 
     keyEncryptionAlgorithmCopy := C.vscf_impl_shallow_copy((*C.vscf_impl_t)(keyEncryptionAlgorithm.ctx()))
 
@@ -78,5 +79,5 @@ func (this PasswordRecipientInfo) KeyEncryptionAlgorithm () (IAlgInfo, error) {
 func (this PasswordRecipientInfo) EncryptedKey () []byte {
     proxyResult := /*pr4*/C.vscf_password_recipient_info_encrypted_key(this.cCtx)
 
-    return helperDataToBytes(proxyResult) /* r1 */
+    return helperExtractData(proxyResult) /* r1 */
 }

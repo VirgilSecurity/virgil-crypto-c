@@ -5,6 +5,7 @@ package foundation
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
 
+
 /*
 * Handle information about signer that is defined by an identifer and
 * a Public Key.
@@ -44,7 +45,7 @@ func newSignerInfoCopy (ctx *C.vscf_signer_info_t /*ct2*/) *SignerInfo {
 }
 
 /// Release underlying C context.
-func (this SignerInfo) close () {
+func (this SignerInfo) clear () {
     C.vscf_signer_info_delete(this.cCtx)
 }
 
@@ -54,7 +55,7 @@ func (this SignerInfo) close () {
 func (this SignerInfo) SignerId () []byte {
     proxyResult := /*pr4*/C.vscf_signer_info_signer_id(this.cCtx)
 
-    return helperDataToBytes(proxyResult) /* r1 */
+    return helperExtractData(proxyResult) /* r1 */
 }
 
 /*
@@ -72,5 +73,5 @@ func (this SignerInfo) SignerAlgInfo () (IAlgInfo, error) {
 func (this SignerInfo) Signature () []byte {
     proxyResult := /*pr4*/C.vscf_signer_info_signature(this.cCtx)
 
-    return helperDataToBytes(proxyResult) /* r1 */
+    return helperExtractData(proxyResult) /* r1 */
 }

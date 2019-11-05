@@ -4,7 +4,7 @@ package foundation
 // #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lmbedcrypto -led25519 -lprotobuf-nanopb -lvsc_common -lvsc_foundation -lvsc_foundation_pb
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
-import unsafe "unsafe"
+
 
 /*
 * This is implementation of Curve25519 elliptic curve algorithms.
@@ -90,7 +90,7 @@ func newCurve25519Copy (ctx *C.vscf_curve25519_t /*ct10*/) *Curve25519 {
 }
 
 /// Release underlying C context.
-func (this Curve25519) close () {
+func (this Curve25519) clear () {
     C.vscf_curve25519_delete(this.cCtx)
 }
 
@@ -129,28 +129,28 @@ func (this Curve25519) RestoreAlgInfo (algInfo IAlgInfo) error {
 /*
 * Defines whether a public key can be imported or not.
 */
-func Curve25519GetCanImportPublicKey () bool {
+func (this Curve25519) GetCanImportPublicKey () bool {
     return true
 }
 
 /*
 * Define whether a public key can be exported or not.
 */
-func Curve25519GetCanExportPublicKey () bool {
+func (this Curve25519) GetCanExportPublicKey () bool {
     return true
 }
 
 /*
 * Define whether a private key can be imported or not.
 */
-func Curve25519GetCanImportPrivateKey () bool {
+func (this Curve25519) GetCanImportPrivateKey () bool {
     return true
 }
 
 /*
 * Define whether a private key can be exported or not.
 */
-func Curve25519GetCanExportPrivateKey () bool {
+func (this Curve25519) GetCanExportPrivateKey () bool {
     return true
 }
 
@@ -284,23 +284,21 @@ func (this Curve25519) EncryptedLen (publicKey IPublicKey, dataLen uint32) uint3
 * Encrypt data with a given public key.
 */
 func (this Curve25519) Encrypt (publicKey IPublicKey, data []byte) ([]byte, error) {
-    outCount := C.ulong(this.EncryptedLen(publicKey.(IPublicKey), uint32(len(data))) /* lg2 */)
-    outMemory := make([]byte, int(C.vsc_buffer_ctx_size() + outCount))
-    outBuf := (*C.vsc_buffer_t)(unsafe.Pointer(&outMemory[0]))
-    outData := outMemory[int(C.vsc_buffer_ctx_size()):]
-    C.vsc_buffer_init(outBuf)
-    C.vsc_buffer_use(outBuf, (*C.byte)(unsafe.Pointer(&outData[0])), outCount)
-    defer C.vsc_buffer_delete(outBuf)
-    dataData := C.vsc_data((*C.uint8_t)(&data[0]), C.size_t(len(data)))
+    outBuf, outBufErr := bufferNewBuffer(int(this.EncryptedLen(publicKey.(IPublicKey), uint32(len(data))) /* lg2 */))
+    if outBufErr != nil {
+        return nil, outBufErr
+    }
+    defer outBuf.clear()
+    dataData := helperWrapData (data)
 
-    proxyResult := /*pr4*/C.vscf_curve25519_encrypt(this.cCtx, (*C.vscf_impl_t)(publicKey.ctx()), dataData, outBuf)
+    proxyResult := /*pr4*/C.vscf_curve25519_encrypt(this.cCtx, (*C.vscf_impl_t)(publicKey.ctx()), dataData, outBuf.ctx)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
         return nil, err
     }
 
-    return outData[0:C.vsc_buffer_len(outBuf)] /* r7 */, nil
+    return outBuf.getData() /* r7 */, nil
 }
 
 /*
@@ -326,23 +324,21 @@ func (this Curve25519) DecryptedLen (privateKey IPrivateKey, dataLen uint32) uin
 * Decrypt given data.
 */
 func (this Curve25519) Decrypt (privateKey IPrivateKey, data []byte) ([]byte, error) {
-    outCount := C.ulong(this.DecryptedLen(privateKey.(IPrivateKey), uint32(len(data))) /* lg2 */)
-    outMemory := make([]byte, int(C.vsc_buffer_ctx_size() + outCount))
-    outBuf := (*C.vsc_buffer_t)(unsafe.Pointer(&outMemory[0]))
-    outData := outMemory[int(C.vsc_buffer_ctx_size()):]
-    C.vsc_buffer_init(outBuf)
-    C.vsc_buffer_use(outBuf, (*C.byte)(unsafe.Pointer(&outData[0])), outCount)
-    defer C.vsc_buffer_delete(outBuf)
-    dataData := C.vsc_data((*C.uint8_t)(&data[0]), C.size_t(len(data)))
+    outBuf, outBufErr := bufferNewBuffer(int(this.DecryptedLen(privateKey.(IPrivateKey), uint32(len(data))) /* lg2 */))
+    if outBufErr != nil {
+        return nil, outBufErr
+    }
+    defer outBuf.clear()
+    dataData := helperWrapData (data)
 
-    proxyResult := /*pr4*/C.vscf_curve25519_decrypt(this.cCtx, (*C.vscf_impl_t)(privateKey.ctx()), dataData, outBuf)
+    proxyResult := /*pr4*/C.vscf_curve25519_decrypt(this.cCtx, (*C.vscf_impl_t)(privateKey.ctx()), dataData, outBuf.ctx)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
         return nil, err
     }
 
-    return outData[0:C.vsc_buffer_len(outBuf)] /* r7 */, nil
+    return outBuf.getData() /* r7 */, nil
 }
 
 /*
@@ -350,23 +346,21 @@ func (this Curve25519) Decrypt (privateKey IPrivateKey, data []byte) ([]byte, er
 * Note, computed shared key can be used only within symmetric cryptography.
 */
 func (this Curve25519) ComputeSharedKey (publicKey IPublicKey, privateKey IPrivateKey) ([]byte, error) {
-    sharedKeyCount := C.ulong(this.SharedKeyLen(privateKey.(IKey)) /* lg2 */)
-    sharedKeyMemory := make([]byte, int(C.vsc_buffer_ctx_size() + sharedKeyCount))
-    sharedKeyBuf := (*C.vsc_buffer_t)(unsafe.Pointer(&sharedKeyMemory[0]))
-    sharedKeyData := sharedKeyMemory[int(C.vsc_buffer_ctx_size()):]
-    C.vsc_buffer_init(sharedKeyBuf)
-    C.vsc_buffer_use(sharedKeyBuf, (*C.byte)(unsafe.Pointer(&sharedKeyData[0])), sharedKeyCount)
-    defer C.vsc_buffer_delete(sharedKeyBuf)
+    sharedKeyBuf, sharedKeyBufErr := bufferNewBuffer(int(this.SharedKeyLen(privateKey.(IKey)) /* lg2 */))
+    if sharedKeyBufErr != nil {
+        return nil, sharedKeyBufErr
+    }
+    defer sharedKeyBuf.clear()
 
 
-    proxyResult := /*pr4*/C.vscf_curve25519_compute_shared_key(this.cCtx, (*C.vscf_impl_t)(publicKey.ctx()), (*C.vscf_impl_t)(privateKey.ctx()), sharedKeyBuf)
+    proxyResult := /*pr4*/C.vscf_curve25519_compute_shared_key(this.cCtx, (*C.vscf_impl_t)(publicKey.ctx()), (*C.vscf_impl_t)(privateKey.ctx()), sharedKeyBuf.ctx)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
         return nil, err
     }
 
-    return sharedKeyData[0:C.vsc_buffer_len(sharedKeyBuf)] /* r7 */, nil
+    return sharedKeyBuf.getData() /* r7 */, nil
 }
 
 /*

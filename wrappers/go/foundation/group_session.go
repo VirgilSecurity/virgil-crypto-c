@@ -4,7 +4,7 @@ package foundation
 // #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lmbedcrypto -led25519 -lprotobuf-nanopb -lvsc_common -lvsc_foundation -lvsc_foundation_pb
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
-import unsafe "unsafe"
+
 
 /*
 * Group chat encryption session.
@@ -44,7 +44,7 @@ func newGroupSessionCopy (ctx *C.vscf_group_session_t /*ct2*/) *GroupSession {
 }
 
 /// Release underlying C context.
-func (this GroupSession) close () {
+func (this GroupSession) clear () {
     C.vscf_group_session_delete(this.cCtx)
 }
 
@@ -114,7 +114,7 @@ func (this GroupSession) SetupDefaults () error {
 func (this GroupSession) GetSessionId () []byte {
     proxyResult := /*pr4*/C.vscf_group_session_get_session_id(this.cCtx)
 
-    return helperDataToBytes(proxyResult) /* r1 */
+    return helperExtractData(proxyResult) /* r1 */
 }
 
 /*
@@ -138,7 +138,7 @@ func (this GroupSession) AddEpoch (message *GroupSessionMessage) error {
 func (this GroupSession) Encrypt (plainText []byte, privateKey IPrivateKey) (*GroupSessionMessage, error) {
     var error C.vscf_error_t
     C.vscf_error_reset(&error)
-    plainTextData := C.vsc_data((*C.uint8_t)(&plainText[0]), C.size_t(len(plainText)))
+    plainTextData := helperWrapData (plainText)
 
     proxyResult := /*pr4*/C.vscf_group_session_encrypt(this.cCtx, plainTextData, (*C.vscf_impl_t)(privateKey.ctx()), &error)
 
@@ -163,23 +163,21 @@ func (this GroupSession) DecryptLen (message *GroupSessionMessage) uint32 {
 * Decrypts message
 */
 func (this GroupSession) Decrypt (message *GroupSessionMessage, publicKey IPublicKey) ([]byte, error) {
-    plainTextCount := C.ulong(this.DecryptLen(message) /* lg2 */)
-    plainTextMemory := make([]byte, int(C.vsc_buffer_ctx_size() + plainTextCount))
-    plainTextBuf := (*C.vsc_buffer_t)(unsafe.Pointer(&plainTextMemory[0]))
-    plainTextData := plainTextMemory[int(C.vsc_buffer_ctx_size()):]
-    C.vsc_buffer_init(plainTextBuf)
-    C.vsc_buffer_use(plainTextBuf, (*C.byte)(unsafe.Pointer(&plainTextData[0])), plainTextCount)
-    defer C.vsc_buffer_delete(plainTextBuf)
+    plainTextBuf, plainTextBufErr := bufferNewBuffer(int(this.DecryptLen(message) /* lg2 */))
+    if plainTextBufErr != nil {
+        return nil, plainTextBufErr
+    }
+    defer plainTextBuf.clear()
 
 
-    proxyResult := /*pr4*/C.vscf_group_session_decrypt(this.cCtx, (*C.vscf_group_session_message_t)(message.ctx()), (*C.vscf_impl_t)(publicKey.ctx()), plainTextBuf)
+    proxyResult := /*pr4*/C.vscf_group_session_decrypt(this.cCtx, (*C.vscf_group_session_message_t)(message.ctx()), (*C.vscf_impl_t)(publicKey.ctx()), plainTextBuf.ctx)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
         return nil, err
     }
 
-    return plainTextData[0:C.vsc_buffer_len(plainTextBuf)] /* r7 */, nil
+    return plainTextBuf.getData() /* r7 */, nil
 }
 
 /*

@@ -5,6 +5,7 @@ package foundation
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
 
+
 /*
 * Handle information about password-based encryption algorithm.
 */
@@ -62,7 +63,7 @@ func newPbeAlgInfoCopy (ctx *C.vscf_pbe_alg_info_t /*ct10*/) *PbeAlgInfo {
 }
 
 /// Release underlying C context.
-func (this PbeAlgInfo) close () {
+func (this PbeAlgInfo) clear () {
     C.vscf_pbe_alg_info_delete(this.cCtx)
 }
 

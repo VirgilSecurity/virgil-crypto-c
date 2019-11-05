@@ -5,6 +5,7 @@ package foundation
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
 
+
 /*
 * Handle simple algorithm information (just id).
 */
@@ -44,7 +45,7 @@ func newSimpleAlgInfoCopy (ctx *C.vscf_simple_alg_info_t /*ct10*/) *SimpleAlgInf
 }
 
 /// Release underlying C context.
-func (this SimpleAlgInfo) close () {
+func (this SimpleAlgInfo) clear () {
     C.vscf_simple_alg_info_delete(this.cCtx)
 }
 

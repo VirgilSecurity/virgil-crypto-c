@@ -35,10 +35,9 @@
 package foundation
 
 import (
-    b64 "encoding/base64"
-    "github.com/stretchr/testify/assert"
-    "reflect"
-    "testing"
+	b64 "encoding/base64"
+	"github.com/stretchr/testify/assert"
+	"testing"
 )
 
 func TestNewAes256Gcm(t *testing.T) {
@@ -70,7 +69,7 @@ func TestAes256Gcm_Encrypt(t *testing.T) {
     key, _ := b64.StdEncoding.DecodeString(TEST_AES256_GCM_KEY)
     nonce, _ := b64.StdEncoding.DecodeString(TEST_AES256_GCM_NONCE)
     data, _ := b64.StdEncoding.DecodeString(TEST_DATA)
-    expectedEncryptedData := []byte(TEST_AES256_GCM_ENCRYPTED_DATA)
+    expectedEncryptedData, _ := b64.StdEncoding.DecodeString(TEST_AES256_GCM_ENCRYPTED_DATA)
 
     aes256Gcm := NewAes256Gcm()
     aes256Gcm.SetKey(key)
@@ -80,28 +79,36 @@ func TestAes256Gcm_Encrypt(t *testing.T) {
 
 	assert.Nil(t, err)
     assert.NotNil(t, encryptedData)
-    assert.True(t, reflect.DeepEqual(expectedEncryptedData, encryptedData))
+    assert.Equal(t, expectedEncryptedData, encryptedData)
 }
 
 func TestAes256Gcm_Encrypt_WithCipher(t *testing.T) {
 	key, _ := b64.StdEncoding.DecodeString(TEST_AES256_GCM_KEY)
 	nonce, _ := b64.StdEncoding.DecodeString(TEST_AES256_GCM_NONCE)
 	data, _ := b64.StdEncoding.DecodeString(TEST_DATA)
-	expectedEncryptedData := []byte(TEST_AES256_GCM_ENCRYPTED_DATA)
+	expectedEncryptedData, _ := b64.StdEncoding.DecodeString(TEST_AES256_GCM_ENCRYPTED_DATA)
 
 	aes256Gcm := NewAes256Gcm()
 	aes256Gcm.SetKey(key)
 	aes256Gcm.SetNonce(nonce)
 
-	aes256Gcm.StartDecryption()
-	updateData := aes256Gcm.Update(data)
+	blockLen := int(aes256Gcm.GetBlockLen())
+	aes256Gcm.StartEncryption()
+	var updateData []byte
+	for startIndex := 0; startIndex < len(data);  {
+		var endIndex = startIndex + blockLen
+		block := data[startIndex : endIndex]
+		updateData = append(updateData, aes256Gcm.Update(block)...)
+
+		startIndex += blockLen
+	}
 	finishData, err := aes256Gcm.Finish()
 	assert.Nil(t, err)
 
 	encryptedData := append(updateData, finishData...)
 
 	assert.NotNil(t, encryptedData)
-	assert.True(t, reflect.DeepEqual(expectedEncryptedData, encryptedData))
+	assert.Equal(t, expectedEncryptedData, encryptedData)
 }
 
 func TestAes256Gcm_Decrypt(t *testing.T) {
@@ -118,7 +125,7 @@ func TestAes256Gcm_Decrypt(t *testing.T) {
 
 	assert.Nil(t, err)
 	assert.NotNil(t, decryptedData)
-	assert.True(t, reflect.DeepEqual(expectedDecryptedData, decryptedData))
+	assert.Equal(t, expectedDecryptedData, decryptedData)
 }
 
 func TestAes256Gcm_Decrypt_WitCipher(t *testing.T) {
@@ -131,38 +138,46 @@ func TestAes256Gcm_Decrypt_WitCipher(t *testing.T) {
 	aes256Gcm.SetKey(key)
 	aes256Gcm.SetNonce(nonce)
 
+	blockLen := int(aes256Gcm.GetBlockLen())
 	aes256Gcm.StartDecryption()
-	updateData := aes256Gcm.Update(encryptedData)
+	var updateData []byte
+	for startIndex := 0; startIndex < len(encryptedData);  {
+		var endIndex = startIndex + blockLen
+		block := encryptedData[startIndex : endIndex]
+		updateData = append(updateData, aes256Gcm.Update(block)...)
+
+		startIndex += blockLen
+	}
 	finishData, err := aes256Gcm.Finish()
 	assert.Nil(t, err)
 
 	decryptedData := append(updateData, finishData...)
 
 	assert.NotNil(t, decryptedData)
-	assert.True(t, reflect.DeepEqual(expectedDecryptedData, decryptedData))
+	assert.Equal(t, expectedDecryptedData, decryptedData)
 }
 
 func TestAes256Gcm_GetNonceLen(t *testing.T) {
     aes256Gcm := NewAes256Gcm()
-    assert.Equal(t, TEST_AES256_GCM_NONCE_LEN, aes256Gcm.GetNonceLen())
+    assert.Equal(t, uint32(TEST_AES256_GCM_NONCE_LEN), aes256Gcm.GetNonceLen())
 }
 
 func TestAes256Gcm_GetKeyLen(t *testing.T) {
     aes256Gcm := NewAes256Gcm()
-    assert.Equal(t, TEST_AES256_GCM_KEY_LEN, aes256Gcm.GetKeyLen())
+    assert.Equal(t, uint32(TEST_AES256_GCM_KEY_LEN), aes256Gcm.GetKeyLen())
 }
 
 func TestAes256Gcm_GetKeyBitLen(t *testing.T) {
     aes256Gcm := NewAes256Gcm()
-    assert.Equal(t, TEST_AES256_GCM_KEY_BIT_LEN, aes256Gcm.GetKeyBitlen())
+    assert.Equal(t, uint32(TEST_AES256_GCM_KEY_BIT_LEN), aes256Gcm.GetKeyBitlen())
 }
 
 func TestAes256Gcm_GetBlockLen(t *testing.T) {
     aes256Gcm := NewAes256Gcm()
-    assert.Equal(t, TEST_AES256_GCM_BLOCK_LEN, aes256Gcm.GetBlockLen())
+    assert.Equal(t, uint32(TEST_AES256_GCM_BLOCK_LEN), aes256Gcm.GetBlockLen())
 }
 
 func TestAes256Gcm_GetAuthTagLen(t *testing.T) {
 	aes256Gcm := NewAes256Gcm()
-	assert.Equal(t, TEST_AES256_GCM_AUTH_TAG_LEN, aes256Gcm.GetAuthTagLen())
+	assert.Equal(t, uint32(TEST_AES256_GCM_AUTH_TAG_LEN), aes256Gcm.GetAuthTagLen())
 }

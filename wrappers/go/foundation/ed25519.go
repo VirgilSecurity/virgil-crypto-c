@@ -4,7 +4,7 @@ package foundation
 // #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lmbedcrypto -led25519 -lprotobuf-nanopb -lvsc_common -lvsc_foundation -lvsc_foundation_pb
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
-import unsafe "unsafe"
+
 
 /*
 * This is implementation of Ed25519 elliptic curve algorithms.
@@ -91,7 +91,7 @@ func newEd25519Copy (ctx *C.vscf_ed25519_t /*ct10*/) *Ed25519 {
 }
 
 /// Release underlying C context.
-func (this Ed25519) close () {
+func (this Ed25519) clear () {
     C.vscf_ed25519_delete(this.cCtx)
 }
 
@@ -130,28 +130,28 @@ func (this Ed25519) RestoreAlgInfo (algInfo IAlgInfo) error {
 /*
 * Defines whether a public key can be imported or not.
 */
-func Ed25519GetCanImportPublicKey () bool {
+func (this Ed25519) GetCanImportPublicKey () bool {
     return true
 }
 
 /*
 * Define whether a public key can be exported or not.
 */
-func Ed25519GetCanExportPublicKey () bool {
+func (this Ed25519) GetCanExportPublicKey () bool {
     return true
 }
 
 /*
 * Define whether a private key can be imported or not.
 */
-func Ed25519GetCanImportPrivateKey () bool {
+func (this Ed25519) GetCanImportPrivateKey () bool {
     return true
 }
 
 /*
 * Define whether a private key can be exported or not.
 */
-func Ed25519GetCanExportPrivateKey () bool {
+func (this Ed25519) GetCanExportPrivateKey () bool {
     return true
 }
 
@@ -285,23 +285,21 @@ func (this Ed25519) EncryptedLen (publicKey IPublicKey, dataLen uint32) uint32 {
 * Encrypt data with a given public key.
 */
 func (this Ed25519) Encrypt (publicKey IPublicKey, data []byte) ([]byte, error) {
-    outCount := C.ulong(this.EncryptedLen(publicKey.(IPublicKey), uint32(len(data))) /* lg2 */)
-    outMemory := make([]byte, int(C.vsc_buffer_ctx_size() + outCount))
-    outBuf := (*C.vsc_buffer_t)(unsafe.Pointer(&outMemory[0]))
-    outData := outMemory[int(C.vsc_buffer_ctx_size()):]
-    C.vsc_buffer_init(outBuf)
-    C.vsc_buffer_use(outBuf, (*C.byte)(unsafe.Pointer(&outData[0])), outCount)
-    defer C.vsc_buffer_delete(outBuf)
-    dataData := C.vsc_data((*C.uint8_t)(&data[0]), C.size_t(len(data)))
+    outBuf, outBufErr := bufferNewBuffer(int(this.EncryptedLen(publicKey.(IPublicKey), uint32(len(data))) /* lg2 */))
+    if outBufErr != nil {
+        return nil, outBufErr
+    }
+    defer outBuf.clear()
+    dataData := helperWrapData (data)
 
-    proxyResult := /*pr4*/C.vscf_ed25519_encrypt(this.cCtx, (*C.vscf_impl_t)(publicKey.ctx()), dataData, outBuf)
+    proxyResult := /*pr4*/C.vscf_ed25519_encrypt(this.cCtx, (*C.vscf_impl_t)(publicKey.ctx()), dataData, outBuf.ctx)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
         return nil, err
     }
 
-    return outData[0:C.vsc_buffer_len(outBuf)] /* r7 */, nil
+    return outBuf.getData() /* r7 */, nil
 }
 
 /*
@@ -327,23 +325,21 @@ func (this Ed25519) DecryptedLen (privateKey IPrivateKey, dataLen uint32) uint32
 * Decrypt given data.
 */
 func (this Ed25519) Decrypt (privateKey IPrivateKey, data []byte) ([]byte, error) {
-    outCount := C.ulong(this.DecryptedLen(privateKey.(IPrivateKey), uint32(len(data))) /* lg2 */)
-    outMemory := make([]byte, int(C.vsc_buffer_ctx_size() + outCount))
-    outBuf := (*C.vsc_buffer_t)(unsafe.Pointer(&outMemory[0]))
-    outData := outMemory[int(C.vsc_buffer_ctx_size()):]
-    C.vsc_buffer_init(outBuf)
-    C.vsc_buffer_use(outBuf, (*C.byte)(unsafe.Pointer(&outData[0])), outCount)
-    defer C.vsc_buffer_delete(outBuf)
-    dataData := C.vsc_data((*C.uint8_t)(&data[0]), C.size_t(len(data)))
+    outBuf, outBufErr := bufferNewBuffer(int(this.DecryptedLen(privateKey.(IPrivateKey), uint32(len(data))) /* lg2 */))
+    if outBufErr != nil {
+        return nil, outBufErr
+    }
+    defer outBuf.clear()
+    dataData := helperWrapData (data)
 
-    proxyResult := /*pr4*/C.vscf_ed25519_decrypt(this.cCtx, (*C.vscf_impl_t)(privateKey.ctx()), dataData, outBuf)
+    proxyResult := /*pr4*/C.vscf_ed25519_decrypt(this.cCtx, (*C.vscf_impl_t)(privateKey.ctx()), dataData, outBuf.ctx)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
         return nil, err
     }
 
-    return outData[0:C.vsc_buffer_len(outBuf)] /* r7 */, nil
+    return outBuf.getData() /* r7 */, nil
 }
 
 /*
@@ -369,23 +365,21 @@ func (this Ed25519) SignatureLen (key IKey) uint32 {
 * Sign data digest with a given private key.
 */
 func (this Ed25519) SignHash (privateKey IPrivateKey, hashId AlgId, digest []byte) ([]byte, error) {
-    signatureCount := C.ulong(this.SignatureLen(privateKey.(IKey)) /* lg2 */)
-    signatureMemory := make([]byte, int(C.vsc_buffer_ctx_size() + signatureCount))
-    signatureBuf := (*C.vsc_buffer_t)(unsafe.Pointer(&signatureMemory[0]))
-    signatureData := signatureMemory[int(C.vsc_buffer_ctx_size()):]
-    C.vsc_buffer_init(signatureBuf)
-    C.vsc_buffer_use(signatureBuf, (*C.byte)(unsafe.Pointer(&signatureData[0])), signatureCount)
-    defer C.vsc_buffer_delete(signatureBuf)
-    digestData := C.vsc_data((*C.uint8_t)(&digest[0]), C.size_t(len(digest)))
+    signatureBuf, signatureBufErr := bufferNewBuffer(int(this.SignatureLen(privateKey.(IKey)) /* lg2 */))
+    if signatureBufErr != nil {
+        return nil, signatureBufErr
+    }
+    defer signatureBuf.clear()
+    digestData := helperWrapData (digest)
 
-    proxyResult := /*pr4*/C.vscf_ed25519_sign_hash(this.cCtx, (*C.vscf_impl_t)(privateKey.ctx()), C.vscf_alg_id_t(hashId) /*pa7*/, digestData, signatureBuf)
+    proxyResult := /*pr4*/C.vscf_ed25519_sign_hash(this.cCtx, (*C.vscf_impl_t)(privateKey.ctx()), C.vscf_alg_id_t(hashId) /*pa7*/, digestData, signatureBuf.ctx)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
         return nil, err
     }
 
-    return signatureData[0:C.vsc_buffer_len(signatureBuf)] /* r7 */, nil
+    return signatureBuf.getData() /* r7 */, nil
 }
 
 /*
@@ -401,8 +395,8 @@ func (this Ed25519) CanVerify (publicKey IPublicKey) bool {
 * Verify data digest with a given public key and signature.
 */
 func (this Ed25519) VerifyHash (publicKey IPublicKey, hashId AlgId, digest []byte, signature []byte) bool {
-    digestData := C.vsc_data((*C.uint8_t)(&digest[0]), C.size_t(len(digest)))
-    signatureData := C.vsc_data((*C.uint8_t)(&signature[0]), C.size_t(len(signature)))
+    digestData := helperWrapData (digest)
+    signatureData := helperWrapData (signature)
 
     proxyResult := /*pr4*/C.vscf_ed25519_verify_hash(this.cCtx, (*C.vscf_impl_t)(publicKey.ctx()), C.vscf_alg_id_t(hashId) /*pa7*/, digestData, signatureData)
 
@@ -414,23 +408,21 @@ func (this Ed25519) VerifyHash (publicKey IPublicKey, hashId AlgId, digest []byt
 * Note, computed shared key can be used only within symmetric cryptography.
 */
 func (this Ed25519) ComputeSharedKey (publicKey IPublicKey, privateKey IPrivateKey) ([]byte, error) {
-    sharedKeyCount := C.ulong(this.SharedKeyLen(privateKey.(IKey)) /* lg2 */)
-    sharedKeyMemory := make([]byte, int(C.vsc_buffer_ctx_size() + sharedKeyCount))
-    sharedKeyBuf := (*C.vsc_buffer_t)(unsafe.Pointer(&sharedKeyMemory[0]))
-    sharedKeyData := sharedKeyMemory[int(C.vsc_buffer_ctx_size()):]
-    C.vsc_buffer_init(sharedKeyBuf)
-    C.vsc_buffer_use(sharedKeyBuf, (*C.byte)(unsafe.Pointer(&sharedKeyData[0])), sharedKeyCount)
-    defer C.vsc_buffer_delete(sharedKeyBuf)
+    sharedKeyBuf, sharedKeyBufErr := bufferNewBuffer(int(this.SharedKeyLen(privateKey.(IKey)) /* lg2 */))
+    if sharedKeyBufErr != nil {
+        return nil, sharedKeyBufErr
+    }
+    defer sharedKeyBuf.clear()
 
 
-    proxyResult := /*pr4*/C.vscf_ed25519_compute_shared_key(this.cCtx, (*C.vscf_impl_t)(publicKey.ctx()), (*C.vscf_impl_t)(privateKey.ctx()), sharedKeyBuf)
+    proxyResult := /*pr4*/C.vscf_ed25519_compute_shared_key(this.cCtx, (*C.vscf_impl_t)(publicKey.ctx()), (*C.vscf_impl_t)(privateKey.ctx()), sharedKeyBuf.ctx)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
         return nil, err
     }
 
-    return sharedKeyData[0:C.vsc_buffer_len(sharedKeyBuf)] /* r7 */, nil
+    return sharedKeyBuf.getData() /* r7 */, nil
 }
 
 /*

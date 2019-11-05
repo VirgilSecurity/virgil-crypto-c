@@ -57,7 +57,7 @@ func TestSha256_AlgId(t *testing.T) {
 func TestSha256_GetDigestLen(t *testing.T) {
     sha := NewSha256()
 
-    assert.Equal(t, TEST_SHA256_DIGEST_LEN, sha.GetDigestLen())
+    assert.Equal(t, uint32(TEST_SHA256_DIGEST_LEN), sha.GetDigestLen())
 }
 
 func TestSha256_Hash(t *testing.T) {
@@ -79,13 +79,12 @@ func TestSha256_Hash_Stream(t *testing.T) {
     sha := NewSha256()
     sha.Start()
     blockLen := int(sha.GetBlockLen())
-    startIndex := 0
-    for ;startIndex < len(data);  {
+    for startIndex := 0; startIndex < len(data);  {
         endIndex := startIndex + blockLen
         block := data[startIndex : endIndex]
         sha.Update(block)
 
-        startIndex += endIndex
+        startIndex += blockLen
     }
 
     hash := sha.Finish()

@@ -6,6 +6,7 @@ package foundation
 import "C"
 import unsafe "unsafe"
 
+
 /*
 * This is MbedTLS implementation of ASN.1 writer.
 */
@@ -45,7 +46,7 @@ func newAsn1wrCopy (ctx *C.vscf_asn1wr_t /*ct10*/) *Asn1wr {
 }
 
 /// Release underlying C context.
-func (this Asn1wr) close () {
+func (this Asn1wr) clear () {
     C.vscf_asn1wr_delete(this.cCtx)
 }
 
@@ -296,7 +297,7 @@ func (this Asn1wr) WriteNull () uint32 {
 * Return count of written bytes.
 */
 func (this Asn1wr) WriteOctetStr (value []byte) uint32 {
-    valueData := C.vsc_data((*C.uint8_t)(&value[0]), C.size_t(len(value)))
+    valueData := helperWrapData (value)
 
     proxyResult := /*pr4*/C.vscf_asn1wr_write_octet_str(this.cCtx, valueData)
 
@@ -309,7 +310,7 @@ func (this Asn1wr) WriteOctetStr (value []byte) uint32 {
 * Return count of written bytes.
 */
 func (this Asn1wr) WriteOctetStrAsBitstring (value []byte) uint32 {
-    valueData := C.vsc_data((*C.uint8_t)(&value[0]), C.size_t(len(value)))
+    valueData := helperWrapData (value)
 
     proxyResult := /*pr4*/C.vscf_asn1wr_write_octet_str_as_bitstring(this.cCtx, valueData)
 
@@ -322,7 +323,7 @@ func (this Asn1wr) WriteOctetStrAsBitstring (value []byte) uint32 {
 * Note, use this method carefully.
 */
 func (this Asn1wr) WriteData (data []byte) uint32 {
-    dataData := C.vsc_data((*C.uint8_t)(&data[0]), C.size_t(len(data)))
+    dataData := helperWrapData (data)
 
     proxyResult := /*pr4*/C.vscf_asn1wr_write_data(this.cCtx, dataData)
 
@@ -334,7 +335,7 @@ func (this Asn1wr) WriteData (data []byte) uint32 {
 * Return count of written bytes.
 */
 func (this Asn1wr) WriteUtf8Str (value []byte) uint32 {
-    valueData := C.vsc_data((*C.uint8_t)(&value[0]), C.size_t(len(value)))
+    valueData := helperWrapData (value)
 
     proxyResult := /*pr4*/C.vscf_asn1wr_write_utf8_str(this.cCtx, valueData)
 
@@ -346,7 +347,7 @@ func (this Asn1wr) WriteUtf8Str (value []byte) uint32 {
 * Return count of written bytes.
 */
 func (this Asn1wr) WriteOid (value []byte) uint32 {
-    valueData := C.vsc_data((*C.uint8_t)(&value[0]), C.size_t(len(value)))
+    valueData := helperWrapData (value)
 
     proxyResult := /*pr4*/C.vscf_asn1wr_write_oid(this.cCtx, valueData)
 

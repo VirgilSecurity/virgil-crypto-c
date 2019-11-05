@@ -111,9 +111,6 @@ func TestEd25519_ExportPrivateKey(t *testing.T) {
     importedPrivateKey, err := ed.ImportPrivateKey(rawPrivateKey)
     assert.Nil(t, err)
 
-    _, ok := importedPrivateKey.(EccPrivateKey)
-    assert.True(t, ok)
-
     rawPrivateKey2, err := ed.ExportPrivateKey(importedPrivateKey)
     assert.Nil(t, err)
     assert.NotNil(t, rawPrivateKey2)
@@ -142,9 +139,6 @@ func TestEd25519_ExportPublicKey(t *testing.T) {
 
     importedPublicKey, err := ed.ImportPublicKey(rawPublicKey)
     assert.Nil(t, err)
-
-    _, ok := importedPublicKey.(EccPublicKey)
-    assert.True(t, ok)
 
     rawPublicKey2, err := ed.ExportPublicKey(importedPublicKey)
     assert.Nil(t, err)
@@ -186,7 +180,7 @@ func TestEd25519_Decrypt(t *testing.T) {
     privateKeyData, _ := b64.StdEncoding.DecodeString(TEST_ED25519_PRIVATE_KEY)
     encryptedData, _ := b64.StdEncoding.DecodeString(TEST_ED25519_ENCRYPTED_DATA)
     expectedDecryptedData, _ := b64.StdEncoding.DecodeString(TEST_SHORT_DATA)
-    ed := NewEd25519()
+    ed := newEd25519()
     keyProvider := newKeyProvider()
 
     privateKey, err := keyProvider.ImportPrivateKey(privateKeyData)
@@ -201,13 +195,12 @@ func TestEd25519_Decrypt(t *testing.T) {
 func TestEd25519_SignHash(t *testing.T) {
     data, _ := b64.StdEncoding.DecodeString(TEST_DATA)
     privateKeyData, _ := b64.StdEncoding.DecodeString(TEST_ED25519_PRIVATE_KEY)
-    ed := NewEd25519()
+    ed := newEd25519()
     keyProvider := newKeyProvider()
 
-    pk, err := keyProvider.ImportPrivateKey(privateKeyData)
+    privateKey, err := keyProvider.ImportPrivateKey(privateKeyData)
     assert.Nil(t, err)
 
-    privateKey, _ := pk.(EccPrivateKey)
     publicKey, err := privateKey.ExtractPublicKey()
     assert.Nil(t, err)
     assert.True(t, ed.CanSign(privateKey))
@@ -215,7 +208,7 @@ func TestEd25519_SignHash(t *testing.T) {
     signature, err := ed.SignHash(privateKey, ALG_ID_SHA512, data)
     assert.Nil(t, err)
     assert.NotNil(t, signature)
-    assert.Equal(t, ed.SignatureLen(privateKey), len(signature))
+    assert.Equal(t, ed.SignatureLen(privateKey.(IKey)), uint32(len(signature)))
 
     assert.True(t, ed.VerifyHash(publicKey, ALG_ID_SHA512, data, signature))
 }
@@ -224,7 +217,7 @@ func TestEd25519_VerifyHash(t *testing.T) {
     data, _ := b64.StdEncoding.DecodeString(TEST_DATA)
     publicKeyData, _ := b64.StdEncoding.DecodeString(TEST_ED25519_PUBLIC_KEY)
     signature, _ := b64.StdEncoding.DecodeString(TEST_ED25519_SIGNATURE)
-    ed := NewEd25519()
+    ed := newEd25519()
     keyProvider := newKeyProvider()
 
     publicKey, err := keyProvider.ImportPublicKey(publicKeyData)
@@ -237,7 +230,7 @@ func TestEd25519_VerifyHash_WrongHash(t *testing.T) {
     data, _ := b64.StdEncoding.DecodeString(TEST_DATA)
     publicKeyData, _ := b64.StdEncoding.DecodeString(TEST_ED25519_PUBLIC_KEY)
     signature, _ := b64.StdEncoding.DecodeString(TEST_ED25519_WRONG_SIGNATURE)
-    ed := NewEd25519()
+    ed := newEd25519()
     keyProvider := newKeyProvider()
 
     publicKey, err := keyProvider.ImportPublicKey(publicKeyData)

@@ -5,6 +5,7 @@ package foundation
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
 
+
 /*
 * Handle message signatures and related information.
 */
@@ -43,7 +44,7 @@ func newMessageInfoFooterCopy (ctx *C.vscf_message_info_footer_t /*ct2*/) *Messa
 }
 
 /// Release underlying C context.
-func (this MessageInfoFooter) close () {
+func (this MessageInfoFooter) clear () {
     C.vscf_message_info_footer_delete(this.cCtx)
 }
 
@@ -80,5 +81,5 @@ func (this MessageInfoFooter) SignerHashAlgInfo () (IAlgInfo, error) {
 func (this MessageInfoFooter) SignerDigest () []byte {
     proxyResult := /*pr4*/C.vscf_message_info_footer_signer_digest(this.cCtx)
 
-    return helperDataToBytes(proxyResult) /* r1 */
+    return helperExtractData(proxyResult) /* r1 */
 }

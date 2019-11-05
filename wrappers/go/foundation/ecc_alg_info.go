@@ -5,6 +5,7 @@ package foundation
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
 
+
 /*
 * Handle algorithm information about ECP.
 */
@@ -62,7 +63,7 @@ func newEccAlgInfoCopy (ctx *C.vscf_ecc_alg_info_t /*ct10*/) *EccAlgInfo {
 }
 
 /// Release underlying C context.
-func (this EccAlgInfo) close () {
+func (this EccAlgInfo) clear () {
     C.vscf_ecc_alg_info_delete(this.cCtx)
 }
 

@@ -56,6 +56,6 @@ func TestAsn1wr_Finish(t *testing.T) {
     writteneLen := asn1wr.WriteInt(2);
     writtenBytes := asn1wr.Finish(false);
 
-    assert.Equal(t, 3, writtenBytes);
-    assert.Equal(t, len(asn1_encoded_INT_2), writteneLen)
+    assert.Equal(t, uint32(3), writtenBytes);
+    assert.Equal(t, uint32(len(asn1_encoded_INT_2)), writteneLen)
 }

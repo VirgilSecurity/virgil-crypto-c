@@ -4,7 +4,7 @@ package foundation
 // #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lmbedcrypto -led25519 -lprotobuf-nanopb -lvsc_common -lvsc_foundation -lvsc_foundation_pb
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
-import unsafe "unsafe"
+
 
 /*
 * Virgil implementation of the ECIES algorithm.
@@ -44,7 +44,7 @@ func newEciesCopy (ctx *C.vscf_ecies_t /*ct2*/) *Ecies {
 }
 
 /// Release underlying C context.
-func (this Ecies) close () {
+func (this Ecies) clear () {
     C.vscf_ecies_delete(this.cCtx)
 }
 
@@ -134,23 +134,21 @@ func (this Ecies) EncryptedLen (publicKey IPublicKey, dataLen uint32) uint32 {
 * Encrypt data with a given public key.
 */
 func (this Ecies) Encrypt (publicKey IPublicKey, data []byte) ([]byte, error) {
-    outCount := C.ulong(this.EncryptedLen(publicKey.(IPublicKey), uint32(len(data))) /* lg2 */)
-    outMemory := make([]byte, int(C.vsc_buffer_ctx_size() + outCount))
-    outBuf := (*C.vsc_buffer_t)(unsafe.Pointer(&outMemory[0]))
-    outData := outMemory[int(C.vsc_buffer_ctx_size()):]
-    C.vsc_buffer_init(outBuf)
-    C.vsc_buffer_use(outBuf, (*C.byte)(unsafe.Pointer(&outData[0])), outCount)
-    defer C.vsc_buffer_delete(outBuf)
-    dataData := C.vsc_data((*C.uint8_t)(&data[0]), C.size_t(len(data)))
+    outBuf, outBufErr := bufferNewBuffer(int(this.EncryptedLen(publicKey.(IPublicKey), uint32(len(data))) /* lg2 */))
+    if outBufErr != nil {
+        return nil, outBufErr
+    }
+    defer outBuf.clear()
+    dataData := helperWrapData (data)
 
-    proxyResult := /*pr4*/C.vscf_ecies_encrypt(this.cCtx, (*C.vscf_impl_t)(publicKey.ctx()), dataData, outBuf)
+    proxyResult := /*pr4*/C.vscf_ecies_encrypt(this.cCtx, (*C.vscf_impl_t)(publicKey.ctx()), dataData, outBuf.ctx)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
         return nil, err
     }
 
-    return outData[0:C.vsc_buffer_len(outBuf)] /* r7 */, nil
+    return outBuf.getData() /* r7 */, nil
 }
 
 /*
@@ -166,21 +164,19 @@ func (this Ecies) DecryptedLen (privateKey IPrivateKey, dataLen uint32) uint32 {
 * Decrypt given data.
 */
 func (this Ecies) Decrypt (privateKey IPrivateKey, data []byte) ([]byte, error) {
-    outCount := C.ulong(this.DecryptedLen(privateKey.(IPrivateKey), uint32(len(data))) /* lg2 */)
-    outMemory := make([]byte, int(C.vsc_buffer_ctx_size() + outCount))
-    outBuf := (*C.vsc_buffer_t)(unsafe.Pointer(&outMemory[0]))
-    outData := outMemory[int(C.vsc_buffer_ctx_size()):]
-    C.vsc_buffer_init(outBuf)
-    C.vsc_buffer_use(outBuf, (*C.byte)(unsafe.Pointer(&outData[0])), outCount)
-    defer C.vsc_buffer_delete(outBuf)
-    dataData := C.vsc_data((*C.uint8_t)(&data[0]), C.size_t(len(data)))
+    outBuf, outBufErr := bufferNewBuffer(int(this.DecryptedLen(privateKey.(IPrivateKey), uint32(len(data))) /* lg2 */))
+    if outBufErr != nil {
+        return nil, outBufErr
+    }
+    defer outBuf.clear()
+    dataData := helperWrapData (data)
 
-    proxyResult := /*pr4*/C.vscf_ecies_decrypt(this.cCtx, (*C.vscf_impl_t)(privateKey.ctx()), dataData, outBuf)
+    proxyResult := /*pr4*/C.vscf_ecies_decrypt(this.cCtx, (*C.vscf_impl_t)(privateKey.ctx()), dataData, outBuf.ctx)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
         return nil, err
     }
 
-    return outData[0:C.vsc_buffer_len(outBuf)] /* r7 */, nil
+    return outBuf.getData() /* r7 */, nil
 }

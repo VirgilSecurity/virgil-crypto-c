@@ -4,7 +4,7 @@ package foundation
 // #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lmbedcrypto -led25519 -lprotobuf-nanopb -lvsc_common -lvsc_foundation -lvsc_foundation_pb
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
-import unsafe "unsafe"
+
 
 /*
 * This class provides hybrid encryption algorithm that combines symmetric
@@ -46,7 +46,7 @@ func newRecipientCipherCopy (ctx *C.vscf_recipient_cipher_t /*ct2*/) *RecipientC
 }
 
 /// Release underlying C context.
-func (this RecipientCipher) close () {
+func (this RecipientCipher) clear () {
     C.vscf_recipient_cipher_delete(this.cCtx)
 }
 
@@ -70,7 +70,7 @@ func (this RecipientCipher) SetSignerHash (signerHash IHash) {
 * Note, operation has O(N) time complexity.
 */
 func (this RecipientCipher) HasKeyRecipient (recipientId []byte) bool {
-    recipientIdData := C.vsc_data((*C.uint8_t)(&recipientId[0]), C.size_t(len(recipientId)))
+    recipientIdData := helperWrapData (recipientId)
 
     proxyResult := /*pr4*/C.vscf_recipient_cipher_has_key_recipient(this.cCtx, recipientIdData)
 
@@ -81,7 +81,7 @@ func (this RecipientCipher) HasKeyRecipient (recipientId []byte) bool {
 * Add recipient defined with id and public key.
 */
 func (this RecipientCipher) AddKeyRecipient (recipientId []byte, publicKey IPublicKey) {
-    recipientIdData := C.vsc_data((*C.uint8_t)(&recipientId[0]), C.size_t(len(recipientId)))
+    recipientIdData := helperWrapData (recipientId)
 
     C.vscf_recipient_cipher_add_key_recipient(this.cCtx, recipientIdData, (*C.vscf_impl_t)(publicKey.ctx()))
 
@@ -102,7 +102,7 @@ func (this RecipientCipher) ClearRecipients () {
 * Return error if the private key can not sign.
 */
 func (this RecipientCipher) AddSigner (signerId []byte, privateKey IPrivateKey) error {
-    signerIdData := C.vsc_data((*C.uint8_t)(&signerId[0]), C.size_t(len(signerId)))
+    signerIdData := helperWrapData (signerId)
 
     proxyResult := /*pr4*/C.vscf_recipient_cipher_add_signer(this.cCtx, signerIdData, (*C.vscf_impl_t)(privateKey.ctx()))
 
@@ -188,18 +188,16 @@ func (this RecipientCipher) MessageInfoLen () uint32 {
 * algorithm information, etc.
 */
 func (this RecipientCipher) PackMessageInfo () []byte {
-    messageInfoCount := C.ulong(this.MessageInfoLen() /* lg2 */)
-    messageInfoMemory := make([]byte, int(C.vsc_buffer_ctx_size() + messageInfoCount))
-    messageInfoBuf := (*C.vsc_buffer_t)(unsafe.Pointer(&messageInfoMemory[0]))
-    messageInfoData := messageInfoMemory[int(C.vsc_buffer_ctx_size()):]
-    C.vsc_buffer_init(messageInfoBuf)
-    C.vsc_buffer_use(messageInfoBuf, (*C.byte)(unsafe.Pointer(&messageInfoData[0])), messageInfoCount)
-    defer C.vsc_buffer_delete(messageInfoBuf)
+    messageInfoBuf, messageInfoBufErr := bufferNewBuffer(int(this.MessageInfoLen() /* lg2 */))
+    if messageInfoBufErr != nil {
+        return nil
+    }
+    defer messageInfoBuf.clear()
 
 
-    C.vscf_recipient_cipher_pack_message_info(this.cCtx, messageInfoBuf)
+    C.vscf_recipient_cipher_pack_message_info(this.cCtx, messageInfoBuf.ctx)
 
-    return messageInfoData[0:C.vsc_buffer_len(messageInfoBuf)] /* r7 */
+    return messageInfoBuf.getData() /* r7 */
 }
 
 /*
@@ -216,46 +214,42 @@ func (this RecipientCipher) EncryptionOutLen (dataLen uint32) uint32 {
 * Process encryption of a new portion of data.
 */
 func (this RecipientCipher) ProcessEncryption (data []byte) ([]byte, error) {
-    outCount := C.ulong(this.EncryptionOutLen(uint32(len(data))) /* lg2 */)
-    outMemory := make([]byte, int(C.vsc_buffer_ctx_size() + outCount))
-    outBuf := (*C.vsc_buffer_t)(unsafe.Pointer(&outMemory[0]))
-    outData := outMemory[int(C.vsc_buffer_ctx_size()):]
-    C.vsc_buffer_init(outBuf)
-    C.vsc_buffer_use(outBuf, (*C.byte)(unsafe.Pointer(&outData[0])), outCount)
-    defer C.vsc_buffer_delete(outBuf)
-    dataData := C.vsc_data((*C.uint8_t)(&data[0]), C.size_t(len(data)))
+    outBuf, outBufErr := bufferNewBuffer(int(this.EncryptionOutLen(uint32(len(data))) /* lg2 */))
+    if outBufErr != nil {
+        return nil, outBufErr
+    }
+    defer outBuf.clear()
+    dataData := helperWrapData (data)
 
-    proxyResult := /*pr4*/C.vscf_recipient_cipher_process_encryption(this.cCtx, dataData, outBuf)
+    proxyResult := /*pr4*/C.vscf_recipient_cipher_process_encryption(this.cCtx, dataData, outBuf.ctx)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
         return nil, err
     }
 
-    return outData[0:C.vsc_buffer_len(outBuf)] /* r7 */, nil
+    return outBuf.getData() /* r7 */, nil
 }
 
 /*
 * Accomplish encryption.
 */
 func (this RecipientCipher) FinishEncryption () ([]byte, error) {
-    outCount := C.ulong(this.EncryptionOutLen(0) /* lg2 */)
-    outMemory := make([]byte, int(C.vsc_buffer_ctx_size() + outCount))
-    outBuf := (*C.vsc_buffer_t)(unsafe.Pointer(&outMemory[0]))
-    outData := outMemory[int(C.vsc_buffer_ctx_size()):]
-    C.vsc_buffer_init(outBuf)
-    C.vsc_buffer_use(outBuf, (*C.byte)(unsafe.Pointer(&outData[0])), outCount)
-    defer C.vsc_buffer_delete(outBuf)
+    outBuf, outBufErr := bufferNewBuffer(int(this.EncryptionOutLen(0) /* lg2 */))
+    if outBufErr != nil {
+        return nil, outBufErr
+    }
+    defer outBuf.clear()
 
 
-    proxyResult := /*pr4*/C.vscf_recipient_cipher_finish_encryption(this.cCtx, outBuf)
+    proxyResult := /*pr4*/C.vscf_recipient_cipher_finish_encryption(this.cCtx, outBuf.ctx)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
         return nil, err
     }
 
-    return outData[0:C.vsc_buffer_len(outBuf)] /* r7 */, nil
+    return outBuf.getData() /* r7 */, nil
 }
 
 /*
@@ -263,8 +257,8 @@ func (this RecipientCipher) FinishEncryption () ([]byte, error) {
 * Message Info can be empty if it was embedded to encrypted data.
 */
 func (this RecipientCipher) StartDecryptionWithKey (recipientId []byte, privateKey IPrivateKey, messageInfo []byte) error {
-    recipientIdData := C.vsc_data((*C.uint8_t)(&recipientId[0]), C.size_t(len(recipientId)))
-    messageInfoData := C.vsc_data((*C.uint8_t)(&messageInfo[0]), C.size_t(len(messageInfo)))
+    recipientIdData := helperWrapData (recipientId)
+    messageInfoData := helperWrapData (messageInfo)
 
     proxyResult := /*pr4*/C.vscf_recipient_cipher_start_decryption_with_key(this.cCtx, recipientIdData, (*C.vscf_impl_t)(privateKey.ctx()), messageInfoData)
 
@@ -283,9 +277,9 @@ func (this RecipientCipher) StartDecryptionWithKey (recipientId []byte, privateK
 * If footer was embedded, method "start decryption with key" can be used.
 */
 func (this RecipientCipher) StartVerifiedDecryptionWithKey (recipientId []byte, privateKey IPrivateKey, messageInfo []byte, messageInfoFooter []byte) error {
-    recipientIdData := C.vsc_data((*C.uint8_t)(&recipientId[0]), C.size_t(len(recipientId)))
-    messageInfoData := C.vsc_data((*C.uint8_t)(&messageInfo[0]), C.size_t(len(messageInfo)))
-    messageInfoFooterData := C.vsc_data((*C.uint8_t)(&messageInfoFooter[0]), C.size_t(len(messageInfoFooter)))
+    recipientIdData := helperWrapData (recipientId)
+    messageInfoData := helperWrapData (messageInfo)
+    messageInfoFooterData := helperWrapData (messageInfoFooter)
 
     proxyResult := /*pr4*/C.vscf_recipient_cipher_start_verified_decryption_with_key(this.cCtx, recipientIdData, (*C.vscf_impl_t)(privateKey.ctx()), messageInfoData, messageInfoFooterData)
 
@@ -312,46 +306,42 @@ func (this RecipientCipher) DecryptionOutLen (dataLen uint32) uint32 {
 * Return error if data can not be encrypted or decrypted.
 */
 func (this RecipientCipher) ProcessDecryption (data []byte) ([]byte, error) {
-    outCount := C.ulong(this.DecryptionOutLen(uint32(len(data))) /* lg2 */)
-    outMemory := make([]byte, int(C.vsc_buffer_ctx_size() + outCount))
-    outBuf := (*C.vsc_buffer_t)(unsafe.Pointer(&outMemory[0]))
-    outData := outMemory[int(C.vsc_buffer_ctx_size()):]
-    C.vsc_buffer_init(outBuf)
-    C.vsc_buffer_use(outBuf, (*C.byte)(unsafe.Pointer(&outData[0])), outCount)
-    defer C.vsc_buffer_delete(outBuf)
-    dataData := C.vsc_data((*C.uint8_t)(&data[0]), C.size_t(len(data)))
+    outBuf, outBufErr := bufferNewBuffer(int(this.DecryptionOutLen(uint32(len(data))) /* lg2 */))
+    if outBufErr != nil {
+        return nil, outBufErr
+    }
+    defer outBuf.clear()
+    dataData := helperWrapData (data)
 
-    proxyResult := /*pr4*/C.vscf_recipient_cipher_process_decryption(this.cCtx, dataData, outBuf)
+    proxyResult := /*pr4*/C.vscf_recipient_cipher_process_decryption(this.cCtx, dataData, outBuf.ctx)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
         return nil, err
     }
 
-    return outData[0:C.vsc_buffer_len(outBuf)] /* r7 */, nil
+    return outBuf.getData() /* r7 */, nil
 }
 
 /*
 * Accomplish decryption.
 */
 func (this RecipientCipher) FinishDecryption () ([]byte, error) {
-    outCount := C.ulong(this.DecryptionOutLen(0) /* lg2 */)
-    outMemory := make([]byte, int(C.vsc_buffer_ctx_size() + outCount))
-    outBuf := (*C.vsc_buffer_t)(unsafe.Pointer(&outMemory[0]))
-    outData := outMemory[int(C.vsc_buffer_ctx_size()):]
-    C.vsc_buffer_init(outBuf)
-    C.vsc_buffer_use(outBuf, (*C.byte)(unsafe.Pointer(&outData[0])), outCount)
-    defer C.vsc_buffer_delete(outBuf)
+    outBuf, outBufErr := bufferNewBuffer(int(this.DecryptionOutLen(0) /* lg2 */))
+    if outBufErr != nil {
+        return nil, outBufErr
+    }
+    defer outBuf.clear()
 
 
-    proxyResult := /*pr4*/C.vscf_recipient_cipher_finish_decryption(this.cCtx, outBuf)
+    proxyResult := /*pr4*/C.vscf_recipient_cipher_finish_decryption(this.cCtx, outBuf.ctx)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
         return nil, err
     }
 
-    return outData[0:C.vsc_buffer_len(outBuf)] /* r7 */, nil
+    return outBuf.getData() /* r7 */, nil
 }
 
 /*
@@ -409,21 +399,19 @@ func (this RecipientCipher) MessageInfoFooterLen () uint32 {
 * Return message info footer - signers public information, etc.
 */
 func (this RecipientCipher) PackMessageInfoFooter () ([]byte, error) {
-    outCount := C.ulong(this.MessageInfoFooterLen() /* lg2 */)
-    outMemory := make([]byte, int(C.vsc_buffer_ctx_size() + outCount))
-    outBuf := (*C.vsc_buffer_t)(unsafe.Pointer(&outMemory[0]))
-    outData := outMemory[int(C.vsc_buffer_ctx_size()):]
-    C.vsc_buffer_init(outBuf)
-    C.vsc_buffer_use(outBuf, (*C.byte)(unsafe.Pointer(&outData[0])), outCount)
-    defer C.vsc_buffer_delete(outBuf)
+    outBuf, outBufErr := bufferNewBuffer(int(this.MessageInfoFooterLen() /* lg2 */))
+    if outBufErr != nil {
+        return nil, outBufErr
+    }
+    defer outBuf.clear()
 
 
-    proxyResult := /*pr4*/C.vscf_recipient_cipher_pack_message_info_footer(this.cCtx, outBuf)
+    proxyResult := /*pr4*/C.vscf_recipient_cipher_pack_message_info_footer(this.cCtx, outBuf.ctx)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
         return nil, err
     }
 
-    return outData[0:C.vsc_buffer_len(outBuf)] /* r7 */, nil
+    return outBuf.getData() /* r7 */, nil
 }

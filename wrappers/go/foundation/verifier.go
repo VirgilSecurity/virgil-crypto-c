@@ -5,6 +5,7 @@ package foundation
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
 
+
 /*
 * Verify data of any size.
 * Compatible with the class "signer".
@@ -44,7 +45,7 @@ func newVerifierCopy (ctx *C.vscf_verifier_t /*ct2*/) *Verifier {
 }
 
 /// Release underlying C context.
-func (this Verifier) close () {
+func (this Verifier) clear () {
     C.vscf_verifier_delete(this.cCtx)
 }
 
@@ -52,7 +53,7 @@ func (this Verifier) close () {
 * Start verifying a signature.
 */
 func (this Verifier) Reset (signature []byte) error {
-    signatureData := C.vsc_data((*C.uint8_t)(&signature[0]), C.size_t(len(signature)))
+    signatureData := helperWrapData (signature)
 
     proxyResult := /*pr4*/C.vscf_verifier_reset(this.cCtx, signatureData)
 
@@ -68,7 +69,7 @@ func (this Verifier) Reset (signature []byte) error {
 * Add given data to the signed data.
 */
 func (this Verifier) AppendData (data []byte) {
-    dataData := C.vsc_data((*C.uint8_t)(&data[0]), C.size_t(len(data)))
+    dataData := helperWrapData (data)
 
     C.vscf_verifier_append_data(this.cCtx, dataData)
 

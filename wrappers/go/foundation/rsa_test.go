@@ -150,9 +150,6 @@ func TestRsa_ExportPublicKey(t *testing.T) {
     importedPublicKey, err := rsa.ImportPublicKey(rawPublicKey)
     assert.Nil(t, err)
 
-    _, ok := importedPublicKey.(RsaPublicKey)
-    assert.True(t, ok)
-
     rawPublicKey2, err := rsa.ExportPublicKey(importedPublicKey)
     assert.Nil(t, err)
     assert.NotNil(t, rawPublicKey2)
@@ -194,7 +191,7 @@ func TestRsa_Decrypt(t *testing.T) {
     privateKeyData, _ := b64.StdEncoding.DecodeString(TEST_RSA_PRIVATE_KEY)
     encryptedData, _ := b64.StdEncoding.DecodeString(TEST_RSA_ENCRYPTED_DATA)
     expectedDecryptedData, _ := b64.StdEncoding.DecodeString(TEST_SHORT_DATA)
-    rsa := NewRsa()
+    rsa := newRsa()
     keyProvider := newKeyProvider()
 
     privateKey, err := keyProvider.ImportPrivateKey(privateKeyData)
@@ -209,7 +206,7 @@ func TestRsa_Decrypt(t *testing.T) {
 func TestRsa_SignHash(t *testing.T) {
     data, _ := b64.StdEncoding.DecodeString(TEST_DATA)
     privateKeyData, _ := b64.StdEncoding.DecodeString(TEST_RSA_PRIVATE_KEY)
-    rsa := NewRsa()
+    rsa := newRsa()
     keyProvider := newKeyProvider()
 
     privateKey, err :=keyProvider.ImportPrivateKey(privateKeyData)
@@ -224,7 +221,7 @@ func TestRsa_SignHash(t *testing.T) {
     assert.Nil(t, err)
 
     assert.NotNil(t, signature)
-    assert.Equal(t, rsa.SignatureLen(privateKey.(IKey)), len(signature))
+    assert.Equal(t, rsa.SignatureLen(privateKey.(IKey)), uint32(len(signature)))
 
     assert.True(t, rsa.VerifyHash(publicKey, ALG_ID_SHA512, data, signature))
 }
@@ -233,7 +230,7 @@ func TestRsa_VerifyHash(t *testing.T) {
     data, _ := b64.StdEncoding.DecodeString(TEST_DATA)
     publicKeyData, _ := b64.StdEncoding.DecodeString(TEST_RSA_PUBLIC_KEY)
     signature, _ := b64.StdEncoding.DecodeString(TEST_RSA_SIGNATURE)
-    rsa := NewRsa()
+    rsa := newRsa()
     keyProvider := newKeyProvider()
 
     publicKey, err := keyProvider.ImportPublicKey(publicKeyData)
@@ -246,7 +243,7 @@ func TestRsa_VerifyHash_WrongHash(t *testing.T) {
     data, _ := b64.StdEncoding.DecodeString(TEST_DATA)
     publicKeyData, _ := b64.StdEncoding.DecodeString(TEST_RSA_PUBLIC_KEY)
     signature, _ := b64.StdEncoding.DecodeString(TEST_RSA_WRONG_SIGNATURE)
-    rsa := NewRsa()
+    rsa := newRsa()
     keyProvider := newKeyProvider()
 
     publicKey, err := keyProvider.ImportPublicKey(publicKeyData)

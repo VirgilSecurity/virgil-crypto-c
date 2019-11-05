@@ -4,7 +4,7 @@ package foundation
 // #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lmbedcrypto -led25519 -lprotobuf-nanopb -lvsc_common -lvsc_foundation -lvsc_foundation_pb
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
-import unsafe "unsafe"
+
 
 /*
 * Add and/or remove recipients and it's parameters within message info.
@@ -49,7 +49,7 @@ func newMessageInfoEditorCopy (ctx *C.vscf_message_info_editor_t /*ct2*/) *Messa
 }
 
 /// Release underlying C context.
-func (this MessageInfoEditor) close () {
+func (this MessageInfoEditor) clear () {
     C.vscf_message_info_editor_delete(this.cCtx)
 }
 
@@ -79,7 +79,7 @@ func (this MessageInfoEditor) SetupDefaults () error {
 * Note, use "unlock" method to be able to add new recipients as well.
 */
 func (this MessageInfoEditor) Unpack (messageInfoData []byte) error {
-    messageInfoDataData := C.vsc_data((*C.uint8_t)(&messageInfoData[0]), C.size_t(len(messageInfoData)))
+    messageInfoDataData := helperWrapData (messageInfoData)
 
     proxyResult := /*pr4*/C.vscf_message_info_editor_unpack(this.cCtx, messageInfoDataData)
 
@@ -95,7 +95,7 @@ func (this MessageInfoEditor) Unpack (messageInfoData []byte) error {
 * Decrypt encryption key this allows adding new recipients.
 */
 func (this MessageInfoEditor) Unlock (ownerRecipientId []byte, ownerPrivateKey IPrivateKey) error {
-    ownerRecipientIdData := C.vsc_data((*C.uint8_t)(&ownerRecipientId[0]), C.size_t(len(ownerRecipientId)))
+    ownerRecipientIdData := helperWrapData (ownerRecipientId)
 
     proxyResult := /*pr4*/C.vscf_message_info_editor_unlock(this.cCtx, ownerRecipientIdData, (*C.vscf_impl_t)(ownerPrivateKey.ctx()))
 
@@ -111,7 +111,7 @@ func (this MessageInfoEditor) Unlock (ownerRecipientId []byte, ownerPrivateKey I
 * Add recipient defined with id and public key.
 */
 func (this MessageInfoEditor) AddKeyRecipient (recipientId []byte, publicKey IPublicKey) error {
-    recipientIdData := C.vsc_data((*C.uint8_t)(&recipientId[0]), C.size_t(len(recipientId)))
+    recipientIdData := helperWrapData (recipientId)
 
     proxyResult := /*pr4*/C.vscf_message_info_editor_add_key_recipient(this.cCtx, recipientIdData, (*C.vscf_impl_t)(publicKey.ctx()))
 
@@ -128,7 +128,7 @@ func (this MessageInfoEditor) AddKeyRecipient (recipientId []byte, publicKey IPu
 * Return false if recipient with given id was not found.
 */
 func (this MessageInfoEditor) RemoveKeyRecipient (recipientId []byte) bool {
-    recipientIdData := C.vsc_data((*C.uint8_t)(&recipientId[0]), C.size_t(len(recipientId)))
+    recipientIdData := helperWrapData (recipientId)
 
     proxyResult := /*pr4*/C.vscf_message_info_editor_remove_key_recipient(this.cCtx, recipientIdData)
 
@@ -159,16 +159,14 @@ func (this MessageInfoEditor) PackedLen () uint32 {
 * Precondition: this method can be called after "apply".
 */
 func (this MessageInfoEditor) Pack () []byte {
-    messageInfoCount := C.ulong(this.PackedLen() /* lg2 */)
-    messageInfoMemory := make([]byte, int(C.vsc_buffer_ctx_size() + messageInfoCount))
-    messageInfoBuf := (*C.vsc_buffer_t)(unsafe.Pointer(&messageInfoMemory[0]))
-    messageInfoData := messageInfoMemory[int(C.vsc_buffer_ctx_size()):]
-    C.vsc_buffer_init(messageInfoBuf)
-    C.vsc_buffer_use(messageInfoBuf, (*C.byte)(unsafe.Pointer(&messageInfoData[0])), messageInfoCount)
-    defer C.vsc_buffer_delete(messageInfoBuf)
+    messageInfoBuf, messageInfoBufErr := bufferNewBuffer(int(this.PackedLen() /* lg2 */))
+    if messageInfoBufErr != nil {
+        return nil
+    }
+    defer messageInfoBuf.clear()
 
 
-    C.vscf_message_info_editor_pack(this.cCtx, messageInfoBuf)
+    C.vscf_message_info_editor_pack(this.cCtx, messageInfoBuf.ctx)
 
-    return messageInfoData[0:C.vsc_buffer_len(messageInfoBuf)] /* r7 */
+    return messageInfoBuf.getData() /* r7 */
 }

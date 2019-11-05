@@ -5,6 +5,7 @@ package foundation
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
 
+
 /*
 * Provide DER deserializer of algorithm information.
 */
@@ -77,7 +78,7 @@ func newAlgInfoDerDeserializerCopy (ctx *C.vscf_alg_info_der_deserializer_t /*ct
 }
 
 /// Release underlying C context.
-func (this AlgInfoDerDeserializer) close () {
+func (this AlgInfoDerDeserializer) clear () {
     C.vscf_alg_info_der_deserializer_delete(this.cCtx)
 }
 
@@ -87,7 +88,7 @@ func (this AlgInfoDerDeserializer) close () {
 func (this AlgInfoDerDeserializer) Deserialize (data []byte) (IAlgInfo, error) {
     var error C.vscf_error_t
     C.vscf_error_reset(&error)
-    dataData := C.vsc_data((*C.uint8_t)(&data[0]), C.size_t(len(data)))
+    dataData := helperWrapData (data)
 
     proxyResult := /*pr4*/C.vscf_alg_info_der_deserializer_deserialize(this.cCtx, dataData, &error)
 

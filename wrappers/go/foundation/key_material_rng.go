@@ -4,7 +4,7 @@ package foundation
 // #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lmbedcrypto -led25519 -lprotobuf-nanopb -lvsc_common -lvsc_foundation -lvsc_foundation_pb
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
-import unsafe "unsafe"
+
 
 /*
 * Random number generator that generate deterministic sequence based
@@ -34,7 +34,7 @@ func KeyMaterialRngGetKeyMaterialLenMax () uint32 {
 * Set a new key material.
 */
 func (this KeyMaterialRng) ResetKeyMaterial (keyMaterial []byte) {
-    keyMaterialData := C.vsc_data((*C.uint8_t)(&keyMaterial[0]), C.size_t(len(keyMaterial)))
+    keyMaterialData := helperWrapData (keyMaterial)
 
     C.vscf_key_material_rng_reset_key_material(this.cCtx, keyMaterialData)
 
@@ -72,7 +72,7 @@ func newKeyMaterialRngCopy (ctx *C.vscf_key_material_rng_t /*ct10*/) *KeyMateria
 }
 
 /// Release underlying C context.
-func (this KeyMaterialRng) close () {
+func (this KeyMaterialRng) clear () {
     C.vscf_key_material_rng_delete(this.cCtx)
 }
 
@@ -81,23 +81,21 @@ func (this KeyMaterialRng) close () {
 * All RNG implementations must be thread-safe.
 */
 func (this KeyMaterialRng) Random (dataLen uint32) ([]byte, error) {
-    dataCount := C.ulong(dataLen)
-    dataMemory := make([]byte, int(C.vsc_buffer_ctx_size() + dataCount))
-    dataBuf := (*C.vsc_buffer_t)(unsafe.Pointer(&dataMemory[0]))
-    dataData := dataMemory[int(C.vsc_buffer_ctx_size()):]
-    C.vsc_buffer_init(dataBuf)
-    C.vsc_buffer_use(dataBuf, (*C.byte)(unsafe.Pointer(&dataData[0])), dataCount)
-    defer C.vsc_buffer_delete(dataBuf)
+    dataBuf, dataBufErr := bufferNewBuffer(int(dataLen))
+    if dataBufErr != nil {
+        return nil, dataBufErr
+    }
+    defer dataBuf.clear()
 
 
-    proxyResult := /*pr4*/C.vscf_key_material_rng_random(this.cCtx, (C.size_t)(dataLen)/*pa10*/, dataBuf)
+    proxyResult := /*pr4*/C.vscf_key_material_rng_random(this.cCtx, (C.size_t)(dataLen)/*pa10*/, dataBuf.ctx)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
         return nil, err
     }
 
-    return dataData[0:C.vsc_buffer_len(dataBuf)] /* r7 */, nil
+    return dataBuf.getData() /* r7 */, nil
 }
 
 /*

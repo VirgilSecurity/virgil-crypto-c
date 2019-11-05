@@ -5,6 +5,7 @@ package foundation
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
 
+
 /*
 * Handles ECC private key.
 */
@@ -45,7 +46,7 @@ func newEccPrivateKeyCopy (ctx *C.vscf_ecc_private_key_t /*ct10*/) *EccPrivateKe
 }
 
 /// Release underlying C context.
-func (this EccPrivateKey) close () {
+func (this EccPrivateKey) clear () {
     C.vscf_ecc_private_key_delete(this.cCtx)
 }
 

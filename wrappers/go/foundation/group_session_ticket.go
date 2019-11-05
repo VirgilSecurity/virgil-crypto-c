@@ -5,6 +5,7 @@ package foundation
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
 
+
 /*
 * Group ticket used to start group session, remove participants or proactive to rotate encryption key.
 */
@@ -43,7 +44,7 @@ func newGroupSessionTicketCopy (ctx *C.vscf_group_session_ticket_t /*ct2*/) *Gro
 }
 
 /// Release underlying C context.
-func (this GroupSessionTicket) close () {
+func (this GroupSessionTicket) clear () {
     C.vscf_group_session_ticket_delete(this.cCtx)
 }
 
@@ -74,7 +75,7 @@ func (this GroupSessionTicket) SetupDefaults () error {
 * Set this ticket to start new group session.
 */
 func (this GroupSessionTicket) SetupTicketAsNew (sessionId []byte) error {
-    sessionIdData := C.vsc_data((*C.uint8_t)(&sessionId[0]), C.size_t(len(sessionId)))
+    sessionIdData := helperWrapData (sessionId)
 
     proxyResult := /*pr4*/C.vscf_group_session_ticket_setup_ticket_as_new(this.cCtx, sessionIdData)
 

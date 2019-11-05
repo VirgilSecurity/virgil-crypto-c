@@ -4,7 +4,7 @@ package foundation
 // #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lmbedcrypto -led25519 -lprotobuf-nanopb -lvsc_common -lvsc_foundation -lvsc_foundation_pb
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
-import unsafe "unsafe"
+
 
 type BrainkeyServer struct {
     cCtx *C.vscf_brainkey_server_t /*ct2*/
@@ -41,7 +41,7 @@ func newBrainkeyServerCopy (ctx *C.vscf_brainkey_server_t /*ct2*/) *BrainkeyServ
 }
 
 /// Release underlying C context.
-func (this BrainkeyServer) close () {
+func (this BrainkeyServer) clear () {
     C.vscf_brainkey_server_delete(this.cCtx)
 }
 
@@ -81,42 +81,38 @@ func (this BrainkeyServer) SetupDefaults () error {
 }
 
 func (this BrainkeyServer) GenerateIdentitySecret () ([]byte, error) {
-    identitySecretCount := C.ulong(BrainkeyServerGetMpiLen() /* lg4 */)
-    identitySecretMemory := make([]byte, int(C.vsc_buffer_ctx_size() + identitySecretCount))
-    identitySecretBuf := (*C.vsc_buffer_t)(unsafe.Pointer(&identitySecretMemory[0]))
-    identitySecretData := identitySecretMemory[int(C.vsc_buffer_ctx_size()):]
-    C.vsc_buffer_init(identitySecretBuf)
-    C.vsc_buffer_use(identitySecretBuf, (*C.byte)(unsafe.Pointer(&identitySecretData[0])), identitySecretCount)
-    defer C.vsc_buffer_delete(identitySecretBuf)
+    identitySecretBuf, identitySecretBufErr := bufferNewBuffer(int(BrainkeyServerGetMpiLen() /* lg4 */))
+    if identitySecretBufErr != nil {
+        return nil, identitySecretBufErr
+    }
+    defer identitySecretBuf.clear()
 
 
-    proxyResult := /*pr4*/C.vscf_brainkey_server_generate_identity_secret(this.cCtx, identitySecretBuf)
+    proxyResult := /*pr4*/C.vscf_brainkey_server_generate_identity_secret(this.cCtx, identitySecretBuf.ctx)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
         return nil, err
     }
 
-    return identitySecretData[0:C.vsc_buffer_len(identitySecretBuf)] /* r7 */, nil
+    return identitySecretBuf.getData() /* r7 */, nil
 }
 
 func (this BrainkeyServer) Harden (identitySecret []byte, blindedPoint []byte) ([]byte, error) {
-    hardenedPointCount := C.ulong(BrainkeyServerGetPointLen() /* lg4 */)
-    hardenedPointMemory := make([]byte, int(C.vsc_buffer_ctx_size() + hardenedPointCount))
-    hardenedPointBuf := (*C.vsc_buffer_t)(unsafe.Pointer(&hardenedPointMemory[0]))
-    hardenedPointData := hardenedPointMemory[int(C.vsc_buffer_ctx_size()):]
-    C.vsc_buffer_init(hardenedPointBuf)
-    C.vsc_buffer_use(hardenedPointBuf, (*C.byte)(unsafe.Pointer(&hardenedPointData[0])), hardenedPointCount)
-    defer C.vsc_buffer_delete(hardenedPointBuf)
-    identitySecretData := C.vsc_data((*C.uint8_t)(&identitySecret[0]), C.size_t(len(identitySecret)))
-    blindedPointData := C.vsc_data((*C.uint8_t)(&blindedPoint[0]), C.size_t(len(blindedPoint)))
+    hardenedPointBuf, hardenedPointBufErr := bufferNewBuffer(int(BrainkeyServerGetPointLen() /* lg4 */))
+    if hardenedPointBufErr != nil {
+        return nil, hardenedPointBufErr
+    }
+    defer hardenedPointBuf.clear()
+    identitySecretData := helperWrapData (identitySecret)
+    blindedPointData := helperWrapData (blindedPoint)
 
-    proxyResult := /*pr4*/C.vscf_brainkey_server_harden(this.cCtx, identitySecretData, blindedPointData, hardenedPointBuf)
+    proxyResult := /*pr4*/C.vscf_brainkey_server_harden(this.cCtx, identitySecretData, blindedPointData, hardenedPointBuf.ctx)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
         return nil, err
     }
 
-    return hardenedPointData[0:C.vsc_buffer_len(hardenedPointBuf)] /* r7 */, nil
+    return hardenedPointBuf.getData() /* r7 */, nil
 }

@@ -4,7 +4,7 @@ package foundation
 // #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lmbedcrypto -led25519 -lprotobuf-nanopb -lvsc_common -lvsc_foundation -lvsc_foundation_pb
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
-import unsafe "unsafe"
+
 
 /*
 * Class represents group session message
@@ -44,7 +44,7 @@ func newGroupSessionMessageCopy (ctx *C.vscf_group_session_message_t /*ct2*/) *G
 }
 
 /// Release underlying C context.
-func (this GroupSessionMessage) close () {
+func (this GroupSessionMessage) clear () {
     C.vscf_group_session_message_delete(this.cCtx)
 }
 
@@ -78,7 +78,7 @@ func (this GroupSessionMessage) GetType () GroupMsgType {
 func (this GroupSessionMessage) GetSessionId () []byte {
     proxyResult := /*pr4*/C.vscf_group_session_message_get_session_id(this.cCtx)
 
-    return helperDataToBytes(proxyResult) /* r1 */
+    return helperExtractData(proxyResult) /* r1 */
 }
 
 /*
@@ -103,18 +103,16 @@ func (this GroupSessionMessage) SerializeLen () uint32 {
 * Serializes instance.
 */
 func (this GroupSessionMessage) Serialize () []byte {
-    outputCount := C.ulong(this.SerializeLen() /* lg2 */)
-    outputMemory := make([]byte, int(C.vsc_buffer_ctx_size() + outputCount))
-    outputBuf := (*C.vsc_buffer_t)(unsafe.Pointer(&outputMemory[0]))
-    outputData := outputMemory[int(C.vsc_buffer_ctx_size()):]
-    C.vsc_buffer_init(outputBuf)
-    C.vsc_buffer_use(outputBuf, (*C.byte)(unsafe.Pointer(&outputData[0])), outputCount)
-    defer C.vsc_buffer_delete(outputBuf)
+    outputBuf, outputBufErr := bufferNewBuffer(int(this.SerializeLen() /* lg2 */))
+    if outputBufErr != nil {
+        return nil
+    }
+    defer outputBuf.clear()
 
 
-    C.vscf_group_session_message_serialize(this.cCtx, outputBuf)
+    C.vscf_group_session_message_serialize(this.cCtx, outputBuf.ctx)
 
-    return outputData[0:C.vsc_buffer_len(outputBuf)] /* r7 */
+    return outputBuf.getData() /* r7 */
 }
 
 /*
@@ -123,7 +121,7 @@ func (this GroupSessionMessage) Serialize () []byte {
 func GroupSessionMessageDeserialize (input []byte) (*GroupSessionMessage, error) {
     var error C.vscf_error_t
     C.vscf_error_reset(&error)
-    inputData := C.vsc_data((*C.uint8_t)(&input[0]), C.size_t(len(input)))
+    inputData := helperWrapData (input)
 
     proxyResult := /*pr4*/C.vscf_group_session_message_deserialize(inputData, &error)
 

@@ -4,7 +4,7 @@ package foundation
 // #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lmbedcrypto -led25519 -lprotobuf-nanopb -lvsc_common -lvsc_foundation -lvsc_foundation_pb
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
-import unsafe "unsafe"
+
 
 /*
 * Virgil Security implementation of the PBES2 (RFC 8018) algorithm.
@@ -30,7 +30,7 @@ func (this Pkcs5Pbes2) SetCipher (cipher ICipher) {
 * Configure cipher with a new password.
 */
 func (this Pkcs5Pbes2) Reset (pwd []byte) {
-    pwdData := C.vsc_data((*C.uint8_t)(&pwd[0]), C.size_t(len(pwd)))
+    pwdData := helperWrapData (pwd)
 
     C.vscf_pkcs5_pbes2_reset(this.cCtx, pwdData)
 
@@ -68,7 +68,7 @@ func newPkcs5Pbes2Copy (ctx *C.vscf_pkcs5_pbes2_t /*ct10*/) *Pkcs5Pbes2 {
 }
 
 /// Release underlying C context.
-func (this Pkcs5Pbes2) close () {
+func (this Pkcs5Pbes2) clear () {
     C.vscf_pkcs5_pbes2_delete(this.cCtx)
 }
 
@@ -108,23 +108,21 @@ func (this Pkcs5Pbes2) RestoreAlgInfo (algInfo IAlgInfo) error {
 * Encrypt given data.
 */
 func (this Pkcs5Pbes2) Encrypt (data []byte) ([]byte, error) {
-    outCount := C.ulong(this.EncryptedLen(uint32(len(data))) /* lg2 */)
-    outMemory := make([]byte, int(C.vsc_buffer_ctx_size() + outCount))
-    outBuf := (*C.vsc_buffer_t)(unsafe.Pointer(&outMemory[0]))
-    outData := outMemory[int(C.vsc_buffer_ctx_size()):]
-    C.vsc_buffer_init(outBuf)
-    C.vsc_buffer_use(outBuf, (*C.byte)(unsafe.Pointer(&outData[0])), outCount)
-    defer C.vsc_buffer_delete(outBuf)
-    dataData := C.vsc_data((*C.uint8_t)(&data[0]), C.size_t(len(data)))
+    outBuf, outBufErr := bufferNewBuffer(int(this.EncryptedLen(uint32(len(data))) /* lg2 */))
+    if outBufErr != nil {
+        return nil, outBufErr
+    }
+    defer outBuf.clear()
+    dataData := helperWrapData (data)
 
-    proxyResult := /*pr4*/C.vscf_pkcs5_pbes2_encrypt(this.cCtx, dataData, outBuf)
+    proxyResult := /*pr4*/C.vscf_pkcs5_pbes2_encrypt(this.cCtx, dataData, outBuf.ctx)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
         return nil, err
     }
 
-    return outData[0:C.vsc_buffer_len(outBuf)] /* r7 */, nil
+    return outBuf.getData() /* r7 */, nil
 }
 
 /*
@@ -149,23 +147,21 @@ func (this Pkcs5Pbes2) PreciseEncryptedLen (dataLen uint32) uint32 {
 * Decrypt given data.
 */
 func (this Pkcs5Pbes2) Decrypt (data []byte) ([]byte, error) {
-    outCount := C.ulong(this.DecryptedLen(uint32(len(data))) /* lg2 */)
-    outMemory := make([]byte, int(C.vsc_buffer_ctx_size() + outCount))
-    outBuf := (*C.vsc_buffer_t)(unsafe.Pointer(&outMemory[0]))
-    outData := outMemory[int(C.vsc_buffer_ctx_size()):]
-    C.vsc_buffer_init(outBuf)
-    C.vsc_buffer_use(outBuf, (*C.byte)(unsafe.Pointer(&outData[0])), outCount)
-    defer C.vsc_buffer_delete(outBuf)
-    dataData := C.vsc_data((*C.uint8_t)(&data[0]), C.size_t(len(data)))
+    outBuf, outBufErr := bufferNewBuffer(int(this.DecryptedLen(uint32(len(data))) /* lg2 */))
+    if outBufErr != nil {
+        return nil, outBufErr
+    }
+    defer outBuf.clear()
+    dataData := helperWrapData (data)
 
-    proxyResult := /*pr4*/C.vscf_pkcs5_pbes2_decrypt(this.cCtx, dataData, outBuf)
+    proxyResult := /*pr4*/C.vscf_pkcs5_pbes2_decrypt(this.cCtx, dataData, outBuf.ctx)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
         return nil, err
     }
 
-    return outData[0:C.vsc_buffer_len(outBuf)] /* r7 */, nil
+    return outBuf.getData() /* r7 */, nil
 }
 
 /*

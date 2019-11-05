@@ -4,7 +4,7 @@ package foundation
 // #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lmbedcrypto -led25519 -lprotobuf-nanopb -lvsc_common -lvsc_foundation -lvsc_foundation_pb
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
-import unsafe "unsafe"
+
 
 /*
 * Virgil Security implementation of the KDF2 (ISO-18033-2) algorithm.
@@ -51,7 +51,7 @@ func newKdf2Copy (ctx *C.vscf_kdf2_t /*ct10*/) *Kdf2 {
 }
 
 /// Release underlying C context.
-func (this Kdf2) close () {
+func (this Kdf2) clear () {
     C.vscf_kdf2_delete(this.cCtx)
 }
 
@@ -91,16 +91,14 @@ func (this Kdf2) RestoreAlgInfo (algInfo IAlgInfo) error {
 * Derive key of the requested length from the given data.
 */
 func (this Kdf2) Derive (data []byte, keyLen uint32) []byte {
-    keyCount := C.ulong(keyLen)
-    keyMemory := make([]byte, int(C.vsc_buffer_ctx_size() + keyCount))
-    keyBuf := (*C.vsc_buffer_t)(unsafe.Pointer(&keyMemory[0]))
-    keyData := keyMemory[int(C.vsc_buffer_ctx_size()):]
-    C.vsc_buffer_init(keyBuf)
-    C.vsc_buffer_use(keyBuf, (*C.byte)(unsafe.Pointer(&keyData[0])), keyCount)
-    defer C.vsc_buffer_delete(keyBuf)
-    dataData := C.vsc_data((*C.uint8_t)(&data[0]), C.size_t(len(data)))
+    keyBuf, keyBufErr := bufferNewBuffer(int(keyLen))
+    if keyBufErr != nil {
+        return nil
+    }
+    defer keyBuf.clear()
+    dataData := helperWrapData (data)
 
-    C.vscf_kdf2_derive(this.cCtx, dataData, (C.size_t)(keyLen)/*pa10*/, keyBuf)
+    C.vscf_kdf2_derive(this.cCtx, dataData, (C.size_t)(keyLen)/*pa10*/, keyBuf.ctx)
 
-    return keyData[0:C.vsc_buffer_len(keyBuf)] /* r7 */
+    return keyBuf.getData() /* r7 */
 }

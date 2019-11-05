@@ -4,7 +4,7 @@ package foundation
 // #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lmbedcrypto -led25519 -lprotobuf-nanopb -lvsc_common -lvsc_foundation -lvsc_foundation_pb
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
-import unsafe "unsafe"
+
 
 /*
 * Sign data of any size.
@@ -44,7 +44,7 @@ func newSignerCopy (ctx *C.vscf_signer_t /*ct2*/) *Signer {
 }
 
 /// Release underlying C context.
-func (this Signer) close () {
+func (this Signer) clear () {
     C.vscf_signer_delete(this.cCtx)
 }
 
@@ -71,7 +71,7 @@ func (this Signer) Reset () {
 * Add given data to the signed data.
 */
 func (this Signer) AppendData (data []byte) {
-    dataData := C.vsc_data((*C.uint8_t)(&data[0]), C.size_t(len(data)))
+    dataData := helperWrapData (data)
 
     C.vscf_signer_append_data(this.cCtx, dataData)
 
@@ -91,21 +91,19 @@ func (this Signer) SignatureLen (privateKey IPrivateKey) uint32 {
 * Accomplish signing and return signature.
 */
 func (this Signer) Sign (privateKey IPrivateKey) ([]byte, error) {
-    signatureCount := C.ulong(this.SignatureLen(privateKey.(IPrivateKey)) /* lg2 */)
-    signatureMemory := make([]byte, int(C.vsc_buffer_ctx_size() + signatureCount))
-    signatureBuf := (*C.vsc_buffer_t)(unsafe.Pointer(&signatureMemory[0]))
-    signatureData := signatureMemory[int(C.vsc_buffer_ctx_size()):]
-    C.vsc_buffer_init(signatureBuf)
-    C.vsc_buffer_use(signatureBuf, (*C.byte)(unsafe.Pointer(&signatureData[0])), signatureCount)
-    defer C.vsc_buffer_delete(signatureBuf)
+    signatureBuf, signatureBufErr := bufferNewBuffer(int(this.SignatureLen(privateKey.(IPrivateKey)) /* lg2 */))
+    if signatureBufErr != nil {
+        return nil, signatureBufErr
+    }
+    defer signatureBuf.clear()
 
 
-    proxyResult := /*pr4*/C.vscf_signer_sign(this.cCtx, (*C.vscf_impl_t)(privateKey.ctx()), signatureBuf)
+    proxyResult := /*pr4*/C.vscf_signer_sign(this.cCtx, (*C.vscf_impl_t)(privateKey.ctx()), signatureBuf.ctx)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
         return nil, err
     }
 
-    return signatureData[0:C.vsc_buffer_len(signatureBuf)] /* r7 */, nil
+    return signatureBuf.getData() /* r7 */, nil
 }

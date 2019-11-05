@@ -5,6 +5,7 @@ package foundation
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
 
+
 /*
 * Handles interchangeable private key representation.
 */
@@ -20,7 +21,7 @@ type RawPrivateKey struct {
 func (this RawPrivateKey) Data () []byte {
     proxyResult := /*pr4*/C.vscf_raw_private_key_data(this.cCtx)
 
-    return helperDataToBytes(proxyResult) /* r1 */
+    return helperExtractData(proxyResult) /* r1 */
 }
 
 /*
@@ -83,7 +84,7 @@ func newRawPrivateKeyCopy (ctx *C.vscf_raw_private_key_t /*ct10*/) *RawPrivateKe
 }
 
 /// Release underlying C context.
-func (this RawPrivateKey) close () {
+func (this RawPrivateKey) clear () {
     C.vscf_raw_private_key_delete(this.cCtx)
 }
 

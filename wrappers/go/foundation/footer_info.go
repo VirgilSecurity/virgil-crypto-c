@@ -5,6 +5,7 @@ package foundation
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
 
+
 /*
 * Handle meta information about footer.
 */
@@ -43,7 +44,7 @@ func newFooterInfoCopy (ctx *C.vscf_footer_info_t /*ct2*/) *FooterInfo {
 }
 
 /// Release underlying C context.
-func (this FooterInfo) close () {
+func (this FooterInfo) clear () {
     C.vscf_footer_info_delete(this.cCtx)
 }
 

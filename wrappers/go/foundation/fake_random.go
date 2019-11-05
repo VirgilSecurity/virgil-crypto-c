@@ -4,7 +4,7 @@ package foundation
 // #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lmbedcrypto -led25519 -lprotobuf-nanopb -lvsc_common -lvsc_foundation -lvsc_foundation_pb
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
-import unsafe "unsafe"
+
 
 /*
 * Random number generator that is used for test purposes only.
@@ -29,7 +29,7 @@ func (this FakeRandom) SetupSourceByte (byteSource byte) {
 * Note, that given data is used as circular source.
 */
 func (this FakeRandom) SetupSourceData (dataSource []byte) {
-    dataSourceData := C.vsc_data((*C.uint8_t)(&dataSource[0]), C.size_t(len(dataSource)))
+    dataSourceData := helperWrapData (dataSource)
 
     C.vscf_fake_random_setup_source_data(this.cCtx, dataSourceData)
 
@@ -67,7 +67,7 @@ func newFakeRandomCopy (ctx *C.vscf_fake_random_t /*ct10*/) *FakeRandom {
 }
 
 /// Release underlying C context.
-func (this FakeRandom) close () {
+func (this FakeRandom) clear () {
     C.vscf_fake_random_delete(this.cCtx)
 }
 
@@ -76,23 +76,21 @@ func (this FakeRandom) close () {
 * All RNG implementations must be thread-safe.
 */
 func (this FakeRandom) Random (dataLen uint32) ([]byte, error) {
-    dataCount := C.ulong(dataLen)
-    dataMemory := make([]byte, int(C.vsc_buffer_ctx_size() + dataCount))
-    dataBuf := (*C.vsc_buffer_t)(unsafe.Pointer(&dataMemory[0]))
-    dataData := dataMemory[int(C.vsc_buffer_ctx_size()):]
-    C.vsc_buffer_init(dataBuf)
-    C.vsc_buffer_use(dataBuf, (*C.byte)(unsafe.Pointer(&dataData[0])), dataCount)
-    defer C.vsc_buffer_delete(dataBuf)
+    dataBuf, dataBufErr := bufferNewBuffer(int(dataLen))
+    if dataBufErr != nil {
+        return nil, dataBufErr
+    }
+    defer dataBuf.clear()
 
 
-    proxyResult := /*pr4*/C.vscf_fake_random_random(this.cCtx, (C.size_t)(dataLen)/*pa10*/, dataBuf)
+    proxyResult := /*pr4*/C.vscf_fake_random_random(this.cCtx, (C.size_t)(dataLen)/*pa10*/, dataBuf.ctx)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
         return nil, err
     }
 
-    return dataData[0:C.vsc_buffer_len(dataBuf)] /* r7 */, nil
+    return dataBuf.getData() /* r7 */, nil
 }
 
 /*
@@ -122,21 +120,19 @@ func (this FakeRandom) IsStrong () bool {
 * Gather entropy of the requested length.
 */
 func (this FakeRandom) Gather (len uint32) ([]byte, error) {
-    outCount := C.ulong(len)
-    outMemory := make([]byte, int(C.vsc_buffer_ctx_size() + outCount))
-    outBuf := (*C.vsc_buffer_t)(unsafe.Pointer(&outMemory[0]))
-    outData := outMemory[int(C.vsc_buffer_ctx_size()):]
-    C.vsc_buffer_init(outBuf)
-    C.vsc_buffer_use(outBuf, (*C.byte)(unsafe.Pointer(&outData[0])), outCount)
-    defer C.vsc_buffer_delete(outBuf)
+    outBuf, outBufErr := bufferNewBuffer(int(len))
+    if outBufErr != nil {
+        return nil, outBufErr
+    }
+    defer outBuf.clear()
 
 
-    proxyResult := /*pr4*/C.vscf_fake_random_gather(this.cCtx, (C.size_t)(len)/*pa10*/, outBuf)
+    proxyResult := /*pr4*/C.vscf_fake_random_gather(this.cCtx, (C.size_t)(len)/*pa10*/, outBuf.ctx)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
         return nil, err
     }
 
-    return outData[0:C.vsc_buffer_len(outBuf)] /* r7 */, nil
+    return outBuf.getData() /* r7 */, nil
 }

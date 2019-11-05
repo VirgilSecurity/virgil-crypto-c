@@ -5,6 +5,7 @@ package foundation
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
 
+
 /*
 * Implements PKCS#8 and SEC1 key deserialization from DER / PEM format.
 */
@@ -96,7 +97,7 @@ func newKeyAsn1DeserializerCopy (ctx *C.vscf_key_asn1_deserializer_t /*ct10*/) *
 }
 
 /// Release underlying C context.
-func (this KeyAsn1Deserializer) close () {
+func (this KeyAsn1Deserializer) clear () {
     C.vscf_key_asn1_deserializer_delete(this.cCtx)
 }
 
@@ -106,7 +107,7 @@ func (this KeyAsn1Deserializer) close () {
 func (this KeyAsn1Deserializer) DeserializePublicKey (publicKeyData []byte) (*RawPublicKey, error) {
     var error C.vscf_error_t
     C.vscf_error_reset(&error)
-    publicKeyDataData := C.vsc_data((*C.uint8_t)(&publicKeyData[0]), C.size_t(len(publicKeyData)))
+    publicKeyDataData := helperWrapData (publicKeyData)
 
     proxyResult := /*pr4*/C.vscf_key_asn1_deserializer_deserialize_public_key(this.cCtx, publicKeyDataData, &error)
 
@@ -124,7 +125,7 @@ func (this KeyAsn1Deserializer) DeserializePublicKey (publicKeyData []byte) (*Ra
 func (this KeyAsn1Deserializer) DeserializePrivateKey (privateKeyData []byte) (*RawPrivateKey, error) {
     var error C.vscf_error_t
     C.vscf_error_reset(&error)
-    privateKeyDataData := C.vsc_data((*C.uint8_t)(&privateKeyData[0]), C.size_t(len(privateKeyData)))
+    privateKeyDataData := helperWrapData (privateKeyData)
 
     proxyResult := /*pr4*/C.vscf_key_asn1_deserializer_deserialize_private_key(this.cCtx, privateKeyDataData, &error)
 

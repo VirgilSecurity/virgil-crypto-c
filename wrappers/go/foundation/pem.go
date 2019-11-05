@@ -6,6 +6,7 @@ package foundation
 import "C"
 import unsafe "unsafe"
 
+
 /*
 * Simple PEM wrapper.
 */
@@ -33,18 +34,16 @@ func PemWrap (title string, data []byte) []byte {
     titleStr := C.CString(title)
     defer C.free(unsafe.Pointer(titleStr))
 
-    pemCount := C.ulong(PemWrappedLen(title, uint32(len(data))) /* lg1 */)
-    pemMemory := make([]byte, int(C.vsc_buffer_ctx_size() + pemCount))
-    pemBuf := (*C.vsc_buffer_t)(unsafe.Pointer(&pemMemory[0]))
-    pemData := pemMemory[int(C.vsc_buffer_ctx_size()):]
-    C.vsc_buffer_init(pemBuf)
-    C.vsc_buffer_use(pemBuf, (*C.byte)(unsafe.Pointer(&pemData[0])), pemCount)
-    defer C.vsc_buffer_delete(pemBuf)
-    dataData := C.vsc_data((*C.uint8_t)(&data[0]), C.size_t(len(data)))
+    pemBuf, pemBufErr := bufferNewBuffer(int(PemWrappedLen(title, uint32(len(data))) /* lg1 */))
+    if pemBufErr != nil {
+        return nil
+    }
+    defer pemBuf.clear()
+    dataData := helperWrapData (data)
 
-    C.vscf_pem_wrap(titleStr/*pa9*/, dataData, pemBuf)
+    C.vscf_pem_wrap(titleStr/*pa9*/, dataData, pemBuf.ctx)
 
-    return pemData[0:C.vsc_buffer_len(pemBuf)] /* r7 */
+    return pemBuf.getData() /* r7 */
 }
 
 /*
@@ -60,32 +59,30 @@ func PemUnwrappedLen (pemLen uint32) uint32 {
 * Takes PEM data and extract binary data from it.
 */
 func PemUnwrap (pem []byte) ([]byte, error) {
-    dataCount := C.ulong(PemUnwrappedLen(uint32(len(pem))) /* lg1 */)
-    dataMemory := make([]byte, int(C.vsc_buffer_ctx_size() + dataCount))
-    dataBuf := (*C.vsc_buffer_t)(unsafe.Pointer(&dataMemory[0]))
-    dataData := dataMemory[int(C.vsc_buffer_ctx_size()):]
-    C.vsc_buffer_init(dataBuf)
-    C.vsc_buffer_use(dataBuf, (*C.byte)(unsafe.Pointer(&dataData[0])), dataCount)
-    defer C.vsc_buffer_delete(dataBuf)
-    pemData := C.vsc_data((*C.uint8_t)(&pem[0]), C.size_t(len(pem)))
+    dataBuf, dataBufErr := bufferNewBuffer(int(PemUnwrappedLen(uint32(len(pem))) /* lg1 */))
+    if dataBufErr != nil {
+        return nil, dataBufErr
+    }
+    defer dataBuf.clear()
+    pemData := helperWrapData (pem)
 
-    proxyResult := /*pr4*/C.vscf_pem_unwrap(pemData, dataBuf)
+    proxyResult := /*pr4*/C.vscf_pem_unwrap(pemData, dataBuf.ctx)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
         return nil, err
     }
 
-    return dataData[0:C.vsc_buffer_len(dataBuf)] /* r7 */, nil
+    return dataBuf.getData() /* r7 */, nil
 }
 
 /*
 * Returns PEM title if PEM data is valid, otherwise - empty data.
 */
 func PemTitle (pem []byte) []byte {
-    pemData := C.vsc_data((*C.uint8_t)(&pem[0]), C.size_t(len(pem)))
+    pemData := helperWrapData (pem)
 
     proxyResult := /*pr4*/C.vscf_pem_title(pemData)
 
-    return helperDataToBytes(proxyResult) /* r1 */
+    return helperExtractData(proxyResult) /* r1 */
 }

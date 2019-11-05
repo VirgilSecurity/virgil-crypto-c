@@ -5,6 +5,7 @@ package foundation
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
 
+
 /*
 * Handles RSA public key.
 */
@@ -54,7 +55,7 @@ func newRsaPublicKeyCopy (ctx *C.vscf_rsa_public_key_t /*ct10*/) *RsaPublicKey {
 }
 
 /// Release underlying C context.
-func (this RsaPublicKey) close () {
+func (this RsaPublicKey) clear () {
     C.vscf_rsa_public_key_delete(this.cCtx)
 }
 

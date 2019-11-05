@@ -4,7 +4,7 @@ package foundation
 // #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lmbedcrypto -led25519 -lprotobuf-nanopb -lvsc_common -lvsc_foundation -lvsc_foundation_pb
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
-import unsafe "unsafe"
+
 
 /*
 * Virgil Security implementation of HMAC algorithm (RFC 2104) (FIPS PUB 198-1).
@@ -51,7 +51,7 @@ func newHmacCopy (ctx *C.vscf_hmac_t /*ct10*/) *Hmac {
 }
 
 /// Release underlying C context.
-func (this Hmac) close () {
+func (this Hmac) clear () {
     C.vscf_hmac_delete(this.cCtx)
 }
 
@@ -100,26 +100,24 @@ func (this Hmac) DigestLen () uint32 {
 * Calculate MAC over given data.
 */
 func (this Hmac) Mac (key []byte, data []byte) []byte {
-    macCount := C.ulong(this.DigestLen() /* lg2 */)
-    macMemory := make([]byte, int(C.vsc_buffer_ctx_size() + macCount))
-    macBuf := (*C.vsc_buffer_t)(unsafe.Pointer(&macMemory[0]))
-    macData := macMemory[int(C.vsc_buffer_ctx_size()):]
-    C.vsc_buffer_init(macBuf)
-    C.vsc_buffer_use(macBuf, (*C.byte)(unsafe.Pointer(&macData[0])), macCount)
-    defer C.vsc_buffer_delete(macBuf)
-    keyData := C.vsc_data((*C.uint8_t)(&key[0]), C.size_t(len(key)))
-    dataData := C.vsc_data((*C.uint8_t)(&data[0]), C.size_t(len(data)))
+    macBuf, macBufErr := bufferNewBuffer(int(this.DigestLen() /* lg2 */))
+    if macBufErr != nil {
+        return nil
+    }
+    defer macBuf.clear()
+    keyData := helperWrapData (key)
+    dataData := helperWrapData (data)
 
-    C.vscf_hmac_mac(this.cCtx, keyData, dataData, macBuf)
+    C.vscf_hmac_mac(this.cCtx, keyData, dataData, macBuf.ctx)
 
-    return macData[0:C.vsc_buffer_len(macBuf)] /* r7 */
+    return macBuf.getData() /* r7 */
 }
 
 /*
 * Start a new MAC.
 */
 func (this Hmac) Start (key []byte) {
-    keyData := C.vsc_data((*C.uint8_t)(&key[0]), C.size_t(len(key)))
+    keyData := helperWrapData (key)
 
     C.vscf_hmac_start(this.cCtx, keyData)
 
@@ -130,7 +128,7 @@ func (this Hmac) Start (key []byte) {
 * Add given data to the MAC.
 */
 func (this Hmac) Update (data []byte) {
-    dataData := C.vsc_data((*C.uint8_t)(&data[0]), C.size_t(len(data)))
+    dataData := helperWrapData (data)
 
     C.vscf_hmac_update(this.cCtx, dataData)
 
@@ -141,18 +139,16 @@ func (this Hmac) Update (data []byte) {
 * Accomplish MAC and return it's result (a message digest).
 */
 func (this Hmac) Finish () []byte {
-    macCount := C.ulong(this.DigestLen() /* lg2 */)
-    macMemory := make([]byte, int(C.vsc_buffer_ctx_size() + macCount))
-    macBuf := (*C.vsc_buffer_t)(unsafe.Pointer(&macMemory[0]))
-    macData := macMemory[int(C.vsc_buffer_ctx_size()):]
-    C.vsc_buffer_init(macBuf)
-    C.vsc_buffer_use(macBuf, (*C.byte)(unsafe.Pointer(&macData[0])), macCount)
-    defer C.vsc_buffer_delete(macBuf)
+    macBuf, macBufErr := bufferNewBuffer(int(this.DigestLen() /* lg2 */))
+    if macBufErr != nil {
+        return nil
+    }
+    defer macBuf.clear()
 
 
-    C.vscf_hmac_finish(this.cCtx, macBuf)
+    C.vscf_hmac_finish(this.cCtx, macBuf.ctx)
 
-    return macData[0:C.vsc_buffer_len(macBuf)] /* r7 */
+    return macBuf.getData() /* r7 */
 }
 
 /*

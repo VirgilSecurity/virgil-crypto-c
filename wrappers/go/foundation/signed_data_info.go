@@ -5,6 +5,7 @@ package foundation
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
 
+
 /*
 * Handle meta information about signed data.
 */
@@ -43,7 +44,7 @@ func newSignedDataInfoCopy (ctx *C.vscf_signed_data_info_t /*ct2*/) *SignedDataI
 }
 
 /// Release underlying C context.
-func (this SignedDataInfo) close () {
+func (this SignedDataInfo) clear () {
     C.vscf_signed_data_info_delete(this.cCtx)
 }
 

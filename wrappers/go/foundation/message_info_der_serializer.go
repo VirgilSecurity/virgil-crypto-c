@@ -4,7 +4,7 @@ package foundation
 // #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lmbedcrypto -led25519 -lprotobuf-nanopb -lvsc_common -lvsc_foundation -lvsc_foundation_pb
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
-import unsafe "unsafe"
+
 
 /*
 * CMS based serialization of the class "message info".
@@ -65,11 +65,11 @@ func newMessageInfoDerSerializerCopy (ctx *C.vscf_message_info_der_serializer_t 
 }
 
 /// Release underlying C context.
-func (this MessageInfoDerSerializer) close () {
+func (this MessageInfoDerSerializer) clear () {
     C.vscf_message_info_der_serializer_delete(this.cCtx)
 }
 
-func MessageInfoDerSerializerGetPrefixLen () uint32 {
+func (this MessageInfoDerSerializer) GetPrefixLen () uint32 {
     return 32
 }
 
@@ -86,18 +86,16 @@ func (this MessageInfoDerSerializer) SerializedLen (messageInfo *MessageInfo) ui
 * Serialize class "message info".
 */
 func (this MessageInfoDerSerializer) Serialize (messageInfo *MessageInfo) []byte {
-    outCount := C.ulong(this.SerializedLen(messageInfo) /* lg2 */)
-    outMemory := make([]byte, int(C.vsc_buffer_ctx_size() + outCount))
-    outBuf := (*C.vsc_buffer_t)(unsafe.Pointer(&outMemory[0]))
-    outData := outMemory[int(C.vsc_buffer_ctx_size()):]
-    C.vsc_buffer_init(outBuf)
-    C.vsc_buffer_use(outBuf, (*C.byte)(unsafe.Pointer(&outData[0])), outCount)
-    defer C.vsc_buffer_delete(outBuf)
+    outBuf, outBufErr := bufferNewBuffer(int(this.SerializedLen(messageInfo) /* lg2 */))
+    if outBufErr != nil {
+        return nil
+    }
+    defer outBuf.clear()
 
 
-    C.vscf_message_info_der_serializer_serialize(this.cCtx, (*C.vscf_message_info_t)(messageInfo.ctx()), outBuf)
+    C.vscf_message_info_der_serializer_serialize(this.cCtx, (*C.vscf_message_info_t)(messageInfo.ctx()), outBuf.ctx)
 
-    return outData[0:C.vsc_buffer_len(outBuf)] /* r7 */
+    return outBuf.getData() /* r7 */
 }
 
 /*
@@ -108,7 +106,7 @@ func (this MessageInfoDerSerializer) Serialize (messageInfo *MessageInfo) []byte
 * and this means that there is no message info at the data beginning.
 */
 func (this MessageInfoDerSerializer) ReadPrefix (data []byte) uint32 {
-    dataData := C.vsc_data((*C.uint8_t)(&data[0]), C.size_t(len(data)))
+    dataData := helperWrapData (data)
 
     proxyResult := /*pr4*/C.vscf_message_info_der_serializer_read_prefix(this.cCtx, dataData)
 
@@ -121,7 +119,7 @@ func (this MessageInfoDerSerializer) ReadPrefix (data []byte) uint32 {
 func (this MessageInfoDerSerializer) Deserialize (data []byte) (*MessageInfo, error) {
     var error C.vscf_error_t
     C.vscf_error_reset(&error)
-    dataData := C.vsc_data((*C.uint8_t)(&data[0]), C.size_t(len(data)))
+    dataData := helperWrapData (data)
 
     proxyResult := /*pr4*/C.vscf_message_info_der_serializer_deserialize(this.cCtx, dataData, &error)
 
@@ -146,18 +144,16 @@ func (this MessageInfoDerSerializer) SerializedFooterLen (messageInfoFooter *Mes
 * Serialize class "message info footer".
 */
 func (this MessageInfoDerSerializer) SerializeFooter (messageInfoFooter *MessageInfoFooter) []byte {
-    outCount := C.ulong(this.SerializedFooterLen(messageInfoFooter) /* lg2 */)
-    outMemory := make([]byte, int(C.vsc_buffer_ctx_size() + outCount))
-    outBuf := (*C.vsc_buffer_t)(unsafe.Pointer(&outMemory[0]))
-    outData := outMemory[int(C.vsc_buffer_ctx_size()):]
-    C.vsc_buffer_init(outBuf)
-    C.vsc_buffer_use(outBuf, (*C.byte)(unsafe.Pointer(&outData[0])), outCount)
-    defer C.vsc_buffer_delete(outBuf)
+    outBuf, outBufErr := bufferNewBuffer(int(this.SerializedFooterLen(messageInfoFooter) /* lg2 */))
+    if outBufErr != nil {
+        return nil
+    }
+    defer outBuf.clear()
 
 
-    C.vscf_message_info_der_serializer_serialize_footer(this.cCtx, (*C.vscf_message_info_footer_t)(messageInfoFooter.ctx()), outBuf)
+    C.vscf_message_info_der_serializer_serialize_footer(this.cCtx, (*C.vscf_message_info_footer_t)(messageInfoFooter.ctx()), outBuf.ctx)
 
-    return outData[0:C.vsc_buffer_len(outBuf)] /* r7 */
+    return outBuf.getData() /* r7 */
 }
 
 /*
@@ -166,7 +162,7 @@ func (this MessageInfoDerSerializer) SerializeFooter (messageInfoFooter *Message
 func (this MessageInfoDerSerializer) DeserializeFooter (data []byte) (*MessageInfoFooter, error) {
     var error C.vscf_error_t
     C.vscf_error_reset(&error)
-    dataData := C.vsc_data((*C.uint8_t)(&data[0]), C.size_t(len(data)))
+    dataData := helperWrapData (data)
 
     proxyResult := /*pr4*/C.vscf_message_info_der_serializer_deserialize_footer(this.cCtx, dataData, &error)
 

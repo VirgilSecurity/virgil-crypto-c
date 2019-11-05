@@ -4,14 +4,75 @@ package foundation
 // #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lmbedcrypto -led25519 -lprotobuf-nanopb -lvsc_common -lvsc_foundation -lvsc_foundation_pb
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
+import unsafe "unsafe"
+
 
 type helper struct {
 }
 
-func helperDataToBytes (data C.vsc_data_t) []byte {
-    return []byte("Go")
-}
-
 func helperBytesToBytePtr (data []byte) *C.uint8_t {
     return (*C.uint8_t)(&data[0])
+}
+
+func helperWrapData (data []byte) C.vsc_data_t {
+    if len(data) == 0 {
+        return C.vsc_data_empty()
+    }
+    return C.vsc_data((*C.uint8_t)(&data[0]), C.size_t(len(data)))
+}
+
+func helperExtractData (data C.vsc_data_t) []byte {
+    newSize := data.len
+    //FIXME Verify data is not corrupted
+    //if newSize < len(data.bytes) {
+    //    panic("Underlying C buffer corrupt the memory.")
+    //}
+    return C.GoBytes(unsafe.Pointer(data.bytes), C.int(newSize))
+}
+
+type buffer struct {
+    memory []byte
+    ctx *C.vsc_buffer_t
+    data []byte
+}
+
+func bufferNewBuffer (cap int) (*buffer, error) {
+    capacity := C.size_t(cap)
+    if capacity == 0 {
+        return nil, &FoundationError{-1,"Buffer with zero capacity is not allowed."}
+    }
+
+    ctxLen := C.vsc_buffer_ctx_size()
+    memory := make([]byte, int(ctxLen + capacity))
+    ctx := (*C.vsc_buffer_t)(unsafe.Pointer(&memory[0]))
+    data := memory[int(ctxLen):]
+
+    C.vsc_buffer_init(ctx)
+    C.vsc_buffer_use(ctx, (*C.byte)(unsafe.Pointer(&data[0])), capacity)
+
+    return &buffer {
+        memory: memory,
+        ctx: ctx,
+        data: data,
+    }, nil
+}
+
+func (this buffer) getData () []byte {
+    newSize := int(C.vsc_buffer_len(this.ctx))
+    if newSize > len(this.data) {
+        panic ("Underlying C buffer corrupt the memory.")
+    }
+    return this.data[:newSize]
+}
+
+func (this buffer) cap () int {
+    return int(C.vsc_buffer_capacity(this.ctx))
+}
+
+func (this buffer) len () int {
+    return int(C.vsc_buffer_len(this.ctx))
+}
+
+func (this buffer) clear () {
+    C.vsc_buffer_delete(this.ctx)
 }

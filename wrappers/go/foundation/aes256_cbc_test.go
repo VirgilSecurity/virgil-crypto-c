@@ -51,7 +51,7 @@ func TestAes256Cbc_Encrypt(t *testing.T) {
     key, _ := b64.StdEncoding.DecodeString(TEST_AES256_CBC_KEY)
     nonce, _ := b64.StdEncoding.DecodeString(TEST_AES256_CBC_IV)
     data, _ := b64.StdEncoding.DecodeString(TEST_DATA)
-    expectedEncryptedData := []byte(TEST_AES256_CBC_ENCRYPTED_DATA)
+    expectedEncryptedData, _ := b64.StdEncoding.DecodeString(TEST_AES256_CBC_ENCRYPTED_DATA)
 
     aes256Cbc := NewAes256Cbc()
     aes256Cbc.SetKey(key)
@@ -61,28 +61,37 @@ func TestAes256Cbc_Encrypt(t *testing.T) {
 
     assert.Nil(t, err)
     assert.NotNil(t, encryptedData)
-    assert.True(t, reflect.DeepEqual(expectedEncryptedData, encryptedData))
+    assert.Equal(t, expectedEncryptedData, encryptedData)
 }
 
 func TestAes256Cbc_Encrypt_WithCipher(t *testing.T) {
 	key, _ := b64.StdEncoding.DecodeString(TEST_AES256_CBC_KEY)
 	nonce, _ := b64.StdEncoding.DecodeString(TEST_AES256_CBC_IV)
 	data, _ := b64.StdEncoding.DecodeString(TEST_DATA)
-	expectedEncryptedData := []byte(TEST_AES256_CBC_ENCRYPTED_DATA)
+	expectedEncryptedData, _ := b64.StdEncoding.DecodeString(TEST_AES256_CBC_ENCRYPTED_DATA)
 
 	aes256Cbc := NewAes256Cbc()
 	aes256Cbc.SetKey(key)
 	aes256Cbc.SetNonce(nonce)
 
-	aes256Cbc.StartDecryption()
-	updateData := aes256Cbc.Update(data)
+	aes256Cbc.StartEncryption()
+	blockLen := int(aes256Cbc.GetBlockLen())
+
+	var updateData []byte
+	for startIndex := 0; startIndex < len(data);  {
+		var endIndex = startIndex + blockLen
+		block := data[startIndex : endIndex]
+		updateData = append(updateData, aes256Cbc.Update(block)...)
+
+		startIndex += blockLen
+	}
 	finishData, err := aes256Cbc.Finish()
 	assert.Nil(t, err)
 
 	encryptedData := append(updateData, finishData...)
 
 	assert.NotNil(t, encryptedData)
-	assert.True(t, reflect.DeepEqual(expectedEncryptedData, encryptedData))
+	assert.Equal(t, expectedEncryptedData, encryptedData)
 }
 
 func TestAes256Cbc_Decrypt(t *testing.T) {
@@ -125,20 +134,20 @@ func TestAes256Cbc_Decrypt_WitCipher(t *testing.T) {
 
 func TestAes256Cbc_GetNonceLen(t *testing.T) {
     aes256Cbc := NewAes256Cbc()
-    assert.Equal(t, TEST_AES256_CBC_NONCE_LEN, aes256Cbc.GetNonceLen())
+    assert.Equal(t, uint32(TEST_AES256_CBC_NONCE_LEN), aes256Cbc.GetNonceLen())
 }
 
 func TestAes256Cbc_GetKeyLen(t *testing.T) {
     aes256Cbc := NewAes256Cbc()
-    assert.Equal(t, TEST_AES256_CBC_KEY_LEN, aes256Cbc.GetKeyLen())
+    assert.Equal(t, uint32(TEST_AES256_CBC_KEY_LEN), aes256Cbc.GetKeyLen())
 }
 
 func TestAes256Cbc_GetKeyBitLen(t *testing.T) {
     aes256Cbc := NewAes256Cbc()
-    assert.Equal(t, TEST_AES256_CBC_KEY_BIT_LEN, aes256Cbc.GetKeyBitlen())
+    assert.Equal(t, uint32(TEST_AES256_CBC_KEY_BIT_LEN), aes256Cbc.GetKeyBitlen())
 }
 
 func TestAes256Cbc_GetBlockLen(t *testing.T) {
     aes256Cbc := NewAes256Cbc()
-    assert.Equal(t, TEST_AES256_CBC_BLOCK_LEN, aes256Cbc.GetBlockLen())
+    assert.Equal(t, uint32(TEST_AES256_CBC_BLOCK_LEN), aes256Cbc.GetBlockLen())
 }

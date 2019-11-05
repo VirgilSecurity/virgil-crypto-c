@@ -273,6 +273,7 @@ function go_generate_sources (go_project)
         newline()
 
         for go_module.go_struct
+            newline()
             go_insert_struct (go_struct)
         endfor
 

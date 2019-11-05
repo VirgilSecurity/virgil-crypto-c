@@ -5,6 +5,7 @@ package foundation
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
 
+
 /*
 * Handle hashed based algorithm information, i.e. HKDF, HMAC, etc.
 */
@@ -53,7 +54,7 @@ func newHashBasedAlgInfoCopy (ctx *C.vscf_hash_based_alg_info_t /*ct10*/) *HashB
 }
 
 /// Release underlying C context.
-func (this HashBasedAlgInfo) close () {
+func (this HashBasedAlgInfo) clear () {
     C.vscf_hash_based_alg_info_delete(this.cCtx)
 }
 

@@ -4,7 +4,7 @@ package foundation
 // #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lmbedcrypto -led25519 -lprotobuf-nanopb -lvsc_common -lvsc_foundation -lvsc_foundation_pb
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
-import unsafe "unsafe"
+
 
 /*
 * Provide functionality for private key generation and importing that
@@ -45,7 +45,7 @@ func newKeyProviderCopy (ctx *C.vscf_key_provider_t /*ct2*/) *KeyProvider {
 }
 
 /// Release underlying C context.
-func (this KeyProvider) close () {
+func (this KeyProvider) clear () {
     C.vscf_key_provider_delete(this.cCtx)
 }
 
@@ -105,7 +105,7 @@ func (this KeyProvider) GeneratePrivateKey (algId AlgId) (IPrivateKey, error) {
 func (this KeyProvider) ImportPrivateKey (keyData []byte) (IPrivateKey, error) {
     var error C.vscf_error_t
     C.vscf_error_reset(&error)
-    keyDataData := C.vsc_data((*C.uint8_t)(&keyData[0]), C.size_t(len(keyData)))
+    keyDataData := helperWrapData (keyData)
 
     proxyResult := /*pr4*/C.vscf_key_provider_import_private_key(this.cCtx, keyDataData, &error)
 
@@ -123,7 +123,7 @@ func (this KeyProvider) ImportPrivateKey (keyData []byte) (IPrivateKey, error) {
 func (this KeyProvider) ImportPublicKey (keyData []byte) (IPublicKey, error) {
     var error C.vscf_error_t
     C.vscf_error_reset(&error)
-    keyDataData := C.vsc_data((*C.uint8_t)(&keyData[0]), C.size_t(len(keyData)))
+    keyDataData := helperWrapData (keyData)
 
     proxyResult := /*pr4*/C.vscf_key_provider_import_public_key(this.cCtx, keyDataData, &error)
 
@@ -152,23 +152,21 @@ func (this KeyProvider) ExportedPublicKeyLen (publicKey IPublicKey) uint32 {
 * Precondition: public key must be exportable.
 */
 func (this KeyProvider) ExportPublicKey (publicKey IPublicKey) ([]byte, error) {
-    outCount := C.ulong(this.ExportedPublicKeyLen(publicKey.(IPublicKey)) /* lg2 */)
-    outMemory := make([]byte, int(C.vsc_buffer_ctx_size() + outCount))
-    outBuf := (*C.vsc_buffer_t)(unsafe.Pointer(&outMemory[0]))
-    outData := outMemory[int(C.vsc_buffer_ctx_size()):]
-    C.vsc_buffer_init(outBuf)
-    C.vsc_buffer_use(outBuf, (*C.byte)(unsafe.Pointer(&outData[0])), outCount)
-    defer C.vsc_buffer_delete(outBuf)
+    outBuf, outBufErr := bufferNewBuffer(int(this.ExportedPublicKeyLen(publicKey.(IPublicKey)) /* lg2 */))
+    if outBufErr != nil {
+        return nil, outBufErr
+    }
+    defer outBuf.clear()
 
 
-    proxyResult := /*pr4*/C.vscf_key_provider_export_public_key(this.cCtx, (*C.vscf_impl_t)(publicKey.ctx()), outBuf)
+    proxyResult := /*pr4*/C.vscf_key_provider_export_public_key(this.cCtx, (*C.vscf_impl_t)(publicKey.ctx()), outBuf.ctx)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
         return nil, err
     }
 
-    return outData[0:C.vsc_buffer_len(outBuf)] /* r7 */, nil
+    return outBuf.getData() /* r7 */, nil
 }
 
 /*
@@ -188,21 +186,19 @@ func (this KeyProvider) ExportedPrivateKeyLen (privateKey IPrivateKey) uint32 {
 * Precondition: private key must be exportable.
 */
 func (this KeyProvider) ExportPrivateKey (privateKey IPrivateKey) ([]byte, error) {
-    outCount := C.ulong(this.ExportedPrivateKeyLen(privateKey.(IPrivateKey)) /* lg2 */)
-    outMemory := make([]byte, int(C.vsc_buffer_ctx_size() + outCount))
-    outBuf := (*C.vsc_buffer_t)(unsafe.Pointer(&outMemory[0]))
-    outData := outMemory[int(C.vsc_buffer_ctx_size()):]
-    C.vsc_buffer_init(outBuf)
-    C.vsc_buffer_use(outBuf, (*C.byte)(unsafe.Pointer(&outData[0])), outCount)
-    defer C.vsc_buffer_delete(outBuf)
+    outBuf, outBufErr := bufferNewBuffer(int(this.ExportedPrivateKeyLen(privateKey.(IPrivateKey)) /* lg2 */))
+    if outBufErr != nil {
+        return nil, outBufErr
+    }
+    defer outBuf.clear()
 
 
-    proxyResult := /*pr4*/C.vscf_key_provider_export_private_key(this.cCtx, (*C.vscf_impl_t)(privateKey.ctx()), outBuf)
+    proxyResult := /*pr4*/C.vscf_key_provider_export_private_key(this.cCtx, (*C.vscf_impl_t)(privateKey.ctx()), outBuf.ctx)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
         return nil, err
     }
 
-    return outData[0:C.vsc_buffer_len(outBuf)] /* r7 */, nil
+    return outBuf.getData() /* r7 */, nil
 }

@@ -4,7 +4,7 @@ package foundation
 // #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lmbedcrypto -led25519 -lprotobuf-nanopb -lvsc_common -lvsc_foundation -lvsc_foundation_pb
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
-import unsafe "unsafe"
+
 
 /*
 * Implements key serialization in the ASN.1 format (DER / PEM):
@@ -99,7 +99,7 @@ func newKeyAsn1SerializerCopy (ctx *C.vscf_key_asn1_serializer_t /*ct10*/) *KeyA
 }
 
 /// Release underlying C context.
-func (this KeyAsn1Serializer) close () {
+func (this KeyAsn1Serializer) clear () {
     C.vscf_key_asn1_serializer_delete(this.cCtx)
 }
 
@@ -120,23 +120,21 @@ func (this KeyAsn1Serializer) SerializedPublicKeyLen (publicKey *RawPublicKey) u
 * Precondition: public key must be exportable.
 */
 func (this KeyAsn1Serializer) SerializePublicKey (publicKey *RawPublicKey) ([]byte, error) {
-    outCount := C.ulong(this.SerializedPublicKeyLen(publicKey) /* lg2 */)
-    outMemory := make([]byte, int(C.vsc_buffer_ctx_size() + outCount))
-    outBuf := (*C.vsc_buffer_t)(unsafe.Pointer(&outMemory[0]))
-    outData := outMemory[int(C.vsc_buffer_ctx_size()):]
-    C.vsc_buffer_init(outBuf)
-    C.vsc_buffer_use(outBuf, (*C.byte)(unsafe.Pointer(&outData[0])), outCount)
-    defer C.vsc_buffer_delete(outBuf)
+    outBuf, outBufErr := bufferNewBuffer(int(this.SerializedPublicKeyLen(publicKey) /* lg2 */))
+    if outBufErr != nil {
+        return nil, outBufErr
+    }
+    defer outBuf.clear()
 
 
-    proxyResult := /*pr4*/C.vscf_key_asn1_serializer_serialize_public_key(this.cCtx, (*C.vscf_raw_public_key_t)(publicKey.ctx()), outBuf)
+    proxyResult := /*pr4*/C.vscf_key_asn1_serializer_serialize_public_key(this.cCtx, (*C.vscf_raw_public_key_t)(publicKey.ctx()), outBuf.ctx)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
         return nil, err
     }
 
-    return outData[0:C.vsc_buffer_len(outBuf)] /* r7 */, nil
+    return outBuf.getData() /* r7 */, nil
 }
 
 /*
@@ -156,21 +154,19 @@ func (this KeyAsn1Serializer) SerializedPrivateKeyLen (privateKey *RawPrivateKey
 * Precondition: private key must be exportable.
 */
 func (this KeyAsn1Serializer) SerializePrivateKey (privateKey *RawPrivateKey) ([]byte, error) {
-    outCount := C.ulong(this.SerializedPrivateKeyLen(privateKey) /* lg2 */)
-    outMemory := make([]byte, int(C.vsc_buffer_ctx_size() + outCount))
-    outBuf := (*C.vsc_buffer_t)(unsafe.Pointer(&outMemory[0]))
-    outData := outMemory[int(C.vsc_buffer_ctx_size()):]
-    C.vsc_buffer_init(outBuf)
-    C.vsc_buffer_use(outBuf, (*C.byte)(unsafe.Pointer(&outData[0])), outCount)
-    defer C.vsc_buffer_delete(outBuf)
+    outBuf, outBufErr := bufferNewBuffer(int(this.SerializedPrivateKeyLen(privateKey) /* lg2 */))
+    if outBufErr != nil {
+        return nil, outBufErr
+    }
+    defer outBuf.clear()
 
 
-    proxyResult := /*pr4*/C.vscf_key_asn1_serializer_serialize_private_key(this.cCtx, (*C.vscf_raw_private_key_t)(privateKey.ctx()), outBuf)
+    proxyResult := /*pr4*/C.vscf_key_asn1_serializer_serialize_private_key(this.cCtx, (*C.vscf_raw_private_key_t)(privateKey.ctx()), outBuf.ctx)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
         return nil, err
     }
 
-    return outData[0:C.vsc_buffer_len(outBuf)] /* r7 */, nil
+    return outBuf.getData() /* r7 */, nil
 }

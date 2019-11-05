@@ -111,9 +111,6 @@ func TestEcc_ExportPrivateKey(t *testing.T) {
     importedEccPrivateKey, err := ecc.ImportPrivateKey(rawPrivateKey)
     assert.Nil(t, err)
 
-    _, ok := importedEccPrivateKey.(EccPrivateKey)
-    assert.True(t, ok)
-
     rawPrivateKey2, err := ecc.ExportPrivateKey(importedEccPrivateKey)
     assert.Nil(t, err)
     assert.NotNil(t, rawPrivateKey2)
@@ -140,13 +137,10 @@ func TestEcc_ExportPublicKey(t *testing.T) {
     exportedEccKeyData := rawPublicKey.Data()
     assert.NotNil(t, exportedEccKeyData)
 
-    importeccPublicKey, err := ecc.ImportPublicKey(rawPublicKey)
+    importedEccPublicKey, err := ecc.ImportPublicKey(rawPublicKey)
     assert.Nil(t, err)
 
-    _, ok := importeccPublicKey.(EccPublicKey)
-    assert.True(t, ok)
-
-    rawPublicKey2, err := ecc.ExportPublicKey(importeccPublicKey)
+    rawPublicKey2, err := ecc.ExportPublicKey(importedEccPublicKey)
     assert.Nil(t, err)
     assert.NotNil(t, rawPublicKey2)
 

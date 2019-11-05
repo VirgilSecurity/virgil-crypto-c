@@ -5,6 +5,7 @@ package foundation
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
 
+
 /*
 * Handle information about recipient that is defined by a Public Key.
 */
@@ -43,7 +44,7 @@ func newKeyRecipientInfoCopy (ctx *C.vscf_key_recipient_info_t /*ct2*/) *KeyReci
 }
 
 /// Release underlying C context.
-func (this KeyRecipientInfo) close () {
+func (this KeyRecipientInfo) clear () {
     C.vscf_key_recipient_info_delete(this.cCtx)
 }
 
@@ -51,8 +52,8 @@ func (this KeyRecipientInfo) close () {
 * Create object and define all properties.
 */
 func NewKeyRecipientInfoWithData (recipientId []byte, keyEncryptionAlgorithm IAlgInfo, encryptedKey []byte) *KeyRecipientInfo {
-    recipientIdData := C.vsc_data((*C.uint8_t)(&recipientId[0]), C.size_t(len(recipientId)))
-    encryptedKeyData := C.vsc_data((*C.uint8_t)(&encryptedKey[0]), C.size_t(len(encryptedKey)))
+    recipientIdData := helperWrapData (recipientId)
+    encryptedKeyData := helperWrapData (encryptedKey)
 
     proxyResult := /*pr4*/C.vscf_key_recipient_info_new_with_data(recipientIdData, (*C.vscf_impl_t)(keyEncryptionAlgorithm.ctx()), encryptedKeyData)
 
@@ -67,7 +68,7 @@ func NewKeyRecipientInfoWithData (recipientId []byte, keyEncryptionAlgorithm IAl
 func (this KeyRecipientInfo) RecipientId () []byte {
     proxyResult := /*pr4*/C.vscf_key_recipient_info_recipient_id(this.cCtx)
 
-    return helperDataToBytes(proxyResult) /* r1 */
+    return helperExtractData(proxyResult) /* r1 */
 }
 
 /*
@@ -86,5 +87,5 @@ func (this KeyRecipientInfo) KeyEncryptionAlgorithm () (IAlgInfo, error) {
 func (this KeyRecipientInfo) EncryptedKey () []byte {
     proxyResult := /*pr4*/C.vscf_key_recipient_info_encrypted_key(this.cCtx)
 
-    return helperDataToBytes(proxyResult) /* r1 */
+    return helperExtractData(proxyResult) /* r1 */
 }

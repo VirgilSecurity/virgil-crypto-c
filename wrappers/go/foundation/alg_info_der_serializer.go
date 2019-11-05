@@ -4,7 +4,7 @@ package foundation
 // #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lmbedcrypto -led25519 -lprotobuf-nanopb -lvsc_common -lvsc_foundation -lvsc_foundation_pb
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
-import unsafe "unsafe"
+
 
 /*
 * Provide DER serializer of algorithm information.
@@ -70,7 +70,7 @@ func newAlgInfoDerSerializerCopy (ctx *C.vscf_alg_info_der_serializer_t /*ct10*/
 }
 
 /// Release underlying C context.
-func (this AlgInfoDerSerializer) close () {
+func (this AlgInfoDerSerializer) clear () {
     C.vscf_alg_info_der_serializer_delete(this.cCtx)
 }
 
@@ -87,16 +87,14 @@ func (this AlgInfoDerSerializer) SerializedLen (algInfo IAlgInfo) uint32 {
 * Serialize algorithm info to buffer class.
 */
 func (this AlgInfoDerSerializer) Serialize (algInfo IAlgInfo) []byte {
-    outCount := C.ulong(this.SerializedLen(algInfo.(IAlgInfo)) /* lg2 */)
-    outMemory := make([]byte, int(C.vsc_buffer_ctx_size() + outCount))
-    outBuf := (*C.vsc_buffer_t)(unsafe.Pointer(&outMemory[0]))
-    outData := outMemory[int(C.vsc_buffer_ctx_size()):]
-    C.vsc_buffer_init(outBuf)
-    C.vsc_buffer_use(outBuf, (*C.byte)(unsafe.Pointer(&outData[0])), outCount)
-    defer C.vsc_buffer_delete(outBuf)
+    outBuf, outBufErr := bufferNewBuffer(int(this.SerializedLen(algInfo.(IAlgInfo)) /* lg2 */))
+    if outBufErr != nil {
+        return nil
+    }
+    defer outBuf.clear()
 
 
-    C.vscf_alg_info_der_serializer_serialize(this.cCtx, (*C.vscf_impl_t)(algInfo.ctx()), outBuf)
+    C.vscf_alg_info_der_serializer_serialize(this.cCtx, (*C.vscf_impl_t)(algInfo.ctx()), outBuf.ctx)
 
-    return outData[0:C.vsc_buffer_len(outBuf)] /* r7 */
+    return outBuf.getData() /* r7 */
 }

@@ -6,6 +6,7 @@ package foundation
 import "C"
 import "fmt"
 
+
 /*
 * Defines the library status codes.
 */
@@ -387,6 +388,7 @@ func FoundationErrorHandleStatus (status C.vscf_status_t) error {
     }
     return nil
 }
+
 type wrapError struct {
     err error
     msg string

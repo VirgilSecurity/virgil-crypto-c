@@ -5,6 +5,7 @@ package foundation
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
 
+
 /*
 * Handles a list of "key recipient info" class objects.
 */
@@ -43,7 +44,7 @@ func newKeyRecipientInfoListCopy (ctx *C.vscf_key_recipient_info_list_t /*ct2*/)
 }
 
 /// Release underlying C context.
-func (this KeyRecipientInfoList) close () {
+func (this KeyRecipientInfoList) clear () {
     C.vscf_key_recipient_info_list_delete(this.cCtx)
 }
 

@@ -4,7 +4,7 @@ package foundation
 // #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lmbedcrypto -led25519 -lprotobuf-nanopb -lvsc_common -lvsc_foundation -lvsc_foundation_pb
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
-import unsafe "unsafe"
+
 
 /*
 * RSA implementation.
@@ -85,7 +85,7 @@ func newRsaCopy (ctx *C.vscf_rsa_t /*ct10*/) *Rsa {
 }
 
 /// Release underlying C context.
-func (this Rsa) close () {
+func (this Rsa) clear () {
     C.vscf_rsa_delete(this.cCtx)
 }
 
@@ -124,28 +124,28 @@ func (this Rsa) RestoreAlgInfo (algInfo IAlgInfo) error {
 /*
 * Defines whether a public key can be imported or not.
 */
-func RsaGetCanImportPublicKey () bool {
+func (this Rsa) GetCanImportPublicKey () bool {
     return true
 }
 
 /*
 * Define whether a public key can be exported or not.
 */
-func RsaGetCanExportPublicKey () bool {
+func (this Rsa) GetCanExportPublicKey () bool {
     return true
 }
 
 /*
 * Define whether a private key can be imported or not.
 */
-func RsaGetCanImportPrivateKey () bool {
+func (this Rsa) GetCanImportPrivateKey () bool {
     return true
 }
 
 /*
 * Define whether a private key can be exported or not.
 */
-func RsaGetCanExportPrivateKey () bool {
+func (this Rsa) GetCanExportPrivateKey () bool {
     return true
 }
 
@@ -279,23 +279,21 @@ func (this Rsa) EncryptedLen (publicKey IPublicKey, dataLen uint32) uint32 {
 * Encrypt data with a given public key.
 */
 func (this Rsa) Encrypt (publicKey IPublicKey, data []byte) ([]byte, error) {
-    outCount := C.ulong(this.EncryptedLen(publicKey.(IPublicKey), uint32(len(data))) /* lg2 */)
-    outMemory := make([]byte, int(C.vsc_buffer_ctx_size() + outCount))
-    outBuf := (*C.vsc_buffer_t)(unsafe.Pointer(&outMemory[0]))
-    outData := outMemory[int(C.vsc_buffer_ctx_size()):]
-    C.vsc_buffer_init(outBuf)
-    C.vsc_buffer_use(outBuf, (*C.byte)(unsafe.Pointer(&outData[0])), outCount)
-    defer C.vsc_buffer_delete(outBuf)
-    dataData := C.vsc_data((*C.uint8_t)(&data[0]), C.size_t(len(data)))
+    outBuf, outBufErr := bufferNewBuffer(int(this.EncryptedLen(publicKey.(IPublicKey), uint32(len(data))) /* lg2 */))
+    if outBufErr != nil {
+        return nil, outBufErr
+    }
+    defer outBuf.clear()
+    dataData := helperWrapData (data)
 
-    proxyResult := /*pr4*/C.vscf_rsa_encrypt(this.cCtx, (*C.vscf_impl_t)(publicKey.ctx()), dataData, outBuf)
+    proxyResult := /*pr4*/C.vscf_rsa_encrypt(this.cCtx, (*C.vscf_impl_t)(publicKey.ctx()), dataData, outBuf.ctx)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
         return nil, err
     }
 
-    return outData[0:C.vsc_buffer_len(outBuf)] /* r7 */, nil
+    return outBuf.getData() /* r7 */, nil
 }
 
 /*
@@ -321,23 +319,21 @@ func (this Rsa) DecryptedLen (privateKey IPrivateKey, dataLen uint32) uint32 {
 * Decrypt given data.
 */
 func (this Rsa) Decrypt (privateKey IPrivateKey, data []byte) ([]byte, error) {
-    outCount := C.ulong(this.DecryptedLen(privateKey.(IPrivateKey), uint32(len(data))) /* lg2 */)
-    outMemory := make([]byte, int(C.vsc_buffer_ctx_size() + outCount))
-    outBuf := (*C.vsc_buffer_t)(unsafe.Pointer(&outMemory[0]))
-    outData := outMemory[int(C.vsc_buffer_ctx_size()):]
-    C.vsc_buffer_init(outBuf)
-    C.vsc_buffer_use(outBuf, (*C.byte)(unsafe.Pointer(&outData[0])), outCount)
-    defer C.vsc_buffer_delete(outBuf)
-    dataData := C.vsc_data((*C.uint8_t)(&data[0]), C.size_t(len(data)))
+    outBuf, outBufErr := bufferNewBuffer(int(this.DecryptedLen(privateKey.(IPrivateKey), uint32(len(data))) /* lg2 */))
+    if outBufErr != nil {
+        return nil, outBufErr
+    }
+    defer outBuf.clear()
+    dataData := helperWrapData (data)
 
-    proxyResult := /*pr4*/C.vscf_rsa_decrypt(this.cCtx, (*C.vscf_impl_t)(privateKey.ctx()), dataData, outBuf)
+    proxyResult := /*pr4*/C.vscf_rsa_decrypt(this.cCtx, (*C.vscf_impl_t)(privateKey.ctx()), dataData, outBuf.ctx)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
         return nil, err
     }
 
-    return outData[0:C.vsc_buffer_len(outBuf)] /* r7 */, nil
+    return outBuf.getData() /* r7 */, nil
 }
 
 /*
@@ -363,23 +359,21 @@ func (this Rsa) SignatureLen (key IKey) uint32 {
 * Sign data digest with a given private key.
 */
 func (this Rsa) SignHash (privateKey IPrivateKey, hashId AlgId, digest []byte) ([]byte, error) {
-    signatureCount := C.ulong(this.SignatureLen(privateKey.(IKey)) /* lg2 */)
-    signatureMemory := make([]byte, int(C.vsc_buffer_ctx_size() + signatureCount))
-    signatureBuf := (*C.vsc_buffer_t)(unsafe.Pointer(&signatureMemory[0]))
-    signatureData := signatureMemory[int(C.vsc_buffer_ctx_size()):]
-    C.vsc_buffer_init(signatureBuf)
-    C.vsc_buffer_use(signatureBuf, (*C.byte)(unsafe.Pointer(&signatureData[0])), signatureCount)
-    defer C.vsc_buffer_delete(signatureBuf)
-    digestData := C.vsc_data((*C.uint8_t)(&digest[0]), C.size_t(len(digest)))
+    signatureBuf, signatureBufErr := bufferNewBuffer(int(this.SignatureLen(privateKey.(IKey)) /* lg2 */))
+    if signatureBufErr != nil {
+        return nil, signatureBufErr
+    }
+    defer signatureBuf.clear()
+    digestData := helperWrapData (digest)
 
-    proxyResult := /*pr4*/C.vscf_rsa_sign_hash(this.cCtx, (*C.vscf_impl_t)(privateKey.ctx()), C.vscf_alg_id_t(hashId) /*pa7*/, digestData, signatureBuf)
+    proxyResult := /*pr4*/C.vscf_rsa_sign_hash(this.cCtx, (*C.vscf_impl_t)(privateKey.ctx()), C.vscf_alg_id_t(hashId) /*pa7*/, digestData, signatureBuf.ctx)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
         return nil, err
     }
 
-    return signatureData[0:C.vsc_buffer_len(signatureBuf)] /* r7 */, nil
+    return signatureBuf.getData() /* r7 */, nil
 }
 
 /*
@@ -395,8 +389,8 @@ func (this Rsa) CanVerify (publicKey IPublicKey) bool {
 * Verify data digest with a given public key and signature.
 */
 func (this Rsa) VerifyHash (publicKey IPublicKey, hashId AlgId, digest []byte, signature []byte) bool {
-    digestData := C.vsc_data((*C.uint8_t)(&digest[0]), C.size_t(len(digest)))
-    signatureData := C.vsc_data((*C.uint8_t)(&signature[0]), C.size_t(len(signature)))
+    digestData := helperWrapData (digest)
+    signatureData := helperWrapData (signature)
 
     proxyResult := /*pr4*/C.vscf_rsa_verify_hash(this.cCtx, (*C.vscf_impl_t)(publicKey.ctx()), C.vscf_alg_id_t(hashId) /*pa7*/, digestData, signatureData)
 

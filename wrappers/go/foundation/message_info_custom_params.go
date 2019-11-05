@@ -5,6 +5,7 @@ package foundation
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
 
+
 type MessageInfoCustomParams struct {
     cCtx *C.vscf_message_info_custom_params_t /*ct2*/
 }
@@ -40,7 +41,7 @@ func newMessageInfoCustomParamsCopy (ctx *C.vscf_message_info_custom_params_t /*
 }
 
 /// Release underlying C context.
-func (this MessageInfoCustomParams) close () {
+func (this MessageInfoCustomParams) clear () {
     C.vscf_message_info_custom_params_delete(this.cCtx)
 }
 
@@ -60,7 +61,7 @@ func MessageInfoCustomParamsGetOfDataType () uint32 {
 * Add custom parameter with integer value.
 */
 func (this MessageInfoCustomParams) AddInt (key []byte, value int32) {
-    keyData := C.vsc_data((*C.uint8_t)(&key[0]), C.size_t(len(key)))
+    keyData := helperWrapData (key)
 
     C.vscf_message_info_custom_params_add_int(this.cCtx, keyData, (C.int32_t)(value)/*pa10*/)
 
@@ -71,8 +72,8 @@ func (this MessageInfoCustomParams) AddInt (key []byte, value int32) {
 * Add custom parameter with UTF8 string value.
 */
 func (this MessageInfoCustomParams) AddString (key []byte, value []byte) {
-    keyData := C.vsc_data((*C.uint8_t)(&key[0]), C.size_t(len(key)))
-    valueData := C.vsc_data((*C.uint8_t)(&value[0]), C.size_t(len(value)))
+    keyData := helperWrapData (key)
+    valueData := helperWrapData (value)
 
     C.vscf_message_info_custom_params_add_string(this.cCtx, keyData, valueData)
 
@@ -83,8 +84,8 @@ func (this MessageInfoCustomParams) AddString (key []byte, value []byte) {
 * Add custom parameter with octet string value.
 */
 func (this MessageInfoCustomParams) AddData (key []byte, value []byte) {
-    keyData := C.vsc_data((*C.uint8_t)(&key[0]), C.size_t(len(key)))
-    valueData := C.vsc_data((*C.uint8_t)(&value[0]), C.size_t(len(value)))
+    keyData := helperWrapData (key)
+    valueData := helperWrapData (value)
 
     C.vscf_message_info_custom_params_add_data(this.cCtx, keyData, valueData)
 
@@ -106,7 +107,7 @@ func (this MessageInfoCustomParams) Clear () {
 func (this MessageInfoCustomParams) FindInt (key []byte) (int32, error) {
     var error C.vscf_error_t
     C.vscf_error_reset(&error)
-    keyData := C.vsc_data((*C.uint8_t)(&key[0]), C.size_t(len(key)))
+    keyData := helperWrapData (key)
 
     proxyResult := /*pr4*/C.vscf_message_info_custom_params_find_int(this.cCtx, keyData, &error)
 
@@ -124,7 +125,7 @@ func (this MessageInfoCustomParams) FindInt (key []byte) (int32, error) {
 func (this MessageInfoCustomParams) FindString (key []byte) ([]byte, error) {
     var error C.vscf_error_t
     C.vscf_error_reset(&error)
-    keyData := C.vsc_data((*C.uint8_t)(&key[0]), C.size_t(len(key)))
+    keyData := helperWrapData (key)
 
     proxyResult := /*pr4*/C.vscf_message_info_custom_params_find_string(this.cCtx, keyData, &error)
 
@@ -133,7 +134,7 @@ func (this MessageInfoCustomParams) FindString (key []byte) ([]byte, error) {
         return nil, err
     }
 
-    return helperDataToBytes(proxyResult) /* r1 */, nil
+    return helperExtractData(proxyResult) /* r1 */, nil
 }
 
 /*
@@ -142,7 +143,7 @@ func (this MessageInfoCustomParams) FindString (key []byte) ([]byte, error) {
 func (this MessageInfoCustomParams) FindData (key []byte) ([]byte, error) {
     var error C.vscf_error_t
     C.vscf_error_reset(&error)
-    keyData := C.vsc_data((*C.uint8_t)(&key[0]), C.size_t(len(key)))
+    keyData := helperWrapData (key)
 
     proxyResult := /*pr4*/C.vscf_message_info_custom_params_find_data(this.cCtx, keyData, &error)
 
@@ -151,7 +152,7 @@ func (this MessageInfoCustomParams) FindData (key []byte) ([]byte, error) {
         return nil, err
     }
 
-    return helperDataToBytes(proxyResult) /* r1 */, nil
+    return helperExtractData(proxyResult) /* r1 */, nil
 }
 
 /*
