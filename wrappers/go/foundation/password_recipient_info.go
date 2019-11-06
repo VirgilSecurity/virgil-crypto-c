@@ -14,8 +14,8 @@ type PasswordRecipientInfo struct {
 }
 
 /* Handle underlying C context. */
-func (this PasswordRecipientInfo) ctx () *C.vscf_impl_t {
-    return (*C.vscf_impl_t)(this.cCtx)
+func (obj *PasswordRecipientInfo) ctx () *C.vscf_impl_t {
+    return (*C.vscf_impl_t)(obj.cCtx)
 }
 
 func NewPasswordRecipientInfo () *PasswordRecipientInfo {
@@ -44,8 +44,8 @@ func newPasswordRecipientInfoCopy (ctx *C.vscf_password_recipient_info_t /*ct2*/
 }
 
 /// Release underlying C context.
-func (this PasswordRecipientInfo) clear () {
-    C.vscf_password_recipient_info_delete(this.cCtx)
+func (obj *PasswordRecipientInfo) clear () {
+    C.vscf_password_recipient_info_delete(obj.cCtx)
 }
 
 /*
@@ -67,8 +67,8 @@ func NewPasswordRecipientInfoWithMembers (keyEncryptionAlgorithm IAlgInfo, encry
 * Return algorithm information that was used for encryption
 * a data encryption key.
 */
-func (this PasswordRecipientInfo) KeyEncryptionAlgorithm () (IAlgInfo, error) {
-    proxyResult := /*pr4*/C.vscf_password_recipient_info_key_encryption_algorithm(this.cCtx)
+func (obj *PasswordRecipientInfo) KeyEncryptionAlgorithm () (IAlgInfo, error) {
+    proxyResult := /*pr4*/C.vscf_password_recipient_info_key_encryption_algorithm(obj.cCtx)
 
     return FoundationImplementationWrapIAlgInfo(proxyResult) /* r4 */
 }
@@ -76,8 +76,8 @@ func (this PasswordRecipientInfo) KeyEncryptionAlgorithm () (IAlgInfo, error) {
 /*
 * Return an encrypted data encryption key.
 */
-func (this PasswordRecipientInfo) EncryptedKey () []byte {
-    proxyResult := /*pr4*/C.vscf_password_recipient_info_encrypted_key(this.cCtx)
+func (obj *PasswordRecipientInfo) EncryptedKey () []byte {
+    proxyResult := /*pr4*/C.vscf_password_recipient_info_encrypted_key(obj.cCtx)
 
     return helperExtractData(proxyResult) /* r1 */
 }

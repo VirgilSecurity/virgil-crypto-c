@@ -16,8 +16,8 @@ type Sha384 struct {
 }
 
 /* Handle underlying C context. */
-func (this Sha384) ctx () *C.vscf_impl_t {
-    return (*C.vscf_impl_t)(this.cCtx)
+func (obj *Sha384) ctx () *C.vscf_impl_t {
+    return (*C.vscf_impl_t)(obj.cCtx)
 }
 
 func NewSha384 () *Sha384 {
@@ -46,15 +46,15 @@ func newSha384Copy (ctx *C.vscf_sha384_t /*ct10*/) *Sha384 {
 }
 
 /// Release underlying C context.
-func (this Sha384) clear () {
-    C.vscf_sha384_delete(this.cCtx)
+func (obj *Sha384) clear () {
+    C.vscf_sha384_delete(obj.cCtx)
 }
 
 /*
 * Provide algorithm identificator.
 */
-func (this Sha384) AlgId () AlgId {
-    proxyResult := /*pr4*/C.vscf_sha384_alg_id(this.cCtx)
+func (obj *Sha384) AlgId () AlgId {
+    proxyResult := /*pr4*/C.vscf_sha384_alg_id(obj.cCtx)
 
     return AlgId(proxyResult) /* r8 */
 }
@@ -62,8 +62,8 @@ func (this Sha384) AlgId () AlgId {
 /*
 * Produce object with algorithm information and configuration parameters.
 */
-func (this Sha384) ProduceAlgInfo () (IAlgInfo, error) {
-    proxyResult := /*pr4*/C.vscf_sha384_produce_alg_info(this.cCtx)
+func (obj *Sha384) ProduceAlgInfo () (IAlgInfo, error) {
+    proxyResult := /*pr4*/C.vscf_sha384_produce_alg_info(obj.cCtx)
 
     return FoundationImplementationWrapIAlgInfo(proxyResult) /* r4 */
 }
@@ -71,8 +71,8 @@ func (this Sha384) ProduceAlgInfo () (IAlgInfo, error) {
 /*
 * Restore algorithm configuration from the given object.
 */
-func (this Sha384) RestoreAlgInfo (algInfo IAlgInfo) error {
-    proxyResult := /*pr4*/C.vscf_sha384_restore_alg_info(this.cCtx, (*C.vscf_impl_t)(algInfo.ctx()))
+func (obj *Sha384) RestoreAlgInfo (algInfo IAlgInfo) error {
+    proxyResult := /*pr4*/C.vscf_sha384_restore_alg_info(obj.cCtx, (*C.vscf_impl_t)(algInfo.ctx()))
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
@@ -85,22 +85,22 @@ func (this Sha384) RestoreAlgInfo (algInfo IAlgInfo) error {
 /*
 * Length of the digest (hashing output) in bytes.
 */
-func (this Sha384) GetDigestLen () uint32 {
+func (obj *Sha384) GetDigestLen () uint32 {
     return 48
 }
 
 /*
 * Block length of the digest function in bytes.
 */
-func (this Sha384) GetBlockLen () uint32 {
+func (obj *Sha384) GetBlockLen () uint32 {
     return 128
 }
 
 /*
 * Calculate hash over given data.
 */
-func (this Sha384) Hash (data []byte) []byte {
-    digestBuf, digestBufErr := bufferNewBuffer(int(this.GetDigestLen() /* lg3 */))
+func (obj *Sha384) Hash (data []byte) []byte {
+    digestBuf, digestBufErr := bufferNewBuffer(int(obj.GetDigestLen() /* lg3 */))
     if digestBufErr != nil {
         return nil
     }
@@ -115,8 +115,8 @@ func (this Sha384) Hash (data []byte) []byte {
 /*
 * Start a new hashing.
 */
-func (this Sha384) Start () {
-    C.vscf_sha384_start(this.cCtx)
+func (obj *Sha384) Start () {
+    C.vscf_sha384_start(obj.cCtx)
 
     return
 }
@@ -124,10 +124,10 @@ func (this Sha384) Start () {
 /*
 * Add given data to the hash.
 */
-func (this Sha384) Update (data []byte) {
+func (obj *Sha384) Update (data []byte) {
     dataData := helperWrapData (data)
 
-    C.vscf_sha384_update(this.cCtx, dataData)
+    C.vscf_sha384_update(obj.cCtx, dataData)
 
     return
 }
@@ -135,15 +135,15 @@ func (this Sha384) Update (data []byte) {
 /*
 * Accompilsh hashing and return it's result (a message digest).
 */
-func (this Sha384) Finish () []byte {
-    digestBuf, digestBufErr := bufferNewBuffer(int(this.GetDigestLen() /* lg3 */))
+func (obj *Sha384) Finish () []byte {
+    digestBuf, digestBufErr := bufferNewBuffer(int(obj.GetDigestLen() /* lg3 */))
     if digestBufErr != nil {
         return nil
     }
     defer digestBuf.clear()
 
 
-    C.vscf_sha384_finish(this.cCtx, digestBuf.ctx)
+    C.vscf_sha384_finish(obj.cCtx, digestBuf.ctx)
 
     return digestBuf.getData() /* r7 */
 }

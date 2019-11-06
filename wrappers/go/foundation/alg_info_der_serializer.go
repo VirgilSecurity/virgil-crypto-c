@@ -14,16 +14,16 @@ type AlgInfoDerSerializer struct {
     cCtx *C.vscf_alg_info_der_serializer_t /*ct10*/
 }
 
-func (this AlgInfoDerSerializer) SetAsn1Writer (asn1Writer IAsn1Writer) {
-    C.vscf_alg_info_der_serializer_release_asn1_writer(this.cCtx)
-    C.vscf_alg_info_der_serializer_use_asn1_writer(this.cCtx, (*C.vscf_impl_t)(asn1Writer.ctx()))
+func (obj *AlgInfoDerSerializer) SetAsn1Writer (asn1Writer IAsn1Writer) {
+    C.vscf_alg_info_der_serializer_release_asn1_writer(obj.cCtx)
+    C.vscf_alg_info_der_serializer_use_asn1_writer(obj.cCtx, (*C.vscf_impl_t)(asn1Writer.ctx()))
 }
 
 /*
 * Setup predefined values to the uninitialized class dependencies.
 */
-func (this AlgInfoDerSerializer) SetupDefaults () {
-    C.vscf_alg_info_der_serializer_setup_defaults(this.cCtx)
+func (obj *AlgInfoDerSerializer) SetupDefaults () {
+    C.vscf_alg_info_der_serializer_setup_defaults(obj.cCtx)
 
     return
 }
@@ -33,15 +33,15 @@ func (this AlgInfoDerSerializer) SetupDefaults () {
 * Note, that caller code is responsible to reset ASN.1 writer with
 * an output buffer.
 */
-func (this AlgInfoDerSerializer) SerializeInplace (algInfo IAlgInfo) uint32 {
-    proxyResult := /*pr4*/C.vscf_alg_info_der_serializer_serialize_inplace(this.cCtx, (*C.vscf_impl_t)(algInfo.ctx()))
+func (obj *AlgInfoDerSerializer) SerializeInplace (algInfo IAlgInfo) uint32 {
+    proxyResult := /*pr4*/C.vscf_alg_info_der_serializer_serialize_inplace(obj.cCtx, (*C.vscf_impl_t)(algInfo.ctx()))
 
     return uint32(proxyResult) /* r9 */
 }
 
 /* Handle underlying C context. */
-func (this AlgInfoDerSerializer) ctx () *C.vscf_impl_t {
-    return (*C.vscf_impl_t)(this.cCtx)
+func (obj *AlgInfoDerSerializer) ctx () *C.vscf_impl_t {
+    return (*C.vscf_impl_t)(obj.cCtx)
 }
 
 func NewAlgInfoDerSerializer () *AlgInfoDerSerializer {
@@ -70,15 +70,15 @@ func newAlgInfoDerSerializerCopy (ctx *C.vscf_alg_info_der_serializer_t /*ct10*/
 }
 
 /// Release underlying C context.
-func (this AlgInfoDerSerializer) clear () {
-    C.vscf_alg_info_der_serializer_delete(this.cCtx)
+func (obj *AlgInfoDerSerializer) clear () {
+    C.vscf_alg_info_der_serializer_delete(obj.cCtx)
 }
 
 /*
 * Return buffer size enough to hold serialized algorithm.
 */
-func (this AlgInfoDerSerializer) SerializedLen (algInfo IAlgInfo) uint32 {
-    proxyResult := /*pr4*/C.vscf_alg_info_der_serializer_serialized_len(this.cCtx, (*C.vscf_impl_t)(algInfo.ctx()))
+func (obj *AlgInfoDerSerializer) SerializedLen (algInfo IAlgInfo) uint32 {
+    proxyResult := /*pr4*/C.vscf_alg_info_der_serializer_serialized_len(obj.cCtx, (*C.vscf_impl_t)(algInfo.ctx()))
 
     return uint32(proxyResult) /* r9 */
 }
@@ -86,15 +86,15 @@ func (this AlgInfoDerSerializer) SerializedLen (algInfo IAlgInfo) uint32 {
 /*
 * Serialize algorithm info to buffer class.
 */
-func (this AlgInfoDerSerializer) Serialize (algInfo IAlgInfo) []byte {
-    outBuf, outBufErr := bufferNewBuffer(int(this.SerializedLen(algInfo.(IAlgInfo)) /* lg2 */))
+func (obj *AlgInfoDerSerializer) Serialize (algInfo IAlgInfo) []byte {
+    outBuf, outBufErr := bufferNewBuffer(int(obj.SerializedLen(algInfo.(IAlgInfo)) /* lg2 */))
     if outBufErr != nil {
         return nil
     }
     defer outBuf.clear()
 
 
-    C.vscf_alg_info_der_serializer_serialize(this.cCtx, (*C.vscf_impl_t)(algInfo.ctx()), outBuf.ctx)
+    C.vscf_alg_info_der_serializer_serialize(obj.cCtx, (*C.vscf_impl_t)(algInfo.ctx()), outBuf.ctx)
 
     return outBuf.getData() /* r7 */
 }

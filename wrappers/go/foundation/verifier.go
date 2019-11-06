@@ -15,8 +15,8 @@ type Verifier struct {
 }
 
 /* Handle underlying C context. */
-func (this Verifier) ctx () *C.vscf_impl_t {
-    return (*C.vscf_impl_t)(this.cCtx)
+func (obj *Verifier) ctx () *C.vscf_impl_t {
+    return (*C.vscf_impl_t)(obj.cCtx)
 }
 
 func NewVerifier () *Verifier {
@@ -45,17 +45,17 @@ func newVerifierCopy (ctx *C.vscf_verifier_t /*ct2*/) *Verifier {
 }
 
 /// Release underlying C context.
-func (this Verifier) clear () {
-    C.vscf_verifier_delete(this.cCtx)
+func (obj *Verifier) clear () {
+    C.vscf_verifier_delete(obj.cCtx)
 }
 
 /*
 * Start verifying a signature.
 */
-func (this Verifier) Reset (signature []byte) error {
+func (obj *Verifier) Reset (signature []byte) error {
     signatureData := helperWrapData (signature)
 
-    proxyResult := /*pr4*/C.vscf_verifier_reset(this.cCtx, signatureData)
+    proxyResult := /*pr4*/C.vscf_verifier_reset(obj.cCtx, signatureData)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
@@ -68,10 +68,10 @@ func (this Verifier) Reset (signature []byte) error {
 /*
 * Add given data to the signed data.
 */
-func (this Verifier) AppendData (data []byte) {
+func (obj *Verifier) AppendData (data []byte) {
     dataData := helperWrapData (data)
 
-    C.vscf_verifier_append_data(this.cCtx, dataData)
+    C.vscf_verifier_append_data(obj.cCtx, dataData)
 
     return
 }
@@ -79,8 +79,8 @@ func (this Verifier) AppendData (data []byte) {
 /*
 * Verify accumulated data.
 */
-func (this Verifier) Verify (publicKey IPublicKey) bool {
-    proxyResult := /*pr4*/C.vscf_verifier_verify(this.cCtx, (*C.vscf_impl_t)(publicKey.ctx()))
+func (obj *Verifier) Verify (publicKey IPublicKey) bool {
+    proxyResult := /*pr4*/C.vscf_verifier_verify(obj.cCtx, (*C.vscf_impl_t)(publicKey.ctx()))
 
     return bool(proxyResult) /* r9 */
 }

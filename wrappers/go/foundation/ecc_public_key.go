@@ -16,8 +16,8 @@ type EccPublicKey struct {
 }
 
 /* Handle underlying C context. */
-func (this EccPublicKey) ctx () *C.vscf_impl_t {
-    return (*C.vscf_impl_t)(this.cCtx)
+func (obj *EccPublicKey) ctx () *C.vscf_impl_t {
+    return (*C.vscf_impl_t)(obj.cCtx)
 }
 
 func NewEccPublicKey () *EccPublicKey {
@@ -46,15 +46,15 @@ func newEccPublicKeyCopy (ctx *C.vscf_ecc_public_key_t /*ct10*/) *EccPublicKey {
 }
 
 /// Release underlying C context.
-func (this EccPublicKey) clear () {
-    C.vscf_ecc_public_key_delete(this.cCtx)
+func (obj *EccPublicKey) clear () {
+    C.vscf_ecc_public_key_delete(obj.cCtx)
 }
 
 /*
 * Algorithm identifier the key belongs to.
 */
-func (this EccPublicKey) AlgId () AlgId {
-    proxyResult := /*pr4*/C.vscf_ecc_public_key_alg_id(this.cCtx)
+func (obj *EccPublicKey) AlgId () AlgId {
+    proxyResult := /*pr4*/C.vscf_ecc_public_key_alg_id(obj.cCtx)
 
     return AlgId(proxyResult) /* r8 */
 }
@@ -62,8 +62,8 @@ func (this EccPublicKey) AlgId () AlgId {
 /*
 * Return algorithm information that can be used for serialization.
 */
-func (this EccPublicKey) AlgInfo () (IAlgInfo, error) {
-    proxyResult := /*pr4*/C.vscf_ecc_public_key_alg_info(this.cCtx)
+func (obj *EccPublicKey) AlgInfo () (IAlgInfo, error) {
+    proxyResult := /*pr4*/C.vscf_ecc_public_key_alg_info(obj.cCtx)
 
     return FoundationImplementationWrapIAlgInfo(proxyResult) /* r4 */
 }
@@ -71,8 +71,8 @@ func (this EccPublicKey) AlgInfo () (IAlgInfo, error) {
 /*
 * Length of the key in bytes.
 */
-func (this EccPublicKey) Len () uint32 {
-    proxyResult := /*pr4*/C.vscf_ecc_public_key_len(this.cCtx)
+func (obj *EccPublicKey) Len () uint32 {
+    proxyResult := /*pr4*/C.vscf_ecc_public_key_len(obj.cCtx)
 
     return uint32(proxyResult) /* r9 */
 }
@@ -80,8 +80,8 @@ func (this EccPublicKey) Len () uint32 {
 /*
 * Length of the key in bits.
 */
-func (this EccPublicKey) Bitlen () uint32 {
-    proxyResult := /*pr4*/C.vscf_ecc_public_key_bitlen(this.cCtx)
+func (obj *EccPublicKey) Bitlen () uint32 {
+    proxyResult := /*pr4*/C.vscf_ecc_public_key_bitlen(obj.cCtx)
 
     return uint32(proxyResult) /* r9 */
 }
@@ -90,8 +90,8 @@ func (this EccPublicKey) Bitlen () uint32 {
 * Check that key is valid.
 * Note, this operation can be slow.
 */
-func (this EccPublicKey) IsValid () bool {
-    proxyResult := /*pr4*/C.vscf_ecc_public_key_is_valid(this.cCtx)
+func (obj *EccPublicKey) IsValid () bool {
+    proxyResult := /*pr4*/C.vscf_ecc_public_key_is_valid(obj.cCtx)
 
     return bool(proxyResult) /* r9 */
 }

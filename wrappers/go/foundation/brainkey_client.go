@@ -11,8 +11,8 @@ type BrainkeyClient struct {
 }
 
 /* Handle underlying C context. */
-func (this BrainkeyClient) ctx () *C.vscf_impl_t {
-    return (*C.vscf_impl_t)(this.cCtx)
+func (obj *BrainkeyClient) ctx () *C.vscf_impl_t {
+    return (*C.vscf_impl_t)(obj.cCtx)
 }
 
 func NewBrainkeyClient () *BrainkeyClient {
@@ -41,8 +41,8 @@ func newBrainkeyClientCopy (ctx *C.vscf_brainkey_client_t /*ct2*/) *BrainkeyClie
 }
 
 /// Release underlying C context.
-func (this BrainkeyClient) clear () {
-    C.vscf_brainkey_client_delete(this.cCtx)
+func (obj *BrainkeyClient) clear () {
+    C.vscf_brainkey_client_delete(obj.cCtx)
 }
 
 func BrainkeyClientGetPointLen () uint32 {
@@ -68,21 +68,21 @@ func BrainkeyClientGetMaxKeyNameLen () uint32 {
 /*
 * Random used for key generation, proofs, etc.
 */
-func (this BrainkeyClient) SetRandom (random IRandom) {
-    C.vscf_brainkey_client_release_random(this.cCtx)
-    C.vscf_brainkey_client_use_random(this.cCtx, (*C.vscf_impl_t)(random.ctx()))
+func (obj *BrainkeyClient) SetRandom (random IRandom) {
+    C.vscf_brainkey_client_release_random(obj.cCtx)
+    C.vscf_brainkey_client_use_random(obj.cCtx, (*C.vscf_impl_t)(random.ctx()))
 }
 
 /*
 * Random used for crypto operations to make them const-time
 */
-func (this BrainkeyClient) SetOperationRandom (operationRandom IRandom) {
-    C.vscf_brainkey_client_release_operation_random(this.cCtx)
-    C.vscf_brainkey_client_use_operation_random(this.cCtx, (*C.vscf_impl_t)(operationRandom.ctx()))
+func (obj *BrainkeyClient) SetOperationRandom (operationRandom IRandom) {
+    C.vscf_brainkey_client_release_operation_random(obj.cCtx)
+    C.vscf_brainkey_client_use_operation_random(obj.cCtx, (*C.vscf_impl_t)(operationRandom.ctx()))
 }
 
-func (this BrainkeyClient) SetupDefaults () error {
-    proxyResult := /*pr4*/C.vscf_brainkey_client_setup_defaults(this.cCtx)
+func (obj *BrainkeyClient) SetupDefaults () error {
+    proxyResult := /*pr4*/C.vscf_brainkey_client_setup_defaults(obj.cCtx)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
@@ -92,7 +92,7 @@ func (this BrainkeyClient) SetupDefaults () error {
     return nil
 }
 
-func (this BrainkeyClient) Blind (password []byte) ([]byte, []byte, error) {
+func (obj *BrainkeyClient) Blind (password []byte) ([]byte, []byte, error) {
     deblindFactorBuf, deblindFactorBufErr := bufferNewBuffer(int(BrainkeyClientGetMpiLen() /* lg4 */))
     if deblindFactorBufErr != nil {
         return nil, nil, deblindFactorBufErr
@@ -106,7 +106,7 @@ func (this BrainkeyClient) Blind (password []byte) ([]byte, []byte, error) {
     defer blindedPointBuf.clear()
     passwordData := helperWrapData (password)
 
-    proxyResult := /*pr4*/C.vscf_brainkey_client_blind(this.cCtx, passwordData, deblindFactorBuf.ctx, blindedPointBuf.ctx)
+    proxyResult := /*pr4*/C.vscf_brainkey_client_blind(obj.cCtx, passwordData, deblindFactorBuf.ctx, blindedPointBuf.ctx)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
@@ -116,7 +116,7 @@ func (this BrainkeyClient) Blind (password []byte) ([]byte, []byte, error) {
     return deblindFactorBuf.getData() /* r7 */, blindedPointBuf.getData() /* r7 */, nil
 }
 
-func (this BrainkeyClient) Deblind (password []byte, hardenedPoint []byte, deblindFactor []byte, keyName []byte) ([]byte, error) {
+func (obj *BrainkeyClient) Deblind (password []byte, hardenedPoint []byte, deblindFactor []byte, keyName []byte) ([]byte, error) {
     seedBuf, seedBufErr := bufferNewBuffer(int(BrainkeyClientGetPointLen() /* lg4 */))
     if seedBufErr != nil {
         return nil, seedBufErr
@@ -127,7 +127,7 @@ func (this BrainkeyClient) Deblind (password []byte, hardenedPoint []byte, debli
     deblindFactorData := helperWrapData (deblindFactor)
     keyNameData := helperWrapData (keyName)
 
-    proxyResult := /*pr4*/C.vscf_brainkey_client_deblind(this.cCtx, passwordData, hardenedPointData, deblindFactorData, keyNameData, seedBuf.ctx)
+    proxyResult := /*pr4*/C.vscf_brainkey_client_deblind(obj.cCtx, passwordData, hardenedPointData, deblindFactorData, keyNameData, seedBuf.ctx)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {

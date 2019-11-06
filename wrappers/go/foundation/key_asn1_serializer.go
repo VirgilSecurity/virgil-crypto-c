@@ -16,16 +16,16 @@ type KeyAsn1Serializer struct {
     cCtx *C.vscf_key_asn1_serializer_t /*ct10*/
 }
 
-func (this KeyAsn1Serializer) SetAsn1Writer (asn1Writer IAsn1Writer) {
-    C.vscf_key_asn1_serializer_release_asn1_writer(this.cCtx)
-    C.vscf_key_asn1_serializer_use_asn1_writer(this.cCtx, (*C.vscf_impl_t)(asn1Writer.ctx()))
+func (obj *KeyAsn1Serializer) SetAsn1Writer (asn1Writer IAsn1Writer) {
+    C.vscf_key_asn1_serializer_release_asn1_writer(obj.cCtx)
+    C.vscf_key_asn1_serializer_use_asn1_writer(obj.cCtx, (*C.vscf_impl_t)(asn1Writer.ctx()))
 }
 
 /*
 * Setup predefined values to the uninitialized class dependencies.
 */
-func (this KeyAsn1Serializer) SetupDefaults () {
-    C.vscf_key_asn1_serializer_setup_defaults(this.cCtx)
+func (obj *KeyAsn1Serializer) SetupDefaults () {
+    C.vscf_key_asn1_serializer_setup_defaults(obj.cCtx)
 
     return
 }
@@ -35,11 +35,11 @@ func (this KeyAsn1Serializer) SetupDefaults () {
 * Note, that caller code is responsible to reset ASN.1 writer with
 * an output buffer.
 */
-func (this KeyAsn1Serializer) SerializePublicKeyInplace (publicKey *RawPublicKey) (uint32, error) {
+func (obj *KeyAsn1Serializer) SerializePublicKeyInplace (publicKey *RawPublicKey) (uint32, error) {
     var error C.vscf_error_t
     C.vscf_error_reset(&error)
 
-    proxyResult := /*pr4*/C.vscf_key_asn1_serializer_serialize_public_key_inplace(this.cCtx, (*C.vscf_raw_public_key_t)(publicKey.ctx()), &error)
+    proxyResult := /*pr4*/C.vscf_key_asn1_serializer_serialize_public_key_inplace(obj.cCtx, (*C.vscf_raw_public_key_t)(publicKey.ctx()), &error)
 
     err := FoundationErrorHandleStatus(error.status)
     if err != nil {
@@ -54,11 +54,11 @@ func (this KeyAsn1Serializer) SerializePublicKeyInplace (publicKey *RawPublicKey
 * Note, that caller code is responsible to reset ASN.1 writer with
 * an output buffer.
 */
-func (this KeyAsn1Serializer) SerializePrivateKeyInplace (privateKey *RawPrivateKey) (uint32, error) {
+func (obj *KeyAsn1Serializer) SerializePrivateKeyInplace (privateKey *RawPrivateKey) (uint32, error) {
     var error C.vscf_error_t
     C.vscf_error_reset(&error)
 
-    proxyResult := /*pr4*/C.vscf_key_asn1_serializer_serialize_private_key_inplace(this.cCtx, (*C.vscf_raw_private_key_t)(privateKey.ctx()), &error)
+    proxyResult := /*pr4*/C.vscf_key_asn1_serializer_serialize_private_key_inplace(obj.cCtx, (*C.vscf_raw_private_key_t)(privateKey.ctx()), &error)
 
     err := FoundationErrorHandleStatus(error.status)
     if err != nil {
@@ -69,8 +69,8 @@ func (this KeyAsn1Serializer) SerializePrivateKeyInplace (privateKey *RawPrivate
 }
 
 /* Handle underlying C context. */
-func (this KeyAsn1Serializer) ctx () *C.vscf_impl_t {
-    return (*C.vscf_impl_t)(this.cCtx)
+func (obj *KeyAsn1Serializer) ctx () *C.vscf_impl_t {
+    return (*C.vscf_impl_t)(obj.cCtx)
 }
 
 func NewKeyAsn1Serializer () *KeyAsn1Serializer {
@@ -99,8 +99,8 @@ func newKeyAsn1SerializerCopy (ctx *C.vscf_key_asn1_serializer_t /*ct10*/) *KeyA
 }
 
 /// Release underlying C context.
-func (this KeyAsn1Serializer) clear () {
-    C.vscf_key_asn1_serializer_delete(this.cCtx)
+func (obj *KeyAsn1Serializer) clear () {
+    C.vscf_key_asn1_serializer_delete(obj.cCtx)
 }
 
 /*
@@ -108,8 +108,8 @@ func (this KeyAsn1Serializer) clear () {
 *
 * Precondition: public key must be exportable.
 */
-func (this KeyAsn1Serializer) SerializedPublicKeyLen (publicKey *RawPublicKey) uint32 {
-    proxyResult := /*pr4*/C.vscf_key_asn1_serializer_serialized_public_key_len(this.cCtx, (*C.vscf_raw_public_key_t)(publicKey.ctx()))
+func (obj *KeyAsn1Serializer) SerializedPublicKeyLen (publicKey *RawPublicKey) uint32 {
+    proxyResult := /*pr4*/C.vscf_key_asn1_serializer_serialized_public_key_len(obj.cCtx, (*C.vscf_raw_public_key_t)(publicKey.ctx()))
 
     return uint32(proxyResult) /* r9 */
 }
@@ -119,15 +119,15 @@ func (this KeyAsn1Serializer) SerializedPublicKeyLen (publicKey *RawPublicKey) u
 *
 * Precondition: public key must be exportable.
 */
-func (this KeyAsn1Serializer) SerializePublicKey (publicKey *RawPublicKey) ([]byte, error) {
-    outBuf, outBufErr := bufferNewBuffer(int(this.SerializedPublicKeyLen(publicKey) /* lg2 */))
+func (obj *KeyAsn1Serializer) SerializePublicKey (publicKey *RawPublicKey) ([]byte, error) {
+    outBuf, outBufErr := bufferNewBuffer(int(obj.SerializedPublicKeyLen(publicKey) /* lg2 */))
     if outBufErr != nil {
         return nil, outBufErr
     }
     defer outBuf.clear()
 
 
-    proxyResult := /*pr4*/C.vscf_key_asn1_serializer_serialize_public_key(this.cCtx, (*C.vscf_raw_public_key_t)(publicKey.ctx()), outBuf.ctx)
+    proxyResult := /*pr4*/C.vscf_key_asn1_serializer_serialize_public_key(obj.cCtx, (*C.vscf_raw_public_key_t)(publicKey.ctx()), outBuf.ctx)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
@@ -142,8 +142,8 @@ func (this KeyAsn1Serializer) SerializePublicKey (publicKey *RawPublicKey) ([]by
 *
 * Precondition: private key must be exportable.
 */
-func (this KeyAsn1Serializer) SerializedPrivateKeyLen (privateKey *RawPrivateKey) uint32 {
-    proxyResult := /*pr4*/C.vscf_key_asn1_serializer_serialized_private_key_len(this.cCtx, (*C.vscf_raw_private_key_t)(privateKey.ctx()))
+func (obj *KeyAsn1Serializer) SerializedPrivateKeyLen (privateKey *RawPrivateKey) uint32 {
+    proxyResult := /*pr4*/C.vscf_key_asn1_serializer_serialized_private_key_len(obj.cCtx, (*C.vscf_raw_private_key_t)(privateKey.ctx()))
 
     return uint32(proxyResult) /* r9 */
 }
@@ -153,15 +153,15 @@ func (this KeyAsn1Serializer) SerializedPrivateKeyLen (privateKey *RawPrivateKey
 *
 * Precondition: private key must be exportable.
 */
-func (this KeyAsn1Serializer) SerializePrivateKey (privateKey *RawPrivateKey) ([]byte, error) {
-    outBuf, outBufErr := bufferNewBuffer(int(this.SerializedPrivateKeyLen(privateKey) /* lg2 */))
+func (obj *KeyAsn1Serializer) SerializePrivateKey (privateKey *RawPrivateKey) ([]byte, error) {
+    outBuf, outBufErr := bufferNewBuffer(int(obj.SerializedPrivateKeyLen(privateKey) /* lg2 */))
     if outBufErr != nil {
         return nil, outBufErr
     }
     defer outBuf.clear()
 
 
-    proxyResult := /*pr4*/C.vscf_key_asn1_serializer_serialize_private_key(this.cCtx, (*C.vscf_raw_private_key_t)(privateKey.ctx()), outBuf.ctx)
+    proxyResult := /*pr4*/C.vscf_key_asn1_serializer_serialize_private_key(obj.cCtx, (*C.vscf_raw_private_key_t)(privateKey.ctx()), outBuf.ctx)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {

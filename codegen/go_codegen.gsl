@@ -416,7 +416,7 @@ function go_insert_func (go_instance, go_func)
     elsif is_true (my.go_func.is_static)
         go_insert_code("func $(my.go_instance.name:)$(my.go_func.name:) ($(my.method_args?:)) $(my.method_return?:) {")
     else
-        go_insert_code("func (this $(my.go_instance.name:)) $(my.go_func.name:) ($(my.method_args?:)) $(my.method_return?:) {")
+        go_insert_code("func (obj *$(my.go_instance.name:)) $(my.go_func.name:) ($(my.method_args?:)) $(my.method_return?:) {")
     endif
     go_insert_code (my.go_func->go_code., 1)
     go_insert_code("}")

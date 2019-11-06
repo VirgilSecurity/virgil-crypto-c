@@ -14,8 +14,8 @@ type KeyRecipientInfo struct {
 }
 
 /* Handle underlying C context. */
-func (this KeyRecipientInfo) ctx () *C.vscf_impl_t {
-    return (*C.vscf_impl_t)(this.cCtx)
+func (obj *KeyRecipientInfo) ctx () *C.vscf_impl_t {
+    return (*C.vscf_impl_t)(obj.cCtx)
 }
 
 func NewKeyRecipientInfo () *KeyRecipientInfo {
@@ -44,8 +44,8 @@ func newKeyRecipientInfoCopy (ctx *C.vscf_key_recipient_info_t /*ct2*/) *KeyReci
 }
 
 /// Release underlying C context.
-func (this KeyRecipientInfo) clear () {
-    C.vscf_key_recipient_info_delete(this.cCtx)
+func (obj *KeyRecipientInfo) clear () {
+    C.vscf_key_recipient_info_delete(obj.cCtx)
 }
 
 /*
@@ -65,8 +65,8 @@ func NewKeyRecipientInfoWithData (recipientId []byte, keyEncryptionAlgorithm IAl
 /*
 * Return recipient identifier.
 */
-func (this KeyRecipientInfo) RecipientId () []byte {
-    proxyResult := /*pr4*/C.vscf_key_recipient_info_recipient_id(this.cCtx)
+func (obj *KeyRecipientInfo) RecipientId () []byte {
+    proxyResult := /*pr4*/C.vscf_key_recipient_info_recipient_id(obj.cCtx)
 
     return helperExtractData(proxyResult) /* r1 */
 }
@@ -75,8 +75,8 @@ func (this KeyRecipientInfo) RecipientId () []byte {
 * Return algorithm information that was used for encryption
 * a data encryption key.
 */
-func (this KeyRecipientInfo) KeyEncryptionAlgorithm () (IAlgInfo, error) {
-    proxyResult := /*pr4*/C.vscf_key_recipient_info_key_encryption_algorithm(this.cCtx)
+func (obj *KeyRecipientInfo) KeyEncryptionAlgorithm () (IAlgInfo, error) {
+    proxyResult := /*pr4*/C.vscf_key_recipient_info_key_encryption_algorithm(obj.cCtx)
 
     return FoundationImplementationWrapIAlgInfo(proxyResult) /* r4 */
 }
@@ -84,8 +84,8 @@ func (this KeyRecipientInfo) KeyEncryptionAlgorithm () (IAlgInfo, error) {
 /*
 * Return an encrypted data encryption key.
 */
-func (this KeyRecipientInfo) EncryptedKey () []byte {
-    proxyResult := /*pr4*/C.vscf_key_recipient_info_encrypted_key(this.cCtx)
+func (obj *KeyRecipientInfo) EncryptedKey () []byte {
+    proxyResult := /*pr4*/C.vscf_key_recipient_info_encrypted_key(obj.cCtx)
 
     return helperExtractData(proxyResult) /* r1 */
 }

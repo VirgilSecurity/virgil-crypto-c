@@ -17,15 +17,15 @@ type HashBasedAlgInfo struct {
 /*
 * Return hash algorithm information.
 */
-func (this HashBasedAlgInfo) HashAlgInfo () (IAlgInfo, error) {
-    proxyResult := /*pr4*/C.vscf_hash_based_alg_info_hash_alg_info(this.cCtx)
+func (obj *HashBasedAlgInfo) HashAlgInfo () (IAlgInfo, error) {
+    proxyResult := /*pr4*/C.vscf_hash_based_alg_info_hash_alg_info(obj.cCtx)
 
     return FoundationImplementationWrapIAlgInfo(proxyResult) /* r4 */
 }
 
 /* Handle underlying C context. */
-func (this HashBasedAlgInfo) ctx () *C.vscf_impl_t {
-    return (*C.vscf_impl_t)(this.cCtx)
+func (obj *HashBasedAlgInfo) ctx () *C.vscf_impl_t {
+    return (*C.vscf_impl_t)(obj.cCtx)
 }
 
 func NewHashBasedAlgInfo () *HashBasedAlgInfo {
@@ -54,8 +54,8 @@ func newHashBasedAlgInfoCopy (ctx *C.vscf_hash_based_alg_info_t /*ct10*/) *HashB
 }
 
 /// Release underlying C context.
-func (this HashBasedAlgInfo) clear () {
-    C.vscf_hash_based_alg_info_delete(this.cCtx)
+func (obj *HashBasedAlgInfo) clear () {
+    C.vscf_hash_based_alg_info_delete(obj.cCtx)
 }
 
 /*
@@ -74,8 +74,8 @@ func NewHashBasedAlgInfoWithMembers (algId AlgId, hashAlgInfo IAlgInfo) *HashBas
 /*
 * Provide algorithm identificator.
 */
-func (this HashBasedAlgInfo) AlgId () AlgId {
-    proxyResult := /*pr4*/C.vscf_hash_based_alg_info_alg_id(this.cCtx)
+func (obj *HashBasedAlgInfo) AlgId () AlgId {
+    proxyResult := /*pr4*/C.vscf_hash_based_alg_info_alg_id(obj.cCtx)
 
     return AlgId(proxyResult) /* r8 */
 }

@@ -11,8 +11,8 @@ type MessageInfoCustomParams struct {
 }
 
 /* Handle underlying C context. */
-func (this MessageInfoCustomParams) ctx () *C.vscf_impl_t {
-    return (*C.vscf_impl_t)(this.cCtx)
+func (obj *MessageInfoCustomParams) ctx () *C.vscf_impl_t {
+    return (*C.vscf_impl_t)(obj.cCtx)
 }
 
 func NewMessageInfoCustomParams () *MessageInfoCustomParams {
@@ -41,8 +41,8 @@ func newMessageInfoCustomParamsCopy (ctx *C.vscf_message_info_custom_params_t /*
 }
 
 /// Release underlying C context.
-func (this MessageInfoCustomParams) clear () {
-    C.vscf_message_info_custom_params_delete(this.cCtx)
+func (obj *MessageInfoCustomParams) clear () {
+    C.vscf_message_info_custom_params_delete(obj.cCtx)
 }
 
 func MessageInfoCustomParamsGetOfIntType () uint32 {
@@ -60,10 +60,10 @@ func MessageInfoCustomParamsGetOfDataType () uint32 {
 /*
 * Add custom parameter with integer value.
 */
-func (this MessageInfoCustomParams) AddInt (key []byte, value int32) {
+func (obj *MessageInfoCustomParams) AddInt (key []byte, value int32) {
     keyData := helperWrapData (key)
 
-    C.vscf_message_info_custom_params_add_int(this.cCtx, keyData, (C.int32_t)(value)/*pa10*/)
+    C.vscf_message_info_custom_params_add_int(obj.cCtx, keyData, (C.int32_t)(value)/*pa10*/)
 
     return
 }
@@ -71,11 +71,11 @@ func (this MessageInfoCustomParams) AddInt (key []byte, value int32) {
 /*
 * Add custom parameter with UTF8 string value.
 */
-func (this MessageInfoCustomParams) AddString (key []byte, value []byte) {
+func (obj *MessageInfoCustomParams) AddString (key []byte, value []byte) {
     keyData := helperWrapData (key)
     valueData := helperWrapData (value)
 
-    C.vscf_message_info_custom_params_add_string(this.cCtx, keyData, valueData)
+    C.vscf_message_info_custom_params_add_string(obj.cCtx, keyData, valueData)
 
     return
 }
@@ -83,11 +83,11 @@ func (this MessageInfoCustomParams) AddString (key []byte, value []byte) {
 /*
 * Add custom parameter with octet string value.
 */
-func (this MessageInfoCustomParams) AddData (key []byte, value []byte) {
+func (obj *MessageInfoCustomParams) AddData (key []byte, value []byte) {
     keyData := helperWrapData (key)
     valueData := helperWrapData (value)
 
-    C.vscf_message_info_custom_params_add_data(this.cCtx, keyData, valueData)
+    C.vscf_message_info_custom_params_add_data(obj.cCtx, keyData, valueData)
 
     return
 }
@@ -95,8 +95,8 @@ func (this MessageInfoCustomParams) AddData (key []byte, value []byte) {
 /*
 * Remove all parameters.
 */
-func (this MessageInfoCustomParams) Clear () {
-    C.vscf_message_info_custom_params_clear(this.cCtx)
+func (obj *MessageInfoCustomParams) Clear () {
+    C.vscf_message_info_custom_params_clear(obj.cCtx)
 
     return
 }
@@ -104,12 +104,12 @@ func (this MessageInfoCustomParams) Clear () {
 /*
 * Return custom parameter with integer value.
 */
-func (this MessageInfoCustomParams) FindInt (key []byte) (int32, error) {
+func (obj *MessageInfoCustomParams) FindInt (key []byte) (int32, error) {
     var error C.vscf_error_t
     C.vscf_error_reset(&error)
     keyData := helperWrapData (key)
 
-    proxyResult := /*pr4*/C.vscf_message_info_custom_params_find_int(this.cCtx, keyData, &error)
+    proxyResult := /*pr4*/C.vscf_message_info_custom_params_find_int(obj.cCtx, keyData, &error)
 
     err := FoundationErrorHandleStatus(error.status)
     if err != nil {
@@ -122,12 +122,12 @@ func (this MessageInfoCustomParams) FindInt (key []byte) (int32, error) {
 /*
 * Return custom parameter with UTF8 string value.
 */
-func (this MessageInfoCustomParams) FindString (key []byte) ([]byte, error) {
+func (obj *MessageInfoCustomParams) FindString (key []byte) ([]byte, error) {
     var error C.vscf_error_t
     C.vscf_error_reset(&error)
     keyData := helperWrapData (key)
 
-    proxyResult := /*pr4*/C.vscf_message_info_custom_params_find_string(this.cCtx, keyData, &error)
+    proxyResult := /*pr4*/C.vscf_message_info_custom_params_find_string(obj.cCtx, keyData, &error)
 
     err := FoundationErrorHandleStatus(error.status)
     if err != nil {
@@ -140,12 +140,12 @@ func (this MessageInfoCustomParams) FindString (key []byte) ([]byte, error) {
 /*
 * Return custom parameter with octet string value.
 */
-func (this MessageInfoCustomParams) FindData (key []byte) ([]byte, error) {
+func (obj *MessageInfoCustomParams) FindData (key []byte) ([]byte, error) {
     var error C.vscf_error_t
     C.vscf_error_reset(&error)
     keyData := helperWrapData (key)
 
-    proxyResult := /*pr4*/C.vscf_message_info_custom_params_find_data(this.cCtx, keyData, &error)
+    proxyResult := /*pr4*/C.vscf_message_info_custom_params_find_data(obj.cCtx, keyData, &error)
 
     err := FoundationErrorHandleStatus(error.status)
     if err != nil {
@@ -158,8 +158,8 @@ func (this MessageInfoCustomParams) FindData (key []byte) ([]byte, error) {
 /*
 * Return true if at least one param exists.
 */
-func (this MessageInfoCustomParams) HasParams () bool {
-    proxyResult := /*pr4*/C.vscf_message_info_custom_params_has_params(this.cCtx)
+func (obj *MessageInfoCustomParams) HasParams () bool {
+    proxyResult := /*pr4*/C.vscf_message_info_custom_params_has_params(obj.cCtx)
 
     return bool(proxyResult) /* r9 */
 }

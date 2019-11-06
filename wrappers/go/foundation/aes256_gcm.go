@@ -25,8 +25,8 @@ type Aes256Gcm struct {
 }
 
 /* Handle underlying C context. */
-func (this Aes256Gcm) ctx () *C.vscf_impl_t {
-    return (*C.vscf_impl_t)(this.cCtx)
+func (obj *Aes256Gcm) ctx () *C.vscf_impl_t {
+    return (*C.vscf_impl_t)(obj.cCtx)
 }
 
 func NewAes256Gcm () *Aes256Gcm {
@@ -55,15 +55,15 @@ func newAes256GcmCopy (ctx *C.vscf_aes256_gcm_t /*ct10*/) *Aes256Gcm {
 }
 
 /// Release underlying C context.
-func (this Aes256Gcm) clear () {
-    C.vscf_aes256_gcm_delete(this.cCtx)
+func (obj *Aes256Gcm) clear () {
+    C.vscf_aes256_gcm_delete(obj.cCtx)
 }
 
 /*
 * Provide algorithm identificator.
 */
-func (this Aes256Gcm) AlgId () AlgId {
-    proxyResult := /*pr4*/C.vscf_aes256_gcm_alg_id(this.cCtx)
+func (obj *Aes256Gcm) AlgId () AlgId {
+    proxyResult := /*pr4*/C.vscf_aes256_gcm_alg_id(obj.cCtx)
 
     return AlgId(proxyResult) /* r8 */
 }
@@ -71,8 +71,8 @@ func (this Aes256Gcm) AlgId () AlgId {
 /*
 * Produce object with algorithm information and configuration parameters.
 */
-func (this Aes256Gcm) ProduceAlgInfo () (IAlgInfo, error) {
-    proxyResult := /*pr4*/C.vscf_aes256_gcm_produce_alg_info(this.cCtx)
+func (obj *Aes256Gcm) ProduceAlgInfo () (IAlgInfo, error) {
+    proxyResult := /*pr4*/C.vscf_aes256_gcm_produce_alg_info(obj.cCtx)
 
     return FoundationImplementationWrapIAlgInfo(proxyResult) /* r4 */
 }
@@ -80,8 +80,8 @@ func (this Aes256Gcm) ProduceAlgInfo () (IAlgInfo, error) {
 /*
 * Restore algorithm configuration from the given object.
 */
-func (this Aes256Gcm) RestoreAlgInfo (algInfo IAlgInfo) error {
-    proxyResult := /*pr4*/C.vscf_aes256_gcm_restore_alg_info(this.cCtx, (*C.vscf_impl_t)(algInfo.ctx()))
+func (obj *Aes256Gcm) RestoreAlgInfo (algInfo IAlgInfo) error {
+    proxyResult := /*pr4*/C.vscf_aes256_gcm_restore_alg_info(obj.cCtx, (*C.vscf_impl_t)(algInfo.ctx()))
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
@@ -94,15 +94,15 @@ func (this Aes256Gcm) RestoreAlgInfo (algInfo IAlgInfo) error {
 /*
 * Encrypt given data.
 */
-func (this Aes256Gcm) Encrypt (data []byte) ([]byte, error) {
-    outBuf, outBufErr := bufferNewBuffer(int(this.EncryptedLen(uint32(len(data))) /* lg2 */))
+func (obj *Aes256Gcm) Encrypt (data []byte) ([]byte, error) {
+    outBuf, outBufErr := bufferNewBuffer(int(obj.EncryptedLen(uint32(len(data))) /* lg2 */))
     if outBufErr != nil {
         return nil, outBufErr
     }
     defer outBuf.clear()
     dataData := helperWrapData (data)
 
-    proxyResult := /*pr4*/C.vscf_aes256_gcm_encrypt(this.cCtx, dataData, outBuf.ctx)
+    proxyResult := /*pr4*/C.vscf_aes256_gcm_encrypt(obj.cCtx, dataData, outBuf.ctx)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
@@ -115,8 +115,8 @@ func (this Aes256Gcm) Encrypt (data []byte) ([]byte, error) {
 /*
 * Calculate required buffer length to hold the encrypted data.
 */
-func (this Aes256Gcm) EncryptedLen (dataLen uint32) uint32 {
-    proxyResult := /*pr4*/C.vscf_aes256_gcm_encrypted_len(this.cCtx, (C.size_t)(dataLen)/*pa10*/)
+func (obj *Aes256Gcm) EncryptedLen (dataLen uint32) uint32 {
+    proxyResult := /*pr4*/C.vscf_aes256_gcm_encrypted_len(obj.cCtx, (C.size_t)(dataLen)/*pa10*/)
 
     return uint32(proxyResult) /* r9 */
 }
@@ -124,8 +124,8 @@ func (this Aes256Gcm) EncryptedLen (dataLen uint32) uint32 {
 /*
 * Precise length calculation of encrypted data.
 */
-func (this Aes256Gcm) PreciseEncryptedLen (dataLen uint32) uint32 {
-    proxyResult := /*pr4*/C.vscf_aes256_gcm_precise_encrypted_len(this.cCtx, (C.size_t)(dataLen)/*pa10*/)
+func (obj *Aes256Gcm) PreciseEncryptedLen (dataLen uint32) uint32 {
+    proxyResult := /*pr4*/C.vscf_aes256_gcm_precise_encrypted_len(obj.cCtx, (C.size_t)(dataLen)/*pa10*/)
 
     return uint32(proxyResult) /* r9 */
 }
@@ -133,15 +133,15 @@ func (this Aes256Gcm) PreciseEncryptedLen (dataLen uint32) uint32 {
 /*
 * Decrypt given data.
 */
-func (this Aes256Gcm) Decrypt (data []byte) ([]byte, error) {
-    outBuf, outBufErr := bufferNewBuffer(int(this.DecryptedLen(uint32(len(data))) /* lg2 */))
+func (obj *Aes256Gcm) Decrypt (data []byte) ([]byte, error) {
+    outBuf, outBufErr := bufferNewBuffer(int(obj.DecryptedLen(uint32(len(data))) /* lg2 */))
     if outBufErr != nil {
         return nil, outBufErr
     }
     defer outBuf.clear()
     dataData := helperWrapData (data)
 
-    proxyResult := /*pr4*/C.vscf_aes256_gcm_decrypt(this.cCtx, dataData, outBuf.ctx)
+    proxyResult := /*pr4*/C.vscf_aes256_gcm_decrypt(obj.cCtx, dataData, outBuf.ctx)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
@@ -154,8 +154,8 @@ func (this Aes256Gcm) Decrypt (data []byte) ([]byte, error) {
 /*
 * Calculate required buffer length to hold the decrypted data.
 */
-func (this Aes256Gcm) DecryptedLen (dataLen uint32) uint32 {
-    proxyResult := /*pr4*/C.vscf_aes256_gcm_decrypted_len(this.cCtx, (C.size_t)(dataLen)/*pa10*/)
+func (obj *Aes256Gcm) DecryptedLen (dataLen uint32) uint32 {
+    proxyResult := /*pr4*/C.vscf_aes256_gcm_decrypted_len(obj.cCtx, (C.size_t)(dataLen)/*pa10*/)
 
     return uint32(proxyResult) /* r9 */
 }
@@ -163,38 +163,38 @@ func (this Aes256Gcm) DecryptedLen (dataLen uint32) uint32 {
 /*
 * Cipher nfonce length or IV length in bytes, or 0 if nonce is not required.
 */
-func (this Aes256Gcm) GetNonceLen () uint32 {
+func (obj *Aes256Gcm) GetNonceLen () uint32 {
     return 12
 }
 
 /*
 * Cipher key length in bytes.
 */
-func (this Aes256Gcm) GetKeyLen () uint32 {
+func (obj *Aes256Gcm) GetKeyLen () uint32 {
     return 32
 }
 
 /*
 * Cipher key length in bits.
 */
-func (this Aes256Gcm) GetKeyBitlen () uint32 {
+func (obj *Aes256Gcm) GetKeyBitlen () uint32 {
     return 256
 }
 
 /*
 * Cipher block length in bytes.
 */
-func (this Aes256Gcm) GetBlockLen () uint32 {
+func (obj *Aes256Gcm) GetBlockLen () uint32 {
     return 16
 }
 
 /*
 * Setup IV or nonce.
 */
-func (this Aes256Gcm) SetNonce (nonce []byte) {
+func (obj *Aes256Gcm) SetNonce (nonce []byte) {
     nonceData := helperWrapData (nonce)
 
-    C.vscf_aes256_gcm_set_nonce(this.cCtx, nonceData)
+    C.vscf_aes256_gcm_set_nonce(obj.cCtx, nonceData)
 
     return
 }
@@ -202,10 +202,10 @@ func (this Aes256Gcm) SetNonce (nonce []byte) {
 /*
 * Set cipher encryption / decryption key.
 */
-func (this Aes256Gcm) SetKey (key []byte) {
+func (obj *Aes256Gcm) SetKey (key []byte) {
     keyData := helperWrapData (key)
 
-    C.vscf_aes256_gcm_set_key(this.cCtx, keyData)
+    C.vscf_aes256_gcm_set_key(obj.cCtx, keyData)
 
     return
 }
@@ -213,8 +213,8 @@ func (this Aes256Gcm) SetKey (key []byte) {
 /*
 * Start sequential encryption.
 */
-func (this Aes256Gcm) StartEncryption () {
-    C.vscf_aes256_gcm_start_encryption(this.cCtx)
+func (obj *Aes256Gcm) StartEncryption () {
+    C.vscf_aes256_gcm_start_encryption(obj.cCtx)
 
     return
 }
@@ -222,8 +222,8 @@ func (this Aes256Gcm) StartEncryption () {
 /*
 * Start sequential decryption.
 */
-func (this Aes256Gcm) StartDecryption () {
-    C.vscf_aes256_gcm_start_decryption(this.cCtx)
+func (obj *Aes256Gcm) StartDecryption () {
+    C.vscf_aes256_gcm_start_decryption(obj.cCtx)
 
     return
 }
@@ -231,15 +231,15 @@ func (this Aes256Gcm) StartDecryption () {
 /*
 * Process encryption or decryption of the given data chunk.
 */
-func (this Aes256Gcm) Update (data []byte) []byte {
-    outBuf, outBufErr := bufferNewBuffer(int(this.OutLen(uint32(len(data))) /* lg2 */))
+func (obj *Aes256Gcm) Update (data []byte) []byte {
+    outBuf, outBufErr := bufferNewBuffer(int(obj.OutLen(uint32(len(data))) /* lg2 */))
     if outBufErr != nil {
         return nil
     }
     defer outBuf.clear()
     dataData := helperWrapData (data)
 
-    C.vscf_aes256_gcm_update(this.cCtx, dataData, outBuf.ctx)
+    C.vscf_aes256_gcm_update(obj.cCtx, dataData, outBuf.ctx)
 
     return outBuf.getData() /* r7 */
 }
@@ -249,8 +249,8 @@ func (this Aes256Gcm) Update (data []byte) []byte {
 * "update" or "finish" in an current mode.
 * Pass zero length to define buffer length of the method "finish".
 */
-func (this Aes256Gcm) OutLen (dataLen uint32) uint32 {
-    proxyResult := /*pr4*/C.vscf_aes256_gcm_out_len(this.cCtx, (C.size_t)(dataLen)/*pa10*/)
+func (obj *Aes256Gcm) OutLen (dataLen uint32) uint32 {
+    proxyResult := /*pr4*/C.vscf_aes256_gcm_out_len(obj.cCtx, (C.size_t)(dataLen)/*pa10*/)
 
     return uint32(proxyResult) /* r9 */
 }
@@ -260,8 +260,8 @@ func (this Aes256Gcm) OutLen (dataLen uint32) uint32 {
 * "update" or "finish" in an encryption mode.
 * Pass zero length to define buffer length of the method "finish".
 */
-func (this Aes256Gcm) EncryptedOutLen (dataLen uint32) uint32 {
-    proxyResult := /*pr4*/C.vscf_aes256_gcm_encrypted_out_len(this.cCtx, (C.size_t)(dataLen)/*pa10*/)
+func (obj *Aes256Gcm) EncryptedOutLen (dataLen uint32) uint32 {
+    proxyResult := /*pr4*/C.vscf_aes256_gcm_encrypted_out_len(obj.cCtx, (C.size_t)(dataLen)/*pa10*/)
 
     return uint32(proxyResult) /* r9 */
 }
@@ -271,8 +271,8 @@ func (this Aes256Gcm) EncryptedOutLen (dataLen uint32) uint32 {
 * "update" or "finish" in an decryption mode.
 * Pass zero length to define buffer length of the method "finish".
 */
-func (this Aes256Gcm) DecryptedOutLen (dataLen uint32) uint32 {
-    proxyResult := /*pr4*/C.vscf_aes256_gcm_decrypted_out_len(this.cCtx, (C.size_t)(dataLen)/*pa10*/)
+func (obj *Aes256Gcm) DecryptedOutLen (dataLen uint32) uint32 {
+    proxyResult := /*pr4*/C.vscf_aes256_gcm_decrypted_out_len(obj.cCtx, (C.size_t)(dataLen)/*pa10*/)
 
     return uint32(proxyResult) /* r9 */
 }
@@ -280,15 +280,15 @@ func (this Aes256Gcm) DecryptedOutLen (dataLen uint32) uint32 {
 /*
 * Accomplish encryption or decryption process.
 */
-func (this Aes256Gcm) Finish () ([]byte, error) {
-    outBuf, outBufErr := bufferNewBuffer(int(this.OutLen(0) /* lg2 */))
+func (obj *Aes256Gcm) Finish () ([]byte, error) {
+    outBuf, outBufErr := bufferNewBuffer(int(obj.OutLen(0) /* lg2 */))
     if outBufErr != nil {
         return nil, outBufErr
     }
     defer outBuf.clear()
 
 
-    proxyResult := /*pr4*/C.vscf_aes256_gcm_finish(this.cCtx, outBuf.ctx)
+    proxyResult := /*pr4*/C.vscf_aes256_gcm_finish(obj.cCtx, outBuf.ctx)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
@@ -301,7 +301,7 @@ func (this Aes256Gcm) Finish () ([]byte, error) {
 /*
 * Defines authentication tag length in bytes.
 */
-func (this Aes256Gcm) GetAuthTagLen () uint32 {
+func (obj *Aes256Gcm) GetAuthTagLen () uint32 {
     return 16
 }
 
@@ -309,14 +309,14 @@ func (this Aes256Gcm) GetAuthTagLen () uint32 {
 * Encrypt given data.
 * If 'tag' is not given, then it will written to the 'enc'.
 */
-func (this Aes256Gcm) AuthEncrypt (data []byte, authData []byte) ([]byte, []byte, error) {
-    outBuf, outBufErr := bufferNewBuffer(int(this.AuthEncryptedLen(uint32(len(data))) /* lg2 */))
+func (obj *Aes256Gcm) AuthEncrypt (data []byte, authData []byte) ([]byte, []byte, error) {
+    outBuf, outBufErr := bufferNewBuffer(int(obj.AuthEncryptedLen(uint32(len(data))) /* lg2 */))
     if outBufErr != nil {
         return nil, nil, outBufErr
     }
     defer outBuf.clear()
 
-    tagBuf, tagBufErr := bufferNewBuffer(int(this.GetAuthTagLen() /* lg3 */))
+    tagBuf, tagBufErr := bufferNewBuffer(int(obj.GetAuthTagLen() /* lg3 */))
     if tagBufErr != nil {
         return nil, nil, tagBufErr
     }
@@ -324,7 +324,7 @@ func (this Aes256Gcm) AuthEncrypt (data []byte, authData []byte) ([]byte, []byte
     dataData := helperWrapData (data)
     authDataData := helperWrapData (authData)
 
-    proxyResult := /*pr4*/C.vscf_aes256_gcm_auth_encrypt(this.cCtx, dataData, authDataData, outBuf.ctx, tagBuf.ctx)
+    proxyResult := /*pr4*/C.vscf_aes256_gcm_auth_encrypt(obj.cCtx, dataData, authDataData, outBuf.ctx, tagBuf.ctx)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
@@ -337,8 +337,8 @@ func (this Aes256Gcm) AuthEncrypt (data []byte, authData []byte) ([]byte, []byte
 /*
 * Calculate required buffer length to hold the authenticated encrypted data.
 */
-func (this Aes256Gcm) AuthEncryptedLen (dataLen uint32) uint32 {
-    proxyResult := /*pr4*/C.vscf_aes256_gcm_auth_encrypted_len(this.cCtx, (C.size_t)(dataLen)/*pa10*/)
+func (obj *Aes256Gcm) AuthEncryptedLen (dataLen uint32) uint32 {
+    proxyResult := /*pr4*/C.vscf_aes256_gcm_auth_encrypted_len(obj.cCtx, (C.size_t)(dataLen)/*pa10*/)
 
     return uint32(proxyResult) /* r9 */
 }
@@ -347,8 +347,8 @@ func (this Aes256Gcm) AuthEncryptedLen (dataLen uint32) uint32 {
 * Decrypt given data.
 * If 'tag' is not given, then it will be taken from the 'enc'.
 */
-func (this Aes256Gcm) AuthDecrypt (data []byte, authData []byte, tag []byte) ([]byte, error) {
-    outBuf, outBufErr := bufferNewBuffer(int(this.AuthDecryptedLen(uint32(len(data))) /* lg2 */))
+func (obj *Aes256Gcm) AuthDecrypt (data []byte, authData []byte, tag []byte) ([]byte, error) {
+    outBuf, outBufErr := bufferNewBuffer(int(obj.AuthDecryptedLen(uint32(len(data))) /* lg2 */))
     if outBufErr != nil {
         return nil, outBufErr
     }
@@ -357,7 +357,7 @@ func (this Aes256Gcm) AuthDecrypt (data []byte, authData []byte, tag []byte) ([]
     authDataData := helperWrapData (authData)
     tagData := helperWrapData (tag)
 
-    proxyResult := /*pr4*/C.vscf_aes256_gcm_auth_decrypt(this.cCtx, dataData, authDataData, tagData, outBuf.ctx)
+    proxyResult := /*pr4*/C.vscf_aes256_gcm_auth_decrypt(obj.cCtx, dataData, authDataData, tagData, outBuf.ctx)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
@@ -370,8 +370,8 @@ func (this Aes256Gcm) AuthDecrypt (data []byte, authData []byte, tag []byte) ([]
 /*
 * Calculate required buffer length to hold the authenticated decrypted data.
 */
-func (this Aes256Gcm) AuthDecryptedLen (dataLen uint32) uint32 {
-    proxyResult := /*pr4*/C.vscf_aes256_gcm_auth_decrypted_len(this.cCtx, (C.size_t)(dataLen)/*pa10*/)
+func (obj *Aes256Gcm) AuthDecryptedLen (dataLen uint32) uint32 {
+    proxyResult := /*pr4*/C.vscf_aes256_gcm_auth_decrypted_len(obj.cCtx, (C.size_t)(dataLen)/*pa10*/)
 
     return uint32(proxyResult) /* r9 */
 }
@@ -379,10 +379,10 @@ func (this Aes256Gcm) AuthDecryptedLen (dataLen uint32) uint32 {
 /*
 * Set additional data for for AEAD ciphers.
 */
-func (this Aes256Gcm) SetAuthData (authData []byte) {
+func (obj *Aes256Gcm) SetAuthData (authData []byte) {
     authDataData := helperWrapData (authData)
 
-    C.vscf_aes256_gcm_set_auth_data(this.cCtx, authDataData)
+    C.vscf_aes256_gcm_set_auth_data(obj.cCtx, authDataData)
 
     return
 }
@@ -393,21 +393,21 @@ func (this Aes256Gcm) SetAuthData (authData []byte) {
 * Note, if authentication tag should be added to an encrypted data,
 * method "finish" can be used.
 */
-func (this Aes256Gcm) FinishAuthEncryption () ([]byte, []byte, error) {
-    outBuf, outBufErr := bufferNewBuffer(int(this.OutLen(0) /* lg2 */))
+func (obj *Aes256Gcm) FinishAuthEncryption () ([]byte, []byte, error) {
+    outBuf, outBufErr := bufferNewBuffer(int(obj.OutLen(0) /* lg2 */))
     if outBufErr != nil {
         return nil, nil, outBufErr
     }
     defer outBuf.clear()
 
-    tagBuf, tagBufErr := bufferNewBuffer(int(this.GetAuthTagLen() /* lg3 */))
+    tagBuf, tagBufErr := bufferNewBuffer(int(obj.GetAuthTagLen() /* lg3 */))
     if tagBufErr != nil {
         return nil, nil, tagBufErr
     }
     defer tagBuf.clear()
 
 
-    proxyResult := /*pr4*/C.vscf_aes256_gcm_finish_auth_encryption(this.cCtx, outBuf.ctx, tagBuf.ctx)
+    proxyResult := /*pr4*/C.vscf_aes256_gcm_finish_auth_encryption(obj.cCtx, outBuf.ctx, tagBuf.ctx)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
@@ -423,15 +423,15 @@ func (this Aes256Gcm) FinishAuthEncryption () ([]byte, []byte, error) {
 * Note, if authentication tag is a part of an encrypted data then,
 * method "finish" can be used for simplicity.
 */
-func (this Aes256Gcm) FinishAuthDecryption (tag []byte) ([]byte, error) {
-    outBuf, outBufErr := bufferNewBuffer(int(this.OutLen(0) /* lg2 */))
+func (obj *Aes256Gcm) FinishAuthDecryption (tag []byte) ([]byte, error) {
+    outBuf, outBufErr := bufferNewBuffer(int(obj.OutLen(0) /* lg2 */))
     if outBufErr != nil {
         return nil, outBufErr
     }
     defer outBuf.clear()
     tagData := helperWrapData (tag)
 
-    proxyResult := /*pr4*/C.vscf_aes256_gcm_finish_auth_decryption(this.cCtx, tagData, outBuf.ctx)
+    proxyResult := /*pr4*/C.vscf_aes256_gcm_finish_auth_decryption(obj.cCtx, tagData, outBuf.ctx)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {

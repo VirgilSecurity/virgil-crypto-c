@@ -258,8 +258,8 @@ const (
     FOUNDATION_ERROR_ERROR_PLAIN_TEXT_TOO_LONG int = -707
 )
 
-func (this FoundationError) Error () string {
-    return fmt.Sprintf("FoundationError{code: %v message: %s}", this.Code, this.Message)
+func (obj *FoundationError) Error () string {
+    return fmt.Sprintf("FoundationError{code: %v message: %s}", obj.Code, obj.Message)
 }
 
 /* Check given C status, and if it's not "success" then raise correspond error. */
@@ -394,10 +394,10 @@ type wrapError struct {
     msg string
 }
 
-func (this wrapError) Error () string {
-    return fmt.Sprintf("%s: %v", this.msg, this.err)
+func (obj *wrapError) Error () string {
+    return fmt.Sprintf("%s: %v", obj.msg, obj.err)
 }
 
-func (this wrapError) Unwrap () error {
-    return this.err
+func (obj *wrapError) Unwrap () error {
+    return obj.err
 }

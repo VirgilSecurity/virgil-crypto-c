@@ -18,15 +18,15 @@ type RawPublicKey struct {
 /*
 * Return key data.
 */
-func (this RawPublicKey) Data () []byte {
-    proxyResult := /*pr4*/C.vscf_raw_public_key_data(this.cCtx)
+func (obj *RawPublicKey) Data () []byte {
+    proxyResult := /*pr4*/C.vscf_raw_public_key_data(obj.cCtx)
 
     return helperExtractData(proxyResult) /* r1 */
 }
 
 /* Handle underlying C context. */
-func (this RawPublicKey) ctx () *C.vscf_impl_t {
-    return (*C.vscf_impl_t)(this.cCtx)
+func (obj *RawPublicKey) ctx () *C.vscf_impl_t {
+    return (*C.vscf_impl_t)(obj.cCtx)
 }
 
 func NewRawPublicKey () *RawPublicKey {
@@ -55,15 +55,15 @@ func newRawPublicKeyCopy (ctx *C.vscf_raw_public_key_t /*ct10*/) *RawPublicKey {
 }
 
 /// Release underlying C context.
-func (this RawPublicKey) clear () {
-    C.vscf_raw_public_key_delete(this.cCtx)
+func (obj *RawPublicKey) clear () {
+    C.vscf_raw_public_key_delete(obj.cCtx)
 }
 
 /*
 * Algorithm identifier the key belongs to.
 */
-func (this RawPublicKey) AlgId () AlgId {
-    proxyResult := /*pr4*/C.vscf_raw_public_key_alg_id(this.cCtx)
+func (obj *RawPublicKey) AlgId () AlgId {
+    proxyResult := /*pr4*/C.vscf_raw_public_key_alg_id(obj.cCtx)
 
     return AlgId(proxyResult) /* r8 */
 }
@@ -71,8 +71,8 @@ func (this RawPublicKey) AlgId () AlgId {
 /*
 * Return algorithm information that can be used for serialization.
 */
-func (this RawPublicKey) AlgInfo () (IAlgInfo, error) {
-    proxyResult := /*pr4*/C.vscf_raw_public_key_alg_info(this.cCtx)
+func (obj *RawPublicKey) AlgInfo () (IAlgInfo, error) {
+    proxyResult := /*pr4*/C.vscf_raw_public_key_alg_info(obj.cCtx)
 
     return FoundationImplementationWrapIAlgInfo(proxyResult) /* r4 */
 }
@@ -80,8 +80,8 @@ func (this RawPublicKey) AlgInfo () (IAlgInfo, error) {
 /*
 * Length of the key in bytes.
 */
-func (this RawPublicKey) Len () uint32 {
-    proxyResult := /*pr4*/C.vscf_raw_public_key_len(this.cCtx)
+func (obj *RawPublicKey) Len () uint32 {
+    proxyResult := /*pr4*/C.vscf_raw_public_key_len(obj.cCtx)
 
     return uint32(proxyResult) /* r9 */
 }
@@ -89,8 +89,8 @@ func (this RawPublicKey) Len () uint32 {
 /*
 * Length of the key in bits.
 */
-func (this RawPublicKey) Bitlen () uint32 {
-    proxyResult := /*pr4*/C.vscf_raw_public_key_bitlen(this.cCtx)
+func (obj *RawPublicKey) Bitlen () uint32 {
+    proxyResult := /*pr4*/C.vscf_raw_public_key_bitlen(obj.cCtx)
 
     return uint32(proxyResult) /* r9 */
 }
@@ -99,8 +99,8 @@ func (this RawPublicKey) Bitlen () uint32 {
 * Check that key is valid.
 * Note, this operation can be slow.
 */
-func (this RawPublicKey) IsValid () bool {
-    proxyResult := /*pr4*/C.vscf_raw_public_key_is_valid(this.cCtx)
+func (obj *RawPublicKey) IsValid () bool {
+    proxyResult := /*pr4*/C.vscf_raw_public_key_is_valid(obj.cCtx)
 
     return bool(proxyResult) /* r9 */
 }

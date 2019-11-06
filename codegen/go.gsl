@@ -153,7 +153,7 @@ function go_derive_buffer_length_getter (class, method, argument)
         my.proxy_object = go_derive_struct_name_str (my.specified_proxy_object)
         my.is_static_method = "1"
     else
-        my.proxy_object = "this"
+        my.proxy_object = "obj"
     endif
 
     if defined (my.length.method)
@@ -166,7 +166,7 @@ function go_derive_buffer_length_getter (class, method, argument)
 
     elsif defined (my.length.constant)
         my.proxy_constant_func = go_derive_getter_name_str (my.length.constant)
-        if string_equal (my.proxy_object, "this")
+        if string_equal (my.proxy_object, "obj")
             return "$(my.proxy_object:).$(my.proxy_constant_func:)() /* lg3 */"
         else
             return "$(my.proxy_object:)$(my.proxy_constant_func:)() /* lg4 */"
@@ -934,7 +934,7 @@ function go_map_enum_status (go_struct, enum, go_module, go_project, meta)
 
         new go_code to go_func
             . = "\
-                return fmt.Sprintf(\"$(my.go_struct.name:){code: %v message: %s}\", this.Code, this.Message)
+                return fmt.Sprintf(\"$(my.go_struct.name:){code: %v message: %s}\", obj.Code, obj.Message)
             "
         endnew
 
@@ -994,7 +994,7 @@ function go_map_enum_status (go_struct, enum, go_module, go_project, meta)
 
             new go_code to go_func
                 . = "\
-                    return fmt.Sprintf(\"%s: %v\", this.msg, this.err)
+                    return fmt.Sprintf(\"%s: %v\", obj.msg, obj.err)
                 "
             endnew
 
@@ -1010,7 +1010,7 @@ function go_map_enum_status (go_struct, enum, go_module, go_project, meta)
 
             new go_code to go_func
                 . = "\
-                    return this.err
+                    return obj.err
                 "
             endnew
 
@@ -1430,8 +1430,8 @@ function go_create_func_from_dependency (dependency, impl, destination, go_proje
             endif
 
             . = format_left("\
-                C.$(class_derive_c_method_release_dependency (my.impl, my.dependency))(this.cCtx)
-                $(my.result_var?:)C.$(class_derive_c_method_use_dependency (my.impl, my.dependency))(this.cCtx,\
+                C.$(class_derive_c_method_release_dependency (my.impl, my.dependency))(obj.cCtx)
+                $(my.result_var?:)C.$(class_derive_c_method_use_dependency (my.impl, my.dependency))(obj.cCtx,\
                         (*C.$(class_derive_c_instance_type(my.dependency)))($(my.arg_name:).ctx()))
                 $(my.impl_handle_status?:)
                 $(my.method_return?:)
@@ -1556,7 +1556,7 @@ endfunction
 function go_create_struct_close (go_struct, class, go_project, meta)
     check_arguments (my, "go_struct, class, go_project, meta", my)
 
-    my.self_ctx = "this.cCtx"
+    my.self_ctx = "obj.cCtx"
 
     if string_in (my.class.context, "public") & string_in (my.class.lifecycle, "none")
         my.dtor_invocation = "C..(c_global_method_dealloc)($(my.self_ctx:))"
@@ -1738,7 +1738,7 @@ function go_create_struct_field_context (destination, instance)
 
         my.type = go_derive_struct_default_context_type ()
         new go_code to go_func
-            .= "return ($(my.type:))(this.cCtx)"
+            .= "return ($(my.type:))(obj.cCtx)"
         endnew
 
         new go_return to go_func
@@ -2126,13 +2126,13 @@ function go_format_c_proxy_args (class, method)
     check_arguments (my, "class, method", my)
 
     if is_false (my.method.is_static)
-        my.proxy_args = "this.cCtx"
+        my.proxy_args = "obj.cCtx"
 
     elsif defined (my.method.implementation)
         my.proxy_args = ""
 
     elsif defined (my.method.interface)
-        my.proxy_args = "C.$(interface_derive_c_api_method_from_name(my.method.interface))(this.cCtx)"
+        my.proxy_args = "C.$(interface_derive_c_api_method_from_name(my.method.interface))(obj.cCtx)"
     endif
 
     for my.method.argument
@@ -2700,11 +2700,11 @@ function go_finalize_implementation_helper_modules (go_project, meta)
 
                 new go_code to go_func
                     . = format_left("\
-                        newSize := int(C..(c_project_common_class_buffer_method_len)(this.ctx))
-                        if newSize > len(this.data) {
+                        newSize := int(C..(c_project_common_class_buffer_method_len)(obj.ctx))
+                        if newSize > len(obj.data) {
                             panic (\"Underlying C buffer corrupt the memory.\")
                         }
-                        return this.data[:newSize]
+                        return obj.data[:newSize]
                     ")
                 endnew
             endnew
@@ -2718,7 +2718,7 @@ function go_finalize_implementation_helper_modules (go_project, meta)
 
                 new go_code to go_func
                     . = format_left("\
-                        return int(C..(c_project_common_class_buffer_method_capacity)(this.ctx))
+                        return int(C..(c_project_common_class_buffer_method_capacity)(obj.ctx))
                     ")
                 endnew
             endnew
@@ -2732,7 +2732,7 @@ function go_finalize_implementation_helper_modules (go_project, meta)
 
                 new go_code to go_func
                     . = format_left("\
-                        return int(C..(c_project_common_class_buffer_method_len)(this.ctx))
+                        return int(C..(c_project_common_class_buffer_method_len)(obj.ctx))
                     ")
                 endnew
             endnew
@@ -2742,7 +2742,7 @@ function go_finalize_implementation_helper_modules (go_project, meta)
 
                 new go_code to go_func
                     . = format_left("\
-                        C..(c_project_common_class_buffer_method_delete)(this.ctx)
+                        C..(c_project_common_class_buffer_method_delete)(obj.ctx)
                     ")
                 endnew
             endnew

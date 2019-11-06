@@ -18,15 +18,15 @@ type RsaPublicKey struct {
 /*
 * Return public key exponent.
 */
-func (this RsaPublicKey) KeyExponent () uint32 {
-    proxyResult := /*pr4*/C.vscf_rsa_public_key_key_exponent(this.cCtx)
+func (obj *RsaPublicKey) KeyExponent () uint32 {
+    proxyResult := /*pr4*/C.vscf_rsa_public_key_key_exponent(obj.cCtx)
 
     return uint32(proxyResult) /* r9 */
 }
 
 /* Handle underlying C context. */
-func (this RsaPublicKey) ctx () *C.vscf_impl_t {
-    return (*C.vscf_impl_t)(this.cCtx)
+func (obj *RsaPublicKey) ctx () *C.vscf_impl_t {
+    return (*C.vscf_impl_t)(obj.cCtx)
 }
 
 func NewRsaPublicKey () *RsaPublicKey {
@@ -55,15 +55,15 @@ func newRsaPublicKeyCopy (ctx *C.vscf_rsa_public_key_t /*ct10*/) *RsaPublicKey {
 }
 
 /// Release underlying C context.
-func (this RsaPublicKey) clear () {
-    C.vscf_rsa_public_key_delete(this.cCtx)
+func (obj *RsaPublicKey) clear () {
+    C.vscf_rsa_public_key_delete(obj.cCtx)
 }
 
 /*
 * Algorithm identifier the key belongs to.
 */
-func (this RsaPublicKey) AlgId () AlgId {
-    proxyResult := /*pr4*/C.vscf_rsa_public_key_alg_id(this.cCtx)
+func (obj *RsaPublicKey) AlgId () AlgId {
+    proxyResult := /*pr4*/C.vscf_rsa_public_key_alg_id(obj.cCtx)
 
     return AlgId(proxyResult) /* r8 */
 }
@@ -71,8 +71,8 @@ func (this RsaPublicKey) AlgId () AlgId {
 /*
 * Return algorithm information that can be used for serialization.
 */
-func (this RsaPublicKey) AlgInfo () (IAlgInfo, error) {
-    proxyResult := /*pr4*/C.vscf_rsa_public_key_alg_info(this.cCtx)
+func (obj *RsaPublicKey) AlgInfo () (IAlgInfo, error) {
+    proxyResult := /*pr4*/C.vscf_rsa_public_key_alg_info(obj.cCtx)
 
     return FoundationImplementationWrapIAlgInfo(proxyResult) /* r4 */
 }
@@ -80,8 +80,8 @@ func (this RsaPublicKey) AlgInfo () (IAlgInfo, error) {
 /*
 * Length of the key in bytes.
 */
-func (this RsaPublicKey) Len () uint32 {
-    proxyResult := /*pr4*/C.vscf_rsa_public_key_len(this.cCtx)
+func (obj *RsaPublicKey) Len () uint32 {
+    proxyResult := /*pr4*/C.vscf_rsa_public_key_len(obj.cCtx)
 
     return uint32(proxyResult) /* r9 */
 }
@@ -89,8 +89,8 @@ func (this RsaPublicKey) Len () uint32 {
 /*
 * Length of the key in bits.
 */
-func (this RsaPublicKey) Bitlen () uint32 {
-    proxyResult := /*pr4*/C.vscf_rsa_public_key_bitlen(this.cCtx)
+func (obj *RsaPublicKey) Bitlen () uint32 {
+    proxyResult := /*pr4*/C.vscf_rsa_public_key_bitlen(obj.cCtx)
 
     return uint32(proxyResult) /* r9 */
 }
@@ -99,8 +99,8 @@ func (this RsaPublicKey) Bitlen () uint32 {
 * Check that key is valid.
 * Note, this operation can be slow.
 */
-func (this RsaPublicKey) IsValid () bool {
-    proxyResult := /*pr4*/C.vscf_rsa_public_key_is_valid(this.cCtx)
+func (obj *RsaPublicKey) IsValid () bool {
+    proxyResult := /*pr4*/C.vscf_rsa_public_key_is_valid(obj.cCtx)
 
     return bool(proxyResult) /* r9 */
 }

@@ -19,8 +19,8 @@ type MessageInfoEditor struct {
 }
 
 /* Handle underlying C context. */
-func (this MessageInfoEditor) ctx () *C.vscf_impl_t {
-    return (*C.vscf_impl_t)(this.cCtx)
+func (obj *MessageInfoEditor) ctx () *C.vscf_impl_t {
+    return (*C.vscf_impl_t)(obj.cCtx)
 }
 
 func NewMessageInfoEditor () *MessageInfoEditor {
@@ -49,20 +49,20 @@ func newMessageInfoEditorCopy (ctx *C.vscf_message_info_editor_t /*ct2*/) *Messa
 }
 
 /// Release underlying C context.
-func (this MessageInfoEditor) clear () {
-    C.vscf_message_info_editor_delete(this.cCtx)
+func (obj *MessageInfoEditor) clear () {
+    C.vscf_message_info_editor_delete(obj.cCtx)
 }
 
-func (this MessageInfoEditor) SetRandom (random IRandom) {
-    C.vscf_message_info_editor_release_random(this.cCtx)
-    C.vscf_message_info_editor_use_random(this.cCtx, (*C.vscf_impl_t)(random.ctx()))
+func (obj *MessageInfoEditor) SetRandom (random IRandom) {
+    C.vscf_message_info_editor_release_random(obj.cCtx)
+    C.vscf_message_info_editor_use_random(obj.cCtx, (*C.vscf_impl_t)(random.ctx()))
 }
 
 /*
 * Set dependencies to it's defaults.
 */
-func (this MessageInfoEditor) SetupDefaults () error {
-    proxyResult := /*pr4*/C.vscf_message_info_editor_setup_defaults(this.cCtx)
+func (obj *MessageInfoEditor) SetupDefaults () error {
+    proxyResult := /*pr4*/C.vscf_message_info_editor_setup_defaults(obj.cCtx)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
@@ -78,10 +78,10 @@ func (this MessageInfoEditor) SetupDefaults () error {
 * Note that recipients can only be removed but not added.
 * Note, use "unlock" method to be able to add new recipients as well.
 */
-func (this MessageInfoEditor) Unpack (messageInfoData []byte) error {
+func (obj *MessageInfoEditor) Unpack (messageInfoData []byte) error {
     messageInfoDataData := helperWrapData (messageInfoData)
 
-    proxyResult := /*pr4*/C.vscf_message_info_editor_unpack(this.cCtx, messageInfoDataData)
+    proxyResult := /*pr4*/C.vscf_message_info_editor_unpack(obj.cCtx, messageInfoDataData)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
@@ -94,10 +94,10 @@ func (this MessageInfoEditor) Unpack (messageInfoData []byte) error {
 /*
 * Decrypt encryption key this allows adding new recipients.
 */
-func (this MessageInfoEditor) Unlock (ownerRecipientId []byte, ownerPrivateKey IPrivateKey) error {
+func (obj *MessageInfoEditor) Unlock (ownerRecipientId []byte, ownerPrivateKey IPrivateKey) error {
     ownerRecipientIdData := helperWrapData (ownerRecipientId)
 
-    proxyResult := /*pr4*/C.vscf_message_info_editor_unlock(this.cCtx, ownerRecipientIdData, (*C.vscf_impl_t)(ownerPrivateKey.ctx()))
+    proxyResult := /*pr4*/C.vscf_message_info_editor_unlock(obj.cCtx, ownerRecipientIdData, (*C.vscf_impl_t)(ownerPrivateKey.ctx()))
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
@@ -110,10 +110,10 @@ func (this MessageInfoEditor) Unlock (ownerRecipientId []byte, ownerPrivateKey I
 /*
 * Add recipient defined with id and public key.
 */
-func (this MessageInfoEditor) AddKeyRecipient (recipientId []byte, publicKey IPublicKey) error {
+func (obj *MessageInfoEditor) AddKeyRecipient (recipientId []byte, publicKey IPublicKey) error {
     recipientIdData := helperWrapData (recipientId)
 
-    proxyResult := /*pr4*/C.vscf_message_info_editor_add_key_recipient(this.cCtx, recipientIdData, (*C.vscf_impl_t)(publicKey.ctx()))
+    proxyResult := /*pr4*/C.vscf_message_info_editor_add_key_recipient(obj.cCtx, recipientIdData, (*C.vscf_impl_t)(publicKey.ctx()))
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
@@ -127,10 +127,10 @@ func (this MessageInfoEditor) AddKeyRecipient (recipientId []byte, publicKey IPu
 * Remove recipient with a given id.
 * Return false if recipient with given id was not found.
 */
-func (this MessageInfoEditor) RemoveKeyRecipient (recipientId []byte) bool {
+func (obj *MessageInfoEditor) RemoveKeyRecipient (recipientId []byte) bool {
     recipientIdData := helperWrapData (recipientId)
 
-    proxyResult := /*pr4*/C.vscf_message_info_editor_remove_key_recipient(this.cCtx, recipientIdData)
+    proxyResult := /*pr4*/C.vscf_message_info_editor_remove_key_recipient(obj.cCtx, recipientIdData)
 
     return bool(proxyResult) /* r9 */
 }
@@ -138,8 +138,8 @@ func (this MessageInfoEditor) RemoveKeyRecipient (recipientId []byte) bool {
 /*
 * Remove all existent recipients.
 */
-func (this MessageInfoEditor) RemoveAll () {
-    C.vscf_message_info_editor_remove_all(this.cCtx)
+func (obj *MessageInfoEditor) RemoveAll () {
+    C.vscf_message_info_editor_remove_all(obj.cCtx)
 
     return
 }
@@ -148,8 +148,8 @@ func (this MessageInfoEditor) RemoveAll () {
 * Return length of serialized message info.
 * Actual length can be obtained right after applying changes.
 */
-func (this MessageInfoEditor) PackedLen () uint32 {
-    proxyResult := /*pr4*/C.vscf_message_info_editor_packed_len(this.cCtx)
+func (obj *MessageInfoEditor) PackedLen () uint32 {
+    proxyResult := /*pr4*/C.vscf_message_info_editor_packed_len(obj.cCtx)
 
     return uint32(proxyResult) /* r9 */
 }
@@ -158,15 +158,15 @@ func (this MessageInfoEditor) PackedLen () uint32 {
 * Return serialized message info.
 * Precondition: this method can be called after "apply".
 */
-func (this MessageInfoEditor) Pack () []byte {
-    messageInfoBuf, messageInfoBufErr := bufferNewBuffer(int(this.PackedLen() /* lg2 */))
+func (obj *MessageInfoEditor) Pack () []byte {
+    messageInfoBuf, messageInfoBufErr := bufferNewBuffer(int(obj.PackedLen() /* lg2 */))
     if messageInfoBufErr != nil {
         return nil
     }
     defer messageInfoBuf.clear()
 
 
-    C.vscf_message_info_editor_pack(this.cCtx, messageInfoBuf.ctx)
+    C.vscf_message_info_editor_pack(obj.cCtx, messageInfoBuf.ctx)
 
     return messageInfoBuf.getData() /* r7 */
 }

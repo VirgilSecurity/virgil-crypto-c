@@ -30,9 +30,9 @@ func CtrDrbgGetEntropyLen () uint32 {
     return 48
 }
 
-func (this CtrDrbg) SetEntropySource (entropySource IEntropySource) error {
-    C.vscf_ctr_drbg_release_entropy_source(this.cCtx)
-                    proxyResult := C.vscf_ctr_drbg_use_entropy_source(this.cCtx, (*C.vscf_impl_t)(entropySource.ctx()))
+func (obj *CtrDrbg) SetEntropySource (entropySource IEntropySource) error {
+    C.vscf_ctr_drbg_release_entropy_source(obj.cCtx)
+                    proxyResult := C.vscf_ctr_drbg_use_entropy_source(obj.cCtx, (*C.vscf_impl_t)(entropySource.ctx()))
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
@@ -45,8 +45,8 @@ func (this CtrDrbg) SetEntropySource (entropySource IEntropySource) error {
 /*
 * Setup predefined values to the uninitialized class dependencies.
 */
-func (this CtrDrbg) SetupDefaults () error {
-    proxyResult := /*pr4*/C.vscf_ctr_drbg_setup_defaults(this.cCtx)
+func (obj *CtrDrbg) SetupDefaults () error {
+    proxyResult := /*pr4*/C.vscf_ctr_drbg_setup_defaults(obj.cCtx)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
@@ -61,8 +61,8 @@ func (this CtrDrbg) SetupDefaults () error {
 * the random() method.
 * Note, use this if your entropy source has sufficient throughput.
 */
-func (this CtrDrbg) EnablePredictionResistance () {
-    C.vscf_ctr_drbg_enable_prediction_resistance(this.cCtx)
+func (obj *CtrDrbg) EnablePredictionResistance () {
+    C.vscf_ctr_drbg_enable_prediction_resistance(obj.cCtx)
 
     return
 }
@@ -71,8 +71,8 @@ func (this CtrDrbg) EnablePredictionResistance () {
 * Sets the reseed interval.
 * Default value is reseed interval.
 */
-func (this CtrDrbg) SetReseedInterval (interval uint32) {
-    C.vscf_ctr_drbg_set_reseed_interval(this.cCtx, (C.size_t)(interval)/*pa10*/)
+func (obj *CtrDrbg) SetReseedInterval (interval uint32) {
+    C.vscf_ctr_drbg_set_reseed_interval(obj.cCtx, (C.size_t)(interval)/*pa10*/)
 
     return
 }
@@ -81,15 +81,15 @@ func (this CtrDrbg) SetReseedInterval (interval uint32) {
 * Sets the amount of entropy grabbed on each seed or reseed.
 * The default value is entropy len.
 */
-func (this CtrDrbg) SetEntropyLen (len uint32) {
-    C.vscf_ctr_drbg_set_entropy_len(this.cCtx, (C.size_t)(len)/*pa10*/)
+func (obj *CtrDrbg) SetEntropyLen (len uint32) {
+    C.vscf_ctr_drbg_set_entropy_len(obj.cCtx, (C.size_t)(len)/*pa10*/)
 
     return
 }
 
 /* Handle underlying C context. */
-func (this CtrDrbg) ctx () *C.vscf_impl_t {
-    return (*C.vscf_impl_t)(this.cCtx)
+func (obj *CtrDrbg) ctx () *C.vscf_impl_t {
+    return (*C.vscf_impl_t)(obj.cCtx)
 }
 
 func NewCtrDrbg () *CtrDrbg {
@@ -118,15 +118,15 @@ func newCtrDrbgCopy (ctx *C.vscf_ctr_drbg_t /*ct10*/) *CtrDrbg {
 }
 
 /// Release underlying C context.
-func (this CtrDrbg) clear () {
-    C.vscf_ctr_drbg_delete(this.cCtx)
+func (obj *CtrDrbg) clear () {
+    C.vscf_ctr_drbg_delete(obj.cCtx)
 }
 
 /*
 * Generate random bytes.
 * All RNG implementations must be thread-safe.
 */
-func (this CtrDrbg) Random (dataLen uint32) ([]byte, error) {
+func (obj *CtrDrbg) Random (dataLen uint32) ([]byte, error) {
     dataBuf, dataBufErr := bufferNewBuffer(int(dataLen))
     if dataBufErr != nil {
         return nil, dataBufErr
@@ -134,7 +134,7 @@ func (this CtrDrbg) Random (dataLen uint32) ([]byte, error) {
     defer dataBuf.clear()
 
 
-    proxyResult := /*pr4*/C.vscf_ctr_drbg_random(this.cCtx, (C.size_t)(dataLen)/*pa10*/, dataBuf.ctx)
+    proxyResult := /*pr4*/C.vscf_ctr_drbg_random(obj.cCtx, (C.size_t)(dataLen)/*pa10*/, dataBuf.ctx)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
@@ -147,8 +147,8 @@ func (this CtrDrbg) Random (dataLen uint32) ([]byte, error) {
 /*
 * Retrieve new seed data from the entropy sources.
 */
-func (this CtrDrbg) Reseed () error {
-    proxyResult := /*pr4*/C.vscf_ctr_drbg_reseed(this.cCtx)
+func (obj *CtrDrbg) Reseed () error {
+    proxyResult := /*pr4*/C.vscf_ctr_drbg_reseed(obj.cCtx)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {

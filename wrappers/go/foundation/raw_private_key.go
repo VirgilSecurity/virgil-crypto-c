@@ -18,8 +18,8 @@ type RawPrivateKey struct {
 /*
 * Return key data.
 */
-func (this RawPrivateKey) Data () []byte {
-    proxyResult := /*pr4*/C.vscf_raw_private_key_data(this.cCtx)
+func (obj *RawPrivateKey) Data () []byte {
+    proxyResult := /*pr4*/C.vscf_raw_private_key_data(obj.cCtx)
 
     return helperExtractData(proxyResult) /* r1 */
 }
@@ -27,8 +27,8 @@ func (this RawPrivateKey) Data () []byte {
 /*
 * Return true if private key contains public key.
 */
-func (this RawPrivateKey) HasPublicKey () bool {
-    proxyResult := /*pr4*/C.vscf_raw_private_key_has_public_key(this.cCtx)
+func (obj *RawPrivateKey) HasPublicKey () bool {
+    proxyResult := /*pr4*/C.vscf_raw_private_key_has_public_key(obj.cCtx)
 
     return bool(proxyResult) /* r9 */
 }
@@ -36,10 +36,10 @@ func (this RawPrivateKey) HasPublicKey () bool {
 /*
 * Setup public key related to the private key.
 */
-func (this RawPrivateKey) SetPublicKey (rawPublicKey *RawPublicKey) {
+func (obj *RawPrivateKey) SetPublicKey (rawPublicKey *RawPublicKey) {
     rawPublicKeyCopy := C.vscf_raw_public_key_shallow_copy((*C.vscf_raw_public_key_t)(rawPublicKey.ctx()))
 
-    C.vscf_raw_private_key_set_public_key(this.cCtx, &rawPublicKeyCopy)
+    C.vscf_raw_private_key_set_public_key(obj.cCtx, &rawPublicKeyCopy)
 
     return
 }
@@ -47,15 +47,15 @@ func (this RawPrivateKey) SetPublicKey (rawPublicKey *RawPublicKey) {
 /*
 * Return public key related to the private key.
 */
-func (this RawPrivateKey) GetPublicKey () *RawPublicKey {
-    proxyResult := /*pr4*/C.vscf_raw_private_key_get_public_key(this.cCtx)
+func (obj *RawPrivateKey) GetPublicKey () *RawPublicKey {
+    proxyResult := /*pr4*/C.vscf_raw_private_key_get_public_key(obj.cCtx)
 
     return newRawPublicKeyWithCtx(proxyResult) /* r5 */
 }
 
 /* Handle underlying C context. */
-func (this RawPrivateKey) ctx () *C.vscf_impl_t {
-    return (*C.vscf_impl_t)(this.cCtx)
+func (obj *RawPrivateKey) ctx () *C.vscf_impl_t {
+    return (*C.vscf_impl_t)(obj.cCtx)
 }
 
 func NewRawPrivateKey () *RawPrivateKey {
@@ -84,15 +84,15 @@ func newRawPrivateKeyCopy (ctx *C.vscf_raw_private_key_t /*ct10*/) *RawPrivateKe
 }
 
 /// Release underlying C context.
-func (this RawPrivateKey) clear () {
-    C.vscf_raw_private_key_delete(this.cCtx)
+func (obj *RawPrivateKey) clear () {
+    C.vscf_raw_private_key_delete(obj.cCtx)
 }
 
 /*
 * Algorithm identifier the key belongs to.
 */
-func (this RawPrivateKey) AlgId () AlgId {
-    proxyResult := /*pr4*/C.vscf_raw_private_key_alg_id(this.cCtx)
+func (obj *RawPrivateKey) AlgId () AlgId {
+    proxyResult := /*pr4*/C.vscf_raw_private_key_alg_id(obj.cCtx)
 
     return AlgId(proxyResult) /* r8 */
 }
@@ -100,8 +100,8 @@ func (this RawPrivateKey) AlgId () AlgId {
 /*
 * Return algorithm information that can be used for serialization.
 */
-func (this RawPrivateKey) AlgInfo () (IAlgInfo, error) {
-    proxyResult := /*pr4*/C.vscf_raw_private_key_alg_info(this.cCtx)
+func (obj *RawPrivateKey) AlgInfo () (IAlgInfo, error) {
+    proxyResult := /*pr4*/C.vscf_raw_private_key_alg_info(obj.cCtx)
 
     return FoundationImplementationWrapIAlgInfo(proxyResult) /* r4 */
 }
@@ -109,8 +109,8 @@ func (this RawPrivateKey) AlgInfo () (IAlgInfo, error) {
 /*
 * Length of the key in bytes.
 */
-func (this RawPrivateKey) Len () uint32 {
-    proxyResult := /*pr4*/C.vscf_raw_private_key_len(this.cCtx)
+func (obj *RawPrivateKey) Len () uint32 {
+    proxyResult := /*pr4*/C.vscf_raw_private_key_len(obj.cCtx)
 
     return uint32(proxyResult) /* r9 */
 }
@@ -118,8 +118,8 @@ func (this RawPrivateKey) Len () uint32 {
 /*
 * Length of the key in bits.
 */
-func (this RawPrivateKey) Bitlen () uint32 {
-    proxyResult := /*pr4*/C.vscf_raw_private_key_bitlen(this.cCtx)
+func (obj *RawPrivateKey) Bitlen () uint32 {
+    proxyResult := /*pr4*/C.vscf_raw_private_key_bitlen(obj.cCtx)
 
     return uint32(proxyResult) /* r9 */
 }
@@ -128,8 +128,8 @@ func (this RawPrivateKey) Bitlen () uint32 {
 * Check that key is valid.
 * Note, this operation can be slow.
 */
-func (this RawPrivateKey) IsValid () bool {
-    proxyResult := /*pr4*/C.vscf_raw_private_key_is_valid(this.cCtx)
+func (obj *RawPrivateKey) IsValid () bool {
+    proxyResult := /*pr4*/C.vscf_raw_private_key_is_valid(obj.cCtx)
 
     return bool(proxyResult) /* r9 */
 }
@@ -137,8 +137,8 @@ func (this RawPrivateKey) IsValid () bool {
 /*
 * Extract public key from the private key.
 */
-func (this RawPrivateKey) ExtractPublicKey () (IPublicKey, error) {
-    proxyResult := /*pr4*/C.vscf_raw_private_key_extract_public_key(this.cCtx)
+func (obj *RawPrivateKey) ExtractPublicKey () (IPublicKey, error) {
+    proxyResult := /*pr4*/C.vscf_raw_private_key_extract_public_key(obj.cCtx)
 
     return FoundationImplementationWrapIPublicKey(proxyResult) /* r4 */
 }

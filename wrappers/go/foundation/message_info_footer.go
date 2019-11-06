@@ -14,8 +14,8 @@ type MessageInfoFooter struct {
 }
 
 /* Handle underlying C context. */
-func (this MessageInfoFooter) ctx () *C.vscf_impl_t {
-    return (*C.vscf_impl_t)(this.cCtx)
+func (obj *MessageInfoFooter) ctx () *C.vscf_impl_t {
+    return (*C.vscf_impl_t)(obj.cCtx)
 }
 
 func NewMessageInfoFooter () *MessageInfoFooter {
@@ -44,15 +44,15 @@ func newMessageInfoFooterCopy (ctx *C.vscf_message_info_footer_t /*ct2*/) *Messa
 }
 
 /// Release underlying C context.
-func (this MessageInfoFooter) clear () {
-    C.vscf_message_info_footer_delete(this.cCtx)
+func (obj *MessageInfoFooter) clear () {
+    C.vscf_message_info_footer_delete(obj.cCtx)
 }
 
 /*
 * Return true if at least one signer info presents.
 */
-func (this MessageInfoFooter) HasSignerInfos () bool {
-    proxyResult := /*pr4*/C.vscf_message_info_footer_has_signer_infos(this.cCtx)
+func (obj *MessageInfoFooter) HasSignerInfos () bool {
+    proxyResult := /*pr4*/C.vscf_message_info_footer_has_signer_infos(obj.cCtx)
 
     return bool(proxyResult) /* r9 */
 }
@@ -60,8 +60,8 @@ func (this MessageInfoFooter) HasSignerInfos () bool {
 /*
 * Return list with a "signer info" elements.
 */
-func (this MessageInfoFooter) SignerInfos () *SignerInfoList {
-    proxyResult := /*pr4*/C.vscf_message_info_footer_signer_infos(this.cCtx)
+func (obj *MessageInfoFooter) SignerInfos () *SignerInfoList {
+    proxyResult := /*pr4*/C.vscf_message_info_footer_signer_infos(obj.cCtx)
 
     return newSignerInfoListWithCtx(proxyResult) /* r5 */
 }
@@ -69,8 +69,8 @@ func (this MessageInfoFooter) SignerInfos () *SignerInfoList {
 /*
 * Return information about algorithm that was used for data hashing.
 */
-func (this MessageInfoFooter) SignerHashAlgInfo () (IAlgInfo, error) {
-    proxyResult := /*pr4*/C.vscf_message_info_footer_signer_hash_alg_info(this.cCtx)
+func (obj *MessageInfoFooter) SignerHashAlgInfo () (IAlgInfo, error) {
+    proxyResult := /*pr4*/C.vscf_message_info_footer_signer_hash_alg_info(obj.cCtx)
 
     return FoundationImplementationWrapIAlgInfo(proxyResult) /* r4 */
 }
@@ -78,8 +78,8 @@ func (this MessageInfoFooter) SignerHashAlgInfo () (IAlgInfo, error) {
 /*
 * Return plain text digest that was used to produce signature.
 */
-func (this MessageInfoFooter) SignerDigest () []byte {
-    proxyResult := /*pr4*/C.vscf_message_info_footer_signer_digest(this.cCtx)
+func (obj *MessageInfoFooter) SignerDigest () []byte {
+    proxyResult := /*pr4*/C.vscf_message_info_footer_signer_digest(obj.cCtx)
 
     return helperExtractData(proxyResult) /* r1 */
 }

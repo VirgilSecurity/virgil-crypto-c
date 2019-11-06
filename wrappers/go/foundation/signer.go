@@ -14,8 +14,8 @@ type Signer struct {
 }
 
 /* Handle underlying C context. */
-func (this Signer) ctx () *C.vscf_impl_t {
-    return (*C.vscf_impl_t)(this.cCtx)
+func (obj *Signer) ctx () *C.vscf_impl_t {
+    return (*C.vscf_impl_t)(obj.cCtx)
 }
 
 func NewSigner () *Signer {
@@ -44,25 +44,25 @@ func newSignerCopy (ctx *C.vscf_signer_t /*ct2*/) *Signer {
 }
 
 /// Release underlying C context.
-func (this Signer) clear () {
-    C.vscf_signer_delete(this.cCtx)
+func (obj *Signer) clear () {
+    C.vscf_signer_delete(obj.cCtx)
 }
 
-func (this Signer) SetHash (hash IHash) {
-    C.vscf_signer_release_hash(this.cCtx)
-    C.vscf_signer_use_hash(this.cCtx, (*C.vscf_impl_t)(hash.ctx()))
+func (obj *Signer) SetHash (hash IHash) {
+    C.vscf_signer_release_hash(obj.cCtx)
+    C.vscf_signer_use_hash(obj.cCtx, (*C.vscf_impl_t)(hash.ctx()))
 }
 
-func (this Signer) SetRandom (random IRandom) {
-    C.vscf_signer_release_random(this.cCtx)
-    C.vscf_signer_use_random(this.cCtx, (*C.vscf_impl_t)(random.ctx()))
+func (obj *Signer) SetRandom (random IRandom) {
+    C.vscf_signer_release_random(obj.cCtx)
+    C.vscf_signer_use_random(obj.cCtx, (*C.vscf_impl_t)(random.ctx()))
 }
 
 /*
 * Start a processing a new signature.
 */
-func (this Signer) Reset () {
-    C.vscf_signer_reset(this.cCtx)
+func (obj *Signer) Reset () {
+    C.vscf_signer_reset(obj.cCtx)
 
     return
 }
@@ -70,10 +70,10 @@ func (this Signer) Reset () {
 /*
 * Add given data to the signed data.
 */
-func (this Signer) AppendData (data []byte) {
+func (obj *Signer) AppendData (data []byte) {
     dataData := helperWrapData (data)
 
-    C.vscf_signer_append_data(this.cCtx, dataData)
+    C.vscf_signer_append_data(obj.cCtx, dataData)
 
     return
 }
@@ -81,8 +81,8 @@ func (this Signer) AppendData (data []byte) {
 /*
 * Return length of the signature.
 */
-func (this Signer) SignatureLen (privateKey IPrivateKey) uint32 {
-    proxyResult := /*pr4*/C.vscf_signer_signature_len(this.cCtx, (*C.vscf_impl_t)(privateKey.ctx()))
+func (obj *Signer) SignatureLen (privateKey IPrivateKey) uint32 {
+    proxyResult := /*pr4*/C.vscf_signer_signature_len(obj.cCtx, (*C.vscf_impl_t)(privateKey.ctx()))
 
     return uint32(proxyResult) /* r9 */
 }
@@ -90,15 +90,15 @@ func (this Signer) SignatureLen (privateKey IPrivateKey) uint32 {
 /*
 * Accomplish signing and return signature.
 */
-func (this Signer) Sign (privateKey IPrivateKey) ([]byte, error) {
-    signatureBuf, signatureBufErr := bufferNewBuffer(int(this.SignatureLen(privateKey.(IPrivateKey)) /* lg2 */))
+func (obj *Signer) Sign (privateKey IPrivateKey) ([]byte, error) {
+    signatureBuf, signatureBufErr := bufferNewBuffer(int(obj.SignatureLen(privateKey.(IPrivateKey)) /* lg2 */))
     if signatureBufErr != nil {
         return nil, signatureBufErr
     }
     defer signatureBuf.clear()
 
 
-    proxyResult := /*pr4*/C.vscf_signer_sign(this.cCtx, (*C.vscf_impl_t)(privateKey.ctx()), signatureBuf.ctx)
+    proxyResult := /*pr4*/C.vscf_signer_sign(obj.cCtx, (*C.vscf_impl_t)(privateKey.ctx()), signatureBuf.ctx)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {

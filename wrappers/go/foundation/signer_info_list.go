@@ -14,8 +14,8 @@ type SignerInfoList struct {
 }
 
 /* Handle underlying C context. */
-func (this SignerInfoList) ctx () *C.vscf_impl_t {
-    return (*C.vscf_impl_t)(this.cCtx)
+func (obj *SignerInfoList) ctx () *C.vscf_impl_t {
+    return (*C.vscf_impl_t)(obj.cCtx)
 }
 
 func NewSignerInfoList () *SignerInfoList {
@@ -44,15 +44,15 @@ func newSignerInfoListCopy (ctx *C.vscf_signer_info_list_t /*ct2*/) *SignerInfoL
 }
 
 /// Release underlying C context.
-func (this SignerInfoList) clear () {
-    C.vscf_signer_info_list_delete(this.cCtx)
+func (obj *SignerInfoList) clear () {
+    C.vscf_signer_info_list_delete(obj.cCtx)
 }
 
 /*
 * Return true if given list has item.
 */
-func (this SignerInfoList) HasItem () bool {
-    proxyResult := /*pr4*/C.vscf_signer_info_list_has_item(this.cCtx)
+func (obj *SignerInfoList) HasItem () bool {
+    proxyResult := /*pr4*/C.vscf_signer_info_list_has_item(obj.cCtx)
 
     return bool(proxyResult) /* r9 */
 }
@@ -60,8 +60,8 @@ func (this SignerInfoList) HasItem () bool {
 /*
 * Return list item.
 */
-func (this SignerInfoList) Item () *SignerInfo {
-    proxyResult := /*pr4*/C.vscf_signer_info_list_item(this.cCtx)
+func (obj *SignerInfoList) Item () *SignerInfo {
+    proxyResult := /*pr4*/C.vscf_signer_info_list_item(obj.cCtx)
 
     return newSignerInfoWithCtx(proxyResult) /* r5 */
 }
@@ -69,8 +69,8 @@ func (this SignerInfoList) Item () *SignerInfo {
 /*
 * Return true if list has next item.
 */
-func (this SignerInfoList) HasNext () bool {
-    proxyResult := /*pr4*/C.vscf_signer_info_list_has_next(this.cCtx)
+func (obj *SignerInfoList) HasNext () bool {
+    proxyResult := /*pr4*/C.vscf_signer_info_list_has_next(obj.cCtx)
 
     return bool(proxyResult) /* r9 */
 }
@@ -78,8 +78,8 @@ func (this SignerInfoList) HasNext () bool {
 /*
 * Return next list node if exists, or NULL otherwise.
 */
-func (this SignerInfoList) Next () *SignerInfoList {
-    proxyResult := /*pr4*/C.vscf_signer_info_list_next(this.cCtx)
+func (obj *SignerInfoList) Next () *SignerInfoList {
+    proxyResult := /*pr4*/C.vscf_signer_info_list_next(obj.cCtx)
 
     return newSignerInfoListWithCtx(proxyResult) /* r6 */
 }
@@ -87,8 +87,8 @@ func (this SignerInfoList) Next () *SignerInfoList {
 /*
 * Return true if list has previous item.
 */
-func (this SignerInfoList) HasPrev () bool {
-    proxyResult := /*pr4*/C.vscf_signer_info_list_has_prev(this.cCtx)
+func (obj *SignerInfoList) HasPrev () bool {
+    proxyResult := /*pr4*/C.vscf_signer_info_list_has_prev(obj.cCtx)
 
     return bool(proxyResult) /* r9 */
 }
@@ -96,8 +96,8 @@ func (this SignerInfoList) HasPrev () bool {
 /*
 * Return previous list node if exists, or NULL otherwise.
 */
-func (this SignerInfoList) Prev () *SignerInfoList {
-    proxyResult := /*pr4*/C.vscf_signer_info_list_prev(this.cCtx)
+func (obj *SignerInfoList) Prev () *SignerInfoList {
+    proxyResult := /*pr4*/C.vscf_signer_info_list_prev(obj.cCtx)
 
     return newSignerInfoListWithCtx(proxyResult) /* r6 */
 }
@@ -105,8 +105,8 @@ func (this SignerInfoList) Prev () *SignerInfoList {
 /*
 * Remove all items.
 */
-func (this SignerInfoList) Clear () {
-    C.vscf_signer_info_list_clear(this.cCtx)
+func (obj *SignerInfoList) Clear () {
+    C.vscf_signer_info_list_clear(obj.cCtx)
 
     return
 }

@@ -14,16 +14,16 @@ type AlgInfoDerDeserializer struct {
     cCtx *C.vscf_alg_info_der_deserializer_t /*ct10*/
 }
 
-func (this AlgInfoDerDeserializer) SetAsn1Reader (asn1Reader IAsn1Reader) {
-    C.vscf_alg_info_der_deserializer_release_asn1_reader(this.cCtx)
-    C.vscf_alg_info_der_deserializer_use_asn1_reader(this.cCtx, (*C.vscf_impl_t)(asn1Reader.ctx()))
+func (obj *AlgInfoDerDeserializer) SetAsn1Reader (asn1Reader IAsn1Reader) {
+    C.vscf_alg_info_der_deserializer_release_asn1_reader(obj.cCtx)
+    C.vscf_alg_info_der_deserializer_use_asn1_reader(obj.cCtx, (*C.vscf_impl_t)(asn1Reader.ctx()))
 }
 
 /*
 * Setup predefined values to the uninitialized class dependencies.
 */
-func (this AlgInfoDerDeserializer) SetupDefaults () {
-    C.vscf_alg_info_der_deserializer_setup_defaults(this.cCtx)
+func (obj *AlgInfoDerDeserializer) SetupDefaults () {
+    C.vscf_alg_info_der_deserializer_setup_defaults(obj.cCtx)
 
     return
 }
@@ -33,11 +33,11 @@ func (this AlgInfoDerDeserializer) SetupDefaults () {
 * Note, that caller code is responsible to reset ASN.1 reader with
 * an input buffer.
 */
-func (this AlgInfoDerDeserializer) DeserializeInplace () (IAlgInfo, error) {
+func (obj *AlgInfoDerDeserializer) DeserializeInplace () (IAlgInfo, error) {
     var error C.vscf_error_t
     C.vscf_error_reset(&error)
 
-    proxyResult := /*pr4*/C.vscf_alg_info_der_deserializer_deserialize_inplace(this.cCtx, &error)
+    proxyResult := /*pr4*/C.vscf_alg_info_der_deserializer_deserialize_inplace(obj.cCtx, &error)
 
     err := FoundationErrorHandleStatus(error.status)
     if err != nil {
@@ -48,8 +48,8 @@ func (this AlgInfoDerDeserializer) DeserializeInplace () (IAlgInfo, error) {
 }
 
 /* Handle underlying C context. */
-func (this AlgInfoDerDeserializer) ctx () *C.vscf_impl_t {
-    return (*C.vscf_impl_t)(this.cCtx)
+func (obj *AlgInfoDerDeserializer) ctx () *C.vscf_impl_t {
+    return (*C.vscf_impl_t)(obj.cCtx)
 }
 
 func NewAlgInfoDerDeserializer () *AlgInfoDerDeserializer {
@@ -78,19 +78,19 @@ func newAlgInfoDerDeserializerCopy (ctx *C.vscf_alg_info_der_deserializer_t /*ct
 }
 
 /// Release underlying C context.
-func (this AlgInfoDerDeserializer) clear () {
-    C.vscf_alg_info_der_deserializer_delete(this.cCtx)
+func (obj *AlgInfoDerDeserializer) clear () {
+    C.vscf_alg_info_der_deserializer_delete(obj.cCtx)
 }
 
 /*
 * Deserialize algorithm from the data.
 */
-func (this AlgInfoDerDeserializer) Deserialize (data []byte) (IAlgInfo, error) {
+func (obj *AlgInfoDerDeserializer) Deserialize (data []byte) (IAlgInfo, error) {
     var error C.vscf_error_t
     C.vscf_error_reset(&error)
     dataData := helperWrapData (data)
 
-    proxyResult := /*pr4*/C.vscf_alg_info_der_deserializer_deserialize(this.cCtx, dataData, &error)
+    proxyResult := /*pr4*/C.vscf_alg_info_der_deserializer_deserialize(obj.cCtx, dataData, &error)
 
     err := FoundationErrorHandleStatus(error.status)
     if err != nil {

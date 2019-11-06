@@ -14,8 +14,8 @@ type SignedDataInfo struct {
 }
 
 /* Handle underlying C context. */
-func (this SignedDataInfo) ctx () *C.vscf_impl_t {
-    return (*C.vscf_impl_t)(this.cCtx)
+func (obj *SignedDataInfo) ctx () *C.vscf_impl_t {
+    return (*C.vscf_impl_t)(obj.cCtx)
 }
 
 func NewSignedDataInfo () *SignedDataInfo {
@@ -44,17 +44,17 @@ func newSignedDataInfoCopy (ctx *C.vscf_signed_data_info_t /*ct2*/) *SignedDataI
 }
 
 /// Release underlying C context.
-func (this SignedDataInfo) clear () {
-    C.vscf_signed_data_info_delete(this.cCtx)
+func (obj *SignedDataInfo) clear () {
+    C.vscf_signed_data_info_delete(obj.cCtx)
 }
 
 /*
 * Set information about algorithm that was used to produce data digest.
 */
-func (this SignedDataInfo) SetHashAlgInfo (hashAlgInfo IAlgInfo) {
+func (obj *SignedDataInfo) SetHashAlgInfo (hashAlgInfo IAlgInfo) {
     hashAlgInfoCopy := C.vscf_impl_shallow_copy((*C.vscf_impl_t)(hashAlgInfo.ctx()))
 
-    C.vscf_signed_data_info_set_hash_alg_info(this.cCtx, &hashAlgInfoCopy)
+    C.vscf_signed_data_info_set_hash_alg_info(obj.cCtx, &hashAlgInfoCopy)
 
     return
 }
@@ -62,8 +62,8 @@ func (this SignedDataInfo) SetHashAlgInfo (hashAlgInfo IAlgInfo) {
 /*
 * Return information about algorithm that was used to produce data digest.
 */
-func (this SignedDataInfo) HashAlgInfo () (IAlgInfo, error) {
-    proxyResult := /*pr4*/C.vscf_signed_data_info_hash_alg_info(this.cCtx)
+func (obj *SignedDataInfo) HashAlgInfo () (IAlgInfo, error) {
+    proxyResult := /*pr4*/C.vscf_signed_data_info_hash_alg_info(obj.cCtx)
 
     return FoundationImplementationWrapIAlgInfo(proxyResult) /* r4 */
 }

@@ -16,23 +16,23 @@ type Pkcs5Pbkdf2 struct {
     cCtx *C.vscf_pkcs5_pbkdf2_t /*ct10*/
 }
 
-func (this Pkcs5Pbkdf2) SetHmac (hmac IMac) {
-    C.vscf_pkcs5_pbkdf2_release_hmac(this.cCtx)
-    C.vscf_pkcs5_pbkdf2_use_hmac(this.cCtx, (*C.vscf_impl_t)(hmac.ctx()))
+func (obj *Pkcs5Pbkdf2) SetHmac (hmac IMac) {
+    C.vscf_pkcs5_pbkdf2_release_hmac(obj.cCtx)
+    C.vscf_pkcs5_pbkdf2_use_hmac(obj.cCtx, (*C.vscf_impl_t)(hmac.ctx()))
 }
 
 /*
 * Setup predefined values to the uninitialized class dependencies.
 */
-func (this Pkcs5Pbkdf2) SetupDefaults () {
-    C.vscf_pkcs5_pbkdf2_setup_defaults(this.cCtx)
+func (obj *Pkcs5Pbkdf2) SetupDefaults () {
+    C.vscf_pkcs5_pbkdf2_setup_defaults(obj.cCtx)
 
     return
 }
 
 /* Handle underlying C context. */
-func (this Pkcs5Pbkdf2) ctx () *C.vscf_impl_t {
-    return (*C.vscf_impl_t)(this.cCtx)
+func (obj *Pkcs5Pbkdf2) ctx () *C.vscf_impl_t {
+    return (*C.vscf_impl_t)(obj.cCtx)
 }
 
 func NewPkcs5Pbkdf2 () *Pkcs5Pbkdf2 {
@@ -61,15 +61,15 @@ func newPkcs5Pbkdf2Copy (ctx *C.vscf_pkcs5_pbkdf2_t /*ct10*/) *Pkcs5Pbkdf2 {
 }
 
 /// Release underlying C context.
-func (this Pkcs5Pbkdf2) clear () {
-    C.vscf_pkcs5_pbkdf2_delete(this.cCtx)
+func (obj *Pkcs5Pbkdf2) clear () {
+    C.vscf_pkcs5_pbkdf2_delete(obj.cCtx)
 }
 
 /*
 * Provide algorithm identificator.
 */
-func (this Pkcs5Pbkdf2) AlgId () AlgId {
-    proxyResult := /*pr4*/C.vscf_pkcs5_pbkdf2_alg_id(this.cCtx)
+func (obj *Pkcs5Pbkdf2) AlgId () AlgId {
+    proxyResult := /*pr4*/C.vscf_pkcs5_pbkdf2_alg_id(obj.cCtx)
 
     return AlgId(proxyResult) /* r8 */
 }
@@ -77,8 +77,8 @@ func (this Pkcs5Pbkdf2) AlgId () AlgId {
 /*
 * Produce object with algorithm information and configuration parameters.
 */
-func (this Pkcs5Pbkdf2) ProduceAlgInfo () (IAlgInfo, error) {
-    proxyResult := /*pr4*/C.vscf_pkcs5_pbkdf2_produce_alg_info(this.cCtx)
+func (obj *Pkcs5Pbkdf2) ProduceAlgInfo () (IAlgInfo, error) {
+    proxyResult := /*pr4*/C.vscf_pkcs5_pbkdf2_produce_alg_info(obj.cCtx)
 
     return FoundationImplementationWrapIAlgInfo(proxyResult) /* r4 */
 }
@@ -86,8 +86,8 @@ func (this Pkcs5Pbkdf2) ProduceAlgInfo () (IAlgInfo, error) {
 /*
 * Restore algorithm configuration from the given object.
 */
-func (this Pkcs5Pbkdf2) RestoreAlgInfo (algInfo IAlgInfo) error {
-    proxyResult := /*pr4*/C.vscf_pkcs5_pbkdf2_restore_alg_info(this.cCtx, (*C.vscf_impl_t)(algInfo.ctx()))
+func (obj *Pkcs5Pbkdf2) RestoreAlgInfo (algInfo IAlgInfo) error {
+    proxyResult := /*pr4*/C.vscf_pkcs5_pbkdf2_restore_alg_info(obj.cCtx, (*C.vscf_impl_t)(algInfo.ctx()))
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
@@ -100,7 +100,7 @@ func (this Pkcs5Pbkdf2) RestoreAlgInfo (algInfo IAlgInfo) error {
 /*
 * Derive key of the requested length from the given data.
 */
-func (this Pkcs5Pbkdf2) Derive (data []byte, keyLen uint32) []byte {
+func (obj *Pkcs5Pbkdf2) Derive (data []byte, keyLen uint32) []byte {
     keyBuf, keyBufErr := bufferNewBuffer(int(keyLen))
     if keyBufErr != nil {
         return nil
@@ -108,7 +108,7 @@ func (this Pkcs5Pbkdf2) Derive (data []byte, keyLen uint32) []byte {
     defer keyBuf.clear()
     dataData := helperWrapData (data)
 
-    C.vscf_pkcs5_pbkdf2_derive(this.cCtx, dataData, (C.size_t)(keyLen)/*pa10*/, keyBuf.ctx)
+    C.vscf_pkcs5_pbkdf2_derive(obj.cCtx, dataData, (C.size_t)(keyLen)/*pa10*/, keyBuf.ctx)
 
     return keyBuf.getData() /* r7 */
 }
@@ -116,10 +116,10 @@ func (this Pkcs5Pbkdf2) Derive (data []byte, keyLen uint32) []byte {
 /*
 * Prepare algorithm to derive new key.
 */
-func (this Pkcs5Pbkdf2) Reset (salt []byte, iterationCount uint32) {
+func (obj *Pkcs5Pbkdf2) Reset (salt []byte, iterationCount uint32) {
     saltData := helperWrapData (salt)
 
-    C.vscf_pkcs5_pbkdf2_reset(this.cCtx, saltData, (C.size_t)(iterationCount)/*pa10*/)
+    C.vscf_pkcs5_pbkdf2_reset(obj.cCtx, saltData, (C.size_t)(iterationCount)/*pa10*/)
 
     return
 }
@@ -128,10 +128,10 @@ func (this Pkcs5Pbkdf2) Reset (salt []byte, iterationCount uint32) {
 * Setup application specific information (optional).
 * Can be empty.
 */
-func (this Pkcs5Pbkdf2) SetInfo (info []byte) {
+func (obj *Pkcs5Pbkdf2) SetInfo (info []byte) {
     infoData := helperWrapData (info)
 
-    C.vscf_pkcs5_pbkdf2_set_info(this.cCtx, infoData)
+    C.vscf_pkcs5_pbkdf2_set_info(obj.cCtx, infoData)
 
     return
 }

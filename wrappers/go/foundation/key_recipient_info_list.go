@@ -14,8 +14,8 @@ type KeyRecipientInfoList struct {
 }
 
 /* Handle underlying C context. */
-func (this KeyRecipientInfoList) ctx () *C.vscf_impl_t {
-    return (*C.vscf_impl_t)(this.cCtx)
+func (obj *KeyRecipientInfoList) ctx () *C.vscf_impl_t {
+    return (*C.vscf_impl_t)(obj.cCtx)
 }
 
 func NewKeyRecipientInfoList () *KeyRecipientInfoList {
@@ -44,15 +44,15 @@ func newKeyRecipientInfoListCopy (ctx *C.vscf_key_recipient_info_list_t /*ct2*/)
 }
 
 /// Release underlying C context.
-func (this KeyRecipientInfoList) clear () {
-    C.vscf_key_recipient_info_list_delete(this.cCtx)
+func (obj *KeyRecipientInfoList) clear () {
+    C.vscf_key_recipient_info_list_delete(obj.cCtx)
 }
 
 /*
 * Return true if given list has item.
 */
-func (this KeyRecipientInfoList) HasItem () bool {
-    proxyResult := /*pr4*/C.vscf_key_recipient_info_list_has_item(this.cCtx)
+func (obj *KeyRecipientInfoList) HasItem () bool {
+    proxyResult := /*pr4*/C.vscf_key_recipient_info_list_has_item(obj.cCtx)
 
     return bool(proxyResult) /* r9 */
 }
@@ -60,8 +60,8 @@ func (this KeyRecipientInfoList) HasItem () bool {
 /*
 * Return list item.
 */
-func (this KeyRecipientInfoList) Item () *KeyRecipientInfo {
-    proxyResult := /*pr4*/C.vscf_key_recipient_info_list_item(this.cCtx)
+func (obj *KeyRecipientInfoList) Item () *KeyRecipientInfo {
+    proxyResult := /*pr4*/C.vscf_key_recipient_info_list_item(obj.cCtx)
 
     return newKeyRecipientInfoWithCtx(proxyResult) /* r5 */
 }
@@ -69,8 +69,8 @@ func (this KeyRecipientInfoList) Item () *KeyRecipientInfo {
 /*
 * Return true if list has next item.
 */
-func (this KeyRecipientInfoList) HasNext () bool {
-    proxyResult := /*pr4*/C.vscf_key_recipient_info_list_has_next(this.cCtx)
+func (obj *KeyRecipientInfoList) HasNext () bool {
+    proxyResult := /*pr4*/C.vscf_key_recipient_info_list_has_next(obj.cCtx)
 
     return bool(proxyResult) /* r9 */
 }
@@ -78,8 +78,8 @@ func (this KeyRecipientInfoList) HasNext () bool {
 /*
 * Return next list node if exists, or NULL otherwise.
 */
-func (this KeyRecipientInfoList) Next () *KeyRecipientInfoList {
-    proxyResult := /*pr4*/C.vscf_key_recipient_info_list_next(this.cCtx)
+func (obj *KeyRecipientInfoList) Next () *KeyRecipientInfoList {
+    proxyResult := /*pr4*/C.vscf_key_recipient_info_list_next(obj.cCtx)
 
     return newKeyRecipientInfoListWithCtx(proxyResult) /* r6 */
 }
@@ -87,8 +87,8 @@ func (this KeyRecipientInfoList) Next () *KeyRecipientInfoList {
 /*
 * Return true if list has previous item.
 */
-func (this KeyRecipientInfoList) HasPrev () bool {
-    proxyResult := /*pr4*/C.vscf_key_recipient_info_list_has_prev(this.cCtx)
+func (obj *KeyRecipientInfoList) HasPrev () bool {
+    proxyResult := /*pr4*/C.vscf_key_recipient_info_list_has_prev(obj.cCtx)
 
     return bool(proxyResult) /* r9 */
 }
@@ -96,8 +96,8 @@ func (this KeyRecipientInfoList) HasPrev () bool {
 /*
 * Return previous list node if exists, or NULL otherwise.
 */
-func (this KeyRecipientInfoList) Prev () *KeyRecipientInfoList {
-    proxyResult := /*pr4*/C.vscf_key_recipient_info_list_prev(this.cCtx)
+func (obj *KeyRecipientInfoList) Prev () *KeyRecipientInfoList {
+    proxyResult := /*pr4*/C.vscf_key_recipient_info_list_prev(obj.cCtx)
 
     return newKeyRecipientInfoListWithCtx(proxyResult) /* r6 */
 }
@@ -105,8 +105,8 @@ func (this KeyRecipientInfoList) Prev () *KeyRecipientInfoList {
 /*
 * Remove all items.
 */
-func (this KeyRecipientInfoList) Clear () {
-    C.vscf_key_recipient_info_list_clear(this.cCtx)
+func (obj *KeyRecipientInfoList) Clear () {
+    C.vscf_key_recipient_info_list_clear(obj.cCtx)
 
     return
 }

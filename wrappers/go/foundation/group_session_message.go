@@ -14,8 +14,8 @@ type GroupSessionMessage struct {
 }
 
 /* Handle underlying C context. */
-func (this GroupSessionMessage) ctx () *C.vscf_impl_t {
-    return (*C.vscf_impl_t)(this.cCtx)
+func (obj *GroupSessionMessage) ctx () *C.vscf_impl_t {
+    return (*C.vscf_impl_t)(obj.cCtx)
 }
 
 func NewGroupSessionMessage () *GroupSessionMessage {
@@ -44,8 +44,8 @@ func newGroupSessionMessageCopy (ctx *C.vscf_group_session_message_t /*ct2*/) *G
 }
 
 /// Release underlying C context.
-func (this GroupSessionMessage) clear () {
-    C.vscf_group_session_message_delete(this.cCtx)
+func (obj *GroupSessionMessage) clear () {
+    C.vscf_group_session_message_delete(obj.cCtx)
 }
 
 /*
@@ -65,8 +65,8 @@ func GroupSessionMessageGetMessageVersion () uint32 {
 /*
 * Returns message type.
 */
-func (this GroupSessionMessage) GetType () GroupMsgType {
-    proxyResult := /*pr4*/C.vscf_group_session_message_get_type(this.cCtx)
+func (obj *GroupSessionMessage) GetType () GroupMsgType {
+    proxyResult := /*pr4*/C.vscf_group_session_message_get_type(obj.cCtx)
 
     return GroupMsgType(proxyResult) /* r8 */
 }
@@ -75,8 +75,8 @@ func (this GroupSessionMessage) GetType () GroupMsgType {
 * Returns session id.
 * This method should be called only for group info type.
 */
-func (this GroupSessionMessage) GetSessionId () []byte {
-    proxyResult := /*pr4*/C.vscf_group_session_message_get_session_id(this.cCtx)
+func (obj *GroupSessionMessage) GetSessionId () []byte {
+    proxyResult := /*pr4*/C.vscf_group_session_message_get_session_id(obj.cCtx)
 
     return helperExtractData(proxyResult) /* r1 */
 }
@@ -84,8 +84,8 @@ func (this GroupSessionMessage) GetSessionId () []byte {
 /*
 * Returns message epoch.
 */
-func (this GroupSessionMessage) GetEpoch () uint32 {
-    proxyResult := /*pr4*/C.vscf_group_session_message_get_epoch(this.cCtx)
+func (obj *GroupSessionMessage) GetEpoch () uint32 {
+    proxyResult := /*pr4*/C.vscf_group_session_message_get_epoch(obj.cCtx)
 
     return uint32(proxyResult) /* r9 */
 }
@@ -93,8 +93,8 @@ func (this GroupSessionMessage) GetEpoch () uint32 {
 /*
 * Buffer len to serialize this class.
 */
-func (this GroupSessionMessage) SerializeLen () uint32 {
-    proxyResult := /*pr4*/C.vscf_group_session_message_serialize_len(this.cCtx)
+func (obj *GroupSessionMessage) SerializeLen () uint32 {
+    proxyResult := /*pr4*/C.vscf_group_session_message_serialize_len(obj.cCtx)
 
     return uint32(proxyResult) /* r9 */
 }
@@ -102,15 +102,15 @@ func (this GroupSessionMessage) SerializeLen () uint32 {
 /*
 * Serializes instance.
 */
-func (this GroupSessionMessage) Serialize () []byte {
-    outputBuf, outputBufErr := bufferNewBuffer(int(this.SerializeLen() /* lg2 */))
+func (obj *GroupSessionMessage) Serialize () []byte {
+    outputBuf, outputBufErr := bufferNewBuffer(int(obj.SerializeLen() /* lg2 */))
     if outputBufErr != nil {
         return nil
     }
     defer outputBuf.clear()
 
 
-    C.vscf_group_session_message_serialize(this.cCtx, outputBuf.ctx)
+    C.vscf_group_session_message_serialize(obj.cCtx, outputBuf.ctx)
 
     return outputBuf.getData() /* r7 */
 }

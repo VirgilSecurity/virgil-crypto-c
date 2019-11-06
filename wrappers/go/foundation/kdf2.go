@@ -15,14 +15,14 @@ type Kdf2 struct {
     cCtx *C.vscf_kdf2_t /*ct10*/
 }
 
-func (this Kdf2) SetHash (hash IHash) {
-    C.vscf_kdf2_release_hash(this.cCtx)
-    C.vscf_kdf2_use_hash(this.cCtx, (*C.vscf_impl_t)(hash.ctx()))
+func (obj *Kdf2) SetHash (hash IHash) {
+    C.vscf_kdf2_release_hash(obj.cCtx)
+    C.vscf_kdf2_use_hash(obj.cCtx, (*C.vscf_impl_t)(hash.ctx()))
 }
 
 /* Handle underlying C context. */
-func (this Kdf2) ctx () *C.vscf_impl_t {
-    return (*C.vscf_impl_t)(this.cCtx)
+func (obj *Kdf2) ctx () *C.vscf_impl_t {
+    return (*C.vscf_impl_t)(obj.cCtx)
 }
 
 func NewKdf2 () *Kdf2 {
@@ -51,15 +51,15 @@ func newKdf2Copy (ctx *C.vscf_kdf2_t /*ct10*/) *Kdf2 {
 }
 
 /// Release underlying C context.
-func (this Kdf2) clear () {
-    C.vscf_kdf2_delete(this.cCtx)
+func (obj *Kdf2) clear () {
+    C.vscf_kdf2_delete(obj.cCtx)
 }
 
 /*
 * Provide algorithm identificator.
 */
-func (this Kdf2) AlgId () AlgId {
-    proxyResult := /*pr4*/C.vscf_kdf2_alg_id(this.cCtx)
+func (obj *Kdf2) AlgId () AlgId {
+    proxyResult := /*pr4*/C.vscf_kdf2_alg_id(obj.cCtx)
 
     return AlgId(proxyResult) /* r8 */
 }
@@ -67,8 +67,8 @@ func (this Kdf2) AlgId () AlgId {
 /*
 * Produce object with algorithm information and configuration parameters.
 */
-func (this Kdf2) ProduceAlgInfo () (IAlgInfo, error) {
-    proxyResult := /*pr4*/C.vscf_kdf2_produce_alg_info(this.cCtx)
+func (obj *Kdf2) ProduceAlgInfo () (IAlgInfo, error) {
+    proxyResult := /*pr4*/C.vscf_kdf2_produce_alg_info(obj.cCtx)
 
     return FoundationImplementationWrapIAlgInfo(proxyResult) /* r4 */
 }
@@ -76,8 +76,8 @@ func (this Kdf2) ProduceAlgInfo () (IAlgInfo, error) {
 /*
 * Restore algorithm configuration from the given object.
 */
-func (this Kdf2) RestoreAlgInfo (algInfo IAlgInfo) error {
-    proxyResult := /*pr4*/C.vscf_kdf2_restore_alg_info(this.cCtx, (*C.vscf_impl_t)(algInfo.ctx()))
+func (obj *Kdf2) RestoreAlgInfo (algInfo IAlgInfo) error {
+    proxyResult := /*pr4*/C.vscf_kdf2_restore_alg_info(obj.cCtx, (*C.vscf_impl_t)(algInfo.ctx()))
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
@@ -90,7 +90,7 @@ func (this Kdf2) RestoreAlgInfo (algInfo IAlgInfo) error {
 /*
 * Derive key of the requested length from the given data.
 */
-func (this Kdf2) Derive (data []byte, keyLen uint32) []byte {
+func (obj *Kdf2) Derive (data []byte, keyLen uint32) []byte {
     keyBuf, keyBufErr := bufferNewBuffer(int(keyLen))
     if keyBufErr != nil {
         return nil
@@ -98,7 +98,7 @@ func (this Kdf2) Derive (data []byte, keyLen uint32) []byte {
     defer keyBuf.clear()
     dataData := helperWrapData (data)
 
-    C.vscf_kdf2_derive(this.cCtx, dataData, (C.size_t)(keyLen)/*pa10*/, keyBuf.ctx)
+    C.vscf_kdf2_derive(obj.cCtx, dataData, (C.size_t)(keyLen)/*pa10*/, keyBuf.ctx)
 
     return keyBuf.getData() /* r7 */
 }

@@ -17,15 +17,15 @@ type CipherAlgInfo struct {
 /*
 * Return IV.
 */
-func (this CipherAlgInfo) Nonce () []byte {
-    proxyResult := /*pr4*/C.vscf_cipher_alg_info_nonce(this.cCtx)
+func (obj *CipherAlgInfo) Nonce () []byte {
+    proxyResult := /*pr4*/C.vscf_cipher_alg_info_nonce(obj.cCtx)
 
     return helperExtractData(proxyResult) /* r1 */
 }
 
 /* Handle underlying C context. */
-func (this CipherAlgInfo) ctx () *C.vscf_impl_t {
-    return (*C.vscf_impl_t)(this.cCtx)
+func (obj *CipherAlgInfo) ctx () *C.vscf_impl_t {
+    return (*C.vscf_impl_t)(obj.cCtx)
 }
 
 func NewCipherAlgInfo () *CipherAlgInfo {
@@ -54,8 +54,8 @@ func newCipherAlgInfoCopy (ctx *C.vscf_cipher_alg_info_t /*ct10*/) *CipherAlgInf
 }
 
 /// Release underlying C context.
-func (this CipherAlgInfo) clear () {
-    C.vscf_cipher_alg_info_delete(this.cCtx)
+func (obj *CipherAlgInfo) clear () {
+    C.vscf_cipher_alg_info_delete(obj.cCtx)
 }
 
 /*
@@ -74,8 +74,8 @@ func NewCipherAlgInfoWithMembers (algId AlgId, nonce []byte) *CipherAlgInfo {
 /*
 * Provide algorithm identificator.
 */
-func (this CipherAlgInfo) AlgId () AlgId {
-    proxyResult := /*pr4*/C.vscf_cipher_alg_info_alg_id(this.cCtx)
+func (obj *CipherAlgInfo) AlgId () AlgId {
+    proxyResult := /*pr4*/C.vscf_cipher_alg_info_alg_id(obj.cCtx)
 
     return AlgId(proxyResult) /* r8 */
 }

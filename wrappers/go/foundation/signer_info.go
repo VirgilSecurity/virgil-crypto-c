@@ -15,8 +15,8 @@ type SignerInfo struct {
 }
 
 /* Handle underlying C context. */
-func (this SignerInfo) ctx () *C.vscf_impl_t {
-    return (*C.vscf_impl_t)(this.cCtx)
+func (obj *SignerInfo) ctx () *C.vscf_impl_t {
+    return (*C.vscf_impl_t)(obj.cCtx)
 }
 
 func NewSignerInfo () *SignerInfo {
@@ -45,15 +45,15 @@ func newSignerInfoCopy (ctx *C.vscf_signer_info_t /*ct2*/) *SignerInfo {
 }
 
 /// Release underlying C context.
-func (this SignerInfo) clear () {
-    C.vscf_signer_info_delete(this.cCtx)
+func (obj *SignerInfo) clear () {
+    C.vscf_signer_info_delete(obj.cCtx)
 }
 
 /*
 * Return signer identifier.
 */
-func (this SignerInfo) SignerId () []byte {
-    proxyResult := /*pr4*/C.vscf_signer_info_signer_id(this.cCtx)
+func (obj *SignerInfo) SignerId () []byte {
+    proxyResult := /*pr4*/C.vscf_signer_info_signer_id(obj.cCtx)
 
     return helperExtractData(proxyResult) /* r1 */
 }
@@ -61,8 +61,8 @@ func (this SignerInfo) SignerId () []byte {
 /*
 * Return algorithm information that was used for data signing.
 */
-func (this SignerInfo) SignerAlgInfo () (IAlgInfo, error) {
-    proxyResult := /*pr4*/C.vscf_signer_info_signer_alg_info(this.cCtx)
+func (obj *SignerInfo) SignerAlgInfo () (IAlgInfo, error) {
+    proxyResult := /*pr4*/C.vscf_signer_info_signer_alg_info(obj.cCtx)
 
     return FoundationImplementationWrapIAlgInfo(proxyResult) /* r4 */
 }
@@ -70,8 +70,8 @@ func (this SignerInfo) SignerAlgInfo () (IAlgInfo, error) {
 /*
 * Return data signature.
 */
-func (this SignerInfo) Signature () []byte {
-    proxyResult := /*pr4*/C.vscf_signer_info_signature(this.cCtx)
+func (obj *SignerInfo) Signature () []byte {
+    proxyResult := /*pr4*/C.vscf_signer_info_signature(obj.cCtx)
 
     return helperExtractData(proxyResult) /* r1 */
 }

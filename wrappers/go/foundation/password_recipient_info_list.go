@@ -14,8 +14,8 @@ type PasswordRecipientInfoList struct {
 }
 
 /* Handle underlying C context. */
-func (this PasswordRecipientInfoList) ctx () *C.vscf_impl_t {
-    return (*C.vscf_impl_t)(this.cCtx)
+func (obj *PasswordRecipientInfoList) ctx () *C.vscf_impl_t {
+    return (*C.vscf_impl_t)(obj.cCtx)
 }
 
 func NewPasswordRecipientInfoList () *PasswordRecipientInfoList {
@@ -44,15 +44,15 @@ func newPasswordRecipientInfoListCopy (ctx *C.vscf_password_recipient_info_list_
 }
 
 /// Release underlying C context.
-func (this PasswordRecipientInfoList) clear () {
-    C.vscf_password_recipient_info_list_delete(this.cCtx)
+func (obj *PasswordRecipientInfoList) clear () {
+    C.vscf_password_recipient_info_list_delete(obj.cCtx)
 }
 
 /*
 * Return true if given list has item.
 */
-func (this PasswordRecipientInfoList) HasItem () bool {
-    proxyResult := /*pr4*/C.vscf_password_recipient_info_list_has_item(this.cCtx)
+func (obj *PasswordRecipientInfoList) HasItem () bool {
+    proxyResult := /*pr4*/C.vscf_password_recipient_info_list_has_item(obj.cCtx)
 
     return bool(proxyResult) /* r9 */
 }
@@ -60,8 +60,8 @@ func (this PasswordRecipientInfoList) HasItem () bool {
 /*
 * Return list item.
 */
-func (this PasswordRecipientInfoList) Item () *PasswordRecipientInfo {
-    proxyResult := /*pr4*/C.vscf_password_recipient_info_list_item(this.cCtx)
+func (obj *PasswordRecipientInfoList) Item () *PasswordRecipientInfo {
+    proxyResult := /*pr4*/C.vscf_password_recipient_info_list_item(obj.cCtx)
 
     return newPasswordRecipientInfoWithCtx(proxyResult) /* r5 */
 }
@@ -69,8 +69,8 @@ func (this PasswordRecipientInfoList) Item () *PasswordRecipientInfo {
 /*
 * Return true if list has next item.
 */
-func (this PasswordRecipientInfoList) HasNext () bool {
-    proxyResult := /*pr4*/C.vscf_password_recipient_info_list_has_next(this.cCtx)
+func (obj *PasswordRecipientInfoList) HasNext () bool {
+    proxyResult := /*pr4*/C.vscf_password_recipient_info_list_has_next(obj.cCtx)
 
     return bool(proxyResult) /* r9 */
 }
@@ -78,8 +78,8 @@ func (this PasswordRecipientInfoList) HasNext () bool {
 /*
 * Return next list node if exists, or NULL otherwise.
 */
-func (this PasswordRecipientInfoList) Next () *PasswordRecipientInfoList {
-    proxyResult := /*pr4*/C.vscf_password_recipient_info_list_next(this.cCtx)
+func (obj *PasswordRecipientInfoList) Next () *PasswordRecipientInfoList {
+    proxyResult := /*pr4*/C.vscf_password_recipient_info_list_next(obj.cCtx)
 
     return newPasswordRecipientInfoListWithCtx(proxyResult) /* r6 */
 }
@@ -87,8 +87,8 @@ func (this PasswordRecipientInfoList) Next () *PasswordRecipientInfoList {
 /*
 * Return true if list has previous item.
 */
-func (this PasswordRecipientInfoList) HasPrev () bool {
-    proxyResult := /*pr4*/C.vscf_password_recipient_info_list_has_prev(this.cCtx)
+func (obj *PasswordRecipientInfoList) HasPrev () bool {
+    proxyResult := /*pr4*/C.vscf_password_recipient_info_list_has_prev(obj.cCtx)
 
     return bool(proxyResult) /* r9 */
 }
@@ -96,8 +96,8 @@ func (this PasswordRecipientInfoList) HasPrev () bool {
 /*
 * Return previous list node if exists, or NULL otherwise.
 */
-func (this PasswordRecipientInfoList) Prev () *PasswordRecipientInfoList {
-    proxyResult := /*pr4*/C.vscf_password_recipient_info_list_prev(this.cCtx)
+func (obj *PasswordRecipientInfoList) Prev () *PasswordRecipientInfoList {
+    proxyResult := /*pr4*/C.vscf_password_recipient_info_list_prev(obj.cCtx)
 
     return newPasswordRecipientInfoListWithCtx(proxyResult) /* r6 */
 }
@@ -105,8 +105,8 @@ func (this PasswordRecipientInfoList) Prev () *PasswordRecipientInfoList {
 /*
 * Remove all items.
 */
-func (this PasswordRecipientInfoList) Clear () {
-    C.vscf_password_recipient_info_list_clear(this.cCtx)
+func (obj *PasswordRecipientInfoList) Clear () {
+    C.vscf_password_recipient_info_list_clear(obj.cCtx)
 
     return
 }

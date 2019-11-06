@@ -15,8 +15,8 @@ type SimpleAlgInfo struct {
 }
 
 /* Handle underlying C context. */
-func (this SimpleAlgInfo) ctx () *C.vscf_impl_t {
-    return (*C.vscf_impl_t)(this.cCtx)
+func (obj *SimpleAlgInfo) ctx () *C.vscf_impl_t {
+    return (*C.vscf_impl_t)(obj.cCtx)
 }
 
 func NewSimpleAlgInfo () *SimpleAlgInfo {
@@ -45,8 +45,8 @@ func newSimpleAlgInfoCopy (ctx *C.vscf_simple_alg_info_t /*ct10*/) *SimpleAlgInf
 }
 
 /// Release underlying C context.
-func (this SimpleAlgInfo) clear () {
-    C.vscf_simple_alg_info_delete(this.cCtx)
+func (obj *SimpleAlgInfo) clear () {
+    C.vscf_simple_alg_info_delete(obj.cCtx)
 }
 
 /*
@@ -63,8 +63,8 @@ func NewSimpleAlgInfoWithAlgId (algId AlgId) *SimpleAlgInfo {
 /*
 * Provide algorithm identificator.
 */
-func (this SimpleAlgInfo) AlgId () AlgId {
-    proxyResult := /*pr4*/C.vscf_simple_alg_info_alg_id(this.cCtx)
+func (obj *SimpleAlgInfo) AlgId () AlgId {
+    proxyResult := /*pr4*/C.vscf_simple_alg_info_alg_id(obj.cCtx)
 
     return AlgId(proxyResult) /* r8 */
 }

@@ -47,7 +47,6 @@ func TestNewKeyProvider(t *testing.T) {
 }
 
 func TestKeyProvider_ImportPrivateKey_EmptyData(t *testing.T) {
-    t.SkipNow()
     keyProvider := newKeyProvider()
 
     importedKey, err := keyProvider.ImportPrivateKey([]byte{})

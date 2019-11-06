@@ -11,8 +11,8 @@ type BrainkeyServer struct {
 }
 
 /* Handle underlying C context. */
-func (this BrainkeyServer) ctx () *C.vscf_impl_t {
-    return (*C.vscf_impl_t)(this.cCtx)
+func (obj *BrainkeyServer) ctx () *C.vscf_impl_t {
+    return (*C.vscf_impl_t)(obj.cCtx)
 }
 
 func NewBrainkeyServer () *BrainkeyServer {
@@ -41,8 +41,8 @@ func newBrainkeyServerCopy (ctx *C.vscf_brainkey_server_t /*ct2*/) *BrainkeyServ
 }
 
 /// Release underlying C context.
-func (this BrainkeyServer) clear () {
-    C.vscf_brainkey_server_delete(this.cCtx)
+func (obj *BrainkeyServer) clear () {
+    C.vscf_brainkey_server_delete(obj.cCtx)
 }
 
 func BrainkeyServerGetPointLen () uint32 {
@@ -56,21 +56,21 @@ func BrainkeyServerGetMpiLen () uint32 {
 /*
 * Random used for key generation, proofs, etc.
 */
-func (this BrainkeyServer) SetRandom (random IRandom) {
-    C.vscf_brainkey_server_release_random(this.cCtx)
-    C.vscf_brainkey_server_use_random(this.cCtx, (*C.vscf_impl_t)(random.ctx()))
+func (obj *BrainkeyServer) SetRandom (random IRandom) {
+    C.vscf_brainkey_server_release_random(obj.cCtx)
+    C.vscf_brainkey_server_use_random(obj.cCtx, (*C.vscf_impl_t)(random.ctx()))
 }
 
 /*
 * Random used for crypto operations to make them const-time
 */
-func (this BrainkeyServer) SetOperationRandom (operationRandom IRandom) {
-    C.vscf_brainkey_server_release_operation_random(this.cCtx)
-    C.vscf_brainkey_server_use_operation_random(this.cCtx, (*C.vscf_impl_t)(operationRandom.ctx()))
+func (obj *BrainkeyServer) SetOperationRandom (operationRandom IRandom) {
+    C.vscf_brainkey_server_release_operation_random(obj.cCtx)
+    C.vscf_brainkey_server_use_operation_random(obj.cCtx, (*C.vscf_impl_t)(operationRandom.ctx()))
 }
 
-func (this BrainkeyServer) SetupDefaults () error {
-    proxyResult := /*pr4*/C.vscf_brainkey_server_setup_defaults(this.cCtx)
+func (obj *BrainkeyServer) SetupDefaults () error {
+    proxyResult := /*pr4*/C.vscf_brainkey_server_setup_defaults(obj.cCtx)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
@@ -80,7 +80,7 @@ func (this BrainkeyServer) SetupDefaults () error {
     return nil
 }
 
-func (this BrainkeyServer) GenerateIdentitySecret () ([]byte, error) {
+func (obj *BrainkeyServer) GenerateIdentitySecret () ([]byte, error) {
     identitySecretBuf, identitySecretBufErr := bufferNewBuffer(int(BrainkeyServerGetMpiLen() /* lg4 */))
     if identitySecretBufErr != nil {
         return nil, identitySecretBufErr
@@ -88,7 +88,7 @@ func (this BrainkeyServer) GenerateIdentitySecret () ([]byte, error) {
     defer identitySecretBuf.clear()
 
 
-    proxyResult := /*pr4*/C.vscf_brainkey_server_generate_identity_secret(this.cCtx, identitySecretBuf.ctx)
+    proxyResult := /*pr4*/C.vscf_brainkey_server_generate_identity_secret(obj.cCtx, identitySecretBuf.ctx)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
@@ -98,7 +98,7 @@ func (this BrainkeyServer) GenerateIdentitySecret () ([]byte, error) {
     return identitySecretBuf.getData() /* r7 */, nil
 }
 
-func (this BrainkeyServer) Harden (identitySecret []byte, blindedPoint []byte) ([]byte, error) {
+func (obj *BrainkeyServer) Harden (identitySecret []byte, blindedPoint []byte) ([]byte, error) {
     hardenedPointBuf, hardenedPointBufErr := bufferNewBuffer(int(BrainkeyServerGetPointLen() /* lg4 */))
     if hardenedPointBufErr != nil {
         return nil, hardenedPointBufErr
@@ -107,7 +107,7 @@ func (this BrainkeyServer) Harden (identitySecret []byte, blindedPoint []byte) (
     identitySecretData := helperWrapData (identitySecret)
     blindedPointData := helperWrapData (blindedPoint)
 
-    proxyResult := /*pr4*/C.vscf_brainkey_server_harden(this.cCtx, identitySecretData, blindedPointData, hardenedPointBuf.ctx)
+    proxyResult := /*pr4*/C.vscf_brainkey_server_harden(obj.cCtx, identitySecretData, blindedPointData, hardenedPointBuf.ctx)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {

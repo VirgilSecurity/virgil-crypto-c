@@ -17,8 +17,8 @@ type PbeAlgInfo struct {
 /*
 * Return KDF algorithm information.
 */
-func (this PbeAlgInfo) KdfAlgInfo () (IAlgInfo, error) {
-    proxyResult := /*pr4*/C.vscf_pbe_alg_info_kdf_alg_info(this.cCtx)
+func (obj *PbeAlgInfo) KdfAlgInfo () (IAlgInfo, error) {
+    proxyResult := /*pr4*/C.vscf_pbe_alg_info_kdf_alg_info(obj.cCtx)
 
     return FoundationImplementationWrapIAlgInfo(proxyResult) /* r4 */
 }
@@ -26,15 +26,15 @@ func (this PbeAlgInfo) KdfAlgInfo () (IAlgInfo, error) {
 /*
 * Return cipher algorithm information.
 */
-func (this PbeAlgInfo) CipherAlgInfo () (IAlgInfo, error) {
-    proxyResult := /*pr4*/C.vscf_pbe_alg_info_cipher_alg_info(this.cCtx)
+func (obj *PbeAlgInfo) CipherAlgInfo () (IAlgInfo, error) {
+    proxyResult := /*pr4*/C.vscf_pbe_alg_info_cipher_alg_info(obj.cCtx)
 
     return FoundationImplementationWrapIAlgInfo(proxyResult) /* r4 */
 }
 
 /* Handle underlying C context. */
-func (this PbeAlgInfo) ctx () *C.vscf_impl_t {
-    return (*C.vscf_impl_t)(this.cCtx)
+func (obj *PbeAlgInfo) ctx () *C.vscf_impl_t {
+    return (*C.vscf_impl_t)(obj.cCtx)
 }
 
 func NewPbeAlgInfo () *PbeAlgInfo {
@@ -63,8 +63,8 @@ func newPbeAlgInfoCopy (ctx *C.vscf_pbe_alg_info_t /*ct10*/) *PbeAlgInfo {
 }
 
 /// Release underlying C context.
-func (this PbeAlgInfo) clear () {
-    C.vscf_pbe_alg_info_delete(this.cCtx)
+func (obj *PbeAlgInfo) clear () {
+    C.vscf_pbe_alg_info_delete(obj.cCtx)
 }
 
 /*
@@ -85,8 +85,8 @@ func NewPbeAlgInfoWithMembers (algId AlgId, kdfAlgInfo IAlgInfo, cipherAlgInfo I
 /*
 * Provide algorithm identificator.
 */
-func (this PbeAlgInfo) AlgId () AlgId {
-    proxyResult := /*pr4*/C.vscf_pbe_alg_info_alg_id(this.cCtx)
+func (obj *PbeAlgInfo) AlgId () AlgId {
+    proxyResult := /*pr4*/C.vscf_pbe_alg_info_alg_id(obj.cCtx)
 
     return AlgId(proxyResult) /* r8 */
 }

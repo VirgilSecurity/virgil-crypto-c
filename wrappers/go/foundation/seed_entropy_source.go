@@ -24,17 +24,17 @@ func SeedEntropySourceGetGatherLenMax () uint32 {
 /*
 * Set a new seed as an entropy source.
 */
-func (this SeedEntropySource) ResetSeed (seed []byte) {
+func (obj *SeedEntropySource) ResetSeed (seed []byte) {
     seedData := helperWrapData (seed)
 
-    C.vscf_seed_entropy_source_reset_seed(this.cCtx, seedData)
+    C.vscf_seed_entropy_source_reset_seed(obj.cCtx, seedData)
 
     return
 }
 
 /* Handle underlying C context. */
-func (this SeedEntropySource) ctx () *C.vscf_impl_t {
-    return (*C.vscf_impl_t)(this.cCtx)
+func (obj *SeedEntropySource) ctx () *C.vscf_impl_t {
+    return (*C.vscf_impl_t)(obj.cCtx)
 }
 
 func NewSeedEntropySource () *SeedEntropySource {
@@ -63,15 +63,15 @@ func newSeedEntropySourceCopy (ctx *C.vscf_seed_entropy_source_t /*ct10*/) *Seed
 }
 
 /// Release underlying C context.
-func (this SeedEntropySource) clear () {
-    C.vscf_seed_entropy_source_delete(this.cCtx)
+func (obj *SeedEntropySource) clear () {
+    C.vscf_seed_entropy_source_delete(obj.cCtx)
 }
 
 /*
 * Defines that implemented source is strong.
 */
-func (this SeedEntropySource) IsStrong () bool {
-    proxyResult := /*pr4*/C.vscf_seed_entropy_source_is_strong(this.cCtx)
+func (obj *SeedEntropySource) IsStrong () bool {
+    proxyResult := /*pr4*/C.vscf_seed_entropy_source_is_strong(obj.cCtx)
 
     return bool(proxyResult) /* r9 */
 }
@@ -79,7 +79,7 @@ func (this SeedEntropySource) IsStrong () bool {
 /*
 * Gather entropy of the requested length.
 */
-func (this SeedEntropySource) Gather (len uint32) ([]byte, error) {
+func (obj *SeedEntropySource) Gather (len uint32) ([]byte, error) {
     outBuf, outBufErr := bufferNewBuffer(int(len))
     if outBufErr != nil {
         return nil, outBufErr
@@ -87,7 +87,7 @@ func (this SeedEntropySource) Gather (len uint32) ([]byte, error) {
     defer outBuf.clear()
 
 
-    proxyResult := /*pr4*/C.vscf_seed_entropy_source_gather(this.cCtx, (C.size_t)(len)/*pa10*/, outBuf.ctx)
+    proxyResult := /*pr4*/C.vscf_seed_entropy_source_gather(obj.cCtx, (C.size_t)(len)/*pa10*/, outBuf.ctx)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {

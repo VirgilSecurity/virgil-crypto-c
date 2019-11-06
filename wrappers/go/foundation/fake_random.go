@@ -18,8 +18,8 @@ type FakeRandom struct {
 /*
 * Configure random number generator to generate sequence filled with given byte.
 */
-func (this FakeRandom) SetupSourceByte (byteSource byte) {
-    C.vscf_fake_random_setup_source_byte(this.cCtx, (C.byte)(byteSource)/*pa10*/)
+func (obj *FakeRandom) SetupSourceByte (byteSource byte) {
+    C.vscf_fake_random_setup_source_byte(obj.cCtx, (C.byte)(byteSource)/*pa10*/)
 
     return
 }
@@ -28,17 +28,17 @@ func (this FakeRandom) SetupSourceByte (byteSource byte) {
 * Configure random number generator to generate random sequence from given data.
 * Note, that given data is used as circular source.
 */
-func (this FakeRandom) SetupSourceData (dataSource []byte) {
+func (obj *FakeRandom) SetupSourceData (dataSource []byte) {
     dataSourceData := helperWrapData (dataSource)
 
-    C.vscf_fake_random_setup_source_data(this.cCtx, dataSourceData)
+    C.vscf_fake_random_setup_source_data(obj.cCtx, dataSourceData)
 
     return
 }
 
 /* Handle underlying C context. */
-func (this FakeRandom) ctx () *C.vscf_impl_t {
-    return (*C.vscf_impl_t)(this.cCtx)
+func (obj *FakeRandom) ctx () *C.vscf_impl_t {
+    return (*C.vscf_impl_t)(obj.cCtx)
 }
 
 func NewFakeRandom () *FakeRandom {
@@ -67,15 +67,15 @@ func newFakeRandomCopy (ctx *C.vscf_fake_random_t /*ct10*/) *FakeRandom {
 }
 
 /// Release underlying C context.
-func (this FakeRandom) clear () {
-    C.vscf_fake_random_delete(this.cCtx)
+func (obj *FakeRandom) clear () {
+    C.vscf_fake_random_delete(obj.cCtx)
 }
 
 /*
 * Generate random bytes.
 * All RNG implementations must be thread-safe.
 */
-func (this FakeRandom) Random (dataLen uint32) ([]byte, error) {
+func (obj *FakeRandom) Random (dataLen uint32) ([]byte, error) {
     dataBuf, dataBufErr := bufferNewBuffer(int(dataLen))
     if dataBufErr != nil {
         return nil, dataBufErr
@@ -83,7 +83,7 @@ func (this FakeRandom) Random (dataLen uint32) ([]byte, error) {
     defer dataBuf.clear()
 
 
-    proxyResult := /*pr4*/C.vscf_fake_random_random(this.cCtx, (C.size_t)(dataLen)/*pa10*/, dataBuf.ctx)
+    proxyResult := /*pr4*/C.vscf_fake_random_random(obj.cCtx, (C.size_t)(dataLen)/*pa10*/, dataBuf.ctx)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
@@ -96,8 +96,8 @@ func (this FakeRandom) Random (dataLen uint32) ([]byte, error) {
 /*
 * Retrieve new seed data from the entropy sources.
 */
-func (this FakeRandom) Reseed () error {
-    proxyResult := /*pr4*/C.vscf_fake_random_reseed(this.cCtx)
+func (obj *FakeRandom) Reseed () error {
+    proxyResult := /*pr4*/C.vscf_fake_random_reseed(obj.cCtx)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
@@ -110,8 +110,8 @@ func (this FakeRandom) Reseed () error {
 /*
 * Defines that implemented source is strong.
 */
-func (this FakeRandom) IsStrong () bool {
-    proxyResult := /*pr4*/C.vscf_fake_random_is_strong(this.cCtx)
+func (obj *FakeRandom) IsStrong () bool {
+    proxyResult := /*pr4*/C.vscf_fake_random_is_strong(obj.cCtx)
 
     return bool(proxyResult) /* r9 */
 }
@@ -119,7 +119,7 @@ func (this FakeRandom) IsStrong () bool {
 /*
 * Gather entropy of the requested length.
 */
-func (this FakeRandom) Gather (len uint32) ([]byte, error) {
+func (obj *FakeRandom) Gather (len uint32) ([]byte, error) {
     outBuf, outBufErr := bufferNewBuffer(int(len))
     if outBufErr != nil {
         return nil, outBufErr
@@ -127,7 +127,7 @@ func (this FakeRandom) Gather (len uint32) ([]byte, error) {
     defer outBuf.clear()
 
 
-    proxyResult := /*pr4*/C.vscf_fake_random_gather(this.cCtx, (C.size_t)(len)/*pa10*/, outBuf.ctx)
+    proxyResult := /*pr4*/C.vscf_fake_random_gather(obj.cCtx, (C.size_t)(len)/*pa10*/, outBuf.ctx)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {

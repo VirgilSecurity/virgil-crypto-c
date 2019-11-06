@@ -20,14 +20,14 @@ func HkdfGetHashCounterMax () uint32 {
     return 255
 }
 
-func (this Hkdf) SetHash (hash IHash) {
-    C.vscf_hkdf_release_hash(this.cCtx)
-    C.vscf_hkdf_use_hash(this.cCtx, (*C.vscf_impl_t)(hash.ctx()))
+func (obj *Hkdf) SetHash (hash IHash) {
+    C.vscf_hkdf_release_hash(obj.cCtx)
+    C.vscf_hkdf_use_hash(obj.cCtx, (*C.vscf_impl_t)(hash.ctx()))
 }
 
 /* Handle underlying C context. */
-func (this Hkdf) ctx () *C.vscf_impl_t {
-    return (*C.vscf_impl_t)(this.cCtx)
+func (obj *Hkdf) ctx () *C.vscf_impl_t {
+    return (*C.vscf_impl_t)(obj.cCtx)
 }
 
 func NewHkdf () *Hkdf {
@@ -56,15 +56,15 @@ func newHkdfCopy (ctx *C.vscf_hkdf_t /*ct10*/) *Hkdf {
 }
 
 /// Release underlying C context.
-func (this Hkdf) clear () {
-    C.vscf_hkdf_delete(this.cCtx)
+func (obj *Hkdf) clear () {
+    C.vscf_hkdf_delete(obj.cCtx)
 }
 
 /*
 * Provide algorithm identificator.
 */
-func (this Hkdf) AlgId () AlgId {
-    proxyResult := /*pr4*/C.vscf_hkdf_alg_id(this.cCtx)
+func (obj *Hkdf) AlgId () AlgId {
+    proxyResult := /*pr4*/C.vscf_hkdf_alg_id(obj.cCtx)
 
     return AlgId(proxyResult) /* r8 */
 }
@@ -72,8 +72,8 @@ func (this Hkdf) AlgId () AlgId {
 /*
 * Produce object with algorithm information and configuration parameters.
 */
-func (this Hkdf) ProduceAlgInfo () (IAlgInfo, error) {
-    proxyResult := /*pr4*/C.vscf_hkdf_produce_alg_info(this.cCtx)
+func (obj *Hkdf) ProduceAlgInfo () (IAlgInfo, error) {
+    proxyResult := /*pr4*/C.vscf_hkdf_produce_alg_info(obj.cCtx)
 
     return FoundationImplementationWrapIAlgInfo(proxyResult) /* r4 */
 }
@@ -81,8 +81,8 @@ func (this Hkdf) ProduceAlgInfo () (IAlgInfo, error) {
 /*
 * Restore algorithm configuration from the given object.
 */
-func (this Hkdf) RestoreAlgInfo (algInfo IAlgInfo) error {
-    proxyResult := /*pr4*/C.vscf_hkdf_restore_alg_info(this.cCtx, (*C.vscf_impl_t)(algInfo.ctx()))
+func (obj *Hkdf) RestoreAlgInfo (algInfo IAlgInfo) error {
+    proxyResult := /*pr4*/C.vscf_hkdf_restore_alg_info(obj.cCtx, (*C.vscf_impl_t)(algInfo.ctx()))
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
@@ -95,7 +95,7 @@ func (this Hkdf) RestoreAlgInfo (algInfo IAlgInfo) error {
 /*
 * Derive key of the requested length from the given data.
 */
-func (this Hkdf) Derive (data []byte, keyLen uint32) []byte {
+func (obj *Hkdf) Derive (data []byte, keyLen uint32) []byte {
     keyBuf, keyBufErr := bufferNewBuffer(int(keyLen))
     if keyBufErr != nil {
         return nil
@@ -103,7 +103,7 @@ func (this Hkdf) Derive (data []byte, keyLen uint32) []byte {
     defer keyBuf.clear()
     dataData := helperWrapData (data)
 
-    C.vscf_hkdf_derive(this.cCtx, dataData, (C.size_t)(keyLen)/*pa10*/, keyBuf.ctx)
+    C.vscf_hkdf_derive(obj.cCtx, dataData, (C.size_t)(keyLen)/*pa10*/, keyBuf.ctx)
 
     return keyBuf.getData() /* r7 */
 }
@@ -111,10 +111,10 @@ func (this Hkdf) Derive (data []byte, keyLen uint32) []byte {
 /*
 * Prepare algorithm to derive new key.
 */
-func (this Hkdf) Reset (salt []byte, iterationCount uint32) {
+func (obj *Hkdf) Reset (salt []byte, iterationCount uint32) {
     saltData := helperWrapData (salt)
 
-    C.vscf_hkdf_reset(this.cCtx, saltData, (C.size_t)(iterationCount)/*pa10*/)
+    C.vscf_hkdf_reset(obj.cCtx, saltData, (C.size_t)(iterationCount)/*pa10*/)
 
     return
 }
@@ -123,10 +123,10 @@ func (this Hkdf) Reset (salt []byte, iterationCount uint32) {
 * Setup application specific information (optional).
 * Can be empty.
 */
-func (this Hkdf) SetInfo (info []byte) {
+func (obj *Hkdf) SetInfo (info []byte) {
     infoData := helperWrapData (info)
 
-    C.vscf_hkdf_set_info(this.cCtx, infoData)
+    C.vscf_hkdf_set_info(obj.cCtx, infoData)
 
     return
 }

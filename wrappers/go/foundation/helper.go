@@ -57,22 +57,22 @@ func bufferNewBuffer (cap int) (*buffer, error) {
     }, nil
 }
 
-func (this buffer) getData () []byte {
-    newSize := int(C.vsc_buffer_len(this.ctx))
-    if newSize > len(this.data) {
+func (obj *buffer) getData () []byte {
+    newSize := int(C.vsc_buffer_len(obj.ctx))
+    if newSize > len(obj.data) {
         panic ("Underlying C buffer corrupt the memory.")
     }
-    return this.data[:newSize]
+    return obj.data[:newSize]
 }
 
-func (this buffer) cap () int {
-    return int(C.vsc_buffer_capacity(this.ctx))
+func (obj *buffer) cap () int {
+    return int(C.vsc_buffer_capacity(obj.ctx))
 }
 
-func (this buffer) len () int {
-    return int(C.vsc_buffer_len(this.ctx))
+func (obj *buffer) len () int {
+    return int(C.vsc_buffer_len(obj.ctx))
 }
 
-func (this buffer) clear () {
-    C.vsc_buffer_delete(this.ctx)
+func (obj *buffer) clear () {
+    C.vsc_buffer_delete(obj.ctx)
 }

@@ -14,8 +14,8 @@ type FooterInfo struct {
 }
 
 /* Handle underlying C context. */
-func (this FooterInfo) ctx () *C.vscf_impl_t {
-    return (*C.vscf_impl_t)(this.cCtx)
+func (obj *FooterInfo) ctx () *C.vscf_impl_t {
+    return (*C.vscf_impl_t)(obj.cCtx)
 }
 
 func NewFooterInfo () *FooterInfo {
@@ -44,15 +44,15 @@ func newFooterInfoCopy (ctx *C.vscf_footer_info_t /*ct2*/) *FooterInfo {
 }
 
 /// Release underlying C context.
-func (this FooterInfo) clear () {
-    C.vscf_footer_info_delete(this.cCtx)
+func (obj *FooterInfo) clear () {
+    C.vscf_footer_info_delete(obj.cCtx)
 }
 
 /*
 * Retrun true if signed data info present.
 */
-func (this FooterInfo) HasSignedDataInfo () bool {
-    proxyResult := /*pr4*/C.vscf_footer_info_has_signed_data_info(this.cCtx)
+func (obj *FooterInfo) HasSignedDataInfo () bool {
+    proxyResult := /*pr4*/C.vscf_footer_info_has_signed_data_info(obj.cCtx)
 
     return bool(proxyResult) /* r9 */
 }
@@ -60,8 +60,8 @@ func (this FooterInfo) HasSignedDataInfo () bool {
 /*
 * Return signed data info.
 */
-func (this FooterInfo) SignedDataInfo () *SignedDataInfo {
-    proxyResult := /*pr4*/C.vscf_footer_info_signed_data_info(this.cCtx)
+func (obj *FooterInfo) SignedDataInfo () *SignedDataInfo {
+    proxyResult := /*pr4*/C.vscf_footer_info_signed_data_info(obj.cCtx)
 
     return newSignedDataInfoWithCtx(proxyResult) /* r5 */
 }
@@ -69,8 +69,8 @@ func (this FooterInfo) SignedDataInfo () *SignedDataInfo {
 /*
 * Set data size.
 */
-func (this FooterInfo) SetDataSize (dataSize uint32) {
-    C.vscf_footer_info_set_data_size(this.cCtx, (C.size_t)(dataSize)/*pa10*/)
+func (obj *FooterInfo) SetDataSize (dataSize uint32) {
+    C.vscf_footer_info_set_data_size(obj.cCtx, (C.size_t)(dataSize)/*pa10*/)
 
     return
 }
@@ -78,8 +78,8 @@ func (this FooterInfo) SetDataSize (dataSize uint32) {
 /*
 * Return data size.
 */
-func (this FooterInfo) DataSize () uint32 {
-    proxyResult := /*pr4*/C.vscf_footer_info_data_size(this.cCtx)
+func (obj *FooterInfo) DataSize () uint32 {
+    proxyResult := /*pr4*/C.vscf_footer_info_data_size(obj.cCtx)
 
     return uint32(proxyResult) /* r9 */
 }

@@ -21,8 +21,8 @@ func EntropyAccumulatorGetSourcesMax () uint32 {
 /*
 * Setup predefined values to the uninitialized class dependencies.
 */
-func (this EntropyAccumulator) SetupDefaults () {
-    C.vscf_entropy_accumulator_setup_defaults(this.cCtx)
+func (obj *EntropyAccumulator) SetupDefaults () {
+    C.vscf_entropy_accumulator_setup_defaults(obj.cCtx)
 
     return
 }
@@ -32,15 +32,15 @@ func (this EntropyAccumulator) SetupDefaults () {
 * Threshold defines minimum number of bytes that must be gathered
 * from the source during accumulation.
 */
-func (this EntropyAccumulator) AddSource (source IEntropySource, threshold uint32) {
-    C.vscf_entropy_accumulator_add_source(this.cCtx, (*C.vscf_impl_t)(source.ctx()), (C.size_t)(threshold)/*pa10*/)
+func (obj *EntropyAccumulator) AddSource (source IEntropySource, threshold uint32) {
+    C.vscf_entropy_accumulator_add_source(obj.cCtx, (*C.vscf_impl_t)(source.ctx()), (C.size_t)(threshold)/*pa10*/)
 
     return
 }
 
 /* Handle underlying C context. */
-func (this EntropyAccumulator) ctx () *C.vscf_impl_t {
-    return (*C.vscf_impl_t)(this.cCtx)
+func (obj *EntropyAccumulator) ctx () *C.vscf_impl_t {
+    return (*C.vscf_impl_t)(obj.cCtx)
 }
 
 func NewEntropyAccumulator () *EntropyAccumulator {
@@ -69,15 +69,15 @@ func newEntropyAccumulatorCopy (ctx *C.vscf_entropy_accumulator_t /*ct10*/) *Ent
 }
 
 /// Release underlying C context.
-func (this EntropyAccumulator) clear () {
-    C.vscf_entropy_accumulator_delete(this.cCtx)
+func (obj *EntropyAccumulator) clear () {
+    C.vscf_entropy_accumulator_delete(obj.cCtx)
 }
 
 /*
 * Defines that implemented source is strong.
 */
-func (this EntropyAccumulator) IsStrong () bool {
-    proxyResult := /*pr4*/C.vscf_entropy_accumulator_is_strong(this.cCtx)
+func (obj *EntropyAccumulator) IsStrong () bool {
+    proxyResult := /*pr4*/C.vscf_entropy_accumulator_is_strong(obj.cCtx)
 
     return bool(proxyResult) /* r9 */
 }
@@ -85,7 +85,7 @@ func (this EntropyAccumulator) IsStrong () bool {
 /*
 * Gather entropy of the requested length.
 */
-func (this EntropyAccumulator) Gather (len uint32) ([]byte, error) {
+func (obj *EntropyAccumulator) Gather (len uint32) ([]byte, error) {
     outBuf, outBufErr := bufferNewBuffer(int(len))
     if outBufErr != nil {
         return nil, outBufErr
@@ -93,7 +93,7 @@ func (this EntropyAccumulator) Gather (len uint32) ([]byte, error) {
     defer outBuf.clear()
 
 
-    proxyResult := /*pr4*/C.vscf_entropy_accumulator_gather(this.cCtx, (C.size_t)(len)/*pa10*/, outBuf.ctx)
+    proxyResult := /*pr4*/C.vscf_entropy_accumulator_gather(obj.cCtx, (C.size_t)(len)/*pa10*/, outBuf.ctx)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {

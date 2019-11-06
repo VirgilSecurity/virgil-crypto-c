@@ -33,17 +33,17 @@ func KeyMaterialRngGetKeyMaterialLenMax () uint32 {
 /*
 * Set a new key material.
 */
-func (this KeyMaterialRng) ResetKeyMaterial (keyMaterial []byte) {
+func (obj *KeyMaterialRng) ResetKeyMaterial (keyMaterial []byte) {
     keyMaterialData := helperWrapData (keyMaterial)
 
-    C.vscf_key_material_rng_reset_key_material(this.cCtx, keyMaterialData)
+    C.vscf_key_material_rng_reset_key_material(obj.cCtx, keyMaterialData)
 
     return
 }
 
 /* Handle underlying C context. */
-func (this KeyMaterialRng) ctx () *C.vscf_impl_t {
-    return (*C.vscf_impl_t)(this.cCtx)
+func (obj *KeyMaterialRng) ctx () *C.vscf_impl_t {
+    return (*C.vscf_impl_t)(obj.cCtx)
 }
 
 func NewKeyMaterialRng () *KeyMaterialRng {
@@ -72,15 +72,15 @@ func newKeyMaterialRngCopy (ctx *C.vscf_key_material_rng_t /*ct10*/) *KeyMateria
 }
 
 /// Release underlying C context.
-func (this KeyMaterialRng) clear () {
-    C.vscf_key_material_rng_delete(this.cCtx)
+func (obj *KeyMaterialRng) clear () {
+    C.vscf_key_material_rng_delete(obj.cCtx)
 }
 
 /*
 * Generate random bytes.
 * All RNG implementations must be thread-safe.
 */
-func (this KeyMaterialRng) Random (dataLen uint32) ([]byte, error) {
+func (obj *KeyMaterialRng) Random (dataLen uint32) ([]byte, error) {
     dataBuf, dataBufErr := bufferNewBuffer(int(dataLen))
     if dataBufErr != nil {
         return nil, dataBufErr
@@ -88,7 +88,7 @@ func (this KeyMaterialRng) Random (dataLen uint32) ([]byte, error) {
     defer dataBuf.clear()
 
 
-    proxyResult := /*pr4*/C.vscf_key_material_rng_random(this.cCtx, (C.size_t)(dataLen)/*pa10*/, dataBuf.ctx)
+    proxyResult := /*pr4*/C.vscf_key_material_rng_random(obj.cCtx, (C.size_t)(dataLen)/*pa10*/, dataBuf.ctx)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
@@ -101,8 +101,8 @@ func (this KeyMaterialRng) Random (dataLen uint32) ([]byte, error) {
 /*
 * Retrieve new seed data from the entropy sources.
 */
-func (this KeyMaterialRng) Reseed () error {
-    proxyResult := /*pr4*/C.vscf_key_material_rng_reseed(this.cCtx)
+func (obj *KeyMaterialRng) Reseed () error {
+    proxyResult := /*pr4*/C.vscf_key_material_rng_reseed(obj.cCtx)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {

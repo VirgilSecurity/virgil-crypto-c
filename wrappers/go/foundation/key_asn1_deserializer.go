@@ -14,16 +14,16 @@ type KeyAsn1Deserializer struct {
     cCtx *C.vscf_key_asn1_deserializer_t /*ct10*/
 }
 
-func (this KeyAsn1Deserializer) SetAsn1Reader (asn1Reader IAsn1Reader) {
-    C.vscf_key_asn1_deserializer_release_asn1_reader(this.cCtx)
-    C.vscf_key_asn1_deserializer_use_asn1_reader(this.cCtx, (*C.vscf_impl_t)(asn1Reader.ctx()))
+func (obj *KeyAsn1Deserializer) SetAsn1Reader (asn1Reader IAsn1Reader) {
+    C.vscf_key_asn1_deserializer_release_asn1_reader(obj.cCtx)
+    C.vscf_key_asn1_deserializer_use_asn1_reader(obj.cCtx, (*C.vscf_impl_t)(asn1Reader.ctx()))
 }
 
 /*
 * Setup predefined values to the uninitialized class dependencies.
 */
-func (this KeyAsn1Deserializer) SetupDefaults () {
-    C.vscf_key_asn1_deserializer_setup_defaults(this.cCtx)
+func (obj *KeyAsn1Deserializer) SetupDefaults () {
+    C.vscf_key_asn1_deserializer_setup_defaults(obj.cCtx)
 
     return
 }
@@ -33,11 +33,11 @@ func (this KeyAsn1Deserializer) SetupDefaults () {
 * Note, that caller code is responsible to reset ASN.1 reader with
 * an input buffer.
 */
-func (this KeyAsn1Deserializer) DeserializePublicKeyInplace () (*RawPublicKey, error) {
+func (obj *KeyAsn1Deserializer) DeserializePublicKeyInplace () (*RawPublicKey, error) {
     var error C.vscf_error_t
     C.vscf_error_reset(&error)
 
-    proxyResult := /*pr4*/C.vscf_key_asn1_deserializer_deserialize_public_key_inplace(this.cCtx, &error)
+    proxyResult := /*pr4*/C.vscf_key_asn1_deserializer_deserialize_public_key_inplace(obj.cCtx, &error)
 
     err := FoundationErrorHandleStatus(error.status)
     if err != nil {
@@ -52,11 +52,11 @@ func (this KeyAsn1Deserializer) DeserializePublicKeyInplace () (*RawPublicKey, e
 * Note, that caller code is responsible to reset ASN.1 reader with
 * an input buffer.
 */
-func (this KeyAsn1Deserializer) DeserializePrivateKeyInplace () (*RawPrivateKey, error) {
+func (obj *KeyAsn1Deserializer) DeserializePrivateKeyInplace () (*RawPrivateKey, error) {
     var error C.vscf_error_t
     C.vscf_error_reset(&error)
 
-    proxyResult := /*pr4*/C.vscf_key_asn1_deserializer_deserialize_private_key_inplace(this.cCtx, &error)
+    proxyResult := /*pr4*/C.vscf_key_asn1_deserializer_deserialize_private_key_inplace(obj.cCtx, &error)
 
     err := FoundationErrorHandleStatus(error.status)
     if err != nil {
@@ -67,8 +67,8 @@ func (this KeyAsn1Deserializer) DeserializePrivateKeyInplace () (*RawPrivateKey,
 }
 
 /* Handle underlying C context. */
-func (this KeyAsn1Deserializer) ctx () *C.vscf_impl_t {
-    return (*C.vscf_impl_t)(this.cCtx)
+func (obj *KeyAsn1Deserializer) ctx () *C.vscf_impl_t {
+    return (*C.vscf_impl_t)(obj.cCtx)
 }
 
 func NewKeyAsn1Deserializer () *KeyAsn1Deserializer {
@@ -97,19 +97,19 @@ func newKeyAsn1DeserializerCopy (ctx *C.vscf_key_asn1_deserializer_t /*ct10*/) *
 }
 
 /// Release underlying C context.
-func (this KeyAsn1Deserializer) clear () {
-    C.vscf_key_asn1_deserializer_delete(this.cCtx)
+func (obj *KeyAsn1Deserializer) clear () {
+    C.vscf_key_asn1_deserializer_delete(obj.cCtx)
 }
 
 /*
 * Deserialize given public key as an interchangeable format to the object.
 */
-func (this KeyAsn1Deserializer) DeserializePublicKey (publicKeyData []byte) (*RawPublicKey, error) {
+func (obj *KeyAsn1Deserializer) DeserializePublicKey (publicKeyData []byte) (*RawPublicKey, error) {
     var error C.vscf_error_t
     C.vscf_error_reset(&error)
     publicKeyDataData := helperWrapData (publicKeyData)
 
-    proxyResult := /*pr4*/C.vscf_key_asn1_deserializer_deserialize_public_key(this.cCtx, publicKeyDataData, &error)
+    proxyResult := /*pr4*/C.vscf_key_asn1_deserializer_deserialize_public_key(obj.cCtx, publicKeyDataData, &error)
 
     err := FoundationErrorHandleStatus(error.status)
     if err != nil {
@@ -122,12 +122,12 @@ func (this KeyAsn1Deserializer) DeserializePublicKey (publicKeyData []byte) (*Ra
 /*
 * Deserialize given private key as an interchangeable format to the object.
 */
-func (this KeyAsn1Deserializer) DeserializePrivateKey (privateKeyData []byte) (*RawPrivateKey, error) {
+func (obj *KeyAsn1Deserializer) DeserializePrivateKey (privateKeyData []byte) (*RawPrivateKey, error) {
     var error C.vscf_error_t
     C.vscf_error_reset(&error)
     privateKeyDataData := helperWrapData (privateKeyData)
 
-    proxyResult := /*pr4*/C.vscf_key_asn1_deserializer_deserialize_private_key(this.cCtx, privateKeyDataData, &error)
+    proxyResult := /*pr4*/C.vscf_key_asn1_deserializer_deserialize_private_key(obj.cCtx, privateKeyDataData, &error)
 
     err := FoundationErrorHandleStatus(error.status)
     if err != nil {

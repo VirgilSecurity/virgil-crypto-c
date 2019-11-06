@@ -15,8 +15,8 @@ type MessageInfo struct {
 }
 
 /* Handle underlying C context. */
-func (this MessageInfo) ctx () *C.vscf_impl_t {
-    return (*C.vscf_impl_t)(this.cCtx)
+func (obj *MessageInfo) ctx () *C.vscf_impl_t {
+    return (*C.vscf_impl_t)(obj.cCtx)
 }
 
 func NewMessageInfo () *MessageInfo {
@@ -45,15 +45,15 @@ func newMessageInfoCopy (ctx *C.vscf_message_info_t /*ct2*/) *MessageInfo {
 }
 
 /// Release underlying C context.
-func (this MessageInfo) clear () {
-    C.vscf_message_info_delete(this.cCtx)
+func (obj *MessageInfo) clear () {
+    C.vscf_message_info_delete(obj.cCtx)
 }
 
 /*
 * Return information about algorithm that was used for the data encryption.
 */
-func (this MessageInfo) DataEncryptionAlgInfo () (IAlgInfo, error) {
-    proxyResult := /*pr4*/C.vscf_message_info_data_encryption_alg_info(this.cCtx)
+func (obj *MessageInfo) DataEncryptionAlgInfo () (IAlgInfo, error) {
+    proxyResult := /*pr4*/C.vscf_message_info_data_encryption_alg_info(obj.cCtx)
 
     return FoundationImplementationWrapIAlgInfo(proxyResult) /* r4 */
 }
@@ -61,8 +61,8 @@ func (this MessageInfo) DataEncryptionAlgInfo () (IAlgInfo, error) {
 /*
 * Return list with a "key recipient info" elements.
 */
-func (this MessageInfo) KeyRecipientInfoList () *KeyRecipientInfoList {
-    proxyResult := /*pr4*/C.vscf_message_info_key_recipient_info_list(this.cCtx)
+func (obj *MessageInfo) KeyRecipientInfoList () *KeyRecipientInfoList {
+    proxyResult := /*pr4*/C.vscf_message_info_key_recipient_info_list(obj.cCtx)
 
     return newKeyRecipientInfoListWithCtx(proxyResult) /* r5 */
 }
@@ -70,8 +70,8 @@ func (this MessageInfo) KeyRecipientInfoList () *KeyRecipientInfoList {
 /*
 * Return list with a "password recipient info" elements.
 */
-func (this MessageInfo) PasswordRecipientInfoList () *PasswordRecipientInfoList {
-    proxyResult := /*pr4*/C.vscf_message_info_password_recipient_info_list(this.cCtx)
+func (obj *MessageInfo) PasswordRecipientInfoList () *PasswordRecipientInfoList {
+    proxyResult := /*pr4*/C.vscf_message_info_password_recipient_info_list(obj.cCtx)
 
     return newPasswordRecipientInfoListWithCtx(proxyResult) /* r5 */
 }
@@ -79,8 +79,8 @@ func (this MessageInfo) PasswordRecipientInfoList () *PasswordRecipientInfoList 
 /*
 * Return true if message info contains at least one custom param.
 */
-func (this MessageInfo) HasCustomParams () bool {
-    proxyResult := /*pr4*/C.vscf_message_info_has_custom_params(this.cCtx)
+func (obj *MessageInfo) HasCustomParams () bool {
+    proxyResult := /*pr4*/C.vscf_message_info_has_custom_params(obj.cCtx)
 
     return bool(proxyResult) /* r9 */
 }
@@ -90,8 +90,8 @@ func (this MessageInfo) HasCustomParams () bool {
 * The returned object can be used to add custom params or read it.
 * If custom params object was not set then new empty object is created.
 */
-func (this MessageInfo) CustomParams () *MessageInfoCustomParams {
-    proxyResult := /*pr4*/C.vscf_message_info_custom_params(this.cCtx)
+func (obj *MessageInfo) CustomParams () *MessageInfoCustomParams {
+    proxyResult := /*pr4*/C.vscf_message_info_custom_params(obj.cCtx)
 
     return newMessageInfoCustomParamsWithCtx(proxyResult) /* r5 */
 }
@@ -99,8 +99,8 @@ func (this MessageInfo) CustomParams () *MessageInfoCustomParams {
 /*
 * Return true if cipher kdf alg info exists.
 */
-func (this MessageInfo) HasCipherKdfAlgInfo () bool {
-    proxyResult := /*pr4*/C.vscf_message_info_has_cipher_kdf_alg_info(this.cCtx)
+func (obj *MessageInfo) HasCipherKdfAlgInfo () bool {
+    proxyResult := /*pr4*/C.vscf_message_info_has_cipher_kdf_alg_info(obj.cCtx)
 
     return bool(proxyResult) /* r9 */
 }
@@ -108,8 +108,8 @@ func (this MessageInfo) HasCipherKdfAlgInfo () bool {
 /*
 * Return cipher kdf alg info.
 */
-func (this MessageInfo) CipherKdfAlgInfo () (IAlgInfo, error) {
-    proxyResult := /*pr4*/C.vscf_message_info_cipher_kdf_alg_info(this.cCtx)
+func (obj *MessageInfo) CipherKdfAlgInfo () (IAlgInfo, error) {
+    proxyResult := /*pr4*/C.vscf_message_info_cipher_kdf_alg_info(obj.cCtx)
 
     return FoundationImplementationWrapIAlgInfo(proxyResult) /* r4 */
 }
@@ -117,8 +117,8 @@ func (this MessageInfo) CipherKdfAlgInfo () (IAlgInfo, error) {
 /*
 * Return true if footer info exists.
 */
-func (this MessageInfo) HasFooterInfo () bool {
-    proxyResult := /*pr4*/C.vscf_message_info_has_footer_info(this.cCtx)
+func (obj *MessageInfo) HasFooterInfo () bool {
+    proxyResult := /*pr4*/C.vscf_message_info_has_footer_info(obj.cCtx)
 
     return bool(proxyResult) /* r9 */
 }
@@ -126,8 +126,8 @@ func (this MessageInfo) HasFooterInfo () bool {
 /*
 * Return footer info.
 */
-func (this MessageInfo) FooterInfo () *FooterInfo {
-    proxyResult := /*pr4*/C.vscf_message_info_footer_info(this.cCtx)
+func (obj *MessageInfo) FooterInfo () *FooterInfo {
+    proxyResult := /*pr4*/C.vscf_message_info_footer_info(obj.cCtx)
 
     return newFooterInfoWithCtx(proxyResult) /* r5 */
 }
@@ -135,8 +135,8 @@ func (this MessageInfo) FooterInfo () *FooterInfo {
 /*
 * Remove all infos.
 */
-func (this MessageInfo) Clear () {
-    C.vscf_message_info_clear(this.cCtx)
+func (obj *MessageInfo) Clear () {
+    C.vscf_message_info_clear(obj.cCtx)
 
     return
 }

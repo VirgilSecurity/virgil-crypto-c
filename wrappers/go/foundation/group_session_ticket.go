@@ -14,8 +14,8 @@ type GroupSessionTicket struct {
 }
 
 /* Handle underlying C context. */
-func (this GroupSessionTicket) ctx () *C.vscf_impl_t {
-    return (*C.vscf_impl_t)(this.cCtx)
+func (obj *GroupSessionTicket) ctx () *C.vscf_impl_t {
+    return (*C.vscf_impl_t)(obj.cCtx)
 }
 
 func NewGroupSessionTicket () *GroupSessionTicket {
@@ -44,24 +44,24 @@ func newGroupSessionTicketCopy (ctx *C.vscf_group_session_ticket_t /*ct2*/) *Gro
 }
 
 /// Release underlying C context.
-func (this GroupSessionTicket) clear () {
-    C.vscf_group_session_ticket_delete(this.cCtx)
+func (obj *GroupSessionTicket) clear () {
+    C.vscf_group_session_ticket_delete(obj.cCtx)
 }
 
 /*
 * Random used to generate keys
 */
-func (this GroupSessionTicket) SetRng (rng IRandom) {
-    C.vscf_group_session_ticket_release_rng(this.cCtx)
-    C.vscf_group_session_ticket_use_rng(this.cCtx, (*C.vscf_impl_t)(rng.ctx()))
+func (obj *GroupSessionTicket) SetRng (rng IRandom) {
+    C.vscf_group_session_ticket_release_rng(obj.cCtx)
+    C.vscf_group_session_ticket_use_rng(obj.cCtx, (*C.vscf_impl_t)(rng.ctx()))
 }
 
 /*
 * Setups default dependencies:
 * - RNG: CTR DRBG
 */
-func (this GroupSessionTicket) SetupDefaults () error {
-    proxyResult := /*pr4*/C.vscf_group_session_ticket_setup_defaults(this.cCtx)
+func (obj *GroupSessionTicket) SetupDefaults () error {
+    proxyResult := /*pr4*/C.vscf_group_session_ticket_setup_defaults(obj.cCtx)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
@@ -74,10 +74,10 @@ func (this GroupSessionTicket) SetupDefaults () error {
 /*
 * Set this ticket to start new group session.
 */
-func (this GroupSessionTicket) SetupTicketAsNew (sessionId []byte) error {
+func (obj *GroupSessionTicket) SetupTicketAsNew (sessionId []byte) error {
     sessionIdData := helperWrapData (sessionId)
 
-    proxyResult := /*pr4*/C.vscf_group_session_ticket_setup_ticket_as_new(this.cCtx, sessionIdData)
+    proxyResult := /*pr4*/C.vscf_group_session_ticket_setup_ticket_as_new(obj.cCtx, sessionIdData)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
@@ -90,8 +90,8 @@ func (this GroupSessionTicket) SetupTicketAsNew (sessionId []byte) error {
 /*
 * Returns message that should be sent to all participants using secure channel.
 */
-func (this GroupSessionTicket) GetTicketMessage () *GroupSessionMessage {
-    proxyResult := /*pr4*/C.vscf_group_session_ticket_get_ticket_message(this.cCtx)
+func (obj *GroupSessionTicket) GetTicketMessage () *GroupSessionMessage {
+    proxyResult := /*pr4*/C.vscf_group_session_ticket_get_ticket_message(obj.cCtx)
 
     return newGroupSessionMessageWithCtx(proxyResult) /* r5 */
 }
