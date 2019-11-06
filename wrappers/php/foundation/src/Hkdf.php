@@ -48,6 +48,8 @@ class Hkdf implements Alg, Kdf, SaltedKdf
     */
     private $ctx;
 
+    const HASH_COUNTER_MAX = 255;
+
     /**
     * Create underlying C context.
     * @param null $ctx

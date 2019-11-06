@@ -50,6 +50,9 @@ class CtrDrbg implements Random
     */
     private $ctx;
 
+    const RESEED_INTERVAL = 10000;
+    const ENTROPY_LEN = 48;
+
     /**
     * Create underlying C context.
     * @param null $ctx

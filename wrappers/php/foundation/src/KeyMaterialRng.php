@@ -50,6 +50,9 @@ class KeyMaterialRng implements Random
     */
     private $ctx;
 
+    const KEY_MATERIAL_LEN_MIN = 32;
+    const KEY_MATERIAL_LEN_MAX = 512;
+
     /**
     * Create underlying C context.
     * @param null $ctx

@@ -48,6 +48,8 @@ class EntropyAccumulator implements EntropySource
     */
     private $ctx;
 
+    const SOURCES_MAX = 15;
+
     /**
     * Create underlying C context.
     * @param null $ctx

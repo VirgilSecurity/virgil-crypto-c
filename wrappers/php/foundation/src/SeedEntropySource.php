@@ -48,6 +48,8 @@ class SeedEntropySource implements EntropySource
     */
     private $ctx;
 
+    const GATHER_LEN_MAX = 48;
+
     /**
     * Create underlying C context.
     * @param null $ctx

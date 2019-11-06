@@ -89,7 +89,7 @@ function php_map_high_level (in_module, in_php_module, in_php_project, out_high_
 
     my._constant = ""
 
-    if my.in_type = "class"
+    if string_in(my.in_type, "class, implementation")
         for my.in_module.constant as constant0
             new constant to high_level
                 .name = php_derive_high_level_constant_name(constant0)
