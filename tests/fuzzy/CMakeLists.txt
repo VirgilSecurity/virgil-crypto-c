@@ -33,6 +33,6 @@ macro(_add_test test)
     endif()
 endmacro()
 
-_add_test(pkcs8_test_fuzzy)
+_add_test(key_asn1_deserializer_fuzzy)
 _add_test(key_provider_test_fuzzy)
 

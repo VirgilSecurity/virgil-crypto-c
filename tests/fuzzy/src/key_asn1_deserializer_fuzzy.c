@@ -57,17 +57,12 @@ LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
     vscf_error_t error;
     vscf_error_reset(&error);
 
-    vsc_data_t key;
-    key.bytes = data;
-    key.len = size;
+    vsc_data_t data_wrapper = vsc_data(data, size);
 
-    vscf_raw_private_key_t *raw_private_key =
-            vscf_key_asn1_deserializer_deserialize_private_key(key_deserializer, key, &error);
+    vscf_raw_public_key_t *raw_public_key = vscf_key_asn1_deserializer_deserialize_public_key(
+            key_deserializer, data_wrapper, &error);
 
-    TEST_ASSERT_FALSE(vscf_error_has_error(&error));
-    TEST_ASSERT_NOT_NULL(raw_private_key);
-
-    vscf_raw_private_key_destroy(&raw_private_key);
+    vscf_raw_public_key_destroy(&raw_public_key);
     vscf_key_asn1_deserializer_destroy(&key_deserializer);
     return 0;
 }
