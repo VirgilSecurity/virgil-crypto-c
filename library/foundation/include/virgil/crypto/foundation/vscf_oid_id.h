@@ -89,6 +89,7 @@ enum vscf_oid_id_t {
     vscf_oid_id_EC_GENERIC_KEY,
     vscf_oid_id_EC_DOMAIN_SECP256R1,
     vscf_oid_id_COMPOUND_KEY,
+    vscf_oid_id_CHAINED_KEY,
     vscf_oid_id_FALCON,
     vscf_oid_id_ROUND5,
     vscf_oid_id_ROUND5_ND_5PKE_5D

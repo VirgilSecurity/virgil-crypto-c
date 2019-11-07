@@ -48,6 +48,7 @@
 
 #include "test_data_recipient_cipher.h"
 #include "test_data_compound_key.h"
+#include "test_data_post_quantum.h"
 
 
 // --------------------------------------------------------------------------
@@ -141,11 +142,11 @@ test__encrypt_decrypt__with_compound_curve25519_ed25519_key_recipient__success(v
 }
 
 void
-test__encrypt_decrypt__with_compound_round5_falcon_key_recipient__success(void) {
+test__encrypt_decrypt__with_pqc_curve25519_round5_falcon_key_recipient__success(void) {
 #if VSCF_POST_QUANTUM
     inner_test__encrypt_decrypt__with_one_key_recipient__success(
-            test_data_compound_key_ROUND5_FALCON_PUBLIC_KEY_PKCS8_DER,
-            test_data_compound_key_ROUND5_FALCON_PRIVATE_KEY_PKCS8_DER);
+            test_data_pqc_CURVE25519_ROUND5_ND_5PKE_5D_FALCON_PUBLIC_KEY_PKCS8_DER,
+            test_data_pqc_CURVE25519_ROUND5_ND_5PKE_5D_FALCON_PRIVATE_KEY_PKCS8_DER);
 #else
     TEST_IGNORE_MESSAGE("Feature VSCF_POST_QUANTUM is disabled");
 #endif
@@ -405,11 +406,11 @@ test__sign_then_encrypt_and_decrypt_then_verify__with_compound_curve25519_ed2551
 }
 
 void
-test__sign_then_encrypt_and_decrypt_then_verify__with_compound_round5_falcon_key_recipient__success(void) {
+test__sign_then_encrypt_and_decrypt_then_verify__with_pqc_curve25519_round5_falcon_key_recipient__success(void) {
 #if VSCF_POST_QUANTUM
     inner_test__sign_then_encrypt_and_decrypt_then_verify__with_self_signed_key_recipient__success(
-            test_data_compound_key_ROUND5_FALCON_PUBLIC_KEY_PKCS8_DER,
-            test_data_compound_key_ROUND5_FALCON_PRIVATE_KEY_PKCS8_DER);
+            test_data_pqc_CURVE25519_ROUND5_ND_5PKE_5D_FALCON_PUBLIC_KEY_PKCS8_DER,
+            test_data_pqc_CURVE25519_ROUND5_ND_5PKE_5D_FALCON_PRIVATE_KEY_PKCS8_DER);
 #else
     TEST_IGNORE_MESSAGE("Feature VSCF_POST_QUANTUM is disabled");
 #endif
@@ -917,13 +918,13 @@ main(void) {
 #if TEST_DEPENDENCIES_AVAILABLE
     RUN_TEST(test__encrypt_decrypt__with_ed25519_key_recipient__success);
     RUN_TEST(test__encrypt_decrypt__with_compound_curve25519_ed25519_key_recipient__success);
-    RUN_TEST(test__encrypt_decrypt__with_compound_round5_falcon_key_recipient__success);
+    RUN_TEST(test__encrypt_decrypt__with_pqc_curve25519_round5_falcon_key_recipient__success);
     RUN_TEST(test__decrypt__with_ed25519_private_key__success);
     RUN_TEST(test__decrypt__chunks_with_ed25519_key_recipient__success);
 
     RUN_TEST(test__sign_then_encrypt_and_decrypt_then_verify__with_ed25519_key_recipient__success);
     RUN_TEST(test__sign_then_encrypt_and_decrypt_then_verify__with_compound_curve25519_ed25519_key_recipient__success);
-    RUN_TEST(test__sign_then_encrypt_and_decrypt_then_verify__with_compound_round5_falcon_key_recipient__success);
+    RUN_TEST(test__sign_then_encrypt_and_decrypt_then_verify__with_pqc_curve25519_round5_falcon_key_recipient__success);
 
     RUN_TEST(test__sign_then_encrypt__with_self_signed_ed25519_key_recipient__success);
     RUN_TEST(test__decrypt_then_verify__with_ed25519_key_recipient_and_detached_header_and_detached_footer__success);

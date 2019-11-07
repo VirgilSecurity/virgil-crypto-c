@@ -64,6 +64,7 @@
 #include "vscf_key_signer.h"
 #include "vscf_key_signer_api.h"
 #include "vscf_random.h"
+#include "vscf_hash.h"
 #include "vscf_impl.h"
 #include "vscf_api.h"
 
@@ -76,18 +77,6 @@
 // clang-format off
 //  Generated section start.
 // --------------------------------------------------------------------------
-
-//
-//  This method is called when interface 'random' was setup.
-//
-VSCF_PRIVATE void
-vscf_compound_key_alg_did_setup_random(vscf_compound_key_alg_t *self);
-
-//
-//  This method is called when interface 'random' was released.
-//
-VSCF_PRIVATE void
-vscf_compound_key_alg_did_release_random(vscf_compound_key_alg_t *self);
 
 static const vscf_api_t *
 vscf_compound_key_alg_find_api(vscf_api_tag_t api_tag);
@@ -316,8 +305,6 @@ vscf_compound_key_alg_init(vscf_compound_key_alg_t *self) {
 
     self->info = &info;
     self->refcnt = 1;
-
-    vscf_compound_key_alg_init_ctx(self);
 }
 
 //
@@ -332,8 +319,7 @@ vscf_compound_key_alg_cleanup(vscf_compound_key_alg_t *self) {
     }
 
     vscf_compound_key_alg_release_random(self);
-
-    vscf_compound_key_alg_cleanup_ctx(self);
+    vscf_compound_key_alg_release_hash(self);
 
     vscf_zeroize(self, sizeof(vscf_compound_key_alg_t));
 }
@@ -456,8 +442,6 @@ vscf_compound_key_alg_use_random(vscf_compound_key_alg_t *self, vscf_impl_t *ran
     VSCF_ASSERT(vscf_random_is_implemented(random));
 
     self->random = vscf_impl_shallow_copy(random);
-
-    vscf_compound_key_alg_did_setup_random(self);
 }
 
 //
@@ -474,8 +458,6 @@ vscf_compound_key_alg_take_random(vscf_compound_key_alg_t *self, vscf_impl_t *ra
     VSCF_ASSERT(vscf_random_is_implemented(random));
 
     self->random = random;
-
-    vscf_compound_key_alg_did_setup_random(self);
 }
 
 //
@@ -487,8 +469,48 @@ vscf_compound_key_alg_release_random(vscf_compound_key_alg_t *self) {
     VSCF_ASSERT_PTR(self);
 
     vscf_impl_destroy(&self->random);
+}
 
-    vscf_compound_key_alg_did_release_random(self);
+//
+//  Setup dependency to the interface 'hash' with shared ownership.
+//
+VSCF_PUBLIC void
+vscf_compound_key_alg_use_hash(vscf_compound_key_alg_t *self, vscf_impl_t *hash) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(hash);
+    VSCF_ASSERT(self->hash == NULL);
+
+    VSCF_ASSERT(vscf_hash_is_implemented(hash));
+
+    self->hash = vscf_impl_shallow_copy(hash);
+}
+
+//
+//  Setup dependency to the interface 'hash' and transfer ownership.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCF_PUBLIC void
+vscf_compound_key_alg_take_hash(vscf_compound_key_alg_t *self, vscf_impl_t *hash) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(hash);
+    VSCF_ASSERT(self->hash == NULL);
+
+    VSCF_ASSERT(vscf_hash_is_implemented(hash));
+
+    self->hash = hash;
+}
+
+//
+//  Release dependency to the interface 'hash'.
+//
+VSCF_PUBLIC void
+vscf_compound_key_alg_release_hash(vscf_compound_key_alg_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+
+    vscf_impl_destroy(&self->hash);
 }
 
 static const vscf_api_t *

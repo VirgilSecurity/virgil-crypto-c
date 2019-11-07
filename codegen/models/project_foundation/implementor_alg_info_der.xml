@@ -6,10 +6,10 @@
 
         <interface name="alg info serializer"/>
 
+        <require interface="alg info"/>
+        <require enum="asn1 tag"/>
         <require class="asn1wr"/>
         <require class="oid"/>
-        <require enum="asn1 tag"/>
-        <require interface="alg info"/>
         <require impl="cipher alg info"/>
         <require impl="hash based alg info"/>
         <require impl="simple alg info"/>
@@ -17,6 +17,7 @@
         <require impl="pbe alg info"/>
         <require impl="ecc alg info"/>
         <require impl="compound key alg info"/>
+        <require impl="chained key alg info"/>
         <require module="buffer defs" project="common"/>
 
         <dependency name="asn1 writer" interface="asn1 writer"/>
@@ -184,17 +185,16 @@
             Return buffer size enough to hold ASN.1 structure
             "AlgorithmIdentifier" with "CompoundKeyParams" parameters.
 
-            AlgorithmIdentifier  ::=  SEQUENCE  {
-                algorithm   OBJECT IDENTIFIER,
-                parameters  ANY DEFINED BY algorithm OPTIONAL
+            CompoundKeyAlgorithms ALGORITHM ::= {
+                { OID id-CompoundKey parameters CompoundKeyParams }
             }
 
-            algorithm ::= { id-CompoundKey }
             id-CompoundKey ::= { 1 3 6 1 4 1 54811 1 1 }
 
             CompoundKeyParams ::= SEQUENCE {
                 cipherAlgorithm AlgorithmIdentifier
                 signerAlgorithm AlgorithmIdentifier
+                signerDigestAlgorithm AlgorithmIdentifier
             }
 
             <argument name="alg info" interface="alg info"/>
@@ -206,17 +206,56 @@
             Serialize class "compound key alg info" to the ASN.1 structure
             "AlgorithmIdentifier" with "CompoundKeyParams" parameters.
 
-            AlgorithmIdentifier  ::=  SEQUENCE  {
-                algorithm   OBJECT IDENTIFIER,
-                parameters  ANY DEFINED BY algorithm OPTIONAL
+            CompoundKeyAlgorithms ALGORITHM ::= {
+                { OID id-CompoundKey parameters CompoundKeyParams }
             }
 
-            algorithm ::= { id-CompoundKey }
             id-CompoundKey ::= { 1 3 6 1 4 1 54811 1 1 }
 
             CompoundKeyParams ::= SEQUENCE {
                 cipherAlgorithm AlgorithmIdentifier
                 signerAlgorithm AlgorithmIdentifier
+                signerDigestAlgorithm AlgorithmIdentifier
+            }
+
+            <argument name="alg info" interface="alg info"/>
+
+            <return type="size"/>
+        </method>
+
+        <method name="serialized chained key alg info len" is_const="1">
+            Return buffer size enough to hold ASN.1 structure
+            "AlgorithmIdentifier" with "ChainedKeyParams" parameters.
+
+            ChainedKeyAlgorithms ALGORITHM ::= {
+                { OID id-ChainedKey parameters ChainedKeyParams }
+            }
+
+            id-ChainedKey ::= { 1 3 6 1 4 1 54811 1 2 }
+
+            ChainedKeyParams ::= SEQUENCE {
+                l1CipherAlgorithm AlgorithmIdentifier,
+                l2CipherAlgorithm AlgorithmIdentifier
+            }
+
+            <argument name="alg info" interface="alg info"/>
+
+            <return type="size"/>
+        </method>
+
+        <method name="serialize chained key alg info">
+            Serialize class "chained key alg info" to the ASN.1 structure
+            "AlgorithmIdentifier" with "ChainedKeyParams" parameters.
+
+            ChainedKeyAlgorithms ALGORITHM ::= {
+                { OID id-ChainedKey parameters ChainedKeyParams }
+            }
+
+            id-ChainedKey ::= { 1 3 6 1 4 1 54811 1 2 }
+
+            ChainedKeyParams ::= SEQUENCE {
+                l1CipherAlgorithm AlgorithmIdentifier,
+                l2CipherAlgorithm AlgorithmIdentifier
             }
 
             <argument name="alg info" interface="alg info"/>
@@ -240,6 +279,7 @@
 
         <interface name="alg info deserializer"/>
 
+        <require interface="alg info"/>
         <require class="asn1rd"/>
         <require class="oid"/>
         <require enum="asn1 tag"/>
@@ -250,7 +290,7 @@
         <require impl="pbe alg info"/>
         <require impl="ecc alg info"/>
         <require impl="compound key alg info"/>
-        <require interface="alg info"/>
+        <require impl="chained key alg info"/>
 
         <dependency name="asn1 reader" interface="asn1 reader"/>
 
@@ -340,17 +380,37 @@
             Parse ASN.1 structure "AlgorithmIdentifier" with
             "CompoundKeyParams" parameters.
 
-            AlgorithmIdentifier  ::=  SEQUENCE  {
-                algorithm   OBJECT IDENTIFIER,
-                parameters  ANY DEFINED BY algorithm OPTIONAL
+            CompoundKeyAlgorithms ALGORITHM ::= {
+                { OID id-CompoundKey parameters CompoundKeyParams }
             }
 
-            algorithm ::= { id-CompoundKey }
             id-CompoundKey ::= { 1 3 6 1 4 1 54811 1 1 }
 
             CompoundKeyParams ::= SEQUENCE {
                 cipherAlgorithm AlgorithmIdentifier
                 signerAlgorithm AlgorithmIdentifier
+                signerDigestAlgorithm AlgorithmIdentifier
+            }
+
+            <argument name="oid id" enum="oid id"/>
+            <argument name="error" class="error" access="readwrite"/>
+
+            <return interface="alg info" access="disown"/>
+        </method>
+
+        <method name="deserialize chained key alg info">
+            Parse ASN.1 structure "AlgorithmIdentifier" with
+            "ChainedKeyParams" parameters.
+
+            ChainedKeyAlgorithms ALGORITHM ::= {
+                { OID id-ChainedKey parameters ChainedKeyParams }
+            }
+
+            id-ChainedKey ::= { 1 3 6 1 4 1 54811 1 2 }
+
+            ChainedKeyParams ::= SEQUENCE {
+                l1CipherAlgorithm AlgorithmIdentifier,
+                l2CipherAlgorithm AlgorithmIdentifier
             }
 
             <argument name="oid id" enum="oid id"/>

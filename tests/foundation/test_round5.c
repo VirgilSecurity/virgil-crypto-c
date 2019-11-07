@@ -75,7 +75,7 @@ test__encrypt__success(void) {
     vscf_impl_t *alg_info =
             vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_ROUND5_ND_5PKE_5D));
     vscf_raw_public_key_t *raw_public_key =
-            vscf_raw_public_key_new_with_data(test_data_round5_CCA_PKE_PUBLIC_KEY, &alg_info);
+            vscf_raw_public_key_new_with_data(test_data_round5_ND_5PKE_5D_PUBLIC_KEY, &alg_info);
 
     vscf_error_t error;
     vscf_error_reset(&error);
@@ -86,13 +86,13 @@ test__encrypt__success(void) {
     //
     //  Encrypt.
     //
-    TEST_ASSERT_TRUE(vscf_round5_can_encrypt(round5, public_key, test_data_round5_CCA_PKE_MESSAGE.len));
+    TEST_ASSERT_TRUE(vscf_round5_can_encrypt(round5, public_key, test_data_round5_ND_5PKE_5D_MESSAGE.len));
 
-    const size_t enc_len = vscf_round5_encrypted_len(round5, public_key, test_data_round5_CCA_PKE_MESSAGE.len);
+    const size_t enc_len = vscf_round5_encrypted_len(round5, public_key, test_data_round5_ND_5PKE_5D_MESSAGE.len);
     TEST_ASSERT_GREATER_THAN(0, enc_len);
 
     vsc_buffer_t *enc = vsc_buffer_new_with_capacity(enc_len);
-    const vscf_status_t status = vscf_round5_encrypt(round5, public_key, test_data_round5_CCA_PKE_MESSAGE, enc);
+    const vscf_status_t status = vscf_round5_encrypt(round5, public_key, test_data_round5_ND_5PKE_5D_MESSAGE, enc);
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, status);
 
     vsc_buffer_destroy(&enc);
@@ -115,7 +115,7 @@ test__decrypt__success(void) {
     vscf_impl_t *alg_info =
             vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_ROUND5_ND_5PKE_5D));
     vscf_raw_private_key_t *raw_private_key =
-            vscf_raw_private_key_new_with_data(test_data_round5_CCA_PKE_PRIVATE_KEY, &alg_info);
+            vscf_raw_private_key_new_with_data(test_data_round5_ND_5PKE_5D_PRIVATE_KEY, &alg_info);
 
     vscf_error_t error;
     vscf_error_reset(&error);
@@ -126,12 +126,12 @@ test__decrypt__success(void) {
     //
     //  Decrypt.
     //
-    TEST_ASSERT_TRUE(vscf_round5_can_decrypt(round5, private_key, test_data_round5_CCA_PKE_ENC_MESSAGE.len));
+    TEST_ASSERT_TRUE(vscf_round5_can_decrypt(round5, private_key, test_data_round5_ND_5PKE_5D_ENC_MESSAGE.len));
 
-    const size_t msg_len = vscf_round5_decrypted_len(round5, private_key, test_data_round5_CCA_PKE_ENC_MESSAGE.len);
+    const size_t msg_len = vscf_round5_decrypted_len(round5, private_key, test_data_round5_ND_5PKE_5D_ENC_MESSAGE.len);
 
     vsc_buffer_t *msg = vsc_buffer_new_with_capacity(msg_len);
-    const vscf_status_t status = vscf_round5_decrypt(round5, private_key, test_data_round5_CCA_PKE_ENC_MESSAGE, msg);
+    const vscf_status_t status = vscf_round5_decrypt(round5, private_key, test_data_round5_ND_5PKE_5D_ENC_MESSAGE, msg);
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, status);
 
     vsc_buffer_destroy(&msg);

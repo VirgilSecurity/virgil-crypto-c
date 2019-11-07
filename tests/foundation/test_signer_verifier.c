@@ -141,22 +141,6 @@ test__sign_verify__with_compound_curve25519_ed25519__success(void) {
 #endif
 }
 
-void
-test__sign_verify__with_compound_round5_falcon__success(void) {
-#if !VSCF_COMPOUND_KEY_ALG
-    TEST_IGNORE_MESSAGE("Feature VSCF_COMPOUND_KEY_ALG is disabled");
-#elif !VSCF_POST_QUANTUM
-    TEST_IGNORE_MESSAGE("Feature VSCF_POST_QUANTUM is disabled");
-#elif !VSCF_ROUND5
-    TEST_IGNORE_MESSAGE("Feature VSCF_ROUND5 is disabled");
-#elif !VSCF_FALCON
-    TEST_IGNORE_MESSAGE("Feature VSCF_FALCON is disabled");
-#else
-    inner_test__sign_verify__success(test_data_compound_key_ROUND5_FALCON_PUBLIC_KEY_PKCS8_PEM,
-            test_data_compound_key_ROUND5_FALCON_PRIVATE_KEY_PKCS8_PEM);
-#endif
-}
-
 #endif // TEST_DEPENDENCIES_AVAILABLE
 
 
@@ -170,7 +154,6 @@ main(void) {
 #if TEST_DEPENDENCIES_AVAILABLE
     RUN_TEST(test__sign_verify__with_ed25519__success);
     RUN_TEST(test__sign_verify__with_compound_curve25519_ed25519__success);
-    RUN_TEST(test__sign_verify__with_compound_round5_falcon__success);
 #else
     RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
 #endif

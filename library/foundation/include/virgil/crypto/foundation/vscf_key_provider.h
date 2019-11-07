@@ -166,17 +166,26 @@ VSCF_PUBLIC void
 vscf_key_provider_set_rsa_params(vscf_key_provider_t *self, size_t bitlen);
 
 //
-//  Generate new private key from the given id.
+//  Generate new private key with a given algorithm.
 //
 VSCF_PUBLIC vscf_impl_t *
 vscf_key_provider_generate_private_key(vscf_key_provider_t *self, vscf_alg_id_t alg_id, vscf_error_t *error);
 
 //
-//  Generate new compound private key from the given ids.
+//  Generate new compound private key with given algorithms.
 //
 VSCF_PUBLIC vscf_impl_t *
 vscf_key_provider_generate_compound_private_key(vscf_key_provider_t *self, vscf_alg_id_t cipher_alg_id,
         vscf_alg_id_t signer_alg_id, vscf_error_t *error);
+
+//
+//  Generate new compound private key with post-quantum algorithms.
+//
+//  Note, cipher should not be post-quantum.
+//
+VSCF_PUBLIC vscf_impl_t *
+vscf_key_provider_generate_post_quantum_private_key(vscf_key_provider_t *self, vscf_alg_id_t cipher_alg_id,
+        vscf_error_t *error);
 
 //
 //  Import private key from the PKCS#8 format.

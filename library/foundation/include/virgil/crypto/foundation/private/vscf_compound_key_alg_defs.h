@@ -60,7 +60,6 @@
 #include "vscf_impl_private.h"
 #include "vscf_compound_key_alg.h"
 #include "vscf_atomic.h"
-#include "vscf_key_provider.h"
 #include "vscf_impl.h"
 
 // clang-format on
@@ -95,9 +94,9 @@ struct vscf_compound_key_alg_t {
     //
     vscf_impl_t *random;
     //
-    //  Implementation specific context.
+    //  Dependency to the interface 'hash'.
     //
-    vscf_key_provider_t *key_provider;
+    vscf_impl_t *hash;
 };
 
 

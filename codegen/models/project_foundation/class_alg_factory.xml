@@ -30,7 +30,7 @@
 
         <argument name="alg info" interface="alg info"/>
 
-        <return interface="hash" access="disown"/>
+        <return interface="hash" access="disown" is_optional="1"/>
     </method>
 
     <method name="create mac from info" is_static="1">
@@ -38,7 +38,7 @@
 
         <argument name="alg info" interface="alg info"/>
 
-        <return interface="mac" access="disown"/>
+        <return interface="mac" access="disown" is_optional="1"/>
     </method>
 
     <method name="create kdf from info" is_static="1">
@@ -46,7 +46,7 @@
 
         <argument name="alg info" interface="alg info"/>
 
-        <return interface="kdf" access="disown"/>
+        <return interface="kdf" access="disown" is_optional="1"/>
     </method>
 
     <method name="create salted kdf from info" is_static="1">
@@ -54,7 +54,7 @@
 
         <argument name="alg info" interface="alg info"/>
 
-        <return interface="salted kdf" access="disown"/>
+        <return interface="salted kdf" access="disown" is_optional="1"/>
     </method>
 
     <method name="create cipher from info" is_static="1">
@@ -62,6 +62,6 @@
 
         <argument name="alg info" interface="alg info"/>
 
-        <return interface="cipher" access="disown"/>
+        <return interface="cipher" access="disown" is_optional="1"/>
     </method>
 </class>

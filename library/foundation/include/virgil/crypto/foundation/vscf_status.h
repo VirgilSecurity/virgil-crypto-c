@@ -231,6 +231,30 @@ enum vscf_status_t {
     //
     vscf_status_ERROR_BAD_COMPOUND_PRIVATE_KEY = -233,
     //
+    //  Compound public chained key is corrupted.
+    //
+    vscf_status_ERROR_BAD_CHAINED_PUBLIC_KEY = -234,
+    //
+    //  Compound private chained key is corrupted.
+    //
+    vscf_status_ERROR_BAD_CHAINED_PRIVATE_KEY = -235,
+    //
+    //  ASN.1 AlgorithmIdentifer is corrupted.
+    //
+    vscf_status_ERROR_BAD_ASN1_ALGORITHM = -236,
+    //
+    //  ASN.1 AlgorithmIdentifer with ECParameters is corrupted.
+    //
+    vscf_status_ERROR_BAD_ASN1_ALGORITHM_ECC = -237,
+    //
+    //  ASN.1 AlgorithmIdentifer with CompoundKeyParams is corrupted.
+    //
+    vscf_status_ERROR_BAD_ASN1_ALGORITHM_COMPOUND_KEY = -238,
+    //
+    //  ASN.1 AlgorithmIdentifer with ChainedKeyParams is corrupted.
+    //
+    vscf_status_ERROR_BAD_ASN1_ALGORITHM_CHAINED_KEY = -239,
+    //
     //  Decryption failed, because message info was not given explicitly,
     //  and was not part of an encrypted message.
     //

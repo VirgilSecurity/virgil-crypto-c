@@ -34,7 +34,10 @@
 
 #include "vsc_data.h"
 
-extern const vsc_data_t test_data_round5_CCA_PKE_PUBLIC_KEY;
-extern const vsc_data_t test_data_round5_CCA_PKE_PRIVATE_KEY;
-extern const vsc_data_t test_data_round5_CCA_PKE_MESSAGE;
-extern const vsc_data_t test_data_round5_CCA_PKE_ENC_MESSAGE;
+extern const vsc_data_t test_data_round5_ND_5PKE_5D_PUBLIC_KEY;
+extern const vsc_data_t test_data_round5_ND_5PKE_5D_PRIVATE_KEY;
+extern const vsc_data_t test_data_round5_ND_5PKE_5D_MESSAGE;
+extern const vsc_data_t test_data_round5_ND_5PKE_5D_ENC_MESSAGE;
+
+extern const vsc_data_t test_data_round5_ND_5PKE_5D_PUBLIC_KEY_PKCS8_DER;
+extern const vsc_data_t test_data_round5_ND_5PKE_5D_PRIVATE_KEY_PKCS8_DER;

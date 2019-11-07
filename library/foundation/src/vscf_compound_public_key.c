@@ -97,79 +97,104 @@ vscf_compound_public_key_cleanup_ctx(vscf_compound_public_key_t *self) {
     VSCF_ASSERT_PTR(self);
 
     vscf_impl_destroy(&self->alg_info);
-    vscf_impl_destroy(&self->encryption_key);
-    vscf_impl_destroy(&self->verifying_key);
-    vsc_buffer_destroy(&self->encryption_key_signature);
+    vscf_impl_destroy(&self->cipher_key);
+    vscf_impl_destroy(&self->signer_key);
+    vsc_buffer_destroy(&self->signature);
 }
 
 //
-//  Create compound public key with an encryption public key and
-//  a verifying public key.
-//
-//  Note, keys ownership is transferred.
+//  Create a compound public key with a cipher public key,
+//  a signer public key, and a cipher public key signature.
 //
 VSCF_PUBLIC void
-vscf_compound_public_key_init_ctx_with_members(vscf_compound_public_key_t *self, const vscf_impl_t *alg_info,
-        vscf_impl_t **encryption_key_ref, vscf_impl_t **verifying_key_ref,
-        vsc_buffer_t **encryption_key_signature_ref) {
+vscf_compound_public_key_init_ctx_with_keys(vscf_compound_public_key_t *self, vscf_impl_t **alg_info_ref,
+        const vscf_impl_t *cipher_key, const vscf_impl_t *signer_key, vsc_buffer_t **signature_ref) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(alg_info_ref);
+    VSCF_ASSERT_PTR(*alg_info_ref);
+    VSCF_ASSERT_PTR(cipher_key);
+    VSCF_ASSERT_PTR(signer_key);
+    VSCF_ASSERT_PTR(signature_ref);
+    VSCF_ASSERT_PTR(*signature_ref);
+    VSCF_ASSERT(vscf_alg_info_is_implemented(*alg_info_ref));
+    VSCF_ASSERT(vscf_alg_info_alg_id(*alg_info_ref) != vscf_alg_id_NONE);
+    VSCF_ASSERT(vscf_public_key_is_implemented(cipher_key));
+    VSCF_ASSERT(vscf_public_key_is_implemented(signer_key));
+    VSCF_ASSERT(vsc_buffer_is_valid(*signature_ref));
+
+    self->alg_info = *alg_info_ref;
+    self->cipher_key = (vscf_impl_t *)vscf_impl_shallow_copy_const(cipher_key);
+    self->signer_key = (vscf_impl_t *)vscf_impl_shallow_copy_const(signer_key);
+    self->signature = *signature_ref;
+
+    *alg_info_ref = NULL;
+    *signature_ref = NULL;
+}
+
+//
+//  Create a compound public key with a cipher public key,
+//  a signer public key, and a cipher public key signature.
+//
+VSCF_PUBLIC void
+vscf_compound_public_key_init_ctx_with_imported_keys(vscf_compound_public_key_t *self, const vscf_impl_t *alg_info,
+        vscf_impl_t **cipher_key_ref, vscf_impl_t **signer_key_ref, vsc_data_t signature) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(alg_info);
-    VSCF_ASSERT_PTR(encryption_key_ref);
-    VSCF_ASSERT_PTR(*encryption_key_ref);
-    VSCF_ASSERT_PTR(verifying_key_ref);
-    VSCF_ASSERT_PTR(*verifying_key_ref);
-    VSCF_ASSERT_PTR(encryption_key_signature_ref);
-    VSCF_ASSERT_PTR(*encryption_key_signature_ref);
+    VSCF_ASSERT_PTR(cipher_key_ref);
+    VSCF_ASSERT_PTR(*cipher_key_ref);
+    VSCF_ASSERT_PTR(signer_key_ref);
+    VSCF_ASSERT_PTR(*signer_key_ref);
     VSCF_ASSERT(vscf_alg_info_is_implemented(alg_info));
-    VSCF_ASSERT(vscf_public_key_is_implemented(*encryption_key_ref));
-    VSCF_ASSERT(vscf_public_key_is_implemented(*verifying_key_ref));
-    VSCF_ASSERT(vsc_buffer_is_valid(*encryption_key_signature_ref));
+    VSCF_ASSERT(vscf_alg_info_alg_id(alg_info) != vscf_alg_id_NONE);
+    VSCF_ASSERT(vscf_public_key_is_implemented(*cipher_key_ref));
+    VSCF_ASSERT(vscf_public_key_is_implemented(*signer_key_ref));
+    VSCF_ASSERT(vsc_data_is_valid(signature));
 
     self->alg_info = (vscf_impl_t *)vscf_impl_shallow_copy_const(alg_info);
-    self->encryption_key = *encryption_key_ref;
-    self->verifying_key = *verifying_key_ref;
-    self->encryption_key_signature = *encryption_key_signature_ref;
+    self->cipher_key = *cipher_key_ref;
+    self->signer_key = *signer_key_ref;
+    self->signature = vsc_buffer_new_with_data(signature);
 
-    *encryption_key_ref = NULL;
-    *verifying_key_ref = NULL;
-    *encryption_key_signature_ref = NULL;
+    *cipher_key_ref = NULL;
+    *signer_key_ref = NULL;
 }
 
 //
-//  Return public key suitable for encryption.
+//  Return a cipher public key suitable for initial encryption.
 //
 VSCF_PUBLIC const vscf_impl_t *
-vscf_compound_public_key_get_encryption_key(const vscf_compound_public_key_t *self) {
+vscf_compound_public_key_cipher_key(const vscf_compound_public_key_t *self) {
 
     VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(self->encryption_key);
+    VSCF_ASSERT_PTR(self->cipher_key);
 
-    return self->encryption_key;
+    return self->cipher_key;
 }
 
 //
 //  Return public key suitable for verifying.
 //
 VSCF_PUBLIC const vscf_impl_t *
-vscf_compound_public_key_get_verifying_key(const vscf_compound_public_key_t *self) {
+vscf_compound_public_key_signer_key(const vscf_compound_public_key_t *self) {
 
     VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(self->verifying_key);
+    VSCF_ASSERT_PTR(self->signer_key);
 
-    return self->verifying_key;
+    return self->signer_key;
 }
 
 //
-//  Setup the encryption key signature.
+//  Return cipher public key signature.
 //
 VSCF_PUBLIC vsc_data_t
-vscf_compound_public_key_get_encryption_key_signature(const vscf_compound_public_key_t *self) {
+vscf_compound_public_key_signature(const vscf_compound_public_key_t *self) {
 
     VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(self->encryption_key_signature);
+    VSCF_ASSERT_PTR(self->signature);
 
-    return vsc_buffer_data(self->encryption_key_signature);
+    return vsc_buffer_data(self->signature);
 }
 
 //
@@ -237,11 +262,11 @@ vscf_compound_public_key_is_valid(const vscf_compound_public_key_t *self) {
 
     VSCF_ASSERT_PTR(self);
 
-    if (NULL == self->alg_info || NULL == self->encryption_key || NULL == self->verifying_key) {
+    if (NULL == self->alg_info || NULL == self->cipher_key || NULL == self->signer_key) {
         return false;
     }
 
-    const bool is_encryption_key_valid = vscf_key_is_valid(self->verifying_key);
-    const bool is_verifying_key_valid = vscf_key_is_valid(self->encryption_key);
-    return is_encryption_key_valid && is_verifying_key_valid;
+    const bool is_cipher_key_valid = vscf_key_is_valid(self->signer_key);
+    const bool is_signer_key_valid = vscf_key_is_valid(self->cipher_key);
+    return is_cipher_key_valid && is_signer_key_valid;
 }

@@ -19,6 +19,8 @@
     <require impl="round5" is_optional="1"/>
     <require impl="compound key alg" is_optional="1"/>
     <require module="compound key alg defs" is_optional="1"/>
+    <require impl="chained key alg" is_optional="1"/>
+    <require module="chained key alg defs" is_optional="1"/>
 
     <dependency name="random" interface="random"/>
 
@@ -39,7 +41,7 @@
     </method>
 
     <method name="generate private key">
-        Generate new private key from the given id.
+        Generate new private key with a given algorithm.
 
         <argument name="alg id" enum="alg id"/>
         <argument name="error" class="error" access="readwrite"/>
@@ -48,10 +50,21 @@
     </method>
 
     <method name="generate compound private key">
-        Generate new compound private key from the given ids.
+        Generate new compound private key with given algorithms.
 
         <argument name="cipher alg id" enum="alg id"/>
         <argument name="signer alg id" enum="alg id"/>
+        <argument name="error" class="error" access="readwrite"/>
+
+        <return interface="private key" access="disown"/>
+    </method>
+
+    <method name="generate post-quantum private key">
+        Generate new compound private key with post-quantum algorithms.
+
+        Note, cipher should not be post-quantum.
+
+        <argument name="cipher alg id" enum="alg id"/>
         <argument name="error" class="error" access="readwrite"/>
 
         <return interface="private key" access="disown"/>

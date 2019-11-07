@@ -104,15 +104,15 @@ struct vscf_compound_public_key_t {
     //
     //  Implementation specific context.
     //
-    vscf_impl_t *encryption_key;
+    vscf_impl_t *cipher_key;
     //
     //  Implementation specific context.
     //
-    vscf_impl_t *verifying_key;
+    vscf_impl_t *signer_key;
     //
     //  Implementation specific context.
     //
-    vsc_buffer_t *encryption_key_signature;
+    vsc_buffer_t *signature;
 };
 
 

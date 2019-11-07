@@ -98,14 +98,20 @@ VSCF_PRIVATE void
 vscf_compound_private_key_cleanup_ctx(vscf_compound_private_key_t *self);
 
 //
-//  Create compound private key with a decryption private key and
-//  a signing private key.
-//
-//  Note, keys ownership is transferred.
+//  Create a compound private key with a cipher private key,
+//  a signer private key, and a cipher public key signature.
 //
 VSCF_PUBLIC void
-vscf_compound_private_key_init_ctx_with_members(vscf_compound_private_key_t *self, const vscf_impl_t *alg_info,
-        vscf_impl_t **decryption_key_ref, vscf_impl_t **signing_key_ref, vsc_buffer_t **encryption_key_signature_ref);
+vscf_compound_private_key_init_ctx_with_keys(vscf_compound_private_key_t *self, vscf_impl_t **alg_info_ref,
+        const vscf_impl_t *cipher_key, const vscf_impl_t *signer_key, vsc_buffer_t **signature_ref);
+
+//
+//  Create a compound private key with a cipher private key,
+//  a signer private key, and a cipher public key signature.
+//
+VSCF_PUBLIC void
+vscf_compound_private_key_init_ctx_with_imported_keys(vscf_compound_private_key_t *self, const vscf_impl_t *alg_info,
+        vscf_impl_t **cipher_key_ref, vscf_impl_t **signer_key_ref, vsc_buffer_t **signature_ref);
 
 
 // --------------------------------------------------------------------------

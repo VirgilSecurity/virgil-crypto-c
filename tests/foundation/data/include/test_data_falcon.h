@@ -43,3 +43,6 @@ extern const vsc_data_t test_data_falcon_DATA;
 extern const vsc_data_t test_data_falcon_DATA_SHA512_DIGEST;
 extern const vsc_data_t test_data_falcon_RNG_SEED2;
 extern const vsc_data_t test_data_falcon_CONST_SIGNATURE;
+
+extern const vsc_data_t test_data_falcon_PUBLIC_KEY_512_PKCS8_DER;
+extern const vsc_data_t test_data_falcon_PRIVATE_KEY_512_PKCS8_DER;

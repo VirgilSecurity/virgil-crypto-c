@@ -61,18 +61,20 @@
 #include "vscf_private_key.h"
 #include "vscf_key_serializer.h"
 #include "vscf_key_deserializer.h"
+#include "vscf_key_alg_factory.h"
 #include "vscf_ctr_drbg.h"
+#include "vscf_key_asn1_deserializer.h"
+#include "vscf_key_asn1_serializer.h"
 #include "vscf_rsa.h"
 #include "vscf_ed25519.h"
 #include "vscf_curve25519.h"
 #include "vscf_ecc.h"
 #include "vscf_falcon.h"
 #include "vscf_round5.h"
-#include "vscf_key_asn1_deserializer.h"
-#include "vscf_key_asn1_serializer.h"
 #include "vscf_compound_key_alg.h"
 #include "vscf_compound_key_alg_defs.h"
-#include "vscf_key_alg_factory.h"
+#include "vscf_chained_key_alg.h"
+#include "vscf_chained_key_alg_defs.h"
 
 // clang-format on
 //  @end
@@ -354,7 +356,7 @@ vscf_key_provider_set_rsa_params(vscf_key_provider_t *self, size_t bitlen) {
 }
 
 //
-//  Generate new private key from the given id.
+//  Generate new private key with a given algorithm.
 //
 VSCF_PUBLIC vscf_impl_t *
 vscf_key_provider_generate_private_key(vscf_key_provider_t *self, vscf_alg_id_t alg_id, vscf_error_t *error) {
@@ -429,16 +431,15 @@ vscf_key_provider_generate_private_key(vscf_key_provider_t *self, vscf_alg_id_t 
 #endif // VSCF_POST_QUANTUM
 
     default:
-        VSCF_ASSERT(0 && "Unhandled algorithm identifier.");
         VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_UNSUPPORTED_ALGORITHM);
-        break;
+        return NULL;
     }
 
     return key;
 }
 
 //
-//  Generate new compound private key from the given ids.
+//  Generate new compound private key with given algorithms.
 //
 VSCF_PUBLIC vscf_impl_t *
 vscf_key_provider_generate_compound_private_key(
@@ -449,13 +450,124 @@ vscf_key_provider_generate_compound_private_key(
     VSCF_ASSERT(cipher_alg_id != vscf_alg_id_NONE);
     VSCF_ASSERT(signer_alg_id != vscf_alg_id_NONE);
 
+#if VSCF_COMPOUND_KEY_ALG
+    //
+    //  Configure a;gs.
+    //
     vscf_compound_key_alg_t compound_key_alg;
     vscf_compound_key_alg_init(&compound_key_alg);
     vscf_compound_key_alg_use_random(&compound_key_alg, self->random);
-    vscf_impl_t *key = vscf_compound_key_alg_generate_key(&compound_key_alg, cipher_alg_id, signer_alg_id, error);
-    vscf_compound_key_alg_cleanup(&compound_key_alg);
 
-    return key;
+    const vscf_status_t status = vscf_compound_key_alg_setup_defaults(&compound_key_alg);
+    VSCF_ASSERT(status == vscf_status_SUCCESS);
+
+    //
+    //  Prepare result variables.
+    //
+    vscf_impl_t *compound_key = NULL;
+    vscf_impl_t *cipher_key = NULL;
+    vscf_impl_t *signer_key = NULL;
+
+    //
+    //  Generate keys.
+    //
+    cipher_key = vscf_key_provider_generate_private_key(self, cipher_alg_id, error);
+    if (NULL == cipher_key) {
+        goto cleanup;
+    }
+
+    signer_key = vscf_key_provider_generate_private_key(self, signer_alg_id, error);
+    if (NULL == signer_key) {
+        goto cleanup;
+    }
+
+    compound_key = vscf_compound_key_alg_make_key(&compound_key_alg, cipher_key, signer_key, error);
+
+cleanup:
+    vscf_impl_destroy(&cipher_key);
+    vscf_impl_destroy(&signer_key);
+    vscf_compound_key_alg_cleanup(&compound_key_alg);
+    return compound_key;
+#else
+    VSCF_ERROR_SAFE_UPDATE(vscf_status_ERROR_UNSUPPORTED_ALGORITHM);
+    return NULL;
+#endif // VSCF_COMPOUND_KEY_ALG
+}
+
+//
+//  Generate new compound private key with post-quantum algorithms.
+//
+//  Note, cipher should not be post-quantum.
+//
+VSCF_PUBLIC vscf_impl_t *
+vscf_key_provider_generate_post_quantum_private_key(
+        vscf_key_provider_t *self, vscf_alg_id_t cipher_alg_id, vscf_error_t *error) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(self->random);
+    VSCF_ASSERT(cipher_alg_id != vscf_alg_id_NONE);
+    VSCF_ASSERT(cipher_alg_id != vscf_alg_id_ROUND5);
+    VSCF_ASSERT(cipher_alg_id != vscf_alg_id_ROUND5_ND_5PKE_5D);
+#if VSCF_POST_QUANTUM && VSCF_COMPOUND_KEY_ALG && VSCF_CHAINED_KEY_ALG
+    //
+    //  Configure a;algs.
+    //
+    vscf_compound_key_alg_t compound_key_alg;
+    vscf_compound_key_alg_init(&compound_key_alg);
+    vscf_compound_key_alg_use_random(&compound_key_alg, self->random);
+
+    const vscf_status_t status = vscf_compound_key_alg_setup_defaults(&compound_key_alg);
+    VSCF_ASSERT(status == vscf_status_SUCCESS);
+
+    vscf_chained_key_alg_t chained_key_alg;
+    vscf_chained_key_alg_init(&chained_key_alg);
+    vscf_chained_key_alg_use_random(&chained_key_alg, self->random);
+
+    //
+    //  Prepare result variables.
+    //
+    vscf_impl_t *compound_key = NULL;
+    vscf_impl_t *chained_cipher_key = NULL;
+    vscf_impl_t *cipher_key = NULL;
+    vscf_impl_t *pq_cipher_key = NULL;
+    vscf_impl_t *signer_key = NULL;
+
+    //
+    //  Generate keys.
+    //
+    cipher_key = vscf_key_provider_generate_private_key(self, cipher_alg_id, error);
+    if (NULL == cipher_key) {
+        goto cleanup;
+    }
+
+    pq_cipher_key = vscf_key_provider_generate_private_key(self, vscf_alg_id_ROUND5_ND_5PKE_5D, error);
+    if (NULL == pq_cipher_key) {
+        goto cleanup;
+    }
+
+    signer_key = vscf_key_provider_generate_private_key(self, vscf_alg_id_FALCON, error);
+    if (NULL == signer_key) {
+        goto cleanup;
+    }
+
+    chained_cipher_key = vscf_chained_key_alg_make_key(&chained_key_alg, cipher_key, pq_cipher_key, error);
+    if (NULL == chained_cipher_key) {
+        goto cleanup;
+    }
+
+    compound_key = vscf_compound_key_alg_make_key(&compound_key_alg, chained_cipher_key, signer_key, error);
+
+cleanup:
+    vscf_impl_destroy(&cipher_key);
+    vscf_impl_destroy(&signer_key);
+    vscf_impl_destroy(&chained_cipher_key);
+    vscf_compound_key_alg_cleanup(&compound_key_alg);
+    vscf_chained_key_alg_cleanup(&chained_key_alg);
+    return compound_key;
+#else  // VSCF_POST_QUANTUM && VSCF_COMPOUND_KEY_ALG && VSCF_CHAINED_KEY_ALG
+    VSCF_ERROR_SAFE_UPDATE(vscf_status_ERROR_UNSUPPORTED_ALGORITHM);
+    return NULL;
+#endif // VSCF_POST_QUANTUM && VSCF_COMPOUND_KEY_ALG && VSCF_CHAINED_KEY_ALG
 }
 
 //

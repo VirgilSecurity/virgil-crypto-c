@@ -97,35 +97,39 @@ vscf_compound_key_alg_info_cleanup_ctx(vscf_compound_key_alg_info_t *self) {
 
     vscf_impl_destroy(&self->cipher_alg_info);
     vscf_impl_destroy(&self->signer_alg_info);
+    vscf_impl_destroy(&self->signer_hash_alg_info);
 }
 
 //
-//  Create compound algorithm information
+//  Create compound algorithm information.
 //
 //  Note, keys ownership is preserved.
 //
 VSCF_PUBLIC void
 vscf_compound_key_alg_info_init_ctx_with_infos(vscf_compound_key_alg_info_t *self, vscf_alg_id_t alg_id,
-        const vscf_impl_t *cipher_alg_info, const vscf_impl_t *signer_alg_info) {
+        const vscf_impl_t *cipher_alg_info, const vscf_impl_t *signer_alg_info,
+        const vscf_impl_t *signer_hash_alg_info) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT(alg_id != vscf_alg_id_NONE);
     VSCF_ASSERT_PTR(cipher_alg_info);
     VSCF_ASSERT_PTR(signer_alg_info);
+    VSCF_ASSERT_PTR(signer_hash_alg_info);
 
     self->alg_id = alg_id;
     self->cipher_alg_info = vscf_impl_shallow_copy((vscf_impl_t *)cipher_alg_info);
     self->signer_alg_info = vscf_impl_shallow_copy((vscf_impl_t *)signer_alg_info);
+    self->signer_hash_alg_info = vscf_impl_shallow_copy((vscf_impl_t *)signer_hash_alg_info);
 }
 
 //
-//  Create compound algorithm information
+//  Create compound algorithm information.
 //
 //  Note, keys ownership is transferred.
 //
 VSCF_PUBLIC void
 vscf_compound_key_alg_info_init_ctx_with_infos_disown(vscf_compound_key_alg_info_t *self, vscf_alg_id_t alg_id,
-        vscf_impl_t **cipher_alg_info_ref, vscf_impl_t **signer_alg_info_ref) {
+        vscf_impl_t **cipher_alg_info_ref, vscf_impl_t **signer_alg_info_ref, vscf_impl_t **signer_hash_alg_info_ref) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT(alg_id != vscf_alg_id_NONE);
@@ -133,14 +137,18 @@ vscf_compound_key_alg_info_init_ctx_with_infos_disown(vscf_compound_key_alg_info
     VSCF_ASSERT_PTR(*cipher_alg_info_ref);
     VSCF_ASSERT_PTR(signer_alg_info_ref);
     VSCF_ASSERT_PTR(*signer_alg_info_ref);
+    VSCF_ASSERT_PTR(signer_hash_alg_info_ref);
+    VSCF_ASSERT_PTR(*signer_hash_alg_info_ref);
 
     self->alg_id = alg_id;
 
     self->cipher_alg_info = *cipher_alg_info_ref;
     self->signer_alg_info = *signer_alg_info_ref;
+    self->signer_hash_alg_info = *signer_hash_alg_info_ref;
 
     *cipher_alg_info_ref = NULL;
     *signer_alg_info_ref = NULL;
+    *signer_hash_alg_info_ref = NULL;
 }
 
 //
@@ -165,6 +173,18 @@ vscf_compound_key_alg_info_signer_alg_info(const vscf_compound_key_alg_info_t *s
     VSCF_ASSERT_PTR(self->signer_alg_info);
 
     return self->signer_alg_info;
+}
+
+//
+//  Return information about hash algorithm that is used with signing.
+//
+VSCF_PUBLIC const vscf_impl_t *
+vscf_compound_key_alg_info_signer_hash_alg_info(const vscf_compound_key_alg_info_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(self->signer_hash_alg_info);
+
+    return self->signer_hash_alg_info;
 }
 
 //

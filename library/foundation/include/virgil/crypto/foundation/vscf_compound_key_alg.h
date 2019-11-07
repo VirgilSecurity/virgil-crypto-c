@@ -192,28 +192,38 @@ VSCF_PUBLIC void
 vscf_compound_key_alg_release_random(vscf_compound_key_alg_t *self);
 
 //
+//  Setup dependency to the interface 'hash' with shared ownership.
+//
+VSCF_PUBLIC void
+vscf_compound_key_alg_use_hash(vscf_compound_key_alg_t *self, vscf_impl_t *hash);
+
+//
+//  Setup dependency to the interface 'hash' and transfer ownership.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCF_PUBLIC void
+vscf_compound_key_alg_take_hash(vscf_compound_key_alg_t *self, vscf_impl_t *hash);
+
+//
+//  Release dependency to the interface 'hash'.
+//
+VSCF_PUBLIC void
+vscf_compound_key_alg_release_hash(vscf_compound_key_alg_t *self);
+
+//
 //  Setup predefined values to the uninitialized class dependencies.
 //
 VSCF_PUBLIC vscf_status_t
 vscf_compound_key_alg_setup_defaults(vscf_compound_key_alg_t *self) VSCF_NODISCARD;
 
 //
-//  Generate new compound private key from given encryption algorithm
-//  identifier and signing algorithm identifier.
+//  Make compound private key from given.
 //
 //  Note, this operation might be slow.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_compound_key_alg_generate_key(const vscf_compound_key_alg_t *self, vscf_alg_id_t enc_alg_id,
-        vscf_alg_id_t sign_alg_id, vscf_error_t *error);
-
-//
-//  Generate new compound private key with post-quantum algorithms.
-//
-//  Note, this operation might be slow.
-//
-VSCF_PUBLIC vscf_impl_t *
-vscf_compound_key_alg_generate_post_quantum_key(const vscf_compound_key_alg_t *self, vscf_error_t *error);
+vscf_compound_key_alg_make_key(const vscf_compound_key_alg_t *self, const vscf_impl_t *cipher_key,
+        const vscf_impl_t *signer_key, vscf_error_t *error);
 
 //
 //  Provide algorithm identificator.

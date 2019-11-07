@@ -149,26 +149,39 @@ vscf_compound_public_key_shallow_copy(vscf_compound_public_key_t *self);
 
 //
 //  Perform initialization of pre-allocated context.
-//  Create compound public key with an encryption public key and
-//  a verifying public key.
-//
-//  Note, keys ownership is transferred.
+//  Create a compound public key with a cipher public key,
+//  a signer public key, and a cipher public key signature.
 //
 VSCF_PRIVATE void
-vscf_compound_public_key_init_with_members(vscf_compound_public_key_t *self, const vscf_impl_t *alg_info,
-        vscf_impl_t **encryption_key_ref, vscf_impl_t **verifying_key_ref,
-        vsc_buffer_t **encryption_key_signature_ref);
+vscf_compound_public_key_init_with_keys(vscf_compound_public_key_t *self, vscf_impl_t **alg_info_ref,
+        const vscf_impl_t *cipher_key, const vscf_impl_t *signer_key, vsc_buffer_t **signature_ref);
 
 //
 //  Allocate implementation context and perform it's initialization.
-//  Create compound public key with an encryption public key and
-//  a verifying public key.
-//
-//  Note, keys ownership is transferred.
+//  Create a compound public key with a cipher public key,
+//  a signer public key, and a cipher public key signature.
 //
 VSCF_PRIVATE vscf_compound_public_key_t *
-vscf_compound_public_key_new_with_members(const vscf_impl_t *alg_info, vscf_impl_t **encryption_key_ref,
-        vscf_impl_t **verifying_key_ref, vsc_buffer_t **encryption_key_signature_ref);
+vscf_compound_public_key_new_with_keys(vscf_impl_t **alg_info_ref, const vscf_impl_t *cipher_key,
+        const vscf_impl_t *signer_key, vsc_buffer_t **signature_ref);
+
+//
+//  Perform initialization of pre-allocated context.
+//  Create a compound public key with a cipher public key,
+//  a signer public key, and a cipher public key signature.
+//
+VSCF_PRIVATE void
+vscf_compound_public_key_init_with_imported_keys(vscf_compound_public_key_t *self, const vscf_impl_t *alg_info,
+        vscf_impl_t **cipher_key_ref, vscf_impl_t **signer_key_ref, vsc_data_t signature);
+
+//
+//  Allocate implementation context and perform it's initialization.
+//  Create a compound public key with a cipher public key,
+//  a signer public key, and a cipher public key signature.
+//
+VSCF_PRIVATE vscf_compound_public_key_t *
+vscf_compound_public_key_new_with_imported_keys(const vscf_impl_t *alg_info, vscf_impl_t **cipher_key_ref,
+        vscf_impl_t **signer_key_ref, vsc_data_t signature);
 
 //
 //  Returns instance of the implemented interface 'public key'.
@@ -177,22 +190,22 @@ VSCF_PUBLIC const vscf_public_key_api_t *
 vscf_compound_public_key_public_key_api(void);
 
 //
-//  Return public key suitable for encryption.
+//  Return a cipher public key suitable for initial encryption.
 //
 VSCF_PUBLIC const vscf_impl_t *
-vscf_compound_public_key_get_encryption_key(const vscf_compound_public_key_t *self);
+vscf_compound_public_key_cipher_key(const vscf_compound_public_key_t *self);
 
 //
 //  Return public key suitable for verifying.
 //
 VSCF_PUBLIC const vscf_impl_t *
-vscf_compound_public_key_get_verifying_key(const vscf_compound_public_key_t *self);
+vscf_compound_public_key_signer_key(const vscf_compound_public_key_t *self);
 
 //
-//  Setup the encryption key signature.
+//  Return cipher public key signature.
 //
 VSCF_PUBLIC vsc_data_t
-vscf_compound_public_key_get_encryption_key_signature(const vscf_compound_public_key_t *self);
+vscf_compound_public_key_signature(const vscf_compound_public_key_t *self);
 
 //
 //  Algorithm identifier the key belongs to.

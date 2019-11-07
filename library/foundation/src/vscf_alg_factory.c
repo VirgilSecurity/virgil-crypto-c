@@ -128,7 +128,6 @@ vscf_alg_factory_create_hash_from_info(const vscf_impl_t *alg_info) {
 #endif // VSCF_SHA512
 
     default:
-        VSCF_ASSERT(0 && "Can not create 'hash stream' algorithm from the given alg id.");
         return NULL;
     }
 }
@@ -156,7 +155,6 @@ vscf_alg_factory_create_mac_from_info(const vscf_impl_t *alg_info) {
     }
 #endif // VSCF_HMAC
 
-    VSCF_ASSERT(0 && "Can not create 'mac stream' algorithm from the given alg id.");
     return NULL;
 }
 
@@ -203,7 +201,6 @@ vscf_alg_factory_create_kdf_from_info(const vscf_impl_t *alg_info) {
         return vscf_alg_factory_create_salted_kdf_from_info(alg_info);
     }
 
-    VSCF_ASSERT(0 && "Can not create 'kdf' algorithm from the given alg id.");
     return NULL;
 }
 
@@ -247,7 +244,6 @@ vscf_alg_factory_create_salted_kdf_from_info(const vscf_impl_t *alg_info) {
     }
 #endif // VSCF_PKCS5_PBKDF2
 
-    VSCF_ASSERT(0 && "Can not create 'salted kdf' algorithm from the given alg id.");
     return NULL;
 }
 
@@ -280,6 +276,5 @@ vscf_alg_factory_create_cipher_from_info(const vscf_impl_t *alg_info) {
     }
 #endif // VSCF_AES256_CBC
 
-    VSCF_ASSERT(0 && "Can not create 'cipher' algorithm from the given alg id.");
     return NULL;
 }

@@ -118,12 +118,12 @@ test__cca_pke_encrypt__return_success(void) {
     TEST_ASSERT_NOT_NULL(params);
 
     const size_t enc_overhead_len = get_crypto_bytes(params, 1 /* is_encrypt */);
-    const size_t enc_len_max = enc_overhead_len + test_data_round5_CCA_PKE_MESSAGE.len;
+    const size_t enc_len_max = enc_overhead_len + test_data_round5_ND_5PKE_5D_MESSAGE.len;
     vsc_buffer_t *enc = vsc_buffer_new_with_capacity(enc_len_max);
 
     unsigned long long enc_len = 0;
-    int status = r5_cca_pke_encrypt(vsc_buffer_unused_bytes(enc), &enc_len, test_data_round5_CCA_PKE_MESSAGE.bytes,
-            test_data_round5_CCA_PKE_MESSAGE.len, test_data_round5_CCA_PKE_PUBLIC_KEY.bytes, params);
+    int status = r5_cca_pke_encrypt(vsc_buffer_unused_bytes(enc), &enc_len, test_data_round5_ND_5PKE_5D_MESSAGE.bytes,
+            test_data_round5_ND_5PKE_5D_MESSAGE.len, test_data_round5_ND_5PKE_5D_PUBLIC_KEY.bytes, params);
     TEST_ASSERT_EQUAL(0, status);
     vsc_buffer_inc_used(enc, enc_len);
 
@@ -140,17 +140,17 @@ test__cca_pke_decrypt__return_success(void) {
     TEST_ASSERT_NOT_NULL(params);
 
     const size_t enc_overhead_len = get_crypto_bytes(params, 1 /* is_encrypt */);
-    const size_t message_len_max = test_data_round5_CCA_PKE_ENC_MESSAGE.len - enc_overhead_len;
+    const size_t message_len_max = test_data_round5_ND_5PKE_5D_ENC_MESSAGE.len - enc_overhead_len;
     vsc_buffer_t *message = vsc_buffer_new_with_capacity(message_len_max);
 
     unsigned long long message_len = 0;
     int status = r5_cca_pke_decrypt(vsc_buffer_unused_bytes(message), &message_len,
-            test_data_round5_CCA_PKE_ENC_MESSAGE.bytes, test_data_round5_CCA_PKE_ENC_MESSAGE.len,
-            test_data_round5_CCA_PKE_PRIVATE_KEY.bytes, params);
+            test_data_round5_ND_5PKE_5D_ENC_MESSAGE.bytes, test_data_round5_ND_5PKE_5D_ENC_MESSAGE.len,
+            test_data_round5_ND_5PKE_5D_PRIVATE_KEY.bytes, params);
     TEST_ASSERT_EQUAL(0, status);
     vsc_buffer_inc_used(message, message_len);
 
-    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_data_round5_CCA_PKE_MESSAGE, message);
+    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_data_round5_ND_5PKE_5D_MESSAGE, message);
 
     vsc_buffer_destroy(&message);
 #else

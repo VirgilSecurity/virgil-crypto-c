@@ -91,22 +91,23 @@ VSCF_PRIVATE void
 vscf_compound_key_alg_info_cleanup_ctx(vscf_compound_key_alg_info_t *self);
 
 //
-//  Create compound algorithm information
+//  Create compound algorithm information.
 //
 //  Note, keys ownership is preserved.
 //
 VSCF_PUBLIC void
 vscf_compound_key_alg_info_init_ctx_with_infos(vscf_compound_key_alg_info_t *self, vscf_alg_id_t alg_id,
-        const vscf_impl_t *cipher_alg_info, const vscf_impl_t *signer_alg_info);
+        const vscf_impl_t *cipher_alg_info, const vscf_impl_t *signer_alg_info,
+        const vscf_impl_t *signer_hash_alg_info);
 
 //
-//  Create compound algorithm information
+//  Create compound algorithm information.
 //
 //  Note, keys ownership is transferred.
 //
 VSCF_PUBLIC void
 vscf_compound_key_alg_info_init_ctx_with_infos_disown(vscf_compound_key_alg_info_t *self, vscf_alg_id_t alg_id,
-        vscf_impl_t **cipher_alg_info_ref, vscf_impl_t **signer_alg_info_ref);
+        vscf_impl_t **cipher_alg_info_ref, vscf_impl_t **signer_alg_info_ref, vscf_impl_t **signer_hash_alg_info_ref);
 
 
 // --------------------------------------------------------------------------
