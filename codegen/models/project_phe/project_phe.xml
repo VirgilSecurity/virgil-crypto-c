@@ -54,6 +54,7 @@
         <require impl="hmac"/>
         <require impl="hkdf"/>
         <require impl="sha512"/>
+        <require enum="status"/>
     </require>
 
     <require library="mbedtls" feature="library"/>

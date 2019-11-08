@@ -1061,7 +1061,7 @@ function wasm_create_class_constructor(class, constructor, wasm_class, wasm_proj
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Create singlr <wasm_imported_class/> entry.
+#   Create single <wasm_imported_class/> entry.
 # ---------------------------------------------------------------------------
 function wasm_create_imported_class(ext_wasm_class, ext_wasm_project, wasm_project)
     check_arguments(my, "ext_wasm_class, ext_wasm_project, wasm_project", my)
@@ -1073,6 +1073,18 @@ function wasm_create_imported_class(ext_wasm_class, ext_wasm_project, wasm_proje
         for my.ext_wasm_class.wasm_imported_function
             copy wasm_imported_function to wasm_imported_class
         endfor
+    endnew
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Create single <wasm_imported_enum/> entry.
+# ---------------------------------------------------------------------------
+function wasm_create_imported_enum(ext_wasm_enum, ext_wasm_project, wasm_project)
+    check_arguments(my, "ext_wasm_class, ext_wasm_project, wasm_project", my)
+
+    new wasm_imported_enum to my.wasm_project
+        .name = my.ext_wasm_enum.name
+        .source_dir = cat_path("..", my.ext_wasm_project.name)
     endnew
 endfunction
 
@@ -1104,6 +1116,18 @@ function wasm_create_project_imported_classes(project, wasm_project, wrapper)
                 my.name = wasm_derive_class_name_str(inner_require.class)
                 my.imported_module = my.imported_wasm_project->wasm_module(name = my.name)
                 wasm_create_imported_class(my.imported_module->wasm_class, my.imported_wasm_project, my.wasm_project)
+            endfor
+
+            for require.require as inner_require where defined(inner_require.enum)
+                if inner_require.enum = "status"
+                    my.name = my.imported_wasm_project.error_class_name
+                    my.imported_module = my.imported_wasm_project->wasm_module(name = my.name)
+                    wasm_create_imported_class(my.imported_module->wasm_class, my.imported_wasm_project, my.wasm_project)
+                else
+                    my.name = wasm_derive_enum_name_str(inner_require.enum)
+                    my.imported_module = my.imported_wasm_project->wasm_module(name = my.name)
+                    wasm_create_imported_enum(my.imported_module->wasm_enum, my.imported_wasm_project, my.wasm_project)
+                endif
             endfor
         else
             #   Import all.
