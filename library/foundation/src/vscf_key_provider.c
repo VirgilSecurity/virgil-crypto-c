@@ -559,6 +559,7 @@ vscf_key_provider_generate_post_quantum_private_key(
 
 cleanup:
     vscf_impl_destroy(&cipher_key);
+    vscf_impl_destroy(&pq_cipher_key);
     vscf_impl_destroy(&signer_key);
     vscf_impl_destroy(&chained_cipher_key);
     vscf_compound_key_alg_cleanup(&compound_key_alg);

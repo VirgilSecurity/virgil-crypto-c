@@ -130,7 +130,7 @@ inner_test__make_key__is_valid_alg(vsc_data_t l1_cipher_key_data, vsc_data_t l2_
     vscf_fake_random_setup_source_byte(fake_random, 0xAB);
 
     vscf_key_provider_t *key_provider = vscf_key_provider_new();
-    vscf_key_provider_use_random(key_provider, vscf_fake_random_impl(fake_random));
+    vscf_key_provider_take_random(key_provider, vscf_fake_random_impl(fake_random));
     vscf_status_t status = vscf_key_provider_setup_defaults(key_provider);
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, status);
 
@@ -172,6 +172,8 @@ inner_test__make_key__is_valid_alg(vsc_data_t l1_cipher_key_data, vsc_data_t l2_
     //
     //  Cleanup.
     //
+    vscf_impl_destroy(&l1_cipher_key);
+    vscf_impl_destroy(&l2_cipher_key);
     vscf_impl_destroy(&public_key);
     vscf_impl_destroy(&private_key);
     vscf_chained_key_alg_destroy(&key_alg);
