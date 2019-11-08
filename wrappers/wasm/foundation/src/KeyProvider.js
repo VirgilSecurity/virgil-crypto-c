@@ -115,7 +115,7 @@ const initKeyProvider = (Module, modules) => {
         }
 
         /**
-         * Generate new private key from the given id.
+         * Generate new private key with a given algorithm.
          */
         generatePrivateKey(algId) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
@@ -141,7 +141,7 @@ const initKeyProvider = (Module, modules) => {
         }
 
         /**
-         * Generate new compound private key from the given ids.
+         * Generate new compound private key with given algorithms.
          */
         generateCompoundPrivateKey(cipherAlgId, signerAlgId) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
@@ -156,6 +156,34 @@ const initKeyProvider = (Module, modules) => {
 
             try {
                 proxyResult = Module._vscf_key_provider_generate_compound_private_key(this.ctxPtr, cipherAlgId, signerAlgId, errorCtxPtr);
+
+                const errorStatus = Module._vscf_error_status(errorCtxPtr);
+                modules.FoundationError.handleStatusCode(errorStatus);
+
+                const jsResult = modules.FoundationInterface.newAndTakeCContext(proxyResult);
+                return jsResult;
+            } finally {
+                Module._free(errorCtxPtr);
+            }
+        }
+
+        /**
+         * Generate new compound private key with post-quantum algorithms.
+         *
+         * Note, cipher should not be post-quantum.
+         */
+        generatePostQuantumPrivateKey(cipherAlgId) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureNumber('cipherAlgId', cipherAlgId);
+
+            const errorCtxSize = Module._vscf_error_ctx_size();
+            const errorCtxPtr = Module._malloc(errorCtxSize);
+            Module._vscf_error_reset(errorCtxPtr);
+
+            let proxyResult;
+
+            try {
+                proxyResult = Module._vscf_key_provider_generate_post_quantum_private_key(this.ctxPtr, cipherAlgId, errorCtxPtr);
 
                 const errorStatus = Module._vscf_error_status(errorCtxPtr);
                 modules.FoundationError.handleStatusCode(errorStatus);

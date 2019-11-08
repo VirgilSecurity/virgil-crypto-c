@@ -70,6 +70,12 @@ class CompoundKeyAlgInfo(AlgInfo):
         instance = VscfImplTag.get_type(result)[0].use_c_ctx(cast(result, POINTER(VscfImplTag.get_type(result)[1])))
         return instance
 
+    def signer_hash_alg_info(self):
+        """Return information about hash algorithm that is used with signing."""
+        result = self._lib_vscf_compound_key_alg_info.vscf_compound_key_alg_info_signer_hash_alg_info(self.ctx)
+        instance = VscfImplTag.get_type(result)[0].use_c_ctx(cast(result, POINTER(VscfImplTag.get_type(result)[1])))
+        return instance
+
     @classmethod
     def take_c_ctx(cls, c_ctx):
         inst = cls.__new__(cls)

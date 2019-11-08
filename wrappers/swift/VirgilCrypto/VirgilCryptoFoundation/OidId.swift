@@ -90,6 +90,8 @@ import VSCFoundation
 
     case compoundKey
 
+    case chainedKey
+
     case falcon
 
     case round5

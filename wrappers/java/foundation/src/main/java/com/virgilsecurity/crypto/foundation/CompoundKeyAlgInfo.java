@@ -69,6 +69,13 @@ public class CompoundKeyAlgInfo implements AutoCloseable, AlgInfo {
     }
 
     /*
+    * Return information about hash algorithm that is used with signing.
+    */
+    public AlgInfo signerHashAlgInfo() {
+        return FoundationJNI.INSTANCE.compoundKeyAlgInfo_signerHashAlgInfo(this.cCtx);
+    }
+
+    /*
     * Acquire C context.
     * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     */

@@ -64,6 +64,7 @@ class VscfOidId(object):
     EC_GENERIC_KEY = 23
     EC_DOMAIN_SECP256R1 = 24
     COMPOUND_KEY = 25
-    FALCON = 26
-    ROUND5 = 27
-    ROUND5_ND_5PKE_5D = 28
+    CHAINED_KEY = 26
+    FALCON = 27
+    ROUND5 = 28
+    ROUND5_ND_5PKE_5D = 29

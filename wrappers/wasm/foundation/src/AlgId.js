@@ -79,11 +79,13 @@ const initAlgId = (Module, modules) => {
 
         COMPOUND_KEY: 18,
 
-        FALCON: 19,
+        CHAINED_KEY: 19,
 
-        ROUND5: 20,
+        FALCON: 20,
 
-        ROUND5_ND_5PKE_5D: 21
+        ROUND5: 21,
+
+        ROUND5_ND_5PKE_5D: 22
     });
 
     return AlgId;

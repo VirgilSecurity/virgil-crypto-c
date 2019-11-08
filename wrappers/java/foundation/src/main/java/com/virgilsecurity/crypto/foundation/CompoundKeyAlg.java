@@ -61,6 +61,10 @@ public class CompoundKeyAlg implements AutoCloseable, Alg, KeyAlg, KeyCipher, Ke
         FoundationJNI.INSTANCE.compoundKeyAlg_setRandom(this.cCtx, random);
     }
 
+    public void setHash(Hash hash) {
+        FoundationJNI.INSTANCE.compoundKeyAlg_setHash(this.cCtx, hash);
+    }
+
     /*
     * Setup predefined values to the uninitialized class dependencies.
     */
@@ -69,22 +73,12 @@ public class CompoundKeyAlg implements AutoCloseable, Alg, KeyAlg, KeyCipher, Ke
     }
 
     /*
-    * Generate new compound private key from given encryption algorithm
-    * identifier and signing algorithm identifier.
+    * Make compound private key from given.
     *
     * Note, this operation might be slow.
     */
-    public PrivateKey generateKey(AlgId encAlgId, AlgId signAlgId) throws FoundationException {
-        return FoundationJNI.INSTANCE.compoundKeyAlg_generateKey(this.cCtx, encAlgId, signAlgId);
-    }
-
-    /*
-    * Generate new compound private key with post-quantum algorithms.
-    *
-    * Note, this operation might be slow.
-    */
-    public PrivateKey generatePostQuantumKey() throws FoundationException {
-        return FoundationJNI.INSTANCE.compoundKeyAlg_generatePostQuantumKey(this.cCtx);
+    public PrivateKey makeKey(PrivateKey cipherKey, PrivateKey signerKey) throws FoundationException {
+        return FoundationJNI.INSTANCE.compoundKeyAlg_makeKey(this.cCtx, cipherKey, signerKey);
     }
 
     /*

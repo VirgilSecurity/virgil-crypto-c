@@ -87,18 +87,27 @@ class VscfKeyProvider(object):
         return vscf_key_provider_set_rsa_params(ctx, bitlen)
 
     def vscf_key_provider_generate_private_key(self, ctx, alg_id, error):
-        """Generate new private key from the given id."""
+        """Generate new private key with a given algorithm."""
         vscf_key_provider_generate_private_key = self._lib.vscf_key_provider_generate_private_key
         vscf_key_provider_generate_private_key.argtypes = [POINTER(vscf_key_provider_t), c_int, POINTER(vscf_error_t)]
         vscf_key_provider_generate_private_key.restype = POINTER(vscf_impl_t)
         return vscf_key_provider_generate_private_key(ctx, alg_id, error)
 
     def vscf_key_provider_generate_compound_private_key(self, ctx, cipher_alg_id, signer_alg_id, error):
-        """Generate new compound private key from the given ids."""
+        """Generate new compound private key with given algorithms."""
         vscf_key_provider_generate_compound_private_key = self._lib.vscf_key_provider_generate_compound_private_key
         vscf_key_provider_generate_compound_private_key.argtypes = [POINTER(vscf_key_provider_t), c_int, c_int, POINTER(vscf_error_t)]
         vscf_key_provider_generate_compound_private_key.restype = POINTER(vscf_impl_t)
         return vscf_key_provider_generate_compound_private_key(ctx, cipher_alg_id, signer_alg_id, error)
+
+    def vscf_key_provider_generate_post_quantum_private_key(self, ctx, cipher_alg_id, error):
+        """Generate new compound private key with post-quantum algorithms.
+
+        Note, cipher should not be post-quantum."""
+        vscf_key_provider_generate_post_quantum_private_key = self._lib.vscf_key_provider_generate_post_quantum_private_key
+        vscf_key_provider_generate_post_quantum_private_key.argtypes = [POINTER(vscf_key_provider_t), c_int, POINTER(vscf_error_t)]
+        vscf_key_provider_generate_post_quantum_private_key.restype = POINTER(vscf_impl_t)
+        return vscf_key_provider_generate_post_quantum_private_key(ctx, cipher_alg_id, error)
 
     def vscf_key_provider_import_private_key(self, ctx, key_data, error):
         """Import private key from the PKCS#8 format."""

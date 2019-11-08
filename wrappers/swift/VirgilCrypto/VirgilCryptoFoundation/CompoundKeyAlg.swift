@@ -87,6 +87,11 @@ import VSCFoundation
         vscf_compound_key_alg_use_random(self.c_ctx, random.c_ctx)
     }
 
+    @objc public func setHash(hash: Hash) {
+        vscf_compound_key_alg_release_hash(self.c_ctx)
+        vscf_compound_key_alg_use_hash(self.c_ctx, hash.c_ctx)
+    }
+
     /// Setup predefined values to the uninitialized class dependencies.
     @objc public func setupDefaults() throws {
         let proxyResult = vscf_compound_key_alg_setup_defaults(self.c_ctx)
@@ -94,29 +99,14 @@ import VSCFoundation
         try FoundationError.handleStatus(fromC: proxyResult)
     }
 
-    /// Generate new compound private key from given encryption algorithm
-    /// identifier and signing algorithm identifier.
+    /// Make compound private key from given.
     ///
     /// Note, this operation might be slow.
-    @objc public func generateKey(encAlgId: AlgId, signAlgId: AlgId) throws -> PrivateKey {
+    @objc public func makeKey(cipherKey: PrivateKey, signerKey: PrivateKey) throws -> PrivateKey {
         var error: vscf_error_t = vscf_error_t()
         vscf_error_reset(&error)
 
-        let proxyResult = vscf_compound_key_alg_generate_key(self.c_ctx, vscf_alg_id_t(rawValue: UInt32(encAlgId.rawValue)), vscf_alg_id_t(rawValue: UInt32(signAlgId.rawValue)), &error)
-
-        try FoundationError.handleStatus(fromC: error.status)
-
-        return FoundationImplementation.wrapPrivateKey(take: proxyResult!)
-    }
-
-    /// Generate new compound private key with post-quantum algorithms.
-    ///
-    /// Note, this operation might be slow.
-    @objc public func generatePostQuantumKey() throws -> PrivateKey {
-        var error: vscf_error_t = vscf_error_t()
-        vscf_error_reset(&error)
-
-        let proxyResult = vscf_compound_key_alg_generate_post_quantum_key(self.c_ctx, &error)
+        let proxyResult = vscf_compound_key_alg_make_key(self.c_ctx, cipherKey.c_ctx, signerKey.c_ctx, &error)
 
         try FoundationError.handleStatus(fromC: error.status)
 

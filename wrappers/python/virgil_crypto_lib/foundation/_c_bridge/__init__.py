@@ -169,6 +169,14 @@ from ._vscf_compound_private_key import vscf_compound_private_key_t
 from ._vscf_compound_private_key import VscfCompoundPrivateKey
 from ._vscf_compound_key_alg import vscf_compound_key_alg_t
 from ._vscf_compound_key_alg import VscfCompoundKeyAlg
+from ._vscf_chained_key_alg_info import vscf_chained_key_alg_info_t
+from ._vscf_chained_key_alg_info import VscfChainedKeyAlgInfo
+from ._vscf_chained_public_key import vscf_chained_public_key_t
+from ._vscf_chained_public_key import VscfChainedPublicKey
+from ._vscf_chained_private_key import vscf_chained_private_key_t
+from ._vscf_chained_private_key import VscfChainedPrivateKey
+from ._vscf_chained_key_alg import vscf_chained_key_alg_t
+from ._vscf_chained_key_alg import VscfChainedKeyAlg
 from ._vscf_simple_alg_info import vscf_simple_alg_info_t
 from ._vscf_simple_alg_info import VscfSimpleAlgInfo
 from ._vscf_hash_based_alg_info import vscf_hash_based_alg_info_t

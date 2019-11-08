@@ -85,6 +85,12 @@ class VscfCompoundKeyAlg(object):
         vscf_compound_key_alg_use_random.restype = None
         return vscf_compound_key_alg_use_random(ctx, random)
 
+    def vscf_compound_key_alg_use_hash(self, ctx, hash):
+        vscf_compound_key_alg_use_hash = self._lib.vscf_compound_key_alg_use_hash
+        vscf_compound_key_alg_use_hash.argtypes = [POINTER(vscf_compound_key_alg_t), POINTER(vscf_impl_t)]
+        vscf_compound_key_alg_use_hash.restype = None
+        return vscf_compound_key_alg_use_hash(ctx, hash)
+
     def vscf_compound_key_alg_alg_id(self, ctx):
         """Provide algorithm identificator."""
         vscf_compound_key_alg_alg_id = self._lib.vscf_compound_key_alg_alg_id
@@ -250,24 +256,14 @@ class VscfCompoundKeyAlg(object):
         vscf_compound_key_alg_setup_defaults.restype = c_int
         return vscf_compound_key_alg_setup_defaults(ctx)
 
-    def vscf_compound_key_alg_generate_key(self, ctx, enc_alg_id, sign_alg_id, error):
-        """Generate new compound private key from given encryption algorithm
-        identifier and signing algorithm identifier.
+    def vscf_compound_key_alg_make_key(self, ctx, cipher_key, signer_key, error):
+        """Make compound private key from given.
 
         Note, this operation might be slow."""
-        vscf_compound_key_alg_generate_key = self._lib.vscf_compound_key_alg_generate_key
-        vscf_compound_key_alg_generate_key.argtypes = [POINTER(vscf_compound_key_alg_t), c_int, c_int, POINTER(vscf_error_t)]
-        vscf_compound_key_alg_generate_key.restype = POINTER(vscf_impl_t)
-        return vscf_compound_key_alg_generate_key(ctx, enc_alg_id, sign_alg_id, error)
-
-    def vscf_compound_key_alg_generate_post_quantum_key(self, ctx, error):
-        """Generate new compound private key with post-quantum algorithms.
-
-        Note, this operation might be slow."""
-        vscf_compound_key_alg_generate_post_quantum_key = self._lib.vscf_compound_key_alg_generate_post_quantum_key
-        vscf_compound_key_alg_generate_post_quantum_key.argtypes = [POINTER(vscf_compound_key_alg_t), POINTER(vscf_error_t)]
-        vscf_compound_key_alg_generate_post_quantum_key.restype = POINTER(vscf_impl_t)
-        return vscf_compound_key_alg_generate_post_quantum_key(ctx, error)
+        vscf_compound_key_alg_make_key = self._lib.vscf_compound_key_alg_make_key
+        vscf_compound_key_alg_make_key.argtypes = [POINTER(vscf_compound_key_alg_t), POINTER(vscf_impl_t), POINTER(vscf_impl_t), POINTER(vscf_error_t)]
+        vscf_compound_key_alg_make_key.restype = POINTER(vscf_impl_t)
+        return vscf_compound_key_alg_make_key(ctx, cipher_key, signer_key, error)
 
     def vscf_compound_key_alg_shallow_copy(self, ctx):
         vscf_compound_key_alg_shallow_copy = self._lib.vscf_compound_key_alg_shallow_copy

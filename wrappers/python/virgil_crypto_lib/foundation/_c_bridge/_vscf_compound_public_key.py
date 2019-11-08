@@ -46,10 +46,10 @@ class vscf_compound_public_key_t(Structure):
 class VscfCompoundPublicKey(object):
     """Handles compound public key.
 
-    Compound public key contains 2 public keys:
-        - encryption key;
-        - verification key;
-        - encryption key signature."""
+    Compound public key contains 2 public keys and signature:
+        - cipher key - is used for encryption;
+        - signer key - is used for verifying;
+        - signature - signature of the "cipher public key"."""
 
     def __init__(self):
         """Create underlying C context."""
@@ -111,26 +111,26 @@ class VscfCompoundPublicKey(object):
         vscf_compound_public_key_is_valid.restype = c_bool
         return vscf_compound_public_key_is_valid(ctx)
 
-    def vscf_compound_public_key_get_encryption_key(self, ctx):
-        """Return public key suitable for encryption."""
-        vscf_compound_public_key_get_encryption_key = self._lib.vscf_compound_public_key_get_encryption_key
-        vscf_compound_public_key_get_encryption_key.argtypes = [POINTER(vscf_compound_public_key_t)]
-        vscf_compound_public_key_get_encryption_key.restype = POINTER(vscf_impl_t)
-        return vscf_compound_public_key_get_encryption_key(ctx)
+    def vscf_compound_public_key_cipher_key(self, ctx):
+        """Return a cipher public key suitable for initial encryption."""
+        vscf_compound_public_key_cipher_key = self._lib.vscf_compound_public_key_cipher_key
+        vscf_compound_public_key_cipher_key.argtypes = [POINTER(vscf_compound_public_key_t)]
+        vscf_compound_public_key_cipher_key.restype = POINTER(vscf_impl_t)
+        return vscf_compound_public_key_cipher_key(ctx)
 
-    def vscf_compound_public_key_get_verifying_key(self, ctx):
+    def vscf_compound_public_key_signer_key(self, ctx):
         """Return public key suitable for verifying."""
-        vscf_compound_public_key_get_verifying_key = self._lib.vscf_compound_public_key_get_verifying_key
-        vscf_compound_public_key_get_verifying_key.argtypes = [POINTER(vscf_compound_public_key_t)]
-        vscf_compound_public_key_get_verifying_key.restype = POINTER(vscf_impl_t)
-        return vscf_compound_public_key_get_verifying_key(ctx)
+        vscf_compound_public_key_signer_key = self._lib.vscf_compound_public_key_signer_key
+        vscf_compound_public_key_signer_key.argtypes = [POINTER(vscf_compound_public_key_t)]
+        vscf_compound_public_key_signer_key.restype = POINTER(vscf_impl_t)
+        return vscf_compound_public_key_signer_key(ctx)
 
-    def vscf_compound_public_key_get_encryption_key_signature(self, ctx):
-        """Setup the encryption key signature."""
-        vscf_compound_public_key_get_encryption_key_signature = self._lib.vscf_compound_public_key_get_encryption_key_signature
-        vscf_compound_public_key_get_encryption_key_signature.argtypes = [POINTER(vscf_compound_public_key_t)]
-        vscf_compound_public_key_get_encryption_key_signature.restype = vsc_data_t
-        return vscf_compound_public_key_get_encryption_key_signature(ctx)
+    def vscf_compound_public_key_signature(self, ctx):
+        """Return cipher public key signature."""
+        vscf_compound_public_key_signature = self._lib.vscf_compound_public_key_signature
+        vscf_compound_public_key_signature.argtypes = [POINTER(vscf_compound_public_key_t)]
+        vscf_compound_public_key_signature.restype = vsc_data_t
+        return vscf_compound_public_key_signature(ctx)
 
     def vscf_compound_public_key_shallow_copy(self, ctx):
         vscf_compound_public_key_shallow_copy = self._lib.vscf_compound_public_key_shallow_copy

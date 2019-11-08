@@ -136,6 +136,10 @@ from .compound_key_alg_info import CompoundKeyAlgInfo
 from .compound_public_key import CompoundPublicKey
 from .compound_private_key import CompoundPrivateKey
 from .compound_key_alg import CompoundKeyAlg
+from .chained_key_alg_info import ChainedKeyAlgInfo
+from .chained_public_key import ChainedPublicKey
+from .chained_private_key import ChainedPrivateKey
+from .chained_key_alg import ChainedKeyAlg
 from .simple_alg_info import SimpleAlgInfo
 from .hash_based_alg_info import HashBasedAlgInfo
 from .cipher_alg_info import CipherAlgInfo

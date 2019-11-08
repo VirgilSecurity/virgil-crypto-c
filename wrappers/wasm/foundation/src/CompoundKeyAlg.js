@@ -142,6 +142,13 @@ const initCompoundKeyAlg = (Module, modules) => {
             Module._vscf_compound_key_alg_use_random(this.ctxPtr, random.ctxPtr)
         }
 
+        set hash(hash) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureImplementInterface('hash', hash, 'Foundation.Hash', modules.FoundationInterfaceTag.HASH, modules.FoundationInterface);
+            Module._vscf_compound_key_alg_release_hash(this.ctxPtr)
+            Module._vscf_compound_key_alg_use_hash(this.ctxPtr, hash.ctxPtr)
+        }
+
         /**
          * Provide algorithm identificator.
          */
@@ -601,15 +608,14 @@ const initCompoundKeyAlg = (Module, modules) => {
         }
 
         /**
-         * Generate new compound private key from given encryption algorithm
-         * identifier and signing algorithm identifier.
+         * Make compound private key from given.
          *
          * Note, this operation might be slow.
          */
-        generateKey(encAlgId, signAlgId) {
+        makeKey(cipherKey, signerKey) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-            precondition.ensureNumber('encAlgId', encAlgId);
-            precondition.ensureNumber('signAlgId', signAlgId);
+            precondition.ensureImplementInterface('cipherKey', cipherKey, 'Foundation.PrivateKey', modules.FoundationInterfaceTag.PRIVATE_KEY, modules.FoundationInterface);
+            precondition.ensureImplementInterface('signerKey', signerKey, 'Foundation.PrivateKey', modules.FoundationInterfaceTag.PRIVATE_KEY, modules.FoundationInterface);
 
             const errorCtxSize = Module._vscf_error_ctx_size();
             const errorCtxPtr = Module._malloc(errorCtxSize);
@@ -618,34 +624,7 @@ const initCompoundKeyAlg = (Module, modules) => {
             let proxyResult;
 
             try {
-                proxyResult = Module._vscf_compound_key_alg_generate_key(this.ctxPtr, encAlgId, signAlgId, errorCtxPtr);
-
-                const errorStatus = Module._vscf_error_status(errorCtxPtr);
-                modules.FoundationError.handleStatusCode(errorStatus);
-
-                const jsResult = modules.FoundationInterface.newAndTakeCContext(proxyResult);
-                return jsResult;
-            } finally {
-                Module._free(errorCtxPtr);
-            }
-        }
-
-        /**
-         * Generate new compound private key with post-quantum algorithms.
-         *
-         * Note, this operation might be slow.
-         */
-        generatePostQuantumKey() {
-            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
-            const errorCtxSize = Module._vscf_error_ctx_size();
-            const errorCtxPtr = Module._malloc(errorCtxSize);
-            Module._vscf_error_reset(errorCtxPtr);
-
-            let proxyResult;
-
-            try {
-                proxyResult = Module._vscf_compound_key_alg_generate_post_quantum_key(this.ctxPtr, errorCtxPtr);
+                proxyResult = Module._vscf_compound_key_alg_make_key(this.ctxPtr, cipherKey.ctxPtr, signerKey.ctxPtr, errorCtxPtr);
 
                 const errorStatus = Module._vscf_error_status(errorCtxPtr);
                 modules.FoundationError.handleStatusCode(errorStatus);

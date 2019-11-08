@@ -632,14 +632,21 @@ public class FoundationJNI {
     public native void keyProvider_setRsaParams(long cCtx, int bitlen);
 
     /*
-    * Generate new private key from the given id.
+    * Generate new private key with a given algorithm.
     */
     public native PrivateKey keyProvider_generatePrivateKey(long cCtx, AlgId algId) throws FoundationException;
 
     /*
-    * Generate new compound private key from the given ids.
+    * Generate new compound private key with given algorithms.
     */
     public native PrivateKey keyProvider_generateCompoundPrivateKey(long cCtx, AlgId cipherAlgId, AlgId signerAlgId) throws FoundationException;
+
+    /*
+    * Generate new compound private key with post-quantum algorithms.
+    *
+    * Note, cipher should not be post-quantum.
+    */
+    public native PrivateKey keyProvider_generatePostQuantumPrivateKey(long cCtx, AlgId cipherAlgId) throws FoundationException;
 
     /*
     * Import private key from the PKCS#8 format.
@@ -3366,6 +3373,11 @@ public class FoundationJNI {
     */
     public native AlgInfo compoundKeyAlgInfo_signerAlgInfo(long cCtx);
 
+    /*
+    * Return information about hash algorithm that is used with signing.
+    */
+    public native AlgInfo compoundKeyAlgInfo_signerHashAlgInfo(long cCtx);
+
     public native long compoundKeyAlgInfo_new();
 
     public native void compoundKeyAlgInfo_close(long cCtx);
@@ -3376,19 +3388,19 @@ public class FoundationJNI {
     public native AlgId compoundKeyAlgInfo_algId(long cCtx);
 
     /*
-    * Return public key suitable for encryption.
+    * Return a cipher public key suitable for initial encryption.
     */
-    public native PublicKey compoundPublicKey_getEncryptionKey(long cCtx);
+    public native PublicKey compoundPublicKey_cipherKey(long cCtx);
 
     /*
     * Return public key suitable for verifying.
     */
-    public native PublicKey compoundPublicKey_getVerifyingKey(long cCtx);
+    public native PublicKey compoundPublicKey_signerKey(long cCtx);
 
     /*
-    * Setup the encryption key signature.
+    * Return cipher public key signature.
     */
-    public native byte[] compoundPublicKey_getEncryptionKeySignature(long cCtx);
+    public native byte[] compoundPublicKey_signature(long cCtx);
 
     public native long compoundPublicKey_new();
 
@@ -3421,19 +3433,19 @@ public class FoundationJNI {
     public native boolean compoundPublicKey_isValid(long cCtx);
 
     /*
-    * Return private key suitable for decryption.
+    * Return primary private key suitable for a final decryption.
     */
-    public native PrivateKey compoundPrivateKey_getDecryptionKey(long cCtx);
+    public native PrivateKey compoundPrivateKey_cipherKey(long cCtx);
 
     /*
     * Return private key suitable for signing.
     */
-    public native PrivateKey compoundPrivateKey_getSigningKey(long cCtx);
+    public native PrivateKey compoundPrivateKey_signerKey(long cCtx);
 
     /*
-    * Setup the encryption key signature.
+    * Return the cipher public key signature.
     */
-    public native byte[] compoundPrivateKey_getEncryptionKeySignature(long cCtx);
+    public native byte[] compoundPrivateKey_signature(long cCtx);
 
     public native long compoundPrivateKey_new();
 
@@ -3470,7 +3482,9 @@ public class FoundationJNI {
     */
     public native PublicKey compoundPrivateKey_extractPublicKey(long cCtx);
 
-    public native void compoundKeyAlg_setRandom(long cCtx, Random random) throws FoundationException;
+    public native void compoundKeyAlg_setRandom(long cCtx, Random random);
+
+    public native void compoundKeyAlg_setHash(long cCtx, Hash hash);
 
     /*
     * Setup predefined values to the uninitialized class dependencies.
@@ -3478,19 +3492,11 @@ public class FoundationJNI {
     public native void compoundKeyAlg_setupDefaults(long cCtx) throws FoundationException;
 
     /*
-    * Generate new compound private key from given encryption algorithm
-    * identifier and signing algorithm identifier.
+    * Make compound private key from given.
     *
     * Note, this operation might be slow.
     */
-    public native PrivateKey compoundKeyAlg_generateKey(long cCtx, AlgId encAlgId, AlgId signAlgId) throws FoundationException;
-
-    /*
-    * Generate new compound private key with post-quantum algorithms.
-    *
-    * Note, this operation might be slow.
-    */
-    public native PrivateKey compoundKeyAlg_generatePostQuantumKey(long cCtx) throws FoundationException;
+    public native PrivateKey compoundKeyAlg_makeKey(long cCtx, PrivateKey cipherKey, PrivateKey signerKey) throws FoundationException;
 
     public native long compoundKeyAlg_new();
 
@@ -3615,6 +3621,223 @@ public class FoundationJNI {
     * Verify data digest with a given public key and signature.
     */
     public native boolean compoundKeyAlg_verifyHash(long cCtx, PublicKey publicKey, AlgId hashId, byte[] digest, byte[] signature);
+
+    /*
+    * Return information about encrypt/decrypt algorithm.
+    */
+    public native AlgInfo chainedKeyAlgInfo_l1CipherAlgInfo(long cCtx);
+
+    /*
+    * Return information about l2 cipher encrypt/decrypt algorithm,
+    * or NULL if absent.
+    */
+    public native AlgInfo chainedKeyAlgInfo_l2CipherAlgInfo(long cCtx);
+
+    public native long chainedKeyAlgInfo_new();
+
+    public native void chainedKeyAlgInfo_close(long cCtx);
+
+    /*
+    * Provide algorithm identificator.
+    */
+    public native AlgId chainedKeyAlgInfo_algId(long cCtx);
+
+    /*
+    * Return l1 cipher public key.
+    */
+    public native PublicKey chainedPublicKey_l1CipherKey(long cCtx);
+
+    /*
+    * Return l2 cipher public key.
+    */
+    public native PublicKey chainedPublicKey_l2CipherKey(long cCtx);
+
+    public native long chainedPublicKey_new();
+
+    public native void chainedPublicKey_close(long cCtx);
+
+    /*
+    * Algorithm identifier the key belongs to.
+    */
+    public native AlgId chainedPublicKey_algId(long cCtx);
+
+    /*
+    * Return algorithm information that can be used for serialization.
+    */
+    public native AlgInfo chainedPublicKey_algInfo(long cCtx);
+
+    /*
+    * Length of the key in bytes.
+    */
+    public native int chainedPublicKey_len(long cCtx);
+
+    /*
+    * Length of the key in bits.
+    */
+    public native int chainedPublicKey_bitlen(long cCtx);
+
+    /*
+    * Check that key is valid.
+    * Note, this operation can be slow.
+    */
+    public native boolean chainedPublicKey_isValid(long cCtx);
+
+    /*
+    * Return l1 cipher private key.
+    */
+    public native PrivateKey chainedPrivateKey_l1CipherKey(long cCtx);
+
+    /*
+    * Return l2 cipher private key.
+    */
+    public native PrivateKey chainedPrivateKey_l2CipherKey(long cCtx);
+
+    public native long chainedPrivateKey_new();
+
+    public native void chainedPrivateKey_close(long cCtx);
+
+    /*
+    * Algorithm identifier the key belongs to.
+    */
+    public native AlgId chainedPrivateKey_algId(long cCtx);
+
+    /*
+    * Return algorithm information that can be used for serialization.
+    */
+    public native AlgInfo chainedPrivateKey_algInfo(long cCtx);
+
+    /*
+    * Length of the key in bytes.
+    */
+    public native int chainedPrivateKey_len(long cCtx);
+
+    /*
+    * Length of the key in bits.
+    */
+    public native int chainedPrivateKey_bitlen(long cCtx);
+
+    /*
+    * Check that key is valid.
+    * Note, this operation can be slow.
+    */
+    public native boolean chainedPrivateKey_isValid(long cCtx);
+
+    /*
+    * Extract public key from the private key.
+    */
+    public native PublicKey chainedPrivateKey_extractPublicKey(long cCtx);
+
+    public native void chainedKeyAlg_setRandom(long cCtx, Random random);
+
+    /*
+    * Setup predefined values to the uninitialized class dependencies.
+    */
+    public native void chainedKeyAlg_setupDefaults(long cCtx) throws FoundationException;
+
+    /*
+    * Make chained private key from given.
+    *
+    * Note, l2 cipher should be able to encrypt data produced by the l1 cipher.
+    */
+    public native PrivateKey chainedKeyAlg_makeKey(long cCtx, PrivateKey l1CipherKey, PrivateKey l2CipherKey) throws FoundationException;
+
+    public native long chainedKeyAlg_new();
+
+    public native void chainedKeyAlg_close(long cCtx);
+
+    /*
+    * Provide algorithm identificator.
+    */
+    public native AlgId chainedKeyAlg_algId(long cCtx);
+
+    /*
+    * Produce object with algorithm information and configuration parameters.
+    */
+    public native AlgInfo chainedKeyAlg_produceAlgInfo(long cCtx);
+
+    /*
+    * Restore algorithm configuration from the given object.
+    */
+    public native void chainedKeyAlg_restoreAlgInfo(long cCtx, AlgInfo algInfo) throws FoundationException;
+
+    /*
+    * Generate ephemeral private key of the same type.
+    * Note, this operation might be slow.
+    */
+    public native PrivateKey chainedKeyAlg_generateEphemeralKey(long cCtx, Key key) throws FoundationException;
+
+    /*
+    * Import public key from the raw binary format.
+    *
+    * Return public key that is adopted and optimized to be used
+    * with this particular algorithm.
+    *
+    * Binary format must be defined in the key specification.
+    * For instance, RSA public key must be imported from the format defined in
+    * RFC 3447 Appendix A.1.1.
+    */
+    public native PublicKey chainedKeyAlg_importPublicKey(long cCtx, RawPublicKey rawKey) throws FoundationException;
+
+    /*
+    * Export public key to the raw binary format.
+    *
+    * Binary format must be defined in the key specification.
+    * For instance, RSA public key must be exported in format defined in
+    * RFC 3447 Appendix A.1.1.
+    */
+    public native RawPublicKey chainedKeyAlg_exportPublicKey(long cCtx, PublicKey publicKey) throws FoundationException;
+
+    /*
+    * Import private key from the raw binary format.
+    *
+    * Return private key that is adopted and optimized to be used
+    * with this particular algorithm.
+    *
+    * Binary format must be defined in the key specification.
+    * For instance, RSA private key must be imported from the format defined in
+    * RFC 3447 Appendix A.1.2.
+    */
+    public native PrivateKey chainedKeyAlg_importPrivateKey(long cCtx, RawPrivateKey rawKey) throws FoundationException;
+
+    /*
+    * Export private key in the raw binary format.
+    *
+    * Binary format must be defined in the key specification.
+    * For instance, RSA private key must be exported in format defined in
+    * RFC 3447 Appendix A.1.2.
+    */
+    public native RawPrivateKey chainedKeyAlg_exportPrivateKey(long cCtx, PrivateKey privateKey) throws FoundationException;
+
+    /*
+    * Check if algorithm can encrypt data with a given key.
+    */
+    public native boolean chainedKeyAlg_canEncrypt(long cCtx, PublicKey publicKey, int dataLen);
+
+    /*
+    * Calculate required buffer length to hold the encrypted data.
+    */
+    public native int chainedKeyAlg_encryptedLen(long cCtx, PublicKey publicKey, int dataLen);
+
+    /*
+    * Encrypt data with a given public key.
+    */
+    public native byte[] chainedKeyAlg_encrypt(long cCtx, PublicKey publicKey, byte[] data) throws FoundationException;
+
+    /*
+    * Check if algorithm can decrypt data with a given key.
+    * However, success result of decryption is not guaranteed.
+    */
+    public native boolean chainedKeyAlg_canDecrypt(long cCtx, PrivateKey privateKey, int dataLen);
+
+    /*
+    * Calculate required buffer length to hold the decrypted data.
+    */
+    public native int chainedKeyAlg_decryptedLen(long cCtx, PrivateKey privateKey, int dataLen);
+
+    /*
+    * Decrypt given data.
+    */
+    public native byte[] chainedKeyAlg_decrypt(long cCtx, PrivateKey privateKey, byte[] data) throws FoundationException;
 
     public native long simpleAlgInfo_new();
 

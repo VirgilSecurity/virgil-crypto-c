@@ -44,10 +44,10 @@ from .public_key import PublicKey
 class CompoundPublicKey(Key, PublicKey):
     """Handles compound public key.
 
-    Compound public key contains 2 public keys:
-        - encryption key;
-        - verification key;
-        - encryption key signature."""
+    Compound public key contains 2 public keys and signature:
+        - cipher key - is used for encryption;
+        - signer key - is used for verifying;
+        - signature - signature of the "cipher public key"."""
 
     def __init__(self):
         """Create underlying C context."""
@@ -92,21 +92,21 @@ class CompoundPublicKey(Key, PublicKey):
         result = self._lib_vscf_compound_public_key.vscf_compound_public_key_is_valid(self.ctx)
         return result
 
-    def get_encryption_key(self):
-        """Return public key suitable for encryption."""
-        result = self._lib_vscf_compound_public_key.vscf_compound_public_key_get_encryption_key(self.ctx)
+    def cipher_key(self):
+        """Return a cipher public key suitable for initial encryption."""
+        result = self._lib_vscf_compound_public_key.vscf_compound_public_key_cipher_key(self.ctx)
         instance = VscfImplTag.get_type(result)[0].use_c_ctx(cast(result, POINTER(VscfImplTag.get_type(result)[1])))
         return instance
 
-    def get_verifying_key(self):
+    def signer_key(self):
         """Return public key suitable for verifying."""
-        result = self._lib_vscf_compound_public_key.vscf_compound_public_key_get_verifying_key(self.ctx)
+        result = self._lib_vscf_compound_public_key.vscf_compound_public_key_signer_key(self.ctx)
         instance = VscfImplTag.get_type(result)[0].use_c_ctx(cast(result, POINTER(VscfImplTag.get_type(result)[1])))
         return instance
 
-    def get_encryption_key_signature(self):
-        """Setup the encryption key signature."""
-        result = self._lib_vscf_compound_public_key.vscf_compound_public_key_get_encryption_key_signature(self.ctx)
+    def signature(self):
+        """Return cipher public key signature."""
+        result = self._lib_vscf_compound_public_key.vscf_compound_public_key_signature(self.ctx)
         instance = Data.take_c_ctx(result)
         cleaned_bytes = bytearray(instance)
         return cleaned_bytes

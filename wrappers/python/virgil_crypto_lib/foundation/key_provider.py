@@ -68,7 +68,7 @@ class KeyProvider(object):
         self._lib_vscf_key_provider.vscf_key_provider_set_rsa_params(self.ctx, bitlen)
 
     def generate_private_key(self, alg_id):
-        """Generate new private key from the given id."""
+        """Generate new private key with a given algorithm."""
         error = vscf_error_t()
         result = self._lib_vscf_key_provider.vscf_key_provider_generate_private_key(self.ctx, alg_id, error)
         VscfStatus.handle_status(error.status)
@@ -76,9 +76,19 @@ class KeyProvider(object):
         return instance
 
     def generate_compound_private_key(self, cipher_alg_id, signer_alg_id):
-        """Generate new compound private key from the given ids."""
+        """Generate new compound private key with given algorithms."""
         error = vscf_error_t()
         result = self._lib_vscf_key_provider.vscf_key_provider_generate_compound_private_key(self.ctx, cipher_alg_id, signer_alg_id, error)
+        VscfStatus.handle_status(error.status)
+        instance = VscfImplTag.get_type(result)[0].take_c_ctx(cast(result, POINTER(VscfImplTag.get_type(result)[1])))
+        return instance
+
+    def generate_post_quantum_private_key(self, cipher_alg_id):
+        """Generate new compound private key with post-quantum algorithms.
+
+        Note, cipher should not be post-quantum."""
+        error = vscf_error_t()
+        result = self._lib_vscf_key_provider.vscf_key_provider_generate_post_quantum_private_key(self.ctx, cipher_alg_id, error)
         VscfStatus.handle_status(error.status)
         instance = VscfImplTag.get_type(result)[0].take_c_ctx(cast(result, POINTER(VscfImplTag.get_type(result)[1])))
         return instance

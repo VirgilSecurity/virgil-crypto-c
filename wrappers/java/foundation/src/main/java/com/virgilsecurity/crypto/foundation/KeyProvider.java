@@ -88,17 +88,26 @@ public class KeyProvider implements AutoCloseable {
     }
 
     /*
-    * Generate new private key from the given id.
+    * Generate new private key with a given algorithm.
     */
     public PrivateKey generatePrivateKey(AlgId algId) throws FoundationException {
         return FoundationJNI.INSTANCE.keyProvider_generatePrivateKey(this.cCtx, algId);
     }
 
     /*
-    * Generate new compound private key from the given ids.
+    * Generate new compound private key with given algorithms.
     */
     public PrivateKey generateCompoundPrivateKey(AlgId cipherAlgId, AlgId signerAlgId) throws FoundationException {
         return FoundationJNI.INSTANCE.keyProvider_generateCompoundPrivateKey(this.cCtx, cipherAlgId, signerAlgId);
+    }
+
+    /*
+    * Generate new compound private key with post-quantum algorithms.
+    *
+    * Note, cipher should not be post-quantum.
+    */
+    public PrivateKey generatePostQuantumPrivateKey(AlgId cipherAlgId) throws FoundationException {
+        return FoundationJNI.INSTANCE.keyProvider_generatePostQuantumPrivateKey(this.cCtx, cipherAlgId);
     }
 
     /*

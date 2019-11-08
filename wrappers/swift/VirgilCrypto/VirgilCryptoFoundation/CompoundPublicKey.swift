@@ -38,10 +38,10 @@ import VSCFoundation
 
 /// Handles compound public key.
 ///
-/// Compound public key contains 2 public keys:
-///     - encryption key;
-///     - verification key;
-///     - encryption key signature.
+/// Compound public key contains 2 public keys and signature:
+///     - cipher key - is used for encryption;
+///     - signer key - is used for verifying;
+///     - signature - signature of the "cipher public key".
 @objc(VSCFCompoundPublicKey) public class CompoundPublicKey: NSObject, Key, PublicKey {
 
     /// Handle underlying C context.
@@ -72,23 +72,23 @@ import VSCFoundation
         vscf_compound_public_key_delete(self.c_ctx)
     }
 
-    /// Return public key suitable for encryption.
-    @objc public func getEncryptionKey() -> PublicKey {
-        let proxyResult = vscf_compound_public_key_get_encryption_key(self.c_ctx)
+    /// Return a cipher public key suitable for initial encryption.
+    @objc public func cipherKey() -> PublicKey {
+        let proxyResult = vscf_compound_public_key_cipher_key(self.c_ctx)
 
         return FoundationImplementation.wrapPublicKey(take: proxyResult!)
     }
 
     /// Return public key suitable for verifying.
-    @objc public func getVerifyingKey() -> PublicKey {
-        let proxyResult = vscf_compound_public_key_get_verifying_key(self.c_ctx)
+    @objc public func signerKey() -> PublicKey {
+        let proxyResult = vscf_compound_public_key_signer_key(self.c_ctx)
 
         return FoundationImplementation.wrapPublicKey(take: proxyResult!)
     }
 
-    /// Setup the encryption key signature.
-    @objc public func getEncryptionKeySignature() -> Data {
-        let proxyResult = vscf_compound_public_key_get_encryption_key_signature(self.c_ctx)
+    /// Return cipher public key signature.
+    @objc public func signature() -> Data {
+        let proxyResult = vscf_compound_public_key_signature(self.c_ctx)
 
         return Data.init(bytes: proxyResult.bytes, count: proxyResult.len)
     }

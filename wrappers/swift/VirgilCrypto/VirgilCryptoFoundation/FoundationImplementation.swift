@@ -84,6 +84,8 @@ import VSCFoundation
             return Round5(take: c_ctx)
         case vscf_impl_tag_COMPOUND_KEY_ALG:
             return CompoundKeyAlg(take: c_ctx)
+        case vscf_impl_tag_CHAINED_KEY_ALG:
+            return ChainedKeyAlg(take: c_ctx)
         default:
             fatalError("Unexpected C implementation cast to the Swift implementation.")
         }
@@ -296,6 +298,10 @@ import VSCFoundation
             return CompoundPublicKey(take: c_ctx)
         case vscf_impl_tag_COMPOUND_PRIVATE_KEY:
             return CompoundPrivateKey(take: c_ctx)
+        case vscf_impl_tag_CHAINED_PUBLIC_KEY:
+            return ChainedPublicKey(take: c_ctx)
+        case vscf_impl_tag_CHAINED_PRIVATE_KEY:
+            return ChainedPrivateKey(take: c_ctx)
         default:
             fatalError("Unexpected C implementation cast to the Swift implementation.")
         }
@@ -317,6 +323,8 @@ import VSCFoundation
             return RawPublicKey(take: c_ctx)
         case vscf_impl_tag_COMPOUND_PUBLIC_KEY:
             return CompoundPublicKey(take: c_ctx)
+        case vscf_impl_tag_CHAINED_PUBLIC_KEY:
+            return ChainedPublicKey(take: c_ctx)
         default:
             fatalError("Unexpected C implementation cast to the Swift implementation.")
         }
@@ -338,6 +346,8 @@ import VSCFoundation
             return RawPrivateKey(take: c_ctx)
         case vscf_impl_tag_COMPOUND_PRIVATE_KEY:
             return CompoundPrivateKey(take: c_ctx)
+        case vscf_impl_tag_CHAINED_PRIVATE_KEY:
+            return ChainedPrivateKey(take: c_ctx)
         default:
             fatalError("Unexpected C implementation cast to the Swift implementation.")
         }
@@ -365,6 +375,8 @@ import VSCFoundation
             return Round5(take: c_ctx)
         case vscf_impl_tag_COMPOUND_KEY_ALG:
             return CompoundKeyAlg(take: c_ctx)
+        case vscf_impl_tag_CHAINED_KEY_ALG:
+            return ChainedKeyAlg(take: c_ctx)
         default:
             fatalError("Unexpected C implementation cast to the Swift implementation.")
         }
@@ -390,6 +402,8 @@ import VSCFoundation
             return Round5(take: c_ctx)
         case vscf_impl_tag_COMPOUND_KEY_ALG:
             return CompoundKeyAlg(take: c_ctx)
+        case vscf_impl_tag_CHAINED_KEY_ALG:
+            return ChainedKeyAlg(take: c_ctx)
         default:
             fatalError("Unexpected C implementation cast to the Swift implementation.")
         }
@@ -572,6 +586,8 @@ import VSCFoundation
         switch(implTag) {
         case vscf_impl_tag_COMPOUND_KEY_ALG_INFO:
             return CompoundKeyAlgInfo(take: c_ctx)
+        case vscf_impl_tag_CHAINED_KEY_ALG_INFO:
+            return ChainedKeyAlgInfo(take: c_ctx)
         case vscf_impl_tag_SIMPLE_ALG_INFO:
             return SimpleAlgInfo(take: c_ctx)
         case vscf_impl_tag_HASH_BASED_ALG_INFO:

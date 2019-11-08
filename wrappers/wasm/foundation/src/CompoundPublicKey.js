@@ -41,10 +41,10 @@ const initCompoundPublicKey = (Module, modules) => {
     /**
      * Handles compound public key.
      *
-     * Compound public key contains 2 public keys:
-     * - encryption key;
-     * - verification key;
-     * - encryption key signature.
+     * Compound public key contains 2 public keys and signature:
+     * - cipher key - is used for encryption;
+     * - signer key - is used for verifying;
+     * - signature - signature of the "cipher public key".
      */
     class CompoundPublicKey {
 
@@ -165,13 +165,13 @@ const initCompoundPublicKey = (Module, modules) => {
         }
 
         /**
-         * Return public key suitable for encryption.
+         * Return a cipher public key suitable for initial encryption.
          */
-        getEncryptionKey() {
+        cipherKey() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
             let proxyResult;
-            proxyResult = Module._vscf_compound_public_key_get_encryption_key(this.ctxPtr);
+            proxyResult = Module._vscf_compound_public_key_cipher_key(this.ctxPtr);
 
             const jsResult = modules.FoundationInterface.newAndUseCContext(proxyResult);
             return jsResult;
@@ -180,20 +180,20 @@ const initCompoundPublicKey = (Module, modules) => {
         /**
          * Return public key suitable for verifying.
          */
-        getVerifyingKey() {
+        signerKey() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
             let proxyResult;
-            proxyResult = Module._vscf_compound_public_key_get_verifying_key(this.ctxPtr);
+            proxyResult = Module._vscf_compound_public_key_signer_key(this.ctxPtr);
 
             const jsResult = modules.FoundationInterface.newAndUseCContext(proxyResult);
             return jsResult;
         }
 
         /**
-         * Setup the encryption key signature.
+         * Return cipher public key signature.
          */
-        getEncryptionKeySignature() {
+        signature() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
             //  Create C structure vsc_data_t.
@@ -201,7 +201,7 @@ const initCompoundPublicKey = (Module, modules) => {
             const dataResultCtxPtr = Module._malloc(dataResultCtxSize);
 
             try {
-                Module._vscf_compound_public_key_get_encryption_key_signature(dataResultCtxPtr, this.ctxPtr);
+                Module._vscf_compound_public_key_signature(dataResultCtxPtr, this.ctxPtr);
 
                 const dataResultSize = Module._vsc_data_len(dataResultCtxPtr);
                 const dataResultPtr = Module._vsc_data_bytes(dataResultCtxPtr);

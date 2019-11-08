@@ -39,9 +39,10 @@ package com.virgilsecurity.crypto.foundation;
 /*
 * Handles compound private key.
 *
-* Compound private key contains 2 private keys:
-* - decryption key;
-* - signing key.
+* Compound private key contains 2 private keys and signature:
+* - cipher key - is used for decryption;
+* - signer key - is used for signing;
+* - signature - signature of the "cipher public key".
 */
 public class CompoundPrivateKey implements AutoCloseable, Key, PrivateKey {
 
@@ -59,24 +60,24 @@ public class CompoundPrivateKey implements AutoCloseable, Key, PrivateKey {
     }
 
     /*
-    * Return private key suitable for decryption.
+    * Return primary private key suitable for a final decryption.
     */
-    public PrivateKey getDecryptionKey() {
-        return FoundationJNI.INSTANCE.compoundPrivateKey_getDecryptionKey(this.cCtx);
+    public PrivateKey cipherKey() {
+        return FoundationJNI.INSTANCE.compoundPrivateKey_cipherKey(this.cCtx);
     }
 
     /*
     * Return private key suitable for signing.
     */
-    public PrivateKey getSigningKey() {
-        return FoundationJNI.INSTANCE.compoundPrivateKey_getSigningKey(this.cCtx);
+    public PrivateKey signerKey() {
+        return FoundationJNI.INSTANCE.compoundPrivateKey_signerKey(this.cCtx);
     }
 
     /*
-    * Setup the encryption key signature.
+    * Return the cipher public key signature.
     */
-    public byte[] getEncryptionKeySignature() {
-        return FoundationJNI.INSTANCE.compoundPrivateKey_getEncryptionKeySignature(this.cCtx);
+    public byte[] signature() {
+        return FoundationJNI.INSTANCE.compoundPrivateKey_signature(this.cCtx);
     }
 
     /*

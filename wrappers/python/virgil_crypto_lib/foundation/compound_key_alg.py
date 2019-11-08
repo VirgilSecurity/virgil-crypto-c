@@ -77,6 +77,9 @@ class CompoundKeyAlg(Alg, KeyAlg, KeyCipher, KeySigner):
     def set_random(self, random):
         self._lib_vscf_compound_key_alg.vscf_compound_key_alg_use_random(self.ctx, random.c_impl)
 
+    def set_hash(self, hash):
+        self._lib_vscf_compound_key_alg.vscf_compound_key_alg_use_hash(self.ctx, hash.c_impl)
+
     def alg_id(self):
         """Provide algorithm identificator."""
         result = self._lib_vscf_compound_key_alg.vscf_compound_key_alg_alg_id(self.ctx)
@@ -229,23 +232,12 @@ class CompoundKeyAlg(Alg, KeyAlg, KeyCipher, KeySigner):
         status = self._lib_vscf_compound_key_alg.vscf_compound_key_alg_setup_defaults(self.ctx)
         VscfStatus.handle_status(status)
 
-    def generate_key(self, enc_alg_id, sign_alg_id):
-        """Generate new compound private key from given encryption algorithm
-        identifier and signing algorithm identifier.
+    def make_key(self, cipher_key, signer_key):
+        """Make compound private key from given.
 
         Note, this operation might be slow."""
         error = vscf_error_t()
-        result = self._lib_vscf_compound_key_alg.vscf_compound_key_alg_generate_key(self.ctx, enc_alg_id, sign_alg_id, error)
-        VscfStatus.handle_status(error.status)
-        instance = VscfImplTag.get_type(result)[0].take_c_ctx(cast(result, POINTER(VscfImplTag.get_type(result)[1])))
-        return instance
-
-    def generate_post_quantum_key(self):
-        """Generate new compound private key with post-quantum algorithms.
-
-        Note, this operation might be slow."""
-        error = vscf_error_t()
-        result = self._lib_vscf_compound_key_alg.vscf_compound_key_alg_generate_post_quantum_key(self.ctx, error)
+        result = self._lib_vscf_compound_key_alg.vscf_compound_key_alg_make_key(self.ctx, cipher_key.c_impl, signer_key.c_impl, error)
         VscfStatus.handle_status(error.status)
         instance = VscfImplTag.get_type(result)[0].take_c_ctx(cast(result, POINTER(VscfImplTag.get_type(result)[1])))
         return instance

@@ -83,6 +83,13 @@ class VscfCompoundKeyAlgInfo(object):
         vscf_compound_key_alg_info_signer_alg_info.restype = POINTER(vscf_impl_t)
         return vscf_compound_key_alg_info_signer_alg_info(ctx)
 
+    def vscf_compound_key_alg_info_signer_hash_alg_info(self, ctx):
+        """Return information about hash algorithm that is used with signing."""
+        vscf_compound_key_alg_info_signer_hash_alg_info = self._lib.vscf_compound_key_alg_info_signer_hash_alg_info
+        vscf_compound_key_alg_info_signer_hash_alg_info.argtypes = [POINTER(vscf_compound_key_alg_info_t)]
+        vscf_compound_key_alg_info_signer_hash_alg_info.restype = POINTER(vscf_impl_t)
+        return vscf_compound_key_alg_info_signer_hash_alg_info(ctx)
+
     def vscf_compound_key_alg_info_shallow_copy(self, ctx):
         vscf_compound_key_alg_info_shallow_copy = self._lib.vscf_compound_key_alg_info_shallow_copy
         vscf_compound_key_alg_info_shallow_copy.argtypes = [POINTER(vscf_compound_key_alg_info_t)]

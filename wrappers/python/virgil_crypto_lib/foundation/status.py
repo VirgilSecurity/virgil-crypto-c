@@ -123,6 +123,18 @@ class Status(object):
     ERROR_BAD_COMPOUND_PUBLIC_KEY = -232
     # Compound private key is corrupted.
     ERROR_BAD_COMPOUND_PRIVATE_KEY = -233
+    # Compound public chained key is corrupted.
+    ERROR_BAD_CHAINED_PUBLIC_KEY = -234
+    # Compound private chained key is corrupted.
+    ERROR_BAD_CHAINED_PRIVATE_KEY = -235
+    # ASN.1 AlgorithmIdentifer is corrupted.
+    ERROR_BAD_ASN1_ALGORITHM = -236
+    # ASN.1 AlgorithmIdentifer with ECParameters is corrupted.
+    ERROR_BAD_ASN1_ALGORITHM_ECC = -237
+    # ASN.1 AlgorithmIdentifer with CompoundKeyParams is corrupted.
+    ERROR_BAD_ASN1_ALGORITHM_COMPOUND_KEY = -238
+    # ASN.1 AlgorithmIdentifer with ChainedKeyParams is corrupted.
+    ERROR_BAD_ASN1_ALGORITHM_CHAINED_KEY = -239
     # Decryption failed, because message info was not given explicitly,
     # and was not part of an encrypted message.
     ERROR_NO_MESSAGE_INFO = -301
@@ -223,6 +235,12 @@ class Status(object):
         -231: "Post-quantum NIST Round5 private key is corrupted.",
         -232: "Compound public key is corrupted.",
         -233: "Compound private key is corrupted.",
+        -234: "Compound public chained key is corrupted.",
+        -235: "Compound private chained key is corrupted.",
+        -236: "ASN.1 AlgorithmIdentifer is corrupted.",
+        -237: "ASN.1 AlgorithmIdentifer with ECParameters is corrupted.",
+        -238: "ASN.1 AlgorithmIdentifer with CompoundKeyParams is corrupted.",
+        -239: "ASN.1 AlgorithmIdentifer with ChainedKeyParams is corrupted.",
         -301: "Decryption failed, because message info was not given explicitly, and was not part of an encrypted message.",
         -302: "Message Info is corrupted.",
         -303: "Recipient defined with id is not found within message info during data decryption.",
