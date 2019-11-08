@@ -115,7 +115,8 @@ ExternalProject_Add(round5-ext
         BUILD_IN_SOURCE TRUE
         CONFIGURE_COMMAND ""
         BUILD_COMMAND
-            CPATH=${CPATH} ${MAKE_EXE} LDFLAGS=${LINKER_SEARCH_PATHS} ALG=R5ND_5PKE_5d ${ROUND5_DEBUG_FLAG} reference
+            CPATH=${CPATH} ${MAKE_EXE}
+                    LDFLAGS=${LINKER_SEARCH_PATHS} NO_OPENSSL_SHAKE=1 ALG=R5ND_5PKE_5d ${ROUND5_DEBUG_FLAG} reference
         INSTALL_COMMAND ""
         )
 
