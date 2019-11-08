@@ -566,7 +566,7 @@ cleanup:
     vscf_chained_key_alg_cleanup(&chained_key_alg);
     return compound_key;
 #else  // VSCF_POST_QUANTUM && VSCF_COMPOUND_KEY_ALG && VSCF_CHAINED_KEY_ALG
-    VSCF_ERROR_SAFE_UPDATE(vscf_status_ERROR_UNSUPPORTED_ALGORITHM);
+    VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_UNSUPPORTED_ALGORITHM);
     return NULL;
 #endif // VSCF_POST_QUANTUM && VSCF_COMPOUND_KEY_ALG && VSCF_CHAINED_KEY_ALG
 }
