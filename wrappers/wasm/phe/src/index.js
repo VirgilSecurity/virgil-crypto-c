@@ -42,6 +42,7 @@ const initCtrDrbg = require('../foundation/CtrDrbg');
 const initHmac = require('../foundation/Hmac');
 const initHkdf = require('../foundation/Hkdf');
 const initSha512 = require('../foundation/Sha512');
+const initFoundationError = require('../foundation/FoundationError');
 const initPheError = require('./PheError');
 const initPheCommon = require('./PheCommon');
 const initPheServer = require('./PheServer');
@@ -59,6 +60,7 @@ const initProject = () => {
             modules.Hmac = initHmac(pheModule, modules);
             modules.Hkdf = initHkdf(pheModule, modules);
             modules.Sha512 = initSha512(pheModule, modules);
+            modules.FoundationError = initFoundationError(pheModule, modules);
             modules.PheError = initPheError(pheModule, modules);
             modules.PheCommon = initPheCommon(pheModule, modules);
             modules.PheServer = initPheServer(pheModule, modules);
