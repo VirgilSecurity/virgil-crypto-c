@@ -64,7 +64,7 @@ endif()
 # ---------------------------------------------------------------------------
 #   Dependencies
 # ---------------------------------------------------------------------------
-find_package(PythonInterp 2.7 REQUIRED)
+find_host_package(PythonInterp 2.7 REQUIRED)
 
 # ---------------------------------------------------------------------------
 #   Optionally load and import protobuf generator as an external project
