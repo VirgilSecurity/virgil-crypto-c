@@ -34,7 +34,7 @@
 # ---------------------------------------------------------------------------
 #   Options
 # ---------------------------------------------------------------------------
-set(MBEDTLS_INSTALL_LOCATION ${CMAKE_CURRENT_BINARY_DIR}/mbedtls)
+set(MBEDTLS_INSTALL_LOCATION ${CMAKE_CURRENT_BINARY_DIR}/mbedtls CACHE PATH INTERNAL)
 
 
 # ---------------------------------------------------------------------------

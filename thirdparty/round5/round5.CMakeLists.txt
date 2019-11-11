@@ -89,6 +89,16 @@ set_property(CACHE ALG_TYPE PROPERTY STRINGS
         )
 
 # ---------------------------------------------------------------------------
+#   Implementation specific options.
+# ---------------------------------------------------------------------------
+option(NIST_KAT_GENERATION "RNG depends on KAT-generation setting" OFF)
+option(NO_OPENSSL_SHAKE "RNG depends on KAT-generation setting" OFF)
+option(USE_AES_DRBG "Use of the alternative AES (in CTR mode on zero input blocks) implementation" OFF)
+option(CRYPTO_ENGINE_OPENSSL "Use missed crypto primitives from the OpenSSL library" ON)
+option(CRYPTO_ENGINE_MBEDTLS "Use missed crypto primitives from the MbedTLS library" OFF)
+
+
+# ---------------------------------------------------------------------------
 #   Check dependencies.
 # ---------------------------------------------------------------------------
 #
@@ -99,9 +109,9 @@ if(TARGET keccak AND NOT TARGET XKCP::keccak)
 endif()
 
 if(NOT TARGET XKCP::keccak AND KECCAK_INSTALL_LOCATION)
-    # ---------------------------------------------------------------------------
-    #   Import library as a target
-    # ---------------------------------------------------------------------------
+    #
+    #   Import library as a target.
+    #
     set(KECCAK_LIB_NAME "${CMAKE_STATIC_LIBRARY_PREFIX}keccak${CMAKE_STATIC_LIBRARY_SUFFIX}")
 
     add_library(keccak STATIC IMPORTED GLOBAL)
@@ -118,9 +128,9 @@ if(NOT TARGET XKCP::keccak AND KECCAK_INSTALL_LOCATION)
                 "${KECCAK_INSTALL_LOCATION}/generic64/${KECCAK_LIB_NAME}.headers"
             )
 
-    # ---------------------------------------------------------------------------
-    #   Alias library alias
-    # ---------------------------------------------------------------------------
+    #
+    #   Alias library alias.
+    #
     if(NOT TARGET XKCP::keccak)
         add_library(XKCP::keccak ALIAS keccak)
     endif()
@@ -131,23 +141,59 @@ else()
         )
 endif()
 
-#
-# OpenSSL
-#
-if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-    if(NOT ENV{OPENSSL_ROOT_DIR} AND EXISTS "/usr/local/opt/openssl@1.1")
-        set(ENV{OPENSSL_ROOT_DIR} "/usr/local/opt/openssl@1.1")
+if(CRYPTO_ENGINE_MBEDTLS)
+    #
+    # mbedTLS
+    #
+    if(TARGET mbedcrypto AND NOT TARGET mbed::crypto)
+        add_library(mbed::crypto ALIAS mbedcrypto)
+    endif()
+
+    if(NOT TARGET mbed::crypto AND MBEDTLS_INSTALL_LOCATION)
+        #
+        #   Import library as a target.
+        #
+        add_library(mbedcrypto STATIC IMPORTED GLOBAL)
+
+        set_target_properties(mbedcrypto
+                PROPERTIES
+                IMPORTED_LOCATION
+                    "${MBEDTLS_INSTALL_LOCATION}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}mbedcrypto${CMAKE_STATIC_LIBRARY_SUFFIX}"
+
+                INTERFACE_INCLUDE_DIRECTORIES
+                    "${MBEDTLS_INSTALL_LOCATION}/include"
+                )
+
+        #
+        #   Alias library alias.
+        #
+        if(NOT TARGET mbed::crypto)
+            add_library(mbed::crypto ALIAS mbedcrypto)
+        endif()
+    else()
+        message(FATAL_ERROR
+            "Required library 'mbedtls' is not found.\n"
+            "Expected target 'mbedcrypto', or target 'mbed::crypto', or path MBEDTLS_INSTALL_LOCATION"
+            )
     endif()
 endif()
-set(OPENSSL_USE_STATIC_LIBS NO)
-find_package(OpenSSL 1.1.1 COMPONENTS Crypto REQUIRED)
+
+if(CRYPTO_ENGINE_OPENSSL)
+    #
+    # OpenSSL
+    #
+    if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+        if(NOT ENV{OPENSSL_ROOT_DIR} AND EXISTS "/usr/local/opt/openssl@1.1")
+            set(ENV{OPENSSL_ROOT_DIR} "/usr/local/opt/openssl@1.1")
+        endif()
+    endif()
+    set(OPENSSL_USE_STATIC_LIBS NO)
+    find_package(OpenSSL 1.1.1 COMPONENTS Crypto REQUIRED)
+endif()
 
 # ---------------------------------------------------------------------------
 #   Implementations.
 # ---------------------------------------------------------------------------
-option(NIST_KAT_GENERATION "RNG depends on KAT-generation setting" OFF)
-option(NO_OPENSSL_SHAKE "RNG depends on KAT-generation setting" OFF)
-
 option(REFERENCE "Build reference implementation" ON)
 if(REFERENCE)
     add_subdirectory(reference)

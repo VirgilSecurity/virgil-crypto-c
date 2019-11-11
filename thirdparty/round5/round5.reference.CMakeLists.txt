@@ -85,8 +85,9 @@ target_sources(round5-reference
             ${CMAKE_CURRENT_LIST_DIR}/src/examples/example.c
             ${CMAKE_CURRENT_LIST_DIR}/src/little_endian.c
             ${CMAKE_CURRENT_LIST_DIR}/src/misc.c
-            ${CMAKE_CURRENT_LIST_DIR}/src/r5_dem.c
             ${CMAKE_CURRENT_LIST_DIR}/src/cca_encrypt.c
+            $<$<BOOL:${CRYPTO_ENGINE_OPENSSL}>:${CMAKE_CURRENT_LIST_DIR}/src/r5_dem.c>
+            $<$<BOOL:${CRYPTO_ENGINE_MBEDTLS}>:${CMAKE_CURRENT_LIST_DIR}/src/r5_dem_mbedtls.c>
             $<$<BOOL:NOT ${NIST_KAT_GENERATION}>:${CMAKE_CURRENT_LIST_DIR}/src/rng/true_rng.c>
             $<$<BOOL:${NIST_KAT_GENERATION}>:${CMAKE_CURRENT_LIST_DIR}/src/rng/nist_rng.c>
         )
@@ -122,7 +123,7 @@ if(NO_OPENSSL_SHAKE)
     target_compile_definitions(round5-reference PUBLIC NO_OPENSSL_SHAKE)
 endif()
 
-if(AES)
+if(USE_AES_DRBG)
     target_compile_definitions(round5-reference PUBLIC USE_AES_DRBG)
 endif()
 
@@ -138,7 +139,8 @@ target_compile_options(round5-reference
 target_link_libraries(round5-reference
         PUBLIC
             XKCP::keccak
-            OpenSSL::Crypto
+            $<$<BOOL:${CRYPTO_ENGINE_OPENSSL}>:OpenSSL::Crypto>
+            $<$<BOOL:${CRYPTO_ENGINE_MBEDTLS}>:mbed::crypto>
             $<$<OR:$<C_COMPILER_ID:GNU>,$<C_COMPILER_ID:Clang>,$<C_COMPILER_ID:AppleClang>>:-lm>
         )
 

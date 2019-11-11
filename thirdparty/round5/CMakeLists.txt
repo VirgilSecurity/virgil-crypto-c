@@ -52,15 +52,11 @@ if(NOT TARGET XKCP::keccak)
 endif()
 
 #
-# OpenSSL
+# mbedTLS
 #
-if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-    if(NOT ENV{OPENSSL_ROOT_DIR} AND EXISTS "/usr/local/opt/openssl@1.1")
-        set(ENV{OPENSSL_ROOT_DIR} "/usr/local/opt/openssl@1.1")
-    endif()
+if(NOT TARGET mbed::crypto)
+    message(FATAL_ERROR "Required library 'mbedcrypto' is not found - looking for target 'mbed::crypto'.")
 endif()
-set(OPENSSL_USE_STATIC_LIBS NO)
-find_package(OpenSSL 1.1.1 COMPONENTS Crypto REQUIRED)
 
 # ---------------------------------------------------------------------------
 #   Load library as an external project
@@ -77,7 +73,9 @@ ExternalProject_Add(round5-ext
             ${CMAKE_COMMAND} -E copy_if_different
                     ${CMAKE_CURRENT_LIST_DIR}/round5.CMakeLists.txt <SOURCE_DIR>/CMakeLists.txt &&
             ${CMAKE_COMMAND} -E copy_if_different
-                    ${CMAKE_CURRENT_LIST_DIR}/round5.reference.CMakeLists.txt <SOURCE_DIR>/reference/CMakeLists.txt
+                    ${CMAKE_CURRENT_LIST_DIR}/round5.reference.CMakeLists.txt <SOURCE_DIR>/reference/CMakeLists.txt &&
+            ${CMAKE_COMMAND} -E copy_if_different
+                    ${CMAKE_CURRENT_LIST_DIR}/r5_dem_mbedtls.c <SOURCE_DIR>/reference/src/r5_dem_mbedtls.c
         CMAKE_ARGS
             "${TRANSITIVE_ARGS}"
             "-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}"
@@ -86,9 +84,13 @@ ExternalProject_Add(round5-ext
             "-DCMAKE_INSTALL_LIBDIR=lib"
             "-DALG=R5ND_5PKE_5d"
             "-DNO_OPENSSL_SHAKE=YES"
-            "-DKECCAK_INSTALL_LOCATION=${KECCAK_INSTALL_LOCATION}"
+            "-DUSE_AES_DRBG=NO"
             "-DOPTIMIZED=OFF"
             "-DCONFIGURABLE=OFF"
+            "-DCRYPTO_ENGINE_MBEDTLS=ON"
+            "-DCRYPTO_ENGINE_OPENSSL=OFF"
+            "-DKECCAK_INSTALL_LOCATION=${KECCAK_INSTALL_LOCATION}"
+            "-DMBEDTLS_INSTALL_LOCATION=${MBEDTLS_INSTALL_LOCATION}"
         )
 
 # ---------------------------------------------------------------------------
@@ -99,6 +101,7 @@ file(MAKE_DIRECTORY ${ROUND5_INSTALL_LOCATION}/include)
 add_library(round5 STATIC IMPORTED GLOBAL)
 
 add_dependencies(round5-ext XKCP::keccak)
+add_dependencies(round5-ext mbed::crypto)
 add_dependencies(round5 round5-ext)
 
 set_property(TARGET round5
@@ -109,7 +112,7 @@ set_property(TARGET round5
 set_property(TARGET round5
         PROPERTY INTERFACE_LINK_LIBRARIES
             XKCP::keccak
-            OpenSSL::Crypto
+            mbed::crypto
         )
 
 set_target_properties(round5
