@@ -37,12 +37,14 @@
 
 const RatchetModule = require(process.env.PROJECT_MODULE);
 
+const initFoundationError = require('../foundation/FoundationError');
 const initFoundationInterface = require('../foundation/FoundationInterface');
+const initFoundationInterfaceTag = require('../foundation/FoundationInterfaceTag');
+const initFoundationImplTag = require('../foundation/FoundationImplTag');
 const initCtrDrbg = require('../foundation/CtrDrbg');
 const initHmac = require('../foundation/Hmac');
 const initHkdf = require('../foundation/Hkdf');
 const initSha512 = require('../foundation/Sha512');
-const initFoundationError = require('../foundation/FoundationError');
 const initRatchetError = require('./RatchetError');
 const initMsgType = require('./MsgType');
 const initGroupMsgType = require('./GroupMsgType');
@@ -60,12 +62,14 @@ const initProject = () => {
     const ratchetModule = new RatchetModule();
     const modules = {};
 
+    modules.FoundationError = initFoundationError(ratchetModule, modules);
     modules.FoundationInterface = initFoundationInterface(ratchetModule, modules);
+    modules.FoundationInterfaceTag = initFoundationInterfaceTag(ratchetModule, modules);
+    modules.FoundationImplTag = initFoundationImplTag(ratchetModule, modules);
     modules.CtrDrbg = initCtrDrbg(ratchetModule, modules);
     modules.Hmac = initHmac(ratchetModule, modules);
     modules.Hkdf = initHkdf(ratchetModule, modules);
     modules.Sha512 = initSha512(ratchetModule, modules);
-    modules.FoundationError = initFoundationError(ratchetModule, modules);
     modules.RatchetError = initRatchetError(ratchetModule, modules);
     modules.MsgType = initMsgType(ratchetModule, modules);
     modules.GroupMsgType = initGroupMsgType(ratchetModule, modules);
