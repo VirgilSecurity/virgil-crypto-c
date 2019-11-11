@@ -61,7 +61,7 @@
 #include "vscf_round5_defs.h"
 #include "vscf_round5_internal.h"
 
-#include <r5_cca_pke.h>
+#include <round5/r5_cca_pke.h>
 
 // clang-format on
 //  @end

@@ -51,9 +51,6 @@ if(NOT TARGET XKCP::keccak)
     message(FATAL_ERROR "Required library 'keccak' is not found - looking for target 'XKCP::keccak'.")
 endif()
 
-get_property(KECCAK_INCLUDE_DIRECTORIES TARGET XKCP::keccak PROPERTY INTERFACE_INCLUDE_DIRECTORIES)
-get_property(KECCAK_LIBRARIES TARGET XKCP::keccak PROPERTY IMPORTED_LOCATION)
-
 #
 # OpenSSL
 #
@@ -66,45 +63,9 @@ set(OPENSSL_USE_STATIC_LIBS NO)
 find_package(OpenSSL 1.1.1 COMPONENTS Crypto REQUIRED)
 
 # ---------------------------------------------------------------------------
-#   Prpeare options for 'Make' utility
-# ---------------------------------------------------------------------------
-#
-# CPATH
-#
-foreach(inc_dir IN LISTS KECCAK_INCLUDE_DIRECTORIES OPENSSL_INCLUDE_DIR)
-    if(DEFINED CPATH)
-        set(CPATH "${CPATH}:${inc_dir}")
-    else()
-        set(CPATH "${inc_dir}")
-    endif()
-endforeach()
-
-#
-# LINKER_SEARCH_PATHS
-#
-# Note, LIBRARY_PATH - does not properly work on GCC 4.8, system paths used first.
-#
-foreach(lib IN LISTS KECCAK_LIBRARIES OPENSSL_CRYPTO_LIBRARY)
-    get_filename_component(lib_dir "${lib}" DIRECTORY)
-    if(DEFINED LINKER_SEARCH_PATHS)
-        set(LINKER_SEARCH_PATHS "${LINKER_SEARCH_PATHS} -L${lib_dir}")
-    else()
-        set(LINKER_SEARCH_PATHS "-L${lib_dir}")
-    endif()
-    set(lib_dir)
-endforeach()
-
-#
-# Debug mode
-#
-if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-    set(ROUND5_DEBUG_FLAG "DEBUG=1")
-endif()
-
-# ---------------------------------------------------------------------------
 #   Load library as an external project
 # ---------------------------------------------------------------------------
-find_program(MAKE_EXE NAMES make)
+set(ROUND5_INSTALL_LOCATION ${CMAKE_CURRENT_BINARY_DIR}/round5)
 
 include(ExternalProject)
 ExternalProject_Add(round5-ext
@@ -112,20 +73,30 @@ ExternalProject_Add(round5-ext
             https://github.com/round5/code
         GIT_TAG
             24b9738b0e39ce2115cc6b1f639359f5f459bd3e
-        BUILD_IN_SOURCE TRUE
-        CONFIGURE_COMMAND ""
-        BUILD_COMMAND
-            CPATH=${CPATH} ${MAKE_EXE}
-                    LDFLAGS=${LINKER_SEARCH_PATHS} NO_OPENSSL_SHAKE=1 ALG=R5ND_5PKE_5d ${ROUND5_DEBUG_FLAG} reference
-        INSTALL_COMMAND ""
+        UPDATE_COMMAND
+            ${CMAKE_COMMAND} -E copy_if_different
+                    ${CMAKE_CURRENT_LIST_DIR}/round5.CMakeLists.txt <SOURCE_DIR>/CMakeLists.txt &&
+            ${CMAKE_COMMAND} -E copy_if_different
+                    ${CMAKE_CURRENT_LIST_DIR}/round5.reference.CMakeLists.txt <SOURCE_DIR>/reference/CMakeLists.txt
+        CMAKE_ARGS
+            "${TRANSITIVE_ARGS}"
+            "-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}"
+            "-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}"
+            "-DCMAKE_INSTALL_PREFIX=${ROUND5_INSTALL_LOCATION}"
+            "-DCMAKE_INSTALL_LIBDIR=lib"
+            "-DALG=R5ND_5PKE_5d"
+            "-DNO_OPENSSL_SHAKE=YES"
+            "-DKECCAK_INSTALL_LOCATION=${KECCAK_INSTALL_LOCATION}"
+            "-DOPTIMIZED=OFF"
+            "-DCONFIGURABLE=OFF"
         )
 
 # ---------------------------------------------------------------------------
 #   Import library as a target
 # ---------------------------------------------------------------------------
-set(ROUND5_LOCATION "${CMAKE_CURRENT_BINARY_DIR}/round5-ext-prefix/src/round5-ext/reference")
+file(MAKE_DIRECTORY ${ROUND5_INSTALL_LOCATION}/include)
 
-add_library(round5 OBJECT IMPORTED GLOBAL)
+add_library(round5 STATIC IMPORTED GLOBAL)
 
 add_dependencies(round5-ext XKCP::keccak)
 add_dependencies(round5 round5-ext)
@@ -137,38 +108,15 @@ set_property(TARGET round5
 
 set_property(TARGET round5
         PROPERTY INTERFACE_LINK_LIBRARIES
+            XKCP::keccak
             OpenSSL::Crypto
         )
 
-set_property(TARGET round5
-        PROPERTY IMPORTED_OBJECTS
-            "${ROUND5_LOCATION}/build/.o/a_fixed.o"
-            "${ROUND5_LOCATION}/build/.o/a_random.o"
-            "${ROUND5_LOCATION}/build/.o/cca_encrypt.o"
-            "${ROUND5_LOCATION}/build/.o/cpa_kem.o"
-            "${ROUND5_LOCATION}/build/.o/drbg.o"
-            "${ROUND5_LOCATION}/build/.o/little_endian.o"
-            "${ROUND5_LOCATION}/build/.o/misc.o"
-            "${ROUND5_LOCATION}/build/.o/pack.o"
-            "${ROUND5_LOCATION}/build/.o/parameters.o"
-            "${ROUND5_LOCATION}/build/.o/r5_cca_kem.o"
-            "${ROUND5_LOCATION}/build/.o/r5_cca_pke.o"
-            "${ROUND5_LOCATION}/build/.o/r5_core.o"
-            "${ROUND5_LOCATION}/build/.o/r5_cpa_kem.o"
-            "${ROUND5_LOCATION}/build/.o/r5_cpa_pke.o"
-            "${ROUND5_LOCATION}/build/.o/r5_dem.o"
-            "${ROUND5_LOCATION}/build/.o/r5_hash.o"
-            "${ROUND5_LOCATION}/build/.o/r5_memory.o"
-            "${ROUND5_LOCATION}/build/.o/r5_parameter_sets.o"
-            "${ROUND5_LOCATION}/build/.o/shake.o"
-            "${ROUND5_LOCATION}/build/.o/xef_ref.o"
-            "${ROUND5_LOCATION}/build/.o/rng/true_rng.o"
-        )
+set_target_properties(round5
+        PROPERTIES
+        IMPORTED_LOCATION
+            "${ROUND5_INSTALL_LOCATION}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}round5${CMAKE_STATIC_LIBRARY_SUFFIX}"
 
-file(MAKE_DIRECTORY "${ROUND5_LOCATION}/src")
-file(MAKE_DIRECTORY "${ROUND5_LOCATION}/src/rng")
-set_property(TARGET round5
-        PROPERTY INTERFACE_INCLUDE_DIRECTORIES
-            "${ROUND5_LOCATION}/src"
-            "${ROUND5_LOCATION}/src/rng"
+        INTERFACE_INCLUDE_DIRECTORIES
+            "${ROUND5_INSTALL_LOCATION}/include"
         )

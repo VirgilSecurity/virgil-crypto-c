@@ -43,8 +43,8 @@
 
 #include "test_data_round5.h"
 
-#include <r5_cpa_kem.h>
-#include <r5_cca_pke.h>
+#include <round5/r5_cpa_kem.h>
+#include <round5/r5_cca_pke.h>
 
 #define ROUND5_KEM_EMABLED (CRYPTO_CIPHERTEXTBYTES != 0)
 #define ROUND5_PKE_EMABLED (CRYPTO_CIPHERTEXTBYTES == 0)

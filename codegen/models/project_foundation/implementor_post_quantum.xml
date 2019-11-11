@@ -51,7 +51,7 @@
         For algorithm details check https://github.com/round5/code
 
         <require library="round5" feature="library"/>
-        <require header="r5_cca_pke.h"/>
+        <require header="round5/r5_cca_pke.h"/>
 
         <require interface="public key"/>
         <require interface="private key"/>

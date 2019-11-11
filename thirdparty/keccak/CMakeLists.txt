@@ -61,7 +61,7 @@ ExternalProject_Add(keccak-ext
 # ---------------------------------------------------------------------------
 #   Import library as a target
 # ---------------------------------------------------------------------------
-set(KECCAK_INSTALL_LOCATION ${CMAKE_CURRENT_BINARY_DIR}/keccak-ext-prefix/src/keccak-ext/bin)
+set(KECCAK_INSTALL_LOCATION ${CMAKE_CURRENT_BINARY_DIR}/keccak-ext-prefix/src/keccak-ext/bin CACHE PATH INTERNAL)
 set(KECCAK_LIB_NAME "${CMAKE_STATIC_LIBRARY_PREFIX}keccak${CMAKE_STATIC_LIBRARY_SUFFIX}")
 
 
