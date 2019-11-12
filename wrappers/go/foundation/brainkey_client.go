@@ -1,7 +1,7 @@
 package foundation
 
 // #cgo CFLAGS: -I${SRCDIR}/../binaries/include/
-// #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lmbedcrypto -led25519 -lprotobuf-nanopb -lvsc_common -lvsc_foundation -lvsc_foundation_pb
+// #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lvsc_foundation -lvsc_foundation_pb -led25519 -lprotobuf-nanopb -lvsc_common -lmbedcrypto
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
 
@@ -40,8 +40,10 @@ func newBrainkeyClientCopy (ctx *C.vscf_brainkey_client_t /*ct2*/) *BrainkeyClie
     }
 }
 
-/// Release underlying C context.
-func (obj *BrainkeyClient) clear () {
+/*
+* Release underlying C context.
+*/
+func (obj *BrainkeyClient) Delete () {
     C.vscf_brainkey_client_delete(obj.cCtx)
 }
 
@@ -97,13 +99,13 @@ func (obj *BrainkeyClient) Blind (password []byte) ([]byte, []byte, error) {
     if deblindFactorBufErr != nil {
         return nil, nil, deblindFactorBufErr
     }
-    defer deblindFactorBuf.clear()
+    defer deblindFactorBuf.Delete()
 
     blindedPointBuf, blindedPointBufErr := bufferNewBuffer(int(BrainkeyClientGetPointLen() /* lg4 */))
     if blindedPointBufErr != nil {
         return nil, nil, blindedPointBufErr
     }
-    defer blindedPointBuf.clear()
+    defer blindedPointBuf.Delete()
     passwordData := helperWrapData (password)
 
     proxyResult := /*pr4*/C.vscf_brainkey_client_blind(obj.cCtx, passwordData, deblindFactorBuf.ctx, blindedPointBuf.ctx)
@@ -121,7 +123,7 @@ func (obj *BrainkeyClient) Deblind (password []byte, hardenedPoint []byte, debli
     if seedBufErr != nil {
         return nil, seedBufErr
     }
-    defer seedBuf.clear()
+    defer seedBuf.Delete()
     passwordData := helperWrapData (password)
     hardenedPointData := helperWrapData (hardenedPoint)
     deblindFactorData := helperWrapData (deblindFactor)

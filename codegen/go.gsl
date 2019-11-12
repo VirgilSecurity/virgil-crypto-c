@@ -295,6 +295,10 @@ function go_derive_dependency_type (dependency)
         echo_fatal ("Unhanded dependency type.", my)
     endif
 
+    if defined (my.dependency.project)
+        return "$(my.dependency.project:).$(make_ref_go (make_id(my.project_uid, my.type_uid)))"
+    endif
+
     return make_ref_go (make_id(my.project_uid, my.type_uid))
 endfunction
 
@@ -811,7 +815,7 @@ function go_derive_unsigned_c_type (size)
             return "C.uint"
 
         elsif my.size = "8"
-            return "C.ulong"
+            return "C.uint64_t"
         else
             echo_fatal ("Unsupported size 'my.size' for Go unsigned integers", my)
         endif
@@ -1164,14 +1168,14 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Create <go_cgo_include/> for <go_instance/>
 # ---------------------------------------------------------------------------
-function go_create_cgo_include (unit_name, go_instance)
+function go_create_cgo_include (unit_name, go_instance, go_project)
     check_arguments (my, "unit_name, go_instance", my)
 
     if count (my.go_instance.go_cgo_include, string_equal (go_import.import, my.unit_name))
         # already imported
     else
         new go_cgo_include to my.go_instance
-            .unit_name = "virgil/crypto/foundation/$(my.unit_name:)"
+            .unit_name = "virgil/crypto/$(my.go_project.name)/$(my.unit_name:)"
             #.unit_name = my.unit_name
         endnew
     endif
@@ -1185,10 +1189,25 @@ function go_create_cgo_instructions (go_module, go_project)
     
     # Define CGO instructions
     go_create_cgo_flag ("CFLAGS", "-I${SRCDIR}/../binaries/include/", my.go_module)
-    #go_create_cgo_flag ("CFLAGS", "-I${SRCDIR}/../binaries/include/virgil/crypto/$(my.go_project.name:)", my.go_module)
-    go_create_cgo_flag ("LDFLAGS", "-L${SRCDIR}/../binaries/lib -lmbedcrypto -led25519 -lprotobuf-nanopb -lvsc_common -lvsc_$(my.go_project.name:) -lvsc_$(my.go_project.name:)_pb", my.go_module)
-    #go_create_cgo_flag ("LDFLAGS", "-L${SRCDIR}/../binaries/lib -l$(my.go_project.prefix:)_$(my.go_project.name:)", my.go_module)
-    go_create_cgo_include (my.go_project.c_umbrella_header, my.go_module)
+    
+    new ldflags
+        new ldflag to ldflags
+            .project_name = "foundation"
+        endnew
+
+        my.libraries = "-lvsc_foundation -lvsc_foundation_pb -led25519 -lprotobuf-nanopb -lvsc_common -lmbedcrypto"
+
+        if !count (ldflags.ldflag, project_name = my.go_project.name)
+            new ldflag to ldflags
+                .project_name = my.go_project.name
+            endnew
+            my.libraries = "-lvsc_$(my.go_project.name:c) -lvsc_$(my.go_project.name:c)_pb $(my.libraries:)"
+        endif
+
+        go_create_cgo_flag ("LDFLAGS", "-L${SRCDIR}/../binaries/lib $(my.libraries:)", my.go_module)
+    endnew
+
+    go_create_cgo_include (my.go_project.c_umbrella_header, my.go_module, my.go_project)
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -1312,6 +1331,20 @@ function go_create_constant (constant, instance, go_instance, go_project, meta)
 endfunction
 
 # ---------------------------------------------------------------------------
+#   Create entity <go_func/> with 'delete' method declaration.
+# ---------------------------------------------------------------------------
+function go_create_func_clear_declaration (destination, go_project, meta)
+    check_arguments (my, "destination, go_project, meta", my)
+
+    new go_func to my.destination
+        . = go_format_comment ("Release underlying C context.")
+        .name = "Delete"
+
+        return go_func
+    endnew
+endfunction
+
+# ---------------------------------------------------------------------------
 #   Create entity <go_func/> with <method/> declaration.
 # ---------------------------------------------------------------------------
 function go_create_func_declaration (class, method, destination, go_project, meta)
@@ -1429,10 +1462,14 @@ function go_create_func_from_dependency (dependency, impl, destination, go_proje
                 my.method_return = format_left ("return nil")
             endif
 
+            my.cast_to_context = ""
+            if defined (my.dependency.project)
+                my.cast_to_context = "\\.(context)"
+            endif
             . = format_left("\
                 C.$(class_derive_c_method_release_dependency (my.impl, my.dependency))(obj.cCtx)
                 $(my.result_var?:)C.$(class_derive_c_method_use_dependency (my.impl, my.dependency))(obj.cCtx,\
-                        (*C.$(class_derive_c_instance_type(my.dependency)))($(my.arg_name:).ctx()))
+                        (*C.$(class_derive_c_instance_type(my.dependency)))($(my.arg_name:)$(my.cast_to_context:).ctx()))
                 $(my.impl_handle_status?:)
                 $(my.method_return?:)
             ")
@@ -1563,16 +1600,12 @@ function go_create_struct_close (go_struct, class, go_project, meta)
     else
         my.dtor_invocation = "C.$(class_derive_c_destructor (my.class))($(my.self_ctx:))"
     endif
-
-    new go_func to my.go_struct
-        . = "/// Release underlying C context."
-        .name = "clear"
-
-        new go_code to go_func
-            . = "\
-                $(my.dtor_invocation:)
-            "
-        endnew
+    
+    my.func_clear = go_create_func_clear_declaration (my.go_struct, my.go_project, my.meta)
+    new go_code to my.func_clear
+        . = "\
+            $(my.dtor_invocation:)
+        "
     endnew
 endfunction
 
@@ -1872,6 +1905,9 @@ function go_create_class_module (class, go_project, meta)
             endfor
 
             for my.class.dependency
+                if defined (dependency.project)
+                    go_create_import (dependency.project, "virgil/$(dependency.project:c)", go_module)
+                endif
                 go_create_func_from_dependency (dependency, my.class, go_struct, my.go_project, my.meta)
             endfor
 
@@ -1992,6 +2028,8 @@ function go_create_interface_module (interface, go_project, meta)
                     endif
                 endfor
             endfor
+            
+            go_create_func_clear_declaration (go_interface, my.go_project, my.meta)
         endnew
     endnew
 
@@ -2028,13 +2066,15 @@ function go_create_project_module (project, wrapper)
         
         go_create_import("", "C", go_project)
 
-        for my.project.require where defined (require.project) & string_equal (require.feature, "library")
-            my.required_go_project = my.wrapper->go_project (name = require.project) ?
-
-            if defined (my.required_go_project)
-                go_create_import (".", make_ref_go (make_id ("project", require.project, "import name")) + ".*", go_project)
-            endif
-        endfor
+        #TODO
+        #for my.project.require where defined (require.project) & string_equal (require.feature, "library")
+        #    my.required_go_project = my.wrapper->go_project (name = require.project) ?
+        #
+        #    if defined (my.required_go_project)
+        #        my.import_name = make_ref_go (make_id ("project", require.project, "import name")
+        #        go_create_import (my.import_name, my.import_name), go_project)
+        #    endif
+        #endfor
 
         return go_project
     endnew
@@ -2250,7 +2290,7 @@ function go_wrap_c_proxy_call (go_func, proxy_call, proxy_return_type, proxy_ret
             if $(my.buffer_name:)BufErr != nil {
                 return $(my.buffer_err_args:)
             }
-            defer $(my.buffer_name:)Buf.clear()
+            defer $(my.buffer_name:)Buf.Delete()
         ")
 
         my.buffers_init ?= ""
@@ -2375,8 +2415,8 @@ function go_wrap_c_returned_value (go_return, go_module, go_project)
         return "helperExtractData($(my.name:)) /* r1 */"
 
     elsif is_true (0.is_buffer) & is_false (0.was_argument)
-        return "Data.init(bytes: C..(c_project_common_class_buffer_method_bytes)($(my.name:)), " + \
-                         "count: C..(c_project_common_class_buffer_method_len)($(my.name:))) /* r2 */"
+        go_create_import ("unsafe", "unsafe", my.go_module)
+        return "C.GoBytes(unsafe.Pointer(C..(c_project_common_class_buffer_method_bytes)($(my.name:))), C.int(C..(c_project_common_class_buffer_method_len)($(my.name:)))) /* r2 */"
 
     elsif is_true (0.is_primitive_type) & is_true_any (0.is_array, 0.is_reference)
         go_create_import ("unsafe", "unsafe", my.go_module)
@@ -2737,14 +2777,11 @@ function go_finalize_implementation_helper_modules (go_project, meta)
                 endnew
             endnew
 
-            new go_func to go_struct
-                .name = "clear"
-
-                new go_code to go_func
-                    . = format_left("\
-                        C..(c_project_common_class_buffer_method_delete)(obj.ctx)
-                    ")
-                endnew
+            my.func_clear = go_create_func_clear_declaration (go_struct, my.go_project, my.meta)
+            new go_code to my.func_clear
+                . = format_left("\
+                    C..(c_project_common_class_buffer_method_delete)(obj.ctx)
+                ")
             endnew
         endnew
     endnew

@@ -1,7 +1,7 @@
 package foundation
 
 // #cgo CFLAGS: -I${SRCDIR}/../binaries/include/
-// #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lmbedcrypto -led25519 -lprotobuf-nanopb -lvsc_common -lvsc_foundation -lvsc_foundation_pb
+// #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lvsc_foundation -lvsc_foundation_pb -led25519 -lprotobuf-nanopb -lvsc_common -lmbedcrypto
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
 
@@ -54,8 +54,10 @@ func newAes256GcmCopy (ctx *C.vscf_aes256_gcm_t /*ct10*/) *Aes256Gcm {
     }
 }
 
-/// Release underlying C context.
-func (obj *Aes256Gcm) clear () {
+/*
+* Release underlying C context.
+*/
+func (obj *Aes256Gcm) Delete () {
     C.vscf_aes256_gcm_delete(obj.cCtx)
 }
 
@@ -99,7 +101,7 @@ func (obj *Aes256Gcm) Encrypt (data []byte) ([]byte, error) {
     if outBufErr != nil {
         return nil, outBufErr
     }
-    defer outBuf.clear()
+    defer outBuf.Delete()
     dataData := helperWrapData (data)
 
     proxyResult := /*pr4*/C.vscf_aes256_gcm_encrypt(obj.cCtx, dataData, outBuf.ctx)
@@ -138,7 +140,7 @@ func (obj *Aes256Gcm) Decrypt (data []byte) ([]byte, error) {
     if outBufErr != nil {
         return nil, outBufErr
     }
-    defer outBuf.clear()
+    defer outBuf.Delete()
     dataData := helperWrapData (data)
 
     proxyResult := /*pr4*/C.vscf_aes256_gcm_decrypt(obj.cCtx, dataData, outBuf.ctx)
@@ -236,7 +238,7 @@ func (obj *Aes256Gcm) Update (data []byte) []byte {
     if outBufErr != nil {
         return nil
     }
-    defer outBuf.clear()
+    defer outBuf.Delete()
     dataData := helperWrapData (data)
 
     C.vscf_aes256_gcm_update(obj.cCtx, dataData, outBuf.ctx)
@@ -285,7 +287,7 @@ func (obj *Aes256Gcm) Finish () ([]byte, error) {
     if outBufErr != nil {
         return nil, outBufErr
     }
-    defer outBuf.clear()
+    defer outBuf.Delete()
 
 
     proxyResult := /*pr4*/C.vscf_aes256_gcm_finish(obj.cCtx, outBuf.ctx)
@@ -314,13 +316,13 @@ func (obj *Aes256Gcm) AuthEncrypt (data []byte, authData []byte) ([]byte, []byte
     if outBufErr != nil {
         return nil, nil, outBufErr
     }
-    defer outBuf.clear()
+    defer outBuf.Delete()
 
     tagBuf, tagBufErr := bufferNewBuffer(int(obj.GetAuthTagLen() /* lg3 */))
     if tagBufErr != nil {
         return nil, nil, tagBufErr
     }
-    defer tagBuf.clear()
+    defer tagBuf.Delete()
     dataData := helperWrapData (data)
     authDataData := helperWrapData (authData)
 
@@ -352,7 +354,7 @@ func (obj *Aes256Gcm) AuthDecrypt (data []byte, authData []byte, tag []byte) ([]
     if outBufErr != nil {
         return nil, outBufErr
     }
-    defer outBuf.clear()
+    defer outBuf.Delete()
     dataData := helperWrapData (data)
     authDataData := helperWrapData (authData)
     tagData := helperWrapData (tag)
@@ -398,13 +400,13 @@ func (obj *Aes256Gcm) FinishAuthEncryption () ([]byte, []byte, error) {
     if outBufErr != nil {
         return nil, nil, outBufErr
     }
-    defer outBuf.clear()
+    defer outBuf.Delete()
 
     tagBuf, tagBufErr := bufferNewBuffer(int(obj.GetAuthTagLen() /* lg3 */))
     if tagBufErr != nil {
         return nil, nil, tagBufErr
     }
-    defer tagBuf.clear()
+    defer tagBuf.Delete()
 
 
     proxyResult := /*pr4*/C.vscf_aes256_gcm_finish_auth_encryption(obj.cCtx, outBuf.ctx, tagBuf.ctx)
@@ -428,7 +430,7 @@ func (obj *Aes256Gcm) FinishAuthDecryption (tag []byte) ([]byte, error) {
     if outBufErr != nil {
         return nil, outBufErr
     }
-    defer outBuf.clear()
+    defer outBuf.Delete()
     tagData := helperWrapData (tag)
 
     proxyResult := /*pr4*/C.vscf_aes256_gcm_finish_auth_decryption(obj.cCtx, tagData, outBuf.ctx)

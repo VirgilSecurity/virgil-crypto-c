@@ -13,5 +13,10 @@ type IAlgInfoDeserializer interface {
     * Deserialize algorithm from the data.
     */
     Deserialize (data []byte) (IAlgInfo, error)
+
+    /*
+    * Release underlying C context.
+    */
+    Delete ()
 }
 

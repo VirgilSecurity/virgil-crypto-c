@@ -20,5 +20,10 @@ type IComputeSharedKey interface {
     * Expect Public Key or Private Key.
     */
     SharedKeyLen (key IKey) uint32
+
+    /*
+    * Release underlying C context.
+    */
+    Delete ()
 }
 

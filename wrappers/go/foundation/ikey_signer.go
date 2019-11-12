@@ -35,5 +35,10 @@ type IKeySigner interface {
     * Verify data digest with a given public key and signature.
     */
     VerifyHash (publicKey IPublicKey, hashId AlgId, digest []byte, signature []byte) bool
+
+    /*
+    * Release underlying C context.
+    */
+    Delete ()
 }
 

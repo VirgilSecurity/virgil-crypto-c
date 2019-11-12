@@ -34,5 +34,10 @@ type IKey interface {
     * Note, this operation can be slow.
     */
     IsValid () bool
+
+    /*
+    * Release underlying C context.
+    */
+    Delete ()
 }
 

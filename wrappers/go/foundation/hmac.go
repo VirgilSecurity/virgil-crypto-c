@@ -1,7 +1,7 @@
 package foundation
 
 // #cgo CFLAGS: -I${SRCDIR}/../binaries/include/
-// #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lmbedcrypto -led25519 -lprotobuf-nanopb -lvsc_common -lvsc_foundation -lvsc_foundation_pb
+// #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lvsc_foundation -lvsc_foundation_pb -led25519 -lprotobuf-nanopb -lvsc_common -lmbedcrypto
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
 
@@ -50,8 +50,10 @@ func newHmacCopy (ctx *C.vscf_hmac_t /*ct10*/) *Hmac {
     }
 }
 
-/// Release underlying C context.
-func (obj *Hmac) clear () {
+/*
+* Release underlying C context.
+*/
+func (obj *Hmac) Delete () {
     C.vscf_hmac_delete(obj.cCtx)
 }
 
@@ -104,7 +106,7 @@ func (obj *Hmac) Mac (key []byte, data []byte) []byte {
     if macBufErr != nil {
         return nil
     }
-    defer macBuf.clear()
+    defer macBuf.Delete()
     keyData := helperWrapData (key)
     dataData := helperWrapData (data)
 
@@ -143,7 +145,7 @@ func (obj *Hmac) Finish () []byte {
     if macBufErr != nil {
         return nil
     }
-    defer macBuf.clear()
+    defer macBuf.Delete()
 
 
     C.vscf_hmac_finish(obj.cCtx, macBuf.ctx)

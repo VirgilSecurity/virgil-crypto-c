@@ -18,5 +18,10 @@ type IDecrypt interface {
     * Calculate required buffer length to hold the decrypted data.
     */
     DecryptedLen (dataLen uint32) uint32
+
+    /*
+    * Release underlying C context.
+    */
+    Delete ()
 }
 

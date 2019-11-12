@@ -1,7 +1,7 @@
 package foundation
 
 // #cgo CFLAGS: -I${SRCDIR}/../binaries/include/
-// #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lmbedcrypto -led25519 -lprotobuf-nanopb -lvsc_common -lvsc_foundation -lvsc_foundation_pb
+// #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lvsc_foundation -lvsc_foundation_pb -led25519 -lprotobuf-nanopb -lvsc_common -lmbedcrypto
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
 
@@ -43,8 +43,10 @@ func newEciesCopy (ctx *C.vscf_ecies_t /*ct2*/) *Ecies {
     }
 }
 
-/// Release underlying C context.
-func (obj *Ecies) clear () {
+/*
+* Release underlying C context.
+*/
+func (obj *Ecies) Delete () {
     C.vscf_ecies_delete(obj.cCtx)
 }
 
@@ -138,7 +140,7 @@ func (obj *Ecies) Encrypt (publicKey IPublicKey, data []byte) ([]byte, error) {
     if outBufErr != nil {
         return nil, outBufErr
     }
-    defer outBuf.clear()
+    defer outBuf.Delete()
     dataData := helperWrapData (data)
 
     proxyResult := /*pr4*/C.vscf_ecies_encrypt(obj.cCtx, (*C.vscf_impl_t)(publicKey.ctx()), dataData, outBuf.ctx)
@@ -168,7 +170,7 @@ func (obj *Ecies) Decrypt (privateKey IPrivateKey, data []byte) ([]byte, error) 
     if outBufErr != nil {
         return nil, outBufErr
     }
-    defer outBuf.clear()
+    defer outBuf.Delete()
     dataData := helperWrapData (data)
 
     proxyResult := /*pr4*/C.vscf_ecies_decrypt(obj.cCtx, (*C.vscf_impl_t)(privateKey.ctx()), dataData, outBuf.ctx)

@@ -1,7 +1,7 @@
 package foundation
 
 // #cgo CFLAGS: -I${SRCDIR}/../binaries/include/
-// #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lmbedcrypto -led25519 -lprotobuf-nanopb -lvsc_common -lvsc_foundation -lvsc_foundation_pb
+// #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lvsc_foundation -lvsc_foundation_pb -led25519 -lprotobuf-nanopb -lvsc_common -lmbedcrypto
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
 
@@ -96,8 +96,10 @@ func newPkcs8SerializerCopy (ctx *C.vscf_pkcs8_serializer_t /*ct10*/) *Pkcs8Seri
     }
 }
 
-/// Release underlying C context.
-func (obj *Pkcs8Serializer) clear () {
+/*
+* Release underlying C context.
+*/
+func (obj *Pkcs8Serializer) Delete () {
     C.vscf_pkcs8_serializer_delete(obj.cCtx)
 }
 
@@ -122,7 +124,7 @@ func (obj *Pkcs8Serializer) SerializePublicKey (publicKey *RawPublicKey) ([]byte
     if outBufErr != nil {
         return nil, outBufErr
     }
-    defer outBuf.clear()
+    defer outBuf.Delete()
 
 
     proxyResult := /*pr4*/C.vscf_pkcs8_serializer_serialize_public_key(obj.cCtx, (*C.vscf_raw_public_key_t)(publicKey.ctx()), outBuf.ctx)
@@ -156,7 +158,7 @@ func (obj *Pkcs8Serializer) SerializePrivateKey (privateKey *RawPrivateKey) ([]b
     if outBufErr != nil {
         return nil, outBufErr
     }
-    defer outBuf.clear()
+    defer outBuf.Delete()
 
 
     proxyResult := /*pr4*/C.vscf_pkcs8_serializer_serialize_private_key(obj.cCtx, (*C.vscf_raw_private_key_t)(privateKey.ctx()), outBuf.ctx)

@@ -19,5 +19,10 @@ type IRandom interface {
     * Retrieve new seed data from the entropy sources.
     */
     Reseed () error
+
+    /*
+    * Release underlying C context.
+    */
+    Delete ()
 }
 

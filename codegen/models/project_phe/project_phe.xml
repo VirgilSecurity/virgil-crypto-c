@@ -6,7 +6,7 @@
         prefix="vsce"
         path="../library/phe"
         work_path = "generated/phe/"
-        wrappers="java,python,wasm"
+        wrappers="java,python,wasm,go"
         >
 
     <version major="0" minor="11" patch="1"/>

@@ -1,7 +1,7 @@
 package foundation
 
 // #cgo CFLAGS: -I${SRCDIR}/../binaries/include/
-// #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lmbedcrypto -led25519 -lprotobuf-nanopb -lvsc_common -lvsc_foundation -lvsc_foundation_pb
+// #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lvsc_foundation -lvsc_foundation_pb -led25519 -lprotobuf-nanopb -lvsc_common -lmbedcrypto
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
 
@@ -83,8 +83,10 @@ func newRawPrivateKeyCopy (ctx *C.vscf_raw_private_key_t /*ct10*/) *RawPrivateKe
     }
 }
 
-/// Release underlying C context.
-func (obj *RawPrivateKey) clear () {
+/*
+* Release underlying C context.
+*/
+func (obj *RawPrivateKey) Delete () {
     C.vscf_raw_private_key_delete(obj.cCtx)
 }
 

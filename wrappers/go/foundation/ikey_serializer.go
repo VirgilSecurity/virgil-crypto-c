@@ -36,5 +36,10 @@ type IKeySerializer interface {
     * Precondition: private key must be exportable.
     */
     SerializePrivateKey (privateKey *RawPrivateKey) ([]byte, error)
+
+    /*
+    * Release underlying C context.
+    */
+    Delete ()
 }
 

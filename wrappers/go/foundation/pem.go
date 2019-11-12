@@ -1,7 +1,7 @@
 package foundation
 
 // #cgo CFLAGS: -I${SRCDIR}/../binaries/include/
-// #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lmbedcrypto -led25519 -lprotobuf-nanopb -lvsc_common -lvsc_foundation -lvsc_foundation_pb
+// #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lvsc_foundation -lvsc_foundation_pb -led25519 -lprotobuf-nanopb -lvsc_common -lmbedcrypto
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
 import unsafe "unsafe"
@@ -38,7 +38,7 @@ func PemWrap (title string, data []byte) []byte {
     if pemBufErr != nil {
         return nil
     }
-    defer pemBuf.clear()
+    defer pemBuf.Delete()
     dataData := helperWrapData (data)
 
     C.vscf_pem_wrap(titleStr/*pa9*/, dataData, pemBuf.ctx)
@@ -63,7 +63,7 @@ func PemUnwrap (pem []byte) ([]byte, error) {
     if dataBufErr != nil {
         return nil, dataBufErr
     }
-    defer dataBuf.clear()
+    defer dataBuf.Delete()
     pemData := helperWrapData (pem)
 
     proxyResult := /*pr4*/C.vscf_pem_unwrap(pemData, dataBuf.ctx)

@@ -1,7 +1,7 @@
 package foundation
 
 // #cgo CFLAGS: -I${SRCDIR}/../binaries/include/
-// #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lmbedcrypto -led25519 -lprotobuf-nanopb -lvsc_common -lvsc_foundation -lvsc_foundation_pb
+// #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lvsc_foundation -lvsc_foundation_pb -led25519 -lprotobuf-nanopb -lvsc_common -lmbedcrypto
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
 
@@ -71,8 +71,10 @@ func newKeyMaterialRngCopy (ctx *C.vscf_key_material_rng_t /*ct10*/) *KeyMateria
     }
 }
 
-/// Release underlying C context.
-func (obj *KeyMaterialRng) clear () {
+/*
+* Release underlying C context.
+*/
+func (obj *KeyMaterialRng) Delete () {
     C.vscf_key_material_rng_delete(obj.cCtx)
 }
 
@@ -85,7 +87,7 @@ func (obj *KeyMaterialRng) Random (dataLen uint32) ([]byte, error) {
     if dataBufErr != nil {
         return nil, dataBufErr
     }
-    defer dataBuf.clear()
+    defer dataBuf.Delete()
 
 
     proxyResult := /*pr4*/C.vscf_key_material_rng_random(obj.cCtx, (C.size_t)(dataLen)/*pa10*/, dataBuf.ctx)

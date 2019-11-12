@@ -18,5 +18,10 @@ type IKeyDeserializer interface {
     * Deserialize given private key as an interchangeable format to the object.
     */
     DeserializePrivateKey (privateKeyData []byte) (*RawPrivateKey, error)
+
+    /*
+    * Release underlying C context.
+    */
+    Delete ()
 }
 

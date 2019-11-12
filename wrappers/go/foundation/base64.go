@@ -1,7 +1,7 @@
 package foundation
 
 // #cgo CFLAGS: -I${SRCDIR}/../binaries/include/
-// #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lmbedcrypto -led25519 -lprotobuf-nanopb -lvsc_common -lvsc_foundation -lvsc_foundation_pb
+// #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lvsc_foundation -lvsc_foundation_pb -led25519 -lprotobuf-nanopb -lvsc_common -lmbedcrypto
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
 
@@ -30,7 +30,7 @@ func Base64Encode (data []byte) []byte {
     if strBufErr != nil {
         return nil
     }
-    defer strBuf.clear()
+    defer strBuf.Delete()
     dataData := helperWrapData (data)
 
     C.vscf_base64_encode(dataData, strBuf.ctx)
@@ -55,7 +55,7 @@ func Base64Decode (str []byte) ([]byte, error) {
     if dataBufErr != nil {
         return nil, dataBufErr
     }
-    defer dataBuf.clear()
+    defer dataBuf.Delete()
     strData := helperWrapData (str)
 
     proxyResult := /*pr4*/C.vscf_base64_decode(strData, dataBuf.ctx)

@@ -1,7 +1,7 @@
 package foundation
 
 // #cgo CFLAGS: -I${SRCDIR}/../binaries/include/
-// #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lmbedcrypto -led25519 -lprotobuf-nanopb -lvsc_common -lvsc_foundation -lvsc_foundation_pb
+// #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lvsc_foundation -lvsc_foundation_pb -led25519 -lprotobuf-nanopb -lvsc_common -lmbedcrypto
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
 
@@ -44,8 +44,10 @@ func newKeyProviderCopy (ctx *C.vscf_key_provider_t /*ct2*/) *KeyProvider {
     }
 }
 
-/// Release underlying C context.
-func (obj *KeyProvider) clear () {
+/*
+* Release underlying C context.
+*/
+func (obj *KeyProvider) Delete () {
     C.vscf_key_provider_delete(obj.cCtx)
 }
 
@@ -156,7 +158,7 @@ func (obj *KeyProvider) ExportPublicKey (publicKey IPublicKey) ([]byte, error) {
     if outBufErr != nil {
         return nil, outBufErr
     }
-    defer outBuf.clear()
+    defer outBuf.Delete()
 
 
     proxyResult := /*pr4*/C.vscf_key_provider_export_public_key(obj.cCtx, (*C.vscf_impl_t)(publicKey.ctx()), outBuf.ctx)
@@ -190,7 +192,7 @@ func (obj *KeyProvider) ExportPrivateKey (privateKey IPrivateKey) ([]byte, error
     if outBufErr != nil {
         return nil, outBufErr
     }
-    defer outBuf.clear()
+    defer outBuf.Delete()
 
 
     proxyResult := /*pr4*/C.vscf_key_provider_export_private_key(obj.cCtx, (*C.vscf_impl_t)(privateKey.ctx()), outBuf.ctx)

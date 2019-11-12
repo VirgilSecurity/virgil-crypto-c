@@ -1,7 +1,7 @@
 package foundation
 
 // #cgo CFLAGS: -I${SRCDIR}/../binaries/include/
-// #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lmbedcrypto -led25519 -lprotobuf-nanopb -lvsc_common -lvsc_foundation -lvsc_foundation_pb
+// #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lvsc_foundation -lvsc_foundation_pb -led25519 -lprotobuf-nanopb -lvsc_common -lmbedcrypto
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
 
@@ -40,8 +40,10 @@ func newBrainkeyServerCopy (ctx *C.vscf_brainkey_server_t /*ct2*/) *BrainkeyServ
     }
 }
 
-/// Release underlying C context.
-func (obj *BrainkeyServer) clear () {
+/*
+* Release underlying C context.
+*/
+func (obj *BrainkeyServer) Delete () {
     C.vscf_brainkey_server_delete(obj.cCtx)
 }
 
@@ -85,7 +87,7 @@ func (obj *BrainkeyServer) GenerateIdentitySecret () ([]byte, error) {
     if identitySecretBufErr != nil {
         return nil, identitySecretBufErr
     }
-    defer identitySecretBuf.clear()
+    defer identitySecretBuf.Delete()
 
 
     proxyResult := /*pr4*/C.vscf_brainkey_server_generate_identity_secret(obj.cCtx, identitySecretBuf.ctx)
@@ -103,7 +105,7 @@ func (obj *BrainkeyServer) Harden (identitySecret []byte, blindedPoint []byte) (
     if hardenedPointBufErr != nil {
         return nil, hardenedPointBufErr
     }
-    defer hardenedPointBuf.clear()
+    defer hardenedPointBuf.Delete()
     identitySecretData := helperWrapData (identitySecret)
     blindedPointData := helperWrapData (blindedPoint)
 

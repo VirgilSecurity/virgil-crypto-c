@@ -1,7 +1,7 @@
 package foundation
 
 // #cgo CFLAGS: -I${SRCDIR}/../binaries/include/
-// #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lmbedcrypto -led25519 -lprotobuf-nanopb -lvsc_common -lvsc_foundation -lvsc_foundation_pb
+// #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lvsc_foundation -lvsc_foundation_pb -led25519 -lprotobuf-nanopb -lvsc_common -lmbedcrypto
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
 import unsafe "unsafe"
@@ -45,8 +45,10 @@ func newAsn1wrCopy (ctx *C.vscf_asn1wr_t /*ct10*/) *Asn1wr {
     }
 }
 
-/// Release underlying C context.
-func (obj *Asn1wr) clear () {
+/*
+* Release underlying C context.
+*/
+func (obj *Asn1wr) Delete () {
     C.vscf_asn1wr_delete(obj.cCtx)
 }
 
@@ -268,7 +270,7 @@ func (obj *Asn1wr) WriteUint32 (value uint32) uint32 {
 * Return count of written bytes.
 */
 func (obj *Asn1wr) WriteUint64 (value uint64) uint32 {
-    proxyResult := /*pr4*/C.vscf_asn1wr_write_uint64(obj.cCtx, (C.ulong)(value)/*pa10*/)
+    proxyResult := /*pr4*/C.vscf_asn1wr_write_uint64(obj.cCtx, (C.uint64_t)(value)/*pa10*/)
 
     return uint32(proxyResult) /* r9 */
 }

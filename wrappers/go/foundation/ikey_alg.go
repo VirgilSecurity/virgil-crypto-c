@@ -76,5 +76,10 @@ type IKeyAlg interface {
     * RFC 3447 Appendix A.1.2.
     */
     ExportPrivateKey (privateKey IPrivateKey) (*RawPrivateKey, error)
+
+    /*
+    * Release underlying C context.
+    */
+    Delete ()
 }
 

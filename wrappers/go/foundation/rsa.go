@@ -1,7 +1,7 @@
 package foundation
 
 // #cgo CFLAGS: -I${SRCDIR}/../binaries/include/
-// #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lmbedcrypto -led25519 -lprotobuf-nanopb -lvsc_common -lvsc_foundation -lvsc_foundation_pb
+// #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lvsc_foundation -lvsc_foundation_pb -led25519 -lprotobuf-nanopb -lvsc_common -lmbedcrypto
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
 
@@ -84,8 +84,10 @@ func newRsaCopy (ctx *C.vscf_rsa_t /*ct10*/) *Rsa {
     }
 }
 
-/// Release underlying C context.
-func (obj *Rsa) clear () {
+/*
+* Release underlying C context.
+*/
+func (obj *Rsa) Delete () {
     C.vscf_rsa_delete(obj.cCtx)
 }
 
@@ -283,7 +285,7 @@ func (obj *Rsa) Encrypt (publicKey IPublicKey, data []byte) ([]byte, error) {
     if outBufErr != nil {
         return nil, outBufErr
     }
-    defer outBuf.clear()
+    defer outBuf.Delete()
     dataData := helperWrapData (data)
 
     proxyResult := /*pr4*/C.vscf_rsa_encrypt(obj.cCtx, (*C.vscf_impl_t)(publicKey.ctx()), dataData, outBuf.ctx)
@@ -323,7 +325,7 @@ func (obj *Rsa) Decrypt (privateKey IPrivateKey, data []byte) ([]byte, error) {
     if outBufErr != nil {
         return nil, outBufErr
     }
-    defer outBuf.clear()
+    defer outBuf.Delete()
     dataData := helperWrapData (data)
 
     proxyResult := /*pr4*/C.vscf_rsa_decrypt(obj.cCtx, (*C.vscf_impl_t)(privateKey.ctx()), dataData, outBuf.ctx)
@@ -363,7 +365,7 @@ func (obj *Rsa) SignHash (privateKey IPrivateKey, hashId AlgId, digest []byte) (
     if signatureBufErr != nil {
         return nil, signatureBufErr
     }
-    defer signatureBuf.clear()
+    defer signatureBuf.Delete()
     digestData := helperWrapData (digest)
 
     proxyResult := /*pr4*/C.vscf_rsa_sign_hash(obj.cCtx, (*C.vscf_impl_t)(privateKey.ctx()), C.vscf_alg_id_t(hashId) /*pa7*/, digestData, signatureBuf.ctx)

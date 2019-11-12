@@ -161,5 +161,10 @@ type IAsn1Reader interface {
     * Return element length.
     */
     ReadSet () uint32
+
+    /*
+    * Release underlying C context.
+    */
+    Delete ()
 }
 

@@ -196,5 +196,10 @@ type IAsn1Writer interface {
     * Return count of written bytes.
     */
     WriteSet (len uint32) uint32
+
+    /*
+    * Release underlying C context.
+    */
+    Delete ()
 }
 

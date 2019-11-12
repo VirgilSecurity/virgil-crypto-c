@@ -1,7 +1,7 @@
 package foundation
 
 // #cgo CFLAGS: -I${SRCDIR}/../binaries/include/
-// #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lmbedcrypto -led25519 -lprotobuf-nanopb -lvsc_common -lvsc_foundation -lvsc_foundation_pb
+// #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lvsc_foundation -lvsc_foundation_pb -led25519 -lprotobuf-nanopb -lvsc_common -lmbedcrypto
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
 
@@ -45,8 +45,10 @@ func newSha384Copy (ctx *C.vscf_sha384_t /*ct10*/) *Sha384 {
     }
 }
 
-/// Release underlying C context.
-func (obj *Sha384) clear () {
+/*
+* Release underlying C context.
+*/
+func (obj *Sha384) Delete () {
     C.vscf_sha384_delete(obj.cCtx)
 }
 
@@ -104,7 +106,7 @@ func (obj *Sha384) Hash (data []byte) []byte {
     if digestBufErr != nil {
         return nil
     }
-    defer digestBuf.clear()
+    defer digestBuf.Delete()
     dataData := helperWrapData (data)
 
     C.vscf_sha384_hash(dataData, digestBuf.ctx)
@@ -140,7 +142,7 @@ func (obj *Sha384) Finish () []byte {
     if digestBufErr != nil {
         return nil
     }
-    defer digestBuf.clear()
+    defer digestBuf.Delete()
 
 
     C.vscf_sha384_finish(obj.cCtx, digestBuf.ctx)

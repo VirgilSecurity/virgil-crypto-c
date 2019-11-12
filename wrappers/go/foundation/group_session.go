@@ -1,7 +1,7 @@
 package foundation
 
 // #cgo CFLAGS: -I${SRCDIR}/../binaries/include/
-// #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lmbedcrypto -led25519 -lprotobuf-nanopb -lvsc_common -lvsc_foundation -lvsc_foundation_pb
+// #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lvsc_foundation -lvsc_foundation_pb -led25519 -lprotobuf-nanopb -lvsc_common -lmbedcrypto
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
 
@@ -43,8 +43,10 @@ func newGroupSessionCopy (ctx *C.vscf_group_session_t /*ct2*/) *GroupSession {
     }
 }
 
-/// Release underlying C context.
-func (obj *GroupSession) clear () {
+/*
+* Release underlying C context.
+*/
+func (obj *GroupSession) Delete () {
     C.vscf_group_session_delete(obj.cCtx)
 }
 
@@ -167,7 +169,7 @@ func (obj *GroupSession) Decrypt (message *GroupSessionMessage, publicKey IPubli
     if plainTextBufErr != nil {
         return nil, plainTextBufErr
     }
-    defer plainTextBuf.clear()
+    defer plainTextBuf.Delete()
 
 
     proxyResult := /*pr4*/C.vscf_group_session_decrypt(obj.cCtx, (*C.vscf_group_session_message_t)(message.ctx()), (*C.vscf_impl_t)(publicKey.ctx()), plainTextBuf.ctx)

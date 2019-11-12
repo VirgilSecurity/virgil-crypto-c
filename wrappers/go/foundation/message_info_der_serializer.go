@@ -1,7 +1,7 @@
 package foundation
 
 // #cgo CFLAGS: -I${SRCDIR}/../binaries/include/
-// #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lmbedcrypto -led25519 -lprotobuf-nanopb -lvsc_common -lvsc_foundation -lvsc_foundation_pb
+// #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lvsc_foundation -lvsc_foundation_pb -led25519 -lprotobuf-nanopb -lvsc_common -lmbedcrypto
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
 
@@ -64,8 +64,10 @@ func newMessageInfoDerSerializerCopy (ctx *C.vscf_message_info_der_serializer_t 
     }
 }
 
-/// Release underlying C context.
-func (obj *MessageInfoDerSerializer) clear () {
+/*
+* Release underlying C context.
+*/
+func (obj *MessageInfoDerSerializer) Delete () {
     C.vscf_message_info_der_serializer_delete(obj.cCtx)
 }
 
@@ -90,7 +92,7 @@ func (obj *MessageInfoDerSerializer) Serialize (messageInfo *MessageInfo) []byte
     if outBufErr != nil {
         return nil
     }
-    defer outBuf.clear()
+    defer outBuf.Delete()
 
 
     C.vscf_message_info_der_serializer_serialize(obj.cCtx, (*C.vscf_message_info_t)(messageInfo.ctx()), outBuf.ctx)
@@ -148,7 +150,7 @@ func (obj *MessageInfoDerSerializer) SerializeFooter (messageInfoFooter *Message
     if outBufErr != nil {
         return nil
     }
-    defer outBuf.clear()
+    defer outBuf.Delete()
 
 
     C.vscf_message_info_der_serializer_serialize_footer(obj.cCtx, (*C.vscf_message_info_footer_t)(messageInfoFooter.ctx()), outBuf.ctx)

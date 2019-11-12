@@ -1,7 +1,7 @@
 package foundation
 
 // #cgo CFLAGS: -I${SRCDIR}/../binaries/include/
-// #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lmbedcrypto -led25519 -lprotobuf-nanopb -lvsc_common -lvsc_foundation -lvsc_foundation_pb
+// #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lvsc_foundation -lvsc_foundation_pb -led25519 -lprotobuf-nanopb -lvsc_common -lmbedcrypto
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
 
@@ -95,8 +95,10 @@ func newEccCopy (ctx *C.vscf_ecc_t /*ct10*/) *Ecc {
     }
 }
 
-/// Release underlying C context.
-func (obj *Ecc) clear () {
+/*
+* Release underlying C context.
+*/
+func (obj *Ecc) Delete () {
     C.vscf_ecc_delete(obj.cCtx)
 }
 
@@ -294,7 +296,7 @@ func (obj *Ecc) Encrypt (publicKey IPublicKey, data []byte) ([]byte, error) {
     if outBufErr != nil {
         return nil, outBufErr
     }
-    defer outBuf.clear()
+    defer outBuf.Delete()
     dataData := helperWrapData (data)
 
     proxyResult := /*pr4*/C.vscf_ecc_encrypt(obj.cCtx, (*C.vscf_impl_t)(publicKey.ctx()), dataData, outBuf.ctx)
@@ -334,7 +336,7 @@ func (obj *Ecc) Decrypt (privateKey IPrivateKey, data []byte) ([]byte, error) {
     if outBufErr != nil {
         return nil, outBufErr
     }
-    defer outBuf.clear()
+    defer outBuf.Delete()
     dataData := helperWrapData (data)
 
     proxyResult := /*pr4*/C.vscf_ecc_decrypt(obj.cCtx, (*C.vscf_impl_t)(privateKey.ctx()), dataData, outBuf.ctx)
@@ -374,7 +376,7 @@ func (obj *Ecc) SignHash (privateKey IPrivateKey, hashId AlgId, digest []byte) (
     if signatureBufErr != nil {
         return nil, signatureBufErr
     }
-    defer signatureBuf.clear()
+    defer signatureBuf.Delete()
     digestData := helperWrapData (digest)
 
     proxyResult := /*pr4*/C.vscf_ecc_sign_hash(obj.cCtx, (*C.vscf_impl_t)(privateKey.ctx()), C.vscf_alg_id_t(hashId) /*pa7*/, digestData, signatureBuf.ctx)
@@ -417,7 +419,7 @@ func (obj *Ecc) ComputeSharedKey (publicKey IPublicKey, privateKey IPrivateKey) 
     if sharedKeyBufErr != nil {
         return nil, sharedKeyBufErr
     }
-    defer sharedKeyBuf.clear()
+    defer sharedKeyBuf.Delete()
 
 
     proxyResult := /*pr4*/C.vscf_ecc_compute_shared_key(obj.cCtx, (*C.vscf_impl_t)(publicKey.ctx()), (*C.vscf_impl_t)(privateKey.ctx()), sharedKeyBuf.ctx)

@@ -19,5 +19,10 @@ type IAuthDecrypt interface {
     * Calculate required buffer length to hold the authenticated decrypted data.
     */
     AuthDecryptedLen (dataLen uint32) uint32
+
+    /*
+    * Release underlying C context.
+    */
+    Delete ()
 }
 

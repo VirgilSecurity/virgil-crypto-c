@@ -30,5 +30,10 @@ type ICipherAuth interface {
     * method "finish" can be used for simplicity.
     */
     FinishAuthDecryption (tag []byte) ([]byte, error)
+
+    /*
+    * Release underlying C context.
+    */
+    Delete ()
 }
 

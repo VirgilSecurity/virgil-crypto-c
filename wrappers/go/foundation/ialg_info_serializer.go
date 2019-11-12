@@ -18,5 +18,10 @@ type IAlgInfoSerializer interface {
     * Serialize algorithm info to buffer class.
     */
     Serialize (algInfo IAlgInfo) []byte
+
+    /*
+    * Release underlying C context.
+    */
+    Delete ()
 }
 

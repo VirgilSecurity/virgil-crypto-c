@@ -1,7 +1,7 @@
 package foundation
 
 // #cgo CFLAGS: -I${SRCDIR}/../binaries/include/
-// #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lmbedcrypto -led25519 -lprotobuf-nanopb -lvsc_common -lvsc_foundation -lvsc_foundation_pb
+// #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lvsc_foundation -lvsc_foundation_pb -led25519 -lprotobuf-nanopb -lvsc_common -lmbedcrypto
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
 
@@ -44,8 +44,10 @@ func newAsn1rdCopy (ctx *C.vscf_asn1rd_t /*ct10*/) *Asn1rd {
     }
 }
 
-/// Release underlying C context.
-func (obj *Asn1rd) clear () {
+/*
+* Release underlying C context.
+*/
+func (obj *Asn1rd) Delete () {
     C.vscf_asn1rd_delete(obj.cCtx)
 }
 

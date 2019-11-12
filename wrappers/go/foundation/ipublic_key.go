@@ -8,5 +8,10 @@ import "C"
 type IPublicKey interface {
 
     context
+
+    /*
+    * Release underlying C context.
+    */
+    Delete ()
 }
 

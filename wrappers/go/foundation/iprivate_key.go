@@ -13,5 +13,10 @@ type IPrivateKey interface {
     * Extract public key from the private key.
     */
     ExtractPublicKey () (IPublicKey, error)
+
+    /*
+    * Release underlying C context.
+    */
+    Delete ()
 }
 

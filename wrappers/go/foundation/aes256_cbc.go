@@ -1,7 +1,7 @@
 package foundation
 
 // #cgo CFLAGS: -I${SRCDIR}/../binaries/include/
-// #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lmbedcrypto -led25519 -lprotobuf-nanopb -lvsc_common -lvsc_foundation -lvsc_foundation_pb
+// #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lvsc_foundation -lvsc_foundation_pb -led25519 -lprotobuf-nanopb -lvsc_common -lmbedcrypto
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
 
@@ -50,8 +50,10 @@ func newAes256CbcCopy (ctx *C.vscf_aes256_cbc_t /*ct10*/) *Aes256Cbc {
     }
 }
 
-/// Release underlying C context.
-func (obj *Aes256Cbc) clear () {
+/*
+* Release underlying C context.
+*/
+func (obj *Aes256Cbc) Delete () {
     C.vscf_aes256_cbc_delete(obj.cCtx)
 }
 
@@ -95,7 +97,7 @@ func (obj *Aes256Cbc) Encrypt (data []byte) ([]byte, error) {
     if outBufErr != nil {
         return nil, outBufErr
     }
-    defer outBuf.clear()
+    defer outBuf.Delete()
     dataData := helperWrapData (data)
 
     proxyResult := /*pr4*/C.vscf_aes256_cbc_encrypt(obj.cCtx, dataData, outBuf.ctx)
@@ -134,7 +136,7 @@ func (obj *Aes256Cbc) Decrypt (data []byte) ([]byte, error) {
     if outBufErr != nil {
         return nil, outBufErr
     }
-    defer outBuf.clear()
+    defer outBuf.Delete()
     dataData := helperWrapData (data)
 
     proxyResult := /*pr4*/C.vscf_aes256_cbc_decrypt(obj.cCtx, dataData, outBuf.ctx)
@@ -232,7 +234,7 @@ func (obj *Aes256Cbc) Update (data []byte) []byte {
     if outBufErr != nil {
         return nil
     }
-    defer outBuf.clear()
+    defer outBuf.Delete()
     dataData := helperWrapData (data)
 
     C.vscf_aes256_cbc_update(obj.cCtx, dataData, outBuf.ctx)
@@ -281,7 +283,7 @@ func (obj *Aes256Cbc) Finish () ([]byte, error) {
     if outBufErr != nil {
         return nil, outBufErr
     }
-    defer outBuf.clear()
+    defer outBuf.Delete()
 
 
     proxyResult := /*pr4*/C.vscf_aes256_cbc_finish(obj.cCtx, outBuf.ctx)

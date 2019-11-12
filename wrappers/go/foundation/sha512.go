@@ -1,7 +1,7 @@
 package foundation
 
 // #cgo CFLAGS: -I${SRCDIR}/../binaries/include/
-// #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lmbedcrypto -led25519 -lprotobuf-nanopb -lvsc_common -lvsc_foundation -lvsc_foundation_pb
+// #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lvsc_foundation -lvsc_foundation_pb -led25519 -lprotobuf-nanopb -lvsc_common -lmbedcrypto
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
 
@@ -45,8 +45,10 @@ func newSha512Copy (ctx *C.vscf_sha512_t /*ct10*/) *Sha512 {
     }
 }
 
-/// Release underlying C context.
-func (obj *Sha512) clear () {
+/*
+* Release underlying C context.
+*/
+func (obj *Sha512) Delete () {
     C.vscf_sha512_delete(obj.cCtx)
 }
 
@@ -104,7 +106,7 @@ func (obj *Sha512) Hash (data []byte) []byte {
     if digestBufErr != nil {
         return nil
     }
-    defer digestBuf.clear()
+    defer digestBuf.Delete()
     dataData := helperWrapData (data)
 
     C.vscf_sha512_hash(dataData, digestBuf.ctx)
@@ -140,7 +142,7 @@ func (obj *Sha512) Finish () []byte {
     if digestBufErr != nil {
         return nil
     }
-    defer digestBuf.clear()
+    defer digestBuf.Delete()
 
 
     C.vscf_sha512_finish(obj.cCtx, digestBuf.ctx)

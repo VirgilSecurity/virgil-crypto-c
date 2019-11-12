@@ -39,5 +39,10 @@ type IKeyCipher interface {
     * Decrypt given data.
     */
     Decrypt (privateKey IPrivateKey, data []byte) ([]byte, error)
+
+    /*
+    * Release underlying C context.
+    */
+    Delete ()
 }
 

@@ -1,7 +1,7 @@
 package foundation
 
 // #cgo CFLAGS: -I${SRCDIR}/../binaries/include/
-// #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lmbedcrypto -led25519 -lprotobuf-nanopb -lvsc_common -lvsc_foundation -lvsc_foundation_pb
+// #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lvsc_foundation -lvsc_foundation_pb -led25519 -lprotobuf-nanopb -lvsc_common -lmbedcrypto
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
 
@@ -66,8 +66,10 @@ func newFakeRandomCopy (ctx *C.vscf_fake_random_t /*ct10*/) *FakeRandom {
     }
 }
 
-/// Release underlying C context.
-func (obj *FakeRandom) clear () {
+/*
+* Release underlying C context.
+*/
+func (obj *FakeRandom) Delete () {
     C.vscf_fake_random_delete(obj.cCtx)
 }
 
@@ -80,7 +82,7 @@ func (obj *FakeRandom) Random (dataLen uint32) ([]byte, error) {
     if dataBufErr != nil {
         return nil, dataBufErr
     }
-    defer dataBuf.clear()
+    defer dataBuf.Delete()
 
 
     proxyResult := /*pr4*/C.vscf_fake_random_random(obj.cCtx, (C.size_t)(dataLen)/*pa10*/, dataBuf.ctx)
@@ -124,7 +126,7 @@ func (obj *FakeRandom) Gather (len uint32) ([]byte, error) {
     if outBufErr != nil {
         return nil, outBufErr
     }
-    defer outBuf.clear()
+    defer outBuf.Delete()
 
 
     proxyResult := /*pr4*/C.vscf_fake_random_gather(obj.cCtx, (C.size_t)(len)/*pa10*/, outBuf.ctx)

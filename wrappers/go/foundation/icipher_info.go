@@ -28,5 +28,10 @@ type ICipherInfo interface {
     * Cipher block length in bytes.
     */
     GetBlockLen () uint32
+
+    /*
+    * Release underlying C context.
+    */
+    Delete ()
 }
 

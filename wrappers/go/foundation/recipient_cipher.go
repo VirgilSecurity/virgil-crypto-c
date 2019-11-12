@@ -1,7 +1,7 @@
 package foundation
 
 // #cgo CFLAGS: -I${SRCDIR}/../binaries/include/
-// #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lmbedcrypto -led25519 -lprotobuf-nanopb -lvsc_common -lvsc_foundation -lvsc_foundation_pb
+// #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lvsc_foundation -lvsc_foundation_pb -led25519 -lprotobuf-nanopb -lvsc_common -lmbedcrypto
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
 
@@ -45,8 +45,10 @@ func newRecipientCipherCopy (ctx *C.vscf_recipient_cipher_t /*ct2*/) *RecipientC
     }
 }
 
-/// Release underlying C context.
-func (obj *RecipientCipher) clear () {
+/*
+* Release underlying C context.
+*/
+func (obj *RecipientCipher) Delete () {
     C.vscf_recipient_cipher_delete(obj.cCtx)
 }
 
@@ -192,7 +194,7 @@ func (obj *RecipientCipher) PackMessageInfo () []byte {
     if messageInfoBufErr != nil {
         return nil
     }
-    defer messageInfoBuf.clear()
+    defer messageInfoBuf.Delete()
 
 
     C.vscf_recipient_cipher_pack_message_info(obj.cCtx, messageInfoBuf.ctx)
@@ -218,7 +220,7 @@ func (obj *RecipientCipher) ProcessEncryption (data []byte) ([]byte, error) {
     if outBufErr != nil {
         return nil, outBufErr
     }
-    defer outBuf.clear()
+    defer outBuf.Delete()
     dataData := helperWrapData (data)
 
     proxyResult := /*pr4*/C.vscf_recipient_cipher_process_encryption(obj.cCtx, dataData, outBuf.ctx)
@@ -239,7 +241,7 @@ func (obj *RecipientCipher) FinishEncryption () ([]byte, error) {
     if outBufErr != nil {
         return nil, outBufErr
     }
-    defer outBuf.clear()
+    defer outBuf.Delete()
 
 
     proxyResult := /*pr4*/C.vscf_recipient_cipher_finish_encryption(obj.cCtx, outBuf.ctx)
@@ -310,7 +312,7 @@ func (obj *RecipientCipher) ProcessDecryption (data []byte) ([]byte, error) {
     if outBufErr != nil {
         return nil, outBufErr
     }
-    defer outBuf.clear()
+    defer outBuf.Delete()
     dataData := helperWrapData (data)
 
     proxyResult := /*pr4*/C.vscf_recipient_cipher_process_decryption(obj.cCtx, dataData, outBuf.ctx)
@@ -331,7 +333,7 @@ func (obj *RecipientCipher) FinishDecryption () ([]byte, error) {
     if outBufErr != nil {
         return nil, outBufErr
     }
-    defer outBuf.clear()
+    defer outBuf.Delete()
 
 
     proxyResult := /*pr4*/C.vscf_recipient_cipher_finish_decryption(obj.cCtx, outBuf.ctx)
@@ -403,7 +405,7 @@ func (obj *RecipientCipher) PackMessageInfoFooter () ([]byte, error) {
     if outBufErr != nil {
         return nil, outBufErr
     }
-    defer outBuf.clear()
+    defer outBuf.Delete()
 
 
     proxyResult := /*pr4*/C.vscf_recipient_cipher_pack_message_info_footer(obj.cCtx, outBuf.ctx)

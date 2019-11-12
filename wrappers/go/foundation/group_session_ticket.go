@@ -1,7 +1,7 @@
 package foundation
 
 // #cgo CFLAGS: -I${SRCDIR}/../binaries/include/
-// #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lmbedcrypto -led25519 -lprotobuf-nanopb -lvsc_common -lvsc_foundation -lvsc_foundation_pb
+// #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lvsc_foundation -lvsc_foundation_pb -led25519 -lprotobuf-nanopb -lvsc_common -lmbedcrypto
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
 
@@ -43,8 +43,10 @@ func newGroupSessionTicketCopy (ctx *C.vscf_group_session_ticket_t /*ct2*/) *Gro
     }
 }
 
-/// Release underlying C context.
-func (obj *GroupSessionTicket) clear () {
+/*
+* Release underlying C context.
+*/
+func (obj *GroupSessionTicket) Delete () {
     C.vscf_group_session_ticket_delete(obj.cCtx)
 }
 

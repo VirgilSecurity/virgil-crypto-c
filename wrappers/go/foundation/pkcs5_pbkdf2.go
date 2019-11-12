@@ -1,7 +1,7 @@
 package foundation
 
 // #cgo CFLAGS: -I${SRCDIR}/../binaries/include/
-// #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lmbedcrypto -led25519 -lprotobuf-nanopb -lvsc_common -lvsc_foundation -lvsc_foundation_pb
+// #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lvsc_foundation -lvsc_foundation_pb -led25519 -lprotobuf-nanopb -lvsc_common -lmbedcrypto
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
 
@@ -60,8 +60,10 @@ func newPkcs5Pbkdf2Copy (ctx *C.vscf_pkcs5_pbkdf2_t /*ct10*/) *Pkcs5Pbkdf2 {
     }
 }
 
-/// Release underlying C context.
-func (obj *Pkcs5Pbkdf2) clear () {
+/*
+* Release underlying C context.
+*/
+func (obj *Pkcs5Pbkdf2) Delete () {
     C.vscf_pkcs5_pbkdf2_delete(obj.cCtx)
 }
 
@@ -105,7 +107,7 @@ func (obj *Pkcs5Pbkdf2) Derive (data []byte, keyLen uint32) []byte {
     if keyBufErr != nil {
         return nil
     }
-    defer keyBuf.clear()
+    defer keyBuf.Delete()
     dataData := helperWrapData (data)
 
     C.vscf_pkcs5_pbkdf2_derive(obj.cCtx, dataData, (C.size_t)(keyLen)/*pa10*/, keyBuf.ctx)

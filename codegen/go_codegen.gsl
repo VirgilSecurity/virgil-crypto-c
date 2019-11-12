@@ -69,20 +69,27 @@ function go_format_argument_list (go_func)
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Return formatted multiline commented string.
+#   Return formatted multiline comment.
 # ---------------------------------------------------------------------------
-function go_format_description (obj)
-    if ! defined (my.obj.)
-        return
+function go_format_comment (comment)
+    if ! defined (my.comment)
+        return ""
     endif
 
-    my.str = my.obj.
+    my.str = my.comment
     my.str = string_indent (my.str)
     my.str = "* $(my.str:left, block, no)$(terminator)"
     my.str = string_multi_rtrim (my.str)
     my.str = "/*$(terminator)$(my.str:)$(terminator)*/"
 
     return my.str
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return formatted multiline commented string.
+# ---------------------------------------------------------------------------
+function go_format_description (obj)
+    return go_format_comment (my.obj.)
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -140,7 +147,11 @@ function go_format_result_nil_args (err, go_func, go_project)
 
     for my.go_func.go_return
         if is_true (go_return.is_primitive_type)
-            my.init_args += "0"
+            if string_equal (go_return.type, "bool")
+                my.init_args += "false"
+            else
+                my.init_args += "0"
+            endif
         else
             my.init_args += "nil"
         endif
@@ -149,7 +160,7 @@ function go_format_result_nil_args (err, go_func, go_project)
             my.init_args += ", "
         endif
     endfor
-    
+
     if is_true (my.go_func.throws)
         if !string_empty (my.init_args)
             my.init_args += ", $(my.err:)"

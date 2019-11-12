@@ -1,7 +1,7 @@
 package foundation
 
 // #cgo CFLAGS: -I${SRCDIR}/../binaries/include/
-// #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lmbedcrypto -led25519 -lprotobuf-nanopb -lvsc_common -lvsc_foundation -lvsc_foundation_pb
+// #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lvsc_foundation -lvsc_foundation_pb -led25519 -lprotobuf-nanopb -lvsc_common -lmbedcrypto
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
 
@@ -89,8 +89,10 @@ func newCurve25519Copy (ctx *C.vscf_curve25519_t /*ct10*/) *Curve25519 {
     }
 }
 
-/// Release underlying C context.
-func (obj *Curve25519) clear () {
+/*
+* Release underlying C context.
+*/
+func (obj *Curve25519) Delete () {
     C.vscf_curve25519_delete(obj.cCtx)
 }
 
@@ -288,7 +290,7 @@ func (obj *Curve25519) Encrypt (publicKey IPublicKey, data []byte) ([]byte, erro
     if outBufErr != nil {
         return nil, outBufErr
     }
-    defer outBuf.clear()
+    defer outBuf.Delete()
     dataData := helperWrapData (data)
 
     proxyResult := /*pr4*/C.vscf_curve25519_encrypt(obj.cCtx, (*C.vscf_impl_t)(publicKey.ctx()), dataData, outBuf.ctx)
@@ -328,7 +330,7 @@ func (obj *Curve25519) Decrypt (privateKey IPrivateKey, data []byte) ([]byte, er
     if outBufErr != nil {
         return nil, outBufErr
     }
-    defer outBuf.clear()
+    defer outBuf.Delete()
     dataData := helperWrapData (data)
 
     proxyResult := /*pr4*/C.vscf_curve25519_decrypt(obj.cCtx, (*C.vscf_impl_t)(privateKey.ctx()), dataData, outBuf.ctx)
@@ -350,7 +352,7 @@ func (obj *Curve25519) ComputeSharedKey (publicKey IPublicKey, privateKey IPriva
     if sharedKeyBufErr != nil {
         return nil, sharedKeyBufErr
     }
-    defer sharedKeyBuf.clear()
+    defer sharedKeyBuf.Delete()
 
 
     proxyResult := /*pr4*/C.vscf_curve25519_compute_shared_key(obj.cCtx, (*C.vscf_impl_t)(publicKey.ctx()), (*C.vscf_impl_t)(privateKey.ctx()), sharedKeyBuf.ctx)

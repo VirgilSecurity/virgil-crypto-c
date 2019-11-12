@@ -23,5 +23,10 @@ type IEncrypt interface {
     * Precise length calculation of encrypted data.
     */
     PreciseEncryptedLen (dataLen uint32) uint32
+
+    /*
+    * Release underlying C context.
+    */
+    Delete ()
 }
 

@@ -24,5 +24,10 @@ type IAlg interface {
     * Restore algorithm configuration from the given object.
     */
     RestoreAlgInfo (algInfo IAlgInfo) error
+
+    /*
+    * Release underlying C context.
+    */
+    Delete ()
 }
 

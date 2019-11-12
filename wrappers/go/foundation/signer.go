@@ -1,7 +1,7 @@
 package foundation
 
 // #cgo CFLAGS: -I${SRCDIR}/../binaries/include/
-// #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lmbedcrypto -led25519 -lprotobuf-nanopb -lvsc_common -lvsc_foundation -lvsc_foundation_pb
+// #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lvsc_foundation -lvsc_foundation_pb -led25519 -lprotobuf-nanopb -lvsc_common -lmbedcrypto
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
 
@@ -43,8 +43,10 @@ func newSignerCopy (ctx *C.vscf_signer_t /*ct2*/) *Signer {
     }
 }
 
-/// Release underlying C context.
-func (obj *Signer) clear () {
+/*
+* Release underlying C context.
+*/
+func (obj *Signer) Delete () {
     C.vscf_signer_delete(obj.cCtx)
 }
 
@@ -95,7 +97,7 @@ func (obj *Signer) Sign (privateKey IPrivateKey) ([]byte, error) {
     if signatureBufErr != nil {
         return nil, signatureBufErr
     }
-    defer signatureBuf.clear()
+    defer signatureBuf.Delete()
 
 
     proxyResult := /*pr4*/C.vscf_signer_sign(obj.cCtx, (*C.vscf_impl_t)(privateKey.ctx()), signatureBuf.ctx)

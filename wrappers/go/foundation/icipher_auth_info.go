@@ -10,5 +10,10 @@ type ICipherAuthInfo interface {
     * Defines authentication tag length in bytes.
     */
     GetAuthTagLen () uint32
+
+    /*
+    * Release underlying C context.
+    */
+    Delete ()
 }
 
