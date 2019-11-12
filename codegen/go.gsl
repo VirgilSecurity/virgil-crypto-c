@@ -1184,12 +1184,19 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Create <go_cgo_include/> for <go_instance/>
 # ---------------------------------------------------------------------------
+function go_create_cgo_include_instructions (go_module, go_project)
+    go_create_cgo_include (my.go_project.c_umbrella_header, my.go_module, my.go_project)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Create <go_cgo_include/> for <go_instance/>
+# ---------------------------------------------------------------------------
 function go_create_cgo_instructions (go_module, go_project)
     check_arguments (my, "go_module, go_project", my)
-    
+
     # Define CGO instructions
     go_create_cgo_flag ("CFLAGS", "-I${SRCDIR}/../binaries/include/", my.go_module)
-    
+
     new ldflags
         new ldflag to ldflags
             .project_name = "foundation"
@@ -1207,18 +1214,17 @@ function go_create_cgo_instructions (go_module, go_project)
         go_create_cgo_flag ("LDFLAGS", "-L${SRCDIR}/../binaries/lib $(my.libraries:)", my.go_module)
     endnew
 
-    go_create_cgo_include (my.go_project.c_umbrella_header, my.go_module, my.go_project)
+    
 endfunction
 
 # ---------------------------------------------------------------------------
 #   Create custom modules:
 #       - module with base interface that handles C context.
 # ---------------------------------------------------------------------------
-function go_create_custom_modules (source, go_project, meta)
-    check_arguments (my, "source, go_project, meta", my)
+function go_create_context_module (go_project, meta)
+    check_arguments (my, "go_project, meta", my)
 
-    if !count (my.source.class, scope = "public" & !string_in (name, "data, buffer")) & \
-            !count (my.source.interface, scope = "public")
+    if !is_true (my.go_project.is_context_used)
         return
     endif
 
@@ -1236,7 +1242,7 @@ function go_create_custom_modules (source, go_project, meta)
             . = go_format_license (my.go_project->license) ?
         endnew
         
-        go_create_cgo_instructions (go_module, my.go_project)
+        go_create_cgo_include_instructions (go_module, my.go_project)
 
         for my.go_project.go_import
             copy go_import to go_module
@@ -1262,6 +1268,21 @@ function go_create_custom_modules (source, go_project, meta)
             endnew
         endnew
     endnew
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Create custom modules:
+#       - module with base interface that handles C context.
+# ---------------------------------------------------------------------------
+function go_create_custom_modules (source, go_project, meta)
+    check_arguments (my, "source, go_project, meta", my)
+
+    if !count (my.source.interface, scope = "public")
+        return
+    endif
+
+    my.go_project.is_context_used = "1"
+
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -1465,6 +1486,7 @@ function go_create_func_from_dependency (dependency, impl, destination, go_proje
             my.cast_to_context = ""
             if defined (my.dependency.project)
                 my.cast_to_context = "\\.(context)"
+                my.go_project.is_context_used = "1"
             endif
             . = format_left("\
                 C.$(class_derive_c_method_release_dependency (my.impl, my.dependency))(obj.cCtx)
@@ -1876,7 +1898,7 @@ function go_create_class_module (class, go_project, meta)
             . = go_format_license (my.go_project->license) ?
         endnew
 
-        go_create_cgo_instructions (go_module, my.go_project)
+        go_create_cgo_include_instructions (go_module, my.go_project)
 
         for my.go_project.go_import
             copy go_import to go_module
@@ -1947,7 +1969,7 @@ function go_create_enum_module (enum, go_project, meta)
         endfor
         
         if my.enum.name = "status"
-            go_create_cgo_instructions (go_module, my.go_project)
+            go_create_cgo_include_instructions (go_module, my.go_project)
 
             new go_struct to go_module
                 . = go_format_description (my.enum) ?
@@ -2103,7 +2125,7 @@ function go_create_implementation_module (implementation, go_project, meta)
             . = go_format_license (my.go_project->license) ?
         endnew
 
-        go_create_cgo_instructions (go_module, my.go_project)
+        go_create_cgo_include_instructions (go_module, my.go_project)
 
         for my.go_project.go_import
             copy go_import to go_module
@@ -2473,7 +2495,7 @@ function go_get_implementation_helper_struct (go_project, meta)
             . = go_format_license (my.go_project->license) ?
         endnew
 
-        go_create_cgo_instructions (go_module, my.go_project)
+        go_create_cgo_include_instructions (go_module, my.go_project)
 
         for my.go_project.go_import
             copy go_import to go_module
@@ -2593,6 +2615,7 @@ function go_finalize_implementation_helper_modules (go_project, meta)
         endnew
 
         go_create_cgo_instructions (go_module, my.go_project)
+        go_create_cgo_include_instructions (go_module, my.go_project)
 
         for my.go_project.go_import
             copy go_import to go_module
@@ -2785,6 +2808,8 @@ function go_finalize_implementation_helper_modules (go_project, meta)
             endnew
         endnew
     endnew
+    
+    go_create_context_module (my.go_project, my.meta)
 endfunction
 
 .endtemplate

@@ -35,6 +35,7 @@
 package pythia
 
 import (
+	b64 "encoding/base64"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -42,4 +43,83 @@ import (
 func TestPythiaConfigure(t *testing.T) {
 	err := PythiaConfigure()
     assert.Nil(t, err)
+}
+
+func TestPythiaBlind(t *testing.T) {
+	err := PythiaConfigure()
+	assert.Nil(t, err)
+
+	password := []byte(TEST_PASSWORD)
+
+	blindedPassword, blindingSecret, err := PythiaBlind(password)
+	assert.Nil(t, err)
+	assert.NotNil(t, blindedPassword)
+	assert.NotNil(t, blindingSecret)
+}
+
+func TestPythiaBlindEvalDeblind(t *testing.T) {
+	transformationKeyId := []byte(TEST_W)
+	tweak := []byte(TEST_T)
+	pythiaSecret := []byte(TEST_MSK)
+	pythiaScopeSecret := []byte(TEST_SSK)
+	password := []byte(TEST_PASSWORD)
+	expectedDeblindedPassword, _ := b64.StdEncoding.DecodeString(TEST_DEBLINDED_PASSWORD)
+
+	err := PythiaConfigure()
+	assert.Nil(t, err)
+
+	blindedPassword, blindingSecret, err := PythiaBlind(password)
+	assert.Nil(t, err)
+
+	transformationPrivateKey, transformationPublicKey, err := PythiaComputeTransformationKeyPair(transformationKeyId, pythiaSecret, pythiaScopeSecret);
+	assert.Nil(t, err)
+	assert.NotNil(t, transformationPrivateKey)
+	assert.NotNil(t, transformationPublicKey)
+
+	transformedPassword, transformedTweak, err := PythiaTransform(blindedPassword, tweak, transformationPrivateKey)
+	assert.Nil(t, err)
+	assert.NotNil(t, transformedPassword)
+	assert.NotNil(t, transformedTweak)
+
+	deblindedPassword, err := PythiaDeblind(transformedPassword, blindingSecret)
+	assert.Nil(t, err)
+
+	assert.Equal(t, expectedDeblindedPassword, deblindedPassword)
+}
+
+func TestPythiaBlindEvalProveVerify(t *testing.T) {
+	transformationKeyId := []byte(TEST_W)
+	tweak := []byte(TEST_T)
+	pythiaSecret := []byte(TEST_MSK)
+	pythiaScopeSecret := []byte(TEST_SSK)
+	password := []byte(TEST_PASSWORD)
+
+	err := PythiaConfigure()
+	assert.Nil(t, err)
+
+	blindedPassword, blindingSecret, err := PythiaBlind(password)
+	assert.Nil(t, err)
+	assert.NotNil(t, blindedPassword)
+	assert.NotNil(t, blindingSecret)
+
+	transformationPrivateKey, transformationPublicKey, err := PythiaComputeTransformationKeyPair(transformationKeyId, pythiaSecret, pythiaScopeSecret);
+	assert.Nil(t, err)
+	assert.NotNil(t, transformationPrivateKey)
+	assert.NotNil(t, transformationPublicKey)
+
+	transformedPassword, transformedTweak, err := PythiaTransform(blindedPassword, tweak, transformationPrivateKey)
+	assert.Nil(t, err)
+	assert.NotNil(t, transformedPassword)
+	assert.NotNil(t, transformedTweak)
+
+	proofValueC, proofValueU, err := PythiaProve(transformedPassword, blindedPassword, transformedTweak, transformationPrivateKey,
+		transformationPublicKey)
+	assert.Nil(t, err)
+	assert.NotNil(t, proofValueC)
+	assert.NotNil(t, proofValueU)
+
+	verified, err := PythiaVerify(transformedPassword, blindedPassword, tweak, transformationPublicKey,
+		proofValueC, proofValueU)
+	assert.Nil(t, err)
+	assert.True(t, verified)
 }

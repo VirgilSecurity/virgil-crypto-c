@@ -63,12 +63,3 @@ func TestRatchetMessage_GetOneTimePublicKey(t *testing.T) {
     assert.NotNil(t, key)
     assert.Equal(t, 0, len(key))
 }
-
-func TestRatchetMessage_Serialize(t *testing.T) {
-    t.SkipNow()
-    ratchetMessage := NewRatchetMessage()
-    defer ratchetMessage.Delete()
-
-    serializedMessage := ratchetMessage.Serialize()
-    assert.NotNil(t, serializedMessage)
-}
