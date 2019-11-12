@@ -44,7 +44,7 @@ endif()
 # ---------------------------------------------------------------------------
 #   Load library as an external project
 # ---------------------------------------------------------------------------
-find_program(MAKE_EXE NAMES make)
+set(KECCAK_INSTALL_LOCATION ${CMAKE_CURRENT_BINARY_DIR}/keccak CACHE PATH INTERNAL)
 
 include(ExternalProject)
 ExternalProject_Add(keccak-ext
@@ -52,21 +52,27 @@ ExternalProject_Add(keccak-ext
             https://github.com/XKCP/XKCP
         GIT_TAG
             e8e6b1d45861ea6fc0957ab27a401f42aef0d033
-        BUILD_IN_SOURCE TRUE
-        CONFIGURE_COMMAND ""
-        BUILD_COMMAND ${MAKE_EXE} generic64/libkeccak.a
-        INSTALL_COMMAND ""
+        UPDATE_COMMAND
+            ${CMAKE_COMMAND} -E copy_if_different
+                    ${CMAKE_CURRENT_LIST_DIR}/xkcp.CMakeLists.txt <SOURCE_DIR>/CMakeLists.txt &&
+            ${CMAKE_COMMAND} -E copy_if_different
+                    ${CMAKE_CURRENT_LIST_DIR}/xkcp.lib.CMakeLists.txt <SOURCE_DIR>/lib/CMakeLists.txt
+        CMAKE_ARGS
+            "${TRANSITIVE_ARGS}"
+            "-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}"
+            "-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}"
+            "-DBUILD_SHARED_LIBS=OFF"
+            "-DCMAKE_INSTALL_PREFIX=${KECCAK_INSTALL_LOCATION}"
+            "-DCMAKE_INSTALL_LIBDIR=lib"
+            "-DXKCP_IMPL=reference"
         )
 
 # ---------------------------------------------------------------------------
 #   Import library as a target
 # ---------------------------------------------------------------------------
-set(KECCAK_INSTALL_LOCATION ${CMAKE_CURRENT_BINARY_DIR}/keccak-ext-prefix/src/keccak-ext/bin CACHE PATH INTERNAL)
 set(KECCAK_LIB_NAME "${CMAKE_STATIC_LIBRARY_PREFIX}keccak${CMAKE_STATIC_LIBRARY_SUFFIX}")
-
-
-file(MAKE_DIRECTORY ${KECCAK_INSTALL_LOCATION}/generic64)
-file(MAKE_DIRECTORY ${KECCAK_INSTALL_LOCATION}/generic64/${KECCAK_LIB_NAME}.headers)
+file(MAKE_DIRECTORY "${KECCAK_INSTALL_LOCATION}/include")
+file(MAKE_DIRECTORY "${KECCAK_INSTALL_LOCATION}/include/${KECCAK_LIB_NAME}.headers")
 
 add_library(keccak STATIC IMPORTED GLOBAL)
 
@@ -75,13 +81,14 @@ add_dependencies(keccak keccak-ext)
 set_target_properties(keccak
         PROPERTIES
         IMPORTED_LOCATION
-            "${KECCAK_INSTALL_LOCATION}/generic64/${KECCAK_LIB_NAME}"
+            "${KECCAK_INSTALL_LOCATION}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}keccak${CMAKE_STATIC_LIBRARY_SUFFIX}"
+
         )
 
 set_property(TARGET keccak
         PROPERTY INTERFACE_INCLUDE_DIRECTORIES
-            "${KECCAK_INSTALL_LOCATION}/generic64"
-            "${KECCAK_INSTALL_LOCATION}/generic64/${KECCAK_LIB_NAME}.headers"
+            "${KECCAK_INSTALL_LOCATION}/include"
+            "${KECCAK_INSTALL_LOCATION}/include/${KECCAK_LIB_NAME}.headers"
         )
 
 # ---------------------------------------------------------------------------

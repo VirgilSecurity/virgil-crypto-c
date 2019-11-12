@@ -119,13 +119,13 @@ if(NOT TARGET XKCP::keccak AND KECCAK_INSTALL_LOCATION)
     set_target_properties(keccak
             PROPERTIES
             IMPORTED_LOCATION
-                "${KECCAK_INSTALL_LOCATION}/generic64/${KECCAK_LIB_NAME}"
+                "${KECCAK_INSTALL_LOCATION}/lib/${KECCAK_LIB_NAME}"
             )
 
     set_property(TARGET keccak
             PROPERTY INTERFACE_INCLUDE_DIRECTORIES
-                "${KECCAK_INSTALL_LOCATION}/generic64"
-                "${KECCAK_INSTALL_LOCATION}/generic64/${KECCAK_LIB_NAME}.headers"
+                "${KECCAK_INSTALL_LOCATION}/include"
+                "${KECCAK_INSTALL_LOCATION}/include/${KECCAK_LIB_NAME}.headers"
             )
 
     #
