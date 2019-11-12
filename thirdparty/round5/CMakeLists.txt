@@ -123,3 +123,28 @@ set_target_properties(round5
         INTERFACE_INCLUDE_DIRECTORIES
             "${ROUND5_INSTALL_LOCATION}/include"
         )
+
+# ---------------------------------------------------------------------------
+#   Install library
+# ---------------------------------------------------------------------------
+#
+# Install headers.
+#
+if(VIRGIL_INSTALL_DEPS_HDRS)
+    install(
+            DIRECTORY "${ROUND5_INSTALL_LOCATION}/include/"
+            DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}"
+            )
+endif()
+
+#
+# Install libraries.
+#
+if(VIRGIL_INSTALL_DEPS_LIBS)
+    install(
+            DIRECTORY "${ROUND5_INSTALL_LOCATION}/lib/"
+            DESTINATION "${CMAKE_INSTALL_LIBDIR}"
+            FILES_MATCHING REGEX "round5"
+            PATTERN "cmake" EXCLUDE
+            )
+endif()
