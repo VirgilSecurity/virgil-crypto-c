@@ -55,12 +55,15 @@
 #include "vscf_memory.h"
 #include "vscf_public_key.h"
 #include "vscf_private_key.h"
+#include "vscf_ctr_drbg.h"
 #include "vscf_simple_alg_info.h"
 #include "vscf_raw_public_key_defs.h"
 #include "vscf_raw_private_key_defs.h"
+#include "vscf_random.h"
 #include "vscf_round5_defs.h"
 #include "vscf_round5_internal.h"
 
+#include <round5/rng.h>
 #include <round5/r5_cca_pke.h>
 
 // clang-format on
@@ -73,6 +76,13 @@
 //  Generated section start.
 // --------------------------------------------------------------------------
 
+//
+//  Private integral constants.
+//
+enum {
+    vscf_round5_SEED_LEN = 48
+};
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.
@@ -82,6 +92,29 @@
 
 
 //
+//  Setup predefined values to the uninitialized class dependencies.
+//
+VSCF_PUBLIC vscf_status_t
+vscf_round5_setup_defaults(vscf_round5_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+
+    if (NULL == self->random) {
+        vscf_ctr_drbg_t *random = vscf_ctr_drbg_new();
+        vscf_status_t status = vscf_ctr_drbg_setup_defaults(random);
+
+        if (status != vscf_status_SUCCESS) {
+            vscf_ctr_drbg_destroy(&random);
+            return status;
+        }
+
+        self->random = vscf_ctr_drbg_impl(random);
+    }
+
+    return vscf_status_SUCCESS;
+}
+
+//
 //  Generate new private key.
 //  Note, this operation might be slow.
 //
@@ -89,6 +122,7 @@ VSCF_PUBLIC vscf_impl_t *
 vscf_round5_generate_key(const vscf_round5_t *self, vscf_error_t *error) {
 
     VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(self->random);
 
     parameters *params = set_parameters_from_api();
     VSCF_ASSERT_PTR(params);
@@ -96,11 +130,36 @@ vscf_round5_generate_key(const vscf_round5_t *self, vscf_error_t *error) {
     const size_t sk_len = get_crypto_secret_key_bytes(params, 1);
     const size_t pk_len = get_crypto_public_key_bytes(params);
 
+    //
+    //  Make random SEED
+    //
+    vsc_buffer_t *seed = vsc_buffer_new_with_capacity(vscf_round5_SEED_LEN);
+    const vscf_status_t rng_status = vscf_random(self->random, vscf_round5_SEED_LEN, seed);
+    if (rng_status != vscf_status_SUCCESS) {
+        VSCF_ERROR_SAFE_UPDATE(error, rng_status);
+        vsc_buffer_destroy(&seed);
+        return NULL;
+    }
+    vsc_buffer_make_secure(seed);
+
     vsc_buffer_t *sk = vsc_buffer_new_with_capacity(sk_len);
     vsc_buffer_t *pk = vsc_buffer_new_with_capacity(pk_len);
 
-    const int status = r5_cca_pke_keygen(vsc_buffer_unused_bytes(pk), vsc_buffer_unused_bytes(sk), params);
-    if (status != 0) {
+    //
+    //  Initialize DRBG
+    //
+    VSCF_ATOMIC_CRITICAL_SECTION_DECLARE(keygen);
+    VSCF_ATOMIC_CRITICAL_SECTION_BEGIN(keygen);
+    randombytes_init(vsc_buffer_begin(seed), NULL, 1 /* is not used, so can be any */);
+
+    //
+    //  Generate keys
+    //
+    const int gen_status = r5_cca_pke_keygen(vsc_buffer_unused_bytes(pk), vsc_buffer_unused_bytes(sk), params);
+    VSCF_ATOMIC_CRITICAL_SECTION_END(keygen);
+    vsc_buffer_destroy(&seed);
+
+    if (gen_status != 0) {
         vsc_buffer_destroy(&pk);
         vsc_buffer_destroy(&sk);
         VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_RANDOM_FAILED);
@@ -380,6 +439,7 @@ VSCF_PUBLIC vscf_status_t
 vscf_round5_encrypt(const vscf_round5_t *self, const vscf_impl_t *public_key, vsc_data_t data, vsc_buffer_t *out) {
 
     VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(self->random);
     VSCF_ASSERT_PTR(public_key);
     VSCF_ASSERT(vscf_round5_can_encrypt(self, public_key, data.len));
     VSCF_ASSERT(vsc_data_is_valid(data));
@@ -387,16 +447,40 @@ vscf_round5_encrypt(const vscf_round5_t *self, const vscf_impl_t *public_key, vs
     VSCF_ASSERT(vsc_buffer_is_valid(out));
     VSCF_ASSERT(vsc_buffer_unused_len(out) >= vscf_round5_encrypted_len(self, public_key, data.len));
 
+    //
+    //  Make random SEED
+    //
+    vsc_buffer_t *seed = vsc_buffer_new_with_capacity(vscf_round5_SEED_LEN);
+    const vscf_status_t rng_status = vscf_random(self->random, vscf_round5_SEED_LEN, seed);
+    if (rng_status != vscf_status_SUCCESS) {
+        vsc_buffer_destroy(&seed);
+        return rng_status;
+    }
+    vsc_buffer_make_secure(seed);
 
     parameters *params = set_parameters_from_api();
     VSCF_ASSERT_PTR(params);
 
     vsc_data_t public_key_data = vscf_raw_public_key_data((vscf_raw_public_key_t *)public_key);
     unsigned long long out_len = 0;
-    const int status = r5_cca_pke_encrypt(
+
+    //
+    //  Initialize DRBG
+    //
+    VSCF_ATOMIC_CRITICAL_SECTION_DECLARE(encrypt);
+    VSCF_ATOMIC_CRITICAL_SECTION_BEGIN(encrypt);
+    randombytes_init(vsc_buffer_begin(seed), NULL, 1 /* is not used, so can be any */);
+
+    //
+    //  Encrypt
+    //
+    const int enc_status = r5_cca_pke_encrypt(
             vsc_buffer_unused_bytes(out), &out_len, data.bytes, data.len, public_key_data.bytes, params);
 
-    if (status == 0) {
+    VSCF_ATOMIC_CRITICAL_SECTION_END(encrypt);
+    vsc_buffer_destroy(&seed);
+
+    if (enc_status == 0) {
         vsc_buffer_inc_used(out, out_len);
         return vscf_status_SUCCESS;
     }

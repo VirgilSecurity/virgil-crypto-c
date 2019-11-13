@@ -133,6 +133,13 @@ const initRound5 = (Module, modules) => {
             }
         }
 
+        set random(random) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureImplementInterface('random', random, 'Foundation.Random', modules.FoundationInterfaceTag.RANDOM, modules.FoundationInterface);
+            Module._vscf_round5_release_random(this.ctxPtr)
+            Module._vscf_round5_use_random(this.ctxPtr, random.ctxPtr)
+        }
+
         /**
          * Provide algorithm identificator.
          */
@@ -451,6 +458,15 @@ const initRound5 = (Module, modules) => {
                 Module._free(dataCtxPtr);
                 Module._vsc_buffer_delete(outCtxPtr);
             }
+        }
+
+        /**
+         * Setup predefined values to the uninitialized class dependencies.
+         */
+        setupDefaults() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            const proxyResult = Module._vscf_round5_setup_defaults(this.ctxPtr);
+            modules.FoundationError.handleStatusCode(proxyResult);
         }
 
         /**

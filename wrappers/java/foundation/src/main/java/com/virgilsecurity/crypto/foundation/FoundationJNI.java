@@ -3259,6 +3259,13 @@ public class FoundationJNI {
     */
     public native boolean falcon_verifyHash(long cCtx, PublicKey publicKey, AlgId hashId, byte[] digest, byte[] signature);
 
+    public native void round5_setRandom(long cCtx, Random random);
+
+    /*
+    * Setup predefined values to the uninitialized class dependencies.
+    */
+    public native void round5_setupDefaults(long cCtx) throws FoundationException;
+
     /*
     * Generate new private key.
     * Note, this operation might be slow.

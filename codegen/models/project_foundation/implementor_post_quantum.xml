@@ -51,10 +51,12 @@
         For algorithm details check https://github.com/round5/code
 
         <require library="round5" feature="library"/>
+        <require header="round5/rng.h"/>
         <require header="round5/r5_cca_pke.h"/>
 
         <require interface="public key"/>
         <require interface="private key"/>
+        <require impl="ctr drbg"/>
         <require impl="simple alg info"/>
         <require module="raw public key defs"/>
         <require module="raw private key defs"/>
@@ -67,6 +69,16 @@
             <constant name="can export private key" value="true"/>
         </interface>
         <interface name="key cipher"/>
+
+        <constant name="seed len" value="48"/>
+
+        <dependency name="random" interface="random"/>
+
+        <method name="setup defaults" declaration="public">
+            Setup predefined values to the uninitialized class dependencies.
+
+            <return enum="status"/>
+        </method>
 
         <method name="generate key" declaration="public" is_const="1">
             Generate new private key.

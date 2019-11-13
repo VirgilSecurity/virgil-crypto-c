@@ -194,6 +194,9 @@ vscf_key_alg_factory_create_from_alg_id(vscf_alg_id_t alg_id, const vscf_impl_t 
     case vscf_alg_id_ROUND5:
     case vscf_alg_id_ROUND5_ND_5PKE_5D: {
         vscf_round5_t *round5 = vscf_round5_new();
+        if (random) {
+            vscf_round5_use_random(round5, (vscf_impl_t *)random);
+        }
         return vscf_round5_impl(round5);
     }
 #endif // VSCF_ROUND5

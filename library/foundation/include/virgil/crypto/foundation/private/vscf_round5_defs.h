@@ -60,6 +60,7 @@
 #include "vscf_impl_private.h"
 #include "vscf_round5.h"
 #include "vscf_atomic.h"
+#include "vscf_impl.h"
 
 // clang-format on
 //  @end
@@ -88,6 +89,10 @@ struct vscf_round5_t {
     //  Reference counter.
     //
     VSCF_ATOMIC size_t refcnt;
+    //
+    //  Dependency to the interface 'random'.
+    //
+    vscf_impl_t *random;
 };
 
 

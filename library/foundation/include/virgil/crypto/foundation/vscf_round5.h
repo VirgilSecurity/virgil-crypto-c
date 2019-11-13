@@ -56,8 +56,8 @@
 #include "vscf_library.h"
 #include "vscf_error.h"
 #include "vscf_impl.h"
-#include "vscf_alg_id.h"
 #include "vscf_status.h"
+#include "vscf_alg_id.h"
 #include "vscf_raw_public_key.h"
 #include "vscf_raw_private_key.h"
 
@@ -171,6 +171,31 @@ vscf_round5_destroy(vscf_round5_t **self_ref);
 //
 VSCF_PUBLIC vscf_round5_t *
 vscf_round5_shallow_copy(vscf_round5_t *self);
+
+//
+//  Setup dependency to the interface 'random' with shared ownership.
+//
+VSCF_PUBLIC void
+vscf_round5_use_random(vscf_round5_t *self, vscf_impl_t *random);
+
+//
+//  Setup dependency to the interface 'random' and transfer ownership.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCF_PUBLIC void
+vscf_round5_take_random(vscf_round5_t *self, vscf_impl_t *random);
+
+//
+//  Release dependency to the interface 'random'.
+//
+VSCF_PUBLIC void
+vscf_round5_release_random(vscf_round5_t *self);
+
+//
+//  Setup predefined values to the uninitialized class dependencies.
+//
+VSCF_PUBLIC vscf_status_t
+vscf_round5_setup_defaults(vscf_round5_t *self) VSCF_NODISCARD;
 
 //
 //  Generate new private key.

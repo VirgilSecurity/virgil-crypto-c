@@ -100,7 +100,7 @@ if(NIST_KAT_GENERATION)
     endif()
     target_sources(round5-reference PRIVATE ${CMAKE_CURRENT_LIST_DIR}/src/rng/nist_rng.c)
 else()
-    target_sources(round5-reference PRIVATE ${CMAKE_CURRENT_LIST_DIR}/src/rng/true_rng.c)
+    target_sources(round5-reference PRIVATE ${CMAKE_CURRENT_LIST_DIR}/src/rng/shake_rng.c)
 endif()
 
 target_include_directories(round5-reference

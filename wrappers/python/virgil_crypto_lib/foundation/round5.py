@@ -71,6 +71,9 @@ class Round5(Alg, KeyAlg, KeyCipher):
         """Destroy underlying C context."""
         self._lib_vscf_round5.vscf_round5_delete(self.ctx)
 
+    def set_random(self, random):
+        self._lib_vscf_round5.vscf_round5_use_random(self.ctx, random.c_impl)
+
     def alg_id(self):
         """Provide algorithm identificator."""
         result = self._lib_vscf_round5.vscf_round5_alg_id(self.ctx)
@@ -186,6 +189,11 @@ class Round5(Alg, KeyAlg, KeyCipher):
         status = self._lib_vscf_round5.vscf_round5_decrypt(self.ctx, private_key.c_impl, d_data.data, out.c_buffer)
         VscfStatus.handle_status(status)
         return out.get_bytes()
+
+    def setup_defaults(self):
+        """Setup predefined values to the uninitialized class dependencies."""
+        status = self._lib_vscf_round5.vscf_round5_setup_defaults(self.ctx)
+        VscfStatus.handle_status(status)
 
     def generate_key(self):
         """Generate new private key.

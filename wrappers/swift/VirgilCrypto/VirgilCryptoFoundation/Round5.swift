@@ -80,6 +80,18 @@ import VSCFoundation
         vscf_round5_delete(self.c_ctx)
     }
 
+    @objc public func setRandom(random: Random) {
+        vscf_round5_release_random(self.c_ctx)
+        vscf_round5_use_random(self.c_ctx, random.c_ctx)
+    }
+
+    /// Setup predefined values to the uninitialized class dependencies.
+    @objc public func setupDefaults() throws {
+        let proxyResult = vscf_round5_setup_defaults(self.c_ctx)
+
+        try FoundationError.handleStatus(fromC: proxyResult)
+    }
+
     /// Generate new private key.
     /// Note, this operation might be slow.
     @objc public func generateKey() throws -> PrivateKey {

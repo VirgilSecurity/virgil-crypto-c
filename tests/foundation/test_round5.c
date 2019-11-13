@@ -50,7 +50,11 @@
 
 void
 test__generate_key__success(void) {
+    vscf_fake_random_t *fake_random = vscf_fake_random_new();
+    vscf_fake_random_setup_source_data(fake_random, test_data_round5_RNG_SEED);
+
     vscf_round5_t *round5 = vscf_round5_new();
+    vscf_round5_take_random(round5, vscf_fake_random_impl(fake_random));
 
     vscf_error_t error;
     vscf_error_reset(&error);
@@ -67,7 +71,11 @@ test__encrypt__success(void) {
     //
     //  Configure alg.
     //
+    vscf_fake_random_t *fake_random = vscf_fake_random_new();
+    vscf_fake_random_setup_source_data(fake_random, test_data_round5_RNG_SEED);
+
     vscf_round5_t *round5 = vscf_round5_new();
+    vscf_round5_take_random(round5, vscf_fake_random_impl(fake_random));
 
     //
     //  Import public key.
@@ -107,7 +115,11 @@ test__decrypt__success(void) {
     //
     //  Configure alg.
     //
+    vscf_fake_random_t *fake_random = vscf_fake_random_new();
+    vscf_fake_random_setup_source_data(fake_random, test_data_round5_RNG_SEED);
+
     vscf_round5_t *round5 = vscf_round5_new();
+    vscf_round5_take_random(round5, vscf_fake_random_impl(fake_random));
 
     //
     //  Import private key.
@@ -145,7 +157,11 @@ test__export_public_key__from_generated_key__valid_alg_and_key_length(void) {
     //
     //  Configure alg.
     //
+    vscf_fake_random_t *fake_random = vscf_fake_random_new();
+    vscf_fake_random_setup_source_data(fake_random, test_data_round5_RNG_SEED);
+
     vscf_round5_t *round5 = vscf_round5_new();
+    vscf_round5_take_random(round5, vscf_fake_random_impl(fake_random));
 
     vscf_error_t error;
     vscf_error_reset(&error);
@@ -184,7 +200,11 @@ test__export_private_key__from_generated_key__valid_alg_and_key_length(void) {
     //
     //  Configure alg.
     //
+    vscf_fake_random_t *fake_random = vscf_fake_random_new();
+    vscf_fake_random_setup_source_data(fake_random, test_data_round5_RNG_SEED);
+
     vscf_round5_t *round5 = vscf_round5_new();
+    vscf_round5_take_random(round5, vscf_fake_random_impl(fake_random));
 
     vscf_error_t error;
     vscf_error_reset(&error);

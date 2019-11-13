@@ -77,6 +77,12 @@ class VscfRound5(object):
         vscf_round5_delete.restype = None
         return vscf_round5_delete(ctx)
 
+    def vscf_round5_use_random(self, ctx, random):
+        vscf_round5_use_random = self._lib.vscf_round5_use_random
+        vscf_round5_use_random.argtypes = [POINTER(vscf_round5_t), POINTER(vscf_impl_t)]
+        vscf_round5_use_random.restype = None
+        return vscf_round5_use_random(ctx, random)
+
     def vscf_round5_alg_id(self, ctx):
         """Provide algorithm identificator."""
         vscf_round5_alg_id = self._lib.vscf_round5_alg_id
@@ -198,6 +204,13 @@ class VscfRound5(object):
         vscf_round5_decrypt.argtypes = [POINTER(vscf_round5_t), POINTER(vscf_impl_t), vsc_data_t, POINTER(vsc_buffer_t)]
         vscf_round5_decrypt.restype = c_int
         return vscf_round5_decrypt(ctx, private_key, data, out)
+
+    def vscf_round5_setup_defaults(self, ctx):
+        """Setup predefined values to the uninitialized class dependencies."""
+        vscf_round5_setup_defaults = self._lib.vscf_round5_setup_defaults
+        vscf_round5_setup_defaults.argtypes = [POINTER(vscf_round5_t)]
+        vscf_round5_setup_defaults.restype = c_int
+        return vscf_round5_setup_defaults(ctx)
 
     def vscf_round5_generate_key(self, ctx, error):
         """Generate new private key.

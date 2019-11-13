@@ -61,6 +61,7 @@
 #include "vscf_key_alg_api.h"
 #include "vscf_key_cipher.h"
 #include "vscf_key_cipher_api.h"
+#include "vscf_random.h"
 #include "vscf_impl.h"
 #include "vscf_api.h"
 
@@ -274,6 +275,8 @@ vscf_round5_cleanup(vscf_round5_t *self) {
         return;
     }
 
+    vscf_round5_release_random(self);
+
     vscf_zeroize(self, sizeof(vscf_round5_t));
 }
 
@@ -380,6 +383,48 @@ vscf_round5_impl_const(const vscf_round5_t *self) {
 
     VSCF_ASSERT_PTR(self);
     return (const vscf_impl_t *)(self);
+}
+
+//
+//  Setup dependency to the interface 'random' with shared ownership.
+//
+VSCF_PUBLIC void
+vscf_round5_use_random(vscf_round5_t *self, vscf_impl_t *random) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(random);
+    VSCF_ASSERT(self->random == NULL);
+
+    VSCF_ASSERT(vscf_random_is_implemented(random));
+
+    self->random = vscf_impl_shallow_copy(random);
+}
+
+//
+//  Setup dependency to the interface 'random' and transfer ownership.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCF_PUBLIC void
+vscf_round5_take_random(vscf_round5_t *self, vscf_impl_t *random) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(random);
+    VSCF_ASSERT(self->random == NULL);
+
+    VSCF_ASSERT(vscf_random_is_implemented(random));
+
+    self->random = random;
+}
+
+//
+//  Release dependency to the interface 'random'.
+//
+VSCF_PUBLIC void
+vscf_round5_release_random(vscf_round5_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+
+    vscf_impl_destroy(&self->random);
 }
 
 static const vscf_api_t *

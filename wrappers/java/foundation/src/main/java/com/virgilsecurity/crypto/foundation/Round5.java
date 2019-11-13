@@ -55,6 +55,17 @@ public class Round5 implements AutoCloseable, Alg, KeyAlg, KeyCipher {
         this.cCtx = contextHolder.cCtx;
     }
 
+    public void setRandom(Random random) {
+        FoundationJNI.INSTANCE.round5_setRandom(this.cCtx, random);
+    }
+
+    /*
+    * Setup predefined values to the uninitialized class dependencies.
+    */
+    public void setupDefaults() throws FoundationException {
+        FoundationJNI.INSTANCE.round5_setupDefaults(this.cCtx);
+    }
+
     /*
     * Generate new private key.
     * Note, this operation might be slow.

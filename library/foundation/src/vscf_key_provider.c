@@ -423,6 +423,7 @@ vscf_key_provider_generate_private_key(vscf_key_provider_t *self, vscf_alg_id_t 
     case vscf_alg_id_ROUND5:
     case vscf_alg_id_ROUND5_ND_5PKE_5D: {
         vscf_round5_t *round5 = vscf_round5_new();
+        vscf_round5_use_random(round5, self->random);
         key = vscf_round5_generate_key(round5, error);
         vscf_round5_destroy(&round5);
         break;
