@@ -51,12 +51,32 @@ if(NOT TARGET XKCP::keccak)
     message(FATAL_ERROR "Required library 'keccak' is not found - looking for target 'XKCP::keccak'.")
 endif()
 
-#
-# mbedTLS
-#
-if(NOT TARGET mbed::crypto)
-    message(FATAL_ERROR "Required library 'mbedcrypto' is not found - looking for target 'mbed::crypto'.")
+if(ROUND5_USE_MBEDTLS)
+    #
+    # mbedTLS
+    #
+    if(NOT TARGET mbed::crypto)
+        message(FATAL_ERROR "Required library 'mbedcrypto' is not found - looking for target 'mbed::crypto'.")
+    endif()
 endif()
+
+if(ROUND5_USE_OPENSSL)
+    #
+    # OpenSSL
+    #
+    if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+        if(NOT ENV{OPENSSL_ROOT_DIR} AND EXISTS "/usr/local/opt/openssl@1.1")
+            set(ENV{OPENSSL_ROOT_DIR} "/usr/local/opt/openssl@1.1")
+        endif()
+    endif()
+    set(OPENSSL_USE_STATIC_LIBS NO)
+    find_package(OpenSSL 1.1.1 COMPONENTS Crypto REQUIRED)
+endif()
+
+if(ROUND5_NIST_KAT_GEN AND NOT ROUND5_USE_OPENSSL)
+    message(FATAL_ERROR "ROUND5_NIST_KAT_GEN requires ROUND5_USE_OPENSSL to be enabled")
+endif()
+
 
 # ---------------------------------------------------------------------------
 #   Load library as an external project
@@ -87,8 +107,11 @@ ExternalProject_Add(round5-ext
             "-DUSE_AES_DRBG=NO"
             "-DOPTIMIZED=OFF"
             "-DCONFIGURABLE=OFF"
-            "-DCRYPTO_ENGINE_MBEDTLS=ON"
-            "-DCRYPTO_ENGINE_OPENSSL=OFF"
+            "-DCRYPTO_ENGINE_MBEDTLS=${ROUND5_USE_MBEDTLS}"
+            "-DCRYPTO_ENGINE_OPENSSL=${ROUND5_USE_OPENSSL}"
+            "-DNIST_KAT_GENERATION=${ROUND5_NIST_KAT_GEN}"
+            "-DBUILD_EXAMPLES=${ROUND5_BUILD_EXAMPLES}"
+            "-DBUILD_SPEEDTEST=${ROUND5_BUILD_SPEEDTEST}"
             "-DKECCAK_INSTALL_LOCATION=${KECCAK_INSTALL_LOCATION}"
             "-DMBEDTLS_INSTALL_LOCATION=${MBEDTLS_INSTALL_LOCATION}"
         )
@@ -112,7 +135,8 @@ set_property(TARGET round5
 set_property(TARGET round5
         PROPERTY INTERFACE_LINK_LIBRARIES
             XKCP::keccak
-            mbed::crypto
+            $<$<BOOL:${ROUND5_USE_MBEDTLS}>:mbed::crypto>
+            $<$<BOOL:${ROUND5_USE_OPENSSL}>:OpenSSL::Crypto>
         )
 
 set_target_properties(round5

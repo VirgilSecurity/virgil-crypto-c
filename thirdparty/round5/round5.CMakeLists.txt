@@ -96,6 +96,8 @@ option(NO_OPENSSL_SHAKE "RNG depends on KAT-generation setting" OFF)
 option(USE_AES_DRBG "Use of the alternative AES (in CTR mode on zero input blocks) implementation" OFF)
 option(CRYPTO_ENGINE_OPENSSL "Use missed crypto primitives from the OpenSSL library" ON)
 option(CRYPTO_ENGINE_MBEDTLS "Use missed crypto primitives from the MbedTLS library" OFF)
+option(BUILD_EXAMPLES "On/Off builds of example programs." OFF)
+option(BUILD_SPEEDTEST "On/Off builds of speedtest program." OFF)
 
 
 # ---------------------------------------------------------------------------
@@ -196,16 +198,22 @@ endif()
 # ---------------------------------------------------------------------------
 option(REFERENCE "Build reference implementation" ON)
 if(REFERENCE)
-    add_subdirectory(reference)
+    add_subdirectory("${CMAKE_CURRENT_LIST_DIR}/reference")
 endif()
 
 option(OPTIMIZED "Build optimized implementation" ON)
 if(OPTIMIZED)
-    add_subdirectory(optimized)
+    add_subdirectory("${CMAKE_CURRENT_LIST_DIR}/optimized")
 endif()
 
 option(CONFIGURABLE "Build configurable implementation" ON)
 if(CONFIGURABLE)
-    add_subdirectory(configurable)
+    add_subdirectory("${CMAKE_CURRENT_LIST_DIR}/configurable")
 endif()
 
+# ---------------------------------------------------------------------------
+#   Tests.
+# ---------------------------------------------------------------------------
+if(ENABLE_TESTING)
+    add_subdirectory("${CMAKE_CURRENT_LIST_DIR}/tests")
+endif()

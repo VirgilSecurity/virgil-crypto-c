@@ -86,11 +86,22 @@ target_sources(round5-reference
             ${CMAKE_CURRENT_LIST_DIR}/src/little_endian.c
             ${CMAKE_CURRENT_LIST_DIR}/src/misc.c
             ${CMAKE_CURRENT_LIST_DIR}/src/cca_encrypt.c
-            $<$<BOOL:${CRYPTO_ENGINE_OPENSSL}>:${CMAKE_CURRENT_LIST_DIR}/src/r5_dem.c>
-            $<$<BOOL:${CRYPTO_ENGINE_MBEDTLS}>:${CMAKE_CURRENT_LIST_DIR}/src/r5_dem_mbedtls.c>
-            $<$<BOOL:NOT ${NIST_KAT_GENERATION}>:${CMAKE_CURRENT_LIST_DIR}/src/rng/true_rng.c>
-            $<$<BOOL:${NIST_KAT_GENERATION}>:${CMAKE_CURRENT_LIST_DIR}/src/rng/nist_rng.c>
         )
+
+if(CRYPTO_ENGINE_MBEDTLS)
+    target_sources(round5-reference PRIVATE ${CMAKE_CURRENT_LIST_DIR}/src/r5_dem_mbedtls.c)
+else()
+    target_sources(round5-reference PRIVATE ${CMAKE_CURRENT_LIST_DIR}/src/r5_dem.c)
+endif()
+
+if(NIST_KAT_GENERATION)
+    if(NOT CRYPTO_ENGINE_OPENSSL)
+        message(FATAL_ERROR "NIST_KAT_GENERATION requires CRYPTO_ENGINE_OPENSSL to be enabled")
+    endif()
+    target_sources(round5-reference PRIVATE ${CMAKE_CURRENT_LIST_DIR}/src/rng/nist_rng.c)
+else()
+    target_sources(round5-reference PRIVATE ${CMAKE_CURRENT_LIST_DIR}/src/rng/true_rng.c)
+endif()
 
 target_include_directories(round5-reference
         PUBLIC
@@ -167,3 +178,34 @@ install(
         FRAMEWORK DESTINATION "${CMAKE_INSTALL_LIBDIR}"
         RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}"
         )
+
+# ---------------------------------------------------------------------------
+#   Build examples.
+# ---------------------------------------------------------------------------
+if(BUILD_EXAMPLES)
+    add_executable(example "${CMAKE_CURRENT_LIST_DIR}/src/examples/example.c")
+    target_link_libraries(example round5-reference)
+
+    add_executable(createAfixed "${CMAKE_CURRENT_LIST_DIR}/src/createAfixed/createAfixed.c")
+    target_link_libraries(createAfixed round5-reference)
+
+    install(
+            TARGETS example createAfixed
+            RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}"
+            )
+endif()
+
+if(BUILD_SPEEDTEST)
+    add_executable(speedtest)
+    target_sources(speedtest
+            PRIVATE
+                "${CMAKE_CURRENT_LIST_DIR}/../speedtest/src/speedtest.c"
+                "${CMAKE_CURRENT_LIST_DIR}/../speedtest/src/test_utils.c"
+            )
+    target_link_libraries(speedtest round5-reference)
+
+    install(
+            TARGETS speedtest
+            RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}"
+            )
+endif()

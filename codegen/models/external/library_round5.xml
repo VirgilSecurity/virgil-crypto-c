@@ -1,3 +1,23 @@
 <library name="round5" path="../thirdparty/round5">
     External library: https://github.com/round5/code
+
+    <feature name="USE MBEDTLS" default="on">
+        Use missed crypto primitives from the mbedTLS library.
+    </feature>
+
+    <feature name="USE OPENSSL" default="off">
+        Use missed crypto primitives from the OpenSSL library.
+    </feature>
+
+    <feature name="NIST KAT GEN" default="off">
+        On/Off Generating NIST KATs (debug).
+    </feature>
+
+    <feature name="BUILD EXAMPLES" default="off">
+        On/Off builds of example programs.
+    </feature>
+
+    <feature name="BUILD SPEEDTEST" default="off">
+        On/Off builds of speedtest program.
+    </feature>
 </library>
