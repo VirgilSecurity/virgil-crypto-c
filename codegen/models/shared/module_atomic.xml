@@ -43,4 +43,21 @@
             #endif
         </code>
     </macroses>
+
+    <macroses>
+        <macros name="critical section declare"/>
+        <macros name="critical section begin"/>
+        <macros name="critical section end"/>
+        <code>
+            #if defined(.(c_class_atomic_macros_compare_exchange_weak))
+            #   define .(c_class_atomic_macros_critical_section_declare)(name) static .(c_class_atomic_macros_atomic) int is_busy_##name = 0; int is_not_busy_##name = 0;
+            #   define .(c_class_atomic_macros_critical_section_begin)(name) while (!.(c_class_atomic_macros_compare_exchange_weak)(&is_busy_##name, &is_not_busy_##name, 1))
+            #   define .(c_class_atomic_macros_critical_section_end)(name) do { is_busy_##name = 1; } while(0)
+            #else
+            #   define .(c_class_atomic_macros_critical_section_declare)(name) do {} while(0)
+            #   define .(c_class_atomic_macros_critical_section_begin)(name) do {} while(0)
+            #   define .(c_class_atomic_macros_critical_section_end)(name) do {} while(0)
+            #endif
+        </code>
+    </macroses>
 </module>
