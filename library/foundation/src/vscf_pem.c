@@ -246,22 +246,23 @@ vscf_pem_title(vsc_data_t pem) {
         return vsc_data_empty();
     }
 
-    size_t pem_len = pem.len;
-    const char *header_begin = vscf_strnstr((const char *)pem.bytes, k_header_begin, pem_len);
-    if (NULL == header_begin) {
+    const char *pem_begin = (const char *)pem.bytes;
+    const size_t pem_len = pem.len;
+
+    const char *header_begin = vscf_strnstr(pem_begin, k_header_begin, pem_len);
+    if (header_begin != pem_begin) {
         return vsc_data_empty();
     }
 
     const char *title_begin = header_begin + strlen(k_header_begin);
 
-    const char *title_end = vscf_strnstr(title_begin, k_title_tail, pem_len - strlen(k_header_begin));
+    const size_t from_title_begin_to_end_len = pem_len - (title_begin - pem_begin);
+    const char *title_end = vscf_strnstr(title_begin, k_title_tail, from_title_begin_to_end_len);
     if (NULL == title_end) {
         return vsc_data_empty();
     }
 
-    if (title_end - header_begin > (ptrdiff_t)pem.len) {
-        return vsc_data_empty();
-    }
+    VSCF_ASSERT(title_end - header_begin < (ptrdiff_t)pem.len);
 
     return vsc_data_from_str(title_begin, title_end - title_begin);
 }
