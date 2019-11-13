@@ -489,7 +489,7 @@ cleanup:
     vscf_compound_key_alg_cleanup(&compound_key_alg);
     return compound_key;
 #else
-    VSCF_ERROR_SAFE_UPDATE(vscf_status_ERROR_UNSUPPORTED_ALGORITHM);
+    VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_UNSUPPORTED_ALGORITHM);
     return NULL;
 #endif // VSCF_COMPOUND_KEY_ALG
 }
