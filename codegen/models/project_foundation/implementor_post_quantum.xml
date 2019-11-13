@@ -73,6 +73,7 @@
         <constant name="seed len" value="48"/>
 
         <dependency name="random" interface="random"/>
+        <property name="params" class="any"/>
 
         <method name="setup defaults" declaration="public">
             Setup predefined values to the uninitialized class dependencies.

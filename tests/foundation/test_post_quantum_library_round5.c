@@ -43,17 +43,20 @@
 
 #include "test_data_round5.h"
 
+#include <round5/rng.h>
 #include <round5/r5_cpa_kem.h>
 #include <round5/r5_cca_pke.h>
 
-#define ROUND5_KEM_EMABLED (CRYPTO_CIPHERTEXTBYTES != 0)
-#define ROUND5_PKE_EMABLED (CRYPTO_CIPHERTEXTBYTES == 0)
+#define ROUND5_KEM_ENABLED (CRYPTO_CIPHERTEXTBYTES != 0)
+#define ROUND5_PKE_ENABLED (CRYPTO_CIPHERTEXTBYTES == 0)
 
 void
 test__cpa_kem_keygen__returns_success(void) {
-#if ROUND5_KEM_EMABLED
+#if ROUND5_KEM_ENABLED
     unsigned char pk[CRYPTO_PUBLICKEYBYTES] = {0x00};
     unsigned char sk[CRYPTO_SECRETKEYBYTES] = {0x00};
+
+    randombytes_init((unsigned char *)test_data_round5_RNG_SEED.bytes, NULL, 1);
 
     parameters *params = set_parameters_from_api();
     TEST_ASSERT_NOT_NULL(params);
@@ -67,11 +70,13 @@ test__cpa_kem_keygen__returns_success(void) {
 
 void
 test__cpa_kem_encapsulate__returns_success(void) {
-#if ROUND5_KEM_EMABLED
+#if ROUND5_KEM_ENABLED
     unsigned char pk[CRYPTO_PUBLICKEYBYTES] = {0x00};
     unsigned char sk[CRYPTO_SECRETKEYBYTES] = {0x00};
     unsigned char shared_secret[CRYPTO_BYTES] = {0x00};
     unsigned char ciphertext[CRYPTO_CIPHERTEXTBYTES] = {0x00};
+
+    randombytes_init((unsigned char *)test_data_round5_RNG_SEED.bytes, NULL, 1);
 
     parameters *params = set_parameters_from_api();
     TEST_ASSERT_NOT_NULL(params);
@@ -88,7 +93,9 @@ test__cpa_kem_encapsulate__returns_success(void) {
 
 void
 test__cca_pke_keygen__return_success(void) {
-#if ROUND5_PKE_EMABLED
+#if ROUND5_PKE_ENABLED
+    randombytes_init((unsigned char *)test_data_round5_RNG_SEED.bytes, NULL, 1);
+
     parameters *params = set_parameters_from_api();
     TEST_ASSERT_NOT_NULL(params);
 
@@ -113,7 +120,9 @@ test__cca_pke_keygen__return_success(void) {
 
 void
 test__cca_pke_encrypt__return_success(void) {
-#if ROUND5_PKE_EMABLED
+#if ROUND5_PKE_ENABLED
+    randombytes_init((unsigned char *)test_data_round5_RNG_SEED.bytes, NULL, 1);
+
     parameters *params = set_parameters_from_api();
     TEST_ASSERT_NOT_NULL(params);
 
@@ -135,7 +144,9 @@ test__cca_pke_encrypt__return_success(void) {
 
 void
 test__cca_pke_decrypt__return_success(void) {
-#if ROUND5_PKE_EMABLED
+#if ROUND5_PKE_ENABLED
+    randombytes_init((unsigned char *)test_data_round5_RNG_SEED.bytes, NULL, 1);
+
     parameters *params = set_parameters_from_api();
     TEST_ASSERT_NOT_NULL(params);
 

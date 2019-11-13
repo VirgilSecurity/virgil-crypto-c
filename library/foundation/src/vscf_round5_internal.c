@@ -262,6 +262,8 @@ vscf_round5_init(vscf_round5_t *self) {
 
     self->info = &info;
     self->refcnt = 1;
+
+    vscf_round5_init_ctx(self);
 }
 
 //
@@ -276,6 +278,8 @@ vscf_round5_cleanup(vscf_round5_t *self) {
     }
 
     vscf_round5_release_random(self);
+
+    vscf_round5_cleanup_ctx(self);
 
     vscf_zeroize(self, sizeof(vscf_round5_t));
 }
