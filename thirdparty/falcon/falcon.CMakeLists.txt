@@ -51,7 +51,6 @@ target_sources(falcon
         ${CMAKE_CURRENT_LIST_DIR}/fft.c
         ${CMAKE_CURRENT_LIST_DIR}/fpr.c
         ${CMAKE_CURRENT_LIST_DIR}/keygen.c
-        ${CMAKE_CURRENT_LIST_DIR}/rng.c
         ${CMAKE_CURRENT_LIST_DIR}/shake.c
         ${CMAKE_CURRENT_LIST_DIR}/sign.c
         ${CMAKE_CURRENT_LIST_DIR}/vrfy.c
