@@ -104,8 +104,8 @@ extern "C" {
 
 #if defined(VSCE_ATOMIC_COMPARE_EXCHANGE_WEAK)
 #   define VSCE_ATOMIC_CRITICAL_SECTION_DECLARE(name) static VSCE_ATOMIC int is_busy_##name = 0; int is_not_busy_##name = 0;
-#   define VSCE_ATOMIC_CRITICAL_SECTION_BEGIN(name) while (!VSCE_ATOMIC_COMPARE_EXCHANGE_WEAK(&is_busy_##name, &is_not_busy_##name, 1))
-#   define VSCE_ATOMIC_CRITICAL_SECTION_END(name) do { is_busy_##name = 1; } while(0)
+#   define VSCE_ATOMIC_CRITICAL_SECTION_BEGIN(name) do { is_not_busy_##name = 0; } while (!VSCE_ATOMIC_COMPARE_EXCHANGE_WEAK(&is_busy_##name, &is_not_busy_##name, 1))
+#   define VSCE_ATOMIC_CRITICAL_SECTION_END(name) do { is_busy_##name = 0; } while(0)
 #else
 #   define VSCE_ATOMIC_CRITICAL_SECTION_DECLARE(name) do {} while(0)
 #   define VSCE_ATOMIC_CRITICAL_SECTION_BEGIN(name) do {} while(0)
