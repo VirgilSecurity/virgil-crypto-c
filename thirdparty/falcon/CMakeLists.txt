@@ -52,9 +52,11 @@ ExternalProject_Add(falcon-ext
         URL_HASH
             SHA256=229fca9b3116ca3ff1f0952227419fc8b2ce11ce0be74a6e92a3837bacda19a2
         PATCH_COMMAND
-            ${CMAKE_COMMAND} -DSOURCE_DIR=<SOURCE_DIR> -P ${CMAKE_CURRENT_LIST_DIR}/patch_shake256.cmake &&
             ${CMAKE_COMMAND} -E copy_if_different
-                    ${CMAKE_CURRENT_LIST_DIR}/falcon.CMakeLists.txt <SOURCE_DIR>/CMakeLists.txt
+                    ${CMAKE_CURRENT_LIST_DIR}/falcon.CMakeLists.txt <SOURCE_DIR>/CMakeLists.txt &&
+            ${CMAKE_COMMAND} -E copy_if_different
+                    ${CMAKE_CURRENT_LIST_DIR}/config.h <SOURCE_DIR>/config.h &&
+            ${CMAKE_COMMAND} -DSOURCE_DIR=<SOURCE_DIR> -P ${CMAKE_CURRENT_LIST_DIR}/patch_shake256.cmake
         CMAKE_ARGS
             "${TRANSITIVE_ARGS}"
             "-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}"
