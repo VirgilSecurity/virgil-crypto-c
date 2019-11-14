@@ -82,7 +82,6 @@ target_sources(round5-reference
             ${CMAKE_CURRENT_LIST_DIR}/src/r5_cpa_kem.c
             ${CMAKE_CURRENT_LIST_DIR}/src/r5_cpa_pke.c
             ${CMAKE_CURRENT_LIST_DIR}/src/a_fixed.c
-            ${CMAKE_CURRENT_LIST_DIR}/src/examples/example.c
             ${CMAKE_CURRENT_LIST_DIR}/src/little_endian.c
             ${CMAKE_CURRENT_LIST_DIR}/src/misc.c
             ${CMAKE_CURRENT_LIST_DIR}/src/cca_encrypt.c
