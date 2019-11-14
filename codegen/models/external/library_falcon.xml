@@ -1,3 +1,5 @@
 <library name="falcon" path="../thirdparty/falcon">
     External library: https://falcon-sign.info
+
+    <feature name="library" default="${VIRGIL_POST_QUANTUM}"/>
 </library>

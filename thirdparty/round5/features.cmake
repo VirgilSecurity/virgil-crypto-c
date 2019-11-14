@@ -45,7 +45,7 @@
 
 include_guard()
 
-option(ROUND5_LIBRARY "Enable build of the 'round5' library" ON)
+option(ROUND5_LIBRARY "Enable build of the 'round5' library" ${VIRGIL_POST_QUANTUM})
 option(ROUND5_USE_MBEDTLS "Use missed crypto primitives from the mbedTLS library." ON)
 option(ROUND5_USE_OPENSSL "Use missed crypto primitives from the OpenSSL library." OFF)
 option(ROUND5_NIST_KAT_GEN "On/Off Generating NIST KATs (debug)." OFF)

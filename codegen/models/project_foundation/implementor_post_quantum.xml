@@ -4,6 +4,8 @@
         Provide post-quantum signature based on the falcon implementation.
         For algorithm details check https://falcon-sign.info.
 
+        <feature name="falcon" default="${FALCON_LIBRARY}"/>
+
         <require library="falcon" feature="library"/>
         <require header="falcon/falcon.h"/>
 
@@ -49,6 +51,8 @@
     <implementation name="round5">
         Provide post-quantum encryption based on the round5 implementation.
         For algorithm details check https://github.com/round5/code
+
+        <feature name="round5" default="${ROUND5_LIBRARY}"/>
 
         <require library="round5" feature="library"/>
         <require header="round5/rng.h"/>

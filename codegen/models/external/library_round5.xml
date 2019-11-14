@@ -1,6 +1,8 @@
 <library name="round5" path="../thirdparty/round5">
     External library: https://github.com/round5/code
 
+    <feature name="library" default="${VIRGIL_POST_QUANTUM}"/>
+
     <feature name="USE MBEDTLS" default="on">
         Use missed crypto primitives from the mbedTLS library.
     </feature>

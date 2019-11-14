@@ -45,7 +45,7 @@
 
 include_guard()
 
-option(FALCON_LIBRARY "Enable build of the 'falcon' library" ON)
+option(FALCON_LIBRARY "Enable build of the 'falcon' library" ${VIRGIL_POST_QUANTUM})
 mark_as_advanced(
         FALCON_LIBRARY
         )
