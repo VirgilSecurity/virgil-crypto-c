@@ -1197,24 +1197,27 @@ function go_create_cgo_instructions (go_module, go_project)
     # Define CGO instructions
     go_create_cgo_flag ("CFLAGS", "-I${SRCDIR}/../binaries/include/", my.go_module)
 
-    new ldflags
-        new ldflag to ldflags
-            .project_name = "foundation"
-        endnew
+    #TODO Generate LDFLAGS in more convenient way
+    #new ldflags
+    #    new ldflag to ldflags
+    #        .project_name = "foundation"
+    #    endnew
+    #
+    #    my.libraries = "-lvsc_foundation -lvsc_foundation_pb -led25519 -lprotobuf-nanopb -lvsc_common -lmbedcrypto"
+    #
+    #    if !count (ldflags.ldflag, project_name = my.go_project.name)
+    #        new ldflag to ldflags
+    #            .project_name = my.go_project.name
+    #        endnew
+    #        my.libraries = "-lvsc_$(my.go_project.name:c) -lvsc_$(my.go_project.name:c)_pb $(my.libraries:)"
+    #    endif
+    #
+    #    go_create_cgo_flag ("LDFLAGS", "-L${SRCDIR}/../binaries/lib $(my.libraries:)", my.go_module)
+    #endnew
 
-        my.libraries = "-lvsc_foundation -lvsc_foundation_pb -led25519 -lprotobuf-nanopb -lvsc_common -lmbedcrypto"
-
-        if !count (ldflags.ldflag, project_name = my.go_project.name)
-            new ldflag to ldflags
-                .project_name = my.go_project.name
-            endnew
-            my.libraries = "-lvsc_$(my.go_project.name:c) -lvsc_$(my.go_project.name:c)_pb $(my.libraries:)"
-        endif
-
-        go_create_cgo_flag ("LDFLAGS", "-L${SRCDIR}/../binaries/lib $(my.libraries:)", my.go_module)
-    endnew
-
-    
+    for my.go_project.cgo_link
+        go_create_cgo_flag ("LDFLAGS", "-L${SRCDIR}/../binaries/lib $(cgo_link.libraries:)", my.go_module)
+    endfor
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -2078,6 +2081,10 @@ function go_create_project_module (project, wrapper)
         .package_dir = go_derive_package_dir(my.project, my.wrapper)
         .source_dir = cat_path (my.wrapper.source_dir, my.project.name)
         .c_umbrella_header = make_ref_c (make_id ("header", my.project.name, "public"))
+        
+        if count (my.project.cgo_link)
+            copy my.project->cgo_link to go_project
+        endif
 
         copy my.project->license to go_project
 

@@ -58,6 +58,8 @@
 
     <require library="mbedtls" feature="library"/>
 
+    <cgo_link libraries="-lvsc_phe -lvsc_phe_pb -lvsc_foundation -lvsc_foundation_pb -led25519 -lprotobuf-nanopb -lvsc_common -lmbedcrypto"/>
+
     <feature name="multi threading" default="on">
         Enable multi-threading safety for PHE library.
     </feature>
