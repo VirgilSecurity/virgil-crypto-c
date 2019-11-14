@@ -156,7 +156,7 @@ vscf_chained_key_alg_make_key(const vscf_chained_key_alg_t *self, const vscf_imp
         goto cleanup;
     }
 
-    if (!vscf_key_cipher_is_implemented(l1_cipher_key_alg)) {
+    if (!vscf_key_cipher_is_implemented(l2_cipher_key_alg)) {
         VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_UNSUPPORTED_ALGORITHM);
         goto cleanup;
     }

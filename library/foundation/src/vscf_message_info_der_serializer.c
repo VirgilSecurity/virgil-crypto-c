@@ -707,7 +707,8 @@ vscf_message_info_der_serializer_serialized_footer_info_len(
     if (vscf_footer_info_has_signed_data_info(footer_info)) {
         const vscf_signed_data_info_t *signed_data_info = vscf_footer_info_signed_data_info(footer_info);
         signed_data_info_len += 1 + 1; //  [0] OPTIONAL
-        signed_data_info_len = vscf_message_info_der_serializer_serialized_signed_data_info_len(self, signed_data_info);
+        signed_data_info_len +=
+                vscf_message_info_der_serializer_serialized_signed_data_info_len(self, signed_data_info);
     }
 
     const size_t len = 1 + 1 + 4 +           //  VirgilFooterInfo ::= SEQUENCE {
@@ -2091,7 +2092,7 @@ vscf_message_info_der_serializer_serialized_len(
     if (vscf_message_info_has_footer_info(message_info)) {
         const vscf_footer_info_t *footer_info = vscf_message_info_footer_info((vscf_message_info_t *)message_info);
         footer_info_len += 1 + 1; //  [1] OPTIONAL
-        footer_info_len = vscf_message_info_der_serializer_serialized_footer_info_len(self, footer_info);
+        footer_info_len += vscf_message_info_der_serializer_serialized_footer_info_len(self, footer_info);
     }
 
     size_t len = 1 + 1 + 8 +            //  VirgilMessageInfo ::= SEQUENCE {
