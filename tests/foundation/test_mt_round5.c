@@ -51,6 +51,36 @@
 
 // --------------------------------------------------------------------------
 static void *
+impl_new(void *ctx) {
+    (void)ctx;
+
+    for (size_t i = 0; i < 1000000; ++i) {
+        vscf_round5_t *round5 = vscf_round5_new();
+        vscf_round5_destroy(&round5);
+    }
+
+    return NULL;
+}
+
+void
+test__new__1000000_times_3_threads__no_crash(void) {
+
+    pthread_t t1;
+    pthread_create(&t1, NULL, impl_new, NULL);
+
+    pthread_t t2;
+    pthread_create(&t2, NULL, impl_new, NULL);
+
+    pthread_t t3;
+    pthread_create(&t3, NULL, impl_new, NULL);
+
+    pthread_join(t1, NULL);
+    pthread_join(t2, NULL);
+    pthread_join(t3, NULL);
+}
+
+// --------------------------------------------------------------------------
+static void *
 impl_generate_key(void *ctx) {
     vscf_round5_t *round5 = (vscf_round5_t *)ctx;
 
@@ -102,6 +132,7 @@ main(void) {
     UNITY_BEGIN();
 
 #if TEST_DEPENDENCIES_AVAILABLE
+    RUN_TEST(test__new__1000000_times_3_threads__no_crash);
     RUN_TEST(test__generate_key__with__global_rng_300_times_3_threads__no_crash);
 #else
     RUN_TEST(test__nothing__feature_disabled__must_be_ignored);

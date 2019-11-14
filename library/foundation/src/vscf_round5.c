@@ -101,7 +101,10 @@ vscf_round5_init_ctx(vscf_round5_t *self) {
 
     VSCF_ASSERT_PTR(self);
 
+    VSCF_ATOMIC_CRITICAL_SECTION_DECLARE(params);
+    VSCF_ATOMIC_CRITICAL_SECTION_BEGIN(params);
     self->params = (void *)set_parameters_from_api();
+    VSCF_ATOMIC_CRITICAL_SECTION_END(params);
     VSCF_ASSERT_PTR(self->params);
 }
 
