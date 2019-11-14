@@ -70,9 +70,8 @@ ExternalProject_Add(keccak-ext
 # ---------------------------------------------------------------------------
 #   Import library as a target
 # ---------------------------------------------------------------------------
-set(KECCAK_LIB_NAME "${CMAKE_STATIC_LIBRARY_PREFIX}keccak${CMAKE_STATIC_LIBRARY_SUFFIX}")
 file(MAKE_DIRECTORY "${KECCAK_INSTALL_LOCATION}/include")
-file(MAKE_DIRECTORY "${KECCAK_INSTALL_LOCATION}/include/${KECCAK_LIB_NAME}.headers")
+file(MAKE_DIRECTORY "${KECCAK_INSTALL_LOCATION}/include/libkeccak.a.headers")
 
 add_library(keccak STATIC IMPORTED GLOBAL)
 
@@ -88,7 +87,7 @@ set_target_properties(keccak
 set_property(TARGET keccak
         PROPERTY INTERFACE_INCLUDE_DIRECTORIES
             "${KECCAK_INSTALL_LOCATION}/include"
-            "${KECCAK_INSTALL_LOCATION}/include/${KECCAK_LIB_NAME}.headers"
+            "${KECCAK_INSTALL_LOCATION}/include/libkeccak.a.headers"
         )
 
 # ---------------------------------------------------------------------------
