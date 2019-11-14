@@ -91,11 +91,18 @@ ExternalProject_Add(round5-ext
             24b9738b0e39ce2115cc6b1f639359f5f459bd3e
         UPDATE_COMMAND
             ${CMAKE_COMMAND} -E copy_if_different
-                    ${CMAKE_CURRENT_LIST_DIR}/round5.CMakeLists.txt <SOURCE_DIR>/CMakeLists.txt &&
+                    "${CMAKE_CURRENT_LIST_DIR}/round5.CMakeLists.txt"
+                    "<SOURCE_DIR>/CMakeLists.txt" &&
             ${CMAKE_COMMAND} -E copy_if_different
-                    ${CMAKE_CURRENT_LIST_DIR}/round5.reference.CMakeLists.txt <SOURCE_DIR>/reference/CMakeLists.txt &&
+                    "${CMAKE_CURRENT_LIST_DIR}/round5.reference.CMakeLists.txt"
+                    "<SOURCE_DIR>/reference/CMakeLists.txt" &&
             ${CMAKE_COMMAND} -E copy_if_different
-                    ${CMAKE_CURRENT_LIST_DIR}/r5_dem_mbedtls.c <SOURCE_DIR>/reference/src/r5_dem_mbedtls.c
+                    "${CMAKE_CURRENT_LIST_DIR}/r5_dem_mbedtls.c"
+                    "<SOURCE_DIR>/reference/src/r5_dem_mbedtls.c" &&
+            ${CMAKE_COMMAND}
+                    -D "SOURCE_FILE=<SOURCE_DIR>/reference/src/r5_parameter_sets.h"
+                    -P "${CMAKE_CURRENT_LIST_DIR}/fix_global_non_extern_variables.cmake"
+
         CMAKE_ARGS
             "${TRANSITIVE_ARGS}"
             "-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}"
