@@ -102,6 +102,9 @@ ExternalProject_Add(round5-ext
             ${CMAKE_COMMAND}
                     -D "SOURCE_FILE=<SOURCE_DIR>/reference/src/r5_parameter_sets.h"
                     -P "${CMAKE_CURRENT_LIST_DIR}/fix_global_non_extern_variables.cmake"
+            ${CMAKE_COMMAND}
+                    -D "SOURCE_FILE=<SOURCE_DIR>/reference/src/r5_memory.h"
+                    -P "${CMAKE_CURRENT_LIST_DIR}/fix_restrict_keyword_for_msvc.cmake"
 
         CMAKE_ARGS
             "${TRANSITIVE_ARGS}"
