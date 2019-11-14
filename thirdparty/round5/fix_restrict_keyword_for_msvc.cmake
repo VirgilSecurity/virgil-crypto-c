@@ -44,11 +44,13 @@ if(NOT EXISTS "${SOURCE_FILE}")
 endif()
 
 set(PATCH_STR "
-#if defined(_MSC_VER) && _MSC_VER >= 1400
+#if defined(_MSC_VER)
 #   ifndef restrict
-#       define restrict __restrict
-#   else
-#       define restrict
+#       if _MSC_VER >= 1400
+#           define restrict __restrict
+#       else
+#           define restrict
+#       endif
 #   endif
 #endif
 
