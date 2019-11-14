@@ -128,6 +128,8 @@ def build_LangC_Unix(slave) {
                       -DCPACK_OUTPUT_FILE_PREFIX=c \
                       -DENABLE_CLANGFORMAT=OFF \
                       -DED25519_AMD64_RADIX_64_24K=ON -DED25519_REF10=OFF \
+                      -DVIRGIL_C_MT_TESTING=ON \
+                      -DVIRGIL_POST_QUANTUM=ON \
                       -Bbuild -H.
                 cmake --build build -- -j10
                 cd build
@@ -157,6 +159,7 @@ def build_LangC_Windows(slave) {
                       -DCPACK_OUTPUT_FILE_PREFIX=c ^
                       -DENABLE_CLANGFORMAT=OFF ^
                       -DVIRGIL_C_MT_TESTING=ON ^
+                      -DVIRGIL_POST_QUANTUM=ON ^
                       -Bbuild -H.
                 cmake --build build
                 cd build
