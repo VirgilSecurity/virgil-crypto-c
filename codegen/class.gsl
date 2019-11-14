@@ -297,24 +297,30 @@ endfunction
 function class_create_feature (class, project, destination)
     check_arguments (my, "class, project, destination", my)
 
-    new feature to my.destination
-        . = "Enable class '$(my.class.name)'."
-        .name = my.class.name
-        .project = my.project.name
+    my.class_feature = my.class->feature(feature.name = my.class.name) ?
+    if !defined(my.class_feature)
+        new feature to my.destination
+            .name = my.class.name
+            my.class_feature = feature
+        endnew
+    else
+        my.class_feature = item_copy_to(my.class_feature, my.destination)
+    endif
+    my.class_feature. ?= "Enable class '$(my.class.name)'."
+    my.class_feature.project = my.project.name
 
-        for my.class.require where defined (0.feature)
-            copy require to feature
-        endfor
+    for my.class.require where defined (0.feature)
+        copy require to my.class_feature
+    endfor
 
-        for my.class.require where has_one_of_attribute (require, "class, interface, impl")
-            new require to feature
-                .feature = -1.class ? -1.interface ? -1.impl
-                .scope = -1.scope ?
-                .project = -1.project ?
-                .is_optional = -1.is_optional ?
-            endnew
-        endfor
-    endnew
+    for my.class.require where has_one_of_attribute (require, "class, interface, impl")
+        new require to my.class_feature
+            .feature = -1.class ? -1.interface ? -1.impl
+            .scope = -1.scope ?
+            .project = -1.project ?
+            .is_optional = -1.is_optional ?
+        endnew
+    endfor
 endfunction
 
 # ---------------------------------------------------------------------------
