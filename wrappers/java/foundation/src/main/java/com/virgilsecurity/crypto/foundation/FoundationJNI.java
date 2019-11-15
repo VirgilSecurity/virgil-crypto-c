@@ -1023,11 +1023,6 @@ public class FoundationJNI {
     public native void signedDataInfo_close(long cCtx);
 
     /*
-    * Set information about algorithm that was used to produce data digest.
-    */
-    public native void signedDataInfo_setHashAlgInfo(long cCtx, AlgInfo hashAlgInfo);
-
-    /*
     * Return information about algorithm that was used to produce data digest.
     */
     public native AlgInfo signedDataInfo_hashAlgInfo(long cCtx);
@@ -3866,8 +3861,6 @@ public class FoundationJNI {
 
     public native void hashBasedAlgInfo_close(long cCtx);
 
-    public native long hashBasedAlgInfo_new(AlgId algId, AlgInfo hashAlgInfo);
-
     /*
     * Provide algorithm identificator.
     */
@@ -3909,8 +3902,6 @@ public class FoundationJNI {
 
     public native void saltedKdfAlgInfo_close(long cCtx);
 
-    public native long saltedKdfAlgInfo_new(AlgId algId, AlgInfo hashAlgInfo, byte[] salt, int iterationCount);
-
     /*
     * Provide algorithm identificator.
     */
@@ -3929,8 +3920,6 @@ public class FoundationJNI {
     public native long pbeAlgInfo_new();
 
     public native void pbeAlgInfo_close(long cCtx);
-
-    public native long pbeAlgInfo_new(AlgId algId, AlgInfo kdfAlgInfo, AlgInfo cipherAlgInfo);
 
     /*
     * Provide algorithm identificator.

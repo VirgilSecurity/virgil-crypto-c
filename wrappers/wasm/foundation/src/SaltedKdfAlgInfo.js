@@ -89,41 +89,6 @@ const initSaltedKdfAlgInfo = (Module, modules) => {
         }
 
         /**
-         * Create algorithm info with identificator, HASH algorithm info,
-         * salt and iteration count.
-         */
-        static newWithMembers(algId, hashAlgInfo, salt, iterationCount) {
-            precondition.ensureNumber('algId', algId);
-            precondition.ensureImplementInterface('hashAlgInfo', hashAlgInfo, 'Foundation.AlgInfo', modules.FoundationInterfaceTag.ALG_INFO, modules.FoundationInterface);
-            precondition.ensureByteArray('salt', salt);
-            precondition.ensureNumber('iterationCount', iterationCount);
-
-            //  Copy bytes from JS memory to the WASM memory.
-            const saltSize = salt.length * salt.BYTES_PER_ELEMENT;
-            const saltPtr = Module._malloc(saltSize);
-            Module.HEAP8.set(salt, saltPtr);
-
-            //  Create C structure vsc_data_t.
-            const saltCtxSize = Module._vsc_data_ctx_size();
-            const saltCtxPtr = Module._malloc(saltCtxSize);
-
-            //  Point created vsc_data_t object to the copied bytes.
-            Module._vsc_data(saltCtxPtr, saltPtr, saltSize);
-
-            let proxyResult;
-
-            try {
-                proxyResult = Module._vscf_salted_kdf_alg_info_new_with_members(algId, hashAlgInfo.ctxPtr, saltCtxPtr, iterationCount);
-
-                const jsResult = SaltedKdfAlgInfo.newAndTakeCContext(proxyResult);
-                return jsResult;
-            } finally {
-                Module._free(saltPtr);
-                Module._free(saltCtxPtr);
-            }
-        }
-
-        /**
          * Provide algorithm identificator.
          */
         algId() {

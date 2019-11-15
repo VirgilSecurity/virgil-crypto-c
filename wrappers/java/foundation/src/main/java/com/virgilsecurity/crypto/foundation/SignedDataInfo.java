@@ -69,13 +69,6 @@ public class SignedDataInfo implements AutoCloseable {
     }
 
     /*
-    * Set information about algorithm that was used to produce data digest.
-    */
-    public void setHashAlgInfo(AlgInfo hashAlgInfo) {
-        FoundationJNI.INSTANCE.signedDataInfo_setHashAlgInfo(this.cCtx, hashAlgInfo);
-    }
-
-    /*
     * Return information about algorithm that was used to produce data digest.
     */
     public AlgInfo hashAlgInfo() {

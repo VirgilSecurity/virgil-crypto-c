@@ -4806,26 +4806,6 @@ JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_s
     vscf_signed_data_info_delete(*(vscf_signed_data_info_t /*2*/ **) &c_ctx /*5*/);
 }
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_signedDataInfo_1setHashAlgInfo (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jhashAlgInfo) {
-    // Cast class context
-    vscf_signed_data_info_t /*2*/* signed_data_info_ctx = *(vscf_signed_data_info_t /*2*/**) &c_ctx;
-    // Wrap Java interfaces
-    jclass hash_alg_info_cls = (*jenv)->GetObjectClass(jenv, jhashAlgInfo);
-    if (NULL == hash_alg_info_cls) {
-        VSCF_ASSERT("Class AlgInfo not found.");
-    }
-    jfieldID hash_alg_info_fidCtx = (*jenv)->GetFieldID(jenv, hash_alg_info_cls, "cCtx", "J");
-    if (NULL == hash_alg_info_fidCtx) {
-        VSCF_ASSERT("Class 'AlgInfo' has no field 'cCtx'.");
-    }
-    jlong hash_alg_info_c_ctx = (*jenv)->GetLongField(jenv, jhashAlgInfo, hash_alg_info_fidCtx);
-    vscf_impl_t */*6*/ hash_alg_info = *(vscf_impl_t */*6*/*)&hash_alg_info_c_ctx;
-
-    //Shallow copy
-    vscf_impl_t */*6*/ hash_alg_info_copy = vscf_impl_shallow_copy(hash_alg_info);
-    vscf_signed_data_info_set_hash_alg_info(signed_data_info_ctx /*a1*/, &hash_alg_info_copy /*a5*/);
-}
-
 JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_signedDataInfo_1hashAlgInfo (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
     // Cast class context
     vscf_signed_data_info_t /*2*/* signed_data_info_ctx = *(vscf_signed_data_info_t /*2*/**) &c_ctx;
@@ -13505,29 +13485,6 @@ JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_h
     vscf_hash_based_alg_info_delete(*(vscf_hash_based_alg_info_t /*9*/ **) &c_ctx /*5*/);
 }
 
-JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hashBasedAlgInfo_1new__Lcom_virgilsecurity_crypto_foundation_AlgId_2Lcom_virgilsecurity_crypto_foundation_AlgInfo_2 (JNIEnv *jenv, jobject jobj, jobject jalgId, jobject jhashAlgInfo) {
-    // Wrap enums
-    jclass alg_id_cls = (*jenv)->GetObjectClass(jenv, jalgId);
-    jmethodID alg_id_methodID = (*jenv)->GetMethodID(jenv, alg_id_cls, "getCode", "()I");
-    vscf_alg_id_t /*8*/ alg_id = (vscf_alg_id_t /*8*/) (*jenv)->CallIntMethod(jenv, jalgId, alg_id_methodID);
-    // Wrap Java interfaces
-    jclass hash_alg_info_cls = (*jenv)->GetObjectClass(jenv, jhashAlgInfo);
-    if (NULL == hash_alg_info_cls) {
-        VSCF_ASSERT("Class AlgInfo not found.");
-    }
-    jfieldID hash_alg_info_fidCtx = (*jenv)->GetFieldID(jenv, hash_alg_info_cls, "cCtx", "J");
-    if (NULL == hash_alg_info_fidCtx) {
-        VSCF_ASSERT("Class 'AlgInfo' has no field 'cCtx'.");
-    }
-    jlong hash_alg_info_c_ctx = (*jenv)->GetLongField(jenv, jhashAlgInfo, hash_alg_info_fidCtx);
-    vscf_impl_t */*6*/ hash_alg_info = *(vscf_impl_t */*6*/*)&hash_alg_info_c_ctx;
-
-    //Shallow copy
-    vscf_impl_t */*6*/ hash_alg_info_copy = vscf_impl_shallow_copy(hash_alg_info);
-    jlong proxyResult = (jlong) vscf_hash_based_alg_info_new_with_members(alg_id /*a7*/, &hash_alg_info_copy /*a5*/);
-    return proxyResult;
-}
-
 JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hashBasedAlgInfo_1algId (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
     // Cast class context
     vscf_hash_based_alg_info_t /*9*/* hash_based_alg_info_ctx = *(vscf_hash_based_alg_info_t /*9*/**) &c_ctx;
@@ -13645,36 +13602,6 @@ JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_s
     vscf_salted_kdf_alg_info_delete(*(vscf_salted_kdf_alg_info_t /*9*/ **) &c_ctx /*5*/);
 }
 
-JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_saltedKdfAlgInfo_1new__Lcom_virgilsecurity_crypto_foundation_AlgId_2Lcom_virgilsecurity_crypto_foundation_AlgInfo_2_3BI (JNIEnv *jenv, jobject jobj, jobject jalgId, jobject jhashAlgInfo, jbyteArray jsalt, jint jiterationCount) {
-    // Wrap enums
-    jclass alg_id_cls = (*jenv)->GetObjectClass(jenv, jalgId);
-    jmethodID alg_id_methodID = (*jenv)->GetMethodID(jenv, alg_id_cls, "getCode", "()I");
-    vscf_alg_id_t /*8*/ alg_id = (vscf_alg_id_t /*8*/) (*jenv)->CallIntMethod(jenv, jalgId, alg_id_methodID);
-    // Wrap Java interfaces
-    jclass hash_alg_info_cls = (*jenv)->GetObjectClass(jenv, jhashAlgInfo);
-    if (NULL == hash_alg_info_cls) {
-        VSCF_ASSERT("Class AlgInfo not found.");
-    }
-    jfieldID hash_alg_info_fidCtx = (*jenv)->GetFieldID(jenv, hash_alg_info_cls, "cCtx", "J");
-    if (NULL == hash_alg_info_fidCtx) {
-        VSCF_ASSERT("Class 'AlgInfo' has no field 'cCtx'.");
-    }
-    jlong hash_alg_info_c_ctx = (*jenv)->GetLongField(jenv, jhashAlgInfo, hash_alg_info_fidCtx);
-    vscf_impl_t */*6*/ hash_alg_info = *(vscf_impl_t */*6*/*)&hash_alg_info_c_ctx;
-
-    // Wrap input data
-    byte* salt_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jsalt, NULL);
-    vsc_data_t salt = vsc_data(salt_arr, (*jenv)->GetArrayLength(jenv, jsalt));
-
-    //Shallow copy
-    vscf_impl_t */*6*/ hash_alg_info_copy = vscf_impl_shallow_copy(hash_alg_info);
-    jlong proxyResult = (jlong) vscf_salted_kdf_alg_info_new_with_members(alg_id /*a7*/, &hash_alg_info_copy /*a5*/, salt /*a3*/, jiterationCount /*a9*/);
-    // Free resources
-    (*jenv)->ReleaseByteArrayElements(jenv, jsalt, (jbyte*) salt_arr, 0);
-
-    return proxyResult;
-}
-
 JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_saltedKdfAlgInfo_1algId (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
     // Cast class context
     vscf_salted_kdf_alg_info_t /*9*/* salted_kdf_alg_info_ctx = *(vscf_salted_kdf_alg_info_t /*9*/**) &c_ctx;
@@ -13721,41 +13648,6 @@ JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_
 
 JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_pbeAlgInfo_1close (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
     vscf_pbe_alg_info_delete(*(vscf_pbe_alg_info_t /*9*/ **) &c_ctx /*5*/);
-}
-
-JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_pbeAlgInfo_1new__Lcom_virgilsecurity_crypto_foundation_AlgId_2Lcom_virgilsecurity_crypto_foundation_AlgInfo_2Lcom_virgilsecurity_crypto_foundation_AlgInfo_2 (JNIEnv *jenv, jobject jobj, jobject jalgId, jobject jkdfAlgInfo, jobject jcipherAlgInfo) {
-    // Wrap enums
-    jclass alg_id_cls = (*jenv)->GetObjectClass(jenv, jalgId);
-    jmethodID alg_id_methodID = (*jenv)->GetMethodID(jenv, alg_id_cls, "getCode", "()I");
-    vscf_alg_id_t /*8*/ alg_id = (vscf_alg_id_t /*8*/) (*jenv)->CallIntMethod(jenv, jalgId, alg_id_methodID);
-    // Wrap Java interfaces
-    jclass kdf_alg_info_cls = (*jenv)->GetObjectClass(jenv, jkdfAlgInfo);
-    if (NULL == kdf_alg_info_cls) {
-        VSCF_ASSERT("Class AlgInfo not found.");
-    }
-    jfieldID kdf_alg_info_fidCtx = (*jenv)->GetFieldID(jenv, kdf_alg_info_cls, "cCtx", "J");
-    if (NULL == kdf_alg_info_fidCtx) {
-        VSCF_ASSERT("Class 'AlgInfo' has no field 'cCtx'.");
-    }
-    jlong kdf_alg_info_c_ctx = (*jenv)->GetLongField(jenv, jkdfAlgInfo, kdf_alg_info_fidCtx);
-    vscf_impl_t */*6*/ kdf_alg_info = *(vscf_impl_t */*6*/*)&kdf_alg_info_c_ctx;
-
-    jclass cipher_alg_info_cls = (*jenv)->GetObjectClass(jenv, jcipherAlgInfo);
-    if (NULL == cipher_alg_info_cls) {
-        VSCF_ASSERT("Class AlgInfo not found.");
-    }
-    jfieldID cipher_alg_info_fidCtx = (*jenv)->GetFieldID(jenv, cipher_alg_info_cls, "cCtx", "J");
-    if (NULL == cipher_alg_info_fidCtx) {
-        VSCF_ASSERT("Class 'AlgInfo' has no field 'cCtx'.");
-    }
-    jlong cipher_alg_info_c_ctx = (*jenv)->GetLongField(jenv, jcipherAlgInfo, cipher_alg_info_fidCtx);
-    vscf_impl_t */*6*/ cipher_alg_info = *(vscf_impl_t */*6*/*)&cipher_alg_info_c_ctx;
-
-    //Shallow copy
-    vscf_impl_t */*6*/ kdf_alg_info_copy = vscf_impl_shallow_copy(kdf_alg_info);
-    vscf_impl_t */*6*/ cipher_alg_info_copy = vscf_impl_shallow_copy(cipher_alg_info);
-    jlong proxyResult = (jlong) vscf_pbe_alg_info_new_with_members(alg_id /*a7*/, &kdf_alg_info_copy /*a5*/, &cipher_alg_info_copy /*a5*/);
-    return proxyResult;
 }
 
 JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_pbeAlgInfo_1algId (JNIEnv *jenv, jobject jobj, jlong c_ctx) {

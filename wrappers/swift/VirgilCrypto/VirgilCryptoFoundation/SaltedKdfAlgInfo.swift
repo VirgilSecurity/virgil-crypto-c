@@ -62,19 +62,6 @@ import VSCFoundation
         super.init()
     }
 
-    /// Create algorithm info with identificator, HASH algorithm info,
-    /// salt and iteration count.
-    public init(algId: AlgId, hashAlgInfo: AlgInfo, salt: Data, iterationCount: Int) {
-        let proxyResult = salt.withUnsafeBytes({ (saltPointer: UnsafeRawBufferPointer) -> OpaquePointer? in
-
-            var hashAlgInfoCopy = vscf_impl_shallow_copy(hashAlgInfo.c_ctx)
-
-            return vscf_salted_kdf_alg_info_new_with_members(vscf_alg_id_t(rawValue: UInt32(algId.rawValue)), &hashAlgInfoCopy, vsc_data(saltPointer.bindMemory(to: byte.self).baseAddress, salt.count), iterationCount)
-        })
-
-        self.c_ctx = proxyResult!
-    }
-
     /// Release underlying C context.
     deinit {
         vscf_salted_kdf_alg_info_delete(self.c_ctx)
