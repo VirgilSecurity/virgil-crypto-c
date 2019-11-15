@@ -762,16 +762,12 @@ test__decrypt__with_sec256p1_private_key__success(void) {
 
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS,
                       vscf_recipient_cipher_start_decryption_with_key(
-                              recipient_cipher, test_data_recipient_cipher_ED25519_RECIPIENT_ID, private_key, vsc_data_empty()));
+                              recipient_cipher, test_data_recipient_cipher_SEC256P1_RECIPIENT_ID, private_key, vsc_data_empty()));
 
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_recipient_cipher_process_decryption(recipient_cipher,
                                                                                     test_secp256r1_DATA_ENCRYPTED_WITH_PRIVATE_KEY, dec_msg));
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_recipient_cipher_finish_decryption(recipient_cipher, dec_msg));
 
-    //
-    //  Check.
-    //
-    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_data_recipient_cipher_MESSAGE_2, dec_msg);
 
     //
     //  Cleanup.
