@@ -495,7 +495,12 @@ function swift_wrap_c_returned_value (swift_return, swift_project)
 
     elsif is_true (0.is_interface)
         my.impl_helper_class = "$(my.swift_project.name:Pascal)Implementation"
-        return "$(my.impl_helper_class:).wrap$(my.swift_return.type:)(take: $(my.name:)!)"
+        if string_in (swift_return.access, "readonly, readwrite")
+            return "$(my.impl_helper_class:).wrap$(my.swift_return.type:)(use: $(my.name:)!)"
+        else
+            return "$(my.impl_helper_class:).wrap$(my.swift_return.type:)(take: $(my.name:)!)"
+        endif
+
 
     elsif is_true (0.is_class) & is_false (0.is_buffer)
         if string_in (swift_return.access, "readonly, readwrite")
@@ -1843,7 +1848,8 @@ function swift_get_implementation_helper_interface_method (swift_class, interfac
 
     my.interface_method_name = "wrap$(my.interface.name:Pascal)"
 
-    my.wrap_interface_method = my.swift_class->swift_method (name = my.interface_method_name) ?
+    my.wrap_interface_method = \
+            my.swift_class->swift_method (name = my.interface_method_name & is_true(swift_method.is_primary)) ?
 
     if defined (my.wrap_interface_method)
         return my.wrap_interface_method
@@ -1857,6 +1863,7 @@ function swift_get_implementation_helper_interface_method (swift_class, interfac
         .name = my.interface_method_name
         .modifier = "static"
         .objc = "1"
+        .is_primary = "1"
 
         new swift_argument to swift_method
             .name = "c_ctx"
@@ -1881,8 +1888,39 @@ function swift_get_implementation_helper_interface_method (swift_class, interfac
             ")
         endnew
 
-        return swift_method
+        my.wrap_interface_method = swift_method
     endnew
+
+    new swift_method to my.swift_class
+        my.protocol_name = swift_derive_protocol_name (my.interface, my.swift_project)
+        . = "\
+            /// Wrap C implementation object to the Swift object that implements protocol $(my.protocol_name:).
+        "
+        .name = my.interface_method_name
+        .modifier = "static"
+        .objc = "1"
+
+        new swift_argument to swift_method
+            .name = "c_ctx"
+            .ext_name = "use"
+            .type = "OpaquePointer"
+        endnew
+
+        new swift_return to swift_method
+            .type = swift_derive_protocol_name (my.interface, my.swift_project)
+        endnew
+
+        new swift_code to swift_method
+            my.method_of_class = my.interface.of_class ? my.interface.name
+            my.method_is_implemented = make_ref_c (make_id ("class", my.method_of_class, "method", "is_implemented"))
+            . = format_left("
+                let shallowCopy = .(c_class_impl_method_shallow_copy)(c_ctx)!
+                return $(my.swift_class.name:).$(my.interface_method_name:)(take:shallowCopy)
+            ")
+        endnew
+    endnew
+
+    return my.wrap_interface_method
 endfunction
 
 
@@ -2089,7 +2127,7 @@ function swift_create_implementation_module (implementation, swift_project, meta
 
             swift_create_inherit_nsobject (swift_class)
 
-            for my.implementation.constant
+            for my.implementation.constant where wrapper_should_wrap_class_constant(constant)
                 swift_create_class_constant (constant, swift_class, my.swift_project, my.meta)
             endfor
 
@@ -2135,7 +2173,7 @@ function swift_finalize_implementation_helper_modules (swift_project, meta)
 
     my.helper_class = swift_get_implementation_helper_class(my.swift_project, my.meta)
 
-    for my.helper_class.swift_method
+    for my.helper_class.swift_method where is_true(swift_method.is_primary)
         swift_method->swift_code.temp_code += format_left ("\
             default:
                 fatalError(\"Unexpected C implementation cast to the Swift implementation.\")
@@ -2207,7 +2245,7 @@ function swift_create_class_module (class, swift_project, meta)
                 endif
             endif
 
-            for my.class.constant where 0.scope = "public" & 0.definition = "public"
+            for my.class.constant where wrapper_should_wrap_class_constant(constant)
                 swift_create_class_constant (constant, swift_class, my.swift_project, my.meta)
             endfor
 

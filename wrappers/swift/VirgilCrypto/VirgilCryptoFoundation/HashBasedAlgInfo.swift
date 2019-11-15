@@ -80,7 +80,7 @@ import VSCFoundation
     @objc public func hashAlgInfo() -> AlgInfo {
         let proxyResult = vscf_hash_based_alg_info_hash_alg_info(self.c_ctx)
 
-        return FoundationImplementation.wrapAlgInfo(take: proxyResult!)
+        return FoundationImplementation.wrapAlgInfo(use: proxyResult!)
     }
 
     /// Provide algorithm identificator.

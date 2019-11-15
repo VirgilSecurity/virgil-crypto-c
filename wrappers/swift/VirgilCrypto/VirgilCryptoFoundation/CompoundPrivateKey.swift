@@ -76,14 +76,14 @@ import VSCFoundation
     @objc public func cipherKey() -> PrivateKey {
         let proxyResult = vscf_compound_private_key_cipher_key(self.c_ctx)
 
-        return FoundationImplementation.wrapPrivateKey(take: proxyResult!)
+        return FoundationImplementation.wrapPrivateKey(use: proxyResult!)
     }
 
     /// Return private key suitable for signing.
     @objc public func signerKey() -> PrivateKey {
         let proxyResult = vscf_compound_private_key_signer_key(self.c_ctx)
 
-        return FoundationImplementation.wrapPrivateKey(take: proxyResult!)
+        return FoundationImplementation.wrapPrivateKey(use: proxyResult!)
     }
 
     /// Return the cipher public key signature.
@@ -104,7 +104,7 @@ import VSCFoundation
     @objc public func algInfo() -> AlgInfo {
         let proxyResult = vscf_compound_private_key_alg_info(self.c_ctx)
 
-        return FoundationImplementation.wrapAlgInfo(take: proxyResult!)
+        return FoundationImplementation.wrapAlgInfo(use: proxyResult!)
     }
 
     /// Length of the key in bytes.

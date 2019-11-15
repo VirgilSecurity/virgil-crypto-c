@@ -78,6 +78,6 @@ import VSCFoundation
     @objc public func hashAlgInfo() -> AlgInfo {
         let proxyResult = vscf_signed_data_info_hash_alg_info(self.c_ctx)
 
-        return FoundationImplementation.wrapAlgInfo(take: proxyResult!)
+        return FoundationImplementation.wrapAlgInfo(use: proxyResult!)
     }
 }

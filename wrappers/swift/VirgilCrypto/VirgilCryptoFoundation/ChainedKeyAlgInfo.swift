@@ -71,7 +71,7 @@ import VSCFoundation
     @objc public func l1CipherAlgInfo() -> AlgInfo {
         let proxyResult = vscf_chained_key_alg_info_l1_cipher_alg_info(self.c_ctx)
 
-        return FoundationImplementation.wrapAlgInfo(take: proxyResult!)
+        return FoundationImplementation.wrapAlgInfo(use: proxyResult!)
     }
 
     /// Return information about l2 cipher encrypt/decrypt algorithm,
@@ -79,7 +79,7 @@ import VSCFoundation
     @objc public func l2CipherAlgInfo() -> AlgInfo {
         let proxyResult = vscf_chained_key_alg_info_l2_cipher_alg_info(self.c_ctx)
 
-        return FoundationImplementation.wrapAlgInfo(take: proxyResult!)
+        return FoundationImplementation.wrapAlgInfo(use: proxyResult!)
     }
 
     /// Provide algorithm identificator.

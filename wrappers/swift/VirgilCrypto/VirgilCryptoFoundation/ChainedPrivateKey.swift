@@ -75,14 +75,14 @@ import VSCFoundation
     @objc public func l1CipherKey() -> PrivateKey {
         let proxyResult = vscf_chained_private_key_l1_cipher_key(self.c_ctx)
 
-        return FoundationImplementation.wrapPrivateKey(take: proxyResult!)
+        return FoundationImplementation.wrapPrivateKey(use: proxyResult!)
     }
 
     /// Return l2 cipher private key.
     @objc public func l2CipherKey() -> PrivateKey {
         let proxyResult = vscf_chained_private_key_l2_cipher_key(self.c_ctx)
 
-        return FoundationImplementation.wrapPrivateKey(take: proxyResult!)
+        return FoundationImplementation.wrapPrivateKey(use: proxyResult!)
     }
 
     /// Algorithm identifier the key belongs to.
@@ -96,7 +96,7 @@ import VSCFoundation
     @objc public func algInfo() -> AlgInfo {
         let proxyResult = vscf_chained_private_key_alg_info(self.c_ctx)
 
-        return FoundationImplementation.wrapAlgInfo(take: proxyResult!)
+        return FoundationImplementation.wrapAlgInfo(use: proxyResult!)
     }
 
     /// Length of the key in bytes.

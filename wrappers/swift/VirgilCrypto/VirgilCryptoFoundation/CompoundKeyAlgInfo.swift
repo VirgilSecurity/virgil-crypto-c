@@ -71,21 +71,21 @@ import VSCFoundation
     @objc public func cipherAlgInfo() -> AlgInfo {
         let proxyResult = vscf_compound_key_alg_info_cipher_alg_info(self.c_ctx)
 
-        return FoundationImplementation.wrapAlgInfo(take: proxyResult!)
+        return FoundationImplementation.wrapAlgInfo(use: proxyResult!)
     }
 
     /// Return information about sign/verify algorithm.
     @objc public func signerAlgInfo() -> AlgInfo {
         let proxyResult = vscf_compound_key_alg_info_signer_alg_info(self.c_ctx)
 
-        return FoundationImplementation.wrapAlgInfo(take: proxyResult!)
+        return FoundationImplementation.wrapAlgInfo(use: proxyResult!)
     }
 
     /// Return information about hash algorithm that is used with signing.
     @objc public func signerHashAlgInfo() -> AlgInfo {
         let proxyResult = vscf_compound_key_alg_info_signer_hash_alg_info(self.c_ctx)
 
-        return FoundationImplementation.wrapAlgInfo(take: proxyResult!)
+        return FoundationImplementation.wrapAlgInfo(use: proxyResult!)
     }
 
     /// Provide algorithm identificator.

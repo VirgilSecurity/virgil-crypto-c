@@ -84,7 +84,7 @@ import VSCFoundation
     @objc public func hashAlgInfo() -> AlgInfo {
         let proxyResult = vscf_salted_kdf_alg_info_hash_alg_info(self.c_ctx)
 
-        return FoundationImplementation.wrapAlgInfo(take: proxyResult!)
+        return FoundationImplementation.wrapAlgInfo(use: proxyResult!)
     }
 
     /// Return KDF salt.

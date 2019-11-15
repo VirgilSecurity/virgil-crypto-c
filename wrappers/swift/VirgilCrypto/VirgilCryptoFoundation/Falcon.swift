@@ -40,10 +40,6 @@ import VSCFoundation
 /// For algorithm details check https://falcon-sign.info.
 @objc(VSCFFalcon) public class Falcon: NSObject, Alg, KeyAlg, KeySigner {
 
-    @objc public static let seedLen: Int = 48
-    @objc public static let logn512: Int = 9
-    @objc public static let logn1024: Int = 10
-
     /// Handle underlying C context.
     @objc public let c_ctx: OpaquePointer
 
