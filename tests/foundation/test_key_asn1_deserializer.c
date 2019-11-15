@@ -52,10 +52,6 @@
 #include "test_data_curve25519.h"
 #include "test_data_secp256r1.h"
 
-#include "vscf_key_cipher.h"
-#include "vscf_key_alg_factory.h"
-#include "vscf_fake_random.h"
-
 
 // --------------------------------------------------------------------------
 // PKCS#8 RSA keys.
@@ -349,35 +345,6 @@ test__deserialize_private_key__secp256r1_pem__equals_to_secp256r1_private_key(vo
     vscf_key_asn1_deserializer_destroy(&key_deserializer);
 }
 
-void
-test__deserialize_private_key_then_decrypt_data_with_key__secp256r1_der__DATA_DECRYPTED(void) {
-    vscf_key_asn1_deserializer_t *key_deserializer = vscf_key_asn1_deserializer_new();
-    vscf_key_asn1_deserializer_setup_defaults(key_deserializer);
-
-    vscf_error_t error;
-    vscf_error_reset(&error);
-
-    vscf_raw_private_key_t *raw_private_key = vscf_key_asn1_deserializer_deserialize_private_key(
-            key_deserializer, test_secp256r1_PRIVATE_KEY_FROM_GO, &error);
-
-    TEST_ASSERT_FALSE(vscf_error_has_error(&error));
-    TEST_ASSERT_NOT_NULL(raw_private_key);
-    TEST_ASSERT_EQUAL(vscf_raw_private_key_alg_id(raw_private_key), vscf_alg_id_SECP256R1);
-
-    vscf_fake_random_t *fake_random = vscf_fake_random_new();
-    vscf_fake_random_setup_source_byte(fake_random, 0xAB);
-    vscf_impl_t *random = vscf_fake_random_impl(fake_random);
-
-    vscf_impl_t *key_alg = vscf_key_alg_factory_create_from_raw_private_key(raw_private_key, random, &error);
-    vsc_buffer_t *dec_data =vsc_buffer_new_with_capacity(test_secp256r1_DATA_ENCRYPTED_WITH_PRIVATE_KEY.len * 10);
-    vscf_status_t dec_status = vscf_key_cipher_decrypt(key_alg, (vscf_impl_t *) raw_private_key, test_secp256r1_DATA_ENCRYPTED_WITH_PRIVATE_KEY, dec_data);
-
-    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, dec_status);
-
-    vscf_raw_private_key_destroy(&raw_private_key);
-    vscf_key_asn1_deserializer_destroy(&key_deserializer);
-}
-
 
 #endif // TEST_DEPENDENCIES_AVAILABLE
 
@@ -407,7 +374,6 @@ main(void) {
     RUN_TEST(test__deserialize_public_key__secp256r1_pem__equals_to_secp256r1_public_key);
     RUN_TEST(test__deserialize_private_key__secp256r1_der__equals_to_secp256r1_private_key);
     RUN_TEST(test__deserialize_private_key__secp256r1_pem__equals_to_secp256r1_private_key);
-    RUN_TEST(test__deserialize_private_key_then_decrypt_data_with_key__secp256r1_der__DATA_DECRYPTED);
 #else
     RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
 #endif

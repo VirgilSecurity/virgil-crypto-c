@@ -47,6 +47,7 @@
 #include "vscf_fake_random.h"
 
 #include "test_data_recipient_cipher.h"
+#include "test_data_secp256r1.h"
 
 
 void
@@ -148,15 +149,15 @@ test__decrypt__with_ed25519_private_key__success(void) {
     vscf_recipient_cipher_t *recipient_cipher = vscf_recipient_cipher_new();
 
     vsc_buffer_t *dec_msg = vsc_buffer_new_with_capacity(vscf_recipient_cipher_decryption_out_len(recipient_cipher,
-                                                                 test_data_recipient_cipher_ENCRYPTED_MESSAGE.len) +
+                                                                                                  test_data_recipient_cipher_ENCRYPTED_MESSAGE.len) +
                                                          vscf_recipient_cipher_decryption_out_len(recipient_cipher, 0));
 
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS,
-            vscf_recipient_cipher_start_decryption_with_key(
-                    recipient_cipher, test_data_recipient_cipher_ED25519_RECIPIENT_ID, private_key, vsc_data_empty()));
+                      vscf_recipient_cipher_start_decryption_with_key(
+                              recipient_cipher, test_data_recipient_cipher_ED25519_RECIPIENT_ID, private_key, vsc_data_empty()));
 
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_recipient_cipher_process_decryption(recipient_cipher,
-                                                   test_data_recipient_cipher_ENCRYPTED_MESSAGE, dec_msg));
+                                                                                    test_data_recipient_cipher_ENCRYPTED_MESSAGE, dec_msg));
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_recipient_cipher_finish_decryption(recipient_cipher, dec_msg));
 
     //
@@ -735,6 +736,52 @@ test__has_key_recipient__with_added_ed25519_recipient_with_empty_and_non_empty_i
     vscf_key_provider_destroy(&key_provider);
 }
 
+void
+test__decrypt__with_sec256p1_private_key__success(void) {
+    //
+    //  Prepare decryption key.
+    //
+    vscf_error_t error;
+    vscf_error_reset(&error);
+
+    vscf_key_provider_t *key_provider = vscf_key_provider_new();
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_key_provider_setup_defaults(key_provider));
+
+    vscf_impl_t *private_key =
+            vscf_key_provider_import_private_key(key_provider, test_secp256r1_PRIVATE_KEY_FROM_GO, &error);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
+
+    //
+    //  Decrypt.
+    //
+    vscf_recipient_cipher_t *recipient_cipher = vscf_recipient_cipher_new();
+
+    vsc_buffer_t *dec_msg = vsc_buffer_new_with_capacity(vscf_recipient_cipher_decryption_out_len(recipient_cipher,
+                                                                                                  test_secp256r1_DATA_ENCRYPTED_WITH_PRIVATE_KEY.len) +
+                                                         vscf_recipient_cipher_decryption_out_len(recipient_cipher, 0));
+
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS,
+                      vscf_recipient_cipher_start_decryption_with_key(
+                              recipient_cipher, test_data_recipient_cipher_ED25519_RECIPIENT_ID, private_key, vsc_data_empty()));
+
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_recipient_cipher_process_decryption(recipient_cipher,
+                                                                                    test_secp256r1_DATA_ENCRYPTED_WITH_PRIVATE_KEY, dec_msg));
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_recipient_cipher_finish_decryption(recipient_cipher, dec_msg));
+
+    //
+    //  Check.
+    //
+    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_data_recipient_cipher_MESSAGE_2, dec_msg);
+
+    //
+    //  Cleanup.
+    //
+    vsc_buffer_destroy(&dec_msg);
+    vscf_recipient_cipher_destroy(&recipient_cipher);
+    vscf_impl_destroy(&private_key);
+    vscf_key_provider_destroy(&key_provider);
+}
+
 #endif // TEST_DEPENDENCIES_AVAILABLE
 
 
@@ -760,6 +807,7 @@ main(void) {
     RUN_TEST(test__has_key_recipient__with_added_ed25519_recipient_and_incorrect_id__return_false);
     RUN_TEST(test__has_key_recipient__with_added_ed25519_recipient_with_empty_and_empty_id__return_true);
     RUN_TEST(test__has_key_recipient__with_added_ed25519_recipient_with_empty_and_non_empty_id__return_false);
+    RUN_TEST(test__decrypt__with_sec256p1_private_key__success);
 #else
     RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
 #endif
