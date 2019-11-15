@@ -504,7 +504,7 @@ vscf_secp256r1_private_key_compute_shared_key(
 
     VSCF_ASSERT_LIBRARY_MBEDTLS_SUCCESS(status);
 
-    size_t shared_key_len = mbedtls_mpi_size(&shared_key_mpi);
+    size_t shared_key_len = vscf_secp256r1_private_key_shared_key_len(self);
     VSCF_ASSERT(vsc_buffer_unused_len(shared_key) >= shared_key_len);
     status = mbedtls_mpi_write_binary(&shared_key_mpi, vsc_buffer_unused_bytes(shared_key), shared_key_len);
     VSCF_ASSERT_LIBRARY_MBEDTLS_SUCCESS(status);
