@@ -43,3 +43,7 @@ extern const vsc_data_t test_data_ecies_ED25519_RECEIVER_PUBLIC_KEY;
 extern const vsc_data_t test_data_ecies_ED25519_RECEIVER_PRIVATE_KEY;
 extern const vsc_data_t test_data_ecies_ED25519_EPHEMERAL_PRIVATE_KEY;
 extern const vsc_data_t test_data_ecies_ED25519_AES256_CBC_IV;
+
+extern const vsc_data_t test_data_ecies_SECP256R1_MESSAGE;
+extern const vsc_data_t test_data_ecies_SECP256R1_ENCRYPTED_MESSAGE;
+extern const vsc_data_t test_data_ecies_SECP256R1_RECEIVER_PRIVATE_KEY;
