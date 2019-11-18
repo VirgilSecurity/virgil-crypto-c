@@ -63,6 +63,8 @@ ExternalProject_Add(falcon-ext
             "-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}"
             "-DCMAKE_INSTALL_PREFIX=${FALCON_INSTALL_LOCATION}"
             "-DCMAKE_INSTALL_LIBDIR=lib"
+            "-DENABLE_TESTING=${FALCON_ENABLE_TESTING}"
+            "-DBUILD_SPEEDTEST=${FALCON_BUILD_SPEEDTEST}"
         )
 
 # ---------------------------------------------------------------------------

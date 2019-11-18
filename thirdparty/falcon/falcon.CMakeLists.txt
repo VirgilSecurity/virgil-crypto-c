@@ -40,6 +40,12 @@ project(falcon VERSION 2019.09.18 LANGUAGES C)
 include(GNUInstallDirs)
 
 # ---------------------------------------------------------------------------
+#   Options
+# ---------------------------------------------------------------------------
+option(ENABLE_TESTING "On/Off tests." ON)
+option(BUILD_SPEEDTEST "On/Off build of the speed program." OFF)
+
+# ---------------------------------------------------------------------------
 #   Build library
 # ---------------------------------------------------------------------------
 add_library(falcon)
@@ -84,11 +90,15 @@ target_compile_options(falcon
 # ---------------------------------------------------------------------------
 #   Build executables
 # ---------------------------------------------------------------------------
-add_executable(speed ${CMAKE_CURRENT_LIST_DIR}/speed.c)
-target_link_libraries(speed falcon)
+if(BUILD_SPEEDTEST)
+    add_executable(speed ${CMAKE_CURRENT_LIST_DIR}/speed.c)
+    target_link_libraries(speed falcon)
+endif()
 
-add_executable(test_falcon ${CMAKE_CURRENT_LIST_DIR}/test_falcon.c)
-target_link_libraries(test_falcon falcon)
+if(ENABLE_TESTING)
+    add_executable(test_falcon ${CMAKE_CURRENT_LIST_DIR}/test_falcon.c)
+    target_link_libraries(test_falcon falcon)
+endif()
 
 
 # ---------------------------------------------------------------------------

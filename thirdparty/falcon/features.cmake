@@ -46,6 +46,10 @@
 include_guard()
 
 option(FALCON_LIBRARY "Enable build of the 'falcon' library" ${VIRGIL_POST_QUANTUM})
+option(FALCON_ENABLE_TESTING "On/Off tests." OFF)
+option(FALCON_BUILD_SPEEDTEST "On/Off build of the speed program." OFF)
 mark_as_advanced(
         FALCON_LIBRARY
+        FALCON_ENABLE_TESTING
+        FALCON_BUILD_SPEEDTEST
         )
