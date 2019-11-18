@@ -116,7 +116,7 @@ extern "C" {
 
 #define VSC_VERSION_MINOR 11
 
-#define VSC_VERSION_PATCH 0
+#define VSC_VERSION_PATCH 1
 
 #define VSC_VERSION_MAKE(major, minor, patch) ((major) * 10000 + (minor) * 100 + (patch))
 

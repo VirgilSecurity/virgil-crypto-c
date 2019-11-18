@@ -218,6 +218,56 @@ test__decrypt__ed25519_encrypted_message__match_virgil_message(void) {
     vscf_key_asn1_deserializer_destroy(&key_asn1_deserializer);
 }
 
+void
+test__decrypt__secp256r1_encrypted_message__match(void) {
+#if VSCF_ECC
+    //  Configure algs
+    vscf_error_t error;
+    vscf_error_reset(&error);
+
+    vscf_fake_random_t *fake_random = vscf_fake_random_new();
+    vscf_fake_random_setup_source_byte(fake_random, 0xAB);
+
+    //  Get keys
+    vscf_key_asn1_deserializer_t *key_asn1_deserializer = vscf_key_asn1_deserializer_new();
+    vscf_key_asn1_deserializer_setup_defaults(key_asn1_deserializer);
+
+    vscf_impl_t *key_alg =
+            vscf_key_alg_factory_create_from_alg_id(vscf_alg_id_SECP256R1, vscf_fake_random_impl(fake_random), &error);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
+
+    vscf_raw_private_key_t *raw_private_key = vscf_key_asn1_deserializer_deserialize_private_key(
+            key_asn1_deserializer, test_data_ecies_SECP256R1_RECEIVER_PRIVATE_KEY, &error);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
+
+    vscf_impl_t *private_key = vscf_key_alg_import_private_key(key_alg, raw_private_key, &error);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
+
+    // Configure ECIES
+    vscf_ecies_t *ecies = vscf_ecies_new();
+    vscf_ecies_set_key_alg(ecies, key_alg);
+    vscf_ecies_take_random(ecies, vscf_fake_random_impl(fake_random));
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_ecies_setup_defaults(ecies));
+
+    //  Decrypt
+    vsc_buffer_t *dec_msg = vsc_buffer_new_with_capacity(
+            vscf_ecies_decrypted_len(ecies, private_key, test_data_ecies_SECP256R1_ENCRYPTED_MESSAGE.len));
+    vscf_status_t status = vscf_ecies_decrypt(ecies, private_key, test_data_ecies_SECP256R1_ENCRYPTED_MESSAGE, dec_msg);
+
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, status);
+    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_data_ecies_SECP256R1_MESSAGE, dec_msg);
+
+    vsc_buffer_destroy(&dec_msg);
+    vscf_raw_private_key_destroy(&raw_private_key);
+    vscf_impl_destroy(&private_key);
+    vscf_ecies_destroy(&ecies);
+    vscf_impl_destroy(&key_alg);
+    vscf_key_asn1_deserializer_destroy(&key_asn1_deserializer);
+#else
+    TEST_IGNORE_MESSAGE("Feature VSCF_ECC is disabled");
+#endif
+}
+
 
 #endif // TEST_DEPENDENCIES_AVAILABLE
 
@@ -233,6 +283,7 @@ main(void) {
     RUN_TEST(test__encrypt__virgil_message__success);
     RUN_TEST(test__encrypt__messege_with_ed25519_and_sha384_and_aes256_cbc_and_kdf2_and_hmac__return_encrypted_message);
     RUN_TEST(test__decrypt__ed25519_encrypted_message__match_virgil_message);
+    RUN_TEST(test__decrypt__secp256r1_encrypted_message__match);
 
 #else
     RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
