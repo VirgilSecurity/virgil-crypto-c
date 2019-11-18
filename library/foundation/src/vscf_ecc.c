@@ -872,7 +872,7 @@ vscf_ecc_compute_shared_key(const vscf_ecc_t *self, const vscf_impl_t *public_ke
         return vscf_status_ERROR_SHARED_KEY_EXCHANGE_FAILED;
     }
 
-    size_t shared_key_len = mbedtls_mpi_size(&shared_key_mpi);
+    const size_t shared_key_len = vscf_ecc_shared_key_len(self, public_key);
     VSCF_ASSERT(vsc_buffer_unused_len(shared_key) >= shared_key_len);
     mbed_status = mbedtls_mpi_write_binary(&shared_key_mpi, vsc_buffer_unused_bytes(shared_key), shared_key_len);
     VSCF_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbed_status);
@@ -893,6 +893,14 @@ vscf_ecc_shared_key_len(const vscf_ecc_t *self, const vscf_impl_t *key) {
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(key);
     VSCF_ASSERT(vscf_key_is_implemented(key));
+    VSCF_ASSERT(vscf_key_impl_tag(key) == self->info->impl_tag);
 
-    return MBEDTLS_ECP_MAX_BYTES;
+    if (vscf_impl_tag(key) == vscf_impl_tag_ECC_PUBLIC_KEY) {
+        const vscf_ecc_public_key_t *ecc_public_key = (const vscf_ecc_public_key_t *)key;
+        return VSCF_CEIL(ecc_public_key->ecc_grp.pbits, 8);
+    } else {
+        VSCF_ASSERT(vscf_impl_tag(key) == vscf_impl_tag_ECC_PRIVATE_KEY);
+        const vscf_ecc_private_key_t *ecc_private_key = (const vscf_ecc_private_key_t *)key;
+        return VSCF_CEIL(ecc_private_key->ecc_grp.pbits, 8);
+    }
 }
