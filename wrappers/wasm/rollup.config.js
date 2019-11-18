@@ -1,7 +1,6 @@
 const fs = require('fs');
 const path = require('path');
 
-const closureCompiler = require('@ampproject/rollup-plugin-closure-compiler');
 const builtinModules = require('builtin-modules');
 const commonjs = require('rollup-plugin-commonjs');
 const copy = require('rollup-plugin-copy');
@@ -45,7 +44,6 @@ const createEntry = (inputFilePath, libraryFilePath, format, outputFilePath) => 
 const createWasmEntry = (inputFilePath, libraryFilePath, wasmFilePath, format, outputFilePath) => {
   const entry = createEntry(inputFilePath, libraryFilePath, format, outputFilePath);
   entry.plugins.push(
-    closureCompiler(),
     terser(),
     copy({ targets: [wasmFilePath], outputFolder: path.dirname(outputFilePath) }),
   );
