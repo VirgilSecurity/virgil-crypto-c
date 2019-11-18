@@ -20,6 +20,6 @@
     </feature>
 
     <feature name="BUILD SPEEDTEST" default="off">
-        On/Off builds of speedtest program.
+        On/Off build of the speedtest program.
     </feature>
 </library>

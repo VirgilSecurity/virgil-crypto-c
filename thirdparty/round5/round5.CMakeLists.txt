@@ -97,7 +97,7 @@ option(USE_AES_DRBG "Use of the alternative AES (in CTR mode on zero input block
 option(CRYPTO_ENGINE_OPENSSL "Use missed crypto primitives from the OpenSSL library" ON)
 option(CRYPTO_ENGINE_MBEDTLS "Use missed crypto primitives from the MbedTLS library" OFF)
 option(BUILD_EXAMPLES "On/Off builds of example programs." OFF)
-option(BUILD_SPEEDTEST "On/Off builds of speedtest program." OFF)
+option(BUILD_SPEEDTEST "On/Off build of the speedtest program." OFF)
 
 
 # ---------------------------------------------------------------------------

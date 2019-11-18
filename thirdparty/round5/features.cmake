@@ -50,7 +50,7 @@ option(ROUND5_USE_MBEDTLS "Use missed crypto primitives from the mbedTLS library
 option(ROUND5_USE_OPENSSL "Use missed crypto primitives from the OpenSSL library." OFF)
 option(ROUND5_NIST_KAT_GEN "On/Off Generating NIST KATs (debug)." OFF)
 option(ROUND5_BUILD_EXAMPLES "On/Off builds of example programs." OFF)
-option(ROUND5_BUILD_SPEEDTEST "On/Off builds of speedtest program." OFF)
+option(ROUND5_BUILD_SPEEDTEST "On/Off build of the speedtest program." OFF)
 mark_as_advanced(
         ROUND5_LIBRARY
         ROUND5_USE_MBEDTLS
