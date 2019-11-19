@@ -221,7 +221,7 @@ vscf_memory_secure_equal(const void *a, const void *b, size_t len) {
 //  Find the first occurrence of find in s, where the search is limited to the
 //  first slen characters of s.
 //
-VSCF_PUBLIC char *
+VSCF_PUBLIC const char *
 vscf_strnstr(const char *s, const char *find, size_t slen) {
 
     /*-
