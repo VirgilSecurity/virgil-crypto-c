@@ -112,19 +112,19 @@ VSCF_PUBLIC void
 vscf_erase(void *mem, size_t size);
 
 //
-//  Find the first occurrence of find in s, where the search is limited to the
-//  first slen characters of s.
-//
-VSCF_PUBLIC char *
-vscf_strnstr(const char *s, const char *find, size_t slen);
-
-//
 //  Perform constant-time memory comparison.
 //  The time depends on the given length but not on the compared memory.
 //  Return true of given memory chunks are equal.
 //
 VSCF_PUBLIC bool
 vscf_memory_secure_equal(const void *a, const void *b, size_t len);
+
+//
+//  Find the first occurrence of find in s, where the search is limited to the
+//  first slen characters of s.
+//
+VSCF_PUBLIC const char *
+vscf_vscf_strnstr(const char *s, const char *find, size_t slen);
 
 
 // --------------------------------------------------------------------------

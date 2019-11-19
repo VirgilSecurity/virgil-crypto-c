@@ -8,5 +8,3 @@ set c compiler to clang
 ```bash
 export CC=/usr/local/opt/llvm/bin/clang
 ```
-
-

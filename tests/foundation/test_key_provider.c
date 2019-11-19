@@ -814,7 +814,6 @@ test__import_private_key__fuzzer_founded_NULL___expected_status_bad_pkcs8_privat
     vscf_key_provider_destroy(&key_provider);
 }
 
-
 #endif // TEST_DEPENDENCIES_AVAILABLE
 
 

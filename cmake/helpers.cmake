@@ -78,4 +78,3 @@ function(target_add_filename_definitions target)
         endif()
     endforeach()
 endfunction()
-
