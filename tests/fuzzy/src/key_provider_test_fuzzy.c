@@ -58,7 +58,7 @@ LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
             return -1;
         }
 
-        const vsc_data_t test_data = {data, size};
+        const vsc_data_t test_data = vsc_data(data, size);
 
         vscf_impl_t *private_key = vscf_key_provider_import_private_key(key_provider, test_data, &error);
 
