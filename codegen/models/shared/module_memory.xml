@@ -212,7 +212,7 @@
         <argument name="s" type="string"/>
         <argument name="find" type="string"/>
         <argument name="slen" type="size"/>
-        <return type="boolean"/>
+        <return type="string"/>
 
         <code>
             /*-
@@ -259,7 +259,7 @@
                 len = strlen(find);
                 do {
                     do {
-                        if (slen-- < 1 || (sc = *s++) == '\0') // Fixed by VirgilSecurity inc.
+                        if (slen-- < 1 || (sc = *s++) == '\0') // Fixed by Virgil Security, Inc.
                             return (NULL);
                     } while (sc != c);
                     if (len > slen)

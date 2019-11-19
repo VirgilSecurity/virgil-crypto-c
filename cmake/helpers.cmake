@@ -79,10 +79,3 @@ function(target_add_filename_definitions target)
     endforeach()
 endfunction()
 
-# ---------------------------------------------------------------------------
-#   Add Address Sanitizer
-# ---------------------------------------------------------------------------
-function(enable_target_asan target)
-    #target_compile_options(${target} PRIVATE $<$<C_COMPILER_ID:Clang>:-fsanitize=address -fno-common -fsanitize=undefined -fno-sanitize-recover=all -O1 -g3 -fno-omit-frame-pointer -fno-optimize-sibling-calls>)
-    #target_link_libraries(${target} PRIVATE $<$<C_COMPILER_ID:Clang>: -fsanitize=address -fno-omit-frame-pointer>)
-endfunction()

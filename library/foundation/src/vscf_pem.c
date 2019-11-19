@@ -115,10 +115,10 @@ vscf_pem_wrap(const char *title, vsc_data_t data, vsc_buffer_t *pem) {
     //
     //  Write header.
     //
-    vsc_buffer_append_data(pem, vsc_data_from_str(k_header_begin, strlen(k_header_begin)));
-    vsc_buffer_append_data(pem, vsc_data_from_str(title, strlen(title)));
-    vsc_buffer_append_data(pem, vsc_data_from_str(k_title_tail, strlen(k_title_tail)));
-    vsc_buffer_append_data(pem, vsc_data_from_str("\n", 1));
+    vsc_buffer_write_data(pem, vsc_data_from_str(k_header_begin, strlen(k_header_begin)));
+    vsc_buffer_write_data(pem, vsc_data_from_str(title, strlen(title)));
+    vsc_buffer_write_data(pem, vsc_data_from_str(k_title_tail, strlen(k_title_tail)));
+    vsc_buffer_write_data(pem, vsc_data_from_str("\n", 1));
 
     //
     //  Write base64 formatted body.
@@ -143,9 +143,9 @@ vscf_pem_wrap(const char *title, vsc_data_t data, vsc_buffer_t *pem) {
     //
     //  Write footer.
     //
-    vsc_buffer_append_data(pem, vsc_data_from_str(k_footer_begin, strlen(k_footer_begin)));
-    vsc_buffer_append_data(pem, vsc_data_from_str(title, strlen(title)));
-    vsc_buffer_append_data(pem, vsc_data_from_str(k_title_tail, strlen(k_title_tail)));
+    vsc_buffer_write_data(pem, vsc_data_from_str(k_footer_begin, strlen(k_footer_begin)));
+    vsc_buffer_write_data(pem, vsc_data_from_str(title, strlen(title)));
+    vsc_buffer_write_data(pem, vsc_data_from_str(k_title_tail, strlen(k_title_tail)));
 
     *vsc_buffer_unused_bytes(pem) = 0x00;
 }

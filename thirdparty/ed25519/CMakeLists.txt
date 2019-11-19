@@ -101,13 +101,6 @@ if(COMMAND enable_target_pedantic AND ED25519_REF10)
     enable_target_pedantic(ed25519)
 endif()
 
-#
-# Enable ASAN for fuzzy testing
-#
-if(ENABLE_FUZZY_TESTING)
-    enable_target_asan(ed25519)
-endif()
-
 
 # ---------------------------------------------------------------------------
 #   Install library
