@@ -14,7 +14,6 @@ addons:
       cloc
 
 install:
-  - sudo apt-get install -y -qq xsltproc
   - travis_retry wget https://cmake.org/files/v3.12/cmake-3.12.4-Linux-x86_64.sh
   - sudo bash cmake-3.12.4-Linux-x86_64.sh --skip-license --exclude-subdir --prefix=/usr/local
   - export PATH="/usr/local/bin:$PATH"
@@ -40,12 +39,12 @@ script:
       -DVIRGIL_C_MT_TESTING=OFF
       -DENABLE_BENCHMARKING=ON
       -DVIRGIL_POST_QUANTUM=ON
-  - cmake --build build -- -j1
+  - cmake --build build -- -j8
     && pushd build
     && ctest -T memcheck --output-on-failure
     && popd
   - cmake -H. -Bbuild -DVIRGIL_C_MT_TESTING=ON
-  - cmake --build build -- -j1
+  - cmake --build build -- -j8
     && pushd build
     && ctest -L multi-threading --output-on-failure
     && ./benchmarks/foundation/bench
