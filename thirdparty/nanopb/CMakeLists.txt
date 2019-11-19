@@ -120,7 +120,7 @@ ExternalProject_Add(protobuf-nanopb-ext
         GIT_REPOSITORY
             https://github.com/nanopb/nanopb
         GIT_TAG
-            0.3.9.1
+            0.3.9.4
         CMAKE_ARGS
             "${TRANSITIVE_ARGS}"
             "-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}"
