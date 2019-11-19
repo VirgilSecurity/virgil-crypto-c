@@ -188,6 +188,7 @@
         <argument name="b" class="any"/>
         <argument name="len" type="size"/>
         <return type="boolean"/>
+        <return class="any" access="disown"/>
 
         <code>
             .(c_class_assert_macros_ptr)(.(_argument_a));
@@ -205,7 +206,7 @@
         </code>
     </method>
 
-    <method name="vscf_strnstr">
+    <method name="strnstr">
         Find the first occurrence of find in s, where the search is limited to the
         first slen characters of s.
 
