@@ -221,7 +221,7 @@ vsc_memory_secure_equal(const void *a, const void *b, size_t len) {
 //  Find the first occurrence of find in s, where the search is limited to the
 //  first slen characters of s.
 //
-VSC_PUBLIC bool
+VSC_PUBLIC const char *
 vsc_vscf_strnstr(const char *s, const char *find, size_t slen) {
 
     /*-
@@ -268,7 +268,7 @@ vsc_vscf_strnstr(const char *s, const char *find, size_t slen) {
         len = strlen(find);
         do {
             do {
-                if (slen-- < 1 || (sc = *s++) == '0') // Fixed by VirgilSecurity inc.
+                if (slen-- < 1 || (sc = *s++) == '0') // Fixed by Virgil Security, Inc.
                     return (NULL);
             } while (sc != c);
             if (len > slen)
