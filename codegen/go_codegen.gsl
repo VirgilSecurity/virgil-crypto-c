@@ -423,11 +423,11 @@ function go_insert_func (go_instance, go_func)
         else
             my.prefix = "New"
         endif
-        go_insert_code("func $(my.prefix:)$(my.go_instance.name:)$(my.go_func.name:) ($(my.method_args?:)) $(my.method_return?:) {")
+        go_insert_code("func $(my.prefix:)$(my.go_instance.name:)$(my.go_func.name:)($(my.method_args?:)) $(my.method_return?:) {")
     elsif is_true (my.go_func.is_static)
-        go_insert_code("func $(my.go_instance.name:)$(my.go_func.name:) ($(my.method_args?:)) $(my.method_return?:) {")
+        go_insert_code("func $(my.go_instance.name:)$(my.go_func.name:)($(my.method_args?:)) $(my.method_return?:) {")
     else
-        go_insert_code("func (obj *$(my.go_instance.name:)) $(my.go_func.name:) ($(my.method_args?:)) $(my.method_return?:) {")
+        go_insert_code("func (obj *$(my.go_instance.name:)) $(my.go_func.name:)($(my.method_args?:)) $(my.method_return?:) {")
     endif
     go_insert_code (my.go_func->go_code., 1)
     go_insert_code("}")
@@ -530,9 +530,9 @@ function go_insert_struct (go_struct)
     go_insert_description(my.go_struct)
     go_insert_code ("type $(my.go_struct.name:) struct {")
     
-    for my.go_struct.go_promoted
-        go_insert_code ("$(go_promoted.type:)", 1)
-    endfor
+    #for my.go_struct.go_promoted
+    #    go_insert_code ("$(go_promoted.type:)", 1)
+    #endfor
 
     for my.go_struct.go_field
         go_insert_field (go_field)

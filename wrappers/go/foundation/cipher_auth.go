@@ -6,7 +6,7 @@ import "C"
 * Mix-in interface that provides specific functionality to authenticated
 * encryption and decryption (AEAD ciphers).
 */
-type ICipherAuth interface {
+type CipherAuth interface {
 
     context
 

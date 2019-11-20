@@ -5,7 +5,7 @@ import "C"
 /*
 * Public and private key deserialization from an interchangeable format.
 */
-type IKeyDeserializer interface {
+type KeyDeserializer interface {
 
     context
 

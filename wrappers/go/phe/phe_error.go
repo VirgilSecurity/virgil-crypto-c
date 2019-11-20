@@ -16,39 +16,39 @@ const (
     /*
     * Success proof check failed.
     */
-    PHE_ERROR_ERROR_INVALID_SUCCESS_PROOF int = -1
+    PheErrorErrorInvalidSuccessProof int = -1
     /*
     * Failure proof check failed.
     */
-    PHE_ERROR_ERROR_INVALID_FAIL_PROOF int = -2
+    PheErrorErrorInvalidFailProof int = -2
     /*
     * RNG returned error.
     */
-    PHE_ERROR_ERROR_RNG_FAILED int = -3
+    PheErrorErrorRNGFailed int = -3
     /*
     * Protobuf decode failed.
     */
-    PHE_ERROR_ERROR_PROTOBUF_DECODE_FAILED int = -4
+    PheErrorErrorProtobufDecodeFailed int = -4
     /*
     * Invalid public key.
     */
-    PHE_ERROR_ERROR_INVALID_PUBLIC_KEY int = -5
+    PheErrorErrorInvalidPublicKey int = -5
     /*
     * Invalid private key.
     */
-    PHE_ERROR_ERROR_INVALID_PRIVATE_KEY int = -6
+    PheErrorErrorInvalidPrivateKey int = -6
     /*
     * AES error occurred.
     */
-    PHE_ERROR_ERROR_AES_FAILED int = -7
+    PheErrorErrorAESFailed int = -7
 )
 
-func (obj *PheError) Error () string {
+func (obj *PheError) Error() string {
     return fmt.Sprintf("PheError{code: %v message: %s}", obj.Code, obj.Message)
 }
 
 /* Check given C status, and if it's not "success" then raise correspond error. */
-func PheErrorHandleStatus (status C.vsce_status_t) error {
+func PheErrorHandleStatus(status C.vsce_status_t) error {
     if status != C.vsce_status_SUCCESS {
         switch (status) {
         case C.vsce_status_ERROR_INVALID_SUCCESS_PROOF:
@@ -75,10 +75,10 @@ type wrapError struct {
     msg string
 }
 
-func (obj *wrapError) Error () string {
+func (obj *wrapError) Error() string {
     return fmt.Sprintf("%s: %v", obj.msg, obj.err)
 }
 
-func (obj *wrapError) Unwrap () error {
+func (obj *wrapError) Unwrap() error {
     return obj.err
 }

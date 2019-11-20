@@ -2,26 +2,22 @@ package foundation
 
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
+import "runtime"
 
 
 /*
 * This is implementation of Ed25519 elliptic curve algorithms.
 */
 type Ed25519 struct {
-    IAlg
-    IKeyAlg
-    IKeyCipher
-    IKeySigner
-    IComputeSharedKey
     cCtx *C.vscf_ed25519_t /*ct10*/
 }
 
-func (obj *Ed25519) SetRandom (random IRandom) {
+func (obj *Ed25519) SetRandom(random Random) {
     C.vscf_ed25519_release_random(obj.cCtx)
     C.vscf_ed25519_use_random(obj.cCtx, (*C.vscf_impl_t)(random.ctx()))
 }
 
-func (obj *Ed25519) SetEcies (ecies Ecies) {
+func (obj *Ed25519) SetEcies(ecies Ecies) {
     C.vscf_ed25519_release_ecies(obj.cCtx)
     C.vscf_ed25519_use_ecies(obj.cCtx, (*C.vscf_ecies_t)(ecies.ctx()))
 }
@@ -29,7 +25,7 @@ func (obj *Ed25519) SetEcies (ecies Ecies) {
 /*
 * Setup predefined values to the uninitialized class dependencies.
 */
-func (obj *Ed25519) SetupDefaults () error {
+func (obj *Ed25519) SetupDefaults() error {
     proxyResult := /*pr4*/C.vscf_ed25519_setup_defaults(obj.cCtx)
 
     err := FoundationErrorHandleStatus(proxyResult)
@@ -44,7 +40,7 @@ func (obj *Ed25519) SetupDefaults () error {
 * Generate new private key.
 * Note, this operation might be slow.
 */
-func (obj *Ed25519) GenerateKey () (IPrivateKey, error) {
+func (obj *Ed25519) GenerateKey() (PrivateKey, error) {
     var error C.vscf_error_t
     C.vscf_error_reset(&error)
 
@@ -55,50 +51,64 @@ func (obj *Ed25519) GenerateKey () (IPrivateKey, error) {
         return nil, err
     }
 
-    return FoundationImplementationWrapIPrivateKey(proxyResult) /* r4 */
+    return FoundationImplementationWrapPrivateKey(proxyResult) /* r4 */
 }
 
 /* Handle underlying C context. */
-func (obj *Ed25519) ctx () *C.vscf_impl_t {
+func (obj *Ed25519) ctx() *C.vscf_impl_t {
     return (*C.vscf_impl_t)(obj.cCtx)
 }
 
-func NewEd25519 () *Ed25519 {
+func NewEd25519() *Ed25519 {
     ctx := C.vscf_ed25519_new()
-    return &Ed25519 {
+    obj := &Ed25519 {
         cCtx: ctx,
     }
+    runtime.SetFinalizer(obj, obj.Delete)
+    return obj
 }
 
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newEd25519WithCtx (ctx *C.vscf_ed25519_t /*ct10*/) *Ed25519 {
-    return &Ed25519 {
+func newEd25519WithCtx(ctx *C.vscf_ed25519_t /*ct10*/) *Ed25519 {
+    obj := &Ed25519 {
         cCtx: ctx,
     }
+    runtime.SetFinalizer(obj, obj.Delete)
+    return obj
 }
 
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newEd25519Copy (ctx *C.vscf_ed25519_t /*ct10*/) *Ed25519 {
-    return &Ed25519 {
+func newEd25519Copy(ctx *C.vscf_ed25519_t /*ct10*/) *Ed25519 {
+    obj := &Ed25519 {
         cCtx: C.vscf_ed25519_shallow_copy(ctx),
     }
+    runtime.SetFinalizer(obj, obj.Delete)
+    return obj
 }
 
 /*
 * Release underlying C context.
 */
-func (obj *Ed25519) Delete () {
+func (obj *Ed25519) Delete() {
+    runtime.SetFinalizer(obj, nil)
+    obj.clear()
+}
+
+/*
+* Release underlying C context.
+*/
+func (obj *Ed25519) delete() {
     C.vscf_ed25519_delete(obj.cCtx)
 }
 
 /*
 * Provide algorithm identificator.
 */
-func (obj *Ed25519) AlgId () AlgId {
+func (obj *Ed25519) AlgId() AlgId {
     proxyResult := /*pr4*/C.vscf_ed25519_alg_id(obj.cCtx)
 
     return AlgId(proxyResult) /* r8 */
@@ -107,16 +117,16 @@ func (obj *Ed25519) AlgId () AlgId {
 /*
 * Produce object with algorithm information and configuration parameters.
 */
-func (obj *Ed25519) ProduceAlgInfo () (IAlgInfo, error) {
+func (obj *Ed25519) ProduceAlgInfo() (AlgInfo, error) {
     proxyResult := /*pr4*/C.vscf_ed25519_produce_alg_info(obj.cCtx)
 
-    return FoundationImplementationWrapIAlgInfo(proxyResult) /* r4 */
+    return FoundationImplementationWrapAlgInfo(proxyResult) /* r4 */
 }
 
 /*
 * Restore algorithm configuration from the given object.
 */
-func (obj *Ed25519) RestoreAlgInfo (algInfo IAlgInfo) error {
+func (obj *Ed25519) RestoreAlgInfo(algInfo AlgInfo) error {
     proxyResult := /*pr4*/C.vscf_ed25519_restore_alg_info(obj.cCtx, (*C.vscf_impl_t)(algInfo.ctx()))
 
     err := FoundationErrorHandleStatus(proxyResult)
@@ -130,28 +140,28 @@ func (obj *Ed25519) RestoreAlgInfo (algInfo IAlgInfo) error {
 /*
 * Defines whether a public key can be imported or not.
 */
-func (obj *Ed25519) GetCanImportPublicKey () bool {
+func (obj *Ed25519) GetCanImportPublicKey() bool {
     return true
 }
 
 /*
 * Define whether a public key can be exported or not.
 */
-func (obj *Ed25519) GetCanExportPublicKey () bool {
+func (obj *Ed25519) GetCanExportPublicKey() bool {
     return true
 }
 
 /*
 * Define whether a private key can be imported or not.
 */
-func (obj *Ed25519) GetCanImportPrivateKey () bool {
+func (obj *Ed25519) GetCanImportPrivateKey() bool {
     return true
 }
 
 /*
 * Define whether a private key can be exported or not.
 */
-func (obj *Ed25519) GetCanExportPrivateKey () bool {
+func (obj *Ed25519) GetCanExportPrivateKey() bool {
     return true
 }
 
@@ -159,7 +169,7 @@ func (obj *Ed25519) GetCanExportPrivateKey () bool {
 * Generate ephemeral private key of the same type.
 * Note, this operation might be slow.
 */
-func (obj *Ed25519) GenerateEphemeralKey (key IKey) (IPrivateKey, error) {
+func (obj *Ed25519) GenerateEphemeralKey(key Key) (PrivateKey, error) {
     var error C.vscf_error_t
     C.vscf_error_reset(&error)
 
@@ -170,7 +180,7 @@ func (obj *Ed25519) GenerateEphemeralKey (key IKey) (IPrivateKey, error) {
         return nil, err
     }
 
-    return FoundationImplementationWrapIPrivateKey(proxyResult) /* r4 */
+    return FoundationImplementationWrapPrivateKey(proxyResult) /* r4 */
 }
 
 /*
@@ -183,7 +193,7 @@ func (obj *Ed25519) GenerateEphemeralKey (key IKey) (IPrivateKey, error) {
 * For instance, RSA public key must be imported from the format defined in
 * RFC 3447 Appendix A.1.1.
 */
-func (obj *Ed25519) ImportPublicKey (rawKey *RawPublicKey) (IPublicKey, error) {
+func (obj *Ed25519) ImportPublicKey(rawKey *RawPublicKey) (PublicKey, error) {
     var error C.vscf_error_t
     C.vscf_error_reset(&error)
 
@@ -194,7 +204,7 @@ func (obj *Ed25519) ImportPublicKey (rawKey *RawPublicKey) (IPublicKey, error) {
         return nil, err
     }
 
-    return FoundationImplementationWrapIPublicKey(proxyResult) /* r4 */
+    return FoundationImplementationWrapPublicKey(proxyResult) /* r4 */
 }
 
 /*
@@ -204,7 +214,7 @@ func (obj *Ed25519) ImportPublicKey (rawKey *RawPublicKey) (IPublicKey, error) {
 * For instance, RSA public key must be exported in format defined in
 * RFC 3447 Appendix A.1.1.
 */
-func (obj *Ed25519) ExportPublicKey (publicKey IPublicKey) (*RawPublicKey, error) {
+func (obj *Ed25519) ExportPublicKey(publicKey PublicKey) (*RawPublicKey, error) {
     var error C.vscf_error_t
     C.vscf_error_reset(&error)
 
@@ -228,7 +238,7 @@ func (obj *Ed25519) ExportPublicKey (publicKey IPublicKey) (*RawPublicKey, error
 * For instance, RSA private key must be imported from the format defined in
 * RFC 3447 Appendix A.1.2.
 */
-func (obj *Ed25519) ImportPrivateKey (rawKey *RawPrivateKey) (IPrivateKey, error) {
+func (obj *Ed25519) ImportPrivateKey(rawKey *RawPrivateKey) (PrivateKey, error) {
     var error C.vscf_error_t
     C.vscf_error_reset(&error)
 
@@ -239,7 +249,7 @@ func (obj *Ed25519) ImportPrivateKey (rawKey *RawPrivateKey) (IPrivateKey, error
         return nil, err
     }
 
-    return FoundationImplementationWrapIPrivateKey(proxyResult) /* r4 */
+    return FoundationImplementationWrapPrivateKey(proxyResult) /* r4 */
 }
 
 /*
@@ -249,7 +259,7 @@ func (obj *Ed25519) ImportPrivateKey (rawKey *RawPrivateKey) (IPrivateKey, error
 * For instance, RSA private key must be exported in format defined in
 * RFC 3447 Appendix A.1.2.
 */
-func (obj *Ed25519) ExportPrivateKey (privateKey IPrivateKey) (*RawPrivateKey, error) {
+func (obj *Ed25519) ExportPrivateKey(privateKey PrivateKey) (*RawPrivateKey, error) {
     var error C.vscf_error_t
     C.vscf_error_reset(&error)
 
@@ -266,7 +276,7 @@ func (obj *Ed25519) ExportPrivateKey (privateKey IPrivateKey) (*RawPrivateKey, e
 /*
 * Check if algorithm can encrypt data with a given key.
 */
-func (obj *Ed25519) CanEncrypt (publicKey IPublicKey, dataLen uint32) bool {
+func (obj *Ed25519) CanEncrypt(publicKey PublicKey, dataLen uint32) bool {
     proxyResult := /*pr4*/C.vscf_ed25519_can_encrypt(obj.cCtx, (*C.vscf_impl_t)(publicKey.ctx()), (C.size_t)(dataLen)/*pa10*/)
 
     return bool(proxyResult) /* r9 */
@@ -275,7 +285,7 @@ func (obj *Ed25519) CanEncrypt (publicKey IPublicKey, dataLen uint32) bool {
 /*
 * Calculate required buffer length to hold the encrypted data.
 */
-func (obj *Ed25519) EncryptedLen (publicKey IPublicKey, dataLen uint32) uint32 {
+func (obj *Ed25519) EncryptedLen(publicKey PublicKey, dataLen uint32) uint32 {
     proxyResult := /*pr4*/C.vscf_ed25519_encrypted_len(obj.cCtx, (*C.vscf_impl_t)(publicKey.ctx()), (C.size_t)(dataLen)/*pa10*/)
 
     return uint32(proxyResult) /* r9 */
@@ -284,8 +294,8 @@ func (obj *Ed25519) EncryptedLen (publicKey IPublicKey, dataLen uint32) uint32 {
 /*
 * Encrypt data with a given public key.
 */
-func (obj *Ed25519) Encrypt (publicKey IPublicKey, data []byte) ([]byte, error) {
-    outBuf, outBufErr := bufferNewBuffer(int(obj.EncryptedLen(publicKey.(IPublicKey), uint32(len(data))) /* lg2 */))
+func (obj *Ed25519) Encrypt(publicKey PublicKey, data []byte) ([]byte, error) {
+    outBuf, outBufErr := bufferNewBuffer(int(obj.EncryptedLen(publicKey.(PublicKey), uint32(len(data))) /* lg2 */))
     if outBufErr != nil {
         return nil, outBufErr
     }
@@ -306,7 +316,7 @@ func (obj *Ed25519) Encrypt (publicKey IPublicKey, data []byte) ([]byte, error) 
 * Check if algorithm can decrypt data with a given key.
 * However, success result of decryption is not guaranteed.
 */
-func (obj *Ed25519) CanDecrypt (privateKey IPrivateKey, dataLen uint32) bool {
+func (obj *Ed25519) CanDecrypt(privateKey PrivateKey, dataLen uint32) bool {
     proxyResult := /*pr4*/C.vscf_ed25519_can_decrypt(obj.cCtx, (*C.vscf_impl_t)(privateKey.ctx()), (C.size_t)(dataLen)/*pa10*/)
 
     return bool(proxyResult) /* r9 */
@@ -315,7 +325,7 @@ func (obj *Ed25519) CanDecrypt (privateKey IPrivateKey, dataLen uint32) bool {
 /*
 * Calculate required buffer length to hold the decrypted data.
 */
-func (obj *Ed25519) DecryptedLen (privateKey IPrivateKey, dataLen uint32) uint32 {
+func (obj *Ed25519) DecryptedLen(privateKey PrivateKey, dataLen uint32) uint32 {
     proxyResult := /*pr4*/C.vscf_ed25519_decrypted_len(obj.cCtx, (*C.vscf_impl_t)(privateKey.ctx()), (C.size_t)(dataLen)/*pa10*/)
 
     return uint32(proxyResult) /* r9 */
@@ -324,8 +334,8 @@ func (obj *Ed25519) DecryptedLen (privateKey IPrivateKey, dataLen uint32) uint32
 /*
 * Decrypt given data.
 */
-func (obj *Ed25519) Decrypt (privateKey IPrivateKey, data []byte) ([]byte, error) {
-    outBuf, outBufErr := bufferNewBuffer(int(obj.DecryptedLen(privateKey.(IPrivateKey), uint32(len(data))) /* lg2 */))
+func (obj *Ed25519) Decrypt(privateKey PrivateKey, data []byte) ([]byte, error) {
+    outBuf, outBufErr := bufferNewBuffer(int(obj.DecryptedLen(privateKey.(PrivateKey), uint32(len(data))) /* lg2 */))
     if outBufErr != nil {
         return nil, outBufErr
     }
@@ -345,7 +355,7 @@ func (obj *Ed25519) Decrypt (privateKey IPrivateKey, data []byte) ([]byte, error
 /*
 * Check if algorithm can sign data digest with a given key.
 */
-func (obj *Ed25519) CanSign (privateKey IPrivateKey) bool {
+func (obj *Ed25519) CanSign(privateKey PrivateKey) bool {
     proxyResult := /*pr4*/C.vscf_ed25519_can_sign(obj.cCtx, (*C.vscf_impl_t)(privateKey.ctx()))
 
     return bool(proxyResult) /* r9 */
@@ -355,7 +365,7 @@ func (obj *Ed25519) CanSign (privateKey IPrivateKey) bool {
 * Return length in bytes required to hold signature.
 * Return zero if a given private key can not produce signatures.
 */
-func (obj *Ed25519) SignatureLen (key IKey) uint32 {
+func (obj *Ed25519) SignatureLen(key Key) uint32 {
     proxyResult := /*pr4*/C.vscf_ed25519_signature_len(obj.cCtx, (*C.vscf_impl_t)(key.ctx()))
 
     return uint32(proxyResult) /* r9 */
@@ -364,8 +374,8 @@ func (obj *Ed25519) SignatureLen (key IKey) uint32 {
 /*
 * Sign data digest with a given private key.
 */
-func (obj *Ed25519) SignHash (privateKey IPrivateKey, hashId AlgId, digest []byte) ([]byte, error) {
-    signatureBuf, signatureBufErr := bufferNewBuffer(int(obj.SignatureLen(privateKey.(IKey)) /* lg2 */))
+func (obj *Ed25519) SignHash(privateKey PrivateKey, hashId AlgId, digest []byte) ([]byte, error) {
+    signatureBuf, signatureBufErr := bufferNewBuffer(int(obj.SignatureLen(privateKey.(Key)) /* lg2 */))
     if signatureBufErr != nil {
         return nil, signatureBufErr
     }
@@ -385,7 +395,7 @@ func (obj *Ed25519) SignHash (privateKey IPrivateKey, hashId AlgId, digest []byt
 /*
 * Check if algorithm can verify data digest with a given key.
 */
-func (obj *Ed25519) CanVerify (publicKey IPublicKey) bool {
+func (obj *Ed25519) CanVerify(publicKey PublicKey) bool {
     proxyResult := /*pr4*/C.vscf_ed25519_can_verify(obj.cCtx, (*C.vscf_impl_t)(publicKey.ctx()))
 
     return bool(proxyResult) /* r9 */
@@ -394,7 +404,7 @@ func (obj *Ed25519) CanVerify (publicKey IPublicKey) bool {
 /*
 * Verify data digest with a given public key and signature.
 */
-func (obj *Ed25519) VerifyHash (publicKey IPublicKey, hashId AlgId, digest []byte, signature []byte) bool {
+func (obj *Ed25519) VerifyHash(publicKey PublicKey, hashId AlgId, digest []byte, signature []byte) bool {
     digestData := helperWrapData (digest)
     signatureData := helperWrapData (signature)
 
@@ -407,8 +417,8 @@ func (obj *Ed25519) VerifyHash (publicKey IPublicKey, hashId AlgId, digest []byt
 * Compute shared key for 2 asymmetric keys.
 * Note, computed shared key can be used only within symmetric cryptography.
 */
-func (obj *Ed25519) ComputeSharedKey (publicKey IPublicKey, privateKey IPrivateKey) ([]byte, error) {
-    sharedKeyBuf, sharedKeyBufErr := bufferNewBuffer(int(obj.SharedKeyLen(privateKey.(IKey)) /* lg2 */))
+func (obj *Ed25519) ComputeSharedKey(publicKey PublicKey, privateKey PrivateKey) ([]byte, error) {
+    sharedKeyBuf, sharedKeyBufErr := bufferNewBuffer(int(obj.SharedKeyLen(privateKey.(Key)) /* lg2 */))
     if sharedKeyBufErr != nil {
         return nil, sharedKeyBufErr
     }
@@ -429,7 +439,7 @@ func (obj *Ed25519) ComputeSharedKey (publicKey IPublicKey, privateKey IPrivateK
 * Return number of bytes required to hold shared key.
 * Expect Public Key or Private Key.
 */
-func (obj *Ed25519) SharedKeyLen (key IKey) uint32 {
+func (obj *Ed25519) SharedKeyLen(key Key) uint32 {
     proxyResult := /*pr4*/C.vscf_ed25519_shared_key_len(obj.cCtx, (*C.vscf_impl_t)(key.ctx()))
 
     return uint32(proxyResult) /* r9 */

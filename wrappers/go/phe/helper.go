@@ -10,18 +10,18 @@ import unsafe "unsafe"
 type helper struct {
 }
 
-func helperBytesToBytePtr (data []byte) *C.uint8_t {
+func helperBytesToBytePtr(data []byte) *C.uint8_t {
     return (*C.uint8_t)(&data[0])
 }
 
-func helperWrapData (data []byte) C.vsc_data_t {
+func helperWrapData(data []byte) C.vsc_data_t {
     if len(data) == 0 {
         return C.vsc_data_empty()
     }
     return C.vsc_data((*C.uint8_t)(&data[0]), C.size_t(len(data)))
 }
 
-func helperExtractData (data C.vsc_data_t) []byte {
+func helperExtractData(data C.vsc_data_t) []byte {
     newSize := data.len
     //FIXME Verify data is not corrupted
     //if newSize < len(data.bytes) {
@@ -36,7 +36,7 @@ type buffer struct {
     data []byte
 }
 
-func bufferNewBuffer (cap int) (*buffer, error) {
+func bufferNewBuffer(cap int) (*buffer, error) {
     capacity := C.size_t(cap)
     if capacity == 0 {
         return nil, &PheError{-1,"Buffer with zero capacity is not allowed."}
@@ -57,7 +57,7 @@ func bufferNewBuffer (cap int) (*buffer, error) {
     }, nil
 }
 
-func (obj *buffer) getData () []byte {
+func (obj *buffer) getData() []byte {
     newSize := int(C.vsc_buffer_len(obj.ctx))
     if newSize > len(obj.data) {
         panic ("Underlying C buffer corrupt the memory.")
@@ -65,17 +65,17 @@ func (obj *buffer) getData () []byte {
     return obj.data[:newSize]
 }
 
-func (obj *buffer) cap () int {
+func (obj *buffer) cap() int {
     return int(C.vsc_buffer_capacity(obj.ctx))
 }
 
-func (obj *buffer) len () int {
+func (obj *buffer) len() int {
     return int(C.vsc_buffer_len(obj.ctx))
 }
 
 /*
 * Release underlying C context.
 */
-func (obj *buffer) Delete () {
+func (obj *buffer) Delete() {
     C.vsc_buffer_delete(obj.ctx)
 }

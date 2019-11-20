@@ -6,7 +6,7 @@ import "C"
 * Provides interface to the key derivation function (KDF) algorithms
 * that use salt and teration count.
 */
-type ISaltedKdf interface {
+type SaltedKdf interface {
 
     context
 

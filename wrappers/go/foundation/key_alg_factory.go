@@ -13,7 +13,7 @@ type KeyAlgFactory struct {
 /*
 * Create a key algorithm based on an identifier.
 */
-func KeyAlgFactoryCreateFromAlgId (algId AlgId, random IRandom) (IKeyAlg, error) {
+func KeyAlgFactoryCreateFromAlgId(algId AlgId, random Random) (KeyAlg, error) {
     var error C.vscf_error_t
     C.vscf_error_reset(&error)
 
@@ -24,13 +24,13 @@ func KeyAlgFactoryCreateFromAlgId (algId AlgId, random IRandom) (IKeyAlg, error)
         return nil, err
     }
 
-    return FoundationImplementationWrapIKeyAlg(proxyResult) /* r4 */
+    return FoundationImplementationWrapKeyAlg(proxyResult) /* r4 */
 }
 
 /*
 * Create a key algorithm correspond to a specific key.
 */
-func KeyAlgFactoryCreateFromKey (key IKey, random IRandom) (IKeyAlg, error) {
+func KeyAlgFactoryCreateFromKey(key Key, random Random) (KeyAlg, error) {
     var error C.vscf_error_t
     C.vscf_error_reset(&error)
 
@@ -41,13 +41,13 @@ func KeyAlgFactoryCreateFromKey (key IKey, random IRandom) (IKeyAlg, error) {
         return nil, err
     }
 
-    return FoundationImplementationWrapIKeyAlg(proxyResult) /* r4 */
+    return FoundationImplementationWrapKeyAlg(proxyResult) /* r4 */
 }
 
 /*
 * Create a key algorithm that can import "raw public key".
 */
-func KeyAlgFactoryCreateFromRawPublicKey (publicKey *RawPublicKey, random IRandom) (IKeyAlg, error) {
+func KeyAlgFactoryCreateFromRawPublicKey(publicKey *RawPublicKey, random Random) (KeyAlg, error) {
     var error C.vscf_error_t
     C.vscf_error_reset(&error)
 
@@ -58,13 +58,13 @@ func KeyAlgFactoryCreateFromRawPublicKey (publicKey *RawPublicKey, random IRando
         return nil, err
     }
 
-    return FoundationImplementationWrapIKeyAlg(proxyResult) /* r4 */
+    return FoundationImplementationWrapKeyAlg(proxyResult) /* r4 */
 }
 
 /*
 * Create a key algorithm that can import "raw private key".
 */
-func KeyAlgFactoryCreateFromRawPrivateKey (privateKey *RawPrivateKey, random IRandom) (IKeyAlg, error) {
+func KeyAlgFactoryCreateFromRawPrivateKey(privateKey *RawPrivateKey, random Random) (KeyAlg, error) {
     var error C.vscf_error_t
     C.vscf_error_reset(&error)
 
@@ -75,5 +75,5 @@ func KeyAlgFactoryCreateFromRawPrivateKey (privateKey *RawPrivateKey, random IRa
         return nil, err
     }
 
-    return FoundationImplementationWrapIKeyAlg(proxyResult) /* r4 */
+    return FoundationImplementationWrapKeyAlg(proxyResult) /* r4 */
 }

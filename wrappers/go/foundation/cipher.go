@@ -5,7 +5,7 @@ import "C"
 /*
 * Provide interface for symmetric ciphers.
 */
-type ICipher interface {
+type Cipher interface {
 
     context
 

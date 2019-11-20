@@ -2,6 +2,7 @@ package ratchet
 
 // #include <virgil/crypto/ratchet/vscr_ratchet_public.h>
 import "C"
+import "runtime"
 
 
 /*
@@ -12,46 +13,60 @@ type RatchetGroupMessage struct {
 }
 
 /* Handle underlying C context. */
-func (obj *RatchetGroupMessage) ctx () *C.vscf_impl_t {
+func (obj *RatchetGroupMessage) ctx() *C.vscf_impl_t {
     return (*C.vscf_impl_t)(obj.cCtx)
 }
 
-func NewRatchetGroupMessage () *RatchetGroupMessage {
+func NewRatchetGroupMessage() *RatchetGroupMessage {
     ctx := C.vscr_ratchet_group_message_new()
-    return &RatchetGroupMessage {
+    obj := &RatchetGroupMessage {
         cCtx: ctx,
     }
+    runtime.SetFinalizer(obj, obj.Delete)
+    return obj
 }
 
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newRatchetGroupMessageWithCtx (ctx *C.vscr_ratchet_group_message_t /*ct2*/) *RatchetGroupMessage {
-    return &RatchetGroupMessage {
+func newRatchetGroupMessageWithCtx(ctx *C.vscr_ratchet_group_message_t /*ct2*/) *RatchetGroupMessage {
+    obj := &RatchetGroupMessage {
         cCtx: ctx,
     }
+    runtime.SetFinalizer(obj, obj.Delete)
+    return obj
 }
 
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newRatchetGroupMessageCopy (ctx *C.vscr_ratchet_group_message_t /*ct2*/) *RatchetGroupMessage {
-    return &RatchetGroupMessage {
+func newRatchetGroupMessageCopy(ctx *C.vscr_ratchet_group_message_t /*ct2*/) *RatchetGroupMessage {
+    obj := &RatchetGroupMessage {
         cCtx: C.vscr_ratchet_group_message_shallow_copy(ctx),
     }
+    runtime.SetFinalizer(obj, obj.Delete)
+    return obj
 }
 
 /*
 * Release underlying C context.
 */
-func (obj *RatchetGroupMessage) Delete () {
+func (obj *RatchetGroupMessage) Delete() {
+    runtime.SetFinalizer(obj, nil)
+    obj.clear()
+}
+
+/*
+* Release underlying C context.
+*/
+func (obj *RatchetGroupMessage) delete() {
     C.vscr_ratchet_group_message_delete(obj.cCtx)
 }
 
 /*
 * Returns message type.
 */
-func (obj *RatchetGroupMessage) GetType () GroupMsgType {
+func (obj *RatchetGroupMessage) GetType() GroupMsgType {
     proxyResult := /*pr4*/C.vscr_ratchet_group_message_get_type(obj.cCtx)
 
     return GroupMsgType(proxyResult) /* r8 */
@@ -61,7 +76,7 @@ func (obj *RatchetGroupMessage) GetType () GroupMsgType {
 * Returns session id.
 * This method should be called only for group info type.
 */
-func (obj *RatchetGroupMessage) GetSessionId () []byte {
+func (obj *RatchetGroupMessage) GetSessionId() []byte {
     proxyResult := /*pr4*/C.vscr_ratchet_group_message_get_session_id(obj.cCtx)
 
     return helperExtractData(proxyResult) /* r1 */
@@ -70,7 +85,7 @@ func (obj *RatchetGroupMessage) GetSessionId () []byte {
 /*
 * Returns message counter in current epoch.
 */
-func (obj *RatchetGroupMessage) GetCounter () uint32 {
+func (obj *RatchetGroupMessage) GetCounter() uint32 {
     proxyResult := /*pr4*/C.vscr_ratchet_group_message_get_counter(obj.cCtx)
 
     return uint32(proxyResult) /* r9 */
@@ -79,7 +94,7 @@ func (obj *RatchetGroupMessage) GetCounter () uint32 {
 /*
 * Returns message epoch.
 */
-func (obj *RatchetGroupMessage) GetEpoch () uint32 {
+func (obj *RatchetGroupMessage) GetEpoch() uint32 {
     proxyResult := /*pr4*/C.vscr_ratchet_group_message_get_epoch(obj.cCtx)
 
     return uint32(proxyResult) /* r9 */
@@ -88,7 +103,7 @@ func (obj *RatchetGroupMessage) GetEpoch () uint32 {
 /*
 * Buffer len to serialize this class.
 */
-func (obj *RatchetGroupMessage) SerializeLen () uint32 {
+func (obj *RatchetGroupMessage) SerializeLen() uint32 {
     proxyResult := /*pr4*/C.vscr_ratchet_group_message_serialize_len(obj.cCtx)
 
     return uint32(proxyResult) /* r9 */
@@ -97,7 +112,7 @@ func (obj *RatchetGroupMessage) SerializeLen () uint32 {
 /*
 * Serializes instance.
 */
-func (obj *RatchetGroupMessage) Serialize () []byte {
+func (obj *RatchetGroupMessage) Serialize() []byte {
     outputBuf, outputBufErr := bufferNewBuffer(int(obj.SerializeLen() /* lg2 */))
     if outputBufErr != nil {
         return nil
@@ -113,7 +128,7 @@ func (obj *RatchetGroupMessage) Serialize () []byte {
 /*
 * Deserializes instance.
 */
-func RatchetGroupMessageDeserialize (input []byte) (*RatchetGroupMessage, error) {
+func RatchetGroupMessageDeserialize(input []byte) (*RatchetGroupMessage, error) {
     var error C.vscr_error_t
     C.vscr_error_reset(&error)
     inputData := helperWrapData (input)

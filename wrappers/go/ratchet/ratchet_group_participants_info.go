@@ -2,6 +2,7 @@ package ratchet
 
 // #include <virgil/crypto/ratchet/vscr_ratchet_public.h>
 import "C"
+import "runtime"
 
 
 /*
@@ -12,57 +13,73 @@ type RatchetGroupParticipantsInfo struct {
 }
 
 /* Handle underlying C context. */
-func (obj *RatchetGroupParticipantsInfo) ctx () *C.vscf_impl_t {
+func (obj *RatchetGroupParticipantsInfo) ctx() *C.vscf_impl_t {
     return (*C.vscf_impl_t)(obj.cCtx)
 }
 
-func NewRatchetGroupParticipantsInfo () *RatchetGroupParticipantsInfo {
+func NewRatchetGroupParticipantsInfo() *RatchetGroupParticipantsInfo {
     ctx := C.vscr_ratchet_group_participants_info_new()
-    return &RatchetGroupParticipantsInfo {
+    obj := &RatchetGroupParticipantsInfo {
         cCtx: ctx,
     }
+    runtime.SetFinalizer(obj, obj.Delete)
+    return obj
 }
 
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newRatchetGroupParticipantsInfoWithCtx (ctx *C.vscr_ratchet_group_participants_info_t /*ct2*/) *RatchetGroupParticipantsInfo {
-    return &RatchetGroupParticipantsInfo {
+func newRatchetGroupParticipantsInfoWithCtx(ctx *C.vscr_ratchet_group_participants_info_t /*ct2*/) *RatchetGroupParticipantsInfo {
+    obj := &RatchetGroupParticipantsInfo {
         cCtx: ctx,
     }
+    runtime.SetFinalizer(obj, obj.Delete)
+    return obj
 }
 
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newRatchetGroupParticipantsInfoCopy (ctx *C.vscr_ratchet_group_participants_info_t /*ct2*/) *RatchetGroupParticipantsInfo {
-    return &RatchetGroupParticipantsInfo {
+func newRatchetGroupParticipantsInfoCopy(ctx *C.vscr_ratchet_group_participants_info_t /*ct2*/) *RatchetGroupParticipantsInfo {
+    obj := &RatchetGroupParticipantsInfo {
         cCtx: C.vscr_ratchet_group_participants_info_shallow_copy(ctx),
     }
+    runtime.SetFinalizer(obj, obj.Delete)
+    return obj
 }
 
 /*
 * Release underlying C context.
 */
-func (obj *RatchetGroupParticipantsInfo) Delete () {
+func (obj *RatchetGroupParticipantsInfo) Delete() {
+    runtime.SetFinalizer(obj, nil)
+    obj.clear()
+}
+
+/*
+* Release underlying C context.
+*/
+func (obj *RatchetGroupParticipantsInfo) delete() {
     C.vscr_ratchet_group_participants_info_delete(obj.cCtx)
 }
 
 /*
 * Creates new array for size elements
 */
-func NewRatchetGroupParticipantsInfoSize (size uint32) *RatchetGroupParticipantsInfo {
+func NewRatchetGroupParticipantsInfoSize(size uint32) *RatchetGroupParticipantsInfo {
     proxyResult := /*pr4*/C.vscr_ratchet_group_participants_info_new_size((C.uint)(size)/*pa10*/)
 
-    return &RatchetGroupParticipantsInfo {
+    obj := &RatchetGroupParticipantsInfo {
         cCtx: proxyResult,
     }
+    runtime.SetFinalizer(obj, obj.Delete)
+    return obj
 }
 
 /*
 * Add participant info
 */
-func (obj *RatchetGroupParticipantsInfo) AddParticipant (id []byte, pubKey []byte) error {
+func (obj *RatchetGroupParticipantsInfo) AddParticipant(id []byte, pubKey []byte) error {
     idData := helperWrapData (id)
     pubKeyData := helperWrapData (pubKey)
 

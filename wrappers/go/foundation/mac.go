@@ -5,7 +5,7 @@ import "C"
 /*
 * Provides interface to the stateless MAC (message authentication code) algorithms.
 */
-type IMac interface {
+type Mac interface {
 
     context
 

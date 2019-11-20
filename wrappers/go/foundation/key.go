@@ -5,7 +5,7 @@ import "C"
 /*
 * Basic key type.
 */
-type IKey interface {
+type Key interface {
 
     context
 
@@ -17,7 +17,7 @@ type IKey interface {
     /*
     * Return algorithm information that can be used for serialization.
     */
-    AlgInfo () (IAlgInfo, error)
+    AlgInfo () (AlgInfo, error)
 
     /*
     * Length of the key in bytes.

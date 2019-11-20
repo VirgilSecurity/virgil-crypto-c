@@ -2,6 +2,7 @@ package foundation
 
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
+import "runtime"
 
 
 /*
@@ -13,46 +14,60 @@ type SignerInfo struct {
 }
 
 /* Handle underlying C context. */
-func (obj *SignerInfo) ctx () *C.vscf_impl_t {
+func (obj *SignerInfo) ctx() *C.vscf_impl_t {
     return (*C.vscf_impl_t)(obj.cCtx)
 }
 
-func NewSignerInfo () *SignerInfo {
+func NewSignerInfo() *SignerInfo {
     ctx := C.vscf_signer_info_new()
-    return &SignerInfo {
+    obj := &SignerInfo {
         cCtx: ctx,
     }
+    runtime.SetFinalizer(obj, obj.Delete)
+    return obj
 }
 
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newSignerInfoWithCtx (ctx *C.vscf_signer_info_t /*ct2*/) *SignerInfo {
-    return &SignerInfo {
+func newSignerInfoWithCtx(ctx *C.vscf_signer_info_t /*ct2*/) *SignerInfo {
+    obj := &SignerInfo {
         cCtx: ctx,
     }
+    runtime.SetFinalizer(obj, obj.Delete)
+    return obj
 }
 
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newSignerInfoCopy (ctx *C.vscf_signer_info_t /*ct2*/) *SignerInfo {
-    return &SignerInfo {
+func newSignerInfoCopy(ctx *C.vscf_signer_info_t /*ct2*/) *SignerInfo {
+    obj := &SignerInfo {
         cCtx: C.vscf_signer_info_shallow_copy(ctx),
     }
+    runtime.SetFinalizer(obj, obj.Delete)
+    return obj
 }
 
 /*
 * Release underlying C context.
 */
-func (obj *SignerInfo) Delete () {
+func (obj *SignerInfo) Delete() {
+    runtime.SetFinalizer(obj, nil)
+    obj.clear()
+}
+
+/*
+* Release underlying C context.
+*/
+func (obj *SignerInfo) delete() {
     C.vscf_signer_info_delete(obj.cCtx)
 }
 
 /*
 * Return signer identifier.
 */
-func (obj *SignerInfo) SignerId () []byte {
+func (obj *SignerInfo) SignerId() []byte {
     proxyResult := /*pr4*/C.vscf_signer_info_signer_id(obj.cCtx)
 
     return helperExtractData(proxyResult) /* r1 */
@@ -61,16 +76,16 @@ func (obj *SignerInfo) SignerId () []byte {
 /*
 * Return algorithm information that was used for data signing.
 */
-func (obj *SignerInfo) SignerAlgInfo () (IAlgInfo, error) {
+func (obj *SignerInfo) SignerAlgInfo() (AlgInfo, error) {
     proxyResult := /*pr4*/C.vscf_signer_info_signer_alg_info(obj.cCtx)
 
-    return FoundationImplementationWrapIAlgInfo(proxyResult) /* r4 */
+    return FoundationImplementationWrapAlgInfo(proxyResult) /* r4 */
 }
 
 /*
 * Return data signature.
 */
-func (obj *SignerInfo) Signature () []byte {
+func (obj *SignerInfo) Signature() []byte {
     proxyResult := /*pr4*/C.vscf_signer_info_signature(obj.cCtx)
 
     return helperExtractData(proxyResult) /* r1 */

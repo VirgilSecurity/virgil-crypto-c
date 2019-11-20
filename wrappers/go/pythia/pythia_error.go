@@ -16,23 +16,23 @@ const (
     /*
     * This error should not be returned if assertions is enabled.
     */
-    PYTHIA_ERROR_ERROR_BAD_ARGUMENTS int = -1
+    PythiaErrorErrorBadArguments int = -1
     /*
     * Underlying pythia library returns -1.
     */
-    PYTHIA_ERROR_ERROR_PYTHIA_INNER_FAIL int = -200
+    PythiaErrorErrorPythiaInnerFail int = -200
     /*
     * Underlying random number generator failed.
     */
-    PYTHIA_ERROR_ERROR_RNG_FAILED int = -202
+    PythiaErrorErrorRngFailed int = -202
 )
 
-func (obj *PythiaError) Error () string {
+func (obj *PythiaError) Error() string {
     return fmt.Sprintf("PythiaError{code: %v message: %s}", obj.Code, obj.Message)
 }
 
 /* Check given C status, and if it's not "success" then raise correspond error. */
-func PythiaErrorHandleStatus (status C.vscp_status_t) error {
+func PythiaErrorHandleStatus(status C.vscp_status_t) error {
     if status != C.vscp_status_SUCCESS {
         switch (status) {
         case C.vscp_status_ERROR_BAD_ARGUMENTS:
@@ -51,10 +51,10 @@ type wrapError struct {
     msg string
 }
 
-func (obj *wrapError) Error () string {
+func (obj *wrapError) Error() string {
     return fmt.Sprintf("%s: %v", obj.msg, obj.err)
 }
 
-func (obj *wrapError) Unwrap () error {
+func (obj *wrapError) Unwrap() error {
     return obj.err
 }

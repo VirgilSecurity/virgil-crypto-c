@@ -2,73 +2,75 @@ package foundation
 
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
+import "runtime"
 
 
 type BrainkeyClient struct {
     cCtx *C.vscf_brainkey_client_t /*ct2*/
 }
+const (
+    BrainkeyClientPointLen uint32 = 65
+    BrainkeyClientMpiLen uint32 = 32
+    BrainkeyClientSeedLen uint32 = 32
+    BrainkeyClientMaxPasswordLen uint32 = 128
+    BrainkeyClientMaxKeyNameLen uint32 = 128
+)
 
 /* Handle underlying C context. */
-func (obj *BrainkeyClient) ctx () *C.vscf_impl_t {
+func (obj *BrainkeyClient) ctx() *C.vscf_impl_t {
     return (*C.vscf_impl_t)(obj.cCtx)
 }
 
-func NewBrainkeyClient () *BrainkeyClient {
+func NewBrainkeyClient() *BrainkeyClient {
     ctx := C.vscf_brainkey_client_new()
-    return &BrainkeyClient {
+    obj := &BrainkeyClient {
         cCtx: ctx,
     }
+    runtime.SetFinalizer(obj, obj.Delete)
+    return obj
 }
 
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newBrainkeyClientWithCtx (ctx *C.vscf_brainkey_client_t /*ct2*/) *BrainkeyClient {
-    return &BrainkeyClient {
+func newBrainkeyClientWithCtx(ctx *C.vscf_brainkey_client_t /*ct2*/) *BrainkeyClient {
+    obj := &BrainkeyClient {
         cCtx: ctx,
     }
+    runtime.SetFinalizer(obj, obj.Delete)
+    return obj
 }
 
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newBrainkeyClientCopy (ctx *C.vscf_brainkey_client_t /*ct2*/) *BrainkeyClient {
-    return &BrainkeyClient {
+func newBrainkeyClientCopy(ctx *C.vscf_brainkey_client_t /*ct2*/) *BrainkeyClient {
+    obj := &BrainkeyClient {
         cCtx: C.vscf_brainkey_client_shallow_copy(ctx),
     }
+    runtime.SetFinalizer(obj, obj.Delete)
+    return obj
 }
 
 /*
 * Release underlying C context.
 */
-func (obj *BrainkeyClient) Delete () {
+func (obj *BrainkeyClient) Delete() {
+    runtime.SetFinalizer(obj, nil)
+    obj.clear()
+}
+
+/*
+* Release underlying C context.
+*/
+func (obj *BrainkeyClient) delete() {
     C.vscf_brainkey_client_delete(obj.cCtx)
-}
-
-func BrainkeyClientGetPointLen () uint32 {
-    return 65
-}
-
-func BrainkeyClientGetMpiLen () uint32 {
-    return 32
-}
-
-func BrainkeyClientGetSeedLen () uint32 {
-    return 32
-}
-
-func BrainkeyClientGetMaxPasswordLen () uint32 {
-    return 128
-}
-
-func BrainkeyClientGetMaxKeyNameLen () uint32 {
-    return 128
 }
 
 /*
 * Random used for key generation, proofs, etc.
 */
-func (obj *BrainkeyClient) SetRandom (random IRandom) {
+func (obj *BrainkeyClient) SetRandom(random Random) {
     C.vscf_brainkey_client_release_random(obj.cCtx)
     C.vscf_brainkey_client_use_random(obj.cCtx, (*C.vscf_impl_t)(random.ctx()))
 }
@@ -76,12 +78,12 @@ func (obj *BrainkeyClient) SetRandom (random IRandom) {
 /*
 * Random used for crypto operations to make them const-time
 */
-func (obj *BrainkeyClient) SetOperationRandom (operationRandom IRandom) {
+func (obj *BrainkeyClient) SetOperationRandom(operationRandom Random) {
     C.vscf_brainkey_client_release_operation_random(obj.cCtx)
     C.vscf_brainkey_client_use_operation_random(obj.cCtx, (*C.vscf_impl_t)(operationRandom.ctx()))
 }
 
-func (obj *BrainkeyClient) SetupDefaults () error {
+func (obj *BrainkeyClient) SetupDefaults() error {
     proxyResult := /*pr4*/C.vscf_brainkey_client_setup_defaults(obj.cCtx)
 
     err := FoundationErrorHandleStatus(proxyResult)
@@ -92,14 +94,14 @@ func (obj *BrainkeyClient) SetupDefaults () error {
     return nil
 }
 
-func (obj *BrainkeyClient) Blind (password []byte) ([]byte, []byte, error) {
-    deblindFactorBuf, deblindFactorBufErr := bufferNewBuffer(int(BrainkeyClientGetMpiLen() /* lg4 */))
+func (obj *BrainkeyClient) Blind(password []byte) ([]byte, []byte, error) {
+    deblindFactorBuf, deblindFactorBufErr := bufferNewBuffer(int(BrainkeyClientMpiLen /* lg4 */))
     if deblindFactorBufErr != nil {
         return nil, nil, deblindFactorBufErr
     }
     defer deblindFactorBuf.Delete()
 
-    blindedPointBuf, blindedPointBufErr := bufferNewBuffer(int(BrainkeyClientGetPointLen() /* lg4 */))
+    blindedPointBuf, blindedPointBufErr := bufferNewBuffer(int(BrainkeyClientPointLen /* lg4 */))
     if blindedPointBufErr != nil {
         return nil, nil, blindedPointBufErr
     }
@@ -116,8 +118,8 @@ func (obj *BrainkeyClient) Blind (password []byte) ([]byte, []byte, error) {
     return deblindFactorBuf.getData() /* r7 */, blindedPointBuf.getData() /* r7 */, nil
 }
 
-func (obj *BrainkeyClient) Deblind (password []byte, hardenedPoint []byte, deblindFactor []byte, keyName []byte) ([]byte, error) {
-    seedBuf, seedBufErr := bufferNewBuffer(int(BrainkeyClientGetPointLen() /* lg4 */))
+func (obj *BrainkeyClient) Deblind(password []byte, hardenedPoint []byte, deblindFactor []byte, keyName []byte) ([]byte, error) {
+    seedBuf, seedBufErr := bufferNewBuffer(int(BrainkeyClientPointLen /* lg4 */))
     if seedBufErr != nil {
         return nil, seedBufErr
     }

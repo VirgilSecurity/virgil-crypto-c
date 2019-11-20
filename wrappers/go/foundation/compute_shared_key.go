@@ -5,7 +5,7 @@ import "C"
 /*
 * Provide interface to compute shared key for 2 asymmetric keys.
 */
-type IComputeSharedKey interface {
+type ComputeSharedKey interface {
 
     context
 
@@ -13,13 +13,13 @@ type IComputeSharedKey interface {
     * Compute shared key for 2 asymmetric keys.
     * Note, computed shared key can be used only within symmetric cryptography.
     */
-    ComputeSharedKey (publicKey IPublicKey, privateKey IPrivateKey) ([]byte, error)
+    ComputeSharedKey (publicKey PublicKey, privateKey PrivateKey) ([]byte, error)
 
     /*
     * Return number of bytes required to hold shared key.
     * Expect Public Key or Private Key.
     */
-    SharedKeyLen (key IKey) uint32
+    SharedKeyLen (key Key) uint32
 
     /*
     * Release underlying C context.

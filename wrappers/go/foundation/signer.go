@@ -2,6 +2,7 @@ package foundation
 
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
+import "runtime"
 
 
 /*
@@ -12,48 +13,62 @@ type Signer struct {
 }
 
 /* Handle underlying C context. */
-func (obj *Signer) ctx () *C.vscf_impl_t {
+func (obj *Signer) ctx() *C.vscf_impl_t {
     return (*C.vscf_impl_t)(obj.cCtx)
 }
 
-func NewSigner () *Signer {
+func NewSigner() *Signer {
     ctx := C.vscf_signer_new()
-    return &Signer {
+    obj := &Signer {
         cCtx: ctx,
     }
+    runtime.SetFinalizer(obj, obj.Delete)
+    return obj
 }
 
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newSignerWithCtx (ctx *C.vscf_signer_t /*ct2*/) *Signer {
-    return &Signer {
+func newSignerWithCtx(ctx *C.vscf_signer_t /*ct2*/) *Signer {
+    obj := &Signer {
         cCtx: ctx,
     }
+    runtime.SetFinalizer(obj, obj.Delete)
+    return obj
 }
 
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newSignerCopy (ctx *C.vscf_signer_t /*ct2*/) *Signer {
-    return &Signer {
+func newSignerCopy(ctx *C.vscf_signer_t /*ct2*/) *Signer {
+    obj := &Signer {
         cCtx: C.vscf_signer_shallow_copy(ctx),
     }
+    runtime.SetFinalizer(obj, obj.Delete)
+    return obj
 }
 
 /*
 * Release underlying C context.
 */
-func (obj *Signer) Delete () {
+func (obj *Signer) Delete() {
+    runtime.SetFinalizer(obj, nil)
+    obj.clear()
+}
+
+/*
+* Release underlying C context.
+*/
+func (obj *Signer) delete() {
     C.vscf_signer_delete(obj.cCtx)
 }
 
-func (obj *Signer) SetHash (hash IHash) {
+func (obj *Signer) SetHash(hash Hash) {
     C.vscf_signer_release_hash(obj.cCtx)
     C.vscf_signer_use_hash(obj.cCtx, (*C.vscf_impl_t)(hash.ctx()))
 }
 
-func (obj *Signer) SetRandom (random IRandom) {
+func (obj *Signer) SetRandom(random Random) {
     C.vscf_signer_release_random(obj.cCtx)
     C.vscf_signer_use_random(obj.cCtx, (*C.vscf_impl_t)(random.ctx()))
 }
@@ -61,7 +76,7 @@ func (obj *Signer) SetRandom (random IRandom) {
 /*
 * Start a processing a new signature.
 */
-func (obj *Signer) Reset () {
+func (obj *Signer) Reset() {
     C.vscf_signer_reset(obj.cCtx)
 
     return
@@ -70,7 +85,7 @@ func (obj *Signer) Reset () {
 /*
 * Add given data to the signed data.
 */
-func (obj *Signer) AppendData (data []byte) {
+func (obj *Signer) AppendData(data []byte) {
     dataData := helperWrapData (data)
 
     C.vscf_signer_append_data(obj.cCtx, dataData)
@@ -81,7 +96,7 @@ func (obj *Signer) AppendData (data []byte) {
 /*
 * Return length of the signature.
 */
-func (obj *Signer) SignatureLen (privateKey IPrivateKey) uint32 {
+func (obj *Signer) SignatureLen(privateKey PrivateKey) uint32 {
     proxyResult := /*pr4*/C.vscf_signer_signature_len(obj.cCtx, (*C.vscf_impl_t)(privateKey.ctx()))
 
     return uint32(proxyResult) /* r9 */
@@ -90,8 +105,8 @@ func (obj *Signer) SignatureLen (privateKey IPrivateKey) uint32 {
 /*
 * Accomplish signing and return signature.
 */
-func (obj *Signer) Sign (privateKey IPrivateKey) ([]byte, error) {
-    signatureBuf, signatureBufErr := bufferNewBuffer(int(obj.SignatureLen(privateKey.(IPrivateKey)) /* lg2 */))
+func (obj *Signer) Sign(privateKey PrivateKey) ([]byte, error) {
+    signatureBuf, signatureBufErr := bufferNewBuffer(int(obj.SignatureLen(privateKey.(PrivateKey)) /* lg2 */))
     if signatureBufErr != nil {
         return nil, signatureBufErr
     }

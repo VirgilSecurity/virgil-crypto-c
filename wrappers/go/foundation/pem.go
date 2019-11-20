@@ -14,7 +14,7 @@ type Pem struct {
 /*
 * Return length in bytes required to hold wrapped PEM format.
 */
-func PemWrappedLen (title string, dataLen uint32) uint32 {
+func PemWrappedLen(title string, dataLen uint32) uint32 {
     titleStr := C.CString(title)
     defer C.free(unsafe.Pointer(titleStr))
 
@@ -28,7 +28,7 @@ func PemWrappedLen (title string, dataLen uint32) uint32 {
 * additional information just header-base64-footer.
 * Note, written buffer is NOT null-terminated.
 */
-func PemWrap (title string, data []byte) []byte {
+func PemWrap(title string, data []byte) []byte {
     titleStr := C.CString(title)
     defer C.free(unsafe.Pointer(titleStr))
 
@@ -47,7 +47,7 @@ func PemWrap (title string, data []byte) []byte {
 /*
 * Return length in bytes required to hold unwrapped binary.
 */
-func PemUnwrappedLen (pemLen uint32) uint32 {
+func PemUnwrappedLen(pemLen uint32) uint32 {
     proxyResult := /*pr4*/C.vscf_pem_unwrapped_len((C.size_t)(pemLen)/*pa10*/)
 
     return uint32(proxyResult) /* r9 */
@@ -56,7 +56,7 @@ func PemUnwrappedLen (pemLen uint32) uint32 {
 /*
 * Takes PEM data and extract binary data from it.
 */
-func PemUnwrap (pem []byte) ([]byte, error) {
+func PemUnwrap(pem []byte) ([]byte, error) {
     dataBuf, dataBufErr := bufferNewBuffer(int(PemUnwrappedLen(uint32(len(pem))) /* lg1 */))
     if dataBufErr != nil {
         return nil, dataBufErr
@@ -77,7 +77,7 @@ func PemUnwrap (pem []byte) ([]byte, error) {
 /*
 * Returns PEM title if PEM data is valid, otherwise - empty data.
 */
-func PemTitle (pem []byte) []byte {
+func PemTitle(pem []byte) []byte {
     pemData := helperWrapData (pem)
 
     proxyResult := /*pr4*/C.vscf_pem_title(pemData)

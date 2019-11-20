@@ -2,6 +2,7 @@ package phe
 
 // #include <virgil/crypto/phe/vsce_phe_public.h>
 import "C"
+import "runtime"
 import foundation "virgil/foundation"
 
 
@@ -12,60 +13,67 @@ import foundation "virgil/foundation"
 type PheCipher struct {
     cCtx *C.vsce_phe_cipher_t /*ct2*/
 }
+const (
+    PheCipherSaltLen uint32 = 32
+    PheCipherKeyLen uint32 = 32
+    PheCipherNonceLen uint32 = 12
+)
 
 /* Handle underlying C context. */
-func (obj *PheCipher) ctx () *C.vscf_impl_t {
+func (obj *PheCipher) ctx() *C.vscf_impl_t {
     return (*C.vscf_impl_t)(obj.cCtx)
 }
 
-func NewPheCipher () *PheCipher {
+func NewPheCipher() *PheCipher {
     ctx := C.vsce_phe_cipher_new()
-    return &PheCipher {
+    obj := &PheCipher {
         cCtx: ctx,
     }
+    runtime.SetFinalizer(obj, obj.Delete)
+    return obj
 }
 
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newPheCipherWithCtx (ctx *C.vsce_phe_cipher_t /*ct2*/) *PheCipher {
-    return &PheCipher {
+func newPheCipherWithCtx(ctx *C.vsce_phe_cipher_t /*ct2*/) *PheCipher {
+    obj := &PheCipher {
         cCtx: ctx,
     }
+    runtime.SetFinalizer(obj, obj.Delete)
+    return obj
 }
 
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newPheCipherCopy (ctx *C.vsce_phe_cipher_t /*ct2*/) *PheCipher {
-    return &PheCipher {
+func newPheCipherCopy(ctx *C.vsce_phe_cipher_t /*ct2*/) *PheCipher {
+    obj := &PheCipher {
         cCtx: C.vsce_phe_cipher_shallow_copy(ctx),
     }
+    runtime.SetFinalizer(obj, obj.Delete)
+    return obj
 }
 
 /*
 * Release underlying C context.
 */
-func (obj *PheCipher) Delete () {
+func (obj *PheCipher) Delete() {
+    runtime.SetFinalizer(obj, nil)
+    obj.clear()
+}
+
+/*
+* Release underlying C context.
+*/
+func (obj *PheCipher) delete() {
     C.vsce_phe_cipher_delete(obj.cCtx)
-}
-
-func PheCipherGetSaltLen () uint32 {
-    return 32
-}
-
-func PheCipherGetKeyLen () uint32 {
-    return 32
-}
-
-func PheCipherGetNonceLen () uint32 {
-    return 12
 }
 
 /*
 * Random used for salt generation
 */
-func (obj *PheCipher) SetRandom (random foundation.IRandom) {
+func (obj *PheCipher) SetRandom(random foundation.Random) {
     C.vsce_phe_cipher_release_random(obj.cCtx)
     C.vsce_phe_cipher_use_random(obj.cCtx, (*C.vscf_impl_t)(random.(context).ctx()))
 }
@@ -73,7 +81,7 @@ func (obj *PheCipher) SetRandom (random foundation.IRandom) {
 /*
 * Setups dependencies with default values.
 */
-func (obj *PheCipher) SetupDefaults () error {
+func (obj *PheCipher) SetupDefaults() error {
     proxyResult := /*pr4*/C.vsce_phe_cipher_setup_defaults(obj.cCtx)
 
     err := PheErrorHandleStatus(proxyResult)
@@ -87,7 +95,7 @@ func (obj *PheCipher) SetupDefaults () error {
 /*
 * Returns buffer capacity needed to fit cipher text
 */
-func (obj *PheCipher) EncryptLen (plainTextLen uint32) uint32 {
+func (obj *PheCipher) EncryptLen(plainTextLen uint32) uint32 {
     proxyResult := /*pr4*/C.vsce_phe_cipher_encrypt_len(obj.cCtx, (C.size_t)(plainTextLen)/*pa10*/)
 
     return uint32(proxyResult) /* r9 */
@@ -96,7 +104,7 @@ func (obj *PheCipher) EncryptLen (plainTextLen uint32) uint32 {
 /*
 * Returns buffer capacity needed to fit plain text
 */
-func (obj *PheCipher) DecryptLen (cipherTextLen uint32) uint32 {
+func (obj *PheCipher) DecryptLen(cipherTextLen uint32) uint32 {
     proxyResult := /*pr4*/C.vsce_phe_cipher_decrypt_len(obj.cCtx, (C.size_t)(cipherTextLen)/*pa10*/)
 
     return uint32(proxyResult) /* r9 */
@@ -105,7 +113,7 @@ func (obj *PheCipher) DecryptLen (cipherTextLen uint32) uint32 {
 /*
 * Encrypts data using account key
 */
-func (obj *PheCipher) Encrypt (plainText []byte, accountKey []byte) ([]byte, error) {
+func (obj *PheCipher) Encrypt(plainText []byte, accountKey []byte) ([]byte, error) {
     cipherTextBuf, cipherTextBufErr := bufferNewBuffer(int(obj.EncryptLen(uint32(len(plainText))) /* lg2 */))
     if cipherTextBufErr != nil {
         return nil, cipherTextBufErr
@@ -127,7 +135,7 @@ func (obj *PheCipher) Encrypt (plainText []byte, accountKey []byte) ([]byte, err
 /*
 * Decrypts data using account key
 */
-func (obj *PheCipher) Decrypt (cipherText []byte, accountKey []byte) ([]byte, error) {
+func (obj *PheCipher) Decrypt(cipherText []byte, accountKey []byte) ([]byte, error) {
     plainTextBuf, plainTextBufErr := bufferNewBuffer(int(obj.DecryptLen(uint32(len(cipherText))) /* lg2 */))
     if plainTextBufErr != nil {
         return nil, plainTextBufErr
@@ -149,7 +157,7 @@ func (obj *PheCipher) Decrypt (cipherText []byte, accountKey []byte) ([]byte, er
 /*
 * Encrypts data (and authenticates additional data) using account key
 */
-func (obj *PheCipher) AuthEncrypt (plainText []byte, additionalData []byte, accountKey []byte) ([]byte, error) {
+func (obj *PheCipher) AuthEncrypt(plainText []byte, additionalData []byte, accountKey []byte) ([]byte, error) {
     cipherTextBuf, cipherTextBufErr := bufferNewBuffer(int(obj.EncryptLen(uint32(len(plainText))) /* lg2 */))
     if cipherTextBufErr != nil {
         return nil, cipherTextBufErr
@@ -172,7 +180,7 @@ func (obj *PheCipher) AuthEncrypt (plainText []byte, additionalData []byte, acco
 /*
 * Decrypts data (and verifies additional data) using account key
 */
-func (obj *PheCipher) AuthDecrypt (cipherText []byte, additionalData []byte, accountKey []byte) ([]byte, error) {
+func (obj *PheCipher) AuthDecrypt(cipherText []byte, additionalData []byte, accountKey []byte) ([]byte, error) {
     plainTextBuf, plainTextBufErr := bufferNewBuffer(int(obj.DecryptLen(uint32(len(cipherText))) /* lg2 */))
     if plainTextBufErr != nil {
         return nil, plainTextBufErr

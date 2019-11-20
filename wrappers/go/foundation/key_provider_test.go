@@ -71,7 +71,7 @@ func TestKeyProvider_ImportPrivateKey(t *testing.T) {
     assert.Nil(t, err)
     assert.NotNil(t, privateKey)
 
-    iKey, _ := privateKey.(IKey)
+    iKey, _ := privateKey.(Key)
     assert.True(t, iKey.IsValid())
 
     exportedPrivateKeyData, err := keyProvider.ExportPrivateKey(privateKey)
@@ -80,6 +80,6 @@ func TestKeyProvider_ImportPrivateKey(t *testing.T) {
     pk, err :=keyProvider.ImportPrivateKey(exportedPrivateKeyData)
     assert.Nil(t, err)
 
-    importedPrivateKey := pk.(IKey)
+    importedPrivateKey := pk.(Key)
     assert.True(t, importedPrivateKey.IsValid())
 }

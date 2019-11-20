@@ -2,17 +2,17 @@ package foundation
 
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
+import "runtime"
 
 
 /*
 * Implements PKCS#8 and SEC1 key deserialization from DER / PEM format.
 */
 type KeyAsn1Deserializer struct {
-    IKeyDeserializer
     cCtx *C.vscf_key_asn1_deserializer_t /*ct10*/
 }
 
-func (obj *KeyAsn1Deserializer) SetAsn1Reader (asn1Reader IAsn1Reader) {
+func (obj *KeyAsn1Deserializer) SetAsn1Reader(asn1Reader Asn1Reader) {
     C.vscf_key_asn1_deserializer_release_asn1_reader(obj.cCtx)
     C.vscf_key_asn1_deserializer_use_asn1_reader(obj.cCtx, (*C.vscf_impl_t)(asn1Reader.ctx()))
 }
@@ -20,7 +20,7 @@ func (obj *KeyAsn1Deserializer) SetAsn1Reader (asn1Reader IAsn1Reader) {
 /*
 * Setup predefined values to the uninitialized class dependencies.
 */
-func (obj *KeyAsn1Deserializer) SetupDefaults () {
+func (obj *KeyAsn1Deserializer) SetupDefaults() {
     C.vscf_key_asn1_deserializer_setup_defaults(obj.cCtx)
 
     return
@@ -31,7 +31,7 @@ func (obj *KeyAsn1Deserializer) SetupDefaults () {
 * Note, that caller code is responsible to reset ASN.1 reader with
 * an input buffer.
 */
-func (obj *KeyAsn1Deserializer) DeserializePublicKeyInplace () (*RawPublicKey, error) {
+func (obj *KeyAsn1Deserializer) DeserializePublicKeyInplace() (*RawPublicKey, error) {
     var error C.vscf_error_t
     C.vscf_error_reset(&error)
 
@@ -50,7 +50,7 @@ func (obj *KeyAsn1Deserializer) DeserializePublicKeyInplace () (*RawPublicKey, e
 * Note, that caller code is responsible to reset ASN.1 reader with
 * an input buffer.
 */
-func (obj *KeyAsn1Deserializer) DeserializePrivateKeyInplace () (*RawPrivateKey, error) {
+func (obj *KeyAsn1Deserializer) DeserializePrivateKeyInplace() (*RawPrivateKey, error) {
     var error C.vscf_error_t
     C.vscf_error_reset(&error)
 
@@ -65,46 +65,60 @@ func (obj *KeyAsn1Deserializer) DeserializePrivateKeyInplace () (*RawPrivateKey,
 }
 
 /* Handle underlying C context. */
-func (obj *KeyAsn1Deserializer) ctx () *C.vscf_impl_t {
+func (obj *KeyAsn1Deserializer) ctx() *C.vscf_impl_t {
     return (*C.vscf_impl_t)(obj.cCtx)
 }
 
-func NewKeyAsn1Deserializer () *KeyAsn1Deserializer {
+func NewKeyAsn1Deserializer() *KeyAsn1Deserializer {
     ctx := C.vscf_key_asn1_deserializer_new()
-    return &KeyAsn1Deserializer {
+    obj := &KeyAsn1Deserializer {
         cCtx: ctx,
     }
+    runtime.SetFinalizer(obj, obj.Delete)
+    return obj
 }
 
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newKeyAsn1DeserializerWithCtx (ctx *C.vscf_key_asn1_deserializer_t /*ct10*/) *KeyAsn1Deserializer {
-    return &KeyAsn1Deserializer {
+func newKeyAsn1DeserializerWithCtx(ctx *C.vscf_key_asn1_deserializer_t /*ct10*/) *KeyAsn1Deserializer {
+    obj := &KeyAsn1Deserializer {
         cCtx: ctx,
     }
+    runtime.SetFinalizer(obj, obj.Delete)
+    return obj
 }
 
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newKeyAsn1DeserializerCopy (ctx *C.vscf_key_asn1_deserializer_t /*ct10*/) *KeyAsn1Deserializer {
-    return &KeyAsn1Deserializer {
+func newKeyAsn1DeserializerCopy(ctx *C.vscf_key_asn1_deserializer_t /*ct10*/) *KeyAsn1Deserializer {
+    obj := &KeyAsn1Deserializer {
         cCtx: C.vscf_key_asn1_deserializer_shallow_copy(ctx),
     }
+    runtime.SetFinalizer(obj, obj.Delete)
+    return obj
 }
 
 /*
 * Release underlying C context.
 */
-func (obj *KeyAsn1Deserializer) Delete () {
+func (obj *KeyAsn1Deserializer) Delete() {
+    runtime.SetFinalizer(obj, nil)
+    obj.clear()
+}
+
+/*
+* Release underlying C context.
+*/
+func (obj *KeyAsn1Deserializer) delete() {
     C.vscf_key_asn1_deserializer_delete(obj.cCtx)
 }
 
 /*
 * Deserialize given public key as an interchangeable format to the object.
 */
-func (obj *KeyAsn1Deserializer) DeserializePublicKey (publicKeyData []byte) (*RawPublicKey, error) {
+func (obj *KeyAsn1Deserializer) DeserializePublicKey(publicKeyData []byte) (*RawPublicKey, error) {
     var error C.vscf_error_t
     C.vscf_error_reset(&error)
     publicKeyDataData := helperWrapData (publicKeyData)
@@ -122,7 +136,7 @@ func (obj *KeyAsn1Deserializer) DeserializePublicKey (publicKeyData []byte) (*Ra
 /*
 * Deserialize given private key as an interchangeable format to the object.
 */
-func (obj *KeyAsn1Deserializer) DeserializePrivateKey (privateKeyData []byte) (*RawPrivateKey, error) {
+func (obj *KeyAsn1Deserializer) DeserializePrivateKey(privateKeyData []byte) (*RawPrivateKey, error) {
     var error C.vscf_error_t
     C.vscf_error_reset(&error)
     privateKeyDataData := helperWrapData (privateKeyData)

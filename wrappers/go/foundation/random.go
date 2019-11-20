@@ -5,7 +5,7 @@ import "C"
 /*
 * Common interface to get random data.
 */
-type IRandom interface {
+type Random interface {
 
     context
 

@@ -2,6 +2,7 @@ package foundation
 
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
+import "runtime"
 
 
 /*
@@ -12,58 +13,72 @@ type Ecies struct {
 }
 
 /* Handle underlying C context. */
-func (obj *Ecies) ctx () *C.vscf_impl_t {
+func (obj *Ecies) ctx() *C.vscf_impl_t {
     return (*C.vscf_impl_t)(obj.cCtx)
 }
 
-func NewEcies () *Ecies {
+func NewEcies() *Ecies {
     ctx := C.vscf_ecies_new()
-    return &Ecies {
+    obj := &Ecies {
         cCtx: ctx,
     }
+    runtime.SetFinalizer(obj, obj.Delete)
+    return obj
 }
 
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newEciesWithCtx (ctx *C.vscf_ecies_t /*ct2*/) *Ecies {
-    return &Ecies {
+func newEciesWithCtx(ctx *C.vscf_ecies_t /*ct2*/) *Ecies {
+    obj := &Ecies {
         cCtx: ctx,
     }
+    runtime.SetFinalizer(obj, obj.Delete)
+    return obj
 }
 
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newEciesCopy (ctx *C.vscf_ecies_t /*ct2*/) *Ecies {
-    return &Ecies {
+func newEciesCopy(ctx *C.vscf_ecies_t /*ct2*/) *Ecies {
+    obj := &Ecies {
         cCtx: C.vscf_ecies_shallow_copy(ctx),
     }
+    runtime.SetFinalizer(obj, obj.Delete)
+    return obj
 }
 
 /*
 * Release underlying C context.
 */
-func (obj *Ecies) Delete () {
+func (obj *Ecies) Delete() {
+    runtime.SetFinalizer(obj, nil)
+    obj.clear()
+}
+
+/*
+* Release underlying C context.
+*/
+func (obj *Ecies) delete() {
     C.vscf_ecies_delete(obj.cCtx)
 }
 
-func (obj *Ecies) SetRandom (random IRandom) {
+func (obj *Ecies) SetRandom(random Random) {
     C.vscf_ecies_release_random(obj.cCtx)
     C.vscf_ecies_use_random(obj.cCtx, (*C.vscf_impl_t)(random.ctx()))
 }
 
-func (obj *Ecies) SetCipher (cipher ICipher) {
+func (obj *Ecies) SetCipher(cipher Cipher) {
     C.vscf_ecies_release_cipher(obj.cCtx)
     C.vscf_ecies_use_cipher(obj.cCtx, (*C.vscf_impl_t)(cipher.ctx()))
 }
 
-func (obj *Ecies) SetMac (mac IMac) {
+func (obj *Ecies) SetMac(mac Mac) {
     C.vscf_ecies_release_mac(obj.cCtx)
     C.vscf_ecies_use_mac(obj.cCtx, (*C.vscf_impl_t)(mac.ctx()))
 }
 
-func (obj *Ecies) SetKdf (kdf IKdf) {
+func (obj *Ecies) SetKdf(kdf Kdf) {
     C.vscf_ecies_release_kdf(obj.cCtx)
     C.vscf_ecies_use_kdf(obj.cCtx, (*C.vscf_impl_t)(kdf.ctx()))
 }
@@ -73,7 +88,7 @@ func (obj *Ecies) SetKdf (kdf IKdf) {
 * Public and ephemeral keys should belong to the same curve.
 * This dependency is optional.
 */
-func (obj *Ecies) SetEphemeralKey (ephemeralKey IPrivateKey) {
+func (obj *Ecies) SetEphemeralKey(ephemeralKey PrivateKey) {
     C.vscf_ecies_release_ephemeral_key(obj.cCtx)
     C.vscf_ecies_use_ephemeral_key(obj.cCtx, (*C.vscf_impl_t)(ephemeralKey.ctx()))
 }
@@ -82,7 +97,7 @@ func (obj *Ecies) SetEphemeralKey (ephemeralKey IPrivateKey) {
 * Set weak reference to the key algorithm.
 * Key algorithm MUST support shared key computation as well.
 */
-func (obj *Ecies) SetKeyAlg (keyAlg IKeyAlg) {
+func (obj *Ecies) SetKeyAlg(keyAlg KeyAlg) {
     C.vscf_ecies_set_key_alg(obj.cCtx, (*C.vscf_impl_t)(keyAlg.ctx()))
 
     return
@@ -91,7 +106,7 @@ func (obj *Ecies) SetKeyAlg (keyAlg IKeyAlg) {
 /*
 * Release weak reference to the key algorithm.
 */
-func (obj *Ecies) ReleaseKeyAlg () {
+func (obj *Ecies) ReleaseKeyAlg() {
     C.vscf_ecies_release_key_alg(obj.cCtx)
 
     return
@@ -100,7 +115,7 @@ func (obj *Ecies) ReleaseKeyAlg () {
 /*
 * Setup predefined values to the uninitialized class dependencies.
 */
-func (obj *Ecies) SetupDefaults () error {
+func (obj *Ecies) SetupDefaults() error {
     proxyResult := /*pr4*/C.vscf_ecies_setup_defaults(obj.cCtx)
 
     err := FoundationErrorHandleStatus(proxyResult)
@@ -115,7 +130,7 @@ func (obj *Ecies) SetupDefaults () error {
 * Setup predefined values to the uninitialized class dependencies
 * except random.
 */
-func (obj *Ecies) SetupDefaultsNoRandom () {
+func (obj *Ecies) SetupDefaultsNoRandom() {
     C.vscf_ecies_setup_defaults_no_random(obj.cCtx)
 
     return
@@ -124,7 +139,7 @@ func (obj *Ecies) SetupDefaultsNoRandom () {
 /*
 * Calculate required buffer length to hold the encrypted data.
 */
-func (obj *Ecies) EncryptedLen (publicKey IPublicKey, dataLen uint32) uint32 {
+func (obj *Ecies) EncryptedLen(publicKey PublicKey, dataLen uint32) uint32 {
     proxyResult := /*pr4*/C.vscf_ecies_encrypted_len(obj.cCtx, (*C.vscf_impl_t)(publicKey.ctx()), (C.size_t)(dataLen)/*pa10*/)
 
     return uint32(proxyResult) /* r9 */
@@ -133,8 +148,8 @@ func (obj *Ecies) EncryptedLen (publicKey IPublicKey, dataLen uint32) uint32 {
 /*
 * Encrypt data with a given public key.
 */
-func (obj *Ecies) Encrypt (publicKey IPublicKey, data []byte) ([]byte, error) {
-    outBuf, outBufErr := bufferNewBuffer(int(obj.EncryptedLen(publicKey.(IPublicKey), uint32(len(data))) /* lg2 */))
+func (obj *Ecies) Encrypt(publicKey PublicKey, data []byte) ([]byte, error) {
+    outBuf, outBufErr := bufferNewBuffer(int(obj.EncryptedLen(publicKey.(PublicKey), uint32(len(data))) /* lg2 */))
     if outBufErr != nil {
         return nil, outBufErr
     }
@@ -154,7 +169,7 @@ func (obj *Ecies) Encrypt (publicKey IPublicKey, data []byte) ([]byte, error) {
 /*
 * Calculate required buffer length to hold the decrypted data.
 */
-func (obj *Ecies) DecryptedLen (privateKey IPrivateKey, dataLen uint32) uint32 {
+func (obj *Ecies) DecryptedLen(privateKey PrivateKey, dataLen uint32) uint32 {
     proxyResult := /*pr4*/C.vscf_ecies_decrypted_len(obj.cCtx, (*C.vscf_impl_t)(privateKey.ctx()), (C.size_t)(dataLen)/*pa10*/)
 
     return uint32(proxyResult) /* r9 */
@@ -163,8 +178,8 @@ func (obj *Ecies) DecryptedLen (privateKey IPrivateKey, dataLen uint32) uint32 {
 /*
 * Decrypt given data.
 */
-func (obj *Ecies) Decrypt (privateKey IPrivateKey, data []byte) ([]byte, error) {
-    outBuf, outBufErr := bufferNewBuffer(int(obj.DecryptedLen(privateKey.(IPrivateKey), uint32(len(data))) /* lg2 */))
+func (obj *Ecies) Decrypt(privateKey PrivateKey, data []byte) ([]byte, error) {
+    outBuf, outBufErr := bufferNewBuffer(int(obj.DecryptedLen(privateKey.(PrivateKey), uint32(len(data))) /* lg2 */))
     if outBufErr != nil {
         return nil, outBufErr
     }

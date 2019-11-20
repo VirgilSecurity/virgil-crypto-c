@@ -8,7 +8,7 @@ import unsafe "unsafe"
 * Note, elements are written starting from the buffer ending.
 * Note, that all "write" methods move writing position backward.
 */
-type IAsn1Writer interface {
+type Asn1Writer interface {
 
     context
 

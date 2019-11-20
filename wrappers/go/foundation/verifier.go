@@ -2,6 +2,7 @@ package foundation
 
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
+import "runtime"
 
 
 /*
@@ -13,46 +14,60 @@ type Verifier struct {
 }
 
 /* Handle underlying C context. */
-func (obj *Verifier) ctx () *C.vscf_impl_t {
+func (obj *Verifier) ctx() *C.vscf_impl_t {
     return (*C.vscf_impl_t)(obj.cCtx)
 }
 
-func NewVerifier () *Verifier {
+func NewVerifier() *Verifier {
     ctx := C.vscf_verifier_new()
-    return &Verifier {
+    obj := &Verifier {
         cCtx: ctx,
     }
+    runtime.SetFinalizer(obj, obj.Delete)
+    return obj
 }
 
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newVerifierWithCtx (ctx *C.vscf_verifier_t /*ct2*/) *Verifier {
-    return &Verifier {
+func newVerifierWithCtx(ctx *C.vscf_verifier_t /*ct2*/) *Verifier {
+    obj := &Verifier {
         cCtx: ctx,
     }
+    runtime.SetFinalizer(obj, obj.Delete)
+    return obj
 }
 
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newVerifierCopy (ctx *C.vscf_verifier_t /*ct2*/) *Verifier {
-    return &Verifier {
+func newVerifierCopy(ctx *C.vscf_verifier_t /*ct2*/) *Verifier {
+    obj := &Verifier {
         cCtx: C.vscf_verifier_shallow_copy(ctx),
     }
+    runtime.SetFinalizer(obj, obj.Delete)
+    return obj
 }
 
 /*
 * Release underlying C context.
 */
-func (obj *Verifier) Delete () {
+func (obj *Verifier) Delete() {
+    runtime.SetFinalizer(obj, nil)
+    obj.clear()
+}
+
+/*
+* Release underlying C context.
+*/
+func (obj *Verifier) delete() {
     C.vscf_verifier_delete(obj.cCtx)
 }
 
 /*
 * Start verifying a signature.
 */
-func (obj *Verifier) Reset (signature []byte) error {
+func (obj *Verifier) Reset(signature []byte) error {
     signatureData := helperWrapData (signature)
 
     proxyResult := /*pr4*/C.vscf_verifier_reset(obj.cCtx, signatureData)
@@ -68,7 +83,7 @@ func (obj *Verifier) Reset (signature []byte) error {
 /*
 * Add given data to the signed data.
 */
-func (obj *Verifier) AppendData (data []byte) {
+func (obj *Verifier) AppendData(data []byte) {
     dataData := helperWrapData (data)
 
     C.vscf_verifier_append_data(obj.cCtx, dataData)
@@ -79,7 +94,7 @@ func (obj *Verifier) AppendData (data []byte) {
 /*
 * Verify accumulated data.
 */
-func (obj *Verifier) Verify (publicKey IPublicKey) bool {
+func (obj *Verifier) Verify(publicKey PublicKey) bool {
     proxyResult := /*pr4*/C.vscf_verifier_verify(obj.cCtx, (*C.vscf_impl_t)(publicKey.ctx()))
 
     return bool(proxyResult) /* r9 */

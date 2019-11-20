@@ -2,7 +2,7 @@ package foundation
 
 import "C"
 
-type ICipherAuthInfo interface {
+type CipherAuthInfo interface {
 
     context
 

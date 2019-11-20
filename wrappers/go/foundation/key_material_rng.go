@@ -2,6 +2,7 @@ package foundation
 
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
+import "runtime"
 
 
 /*
@@ -10,28 +11,23 @@ import "C"
 * This RNG can be used to transform key material rial to the private key.
 */
 type KeyMaterialRng struct {
-    IRandom
     cCtx *C.vscf_key_material_rng_t /*ct10*/
 }
-
-/*
-* Minimum length in bytes for the key material.
-*/
-func KeyMaterialRngGetKeyMaterialLenMin () uint32 {
-    return 32
-}
-
-/*
-* Maximum length in bytes for the key material.
-*/
-func KeyMaterialRngGetKeyMaterialLenMax () uint32 {
-    return 512
-}
+const (
+    /*
+    * Minimum length in bytes for the key material.
+    */
+    KeyMaterialRngKeyMaterialLenMin uint32 = 32
+    /*
+    * Maximum length in bytes for the key material.
+    */
+    KeyMaterialRngKeyMaterialLenMax uint32 = 512
+)
 
 /*
 * Set a new key material.
 */
-func (obj *KeyMaterialRng) ResetKeyMaterial (keyMaterial []byte) {
+func (obj *KeyMaterialRng) ResetKeyMaterial(keyMaterial []byte) {
     keyMaterialData := helperWrapData (keyMaterial)
 
     C.vscf_key_material_rng_reset_key_material(obj.cCtx, keyMaterialData)
@@ -40,39 +36,53 @@ func (obj *KeyMaterialRng) ResetKeyMaterial (keyMaterial []byte) {
 }
 
 /* Handle underlying C context. */
-func (obj *KeyMaterialRng) ctx () *C.vscf_impl_t {
+func (obj *KeyMaterialRng) ctx() *C.vscf_impl_t {
     return (*C.vscf_impl_t)(obj.cCtx)
 }
 
-func NewKeyMaterialRng () *KeyMaterialRng {
+func NewKeyMaterialRng() *KeyMaterialRng {
     ctx := C.vscf_key_material_rng_new()
-    return &KeyMaterialRng {
+    obj := &KeyMaterialRng {
         cCtx: ctx,
     }
+    runtime.SetFinalizer(obj, obj.Delete)
+    return obj
 }
 
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newKeyMaterialRngWithCtx (ctx *C.vscf_key_material_rng_t /*ct10*/) *KeyMaterialRng {
-    return &KeyMaterialRng {
+func newKeyMaterialRngWithCtx(ctx *C.vscf_key_material_rng_t /*ct10*/) *KeyMaterialRng {
+    obj := &KeyMaterialRng {
         cCtx: ctx,
     }
+    runtime.SetFinalizer(obj, obj.Delete)
+    return obj
 }
 
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newKeyMaterialRngCopy (ctx *C.vscf_key_material_rng_t /*ct10*/) *KeyMaterialRng {
-    return &KeyMaterialRng {
+func newKeyMaterialRngCopy(ctx *C.vscf_key_material_rng_t /*ct10*/) *KeyMaterialRng {
+    obj := &KeyMaterialRng {
         cCtx: C.vscf_key_material_rng_shallow_copy(ctx),
     }
+    runtime.SetFinalizer(obj, obj.Delete)
+    return obj
 }
 
 /*
 * Release underlying C context.
 */
-func (obj *KeyMaterialRng) Delete () {
+func (obj *KeyMaterialRng) Delete() {
+    runtime.SetFinalizer(obj, nil)
+    obj.clear()
+}
+
+/*
+* Release underlying C context.
+*/
+func (obj *KeyMaterialRng) delete() {
     C.vscf_key_material_rng_delete(obj.cCtx)
 }
 
@@ -80,7 +90,7 @@ func (obj *KeyMaterialRng) Delete () {
 * Generate random bytes.
 * All RNG implementations must be thread-safe.
 */
-func (obj *KeyMaterialRng) Random (dataLen uint32) ([]byte, error) {
+func (obj *KeyMaterialRng) Random(dataLen uint32) ([]byte, error) {
     dataBuf, dataBufErr := bufferNewBuffer(int(dataLen))
     if dataBufErr != nil {
         return nil, dataBufErr
@@ -101,7 +111,7 @@ func (obj *KeyMaterialRng) Random (dataLen uint32) ([]byte, error) {
 /*
 * Retrieve new seed data from the entropy sources.
 */
-func (obj *KeyMaterialRng) Reseed () error {
+func (obj *KeyMaterialRng) Reseed() error {
     proxyResult := /*pr4*/C.vscf_key_material_rng_reseed(obj.cCtx)
 
     err := FoundationErrorHandleStatus(proxyResult)

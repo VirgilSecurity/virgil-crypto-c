@@ -5,14 +5,14 @@ import "C"
 /*
 * Contains private part of the key.
 */
-type IPrivateKey interface {
+type PrivateKey interface {
 
     context
 
     /*
     * Extract public key from the private key.
     */
-    ExtractPublicKey () (IPublicKey, error)
+    ExtractPublicKey () (PublicKey, error)
 
     /*
     * Release underlying C context.

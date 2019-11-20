@@ -5,7 +5,7 @@ import "C"
 /*
 * Defines generic interface for the entropy source.
 */
-type IEntropySource interface {
+type EntropySource interface {
 
     context
 

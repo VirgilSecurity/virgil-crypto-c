@@ -40,13 +40,13 @@ import (
 )
 
 func TestNewSimpleAlgInfoWithAlgId(t *testing.T) {
-	simpleAlgInfo := NewSimpleAlgInfoWithAlgId(ALG_ID_AES256_CBC)
+	simpleAlgInfo := NewSimpleAlgInfoWithAlgId(AlgIdAes256Cbc)
 
-	assert.Equal(t, ALG_ID_AES256_CBC, simpleAlgInfo.AlgId())
+	assert.Equal(t, AlgIdAes256Cbc, simpleAlgInfo.AlgId())
 }
 
 func TestSimpleAlgInfo_AlgId(t *testing.T) {
 	simpleAlgInfo := NewSimpleAlgInfo()
 
-    assert.Equal(t, ALG_ID_NONE, simpleAlgInfo.AlgId())
+    assert.Equal(t, AlgIdNone, simpleAlgInfo.AlgId())
 }

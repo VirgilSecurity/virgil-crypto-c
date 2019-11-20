@@ -5,7 +5,7 @@ import "C"
 /*
 * Public and private key serialization to an interchangeable format.
 */
-type IKeySerializer interface {
+type KeySerializer interface {
 
     context
 

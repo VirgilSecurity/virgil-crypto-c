@@ -2,6 +2,7 @@ package foundation
 
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
+import "runtime"
 
 
 /*
@@ -12,46 +13,60 @@ type FooterInfo struct {
 }
 
 /* Handle underlying C context. */
-func (obj *FooterInfo) ctx () *C.vscf_impl_t {
+func (obj *FooterInfo) ctx() *C.vscf_impl_t {
     return (*C.vscf_impl_t)(obj.cCtx)
 }
 
-func NewFooterInfo () *FooterInfo {
+func NewFooterInfo() *FooterInfo {
     ctx := C.vscf_footer_info_new()
-    return &FooterInfo {
+    obj := &FooterInfo {
         cCtx: ctx,
     }
+    runtime.SetFinalizer(obj, obj.Delete)
+    return obj
 }
 
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newFooterInfoWithCtx (ctx *C.vscf_footer_info_t /*ct2*/) *FooterInfo {
-    return &FooterInfo {
+func newFooterInfoWithCtx(ctx *C.vscf_footer_info_t /*ct2*/) *FooterInfo {
+    obj := &FooterInfo {
         cCtx: ctx,
     }
+    runtime.SetFinalizer(obj, obj.Delete)
+    return obj
 }
 
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newFooterInfoCopy (ctx *C.vscf_footer_info_t /*ct2*/) *FooterInfo {
-    return &FooterInfo {
+func newFooterInfoCopy(ctx *C.vscf_footer_info_t /*ct2*/) *FooterInfo {
+    obj := &FooterInfo {
         cCtx: C.vscf_footer_info_shallow_copy(ctx),
     }
+    runtime.SetFinalizer(obj, obj.Delete)
+    return obj
 }
 
 /*
 * Release underlying C context.
 */
-func (obj *FooterInfo) Delete () {
+func (obj *FooterInfo) Delete() {
+    runtime.SetFinalizer(obj, nil)
+    obj.clear()
+}
+
+/*
+* Release underlying C context.
+*/
+func (obj *FooterInfo) delete() {
     C.vscf_footer_info_delete(obj.cCtx)
 }
 
 /*
 * Retrun true if signed data info present.
 */
-func (obj *FooterInfo) HasSignedDataInfo () bool {
+func (obj *FooterInfo) HasSignedDataInfo() bool {
     proxyResult := /*pr4*/C.vscf_footer_info_has_signed_data_info(obj.cCtx)
 
     return bool(proxyResult) /* r9 */
@@ -60,7 +75,7 @@ func (obj *FooterInfo) HasSignedDataInfo () bool {
 /*
 * Return signed data info.
 */
-func (obj *FooterInfo) SignedDataInfo () *SignedDataInfo {
+func (obj *FooterInfo) SignedDataInfo() *SignedDataInfo {
     proxyResult := /*pr4*/C.vscf_footer_info_signed_data_info(obj.cCtx)
 
     return newSignedDataInfoWithCtx(proxyResult) /* r5 */
@@ -69,7 +84,7 @@ func (obj *FooterInfo) SignedDataInfo () *SignedDataInfo {
 /*
 * Set data size.
 */
-func (obj *FooterInfo) SetDataSize (dataSize uint32) {
+func (obj *FooterInfo) SetDataSize(dataSize uint32) {
     C.vscf_footer_info_set_data_size(obj.cCtx, (C.size_t)(dataSize)/*pa10*/)
 
     return
@@ -78,7 +93,7 @@ func (obj *FooterInfo) SetDataSize (dataSize uint32) {
 /*
 * Return data size.
 */
-func (obj *FooterInfo) DataSize () uint32 {
+func (obj *FooterInfo) DataSize() uint32 {
     proxyResult := /*pr4*/C.vscf_footer_info_data_size(obj.cCtx)
 
     return uint32(proxyResult) /* r9 */

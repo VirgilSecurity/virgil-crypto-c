@@ -5,7 +5,7 @@ import "C"
 /*
 * Provides interface to the hashing (messege digest) algorithms.
 */
-type IHash interface {
+type Hash interface {
 
     context
 

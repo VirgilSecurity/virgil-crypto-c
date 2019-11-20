@@ -54,15 +54,15 @@ func TestEd25519_GenerateKey(t *testing.T) {
     assert.Nil(t, err)
     assert.NotNil(t, privateKey)
 
-    edKey, ok := privateKey.(IKey)
+    edKey, ok := privateKey.(Key)
     assert.True(t, ok)
-    assert.Equal(t, ALG_ID_ED25519, edKey.AlgId())
+    assert.Equal(t, AlgIdEd25519, edKey.AlgId())
 }
 
 func TestEd25519_AlgId(t *testing.T) {
     ed := newEd25519()
 
-    assert.Equal(t, ALG_ID_ED25519, ed.AlgId())
+    assert.Equal(t, AlgIdEd25519, ed.AlgId())
 }
 
 func TestEd25519_CanSign(t *testing.T) {
@@ -205,12 +205,12 @@ func TestEd25519_SignHash(t *testing.T) {
     assert.Nil(t, err)
     assert.True(t, ed.CanSign(privateKey))
 
-    signature, err := ed.SignHash(privateKey, ALG_ID_SHA512, data)
+    signature, err := ed.SignHash(privateKey, AlgIdSha512, data)
     assert.Nil(t, err)
     assert.NotNil(t, signature)
-    assert.Equal(t, ed.SignatureLen(privateKey.(IKey)), uint32(len(signature)))
+    assert.Equal(t, ed.SignatureLen(privateKey.(Key)), uint32(len(signature)))
 
-    assert.True(t, ed.VerifyHash(publicKey, ALG_ID_SHA512, data, signature))
+    assert.True(t, ed.VerifyHash(publicKey, AlgIdSha512, data, signature))
 }
 
 func TestEd25519_VerifyHash(t *testing.T) {
@@ -223,7 +223,7 @@ func TestEd25519_VerifyHash(t *testing.T) {
     publicKey, err := keyProvider.ImportPublicKey(publicKeyData)
     assert.Nil(t, err)
     assert.True(t, ed.CanVerify(publicKey))
-    assert.True(t, ed.VerifyHash(publicKey, ALG_ID_SHA512, data, signature))
+    assert.True(t, ed.VerifyHash(publicKey, AlgIdSha512, data, signature))
 }
 
 func TestEd25519_VerifyHash_WrongHash(t *testing.T) {
@@ -235,7 +235,7 @@ func TestEd25519_VerifyHash_WrongHash(t *testing.T) {
 
     publicKey, err := keyProvider.ImportPublicKey(publicKeyData)
     assert.Nil(t, err)
-    assert.False(t, ed.VerifyHash(publicKey, ALG_ID_SHA512, data, signature))
+    assert.False(t, ed.VerifyHash(publicKey, AlgIdSha512, data, signature))
 }
 
 func newEd25519() *Ed25519 {

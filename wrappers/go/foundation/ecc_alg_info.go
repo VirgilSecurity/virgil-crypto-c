@@ -2,20 +2,20 @@ package foundation
 
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
+import "runtime"
 
 
 /*
 * Handle algorithm information about ECP.
 */
 type EccAlgInfo struct {
-    IAlgInfo
     cCtx *C.vscf_ecc_alg_info_t /*ct10*/
 }
 
 /*
 * Return EC specific algorithm identificator {unrestricted, ecDH, ecMQV}.
 */
-func (obj *EccAlgInfo) KeyId () OidId {
+func (obj *EccAlgInfo) KeyId() OidId {
     proxyResult := /*pr4*/C.vscf_ecc_alg_info_key_id(obj.cCtx)
 
     return OidId(proxyResult) /* r8 */
@@ -24,64 +24,80 @@ func (obj *EccAlgInfo) KeyId () OidId {
 /*
 * Return EC domain group identificator.
 */
-func (obj *EccAlgInfo) DomainId () OidId {
+func (obj *EccAlgInfo) DomainId() OidId {
     proxyResult := /*pr4*/C.vscf_ecc_alg_info_domain_id(obj.cCtx)
 
     return OidId(proxyResult) /* r8 */
 }
 
 /* Handle underlying C context. */
-func (obj *EccAlgInfo) ctx () *C.vscf_impl_t {
+func (obj *EccAlgInfo) ctx() *C.vscf_impl_t {
     return (*C.vscf_impl_t)(obj.cCtx)
 }
 
-func NewEccAlgInfo () *EccAlgInfo {
+func NewEccAlgInfo() *EccAlgInfo {
     ctx := C.vscf_ecc_alg_info_new()
-    return &EccAlgInfo {
+    obj := &EccAlgInfo {
         cCtx: ctx,
     }
+    runtime.SetFinalizer(obj, obj.Delete)
+    return obj
 }
 
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newEccAlgInfoWithCtx (ctx *C.vscf_ecc_alg_info_t /*ct10*/) *EccAlgInfo {
-    return &EccAlgInfo {
+func newEccAlgInfoWithCtx(ctx *C.vscf_ecc_alg_info_t /*ct10*/) *EccAlgInfo {
+    obj := &EccAlgInfo {
         cCtx: ctx,
     }
+    runtime.SetFinalizer(obj, obj.Delete)
+    return obj
 }
 
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newEccAlgInfoCopy (ctx *C.vscf_ecc_alg_info_t /*ct10*/) *EccAlgInfo {
-    return &EccAlgInfo {
+func newEccAlgInfoCopy(ctx *C.vscf_ecc_alg_info_t /*ct10*/) *EccAlgInfo {
+    obj := &EccAlgInfo {
         cCtx: C.vscf_ecc_alg_info_shallow_copy(ctx),
     }
+    runtime.SetFinalizer(obj, obj.Delete)
+    return obj
 }
 
 /*
 * Release underlying C context.
 */
-func (obj *EccAlgInfo) Delete () {
+func (obj *EccAlgInfo) Delete() {
+    runtime.SetFinalizer(obj, nil)
+    obj.clear()
+}
+
+/*
+* Release underlying C context.
+*/
+func (obj *EccAlgInfo) delete() {
     C.vscf_ecc_alg_info_delete(obj.cCtx)
 }
 
 /*
 * Create algorithm info with EC generic key identificator, EC domain group identificator.
 */
-func NewEccAlgInfoWithMembers (algId AlgId, keyId OidId, domainId OidId) *EccAlgInfo {
+func NewEccAlgInfoWithMembers(algId AlgId, keyId OidId, domainId OidId) *EccAlgInfo {
     proxyResult := /*pr4*/C.vscf_ecc_alg_info_new_with_members(C.vscf_alg_id_t(algId) /*pa7*/, C.vscf_oid_id_t(keyId) /*pa7*/, C.vscf_oid_id_t(domainId) /*pa7*/)
 
-    return &EccAlgInfo {
+    obj := &EccAlgInfo {
         cCtx: proxyResult,
     }
+    runtime.SetFinalizer(obj, obj.Delete)
+    return obj
 }
 
 /*
 * Provide algorithm identificator.
 */
-func (obj *EccAlgInfo) AlgId () AlgId {
+func (obj *EccAlgInfo) AlgId() AlgId {
     proxyResult := /*pr4*/C.vscf_ecc_alg_info_alg_id(obj.cCtx)
 
     return AlgId(proxyResult) /* r8 */

@@ -6,80 +6,49 @@ import "C"
 
 type PheCommon struct {
 }
-
-/*
-* PHE elliptic curve point binary length
-*/
-func PheCommonGetPhePointLength () uint32 {
-    return 65
-}
-
-/*
-* PHE max password length
-*/
-func PheCommonGetPheMaxPasswordLength () uint32 {
-    return 128
-}
-
-/*
-* PHE server identifier length
-*/
-func PheCommonGetPheServerIdentifierLength () uint32 {
-    return 32
-}
-
-/*
-* PHE client identifier length
-*/
-func PheCommonGetPheClientIdentifierLength () uint32 {
-    return 32
-}
-
-/*
-* PHE account key length
-*/
-func PheCommonGetPheAccountKeyLength () uint32 {
-    return 32
-}
-
-/*
-* PHE private key length
-*/
-func PheCommonGetPhePrivateKeyLength () uint32 {
-    return 32
-}
-
-/*
-* PHE public key length
-*/
-func PheCommonGetPhePublicKeyLength () uint32 {
-    return 65
-}
-
-/*
-* PHE hash length
-*/
-func PheCommonGetPheHashLen () uint32 {
-    return 32
-}
-
-/*
-* Maximum data size to encrypt
-*/
-func PheCommonGetPheMaxEncryptLen () uint32 {
-    return 1024 * 1024 - 64
-}
-
-/*
-* Maximum data size to decrypt
-*/
-func PheCommonGetPheMaxDecryptLen () uint32 {
-    return 1024 * 1024
-}
-
-/*
-* Maximum data to authenticate
-*/
-func PheCommonGetPheMaxAuthLen () uint32 {
-    return 1024
-}
+const (
+    /*
+    * PHE elliptic curve point binary length
+    */
+    PheCommonPhePointLength uint32 = 65
+    /*
+    * PHE max password length
+    */
+    PheCommonPheMaxPasswordLength uint32 = 128
+    /*
+    * PHE server identifier length
+    */
+    PheCommonPheServerIdentifierLength uint32 = 32
+    /*
+    * PHE client identifier length
+    */
+    PheCommonPheClientIdentifierLength uint32 = 32
+    /*
+    * PHE account key length
+    */
+    PheCommonPheAccountKeyLength uint32 = 32
+    /*
+    * PHE private key length
+    */
+    PheCommonPhePrivateKeyLength uint32 = 32
+    /*
+    * PHE public key length
+    */
+    PheCommonPhePublicKeyLength uint32 = 65
+    /*
+    * PHE hash length
+    */
+    PheCommonPheHashLen uint32 = 32
+    /*
+    * Maximum data size to encrypt
+    */
+    PheCommonPheMaxEncryptLen uint32 = 1024 * 1024 - 64
+    /*
+    * Maximum data size to decrypt
+    */
+    PheCommonPheMaxDecryptLen uint32 = 1024 * 1024
+    /*
+    * Maximum data to authenticate
+    */
+    PheCommonPheMaxAuthLen uint32 = 1024
+)

@@ -7,7 +7,7 @@ import "C"
 * Note, that all "read" methods move reading position forward.
 * Note, that all "get" do not change reading position.
 */
-type IAsn1Reader interface {
+type Asn1Reader interface {
 
     context
 

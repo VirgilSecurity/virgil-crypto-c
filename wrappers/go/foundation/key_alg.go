@@ -5,7 +5,7 @@ import "C"
 /*
 * Common information about asymmetric key algorithm.
 */
-type IKeyAlg interface {
+type KeyAlg interface {
 
     context
 
@@ -33,7 +33,7 @@ type IKeyAlg interface {
     * Generate ephemeral private key of the same type.
     * Note, this operation might be slow.
     */
-    GenerateEphemeralKey (key IKey) (IPrivateKey, error)
+    GenerateEphemeralKey (key Key) (PrivateKey, error)
 
     /*
     * Import public key from the raw binary format.
@@ -45,7 +45,7 @@ type IKeyAlg interface {
     * For instance, RSA public key must be imported from the format defined in
     * RFC 3447 Appendix A.1.1.
     */
-    ImportPublicKey (rawKey *RawPublicKey) (IPublicKey, error)
+    ImportPublicKey (rawKey *RawPublicKey) (PublicKey, error)
 
     /*
     * Export public key to the raw binary format.
@@ -54,7 +54,7 @@ type IKeyAlg interface {
     * For instance, RSA public key must be exported in format defined in
     * RFC 3447 Appendix A.1.1.
     */
-    ExportPublicKey (publicKey IPublicKey) (*RawPublicKey, error)
+    ExportPublicKey (publicKey PublicKey) (*RawPublicKey, error)
 
     /*
     * Import private key from the raw binary format.
@@ -66,7 +66,7 @@ type IKeyAlg interface {
     * For instance, RSA private key must be imported from the format defined in
     * RFC 3447 Appendix A.1.2.
     */
-    ImportPrivateKey (rawKey *RawPrivateKey) (IPrivateKey, error)
+    ImportPrivateKey (rawKey *RawPrivateKey) (PrivateKey, error)
 
     /*
     * Export private key in the raw binary format.
@@ -75,7 +75,7 @@ type IKeyAlg interface {
     * For instance, RSA private key must be exported in format defined in
     * RFC 3447 Appendix A.1.2.
     */
-    ExportPrivateKey (privateKey IPrivateKey) (*RawPrivateKey, error)
+    ExportPrivateKey (privateKey PrivateKey) (*RawPrivateKey, error)
 
     /*
     * Release underlying C context.

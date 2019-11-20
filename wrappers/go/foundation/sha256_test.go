@@ -51,7 +51,7 @@ func TestSha256_AlgId(t *testing.T) {
     algId := sha.AlgId()
 
     assert.NotNil(t, algId)
-    assert.Equal(t, ALG_ID_SHA256, algId)
+    assert.Equal(t, AlgIdSha256, algId)
 }
 
 func TestSha256_GetDigestLen(t *testing.T) {
@@ -99,5 +99,5 @@ func TestSha256_ProduceAlgInfo(t *testing.T) {
     algInfo, err := sha.ProduceAlgInfo()
     assert.Nil(t, err)
     assert.NotNil(t, algInfo)
-    assert.Equal(t, ALG_ID_SHA256, algInfo.AlgId())
+    assert.Equal(t, AlgIdSha256, algInfo.AlgId())
 }

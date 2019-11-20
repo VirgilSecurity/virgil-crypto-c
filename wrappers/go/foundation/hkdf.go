@@ -2,68 +2,79 @@ package foundation
 
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
+import "runtime"
 
 
 /*
 * Virgil Security implementation of the HKDF (RFC 6234) algorithm.
 */
 type Hkdf struct {
-    IAlg
-    IKdf
-    ISaltedKdf
     cCtx *C.vscf_hkdf_t /*ct10*/
 }
+const (
+    HkdfHashCounterMax uint32 = 255
+)
 
-func HkdfGetHashCounterMax () uint32 {
-    return 255
-}
-
-func (obj *Hkdf) SetHash (hash IHash) {
+func (obj *Hkdf) SetHash(hash Hash) {
     C.vscf_hkdf_release_hash(obj.cCtx)
     C.vscf_hkdf_use_hash(obj.cCtx, (*C.vscf_impl_t)(hash.ctx()))
 }
 
 /* Handle underlying C context. */
-func (obj *Hkdf) ctx () *C.vscf_impl_t {
+func (obj *Hkdf) ctx() *C.vscf_impl_t {
     return (*C.vscf_impl_t)(obj.cCtx)
 }
 
-func NewHkdf () *Hkdf {
+func NewHkdf() *Hkdf {
     ctx := C.vscf_hkdf_new()
-    return &Hkdf {
+    obj := &Hkdf {
         cCtx: ctx,
     }
+    runtime.SetFinalizer(obj, obj.Delete)
+    return obj
 }
 
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newHkdfWithCtx (ctx *C.vscf_hkdf_t /*ct10*/) *Hkdf {
-    return &Hkdf {
+func newHkdfWithCtx(ctx *C.vscf_hkdf_t /*ct10*/) *Hkdf {
+    obj := &Hkdf {
         cCtx: ctx,
     }
+    runtime.SetFinalizer(obj, obj.Delete)
+    return obj
 }
 
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newHkdfCopy (ctx *C.vscf_hkdf_t /*ct10*/) *Hkdf {
-    return &Hkdf {
+func newHkdfCopy(ctx *C.vscf_hkdf_t /*ct10*/) *Hkdf {
+    obj := &Hkdf {
         cCtx: C.vscf_hkdf_shallow_copy(ctx),
     }
+    runtime.SetFinalizer(obj, obj.Delete)
+    return obj
 }
 
 /*
 * Release underlying C context.
 */
-func (obj *Hkdf) Delete () {
+func (obj *Hkdf) Delete() {
+    runtime.SetFinalizer(obj, nil)
+    obj.clear()
+}
+
+/*
+* Release underlying C context.
+*/
+func (obj *Hkdf) delete() {
     C.vscf_hkdf_delete(obj.cCtx)
 }
 
 /*
 * Provide algorithm identificator.
 */
-func (obj *Hkdf) AlgId () AlgId {
+func (obj *Hkdf) AlgId() AlgId {
     proxyResult := /*pr4*/C.vscf_hkdf_alg_id(obj.cCtx)
 
     return AlgId(proxyResult) /* r8 */
@@ -72,16 +83,16 @@ func (obj *Hkdf) AlgId () AlgId {
 /*
 * Produce object with algorithm information and configuration parameters.
 */
-func (obj *Hkdf) ProduceAlgInfo () (IAlgInfo, error) {
+func (obj *Hkdf) ProduceAlgInfo() (AlgInfo, error) {
     proxyResult := /*pr4*/C.vscf_hkdf_produce_alg_info(obj.cCtx)
 
-    return FoundationImplementationWrapIAlgInfo(proxyResult) /* r4 */
+    return FoundationImplementationWrapAlgInfo(proxyResult) /* r4 */
 }
 
 /*
 * Restore algorithm configuration from the given object.
 */
-func (obj *Hkdf) RestoreAlgInfo (algInfo IAlgInfo) error {
+func (obj *Hkdf) RestoreAlgInfo(algInfo AlgInfo) error {
     proxyResult := /*pr4*/C.vscf_hkdf_restore_alg_info(obj.cCtx, (*C.vscf_impl_t)(algInfo.ctx()))
 
     err := FoundationErrorHandleStatus(proxyResult)
@@ -95,7 +106,7 @@ func (obj *Hkdf) RestoreAlgInfo (algInfo IAlgInfo) error {
 /*
 * Derive key of the requested length from the given data.
 */
-func (obj *Hkdf) Derive (data []byte, keyLen uint32) []byte {
+func (obj *Hkdf) Derive(data []byte, keyLen uint32) []byte {
     keyBuf, keyBufErr := bufferNewBuffer(int(keyLen))
     if keyBufErr != nil {
         return nil
@@ -111,7 +122,7 @@ func (obj *Hkdf) Derive (data []byte, keyLen uint32) []byte {
 /*
 * Prepare algorithm to derive new key.
 */
-func (obj *Hkdf) Reset (salt []byte, iterationCount uint32) {
+func (obj *Hkdf) Reset(salt []byte, iterationCount uint32) {
     saltData := helperWrapData (salt)
 
     C.vscf_hkdf_reset(obj.cCtx, saltData, (C.size_t)(iterationCount)/*pa10*/)
@@ -123,7 +134,7 @@ func (obj *Hkdf) Reset (salt []byte, iterationCount uint32) {
 * Setup application specific information (optional).
 * Can be empty.
 */
-func (obj *Hkdf) SetInfo (info []byte) {
+func (obj *Hkdf) SetInfo(info []byte) {
     infoData := helperWrapData (info)
 
     C.vscf_hkdf_set_info(obj.cCtx, infoData)

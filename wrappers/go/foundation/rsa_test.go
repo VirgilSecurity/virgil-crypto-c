@@ -56,16 +56,16 @@ func TestRsa_GenerateKey(t *testing.T) {
 
     assert.NotNil(t, privateKey)
 
-    rsaKey, ok := privateKey.(IKey)
+    rsaKey, ok := privateKey.(Key)
     assert.True(t, ok)
-    assert.Equal(t, ALG_ID_RSA, rsaKey.AlgId())
+    assert.Equal(t, AlgIdRsa, rsaKey.AlgId())
     assert.Equal(t, bitlen, rsaKey.Bitlen())
 }
 
 func TestRsa_AlgId(t *testing.T) {
     rsa := newRsa()
 
-    assert.Equal(t, ALG_ID_RSA, rsa.AlgId())
+    assert.Equal(t, AlgIdRsa, rsa.AlgId())
 }
 
 func TestRsa_CanSign(t *testing.T) {
@@ -217,13 +217,13 @@ func TestRsa_SignHash(t *testing.T) {
 
     assert.True(t, rsa.CanSign(privateKey))
 
-    signature, err := rsa.SignHash(privateKey, ALG_ID_SHA512, data)
+    signature, err := rsa.SignHash(privateKey, AlgIdSha512, data)
     assert.Nil(t, err)
 
     assert.NotNil(t, signature)
-    assert.Equal(t, rsa.SignatureLen(privateKey.(IKey)), uint32(len(signature)))
+    assert.Equal(t, rsa.SignatureLen(privateKey.(Key)), uint32(len(signature)))
 
-    assert.True(t, rsa.VerifyHash(publicKey, ALG_ID_SHA512, data, signature))
+    assert.True(t, rsa.VerifyHash(publicKey, AlgIdSha512, data, signature))
 }
 
 func TestRsa_VerifyHash(t *testing.T) {
@@ -236,7 +236,7 @@ func TestRsa_VerifyHash(t *testing.T) {
     publicKey, err := keyProvider.ImportPublicKey(publicKeyData)
     assert.Nil(t, err)
     assert.True(t, rsa.CanVerify(publicKey))
-    assert.True(t, rsa.VerifyHash(publicKey, ALG_ID_SHA512, data, signature))
+    assert.True(t, rsa.VerifyHash(publicKey, AlgIdSha512, data, signature))
 }
 
 func TestRsa_VerifyHash_WrongHash(t *testing.T) {
@@ -248,7 +248,7 @@ func TestRsa_VerifyHash_WrongHash(t *testing.T) {
 
     publicKey, err := keyProvider.ImportPublicKey(publicKeyData)
     assert.Nil(t, err)
-    assert.False(t, rsa.VerifyHash(publicKey, ALG_ID_SHA512, data, signature))
+    assert.False(t, rsa.VerifyHash(publicKey, AlgIdSha512, data, signature))
 }
 
 func newRsa() *Rsa {

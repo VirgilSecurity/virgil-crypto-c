@@ -5,7 +5,7 @@ import "C"
 /*
 * Provide interface for data encryption.
 */
-type IEncrypt interface {
+type Encrypt interface {
 
     context
 

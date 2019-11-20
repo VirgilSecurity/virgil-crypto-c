@@ -5,7 +5,7 @@ import "C"
 /*
 * Provide details about implemented algorithms.
 */
-type IAlgInfo interface {
+type AlgInfo interface {
 
     context
 

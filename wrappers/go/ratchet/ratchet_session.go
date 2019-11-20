@@ -2,6 +2,7 @@ package ratchet
 
 // #include <virgil/crypto/ratchet/vscr_ratchet_public.h>
 import "C"
+import "runtime"
 import foundation "virgil/foundation"
 import unsafe "unsafe"
 
@@ -14,46 +15,60 @@ type RatchetSession struct {
 }
 
 /* Handle underlying C context. */
-func (obj *RatchetSession) ctx () *C.vscf_impl_t {
+func (obj *RatchetSession) ctx() *C.vscf_impl_t {
     return (*C.vscf_impl_t)(obj.cCtx)
 }
 
-func NewRatchetSession () *RatchetSession {
+func NewRatchetSession() *RatchetSession {
     ctx := C.vscr_ratchet_session_new()
-    return &RatchetSession {
+    obj := &RatchetSession {
         cCtx: ctx,
     }
+    runtime.SetFinalizer(obj, obj.Delete)
+    return obj
 }
 
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newRatchetSessionWithCtx (ctx *C.vscr_ratchet_session_t /*ct2*/) *RatchetSession {
-    return &RatchetSession {
+func newRatchetSessionWithCtx(ctx *C.vscr_ratchet_session_t /*ct2*/) *RatchetSession {
+    obj := &RatchetSession {
         cCtx: ctx,
     }
+    runtime.SetFinalizer(obj, obj.Delete)
+    return obj
 }
 
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newRatchetSessionCopy (ctx *C.vscr_ratchet_session_t /*ct2*/) *RatchetSession {
-    return &RatchetSession {
+func newRatchetSessionCopy(ctx *C.vscr_ratchet_session_t /*ct2*/) *RatchetSession {
+    obj := &RatchetSession {
         cCtx: C.vscr_ratchet_session_shallow_copy(ctx),
     }
+    runtime.SetFinalizer(obj, obj.Delete)
+    return obj
 }
 
 /*
 * Release underlying C context.
 */
-func (obj *RatchetSession) Delete () {
+func (obj *RatchetSession) Delete() {
+    runtime.SetFinalizer(obj, nil)
+    obj.clear()
+}
+
+/*
+* Release underlying C context.
+*/
+func (obj *RatchetSession) delete() {
     C.vscr_ratchet_session_delete(obj.cCtx)
 }
 
 /*
 * Random used to generate keys
 */
-func (obj *RatchetSession) SetRng (rng foundation.IRandom) {
+func (obj *RatchetSession) SetRng(rng foundation.Random) {
     C.vscr_ratchet_session_release_rng(obj.cCtx)
     C.vscr_ratchet_session_use_rng(obj.cCtx, (*C.vscf_impl_t)(rng.(context).ctx()))
 }
@@ -62,7 +77,7 @@ func (obj *RatchetSession) SetRng (rng foundation.IRandom) {
 * Setups default dependencies:
 * - RNG: CTR DRBG
 */
-func (obj *RatchetSession) SetupDefaults () error {
+func (obj *RatchetSession) SetupDefaults() error {
     proxyResult := /*pr4*/C.vscr_ratchet_session_setup_defaults(obj.cCtx)
 
     err := RatchetErrorHandleStatus(proxyResult)
@@ -76,7 +91,7 @@ func (obj *RatchetSession) SetupDefaults () error {
 /*
 * Initiates session
 */
-func (obj *RatchetSession) Initiate (senderIdentityPrivateKey []byte, receiverIdentityPublicKey []byte, receiverLongTermPublicKey []byte, receiverOneTimePublicKey []byte) error {
+func (obj *RatchetSession) Initiate(senderIdentityPrivateKey []byte, receiverIdentityPublicKey []byte, receiverLongTermPublicKey []byte, receiverOneTimePublicKey []byte) error {
     senderIdentityPrivateKeyData := helperWrapData (senderIdentityPrivateKey)
     receiverIdentityPublicKeyData := helperWrapData (receiverIdentityPublicKey)
     receiverLongTermPublicKeyData := helperWrapData (receiverLongTermPublicKey)
@@ -95,7 +110,7 @@ func (obj *RatchetSession) Initiate (senderIdentityPrivateKey []byte, receiverId
 /*
 * Responds to session initiation
 */
-func (obj *RatchetSession) Respond (senderIdentityPublicKey []byte, receiverIdentityPrivateKey []byte, receiverLongTermPrivateKey []byte, receiverOneTimePrivateKey []byte, message *RatchetMessage) error {
+func (obj *RatchetSession) Respond(senderIdentityPublicKey []byte, receiverIdentityPrivateKey []byte, receiverLongTermPrivateKey []byte, receiverOneTimePrivateKey []byte, message *RatchetMessage) error {
     senderIdentityPublicKeyData := helperWrapData (senderIdentityPublicKey)
     receiverIdentityPrivateKeyData := helperWrapData (receiverIdentityPrivateKey)
     receiverLongTermPrivateKeyData := helperWrapData (receiverLongTermPrivateKey)
@@ -114,7 +129,7 @@ func (obj *RatchetSession) Respond (senderIdentityPublicKey []byte, receiverIden
 /*
 * Returns flag that indicates is this session was initiated or responded
 */
-func (obj *RatchetSession) IsInitiator () bool {
+func (obj *RatchetSession) IsInitiator() bool {
     proxyResult := /*pr4*/C.vscr_ratchet_session_is_initiator(obj.cCtx)
 
     return bool(proxyResult) /* r9 */
@@ -123,7 +138,7 @@ func (obj *RatchetSession) IsInitiator () bool {
 /*
 * Returns true if at least 1 response was successfully decrypted, false - otherwise
 */
-func (obj *RatchetSession) ReceivedFirstResponse () bool {
+func (obj *RatchetSession) ReceivedFirstResponse() bool {
     proxyResult := /*pr4*/C.vscr_ratchet_session_received_first_response(obj.cCtx)
 
     return bool(proxyResult) /* r9 */
@@ -132,7 +147,7 @@ func (obj *RatchetSession) ReceivedFirstResponse () bool {
 /*
 * Returns true if receiver had one time public key
 */
-func (obj *RatchetSession) ReceiverHasOneTimePublicKey () bool {
+func (obj *RatchetSession) ReceiverHasOneTimePublicKey() bool {
     proxyResult := /*pr4*/C.vscr_ratchet_session_receiver_has_one_time_public_key(obj.cCtx)
 
     return bool(proxyResult) /* r9 */
@@ -141,7 +156,7 @@ func (obj *RatchetSession) ReceiverHasOneTimePublicKey () bool {
 /*
 * Encrypts data
 */
-func (obj *RatchetSession) Encrypt (plainText []byte) (*RatchetMessage, error) {
+func (obj *RatchetSession) Encrypt(plainText []byte) (*RatchetMessage, error) {
     var error C.vscr_error_t
     C.vscr_error_reset(&error)
     plainTextData := helperWrapData (plainText)
@@ -159,7 +174,7 @@ func (obj *RatchetSession) Encrypt (plainText []byte) (*RatchetMessage, error) {
 /*
 * Calculates size of buffer sufficient to store decrypted message
 */
-func (obj *RatchetSession) DecryptLen (message *RatchetMessage) uint32 {
+func (obj *RatchetSession) DecryptLen(message *RatchetMessage) uint32 {
     proxyResult := /*pr4*/C.vscr_ratchet_session_decrypt_len(obj.cCtx, (*C.vscr_ratchet_message_t)(message.ctx()))
 
     return uint32(proxyResult) /* r9 */
@@ -168,7 +183,7 @@ func (obj *RatchetSession) DecryptLen (message *RatchetMessage) uint32 {
 /*
 * Decrypts message
 */
-func (obj *RatchetSession) Decrypt (message *RatchetMessage) ([]byte, error) {
+func (obj *RatchetSession) Decrypt(message *RatchetMessage) ([]byte, error) {
     plainTextBuf, plainTextBufErr := bufferNewBuffer(int(obj.DecryptLen(message) /* lg2 */))
     if plainTextBufErr != nil {
         return nil, plainTextBufErr
@@ -189,7 +204,7 @@ func (obj *RatchetSession) Decrypt (message *RatchetMessage) ([]byte, error) {
 /*
 * Serializes session to buffer
 */
-func (obj *RatchetSession) Serialize () []byte {
+func (obj *RatchetSession) Serialize() []byte {
     proxyResult := /*pr4*/C.vscr_ratchet_session_serialize(obj.cCtx)
 
     defer C.vsc_buffer_delete(proxyResult)
@@ -201,7 +216,7 @@ func (obj *RatchetSession) Serialize () []byte {
 * Deserializes session from buffer.
 * NOTE: Deserialized session needs dependencies to be set. Check setup defaults
 */
-func RatchetSessionDeserialize (input []byte) (*RatchetSession, error) {
+func RatchetSessionDeserialize(input []byte) (*RatchetSession, error) {
     var error C.vscr_error_t
     C.vscr_error_reset(&error)
     inputData := helperWrapData (input)

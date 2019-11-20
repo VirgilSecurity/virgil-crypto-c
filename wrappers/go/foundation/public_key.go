@@ -5,7 +5,7 @@ import "C"
 /*
 * Contains public part of the key.
 */
-type IPublicKey interface {
+type PublicKey interface {
 
     context
 

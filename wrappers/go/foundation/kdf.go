@@ -5,7 +5,7 @@ import "C"
 /*
 * Provides interface to the key derivation function (KDF) algorithms.
 */
-type IKdf interface {
+type Kdf interface {
 
     context
 

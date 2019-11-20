@@ -5,7 +5,7 @@ import "C"
 /*
 * Provide interface for "message info footer" class serialization.
 */
-type IMessageInfoFooterSerializer interface {
+type MessageInfoFooterSerializer interface {
 
     context
 

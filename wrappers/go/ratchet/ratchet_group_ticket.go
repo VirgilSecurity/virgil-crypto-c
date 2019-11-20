@@ -2,6 +2,7 @@ package ratchet
 
 // #include <virgil/crypto/ratchet/vscr_ratchet_public.h>
 import "C"
+import "runtime"
 import foundation "virgil/foundation"
 
 
@@ -13,46 +14,60 @@ type RatchetGroupTicket struct {
 }
 
 /* Handle underlying C context. */
-func (obj *RatchetGroupTicket) ctx () *C.vscf_impl_t {
+func (obj *RatchetGroupTicket) ctx() *C.vscf_impl_t {
     return (*C.vscf_impl_t)(obj.cCtx)
 }
 
-func NewRatchetGroupTicket () *RatchetGroupTicket {
+func NewRatchetGroupTicket() *RatchetGroupTicket {
     ctx := C.vscr_ratchet_group_ticket_new()
-    return &RatchetGroupTicket {
+    obj := &RatchetGroupTicket {
         cCtx: ctx,
     }
+    runtime.SetFinalizer(obj, obj.Delete)
+    return obj
 }
 
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newRatchetGroupTicketWithCtx (ctx *C.vscr_ratchet_group_ticket_t /*ct2*/) *RatchetGroupTicket {
-    return &RatchetGroupTicket {
+func newRatchetGroupTicketWithCtx(ctx *C.vscr_ratchet_group_ticket_t /*ct2*/) *RatchetGroupTicket {
+    obj := &RatchetGroupTicket {
         cCtx: ctx,
     }
+    runtime.SetFinalizer(obj, obj.Delete)
+    return obj
 }
 
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newRatchetGroupTicketCopy (ctx *C.vscr_ratchet_group_ticket_t /*ct2*/) *RatchetGroupTicket {
-    return &RatchetGroupTicket {
+func newRatchetGroupTicketCopy(ctx *C.vscr_ratchet_group_ticket_t /*ct2*/) *RatchetGroupTicket {
+    obj := &RatchetGroupTicket {
         cCtx: C.vscr_ratchet_group_ticket_shallow_copy(ctx),
     }
+    runtime.SetFinalizer(obj, obj.Delete)
+    return obj
 }
 
 /*
 * Release underlying C context.
 */
-func (obj *RatchetGroupTicket) Delete () {
+func (obj *RatchetGroupTicket) Delete() {
+    runtime.SetFinalizer(obj, nil)
+    obj.clear()
+}
+
+/*
+* Release underlying C context.
+*/
+func (obj *RatchetGroupTicket) delete() {
     C.vscr_ratchet_group_ticket_delete(obj.cCtx)
 }
 
 /*
 * Random used to generate keys
 */
-func (obj *RatchetGroupTicket) SetRng (rng foundation.IRandom) {
+func (obj *RatchetGroupTicket) SetRng(rng foundation.Random) {
     C.vscr_ratchet_group_ticket_release_rng(obj.cCtx)
     C.vscr_ratchet_group_ticket_use_rng(obj.cCtx, (*C.vscf_impl_t)(rng.(context).ctx()))
 }
@@ -61,7 +76,7 @@ func (obj *RatchetGroupTicket) SetRng (rng foundation.IRandom) {
 * Setups default dependencies:
 * - RNG: CTR DRBG
 */
-func (obj *RatchetGroupTicket) SetupDefaults () error {
+func (obj *RatchetGroupTicket) SetupDefaults() error {
     proxyResult := /*pr4*/C.vscr_ratchet_group_ticket_setup_defaults(obj.cCtx)
 
     err := RatchetErrorHandleStatus(proxyResult)
@@ -75,7 +90,7 @@ func (obj *RatchetGroupTicket) SetupDefaults () error {
 /*
 * Set this ticket to start new group session.
 */
-func (obj *RatchetGroupTicket) SetupTicketAsNew (sessionId []byte) error {
+func (obj *RatchetGroupTicket) SetupTicketAsNew(sessionId []byte) error {
     sessionIdData := helperWrapData (sessionId)
 
     proxyResult := /*pr4*/C.vscr_ratchet_group_ticket_setup_ticket_as_new(obj.cCtx, sessionIdData)
@@ -91,7 +106,7 @@ func (obj *RatchetGroupTicket) SetupTicketAsNew (sessionId []byte) error {
 /*
 * Returns message that should be sent to all participants using secure channel.
 */
-func (obj *RatchetGroupTicket) GetTicketMessage () *RatchetGroupMessage {
+func (obj *RatchetGroupTicket) GetTicketMessage() *RatchetGroupMessage {
     proxyResult := /*pr4*/C.vscr_ratchet_group_ticket_get_ticket_message(obj.cCtx)
 
     return newRatchetGroupMessageWithCtx(proxyResult) /* r5 */

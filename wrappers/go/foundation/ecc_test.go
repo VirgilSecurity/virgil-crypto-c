@@ -49,24 +49,24 @@ func TestNewEcc(t *testing.T) {
 func TestEcc_GenerateKey(t *testing.T) {
     ecc := newEcc()
 
-    privateKey, err := ecc.GenerateKey(ALG_ID_SECP256R1)
+    privateKey, err := ecc.GenerateKey(AlgIdSecp256r1)
     assert.Nil(t, err)
     assert.NotNil(t, privateKey)
 
-    eccKey, ok := privateKey.(IKey)
+    eccKey, ok := privateKey.(Key)
     assert.True(t, ok)
-    assert.Equal(t, ALG_ID_SECP256R1, eccKey.AlgId())
+    assert.Equal(t, AlgIdSecp256r1, eccKey.AlgId())
 }
 
 func TestEcc_AlgId(t *testing.T) {
     ecc := newEcc()
 
-    assert.Equal(t, ALG_ID_ECC, ecc.AlgId())
+    assert.Equal(t, AlgIdEcc, ecc.AlgId())
 }
 
 func TestEcc_CanSign(t *testing.T) {
     ecc := newEcc()
-    privateKey, err := ecc.GenerateKey(ALG_ID_SECP256R1)
+    privateKey, err := ecc.GenerateKey(AlgIdSecp256r1)
 
     assert.Nil(t, err)
     assert.True(t,ecc.CanSign(privateKey))
@@ -97,7 +97,7 @@ func TestEcc_GetCanImportPrivateKey(t *testing.T) {
 
 func TestEcc_ExportPrivateKey(t *testing.T) {
     ecc := newEcc()
-    privateKey, err := ecc.GenerateKey(ALG_ID_SECP256R1)
+    privateKey, err := ecc.GenerateKey(AlgIdSecp256r1)
     assert.Nil(t, err)
 
     // Export private key
@@ -123,7 +123,7 @@ func TestEcc_ExportPrivateKey(t *testing.T) {
 
 func TestEcc_ExportPublicKey(t *testing.T) {
     ecc := newEcc()
-    privateKey, err := ecc.GenerateKey(ALG_ID_SECP256R1)
+    privateKey, err := ecc.GenerateKey(AlgIdSecp256r1)
     assert.Nil(t, err)
 
     publicKey, err := privateKey.ExtractPublicKey()
@@ -155,7 +155,7 @@ func TestEcc_Encrypt(t *testing.T) {
     rand.Read(data)
 
     ecc := newEcc()
-    privateKey, err := ecc.GenerateKey(ALG_ID_SECP256R1)
+    privateKey, err := ecc.GenerateKey(AlgIdSecp256r1)
     assert.Nil(t, err)
 
     publicKey, err := privateKey.ExtractPublicKey()

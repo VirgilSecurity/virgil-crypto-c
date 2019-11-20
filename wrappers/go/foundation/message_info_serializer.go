@@ -5,7 +5,7 @@ import "C"
 /*
 * Provide interface for "message info" class serialization.
 */
-type IMessageInfoSerializer interface {
+type MessageInfoSerializer interface {
 
     context
 

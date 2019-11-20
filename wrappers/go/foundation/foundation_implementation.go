@@ -7,10 +7,10 @@ import "C"
 type FoundationImplementation struct {
 }
 
-/* Wrap C implementation object to the Go object that implements interface IAlg. */
-func FoundationImplementationWrapIAlg (ctx *C.vscf_impl_t) (IAlg, error) {
+/* Wrap C implementation object to the Go object that implements interface Alg. */
+func FoundationImplementationWrapAlg(ctx *C.vscf_impl_t) (Alg, error) {
     if (!C.vscf_alg_is_implemented(ctx)) {
-        return nil, &FoundationError{-1,"Given C implementation does not implement interface IAlg."}
+        return nil, &FoundationError{-1,"Given C implementation does not implement interface Alg."}
     }
 
     implTag := C.vscf_impl_tag(ctx)
@@ -52,10 +52,10 @@ func FoundationImplementationWrapIAlg (ctx *C.vscf_impl_t) (IAlg, error) {
     }
 }
 
-/* Wrap C implementation object to the Go object that implements interface IHash. */
-func FoundationImplementationWrapIHash (ctx *C.vscf_impl_t) (IHash, error) {
+/* Wrap C implementation object to the Go object that implements interface Hash. */
+func FoundationImplementationWrapHash(ctx *C.vscf_impl_t) (Hash, error) {
     if (!C.vscf_hash_is_implemented(ctx)) {
-        return nil, &FoundationError{-1,"Given C implementation does not implement interface IHash."}
+        return nil, &FoundationError{-1,"Given C implementation does not implement interface Hash."}
     }
 
     implTag := C.vscf_impl_tag(ctx)
@@ -73,10 +73,10 @@ func FoundationImplementationWrapIHash (ctx *C.vscf_impl_t) (IHash, error) {
     }
 }
 
-/* Wrap C implementation object to the Go object that implements interface IEncrypt. */
-func FoundationImplementationWrapIEncrypt (ctx *C.vscf_impl_t) (IEncrypt, error) {
+/* Wrap C implementation object to the Go object that implements interface Encrypt. */
+func FoundationImplementationWrapEncrypt(ctx *C.vscf_impl_t) (Encrypt, error) {
     if (!C.vscf_encrypt_is_implemented(ctx)) {
-        return nil, &FoundationError{-1,"Given C implementation does not implement interface IEncrypt."}
+        return nil, &FoundationError{-1,"Given C implementation does not implement interface Encrypt."}
     }
 
     implTag := C.vscf_impl_tag(ctx)
@@ -92,10 +92,10 @@ func FoundationImplementationWrapIEncrypt (ctx *C.vscf_impl_t) (IEncrypt, error)
     }
 }
 
-/* Wrap C implementation object to the Go object that implements interface IDecrypt. */
-func FoundationImplementationWrapIDecrypt (ctx *C.vscf_impl_t) (IDecrypt, error) {
+/* Wrap C implementation object to the Go object that implements interface Decrypt. */
+func FoundationImplementationWrapDecrypt(ctx *C.vscf_impl_t) (Decrypt, error) {
     if (!C.vscf_decrypt_is_implemented(ctx)) {
-        return nil, &FoundationError{-1,"Given C implementation does not implement interface IDecrypt."}
+        return nil, &FoundationError{-1,"Given C implementation does not implement interface Decrypt."}
     }
 
     implTag := C.vscf_impl_tag(ctx)
@@ -111,10 +111,10 @@ func FoundationImplementationWrapIDecrypt (ctx *C.vscf_impl_t) (IDecrypt, error)
     }
 }
 
-/* Wrap C implementation object to the Go object that implements interface ICipherInfo. */
-func FoundationImplementationWrapICipherInfo (ctx *C.vscf_impl_t) (ICipherInfo, error) {
+/* Wrap C implementation object to the Go object that implements interface CipherInfo. */
+func FoundationImplementationWrapCipherInfo(ctx *C.vscf_impl_t) (CipherInfo, error) {
     if (!C.vscf_cipher_info_is_implemented(ctx)) {
-        return nil, &FoundationError{-1,"Given C implementation does not implement interface ICipherInfo."}
+        return nil, &FoundationError{-1,"Given C implementation does not implement interface CipherInfo."}
     }
 
     implTag := C.vscf_impl_tag(ctx)
@@ -128,10 +128,10 @@ func FoundationImplementationWrapICipherInfo (ctx *C.vscf_impl_t) (ICipherInfo, 
     }
 }
 
-/* Wrap C implementation object to the Go object that implements interface ICipher. */
-func FoundationImplementationWrapICipher (ctx *C.vscf_impl_t) (ICipher, error) {
+/* Wrap C implementation object to the Go object that implements interface Cipher. */
+func FoundationImplementationWrapCipher(ctx *C.vscf_impl_t) (Cipher, error) {
     if (!C.vscf_cipher_is_implemented(ctx)) {
-        return nil, &FoundationError{-1,"Given C implementation does not implement interface ICipher."}
+        return nil, &FoundationError{-1,"Given C implementation does not implement interface Cipher."}
     }
 
     implTag := C.vscf_impl_tag(ctx)
@@ -145,10 +145,10 @@ func FoundationImplementationWrapICipher (ctx *C.vscf_impl_t) (ICipher, error) {
     }
 }
 
-/* Wrap C implementation object to the Go object that implements interface ICipherAuthInfo. */
-func FoundationImplementationWrapICipherAuthInfo (ctx *C.vscf_impl_t) (ICipherAuthInfo, error) {
+/* Wrap C implementation object to the Go object that implements interface CipherAuthInfo. */
+func FoundationImplementationWrapCipherAuthInfo(ctx *C.vscf_impl_t) (CipherAuthInfo, error) {
     if (!C.vscf_cipher_auth_info_is_implemented(ctx)) {
-        return nil, &FoundationError{-1,"Given C implementation does not implement interface ICipherAuthInfo."}
+        return nil, &FoundationError{-1,"Given C implementation does not implement interface CipherAuthInfo."}
     }
 
     implTag := C.vscf_impl_tag(ctx)
@@ -160,10 +160,10 @@ func FoundationImplementationWrapICipherAuthInfo (ctx *C.vscf_impl_t) (ICipherAu
     }
 }
 
-/* Wrap C implementation object to the Go object that implements interface IAuthEncrypt. */
-func FoundationImplementationWrapIAuthEncrypt (ctx *C.vscf_impl_t) (IAuthEncrypt, error) {
+/* Wrap C implementation object to the Go object that implements interface AuthEncrypt. */
+func FoundationImplementationWrapAuthEncrypt(ctx *C.vscf_impl_t) (AuthEncrypt, error) {
     if (!C.vscf_auth_encrypt_is_implemented(ctx)) {
-        return nil, &FoundationError{-1,"Given C implementation does not implement interface IAuthEncrypt."}
+        return nil, &FoundationError{-1,"Given C implementation does not implement interface AuthEncrypt."}
     }
 
     implTag := C.vscf_impl_tag(ctx)
@@ -175,10 +175,10 @@ func FoundationImplementationWrapIAuthEncrypt (ctx *C.vscf_impl_t) (IAuthEncrypt
     }
 }
 
-/* Wrap C implementation object to the Go object that implements interface IAuthDecrypt. */
-func FoundationImplementationWrapIAuthDecrypt (ctx *C.vscf_impl_t) (IAuthDecrypt, error) {
+/* Wrap C implementation object to the Go object that implements interface AuthDecrypt. */
+func FoundationImplementationWrapAuthDecrypt(ctx *C.vscf_impl_t) (AuthDecrypt, error) {
     if (!C.vscf_auth_decrypt_is_implemented(ctx)) {
-        return nil, &FoundationError{-1,"Given C implementation does not implement interface IAuthDecrypt."}
+        return nil, &FoundationError{-1,"Given C implementation does not implement interface AuthDecrypt."}
     }
 
     implTag := C.vscf_impl_tag(ctx)
@@ -190,10 +190,10 @@ func FoundationImplementationWrapIAuthDecrypt (ctx *C.vscf_impl_t) (IAuthDecrypt
     }
 }
 
-/* Wrap C implementation object to the Go object that implements interface ICipherAuth. */
-func FoundationImplementationWrapICipherAuth (ctx *C.vscf_impl_t) (ICipherAuth, error) {
+/* Wrap C implementation object to the Go object that implements interface CipherAuth. */
+func FoundationImplementationWrapCipherAuth(ctx *C.vscf_impl_t) (CipherAuth, error) {
     if (!C.vscf_cipher_auth_is_implemented(ctx)) {
-        return nil, &FoundationError{-1,"Given C implementation does not implement interface ICipherAuth."}
+        return nil, &FoundationError{-1,"Given C implementation does not implement interface CipherAuth."}
     }
 
     implTag := C.vscf_impl_tag(ctx)
@@ -205,10 +205,10 @@ func FoundationImplementationWrapICipherAuth (ctx *C.vscf_impl_t) (ICipherAuth, 
     }
 }
 
-/* Wrap C implementation object to the Go object that implements interface IAsn1Reader. */
-func FoundationImplementationWrapIAsn1Reader (ctx *C.vscf_impl_t) (IAsn1Reader, error) {
+/* Wrap C implementation object to the Go object that implements interface Asn1Reader. */
+func FoundationImplementationWrapAsn1Reader(ctx *C.vscf_impl_t) (Asn1Reader, error) {
     if (!C.vscf_asn1_reader_is_implemented(ctx)) {
-        return nil, &FoundationError{-1,"Given C implementation does not implement interface IAsn1Reader."}
+        return nil, &FoundationError{-1,"Given C implementation does not implement interface Asn1Reader."}
     }
 
     implTag := C.vscf_impl_tag(ctx)
@@ -220,10 +220,10 @@ func FoundationImplementationWrapIAsn1Reader (ctx *C.vscf_impl_t) (IAsn1Reader, 
     }
 }
 
-/* Wrap C implementation object to the Go object that implements interface IAsn1Writer. */
-func FoundationImplementationWrapIAsn1Writer (ctx *C.vscf_impl_t) (IAsn1Writer, error) {
+/* Wrap C implementation object to the Go object that implements interface Asn1Writer. */
+func FoundationImplementationWrapAsn1Writer(ctx *C.vscf_impl_t) (Asn1Writer, error) {
     if (!C.vscf_asn1_writer_is_implemented(ctx)) {
-        return nil, &FoundationError{-1,"Given C implementation does not implement interface IAsn1Writer."}
+        return nil, &FoundationError{-1,"Given C implementation does not implement interface Asn1Writer."}
     }
 
     implTag := C.vscf_impl_tag(ctx)
@@ -235,10 +235,10 @@ func FoundationImplementationWrapIAsn1Writer (ctx *C.vscf_impl_t) (IAsn1Writer, 
     }
 }
 
-/* Wrap C implementation object to the Go object that implements interface IKey. */
-func FoundationImplementationWrapIKey (ctx *C.vscf_impl_t) (IKey, error) {
+/* Wrap C implementation object to the Go object that implements interface Key. */
+func FoundationImplementationWrapKey(ctx *C.vscf_impl_t) (Key, error) {
     if (!C.vscf_key_is_implemented(ctx)) {
-        return nil, &FoundationError{-1,"Given C implementation does not implement interface IKey."}
+        return nil, &FoundationError{-1,"Given C implementation does not implement interface Key."}
     }
 
     implTag := C.vscf_impl_tag(ctx)
@@ -260,10 +260,10 @@ func FoundationImplementationWrapIKey (ctx *C.vscf_impl_t) (IKey, error) {
     }
 }
 
-/* Wrap C implementation object to the Go object that implements interface IPublicKey. */
-func FoundationImplementationWrapIPublicKey (ctx *C.vscf_impl_t) (IPublicKey, error) {
+/* Wrap C implementation object to the Go object that implements interface PublicKey. */
+func FoundationImplementationWrapPublicKey(ctx *C.vscf_impl_t) (PublicKey, error) {
     if (!C.vscf_public_key_is_implemented(ctx)) {
-        return nil, &FoundationError{-1,"Given C implementation does not implement interface IPublicKey."}
+        return nil, &FoundationError{-1,"Given C implementation does not implement interface PublicKey."}
     }
 
     implTag := C.vscf_impl_tag(ctx)
@@ -279,10 +279,10 @@ func FoundationImplementationWrapIPublicKey (ctx *C.vscf_impl_t) (IPublicKey, er
     }
 }
 
-/* Wrap C implementation object to the Go object that implements interface IPrivateKey. */
-func FoundationImplementationWrapIPrivateKey (ctx *C.vscf_impl_t) (IPrivateKey, error) {
+/* Wrap C implementation object to the Go object that implements interface PrivateKey. */
+func FoundationImplementationWrapPrivateKey(ctx *C.vscf_impl_t) (PrivateKey, error) {
     if (!C.vscf_private_key_is_implemented(ctx)) {
-        return nil, &FoundationError{-1,"Given C implementation does not implement interface IPrivateKey."}
+        return nil, &FoundationError{-1,"Given C implementation does not implement interface PrivateKey."}
     }
 
     implTag := C.vscf_impl_tag(ctx)
@@ -298,10 +298,10 @@ func FoundationImplementationWrapIPrivateKey (ctx *C.vscf_impl_t) (IPrivateKey, 
     }
 }
 
-/* Wrap C implementation object to the Go object that implements interface IKeyAlg. */
-func FoundationImplementationWrapIKeyAlg (ctx *C.vscf_impl_t) (IKeyAlg, error) {
+/* Wrap C implementation object to the Go object that implements interface KeyAlg. */
+func FoundationImplementationWrapKeyAlg(ctx *C.vscf_impl_t) (KeyAlg, error) {
     if (!C.vscf_key_alg_is_implemented(ctx)) {
-        return nil, &FoundationError{-1,"Given C implementation does not implement interface IKeyAlg."}
+        return nil, &FoundationError{-1,"Given C implementation does not implement interface KeyAlg."}
     }
 
     implTag := C.vscf_impl_tag(ctx)
@@ -319,10 +319,10 @@ func FoundationImplementationWrapIKeyAlg (ctx *C.vscf_impl_t) (IKeyAlg, error) {
     }
 }
 
-/* Wrap C implementation object to the Go object that implements interface IKeyCipher. */
-func FoundationImplementationWrapIKeyCipher (ctx *C.vscf_impl_t) (IKeyCipher, error) {
+/* Wrap C implementation object to the Go object that implements interface KeyCipher. */
+func FoundationImplementationWrapKeyCipher(ctx *C.vscf_impl_t) (KeyCipher, error) {
     if (!C.vscf_key_cipher_is_implemented(ctx)) {
-        return nil, &FoundationError{-1,"Given C implementation does not implement interface IKeyCipher."}
+        return nil, &FoundationError{-1,"Given C implementation does not implement interface KeyCipher."}
     }
 
     implTag := C.vscf_impl_tag(ctx)
@@ -340,10 +340,10 @@ func FoundationImplementationWrapIKeyCipher (ctx *C.vscf_impl_t) (IKeyCipher, er
     }
 }
 
-/* Wrap C implementation object to the Go object that implements interface IKeySigner. */
-func FoundationImplementationWrapIKeySigner (ctx *C.vscf_impl_t) (IKeySigner, error) {
+/* Wrap C implementation object to the Go object that implements interface KeySigner. */
+func FoundationImplementationWrapKeySigner(ctx *C.vscf_impl_t) (KeySigner, error) {
     if (!C.vscf_key_signer_is_implemented(ctx)) {
-        return nil, &FoundationError{-1,"Given C implementation does not implement interface IKeySigner."}
+        return nil, &FoundationError{-1,"Given C implementation does not implement interface KeySigner."}
     }
 
     implTag := C.vscf_impl_tag(ctx)
@@ -359,10 +359,10 @@ func FoundationImplementationWrapIKeySigner (ctx *C.vscf_impl_t) (IKeySigner, er
     }
 }
 
-/* Wrap C implementation object to the Go object that implements interface IComputeSharedKey. */
-func FoundationImplementationWrapIComputeSharedKey (ctx *C.vscf_impl_t) (IComputeSharedKey, error) {
+/* Wrap C implementation object to the Go object that implements interface ComputeSharedKey. */
+func FoundationImplementationWrapComputeSharedKey(ctx *C.vscf_impl_t) (ComputeSharedKey, error) {
     if (!C.vscf_compute_shared_key_is_implemented(ctx)) {
-        return nil, &FoundationError{-1,"Given C implementation does not implement interface IComputeSharedKey."}
+        return nil, &FoundationError{-1,"Given C implementation does not implement interface ComputeSharedKey."}
     }
 
     implTag := C.vscf_impl_tag(ctx)
@@ -378,10 +378,10 @@ func FoundationImplementationWrapIComputeSharedKey (ctx *C.vscf_impl_t) (IComput
     }
 }
 
-/* Wrap C implementation object to the Go object that implements interface IEntropySource. */
-func FoundationImplementationWrapIEntropySource (ctx *C.vscf_impl_t) (IEntropySource, error) {
+/* Wrap C implementation object to the Go object that implements interface EntropySource. */
+func FoundationImplementationWrapEntropySource(ctx *C.vscf_impl_t) (EntropySource, error) {
     if (!C.vscf_entropy_source_is_implemented(ctx)) {
-        return nil, &FoundationError{-1,"Given C implementation does not implement interface IEntropySource."}
+        return nil, &FoundationError{-1,"Given C implementation does not implement interface EntropySource."}
     }
 
     implTag := C.vscf_impl_tag(ctx)
@@ -397,10 +397,10 @@ func FoundationImplementationWrapIEntropySource (ctx *C.vscf_impl_t) (IEntropySo
     }
 }
 
-/* Wrap C implementation object to the Go object that implements interface IRandom. */
-func FoundationImplementationWrapIRandom (ctx *C.vscf_impl_t) (IRandom, error) {
+/* Wrap C implementation object to the Go object that implements interface Random. */
+func FoundationImplementationWrapRandom(ctx *C.vscf_impl_t) (Random, error) {
     if (!C.vscf_random_is_implemented(ctx)) {
-        return nil, &FoundationError{-1,"Given C implementation does not implement interface IRandom."}
+        return nil, &FoundationError{-1,"Given C implementation does not implement interface Random."}
     }
 
     implTag := C.vscf_impl_tag(ctx)
@@ -416,10 +416,10 @@ func FoundationImplementationWrapIRandom (ctx *C.vscf_impl_t) (IRandom, error) {
     }
 }
 
-/* Wrap C implementation object to the Go object that implements interface IMac. */
-func FoundationImplementationWrapIMac (ctx *C.vscf_impl_t) (IMac, error) {
+/* Wrap C implementation object to the Go object that implements interface Mac. */
+func FoundationImplementationWrapMac(ctx *C.vscf_impl_t) (Mac, error) {
     if (!C.vscf_mac_is_implemented(ctx)) {
-        return nil, &FoundationError{-1,"Given C implementation does not implement interface IMac."}
+        return nil, &FoundationError{-1,"Given C implementation does not implement interface Mac."}
     }
 
     implTag := C.vscf_impl_tag(ctx)
@@ -431,10 +431,10 @@ func FoundationImplementationWrapIMac (ctx *C.vscf_impl_t) (IMac, error) {
     }
 }
 
-/* Wrap C implementation object to the Go object that implements interface IKdf. */
-func FoundationImplementationWrapIKdf (ctx *C.vscf_impl_t) (IKdf, error) {
+/* Wrap C implementation object to the Go object that implements interface Kdf. */
+func FoundationImplementationWrapKdf(ctx *C.vscf_impl_t) (Kdf, error) {
     if (!C.vscf_kdf_is_implemented(ctx)) {
-        return nil, &FoundationError{-1,"Given C implementation does not implement interface IKdf."}
+        return nil, &FoundationError{-1,"Given C implementation does not implement interface Kdf."}
     }
 
     implTag := C.vscf_impl_tag(ctx)
@@ -452,10 +452,10 @@ func FoundationImplementationWrapIKdf (ctx *C.vscf_impl_t) (IKdf, error) {
     }
 }
 
-/* Wrap C implementation object to the Go object that implements interface ISaltedKdf. */
-func FoundationImplementationWrapISaltedKdf (ctx *C.vscf_impl_t) (ISaltedKdf, error) {
+/* Wrap C implementation object to the Go object that implements interface SaltedKdf. */
+func FoundationImplementationWrapSaltedKdf(ctx *C.vscf_impl_t) (SaltedKdf, error) {
     if (!C.vscf_salted_kdf_is_implemented(ctx)) {
-        return nil, &FoundationError{-1,"Given C implementation does not implement interface ISaltedKdf."}
+        return nil, &FoundationError{-1,"Given C implementation does not implement interface SaltedKdf."}
     }
 
     implTag := C.vscf_impl_tag(ctx)
@@ -469,10 +469,10 @@ func FoundationImplementationWrapISaltedKdf (ctx *C.vscf_impl_t) (ISaltedKdf, er
     }
 }
 
-/* Wrap C implementation object to the Go object that implements interface IKeySerializer. */
-func FoundationImplementationWrapIKeySerializer (ctx *C.vscf_impl_t) (IKeySerializer, error) {
+/* Wrap C implementation object to the Go object that implements interface KeySerializer. */
+func FoundationImplementationWrapKeySerializer(ctx *C.vscf_impl_t) (KeySerializer, error) {
     if (!C.vscf_key_serializer_is_implemented(ctx)) {
-        return nil, &FoundationError{-1,"Given C implementation does not implement interface IKeySerializer."}
+        return nil, &FoundationError{-1,"Given C implementation does not implement interface KeySerializer."}
     }
 
     implTag := C.vscf_impl_tag(ctx)
@@ -488,10 +488,10 @@ func FoundationImplementationWrapIKeySerializer (ctx *C.vscf_impl_t) (IKeySerial
     }
 }
 
-/* Wrap C implementation object to the Go object that implements interface IKeyDeserializer. */
-func FoundationImplementationWrapIKeyDeserializer (ctx *C.vscf_impl_t) (IKeyDeserializer, error) {
+/* Wrap C implementation object to the Go object that implements interface KeyDeserializer. */
+func FoundationImplementationWrapKeyDeserializer(ctx *C.vscf_impl_t) (KeyDeserializer, error) {
     if (!C.vscf_key_deserializer_is_implemented(ctx)) {
-        return nil, &FoundationError{-1,"Given C implementation does not implement interface IKeyDeserializer."}
+        return nil, &FoundationError{-1,"Given C implementation does not implement interface KeyDeserializer."}
     }
 
     implTag := C.vscf_impl_tag(ctx)
@@ -503,10 +503,10 @@ func FoundationImplementationWrapIKeyDeserializer (ctx *C.vscf_impl_t) (IKeyDese
     }
 }
 
-/* Wrap C implementation object to the Go object that implements interface IAlgInfo. */
-func FoundationImplementationWrapIAlgInfo (ctx *C.vscf_impl_t) (IAlgInfo, error) {
+/* Wrap C implementation object to the Go object that implements interface AlgInfo. */
+func FoundationImplementationWrapAlgInfo(ctx *C.vscf_impl_t) (AlgInfo, error) {
     if (!C.vscf_alg_info_is_implemented(ctx)) {
-        return nil, &FoundationError{-1,"Given C implementation does not implement interface IAlgInfo."}
+        return nil, &FoundationError{-1,"Given C implementation does not implement interface AlgInfo."}
     }
 
     implTag := C.vscf_impl_tag(ctx)
@@ -528,10 +528,10 @@ func FoundationImplementationWrapIAlgInfo (ctx *C.vscf_impl_t) (IAlgInfo, error)
     }
 }
 
-/* Wrap C implementation object to the Go object that implements interface IAlgInfoSerializer. */
-func FoundationImplementationWrapIAlgInfoSerializer (ctx *C.vscf_impl_t) (IAlgInfoSerializer, error) {
+/* Wrap C implementation object to the Go object that implements interface AlgInfoSerializer. */
+func FoundationImplementationWrapAlgInfoSerializer(ctx *C.vscf_impl_t) (AlgInfoSerializer, error) {
     if (!C.vscf_alg_info_serializer_is_implemented(ctx)) {
-        return nil, &FoundationError{-1,"Given C implementation does not implement interface IAlgInfoSerializer."}
+        return nil, &FoundationError{-1,"Given C implementation does not implement interface AlgInfoSerializer."}
     }
 
     implTag := C.vscf_impl_tag(ctx)
@@ -543,10 +543,10 @@ func FoundationImplementationWrapIAlgInfoSerializer (ctx *C.vscf_impl_t) (IAlgIn
     }
 }
 
-/* Wrap C implementation object to the Go object that implements interface IAlgInfoDeserializer. */
-func FoundationImplementationWrapIAlgInfoDeserializer (ctx *C.vscf_impl_t) (IAlgInfoDeserializer, error) {
+/* Wrap C implementation object to the Go object that implements interface AlgInfoDeserializer. */
+func FoundationImplementationWrapAlgInfoDeserializer(ctx *C.vscf_impl_t) (AlgInfoDeserializer, error) {
     if (!C.vscf_alg_info_deserializer_is_implemented(ctx)) {
-        return nil, &FoundationError{-1,"Given C implementation does not implement interface IAlgInfoDeserializer."}
+        return nil, &FoundationError{-1,"Given C implementation does not implement interface AlgInfoDeserializer."}
     }
 
     implTag := C.vscf_impl_tag(ctx)
@@ -558,10 +558,10 @@ func FoundationImplementationWrapIAlgInfoDeserializer (ctx *C.vscf_impl_t) (IAlg
     }
 }
 
-/* Wrap C implementation object to the Go object that implements interface IMessageInfoSerializer. */
-func FoundationImplementationWrapIMessageInfoSerializer (ctx *C.vscf_impl_t) (IMessageInfoSerializer, error) {
+/* Wrap C implementation object to the Go object that implements interface MessageInfoSerializer. */
+func FoundationImplementationWrapMessageInfoSerializer(ctx *C.vscf_impl_t) (MessageInfoSerializer, error) {
     if (!C.vscf_message_info_serializer_is_implemented(ctx)) {
-        return nil, &FoundationError{-1,"Given C implementation does not implement interface IMessageInfoSerializer."}
+        return nil, &FoundationError{-1,"Given C implementation does not implement interface MessageInfoSerializer."}
     }
 
     implTag := C.vscf_impl_tag(ctx)
@@ -573,10 +573,10 @@ func FoundationImplementationWrapIMessageInfoSerializer (ctx *C.vscf_impl_t) (IM
     }
 }
 
-/* Wrap C implementation object to the Go object that implements interface IMessageInfoFooterSerializer. */
-func FoundationImplementationWrapIMessageInfoFooterSerializer (ctx *C.vscf_impl_t) (IMessageInfoFooterSerializer, error) {
+/* Wrap C implementation object to the Go object that implements interface MessageInfoFooterSerializer. */
+func FoundationImplementationWrapMessageInfoFooterSerializer(ctx *C.vscf_impl_t) (MessageInfoFooterSerializer, error) {
     if (!C.vscf_message_info_footer_serializer_is_implemented(ctx)) {
-        return nil, &FoundationError{-1,"Given C implementation does not implement interface IMessageInfoFooterSerializer."}
+        return nil, &FoundationError{-1,"Given C implementation does not implement interface MessageInfoFooterSerializer."}
     }
 
     implTag := C.vscf_impl_tag(ctx)

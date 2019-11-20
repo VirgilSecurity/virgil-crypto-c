@@ -2,21 +2,20 @@ package foundation
 
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
+import "runtime"
 
 
 /*
 * Random number generator that is used for test purposes only.
 */
 type FakeRandom struct {
-    IRandom
-    IEntropySource
     cCtx *C.vscf_fake_random_t /*ct10*/
 }
 
 /*
 * Configure random number generator to generate sequence filled with given byte.
 */
-func (obj *FakeRandom) SetupSourceByte (byteSource byte) {
+func (obj *FakeRandom) SetupSourceByte(byteSource byte) {
     C.vscf_fake_random_setup_source_byte(obj.cCtx, (C.byte)(byteSource)/*pa10*/)
 
     return
@@ -26,7 +25,7 @@ func (obj *FakeRandom) SetupSourceByte (byteSource byte) {
 * Configure random number generator to generate random sequence from given data.
 * Note, that given data is used as circular source.
 */
-func (obj *FakeRandom) SetupSourceData (dataSource []byte) {
+func (obj *FakeRandom) SetupSourceData(dataSource []byte) {
     dataSourceData := helperWrapData (dataSource)
 
     C.vscf_fake_random_setup_source_data(obj.cCtx, dataSourceData)
@@ -35,39 +34,53 @@ func (obj *FakeRandom) SetupSourceData (dataSource []byte) {
 }
 
 /* Handle underlying C context. */
-func (obj *FakeRandom) ctx () *C.vscf_impl_t {
+func (obj *FakeRandom) ctx() *C.vscf_impl_t {
     return (*C.vscf_impl_t)(obj.cCtx)
 }
 
-func NewFakeRandom () *FakeRandom {
+func NewFakeRandom() *FakeRandom {
     ctx := C.vscf_fake_random_new()
-    return &FakeRandom {
+    obj := &FakeRandom {
         cCtx: ctx,
     }
+    runtime.SetFinalizer(obj, obj.Delete)
+    return obj
 }
 
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newFakeRandomWithCtx (ctx *C.vscf_fake_random_t /*ct10*/) *FakeRandom {
-    return &FakeRandom {
+func newFakeRandomWithCtx(ctx *C.vscf_fake_random_t /*ct10*/) *FakeRandom {
+    obj := &FakeRandom {
         cCtx: ctx,
     }
+    runtime.SetFinalizer(obj, obj.Delete)
+    return obj
 }
 
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newFakeRandomCopy (ctx *C.vscf_fake_random_t /*ct10*/) *FakeRandom {
-    return &FakeRandom {
+func newFakeRandomCopy(ctx *C.vscf_fake_random_t /*ct10*/) *FakeRandom {
+    obj := &FakeRandom {
         cCtx: C.vscf_fake_random_shallow_copy(ctx),
     }
+    runtime.SetFinalizer(obj, obj.Delete)
+    return obj
 }
 
 /*
 * Release underlying C context.
 */
-func (obj *FakeRandom) Delete () {
+func (obj *FakeRandom) Delete() {
+    runtime.SetFinalizer(obj, nil)
+    obj.clear()
+}
+
+/*
+* Release underlying C context.
+*/
+func (obj *FakeRandom) delete() {
     C.vscf_fake_random_delete(obj.cCtx)
 }
 
@@ -75,7 +88,7 @@ func (obj *FakeRandom) Delete () {
 * Generate random bytes.
 * All RNG implementations must be thread-safe.
 */
-func (obj *FakeRandom) Random (dataLen uint32) ([]byte, error) {
+func (obj *FakeRandom) Random(dataLen uint32) ([]byte, error) {
     dataBuf, dataBufErr := bufferNewBuffer(int(dataLen))
     if dataBufErr != nil {
         return nil, dataBufErr
@@ -96,7 +109,7 @@ func (obj *FakeRandom) Random (dataLen uint32) ([]byte, error) {
 /*
 * Retrieve new seed data from the entropy sources.
 */
-func (obj *FakeRandom) Reseed () error {
+func (obj *FakeRandom) Reseed() error {
     proxyResult := /*pr4*/C.vscf_fake_random_reseed(obj.cCtx)
 
     err := FoundationErrorHandleStatus(proxyResult)
@@ -110,7 +123,7 @@ func (obj *FakeRandom) Reseed () error {
 /*
 * Defines that implemented source is strong.
 */
-func (obj *FakeRandom) IsStrong () bool {
+func (obj *FakeRandom) IsStrong() bool {
     proxyResult := /*pr4*/C.vscf_fake_random_is_strong(obj.cCtx)
 
     return bool(proxyResult) /* r9 */
@@ -119,7 +132,7 @@ func (obj *FakeRandom) IsStrong () bool {
 /*
 * Gather entropy of the requested length.
 */
-func (obj *FakeRandom) Gather (len uint32) ([]byte, error) {
+func (obj *FakeRandom) Gather(len uint32) ([]byte, error) {
     outBuf, outBufErr := bufferNewBuffer(int(len))
     if outBufErr != nil {
         return nil, outBufErr

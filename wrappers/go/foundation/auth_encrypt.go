@@ -5,7 +5,7 @@ import "C"
 /*
 * Provide interface for authenticated data encryption.
 */
-type IAuthEncrypt interface {
+type AuthEncrypt interface {
 
     context
 

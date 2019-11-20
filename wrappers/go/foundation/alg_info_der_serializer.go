@@ -2,17 +2,17 @@ package foundation
 
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
+import "runtime"
 
 
 /*
 * Provide DER serializer of algorithm information.
 */
 type AlgInfoDerSerializer struct {
-    IAlgInfoSerializer
     cCtx *C.vscf_alg_info_der_serializer_t /*ct10*/
 }
 
-func (obj *AlgInfoDerSerializer) SetAsn1Writer (asn1Writer IAsn1Writer) {
+func (obj *AlgInfoDerSerializer) SetAsn1Writer(asn1Writer Asn1Writer) {
     C.vscf_alg_info_der_serializer_release_asn1_writer(obj.cCtx)
     C.vscf_alg_info_der_serializer_use_asn1_writer(obj.cCtx, (*C.vscf_impl_t)(asn1Writer.ctx()))
 }
@@ -20,7 +20,7 @@ func (obj *AlgInfoDerSerializer) SetAsn1Writer (asn1Writer IAsn1Writer) {
 /*
 * Setup predefined values to the uninitialized class dependencies.
 */
-func (obj *AlgInfoDerSerializer) SetupDefaults () {
+func (obj *AlgInfoDerSerializer) SetupDefaults() {
     C.vscf_alg_info_der_serializer_setup_defaults(obj.cCtx)
 
     return
@@ -31,53 +31,67 @@ func (obj *AlgInfoDerSerializer) SetupDefaults () {
 * Note, that caller code is responsible to reset ASN.1 writer with
 * an output buffer.
 */
-func (obj *AlgInfoDerSerializer) SerializeInplace (algInfo IAlgInfo) uint32 {
+func (obj *AlgInfoDerSerializer) SerializeInplace(algInfo AlgInfo) uint32 {
     proxyResult := /*pr4*/C.vscf_alg_info_der_serializer_serialize_inplace(obj.cCtx, (*C.vscf_impl_t)(algInfo.ctx()))
 
     return uint32(proxyResult) /* r9 */
 }
 
 /* Handle underlying C context. */
-func (obj *AlgInfoDerSerializer) ctx () *C.vscf_impl_t {
+func (obj *AlgInfoDerSerializer) ctx() *C.vscf_impl_t {
     return (*C.vscf_impl_t)(obj.cCtx)
 }
 
-func NewAlgInfoDerSerializer () *AlgInfoDerSerializer {
+func NewAlgInfoDerSerializer() *AlgInfoDerSerializer {
     ctx := C.vscf_alg_info_der_serializer_new()
-    return &AlgInfoDerSerializer {
+    obj := &AlgInfoDerSerializer {
         cCtx: ctx,
     }
+    runtime.SetFinalizer(obj, obj.Delete)
+    return obj
 }
 
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newAlgInfoDerSerializerWithCtx (ctx *C.vscf_alg_info_der_serializer_t /*ct10*/) *AlgInfoDerSerializer {
-    return &AlgInfoDerSerializer {
+func newAlgInfoDerSerializerWithCtx(ctx *C.vscf_alg_info_der_serializer_t /*ct10*/) *AlgInfoDerSerializer {
+    obj := &AlgInfoDerSerializer {
         cCtx: ctx,
     }
+    runtime.SetFinalizer(obj, obj.Delete)
+    return obj
 }
 
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newAlgInfoDerSerializerCopy (ctx *C.vscf_alg_info_der_serializer_t /*ct10*/) *AlgInfoDerSerializer {
-    return &AlgInfoDerSerializer {
+func newAlgInfoDerSerializerCopy(ctx *C.vscf_alg_info_der_serializer_t /*ct10*/) *AlgInfoDerSerializer {
+    obj := &AlgInfoDerSerializer {
         cCtx: C.vscf_alg_info_der_serializer_shallow_copy(ctx),
     }
+    runtime.SetFinalizer(obj, obj.Delete)
+    return obj
 }
 
 /*
 * Release underlying C context.
 */
-func (obj *AlgInfoDerSerializer) Delete () {
+func (obj *AlgInfoDerSerializer) Delete() {
+    runtime.SetFinalizer(obj, nil)
+    obj.clear()
+}
+
+/*
+* Release underlying C context.
+*/
+func (obj *AlgInfoDerSerializer) delete() {
     C.vscf_alg_info_der_serializer_delete(obj.cCtx)
 }
 
 /*
 * Return buffer size enough to hold serialized algorithm.
 */
-func (obj *AlgInfoDerSerializer) SerializedLen (algInfo IAlgInfo) uint32 {
+func (obj *AlgInfoDerSerializer) SerializedLen(algInfo AlgInfo) uint32 {
     proxyResult := /*pr4*/C.vscf_alg_info_der_serializer_serialized_len(obj.cCtx, (*C.vscf_impl_t)(algInfo.ctx()))
 
     return uint32(proxyResult) /* r9 */
@@ -86,8 +100,8 @@ func (obj *AlgInfoDerSerializer) SerializedLen (algInfo IAlgInfo) uint32 {
 /*
 * Serialize algorithm info to buffer class.
 */
-func (obj *AlgInfoDerSerializer) Serialize (algInfo IAlgInfo) []byte {
-    outBuf, outBufErr := bufferNewBuffer(int(obj.SerializedLen(algInfo.(IAlgInfo)) /* lg2 */))
+func (obj *AlgInfoDerSerializer) Serialize(algInfo AlgInfo) []byte {
+    outBuf, outBufErr := bufferNewBuffer(int(obj.SerializedLen(algInfo.(AlgInfo)) /* lg2 */))
     if outBufErr != nil {
         return nil
     }

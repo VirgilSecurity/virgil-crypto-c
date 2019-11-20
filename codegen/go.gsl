@@ -165,11 +165,11 @@ function go_derive_buffer_length_getter (class, method, argument)
         endif
 
     elsif defined (my.length.constant)
-        my.proxy_constant_func = go_derive_getter_name_str (my.length.constant)
         if string_equal (my.proxy_object, "obj")
+            my.proxy_constant_func = go_derive_getter_name_str (my.length.constant)
             return "$(my.proxy_object:).$(my.proxy_constant_func:)() /* lg3 */"
         else
-            return "$(my.proxy_object:)$(my.proxy_constant_func:)() /* lg4 */"
+            return "$(my.proxy_object:)$(my.length.constant:Pascal) /* lg4 */"
         endif
 
     elsif defined (my.length.argument)
@@ -198,9 +198,9 @@ function go_derive_constant_name (constant, instance, go_project)
     assert_attribute (my.instance, "name", my)
     
     if (my.instance.name = "status")
-        return "$(my.go_project.name:c, UPPER)_ERROR_$(my.constant.name:c, UPPER)"
+        return "$(my.go_project.name:Pascal)Error$(my.constant.name:Pascal)"
     else
-        return "$(my.instance.name:c, UPPER)_$(my.constant.name:c, UPPER)"
+        return "$(my.instance.name:Pascal)$(my.constant.name:Pascal)"
     endif
 endfunction
 
@@ -279,10 +279,10 @@ function go_derive_dependency_type (dependency)
     my.project_uid = component_derive_project_uid (my.dependency)
 
     if defined (my.dependency.interface)
-        my.type_uid = make_id ("interface", "I$(my.dependency.interface:Pascal)")
+        my.type_uid = make_id ("interface", "$(my.dependency.interface:Pascal)")
 
     elsif defined (my.dependency.api)
-        my.type_uid = make_id ("interface", "I$(my.dependency.api:Pascal)")
+        my.type_uid = make_id ("interface", "$(my.dependency.api:Pascal)")
 
     elsif defined (my.dependency.class)
         my.type_uid = make_id ("struct", "$(my.dependency.class:Pascal)")
@@ -571,7 +571,7 @@ function go_derive_instance_type (instance)
 
     elsif defined (my.instance.interface)
         my.project_uid = component_derive_project_uid (my.instance)
-        my.type_uid = make_id ("interface", "I$(my.instance.interface:Pascal)")
+        my.type_uid = make_id ("interface", "$(my.instance.interface:Pascal)")
         return make_ref_go (make_id(my.project_uid, my.type_uid))
 
     elsif defined (my.instance.enum)
@@ -655,7 +655,7 @@ endfunction
 function go_derive_interface_name_str (name)
     check_arguments (my, "name", my)
 
-    return "I$(my.name:Pascal)"
+    return "$(my.name:Pascal)"
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -1355,7 +1355,7 @@ function go_create_constant (constant, instance, go_instance, go_project, meta)
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Create entity <go_func/> with 'delete' method declaration.
+#   Create entity <go_func/> with 'Delete' method declaration.
 # ---------------------------------------------------------------------------
 function go_create_func_clear_declaration (destination, go_project, meta)
     check_arguments (my, "destination, go_project, meta", my)
@@ -1363,6 +1363,20 @@ function go_create_func_clear_declaration (destination, go_project, meta)
     new go_func to my.destination
         . = go_format_comment ("Release underlying C context.")
         .name = "Delete"
+
+        return go_func
+    endnew
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Create entity <go_func/> with 'delete' method declaration.
+# ---------------------------------------------------------------------------
+function go_create_func_clear_declaration_private (destination, go_project, meta)
+    check_arguments (my, "destination, go_project, meta", my)
+
+    new go_func to my.destination
+        . = go_format_comment ("Release underlying C context.")
+        .name = "delete"
 
         return go_func
     endnew
@@ -1629,6 +1643,14 @@ function go_create_struct_close (go_struct, class, go_project, meta)
     my.func_clear = go_create_func_clear_declaration (my.go_struct, my.go_project, my.meta)
     new go_code to my.func_clear
         . = "\
+            runtime.SetFinalizer(obj, nil)
+            obj.clear()
+        "
+    endnew
+
+    my.func_clear = go_create_func_clear_declaration_private (my.go_struct, my.go_project, my.meta)
+    new go_code to my.func_clear
+        . = "\
             $(my.dtor_invocation:)
         "
     endnew
@@ -1640,6 +1662,8 @@ endfunction
 # ---------------------------------------------------------------------------
 function go_create_struct_constructor (class, constructor, destination, go_module, go_project, meta)
     check_arguments (my, "class, constructor, destination, go_module, go_project, meta", my)
+
+    go_create_import ("", "runtime", my.go_module)
 
     my.struct_name = go_derive_struct_name (my.class, my.go_project)
     new go_func to my.destination
@@ -1660,9 +1684,12 @@ function go_create_struct_constructor (class, constructor, destination, go_modul
         my.proxy_invocation = go_wrap_c_proxy_call (go_func, my.proxy_call, my.proxy_return_type, my.proxy_return_c_type, my.go_module, my.go_project)
 
         my.context_assignment = format_left ("
-            return &$(my.struct_name:) {
+            obj := &$(my.struct_name:) {
                 cCtx: proxyResult,
-            }")
+            }
+            runtime.SetFinalizer(obj, obj.Delete)
+            return obj
+            ")
 
         new go_code to go_func
             my.method_body = ""
@@ -1683,10 +1710,12 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Create entity <go_func/> of from the class entity <method/>.
 # ---------------------------------------------------------------------------
-function go_create_struct_default_constructor (go_struct, class, go_project, meta)
-    check_arguments (my, "go_struct, class, go_project, meta", my)
+function go_create_struct_default_constructor (go_struct, class, go_module, go_project, meta)
+    check_arguments (my, "go_struct, class, go_module, go_project, meta", my)
 
     echo_debug ("Create constructor '$(my.go_struct.name:)'", my)
+    
+    go_create_import ("", "runtime", my.go_module)
 
     if string_in (my.class.context, "public") & string_in (my.class.lifecycle, "none")
         my.ctx_size_invocation = "C.$(class_derive_class_c_method_ctx_size (my.class))()"
@@ -1705,9 +1734,11 @@ function go_create_struct_default_constructor (go_struct, class, go_project, met
         new go_code to go_func
             . = "
                 ctx := $(my.ctor_invocation:)
-                return &$(my.struct_name:) {
+                obj := &$(my.struct_name:) {
                     cCtx: ctx,
                 }
+                runtime.SetFinalizer(obj, obj.Delete)
+                return obj
             "
         endnew
         
@@ -1733,9 +1764,11 @@ function go_create_struct_default_constructor (go_struct, class, go_project, met
 
         new go_code to go_func
             . = "\
-                return &$(my.struct_name:) {
+                obj := &$(my.struct_name:) {
                     cCtx: ctx,
                 }
+                runtime.SetFinalizer(obj, obj.Delete)
+                return obj
             "
         endnew
 
@@ -1762,9 +1795,11 @@ function go_create_struct_default_constructor (go_struct, class, go_project, met
 
             new go_code to go_func
                 . = "\
-                    return &$(my.struct_name:) {
+                    obj := &$(my.struct_name:) {
                         cCtx: C.$(class_derive_c_method_shallow_copy (my.class))(ctx),
                     }
+                    runtime.SetFinalizer(obj, obj.Delete)
+                    return obj
                 "
             endnew
 
@@ -1915,7 +1950,7 @@ function go_create_class_module (class, go_project, meta)
 
             if my.class.context <> "none"
                 go_create_struct_field_context (go_struct, my.class)
-                go_create_struct_default_constructor (go_struct, my.class, my.go_project, my.meta)
+                go_create_struct_default_constructor (go_struct, my.class, go_module, my.go_project, my.meta)
                 go_create_struct_close (go_struct, my.class, my.go_project, my.meta)
 
                 if ! string_in (my.class.lifecycle, "none")
@@ -1926,7 +1961,8 @@ function go_create_class_module (class, go_project, meta)
             endif
 
             for my.class.constant
-                go_create_func_from_constant (my.class, constant, go_struct, my.go_project, my.meta)
+                go_create_constant (constant, my.class, go_struct, my.go_project, my.meta)
+                #TODO go_create_func_from_constant (my.class, constant, go_struct, my.go_project, my.meta)
             endfor
 
             for my.class.dependency
@@ -2006,7 +2042,7 @@ function go_create_interface_module (interface, go_project, meta)
     echo_info ("Create <go_module/> from interface: '$(my.interface.name:)'", my)
 
     new go_module to my.go_project
-        .name = "i$(go_derive_module_name (my.interface):)"
+        .name = "$(go_derive_module_name (my.interface):)"
         .package = my.go_project.package
         .package_dir = my.go_project.package_dir
         .source_file_name = 0.name + ".go"
@@ -2145,7 +2181,8 @@ function go_create_implementation_module (implementation, go_project, meta)
             go_map_attr_visibility (go_struct, my.implementation)
 
             for my.implementation.constant
-                go_create_func_from_constant (my.implementation, constant, go_struct, my.go_project, my.meta)
+                go_create_constant (constant, my.implementation, go_struct, my.go_project, my.meta)
+                #TODO go_create_func_from_constant (my.implementation, constant, go_struct, my.go_project, my.meta)
             endfor
 
             for my.implementation.dependency
@@ -2161,7 +2198,7 @@ function go_create_implementation_module (implementation, go_project, meta)
             
                 go_create_struct_field_context (go_struct, my.implementation)
 
-                go_create_struct_default_constructor (go_struct, my.implementation, my.go_project, my.meta)
+                go_create_struct_default_constructor (go_struct, my.implementation, go_module, my.go_project, my.meta)
                 go_create_struct_close (go_struct, my.implementation, my.go_project, my.meta)
 
                 if my.implementation.lifecycle <> "none"
@@ -2524,7 +2561,7 @@ endfunction
 function go_get_implementation_helper_interface_func (go_struct, interface, go_project)
     check_arguments (my, "go_struct, interface, go_project", my)
 
-    my.interface_func_name = "WrapI$(my.interface.name:Pascal)"
+    my.interface_func_name = "Wrap$(my.interface.name:Pascal)"
 
     my.wrap_interface_func = my.go_struct->go_func (name = my.interface_func_name) ?
 

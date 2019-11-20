@@ -7,23 +7,23 @@ import "C"
 */
 type Asn1Tag int
 const (
-    ASN1_TAG_BOOLEAN Asn1Tag = 0x01
-    ASN1_TAG_INTEGER Asn1Tag = 0x02
-    ASN1_TAG_BIT_STRING Asn1Tag = 0x03
-    ASN1_TAG_OCTET_STRING Asn1Tag = 0x04
-    ASN1_TAG_NULL Asn1Tag = 0x05
-    ASN1_TAG_OID Asn1Tag = 0x06
-    ASN1_TAG_UTF8_STRING Asn1Tag = 0x0C
-    ASN1_TAG_SEQUENCE Asn1Tag = 0x10
-    ASN1_TAG_SET Asn1Tag = 0x11
-    ASN1_TAG_PRINTABLE_STRING Asn1Tag = 0x13
-    ASN1_TAG_T61_STRING Asn1Tag = 0x14
-    ASN1_TAG_IA5_STRING Asn1Tag = 0x16
-    ASN1_TAG_UTC_TIME Asn1Tag = 0x17
-    ASN1_TAG_GENERALIZED_TIME Asn1Tag = 0x18
-    ASN1_TAG_UNIVERSAL_STRING Asn1Tag = 0x1C
-    ASN1_TAG_BMP_STRING Asn1Tag = 0x1E
-    ASN1_TAG_PRIMITIVE Asn1Tag = 0x00
-    ASN1_TAG_CONSTRUCTED Asn1Tag = 0x20
-    ASN1_TAG_CONTEXT_SPECIFIC Asn1Tag = 0x80
+    Asn1TagBoolean Asn1Tag = 0x01
+    Asn1TagInteger Asn1Tag = 0x02
+    Asn1TagBitString Asn1Tag = 0x03
+    Asn1TagOctetString Asn1Tag = 0x04
+    Asn1TagNull Asn1Tag = 0x05
+    Asn1TagOid Asn1Tag = 0x06
+    Asn1TagUtf8String Asn1Tag = 0x0C
+    Asn1TagSequence Asn1Tag = 0x10
+    Asn1TagSet Asn1Tag = 0x11
+    Asn1TagPrintableString Asn1Tag = 0x13
+    Asn1TagT61String Asn1Tag = 0x14
+    Asn1TagIa5String Asn1Tag = 0x16
+    Asn1TagUtcTime Asn1Tag = 0x17
+    Asn1TagGeneralizedTime Asn1Tag = 0x18
+    Asn1TagUniversalString Asn1Tag = 0x1C
+    Asn1TagBmpString Asn1Tag = 0x1E
+    Asn1TagPrimitive Asn1Tag = 0x00
+    Asn1TagConstructed Asn1Tag = 0x20
+    Asn1TagContextSpecific Asn1Tag = 0x80
 )

@@ -6,7 +6,7 @@ import "C"
 * Provide interface to persist algorithm information and it parameters
 * and then restore the algorithm from it.
 */
-type IAlg interface {
+type Alg interface {
 
     context
 
@@ -18,12 +18,12 @@ type IAlg interface {
     /*
     * Produce object with algorithm information and configuration parameters.
     */
-    ProduceAlgInfo () (IAlgInfo, error)
+    ProduceAlgInfo () (AlgInfo, error)
 
     /*
     * Restore algorithm configuration from the given object.
     */
-    RestoreAlgInfo (algInfo IAlgInfo) error
+    RestoreAlgInfo (algInfo AlgInfo) error
 
     /*
     * Release underlying C context.

@@ -5,19 +5,19 @@ import "C"
 /*
 * Provide serialization of algorithm
 */
-type IAlgInfoSerializer interface {
+type AlgInfoSerializer interface {
 
     context
 
     /*
     * Return buffer size enough to hold serialized algorithm.
     */
-    SerializedLen (algInfo IAlgInfo) uint32
+    SerializedLen (algInfo AlgInfo) uint32
 
     /*
     * Serialize algorithm info to buffer class.
     */
-    Serialize (algInfo IAlgInfo) []byte
+    Serialize (algInfo AlgInfo) []byte
 
     /*
     * Release underlying C context.

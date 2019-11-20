@@ -14,7 +14,7 @@ type Pythia struct {
 * Performs global initialization of the pythia library.
 * Must be called once for entire application at startup.
 */
-func PythiaConfigure () error {
+func PythiaConfigure() error {
     proxyResult := /*pr4*/C.vscp_pythia_configure()
 
     err := PythiaErrorHandleStatus(proxyResult)
@@ -29,7 +29,7 @@ func PythiaConfigure () error {
 * Performs global cleanup of the pythia library.
 * Must be called once for entire application before exit.
 */
-func PythiaCleanup () {
+func PythiaCleanup() {
     C.vscp_pythia_cleanup()
 
     return
@@ -38,7 +38,7 @@ func PythiaCleanup () {
 /*
 * Return length of the buffer needed to hold 'blinded password'.
 */
-func PythiaBlindedPasswordBufLen () uint32 {
+func PythiaBlindedPasswordBufLen() uint32 {
     proxyResult := /*pr4*/C.vscp_pythia_blinded_password_buf_len()
 
     return uint32(proxyResult) /* r9 */
@@ -47,7 +47,7 @@ func PythiaBlindedPasswordBufLen () uint32 {
 /*
 * Return length of the buffer needed to hold 'deblinded password'.
 */
-func PythiaDeblindedPasswordBufLen () uint32 {
+func PythiaDeblindedPasswordBufLen() uint32 {
     proxyResult := /*pr4*/C.vscp_pythia_deblinded_password_buf_len()
 
     return uint32(proxyResult) /* r9 */
@@ -56,7 +56,7 @@ func PythiaDeblindedPasswordBufLen () uint32 {
 /*
 * Return length of the buffer needed to hold 'blinding secret'.
 */
-func PythiaBlindingSecretBufLen () uint32 {
+func PythiaBlindingSecretBufLen() uint32 {
     proxyResult := /*pr4*/C.vscp_pythia_blinding_secret_buf_len()
 
     return uint32(proxyResult) /* r9 */
@@ -65,7 +65,7 @@ func PythiaBlindingSecretBufLen () uint32 {
 /*
 * Return length of the buffer needed to hold 'transformation private key'.
 */
-func PythiaTransformationPrivateKeyBufLen () uint32 {
+func PythiaTransformationPrivateKeyBufLen() uint32 {
     proxyResult := /*pr4*/C.vscp_pythia_transformation_private_key_buf_len()
 
     return uint32(proxyResult) /* r9 */
@@ -74,7 +74,7 @@ func PythiaTransformationPrivateKeyBufLen () uint32 {
 /*
 * Return length of the buffer needed to hold 'transformation public key'.
 */
-func PythiaTransformationPublicKeyBufLen () uint32 {
+func PythiaTransformationPublicKeyBufLen() uint32 {
     proxyResult := /*pr4*/C.vscp_pythia_transformation_public_key_buf_len()
 
     return uint32(proxyResult) /* r9 */
@@ -83,7 +83,7 @@ func PythiaTransformationPublicKeyBufLen () uint32 {
 /*
 * Return length of the buffer needed to hold 'transformed password'.
 */
-func PythiaTransformedPasswordBufLen () uint32 {
+func PythiaTransformedPasswordBufLen() uint32 {
     proxyResult := /*pr4*/C.vscp_pythia_transformed_password_buf_len()
 
     return uint32(proxyResult) /* r9 */
@@ -92,7 +92,7 @@ func PythiaTransformedPasswordBufLen () uint32 {
 /*
 * Return length of the buffer needed to hold 'transformed tweak'.
 */
-func PythiaTransformedTweakBufLen () uint32 {
+func PythiaTransformedTweakBufLen() uint32 {
     proxyResult := /*pr4*/C.vscp_pythia_transformed_tweak_buf_len()
 
     return uint32(proxyResult) /* r9 */
@@ -101,7 +101,7 @@ func PythiaTransformedTweakBufLen () uint32 {
 /*
 * Return length of the buffer needed to hold 'proof value'.
 */
-func PythiaProofValueBufLen () uint32 {
+func PythiaProofValueBufLen() uint32 {
     proxyResult := /*pr4*/C.vscp_pythia_proof_value_buf_len()
 
     return uint32(proxyResult) /* r9 */
@@ -110,7 +110,7 @@ func PythiaProofValueBufLen () uint32 {
 /*
 * Return length of the buffer needed to hold 'password update token'.
 */
-func PythiaPasswordUpdateTokenBufLen () uint32 {
+func PythiaPasswordUpdateTokenBufLen() uint32 {
     proxyResult := /*pr4*/C.vscp_pythia_password_update_token_buf_len()
 
     return uint32(proxyResult) /* r9 */
@@ -120,7 +120,7 @@ func PythiaPasswordUpdateTokenBufLen () uint32 {
 * Blinds password. Turns password into a pseudo-random string.
 * This step is necessary to prevent 3rd-parties from knowledge of end user's password.
 */
-func PythiaBlind (password []byte) ([]byte, []byte, error) {
+func PythiaBlind(password []byte) ([]byte, []byte, error) {
     blindedPasswordBuf, blindedPasswordBufErr := bufferNewBuffer(int(PythiaBlindedPasswordBufLen() /* lg1 */))
     if blindedPasswordBufErr != nil {
         return nil, nil, blindedPasswordBufErr
@@ -147,7 +147,7 @@ func PythiaBlind (password []byte) ([]byte, []byte, error) {
 /*
 * Deblinds 'transformed password' value with previously returned 'blinding secret' from blind().
 */
-func PythiaDeblind (transformedPassword []byte, blindingSecret []byte) ([]byte, error) {
+func PythiaDeblind(transformedPassword []byte, blindingSecret []byte) ([]byte, error) {
     deblindedPasswordBuf, deblindedPasswordBufErr := bufferNewBuffer(int(PythiaDeblindedPasswordBufLen() /* lg1 */))
     if deblindedPasswordBufErr != nil {
         return nil, deblindedPasswordBufErr
@@ -169,7 +169,7 @@ func PythiaDeblind (transformedPassword []byte, blindingSecret []byte) ([]byte, 
 /*
 * Computes transformation private and public key.
 */
-func PythiaComputeTransformationKeyPair (transformationKeyId []byte, pythiaSecret []byte, pythiaScopeSecret []byte) ([]byte, []byte, error) {
+func PythiaComputeTransformationKeyPair(transformationKeyId []byte, pythiaSecret []byte, pythiaScopeSecret []byte) ([]byte, []byte, error) {
     transformationPrivateKeyBuf, transformationPrivateKeyBufErr := bufferNewBuffer(int(PythiaTransformationPrivateKeyBufLen() /* lg1 */))
     if transformationPrivateKeyBufErr != nil {
         return nil, nil, transformationPrivateKeyBufErr
@@ -198,7 +198,7 @@ func PythiaComputeTransformationKeyPair (transformationKeyId []byte, pythiaSecre
 /*
 * Transforms blinded password using transformation private key.
 */
-func PythiaTransform (blindedPassword []byte, tweak []byte, transformationPrivateKey []byte) ([]byte, []byte, error) {
+func PythiaTransform(blindedPassword []byte, tweak []byte, transformationPrivateKey []byte) ([]byte, []byte, error) {
     transformedPasswordBuf, transformedPasswordBufErr := bufferNewBuffer(int(PythiaTransformedPasswordBufLen() /* lg1 */))
     if transformedPasswordBufErr != nil {
         return nil, nil, transformedPasswordBufErr
@@ -227,7 +227,7 @@ func PythiaTransform (blindedPassword []byte, tweak []byte, transformationPrivat
 /*
 * Generates proof that server possesses secret values that were used to transform password.
 */
-func PythiaProve (transformedPassword []byte, blindedPassword []byte, transformedTweak []byte, transformationPrivateKey []byte, transformationPublicKey []byte) ([]byte, []byte, error) {
+func PythiaProve(transformedPassword []byte, blindedPassword []byte, transformedTweak []byte, transformationPrivateKey []byte, transformationPublicKey []byte) ([]byte, []byte, error) {
     proofValueCBuf, proofValueCBufErr := bufferNewBuffer(int(PythiaProofValueBufLen() /* lg1 */))
     if proofValueCBufErr != nil {
         return nil, nil, proofValueCBufErr
@@ -259,7 +259,7 @@ func PythiaProve (transformedPassword []byte, blindedPassword []byte, transforme
 * This operation allows client to verify that the output of transform() is correct,
 * assuming that client has previously stored transformation public key.
 */
-func PythiaVerify (transformedPassword []byte, blindedPassword []byte, tweak []byte, transformationPublicKey []byte, proofValueC []byte, proofValueU []byte) (bool, error) {
+func PythiaVerify(transformedPassword []byte, blindedPassword []byte, tweak []byte, transformationPublicKey []byte, proofValueC []byte, proofValueU []byte) (bool, error) {
     var error C.vscp_error_t
     C.vscp_error_reset(&error)
     transformedPasswordData := helperWrapData (transformedPassword)
@@ -285,7 +285,7 @@ func PythiaVerify (transformedPassword []byte, blindedPassword []byte, tweak []b
 *
 * This action should increment version of the 'pythia scope secret'.
 */
-func PythiaGetPasswordUpdateToken (previousTransformationPrivateKey []byte, newTransformationPrivateKey []byte) ([]byte, error) {
+func PythiaGetPasswordUpdateToken(previousTransformationPrivateKey []byte, newTransformationPrivateKey []byte) ([]byte, error) {
     passwordUpdateTokenBuf, passwordUpdateTokenBufErr := bufferNewBuffer(int(PythiaPasswordUpdateTokenBufLen() /* lg1 */))
     if passwordUpdateTokenBufErr != nil {
         return nil, passwordUpdateTokenBufErr
@@ -308,7 +308,7 @@ func PythiaGetPasswordUpdateToken (previousTransformationPrivateKey []byte, newT
 * Updates previously stored 'deblinded password' with 'password update token'.
 * After this call, 'transform()' called with new arguments will return corresponding values.
 */
-func PythiaUpdateDeblindedWithToken (deblindedPassword []byte, passwordUpdateToken []byte) ([]byte, error) {
+func PythiaUpdateDeblindedWithToken(deblindedPassword []byte, passwordUpdateToken []byte) ([]byte, error) {
     updatedDeblindedPasswordBuf, updatedDeblindedPasswordBufErr := bufferNewBuffer(int(PythiaDeblindedPasswordBufLen() /* lg1 */))
     if updatedDeblindedPasswordBufErr != nil {
         return nil, updatedDeblindedPasswordBufErr

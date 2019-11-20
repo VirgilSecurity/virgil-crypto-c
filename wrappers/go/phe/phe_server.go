@@ -2,6 +2,7 @@ package phe
 
 // #include <virgil/crypto/phe/vsce_phe_public.h>
 import "C"
+import "runtime"
 import foundation "virgil/foundation"
 
 
@@ -14,46 +15,60 @@ type PheServer struct {
 }
 
 /* Handle underlying C context. */
-func (obj *PheServer) ctx () *C.vscf_impl_t {
+func (obj *PheServer) ctx() *C.vscf_impl_t {
     return (*C.vscf_impl_t)(obj.cCtx)
 }
 
-func NewPheServer () *PheServer {
+func NewPheServer() *PheServer {
     ctx := C.vsce_phe_server_new()
-    return &PheServer {
+    obj := &PheServer {
         cCtx: ctx,
     }
+    runtime.SetFinalizer(obj, obj.Delete)
+    return obj
 }
 
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newPheServerWithCtx (ctx *C.vsce_phe_server_t /*ct2*/) *PheServer {
-    return &PheServer {
+func newPheServerWithCtx(ctx *C.vsce_phe_server_t /*ct2*/) *PheServer {
+    obj := &PheServer {
         cCtx: ctx,
     }
+    runtime.SetFinalizer(obj, obj.Delete)
+    return obj
 }
 
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newPheServerCopy (ctx *C.vsce_phe_server_t /*ct2*/) *PheServer {
-    return &PheServer {
+func newPheServerCopy(ctx *C.vsce_phe_server_t /*ct2*/) *PheServer {
+    obj := &PheServer {
         cCtx: C.vsce_phe_server_shallow_copy(ctx),
     }
+    runtime.SetFinalizer(obj, obj.Delete)
+    return obj
 }
 
 /*
 * Release underlying C context.
 */
-func (obj *PheServer) Delete () {
+func (obj *PheServer) Delete() {
+    runtime.SetFinalizer(obj, nil)
+    obj.clear()
+}
+
+/*
+* Release underlying C context.
+*/
+func (obj *PheServer) delete() {
     C.vsce_phe_server_delete(obj.cCtx)
 }
 
 /*
 * Random used for key generation, proofs, etc.
 */
-func (obj *PheServer) SetRandom (random foundation.IRandom) {
+func (obj *PheServer) SetRandom(random foundation.Random) {
     C.vsce_phe_server_release_random(obj.cCtx)
     C.vsce_phe_server_use_random(obj.cCtx, (*C.vscf_impl_t)(random.(context).ctx()))
 }
@@ -61,12 +76,12 @@ func (obj *PheServer) SetRandom (random foundation.IRandom) {
 /*
 * Random used for crypto operations to make them const-time
 */
-func (obj *PheServer) SetOperationRandom (operationRandom foundation.IRandom) {
+func (obj *PheServer) SetOperationRandom(operationRandom foundation.Random) {
     C.vsce_phe_server_release_operation_random(obj.cCtx)
     C.vsce_phe_server_use_operation_random(obj.cCtx, (*C.vscf_impl_t)(operationRandom.(context).ctx()))
 }
 
-func (obj *PheServer) SetupDefaults () error {
+func (obj *PheServer) SetupDefaults() error {
     proxyResult := /*pr4*/C.vsce_phe_server_setup_defaults(obj.cCtx)
 
     err := PheErrorHandleStatus(proxyResult)
@@ -80,14 +95,14 @@ func (obj *PheServer) SetupDefaults () error {
 /*
 * Generates new NIST P-256 server key pair for some client
 */
-func (obj *PheServer) GenerateServerKeyPair () ([]byte, []byte, error) {
-    serverPrivateKeyBuf, serverPrivateKeyBufErr := bufferNewBuffer(int(PheCommonGetPhePrivateKeyLength() /* lg4 */))
+func (obj *PheServer) GenerateServerKeyPair() ([]byte, []byte, error) {
+    serverPrivateKeyBuf, serverPrivateKeyBufErr := bufferNewBuffer(int(PheCommonPhePrivateKeyLength /* lg4 */))
     if serverPrivateKeyBufErr != nil {
         return nil, nil, serverPrivateKeyBufErr
     }
     defer serverPrivateKeyBuf.Delete()
 
-    serverPublicKeyBuf, serverPublicKeyBufErr := bufferNewBuffer(int(PheCommonGetPhePublicKeyLength() /* lg4 */))
+    serverPublicKeyBuf, serverPublicKeyBufErr := bufferNewBuffer(int(PheCommonPhePublicKeyLength /* lg4 */))
     if serverPublicKeyBufErr != nil {
         return nil, nil, serverPublicKeyBufErr
     }
@@ -107,7 +122,7 @@ func (obj *PheServer) GenerateServerKeyPair () ([]byte, []byte, error) {
 /*
 * Buffer size needed to fit EnrollmentResponse
 */
-func (obj *PheServer) EnrollmentResponseLen () uint32 {
+func (obj *PheServer) EnrollmentResponseLen() uint32 {
     proxyResult := /*pr4*/C.vsce_phe_server_enrollment_response_len(obj.cCtx)
 
     return uint32(proxyResult) /* r9 */
@@ -116,7 +131,7 @@ func (obj *PheServer) EnrollmentResponseLen () uint32 {
 /*
 * Generates a new random enrollment and proof for a new user
 */
-func (obj *PheServer) GetEnrollment (serverPrivateKey []byte, serverPublicKey []byte) ([]byte, error) {
+func (obj *PheServer) GetEnrollment(serverPrivateKey []byte, serverPublicKey []byte) ([]byte, error) {
     enrollmentResponseBuf, enrollmentResponseBufErr := bufferNewBuffer(int(obj.EnrollmentResponseLen() /* lg2 */))
     if enrollmentResponseBufErr != nil {
         return nil, enrollmentResponseBufErr
@@ -138,7 +153,7 @@ func (obj *PheServer) GetEnrollment (serverPrivateKey []byte, serverPublicKey []
 /*
 * Buffer size needed to fit VerifyPasswordResponse
 */
-func (obj *PheServer) VerifyPasswordResponseLen () uint32 {
+func (obj *PheServer) VerifyPasswordResponseLen() uint32 {
     proxyResult := /*pr4*/C.vsce_phe_server_verify_password_response_len(obj.cCtx)
 
     return uint32(proxyResult) /* r9 */
@@ -147,7 +162,7 @@ func (obj *PheServer) VerifyPasswordResponseLen () uint32 {
 /*
 * Verifies existing user's password and generates response with proof
 */
-func (obj *PheServer) VerifyPassword (serverPrivateKey []byte, serverPublicKey []byte, verifyPasswordRequest []byte) ([]byte, error) {
+func (obj *PheServer) VerifyPassword(serverPrivateKey []byte, serverPublicKey []byte, verifyPasswordRequest []byte) ([]byte, error) {
     verifyPasswordResponseBuf, verifyPasswordResponseBufErr := bufferNewBuffer(int(obj.VerifyPasswordResponseLen() /* lg2 */))
     if verifyPasswordResponseBufErr != nil {
         return nil, verifyPasswordResponseBufErr
@@ -170,7 +185,7 @@ func (obj *PheServer) VerifyPassword (serverPrivateKey []byte, serverPublicKey [
 /*
 * Buffer size needed to fit UpdateToken
 */
-func (obj *PheServer) UpdateTokenLen () uint32 {
+func (obj *PheServer) UpdateTokenLen() uint32 {
     proxyResult := /*pr4*/C.vsce_phe_server_update_token_len(obj.cCtx)
 
     return uint32(proxyResult) /* r9 */
@@ -179,14 +194,14 @@ func (obj *PheServer) UpdateTokenLen () uint32 {
 /*
 * Updates server's private and public keys and issues an update token for use on client's side
 */
-func (obj *PheServer) RotateKeys (serverPrivateKey []byte) ([]byte, []byte, []byte, error) {
-    newServerPrivateKeyBuf, newServerPrivateKeyBufErr := bufferNewBuffer(int(PheCommonGetPhePrivateKeyLength() /* lg4 */))
+func (obj *PheServer) RotateKeys(serverPrivateKey []byte) ([]byte, []byte, []byte, error) {
+    newServerPrivateKeyBuf, newServerPrivateKeyBufErr := bufferNewBuffer(int(PheCommonPhePrivateKeyLength /* lg4 */))
     if newServerPrivateKeyBufErr != nil {
         return nil, nil, nil, newServerPrivateKeyBufErr
     }
     defer newServerPrivateKeyBuf.Delete()
 
-    newServerPublicKeyBuf, newServerPublicKeyBufErr := bufferNewBuffer(int(PheCommonGetPhePublicKeyLength() /* lg4 */))
+    newServerPublicKeyBuf, newServerPublicKeyBufErr := bufferNewBuffer(int(PheCommonPhePublicKeyLength /* lg4 */))
     if newServerPublicKeyBufErr != nil {
         return nil, nil, nil, newServerPublicKeyBufErr
     }

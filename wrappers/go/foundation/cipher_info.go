@@ -5,7 +5,7 @@ import "C"
 /*
 * Provides compile time knownledge about algorithm.
 */
-type ICipherInfo interface {
+type CipherInfo interface {
 
     context
 
