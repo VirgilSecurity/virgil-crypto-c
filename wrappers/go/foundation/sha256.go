@@ -22,7 +22,8 @@ func NewSha256() *Sha256 {
     obj := &Sha256 {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, func (o *Sha256) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *Sha256) {o.Delete()})
+    runtime.SetFinalizer(obj, (*Sha256).Delete)
     return obj
 }
 
@@ -33,7 +34,8 @@ func newSha256WithCtx(ctx *C.vscf_sha256_t /*ct10*/) *Sha256 {
     obj := &Sha256 {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, func (o *Sha256) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *Sha256) {o.Delete()})
+    runtime.SetFinalizer(obj, (*Sha256).Delete)
     return obj
 }
 
@@ -44,7 +46,8 @@ func newSha256Copy(ctx *C.vscf_sha256_t /*ct10*/) *Sha256 {
     obj := &Sha256 {
         cCtx: C.vscf_sha256_shallow_copy(ctx),
     }
-    runtime.SetFinalizer(obj, func (o *Sha256) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *Sha256) {o.Delete()})
+    runtime.SetFinalizer(obj, (*Sha256).Delete)
     return obj
 }
 
@@ -52,6 +55,9 @@ func newSha256Copy(ctx *C.vscf_sha256_t /*ct10*/) *Sha256 {
 * Release underlying C context.
 */
 func (obj *Sha256) Delete() {
+    if obj == nil {
+        return
+    }
     runtime.SetFinalizer(obj, nil)
     obj.delete()
 }
@@ -69,6 +75,8 @@ func (obj *Sha256) delete() {
 func (obj *Sha256) AlgId() AlgId {
     proxyResult := /*pr4*/C.vscf_sha256_alg_id(obj.cCtx)
 
+    runtime.KeepAlive(obj)
+
     return AlgId(proxyResult) /* r8 */
 }
 
@@ -77,6 +85,8 @@ func (obj *Sha256) AlgId() AlgId {
 */
 func (obj *Sha256) ProduceAlgInfo() (AlgInfo, error) {
     proxyResult := /*pr4*/C.vscf_sha256_produce_alg_info(obj.cCtx)
+
+    runtime.KeepAlive(obj)
 
     return FoundationImplementationWrapAlgInfo(proxyResult) /* r4 */
 }
@@ -91,6 +101,10 @@ func (obj *Sha256) RestoreAlgInfo(algInfo AlgInfo) error {
     if err != nil {
         return err
     }
+
+    runtime.KeepAlive(obj)
+
+    runtime.KeepAlive(algInfo)
 
     return nil
 }
@@ -122,6 +136,8 @@ func (obj *Sha256) Hash(data []byte) []byte {
 
     C.vscf_sha256_hash(dataData, digestBuf.ctx)
 
+    runtime.KeepAlive(obj)
+
     return digestBuf.getData() /* r7 */
 }
 
@@ -130,6 +146,8 @@ func (obj *Sha256) Hash(data []byte) []byte {
 */
 func (obj *Sha256) Start() {
     C.vscf_sha256_start(obj.cCtx)
+
+    runtime.KeepAlive(obj)
 
     return
 }
@@ -141,6 +159,8 @@ func (obj *Sha256) Update(data []byte) {
     dataData := helperWrapData (data)
 
     C.vscf_sha256_update(obj.cCtx, dataData)
+
+    runtime.KeepAlive(obj)
 
     return
 }
@@ -157,6 +177,8 @@ func (obj *Sha256) Finish() []byte {
 
 
     C.vscf_sha256_finish(obj.cCtx, digestBuf.ctx)
+
+    runtime.KeepAlive(obj)
 
     return digestBuf.getData() /* r7 */
 }

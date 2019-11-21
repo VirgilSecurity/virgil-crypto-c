@@ -23,7 +23,8 @@ func NewMessageInfo() *MessageInfo {
     obj := &MessageInfo {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, func (o *MessageInfo) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *MessageInfo) {o.Delete()})
+    runtime.SetFinalizer(obj, (*MessageInfo).Delete)
     return obj
 }
 
@@ -34,7 +35,8 @@ func newMessageInfoWithCtx(ctx *C.vscf_message_info_t /*ct2*/) *MessageInfo {
     obj := &MessageInfo {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, func (o *MessageInfo) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *MessageInfo) {o.Delete()})
+    runtime.SetFinalizer(obj, (*MessageInfo).Delete)
     return obj
 }
 
@@ -45,7 +47,8 @@ func newMessageInfoCopy(ctx *C.vscf_message_info_t /*ct2*/) *MessageInfo {
     obj := &MessageInfo {
         cCtx: C.vscf_message_info_shallow_copy(ctx),
     }
-    runtime.SetFinalizer(obj, func (o *MessageInfo) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *MessageInfo) {o.Delete()})
+    runtime.SetFinalizer(obj, (*MessageInfo).Delete)
     return obj
 }
 
@@ -53,6 +56,9 @@ func newMessageInfoCopy(ctx *C.vscf_message_info_t /*ct2*/) *MessageInfo {
 * Release underlying C context.
 */
 func (obj *MessageInfo) Delete() {
+    if obj == nil {
+        return
+    }
     runtime.SetFinalizer(obj, nil)
     obj.delete()
 }
@@ -70,6 +76,8 @@ func (obj *MessageInfo) delete() {
 func (obj *MessageInfo) DataEncryptionAlgInfo() (AlgInfo, error) {
     proxyResult := /*pr4*/C.vscf_message_info_data_encryption_alg_info(obj.cCtx)
 
+    runtime.KeepAlive(obj)
+
     return FoundationImplementationWrapAlgInfo(proxyResult) /* r4 */
 }
 
@@ -78,6 +86,8 @@ func (obj *MessageInfo) DataEncryptionAlgInfo() (AlgInfo, error) {
 */
 func (obj *MessageInfo) KeyRecipientInfoList() *KeyRecipientInfoList {
     proxyResult := /*pr4*/C.vscf_message_info_key_recipient_info_list(obj.cCtx)
+
+    runtime.KeepAlive(obj)
 
     return newKeyRecipientInfoListCopy(proxyResult) /* r5 */
 }
@@ -88,6 +98,8 @@ func (obj *MessageInfo) KeyRecipientInfoList() *KeyRecipientInfoList {
 func (obj *MessageInfo) PasswordRecipientInfoList() *PasswordRecipientInfoList {
     proxyResult := /*pr4*/C.vscf_message_info_password_recipient_info_list(obj.cCtx)
 
+    runtime.KeepAlive(obj)
+
     return newPasswordRecipientInfoListCopy(proxyResult) /* r5 */
 }
 
@@ -96,6 +108,8 @@ func (obj *MessageInfo) PasswordRecipientInfoList() *PasswordRecipientInfoList {
 */
 func (obj *MessageInfo) HasCustomParams() bool {
     proxyResult := /*pr4*/C.vscf_message_info_has_custom_params(obj.cCtx)
+
+    runtime.KeepAlive(obj)
 
     return bool(proxyResult) /* r9 */
 }
@@ -108,6 +122,8 @@ func (obj *MessageInfo) HasCustomParams() bool {
 func (obj *MessageInfo) CustomParams() *MessageInfoCustomParams {
     proxyResult := /*pr4*/C.vscf_message_info_custom_params(obj.cCtx)
 
+    runtime.KeepAlive(obj)
+
     return newMessageInfoCustomParamsCopy(proxyResult) /* r5 */
 }
 
@@ -116,6 +132,8 @@ func (obj *MessageInfo) CustomParams() *MessageInfoCustomParams {
 */
 func (obj *MessageInfo) HasCipherKdfAlgInfo() bool {
     proxyResult := /*pr4*/C.vscf_message_info_has_cipher_kdf_alg_info(obj.cCtx)
+
+    runtime.KeepAlive(obj)
 
     return bool(proxyResult) /* r9 */
 }
@@ -126,6 +144,8 @@ func (obj *MessageInfo) HasCipherKdfAlgInfo() bool {
 func (obj *MessageInfo) CipherKdfAlgInfo() (AlgInfo, error) {
     proxyResult := /*pr4*/C.vscf_message_info_cipher_kdf_alg_info(obj.cCtx)
 
+    runtime.KeepAlive(obj)
+
     return FoundationImplementationWrapAlgInfo(proxyResult) /* r4 */
 }
 
@@ -134,6 +154,8 @@ func (obj *MessageInfo) CipherKdfAlgInfo() (AlgInfo, error) {
 */
 func (obj *MessageInfo) HasFooterInfo() bool {
     proxyResult := /*pr4*/C.vscf_message_info_has_footer_info(obj.cCtx)
+
+    runtime.KeepAlive(obj)
 
     return bool(proxyResult) /* r9 */
 }
@@ -144,6 +166,8 @@ func (obj *MessageInfo) HasFooterInfo() bool {
 func (obj *MessageInfo) FooterInfo() *FooterInfo {
     proxyResult := /*pr4*/C.vscf_message_info_footer_info(obj.cCtx)
 
+    runtime.KeepAlive(obj)
+
     return newFooterInfoCopy(proxyResult) /* r5 */
 }
 
@@ -152,6 +176,8 @@ func (obj *MessageInfo) FooterInfo() *FooterInfo {
 */
 func (obj *MessageInfo) Clear() {
     C.vscf_message_info_clear(obj.cCtx)
+
+    runtime.KeepAlive(obj)
 
     return
 }

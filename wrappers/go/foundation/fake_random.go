@@ -18,6 +18,8 @@ type FakeRandom struct {
 func (obj *FakeRandom) SetupSourceByte(byteSource byte) {
     C.vscf_fake_random_setup_source_byte(obj.cCtx, (C.byte)(byteSource)/*pa10*/)
 
+    runtime.KeepAlive(obj)
+
     return
 }
 
@@ -29,6 +31,8 @@ func (obj *FakeRandom) SetupSourceData(dataSource []byte) {
     dataSourceData := helperWrapData (dataSource)
 
     C.vscf_fake_random_setup_source_data(obj.cCtx, dataSourceData)
+
+    runtime.KeepAlive(obj)
 
     return
 }
@@ -43,7 +47,8 @@ func NewFakeRandom() *FakeRandom {
     obj := &FakeRandom {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, func (o *FakeRandom) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *FakeRandom) {o.Delete()})
+    runtime.SetFinalizer(obj, (*FakeRandom).Delete)
     return obj
 }
 
@@ -54,7 +59,8 @@ func newFakeRandomWithCtx(ctx *C.vscf_fake_random_t /*ct10*/) *FakeRandom {
     obj := &FakeRandom {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, func (o *FakeRandom) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *FakeRandom) {o.Delete()})
+    runtime.SetFinalizer(obj, (*FakeRandom).Delete)
     return obj
 }
 
@@ -65,7 +71,8 @@ func newFakeRandomCopy(ctx *C.vscf_fake_random_t /*ct10*/) *FakeRandom {
     obj := &FakeRandom {
         cCtx: C.vscf_fake_random_shallow_copy(ctx),
     }
-    runtime.SetFinalizer(obj, func (o *FakeRandom) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *FakeRandom) {o.Delete()})
+    runtime.SetFinalizer(obj, (*FakeRandom).Delete)
     return obj
 }
 
@@ -73,6 +80,9 @@ func newFakeRandomCopy(ctx *C.vscf_fake_random_t /*ct10*/) *FakeRandom {
 * Release underlying C context.
 */
 func (obj *FakeRandom) Delete() {
+    if obj == nil {
+        return
+    }
     runtime.SetFinalizer(obj, nil)
     obj.delete()
 }
@@ -103,6 +113,8 @@ func (obj *FakeRandom) Random(dataLen uint32) ([]byte, error) {
         return nil, err
     }
 
+    runtime.KeepAlive(obj)
+
     return dataBuf.getData() /* r7 */, nil
 }
 
@@ -117,6 +129,8 @@ func (obj *FakeRandom) Reseed() error {
         return err
     }
 
+    runtime.KeepAlive(obj)
+
     return nil
 }
 
@@ -125,6 +139,8 @@ func (obj *FakeRandom) Reseed() error {
 */
 func (obj *FakeRandom) IsStrong() bool {
     proxyResult := /*pr4*/C.vscf_fake_random_is_strong(obj.cCtx)
+
+    runtime.KeepAlive(obj)
 
     return bool(proxyResult) /* r9 */
 }
@@ -146,6 +162,8 @@ func (obj *FakeRandom) Gather(len uint32) ([]byte, error) {
     if err != nil {
         return nil, err
     }
+
+    runtime.KeepAlive(obj)
 
     return outBuf.getData() /* r7 */, nil
 }

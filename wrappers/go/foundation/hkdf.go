@@ -18,6 +18,9 @@ const (
 func (obj *Hkdf) SetHash(hash Hash) {
     C.vscf_hkdf_release_hash(obj.cCtx)
     C.vscf_hkdf_use_hash(obj.cCtx, (*C.vscf_impl_t)(hash.ctx()))
+
+    runtime.KeepAlive(hash)
+    runtime.KeepAlive(obj)
 }
 
 /* Handle underlying C context. */
@@ -30,7 +33,8 @@ func NewHkdf() *Hkdf {
     obj := &Hkdf {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, func (o *Hkdf) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *Hkdf) {o.Delete()})
+    runtime.SetFinalizer(obj, (*Hkdf).Delete)
     return obj
 }
 
@@ -41,7 +45,8 @@ func newHkdfWithCtx(ctx *C.vscf_hkdf_t /*ct10*/) *Hkdf {
     obj := &Hkdf {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, func (o *Hkdf) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *Hkdf) {o.Delete()})
+    runtime.SetFinalizer(obj, (*Hkdf).Delete)
     return obj
 }
 
@@ -52,7 +57,8 @@ func newHkdfCopy(ctx *C.vscf_hkdf_t /*ct10*/) *Hkdf {
     obj := &Hkdf {
         cCtx: C.vscf_hkdf_shallow_copy(ctx),
     }
-    runtime.SetFinalizer(obj, func (o *Hkdf) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *Hkdf) {o.Delete()})
+    runtime.SetFinalizer(obj, (*Hkdf).Delete)
     return obj
 }
 
@@ -60,6 +66,9 @@ func newHkdfCopy(ctx *C.vscf_hkdf_t /*ct10*/) *Hkdf {
 * Release underlying C context.
 */
 func (obj *Hkdf) Delete() {
+    if obj == nil {
+        return
+    }
     runtime.SetFinalizer(obj, nil)
     obj.delete()
 }
@@ -77,6 +86,8 @@ func (obj *Hkdf) delete() {
 func (obj *Hkdf) AlgId() AlgId {
     proxyResult := /*pr4*/C.vscf_hkdf_alg_id(obj.cCtx)
 
+    runtime.KeepAlive(obj)
+
     return AlgId(proxyResult) /* r8 */
 }
 
@@ -85,6 +96,8 @@ func (obj *Hkdf) AlgId() AlgId {
 */
 func (obj *Hkdf) ProduceAlgInfo() (AlgInfo, error) {
     proxyResult := /*pr4*/C.vscf_hkdf_produce_alg_info(obj.cCtx)
+
+    runtime.KeepAlive(obj)
 
     return FoundationImplementationWrapAlgInfo(proxyResult) /* r4 */
 }
@@ -99,6 +112,10 @@ func (obj *Hkdf) RestoreAlgInfo(algInfo AlgInfo) error {
     if err != nil {
         return err
     }
+
+    runtime.KeepAlive(obj)
+
+    runtime.KeepAlive(algInfo)
 
     return nil
 }
@@ -116,6 +133,8 @@ func (obj *Hkdf) Derive(data []byte, keyLen uint32) []byte {
 
     C.vscf_hkdf_derive(obj.cCtx, dataData, (C.size_t)(keyLen)/*pa10*/, keyBuf.ctx)
 
+    runtime.KeepAlive(obj)
+
     return keyBuf.getData() /* r7 */
 }
 
@@ -126,6 +145,8 @@ func (obj *Hkdf) Reset(salt []byte, iterationCount uint32) {
     saltData := helperWrapData (salt)
 
     C.vscf_hkdf_reset(obj.cCtx, saltData, (C.size_t)(iterationCount)/*pa10*/)
+
+    runtime.KeepAlive(obj)
 
     return
 }
@@ -138,6 +159,8 @@ func (obj *Hkdf) SetInfo(info []byte) {
     infoData := helperWrapData (info)
 
     C.vscf_hkdf_set_info(obj.cCtx, infoData)
+
+    runtime.KeepAlive(obj)
 
     return
 }

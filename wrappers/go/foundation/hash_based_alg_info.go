@@ -18,6 +18,8 @@ type HashBasedAlgInfo struct {
 func (obj *HashBasedAlgInfo) HashAlgInfo() (AlgInfo, error) {
     proxyResult := /*pr4*/C.vscf_hash_based_alg_info_hash_alg_info(obj.cCtx)
 
+    runtime.KeepAlive(obj)
+
     return FoundationImplementationWrapAlgInfo(proxyResult) /* r4 */
 }
 
@@ -31,7 +33,8 @@ func NewHashBasedAlgInfo() *HashBasedAlgInfo {
     obj := &HashBasedAlgInfo {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, func (o *HashBasedAlgInfo) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *HashBasedAlgInfo) {o.Delete()})
+    runtime.SetFinalizer(obj, (*HashBasedAlgInfo).Delete)
     return obj
 }
 
@@ -42,7 +45,8 @@ func newHashBasedAlgInfoWithCtx(ctx *C.vscf_hash_based_alg_info_t /*ct10*/) *Has
     obj := &HashBasedAlgInfo {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, func (o *HashBasedAlgInfo) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *HashBasedAlgInfo) {o.Delete()})
+    runtime.SetFinalizer(obj, (*HashBasedAlgInfo).Delete)
     return obj
 }
 
@@ -53,7 +57,8 @@ func newHashBasedAlgInfoCopy(ctx *C.vscf_hash_based_alg_info_t /*ct10*/) *HashBa
     obj := &HashBasedAlgInfo {
         cCtx: C.vscf_hash_based_alg_info_shallow_copy(ctx),
     }
-    runtime.SetFinalizer(obj, func (o *HashBasedAlgInfo) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *HashBasedAlgInfo) {o.Delete()})
+    runtime.SetFinalizer(obj, (*HashBasedAlgInfo).Delete)
     return obj
 }
 
@@ -61,6 +66,9 @@ func newHashBasedAlgInfoCopy(ctx *C.vscf_hash_based_alg_info_t /*ct10*/) *HashBa
 * Release underlying C context.
 */
 func (obj *HashBasedAlgInfo) Delete() {
+    if obj == nil {
+        return
+    }
     runtime.SetFinalizer(obj, nil)
     obj.delete()
 }
@@ -80,10 +88,13 @@ func NewHashBasedAlgInfoWithMembers(algId AlgId, hashAlgInfo AlgInfo) *HashBased
 
     proxyResult := /*pr4*/C.vscf_hash_based_alg_info_new_with_members(C.vscf_alg_id_t(algId) /*pa7*/, &hashAlgInfoCopy)
 
+    runtime.KeepAlive(hashAlgInfo)
+
     obj := &HashBasedAlgInfo {
         cCtx: proxyResult,
     }
-    runtime.SetFinalizer(obj, func (o *HashBasedAlgInfo) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *HashBasedAlgInfo) {o.Delete()})
+    runtime.SetFinalizer(obj, (*HashBasedAlgInfo).Delete)
     return obj
 }
 
@@ -92,6 +103,8 @@ func NewHashBasedAlgInfoWithMembers(algId AlgId, hashAlgInfo AlgInfo) *HashBased
 */
 func (obj *HashBasedAlgInfo) AlgId() AlgId {
     proxyResult := /*pr4*/C.vscf_hash_based_alg_info_alg_id(obj.cCtx)
+
+    runtime.KeepAlive(obj)
 
     return AlgId(proxyResult) /* r8 */
 }

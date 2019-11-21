@@ -40,7 +40,8 @@ func NewGroupSession() *GroupSession {
     obj := &GroupSession {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, func (o *GroupSession) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *GroupSession) {o.Delete()})
+    runtime.SetFinalizer(obj, (*GroupSession).Delete)
     return obj
 }
 
@@ -51,7 +52,8 @@ func newGroupSessionWithCtx(ctx *C.vscf_group_session_t /*ct2*/) *GroupSession {
     obj := &GroupSession {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, func (o *GroupSession) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *GroupSession) {o.Delete()})
+    runtime.SetFinalizer(obj, (*GroupSession).Delete)
     return obj
 }
 
@@ -62,7 +64,8 @@ func newGroupSessionCopy(ctx *C.vscf_group_session_t /*ct2*/) *GroupSession {
     obj := &GroupSession {
         cCtx: C.vscf_group_session_shallow_copy(ctx),
     }
-    runtime.SetFinalizer(obj, func (o *GroupSession) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *GroupSession) {o.Delete()})
+    runtime.SetFinalizer(obj, (*GroupSession).Delete)
     return obj
 }
 
@@ -70,6 +73,9 @@ func newGroupSessionCopy(ctx *C.vscf_group_session_t /*ct2*/) *GroupSession {
 * Release underlying C context.
 */
 func (obj *GroupSession) Delete() {
+    if obj == nil {
+        return
+    }
     runtime.SetFinalizer(obj, nil)
     obj.delete()
 }
@@ -87,6 +93,9 @@ func (obj *GroupSession) delete() {
 func (obj *GroupSession) SetRng(rng Random) {
     C.vscf_group_session_release_rng(obj.cCtx)
     C.vscf_group_session_use_rng(obj.cCtx, (*C.vscf_impl_t)(rng.ctx()))
+
+    runtime.KeepAlive(rng)
+    runtime.KeepAlive(obj)
 }
 
 /*
@@ -94,6 +103,8 @@ func (obj *GroupSession) SetRng(rng Random) {
 */
 func (obj *GroupSession) GetCurrentEpoch() uint32 {
     proxyResult := /*pr4*/C.vscf_group_session_get_current_epoch(obj.cCtx)
+
+    runtime.KeepAlive(obj)
 
     return uint32(proxyResult) /* r9 */
 }
@@ -110,6 +121,8 @@ func (obj *GroupSession) SetupDefaults() error {
         return err
     }
 
+    runtime.KeepAlive(obj)
+
     return nil
 }
 
@@ -118,6 +131,8 @@ func (obj *GroupSession) SetupDefaults() error {
 */
 func (obj *GroupSession) GetSessionId() []byte {
     proxyResult := /*pr4*/C.vscf_group_session_get_session_id(obj.cCtx)
+
+    runtime.KeepAlive(obj)
 
     return helperExtractData(proxyResult) /* r1 */
 }
@@ -133,6 +148,10 @@ func (obj *GroupSession) AddEpoch(message *GroupSessionMessage) error {
     if err != nil {
         return err
     }
+
+    runtime.KeepAlive(obj)
+
+    runtime.KeepAlive(message)
 
     return nil
 }
@@ -152,6 +171,12 @@ func (obj *GroupSession) Encrypt(plainText []byte, privateKey PrivateKey) (*Grou
         return nil, err
     }
 
+    runtime.KeepAlive(obj)
+
+    runtime.KeepAlive(privateKey)
+
+    runtime.KeepAlive(error)
+
     return newGroupSessionMessageWithCtx(proxyResult) /* r6 */, nil
 }
 
@@ -160,6 +185,10 @@ func (obj *GroupSession) Encrypt(plainText []byte, privateKey PrivateKey) (*Grou
 */
 func (obj *GroupSession) DecryptLen(message *GroupSessionMessage) uint32 {
     proxyResult := /*pr4*/C.vscf_group_session_decrypt_len(obj.cCtx, (*C.vscf_group_session_message_t)(message.ctx()))
+
+    runtime.KeepAlive(obj)
+
+    runtime.KeepAlive(message)
 
     return uint32(proxyResult) /* r9 */
 }
@@ -182,6 +211,12 @@ func (obj *GroupSession) Decrypt(message *GroupSessionMessage, publicKey PublicK
         return nil, err
     }
 
+    runtime.KeepAlive(obj)
+
+    runtime.KeepAlive(message)
+
+    runtime.KeepAlive(publicKey)
+
     return plainTextBuf.getData() /* r7 */, nil
 }
 
@@ -198,6 +233,10 @@ func (obj *GroupSession) CreateGroupTicket() (*GroupSessionTicket, error) {
     if err != nil {
         return nil, err
     }
+
+    runtime.KeepAlive(obj)
+
+    runtime.KeepAlive(error)
 
     return newGroupSessionTicketWithCtx(proxyResult) /* r6 */, nil
 }

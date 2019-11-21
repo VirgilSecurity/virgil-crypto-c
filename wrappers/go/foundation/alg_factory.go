@@ -2,6 +2,7 @@ package foundation
 
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
+import "runtime"
 
 
 /*
@@ -16,6 +17,8 @@ type AlgFactory struct {
 func AlgFactoryCreateHashFromInfo(algInfo AlgInfo) (Hash, error) {
     proxyResult := /*pr4*/C.vscf_alg_factory_create_hash_from_info((*C.vscf_impl_t)(algInfo.ctx()))
 
+    runtime.KeepAlive(algInfo)
+
     return FoundationImplementationWrapHash(proxyResult) /* r4 */
 }
 
@@ -24,6 +27,8 @@ func AlgFactoryCreateHashFromInfo(algInfo AlgInfo) (Hash, error) {
 */
 func AlgFactoryCreateMacFromInfo(algInfo AlgInfo) (Mac, error) {
     proxyResult := /*pr4*/C.vscf_alg_factory_create_mac_from_info((*C.vscf_impl_t)(algInfo.ctx()))
+
+    runtime.KeepAlive(algInfo)
 
     return FoundationImplementationWrapMac(proxyResult) /* r4 */
 }
@@ -34,6 +39,8 @@ func AlgFactoryCreateMacFromInfo(algInfo AlgInfo) (Mac, error) {
 func AlgFactoryCreateKdfFromInfo(algInfo AlgInfo) (Kdf, error) {
     proxyResult := /*pr4*/C.vscf_alg_factory_create_kdf_from_info((*C.vscf_impl_t)(algInfo.ctx()))
 
+    runtime.KeepAlive(algInfo)
+
     return FoundationImplementationWrapKdf(proxyResult) /* r4 */
 }
 
@@ -43,6 +50,8 @@ func AlgFactoryCreateKdfFromInfo(algInfo AlgInfo) (Kdf, error) {
 func AlgFactoryCreateSaltedKdfFromInfo(algInfo AlgInfo) (SaltedKdf, error) {
     proxyResult := /*pr4*/C.vscf_alg_factory_create_salted_kdf_from_info((*C.vscf_impl_t)(algInfo.ctx()))
 
+    runtime.KeepAlive(algInfo)
+
     return FoundationImplementationWrapSaltedKdf(proxyResult) /* r4 */
 }
 
@@ -51,6 +60,8 @@ func AlgFactoryCreateSaltedKdfFromInfo(algInfo AlgInfo) (SaltedKdf, error) {
 */
 func AlgFactoryCreateCipherFromInfo(algInfo AlgInfo) (Cipher, error) {
     proxyResult := /*pr4*/C.vscf_alg_factory_create_cipher_from_info((*C.vscf_impl_t)(algInfo.ctx()))
+
+    runtime.KeepAlive(algInfo)
 
     return FoundationImplementationWrapCipher(proxyResult) /* r4 */
 }

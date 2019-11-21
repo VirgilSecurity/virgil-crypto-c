@@ -24,7 +24,8 @@ func NewPheClient() *PheClient {
     obj := &PheClient {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, func (o *PheClient) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *PheClient) {o.Delete()})
+    runtime.SetFinalizer(obj, (*PheClient).Delete)
     return obj
 }
 
@@ -35,7 +36,8 @@ func newPheClientWithCtx(ctx *C.vsce_phe_client_t /*ct2*/) *PheClient {
     obj := &PheClient {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, func (o *PheClient) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *PheClient) {o.Delete()})
+    runtime.SetFinalizer(obj, (*PheClient).Delete)
     return obj
 }
 
@@ -46,7 +48,8 @@ func newPheClientCopy(ctx *C.vsce_phe_client_t /*ct2*/) *PheClient {
     obj := &PheClient {
         cCtx: C.vsce_phe_client_shallow_copy(ctx),
     }
-    runtime.SetFinalizer(obj, func (o *PheClient) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *PheClient) {o.Delete()})
+    runtime.SetFinalizer(obj, (*PheClient).Delete)
     return obj
 }
 
@@ -54,6 +57,9 @@ func newPheClientCopy(ctx *C.vsce_phe_client_t /*ct2*/) *PheClient {
 * Release underlying C context.
 */
 func (obj *PheClient) Delete() {
+    if obj == nil {
+        return
+    }
     runtime.SetFinalizer(obj, nil)
     obj.delete()
 }
@@ -71,6 +77,9 @@ func (obj *PheClient) delete() {
 func (obj *PheClient) SetRandom(random foundation.Random) {
     C.vsce_phe_client_release_random(obj.cCtx)
     C.vsce_phe_client_use_random(obj.cCtx, (*C.vscf_impl_t)(random.(context).ctx()))
+
+    runtime.KeepAlive(random)
+    runtime.KeepAlive(obj)
 }
 
 /*
@@ -79,6 +88,9 @@ func (obj *PheClient) SetRandom(random foundation.Random) {
 func (obj *PheClient) SetOperationRandom(operationRandom foundation.Random) {
     C.vsce_phe_client_release_operation_random(obj.cCtx)
     C.vsce_phe_client_use_operation_random(obj.cCtx, (*C.vscf_impl_t)(operationRandom.(context).ctx()))
+
+    runtime.KeepAlive(operationRandom)
+    runtime.KeepAlive(obj)
 }
 
 func (obj *PheClient) SetupDefaults() error {
@@ -88,6 +100,8 @@ func (obj *PheClient) SetupDefaults() error {
     if err != nil {
         return err
     }
+
+    runtime.KeepAlive(obj)
 
     return nil
 }
@@ -107,6 +121,8 @@ func (obj *PheClient) SetKeys(clientPrivateKey []byte, serverPublicKey []byte) e
     if err != nil {
         return err
     }
+
+    runtime.KeepAlive(obj)
 
     return nil
 }
@@ -129,6 +145,8 @@ func (obj *PheClient) GenerateClientPrivateKey() ([]byte, error) {
         return nil, err
     }
 
+    runtime.KeepAlive(obj)
+
     return clientPrivateKeyBuf.getData() /* r7 */, nil
 }
 
@@ -137,6 +155,8 @@ func (obj *PheClient) GenerateClientPrivateKey() ([]byte, error) {
 */
 func (obj *PheClient) EnrollmentRecordLen() uint32 {
     proxyResult := /*pr4*/C.vsce_phe_client_enrollment_record_len(obj.cCtx)
+
+    runtime.KeepAlive(obj)
 
     return uint32(proxyResult) /* r9 */
 }
@@ -168,6 +188,8 @@ func (obj *PheClient) EnrollAccount(enrollmentResponse []byte, password []byte) 
         return nil, nil, err
     }
 
+    runtime.KeepAlive(obj)
+
     return enrollmentRecordBuf.getData() /* r7 */, accountKeyBuf.getData() /* r7 */, nil
 }
 
@@ -176,6 +198,8 @@ func (obj *PheClient) EnrollAccount(enrollmentResponse []byte, password []byte) 
 */
 func (obj *PheClient) VerifyPasswordRequestLen() uint32 {
     proxyResult := /*pr4*/C.vsce_phe_client_verify_password_request_len(obj.cCtx)
+
+    runtime.KeepAlive(obj)
 
     return uint32(proxyResult) /* r9 */
 }
@@ -198,6 +222,8 @@ func (obj *PheClient) CreateVerifyPasswordRequest(password []byte, enrollmentRec
     if err != nil {
         return nil, err
     }
+
+    runtime.KeepAlive(obj)
 
     return verifyPasswordRequestBuf.getData() /* r7 */, nil
 }
@@ -223,6 +249,8 @@ func (obj *PheClient) CheckResponseAndDecrypt(password []byte, enrollmentRecord 
     if err != nil {
         return nil, err
     }
+
+    runtime.KeepAlive(obj)
 
     return accountKeyBuf.getData() /* r7 */, nil
 }
@@ -252,6 +280,8 @@ func (obj *PheClient) RotateKeys(updateToken []byte) ([]byte, []byte, error) {
         return nil, nil, err
     }
 
+    runtime.KeepAlive(obj)
+
     return newClientPrivateKeyBuf.getData() /* r7 */, newServerPublicKeyBuf.getData() /* r7 */, nil
 }
 
@@ -273,6 +303,8 @@ func (obj *PheClient) UpdateEnrollmentRecord(enrollmentRecord []byte, updateToke
     if err != nil {
         return nil, err
     }
+
+    runtime.KeepAlive(obj)
 
     return newEnrollmentRecordBuf.getData() /* r7 */, nil
 }

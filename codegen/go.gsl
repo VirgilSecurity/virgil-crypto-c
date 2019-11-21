@@ -1510,6 +1510,8 @@ function go_create_func_from_dependency (dependency, impl, destination, go_proje
                 $(my.result_var?:)C.$(class_derive_c_method_use_dependency (my.impl, my.dependency))(obj.cCtx,\
                         (*C.$(class_derive_c_instance_type(my.dependency)))($(my.arg_name:)$(my.cast_to_context:).ctx()))
                 $(my.impl_handle_status?:)
+                runtime.KeepAlive($(my.arg_name:))
+                runtime.KeepAlive(obj)
                 $(my.method_return?:)
             ")
         endnew
@@ -1643,6 +1645,9 @@ function go_create_struct_close (go_struct, class, go_project, meta)
     my.func_clear = go_create_func_clear_declaration (my.go_struct, my.go_project, my.meta)
     new go_code to my.func_clear
         . = "\
+            if obj == nil {
+                return
+            }
             runtime.SetFinalizer(obj, nil)
             obj.delete()
         "
@@ -1687,7 +1692,7 @@ function go_create_struct_constructor (class, constructor, destination, go_modul
             obj := &$(my.struct_name:) {
                 cCtx: proxyResult,
             }
-            runtime.SetFinalizer(obj, func (o *$(my.struct_name:)) {o.Delete()})
+            runtime.SetFinalizer(obj, (*$(my.struct_name:)).Delete)
             return obj
             ")
 
@@ -1737,7 +1742,7 @@ function go_create_struct_default_constructor (go_struct, class, go_module, go_p
                 obj := &$(my.struct_name:) {
                     cCtx: ctx,
                 }
-                runtime.SetFinalizer(obj, func (o *$(my.struct_name:)) {o.Delete()})
+                runtime.SetFinalizer(obj, (*$(my.struct_name:)).Delete)
                 return obj
             "
         endnew
@@ -1767,7 +1772,7 @@ function go_create_struct_default_constructor (go_struct, class, go_module, go_p
                 obj := &$(my.struct_name:) {
                     cCtx: ctx,
                 }
-                runtime.SetFinalizer(obj, func (o *$(my.struct_name:)) {o.Delete()})
+                runtime.SetFinalizer(obj, (*$(my.struct_name:)).Delete)
                 return obj
             "
         endnew
@@ -1798,7 +1803,7 @@ function go_create_struct_default_constructor (go_struct, class, go_module, go_p
                     obj := &$(my.struct_name:) {
                         cCtx: C.$(class_derive_c_method_shallow_copy (my.class))(ctx),
                     }
-                    runtime.SetFinalizer(obj, func (o *$(my.struct_name:)) {o.Delete()})
+                    runtime.SetFinalizer(obj, (*$(my.struct_name:)).Delete)
                     return obj
                 "
             endnew
@@ -2394,8 +2399,21 @@ function go_wrap_c_proxy_call (go_func, proxy_call, proxy_return_type, proxy_ret
         endif
     endfor
 
-    #   Create opened scopes for data and buffers and string.
-    my.scope_count = 0
+    # Keep alive
+    if ! is_true (my.go_func.is_static) & ! is_true (my.go_func.is_constructor)
+        go_create_import ("", "runtime", my.go_module)
+
+        my.keep_alive ?= ""
+        my.keep_alive += terminator + format_left("\
+            runtime.KeepAlive(obj)")
+    endif
+    for my.go_func.go_argument where (is_true (0.is_class) | is_true (0.is_interface)) & ! string_in (0.type, "Data")
+        go_create_import ("", "runtime", my.go_module)
+
+        my.keep_alive ?= ""
+        my.keep_alive += terminator + format_left("\
+            runtime.KeepAlive($(go_argument.name:))")
+    endfor
 
     if my.proxy_return_type <> "Void"
         my.result_statement = "proxyResult := /*pr1*/"
@@ -2403,7 +2421,7 @@ function go_wrap_c_proxy_call (go_func, proxy_call, proxy_return_type, proxy_ret
     my.proxy_return_statement = (my.proxy_return_type = "auto") ?? "" ? "-> $(my.proxy_return_type:) /*pr2*/"
 
     if defined (my.buffers_init)
-        my.buffers_init = format_left (my.buffers_init, my.scope_count)
+        my.buffers_init = format_left (my.buffers_init, 0)
     endif
 
     #   Create shallow copies for objects that is passed as "disown" argument.
@@ -2412,23 +2430,12 @@ function go_wrap_c_proxy_call (go_func, proxy_call, proxy_return_type, proxy_ret
         #(*C.$(class_derive_c_instance_type(my.dependency)))
         my.shallow_copies += format_left("\
             $(go_argument.name:)Copy := C.$(go_argument.method_shallow_copy:)((*C.$(go_argument.c_type:))($(go_argument.name:).ctx()))
-        ", my.scope_count)
+        ", 0)
     endfor
 
-    if my.scope_count > 0
-        my.proxy_invocation = (my.proxy_return_type <> "Void") ?? "return /*pr3*/" ? ""
-    else
-        my.proxy_invocation = (my.proxy_return_type <> "Void") ?? "proxyResult := /*pr4*/" ? ""
-    endif
+    my.proxy_invocation = (my.proxy_return_type <> "Void") ?? "proxyResult := /*pr4*/" ? ""
     my.proxy_invocation += my.proxy_call
-    my.proxy_invocation = terminator + format_left (my.proxy_invocation, my.scope_count)
-
-    #   Create closed scopes for data and buffers.
-    while my.scope_count > 0
-        my.closed_scope ?= ""
-        my.scope_count -= 1
-        my.closed_scope += format_left("})", my.scope_count)
-    endwhile
+    my.proxy_invocation = terminator + format_left (my.proxy_invocation, 0)
 
     #   Defer returned buffer.
     for my.go_func.go_return where \
@@ -2463,7 +2470,8 @@ function go_wrap_c_proxy_call (go_func, proxy_call, proxy_return_type, proxy_ret
         (my.closed_scope ? "") + \
         (my.buffers_shrink ? "") + \
         (my.buffers_cleanup ? "") + \
-        (my.errors_handling ? "")
+        (my.errors_handling ? "") + \
+        (my.keep_alive ? "")
 endfunction
 
 # ---------------------------------------------------------------------------

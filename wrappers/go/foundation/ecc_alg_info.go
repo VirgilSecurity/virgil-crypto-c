@@ -18,6 +18,8 @@ type EccAlgInfo struct {
 func (obj *EccAlgInfo) KeyId() OidId {
     proxyResult := /*pr4*/C.vscf_ecc_alg_info_key_id(obj.cCtx)
 
+    runtime.KeepAlive(obj)
+
     return OidId(proxyResult) /* r8 */
 }
 
@@ -26,6 +28,8 @@ func (obj *EccAlgInfo) KeyId() OidId {
 */
 func (obj *EccAlgInfo) DomainId() OidId {
     proxyResult := /*pr4*/C.vscf_ecc_alg_info_domain_id(obj.cCtx)
+
+    runtime.KeepAlive(obj)
 
     return OidId(proxyResult) /* r8 */
 }
@@ -40,7 +44,8 @@ func NewEccAlgInfo() *EccAlgInfo {
     obj := &EccAlgInfo {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, func (o *EccAlgInfo) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *EccAlgInfo) {o.Delete()})
+    runtime.SetFinalizer(obj, (*EccAlgInfo).Delete)
     return obj
 }
 
@@ -51,7 +56,8 @@ func newEccAlgInfoWithCtx(ctx *C.vscf_ecc_alg_info_t /*ct10*/) *EccAlgInfo {
     obj := &EccAlgInfo {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, func (o *EccAlgInfo) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *EccAlgInfo) {o.Delete()})
+    runtime.SetFinalizer(obj, (*EccAlgInfo).Delete)
     return obj
 }
 
@@ -62,7 +68,8 @@ func newEccAlgInfoCopy(ctx *C.vscf_ecc_alg_info_t /*ct10*/) *EccAlgInfo {
     obj := &EccAlgInfo {
         cCtx: C.vscf_ecc_alg_info_shallow_copy(ctx),
     }
-    runtime.SetFinalizer(obj, func (o *EccAlgInfo) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *EccAlgInfo) {o.Delete()})
+    runtime.SetFinalizer(obj, (*EccAlgInfo).Delete)
     return obj
 }
 
@@ -70,6 +77,9 @@ func newEccAlgInfoCopy(ctx *C.vscf_ecc_alg_info_t /*ct10*/) *EccAlgInfo {
 * Release underlying C context.
 */
 func (obj *EccAlgInfo) Delete() {
+    if obj == nil {
+        return
+    }
     runtime.SetFinalizer(obj, nil)
     obj.delete()
 }
@@ -90,7 +100,8 @@ func NewEccAlgInfoWithMembers(algId AlgId, keyId OidId, domainId OidId) *EccAlgI
     obj := &EccAlgInfo {
         cCtx: proxyResult,
     }
-    runtime.SetFinalizer(obj, func (o *EccAlgInfo) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *EccAlgInfo) {o.Delete()})
+    runtime.SetFinalizer(obj, (*EccAlgInfo).Delete)
     return obj
 }
 
@@ -99,6 +110,8 @@ func NewEccAlgInfoWithMembers(algId AlgId, keyId OidId, domainId OidId) *EccAlgI
 */
 func (obj *EccAlgInfo) AlgId() AlgId {
     proxyResult := /*pr4*/C.vscf_ecc_alg_info_alg_id(obj.cCtx)
+
+    runtime.KeepAlive(obj)
 
     return AlgId(proxyResult) /* r8 */
 }

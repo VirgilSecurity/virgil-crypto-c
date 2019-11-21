@@ -21,6 +21,8 @@ const (
 func (obj *EntropyAccumulator) SetupDefaults() {
     C.vscf_entropy_accumulator_setup_defaults(obj.cCtx)
 
+    runtime.KeepAlive(obj)
+
     return
 }
 
@@ -31,6 +33,10 @@ func (obj *EntropyAccumulator) SetupDefaults() {
 */
 func (obj *EntropyAccumulator) AddSource(source EntropySource, threshold uint32) {
     C.vscf_entropy_accumulator_add_source(obj.cCtx, (*C.vscf_impl_t)(source.ctx()), (C.size_t)(threshold)/*pa10*/)
+
+    runtime.KeepAlive(obj)
+
+    runtime.KeepAlive(source)
 
     return
 }
@@ -45,7 +51,8 @@ func NewEntropyAccumulator() *EntropyAccumulator {
     obj := &EntropyAccumulator {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, func (o *EntropyAccumulator) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *EntropyAccumulator) {o.Delete()})
+    runtime.SetFinalizer(obj, (*EntropyAccumulator).Delete)
     return obj
 }
 
@@ -56,7 +63,8 @@ func newEntropyAccumulatorWithCtx(ctx *C.vscf_entropy_accumulator_t /*ct10*/) *E
     obj := &EntropyAccumulator {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, func (o *EntropyAccumulator) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *EntropyAccumulator) {o.Delete()})
+    runtime.SetFinalizer(obj, (*EntropyAccumulator).Delete)
     return obj
 }
 
@@ -67,7 +75,8 @@ func newEntropyAccumulatorCopy(ctx *C.vscf_entropy_accumulator_t /*ct10*/) *Entr
     obj := &EntropyAccumulator {
         cCtx: C.vscf_entropy_accumulator_shallow_copy(ctx),
     }
-    runtime.SetFinalizer(obj, func (o *EntropyAccumulator) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *EntropyAccumulator) {o.Delete()})
+    runtime.SetFinalizer(obj, (*EntropyAccumulator).Delete)
     return obj
 }
 
@@ -75,6 +84,9 @@ func newEntropyAccumulatorCopy(ctx *C.vscf_entropy_accumulator_t /*ct10*/) *Entr
 * Release underlying C context.
 */
 func (obj *EntropyAccumulator) Delete() {
+    if obj == nil {
+        return
+    }
     runtime.SetFinalizer(obj, nil)
     obj.delete()
 }
@@ -91,6 +103,8 @@ func (obj *EntropyAccumulator) delete() {
 */
 func (obj *EntropyAccumulator) IsStrong() bool {
     proxyResult := /*pr4*/C.vscf_entropy_accumulator_is_strong(obj.cCtx)
+
+    runtime.KeepAlive(obj)
 
     return bool(proxyResult) /* r9 */
 }
@@ -112,6 +126,8 @@ func (obj *EntropyAccumulator) Gather(len uint32) ([]byte, error) {
     if err != nil {
         return nil, err
     }
+
+    runtime.KeepAlive(obj)
 
     return outBuf.getData() /* r7 */, nil
 }

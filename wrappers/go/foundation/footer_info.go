@@ -22,7 +22,8 @@ func NewFooterInfo() *FooterInfo {
     obj := &FooterInfo {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, func (o *FooterInfo) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *FooterInfo) {o.Delete()})
+    runtime.SetFinalizer(obj, (*FooterInfo).Delete)
     return obj
 }
 
@@ -33,7 +34,8 @@ func newFooterInfoWithCtx(ctx *C.vscf_footer_info_t /*ct2*/) *FooterInfo {
     obj := &FooterInfo {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, func (o *FooterInfo) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *FooterInfo) {o.Delete()})
+    runtime.SetFinalizer(obj, (*FooterInfo).Delete)
     return obj
 }
 
@@ -44,7 +46,8 @@ func newFooterInfoCopy(ctx *C.vscf_footer_info_t /*ct2*/) *FooterInfo {
     obj := &FooterInfo {
         cCtx: C.vscf_footer_info_shallow_copy(ctx),
     }
-    runtime.SetFinalizer(obj, func (o *FooterInfo) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *FooterInfo) {o.Delete()})
+    runtime.SetFinalizer(obj, (*FooterInfo).Delete)
     return obj
 }
 
@@ -52,6 +55,9 @@ func newFooterInfoCopy(ctx *C.vscf_footer_info_t /*ct2*/) *FooterInfo {
 * Release underlying C context.
 */
 func (obj *FooterInfo) Delete() {
+    if obj == nil {
+        return
+    }
     runtime.SetFinalizer(obj, nil)
     obj.delete()
 }
@@ -69,6 +75,8 @@ func (obj *FooterInfo) delete() {
 func (obj *FooterInfo) HasSignedDataInfo() bool {
     proxyResult := /*pr4*/C.vscf_footer_info_has_signed_data_info(obj.cCtx)
 
+    runtime.KeepAlive(obj)
+
     return bool(proxyResult) /* r9 */
 }
 
@@ -77,6 +85,8 @@ func (obj *FooterInfo) HasSignedDataInfo() bool {
 */
 func (obj *FooterInfo) SignedDataInfo() *SignedDataInfo {
     proxyResult := /*pr4*/C.vscf_footer_info_signed_data_info(obj.cCtx)
+
+    runtime.KeepAlive(obj)
 
     return newSignedDataInfoCopy(proxyResult) /* r5 */
 }
@@ -87,6 +97,8 @@ func (obj *FooterInfo) SignedDataInfo() *SignedDataInfo {
 func (obj *FooterInfo) SetDataSize(dataSize uint32) {
     C.vscf_footer_info_set_data_size(obj.cCtx, (C.size_t)(dataSize)/*pa10*/)
 
+    runtime.KeepAlive(obj)
+
     return
 }
 
@@ -95,6 +107,8 @@ func (obj *FooterInfo) SetDataSize(dataSize uint32) {
 */
 func (obj *FooterInfo) DataSize() uint32 {
     proxyResult := /*pr4*/C.vscf_footer_info_data_size(obj.cCtx)
+
+    runtime.KeepAlive(obj)
 
     return uint32(proxyResult) /* r9 */
 }

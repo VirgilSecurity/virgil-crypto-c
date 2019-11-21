@@ -32,6 +32,8 @@ func (obj *KeyMaterialRng) ResetKeyMaterial(keyMaterial []byte) {
 
     C.vscf_key_material_rng_reset_key_material(obj.cCtx, keyMaterialData)
 
+    runtime.KeepAlive(obj)
+
     return
 }
 
@@ -45,7 +47,8 @@ func NewKeyMaterialRng() *KeyMaterialRng {
     obj := &KeyMaterialRng {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, func (o *KeyMaterialRng) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *KeyMaterialRng) {o.Delete()})
+    runtime.SetFinalizer(obj, (*KeyMaterialRng).Delete)
     return obj
 }
 
@@ -56,7 +59,8 @@ func newKeyMaterialRngWithCtx(ctx *C.vscf_key_material_rng_t /*ct10*/) *KeyMater
     obj := &KeyMaterialRng {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, func (o *KeyMaterialRng) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *KeyMaterialRng) {o.Delete()})
+    runtime.SetFinalizer(obj, (*KeyMaterialRng).Delete)
     return obj
 }
 
@@ -67,7 +71,8 @@ func newKeyMaterialRngCopy(ctx *C.vscf_key_material_rng_t /*ct10*/) *KeyMaterial
     obj := &KeyMaterialRng {
         cCtx: C.vscf_key_material_rng_shallow_copy(ctx),
     }
-    runtime.SetFinalizer(obj, func (o *KeyMaterialRng) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *KeyMaterialRng) {o.Delete()})
+    runtime.SetFinalizer(obj, (*KeyMaterialRng).Delete)
     return obj
 }
 
@@ -75,6 +80,9 @@ func newKeyMaterialRngCopy(ctx *C.vscf_key_material_rng_t /*ct10*/) *KeyMaterial
 * Release underlying C context.
 */
 func (obj *KeyMaterialRng) Delete() {
+    if obj == nil {
+        return
+    }
     runtime.SetFinalizer(obj, nil)
     obj.delete()
 }
@@ -105,6 +113,8 @@ func (obj *KeyMaterialRng) Random(dataLen uint32) ([]byte, error) {
         return nil, err
     }
 
+    runtime.KeepAlive(obj)
+
     return dataBuf.getData() /* r7 */, nil
 }
 
@@ -118,6 +128,8 @@ func (obj *KeyMaterialRng) Reseed() error {
     if err != nil {
         return err
     }
+
+    runtime.KeepAlive(obj)
 
     return nil
 }

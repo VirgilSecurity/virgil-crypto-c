@@ -18,6 +18,8 @@ type RawPrivateKey struct {
 func (obj *RawPrivateKey) Data() []byte {
     proxyResult := /*pr4*/C.vscf_raw_private_key_data(obj.cCtx)
 
+    runtime.KeepAlive(obj)
+
     return helperExtractData(proxyResult) /* r1 */
 }
 
@@ -26,6 +28,8 @@ func (obj *RawPrivateKey) Data() []byte {
 */
 func (obj *RawPrivateKey) HasPublicKey() bool {
     proxyResult := /*pr4*/C.vscf_raw_private_key_has_public_key(obj.cCtx)
+
+    runtime.KeepAlive(obj)
 
     return bool(proxyResult) /* r9 */
 }
@@ -38,6 +42,10 @@ func (obj *RawPrivateKey) SetPublicKey(rawPublicKey *RawPublicKey) {
 
     C.vscf_raw_private_key_set_public_key(obj.cCtx, &rawPublicKeyCopy)
 
+    runtime.KeepAlive(obj)
+
+    runtime.KeepAlive(rawPublicKey)
+
     return
 }
 
@@ -46,6 +54,8 @@ func (obj *RawPrivateKey) SetPublicKey(rawPublicKey *RawPublicKey) {
 */
 func (obj *RawPrivateKey) GetPublicKey() *RawPublicKey {
     proxyResult := /*pr4*/C.vscf_raw_private_key_get_public_key(obj.cCtx)
+
+    runtime.KeepAlive(obj)
 
     return newRawPublicKeyCopy(proxyResult) /* r5 */
 }
@@ -60,7 +70,8 @@ func NewRawPrivateKey() *RawPrivateKey {
     obj := &RawPrivateKey {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, func (o *RawPrivateKey) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *RawPrivateKey) {o.Delete()})
+    runtime.SetFinalizer(obj, (*RawPrivateKey).Delete)
     return obj
 }
 
@@ -71,7 +82,8 @@ func newRawPrivateKeyWithCtx(ctx *C.vscf_raw_private_key_t /*ct10*/) *RawPrivate
     obj := &RawPrivateKey {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, func (o *RawPrivateKey) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *RawPrivateKey) {o.Delete()})
+    runtime.SetFinalizer(obj, (*RawPrivateKey).Delete)
     return obj
 }
 
@@ -82,7 +94,8 @@ func newRawPrivateKeyCopy(ctx *C.vscf_raw_private_key_t /*ct10*/) *RawPrivateKey
     obj := &RawPrivateKey {
         cCtx: C.vscf_raw_private_key_shallow_copy(ctx),
     }
-    runtime.SetFinalizer(obj, func (o *RawPrivateKey) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *RawPrivateKey) {o.Delete()})
+    runtime.SetFinalizer(obj, (*RawPrivateKey).Delete)
     return obj
 }
 
@@ -90,6 +103,9 @@ func newRawPrivateKeyCopy(ctx *C.vscf_raw_private_key_t /*ct10*/) *RawPrivateKey
 * Release underlying C context.
 */
 func (obj *RawPrivateKey) Delete() {
+    if obj == nil {
+        return
+    }
     runtime.SetFinalizer(obj, nil)
     obj.delete()
 }
@@ -107,6 +123,8 @@ func (obj *RawPrivateKey) delete() {
 func (obj *RawPrivateKey) AlgId() AlgId {
     proxyResult := /*pr4*/C.vscf_raw_private_key_alg_id(obj.cCtx)
 
+    runtime.KeepAlive(obj)
+
     return AlgId(proxyResult) /* r8 */
 }
 
@@ -115,6 +133,8 @@ func (obj *RawPrivateKey) AlgId() AlgId {
 */
 func (obj *RawPrivateKey) AlgInfo() (AlgInfo, error) {
     proxyResult := /*pr4*/C.vscf_raw_private_key_alg_info(obj.cCtx)
+
+    runtime.KeepAlive(obj)
 
     return FoundationImplementationWrapAlgInfo(proxyResult) /* r4 */
 }
@@ -125,6 +145,8 @@ func (obj *RawPrivateKey) AlgInfo() (AlgInfo, error) {
 func (obj *RawPrivateKey) Len() uint32 {
     proxyResult := /*pr4*/C.vscf_raw_private_key_len(obj.cCtx)
 
+    runtime.KeepAlive(obj)
+
     return uint32(proxyResult) /* r9 */
 }
 
@@ -133,6 +155,8 @@ func (obj *RawPrivateKey) Len() uint32 {
 */
 func (obj *RawPrivateKey) Bitlen() uint32 {
     proxyResult := /*pr4*/C.vscf_raw_private_key_bitlen(obj.cCtx)
+
+    runtime.KeepAlive(obj)
 
     return uint32(proxyResult) /* r9 */
 }
@@ -144,6 +168,8 @@ func (obj *RawPrivateKey) Bitlen() uint32 {
 func (obj *RawPrivateKey) IsValid() bool {
     proxyResult := /*pr4*/C.vscf_raw_private_key_is_valid(obj.cCtx)
 
+    runtime.KeepAlive(obj)
+
     return bool(proxyResult) /* r9 */
 }
 
@@ -152,6 +178,8 @@ func (obj *RawPrivateKey) IsValid() bool {
 */
 func (obj *RawPrivateKey) ExtractPublicKey() (PublicKey, error) {
     proxyResult := /*pr4*/C.vscf_raw_private_key_extract_public_key(obj.cCtx)
+
+    runtime.KeepAlive(obj)
 
     return FoundationImplementationWrapPublicKey(proxyResult) /* r4 */
 }

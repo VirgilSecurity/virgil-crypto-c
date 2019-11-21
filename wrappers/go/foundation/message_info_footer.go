@@ -22,7 +22,8 @@ func NewMessageInfoFooter() *MessageInfoFooter {
     obj := &MessageInfoFooter {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, func (o *MessageInfoFooter) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *MessageInfoFooter) {o.Delete()})
+    runtime.SetFinalizer(obj, (*MessageInfoFooter).Delete)
     return obj
 }
 
@@ -33,7 +34,8 @@ func newMessageInfoFooterWithCtx(ctx *C.vscf_message_info_footer_t /*ct2*/) *Mes
     obj := &MessageInfoFooter {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, func (o *MessageInfoFooter) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *MessageInfoFooter) {o.Delete()})
+    runtime.SetFinalizer(obj, (*MessageInfoFooter).Delete)
     return obj
 }
 
@@ -44,7 +46,8 @@ func newMessageInfoFooterCopy(ctx *C.vscf_message_info_footer_t /*ct2*/) *Messag
     obj := &MessageInfoFooter {
         cCtx: C.vscf_message_info_footer_shallow_copy(ctx),
     }
-    runtime.SetFinalizer(obj, func (o *MessageInfoFooter) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *MessageInfoFooter) {o.Delete()})
+    runtime.SetFinalizer(obj, (*MessageInfoFooter).Delete)
     return obj
 }
 
@@ -52,6 +55,9 @@ func newMessageInfoFooterCopy(ctx *C.vscf_message_info_footer_t /*ct2*/) *Messag
 * Release underlying C context.
 */
 func (obj *MessageInfoFooter) Delete() {
+    if obj == nil {
+        return
+    }
     runtime.SetFinalizer(obj, nil)
     obj.delete()
 }
@@ -69,6 +75,8 @@ func (obj *MessageInfoFooter) delete() {
 func (obj *MessageInfoFooter) HasSignerInfos() bool {
     proxyResult := /*pr4*/C.vscf_message_info_footer_has_signer_infos(obj.cCtx)
 
+    runtime.KeepAlive(obj)
+
     return bool(proxyResult) /* r9 */
 }
 
@@ -77,6 +85,8 @@ func (obj *MessageInfoFooter) HasSignerInfos() bool {
 */
 func (obj *MessageInfoFooter) SignerInfos() *SignerInfoList {
     proxyResult := /*pr4*/C.vscf_message_info_footer_signer_infos(obj.cCtx)
+
+    runtime.KeepAlive(obj)
 
     return newSignerInfoListCopy(proxyResult) /* r5 */
 }
@@ -87,6 +97,8 @@ func (obj *MessageInfoFooter) SignerInfos() *SignerInfoList {
 func (obj *MessageInfoFooter) SignerHashAlgInfo() (AlgInfo, error) {
     proxyResult := /*pr4*/C.vscf_message_info_footer_signer_hash_alg_info(obj.cCtx)
 
+    runtime.KeepAlive(obj)
+
     return FoundationImplementationWrapAlgInfo(proxyResult) /* r4 */
 }
 
@@ -95,6 +107,8 @@ func (obj *MessageInfoFooter) SignerHashAlgInfo() (AlgInfo, error) {
 */
 func (obj *MessageInfoFooter) SignerDigest() []byte {
     proxyResult := /*pr4*/C.vscf_message_info_footer_signer_digest(obj.cCtx)
+
+    runtime.KeepAlive(obj)
 
     return helperExtractData(proxyResult) /* r1 */
 }

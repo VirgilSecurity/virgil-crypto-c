@@ -15,6 +15,9 @@ type Rsa struct {
 func (obj *Rsa) SetRandom(random Random) {
     C.vscf_rsa_release_random(obj.cCtx)
     C.vscf_rsa_use_random(obj.cCtx, (*C.vscf_impl_t)(random.ctx()))
+
+    runtime.KeepAlive(random)
+    runtime.KeepAlive(obj)
 }
 
 /*
@@ -27,6 +30,8 @@ func (obj *Rsa) SetupDefaults() error {
     if err != nil {
         return err
     }
+
+    runtime.KeepAlive(obj)
 
     return nil
 }
@@ -46,6 +51,10 @@ func (obj *Rsa) GenerateKey(bitlen uint32) (PrivateKey, error) {
         return nil, err
     }
 
+    runtime.KeepAlive(obj)
+
+    runtime.KeepAlive(error)
+
     return FoundationImplementationWrapPrivateKey(proxyResult) /* r4 */
 }
 
@@ -59,7 +68,8 @@ func NewRsa() *Rsa {
     obj := &Rsa {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, func (o *Rsa) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *Rsa) {o.Delete()})
+    runtime.SetFinalizer(obj, (*Rsa).Delete)
     return obj
 }
 
@@ -70,7 +80,8 @@ func newRsaWithCtx(ctx *C.vscf_rsa_t /*ct10*/) *Rsa {
     obj := &Rsa {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, func (o *Rsa) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *Rsa) {o.Delete()})
+    runtime.SetFinalizer(obj, (*Rsa).Delete)
     return obj
 }
 
@@ -81,7 +92,8 @@ func newRsaCopy(ctx *C.vscf_rsa_t /*ct10*/) *Rsa {
     obj := &Rsa {
         cCtx: C.vscf_rsa_shallow_copy(ctx),
     }
-    runtime.SetFinalizer(obj, func (o *Rsa) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *Rsa) {o.Delete()})
+    runtime.SetFinalizer(obj, (*Rsa).Delete)
     return obj
 }
 
@@ -89,6 +101,9 @@ func newRsaCopy(ctx *C.vscf_rsa_t /*ct10*/) *Rsa {
 * Release underlying C context.
 */
 func (obj *Rsa) Delete() {
+    if obj == nil {
+        return
+    }
     runtime.SetFinalizer(obj, nil)
     obj.delete()
 }
@@ -106,6 +121,8 @@ func (obj *Rsa) delete() {
 func (obj *Rsa) AlgId() AlgId {
     proxyResult := /*pr4*/C.vscf_rsa_alg_id(obj.cCtx)
 
+    runtime.KeepAlive(obj)
+
     return AlgId(proxyResult) /* r8 */
 }
 
@@ -114,6 +131,8 @@ func (obj *Rsa) AlgId() AlgId {
 */
 func (obj *Rsa) ProduceAlgInfo() (AlgInfo, error) {
     proxyResult := /*pr4*/C.vscf_rsa_produce_alg_info(obj.cCtx)
+
+    runtime.KeepAlive(obj)
 
     return FoundationImplementationWrapAlgInfo(proxyResult) /* r4 */
 }
@@ -128,6 +147,10 @@ func (obj *Rsa) RestoreAlgInfo(algInfo AlgInfo) error {
     if err != nil {
         return err
     }
+
+    runtime.KeepAlive(obj)
+
+    runtime.KeepAlive(algInfo)
 
     return nil
 }
@@ -175,6 +198,12 @@ func (obj *Rsa) GenerateEphemeralKey(key Key) (PrivateKey, error) {
         return nil, err
     }
 
+    runtime.KeepAlive(obj)
+
+    runtime.KeepAlive(key)
+
+    runtime.KeepAlive(error)
+
     return FoundationImplementationWrapPrivateKey(proxyResult) /* r4 */
 }
 
@@ -199,6 +228,12 @@ func (obj *Rsa) ImportPublicKey(rawKey *RawPublicKey) (PublicKey, error) {
         return nil, err
     }
 
+    runtime.KeepAlive(obj)
+
+    runtime.KeepAlive(rawKey)
+
+    runtime.KeepAlive(error)
+
     return FoundationImplementationWrapPublicKey(proxyResult) /* r4 */
 }
 
@@ -219,6 +254,12 @@ func (obj *Rsa) ExportPublicKey(publicKey PublicKey) (*RawPublicKey, error) {
     if err != nil {
         return nil, err
     }
+
+    runtime.KeepAlive(obj)
+
+    runtime.KeepAlive(publicKey)
+
+    runtime.KeepAlive(error)
 
     return newRawPublicKeyWithCtx(proxyResult) /* r6 */, nil
 }
@@ -244,6 +285,12 @@ func (obj *Rsa) ImportPrivateKey(rawKey *RawPrivateKey) (PrivateKey, error) {
         return nil, err
     }
 
+    runtime.KeepAlive(obj)
+
+    runtime.KeepAlive(rawKey)
+
+    runtime.KeepAlive(error)
+
     return FoundationImplementationWrapPrivateKey(proxyResult) /* r4 */
 }
 
@@ -265,6 +312,12 @@ func (obj *Rsa) ExportPrivateKey(privateKey PrivateKey) (*RawPrivateKey, error) 
         return nil, err
     }
 
+    runtime.KeepAlive(obj)
+
+    runtime.KeepAlive(privateKey)
+
+    runtime.KeepAlive(error)
+
     return newRawPrivateKeyWithCtx(proxyResult) /* r6 */, nil
 }
 
@@ -274,6 +327,10 @@ func (obj *Rsa) ExportPrivateKey(privateKey PrivateKey) (*RawPrivateKey, error) 
 func (obj *Rsa) CanEncrypt(publicKey PublicKey, dataLen uint32) bool {
     proxyResult := /*pr4*/C.vscf_rsa_can_encrypt(obj.cCtx, (*C.vscf_impl_t)(publicKey.ctx()), (C.size_t)(dataLen)/*pa10*/)
 
+    runtime.KeepAlive(obj)
+
+    runtime.KeepAlive(publicKey)
+
     return bool(proxyResult) /* r9 */
 }
 
@@ -282,6 +339,10 @@ func (obj *Rsa) CanEncrypt(publicKey PublicKey, dataLen uint32) bool {
 */
 func (obj *Rsa) EncryptedLen(publicKey PublicKey, dataLen uint32) uint32 {
     proxyResult := /*pr4*/C.vscf_rsa_encrypted_len(obj.cCtx, (*C.vscf_impl_t)(publicKey.ctx()), (C.size_t)(dataLen)/*pa10*/)
+
+    runtime.KeepAlive(obj)
+
+    runtime.KeepAlive(publicKey)
 
     return uint32(proxyResult) /* r9 */
 }
@@ -304,6 +365,10 @@ func (obj *Rsa) Encrypt(publicKey PublicKey, data []byte) ([]byte, error) {
         return nil, err
     }
 
+    runtime.KeepAlive(obj)
+
+    runtime.KeepAlive(publicKey)
+
     return outBuf.getData() /* r7 */, nil
 }
 
@@ -314,6 +379,10 @@ func (obj *Rsa) Encrypt(publicKey PublicKey, data []byte) ([]byte, error) {
 func (obj *Rsa) CanDecrypt(privateKey PrivateKey, dataLen uint32) bool {
     proxyResult := /*pr4*/C.vscf_rsa_can_decrypt(obj.cCtx, (*C.vscf_impl_t)(privateKey.ctx()), (C.size_t)(dataLen)/*pa10*/)
 
+    runtime.KeepAlive(obj)
+
+    runtime.KeepAlive(privateKey)
+
     return bool(proxyResult) /* r9 */
 }
 
@@ -322,6 +391,10 @@ func (obj *Rsa) CanDecrypt(privateKey PrivateKey, dataLen uint32) bool {
 */
 func (obj *Rsa) DecryptedLen(privateKey PrivateKey, dataLen uint32) uint32 {
     proxyResult := /*pr4*/C.vscf_rsa_decrypted_len(obj.cCtx, (*C.vscf_impl_t)(privateKey.ctx()), (C.size_t)(dataLen)/*pa10*/)
+
+    runtime.KeepAlive(obj)
+
+    runtime.KeepAlive(privateKey)
 
     return uint32(proxyResult) /* r9 */
 }
@@ -344,6 +417,10 @@ func (obj *Rsa) Decrypt(privateKey PrivateKey, data []byte) ([]byte, error) {
         return nil, err
     }
 
+    runtime.KeepAlive(obj)
+
+    runtime.KeepAlive(privateKey)
+
     return outBuf.getData() /* r7 */, nil
 }
 
@@ -352,6 +429,10 @@ func (obj *Rsa) Decrypt(privateKey PrivateKey, data []byte) ([]byte, error) {
 */
 func (obj *Rsa) CanSign(privateKey PrivateKey) bool {
     proxyResult := /*pr4*/C.vscf_rsa_can_sign(obj.cCtx, (*C.vscf_impl_t)(privateKey.ctx()))
+
+    runtime.KeepAlive(obj)
+
+    runtime.KeepAlive(privateKey)
 
     return bool(proxyResult) /* r9 */
 }
@@ -362,6 +443,10 @@ func (obj *Rsa) CanSign(privateKey PrivateKey) bool {
 */
 func (obj *Rsa) SignatureLen(key Key) uint32 {
     proxyResult := /*pr4*/C.vscf_rsa_signature_len(obj.cCtx, (*C.vscf_impl_t)(key.ctx()))
+
+    runtime.KeepAlive(obj)
+
+    runtime.KeepAlive(key)
 
     return uint32(proxyResult) /* r9 */
 }
@@ -384,6 +469,10 @@ func (obj *Rsa) SignHash(privateKey PrivateKey, hashId AlgId, digest []byte) ([]
         return nil, err
     }
 
+    runtime.KeepAlive(obj)
+
+    runtime.KeepAlive(privateKey)
+
     return signatureBuf.getData() /* r7 */, nil
 }
 
@@ -392,6 +481,10 @@ func (obj *Rsa) SignHash(privateKey PrivateKey, hashId AlgId, digest []byte) ([]
 */
 func (obj *Rsa) CanVerify(publicKey PublicKey) bool {
     proxyResult := /*pr4*/C.vscf_rsa_can_verify(obj.cCtx, (*C.vscf_impl_t)(publicKey.ctx()))
+
+    runtime.KeepAlive(obj)
+
+    runtime.KeepAlive(publicKey)
 
     return bool(proxyResult) /* r9 */
 }
@@ -404,6 +497,10 @@ func (obj *Rsa) VerifyHash(publicKey PublicKey, hashId AlgId, digest []byte, sig
     signatureData := helperWrapData (signature)
 
     proxyResult := /*pr4*/C.vscf_rsa_verify_hash(obj.cCtx, (*C.vscf_impl_t)(publicKey.ctx()), C.vscf_alg_id_t(hashId) /*pa7*/, digestData, signatureData)
+
+    runtime.KeepAlive(obj)
+
+    runtime.KeepAlive(publicKey)
 
     return bool(proxyResult) /* r9 */
 }

@@ -22,7 +22,8 @@ func NewSignerInfoList() *SignerInfoList {
     obj := &SignerInfoList {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, func (o *SignerInfoList) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *SignerInfoList) {o.Delete()})
+    runtime.SetFinalizer(obj, (*SignerInfoList).Delete)
     return obj
 }
 
@@ -33,7 +34,8 @@ func newSignerInfoListWithCtx(ctx *C.vscf_signer_info_list_t /*ct2*/) *SignerInf
     obj := &SignerInfoList {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, func (o *SignerInfoList) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *SignerInfoList) {o.Delete()})
+    runtime.SetFinalizer(obj, (*SignerInfoList).Delete)
     return obj
 }
 
@@ -44,7 +46,8 @@ func newSignerInfoListCopy(ctx *C.vscf_signer_info_list_t /*ct2*/) *SignerInfoLi
     obj := &SignerInfoList {
         cCtx: C.vscf_signer_info_list_shallow_copy(ctx),
     }
-    runtime.SetFinalizer(obj, func (o *SignerInfoList) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *SignerInfoList) {o.Delete()})
+    runtime.SetFinalizer(obj, (*SignerInfoList).Delete)
     return obj
 }
 
@@ -52,6 +55,9 @@ func newSignerInfoListCopy(ctx *C.vscf_signer_info_list_t /*ct2*/) *SignerInfoLi
 * Release underlying C context.
 */
 func (obj *SignerInfoList) Delete() {
+    if obj == nil {
+        return
+    }
     runtime.SetFinalizer(obj, nil)
     obj.delete()
 }
@@ -69,6 +75,8 @@ func (obj *SignerInfoList) delete() {
 func (obj *SignerInfoList) HasItem() bool {
     proxyResult := /*pr4*/C.vscf_signer_info_list_has_item(obj.cCtx)
 
+    runtime.KeepAlive(obj)
+
     return bool(proxyResult) /* r9 */
 }
 
@@ -77,6 +85,8 @@ func (obj *SignerInfoList) HasItem() bool {
 */
 func (obj *SignerInfoList) Item() *SignerInfo {
     proxyResult := /*pr4*/C.vscf_signer_info_list_item(obj.cCtx)
+
+    runtime.KeepAlive(obj)
 
     return newSignerInfoCopy(proxyResult) /* r5 */
 }
@@ -87,6 +97,8 @@ func (obj *SignerInfoList) Item() *SignerInfo {
 func (obj *SignerInfoList) HasNext() bool {
     proxyResult := /*pr4*/C.vscf_signer_info_list_has_next(obj.cCtx)
 
+    runtime.KeepAlive(obj)
+
     return bool(proxyResult) /* r9 */
 }
 
@@ -95,6 +107,8 @@ func (obj *SignerInfoList) HasNext() bool {
 */
 func (obj *SignerInfoList) Next() *SignerInfoList {
     proxyResult := /*pr4*/C.vscf_signer_info_list_next(obj.cCtx)
+
+    runtime.KeepAlive(obj)
 
     return newSignerInfoListWithCtx(proxyResult) /* r6 */
 }
@@ -105,6 +119,8 @@ func (obj *SignerInfoList) Next() *SignerInfoList {
 func (obj *SignerInfoList) HasPrev() bool {
     proxyResult := /*pr4*/C.vscf_signer_info_list_has_prev(obj.cCtx)
 
+    runtime.KeepAlive(obj)
+
     return bool(proxyResult) /* r9 */
 }
 
@@ -114,6 +130,8 @@ func (obj *SignerInfoList) HasPrev() bool {
 func (obj *SignerInfoList) Prev() *SignerInfoList {
     proxyResult := /*pr4*/C.vscf_signer_info_list_prev(obj.cCtx)
 
+    runtime.KeepAlive(obj)
+
     return newSignerInfoListWithCtx(proxyResult) /* r6 */
 }
 
@@ -122,6 +140,8 @@ func (obj *SignerInfoList) Prev() *SignerInfoList {
 */
 func (obj *SignerInfoList) Clear() {
     C.vscf_signer_info_list_clear(obj.cCtx)
+
+    runtime.KeepAlive(obj)
 
     return
 }

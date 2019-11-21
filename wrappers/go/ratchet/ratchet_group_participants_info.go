@@ -22,7 +22,8 @@ func NewRatchetGroupParticipantsInfo() *RatchetGroupParticipantsInfo {
     obj := &RatchetGroupParticipantsInfo {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, func (o *RatchetGroupParticipantsInfo) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *RatchetGroupParticipantsInfo) {o.Delete()})
+    runtime.SetFinalizer(obj, (*RatchetGroupParticipantsInfo).Delete)
     return obj
 }
 
@@ -33,7 +34,8 @@ func newRatchetGroupParticipantsInfoWithCtx(ctx *C.vscr_ratchet_group_participan
     obj := &RatchetGroupParticipantsInfo {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, func (o *RatchetGroupParticipantsInfo) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *RatchetGroupParticipantsInfo) {o.Delete()})
+    runtime.SetFinalizer(obj, (*RatchetGroupParticipantsInfo).Delete)
     return obj
 }
 
@@ -44,7 +46,8 @@ func newRatchetGroupParticipantsInfoCopy(ctx *C.vscr_ratchet_group_participants_
     obj := &RatchetGroupParticipantsInfo {
         cCtx: C.vscr_ratchet_group_participants_info_shallow_copy(ctx),
     }
-    runtime.SetFinalizer(obj, func (o *RatchetGroupParticipantsInfo) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *RatchetGroupParticipantsInfo) {o.Delete()})
+    runtime.SetFinalizer(obj, (*RatchetGroupParticipantsInfo).Delete)
     return obj
 }
 
@@ -52,6 +55,9 @@ func newRatchetGroupParticipantsInfoCopy(ctx *C.vscr_ratchet_group_participants_
 * Release underlying C context.
 */
 func (obj *RatchetGroupParticipantsInfo) Delete() {
+    if obj == nil {
+        return
+    }
     runtime.SetFinalizer(obj, nil)
     obj.delete()
 }
@@ -72,7 +78,8 @@ func NewRatchetGroupParticipantsInfoSize(size uint32) *RatchetGroupParticipantsI
     obj := &RatchetGroupParticipantsInfo {
         cCtx: proxyResult,
     }
-    runtime.SetFinalizer(obj, func (o *RatchetGroupParticipantsInfo) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *RatchetGroupParticipantsInfo) {o.Delete()})
+    runtime.SetFinalizer(obj, (*RatchetGroupParticipantsInfo).Delete)
     return obj
 }
 
@@ -89,6 +96,8 @@ func (obj *RatchetGroupParticipantsInfo) AddParticipant(id []byte, pubKey []byte
     if err != nil {
         return err
     }
+
+    runtime.KeepAlive(obj)
 
     return nil
 }

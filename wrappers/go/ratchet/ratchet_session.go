@@ -24,7 +24,8 @@ func NewRatchetSession() *RatchetSession {
     obj := &RatchetSession {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, func (o *RatchetSession) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *RatchetSession) {o.Delete()})
+    runtime.SetFinalizer(obj, (*RatchetSession).Delete)
     return obj
 }
 
@@ -35,7 +36,8 @@ func newRatchetSessionWithCtx(ctx *C.vscr_ratchet_session_t /*ct2*/) *RatchetSes
     obj := &RatchetSession {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, func (o *RatchetSession) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *RatchetSession) {o.Delete()})
+    runtime.SetFinalizer(obj, (*RatchetSession).Delete)
     return obj
 }
 
@@ -46,7 +48,8 @@ func newRatchetSessionCopy(ctx *C.vscr_ratchet_session_t /*ct2*/) *RatchetSessio
     obj := &RatchetSession {
         cCtx: C.vscr_ratchet_session_shallow_copy(ctx),
     }
-    runtime.SetFinalizer(obj, func (o *RatchetSession) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *RatchetSession) {o.Delete()})
+    runtime.SetFinalizer(obj, (*RatchetSession).Delete)
     return obj
 }
 
@@ -54,6 +57,9 @@ func newRatchetSessionCopy(ctx *C.vscr_ratchet_session_t /*ct2*/) *RatchetSessio
 * Release underlying C context.
 */
 func (obj *RatchetSession) Delete() {
+    if obj == nil {
+        return
+    }
     runtime.SetFinalizer(obj, nil)
     obj.delete()
 }
@@ -71,6 +77,9 @@ func (obj *RatchetSession) delete() {
 func (obj *RatchetSession) SetRng(rng foundation.Random) {
     C.vscr_ratchet_session_release_rng(obj.cCtx)
     C.vscr_ratchet_session_use_rng(obj.cCtx, (*C.vscf_impl_t)(rng.(context).ctx()))
+
+    runtime.KeepAlive(rng)
+    runtime.KeepAlive(obj)
 }
 
 /*
@@ -84,6 +93,8 @@ func (obj *RatchetSession) SetupDefaults() error {
     if err != nil {
         return err
     }
+
+    runtime.KeepAlive(obj)
 
     return nil
 }
@@ -104,6 +115,8 @@ func (obj *RatchetSession) Initiate(senderIdentityPrivateKey []byte, receiverIde
         return err
     }
 
+    runtime.KeepAlive(obj)
+
     return nil
 }
 
@@ -123,6 +136,10 @@ func (obj *RatchetSession) Respond(senderIdentityPublicKey []byte, receiverIdent
         return err
     }
 
+    runtime.KeepAlive(obj)
+
+    runtime.KeepAlive(message)
+
     return nil
 }
 
@@ -131,6 +148,8 @@ func (obj *RatchetSession) Respond(senderIdentityPublicKey []byte, receiverIdent
 */
 func (obj *RatchetSession) IsInitiator() bool {
     proxyResult := /*pr4*/C.vscr_ratchet_session_is_initiator(obj.cCtx)
+
+    runtime.KeepAlive(obj)
 
     return bool(proxyResult) /* r9 */
 }
@@ -141,6 +160,8 @@ func (obj *RatchetSession) IsInitiator() bool {
 func (obj *RatchetSession) ReceivedFirstResponse() bool {
     proxyResult := /*pr4*/C.vscr_ratchet_session_received_first_response(obj.cCtx)
 
+    runtime.KeepAlive(obj)
+
     return bool(proxyResult) /* r9 */
 }
 
@@ -149,6 +170,8 @@ func (obj *RatchetSession) ReceivedFirstResponse() bool {
 */
 func (obj *RatchetSession) ReceiverHasOneTimePublicKey() bool {
     proxyResult := /*pr4*/C.vscr_ratchet_session_receiver_has_one_time_public_key(obj.cCtx)
+
+    runtime.KeepAlive(obj)
 
     return bool(proxyResult) /* r9 */
 }
@@ -168,6 +191,10 @@ func (obj *RatchetSession) Encrypt(plainText []byte) (*RatchetMessage, error) {
         return nil, err
     }
 
+    runtime.KeepAlive(obj)
+
+    runtime.KeepAlive(error)
+
     return newRatchetMessageWithCtx(proxyResult) /* r6 */, nil
 }
 
@@ -176,6 +203,10 @@ func (obj *RatchetSession) Encrypt(plainText []byte) (*RatchetMessage, error) {
 */
 func (obj *RatchetSession) DecryptLen(message *RatchetMessage) uint32 {
     proxyResult := /*pr4*/C.vscr_ratchet_session_decrypt_len(obj.cCtx, (*C.vscr_ratchet_message_t)(message.ctx()))
+
+    runtime.KeepAlive(obj)
+
+    runtime.KeepAlive(message)
 
     return uint32(proxyResult) /* r9 */
 }
@@ -198,6 +229,10 @@ func (obj *RatchetSession) Decrypt(message *RatchetMessage) ([]byte, error) {
         return nil, err
     }
 
+    runtime.KeepAlive(obj)
+
+    runtime.KeepAlive(message)
+
     return plainTextBuf.getData() /* r7 */, nil
 }
 
@@ -208,6 +243,8 @@ func (obj *RatchetSession) Serialize() []byte {
     proxyResult := /*pr4*/C.vscr_ratchet_session_serialize(obj.cCtx)
 
     defer C.vsc_buffer_delete(proxyResult)
+
+    runtime.KeepAlive(obj)
 
     return C.GoBytes(unsafe.Pointer(C.vsc_buffer_bytes(proxyResult)), C.int(C.vsc_buffer_len(proxyResult))) /* r2 */
 }
@@ -227,6 +264,8 @@ func RatchetSessionDeserialize(input []byte) (*RatchetSession, error) {
     if err != nil {
         return nil, err
     }
+
+    runtime.KeepAlive(error)
 
     return newRatchetSessionWithCtx(proxyResult) /* r6 */, nil
 }

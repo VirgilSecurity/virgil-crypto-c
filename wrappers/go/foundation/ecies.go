@@ -22,7 +22,8 @@ func NewEcies() *Ecies {
     obj := &Ecies {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, func (o *Ecies) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *Ecies) {o.Delete()})
+    runtime.SetFinalizer(obj, (*Ecies).Delete)
     return obj
 }
 
@@ -33,7 +34,8 @@ func newEciesWithCtx(ctx *C.vscf_ecies_t /*ct2*/) *Ecies {
     obj := &Ecies {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, func (o *Ecies) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *Ecies) {o.Delete()})
+    runtime.SetFinalizer(obj, (*Ecies).Delete)
     return obj
 }
 
@@ -44,7 +46,8 @@ func newEciesCopy(ctx *C.vscf_ecies_t /*ct2*/) *Ecies {
     obj := &Ecies {
         cCtx: C.vscf_ecies_shallow_copy(ctx),
     }
-    runtime.SetFinalizer(obj, func (o *Ecies) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *Ecies) {o.Delete()})
+    runtime.SetFinalizer(obj, (*Ecies).Delete)
     return obj
 }
 
@@ -52,6 +55,9 @@ func newEciesCopy(ctx *C.vscf_ecies_t /*ct2*/) *Ecies {
 * Release underlying C context.
 */
 func (obj *Ecies) Delete() {
+    if obj == nil {
+        return
+    }
     runtime.SetFinalizer(obj, nil)
     obj.delete()
 }
@@ -66,21 +72,33 @@ func (obj *Ecies) delete() {
 func (obj *Ecies) SetRandom(random Random) {
     C.vscf_ecies_release_random(obj.cCtx)
     C.vscf_ecies_use_random(obj.cCtx, (*C.vscf_impl_t)(random.ctx()))
+
+    runtime.KeepAlive(random)
+    runtime.KeepAlive(obj)
 }
 
 func (obj *Ecies) SetCipher(cipher Cipher) {
     C.vscf_ecies_release_cipher(obj.cCtx)
     C.vscf_ecies_use_cipher(obj.cCtx, (*C.vscf_impl_t)(cipher.ctx()))
+
+    runtime.KeepAlive(cipher)
+    runtime.KeepAlive(obj)
 }
 
 func (obj *Ecies) SetMac(mac Mac) {
     C.vscf_ecies_release_mac(obj.cCtx)
     C.vscf_ecies_use_mac(obj.cCtx, (*C.vscf_impl_t)(mac.ctx()))
+
+    runtime.KeepAlive(mac)
+    runtime.KeepAlive(obj)
 }
 
 func (obj *Ecies) SetKdf(kdf Kdf) {
     C.vscf_ecies_release_kdf(obj.cCtx)
     C.vscf_ecies_use_kdf(obj.cCtx, (*C.vscf_impl_t)(kdf.ctx()))
+
+    runtime.KeepAlive(kdf)
+    runtime.KeepAlive(obj)
 }
 
 /*
@@ -91,6 +109,9 @@ func (obj *Ecies) SetKdf(kdf Kdf) {
 func (obj *Ecies) SetEphemeralKey(ephemeralKey PrivateKey) {
     C.vscf_ecies_release_ephemeral_key(obj.cCtx)
     C.vscf_ecies_use_ephemeral_key(obj.cCtx, (*C.vscf_impl_t)(ephemeralKey.ctx()))
+
+    runtime.KeepAlive(ephemeralKey)
+    runtime.KeepAlive(obj)
 }
 
 /*
@@ -100,6 +121,10 @@ func (obj *Ecies) SetEphemeralKey(ephemeralKey PrivateKey) {
 func (obj *Ecies) SetKeyAlg(keyAlg KeyAlg) {
     C.vscf_ecies_set_key_alg(obj.cCtx, (*C.vscf_impl_t)(keyAlg.ctx()))
 
+    runtime.KeepAlive(obj)
+
+    runtime.KeepAlive(keyAlg)
+
     return
 }
 
@@ -108,6 +133,8 @@ func (obj *Ecies) SetKeyAlg(keyAlg KeyAlg) {
 */
 func (obj *Ecies) ReleaseKeyAlg() {
     C.vscf_ecies_release_key_alg(obj.cCtx)
+
+    runtime.KeepAlive(obj)
 
     return
 }
@@ -123,6 +150,8 @@ func (obj *Ecies) SetupDefaults() error {
         return err
     }
 
+    runtime.KeepAlive(obj)
+
     return nil
 }
 
@@ -133,6 +162,8 @@ func (obj *Ecies) SetupDefaults() error {
 func (obj *Ecies) SetupDefaultsNoRandom() {
     C.vscf_ecies_setup_defaults_no_random(obj.cCtx)
 
+    runtime.KeepAlive(obj)
+
     return
 }
 
@@ -141,6 +172,10 @@ func (obj *Ecies) SetupDefaultsNoRandom() {
 */
 func (obj *Ecies) EncryptedLen(publicKey PublicKey, dataLen uint32) uint32 {
     proxyResult := /*pr4*/C.vscf_ecies_encrypted_len(obj.cCtx, (*C.vscf_impl_t)(publicKey.ctx()), (C.size_t)(dataLen)/*pa10*/)
+
+    runtime.KeepAlive(obj)
+
+    runtime.KeepAlive(publicKey)
 
     return uint32(proxyResult) /* r9 */
 }
@@ -163,6 +198,10 @@ func (obj *Ecies) Encrypt(publicKey PublicKey, data []byte) ([]byte, error) {
         return nil, err
     }
 
+    runtime.KeepAlive(obj)
+
+    runtime.KeepAlive(publicKey)
+
     return outBuf.getData() /* r7 */, nil
 }
 
@@ -171,6 +210,10 @@ func (obj *Ecies) Encrypt(publicKey PublicKey, data []byte) ([]byte, error) {
 */
 func (obj *Ecies) DecryptedLen(privateKey PrivateKey, dataLen uint32) uint32 {
     proxyResult := /*pr4*/C.vscf_ecies_decrypted_len(obj.cCtx, (*C.vscf_impl_t)(privateKey.ctx()), (C.size_t)(dataLen)/*pa10*/)
+
+    runtime.KeepAlive(obj)
+
+    runtime.KeepAlive(privateKey)
 
     return uint32(proxyResult) /* r9 */
 }
@@ -192,6 +235,10 @@ func (obj *Ecies) Decrypt(privateKey PrivateKey, data []byte) ([]byte, error) {
     if err != nil {
         return nil, err
     }
+
+    runtime.KeepAlive(obj)
+
+    runtime.KeepAlive(privateKey)
 
     return outBuf.getData() /* r7 */, nil
 }

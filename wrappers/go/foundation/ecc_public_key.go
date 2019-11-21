@@ -22,7 +22,8 @@ func NewEccPublicKey() *EccPublicKey {
     obj := &EccPublicKey {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, func (o *EccPublicKey) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *EccPublicKey) {o.Delete()})
+    runtime.SetFinalizer(obj, (*EccPublicKey).Delete)
     return obj
 }
 
@@ -33,7 +34,8 @@ func newEccPublicKeyWithCtx(ctx *C.vscf_ecc_public_key_t /*ct10*/) *EccPublicKey
     obj := &EccPublicKey {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, func (o *EccPublicKey) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *EccPublicKey) {o.Delete()})
+    runtime.SetFinalizer(obj, (*EccPublicKey).Delete)
     return obj
 }
 
@@ -44,7 +46,8 @@ func newEccPublicKeyCopy(ctx *C.vscf_ecc_public_key_t /*ct10*/) *EccPublicKey {
     obj := &EccPublicKey {
         cCtx: C.vscf_ecc_public_key_shallow_copy(ctx),
     }
-    runtime.SetFinalizer(obj, func (o *EccPublicKey) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *EccPublicKey) {o.Delete()})
+    runtime.SetFinalizer(obj, (*EccPublicKey).Delete)
     return obj
 }
 
@@ -52,6 +55,9 @@ func newEccPublicKeyCopy(ctx *C.vscf_ecc_public_key_t /*ct10*/) *EccPublicKey {
 * Release underlying C context.
 */
 func (obj *EccPublicKey) Delete() {
+    if obj == nil {
+        return
+    }
     runtime.SetFinalizer(obj, nil)
     obj.delete()
 }
@@ -69,6 +75,8 @@ func (obj *EccPublicKey) delete() {
 func (obj *EccPublicKey) AlgId() AlgId {
     proxyResult := /*pr4*/C.vscf_ecc_public_key_alg_id(obj.cCtx)
 
+    runtime.KeepAlive(obj)
+
     return AlgId(proxyResult) /* r8 */
 }
 
@@ -77,6 +85,8 @@ func (obj *EccPublicKey) AlgId() AlgId {
 */
 func (obj *EccPublicKey) AlgInfo() (AlgInfo, error) {
     proxyResult := /*pr4*/C.vscf_ecc_public_key_alg_info(obj.cCtx)
+
+    runtime.KeepAlive(obj)
 
     return FoundationImplementationWrapAlgInfo(proxyResult) /* r4 */
 }
@@ -87,6 +97,8 @@ func (obj *EccPublicKey) AlgInfo() (AlgInfo, error) {
 func (obj *EccPublicKey) Len() uint32 {
     proxyResult := /*pr4*/C.vscf_ecc_public_key_len(obj.cCtx)
 
+    runtime.KeepAlive(obj)
+
     return uint32(proxyResult) /* r9 */
 }
 
@@ -95,6 +107,8 @@ func (obj *EccPublicKey) Len() uint32 {
 */
 func (obj *EccPublicKey) Bitlen() uint32 {
     proxyResult := /*pr4*/C.vscf_ecc_public_key_bitlen(obj.cCtx)
+
+    runtime.KeepAlive(obj)
 
     return uint32(proxyResult) /* r9 */
 }
@@ -105,6 +119,8 @@ func (obj *EccPublicKey) Bitlen() uint32 {
 */
 func (obj *EccPublicKey) IsValid() bool {
     proxyResult := /*pr4*/C.vscf_ecc_public_key_is_valid(obj.cCtx)
+
+    runtime.KeepAlive(obj)
 
     return bool(proxyResult) /* r9 */
 }

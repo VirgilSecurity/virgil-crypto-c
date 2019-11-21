@@ -23,7 +23,8 @@ func NewKeyProvider() *KeyProvider {
     obj := &KeyProvider {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, func (o *KeyProvider) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *KeyProvider) {o.Delete()})
+    runtime.SetFinalizer(obj, (*KeyProvider).Delete)
     return obj
 }
 
@@ -34,7 +35,8 @@ func newKeyProviderWithCtx(ctx *C.vscf_key_provider_t /*ct2*/) *KeyProvider {
     obj := &KeyProvider {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, func (o *KeyProvider) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *KeyProvider) {o.Delete()})
+    runtime.SetFinalizer(obj, (*KeyProvider).Delete)
     return obj
 }
 
@@ -45,7 +47,8 @@ func newKeyProviderCopy(ctx *C.vscf_key_provider_t /*ct2*/) *KeyProvider {
     obj := &KeyProvider {
         cCtx: C.vscf_key_provider_shallow_copy(ctx),
     }
-    runtime.SetFinalizer(obj, func (o *KeyProvider) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *KeyProvider) {o.Delete()})
+    runtime.SetFinalizer(obj, (*KeyProvider).Delete)
     return obj
 }
 
@@ -53,6 +56,9 @@ func newKeyProviderCopy(ctx *C.vscf_key_provider_t /*ct2*/) *KeyProvider {
 * Release underlying C context.
 */
 func (obj *KeyProvider) Delete() {
+    if obj == nil {
+        return
+    }
     runtime.SetFinalizer(obj, nil)
     obj.delete()
 }
@@ -67,11 +73,17 @@ func (obj *KeyProvider) delete() {
 func (obj *KeyProvider) SetRandom(random Random) {
     C.vscf_key_provider_release_random(obj.cCtx)
     C.vscf_key_provider_use_random(obj.cCtx, (*C.vscf_impl_t)(random.ctx()))
+
+    runtime.KeepAlive(random)
+    runtime.KeepAlive(obj)
 }
 
 func (obj *KeyProvider) SetEcies(ecies Ecies) {
     C.vscf_key_provider_release_ecies(obj.cCtx)
     C.vscf_key_provider_use_ecies(obj.cCtx, (*C.vscf_ecies_t)(ecies.ctx()))
+
+    runtime.KeepAlive(ecies)
+    runtime.KeepAlive(obj)
 }
 
 /*
@@ -85,6 +97,8 @@ func (obj *KeyProvider) SetupDefaults() error {
         return err
     }
 
+    runtime.KeepAlive(obj)
+
     return nil
 }
 
@@ -93,6 +107,8 @@ func (obj *KeyProvider) SetupDefaults() error {
 */
 func (obj *KeyProvider) SetRsaParams(bitlen uint32) {
     C.vscf_key_provider_set_rsa_params(obj.cCtx, (C.size_t)(bitlen)/*pa10*/)
+
+    runtime.KeepAlive(obj)
 
     return
 }
@@ -110,6 +126,10 @@ func (obj *KeyProvider) GeneratePrivateKey(algId AlgId) (PrivateKey, error) {
     if err != nil {
         return nil, err
     }
+
+    runtime.KeepAlive(obj)
+
+    runtime.KeepAlive(error)
 
     return FoundationImplementationWrapPrivateKey(proxyResult) /* r4 */
 }
@@ -129,6 +149,10 @@ func (obj *KeyProvider) ImportPrivateKey(keyData []byte) (PrivateKey, error) {
         return nil, err
     }
 
+    runtime.KeepAlive(obj)
+
+    runtime.KeepAlive(error)
+
     return FoundationImplementationWrapPrivateKey(proxyResult) /* r4 */
 }
 
@@ -147,6 +171,10 @@ func (obj *KeyProvider) ImportPublicKey(keyData []byte) (PublicKey, error) {
         return nil, err
     }
 
+    runtime.KeepAlive(obj)
+
+    runtime.KeepAlive(error)
+
     return FoundationImplementationWrapPublicKey(proxyResult) /* r4 */
 }
 
@@ -157,6 +185,10 @@ func (obj *KeyProvider) ImportPublicKey(keyData []byte) (PublicKey, error) {
 */
 func (obj *KeyProvider) ExportedPublicKeyLen(publicKey PublicKey) uint32 {
     proxyResult := /*pr4*/C.vscf_key_provider_exported_public_key_len(obj.cCtx, (*C.vscf_impl_t)(publicKey.ctx()))
+
+    runtime.KeepAlive(obj)
+
+    runtime.KeepAlive(publicKey)
 
     return uint32(proxyResult) /* r9 */
 }
@@ -181,6 +213,10 @@ func (obj *KeyProvider) ExportPublicKey(publicKey PublicKey) ([]byte, error) {
         return nil, err
     }
 
+    runtime.KeepAlive(obj)
+
+    runtime.KeepAlive(publicKey)
+
     return outBuf.getData() /* r7 */, nil
 }
 
@@ -191,6 +227,10 @@ func (obj *KeyProvider) ExportPublicKey(publicKey PublicKey) ([]byte, error) {
 */
 func (obj *KeyProvider) ExportedPrivateKeyLen(privateKey PrivateKey) uint32 {
     proxyResult := /*pr4*/C.vscf_key_provider_exported_private_key_len(obj.cCtx, (*C.vscf_impl_t)(privateKey.ctx()))
+
+    runtime.KeepAlive(obj)
+
+    runtime.KeepAlive(privateKey)
 
     return uint32(proxyResult) /* r9 */
 }
@@ -214,6 +254,10 @@ func (obj *KeyProvider) ExportPrivateKey(privateKey PrivateKey) ([]byte, error) 
     if err != nil {
         return nil, err
     }
+
+    runtime.KeepAlive(obj)
+
+    runtime.KeepAlive(privateKey)
 
     return outBuf.getData() /* r7 */, nil
 }

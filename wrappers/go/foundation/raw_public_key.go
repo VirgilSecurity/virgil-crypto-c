@@ -18,6 +18,8 @@ type RawPublicKey struct {
 func (obj *RawPublicKey) Data() []byte {
     proxyResult := /*pr4*/C.vscf_raw_public_key_data(obj.cCtx)
 
+    runtime.KeepAlive(obj)
+
     return helperExtractData(proxyResult) /* r1 */
 }
 
@@ -31,7 +33,8 @@ func NewRawPublicKey() *RawPublicKey {
     obj := &RawPublicKey {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, func (o *RawPublicKey) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *RawPublicKey) {o.Delete()})
+    runtime.SetFinalizer(obj, (*RawPublicKey).Delete)
     return obj
 }
 
@@ -42,7 +45,8 @@ func newRawPublicKeyWithCtx(ctx *C.vscf_raw_public_key_t /*ct10*/) *RawPublicKey
     obj := &RawPublicKey {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, func (o *RawPublicKey) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *RawPublicKey) {o.Delete()})
+    runtime.SetFinalizer(obj, (*RawPublicKey).Delete)
     return obj
 }
 
@@ -53,7 +57,8 @@ func newRawPublicKeyCopy(ctx *C.vscf_raw_public_key_t /*ct10*/) *RawPublicKey {
     obj := &RawPublicKey {
         cCtx: C.vscf_raw_public_key_shallow_copy(ctx),
     }
-    runtime.SetFinalizer(obj, func (o *RawPublicKey) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *RawPublicKey) {o.Delete()})
+    runtime.SetFinalizer(obj, (*RawPublicKey).Delete)
     return obj
 }
 
@@ -61,6 +66,9 @@ func newRawPublicKeyCopy(ctx *C.vscf_raw_public_key_t /*ct10*/) *RawPublicKey {
 * Release underlying C context.
 */
 func (obj *RawPublicKey) Delete() {
+    if obj == nil {
+        return
+    }
     runtime.SetFinalizer(obj, nil)
     obj.delete()
 }
@@ -78,6 +86,8 @@ func (obj *RawPublicKey) delete() {
 func (obj *RawPublicKey) AlgId() AlgId {
     proxyResult := /*pr4*/C.vscf_raw_public_key_alg_id(obj.cCtx)
 
+    runtime.KeepAlive(obj)
+
     return AlgId(proxyResult) /* r8 */
 }
 
@@ -86,6 +96,8 @@ func (obj *RawPublicKey) AlgId() AlgId {
 */
 func (obj *RawPublicKey) AlgInfo() (AlgInfo, error) {
     proxyResult := /*pr4*/C.vscf_raw_public_key_alg_info(obj.cCtx)
+
+    runtime.KeepAlive(obj)
 
     return FoundationImplementationWrapAlgInfo(proxyResult) /* r4 */
 }
@@ -96,6 +108,8 @@ func (obj *RawPublicKey) AlgInfo() (AlgInfo, error) {
 func (obj *RawPublicKey) Len() uint32 {
     proxyResult := /*pr4*/C.vscf_raw_public_key_len(obj.cCtx)
 
+    runtime.KeepAlive(obj)
+
     return uint32(proxyResult) /* r9 */
 }
 
@@ -104,6 +118,8 @@ func (obj *RawPublicKey) Len() uint32 {
 */
 func (obj *RawPublicKey) Bitlen() uint32 {
     proxyResult := /*pr4*/C.vscf_raw_public_key_bitlen(obj.cCtx)
+
+    runtime.KeepAlive(obj)
 
     return uint32(proxyResult) /* r9 */
 }
@@ -114,6 +130,8 @@ func (obj *RawPublicKey) Bitlen() uint32 {
 */
 func (obj *RawPublicKey) IsValid() bool {
     proxyResult := /*pr4*/C.vscf_raw_public_key_is_valid(obj.cCtx)
+
+    runtime.KeepAlive(obj)
 
     return bool(proxyResult) /* r9 */
 }

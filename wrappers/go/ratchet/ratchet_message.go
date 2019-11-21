@@ -22,7 +22,8 @@ func NewRatchetMessage() *RatchetMessage {
     obj := &RatchetMessage {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, func (o *RatchetMessage) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *RatchetMessage) {o.Delete()})
+    runtime.SetFinalizer(obj, (*RatchetMessage).Delete)
     return obj
 }
 
@@ -33,7 +34,8 @@ func newRatchetMessageWithCtx(ctx *C.vscr_ratchet_message_t /*ct2*/) *RatchetMes
     obj := &RatchetMessage {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, func (o *RatchetMessage) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *RatchetMessage) {o.Delete()})
+    runtime.SetFinalizer(obj, (*RatchetMessage).Delete)
     return obj
 }
 
@@ -44,7 +46,8 @@ func newRatchetMessageCopy(ctx *C.vscr_ratchet_message_t /*ct2*/) *RatchetMessag
     obj := &RatchetMessage {
         cCtx: C.vscr_ratchet_message_shallow_copy(ctx),
     }
-    runtime.SetFinalizer(obj, func (o *RatchetMessage) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *RatchetMessage) {o.Delete()})
+    runtime.SetFinalizer(obj, (*RatchetMessage).Delete)
     return obj
 }
 
@@ -52,6 +55,9 @@ func newRatchetMessageCopy(ctx *C.vscr_ratchet_message_t /*ct2*/) *RatchetMessag
 * Release underlying C context.
 */
 func (obj *RatchetMessage) Delete() {
+    if obj == nil {
+        return
+    }
     runtime.SetFinalizer(obj, nil)
     obj.delete()
 }
@@ -69,6 +75,8 @@ func (obj *RatchetMessage) delete() {
 func (obj *RatchetMessage) GetType() MsgType {
     proxyResult := /*pr4*/C.vscr_ratchet_message_get_type(obj.cCtx)
 
+    runtime.KeepAlive(obj)
+
     return MsgType(proxyResult) /* r8 */
 }
 
@@ -77,6 +85,8 @@ func (obj *RatchetMessage) GetType() MsgType {
 */
 func (obj *RatchetMessage) GetCounter() uint32 {
     proxyResult := /*pr4*/C.vscr_ratchet_message_get_counter(obj.cCtx)
+
+    runtime.KeepAlive(obj)
 
     return uint32(proxyResult) /* r9 */
 }
@@ -87,6 +97,8 @@ func (obj *RatchetMessage) GetCounter() uint32 {
 func (obj *RatchetMessage) GetLongTermPublicKey() []byte {
     proxyResult := /*pr4*/C.vscr_ratchet_message_get_long_term_public_key(obj.cCtx)
 
+    runtime.KeepAlive(obj)
+
     return helperExtractData(proxyResult) /* r1 */
 }
 
@@ -96,6 +108,8 @@ func (obj *RatchetMessage) GetLongTermPublicKey() []byte {
 func (obj *RatchetMessage) GetOneTimePublicKey() []byte {
     proxyResult := /*pr4*/C.vscr_ratchet_message_get_one_time_public_key(obj.cCtx)
 
+    runtime.KeepAlive(obj)
+
     return helperExtractData(proxyResult) /* r1 */
 }
 
@@ -104,6 +118,8 @@ func (obj *RatchetMessage) GetOneTimePublicKey() []byte {
 */
 func (obj *RatchetMessage) SerializeLen() uint32 {
     proxyResult := /*pr4*/C.vscr_ratchet_message_serialize_len(obj.cCtx)
+
+    runtime.KeepAlive(obj)
 
     return uint32(proxyResult) /* r9 */
 }
@@ -120,6 +136,8 @@ func (obj *RatchetMessage) Serialize() []byte {
 
 
     C.vscr_ratchet_message_serialize(obj.cCtx, outputBuf.ctx)
+
+    runtime.KeepAlive(obj)
 
     return outputBuf.getData() /* r7 */
 }
@@ -138,6 +156,8 @@ func RatchetMessageDeserialize(input []byte) (*RatchetMessage, error) {
     if err != nil {
         return nil, err
     }
+
+    runtime.KeepAlive(error)
 
     return newRatchetMessageWithCtx(proxyResult) /* r6 */, nil
 }

@@ -18,6 +18,8 @@ type RsaPublicKey struct {
 func (obj *RsaPublicKey) KeyExponent() uint32 {
     proxyResult := /*pr4*/C.vscf_rsa_public_key_key_exponent(obj.cCtx)
 
+    runtime.KeepAlive(obj)
+
     return uint32(proxyResult) /* r9 */
 }
 
@@ -31,7 +33,8 @@ func NewRsaPublicKey() *RsaPublicKey {
     obj := &RsaPublicKey {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, func (o *RsaPublicKey) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *RsaPublicKey) {o.Delete()})
+    runtime.SetFinalizer(obj, (*RsaPublicKey).Delete)
     return obj
 }
 
@@ -42,7 +45,8 @@ func newRsaPublicKeyWithCtx(ctx *C.vscf_rsa_public_key_t /*ct10*/) *RsaPublicKey
     obj := &RsaPublicKey {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, func (o *RsaPublicKey) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *RsaPublicKey) {o.Delete()})
+    runtime.SetFinalizer(obj, (*RsaPublicKey).Delete)
     return obj
 }
 
@@ -53,7 +57,8 @@ func newRsaPublicKeyCopy(ctx *C.vscf_rsa_public_key_t /*ct10*/) *RsaPublicKey {
     obj := &RsaPublicKey {
         cCtx: C.vscf_rsa_public_key_shallow_copy(ctx),
     }
-    runtime.SetFinalizer(obj, func (o *RsaPublicKey) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *RsaPublicKey) {o.Delete()})
+    runtime.SetFinalizer(obj, (*RsaPublicKey).Delete)
     return obj
 }
 
@@ -61,6 +66,9 @@ func newRsaPublicKeyCopy(ctx *C.vscf_rsa_public_key_t /*ct10*/) *RsaPublicKey {
 * Release underlying C context.
 */
 func (obj *RsaPublicKey) Delete() {
+    if obj == nil {
+        return
+    }
     runtime.SetFinalizer(obj, nil)
     obj.delete()
 }
@@ -78,6 +86,8 @@ func (obj *RsaPublicKey) delete() {
 func (obj *RsaPublicKey) AlgId() AlgId {
     proxyResult := /*pr4*/C.vscf_rsa_public_key_alg_id(obj.cCtx)
 
+    runtime.KeepAlive(obj)
+
     return AlgId(proxyResult) /* r8 */
 }
 
@@ -86,6 +96,8 @@ func (obj *RsaPublicKey) AlgId() AlgId {
 */
 func (obj *RsaPublicKey) AlgInfo() (AlgInfo, error) {
     proxyResult := /*pr4*/C.vscf_rsa_public_key_alg_info(obj.cCtx)
+
+    runtime.KeepAlive(obj)
 
     return FoundationImplementationWrapAlgInfo(proxyResult) /* r4 */
 }
@@ -96,6 +108,8 @@ func (obj *RsaPublicKey) AlgInfo() (AlgInfo, error) {
 func (obj *RsaPublicKey) Len() uint32 {
     proxyResult := /*pr4*/C.vscf_rsa_public_key_len(obj.cCtx)
 
+    runtime.KeepAlive(obj)
+
     return uint32(proxyResult) /* r9 */
 }
 
@@ -104,6 +118,8 @@ func (obj *RsaPublicKey) Len() uint32 {
 */
 func (obj *RsaPublicKey) Bitlen() uint32 {
     proxyResult := /*pr4*/C.vscf_rsa_public_key_bitlen(obj.cCtx)
+
+    runtime.KeepAlive(obj)
 
     return uint32(proxyResult) /* r9 */
 }
@@ -114,6 +130,8 @@ func (obj *RsaPublicKey) Bitlen() uint32 {
 */
 func (obj *RsaPublicKey) IsValid() bool {
     proxyResult := /*pr4*/C.vscf_rsa_public_key_is_valid(obj.cCtx)
+
+    runtime.KeepAlive(obj)
 
     return bool(proxyResult) /* r9 */
 }

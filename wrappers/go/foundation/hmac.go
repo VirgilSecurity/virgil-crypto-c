@@ -15,6 +15,9 @@ type Hmac struct {
 func (obj *Hmac) SetHash(hash Hash) {
     C.vscf_hmac_release_hash(obj.cCtx)
     C.vscf_hmac_use_hash(obj.cCtx, (*C.vscf_impl_t)(hash.ctx()))
+
+    runtime.KeepAlive(hash)
+    runtime.KeepAlive(obj)
 }
 
 /* Handle underlying C context. */
@@ -27,7 +30,8 @@ func NewHmac() *Hmac {
     obj := &Hmac {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, func (o *Hmac) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *Hmac) {o.Delete()})
+    runtime.SetFinalizer(obj, (*Hmac).Delete)
     return obj
 }
 
@@ -38,7 +42,8 @@ func newHmacWithCtx(ctx *C.vscf_hmac_t /*ct10*/) *Hmac {
     obj := &Hmac {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, func (o *Hmac) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *Hmac) {o.Delete()})
+    runtime.SetFinalizer(obj, (*Hmac).Delete)
     return obj
 }
 
@@ -49,7 +54,8 @@ func newHmacCopy(ctx *C.vscf_hmac_t /*ct10*/) *Hmac {
     obj := &Hmac {
         cCtx: C.vscf_hmac_shallow_copy(ctx),
     }
-    runtime.SetFinalizer(obj, func (o *Hmac) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *Hmac) {o.Delete()})
+    runtime.SetFinalizer(obj, (*Hmac).Delete)
     return obj
 }
 
@@ -57,6 +63,9 @@ func newHmacCopy(ctx *C.vscf_hmac_t /*ct10*/) *Hmac {
 * Release underlying C context.
 */
 func (obj *Hmac) Delete() {
+    if obj == nil {
+        return
+    }
     runtime.SetFinalizer(obj, nil)
     obj.delete()
 }
@@ -74,6 +83,8 @@ func (obj *Hmac) delete() {
 func (obj *Hmac) AlgId() AlgId {
     proxyResult := /*pr4*/C.vscf_hmac_alg_id(obj.cCtx)
 
+    runtime.KeepAlive(obj)
+
     return AlgId(proxyResult) /* r8 */
 }
 
@@ -82,6 +93,8 @@ func (obj *Hmac) AlgId() AlgId {
 */
 func (obj *Hmac) ProduceAlgInfo() (AlgInfo, error) {
     proxyResult := /*pr4*/C.vscf_hmac_produce_alg_info(obj.cCtx)
+
+    runtime.KeepAlive(obj)
 
     return FoundationImplementationWrapAlgInfo(proxyResult) /* r4 */
 }
@@ -97,6 +110,10 @@ func (obj *Hmac) RestoreAlgInfo(algInfo AlgInfo) error {
         return err
     }
 
+    runtime.KeepAlive(obj)
+
+    runtime.KeepAlive(algInfo)
+
     return nil
 }
 
@@ -105,6 +122,8 @@ func (obj *Hmac) RestoreAlgInfo(algInfo AlgInfo) error {
 */
 func (obj *Hmac) DigestLen() uint32 {
     proxyResult := /*pr4*/C.vscf_hmac_digest_len(obj.cCtx)
+
+    runtime.KeepAlive(obj)
 
     return uint32(proxyResult) /* r9 */
 }
@@ -123,6 +142,8 @@ func (obj *Hmac) Mac(key []byte, data []byte) []byte {
 
     C.vscf_hmac_mac(obj.cCtx, keyData, dataData, macBuf.ctx)
 
+    runtime.KeepAlive(obj)
+
     return macBuf.getData() /* r7 */
 }
 
@@ -134,6 +155,8 @@ func (obj *Hmac) Start(key []byte) {
 
     C.vscf_hmac_start(obj.cCtx, keyData)
 
+    runtime.KeepAlive(obj)
+
     return
 }
 
@@ -144,6 +167,8 @@ func (obj *Hmac) Update(data []byte) {
     dataData := helperWrapData (data)
 
     C.vscf_hmac_update(obj.cCtx, dataData)
+
+    runtime.KeepAlive(obj)
 
     return
 }
@@ -161,6 +186,8 @@ func (obj *Hmac) Finish() []byte {
 
     C.vscf_hmac_finish(obj.cCtx, macBuf.ctx)
 
+    runtime.KeepAlive(obj)
+
     return macBuf.getData() /* r7 */
 }
 
@@ -170,6 +197,8 @@ func (obj *Hmac) Finish() []byte {
 */
 func (obj *Hmac) Reset() {
     C.vscf_hmac_reset(obj.cCtx)
+
+    runtime.KeepAlive(obj)
 
     return
 }

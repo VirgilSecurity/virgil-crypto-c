@@ -32,7 +32,8 @@ func NewGroupSessionMessage() *GroupSessionMessage {
     obj := &GroupSessionMessage {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, func (o *GroupSessionMessage) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *GroupSessionMessage) {o.Delete()})
+    runtime.SetFinalizer(obj, (*GroupSessionMessage).Delete)
     return obj
 }
 
@@ -43,7 +44,8 @@ func newGroupSessionMessageWithCtx(ctx *C.vscf_group_session_message_t /*ct2*/) 
     obj := &GroupSessionMessage {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, func (o *GroupSessionMessage) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *GroupSessionMessage) {o.Delete()})
+    runtime.SetFinalizer(obj, (*GroupSessionMessage).Delete)
     return obj
 }
 
@@ -54,7 +56,8 @@ func newGroupSessionMessageCopy(ctx *C.vscf_group_session_message_t /*ct2*/) *Gr
     obj := &GroupSessionMessage {
         cCtx: C.vscf_group_session_message_shallow_copy(ctx),
     }
-    runtime.SetFinalizer(obj, func (o *GroupSessionMessage) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *GroupSessionMessage) {o.Delete()})
+    runtime.SetFinalizer(obj, (*GroupSessionMessage).Delete)
     return obj
 }
 
@@ -62,6 +65,9 @@ func newGroupSessionMessageCopy(ctx *C.vscf_group_session_message_t /*ct2*/) *Gr
 * Release underlying C context.
 */
 func (obj *GroupSessionMessage) Delete() {
+    if obj == nil {
+        return
+    }
     runtime.SetFinalizer(obj, nil)
     obj.delete()
 }
@@ -79,6 +85,8 @@ func (obj *GroupSessionMessage) delete() {
 func (obj *GroupSessionMessage) GetType() GroupMsgType {
     proxyResult := /*pr4*/C.vscf_group_session_message_get_type(obj.cCtx)
 
+    runtime.KeepAlive(obj)
+
     return GroupMsgType(proxyResult) /* r8 */
 }
 
@@ -89,6 +97,8 @@ func (obj *GroupSessionMessage) GetType() GroupMsgType {
 func (obj *GroupSessionMessage) GetSessionId() []byte {
     proxyResult := /*pr4*/C.vscf_group_session_message_get_session_id(obj.cCtx)
 
+    runtime.KeepAlive(obj)
+
     return helperExtractData(proxyResult) /* r1 */
 }
 
@@ -98,6 +108,8 @@ func (obj *GroupSessionMessage) GetSessionId() []byte {
 func (obj *GroupSessionMessage) GetEpoch() uint32 {
     proxyResult := /*pr4*/C.vscf_group_session_message_get_epoch(obj.cCtx)
 
+    runtime.KeepAlive(obj)
+
     return uint32(proxyResult) /* r9 */
 }
 
@@ -106,6 +118,8 @@ func (obj *GroupSessionMessage) GetEpoch() uint32 {
 */
 func (obj *GroupSessionMessage) SerializeLen() uint32 {
     proxyResult := /*pr4*/C.vscf_group_session_message_serialize_len(obj.cCtx)
+
+    runtime.KeepAlive(obj)
 
     return uint32(proxyResult) /* r9 */
 }
@@ -122,6 +136,8 @@ func (obj *GroupSessionMessage) Serialize() []byte {
 
 
     C.vscf_group_session_message_serialize(obj.cCtx, outputBuf.ctx)
+
+    runtime.KeepAlive(obj)
 
     return outputBuf.getData() /* r7 */
 }
@@ -140,6 +156,8 @@ func GroupSessionMessageDeserialize(input []byte) (*GroupSessionMessage, error) 
     if err != nil {
         return nil, err
     }
+
+    runtime.KeepAlive(error)
 
     return newGroupSessionMessageWithCtx(proxyResult) /* r6 */, nil
 }

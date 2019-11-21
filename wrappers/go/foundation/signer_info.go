@@ -23,7 +23,8 @@ func NewSignerInfo() *SignerInfo {
     obj := &SignerInfo {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, func (o *SignerInfo) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *SignerInfo) {o.Delete()})
+    runtime.SetFinalizer(obj, (*SignerInfo).Delete)
     return obj
 }
 
@@ -34,7 +35,8 @@ func newSignerInfoWithCtx(ctx *C.vscf_signer_info_t /*ct2*/) *SignerInfo {
     obj := &SignerInfo {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, func (o *SignerInfo) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *SignerInfo) {o.Delete()})
+    runtime.SetFinalizer(obj, (*SignerInfo).Delete)
     return obj
 }
 
@@ -45,7 +47,8 @@ func newSignerInfoCopy(ctx *C.vscf_signer_info_t /*ct2*/) *SignerInfo {
     obj := &SignerInfo {
         cCtx: C.vscf_signer_info_shallow_copy(ctx),
     }
-    runtime.SetFinalizer(obj, func (o *SignerInfo) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *SignerInfo) {o.Delete()})
+    runtime.SetFinalizer(obj, (*SignerInfo).Delete)
     return obj
 }
 
@@ -53,6 +56,9 @@ func newSignerInfoCopy(ctx *C.vscf_signer_info_t /*ct2*/) *SignerInfo {
 * Release underlying C context.
 */
 func (obj *SignerInfo) Delete() {
+    if obj == nil {
+        return
+    }
     runtime.SetFinalizer(obj, nil)
     obj.delete()
 }
@@ -70,6 +76,8 @@ func (obj *SignerInfo) delete() {
 func (obj *SignerInfo) SignerId() []byte {
     proxyResult := /*pr4*/C.vscf_signer_info_signer_id(obj.cCtx)
 
+    runtime.KeepAlive(obj)
+
     return helperExtractData(proxyResult) /* r1 */
 }
 
@@ -79,6 +87,8 @@ func (obj *SignerInfo) SignerId() []byte {
 func (obj *SignerInfo) SignerAlgInfo() (AlgInfo, error) {
     proxyResult := /*pr4*/C.vscf_signer_info_signer_alg_info(obj.cCtx)
 
+    runtime.KeepAlive(obj)
+
     return FoundationImplementationWrapAlgInfo(proxyResult) /* r4 */
 }
 
@@ -87,6 +97,8 @@ func (obj *SignerInfo) SignerAlgInfo() (AlgInfo, error) {
 */
 func (obj *SignerInfo) Signature() []byte {
     proxyResult := /*pr4*/C.vscf_signer_info_signature(obj.cCtx)
+
+    runtime.KeepAlive(obj)
 
     return helperExtractData(proxyResult) /* r1 */
 }

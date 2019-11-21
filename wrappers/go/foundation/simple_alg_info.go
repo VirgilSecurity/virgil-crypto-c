@@ -22,7 +22,8 @@ func NewSimpleAlgInfo() *SimpleAlgInfo {
     obj := &SimpleAlgInfo {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, func (o *SimpleAlgInfo) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *SimpleAlgInfo) {o.Delete()})
+    runtime.SetFinalizer(obj, (*SimpleAlgInfo).Delete)
     return obj
 }
 
@@ -33,7 +34,8 @@ func newSimpleAlgInfoWithCtx(ctx *C.vscf_simple_alg_info_t /*ct10*/) *SimpleAlgI
     obj := &SimpleAlgInfo {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, func (o *SimpleAlgInfo) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *SimpleAlgInfo) {o.Delete()})
+    runtime.SetFinalizer(obj, (*SimpleAlgInfo).Delete)
     return obj
 }
 
@@ -44,7 +46,8 @@ func newSimpleAlgInfoCopy(ctx *C.vscf_simple_alg_info_t /*ct10*/) *SimpleAlgInfo
     obj := &SimpleAlgInfo {
         cCtx: C.vscf_simple_alg_info_shallow_copy(ctx),
     }
-    runtime.SetFinalizer(obj, func (o *SimpleAlgInfo) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *SimpleAlgInfo) {o.Delete()})
+    runtime.SetFinalizer(obj, (*SimpleAlgInfo).Delete)
     return obj
 }
 
@@ -52,6 +55,9 @@ func newSimpleAlgInfoCopy(ctx *C.vscf_simple_alg_info_t /*ct10*/) *SimpleAlgInfo
 * Release underlying C context.
 */
 func (obj *SimpleAlgInfo) Delete() {
+    if obj == nil {
+        return
+    }
     runtime.SetFinalizer(obj, nil)
     obj.delete()
 }
@@ -72,7 +78,8 @@ func NewSimpleAlgInfoWithAlgId(algId AlgId) *SimpleAlgInfo {
     obj := &SimpleAlgInfo {
         cCtx: proxyResult,
     }
-    runtime.SetFinalizer(obj, func (o *SimpleAlgInfo) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *SimpleAlgInfo) {o.Delete()})
+    runtime.SetFinalizer(obj, (*SimpleAlgInfo).Delete)
     return obj
 }
 
@@ -81,6 +88,8 @@ func NewSimpleAlgInfoWithAlgId(algId AlgId) *SimpleAlgInfo {
 */
 func (obj *SimpleAlgInfo) AlgId() AlgId {
     proxyResult := /*pr4*/C.vscf_simple_alg_info_alg_id(obj.cCtx)
+
+    runtime.KeepAlive(obj)
 
     return AlgId(proxyResult) /* r8 */
 }

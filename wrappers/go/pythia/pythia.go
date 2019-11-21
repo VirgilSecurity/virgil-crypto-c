@@ -2,6 +2,7 @@ package pythia
 
 // #include <virgil/crypto/pythia/vscp_pythia_public.h>
 import "C"
+import "runtime"
 
 
 /*
@@ -275,6 +276,8 @@ func PythiaVerify(transformedPassword []byte, blindedPassword []byte, tweak []by
     if err != nil {
         return false, err
     }
+
+    runtime.KeepAlive(error)
 
     return bool(proxyResult) /* r9 */, nil
 }

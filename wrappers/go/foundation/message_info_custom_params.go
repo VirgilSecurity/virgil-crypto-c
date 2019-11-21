@@ -24,7 +24,8 @@ func NewMessageInfoCustomParams() *MessageInfoCustomParams {
     obj := &MessageInfoCustomParams {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, func (o *MessageInfoCustomParams) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *MessageInfoCustomParams) {o.Delete()})
+    runtime.SetFinalizer(obj, (*MessageInfoCustomParams).Delete)
     return obj
 }
 
@@ -35,7 +36,8 @@ func newMessageInfoCustomParamsWithCtx(ctx *C.vscf_message_info_custom_params_t 
     obj := &MessageInfoCustomParams {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, func (o *MessageInfoCustomParams) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *MessageInfoCustomParams) {o.Delete()})
+    runtime.SetFinalizer(obj, (*MessageInfoCustomParams).Delete)
     return obj
 }
 
@@ -46,7 +48,8 @@ func newMessageInfoCustomParamsCopy(ctx *C.vscf_message_info_custom_params_t /*c
     obj := &MessageInfoCustomParams {
         cCtx: C.vscf_message_info_custom_params_shallow_copy(ctx),
     }
-    runtime.SetFinalizer(obj, func (o *MessageInfoCustomParams) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *MessageInfoCustomParams) {o.Delete()})
+    runtime.SetFinalizer(obj, (*MessageInfoCustomParams).Delete)
     return obj
 }
 
@@ -54,6 +57,9 @@ func newMessageInfoCustomParamsCopy(ctx *C.vscf_message_info_custom_params_t /*c
 * Release underlying C context.
 */
 func (obj *MessageInfoCustomParams) Delete() {
+    if obj == nil {
+        return
+    }
     runtime.SetFinalizer(obj, nil)
     obj.delete()
 }
@@ -73,6 +79,8 @@ func (obj *MessageInfoCustomParams) AddInt(key []byte, value int32) {
 
     C.vscf_message_info_custom_params_add_int(obj.cCtx, keyData, (C.int32_t)(value)/*pa10*/)
 
+    runtime.KeepAlive(obj)
+
     return
 }
 
@@ -84,6 +92,8 @@ func (obj *MessageInfoCustomParams) AddString(key []byte, value []byte) {
     valueData := helperWrapData (value)
 
     C.vscf_message_info_custom_params_add_string(obj.cCtx, keyData, valueData)
+
+    runtime.KeepAlive(obj)
 
     return
 }
@@ -97,6 +107,8 @@ func (obj *MessageInfoCustomParams) AddData(key []byte, value []byte) {
 
     C.vscf_message_info_custom_params_add_data(obj.cCtx, keyData, valueData)
 
+    runtime.KeepAlive(obj)
+
     return
 }
 
@@ -105,6 +117,8 @@ func (obj *MessageInfoCustomParams) AddData(key []byte, value []byte) {
 */
 func (obj *MessageInfoCustomParams) Clear() {
     C.vscf_message_info_custom_params_clear(obj.cCtx)
+
+    runtime.KeepAlive(obj)
 
     return
 }
@@ -124,6 +138,10 @@ func (obj *MessageInfoCustomParams) FindInt(key []byte) (int32, error) {
         return 0, err
     }
 
+    runtime.KeepAlive(obj)
+
+    runtime.KeepAlive(error)
+
     return int32(proxyResult) /* r9 */, nil
 }
 
@@ -141,6 +159,10 @@ func (obj *MessageInfoCustomParams) FindString(key []byte) ([]byte, error) {
     if err != nil {
         return nil, err
     }
+
+    runtime.KeepAlive(obj)
+
+    runtime.KeepAlive(error)
 
     return helperExtractData(proxyResult) /* r1 */, nil
 }
@@ -160,6 +182,10 @@ func (obj *MessageInfoCustomParams) FindData(key []byte) ([]byte, error) {
         return nil, err
     }
 
+    runtime.KeepAlive(obj)
+
+    runtime.KeepAlive(error)
+
     return helperExtractData(proxyResult) /* r1 */, nil
 }
 
@@ -168,6 +194,8 @@ func (obj *MessageInfoCustomParams) FindData(key []byte) ([]byte, error) {
 */
 func (obj *MessageInfoCustomParams) HasParams() bool {
     proxyResult := /*pr4*/C.vscf_message_info_custom_params_has_params(obj.cCtx)
+
+    runtime.KeepAlive(obj)
 
     return bool(proxyResult) /* r9 */
 }

@@ -15,6 +15,9 @@ type AlgInfoDerDeserializer struct {
 func (obj *AlgInfoDerDeserializer) SetAsn1Reader(asn1Reader Asn1Reader) {
     C.vscf_alg_info_der_deserializer_release_asn1_reader(obj.cCtx)
     C.vscf_alg_info_der_deserializer_use_asn1_reader(obj.cCtx, (*C.vscf_impl_t)(asn1Reader.ctx()))
+
+    runtime.KeepAlive(asn1Reader)
+    runtime.KeepAlive(obj)
 }
 
 /*
@@ -22,6 +25,8 @@ func (obj *AlgInfoDerDeserializer) SetAsn1Reader(asn1Reader Asn1Reader) {
 */
 func (obj *AlgInfoDerDeserializer) SetupDefaults() {
     C.vscf_alg_info_der_deserializer_setup_defaults(obj.cCtx)
+
+    runtime.KeepAlive(obj)
 
     return
 }
@@ -42,6 +47,10 @@ func (obj *AlgInfoDerDeserializer) DeserializeInplace() (AlgInfo, error) {
         return nil, err
     }
 
+    runtime.KeepAlive(obj)
+
+    runtime.KeepAlive(error)
+
     return FoundationImplementationWrapAlgInfo(proxyResult) /* r4 */
 }
 
@@ -55,7 +64,8 @@ func NewAlgInfoDerDeserializer() *AlgInfoDerDeserializer {
     obj := &AlgInfoDerDeserializer {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, func (o *AlgInfoDerDeserializer) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *AlgInfoDerDeserializer) {o.Delete()})
+    runtime.SetFinalizer(obj, (*AlgInfoDerDeserializer).Delete)
     return obj
 }
 
@@ -66,7 +76,8 @@ func newAlgInfoDerDeserializerWithCtx(ctx *C.vscf_alg_info_der_deserializer_t /*
     obj := &AlgInfoDerDeserializer {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, func (o *AlgInfoDerDeserializer) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *AlgInfoDerDeserializer) {o.Delete()})
+    runtime.SetFinalizer(obj, (*AlgInfoDerDeserializer).Delete)
     return obj
 }
 
@@ -77,7 +88,8 @@ func newAlgInfoDerDeserializerCopy(ctx *C.vscf_alg_info_der_deserializer_t /*ct1
     obj := &AlgInfoDerDeserializer {
         cCtx: C.vscf_alg_info_der_deserializer_shallow_copy(ctx),
     }
-    runtime.SetFinalizer(obj, func (o *AlgInfoDerDeserializer) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *AlgInfoDerDeserializer) {o.Delete()})
+    runtime.SetFinalizer(obj, (*AlgInfoDerDeserializer).Delete)
     return obj
 }
 
@@ -85,6 +97,9 @@ func newAlgInfoDerDeserializerCopy(ctx *C.vscf_alg_info_der_deserializer_t /*ct1
 * Release underlying C context.
 */
 func (obj *AlgInfoDerDeserializer) Delete() {
+    if obj == nil {
+        return
+    }
     runtime.SetFinalizer(obj, nil)
     obj.delete()
 }
@@ -110,6 +125,10 @@ func (obj *AlgInfoDerDeserializer) Deserialize(data []byte) (AlgInfo, error) {
     if err != nil {
         return nil, err
     }
+
+    runtime.KeepAlive(obj)
+
+    runtime.KeepAlive(error)
 
     return FoundationImplementationWrapAlgInfo(proxyResult) /* r4 */
 }

@@ -26,7 +26,8 @@ func NewBrainkeyClient() *BrainkeyClient {
     obj := &BrainkeyClient {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, func (o *BrainkeyClient) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *BrainkeyClient) {o.Delete()})
+    runtime.SetFinalizer(obj, (*BrainkeyClient).Delete)
     return obj
 }
 
@@ -37,7 +38,8 @@ func newBrainkeyClientWithCtx(ctx *C.vscf_brainkey_client_t /*ct2*/) *BrainkeyCl
     obj := &BrainkeyClient {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, func (o *BrainkeyClient) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *BrainkeyClient) {o.Delete()})
+    runtime.SetFinalizer(obj, (*BrainkeyClient).Delete)
     return obj
 }
 
@@ -48,7 +50,8 @@ func newBrainkeyClientCopy(ctx *C.vscf_brainkey_client_t /*ct2*/) *BrainkeyClien
     obj := &BrainkeyClient {
         cCtx: C.vscf_brainkey_client_shallow_copy(ctx),
     }
-    runtime.SetFinalizer(obj, func (o *BrainkeyClient) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *BrainkeyClient) {o.Delete()})
+    runtime.SetFinalizer(obj, (*BrainkeyClient).Delete)
     return obj
 }
 
@@ -56,6 +59,9 @@ func newBrainkeyClientCopy(ctx *C.vscf_brainkey_client_t /*ct2*/) *BrainkeyClien
 * Release underlying C context.
 */
 func (obj *BrainkeyClient) Delete() {
+    if obj == nil {
+        return
+    }
     runtime.SetFinalizer(obj, nil)
     obj.delete()
 }
@@ -73,6 +79,9 @@ func (obj *BrainkeyClient) delete() {
 func (obj *BrainkeyClient) SetRandom(random Random) {
     C.vscf_brainkey_client_release_random(obj.cCtx)
     C.vscf_brainkey_client_use_random(obj.cCtx, (*C.vscf_impl_t)(random.ctx()))
+
+    runtime.KeepAlive(random)
+    runtime.KeepAlive(obj)
 }
 
 /*
@@ -81,6 +90,9 @@ func (obj *BrainkeyClient) SetRandom(random Random) {
 func (obj *BrainkeyClient) SetOperationRandom(operationRandom Random) {
     C.vscf_brainkey_client_release_operation_random(obj.cCtx)
     C.vscf_brainkey_client_use_operation_random(obj.cCtx, (*C.vscf_impl_t)(operationRandom.ctx()))
+
+    runtime.KeepAlive(operationRandom)
+    runtime.KeepAlive(obj)
 }
 
 func (obj *BrainkeyClient) SetupDefaults() error {
@@ -90,6 +102,8 @@ func (obj *BrainkeyClient) SetupDefaults() error {
     if err != nil {
         return err
     }
+
+    runtime.KeepAlive(obj)
 
     return nil
 }
@@ -115,6 +129,8 @@ func (obj *BrainkeyClient) Blind(password []byte) ([]byte, []byte, error) {
         return nil, nil, err
     }
 
+    runtime.KeepAlive(obj)
+
     return deblindFactorBuf.getData() /* r7 */, blindedPointBuf.getData() /* r7 */, nil
 }
 
@@ -135,6 +151,8 @@ func (obj *BrainkeyClient) Deblind(password []byte, hardenedPoint []byte, deblin
     if err != nil {
         return nil, err
     }
+
+    runtime.KeepAlive(obj)
 
     return seedBuf.getData() /* r7 */, nil
 }

@@ -24,7 +24,8 @@ func NewRecipientCipher() *RecipientCipher {
     obj := &RecipientCipher {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, func (o *RecipientCipher) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *RecipientCipher) {o.Delete()})
+    runtime.SetFinalizer(obj, (*RecipientCipher).Delete)
     return obj
 }
 
@@ -35,7 +36,8 @@ func newRecipientCipherWithCtx(ctx *C.vscf_recipient_cipher_t /*ct2*/) *Recipien
     obj := &RecipientCipher {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, func (o *RecipientCipher) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *RecipientCipher) {o.Delete()})
+    runtime.SetFinalizer(obj, (*RecipientCipher).Delete)
     return obj
 }
 
@@ -46,7 +48,8 @@ func newRecipientCipherCopy(ctx *C.vscf_recipient_cipher_t /*ct2*/) *RecipientCi
     obj := &RecipientCipher {
         cCtx: C.vscf_recipient_cipher_shallow_copy(ctx),
     }
-    runtime.SetFinalizer(obj, func (o *RecipientCipher) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *RecipientCipher) {o.Delete()})
+    runtime.SetFinalizer(obj, (*RecipientCipher).Delete)
     return obj
 }
 
@@ -54,6 +57,9 @@ func newRecipientCipherCopy(ctx *C.vscf_recipient_cipher_t /*ct2*/) *RecipientCi
 * Release underlying C context.
 */
 func (obj *RecipientCipher) Delete() {
+    if obj == nil {
+        return
+    }
     runtime.SetFinalizer(obj, nil)
     obj.delete()
 }
@@ -68,16 +74,25 @@ func (obj *RecipientCipher) delete() {
 func (obj *RecipientCipher) SetRandom(random Random) {
     C.vscf_recipient_cipher_release_random(obj.cCtx)
     C.vscf_recipient_cipher_use_random(obj.cCtx, (*C.vscf_impl_t)(random.ctx()))
+
+    runtime.KeepAlive(random)
+    runtime.KeepAlive(obj)
 }
 
 func (obj *RecipientCipher) SetEncryptionCipher(encryptionCipher Cipher) {
     C.vscf_recipient_cipher_release_encryption_cipher(obj.cCtx)
     C.vscf_recipient_cipher_use_encryption_cipher(obj.cCtx, (*C.vscf_impl_t)(encryptionCipher.ctx()))
+
+    runtime.KeepAlive(encryptionCipher)
+    runtime.KeepAlive(obj)
 }
 
 func (obj *RecipientCipher) SetSignerHash(signerHash Hash) {
     C.vscf_recipient_cipher_release_signer_hash(obj.cCtx)
     C.vscf_recipient_cipher_use_signer_hash(obj.cCtx, (*C.vscf_impl_t)(signerHash.ctx()))
+
+    runtime.KeepAlive(signerHash)
+    runtime.KeepAlive(obj)
 }
 
 /*
@@ -88,6 +103,8 @@ func (obj *RecipientCipher) HasKeyRecipient(recipientId []byte) bool {
     recipientIdData := helperWrapData (recipientId)
 
     proxyResult := /*pr4*/C.vscf_recipient_cipher_has_key_recipient(obj.cCtx, recipientIdData)
+
+    runtime.KeepAlive(obj)
 
     return bool(proxyResult) /* r9 */
 }
@@ -100,6 +117,10 @@ func (obj *RecipientCipher) AddKeyRecipient(recipientId []byte, publicKey Public
 
     C.vscf_recipient_cipher_add_key_recipient(obj.cCtx, recipientIdData, (*C.vscf_impl_t)(publicKey.ctx()))
 
+    runtime.KeepAlive(obj)
+
+    runtime.KeepAlive(publicKey)
+
     return
 }
 
@@ -108,6 +129,8 @@ func (obj *RecipientCipher) AddKeyRecipient(recipientId []byte, publicKey Public
 */
 func (obj *RecipientCipher) ClearRecipients() {
     C.vscf_recipient_cipher_clear_recipients(obj.cCtx)
+
+    runtime.KeepAlive(obj)
 
     return
 }
@@ -126,6 +149,10 @@ func (obj *RecipientCipher) AddSigner(signerId []byte, privateKey PrivateKey) er
         return err
     }
 
+    runtime.KeepAlive(obj)
+
+    runtime.KeepAlive(privateKey)
+
     return nil
 }
 
@@ -134,6 +161,8 @@ func (obj *RecipientCipher) AddSigner(signerId []byte, privateKey PrivateKey) er
 */
 func (obj *RecipientCipher) ClearSigners() {
     C.vscf_recipient_cipher_clear_signers(obj.cCtx)
+
+    runtime.KeepAlive(obj)
 
     return
 }
@@ -144,6 +173,8 @@ func (obj *RecipientCipher) ClearSigners() {
 */
 func (obj *RecipientCipher) CustomParams() *MessageInfoCustomParams {
     proxyResult := /*pr4*/C.vscf_recipient_cipher_custom_params(obj.cCtx)
+
+    runtime.KeepAlive(obj)
 
     return newMessageInfoCustomParamsCopy(proxyResult) /* r5 */
 }
@@ -158,6 +189,8 @@ func (obj *RecipientCipher) StartEncryption() error {
     if err != nil {
         return err
     }
+
+    runtime.KeepAlive(obj)
 
     return nil
 }
@@ -176,6 +209,8 @@ func (obj *RecipientCipher) StartSignedEncryption(dataSize uint32) error {
         return err
     }
 
+    runtime.KeepAlive(obj)
+
     return nil
 }
 
@@ -186,6 +221,8 @@ func (obj *RecipientCipher) StartSignedEncryption(dataSize uint32) error {
 */
 func (obj *RecipientCipher) MessageInfoLen() uint32 {
     proxyResult := /*pr4*/C.vscf_recipient_cipher_message_info_len(obj.cCtx)
+
+    runtime.KeepAlive(obj)
 
     return uint32(proxyResult) /* r9 */
 }
@@ -212,6 +249,8 @@ func (obj *RecipientCipher) PackMessageInfo() []byte {
 
     C.vscf_recipient_cipher_pack_message_info(obj.cCtx, messageInfoBuf.ctx)
 
+    runtime.KeepAlive(obj)
+
     return messageInfoBuf.getData() /* r7 */
 }
 
@@ -221,6 +260,8 @@ func (obj *RecipientCipher) PackMessageInfo() []byte {
 */
 func (obj *RecipientCipher) EncryptionOutLen(dataLen uint32) uint32 {
     proxyResult := /*pr4*/C.vscf_recipient_cipher_encryption_out_len(obj.cCtx, (C.size_t)(dataLen)/*pa10*/)
+
+    runtime.KeepAlive(obj)
 
     return uint32(proxyResult) /* r9 */
 }
@@ -243,6 +284,8 @@ func (obj *RecipientCipher) ProcessEncryption(data []byte) ([]byte, error) {
         return nil, err
     }
 
+    runtime.KeepAlive(obj)
+
     return outBuf.getData() /* r7 */, nil
 }
 
@@ -264,6 +307,8 @@ func (obj *RecipientCipher) FinishEncryption() ([]byte, error) {
         return nil, err
     }
 
+    runtime.KeepAlive(obj)
+
     return outBuf.getData() /* r7 */, nil
 }
 
@@ -281,6 +326,10 @@ func (obj *RecipientCipher) StartDecryptionWithKey(recipientId []byte, privateKe
     if err != nil {
         return err
     }
+
+    runtime.KeepAlive(obj)
+
+    runtime.KeepAlive(privateKey)
 
     return nil
 }
@@ -303,6 +352,10 @@ func (obj *RecipientCipher) StartVerifiedDecryptionWithKey(recipientId []byte, p
         return err
     }
 
+    runtime.KeepAlive(obj)
+
+    runtime.KeepAlive(privateKey)
+
     return nil
 }
 
@@ -312,6 +365,8 @@ func (obj *RecipientCipher) StartVerifiedDecryptionWithKey(recipientId []byte, p
 */
 func (obj *RecipientCipher) DecryptionOutLen(dataLen uint32) uint32 {
     proxyResult := /*pr4*/C.vscf_recipient_cipher_decryption_out_len(obj.cCtx, (C.size_t)(dataLen)/*pa10*/)
+
+    runtime.KeepAlive(obj)
 
     return uint32(proxyResult) /* r9 */
 }
@@ -335,6 +390,8 @@ func (obj *RecipientCipher) ProcessDecryption(data []byte) ([]byte, error) {
         return nil, err
     }
 
+    runtime.KeepAlive(obj)
+
     return outBuf.getData() /* r7 */, nil
 }
 
@@ -356,6 +413,8 @@ func (obj *RecipientCipher) FinishDecryption() ([]byte, error) {
         return nil, err
     }
 
+    runtime.KeepAlive(obj)
+
     return outBuf.getData() /* r7 */, nil
 }
 
@@ -366,6 +425,8 @@ func (obj *RecipientCipher) FinishDecryption() ([]byte, error) {
 */
 func (obj *RecipientCipher) IsDataSigned() bool {
     proxyResult := /*pr4*/C.vscf_recipient_cipher_is_data_signed(obj.cCtx)
+
+    runtime.KeepAlive(obj)
 
     return bool(proxyResult) /* r9 */
 }
@@ -379,6 +440,8 @@ func (obj *RecipientCipher) IsDataSigned() bool {
 func (obj *RecipientCipher) SignerInfos() *SignerInfoList {
     proxyResult := /*pr4*/C.vscf_recipient_cipher_signer_infos(obj.cCtx)
 
+    runtime.KeepAlive(obj)
+
     return newSignerInfoListCopy(proxyResult) /* r5 */
 }
 
@@ -387,6 +450,12 @@ func (obj *RecipientCipher) SignerInfos() *SignerInfoList {
 */
 func (obj *RecipientCipher) VerifySignerInfo(signerInfo *SignerInfo, publicKey PublicKey) bool {
     proxyResult := /*pr4*/C.vscf_recipient_cipher_verify_signer_info(obj.cCtx, (*C.vscf_signer_info_t)(signerInfo.ctx()), (*C.vscf_impl_t)(publicKey.ctx()))
+
+    runtime.KeepAlive(obj)
+
+    runtime.KeepAlive(signerInfo)
+
+    runtime.KeepAlive(publicKey)
 
     return bool(proxyResult) /* r9 */
 }
@@ -399,6 +468,8 @@ func (obj *RecipientCipher) VerifySignerInfo(signerInfo *SignerInfo, publicKey P
 */
 func (obj *RecipientCipher) MessageInfoFooterLen() uint32 {
     proxyResult := /*pr4*/C.vscf_recipient_cipher_message_info_footer_len(obj.cCtx)
+
+    runtime.KeepAlive(obj)
 
     return uint32(proxyResult) /* r9 */
 }
@@ -427,6 +498,8 @@ func (obj *RecipientCipher) PackMessageInfoFooter() ([]byte, error) {
     if err != nil {
         return nil, err
     }
+
+    runtime.KeepAlive(obj)
 
     return outBuf.getData() /* r7 */, nil
 }

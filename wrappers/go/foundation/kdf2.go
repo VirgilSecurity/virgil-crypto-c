@@ -15,6 +15,9 @@ type Kdf2 struct {
 func (obj *Kdf2) SetHash(hash Hash) {
     C.vscf_kdf2_release_hash(obj.cCtx)
     C.vscf_kdf2_use_hash(obj.cCtx, (*C.vscf_impl_t)(hash.ctx()))
+
+    runtime.KeepAlive(hash)
+    runtime.KeepAlive(obj)
 }
 
 /* Handle underlying C context. */
@@ -27,7 +30,8 @@ func NewKdf2() *Kdf2 {
     obj := &Kdf2 {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, func (o *Kdf2) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *Kdf2) {o.Delete()})
+    runtime.SetFinalizer(obj, (*Kdf2).Delete)
     return obj
 }
 
@@ -38,7 +42,8 @@ func newKdf2WithCtx(ctx *C.vscf_kdf2_t /*ct10*/) *Kdf2 {
     obj := &Kdf2 {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, func (o *Kdf2) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *Kdf2) {o.Delete()})
+    runtime.SetFinalizer(obj, (*Kdf2).Delete)
     return obj
 }
 
@@ -49,7 +54,8 @@ func newKdf2Copy(ctx *C.vscf_kdf2_t /*ct10*/) *Kdf2 {
     obj := &Kdf2 {
         cCtx: C.vscf_kdf2_shallow_copy(ctx),
     }
-    runtime.SetFinalizer(obj, func (o *Kdf2) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *Kdf2) {o.Delete()})
+    runtime.SetFinalizer(obj, (*Kdf2).Delete)
     return obj
 }
 
@@ -57,6 +63,9 @@ func newKdf2Copy(ctx *C.vscf_kdf2_t /*ct10*/) *Kdf2 {
 * Release underlying C context.
 */
 func (obj *Kdf2) Delete() {
+    if obj == nil {
+        return
+    }
     runtime.SetFinalizer(obj, nil)
     obj.delete()
 }
@@ -74,6 +83,8 @@ func (obj *Kdf2) delete() {
 func (obj *Kdf2) AlgId() AlgId {
     proxyResult := /*pr4*/C.vscf_kdf2_alg_id(obj.cCtx)
 
+    runtime.KeepAlive(obj)
+
     return AlgId(proxyResult) /* r8 */
 }
 
@@ -82,6 +93,8 @@ func (obj *Kdf2) AlgId() AlgId {
 */
 func (obj *Kdf2) ProduceAlgInfo() (AlgInfo, error) {
     proxyResult := /*pr4*/C.vscf_kdf2_produce_alg_info(obj.cCtx)
+
+    runtime.KeepAlive(obj)
 
     return FoundationImplementationWrapAlgInfo(proxyResult) /* r4 */
 }
@@ -96,6 +109,10 @@ func (obj *Kdf2) RestoreAlgInfo(algInfo AlgInfo) error {
     if err != nil {
         return err
     }
+
+    runtime.KeepAlive(obj)
+
+    runtime.KeepAlive(algInfo)
 
     return nil
 }
@@ -112,6 +129,8 @@ func (obj *Kdf2) Derive(data []byte, keyLen uint32) []byte {
     dataData := helperWrapData (data)
 
     C.vscf_kdf2_derive(obj.cCtx, dataData, (C.size_t)(keyLen)/*pa10*/, keyBuf.ctx)
+
+    runtime.KeepAlive(obj)
 
     return keyBuf.getData() /* r7 */
 }

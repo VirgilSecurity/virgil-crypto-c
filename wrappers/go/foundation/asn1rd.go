@@ -22,7 +22,8 @@ func NewAsn1rd() *Asn1rd {
     obj := &Asn1rd {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, func (o *Asn1rd) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *Asn1rd) {o.Delete()})
+    runtime.SetFinalizer(obj, (*Asn1rd).Delete)
     return obj
 }
 
@@ -33,7 +34,8 @@ func newAsn1rdWithCtx(ctx *C.vscf_asn1rd_t /*ct10*/) *Asn1rd {
     obj := &Asn1rd {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, func (o *Asn1rd) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *Asn1rd) {o.Delete()})
+    runtime.SetFinalizer(obj, (*Asn1rd).Delete)
     return obj
 }
 
@@ -44,7 +46,8 @@ func newAsn1rdCopy(ctx *C.vscf_asn1rd_t /*ct10*/) *Asn1rd {
     obj := &Asn1rd {
         cCtx: C.vscf_asn1rd_shallow_copy(ctx),
     }
-    runtime.SetFinalizer(obj, func (o *Asn1rd) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *Asn1rd) {o.Delete()})
+    runtime.SetFinalizer(obj, (*Asn1rd).Delete)
     return obj
 }
 
@@ -52,6 +55,9 @@ func newAsn1rdCopy(ctx *C.vscf_asn1rd_t /*ct10*/) *Asn1rd {
 * Release underlying C context.
 */
 func (obj *Asn1rd) Delete() {
+    if obj == nil {
+        return
+    }
     runtime.SetFinalizer(obj, nil)
     obj.delete()
 }
@@ -71,6 +77,8 @@ func (obj *Asn1rd) Reset(data []byte) {
 
     C.vscf_asn1rd_reset(obj.cCtx, dataData)
 
+    runtime.KeepAlive(obj)
+
     return
 }
 
@@ -80,6 +88,8 @@ func (obj *Asn1rd) Reset(data []byte) {
 func (obj *Asn1rd) LeftLen() uint32 {
     proxyResult := /*pr4*/C.vscf_asn1rd_left_len(obj.cCtx)
 
+    runtime.KeepAlive(obj)
+
     return uint32(proxyResult) /* r9 */
 }
 
@@ -88,6 +98,8 @@ func (obj *Asn1rd) LeftLen() uint32 {
 */
 func (obj *Asn1rd) HasError() bool {
     proxyResult := /*pr4*/C.vscf_asn1rd_has_error(obj.cCtx)
+
+    runtime.KeepAlive(obj)
 
     return bool(proxyResult) /* r9 */
 }
@@ -103,6 +115,8 @@ func (obj *Asn1rd) Status() error {
         return err
     }
 
+    runtime.KeepAlive(obj)
+
     return nil
 }
 
@@ -111,6 +125,8 @@ func (obj *Asn1rd) Status() error {
 */
 func (obj *Asn1rd) GetTag() int32 {
     proxyResult := /*pr4*/C.vscf_asn1rd_get_tag(obj.cCtx)
+
+    runtime.KeepAlive(obj)
 
     return int32(proxyResult) /* r9 */
 }
@@ -121,6 +137,8 @@ func (obj *Asn1rd) GetTag() int32 {
 func (obj *Asn1rd) GetLen() uint32 {
     proxyResult := /*pr4*/C.vscf_asn1rd_get_len(obj.cCtx)
 
+    runtime.KeepAlive(obj)
+
     return uint32(proxyResult) /* r9 */
 }
 
@@ -129,6 +147,8 @@ func (obj *Asn1rd) GetLen() uint32 {
 */
 func (obj *Asn1rd) GetDataLen() uint32 {
     proxyResult := /*pr4*/C.vscf_asn1rd_get_data_len(obj.cCtx)
+
+    runtime.KeepAlive(obj)
 
     return uint32(proxyResult) /* r9 */
 }
@@ -139,6 +159,8 @@ func (obj *Asn1rd) GetDataLen() uint32 {
 */
 func (obj *Asn1rd) ReadTag(tag int32) uint32 {
     proxyResult := /*pr4*/C.vscf_asn1rd_read_tag(obj.cCtx, (C.int32_t)(tag)/*pa10*/)
+
+    runtime.KeepAlive(obj)
 
     return uint32(proxyResult) /* r9 */
 }
@@ -151,6 +173,8 @@ func (obj *Asn1rd) ReadTag(tag int32) uint32 {
 func (obj *Asn1rd) ReadContextTag(tag int32) uint32 {
     proxyResult := /*pr4*/C.vscf_asn1rd_read_context_tag(obj.cCtx, (C.int32_t)(tag)/*pa10*/)
 
+    runtime.KeepAlive(obj)
+
     return uint32(proxyResult) /* r9 */
 }
 
@@ -159,6 +183,8 @@ func (obj *Asn1rd) ReadContextTag(tag int32) uint32 {
 */
 func (obj *Asn1rd) ReadInt() int32 {
     proxyResult := /*pr4*/C.vscf_asn1rd_read_int(obj.cCtx)
+
+    runtime.KeepAlive(obj)
 
     return int32(proxyResult) /* r9 */
 }
@@ -169,6 +195,8 @@ func (obj *Asn1rd) ReadInt() int32 {
 func (obj *Asn1rd) ReadInt8() int8 {
     proxyResult := /*pr4*/C.vscf_asn1rd_read_int8(obj.cCtx)
 
+    runtime.KeepAlive(obj)
+
     return int8(proxyResult) /* r9 */
 }
 
@@ -177,6 +205,8 @@ func (obj *Asn1rd) ReadInt8() int8 {
 */
 func (obj *Asn1rd) ReadInt16() int16 {
     proxyResult := /*pr4*/C.vscf_asn1rd_read_int16(obj.cCtx)
+
+    runtime.KeepAlive(obj)
 
     return int16(proxyResult) /* r9 */
 }
@@ -187,6 +217,8 @@ func (obj *Asn1rd) ReadInt16() int16 {
 func (obj *Asn1rd) ReadInt32() int32 {
     proxyResult := /*pr4*/C.vscf_asn1rd_read_int32(obj.cCtx)
 
+    runtime.KeepAlive(obj)
+
     return int32(proxyResult) /* r9 */
 }
 
@@ -195,6 +227,8 @@ func (obj *Asn1rd) ReadInt32() int32 {
 */
 func (obj *Asn1rd) ReadInt64() int64 {
     proxyResult := /*pr4*/C.vscf_asn1rd_read_int64(obj.cCtx)
+
+    runtime.KeepAlive(obj)
 
     return int64(proxyResult) /* r9 */
 }
@@ -205,6 +239,8 @@ func (obj *Asn1rd) ReadInt64() int64 {
 func (obj *Asn1rd) ReadUint() uint32 {
     proxyResult := /*pr4*/C.vscf_asn1rd_read_uint(obj.cCtx)
 
+    runtime.KeepAlive(obj)
+
     return uint32(proxyResult) /* r9 */
 }
 
@@ -213,6 +249,8 @@ func (obj *Asn1rd) ReadUint() uint32 {
 */
 func (obj *Asn1rd) ReadUint8() uint8 {
     proxyResult := /*pr4*/C.vscf_asn1rd_read_uint8(obj.cCtx)
+
+    runtime.KeepAlive(obj)
 
     return uint8(proxyResult) /* r9 */
 }
@@ -223,6 +261,8 @@ func (obj *Asn1rd) ReadUint8() uint8 {
 func (obj *Asn1rd) ReadUint16() uint16 {
     proxyResult := /*pr4*/C.vscf_asn1rd_read_uint16(obj.cCtx)
 
+    runtime.KeepAlive(obj)
+
     return uint16(proxyResult) /* r9 */
 }
 
@@ -231,6 +271,8 @@ func (obj *Asn1rd) ReadUint16() uint16 {
 */
 func (obj *Asn1rd) ReadUint32() uint32 {
     proxyResult := /*pr4*/C.vscf_asn1rd_read_uint32(obj.cCtx)
+
+    runtime.KeepAlive(obj)
 
     return uint32(proxyResult) /* r9 */
 }
@@ -241,6 +283,8 @@ func (obj *Asn1rd) ReadUint32() uint32 {
 func (obj *Asn1rd) ReadUint64() uint64 {
     proxyResult := /*pr4*/C.vscf_asn1rd_read_uint64(obj.cCtx)
 
+    runtime.KeepAlive(obj)
+
     return uint64(proxyResult) /* r9 */
 }
 
@@ -250,6 +294,8 @@ func (obj *Asn1rd) ReadUint64() uint64 {
 func (obj *Asn1rd) ReadBool() bool {
     proxyResult := /*pr4*/C.vscf_asn1rd_read_bool(obj.cCtx)
 
+    runtime.KeepAlive(obj)
+
     return bool(proxyResult) /* r9 */
 }
 
@@ -258,6 +304,8 @@ func (obj *Asn1rd) ReadBool() bool {
 */
 func (obj *Asn1rd) ReadNull() {
     C.vscf_asn1rd_read_null(obj.cCtx)
+
+    runtime.KeepAlive(obj)
 
     return
 }
@@ -269,6 +317,8 @@ func (obj *Asn1rd) ReadNull() {
 func (obj *Asn1rd) ReadNullOptional() {
     C.vscf_asn1rd_read_null_optional(obj.cCtx)
 
+    runtime.KeepAlive(obj)
+
     return
 }
 
@@ -277,6 +327,8 @@ func (obj *Asn1rd) ReadNullOptional() {
 */
 func (obj *Asn1rd) ReadOctetStr() []byte {
     proxyResult := /*pr4*/C.vscf_asn1rd_read_octet_str(obj.cCtx)
+
+    runtime.KeepAlive(obj)
 
     return helperExtractData(proxyResult) /* r1 */
 }
@@ -287,6 +339,8 @@ func (obj *Asn1rd) ReadOctetStr() []byte {
 func (obj *Asn1rd) ReadBitstringAsOctetStr() []byte {
     proxyResult := /*pr4*/C.vscf_asn1rd_read_bitstring_as_octet_str(obj.cCtx)
 
+    runtime.KeepAlive(obj)
+
     return helperExtractData(proxyResult) /* r1 */
 }
 
@@ -295,6 +349,8 @@ func (obj *Asn1rd) ReadBitstringAsOctetStr() []byte {
 */
 func (obj *Asn1rd) ReadUtf8Str() []byte {
     proxyResult := /*pr4*/C.vscf_asn1rd_read_utf8_str(obj.cCtx)
+
+    runtime.KeepAlive(obj)
 
     return helperExtractData(proxyResult) /* r1 */
 }
@@ -305,6 +361,8 @@ func (obj *Asn1rd) ReadUtf8Str() []byte {
 func (obj *Asn1rd) ReadOid() []byte {
     proxyResult := /*pr4*/C.vscf_asn1rd_read_oid(obj.cCtx)
 
+    runtime.KeepAlive(obj)
+
     return helperExtractData(proxyResult) /* r1 */
 }
 
@@ -313,6 +371,8 @@ func (obj *Asn1rd) ReadOid() []byte {
 */
 func (obj *Asn1rd) ReadData(len uint32) []byte {
     proxyResult := /*pr4*/C.vscf_asn1rd_read_data(obj.cCtx, (C.size_t)(len)/*pa10*/)
+
+    runtime.KeepAlive(obj)
 
     return helperExtractData(proxyResult) /* r1 */
 }
@@ -324,6 +384,8 @@ func (obj *Asn1rd) ReadData(len uint32) []byte {
 func (obj *Asn1rd) ReadSequence() uint32 {
     proxyResult := /*pr4*/C.vscf_asn1rd_read_sequence(obj.cCtx)
 
+    runtime.KeepAlive(obj)
+
     return uint32(proxyResult) /* r9 */
 }
 
@@ -333,6 +395,8 @@ func (obj *Asn1rd) ReadSequence() uint32 {
 */
 func (obj *Asn1rd) ReadSet() uint32 {
     proxyResult := /*pr4*/C.vscf_asn1rd_read_set(obj.cCtx)
+
+    runtime.KeepAlive(obj)
 
     return uint32(proxyResult) /* r9 */
 }

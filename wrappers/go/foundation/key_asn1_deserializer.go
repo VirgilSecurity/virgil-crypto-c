@@ -15,6 +15,9 @@ type KeyAsn1Deserializer struct {
 func (obj *KeyAsn1Deserializer) SetAsn1Reader(asn1Reader Asn1Reader) {
     C.vscf_key_asn1_deserializer_release_asn1_reader(obj.cCtx)
     C.vscf_key_asn1_deserializer_use_asn1_reader(obj.cCtx, (*C.vscf_impl_t)(asn1Reader.ctx()))
+
+    runtime.KeepAlive(asn1Reader)
+    runtime.KeepAlive(obj)
 }
 
 /*
@@ -22,6 +25,8 @@ func (obj *KeyAsn1Deserializer) SetAsn1Reader(asn1Reader Asn1Reader) {
 */
 func (obj *KeyAsn1Deserializer) SetupDefaults() {
     C.vscf_key_asn1_deserializer_setup_defaults(obj.cCtx)
+
+    runtime.KeepAlive(obj)
 
     return
 }
@@ -42,6 +47,10 @@ func (obj *KeyAsn1Deserializer) DeserializePublicKeyInplace() (*RawPublicKey, er
         return nil, err
     }
 
+    runtime.KeepAlive(obj)
+
+    runtime.KeepAlive(error)
+
     return newRawPublicKeyWithCtx(proxyResult) /* r6 */, nil
 }
 
@@ -61,6 +70,10 @@ func (obj *KeyAsn1Deserializer) DeserializePrivateKeyInplace() (*RawPrivateKey, 
         return nil, err
     }
 
+    runtime.KeepAlive(obj)
+
+    runtime.KeepAlive(error)
+
     return newRawPrivateKeyWithCtx(proxyResult) /* r6 */, nil
 }
 
@@ -74,7 +87,8 @@ func NewKeyAsn1Deserializer() *KeyAsn1Deserializer {
     obj := &KeyAsn1Deserializer {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, func (o *KeyAsn1Deserializer) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *KeyAsn1Deserializer) {o.Delete()})
+    runtime.SetFinalizer(obj, (*KeyAsn1Deserializer).Delete)
     return obj
 }
 
@@ -85,7 +99,8 @@ func newKeyAsn1DeserializerWithCtx(ctx *C.vscf_key_asn1_deserializer_t /*ct10*/)
     obj := &KeyAsn1Deserializer {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, func (o *KeyAsn1Deserializer) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *KeyAsn1Deserializer) {o.Delete()})
+    runtime.SetFinalizer(obj, (*KeyAsn1Deserializer).Delete)
     return obj
 }
 
@@ -96,7 +111,8 @@ func newKeyAsn1DeserializerCopy(ctx *C.vscf_key_asn1_deserializer_t /*ct10*/) *K
     obj := &KeyAsn1Deserializer {
         cCtx: C.vscf_key_asn1_deserializer_shallow_copy(ctx),
     }
-    runtime.SetFinalizer(obj, func (o *KeyAsn1Deserializer) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *KeyAsn1Deserializer) {o.Delete()})
+    runtime.SetFinalizer(obj, (*KeyAsn1Deserializer).Delete)
     return obj
 }
 
@@ -104,6 +120,9 @@ func newKeyAsn1DeserializerCopy(ctx *C.vscf_key_asn1_deserializer_t /*ct10*/) *K
 * Release underlying C context.
 */
 func (obj *KeyAsn1Deserializer) Delete() {
+    if obj == nil {
+        return
+    }
     runtime.SetFinalizer(obj, nil)
     obj.delete()
 }
@@ -130,6 +149,10 @@ func (obj *KeyAsn1Deserializer) DeserializePublicKey(publicKeyData []byte) (*Raw
         return nil, err
     }
 
+    runtime.KeepAlive(obj)
+
+    runtime.KeepAlive(error)
+
     return newRawPublicKeyWithCtx(proxyResult) /* r6 */, nil
 }
 
@@ -147,6 +170,10 @@ func (obj *KeyAsn1Deserializer) DeserializePrivateKey(privateKeyData []byte) (*R
     if err != nil {
         return nil, err
     }
+
+    runtime.KeepAlive(obj)
+
+    runtime.KeepAlive(error)
 
     return newRawPrivateKeyWithCtx(proxyResult) /* r6 */, nil
 }

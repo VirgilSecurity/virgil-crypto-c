@@ -23,7 +23,8 @@ func NewVerifier() *Verifier {
     obj := &Verifier {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, func (o *Verifier) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *Verifier) {o.Delete()})
+    runtime.SetFinalizer(obj, (*Verifier).Delete)
     return obj
 }
 
@@ -34,7 +35,8 @@ func newVerifierWithCtx(ctx *C.vscf_verifier_t /*ct2*/) *Verifier {
     obj := &Verifier {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, func (o *Verifier) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *Verifier) {o.Delete()})
+    runtime.SetFinalizer(obj, (*Verifier).Delete)
     return obj
 }
 
@@ -45,7 +47,8 @@ func newVerifierCopy(ctx *C.vscf_verifier_t /*ct2*/) *Verifier {
     obj := &Verifier {
         cCtx: C.vscf_verifier_shallow_copy(ctx),
     }
-    runtime.SetFinalizer(obj, func (o *Verifier) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *Verifier) {o.Delete()})
+    runtime.SetFinalizer(obj, (*Verifier).Delete)
     return obj
 }
 
@@ -53,6 +56,9 @@ func newVerifierCopy(ctx *C.vscf_verifier_t /*ct2*/) *Verifier {
 * Release underlying C context.
 */
 func (obj *Verifier) Delete() {
+    if obj == nil {
+        return
+    }
     runtime.SetFinalizer(obj, nil)
     obj.delete()
 }
@@ -77,6 +83,8 @@ func (obj *Verifier) Reset(signature []byte) error {
         return err
     }
 
+    runtime.KeepAlive(obj)
+
     return nil
 }
 
@@ -88,6 +96,8 @@ func (obj *Verifier) AppendData(data []byte) {
 
     C.vscf_verifier_append_data(obj.cCtx, dataData)
 
+    runtime.KeepAlive(obj)
+
     return
 }
 
@@ -96,6 +106,10 @@ func (obj *Verifier) AppendData(data []byte) {
 */
 func (obj *Verifier) Verify(publicKey PublicKey) bool {
     proxyResult := /*pr4*/C.vscf_verifier_verify(obj.cCtx, (*C.vscf_impl_t)(publicKey.ctx()))
+
+    runtime.KeepAlive(obj)
+
+    runtime.KeepAlive(publicKey)
 
     return bool(proxyResult) /* r9 */
 }

@@ -32,6 +32,8 @@ func (obj *CtrDrbg) SetEntropySource(entropySource EntropySource) error {
     if err != nil {
         return err
     }
+                    runtime.KeepAlive(entropySource)
+                    runtime.KeepAlive(obj)
 
     return nil
 }
@@ -47,6 +49,8 @@ func (obj *CtrDrbg) SetupDefaults() error {
         return err
     }
 
+    runtime.KeepAlive(obj)
+
     return nil
 }
 
@@ -58,6 +62,8 @@ func (obj *CtrDrbg) SetupDefaults() error {
 func (obj *CtrDrbg) EnablePredictionResistance() {
     C.vscf_ctr_drbg_enable_prediction_resistance(obj.cCtx)
 
+    runtime.KeepAlive(obj)
+
     return
 }
 
@@ -68,6 +74,8 @@ func (obj *CtrDrbg) EnablePredictionResistance() {
 func (obj *CtrDrbg) SetReseedInterval(interval uint32) {
     C.vscf_ctr_drbg_set_reseed_interval(obj.cCtx, (C.size_t)(interval)/*pa10*/)
 
+    runtime.KeepAlive(obj)
+
     return
 }
 
@@ -77,6 +85,8 @@ func (obj *CtrDrbg) SetReseedInterval(interval uint32) {
 */
 func (obj *CtrDrbg) SetEntropyLen(len uint32) {
     C.vscf_ctr_drbg_set_entropy_len(obj.cCtx, (C.size_t)(len)/*pa10*/)
+
+    runtime.KeepAlive(obj)
 
     return
 }
@@ -91,7 +101,8 @@ func NewCtrDrbg() *CtrDrbg {
     obj := &CtrDrbg {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, func (o *CtrDrbg) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *CtrDrbg) {o.Delete()})
+    runtime.SetFinalizer(obj, (*CtrDrbg).Delete)
     return obj
 }
 
@@ -102,7 +113,8 @@ func newCtrDrbgWithCtx(ctx *C.vscf_ctr_drbg_t /*ct10*/) *CtrDrbg {
     obj := &CtrDrbg {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, func (o *CtrDrbg) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *CtrDrbg) {o.Delete()})
+    runtime.SetFinalizer(obj, (*CtrDrbg).Delete)
     return obj
 }
 
@@ -113,7 +125,8 @@ func newCtrDrbgCopy(ctx *C.vscf_ctr_drbg_t /*ct10*/) *CtrDrbg {
     obj := &CtrDrbg {
         cCtx: C.vscf_ctr_drbg_shallow_copy(ctx),
     }
-    runtime.SetFinalizer(obj, func (o *CtrDrbg) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *CtrDrbg) {o.Delete()})
+    runtime.SetFinalizer(obj, (*CtrDrbg).Delete)
     return obj
 }
 
@@ -121,6 +134,9 @@ func newCtrDrbgCopy(ctx *C.vscf_ctr_drbg_t /*ct10*/) *CtrDrbg {
 * Release underlying C context.
 */
 func (obj *CtrDrbg) Delete() {
+    if obj == nil {
+        return
+    }
     runtime.SetFinalizer(obj, nil)
     obj.delete()
 }
@@ -151,6 +167,8 @@ func (obj *CtrDrbg) Random(dataLen uint32) ([]byte, error) {
         return nil, err
     }
 
+    runtime.KeepAlive(obj)
+
     return dataBuf.getData() /* r7 */, nil
 }
 
@@ -164,6 +182,8 @@ func (obj *CtrDrbg) Reseed() error {
     if err != nil {
         return err
     }
+
+    runtime.KeepAlive(obj)
 
     return nil
 }

@@ -17,6 +17,9 @@ type KeyAsn1Serializer struct {
 func (obj *KeyAsn1Serializer) SetAsn1Writer(asn1Writer Asn1Writer) {
     C.vscf_key_asn1_serializer_release_asn1_writer(obj.cCtx)
     C.vscf_key_asn1_serializer_use_asn1_writer(obj.cCtx, (*C.vscf_impl_t)(asn1Writer.ctx()))
+
+    runtime.KeepAlive(asn1Writer)
+    runtime.KeepAlive(obj)
 }
 
 /*
@@ -24,6 +27,8 @@ func (obj *KeyAsn1Serializer) SetAsn1Writer(asn1Writer Asn1Writer) {
 */
 func (obj *KeyAsn1Serializer) SetupDefaults() {
     C.vscf_key_asn1_serializer_setup_defaults(obj.cCtx)
+
+    runtime.KeepAlive(obj)
 
     return
 }
@@ -44,6 +49,12 @@ func (obj *KeyAsn1Serializer) SerializePublicKeyInplace(publicKey *RawPublicKey)
         return 0, err
     }
 
+    runtime.KeepAlive(obj)
+
+    runtime.KeepAlive(publicKey)
+
+    runtime.KeepAlive(error)
+
     return uint32(proxyResult) /* r9 */, nil
 }
 
@@ -63,6 +74,12 @@ func (obj *KeyAsn1Serializer) SerializePrivateKeyInplace(privateKey *RawPrivateK
         return 0, err
     }
 
+    runtime.KeepAlive(obj)
+
+    runtime.KeepAlive(privateKey)
+
+    runtime.KeepAlive(error)
+
     return uint32(proxyResult) /* r9 */, nil
 }
 
@@ -76,7 +93,8 @@ func NewKeyAsn1Serializer() *KeyAsn1Serializer {
     obj := &KeyAsn1Serializer {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, func (o *KeyAsn1Serializer) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *KeyAsn1Serializer) {o.Delete()})
+    runtime.SetFinalizer(obj, (*KeyAsn1Serializer).Delete)
     return obj
 }
 
@@ -87,7 +105,8 @@ func newKeyAsn1SerializerWithCtx(ctx *C.vscf_key_asn1_serializer_t /*ct10*/) *Ke
     obj := &KeyAsn1Serializer {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, func (o *KeyAsn1Serializer) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *KeyAsn1Serializer) {o.Delete()})
+    runtime.SetFinalizer(obj, (*KeyAsn1Serializer).Delete)
     return obj
 }
 
@@ -98,7 +117,8 @@ func newKeyAsn1SerializerCopy(ctx *C.vscf_key_asn1_serializer_t /*ct10*/) *KeyAs
     obj := &KeyAsn1Serializer {
         cCtx: C.vscf_key_asn1_serializer_shallow_copy(ctx),
     }
-    runtime.SetFinalizer(obj, func (o *KeyAsn1Serializer) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *KeyAsn1Serializer) {o.Delete()})
+    runtime.SetFinalizer(obj, (*KeyAsn1Serializer).Delete)
     return obj
 }
 
@@ -106,6 +126,9 @@ func newKeyAsn1SerializerCopy(ctx *C.vscf_key_asn1_serializer_t /*ct10*/) *KeyAs
 * Release underlying C context.
 */
 func (obj *KeyAsn1Serializer) Delete() {
+    if obj == nil {
+        return
+    }
     runtime.SetFinalizer(obj, nil)
     obj.delete()
 }
@@ -124,6 +147,10 @@ func (obj *KeyAsn1Serializer) delete() {
 */
 func (obj *KeyAsn1Serializer) SerializedPublicKeyLen(publicKey *RawPublicKey) uint32 {
     proxyResult := /*pr4*/C.vscf_key_asn1_serializer_serialized_public_key_len(obj.cCtx, (*C.vscf_raw_public_key_t)(publicKey.ctx()))
+
+    runtime.KeepAlive(obj)
+
+    runtime.KeepAlive(publicKey)
 
     return uint32(proxyResult) /* r9 */
 }
@@ -148,6 +175,10 @@ func (obj *KeyAsn1Serializer) SerializePublicKey(publicKey *RawPublicKey) ([]byt
         return nil, err
     }
 
+    runtime.KeepAlive(obj)
+
+    runtime.KeepAlive(publicKey)
+
     return outBuf.getData() /* r7 */, nil
 }
 
@@ -158,6 +189,10 @@ func (obj *KeyAsn1Serializer) SerializePublicKey(publicKey *RawPublicKey) ([]byt
 */
 func (obj *KeyAsn1Serializer) SerializedPrivateKeyLen(privateKey *RawPrivateKey) uint32 {
     proxyResult := /*pr4*/C.vscf_key_asn1_serializer_serialized_private_key_len(obj.cCtx, (*C.vscf_raw_private_key_t)(privateKey.ctx()))
+
+    runtime.KeepAlive(obj)
+
+    runtime.KeepAlive(privateKey)
 
     return uint32(proxyResult) /* r9 */
 }
@@ -181,6 +216,10 @@ func (obj *KeyAsn1Serializer) SerializePrivateKey(privateKey *RawPrivateKey) ([]
     if err != nil {
         return nil, err
     }
+
+    runtime.KeepAlive(obj)
+
+    runtime.KeepAlive(privateKey)
 
     return outBuf.getData() /* r7 */, nil
 }

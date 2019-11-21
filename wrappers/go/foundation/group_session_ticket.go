@@ -22,7 +22,8 @@ func NewGroupSessionTicket() *GroupSessionTicket {
     obj := &GroupSessionTicket {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, func (o *GroupSessionTicket) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *GroupSessionTicket) {o.Delete()})
+    runtime.SetFinalizer(obj, (*GroupSessionTicket).Delete)
     return obj
 }
 
@@ -33,7 +34,8 @@ func newGroupSessionTicketWithCtx(ctx *C.vscf_group_session_ticket_t /*ct2*/) *G
     obj := &GroupSessionTicket {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, func (o *GroupSessionTicket) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *GroupSessionTicket) {o.Delete()})
+    runtime.SetFinalizer(obj, (*GroupSessionTicket).Delete)
     return obj
 }
 
@@ -44,7 +46,8 @@ func newGroupSessionTicketCopy(ctx *C.vscf_group_session_ticket_t /*ct2*/) *Grou
     obj := &GroupSessionTicket {
         cCtx: C.vscf_group_session_ticket_shallow_copy(ctx),
     }
-    runtime.SetFinalizer(obj, func (o *GroupSessionTicket) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *GroupSessionTicket) {o.Delete()})
+    runtime.SetFinalizer(obj, (*GroupSessionTicket).Delete)
     return obj
 }
 
@@ -52,6 +55,9 @@ func newGroupSessionTicketCopy(ctx *C.vscf_group_session_ticket_t /*ct2*/) *Grou
 * Release underlying C context.
 */
 func (obj *GroupSessionTicket) Delete() {
+    if obj == nil {
+        return
+    }
     runtime.SetFinalizer(obj, nil)
     obj.delete()
 }
@@ -69,6 +75,9 @@ func (obj *GroupSessionTicket) delete() {
 func (obj *GroupSessionTicket) SetRng(rng Random) {
     C.vscf_group_session_ticket_release_rng(obj.cCtx)
     C.vscf_group_session_ticket_use_rng(obj.cCtx, (*C.vscf_impl_t)(rng.ctx()))
+
+    runtime.KeepAlive(rng)
+    runtime.KeepAlive(obj)
 }
 
 /*
@@ -82,6 +91,8 @@ func (obj *GroupSessionTicket) SetupDefaults() error {
     if err != nil {
         return err
     }
+
+    runtime.KeepAlive(obj)
 
     return nil
 }
@@ -99,6 +110,8 @@ func (obj *GroupSessionTicket) SetupTicketAsNew(sessionId []byte) error {
         return err
     }
 
+    runtime.KeepAlive(obj)
+
     return nil
 }
 
@@ -107,6 +120,8 @@ func (obj *GroupSessionTicket) SetupTicketAsNew(sessionId []byte) error {
 */
 func (obj *GroupSessionTicket) GetTicketMessage() *GroupSessionMessage {
     proxyResult := /*pr4*/C.vscf_group_session_ticket_get_ticket_message(obj.cCtx)
+
+    runtime.KeepAlive(obj)
 
     return newGroupSessionMessageCopy(proxyResult) /* r5 */
 }

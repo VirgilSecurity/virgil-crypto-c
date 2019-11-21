@@ -22,7 +22,8 @@ func NewKeyRecipientInfoList() *KeyRecipientInfoList {
     obj := &KeyRecipientInfoList {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, func (o *KeyRecipientInfoList) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *KeyRecipientInfoList) {o.Delete()})
+    runtime.SetFinalizer(obj, (*KeyRecipientInfoList).Delete)
     return obj
 }
 
@@ -33,7 +34,8 @@ func newKeyRecipientInfoListWithCtx(ctx *C.vscf_key_recipient_info_list_t /*ct2*
     obj := &KeyRecipientInfoList {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, func (o *KeyRecipientInfoList) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *KeyRecipientInfoList) {o.Delete()})
+    runtime.SetFinalizer(obj, (*KeyRecipientInfoList).Delete)
     return obj
 }
 
@@ -44,7 +46,8 @@ func newKeyRecipientInfoListCopy(ctx *C.vscf_key_recipient_info_list_t /*ct2*/) 
     obj := &KeyRecipientInfoList {
         cCtx: C.vscf_key_recipient_info_list_shallow_copy(ctx),
     }
-    runtime.SetFinalizer(obj, func (o *KeyRecipientInfoList) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *KeyRecipientInfoList) {o.Delete()})
+    runtime.SetFinalizer(obj, (*KeyRecipientInfoList).Delete)
     return obj
 }
 
@@ -52,6 +55,9 @@ func newKeyRecipientInfoListCopy(ctx *C.vscf_key_recipient_info_list_t /*ct2*/) 
 * Release underlying C context.
 */
 func (obj *KeyRecipientInfoList) Delete() {
+    if obj == nil {
+        return
+    }
     runtime.SetFinalizer(obj, nil)
     obj.delete()
 }
@@ -69,6 +75,8 @@ func (obj *KeyRecipientInfoList) delete() {
 func (obj *KeyRecipientInfoList) HasItem() bool {
     proxyResult := /*pr4*/C.vscf_key_recipient_info_list_has_item(obj.cCtx)
 
+    runtime.KeepAlive(obj)
+
     return bool(proxyResult) /* r9 */
 }
 
@@ -77,6 +85,8 @@ func (obj *KeyRecipientInfoList) HasItem() bool {
 */
 func (obj *KeyRecipientInfoList) Item() *KeyRecipientInfo {
     proxyResult := /*pr4*/C.vscf_key_recipient_info_list_item(obj.cCtx)
+
+    runtime.KeepAlive(obj)
 
     return newKeyRecipientInfoCopy(proxyResult) /* r5 */
 }
@@ -87,6 +97,8 @@ func (obj *KeyRecipientInfoList) Item() *KeyRecipientInfo {
 func (obj *KeyRecipientInfoList) HasNext() bool {
     proxyResult := /*pr4*/C.vscf_key_recipient_info_list_has_next(obj.cCtx)
 
+    runtime.KeepAlive(obj)
+
     return bool(proxyResult) /* r9 */
 }
 
@@ -95,6 +107,8 @@ func (obj *KeyRecipientInfoList) HasNext() bool {
 */
 func (obj *KeyRecipientInfoList) Next() *KeyRecipientInfoList {
     proxyResult := /*pr4*/C.vscf_key_recipient_info_list_next(obj.cCtx)
+
+    runtime.KeepAlive(obj)
 
     return newKeyRecipientInfoListWithCtx(proxyResult) /* r6 */
 }
@@ -105,6 +119,8 @@ func (obj *KeyRecipientInfoList) Next() *KeyRecipientInfoList {
 func (obj *KeyRecipientInfoList) HasPrev() bool {
     proxyResult := /*pr4*/C.vscf_key_recipient_info_list_has_prev(obj.cCtx)
 
+    runtime.KeepAlive(obj)
+
     return bool(proxyResult) /* r9 */
 }
 
@@ -114,6 +130,8 @@ func (obj *KeyRecipientInfoList) HasPrev() bool {
 func (obj *KeyRecipientInfoList) Prev() *KeyRecipientInfoList {
     proxyResult := /*pr4*/C.vscf_key_recipient_info_list_prev(obj.cCtx)
 
+    runtime.KeepAlive(obj)
+
     return newKeyRecipientInfoListWithCtx(proxyResult) /* r6 */
 }
 
@@ -122,6 +140,8 @@ func (obj *KeyRecipientInfoList) Prev() *KeyRecipientInfoList {
 */
 func (obj *KeyRecipientInfoList) Clear() {
     C.vscf_key_recipient_info_list_clear(obj.cCtx)
+
+    runtime.KeepAlive(obj)
 
     return
 }

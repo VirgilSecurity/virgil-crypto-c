@@ -2,6 +2,7 @@ package foundation
 
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
+import "runtime"
 
 
 /*
@@ -24,6 +25,10 @@ func KeyAlgFactoryCreateFromAlgId(algId AlgId, random Random) (KeyAlg, error) {
         return nil, err
     }
 
+    runtime.KeepAlive(random)
+
+    runtime.KeepAlive(error)
+
     return FoundationImplementationWrapKeyAlg(proxyResult) /* r4 */
 }
 
@@ -40,6 +45,12 @@ func KeyAlgFactoryCreateFromKey(key Key, random Random) (KeyAlg, error) {
     if err != nil {
         return nil, err
     }
+
+    runtime.KeepAlive(key)
+
+    runtime.KeepAlive(random)
+
+    runtime.KeepAlive(error)
 
     return FoundationImplementationWrapKeyAlg(proxyResult) /* r4 */
 }
@@ -58,6 +69,12 @@ func KeyAlgFactoryCreateFromRawPublicKey(publicKey *RawPublicKey, random Random)
         return nil, err
     }
 
+    runtime.KeepAlive(publicKey)
+
+    runtime.KeepAlive(random)
+
+    runtime.KeepAlive(error)
+
     return FoundationImplementationWrapKeyAlg(proxyResult) /* r4 */
 }
 
@@ -74,6 +91,12 @@ func KeyAlgFactoryCreateFromRawPrivateKey(privateKey *RawPrivateKey, random Rand
     if err != nil {
         return nil, err
     }
+
+    runtime.KeepAlive(privateKey)
+
+    runtime.KeepAlive(random)
+
+    runtime.KeepAlive(error)
 
     return FoundationImplementationWrapKeyAlg(proxyResult) /* r4 */
 }

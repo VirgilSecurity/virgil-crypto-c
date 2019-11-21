@@ -23,7 +23,8 @@ func NewRatchetGroupTicket() *RatchetGroupTicket {
     obj := &RatchetGroupTicket {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, func (o *RatchetGroupTicket) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *RatchetGroupTicket) {o.Delete()})
+    runtime.SetFinalizer(obj, (*RatchetGroupTicket).Delete)
     return obj
 }
 
@@ -34,7 +35,8 @@ func newRatchetGroupTicketWithCtx(ctx *C.vscr_ratchet_group_ticket_t /*ct2*/) *R
     obj := &RatchetGroupTicket {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, func (o *RatchetGroupTicket) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *RatchetGroupTicket) {o.Delete()})
+    runtime.SetFinalizer(obj, (*RatchetGroupTicket).Delete)
     return obj
 }
 
@@ -45,7 +47,8 @@ func newRatchetGroupTicketCopy(ctx *C.vscr_ratchet_group_ticket_t /*ct2*/) *Ratc
     obj := &RatchetGroupTicket {
         cCtx: C.vscr_ratchet_group_ticket_shallow_copy(ctx),
     }
-    runtime.SetFinalizer(obj, func (o *RatchetGroupTicket) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *RatchetGroupTicket) {o.Delete()})
+    runtime.SetFinalizer(obj, (*RatchetGroupTicket).Delete)
     return obj
 }
 
@@ -53,6 +56,9 @@ func newRatchetGroupTicketCopy(ctx *C.vscr_ratchet_group_ticket_t /*ct2*/) *Ratc
 * Release underlying C context.
 */
 func (obj *RatchetGroupTicket) Delete() {
+    if obj == nil {
+        return
+    }
     runtime.SetFinalizer(obj, nil)
     obj.delete()
 }
@@ -70,6 +76,9 @@ func (obj *RatchetGroupTicket) delete() {
 func (obj *RatchetGroupTicket) SetRng(rng foundation.Random) {
     C.vscr_ratchet_group_ticket_release_rng(obj.cCtx)
     C.vscr_ratchet_group_ticket_use_rng(obj.cCtx, (*C.vscf_impl_t)(rng.(context).ctx()))
+
+    runtime.KeepAlive(rng)
+    runtime.KeepAlive(obj)
 }
 
 /*
@@ -83,6 +92,8 @@ func (obj *RatchetGroupTicket) SetupDefaults() error {
     if err != nil {
         return err
     }
+
+    runtime.KeepAlive(obj)
 
     return nil
 }
@@ -100,6 +111,8 @@ func (obj *RatchetGroupTicket) SetupTicketAsNew(sessionId []byte) error {
         return err
     }
 
+    runtime.KeepAlive(obj)
+
     return nil
 }
 
@@ -108,6 +121,8 @@ func (obj *RatchetGroupTicket) SetupTicketAsNew(sessionId []byte) error {
 */
 func (obj *RatchetGroupTicket) GetTicketMessage() *RatchetGroupMessage {
     proxyResult := /*pr4*/C.vscr_ratchet_group_ticket_get_ticket_message(obj.cCtx)
+
+    runtime.KeepAlive(obj)
 
     return newRatchetGroupMessageCopy(proxyResult) /* r5 */
 }

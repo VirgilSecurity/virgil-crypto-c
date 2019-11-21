@@ -26,6 +26,8 @@ func (obj *SeedEntropySource) ResetSeed(seed []byte) {
 
     C.vscf_seed_entropy_source_reset_seed(obj.cCtx, seedData)
 
+    runtime.KeepAlive(obj)
+
     return
 }
 
@@ -39,7 +41,8 @@ func NewSeedEntropySource() *SeedEntropySource {
     obj := &SeedEntropySource {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, func (o *SeedEntropySource) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *SeedEntropySource) {o.Delete()})
+    runtime.SetFinalizer(obj, (*SeedEntropySource).Delete)
     return obj
 }
 
@@ -50,7 +53,8 @@ func newSeedEntropySourceWithCtx(ctx *C.vscf_seed_entropy_source_t /*ct10*/) *Se
     obj := &SeedEntropySource {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, func (o *SeedEntropySource) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *SeedEntropySource) {o.Delete()})
+    runtime.SetFinalizer(obj, (*SeedEntropySource).Delete)
     return obj
 }
 
@@ -61,7 +65,8 @@ func newSeedEntropySourceCopy(ctx *C.vscf_seed_entropy_source_t /*ct10*/) *SeedE
     obj := &SeedEntropySource {
         cCtx: C.vscf_seed_entropy_source_shallow_copy(ctx),
     }
-    runtime.SetFinalizer(obj, func (o *SeedEntropySource) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *SeedEntropySource) {o.Delete()})
+    runtime.SetFinalizer(obj, (*SeedEntropySource).Delete)
     return obj
 }
 
@@ -69,6 +74,9 @@ func newSeedEntropySourceCopy(ctx *C.vscf_seed_entropy_source_t /*ct10*/) *SeedE
 * Release underlying C context.
 */
 func (obj *SeedEntropySource) Delete() {
+    if obj == nil {
+        return
+    }
     runtime.SetFinalizer(obj, nil)
     obj.delete()
 }
@@ -85,6 +93,8 @@ func (obj *SeedEntropySource) delete() {
 */
 func (obj *SeedEntropySource) IsStrong() bool {
     proxyResult := /*pr4*/C.vscf_seed_entropy_source_is_strong(obj.cCtx)
+
+    runtime.KeepAlive(obj)
 
     return bool(proxyResult) /* r9 */
 }
@@ -106,6 +116,8 @@ func (obj *SeedEntropySource) Gather(len uint32) ([]byte, error) {
     if err != nil {
         return nil, err
     }
+
+    runtime.KeepAlive(obj)
 
     return outBuf.getData() /* r7 */, nil
 }

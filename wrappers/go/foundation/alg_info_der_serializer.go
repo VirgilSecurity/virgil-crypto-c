@@ -15,6 +15,9 @@ type AlgInfoDerSerializer struct {
 func (obj *AlgInfoDerSerializer) SetAsn1Writer(asn1Writer Asn1Writer) {
     C.vscf_alg_info_der_serializer_release_asn1_writer(obj.cCtx)
     C.vscf_alg_info_der_serializer_use_asn1_writer(obj.cCtx, (*C.vscf_impl_t)(asn1Writer.ctx()))
+
+    runtime.KeepAlive(asn1Writer)
+    runtime.KeepAlive(obj)
 }
 
 /*
@@ -22,6 +25,8 @@ func (obj *AlgInfoDerSerializer) SetAsn1Writer(asn1Writer Asn1Writer) {
 */
 func (obj *AlgInfoDerSerializer) SetupDefaults() {
     C.vscf_alg_info_der_serializer_setup_defaults(obj.cCtx)
+
+    runtime.KeepAlive(obj)
 
     return
 }
@@ -33,6 +38,10 @@ func (obj *AlgInfoDerSerializer) SetupDefaults() {
 */
 func (obj *AlgInfoDerSerializer) SerializeInplace(algInfo AlgInfo) uint32 {
     proxyResult := /*pr4*/C.vscf_alg_info_der_serializer_serialize_inplace(obj.cCtx, (*C.vscf_impl_t)(algInfo.ctx()))
+
+    runtime.KeepAlive(obj)
+
+    runtime.KeepAlive(algInfo)
 
     return uint32(proxyResult) /* r9 */
 }
@@ -47,7 +56,8 @@ func NewAlgInfoDerSerializer() *AlgInfoDerSerializer {
     obj := &AlgInfoDerSerializer {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, func (o *AlgInfoDerSerializer) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *AlgInfoDerSerializer) {o.Delete()})
+    runtime.SetFinalizer(obj, (*AlgInfoDerSerializer).Delete)
     return obj
 }
 
@@ -58,7 +68,8 @@ func newAlgInfoDerSerializerWithCtx(ctx *C.vscf_alg_info_der_serializer_t /*ct10
     obj := &AlgInfoDerSerializer {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, func (o *AlgInfoDerSerializer) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *AlgInfoDerSerializer) {o.Delete()})
+    runtime.SetFinalizer(obj, (*AlgInfoDerSerializer).Delete)
     return obj
 }
 
@@ -69,7 +80,8 @@ func newAlgInfoDerSerializerCopy(ctx *C.vscf_alg_info_der_serializer_t /*ct10*/)
     obj := &AlgInfoDerSerializer {
         cCtx: C.vscf_alg_info_der_serializer_shallow_copy(ctx),
     }
-    runtime.SetFinalizer(obj, func (o *AlgInfoDerSerializer) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *AlgInfoDerSerializer) {o.Delete()})
+    runtime.SetFinalizer(obj, (*AlgInfoDerSerializer).Delete)
     return obj
 }
 
@@ -77,6 +89,9 @@ func newAlgInfoDerSerializerCopy(ctx *C.vscf_alg_info_der_serializer_t /*ct10*/)
 * Release underlying C context.
 */
 func (obj *AlgInfoDerSerializer) Delete() {
+    if obj == nil {
+        return
+    }
     runtime.SetFinalizer(obj, nil)
     obj.delete()
 }
@@ -94,6 +109,10 @@ func (obj *AlgInfoDerSerializer) delete() {
 func (obj *AlgInfoDerSerializer) SerializedLen(algInfo AlgInfo) uint32 {
     proxyResult := /*pr4*/C.vscf_alg_info_der_serializer_serialized_len(obj.cCtx, (*C.vscf_impl_t)(algInfo.ctx()))
 
+    runtime.KeepAlive(obj)
+
+    runtime.KeepAlive(algInfo)
+
     return uint32(proxyResult) /* r9 */
 }
 
@@ -109,6 +128,10 @@ func (obj *AlgInfoDerSerializer) Serialize(algInfo AlgInfo) []byte {
 
 
     C.vscf_alg_info_der_serializer_serialize(obj.cCtx, (*C.vscf_impl_t)(algInfo.ctx()), outBuf.ctx)
+
+    runtime.KeepAlive(obj)
+
+    runtime.KeepAlive(algInfo)
 
     return outBuf.getData() /* r7 */
 }

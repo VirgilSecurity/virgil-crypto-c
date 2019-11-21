@@ -29,7 +29,8 @@ func NewPheCipher() *PheCipher {
     obj := &PheCipher {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, func (o *PheCipher) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *PheCipher) {o.Delete()})
+    runtime.SetFinalizer(obj, (*PheCipher).Delete)
     return obj
 }
 
@@ -40,7 +41,8 @@ func newPheCipherWithCtx(ctx *C.vsce_phe_cipher_t /*ct2*/) *PheCipher {
     obj := &PheCipher {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, func (o *PheCipher) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *PheCipher) {o.Delete()})
+    runtime.SetFinalizer(obj, (*PheCipher).Delete)
     return obj
 }
 
@@ -51,7 +53,8 @@ func newPheCipherCopy(ctx *C.vsce_phe_cipher_t /*ct2*/) *PheCipher {
     obj := &PheCipher {
         cCtx: C.vsce_phe_cipher_shallow_copy(ctx),
     }
-    runtime.SetFinalizer(obj, func (o *PheCipher) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *PheCipher) {o.Delete()})
+    runtime.SetFinalizer(obj, (*PheCipher).Delete)
     return obj
 }
 
@@ -59,6 +62,9 @@ func newPheCipherCopy(ctx *C.vsce_phe_cipher_t /*ct2*/) *PheCipher {
 * Release underlying C context.
 */
 func (obj *PheCipher) Delete() {
+    if obj == nil {
+        return
+    }
     runtime.SetFinalizer(obj, nil)
     obj.delete()
 }
@@ -76,6 +82,9 @@ func (obj *PheCipher) delete() {
 func (obj *PheCipher) SetRandom(random foundation.Random) {
     C.vsce_phe_cipher_release_random(obj.cCtx)
     C.vsce_phe_cipher_use_random(obj.cCtx, (*C.vscf_impl_t)(random.(context).ctx()))
+
+    runtime.KeepAlive(random)
+    runtime.KeepAlive(obj)
 }
 
 /*
@@ -89,6 +98,8 @@ func (obj *PheCipher) SetupDefaults() error {
         return err
     }
 
+    runtime.KeepAlive(obj)
+
     return nil
 }
 
@@ -98,6 +109,8 @@ func (obj *PheCipher) SetupDefaults() error {
 func (obj *PheCipher) EncryptLen(plainTextLen uint32) uint32 {
     proxyResult := /*pr4*/C.vsce_phe_cipher_encrypt_len(obj.cCtx, (C.size_t)(plainTextLen)/*pa10*/)
 
+    runtime.KeepAlive(obj)
+
     return uint32(proxyResult) /* r9 */
 }
 
@@ -106,6 +119,8 @@ func (obj *PheCipher) EncryptLen(plainTextLen uint32) uint32 {
 */
 func (obj *PheCipher) DecryptLen(cipherTextLen uint32) uint32 {
     proxyResult := /*pr4*/C.vsce_phe_cipher_decrypt_len(obj.cCtx, (C.size_t)(cipherTextLen)/*pa10*/)
+
+    runtime.KeepAlive(obj)
 
     return uint32(proxyResult) /* r9 */
 }
@@ -129,6 +144,8 @@ func (obj *PheCipher) Encrypt(plainText []byte, accountKey []byte) ([]byte, erro
         return nil, err
     }
 
+    runtime.KeepAlive(obj)
+
     return cipherTextBuf.getData() /* r7 */, nil
 }
 
@@ -150,6 +167,8 @@ func (obj *PheCipher) Decrypt(cipherText []byte, accountKey []byte) ([]byte, err
     if err != nil {
         return nil, err
     }
+
+    runtime.KeepAlive(obj)
 
     return plainTextBuf.getData() /* r7 */, nil
 }
@@ -174,6 +193,8 @@ func (obj *PheCipher) AuthEncrypt(plainText []byte, additionalData []byte, accou
         return nil, err
     }
 
+    runtime.KeepAlive(obj)
+
     return cipherTextBuf.getData() /* r7 */, nil
 }
 
@@ -196,6 +217,8 @@ func (obj *PheCipher) AuthDecrypt(cipherText []byte, additionalData []byte, acco
     if err != nil {
         return nil, err
     }
+
+    runtime.KeepAlive(obj)
 
     return plainTextBuf.getData() /* r7 */, nil
 }

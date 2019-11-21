@@ -15,11 +15,17 @@ type MessageInfoDerSerializer struct {
 func (obj *MessageInfoDerSerializer) SetAsn1Reader(asn1Reader Asn1Reader) {
     C.vscf_message_info_der_serializer_release_asn1_reader(obj.cCtx)
     C.vscf_message_info_der_serializer_use_asn1_reader(obj.cCtx, (*C.vscf_impl_t)(asn1Reader.ctx()))
+
+    runtime.KeepAlive(asn1Reader)
+    runtime.KeepAlive(obj)
 }
 
 func (obj *MessageInfoDerSerializer) SetAsn1Writer(asn1Writer Asn1Writer) {
     C.vscf_message_info_der_serializer_release_asn1_writer(obj.cCtx)
     C.vscf_message_info_der_serializer_use_asn1_writer(obj.cCtx, (*C.vscf_impl_t)(asn1Writer.ctx()))
+
+    runtime.KeepAlive(asn1Writer)
+    runtime.KeepAlive(obj)
 }
 
 /*
@@ -27,6 +33,8 @@ func (obj *MessageInfoDerSerializer) SetAsn1Writer(asn1Writer Asn1Writer) {
 */
 func (obj *MessageInfoDerSerializer) SetupDefaults() {
     C.vscf_message_info_der_serializer_setup_defaults(obj.cCtx)
+
+    runtime.KeepAlive(obj)
 
     return
 }
@@ -41,7 +49,8 @@ func NewMessageInfoDerSerializer() *MessageInfoDerSerializer {
     obj := &MessageInfoDerSerializer {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, func (o *MessageInfoDerSerializer) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *MessageInfoDerSerializer) {o.Delete()})
+    runtime.SetFinalizer(obj, (*MessageInfoDerSerializer).Delete)
     return obj
 }
 
@@ -52,7 +61,8 @@ func newMessageInfoDerSerializerWithCtx(ctx *C.vscf_message_info_der_serializer_
     obj := &MessageInfoDerSerializer {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, func (o *MessageInfoDerSerializer) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *MessageInfoDerSerializer) {o.Delete()})
+    runtime.SetFinalizer(obj, (*MessageInfoDerSerializer).Delete)
     return obj
 }
 
@@ -63,7 +73,8 @@ func newMessageInfoDerSerializerCopy(ctx *C.vscf_message_info_der_serializer_t /
     obj := &MessageInfoDerSerializer {
         cCtx: C.vscf_message_info_der_serializer_shallow_copy(ctx),
     }
-    runtime.SetFinalizer(obj, func (o *MessageInfoDerSerializer) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *MessageInfoDerSerializer) {o.Delete()})
+    runtime.SetFinalizer(obj, (*MessageInfoDerSerializer).Delete)
     return obj
 }
 
@@ -71,6 +82,9 @@ func newMessageInfoDerSerializerCopy(ctx *C.vscf_message_info_der_serializer_t /
 * Release underlying C context.
 */
 func (obj *MessageInfoDerSerializer) Delete() {
+    if obj == nil {
+        return
+    }
     runtime.SetFinalizer(obj, nil)
     obj.delete()
 }
@@ -92,6 +106,10 @@ func (obj *MessageInfoDerSerializer) GetPrefixLen() uint32 {
 func (obj *MessageInfoDerSerializer) SerializedLen(messageInfo *MessageInfo) uint32 {
     proxyResult := /*pr4*/C.vscf_message_info_der_serializer_serialized_len(obj.cCtx, (*C.vscf_message_info_t)(messageInfo.ctx()))
 
+    runtime.KeepAlive(obj)
+
+    runtime.KeepAlive(messageInfo)
+
     return uint32(proxyResult) /* r9 */
 }
 
@@ -108,6 +126,10 @@ func (obj *MessageInfoDerSerializer) Serialize(messageInfo *MessageInfo) []byte 
 
     C.vscf_message_info_der_serializer_serialize(obj.cCtx, (*C.vscf_message_info_t)(messageInfo.ctx()), outBuf.ctx)
 
+    runtime.KeepAlive(obj)
+
+    runtime.KeepAlive(messageInfo)
+
     return outBuf.getData() /* r7 */
 }
 
@@ -122,6 +144,8 @@ func (obj *MessageInfoDerSerializer) ReadPrefix(data []byte) uint32 {
     dataData := helperWrapData (data)
 
     proxyResult := /*pr4*/C.vscf_message_info_der_serializer_read_prefix(obj.cCtx, dataData)
+
+    runtime.KeepAlive(obj)
 
     return uint32(proxyResult) /* r9 */
 }
@@ -141,6 +165,10 @@ func (obj *MessageInfoDerSerializer) Deserialize(data []byte) (*MessageInfo, err
         return nil, err
     }
 
+    runtime.KeepAlive(obj)
+
+    runtime.KeepAlive(error)
+
     return newMessageInfoWithCtx(proxyResult) /* r6 */, nil
 }
 
@@ -149,6 +177,10 @@ func (obj *MessageInfoDerSerializer) Deserialize(data []byte) (*MessageInfo, err
 */
 func (obj *MessageInfoDerSerializer) SerializedFooterLen(messageInfoFooter *MessageInfoFooter) uint32 {
     proxyResult := /*pr4*/C.vscf_message_info_der_serializer_serialized_footer_len(obj.cCtx, (*C.vscf_message_info_footer_t)(messageInfoFooter.ctx()))
+
+    runtime.KeepAlive(obj)
+
+    runtime.KeepAlive(messageInfoFooter)
 
     return uint32(proxyResult) /* r9 */
 }
@@ -165,6 +197,10 @@ func (obj *MessageInfoDerSerializer) SerializeFooter(messageInfoFooter *MessageI
 
 
     C.vscf_message_info_der_serializer_serialize_footer(obj.cCtx, (*C.vscf_message_info_footer_t)(messageInfoFooter.ctx()), outBuf.ctx)
+
+    runtime.KeepAlive(obj)
+
+    runtime.KeepAlive(messageInfoFooter)
 
     return outBuf.getData() /* r7 */
 }
@@ -183,6 +219,10 @@ func (obj *MessageInfoDerSerializer) DeserializeFooter(data []byte) (*MessageInf
     if err != nil {
         return nil, err
     }
+
+    runtime.KeepAlive(obj)
+
+    runtime.KeepAlive(error)
 
     return newMessageInfoFooterWithCtx(proxyResult) /* r6 */, nil
 }

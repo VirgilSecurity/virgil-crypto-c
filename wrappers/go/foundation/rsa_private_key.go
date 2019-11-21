@@ -22,7 +22,8 @@ func NewRsaPrivateKey() *RsaPrivateKey {
     obj := &RsaPrivateKey {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, func (o *RsaPrivateKey) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *RsaPrivateKey) {o.Delete()})
+    runtime.SetFinalizer(obj, (*RsaPrivateKey).Delete)
     return obj
 }
 
@@ -33,7 +34,8 @@ func newRsaPrivateKeyWithCtx(ctx *C.vscf_rsa_private_key_t /*ct10*/) *RsaPrivate
     obj := &RsaPrivateKey {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, func (o *RsaPrivateKey) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *RsaPrivateKey) {o.Delete()})
+    runtime.SetFinalizer(obj, (*RsaPrivateKey).Delete)
     return obj
 }
 
@@ -44,7 +46,8 @@ func newRsaPrivateKeyCopy(ctx *C.vscf_rsa_private_key_t /*ct10*/) *RsaPrivateKey
     obj := &RsaPrivateKey {
         cCtx: C.vscf_rsa_private_key_shallow_copy(ctx),
     }
-    runtime.SetFinalizer(obj, func (o *RsaPrivateKey) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *RsaPrivateKey) {o.Delete()})
+    runtime.SetFinalizer(obj, (*RsaPrivateKey).Delete)
     return obj
 }
 
@@ -52,6 +55,9 @@ func newRsaPrivateKeyCopy(ctx *C.vscf_rsa_private_key_t /*ct10*/) *RsaPrivateKey
 * Release underlying C context.
 */
 func (obj *RsaPrivateKey) Delete() {
+    if obj == nil {
+        return
+    }
     runtime.SetFinalizer(obj, nil)
     obj.delete()
 }
@@ -69,6 +75,8 @@ func (obj *RsaPrivateKey) delete() {
 func (obj *RsaPrivateKey) AlgId() AlgId {
     proxyResult := /*pr4*/C.vscf_rsa_private_key_alg_id(obj.cCtx)
 
+    runtime.KeepAlive(obj)
+
     return AlgId(proxyResult) /* r8 */
 }
 
@@ -77,6 +85,8 @@ func (obj *RsaPrivateKey) AlgId() AlgId {
 */
 func (obj *RsaPrivateKey) AlgInfo() (AlgInfo, error) {
     proxyResult := /*pr4*/C.vscf_rsa_private_key_alg_info(obj.cCtx)
+
+    runtime.KeepAlive(obj)
 
     return FoundationImplementationWrapAlgInfo(proxyResult) /* r4 */
 }
@@ -87,6 +97,8 @@ func (obj *RsaPrivateKey) AlgInfo() (AlgInfo, error) {
 func (obj *RsaPrivateKey) Len() uint32 {
     proxyResult := /*pr4*/C.vscf_rsa_private_key_len(obj.cCtx)
 
+    runtime.KeepAlive(obj)
+
     return uint32(proxyResult) /* r9 */
 }
 
@@ -95,6 +107,8 @@ func (obj *RsaPrivateKey) Len() uint32 {
 */
 func (obj *RsaPrivateKey) Bitlen() uint32 {
     proxyResult := /*pr4*/C.vscf_rsa_private_key_bitlen(obj.cCtx)
+
+    runtime.KeepAlive(obj)
 
     return uint32(proxyResult) /* r9 */
 }
@@ -106,6 +120,8 @@ func (obj *RsaPrivateKey) Bitlen() uint32 {
 func (obj *RsaPrivateKey) IsValid() bool {
     proxyResult := /*pr4*/C.vscf_rsa_private_key_is_valid(obj.cCtx)
 
+    runtime.KeepAlive(obj)
+
     return bool(proxyResult) /* r9 */
 }
 
@@ -114,6 +130,8 @@ func (obj *RsaPrivateKey) IsValid() bool {
 */
 func (obj *RsaPrivateKey) ExtractPublicKey() (PublicKey, error) {
     proxyResult := /*pr4*/C.vscf_rsa_private_key_extract_public_key(obj.cCtx)
+
+    runtime.KeepAlive(obj)
 
     return FoundationImplementationWrapPublicKey(proxyResult) /* r4 */
 }

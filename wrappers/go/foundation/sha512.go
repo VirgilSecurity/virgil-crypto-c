@@ -22,7 +22,8 @@ func NewSha512() *Sha512 {
     obj := &Sha512 {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, func (o *Sha512) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *Sha512) {o.Delete()})
+    runtime.SetFinalizer(obj, (*Sha512).Delete)
     return obj
 }
 
@@ -33,7 +34,8 @@ func newSha512WithCtx(ctx *C.vscf_sha512_t /*ct10*/) *Sha512 {
     obj := &Sha512 {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, func (o *Sha512) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *Sha512) {o.Delete()})
+    runtime.SetFinalizer(obj, (*Sha512).Delete)
     return obj
 }
 
@@ -44,7 +46,8 @@ func newSha512Copy(ctx *C.vscf_sha512_t /*ct10*/) *Sha512 {
     obj := &Sha512 {
         cCtx: C.vscf_sha512_shallow_copy(ctx),
     }
-    runtime.SetFinalizer(obj, func (o *Sha512) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *Sha512) {o.Delete()})
+    runtime.SetFinalizer(obj, (*Sha512).Delete)
     return obj
 }
 
@@ -52,6 +55,9 @@ func newSha512Copy(ctx *C.vscf_sha512_t /*ct10*/) *Sha512 {
 * Release underlying C context.
 */
 func (obj *Sha512) Delete() {
+    if obj == nil {
+        return
+    }
     runtime.SetFinalizer(obj, nil)
     obj.delete()
 }
@@ -69,6 +75,8 @@ func (obj *Sha512) delete() {
 func (obj *Sha512) AlgId() AlgId {
     proxyResult := /*pr4*/C.vscf_sha512_alg_id(obj.cCtx)
 
+    runtime.KeepAlive(obj)
+
     return AlgId(proxyResult) /* r8 */
 }
 
@@ -77,6 +85,8 @@ func (obj *Sha512) AlgId() AlgId {
 */
 func (obj *Sha512) ProduceAlgInfo() (AlgInfo, error) {
     proxyResult := /*pr4*/C.vscf_sha512_produce_alg_info(obj.cCtx)
+
+    runtime.KeepAlive(obj)
 
     return FoundationImplementationWrapAlgInfo(proxyResult) /* r4 */
 }
@@ -91,6 +101,10 @@ func (obj *Sha512) RestoreAlgInfo(algInfo AlgInfo) error {
     if err != nil {
         return err
     }
+
+    runtime.KeepAlive(obj)
+
+    runtime.KeepAlive(algInfo)
 
     return nil
 }
@@ -122,6 +136,8 @@ func (obj *Sha512) Hash(data []byte) []byte {
 
     C.vscf_sha512_hash(dataData, digestBuf.ctx)
 
+    runtime.KeepAlive(obj)
+
     return digestBuf.getData() /* r7 */
 }
 
@@ -130,6 +146,8 @@ func (obj *Sha512) Hash(data []byte) []byte {
 */
 func (obj *Sha512) Start() {
     C.vscf_sha512_start(obj.cCtx)
+
+    runtime.KeepAlive(obj)
 
     return
 }
@@ -141,6 +159,8 @@ func (obj *Sha512) Update(data []byte) {
     dataData := helperWrapData (data)
 
     C.vscf_sha512_update(obj.cCtx, dataData)
+
+    runtime.KeepAlive(obj)
 
     return
 }
@@ -157,6 +177,8 @@ func (obj *Sha512) Finish() []byte {
 
 
     C.vscf_sha512_finish(obj.cCtx, digestBuf.ctx)
+
+    runtime.KeepAlive(obj)
 
     return digestBuf.getData() /* r7 */
 }

@@ -24,7 +24,8 @@ func NewAes256Gcm() *Aes256Gcm {
     obj := &Aes256Gcm {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, func (o *Aes256Gcm) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *Aes256Gcm) {o.Delete()})
+    runtime.SetFinalizer(obj, (*Aes256Gcm).Delete)
     return obj
 }
 
@@ -35,7 +36,8 @@ func newAes256GcmWithCtx(ctx *C.vscf_aes256_gcm_t /*ct10*/) *Aes256Gcm {
     obj := &Aes256Gcm {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, func (o *Aes256Gcm) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *Aes256Gcm) {o.Delete()})
+    runtime.SetFinalizer(obj, (*Aes256Gcm).Delete)
     return obj
 }
 
@@ -46,7 +48,8 @@ func newAes256GcmCopy(ctx *C.vscf_aes256_gcm_t /*ct10*/) *Aes256Gcm {
     obj := &Aes256Gcm {
         cCtx: C.vscf_aes256_gcm_shallow_copy(ctx),
     }
-    runtime.SetFinalizer(obj, func (o *Aes256Gcm) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *Aes256Gcm) {o.Delete()})
+    runtime.SetFinalizer(obj, (*Aes256Gcm).Delete)
     return obj
 }
 
@@ -54,6 +57,9 @@ func newAes256GcmCopy(ctx *C.vscf_aes256_gcm_t /*ct10*/) *Aes256Gcm {
 * Release underlying C context.
 */
 func (obj *Aes256Gcm) Delete() {
+    if obj == nil {
+        return
+    }
     runtime.SetFinalizer(obj, nil)
     obj.delete()
 }
@@ -71,6 +77,8 @@ func (obj *Aes256Gcm) delete() {
 func (obj *Aes256Gcm) AlgId() AlgId {
     proxyResult := /*pr4*/C.vscf_aes256_gcm_alg_id(obj.cCtx)
 
+    runtime.KeepAlive(obj)
+
     return AlgId(proxyResult) /* r8 */
 }
 
@@ -79,6 +87,8 @@ func (obj *Aes256Gcm) AlgId() AlgId {
 */
 func (obj *Aes256Gcm) ProduceAlgInfo() (AlgInfo, error) {
     proxyResult := /*pr4*/C.vscf_aes256_gcm_produce_alg_info(obj.cCtx)
+
+    runtime.KeepAlive(obj)
 
     return FoundationImplementationWrapAlgInfo(proxyResult) /* r4 */
 }
@@ -93,6 +103,10 @@ func (obj *Aes256Gcm) RestoreAlgInfo(algInfo AlgInfo) error {
     if err != nil {
         return err
     }
+
+    runtime.KeepAlive(obj)
+
+    runtime.KeepAlive(algInfo)
 
     return nil
 }
@@ -115,6 +129,8 @@ func (obj *Aes256Gcm) Encrypt(data []byte) ([]byte, error) {
         return nil, err
     }
 
+    runtime.KeepAlive(obj)
+
     return outBuf.getData() /* r7 */, nil
 }
 
@@ -124,6 +140,8 @@ func (obj *Aes256Gcm) Encrypt(data []byte) ([]byte, error) {
 func (obj *Aes256Gcm) EncryptedLen(dataLen uint32) uint32 {
     proxyResult := /*pr4*/C.vscf_aes256_gcm_encrypted_len(obj.cCtx, (C.size_t)(dataLen)/*pa10*/)
 
+    runtime.KeepAlive(obj)
+
     return uint32(proxyResult) /* r9 */
 }
 
@@ -132,6 +150,8 @@ func (obj *Aes256Gcm) EncryptedLen(dataLen uint32) uint32 {
 */
 func (obj *Aes256Gcm) PreciseEncryptedLen(dataLen uint32) uint32 {
     proxyResult := /*pr4*/C.vscf_aes256_gcm_precise_encrypted_len(obj.cCtx, (C.size_t)(dataLen)/*pa10*/)
+
+    runtime.KeepAlive(obj)
 
     return uint32(proxyResult) /* r9 */
 }
@@ -154,6 +174,8 @@ func (obj *Aes256Gcm) Decrypt(data []byte) ([]byte, error) {
         return nil, err
     }
 
+    runtime.KeepAlive(obj)
+
     return outBuf.getData() /* r7 */, nil
 }
 
@@ -162,6 +184,8 @@ func (obj *Aes256Gcm) Decrypt(data []byte) ([]byte, error) {
 */
 func (obj *Aes256Gcm) DecryptedLen(dataLen uint32) uint32 {
     proxyResult := /*pr4*/C.vscf_aes256_gcm_decrypted_len(obj.cCtx, (C.size_t)(dataLen)/*pa10*/)
+
+    runtime.KeepAlive(obj)
 
     return uint32(proxyResult) /* r9 */
 }
@@ -202,6 +226,8 @@ func (obj *Aes256Gcm) SetNonce(nonce []byte) {
 
     C.vscf_aes256_gcm_set_nonce(obj.cCtx, nonceData)
 
+    runtime.KeepAlive(obj)
+
     return
 }
 
@@ -213,6 +239,8 @@ func (obj *Aes256Gcm) SetKey(key []byte) {
 
     C.vscf_aes256_gcm_set_key(obj.cCtx, keyData)
 
+    runtime.KeepAlive(obj)
+
     return
 }
 
@@ -222,6 +250,8 @@ func (obj *Aes256Gcm) SetKey(key []byte) {
 func (obj *Aes256Gcm) StartEncryption() {
     C.vscf_aes256_gcm_start_encryption(obj.cCtx)
 
+    runtime.KeepAlive(obj)
+
     return
 }
 
@@ -230,6 +260,8 @@ func (obj *Aes256Gcm) StartEncryption() {
 */
 func (obj *Aes256Gcm) StartDecryption() {
     C.vscf_aes256_gcm_start_decryption(obj.cCtx)
+
+    runtime.KeepAlive(obj)
 
     return
 }
@@ -247,6 +279,8 @@ func (obj *Aes256Gcm) Update(data []byte) []byte {
 
     C.vscf_aes256_gcm_update(obj.cCtx, dataData, outBuf.ctx)
 
+    runtime.KeepAlive(obj)
+
     return outBuf.getData() /* r7 */
 }
 
@@ -257,6 +291,8 @@ func (obj *Aes256Gcm) Update(data []byte) []byte {
 */
 func (obj *Aes256Gcm) OutLen(dataLen uint32) uint32 {
     proxyResult := /*pr4*/C.vscf_aes256_gcm_out_len(obj.cCtx, (C.size_t)(dataLen)/*pa10*/)
+
+    runtime.KeepAlive(obj)
 
     return uint32(proxyResult) /* r9 */
 }
@@ -269,6 +305,8 @@ func (obj *Aes256Gcm) OutLen(dataLen uint32) uint32 {
 func (obj *Aes256Gcm) EncryptedOutLen(dataLen uint32) uint32 {
     proxyResult := /*pr4*/C.vscf_aes256_gcm_encrypted_out_len(obj.cCtx, (C.size_t)(dataLen)/*pa10*/)
 
+    runtime.KeepAlive(obj)
+
     return uint32(proxyResult) /* r9 */
 }
 
@@ -279,6 +317,8 @@ func (obj *Aes256Gcm) EncryptedOutLen(dataLen uint32) uint32 {
 */
 func (obj *Aes256Gcm) DecryptedOutLen(dataLen uint32) uint32 {
     proxyResult := /*pr4*/C.vscf_aes256_gcm_decrypted_out_len(obj.cCtx, (C.size_t)(dataLen)/*pa10*/)
+
+    runtime.KeepAlive(obj)
 
     return uint32(proxyResult) /* r9 */
 }
@@ -300,6 +340,8 @@ func (obj *Aes256Gcm) Finish() ([]byte, error) {
     if err != nil {
         return nil, err
     }
+
+    runtime.KeepAlive(obj)
 
     return outBuf.getData() /* r7 */, nil
 }
@@ -337,6 +379,8 @@ func (obj *Aes256Gcm) AuthEncrypt(data []byte, authData []byte) ([]byte, []byte,
         return nil, nil, err
     }
 
+    runtime.KeepAlive(obj)
+
     return outBuf.getData() /* r7 */, tagBuf.getData() /* r7 */, nil
 }
 
@@ -345,6 +389,8 @@ func (obj *Aes256Gcm) AuthEncrypt(data []byte, authData []byte) ([]byte, []byte,
 */
 func (obj *Aes256Gcm) AuthEncryptedLen(dataLen uint32) uint32 {
     proxyResult := /*pr4*/C.vscf_aes256_gcm_auth_encrypted_len(obj.cCtx, (C.size_t)(dataLen)/*pa10*/)
+
+    runtime.KeepAlive(obj)
 
     return uint32(proxyResult) /* r9 */
 }
@@ -370,6 +416,8 @@ func (obj *Aes256Gcm) AuthDecrypt(data []byte, authData []byte, tag []byte) ([]b
         return nil, err
     }
 
+    runtime.KeepAlive(obj)
+
     return outBuf.getData() /* r7 */, nil
 }
 
@@ -378,6 +426,8 @@ func (obj *Aes256Gcm) AuthDecrypt(data []byte, authData []byte, tag []byte) ([]b
 */
 func (obj *Aes256Gcm) AuthDecryptedLen(dataLen uint32) uint32 {
     proxyResult := /*pr4*/C.vscf_aes256_gcm_auth_decrypted_len(obj.cCtx, (C.size_t)(dataLen)/*pa10*/)
+
+    runtime.KeepAlive(obj)
 
     return uint32(proxyResult) /* r9 */
 }
@@ -389,6 +439,8 @@ func (obj *Aes256Gcm) SetAuthData(authData []byte) {
     authDataData := helperWrapData (authData)
 
     C.vscf_aes256_gcm_set_auth_data(obj.cCtx, authDataData)
+
+    runtime.KeepAlive(obj)
 
     return
 }
@@ -420,6 +472,8 @@ func (obj *Aes256Gcm) FinishAuthEncryption() ([]byte, []byte, error) {
         return nil, nil, err
     }
 
+    runtime.KeepAlive(obj)
+
     return outBuf.getData() /* r7 */, tagBuf.getData() /* r7 */, nil
 }
 
@@ -443,6 +497,8 @@ func (obj *Aes256Gcm) FinishAuthDecryption(tag []byte) ([]byte, error) {
     if err != nil {
         return nil, err
     }
+
+    runtime.KeepAlive(obj)
 
     return outBuf.getData() /* r7 */, nil
 }

@@ -18,6 +18,8 @@ type PbeAlgInfo struct {
 func (obj *PbeAlgInfo) KdfAlgInfo() (AlgInfo, error) {
     proxyResult := /*pr4*/C.vscf_pbe_alg_info_kdf_alg_info(obj.cCtx)
 
+    runtime.KeepAlive(obj)
+
     return FoundationImplementationWrapAlgInfo(proxyResult) /* r4 */
 }
 
@@ -26,6 +28,8 @@ func (obj *PbeAlgInfo) KdfAlgInfo() (AlgInfo, error) {
 */
 func (obj *PbeAlgInfo) CipherAlgInfo() (AlgInfo, error) {
     proxyResult := /*pr4*/C.vscf_pbe_alg_info_cipher_alg_info(obj.cCtx)
+
+    runtime.KeepAlive(obj)
 
     return FoundationImplementationWrapAlgInfo(proxyResult) /* r4 */
 }
@@ -40,7 +44,8 @@ func NewPbeAlgInfo() *PbeAlgInfo {
     obj := &PbeAlgInfo {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, func (o *PbeAlgInfo) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *PbeAlgInfo) {o.Delete()})
+    runtime.SetFinalizer(obj, (*PbeAlgInfo).Delete)
     return obj
 }
 
@@ -51,7 +56,8 @@ func newPbeAlgInfoWithCtx(ctx *C.vscf_pbe_alg_info_t /*ct10*/) *PbeAlgInfo {
     obj := &PbeAlgInfo {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, func (o *PbeAlgInfo) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *PbeAlgInfo) {o.Delete()})
+    runtime.SetFinalizer(obj, (*PbeAlgInfo).Delete)
     return obj
 }
 
@@ -62,7 +68,8 @@ func newPbeAlgInfoCopy(ctx *C.vscf_pbe_alg_info_t /*ct10*/) *PbeAlgInfo {
     obj := &PbeAlgInfo {
         cCtx: C.vscf_pbe_alg_info_shallow_copy(ctx),
     }
-    runtime.SetFinalizer(obj, func (o *PbeAlgInfo) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *PbeAlgInfo) {o.Delete()})
+    runtime.SetFinalizer(obj, (*PbeAlgInfo).Delete)
     return obj
 }
 
@@ -70,6 +77,9 @@ func newPbeAlgInfoCopy(ctx *C.vscf_pbe_alg_info_t /*ct10*/) *PbeAlgInfo {
 * Release underlying C context.
 */
 func (obj *PbeAlgInfo) Delete() {
+    if obj == nil {
+        return
+    }
     runtime.SetFinalizer(obj, nil)
     obj.delete()
 }
@@ -91,10 +101,15 @@ func NewPbeAlgInfoWithMembers(algId AlgId, kdfAlgInfo AlgInfo, cipherAlgInfo Alg
 
     proxyResult := /*pr4*/C.vscf_pbe_alg_info_new_with_members(C.vscf_alg_id_t(algId) /*pa7*/, &kdfAlgInfoCopy, &cipherAlgInfoCopy)
 
+    runtime.KeepAlive(kdfAlgInfo)
+
+    runtime.KeepAlive(cipherAlgInfo)
+
     obj := &PbeAlgInfo {
         cCtx: proxyResult,
     }
-    runtime.SetFinalizer(obj, func (o *PbeAlgInfo) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *PbeAlgInfo) {o.Delete()})
+    runtime.SetFinalizer(obj, (*PbeAlgInfo).Delete)
     return obj
 }
 
@@ -103,6 +118,8 @@ func NewPbeAlgInfoWithMembers(algId AlgId, kdfAlgInfo AlgInfo, cipherAlgInfo Alg
 */
 func (obj *PbeAlgInfo) AlgId() AlgId {
     proxyResult := /*pr4*/C.vscf_pbe_alg_info_alg_id(obj.cCtx)
+
+    runtime.KeepAlive(obj)
 
     return AlgId(proxyResult) /* r8 */
 }

@@ -27,7 +27,8 @@ func NewMessageInfoEditor() *MessageInfoEditor {
     obj := &MessageInfoEditor {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, func (o *MessageInfoEditor) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *MessageInfoEditor) {o.Delete()})
+    runtime.SetFinalizer(obj, (*MessageInfoEditor).Delete)
     return obj
 }
 
@@ -38,7 +39,8 @@ func newMessageInfoEditorWithCtx(ctx *C.vscf_message_info_editor_t /*ct2*/) *Mes
     obj := &MessageInfoEditor {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, func (o *MessageInfoEditor) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *MessageInfoEditor) {o.Delete()})
+    runtime.SetFinalizer(obj, (*MessageInfoEditor).Delete)
     return obj
 }
 
@@ -49,7 +51,8 @@ func newMessageInfoEditorCopy(ctx *C.vscf_message_info_editor_t /*ct2*/) *Messag
     obj := &MessageInfoEditor {
         cCtx: C.vscf_message_info_editor_shallow_copy(ctx),
     }
-    runtime.SetFinalizer(obj, func (o *MessageInfoEditor) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *MessageInfoEditor) {o.Delete()})
+    runtime.SetFinalizer(obj, (*MessageInfoEditor).Delete)
     return obj
 }
 
@@ -57,6 +60,9 @@ func newMessageInfoEditorCopy(ctx *C.vscf_message_info_editor_t /*ct2*/) *Messag
 * Release underlying C context.
 */
 func (obj *MessageInfoEditor) Delete() {
+    if obj == nil {
+        return
+    }
     runtime.SetFinalizer(obj, nil)
     obj.delete()
 }
@@ -71,6 +77,9 @@ func (obj *MessageInfoEditor) delete() {
 func (obj *MessageInfoEditor) SetRandom(random Random) {
     C.vscf_message_info_editor_release_random(obj.cCtx)
     C.vscf_message_info_editor_use_random(obj.cCtx, (*C.vscf_impl_t)(random.ctx()))
+
+    runtime.KeepAlive(random)
+    runtime.KeepAlive(obj)
 }
 
 /*
@@ -83,6 +92,8 @@ func (obj *MessageInfoEditor) SetupDefaults() error {
     if err != nil {
         return err
     }
+
+    runtime.KeepAlive(obj)
 
     return nil
 }
@@ -103,6 +114,8 @@ func (obj *MessageInfoEditor) Unpack(messageInfoData []byte) error {
         return err
     }
 
+    runtime.KeepAlive(obj)
+
     return nil
 }
 
@@ -118,6 +131,10 @@ func (obj *MessageInfoEditor) Unlock(ownerRecipientId []byte, ownerPrivateKey Pr
     if err != nil {
         return err
     }
+
+    runtime.KeepAlive(obj)
+
+    runtime.KeepAlive(ownerPrivateKey)
 
     return nil
 }
@@ -135,6 +152,10 @@ func (obj *MessageInfoEditor) AddKeyRecipient(recipientId []byte, publicKey Publ
         return err
     }
 
+    runtime.KeepAlive(obj)
+
+    runtime.KeepAlive(publicKey)
+
     return nil
 }
 
@@ -147,6 +168,8 @@ func (obj *MessageInfoEditor) RemoveKeyRecipient(recipientId []byte) bool {
 
     proxyResult := /*pr4*/C.vscf_message_info_editor_remove_key_recipient(obj.cCtx, recipientIdData)
 
+    runtime.KeepAlive(obj)
+
     return bool(proxyResult) /* r9 */
 }
 
@@ -155,6 +178,8 @@ func (obj *MessageInfoEditor) RemoveKeyRecipient(recipientId []byte) bool {
 */
 func (obj *MessageInfoEditor) RemoveAll() {
     C.vscf_message_info_editor_remove_all(obj.cCtx)
+
+    runtime.KeepAlive(obj)
 
     return
 }
@@ -165,6 +190,8 @@ func (obj *MessageInfoEditor) RemoveAll() {
 */
 func (obj *MessageInfoEditor) PackedLen() uint32 {
     proxyResult := /*pr4*/C.vscf_message_info_editor_packed_len(obj.cCtx)
+
+    runtime.KeepAlive(obj)
 
     return uint32(proxyResult) /* r9 */
 }
@@ -182,6 +209,8 @@ func (obj *MessageInfoEditor) Pack() []byte {
 
 
     C.vscf_message_info_editor_pack(obj.cCtx, messageInfoBuf.ctx)
+
+    runtime.KeepAlive(obj)
 
     return messageInfoBuf.getData() /* r7 */
 }

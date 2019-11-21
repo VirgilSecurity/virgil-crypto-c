@@ -15,6 +15,9 @@ type Pkcs5Pbkdf2 struct {
 func (obj *Pkcs5Pbkdf2) SetHmac(hmac Mac) {
     C.vscf_pkcs5_pbkdf2_release_hmac(obj.cCtx)
     C.vscf_pkcs5_pbkdf2_use_hmac(obj.cCtx, (*C.vscf_impl_t)(hmac.ctx()))
+
+    runtime.KeepAlive(hmac)
+    runtime.KeepAlive(obj)
 }
 
 /*
@@ -22,6 +25,8 @@ func (obj *Pkcs5Pbkdf2) SetHmac(hmac Mac) {
 */
 func (obj *Pkcs5Pbkdf2) SetupDefaults() {
     C.vscf_pkcs5_pbkdf2_setup_defaults(obj.cCtx)
+
+    runtime.KeepAlive(obj)
 
     return
 }
@@ -36,7 +41,8 @@ func NewPkcs5Pbkdf2() *Pkcs5Pbkdf2 {
     obj := &Pkcs5Pbkdf2 {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, func (o *Pkcs5Pbkdf2) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *Pkcs5Pbkdf2) {o.Delete()})
+    runtime.SetFinalizer(obj, (*Pkcs5Pbkdf2).Delete)
     return obj
 }
 
@@ -47,7 +53,8 @@ func newPkcs5Pbkdf2WithCtx(ctx *C.vscf_pkcs5_pbkdf2_t /*ct10*/) *Pkcs5Pbkdf2 {
     obj := &Pkcs5Pbkdf2 {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, func (o *Pkcs5Pbkdf2) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *Pkcs5Pbkdf2) {o.Delete()})
+    runtime.SetFinalizer(obj, (*Pkcs5Pbkdf2).Delete)
     return obj
 }
 
@@ -58,7 +65,8 @@ func newPkcs5Pbkdf2Copy(ctx *C.vscf_pkcs5_pbkdf2_t /*ct10*/) *Pkcs5Pbkdf2 {
     obj := &Pkcs5Pbkdf2 {
         cCtx: C.vscf_pkcs5_pbkdf2_shallow_copy(ctx),
     }
-    runtime.SetFinalizer(obj, func (o *Pkcs5Pbkdf2) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *Pkcs5Pbkdf2) {o.Delete()})
+    runtime.SetFinalizer(obj, (*Pkcs5Pbkdf2).Delete)
     return obj
 }
 
@@ -66,6 +74,9 @@ func newPkcs5Pbkdf2Copy(ctx *C.vscf_pkcs5_pbkdf2_t /*ct10*/) *Pkcs5Pbkdf2 {
 * Release underlying C context.
 */
 func (obj *Pkcs5Pbkdf2) Delete() {
+    if obj == nil {
+        return
+    }
     runtime.SetFinalizer(obj, nil)
     obj.delete()
 }
@@ -83,6 +94,8 @@ func (obj *Pkcs5Pbkdf2) delete() {
 func (obj *Pkcs5Pbkdf2) AlgId() AlgId {
     proxyResult := /*pr4*/C.vscf_pkcs5_pbkdf2_alg_id(obj.cCtx)
 
+    runtime.KeepAlive(obj)
+
     return AlgId(proxyResult) /* r8 */
 }
 
@@ -91,6 +104,8 @@ func (obj *Pkcs5Pbkdf2) AlgId() AlgId {
 */
 func (obj *Pkcs5Pbkdf2) ProduceAlgInfo() (AlgInfo, error) {
     proxyResult := /*pr4*/C.vscf_pkcs5_pbkdf2_produce_alg_info(obj.cCtx)
+
+    runtime.KeepAlive(obj)
 
     return FoundationImplementationWrapAlgInfo(proxyResult) /* r4 */
 }
@@ -105,6 +120,10 @@ func (obj *Pkcs5Pbkdf2) RestoreAlgInfo(algInfo AlgInfo) error {
     if err != nil {
         return err
     }
+
+    runtime.KeepAlive(obj)
+
+    runtime.KeepAlive(algInfo)
 
     return nil
 }
@@ -122,6 +141,8 @@ func (obj *Pkcs5Pbkdf2) Derive(data []byte, keyLen uint32) []byte {
 
     C.vscf_pkcs5_pbkdf2_derive(obj.cCtx, dataData, (C.size_t)(keyLen)/*pa10*/, keyBuf.ctx)
 
+    runtime.KeepAlive(obj)
+
     return keyBuf.getData() /* r7 */
 }
 
@@ -132,6 +153,8 @@ func (obj *Pkcs5Pbkdf2) Reset(salt []byte, iterationCount uint32) {
     saltData := helperWrapData (salt)
 
     C.vscf_pkcs5_pbkdf2_reset(obj.cCtx, saltData, (C.size_t)(iterationCount)/*pa10*/)
+
+    runtime.KeepAlive(obj)
 
     return
 }
@@ -144,6 +167,8 @@ func (obj *Pkcs5Pbkdf2) SetInfo(info []byte) {
     infoData := helperWrapData (info)
 
     C.vscf_pkcs5_pbkdf2_set_info(obj.cCtx, infoData)
+
+    runtime.KeepAlive(obj)
 
     return
 }

@@ -22,7 +22,8 @@ func NewSigner() *Signer {
     obj := &Signer {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, func (o *Signer) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *Signer) {o.Delete()})
+    runtime.SetFinalizer(obj, (*Signer).Delete)
     return obj
 }
 
@@ -33,7 +34,8 @@ func newSignerWithCtx(ctx *C.vscf_signer_t /*ct2*/) *Signer {
     obj := &Signer {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, func (o *Signer) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *Signer) {o.Delete()})
+    runtime.SetFinalizer(obj, (*Signer).Delete)
     return obj
 }
 
@@ -44,7 +46,8 @@ func newSignerCopy(ctx *C.vscf_signer_t /*ct2*/) *Signer {
     obj := &Signer {
         cCtx: C.vscf_signer_shallow_copy(ctx),
     }
-    runtime.SetFinalizer(obj, func (o *Signer) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *Signer) {o.Delete()})
+    runtime.SetFinalizer(obj, (*Signer).Delete)
     return obj
 }
 
@@ -52,6 +55,9 @@ func newSignerCopy(ctx *C.vscf_signer_t /*ct2*/) *Signer {
 * Release underlying C context.
 */
 func (obj *Signer) Delete() {
+    if obj == nil {
+        return
+    }
     runtime.SetFinalizer(obj, nil)
     obj.delete()
 }
@@ -66,11 +72,17 @@ func (obj *Signer) delete() {
 func (obj *Signer) SetHash(hash Hash) {
     C.vscf_signer_release_hash(obj.cCtx)
     C.vscf_signer_use_hash(obj.cCtx, (*C.vscf_impl_t)(hash.ctx()))
+
+    runtime.KeepAlive(hash)
+    runtime.KeepAlive(obj)
 }
 
 func (obj *Signer) SetRandom(random Random) {
     C.vscf_signer_release_random(obj.cCtx)
     C.vscf_signer_use_random(obj.cCtx, (*C.vscf_impl_t)(random.ctx()))
+
+    runtime.KeepAlive(random)
+    runtime.KeepAlive(obj)
 }
 
 /*
@@ -78,6 +90,8 @@ func (obj *Signer) SetRandom(random Random) {
 */
 func (obj *Signer) Reset() {
     C.vscf_signer_reset(obj.cCtx)
+
+    runtime.KeepAlive(obj)
 
     return
 }
@@ -90,6 +104,8 @@ func (obj *Signer) AppendData(data []byte) {
 
     C.vscf_signer_append_data(obj.cCtx, dataData)
 
+    runtime.KeepAlive(obj)
+
     return
 }
 
@@ -98,6 +114,10 @@ func (obj *Signer) AppendData(data []byte) {
 */
 func (obj *Signer) SignatureLen(privateKey PrivateKey) uint32 {
     proxyResult := /*pr4*/C.vscf_signer_signature_len(obj.cCtx, (*C.vscf_impl_t)(privateKey.ctx()))
+
+    runtime.KeepAlive(obj)
+
+    runtime.KeepAlive(privateKey)
 
     return uint32(proxyResult) /* r9 */
 }
@@ -119,6 +139,10 @@ func (obj *Signer) Sign(privateKey PrivateKey) ([]byte, error) {
     if err != nil {
         return nil, err
     }
+
+    runtime.KeepAlive(obj)
+
+    runtime.KeepAlive(privateKey)
 
     return signatureBuf.getData() /* r7 */, nil
 }

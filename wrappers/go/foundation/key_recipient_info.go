@@ -22,7 +22,8 @@ func NewKeyRecipientInfo() *KeyRecipientInfo {
     obj := &KeyRecipientInfo {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, func (o *KeyRecipientInfo) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *KeyRecipientInfo) {o.Delete()})
+    runtime.SetFinalizer(obj, (*KeyRecipientInfo).Delete)
     return obj
 }
 
@@ -33,7 +34,8 @@ func newKeyRecipientInfoWithCtx(ctx *C.vscf_key_recipient_info_t /*ct2*/) *KeyRe
     obj := &KeyRecipientInfo {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, func (o *KeyRecipientInfo) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *KeyRecipientInfo) {o.Delete()})
+    runtime.SetFinalizer(obj, (*KeyRecipientInfo).Delete)
     return obj
 }
 
@@ -44,7 +46,8 @@ func newKeyRecipientInfoCopy(ctx *C.vscf_key_recipient_info_t /*ct2*/) *KeyRecip
     obj := &KeyRecipientInfo {
         cCtx: C.vscf_key_recipient_info_shallow_copy(ctx),
     }
-    runtime.SetFinalizer(obj, func (o *KeyRecipientInfo) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *KeyRecipientInfo) {o.Delete()})
+    runtime.SetFinalizer(obj, (*KeyRecipientInfo).Delete)
     return obj
 }
 
@@ -52,6 +55,9 @@ func newKeyRecipientInfoCopy(ctx *C.vscf_key_recipient_info_t /*ct2*/) *KeyRecip
 * Release underlying C context.
 */
 func (obj *KeyRecipientInfo) Delete() {
+    if obj == nil {
+        return
+    }
     runtime.SetFinalizer(obj, nil)
     obj.delete()
 }
@@ -72,10 +78,13 @@ func NewKeyRecipientInfoWithData(recipientId []byte, keyEncryptionAlgorithm AlgI
 
     proxyResult := /*pr4*/C.vscf_key_recipient_info_new_with_data(recipientIdData, (*C.vscf_impl_t)(keyEncryptionAlgorithm.ctx()), encryptedKeyData)
 
+    runtime.KeepAlive(keyEncryptionAlgorithm)
+
     obj := &KeyRecipientInfo {
         cCtx: proxyResult,
     }
-    runtime.SetFinalizer(obj, func (o *KeyRecipientInfo) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *KeyRecipientInfo) {o.Delete()})
+    runtime.SetFinalizer(obj, (*KeyRecipientInfo).Delete)
     return obj
 }
 
@@ -84,6 +93,8 @@ func NewKeyRecipientInfoWithData(recipientId []byte, keyEncryptionAlgorithm AlgI
 */
 func (obj *KeyRecipientInfo) RecipientId() []byte {
     proxyResult := /*pr4*/C.vscf_key_recipient_info_recipient_id(obj.cCtx)
+
+    runtime.KeepAlive(obj)
 
     return helperExtractData(proxyResult) /* r1 */
 }
@@ -95,6 +106,8 @@ func (obj *KeyRecipientInfo) RecipientId() []byte {
 func (obj *KeyRecipientInfo) KeyEncryptionAlgorithm() (AlgInfo, error) {
     proxyResult := /*pr4*/C.vscf_key_recipient_info_key_encryption_algorithm(obj.cCtx)
 
+    runtime.KeepAlive(obj)
+
     return FoundationImplementationWrapAlgInfo(proxyResult) /* r4 */
 }
 
@@ -103,6 +116,8 @@ func (obj *KeyRecipientInfo) KeyEncryptionAlgorithm() (AlgInfo, error) {
 */
 func (obj *KeyRecipientInfo) EncryptedKey() []byte {
     proxyResult := /*pr4*/C.vscf_key_recipient_info_encrypted_key(obj.cCtx)
+
+    runtime.KeepAlive(obj)
 
     return helperExtractData(proxyResult) /* r1 */
 }

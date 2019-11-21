@@ -17,11 +17,17 @@ type Ecc struct {
 func (obj *Ecc) SetRandom(random Random) {
     C.vscf_ecc_release_random(obj.cCtx)
     C.vscf_ecc_use_random(obj.cCtx, (*C.vscf_impl_t)(random.ctx()))
+
+    runtime.KeepAlive(random)
+    runtime.KeepAlive(obj)
 }
 
 func (obj *Ecc) SetEcies(ecies Ecies) {
     C.vscf_ecc_release_ecies(obj.cCtx)
     C.vscf_ecc_use_ecies(obj.cCtx, (*C.vscf_ecies_t)(ecies.ctx()))
+
+    runtime.KeepAlive(ecies)
+    runtime.KeepAlive(obj)
 }
 
 /*
@@ -34,6 +40,8 @@ func (obj *Ecc) SetupDefaults() error {
     if err != nil {
         return err
     }
+
+    runtime.KeepAlive(obj)
 
     return nil
 }
@@ -56,6 +64,10 @@ func (obj *Ecc) GenerateKey(algId AlgId) (PrivateKey, error) {
         return nil, err
     }
 
+    runtime.KeepAlive(obj)
+
+    runtime.KeepAlive(error)
+
     return FoundationImplementationWrapPrivateKey(proxyResult) /* r4 */
 }
 
@@ -69,7 +81,8 @@ func NewEcc() *Ecc {
     obj := &Ecc {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, func (o *Ecc) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *Ecc) {o.Delete()})
+    runtime.SetFinalizer(obj, (*Ecc).Delete)
     return obj
 }
 
@@ -80,7 +93,8 @@ func newEccWithCtx(ctx *C.vscf_ecc_t /*ct10*/) *Ecc {
     obj := &Ecc {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, func (o *Ecc) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *Ecc) {o.Delete()})
+    runtime.SetFinalizer(obj, (*Ecc).Delete)
     return obj
 }
 
@@ -91,7 +105,8 @@ func newEccCopy(ctx *C.vscf_ecc_t /*ct10*/) *Ecc {
     obj := &Ecc {
         cCtx: C.vscf_ecc_shallow_copy(ctx),
     }
-    runtime.SetFinalizer(obj, func (o *Ecc) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *Ecc) {o.Delete()})
+    runtime.SetFinalizer(obj, (*Ecc).Delete)
     return obj
 }
 
@@ -99,6 +114,9 @@ func newEccCopy(ctx *C.vscf_ecc_t /*ct10*/) *Ecc {
 * Release underlying C context.
 */
 func (obj *Ecc) Delete() {
+    if obj == nil {
+        return
+    }
     runtime.SetFinalizer(obj, nil)
     obj.delete()
 }
@@ -116,6 +134,8 @@ func (obj *Ecc) delete() {
 func (obj *Ecc) AlgId() AlgId {
     proxyResult := /*pr4*/C.vscf_ecc_alg_id(obj.cCtx)
 
+    runtime.KeepAlive(obj)
+
     return AlgId(proxyResult) /* r8 */
 }
 
@@ -124,6 +144,8 @@ func (obj *Ecc) AlgId() AlgId {
 */
 func (obj *Ecc) ProduceAlgInfo() (AlgInfo, error) {
     proxyResult := /*pr4*/C.vscf_ecc_produce_alg_info(obj.cCtx)
+
+    runtime.KeepAlive(obj)
 
     return FoundationImplementationWrapAlgInfo(proxyResult) /* r4 */
 }
@@ -138,6 +160,10 @@ func (obj *Ecc) RestoreAlgInfo(algInfo AlgInfo) error {
     if err != nil {
         return err
     }
+
+    runtime.KeepAlive(obj)
+
+    runtime.KeepAlive(algInfo)
 
     return nil
 }
@@ -185,6 +211,12 @@ func (obj *Ecc) GenerateEphemeralKey(key Key) (PrivateKey, error) {
         return nil, err
     }
 
+    runtime.KeepAlive(obj)
+
+    runtime.KeepAlive(key)
+
+    runtime.KeepAlive(error)
+
     return FoundationImplementationWrapPrivateKey(proxyResult) /* r4 */
 }
 
@@ -209,6 +241,12 @@ func (obj *Ecc) ImportPublicKey(rawKey *RawPublicKey) (PublicKey, error) {
         return nil, err
     }
 
+    runtime.KeepAlive(obj)
+
+    runtime.KeepAlive(rawKey)
+
+    runtime.KeepAlive(error)
+
     return FoundationImplementationWrapPublicKey(proxyResult) /* r4 */
 }
 
@@ -229,6 +267,12 @@ func (obj *Ecc) ExportPublicKey(publicKey PublicKey) (*RawPublicKey, error) {
     if err != nil {
         return nil, err
     }
+
+    runtime.KeepAlive(obj)
+
+    runtime.KeepAlive(publicKey)
+
+    runtime.KeepAlive(error)
 
     return newRawPublicKeyWithCtx(proxyResult) /* r6 */, nil
 }
@@ -254,6 +298,12 @@ func (obj *Ecc) ImportPrivateKey(rawKey *RawPrivateKey) (PrivateKey, error) {
         return nil, err
     }
 
+    runtime.KeepAlive(obj)
+
+    runtime.KeepAlive(rawKey)
+
+    runtime.KeepAlive(error)
+
     return FoundationImplementationWrapPrivateKey(proxyResult) /* r4 */
 }
 
@@ -275,6 +325,12 @@ func (obj *Ecc) ExportPrivateKey(privateKey PrivateKey) (*RawPrivateKey, error) 
         return nil, err
     }
 
+    runtime.KeepAlive(obj)
+
+    runtime.KeepAlive(privateKey)
+
+    runtime.KeepAlive(error)
+
     return newRawPrivateKeyWithCtx(proxyResult) /* r6 */, nil
 }
 
@@ -284,6 +340,10 @@ func (obj *Ecc) ExportPrivateKey(privateKey PrivateKey) (*RawPrivateKey, error) 
 func (obj *Ecc) CanEncrypt(publicKey PublicKey, dataLen uint32) bool {
     proxyResult := /*pr4*/C.vscf_ecc_can_encrypt(obj.cCtx, (*C.vscf_impl_t)(publicKey.ctx()), (C.size_t)(dataLen)/*pa10*/)
 
+    runtime.KeepAlive(obj)
+
+    runtime.KeepAlive(publicKey)
+
     return bool(proxyResult) /* r9 */
 }
 
@@ -292,6 +352,10 @@ func (obj *Ecc) CanEncrypt(publicKey PublicKey, dataLen uint32) bool {
 */
 func (obj *Ecc) EncryptedLen(publicKey PublicKey, dataLen uint32) uint32 {
     proxyResult := /*pr4*/C.vscf_ecc_encrypted_len(obj.cCtx, (*C.vscf_impl_t)(publicKey.ctx()), (C.size_t)(dataLen)/*pa10*/)
+
+    runtime.KeepAlive(obj)
+
+    runtime.KeepAlive(publicKey)
 
     return uint32(proxyResult) /* r9 */
 }
@@ -314,6 +378,10 @@ func (obj *Ecc) Encrypt(publicKey PublicKey, data []byte) ([]byte, error) {
         return nil, err
     }
 
+    runtime.KeepAlive(obj)
+
+    runtime.KeepAlive(publicKey)
+
     return outBuf.getData() /* r7 */, nil
 }
 
@@ -324,6 +392,10 @@ func (obj *Ecc) Encrypt(publicKey PublicKey, data []byte) ([]byte, error) {
 func (obj *Ecc) CanDecrypt(privateKey PrivateKey, dataLen uint32) bool {
     proxyResult := /*pr4*/C.vscf_ecc_can_decrypt(obj.cCtx, (*C.vscf_impl_t)(privateKey.ctx()), (C.size_t)(dataLen)/*pa10*/)
 
+    runtime.KeepAlive(obj)
+
+    runtime.KeepAlive(privateKey)
+
     return bool(proxyResult) /* r9 */
 }
 
@@ -332,6 +404,10 @@ func (obj *Ecc) CanDecrypt(privateKey PrivateKey, dataLen uint32) bool {
 */
 func (obj *Ecc) DecryptedLen(privateKey PrivateKey, dataLen uint32) uint32 {
     proxyResult := /*pr4*/C.vscf_ecc_decrypted_len(obj.cCtx, (*C.vscf_impl_t)(privateKey.ctx()), (C.size_t)(dataLen)/*pa10*/)
+
+    runtime.KeepAlive(obj)
+
+    runtime.KeepAlive(privateKey)
 
     return uint32(proxyResult) /* r9 */
 }
@@ -354,6 +430,10 @@ func (obj *Ecc) Decrypt(privateKey PrivateKey, data []byte) ([]byte, error) {
         return nil, err
     }
 
+    runtime.KeepAlive(obj)
+
+    runtime.KeepAlive(privateKey)
+
     return outBuf.getData() /* r7 */, nil
 }
 
@@ -362,6 +442,10 @@ func (obj *Ecc) Decrypt(privateKey PrivateKey, data []byte) ([]byte, error) {
 */
 func (obj *Ecc) CanSign(privateKey PrivateKey) bool {
     proxyResult := /*pr4*/C.vscf_ecc_can_sign(obj.cCtx, (*C.vscf_impl_t)(privateKey.ctx()))
+
+    runtime.KeepAlive(obj)
+
+    runtime.KeepAlive(privateKey)
 
     return bool(proxyResult) /* r9 */
 }
@@ -372,6 +456,10 @@ func (obj *Ecc) CanSign(privateKey PrivateKey) bool {
 */
 func (obj *Ecc) SignatureLen(key Key) uint32 {
     proxyResult := /*pr4*/C.vscf_ecc_signature_len(obj.cCtx, (*C.vscf_impl_t)(key.ctx()))
+
+    runtime.KeepAlive(obj)
+
+    runtime.KeepAlive(key)
 
     return uint32(proxyResult) /* r9 */
 }
@@ -394,6 +482,10 @@ func (obj *Ecc) SignHash(privateKey PrivateKey, hashId AlgId, digest []byte) ([]
         return nil, err
     }
 
+    runtime.KeepAlive(obj)
+
+    runtime.KeepAlive(privateKey)
+
     return signatureBuf.getData() /* r7 */, nil
 }
 
@@ -402,6 +494,10 @@ func (obj *Ecc) SignHash(privateKey PrivateKey, hashId AlgId, digest []byte) ([]
 */
 func (obj *Ecc) CanVerify(publicKey PublicKey) bool {
     proxyResult := /*pr4*/C.vscf_ecc_can_verify(obj.cCtx, (*C.vscf_impl_t)(publicKey.ctx()))
+
+    runtime.KeepAlive(obj)
+
+    runtime.KeepAlive(publicKey)
 
     return bool(proxyResult) /* r9 */
 }
@@ -414,6 +510,10 @@ func (obj *Ecc) VerifyHash(publicKey PublicKey, hashId AlgId, digest []byte, sig
     signatureData := helperWrapData (signature)
 
     proxyResult := /*pr4*/C.vscf_ecc_verify_hash(obj.cCtx, (*C.vscf_impl_t)(publicKey.ctx()), C.vscf_alg_id_t(hashId) /*pa7*/, digestData, signatureData)
+
+    runtime.KeepAlive(obj)
+
+    runtime.KeepAlive(publicKey)
 
     return bool(proxyResult) /* r9 */
 }
@@ -437,6 +537,12 @@ func (obj *Ecc) ComputeSharedKey(publicKey PublicKey, privateKey PrivateKey) ([]
         return nil, err
     }
 
+    runtime.KeepAlive(obj)
+
+    runtime.KeepAlive(publicKey)
+
+    runtime.KeepAlive(privateKey)
+
     return sharedKeyBuf.getData() /* r7 */, nil
 }
 
@@ -446,6 +552,10 @@ func (obj *Ecc) ComputeSharedKey(publicKey PublicKey, privateKey PrivateKey) ([]
 */
 func (obj *Ecc) SharedKeyLen(key Key) uint32 {
     proxyResult := /*pr4*/C.vscf_ecc_shared_key_len(obj.cCtx, (*C.vscf_impl_t)(key.ctx()))
+
+    runtime.KeepAlive(obj)
+
+    runtime.KeepAlive(key)
 
     return uint32(proxyResult) /* r9 */
 }

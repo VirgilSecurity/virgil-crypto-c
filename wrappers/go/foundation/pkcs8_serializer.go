@@ -15,6 +15,9 @@ type Pkcs8Serializer struct {
 func (obj *Pkcs8Serializer) SetAsn1Writer(asn1Writer Asn1Writer) {
     C.vscf_pkcs8_serializer_release_asn1_writer(obj.cCtx)
     C.vscf_pkcs8_serializer_use_asn1_writer(obj.cCtx, (*C.vscf_impl_t)(asn1Writer.ctx()))
+
+    runtime.KeepAlive(asn1Writer)
+    runtime.KeepAlive(obj)
 }
 
 /*
@@ -22,6 +25,8 @@ func (obj *Pkcs8Serializer) SetAsn1Writer(asn1Writer Asn1Writer) {
 */
 func (obj *Pkcs8Serializer) SetupDefaults() {
     C.vscf_pkcs8_serializer_setup_defaults(obj.cCtx)
+
+    runtime.KeepAlive(obj)
 
     return
 }
@@ -42,6 +47,12 @@ func (obj *Pkcs8Serializer) SerializePublicKeyInplace(publicKey *RawPublicKey) (
         return 0, err
     }
 
+    runtime.KeepAlive(obj)
+
+    runtime.KeepAlive(publicKey)
+
+    runtime.KeepAlive(error)
+
     return uint32(proxyResult) /* r9 */, nil
 }
 
@@ -61,6 +72,12 @@ func (obj *Pkcs8Serializer) SerializePrivateKeyInplace(privateKey *RawPrivateKey
         return 0, err
     }
 
+    runtime.KeepAlive(obj)
+
+    runtime.KeepAlive(privateKey)
+
+    runtime.KeepAlive(error)
+
     return uint32(proxyResult) /* r9 */, nil
 }
 
@@ -74,7 +91,8 @@ func NewPkcs8Serializer() *Pkcs8Serializer {
     obj := &Pkcs8Serializer {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, func (o *Pkcs8Serializer) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *Pkcs8Serializer) {o.Delete()})
+    runtime.SetFinalizer(obj, (*Pkcs8Serializer).Delete)
     return obj
 }
 
@@ -85,7 +103,8 @@ func newPkcs8SerializerWithCtx(ctx *C.vscf_pkcs8_serializer_t /*ct10*/) *Pkcs8Se
     obj := &Pkcs8Serializer {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, func (o *Pkcs8Serializer) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *Pkcs8Serializer) {o.Delete()})
+    runtime.SetFinalizer(obj, (*Pkcs8Serializer).Delete)
     return obj
 }
 
@@ -96,7 +115,8 @@ func newPkcs8SerializerCopy(ctx *C.vscf_pkcs8_serializer_t /*ct10*/) *Pkcs8Seria
     obj := &Pkcs8Serializer {
         cCtx: C.vscf_pkcs8_serializer_shallow_copy(ctx),
     }
-    runtime.SetFinalizer(obj, func (o *Pkcs8Serializer) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *Pkcs8Serializer) {o.Delete()})
+    runtime.SetFinalizer(obj, (*Pkcs8Serializer).Delete)
     return obj
 }
 
@@ -104,6 +124,9 @@ func newPkcs8SerializerCopy(ctx *C.vscf_pkcs8_serializer_t /*ct10*/) *Pkcs8Seria
 * Release underlying C context.
 */
 func (obj *Pkcs8Serializer) Delete() {
+    if obj == nil {
+        return
+    }
     runtime.SetFinalizer(obj, nil)
     obj.delete()
 }
@@ -122,6 +145,10 @@ func (obj *Pkcs8Serializer) delete() {
 */
 func (obj *Pkcs8Serializer) SerializedPublicKeyLen(publicKey *RawPublicKey) uint32 {
     proxyResult := /*pr4*/C.vscf_pkcs8_serializer_serialized_public_key_len(obj.cCtx, (*C.vscf_raw_public_key_t)(publicKey.ctx()))
+
+    runtime.KeepAlive(obj)
+
+    runtime.KeepAlive(publicKey)
 
     return uint32(proxyResult) /* r9 */
 }
@@ -146,6 +173,10 @@ func (obj *Pkcs8Serializer) SerializePublicKey(publicKey *RawPublicKey) ([]byte,
         return nil, err
     }
 
+    runtime.KeepAlive(obj)
+
+    runtime.KeepAlive(publicKey)
+
     return outBuf.getData() /* r7 */, nil
 }
 
@@ -156,6 +187,10 @@ func (obj *Pkcs8Serializer) SerializePublicKey(publicKey *RawPublicKey) ([]byte,
 */
 func (obj *Pkcs8Serializer) SerializedPrivateKeyLen(privateKey *RawPrivateKey) uint32 {
     proxyResult := /*pr4*/C.vscf_pkcs8_serializer_serialized_private_key_len(obj.cCtx, (*C.vscf_raw_private_key_t)(privateKey.ctx()))
+
+    runtime.KeepAlive(obj)
+
+    runtime.KeepAlive(privateKey)
 
     return uint32(proxyResult) /* r9 */
 }
@@ -179,6 +214,10 @@ func (obj *Pkcs8Serializer) SerializePrivateKey(privateKey *RawPrivateKey) ([]by
     if err != nil {
         return nil, err
     }
+
+    runtime.KeepAlive(obj)
+
+    runtime.KeepAlive(privateKey)
 
     return outBuf.getData() /* r7 */, nil
 }

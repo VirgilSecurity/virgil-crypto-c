@@ -22,7 +22,8 @@ func NewRatchetGroupMessage() *RatchetGroupMessage {
     obj := &RatchetGroupMessage {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, func (o *RatchetGroupMessage) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *RatchetGroupMessage) {o.Delete()})
+    runtime.SetFinalizer(obj, (*RatchetGroupMessage).Delete)
     return obj
 }
 
@@ -33,7 +34,8 @@ func newRatchetGroupMessageWithCtx(ctx *C.vscr_ratchet_group_message_t /*ct2*/) 
     obj := &RatchetGroupMessage {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, func (o *RatchetGroupMessage) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *RatchetGroupMessage) {o.Delete()})
+    runtime.SetFinalizer(obj, (*RatchetGroupMessage).Delete)
     return obj
 }
 
@@ -44,7 +46,8 @@ func newRatchetGroupMessageCopy(ctx *C.vscr_ratchet_group_message_t /*ct2*/) *Ra
     obj := &RatchetGroupMessage {
         cCtx: C.vscr_ratchet_group_message_shallow_copy(ctx),
     }
-    runtime.SetFinalizer(obj, func (o *RatchetGroupMessage) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *RatchetGroupMessage) {o.Delete()})
+    runtime.SetFinalizer(obj, (*RatchetGroupMessage).Delete)
     return obj
 }
 
@@ -52,6 +55,9 @@ func newRatchetGroupMessageCopy(ctx *C.vscr_ratchet_group_message_t /*ct2*/) *Ra
 * Release underlying C context.
 */
 func (obj *RatchetGroupMessage) Delete() {
+    if obj == nil {
+        return
+    }
     runtime.SetFinalizer(obj, nil)
     obj.delete()
 }
@@ -69,6 +75,8 @@ func (obj *RatchetGroupMessage) delete() {
 func (obj *RatchetGroupMessage) GetType() GroupMsgType {
     proxyResult := /*pr4*/C.vscr_ratchet_group_message_get_type(obj.cCtx)
 
+    runtime.KeepAlive(obj)
+
     return GroupMsgType(proxyResult) /* r8 */
 }
 
@@ -79,6 +87,8 @@ func (obj *RatchetGroupMessage) GetType() GroupMsgType {
 func (obj *RatchetGroupMessage) GetSessionId() []byte {
     proxyResult := /*pr4*/C.vscr_ratchet_group_message_get_session_id(obj.cCtx)
 
+    runtime.KeepAlive(obj)
+
     return helperExtractData(proxyResult) /* r1 */
 }
 
@@ -87,6 +97,8 @@ func (obj *RatchetGroupMessage) GetSessionId() []byte {
 */
 func (obj *RatchetGroupMessage) GetCounter() uint32 {
     proxyResult := /*pr4*/C.vscr_ratchet_group_message_get_counter(obj.cCtx)
+
+    runtime.KeepAlive(obj)
 
     return uint32(proxyResult) /* r9 */
 }
@@ -97,6 +109,8 @@ func (obj *RatchetGroupMessage) GetCounter() uint32 {
 func (obj *RatchetGroupMessage) GetEpoch() uint32 {
     proxyResult := /*pr4*/C.vscr_ratchet_group_message_get_epoch(obj.cCtx)
 
+    runtime.KeepAlive(obj)
+
     return uint32(proxyResult) /* r9 */
 }
 
@@ -105,6 +119,8 @@ func (obj *RatchetGroupMessage) GetEpoch() uint32 {
 */
 func (obj *RatchetGroupMessage) SerializeLen() uint32 {
     proxyResult := /*pr4*/C.vscr_ratchet_group_message_serialize_len(obj.cCtx)
+
+    runtime.KeepAlive(obj)
 
     return uint32(proxyResult) /* r9 */
 }
@@ -121,6 +137,8 @@ func (obj *RatchetGroupMessage) Serialize() []byte {
 
 
     C.vscr_ratchet_group_message_serialize(obj.cCtx, outputBuf.ctx)
+
+    runtime.KeepAlive(obj)
 
     return outputBuf.getData() /* r7 */
 }
@@ -139,6 +157,8 @@ func RatchetGroupMessageDeserialize(input []byte) (*RatchetGroupMessage, error) 
     if err != nil {
         return nil, err
     }
+
+    runtime.KeepAlive(error)
 
     return newRatchetGroupMessageWithCtx(proxyResult) /* r6 */, nil
 }

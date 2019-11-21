@@ -24,7 +24,8 @@ func NewPheServer() *PheServer {
     obj := &PheServer {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, func (o *PheServer) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *PheServer) {o.Delete()})
+    runtime.SetFinalizer(obj, (*PheServer).Delete)
     return obj
 }
 
@@ -35,7 +36,8 @@ func newPheServerWithCtx(ctx *C.vsce_phe_server_t /*ct2*/) *PheServer {
     obj := &PheServer {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, func (o *PheServer) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *PheServer) {o.Delete()})
+    runtime.SetFinalizer(obj, (*PheServer).Delete)
     return obj
 }
 
@@ -46,7 +48,8 @@ func newPheServerCopy(ctx *C.vsce_phe_server_t /*ct2*/) *PheServer {
     obj := &PheServer {
         cCtx: C.vsce_phe_server_shallow_copy(ctx),
     }
-    runtime.SetFinalizer(obj, func (o *PheServer) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *PheServer) {o.Delete()})
+    runtime.SetFinalizer(obj, (*PheServer).Delete)
     return obj
 }
 
@@ -54,6 +57,9 @@ func newPheServerCopy(ctx *C.vsce_phe_server_t /*ct2*/) *PheServer {
 * Release underlying C context.
 */
 func (obj *PheServer) Delete() {
+    if obj == nil {
+        return
+    }
     runtime.SetFinalizer(obj, nil)
     obj.delete()
 }
@@ -71,6 +77,9 @@ func (obj *PheServer) delete() {
 func (obj *PheServer) SetRandom(random foundation.Random) {
     C.vsce_phe_server_release_random(obj.cCtx)
     C.vsce_phe_server_use_random(obj.cCtx, (*C.vscf_impl_t)(random.(context).ctx()))
+
+    runtime.KeepAlive(random)
+    runtime.KeepAlive(obj)
 }
 
 /*
@@ -79,6 +88,9 @@ func (obj *PheServer) SetRandom(random foundation.Random) {
 func (obj *PheServer) SetOperationRandom(operationRandom foundation.Random) {
     C.vsce_phe_server_release_operation_random(obj.cCtx)
     C.vsce_phe_server_use_operation_random(obj.cCtx, (*C.vscf_impl_t)(operationRandom.(context).ctx()))
+
+    runtime.KeepAlive(operationRandom)
+    runtime.KeepAlive(obj)
 }
 
 func (obj *PheServer) SetupDefaults() error {
@@ -88,6 +100,8 @@ func (obj *PheServer) SetupDefaults() error {
     if err != nil {
         return err
     }
+
+    runtime.KeepAlive(obj)
 
     return nil
 }
@@ -116,6 +130,8 @@ func (obj *PheServer) GenerateServerKeyPair() ([]byte, []byte, error) {
         return nil, nil, err
     }
 
+    runtime.KeepAlive(obj)
+
     return serverPrivateKeyBuf.getData() /* r7 */, serverPublicKeyBuf.getData() /* r7 */, nil
 }
 
@@ -124,6 +140,8 @@ func (obj *PheServer) GenerateServerKeyPair() ([]byte, []byte, error) {
 */
 func (obj *PheServer) EnrollmentResponseLen() uint32 {
     proxyResult := /*pr4*/C.vsce_phe_server_enrollment_response_len(obj.cCtx)
+
+    runtime.KeepAlive(obj)
 
     return uint32(proxyResult) /* r9 */
 }
@@ -147,6 +165,8 @@ func (obj *PheServer) GetEnrollment(serverPrivateKey []byte, serverPublicKey []b
         return nil, err
     }
 
+    runtime.KeepAlive(obj)
+
     return enrollmentResponseBuf.getData() /* r7 */, nil
 }
 
@@ -155,6 +175,8 @@ func (obj *PheServer) GetEnrollment(serverPrivateKey []byte, serverPublicKey []b
 */
 func (obj *PheServer) VerifyPasswordResponseLen() uint32 {
     proxyResult := /*pr4*/C.vsce_phe_server_verify_password_response_len(obj.cCtx)
+
+    runtime.KeepAlive(obj)
 
     return uint32(proxyResult) /* r9 */
 }
@@ -179,6 +201,8 @@ func (obj *PheServer) VerifyPassword(serverPrivateKey []byte, serverPublicKey []
         return nil, err
     }
 
+    runtime.KeepAlive(obj)
+
     return verifyPasswordResponseBuf.getData() /* r7 */, nil
 }
 
@@ -187,6 +211,8 @@ func (obj *PheServer) VerifyPassword(serverPrivateKey []byte, serverPublicKey []
 */
 func (obj *PheServer) UpdateTokenLen() uint32 {
     proxyResult := /*pr4*/C.vsce_phe_server_update_token_len(obj.cCtx)
+
+    runtime.KeepAlive(obj)
 
     return uint32(proxyResult) /* r9 */
 }
@@ -220,6 +246,8 @@ func (obj *PheServer) RotateKeys(serverPrivateKey []byte) ([]byte, []byte, []byt
     if err != nil {
         return nil, nil, nil, err
     }
+
+    runtime.KeepAlive(obj)
 
     return newServerPrivateKeyBuf.getData() /* r7 */, newServerPublicKeyBuf.getData() /* r7 */, updateTokenBuf.getData() /* r7 */, nil
 }

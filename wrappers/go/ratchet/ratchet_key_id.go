@@ -22,7 +22,8 @@ func NewRatchetKeyId() *RatchetKeyId {
     obj := &RatchetKeyId {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, func (o *RatchetKeyId) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *RatchetKeyId) {o.Delete()})
+    runtime.SetFinalizer(obj, (*RatchetKeyId).Delete)
     return obj
 }
 
@@ -33,7 +34,8 @@ func newRatchetKeyIdWithCtx(ctx *C.vscr_ratchet_key_id_t /*ct2*/) *RatchetKeyId 
     obj := &RatchetKeyId {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, func (o *RatchetKeyId) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *RatchetKeyId) {o.Delete()})
+    runtime.SetFinalizer(obj, (*RatchetKeyId).Delete)
     return obj
 }
 
@@ -44,7 +46,8 @@ func newRatchetKeyIdCopy(ctx *C.vscr_ratchet_key_id_t /*ct2*/) *RatchetKeyId {
     obj := &RatchetKeyId {
         cCtx: C.vscr_ratchet_key_id_shallow_copy(ctx),
     }
-    runtime.SetFinalizer(obj, func (o *RatchetKeyId) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *RatchetKeyId) {o.Delete()})
+    runtime.SetFinalizer(obj, (*RatchetKeyId).Delete)
     return obj
 }
 
@@ -52,6 +55,9 @@ func newRatchetKeyIdCopy(ctx *C.vscr_ratchet_key_id_t /*ct2*/) *RatchetKeyId {
 * Release underlying C context.
 */
 func (obj *RatchetKeyId) Delete() {
+    if obj == nil {
+        return
+    }
     runtime.SetFinalizer(obj, nil)
     obj.delete()
 }
@@ -80,6 +86,8 @@ func (obj *RatchetKeyId) ComputePublicKeyId(publicKey []byte) ([]byte, error) {
     if err != nil {
         return nil, err
     }
+
+    runtime.KeepAlive(obj)
 
     return keyIdBuf.getData() /* r7 */, nil
 }

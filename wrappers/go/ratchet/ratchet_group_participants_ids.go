@@ -22,7 +22,8 @@ func NewRatchetGroupParticipantsIds() *RatchetGroupParticipantsIds {
     obj := &RatchetGroupParticipantsIds {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, func (o *RatchetGroupParticipantsIds) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *RatchetGroupParticipantsIds) {o.Delete()})
+    runtime.SetFinalizer(obj, (*RatchetGroupParticipantsIds).Delete)
     return obj
 }
 
@@ -33,7 +34,8 @@ func newRatchetGroupParticipantsIdsWithCtx(ctx *C.vscr_ratchet_group_participant
     obj := &RatchetGroupParticipantsIds {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, func (o *RatchetGroupParticipantsIds) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *RatchetGroupParticipantsIds) {o.Delete()})
+    runtime.SetFinalizer(obj, (*RatchetGroupParticipantsIds).Delete)
     return obj
 }
 
@@ -44,7 +46,8 @@ func newRatchetGroupParticipantsIdsCopy(ctx *C.vscr_ratchet_group_participants_i
     obj := &RatchetGroupParticipantsIds {
         cCtx: C.vscr_ratchet_group_participants_ids_shallow_copy(ctx),
     }
-    runtime.SetFinalizer(obj, func (o *RatchetGroupParticipantsIds) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *RatchetGroupParticipantsIds) {o.Delete()})
+    runtime.SetFinalizer(obj, (*RatchetGroupParticipantsIds).Delete)
     return obj
 }
 
@@ -52,6 +55,9 @@ func newRatchetGroupParticipantsIdsCopy(ctx *C.vscr_ratchet_group_participants_i
 * Release underlying C context.
 */
 func (obj *RatchetGroupParticipantsIds) Delete() {
+    if obj == nil {
+        return
+    }
     runtime.SetFinalizer(obj, nil)
     obj.delete()
 }
@@ -72,7 +78,8 @@ func NewRatchetGroupParticipantsIdsSize(size uint32) *RatchetGroupParticipantsId
     obj := &RatchetGroupParticipantsIds {
         cCtx: proxyResult,
     }
-    runtime.SetFinalizer(obj, func (o *RatchetGroupParticipantsIds) {o.Delete()})
+    //runtime.SetFinalizer(obj, func (o *RatchetGroupParticipantsIds) {o.Delete()})
+    runtime.SetFinalizer(obj, (*RatchetGroupParticipantsIds).Delete)
     return obj
 }
 
@@ -83,6 +90,8 @@ func (obj *RatchetGroupParticipantsIds) AddId(id []byte) {
     idData := helperWrapData (id)
 
     C.vscr_ratchet_group_participants_ids_add_id(obj.cCtx, idData)
+
+    runtime.KeepAlive(obj)
 
     return
 }
