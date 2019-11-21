@@ -82,16 +82,9 @@
         <interface name="alg"/>
         <interface name="encrypt"/>
         <interface name="decrypt"/>
-        <interface name="cipher info">
-            <constant name="nonce len" value="12"/>
-            <constant name="key len" value="32"/>
-            <constant name="key bitlen" value="256"/>
-            <constant name="block len" value="16"/>
-        </interface>
+        <interface name="cipher info"/>
         <interface name="cipher"/>
-        <interface name="cipher auth info">
-            <constant name="auth tag len" value="16"/>
-        </interface>
+        <interface name="cipher auth info"/>
         <interface name="auth encrypt"/>
         <interface name="auth decrypt"/>
         <interface name="cipher auth"/>
@@ -100,6 +93,27 @@
         <require header="mbedtls/cipher.h" scope="context"/>
         <require impl="alg info"/>
         <require impl="cipher alg info"/>
+
+        <constant name="nonce len" value="12" definition="public">
+            Return cipher's nonce length or IV length in bytes,
+            or 0 if nonce is not required.
+        </constant>
+
+        <constant name="key len" value="32" definition="public">
+            Return cipher's key length in bytes.
+        </constant>
+
+        <constant name="key bitlen" value="256" definition="public">
+            Return cipher's key length in bits.
+        </constant>
+
+        <constant name="block len" value="16" definition="public">
+            Return cipher's block length in bytes.
+        </constant>
+
+        <constant name="auth tag len" value="16" definition="public">
+            Return cipher's authentication tag length in bytes.
+        </constant>
 
         <property name="cipher ctx" class="mbedtls_cipher_context_t" library="mbedtls" is_reference="0"/>
 
@@ -145,12 +159,7 @@
         <interface name="alg"/>
         <interface name="encrypt"/>
         <interface name="decrypt"/>
-        <interface name="cipher info">
-            <constant name="nonce len" value="16"/>
-            <constant name="key len" value="32"/>
-            <constant name="key bitlen" value="256"/>
-            <constant name="block len" value="16"/>
-        </interface>
+        <interface name="cipher info"/>
         <interface name="cipher"/>
 
         <require library="mbedtls" feature="CIPHER C"/>
@@ -159,6 +168,23 @@
         <require header="mbedtls/cipher.h" scope="context"/>
         <require impl="alg info"/>
         <require impl="cipher alg info"/>
+
+        <constant name="nonce len" value="16" definition="public">
+            Return cipher's nonce length or IV length in bytes,
+            or 0 if nonce is not required.
+        </constant>
+
+        <constant name="key len" value="32" definition="public">
+            Return cipher's key length in bytes.
+        </constant>
+
+        <constant name="key bitlen" value="256" definition="public">
+            Return cipher's key length in bits.
+        </constant>
+
+        <constant name="block len" value="16" definition="public">
+            Return cipher's block length in bytes.
+        </constant>
 
         <property name="cipher ctx" class="mbedtls_cipher_context_t" library="mbedtls" is_reference="0"/>
 

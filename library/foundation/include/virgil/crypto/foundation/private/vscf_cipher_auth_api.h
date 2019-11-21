@@ -57,6 +57,7 @@
 #include "vscf_api.h"
 #include "vscf_impl.h"
 #include "vscf_cipher.h"
+#include "vscf_cipher_auth_info.h"
 #include "vscf_auth_encrypt.h"
 #include "vscf_auth_decrypt.h"
 #include "vscf_status.h"
@@ -126,6 +127,10 @@ struct vscf_cipher_auth_api_t {
     //  Link to the inherited interface API 'cipher'.
     //
     const vscf_cipher_api_t *cipher_api;
+    //
+    //  Link to the inherited interface API 'cipher auth info'.
+    //
+    const vscf_cipher_auth_info_api_t *cipher_auth_info_api;
     //
     //  Link to the inherited interface API 'auth encrypt'.
     //

@@ -226,6 +226,51 @@ vscf_aes256_cbc_decrypted_len(vscf_aes256_cbc_t *self, size_t data_len) {
 }
 
 //
+//  Return cipher's nonce length or IV length in bytes,
+//  or 0 if nonce is not required.
+//
+VSCF_PUBLIC size_t
+vscf_aes256_cbc_nonce_len(const vscf_aes256_cbc_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+
+    return vscf_aes256_cbc_NONCE_LEN;
+}
+
+//
+//  Return cipher's key length in bytes.
+//
+VSCF_PUBLIC size_t
+vscf_aes256_cbc_key_len(const vscf_aes256_cbc_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+
+    return vscf_aes256_cbc_KEY_LEN;
+}
+
+//
+//  Return cipher's key length in bits.
+//
+VSCF_PUBLIC size_t
+vscf_aes256_cbc_key_bitlen(const vscf_aes256_cbc_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+
+    return vscf_aes256_cbc_KEY_BITLEN;
+}
+
+//
+//  Return cipher's block length in bytes.
+//
+VSCF_PUBLIC size_t
+vscf_aes256_cbc_block_len(const vscf_aes256_cbc_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+
+    return vscf_aes256_cbc_BLOCK_LEN;
+}
+
+//
 //  Setup IV or nonce.
 //
 VSCF_PUBLIC void

@@ -78,28 +78,29 @@ extern "C" {
 typedef struct vscf_cipher_info_api_t vscf_cipher_info_api_t;
 
 //
-//  Returns constant 'nonce len'.
+//  Return cipher's nonce length or IV length in bytes,
+//  or 0 if nonce is not required.
 //
 VSCF_PUBLIC size_t
-vscf_cipher_info_nonce_len(const vscf_cipher_info_api_t *cipher_info_api);
+vscf_cipher_info_nonce_len(const vscf_impl_t *impl);
 
 //
-//  Returns constant 'key len'.
+//  Return cipher's key length in bytes.
 //
 VSCF_PUBLIC size_t
-vscf_cipher_info_key_len(const vscf_cipher_info_api_t *cipher_info_api);
+vscf_cipher_info_key_len(const vscf_impl_t *impl);
 
 //
-//  Returns constant 'key bitlen'.
+//  Return cipher's key length in bits.
 //
 VSCF_PUBLIC size_t
-vscf_cipher_info_key_bitlen(const vscf_cipher_info_api_t *cipher_info_api);
+vscf_cipher_info_key_bitlen(const vscf_impl_t *impl);
 
 //
-//  Returns constant 'block len'.
+//  Return cipher's block length in bytes.
 //
 VSCF_PUBLIC size_t
-vscf_cipher_info_block_len(const vscf_cipher_info_api_t *cipher_info_api);
+vscf_cipher_info_block_len(const vscf_impl_t *impl);
 
 //
 //  Return cipher info API, or NULL if it is not implemented.

@@ -630,7 +630,7 @@ vscf_ecies_encrypt(const vscf_ecies_t *self, const vscf_impl_t *public_key, vsc_
     // Derive keys (encryption key and hmac key).
     //
     const size_t mac_key_len = vscf_mac_digest_len(self->mac);
-    const size_t cipher_key_len = vscf_cipher_info_key_len(vscf_cipher_cipher_info_api(vscf_cipher_api(self->cipher)));
+    const size_t cipher_key_len = vscf_cipher_info_key_len(self->cipher);
     const size_t derived_key_len = cipher_key_len + mac_key_len;
     derived_key = vsc_buffer_new_with_capacity(derived_key_len);
     vsc_buffer_make_secure(derived_key);
@@ -642,7 +642,7 @@ vscf_ecies_encrypt(const vscf_ecies_t *self, const vscf_impl_t *public_key, vsc_
     //
     // Encrypt given message.
     //
-    const size_t nonce_len = vscf_cipher_info_nonce_len(vscf_cipher_cipher_info_api(vscf_cipher_api(self->cipher)));
+    const size_t nonce_len = vscf_cipher_info_nonce_len(self->cipher);
     nonce = vsc_buffer_new_with_capacity(nonce_len);
     vscf_error_update(&error, vscf_random(self->random, nonce_len, nonce));
 
@@ -774,8 +774,7 @@ vscf_ecies_decrypt(const vscf_ecies_t *self, const vscf_impl_t *private_key, vsc
     //  Derive keys (decryption key and hmac key).
     //
     const size_t mac_key_len = vscf_mac_digest_len(envelope.mac);
-    const size_t cipher_key_len =
-            vscf_cipher_info_key_len(vscf_cipher_cipher_info_api(vscf_cipher_api(envelope.cipher)));
+    const size_t cipher_key_len = vscf_cipher_info_key_len(envelope.cipher);
     const size_t derived_key_len = cipher_key_len + mac_key_len;
     derived_key = vsc_buffer_new_with_capacity(derived_key_len);
     vsc_buffer_make_secure(derived_key);

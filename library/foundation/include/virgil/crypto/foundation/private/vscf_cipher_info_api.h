@@ -73,6 +73,27 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
+//  Callback. Return cipher's nonce length or IV length in bytes,
+//          or 0 if nonce is not required.
+//
+typedef size_t (*vscf_cipher_info_api_nonce_len_fn)(const vscf_impl_t *impl);
+
+//
+//  Callback. Return cipher's key length in bytes.
+//
+typedef size_t (*vscf_cipher_info_api_key_len_fn)(const vscf_impl_t *impl);
+
+//
+//  Callback. Return cipher's key length in bits.
+//
+typedef size_t (*vscf_cipher_info_api_key_bitlen_fn)(const vscf_impl_t *impl);
+
+//
+//  Callback. Return cipher's block length in bytes.
+//
+typedef size_t (*vscf_cipher_info_api_block_len_fn)(const vscf_impl_t *impl);
+
+//
 //  Contains API requirements of the interface 'cipher info'.
 //
 struct vscf_cipher_info_api_t {
@@ -86,21 +107,22 @@ struct vscf_cipher_info_api_t {
     //
     vscf_impl_tag_t impl_tag;
     //
-    //  Cipher nfonce length or IV length in bytes, or 0 if nonce is not required.
+    //  Return cipher's nonce length or IV length in bytes,
+    //  or 0 if nonce is not required.
     //
-    size_t nonce_len;
+    vscf_cipher_info_api_nonce_len_fn nonce_len_cb;
     //
-    //  Cipher key length in bytes.
+    //  Return cipher's key length in bytes.
     //
-    size_t key_len;
+    vscf_cipher_info_api_key_len_fn key_len_cb;
     //
-    //  Cipher key length in bits.
+    //  Return cipher's key length in bits.
     //
-    size_t key_bitlen;
+    vscf_cipher_info_api_key_bitlen_fn key_bitlen_cb;
     //
-    //  Cipher block length in bytes.
+    //  Return cipher's block length in bytes.
     //
-    size_t block_len;
+    vscf_cipher_info_api_block_len_fn block_len_cb;
 };
 
 

@@ -55,8 +55,6 @@
 
 #include "vscf_library.h"
 #include "vscf_impl.h"
-#include "vscf_cipher_info.h"
-#include "vscf_cipher_auth_info.h"
 #include "vscf_alg_id.h"
 #include "vscf_status.h"
 
@@ -90,23 +88,24 @@ extern "C" {
 //
 enum {
     //
-    //  Cipher nfonce length or IV length in bytes, or 0 if nonce is not required.
+    //  Return cipher's nonce length or IV length in bytes,
+    //  or 0 if nonce is not required.
     //
     vscf_aes256_gcm_NONCE_LEN = 12,
     //
-    //  Cipher key length in bytes.
+    //  Return cipher's key length in bytes.
     //
     vscf_aes256_gcm_KEY_LEN = 32,
     //
-    //  Cipher key length in bits.
+    //  Return cipher's key length in bits.
     //
     vscf_aes256_gcm_KEY_BITLEN = 256,
     //
-    //  Cipher block length in bytes.
+    //  Return cipher's block length in bytes.
     //
     vscf_aes256_gcm_BLOCK_LEN = 16,
     //
-    //  Defines authentication tag length in bytes.
+    //  Return cipher's authentication tag length in bytes.
     //
     vscf_aes256_gcm_AUTH_TAG_LEN = 16
 };
@@ -176,18 +175,6 @@ VSCF_PUBLIC vscf_aes256_gcm_t *
 vscf_aes256_gcm_shallow_copy(vscf_aes256_gcm_t *self);
 
 //
-//  Returns instance of the implemented interface 'cipher info'.
-//
-VSCF_PUBLIC const vscf_cipher_info_api_t *
-vscf_aes256_gcm_cipher_info_api(void);
-
-//
-//  Returns instance of the implemented interface 'cipher auth info'.
-//
-VSCF_PUBLIC const vscf_cipher_auth_info_api_t *
-vscf_aes256_gcm_cipher_auth_info_api(void);
-
-//
 //  Provide algorithm identificator.
 //
 VSCF_PUBLIC vscf_alg_id_t
@@ -234,6 +221,31 @@ vscf_aes256_gcm_decrypt(vscf_aes256_gcm_t *self, vsc_data_t data, vsc_buffer_t *
 //
 VSCF_PUBLIC size_t
 vscf_aes256_gcm_decrypted_len(vscf_aes256_gcm_t *self, size_t data_len);
+
+//
+//  Return cipher's nonce length or IV length in bytes,
+//  or 0 if nonce is not required.
+//
+VSCF_PUBLIC size_t
+vscf_aes256_gcm_nonce_len(const vscf_aes256_gcm_t *self);
+
+//
+//  Return cipher's key length in bytes.
+//
+VSCF_PUBLIC size_t
+vscf_aes256_gcm_key_len(const vscf_aes256_gcm_t *self);
+
+//
+//  Return cipher's key length in bits.
+//
+VSCF_PUBLIC size_t
+vscf_aes256_gcm_key_bitlen(const vscf_aes256_gcm_t *self);
+
+//
+//  Return cipher's block length in bytes.
+//
+VSCF_PUBLIC size_t
+vscf_aes256_gcm_block_len(const vscf_aes256_gcm_t *self);
 
 //
 //  Setup IV or nonce.
@@ -294,6 +306,12 @@ vscf_aes256_gcm_decrypted_out_len(vscf_aes256_gcm_t *self, size_t data_len);
 //
 VSCF_PUBLIC vscf_status_t
 vscf_aes256_gcm_finish(vscf_aes256_gcm_t *self, vsc_buffer_t *out) VSCF_NODISCARD;
+
+//
+//  Return cipher's authentication tag length in bytes.
+//
+VSCF_PUBLIC size_t
+vscf_aes256_gcm_auth_tag_len(const vscf_aes256_gcm_t *self);
 
 //
 //  Encrypt given data.

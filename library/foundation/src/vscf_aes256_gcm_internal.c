@@ -180,21 +180,22 @@ static const vscf_cipher_info_api_t cipher_info_api = {
     //
     vscf_impl_tag_AES256_GCM,
     //
-    //  Cipher nfonce length or IV length in bytes, or 0 if nonce is not required.
+    //  Return cipher's nonce length or IV length in bytes,
+    //  or 0 if nonce is not required.
     //
-    vscf_aes256_gcm_NONCE_LEN,
+    (vscf_cipher_info_api_nonce_len_fn)vscf_aes256_gcm_nonce_len,
     //
-    //  Cipher key length in bytes.
+    //  Return cipher's key length in bytes.
     //
-    vscf_aes256_gcm_KEY_LEN,
+    (vscf_cipher_info_api_key_len_fn)vscf_aes256_gcm_key_len,
     //
-    //  Cipher key length in bits.
+    //  Return cipher's key length in bits.
     //
-    vscf_aes256_gcm_KEY_BITLEN,
+    (vscf_cipher_info_api_key_bitlen_fn)vscf_aes256_gcm_key_bitlen,
     //
-    //  Cipher block length in bytes.
+    //  Return cipher's block length in bytes.
     //
-    vscf_aes256_gcm_BLOCK_LEN
+    (vscf_cipher_info_api_block_len_fn)vscf_aes256_gcm_block_len
 };
 
 //
@@ -280,9 +281,9 @@ static const vscf_cipher_auth_info_api_t cipher_auth_info_api = {
     //
     vscf_impl_tag_AES256_GCM,
     //
-    //  Defines authentication tag length in bytes.
+    //  Return cipher's authentication tag length in bytes.
     //
-    vscf_aes256_gcm_AUTH_TAG_LEN
+    (vscf_cipher_auth_info_api_auth_tag_len_fn)vscf_aes256_gcm_auth_tag_len
 };
 
 //
@@ -358,6 +359,10 @@ static const vscf_cipher_auth_api_t cipher_auth_api = {
     //  Link to the inherited interface API 'cipher'.
     //
     &cipher_api,
+    //
+    //  Link to the inherited interface API 'cipher auth info'.
+    //
+    &cipher_auth_info_api,
     //
     //  Link to the inherited interface API 'auth encrypt'.
     //
@@ -515,24 +520,6 @@ vscf_aes256_gcm_shallow_copy(vscf_aes256_gcm_t *self) {
 
     // Proxy to the parent implementation.
     return (vscf_aes256_gcm_t *)vscf_impl_shallow_copy((vscf_impl_t *)self);
-}
-
-//
-//  Returns instance of the implemented interface 'cipher info'.
-//
-VSCF_PUBLIC const vscf_cipher_info_api_t *
-vscf_aes256_gcm_cipher_info_api(void) {
-
-    return &cipher_info_api;
-}
-
-//
-//  Returns instance of the implemented interface 'cipher auth info'.
-//
-VSCF_PUBLIC const vscf_cipher_auth_info_api_t *
-vscf_aes256_gcm_cipher_auth_info_api(void) {
-
-    return &cipher_auth_info_api;
 }
 
 //

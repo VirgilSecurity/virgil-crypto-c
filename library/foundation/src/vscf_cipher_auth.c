@@ -134,6 +134,17 @@ vscf_cipher_auth_cipher_api(const vscf_cipher_auth_api_t *cipher_auth_api) {
 }
 
 //
+//  Return cipher auth info API.
+//
+VSCF_PUBLIC const vscf_cipher_auth_info_api_t *
+vscf_cipher_auth_cipher_auth_info_api(const vscf_cipher_auth_api_t *cipher_auth_api) {
+
+    VSCF_ASSERT_PTR (cipher_auth_api);
+
+    return cipher_auth_api->cipher_auth_info_api;
+}
+
+//
 //  Return auth encrypt API.
 //
 VSCF_PUBLIC const vscf_auth_encrypt_api_t *
