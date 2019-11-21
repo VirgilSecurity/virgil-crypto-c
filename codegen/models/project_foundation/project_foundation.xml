@@ -69,6 +69,7 @@
     <enum name="oid id"/>
     <enum name="recipient cipher decryption state"/>
     <enum name="group msg type"/>
+    <enum name="cipher state"/>
 
     <interface name="cipher"/>
     <interface name="auth encrypt"/>

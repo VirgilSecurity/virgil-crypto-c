@@ -59,6 +59,7 @@
 #include "vscf_encrypt.h"
 #include "vscf_decrypt.h"
 #include "vscf_cipher_info.h"
+#include "vscf_cipher_state.h"
 #include "vscf_status.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
@@ -95,6 +96,11 @@ typedef void (*vscf_cipher_api_set_nonce_fn)(vscf_impl_t *impl, vsc_data_t nonce
 //  Callback. Set cipher encryption / decryption key.
 //
 typedef void (*vscf_cipher_api_set_key_fn)(vscf_impl_t *impl, vsc_data_t key);
+
+//
+//  Callback. Return cipher's current state.
+//
+typedef vscf_cipher_state_t (*vscf_cipher_api_state_fn)(const vscf_impl_t *impl);
 
 //
 //  Callback. Start sequential encryption.
@@ -170,6 +176,10 @@ struct vscf_cipher_api_t {
     //  Set cipher encryption / decryption key.
     //
     vscf_cipher_api_set_key_fn set_key_cb;
+    //
+    //  Return cipher's current state.
+    //
+    vscf_cipher_api_state_fn state_cb;
     //
     //  Start sequential encryption.
     //

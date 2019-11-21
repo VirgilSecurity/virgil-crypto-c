@@ -111,6 +111,7 @@ framework module VSCFoundation {
     header "vscf_alg_id.h"
     header "vscf_oid_id.h"
     header "vscf_group_msg_type.h"
+    header "vscf_cipher_state.h"
     header "vscf_foundation_public.h"
     export *
 }

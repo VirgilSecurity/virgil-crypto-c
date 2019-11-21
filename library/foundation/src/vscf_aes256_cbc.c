@@ -98,6 +98,8 @@ vscf_aes256_cbc_init_ctx(vscf_aes256_cbc_t *self) {
 
     vscf_zeroize(self->key, vscf_aes256_cbc_KEY_LEN);
     vscf_zeroize(self->nonce, vscf_aes256_cbc_NONCE_LEN);
+
+    self->state = vscf_cipher_state_INITIAL;
 }
 
 //
@@ -300,6 +302,17 @@ vscf_aes256_cbc_set_key(vscf_aes256_cbc_t *self, vsc_data_t key) {
 }
 
 //
+//  Return cipher's current state.
+//
+VSCF_PRIVATE vscf_cipher_state_t
+vscf_aes256_cbc_state(const vscf_aes256_cbc_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+
+    return self->state;
+}
+
+//
 //  Start sequential encryption.
 //
 VSCF_PUBLIC void
@@ -308,7 +321,7 @@ vscf_aes256_cbc_start_encryption(vscf_aes256_cbc_t *self) {
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT(!vsc_data_is_zero(vsc_data(self->key, vscf_aes256_cbc_KEY_LEN)));
 
-    self->do_decrypt = false;
+    self->state = vscf_cipher_state_ENCRYPTION;
 
     int status = mbedtls_cipher_setkey(&self->cipher_ctx, self->key, vscf_aes256_cbc_KEY_BITLEN, MBEDTLS_ENCRYPT);
     VSCF_ASSERT_LIBRARY_MBEDTLS_SUCCESS(status);
@@ -326,7 +339,7 @@ vscf_aes256_cbc_start_decryption(vscf_aes256_cbc_t *self) {
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT(!vsc_data_is_zero(vsc_data(self->key, vscf_aes256_cbc_KEY_LEN)));
 
-    self->do_decrypt = true;
+    self->state = vscf_cipher_state_DECRYPTION;
 
     int status = mbedtls_cipher_setkey(&self->cipher_ctx, self->key, vscf_aes256_cbc_KEY_BITLEN, MBEDTLS_DECRYPT);
     VSCF_ASSERT_LIBRARY_MBEDTLS_SUCCESS(status);
@@ -344,6 +357,7 @@ vscf_aes256_cbc_update(vscf_aes256_cbc_t *self, vsc_data_t data, vsc_buffer_t *o
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT(vsc_data_is_valid(data));
     VSCF_ASSERT(vsc_buffer_is_valid(out));
+    VSCF_ASSERT(self->state != vscf_cipher_state_INITIAL);
 
     VSCF_ASSERT(vsc_buffer_unused_len(out) >= vscf_aes256_cbc_out_len(self, data.len));
 
@@ -365,8 +379,9 @@ VSCF_PUBLIC size_t
 vscf_aes256_cbc_out_len(vscf_aes256_cbc_t *self, size_t data_len) {
 
     VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT(self->state != vscf_cipher_state_INITIAL);
 
-    if (self->do_decrypt) {
+    if (vscf_cipher_state_DECRYPTION == self->state) {
         return vscf_aes256_cbc_decrypted_out_len(self, data_len);
     } else {
         return vscf_aes256_cbc_encrypted_out_len(self, data_len);
@@ -409,12 +424,14 @@ vscf_aes256_cbc_finish(vscf_aes256_cbc_t *self, vsc_buffer_t *out) {
     VSCF_ASSERT_PTR(out);
     VSCF_ASSERT(vsc_buffer_is_valid(out));
     VSCF_ASSERT(vsc_buffer_unused_len(out) >= vscf_aes256_cbc_out_len(self, 0));
-
+    VSCF_ASSERT(self->state != vscf_cipher_state_INITIAL);
 
     size_t last_block_len = 0;
     int status = mbedtls_cipher_finish(&self->cipher_ctx, vsc_buffer_unused_bytes(out), &last_block_len);
     VSCF_ASSERT_LIBRARY_MBEDTLS_SUCCESS(status);
     vsc_buffer_inc_used(out, last_block_len);
+
+    self->state = vscf_cipher_state_INITIAL;
 
     return vscf_status_SUCCESS;
 }

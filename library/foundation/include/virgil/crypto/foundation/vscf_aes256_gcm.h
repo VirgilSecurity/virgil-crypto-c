@@ -57,6 +57,7 @@
 #include "vscf_impl.h"
 #include "vscf_alg_id.h"
 #include "vscf_status.h"
+#include "vscf_cipher_state.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_data.h>
@@ -258,6 +259,12 @@ vscf_aes256_gcm_set_nonce(vscf_aes256_gcm_t *self, vsc_data_t nonce);
 //
 VSCF_PUBLIC void
 vscf_aes256_gcm_set_key(vscf_aes256_gcm_t *self, vsc_data_t key);
+
+//
+//  Return cipher's current state.
+//
+VSCF_PRIVATE vscf_cipher_state_t
+vscf_aes256_gcm_state(const vscf_aes256_gcm_t *self);
 
 //
 //  Start sequential encryption.

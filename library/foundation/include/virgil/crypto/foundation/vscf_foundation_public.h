@@ -80,6 +80,7 @@
 #include "vscf_cipher_auth.h"
 #include "vscf_cipher_auth_info.h"
 #include "vscf_cipher_info.h"
+#include "vscf_cipher_state.h"
 #include "vscf_compute_shared_key.h"
 #include "vscf_ctr_drbg.h"
 #include "vscf_curve25519.h"

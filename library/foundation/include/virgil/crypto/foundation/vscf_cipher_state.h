@@ -47,30 +47,11 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Types of the 'aes256 gcm' implementation.
-//  This types SHOULD NOT be used directly.
-//  The only purpose of including this module is to place implementation
-//  object in the stack memory.
+//  Enumerates possible sequentail cipher's states.
 // --------------------------------------------------------------------------
 
-#ifndef VSCF_AES256_GCM_DEFS_H_INCLUDED
-#define VSCF_AES256_GCM_DEFS_H_INCLUDED
-
-#include "vscf_library.h"
-#include "vscf_impl_private.h"
-#include "vscf_aes256_gcm.h"
-#include "vscf_atomic.h"
-#include "vscf_cipher_state.h"
-
-#include <mbedtls/cipher.h>
-
-#if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <virgil/crypto/common/vsc_buffer.h>
-#endif
-
-#if VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <VSCCommon/vsc_buffer.h>
-#endif
+#ifndef VSCF_CIPHER_STATE_H_INCLUDED
+#define VSCF_CIPHER_STATE_H_INCLUDED
 
 // clang-format on
 //  @end
@@ -88,54 +69,23 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Handles implementation details.
+//  Enumerates possible sequentail cipher's states.
 //
-struct vscf_aes256_gcm_t {
+enum vscf_cipher_state_t {
     //
-    //  Compile-time known information about this implementation.
+    //  Cipher is ready for new encryption / decryption operation.
     //
-    const vscf_impl_info_t *info;
+    vscf_cipher_state_INITIAL,
     //
-    //  Reference counter.
+    //  Cipher is configured for encryption.
     //
-    VSCF_ATOMIC size_t refcnt;
+    vscf_cipher_state_ENCRYPTION,
     //
-    //  Implementation specific context.
+    //  Cipher is configured for decryption.
     //
-    mbedtls_cipher_context_t cipher_ctx;
-    //
-    //  Implementation specific context.
-    //
-    byte key[vscf_aes256_gcm_KEY_LEN];
-    //
-    //  Implementation specific context.
-    //
-    byte nonce[vscf_aes256_gcm_NONCE_LEN];
-    //
-    //  Implementation specific context.
-    //
-    vsc_buffer_t *auth_data;
-    //
-    //  Implementation specific context.
-    //
-    vscf_cipher_state_t state;
-    //
-    //  Implementation specific context.
-    //
-    byte cached_data[vscf_aes256_gcm_BLOCK_LEN];
-    //
-    //  Implementation specific context.
-    //
-    byte auth_tag[vscf_aes256_gcm_AUTH_TAG_LEN];
-    //
-    //  Implementation specific context.
-    //
-    size_t cached_data_len;
-    //
-    //  Implementation specific context.
-    //
-    size_t auth_tag_len;
+    vscf_cipher_state_DECRYPTION
 };
+typedef enum vscf_cipher_state_t vscf_cipher_state_t;
 
 
 // --------------------------------------------------------------------------
@@ -151,5 +101,5 @@ struct vscf_aes256_gcm_t {
 
 
 //  @footer
-#endif // VSCF_AES256_GCM_DEFS_H_INCLUDED
+#endif // VSCF_CIPHER_STATE_H_INCLUDED
 //  @end

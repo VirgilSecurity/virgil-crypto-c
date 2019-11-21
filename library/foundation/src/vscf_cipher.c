@@ -91,6 +91,19 @@ vscf_cipher_set_key(vscf_impl_t *impl, vsc_data_t key) {
 }
 
 //
+//  Return cipher's current state.
+//
+VSCF_PRIVATE vscf_cipher_state_t
+vscf_cipher_state(const vscf_impl_t *impl) {
+
+    const vscf_cipher_api_t *cipher_api = vscf_cipher_api(impl);
+    VSCF_ASSERT_PTR (cipher_api);
+
+    VSCF_ASSERT_PTR (cipher_api->state_cb);
+    return cipher_api->state_cb (impl);
+}
+
+//
 //  Start sequential encryption.
 //
 VSCF_PUBLIC void

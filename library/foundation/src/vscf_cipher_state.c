@@ -37,6 +37,12 @@
 // clang-format off
 
 
+//  @description
+// --------------------------------------------------------------------------
+//  Enumerates possible sequentail cipher's states.
+// --------------------------------------------------------------------------
+
+
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -44,41 +50,10 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-
-//  @description
-// --------------------------------------------------------------------------
-//  Types of the 'aes256 gcm' implementation.
-//  This types SHOULD NOT be used directly.
-//  The only purpose of including this module is to place implementation
-//  object in the stack memory.
-// --------------------------------------------------------------------------
-
-#ifndef VSCF_AES256_GCM_DEFS_H_INCLUDED
-#define VSCF_AES256_GCM_DEFS_H_INCLUDED
-
-#include "vscf_library.h"
-#include "vscf_impl_private.h"
-#include "vscf_aes256_gcm.h"
-#include "vscf_atomic.h"
 #include "vscf_cipher_state.h"
-
-#include <mbedtls/cipher.h>
-
-#if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <virgil/crypto/common/vsc_buffer.h>
-#endif
-
-#if VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <VSCCommon/vsc_buffer.h>
-#endif
 
 // clang-format on
 //  @end
-
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 
 //  @generated
@@ -87,69 +62,9 @@ extern "C" {
 //  Generated section start.
 // --------------------------------------------------------------------------
 
-//
-//  Handles implementation details.
-//
-struct vscf_aes256_gcm_t {
-    //
-    //  Compile-time known information about this implementation.
-    //
-    const vscf_impl_info_t *info;
-    //
-    //  Reference counter.
-    //
-    VSCF_ATOMIC size_t refcnt;
-    //
-    //  Implementation specific context.
-    //
-    mbedtls_cipher_context_t cipher_ctx;
-    //
-    //  Implementation specific context.
-    //
-    byte key[vscf_aes256_gcm_KEY_LEN];
-    //
-    //  Implementation specific context.
-    //
-    byte nonce[vscf_aes256_gcm_NONCE_LEN];
-    //
-    //  Implementation specific context.
-    //
-    vsc_buffer_t *auth_data;
-    //
-    //  Implementation specific context.
-    //
-    vscf_cipher_state_t state;
-    //
-    //  Implementation specific context.
-    //
-    byte cached_data[vscf_aes256_gcm_BLOCK_LEN];
-    //
-    //  Implementation specific context.
-    //
-    byte auth_tag[vscf_aes256_gcm_AUTH_TAG_LEN];
-    //
-    //  Implementation specific context.
-    //
-    size_t cached_data_len;
-    //
-    //  Implementation specific context.
-    //
-    size_t auth_tag_len;
-};
-
 
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
-//  @end
-
-
-#ifdef __cplusplus
-}
-#endif
-
-
-//  @footer
-#endif // VSCF_AES256_GCM_DEFS_H_INCLUDED
 //  @end

@@ -17,6 +17,12 @@
         <argument name="key" class="data"/>
     </method>
 
+    <method name="state" is_const="1" visibility="private">
+        Return cipher's current state.
+
+        <return enum="cipher state"/>
+    </method>
+
     <method name="start encryption">
         Start sequential encryption.
     </method>
