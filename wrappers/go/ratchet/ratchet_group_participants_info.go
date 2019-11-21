@@ -22,7 +22,7 @@ func NewRatchetGroupParticipantsInfo() *RatchetGroupParticipantsInfo {
     obj := &RatchetGroupParticipantsInfo {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *RatchetGroupParticipantsInfo) {o.Delete()})
     return obj
 }
 
@@ -33,7 +33,7 @@ func newRatchetGroupParticipantsInfoWithCtx(ctx *C.vscr_ratchet_group_participan
     obj := &RatchetGroupParticipantsInfo {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *RatchetGroupParticipantsInfo) {o.Delete()})
     return obj
 }
 
@@ -44,7 +44,7 @@ func newRatchetGroupParticipantsInfoCopy(ctx *C.vscr_ratchet_group_participants_
     obj := &RatchetGroupParticipantsInfo {
         cCtx: C.vscr_ratchet_group_participants_info_shallow_copy(ctx),
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *RatchetGroupParticipantsInfo) {o.Delete()})
     return obj
 }
 
@@ -72,7 +72,7 @@ func NewRatchetGroupParticipantsInfoSize(size uint32) *RatchetGroupParticipantsI
     obj := &RatchetGroupParticipantsInfo {
         cCtx: proxyResult,
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *RatchetGroupParticipantsInfo) {o.Delete()})
     return obj
 }
 

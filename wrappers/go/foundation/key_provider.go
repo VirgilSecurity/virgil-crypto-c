@@ -23,7 +23,7 @@ func NewKeyProvider() *KeyProvider {
     obj := &KeyProvider {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *KeyProvider) {o.Delete()})
     return obj
 }
 
@@ -34,7 +34,7 @@ func newKeyProviderWithCtx(ctx *C.vscf_key_provider_t /*ct2*/) *KeyProvider {
     obj := &KeyProvider {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *KeyProvider) {o.Delete()})
     return obj
 }
 
@@ -45,7 +45,7 @@ func newKeyProviderCopy(ctx *C.vscf_key_provider_t /*ct2*/) *KeyProvider {
     obj := &KeyProvider {
         cCtx: C.vscf_key_provider_shallow_copy(ctx),
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *KeyProvider) {o.Delete()})
     return obj
 }
 

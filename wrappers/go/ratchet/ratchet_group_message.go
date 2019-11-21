@@ -22,7 +22,7 @@ func NewRatchetGroupMessage() *RatchetGroupMessage {
     obj := &RatchetGroupMessage {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *RatchetGroupMessage) {o.Delete()})
     return obj
 }
 
@@ -33,7 +33,7 @@ func newRatchetGroupMessageWithCtx(ctx *C.vscr_ratchet_group_message_t /*ct2*/) 
     obj := &RatchetGroupMessage {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *RatchetGroupMessage) {o.Delete()})
     return obj
 }
 
@@ -44,7 +44,7 @@ func newRatchetGroupMessageCopy(ctx *C.vscr_ratchet_group_message_t /*ct2*/) *Ra
     obj := &RatchetGroupMessage {
         cCtx: C.vscr_ratchet_group_message_shallow_copy(ctx),
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *RatchetGroupMessage) {o.Delete()})
     return obj
 }
 

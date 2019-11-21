@@ -24,7 +24,7 @@ func NewPheServer() *PheServer {
     obj := &PheServer {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *PheServer) {o.Delete()})
     return obj
 }
 
@@ -35,7 +35,7 @@ func newPheServerWithCtx(ctx *C.vsce_phe_server_t /*ct2*/) *PheServer {
     obj := &PheServer {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *PheServer) {o.Delete()})
     return obj
 }
 
@@ -46,7 +46,7 @@ func newPheServerCopy(ctx *C.vsce_phe_server_t /*ct2*/) *PheServer {
     obj := &PheServer {
         cCtx: C.vsce_phe_server_shallow_copy(ctx),
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *PheServer) {o.Delete()})
     return obj
 }
 

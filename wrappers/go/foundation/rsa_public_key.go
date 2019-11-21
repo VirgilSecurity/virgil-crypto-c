@@ -31,7 +31,7 @@ func NewRsaPublicKey() *RsaPublicKey {
     obj := &RsaPublicKey {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *RsaPublicKey) {o.Delete()})
     return obj
 }
 
@@ -42,7 +42,7 @@ func newRsaPublicKeyWithCtx(ctx *C.vscf_rsa_public_key_t /*ct10*/) *RsaPublicKey
     obj := &RsaPublicKey {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *RsaPublicKey) {o.Delete()})
     return obj
 }
 
@@ -53,7 +53,7 @@ func newRsaPublicKeyCopy(ctx *C.vscf_rsa_public_key_t /*ct10*/) *RsaPublicKey {
     obj := &RsaPublicKey {
         cCtx: C.vscf_rsa_public_key_shallow_copy(ctx),
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *RsaPublicKey) {o.Delete()})
     return obj
 }
 

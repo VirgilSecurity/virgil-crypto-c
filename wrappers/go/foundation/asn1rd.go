@@ -22,7 +22,7 @@ func NewAsn1rd() *Asn1rd {
     obj := &Asn1rd {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *Asn1rd) {o.Delete()})
     return obj
 }
 
@@ -33,7 +33,7 @@ func newAsn1rdWithCtx(ctx *C.vscf_asn1rd_t /*ct10*/) *Asn1rd {
     obj := &Asn1rd {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *Asn1rd) {o.Delete()})
     return obj
 }
 
@@ -44,7 +44,7 @@ func newAsn1rdCopy(ctx *C.vscf_asn1rd_t /*ct10*/) *Asn1rd {
     obj := &Asn1rd {
         cCtx: C.vscf_asn1rd_shallow_copy(ctx),
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *Asn1rd) {o.Delete()})
     return obj
 }
 

@@ -43,7 +43,7 @@ func NewPkcs5Pbes2() *Pkcs5Pbes2 {
     obj := &Pkcs5Pbes2 {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *Pkcs5Pbes2) {o.Delete()})
     return obj
 }
 
@@ -54,7 +54,7 @@ func newPkcs5Pbes2WithCtx(ctx *C.vscf_pkcs5_pbes2_t /*ct10*/) *Pkcs5Pbes2 {
     obj := &Pkcs5Pbes2 {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *Pkcs5Pbes2) {o.Delete()})
     return obj
 }
 
@@ -65,7 +65,7 @@ func newPkcs5Pbes2Copy(ctx *C.vscf_pkcs5_pbes2_t /*ct10*/) *Pkcs5Pbes2 {
     obj := &Pkcs5Pbes2 {
         cCtx: C.vscf_pkcs5_pbes2_shallow_copy(ctx),
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *Pkcs5Pbes2) {o.Delete()})
     return obj
 }
 

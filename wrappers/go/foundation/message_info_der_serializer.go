@@ -41,7 +41,7 @@ func NewMessageInfoDerSerializer() *MessageInfoDerSerializer {
     obj := &MessageInfoDerSerializer {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *MessageInfoDerSerializer) {o.Delete()})
     return obj
 }
 
@@ -52,7 +52,7 @@ func newMessageInfoDerSerializerWithCtx(ctx *C.vscf_message_info_der_serializer_
     obj := &MessageInfoDerSerializer {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *MessageInfoDerSerializer) {o.Delete()})
     return obj
 }
 
@@ -63,7 +63,7 @@ func newMessageInfoDerSerializerCopy(ctx *C.vscf_message_info_der_serializer_t /
     obj := &MessageInfoDerSerializer {
         cCtx: C.vscf_message_info_der_serializer_shallow_copy(ctx),
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *MessageInfoDerSerializer) {o.Delete()})
     return obj
 }
 

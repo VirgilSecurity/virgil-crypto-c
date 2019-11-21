@@ -75,7 +75,7 @@ func NewSec1Serializer() *Sec1Serializer {
     obj := &Sec1Serializer {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *Sec1Serializer) {o.Delete()})
     return obj
 }
 
@@ -86,7 +86,7 @@ func newSec1SerializerWithCtx(ctx *C.vscf_sec1_serializer_t /*ct10*/) *Sec1Seria
     obj := &Sec1Serializer {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *Sec1Serializer) {o.Delete()})
     return obj
 }
 
@@ -97,7 +97,7 @@ func newSec1SerializerCopy(ctx *C.vscf_sec1_serializer_t /*ct10*/) *Sec1Serializ
     obj := &Sec1Serializer {
         cCtx: C.vscf_sec1_serializer_shallow_copy(ctx),
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *Sec1Serializer) {o.Delete()})
     return obj
 }
 

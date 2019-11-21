@@ -22,7 +22,7 @@ func NewMessageInfoFooter() *MessageInfoFooter {
     obj := &MessageInfoFooter {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *MessageInfoFooter) {o.Delete()})
     return obj
 }
 
@@ -33,7 +33,7 @@ func newMessageInfoFooterWithCtx(ctx *C.vscf_message_info_footer_t /*ct2*/) *Mes
     obj := &MessageInfoFooter {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *MessageInfoFooter) {o.Delete()})
     return obj
 }
 
@@ -44,7 +44,7 @@ func newMessageInfoFooterCopy(ctx *C.vscf_message_info_footer_t /*ct2*/) *Messag
     obj := &MessageInfoFooter {
         cCtx: C.vscf_message_info_footer_shallow_copy(ctx),
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *MessageInfoFooter) {o.Delete()})
     return obj
 }
 
@@ -78,7 +78,7 @@ func (obj *MessageInfoFooter) HasSignerInfos() bool {
 func (obj *MessageInfoFooter) SignerInfos() *SignerInfoList {
     proxyResult := /*pr4*/C.vscf_message_info_footer_signer_infos(obj.cCtx)
 
-    return newSignerInfoListWithCtx(proxyResult) /* r5 */
+    return newSignerInfoListCopy(proxyResult) /* r5 */
 }
 
 /*

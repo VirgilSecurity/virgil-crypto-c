@@ -27,7 +27,7 @@ func NewKdf1() *Kdf1 {
     obj := &Kdf1 {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *Kdf1) {o.Delete()})
     return obj
 }
 
@@ -38,7 +38,7 @@ func newKdf1WithCtx(ctx *C.vscf_kdf1_t /*ct10*/) *Kdf1 {
     obj := &Kdf1 {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *Kdf1) {o.Delete()})
     return obj
 }
 
@@ -49,7 +49,7 @@ func newKdf1Copy(ctx *C.vscf_kdf1_t /*ct10*/) *Kdf1 {
     obj := &Kdf1 {
         cCtx: C.vscf_kdf1_shallow_copy(ctx),
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *Kdf1) {o.Delete()})
     return obj
 }
 

@@ -45,7 +45,7 @@ func NewEntropyAccumulator() *EntropyAccumulator {
     obj := &EntropyAccumulator {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *EntropyAccumulator) {o.Delete()})
     return obj
 }
 
@@ -56,7 +56,7 @@ func newEntropyAccumulatorWithCtx(ctx *C.vscf_entropy_accumulator_t /*ct10*/) *E
     obj := &EntropyAccumulator {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *EntropyAccumulator) {o.Delete()})
     return obj
 }
 
@@ -67,7 +67,7 @@ func newEntropyAccumulatorCopy(ctx *C.vscf_entropy_accumulator_t /*ct10*/) *Entr
     obj := &EntropyAccumulator {
         cCtx: C.vscf_entropy_accumulator_shallow_copy(ctx),
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *EntropyAccumulator) {o.Delete()})
     return obj
 }
 

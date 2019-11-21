@@ -32,7 +32,7 @@ func NewGroupSessionMessage() *GroupSessionMessage {
     obj := &GroupSessionMessage {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *GroupSessionMessage) {o.Delete()})
     return obj
 }
 
@@ -43,7 +43,7 @@ func newGroupSessionMessageWithCtx(ctx *C.vscf_group_session_message_t /*ct2*/) 
     obj := &GroupSessionMessage {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *GroupSessionMessage) {o.Delete()})
     return obj
 }
 
@@ -54,7 +54,7 @@ func newGroupSessionMessageCopy(ctx *C.vscf_group_session_message_t /*ct2*/) *Gr
     obj := &GroupSessionMessage {
         cCtx: C.vscf_group_session_message_shallow_copy(ctx),
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *GroupSessionMessage) {o.Delete()})
     return obj
 }
 

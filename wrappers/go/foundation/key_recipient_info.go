@@ -22,7 +22,7 @@ func NewKeyRecipientInfo() *KeyRecipientInfo {
     obj := &KeyRecipientInfo {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *KeyRecipientInfo) {o.Delete()})
     return obj
 }
 
@@ -33,7 +33,7 @@ func newKeyRecipientInfoWithCtx(ctx *C.vscf_key_recipient_info_t /*ct2*/) *KeyRe
     obj := &KeyRecipientInfo {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *KeyRecipientInfo) {o.Delete()})
     return obj
 }
 
@@ -44,7 +44,7 @@ func newKeyRecipientInfoCopy(ctx *C.vscf_key_recipient_info_t /*ct2*/) *KeyRecip
     obj := &KeyRecipientInfo {
         cCtx: C.vscf_key_recipient_info_shallow_copy(ctx),
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *KeyRecipientInfo) {o.Delete()})
     return obj
 }
 
@@ -75,7 +75,7 @@ func NewKeyRecipientInfoWithData(recipientId []byte, keyEncryptionAlgorithm AlgI
     obj := &KeyRecipientInfo {
         cCtx: proxyResult,
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *KeyRecipientInfo) {o.Delete()})
     return obj
 }
 

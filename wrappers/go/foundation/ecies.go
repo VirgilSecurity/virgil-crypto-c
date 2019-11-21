@@ -22,7 +22,7 @@ func NewEcies() *Ecies {
     obj := &Ecies {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *Ecies) {o.Delete()})
     return obj
 }
 
@@ -33,7 +33,7 @@ func newEciesWithCtx(ctx *C.vscf_ecies_t /*ct2*/) *Ecies {
     obj := &Ecies {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *Ecies) {o.Delete()})
     return obj
 }
 
@@ -44,7 +44,7 @@ func newEciesCopy(ctx *C.vscf_ecies_t /*ct2*/) *Ecies {
     obj := &Ecies {
         cCtx: C.vscf_ecies_shallow_copy(ctx),
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *Ecies) {o.Delete()})
     return obj
 }
 

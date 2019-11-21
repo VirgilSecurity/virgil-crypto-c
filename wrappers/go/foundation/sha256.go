@@ -22,7 +22,7 @@ func NewSha256() *Sha256 {
     obj := &Sha256 {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *Sha256) {o.Delete()})
     return obj
 }
 
@@ -33,7 +33,7 @@ func newSha256WithCtx(ctx *C.vscf_sha256_t /*ct10*/) *Sha256 {
     obj := &Sha256 {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *Sha256) {o.Delete()})
     return obj
 }
 
@@ -44,7 +44,7 @@ func newSha256Copy(ctx *C.vscf_sha256_t /*ct10*/) *Sha256 {
     obj := &Sha256 {
         cCtx: C.vscf_sha256_shallow_copy(ctx),
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *Sha256) {o.Delete()})
     return obj
 }
 

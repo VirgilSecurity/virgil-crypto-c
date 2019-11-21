@@ -40,7 +40,7 @@ func NewGroupSession() *GroupSession {
     obj := &GroupSession {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *GroupSession) {o.Delete()})
     return obj
 }
 
@@ -51,7 +51,7 @@ func newGroupSessionWithCtx(ctx *C.vscf_group_session_t /*ct2*/) *GroupSession {
     obj := &GroupSession {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *GroupSession) {o.Delete()})
     return obj
 }
 
@@ -62,7 +62,7 @@ func newGroupSessionCopy(ctx *C.vscf_group_session_t /*ct2*/) *GroupSession {
     obj := &GroupSession {
         cCtx: C.vscf_group_session_shallow_copy(ctx),
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *GroupSession) {o.Delete()})
     return obj
 }
 

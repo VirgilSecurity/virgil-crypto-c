@@ -47,7 +47,7 @@ func NewAlgInfoDerSerializer() *AlgInfoDerSerializer {
     obj := &AlgInfoDerSerializer {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *AlgInfoDerSerializer) {o.Delete()})
     return obj
 }
 
@@ -58,7 +58,7 @@ func newAlgInfoDerSerializerWithCtx(ctx *C.vscf_alg_info_der_serializer_t /*ct10
     obj := &AlgInfoDerSerializer {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *AlgInfoDerSerializer) {o.Delete()})
     return obj
 }
 
@@ -69,7 +69,7 @@ func newAlgInfoDerSerializerCopy(ctx *C.vscf_alg_info_der_serializer_t /*ct10*/)
     obj := &AlgInfoDerSerializer {
         cCtx: C.vscf_alg_info_der_serializer_shallow_copy(ctx),
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *AlgInfoDerSerializer) {o.Delete()})
     return obj
 }
 

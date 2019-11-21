@@ -59,7 +59,7 @@ func NewRsa() *Rsa {
     obj := &Rsa {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *Rsa) {o.Delete()})
     return obj
 }
 
@@ -70,7 +70,7 @@ func newRsaWithCtx(ctx *C.vscf_rsa_t /*ct10*/) *Rsa {
     obj := &Rsa {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *Rsa) {o.Delete()})
     return obj
 }
 
@@ -81,7 +81,7 @@ func newRsaCopy(ctx *C.vscf_rsa_t /*ct10*/) *Rsa {
     obj := &Rsa {
         cCtx: C.vscf_rsa_shallow_copy(ctx),
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *Rsa) {o.Delete()})
     return obj
 }
 

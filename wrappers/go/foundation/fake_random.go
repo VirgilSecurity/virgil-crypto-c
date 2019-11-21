@@ -43,7 +43,7 @@ func NewFakeRandom() *FakeRandom {
     obj := &FakeRandom {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *FakeRandom) {o.Delete()})
     return obj
 }
 
@@ -54,7 +54,7 @@ func newFakeRandomWithCtx(ctx *C.vscf_fake_random_t /*ct10*/) *FakeRandom {
     obj := &FakeRandom {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *FakeRandom) {o.Delete()})
     return obj
 }
 
@@ -65,7 +65,7 @@ func newFakeRandomCopy(ctx *C.vscf_fake_random_t /*ct10*/) *FakeRandom {
     obj := &FakeRandom {
         cCtx: C.vscf_fake_random_shallow_copy(ctx),
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *FakeRandom) {o.Delete()})
     return obj
 }
 

@@ -24,7 +24,7 @@ func NewAes256Cbc() *Aes256Cbc {
     obj := &Aes256Cbc {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *Aes256Cbc) {o.Delete()})
     return obj
 }
 
@@ -35,10 +35,10 @@ func newAes256CbcWithCtx(ctx *C.vscf_aes256_cbc_t /*ct10*/) *Aes256Cbc {
     obj := &Aes256Cbc {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *Aes256Cbc) {o.Delete()})
     return obj
 }
-    
+
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
@@ -46,7 +46,7 @@ func newAes256CbcCopy(ctx *C.vscf_aes256_cbc_t /*ct10*/) *Aes256Cbc {
     obj := &Aes256Cbc {
         cCtx: C.vscf_aes256_cbc_shallow_copy(ctx),
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *Aes256Cbc) {o.Delete()})
     return obj
 }
 

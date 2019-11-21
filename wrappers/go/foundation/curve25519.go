@@ -64,7 +64,7 @@ func NewCurve25519() *Curve25519 {
     obj := &Curve25519 {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *Curve25519) {o.Delete()})
     return obj
 }
 
@@ -75,7 +75,7 @@ func newCurve25519WithCtx(ctx *C.vscf_curve25519_t /*ct10*/) *Curve25519 {
     obj := &Curve25519 {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *Curve25519) {o.Delete()})
     return obj
 }
 
@@ -86,7 +86,7 @@ func newCurve25519Copy(ctx *C.vscf_curve25519_t /*ct10*/) *Curve25519 {
     obj := &Curve25519 {
         cCtx: C.vscf_curve25519_shallow_copy(ctx),
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *Curve25519) {o.Delete()})
     return obj
 }
 

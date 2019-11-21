@@ -40,7 +40,7 @@ func NewEccAlgInfo() *EccAlgInfo {
     obj := &EccAlgInfo {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *EccAlgInfo) {o.Delete()})
     return obj
 }
 
@@ -51,7 +51,7 @@ func newEccAlgInfoWithCtx(ctx *C.vscf_ecc_alg_info_t /*ct10*/) *EccAlgInfo {
     obj := &EccAlgInfo {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *EccAlgInfo) {o.Delete()})
     return obj
 }
 
@@ -62,7 +62,7 @@ func newEccAlgInfoCopy(ctx *C.vscf_ecc_alg_info_t /*ct10*/) *EccAlgInfo {
     obj := &EccAlgInfo {
         cCtx: C.vscf_ecc_alg_info_shallow_copy(ctx),
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *EccAlgInfo) {o.Delete()})
     return obj
 }
 
@@ -90,7 +90,7 @@ func NewEccAlgInfoWithMembers(algId AlgId, keyId OidId, domainId OidId) *EccAlgI
     obj := &EccAlgInfo {
         cCtx: proxyResult,
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *EccAlgInfo) {o.Delete()})
     return obj
 }
 

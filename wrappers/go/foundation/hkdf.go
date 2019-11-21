@@ -30,7 +30,7 @@ func NewHkdf() *Hkdf {
     obj := &Hkdf {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *Hkdf) {o.Delete()})
     return obj
 }
 
@@ -41,7 +41,7 @@ func newHkdfWithCtx(ctx *C.vscf_hkdf_t /*ct10*/) *Hkdf {
     obj := &Hkdf {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *Hkdf) {o.Delete()})
     return obj
 }
 
@@ -52,7 +52,7 @@ func newHkdfCopy(ctx *C.vscf_hkdf_t /*ct10*/) *Hkdf {
     obj := &Hkdf {
         cCtx: C.vscf_hkdf_shallow_copy(ctx),
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *Hkdf) {o.Delete()})
     return obj
 }
 

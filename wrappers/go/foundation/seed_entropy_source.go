@@ -39,7 +39,7 @@ func NewSeedEntropySource() *SeedEntropySource {
     obj := &SeedEntropySource {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *SeedEntropySource) {o.Delete()})
     return obj
 }
 
@@ -50,7 +50,7 @@ func newSeedEntropySourceWithCtx(ctx *C.vscf_seed_entropy_source_t /*ct10*/) *Se
     obj := &SeedEntropySource {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *SeedEntropySource) {o.Delete()})
     return obj
 }
 
@@ -61,7 +61,7 @@ func newSeedEntropySourceCopy(ctx *C.vscf_seed_entropy_source_t /*ct10*/) *SeedE
     obj := &SeedEntropySource {
         cCtx: C.vscf_seed_entropy_source_shallow_copy(ctx),
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *SeedEntropySource) {o.Delete()})
     return obj
 }
 

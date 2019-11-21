@@ -23,7 +23,7 @@ func NewRatchetGroupTicket() *RatchetGroupTicket {
     obj := &RatchetGroupTicket {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *RatchetGroupTicket) {o.Delete()})
     return obj
 }
 
@@ -34,7 +34,7 @@ func newRatchetGroupTicketWithCtx(ctx *C.vscr_ratchet_group_ticket_t /*ct2*/) *R
     obj := &RatchetGroupTicket {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *RatchetGroupTicket) {o.Delete()})
     return obj
 }
 
@@ -45,7 +45,7 @@ func newRatchetGroupTicketCopy(ctx *C.vscr_ratchet_group_ticket_t /*ct2*/) *Ratc
     obj := &RatchetGroupTicket {
         cCtx: C.vscr_ratchet_group_ticket_shallow_copy(ctx),
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *RatchetGroupTicket) {o.Delete()})
     return obj
 }
 
@@ -109,5 +109,5 @@ func (obj *RatchetGroupTicket) SetupTicketAsNew(sessionId []byte) error {
 func (obj *RatchetGroupTicket) GetTicketMessage() *RatchetGroupMessage {
     proxyResult := /*pr4*/C.vscr_ratchet_group_ticket_get_ticket_message(obj.cCtx)
 
-    return newRatchetGroupMessageWithCtx(proxyResult) /* r5 */
+    return newRatchetGroupMessageCopy(proxyResult) /* r5 */
 }

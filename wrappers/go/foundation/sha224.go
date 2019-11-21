@@ -22,7 +22,7 @@ func NewSha224() *Sha224 {
     obj := &Sha224 {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *Sha224) {o.Delete()})
     return obj
 }
 
@@ -33,7 +33,7 @@ func newSha224WithCtx(ctx *C.vscf_sha224_t /*ct10*/) *Sha224 {
     obj := &Sha224 {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *Sha224) {o.Delete()})
     return obj
 }
 
@@ -44,7 +44,7 @@ func newSha224Copy(ctx *C.vscf_sha224_t /*ct10*/) *Sha224 {
     obj := &Sha224 {
         cCtx: C.vscf_sha224_shallow_copy(ctx),
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *Sha224) {o.Delete()})
     return obj
 }
 

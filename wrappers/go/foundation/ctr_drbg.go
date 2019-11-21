@@ -91,7 +91,7 @@ func NewCtrDrbg() *CtrDrbg {
     obj := &CtrDrbg {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *CtrDrbg) {o.Delete()})
     return obj
 }
 
@@ -102,7 +102,7 @@ func newCtrDrbgWithCtx(ctx *C.vscf_ctr_drbg_t /*ct10*/) *CtrDrbg {
     obj := &CtrDrbg {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *CtrDrbg) {o.Delete()})
     return obj
 }
 
@@ -113,7 +113,7 @@ func newCtrDrbgCopy(ctx *C.vscf_ctr_drbg_t /*ct10*/) *CtrDrbg {
     obj := &CtrDrbg {
         cCtx: C.vscf_ctr_drbg_shallow_copy(ctx),
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *CtrDrbg) {o.Delete()})
     return obj
 }
 

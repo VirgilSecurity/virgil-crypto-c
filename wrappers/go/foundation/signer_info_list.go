@@ -22,7 +22,7 @@ func NewSignerInfoList() *SignerInfoList {
     obj := &SignerInfoList {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *SignerInfoList) {o.Delete()})
     return obj
 }
 
@@ -33,7 +33,7 @@ func newSignerInfoListWithCtx(ctx *C.vscf_signer_info_list_t /*ct2*/) *SignerInf
     obj := &SignerInfoList {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *SignerInfoList) {o.Delete()})
     return obj
 }
 
@@ -44,7 +44,7 @@ func newSignerInfoListCopy(ctx *C.vscf_signer_info_list_t /*ct2*/) *SignerInfoLi
     obj := &SignerInfoList {
         cCtx: C.vscf_signer_info_list_shallow_copy(ctx),
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *SignerInfoList) {o.Delete()})
     return obj
 }
 
@@ -78,7 +78,7 @@ func (obj *SignerInfoList) HasItem() bool {
 func (obj *SignerInfoList) Item() *SignerInfo {
     proxyResult := /*pr4*/C.vscf_signer_info_list_item(obj.cCtx)
 
-    return newSignerInfoWithCtx(proxyResult) /* r5 */
+    return newSignerInfoCopy(proxyResult) /* r5 */
 }
 
 /*

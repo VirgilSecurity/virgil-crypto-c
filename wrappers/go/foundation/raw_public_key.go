@@ -31,7 +31,7 @@ func NewRawPublicKey() *RawPublicKey {
     obj := &RawPublicKey {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *RawPublicKey) {o.Delete()})
     return obj
 }
 
@@ -42,7 +42,7 @@ func newRawPublicKeyWithCtx(ctx *C.vscf_raw_public_key_t /*ct10*/) *RawPublicKey
     obj := &RawPublicKey {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *RawPublicKey) {o.Delete()})
     return obj
 }
 
@@ -53,7 +53,7 @@ func newRawPublicKeyCopy(ctx *C.vscf_raw_public_key_t /*ct10*/) *RawPublicKey {
     obj := &RawPublicKey {
         cCtx: C.vscf_raw_public_key_shallow_copy(ctx),
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *RawPublicKey) {o.Delete()})
     return obj
 }
 

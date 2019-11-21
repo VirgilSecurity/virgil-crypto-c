@@ -40,7 +40,7 @@ func NewPbeAlgInfo() *PbeAlgInfo {
     obj := &PbeAlgInfo {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *PbeAlgInfo) {o.Delete()})
     return obj
 }
 
@@ -51,7 +51,7 @@ func newPbeAlgInfoWithCtx(ctx *C.vscf_pbe_alg_info_t /*ct10*/) *PbeAlgInfo {
     obj := &PbeAlgInfo {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *PbeAlgInfo) {o.Delete()})
     return obj
 }
 
@@ -62,7 +62,7 @@ func newPbeAlgInfoCopy(ctx *C.vscf_pbe_alg_info_t /*ct10*/) *PbeAlgInfo {
     obj := &PbeAlgInfo {
         cCtx: C.vscf_pbe_alg_info_shallow_copy(ctx),
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *PbeAlgInfo) {o.Delete()})
     return obj
 }
 
@@ -94,7 +94,7 @@ func NewPbeAlgInfoWithMembers(algId AlgId, kdfAlgInfo AlgInfo, cipherAlgInfo Alg
     obj := &PbeAlgInfo {
         cCtx: proxyResult,
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *PbeAlgInfo) {o.Delete()})
     return obj
 }
 

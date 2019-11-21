@@ -31,7 +31,7 @@ func NewHashBasedAlgInfo() *HashBasedAlgInfo {
     obj := &HashBasedAlgInfo {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *HashBasedAlgInfo) {o.Delete()})
     return obj
 }
 
@@ -42,7 +42,7 @@ func newHashBasedAlgInfoWithCtx(ctx *C.vscf_hash_based_alg_info_t /*ct10*/) *Has
     obj := &HashBasedAlgInfo {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *HashBasedAlgInfo) {o.Delete()})
     return obj
 }
 
@@ -53,7 +53,7 @@ func newHashBasedAlgInfoCopy(ctx *C.vscf_hash_based_alg_info_t /*ct10*/) *HashBa
     obj := &HashBasedAlgInfo {
         cCtx: C.vscf_hash_based_alg_info_shallow_copy(ctx),
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *HashBasedAlgInfo) {o.Delete()})
     return obj
 }
 
@@ -83,7 +83,7 @@ func NewHashBasedAlgInfoWithMembers(algId AlgId, hashAlgInfo AlgInfo) *HashBased
     obj := &HashBasedAlgInfo {
         cCtx: proxyResult,
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *HashBasedAlgInfo) {o.Delete()})
     return obj
 }
 

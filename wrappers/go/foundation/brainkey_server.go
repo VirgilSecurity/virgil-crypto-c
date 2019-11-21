@@ -23,7 +23,7 @@ func NewBrainkeyServer() *BrainkeyServer {
     obj := &BrainkeyServer {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *BrainkeyServer) {o.Delete()})
     return obj
 }
 
@@ -34,7 +34,7 @@ func newBrainkeyServerWithCtx(ctx *C.vscf_brainkey_server_t /*ct2*/) *BrainkeySe
     obj := &BrainkeyServer {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *BrainkeyServer) {o.Delete()})
     return obj
 }
 
@@ -45,7 +45,7 @@ func newBrainkeyServerCopy(ctx *C.vscf_brainkey_server_t /*ct2*/) *BrainkeyServe
     obj := &BrainkeyServer {
         cCtx: C.vscf_brainkey_server_shallow_copy(ctx),
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *BrainkeyServer) {o.Delete()})
     return obj
 }
 

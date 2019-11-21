@@ -29,7 +29,7 @@ func NewPheCipher() *PheCipher {
     obj := &PheCipher {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *PheCipher) {o.Delete()})
     return obj
 }
 
@@ -40,7 +40,7 @@ func newPheCipherWithCtx(ctx *C.vsce_phe_cipher_t /*ct2*/) *PheCipher {
     obj := &PheCipher {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *PheCipher) {o.Delete()})
     return obj
 }
 
@@ -51,7 +51,7 @@ func newPheCipherCopy(ctx *C.vsce_phe_cipher_t /*ct2*/) *PheCipher {
     obj := &PheCipher {
         cCtx: C.vsce_phe_cipher_shallow_copy(ctx),
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *PheCipher) {o.Delete()})
     return obj
 }
 

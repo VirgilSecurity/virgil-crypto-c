@@ -24,7 +24,7 @@ func NewAes256Gcm() *Aes256Gcm {
     obj := &Aes256Gcm {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *Aes256Gcm) {o.Delete()})
     return obj
 }
 
@@ -35,7 +35,7 @@ func newAes256GcmWithCtx(ctx *C.vscf_aes256_gcm_t /*ct10*/) *Aes256Gcm {
     obj := &Aes256Gcm {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *Aes256Gcm) {o.Delete()})
     return obj
 }
 
@@ -46,7 +46,7 @@ func newAes256GcmCopy(ctx *C.vscf_aes256_gcm_t /*ct10*/) *Aes256Gcm {
     obj := &Aes256Gcm {
         cCtx: C.vscf_aes256_gcm_shallow_copy(ctx),
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *Aes256Gcm) {o.Delete()})
     return obj
 }
 

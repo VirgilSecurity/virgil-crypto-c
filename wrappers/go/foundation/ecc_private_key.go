@@ -22,7 +22,7 @@ func NewEccPrivateKey() *EccPrivateKey {
     obj := &EccPrivateKey {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *EccPrivateKey) {o.Delete()})
     return obj
 }
 
@@ -33,7 +33,7 @@ func newEccPrivateKeyWithCtx(ctx *C.vscf_ecc_private_key_t /*ct10*/) *EccPrivate
     obj := &EccPrivateKey {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *EccPrivateKey) {o.Delete()})
     return obj
 }
 
@@ -44,7 +44,7 @@ func newEccPrivateKeyCopy(ctx *C.vscf_ecc_private_key_t /*ct10*/) *EccPrivateKey
     obj := &EccPrivateKey {
         cCtx: C.vscf_ecc_private_key_shallow_copy(ctx),
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *EccPrivateKey) {o.Delete()})
     return obj
 }
 

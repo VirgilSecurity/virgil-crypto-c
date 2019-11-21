@@ -74,7 +74,7 @@ func NewKeyAsn1Deserializer() *KeyAsn1Deserializer {
     obj := &KeyAsn1Deserializer {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *KeyAsn1Deserializer) {o.Delete()})
     return obj
 }
 
@@ -85,7 +85,7 @@ func newKeyAsn1DeserializerWithCtx(ctx *C.vscf_key_asn1_deserializer_t /*ct10*/)
     obj := &KeyAsn1Deserializer {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *KeyAsn1Deserializer) {o.Delete()})
     return obj
 }
 
@@ -96,7 +96,7 @@ func newKeyAsn1DeserializerCopy(ctx *C.vscf_key_asn1_deserializer_t /*ct10*/) *K
     obj := &KeyAsn1Deserializer {
         cCtx: C.vscf_key_asn1_deserializer_shallow_copy(ctx),
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *KeyAsn1Deserializer) {o.Delete()})
     return obj
 }
 

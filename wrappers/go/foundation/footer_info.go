@@ -22,7 +22,7 @@ func NewFooterInfo() *FooterInfo {
     obj := &FooterInfo {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *FooterInfo) {o.Delete()})
     return obj
 }
 
@@ -33,7 +33,7 @@ func newFooterInfoWithCtx(ctx *C.vscf_footer_info_t /*ct2*/) *FooterInfo {
     obj := &FooterInfo {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *FooterInfo) {o.Delete()})
     return obj
 }
 
@@ -44,7 +44,7 @@ func newFooterInfoCopy(ctx *C.vscf_footer_info_t /*ct2*/) *FooterInfo {
     obj := &FooterInfo {
         cCtx: C.vscf_footer_info_shallow_copy(ctx),
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *FooterInfo) {o.Delete()})
     return obj
 }
 
@@ -78,7 +78,7 @@ func (obj *FooterInfo) HasSignedDataInfo() bool {
 func (obj *FooterInfo) SignedDataInfo() *SignedDataInfo {
     proxyResult := /*pr4*/C.vscf_footer_info_signed_data_info(obj.cCtx)
 
-    return newSignedDataInfoWithCtx(proxyResult) /* r5 */
+    return newSignedDataInfoCopy(proxyResult) /* r5 */
 }
 
 /*

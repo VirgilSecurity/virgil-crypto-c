@@ -69,7 +69,7 @@ func NewEcc() *Ecc {
     obj := &Ecc {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *Ecc) {o.Delete()})
     return obj
 }
 
@@ -80,7 +80,7 @@ func newEccWithCtx(ctx *C.vscf_ecc_t /*ct10*/) *Ecc {
     obj := &Ecc {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *Ecc) {o.Delete()})
     return obj
 }
 
@@ -91,7 +91,7 @@ func newEccCopy(ctx *C.vscf_ecc_t /*ct10*/) *Ecc {
     obj := &Ecc {
         cCtx: C.vscf_ecc_shallow_copy(ctx),
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *Ecc) {o.Delete()})
     return obj
 }
 

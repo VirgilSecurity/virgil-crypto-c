@@ -22,7 +22,7 @@ func NewRatchetMessage() *RatchetMessage {
     obj := &RatchetMessage {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *RatchetMessage) {o.Delete()})
     return obj
 }
 
@@ -33,7 +33,7 @@ func newRatchetMessageWithCtx(ctx *C.vscr_ratchet_message_t /*ct2*/) *RatchetMes
     obj := &RatchetMessage {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *RatchetMessage) {o.Delete()})
     return obj
 }
 
@@ -44,7 +44,7 @@ func newRatchetMessageCopy(ctx *C.vscr_ratchet_message_t /*ct2*/) *RatchetMessag
     obj := &RatchetMessage {
         cCtx: C.vscr_ratchet_message_shallow_copy(ctx),
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *RatchetMessage) {o.Delete()})
     return obj
 }
 

@@ -1687,7 +1687,7 @@ function go_create_struct_constructor (class, constructor, destination, go_modul
             obj := &$(my.struct_name:) {
                 cCtx: proxyResult,
             }
-            runtime.SetFinalizer(obj, obj.Delete)
+            runtime.SetFinalizer(obj, func (o *$(my.struct_name:)) {o.Delete()})
             return obj
             ")
 
@@ -1737,7 +1737,7 @@ function go_create_struct_default_constructor (go_struct, class, go_module, go_p
                 obj := &$(my.struct_name:) {
                     cCtx: ctx,
                 }
-                runtime.SetFinalizer(obj, obj.Delete)
+                runtime.SetFinalizer(obj, func (o *$(my.struct_name:)) {o.Delete()})
                 return obj
             "
         endnew
@@ -1767,7 +1767,7 @@ function go_create_struct_default_constructor (go_struct, class, go_module, go_p
                 obj := &$(my.struct_name:) {
                     cCtx: ctx,
                 }
-                runtime.SetFinalizer(obj, obj.Delete)
+                runtime.SetFinalizer(obj, func (o *$(my.struct_name:)) {o.Delete()})
                 return obj
             "
         endnew
@@ -1798,7 +1798,7 @@ function go_create_struct_default_constructor (go_struct, class, go_module, go_p
                     obj := &$(my.struct_name:) {
                         cCtx: C.$(class_derive_c_method_shallow_copy (my.class))(ctx),
                     }
-                    runtime.SetFinalizer(obj, obj.Delete)
+                    runtime.SetFinalizer(obj, func (o *$(my.struct_name:)) {o.Delete()})
                     return obj
                 "
             endnew

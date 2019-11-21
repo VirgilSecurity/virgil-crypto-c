@@ -50,7 +50,7 @@ func NewSaltedKdfAlgInfo() *SaltedKdfAlgInfo {
     obj := &SaltedKdfAlgInfo {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *SaltedKdfAlgInfo) {o.Delete()})
     return obj
 }
 
@@ -61,7 +61,7 @@ func newSaltedKdfAlgInfoWithCtx(ctx *C.vscf_salted_kdf_alg_info_t /*ct10*/) *Sal
     obj := &SaltedKdfAlgInfo {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *SaltedKdfAlgInfo) {o.Delete()})
     return obj
 }
 
@@ -72,7 +72,7 @@ func newSaltedKdfAlgInfoCopy(ctx *C.vscf_salted_kdf_alg_info_t /*ct10*/) *Salted
     obj := &SaltedKdfAlgInfo {
         cCtx: C.vscf_salted_kdf_alg_info_shallow_copy(ctx),
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *SaltedKdfAlgInfo) {o.Delete()})
     return obj
 }
 
@@ -105,7 +105,7 @@ func NewSaltedKdfAlgInfoWithMembers(algId AlgId, hashAlgInfo AlgInfo, salt []byt
     obj := &SaltedKdfAlgInfo {
         cCtx: proxyResult,
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *SaltedKdfAlgInfo) {o.Delete()})
     return obj
 }
 

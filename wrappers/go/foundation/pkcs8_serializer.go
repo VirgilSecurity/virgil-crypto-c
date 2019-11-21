@@ -74,7 +74,7 @@ func NewPkcs8Serializer() *Pkcs8Serializer {
     obj := &Pkcs8Serializer {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *Pkcs8Serializer) {o.Delete()})
     return obj
 }
 
@@ -85,7 +85,7 @@ func newPkcs8SerializerWithCtx(ctx *C.vscf_pkcs8_serializer_t /*ct10*/) *Pkcs8Se
     obj := &Pkcs8Serializer {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *Pkcs8Serializer) {o.Delete()})
     return obj
 }
 
@@ -96,7 +96,7 @@ func newPkcs8SerializerCopy(ctx *C.vscf_pkcs8_serializer_t /*ct10*/) *Pkcs8Seria
     obj := &Pkcs8Serializer {
         cCtx: C.vscf_pkcs8_serializer_shallow_copy(ctx),
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *Pkcs8Serializer) {o.Delete()})
     return obj
 }
 

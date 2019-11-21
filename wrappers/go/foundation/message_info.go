@@ -23,7 +23,7 @@ func NewMessageInfo() *MessageInfo {
     obj := &MessageInfo {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *MessageInfo) {o.Delete()})
     return obj
 }
 
@@ -34,7 +34,7 @@ func newMessageInfoWithCtx(ctx *C.vscf_message_info_t /*ct2*/) *MessageInfo {
     obj := &MessageInfo {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *MessageInfo) {o.Delete()})
     return obj
 }
 
@@ -45,7 +45,7 @@ func newMessageInfoCopy(ctx *C.vscf_message_info_t /*ct2*/) *MessageInfo {
     obj := &MessageInfo {
         cCtx: C.vscf_message_info_shallow_copy(ctx),
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *MessageInfo) {o.Delete()})
     return obj
 }
 
@@ -79,7 +79,7 @@ func (obj *MessageInfo) DataEncryptionAlgInfo() (AlgInfo, error) {
 func (obj *MessageInfo) KeyRecipientInfoList() *KeyRecipientInfoList {
     proxyResult := /*pr4*/C.vscf_message_info_key_recipient_info_list(obj.cCtx)
 
-    return newKeyRecipientInfoListWithCtx(proxyResult) /* r5 */
+    return newKeyRecipientInfoListCopy(proxyResult) /* r5 */
 }
 
 /*
@@ -88,7 +88,7 @@ func (obj *MessageInfo) KeyRecipientInfoList() *KeyRecipientInfoList {
 func (obj *MessageInfo) PasswordRecipientInfoList() *PasswordRecipientInfoList {
     proxyResult := /*pr4*/C.vscf_message_info_password_recipient_info_list(obj.cCtx)
 
-    return newPasswordRecipientInfoListWithCtx(proxyResult) /* r5 */
+    return newPasswordRecipientInfoListCopy(proxyResult) /* r5 */
 }
 
 /*
@@ -108,7 +108,7 @@ func (obj *MessageInfo) HasCustomParams() bool {
 func (obj *MessageInfo) CustomParams() *MessageInfoCustomParams {
     proxyResult := /*pr4*/C.vscf_message_info_custom_params(obj.cCtx)
 
-    return newMessageInfoCustomParamsWithCtx(proxyResult) /* r5 */
+    return newMessageInfoCustomParamsCopy(proxyResult) /* r5 */
 }
 
 /*
@@ -144,7 +144,7 @@ func (obj *MessageInfo) HasFooterInfo() bool {
 func (obj *MessageInfo) FooterInfo() *FooterInfo {
     proxyResult := /*pr4*/C.vscf_message_info_footer_info(obj.cCtx)
 
-    return newFooterInfoWithCtx(proxyResult) /* r5 */
+    return newFooterInfoCopy(proxyResult) /* r5 */
 }
 
 /*

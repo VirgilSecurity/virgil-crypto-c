@@ -24,7 +24,7 @@ func NewRatchetSession() *RatchetSession {
     obj := &RatchetSession {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *RatchetSession) {o.Delete()})
     return obj
 }
 
@@ -35,7 +35,7 @@ func newRatchetSessionWithCtx(ctx *C.vscr_ratchet_session_t /*ct2*/) *RatchetSes
     obj := &RatchetSession {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *RatchetSession) {o.Delete()})
     return obj
 }
 
@@ -46,7 +46,7 @@ func newRatchetSessionCopy(ctx *C.vscr_ratchet_session_t /*ct2*/) *RatchetSessio
     obj := &RatchetSession {
         cCtx: C.vscr_ratchet_session_shallow_copy(ctx),
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *RatchetSession) {o.Delete()})
     return obj
 }
 

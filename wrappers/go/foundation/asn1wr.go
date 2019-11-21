@@ -23,7 +23,7 @@ func NewAsn1wr() *Asn1wr {
     obj := &Asn1wr {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *Asn1wr) {o.Delete()})
     return obj
 }
 
@@ -34,7 +34,7 @@ func newAsn1wrWithCtx(ctx *C.vscf_asn1wr_t /*ct10*/) *Asn1wr {
     obj := &Asn1wr {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *Asn1wr) {o.Delete()})
     return obj
 }
 
@@ -45,7 +45,7 @@ func newAsn1wrCopy(ctx *C.vscf_asn1wr_t /*ct10*/) *Asn1wr {
     obj := &Asn1wr {
         cCtx: C.vscf_asn1wr_shallow_copy(ctx),
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *Asn1wr) {o.Delete()})
     return obj
 }
 

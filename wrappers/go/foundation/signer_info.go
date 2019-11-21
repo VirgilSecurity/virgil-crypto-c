@@ -23,7 +23,7 @@ func NewSignerInfo() *SignerInfo {
     obj := &SignerInfo {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *SignerInfo) {o.Delete()})
     return obj
 }
 
@@ -34,7 +34,7 @@ func newSignerInfoWithCtx(ctx *C.vscf_signer_info_t /*ct2*/) *SignerInfo {
     obj := &SignerInfo {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *SignerInfo) {o.Delete()})
     return obj
 }
 
@@ -45,7 +45,7 @@ func newSignerInfoCopy(ctx *C.vscf_signer_info_t /*ct2*/) *SignerInfo {
     obj := &SignerInfo {
         cCtx: C.vscf_signer_info_shallow_copy(ctx),
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *SignerInfo) {o.Delete()})
     return obj
 }
 

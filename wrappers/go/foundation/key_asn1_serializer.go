@@ -76,7 +76,7 @@ func NewKeyAsn1Serializer() *KeyAsn1Serializer {
     obj := &KeyAsn1Serializer {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *KeyAsn1Serializer) {o.Delete()})
     return obj
 }
 
@@ -87,7 +87,7 @@ func newKeyAsn1SerializerWithCtx(ctx *C.vscf_key_asn1_serializer_t /*ct10*/) *Ke
     obj := &KeyAsn1Serializer {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *KeyAsn1Serializer) {o.Delete()})
     return obj
 }
 
@@ -98,7 +98,7 @@ func newKeyAsn1SerializerCopy(ctx *C.vscf_key_asn1_serializer_t /*ct10*/) *KeyAs
     obj := &KeyAsn1Serializer {
         cCtx: C.vscf_key_asn1_serializer_shallow_copy(ctx),
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *KeyAsn1Serializer) {o.Delete()})
     return obj
 }
 

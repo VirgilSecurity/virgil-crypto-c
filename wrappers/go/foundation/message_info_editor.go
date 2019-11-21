@@ -27,7 +27,7 @@ func NewMessageInfoEditor() *MessageInfoEditor {
     obj := &MessageInfoEditor {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *MessageInfoEditor) {o.Delete()})
     return obj
 }
 
@@ -38,7 +38,7 @@ func newMessageInfoEditorWithCtx(ctx *C.vscf_message_info_editor_t /*ct2*/) *Mes
     obj := &MessageInfoEditor {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *MessageInfoEditor) {o.Delete()})
     return obj
 }
 
@@ -49,7 +49,7 @@ func newMessageInfoEditorCopy(ctx *C.vscf_message_info_editor_t /*ct2*/) *Messag
     obj := &MessageInfoEditor {
         cCtx: C.vscf_message_info_editor_shallow_copy(ctx),
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *MessageInfoEditor) {o.Delete()})
     return obj
 }
 

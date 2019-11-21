@@ -22,7 +22,7 @@ func NewSha384() *Sha384 {
     obj := &Sha384 {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *Sha384) {o.Delete()})
     return obj
 }
 
@@ -33,7 +33,7 @@ func newSha384WithCtx(ctx *C.vscf_sha384_t /*ct10*/) *Sha384 {
     obj := &Sha384 {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *Sha384) {o.Delete()})
     return obj
 }
 
@@ -44,7 +44,7 @@ func newSha384Copy(ctx *C.vscf_sha384_t /*ct10*/) *Sha384 {
     obj := &Sha384 {
         cCtx: C.vscf_sha384_shallow_copy(ctx),
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *Sha384) {o.Delete()})
     return obj
 }
 

@@ -23,7 +23,7 @@ func NewVerifier() *Verifier {
     obj := &Verifier {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *Verifier) {o.Delete()})
     return obj
 }
 
@@ -34,7 +34,7 @@ func newVerifierWithCtx(ctx *C.vscf_verifier_t /*ct2*/) *Verifier {
     obj := &Verifier {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *Verifier) {o.Delete()})
     return obj
 }
 
@@ -45,7 +45,7 @@ func newVerifierCopy(ctx *C.vscf_verifier_t /*ct2*/) *Verifier {
     obj := &Verifier {
         cCtx: C.vscf_verifier_shallow_copy(ctx),
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *Verifier) {o.Delete()})
     return obj
 }
 

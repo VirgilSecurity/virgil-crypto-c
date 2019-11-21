@@ -22,7 +22,7 @@ func NewEccPublicKey() *EccPublicKey {
     obj := &EccPublicKey {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *EccPublicKey) {o.Delete()})
     return obj
 }
 
@@ -33,7 +33,7 @@ func newEccPublicKeyWithCtx(ctx *C.vscf_ecc_public_key_t /*ct10*/) *EccPublicKey
     obj := &EccPublicKey {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *EccPublicKey) {o.Delete()})
     return obj
 }
 
@@ -44,7 +44,7 @@ func newEccPublicKeyCopy(ctx *C.vscf_ecc_public_key_t /*ct10*/) *EccPublicKey {
     obj := &EccPublicKey {
         cCtx: C.vscf_ecc_public_key_shallow_copy(ctx),
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *EccPublicKey) {o.Delete()})
     return obj
 }
 

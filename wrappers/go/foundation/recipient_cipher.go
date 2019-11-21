@@ -24,7 +24,7 @@ func NewRecipientCipher() *RecipientCipher {
     obj := &RecipientCipher {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *RecipientCipher) {o.Delete()})
     return obj
 }
 
@@ -35,7 +35,7 @@ func newRecipientCipherWithCtx(ctx *C.vscf_recipient_cipher_t /*ct2*/) *Recipien
     obj := &RecipientCipher {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *RecipientCipher) {o.Delete()})
     return obj
 }
 
@@ -46,7 +46,7 @@ func newRecipientCipherCopy(ctx *C.vscf_recipient_cipher_t /*ct2*/) *RecipientCi
     obj := &RecipientCipher {
         cCtx: C.vscf_recipient_cipher_shallow_copy(ctx),
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *RecipientCipher) {o.Delete()})
     return obj
 }
 
@@ -145,7 +145,7 @@ func (obj *RecipientCipher) ClearSigners() {
 func (obj *RecipientCipher) CustomParams() *MessageInfoCustomParams {
     proxyResult := /*pr4*/C.vscf_recipient_cipher_custom_params(obj.cCtx)
 
-    return newMessageInfoCustomParamsWithCtx(proxyResult) /* r5 */
+    return newMessageInfoCustomParamsCopy(proxyResult) /* r5 */
 }
 
 /*
@@ -379,7 +379,7 @@ func (obj *RecipientCipher) IsDataSigned() bool {
 func (obj *RecipientCipher) SignerInfos() *SignerInfoList {
     proxyResult := /*pr4*/C.vscf_recipient_cipher_signer_infos(obj.cCtx)
 
-    return newSignerInfoListWithCtx(proxyResult) /* r5 */
+    return newSignerInfoListCopy(proxyResult) /* r5 */
 }
 
 /*

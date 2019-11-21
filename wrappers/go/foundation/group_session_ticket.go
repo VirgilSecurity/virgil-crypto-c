@@ -22,7 +22,7 @@ func NewGroupSessionTicket() *GroupSessionTicket {
     obj := &GroupSessionTicket {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *GroupSessionTicket) {o.Delete()})
     return obj
 }
 
@@ -33,7 +33,7 @@ func newGroupSessionTicketWithCtx(ctx *C.vscf_group_session_ticket_t /*ct2*/) *G
     obj := &GroupSessionTicket {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *GroupSessionTicket) {o.Delete()})
     return obj
 }
 
@@ -44,7 +44,7 @@ func newGroupSessionTicketCopy(ctx *C.vscf_group_session_ticket_t /*ct2*/) *Grou
     obj := &GroupSessionTicket {
         cCtx: C.vscf_group_session_ticket_shallow_copy(ctx),
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *GroupSessionTicket) {o.Delete()})
     return obj
 }
 
@@ -108,5 +108,5 @@ func (obj *GroupSessionTicket) SetupTicketAsNew(sessionId []byte) error {
 func (obj *GroupSessionTicket) GetTicketMessage() *GroupSessionMessage {
     proxyResult := /*pr4*/C.vscf_group_session_ticket_get_ticket_message(obj.cCtx)
 
-    return newGroupSessionMessageWithCtx(proxyResult) /* r5 */
+    return newGroupSessionMessageCopy(proxyResult) /* r5 */
 }

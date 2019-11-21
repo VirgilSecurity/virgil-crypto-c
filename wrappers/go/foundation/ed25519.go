@@ -64,7 +64,7 @@ func NewEd25519() *Ed25519 {
     obj := &Ed25519 {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *Ed25519) {o.Delete()})
     return obj
 }
 
@@ -75,7 +75,7 @@ func newEd25519WithCtx(ctx *C.vscf_ed25519_t /*ct10*/) *Ed25519 {
     obj := &Ed25519 {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *Ed25519) {o.Delete()})
     return obj
 }
 
@@ -86,7 +86,7 @@ func newEd25519Copy(ctx *C.vscf_ed25519_t /*ct10*/) *Ed25519 {
     obj := &Ed25519 {
         cCtx: C.vscf_ed25519_shallow_copy(ctx),
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *Ed25519) {o.Delete()})
     return obj
 }
 

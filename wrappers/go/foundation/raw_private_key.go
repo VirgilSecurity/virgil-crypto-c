@@ -47,7 +47,7 @@ func (obj *RawPrivateKey) SetPublicKey(rawPublicKey *RawPublicKey) {
 func (obj *RawPrivateKey) GetPublicKey() *RawPublicKey {
     proxyResult := /*pr4*/C.vscf_raw_private_key_get_public_key(obj.cCtx)
 
-    return newRawPublicKeyWithCtx(proxyResult) /* r5 */
+    return newRawPublicKeyCopy(proxyResult) /* r5 */
 }
 
 /* Handle underlying C context. */
@@ -60,7 +60,7 @@ func NewRawPrivateKey() *RawPrivateKey {
     obj := &RawPrivateKey {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *RawPrivateKey) {o.Delete()})
     return obj
 }
 
@@ -71,7 +71,7 @@ func newRawPrivateKeyWithCtx(ctx *C.vscf_raw_private_key_t /*ct10*/) *RawPrivate
     obj := &RawPrivateKey {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *RawPrivateKey) {o.Delete()})
     return obj
 }
 
@@ -82,7 +82,7 @@ func newRawPrivateKeyCopy(ctx *C.vscf_raw_private_key_t /*ct10*/) *RawPrivateKey
     obj := &RawPrivateKey {
         cCtx: C.vscf_raw_private_key_shallow_copy(ctx),
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *RawPrivateKey) {o.Delete()})
     return obj
 }
 

@@ -22,7 +22,7 @@ func NewSigner() *Signer {
     obj := &Signer {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *Signer) {o.Delete()})
     return obj
 }
 
@@ -33,7 +33,7 @@ func newSignerWithCtx(ctx *C.vscf_signer_t /*ct2*/) *Signer {
     obj := &Signer {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *Signer) {o.Delete()})
     return obj
 }
 
@@ -44,7 +44,7 @@ func newSignerCopy(ctx *C.vscf_signer_t /*ct2*/) *Signer {
     obj := &Signer {
         cCtx: C.vscf_signer_shallow_copy(ctx),
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *Signer) {o.Delete()})
     return obj
 }
 

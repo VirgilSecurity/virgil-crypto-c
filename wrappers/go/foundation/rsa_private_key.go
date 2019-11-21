@@ -22,7 +22,7 @@ func NewRsaPrivateKey() *RsaPrivateKey {
     obj := &RsaPrivateKey {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *RsaPrivateKey) {o.Delete()})
     return obj
 }
 
@@ -33,7 +33,7 @@ func newRsaPrivateKeyWithCtx(ctx *C.vscf_rsa_private_key_t /*ct10*/) *RsaPrivate
     obj := &RsaPrivateKey {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *RsaPrivateKey) {o.Delete()})
     return obj
 }
 
@@ -44,7 +44,7 @@ func newRsaPrivateKeyCopy(ctx *C.vscf_rsa_private_key_t /*ct10*/) *RsaPrivateKey
     obj := &RsaPrivateKey {
         cCtx: C.vscf_rsa_private_key_shallow_copy(ctx),
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *RsaPrivateKey) {o.Delete()})
     return obj
 }
 

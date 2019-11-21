@@ -22,7 +22,7 @@ func NewPasswordRecipientInfo() *PasswordRecipientInfo {
     obj := &PasswordRecipientInfo {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *PasswordRecipientInfo) {o.Delete()})
     return obj
 }
 
@@ -33,7 +33,7 @@ func newPasswordRecipientInfoWithCtx(ctx *C.vscf_password_recipient_info_t /*ct2
     obj := &PasswordRecipientInfo {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *PasswordRecipientInfo) {o.Delete()})
     return obj
 }
 
@@ -44,7 +44,7 @@ func newPasswordRecipientInfoCopy(ctx *C.vscf_password_recipient_info_t /*ct2*/)
     obj := &PasswordRecipientInfo {
         cCtx: C.vscf_password_recipient_info_shallow_copy(ctx),
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *PasswordRecipientInfo) {o.Delete()})
     return obj
 }
 
@@ -76,7 +76,7 @@ func NewPasswordRecipientInfoWithMembers(keyEncryptionAlgorithm AlgInfo, encrypt
     obj := &PasswordRecipientInfo {
         cCtx: proxyResult,
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *PasswordRecipientInfo) {o.Delete()})
     return obj
 }
 

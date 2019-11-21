@@ -27,7 +27,7 @@ func NewHmac() *Hmac {
     obj := &Hmac {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *Hmac) {o.Delete()})
     return obj
 }
 
@@ -38,7 +38,7 @@ func newHmacWithCtx(ctx *C.vscf_hmac_t /*ct10*/) *Hmac {
     obj := &Hmac {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *Hmac) {o.Delete()})
     return obj
 }
 
@@ -49,7 +49,7 @@ func newHmacCopy(ctx *C.vscf_hmac_t /*ct10*/) *Hmac {
     obj := &Hmac {
         cCtx: C.vscf_hmac_shallow_copy(ctx),
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *Hmac) {o.Delete()})
     return obj
 }
 

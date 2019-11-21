@@ -31,7 +31,7 @@ func NewCipherAlgInfo() *CipherAlgInfo {
     obj := &CipherAlgInfo {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *CipherAlgInfo) {o.Delete()})
     return obj
 }
 
@@ -42,7 +42,7 @@ func newCipherAlgInfoWithCtx(ctx *C.vscf_cipher_alg_info_t /*ct10*/) *CipherAlgI
     obj := &CipherAlgInfo {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *CipherAlgInfo) {o.Delete()})
     return obj
 }
 
@@ -53,7 +53,7 @@ func newCipherAlgInfoCopy(ctx *C.vscf_cipher_alg_info_t /*ct10*/) *CipherAlgInfo
     obj := &CipherAlgInfo {
         cCtx: C.vscf_cipher_alg_info_shallow_copy(ctx),
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *CipherAlgInfo) {o.Delete()})
     return obj
 }
 
@@ -83,7 +83,7 @@ func NewCipherAlgInfoWithMembers(algId AlgId, nonce []byte) *CipherAlgInfo {
     obj := &CipherAlgInfo {
         cCtx: proxyResult,
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *CipherAlgInfo) {o.Delete()})
     return obj
 }
 

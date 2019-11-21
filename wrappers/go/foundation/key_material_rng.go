@@ -45,7 +45,7 @@ func NewKeyMaterialRng() *KeyMaterialRng {
     obj := &KeyMaterialRng {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *KeyMaterialRng) {o.Delete()})
     return obj
 }
 
@@ -56,7 +56,7 @@ func newKeyMaterialRngWithCtx(ctx *C.vscf_key_material_rng_t /*ct10*/) *KeyMater
     obj := &KeyMaterialRng {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *KeyMaterialRng) {o.Delete()})
     return obj
 }
 
@@ -67,7 +67,7 @@ func newKeyMaterialRngCopy(ctx *C.vscf_key_material_rng_t /*ct10*/) *KeyMaterial
     obj := &KeyMaterialRng {
         cCtx: C.vscf_key_material_rng_shallow_copy(ctx),
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *KeyMaterialRng) {o.Delete()})
     return obj
 }
 

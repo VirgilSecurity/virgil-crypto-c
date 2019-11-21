@@ -22,7 +22,7 @@ func NewRatchetKeyId() *RatchetKeyId {
     obj := &RatchetKeyId {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *RatchetKeyId) {o.Delete()})
     return obj
 }
 
@@ -33,7 +33,7 @@ func newRatchetKeyIdWithCtx(ctx *C.vscr_ratchet_key_id_t /*ct2*/) *RatchetKeyId 
     obj := &RatchetKeyId {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *RatchetKeyId) {o.Delete()})
     return obj
 }
 
@@ -44,7 +44,7 @@ func newRatchetKeyIdCopy(ctx *C.vscr_ratchet_key_id_t /*ct2*/) *RatchetKeyId {
     obj := &RatchetKeyId {
         cCtx: C.vscr_ratchet_key_id_shallow_copy(ctx),
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *RatchetKeyId) {o.Delete()})
     return obj
 }
 

@@ -24,7 +24,7 @@ func NewPheClient() *PheClient {
     obj := &PheClient {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *PheClient) {o.Delete()})
     return obj
 }
 
@@ -35,7 +35,7 @@ func newPheClientWithCtx(ctx *C.vsce_phe_client_t /*ct2*/) *PheClient {
     obj := &PheClient {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *PheClient) {o.Delete()})
     return obj
 }
 
@@ -46,7 +46,7 @@ func newPheClientCopy(ctx *C.vsce_phe_client_t /*ct2*/) *PheClient {
     obj := &PheClient {
         cCtx: C.vsce_phe_client_shallow_copy(ctx),
     }
-    runtime.SetFinalizer(obj, obj.Delete)
+    runtime.SetFinalizer(obj, func (o *PheClient) {o.Delete()})
     return obj
 }
 
