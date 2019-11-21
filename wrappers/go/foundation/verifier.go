@@ -54,7 +54,7 @@ func newVerifierCopy(ctx *C.vscf_verifier_t /*ct2*/) *Verifier {
 */
 func (obj *Verifier) Delete() {
     runtime.SetFinalizer(obj, nil)
-    obj.clear()
+    obj.delete()
 }
 
 /*

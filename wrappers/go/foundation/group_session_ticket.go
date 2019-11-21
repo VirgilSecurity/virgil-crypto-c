@@ -53,7 +53,7 @@ func newGroupSessionTicketCopy(ctx *C.vscf_group_session_ticket_t /*ct2*/) *Grou
 */
 func (obj *GroupSessionTicket) Delete() {
     runtime.SetFinalizer(obj, nil)
-    obj.clear()
+    obj.delete()
 }
 
 /*

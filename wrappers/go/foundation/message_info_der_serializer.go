@@ -72,7 +72,7 @@ func newMessageInfoDerSerializerCopy(ctx *C.vscf_message_info_der_serializer_t /
 */
 func (obj *MessageInfoDerSerializer) Delete() {
     runtime.SetFinalizer(obj, nil)
-    obj.clear()
+    obj.delete()
 }
 
 /*

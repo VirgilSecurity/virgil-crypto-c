@@ -86,7 +86,7 @@ func newAlgInfoDerDeserializerCopy(ctx *C.vscf_alg_info_der_deserializer_t /*ct1
 */
 func (obj *AlgInfoDerDeserializer) Delete() {
     runtime.SetFinalizer(obj, nil)
-    obj.clear()
+    obj.delete()
 }
 
 /*

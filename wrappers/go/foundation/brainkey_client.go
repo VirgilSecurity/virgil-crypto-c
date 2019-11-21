@@ -57,7 +57,7 @@ func newBrainkeyClientCopy(ctx *C.vscf_brainkey_client_t /*ct2*/) *BrainkeyClien
 */
 func (obj *BrainkeyClient) Delete() {
     runtime.SetFinalizer(obj, nil)
-    obj.clear()
+    obj.delete()
 }
 
 /*

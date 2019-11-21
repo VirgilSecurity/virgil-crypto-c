@@ -61,7 +61,7 @@ func newHkdfCopy(ctx *C.vscf_hkdf_t /*ct10*/) *Hkdf {
 */
 func (obj *Hkdf) Delete() {
     runtime.SetFinalizer(obj, nil)
-    obj.clear()
+    obj.delete()
 }
 
 /*

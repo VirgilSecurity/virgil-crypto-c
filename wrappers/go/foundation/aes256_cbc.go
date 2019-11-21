@@ -38,7 +38,7 @@ func newAes256CbcWithCtx(ctx *C.vscf_aes256_cbc_t /*ct10*/) *Aes256Cbc {
     runtime.SetFinalizer(obj, obj.Delete)
     return obj
 }
-
+    
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
@@ -55,7 +55,7 @@ func newAes256CbcCopy(ctx *C.vscf_aes256_cbc_t /*ct10*/) *Aes256Cbc {
 */
 func (obj *Aes256Cbc) Delete() {
     runtime.SetFinalizer(obj, nil)
-    obj.clear()
+    obj.delete()
 }
 
 /*

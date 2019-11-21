@@ -105,7 +105,7 @@ func newPkcs8SerializerCopy(ctx *C.vscf_pkcs8_serializer_t /*ct10*/) *Pkcs8Seria
 */
 func (obj *Pkcs8Serializer) Delete() {
     runtime.SetFinalizer(obj, nil)
-    obj.clear()
+    obj.delete()
 }
 
 /*

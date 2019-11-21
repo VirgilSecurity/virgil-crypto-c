@@ -91,7 +91,7 @@ func newRawPrivateKeyCopy(ctx *C.vscf_raw_private_key_t /*ct10*/) *RawPrivateKey
 */
 func (obj *RawPrivateKey) Delete() {
     runtime.SetFinalizer(obj, nil)
-    obj.clear()
+    obj.delete()
 }
 
 /*

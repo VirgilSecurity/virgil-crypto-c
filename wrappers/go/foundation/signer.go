@@ -53,7 +53,7 @@ func newSignerCopy(ctx *C.vscf_signer_t /*ct2*/) *Signer {
 */
 func (obj *Signer) Delete() {
     runtime.SetFinalizer(obj, nil)
-    obj.clear()
+    obj.delete()
 }
 
 /*

@@ -54,7 +54,7 @@ func newMessageInfoCopy(ctx *C.vscf_message_info_t /*ct2*/) *MessageInfo {
 */
 func (obj *MessageInfo) Delete() {
     runtime.SetFinalizer(obj, nil)
-    obj.clear()
+    obj.delete()
 }
 
 /*

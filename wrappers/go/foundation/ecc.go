@@ -100,7 +100,7 @@ func newEccCopy(ctx *C.vscf_ecc_t /*ct10*/) *Ecc {
 */
 func (obj *Ecc) Delete() {
     runtime.SetFinalizer(obj, nil)
-    obj.clear()
+    obj.delete()
 }
 
 /*

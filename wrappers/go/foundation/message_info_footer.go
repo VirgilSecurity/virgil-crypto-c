@@ -53,7 +53,7 @@ func newMessageInfoFooterCopy(ctx *C.vscf_message_info_footer_t /*ct2*/) *Messag
 */
 func (obj *MessageInfoFooter) Delete() {
     runtime.SetFinalizer(obj, nil)
-    obj.clear()
+    obj.delete()
 }
 
 /*

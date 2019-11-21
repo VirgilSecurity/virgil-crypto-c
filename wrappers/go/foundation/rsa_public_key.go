@@ -62,7 +62,7 @@ func newRsaPublicKeyCopy(ctx *C.vscf_rsa_public_key_t /*ct10*/) *RsaPublicKey {
 */
 func (obj *RsaPublicKey) Delete() {
     runtime.SetFinalizer(obj, nil)
-    obj.clear()
+    obj.delete()
 }
 
 /*

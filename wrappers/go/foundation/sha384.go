@@ -53,7 +53,7 @@ func newSha384Copy(ctx *C.vscf_sha384_t /*ct10*/) *Sha384 {
 */
 func (obj *Sha384) Delete() {
     runtime.SetFinalizer(obj, nil)
-    obj.clear()
+    obj.delete()
 }
 
 /*

@@ -62,7 +62,7 @@ func newCipherAlgInfoCopy(ctx *C.vscf_cipher_alg_info_t /*ct10*/) *CipherAlgInfo
 */
 func (obj *CipherAlgInfo) Delete() {
     runtime.SetFinalizer(obj, nil)
-    obj.clear()
+    obj.delete()
 }
 
 /*

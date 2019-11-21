@@ -53,7 +53,7 @@ func newPasswordRecipientInfoListCopy(ctx *C.vscf_password_recipient_info_list_t
 */
 func (obj *PasswordRecipientInfoList) Delete() {
     runtime.SetFinalizer(obj, nil)
-    obj.clear()
+    obj.delete()
 }
 
 /*

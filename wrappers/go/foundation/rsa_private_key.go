@@ -53,7 +53,7 @@ func newRsaPrivateKeyCopy(ctx *C.vscf_rsa_private_key_t /*ct10*/) *RsaPrivateKey
 */
 func (obj *RsaPrivateKey) Delete() {
     runtime.SetFinalizer(obj, nil)
-    obj.clear()
+    obj.delete()
 }
 
 /*

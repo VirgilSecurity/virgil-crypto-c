@@ -58,7 +58,7 @@ func newHmacCopy(ctx *C.vscf_hmac_t /*ct10*/) *Hmac {
 */
 func (obj *Hmac) Delete() {
     runtime.SetFinalizer(obj, nil)
-    obj.clear()
+    obj.delete()
 }
 
 /*

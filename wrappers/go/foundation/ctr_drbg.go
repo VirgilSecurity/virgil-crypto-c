@@ -122,7 +122,7 @@ func newCtrDrbgCopy(ctx *C.vscf_ctr_drbg_t /*ct10*/) *CtrDrbg {
 */
 func (obj *CtrDrbg) Delete() {
     runtime.SetFinalizer(obj, nil)
-    obj.clear()
+    obj.delete()
 }
 
 /*

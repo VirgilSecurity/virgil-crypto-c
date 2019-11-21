@@ -53,7 +53,7 @@ func newEciesCopy(ctx *C.vscf_ecies_t /*ct2*/) *Ecies {
 */
 func (obj *Ecies) Delete() {
     runtime.SetFinalizer(obj, nil)
-    obj.clear()
+    obj.delete()
 }
 
 /*

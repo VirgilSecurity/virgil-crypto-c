@@ -53,7 +53,7 @@ func newSha256Copy(ctx *C.vscf_sha256_t /*ct10*/) *Sha256 {
 */
 func (obj *Sha256) Delete() {
     runtime.SetFinalizer(obj, nil)
-    obj.clear()
+    obj.delete()
 }
 
 /*

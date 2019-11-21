@@ -54,7 +54,7 @@ func newBrainkeyServerCopy(ctx *C.vscf_brainkey_server_t /*ct2*/) *BrainkeyServe
 */
 func (obj *BrainkeyServer) Delete() {
     runtime.SetFinalizer(obj, nil)
-    obj.clear()
+    obj.delete()
 }
 
 /*

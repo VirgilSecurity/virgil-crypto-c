@@ -106,7 +106,7 @@ func newSec1SerializerCopy(ctx *C.vscf_sec1_serializer_t /*ct10*/) *Sec1Serializ
 */
 func (obj *Sec1Serializer) Delete() {
     runtime.SetFinalizer(obj, nil)
-    obj.clear()
+    obj.delete()
 }
 
 /*

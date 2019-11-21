@@ -53,7 +53,7 @@ func newEccPublicKeyCopy(ctx *C.vscf_ecc_public_key_t /*ct10*/) *EccPublicKey {
 */
 func (obj *EccPublicKey) Delete() {
     runtime.SetFinalizer(obj, nil)
-    obj.clear()
+    obj.delete()
 }
 
 /*

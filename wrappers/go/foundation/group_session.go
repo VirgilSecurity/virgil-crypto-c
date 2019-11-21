@@ -71,7 +71,7 @@ func newGroupSessionCopy(ctx *C.vscf_group_session_t /*ct2*/) *GroupSession {
 */
 func (obj *GroupSession) Delete() {
     runtime.SetFinalizer(obj, nil)
-    obj.clear()
+    obj.delete()
 }
 
 /*

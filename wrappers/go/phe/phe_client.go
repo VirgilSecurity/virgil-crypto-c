@@ -55,7 +55,7 @@ func newPheClientCopy(ctx *C.vsce_phe_client_t /*ct2*/) *PheClient {
 */
 func (obj *PheClient) Delete() {
     runtime.SetFinalizer(obj, nil)
-    obj.clear()
+    obj.delete()
 }
 
 /*

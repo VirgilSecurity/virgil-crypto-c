@@ -95,7 +95,7 @@ func newEd25519Copy(ctx *C.vscf_ed25519_t /*ct10*/) *Ed25519 {
 */
 func (obj *Ed25519) Delete() {
     runtime.SetFinalizer(obj, nil)
-    obj.clear()
+    obj.delete()
 }
 
 /*

@@ -74,7 +74,7 @@ func newFakeRandomCopy(ctx *C.vscf_fake_random_t /*ct10*/) *FakeRandom {
 */
 func (obj *FakeRandom) Delete() {
     runtime.SetFinalizer(obj, nil)
-    obj.clear()
+    obj.delete()
 }
 
 /*

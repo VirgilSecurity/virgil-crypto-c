@@ -55,7 +55,7 @@ func newMessageInfoCustomParamsCopy(ctx *C.vscf_message_info_custom_params_t /*c
 */
 func (obj *MessageInfoCustomParams) Delete() {
     runtime.SetFinalizer(obj, nil)
-    obj.clear()
+    obj.delete()
 }
 
 /*

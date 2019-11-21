@@ -71,7 +71,7 @@ func newPbeAlgInfoCopy(ctx *C.vscf_pbe_alg_info_t /*ct10*/) *PbeAlgInfo {
 */
 func (obj *PbeAlgInfo) Delete() {
     runtime.SetFinalizer(obj, nil)
-    obj.clear()
+    obj.delete()
 }
 
 /*

@@ -55,7 +55,7 @@ func newPheServerCopy(ctx *C.vsce_phe_server_t /*ct2*/) *PheServer {
 */
 func (obj *PheServer) Delete() {
     runtime.SetFinalizer(obj, nil)
-    obj.clear()
+    obj.delete()
 }
 
 /*

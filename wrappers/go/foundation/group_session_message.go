@@ -63,7 +63,7 @@ func newGroupSessionMessageCopy(ctx *C.vscf_group_session_message_t /*ct2*/) *Gr
 */
 func (obj *GroupSessionMessage) Delete() {
     runtime.SetFinalizer(obj, nil)
-    obj.clear()
+    obj.delete()
 }
 
 /*

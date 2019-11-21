@@ -55,7 +55,7 @@ func newAes256GcmCopy(ctx *C.vscf_aes256_gcm_t /*ct10*/) *Aes256Gcm {
 */
 func (obj *Aes256Gcm) Delete() {
     runtime.SetFinalizer(obj, nil)
-    obj.clear()
+    obj.delete()
 }
 
 /*

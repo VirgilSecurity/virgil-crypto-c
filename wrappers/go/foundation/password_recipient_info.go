@@ -53,7 +53,7 @@ func newPasswordRecipientInfoCopy(ctx *C.vscf_password_recipient_info_t /*ct2*/)
 */
 func (obj *PasswordRecipientInfo) Delete() {
     runtime.SetFinalizer(obj, nil)
-    obj.clear()
+    obj.delete()
 }
 
 /*

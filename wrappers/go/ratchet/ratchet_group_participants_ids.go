@@ -53,7 +53,7 @@ func newRatchetGroupParticipantsIdsCopy(ctx *C.vscr_ratchet_group_participants_i
 */
 func (obj *RatchetGroupParticipantsIds) Delete() {
     runtime.SetFinalizer(obj, nil)
-    obj.clear()
+    obj.delete()
 }
 
 /*

@@ -53,7 +53,7 @@ func newRatchetKeyIdCopy(ctx *C.vscr_ratchet_key_id_t /*ct2*/) *RatchetKeyId {
 */
 func (obj *RatchetKeyId) Delete() {
     runtime.SetFinalizer(obj, nil)
-    obj.clear()
+    obj.delete()
 }
 
 /*

@@ -107,7 +107,7 @@ func newKeyAsn1SerializerCopy(ctx *C.vscf_key_asn1_serializer_t /*ct10*/) *KeyAs
 */
 func (obj *KeyAsn1Serializer) Delete() {
     runtime.SetFinalizer(obj, nil)
-    obj.clear()
+    obj.delete()
 }
 
 /*

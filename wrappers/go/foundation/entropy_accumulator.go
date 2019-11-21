@@ -76,7 +76,7 @@ func newEntropyAccumulatorCopy(ctx *C.vscf_entropy_accumulator_t /*ct10*/) *Entr
 */
 func (obj *EntropyAccumulator) Delete() {
     runtime.SetFinalizer(obj, nil)
-    obj.clear()
+    obj.delete()
 }
 
 /*

@@ -53,7 +53,7 @@ func newKeyRecipientInfoCopy(ctx *C.vscf_key_recipient_info_t /*ct2*/) *KeyRecip
 */
 func (obj *KeyRecipientInfo) Delete() {
     runtime.SetFinalizer(obj, nil)
-    obj.clear()
+    obj.delete()
 }
 
 /*

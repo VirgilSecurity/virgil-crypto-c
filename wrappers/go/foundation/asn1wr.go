@@ -54,7 +54,7 @@ func newAsn1wrCopy(ctx *C.vscf_asn1wr_t /*ct10*/) *Asn1wr {
 */
 func (obj *Asn1wr) Delete() {
     runtime.SetFinalizer(obj, nil)
-    obj.clear()
+    obj.delete()
 }
 
 /*

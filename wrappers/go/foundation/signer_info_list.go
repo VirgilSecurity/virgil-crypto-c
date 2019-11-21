@@ -53,7 +53,7 @@ func newSignerInfoListCopy(ctx *C.vscf_signer_info_list_t /*ct2*/) *SignerInfoLi
 */
 func (obj *SignerInfoList) Delete() {
     runtime.SetFinalizer(obj, nil)
-    obj.clear()
+    obj.delete()
 }
 
 /*

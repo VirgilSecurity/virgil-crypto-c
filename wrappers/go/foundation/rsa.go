@@ -90,7 +90,7 @@ func newRsaCopy(ctx *C.vscf_rsa_t /*ct10*/) *Rsa {
 */
 func (obj *Rsa) Delete() {
     runtime.SetFinalizer(obj, nil)
-    obj.clear()
+    obj.delete()
 }
 
 /*

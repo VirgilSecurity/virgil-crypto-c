@@ -1644,7 +1644,7 @@ function go_create_struct_close (go_struct, class, go_project, meta)
     new go_code to my.func_clear
         . = "\
             runtime.SetFinalizer(obj, nil)
-            obj.clear()
+            obj.delete()
         "
     endnew
 
@@ -2493,7 +2493,7 @@ function go_wrap_c_returned_value (go_return, go_module, go_project)
 
     elsif is_true (0.is_class) & is_false (0.is_buffer)
         if string_in (go_return.access, "readonly, readwrite")
-            return "new$(my.type:)WithCtx($(my.name:)) /* r5 */"
+            return "new$(my.type:)Copy($(my.name:)) /* r5 */"
         else
             return "new$(my.type:)WithCtx($(my.name:)) /* r6 */"
         endif

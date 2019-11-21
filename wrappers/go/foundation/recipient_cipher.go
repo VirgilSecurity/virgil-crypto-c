@@ -55,7 +55,7 @@ func newRecipientCipherCopy(ctx *C.vscf_recipient_cipher_t /*ct2*/) *RecipientCi
 */
 func (obj *RecipientCipher) Delete() {
     runtime.SetFinalizer(obj, nil)
-    obj.clear()
+    obj.delete()
 }
 
 /*

@@ -74,7 +74,7 @@ func newPkcs5Pbes2Copy(ctx *C.vscf_pkcs5_pbes2_t /*ct10*/) *Pkcs5Pbes2 {
 */
 func (obj *Pkcs5Pbes2) Delete() {
     runtime.SetFinalizer(obj, nil)
-    obj.clear()
+    obj.delete()
 }
 
 /*

@@ -62,7 +62,7 @@ func newRawPublicKeyCopy(ctx *C.vscf_raw_public_key_t /*ct10*/) *RawPublicKey {
 */
 func (obj *RawPublicKey) Delete() {
     runtime.SetFinalizer(obj, nil)
-    obj.clear()
+    obj.delete()
 }
 
 /*

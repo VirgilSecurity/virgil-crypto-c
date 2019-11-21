@@ -55,7 +55,7 @@ func newRatchetGroupSessionCopy(ctx *C.vscr_ratchet_group_session_t /*ct2*/) *Ra
 */
 func (obj *RatchetGroupSession) Delete() {
     runtime.SetFinalizer(obj, nil)
-    obj.clear()
+    obj.delete()
 }
 
 /*

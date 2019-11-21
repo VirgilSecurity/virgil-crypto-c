@@ -53,7 +53,7 @@ func newRatchetMessageCopy(ctx *C.vscr_ratchet_message_t /*ct2*/) *RatchetMessag
 */
 func (obj *RatchetMessage) Delete() {
     runtime.SetFinalizer(obj, nil)
-    obj.clear()
+    obj.delete()
 }
 
 /*

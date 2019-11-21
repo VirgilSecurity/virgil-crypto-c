@@ -58,7 +58,7 @@ func newKdf2Copy(ctx *C.vscf_kdf2_t /*ct10*/) *Kdf2 {
 */
 func (obj *Kdf2) Delete() {
     runtime.SetFinalizer(obj, nil)
-    obj.clear()
+    obj.delete()
 }
 
 /*

@@ -81,7 +81,7 @@ func newSaltedKdfAlgInfoCopy(ctx *C.vscf_salted_kdf_alg_info_t /*ct10*/) *Salted
 */
 func (obj *SaltedKdfAlgInfo) Delete() {
     runtime.SetFinalizer(obj, nil)
-    obj.clear()
+    obj.delete()
 }
 
 /*

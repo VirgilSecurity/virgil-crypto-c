@@ -53,7 +53,7 @@ func newSha224Copy(ctx *C.vscf_sha224_t /*ct10*/) *Sha224 {
 */
 func (obj *Sha224) Delete() {
     runtime.SetFinalizer(obj, nil)
-    obj.clear()
+    obj.delete()
 }
 
 /*

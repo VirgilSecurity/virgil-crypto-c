@@ -53,7 +53,7 @@ func newSignedDataInfoCopy(ctx *C.vscf_signed_data_info_t /*ct2*/) *SignedDataIn
 */
 func (obj *SignedDataInfo) Delete() {
     runtime.SetFinalizer(obj, nil)
-    obj.clear()
+    obj.delete()
 }
 
 /*

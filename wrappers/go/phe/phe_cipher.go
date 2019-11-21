@@ -60,7 +60,7 @@ func newPheCipherCopy(ctx *C.vsce_phe_cipher_t /*ct2*/) *PheCipher {
 */
 func (obj *PheCipher) Delete() {
     runtime.SetFinalizer(obj, nil)
-    obj.clear()
+    obj.delete()
 }
 
 /*

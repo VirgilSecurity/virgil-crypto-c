@@ -95,7 +95,7 @@ func newCurve25519Copy(ctx *C.vscf_curve25519_t /*ct10*/) *Curve25519 {
 */
 func (obj *Curve25519) Delete() {
     runtime.SetFinalizer(obj, nil)
-    obj.clear()
+    obj.delete()
 }
 
 /*
