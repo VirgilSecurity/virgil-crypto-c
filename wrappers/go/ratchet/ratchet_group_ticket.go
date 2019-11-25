@@ -2,6 +2,7 @@ package ratchet
 
 // #include <virgil/crypto/ratchet/vscr_ratchet_public.h>
 import "C"
+import unsafe "unsafe"
 import "runtime"
 import foundation "virgil/foundation"
 
@@ -14,8 +15,8 @@ type RatchetGroupTicket struct {
 }
 
 /* Handle underlying C context. */
-func (obj *RatchetGroupTicket) ctx() *C.vscf_impl_t {
-    return (*C.vscf_impl_t)(obj.cCtx)
+func (obj *RatchetGroupTicket) Ctx() uintptr {
+    return uintptr(unsafe.Pointer(obj.cCtx))
 }
 
 func NewRatchetGroupTicket() *RatchetGroupTicket {
@@ -23,7 +24,6 @@ func NewRatchetGroupTicket() *RatchetGroupTicket {
     obj := &RatchetGroupTicket {
         cCtx: ctx,
     }
-    //runtime.SetFinalizer(obj, func (o *RatchetGroupTicket) {o.Delete()})
     runtime.SetFinalizer(obj, (*RatchetGroupTicket).Delete)
     return obj
 }
@@ -35,7 +35,6 @@ func newRatchetGroupTicketWithCtx(ctx *C.vscr_ratchet_group_ticket_t /*ct2*/) *R
     obj := &RatchetGroupTicket {
         cCtx: ctx,
     }
-    //runtime.SetFinalizer(obj, func (o *RatchetGroupTicket) {o.Delete()})
     runtime.SetFinalizer(obj, (*RatchetGroupTicket).Delete)
     return obj
 }
@@ -47,7 +46,6 @@ func newRatchetGroupTicketCopy(ctx *C.vscr_ratchet_group_ticket_t /*ct2*/) *Ratc
     obj := &RatchetGroupTicket {
         cCtx: C.vscr_ratchet_group_ticket_shallow_copy(ctx),
     }
-    //runtime.SetFinalizer(obj, func (o *RatchetGroupTicket) {o.Delete()})
     runtime.SetFinalizer(obj, (*RatchetGroupTicket).Delete)
     return obj
 }
@@ -75,7 +73,7 @@ func (obj *RatchetGroupTicket) delete() {
 */
 func (obj *RatchetGroupTicket) SetRng(rng foundation.Random) {
     C.vscr_ratchet_group_ticket_release_rng(obj.cCtx)
-    C.vscr_ratchet_group_ticket_use_rng(obj.cCtx, (*C.vscf_impl_t)(rng.(context).ctx()))
+    C.vscr_ratchet_group_ticket_use_rng(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(rng.Ctx())))
 
     runtime.KeepAlive(rng)
     runtime.KeepAlive(obj)

@@ -2,6 +2,7 @@ package foundation
 
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
+import unsafe "unsafe"
 import "runtime"
 
 
@@ -13,8 +14,8 @@ type SimpleAlgInfo struct {
 }
 
 /* Handle underlying C context. */
-func (obj *SimpleAlgInfo) ctx() *C.vscf_impl_t {
-    return (*C.vscf_impl_t)(obj.cCtx)
+func (obj *SimpleAlgInfo) Ctx() uintptr {
+    return uintptr(unsafe.Pointer(obj.cCtx))
 }
 
 func NewSimpleAlgInfo() *SimpleAlgInfo {
@@ -22,7 +23,6 @@ func NewSimpleAlgInfo() *SimpleAlgInfo {
     obj := &SimpleAlgInfo {
         cCtx: ctx,
     }
-    //runtime.SetFinalizer(obj, func (o *SimpleAlgInfo) {o.Delete()})
     runtime.SetFinalizer(obj, (*SimpleAlgInfo).Delete)
     return obj
 }
@@ -34,7 +34,6 @@ func newSimpleAlgInfoWithCtx(ctx *C.vscf_simple_alg_info_t /*ct10*/) *SimpleAlgI
     obj := &SimpleAlgInfo {
         cCtx: ctx,
     }
-    //runtime.SetFinalizer(obj, func (o *SimpleAlgInfo) {o.Delete()})
     runtime.SetFinalizer(obj, (*SimpleAlgInfo).Delete)
     return obj
 }
@@ -46,7 +45,6 @@ func newSimpleAlgInfoCopy(ctx *C.vscf_simple_alg_info_t /*ct10*/) *SimpleAlgInfo
     obj := &SimpleAlgInfo {
         cCtx: C.vscf_simple_alg_info_shallow_copy(ctx),
     }
-    //runtime.SetFinalizer(obj, func (o *SimpleAlgInfo) {o.Delete()})
     runtime.SetFinalizer(obj, (*SimpleAlgInfo).Delete)
     return obj
 }
@@ -78,7 +76,6 @@ func NewSimpleAlgInfoWithAlgId(algId AlgId) *SimpleAlgInfo {
     obj := &SimpleAlgInfo {
         cCtx: proxyResult,
     }
-    //runtime.SetFinalizer(obj, func (o *SimpleAlgInfo) {o.Delete()})
     runtime.SetFinalizer(obj, (*SimpleAlgInfo).Delete)
     return obj
 }

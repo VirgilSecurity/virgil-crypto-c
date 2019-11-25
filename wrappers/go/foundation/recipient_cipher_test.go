@@ -35,119 +35,119 @@
 package foundation
 
 import (
-    b64 "encoding/base64"
-    "github.com/stretchr/testify/assert"
-    "testing"
+	b64 "encoding/base64"
+	"github.com/stretchr/testify/assert"
+	"testing"
 )
 
 func TestNewRecipientCipher(t *testing.T) {
-    recipientCipher := NewRecipientCipher()
+	recipientCipher := NewRecipientCipher()
 
-    assert.NotNil(t, recipientCipher)
+	assert.NotNil(t, recipientCipher)
 }
 
 func TestRecipientCipher_Encrypt_ED25519(t *testing.T) {
-    data, _ := b64.StdEncoding.DecodeString(TEST_DATA)
-    recipientId := []byte{ 0x01, 0x02, 0x03 }
+	data, _ := b64.StdEncoding.DecodeString(TEST_DATA)
+	recipientId := []byte{0x01, 0x02, 0x03}
 
-    recipientCipher := NewRecipientCipher()
-    ed := NewEd25519()
-    err := ed.SetupDefaults()
-    assert.Nil(t, err)
+	recipientCipher := NewRecipientCipher()
+	ed := NewEd25519()
+	err := ed.SetupDefaults()
+	assert.Nil(t, err)
 
-    privateKey,err := ed.GenerateKey()
-    assert.Nil(t, err)
+	privateKey, err := ed.GenerateKey()
+	assert.Nil(t, err)
 
-    // Encrypt
-    extractedPublicKey, err := privateKey.ExtractPublicKey()
-    assert.Nil(t, err)
+	// Encrypt
+	extractedPublicKey, err := privateKey.ExtractPublicKey()
+	assert.Nil(t, err)
 
-    recipientCipher.AddKeyRecipient(recipientId, extractedPublicKey)
-    recipientCipher.CustomParams().AddData([]byte("VIRGIL-DATA-SIGNER-ID"), []byte("VIRGIL-DATA-SIGNER-ID"))
-    recipientCipher.CustomParams().AddData([]byte("VIRGIL-DATA-SIGNATURE"), []byte("VIRGIL-DATA-SIGNATURE"))
+	recipientCipher.AddKeyRecipient(recipientId, extractedPublicKey)
+	recipientCipher.CustomParams().AddData([]byte("VIRGIL-DATA-SIGNER-ID"), []byte("VIRGIL-DATA-SIGNER-ID"))
+	recipientCipher.CustomParams().AddData([]byte("VIRGIL-DATA-SIGNATURE"), []byte("VIRGIL-DATA-SIGNATURE"))
 
-    err = recipientCipher.StartEncryption()
-    assert.Nil(t, err)
+	err = recipientCipher.StartEncryption()
+	assert.Nil(t, err)
 
-    messageInfo := recipientCipher.PackMessageInfo()
-    assert.NotNil(t, messageInfo)
+	messageInfo := recipientCipher.PackMessageInfo()
+	assert.NotNil(t, messageInfo)
 
-    processEncryptionData, err := recipientCipher.ProcessEncryption(data)
-    assert.Nil(t, err)
-    assert.NotNil(t, processEncryptionData)
+	processEncryptionData, err := recipientCipher.ProcessEncryption(data)
+	assert.Nil(t, err)
+	assert.NotNil(t, processEncryptionData)
 
-    finishEncryptionData, err := recipientCipher.FinishEncryption()
-    assert.Nil(t, err)
-    assert.NotNil(t, finishEncryptionData)
+	finishEncryptionData, err := recipientCipher.FinishEncryption()
+	assert.Nil(t, err)
+	assert.NotNil(t, finishEncryptionData)
 
-    encryptedData := append(append(messageInfo, processEncryptionData...), finishEncryptionData...)
+	encryptedData := append(append(messageInfo, processEncryptionData...), finishEncryptionData...)
 
-    // Decrypt
-    cipher := NewRecipientCipher()
-    err = cipher.StartDecryptionWithKey(recipientId, privateKey, []byte{})
-    assert.Nil(t, err)
+	// Decrypt
+	cipher := NewRecipientCipher()
+	err = cipher.StartDecryptionWithKey(recipientId, privateKey, []byte{})
+	assert.Nil(t, err)
 
-    processDecryptionData, err := cipher.ProcessDecryption(encryptedData)
-    assert.Nil(t, err)
-    assert.NotNil(t, processDecryptionData)
+	processDecryptionData, err := cipher.ProcessDecryption(encryptedData)
+	assert.Nil(t, err)
+	assert.NotNil(t, processDecryptionData)
 
-    finishDecryptionData, err := cipher.FinishDecryption()
-    assert.Nil(t, err)
-    assert.NotNil(t, finishDecryptionData)
+	finishDecryptionData, err := cipher.FinishDecryption()
+	assert.Nil(t, err)
+	assert.NotNil(t, finishDecryptionData)
 
-    decryptedData := append(processDecryptionData, finishDecryptionData...)
-    assert.Equal(t, data, decryptedData)
+	decryptedData := append(processDecryptionData, finishDecryptionData...)
+	assert.Equal(t, data, decryptedData)
 }
 
 func TestRecipientCipher_Encrypt_RSA(t *testing.T) {
-    data, _ := b64.StdEncoding.DecodeString(TEST_DATA)
-    recipientId := []byte{ 0x01, 0x02, 0x03 }
+	data, _ := b64.StdEncoding.DecodeString(TEST_DATA)
+	recipientId := []byte{0x01, 0x02, 0x03}
 
-    recipientCipher := NewRecipientCipher()
-    rsa := NewRsa()
-    err := rsa.SetupDefaults()
-    assert.Nil(t, err)
+	recipientCipher := NewRecipientCipher()
+	rsa := NewRsa()
+	err := rsa.SetupDefaults()
+	assert.Nil(t, err)
 
-    privateKey, err := rsa.GenerateKey(2048)
-    assert.Nil(t, err)
+	privateKey, err := rsa.GenerateKey(2048)
+	assert.Nil(t, err)
 
-    // Encrypt
-    extractedPublicKey, err := privateKey.ExtractPublicKey()
-    assert.Nil(t, err)
+	// Encrypt
+	extractedPublicKey, err := privateKey.ExtractPublicKey()
+	assert.Nil(t, err)
 
-    recipientCipher.AddKeyRecipient(recipientId, extractedPublicKey)
-    recipientCipher.CustomParams().AddData([]byte("VIRGIL-DATA-SIGNER-ID"), []byte("VIRGIL-DATA-SIGNER-ID"))
-    recipientCipher.CustomParams().AddData([]byte("VIRGIL-DATA-SIGNATURE"), []byte("VIRGIL-DATA-SIGNATURE"))
+	recipientCipher.AddKeyRecipient(recipientId, extractedPublicKey)
+	recipientCipher.CustomParams().AddData([]byte("VIRGIL-DATA-SIGNER-ID"), []byte("VIRGIL-DATA-SIGNER-ID"))
+	recipientCipher.CustomParams().AddData([]byte("VIRGIL-DATA-SIGNATURE"), []byte("VIRGIL-DATA-SIGNATURE"))
 
-    err = recipientCipher.StartEncryption()
-    assert.Nil(t, err)
+	err = recipientCipher.StartEncryption()
+	assert.Nil(t, err)
 
-    messageInfo := recipientCipher.PackMessageInfo()
-    assert.NotNil(t, messageInfo)
+	messageInfo := recipientCipher.PackMessageInfo()
+	assert.NotNil(t, messageInfo)
 
-    processEncryptionData, err := recipientCipher.ProcessEncryption(data)
-    assert.Nil(t, err)
-    assert.NotNil(t, processEncryptionData)
+	processEncryptionData, err := recipientCipher.ProcessEncryption(data)
+	assert.Nil(t, err)
+	assert.NotNil(t, processEncryptionData)
 
-    finishEncryptionData, err := recipientCipher.FinishEncryption()
-    assert.Nil(t, err)
-    assert.NotNil(t, finishEncryptionData)
+	finishEncryptionData, err := recipientCipher.FinishEncryption()
+	assert.Nil(t, err)
+	assert.NotNil(t, finishEncryptionData)
 
-    encryptedData := append(append(messageInfo, processEncryptionData...), finishEncryptionData...)
+	encryptedData := append(append(messageInfo, processEncryptionData...), finishEncryptionData...)
 
-    // Decrypt
-    cipher := NewRecipientCipher()
-    err = cipher.StartDecryptionWithKey(recipientId, privateKey, []byte{})
-    assert.Nil(t, err)
+	// Decrypt
+	cipher := NewRecipientCipher()
+	err = cipher.StartDecryptionWithKey(recipientId, privateKey, []byte{})
+	assert.Nil(t, err)
 
-    processDecryptionData, err := cipher.ProcessDecryption(encryptedData)
-    assert.Nil(t, err)
-    assert.NotNil(t, processDecryptionData)
+	processDecryptionData, err := cipher.ProcessDecryption(encryptedData)
+	assert.Nil(t, err)
+	assert.NotNil(t, processDecryptionData)
 
-    finishDecryptionData, err := cipher.FinishDecryption()
-    assert.Nil(t, err)
-    assert.NotNil(t, finishDecryptionData)
+	finishDecryptionData, err := cipher.FinishDecryption()
+	assert.Nil(t, err)
+	assert.NotNil(t, finishDecryptionData)
 
-    decryptedData := append(processDecryptionData, finishDecryptionData...)
-    assert.Equal(t, data, decryptedData)
+	decryptedData := append(processDecryptionData, finishDecryptionData...)
+	assert.Equal(t, data, decryptedData)
 }

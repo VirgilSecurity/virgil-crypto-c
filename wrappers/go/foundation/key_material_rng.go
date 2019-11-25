@@ -3,6 +3,7 @@ package foundation
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
 import "runtime"
+import unsafe "unsafe"
 
 
 /*
@@ -38,8 +39,8 @@ func (obj *KeyMaterialRng) ResetKeyMaterial(keyMaterial []byte) {
 }
 
 /* Handle underlying C context. */
-func (obj *KeyMaterialRng) ctx() *C.vscf_impl_t {
-    return (*C.vscf_impl_t)(obj.cCtx)
+func (obj *KeyMaterialRng) Ctx() uintptr {
+    return uintptr(unsafe.Pointer(obj.cCtx))
 }
 
 func NewKeyMaterialRng() *KeyMaterialRng {
@@ -47,7 +48,6 @@ func NewKeyMaterialRng() *KeyMaterialRng {
     obj := &KeyMaterialRng {
         cCtx: ctx,
     }
-    //runtime.SetFinalizer(obj, func (o *KeyMaterialRng) {o.Delete()})
     runtime.SetFinalizer(obj, (*KeyMaterialRng).Delete)
     return obj
 }
@@ -59,7 +59,6 @@ func newKeyMaterialRngWithCtx(ctx *C.vscf_key_material_rng_t /*ct10*/) *KeyMater
     obj := &KeyMaterialRng {
         cCtx: ctx,
     }
-    //runtime.SetFinalizer(obj, func (o *KeyMaterialRng) {o.Delete()})
     runtime.SetFinalizer(obj, (*KeyMaterialRng).Delete)
     return obj
 }
@@ -71,7 +70,6 @@ func newKeyMaterialRngCopy(ctx *C.vscf_key_material_rng_t /*ct10*/) *KeyMaterial
     obj := &KeyMaterialRng {
         cCtx: C.vscf_key_material_rng_shallow_copy(ctx),
     }
-    //runtime.SetFinalizer(obj, func (o *KeyMaterialRng) {o.Delete()})
     runtime.SetFinalizer(obj, (*KeyMaterialRng).Delete)
     return obj
 }

@@ -37,6 +37,7 @@ package phe
 import (
 	"github.com/stretchr/testify/assert"
 	"testing"
+	"virgil/foundation"
 )
 
 func TestNewPheCipher(t *testing.T) {
@@ -64,6 +65,31 @@ func TestFullFlowShouldSucceed(t *testing.T) {
 	defer cipher.Delete()
 	err := cipher.SetupDefaults()
 	assert.Nil(t, err)
+
+	encryptedData, err := cipher.Encrypt(plainText, accountKey)
+	assert.Nil(t, err)
+
+	decryptedData, err := cipher.Decrypt(encryptedData, accountKey)
+	assert.Nil(t, err)
+
+	assert.Equal(t, plainText, decryptedData)
+}
+
+func TestFullFlowShouldSucceed_customRandom(t *testing.T) {
+	plainText := []byte("plain text")
+	accountKey := []byte("Gjg-Ap7Qa5BjpuZ22FhZsairw^ZS5KjC") // 32 bytes string
+	assert.Equal(t, 32, len(accountKey))
+
+	random := foundation.NewCtrDrbg()
+	err := random.SetupDefaults()
+	assert.Nil(t, err)
+
+	cipher := NewPheCipher()
+	defer cipher.Delete()
+
+	cipher.SetRandom(random)
+	//err := cipher.SetupDefaults()
+	//assert.Nil(t, err)
 
 	encryptedData, err := cipher.Encrypt(plainText, accountKey)
 	assert.Nil(t, err)

@@ -2,6 +2,7 @@ package foundation
 
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
+import unsafe "unsafe"
 import "runtime"
 
 
@@ -14,7 +15,7 @@ type Pkcs5Pbes2 struct {
 
 func (obj *Pkcs5Pbes2) SetKdf(kdf SaltedKdf) {
     C.vscf_pkcs5_pbes2_release_kdf(obj.cCtx)
-    C.vscf_pkcs5_pbes2_use_kdf(obj.cCtx, (*C.vscf_impl_t)(kdf.ctx()))
+    C.vscf_pkcs5_pbes2_use_kdf(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(kdf.Ctx())))
 
     runtime.KeepAlive(kdf)
     runtime.KeepAlive(obj)
@@ -22,7 +23,7 @@ func (obj *Pkcs5Pbes2) SetKdf(kdf SaltedKdf) {
 
 func (obj *Pkcs5Pbes2) SetCipher(cipher Cipher) {
     C.vscf_pkcs5_pbes2_release_cipher(obj.cCtx)
-    C.vscf_pkcs5_pbes2_use_cipher(obj.cCtx, (*C.vscf_impl_t)(cipher.ctx()))
+    C.vscf_pkcs5_pbes2_use_cipher(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(cipher.Ctx())))
 
     runtime.KeepAlive(cipher)
     runtime.KeepAlive(obj)
@@ -42,8 +43,8 @@ func (obj *Pkcs5Pbes2) Reset(pwd []byte) {
 }
 
 /* Handle underlying C context. */
-func (obj *Pkcs5Pbes2) ctx() *C.vscf_impl_t {
-    return (*C.vscf_impl_t)(obj.cCtx)
+func (obj *Pkcs5Pbes2) Ctx() uintptr {
+    return uintptr(unsafe.Pointer(obj.cCtx))
 }
 
 func NewPkcs5Pbes2() *Pkcs5Pbes2 {
@@ -51,7 +52,6 @@ func NewPkcs5Pbes2() *Pkcs5Pbes2 {
     obj := &Pkcs5Pbes2 {
         cCtx: ctx,
     }
-    //runtime.SetFinalizer(obj, func (o *Pkcs5Pbes2) {o.Delete()})
     runtime.SetFinalizer(obj, (*Pkcs5Pbes2).Delete)
     return obj
 }
@@ -63,7 +63,6 @@ func newPkcs5Pbes2WithCtx(ctx *C.vscf_pkcs5_pbes2_t /*ct10*/) *Pkcs5Pbes2 {
     obj := &Pkcs5Pbes2 {
         cCtx: ctx,
     }
-    //runtime.SetFinalizer(obj, func (o *Pkcs5Pbes2) {o.Delete()})
     runtime.SetFinalizer(obj, (*Pkcs5Pbes2).Delete)
     return obj
 }
@@ -75,7 +74,6 @@ func newPkcs5Pbes2Copy(ctx *C.vscf_pkcs5_pbes2_t /*ct10*/) *Pkcs5Pbes2 {
     obj := &Pkcs5Pbes2 {
         cCtx: C.vscf_pkcs5_pbes2_shallow_copy(ctx),
     }
-    //runtime.SetFinalizer(obj, func (o *Pkcs5Pbes2) {o.Delete()})
     runtime.SetFinalizer(obj, (*Pkcs5Pbes2).Delete)
     return obj
 }
@@ -124,7 +122,7 @@ func (obj *Pkcs5Pbes2) ProduceAlgInfo() (AlgInfo, error) {
 * Restore algorithm configuration from the given object.
 */
 func (obj *Pkcs5Pbes2) RestoreAlgInfo(algInfo AlgInfo) error {
-    proxyResult := /*pr4*/C.vscf_pkcs5_pbes2_restore_alg_info(obj.cCtx, (*C.vscf_impl_t)(algInfo.ctx()))
+    proxyResult := /*pr4*/C.vscf_pkcs5_pbes2_restore_alg_info(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(algInfo.Ctx())))
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {

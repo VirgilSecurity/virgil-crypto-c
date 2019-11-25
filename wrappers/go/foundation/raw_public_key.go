@@ -3,6 +3,7 @@ package foundation
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
 import "runtime"
+import unsafe "unsafe"
 
 
 /*
@@ -24,8 +25,8 @@ func (obj *RawPublicKey) Data() []byte {
 }
 
 /* Handle underlying C context. */
-func (obj *RawPublicKey) ctx() *C.vscf_impl_t {
-    return (*C.vscf_impl_t)(obj.cCtx)
+func (obj *RawPublicKey) Ctx() uintptr {
+    return uintptr(unsafe.Pointer(obj.cCtx))
 }
 
 func NewRawPublicKey() *RawPublicKey {
@@ -33,7 +34,6 @@ func NewRawPublicKey() *RawPublicKey {
     obj := &RawPublicKey {
         cCtx: ctx,
     }
-    //runtime.SetFinalizer(obj, func (o *RawPublicKey) {o.Delete()})
     runtime.SetFinalizer(obj, (*RawPublicKey).Delete)
     return obj
 }
@@ -45,7 +45,6 @@ func newRawPublicKeyWithCtx(ctx *C.vscf_raw_public_key_t /*ct10*/) *RawPublicKey
     obj := &RawPublicKey {
         cCtx: ctx,
     }
-    //runtime.SetFinalizer(obj, func (o *RawPublicKey) {o.Delete()})
     runtime.SetFinalizer(obj, (*RawPublicKey).Delete)
     return obj
 }
@@ -57,7 +56,6 @@ func newRawPublicKeyCopy(ctx *C.vscf_raw_public_key_t /*ct10*/) *RawPublicKey {
     obj := &RawPublicKey {
         cCtx: C.vscf_raw_public_key_shallow_copy(ctx),
     }
-    //runtime.SetFinalizer(obj, func (o *RawPublicKey) {o.Delete()})
     runtime.SetFinalizer(obj, (*RawPublicKey).Delete)
     return obj
 }

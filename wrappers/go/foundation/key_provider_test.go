@@ -35,51 +35,51 @@
 package foundation
 
 import (
-    b64 "encoding/base64"
-    "github.com/stretchr/testify/assert"
-    "testing"
+	b64 "encoding/base64"
+	"github.com/stretchr/testify/assert"
+	"testing"
 )
 
 func TestNewKeyProvider(t *testing.T) {
-    keyProvider := NewKeyProvider()
+	keyProvider := NewKeyProvider()
 
-    assert.NotNil(t, keyProvider)
+	assert.NotNil(t, keyProvider)
 }
 
 func TestKeyProvider_ImportPrivateKey_EmptyData(t *testing.T) {
-    keyProvider := newKeyProvider()
+	keyProvider := newKeyProvider()
 
-    importedKey, err := keyProvider.ImportPrivateKey([]byte{})
-    assert.NotNil(t, err)
-    assert.Nil(t, importedKey)
+	importedKey, err := keyProvider.ImportPrivateKey([]byte{})
+	assert.NotNil(t, err)
+	assert.Nil(t, importedKey)
 }
 
 func TestKeyProvider_ImportPrivateKey_WrongData(t *testing.T) {
-    wrongKeyData, _ := b64.StdEncoding.DecodeString(TEST_KEY_PROVIDER_WRONG_KEY)
-    keyProvider := newKeyProvider()
+	wrongKeyData, _ := b64.StdEncoding.DecodeString(TEST_KEY_PROVIDER_WRONG_KEY)
+	keyProvider := newKeyProvider()
 
-    importedKey, err := keyProvider.ImportPrivateKey(wrongKeyData)
-    assert.NotNil(t, err)
-    assert.Nil(t, importedKey)
+	importedKey, err := keyProvider.ImportPrivateKey(wrongKeyData)
+	assert.NotNil(t, err)
+	assert.Nil(t, importedKey)
 }
 
 func TestKeyProvider_ImportPrivateKey(t *testing.T) {
-    keyData, _ := b64.StdEncoding.DecodeString(TEST_ED25519_PRIVATE_KEY)
-    keyProvider := newKeyProvider()
+	keyData, _ := b64.StdEncoding.DecodeString(TEST_ED25519_PRIVATE_KEY)
+	keyProvider := newKeyProvider()
 
-    privateKey, err := keyProvider.ImportPrivateKey(keyData)
-    assert.Nil(t, err)
-    assert.NotNil(t, privateKey)
+	privateKey, err := keyProvider.ImportPrivateKey(keyData)
+	assert.Nil(t, err)
+	assert.NotNil(t, privateKey)
 
-    iKey, _ := privateKey.(Key)
-    assert.True(t, iKey.IsValid())
+	iKey, _ := privateKey.(Key)
+	assert.True(t, iKey.IsValid())
 
-    exportedPrivateKeyData, err := keyProvider.ExportPrivateKey(privateKey)
-    assert.Nil(t, err)
+	exportedPrivateKeyData, err := keyProvider.ExportPrivateKey(privateKey)
+	assert.Nil(t, err)
 
-    pk, err :=keyProvider.ImportPrivateKey(exportedPrivateKeyData)
-    assert.Nil(t, err)
+	pk, err := keyProvider.ImportPrivateKey(exportedPrivateKeyData)
+	assert.Nil(t, err)
 
-    importedPrivateKey := pk.(Key)
-    assert.True(t, importedPrivateKey.IsValid())
+	importedPrivateKey := pk.(Key)
+	assert.True(t, importedPrivateKey.IsValid())
 }

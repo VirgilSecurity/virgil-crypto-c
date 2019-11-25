@@ -2,6 +2,7 @@ package foundation
 
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
+import unsafe "unsafe"
 import "runtime"
 
 
@@ -26,7 +27,7 @@ const (
 
 func (obj *CtrDrbg) SetEntropySource(entropySource EntropySource) error {
     C.vscf_ctr_drbg_release_entropy_source(obj.cCtx)
-                    proxyResult := C.vscf_ctr_drbg_use_entropy_source(obj.cCtx, (*C.vscf_impl_t)(entropySource.ctx()))
+                    proxyResult := C.vscf_ctr_drbg_use_entropy_source(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(entropySource.Ctx())))
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
@@ -92,8 +93,8 @@ func (obj *CtrDrbg) SetEntropyLen(len uint32) {
 }
 
 /* Handle underlying C context. */
-func (obj *CtrDrbg) ctx() *C.vscf_impl_t {
-    return (*C.vscf_impl_t)(obj.cCtx)
+func (obj *CtrDrbg) Ctx() uintptr {
+    return uintptr(unsafe.Pointer(obj.cCtx))
 }
 
 func NewCtrDrbg() *CtrDrbg {
@@ -101,7 +102,6 @@ func NewCtrDrbg() *CtrDrbg {
     obj := &CtrDrbg {
         cCtx: ctx,
     }
-    //runtime.SetFinalizer(obj, func (o *CtrDrbg) {o.Delete()})
     runtime.SetFinalizer(obj, (*CtrDrbg).Delete)
     return obj
 }
@@ -113,7 +113,6 @@ func newCtrDrbgWithCtx(ctx *C.vscf_ctr_drbg_t /*ct10*/) *CtrDrbg {
     obj := &CtrDrbg {
         cCtx: ctx,
     }
-    //runtime.SetFinalizer(obj, func (o *CtrDrbg) {o.Delete()})
     runtime.SetFinalizer(obj, (*CtrDrbg).Delete)
     return obj
 }
@@ -125,7 +124,6 @@ func newCtrDrbgCopy(ctx *C.vscf_ctr_drbg_t /*ct10*/) *CtrDrbg {
     obj := &CtrDrbg {
         cCtx: C.vscf_ctr_drbg_shallow_copy(ctx),
     }
-    //runtime.SetFinalizer(obj, func (o *CtrDrbg) {o.Delete()})
     runtime.SetFinalizer(obj, (*CtrDrbg).Delete)
     return obj
 }

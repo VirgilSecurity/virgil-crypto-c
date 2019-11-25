@@ -2,6 +2,7 @@ package foundation
 
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
+import unsafe "unsafe"
 import "runtime"
 
 
@@ -13,8 +14,8 @@ type Signer struct {
 }
 
 /* Handle underlying C context. */
-func (obj *Signer) ctx() *C.vscf_impl_t {
-    return (*C.vscf_impl_t)(obj.cCtx)
+func (obj *Signer) Ctx() uintptr {
+    return uintptr(unsafe.Pointer(obj.cCtx))
 }
 
 func NewSigner() *Signer {
@@ -22,7 +23,6 @@ func NewSigner() *Signer {
     obj := &Signer {
         cCtx: ctx,
     }
-    //runtime.SetFinalizer(obj, func (o *Signer) {o.Delete()})
     runtime.SetFinalizer(obj, (*Signer).Delete)
     return obj
 }
@@ -34,7 +34,6 @@ func newSignerWithCtx(ctx *C.vscf_signer_t /*ct2*/) *Signer {
     obj := &Signer {
         cCtx: ctx,
     }
-    //runtime.SetFinalizer(obj, func (o *Signer) {o.Delete()})
     runtime.SetFinalizer(obj, (*Signer).Delete)
     return obj
 }
@@ -46,7 +45,6 @@ func newSignerCopy(ctx *C.vscf_signer_t /*ct2*/) *Signer {
     obj := &Signer {
         cCtx: C.vscf_signer_shallow_copy(ctx),
     }
-    //runtime.SetFinalizer(obj, func (o *Signer) {o.Delete()})
     runtime.SetFinalizer(obj, (*Signer).Delete)
     return obj
 }
@@ -71,7 +69,7 @@ func (obj *Signer) delete() {
 
 func (obj *Signer) SetHash(hash Hash) {
     C.vscf_signer_release_hash(obj.cCtx)
-    C.vscf_signer_use_hash(obj.cCtx, (*C.vscf_impl_t)(hash.ctx()))
+    C.vscf_signer_use_hash(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(hash.Ctx())))
 
     runtime.KeepAlive(hash)
     runtime.KeepAlive(obj)
@@ -79,7 +77,7 @@ func (obj *Signer) SetHash(hash Hash) {
 
 func (obj *Signer) SetRandom(random Random) {
     C.vscf_signer_release_random(obj.cCtx)
-    C.vscf_signer_use_random(obj.cCtx, (*C.vscf_impl_t)(random.ctx()))
+    C.vscf_signer_use_random(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(random.Ctx())))
 
     runtime.KeepAlive(random)
     runtime.KeepAlive(obj)
@@ -113,7 +111,7 @@ func (obj *Signer) AppendData(data []byte) {
 * Return length of the signature.
 */
 func (obj *Signer) SignatureLen(privateKey PrivateKey) uint32 {
-    proxyResult := /*pr4*/C.vscf_signer_signature_len(obj.cCtx, (*C.vscf_impl_t)(privateKey.ctx()))
+    proxyResult := /*pr4*/C.vscf_signer_signature_len(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(privateKey.Ctx())))
 
     runtime.KeepAlive(obj)
 
@@ -133,7 +131,7 @@ func (obj *Signer) Sign(privateKey PrivateKey) ([]byte, error) {
     defer signatureBuf.Delete()
 
 
-    proxyResult := /*pr4*/C.vscf_signer_sign(obj.cCtx, (*C.vscf_impl_t)(privateKey.ctx()), signatureBuf.ctx)
+    proxyResult := /*pr4*/C.vscf_signer_sign(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(privateKey.Ctx())), signatureBuf.ctx)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {

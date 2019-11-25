@@ -2,8 +2,8 @@ package foundation
 
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
-import "runtime"
 import unsafe "unsafe"
+import "runtime"
 
 
 /*
@@ -14,8 +14,8 @@ type Asn1wr struct {
 }
 
 /* Handle underlying C context. */
-func (obj *Asn1wr) ctx() *C.vscf_impl_t {
-    return (*C.vscf_impl_t)(obj.cCtx)
+func (obj *Asn1wr) Ctx() uintptr {
+    return uintptr(unsafe.Pointer(obj.cCtx))
 }
 
 func NewAsn1wr() *Asn1wr {
@@ -23,7 +23,6 @@ func NewAsn1wr() *Asn1wr {
     obj := &Asn1wr {
         cCtx: ctx,
     }
-    //runtime.SetFinalizer(obj, func (o *Asn1wr) {o.Delete()})
     runtime.SetFinalizer(obj, (*Asn1wr).Delete)
     return obj
 }
@@ -35,7 +34,6 @@ func newAsn1wrWithCtx(ctx *C.vscf_asn1wr_t /*ct10*/) *Asn1wr {
     obj := &Asn1wr {
         cCtx: ctx,
     }
-    //runtime.SetFinalizer(obj, func (o *Asn1wr) {o.Delete()})
     runtime.SetFinalizer(obj, (*Asn1wr).Delete)
     return obj
 }
@@ -47,7 +45,6 @@ func newAsn1wrCopy(ctx *C.vscf_asn1wr_t /*ct10*/) *Asn1wr {
     obj := &Asn1wr {
         cCtx: C.vscf_asn1wr_shallow_copy(ctx),
     }
-    //runtime.SetFinalizer(obj, func (o *Asn1wr) {o.Delete()})
     runtime.SetFinalizer(obj, (*Asn1wr).Delete)
     return obj
 }

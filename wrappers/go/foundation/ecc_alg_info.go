@@ -3,6 +3,7 @@ package foundation
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
 import "runtime"
+import unsafe "unsafe"
 
 
 /*
@@ -35,8 +36,8 @@ func (obj *EccAlgInfo) DomainId() OidId {
 }
 
 /* Handle underlying C context. */
-func (obj *EccAlgInfo) ctx() *C.vscf_impl_t {
-    return (*C.vscf_impl_t)(obj.cCtx)
+func (obj *EccAlgInfo) Ctx() uintptr {
+    return uintptr(unsafe.Pointer(obj.cCtx))
 }
 
 func NewEccAlgInfo() *EccAlgInfo {
@@ -44,7 +45,6 @@ func NewEccAlgInfo() *EccAlgInfo {
     obj := &EccAlgInfo {
         cCtx: ctx,
     }
-    //runtime.SetFinalizer(obj, func (o *EccAlgInfo) {o.Delete()})
     runtime.SetFinalizer(obj, (*EccAlgInfo).Delete)
     return obj
 }
@@ -56,7 +56,6 @@ func newEccAlgInfoWithCtx(ctx *C.vscf_ecc_alg_info_t /*ct10*/) *EccAlgInfo {
     obj := &EccAlgInfo {
         cCtx: ctx,
     }
-    //runtime.SetFinalizer(obj, func (o *EccAlgInfo) {o.Delete()})
     runtime.SetFinalizer(obj, (*EccAlgInfo).Delete)
     return obj
 }
@@ -68,7 +67,6 @@ func newEccAlgInfoCopy(ctx *C.vscf_ecc_alg_info_t /*ct10*/) *EccAlgInfo {
     obj := &EccAlgInfo {
         cCtx: C.vscf_ecc_alg_info_shallow_copy(ctx),
     }
-    //runtime.SetFinalizer(obj, func (o *EccAlgInfo) {o.Delete()})
     runtime.SetFinalizer(obj, (*EccAlgInfo).Delete)
     return obj
 }
@@ -100,7 +98,6 @@ func NewEccAlgInfoWithMembers(algId AlgId, keyId OidId, domainId OidId) *EccAlgI
     obj := &EccAlgInfo {
         cCtx: proxyResult,
     }
-    //runtime.SetFinalizer(obj, func (o *EccAlgInfo) {o.Delete()})
     runtime.SetFinalizer(obj, (*EccAlgInfo).Delete)
     return obj
 }

@@ -2,6 +2,7 @@ package foundation
 
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
+import unsafe "unsafe"
 import "runtime"
 
 
@@ -31,8 +32,8 @@ const (
 )
 
 /* Handle underlying C context. */
-func (obj *GroupSession) ctx() *C.vscf_impl_t {
-    return (*C.vscf_impl_t)(obj.cCtx)
+func (obj *GroupSession) Ctx() uintptr {
+    return uintptr(unsafe.Pointer(obj.cCtx))
 }
 
 func NewGroupSession() *GroupSession {
@@ -40,7 +41,6 @@ func NewGroupSession() *GroupSession {
     obj := &GroupSession {
         cCtx: ctx,
     }
-    //runtime.SetFinalizer(obj, func (o *GroupSession) {o.Delete()})
     runtime.SetFinalizer(obj, (*GroupSession).Delete)
     return obj
 }
@@ -52,7 +52,6 @@ func newGroupSessionWithCtx(ctx *C.vscf_group_session_t /*ct2*/) *GroupSession {
     obj := &GroupSession {
         cCtx: ctx,
     }
-    //runtime.SetFinalizer(obj, func (o *GroupSession) {o.Delete()})
     runtime.SetFinalizer(obj, (*GroupSession).Delete)
     return obj
 }
@@ -64,7 +63,6 @@ func newGroupSessionCopy(ctx *C.vscf_group_session_t /*ct2*/) *GroupSession {
     obj := &GroupSession {
         cCtx: C.vscf_group_session_shallow_copy(ctx),
     }
-    //runtime.SetFinalizer(obj, func (o *GroupSession) {o.Delete()})
     runtime.SetFinalizer(obj, (*GroupSession).Delete)
     return obj
 }
@@ -92,7 +90,7 @@ func (obj *GroupSession) delete() {
 */
 func (obj *GroupSession) SetRng(rng Random) {
     C.vscf_group_session_release_rng(obj.cCtx)
-    C.vscf_group_session_use_rng(obj.cCtx, (*C.vscf_impl_t)(rng.ctx()))
+    C.vscf_group_session_use_rng(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(rng.Ctx())))
 
     runtime.KeepAlive(rng)
     runtime.KeepAlive(obj)
@@ -142,7 +140,7 @@ func (obj *GroupSession) GetSessionId() []byte {
 * Epoch message should be encrypted and signed by trusted group chat member (admin).
 */
 func (obj *GroupSession) AddEpoch(message *GroupSessionMessage) error {
-    proxyResult := /*pr4*/C.vscf_group_session_add_epoch(obj.cCtx, (*C.vscf_group_session_message_t)(message.ctx()))
+    proxyResult := /*pr4*/C.vscf_group_session_add_epoch(obj.cCtx, (*C.vscf_group_session_message_t)(unsafe.Pointer(message.Ctx())))
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
@@ -164,7 +162,7 @@ func (obj *GroupSession) Encrypt(plainText []byte, privateKey PrivateKey) (*Grou
     C.vscf_error_reset(&error)
     plainTextData := helperWrapData (plainText)
 
-    proxyResult := /*pr4*/C.vscf_group_session_encrypt(obj.cCtx, plainTextData, (*C.vscf_impl_t)(privateKey.ctx()), &error)
+    proxyResult := /*pr4*/C.vscf_group_session_encrypt(obj.cCtx, plainTextData, (*C.vscf_impl_t)(unsafe.Pointer(privateKey.Ctx())), &error)
 
     err := FoundationErrorHandleStatus(error.status)
     if err != nil {
@@ -184,7 +182,7 @@ func (obj *GroupSession) Encrypt(plainText []byte, privateKey PrivateKey) (*Grou
 * Calculates size of buffer sufficient to store decrypted message
 */
 func (obj *GroupSession) DecryptLen(message *GroupSessionMessage) uint32 {
-    proxyResult := /*pr4*/C.vscf_group_session_decrypt_len(obj.cCtx, (*C.vscf_group_session_message_t)(message.ctx()))
+    proxyResult := /*pr4*/C.vscf_group_session_decrypt_len(obj.cCtx, (*C.vscf_group_session_message_t)(unsafe.Pointer(message.Ctx())))
 
     runtime.KeepAlive(obj)
 
@@ -204,7 +202,7 @@ func (obj *GroupSession) Decrypt(message *GroupSessionMessage, publicKey PublicK
     defer plainTextBuf.Delete()
 
 
-    proxyResult := /*pr4*/C.vscf_group_session_decrypt(obj.cCtx, (*C.vscf_group_session_message_t)(message.ctx()), (*C.vscf_impl_t)(publicKey.ctx()), plainTextBuf.ctx)
+    proxyResult := /*pr4*/C.vscf_group_session_decrypt(obj.cCtx, (*C.vscf_group_session_message_t)(unsafe.Pointer(message.Ctx())), (*C.vscf_impl_t)(unsafe.Pointer(publicKey.Ctx())), plainTextBuf.ctx)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {

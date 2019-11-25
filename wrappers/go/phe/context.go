@@ -6,6 +6,6 @@ import "C"
 type context interface {
 
     /* Get C context */
-    ctx () *C.vscf_impl_t
+    Ctx () uintptr
 }
 

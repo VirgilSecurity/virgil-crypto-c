@@ -2,6 +2,7 @@ package foundation
 
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
+import unsafe "unsafe"
 import "runtime"
 
 
@@ -15,7 +16,7 @@ type Sec1Serializer struct {
 
 func (obj *Sec1Serializer) SetAsn1Writer(asn1Writer Asn1Writer) {
     C.vscf_sec1_serializer_release_asn1_writer(obj.cCtx)
-    C.vscf_sec1_serializer_use_asn1_writer(obj.cCtx, (*C.vscf_impl_t)(asn1Writer.ctx()))
+    C.vscf_sec1_serializer_use_asn1_writer(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(asn1Writer.Ctx())))
 
     runtime.KeepAlive(asn1Writer)
     runtime.KeepAlive(obj)
@@ -41,7 +42,7 @@ func (obj *Sec1Serializer) SerializePublicKeyInplace(publicKey *RawPublicKey) (u
     var error C.vscf_error_t
     C.vscf_error_reset(&error)
 
-    proxyResult := /*pr4*/C.vscf_sec1_serializer_serialize_public_key_inplace(obj.cCtx, (*C.vscf_raw_public_key_t)(publicKey.ctx()), &error)
+    proxyResult := /*pr4*/C.vscf_sec1_serializer_serialize_public_key_inplace(obj.cCtx, (*C.vscf_raw_public_key_t)(unsafe.Pointer(publicKey.Ctx())), &error)
 
     err := FoundationErrorHandleStatus(error.status)
     if err != nil {
@@ -66,7 +67,7 @@ func (obj *Sec1Serializer) SerializePrivateKeyInplace(privateKey *RawPrivateKey)
     var error C.vscf_error_t
     C.vscf_error_reset(&error)
 
-    proxyResult := /*pr4*/C.vscf_sec1_serializer_serialize_private_key_inplace(obj.cCtx, (*C.vscf_raw_private_key_t)(privateKey.ctx()), &error)
+    proxyResult := /*pr4*/C.vscf_sec1_serializer_serialize_private_key_inplace(obj.cCtx, (*C.vscf_raw_private_key_t)(unsafe.Pointer(privateKey.Ctx())), &error)
 
     err := FoundationErrorHandleStatus(error.status)
     if err != nil {
@@ -83,8 +84,8 @@ func (obj *Sec1Serializer) SerializePrivateKeyInplace(privateKey *RawPrivateKey)
 }
 
 /* Handle underlying C context. */
-func (obj *Sec1Serializer) ctx() *C.vscf_impl_t {
-    return (*C.vscf_impl_t)(obj.cCtx)
+func (obj *Sec1Serializer) Ctx() uintptr {
+    return uintptr(unsafe.Pointer(obj.cCtx))
 }
 
 func NewSec1Serializer() *Sec1Serializer {
@@ -92,7 +93,6 @@ func NewSec1Serializer() *Sec1Serializer {
     obj := &Sec1Serializer {
         cCtx: ctx,
     }
-    //runtime.SetFinalizer(obj, func (o *Sec1Serializer) {o.Delete()})
     runtime.SetFinalizer(obj, (*Sec1Serializer).Delete)
     return obj
 }
@@ -104,7 +104,6 @@ func newSec1SerializerWithCtx(ctx *C.vscf_sec1_serializer_t /*ct10*/) *Sec1Seria
     obj := &Sec1Serializer {
         cCtx: ctx,
     }
-    //runtime.SetFinalizer(obj, func (o *Sec1Serializer) {o.Delete()})
     runtime.SetFinalizer(obj, (*Sec1Serializer).Delete)
     return obj
 }
@@ -116,7 +115,6 @@ func newSec1SerializerCopy(ctx *C.vscf_sec1_serializer_t /*ct10*/) *Sec1Serializ
     obj := &Sec1Serializer {
         cCtx: C.vscf_sec1_serializer_shallow_copy(ctx),
     }
-    //runtime.SetFinalizer(obj, func (o *Sec1Serializer) {o.Delete()})
     runtime.SetFinalizer(obj, (*Sec1Serializer).Delete)
     return obj
 }
@@ -145,7 +143,7 @@ func (obj *Sec1Serializer) delete() {
 * Precondition: public key must be exportable.
 */
 func (obj *Sec1Serializer) SerializedPublicKeyLen(publicKey *RawPublicKey) uint32 {
-    proxyResult := /*pr4*/C.vscf_sec1_serializer_serialized_public_key_len(obj.cCtx, (*C.vscf_raw_public_key_t)(publicKey.ctx()))
+    proxyResult := /*pr4*/C.vscf_sec1_serializer_serialized_public_key_len(obj.cCtx, (*C.vscf_raw_public_key_t)(unsafe.Pointer(publicKey.Ctx())))
 
     runtime.KeepAlive(obj)
 
@@ -167,7 +165,7 @@ func (obj *Sec1Serializer) SerializePublicKey(publicKey *RawPublicKey) ([]byte, 
     defer outBuf.Delete()
 
 
-    proxyResult := /*pr4*/C.vscf_sec1_serializer_serialize_public_key(obj.cCtx, (*C.vscf_raw_public_key_t)(publicKey.ctx()), outBuf.ctx)
+    proxyResult := /*pr4*/C.vscf_sec1_serializer_serialize_public_key(obj.cCtx, (*C.vscf_raw_public_key_t)(unsafe.Pointer(publicKey.Ctx())), outBuf.ctx)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
@@ -187,7 +185,7 @@ func (obj *Sec1Serializer) SerializePublicKey(publicKey *RawPublicKey) ([]byte, 
 * Precondition: private key must be exportable.
 */
 func (obj *Sec1Serializer) SerializedPrivateKeyLen(privateKey *RawPrivateKey) uint32 {
-    proxyResult := /*pr4*/C.vscf_sec1_serializer_serialized_private_key_len(obj.cCtx, (*C.vscf_raw_private_key_t)(privateKey.ctx()))
+    proxyResult := /*pr4*/C.vscf_sec1_serializer_serialized_private_key_len(obj.cCtx, (*C.vscf_raw_private_key_t)(unsafe.Pointer(privateKey.Ctx())))
 
     runtime.KeepAlive(obj)
 
@@ -209,7 +207,7 @@ func (obj *Sec1Serializer) SerializePrivateKey(privateKey *RawPrivateKey) ([]byt
     defer outBuf.Delete()
 
 
-    proxyResult := /*pr4*/C.vscf_sec1_serializer_serialize_private_key(obj.cCtx, (*C.vscf_raw_private_key_t)(privateKey.ctx()), outBuf.ctx)
+    proxyResult := /*pr4*/C.vscf_sec1_serializer_serialize_private_key(obj.cCtx, (*C.vscf_raw_private_key_t)(unsafe.Pointer(privateKey.Ctx())), outBuf.ctx)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {

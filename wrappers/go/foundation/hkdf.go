@@ -2,6 +2,7 @@ package foundation
 
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
+import unsafe "unsafe"
 import "runtime"
 
 
@@ -17,15 +18,15 @@ const (
 
 func (obj *Hkdf) SetHash(hash Hash) {
     C.vscf_hkdf_release_hash(obj.cCtx)
-    C.vscf_hkdf_use_hash(obj.cCtx, (*C.vscf_impl_t)(hash.ctx()))
+    C.vscf_hkdf_use_hash(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(hash.Ctx())))
 
     runtime.KeepAlive(hash)
     runtime.KeepAlive(obj)
 }
 
 /* Handle underlying C context. */
-func (obj *Hkdf) ctx() *C.vscf_impl_t {
-    return (*C.vscf_impl_t)(obj.cCtx)
+func (obj *Hkdf) Ctx() uintptr {
+    return uintptr(unsafe.Pointer(obj.cCtx))
 }
 
 func NewHkdf() *Hkdf {
@@ -33,7 +34,6 @@ func NewHkdf() *Hkdf {
     obj := &Hkdf {
         cCtx: ctx,
     }
-    //runtime.SetFinalizer(obj, func (o *Hkdf) {o.Delete()})
     runtime.SetFinalizer(obj, (*Hkdf).Delete)
     return obj
 }
@@ -45,7 +45,6 @@ func newHkdfWithCtx(ctx *C.vscf_hkdf_t /*ct10*/) *Hkdf {
     obj := &Hkdf {
         cCtx: ctx,
     }
-    //runtime.SetFinalizer(obj, func (o *Hkdf) {o.Delete()})
     runtime.SetFinalizer(obj, (*Hkdf).Delete)
     return obj
 }
@@ -57,7 +56,6 @@ func newHkdfCopy(ctx *C.vscf_hkdf_t /*ct10*/) *Hkdf {
     obj := &Hkdf {
         cCtx: C.vscf_hkdf_shallow_copy(ctx),
     }
-    //runtime.SetFinalizer(obj, func (o *Hkdf) {o.Delete()})
     runtime.SetFinalizer(obj, (*Hkdf).Delete)
     return obj
 }
@@ -106,7 +104,7 @@ func (obj *Hkdf) ProduceAlgInfo() (AlgInfo, error) {
 * Restore algorithm configuration from the given object.
 */
 func (obj *Hkdf) RestoreAlgInfo(algInfo AlgInfo) error {
-    proxyResult := /*pr4*/C.vscf_hkdf_restore_alg_info(obj.cCtx, (*C.vscf_impl_t)(algInfo.ctx()))
+    proxyResult := /*pr4*/C.vscf_hkdf_restore_alg_info(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(algInfo.Ctx())))
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {

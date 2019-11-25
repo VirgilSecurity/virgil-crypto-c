@@ -2,9 +2,9 @@ package ratchet
 
 // #include <virgil/crypto/ratchet/vscr_ratchet_public.h>
 import "C"
+import unsafe "unsafe"
 import "runtime"
 import foundation "virgil/foundation"
-import unsafe "unsafe"
 
 
 /*
@@ -15,8 +15,8 @@ type RatchetGroupSession struct {
 }
 
 /* Handle underlying C context. */
-func (obj *RatchetGroupSession) ctx() *C.vscf_impl_t {
-    return (*C.vscf_impl_t)(obj.cCtx)
+func (obj *RatchetGroupSession) Ctx() uintptr {
+    return uintptr(unsafe.Pointer(obj.cCtx))
 }
 
 func NewRatchetGroupSession() *RatchetGroupSession {
@@ -24,7 +24,6 @@ func NewRatchetGroupSession() *RatchetGroupSession {
     obj := &RatchetGroupSession {
         cCtx: ctx,
     }
-    //runtime.SetFinalizer(obj, func (o *RatchetGroupSession) {o.Delete()})
     runtime.SetFinalizer(obj, (*RatchetGroupSession).Delete)
     return obj
 }
@@ -36,7 +35,6 @@ func newRatchetGroupSessionWithCtx(ctx *C.vscr_ratchet_group_session_t /*ct2*/) 
     obj := &RatchetGroupSession {
         cCtx: ctx,
     }
-    //runtime.SetFinalizer(obj, func (o *RatchetGroupSession) {o.Delete()})
     runtime.SetFinalizer(obj, (*RatchetGroupSession).Delete)
     return obj
 }
@@ -48,7 +46,6 @@ func newRatchetGroupSessionCopy(ctx *C.vscr_ratchet_group_session_t /*ct2*/) *Ra
     obj := &RatchetGroupSession {
         cCtx: C.vscr_ratchet_group_session_shallow_copy(ctx),
     }
-    //runtime.SetFinalizer(obj, func (o *RatchetGroupSession) {o.Delete()})
     runtime.SetFinalizer(obj, (*RatchetGroupSession).Delete)
     return obj
 }
@@ -76,7 +73,7 @@ func (obj *RatchetGroupSession) delete() {
 */
 func (obj *RatchetGroupSession) SetRng(rng foundation.Random) {
     C.vscr_ratchet_group_session_release_rng(obj.cCtx)
-    C.vscr_ratchet_group_session_use_rng(obj.cCtx, (*C.vscf_impl_t)(rng.(context).ctx()))
+    C.vscr_ratchet_group_session_use_rng(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(rng.Ctx())))
 
     runtime.KeepAlive(rng)
     runtime.KeepAlive(obj)
@@ -213,7 +210,7 @@ func (obj *RatchetGroupSession) GetParticipantsCount() uint32 {
 * NOTE: Identity private key and my id should be set separately.
 */
 func (obj *RatchetGroupSession) SetupSessionState(message *RatchetGroupMessage, participants *RatchetGroupParticipantsInfo) error {
-    proxyResult := /*pr4*/C.vscr_ratchet_group_session_setup_session_state(obj.cCtx, (*C.vscr_ratchet_group_message_t)(message.ctx()), (*C.vscr_ratchet_group_participants_info_t)(participants.ctx()))
+    proxyResult := /*pr4*/C.vscr_ratchet_group_session_setup_session_state(obj.cCtx, (*C.vscr_ratchet_group_message_t)(unsafe.Pointer(message.Ctx())), (*C.vscr_ratchet_group_participants_info_t)(unsafe.Pointer(participants.Ctx())))
 
     err := RatchetErrorHandleStatus(proxyResult)
     if err != nil {
@@ -235,7 +232,7 @@ func (obj *RatchetGroupSession) SetupSessionState(message *RatchetGroupMessage, 
 * NOTE: Identity private key and my id should be set separately.
 */
 func (obj *RatchetGroupSession) UpdateSessionState(message *RatchetGroupMessage, addParticipants *RatchetGroupParticipantsInfo, removeParticipants *RatchetGroupParticipantsIds) error {
-    proxyResult := /*pr4*/C.vscr_ratchet_group_session_update_session_state(obj.cCtx, (*C.vscr_ratchet_group_message_t)(message.ctx()), (*C.vscr_ratchet_group_participants_info_t)(addParticipants.ctx()), (*C.vscr_ratchet_group_participants_ids_t)(removeParticipants.ctx()))
+    proxyResult := /*pr4*/C.vscr_ratchet_group_session_update_session_state(obj.cCtx, (*C.vscr_ratchet_group_message_t)(unsafe.Pointer(message.Ctx())), (*C.vscr_ratchet_group_participants_info_t)(unsafe.Pointer(addParticipants.Ctx())), (*C.vscr_ratchet_group_participants_ids_t)(unsafe.Pointer(removeParticipants.Ctx())))
 
     err := RatchetErrorHandleStatus(proxyResult)
     if err != nil {
@@ -279,7 +276,7 @@ func (obj *RatchetGroupSession) Encrypt(plainText []byte) (*RatchetGroupMessage,
 * Calculates size of buffer sufficient to store decrypted message
 */
 func (obj *RatchetGroupSession) DecryptLen(message *RatchetGroupMessage) uint32 {
-    proxyResult := /*pr4*/C.vscr_ratchet_group_session_decrypt_len(obj.cCtx, (*C.vscr_ratchet_group_message_t)(message.ctx()))
+    proxyResult := /*pr4*/C.vscr_ratchet_group_session_decrypt_len(obj.cCtx, (*C.vscr_ratchet_group_message_t)(unsafe.Pointer(message.Ctx())))
 
     runtime.KeepAlive(obj)
 
@@ -299,7 +296,7 @@ func (obj *RatchetGroupSession) Decrypt(message *RatchetGroupMessage, senderId [
     defer plainTextBuf.Delete()
     senderIdData := helperWrapData (senderId)
 
-    proxyResult := /*pr4*/C.vscr_ratchet_group_session_decrypt(obj.cCtx, (*C.vscr_ratchet_group_message_t)(message.ctx()), senderIdData, plainTextBuf.ctx)
+    proxyResult := /*pr4*/C.vscr_ratchet_group_session_decrypt(obj.cCtx, (*C.vscr_ratchet_group_message_t)(unsafe.Pointer(message.Ctx())), senderIdData, plainTextBuf.ctx)
 
     err := RatchetErrorHandleStatus(proxyResult)
     if err != nil {

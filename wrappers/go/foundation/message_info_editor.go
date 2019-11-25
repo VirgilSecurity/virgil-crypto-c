@@ -2,6 +2,7 @@ package foundation
 
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
+import unsafe "unsafe"
 import "runtime"
 
 
@@ -18,8 +19,8 @@ type MessageInfoEditor struct {
 }
 
 /* Handle underlying C context. */
-func (obj *MessageInfoEditor) ctx() *C.vscf_impl_t {
-    return (*C.vscf_impl_t)(obj.cCtx)
+func (obj *MessageInfoEditor) Ctx() uintptr {
+    return uintptr(unsafe.Pointer(obj.cCtx))
 }
 
 func NewMessageInfoEditor() *MessageInfoEditor {
@@ -27,7 +28,6 @@ func NewMessageInfoEditor() *MessageInfoEditor {
     obj := &MessageInfoEditor {
         cCtx: ctx,
     }
-    //runtime.SetFinalizer(obj, func (o *MessageInfoEditor) {o.Delete()})
     runtime.SetFinalizer(obj, (*MessageInfoEditor).Delete)
     return obj
 }
@@ -39,7 +39,6 @@ func newMessageInfoEditorWithCtx(ctx *C.vscf_message_info_editor_t /*ct2*/) *Mes
     obj := &MessageInfoEditor {
         cCtx: ctx,
     }
-    //runtime.SetFinalizer(obj, func (o *MessageInfoEditor) {o.Delete()})
     runtime.SetFinalizer(obj, (*MessageInfoEditor).Delete)
     return obj
 }
@@ -51,7 +50,6 @@ func newMessageInfoEditorCopy(ctx *C.vscf_message_info_editor_t /*ct2*/) *Messag
     obj := &MessageInfoEditor {
         cCtx: C.vscf_message_info_editor_shallow_copy(ctx),
     }
-    //runtime.SetFinalizer(obj, func (o *MessageInfoEditor) {o.Delete()})
     runtime.SetFinalizer(obj, (*MessageInfoEditor).Delete)
     return obj
 }
@@ -76,7 +74,7 @@ func (obj *MessageInfoEditor) delete() {
 
 func (obj *MessageInfoEditor) SetRandom(random Random) {
     C.vscf_message_info_editor_release_random(obj.cCtx)
-    C.vscf_message_info_editor_use_random(obj.cCtx, (*C.vscf_impl_t)(random.ctx()))
+    C.vscf_message_info_editor_use_random(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(random.Ctx())))
 
     runtime.KeepAlive(random)
     runtime.KeepAlive(obj)
@@ -125,7 +123,7 @@ func (obj *MessageInfoEditor) Unpack(messageInfoData []byte) error {
 func (obj *MessageInfoEditor) Unlock(ownerRecipientId []byte, ownerPrivateKey PrivateKey) error {
     ownerRecipientIdData := helperWrapData (ownerRecipientId)
 
-    proxyResult := /*pr4*/C.vscf_message_info_editor_unlock(obj.cCtx, ownerRecipientIdData, (*C.vscf_impl_t)(ownerPrivateKey.ctx()))
+    proxyResult := /*pr4*/C.vscf_message_info_editor_unlock(obj.cCtx, ownerRecipientIdData, (*C.vscf_impl_t)(unsafe.Pointer(ownerPrivateKey.Ctx())))
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
@@ -145,7 +143,7 @@ func (obj *MessageInfoEditor) Unlock(ownerRecipientId []byte, ownerPrivateKey Pr
 func (obj *MessageInfoEditor) AddKeyRecipient(recipientId []byte, publicKey PublicKey) error {
     recipientIdData := helperWrapData (recipientId)
 
-    proxyResult := /*pr4*/C.vscf_message_info_editor_add_key_recipient(obj.cCtx, recipientIdData, (*C.vscf_impl_t)(publicKey.ctx()))
+    proxyResult := /*pr4*/C.vscf_message_info_editor_add_key_recipient(obj.cCtx, recipientIdData, (*C.vscf_impl_t)(unsafe.Pointer(publicKey.Ctx())))
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {

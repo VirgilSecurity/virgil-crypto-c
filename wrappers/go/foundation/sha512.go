@@ -2,6 +2,7 @@ package foundation
 
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
+import unsafe "unsafe"
 import "runtime"
 
 
@@ -13,8 +14,8 @@ type Sha512 struct {
 }
 
 /* Handle underlying C context. */
-func (obj *Sha512) ctx() *C.vscf_impl_t {
-    return (*C.vscf_impl_t)(obj.cCtx)
+func (obj *Sha512) Ctx() uintptr {
+    return uintptr(unsafe.Pointer(obj.cCtx))
 }
 
 func NewSha512() *Sha512 {
@@ -22,7 +23,6 @@ func NewSha512() *Sha512 {
     obj := &Sha512 {
         cCtx: ctx,
     }
-    //runtime.SetFinalizer(obj, func (o *Sha512) {o.Delete()})
     runtime.SetFinalizer(obj, (*Sha512).Delete)
     return obj
 }
@@ -34,7 +34,6 @@ func newSha512WithCtx(ctx *C.vscf_sha512_t /*ct10*/) *Sha512 {
     obj := &Sha512 {
         cCtx: ctx,
     }
-    //runtime.SetFinalizer(obj, func (o *Sha512) {o.Delete()})
     runtime.SetFinalizer(obj, (*Sha512).Delete)
     return obj
 }
@@ -46,7 +45,6 @@ func newSha512Copy(ctx *C.vscf_sha512_t /*ct10*/) *Sha512 {
     obj := &Sha512 {
         cCtx: C.vscf_sha512_shallow_copy(ctx),
     }
-    //runtime.SetFinalizer(obj, func (o *Sha512) {o.Delete()})
     runtime.SetFinalizer(obj, (*Sha512).Delete)
     return obj
 }
@@ -95,7 +93,7 @@ func (obj *Sha512) ProduceAlgInfo() (AlgInfo, error) {
 * Restore algorithm configuration from the given object.
 */
 func (obj *Sha512) RestoreAlgInfo(algInfo AlgInfo) error {
-    proxyResult := /*pr4*/C.vscf_sha512_restore_alg_info(obj.cCtx, (*C.vscf_impl_t)(algInfo.ctx()))
+    proxyResult := /*pr4*/C.vscf_sha512_restore_alg_info(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(algInfo.Ctx())))
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {

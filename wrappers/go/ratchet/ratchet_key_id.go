@@ -2,6 +2,7 @@ package ratchet
 
 // #include <virgil/crypto/ratchet/vscr_ratchet_public.h>
 import "C"
+import unsafe "unsafe"
 import "runtime"
 
 
@@ -13,8 +14,8 @@ type RatchetKeyId struct {
 }
 
 /* Handle underlying C context. */
-func (obj *RatchetKeyId) ctx() *C.vscf_impl_t {
-    return (*C.vscf_impl_t)(obj.cCtx)
+func (obj *RatchetKeyId) Ctx() uintptr {
+    return uintptr(unsafe.Pointer(obj.cCtx))
 }
 
 func NewRatchetKeyId() *RatchetKeyId {
@@ -22,7 +23,6 @@ func NewRatchetKeyId() *RatchetKeyId {
     obj := &RatchetKeyId {
         cCtx: ctx,
     }
-    //runtime.SetFinalizer(obj, func (o *RatchetKeyId) {o.Delete()})
     runtime.SetFinalizer(obj, (*RatchetKeyId).Delete)
     return obj
 }
@@ -34,7 +34,6 @@ func newRatchetKeyIdWithCtx(ctx *C.vscr_ratchet_key_id_t /*ct2*/) *RatchetKeyId 
     obj := &RatchetKeyId {
         cCtx: ctx,
     }
-    //runtime.SetFinalizer(obj, func (o *RatchetKeyId) {o.Delete()})
     runtime.SetFinalizer(obj, (*RatchetKeyId).Delete)
     return obj
 }
@@ -46,7 +45,6 @@ func newRatchetKeyIdCopy(ctx *C.vscr_ratchet_key_id_t /*ct2*/) *RatchetKeyId {
     obj := &RatchetKeyId {
         cCtx: C.vscr_ratchet_key_id_shallow_copy(ctx),
     }
-    //runtime.SetFinalizer(obj, func (o *RatchetKeyId) {o.Delete()})
     runtime.SetFinalizer(obj, (*RatchetKeyId).Delete)
     return obj
 }

@@ -2,6 +2,7 @@ package ratchet
 
 // #include <virgil/crypto/ratchet/vscr_ratchet_public.h>
 import "C"
+import unsafe "unsafe"
 import "runtime"
 
 
@@ -13,8 +14,8 @@ type RatchetGroupParticipantsIds struct {
 }
 
 /* Handle underlying C context. */
-func (obj *RatchetGroupParticipantsIds) ctx() *C.vscf_impl_t {
-    return (*C.vscf_impl_t)(obj.cCtx)
+func (obj *RatchetGroupParticipantsIds) Ctx() uintptr {
+    return uintptr(unsafe.Pointer(obj.cCtx))
 }
 
 func NewRatchetGroupParticipantsIds() *RatchetGroupParticipantsIds {
@@ -22,7 +23,6 @@ func NewRatchetGroupParticipantsIds() *RatchetGroupParticipantsIds {
     obj := &RatchetGroupParticipantsIds {
         cCtx: ctx,
     }
-    //runtime.SetFinalizer(obj, func (o *RatchetGroupParticipantsIds) {o.Delete()})
     runtime.SetFinalizer(obj, (*RatchetGroupParticipantsIds).Delete)
     return obj
 }
@@ -34,7 +34,6 @@ func newRatchetGroupParticipantsIdsWithCtx(ctx *C.vscr_ratchet_group_participant
     obj := &RatchetGroupParticipantsIds {
         cCtx: ctx,
     }
-    //runtime.SetFinalizer(obj, func (o *RatchetGroupParticipantsIds) {o.Delete()})
     runtime.SetFinalizer(obj, (*RatchetGroupParticipantsIds).Delete)
     return obj
 }
@@ -46,7 +45,6 @@ func newRatchetGroupParticipantsIdsCopy(ctx *C.vscr_ratchet_group_participants_i
     obj := &RatchetGroupParticipantsIds {
         cCtx: C.vscr_ratchet_group_participants_ids_shallow_copy(ctx),
     }
-    //runtime.SetFinalizer(obj, func (o *RatchetGroupParticipantsIds) {o.Delete()})
     runtime.SetFinalizer(obj, (*RatchetGroupParticipantsIds).Delete)
     return obj
 }
@@ -78,7 +76,6 @@ func NewRatchetGroupParticipantsIdsSize(size uint32) *RatchetGroupParticipantsId
     obj := &RatchetGroupParticipantsIds {
         cCtx: proxyResult,
     }
-    //runtime.SetFinalizer(obj, func (o *RatchetGroupParticipantsIds) {o.Delete()})
     runtime.SetFinalizer(obj, (*RatchetGroupParticipantsIds).Delete)
     return obj
 }

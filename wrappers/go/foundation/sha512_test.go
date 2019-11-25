@@ -35,69 +35,69 @@
 package foundation
 
 import (
-    b64 "encoding/base64"
-    "github.com/stretchr/testify/assert"
-    "testing"
+	b64 "encoding/base64"
+	"github.com/stretchr/testify/assert"
+	"testing"
 )
 
 func TestNewSha512(t *testing.T) {
-    sha := NewSha512()
+	sha := NewSha512()
 
-    assert.NotNil(t, sha)
+	assert.NotNil(t, sha)
 }
 
 func TestSha512_AlgId(t *testing.T) {
-    sha := NewSha512()
-    algId := sha.AlgId()
+	sha := NewSha512()
+	algId := sha.AlgId()
 
-    assert.NotNil(t, algId)
-    assert.Equal(t, AlgIdSha512, algId)
+	assert.NotNil(t, algId)
+	assert.Equal(t, AlgIdSha512, algId)
 }
 
 func TestSha512_GetDigestLen(t *testing.T) {
-    sha := NewSha512()
+	sha := NewSha512()
 
-    assert.Equal(t, uint32(TEST_SHA512_DIGEST_LEN), sha.GetDigestLen())
+	assert.Equal(t, uint32(TEST_SHA512_DIGEST_LEN), sha.GetDigestLen())
 }
 
 func TestSha512_Hash(t *testing.T) {
-    data, _ := b64.StdEncoding.DecodeString(TEST_DATA)
-    expectedHash, _ := b64.StdEncoding.DecodeString(TEST_SHA512_HASH)
+	data, _ := b64.StdEncoding.DecodeString(TEST_DATA)
+	expectedHash, _ := b64.StdEncoding.DecodeString(TEST_SHA512_HASH)
 
-    sha := NewSha512()
-    hash := sha.Hash(data)
+	sha := NewSha512()
+	hash := sha.Hash(data)
 
-    assert.NotNil(t, hash)
-    assert.Equal(t, len(expectedHash), len(hash))
-    assert.Equal(t, expectedHash, hash)
+	assert.NotNil(t, hash)
+	assert.Equal(t, len(expectedHash), len(hash))
+	assert.Equal(t, expectedHash, hash)
 }
 
 func TestSha512_Hash_Stream(t *testing.T) {
-    data, _ := b64.StdEncoding.DecodeString(TEST_DATA)
-    expectedHash, _ := b64.StdEncoding.DecodeString(TEST_SHA512_HASH)
+	data, _ := b64.StdEncoding.DecodeString(TEST_DATA)
+	expectedHash, _ := b64.StdEncoding.DecodeString(TEST_SHA512_HASH)
 
-    sha := NewSha512()
-    sha.Start()
-    blockLen := int(sha.GetBlockLen())
-    for startIndex := 0; startIndex < len(data);  {
-        endIndex := startIndex + blockLen
-        block := data[startIndex : endIndex]
-        sha.Update(block)
+	sha := NewSha512()
+	sha.Start()
+	blockLen := int(sha.GetBlockLen())
+	for startIndex := 0; startIndex < len(data); {
+		endIndex := startIndex + blockLen
+		block := data[startIndex:endIndex]
+		sha.Update(block)
 
-        startIndex += blockLen
-    }
+		startIndex += blockLen
+	}
 
-    hash := sha.Finish()
+	hash := sha.Finish()
 
-    assert.NotNil(t, hash)
-    assert.Equal(t, len(expectedHash), len(hash))
-    assert.Equal(t, expectedHash, hash)
+	assert.NotNil(t, hash)
+	assert.Equal(t, len(expectedHash), len(hash))
+	assert.Equal(t, expectedHash, hash)
 }
 
 func TestSha512_ProduceAlgInfo(t *testing.T) {
-    sha := NewSha512()
-    algInfo, err := sha.ProduceAlgInfo()
-    assert.Nil(t, err)
-    assert.NotNil(t, algInfo)
-    assert.Equal(t, AlgIdSha512, algInfo.AlgId())
+	sha := NewSha512()
+	algInfo, err := sha.ProduceAlgInfo()
+	assert.Nil(t, err)
+	assert.NotNil(t, algInfo)
+	assert.Equal(t, AlgIdSha512, algInfo.AlgId())
 }

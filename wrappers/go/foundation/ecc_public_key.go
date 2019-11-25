@@ -2,6 +2,7 @@ package foundation
 
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
+import unsafe "unsafe"
 import "runtime"
 
 
@@ -13,8 +14,8 @@ type EccPublicKey struct {
 }
 
 /* Handle underlying C context. */
-func (obj *EccPublicKey) ctx() *C.vscf_impl_t {
-    return (*C.vscf_impl_t)(obj.cCtx)
+func (obj *EccPublicKey) Ctx() uintptr {
+    return uintptr(unsafe.Pointer(obj.cCtx))
 }
 
 func NewEccPublicKey() *EccPublicKey {
@@ -22,7 +23,6 @@ func NewEccPublicKey() *EccPublicKey {
     obj := &EccPublicKey {
         cCtx: ctx,
     }
-    //runtime.SetFinalizer(obj, func (o *EccPublicKey) {o.Delete()})
     runtime.SetFinalizer(obj, (*EccPublicKey).Delete)
     return obj
 }
@@ -34,7 +34,6 @@ func newEccPublicKeyWithCtx(ctx *C.vscf_ecc_public_key_t /*ct10*/) *EccPublicKey
     obj := &EccPublicKey {
         cCtx: ctx,
     }
-    //runtime.SetFinalizer(obj, func (o *EccPublicKey) {o.Delete()})
     runtime.SetFinalizer(obj, (*EccPublicKey).Delete)
     return obj
 }
@@ -46,7 +45,6 @@ func newEccPublicKeyCopy(ctx *C.vscf_ecc_public_key_t /*ct10*/) *EccPublicKey {
     obj := &EccPublicKey {
         cCtx: C.vscf_ecc_public_key_shallow_copy(ctx),
     }
-    //runtime.SetFinalizer(obj, func (o *EccPublicKey) {o.Delete()})
     runtime.SetFinalizer(obj, (*EccPublicKey).Delete)
     return obj
 }

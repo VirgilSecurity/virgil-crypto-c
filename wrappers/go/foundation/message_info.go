@@ -2,6 +2,7 @@ package foundation
 
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
+import unsafe "unsafe"
 import "runtime"
 
 
@@ -14,8 +15,8 @@ type MessageInfo struct {
 }
 
 /* Handle underlying C context. */
-func (obj *MessageInfo) ctx() *C.vscf_impl_t {
-    return (*C.vscf_impl_t)(obj.cCtx)
+func (obj *MessageInfo) Ctx() uintptr {
+    return uintptr(unsafe.Pointer(obj.cCtx))
 }
 
 func NewMessageInfo() *MessageInfo {
@@ -23,7 +24,6 @@ func NewMessageInfo() *MessageInfo {
     obj := &MessageInfo {
         cCtx: ctx,
     }
-    //runtime.SetFinalizer(obj, func (o *MessageInfo) {o.Delete()})
     runtime.SetFinalizer(obj, (*MessageInfo).Delete)
     return obj
 }
@@ -35,7 +35,6 @@ func newMessageInfoWithCtx(ctx *C.vscf_message_info_t /*ct2*/) *MessageInfo {
     obj := &MessageInfo {
         cCtx: ctx,
     }
-    //runtime.SetFinalizer(obj, func (o *MessageInfo) {o.Delete()})
     runtime.SetFinalizer(obj, (*MessageInfo).Delete)
     return obj
 }
@@ -47,7 +46,6 @@ func newMessageInfoCopy(ctx *C.vscf_message_info_t /*ct2*/) *MessageInfo {
     obj := &MessageInfo {
         cCtx: C.vscf_message_info_shallow_copy(ctx),
     }
-    //runtime.SetFinalizer(obj, func (o *MessageInfo) {o.Delete()})
     runtime.SetFinalizer(obj, (*MessageInfo).Delete)
     return obj
 }

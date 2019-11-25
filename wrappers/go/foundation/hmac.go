@@ -2,6 +2,7 @@ package foundation
 
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
+import unsafe "unsafe"
 import "runtime"
 
 
@@ -14,15 +15,15 @@ type Hmac struct {
 
 func (obj *Hmac) SetHash(hash Hash) {
     C.vscf_hmac_release_hash(obj.cCtx)
-    C.vscf_hmac_use_hash(obj.cCtx, (*C.vscf_impl_t)(hash.ctx()))
+    C.vscf_hmac_use_hash(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(hash.Ctx())))
 
     runtime.KeepAlive(hash)
     runtime.KeepAlive(obj)
 }
 
 /* Handle underlying C context. */
-func (obj *Hmac) ctx() *C.vscf_impl_t {
-    return (*C.vscf_impl_t)(obj.cCtx)
+func (obj *Hmac) Ctx() uintptr {
+    return uintptr(unsafe.Pointer(obj.cCtx))
 }
 
 func NewHmac() *Hmac {
@@ -30,7 +31,6 @@ func NewHmac() *Hmac {
     obj := &Hmac {
         cCtx: ctx,
     }
-    //runtime.SetFinalizer(obj, func (o *Hmac) {o.Delete()})
     runtime.SetFinalizer(obj, (*Hmac).Delete)
     return obj
 }
@@ -42,7 +42,6 @@ func newHmacWithCtx(ctx *C.vscf_hmac_t /*ct10*/) *Hmac {
     obj := &Hmac {
         cCtx: ctx,
     }
-    //runtime.SetFinalizer(obj, func (o *Hmac) {o.Delete()})
     runtime.SetFinalizer(obj, (*Hmac).Delete)
     return obj
 }
@@ -54,7 +53,6 @@ func newHmacCopy(ctx *C.vscf_hmac_t /*ct10*/) *Hmac {
     obj := &Hmac {
         cCtx: C.vscf_hmac_shallow_copy(ctx),
     }
-    //runtime.SetFinalizer(obj, func (o *Hmac) {o.Delete()})
     runtime.SetFinalizer(obj, (*Hmac).Delete)
     return obj
 }
@@ -103,7 +101,7 @@ func (obj *Hmac) ProduceAlgInfo() (AlgInfo, error) {
 * Restore algorithm configuration from the given object.
 */
 func (obj *Hmac) RestoreAlgInfo(algInfo AlgInfo) error {
-    proxyResult := /*pr4*/C.vscf_hmac_restore_alg_info(obj.cCtx, (*C.vscf_impl_t)(algInfo.ctx()))
+    proxyResult := /*pr4*/C.vscf_hmac_restore_alg_info(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(algInfo.Ctx())))
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {

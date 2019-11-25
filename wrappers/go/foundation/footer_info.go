@@ -2,6 +2,7 @@ package foundation
 
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
+import unsafe "unsafe"
 import "runtime"
 
 
@@ -13,8 +14,8 @@ type FooterInfo struct {
 }
 
 /* Handle underlying C context. */
-func (obj *FooterInfo) ctx() *C.vscf_impl_t {
-    return (*C.vscf_impl_t)(obj.cCtx)
+func (obj *FooterInfo) Ctx() uintptr {
+    return uintptr(unsafe.Pointer(obj.cCtx))
 }
 
 func NewFooterInfo() *FooterInfo {
@@ -22,7 +23,6 @@ func NewFooterInfo() *FooterInfo {
     obj := &FooterInfo {
         cCtx: ctx,
     }
-    //runtime.SetFinalizer(obj, func (o *FooterInfo) {o.Delete()})
     runtime.SetFinalizer(obj, (*FooterInfo).Delete)
     return obj
 }
@@ -34,7 +34,6 @@ func newFooterInfoWithCtx(ctx *C.vscf_footer_info_t /*ct2*/) *FooterInfo {
     obj := &FooterInfo {
         cCtx: ctx,
     }
-    //runtime.SetFinalizer(obj, func (o *FooterInfo) {o.Delete()})
     runtime.SetFinalizer(obj, (*FooterInfo).Delete)
     return obj
 }
@@ -46,7 +45,6 @@ func newFooterInfoCopy(ctx *C.vscf_footer_info_t /*ct2*/) *FooterInfo {
     obj := &FooterInfo {
         cCtx: C.vscf_footer_info_shallow_copy(ctx),
     }
-    //runtime.SetFinalizer(obj, func (o *FooterInfo) {o.Delete()})
     runtime.SetFinalizer(obj, (*FooterInfo).Delete)
     return obj
 }

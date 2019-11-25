@@ -2,6 +2,7 @@ package foundation
 
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
+import unsafe "unsafe"
 import "runtime"
 
 
@@ -15,8 +16,8 @@ type Aes256Gcm struct {
 }
 
 /* Handle underlying C context. */
-func (obj *Aes256Gcm) ctx() *C.vscf_impl_t {
-    return (*C.vscf_impl_t)(obj.cCtx)
+func (obj *Aes256Gcm) Ctx() uintptr {
+    return uintptr(unsafe.Pointer(obj.cCtx))
 }
 
 func NewAes256Gcm() *Aes256Gcm {
@@ -24,7 +25,6 @@ func NewAes256Gcm() *Aes256Gcm {
     obj := &Aes256Gcm {
         cCtx: ctx,
     }
-    //runtime.SetFinalizer(obj, func (o *Aes256Gcm) {o.Delete()})
     runtime.SetFinalizer(obj, (*Aes256Gcm).Delete)
     return obj
 }
@@ -36,7 +36,6 @@ func newAes256GcmWithCtx(ctx *C.vscf_aes256_gcm_t /*ct10*/) *Aes256Gcm {
     obj := &Aes256Gcm {
         cCtx: ctx,
     }
-    //runtime.SetFinalizer(obj, func (o *Aes256Gcm) {o.Delete()})
     runtime.SetFinalizer(obj, (*Aes256Gcm).Delete)
     return obj
 }
@@ -48,7 +47,6 @@ func newAes256GcmCopy(ctx *C.vscf_aes256_gcm_t /*ct10*/) *Aes256Gcm {
     obj := &Aes256Gcm {
         cCtx: C.vscf_aes256_gcm_shallow_copy(ctx),
     }
-    //runtime.SetFinalizer(obj, func (o *Aes256Gcm) {o.Delete()})
     runtime.SetFinalizer(obj, (*Aes256Gcm).Delete)
     return obj
 }
@@ -97,7 +95,7 @@ func (obj *Aes256Gcm) ProduceAlgInfo() (AlgInfo, error) {
 * Restore algorithm configuration from the given object.
 */
 func (obj *Aes256Gcm) RestoreAlgInfo(algInfo AlgInfo) error {
-    proxyResult := /*pr4*/C.vscf_aes256_gcm_restore_alg_info(obj.cCtx, (*C.vscf_impl_t)(algInfo.ctx()))
+    proxyResult := /*pr4*/C.vscf_aes256_gcm_restore_alg_info(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(algInfo.Ctx())))
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {

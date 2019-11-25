@@ -3,6 +3,7 @@ package foundation
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
 import "runtime"
+import unsafe "unsafe"
 
 
 /*
@@ -47,8 +48,8 @@ func (obj *SaltedKdfAlgInfo) IterationCount() uint32 {
 }
 
 /* Handle underlying C context. */
-func (obj *SaltedKdfAlgInfo) ctx() *C.vscf_impl_t {
-    return (*C.vscf_impl_t)(obj.cCtx)
+func (obj *SaltedKdfAlgInfo) Ctx() uintptr {
+    return uintptr(unsafe.Pointer(obj.cCtx))
 }
 
 func NewSaltedKdfAlgInfo() *SaltedKdfAlgInfo {
@@ -56,7 +57,6 @@ func NewSaltedKdfAlgInfo() *SaltedKdfAlgInfo {
     obj := &SaltedKdfAlgInfo {
         cCtx: ctx,
     }
-    //runtime.SetFinalizer(obj, func (o *SaltedKdfAlgInfo) {o.Delete()})
     runtime.SetFinalizer(obj, (*SaltedKdfAlgInfo).Delete)
     return obj
 }
@@ -68,7 +68,6 @@ func newSaltedKdfAlgInfoWithCtx(ctx *C.vscf_salted_kdf_alg_info_t /*ct10*/) *Sal
     obj := &SaltedKdfAlgInfo {
         cCtx: ctx,
     }
-    //runtime.SetFinalizer(obj, func (o *SaltedKdfAlgInfo) {o.Delete()})
     runtime.SetFinalizer(obj, (*SaltedKdfAlgInfo).Delete)
     return obj
 }
@@ -80,7 +79,6 @@ func newSaltedKdfAlgInfoCopy(ctx *C.vscf_salted_kdf_alg_info_t /*ct10*/) *Salted
     obj := &SaltedKdfAlgInfo {
         cCtx: C.vscf_salted_kdf_alg_info_shallow_copy(ctx),
     }
-    //runtime.SetFinalizer(obj, func (o *SaltedKdfAlgInfo) {o.Delete()})
     runtime.SetFinalizer(obj, (*SaltedKdfAlgInfo).Delete)
     return obj
 }
@@ -110,7 +108,7 @@ func (obj *SaltedKdfAlgInfo) delete() {
 func NewSaltedKdfAlgInfoWithMembers(algId AlgId, hashAlgInfo AlgInfo, salt []byte, iterationCount uint32) *SaltedKdfAlgInfo {
     saltData := helperWrapData (salt)
 
-    hashAlgInfoCopy := C.vscf_impl_shallow_copy((*C.vscf_impl_t)(hashAlgInfo.ctx()))
+    hashAlgInfoCopy := C.vscf_impl_shallow_copy((*C.vscf_impl_t)(unsafe.Pointer(hashAlgInfo.Ctx())))
 
     proxyResult := /*pr4*/C.vscf_salted_kdf_alg_info_new_with_members(C.vscf_alg_id_t(algId) /*pa7*/, &hashAlgInfoCopy, saltData, (C.size_t)(iterationCount)/*pa10*/)
 
@@ -119,7 +117,6 @@ func NewSaltedKdfAlgInfoWithMembers(algId AlgId, hashAlgInfo AlgInfo, salt []byt
     obj := &SaltedKdfAlgInfo {
         cCtx: proxyResult,
     }
-    //runtime.SetFinalizer(obj, func (o *SaltedKdfAlgInfo) {o.Delete()})
     runtime.SetFinalizer(obj, (*SaltedKdfAlgInfo).Delete)
     return obj
 }

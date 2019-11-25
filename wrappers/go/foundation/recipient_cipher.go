@@ -2,6 +2,7 @@ package foundation
 
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
+import unsafe "unsafe"
 import "runtime"
 
 
@@ -15,8 +16,8 @@ type RecipientCipher struct {
 }
 
 /* Handle underlying C context. */
-func (obj *RecipientCipher) ctx() *C.vscf_impl_t {
-    return (*C.vscf_impl_t)(obj.cCtx)
+func (obj *RecipientCipher) Ctx() uintptr {
+    return uintptr(unsafe.Pointer(obj.cCtx))
 }
 
 func NewRecipientCipher() *RecipientCipher {
@@ -24,7 +25,6 @@ func NewRecipientCipher() *RecipientCipher {
     obj := &RecipientCipher {
         cCtx: ctx,
     }
-    //runtime.SetFinalizer(obj, func (o *RecipientCipher) {o.Delete()})
     runtime.SetFinalizer(obj, (*RecipientCipher).Delete)
     return obj
 }
@@ -36,7 +36,6 @@ func newRecipientCipherWithCtx(ctx *C.vscf_recipient_cipher_t /*ct2*/) *Recipien
     obj := &RecipientCipher {
         cCtx: ctx,
     }
-    //runtime.SetFinalizer(obj, func (o *RecipientCipher) {o.Delete()})
     runtime.SetFinalizer(obj, (*RecipientCipher).Delete)
     return obj
 }
@@ -48,7 +47,6 @@ func newRecipientCipherCopy(ctx *C.vscf_recipient_cipher_t /*ct2*/) *RecipientCi
     obj := &RecipientCipher {
         cCtx: C.vscf_recipient_cipher_shallow_copy(ctx),
     }
-    //runtime.SetFinalizer(obj, func (o *RecipientCipher) {o.Delete()})
     runtime.SetFinalizer(obj, (*RecipientCipher).Delete)
     return obj
 }
@@ -73,7 +71,7 @@ func (obj *RecipientCipher) delete() {
 
 func (obj *RecipientCipher) SetRandom(random Random) {
     C.vscf_recipient_cipher_release_random(obj.cCtx)
-    C.vscf_recipient_cipher_use_random(obj.cCtx, (*C.vscf_impl_t)(random.ctx()))
+    C.vscf_recipient_cipher_use_random(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(random.Ctx())))
 
     runtime.KeepAlive(random)
     runtime.KeepAlive(obj)
@@ -81,7 +79,7 @@ func (obj *RecipientCipher) SetRandom(random Random) {
 
 func (obj *RecipientCipher) SetEncryptionCipher(encryptionCipher Cipher) {
     C.vscf_recipient_cipher_release_encryption_cipher(obj.cCtx)
-    C.vscf_recipient_cipher_use_encryption_cipher(obj.cCtx, (*C.vscf_impl_t)(encryptionCipher.ctx()))
+    C.vscf_recipient_cipher_use_encryption_cipher(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(encryptionCipher.Ctx())))
 
     runtime.KeepAlive(encryptionCipher)
     runtime.KeepAlive(obj)
@@ -89,7 +87,7 @@ func (obj *RecipientCipher) SetEncryptionCipher(encryptionCipher Cipher) {
 
 func (obj *RecipientCipher) SetSignerHash(signerHash Hash) {
     C.vscf_recipient_cipher_release_signer_hash(obj.cCtx)
-    C.vscf_recipient_cipher_use_signer_hash(obj.cCtx, (*C.vscf_impl_t)(signerHash.ctx()))
+    C.vscf_recipient_cipher_use_signer_hash(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(signerHash.Ctx())))
 
     runtime.KeepAlive(signerHash)
     runtime.KeepAlive(obj)
@@ -115,7 +113,7 @@ func (obj *RecipientCipher) HasKeyRecipient(recipientId []byte) bool {
 func (obj *RecipientCipher) AddKeyRecipient(recipientId []byte, publicKey PublicKey) {
     recipientIdData := helperWrapData (recipientId)
 
-    C.vscf_recipient_cipher_add_key_recipient(obj.cCtx, recipientIdData, (*C.vscf_impl_t)(publicKey.ctx()))
+    C.vscf_recipient_cipher_add_key_recipient(obj.cCtx, recipientIdData, (*C.vscf_impl_t)(unsafe.Pointer(publicKey.Ctx())))
 
     runtime.KeepAlive(obj)
 
@@ -142,7 +140,7 @@ func (obj *RecipientCipher) ClearRecipients() {
 func (obj *RecipientCipher) AddSigner(signerId []byte, privateKey PrivateKey) error {
     signerIdData := helperWrapData (signerId)
 
-    proxyResult := /*pr4*/C.vscf_recipient_cipher_add_signer(obj.cCtx, signerIdData, (*C.vscf_impl_t)(privateKey.ctx()))
+    proxyResult := /*pr4*/C.vscf_recipient_cipher_add_signer(obj.cCtx, signerIdData, (*C.vscf_impl_t)(unsafe.Pointer(privateKey.Ctx())))
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
@@ -320,7 +318,7 @@ func (obj *RecipientCipher) StartDecryptionWithKey(recipientId []byte, privateKe
     recipientIdData := helperWrapData (recipientId)
     messageInfoData := helperWrapData (messageInfo)
 
-    proxyResult := /*pr4*/C.vscf_recipient_cipher_start_decryption_with_key(obj.cCtx, recipientIdData, (*C.vscf_impl_t)(privateKey.ctx()), messageInfoData)
+    proxyResult := /*pr4*/C.vscf_recipient_cipher_start_decryption_with_key(obj.cCtx, recipientIdData, (*C.vscf_impl_t)(unsafe.Pointer(privateKey.Ctx())), messageInfoData)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
@@ -345,7 +343,7 @@ func (obj *RecipientCipher) StartVerifiedDecryptionWithKey(recipientId []byte, p
     messageInfoData := helperWrapData (messageInfo)
     messageInfoFooterData := helperWrapData (messageInfoFooter)
 
-    proxyResult := /*pr4*/C.vscf_recipient_cipher_start_verified_decryption_with_key(obj.cCtx, recipientIdData, (*C.vscf_impl_t)(privateKey.ctx()), messageInfoData, messageInfoFooterData)
+    proxyResult := /*pr4*/C.vscf_recipient_cipher_start_verified_decryption_with_key(obj.cCtx, recipientIdData, (*C.vscf_impl_t)(unsafe.Pointer(privateKey.Ctx())), messageInfoData, messageInfoFooterData)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
@@ -449,7 +447,7 @@ func (obj *RecipientCipher) SignerInfos() *SignerInfoList {
 * Verify given cipher info.
 */
 func (obj *RecipientCipher) VerifySignerInfo(signerInfo *SignerInfo, publicKey PublicKey) bool {
-    proxyResult := /*pr4*/C.vscf_recipient_cipher_verify_signer_info(obj.cCtx, (*C.vscf_signer_info_t)(signerInfo.ctx()), (*C.vscf_impl_t)(publicKey.ctx()))
+    proxyResult := /*pr4*/C.vscf_recipient_cipher_verify_signer_info(obj.cCtx, (*C.vscf_signer_info_t)(unsafe.Pointer(signerInfo.Ctx())), (*C.vscf_impl_t)(unsafe.Pointer(publicKey.Ctx())))
 
     runtime.KeepAlive(obj)
 

@@ -3,6 +3,7 @@ package foundation
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
 import "runtime"
+import unsafe "unsafe"
 
 
 /*
@@ -32,7 +33,7 @@ func (obj *EntropyAccumulator) SetupDefaults() {
 * from the source during accumulation.
 */
 func (obj *EntropyAccumulator) AddSource(source EntropySource, threshold uint32) {
-    C.vscf_entropy_accumulator_add_source(obj.cCtx, (*C.vscf_impl_t)(source.ctx()), (C.size_t)(threshold)/*pa10*/)
+    C.vscf_entropy_accumulator_add_source(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(source.Ctx())), (C.size_t)(threshold)/*pa10*/)
 
     runtime.KeepAlive(obj)
 
@@ -42,8 +43,8 @@ func (obj *EntropyAccumulator) AddSource(source EntropySource, threshold uint32)
 }
 
 /* Handle underlying C context. */
-func (obj *EntropyAccumulator) ctx() *C.vscf_impl_t {
-    return (*C.vscf_impl_t)(obj.cCtx)
+func (obj *EntropyAccumulator) Ctx() uintptr {
+    return uintptr(unsafe.Pointer(obj.cCtx))
 }
 
 func NewEntropyAccumulator() *EntropyAccumulator {
@@ -51,7 +52,6 @@ func NewEntropyAccumulator() *EntropyAccumulator {
     obj := &EntropyAccumulator {
         cCtx: ctx,
     }
-    //runtime.SetFinalizer(obj, func (o *EntropyAccumulator) {o.Delete()})
     runtime.SetFinalizer(obj, (*EntropyAccumulator).Delete)
     return obj
 }
@@ -63,7 +63,6 @@ func newEntropyAccumulatorWithCtx(ctx *C.vscf_entropy_accumulator_t /*ct10*/) *E
     obj := &EntropyAccumulator {
         cCtx: ctx,
     }
-    //runtime.SetFinalizer(obj, func (o *EntropyAccumulator) {o.Delete()})
     runtime.SetFinalizer(obj, (*EntropyAccumulator).Delete)
     return obj
 }
@@ -75,7 +74,6 @@ func newEntropyAccumulatorCopy(ctx *C.vscf_entropy_accumulator_t /*ct10*/) *Entr
     obj := &EntropyAccumulator {
         cCtx: C.vscf_entropy_accumulator_shallow_copy(ctx),
     }
-    //runtime.SetFinalizer(obj, func (o *EntropyAccumulator) {o.Delete()})
     runtime.SetFinalizer(obj, (*EntropyAccumulator).Delete)
     return obj
 }

@@ -2,6 +2,7 @@ package foundation
 
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
+import unsafe "unsafe"
 import "runtime"
 
 
@@ -13,8 +14,8 @@ type PasswordRecipientInfoList struct {
 }
 
 /* Handle underlying C context. */
-func (obj *PasswordRecipientInfoList) ctx() *C.vscf_impl_t {
-    return (*C.vscf_impl_t)(obj.cCtx)
+func (obj *PasswordRecipientInfoList) Ctx() uintptr {
+    return uintptr(unsafe.Pointer(obj.cCtx))
 }
 
 func NewPasswordRecipientInfoList() *PasswordRecipientInfoList {
@@ -22,7 +23,6 @@ func NewPasswordRecipientInfoList() *PasswordRecipientInfoList {
     obj := &PasswordRecipientInfoList {
         cCtx: ctx,
     }
-    //runtime.SetFinalizer(obj, func (o *PasswordRecipientInfoList) {o.Delete()})
     runtime.SetFinalizer(obj, (*PasswordRecipientInfoList).Delete)
     return obj
 }
@@ -34,7 +34,6 @@ func newPasswordRecipientInfoListWithCtx(ctx *C.vscf_password_recipient_info_lis
     obj := &PasswordRecipientInfoList {
         cCtx: ctx,
     }
-    //runtime.SetFinalizer(obj, func (o *PasswordRecipientInfoList) {o.Delete()})
     runtime.SetFinalizer(obj, (*PasswordRecipientInfoList).Delete)
     return obj
 }
@@ -46,7 +45,6 @@ func newPasswordRecipientInfoListCopy(ctx *C.vscf_password_recipient_info_list_t
     obj := &PasswordRecipientInfoList {
         cCtx: C.vscf_password_recipient_info_list_shallow_copy(ctx),
     }
-    //runtime.SetFinalizer(obj, func (o *PasswordRecipientInfoList) {o.Delete()})
     runtime.SetFinalizer(obj, (*PasswordRecipientInfoList).Delete)
     return obj
 }

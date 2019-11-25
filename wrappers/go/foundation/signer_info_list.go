@@ -2,6 +2,7 @@ package foundation
 
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
+import unsafe "unsafe"
 import "runtime"
 
 
@@ -13,8 +14,8 @@ type SignerInfoList struct {
 }
 
 /* Handle underlying C context. */
-func (obj *SignerInfoList) ctx() *C.vscf_impl_t {
-    return (*C.vscf_impl_t)(obj.cCtx)
+func (obj *SignerInfoList) Ctx() uintptr {
+    return uintptr(unsafe.Pointer(obj.cCtx))
 }
 
 func NewSignerInfoList() *SignerInfoList {
@@ -22,7 +23,6 @@ func NewSignerInfoList() *SignerInfoList {
     obj := &SignerInfoList {
         cCtx: ctx,
     }
-    //runtime.SetFinalizer(obj, func (o *SignerInfoList) {o.Delete()})
     runtime.SetFinalizer(obj, (*SignerInfoList).Delete)
     return obj
 }
@@ -34,7 +34,6 @@ func newSignerInfoListWithCtx(ctx *C.vscf_signer_info_list_t /*ct2*/) *SignerInf
     obj := &SignerInfoList {
         cCtx: ctx,
     }
-    //runtime.SetFinalizer(obj, func (o *SignerInfoList) {o.Delete()})
     runtime.SetFinalizer(obj, (*SignerInfoList).Delete)
     return obj
 }
@@ -46,7 +45,6 @@ func newSignerInfoListCopy(ctx *C.vscf_signer_info_list_t /*ct2*/) *SignerInfoLi
     obj := &SignerInfoList {
         cCtx: C.vscf_signer_info_list_shallow_copy(ctx),
     }
-    //runtime.SetFinalizer(obj, func (o *SignerInfoList) {o.Delete()})
     runtime.SetFinalizer(obj, (*SignerInfoList).Delete)
     return obj
 }

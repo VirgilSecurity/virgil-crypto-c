@@ -2,6 +2,7 @@ package foundation
 
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
+import unsafe "unsafe"
 import "runtime"
 
 
@@ -13,8 +14,8 @@ type PasswordRecipientInfo struct {
 }
 
 /* Handle underlying C context. */
-func (obj *PasswordRecipientInfo) ctx() *C.vscf_impl_t {
-    return (*C.vscf_impl_t)(obj.cCtx)
+func (obj *PasswordRecipientInfo) Ctx() uintptr {
+    return uintptr(unsafe.Pointer(obj.cCtx))
 }
 
 func NewPasswordRecipientInfo() *PasswordRecipientInfo {
@@ -22,7 +23,6 @@ func NewPasswordRecipientInfo() *PasswordRecipientInfo {
     obj := &PasswordRecipientInfo {
         cCtx: ctx,
     }
-    //runtime.SetFinalizer(obj, func (o *PasswordRecipientInfo) {o.Delete()})
     runtime.SetFinalizer(obj, (*PasswordRecipientInfo).Delete)
     return obj
 }
@@ -34,7 +34,6 @@ func newPasswordRecipientInfoWithCtx(ctx *C.vscf_password_recipient_info_t /*ct2
     obj := &PasswordRecipientInfo {
         cCtx: ctx,
     }
-    //runtime.SetFinalizer(obj, func (o *PasswordRecipientInfo) {o.Delete()})
     runtime.SetFinalizer(obj, (*PasswordRecipientInfo).Delete)
     return obj
 }
@@ -46,7 +45,6 @@ func newPasswordRecipientInfoCopy(ctx *C.vscf_password_recipient_info_t /*ct2*/)
     obj := &PasswordRecipientInfo {
         cCtx: C.vscf_password_recipient_info_shallow_copy(ctx),
     }
-    //runtime.SetFinalizer(obj, func (o *PasswordRecipientInfo) {o.Delete()})
     runtime.SetFinalizer(obj, (*PasswordRecipientInfo).Delete)
     return obj
 }
@@ -75,7 +73,7 @@ func (obj *PasswordRecipientInfo) delete() {
 func NewPasswordRecipientInfoWithMembers(keyEncryptionAlgorithm AlgInfo, encryptedKey []byte) *PasswordRecipientInfo {
     encryptedKeyData := helperWrapData (encryptedKey)
 
-    keyEncryptionAlgorithmCopy := C.vscf_impl_shallow_copy((*C.vscf_impl_t)(keyEncryptionAlgorithm.ctx()))
+    keyEncryptionAlgorithmCopy := C.vscf_impl_shallow_copy((*C.vscf_impl_t)(unsafe.Pointer(keyEncryptionAlgorithm.Ctx())))
 
     proxyResult := /*pr4*/C.vscf_password_recipient_info_new_with_members(&keyEncryptionAlgorithmCopy, encryptedKeyData)
 
@@ -84,7 +82,6 @@ func NewPasswordRecipientInfoWithMembers(keyEncryptionAlgorithm AlgInfo, encrypt
     obj := &PasswordRecipientInfo {
         cCtx: proxyResult,
     }
-    //runtime.SetFinalizer(obj, func (o *PasswordRecipientInfo) {o.Delete()})
     runtime.SetFinalizer(obj, (*PasswordRecipientInfo).Delete)
     return obj
 }

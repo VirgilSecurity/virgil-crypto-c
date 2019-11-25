@@ -2,6 +2,7 @@ package foundation
 
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
+import unsafe "unsafe"
 import "runtime"
 
 
@@ -13,8 +14,8 @@ type SignedDataInfo struct {
 }
 
 /* Handle underlying C context. */
-func (obj *SignedDataInfo) ctx() *C.vscf_impl_t {
-    return (*C.vscf_impl_t)(obj.cCtx)
+func (obj *SignedDataInfo) Ctx() uintptr {
+    return uintptr(unsafe.Pointer(obj.cCtx))
 }
 
 func NewSignedDataInfo() *SignedDataInfo {
@@ -22,7 +23,6 @@ func NewSignedDataInfo() *SignedDataInfo {
     obj := &SignedDataInfo {
         cCtx: ctx,
     }
-    //runtime.SetFinalizer(obj, func (o *SignedDataInfo) {o.Delete()})
     runtime.SetFinalizer(obj, (*SignedDataInfo).Delete)
     return obj
 }
@@ -34,7 +34,6 @@ func newSignedDataInfoWithCtx(ctx *C.vscf_signed_data_info_t /*ct2*/) *SignedDat
     obj := &SignedDataInfo {
         cCtx: ctx,
     }
-    //runtime.SetFinalizer(obj, func (o *SignedDataInfo) {o.Delete()})
     runtime.SetFinalizer(obj, (*SignedDataInfo).Delete)
     return obj
 }
@@ -46,7 +45,6 @@ func newSignedDataInfoCopy(ctx *C.vscf_signed_data_info_t /*ct2*/) *SignedDataIn
     obj := &SignedDataInfo {
         cCtx: C.vscf_signed_data_info_shallow_copy(ctx),
     }
-    //runtime.SetFinalizer(obj, func (o *SignedDataInfo) {o.Delete()})
     runtime.SetFinalizer(obj, (*SignedDataInfo).Delete)
     return obj
 }
@@ -73,7 +71,7 @@ func (obj *SignedDataInfo) delete() {
 * Set information about algorithm that was used to produce data digest.
 */
 func (obj *SignedDataInfo) SetHashAlgInfo(hashAlgInfo AlgInfo) {
-    hashAlgInfoCopy := C.vscf_impl_shallow_copy((*C.vscf_impl_t)(hashAlgInfo.ctx()))
+    hashAlgInfoCopy := C.vscf_impl_shallow_copy((*C.vscf_impl_t)(unsafe.Pointer(hashAlgInfo.Ctx())))
 
     C.vscf_signed_data_info_set_hash_alg_info(obj.cCtx, &hashAlgInfoCopy)
 

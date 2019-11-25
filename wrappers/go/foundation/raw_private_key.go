@@ -3,6 +3,7 @@ package foundation
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
 import "runtime"
+import unsafe "unsafe"
 
 
 /*
@@ -38,7 +39,7 @@ func (obj *RawPrivateKey) HasPublicKey() bool {
 * Setup public key related to the private key.
 */
 func (obj *RawPrivateKey) SetPublicKey(rawPublicKey *RawPublicKey) {
-    rawPublicKeyCopy := C.vscf_raw_public_key_shallow_copy((*C.vscf_raw_public_key_t)(rawPublicKey.ctx()))
+    rawPublicKeyCopy := C.vscf_raw_public_key_shallow_copy((*C.vscf_raw_public_key_t)(unsafe.Pointer(rawPublicKey.Ctx())))
 
     C.vscf_raw_private_key_set_public_key(obj.cCtx, &rawPublicKeyCopy)
 
@@ -61,8 +62,8 @@ func (obj *RawPrivateKey) GetPublicKey() *RawPublicKey {
 }
 
 /* Handle underlying C context. */
-func (obj *RawPrivateKey) ctx() *C.vscf_impl_t {
-    return (*C.vscf_impl_t)(obj.cCtx)
+func (obj *RawPrivateKey) Ctx() uintptr {
+    return uintptr(unsafe.Pointer(obj.cCtx))
 }
 
 func NewRawPrivateKey() *RawPrivateKey {
@@ -70,7 +71,6 @@ func NewRawPrivateKey() *RawPrivateKey {
     obj := &RawPrivateKey {
         cCtx: ctx,
     }
-    //runtime.SetFinalizer(obj, func (o *RawPrivateKey) {o.Delete()})
     runtime.SetFinalizer(obj, (*RawPrivateKey).Delete)
     return obj
 }
@@ -82,7 +82,6 @@ func newRawPrivateKeyWithCtx(ctx *C.vscf_raw_private_key_t /*ct10*/) *RawPrivate
     obj := &RawPrivateKey {
         cCtx: ctx,
     }
-    //runtime.SetFinalizer(obj, func (o *RawPrivateKey) {o.Delete()})
     runtime.SetFinalizer(obj, (*RawPrivateKey).Delete)
     return obj
 }
@@ -94,7 +93,6 @@ func newRawPrivateKeyCopy(ctx *C.vscf_raw_private_key_t /*ct10*/) *RawPrivateKey
     obj := &RawPrivateKey {
         cCtx: C.vscf_raw_private_key_shallow_copy(ctx),
     }
-    //runtime.SetFinalizer(obj, func (o *RawPrivateKey) {o.Delete()})
     runtime.SetFinalizer(obj, (*RawPrivateKey).Delete)
     return obj
 }

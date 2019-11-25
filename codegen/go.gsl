@@ -780,6 +780,13 @@ function go_derive_struct_default_context_type ()
 endfunction
 
 # ---------------------------------------------------------------------------
+#   Return C type for class context.
+# ---------------------------------------------------------------------------
+function go_derive_struct_public_context_type ()
+    return "uintptr"
+endfunction
+
+# ---------------------------------------------------------------------------
 #   Return formatted name of the Go struct.
 # ---------------------------------------------------------------------------
 function go_derive_struct_name (class, go_project)
@@ -1257,11 +1264,11 @@ function go_create_context_module (go_project, meta)
 
             new go_func to go_interface
                 . = "/* Get C context */"
-                .name = "ctx"
+                .name = "Ctx"
                 .visibility = "public"
 
-                my.type = go_derive_struct_default_context_type ()
-        
+                my.type = go_derive_struct_public_context_type ()
+
                 new go_return to go_func
                     .type = my.type
                     .access = "readonly"
@@ -1471,14 +1478,16 @@ endfunction
 #   Add <go_func/> with setter only that proxy dependency to the
 #   C context.
 # ---------------------------------------------------------------------------
-function go_create_func_from_dependency (dependency, impl, destination, go_project, meta)
-    check_arguments (my, "dependency, impl, destination, go_project, meta", my)
+function go_create_func_from_dependency (dependency, impl, destination, go_module, go_project, meta)
+    check_arguments (my, "dependency, impl, destination, go_module, go_project, meta", my)
 
     new go_func to my.destination
         . = go_format_description (my.dependency) ?
         .name = go_derive_func_name_str (cat ("set", my.dependency.name))
         .visibility = "public"
         .throws = my.dependency.has_observers & my.dependency.is_observers_return_status
+
+        go_create_import ("unsafe", "unsafe", my.go_module)
 
         my.arg_name = go_derive_argument_name (my.dependency)
 
@@ -1500,15 +1509,14 @@ function go_create_func_from_dependency (dependency, impl, destination, go_proje
                 my.method_return = format_left ("return nil")
             endif
 
-            my.cast_to_context = ""
             if defined (my.dependency.project)
-                my.cast_to_context = "\\.(context)"
                 my.go_project.is_context_used = "1"
             endif
+
             . = format_left("\
                 C.$(class_derive_c_method_release_dependency (my.impl, my.dependency))(obj.cCtx)
                 $(my.result_var?:)C.$(class_derive_c_method_use_dependency (my.impl, my.dependency))(obj.cCtx,\
-                        (*C.$(class_derive_c_instance_type(my.dependency)))($(my.arg_name:)$(my.cast_to_context:).ctx()))
+                        (*C.$(class_derive_c_instance_type(my.dependency)))(unsafe.Pointer($(my.arg_name:).Ctx())))
                 $(my.impl_handle_status?:)
                 runtime.KeepAlive($(my.arg_name:))
                 runtime.KeepAlive(obj)
@@ -1818,8 +1826,10 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Create <go_field/> that handles underlying C context.
 # ---------------------------------------------------------------------------
-function go_create_struct_field_context (destination, instance)
-    check_arguments (my, "destination", my)
+function go_create_struct_field_context (destination, instance, go_module)
+    check_arguments (my, "destination, instance, go_module", my)
+
+    go_create_import ("unsafe", "unsafe", my.go_module)
 
     new go_field to my.destination
         . = "/* Handle underlying C context. */"
@@ -1828,15 +1838,15 @@ function go_create_struct_field_context (destination, instance)
         .access = "readonly"
         .visibility = "public"
     endnew
-    
+
     new go_func to my.destination
         . = "/* Handle underlying C context. */"
-        .name = "ctx"
+        .name = "Ctx"
         .visibility = "public"
 
-        my.type = go_derive_struct_default_context_type ()
+        my.type = go_derive_struct_public_context_type ()
         new go_code to go_func
-            .= "return ($(my.type:))(obj.cCtx)"
+            .= "return $(my.type:)(unsafe.Pointer(obj.cCtx))"
         endnew
 
         new go_return to go_func
@@ -1954,7 +1964,7 @@ function go_create_class_module (class, go_project, meta)
             go_map_attr_visibility (go_struct, my.class)
 
             if my.class.context <> "none"
-                go_create_struct_field_context (go_struct, my.class)
+                go_create_struct_field_context (go_struct, my.class, go_module)
                 go_create_struct_default_constructor (go_struct, my.class, go_module, my.go_project, my.meta)
                 go_create_struct_close (go_struct, my.class, my.go_project, my.meta)
 
@@ -1974,12 +1984,20 @@ function go_create_class_module (class, go_project, meta)
                 if defined (dependency.project)
                     go_create_import (dependency.project, "virgil/$(dependency.project:c)", go_module)
                 endif
-                go_create_func_from_dependency (dependency, my.class, go_struct, my.go_project, my.meta)
+                go_create_func_from_dependency (dependency, my.class, go_struct, go_module, my.go_project, my.meta)
             endfor
 
             for my.class.method where 0.scope = "public" & method.declaration = "public" & method.visibility = "public"
                 go_create_import_to_common (method, go_module)
                 go_create_struct_func (my.class, method, go_struct, go_module, my.go_project, my.meta)
+            endfor
+
+            for go_struct.go_func
+                for go_func.go_argument
+                    if is_true (go_argument.is_interface)
+                        go_create_import ("unsafe", "unsafe", go_module)
+                    endif
+                endfor
             endfor
         endnew
     endnew
@@ -2191,7 +2209,7 @@ function go_create_implementation_module (implementation, go_project, meta)
             endfor
 
             for my.implementation.dependency
-                go_create_func_from_dependency (dependency, my.implementation, go_struct, my.go_project, my.meta)
+                go_create_func_from_dependency (dependency, my.implementation, go_struct, go_module, my.go_project, my.meta)
             endfor
 
             for my.implementation.method where 0.scope = "public" & method.declaration = "public" & method.visibility = "public"
@@ -2201,7 +2219,7 @@ function go_create_implementation_module (implementation, go_project, meta)
 
             if my.implementation.context <> "none"
             
-                go_create_struct_field_context (go_struct, my.implementation)
+                go_create_struct_field_context (go_struct, my.implementation, go_module)
 
                 go_create_struct_default_constructor (go_struct, my.implementation, go_module, my.go_project, my.meta)
                 go_create_struct_close (go_struct, my.implementation, my.go_project, my.meta)
@@ -2271,7 +2289,7 @@ function go_format_c_proxy_args (class, method)
                 my.proxy_arg = "$(my.arg_name:)Copy"
             else
                 my.arg_c_type = class_derive_c_instance_type (argument)
-                my.proxy_arg = "(*C.$(my.arg_c_type:))($(my.arg_name:).ctx())"
+                my.proxy_arg = "(*C.$(my.arg_c_type:))(unsafe.Pointer($(my.arg_name:).Ctx()))"
             endif
 
         elsif defined (argument.enum)
@@ -2426,10 +2444,11 @@ function go_wrap_c_proxy_call (go_func, proxy_call, proxy_return_type, proxy_ret
 
     #   Create shallow copies for objects that is passed as "disown" argument.
     for my.go_func.go_argument where go_argument.access = "disown"
+        go_create_import ("unsafe", "unsafe", my.go_module)
+
         my.shallow_copies ?= terminator
-        #(*C.$(class_derive_c_instance_type(my.dependency)))
         my.shallow_copies += format_left("\
-            $(go_argument.name:)Copy := C.$(go_argument.method_shallow_copy:)((*C.$(go_argument.c_type:))($(go_argument.name:).ctx()))
+            $(go_argument.name:)Copy := C.$(go_argument.method_shallow_copy:)((*C.$(go_argument.c_type:))(unsafe.Pointer($(go_argument.name:).Ctx())))
         ", 0)
     endfor
 

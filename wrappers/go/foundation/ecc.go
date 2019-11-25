@@ -2,6 +2,7 @@ package foundation
 
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
+import unsafe "unsafe"
 import "runtime"
 
 
@@ -16,7 +17,7 @@ type Ecc struct {
 
 func (obj *Ecc) SetRandom(random Random) {
     C.vscf_ecc_release_random(obj.cCtx)
-    C.vscf_ecc_use_random(obj.cCtx, (*C.vscf_impl_t)(random.ctx()))
+    C.vscf_ecc_use_random(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(random.Ctx())))
 
     runtime.KeepAlive(random)
     runtime.KeepAlive(obj)
@@ -24,7 +25,7 @@ func (obj *Ecc) SetRandom(random Random) {
 
 func (obj *Ecc) SetEcies(ecies Ecies) {
     C.vscf_ecc_release_ecies(obj.cCtx)
-    C.vscf_ecc_use_ecies(obj.cCtx, (*C.vscf_ecies_t)(ecies.ctx()))
+    C.vscf_ecc_use_ecies(obj.cCtx, (*C.vscf_ecies_t)(unsafe.Pointer(ecies.Ctx())))
 
     runtime.KeepAlive(ecies)
     runtime.KeepAlive(obj)
@@ -72,8 +73,8 @@ func (obj *Ecc) GenerateKey(algId AlgId) (PrivateKey, error) {
 }
 
 /* Handle underlying C context. */
-func (obj *Ecc) ctx() *C.vscf_impl_t {
-    return (*C.vscf_impl_t)(obj.cCtx)
+func (obj *Ecc) Ctx() uintptr {
+    return uintptr(unsafe.Pointer(obj.cCtx))
 }
 
 func NewEcc() *Ecc {
@@ -81,7 +82,6 @@ func NewEcc() *Ecc {
     obj := &Ecc {
         cCtx: ctx,
     }
-    //runtime.SetFinalizer(obj, func (o *Ecc) {o.Delete()})
     runtime.SetFinalizer(obj, (*Ecc).Delete)
     return obj
 }
@@ -93,7 +93,6 @@ func newEccWithCtx(ctx *C.vscf_ecc_t /*ct10*/) *Ecc {
     obj := &Ecc {
         cCtx: ctx,
     }
-    //runtime.SetFinalizer(obj, func (o *Ecc) {o.Delete()})
     runtime.SetFinalizer(obj, (*Ecc).Delete)
     return obj
 }
@@ -105,7 +104,6 @@ func newEccCopy(ctx *C.vscf_ecc_t /*ct10*/) *Ecc {
     obj := &Ecc {
         cCtx: C.vscf_ecc_shallow_copy(ctx),
     }
-    //runtime.SetFinalizer(obj, func (o *Ecc) {o.Delete()})
     runtime.SetFinalizer(obj, (*Ecc).Delete)
     return obj
 }
@@ -154,7 +152,7 @@ func (obj *Ecc) ProduceAlgInfo() (AlgInfo, error) {
 * Restore algorithm configuration from the given object.
 */
 func (obj *Ecc) RestoreAlgInfo(algInfo AlgInfo) error {
-    proxyResult := /*pr4*/C.vscf_ecc_restore_alg_info(obj.cCtx, (*C.vscf_impl_t)(algInfo.ctx()))
+    proxyResult := /*pr4*/C.vscf_ecc_restore_alg_info(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(algInfo.Ctx())))
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
@@ -204,7 +202,7 @@ func (obj *Ecc) GenerateEphemeralKey(key Key) (PrivateKey, error) {
     var error C.vscf_error_t
     C.vscf_error_reset(&error)
 
-    proxyResult := /*pr4*/C.vscf_ecc_generate_ephemeral_key(obj.cCtx, (*C.vscf_impl_t)(key.ctx()), &error)
+    proxyResult := /*pr4*/C.vscf_ecc_generate_ephemeral_key(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(key.Ctx())), &error)
 
     err := FoundationErrorHandleStatus(error.status)
     if err != nil {
@@ -234,7 +232,7 @@ func (obj *Ecc) ImportPublicKey(rawKey *RawPublicKey) (PublicKey, error) {
     var error C.vscf_error_t
     C.vscf_error_reset(&error)
 
-    proxyResult := /*pr4*/C.vscf_ecc_import_public_key(obj.cCtx, (*C.vscf_raw_public_key_t)(rawKey.ctx()), &error)
+    proxyResult := /*pr4*/C.vscf_ecc_import_public_key(obj.cCtx, (*C.vscf_raw_public_key_t)(unsafe.Pointer(rawKey.Ctx())), &error)
 
     err := FoundationErrorHandleStatus(error.status)
     if err != nil {
@@ -261,7 +259,7 @@ func (obj *Ecc) ExportPublicKey(publicKey PublicKey) (*RawPublicKey, error) {
     var error C.vscf_error_t
     C.vscf_error_reset(&error)
 
-    proxyResult := /*pr4*/C.vscf_ecc_export_public_key(obj.cCtx, (*C.vscf_impl_t)(publicKey.ctx()), &error)
+    proxyResult := /*pr4*/C.vscf_ecc_export_public_key(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(publicKey.Ctx())), &error)
 
     err := FoundationErrorHandleStatus(error.status)
     if err != nil {
@@ -291,7 +289,7 @@ func (obj *Ecc) ImportPrivateKey(rawKey *RawPrivateKey) (PrivateKey, error) {
     var error C.vscf_error_t
     C.vscf_error_reset(&error)
 
-    proxyResult := /*pr4*/C.vscf_ecc_import_private_key(obj.cCtx, (*C.vscf_raw_private_key_t)(rawKey.ctx()), &error)
+    proxyResult := /*pr4*/C.vscf_ecc_import_private_key(obj.cCtx, (*C.vscf_raw_private_key_t)(unsafe.Pointer(rawKey.Ctx())), &error)
 
     err := FoundationErrorHandleStatus(error.status)
     if err != nil {
@@ -318,7 +316,7 @@ func (obj *Ecc) ExportPrivateKey(privateKey PrivateKey) (*RawPrivateKey, error) 
     var error C.vscf_error_t
     C.vscf_error_reset(&error)
 
-    proxyResult := /*pr4*/C.vscf_ecc_export_private_key(obj.cCtx, (*C.vscf_impl_t)(privateKey.ctx()), &error)
+    proxyResult := /*pr4*/C.vscf_ecc_export_private_key(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(privateKey.Ctx())), &error)
 
     err := FoundationErrorHandleStatus(error.status)
     if err != nil {
@@ -338,7 +336,7 @@ func (obj *Ecc) ExportPrivateKey(privateKey PrivateKey) (*RawPrivateKey, error) 
 * Check if algorithm can encrypt data with a given key.
 */
 func (obj *Ecc) CanEncrypt(publicKey PublicKey, dataLen uint32) bool {
-    proxyResult := /*pr4*/C.vscf_ecc_can_encrypt(obj.cCtx, (*C.vscf_impl_t)(publicKey.ctx()), (C.size_t)(dataLen)/*pa10*/)
+    proxyResult := /*pr4*/C.vscf_ecc_can_encrypt(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(publicKey.Ctx())), (C.size_t)(dataLen)/*pa10*/)
 
     runtime.KeepAlive(obj)
 
@@ -351,7 +349,7 @@ func (obj *Ecc) CanEncrypt(publicKey PublicKey, dataLen uint32) bool {
 * Calculate required buffer length to hold the encrypted data.
 */
 func (obj *Ecc) EncryptedLen(publicKey PublicKey, dataLen uint32) uint32 {
-    proxyResult := /*pr4*/C.vscf_ecc_encrypted_len(obj.cCtx, (*C.vscf_impl_t)(publicKey.ctx()), (C.size_t)(dataLen)/*pa10*/)
+    proxyResult := /*pr4*/C.vscf_ecc_encrypted_len(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(publicKey.Ctx())), (C.size_t)(dataLen)/*pa10*/)
 
     runtime.KeepAlive(obj)
 
@@ -371,7 +369,7 @@ func (obj *Ecc) Encrypt(publicKey PublicKey, data []byte) ([]byte, error) {
     defer outBuf.Delete()
     dataData := helperWrapData (data)
 
-    proxyResult := /*pr4*/C.vscf_ecc_encrypt(obj.cCtx, (*C.vscf_impl_t)(publicKey.ctx()), dataData, outBuf.ctx)
+    proxyResult := /*pr4*/C.vscf_ecc_encrypt(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(publicKey.Ctx())), dataData, outBuf.ctx)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
@@ -390,7 +388,7 @@ func (obj *Ecc) Encrypt(publicKey PublicKey, data []byte) ([]byte, error) {
 * However, success result of decryption is not guaranteed.
 */
 func (obj *Ecc) CanDecrypt(privateKey PrivateKey, dataLen uint32) bool {
-    proxyResult := /*pr4*/C.vscf_ecc_can_decrypt(obj.cCtx, (*C.vscf_impl_t)(privateKey.ctx()), (C.size_t)(dataLen)/*pa10*/)
+    proxyResult := /*pr4*/C.vscf_ecc_can_decrypt(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(privateKey.Ctx())), (C.size_t)(dataLen)/*pa10*/)
 
     runtime.KeepAlive(obj)
 
@@ -403,7 +401,7 @@ func (obj *Ecc) CanDecrypt(privateKey PrivateKey, dataLen uint32) bool {
 * Calculate required buffer length to hold the decrypted data.
 */
 func (obj *Ecc) DecryptedLen(privateKey PrivateKey, dataLen uint32) uint32 {
-    proxyResult := /*pr4*/C.vscf_ecc_decrypted_len(obj.cCtx, (*C.vscf_impl_t)(privateKey.ctx()), (C.size_t)(dataLen)/*pa10*/)
+    proxyResult := /*pr4*/C.vscf_ecc_decrypted_len(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(privateKey.Ctx())), (C.size_t)(dataLen)/*pa10*/)
 
     runtime.KeepAlive(obj)
 
@@ -423,7 +421,7 @@ func (obj *Ecc) Decrypt(privateKey PrivateKey, data []byte) ([]byte, error) {
     defer outBuf.Delete()
     dataData := helperWrapData (data)
 
-    proxyResult := /*pr4*/C.vscf_ecc_decrypt(obj.cCtx, (*C.vscf_impl_t)(privateKey.ctx()), dataData, outBuf.ctx)
+    proxyResult := /*pr4*/C.vscf_ecc_decrypt(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(privateKey.Ctx())), dataData, outBuf.ctx)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
@@ -441,7 +439,7 @@ func (obj *Ecc) Decrypt(privateKey PrivateKey, data []byte) ([]byte, error) {
 * Check if algorithm can sign data digest with a given key.
 */
 func (obj *Ecc) CanSign(privateKey PrivateKey) bool {
-    proxyResult := /*pr4*/C.vscf_ecc_can_sign(obj.cCtx, (*C.vscf_impl_t)(privateKey.ctx()))
+    proxyResult := /*pr4*/C.vscf_ecc_can_sign(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(privateKey.Ctx())))
 
     runtime.KeepAlive(obj)
 
@@ -455,7 +453,7 @@ func (obj *Ecc) CanSign(privateKey PrivateKey) bool {
 * Return zero if a given private key can not produce signatures.
 */
 func (obj *Ecc) SignatureLen(key Key) uint32 {
-    proxyResult := /*pr4*/C.vscf_ecc_signature_len(obj.cCtx, (*C.vscf_impl_t)(key.ctx()))
+    proxyResult := /*pr4*/C.vscf_ecc_signature_len(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(key.Ctx())))
 
     runtime.KeepAlive(obj)
 
@@ -475,7 +473,7 @@ func (obj *Ecc) SignHash(privateKey PrivateKey, hashId AlgId, digest []byte) ([]
     defer signatureBuf.Delete()
     digestData := helperWrapData (digest)
 
-    proxyResult := /*pr4*/C.vscf_ecc_sign_hash(obj.cCtx, (*C.vscf_impl_t)(privateKey.ctx()), C.vscf_alg_id_t(hashId) /*pa7*/, digestData, signatureBuf.ctx)
+    proxyResult := /*pr4*/C.vscf_ecc_sign_hash(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(privateKey.Ctx())), C.vscf_alg_id_t(hashId) /*pa7*/, digestData, signatureBuf.ctx)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
@@ -493,7 +491,7 @@ func (obj *Ecc) SignHash(privateKey PrivateKey, hashId AlgId, digest []byte) ([]
 * Check if algorithm can verify data digest with a given key.
 */
 func (obj *Ecc) CanVerify(publicKey PublicKey) bool {
-    proxyResult := /*pr4*/C.vscf_ecc_can_verify(obj.cCtx, (*C.vscf_impl_t)(publicKey.ctx()))
+    proxyResult := /*pr4*/C.vscf_ecc_can_verify(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(publicKey.Ctx())))
 
     runtime.KeepAlive(obj)
 
@@ -509,7 +507,7 @@ func (obj *Ecc) VerifyHash(publicKey PublicKey, hashId AlgId, digest []byte, sig
     digestData := helperWrapData (digest)
     signatureData := helperWrapData (signature)
 
-    proxyResult := /*pr4*/C.vscf_ecc_verify_hash(obj.cCtx, (*C.vscf_impl_t)(publicKey.ctx()), C.vscf_alg_id_t(hashId) /*pa7*/, digestData, signatureData)
+    proxyResult := /*pr4*/C.vscf_ecc_verify_hash(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(publicKey.Ctx())), C.vscf_alg_id_t(hashId) /*pa7*/, digestData, signatureData)
 
     runtime.KeepAlive(obj)
 
@@ -530,7 +528,7 @@ func (obj *Ecc) ComputeSharedKey(publicKey PublicKey, privateKey PrivateKey) ([]
     defer sharedKeyBuf.Delete()
 
 
-    proxyResult := /*pr4*/C.vscf_ecc_compute_shared_key(obj.cCtx, (*C.vscf_impl_t)(publicKey.ctx()), (*C.vscf_impl_t)(privateKey.ctx()), sharedKeyBuf.ctx)
+    proxyResult := /*pr4*/C.vscf_ecc_compute_shared_key(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(publicKey.Ctx())), (*C.vscf_impl_t)(unsafe.Pointer(privateKey.Ctx())), sharedKeyBuf.ctx)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
@@ -551,7 +549,7 @@ func (obj *Ecc) ComputeSharedKey(publicKey PublicKey, privateKey PrivateKey) ([]
 * Expect Public Key or Private Key.
 */
 func (obj *Ecc) SharedKeyLen(key Key) uint32 {
-    proxyResult := /*pr4*/C.vscf_ecc_shared_key_len(obj.cCtx, (*C.vscf_impl_t)(key.ctx()))
+    proxyResult := /*pr4*/C.vscf_ecc_shared_key_len(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(key.Ctx())))
 
     runtime.KeepAlive(obj)
 

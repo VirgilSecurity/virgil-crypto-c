@@ -2,6 +2,7 @@ package foundation
 
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
+import unsafe "unsafe"
 import "runtime"
 
 
@@ -14,15 +15,15 @@ type Kdf1 struct {
 
 func (obj *Kdf1) SetHash(hash Hash) {
     C.vscf_kdf1_release_hash(obj.cCtx)
-    C.vscf_kdf1_use_hash(obj.cCtx, (*C.vscf_impl_t)(hash.ctx()))
+    C.vscf_kdf1_use_hash(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(hash.Ctx())))
 
     runtime.KeepAlive(hash)
     runtime.KeepAlive(obj)
 }
 
 /* Handle underlying C context. */
-func (obj *Kdf1) ctx() *C.vscf_impl_t {
-    return (*C.vscf_impl_t)(obj.cCtx)
+func (obj *Kdf1) Ctx() uintptr {
+    return uintptr(unsafe.Pointer(obj.cCtx))
 }
 
 func NewKdf1() *Kdf1 {
@@ -30,7 +31,6 @@ func NewKdf1() *Kdf1 {
     obj := &Kdf1 {
         cCtx: ctx,
     }
-    //runtime.SetFinalizer(obj, func (o *Kdf1) {o.Delete()})
     runtime.SetFinalizer(obj, (*Kdf1).Delete)
     return obj
 }
@@ -42,7 +42,6 @@ func newKdf1WithCtx(ctx *C.vscf_kdf1_t /*ct10*/) *Kdf1 {
     obj := &Kdf1 {
         cCtx: ctx,
     }
-    //runtime.SetFinalizer(obj, func (o *Kdf1) {o.Delete()})
     runtime.SetFinalizer(obj, (*Kdf1).Delete)
     return obj
 }
@@ -54,7 +53,6 @@ func newKdf1Copy(ctx *C.vscf_kdf1_t /*ct10*/) *Kdf1 {
     obj := &Kdf1 {
         cCtx: C.vscf_kdf1_shallow_copy(ctx),
     }
-    //runtime.SetFinalizer(obj, func (o *Kdf1) {o.Delete()})
     runtime.SetFinalizer(obj, (*Kdf1).Delete)
     return obj
 }
@@ -103,7 +101,7 @@ func (obj *Kdf1) ProduceAlgInfo() (AlgInfo, error) {
 * Restore algorithm configuration from the given object.
 */
 func (obj *Kdf1) RestoreAlgInfo(algInfo AlgInfo) error {
-    proxyResult := /*pr4*/C.vscf_kdf1_restore_alg_info(obj.cCtx, (*C.vscf_impl_t)(algInfo.ctx()))
+    proxyResult := /*pr4*/C.vscf_kdf1_restore_alg_info(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(algInfo.Ctx())))
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {

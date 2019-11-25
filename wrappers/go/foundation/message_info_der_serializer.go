@@ -2,6 +2,7 @@ package foundation
 
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
+import unsafe "unsafe"
 import "runtime"
 
 
@@ -14,7 +15,7 @@ type MessageInfoDerSerializer struct {
 
 func (obj *MessageInfoDerSerializer) SetAsn1Reader(asn1Reader Asn1Reader) {
     C.vscf_message_info_der_serializer_release_asn1_reader(obj.cCtx)
-    C.vscf_message_info_der_serializer_use_asn1_reader(obj.cCtx, (*C.vscf_impl_t)(asn1Reader.ctx()))
+    C.vscf_message_info_der_serializer_use_asn1_reader(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(asn1Reader.Ctx())))
 
     runtime.KeepAlive(asn1Reader)
     runtime.KeepAlive(obj)
@@ -22,7 +23,7 @@ func (obj *MessageInfoDerSerializer) SetAsn1Reader(asn1Reader Asn1Reader) {
 
 func (obj *MessageInfoDerSerializer) SetAsn1Writer(asn1Writer Asn1Writer) {
     C.vscf_message_info_der_serializer_release_asn1_writer(obj.cCtx)
-    C.vscf_message_info_der_serializer_use_asn1_writer(obj.cCtx, (*C.vscf_impl_t)(asn1Writer.ctx()))
+    C.vscf_message_info_der_serializer_use_asn1_writer(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(asn1Writer.Ctx())))
 
     runtime.KeepAlive(asn1Writer)
     runtime.KeepAlive(obj)
@@ -40,8 +41,8 @@ func (obj *MessageInfoDerSerializer) SetupDefaults() {
 }
 
 /* Handle underlying C context. */
-func (obj *MessageInfoDerSerializer) ctx() *C.vscf_impl_t {
-    return (*C.vscf_impl_t)(obj.cCtx)
+func (obj *MessageInfoDerSerializer) Ctx() uintptr {
+    return uintptr(unsafe.Pointer(obj.cCtx))
 }
 
 func NewMessageInfoDerSerializer() *MessageInfoDerSerializer {
@@ -49,7 +50,6 @@ func NewMessageInfoDerSerializer() *MessageInfoDerSerializer {
     obj := &MessageInfoDerSerializer {
         cCtx: ctx,
     }
-    //runtime.SetFinalizer(obj, func (o *MessageInfoDerSerializer) {o.Delete()})
     runtime.SetFinalizer(obj, (*MessageInfoDerSerializer).Delete)
     return obj
 }
@@ -61,7 +61,6 @@ func newMessageInfoDerSerializerWithCtx(ctx *C.vscf_message_info_der_serializer_
     obj := &MessageInfoDerSerializer {
         cCtx: ctx,
     }
-    //runtime.SetFinalizer(obj, func (o *MessageInfoDerSerializer) {o.Delete()})
     runtime.SetFinalizer(obj, (*MessageInfoDerSerializer).Delete)
     return obj
 }
@@ -73,7 +72,6 @@ func newMessageInfoDerSerializerCopy(ctx *C.vscf_message_info_der_serializer_t /
     obj := &MessageInfoDerSerializer {
         cCtx: C.vscf_message_info_der_serializer_shallow_copy(ctx),
     }
-    //runtime.SetFinalizer(obj, func (o *MessageInfoDerSerializer) {o.Delete()})
     runtime.SetFinalizer(obj, (*MessageInfoDerSerializer).Delete)
     return obj
 }
@@ -104,7 +102,7 @@ func (obj *MessageInfoDerSerializer) GetPrefixLen() uint32 {
 * Return buffer size enough to hold serialized message info.
 */
 func (obj *MessageInfoDerSerializer) SerializedLen(messageInfo *MessageInfo) uint32 {
-    proxyResult := /*pr4*/C.vscf_message_info_der_serializer_serialized_len(obj.cCtx, (*C.vscf_message_info_t)(messageInfo.ctx()))
+    proxyResult := /*pr4*/C.vscf_message_info_der_serializer_serialized_len(obj.cCtx, (*C.vscf_message_info_t)(unsafe.Pointer(messageInfo.Ctx())))
 
     runtime.KeepAlive(obj)
 
@@ -124,7 +122,7 @@ func (obj *MessageInfoDerSerializer) Serialize(messageInfo *MessageInfo) []byte 
     defer outBuf.Delete()
 
 
-    C.vscf_message_info_der_serializer_serialize(obj.cCtx, (*C.vscf_message_info_t)(messageInfo.ctx()), outBuf.ctx)
+    C.vscf_message_info_der_serializer_serialize(obj.cCtx, (*C.vscf_message_info_t)(unsafe.Pointer(messageInfo.Ctx())), outBuf.ctx)
 
     runtime.KeepAlive(obj)
 
@@ -176,7 +174,7 @@ func (obj *MessageInfoDerSerializer) Deserialize(data []byte) (*MessageInfo, err
 * Return buffer size enough to hold serialized message info footer.
 */
 func (obj *MessageInfoDerSerializer) SerializedFooterLen(messageInfoFooter *MessageInfoFooter) uint32 {
-    proxyResult := /*pr4*/C.vscf_message_info_der_serializer_serialized_footer_len(obj.cCtx, (*C.vscf_message_info_footer_t)(messageInfoFooter.ctx()))
+    proxyResult := /*pr4*/C.vscf_message_info_der_serializer_serialized_footer_len(obj.cCtx, (*C.vscf_message_info_footer_t)(unsafe.Pointer(messageInfoFooter.Ctx())))
 
     runtime.KeepAlive(obj)
 
@@ -196,7 +194,7 @@ func (obj *MessageInfoDerSerializer) SerializeFooter(messageInfoFooter *MessageI
     defer outBuf.Delete()
 
 
-    C.vscf_message_info_der_serializer_serialize_footer(obj.cCtx, (*C.vscf_message_info_footer_t)(messageInfoFooter.ctx()), outBuf.ctx)
+    C.vscf_message_info_der_serializer_serialize_footer(obj.cCtx, (*C.vscf_message_info_footer_t)(unsafe.Pointer(messageInfoFooter.Ctx())), outBuf.ctx)
 
     runtime.KeepAlive(obj)
 

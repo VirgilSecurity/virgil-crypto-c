@@ -3,6 +3,7 @@ package foundation
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
 import "runtime"
+import unsafe "unsafe"
 
 
 /*
@@ -38,8 +39,8 @@ func (obj *FakeRandom) SetupSourceData(dataSource []byte) {
 }
 
 /* Handle underlying C context. */
-func (obj *FakeRandom) ctx() *C.vscf_impl_t {
-    return (*C.vscf_impl_t)(obj.cCtx)
+func (obj *FakeRandom) Ctx() uintptr {
+    return uintptr(unsafe.Pointer(obj.cCtx))
 }
 
 func NewFakeRandom() *FakeRandom {
@@ -47,7 +48,6 @@ func NewFakeRandom() *FakeRandom {
     obj := &FakeRandom {
         cCtx: ctx,
     }
-    //runtime.SetFinalizer(obj, func (o *FakeRandom) {o.Delete()})
     runtime.SetFinalizer(obj, (*FakeRandom).Delete)
     return obj
 }
@@ -59,7 +59,6 @@ func newFakeRandomWithCtx(ctx *C.vscf_fake_random_t /*ct10*/) *FakeRandom {
     obj := &FakeRandom {
         cCtx: ctx,
     }
-    //runtime.SetFinalizer(obj, func (o *FakeRandom) {o.Delete()})
     runtime.SetFinalizer(obj, (*FakeRandom).Delete)
     return obj
 }
@@ -71,7 +70,6 @@ func newFakeRandomCopy(ctx *C.vscf_fake_random_t /*ct10*/) *FakeRandom {
     obj := &FakeRandom {
         cCtx: C.vscf_fake_random_shallow_copy(ctx),
     }
-    //runtime.SetFinalizer(obj, func (o *FakeRandom) {o.Delete()})
     runtime.SetFinalizer(obj, (*FakeRandom).Delete)
     return obj
 }

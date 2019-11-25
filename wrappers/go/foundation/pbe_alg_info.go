@@ -3,6 +3,7 @@ package foundation
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
 import "runtime"
+import unsafe "unsafe"
 
 
 /*
@@ -35,8 +36,8 @@ func (obj *PbeAlgInfo) CipherAlgInfo() (AlgInfo, error) {
 }
 
 /* Handle underlying C context. */
-func (obj *PbeAlgInfo) ctx() *C.vscf_impl_t {
-    return (*C.vscf_impl_t)(obj.cCtx)
+func (obj *PbeAlgInfo) Ctx() uintptr {
+    return uintptr(unsafe.Pointer(obj.cCtx))
 }
 
 func NewPbeAlgInfo() *PbeAlgInfo {
@@ -44,7 +45,6 @@ func NewPbeAlgInfo() *PbeAlgInfo {
     obj := &PbeAlgInfo {
         cCtx: ctx,
     }
-    //runtime.SetFinalizer(obj, func (o *PbeAlgInfo) {o.Delete()})
     runtime.SetFinalizer(obj, (*PbeAlgInfo).Delete)
     return obj
 }
@@ -56,7 +56,6 @@ func newPbeAlgInfoWithCtx(ctx *C.vscf_pbe_alg_info_t /*ct10*/) *PbeAlgInfo {
     obj := &PbeAlgInfo {
         cCtx: ctx,
     }
-    //runtime.SetFinalizer(obj, func (o *PbeAlgInfo) {o.Delete()})
     runtime.SetFinalizer(obj, (*PbeAlgInfo).Delete)
     return obj
 }
@@ -68,7 +67,6 @@ func newPbeAlgInfoCopy(ctx *C.vscf_pbe_alg_info_t /*ct10*/) *PbeAlgInfo {
     obj := &PbeAlgInfo {
         cCtx: C.vscf_pbe_alg_info_shallow_copy(ctx),
     }
-    //runtime.SetFinalizer(obj, func (o *PbeAlgInfo) {o.Delete()})
     runtime.SetFinalizer(obj, (*PbeAlgInfo).Delete)
     return obj
 }
@@ -96,8 +94,8 @@ func (obj *PbeAlgInfo) delete() {
 * cipher alg info.
 */
 func NewPbeAlgInfoWithMembers(algId AlgId, kdfAlgInfo AlgInfo, cipherAlgInfo AlgInfo) *PbeAlgInfo {
-    kdfAlgInfoCopy := C.vscf_impl_shallow_copy((*C.vscf_impl_t)(kdfAlgInfo.ctx()))
-    cipherAlgInfoCopy := C.vscf_impl_shallow_copy((*C.vscf_impl_t)(cipherAlgInfo.ctx()))
+    kdfAlgInfoCopy := C.vscf_impl_shallow_copy((*C.vscf_impl_t)(unsafe.Pointer(kdfAlgInfo.Ctx())))
+    cipherAlgInfoCopy := C.vscf_impl_shallow_copy((*C.vscf_impl_t)(unsafe.Pointer(cipherAlgInfo.Ctx())))
 
     proxyResult := /*pr4*/C.vscf_pbe_alg_info_new_with_members(C.vscf_alg_id_t(algId) /*pa7*/, &kdfAlgInfoCopy, &cipherAlgInfoCopy)
 
@@ -108,7 +106,6 @@ func NewPbeAlgInfoWithMembers(algId AlgId, kdfAlgInfo AlgInfo, cipherAlgInfo Alg
     obj := &PbeAlgInfo {
         cCtx: proxyResult,
     }
-    //runtime.SetFinalizer(obj, func (o *PbeAlgInfo) {o.Delete()})
     runtime.SetFinalizer(obj, (*PbeAlgInfo).Delete)
     return obj
 }

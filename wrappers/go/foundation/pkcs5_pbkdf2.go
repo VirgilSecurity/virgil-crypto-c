@@ -2,6 +2,7 @@ package foundation
 
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
+import unsafe "unsafe"
 import "runtime"
 
 
@@ -14,7 +15,7 @@ type Pkcs5Pbkdf2 struct {
 
 func (obj *Pkcs5Pbkdf2) SetHmac(hmac Mac) {
     C.vscf_pkcs5_pbkdf2_release_hmac(obj.cCtx)
-    C.vscf_pkcs5_pbkdf2_use_hmac(obj.cCtx, (*C.vscf_impl_t)(hmac.ctx()))
+    C.vscf_pkcs5_pbkdf2_use_hmac(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(hmac.Ctx())))
 
     runtime.KeepAlive(hmac)
     runtime.KeepAlive(obj)
@@ -32,8 +33,8 @@ func (obj *Pkcs5Pbkdf2) SetupDefaults() {
 }
 
 /* Handle underlying C context. */
-func (obj *Pkcs5Pbkdf2) ctx() *C.vscf_impl_t {
-    return (*C.vscf_impl_t)(obj.cCtx)
+func (obj *Pkcs5Pbkdf2) Ctx() uintptr {
+    return uintptr(unsafe.Pointer(obj.cCtx))
 }
 
 func NewPkcs5Pbkdf2() *Pkcs5Pbkdf2 {
@@ -41,7 +42,6 @@ func NewPkcs5Pbkdf2() *Pkcs5Pbkdf2 {
     obj := &Pkcs5Pbkdf2 {
         cCtx: ctx,
     }
-    //runtime.SetFinalizer(obj, func (o *Pkcs5Pbkdf2) {o.Delete()})
     runtime.SetFinalizer(obj, (*Pkcs5Pbkdf2).Delete)
     return obj
 }
@@ -53,7 +53,6 @@ func newPkcs5Pbkdf2WithCtx(ctx *C.vscf_pkcs5_pbkdf2_t /*ct10*/) *Pkcs5Pbkdf2 {
     obj := &Pkcs5Pbkdf2 {
         cCtx: ctx,
     }
-    //runtime.SetFinalizer(obj, func (o *Pkcs5Pbkdf2) {o.Delete()})
     runtime.SetFinalizer(obj, (*Pkcs5Pbkdf2).Delete)
     return obj
 }
@@ -65,7 +64,6 @@ func newPkcs5Pbkdf2Copy(ctx *C.vscf_pkcs5_pbkdf2_t /*ct10*/) *Pkcs5Pbkdf2 {
     obj := &Pkcs5Pbkdf2 {
         cCtx: C.vscf_pkcs5_pbkdf2_shallow_copy(ctx),
     }
-    //runtime.SetFinalizer(obj, func (o *Pkcs5Pbkdf2) {o.Delete()})
     runtime.SetFinalizer(obj, (*Pkcs5Pbkdf2).Delete)
     return obj
 }
@@ -114,7 +112,7 @@ func (obj *Pkcs5Pbkdf2) ProduceAlgInfo() (AlgInfo, error) {
 * Restore algorithm configuration from the given object.
 */
 func (obj *Pkcs5Pbkdf2) RestoreAlgInfo(algInfo AlgInfo) error {
-    proxyResult := /*pr4*/C.vscf_pkcs5_pbkdf2_restore_alg_info(obj.cCtx, (*C.vscf_impl_t)(algInfo.ctx()))
+    proxyResult := /*pr4*/C.vscf_pkcs5_pbkdf2_restore_alg_info(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(algInfo.Ctx())))
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {

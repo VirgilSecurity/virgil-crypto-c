@@ -2,6 +2,7 @@ package foundation
 
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
+import unsafe "unsafe"
 import "runtime"
 
 
@@ -13,8 +14,8 @@ type MessageInfoFooter struct {
 }
 
 /* Handle underlying C context. */
-func (obj *MessageInfoFooter) ctx() *C.vscf_impl_t {
-    return (*C.vscf_impl_t)(obj.cCtx)
+func (obj *MessageInfoFooter) Ctx() uintptr {
+    return uintptr(unsafe.Pointer(obj.cCtx))
 }
 
 func NewMessageInfoFooter() *MessageInfoFooter {
@@ -22,7 +23,6 @@ func NewMessageInfoFooter() *MessageInfoFooter {
     obj := &MessageInfoFooter {
         cCtx: ctx,
     }
-    //runtime.SetFinalizer(obj, func (o *MessageInfoFooter) {o.Delete()})
     runtime.SetFinalizer(obj, (*MessageInfoFooter).Delete)
     return obj
 }
@@ -34,7 +34,6 @@ func newMessageInfoFooterWithCtx(ctx *C.vscf_message_info_footer_t /*ct2*/) *Mes
     obj := &MessageInfoFooter {
         cCtx: ctx,
     }
-    //runtime.SetFinalizer(obj, func (o *MessageInfoFooter) {o.Delete()})
     runtime.SetFinalizer(obj, (*MessageInfoFooter).Delete)
     return obj
 }
@@ -46,7 +45,6 @@ func newMessageInfoFooterCopy(ctx *C.vscf_message_info_footer_t /*ct2*/) *Messag
     obj := &MessageInfoFooter {
         cCtx: C.vscf_message_info_footer_shallow_copy(ctx),
     }
-    //runtime.SetFinalizer(obj, func (o *MessageInfoFooter) {o.Delete()})
     runtime.SetFinalizer(obj, (*MessageInfoFooter).Delete)
     return obj
 }

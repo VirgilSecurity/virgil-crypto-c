@@ -35,20 +35,20 @@
 package foundation
 
 import (
-    "github.com/stretchr/testify/assert"
-    "testing"
+	"github.com/stretchr/testify/assert"
+	"testing"
 )
 
 func TestNewFakeRandom(t *testing.T) {
-    fakeRandom := NewFakeRandom()
+	fakeRandom := NewFakeRandom()
 
-    assert.NotNil(t, fakeRandom)
+	assert.NotNil(t, fakeRandom)
 }
 
 func TestFakeRandom_Random(t *testing.T) {
-    fakeRandom := NewFakeRandom()
-    bytes, err := fakeRandom.Random(10)
-    assert.Nil(t, err)
-    assert.NotNil(t, bytes)
-    assert.Equal(t, 10, len(bytes))
+	fakeRandom := NewFakeRandom()
+	bytes, err := fakeRandom.Random(10)
+	assert.Nil(t, err)
+	assert.NotNil(t, bytes)
+	assert.Equal(t, 10, len(bytes))
 }

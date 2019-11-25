@@ -2,6 +2,7 @@ package phe
 
 // #include <virgil/crypto/phe/vsce_phe_public.h>
 import "C"
+import unsafe "unsafe"
 import "runtime"
 import foundation "virgil/foundation"
 
@@ -20,8 +21,8 @@ const (
 )
 
 /* Handle underlying C context. */
-func (obj *PheCipher) ctx() *C.vscf_impl_t {
-    return (*C.vscf_impl_t)(obj.cCtx)
+func (obj *PheCipher) Ctx() uintptr {
+    return uintptr(unsafe.Pointer(obj.cCtx))
 }
 
 func NewPheCipher() *PheCipher {
@@ -29,7 +30,6 @@ func NewPheCipher() *PheCipher {
     obj := &PheCipher {
         cCtx: ctx,
     }
-    //runtime.SetFinalizer(obj, func (o *PheCipher) {o.Delete()})
     runtime.SetFinalizer(obj, (*PheCipher).Delete)
     return obj
 }
@@ -41,7 +41,6 @@ func newPheCipherWithCtx(ctx *C.vsce_phe_cipher_t /*ct2*/) *PheCipher {
     obj := &PheCipher {
         cCtx: ctx,
     }
-    //runtime.SetFinalizer(obj, func (o *PheCipher) {o.Delete()})
     runtime.SetFinalizer(obj, (*PheCipher).Delete)
     return obj
 }
@@ -53,7 +52,6 @@ func newPheCipherCopy(ctx *C.vsce_phe_cipher_t /*ct2*/) *PheCipher {
     obj := &PheCipher {
         cCtx: C.vsce_phe_cipher_shallow_copy(ctx),
     }
-    //runtime.SetFinalizer(obj, func (o *PheCipher) {o.Delete()})
     runtime.SetFinalizer(obj, (*PheCipher).Delete)
     return obj
 }
@@ -81,7 +79,7 @@ func (obj *PheCipher) delete() {
 */
 func (obj *PheCipher) SetRandom(random foundation.Random) {
     C.vsce_phe_cipher_release_random(obj.cCtx)
-    C.vsce_phe_cipher_use_random(obj.cCtx, (*C.vscf_impl_t)(random.(context).ctx()))
+    C.vsce_phe_cipher_use_random(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(random.Ctx())))
 
     runtime.KeepAlive(random)
     runtime.KeepAlive(obj)

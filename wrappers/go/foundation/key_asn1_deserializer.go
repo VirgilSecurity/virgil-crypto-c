@@ -2,6 +2,7 @@ package foundation
 
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
+import unsafe "unsafe"
 import "runtime"
 
 
@@ -14,7 +15,7 @@ type KeyAsn1Deserializer struct {
 
 func (obj *KeyAsn1Deserializer) SetAsn1Reader(asn1Reader Asn1Reader) {
     C.vscf_key_asn1_deserializer_release_asn1_reader(obj.cCtx)
-    C.vscf_key_asn1_deserializer_use_asn1_reader(obj.cCtx, (*C.vscf_impl_t)(asn1Reader.ctx()))
+    C.vscf_key_asn1_deserializer_use_asn1_reader(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(asn1Reader.Ctx())))
 
     runtime.KeepAlive(asn1Reader)
     runtime.KeepAlive(obj)
@@ -78,8 +79,8 @@ func (obj *KeyAsn1Deserializer) DeserializePrivateKeyInplace() (*RawPrivateKey, 
 }
 
 /* Handle underlying C context. */
-func (obj *KeyAsn1Deserializer) ctx() *C.vscf_impl_t {
-    return (*C.vscf_impl_t)(obj.cCtx)
+func (obj *KeyAsn1Deserializer) Ctx() uintptr {
+    return uintptr(unsafe.Pointer(obj.cCtx))
 }
 
 func NewKeyAsn1Deserializer() *KeyAsn1Deserializer {
@@ -87,7 +88,6 @@ func NewKeyAsn1Deserializer() *KeyAsn1Deserializer {
     obj := &KeyAsn1Deserializer {
         cCtx: ctx,
     }
-    //runtime.SetFinalizer(obj, func (o *KeyAsn1Deserializer) {o.Delete()})
     runtime.SetFinalizer(obj, (*KeyAsn1Deserializer).Delete)
     return obj
 }
@@ -99,7 +99,6 @@ func newKeyAsn1DeserializerWithCtx(ctx *C.vscf_key_asn1_deserializer_t /*ct10*/)
     obj := &KeyAsn1Deserializer {
         cCtx: ctx,
     }
-    //runtime.SetFinalizer(obj, func (o *KeyAsn1Deserializer) {o.Delete()})
     runtime.SetFinalizer(obj, (*KeyAsn1Deserializer).Delete)
     return obj
 }
@@ -111,7 +110,6 @@ func newKeyAsn1DeserializerCopy(ctx *C.vscf_key_asn1_deserializer_t /*ct10*/) *K
     obj := &KeyAsn1Deserializer {
         cCtx: C.vscf_key_asn1_deserializer_shallow_copy(ctx),
     }
-    //runtime.SetFinalizer(obj, func (o *KeyAsn1Deserializer) {o.Delete()})
     runtime.SetFinalizer(obj, (*KeyAsn1Deserializer).Delete)
     return obj
 }

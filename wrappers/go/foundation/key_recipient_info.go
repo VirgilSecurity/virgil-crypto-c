@@ -2,6 +2,7 @@ package foundation
 
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
+import unsafe "unsafe"
 import "runtime"
 
 
@@ -13,8 +14,8 @@ type KeyRecipientInfo struct {
 }
 
 /* Handle underlying C context. */
-func (obj *KeyRecipientInfo) ctx() *C.vscf_impl_t {
-    return (*C.vscf_impl_t)(obj.cCtx)
+func (obj *KeyRecipientInfo) Ctx() uintptr {
+    return uintptr(unsafe.Pointer(obj.cCtx))
 }
 
 func NewKeyRecipientInfo() *KeyRecipientInfo {
@@ -22,7 +23,6 @@ func NewKeyRecipientInfo() *KeyRecipientInfo {
     obj := &KeyRecipientInfo {
         cCtx: ctx,
     }
-    //runtime.SetFinalizer(obj, func (o *KeyRecipientInfo) {o.Delete()})
     runtime.SetFinalizer(obj, (*KeyRecipientInfo).Delete)
     return obj
 }
@@ -34,7 +34,6 @@ func newKeyRecipientInfoWithCtx(ctx *C.vscf_key_recipient_info_t /*ct2*/) *KeyRe
     obj := &KeyRecipientInfo {
         cCtx: ctx,
     }
-    //runtime.SetFinalizer(obj, func (o *KeyRecipientInfo) {o.Delete()})
     runtime.SetFinalizer(obj, (*KeyRecipientInfo).Delete)
     return obj
 }
@@ -46,7 +45,6 @@ func newKeyRecipientInfoCopy(ctx *C.vscf_key_recipient_info_t /*ct2*/) *KeyRecip
     obj := &KeyRecipientInfo {
         cCtx: C.vscf_key_recipient_info_shallow_copy(ctx),
     }
-    //runtime.SetFinalizer(obj, func (o *KeyRecipientInfo) {o.Delete()})
     runtime.SetFinalizer(obj, (*KeyRecipientInfo).Delete)
     return obj
 }
@@ -76,14 +74,13 @@ func NewKeyRecipientInfoWithData(recipientId []byte, keyEncryptionAlgorithm AlgI
     recipientIdData := helperWrapData (recipientId)
     encryptedKeyData := helperWrapData (encryptedKey)
 
-    proxyResult := /*pr4*/C.vscf_key_recipient_info_new_with_data(recipientIdData, (*C.vscf_impl_t)(keyEncryptionAlgorithm.ctx()), encryptedKeyData)
+    proxyResult := /*pr4*/C.vscf_key_recipient_info_new_with_data(recipientIdData, (*C.vscf_impl_t)(unsafe.Pointer(keyEncryptionAlgorithm.Ctx())), encryptedKeyData)
 
     runtime.KeepAlive(keyEncryptionAlgorithm)
 
     obj := &KeyRecipientInfo {
         cCtx: proxyResult,
     }
-    //runtime.SetFinalizer(obj, func (o *KeyRecipientInfo) {o.Delete()})
     runtime.SetFinalizer(obj, (*KeyRecipientInfo).Delete)
     return obj
 }

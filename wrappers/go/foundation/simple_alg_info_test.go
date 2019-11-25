@@ -35,8 +35,8 @@
 package foundation
 
 import (
-    "github.com/stretchr/testify/assert"
-    "testing"
+	"github.com/stretchr/testify/assert"
+	"testing"
 )
 
 func TestNewSimpleAlgInfoWithAlgId(t *testing.T) {
@@ -48,5 +48,5 @@ func TestNewSimpleAlgInfoWithAlgId(t *testing.T) {
 func TestSimpleAlgInfo_AlgId(t *testing.T) {
 	simpleAlgInfo := NewSimpleAlgInfo()
 
-    assert.Equal(t, AlgIdNone, simpleAlgInfo.AlgId())
+	assert.Equal(t, AlgIdNone, simpleAlgInfo.AlgId())
 }

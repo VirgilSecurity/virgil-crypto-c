@@ -2,6 +2,7 @@ package foundation
 
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
+import unsafe "unsafe"
 import "runtime"
 
 
@@ -15,8 +16,8 @@ const (
 )
 
 /* Handle underlying C context. */
-func (obj *MessageInfoCustomParams) ctx() *C.vscf_impl_t {
-    return (*C.vscf_impl_t)(obj.cCtx)
+func (obj *MessageInfoCustomParams) Ctx() uintptr {
+    return uintptr(unsafe.Pointer(obj.cCtx))
 }
 
 func NewMessageInfoCustomParams() *MessageInfoCustomParams {
@@ -24,7 +25,6 @@ func NewMessageInfoCustomParams() *MessageInfoCustomParams {
     obj := &MessageInfoCustomParams {
         cCtx: ctx,
     }
-    //runtime.SetFinalizer(obj, func (o *MessageInfoCustomParams) {o.Delete()})
     runtime.SetFinalizer(obj, (*MessageInfoCustomParams).Delete)
     return obj
 }
@@ -36,7 +36,6 @@ func newMessageInfoCustomParamsWithCtx(ctx *C.vscf_message_info_custom_params_t 
     obj := &MessageInfoCustomParams {
         cCtx: ctx,
     }
-    //runtime.SetFinalizer(obj, func (o *MessageInfoCustomParams) {o.Delete()})
     runtime.SetFinalizer(obj, (*MessageInfoCustomParams).Delete)
     return obj
 }
@@ -48,7 +47,6 @@ func newMessageInfoCustomParamsCopy(ctx *C.vscf_message_info_custom_params_t /*c
     obj := &MessageInfoCustomParams {
         cCtx: C.vscf_message_info_custom_params_shallow_copy(ctx),
     }
-    //runtime.SetFinalizer(obj, func (o *MessageInfoCustomParams) {o.Delete()})
     runtime.SetFinalizer(obj, (*MessageInfoCustomParams).Delete)
     return obj
 }

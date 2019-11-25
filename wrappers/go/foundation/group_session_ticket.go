@@ -2,6 +2,7 @@ package foundation
 
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
+import unsafe "unsafe"
 import "runtime"
 
 
@@ -13,8 +14,8 @@ type GroupSessionTicket struct {
 }
 
 /* Handle underlying C context. */
-func (obj *GroupSessionTicket) ctx() *C.vscf_impl_t {
-    return (*C.vscf_impl_t)(obj.cCtx)
+func (obj *GroupSessionTicket) Ctx() uintptr {
+    return uintptr(unsafe.Pointer(obj.cCtx))
 }
 
 func NewGroupSessionTicket() *GroupSessionTicket {
@@ -22,7 +23,6 @@ func NewGroupSessionTicket() *GroupSessionTicket {
     obj := &GroupSessionTicket {
         cCtx: ctx,
     }
-    //runtime.SetFinalizer(obj, func (o *GroupSessionTicket) {o.Delete()})
     runtime.SetFinalizer(obj, (*GroupSessionTicket).Delete)
     return obj
 }
@@ -34,7 +34,6 @@ func newGroupSessionTicketWithCtx(ctx *C.vscf_group_session_ticket_t /*ct2*/) *G
     obj := &GroupSessionTicket {
         cCtx: ctx,
     }
-    //runtime.SetFinalizer(obj, func (o *GroupSessionTicket) {o.Delete()})
     runtime.SetFinalizer(obj, (*GroupSessionTicket).Delete)
     return obj
 }
@@ -46,7 +45,6 @@ func newGroupSessionTicketCopy(ctx *C.vscf_group_session_ticket_t /*ct2*/) *Grou
     obj := &GroupSessionTicket {
         cCtx: C.vscf_group_session_ticket_shallow_copy(ctx),
     }
-    //runtime.SetFinalizer(obj, func (o *GroupSessionTicket) {o.Delete()})
     runtime.SetFinalizer(obj, (*GroupSessionTicket).Delete)
     return obj
 }
@@ -74,7 +72,7 @@ func (obj *GroupSessionTicket) delete() {
 */
 func (obj *GroupSessionTicket) SetRng(rng Random) {
     C.vscf_group_session_ticket_release_rng(obj.cCtx)
-    C.vscf_group_session_ticket_use_rng(obj.cCtx, (*C.vscf_impl_t)(rng.ctx()))
+    C.vscf_group_session_ticket_use_rng(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(rng.Ctx())))
 
     runtime.KeepAlive(rng)
     runtime.KeepAlive(obj)

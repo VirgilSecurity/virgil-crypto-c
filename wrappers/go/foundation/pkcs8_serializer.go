@@ -2,6 +2,7 @@ package foundation
 
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
+import unsafe "unsafe"
 import "runtime"
 
 
@@ -14,7 +15,7 @@ type Pkcs8Serializer struct {
 
 func (obj *Pkcs8Serializer) SetAsn1Writer(asn1Writer Asn1Writer) {
     C.vscf_pkcs8_serializer_release_asn1_writer(obj.cCtx)
-    C.vscf_pkcs8_serializer_use_asn1_writer(obj.cCtx, (*C.vscf_impl_t)(asn1Writer.ctx()))
+    C.vscf_pkcs8_serializer_use_asn1_writer(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(asn1Writer.Ctx())))
 
     runtime.KeepAlive(asn1Writer)
     runtime.KeepAlive(obj)
@@ -40,7 +41,7 @@ func (obj *Pkcs8Serializer) SerializePublicKeyInplace(publicKey *RawPublicKey) (
     var error C.vscf_error_t
     C.vscf_error_reset(&error)
 
-    proxyResult := /*pr4*/C.vscf_pkcs8_serializer_serialize_public_key_inplace(obj.cCtx, (*C.vscf_raw_public_key_t)(publicKey.ctx()), &error)
+    proxyResult := /*pr4*/C.vscf_pkcs8_serializer_serialize_public_key_inplace(obj.cCtx, (*C.vscf_raw_public_key_t)(unsafe.Pointer(publicKey.Ctx())), &error)
 
     err := FoundationErrorHandleStatus(error.status)
     if err != nil {
@@ -65,7 +66,7 @@ func (obj *Pkcs8Serializer) SerializePrivateKeyInplace(privateKey *RawPrivateKey
     var error C.vscf_error_t
     C.vscf_error_reset(&error)
 
-    proxyResult := /*pr4*/C.vscf_pkcs8_serializer_serialize_private_key_inplace(obj.cCtx, (*C.vscf_raw_private_key_t)(privateKey.ctx()), &error)
+    proxyResult := /*pr4*/C.vscf_pkcs8_serializer_serialize_private_key_inplace(obj.cCtx, (*C.vscf_raw_private_key_t)(unsafe.Pointer(privateKey.Ctx())), &error)
 
     err := FoundationErrorHandleStatus(error.status)
     if err != nil {
@@ -82,8 +83,8 @@ func (obj *Pkcs8Serializer) SerializePrivateKeyInplace(privateKey *RawPrivateKey
 }
 
 /* Handle underlying C context. */
-func (obj *Pkcs8Serializer) ctx() *C.vscf_impl_t {
-    return (*C.vscf_impl_t)(obj.cCtx)
+func (obj *Pkcs8Serializer) Ctx() uintptr {
+    return uintptr(unsafe.Pointer(obj.cCtx))
 }
 
 func NewPkcs8Serializer() *Pkcs8Serializer {
@@ -91,7 +92,6 @@ func NewPkcs8Serializer() *Pkcs8Serializer {
     obj := &Pkcs8Serializer {
         cCtx: ctx,
     }
-    //runtime.SetFinalizer(obj, func (o *Pkcs8Serializer) {o.Delete()})
     runtime.SetFinalizer(obj, (*Pkcs8Serializer).Delete)
     return obj
 }
@@ -103,7 +103,6 @@ func newPkcs8SerializerWithCtx(ctx *C.vscf_pkcs8_serializer_t /*ct10*/) *Pkcs8Se
     obj := &Pkcs8Serializer {
         cCtx: ctx,
     }
-    //runtime.SetFinalizer(obj, func (o *Pkcs8Serializer) {o.Delete()})
     runtime.SetFinalizer(obj, (*Pkcs8Serializer).Delete)
     return obj
 }
@@ -115,7 +114,6 @@ func newPkcs8SerializerCopy(ctx *C.vscf_pkcs8_serializer_t /*ct10*/) *Pkcs8Seria
     obj := &Pkcs8Serializer {
         cCtx: C.vscf_pkcs8_serializer_shallow_copy(ctx),
     }
-    //runtime.SetFinalizer(obj, func (o *Pkcs8Serializer) {o.Delete()})
     runtime.SetFinalizer(obj, (*Pkcs8Serializer).Delete)
     return obj
 }
@@ -144,7 +142,7 @@ func (obj *Pkcs8Serializer) delete() {
 * Precondition: public key must be exportable.
 */
 func (obj *Pkcs8Serializer) SerializedPublicKeyLen(publicKey *RawPublicKey) uint32 {
-    proxyResult := /*pr4*/C.vscf_pkcs8_serializer_serialized_public_key_len(obj.cCtx, (*C.vscf_raw_public_key_t)(publicKey.ctx()))
+    proxyResult := /*pr4*/C.vscf_pkcs8_serializer_serialized_public_key_len(obj.cCtx, (*C.vscf_raw_public_key_t)(unsafe.Pointer(publicKey.Ctx())))
 
     runtime.KeepAlive(obj)
 
@@ -166,7 +164,7 @@ func (obj *Pkcs8Serializer) SerializePublicKey(publicKey *RawPublicKey) ([]byte,
     defer outBuf.Delete()
 
 
-    proxyResult := /*pr4*/C.vscf_pkcs8_serializer_serialize_public_key(obj.cCtx, (*C.vscf_raw_public_key_t)(publicKey.ctx()), outBuf.ctx)
+    proxyResult := /*pr4*/C.vscf_pkcs8_serializer_serialize_public_key(obj.cCtx, (*C.vscf_raw_public_key_t)(unsafe.Pointer(publicKey.Ctx())), outBuf.ctx)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
@@ -186,7 +184,7 @@ func (obj *Pkcs8Serializer) SerializePublicKey(publicKey *RawPublicKey) ([]byte,
 * Precondition: private key must be exportable.
 */
 func (obj *Pkcs8Serializer) SerializedPrivateKeyLen(privateKey *RawPrivateKey) uint32 {
-    proxyResult := /*pr4*/C.vscf_pkcs8_serializer_serialized_private_key_len(obj.cCtx, (*C.vscf_raw_private_key_t)(privateKey.ctx()))
+    proxyResult := /*pr4*/C.vscf_pkcs8_serializer_serialized_private_key_len(obj.cCtx, (*C.vscf_raw_private_key_t)(unsafe.Pointer(privateKey.Ctx())))
 
     runtime.KeepAlive(obj)
 
@@ -208,7 +206,7 @@ func (obj *Pkcs8Serializer) SerializePrivateKey(privateKey *RawPrivateKey) ([]by
     defer outBuf.Delete()
 
 
-    proxyResult := /*pr4*/C.vscf_pkcs8_serializer_serialize_private_key(obj.cCtx, (*C.vscf_raw_private_key_t)(privateKey.ctx()), outBuf.ctx)
+    proxyResult := /*pr4*/C.vscf_pkcs8_serializer_serialize_private_key(obj.cCtx, (*C.vscf_raw_private_key_t)(unsafe.Pointer(privateKey.Ctx())), outBuf.ctx)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {

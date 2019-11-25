@@ -35,212 +35,212 @@
 package foundation
 
 import (
-    b64 "encoding/base64"
-    "github.com/stretchr/testify/assert"
-    "math/rand"
-    "testing"
+	b64 "encoding/base64"
+	"github.com/stretchr/testify/assert"
+	"math/rand"
+	"testing"
 )
 
 func TestNewEd25519(t *testing.T) {
-    ed := NewEd25519()
+	ed := NewEd25519()
 
-    assert.NotNil(t, ed)
+	assert.NotNil(t, ed)
 }
 
 func TestEd25519_GenerateKey(t *testing.T) {
-    ed := newEd25519()
+	ed := newEd25519()
 
-    privateKey, err := ed.GenerateKey()
-    assert.Nil(t, err)
-    assert.NotNil(t, privateKey)
+	privateKey, err := ed.GenerateKey()
+	assert.Nil(t, err)
+	assert.NotNil(t, privateKey)
 
-    edKey, ok := privateKey.(Key)
-    assert.True(t, ok)
-    assert.Equal(t, AlgIdEd25519, edKey.AlgId())
+	edKey, ok := privateKey.(Key)
+	assert.True(t, ok)
+	assert.Equal(t, AlgIdEd25519, edKey.AlgId())
 }
 
 func TestEd25519_AlgId(t *testing.T) {
-    ed := newEd25519()
+	ed := newEd25519()
 
-    assert.Equal(t, AlgIdEd25519, ed.AlgId())
+	assert.Equal(t, AlgIdEd25519, ed.AlgId())
 }
 
 func TestEd25519_CanSign(t *testing.T) {
-    ed := newEd25519()
-    privateKey, err := ed.GenerateKey()
-    assert.Nil(t, err)
-    assert.True(t,ed.CanSign(privateKey))
+	ed := newEd25519()
+	privateKey, err := ed.GenerateKey()
+	assert.Nil(t, err)
+	assert.True(t, ed.CanSign(privateKey))
 }
 
 func TestEd25519_CanSign_WrongKey(t *testing.T) {
-    ed := newEd25519()
-    rsa := NewRsa()
-    err := rsa.SetupDefaults()
-    assert.Nil(t, err)
+	ed := newEd25519()
+	rsa := NewRsa()
+	err := rsa.SetupDefaults()
+	assert.Nil(t, err)
 
-    privateKey, err :=rsa.GenerateKey(2048)
-    assert.Nil(t, err)
-    assert.False(t,ed.CanSign(privateKey))
+	privateKey, err := rsa.GenerateKey(2048)
+	assert.Nil(t, err)
+	assert.False(t, ed.CanSign(privateKey))
 }
 
 func TestEd25519_GetCanExportPrivateKey(t *testing.T) {
-    ed := newEd25519()
+	ed := newEd25519()
 
-    assert.True(t, ed.GetCanExportPrivateKey())
+	assert.True(t, ed.GetCanExportPrivateKey())
 }
 
 func TestEd25519_GetCanImportPrivateKey(t *testing.T) {
-    ed := newEd25519()
+	ed := newEd25519()
 
-    assert.True(t, ed.GetCanImportPrivateKey())
+	assert.True(t, ed.GetCanImportPrivateKey())
 }
 
 func TestEd25519_ExportPrivateKey(t *testing.T) {
-    ed := newEd25519()
-    privateKey, err := ed.GenerateKey()
-    assert.Nil(t, err)
+	ed := newEd25519()
+	privateKey, err := ed.GenerateKey()
+	assert.Nil(t, err)
 
-    // Export private key
-    rawPrivateKey, err := ed.ExportPrivateKey(privateKey)
-    assert.Nil(t, err)
-    assert.NotNil(t, rawPrivateKey)
+	// Export private key
+	rawPrivateKey, err := ed.ExportPrivateKey(privateKey)
+	assert.Nil(t, err)
+	assert.NotNil(t, rawPrivateKey)
 
-    exportedKeyData := rawPrivateKey.Data()
-    assert.NotNil(t, exportedKeyData)
+	exportedKeyData := rawPrivateKey.Data()
+	assert.NotNil(t, exportedKeyData)
 
-    importedPrivateKey, err := ed.ImportPrivateKey(rawPrivateKey)
-    assert.Nil(t, err)
+	importedPrivateKey, err := ed.ImportPrivateKey(rawPrivateKey)
+	assert.Nil(t, err)
 
-    rawPrivateKey2, err := ed.ExportPrivateKey(importedPrivateKey)
-    assert.Nil(t, err)
-    assert.NotNil(t, rawPrivateKey2)
+	rawPrivateKey2, err := ed.ExportPrivateKey(importedPrivateKey)
+	assert.Nil(t, err)
+	assert.NotNil(t, rawPrivateKey2)
 
-    exportedKeyData2 := rawPrivateKey2.Data()
+	exportedKeyData2 := rawPrivateKey2.Data()
 
-    assert.NotNil(t, exportedKeyData2)
-    assert.Equal(t, exportedKeyData, exportedKeyData2)
+	assert.NotNil(t, exportedKeyData2)
+	assert.Equal(t, exportedKeyData, exportedKeyData2)
 }
 
 func TestEd25519_ExportPublicKey(t *testing.T) {
-    ed := newEd25519()
-    privateKey, err := ed.GenerateKey()
-    assert.Nil(t, err)
+	ed := newEd25519()
+	privateKey, err := ed.GenerateKey()
+	assert.Nil(t, err)
 
-    publicKey, err := privateKey.ExtractPublicKey()
-    assert.Nil(t, err)
+	publicKey, err := privateKey.ExtractPublicKey()
+	assert.Nil(t, err)
 
-    // Export public key
-    rawPublicKey, err := ed.ExportPublicKey(publicKey)
-    assert.Nil(t, err)
-    assert.NotNil(t, rawPublicKey)
+	// Export public key
+	rawPublicKey, err := ed.ExportPublicKey(publicKey)
+	assert.Nil(t, err)
+	assert.NotNil(t, rawPublicKey)
 
-    exportedKeyData := rawPublicKey.Data()
-    assert.NotNil(t, exportedKeyData)
+	exportedKeyData := rawPublicKey.Data()
+	assert.NotNil(t, exportedKeyData)
 
-    importedPublicKey, err := ed.ImportPublicKey(rawPublicKey)
-    assert.Nil(t, err)
+	importedPublicKey, err := ed.ImportPublicKey(rawPublicKey)
+	assert.Nil(t, err)
 
-    rawPublicKey2, err := ed.ExportPublicKey(importedPublicKey)
-    assert.Nil(t, err)
-    assert.NotNil(t, rawPublicKey2)
+	rawPublicKey2, err := ed.ExportPublicKey(importedPublicKey)
+	assert.Nil(t, err)
+	assert.NotNil(t, rawPublicKey2)
 
-    exportedKeyData2 := rawPublicKey2.Data()
+	exportedKeyData2 := rawPublicKey2.Data()
 
-    assert.NotNil(t, exportedKeyData2)
-    assert.Equal(t, exportedKeyData, exportedKeyData2)
+	assert.NotNil(t, exportedKeyData2)
+	assert.Equal(t, exportedKeyData, exportedKeyData2)
 }
 
 func TestEd25519_Encrypt(t *testing.T) {
-    data := make([]byte, 100)
-    rand.Read(data)
+	data := make([]byte, 100)
+	rand.Read(data)
 
-    ed := newEd25519()
-    privateKey, err := ed.GenerateKey()
-    assert.Nil(t, err)
+	ed := newEd25519()
+	privateKey, err := ed.GenerateKey()
+	assert.Nil(t, err)
 
-    publicKey, err := privateKey.ExtractPublicKey()
-    assert.Nil(t, err)
+	publicKey, err := privateKey.ExtractPublicKey()
+	assert.Nil(t, err)
 
-    assert.True(t, ed.CanEncrypt(publicKey, uint32(len(data))))
+	assert.True(t, ed.CanEncrypt(publicKey, uint32(len(data))))
 
-    encryptedData, err := ed.Encrypt(publicKey, data)
-    assert.Nil(t, err)
-    assert.NotNil(t, encryptedData)
+	encryptedData, err := ed.Encrypt(publicKey, data)
+	assert.Nil(t, err)
+	assert.NotNil(t, encryptedData)
 
-    assert.True(t, ed.CanDecrypt(privateKey, uint32(len(encryptedData))))
+	assert.True(t, ed.CanDecrypt(privateKey, uint32(len(encryptedData))))
 
-    decryptedData, err := ed.Decrypt(privateKey, encryptedData)
-    assert.Nil(t, err)
-    assert.NotNil(t, decryptedData)
+	decryptedData, err := ed.Decrypt(privateKey, encryptedData)
+	assert.Nil(t, err)
+	assert.NotNil(t, decryptedData)
 
-    assert.Equal(t, data, decryptedData)
+	assert.Equal(t, data, decryptedData)
 }
 
 func TestEd25519_Decrypt(t *testing.T) {
-    privateKeyData, _ := b64.StdEncoding.DecodeString(TEST_ED25519_PRIVATE_KEY)
-    encryptedData, _ := b64.StdEncoding.DecodeString(TEST_ED25519_ENCRYPTED_DATA)
-    expectedDecryptedData, _ := b64.StdEncoding.DecodeString(TEST_SHORT_DATA)
-    ed := newEd25519()
-    keyProvider := newKeyProvider()
+	privateKeyData, _ := b64.StdEncoding.DecodeString(TEST_ED25519_PRIVATE_KEY)
+	encryptedData, _ := b64.StdEncoding.DecodeString(TEST_ED25519_ENCRYPTED_DATA)
+	expectedDecryptedData, _ := b64.StdEncoding.DecodeString(TEST_SHORT_DATA)
+	ed := newEd25519()
+	keyProvider := newKeyProvider()
 
-    privateKey, err := keyProvider.ImportPrivateKey(privateKeyData)
-    assert.Nil(t, err)
+	privateKey, err := keyProvider.ImportPrivateKey(privateKeyData)
+	assert.Nil(t, err)
 
-    decryptedData, err := ed.Decrypt(privateKey, encryptedData)
-    assert.Nil(t, err)
-    assert.NotNil(t, decryptedData)
-    assert.Equal(t, expectedDecryptedData, decryptedData)
+	decryptedData, err := ed.Decrypt(privateKey, encryptedData)
+	assert.Nil(t, err)
+	assert.NotNil(t, decryptedData)
+	assert.Equal(t, expectedDecryptedData, decryptedData)
 }
 
 func TestEd25519_SignHash(t *testing.T) {
-    data, _ := b64.StdEncoding.DecodeString(TEST_DATA)
-    privateKeyData, _ := b64.StdEncoding.DecodeString(TEST_ED25519_PRIVATE_KEY)
-    ed := newEd25519()
-    keyProvider := newKeyProvider()
+	data, _ := b64.StdEncoding.DecodeString(TEST_DATA)
+	privateKeyData, _ := b64.StdEncoding.DecodeString(TEST_ED25519_PRIVATE_KEY)
+	ed := newEd25519()
+	keyProvider := newKeyProvider()
 
-    privateKey, err := keyProvider.ImportPrivateKey(privateKeyData)
-    assert.Nil(t, err)
+	privateKey, err := keyProvider.ImportPrivateKey(privateKeyData)
+	assert.Nil(t, err)
 
-    publicKey, err := privateKey.ExtractPublicKey()
-    assert.Nil(t, err)
-    assert.True(t, ed.CanSign(privateKey))
+	publicKey, err := privateKey.ExtractPublicKey()
+	assert.Nil(t, err)
+	assert.True(t, ed.CanSign(privateKey))
 
-    signature, err := ed.SignHash(privateKey, AlgIdSha512, data)
-    assert.Nil(t, err)
-    assert.NotNil(t, signature)
-    assert.Equal(t, ed.SignatureLen(privateKey.(Key)), uint32(len(signature)))
+	signature, err := ed.SignHash(privateKey, AlgIdSha512, data)
+	assert.Nil(t, err)
+	assert.NotNil(t, signature)
+	assert.Equal(t, ed.SignatureLen(privateKey.(Key)), uint32(len(signature)))
 
-    assert.True(t, ed.VerifyHash(publicKey, AlgIdSha512, data, signature))
+	assert.True(t, ed.VerifyHash(publicKey, AlgIdSha512, data, signature))
 }
 
 func TestEd25519_VerifyHash(t *testing.T) {
-    data, _ := b64.StdEncoding.DecodeString(TEST_DATA)
-    publicKeyData, _ := b64.StdEncoding.DecodeString(TEST_ED25519_PUBLIC_KEY)
-    signature, _ := b64.StdEncoding.DecodeString(TEST_ED25519_SIGNATURE)
-    ed := newEd25519()
-    keyProvider := newKeyProvider()
+	data, _ := b64.StdEncoding.DecodeString(TEST_DATA)
+	publicKeyData, _ := b64.StdEncoding.DecodeString(TEST_ED25519_PUBLIC_KEY)
+	signature, _ := b64.StdEncoding.DecodeString(TEST_ED25519_SIGNATURE)
+	ed := newEd25519()
+	keyProvider := newKeyProvider()
 
-    publicKey, err := keyProvider.ImportPublicKey(publicKeyData)
-    assert.Nil(t, err)
-    assert.True(t, ed.CanVerify(publicKey))
-    assert.True(t, ed.VerifyHash(publicKey, AlgIdSha512, data, signature))
+	publicKey, err := keyProvider.ImportPublicKey(publicKeyData)
+	assert.Nil(t, err)
+	assert.True(t, ed.CanVerify(publicKey))
+	assert.True(t, ed.VerifyHash(publicKey, AlgIdSha512, data, signature))
 }
 
 func TestEd25519_VerifyHash_WrongHash(t *testing.T) {
-    data, _ := b64.StdEncoding.DecodeString(TEST_DATA)
-    publicKeyData, _ := b64.StdEncoding.DecodeString(TEST_ED25519_PUBLIC_KEY)
-    signature, _ := b64.StdEncoding.DecodeString(TEST_ED25519_WRONG_SIGNATURE)
-    ed := newEd25519()
-    keyProvider := newKeyProvider()
+	data, _ := b64.StdEncoding.DecodeString(TEST_DATA)
+	publicKeyData, _ := b64.StdEncoding.DecodeString(TEST_ED25519_PUBLIC_KEY)
+	signature, _ := b64.StdEncoding.DecodeString(TEST_ED25519_WRONG_SIGNATURE)
+	ed := newEd25519()
+	keyProvider := newKeyProvider()
 
-    publicKey, err := keyProvider.ImportPublicKey(publicKeyData)
-    assert.Nil(t, err)
-    assert.False(t, ed.VerifyHash(publicKey, AlgIdSha512, data, signature))
+	publicKey, err := keyProvider.ImportPublicKey(publicKeyData)
+	assert.Nil(t, err)
+	assert.False(t, ed.VerifyHash(publicKey, AlgIdSha512, data, signature))
 }
 
 func newEd25519() *Ed25519 {
-    ed := NewEd25519()
-    _ = ed.SetupDefaults()
+	ed := NewEd25519()
+	_ = ed.SetupDefaults()
 
-    return ed
+	return ed
 }

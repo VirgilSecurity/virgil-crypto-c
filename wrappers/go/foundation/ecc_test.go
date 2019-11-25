@@ -35,144 +35,144 @@
 package foundation
 
 import (
-    "github.com/stretchr/testify/assert"
-    "math/rand"
-    "testing"
+	"github.com/stretchr/testify/assert"
+	"math/rand"
+	"testing"
 )
 
 func TestNewEcc(t *testing.T) {
-    ecc := NewEcc()
+	ecc := NewEcc()
 
-    assert.NotNil(t, ecc)
+	assert.NotNil(t, ecc)
 }
 
 func TestEcc_GenerateKey(t *testing.T) {
-    ecc := newEcc()
+	ecc := newEcc()
 
-    privateKey, err := ecc.GenerateKey(AlgIdSecp256r1)
-    assert.Nil(t, err)
-    assert.NotNil(t, privateKey)
+	privateKey, err := ecc.GenerateKey(AlgIdSecp256r1)
+	assert.Nil(t, err)
+	assert.NotNil(t, privateKey)
 
-    eccKey, ok := privateKey.(Key)
-    assert.True(t, ok)
-    assert.Equal(t, AlgIdSecp256r1, eccKey.AlgId())
+	eccKey, ok := privateKey.(Key)
+	assert.True(t, ok)
+	assert.Equal(t, AlgIdSecp256r1, eccKey.AlgId())
 }
 
 func TestEcc_AlgId(t *testing.T) {
-    ecc := newEcc()
+	ecc := newEcc()
 
-    assert.Equal(t, AlgIdEcc, ecc.AlgId())
+	assert.Equal(t, AlgIdEcc, ecc.AlgId())
 }
 
 func TestEcc_CanSign(t *testing.T) {
-    ecc := newEcc()
-    privateKey, err := ecc.GenerateKey(AlgIdSecp256r1)
+	ecc := newEcc()
+	privateKey, err := ecc.GenerateKey(AlgIdSecp256r1)
 
-    assert.Nil(t, err)
-    assert.True(t,ecc.CanSign(privateKey))
+	assert.Nil(t, err)
+	assert.True(t, ecc.CanSign(privateKey))
 }
 
 func TestEcc_CanSign_WrongKey(t *testing.T) {
-    ecc := newEcc()
-    rsa := NewRsa()
-    err := rsa.SetupDefaults()
-    assert.Nil(t, err)
+	ecc := newEcc()
+	rsa := NewRsa()
+	err := rsa.SetupDefaults()
+	assert.Nil(t, err)
 
-    privateKey, err := rsa.GenerateKey(2048)
-    assert.Nil(t, err)
-    assert.False(t,ecc.CanSign(privateKey))
+	privateKey, err := rsa.GenerateKey(2048)
+	assert.Nil(t, err)
+	assert.False(t, ecc.CanSign(privateKey))
 }
 
 func TestEcc_GetCanExportPrivateKey(t *testing.T) {
-    ecc := newEcc()
+	ecc := newEcc()
 
-    assert.True(t, ecc.GetCanExportPrivateKey())
+	assert.True(t, ecc.GetCanExportPrivateKey())
 }
 
 func TestEcc_GetCanImportPrivateKey(t *testing.T) {
-    ecc := newEcc()
+	ecc := newEcc()
 
-    assert.True(t, ecc.GetCanImportPrivateKey())
+	assert.True(t, ecc.GetCanImportPrivateKey())
 }
 
 func TestEcc_ExportPrivateKey(t *testing.T) {
-    ecc := newEcc()
-    privateKey, err := ecc.GenerateKey(AlgIdSecp256r1)
-    assert.Nil(t, err)
+	ecc := newEcc()
+	privateKey, err := ecc.GenerateKey(AlgIdSecp256r1)
+	assert.Nil(t, err)
 
-    // Export private key
-    rawPrivateKey, err := ecc.ExportPrivateKey(privateKey)
-    assert.Nil(t, err)
-    assert.NotNil(t, rawPrivateKey)
+	// Export private key
+	rawPrivateKey, err := ecc.ExportPrivateKey(privateKey)
+	assert.Nil(t, err)
+	assert.NotNil(t, rawPrivateKey)
 
-    exportedEccKeyData := rawPrivateKey.Data()
-    assert.NotNil(t, exportedEccKeyData)
+	exportedEccKeyData := rawPrivateKey.Data()
+	assert.NotNil(t, exportedEccKeyData)
 
-    importedEccPrivateKey, err := ecc.ImportPrivateKey(rawPrivateKey)
-    assert.Nil(t, err)
+	importedEccPrivateKey, err := ecc.ImportPrivateKey(rawPrivateKey)
+	assert.Nil(t, err)
 
-    rawPrivateKey2, err := ecc.ExportPrivateKey(importedEccPrivateKey)
-    assert.Nil(t, err)
-    assert.NotNil(t, rawPrivateKey2)
+	rawPrivateKey2, err := ecc.ExportPrivateKey(importedEccPrivateKey)
+	assert.Nil(t, err)
+	assert.NotNil(t, rawPrivateKey2)
 
-    exportedEccKeyData2 := rawPrivateKey2.Data()
+	exportedEccKeyData2 := rawPrivateKey2.Data()
 
-    assert.NotNil(t, exportedEccKeyData2)
-    assert.Equal(t, exportedEccKeyData, exportedEccKeyData2)
+	assert.NotNil(t, exportedEccKeyData2)
+	assert.Equal(t, exportedEccKeyData, exportedEccKeyData2)
 }
 
 func TestEcc_ExportPublicKey(t *testing.T) {
-    ecc := newEcc()
-    privateKey, err := ecc.GenerateKey(AlgIdSecp256r1)
-    assert.Nil(t, err)
+	ecc := newEcc()
+	privateKey, err := ecc.GenerateKey(AlgIdSecp256r1)
+	assert.Nil(t, err)
 
-    publicKey, err := privateKey.ExtractPublicKey()
-    assert.Nil(t, err)
+	publicKey, err := privateKey.ExtractPublicKey()
+	assert.Nil(t, err)
 
-    // Export public key
-    rawPublicKey, err := ecc.ExportPublicKey(publicKey)
-    assert.Nil(t, err)
-    assert.NotNil(t, rawPublicKey)
+	// Export public key
+	rawPublicKey, err := ecc.ExportPublicKey(publicKey)
+	assert.Nil(t, err)
+	assert.NotNil(t, rawPublicKey)
 
-    exportedEccKeyData := rawPublicKey.Data()
-    assert.NotNil(t, exportedEccKeyData)
+	exportedEccKeyData := rawPublicKey.Data()
+	assert.NotNil(t, exportedEccKeyData)
 
-    importedEccPublicKey, err := ecc.ImportPublicKey(rawPublicKey)
-    assert.Nil(t, err)
+	importedEccPublicKey, err := ecc.ImportPublicKey(rawPublicKey)
+	assert.Nil(t, err)
 
-    rawPublicKey2, err := ecc.ExportPublicKey(importedEccPublicKey)
-    assert.Nil(t, err)
-    assert.NotNil(t, rawPublicKey2)
+	rawPublicKey2, err := ecc.ExportPublicKey(importedEccPublicKey)
+	assert.Nil(t, err)
+	assert.NotNil(t, rawPublicKey2)
 
-    exportedEccKeyData2 := rawPublicKey2.Data()
+	exportedEccKeyData2 := rawPublicKey2.Data()
 
-    assert.NotNil(t, exportedEccKeyData2)
-    assert.Equal(t, exportedEccKeyData, exportedEccKeyData2)
+	assert.NotNil(t, exportedEccKeyData2)
+	assert.Equal(t, exportedEccKeyData, exportedEccKeyData2)
 }
 
 func TestEcc_Encrypt(t *testing.T) {
-    data := make([]byte, 100)
-    rand.Read(data)
+	data := make([]byte, 100)
+	rand.Read(data)
 
-    ecc := newEcc()
-    privateKey, err := ecc.GenerateKey(AlgIdSecp256r1)
-    assert.Nil(t, err)
+	ecc := newEcc()
+	privateKey, err := ecc.GenerateKey(AlgIdSecp256r1)
+	assert.Nil(t, err)
 
-    publicKey, err := privateKey.ExtractPublicKey()
-    assert.Nil(t, err)
-    assert.True(t, ecc.CanEncrypt(publicKey, uint32(len(data))))
+	publicKey, err := privateKey.ExtractPublicKey()
+	assert.Nil(t, err)
+	assert.True(t, ecc.CanEncrypt(publicKey, uint32(len(data))))
 
-    encrypteccData, err := ecc.Encrypt(publicKey, data)
-    assert.Nil(t, err)
-    assert.NotNil(t, encrypteccData)
+	encrypteccData, err := ecc.Encrypt(publicKey, data)
+	assert.Nil(t, err)
+	assert.NotNil(t, encrypteccData)
 
-    assert.True(t, ecc.CanDecrypt(privateKey, uint32(len(encrypteccData))))
+	assert.True(t, ecc.CanDecrypt(privateKey, uint32(len(encrypteccData))))
 
-    decrypteccData, err := ecc.Decrypt(privateKey, encrypteccData)
-    assert.Nil(t, err)
-    assert.NotNil(t, decrypteccData)
+	decrypteccData, err := ecc.Decrypt(privateKey, encrypteccData)
+	assert.Nil(t, err)
+	assert.NotNil(t, decrypteccData)
 
-    assert.Equal(t, data, decrypteccData)
+	assert.Equal(t, data, decrypteccData)
 }
 
 //func TestEcc_Decrypt(t *testing.T) {
@@ -233,8 +233,8 @@ func TestEcc_Encrypt(t *testing.T) {
 //}
 
 func newEcc() *Ecc {
-    ecc := NewEcc()
-    _  = ecc.SetupDefaults()
+	ecc := NewEcc()
+	_ = ecc.SetupDefaults()
 
-    return ecc
+	return ecc
 }

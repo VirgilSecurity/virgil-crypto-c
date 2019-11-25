@@ -2,6 +2,7 @@ package foundation
 
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
+import unsafe "unsafe"
 import "runtime"
 
 
@@ -13,8 +14,8 @@ type Ecies struct {
 }
 
 /* Handle underlying C context. */
-func (obj *Ecies) ctx() *C.vscf_impl_t {
-    return (*C.vscf_impl_t)(obj.cCtx)
+func (obj *Ecies) Ctx() uintptr {
+    return uintptr(unsafe.Pointer(obj.cCtx))
 }
 
 func NewEcies() *Ecies {
@@ -22,7 +23,6 @@ func NewEcies() *Ecies {
     obj := &Ecies {
         cCtx: ctx,
     }
-    //runtime.SetFinalizer(obj, func (o *Ecies) {o.Delete()})
     runtime.SetFinalizer(obj, (*Ecies).Delete)
     return obj
 }
@@ -34,7 +34,6 @@ func newEciesWithCtx(ctx *C.vscf_ecies_t /*ct2*/) *Ecies {
     obj := &Ecies {
         cCtx: ctx,
     }
-    //runtime.SetFinalizer(obj, func (o *Ecies) {o.Delete()})
     runtime.SetFinalizer(obj, (*Ecies).Delete)
     return obj
 }
@@ -46,7 +45,6 @@ func newEciesCopy(ctx *C.vscf_ecies_t /*ct2*/) *Ecies {
     obj := &Ecies {
         cCtx: C.vscf_ecies_shallow_copy(ctx),
     }
-    //runtime.SetFinalizer(obj, func (o *Ecies) {o.Delete()})
     runtime.SetFinalizer(obj, (*Ecies).Delete)
     return obj
 }
@@ -71,7 +69,7 @@ func (obj *Ecies) delete() {
 
 func (obj *Ecies) SetRandom(random Random) {
     C.vscf_ecies_release_random(obj.cCtx)
-    C.vscf_ecies_use_random(obj.cCtx, (*C.vscf_impl_t)(random.ctx()))
+    C.vscf_ecies_use_random(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(random.Ctx())))
 
     runtime.KeepAlive(random)
     runtime.KeepAlive(obj)
@@ -79,7 +77,7 @@ func (obj *Ecies) SetRandom(random Random) {
 
 func (obj *Ecies) SetCipher(cipher Cipher) {
     C.vscf_ecies_release_cipher(obj.cCtx)
-    C.vscf_ecies_use_cipher(obj.cCtx, (*C.vscf_impl_t)(cipher.ctx()))
+    C.vscf_ecies_use_cipher(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(cipher.Ctx())))
 
     runtime.KeepAlive(cipher)
     runtime.KeepAlive(obj)
@@ -87,7 +85,7 @@ func (obj *Ecies) SetCipher(cipher Cipher) {
 
 func (obj *Ecies) SetMac(mac Mac) {
     C.vscf_ecies_release_mac(obj.cCtx)
-    C.vscf_ecies_use_mac(obj.cCtx, (*C.vscf_impl_t)(mac.ctx()))
+    C.vscf_ecies_use_mac(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(mac.Ctx())))
 
     runtime.KeepAlive(mac)
     runtime.KeepAlive(obj)
@@ -95,7 +93,7 @@ func (obj *Ecies) SetMac(mac Mac) {
 
 func (obj *Ecies) SetKdf(kdf Kdf) {
     C.vscf_ecies_release_kdf(obj.cCtx)
-    C.vscf_ecies_use_kdf(obj.cCtx, (*C.vscf_impl_t)(kdf.ctx()))
+    C.vscf_ecies_use_kdf(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(kdf.Ctx())))
 
     runtime.KeepAlive(kdf)
     runtime.KeepAlive(obj)
@@ -108,7 +106,7 @@ func (obj *Ecies) SetKdf(kdf Kdf) {
 */
 func (obj *Ecies) SetEphemeralKey(ephemeralKey PrivateKey) {
     C.vscf_ecies_release_ephemeral_key(obj.cCtx)
-    C.vscf_ecies_use_ephemeral_key(obj.cCtx, (*C.vscf_impl_t)(ephemeralKey.ctx()))
+    C.vscf_ecies_use_ephemeral_key(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(ephemeralKey.Ctx())))
 
     runtime.KeepAlive(ephemeralKey)
     runtime.KeepAlive(obj)
@@ -119,7 +117,7 @@ func (obj *Ecies) SetEphemeralKey(ephemeralKey PrivateKey) {
 * Key algorithm MUST support shared key computation as well.
 */
 func (obj *Ecies) SetKeyAlg(keyAlg KeyAlg) {
-    C.vscf_ecies_set_key_alg(obj.cCtx, (*C.vscf_impl_t)(keyAlg.ctx()))
+    C.vscf_ecies_set_key_alg(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(keyAlg.Ctx())))
 
     runtime.KeepAlive(obj)
 
@@ -171,7 +169,7 @@ func (obj *Ecies) SetupDefaultsNoRandom() {
 * Calculate required buffer length to hold the encrypted data.
 */
 func (obj *Ecies) EncryptedLen(publicKey PublicKey, dataLen uint32) uint32 {
-    proxyResult := /*pr4*/C.vscf_ecies_encrypted_len(obj.cCtx, (*C.vscf_impl_t)(publicKey.ctx()), (C.size_t)(dataLen)/*pa10*/)
+    proxyResult := /*pr4*/C.vscf_ecies_encrypted_len(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(publicKey.Ctx())), (C.size_t)(dataLen)/*pa10*/)
 
     runtime.KeepAlive(obj)
 
@@ -191,7 +189,7 @@ func (obj *Ecies) Encrypt(publicKey PublicKey, data []byte) ([]byte, error) {
     defer outBuf.Delete()
     dataData := helperWrapData (data)
 
-    proxyResult := /*pr4*/C.vscf_ecies_encrypt(obj.cCtx, (*C.vscf_impl_t)(publicKey.ctx()), dataData, outBuf.ctx)
+    proxyResult := /*pr4*/C.vscf_ecies_encrypt(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(publicKey.Ctx())), dataData, outBuf.ctx)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
@@ -209,7 +207,7 @@ func (obj *Ecies) Encrypt(publicKey PublicKey, data []byte) ([]byte, error) {
 * Calculate required buffer length to hold the decrypted data.
 */
 func (obj *Ecies) DecryptedLen(privateKey PrivateKey, dataLen uint32) uint32 {
-    proxyResult := /*pr4*/C.vscf_ecies_decrypted_len(obj.cCtx, (*C.vscf_impl_t)(privateKey.ctx()), (C.size_t)(dataLen)/*pa10*/)
+    proxyResult := /*pr4*/C.vscf_ecies_decrypted_len(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(privateKey.Ctx())), (C.size_t)(dataLen)/*pa10*/)
 
     runtime.KeepAlive(obj)
 
@@ -229,7 +227,7 @@ func (obj *Ecies) Decrypt(privateKey PrivateKey, data []byte) ([]byte, error) {
     defer outBuf.Delete()
     dataData := helperWrapData (data)
 
-    proxyResult := /*pr4*/C.vscf_ecies_decrypt(obj.cCtx, (*C.vscf_impl_t)(privateKey.ctx()), dataData, outBuf.ctx)
+    proxyResult := /*pr4*/C.vscf_ecies_decrypt(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(privateKey.Ctx())), dataData, outBuf.ctx)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {

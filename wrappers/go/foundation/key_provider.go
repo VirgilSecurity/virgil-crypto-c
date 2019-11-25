@@ -2,6 +2,7 @@ package foundation
 
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
+import unsafe "unsafe"
 import "runtime"
 
 
@@ -14,8 +15,8 @@ type KeyProvider struct {
 }
 
 /* Handle underlying C context. */
-func (obj *KeyProvider) ctx() *C.vscf_impl_t {
-    return (*C.vscf_impl_t)(obj.cCtx)
+func (obj *KeyProvider) Ctx() uintptr {
+    return uintptr(unsafe.Pointer(obj.cCtx))
 }
 
 func NewKeyProvider() *KeyProvider {
@@ -23,7 +24,6 @@ func NewKeyProvider() *KeyProvider {
     obj := &KeyProvider {
         cCtx: ctx,
     }
-    //runtime.SetFinalizer(obj, func (o *KeyProvider) {o.Delete()})
     runtime.SetFinalizer(obj, (*KeyProvider).Delete)
     return obj
 }
@@ -35,7 +35,6 @@ func newKeyProviderWithCtx(ctx *C.vscf_key_provider_t /*ct2*/) *KeyProvider {
     obj := &KeyProvider {
         cCtx: ctx,
     }
-    //runtime.SetFinalizer(obj, func (o *KeyProvider) {o.Delete()})
     runtime.SetFinalizer(obj, (*KeyProvider).Delete)
     return obj
 }
@@ -47,7 +46,6 @@ func newKeyProviderCopy(ctx *C.vscf_key_provider_t /*ct2*/) *KeyProvider {
     obj := &KeyProvider {
         cCtx: C.vscf_key_provider_shallow_copy(ctx),
     }
-    //runtime.SetFinalizer(obj, func (o *KeyProvider) {o.Delete()})
     runtime.SetFinalizer(obj, (*KeyProvider).Delete)
     return obj
 }
@@ -72,7 +70,7 @@ func (obj *KeyProvider) delete() {
 
 func (obj *KeyProvider) SetRandom(random Random) {
     C.vscf_key_provider_release_random(obj.cCtx)
-    C.vscf_key_provider_use_random(obj.cCtx, (*C.vscf_impl_t)(random.ctx()))
+    C.vscf_key_provider_use_random(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(random.Ctx())))
 
     runtime.KeepAlive(random)
     runtime.KeepAlive(obj)
@@ -80,7 +78,7 @@ func (obj *KeyProvider) SetRandom(random Random) {
 
 func (obj *KeyProvider) SetEcies(ecies Ecies) {
     C.vscf_key_provider_release_ecies(obj.cCtx)
-    C.vscf_key_provider_use_ecies(obj.cCtx, (*C.vscf_ecies_t)(ecies.ctx()))
+    C.vscf_key_provider_use_ecies(obj.cCtx, (*C.vscf_ecies_t)(unsafe.Pointer(ecies.Ctx())))
 
     runtime.KeepAlive(ecies)
     runtime.KeepAlive(obj)
@@ -184,7 +182,7 @@ func (obj *KeyProvider) ImportPublicKey(keyData []byte) (PublicKey, error) {
 * Precondition: public key must be exportable.
 */
 func (obj *KeyProvider) ExportedPublicKeyLen(publicKey PublicKey) uint32 {
-    proxyResult := /*pr4*/C.vscf_key_provider_exported_public_key_len(obj.cCtx, (*C.vscf_impl_t)(publicKey.ctx()))
+    proxyResult := /*pr4*/C.vscf_key_provider_exported_public_key_len(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(publicKey.Ctx())))
 
     runtime.KeepAlive(obj)
 
@@ -206,7 +204,7 @@ func (obj *KeyProvider) ExportPublicKey(publicKey PublicKey) ([]byte, error) {
     defer outBuf.Delete()
 
 
-    proxyResult := /*pr4*/C.vscf_key_provider_export_public_key(obj.cCtx, (*C.vscf_impl_t)(publicKey.ctx()), outBuf.ctx)
+    proxyResult := /*pr4*/C.vscf_key_provider_export_public_key(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(publicKey.Ctx())), outBuf.ctx)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
@@ -226,7 +224,7 @@ func (obj *KeyProvider) ExportPublicKey(publicKey PublicKey) ([]byte, error) {
 * Precondition: private key must be exportable.
 */
 func (obj *KeyProvider) ExportedPrivateKeyLen(privateKey PrivateKey) uint32 {
-    proxyResult := /*pr4*/C.vscf_key_provider_exported_private_key_len(obj.cCtx, (*C.vscf_impl_t)(privateKey.ctx()))
+    proxyResult := /*pr4*/C.vscf_key_provider_exported_private_key_len(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(privateKey.Ctx())))
 
     runtime.KeepAlive(obj)
 
@@ -248,7 +246,7 @@ func (obj *KeyProvider) ExportPrivateKey(privateKey PrivateKey) ([]byte, error) 
     defer outBuf.Delete()
 
 
-    proxyResult := /*pr4*/C.vscf_key_provider_export_private_key(obj.cCtx, (*C.vscf_impl_t)(privateKey.ctx()), outBuf.ctx)
+    proxyResult := /*pr4*/C.vscf_key_provider_export_private_key(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(privateKey.Ctx())), outBuf.ctx)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {

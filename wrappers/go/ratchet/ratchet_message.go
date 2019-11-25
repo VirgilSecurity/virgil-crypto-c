@@ -2,6 +2,7 @@ package ratchet
 
 // #include <virgil/crypto/ratchet/vscr_ratchet_public.h>
 import "C"
+import unsafe "unsafe"
 import "runtime"
 
 
@@ -13,8 +14,8 @@ type RatchetMessage struct {
 }
 
 /* Handle underlying C context. */
-func (obj *RatchetMessage) ctx() *C.vscf_impl_t {
-    return (*C.vscf_impl_t)(obj.cCtx)
+func (obj *RatchetMessage) Ctx() uintptr {
+    return uintptr(unsafe.Pointer(obj.cCtx))
 }
 
 func NewRatchetMessage() *RatchetMessage {
@@ -22,7 +23,6 @@ func NewRatchetMessage() *RatchetMessage {
     obj := &RatchetMessage {
         cCtx: ctx,
     }
-    //runtime.SetFinalizer(obj, func (o *RatchetMessage) {o.Delete()})
     runtime.SetFinalizer(obj, (*RatchetMessage).Delete)
     return obj
 }
@@ -34,7 +34,6 @@ func newRatchetMessageWithCtx(ctx *C.vscr_ratchet_message_t /*ct2*/) *RatchetMes
     obj := &RatchetMessage {
         cCtx: ctx,
     }
-    //runtime.SetFinalizer(obj, func (o *RatchetMessage) {o.Delete()})
     runtime.SetFinalizer(obj, (*RatchetMessage).Delete)
     return obj
 }
@@ -46,7 +45,6 @@ func newRatchetMessageCopy(ctx *C.vscr_ratchet_message_t /*ct2*/) *RatchetMessag
     obj := &RatchetMessage {
         cCtx: C.vscr_ratchet_message_shallow_copy(ctx),
     }
-    //runtime.SetFinalizer(obj, func (o *RatchetMessage) {o.Delete()})
     runtime.SetFinalizer(obj, (*RatchetMessage).Delete)
     return obj
 }

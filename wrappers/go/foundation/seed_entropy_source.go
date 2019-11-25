@@ -3,6 +3,7 @@ package foundation
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
 import "runtime"
+import unsafe "unsafe"
 
 
 /*
@@ -32,8 +33,8 @@ func (obj *SeedEntropySource) ResetSeed(seed []byte) {
 }
 
 /* Handle underlying C context. */
-func (obj *SeedEntropySource) ctx() *C.vscf_impl_t {
-    return (*C.vscf_impl_t)(obj.cCtx)
+func (obj *SeedEntropySource) Ctx() uintptr {
+    return uintptr(unsafe.Pointer(obj.cCtx))
 }
 
 func NewSeedEntropySource() *SeedEntropySource {
@@ -41,7 +42,6 @@ func NewSeedEntropySource() *SeedEntropySource {
     obj := &SeedEntropySource {
         cCtx: ctx,
     }
-    //runtime.SetFinalizer(obj, func (o *SeedEntropySource) {o.Delete()})
     runtime.SetFinalizer(obj, (*SeedEntropySource).Delete)
     return obj
 }
@@ -53,7 +53,6 @@ func newSeedEntropySourceWithCtx(ctx *C.vscf_seed_entropy_source_t /*ct10*/) *Se
     obj := &SeedEntropySource {
         cCtx: ctx,
     }
-    //runtime.SetFinalizer(obj, func (o *SeedEntropySource) {o.Delete()})
     runtime.SetFinalizer(obj, (*SeedEntropySource).Delete)
     return obj
 }
@@ -65,7 +64,6 @@ func newSeedEntropySourceCopy(ctx *C.vscf_seed_entropy_source_t /*ct10*/) *SeedE
     obj := &SeedEntropySource {
         cCtx: C.vscf_seed_entropy_source_shallow_copy(ctx),
     }
-    //runtime.SetFinalizer(obj, func (o *SeedEntropySource) {o.Delete()})
     runtime.SetFinalizer(obj, (*SeedEntropySource).Delete)
     return obj
 }

@@ -3,6 +3,7 @@ package foundation
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
 import "runtime"
+import unsafe "unsafe"
 
 
 /*
@@ -24,8 +25,8 @@ func (obj *HashBasedAlgInfo) HashAlgInfo() (AlgInfo, error) {
 }
 
 /* Handle underlying C context. */
-func (obj *HashBasedAlgInfo) ctx() *C.vscf_impl_t {
-    return (*C.vscf_impl_t)(obj.cCtx)
+func (obj *HashBasedAlgInfo) Ctx() uintptr {
+    return uintptr(unsafe.Pointer(obj.cCtx))
 }
 
 func NewHashBasedAlgInfo() *HashBasedAlgInfo {
@@ -33,7 +34,6 @@ func NewHashBasedAlgInfo() *HashBasedAlgInfo {
     obj := &HashBasedAlgInfo {
         cCtx: ctx,
     }
-    //runtime.SetFinalizer(obj, func (o *HashBasedAlgInfo) {o.Delete()})
     runtime.SetFinalizer(obj, (*HashBasedAlgInfo).Delete)
     return obj
 }
@@ -45,7 +45,6 @@ func newHashBasedAlgInfoWithCtx(ctx *C.vscf_hash_based_alg_info_t /*ct10*/) *Has
     obj := &HashBasedAlgInfo {
         cCtx: ctx,
     }
-    //runtime.SetFinalizer(obj, func (o *HashBasedAlgInfo) {o.Delete()})
     runtime.SetFinalizer(obj, (*HashBasedAlgInfo).Delete)
     return obj
 }
@@ -57,7 +56,6 @@ func newHashBasedAlgInfoCopy(ctx *C.vscf_hash_based_alg_info_t /*ct10*/) *HashBa
     obj := &HashBasedAlgInfo {
         cCtx: C.vscf_hash_based_alg_info_shallow_copy(ctx),
     }
-    //runtime.SetFinalizer(obj, func (o *HashBasedAlgInfo) {o.Delete()})
     runtime.SetFinalizer(obj, (*HashBasedAlgInfo).Delete)
     return obj
 }
@@ -84,7 +82,7 @@ func (obj *HashBasedAlgInfo) delete() {
 * Create algorithm info with identificator and HASH algorithm info.
 */
 func NewHashBasedAlgInfoWithMembers(algId AlgId, hashAlgInfo AlgInfo) *HashBasedAlgInfo {
-    hashAlgInfoCopy := C.vscf_impl_shallow_copy((*C.vscf_impl_t)(hashAlgInfo.ctx()))
+    hashAlgInfoCopy := C.vscf_impl_shallow_copy((*C.vscf_impl_t)(unsafe.Pointer(hashAlgInfo.Ctx())))
 
     proxyResult := /*pr4*/C.vscf_hash_based_alg_info_new_with_members(C.vscf_alg_id_t(algId) /*pa7*/, &hashAlgInfoCopy)
 
@@ -93,7 +91,6 @@ func NewHashBasedAlgInfoWithMembers(algId AlgId, hashAlgInfo AlgInfo) *HashBased
     obj := &HashBasedAlgInfo {
         cCtx: proxyResult,
     }
-    //runtime.SetFinalizer(obj, func (o *HashBasedAlgInfo) {o.Delete()})
     runtime.SetFinalizer(obj, (*HashBasedAlgInfo).Delete)
     return obj
 }

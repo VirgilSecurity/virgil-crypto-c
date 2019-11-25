@@ -2,6 +2,7 @@ package phe
 
 // #include <virgil/crypto/phe/vsce_phe_public.h>
 import "C"
+import unsafe "unsafe"
 import "runtime"
 import foundation "virgil/foundation"
 
@@ -15,8 +16,8 @@ type PheClient struct {
 }
 
 /* Handle underlying C context. */
-func (obj *PheClient) ctx() *C.vscf_impl_t {
-    return (*C.vscf_impl_t)(obj.cCtx)
+func (obj *PheClient) Ctx() uintptr {
+    return uintptr(unsafe.Pointer(obj.cCtx))
 }
 
 func NewPheClient() *PheClient {
@@ -24,7 +25,6 @@ func NewPheClient() *PheClient {
     obj := &PheClient {
         cCtx: ctx,
     }
-    //runtime.SetFinalizer(obj, func (o *PheClient) {o.Delete()})
     runtime.SetFinalizer(obj, (*PheClient).Delete)
     return obj
 }
@@ -36,7 +36,6 @@ func newPheClientWithCtx(ctx *C.vsce_phe_client_t /*ct2*/) *PheClient {
     obj := &PheClient {
         cCtx: ctx,
     }
-    //runtime.SetFinalizer(obj, func (o *PheClient) {o.Delete()})
     runtime.SetFinalizer(obj, (*PheClient).Delete)
     return obj
 }
@@ -48,7 +47,6 @@ func newPheClientCopy(ctx *C.vsce_phe_client_t /*ct2*/) *PheClient {
     obj := &PheClient {
         cCtx: C.vsce_phe_client_shallow_copy(ctx),
     }
-    //runtime.SetFinalizer(obj, func (o *PheClient) {o.Delete()})
     runtime.SetFinalizer(obj, (*PheClient).Delete)
     return obj
 }
@@ -76,7 +74,7 @@ func (obj *PheClient) delete() {
 */
 func (obj *PheClient) SetRandom(random foundation.Random) {
     C.vsce_phe_client_release_random(obj.cCtx)
-    C.vsce_phe_client_use_random(obj.cCtx, (*C.vscf_impl_t)(random.(context).ctx()))
+    C.vsce_phe_client_use_random(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(random.Ctx())))
 
     runtime.KeepAlive(random)
     runtime.KeepAlive(obj)
@@ -87,7 +85,7 @@ func (obj *PheClient) SetRandom(random foundation.Random) {
 */
 func (obj *PheClient) SetOperationRandom(operationRandom foundation.Random) {
     C.vsce_phe_client_release_operation_random(obj.cCtx)
-    C.vsce_phe_client_use_operation_random(obj.cCtx, (*C.vscf_impl_t)(operationRandom.(context).ctx()))
+    C.vsce_phe_client_use_operation_random(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(operationRandom.Ctx())))
 
     runtime.KeepAlive(operationRandom)
     runtime.KeepAlive(obj)

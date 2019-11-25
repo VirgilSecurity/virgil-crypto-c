@@ -2,6 +2,7 @@ package foundation
 
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
+import unsafe "unsafe"
 import "runtime"
 
 
@@ -13,8 +14,8 @@ type Asn1rd struct {
 }
 
 /* Handle underlying C context. */
-func (obj *Asn1rd) ctx() *C.vscf_impl_t {
-    return (*C.vscf_impl_t)(obj.cCtx)
+func (obj *Asn1rd) Ctx() uintptr {
+    return uintptr(unsafe.Pointer(obj.cCtx))
 }
 
 func NewAsn1rd() *Asn1rd {
@@ -22,7 +23,6 @@ func NewAsn1rd() *Asn1rd {
     obj := &Asn1rd {
         cCtx: ctx,
     }
-    //runtime.SetFinalizer(obj, func (o *Asn1rd) {o.Delete()})
     runtime.SetFinalizer(obj, (*Asn1rd).Delete)
     return obj
 }
@@ -34,7 +34,6 @@ func newAsn1rdWithCtx(ctx *C.vscf_asn1rd_t /*ct10*/) *Asn1rd {
     obj := &Asn1rd {
         cCtx: ctx,
     }
-    //runtime.SetFinalizer(obj, func (o *Asn1rd) {o.Delete()})
     runtime.SetFinalizer(obj, (*Asn1rd).Delete)
     return obj
 }
@@ -46,7 +45,6 @@ func newAsn1rdCopy(ctx *C.vscf_asn1rd_t /*ct10*/) *Asn1rd {
     obj := &Asn1rd {
         cCtx: C.vscf_asn1rd_shallow_copy(ctx),
     }
-    //runtime.SetFinalizer(obj, func (o *Asn1rd) {o.Delete()})
     runtime.SetFinalizer(obj, (*Asn1rd).Delete)
     return obj
 }

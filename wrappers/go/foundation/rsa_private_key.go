@@ -2,6 +2,7 @@ package foundation
 
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
+import unsafe "unsafe"
 import "runtime"
 
 
@@ -13,8 +14,8 @@ type RsaPrivateKey struct {
 }
 
 /* Handle underlying C context. */
-func (obj *RsaPrivateKey) ctx() *C.vscf_impl_t {
-    return (*C.vscf_impl_t)(obj.cCtx)
+func (obj *RsaPrivateKey) Ctx() uintptr {
+    return uintptr(unsafe.Pointer(obj.cCtx))
 }
 
 func NewRsaPrivateKey() *RsaPrivateKey {
@@ -22,7 +23,6 @@ func NewRsaPrivateKey() *RsaPrivateKey {
     obj := &RsaPrivateKey {
         cCtx: ctx,
     }
-    //runtime.SetFinalizer(obj, func (o *RsaPrivateKey) {o.Delete()})
     runtime.SetFinalizer(obj, (*RsaPrivateKey).Delete)
     return obj
 }
@@ -34,7 +34,6 @@ func newRsaPrivateKeyWithCtx(ctx *C.vscf_rsa_private_key_t /*ct10*/) *RsaPrivate
     obj := &RsaPrivateKey {
         cCtx: ctx,
     }
-    //runtime.SetFinalizer(obj, func (o *RsaPrivateKey) {o.Delete()})
     runtime.SetFinalizer(obj, (*RsaPrivateKey).Delete)
     return obj
 }
@@ -46,7 +45,6 @@ func newRsaPrivateKeyCopy(ctx *C.vscf_rsa_private_key_t /*ct10*/) *RsaPrivateKey
     obj := &RsaPrivateKey {
         cCtx: C.vscf_rsa_private_key_shallow_copy(ctx),
     }
-    //runtime.SetFinalizer(obj, func (o *RsaPrivateKey) {o.Delete()})
     runtime.SetFinalizer(obj, (*RsaPrivateKey).Delete)
     return obj
 }

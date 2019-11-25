@@ -2,6 +2,7 @@ package foundation
 
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
+import unsafe "unsafe"
 import "runtime"
 
 
@@ -14,8 +15,8 @@ type Verifier struct {
 }
 
 /* Handle underlying C context. */
-func (obj *Verifier) ctx() *C.vscf_impl_t {
-    return (*C.vscf_impl_t)(obj.cCtx)
+func (obj *Verifier) Ctx() uintptr {
+    return uintptr(unsafe.Pointer(obj.cCtx))
 }
 
 func NewVerifier() *Verifier {
@@ -23,7 +24,6 @@ func NewVerifier() *Verifier {
     obj := &Verifier {
         cCtx: ctx,
     }
-    //runtime.SetFinalizer(obj, func (o *Verifier) {o.Delete()})
     runtime.SetFinalizer(obj, (*Verifier).Delete)
     return obj
 }
@@ -35,7 +35,6 @@ func newVerifierWithCtx(ctx *C.vscf_verifier_t /*ct2*/) *Verifier {
     obj := &Verifier {
         cCtx: ctx,
     }
-    //runtime.SetFinalizer(obj, func (o *Verifier) {o.Delete()})
     runtime.SetFinalizer(obj, (*Verifier).Delete)
     return obj
 }
@@ -47,7 +46,6 @@ func newVerifierCopy(ctx *C.vscf_verifier_t /*ct2*/) *Verifier {
     obj := &Verifier {
         cCtx: C.vscf_verifier_shallow_copy(ctx),
     }
-    //runtime.SetFinalizer(obj, func (o *Verifier) {o.Delete()})
     runtime.SetFinalizer(obj, (*Verifier).Delete)
     return obj
 }
@@ -105,7 +103,7 @@ func (obj *Verifier) AppendData(data []byte) {
 * Verify accumulated data.
 */
 func (obj *Verifier) Verify(publicKey PublicKey) bool {
-    proxyResult := /*pr4*/C.vscf_verifier_verify(obj.cCtx, (*C.vscf_impl_t)(publicKey.ctx()))
+    proxyResult := /*pr4*/C.vscf_verifier_verify(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(publicKey.Ctx())))
 
     runtime.KeepAlive(obj)
 

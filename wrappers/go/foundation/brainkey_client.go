@@ -2,6 +2,7 @@ package foundation
 
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
+import unsafe "unsafe"
 import "runtime"
 
 
@@ -17,8 +18,8 @@ const (
 )
 
 /* Handle underlying C context. */
-func (obj *BrainkeyClient) ctx() *C.vscf_impl_t {
-    return (*C.vscf_impl_t)(obj.cCtx)
+func (obj *BrainkeyClient) Ctx() uintptr {
+    return uintptr(unsafe.Pointer(obj.cCtx))
 }
 
 func NewBrainkeyClient() *BrainkeyClient {
@@ -26,7 +27,6 @@ func NewBrainkeyClient() *BrainkeyClient {
     obj := &BrainkeyClient {
         cCtx: ctx,
     }
-    //runtime.SetFinalizer(obj, func (o *BrainkeyClient) {o.Delete()})
     runtime.SetFinalizer(obj, (*BrainkeyClient).Delete)
     return obj
 }
@@ -38,7 +38,6 @@ func newBrainkeyClientWithCtx(ctx *C.vscf_brainkey_client_t /*ct2*/) *BrainkeyCl
     obj := &BrainkeyClient {
         cCtx: ctx,
     }
-    //runtime.SetFinalizer(obj, func (o *BrainkeyClient) {o.Delete()})
     runtime.SetFinalizer(obj, (*BrainkeyClient).Delete)
     return obj
 }
@@ -50,7 +49,6 @@ func newBrainkeyClientCopy(ctx *C.vscf_brainkey_client_t /*ct2*/) *BrainkeyClien
     obj := &BrainkeyClient {
         cCtx: C.vscf_brainkey_client_shallow_copy(ctx),
     }
-    //runtime.SetFinalizer(obj, func (o *BrainkeyClient) {o.Delete()})
     runtime.SetFinalizer(obj, (*BrainkeyClient).Delete)
     return obj
 }
@@ -78,7 +76,7 @@ func (obj *BrainkeyClient) delete() {
 */
 func (obj *BrainkeyClient) SetRandom(random Random) {
     C.vscf_brainkey_client_release_random(obj.cCtx)
-    C.vscf_brainkey_client_use_random(obj.cCtx, (*C.vscf_impl_t)(random.ctx()))
+    C.vscf_brainkey_client_use_random(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(random.Ctx())))
 
     runtime.KeepAlive(random)
     runtime.KeepAlive(obj)
@@ -89,7 +87,7 @@ func (obj *BrainkeyClient) SetRandom(random Random) {
 */
 func (obj *BrainkeyClient) SetOperationRandom(operationRandom Random) {
     C.vscf_brainkey_client_release_operation_random(obj.cCtx)
-    C.vscf_brainkey_client_use_operation_random(obj.cCtx, (*C.vscf_impl_t)(operationRandom.ctx()))
+    C.vscf_brainkey_client_use_operation_random(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(operationRandom.Ctx())))
 
     runtime.KeepAlive(operationRandom)
     runtime.KeepAlive(obj)

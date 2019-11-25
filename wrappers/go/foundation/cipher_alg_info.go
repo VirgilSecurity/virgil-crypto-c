@@ -3,6 +3,7 @@ package foundation
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
 import "runtime"
+import unsafe "unsafe"
 
 
 /*
@@ -24,8 +25,8 @@ func (obj *CipherAlgInfo) Nonce() []byte {
 }
 
 /* Handle underlying C context. */
-func (obj *CipherAlgInfo) ctx() *C.vscf_impl_t {
-    return (*C.vscf_impl_t)(obj.cCtx)
+func (obj *CipherAlgInfo) Ctx() uintptr {
+    return uintptr(unsafe.Pointer(obj.cCtx))
 }
 
 func NewCipherAlgInfo() *CipherAlgInfo {
@@ -33,7 +34,6 @@ func NewCipherAlgInfo() *CipherAlgInfo {
     obj := &CipherAlgInfo {
         cCtx: ctx,
     }
-    //runtime.SetFinalizer(obj, func (o *CipherAlgInfo) {o.Delete()})
     runtime.SetFinalizer(obj, (*CipherAlgInfo).Delete)
     return obj
 }
@@ -45,7 +45,6 @@ func newCipherAlgInfoWithCtx(ctx *C.vscf_cipher_alg_info_t /*ct10*/) *CipherAlgI
     obj := &CipherAlgInfo {
         cCtx: ctx,
     }
-    //runtime.SetFinalizer(obj, func (o *CipherAlgInfo) {o.Delete()})
     runtime.SetFinalizer(obj, (*CipherAlgInfo).Delete)
     return obj
 }
@@ -57,7 +56,6 @@ func newCipherAlgInfoCopy(ctx *C.vscf_cipher_alg_info_t /*ct10*/) *CipherAlgInfo
     obj := &CipherAlgInfo {
         cCtx: C.vscf_cipher_alg_info_shallow_copy(ctx),
     }
-    //runtime.SetFinalizer(obj, func (o *CipherAlgInfo) {o.Delete()})
     runtime.SetFinalizer(obj, (*CipherAlgInfo).Delete)
     return obj
 }
@@ -91,7 +89,6 @@ func NewCipherAlgInfoWithMembers(algId AlgId, nonce []byte) *CipherAlgInfo {
     obj := &CipherAlgInfo {
         cCtx: proxyResult,
     }
-    //runtime.SetFinalizer(obj, func (o *CipherAlgInfo) {o.Delete()})
     runtime.SetFinalizer(obj, (*CipherAlgInfo).Delete)
     return obj
 }

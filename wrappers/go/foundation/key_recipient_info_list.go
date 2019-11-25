@@ -2,6 +2,7 @@ package foundation
 
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
+import unsafe "unsafe"
 import "runtime"
 
 
@@ -13,8 +14,8 @@ type KeyRecipientInfoList struct {
 }
 
 /* Handle underlying C context. */
-func (obj *KeyRecipientInfoList) ctx() *C.vscf_impl_t {
-    return (*C.vscf_impl_t)(obj.cCtx)
+func (obj *KeyRecipientInfoList) Ctx() uintptr {
+    return uintptr(unsafe.Pointer(obj.cCtx))
 }
 
 func NewKeyRecipientInfoList() *KeyRecipientInfoList {
@@ -22,7 +23,6 @@ func NewKeyRecipientInfoList() *KeyRecipientInfoList {
     obj := &KeyRecipientInfoList {
         cCtx: ctx,
     }
-    //runtime.SetFinalizer(obj, func (o *KeyRecipientInfoList) {o.Delete()})
     runtime.SetFinalizer(obj, (*KeyRecipientInfoList).Delete)
     return obj
 }
@@ -34,7 +34,6 @@ func newKeyRecipientInfoListWithCtx(ctx *C.vscf_key_recipient_info_list_t /*ct2*
     obj := &KeyRecipientInfoList {
         cCtx: ctx,
     }
-    //runtime.SetFinalizer(obj, func (o *KeyRecipientInfoList) {o.Delete()})
     runtime.SetFinalizer(obj, (*KeyRecipientInfoList).Delete)
     return obj
 }
@@ -46,7 +45,6 @@ func newKeyRecipientInfoListCopy(ctx *C.vscf_key_recipient_info_list_t /*ct2*/) 
     obj := &KeyRecipientInfoList {
         cCtx: C.vscf_key_recipient_info_list_shallow_copy(ctx),
     }
-    //runtime.SetFinalizer(obj, func (o *KeyRecipientInfoList) {o.Delete()})
     runtime.SetFinalizer(obj, (*KeyRecipientInfoList).Delete)
     return obj
 }

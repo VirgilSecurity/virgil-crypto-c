@@ -2,6 +2,7 @@ package foundation
 
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
+import unsafe "unsafe"
 import "runtime"
 
 
@@ -14,7 +15,7 @@ type AlgInfoDerDeserializer struct {
 
 func (obj *AlgInfoDerDeserializer) SetAsn1Reader(asn1Reader Asn1Reader) {
     C.vscf_alg_info_der_deserializer_release_asn1_reader(obj.cCtx)
-    C.vscf_alg_info_der_deserializer_use_asn1_reader(obj.cCtx, (*C.vscf_impl_t)(asn1Reader.ctx()))
+    C.vscf_alg_info_der_deserializer_use_asn1_reader(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(asn1Reader.Ctx())))
 
     runtime.KeepAlive(asn1Reader)
     runtime.KeepAlive(obj)
@@ -55,8 +56,8 @@ func (obj *AlgInfoDerDeserializer) DeserializeInplace() (AlgInfo, error) {
 }
 
 /* Handle underlying C context. */
-func (obj *AlgInfoDerDeserializer) ctx() *C.vscf_impl_t {
-    return (*C.vscf_impl_t)(obj.cCtx)
+func (obj *AlgInfoDerDeserializer) Ctx() uintptr {
+    return uintptr(unsafe.Pointer(obj.cCtx))
 }
 
 func NewAlgInfoDerDeserializer() *AlgInfoDerDeserializer {
@@ -64,7 +65,6 @@ func NewAlgInfoDerDeserializer() *AlgInfoDerDeserializer {
     obj := &AlgInfoDerDeserializer {
         cCtx: ctx,
     }
-    //runtime.SetFinalizer(obj, func (o *AlgInfoDerDeserializer) {o.Delete()})
     runtime.SetFinalizer(obj, (*AlgInfoDerDeserializer).Delete)
     return obj
 }
@@ -76,7 +76,6 @@ func newAlgInfoDerDeserializerWithCtx(ctx *C.vscf_alg_info_der_deserializer_t /*
     obj := &AlgInfoDerDeserializer {
         cCtx: ctx,
     }
-    //runtime.SetFinalizer(obj, func (o *AlgInfoDerDeserializer) {o.Delete()})
     runtime.SetFinalizer(obj, (*AlgInfoDerDeserializer).Delete)
     return obj
 }
@@ -88,7 +87,6 @@ func newAlgInfoDerDeserializerCopy(ctx *C.vscf_alg_info_der_deserializer_t /*ct1
     obj := &AlgInfoDerDeserializer {
         cCtx: C.vscf_alg_info_der_deserializer_shallow_copy(ctx),
     }
-    //runtime.SetFinalizer(obj, func (o *AlgInfoDerDeserializer) {o.Delete()})
     runtime.SetFinalizer(obj, (*AlgInfoDerDeserializer).Delete)
     return obj
 }
