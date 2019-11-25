@@ -385,17 +385,14 @@ function cmake_generate_definitions (source, license)
             target_compile_definitions($(c_features.cmake_target:)
                     PUBLIC
                         $<BUILD_INTERFACE:$(c_features.internal_build:)>
+                        \"$(c_features.shared_lib:)=$<$<BOOL:${BUILD_SHARED_LIBS}>:$(c_features.shared_lib:)>\"
         ")
 
         for c_features.c_feature
             cmake_insert ("\"$(c_feature.name:)=$<BOOL:${$(c_feature.name:)}>\"", 3)
         endfor
 
-        cmake_insert ("\
-            PRIVATE
-                $<$<BOOL:${BUILD_SHARED_LIBS}>:$(c_features.build_shared_libs:)>
-            )
-        ", 2)
+        cmake_insert (")", 2)
     endfor
 endfunction
 

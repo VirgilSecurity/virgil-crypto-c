@@ -149,7 +149,7 @@ function c_features_create (source, destination)
             .path = features.path
             .cmake_target = features.cmake_target ?
             .internal_build = "$(features.prefix:c,UPPER)_INTERNAL_BUILD"
-            .build_shared_libs = "$(features.prefix:c,UPPER)_BUILD_SHARED_LIBS"
+            .shared_lib = "$(features.prefix:c,UPPER)_SHARED_LIBRARY"
 
             for features.feature
                 c_feature_create (feature, c_features)

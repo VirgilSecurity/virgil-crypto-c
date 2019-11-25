@@ -52,10 +52,9 @@ endif()
 target_compile_definitions(common
         PUBLIC
             $<BUILD_INTERFACE:VSC_INTERNAL_BUILD>
+            "VSC_SHARED_LIBRARY=$<$<BOOL:${BUILD_SHARED_LIBS}>:VSC_SHARED_LIBRARY>"
             "VSC_LIBRARY=$<BOOL:${VSC_LIBRARY}>"
             "VSC_MULTI_THREADING=$<BOOL:${VSC_MULTI_THREADING}>"
             "VSC_DATA=$<BOOL:${VSC_DATA}>"
             "VSC_BUFFER=$<BOOL:${VSC_BUFFER}>"
-        PRIVATE
-            $<$<BOOL:${BUILD_SHARED_LIBS}>:VSC_BUILD_SHARED_LIBS>
         )
