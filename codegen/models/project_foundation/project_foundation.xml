@@ -148,6 +148,7 @@
     <class name="message info footer"/>
     <class name="signed data info"/>
     <class name="footer info"/>
+    <class name="tail filter"/>
 
     <implementor name="mbedtls"/>
     <implementor name="mbedtls pk"/>

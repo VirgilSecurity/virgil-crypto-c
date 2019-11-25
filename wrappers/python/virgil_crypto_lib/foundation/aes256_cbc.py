@@ -51,13 +51,14 @@ class Aes256Cbc(Alg, Encrypt, Decrypt, CipherInfo, Cipher):
     Note, this implementation contains dynamic memory allocations,
     this should be improved in the future releases."""
 
-    # Cipher nfonce length or IV length in bytes, or 0 if nonce is not required.
+    # Return cipher's nonce length or IV length in bytes,
+    # or 0 if nonce is not required.
     NONCE_LEN = 16
-    # Cipher key length in bytes.
+    # Return cipher's key length in bytes.
     KEY_LEN = 32
-    # Cipher key length in bits.
+    # Return cipher's key length in bits.
     KEY_BITLEN = 256
-    # Cipher block length in bytes.
+    # Return cipher's block length in bytes.
     BLOCK_LEN = 16
 
     def __init__(self):
@@ -118,6 +119,27 @@ class Aes256Cbc(Alg, Encrypt, Decrypt, CipherInfo, Cipher):
         result = self._lib_vscf_aes256_cbc.vscf_aes256_cbc_decrypted_len(self.ctx, data_len)
         return result
 
+    def nonce_len(self):
+        """Return cipher's nonce length or IV length in bytes,
+        or 0 if nonce is not required."""
+        result = self._lib_vscf_aes256_cbc.vscf_aes256_cbc_nonce_len(self.ctx)
+        return result
+
+    def key_len(self):
+        """Return cipher's key length in bytes."""
+        result = self._lib_vscf_aes256_cbc.vscf_aes256_cbc_key_len(self.ctx)
+        return result
+
+    def key_bitlen(self):
+        """Return cipher's key length in bits."""
+        result = self._lib_vscf_aes256_cbc.vscf_aes256_cbc_key_bitlen(self.ctx)
+        return result
+
+    def block_len(self):
+        """Return cipher's block length in bytes."""
+        result = self._lib_vscf_aes256_cbc.vscf_aes256_cbc_block_len(self.ctx)
+        return result
+
     def set_nonce(self, nonce):
         """Setup IV or nonce."""
         d_nonce = Data(nonce)
@@ -127,6 +149,11 @@ class Aes256Cbc(Alg, Encrypt, Decrypt, CipherInfo, Cipher):
         """Set cipher encryption / decryption key."""
         d_key = Data(key)
         self._lib_vscf_aes256_cbc.vscf_aes256_cbc_set_key(self.ctx, d_key.data)
+
+    def state(self):
+        """Return cipher's current state."""
+        result = self._lib_vscf_aes256_cbc.vscf_aes256_cbc_state(self.ctx)
+        return result
 
     def start_encryption(self):
         """Start sequential encryption."""

@@ -41,20 +41,18 @@ import VSCFoundation
 /// this should be improved in the future releases.
 @objc(VSCFAes256Cbc) public class Aes256Cbc: NSObject, Alg, Encrypt, Decrypt, CipherInfo, Cipher {
 
+    /// Return cipher's nonce length or IV length in bytes,
+    /// or 0 if nonce is not required.
+    @objc public static let nonceLen: Int = 16
+    /// Return cipher's key length in bytes.
+    @objc public static let keyLen: Int = 32
+    /// Return cipher's key length in bits.
+    @objc public static let keyBitlen: Int = 256
+    /// Return cipher's block length in bytes.
+    @objc public static let blockLen: Int = 16
+
     /// Handle underlying C context.
     @objc public let c_ctx: OpaquePointer
-
-    /// Cipher nfonce length or IV length in bytes, or 0 if nonce is not required.
-    @objc public let nonceLen: Int = 16
-
-    /// Cipher key length in bytes.
-    @objc public let keyLen: Int = 32
-
-    /// Cipher key length in bits.
-    @objc public let keyBitlen: Int = 256
-
-    /// Cipher block length in bytes.
-    @objc public let blockLen: Int = 16
 
     /// Create underlying C context.
     public override init() {
@@ -165,6 +163,35 @@ import VSCFoundation
     /// Calculate required buffer length to hold the decrypted data.
     @objc public func decryptedLen(dataLen: Int) -> Int {
         let proxyResult = vscf_aes256_cbc_decrypted_len(self.c_ctx, dataLen)
+
+        return proxyResult
+    }
+
+    /// Return cipher's nonce length or IV length in bytes,
+    /// or 0 if nonce is not required.
+    @objc public func nonceLen() -> Int {
+        let proxyResult = vscf_aes256_cbc_nonce_len(self.c_ctx)
+
+        return proxyResult
+    }
+
+    /// Return cipher's key length in bytes.
+    @objc public func keyLen() -> Int {
+        let proxyResult = vscf_aes256_cbc_key_len(self.c_ctx)
+
+        return proxyResult
+    }
+
+    /// Return cipher's key length in bits.
+    @objc public func keyBitlen() -> Int {
+        let proxyResult = vscf_aes256_cbc_key_bitlen(self.c_ctx)
+
+        return proxyResult
+    }
+
+    /// Return cipher's block length in bytes.
+    @objc public func blockLen() -> Int {
+        let proxyResult = vscf_aes256_cbc_block_len(self.c_ctx)
 
         return proxyResult
     }

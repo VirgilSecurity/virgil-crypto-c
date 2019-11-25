@@ -41,11 +41,23 @@ class CipherInfo(object):
     """Provides compile time knownledge about algorithm."""
     __metaclass__ = ABCMeta
 
-    # Cipher nfonce length or IV length in bytes, or 0 if nonce is not required.
-    NONCE_LEN = 0
-    # Cipher key length in bytes.
-    KEY_LEN = 1
-    # Cipher key length in bits.
-    KEY_BITLEN = 2
-    # Cipher block length in bytes.
-    BLOCK_LEN = 3
+    @abstractmethod
+    def nonce_len(self):
+        """Return cipher's nonce length or IV length in bytes,
+        or 0 if nonce is not required."""
+        raise NotImplementedError()
+
+    @abstractmethod
+    def key_len(self):
+        """Return cipher's key length in bytes."""
+        raise NotImplementedError()
+
+    @abstractmethod
+    def key_bitlen(self):
+        """Return cipher's key length in bits."""
+        raise NotImplementedError()
+
+    @abstractmethod
+    def block_len(self):
+        """Return cipher's block length in bytes."""
+        raise NotImplementedError()

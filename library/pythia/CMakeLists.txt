@@ -142,6 +142,7 @@ endif()
 #
 if(COMMAND enable_target_pedantic)
     enable_target_pedantic(pythia)
+    target_compile_options(pythia PRIVATE $<$<C_COMPILER_ID:GNU>:-Wno-error>)
 else()
     message(STATUS "To enable pedantic mode create function 'enable_target_pedantic(<target>)'.")
 endif()

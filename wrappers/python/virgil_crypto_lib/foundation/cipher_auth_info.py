@@ -40,5 +40,7 @@ from abc import *
 class CipherAuthInfo(object):
     __metaclass__ = ABCMeta
 
-    # Defines authentication tag length in bytes.
-    AUTH_TAG_LEN = 0
+    @abstractmethod
+    def auth_tag_len(self):
+        """Return cipher's authentication tag length in bytes."""
+        raise NotImplementedError()

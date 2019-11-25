@@ -105,6 +105,7 @@ option(VSCF_SEED_ENTROPY_SOURCE "Enable implementation 'seed entropy source'." O
 option(VSCF_KEY_MATERIAL_RNG "Enable implementation 'key material rng'." ON)
 option(VSCF_RAW_PUBLIC_KEY "Enable implementation 'raw public key'." ON)
 option(VSCF_RAW_PRIVATE_KEY "Enable implementation 'raw private key'." ON)
+option(VSCF_PADDING_CIPHER "Enable implementation 'padding cipher'." ON)
 option(VSCF_PKCS8_SERIALIZER "Enable implementation 'pkcs8 serializer'." ON)
 option(VSCF_SEC1_SERIALIZER "Enable implementation 'sec1 serializer'." ON)
 option(VSCF_KEY_ASN1_SERIALIZER "Enable implementation 'key asn1 serializer'." ON)
@@ -162,6 +163,7 @@ option(VSCF_SIGNER_LIST "Enable class 'signer list'." ON)
 option(VSCF_MESSAGE_INFO_FOOTER "Enable class 'message info footer'." ON)
 option(VSCF_SIGNED_DATA_INFO "Enable class 'signed data info'." ON)
 option(VSCF_FOOTER_INFO "Enable class 'footer info'." ON)
+option(VSCF_TAIL_FILTER "Enable class 'tail filter'." ON)
 mark_as_advanced(
         VSCF_LIBRARY
         VSCF_MULTI_THREADING
@@ -223,6 +225,7 @@ mark_as_advanced(
         VSCF_KEY_MATERIAL_RNG
         VSCF_RAW_PUBLIC_KEY
         VSCF_RAW_PRIVATE_KEY
+        VSCF_PADDING_CIPHER
         VSCF_PKCS8_SERIALIZER
         VSCF_SEC1_SERIALIZER
         VSCF_KEY_ASN1_SERIALIZER
@@ -280,6 +283,7 @@ mark_as_advanced(
         VSCF_MESSAGE_INFO_FOOTER
         VSCF_SIGNED_DATA_INFO
         VSCF_FOOTER_INFO
+        VSCF_TAIL_FILTER
         )
 
 if(VSCF_MULTI_THREADING AND NOT MBEDTLS_THREADING_C)
@@ -1322,6 +1326,33 @@ if(VSCF_RAW_PRIVATE_KEY AND NOT VSCF_ALG_INFO)
     message("--")
     message("Feature VSCF_RAW_PRIVATE_KEY depends on the feature:")
     message("     VSCF_ALG_INFO - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_PADDING_CIPHER AND NOT VSCF_ALG_INFO)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_PADDING_CIPHER depends on the feature:")
+    message("     VSCF_ALG_INFO - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_PADDING_CIPHER AND NOT VSCF_DECRYPT)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_PADDING_CIPHER depends on the feature:")
+    message("     VSCF_DECRYPT - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_PADDING_CIPHER AND NOT VSCF_ENCRYPT)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_PADDING_CIPHER depends on the feature:")
+    message("     VSCF_ENCRYPT - which is disabled.")
     message("--")
     message(FATAL_ERROR)
 endif()

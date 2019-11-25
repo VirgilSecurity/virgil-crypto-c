@@ -40,6 +40,7 @@ from ._vscf_asn1_tag import VscfAsn1Tag
 from ._vscf_alg_id import VscfAlgId
 from ._vscf_oid_id import VscfOidId
 from ._vscf_group_msg_type import VscfGroupMsgType
+from ._vscf_cipher_state import VscfCipherState
 from ._vscf_error import vscf_error_t
 from ._vscf_error import VscfError
 from ._vscf_oid import VscfOid
@@ -145,6 +146,8 @@ from ._vscf_raw_public_key import vscf_raw_public_key_t
 from ._vscf_raw_public_key import VscfRawPublicKey
 from ._vscf_raw_private_key import vscf_raw_private_key_t
 from ._vscf_raw_private_key import VscfRawPrivateKey
+from ._vscf_padding_cipher import vscf_padding_cipher_t
+from ._vscf_padding_cipher import VscfPaddingCipher
 from ._vscf_pkcs8_serializer import vscf_pkcs8_serializer_t
 from ._vscf_pkcs8_serializer import VscfPkcs8Serializer
 from ._vscf_sec1_serializer import vscf_sec1_serializer_t

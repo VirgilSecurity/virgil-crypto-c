@@ -57,6 +57,42 @@ public class Aes256Gcm implements AutoCloseable, Alg, Encrypt, Decrypt, CipherIn
     }
 
     /*
+    * Return cipher's nonce length or IV length in bytes,
+    * or 0 if nonce is not required.
+    */
+    public int getNonceLen() {
+        return 12;
+    }
+
+    /*
+    * Return cipher's key length in bytes.
+    */
+    public int getKeyLen() {
+        return 32;
+    }
+
+    /*
+    * Return cipher's key length in bits.
+    */
+    public int getKeyBitlen() {
+        return 256;
+    }
+
+    /*
+    * Return cipher's block length in bytes.
+    */
+    public int getBlockLen() {
+        return 16;
+    }
+
+    /*
+    * Return cipher's authentication tag length in bytes.
+    */
+    public int getAuthTagLen() {
+        return 16;
+    }
+
+    /*
     * Acquire C context.
     * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     */
@@ -127,31 +163,32 @@ public class Aes256Gcm implements AutoCloseable, Alg, Encrypt, Decrypt, CipherIn
     }
 
     /*
-    * Cipher nfonce length or IV length in bytes, or 0 if nonce is not required.
+    * Return cipher's nonce length or IV length in bytes,
+    * or 0 if nonce is not required.
     */
-    public int getNonceLen() {
-        return 12;
+    public int nonceLen() {
+        return FoundationJNI.INSTANCE.aes256Gcm_nonceLen(this.cCtx);
     }
 
     /*
-    * Cipher key length in bytes.
+    * Return cipher's key length in bytes.
     */
-    public int getKeyLen() {
-        return 32;
+    public int keyLen() {
+        return FoundationJNI.INSTANCE.aes256Gcm_keyLen(this.cCtx);
     }
 
     /*
-    * Cipher key length in bits.
+    * Return cipher's key length in bits.
     */
-    public int getKeyBitlen() {
-        return 256;
+    public int keyBitlen() {
+        return FoundationJNI.INSTANCE.aes256Gcm_keyBitlen(this.cCtx);
     }
 
     /*
-    * Cipher block length in bytes.
+    * Return cipher's block length in bytes.
     */
-    public int getBlockLen() {
-        return 16;
+    public int blockLen() {
+        return FoundationJNI.INSTANCE.aes256Gcm_blockLen(this.cCtx);
     }
 
     /*
@@ -224,10 +261,10 @@ public class Aes256Gcm implements AutoCloseable, Alg, Encrypt, Decrypt, CipherIn
     }
 
     /*
-    * Defines authentication tag length in bytes.
+    * Return cipher's authentication tag length in bytes.
     */
-    public int getAuthTagLen() {
-        return 16;
+    public int authTagLen() {
+        return FoundationJNI.INSTANCE.aes256Gcm_authTagLen(this.cCtx);
     }
 
     /*

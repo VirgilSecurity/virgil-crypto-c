@@ -41,23 +41,20 @@ import VSCFoundation
 /// this should be improved in the future releases.
 @objc(VSCFAes256Gcm) public class Aes256Gcm: NSObject, Alg, Encrypt, Decrypt, CipherInfo, Cipher, CipherAuthInfo, AuthEncrypt, AuthDecrypt, CipherAuth {
 
+    /// Return cipher's nonce length or IV length in bytes,
+    /// or 0 if nonce is not required.
+    @objc public static let nonceLen: Int = 12
+    /// Return cipher's key length in bytes.
+    @objc public static let keyLen: Int = 32
+    /// Return cipher's key length in bits.
+    @objc public static let keyBitlen: Int = 256
+    /// Return cipher's block length in bytes.
+    @objc public static let blockLen: Int = 16
+    /// Return cipher's authentication tag length in bytes.
+    @objc public static let authTagLen: Int = 16
+
     /// Handle underlying C context.
     @objc public let c_ctx: OpaquePointer
-
-    /// Cipher nfonce length or IV length in bytes, or 0 if nonce is not required.
-    @objc public let nonceLen: Int = 12
-
-    /// Cipher key length in bytes.
-    @objc public let keyLen: Int = 32
-
-    /// Cipher key length in bits.
-    @objc public let keyBitlen: Int = 256
-
-    /// Cipher block length in bytes.
-    @objc public let blockLen: Int = 16
-
-    /// Defines authentication tag length in bytes.
-    @objc public let authTagLen: Int = 16
 
     /// Create underlying C context.
     public override init() {
@@ -172,6 +169,35 @@ import VSCFoundation
         return proxyResult
     }
 
+    /// Return cipher's nonce length or IV length in bytes,
+    /// or 0 if nonce is not required.
+    @objc public func nonceLen() -> Int {
+        let proxyResult = vscf_aes256_gcm_nonce_len(self.c_ctx)
+
+        return proxyResult
+    }
+
+    /// Return cipher's key length in bytes.
+    @objc public func keyLen() -> Int {
+        let proxyResult = vscf_aes256_gcm_key_len(self.c_ctx)
+
+        return proxyResult
+    }
+
+    /// Return cipher's key length in bits.
+    @objc public func keyBitlen() -> Int {
+        let proxyResult = vscf_aes256_gcm_key_bitlen(self.c_ctx)
+
+        return proxyResult
+    }
+
+    /// Return cipher's block length in bytes.
+    @objc public func blockLen() -> Int {
+        let proxyResult = vscf_aes256_gcm_block_len(self.c_ctx)
+
+        return proxyResult
+    }
+
     /// Setup IV or nonce.
     @objc public func setNonce(nonce: Data) {
         nonce.withUnsafeBytes({ (noncePointer: UnsafeRawBufferPointer) -> Void in
@@ -265,6 +291,13 @@ import VSCFoundation
         try FoundationError.handleStatus(fromC: proxyResult)
 
         return out
+    }
+
+    /// Return cipher's authentication tag length in bytes.
+    @objc public func authTagLen() -> Int {
+        let proxyResult = vscf_aes256_gcm_auth_tag_len(self.c_ctx)
+
+        return proxyResult
     }
 
     /// Encrypt given data.

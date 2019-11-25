@@ -73,6 +73,7 @@ target_sources(test_data_foundation
             "${CMAKE_CURRENT_LIST_DIR}/include/test_data_simple_swu.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/test_data_group_session.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/test_data_message_info.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/test_data_padding_cipher.h"
 
         PRIVATE
             "${CMAKE_CURRENT_LIST_DIR}/src/test_data_aes256_gcm.c"
@@ -109,6 +110,7 @@ target_sources(test_data_foundation
             "${CMAKE_CURRENT_LIST_DIR}/src/test_data_simple_swu.c"
             "${CMAKE_CURRENT_LIST_DIR}/src/test_data_group_session.c"
             "${CMAKE_CURRENT_LIST_DIR}/src/test_data_message_info.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/test_data_padding_cipher.c"
         )
 
 target_include_directories(test_data_foundation

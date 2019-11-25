@@ -118,6 +118,8 @@ import VSCFoundation
             return Aes256Cbc(take: c_ctx)
         case vscf_impl_tag_PKCS5_PBES2:
             return Pkcs5Pbes2(take: c_ctx)
+        case vscf_impl_tag_PADDING_CIPHER:
+            return PaddingCipher(take: c_ctx)
         default:
             fatalError("Unexpected C implementation cast to the Swift implementation.")
         }
@@ -137,6 +139,8 @@ import VSCFoundation
             return Aes256Cbc(take: c_ctx)
         case vscf_impl_tag_PKCS5_PBES2:
             return Pkcs5Pbes2(take: c_ctx)
+        case vscf_impl_tag_PADDING_CIPHER:
+            return PaddingCipher(take: c_ctx)
         default:
             fatalError("Unexpected C implementation cast to the Swift implementation.")
         }
@@ -154,6 +158,8 @@ import VSCFoundation
             return Aes256Gcm(take: c_ctx)
         case vscf_impl_tag_AES256_CBC:
             return Aes256Cbc(take: c_ctx)
+        case vscf_impl_tag_PADDING_CIPHER:
+            return PaddingCipher(take: c_ctx)
         default:
             fatalError("Unexpected C implementation cast to the Swift implementation.")
         }
@@ -171,6 +177,8 @@ import VSCFoundation
             return Aes256Gcm(take: c_ctx)
         case vscf_impl_tag_AES256_CBC:
             return Aes256Cbc(take: c_ctx)
+        case vscf_impl_tag_PADDING_CIPHER:
+            return PaddingCipher(take: c_ctx)
         default:
             fatalError("Unexpected C implementation cast to the Swift implementation.")
         }

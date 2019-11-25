@@ -39,8 +39,8 @@ package com.virgilsecurity.crypto.foundation;
 public interface CipherAuthInfo {
 
     /*
-    * Defines authentication tag length in bytes.
+    * Return cipher's authentication tag length in bytes.
     */
-    int getAuthTagLen();
+    int authTagLen();
 }
 

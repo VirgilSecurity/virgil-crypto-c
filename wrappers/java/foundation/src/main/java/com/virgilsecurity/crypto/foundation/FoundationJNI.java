@@ -1247,6 +1247,27 @@ public class FoundationJNI {
     public native int aes256Gcm_decryptedLen(long cCtx, int dataLen);
 
     /*
+    * Return cipher's nonce length or IV length in bytes,
+    * or 0 if nonce is not required.
+    */
+    public native int aes256Gcm_nonceLen(long cCtx);
+
+    /*
+    * Return cipher's key length in bytes.
+    */
+    public native int aes256Gcm_keyLen(long cCtx);
+
+    /*
+    * Return cipher's key length in bits.
+    */
+    public native int aes256Gcm_keyBitlen(long cCtx);
+
+    /*
+    * Return cipher's block length in bytes.
+    */
+    public native int aes256Gcm_blockLen(long cCtx);
+
+    /*
     * Setup IV or nonce.
     */
     public native void aes256Gcm_setNonce(long cCtx, byte[] nonce);
@@ -1296,6 +1317,11 @@ public class FoundationJNI {
     * Accomplish encryption or decryption process.
     */
     public native byte[] aes256Gcm_finish(long cCtx) throws FoundationException;
+
+    /*
+    * Return cipher's authentication tag length in bytes.
+    */
+    public native int aes256Gcm_authTagLen(long cCtx);
 
     /*
     * Encrypt given data.
@@ -1383,6 +1409,27 @@ public class FoundationJNI {
     * Calculate required buffer length to hold the decrypted data.
     */
     public native int aes256Cbc_decryptedLen(long cCtx, int dataLen);
+
+    /*
+    * Return cipher's nonce length or IV length in bytes,
+    * or 0 if nonce is not required.
+    */
+    public native int aes256Cbc_nonceLen(long cCtx);
+
+    /*
+    * Return cipher's key length in bytes.
+    */
+    public native int aes256Cbc_keyLen(long cCtx);
+
+    /*
+    * Return cipher's key length in bits.
+    */
+    public native int aes256Cbc_keyBitlen(long cCtx);
+
+    /*
+    * Return cipher's block length in bytes.
+    */
+    public native int aes256Cbc_blockLen(long cCtx);
 
     /*
     * Setup IV or nonce.
@@ -2672,6 +2719,117 @@ public class FoundationJNI {
     * Extract public key from the private key.
     */
     public native PublicKey rawPrivateKey_extractPublicKey(long cCtx);
+
+    public native void paddingCipher_setRandom(long cCtx, Random random);
+
+    public native void paddingCipher_setCipher(long cCtx, Cipher cipher);
+
+    /*
+    * Setup padding frame in bytes.
+    * The padding frame defines the multiplicator of data length.
+    */
+    public native void paddingCipher_setPaddingFrame(long cCtx, int paddingFrame);
+
+    public native long paddingCipher_new();
+
+    public native void paddingCipher_close(long cCtx);
+
+    /*
+    * Encrypt given data.
+    */
+    public native byte[] paddingCipher_encrypt(long cCtx, byte[] data) throws FoundationException;
+
+    /*
+    * Calculate required buffer length to hold the encrypted data.
+    */
+    public native int paddingCipher_encryptedLen(long cCtx, int dataLen);
+
+    /*
+    * Precise length calculation of encrypted data.
+    */
+    public native int paddingCipher_preciseEncryptedLen(long cCtx, int dataLen);
+
+    /*
+    * Decrypt given data.
+    */
+    public native byte[] paddingCipher_decrypt(long cCtx, byte[] data) throws FoundationException;
+
+    /*
+    * Calculate required buffer length to hold the decrypted data.
+    */
+    public native int paddingCipher_decryptedLen(long cCtx, int dataLen);
+
+    /*
+    * Return cipher's nonce length or IV length in bytes,
+    * or 0 if nonce is not required.
+    */
+    public native int paddingCipher_nonceLen(long cCtx);
+
+    /*
+    * Return cipher's key length in bytes.
+    */
+    public native int paddingCipher_keyLen(long cCtx);
+
+    /*
+    * Return cipher's key length in bits.
+    */
+    public native int paddingCipher_keyBitlen(long cCtx);
+
+    /*
+    * Return cipher's block length in bytes.
+    */
+    public native int paddingCipher_blockLen(long cCtx);
+
+    /*
+    * Setup IV or nonce.
+    */
+    public native void paddingCipher_setNonce(long cCtx, byte[] nonce);
+
+    /*
+    * Set cipher encryption / decryption key.
+    */
+    public native void paddingCipher_setKey(long cCtx, byte[] key);
+
+    /*
+    * Start sequential encryption.
+    */
+    public native void paddingCipher_startEncryption(long cCtx);
+
+    /*
+    * Start sequential decryption.
+    */
+    public native void paddingCipher_startDecryption(long cCtx);
+
+    /*
+    * Process encryption or decryption of the given data chunk.
+    */
+    public native byte[] paddingCipher_update(long cCtx, byte[] data);
+
+    /*
+    * Return buffer length required to hold an output of the methods
+    * "update" or "finish" in an current mode.
+    * Pass zero length to define buffer length of the method "finish".
+    */
+    public native int paddingCipher_outLen(long cCtx, int dataLen);
+
+    /*
+    * Return buffer length required to hold an output of the methods
+    * "update" or "finish" in an encryption mode.
+    * Pass zero length to define buffer length of the method "finish".
+    */
+    public native int paddingCipher_encryptedOutLen(long cCtx, int dataLen);
+
+    /*
+    * Return buffer length required to hold an output of the methods
+    * "update" or "finish" in an decryption mode.
+    * Pass zero length to define buffer length of the method "finish".
+    */
+    public native int paddingCipher_decryptedOutLen(long cCtx, int dataLen);
+
+    /*
+    * Accomplish encryption or decryption process.
+    */
+    public native byte[] paddingCipher_finish(long cCtx) throws FoundationException;
 
     public native void pkcs8Serializer_setAsn1Writer(long cCtx, Asn1Writer asn1Writer);
 

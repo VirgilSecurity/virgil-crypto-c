@@ -42,23 +42,24 @@ package com.virgilsecurity.crypto.foundation;
 public interface CipherInfo {
 
     /*
-    * Cipher nfonce length or IV length in bytes, or 0 if nonce is not required.
+    * Return cipher's nonce length or IV length in bytes,
+    * or 0 if nonce is not required.
     */
-    int getNonceLen();
+    int nonceLen();
 
     /*
-    * Cipher key length in bytes.
+    * Return cipher's key length in bytes.
     */
-    int getKeyLen();
+    int keyLen();
 
     /*
-    * Cipher key length in bits.
+    * Return cipher's key length in bits.
     */
-    int getKeyBitlen();
+    int keyBitlen();
 
     /*
-    * Cipher block length in bytes.
+    * Return cipher's block length in bytes.
     */
-    int getBlockLen();
+    int blockLen();
 }
 

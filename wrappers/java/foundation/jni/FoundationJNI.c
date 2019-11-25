@@ -215,6 +215,9 @@ char* getEncryptClassName (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* 
     case vscf_impl_tag_PKCS5_PBES2:
         strcat (classFullName, "Pkcs5Pbes2");
         break;
+    case vscf_impl_tag_PADDING_CIPHER:
+        strcat (classFullName, "PaddingCipher");
+        break;
     default:
         free(classFullName);
         VSCF_ASSERT("Unexpected C implementation cast to the Java implementation.");
@@ -263,6 +266,9 @@ char* getDecryptClassName (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* 
     case vscf_impl_tag_PKCS5_PBES2:
         strcat (classFullName, "Pkcs5Pbes2");
         break;
+    case vscf_impl_tag_PADDING_CIPHER:
+        strcat (classFullName, "PaddingCipher");
+        break;
     default:
         free(classFullName);
         VSCF_ASSERT("Unexpected C implementation cast to the Java implementation.");
@@ -308,6 +314,9 @@ char* getCipherInfoClassName (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*
     case vscf_impl_tag_AES256_CBC:
         strcat (classFullName, "Aes256Cbc");
         break;
+    case vscf_impl_tag_PADDING_CIPHER:
+        strcat (classFullName, "PaddingCipher");
+        break;
     default:
         free(classFullName);
         VSCF_ASSERT("Unexpected C implementation cast to the Java implementation.");
@@ -352,6 +361,9 @@ char* getCipherClassName (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c
         break;
     case vscf_impl_tag_AES256_CBC:
         strcat (classFullName, "Aes256Cbc");
+        break;
+    case vscf_impl_tag_PADDING_CIPHER:
+        strcat (classFullName, "PaddingCipher");
         break;
     default:
         free(classFullName);
@@ -5371,6 +5383,38 @@ JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_a
     return ret;
 }
 
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Gcm_1nonceLen (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    // Cast class context
+    vscf_aes256_gcm_t /*9*/* aes256_gcm_ctx = *(vscf_aes256_gcm_t /*9*/**) &c_ctx;
+
+    jint ret = (jint) vscf_aes256_gcm_nonce_len(aes256_gcm_ctx /*a1*/);
+    return ret;
+}
+
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Gcm_1keyLen (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    // Cast class context
+    vscf_aes256_gcm_t /*9*/* aes256_gcm_ctx = *(vscf_aes256_gcm_t /*9*/**) &c_ctx;
+
+    jint ret = (jint) vscf_aes256_gcm_key_len(aes256_gcm_ctx /*a1*/);
+    return ret;
+}
+
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Gcm_1keyBitlen (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    // Cast class context
+    vscf_aes256_gcm_t /*9*/* aes256_gcm_ctx = *(vscf_aes256_gcm_t /*9*/**) &c_ctx;
+
+    jint ret = (jint) vscf_aes256_gcm_key_bitlen(aes256_gcm_ctx /*a1*/);
+    return ret;
+}
+
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Gcm_1blockLen (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    // Cast class context
+    vscf_aes256_gcm_t /*9*/* aes256_gcm_ctx = *(vscf_aes256_gcm_t /*9*/**) &c_ctx;
+
+    jint ret = (jint) vscf_aes256_gcm_block_len(aes256_gcm_ctx /*a1*/);
+    return ret;
+}
+
 JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Gcm_1setNonce (JNIEnv *jenv, jobject jobj, jlong c_ctx, jbyteArray jnonce) {
     // Cast class context
     vscf_aes256_gcm_t /*9*/* aes256_gcm_ctx = *(vscf_aes256_gcm_t /*9*/**) &c_ctx;
@@ -5473,6 +5517,14 @@ JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_Foundatio
     // Free resources
     vsc_buffer_delete(out);
 
+    return ret;
+}
+
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Gcm_1authTagLen (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    // Cast class context
+    vscf_aes256_gcm_t /*9*/* aes256_gcm_ctx = *(vscf_aes256_gcm_t /*9*/**) &c_ctx;
+
+    jint ret = (jint) vscf_aes256_gcm_auth_tag_len(aes256_gcm_ctx /*a1*/);
     return ret;
 }
 
@@ -5777,6 +5829,38 @@ JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_a
     vscf_aes256_cbc_t /*9*/* aes256_cbc_ctx = *(vscf_aes256_cbc_t /*9*/**) &c_ctx;
 
     jint ret = (jint) vscf_aes256_cbc_decrypted_len(aes256_cbc_ctx /*a1*/, jdataLen /*a9*/);
+    return ret;
+}
+
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Cbc_1nonceLen (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    // Cast class context
+    vscf_aes256_cbc_t /*9*/* aes256_cbc_ctx = *(vscf_aes256_cbc_t /*9*/**) &c_ctx;
+
+    jint ret = (jint) vscf_aes256_cbc_nonce_len(aes256_cbc_ctx /*a1*/);
+    return ret;
+}
+
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Cbc_1keyLen (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    // Cast class context
+    vscf_aes256_cbc_t /*9*/* aes256_cbc_ctx = *(vscf_aes256_cbc_t /*9*/**) &c_ctx;
+
+    jint ret = (jint) vscf_aes256_cbc_key_len(aes256_cbc_ctx /*a1*/);
+    return ret;
+}
+
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Cbc_1keyBitlen (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    // Cast class context
+    vscf_aes256_cbc_t /*9*/* aes256_cbc_ctx = *(vscf_aes256_cbc_t /*9*/**) &c_ctx;
+
+    jint ret = (jint) vscf_aes256_cbc_key_bitlen(aes256_cbc_ctx /*a1*/);
+    return ret;
+}
+
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Cbc_1blockLen (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    // Cast class context
+    vscf_aes256_cbc_t /*9*/* aes256_cbc_ctx = *(vscf_aes256_cbc_t /*9*/**) &c_ctx;
+
+    jint ret = (jint) vscf_aes256_cbc_block_len(aes256_cbc_ctx /*a1*/);
     return ret;
 }
 
@@ -9231,6 +9315,266 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
 
     const vscf_impl_t */*6*/ proxyResult = vscf_raw_private_key_extract_public_key(raw_private_key_ctx /*a1*/);
     jobject ret = wrapPublicKey(jenv, jobj, proxyResult);
+    return ret;
+}
+
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_paddingCipher_1setRandom (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jrandom) {
+    jclass random_cls = (*jenv)->GetObjectClass(jenv, jrandom);
+    if (NULL == random_cls) {
+        VSCF_ASSERT("Class Random not found.");
+    }
+    jfieldID random_fidCtx = (*jenv)->GetFieldID(jenv, random_cls, "cCtx", "J");
+    if (NULL == random_fidCtx) {
+        VSCF_ASSERT("Class 'Random' has no field 'cCtx'.");
+    }
+    jlong random_c_ctx = (*jenv)->GetLongField(jenv, jrandom, random_fidCtx);
+    vscf_impl_t */*6*/ random = *(vscf_impl_t */*6*/*) &random_c_ctx;
+
+    vscf_padding_cipher_release_random((vscf_padding_cipher_t /*9*/ *) c_ctx);
+    vscf_padding_cipher_use_random((vscf_padding_cipher_t /*9*/ *) c_ctx, random);
+}
+
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_paddingCipher_1setCipher (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jcipher) {
+    jclass cipher_cls = (*jenv)->GetObjectClass(jenv, jcipher);
+    if (NULL == cipher_cls) {
+        VSCF_ASSERT("Class Cipher not found.");
+    }
+    jfieldID cipher_fidCtx = (*jenv)->GetFieldID(jenv, cipher_cls, "cCtx", "J");
+    if (NULL == cipher_fidCtx) {
+        VSCF_ASSERT("Class 'Cipher' has no field 'cCtx'.");
+    }
+    jlong cipher_c_ctx = (*jenv)->GetLongField(jenv, jcipher, cipher_fidCtx);
+    vscf_impl_t */*6*/ cipher = *(vscf_impl_t */*6*/*) &cipher_c_ctx;
+
+    vscf_padding_cipher_release_cipher((vscf_padding_cipher_t /*9*/ *) c_ctx);
+    vscf_padding_cipher_use_cipher((vscf_padding_cipher_t /*9*/ *) c_ctx, cipher);
+}
+
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_paddingCipher_1setPaddingFrame (JNIEnv *jenv, jobject jobj, jlong c_ctx, jint jpaddingFrame) {
+    // Cast class context
+    vscf_padding_cipher_t /*9*/* padding_cipher_ctx = *(vscf_padding_cipher_t /*9*/**) &c_ctx;
+
+    vscf_padding_cipher_set_padding_frame(padding_cipher_ctx /*a1*/, jpaddingFrame /*a9*/);
+}
+
+JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_paddingCipher_1new__ (JNIEnv *jenv, jobject jobj) {
+    jlong c_ctx = 0;
+    *(vscf_padding_cipher_t **)&c_ctx = vscf_padding_cipher_new();
+    return c_ctx;
+}
+
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_paddingCipher_1close (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    vscf_padding_cipher_delete(*(vscf_padding_cipher_t /*9*/ **) &c_ctx /*5*/);
+}
+
+JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_paddingCipher_1encrypt (JNIEnv *jenv, jobject jobj, jlong c_ctx, jbyteArray jdata) {
+    // Cast class context
+    vscf_padding_cipher_t /*9*/* padding_cipher_ctx = *(vscf_padding_cipher_t /*9*/**) &c_ctx;
+
+    // Wrap input data
+    byte* data_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jdata, NULL);
+    vsc_data_t data = vsc_data(data_arr, (*jenv)->GetArrayLength(jenv, jdata));
+
+    vsc_buffer_t *out = vsc_buffer_new_with_capacity(vscf_padding_cipher_encrypted_len((vscf_padding_cipher_t /*9*/ *) c_ctx /*3*/, data.len/*a*/));
+
+    vscf_status_t status = vscf_padding_cipher_encrypt(padding_cipher_ctx /*a1*/, data /*a3*/, out /*a3*/);
+    if (status != vscf_status_SUCCESS) {
+        throwFoundationException(jenv, jobj, status);
+        return NULL;
+    }
+    jbyteArray ret = (*jenv)->NewByteArray(jenv, vsc_buffer_len(out));
+    (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(out), (jbyte*) vsc_buffer_bytes(out));
+    // Free resources
+    (*jenv)->ReleaseByteArrayElements(jenv, jdata, (jbyte*) data_arr, 0);
+
+    vsc_buffer_delete(out);
+
+    return ret;
+}
+
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_paddingCipher_1encryptedLen (JNIEnv *jenv, jobject jobj, jlong c_ctx, jint jdataLen) {
+    // Cast class context
+    vscf_padding_cipher_t /*9*/* padding_cipher_ctx = *(vscf_padding_cipher_t /*9*/**) &c_ctx;
+
+    jint ret = (jint) vscf_padding_cipher_encrypted_len(padding_cipher_ctx /*a1*/, jdataLen /*a9*/);
+    return ret;
+}
+
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_paddingCipher_1preciseEncryptedLen (JNIEnv *jenv, jobject jobj, jlong c_ctx, jint jdataLen) {
+    // Cast class context
+    vscf_padding_cipher_t /*9*/* padding_cipher_ctx = *(vscf_padding_cipher_t /*9*/**) &c_ctx;
+
+    jint ret = (jint) vscf_padding_cipher_precise_encrypted_len(padding_cipher_ctx /*a1*/, jdataLen /*a9*/);
+    return ret;
+}
+
+JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_paddingCipher_1decrypt (JNIEnv *jenv, jobject jobj, jlong c_ctx, jbyteArray jdata) {
+    // Cast class context
+    vscf_padding_cipher_t /*9*/* padding_cipher_ctx = *(vscf_padding_cipher_t /*9*/**) &c_ctx;
+
+    // Wrap input data
+    byte* data_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jdata, NULL);
+    vsc_data_t data = vsc_data(data_arr, (*jenv)->GetArrayLength(jenv, jdata));
+
+    vsc_buffer_t *out = vsc_buffer_new_with_capacity(vscf_padding_cipher_decrypted_len((vscf_padding_cipher_t /*9*/ *) c_ctx /*3*/, data.len/*a*/));
+
+    vscf_status_t status = vscf_padding_cipher_decrypt(padding_cipher_ctx /*a1*/, data /*a3*/, out /*a3*/);
+    if (status != vscf_status_SUCCESS) {
+        throwFoundationException(jenv, jobj, status);
+        return NULL;
+    }
+    jbyteArray ret = (*jenv)->NewByteArray(jenv, vsc_buffer_len(out));
+    (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(out), (jbyte*) vsc_buffer_bytes(out));
+    // Free resources
+    (*jenv)->ReleaseByteArrayElements(jenv, jdata, (jbyte*) data_arr, 0);
+
+    vsc_buffer_delete(out);
+
+    return ret;
+}
+
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_paddingCipher_1decryptedLen (JNIEnv *jenv, jobject jobj, jlong c_ctx, jint jdataLen) {
+    // Cast class context
+    vscf_padding_cipher_t /*9*/* padding_cipher_ctx = *(vscf_padding_cipher_t /*9*/**) &c_ctx;
+
+    jint ret = (jint) vscf_padding_cipher_decrypted_len(padding_cipher_ctx /*a1*/, jdataLen /*a9*/);
+    return ret;
+}
+
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_paddingCipher_1nonceLen (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    // Cast class context
+    vscf_padding_cipher_t /*9*/* padding_cipher_ctx = *(vscf_padding_cipher_t /*9*/**) &c_ctx;
+
+    jint ret = (jint) vscf_padding_cipher_nonce_len(padding_cipher_ctx /*a1*/);
+    return ret;
+}
+
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_paddingCipher_1keyLen (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    // Cast class context
+    vscf_padding_cipher_t /*9*/* padding_cipher_ctx = *(vscf_padding_cipher_t /*9*/**) &c_ctx;
+
+    jint ret = (jint) vscf_padding_cipher_key_len(padding_cipher_ctx /*a1*/);
+    return ret;
+}
+
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_paddingCipher_1keyBitlen (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    // Cast class context
+    vscf_padding_cipher_t /*9*/* padding_cipher_ctx = *(vscf_padding_cipher_t /*9*/**) &c_ctx;
+
+    jint ret = (jint) vscf_padding_cipher_key_bitlen(padding_cipher_ctx /*a1*/);
+    return ret;
+}
+
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_paddingCipher_1blockLen (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    // Cast class context
+    vscf_padding_cipher_t /*9*/* padding_cipher_ctx = *(vscf_padding_cipher_t /*9*/**) &c_ctx;
+
+    jint ret = (jint) vscf_padding_cipher_block_len(padding_cipher_ctx /*a1*/);
+    return ret;
+}
+
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_paddingCipher_1setNonce (JNIEnv *jenv, jobject jobj, jlong c_ctx, jbyteArray jnonce) {
+    // Cast class context
+    vscf_padding_cipher_t /*9*/* padding_cipher_ctx = *(vscf_padding_cipher_t /*9*/**) &c_ctx;
+
+    // Wrap input data
+    byte* nonce_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jnonce, NULL);
+    vsc_data_t nonce = vsc_data(nonce_arr, (*jenv)->GetArrayLength(jenv, jnonce));
+
+    vscf_padding_cipher_set_nonce(padding_cipher_ctx /*a1*/, nonce /*a3*/);
+    // Free resources
+    (*jenv)->ReleaseByteArrayElements(jenv, jnonce, (jbyte*) nonce_arr, 0);
+}
+
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_paddingCipher_1setKey (JNIEnv *jenv, jobject jobj, jlong c_ctx, jbyteArray jkey) {
+    // Cast class context
+    vscf_padding_cipher_t /*9*/* padding_cipher_ctx = *(vscf_padding_cipher_t /*9*/**) &c_ctx;
+
+    // Wrap input data
+    byte* key_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jkey, NULL);
+    vsc_data_t key = vsc_data(key_arr, (*jenv)->GetArrayLength(jenv, jkey));
+
+    vscf_padding_cipher_set_key(padding_cipher_ctx /*a1*/, key /*a3*/);
+    // Free resources
+    (*jenv)->ReleaseByteArrayElements(jenv, jkey, (jbyte*) key_arr, 0);
+}
+
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_paddingCipher_1startEncryption (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    // Cast class context
+    vscf_padding_cipher_t /*9*/* padding_cipher_ctx = *(vscf_padding_cipher_t /*9*/**) &c_ctx;
+
+    vscf_padding_cipher_start_encryption(padding_cipher_ctx /*a1*/);
+}
+
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_paddingCipher_1startDecryption (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    // Cast class context
+    vscf_padding_cipher_t /*9*/* padding_cipher_ctx = *(vscf_padding_cipher_t /*9*/**) &c_ctx;
+
+    vscf_padding_cipher_start_decryption(padding_cipher_ctx /*a1*/);
+}
+
+JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_paddingCipher_1update (JNIEnv *jenv, jobject jobj, jlong c_ctx, jbyteArray jdata) {
+    // Cast class context
+    vscf_padding_cipher_t /*9*/* padding_cipher_ctx = *(vscf_padding_cipher_t /*9*/**) &c_ctx;
+
+    // Wrap input data
+    byte* data_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jdata, NULL);
+    vsc_data_t data = vsc_data(data_arr, (*jenv)->GetArrayLength(jenv, jdata));
+
+    vsc_buffer_t *out = vsc_buffer_new_with_capacity(vscf_padding_cipher_out_len((vscf_padding_cipher_t /*9*/ *) c_ctx /*3*/, data.len/*a*/));
+
+    vscf_padding_cipher_update(padding_cipher_ctx /*a1*/, data /*a3*/, out /*a3*/);
+    jbyteArray ret = (*jenv)->NewByteArray(jenv, vsc_buffer_len(out));
+    (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(out), (jbyte*) vsc_buffer_bytes(out));
+    // Free resources
+    (*jenv)->ReleaseByteArrayElements(jenv, jdata, (jbyte*) data_arr, 0);
+
+    vsc_buffer_delete(out);
+
+    return ret;
+}
+
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_paddingCipher_1outLen (JNIEnv *jenv, jobject jobj, jlong c_ctx, jint jdataLen) {
+    // Cast class context
+    vscf_padding_cipher_t /*9*/* padding_cipher_ctx = *(vscf_padding_cipher_t /*9*/**) &c_ctx;
+
+    jint ret = (jint) vscf_padding_cipher_out_len(padding_cipher_ctx /*a1*/, jdataLen /*a9*/);
+    return ret;
+}
+
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_paddingCipher_1encryptedOutLen (JNIEnv *jenv, jobject jobj, jlong c_ctx, jint jdataLen) {
+    // Cast class context
+    vscf_padding_cipher_t /*9*/* padding_cipher_ctx = *(vscf_padding_cipher_t /*9*/**) &c_ctx;
+
+    jint ret = (jint) vscf_padding_cipher_encrypted_out_len(padding_cipher_ctx /*a1*/, jdataLen /*a9*/);
+    return ret;
+}
+
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_paddingCipher_1decryptedOutLen (JNIEnv *jenv, jobject jobj, jlong c_ctx, jint jdataLen) {
+    // Cast class context
+    vscf_padding_cipher_t /*9*/* padding_cipher_ctx = *(vscf_padding_cipher_t /*9*/**) &c_ctx;
+
+    jint ret = (jint) vscf_padding_cipher_decrypted_out_len(padding_cipher_ctx /*a1*/, jdataLen /*a9*/);
+    return ret;
+}
+
+JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_paddingCipher_1finish (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    // Cast class context
+    vscf_padding_cipher_t /*9*/* padding_cipher_ctx = *(vscf_padding_cipher_t /*9*/**) &c_ctx;
+
+    // Wrap input buffers
+    vsc_buffer_t *out = vsc_buffer_new_with_capacity(vscf_padding_cipher_out_len((vscf_padding_cipher_t /*9*/ *) c_ctx /*3*/, 0/*b*/));
+
+    vscf_status_t status = vscf_padding_cipher_finish(padding_cipher_ctx /*a1*/, out /*a3*/);
+    if (status != vscf_status_SUCCESS) {
+        throwFoundationException(jenv, jobj, status);
+        return NULL;
+    }
+    jbyteArray ret = (*jenv)->NewByteArray(jenv, vsc_buffer_len(out));
+    (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(out), (jbyte*) vsc_buffer_bytes(out));
+    // Free resources
+    vsc_buffer_delete(out);
+
     return ret;
 }
 

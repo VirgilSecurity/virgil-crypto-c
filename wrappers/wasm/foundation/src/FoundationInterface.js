@@ -128,6 +128,9 @@ const initFoundationInterface = (Module, modules) => {
                 case modules.FoundationImplTag.RAW_PRIVATE_KEY:
                     return modules.RawPrivateKey.newAndTakeCContext(ctxPtr);
 
+                case modules.FoundationImplTag.PADDING_CIPHER:
+                    return modules.PaddingCipher.newAndTakeCContext(ctxPtr);
+
                 case modules.FoundationImplTag.PKCS8_SERIALIZER:
                     return modules.Pkcs8Serializer.newAndTakeCContext(ctxPtr);
 

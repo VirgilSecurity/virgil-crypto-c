@@ -1,0 +1,44 @@
+<class name="tail filter" scope="internal">
+    This class filter incoming data stream to keep a tail of the given length.
+
+    <property name="tail" class="buffer"/>
+    <property name="temp" class="buffer"/>
+
+    <method name="reset">
+        Prepare filter for a new byte stream.
+
+        <argument name="len" type="size"/>
+    </method>
+
+    <method name="release">
+        Release inner buffers.
+    </method>
+
+    <method name="tail">
+        Return filtered tail.
+
+        <return class="data"/>
+    </method>
+
+    <method name="provide buffer">
+        Return writable buffer to hold temporary (not filtered) data.
+        Call then "processBuffer()" to filter data from this buffer.
+        Ensures that returned buffer has at least given capacity
+
+        <argument name="capacity" type="size"/>
+
+        <return class="buffer" access="readwrite"/>
+    </method>
+
+    <method name="process buffer">
+        Write filtered data from the temporary buffer to the out.
+
+        <argument name="out" class="buffer"/>
+    </method>
+
+    <method name="shift" declaration="private">
+        Shift tail for a given distance.
+
+        <argument name="distance" type="size"/>
+    </method>
+</class>
