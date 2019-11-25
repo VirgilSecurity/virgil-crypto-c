@@ -44,7 +44,7 @@ target_link_libraries(bench benchmark_data_foundation vsc::foundation benchmark:
 macro(_add_benchmark benchmark)
     target_sources(bench PRIVATE ${benchmark}.cpp)
     add_executable(${benchmark} ${benchmark}.cpp)
-    target_link_libraries(${benchmark} benchmark_data_foundation vsc::foundation benchmark::benchmark_main mingw_stdthreads)
+    target_link_libraries(${benchmark} benchmark_data_foundation vsc::foundation benchmark::benchmark_main)
     set_target_properties(${benchmark} PROPERTIES CXX_STANDARD 11)
 
     if(COMMAND add_clangformat AND ENABLE_CLANGFORMAT)

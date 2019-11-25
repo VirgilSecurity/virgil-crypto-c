@@ -36,10 +36,6 @@ cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
 project(virgil_crypto_c_benchmarks VERSION ${virgil_crypto_VERSION} LANGUAGES CXX)
 
-
-option(MINGW_STDTHREADS_GENERATE_STDHEADERS "" ON)
-add_subdirectory(mingw-std-threads)
-
 add_subdirectory(benchmark)
 
 if(TARGET vsc::foundation)
