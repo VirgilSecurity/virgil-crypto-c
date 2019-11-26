@@ -164,4 +164,32 @@
             <return enum="oid id"/>
         </method>
     </implementation>
+
+    <implementation name="padding cipher alg info">
+        Handle algorithm information about padding cipher.
+
+        <interface name="alg info"/>
+
+        <property name="underlying cipher" interface="alg info"/>
+        <property name="padding frame" type="size"/>
+
+        <constructor name="with members">
+            Create algorithm an underlying cipher alg info and a padding frame.
+
+            <argument name="underlying cipher" interface="alg info" access="disown"/>
+            <argument name="padding frame" type="size"/>
+        </constructor>
+
+        <method name="underlying cipher" is_const="1" declaration="public">
+            Return underlying cipher alg info.
+
+            <return interface="alg info"/>
+         </method>
+
+        <method name="padding frame" is_const="1" declaration="public">
+            Return padding frame.
+
+            <return type="size"/>
+         </method>
+    </implementation>
 </implementor>

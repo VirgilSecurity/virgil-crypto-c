@@ -88,6 +88,8 @@ import VSCFoundation
 
     case ecDomainSecp256r1
 
+    case paddingCipher
+
     /// Create enumeration value from the correspond C enumeration value.
     internal init(fromC oidId: vscf_oid_id_t) {
         self.init(rawValue: Int(oidId.rawValue))!

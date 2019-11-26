@@ -134,6 +134,18 @@ static const byte oid_ec_domain_secp256r1_bytes[] = {0x2A, 0x86, 0x48, 0xCE, 0x3
 static const vsc_data_t oid_ec_domain_secp256r1 = {
         oid_ec_domain_secp256r1_bytes, sizeof(oid_ec_domain_secp256r1_bytes)};
 
+// --------------------------------------------------------------------------
+//  Managed by Virgil Security, Inc.
+//
+//  1.3.6.1.4.1.54811.1.10
+//  iso(1) identified-organization(3) dod(6) internet(1) private(4) enterprise(1) virgil-security(54811)
+//  crypto(1) padding-cipher(1)
+//
+static const byte oid_padding_cipher_bytes[] = {0x2B, 0x06, 0x01, 0x04, 0x01, 0x83, 0xAC, 0x1B, 0x01, 0x0A};
+static const vsc_data_t oid_padding_cipher = {oid_padding_cipher_bytes, sizeof(oid_padding_cipher_bytes)};
+//
+// --------------------------------------------------------------------------
+
 
 //  @generated
 // --------------------------------------------------------------------------
@@ -196,6 +208,9 @@ vscf_oid_from_alg_id(vscf_alg_id_t alg_id) {
 
     case vscf_alg_id_PKCS5_PBES2:
         return oid_pkcs5_pbes2;
+
+    case vscf_alg_id_PADDING_CIPHER:
+        return oid_padding_cipher;
 
     default:
         VSCF_ASSERT(0 && "Unhandled algorithm identifier");
@@ -291,6 +306,10 @@ vscf_oid_to_alg_id(vsc_data_t oid) {
         return vscf_alg_id_HKDF;
     }
 
+    if (vscf_oid_equal(oid, oid_padding_cipher)) {
+        return vscf_alg_id_PADDING_CIPHER;
+    }
+
     return vscf_alg_id_NONE;
 }
 
@@ -373,6 +392,9 @@ vscf_oid_from_id(vscf_oid_id_t oid_id) {
 
     case vscf_oid_id_EC_DOMAIN_SECP256R1:
         return oid_ec_domain_secp256r1;
+
+    case vscf_oid_id_PADDING_CIPHER:
+        return oid_padding_cipher;
 
     default:
         VSCF_ASSERT(0 && "Unhandled oid identifier");
@@ -484,6 +506,10 @@ vscf_oid_to_id(vsc_data_t oid) {
         return vscf_oid_id_EC_DOMAIN_SECP256R1;
     }
 
+    if (vscf_oid_equal(oid, oid_padding_cipher)) {
+        return vscf_oid_id_PADDING_CIPHER;
+    }
+
     return vscf_oid_id_NONE;
 }
 
@@ -548,6 +574,9 @@ vscf_oid_id_to_alg_id(vscf_oid_id_t oid_id) {
 
     case vscf_oid_id_EC_DOMAIN_SECP256R1:
         return vscf_alg_id_SECP256R1;
+
+    case vscf_oid_id_PADDING_CIPHER:
+        return vscf_alg_id_PADDING_CIPHER;
 
     case vscf_oid_id_EC_GENERIC_KEY:
     case vscf_oid_id_CMS_ENVELOPED_DATA:

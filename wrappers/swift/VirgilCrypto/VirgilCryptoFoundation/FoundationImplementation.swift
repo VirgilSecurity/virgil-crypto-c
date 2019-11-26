@@ -74,6 +74,8 @@ import VSCFoundation
             return Pkcs5Pbkdf2(take: c_ctx)
         case vscf_impl_tag_PKCS5_PBES2:
             return Pkcs5Pbes2(take: c_ctx)
+        case vscf_impl_tag_PADDING_CIPHER:
+            return PaddingCipher(take: c_ctx)
         case vscf_impl_tag_ED25519:
             return Ed25519(take: c_ctx)
         case vscf_impl_tag_CURVE25519:
@@ -562,6 +564,8 @@ import VSCFoundation
             return PbeAlgInfo(take: c_ctx)
         case vscf_impl_tag_ECC_ALG_INFO:
             return EccAlgInfo(take: c_ctx)
+        case vscf_impl_tag_PADDING_CIPHER_ALG_INFO:
+            return PaddingCipherAlgInfo(take: c_ctx)
         default:
             fatalError("Unexpected C implementation cast to the Swift implementation.")
         }

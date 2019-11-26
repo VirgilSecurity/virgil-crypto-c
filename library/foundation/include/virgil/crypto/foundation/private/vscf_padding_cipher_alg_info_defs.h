@@ -44,8 +44,23 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#ifndef VSCF_OID_ID_H_INCLUDED
-#define VSCF_OID_ID_H_INCLUDED
+
+//  @description
+// --------------------------------------------------------------------------
+//  Types of the 'padding cipher alg info' implementation.
+//  This types SHOULD NOT be used directly.
+//  The only purpose of including this module is to place implementation
+//  object in the stack memory.
+// --------------------------------------------------------------------------
+
+#ifndef VSCF_PADDING_CIPHER_ALG_INFO_DEFS_H_INCLUDED
+#define VSCF_PADDING_CIPHER_ALG_INFO_DEFS_H_INCLUDED
+
+#include "vscf_library.h"
+#include "vscf_impl_private.h"
+#include "vscf_padding_cipher_alg_info.h"
+#include "vscf_atomic.h"
+#include "vscf_impl.h"
 
 // clang-format on
 //  @end
@@ -62,35 +77,27 @@ extern "C" {
 //  Generated section start.
 // --------------------------------------------------------------------------
 
-enum vscf_oid_id_t {
-    vscf_oid_id_NONE,
-    vscf_oid_id_RSA,
-    vscf_oid_id_ED25519,
-    vscf_oid_id_CURVE25519,
-    vscf_oid_id_SHA224,
-    vscf_oid_id_SHA256,
-    vscf_oid_id_SHA384,
-    vscf_oid_id_SHA512,
-    vscf_oid_id_KDF1,
-    vscf_oid_id_KDF2,
-    vscf_oid_id_AES256_GCM,
-    vscf_oid_id_AES256_CBC,
-    vscf_oid_id_PKCS5_PBKDF2,
-    vscf_oid_id_PKCS5_PBES2,
-    vscf_oid_id_CMS_DATA,
-    vscf_oid_id_CMS_ENVELOPED_DATA,
-    vscf_oid_id_HKDF_WITH_SHA256,
-    vscf_oid_id_HKDF_WITH_SHA384,
-    vscf_oid_id_HKDF_WITH_SHA512,
-    vscf_oid_id_HMAC_WITH_SHA224,
-    vscf_oid_id_HMAC_WITH_SHA256,
-    vscf_oid_id_HMAC_WITH_SHA384,
-    vscf_oid_id_HMAC_WITH_SHA512,
-    vscf_oid_id_EC_GENERIC_KEY,
-    vscf_oid_id_EC_DOMAIN_SECP256R1,
-    vscf_oid_id_PADDING_CIPHER
+//
+//  Handles implementation details.
+//
+struct vscf_padding_cipher_alg_info_t {
+    //
+    //  Compile-time known information about this implementation.
+    //
+    const vscf_impl_info_t *info;
+    //
+    //  Reference counter.
+    //
+    VSCF_ATOMIC size_t refcnt;
+    //
+    //  Implementation specific context.
+    //
+    vscf_impl_t *underlying_cipher;
+    //
+    //  Implementation specific context.
+    //
+    size_t padding_frame;
 };
-typedef enum vscf_oid_id_t vscf_oid_id_t;
 
 
 // --------------------------------------------------------------------------
@@ -106,5 +113,5 @@ typedef enum vscf_oid_id_t vscf_oid_id_t;
 
 
 //  @footer
-#endif // VSCF_OID_ID_H_INCLUDED
+#endif // VSCF_PADDING_CIPHER_ALG_INFO_DEFS_H_INCLUDED
 //  @end

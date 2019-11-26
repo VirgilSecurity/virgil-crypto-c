@@ -53,6 +53,7 @@
 #include "vscf_alg_factory.h"
 #include "vscf_memory.h"
 #include "vscf_assert.h"
+#include "vscf_alg.h"
 #include "vscf_alg_info.h"
 #include "vscf_public_key.h"
 #include "vscf_private_key.h"
@@ -76,6 +77,7 @@
 #include "vscf_ed25519.h"
 #include "vscf_curve25519.h"
 #include "vscf_ecc.h"
+#include "vscf_padding_cipher.h"
 
 // clang-format on
 //  @end
@@ -244,20 +246,29 @@ vscf_alg_factory_create_cipher_from_info(const vscf_impl_t *alg_info) {
     const vscf_alg_id_t alg_id = vscf_alg_info_alg_id(alg_info);
     VSCF_ASSERT(alg_id != vscf_alg_id_NONE);
 
-    if (alg_id == vscf_alg_id_AES256_GCM) {
-        const vscf_cipher_alg_info_t *cipher_alg_info = (const vscf_cipher_alg_info_t *)alg_info;
-        vscf_aes256_gcm_t *aes256_gcm = vscf_aes256_gcm_new();
-        vscf_aes256_gcm_set_nonce(aes256_gcm, vscf_cipher_alg_info_nonce(cipher_alg_info));
-        return vscf_aes256_gcm_impl(aes256_gcm);
+    vscf_impl_t *cipher = NULL;
+    switch (alg_id) {
+    case vscf_alg_id_AES256_GCM:
+        cipher = vscf_aes256_gcm_impl(vscf_aes256_gcm_new());
+        break;
+
+    case vscf_alg_id_AES256_CBC:
+        cipher = vscf_aes256_cbc_impl(vscf_aes256_cbc_new());
+        break;
+
+    case vscf_alg_id_PADDING_CIPHER:
+        cipher = vscf_padding_cipher_impl(vscf_padding_cipher_new());
+        break;
+
+    default:
+        return NULL;
     }
 
-    if (alg_id == vscf_alg_id_AES256_CBC) {
-        const vscf_cipher_alg_info_t *cipher_alg_info = (const vscf_cipher_alg_info_t *)alg_info;
-        vscf_aes256_cbc_t *aes256_cbc = vscf_aes256_cbc_new();
-        vscf_aes256_cbc_set_nonce(aes256_cbc, vscf_cipher_alg_info_nonce(cipher_alg_info));
-        return vscf_aes256_cbc_impl(aes256_cbc);
+    const vscf_status_t status = vscf_alg_restore_alg_info(cipher, alg_info);
+    if (status != vscf_status_SUCCESS) {
+        vscf_impl_destroy(&cipher);
+        //  TODO: Log underlying error.
     }
 
-    VSCF_ASSERT(0 && "Can not create 'cipher' algorithm from the given alg id.");
-    return NULL;
+    return cipher;
 }

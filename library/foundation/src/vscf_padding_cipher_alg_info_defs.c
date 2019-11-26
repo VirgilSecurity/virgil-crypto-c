@@ -1,4 +1,6 @@
-//  Copyright (C) 2015-2018 Virgil Security Inc.
+//  @license
+// --------------------------------------------------------------------------
+//  Copyright (C) 2015-2019 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -31,14 +33,41 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
+// --------------------------------------------------------------------------
+// clang-format off
 
-#include "vsc_data.h"
 
-extern const vsc_data_t test_alg_info_SHA256_DER;
-extern const vsc_data_t test_alg_info_SHA256_DER_V2_COMPAT;
-extern const vsc_data_t test_alg_info_KDF1_SHA256_DER;
-extern const vsc_data_t test_alg_info_KDF1_SHA256_DER_V2_COMPAT;
-extern const vsc_data_t test_alg_info_AES256_GCM_DER;
-extern const vsc_data_t test_alg_info_AES256_GCM_DER_V2_COMPAT;
-extern const vsc_data_t test_alg_info_AES256_GCM_NONCE;
-extern const vsc_data_t test_alg_info_PADDING_CIPHER_WITH_AES256_GCM_AND_FRAME_165;
+//  @description
+// --------------------------------------------------------------------------
+//  Types of the 'padding cipher alg info' implementation.
+//  This types SHOULD NOT be used directly.
+//  The only purpose of including this module is to place implementation
+//  object in the stack memory.
+// --------------------------------------------------------------------------
+
+
+//  @warning
+// --------------------------------------------------------------------------
+//  This file is partially generated.
+//  Generated blocks are enclosed between tags [@<tag>, @end].
+//  User's code can be added between tags [@end, @<tag>].
+// --------------------------------------------------------------------------
+
+#include "vscf_padding_cipher_alg_info_defs.h"
+
+// clang-format on
+//  @end
+
+
+//  @generated
+// --------------------------------------------------------------------------
+// clang-format off
+//  Generated section start.
+// --------------------------------------------------------------------------
+
+
+// --------------------------------------------------------------------------
+//  Generated section end.
+// clang-format on
+// --------------------------------------------------------------------------
+//  @end

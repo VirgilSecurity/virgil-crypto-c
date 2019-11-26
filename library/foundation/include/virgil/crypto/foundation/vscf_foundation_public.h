@@ -135,6 +135,7 @@
 #include "vscf_oid.h"
 #include "vscf_oid_id.h"
 #include "vscf_padding_cipher.h"
+#include "vscf_padding_cipher_alg_info.h"
 #include "vscf_password_recipient_info.h"
 #include "vscf_password_recipient_info_list.h"
 #include "vscf_pbe_alg_info.h"

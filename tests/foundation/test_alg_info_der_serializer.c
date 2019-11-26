@@ -46,6 +46,7 @@
 #include "vscf_hash_based_alg_info.h"
 #include "vscf_simple_alg_info.h"
 #include "vscf_cipher_alg_info.h"
+#include "vscf_padding_cipher_alg_info.h"
 
 #include "test_data_alg_info_der.h"
 
@@ -111,6 +112,29 @@ test__serialize__aes256_gcm__returns_valid_der_v2_compat(void) {
     vscf_alg_info_der_serializer_destroy(&serializer);
 }
 
+void
+test__serialize__padding_cipher_qith_aes256_gcm_and_frame165__returns_valid_der(void) {
+    vscf_alg_info_der_serializer_t *serializer = vscf_alg_info_der_serializer_new();
+    vscf_alg_info_der_serializer_setup_defaults(serializer);
+
+    vscf_impl_t *underlying_cipher_info = vscf_cipher_alg_info_impl(
+            vscf_cipher_alg_info_new_with_members(vscf_alg_id_AES256_GCM, test_alg_info_AES256_GCM_NONCE));
+
+    vscf_impl_t *padding_cipher_info = vscf_padding_cipher_alg_info_impl(
+            vscf_padding_cipher_alg_info_new_with_members(&underlying_cipher_info, 165));
+
+    vsc_buffer_t *out =
+            vsc_buffer_new_with_capacity(vscf_alg_info_der_serializer_serialized_len(serializer, padding_cipher_info));
+
+    vscf_alg_info_der_serializer_serialize(serializer, padding_cipher_info, out);
+
+    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_alg_info_PADDING_CIPHER_WITH_AES256_GCM_AND_FRAME_165, out);
+
+    vsc_buffer_destroy(&out);
+    vscf_impl_destroy(&padding_cipher_info);
+    vscf_alg_info_der_serializer_destroy(&serializer);
+}
+
 #endif // TEST_DEPENDENCIES_AVAILABLE
 
 
@@ -125,6 +149,7 @@ main(void) {
     RUN_TEST(test__serialize__sha256__returns_valid_der_v2_compat);
     RUN_TEST(test__serialize__kdf1_sha256__returns_valid_der_v2_compat);
     RUN_TEST(test__serialize__aes256_gcm__returns_valid_der_v2_compat);
+    RUN_TEST(test__serialize__padding_cipher_qith_aes256_gcm_and_frame165__returns_valid_der);
 
 #else
     RUN_TEST(test__nothing__feature_disabled__must_be_ignored);

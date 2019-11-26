@@ -366,6 +366,10 @@ extern "C" {
 #cmakedefine01 VSCF_ECC_ALG_INFO
 #endif
 
+#ifndef VSCF_PADDING_CIPHER_ALG_INFO
+#cmakedefine01 VSCF_PADDING_CIPHER_ALG_INFO
+#endif
+
 #ifndef VSCF_ALG_INFO_DER_SERIALIZER
 #cmakedefine01 VSCF_ALG_INFO_DER_SERIALIZER
 #endif

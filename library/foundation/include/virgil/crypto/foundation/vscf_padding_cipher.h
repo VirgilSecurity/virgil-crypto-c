@@ -56,6 +56,7 @@
 #include "vscf_library.h"
 #include "vscf_impl.h"
 #include "vscf_status.h"
+#include "vscf_alg_id.h"
 #include "vscf_cipher_state.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
@@ -200,6 +201,24 @@ vscf_padding_cipher_release_cipher(vscf_padding_cipher_t *self);
 //
 VSCF_PUBLIC void
 vscf_padding_cipher_set_padding_frame(vscf_padding_cipher_t *self, size_t padding_frame);
+
+//
+//  Provide algorithm identificator.
+//
+VSCF_PUBLIC vscf_alg_id_t
+vscf_padding_cipher_alg_id(const vscf_padding_cipher_t *self);
+
+//
+//  Produce object with algorithm information and configuration parameters.
+//
+VSCF_PUBLIC vscf_impl_t *
+vscf_padding_cipher_produce_alg_info(const vscf_padding_cipher_t *self);
+
+//
+//  Restore algorithm configuration from the given object.
+//
+VSCF_PUBLIC vscf_status_t
+vscf_padding_cipher_restore_alg_info(vscf_padding_cipher_t *self, const vscf_impl_t *alg_info) VSCF_NODISCARD;
 
 //
 //  Encrypt given data.

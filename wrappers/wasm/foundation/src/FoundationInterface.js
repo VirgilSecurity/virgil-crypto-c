@@ -167,6 +167,9 @@ const initFoundationInterface = (Module, modules) => {
                 case modules.FoundationImplTag.ECC_ALG_INFO:
                     return modules.EccAlgInfo.newAndTakeCContext(ctxPtr);
 
+                case modules.FoundationImplTag.PADDING_CIPHER_ALG_INFO:
+                    return modules.PaddingCipherAlgInfo.newAndTakeCContext(ctxPtr);
+
                 case modules.FoundationImplTag.ALG_INFO_DER_SERIALIZER:
                     return modules.AlgInfoDerSerializer.newAndTakeCContext(ctxPtr);
 

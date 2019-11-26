@@ -83,6 +83,27 @@ class VscfPaddingCipher(object):
         vscf_padding_cipher_use_cipher.restype = None
         return vscf_padding_cipher_use_cipher(ctx, cipher)
 
+    def vscf_padding_cipher_alg_id(self, ctx):
+        """Provide algorithm identificator."""
+        vscf_padding_cipher_alg_id = self._lib.vscf_padding_cipher_alg_id
+        vscf_padding_cipher_alg_id.argtypes = [POINTER(vscf_padding_cipher_t)]
+        vscf_padding_cipher_alg_id.restype = c_int
+        return vscf_padding_cipher_alg_id(ctx)
+
+    def vscf_padding_cipher_produce_alg_info(self, ctx):
+        """Produce object with algorithm information and configuration parameters."""
+        vscf_padding_cipher_produce_alg_info = self._lib.vscf_padding_cipher_produce_alg_info
+        vscf_padding_cipher_produce_alg_info.argtypes = [POINTER(vscf_padding_cipher_t)]
+        vscf_padding_cipher_produce_alg_info.restype = POINTER(vscf_impl_t)
+        return vscf_padding_cipher_produce_alg_info(ctx)
+
+    def vscf_padding_cipher_restore_alg_info(self, ctx, alg_info):
+        """Restore algorithm configuration from the given object."""
+        vscf_padding_cipher_restore_alg_info = self._lib.vscf_padding_cipher_restore_alg_info
+        vscf_padding_cipher_restore_alg_info.argtypes = [POINTER(vscf_padding_cipher_t), POINTER(vscf_impl_t)]
+        vscf_padding_cipher_restore_alg_info.restype = c_int
+        return vscf_padding_cipher_restore_alg_info(ctx, alg_info)
+
     def vscf_padding_cipher_encrypt(self, ctx, data, out):
         """Encrypt given data."""
         vscf_padding_cipher_encrypt = self._lib.vscf_padding_cipher_encrypt

@@ -172,6 +172,8 @@ from ._vscf_pbe_alg_info import vscf_pbe_alg_info_t
 from ._vscf_pbe_alg_info import VscfPbeAlgInfo
 from ._vscf_ecc_alg_info import vscf_ecc_alg_info_t
 from ._vscf_ecc_alg_info import VscfEccAlgInfo
+from ._vscf_padding_cipher_alg_info import vscf_padding_cipher_alg_info_t
+from ._vscf_padding_cipher_alg_info import VscfPaddingCipherAlgInfo
 from ._vscf_alg_info_der_serializer import vscf_alg_info_der_serializer_t
 from ._vscf_alg_info_der_serializer import VscfAlgInfoDerSerializer
 from ._vscf_alg_info_der_deserializer import vscf_alg_info_der_deserializer_t

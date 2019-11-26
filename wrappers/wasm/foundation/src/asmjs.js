@@ -113,6 +113,7 @@ const initCipherAlgInfo = require('./CipherAlgInfo');
 const initSaltedKdfAlgInfo = require('./SaltedKdfAlgInfo');
 const initPbeAlgInfo = require('./PbeAlgInfo');
 const initEccAlgInfo = require('./EccAlgInfo');
+const initPaddingCipherAlgInfo = require('./PaddingCipherAlgInfo');
 const initAlgInfoDerSerializer = require('./AlgInfoDerSerializer');
 const initAlgInfoDerDeserializer = require('./AlgInfoDerDeserializer');
 const initMessageInfoDerSerializer = require('./MessageInfoDerSerializer');
@@ -197,6 +198,7 @@ const initProject = () => {
     modules.SaltedKdfAlgInfo = initSaltedKdfAlgInfo(foundationModule, modules);
     modules.PbeAlgInfo = initPbeAlgInfo(foundationModule, modules);
     modules.EccAlgInfo = initEccAlgInfo(foundationModule, modules);
+    modules.PaddingCipherAlgInfo = initPaddingCipherAlgInfo(foundationModule, modules);
     modules.AlgInfoDerSerializer = initAlgInfoDerSerializer(foundationModule, modules);
     modules.AlgInfoDerDeserializer = initAlgInfoDerDeserializer(foundationModule, modules);
     modules.MessageInfoDerSerializer = initMessageInfoDerSerializer(foundationModule, modules);

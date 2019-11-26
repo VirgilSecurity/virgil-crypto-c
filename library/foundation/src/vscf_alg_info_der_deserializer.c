@@ -62,6 +62,7 @@
 #include "vscf_salted_kdf_alg_info.h"
 #include "vscf_pbe_alg_info.h"
 #include "vscf_ecc_alg_info.h"
+#include "vscf_padding_cipher_alg_info.h"
 #include "vscf_alg_info.h"
 #include "vscf_asn1_reader.h"
 #include "vscf_alg_info_der_deserializer_defs.h"
@@ -139,6 +140,14 @@ vscf_alg_info_der_deserializer_deserialize_pbes2_alg_info(vscf_alg_info_der_dese
 static vscf_impl_t *
 vscf_alg_info_der_deserializer_deserialize_ecc_alg_info(vscf_alg_info_der_deserializer_t *self, vscf_oid_id_t oid_id,
         vscf_error_t *error);
+
+//
+//  Parse ASN.1 structure "AlgorithmIdentifier" with
+//  PaddingCipherParameters parameters.
+//
+static vscf_impl_t *
+vscf_alg_info_der_deserializer_deserialize_padding_cipher_alg_info(vscf_alg_info_der_deserializer_t *self,
+        vscf_oid_id_t oid_id, vscf_error_t *error);
 
 
 // --------------------------------------------------------------------------
@@ -535,6 +544,42 @@ vscf_alg_info_der_deserializer_deserialize_ecc_alg_info(
 }
 
 //
+//  Parse ASN.1 structure "AlgorithmIdentifier" with
+//  PaddingCipherParameters parameters.
+//
+static vscf_impl_t *
+vscf_alg_info_der_deserializer_deserialize_padding_cipher_alg_info(
+        vscf_alg_info_der_deserializer_t *self, vscf_oid_id_t oid_id, vscf_error_t *error) {
+
+    //  PaddingCipherParameters ::= SEQUENCE {
+    //      underlyingCipher AlgorithmIdentifier,
+    //      paddingFrame INTEGER(1..MAX)
+    //  }
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(self->asn1_reader);
+    VSCF_ASSERT(oid_id != vscf_oid_id_NONE);
+
+    vscf_asn1_reader_read_sequence(self->asn1_reader);
+
+    vscf_impl_t *cipher = vscf_alg_info_der_deserializer_deserialize_inplace(self, error);
+    if (NULL == cipher) {
+        return NULL;
+    }
+
+    const size_t paddingFrame = vscf_asn1_reader_read_uint(self->asn1_reader);
+    if (vscf_asn1_reader_has_error(self->asn1_reader) || (paddingFrame == 0)) {
+        vscf_impl_destroy(&cipher);
+        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_BAD_ASN1);
+        return NULL;
+    }
+
+    vscf_padding_cipher_alg_info_t *alg_info = vscf_padding_cipher_alg_info_new_with_members(&cipher, paddingFrame);
+
+    return vscf_padding_cipher_alg_info_impl(alg_info);
+}
+
+//
 //  Deserialize by using internal ASN.1 reader.
 //  Note, that caller code is responsible to reset ASN.1 reader with
 //  an input buffer.
@@ -607,6 +652,9 @@ vscf_alg_info_der_deserializer_deserialize_inplace(vscf_alg_info_der_deserialize
 
     case vscf_oid_id_PKCS5_PBES2:
         return vscf_alg_info_der_deserializer_deserialize_pbes2_alg_info(self, oid_id, error);
+
+    case vscf_oid_id_PADDING_CIPHER:
+        return vscf_alg_info_der_deserializer_deserialize_padding_cipher_alg_info(self, oid_id, error);
 
     case vscf_oid_id_CMS_DATA:
     case vscf_oid_id_CMS_ENVELOPED_DATA:

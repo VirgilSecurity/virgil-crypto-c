@@ -128,6 +128,40 @@ const initPaddingCipher = (Module, modules) => {
         }
 
         /**
+         * Provide algorithm identificator.
+         */
+        algId() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
+            let proxyResult;
+            proxyResult = Module._vscf_padding_cipher_alg_id(this.ctxPtr);
+            return proxyResult;
+        }
+
+        /**
+         * Produce object with algorithm information and configuration parameters.
+         */
+        produceAlgInfo() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
+            let proxyResult;
+            proxyResult = Module._vscf_padding_cipher_produce_alg_info(this.ctxPtr);
+
+            const jsResult = modules.FoundationInterface.newAndTakeCContext(proxyResult);
+            return jsResult;
+        }
+
+        /**
+         * Restore algorithm configuration from the given object.
+         */
+        restoreAlgInfo(algInfo) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureImplementInterface('algInfo', algInfo, 'Foundation.AlgInfo', modules.FoundationInterfaceTag.ALG_INFO, modules.FoundationInterface);
+            const proxyResult = Module._vscf_padding_cipher_restore_alg_info(this.ctxPtr, algInfo.ctxPtr);
+            modules.FoundationError.handleStatusCode(proxyResult);
+        }
+
+        /**
          * Encrypt given data.
          */
         encrypt(data) {

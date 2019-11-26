@@ -89,7 +89,8 @@ enum vscf_alg_id_t {
     vscf_alg_id_HMAC,
     vscf_alg_id_HKDF,
     vscf_alg_id_PKCS5_PBKDF2,
-    vscf_alg_id_PKCS5_PBES2
+    vscf_alg_id_PKCS5_PBES2,
+    vscf_alg_id_PADDING_CIPHER
 };
 typedef enum vscf_alg_id_t vscf_alg_id_t;
 

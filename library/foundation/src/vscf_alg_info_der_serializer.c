@@ -63,6 +63,7 @@
 #include "vscf_salted_kdf_alg_info.h"
 #include "vscf_pbe_alg_info.h"
 #include "vscf_ecc_alg_info.h"
+#include "vscf_padding_cipher_alg_info.h"
 #include "vscf_asn1_writer.h"
 #include "vscf_alg_info_der_serializer_defs.h"
 #include "vscf_alg_info_der_serializer_internal.h"
@@ -212,6 +213,22 @@ vscf_alg_info_der_serializer_serialized_ecc_alg_info_len(const vscf_alg_info_der
 //
 static size_t
 vscf_alg_info_der_serializer_serialize_ecc_alg_info(vscf_alg_info_der_serializer_t *self, const vscf_impl_t *alg_info);
+
+//
+//  Return buffer size enough to hold ASN.1 structure
+//  "AlgorithmIdentifier" with "PaddingCipherParameters".
+//
+static size_t
+vscf_alg_info_der_serializer_serialize_padding_cipher_alg_info_len(const vscf_alg_info_der_serializer_t *self,
+        const vscf_impl_t *alg_info);
+
+//
+//  Serialize class "padding cipher alg info" to the ASN.1 structure
+//  "AlgorithmIdentifier" with "PaddingCipherParameters".
+//
+static size_t
+vscf_alg_info_der_serializer_serialize_padding_cipher_alg_info(vscf_alg_info_der_serializer_t *self,
+        const vscf_impl_t *alg_info);
 
 
 // --------------------------------------------------------------------------
@@ -864,6 +881,82 @@ vscf_alg_info_der_serializer_serialize_ecc_alg_info(vscf_alg_info_der_serializer
 }
 
 //
+//  Return buffer size enough to hold ASN.1 structure
+//  "AlgorithmIdentifier" with "PaddingCipherParameters".
+//
+static size_t
+vscf_alg_info_der_serializer_serialize_padding_cipher_alg_info_len(
+        const vscf_alg_info_der_serializer_t *self, const vscf_impl_t *alg_info) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(alg_info);
+
+    const vscf_padding_cipher_alg_info_t *padding_cipher_alg_info = (const vscf_padding_cipher_alg_info_t *)alg_info;
+    const vscf_impl_t *underlying_cipher = vscf_padding_cipher_alg_info_underlying_cipher(padding_cipher_alg_info);
+
+    const size_t underlying_cipher_len = vscf_alg_info_der_serializer_serialized_len(self, underlying_cipher);
+
+    const size_t params_len = 1 + 1 +                         //  PaddingCipherParameters ::= SEQUENCE {
+                              1 + 1 + underlying_cipher_len + //      underlyingCipher AlgorithmIdentifier,
+                              1 + 1 + 8;                      //      paddingFrame INTEGER(1..MAX) }
+
+    const size_t len = 1 + 1 +      //  AlgorithmIdentifier ::= SEQUENCE {
+                       1 + 1 + 10 + //      algorithm OBJECT IDENTIFIER, -- id-PaddingCipher
+                       params_len;  //      parameters PaddingCipherParameters }
+
+    return len;
+}
+
+//
+//  Serialize class "padding cipher alg info" to the ASN.1 structure
+//  "AlgorithmIdentifier" with "PaddingCipherParameters".
+//
+static size_t
+vscf_alg_info_der_serializer_serialize_padding_cipher_alg_info(
+        vscf_alg_info_der_serializer_t *self, const vscf_impl_t *alg_info) {
+
+    //  PaddingCipherParameters ::= SEQUENCE {
+    //      underlyingCipher AlgorithmIdentifier,
+    //      paddingFrame INTEGER(1..MAX)
+    //  }
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(alg_info);
+    VSCF_ASSERT_PTR(self->asn1_writer);
+
+    VSCF_ASSERT(vscf_asn1_writer_unwritten_len(self->asn1_writer) >=
+                vscf_alg_info_der_serializer_serialize_padding_cipher_alg_info_len(self, alg_info));
+
+    const vscf_padding_cipher_alg_info_t *padding_cipher_alg_info = (const vscf_padding_cipher_alg_info_t *)alg_info;
+
+    size_t len = 0;
+
+
+    //  Write paddingFrame.
+    const size_t paddingFrame = vscf_padding_cipher_alg_info_padding_frame(padding_cipher_alg_info);
+    len += vscf_asn1_writer_write_uint(self->asn1_writer, paddingFrame);
+
+    //  Write underlyingCipher.
+    const vscf_impl_t *underlying_cipher = vscf_padding_cipher_alg_info_underlying_cipher(padding_cipher_alg_info);
+    len += vscf_alg_info_der_serializer_serialize_inplace(self, underlying_cipher);
+
+    //  Write PaddingCipherParameters.
+    len += vscf_asn1_writer_write_sequence(self->asn1_writer, len);
+
+    //  Write OID.
+    const vscf_alg_id_t alg_id = vscf_padding_cipher_alg_info_alg_id(padding_cipher_alg_info);
+    vsc_data_t self_oid = vscf_oid_from_alg_id(alg_id);
+    len += vscf_asn1_writer_write_oid(self->asn1_writer, self_oid);
+
+    //  Write AlgorithmIdentifier SEQUENCE.
+    len += vscf_asn1_writer_write_sequence(self->asn1_writer, len);
+
+    VSCF_ASSERT(!vscf_asn1_writer_has_error(self->asn1_writer));
+
+    return len;
+}
+
+//
 //  Serialize by using internal ASN.1 writer.
 //  Note, that caller code is responsible to reset ASN.1 writer with
 //  an output buffer.
@@ -914,6 +1007,9 @@ vscf_alg_info_der_serializer_serialize_inplace(vscf_alg_info_der_serializer_t *s
 
     case vscf_alg_id_PKCS5_PBES2:
         return vscf_alg_info_der_serializer_serialize_pbes2_alg_info(self, alg_info);
+
+    case vscf_alg_id_PADDING_CIPHER:
+        return vscf_alg_info_der_serializer_serialize_padding_cipher_alg_info(self, alg_info);
 
     case vscf_alg_id_NONE:
         VSCF_ASSERT(0 && "Unhandled alg id.");
@@ -971,6 +1067,9 @@ vscf_alg_info_der_serializer_serialized_len(const vscf_alg_info_der_serializer_t
 
     case vscf_alg_id_PKCS5_PBES2:
         return vscf_alg_info_der_serializer_serialized_pbes2_alg_info_len(self, alg_info);
+
+    case vscf_alg_id_PADDING_CIPHER:
+        return vscf_alg_info_der_serializer_serialize_padding_cipher_alg_info_len(self, alg_info);
 
     case vscf_alg_id_NONE:
         VSCF_ASSERT(0 && "Unhandled alg id.");

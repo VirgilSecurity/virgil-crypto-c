@@ -38,7 +38,7 @@ import VSCFoundation
 
 /// Wraps any symmetric cipher algorithm to add padding to plaintext
 /// to prevent message guessing attacks based on a ciphertext length.
-@objc(VSCFPaddingCipher) public class PaddingCipher: NSObject, Encrypt, Decrypt, CipherInfo, Cipher {
+@objc(VSCFPaddingCipher) public class PaddingCipher: NSObject, Alg, Encrypt, Decrypt, CipherInfo, Cipher {
 
     @objc public static let paddingFrameDefault: Int = 160
     @objc public static let paddingFrameMin: Int = 32
@@ -88,6 +88,27 @@ import VSCFoundation
     /// The padding frame defines the multiplicator of data length.
     @objc public func setPaddingFrame(paddingFrame: Int) {
         vscf_padding_cipher_set_padding_frame(self.c_ctx, paddingFrame)
+    }
+
+    /// Provide algorithm identificator.
+    @objc public func algId() -> AlgId {
+        let proxyResult = vscf_padding_cipher_alg_id(self.c_ctx)
+
+        return AlgId.init(fromC: proxyResult)
+    }
+
+    /// Produce object with algorithm information and configuration parameters.
+    @objc public func produceAlgInfo() -> AlgInfo {
+        let proxyResult = vscf_padding_cipher_produce_alg_info(self.c_ctx)
+
+        return FoundationImplementation.wrapAlgInfo(take: proxyResult!)
+    }
+
+    /// Restore algorithm configuration from the given object.
+    @objc public func restoreAlgInfo(algInfo: AlgInfo) throws {
+        let proxyResult = vscf_padding_cipher_restore_alg_info(self.c_ctx, algInfo.c_ctx)
+
+        try FoundationError.handleStatus(fromC: proxyResult)
     }
 
     /// Encrypt given data.

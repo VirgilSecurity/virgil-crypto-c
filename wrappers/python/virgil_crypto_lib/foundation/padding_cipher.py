@@ -35,16 +35,18 @@
 
 from ctypes import *
 from ._c_bridge import VscfPaddingCipher
+from ._c_bridge import VscfImplTag
+from ._c_bridge import VscfStatus
 from virgil_crypto_lib.common._c_bridge import Data
 from virgil_crypto_lib.common._c_bridge import Buffer
-from ._c_bridge import VscfStatus
+from .alg import Alg
 from .encrypt import Encrypt
 from .decrypt import Decrypt
 from .cipher_info import CipherInfo
 from .cipher import Cipher
 
 
-class PaddingCipher(Encrypt, Decrypt, CipherInfo, Cipher):
+class PaddingCipher(Alg, Encrypt, Decrypt, CipherInfo, Cipher):
     """Wraps any symmetric cipher algorithm to add padding to plaintext
     to prevent message guessing attacks based on a ciphertext length."""
 
@@ -70,6 +72,22 @@ class PaddingCipher(Encrypt, Decrypt, CipherInfo, Cipher):
 
     def set_cipher(self, cipher):
         self._lib_vscf_padding_cipher.vscf_padding_cipher_use_cipher(self.ctx, cipher.c_impl)
+
+    def alg_id(self):
+        """Provide algorithm identificator."""
+        result = self._lib_vscf_padding_cipher.vscf_padding_cipher_alg_id(self.ctx)
+        return result
+
+    def produce_alg_info(self):
+        """Produce object with algorithm information and configuration parameters."""
+        result = self._lib_vscf_padding_cipher.vscf_padding_cipher_produce_alg_info(self.ctx)
+        instance = VscfImplTag.get_type(result)[0].take_c_ctx(cast(result, POINTER(VscfImplTag.get_type(result)[1])))
+        return instance
+
+    def restore_alg_info(self, alg_info):
+        """Restore algorithm configuration from the given object."""
+        status = self._lib_vscf_padding_cipher.vscf_padding_cipher_restore_alg_info(self.ctx, alg_info.c_impl)
+        VscfStatus.handle_status(status)
 
     def encrypt(self, data):
         """Encrypt given data."""

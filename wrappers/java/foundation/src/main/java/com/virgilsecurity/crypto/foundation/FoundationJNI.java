@@ -2735,6 +2735,21 @@ public class FoundationJNI {
     public native void paddingCipher_close(long cCtx);
 
     /*
+    * Provide algorithm identificator.
+    */
+    public native AlgId paddingCipher_algId(long cCtx);
+
+    /*
+    * Produce object with algorithm information and configuration parameters.
+    */
+    public native AlgInfo paddingCipher_produceAlgInfo(long cCtx);
+
+    /*
+    * Restore algorithm configuration from the given object.
+    */
+    public native void paddingCipher_restoreAlgInfo(long cCtx, AlgInfo algInfo) throws FoundationException;
+
+    /*
     * Encrypt given data.
     */
     public native byte[] paddingCipher_encrypt(long cCtx, byte[] data) throws FoundationException;
@@ -3412,6 +3427,27 @@ public class FoundationJNI {
     * Provide algorithm identificator.
     */
     public native AlgId eccAlgInfo_algId(long cCtx);
+
+    /*
+    * Return underlying cipher alg info.
+    */
+    public native AlgInfo paddingCipherAlgInfo_underlyingCipher(long cCtx);
+
+    /*
+    * Return padding frame.
+    */
+    public native int paddingCipherAlgInfo_paddingFrame(long cCtx);
+
+    public native long paddingCipherAlgInfo_new();
+
+    public native void paddingCipherAlgInfo_close(long cCtx);
+
+    public native long paddingCipherAlgInfo_new(AlgInfo underlyingCipher, int paddingFrame);
+
+    /*
+    * Provide algorithm identificator.
+    */
+    public native AlgId paddingCipherAlgInfo_algId(long cCtx);
 
     public native void algInfoDerSerializer_setAsn1Writer(long cCtx, Asn1Writer asn1Writer);
 

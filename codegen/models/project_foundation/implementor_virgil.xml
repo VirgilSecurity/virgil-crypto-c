@@ -336,12 +336,16 @@
         Wraps any symmetric cipher algorithm to add padding to plaintext
         to prevent message guessing attacks based on a ciphertext length.
 
+        <require interface="alg"/>
         <require interface="alg info"/>
         <require interface="decrypt"/>
         <require interface="encrypt"/>
+        <require impl="padding cipher alg info"/>
+        <require class="alg factory"/>
         <require header="pb_decode.h" scope="private"/>
         <require header="pb_encode.h" scope="private"/>
 
+        <interface name="alg"/>
         <interface name="encrypt"/>
         <interface name="decrypt"/>
         <interface name="cipher info"/>

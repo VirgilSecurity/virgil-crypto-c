@@ -138,6 +138,7 @@ from .cipher_alg_info import CipherAlgInfo
 from .salted_kdf_alg_info import SaltedKdfAlgInfo
 from .pbe_alg_info import PbeAlgInfo
 from .ecc_alg_info import EccAlgInfo
+from .padding_cipher_alg_info import PaddingCipherAlgInfo
 from .alg_info_der_serializer import AlgInfoDerSerializer
 from .alg_info_der_deserializer import AlgInfoDerDeserializer
 from .message_info_der_serializer import MessageInfoDerSerializer

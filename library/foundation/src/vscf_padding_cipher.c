@@ -53,9 +53,12 @@
 #include "vscf_padding_cipher.h"
 #include "vscf_assert.h"
 #include "vscf_memory.h"
+#include "vscf_alg.h"
 #include "vscf_alg_info.h"
 #include "vscf_decrypt.h"
 #include "vscf_encrypt.h"
+#include "vscf_padding_cipher_alg_info.h"
+#include "vscf_alg_factory.h"
 #include "vscf_random.h"
 #include "vscf_cipher.h"
 #include "vscf_padding_cipher_defs.h"
@@ -314,6 +317,65 @@ vscf_padding_cipher_finish_decryption(vscf_padding_cipher_t *self, vsc_buffer_t 
 
     vsc_buffer_write_data(out, data);
     vscf_tail_filter_release(self->tail_filter);
+
+    return vscf_status_SUCCESS;
+}
+
+//
+//  Provide algorithm identificator.
+//
+VSCF_PUBLIC vscf_alg_id_t
+vscf_padding_cipher_alg_id(const vscf_padding_cipher_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+
+    return vscf_alg_id_PADDING_CIPHER;
+}
+
+//
+//  Produce object with algorithm information and configuration parameters.
+//
+VSCF_PUBLIC vscf_impl_t *
+vscf_padding_cipher_produce_alg_info(const vscf_padding_cipher_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(self->cipher);
+
+    vscf_impl_t *underlying_cipher_alg_info = vscf_alg_produce_alg_info(self->cipher);
+    vscf_padding_cipher_alg_info_t *alg_info =
+            vscf_padding_cipher_alg_info_new_with_members(&underlying_cipher_alg_info, self->padding_frame);
+
+    return vscf_padding_cipher_alg_info_impl(alg_info);
+}
+
+//
+//  Restore algorithm configuration from the given object.
+//
+VSCF_PUBLIC vscf_status_t
+vscf_padding_cipher_restore_alg_info(vscf_padding_cipher_t *self, const vscf_impl_t *alg_info) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(alg_info);
+    VSCF_ASSERT(vscf_alg_info_alg_id(alg_info) == vscf_alg_id_PADDING_CIPHER);
+    VSCF_ASSERT(vscf_impl_tag(alg_info) == vscf_impl_tag_PADDING_CIPHER_ALG_INFO);
+
+    const vscf_padding_cipher_alg_info_t *cipher_alg_info = (const vscf_padding_cipher_alg_info_t *)alg_info;
+    const vscf_impl_t *underlying_cipher_alg_info = vscf_padding_cipher_alg_info_underlying_cipher(cipher_alg_info);
+    const size_t padding_frame = vscf_padding_cipher_alg_info_padding_frame(cipher_alg_info);
+
+    if (padding_frame < vscf_padding_cipher_PADDING_FRAME_MIN ||
+            padding_frame > vscf_padding_cipher_PADDING_FRAME_MAX) {
+        return vscf_status_ERROR_UNSUPPORTED_ALGORITHM;
+    }
+
+    vscf_impl_t *underlying_cipher = vscf_alg_factory_create_cipher_from_info(underlying_cipher_alg_info);
+    if (NULL == underlying_cipher) {
+        return vscf_status_ERROR_UNSUPPORTED_ALGORITHM;
+    }
+
+    vscf_padding_cipher_release_cipher(self);
+    vscf_padding_cipher_take_cipher(self, underlying_cipher);
+    vscf_padding_cipher_set_padding_frame(self, padding_frame);
 
     return vscf_status_SUCCESS;
 }

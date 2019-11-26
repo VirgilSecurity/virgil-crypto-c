@@ -40,7 +40,7 @@ package com.virgilsecurity.crypto.foundation;
 * Wraps any symmetric cipher algorithm to add padding to plaintext
 * to prevent message guessing attacks based on a ciphertext length.
 */
-public class PaddingCipher implements AutoCloseable, Encrypt, Decrypt, CipherInfo, Cipher {
+public class PaddingCipher implements AutoCloseable, Alg, Encrypt, Decrypt, CipherInfo, Cipher {
 
     public long cCtx;
 
@@ -103,6 +103,27 @@ public class PaddingCipher implements AutoCloseable, Encrypt, Decrypt, CipherInf
     /* Close resource. */
     public void close() {
         FoundationJNI.INSTANCE.paddingCipher_close(this.cCtx);
+    }
+
+    /*
+    * Provide algorithm identificator.
+    */
+    public AlgId algId() {
+        return FoundationJNI.INSTANCE.paddingCipher_algId(this.cCtx);
+    }
+
+    /*
+    * Produce object with algorithm information and configuration parameters.
+    */
+    public AlgInfo produceAlgInfo() {
+        return FoundationJNI.INSTANCE.paddingCipher_produceAlgInfo(this.cCtx);
+    }
+
+    /*
+    * Restore algorithm configuration from the given object.
+    */
+    public void restoreAlgInfo(AlgInfo algInfo) throws FoundationException {
+        FoundationJNI.INSTANCE.paddingCipher_restoreAlgInfo(this.cCtx, algInfo);
     }
 
     /*
