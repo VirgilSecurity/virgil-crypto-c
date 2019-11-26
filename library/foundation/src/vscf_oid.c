@@ -139,7 +139,7 @@ static const vsc_data_t oid_ec_domain_secp256r1 = {
 //
 //  1.3.6.1.4.1.54811.1.10
 //  iso(1) identified-organization(3) dod(6) internet(1) private(4) enterprise(1) virgil-security(54811)
-//  crypto(1) padding-cipher(1)
+//  crypto(1) padding-cipher(10)
 //
 static const byte oid_padding_cipher_bytes[] = {0x2B, 0x06, 0x01, 0x04, 0x01, 0x83, 0xAC, 0x1B, 0x01, 0x0A};
 static const vsc_data_t oid_padding_cipher = {oid_padding_cipher_bytes, sizeof(oid_padding_cipher_bytes)};
