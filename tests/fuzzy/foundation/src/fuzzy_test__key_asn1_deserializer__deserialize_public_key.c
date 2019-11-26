@@ -32,8 +32,26 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#include "vsc_data.h"
+#include "vscf_key_asn1_deserializer.h"
+#include "test_data_rsa.h"
+#include "test_data_rsa.h"
+#include "test_data_ed25519.h"
+#include "test_data_curve25519.h"
 
-extern const vsc_data_t test_key_provider_MESSAGE_SHA512_DIGEST;
-extern const vsc_data_t test_key_provider_INVALID_KEY_VALID_MESSAGE_INFO_WITH_ENCRYPTED_DATA;
-extern const vsc_data_t test_key_provider_INVALID_KEY_VALID_MESSAGE_INFO;
+
+int
+LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
+    vscf_key_asn1_deserializer_t *key_deserializer = vscf_key_asn1_deserializer_new();
+    vscf_key_asn1_deserializer_setup_defaults(key_deserializer);
+
+    vscf_error_t error;
+    vscf_error_reset(&error);
+
+    vsc_data_t data_wrapper = vsc_data(data, size);
+    vscf_raw_public_key_t *raw_public_key =
+            vscf_key_asn1_deserializer_deserialize_public_key(key_deserializer, data_wrapper, &error);
+
+    vscf_raw_public_key_destroy(&raw_public_key);
+    vscf_key_asn1_deserializer_destroy(&key_deserializer);
+    return 0;
+}

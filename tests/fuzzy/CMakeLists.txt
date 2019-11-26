@@ -32,38 +32,7 @@
 #
 #   Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.12 FATAL_ERROR)
 
-project(virgil_crypto_c_tests VERSION ${virgil_crypto_VERSION} LANGUAGES C)
-
-if (VIRGIL_C_MT_TESTING)
-    find_package(Threads)
-endif()
-
-add_subdirectory(unity)
-add_subdirectory(test_utils)
-
-if(TARGET vsc::common)
-    add_subdirectory(common)
-endif()
-
-if(TARGET vsc::foundation)
-    add_subdirectory(foundation)
-endif()
-
-if(TARGET vsc::pythia)
-    add_subdirectory(pythia)
-endif()
-
-if(TARGET vsc::ratchet)
-    add_subdirectory(ratchet)
-endif()
-
-if(TARGET vsc::phe)
-    add_subdirectory(phe)
-endif()
-
-if(ENABLE_FUZZY_TESTING)
-    add_subdirectory(fuzzy)
-endif(ENABLE_FUZZY_TESTING)
-
+add_subdirectory(helpers)
+add_subdirectory(foundation)
