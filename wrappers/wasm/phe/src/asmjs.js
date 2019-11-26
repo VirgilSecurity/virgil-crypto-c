@@ -37,7 +37,10 @@
 
 const PheModule = require(process.env.PROJECT_MODULE);
 
+const initFoundationError = require('../foundation/FoundationError');
 const initFoundationInterface = require('../foundation/FoundationInterface');
+const initFoundationInterfaceTag = require('../foundation/FoundationInterfaceTag');
+const initFoundationImplTag = require('../foundation/FoundationImplTag');
 const initCtrDrbg = require('../foundation/CtrDrbg');
 const initHmac = require('../foundation/Hmac');
 const initHkdf = require('../foundation/Hkdf');
@@ -52,7 +55,10 @@ const initProject = () => {
     const pheModule = new PheModule();
     const modules = {};
 
+    modules.FoundationError = initFoundationError(pheModule, modules);
     modules.FoundationInterface = initFoundationInterface(pheModule, modules);
+    modules.FoundationInterfaceTag = initFoundationInterfaceTag(pheModule, modules);
+    modules.FoundationImplTag = initFoundationImplTag(pheModule, modules);
     modules.CtrDrbg = initCtrDrbg(pheModule, modules);
     modules.Hmac = initHmac(pheModule, modules);
     modules.Hkdf = initHkdf(pheModule, modules);
