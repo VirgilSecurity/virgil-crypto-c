@@ -294,12 +294,6 @@ VSC_PUBLIC void
 vsc_buffer_dec_used(vsc_buffer_t *self, size_t len);
 
 //
-//  Copy null-terminated string to the buffer.
-//
-VSC_PUBLIC void
-vsc_buffer_write_str(vsc_buffer_t *self, const char *str);
-
-//
 //  Copy data to the buffer.
 //
 VSC_PUBLIC void
