@@ -2904,7 +2904,7 @@ function python_create_implementation_module (implementation, python_project, me
 
             python_map_attr_visibility (python_class, my.implementation)
 
-            for my.implementation.constant where constant.scope ?= "public"
+            for my.implementation.constant where wrapper_should_wrap_class_constant(constant)
                 python_create_class_constant (constant, python_class, my.python_project, my.meta)
             endfor
 
@@ -3130,7 +3130,7 @@ function python_create_class_module (class, python_project, meta)
 
             python_map_attr_visibility (python_class, my.class)
 
-            for my.class.constant where constant.scope ?= "public"
+            for my.class.constant where wrapper_should_wrap_class_constant(constant)
                 python_create_class_constant (constant, python_class, my.python_project, my.meta)
             endfor
 
