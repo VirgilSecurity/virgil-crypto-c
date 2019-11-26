@@ -53,8 +53,6 @@ class PaddingCipher(Alg, Encrypt, Decrypt, CipherInfo, Cipher):
     PADDING_FRAME_DEFAULT = 160
     PADDING_FRAME_MIN = 32
     PADDING_FRAME_MAX = 8 * 1024
-    PADDING_SIZE_LEN = 4
-    PADDING_LEN_MIN = vscf_padding_cipher_PADDING_SIZE_LEN + 1
 
     def __init__(self):
         """Create underlying C context."""
