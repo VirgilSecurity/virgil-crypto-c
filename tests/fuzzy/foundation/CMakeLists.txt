@@ -50,7 +50,6 @@ macro(_add_test test)
     target_link_libraries(${test}
             PRIVATE
                 fuzzer_flags_helper
-                test_data_foundation
                 vsc::foundation
             )
 
@@ -59,7 +58,9 @@ macro(_add_test test)
     endif()
 endmacro()
 
+_add_test(fuzzy_test__key_provider__import_public_key)
 _add_test(fuzzy_test__key_provider__import_private_key)
 _add_test(fuzzy_test__key_asn1_deserializer__deserialize_public_key)
 _add_test(fuzzy_test__key_asn1_deserializer__deserialize_private_key)
+_add_test(fuzzy_test__alg_info_der_deserializer__alg_info_der_deserialize)
 
