@@ -1778,7 +1778,9 @@ vscf_recipient_cipher_configure_encryption_cipher(vscf_recipient_cipher_t *self)
     //
     vscf_cipher_set_key(self->encryption_cipher, vsc_buffer_data(self->master_key));
     vscf_cipher_set_nonce(self->encryption_cipher, vsc_buffer_data(cipher_nonce));
-    vscf_cipher_auth_set_auth_data(self->encryption_cipher, vsc_data_empty());
+    if (vscf_cipher_auth_is_implemented(self->encryption_cipher)) {
+        vscf_cipher_auth_set_auth_data(self->encryption_cipher, vsc_data_empty());
+    }
     vscf_cipher_start_encryption(self->encryption_cipher);
 
     vsc_buffer_destroy(&cipher_nonce);
