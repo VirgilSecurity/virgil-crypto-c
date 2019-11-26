@@ -67,14 +67,6 @@ public class PaddingCipher implements AutoCloseable, Alg, Encrypt, Decrypt, Ciph
         return 8 * 1024;
     }
 
-    public int getPaddingSizeLen() {
-        return 4;
-    }
-
-    public int getPaddingLenMin() {
-        return vscf_padding_cipher_PADDING_SIZE_LEN + 1;
-    }
-
     public void setRandom(Random random) {
         FoundationJNI.INSTANCE.paddingCipher_setRandom(this.cCtx, random);
     }
