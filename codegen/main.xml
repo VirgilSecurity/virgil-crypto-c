@@ -48,9 +48,9 @@
     <project name="ratchet" skip_codegen="0" skip_codegen_c="0" skip_codegen_wrappers="0"/>
     <project name="phe" skip_codegen="0" skip_codegen_c="0" skip_codegen_wrappers="0"/>
 
-    <!--wrapper lang="swift"/>
+    <wrapper lang="swift"/>
     <wrapper lang="java"/>
     <wrapper lang="wasm"/>
-    <wrapper lang="python"/-->
+    <wrapper lang="python"/>
     <wrapper lang="go"/>
 </main>
