@@ -34,5 +34,15 @@
 
 cmake_minimum_required(VERSION 3.12 FATAL_ERROR)
 
-add_subdirectory(helpers)
-add_subdirectory(foundation)
+add_library(fuzzer_flags_helper INTERFACE)
+
+target_compile_options(fuzzer_flags_helper
+        INTERFACE
+            $<$<C_COMPILER_ID:Clang>: -Wall -Werror -g -O0  -fsanitize=address -fsanitize=fuzzer>
+        )
+
+target_link_libraries(fuzzer_flags_helper
+        INTERFACE
+            $<$<C_COMPILER_ID:Clang>:-fsanitize=address,fuzzer>
+        )
+

@@ -4,7 +4,7 @@ Install llvm
 ```bash
 > brew install llvm
 ```
-set c compiler to clang
+set C compiler to  LLVM clang
 ```bash
 export CC=/usr/local/opt/llvm/bin/clang
 ```

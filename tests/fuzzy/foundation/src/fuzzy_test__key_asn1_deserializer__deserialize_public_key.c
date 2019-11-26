@@ -32,18 +32,8 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-
-#define UNITY_BEGIN() UnityBegin(__FILENAME__)
-
-#include "unity.h"
-
-
-#define TEST_DEPENDENCIES_AVAILABLE VSCF_KEY_ASN1_DESERIALIZER &&VSCF_ASN1RD
-
 #include "vscf_key_asn1_deserializer.h"
-
 #include "test_data_rsa.h"
-
 #include "test_data_rsa.h"
 #include "test_data_ed25519.h"
 #include "test_data_curve25519.h"
@@ -58,9 +48,8 @@ LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
     vscf_error_reset(&error);
 
     vsc_data_t data_wrapper = vsc_data(data, size);
-
-    vscf_raw_public_key_t *raw_public_key = vscf_key_asn1_deserializer_deserialize_public_key(
-            key_deserializer, data_wrapper, &error);
+    vscf_raw_public_key_t *raw_public_key =
+            vscf_key_asn1_deserializer_deserialize_public_key(key_deserializer, data_wrapper, &error);
 
     vscf_raw_public_key_destroy(&raw_public_key);
     vscf_key_asn1_deserializer_destroy(&key_deserializer);

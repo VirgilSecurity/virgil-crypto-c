@@ -176,13 +176,14 @@ vscf_pem_unwrap(vsc_data_t pem, vsc_buffer_t *data) {
     //
     const char *header_begin = vscf_strnstr((const char *)pem.bytes, k_header_begin, pem.len);
     size_t header_index = header_begin - (const char *)pem.bytes;
-    size_t header_begin_len =  strlen(k_header_begin);
+    size_t header_begin_len = strlen(k_header_begin);
 
     if (NULL == header_begin) {
         return vscf_status_ERROR_BAD_PEM;
     }
 
-    const char *header_end = vscf_strnstr(header_begin + header_begin_len, k_title_tail, pem.len - header_index - header_begin_len);
+    const char *header_end =
+            vscf_strnstr(header_begin + header_begin_len, k_title_tail, pem.len - header_index - header_begin_len);
     if (NULL == header_end) {
         return vscf_status_ERROR_BAD_PEM;
     }
@@ -211,7 +212,8 @@ vscf_pem_unwrap(vsc_data_t pem, vsc_buffer_t *data) {
         return vscf_status_ERROR_BAD_PEM;
     }
 
-    const char *footer_end = vscf_strnstr(footer_begin + k_footer_len, k_title_tail, pem.len - footer_index - k_footer_len);
+    const char *footer_end =
+            vscf_strnstr(footer_begin + k_footer_len, k_title_tail, pem.len - footer_index - k_footer_len);
     if (NULL == footer_end) {
         return vscf_status_ERROR_BAD_PEM;
     }
