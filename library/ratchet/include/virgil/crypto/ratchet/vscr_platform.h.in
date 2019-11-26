@@ -78,6 +78,10 @@ extern "C" {
 #   include <stdatomic.h>
 #endif
 
+#ifndef VSCR_SHARED_LIBRARY
+#cmakedefine01 VSCR_SHARED_LIBRARY
+#endif
+
 #ifndef VSCR_MULTI_THREADING
 #cmakedefine01 VSCR_MULTI_THREADING
 #endif

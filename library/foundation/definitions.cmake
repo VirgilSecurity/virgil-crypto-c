@@ -52,7 +52,7 @@ endif()
 target_compile_definitions(foundation
         PUBLIC
             $<BUILD_INTERFACE:VSCF_INTERNAL_BUILD>
-            "VSCF_SHARED_LIBRARY=$<$<BOOL:${BUILD_SHARED_LIBS}>:VSCF_SHARED_LIBRARY>"
+            "VSCF_SHARED_LIBRARY=$<BOOL:${BUILD_SHARED_LIBS}>"
             "VSCF_LIBRARY=$<BOOL:${VSCF_LIBRARY}>"
             "VSCF_MULTI_THREADING=$<BOOL:${VSCF_MULTI_THREADING}>"
             "VSCF_CIPHER=$<BOOL:${VSCF_CIPHER}>"

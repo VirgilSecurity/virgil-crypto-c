@@ -52,7 +52,7 @@ endif()
 target_compile_definitions(phe
         PUBLIC
             $<BUILD_INTERFACE:VSCE_INTERNAL_BUILD>
-            "VSCE_SHARED_LIBRARY=$<$<BOOL:${BUILD_SHARED_LIBS}>:VSCE_SHARED_LIBRARY>"
+            "VSCE_SHARED_LIBRARY=$<BOOL:${BUILD_SHARED_LIBS}>"
             "VSCE_LIBRARY=$<BOOL:${VSCE_LIBRARY}>"
             "VSCE_MULTI_THREADING=$<BOOL:${VSCE_MULTI_THREADING}>"
             "VSCE_ERROR=$<BOOL:${VSCE_ERROR}>"

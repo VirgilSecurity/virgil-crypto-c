@@ -52,7 +52,7 @@ endif()
 target_compile_definitions(pythia
         PUBLIC
             $<BUILD_INTERFACE:VSCP_INTERNAL_BUILD>
-            "VSCP_SHARED_LIBRARY=$<$<BOOL:${BUILD_SHARED_LIBS}>:VSCP_SHARED_LIBRARY>"
+            "VSCP_SHARED_LIBRARY=$<BOOL:${BUILD_SHARED_LIBS}>"
             "VSCP_LIBRARY=$<BOOL:${VSCP_LIBRARY}>"
             "VSCP_MULTI_THREADING=$<BOOL:${VSCP_MULTI_THREADING}>"
             "VSCP_PYTHIA=$<BOOL:${VSCP_PYTHIA}>"
