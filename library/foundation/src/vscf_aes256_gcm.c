@@ -234,7 +234,7 @@ vscf_aes256_gcm_encrypt(vscf_aes256_gcm_t *self, vsc_data_t data, vsc_buffer_t *
 //  Calculate required buffer length to hold the encrypted data.
 //
 VSCF_PUBLIC size_t
-vscf_aes256_gcm_encrypted_len(vscf_aes256_gcm_t *self, size_t data_len) {
+vscf_aes256_gcm_encrypted_len(const vscf_aes256_gcm_t *self, size_t data_len) {
 
     VSCF_ASSERT_PTR(self);
 
@@ -245,7 +245,7 @@ vscf_aes256_gcm_encrypted_len(vscf_aes256_gcm_t *self, size_t data_len) {
 //  Precise length calculation of encrypted data.
 //
 VSCF_PUBLIC size_t
-vscf_aes256_gcm_precise_encrypted_len(vscf_aes256_gcm_t *self, size_t data_len) {
+vscf_aes256_gcm_precise_encrypted_len(const vscf_aes256_gcm_t *self, size_t data_len) {
 
     VSCF_ASSERT_PTR(self);
 
@@ -274,7 +274,7 @@ vscf_aes256_gcm_decrypt(vscf_aes256_gcm_t *self, vsc_data_t data, vsc_buffer_t *
 //  Calculate required buffer length to hold the decrypted data.
 //
 VSCF_PUBLIC size_t
-vscf_aes256_gcm_decrypted_len(vscf_aes256_gcm_t *self, size_t data_len) {
+vscf_aes256_gcm_decrypted_len(const vscf_aes256_gcm_t *self, size_t data_len) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT(data_len >= vscf_aes256_gcm_AUTH_TAG_LEN);
@@ -518,7 +518,7 @@ vscf_aes256_gcm_out_len(vscf_aes256_gcm_t *self, size_t data_len) {
 //  Pass zero length to define buffer length of the method "finish".
 //
 VSCF_PUBLIC size_t
-vscf_aes256_gcm_encrypted_out_len(vscf_aes256_gcm_t *self, size_t data_len) {
+vscf_aes256_gcm_encrypted_out_len(const vscf_aes256_gcm_t *self, size_t data_len) {
 
     VSCF_ASSERT_PTR(self);
 
@@ -535,7 +535,7 @@ vscf_aes256_gcm_encrypted_out_len(vscf_aes256_gcm_t *self, size_t data_len) {
 //  Pass zero length to define buffer length of the method "finish".
 //
 VSCF_PUBLIC size_t
-vscf_aes256_gcm_decrypted_out_len(vscf_aes256_gcm_t *self, size_t data_len) {
+vscf_aes256_gcm_decrypted_out_len(const vscf_aes256_gcm_t *self, size_t data_len) {
 
     VSCF_ASSERT_PTR(self);
 
@@ -604,7 +604,7 @@ vscf_aes256_gcm_auth_encrypt(
 //  Calculate required buffer length to hold the authenticated encrypted data.
 //
 VSCF_PUBLIC size_t
-vscf_aes256_gcm_auth_encrypted_len(vscf_aes256_gcm_t *self, size_t data_len) {
+vscf_aes256_gcm_auth_encrypted_len(const vscf_aes256_gcm_t *self, size_t data_len) {
 
     VSCF_ASSERT_PTR(self);
 
@@ -636,7 +636,7 @@ vscf_aes256_gcm_auth_decrypt(
 //  Calculate required buffer length to hold the authenticated decrypted data.
 //
 VSCF_PUBLIC size_t
-vscf_aes256_gcm_auth_decrypted_len(vscf_aes256_gcm_t *self, size_t data_len) {
+vscf_aes256_gcm_auth_decrypted_len(const vscf_aes256_gcm_t *self, size_t data_len) {
 
     VSCF_ASSERT_PTR(self);
 

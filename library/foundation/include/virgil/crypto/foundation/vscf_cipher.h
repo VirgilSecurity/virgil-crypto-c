@@ -142,7 +142,7 @@ vscf_cipher_out_len(vscf_impl_t *impl, size_t data_len);
 //  Pass zero length to define buffer length of the method "finish".
 //
 VSCF_PUBLIC size_t
-vscf_cipher_encrypted_out_len(vscf_impl_t *impl, size_t data_len);
+vscf_cipher_encrypted_out_len(const vscf_impl_t *impl, size_t data_len);
 
 //
 //  Return buffer length required to hold an output of the methods
@@ -150,7 +150,7 @@ vscf_cipher_encrypted_out_len(vscf_impl_t *impl, size_t data_len);
 //  Pass zero length to define buffer length of the method "finish".
 //
 VSCF_PUBLIC size_t
-vscf_cipher_decrypted_out_len(vscf_impl_t *impl, size_t data_len);
+vscf_cipher_decrypted_out_len(const vscf_impl_t *impl, size_t data_len);
 
 //
 //  Accomplish encryption or decryption process.

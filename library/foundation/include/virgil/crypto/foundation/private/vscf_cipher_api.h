@@ -129,14 +129,14 @@ typedef size_t (*vscf_cipher_api_out_len_fn)(vscf_impl_t *impl, size_t data_len)
 //          "update" or "finish" in an encryption mode.
 //          Pass zero length to define buffer length of the method "finish".
 //
-typedef size_t (*vscf_cipher_api_encrypted_out_len_fn)(vscf_impl_t *impl, size_t data_len);
+typedef size_t (*vscf_cipher_api_encrypted_out_len_fn)(const vscf_impl_t *impl, size_t data_len);
 
 //
 //  Callback. Return buffer length required to hold an output of the methods
 //          "update" or "finish" in an decryption mode.
 //          Pass zero length to define buffer length of the method "finish".
 //
-typedef size_t (*vscf_cipher_api_decrypted_out_len_fn)(vscf_impl_t *impl, size_t data_len);
+typedef size_t (*vscf_cipher_api_decrypted_out_len_fn)(const vscf_impl_t *impl, size_t data_len);
 
 //
 //  Callback. Accomplish encryption or decryption process.

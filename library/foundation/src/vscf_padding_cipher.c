@@ -405,7 +405,7 @@ vscf_padding_cipher_encrypt(vscf_padding_cipher_t *self, vsc_data_t data, vsc_bu
 //  Calculate required buffer length to hold the encrypted data.
 //
 VSCF_PUBLIC size_t
-vscf_padding_cipher_encrypted_len(vscf_padding_cipher_t *self, size_t data_len) {
+vscf_padding_cipher_encrypted_len(const vscf_padding_cipher_t *self, size_t data_len) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(self->cipher);
@@ -419,7 +419,7 @@ vscf_padding_cipher_encrypted_len(vscf_padding_cipher_t *self, size_t data_len) 
 //  Precise length calculation of encrypted data.
 //
 VSCF_PUBLIC size_t
-vscf_padding_cipher_precise_encrypted_len(vscf_padding_cipher_t *self, size_t data_len) {
+vscf_padding_cipher_precise_encrypted_len(const vscf_padding_cipher_t *self, size_t data_len) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(self->cipher);
@@ -453,7 +453,7 @@ vscf_padding_cipher_decrypt(vscf_padding_cipher_t *self, vsc_data_t data, vsc_bu
 //  Calculate required buffer length to hold the decrypted data.
 //
 VSCF_PUBLIC size_t
-vscf_padding_cipher_decrypted_len(vscf_padding_cipher_t *self, size_t data_len) {
+vscf_padding_cipher_decrypted_len(const vscf_padding_cipher_t *self, size_t data_len) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(self->cipher);
@@ -627,7 +627,7 @@ vscf_padding_cipher_out_len(vscf_padding_cipher_t *self, size_t data_len) {
 //  Pass zero length to define buffer length of the method "finish".
 //
 VSCF_PUBLIC size_t
-vscf_padding_cipher_encrypted_out_len(vscf_padding_cipher_t *self, size_t data_len) {
+vscf_padding_cipher_encrypted_out_len(const vscf_padding_cipher_t *self, size_t data_len) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(self->cipher);
@@ -651,7 +651,7 @@ vscf_padding_cipher_encrypted_out_len(vscf_padding_cipher_t *self, size_t data_l
 //  Pass zero length to define buffer length of the method "finish".
 //
 VSCF_PUBLIC size_t
-vscf_padding_cipher_decrypted_out_len(vscf_padding_cipher_t *self, size_t data_len) {
+vscf_padding_cipher_decrypted_out_len(const vscf_padding_cipher_t *self, size_t data_len) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(self->cipher);
