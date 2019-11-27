@@ -52,7 +52,7 @@ const vsc_data_t test_key_provider_MESSAGE_SHA512_DIGEST = {
 };
 
 // --------------------------------------------------------------------------
-static const byte INVALID_PRIVATE_KEY_VALID_MESSAGE_INFO_WITH_ENCRYPTED_DATA[] = {
+static const byte INVALID_KEY_VALID_MESSAGE_INFO_WITH_ENCRYPTED_DATA[] = {
     0x30, 0x82, 0x01, 0xe1, 0x02, 0x01, 0x00, 0x30,
     0x82, 0x01, 0x3f, 0x06, 0x09, 0x2a, 0x86, 0x48,
     0x86, 0xf7, 0x0d, 0x01, 0x07, 0x03, 0xa0, 0x82,
@@ -124,12 +124,12 @@ static const byte INVALID_PRIVATE_KEY_VALID_MESSAGE_INFO_WITH_ENCRYPTED_DATA[] =
     0xa5, 0x9d, 0x01, 0xd5, 0x3d
 };
 
-const vsc_data_t test_key_provider_INVALID_PRIVATE_KEY_VALID_MESSAGE_INFO_WITH_ENCRYPTED_DATA = {
-    INVALID_PRIVATE_KEY_VALID_MESSAGE_INFO_WITH_ENCRYPTED_DATA, sizeof(INVALID_PRIVATE_KEY_VALID_MESSAGE_INFO_WITH_ENCRYPTED_DATA)
+const vsc_data_t test_key_provider_INVALID_KEY_VALID_MESSAGE_INFO_WITH_ENCRYPTED_DATA = {
+    INVALID_KEY_VALID_MESSAGE_INFO_WITH_ENCRYPTED_DATA, sizeof(INVALID_KEY_VALID_MESSAGE_INFO_WITH_ENCRYPTED_DATA)
 };
 
 // --------------------------------------------------------------------------
-static const byte INVALID_PRIVATE_KEY_VALID_MESSAGE_INFO[]= {
+static const byte INVALID_KEY_VALID_MESSAGE_INFO[]= {
     0x30, 0x82, 0x01, 0xE1, 0x02, 0x01, 0x00, 0x30,
     0x82, 0x01, 0x3F, 0x06, 0x09, 0x2A, 0x86, 0x48,
     0x86, 0xF7, 0x0D, 0x01, 0x07, 0x03, 0xA0, 0x82,
@@ -193,6 +193,6 @@ static const byte INVALID_PRIVATE_KEY_VALID_MESSAGE_INFO[]= {
     0x88, 0x6B, 0x7E, 0xD5, 0x09
 };
 
-const vsc_data_t test_key_provider_INVALID_PRIVATE_KEY_VALID_MESSAGE_INFO = {
-    INVALID_PRIVATE_KEY_VALID_MESSAGE_INFO, sizeof(INVALID_PRIVATE_KEY_VALID_MESSAGE_INFO)
+const vsc_data_t test_key_provider_INVALID_KEY_VALID_MESSAGE_INFO = {
+    INVALID_KEY_VALID_MESSAGE_INFO, sizeof(INVALID_KEY_VALID_MESSAGE_INFO)
 };

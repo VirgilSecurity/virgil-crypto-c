@@ -65,8 +65,13 @@ set_target_properties(benchmark::benchmark_main
         PROPERTIES
         INTERFACE_INCLUDE_DIRECTORIES
             ${CMAKE_CURRENT_BINARY_DIR}/benchmark/include
-        INTERFACE_LINK_LIBRARIES
-            benchmark::benchmark
         IMPORTED_LOCATION
             ${CMAKE_CURRENT_BINARY_DIR}/benchmark/lib/${CMAKE_STATIC_LIBRARY_PREFIX}benchmark_main${CMAKE_STATIC_LIBRARY_SUFFIX}
+        )
+
+set_property(TARGET benchmark::benchmark_main
+        PROPERTY
+        INTERFACE_LINK_LIBRARIES
+            benchmark::benchmark
+            $<$<BOOL:${WIN32}>:shlwapi>
         )

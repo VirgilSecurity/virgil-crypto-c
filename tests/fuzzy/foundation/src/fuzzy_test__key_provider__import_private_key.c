@@ -32,8 +32,30 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#include "vsc_data.h"
+#include "vscf_alg.h"
+#include "vscf_key.h"
+#include "vscf_key_provider.h"
+#include "test_data_deterministic_key.h"
+#include "test_data_key_provider.h"
+#include "test_data_ed25519.h"
+#include "test_data_rsa.h"
+#include "test_data_secp256r1.h"
 
-extern const vsc_data_t test_key_provider_MESSAGE_SHA512_DIGEST;
-extern const vsc_data_t test_key_provider_INVALID_KEY_VALID_MESSAGE_INFO_WITH_ENCRYPTED_DATA;
-extern const vsc_data_t test_key_provider_INVALID_KEY_VALID_MESSAGE_INFO;
+
+int
+LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
+    vscf_error_t error;
+    vscf_error_reset(&error);
+
+    vscf_key_provider_t *key_provider = vscf_key_provider_new();
+    if (vscf_key_provider_setup_defaults(key_provider) != vscf_status_SUCCESS) {
+        return -1;
+    }
+
+    const vsc_data_t test_data = vsc_data(data, size);
+    vscf_impl_t *private_key = vscf_key_provider_import_private_key(key_provider, test_data, &error);
+
+    vscf_impl_destroy(&private_key);
+    vscf_key_provider_destroy(&key_provider);
+    return 0;
+}
