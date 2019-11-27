@@ -1,6 +1,18 @@
 # virgil-crypto-c ChangeLog (Sorted by date)
 
 
+## Version 0.11.1 released 2019-11-18
+
+### Bugfix
+
+- Lib/Foundation: Fixed a shared key computation for ECC algorithms
+- Wrapper/JS: Fixed cross-project dependencies for JS
+
+### Changes
+
+- Wrapper/JS: Removed rollup-plugin-closure-compiler
+
+
 ## Version 0.11.0 released 2019-10-07
 
 ### Bugfix

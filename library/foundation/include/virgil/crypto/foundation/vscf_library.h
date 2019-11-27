@@ -87,17 +87,19 @@ extern "C" {
 #endif // BYTE_DEFINED
 
 #if defined(_WIN32) || defined(__CYGWIN__)
-#   ifdef VSCF_BUILD_SHARED_LIBS
-#       ifdef __GNUC__
-#           define VSCF_PUBLIC __attribute__ ((dllexport))
+#   if VSCF_SHARED_LIBRARY
+#       if defined(VSCF_INTERNAL_BUILD)
+#           ifdef __GNUC__
+#               define VSCF_PUBLIC __attribute__ ((dllexport))
+#           else
+#               define VSCF_PUBLIC __declspec(dllexport)
+#           endif
 #       else
-#           define VSCF_PUBLIC __declspec(dllexport)
-#       endif
-#   elif !defined(VSCF_INTERNAL_BUILD)
-#       ifdef __GNUC__
-#           define VSCF_PUBLIC __attribute__ ((dllimport))
-#       else
-#           define VSCF_PUBLIC __declspec(dllimport)
+#           ifdef __GNUC__
+#               define VSCF_PUBLIC __attribute__ ((dllimport))
+#           else
+#               define VSCF_PUBLIC __declspec(dllimport)
+#           endif
 #       endif
 #   else
 #       define VSCF_PUBLIC
@@ -114,9 +116,9 @@ extern "C" {
 
 #define VSCF_VERSION_MAJOR 0
 
-#define VSCF_VERSION_MINOR 11
+#define VSCF_VERSION_MINOR 12
 
-#define VSCF_VERSION_PATCH 1
+#define VSCF_VERSION_PATCH 0
 
 #define VSCF_VERSION_MAKE(major, minor, patch) ((major) * 10000 + (minor) * 100 + (patch))
 

@@ -78,6 +78,10 @@ extern "C" {
 #   include <stdatomic.h>
 #endif
 
+#ifndef VSCP_SHARED_LIBRARY
+#cmakedefine01 VSCP_SHARED_LIBRARY
+#endif
+
 #ifndef VSCP_MULTI_THREADING
 #cmakedefine01 VSCP_MULTI_THREADING
 #endif

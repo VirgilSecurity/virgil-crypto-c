@@ -52,6 +52,7 @@ endif()
 target_compile_definitions(foundation
         PUBLIC
             $<BUILD_INTERFACE:VSCF_INTERNAL_BUILD>
+            "VSCF_SHARED_LIBRARY=$<BOOL:${BUILD_SHARED_LIBS}>"
             "VSCF_LIBRARY=$<BOOL:${VSCF_LIBRARY}>"
             "VSCF_MULTI_THREADING=$<BOOL:${VSCF_MULTI_THREADING}>"
             "VSCF_CIPHER=$<BOOL:${VSCF_CIPHER}>"
@@ -169,6 +170,4 @@ target_compile_definitions(foundation
             "VSCF_MESSAGE_INFO_FOOTER=$<BOOL:${VSCF_MESSAGE_INFO_FOOTER}>"
             "VSCF_SIGNED_DATA_INFO=$<BOOL:${VSCF_SIGNED_DATA_INFO}>"
             "VSCF_FOOTER_INFO=$<BOOL:${VSCF_FOOTER_INFO}>"
-        PRIVATE
-            $<$<BOOL:${BUILD_SHARED_LIBS}>:VSCF_BUILD_SHARED_LIBS>
         )

@@ -255,6 +255,10 @@ function features_list_update_from_project (features_list, project)
             .name = "library"
         endnew
 
+        for my.project.cmake_compile_definition
+            copy cmake_compile_definition to features
+        endfor
+
         for my.project.feature
             copy feature to features
         endfor

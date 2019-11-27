@@ -52,6 +52,7 @@ endif()
 target_compile_definitions(phe
         PUBLIC
             $<BUILD_INTERFACE:VSCE_INTERNAL_BUILD>
+            "VSCE_SHARED_LIBRARY=$<BOOL:${BUILD_SHARED_LIBS}>"
             "VSCE_LIBRARY=$<BOOL:${VSCE_LIBRARY}>"
             "VSCE_MULTI_THREADING=$<BOOL:${VSCE_MULTI_THREADING}>"
             "VSCE_ERROR=$<BOOL:${VSCE_ERROR}>"
@@ -60,6 +61,4 @@ target_compile_definitions(phe
             "VSCE_PHE_SERVER=$<BOOL:${VSCE_PHE_SERVER}>"
             "VSCE_PHE_CLIENT=$<BOOL:${VSCE_PHE_CLIENT}>"
             "VSCE_PHE_CIPHER=$<BOOL:${VSCE_PHE_CIPHER}>"
-        PRIVATE
-            $<$<BOOL:${BUILD_SHARED_LIBS}>:VSCE_BUILD_SHARED_LIBS>
         )
