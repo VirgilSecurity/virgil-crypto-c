@@ -55,18 +55,17 @@ public class ChainedKeyAlgInfo implements AutoCloseable, AlgInfo {
     }
 
     /*
-    * Return information about encrypt/decrypt algorithm.
+    * Return algorithm information about l1 key.
     */
-    public AlgInfo l1CipherAlgInfo() {
-        return FoundationJNI.INSTANCE.chainedKeyAlgInfo_l1CipherAlgInfo(this.cCtx);
+    public AlgInfo l1KeyAlgInfo() {
+        return FoundationJNI.INSTANCE.chainedKeyAlgInfo_l1KeyAlgInfo(this.cCtx);
     }
 
     /*
-    * Return information about l2 cipher encrypt/decrypt algorithm,
-    * or NULL if absent.
+    * Return algorithm information about l2 key.
     */
-    public AlgInfo l2CipherAlgInfo() {
-        return FoundationJNI.INSTANCE.chainedKeyAlgInfo_l2CipherAlgInfo(this.cCtx);
+    public AlgInfo l2KeyAlgInfo() {
+        return FoundationJNI.INSTANCE.chainedKeyAlgInfo_l2KeyAlgInfo(this.cCtx);
     }
 
     /*

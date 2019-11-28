@@ -95,8 +95,8 @@ vscf_chained_key_alg_info_cleanup_ctx(vscf_chained_key_alg_info_t *self) {
 
     VSCF_ASSERT_PTR(self);
 
-    vscf_impl_destroy(&self->l1_cipher_alg_info);
-    vscf_impl_destroy(&self->l2_cipher_alg_info);
+    vscf_impl_destroy(&self->l1_key_alg_info);
+    vscf_impl_destroy(&self->l2_key_alg_info);
 }
 
 //
@@ -106,16 +106,16 @@ vscf_chained_key_alg_info_cleanup_ctx(vscf_chained_key_alg_info_t *self) {
 //
 VSCF_PUBLIC void
 vscf_chained_key_alg_info_init_ctx_with_infos(vscf_chained_key_alg_info_t *self, vscf_alg_id_t alg_id,
-        const vscf_impl_t *l1_cipher_alg_info, const vscf_impl_t *l2_cipher_alg_info) {
+        const vscf_impl_t *l1_key_alg_info, const vscf_impl_t *l2_key_alg_info) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT(alg_id != vscf_alg_id_NONE);
-    VSCF_ASSERT_PTR(l1_cipher_alg_info);
-    VSCF_ASSERT_PTR(l2_cipher_alg_info);
+    VSCF_ASSERT_PTR(l1_key_alg_info);
+    VSCF_ASSERT_PTR(l2_key_alg_info);
 
     self->alg_id = alg_id;
-    self->l1_cipher_alg_info = vscf_impl_shallow_copy((vscf_impl_t *)l1_cipher_alg_info);
-    self->l2_cipher_alg_info = vscf_impl_shallow_copy((vscf_impl_t *)l2_cipher_alg_info);
+    self->l1_key_alg_info = vscf_impl_shallow_copy((vscf_impl_t *)l1_key_alg_info);
+    self->l2_key_alg_info = vscf_impl_shallow_copy((vscf_impl_t *)l2_key_alg_info);
 }
 
 //
@@ -125,47 +125,46 @@ vscf_chained_key_alg_info_init_ctx_with_infos(vscf_chained_key_alg_info_t *self,
 //
 VSCF_PUBLIC void
 vscf_chained_key_alg_info_init_ctx_with_infos_disown(vscf_chained_key_alg_info_t *self, vscf_alg_id_t alg_id,
-        vscf_impl_t **l1_cipher_alg_info_ref, vscf_impl_t **l2_cipher_alg_info_ref) {
+        vscf_impl_t **l1_key_alg_info_ref, vscf_impl_t **l2_key_alg_info_ref) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT(alg_id != vscf_alg_id_NONE);
-    VSCF_ASSERT_PTR(l1_cipher_alg_info_ref);
-    VSCF_ASSERT_PTR(*l1_cipher_alg_info_ref);
-    VSCF_ASSERT_PTR(l2_cipher_alg_info_ref);
-    VSCF_ASSERT_PTR(*l2_cipher_alg_info_ref);
+    VSCF_ASSERT_PTR(l1_key_alg_info_ref);
+    VSCF_ASSERT_PTR(*l1_key_alg_info_ref);
+    VSCF_ASSERT_PTR(l2_key_alg_info_ref);
+    VSCF_ASSERT_PTR(*l2_key_alg_info_ref);
 
     self->alg_id = alg_id;
 
-    self->l1_cipher_alg_info = *l1_cipher_alg_info_ref;
-    self->l2_cipher_alg_info = *l2_cipher_alg_info_ref;
+    self->l1_key_alg_info = *l1_key_alg_info_ref;
+    self->l2_key_alg_info = *l2_key_alg_info_ref;
 
-    *l1_cipher_alg_info_ref = NULL;
-    *l2_cipher_alg_info_ref = NULL;
+    *l1_key_alg_info_ref = NULL;
+    *l2_key_alg_info_ref = NULL;
 }
 
 //
-//  Return information about encrypt/decrypt algorithm.
+//  Return algorithm information about l1 key.
 //
 VSCF_PUBLIC const vscf_impl_t *
-vscf_chained_key_alg_info_l1_cipher_alg_info(const vscf_chained_key_alg_info_t *self) {
+vscf_chained_key_alg_info_l1_key_alg_info(const vscf_chained_key_alg_info_t *self) {
 
     VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(self->l1_cipher_alg_info);
+    VSCF_ASSERT_PTR(self->l1_key_alg_info);
 
-    return self->l1_cipher_alg_info;
+    return self->l1_key_alg_info;
 }
 
 //
-//  Return information about l2 cipher encrypt/decrypt algorithm,
-//  or NULL if absent.
+//  Return algorithm information about l2 key.
 //
 VSCF_PUBLIC const vscf_impl_t *
-vscf_chained_key_alg_info_l2_cipher_alg_info(const vscf_chained_key_alg_info_t *self) {
+vscf_chained_key_alg_info_l2_key_alg_info(const vscf_chained_key_alg_info_t *self) {
 
     VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(self->l2_cipher_alg_info);
+    VSCF_ASSERT_PTR(self->l2_key_alg_info);
 
-    return self->l2_cipher_alg_info;
+    return self->l2_key_alg_info;
 }
 
 //

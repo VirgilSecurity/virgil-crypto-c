@@ -7,8 +7,8 @@
         <interface name="alg info"/>
 
         <property name="alg id" enum="alg id"/>
-        <property name="l1 cipher alg info" interface="alg info"/>
-        <property name="l2 cipher alg info" interface="alg info"/>
+        <property name="l1 key alg info" interface="alg info"/>
+        <property name="l2 key alg info" interface="alg info"/>
 
         <constructor name="with infos" visibility="private">
             Create chained algorithm information.
@@ -16,8 +16,8 @@
             Note, keys ownership is preserved.
 
             <argument name="alg id" enum="alg id"/>
-            <argument name="l1 cipher alg info" interface="alg info"/>
-            <argument name="l2 cipher alg info" interface="alg info"/>
+            <argument name="l1 key alg info" interface="alg info"/>
+            <argument name="l2 key alg info" interface="alg info"/>
         </constructor>
 
         <constructor name="with infos disown" visibility="private">
@@ -26,19 +26,18 @@
             Note, keys ownership is transferred.
 
             <argument name="alg id" enum="alg id"/>
-            <argument name="l1 cipher alg info" interface="alg info" access="disown"/>
-            <argument name="l2 cipher alg info" interface="alg info" access="disown"/>
+            <argument name="l1 key alg info" interface="alg info" access="disown"/>
+            <argument name="l2 key alg info" interface="alg info" access="disown"/>
         </constructor>
 
-        <method name="l1 cipher alg info" is_const="1" declaration="public">
-            Return information about encrypt/decrypt algorithm.
+        <method name="l1 key alg info" is_const="1" declaration="public">
+            Return algorithm information about l1 key.
 
             <return interface="alg info"/>
         </method>
 
-        <method name="l2 cipher alg info" is_const="1" declaration="public">
-            Return information about l2 cipher encrypt/decrypt algorithm,
-            or NULL if absent.
+        <method name="l2 key alg info" is_const="1" declaration="public">
+            Return algorithm information about l2 key.
 
             <return interface="alg info" is_optional="1"/>
         </method>
@@ -48,49 +47,54 @@
         Handles chained public key.
 
         Chained public key contains 2 public keys:
-            - l1 cipher key - is used for plain text encryption;
-            - l2 cipher key - is used for l1 output encryption.
+            - l1 key:
+                - can be used for plain text encryption;
+                - can be used to verify l1 signature;
+            - l2 key:
+                - can be used for l1 output encryption;
+                - can be used to verify l2 signature.
+
 
         <require interface="alg info"/>
         <require interface="public key"/>
 
         <property name="alg info" interface="alg info"/>
-        <property name="l1 cipher key" interface="public key"/>
-        <property name="l2 cipher key" interface="public key"/>
+        <property name="l1 key" interface="public key"/>
+        <property name="l2 key" interface="public key"/>
 
         <interface name="key"/>
         <interface name="public key"/>
 
         <constructor name="with keys" visibility="private">
             Create a chained public key with 2 public keys suitable for
-            encryption.
+            encryption and/or verifying signatures.
 
             Note, keys ownership is kept.
 
             <argument name="alg info" interface="alg info" access="disown"/>
-            <argument name="l1 cipher key" interface="public key"/>
-            <argument name="l2 cipher key" interface="public key"/>
+            <argument name="l1 key" interface="public key"/>
+            <argument name="l2 key" interface="public key"/>
         </constructor>
 
         <constructor name="with imported keys" visibility="private">
             Create a chained public key with 2 public keys suitable for
-            encryption.
+            encryption and/or verifying signatures.
 
             Note, keys ownership is transferred.
 
             <argument name="alg info" interface="alg info"/>
-            <argument name="l1 cipher key" interface="public key" access="disown"/>
-            <argument name="l2 cipher key" interface="public key" access="disown"/>
+            <argument name="l1 key" interface="public key" access="disown"/>
+            <argument name="l2 key" interface="public key" access="disown"/>
         </constructor>
 
-        <method name="l1 cipher key" declaration="public" is_const="1">
-            Return l1 cipher public key.
+        <method name="l1 key" declaration="public" is_const="1">
+            Return l1 public key.
 
             <return interface="public key"/>
         </method>
 
-        <method name="l2 cipher key" declaration="public" is_const="1">
-            Return l2 cipher public key.
+        <method name="l2 key" declaration="public" is_const="1">
+            Return l2 public key.
 
             <return interface="public key" is_optional="1"/>
         </method>
@@ -100,50 +104,54 @@
         Handles chained private key.
 
         Chained private key contains 2 private keys:
-            - l1 cipher key - is used for decryption data decrypted by the l2;
-            - l2 cipher key - is used for decryption given data.
+            - l1 key:
+                * can be used for decryption data decrypted by the l2;
+                - can be used to produce l1 signature;
+            - l2 key:
+                - can be used for decryption data;
+                - can be used to produce l1 signature.
 
         <require interface="alg info"/>
         <require interface="private key"/>
         <require impl="chained public key"/>
 
         <property name="alg info" interface="alg info"/>
-        <property name="l1 cipher key" interface="private key"/>
-        <property name="l2 cipher key" interface="private key"/>
+        <property name="l1 key" interface="private key"/>
+        <property name="l2 key" interface="private key"/>
 
         <interface name="key"/>
         <interface name="private key"/>
 
         <constructor name="with keys" visibility="private">
             Create a chained private key with 2 keys suitable for
-            decryption.
+            decryption and/or to produce signatures.
 
             Note, keys ownership is kept.
 
             <argument name="alg info" interface="alg info" access="disown"/>
-            <argument name="l1 cipher key" interface="public key"/>
-            <argument name="l2 cipher key" interface="public key"/>
+            <argument name="l1 key" interface="public key"/>
+            <argument name="l2 key" interface="public key"/>
         </constructor>
 
         <constructor name="with imported keys" visibility="private">
             Create a chained private key with 2 keys suitable for
-            decryption.
+            decryption and/or to produce signatures.
 
             Note, keys ownership is transferred.
 
             <argument name="alg info" interface="alg info"/>
-            <argument name="l1 cipher key" interface="public key" access="disown"/>
-            <argument name="l2 cipher key" interface="public key" access="disown"/>
+            <argument name="l1 key" interface="public key" access="disown"/>
+            <argument name="l2 key" interface="public key" access="disown"/>
         </constructor>
 
-        <method name="l1 cipher key" declaration="public" is_const="1">
-            Return l1 cipher private key.
+        <method name="l1 key" declaration="public" is_const="1">
+            Return l1 private key.
 
             <return interface="private key"/>
         </method>
 
-        <method name="l2 cipher key" declaration="public" is_const="1">
-            Return l2 cipher private key.
+        <method name="l2 key" declaration="public" is_const="1">
+            Return l2 private key.
 
             <return interface="private key" is_optional="1"/>
         </method>
@@ -181,6 +189,7 @@
             <constant name="can export private key" value="true"/>
         </interface>
         <interface name="key cipher"/>
+        <interface name="key signer"/>
 
         <dependency name="random" interface="random"/>
 
@@ -191,12 +200,14 @@
         </method>
 
         <method name="make key" declaration="public" is_const="1">
-            Make chained private key from given.
+            Make chained private key from given keys that are suitable for
+            encryption and decrypt, and/or signing verifying.
 
-            Note, l2 cipher should be able to encrypt data produced by the l1 cipher.
+            Note, l2 should be able to encrypt data produced by the l1 cipher,
+            if keys are used for encryption.
 
-            <argument name="l1 cipher key" interface="private key"/>
-            <argument name="l2 cipher key" interface="private key"/>
+            <argument name="l1 key" interface="private key"/>
+            <argument name="l2 key" interface="private key"/>
             <argument name="error" class="error" access="readwrite"/>
 
             <return interface="private key" access="disown"/>

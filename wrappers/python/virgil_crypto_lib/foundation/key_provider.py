@@ -83,12 +83,21 @@ class KeyProvider(object):
         instance = VscfImplTag.get_type(result)[0].take_c_ctx(cast(result, POINTER(VscfImplTag.get_type(result)[1])))
         return instance
 
-    def generate_post_quantum_private_key(self, cipher_alg_id):
-        """Generate new compound private key with post-quantum algorithms.
-
-        Note, cipher should not be post-quantum."""
+    def generate_chained_private_key(self, l1_alg_id, l2_alg_id):
+        """Generate new chained private key with given algorithms."""
         error = vscf_error_t()
-        result = self._lib_vscf_key_provider.vscf_key_provider_generate_post_quantum_private_key(self.ctx, cipher_alg_id, error)
+        result = self._lib_vscf_key_provider.vscf_key_provider_generate_chained_private_key(self.ctx, l1_alg_id, l2_alg_id, error)
+        VscfStatus.handle_status(error.status)
+        instance = VscfImplTag.get_type(result)[0].take_c_ctx(cast(result, POINTER(VscfImplTag.get_type(result)[1])))
+        return instance
+
+    def generate_compound_chained_private_key(self, cipher_l1_alg_id, cipher_l2_alg_id, signer_l1_alg_id, signer_l2_alg_id):
+        """Generate new compound private key with nested chained private keys.
+
+        Note, l2 algorithm identifiers can be NONE, in this case regular key
+        will be crated instead of chained key."""
+        error = vscf_error_t()
+        result = self._lib_vscf_key_provider.vscf_key_provider_generate_compound_chained_private_key(self.ctx, cipher_l1_alg_id, cipher_l2_alg_id, signer_l1_alg_id, signer_l2_alg_id, error)
         VscfStatus.handle_status(error.status)
         instance = VscfImplTag.get_type(result)[0].take_c_ctx(cast(result, POINTER(VscfImplTag.get_type(result)[1])))
         return instance

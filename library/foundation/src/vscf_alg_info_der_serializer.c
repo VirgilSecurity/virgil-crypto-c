@@ -1061,8 +1061,8 @@ vscf_alg_info_der_serializer_serialized_chained_key_alg_info_len(
     VSCF_ASSERT_PTR(alg_info);
 
     const vscf_chained_key_alg_info_t *compound_alg_info = (const vscf_chained_key_alg_info_t *)alg_info;
-    const vscf_impl_t *l1_cipher_alg_info = vscf_chained_key_alg_info_l1_cipher_alg_info(compound_alg_info);
-    const vscf_impl_t *l2_cipher_alg_info = vscf_chained_key_alg_info_l2_cipher_alg_info(compound_alg_info);
+    const vscf_impl_t *l1_cipher_alg_info = vscf_chained_key_alg_info_l1_key_alg_info(compound_alg_info);
+    const vscf_impl_t *l2_cipher_alg_info = vscf_chained_key_alg_info_l2_key_alg_info(compound_alg_info);
 
     const size_t l1_cipher_alg_info_len = vscf_alg_info_der_serializer_serialized_len(self, l1_cipher_alg_info);
     const size_t l2_cipher_alg_info_len = vscf_alg_info_der_serializer_serialized_len(self, l2_cipher_alg_info);
@@ -1106,8 +1106,8 @@ vscf_alg_info_der_serializer_serialize_chained_key_alg_info(
 
     const vscf_chained_key_alg_info_t *compound_alg_info = (const vscf_chained_key_alg_info_t *)alg_info;
     const vscf_alg_id_t alg_id = vscf_chained_key_alg_info_alg_id(compound_alg_info);
-    const vscf_impl_t *l1_cipher_alg_info = vscf_chained_key_alg_info_l1_cipher_alg_info(compound_alg_info);
-    const vscf_impl_t *l2_cipher_alg_info = vscf_chained_key_alg_info_l2_cipher_alg_info(compound_alg_info);
+    const vscf_impl_t *l1_cipher_alg_info = vscf_chained_key_alg_info_l1_key_alg_info(compound_alg_info);
+    const vscf_impl_t *l2_cipher_alg_info = vscf_chained_key_alg_info_l2_key_alg_info(compound_alg_info);
 
     //
     //  Write: ChainedKeyParams
@@ -1156,6 +1156,7 @@ vscf_alg_info_der_serializer_serialize_inplace(vscf_alg_info_der_serializer_t *s
     case vscf_alg_id_FALCON:
     case vscf_alg_id_ROUND5:
     case vscf_alg_id_ROUND5_ND_5PKE_5D:
+    case vscf_alg_id_POST_QUANTUM:
         return vscf_alg_info_der_serializer_serialize_simple_alg_info(self, alg_info);
 
     case vscf_alg_id_SECP256R1:
@@ -1221,6 +1222,7 @@ vscf_alg_info_der_serializer_serialized_len(const vscf_alg_info_der_serializer_t
     case vscf_alg_id_CURVE25519:
     case vscf_alg_id_FALCON:
     case vscf_alg_id_ROUND5:
+    case vscf_alg_id_POST_QUANTUM:
     case vscf_alg_id_ROUND5_ND_5PKE_5D:
         return vscf_alg_info_der_serializer_serialized_simple_alg_info_len(self, alg_info);
 

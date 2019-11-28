@@ -171,8 +171,7 @@ test__generate_post_quantum_key__with_default_rng__success(void) {
     //
     //  Generate key
     //
-    vscf_impl_t *private_key =
-            vscf_key_provider_generate_post_quantum_private_key(key_provider, vscf_alg_id_CURVE25519, &error);
+    vscf_impl_t *private_key = vscf_key_provider_generate_private_key(key_provider, vscf_alg_id_POST_QUANTUM, &error);
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
     TEST_ASSERT_NOT_NULL(private_key);
 
@@ -187,19 +186,32 @@ test__generate_post_quantum_key__with_default_rng__success(void) {
     TEST_ASSERT_EQUAL(vscf_alg_id_CHAINED_KEY, vscf_key_alg_id(cipher_private_key));
 
     TEST_ASSERT_EQUAL(vscf_impl_tag_CHAINED_PRIVATE_KEY, vscf_impl_tag(cipher_private_key));
-    const vscf_chained_private_key_t *chained_private_key = (const vscf_chained_private_key_t *)cipher_private_key;
+    const vscf_chained_private_key_t *cipher_chained_private_key =
+            (const vscf_chained_private_key_t *)cipher_private_key;
 
-    const vscf_impl_t *l1_cipher_private_key = vscf_chained_private_key_l1_cipher_key(chained_private_key);
+    const vscf_impl_t *l1_cipher_private_key = vscf_chained_private_key_l1_key(cipher_chained_private_key);
     TEST_ASSERT_NOT_NULL(l1_cipher_private_key);
     TEST_ASSERT_EQUAL(vscf_alg_id_CURVE25519, vscf_key_alg_id(l1_cipher_private_key));
 
-    const vscf_impl_t *l2_cipher_private_key = vscf_chained_private_key_l2_cipher_key(chained_private_key);
+    const vscf_impl_t *l2_cipher_private_key = vscf_chained_private_key_l2_key(cipher_chained_private_key);
     TEST_ASSERT_NOT_NULL(l2_cipher_private_key);
     TEST_ASSERT_EQUAL(vscf_alg_id_ROUND5_ND_5PKE_5D, vscf_key_alg_id(l2_cipher_private_key));
 
     const vscf_impl_t *signer_private_key = vscf_compound_private_key_signer_key(compound_private_key);
     TEST_ASSERT_NOT_NULL(signer_private_key);
-    TEST_ASSERT_EQUAL(vscf_alg_id_FALCON, vscf_key_alg_id(signer_private_key));
+    TEST_ASSERT_EQUAL(vscf_alg_id_CHAINED_KEY, vscf_key_alg_id(cipher_private_key));
+
+    TEST_ASSERT_EQUAL(vscf_impl_tag_CHAINED_PRIVATE_KEY, vscf_impl_tag(cipher_private_key));
+    const vscf_chained_private_key_t *signer_chained_private_key =
+            (const vscf_chained_private_key_t *)signer_private_key;
+
+    const vscf_impl_t *l1_signer_private_key = vscf_chained_private_key_l1_key(signer_chained_private_key);
+    TEST_ASSERT_NOT_NULL(l1_signer_private_key);
+    TEST_ASSERT_EQUAL(vscf_alg_id_ED25519, vscf_key_alg_id(l1_signer_private_key));
+
+    const vscf_impl_t *l2_signer_private_key = vscf_chained_private_key_l2_key(signer_chained_private_key);
+    TEST_ASSERT_NOT_NULL(l2_signer_private_key);
+    TEST_ASSERT_EQUAL(vscf_alg_id_FALCON, vscf_key_alg_id(l2_signer_private_key));
 
     //
     //  Check public keys
@@ -215,17 +227,28 @@ test__generate_post_quantum_key__with_default_rng__success(void) {
     TEST_ASSERT_EQUAL(vscf_impl_tag_CHAINED_PUBLIC_KEY, vscf_impl_tag(cipher_public_key));
     const vscf_chained_public_key_t *chained_public_key = (const vscf_chained_public_key_t *)cipher_public_key;
 
-    const vscf_impl_t *l1_cipher_public_key = vscf_chained_public_key_l1_cipher_key(chained_public_key);
+    const vscf_impl_t *l1_cipher_public_key = vscf_chained_public_key_l1_key(chained_public_key);
     TEST_ASSERT_NOT_NULL(l1_cipher_public_key);
     TEST_ASSERT_EQUAL(vscf_alg_id_CURVE25519, vscf_key_alg_id(l1_cipher_public_key));
 
-    const vscf_impl_t *l2_cipher_public_key = vscf_chained_public_key_l2_cipher_key(chained_public_key);
+    const vscf_impl_t *l2_cipher_public_key = vscf_chained_public_key_l2_key(chained_public_key);
     TEST_ASSERT_NOT_NULL(l2_cipher_public_key);
     TEST_ASSERT_EQUAL(vscf_alg_id_ROUND5_ND_5PKE_5D, vscf_key_alg_id(l2_cipher_public_key));
 
     const vscf_impl_t *signer_public_key = vscf_compound_public_key_signer_key(compound_public_key);
     TEST_ASSERT_NOT_NULL(signer_public_key);
-    TEST_ASSERT_EQUAL(vscf_alg_id_FALCON, vscf_key_alg_id(signer_public_key));
+    TEST_ASSERT_EQUAL(vscf_alg_id_CHAINED_KEY, vscf_key_alg_id(signer_public_key));
+
+    TEST_ASSERT_EQUAL(vscf_impl_tag_CHAINED_PUBLIC_KEY, vscf_impl_tag(signer_public_key));
+    const vscf_chained_public_key_t *signer_chained_public_key = (const vscf_chained_public_key_t *)signer_public_key;
+
+    const vscf_impl_t *l1_signer_public_key = vscf_chained_public_key_l1_key(signer_chained_public_key);
+    TEST_ASSERT_NOT_NULL(l1_signer_public_key);
+    TEST_ASSERT_EQUAL(vscf_alg_id_ED25519, vscf_key_alg_id(l1_signer_public_key));
+
+    const vscf_impl_t *l2_signer_public_key = vscf_chained_public_key_l2_key(signer_chained_public_key);
+    TEST_ASSERT_NOT_NULL(l2_signer_public_key);
+    TEST_ASSERT_EQUAL(vscf_alg_id_FALCON, vscf_key_alg_id(l2_signer_public_key));
 
     //
     //  Cleanup
@@ -594,6 +617,16 @@ test__import_public_key__curve25519_round5_falcon_and_then_export__are_equals(vo
 #endif
 }
 
+void
+test__import_public_key__curve25519_round5_ed25519_falcon_and_then_export__are_equals(void) {
+#if VSCF_POST_QUANTUM && VSCF_ROUND5 && VSCF_FALCON
+    inner_test__import_public_key__then_export__are_equals(
+            test_data_pqc_CURVE25519_ROUND5_ND_5PKE_5D_ED25519_FALCON_PUBLIC_KEY_PKCS8_DER);
+#else
+    TEST_IGNORE_MESSAGE("Feature VSCF_POST_QUANTUM and/or VSCF_ROUND5 and/or VSCF_FALCON are disabled");
+#endif
+}
+
 //
 //  Private keys.
 //
@@ -645,6 +678,16 @@ test__import_private_key__curve25519_round5_falcon_and_then_export__are_equals(v
 #endif
 }
 
+void
+test__import_private_key__curve25519_round5__ed25519falcon_and_then_export__are_equals(void) {
+#if VSCF_POST_QUANTUM && VSCF_ROUND5 && VSCF_FALCON
+    inner_test__import_private_key__then_export__are_equals(
+            test_data_pqc_CURVE25519_ROUND5_ND_5PKE_5D_ED25519_FALCON_PRIVATE_KEY_PKCS8_DER);
+#else
+    TEST_IGNORE_MESSAGE("Feature VSCF_POST_QUANTUM and/or VSCF_ROUND5 and/or VSCF_FALCON are disabled");
+#endif
+}
+
 // --------------------------------------------------------------------------
 //  Import / Export invalid keys.
 // --------------------------------------------------------------------------
@@ -689,7 +732,7 @@ test__import_private_key__invalid_private_key__expected_status_bad_der_private_k
 }
 
 void
-test__import_private_key__invalid_private_key_valid_message_info_with_encrypted_data___expected_status_bad_pkcs8_private_key(
+test__import_private_key__invalid_private_key_valid_message_info_with_encrypted_data__expected_status_bad_pkcs8_private_key(
         void) {
 
     vscf_error_t error;
@@ -709,7 +752,7 @@ test__import_private_key__invalid_private_key_valid_message_info_with_encrypted_
 }
 
 void
-test__import_private_key__invalid_private_key_valid_message_info___expected_status_bad_pkcs8_private_key(void) {
+test__import_private_key__invalid_private_key_valid_message_info__expected_status_bad_pkcs8_private_key(void) {
 
     vscf_error_t error;
     vscf_error_reset(&error);
@@ -728,7 +771,7 @@ test__import_private_key__invalid_private_key_valid_message_info___expected_stat
 }
 
 void
-test__import_public_key__invalid_public_key_valid_message_info_with_encrypted_data___expected_status_bad_der_public_key(
+test__import_public_key__invalid_public_key_valid_message_info_with_encrypted_data__expected_status_bad_der_public_key(
         void) {
 
     vscf_error_t error;
@@ -748,7 +791,7 @@ test__import_public_key__invalid_public_key_valid_message_info_with_encrypted_da
 }
 
 void
-test__import_public_key__invalid_public_key_valid_message_info___expected_status_bad_der_public_key(void) {
+test__import_public_key__invalid_public_key_valid_message_info__expected_status_bad_der_public_key(void) {
 
     vscf_error_t error;
     vscf_error_reset(&error);
@@ -767,7 +810,7 @@ test__import_public_key__invalid_public_key_valid_message_info___expected_status
 }
 
 void
-test__import_private_key__fuzzer_founded_NULL___expected_status_bad_pkcs8_private_key(void) {
+test__import_private_key__fuzzer_founded_NULL__expected_status_bad_pkcs8_private_key(void) {
     vscf_error_t error;
     vscf_error_reset(&error);
 
@@ -824,6 +867,7 @@ main(void) {
     RUN_TEST(test__import_public_key__round5_and_then_export__are_equals);
     RUN_TEST(test__import_public_key__falcon_and_then_export__are_equals);
     RUN_TEST(test__import_public_key__curve25519_round5_falcon_and_then_export__are_equals);
+    RUN_TEST(test__import_public_key__curve25519_round5_ed25519_falcon_and_then_export__are_equals);
 
 
     RUN_TEST(test__import_private_key__curve25519_and_then_export__are_equals);
@@ -833,17 +877,18 @@ main(void) {
     RUN_TEST(test__import_private_key__round5_and_then_export__are_equals);
     RUN_TEST(test__import_private_key__falcon_and_then_export__are_equals);
     RUN_TEST(test__import_private_key__curve25519_round5_falcon_and_then_export__are_equals);
+    RUN_TEST(test__import_private_key__curve25519_round5__ed25519falcon_and_then_export__are_equals);
 
     RUN_TEST(test__import_public_key__invalid_public_key__expected_status_bad_der_public_key);
     RUN_TEST(test__import_private_key__invalid_private_key__expected_status_bad_der_private_key);
 
     RUN_TEST(
-            test__import_private_key__invalid_private_key_valid_message_info_with_encrypted_data___expected_status_bad_pkcs8_private_key);
-    RUN_TEST(test__import_private_key__invalid_private_key_valid_message_info___expected_status_bad_pkcs8_private_key);
+            test__import_private_key__invalid_private_key_valid_message_info_with_encrypted_data__expected_status_bad_pkcs8_private_key);
+    RUN_TEST(test__import_private_key__invalid_private_key_valid_message_info__expected_status_bad_pkcs8_private_key);
     RUN_TEST(
-            test__import_public_key__invalid_public_key_valid_message_info_with_encrypted_data___expected_status_bad_der_public_key);
-    RUN_TEST(test__import_public_key__invalid_public_key_valid_message_info___expected_status_bad_der_public_key);
-    RUN_TEST(test__import_private_key__fuzzer_founded_NULL___expected_status_bad_pkcs8_private_key);
+            test__import_public_key__invalid_public_key_valid_message_info_with_encrypted_data__expected_status_bad_der_public_key);
+    RUN_TEST(test__import_public_key__invalid_public_key_valid_message_info__expected_status_bad_der_public_key);
+    RUN_TEST(test__import_private_key__fuzzer_founded_NULL__expected_status_bad_pkcs8_private_key);
 #else
     RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
 #endif

@@ -198,13 +198,15 @@ VSCF_PUBLIC vscf_status_t
 vscf_chained_key_alg_setup_defaults(vscf_chained_key_alg_t *self) VSCF_NODISCARD;
 
 //
-//  Make chained private key from given.
+//  Make chained private key from given keys that are suitable for
+//  encryption and decrypt, and/or signing verifying.
 //
-//  Note, l2 cipher should be able to encrypt data produced by the l1 cipher.
+//  Note, l2 should be able to encrypt data produced by the l1 cipher,
+//  if keys are used for encryption.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_chained_key_alg_make_key(const vscf_chained_key_alg_t *self, const vscf_impl_t *l1_cipher_key,
-        const vscf_impl_t *l2_cipher_key, vscf_error_t *error);
+vscf_chained_key_alg_make_key(const vscf_chained_key_alg_t *self, const vscf_impl_t *l1_key, const vscf_impl_t *l2_key,
+        vscf_error_t *error);
 
 //
 //  Provide algorithm identificator.
@@ -320,6 +322,39 @@ vscf_chained_key_alg_decrypted_len(const vscf_chained_key_alg_t *self, const vsc
 VSCF_PUBLIC vscf_status_t
 vscf_chained_key_alg_decrypt(const vscf_chained_key_alg_t *self, const vscf_impl_t *private_key, vsc_data_t data,
         vsc_buffer_t *out) VSCF_NODISCARD;
+
+//
+//  Check if algorithm can sign data digest with a given key.
+//
+VSCF_PUBLIC bool
+vscf_chained_key_alg_can_sign(const vscf_chained_key_alg_t *self, const vscf_impl_t *private_key);
+
+//
+//  Return length in bytes required to hold signature.
+//  Return zero if a given private key can not produce signatures.
+//
+VSCF_PUBLIC size_t
+vscf_chained_key_alg_signature_len(const vscf_chained_key_alg_t *self, const vscf_impl_t *private_key);
+
+//
+//  Sign data digest with a given private key.
+//
+VSCF_PUBLIC vscf_status_t
+vscf_chained_key_alg_sign_hash(const vscf_chained_key_alg_t *self, const vscf_impl_t *private_key,
+        vscf_alg_id_t hash_id, vsc_data_t digest, vsc_buffer_t *signature) VSCF_NODISCARD;
+
+//
+//  Check if algorithm can verify data digest with a given key.
+//
+VSCF_PUBLIC bool
+vscf_chained_key_alg_can_verify(const vscf_chained_key_alg_t *self, const vscf_impl_t *public_key);
+
+//
+//  Verify data digest with a given public key and signature.
+//
+VSCF_PUBLIC bool
+vscf_chained_key_alg_verify_hash(const vscf_chained_key_alg_t *self, const vscf_impl_t *public_key,
+        vscf_alg_id_t hash_id, vsc_data_t digest, vsc_data_t signature);
 
 
 // --------------------------------------------------------------------------

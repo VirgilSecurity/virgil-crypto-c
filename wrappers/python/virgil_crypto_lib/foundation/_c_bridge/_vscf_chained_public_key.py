@@ -46,8 +46,12 @@ class VscfChainedPublicKey(object):
     """Handles chained public key.
 
     Chained public key contains 2 public keys:
-        - l1 cipher key - is used for plain text encryption;
-        - l2 cipher key - is used for l1 output encryption."""
+        - l1 key:
+            - can be used for plain text encryption;
+            - can be used to verify l1 signature;
+        - l2 key:
+            - can be used for l1 output encryption;
+            - can be used to verify l2 signature."""
 
     def __init__(self):
         """Create underlying C context."""
@@ -109,19 +113,19 @@ class VscfChainedPublicKey(object):
         vscf_chained_public_key_is_valid.restype = c_bool
         return vscf_chained_public_key_is_valid(ctx)
 
-    def vscf_chained_public_key_l1_cipher_key(self, ctx):
-        """Return l1 cipher public key."""
-        vscf_chained_public_key_l1_cipher_key = self._lib.vscf_chained_public_key_l1_cipher_key
-        vscf_chained_public_key_l1_cipher_key.argtypes = [POINTER(vscf_chained_public_key_t)]
-        vscf_chained_public_key_l1_cipher_key.restype = POINTER(vscf_impl_t)
-        return vscf_chained_public_key_l1_cipher_key(ctx)
+    def vscf_chained_public_key_l1_key(self, ctx):
+        """Return l1 public key."""
+        vscf_chained_public_key_l1_key = self._lib.vscf_chained_public_key_l1_key
+        vscf_chained_public_key_l1_key.argtypes = [POINTER(vscf_chained_public_key_t)]
+        vscf_chained_public_key_l1_key.restype = POINTER(vscf_impl_t)
+        return vscf_chained_public_key_l1_key(ctx)
 
-    def vscf_chained_public_key_l2_cipher_key(self, ctx):
-        """Return l2 cipher public key."""
-        vscf_chained_public_key_l2_cipher_key = self._lib.vscf_chained_public_key_l2_cipher_key
-        vscf_chained_public_key_l2_cipher_key.argtypes = [POINTER(vscf_chained_public_key_t)]
-        vscf_chained_public_key_l2_cipher_key.restype = POINTER(vscf_impl_t)
-        return vscf_chained_public_key_l2_cipher_key(ctx)
+    def vscf_chained_public_key_l2_key(self, ctx):
+        """Return l2 public key."""
+        vscf_chained_public_key_l2_key = self._lib.vscf_chained_public_key_l2_key
+        vscf_chained_public_key_l2_key.argtypes = [POINTER(vscf_chained_public_key_t)]
+        vscf_chained_public_key_l2_key.restype = POINTER(vscf_impl_t)
+        return vscf_chained_public_key_l2_key(ctx)
 
     def vscf_chained_public_key_shallow_copy(self, ctx):
         vscf_chained_public_key_shallow_copy = self._lib.vscf_chained_public_key_shallow_copy

@@ -291,7 +291,9 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
 
 JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyProvider_1generateCompoundPrivateKey (JNIEnv *, jobject, jlong, jobject, jobject);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyProvider_1generatePostQuantumPrivateKey (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyProvider_1generateChainedPrivateKey (JNIEnv *, jobject, jlong, jobject, jobject);
+
+JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyProvider_1generateCompoundChainedPrivateKey (JNIEnv *, jobject, jlong, jobject, jobject, jobject, jobject);
 
 JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyProvider_1importPrivateKey (JNIEnv *, jobject, jlong, jbyteArray);
 
@@ -1517,9 +1519,9 @@ JNIEXPORT jboolean JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJ
 
 JNIEXPORT jboolean JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_compoundKeyAlg_1verifyHash (JNIEnv *, jobject, jlong, jobject, jobject, jbyteArray, jbyteArray);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_chainedKeyAlgInfo_1l1CipherAlgInfo (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_chainedKeyAlgInfo_1l1KeyAlgInfo (JNIEnv *, jobject, jlong);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_chainedKeyAlgInfo_1l2CipherAlgInfo (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_chainedKeyAlgInfo_1l2KeyAlgInfo (JNIEnv *, jobject, jlong);
 
 JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_chainedKeyAlgInfo_1new__ (JNIEnv *, jobject);
 
@@ -1527,9 +1529,9 @@ JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_c
 
 JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_chainedKeyAlgInfo_1algId (JNIEnv *, jobject, jlong);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_chainedPublicKey_1l1CipherKey (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_chainedPublicKey_1l1Key (JNIEnv *, jobject, jlong);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_chainedPublicKey_1l2CipherKey (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_chainedPublicKey_1l2Key (JNIEnv *, jobject, jlong);
 
 JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_chainedPublicKey_1new__ (JNIEnv *, jobject);
 
@@ -1545,9 +1547,9 @@ JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_c
 
 JNIEXPORT jboolean JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_chainedPublicKey_1isValid (JNIEnv *, jobject, jlong);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_chainedPrivateKey_1l1CipherKey (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_chainedPrivateKey_1l1Key (JNIEnv *, jobject, jlong);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_chainedPrivateKey_1l2CipherKey (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_chainedPrivateKey_1l2Key (JNIEnv *, jobject, jlong);
 
 JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_chainedPrivateKey_1new__ (JNIEnv *, jobject);
 
@@ -1602,6 +1604,16 @@ JNIEXPORT jboolean JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJ
 JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_chainedKeyAlg_1decryptedLen (JNIEnv *, jobject, jlong, jobject, jint);
 
 JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_chainedKeyAlg_1decrypt (JNIEnv *, jobject, jlong, jobject, jbyteArray);
+
+JNIEXPORT jboolean JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_chainedKeyAlg_1canSign (JNIEnv *, jobject, jlong, jobject);
+
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_chainedKeyAlg_1signatureLen (JNIEnv *, jobject, jlong, jobject);
+
+JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_chainedKeyAlg_1signHash (JNIEnv *, jobject, jlong, jobject, jobject, jbyteArray);
+
+JNIEXPORT jboolean JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_chainedKeyAlg_1canVerify (JNIEnv *, jobject, jlong, jobject);
+
+JNIEXPORT jboolean JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_chainedKeyAlg_1verifyHash (JNIEnv *, jobject, jlong, jobject, jobject, jbyteArray, jbyteArray);
 
 JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_simpleAlgInfo_1new__ (JNIEnv *, jobject);
 

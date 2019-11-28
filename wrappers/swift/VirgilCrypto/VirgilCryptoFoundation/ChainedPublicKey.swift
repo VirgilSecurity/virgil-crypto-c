@@ -39,8 +39,12 @@ import VSCFoundation
 /// Handles chained public key.
 ///
 /// Chained public key contains 2 public keys:
-///     - l1 cipher key - is used for plain text encryption;
-///     - l2 cipher key - is used for l1 output encryption.
+///     - l1 key:
+///         - can be used for plain text encryption;
+///         - can be used to verify l1 signature;
+///     - l2 key:
+///         - can be used for l1 output encryption;
+///         - can be used to verify l2 signature.
 @objc(VSCFChainedPublicKey) public class ChainedPublicKey: NSObject, Key, PublicKey {
 
     /// Handle underlying C context.
@@ -71,16 +75,16 @@ import VSCFoundation
         vscf_chained_public_key_delete(self.c_ctx)
     }
 
-    /// Return l1 cipher public key.
-    @objc public func l1CipherKey() -> PublicKey {
-        let proxyResult = vscf_chained_public_key_l1_cipher_key(self.c_ctx)
+    /// Return l1 public key.
+    @objc public func l1Key() -> PublicKey {
+        let proxyResult = vscf_chained_public_key_l1_key(self.c_ctx)
 
         return FoundationImplementation.wrapPublicKey(use: proxyResult!)
     }
 
-    /// Return l2 cipher public key.
-    @objc public func l2CipherKey() -> PublicKey {
-        let proxyResult = vscf_chained_public_key_l2_cipher_key(self.c_ctx)
+    /// Return l2 public key.
+    @objc public func l2Key() -> PublicKey {
+        let proxyResult = vscf_chained_public_key_l2_key(self.c_ctx)
 
         return FoundationImplementation.wrapPublicKey(use: proxyResult!)
     }

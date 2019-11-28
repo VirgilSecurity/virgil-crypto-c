@@ -54,7 +54,9 @@
 #include "vscf_key_provider.h"
 
 #include "test_data_curve25519.h"
+#include "test_data_ed25519.h"
 #include "test_data_round5.h"
+#include "test_data_falcon.h"
 #include "test_data_chained_key.h"
 
 // --------------------------------------------------------------------------
@@ -118,7 +120,7 @@ inner_import_raw_private_key(
 //  Make key.
 // --------------------------------------------------------------------------
 static void
-inner_test__make_key__is_valid_alg(vsc_data_t l1_cipher_key_data, vsc_data_t l2_cipher_key_data) {
+inner_test__make_key__expect_status(vsc_data_t l1_key_data, vsc_data_t l2_key_data, vscf_status_t expected_status) {
 
     //
     //  Create algs.
@@ -139,57 +141,68 @@ inner_test__make_key__is_valid_alg(vsc_data_t l1_cipher_key_data, vsc_data_t l2_
     //
     //  Import inner keys.
     //
-    vscf_impl_t *l1_cipher_key = vscf_key_provider_import_private_key(key_provider, l1_cipher_key_data, &error);
+    vscf_impl_t *l1_key = vscf_key_provider_import_private_key(key_provider, l1_key_data, &error);
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
 
-    vscf_impl_t *l2_cipher_key = vscf_key_provider_import_private_key(key_provider, l2_cipher_key_data, &error);
+    vscf_impl_t *l2_key = vscf_key_provider_import_private_key(key_provider, l2_key_data, &error);
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
 
     //
     //  Create key.
     //
-    vscf_impl_t *private_key = vscf_chained_key_alg_make_key(key_alg, l1_cipher_key, l2_cipher_key, &error);
-    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
-    TEST_ASSERT_NOT_NULL(private_key);
-    TEST_ASSERT_EQUAL(vscf_alg_id_CHAINED_KEY, vscf_key_alg_id(private_key));
+    vscf_impl_t *private_key = vscf_chained_key_alg_make_key(key_alg, l1_key, l2_key, &error);
+    TEST_ASSERT_EQUAL(expected_status, vscf_error_status(&error));
 
-    vscf_impl_t *public_key = vscf_private_key_extract_public_key(private_key);
-    TEST_ASSERT_NOT_NULL(public_key);
-    TEST_ASSERT_EQUAL(vscf_alg_id_CHAINED_KEY, vscf_key_alg_id(public_key));
+    if (expected_status == vscf_status_SUCCESS) {
+        TEST_ASSERT_NOT_NULL(private_key);
+        TEST_ASSERT_EQUAL(vscf_alg_id_CHAINED_KEY, vscf_key_alg_id(private_key));
 
-    //////
-    // vscf_raw_public_key_t *exported_raw_public_key =
-    //         vscf_chained_key_alg_export_public_key(key_alg, public_key, &error);
+        vscf_impl_t *public_key = vscf_private_key_extract_public_key(private_key);
+        TEST_ASSERT_NOT_NULL(public_key);
+        TEST_ASSERT_EQUAL(vscf_alg_id_CHAINED_KEY, vscf_key_alg_id(public_key));
 
-    // vscf_raw_private_key_t *exported_raw_private_key =
-    //         vscf_chained_key_alg_export_private_key(key_alg, private_key, &error);
-
-    // print_data(vscf_raw_public_key_data(exported_raw_public_key));
-    // print_data(vscf_raw_private_key_data(exported_raw_private_key));
-    ///////
-
+        vscf_impl_destroy(&public_key);
+        vscf_impl_destroy(&private_key);
+    } else {
+        TEST_ASSERT_NULL(private_key);
+    }
 
     //
     //  Cleanup.
     //
-    vscf_impl_destroy(&l1_cipher_key);
-    vscf_impl_destroy(&l2_cipher_key);
-    vscf_impl_destroy(&public_key);
-    vscf_impl_destroy(&private_key);
+    vscf_impl_destroy(&l1_key);
+    vscf_impl_destroy(&l2_key);
     vscf_chained_key_alg_destroy(&key_alg);
     vscf_key_provider_destroy(&key_provider);
 }
 
 void
 test__make_key__curve25519_curve25519__is_valid_alg(void) {
-    inner_test__make_key__is_valid_alg(test_curve25519_PRIVATE_KEY_PKCS8_DER, test_curve25519_PRIVATE_KEY_PKCS8_DER);
+    inner_test__make_key__expect_status(
+            test_curve25519_PRIVATE_KEY_PKCS8_DER, test_curve25519_PRIVATE_KEY_PKCS8_DER, vscf_status_SUCCESS);
+}
+
+void
+test__make_key_ed25519_ed25519__is_valid_alg(void) {
+    inner_test__make_key__expect_status(
+            test_ed25519_PRIVATE_KEY_PKCS8_DER, test_ed25519_PRIVATE_KEY_PKCS8_DER, vscf_status_SUCCESS);
 }
 
 void
 test__make_key__curve25519_round5__is_valid_alg(void) {
 #if VSCF_POST_QUANTUM
-    inner_test__make_key__is_valid_alg(
-            test_curve25519_PRIVATE_KEY_PKCS8_DER, test_data_round5_ND_5PKE_5D_PRIVATE_KEY_PKCS8_DER);
+    inner_test__make_key__expect_status(test_curve25519_PRIVATE_KEY_PKCS8_DER,
+            test_data_round5_ND_5PKE_5D_PRIVATE_KEY_PKCS8_DER, vscf_status_SUCCESS);
+#else
+    TEST_IGNORE_MESSAGE("Feature VSCF_POST_QUANTUM is disabled");
+#endif
+}
+
+void
+test__make_key__curve25519_falcon__returns_error_unsupported_algorithm(void) {
+#if VSCF_POST_QUANTUM
+    inner_test__make_key__expect_status(test_curve25519_PRIVATE_KEY_PKCS8_DER,
+            test_data_falcon_PRIVATE_KEY_512_PKCS8_DER, vscf_status_ERROR_UNSUPPORTED_ALGORITHM);
 #else
     TEST_IGNORE_MESSAGE("Feature VSCF_POST_QUANTUM is disabled");
 #endif
@@ -461,6 +474,80 @@ test__encrypt_decrypt__with_curve25519_and_round5_keys__plain_text_match(void) {
 #endif
 }
 
+// --------------------------------------------------------------------------
+//  Sign / Verify
+// --------------------------------------------------------------------------
+#if VSCF_POST_QUANTUM
+void
+inner_test__sign_verify__success(const vscf_impl_t *public_key, const vscf_impl_t *private_key) {
+    //
+    //  Create dependencies first
+    //
+    vscf_error_t error;
+    vscf_error_reset(&error);
+
+    vscf_chained_key_alg_t *key_alg = vscf_chained_key_alg_new();
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_chained_key_alg_setup_defaults(key_alg));
+
+    //
+    //  Sign
+    //
+    TEST_ASSERT_TRUE(vscf_chained_key_alg_can_sign(key_alg, private_key));
+    const size_t signature_buf_len = vscf_chained_key_alg_signature_len(key_alg, private_key);
+    vsc_buffer_t *signature = vsc_buffer_new_with_capacity(signature_buf_len);
+    const vscf_status_t sign_status = vscf_chained_key_alg_sign_hash(
+            key_alg, private_key, vscf_alg_id_SHA512, test_data_chained_key_MESSAGE_TBS_SHA512_DIGEST, signature);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, sign_status);
+
+    //
+    //  Verify
+    //
+    TEST_ASSERT_TRUE(vscf_chained_key_alg_can_verify(key_alg, public_key));
+    const bool verified = vscf_chained_key_alg_verify_hash(key_alg, public_key, vscf_alg_id_SHA512,
+            test_data_chained_key_MESSAGE_TBS_SHA512_DIGEST, vsc_buffer_data(signature));
+    TEST_ASSERT_TRUE(verified);
+
+    //
+    //
+    //  Cleanup
+    //
+    vsc_buffer_destroy(&signature);
+    vscf_chained_key_alg_destroy(&key_alg);
+}
+#endif
+
+void
+test__sign_verify__with_ed25519_and_ed25519_keys__success(void) {
+    vscf_impl_t *public_key = inner_import_raw_public_key(
+            test_data_chained_key_ED25519_ED25519_PUBLIC_KEY, vscf_alg_id_ED25519, vscf_alg_id_ED25519);
+
+    vscf_impl_t *private_key = inner_import_raw_private_key(
+            test_data_chained_key_ED25519_ED25519_PRIVATE_KEY, vscf_alg_id_ED25519, vscf_alg_id_ED25519);
+
+    inner_test__sign_verify__success(public_key, private_key);
+
+    vscf_impl_destroy(&public_key);
+    vscf_impl_destroy(&private_key);
+}
+
+void
+test__sign_verify__with_ed25519_and_falcon_keys__success(void) {
+#if VSCF_POST_QUANTUM
+    vscf_impl_t *public_key = inner_import_raw_public_key(
+            test_data_chained_key_ED25519_FALCON_512_PUBLIC_KEY, vscf_alg_id_ED25519, vscf_alg_id_FALCON);
+
+    vscf_impl_t *private_key = inner_import_raw_private_key(
+            test_data_chained_key_ED25519_FALCON_512_PRIVATE_KEY, vscf_alg_id_ED25519, vscf_alg_id_FALCON);
+
+    inner_test__sign_verify__success(public_key, private_key);
+
+    vscf_impl_destroy(&public_key);
+    vscf_impl_destroy(&private_key);
+#else
+    TEST_IGNORE_MESSAGE("Feature VSCF_POST_QUANTUM is disabled");
+#endif
+}
+
 #endif // TEST_DEPENDENCIES_AVAILABLE
 
 
@@ -473,7 +560,9 @@ main(void) {
 
 #if TEST_DEPENDENCIES_AVAILABLE
     RUN_TEST(test__make_key__curve25519_curve25519__is_valid_alg);
+    RUN_TEST(test__make_key_ed25519_ed25519__is_valid_alg);
     RUN_TEST(test__make_key__curve25519_round5__is_valid_alg);
+    RUN_TEST(test__make_key__curve25519_falcon__returns_error_unsupported_algorithm);
 
     RUN_TEST(test__import_public_key_then_export__curve25519_curve25519__should_match);
     RUN_TEST(test__import_private_key_then_export__curve25519_curve25519__should_match);
@@ -485,6 +574,9 @@ main(void) {
 
     RUN_TEST(test__encrypt_decrypt__with_curve25519_and_curve25519_keys__plain_text_match);
     RUN_TEST(test__encrypt_decrypt__with_curve25519_and_round5_keys__plain_text_match);
+
+    RUN_TEST(test__sign_verify__with_ed25519_and_ed25519_keys__success);
+    RUN_TEST(test__sign_verify__with_ed25519_and_falcon_keys__success);
 #else
     RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
 #endif

@@ -140,46 +140,45 @@ vscf_chained_public_key_shallow_copy(vscf_chained_public_key_t *self);
 //
 //  Perform initialization of pre-allocated context.
 //  Create a chained public key with 2 public keys suitable for
-//  encryption.
+//  encryption and/or verifying signatures.
 //
 //  Note, keys ownership is kept.
 //
 VSCF_PRIVATE void
 vscf_chained_public_key_init_with_keys(vscf_chained_public_key_t *self, vscf_impl_t **alg_info_ref,
-        const vscf_impl_t *l1_cipher_key, const vscf_impl_t *l2_cipher_key);
+        const vscf_impl_t *l1_key, const vscf_impl_t *l2_key);
 
 //
 //  Allocate implementation context and perform it's initialization.
 //  Create a chained public key with 2 public keys suitable for
-//  encryption.
+//  encryption and/or verifying signatures.
 //
 //  Note, keys ownership is kept.
 //
 VSCF_PRIVATE vscf_chained_public_key_t *
-vscf_chained_public_key_new_with_keys(vscf_impl_t **alg_info_ref, const vscf_impl_t *l1_cipher_key,
-        const vscf_impl_t *l2_cipher_key);
+vscf_chained_public_key_new_with_keys(vscf_impl_t **alg_info_ref, const vscf_impl_t *l1_key, const vscf_impl_t *l2_key);
 
 //
 //  Perform initialization of pre-allocated context.
 //  Create a chained public key with 2 public keys suitable for
-//  encryption.
+//  encryption and/or verifying signatures.
 //
 //  Note, keys ownership is transferred.
 //
 VSCF_PRIVATE void
 vscf_chained_public_key_init_with_imported_keys(vscf_chained_public_key_t *self, const vscf_impl_t *alg_info,
-        vscf_impl_t **l1_cipher_key_ref, vscf_impl_t **l2_cipher_key_ref);
+        vscf_impl_t **l1_key_ref, vscf_impl_t **l2_key_ref);
 
 //
 //  Allocate implementation context and perform it's initialization.
 //  Create a chained public key with 2 public keys suitable for
-//  encryption.
+//  encryption and/or verifying signatures.
 //
 //  Note, keys ownership is transferred.
 //
 VSCF_PRIVATE vscf_chained_public_key_t *
-vscf_chained_public_key_new_with_imported_keys(const vscf_impl_t *alg_info, vscf_impl_t **l1_cipher_key_ref,
-        vscf_impl_t **l2_cipher_key_ref);
+vscf_chained_public_key_new_with_imported_keys(const vscf_impl_t *alg_info, vscf_impl_t **l1_key_ref,
+        vscf_impl_t **l2_key_ref);
 
 //
 //  Returns instance of the implemented interface 'public key'.
@@ -188,16 +187,16 @@ VSCF_PUBLIC const vscf_public_key_api_t *
 vscf_chained_public_key_public_key_api(void);
 
 //
-//  Return l1 cipher public key.
+//  Return l1 public key.
 //
 VSCF_PUBLIC const vscf_impl_t *
-vscf_chained_public_key_l1_cipher_key(const vscf_chained_public_key_t *self);
+vscf_chained_public_key_l1_key(const vscf_chained_public_key_t *self);
 
 //
-//  Return l2 cipher public key.
+//  Return l2 public key.
 //
 VSCF_PUBLIC const vscf_impl_t *
-vscf_chained_public_key_l2_cipher_key(const vscf_chained_public_key_t *self);
+vscf_chained_public_key_l2_key(const vscf_chained_public_key_t *self);
 
 //
 //  Algorithm identifier the key belongs to.

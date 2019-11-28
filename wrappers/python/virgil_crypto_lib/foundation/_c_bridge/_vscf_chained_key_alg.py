@@ -206,6 +206,42 @@ class VscfChainedKeyAlg(object):
         vscf_chained_key_alg_decrypt.restype = c_int
         return vscf_chained_key_alg_decrypt(ctx, private_key, data, out)
 
+    def vscf_chained_key_alg_can_sign(self, ctx, private_key):
+        """Check if algorithm can sign data digest with a given key."""
+        vscf_chained_key_alg_can_sign = self._lib.vscf_chained_key_alg_can_sign
+        vscf_chained_key_alg_can_sign.argtypes = [POINTER(vscf_chained_key_alg_t), POINTER(vscf_impl_t)]
+        vscf_chained_key_alg_can_sign.restype = c_bool
+        return vscf_chained_key_alg_can_sign(ctx, private_key)
+
+    def vscf_chained_key_alg_signature_len(self, ctx, private_key):
+        """Return length in bytes required to hold signature.
+        Return zero if a given private key can not produce signatures."""
+        vscf_chained_key_alg_signature_len = self._lib.vscf_chained_key_alg_signature_len
+        vscf_chained_key_alg_signature_len.argtypes = [POINTER(vscf_chained_key_alg_t), POINTER(vscf_impl_t)]
+        vscf_chained_key_alg_signature_len.restype = c_size_t
+        return vscf_chained_key_alg_signature_len(ctx, private_key)
+
+    def vscf_chained_key_alg_sign_hash(self, ctx, private_key, hash_id, digest, signature):
+        """Sign data digest with a given private key."""
+        vscf_chained_key_alg_sign_hash = self._lib.vscf_chained_key_alg_sign_hash
+        vscf_chained_key_alg_sign_hash.argtypes = [POINTER(vscf_chained_key_alg_t), POINTER(vscf_impl_t), c_int, vsc_data_t, POINTER(vsc_buffer_t)]
+        vscf_chained_key_alg_sign_hash.restype = c_int
+        return vscf_chained_key_alg_sign_hash(ctx, private_key, hash_id, digest, signature)
+
+    def vscf_chained_key_alg_can_verify(self, ctx, public_key):
+        """Check if algorithm can verify data digest with a given key."""
+        vscf_chained_key_alg_can_verify = self._lib.vscf_chained_key_alg_can_verify
+        vscf_chained_key_alg_can_verify.argtypes = [POINTER(vscf_chained_key_alg_t), POINTER(vscf_impl_t)]
+        vscf_chained_key_alg_can_verify.restype = c_bool
+        return vscf_chained_key_alg_can_verify(ctx, public_key)
+
+    def vscf_chained_key_alg_verify_hash(self, ctx, public_key, hash_id, digest, signature):
+        """Verify data digest with a given public key and signature."""
+        vscf_chained_key_alg_verify_hash = self._lib.vscf_chained_key_alg_verify_hash
+        vscf_chained_key_alg_verify_hash.argtypes = [POINTER(vscf_chained_key_alg_t), POINTER(vscf_impl_t), c_int, vsc_data_t, vsc_data_t]
+        vscf_chained_key_alg_verify_hash.restype = c_bool
+        return vscf_chained_key_alg_verify_hash(ctx, public_key, hash_id, digest, signature)
+
     def vscf_chained_key_alg_setup_defaults(self, ctx):
         """Setup predefined values to the uninitialized class dependencies."""
         vscf_chained_key_alg_setup_defaults = self._lib.vscf_chained_key_alg_setup_defaults
@@ -213,14 +249,16 @@ class VscfChainedKeyAlg(object):
         vscf_chained_key_alg_setup_defaults.restype = c_int
         return vscf_chained_key_alg_setup_defaults(ctx)
 
-    def vscf_chained_key_alg_make_key(self, ctx, l1_cipher_key, l2_cipher_key, error):
-        """Make chained private key from given.
+    def vscf_chained_key_alg_make_key(self, ctx, l1_key, l2_key, error):
+        """Make chained private key from given keys that are suitable for
+        encryption and decrypt, and/or signing verifying.
 
-        Note, l2 cipher should be able to encrypt data produced by the l1 cipher."""
+        Note, l2 should be able to encrypt data produced by the l1 cipher,
+        if keys are used for encryption."""
         vscf_chained_key_alg_make_key = self._lib.vscf_chained_key_alg_make_key
         vscf_chained_key_alg_make_key.argtypes = [POINTER(vscf_chained_key_alg_t), POINTER(vscf_impl_t), POINTER(vscf_impl_t), POINTER(vscf_error_t)]
         vscf_chained_key_alg_make_key.restype = POINTER(vscf_impl_t)
-        return vscf_chained_key_alg_make_key(ctx, l1_cipher_key, l2_cipher_key, error)
+        return vscf_chained_key_alg_make_key(ctx, l1_key, l2_key, error)
 
     def vscf_chained_key_alg_shallow_copy(self, ctx):
         vscf_chained_key_alg_shallow_copy = self._lib.vscf_chained_key_alg_shallow_copy

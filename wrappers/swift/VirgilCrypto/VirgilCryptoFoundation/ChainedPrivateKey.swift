@@ -39,8 +39,12 @@ import VSCFoundation
 /// Handles chained private key.
 ///
 /// Chained private key contains 2 private keys:
-///     - l1 cipher key - is used for decryption data decrypted by the l2;
-///     - l2 cipher key - is used for decryption given data.
+///     - l1 key:
+///         * can be used for decryption data decrypted by the l2;
+///         - can be used to produce l1 signature;
+///     - l2 key:
+///         - can be used for decryption data;
+///         - can be used to produce l1 signature.
 @objc(VSCFChainedPrivateKey) public class ChainedPrivateKey: NSObject, Key, PrivateKey {
 
     /// Handle underlying C context.
@@ -71,16 +75,16 @@ import VSCFoundation
         vscf_chained_private_key_delete(self.c_ctx)
     }
 
-    /// Return l1 cipher private key.
-    @objc public func l1CipherKey() -> PrivateKey {
-        let proxyResult = vscf_chained_private_key_l1_cipher_key(self.c_ctx)
+    /// Return l1 private key.
+    @objc public func l1Key() -> PrivateKey {
+        let proxyResult = vscf_chained_private_key_l1_key(self.c_ctx)
 
         return FoundationImplementation.wrapPrivateKey(use: proxyResult!)
     }
 
-    /// Return l2 cipher private key.
-    @objc public func l2CipherKey() -> PrivateKey {
-        let proxyResult = vscf_chained_private_key_l2_cipher_key(self.c_ctx)
+    /// Return l2 private key.
+    @objc public func l2Key() -> PrivateKey {
+        let proxyResult = vscf_chained_private_key_l2_key(self.c_ctx)
 
         return FoundationImplementation.wrapPrivateKey(use: proxyResult!)
     }

@@ -100,27 +100,26 @@ const initChainedKeyAlgInfo = (Module, modules) => {
         }
 
         /**
-         * Return information about encrypt/decrypt algorithm.
+         * Return algorithm information about l1 key.
          */
-        l1CipherAlgInfo() {
+        l1KeyAlgInfo() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
             let proxyResult;
-            proxyResult = Module._vscf_chained_key_alg_info_l1_cipher_alg_info(this.ctxPtr);
+            proxyResult = Module._vscf_chained_key_alg_info_l1_key_alg_info(this.ctxPtr);
 
             const jsResult = modules.FoundationInterface.newAndUseCContext(proxyResult);
             return jsResult;
         }
 
         /**
-         * Return information about l2 cipher encrypt/decrypt algorithm,
-         * or NULL if absent.
+         * Return algorithm information about l2 key.
          */
-        l2CipherAlgInfo() {
+        l2KeyAlgInfo() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
             let proxyResult;
-            proxyResult = Module._vscf_chained_key_alg_info_l2_cipher_alg_info(this.ctxPtr);
+            proxyResult = Module._vscf_chained_key_alg_info_l2_key_alg_info(this.ctxPtr);
 
             const jsResult = modules.FoundationInterface.newAndUseCContext(proxyResult);
             return jsResult;

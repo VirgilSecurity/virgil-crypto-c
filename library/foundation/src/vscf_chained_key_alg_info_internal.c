@@ -230,7 +230,7 @@ vscf_chained_key_alg_info_shallow_copy(vscf_chained_key_alg_info_t *self) {
 //
 VSCF_PRIVATE void
 vscf_chained_key_alg_info_init_with_infos(vscf_chained_key_alg_info_t *self, vscf_alg_id_t alg_id,
-        const vscf_impl_t *l1_cipher_alg_info, const vscf_impl_t *l2_cipher_alg_info) {
+        const vscf_impl_t *l1_key_alg_info, const vscf_impl_t *l2_key_alg_info) {
 
     VSCF_ASSERT_PTR(self);
 
@@ -239,7 +239,7 @@ vscf_chained_key_alg_info_init_with_infos(vscf_chained_key_alg_info_t *self, vsc
     self->info = &info;
     self->refcnt = 1;
 
-    vscf_chained_key_alg_info_init_ctx_with_infos(self, alg_id, l1_cipher_alg_info, l2_cipher_alg_info);
+    vscf_chained_key_alg_info_init_ctx_with_infos(self, alg_id, l1_key_alg_info, l2_key_alg_info);
 }
 
 //
@@ -249,12 +249,12 @@ vscf_chained_key_alg_info_init_with_infos(vscf_chained_key_alg_info_t *self, vsc
 //  Note, keys ownership is preserved.
 //
 VSCF_PRIVATE vscf_chained_key_alg_info_t *
-vscf_chained_key_alg_info_new_with_infos(vscf_alg_id_t alg_id, const vscf_impl_t *l1_cipher_alg_info,
-        const vscf_impl_t *l2_cipher_alg_info) {
+vscf_chained_key_alg_info_new_with_infos(vscf_alg_id_t alg_id, const vscf_impl_t *l1_key_alg_info,
+        const vscf_impl_t *l2_key_alg_info) {
 
     vscf_chained_key_alg_info_t *self = vscf_chained_key_alg_info_new();
 
-    vscf_chained_key_alg_info_init_with_infos(self, alg_id, l1_cipher_alg_info, l2_cipher_alg_info);
+    vscf_chained_key_alg_info_init_with_infos(self, alg_id, l1_key_alg_info, l2_key_alg_info);
 
     return self;
 }
@@ -267,7 +267,7 @@ vscf_chained_key_alg_info_new_with_infos(vscf_alg_id_t alg_id, const vscf_impl_t
 //
 VSCF_PRIVATE void
 vscf_chained_key_alg_info_init_with_infos_disown(vscf_chained_key_alg_info_t *self, vscf_alg_id_t alg_id,
-        vscf_impl_t **l1_cipher_alg_info_ref, vscf_impl_t **l2_cipher_alg_info_ref) {
+        vscf_impl_t **l1_key_alg_info_ref, vscf_impl_t **l2_key_alg_info_ref) {
 
     VSCF_ASSERT_PTR(self);
 
@@ -276,7 +276,7 @@ vscf_chained_key_alg_info_init_with_infos_disown(vscf_chained_key_alg_info_t *se
     self->info = &info;
     self->refcnt = 1;
 
-    vscf_chained_key_alg_info_init_ctx_with_infos_disown(self, alg_id, l1_cipher_alg_info_ref, l2_cipher_alg_info_ref);
+    vscf_chained_key_alg_info_init_ctx_with_infos_disown(self, alg_id, l1_key_alg_info_ref, l2_key_alg_info_ref);
 }
 
 //
@@ -286,12 +286,12 @@ vscf_chained_key_alg_info_init_with_infos_disown(vscf_chained_key_alg_info_t *se
 //  Note, keys ownership is transferred.
 //
 VSCF_PRIVATE vscf_chained_key_alg_info_t *
-vscf_chained_key_alg_info_new_with_infos_disown(vscf_alg_id_t alg_id, vscf_impl_t **l1_cipher_alg_info_ref,
-        vscf_impl_t **l2_cipher_alg_info_ref) {
+vscf_chained_key_alg_info_new_with_infos_disown(vscf_alg_id_t alg_id, vscf_impl_t **l1_key_alg_info_ref,
+        vscf_impl_t **l2_key_alg_info_ref) {
 
     vscf_chained_key_alg_info_t *self = vscf_chained_key_alg_info_new();
 
-    vscf_chained_key_alg_info_init_with_infos_disown(self, alg_id, l1_cipher_alg_info_ref, l2_cipher_alg_info_ref);
+    vscf_chained_key_alg_info_init_with_infos_disown(self, alg_id, l1_key_alg_info_ref, l2_key_alg_info_ref);
 
     return self;
 }

@@ -168,13 +168,12 @@ const initKeyProvider = (Module, modules) => {
         }
 
         /**
-         * Generate new compound private key with post-quantum algorithms.
-         *
-         * Note, cipher should not be post-quantum.
+         * Generate new chained private key with given algorithms.
          */
-        generatePostQuantumPrivateKey(cipherAlgId) {
+        generateChainedPrivateKey(l1AlgId, l2AlgId) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-            precondition.ensureNumber('cipherAlgId', cipherAlgId);
+            precondition.ensureNumber('l1AlgId', l1AlgId);
+            precondition.ensureNumber('l2AlgId', l2AlgId);
 
             const errorCtxSize = Module._vscf_error_ctx_size();
             const errorCtxPtr = Module._malloc(errorCtxSize);
@@ -183,7 +182,39 @@ const initKeyProvider = (Module, modules) => {
             let proxyResult;
 
             try {
-                proxyResult = Module._vscf_key_provider_generate_post_quantum_private_key(this.ctxPtr, cipherAlgId, errorCtxPtr);
+                proxyResult = Module._vscf_key_provider_generate_chained_private_key(this.ctxPtr, l1AlgId, l2AlgId, errorCtxPtr);
+
+                const errorStatus = Module._vscf_error_status(errorCtxPtr);
+                modules.FoundationError.handleStatusCode(errorStatus);
+
+                const jsResult = modules.FoundationInterface.newAndTakeCContext(proxyResult);
+                return jsResult;
+            } finally {
+                Module._free(errorCtxPtr);
+            }
+        }
+
+        /**
+         * Generate new compound private key with nested chained private keys.
+         *
+         * Note, l2 algorithm identifiers can be NONE, in this case regular key
+         * will be crated instead of chained key.
+         */
+        generateCompoundChainedPrivateKey(cipherL1AlgId, cipherL2AlgId, signerL1AlgId, signerL2AlgId) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureNumber('cipherL1AlgId', cipherL1AlgId);
+            precondition.ensureNumber('cipherL2AlgId', cipherL2AlgId);
+            precondition.ensureNumber('signerL1AlgId', signerL1AlgId);
+            precondition.ensureNumber('signerL2AlgId', signerL2AlgId);
+
+            const errorCtxSize = Module._vscf_error_ctx_size();
+            const errorCtxPtr = Module._malloc(errorCtxSize);
+            Module._vscf_error_reset(errorCtxPtr);
+
+            let proxyResult;
+
+            try {
+                proxyResult = Module._vscf_key_provider_generate_compound_chained_private_key(this.ctxPtr, cipherL1AlgId, cipherL2AlgId, signerL1AlgId, signerL2AlgId, errorCtxPtr);
 
                 const errorStatus = Module._vscf_error_status(errorCtxPtr);
                 modules.FoundationError.handleStatusCode(errorStatus);

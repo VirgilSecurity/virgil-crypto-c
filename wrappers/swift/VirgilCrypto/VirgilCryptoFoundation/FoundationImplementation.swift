@@ -529,6 +529,8 @@ import VSCFoundation
             return Falcon(take: c_ctx)
         case vscf_impl_tag_COMPOUND_KEY_ALG:
             return CompoundKeyAlg(take: c_ctx)
+        case vscf_impl_tag_CHAINED_KEY_ALG:
+            return ChainedKeyAlg(take: c_ctx)
         default:
             fatalError("Unexpected C implementation cast to the Swift implementation.")
         }

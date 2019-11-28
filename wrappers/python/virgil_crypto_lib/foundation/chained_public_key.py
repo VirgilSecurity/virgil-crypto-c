@@ -44,8 +44,12 @@ class ChainedPublicKey(Key, PublicKey):
     """Handles chained public key.
 
     Chained public key contains 2 public keys:
-        - l1 cipher key - is used for plain text encryption;
-        - l2 cipher key - is used for l1 output encryption."""
+        - l1 key:
+            - can be used for plain text encryption;
+            - can be used to verify l1 signature;
+        - l2 key:
+            - can be used for l1 output encryption;
+            - can be used to verify l2 signature."""
 
     def __init__(self):
         """Create underlying C context."""
@@ -90,15 +94,15 @@ class ChainedPublicKey(Key, PublicKey):
         result = self._lib_vscf_chained_public_key.vscf_chained_public_key_is_valid(self.ctx)
         return result
 
-    def l1_cipher_key(self):
-        """Return l1 cipher public key."""
-        result = self._lib_vscf_chained_public_key.vscf_chained_public_key_l1_cipher_key(self.ctx)
+    def l1_key(self):
+        """Return l1 public key."""
+        result = self._lib_vscf_chained_public_key.vscf_chained_public_key_l1_key(self.ctx)
         instance = VscfImplTag.get_type(result)[0].use_c_ctx(cast(result, POINTER(VscfImplTag.get_type(result)[1])))
         return instance
 
-    def l2_cipher_key(self):
-        """Return l2 cipher public key."""
-        result = self._lib_vscf_chained_public_key.vscf_chained_public_key_l2_cipher_key(self.ctx)
+    def l2_key(self):
+        """Return l2 public key."""
+        result = self._lib_vscf_chained_public_key.vscf_chained_public_key_l2_key(self.ctx)
         instance = VscfImplTag.get_type(result)[0].use_c_ctx(cast(result, POINTER(VscfImplTag.get_type(result)[1])))
         return instance
 

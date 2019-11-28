@@ -100,14 +100,22 @@ class VscfKeyProvider(object):
         vscf_key_provider_generate_compound_private_key.restype = POINTER(vscf_impl_t)
         return vscf_key_provider_generate_compound_private_key(ctx, cipher_alg_id, signer_alg_id, error)
 
-    def vscf_key_provider_generate_post_quantum_private_key(self, ctx, cipher_alg_id, error):
-        """Generate new compound private key with post-quantum algorithms.
+    def vscf_key_provider_generate_chained_private_key(self, ctx, l1_alg_id, l2_alg_id, error):
+        """Generate new chained private key with given algorithms."""
+        vscf_key_provider_generate_chained_private_key = self._lib.vscf_key_provider_generate_chained_private_key
+        vscf_key_provider_generate_chained_private_key.argtypes = [POINTER(vscf_key_provider_t), c_int, c_int, POINTER(vscf_error_t)]
+        vscf_key_provider_generate_chained_private_key.restype = POINTER(vscf_impl_t)
+        return vscf_key_provider_generate_chained_private_key(ctx, l1_alg_id, l2_alg_id, error)
 
-        Note, cipher should not be post-quantum."""
-        vscf_key_provider_generate_post_quantum_private_key = self._lib.vscf_key_provider_generate_post_quantum_private_key
-        vscf_key_provider_generate_post_quantum_private_key.argtypes = [POINTER(vscf_key_provider_t), c_int, POINTER(vscf_error_t)]
-        vscf_key_provider_generate_post_quantum_private_key.restype = POINTER(vscf_impl_t)
-        return vscf_key_provider_generate_post_quantum_private_key(ctx, cipher_alg_id, error)
+    def vscf_key_provider_generate_compound_chained_private_key(self, ctx, cipher_l1_alg_id, cipher_l2_alg_id, signer_l1_alg_id, signer_l2_alg_id, error):
+        """Generate new compound private key with nested chained private keys.
+
+        Note, l2 algorithm identifiers can be NONE, in this case regular key
+        will be crated instead of chained key."""
+        vscf_key_provider_generate_compound_chained_private_key = self._lib.vscf_key_provider_generate_compound_chained_private_key
+        vscf_key_provider_generate_compound_chained_private_key.argtypes = [POINTER(vscf_key_provider_t), c_int, c_int, c_int, c_int, POINTER(vscf_error_t)]
+        vscf_key_provider_generate_compound_chained_private_key.restype = POINTER(vscf_impl_t)
+        return vscf_key_provider_generate_compound_chained_private_key(ctx, cipher_l1_alg_id, cipher_l2_alg_id, signer_l1_alg_id, signer_l2_alg_id, error)
 
     def vscf_key_provider_import_private_key(self, ctx, key_data, error):
         """Import private key from the PKCS#8 format."""

@@ -40,8 +40,12 @@ package com.virgilsecurity.crypto.foundation;
 * Handles chained public key.
 *
 * Chained public key contains 2 public keys:
-* - l1 cipher key - is used for plain text encryption;
-* - l2 cipher key - is used for l1 output encryption.
+* - l1 key:
+* - can be used for plain text encryption;
+* - can be used to verify l1 signature;
+* - l2 key:
+* - can be used for l1 output encryption;
+* - can be used to verify l2 signature.
 */
 public class ChainedPublicKey implements AutoCloseable, Key, PublicKey {
 
@@ -59,17 +63,17 @@ public class ChainedPublicKey implements AutoCloseable, Key, PublicKey {
     }
 
     /*
-    * Return l1 cipher public key.
+    * Return l1 public key.
     */
-    public PublicKey l1CipherKey() {
-        return FoundationJNI.INSTANCE.chainedPublicKey_l1CipherKey(this.cCtx);
+    public PublicKey l1Key() {
+        return FoundationJNI.INSTANCE.chainedPublicKey_l1Key(this.cCtx);
     }
 
     /*
-    * Return l2 cipher public key.
+    * Return l2 public key.
     */
-    public PublicKey l2CipherKey() {
-        return FoundationJNI.INSTANCE.chainedPublicKey_l2CipherKey(this.cCtx);
+    public PublicKey l2Key() {
+        return FoundationJNI.INSTANCE.chainedPublicKey_l2Key(this.cCtx);
     }
 
     /*

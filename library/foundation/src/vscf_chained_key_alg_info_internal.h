@@ -97,7 +97,7 @@ vscf_chained_key_alg_info_cleanup_ctx(vscf_chained_key_alg_info_t *self);
 //
 VSCF_PUBLIC void
 vscf_chained_key_alg_info_init_ctx_with_infos(vscf_chained_key_alg_info_t *self, vscf_alg_id_t alg_id,
-        const vscf_impl_t *l1_cipher_alg_info, const vscf_impl_t *l2_cipher_alg_info);
+        const vscf_impl_t *l1_key_alg_info, const vscf_impl_t *l2_key_alg_info);
 
 //
 //  Create chained algorithm information.
@@ -106,7 +106,7 @@ vscf_chained_key_alg_info_init_ctx_with_infos(vscf_chained_key_alg_info_t *self,
 //
 VSCF_PUBLIC void
 vscf_chained_key_alg_info_init_ctx_with_infos_disown(vscf_chained_key_alg_info_t *self, vscf_alg_id_t alg_id,
-        vscf_impl_t **l1_cipher_alg_info_ref, vscf_impl_t **l2_cipher_alg_info_ref);
+        vscf_impl_t **l1_key_alg_info_ref, vscf_impl_t **l2_key_alg_info_ref);
 
 
 // --------------------------------------------------------------------------

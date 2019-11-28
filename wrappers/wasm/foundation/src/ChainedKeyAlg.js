@@ -462,6 +462,135 @@ const initChainedKeyAlg = (Module, modules) => {
         }
 
         /**
+         * Check if algorithm can sign data digest with a given key.
+         */
+        canSign(privateKey) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureImplementInterface('privateKey', privateKey, 'Foundation.PrivateKey', modules.FoundationInterfaceTag.PRIVATE_KEY, modules.FoundationInterface);
+
+            let proxyResult;
+            proxyResult = Module._vscf_chained_key_alg_can_sign(this.ctxPtr, privateKey.ctxPtr);
+
+            const booleanResult = !!proxyResult;
+            return booleanResult;
+        }
+
+        /**
+         * Return length in bytes required to hold signature.
+         * Return zero if a given private key can not produce signatures.
+         */
+        signatureLen(privateKey) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureImplementInterface('privateKey', privateKey, 'Foundation.PrivateKey', modules.FoundationInterfaceTag.PRIVATE_KEY, modules.FoundationInterface);
+
+            let proxyResult;
+            proxyResult = Module._vscf_chained_key_alg_signature_len(this.ctxPtr, privateKey.ctxPtr);
+            return proxyResult;
+        }
+
+        /**
+         * Sign data digest with a given private key.
+         */
+        signHash(privateKey, hashId, digest) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureImplementInterface('privateKey', privateKey, 'Foundation.PrivateKey', modules.FoundationInterfaceTag.PRIVATE_KEY, modules.FoundationInterface);
+            precondition.ensureNumber('hashId', hashId);
+            precondition.ensureByteArray('digest', digest);
+
+            //  Copy bytes from JS memory to the WASM memory.
+            const digestSize = digest.length * digest.BYTES_PER_ELEMENT;
+            const digestPtr = Module._malloc(digestSize);
+            Module.HEAP8.set(digest, digestPtr);
+
+            //  Create C structure vsc_data_t.
+            const digestCtxSize = Module._vsc_data_ctx_size();
+            const digestCtxPtr = Module._malloc(digestCtxSize);
+
+            //  Point created vsc_data_t object to the copied bytes.
+            Module._vsc_data(digestCtxPtr, digestPtr, digestSize);
+
+            const signatureCapacity = this.signatureLen(privateKey);
+            const signatureCtxPtr = Module._vsc_buffer_new_with_capacity(signatureCapacity);
+
+            try {
+                const proxyResult = Module._vscf_chained_key_alg_sign_hash(this.ctxPtr, privateKey.ctxPtr, hashId, digestCtxPtr, signatureCtxPtr);
+                modules.FoundationError.handleStatusCode(proxyResult);
+
+                const signaturePtr = Module._vsc_buffer_bytes(signatureCtxPtr);
+                const signaturePtrLen = Module._vsc_buffer_len(signatureCtxPtr);
+                const signature = Module.HEAPU8.slice(signaturePtr, signaturePtr + signaturePtrLen);
+                return signature;
+            } finally {
+                Module._free(digestPtr);
+                Module._free(digestCtxPtr);
+                Module._vsc_buffer_delete(signatureCtxPtr);
+            }
+        }
+
+        /**
+         * Check if algorithm can verify data digest with a given key.
+         */
+        canVerify(publicKey) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureImplementInterface('publicKey', publicKey, 'Foundation.PublicKey', modules.FoundationInterfaceTag.PUBLIC_KEY, modules.FoundationInterface);
+
+            let proxyResult;
+            proxyResult = Module._vscf_chained_key_alg_can_verify(this.ctxPtr, publicKey.ctxPtr);
+
+            const booleanResult = !!proxyResult;
+            return booleanResult;
+        }
+
+        /**
+         * Verify data digest with a given public key and signature.
+         */
+        verifyHash(publicKey, hashId, digest, signature) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureImplementInterface('publicKey', publicKey, 'Foundation.PublicKey', modules.FoundationInterfaceTag.PUBLIC_KEY, modules.FoundationInterface);
+            precondition.ensureNumber('hashId', hashId);
+            precondition.ensureByteArray('digest', digest);
+            precondition.ensureByteArray('signature', signature);
+
+            //  Copy bytes from JS memory to the WASM memory.
+            const digestSize = digest.length * digest.BYTES_PER_ELEMENT;
+            const digestPtr = Module._malloc(digestSize);
+            Module.HEAP8.set(digest, digestPtr);
+
+            //  Create C structure vsc_data_t.
+            const digestCtxSize = Module._vsc_data_ctx_size();
+            const digestCtxPtr = Module._malloc(digestCtxSize);
+
+            //  Point created vsc_data_t object to the copied bytes.
+            Module._vsc_data(digestCtxPtr, digestPtr, digestSize);
+
+            //  Copy bytes from JS memory to the WASM memory.
+            const signatureSize = signature.length * signature.BYTES_PER_ELEMENT;
+            const signaturePtr = Module._malloc(signatureSize);
+            Module.HEAP8.set(signature, signaturePtr);
+
+            //  Create C structure vsc_data_t.
+            const signatureCtxSize = Module._vsc_data_ctx_size();
+            const signatureCtxPtr = Module._malloc(signatureCtxSize);
+
+            //  Point created vsc_data_t object to the copied bytes.
+            Module._vsc_data(signatureCtxPtr, signaturePtr, signatureSize);
+
+            let proxyResult;
+
+            try {
+                proxyResult = Module._vscf_chained_key_alg_verify_hash(this.ctxPtr, publicKey.ctxPtr, hashId, digestCtxPtr, signatureCtxPtr);
+
+                const booleanResult = !!proxyResult;
+                return booleanResult;
+            } finally {
+                Module._free(digestPtr);
+                Module._free(digestCtxPtr);
+                Module._free(signaturePtr);
+                Module._free(signatureCtxPtr);
+            }
+        }
+
+        /**
          * Setup predefined values to the uninitialized class dependencies.
          */
         setupDefaults() {
@@ -471,14 +600,16 @@ const initChainedKeyAlg = (Module, modules) => {
         }
 
         /**
-         * Make chained private key from given.
+         * Make chained private key from given keys that are suitable for
+         * encryption and decrypt, and/or signing verifying.
          *
-         * Note, l2 cipher should be able to encrypt data produced by the l1 cipher.
+         * Note, l2 should be able to encrypt data produced by the l1 cipher,
+         * if keys are used for encryption.
          */
-        makeKey(l1CipherKey, l2CipherKey) {
+        makeKey(l1Key, l2Key) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-            precondition.ensureImplementInterface('l1CipherKey', l1CipherKey, 'Foundation.PrivateKey', modules.FoundationInterfaceTag.PRIVATE_KEY, modules.FoundationInterface);
-            precondition.ensureImplementInterface('l2CipherKey', l2CipherKey, 'Foundation.PrivateKey', modules.FoundationInterfaceTag.PRIVATE_KEY, modules.FoundationInterface);
+            precondition.ensureImplementInterface('l1Key', l1Key, 'Foundation.PrivateKey', modules.FoundationInterfaceTag.PRIVATE_KEY, modules.FoundationInterface);
+            precondition.ensureImplementInterface('l2Key', l2Key, 'Foundation.PrivateKey', modules.FoundationInterfaceTag.PRIVATE_KEY, modules.FoundationInterface);
 
             const errorCtxSize = Module._vscf_error_ctx_size();
             const errorCtxPtr = Module._malloc(errorCtxSize);
@@ -487,7 +618,7 @@ const initChainedKeyAlg = (Module, modules) => {
             let proxyResult;
 
             try {
-                proxyResult = Module._vscf_chained_key_alg_make_key(this.ctxPtr, l1CipherKey.ctxPtr, l2CipherKey.ctxPtr, errorCtxPtr);
+                proxyResult = Module._vscf_chained_key_alg_make_key(this.ctxPtr, l1Key.ctxPtr, l2Key.ctxPtr, errorCtxPtr);
 
                 const errorStatus = Module._vscf_error_status(errorCtxPtr);
                 modules.FoundationError.handleStatusCode(errorStatus);

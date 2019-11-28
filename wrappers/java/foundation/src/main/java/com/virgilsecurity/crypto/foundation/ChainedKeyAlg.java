@@ -41,7 +41,7 @@ package com.virgilsecurity.crypto.foundation;
 * Chained encryption pseudo-code: encrypt(l2_key, encrypt(l1_key, data))
 * Chained decryption pseudo-code: decrypt(l1_key, decrypt(l2_key, data))
 */
-public class ChainedKeyAlg implements AutoCloseable, Alg, KeyAlg, KeyCipher {
+public class ChainedKeyAlg implements AutoCloseable, Alg, KeyAlg, KeyCipher, KeySigner {
 
     public long cCtx;
 
@@ -68,12 +68,14 @@ public class ChainedKeyAlg implements AutoCloseable, Alg, KeyAlg, KeyCipher {
     }
 
     /*
-    * Make chained private key from given.
+    * Make chained private key from given keys that are suitable for
+    * encryption and decrypt, and/or signing verifying.
     *
-    * Note, l2 cipher should be able to encrypt data produced by the l1 cipher.
+    * Note, l2 should be able to encrypt data produced by the l1 cipher,
+    * if keys are used for encryption.
     */
-    public PrivateKey makeKey(PrivateKey l1CipherKey, PrivateKey l2CipherKey) throws FoundationException {
-        return FoundationJNI.INSTANCE.chainedKeyAlg_makeKey(this.cCtx, l1CipherKey, l2CipherKey);
+    public PrivateKey makeKey(PrivateKey l1Key, PrivateKey l2Key) throws FoundationException {
+        return FoundationJNI.INSTANCE.chainedKeyAlg_makeKey(this.cCtx, l1Key, l2Key);
     }
 
     /*
@@ -238,6 +240,42 @@ public class ChainedKeyAlg implements AutoCloseable, Alg, KeyAlg, KeyCipher {
     */
     public byte[] decrypt(PrivateKey privateKey, byte[] data) throws FoundationException {
         return FoundationJNI.INSTANCE.chainedKeyAlg_decrypt(this.cCtx, privateKey, data);
+    }
+
+    /*
+    * Check if algorithm can sign data digest with a given key.
+    */
+    public boolean canSign(PrivateKey privateKey) {
+        return FoundationJNI.INSTANCE.chainedKeyAlg_canSign(this.cCtx, privateKey);
+    }
+
+    /*
+    * Return length in bytes required to hold signature.
+    * Return zero if a given private key can not produce signatures.
+    */
+    public int signatureLen(PrivateKey privateKey) {
+        return FoundationJNI.INSTANCE.chainedKeyAlg_signatureLen(this.cCtx, privateKey);
+    }
+
+    /*
+    * Sign data digest with a given private key.
+    */
+    public byte[] signHash(PrivateKey privateKey, AlgId hashId, byte[] digest) throws FoundationException {
+        return FoundationJNI.INSTANCE.chainedKeyAlg_signHash(this.cCtx, privateKey, hashId, digest);
+    }
+
+    /*
+    * Check if algorithm can verify data digest with a given key.
+    */
+    public boolean canVerify(PublicKey publicKey) {
+        return FoundationJNI.INSTANCE.chainedKeyAlg_canVerify(this.cCtx, publicKey);
+    }
+
+    /*
+    * Verify data digest with a given public key and signature.
+    */
+    public boolean verifyHash(PublicKey publicKey, AlgId hashId, byte[] digest, byte[] signature) {
+        return FoundationJNI.INSTANCE.chainedKeyAlg_verifyHash(this.cCtx, publicKey, hashId, digest, signature);
     }
 }
 

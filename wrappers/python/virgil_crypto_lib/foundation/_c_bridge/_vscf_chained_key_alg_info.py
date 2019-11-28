@@ -69,20 +69,19 @@ class VscfChainedKeyAlgInfo(object):
         vscf_chained_key_alg_info_alg_id.restype = c_int
         return vscf_chained_key_alg_info_alg_id(ctx)
 
-    def vscf_chained_key_alg_info_l1_cipher_alg_info(self, ctx):
-        """Return information about encrypt/decrypt algorithm."""
-        vscf_chained_key_alg_info_l1_cipher_alg_info = self._lib.vscf_chained_key_alg_info_l1_cipher_alg_info
-        vscf_chained_key_alg_info_l1_cipher_alg_info.argtypes = [POINTER(vscf_chained_key_alg_info_t)]
-        vscf_chained_key_alg_info_l1_cipher_alg_info.restype = POINTER(vscf_impl_t)
-        return vscf_chained_key_alg_info_l1_cipher_alg_info(ctx)
+    def vscf_chained_key_alg_info_l1_key_alg_info(self, ctx):
+        """Return algorithm information about l1 key."""
+        vscf_chained_key_alg_info_l1_key_alg_info = self._lib.vscf_chained_key_alg_info_l1_key_alg_info
+        vscf_chained_key_alg_info_l1_key_alg_info.argtypes = [POINTER(vscf_chained_key_alg_info_t)]
+        vscf_chained_key_alg_info_l1_key_alg_info.restype = POINTER(vscf_impl_t)
+        return vscf_chained_key_alg_info_l1_key_alg_info(ctx)
 
-    def vscf_chained_key_alg_info_l2_cipher_alg_info(self, ctx):
-        """Return information about l2 cipher encrypt/decrypt algorithm,
-        or NULL if absent."""
-        vscf_chained_key_alg_info_l2_cipher_alg_info = self._lib.vscf_chained_key_alg_info_l2_cipher_alg_info
-        vscf_chained_key_alg_info_l2_cipher_alg_info.argtypes = [POINTER(vscf_chained_key_alg_info_t)]
-        vscf_chained_key_alg_info_l2_cipher_alg_info.restype = POINTER(vscf_impl_t)
-        return vscf_chained_key_alg_info_l2_cipher_alg_info(ctx)
+    def vscf_chained_key_alg_info_l2_key_alg_info(self, ctx):
+        """Return algorithm information about l2 key."""
+        vscf_chained_key_alg_info_l2_key_alg_info = self._lib.vscf_chained_key_alg_info_l2_key_alg_info
+        vscf_chained_key_alg_info_l2_key_alg_info.argtypes = [POINTER(vscf_chained_key_alg_info_t)]
+        vscf_chained_key_alg_info_l2_key_alg_info.restype = POINTER(vscf_impl_t)
+        return vscf_chained_key_alg_info_l2_key_alg_info(ctx)
 
     def vscf_chained_key_alg_info_shallow_copy(self, ctx):
         vscf_chained_key_alg_info_shallow_copy = self._lib.vscf_chained_key_alg_info_shallow_copy

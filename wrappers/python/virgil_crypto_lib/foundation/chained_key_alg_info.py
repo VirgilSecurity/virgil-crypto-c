@@ -58,16 +58,15 @@ class ChainedKeyAlgInfo(AlgInfo):
         result = self._lib_vscf_chained_key_alg_info.vscf_chained_key_alg_info_alg_id(self.ctx)
         return result
 
-    def l1_cipher_alg_info(self):
-        """Return information about encrypt/decrypt algorithm."""
-        result = self._lib_vscf_chained_key_alg_info.vscf_chained_key_alg_info_l1_cipher_alg_info(self.ctx)
+    def l1_key_alg_info(self):
+        """Return algorithm information about l1 key."""
+        result = self._lib_vscf_chained_key_alg_info.vscf_chained_key_alg_info_l1_key_alg_info(self.ctx)
         instance = VscfImplTag.get_type(result)[0].use_c_ctx(cast(result, POINTER(VscfImplTag.get_type(result)[1])))
         return instance
 
-    def l2_cipher_alg_info(self):
-        """Return information about l2 cipher encrypt/decrypt algorithm,
-        or NULL if absent."""
-        result = self._lib_vscf_chained_key_alg_info.vscf_chained_key_alg_info_l2_cipher_alg_info(self.ctx)
+    def l2_key_alg_info(self):
+        """Return algorithm information about l2 key."""
+        result = self._lib_vscf_chained_key_alg_info.vscf_chained_key_alg_info_l2_key_alg_info(self.ctx)
         instance = VscfImplTag.get_type(result)[0].use_c_ctx(cast(result, POINTER(VscfImplTag.get_type(result)[1])))
         return instance
 

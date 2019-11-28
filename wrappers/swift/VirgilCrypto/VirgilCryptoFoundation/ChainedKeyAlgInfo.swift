@@ -67,17 +67,16 @@ import VSCFoundation
         vscf_chained_key_alg_info_delete(self.c_ctx)
     }
 
-    /// Return information about encrypt/decrypt algorithm.
-    @objc public func l1CipherAlgInfo() -> AlgInfo {
-        let proxyResult = vscf_chained_key_alg_info_l1_cipher_alg_info(self.c_ctx)
+    /// Return algorithm information about l1 key.
+    @objc public func l1KeyAlgInfo() -> AlgInfo {
+        let proxyResult = vscf_chained_key_alg_info_l1_key_alg_info(self.c_ctx)
 
         return FoundationImplementation.wrapAlgInfo(use: proxyResult!)
     }
 
-    /// Return information about l2 cipher encrypt/decrypt algorithm,
-    /// or NULL if absent.
-    @objc public func l2CipherAlgInfo() -> AlgInfo {
-        let proxyResult = vscf_chained_key_alg_info_l2_cipher_alg_info(self.c_ctx)
+    /// Return algorithm information about l2 key.
+    @objc public func l2KeyAlgInfo() -> AlgInfo {
+        let proxyResult = vscf_chained_key_alg_info_l2_key_alg_info(self.c_ctx)
 
         return FoundationImplementation.wrapAlgInfo(use: proxyResult!)
     }

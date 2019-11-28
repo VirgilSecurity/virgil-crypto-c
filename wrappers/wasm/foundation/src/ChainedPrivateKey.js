@@ -42,8 +42,12 @@ const initChainedPrivateKey = (Module, modules) => {
      * Handles chained private key.
      *
      * Chained private key contains 2 private keys:
-     * - l1 cipher key - is used for decryption data decrypted by the l2;
-     * - l2 cipher key - is used for decryption given data.
+     * - l1 key:
+     * * can be used for decryption data decrypted by the l2;
+     * - can be used to produce l1 signature;
+     * - l2 key:
+     * - can be used for decryption data;
+     * - can be used to produce l1 signature.
      */
     class ChainedPrivateKey {
 
@@ -177,26 +181,26 @@ const initChainedPrivateKey = (Module, modules) => {
         }
 
         /**
-         * Return l1 cipher private key.
+         * Return l1 private key.
          */
-        l1CipherKey() {
+        l1Key() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
             let proxyResult;
-            proxyResult = Module._vscf_chained_private_key_l1_cipher_key(this.ctxPtr);
+            proxyResult = Module._vscf_chained_private_key_l1_key(this.ctxPtr);
 
             const jsResult = modules.FoundationInterface.newAndUseCContext(proxyResult);
             return jsResult;
         }
 
         /**
-         * Return l2 cipher private key.
+         * Return l2 private key.
          */
-        l2CipherKey() {
+        l2Key() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
             let proxyResult;
-            proxyResult = Module._vscf_chained_private_key_l2_cipher_key(this.ctxPtr);
+            proxyResult = Module._vscf_chained_private_key_l2_key(this.ctxPtr);
 
             const jsResult = modules.FoundationInterface.newAndUseCContext(proxyResult);
             return jsResult;

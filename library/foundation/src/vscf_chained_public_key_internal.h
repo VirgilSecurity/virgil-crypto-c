@@ -91,23 +91,23 @@ vscf_chained_public_key_cleanup_ctx(vscf_chained_public_key_t *self);
 
 //
 //  Create a chained public key with 2 public keys suitable for
-//  encryption.
+//  encryption and/or verifying signatures.
 //
 //  Note, keys ownership is kept.
 //
 VSCF_PUBLIC void
 vscf_chained_public_key_init_ctx_with_keys(vscf_chained_public_key_t *self, vscf_impl_t **alg_info_ref,
-        const vscf_impl_t *l1_cipher_key, const vscf_impl_t *l2_cipher_key);
+        const vscf_impl_t *l1_key, const vscf_impl_t *l2_key);
 
 //
 //  Create a chained public key with 2 public keys suitable for
-//  encryption.
+//  encryption and/or verifying signatures.
 //
 //  Note, keys ownership is transferred.
 //
 VSCF_PUBLIC void
 vscf_chained_public_key_init_ctx_with_imported_keys(vscf_chained_public_key_t *self, const vscf_impl_t *alg_info,
-        vscf_impl_t **l1_cipher_key_ref, vscf_impl_t **l2_cipher_key_ref);
+        vscf_impl_t **l1_key_ref, vscf_impl_t **l2_key_ref);
 
 
 // --------------------------------------------------------------------------

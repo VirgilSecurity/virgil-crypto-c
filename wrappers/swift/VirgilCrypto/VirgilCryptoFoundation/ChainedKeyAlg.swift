@@ -39,7 +39,7 @@ import VSCFoundation
 /// Implements public key cryptography over chained keys.
 /// Chained encryption pseudo-code: encrypt(l2_key, encrypt(l1_key, data))
 /// Chained decryption pseudo-code: decrypt(l1_key, decrypt(l2_key, data))
-@objc(VSCFChainedKeyAlg) public class ChainedKeyAlg: NSObject, Alg, KeyAlg, KeyCipher {
+@objc(VSCFChainedKeyAlg) public class ChainedKeyAlg: NSObject, Alg, KeyAlg, KeyCipher, KeySigner {
 
     /// Handle underlying C context.
     @objc public let c_ctx: OpaquePointer
@@ -93,14 +93,16 @@ import VSCFoundation
         try FoundationError.handleStatus(fromC: proxyResult)
     }
 
-    /// Make chained private key from given.
+    /// Make chained private key from given keys that are suitable for
+    /// encryption and decrypt, and/or signing verifying.
     ///
-    /// Note, l2 cipher should be able to encrypt data produced by the l1 cipher.
-    @objc public func makeKey(l1CipherKey: PrivateKey, l2CipherKey: PrivateKey) throws -> PrivateKey {
+    /// Note, l2 should be able to encrypt data produced by the l1 cipher,
+    /// if keys are used for encryption.
+    @objc public func makeKey(l1Key: PrivateKey, l2Key: PrivateKey) throws -> PrivateKey {
         var error: vscf_error_t = vscf_error_t()
         vscf_error_reset(&error)
 
-        let proxyResult = vscf_chained_key_alg_make_key(self.c_ctx, l1CipherKey.c_ctx, l2CipherKey.c_ctx, &error)
+        let proxyResult = vscf_chained_key_alg_make_key(self.c_ctx, l1Key.c_ctx, l2Key.c_ctx, &error)
 
         try FoundationError.handleStatus(fromC: error.status)
 
@@ -284,5 +286,62 @@ import VSCFoundation
         try FoundationError.handleStatus(fromC: proxyResult)
 
         return out
+    }
+
+    /// Check if algorithm can sign data digest with a given key.
+    @objc public func canSign(privateKey: PrivateKey) -> Bool {
+        let proxyResult = vscf_chained_key_alg_can_sign(self.c_ctx, privateKey.c_ctx)
+
+        return proxyResult
+    }
+
+    /// Return length in bytes required to hold signature.
+    /// Return zero if a given private key can not produce signatures.
+    @objc public func signatureLen(privateKey: PrivateKey) -> Int {
+        let proxyResult = vscf_chained_key_alg_signature_len(self.c_ctx, privateKey.c_ctx)
+
+        return proxyResult
+    }
+
+    /// Sign data digest with a given private key.
+    @objc public func signHash(privateKey: PrivateKey, hashId: AlgId, digest: Data) throws -> Data {
+        let signatureCount = self.signatureLen(privateKey: privateKey)
+        var signature = Data(count: signatureCount)
+        var signatureBuf = vsc_buffer_new()
+        defer {
+            vsc_buffer_delete(signatureBuf)
+        }
+
+        let proxyResult = digest.withUnsafeBytes({ (digestPointer: UnsafeRawBufferPointer) -> vscf_status_t in
+            signature.withUnsafeMutableBytes({ (signaturePointer: UnsafeMutableRawBufferPointer) -> vscf_status_t in
+                vsc_buffer_use(signatureBuf, signaturePointer.bindMemory(to: byte.self).baseAddress, signatureCount)
+
+                return vscf_chained_key_alg_sign_hash(self.c_ctx, privateKey.c_ctx, vscf_alg_id_t(rawValue: UInt32(hashId.rawValue)), vsc_data(digestPointer.bindMemory(to: byte.self).baseAddress, digest.count), signatureBuf)
+            })
+        })
+        signature.count = vsc_buffer_len(signatureBuf)
+
+        try FoundationError.handleStatus(fromC: proxyResult)
+
+        return signature
+    }
+
+    /// Check if algorithm can verify data digest with a given key.
+    @objc public func canVerify(publicKey: PublicKey) -> Bool {
+        let proxyResult = vscf_chained_key_alg_can_verify(self.c_ctx, publicKey.c_ctx)
+
+        return proxyResult
+    }
+
+    /// Verify data digest with a given public key and signature.
+    @objc public func verifyHash(publicKey: PublicKey, hashId: AlgId, digest: Data, signature: Data) -> Bool {
+        let proxyResult = digest.withUnsafeBytes({ (digestPointer: UnsafeRawBufferPointer) -> Bool in
+            signature.withUnsafeBytes({ (signaturePointer: UnsafeRawBufferPointer) -> Bool in
+
+                return vscf_chained_key_alg_verify_hash(self.c_ctx, publicKey.c_ctx, vscf_alg_id_t(rawValue: UInt32(hashId.rawValue)), vsc_data(digestPointer.bindMemory(to: byte.self).baseAddress, digest.count), vsc_data(signaturePointer.bindMemory(to: byte.self).baseAddress, signature.count))
+            })
+        })
+
+        return proxyResult
     }
 }

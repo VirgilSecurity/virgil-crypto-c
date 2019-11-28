@@ -271,13 +271,13 @@ vscf_chained_private_key_shallow_copy(vscf_chained_private_key_t *self) {
 //
 //  Perform initialization of pre-allocated context.
 //  Create a chained private key with 2 keys suitable for
-//  decryption.
+//  decryption and/or to produce signatures.
 //
 //  Note, keys ownership is kept.
 //
 VSCF_PRIVATE void
 vscf_chained_private_key_init_with_keys(vscf_chained_private_key_t *self, vscf_impl_t **alg_info_ref,
-        const vscf_impl_t *l1_cipher_key, const vscf_impl_t *l2_cipher_key) {
+        const vscf_impl_t *l1_key, const vscf_impl_t *l2_key) {
 
     VSCF_ASSERT_PTR(self);
 
@@ -286,23 +286,23 @@ vscf_chained_private_key_init_with_keys(vscf_chained_private_key_t *self, vscf_i
     self->info = &info;
     self->refcnt = 1;
 
-    vscf_chained_private_key_init_ctx_with_keys(self, alg_info_ref, l1_cipher_key, l2_cipher_key);
+    vscf_chained_private_key_init_ctx_with_keys(self, alg_info_ref, l1_key, l2_key);
 }
 
 //
 //  Allocate implementation context and perform it's initialization.
 //  Create a chained private key with 2 keys suitable for
-//  decryption.
+//  decryption and/or to produce signatures.
 //
 //  Note, keys ownership is kept.
 //
 VSCF_PRIVATE vscf_chained_private_key_t *
-vscf_chained_private_key_new_with_keys(vscf_impl_t **alg_info_ref, const vscf_impl_t *l1_cipher_key,
-        const vscf_impl_t *l2_cipher_key) {
+vscf_chained_private_key_new_with_keys(vscf_impl_t **alg_info_ref, const vscf_impl_t *l1_key,
+        const vscf_impl_t *l2_key) {
 
     vscf_chained_private_key_t *self = vscf_chained_private_key_new();
 
-    vscf_chained_private_key_init_with_keys(self, alg_info_ref, l1_cipher_key, l2_cipher_key);
+    vscf_chained_private_key_init_with_keys(self, alg_info_ref, l1_key, l2_key);
 
     return self;
 }
@@ -310,13 +310,13 @@ vscf_chained_private_key_new_with_keys(vscf_impl_t **alg_info_ref, const vscf_im
 //
 //  Perform initialization of pre-allocated context.
 //  Create a chained private key with 2 keys suitable for
-//  decryption.
+//  decryption and/or to produce signatures.
 //
 //  Note, keys ownership is transferred.
 //
 VSCF_PRIVATE void
 vscf_chained_private_key_init_with_imported_keys(vscf_chained_private_key_t *self, const vscf_impl_t *alg_info,
-        vscf_impl_t **l1_cipher_key_ref, vscf_impl_t **l2_cipher_key_ref) {
+        vscf_impl_t **l1_key_ref, vscf_impl_t **l2_key_ref) {
 
     VSCF_ASSERT_PTR(self);
 
@@ -325,23 +325,23 @@ vscf_chained_private_key_init_with_imported_keys(vscf_chained_private_key_t *sel
     self->info = &info;
     self->refcnt = 1;
 
-    vscf_chained_private_key_init_ctx_with_imported_keys(self, alg_info, l1_cipher_key_ref, l2_cipher_key_ref);
+    vscf_chained_private_key_init_ctx_with_imported_keys(self, alg_info, l1_key_ref, l2_key_ref);
 }
 
 //
 //  Allocate implementation context and perform it's initialization.
 //  Create a chained private key with 2 keys suitable for
-//  decryption.
+//  decryption and/or to produce signatures.
 //
 //  Note, keys ownership is transferred.
 //
 VSCF_PRIVATE vscf_chained_private_key_t *
-vscf_chained_private_key_new_with_imported_keys(const vscf_impl_t *alg_info, vscf_impl_t **l1_cipher_key_ref,
-        vscf_impl_t **l2_cipher_key_ref) {
+vscf_chained_private_key_new_with_imported_keys(const vscf_impl_t *alg_info, vscf_impl_t **l1_key_ref,
+        vscf_impl_t **l2_key_ref) {
 
     vscf_chained_private_key_t *self = vscf_chained_private_key_new();
 
-    vscf_chained_private_key_init_with_imported_keys(self, alg_info, l1_cipher_key_ref, l2_cipher_key_ref);
+    vscf_chained_private_key_init_with_imported_keys(self, alg_info, l1_key_ref, l2_key_ref);
 
     return self;
 }

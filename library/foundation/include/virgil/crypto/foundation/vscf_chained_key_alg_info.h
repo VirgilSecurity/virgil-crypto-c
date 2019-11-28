@@ -144,7 +144,7 @@ vscf_chained_key_alg_info_shallow_copy(vscf_chained_key_alg_info_t *self);
 //
 VSCF_PRIVATE void
 vscf_chained_key_alg_info_init_with_infos(vscf_chained_key_alg_info_t *self, vscf_alg_id_t alg_id,
-        const vscf_impl_t *l1_cipher_alg_info, const vscf_impl_t *l2_cipher_alg_info);
+        const vscf_impl_t *l1_key_alg_info, const vscf_impl_t *l2_key_alg_info);
 
 //
 //  Allocate implementation context and perform it's initialization.
@@ -153,8 +153,8 @@ vscf_chained_key_alg_info_init_with_infos(vscf_chained_key_alg_info_t *self, vsc
 //  Note, keys ownership is preserved.
 //
 VSCF_PRIVATE vscf_chained_key_alg_info_t *
-vscf_chained_key_alg_info_new_with_infos(vscf_alg_id_t alg_id, const vscf_impl_t *l1_cipher_alg_info,
-        const vscf_impl_t *l2_cipher_alg_info);
+vscf_chained_key_alg_info_new_with_infos(vscf_alg_id_t alg_id, const vscf_impl_t *l1_key_alg_info,
+        const vscf_impl_t *l2_key_alg_info);
 
 //
 //  Perform initialization of pre-allocated context.
@@ -164,7 +164,7 @@ vscf_chained_key_alg_info_new_with_infos(vscf_alg_id_t alg_id, const vscf_impl_t
 //
 VSCF_PRIVATE void
 vscf_chained_key_alg_info_init_with_infos_disown(vscf_chained_key_alg_info_t *self, vscf_alg_id_t alg_id,
-        vscf_impl_t **l1_cipher_alg_info_ref, vscf_impl_t **l2_cipher_alg_info_ref);
+        vscf_impl_t **l1_key_alg_info_ref, vscf_impl_t **l2_key_alg_info_ref);
 
 //
 //  Allocate implementation context and perform it's initialization.
@@ -173,21 +173,20 @@ vscf_chained_key_alg_info_init_with_infos_disown(vscf_chained_key_alg_info_t *se
 //  Note, keys ownership is transferred.
 //
 VSCF_PRIVATE vscf_chained_key_alg_info_t *
-vscf_chained_key_alg_info_new_with_infos_disown(vscf_alg_id_t alg_id, vscf_impl_t **l1_cipher_alg_info_ref,
-        vscf_impl_t **l2_cipher_alg_info_ref);
+vscf_chained_key_alg_info_new_with_infos_disown(vscf_alg_id_t alg_id, vscf_impl_t **l1_key_alg_info_ref,
+        vscf_impl_t **l2_key_alg_info_ref);
 
 //
-//  Return information about encrypt/decrypt algorithm.
+//  Return algorithm information about l1 key.
 //
 VSCF_PUBLIC const vscf_impl_t *
-vscf_chained_key_alg_info_l1_cipher_alg_info(const vscf_chained_key_alg_info_t *self);
+vscf_chained_key_alg_info_l1_key_alg_info(const vscf_chained_key_alg_info_t *self);
 
 //
-//  Return information about l2 cipher encrypt/decrypt algorithm,
-//  or NULL if absent.
+//  Return algorithm information about l2 key.
 //
 VSCF_PUBLIC const vscf_impl_t *
-vscf_chained_key_alg_info_l2_cipher_alg_info(const vscf_chained_key_alg_info_t *self);
+vscf_chained_key_alg_info_l2_key_alg_info(const vscf_chained_key_alg_info_t *self);
 
 //
 //  Provide algorithm identificator.

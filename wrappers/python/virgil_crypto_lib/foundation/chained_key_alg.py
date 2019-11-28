@@ -45,9 +45,10 @@ from virgil_crypto_lib.common._c_bridge import Buffer
 from .alg import Alg
 from .key_alg import KeyAlg
 from .key_cipher import KeyCipher
+from .key_signer import KeySigner
 
 
-class ChainedKeyAlg(Alg, KeyAlg, KeyCipher):
+class ChainedKeyAlg(Alg, KeyAlg, KeyCipher, KeySigner):
     """Implements public key cryptography over chained keys.
     Chained encryption pseudo-code: encrypt(l2_key, encrypt(l1_key, data))
     Chained decryption pseudo-code: decrypt(l1_key, decrypt(l2_key, data))"""
@@ -191,17 +192,50 @@ class ChainedKeyAlg(Alg, KeyAlg, KeyCipher):
         VscfStatus.handle_status(status)
         return out.get_bytes()
 
+    def can_sign(self, private_key):
+        """Check if algorithm can sign data digest with a given key."""
+        result = self._lib_vscf_chained_key_alg.vscf_chained_key_alg_can_sign(self.ctx, private_key.c_impl)
+        return result
+
+    def signature_len(self, private_key):
+        """Return length in bytes required to hold signature.
+        Return zero if a given private key can not produce signatures."""
+        result = self._lib_vscf_chained_key_alg.vscf_chained_key_alg_signature_len(self.ctx, private_key.c_impl)
+        return result
+
+    def sign_hash(self, private_key, hash_id, digest):
+        """Sign data digest with a given private key."""
+        d_digest = Data(digest)
+        signature = Buffer(self.signature_len(private_key=private_key))
+        status = self._lib_vscf_chained_key_alg.vscf_chained_key_alg_sign_hash(self.ctx, private_key.c_impl, hash_id, d_digest.data, signature.c_buffer)
+        VscfStatus.handle_status(status)
+        return signature.get_bytes()
+
+    def can_verify(self, public_key):
+        """Check if algorithm can verify data digest with a given key."""
+        result = self._lib_vscf_chained_key_alg.vscf_chained_key_alg_can_verify(self.ctx, public_key.c_impl)
+        return result
+
+    def verify_hash(self, public_key, hash_id, digest, signature):
+        """Verify data digest with a given public key and signature."""
+        d_digest = Data(digest)
+        d_signature = Data(signature)
+        result = self._lib_vscf_chained_key_alg.vscf_chained_key_alg_verify_hash(self.ctx, public_key.c_impl, hash_id, d_digest.data, d_signature.data)
+        return result
+
     def setup_defaults(self):
         """Setup predefined values to the uninitialized class dependencies."""
         status = self._lib_vscf_chained_key_alg.vscf_chained_key_alg_setup_defaults(self.ctx)
         VscfStatus.handle_status(status)
 
-    def make_key(self, l1_cipher_key, l2_cipher_key):
-        """Make chained private key from given.
+    def make_key(self, l1_key, l2_key):
+        """Make chained private key from given keys that are suitable for
+        encryption and decrypt, and/or signing verifying.
 
-        Note, l2 cipher should be able to encrypt data produced by the l1 cipher."""
+        Note, l2 should be able to encrypt data produced by the l1 cipher,
+        if keys are used for encryption."""
         error = vscf_error_t()
-        result = self._lib_vscf_chained_key_alg.vscf_chained_key_alg_make_key(self.ctx, l1_cipher_key.c_impl, l2_cipher_key.c_impl, error)
+        result = self._lib_vscf_chained_key_alg.vscf_chained_key_alg_make_key(self.ctx, l1_key.c_impl, l2_key.c_impl, error)
         VscfStatus.handle_status(error.status)
         instance = VscfImplTag.get_type(result)[0].take_c_ctx(cast(result, POINTER(VscfImplTag.get_type(result)[1])))
         return instance

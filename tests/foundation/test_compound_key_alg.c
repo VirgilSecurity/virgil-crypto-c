@@ -486,9 +486,9 @@ inner_test__sign_verify__success(vscf_impl_t *public_key, vscf_impl_t *private_k
     //
     TEST_ASSERT_TRUE(vscf_compound_key_alg_can_sign(key_alg, private_key));
     const size_t signature_buf_len = vscf_compound_key_alg_signature_len(key_alg, private_key);
-    vsc_buffer_t *signatrure = vsc_buffer_new_with_capacity(signature_buf_len);
+    vsc_buffer_t *signature = vsc_buffer_new_with_capacity(signature_buf_len);
     const vscf_status_t sign_status = vscf_compound_key_alg_sign_hash(
-            key_alg, private_key, vscf_alg_id_SHA512, test_data_compound_key_MESSAGE_TBS_SHA512_DIGEST, signatrure);
+            key_alg, private_key, vscf_alg_id_SHA512, test_data_compound_key_MESSAGE_TBS_SHA512_DIGEST, signature);
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, sign_status);
 
     //
@@ -496,13 +496,13 @@ inner_test__sign_verify__success(vscf_impl_t *public_key, vscf_impl_t *private_k
     //
     TEST_ASSERT_TRUE(vscf_compound_key_alg_can_verify(key_alg, public_key));
     const bool verified = vscf_compound_key_alg_verify_hash(key_alg, public_key, vscf_alg_id_SHA512,
-            test_data_compound_key_MESSAGE_TBS_SHA512_DIGEST, vsc_buffer_data(signatrure));
+            test_data_compound_key_MESSAGE_TBS_SHA512_DIGEST, vsc_buffer_data(signature));
     TEST_ASSERT_TRUE(verified);
 
     //
     //  Cleanup
     //
-    vsc_buffer_destroy(&signatrure);
+    vsc_buffer_destroy(&signature);
     vscf_compound_key_alg_destroy(&key_alg);
 }
 

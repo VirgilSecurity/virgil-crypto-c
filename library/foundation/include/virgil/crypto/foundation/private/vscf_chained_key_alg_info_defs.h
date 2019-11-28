@@ -97,11 +97,11 @@ struct vscf_chained_key_alg_info_t {
     //
     //  Implementation specific context.
     //
-    vscf_impl_t *l1_cipher_alg_info;
+    vscf_impl_t *l1_key_alg_info;
     //
     //  Implementation specific context.
     //
-    vscf_impl_t *l2_cipher_alg_info;
+    vscf_impl_t *l2_key_alg_info;
 };
 
 

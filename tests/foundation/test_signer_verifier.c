@@ -53,6 +53,7 @@
 
 #include "test_data_signer_verifier.h"
 #include "test_data_compound_key.h"
+#include "test_data_chained_key.h"
 
 static void
 inner_test__sign_verify__success(vsc_data_t public_key_data, vsc_data_t private_key_data) {
@@ -141,6 +142,32 @@ test__sign_verify__with_compound_curve25519_ed25519__success(void) {
 #endif
 }
 
+void
+test__sign_verify__with_chained_ed25519_ed25519__success(void) {
+#if !VSCF_CHAINED_KEY_ALG
+    TEST_IGNORE_MESSAGE("Feature VSCF_CHAINED_KEY_ALG is disabled");
+#elif !VSCF_ED25519
+    TEST_IGNORE_MESSAGE("Feature VSCF_ED25519 is disabled");
+#else
+    inner_test__sign_verify__success(test_data_chained_key_ED25519_ED25519_PUBLIC_KEY_PKCS8_DER,
+            test_data_chained_key_ED25519_ED25519_PRIVATE_KEY_PKCS8_DER);
+#endif
+}
+
+void
+test__sign_verify__with_chained_ed25519_falcon__success(void) {
+#if !VSCF_CHAINED_KEY_ALG
+    TEST_IGNORE_MESSAGE("Feature VSCF_CHAINED_KEY_ALG is disabled");
+#elif !VSCF_ED25519
+    TEST_IGNORE_MESSAGE("Feature VSCF_ED25519 is disabled");
+#elif !VSCF_FALCON
+    TEST_IGNORE_MESSAGE("Feature VSCF_FALCON is disabled");
+#else
+    inner_test__sign_verify__success(test_data_chained_key_ED25519_FALCON_512_PUBLIC_KEY_PKCS8_DER,
+            test_data_chained_key_ED25519_FALCON_512_PRIVATE_KEY_PKCS8_DER);
+#endif
+}
+
 #endif // TEST_DEPENDENCIES_AVAILABLE
 
 
@@ -154,6 +181,8 @@ main(void) {
 #if TEST_DEPENDENCIES_AVAILABLE
     RUN_TEST(test__sign_verify__with_ed25519__success);
     RUN_TEST(test__sign_verify__with_compound_curve25519_ed25519__success);
+    RUN_TEST(test__sign_verify__with_chained_ed25519_ed25519__success);
+    RUN_TEST(test__sign_verify__with_chained_ed25519_falcon__success);
 #else
     RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
 #endif

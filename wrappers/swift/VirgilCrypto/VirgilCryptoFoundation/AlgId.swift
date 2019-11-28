@@ -85,6 +85,8 @@ import VSCFoundation
 
     case round5Nd5pke5d
 
+    case postQuantum
+
     /// Create enumeration value from the correspond C enumeration value.
     internal init(fromC algId: vscf_alg_id_t) {
         self.init(rawValue: Int(algId.rawValue))!

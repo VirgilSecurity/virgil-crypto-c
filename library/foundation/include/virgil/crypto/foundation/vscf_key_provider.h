@@ -179,12 +179,21 @@ vscf_key_provider_generate_compound_private_key(vscf_key_provider_t *self, vscf_
         vscf_alg_id_t signer_alg_id, vscf_error_t *error);
 
 //
-//  Generate new compound private key with post-quantum algorithms.
-//
-//  Note, cipher should not be post-quantum.
+//  Generate new chained private key with given algorithms.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_key_provider_generate_post_quantum_private_key(vscf_key_provider_t *self, vscf_alg_id_t cipher_alg_id,
+vscf_key_provider_generate_chained_private_key(vscf_key_provider_t *self, vscf_alg_id_t l1_alg_id,
+        vscf_alg_id_t l2_alg_id, vscf_error_t *error);
+
+//
+//  Generate new compound private key with nested chained private keys.
+//
+//  Note, l2 algorithm identifiers can be NONE, in this case regular key
+//  will be crated instead of chained key.
+//
+VSCF_PUBLIC vscf_impl_t *
+vscf_key_provider_generate_compound_chained_private_key(vscf_key_provider_t *self, vscf_alg_id_t cipher_l1_alg_id,
+        vscf_alg_id_t cipher_l2_alg_id, vscf_alg_id_t signer_l1_alg_id, vscf_alg_id_t signer_l2_alg_id,
         vscf_error_t *error);
 
 //

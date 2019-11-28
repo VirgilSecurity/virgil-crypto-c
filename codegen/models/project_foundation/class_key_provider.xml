@@ -59,12 +59,26 @@
         <return interface="private key" access="disown"/>
     </method>
 
-    <method name="generate post-quantum private key">
-        Generate new compound private key with post-quantum algorithms.
+    <method name="generate chained private key">
+        Generate new chained private key with given algorithms.
 
-        Note, cipher should not be post-quantum.
+        <argument name="l1 alg id" enum="alg id"/>
+        <argument name="l2 alg id" enum="alg id"/>
+        <argument name="error" class="error" access="readwrite"/>
 
-        <argument name="cipher alg id" enum="alg id"/>
+        <return interface="private key" access="disown"/>
+    </method>
+
+    <method name="generate compound chained private key">
+        Generate new compound private key with nested chained private keys.
+
+        Note, l2 algorithm identifiers can be NONE, in this case regular key
+        will be crated instead of chained key.
+
+        <argument name="cipher l1 alg id" enum="alg id"/>
+        <argument name="cipher l2 alg id" enum="alg id"/>
+        <argument name="signer l1 alg id" enum="alg id"/>
+        <argument name="signer l2 alg id" enum="alg id"/>
         <argument name="error" class="error" access="readwrite"/>
 
         <return interface="private key" access="disown"/>

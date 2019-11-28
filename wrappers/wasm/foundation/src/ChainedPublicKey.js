@@ -42,8 +42,12 @@ const initChainedPublicKey = (Module, modules) => {
      * Handles chained public key.
      *
      * Chained public key contains 2 public keys:
-     * - l1 cipher key - is used for plain text encryption;
-     * - l2 cipher key - is used for l1 output encryption.
+     * - l1 key:
+     * - can be used for plain text encryption;
+     * - can be used to verify l1 signature;
+     * - l2 key:
+     * - can be used for l1 output encryption;
+     * - can be used to verify l2 signature.
      */
     class ChainedPublicKey {
 
@@ -164,26 +168,26 @@ const initChainedPublicKey = (Module, modules) => {
         }
 
         /**
-         * Return l1 cipher public key.
+         * Return l1 public key.
          */
-        l1CipherKey() {
+        l1Key() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
             let proxyResult;
-            proxyResult = Module._vscf_chained_public_key_l1_cipher_key(this.ctxPtr);
+            proxyResult = Module._vscf_chained_public_key_l1_key(this.ctxPtr);
 
             const jsResult = modules.FoundationInterface.newAndUseCContext(proxyResult);
             return jsResult;
         }
 
         /**
-         * Return l2 cipher public key.
+         * Return l2 public key.
          */
-        l2CipherKey() {
+        l2Key() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
             let proxyResult;
-            proxyResult = Module._vscf_chained_public_key_l2_cipher_key(this.ctxPtr);
+            proxyResult = Module._vscf_chained_public_key_l2_key(this.ctxPtr);
 
             const jsResult = modules.FoundationInterface.newAndUseCContext(proxyResult);
             return jsResult;

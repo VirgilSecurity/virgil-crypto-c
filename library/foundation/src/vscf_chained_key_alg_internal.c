@@ -61,6 +61,8 @@
 #include "vscf_key_alg_api.h"
 #include "vscf_key_cipher.h"
 #include "vscf_key_cipher_api.h"
+#include "vscf_key_signer.h"
+#include "vscf_key_signer_api.h"
 #include "vscf_random.h"
 #include "vscf_impl.h"
 #include "vscf_api.h"
@@ -225,6 +227,46 @@ static const vscf_key_cipher_api_t key_cipher_api = {
     //  Decrypt given data.
     //
     (vscf_key_cipher_api_decrypt_fn)vscf_chained_key_alg_decrypt
+};
+
+//
+//  Configuration of the interface API 'key signer api'.
+//
+static const vscf_key_signer_api_t key_signer_api = {
+    //
+    //  API's unique identifier, MUST be first in the structure.
+    //  For interface 'key_signer' MUST be equal to the 'vscf_api_tag_KEY_SIGNER'.
+    //
+    vscf_api_tag_KEY_SIGNER,
+    //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_CHAINED_KEY_ALG,
+    //
+    //  Link to the inherited interface API 'key alg'.
+    //
+    &key_alg_api,
+    //
+    //  Check if algorithm can sign data digest with a given key.
+    //
+    (vscf_key_signer_api_can_sign_fn)vscf_chained_key_alg_can_sign,
+    //
+    //  Return length in bytes required to hold signature.
+    //  Return zero if a given private key can not produce signatures.
+    //
+    (vscf_key_signer_api_signature_len_fn)vscf_chained_key_alg_signature_len,
+    //
+    //  Sign data digest with a given private key.
+    //
+    (vscf_key_signer_api_sign_hash_fn)vscf_chained_key_alg_sign_hash,
+    //
+    //  Check if algorithm can verify data digest with a given key.
+    //
+    (vscf_key_signer_api_can_verify_fn)vscf_chained_key_alg_can_verify,
+    //
+    //  Verify data digest with a given public key and signature.
+    //
+    (vscf_key_signer_api_verify_hash_fn)vscf_chained_key_alg_verify_hash
 };
 
 //
@@ -437,6 +479,8 @@ vscf_chained_key_alg_find_api(vscf_api_tag_t api_tag) {
             return (const vscf_api_t *) &key_alg_api;
         case vscf_api_tag_KEY_CIPHER:
             return (const vscf_api_t *) &key_cipher_api;
+        case vscf_api_tag_KEY_SIGNER:
+            return (const vscf_api_t *) &key_signer_api;
         default:
             return NULL;
     }

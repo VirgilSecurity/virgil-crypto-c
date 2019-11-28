@@ -40,8 +40,12 @@ package com.virgilsecurity.crypto.foundation;
 * Handles chained private key.
 *
 * Chained private key contains 2 private keys:
-* - l1 cipher key - is used for decryption data decrypted by the l2;
-* - l2 cipher key - is used for decryption given data.
+* - l1 key:
+* * can be used for decryption data decrypted by the l2;
+* - can be used to produce l1 signature;
+* - l2 key:
+* - can be used for decryption data;
+* - can be used to produce l1 signature.
 */
 public class ChainedPrivateKey implements AutoCloseable, Key, PrivateKey {
 
@@ -59,17 +63,17 @@ public class ChainedPrivateKey implements AutoCloseable, Key, PrivateKey {
     }
 
     /*
-    * Return l1 cipher private key.
+    * Return l1 private key.
     */
-    public PrivateKey l1CipherKey() {
-        return FoundationJNI.INSTANCE.chainedPrivateKey_l1CipherKey(this.cCtx);
+    public PrivateKey l1Key() {
+        return FoundationJNI.INSTANCE.chainedPrivateKey_l1Key(this.cCtx);
     }
 
     /*
-    * Return l2 cipher private key.
+    * Return l2 private key.
     */
-    public PrivateKey l2CipherKey() {
-        return FoundationJNI.INSTANCE.chainedPrivateKey_l2CipherKey(this.cCtx);
+    public PrivateKey l2Key() {
+        return FoundationJNI.INSTANCE.chainedPrivateKey_l2Key(this.cCtx);
     }
 
     /*

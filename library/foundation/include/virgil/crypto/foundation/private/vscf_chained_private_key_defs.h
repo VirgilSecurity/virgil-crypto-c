@@ -96,11 +96,11 @@ struct vscf_chained_private_key_t {
     //
     //  Implementation specific context.
     //
-    vscf_impl_t *l1_cipher_key;
+    vscf_impl_t *l1_key;
     //
     //  Implementation specific context.
     //
-    vscf_impl_t *l2_cipher_key;
+    vscf_impl_t *l2_key;
 };
 
 

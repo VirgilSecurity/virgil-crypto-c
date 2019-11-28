@@ -642,11 +642,17 @@ public class FoundationJNI {
     public native PrivateKey keyProvider_generateCompoundPrivateKey(long cCtx, AlgId cipherAlgId, AlgId signerAlgId) throws FoundationException;
 
     /*
-    * Generate new compound private key with post-quantum algorithms.
-    *
-    * Note, cipher should not be post-quantum.
+    * Generate new chained private key with given algorithms.
     */
-    public native PrivateKey keyProvider_generatePostQuantumPrivateKey(long cCtx, AlgId cipherAlgId) throws FoundationException;
+    public native PrivateKey keyProvider_generateChainedPrivateKey(long cCtx, AlgId l1AlgId, AlgId l2AlgId) throws FoundationException;
+
+    /*
+    * Generate new compound private key with nested chained private keys.
+    *
+    * Note, l2 algorithm identifiers can be NONE, in this case regular key
+    * will be crated instead of chained key.
+    */
+    public native PrivateKey keyProvider_generateCompoundChainedPrivateKey(long cCtx, AlgId cipherL1AlgId, AlgId cipherL2AlgId, AlgId signerL1AlgId, AlgId signerL2AlgId) throws FoundationException;
 
     /*
     * Import private key from the PKCS#8 format.
@@ -3625,15 +3631,14 @@ public class FoundationJNI {
     public native boolean compoundKeyAlg_verifyHash(long cCtx, PublicKey publicKey, AlgId hashId, byte[] digest, byte[] signature);
 
     /*
-    * Return information about encrypt/decrypt algorithm.
+    * Return algorithm information about l1 key.
     */
-    public native AlgInfo chainedKeyAlgInfo_l1CipherAlgInfo(long cCtx);
+    public native AlgInfo chainedKeyAlgInfo_l1KeyAlgInfo(long cCtx);
 
     /*
-    * Return information about l2 cipher encrypt/decrypt algorithm,
-    * or NULL if absent.
+    * Return algorithm information about l2 key.
     */
-    public native AlgInfo chainedKeyAlgInfo_l2CipherAlgInfo(long cCtx);
+    public native AlgInfo chainedKeyAlgInfo_l2KeyAlgInfo(long cCtx);
 
     public native long chainedKeyAlgInfo_new();
 
@@ -3645,14 +3650,14 @@ public class FoundationJNI {
     public native AlgId chainedKeyAlgInfo_algId(long cCtx);
 
     /*
-    * Return l1 cipher public key.
+    * Return l1 public key.
     */
-    public native PublicKey chainedPublicKey_l1CipherKey(long cCtx);
+    public native PublicKey chainedPublicKey_l1Key(long cCtx);
 
     /*
-    * Return l2 cipher public key.
+    * Return l2 public key.
     */
-    public native PublicKey chainedPublicKey_l2CipherKey(long cCtx);
+    public native PublicKey chainedPublicKey_l2Key(long cCtx);
 
     public native long chainedPublicKey_new();
 
@@ -3685,14 +3690,14 @@ public class FoundationJNI {
     public native boolean chainedPublicKey_isValid(long cCtx);
 
     /*
-    * Return l1 cipher private key.
+    * Return l1 private key.
     */
-    public native PrivateKey chainedPrivateKey_l1CipherKey(long cCtx);
+    public native PrivateKey chainedPrivateKey_l1Key(long cCtx);
 
     /*
-    * Return l2 cipher private key.
+    * Return l2 private key.
     */
-    public native PrivateKey chainedPrivateKey_l2CipherKey(long cCtx);
+    public native PrivateKey chainedPrivateKey_l2Key(long cCtx);
 
     public native long chainedPrivateKey_new();
 
@@ -3737,11 +3742,13 @@ public class FoundationJNI {
     public native void chainedKeyAlg_setupDefaults(long cCtx) throws FoundationException;
 
     /*
-    * Make chained private key from given.
+    * Make chained private key from given keys that are suitable for
+    * encryption and decrypt, and/or signing verifying.
     *
-    * Note, l2 cipher should be able to encrypt data produced by the l1 cipher.
+    * Note, l2 should be able to encrypt data produced by the l1 cipher,
+    * if keys are used for encryption.
     */
-    public native PrivateKey chainedKeyAlg_makeKey(long cCtx, PrivateKey l1CipherKey, PrivateKey l2CipherKey) throws FoundationException;
+    public native PrivateKey chainedKeyAlg_makeKey(long cCtx, PrivateKey l1Key, PrivateKey l2Key) throws FoundationException;
 
     public native long chainedKeyAlg_new();
 
@@ -3840,6 +3847,32 @@ public class FoundationJNI {
     * Decrypt given data.
     */
     public native byte[] chainedKeyAlg_decrypt(long cCtx, PrivateKey privateKey, byte[] data) throws FoundationException;
+
+    /*
+    * Check if algorithm can sign data digest with a given key.
+    */
+    public native boolean chainedKeyAlg_canSign(long cCtx, PrivateKey privateKey);
+
+    /*
+    * Return length in bytes required to hold signature.
+    * Return zero if a given private key can not produce signatures.
+    */
+    public native int chainedKeyAlg_signatureLen(long cCtx, PrivateKey privateKey);
+
+    /*
+    * Sign data digest with a given private key.
+    */
+    public native byte[] chainedKeyAlg_signHash(long cCtx, PrivateKey privateKey, AlgId hashId, byte[] digest) throws FoundationException;
+
+    /*
+    * Check if algorithm can verify data digest with a given key.
+    */
+    public native boolean chainedKeyAlg_canVerify(long cCtx, PublicKey publicKey);
+
+    /*
+    * Verify data digest with a given public key and signature.
+    */
+    public native boolean chainedKeyAlg_verifyHash(long cCtx, PublicKey publicKey, AlgId hashId, byte[] digest, byte[] signature);
 
     public native long simpleAlgInfo_new();
 
