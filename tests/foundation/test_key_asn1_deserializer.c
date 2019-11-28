@@ -189,7 +189,7 @@ test__deserialize_private_key__ed25519_der__equals_to_ed25519_private_key(void) 
     vscf_error_reset(&error);
 
     vscf_raw_private_key_t *raw_private_key = vscf_key_asn1_deserializer_deserialize_private_key(
-            key_deserializer, test_ed25519_PRIVATE_KEY_PKCS8_PEM, &error);
+            key_deserializer, test_ed25519_PRIVATE_KEY_PKCS8_DER, &error);
 
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
     TEST_ASSERT_NOT_NULL(raw_private_key);
@@ -488,8 +488,8 @@ test__deserialize_public_key__chained_curve25519_curve25519_der__success(void) {
     const vscf_impl_t *alg_info = vscf_raw_public_key_alg_info(raw_public_key);
     TEST_ASSERT_EQUAL(vscf_impl_tag_CHAINED_KEY_ALG_INFO, vscf_impl_tag(alg_info));
     const vscf_chained_key_alg_info_t *chained_key_alg_info = (const vscf_chained_key_alg_info_t *)alg_info;
-    const vscf_impl_t *l1_cipher_alg_info = vscf_chained_key_alg_info_l1_cipher_alg_info(chained_key_alg_info);
-    const vscf_impl_t *l2_cipher_alg_info = vscf_chained_key_alg_info_l2_cipher_alg_info(chained_key_alg_info);
+    const vscf_impl_t *l1_cipher_alg_info = vscf_chained_key_alg_info_l1_key_alg_info(chained_key_alg_info);
+    const vscf_impl_t *l2_cipher_alg_info = vscf_chained_key_alg_info_l2_key_alg_info(chained_key_alg_info);
 
     TEST_ASSERT_EQUAL(vscf_alg_id_CHAINED_KEY, vscf_alg_info_alg_id(alg_info));
     TEST_ASSERT_EQUAL(vscf_alg_id_CURVE25519, vscf_alg_info_alg_id(l1_cipher_alg_info));
@@ -518,8 +518,8 @@ test__deserialize_private_key__chained_curve25519_curve25519_der__success(void) 
     const vscf_impl_t *alg_info = vscf_raw_private_key_alg_info(raw_private_key);
     TEST_ASSERT_EQUAL(vscf_impl_tag_CHAINED_KEY_ALG_INFO, vscf_impl_tag(alg_info));
     const vscf_chained_key_alg_info_t *chained_key_alg_info = (const vscf_chained_key_alg_info_t *)alg_info;
-    const vscf_impl_t *l1_cipher_alg_info = vscf_chained_key_alg_info_l1_cipher_alg_info(chained_key_alg_info);
-    const vscf_impl_t *l2_cipher_alg_info = vscf_chained_key_alg_info_l2_cipher_alg_info(chained_key_alg_info);
+    const vscf_impl_t *l1_cipher_alg_info = vscf_chained_key_alg_info_l1_key_alg_info(chained_key_alg_info);
+    const vscf_impl_t *l2_cipher_alg_info = vscf_chained_key_alg_info_l2_key_alg_info(chained_key_alg_info);
 
     TEST_ASSERT_EQUAL(vscf_alg_id_CHAINED_KEY, vscf_alg_info_alg_id(alg_info));
     TEST_ASSERT_EQUAL(vscf_alg_id_CURVE25519, vscf_alg_info_alg_id(l1_cipher_alg_info));
@@ -549,8 +549,8 @@ test__deserialize_public_key__chained_curve25519_round5_der__success(void) {
     const vscf_impl_t *alg_info = vscf_raw_public_key_alg_info(raw_public_key);
     TEST_ASSERT_EQUAL(vscf_impl_tag_CHAINED_KEY_ALG_INFO, vscf_impl_tag(alg_info));
     const vscf_chained_key_alg_info_t *chained_key_alg_info = (const vscf_chained_key_alg_info_t *)alg_info;
-    const vscf_impl_t *l1_cipher_alg_info = vscf_chained_key_alg_info_l1_cipher_alg_info(chained_key_alg_info);
-    const vscf_impl_t *l2_cipher_alg_info = vscf_chained_key_alg_info_l2_cipher_alg_info(chained_key_alg_info);
+    const vscf_impl_t *l1_cipher_alg_info = vscf_chained_key_alg_info_l1_key_alg_info(chained_key_alg_info);
+    const vscf_impl_t *l2_cipher_alg_info = vscf_chained_key_alg_info_l2_key_alg_info(chained_key_alg_info);
 
     TEST_ASSERT_EQUAL(vscf_alg_id_CHAINED_KEY, vscf_alg_info_alg_id(alg_info));
     TEST_ASSERT_EQUAL(vscf_alg_id_CURVE25519, vscf_alg_info_alg_id(l1_cipher_alg_info));
@@ -583,8 +583,8 @@ test__deserialize_private_key__chained_curve25519_round5_der__success(void) {
     const vscf_impl_t *alg_info = vscf_raw_private_key_alg_info(raw_private_key);
     TEST_ASSERT_EQUAL(vscf_impl_tag_CHAINED_KEY_ALG_INFO, vscf_impl_tag(alg_info));
     const vscf_chained_key_alg_info_t *chained_key_alg_info = (const vscf_chained_key_alg_info_t *)alg_info;
-    const vscf_impl_t *l1_cipher_alg_info = vscf_chained_key_alg_info_l1_cipher_alg_info(chained_key_alg_info);
-    const vscf_impl_t *l2_cipher_alg_info = vscf_chained_key_alg_info_l2_cipher_alg_info(chained_key_alg_info);
+    const vscf_impl_t *l1_cipher_alg_info = vscf_chained_key_alg_info_l1_key_alg_info(chained_key_alg_info);
+    const vscf_impl_t *l2_cipher_alg_info = vscf_chained_key_alg_info_l2_key_alg_info(chained_key_alg_info);
 
     TEST_ASSERT_EQUAL(vscf_alg_id_CHAINED_KEY, vscf_alg_info_alg_id(alg_info));
     TEST_ASSERT_EQUAL(vscf_alg_id_CURVE25519, vscf_alg_info_alg_id(l1_cipher_alg_info));
