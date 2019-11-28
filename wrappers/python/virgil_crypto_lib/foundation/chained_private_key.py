@@ -45,7 +45,7 @@ class ChainedPrivateKey(Key, PrivateKey):
 
     Chained private key contains 2 private keys:
         - l1 key:
-            * can be used for decryption data decrypted by the l2;
+            - can be used for decryption data decrypted by the l2;
             - can be used to produce l1 signature;
         - l2 key:
             - can be used for decryption data;
