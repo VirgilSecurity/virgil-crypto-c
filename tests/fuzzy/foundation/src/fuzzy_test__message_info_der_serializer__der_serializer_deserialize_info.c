@@ -41,15 +41,16 @@ LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
     vscf_error_t error;
     vscf_error_reset(&error);
 
-    vscf_message_info_der_serializer_t *messageInfoDerSerializer = vscf_message_info_der_serializer_new();
+    vscf_message_info_der_serializer_t *message_info_der_serializer = vscf_message_info_der_serializer_new();
 
-    vscf_message_info_der_serializer_init(messageInfoDerSerializer);
-    vscf_message_info_der_serializer_setup_defaults(messageInfoDerSerializer);
+    vscf_message_info_der_serializer_setup_defaults(message_info_der_serializer);
     vsc_data_t fuzzy_data = vsc_data(data, size);
     vscf_message_info_t *messageInfo =
-            vscf_message_info_der_serializer_deserialize(messageInfoDerSerializer, fuzzy_data, &error);
+            vscf_message_info_der_serializer_deserialize(message_info_der_serializer, fuzzy_data, &error);
 
     VSC_UNUSED(messageInfo);
 
+    vscf_message_info_der_serializer_destroy(&message_info_der_serializer);
+    vscf_message_info_destroy(&messageInfo);
     return 0;
 }
