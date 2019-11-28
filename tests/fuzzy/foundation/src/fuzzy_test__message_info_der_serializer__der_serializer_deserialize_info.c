@@ -33,13 +33,8 @@
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
 
-#include <virgil/crypto/foundation/vscf_message_info.h>
-#include <virgil/crypto/foundation/vscf_foundation_public.h>
-#include "vscf_recipient_cipher.h"
-#include "vscf_key_provider.h"
-#include "vscf_fake_random.h"
-
-#include "test_data_recipient_cipher.h"
+#include "vscf_message_info.h"
+#include "vscf_foundation_public.h"
 
 int
 LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
