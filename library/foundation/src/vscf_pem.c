@@ -175,7 +175,7 @@ vscf_pem_unwrap(vsc_data_t pem, vsc_buffer_t *data) {
     //  Grab PEM header.
     //
     const char *pem_search_ptr = (const char *)pem.bytes;
-    const char *pem_end_ptr = pem_search_ptr + pem.len;
+    const char *const pem_end_ptr = pem_search_ptr + pem.len;
     const char *header_begin = vscf_strnstr(pem_search_ptr, k_header_begin, pem_end_ptr - pem_search_ptr);
     if (header_begin != pem_search_ptr) {
         return vscf_status_ERROR_BAD_PEM;
@@ -188,12 +188,11 @@ vscf_pem_unwrap(vsc_data_t pem, vsc_buffer_t *data) {
     if (NULL == header_end) {
         return vscf_status_ERROR_BAD_PEM;
     }
-    const size_t footer_or_header_end_len = strlen(k_title_tail);
-    const size_t title_tail_len = header_end - pem_search_ptr + footer_or_header_end_len;
-    pem_search_ptr += title_tail_len;
+    const size_t title_tail_len = strlen(k_title_tail);
+    pem_search_ptr = header_end + title_tail_len;
 
     const size_t footer_begin_len = strlen(k_footer_begin);
-    if ((size_t)(pem_end_ptr - pem_search_ptr) < footer_begin_len + footer_or_header_end_len) {
+    if (pem_end_ptr - pem_search_ptr < (ptrdiff_t)(footer_begin_len + title_tail_len)) {
         return vscf_status_ERROR_BAD_PEM;
     }
 
@@ -221,7 +220,7 @@ vscf_pem_unwrap(vsc_data_t pem, vsc_buffer_t *data) {
     if (NULL == footer_end) {
         return vscf_status_ERROR_BAD_PEM;
     }
-    footer_end += footer_or_header_end_len;
+    footer_end += title_tail_len;
 
     if (footer_end - header_begin > (ptrdiff_t)pem.len) {
         return vscf_status_ERROR_BAD_PEM;
