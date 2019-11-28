@@ -190,7 +190,6 @@ vscf_pem_unwrap(vsc_data_t pem, vsc_buffer_t *data) {
     }
     const size_t footer_or_header_end_len = strlen(k_title_tail);
     const size_t title_tail_len = header_end - pem_search_ptr + footer_or_header_end_len;
-
     pem_search_ptr += title_tail_len;
 
     const size_t footer_begin_len = strlen(k_footer_begin);
