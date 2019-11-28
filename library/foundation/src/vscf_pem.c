@@ -174,46 +174,57 @@ vscf_pem_unwrap(vsc_data_t pem, vsc_buffer_t *data) {
     //
     //  Grab PEM header.
     //
-    const char *header_begin = vscf_strnstr((const char *)pem.bytes, k_header_begin, pem.len);
-    size_t header_index = header_begin - (const char *)pem.bytes;
-    size_t header_begin_len = strlen(k_header_begin);
-
-    if (NULL == header_begin) {
+    const char *pem_search_ptr = (const char *)pem.bytes;
+    size_t pem_left_len = pem.len;
+    const char *header_begin = vscf_strnstr(pem_search_ptr, k_header_begin, pem_left_len);
+    if (header_begin != pem_search_ptr) {
         return vscf_status_ERROR_BAD_PEM;
     }
 
-    const char *header_end =
-            vscf_strnstr(header_begin + header_begin_len, k_title_tail, pem.len - header_index - header_begin_len);
+    const size_t header_begin_len = strlen(k_header_begin);
+    pem_left_len -= header_begin_len;
+    pem_search_ptr += header_begin_len;
+
+    const char *header_end = vscf_strnstr(pem_search_ptr, k_title_tail, pem_left_len);
     if (NULL == header_end) {
         return vscf_status_ERROR_BAD_PEM;
     }
-    header_end += strlen(k_title_tail);
+    const size_t title_tail_len = header_end - pem_search_ptr + strlen(k_title_tail);
+    pem_left_len -= title_tail_len;
 
-    //
-    //  Grab PEM body.
-    //
-    const char *body_begin = header_end;
+    pem_search_ptr += title_tail_len;
 
-    if ('\r' == *body_begin) {
-        ++body_begin;
+
+    if (pem_left_len <= 2) {
+        return vscf_status_ERROR_BAD_PEM;
     }
 
-    if ('\n' == *body_begin) {
-        ++body_begin;
+
+    if ('\r' == *pem_search_ptr) {
+        ++pem_search_ptr;
+        --pem_left_len;
     }
 
+    if ('\n' == *pem_search_ptr) {
+        ++pem_search_ptr;
+        --pem_left_len;
+    }
+
+    const char *body_begin = pem_search_ptr;
+
     //
-    //  Grab PEN footer.
+    //  Grab PEM footer.
     //
-    const char *footer_begin = vscf_strnstr((const char *)pem.bytes, k_footer_begin, pem.len);
-    size_t footer_index = footer_begin - (const char *)pem.bytes;
+    const char *footer_begin = vscf_strnstr(pem_search_ptr, k_footer_begin, pem_left_len);
     size_t k_footer_len = strlen(k_footer_begin);
     if (NULL == footer_begin || footer_begin < body_begin) {
         return vscf_status_ERROR_BAD_PEM;
     }
 
-    const char *footer_end =
-            vscf_strnstr(footer_begin + k_footer_len, k_title_tail, pem.len - footer_index - k_footer_len);
+    pem_left_len = (footer_begin + k_footer_len) - pem_search_ptr;
+    pem_search_ptr = footer_begin + k_footer_len;
+
+    const char *footer_end = vscf_strnstr(pem_search_ptr, k_title_tail, pem_left_len);
     if (NULL == footer_end) {
         return vscf_status_ERROR_BAD_PEM;
     }
