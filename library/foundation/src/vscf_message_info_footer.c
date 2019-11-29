@@ -302,8 +302,8 @@ vscf_message_info_footer_signer_infos(const vscf_message_info_footer_t *self) {
 //  Set information about algorithm that was used for data hashing.
 //
 VSCF_PRIVATE void
-vscf_message_info_footer_set_signer_hash_alg_info(vscf_message_info_footer_t *self,
-        vscf_impl_t **signer_hash_alg_info_ref) {
+vscf_message_info_footer_set_signer_hash_alg_info(
+        vscf_message_info_footer_t *self, vscf_impl_t **signer_hash_alg_info_ref) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(signer_hash_alg_info_ref);

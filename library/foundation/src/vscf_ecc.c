@@ -704,53 +704,53 @@ vscf_ecc_sign_hash(const vscf_ecc_t *self, const vscf_impl_t *private_key, vscf_
         vsc_buffer_t *signature) {
 
     VSCF_ASSERT_PTR(self);
-        VSCF_ASSERT_PTR(private_key);
-        VSCF_ASSERT(vscf_ecc_can_sign(self, private_key));
-        VSCF_ASSERT_PTR(signature);
-        VSCF_ASSERT(vsc_buffer_is_valid(signature));
-        VSCF_ASSERT(vsc_buffer_unused_len(signature) >= vscf_ecc_signature_len(self, private_key));
-        VSCF_ASSERT(vsc_data_is_valid(digest));
+    VSCF_ASSERT_PTR(private_key);
+    VSCF_ASSERT(vscf_ecc_can_sign(self, private_key));
+    VSCF_ASSERT_PTR(signature);
+    VSCF_ASSERT(vsc_buffer_is_valid(signature));
+    VSCF_ASSERT(vsc_buffer_unused_len(signature) >= vscf_ecc_signature_len(self, private_key));
+    VSCF_ASSERT(vsc_data_is_valid(digest));
 
-        VSCF_ASSERT(vscf_impl_tag(private_key) == vscf_impl_tag_ECC_PRIVATE_KEY);
-        const vscf_ecc_private_key_t *ecc_private_key = (const vscf_ecc_private_key_t *)private_key;
+    VSCF_ASSERT(vscf_impl_tag(private_key) == vscf_impl_tag_ECC_PRIVATE_KEY);
+    const vscf_ecc_private_key_t *ecc_private_key = (const vscf_ecc_private_key_t *)private_key;
 
 
-        mbedtls_ecp_group tmp_ecp_grp;
-        mbedtls_ecp_group_init(&tmp_ecp_grp);
-        int mbed_status = mbedtls_ecp_group_copy(&tmp_ecp_grp, &ecc_private_key->ecc_grp);
-        VSCF_ASSERT_ALLOC(mbed_status != MBEDTLS_ERR_MPI_ALLOC_FAILED);
-        VSCF_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbed_status);
+    mbedtls_ecp_group tmp_ecp_grp;
+    mbedtls_ecp_group_init(&tmp_ecp_grp);
+    int mbed_status = mbedtls_ecp_group_copy(&tmp_ecp_grp, &ecc_private_key->ecc_grp);
+    VSCF_ASSERT_ALLOC(mbed_status != MBEDTLS_ERR_MPI_ALLOC_FAILED);
+    VSCF_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbed_status);
 
-        mbedtls_mpi r, s;
-        mbedtls_mpi_init(&r);
-        mbedtls_mpi_init(&s);
+    mbedtls_mpi r, s;
+    mbedtls_mpi_init(&r);
+    mbedtls_mpi_init(&s);
 
-        if (self->random) {
-            mbed_status = mbedtls_ecdsa_sign(&tmp_ecp_grp, &r, &s, &ecc_private_key->ecc_priv, digest.bytes, digest.len,
-                    vscf_mbedtls_bridge_random, (void *)self->random);
-        } else {
-            mbedtls_md_type_t md_alg = vscf_mbedtls_md_from_alg_id(hash_id);
-            mbed_status = mbedtls_ecdsa_sign_det(
-                    &tmp_ecp_grp, &r, &s, &ecc_private_key->ecc_priv, digest.bytes, digest.len, md_alg);
-        }
+    if (self->random) {
+        mbed_status = mbedtls_ecdsa_sign(&tmp_ecp_grp, &r, &s, &ecc_private_key->ecc_priv, digest.bytes, digest.len,
+                vscf_mbedtls_bridge_random, (void *)self->random);
+    } else {
+        mbedtls_md_type_t md_alg = vscf_mbedtls_md_from_alg_id(hash_id);
+        mbed_status = mbedtls_ecdsa_sign_det(
+                &tmp_ecp_grp, &r, &s, &ecc_private_key->ecc_priv, digest.bytes, digest.len, md_alg);
+    }
 
-        if (mbed_status != 0) {
-            goto cleanup;
-        }
+    if (mbed_status != 0) {
+        goto cleanup;
+    }
 
-        vscf_ecc_write_signature(&r, &s, signature);
+    vscf_ecc_write_signature(&r, &s, signature);
 
-    cleanup:
-        mbedtls_ecp_group_free(&tmp_ecp_grp);
-        mbedtls_mpi_free(&r);
-        mbedtls_mpi_free(&s);
+cleanup:
+    mbedtls_ecp_group_free(&tmp_ecp_grp);
+    mbedtls_mpi_free(&r);
+    mbedtls_mpi_free(&s);
 
-        if (MBEDTLS_ERR_ECP_RANDOM_FAILED == mbed_status) {
-            return vscf_status_ERROR_RANDOM_FAILED;
-        }
+    if (MBEDTLS_ERR_ECP_RANDOM_FAILED == mbed_status) {
+        return vscf_status_ERROR_RANDOM_FAILED;
+    }
 
-        VSCF_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbed_status);
-        return vscf_status_SUCCESS;
+    VSCF_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbed_status);
+    return vscf_status_SUCCESS;
 }
 
 //

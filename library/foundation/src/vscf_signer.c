@@ -393,8 +393,8 @@ vscf_signer_signature_len(const vscf_signer_t *self, const vscf_impl_t *private_
     VSCF_ASSERT(vscf_key_signer_is_implemented(key_alg));
 
     size_t signature_len = vscf_key_signer_signature_len(key_alg, private_key);
-    size_t len = 1 + 1 + //  VirgilSignature ::= SEQUENCE {
-                 1 + 1 + 32 + 2 + //      digestAlgorithm ::= AlgorithmIdentifier,
+    size_t len = 1 + 1 +                //  VirgilSignature ::= SEQUENCE {
+                 1 + 1 + 32 + 2 +       //      digestAlgorithm ::= AlgorithmIdentifier,
                  1 + 4 + signature_len; //      signature ::= OCTET STRING }
 
     vscf_impl_destroy(&key_alg);

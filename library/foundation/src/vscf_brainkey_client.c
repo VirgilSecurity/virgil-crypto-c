@@ -383,91 +383,91 @@ vscf_brainkey_client_setup_defaults(vscf_brainkey_client_t *self) {
 }
 
 VSCF_PUBLIC vscf_status_t
-vscf_brainkey_client_blind(vscf_brainkey_client_t *self, vsc_data_t password, vsc_buffer_t *deblind_factor,
-        vsc_buffer_t *blinded_point) {
+vscf_brainkey_client_blind(
+        vscf_brainkey_client_t *self, vsc_data_t password, vsc_buffer_t *deblind_factor, vsc_buffer_t *blinded_point) {
 
     VSCF_ASSERT_PTR(self);
-        VSCF_ASSERT_PTR(deblind_factor);
-        VSCF_ASSERT_PTR(blinded_point);
-        VSCF_ASSERT(vsc_data_is_valid(password));
+    VSCF_ASSERT_PTR(deblind_factor);
+    VSCF_ASSERT_PTR(blinded_point);
+    VSCF_ASSERT(vsc_data_is_valid(password));
 
-        vscf_status_t status = vscf_status_SUCCESS;
+    vscf_status_t status = vscf_status_SUCCESS;
 
-        if (password.len == 0 || password.len > vscf_brainkey_client_MAX_PASSWORD_LEN) {
-            status = vscf_status_ERROR_INVALID_BRAINKEY_PASSWORD_LEN;
-            goto input_err;
-        }
+    if (password.len == 0 || password.len > vscf_brainkey_client_MAX_PASSWORD_LEN) {
+        status = vscf_status_ERROR_INVALID_BRAINKEY_PASSWORD_LEN;
+        goto input_err;
+    }
 
-        if (vsc_buffer_unused_len(deblind_factor) < vscf_brainkey_client_MPI_LEN) {
-            status = vscf_status_ERROR_INVALID_BRAINKEY_FACTOR_BUFFER_LEN;
-            goto input_err;
-        }
+    if (vsc_buffer_unused_len(deblind_factor) < vscf_brainkey_client_MPI_LEN) {
+        status = vscf_status_ERROR_INVALID_BRAINKEY_FACTOR_BUFFER_LEN;
+        goto input_err;
+    }
 
-        if (vsc_buffer_unused_len(blinded_point) < vscf_brainkey_client_POINT_LEN) {
-            status = vscf_status_ERROR_INVALID_BRAINKEY_POINT_BUFFER_LEN;
-            goto input_err;
-        }
+    if (vsc_buffer_unused_len(blinded_point) < vscf_brainkey_client_POINT_LEN) {
+        status = vscf_status_ERROR_INVALID_BRAINKEY_POINT_BUFFER_LEN;
+        goto input_err;
+    }
 
-        mbedtls_ecp_point P;
-        mbedtls_ecp_point_init(&P);
+    mbedtls_ecp_point P;
+    mbedtls_ecp_point_init(&P);
 
-        mbedtls_mpi r;
-        mbedtls_mpi_init(&r);
+    mbedtls_mpi r;
+    mbedtls_mpi_init(&r);
 
-        mbedtls_ecp_point A;
-        mbedtls_ecp_point_init(&A);
+    mbedtls_ecp_point A;
+    mbedtls_ecp_point_init(&A);
 
-        mbedtls_mpi rInv;
-        mbedtls_mpi_init(&rInv);
+    mbedtls_mpi rInv;
+    mbedtls_mpi_init(&rInv);
 
-        vscf_simple_swu_data_to_point(self->simple_swu, password, &P);
+    vscf_simple_swu_data_to_point(self->simple_swu, password, &P);
 
-        int mbedtls_status = 0;
-        mbedtls_status = mbedtls_ecp_gen_privkey(&self->group, &r, vscf_mbedtls_bridge_random, self->random);
+    int mbedtls_status = 0;
+    mbedtls_status = mbedtls_ecp_gen_privkey(&self->group, &r, vscf_mbedtls_bridge_random, self->random);
 
-        if (mbedtls_status != 0) {
-            status = vscf_status_ERROR_RANDOM_FAILED;
-            goto err;
-        }
+    if (mbedtls_status != 0) {
+        status = vscf_status_ERROR_RANDOM_FAILED;
+        goto err;
+    }
 
-        mbedtls_status = mbedtls_mpi_inv_mod(&rInv, &r, &self->group.N);
+    mbedtls_status = mbedtls_mpi_inv_mod(&rInv, &r, &self->group.N);
 
-        if (mbedtls_status != 0) {
-            status = vscf_status_ERROR_BRAINKEY_INTERNAL;
-            goto err;
-        }
+    if (mbedtls_status != 0) {
+        status = vscf_status_ERROR_BRAINKEY_INTERNAL;
+        goto err;
+    }
 
-        mbedtls_ecp_group *op_group = vscf_brainkey_client_get_op_group(self);
+    mbedtls_ecp_group *op_group = vscf_brainkey_client_get_op_group(self);
 
-        mbedtls_status = mbedtls_ecp_mul(op_group, &A, &r, &P, vscf_mbedtls_bridge_random, self->operation_random);
+    mbedtls_status = mbedtls_ecp_mul(op_group, &A, &r, &P, vscf_mbedtls_bridge_random, self->operation_random);
 
-        vscf_brainkey_client_free_op_group(op_group);
+    vscf_brainkey_client_free_op_group(op_group);
 
-        if (mbedtls_status != 0) {
-            status = vscf_status_ERROR_BRAINKEY_INTERNAL;
-            goto err;
-        }
+    if (mbedtls_status != 0) {
+        status = vscf_status_ERROR_BRAINKEY_INTERNAL;
+        goto err;
+    }
 
-        size_t olen = 0;
-        mbedtls_status = mbedtls_ecp_point_write_binary(&self->group, &A, MBEDTLS_ECP_PF_UNCOMPRESSED, &olen,
-                vsc_buffer_unused_bytes(blinded_point), vscf_brainkey_client_POINT_LEN);
-        vsc_buffer_inc_used(blinded_point, vscf_brainkey_client_POINT_LEN);
-        VSCF_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
-        VSCF_ASSERT(olen == vscf_brainkey_client_POINT_LEN);
+    size_t olen = 0;
+    mbedtls_status = mbedtls_ecp_point_write_binary(&self->group, &A, MBEDTLS_ECP_PF_UNCOMPRESSED, &olen,
+            vsc_buffer_unused_bytes(blinded_point), vscf_brainkey_client_POINT_LEN);
+    vsc_buffer_inc_used(blinded_point, vscf_brainkey_client_POINT_LEN);
+    VSCF_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
+    VSCF_ASSERT(olen == vscf_brainkey_client_POINT_LEN);
 
-        mbedtls_status = mbedtls_mpi_write_binary(
-                &rInv, vsc_buffer_unused_bytes(deblind_factor), vsc_buffer_unused_len(deblind_factor));
-        vsc_buffer_inc_used(deblind_factor, vscf_brainkey_client_MPI_LEN);
-        VSCF_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
+    mbedtls_status = mbedtls_mpi_write_binary(
+            &rInv, vsc_buffer_unused_bytes(deblind_factor), vsc_buffer_unused_len(deblind_factor));
+    vsc_buffer_inc_used(deblind_factor, vscf_brainkey_client_MPI_LEN);
+    VSCF_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
 
-    err:
-        mbedtls_ecp_point_free(&A);
-        mbedtls_mpi_free(&rInv);
-        mbedtls_mpi_free(&r);
-        mbedtls_ecp_point_free(&P);
+err:
+    mbedtls_ecp_point_free(&A);
+    mbedtls_mpi_free(&rInv);
+    mbedtls_mpi_free(&r);
+    mbedtls_ecp_point_free(&P);
 
-    input_err:
-        return status;
+input_err:
+    return status;
 }
 
 VSCF_PUBLIC vscf_status_t
@@ -475,128 +475,128 @@ vscf_brainkey_client_deblind(vscf_brainkey_client_t *self, vsc_data_t password, 
         vsc_data_t deblind_factor, vsc_data_t key_name, vsc_buffer_t *seed) {
 
     VSCF_ASSERT_PTR(self);
-        VSCF_ASSERT_PTR(seed);
-        VSCF_ASSERT(vsc_data_is_valid(deblind_factor));
-        VSCF_ASSERT(vsc_data_is_valid(hardened_point));
-        VSCF_ASSERT(vsc_data_is_valid(key_name));
+    VSCF_ASSERT_PTR(seed);
+    VSCF_ASSERT(vsc_data_is_valid(deblind_factor));
+    VSCF_ASSERT(vsc_data_is_valid(hardened_point));
+    VSCF_ASSERT(vsc_data_is_valid(key_name));
 
-        vscf_status_t status = vscf_status_SUCCESS;
+    vscf_status_t status = vscf_status_SUCCESS;
 
-        if (password.len == 0 || password.len > vscf_brainkey_client_MAX_PASSWORD_LEN) {
-            status = vscf_status_ERROR_INVALID_BRAINKEY_PASSWORD_LEN;
-            goto input_err;
-        }
+    if (password.len == 0 || password.len > vscf_brainkey_client_MAX_PASSWORD_LEN) {
+        status = vscf_status_ERROR_INVALID_BRAINKEY_PASSWORD_LEN;
+        goto input_err;
+    }
 
-        if (key_name.len > vscf_brainkey_client_MAX_KEY_NAME_LEN) {
-            status = vscf_status_ERROR_INVALID_BRAINKEY_KEY_NAME_LEN;
-            goto input_err;
-        }
+    if (key_name.len > vscf_brainkey_client_MAX_KEY_NAME_LEN) {
+        status = vscf_status_ERROR_INVALID_BRAINKEY_KEY_NAME_LEN;
+        goto input_err;
+    }
 
-        if (deblind_factor.len != vscf_brainkey_client_MPI_LEN) {
-            status = vscf_status_ERROR_INVALID_BRAINKEY_FACTOR_LEN;
-            goto input_err;
-        }
+    if (deblind_factor.len != vscf_brainkey_client_MPI_LEN) {
+        status = vscf_status_ERROR_INVALID_BRAINKEY_FACTOR_LEN;
+        goto input_err;
+    }
 
-        if (hardened_point.len != vscf_brainkey_client_POINT_LEN) {
-            status = vscf_status_ERROR_INVALID_BRAINKEY_POINT_LEN;
-            goto input_err;
-        }
+    if (hardened_point.len != vscf_brainkey_client_POINT_LEN) {
+        status = vscf_status_ERROR_INVALID_BRAINKEY_POINT_LEN;
+        goto input_err;
+    }
 
-        if (vsc_buffer_unused_len(seed) < vscf_brainkey_client_SEED_LEN) {
-            status = vscf_status_ERROR_INVALID_BRAINKEY_SEED_BUFFER_LEN;
-            goto input_err;
-        }
+    if (vsc_buffer_unused_len(seed) < vscf_brainkey_client_SEED_LEN) {
+        status = vscf_status_ERROR_INVALID_BRAINKEY_SEED_BUFFER_LEN;
+        goto input_err;
+    }
 
-        mbedtls_ecp_point Y;
-        mbedtls_ecp_point_init(&Y);
+    mbedtls_ecp_point Y;
+    mbedtls_ecp_point_init(&Y);
 
-        mbedtls_ecp_point S;
-        mbedtls_ecp_point_init(&S);
+    mbedtls_ecp_point S;
+    mbedtls_ecp_point_init(&S);
 
-        mbedtls_mpi rInv;
-        mbedtls_mpi_init(&rInv);
+    mbedtls_mpi rInv;
+    mbedtls_mpi_init(&rInv);
 
-        int mbedtls_status = mbedtls_ecp_point_read_binary(&self->group, &Y, hardened_point.bytes, hardened_point.len);
-        if (mbedtls_status != 0) {
-            status = vscf_status_ERROR_BRAINKEY_INVALID_POINT;
-            goto err;
-        }
+    int mbedtls_status = mbedtls_ecp_point_read_binary(&self->group, &Y, hardened_point.bytes, hardened_point.len);
+    if (mbedtls_status != 0) {
+        status = vscf_status_ERROR_BRAINKEY_INVALID_POINT;
+        goto err;
+    }
 
-        mbedtls_status = mbedtls_ecp_check_pubkey(&self->group, &Y);
-        if (mbedtls_status != 0) {
-            status = vscf_status_ERROR_BRAINKEY_INVALID_POINT;
-            goto err;
-        }
+    mbedtls_status = mbedtls_ecp_check_pubkey(&self->group, &Y);
+    if (mbedtls_status != 0) {
+        status = vscf_status_ERROR_BRAINKEY_INVALID_POINT;
+        goto err;
+    }
 
-        mbedtls_status = mbedtls_mpi_read_binary(&rInv, deblind_factor.bytes, deblind_factor.len);
-        if (mbedtls_status != 0) {
-            status = vscf_status_ERROR_BRAINKEY_INTERNAL;
-            goto err;
-        }
+    mbedtls_status = mbedtls_mpi_read_binary(&rInv, deblind_factor.bytes, deblind_factor.len);
+    if (mbedtls_status != 0) {
+        status = vscf_status_ERROR_BRAINKEY_INTERNAL;
+        goto err;
+    }
 
-        mbedtls_ecp_group *op_group = vscf_brainkey_client_get_op_group(self);
+    mbedtls_ecp_group *op_group = vscf_brainkey_client_get_op_group(self);
 
-        mbedtls_status = mbedtls_ecp_mul(op_group, &S, &rInv, &Y, vscf_mbedtls_bridge_random, self->operation_random);
+    mbedtls_status = mbedtls_ecp_mul(op_group, &S, &rInv, &Y, vscf_mbedtls_bridge_random, self->operation_random);
 
-        vscf_brainkey_client_free_op_group(op_group);
+    vscf_brainkey_client_free_op_group(op_group);
 
-        if (mbedtls_status != 0) {
-            status = vscf_status_ERROR_BRAINKEY_INTERNAL;
-            goto err;
-        }
+    if (mbedtls_status != 0) {
+        status = vscf_status_ERROR_BRAINKEY_INTERNAL;
+        goto err;
+    }
 
-        byte point[vscf_brainkey_client_POINT_LEN];
+    byte point[vscf_brainkey_client_POINT_LEN];
 
-        size_t olen = 0;
-        mbedtls_status = mbedtls_ecp_point_write_binary(
-                &self->group, &S, MBEDTLS_ECP_PF_UNCOMPRESSED, &olen, point, vscf_brainkey_client_POINT_LEN);
-        VSCF_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
-        VSCF_ASSERT(olen == vscf_brainkey_client_POINT_LEN);
+    size_t olen = 0;
+    mbedtls_status = mbedtls_ecp_point_write_binary(
+            &self->group, &S, MBEDTLS_ECP_PF_UNCOMPRESSED, &olen, point, vscf_brainkey_client_POINT_LEN);
+    VSCF_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
+    VSCF_ASSERT(olen == vscf_brainkey_client_POINT_LEN);
 
-        vscf_hkdf_t *hkdf = vscf_hkdf_new();
-        vscf_hkdf_take_hash(hkdf, vscf_sha512_impl(vscf_sha512_new()));
+    vscf_hkdf_t *hkdf = vscf_hkdf_new();
+    vscf_hkdf_take_hash(hkdf, vscf_sha512_impl(vscf_sha512_new()));
 
-        vscf_hkdf_reset(hkdf, password, 0);
-        vscf_hkdf_set_info(hkdf, key_name);
-        vscf_hkdf_derive(hkdf, vsc_data(point, sizeof(point)), vscf_brainkey_client_SEED_LEN, seed);
+    vscf_hkdf_reset(hkdf, password, 0);
+    vscf_hkdf_set_info(hkdf, key_name);
+    vscf_hkdf_derive(hkdf, vsc_data(point, sizeof(point)), vscf_brainkey_client_SEED_LEN, seed);
 
-        vscf_hkdf_destroy(&hkdf);
+    vscf_hkdf_destroy(&hkdf);
 
-        vscf_zeroize(point, sizeof(point));
+    vscf_zeroize(point, sizeof(point));
 
-    err:
-        mbedtls_mpi_free(&rInv);
-        mbedtls_ecp_point_free(&S);
-        mbedtls_ecp_point_free(&Y);
+err:
+    mbedtls_mpi_free(&rInv);
+    mbedtls_ecp_point_free(&S);
+    mbedtls_ecp_point_free(&Y);
 
-    input_err:
-        return status;
+input_err:
+    return status;
 }
 
 static mbedtls_ecp_group *
 vscf_brainkey_client_get_op_group(vscf_brainkey_client_t *self) {
 
-    #if VSCF_MULTI_THREADING
-        VSCF_UNUSED(self);
+#if VSCF_MULTI_THREADING
+    VSCF_UNUSED(self);
 
-        mbedtls_ecp_group *new_group = (mbedtls_ecp_group *)vscf_alloc(sizeof(mbedtls_ecp_group));
-        mbedtls_ecp_group_init(new_group);
+    mbedtls_ecp_group *new_group = (mbedtls_ecp_group *)vscf_alloc(sizeof(mbedtls_ecp_group));
+    mbedtls_ecp_group_init(new_group);
 
-        VSCF_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_ecp_group_load(new_group, MBEDTLS_ECP_DP_SECP256R1));
+    VSCF_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_ecp_group_load(new_group, MBEDTLS_ECP_DP_SECP256R1));
 
-        return new_group;
-    #else
-        return &self->group;
-    #endif
+    return new_group;
+#else
+    return &self->group;
+#endif
 }
 
 static void
 vscf_brainkey_client_free_op_group(mbedtls_ecp_group *op_group) {
 
-    #if VSCF_MULTI_THREADING
-        mbedtls_ecp_group_free(op_group);
-        vscf_dealloc(op_group);
-    #else
-        VSCF_UNUSED(op_group);
-    #endif
+#if VSCF_MULTI_THREADING
+    mbedtls_ecp_group_free(op_group);
+    vscf_dealloc(op_group);
+#else
+    VSCF_UNUSED(op_group);
+#endif
 }

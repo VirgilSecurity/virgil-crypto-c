@@ -412,174 +412,174 @@ VSCF_PUBLIC vscf_status_t
 vscf_group_session_add_epoch(vscf_group_session_t *self, const vscf_group_session_message_t *message) {
 
     VSCF_ASSERT_PTR(self);
-        VSCF_ASSERT_PTR(message);
-        VSCF_ASSERT(message->message_pb.has_group_info);
+    VSCF_ASSERT_PTR(message);
+    VSCF_ASSERT(message->message_pb.has_group_info);
 
-        if (self->last_epoch &&
-                memcmp(self->session_id, message->message_pb.group_info.session_id, sizeof(self->session_id)) != 0) {
-            return vscf_status_ERROR_SESSION_ID_DOESNT_MATCH;
+    if (self->last_epoch &&
+            memcmp(self->session_id, message->message_pb.group_info.session_id, sizeof(self->session_id)) != 0) {
+        return vscf_status_ERROR_SESSION_ID_DOESNT_MATCH;
+    }
+
+    vscf_status_t status = vscf_status_SUCCESS;
+
+    uint32_t msg_epoch = message->message_pb.group_info.epoch;
+
+    if (self->last_epoch == NULL) {
+        memcpy(self->session_id, message->message_pb.group_info.session_id, sizeof(self->session_id));
+    }
+
+    vscf_group_session_epoch_node_t *left = NULL, *right = NULL;
+
+    left = self->last_epoch;
+
+    while (left != NULL && left->value->epoch_number >= msg_epoch) {
+        if (left->value->epoch_number == msg_epoch) {
+            status = vscf_status_ERROR_DUPLICATE_EPOCH;
+            goto err;
         }
 
-        vscf_status_t status = vscf_status_SUCCESS;
+        right = left;
+        left = left->prev;
+    }
 
-        uint32_t msg_epoch = message->message_pb.group_info.epoch;
+    vscf_group_session_epoch_t *value = vscf_group_session_epoch_new();
+    value->epoch_number = message->message_pb.group_info.epoch;
+    memcpy(value->key, message->message_pb.group_info.key, sizeof(value->key));
 
-        if (self->last_epoch == NULL) {
-            memcpy(self->session_id, message->message_pb.group_info.session_id, sizeof(self->session_id));
-        }
+    vscf_group_session_epoch_node_t *new_node = vscf_group_session_epoch_node_new();
+    new_node->value = value;
 
-        vscf_group_session_epoch_node_t *left = NULL, *right = NULL;
+    new_node->prev = left;
+    new_node->next = right;
 
-        left = self->last_epoch;
+    if (right == NULL) {
+        self->last_epoch = new_node;
+    } else {
+        right->prev = new_node;
+    }
 
-        while (left != NULL && left->value->epoch_number >= msg_epoch) {
-            if (left->value->epoch_number == msg_epoch) {
-                status = vscf_status_ERROR_DUPLICATE_EPOCH;
-                goto err;
-            }
+    if (left == NULL) {
+        self->first_epoch = new_node;
+    } else {
+        left->next = new_node;
+    }
 
-            right = left;
-            left = left->prev;
-        }
+    if (self->epochs_count == vscf_group_session_MAX_EPOCHS_COUNT) {
+        VSCF_ASSERT_PTR(self->first_epoch);
+        vscf_group_session_epoch_node_t *first = self->first_epoch;
+        self->first_epoch = first->next;
+        self->first_epoch->prev = NULL;
+        vscf_group_session_epoch_node_destroy(&first);
+    } else if (self->epochs_count < vscf_group_session_MAX_EPOCHS_COUNT) {
+        self->epochs_count++;
+    } else {
+        VSCF_ASSERT(false);
+    }
 
-        vscf_group_session_epoch_t *value = vscf_group_session_epoch_new();
-        value->epoch_number = message->message_pb.group_info.epoch;
-        memcpy(value->key, message->message_pb.group_info.key, sizeof(value->key));
-
-        vscf_group_session_epoch_node_t *new_node = vscf_group_session_epoch_node_new();
-        new_node->value = value;
-
-        new_node->prev = left;
-        new_node->next = right;
-
-        if (right == NULL) {
-            self->last_epoch = new_node;
-        } else {
-            right->prev = new_node;
-        }
-
-        if (left == NULL) {
-            self->first_epoch = new_node;
-        } else {
-            left->next = new_node;
-        }
-
-        if (self->epochs_count == vscf_group_session_MAX_EPOCHS_COUNT) {
-            VSCF_ASSERT_PTR(self->first_epoch);
-            vscf_group_session_epoch_node_t *first = self->first_epoch;
-            self->first_epoch = first->next;
-            self->first_epoch->prev = NULL;
-            vscf_group_session_epoch_node_destroy(&first);
-        } else if (self->epochs_count < vscf_group_session_MAX_EPOCHS_COUNT) {
-            self->epochs_count++;
-        } else {
-            VSCF_ASSERT(false);
-        }
-
-    err:
-        return status;
+err:
+    return status;
 }
 
 //
 //  Encrypts data
 //
 VSCF_PUBLIC vscf_group_session_message_t *
-vscf_group_session_encrypt(vscf_group_session_t *self, vsc_data_t plain_text, const vscf_impl_t *private_key,
-        vscf_error_t *error) {
+vscf_group_session_encrypt(
+        vscf_group_session_t *self, vsc_data_t plain_text, const vscf_impl_t *private_key, vscf_error_t *error) {
 
     VSCF_ASSERT_PTR(self);
-        VSCF_ASSERT_PTR(self->last_epoch);
-        VSCF_ASSERT_PTR(private_key);
-        VSCF_ASSERT(vsc_data_is_valid(plain_text));
-        VSCF_ASSERT(vscf_private_key_is_implemented(private_key));
+    VSCF_ASSERT_PTR(self->last_epoch);
+    VSCF_ASSERT_PTR(private_key);
+    VSCF_ASSERT(vsc_data_is_valid(plain_text));
+    VSCF_ASSERT(vscf_private_key_is_implemented(private_key));
 
-        // TODO: Support other key types?
-        if (vscf_key_alg_id(private_key) != vscf_alg_id_ED25519) {
-            VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_WRONG_KEY_TYPE);
-            return NULL;
-        }
+    // TODO: Support other key types?
+    if (vscf_key_alg_id(private_key) != vscf_alg_id_ED25519) {
+        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_WRONG_KEY_TYPE);
+        return NULL;
+    }
 
-        if (plain_text.len > vscf_group_session_MAX_PLAIN_TEXT_LEN) {
-            VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_PLAIN_TEXT_TOO_LONG);
-            return NULL;
-        }
+    if (plain_text.len > vscf_group_session_MAX_PLAIN_TEXT_LEN) {
+        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_PLAIN_TEXT_TOO_LONG);
+        return NULL;
+    }
 
-        vscf_status_t status;
+    vscf_status_t status;
 
-        vsc_buffer_t *salt = vsc_buffer_new_with_capacity(vscf_group_session_SALT_SIZE);
+    vsc_buffer_t *salt = vsc_buffer_new_with_capacity(vscf_group_session_SALT_SIZE);
 
-        status = vscf_random(self->rng, vscf_group_session_SALT_SIZE, salt);
+    status = vscf_random(self->rng, vscf_group_session_SALT_SIZE, salt);
 
-        if (status != vscf_status_SUCCESS) {
-            goto err1;
-        }
+    if (status != vscf_status_SUCCESS) {
+        goto err1;
+    }
 
-        vscf_group_session_message_t *msg = vscf_group_session_message_new();
+    vscf_group_session_message_t *msg = vscf_group_session_message_new();
 
-        vscf_group_session_message_set_type(msg, vscf_group_msg_type_REGULAR);
+    vscf_group_session_message_set_type(msg, vscf_group_msg_type_REGULAR);
 
-        memcpy(msg->header_pb->salt, vsc_buffer_bytes(salt), sizeof(msg->header_pb->salt));
-        memcpy(msg->header_pb->session_id, self->session_id, sizeof(msg->header_pb->session_id));
-        msg->header_pb->epoch = self->last_epoch->value->epoch_number;
+    memcpy(msg->header_pb->salt, vsc_buffer_bytes(salt), sizeof(msg->header_pb->salt));
+    memcpy(msg->header_pb->session_id, self->session_id, sizeof(msg->header_pb->session_id));
+    msg->header_pb->epoch = self->last_epoch->value->epoch_number;
 
-        pb_ostream_t header_stream = pb_ostream_from_buffer(
-                msg->message_pb.regular_message.header.bytes, sizeof(msg->message_pb.regular_message.header));
+    pb_ostream_t header_stream = pb_ostream_from_buffer(
+            msg->message_pb.regular_message.header.bytes, sizeof(msg->message_pb.regular_message.header));
 
-        VSCF_ASSERT(pb_encode(&header_stream, vscf_RegularGroupMessageHeader_fields, msg->header_pb));
+    VSCF_ASSERT(pb_encode(&header_stream, vscf_RegularGroupMessageHeader_fields, msg->header_pb));
 
-        msg->message_pb.regular_message.header.size = header_stream.bytes_written;
+    msg->message_pb.regular_message.header.size = header_stream.bytes_written;
 
-        size_t len = vscf_message_cipher_encrypt_len(self->cipher, vscf_message_padding_padded_len(plain_text.len));
+    size_t len = vscf_message_cipher_encrypt_len(self->cipher, vscf_message_padding_padded_len(plain_text.len));
 
-        msg->message_pb.regular_message.cipher_text = vscf_alloc(PB_BYTES_ARRAY_T_ALLOCSIZE(len));
+    msg->message_pb.regular_message.cipher_text = vscf_alloc(PB_BYTES_ARRAY_T_ALLOCSIZE(len));
 
-        vsc_buffer_t cipher_text;
-        vsc_buffer_init(&cipher_text);
-        vsc_buffer_use(&cipher_text, msg->message_pb.regular_message.cipher_text->bytes, len);
+    vsc_buffer_t cipher_text;
+    vsc_buffer_init(&cipher_text);
+    vsc_buffer_use(&cipher_text, msg->message_pb.regular_message.cipher_text->bytes, len);
 
-        status = vscf_message_cipher_pad_then_encrypt(self->cipher, self->padding, plain_text, self->last_epoch->value->key,
-                vsc_buffer_bytes(salt),
-                vsc_data(msg->message_pb.regular_message.header.bytes, msg->message_pb.regular_message.header.size),
-                &cipher_text);
+    status = vscf_message_cipher_pad_then_encrypt(self->cipher, self->padding, plain_text, self->last_epoch->value->key,
+            vsc_buffer_bytes(salt),
+            vsc_data(msg->message_pb.regular_message.header.bytes, msg->message_pb.regular_message.header.size),
+            &cipher_text);
 
-        msg->message_pb.regular_message.cipher_text->size = vsc_buffer_len(&cipher_text);
+    msg->message_pb.regular_message.cipher_text->size = vsc_buffer_len(&cipher_text);
 
-        if (status != vscf_status_SUCCESS) {
-            goto err1;
-        }
+    if (status != vscf_status_SUCCESS) {
+        goto err1;
+    }
 
-        vscf_ed25519_t *ed25519 = vscf_ed25519_new();
+    vscf_ed25519_t *ed25519 = vscf_ed25519_new();
 
-        size_t signature_len = vscf_ed25519_signature_len(ed25519, private_key);
+    size_t signature_len = vscf_ed25519_signature_len(ed25519, private_key);
 
-        VSCF_ASSERT(sizeof(msg->message_pb.regular_message.signature) == signature_len);
+    VSCF_ASSERT(sizeof(msg->message_pb.regular_message.signature) == signature_len);
 
-        vsc_buffer_t signature;
-        vsc_buffer_init(&signature);
-        vsc_buffer_use(&signature, msg->message_pb.regular_message.signature, signature_len);
+    vsc_buffer_t signature;
+    vsc_buffer_init(&signature);
+    vsc_buffer_use(&signature, msg->message_pb.regular_message.signature, signature_len);
 
-        status = vscf_ed25519_sign_hash(
-                ed25519, private_key, vscf_alg_id_SHA512 /* FIXME */, vsc_buffer_data(&cipher_text), &signature);
+    status = vscf_ed25519_sign_hash(
+            ed25519, private_key, vscf_alg_id_SHA512 /* FIXME */, vsc_buffer_data(&cipher_text), &signature);
 
-        if (status != vscf_status_SUCCESS) {
-            goto err2;
-        }
+    if (status != vscf_status_SUCCESS) {
+        goto err2;
+    }
 
-    err2:
-        vsc_buffer_delete(&signature);
-        vscf_ed25519_destroy(&ed25519);
-        vsc_buffer_delete(&cipher_text);
+err2:
+    vsc_buffer_delete(&signature);
+    vscf_ed25519_destroy(&ed25519);
+    vsc_buffer_delete(&cipher_text);
 
-    err1:
-        vsc_buffer_destroy(&salt);
+err1:
+    vsc_buffer_destroy(&salt);
 
-        if (status != vscf_status_SUCCESS) {
-            VSCF_ERROR_SAFE_UPDATE(error, status);
-            vscf_group_session_message_destroy(&msg);
-            return NULL;
-        }
+    if (status != vscf_status_SUCCESS) {
+        VSCF_ERROR_SAFE_UPDATE(error, status);
+        vscf_group_session_message_destroy(&msg);
+        return NULL;
+    }
 
-        return msg;
+    return msg;
 }
 
 //
@@ -604,61 +604,61 @@ vscf_group_session_decrypt(vscf_group_session_t *self, const vscf_group_session_
         const vscf_impl_t *public_key, vsc_buffer_t *plain_text) {
 
     VSCF_ASSERT_PTR(self);
-        VSCF_ASSERT_PTR(public_key);
-        VSCF_ASSERT_PTR(message);
-        VSCF_ASSERT(message->message_pb.has_regular_message);
-        VSCF_ASSERT_PTR(message->header_pb);
-        VSCF_ASSERT_PTR(plain_text);
-        VSCF_ASSERT_PTR(self->last_epoch);
-        VSCF_ASSERT(vscf_public_key_is_implemented(public_key));
+    VSCF_ASSERT_PTR(public_key);
+    VSCF_ASSERT_PTR(message);
+    VSCF_ASSERT(message->message_pb.has_regular_message);
+    VSCF_ASSERT_PTR(message->header_pb);
+    VSCF_ASSERT_PTR(plain_text);
+    VSCF_ASSERT_PTR(self->last_epoch);
+    VSCF_ASSERT(vscf_public_key_is_implemented(public_key));
 
-        // TODO: Support other key types?
-        if (vscf_key_alg_id(public_key) != vscf_alg_id_ED25519) {
-            return vscf_status_ERROR_WRONG_KEY_TYPE;
-        }
+    // TODO: Support other key types?
+    if (vscf_key_alg_id(public_key) != vscf_alg_id_ED25519) {
+        return vscf_status_ERROR_WRONG_KEY_TYPE;
+    }
 
-        if (memcmp(self->session_id, message->header_pb->session_id, sizeof(self->session_id)) != 0) {
-            return vscf_status_ERROR_SESSION_ID_DOESNT_MATCH;
-        }
+    if (memcmp(self->session_id, message->header_pb->session_id, sizeof(self->session_id)) != 0) {
+        return vscf_status_ERROR_SESSION_ID_DOESNT_MATCH;
+    }
 
-        uint32_t msg_epoch = message->header_pb->epoch;
-        vscf_group_session_epoch_node_t *epoch = self->last_epoch;
+    uint32_t msg_epoch = message->header_pb->epoch;
+    vscf_group_session_epoch_node_t *epoch = self->last_epoch;
 
-        while (epoch != NULL && epoch->value->epoch_number > msg_epoch) {
-            epoch = epoch->prev;
-        }
+    while (epoch != NULL && epoch->value->epoch_number > msg_epoch) {
+        epoch = epoch->prev;
+    }
 
-        if (epoch == NULL || epoch->value->epoch_number != msg_epoch) {
-            return vscf_status_ERROR_EPOCH_NOT_FOUND;
-        }
+    if (epoch == NULL || epoch->value->epoch_number != msg_epoch) {
+        return vscf_status_ERROR_EPOCH_NOT_FOUND;
+    }
 
-        vscf_status_t status = vscf_status_SUCCESS;
+    vscf_status_t status = vscf_status_SUCCESS;
 
-        vscf_ed25519_t *ed25519 = vscf_ed25519_new();
+    vscf_ed25519_t *ed25519 = vscf_ed25519_new();
 
-        vsc_data_t signature = vsc_data(
-                message->message_pb.regular_message.signature, sizeof(message->message_pb.regular_message.signature));
-        vsc_data_t digest = vsc_data(message->message_pb.regular_message.cipher_text->bytes,
-                message->message_pb.regular_message.cipher_text->size);
+    vsc_data_t signature = vsc_data(
+            message->message_pb.regular_message.signature, sizeof(message->message_pb.regular_message.signature));
+    vsc_data_t digest = vsc_data(message->message_pb.regular_message.cipher_text->bytes,
+            message->message_pb.regular_message.cipher_text->size);
 
-        bool verified = vscf_ed25519_verify_hash(ed25519, public_key, vscf_alg_id_SHA512 /* FIXME */, digest, signature);
+    bool verified = vscf_ed25519_verify_hash(ed25519, public_key, vscf_alg_id_SHA512 /* FIXME */, digest, signature);
 
-        if (!verified) {
-            status = vscf_status_ERROR_INVALID_SIGNATURE;
-            goto err;
-        }
+    if (!verified) {
+        status = vscf_status_ERROR_INVALID_SIGNATURE;
+        goto err;
+    }
 
-        status = vscf_message_cipher_decrypt_then_remove_pad(self->cipher,
-                vsc_data(message->message_pb.regular_message.cipher_text->bytes,
-                        message->message_pb.regular_message.cipher_text->size),
-                epoch->value->key, message->header_pb->salt,
-                vsc_data(message->message_pb.regular_message.header.bytes, message->message_pb.regular_message.header.size),
-                plain_text);
+    status = vscf_message_cipher_decrypt_then_remove_pad(self->cipher,
+            vsc_data(message->message_pb.regular_message.cipher_text->bytes,
+                    message->message_pb.regular_message.cipher_text->size),
+            epoch->value->key, message->header_pb->salt,
+            vsc_data(message->message_pb.regular_message.header.bytes, message->message_pb.regular_message.header.size),
+            plain_text);
 
-    err:
-        vscf_ed25519_destroy(&ed25519);
+err:
+    vscf_ed25519_destroy(&ed25519);
 
-        return status;
+    return status;
 }
 
 //

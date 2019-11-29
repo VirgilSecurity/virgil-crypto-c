@@ -125,8 +125,8 @@ vscf_raw_public_key_init_ctx_with_data(vscf_raw_public_key_t *self, vsc_data_t k
 //  Note, data is not copied.
 //
 VSCF_PUBLIC void
-vscf_raw_public_key_init_ctx_with_buffer(vscf_raw_public_key_t *self, vsc_buffer_t **key_data_ref,
-        vscf_impl_t **alg_info_ref) {
+vscf_raw_public_key_init_ctx_with_buffer(
+        vscf_raw_public_key_t *self, vsc_buffer_t **key_data_ref, vscf_impl_t **alg_info_ref) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(key_data_ref);
@@ -148,8 +148,8 @@ vscf_raw_public_key_init_ctx_with_buffer(vscf_raw_public_key_t *self, vsc_buffer
 //  Note, data is not copied, but new instance of key is created.s
 //
 VSCF_PUBLIC void
-vscf_raw_public_key_init_ctx_with_redefined_impl_tag(vscf_raw_public_key_t *self, const vscf_raw_public_key_t *other,
-        vscf_impl_tag_t impl_tag) {
+vscf_raw_public_key_init_ctx_with_redefined_impl_tag(
+        vscf_raw_public_key_t *self, const vscf_raw_public_key_t *other, vscf_impl_tag_t impl_tag) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(other);

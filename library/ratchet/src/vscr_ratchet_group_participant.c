@@ -241,8 +241,8 @@ vscr_ratchet_group_participant_cleanup_ctx(vscr_ratchet_group_participant_t *sel
 }
 
 VSCR_PUBLIC void
-vscr_ratchet_group_participant_add_epoch(vscr_ratchet_group_participant_t *self, uint32_t epoch,
-        vscr_ratchet_chain_key_t **chain_key_ref) {
+vscr_ratchet_group_participant_add_epoch(
+        vscr_ratchet_group_participant_t *self, uint32_t epoch, vscr_ratchet_chain_key_t **chain_key_ref) {
 
     VSCR_ASSERT_PTR(self);
 
@@ -304,8 +304,8 @@ vscr_ratchet_group_participant_serialize(const vscr_ratchet_group_participant_t 
 }
 
 VSCR_PUBLIC void
-vscr_ratchet_group_participant_deserialize(const vscr_ParticipantData *data_pb,
-        vscr_ratchet_group_participant_t *data) {
+vscr_ratchet_group_participant_deserialize(
+        const vscr_ParticipantData *data_pb, vscr_ratchet_group_participant_t *data) {
 
     VSCR_ASSERT_PTR(data_pb);
     VSCR_ASSERT_PTR(data);

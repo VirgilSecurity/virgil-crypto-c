@@ -291,8 +291,8 @@ vscf_password_recipient_info_cleanup_ctx(vscf_password_recipient_info_t *self) {
 //  Create object and define all properties.
 //
 static void
-vscf_password_recipient_info_init_ctx_with_members(vscf_password_recipient_info_t *self,
-        vscf_impl_t **key_encryption_algorithm_ref, vsc_data_t encrypted_key) {
+vscf_password_recipient_info_init_ctx_with_members(
+        vscf_password_recipient_info_t *self, vscf_impl_t **key_encryption_algorithm_ref, vsc_data_t encrypted_key) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(key_encryption_algorithm_ref);

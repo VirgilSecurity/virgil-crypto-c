@@ -394,43 +394,43 @@ vscr_ratchet_group_message_deserialize(vsc_data_t input, vscr_error_t *error) {
 
     VSCR_ASSERT(vsc_data_is_valid(input));
 
-        if (input.len > vscr_ratchet_common_MAX_GROUP_MESSAGE_LEN) {
-            VSCR_ERROR_SAFE_UPDATE(error, vscr_status_ERROR_PROTOBUF_DECODE);
+    if (input.len > vscr_ratchet_common_MAX_GROUP_MESSAGE_LEN) {
+        VSCR_ERROR_SAFE_UPDATE(error, vscr_status_ERROR_PROTOBUF_DECODE);
 
-            return NULL;
-        }
+        return NULL;
+    }
 
-        vscr_status_t status = vscr_status_SUCCESS;
+    vscr_status_t status = vscr_status_SUCCESS;
 
-        vscr_ratchet_group_message_t *message = vscr_ratchet_group_message_new();
+    vscr_ratchet_group_message_t *message = vscr_ratchet_group_message_new();
 
-        pb_istream_t istream = pb_istream_from_buffer(input.bytes, input.len);
+    pb_istream_t istream = pb_istream_from_buffer(input.bytes, input.len);
 
-        bool pb_status = pb_decode(&istream, vscr_GroupMessage_fields, &message->message_pb);
+    bool pb_status = pb_decode(&istream, vscr_GroupMessage_fields, &message->message_pb);
 
-        if (!pb_status || message->message_pb.has_group_info == message->message_pb.has_regular_message) {
+    if (!pb_status || message->message_pb.has_group_info == message->message_pb.has_regular_message) {
+        status = vscr_status_ERROR_PROTOBUF_DECODE;
+        goto err;
+    }
+
+    if (message->message_pb.has_regular_message) {
+        pb_istream_t sub_istream = pb_istream_from_buffer(
+                message->message_pb.regular_message.header.bytes, message->message_pb.regular_message.header.size);
+
+        message->header_pb = vscr_alloc(sizeof(vscr_RegularGroupMessageHeader));
+        pb_status = pb_decode(&sub_istream, vscr_RegularGroupMessageHeader_fields, message->header_pb);
+
+        if (!pb_status) {
             status = vscr_status_ERROR_PROTOBUF_DECODE;
             goto err;
         }
+    }
 
-        if (message->message_pb.has_regular_message) {
-            pb_istream_t sub_istream = pb_istream_from_buffer(
-                    message->message_pb.regular_message.header.bytes, message->message_pb.regular_message.header.size);
+err:
+    if (status != vscr_status_SUCCESS) {
+        VSCR_ERROR_SAFE_UPDATE(error, status);
+        vscr_ratchet_group_message_destroy(&message);
+    }
 
-            message->header_pb = vscr_alloc(sizeof(vscr_RegularGroupMessageHeader));
-            pb_status = pb_decode(&sub_istream, vscr_RegularGroupMessageHeader_fields, message->header_pb);
-
-            if (!pb_status) {
-                status = vscr_status_ERROR_PROTOBUF_DECODE;
-                goto err;
-            }
-        }
-
-    err:
-        if (status != vscr_status_SUCCESS) {
-            VSCR_ERROR_SAFE_UPDATE(error, status);
-            vscr_ratchet_group_message_destroy(&message);
-        }
-
-        return message;
+    return message;
 }

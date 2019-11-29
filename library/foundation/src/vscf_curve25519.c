@@ -242,8 +242,8 @@ vscf_curve25519_generate_ephemeral_key(const vscf_curve25519_t *self, const vscf
 //  RFC 3447 Appendix A.1.1.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_curve25519_import_public_key(const vscf_curve25519_t *self, const vscf_raw_public_key_t *raw_key,
-        vscf_error_t *error) {
+vscf_curve25519_import_public_key(
+        const vscf_curve25519_t *self, const vscf_raw_public_key_t *raw_key, vscf_error_t *error) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(raw_key);
@@ -301,8 +301,8 @@ vscf_curve25519_export_public_key(const vscf_curve25519_t *self, const vscf_impl
 //  RFC 3447 Appendix A.1.2.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_curve25519_import_private_key(const vscf_curve25519_t *self, const vscf_raw_private_key_t *raw_key,
-        vscf_error_t *error) {
+vscf_curve25519_import_private_key(
+        const vscf_curve25519_t *self, const vscf_raw_private_key_t *raw_key, vscf_error_t *error) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(raw_key);
@@ -401,8 +401,8 @@ vscf_curve25519_encrypted_len(const vscf_curve25519_t *self, const vscf_impl_t *
 //  Encrypt data with a given public key.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_curve25519_encrypt(const vscf_curve25519_t *self, const vscf_impl_t *public_key, vsc_data_t data,
-        vsc_buffer_t *out) {
+vscf_curve25519_encrypt(
+        const vscf_curve25519_t *self, const vscf_impl_t *public_key, vsc_data_t data, vsc_buffer_t *out) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(public_key);
@@ -452,8 +452,8 @@ vscf_curve25519_decrypted_len(const vscf_curve25519_t *self, const vscf_impl_t *
 //  Decrypt given data.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_curve25519_decrypt(const vscf_curve25519_t *self, const vscf_impl_t *private_key, vsc_data_t data,
-        vsc_buffer_t *out) {
+vscf_curve25519_decrypt(
+        const vscf_curve25519_t *self, const vscf_impl_t *private_key, vsc_data_t data, vsc_buffer_t *out) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(private_key);
