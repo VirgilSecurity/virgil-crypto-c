@@ -54,8 +54,6 @@ func (obj *Rsa) GenerateKey(bitlen uint32) (PrivateKey, error) {
 
     runtime.KeepAlive(obj)
 
-    runtime.KeepAlive(error)
-
     return FoundationImplementationWrapPrivateKey(proxyResult) /* r4 */
 }
 
@@ -200,8 +198,6 @@ func (obj *Rsa) GenerateEphemeralKey(key Key) (PrivateKey, error) {
 
     runtime.KeepAlive(key)
 
-    runtime.KeepAlive(error)
-
     return FoundationImplementationWrapPrivateKey(proxyResult) /* r4 */
 }
 
@@ -230,8 +226,6 @@ func (obj *Rsa) ImportPublicKey(rawKey *RawPublicKey) (PublicKey, error) {
 
     runtime.KeepAlive(rawKey)
 
-    runtime.KeepAlive(error)
-
     return FoundationImplementationWrapPublicKey(proxyResult) /* r4 */
 }
 
@@ -256,8 +250,6 @@ func (obj *Rsa) ExportPublicKey(publicKey PublicKey) (*RawPublicKey, error) {
     runtime.KeepAlive(obj)
 
     runtime.KeepAlive(publicKey)
-
-    runtime.KeepAlive(error)
 
     return newRawPublicKeyWithCtx(proxyResult) /* r6 */, nil
 }
@@ -287,8 +279,6 @@ func (obj *Rsa) ImportPrivateKey(rawKey *RawPrivateKey) (PrivateKey, error) {
 
     runtime.KeepAlive(rawKey)
 
-    runtime.KeepAlive(error)
-
     return FoundationImplementationWrapPrivateKey(proxyResult) /* r4 */
 }
 
@@ -313,8 +303,6 @@ func (obj *Rsa) ExportPrivateKey(privateKey PrivateKey) (*RawPrivateKey, error) 
     runtime.KeepAlive(obj)
 
     runtime.KeepAlive(privateKey)
-
-    runtime.KeepAlive(error)
 
     return newRawPrivateKeyWithCtx(proxyResult) /* r6 */, nil
 }

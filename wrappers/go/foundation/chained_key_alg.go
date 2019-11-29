@@ -63,8 +63,6 @@ func (obj *ChainedKeyAlg) MakeKey(l1Key PrivateKey, l2Key PrivateKey) (PrivateKe
 
     runtime.KeepAlive(l2Key)
 
-    runtime.KeepAlive(error)
-
     return FoundationImplementationWrapPrivateKey(proxyResult) /* r4 */
 }
 
@@ -209,8 +207,6 @@ func (obj *ChainedKeyAlg) GenerateEphemeralKey(key Key) (PrivateKey, error) {
 
     runtime.KeepAlive(key)
 
-    runtime.KeepAlive(error)
-
     return FoundationImplementationWrapPrivateKey(proxyResult) /* r4 */
 }
 
@@ -239,8 +235,6 @@ func (obj *ChainedKeyAlg) ImportPublicKey(rawKey *RawPublicKey) (PublicKey, erro
 
     runtime.KeepAlive(rawKey)
 
-    runtime.KeepAlive(error)
-
     return FoundationImplementationWrapPublicKey(proxyResult) /* r4 */
 }
 
@@ -265,8 +259,6 @@ func (obj *ChainedKeyAlg) ExportPublicKey(publicKey PublicKey) (*RawPublicKey, e
     runtime.KeepAlive(obj)
 
     runtime.KeepAlive(publicKey)
-
-    runtime.KeepAlive(error)
 
     return newRawPublicKeyWithCtx(proxyResult) /* r6 */, nil
 }
@@ -296,8 +288,6 @@ func (obj *ChainedKeyAlg) ImportPrivateKey(rawKey *RawPrivateKey) (PrivateKey, e
 
     runtime.KeepAlive(rawKey)
 
-    runtime.KeepAlive(error)
-
     return FoundationImplementationWrapPrivateKey(proxyResult) /* r4 */
 }
 
@@ -322,8 +312,6 @@ func (obj *ChainedKeyAlg) ExportPrivateKey(privateKey PrivateKey) (*RawPrivateKe
     runtime.KeepAlive(obj)
 
     runtime.KeepAlive(privateKey)
-
-    runtime.KeepAlive(error)
 
     return newRawPrivateKeyWithCtx(proxyResult) /* r6 */, nil
 }

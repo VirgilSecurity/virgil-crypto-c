@@ -62,8 +62,6 @@ func (obj *Curve25519) GenerateKey() (PrivateKey, error) {
 
     runtime.KeepAlive(obj)
 
-    runtime.KeepAlive(error)
-
     return FoundationImplementationWrapPrivateKey(proxyResult) /* r4 */
 }
 
@@ -208,8 +206,6 @@ func (obj *Curve25519) GenerateEphemeralKey(key Key) (PrivateKey, error) {
 
     runtime.KeepAlive(key)
 
-    runtime.KeepAlive(error)
-
     return FoundationImplementationWrapPrivateKey(proxyResult) /* r4 */
 }
 
@@ -238,8 +234,6 @@ func (obj *Curve25519) ImportPublicKey(rawKey *RawPublicKey) (PublicKey, error) 
 
     runtime.KeepAlive(rawKey)
 
-    runtime.KeepAlive(error)
-
     return FoundationImplementationWrapPublicKey(proxyResult) /* r4 */
 }
 
@@ -264,8 +258,6 @@ func (obj *Curve25519) ExportPublicKey(publicKey PublicKey) (*RawPublicKey, erro
     runtime.KeepAlive(obj)
 
     runtime.KeepAlive(publicKey)
-
-    runtime.KeepAlive(error)
 
     return newRawPublicKeyWithCtx(proxyResult) /* r6 */, nil
 }
@@ -295,8 +287,6 @@ func (obj *Curve25519) ImportPrivateKey(rawKey *RawPrivateKey) (PrivateKey, erro
 
     runtime.KeepAlive(rawKey)
 
-    runtime.KeepAlive(error)
-
     return FoundationImplementationWrapPrivateKey(proxyResult) /* r4 */
 }
 
@@ -321,8 +311,6 @@ func (obj *Curve25519) ExportPrivateKey(privateKey PrivateKey) (*RawPrivateKey, 
     runtime.KeepAlive(obj)
 
     runtime.KeepAlive(privateKey)
-
-    runtime.KeepAlive(error)
 
     return newRawPrivateKeyWithCtx(proxyResult) /* r6 */, nil
 }

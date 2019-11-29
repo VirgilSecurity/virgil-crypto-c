@@ -267,8 +267,6 @@ func (obj *RatchetGroupSession) Encrypt(plainText []byte) (*RatchetGroupMessage,
 
     runtime.KeepAlive(obj)
 
-    runtime.KeepAlive(error)
-
     return newRatchetGroupMessageWithCtx(proxyResult) /* r6 */, nil
 }
 
@@ -343,8 +341,6 @@ func RatchetGroupSessionDeserialize(input []byte) (*RatchetGroupSession, error) 
         return nil, err
     }
 
-    runtime.KeepAlive(error)
-
     return newRatchetGroupSessionWithCtx(proxyResult) /* r6 */, nil
 }
 
@@ -363,8 +359,6 @@ func (obj *RatchetGroupSession) CreateGroupTicket() (*RatchetGroupTicket, error)
     }
 
     runtime.KeepAlive(obj)
-
-    runtime.KeepAlive(error)
 
     return newRatchetGroupTicketWithCtx(proxyResult) /* r6 */, nil
 }

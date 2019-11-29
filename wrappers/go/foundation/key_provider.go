@@ -119,8 +119,6 @@ func (obj *KeyProvider) GeneratePrivateKey(algId AlgId) (PrivateKey, error) {
 
     runtime.KeepAlive(obj)
 
-    runtime.KeepAlive(error)
-
     return FoundationImplementationWrapPrivateKey(proxyResult) /* r4 */
 }
 
@@ -140,8 +138,6 @@ func (obj *KeyProvider) GenerateCompoundPrivateKey(cipherAlgId AlgId, signerAlgI
 
     runtime.KeepAlive(obj)
 
-    runtime.KeepAlive(error)
-
     return FoundationImplementationWrapPrivateKey(proxyResult) /* r4 */
 }
 
@@ -160,8 +156,6 @@ func (obj *KeyProvider) GenerateChainedPrivateKey(l1AlgId AlgId, l2AlgId AlgId) 
     }
 
     runtime.KeepAlive(obj)
-
-    runtime.KeepAlive(error)
 
     return FoundationImplementationWrapPrivateKey(proxyResult) /* r4 */
 }
@@ -185,8 +179,6 @@ func (obj *KeyProvider) GenerateCompoundChainedPrivateKey(cipherL1AlgId AlgId, c
 
     runtime.KeepAlive(obj)
 
-    runtime.KeepAlive(error)
-
     return FoundationImplementationWrapPrivateKey(proxyResult) /* r4 */
 }
 
@@ -207,8 +199,6 @@ func (obj *KeyProvider) ImportPrivateKey(keyData []byte) (PrivateKey, error) {
 
     runtime.KeepAlive(obj)
 
-    runtime.KeepAlive(error)
-
     return FoundationImplementationWrapPrivateKey(proxyResult) /* r4 */
 }
 
@@ -228,8 +218,6 @@ func (obj *KeyProvider) ImportPublicKey(keyData []byte) (PublicKey, error) {
     }
 
     runtime.KeepAlive(obj)
-
-    runtime.KeepAlive(error)
 
     return FoundationImplementationWrapPublicKey(proxyResult) /* r4 */
 }

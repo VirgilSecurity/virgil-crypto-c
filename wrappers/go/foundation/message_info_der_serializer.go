@@ -165,8 +165,6 @@ func (obj *MessageInfoDerSerializer) Deserialize(data []byte) (*MessageInfo, err
 
     runtime.KeepAlive(obj)
 
-    runtime.KeepAlive(error)
-
     return newMessageInfoWithCtx(proxyResult) /* r6 */, nil
 }
 
@@ -219,8 +217,6 @@ func (obj *MessageInfoDerSerializer) DeserializeFooter(data []byte) (*MessageInf
     }
 
     runtime.KeepAlive(obj)
-
-    runtime.KeepAlive(error)
 
     return newMessageInfoFooterWithCtx(proxyResult) /* r6 */, nil
 }

@@ -155,7 +155,5 @@ func GroupSessionMessageDeserialize(input []byte) (*GroupSessionMessage, error) 
         return nil, err
     }
 
-    runtime.KeepAlive(error)
-
     return newGroupSessionMessageWithCtx(proxyResult) /* r6 */, nil
 }

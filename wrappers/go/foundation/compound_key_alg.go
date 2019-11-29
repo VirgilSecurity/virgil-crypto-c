@@ -70,8 +70,6 @@ func (obj *CompoundKeyAlg) MakeKey(cipherKey PrivateKey, signerKey PrivateKey) (
 
     runtime.KeepAlive(signerKey)
 
-    runtime.KeepAlive(error)
-
     return FoundationImplementationWrapPrivateKey(proxyResult) /* r4 */
 }
 
@@ -216,8 +214,6 @@ func (obj *CompoundKeyAlg) GenerateEphemeralKey(key Key) (PrivateKey, error) {
 
     runtime.KeepAlive(key)
 
-    runtime.KeepAlive(error)
-
     return FoundationImplementationWrapPrivateKey(proxyResult) /* r4 */
 }
 
@@ -246,8 +242,6 @@ func (obj *CompoundKeyAlg) ImportPublicKey(rawKey *RawPublicKey) (PublicKey, err
 
     runtime.KeepAlive(rawKey)
 
-    runtime.KeepAlive(error)
-
     return FoundationImplementationWrapPublicKey(proxyResult) /* r4 */
 }
 
@@ -272,8 +266,6 @@ func (obj *CompoundKeyAlg) ExportPublicKey(publicKey PublicKey) (*RawPublicKey, 
     runtime.KeepAlive(obj)
 
     runtime.KeepAlive(publicKey)
-
-    runtime.KeepAlive(error)
 
     return newRawPublicKeyWithCtx(proxyResult) /* r6 */, nil
 }
@@ -303,8 +295,6 @@ func (obj *CompoundKeyAlg) ImportPrivateKey(rawKey *RawPrivateKey) (PrivateKey, 
 
     runtime.KeepAlive(rawKey)
 
-    runtime.KeepAlive(error)
-
     return FoundationImplementationWrapPrivateKey(proxyResult) /* r4 */
 }
 
@@ -329,8 +319,6 @@ func (obj *CompoundKeyAlg) ExportPrivateKey(privateKey PrivateKey) (*RawPrivateK
     runtime.KeepAlive(obj)
 
     runtime.KeepAlive(privateKey)
-
-    runtime.KeepAlive(error)
 
     return newRawPrivateKeyWithCtx(proxyResult) /* r6 */, nil
 }

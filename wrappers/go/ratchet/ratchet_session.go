@@ -190,8 +190,6 @@ func (obj *RatchetSession) Encrypt(plainText []byte) (*RatchetMessage, error) {
 
     runtime.KeepAlive(obj)
 
-    runtime.KeepAlive(error)
-
     return newRatchetMessageWithCtx(proxyResult) /* r6 */, nil
 }
 
@@ -261,8 +259,6 @@ func RatchetSessionDeserialize(input []byte) (*RatchetSession, error) {
     if err != nil {
         return nil, err
     }
-
-    runtime.KeepAlive(error)
 
     return newRatchetSessionWithCtx(proxyResult) /* r6 */, nil
 }

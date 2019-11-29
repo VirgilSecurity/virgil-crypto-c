@@ -54,8 +54,6 @@ func (obj *KeyAsn1Serializer) SerializePublicKeyInplace(publicKey *RawPublicKey)
 
     runtime.KeepAlive(publicKey)
 
-    runtime.KeepAlive(error)
-
     return uint32(proxyResult) /* r9 */, nil
 }
 
@@ -78,8 +76,6 @@ func (obj *KeyAsn1Serializer) SerializePrivateKeyInplace(privateKey *RawPrivateK
     runtime.KeepAlive(obj)
 
     runtime.KeepAlive(privateKey)
-
-    runtime.KeepAlive(error)
 
     return uint32(proxyResult) /* r9 */, nil
 }

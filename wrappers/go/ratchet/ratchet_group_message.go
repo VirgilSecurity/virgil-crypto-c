@@ -156,7 +156,5 @@ func RatchetGroupMessageDeserialize(input []byte) (*RatchetGroupMessage, error) 
         return nil, err
     }
 
-    runtime.KeepAlive(error)
-
     return newRatchetGroupMessageWithCtx(proxyResult) /* r6 */, nil
 }

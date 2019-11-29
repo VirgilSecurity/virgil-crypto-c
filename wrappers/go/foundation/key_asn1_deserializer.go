@@ -50,8 +50,6 @@ func (obj *KeyAsn1Deserializer) DeserializePublicKeyInplace() (*RawPublicKey, er
 
     runtime.KeepAlive(obj)
 
-    runtime.KeepAlive(error)
-
     return newRawPublicKeyWithCtx(proxyResult) /* r6 */, nil
 }
 
@@ -72,8 +70,6 @@ func (obj *KeyAsn1Deserializer) DeserializePrivateKeyInplace() (*RawPrivateKey, 
     }
 
     runtime.KeepAlive(obj)
-
-    runtime.KeepAlive(error)
 
     return newRawPrivateKeyWithCtx(proxyResult) /* r6 */, nil
 }
@@ -149,8 +145,6 @@ func (obj *KeyAsn1Deserializer) DeserializePublicKey(publicKeyData []byte) (*Raw
 
     runtime.KeepAlive(obj)
 
-    runtime.KeepAlive(error)
-
     return newRawPublicKeyWithCtx(proxyResult) /* r6 */, nil
 }
 
@@ -170,8 +164,6 @@ func (obj *KeyAsn1Deserializer) DeserializePrivateKey(privateKeyData []byte) (*R
     }
 
     runtime.KeepAlive(obj)
-
-    runtime.KeepAlive(error)
 
     return newRawPrivateKeyWithCtx(proxyResult) /* r6 */, nil
 }

@@ -155,7 +155,5 @@ func RatchetMessageDeserialize(input []byte) (*RatchetMessage, error) {
         return nil, err
     }
 
-    runtime.KeepAlive(error)
-
     return newRatchetMessageWithCtx(proxyResult) /* r6 */, nil
 }

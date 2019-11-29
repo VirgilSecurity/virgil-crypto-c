@@ -138,8 +138,6 @@ func (obj *MessageInfoCustomParams) FindInt(key []byte) (int32, error) {
 
     runtime.KeepAlive(obj)
 
-    runtime.KeepAlive(error)
-
     return int32(proxyResult) /* r9 */, nil
 }
 
@@ -160,8 +158,6 @@ func (obj *MessageInfoCustomParams) FindString(key []byte) ([]byte, error) {
 
     runtime.KeepAlive(obj)
 
-    runtime.KeepAlive(error)
-
     return helperExtractData(proxyResult) /* r1 */, nil
 }
 
@@ -181,8 +177,6 @@ func (obj *MessageInfoCustomParams) FindData(key []byte) ([]byte, error) {
     }
 
     runtime.KeepAlive(obj)
-
-    runtime.KeepAlive(error)
 
     return helperExtractData(proxyResult) /* r1 */, nil
 }

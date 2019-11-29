@@ -173,8 +173,6 @@ func (obj *GroupSession) Encrypt(plainText []byte, privateKey PrivateKey) (*Grou
 
     runtime.KeepAlive(privateKey)
 
-    runtime.KeepAlive(error)
-
     return newGroupSessionMessageWithCtx(proxyResult) /* r6 */, nil
 }
 
@@ -233,8 +231,6 @@ func (obj *GroupSession) CreateGroupTicket() (*GroupSessionTicket, error) {
     }
 
     runtime.KeepAlive(obj)
-
-    runtime.KeepAlive(error)
 
     return newGroupSessionTicketWithCtx(proxyResult) /* r6 */, nil
 }

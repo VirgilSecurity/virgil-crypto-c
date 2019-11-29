@@ -2425,7 +2425,7 @@ function go_wrap_c_proxy_call (go_func, proxy_call, proxy_return_type, proxy_ret
         my.keep_alive += terminator + format_left("\
             runtime.KeepAlive(obj)")
     endif
-    for my.go_func.go_argument where (is_true (0.is_class) | is_true (0.is_interface)) & ! string_in (0.type, "Data")
+    for my.go_func.go_argument where (is_true (0.is_class) | is_true (0.is_interface)) & ! string_in (0.type, "Data") & ! is_true (0.is_error)
         go_create_import ("", "runtime", my.go_module)
 
         my.keep_alive ?= ""
