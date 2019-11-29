@@ -477,7 +477,6 @@ test__encrypt_decrypt__with_curve25519_and_round5_keys__plain_text_match(void) {
 // --------------------------------------------------------------------------
 //  Sign / Verify
 // --------------------------------------------------------------------------
-#if VSCF_POST_QUANTUM
 void
 inner_test__sign_verify__success(const vscf_impl_t *public_key, const vscf_impl_t *private_key) {
     //
@@ -514,7 +513,6 @@ inner_test__sign_verify__success(const vscf_impl_t *public_key, const vscf_impl_
     vsc_buffer_destroy(&signature);
     vscf_chained_key_alg_destroy(&key_alg);
 }
-#endif
 
 void
 test__sign_verify__with_ed25519_and_ed25519_keys__success(void) {
