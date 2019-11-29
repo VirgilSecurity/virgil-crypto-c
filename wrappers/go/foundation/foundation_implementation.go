@@ -47,6 +47,14 @@ func FoundationImplementationWrapAlg(ctx *C.vscf_impl_t) (Alg, error) {
         return newEd25519WithCtx((*C.vscf_ed25519_t /*ct10*/)(ctx)), nil
     case C.vscf_impl_tag_CURVE25519:
         return newCurve25519WithCtx((*C.vscf_curve25519_t /*ct10*/)(ctx)), nil
+    case C.vscf_impl_tag_FALCON:
+        return newFalconWithCtx((*C.vscf_falcon_t /*ct10*/)(ctx)), nil
+    case C.vscf_impl_tag_ROUND5:
+        return newRound5WithCtx((*C.vscf_round5_t /*ct10*/)(ctx)), nil
+    case C.vscf_impl_tag_COMPOUND_KEY_ALG:
+        return newCompoundKeyAlgWithCtx((*C.vscf_compound_key_alg_t /*ct10*/)(ctx)), nil
+    case C.vscf_impl_tag_CHAINED_KEY_ALG:
+        return newChainedKeyAlgWithCtx((*C.vscf_chained_key_alg_t /*ct10*/)(ctx)), nil
     default:
         return nil, &FoundationError{-1,"Unexpected C implementation cast to the Go implementation."}
     }
@@ -255,6 +263,14 @@ func FoundationImplementationWrapKey(ctx *C.vscf_impl_t) (Key, error) {
         return newRawPublicKeyWithCtx((*C.vscf_raw_public_key_t /*ct10*/)(ctx)), nil
     case C.vscf_impl_tag_RAW_PRIVATE_KEY:
         return newRawPrivateKeyWithCtx((*C.vscf_raw_private_key_t /*ct10*/)(ctx)), nil
+    case C.vscf_impl_tag_COMPOUND_PUBLIC_KEY:
+        return newCompoundPublicKeyWithCtx((*C.vscf_compound_public_key_t /*ct10*/)(ctx)), nil
+    case C.vscf_impl_tag_COMPOUND_PRIVATE_KEY:
+        return newCompoundPrivateKeyWithCtx((*C.vscf_compound_private_key_t /*ct10*/)(ctx)), nil
+    case C.vscf_impl_tag_CHAINED_PUBLIC_KEY:
+        return newChainedPublicKeyWithCtx((*C.vscf_chained_public_key_t /*ct10*/)(ctx)), nil
+    case C.vscf_impl_tag_CHAINED_PRIVATE_KEY:
+        return newChainedPrivateKeyWithCtx((*C.vscf_chained_private_key_t /*ct10*/)(ctx)), nil
     default:
         return nil, &FoundationError{-1,"Unexpected C implementation cast to the Go implementation."}
     }
@@ -274,6 +290,10 @@ func FoundationImplementationWrapPublicKey(ctx *C.vscf_impl_t) (PublicKey, error
         return newEccPublicKeyWithCtx((*C.vscf_ecc_public_key_t /*ct10*/)(ctx)), nil
     case C.vscf_impl_tag_RAW_PUBLIC_KEY:
         return newRawPublicKeyWithCtx((*C.vscf_raw_public_key_t /*ct10*/)(ctx)), nil
+    case C.vscf_impl_tag_COMPOUND_PUBLIC_KEY:
+        return newCompoundPublicKeyWithCtx((*C.vscf_compound_public_key_t /*ct10*/)(ctx)), nil
+    case C.vscf_impl_tag_CHAINED_PUBLIC_KEY:
+        return newChainedPublicKeyWithCtx((*C.vscf_chained_public_key_t /*ct10*/)(ctx)), nil
     default:
         return nil, &FoundationError{-1,"Unexpected C implementation cast to the Go implementation."}
     }
@@ -293,6 +313,10 @@ func FoundationImplementationWrapPrivateKey(ctx *C.vscf_impl_t) (PrivateKey, err
         return newEccPrivateKeyWithCtx((*C.vscf_ecc_private_key_t /*ct10*/)(ctx)), nil
     case C.vscf_impl_tag_RAW_PRIVATE_KEY:
         return newRawPrivateKeyWithCtx((*C.vscf_raw_private_key_t /*ct10*/)(ctx)), nil
+    case C.vscf_impl_tag_COMPOUND_PRIVATE_KEY:
+        return newCompoundPrivateKeyWithCtx((*C.vscf_compound_private_key_t /*ct10*/)(ctx)), nil
+    case C.vscf_impl_tag_CHAINED_PRIVATE_KEY:
+        return newChainedPrivateKeyWithCtx((*C.vscf_chained_private_key_t /*ct10*/)(ctx)), nil
     default:
         return nil, &FoundationError{-1,"Unexpected C implementation cast to the Go implementation."}
     }
@@ -314,6 +338,14 @@ func FoundationImplementationWrapKeyAlg(ctx *C.vscf_impl_t) (KeyAlg, error) {
         return newEd25519WithCtx((*C.vscf_ed25519_t /*ct10*/)(ctx)), nil
     case C.vscf_impl_tag_CURVE25519:
         return newCurve25519WithCtx((*C.vscf_curve25519_t /*ct10*/)(ctx)), nil
+    case C.vscf_impl_tag_FALCON:
+        return newFalconWithCtx((*C.vscf_falcon_t /*ct10*/)(ctx)), nil
+    case C.vscf_impl_tag_ROUND5:
+        return newRound5WithCtx((*C.vscf_round5_t /*ct10*/)(ctx)), nil
+    case C.vscf_impl_tag_COMPOUND_KEY_ALG:
+        return newCompoundKeyAlgWithCtx((*C.vscf_compound_key_alg_t /*ct10*/)(ctx)), nil
+    case C.vscf_impl_tag_CHAINED_KEY_ALG:
+        return newChainedKeyAlgWithCtx((*C.vscf_chained_key_alg_t /*ct10*/)(ctx)), nil
     default:
         return nil, &FoundationError{-1,"Unexpected C implementation cast to the Go implementation."}
     }
@@ -335,6 +367,12 @@ func FoundationImplementationWrapKeyCipher(ctx *C.vscf_impl_t) (KeyCipher, error
         return newEd25519WithCtx((*C.vscf_ed25519_t /*ct10*/)(ctx)), nil
     case C.vscf_impl_tag_CURVE25519:
         return newCurve25519WithCtx((*C.vscf_curve25519_t /*ct10*/)(ctx)), nil
+    case C.vscf_impl_tag_ROUND5:
+        return newRound5WithCtx((*C.vscf_round5_t /*ct10*/)(ctx)), nil
+    case C.vscf_impl_tag_COMPOUND_KEY_ALG:
+        return newCompoundKeyAlgWithCtx((*C.vscf_compound_key_alg_t /*ct10*/)(ctx)), nil
+    case C.vscf_impl_tag_CHAINED_KEY_ALG:
+        return newChainedKeyAlgWithCtx((*C.vscf_chained_key_alg_t /*ct10*/)(ctx)), nil
     default:
         return nil, &FoundationError{-1,"Unexpected C implementation cast to the Go implementation."}
     }
@@ -354,6 +392,12 @@ func FoundationImplementationWrapKeySigner(ctx *C.vscf_impl_t) (KeySigner, error
         return newEccWithCtx((*C.vscf_ecc_t /*ct10*/)(ctx)), nil
     case C.vscf_impl_tag_ED25519:
         return newEd25519WithCtx((*C.vscf_ed25519_t /*ct10*/)(ctx)), nil
+    case C.vscf_impl_tag_FALCON:
+        return newFalconWithCtx((*C.vscf_falcon_t /*ct10*/)(ctx)), nil
+    case C.vscf_impl_tag_COMPOUND_KEY_ALG:
+        return newCompoundKeyAlgWithCtx((*C.vscf_compound_key_alg_t /*ct10*/)(ctx)), nil
+    case C.vscf_impl_tag_CHAINED_KEY_ALG:
+        return newChainedKeyAlgWithCtx((*C.vscf_chained_key_alg_t /*ct10*/)(ctx)), nil
     default:
         return nil, &FoundationError{-1,"Unexpected C implementation cast to the Go implementation."}
     }
@@ -511,6 +555,10 @@ func FoundationImplementationWrapAlgInfo(ctx *C.vscf_impl_t) (AlgInfo, error) {
 
     implTag := C.vscf_impl_tag(ctx)
     switch (implTag) {
+    case C.vscf_impl_tag_COMPOUND_KEY_ALG_INFO:
+        return newCompoundKeyAlgInfoWithCtx((*C.vscf_compound_key_alg_info_t /*ct10*/)(ctx)), nil
+    case C.vscf_impl_tag_CHAINED_KEY_ALG_INFO:
+        return newChainedKeyAlgInfoWithCtx((*C.vscf_chained_key_alg_info_t /*ct10*/)(ctx)), nil
     case C.vscf_impl_tag_SIMPLE_ALG_INFO:
         return newSimpleAlgInfoWithCtx((*C.vscf_simple_alg_info_t /*ct10*/)(ctx)), nil
     case C.vscf_impl_tag_HASH_BASED_ALG_INFO:

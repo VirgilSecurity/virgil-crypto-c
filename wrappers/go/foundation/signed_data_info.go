@@ -68,21 +68,6 @@ func (obj *SignedDataInfo) delete() {
 }
 
 /*
-* Set information about algorithm that was used to produce data digest.
-*/
-func (obj *SignedDataInfo) SetHashAlgInfo(hashAlgInfo AlgInfo) {
-    hashAlgInfoCopy := C.vscf_impl_shallow_copy((*C.vscf_impl_t)(unsafe.Pointer(hashAlgInfo.Ctx())))
-
-    C.vscf_signed_data_info_set_hash_alg_info(obj.cCtx, &hashAlgInfoCopy)
-
-    runtime.KeepAlive(obj)
-
-    runtime.KeepAlive(hashAlgInfo)
-
-    return
-}
-
-/*
 * Return information about algorithm that was used to produce data digest.
 */
 func (obj *SignedDataInfo) HashAlgInfo() (AlgInfo, error) {

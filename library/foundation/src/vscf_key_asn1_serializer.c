@@ -152,8 +152,8 @@ vscf_key_asn1_serializer_setup_defaults(vscf_key_asn1_serializer_t *self) {
 //  an output buffer.
 //
 VSCF_PUBLIC size_t
-vscf_key_asn1_serializer_serialize_public_key_inplace(
-        vscf_key_asn1_serializer_t *self, const vscf_raw_public_key_t *public_key, vscf_error_t *error) {
+vscf_key_asn1_serializer_serialize_public_key_inplace(vscf_key_asn1_serializer_t *self,
+        const vscf_raw_public_key_t *public_key, vscf_error_t *error) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(public_key);
@@ -176,8 +176,8 @@ vscf_key_asn1_serializer_serialize_public_key_inplace(
 //  an output buffer.
 //
 VSCF_PUBLIC size_t
-vscf_key_asn1_serializer_serialize_private_key_inplace(
-        vscf_key_asn1_serializer_t *self, const vscf_raw_private_key_t *private_key, vscf_error_t *error) {
+vscf_key_asn1_serializer_serialize_private_key_inplace(vscf_key_asn1_serializer_t *self,
+        const vscf_raw_private_key_t *private_key, vscf_error_t *error) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(private_key);
@@ -200,8 +200,8 @@ vscf_key_asn1_serializer_serialize_private_key_inplace(
 //  Precondition: public key must be exportable.
 //
 VSCF_PUBLIC size_t
-vscf_key_asn1_serializer_serialized_public_key_len(
-        const vscf_key_asn1_serializer_t *self, const vscf_raw_public_key_t *public_key) {
+vscf_key_asn1_serializer_serialized_public_key_len(const vscf_key_asn1_serializer_t *self,
+        const vscf_raw_public_key_t *public_key) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(public_key);
@@ -222,8 +222,8 @@ vscf_key_asn1_serializer_serialized_public_key_len(
 //  Precondition: public key must be exportable.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_key_asn1_serializer_serialize_public_key(
-        vscf_key_asn1_serializer_t *self, const vscf_raw_public_key_t *public_key, vsc_buffer_t *out) {
+vscf_key_asn1_serializer_serialize_public_key(vscf_key_asn1_serializer_t *self, const vscf_raw_public_key_t *public_key,
+        vsc_buffer_t *out) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(public_key);
@@ -248,8 +248,8 @@ vscf_key_asn1_serializer_serialize_public_key(
 //  Precondition: private key must be exportable.
 //
 VSCF_PUBLIC size_t
-vscf_key_asn1_serializer_serialized_private_key_len(
-        const vscf_key_asn1_serializer_t *self, const vscf_raw_private_key_t *private_key) {
+vscf_key_asn1_serializer_serialized_private_key_len(const vscf_key_asn1_serializer_t *self,
+        const vscf_raw_private_key_t *private_key) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(private_key);
@@ -270,8 +270,8 @@ vscf_key_asn1_serializer_serialized_private_key_len(
 //  Precondition: private key must be exportable.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_key_asn1_serializer_serialize_private_key(
-        vscf_key_asn1_serializer_t *self, const vscf_raw_private_key_t *private_key, vsc_buffer_t *out) {
+vscf_key_asn1_serializer_serialize_private_key(vscf_key_asn1_serializer_t *self,
+        const vscf_raw_private_key_t *private_key, vsc_buffer_t *out) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(private_key);

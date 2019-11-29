@@ -363,8 +363,8 @@ vsce_phe_cipher_decrypt_len(vsce_phe_cipher_t *self, size_t cipher_text_len) {
 //  Encrypts data using account key
 //
 VSCE_PUBLIC vsce_status_t
-vsce_phe_cipher_encrypt(
-        vsce_phe_cipher_t *self, vsc_data_t plain_text, vsc_data_t account_key, vsc_buffer_t *cipher_text) {
+vsce_phe_cipher_encrypt(vsce_phe_cipher_t *self, vsc_data_t plain_text, vsc_data_t account_key,
+        vsc_buffer_t *cipher_text) {
 
     return vsce_phe_cipher_auth_encrypt(self, plain_text, vsc_data_empty(), account_key, cipher_text);
 }
@@ -373,8 +373,8 @@ vsce_phe_cipher_encrypt(
 //  Decrypts data using account key
 //
 VSCE_PUBLIC vsce_status_t
-vsce_phe_cipher_decrypt(
-        vsce_phe_cipher_t *self, vsc_data_t cipher_text, vsc_data_t account_key, vsc_buffer_t *plain_text) {
+vsce_phe_cipher_decrypt(vsce_phe_cipher_t *self, vsc_data_t cipher_text, vsc_data_t account_key,
+        vsc_buffer_t *plain_text) {
 
     return vsce_phe_cipher_auth_decrypt(self, cipher_text, vsc_data_empty(), account_key, plain_text);
 }
@@ -387,69 +387,69 @@ vsce_phe_cipher_auth_encrypt(vsce_phe_cipher_t *self, vsc_data_t plain_text, vsc
         vsc_data_t account_key, vsc_buffer_t *cipher_text) {
 
     VSCE_ASSERT_PTR(self);
-    VSCE_ASSERT(vsc_data_is_valid(plain_text));
-    VSCE_ASSERT(vsc_data_is_valid(additional_data));
-    VSCE_ASSERT(vsc_data_is_valid(account_key));
-    VSCE_ASSERT(vsc_buffer_is_valid(cipher_text));
-    VSCE_ASSERT(account_key.len == vsce_phe_common_PHE_ACCOUNT_KEY_LENGTH);
-    VSCE_ASSERT(plain_text.len <= vsce_phe_common_PHE_MAX_ENCRYPT_LEN);
-    VSCE_ASSERT(vsc_buffer_capacity(cipher_text) >= vsce_phe_cipher_encrypt_len(self, plain_text.len));
+        VSCE_ASSERT(vsc_data_is_valid(plain_text));
+        VSCE_ASSERT(vsc_data_is_valid(additional_data));
+        VSCE_ASSERT(vsc_data_is_valid(account_key));
+        VSCE_ASSERT(vsc_buffer_is_valid(cipher_text));
+        VSCE_ASSERT(account_key.len == vsce_phe_common_PHE_ACCOUNT_KEY_LENGTH);
+        VSCE_ASSERT(plain_text.len <= vsce_phe_common_PHE_MAX_ENCRYPT_LEN);
+        VSCE_ASSERT(vsc_buffer_capacity(cipher_text) >= vsce_phe_cipher_encrypt_len(self, plain_text.len));
 
-    vsce_status_t status = vsce_status_SUCCESS;
+        vsce_status_t status = vsce_status_SUCCESS;
 
-    byte salt[vsce_phe_cipher_SALT_LEN];
+        byte salt[vsce_phe_cipher_SALT_LEN];
 
-    vsc_buffer_t salt_buf;
-    vsc_buffer_init(&salt_buf);
-    vsc_buffer_use(&salt_buf, salt, sizeof(salt));
+        vsc_buffer_t salt_buf;
+        vsc_buffer_init(&salt_buf);
+        vsc_buffer_use(&salt_buf, salt, sizeof(salt));
 
-    vscf_status_t f_status = vscf_random(self->random, sizeof(salt), &salt_buf);
+        vscf_status_t f_status = vscf_random(self->random, sizeof(salt), &salt_buf);
 
-    if (f_status != vscf_status_SUCCESS) {
-        status = vsce_status_ERROR_RNG_FAILED;
-        goto rng_err;
-    }
+        if (f_status != vscf_status_SUCCESS) {
+            status = vsce_status_ERROR_RNG_FAILED;
+            goto rng_err;
+        }
 
-    vscf_hkdf_t *hkdf = vscf_hkdf_new();
-    vscf_hkdf_take_hash(hkdf, vscf_sha512_impl(vscf_sha512_new()));
+        vscf_hkdf_t *hkdf = vscf_hkdf_new();
+        vscf_hkdf_take_hash(hkdf, vscf_sha512_impl(vscf_sha512_new()));
 
-    byte derived_secret[vsce_phe_cipher_KEY_LEN + vsce_phe_cipher_NONCE_LEN];
+        byte derived_secret[vsce_phe_cipher_KEY_LEN + vsce_phe_cipher_NONCE_LEN];
 
-    vsc_buffer_t derived_secret_buf;
-    vsc_buffer_init(&derived_secret_buf);
-    vsc_buffer_use(&derived_secret_buf, derived_secret, sizeof(derived_secret));
+        vsc_buffer_t derived_secret_buf;
+        vsc_buffer_init(&derived_secret_buf);
+        vsc_buffer_use(&derived_secret_buf, derived_secret, sizeof(derived_secret));
 
-    vscf_hkdf_reset(hkdf, vsc_buffer_data(&salt_buf), 0);
-    vscf_hkdf_set_info(hkdf, k_encrypt);
-    vscf_hkdf_derive(hkdf, account_key, sizeof(derived_secret), &derived_secret_buf);
-    vscf_hkdf_destroy(&hkdf);
+        vscf_hkdf_reset(hkdf, vsc_buffer_data(&salt_buf), 0);
+        vscf_hkdf_set_info(hkdf, k_encrypt);
+        vscf_hkdf_derive(hkdf, account_key, sizeof(derived_secret), &derived_secret_buf);
+        vscf_hkdf_destroy(&hkdf);
 
-    vscf_aes256_gcm_t *aes256_gcm = vscf_aes256_gcm_new();
+        vscf_aes256_gcm_t *aes256_gcm = vscf_aes256_gcm_new();
 
-    vscf_aes256_gcm_set_key(
-            aes256_gcm, vsc_data_slice_beg(vsc_buffer_data(&derived_secret_buf), 0, vsce_phe_cipher_KEY_LEN));
-    vscf_aes256_gcm_set_nonce(
-            aes256_gcm, vsc_data_slice_end(vsc_buffer_data(&derived_secret_buf), 0, vsce_phe_cipher_NONCE_LEN));
+        vscf_aes256_gcm_set_key(
+                aes256_gcm, vsc_data_slice_beg(vsc_buffer_data(&derived_secret_buf), 0, vsce_phe_cipher_KEY_LEN));
+        vscf_aes256_gcm_set_nonce(
+                aes256_gcm, vsc_data_slice_end(vsc_buffer_data(&derived_secret_buf), 0, vsce_phe_cipher_NONCE_LEN));
 
-    memcpy(vsc_buffer_unused_bytes(cipher_text), salt, sizeof(salt));
-    vsc_buffer_inc_used(cipher_text, sizeof(salt));
+        memcpy(vsc_buffer_unused_bytes(cipher_text), salt, sizeof(salt));
+        vsc_buffer_inc_used(cipher_text, sizeof(salt));
 
-    f_status = vscf_aes256_gcm_auth_encrypt(aes256_gcm, plain_text, additional_data, cipher_text, NULL);
+        f_status = vscf_aes256_gcm_auth_encrypt(aes256_gcm, plain_text, additional_data, cipher_text, NULL);
 
-    if (f_status != vscf_status_SUCCESS) {
-        status = vsce_status_ERROR_AES_FAILED;
-    }
+        if (f_status != vscf_status_SUCCESS) {
+            status = vsce_status_ERROR_AES_FAILED;
+        }
 
-    vscf_aes256_gcm_destroy(&aes256_gcm);
+        vscf_aes256_gcm_destroy(&aes256_gcm);
 
-    vsce_zeroize(derived_secret, sizeof(derived_secret));
-    vsc_buffer_delete(&derived_secret_buf);
+        vsce_zeroize(derived_secret, sizeof(derived_secret));
+        vsc_buffer_delete(&derived_secret_buf);
 
-rng_err:
-    vsce_zeroize(salt, sizeof(salt));
-    vsc_buffer_delete(&salt_buf);
+    rng_err:
+        vsce_zeroize(salt, sizeof(salt));
+        vsc_buffer_delete(&salt_buf);
 
-    return status;
+        return status;
 }
 
 //

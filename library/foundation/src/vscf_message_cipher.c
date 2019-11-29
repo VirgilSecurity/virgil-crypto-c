@@ -323,7 +323,8 @@ vscf_message_cipher_setup_cipher(vscf_message_cipher_t *self, const vscf_group_s
 
 static vscf_status_t
 vscf_message_cipher_encrypt(vscf_message_cipher_t *self, const vscf_group_session_symmetric_key_t key,
-        const vscf_group_session_salt_t salt, vsc_data_t plain_text, vsc_data_t additional_data, vsc_buffer_t *buffer) {
+        const vscf_group_session_salt_t salt, vsc_data_t plain_text, vsc_data_t additional_data,
+        vsc_buffer_t *buffer) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(self->aes256_gcm);
@@ -361,28 +362,28 @@ vscf_message_cipher_pad_then_encrypt(vscf_message_cipher_t *self, vscf_message_p
         vsc_buffer_t *cipher_text) {
 
     VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(padding);
-    VSCF_ASSERT_PTR(key);
-    VSCF_ASSERT_PTR(cipher_text);
+        VSCF_ASSERT_PTR(padding);
+        VSCF_ASSERT_PTR(key);
+        VSCF_ASSERT_PTR(cipher_text);
 
-    size_t size = vscf_message_padding_padded_len(data.len);
-    vsc_buffer_t *temp = vsc_buffer_new_with_capacity(size);
-    vsc_buffer_make_secure(temp);
+        size_t size = vscf_message_padding_padded_len(data.len);
+        vsc_buffer_t *temp = vsc_buffer_new_with_capacity(size);
+        vsc_buffer_make_secure(temp);
 
-    vsc_buffer_write_data(temp, data);
+        vsc_buffer_write_data(temp, data);
 
-    vscf_status_t result = vscf_message_padding_add_padding(padding, temp);
+        vscf_status_t result = vscf_message_padding_add_padding(padding, temp);
 
-    if (result != vscf_status_SUCCESS) {
-        goto err;
-    }
+        if (result != vscf_status_SUCCESS) {
+            goto err;
+        }
 
-    result = vscf_message_cipher_encrypt(self, salt, key, vsc_buffer_data(temp), ad, cipher_text);
+        result = vscf_message_cipher_encrypt(self, salt, key, vsc_buffer_data(temp), ad, cipher_text);
 
-err:
-    vsc_buffer_destroy(&temp);
+    err:
+        vsc_buffer_destroy(&temp);
 
-    return result;
+        return result;
 }
 
 VSCF_PUBLIC vscf_status_t
@@ -391,23 +392,23 @@ vscf_message_cipher_decrypt_then_remove_pad(vscf_message_cipher_t *self, vsc_dat
         vsc_buffer_t *plain_text) {
 
     VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(key);
-    VSCF_ASSERT_PTR(plain_text);
+        VSCF_ASSERT_PTR(key);
+        VSCF_ASSERT_PTR(plain_text);
 
-    size_t size = vscf_message_cipher_decrypt_len(self, data.len);
-    vsc_buffer_t *temp = vsc_buffer_new_with_capacity(size);
-    vsc_buffer_make_secure(temp);
+        size_t size = vscf_message_cipher_decrypt_len(self, data.len);
+        vsc_buffer_t *temp = vsc_buffer_new_with_capacity(size);
+        vsc_buffer_make_secure(temp);
 
-    vscf_status_t result = vscf_message_cipher_decrypt(self, salt, key, data, ad, temp);
+        vscf_status_t result = vscf_message_cipher_decrypt(self, salt, key, data, ad, temp);
 
-    if (result != vscf_status_SUCCESS) {
-        goto err;
-    }
+        if (result != vscf_status_SUCCESS) {
+            goto err;
+        }
 
-    result = vscf_message_padding_remove_padding(vsc_buffer_data(temp), plain_text);
+        result = vscf_message_padding_remove_padding(vsc_buffer_data(temp), plain_text);
 
-err:
-    vsc_buffer_destroy(&temp);
+    err:
+        vsc_buffer_destroy(&temp);
 
-    return result;
+        return result;
 }

@@ -7,33 +7,27 @@ import "runtime"
 
 
 /*
-* This is implementation of Ed25519 elliptic curve algorithms.
+* Implements public key cryptography over chained keys.
+* Chained encryption pseudo-code: encrypt(l2_key, encrypt(l1_key, data))
+* Chained decryption pseudo-code: decrypt(l1_key, decrypt(l2_key, data))
 */
-type Ed25519 struct {
-    cCtx *C.vscf_ed25519_t /*ct10*/
+type ChainedKeyAlg struct {
+    cCtx *C.vscf_chained_key_alg_t /*ct10*/
 }
 
-func (obj *Ed25519) SetRandom(random Random) {
-    C.vscf_ed25519_release_random(obj.cCtx)
-    C.vscf_ed25519_use_random(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(random.Ctx())))
+func (obj *ChainedKeyAlg) SetRandom(random Random) {
+    C.vscf_chained_key_alg_release_random(obj.cCtx)
+    C.vscf_chained_key_alg_use_random(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(random.Ctx())))
 
     runtime.KeepAlive(random)
-    runtime.KeepAlive(obj)
-}
-
-func (obj *Ed25519) SetEcies(ecies Ecies) {
-    C.vscf_ed25519_release_ecies(obj.cCtx)
-    C.vscf_ed25519_use_ecies(obj.cCtx, (*C.vscf_ecies_t)(unsafe.Pointer(ecies.Ctx())))
-
-    runtime.KeepAlive(ecies)
     runtime.KeepAlive(obj)
 }
 
 /*
 * Setup predefined values to the uninitialized class dependencies.
 */
-func (obj *Ed25519) SetupDefaults() error {
-    proxyResult := /*pr4*/C.vscf_ed25519_setup_defaults(obj.cCtx)
+func (obj *ChainedKeyAlg) SetupDefaults() error {
+    proxyResult := /*pr4*/C.vscf_chained_key_alg_setup_defaults(obj.cCtx)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
@@ -46,14 +40,17 @@ func (obj *Ed25519) SetupDefaults() error {
 }
 
 /*
-* Generate new private key.
-* Note, this operation might be slow.
+* Make chained private key from given keys that are suitable for
+* encryption and decrypt, and/or signing verifying.
+*
+* Note, l2 should be able to encrypt data produced by the l1 cipher,
+* if keys are used for encryption.
 */
-func (obj *Ed25519) GenerateKey() (PrivateKey, error) {
+func (obj *ChainedKeyAlg) MakeKey(l1Key PrivateKey, l2Key PrivateKey) (PrivateKey, error) {
     var error C.vscf_error_t
     C.vscf_error_reset(&error)
 
-    proxyResult := /*pr4*/C.vscf_ed25519_generate_key(obj.cCtx, &error)
+    proxyResult := /*pr4*/C.vscf_chained_key_alg_make_key(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(l1Key.Ctx())), (*C.vscf_impl_t)(unsafe.Pointer(l2Key.Ctx())), &error)
 
     err := FoundationErrorHandleStatus(error.status)
     if err != nil {
@@ -62,51 +59,55 @@ func (obj *Ed25519) GenerateKey() (PrivateKey, error) {
 
     runtime.KeepAlive(obj)
 
+    runtime.KeepAlive(l1Key)
+
+    runtime.KeepAlive(l2Key)
+
     runtime.KeepAlive(error)
 
     return FoundationImplementationWrapPrivateKey(proxyResult) /* r4 */
 }
 
 /* Handle underlying C context. */
-func (obj *Ed25519) Ctx() uintptr {
+func (obj *ChainedKeyAlg) Ctx() uintptr {
     return uintptr(unsafe.Pointer(obj.cCtx))
 }
 
-func NewEd25519() *Ed25519 {
-    ctx := C.vscf_ed25519_new()
-    obj := &Ed25519 {
+func NewChainedKeyAlg() *ChainedKeyAlg {
+    ctx := C.vscf_chained_key_alg_new()
+    obj := &ChainedKeyAlg {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, (*Ed25519).Delete)
+    runtime.SetFinalizer(obj, (*ChainedKeyAlg).Delete)
     return obj
 }
 
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newEd25519WithCtx(ctx *C.vscf_ed25519_t /*ct10*/) *Ed25519 {
-    obj := &Ed25519 {
+func newChainedKeyAlgWithCtx(ctx *C.vscf_chained_key_alg_t /*ct10*/) *ChainedKeyAlg {
+    obj := &ChainedKeyAlg {
         cCtx: ctx,
     }
-    runtime.SetFinalizer(obj, (*Ed25519).Delete)
+    runtime.SetFinalizer(obj, (*ChainedKeyAlg).Delete)
     return obj
 }
 
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newEd25519Copy(ctx *C.vscf_ed25519_t /*ct10*/) *Ed25519 {
-    obj := &Ed25519 {
-        cCtx: C.vscf_ed25519_shallow_copy(ctx),
+func newChainedKeyAlgCopy(ctx *C.vscf_chained_key_alg_t /*ct10*/) *ChainedKeyAlg {
+    obj := &ChainedKeyAlg {
+        cCtx: C.vscf_chained_key_alg_shallow_copy(ctx),
     }
-    runtime.SetFinalizer(obj, (*Ed25519).Delete)
+    runtime.SetFinalizer(obj, (*ChainedKeyAlg).Delete)
     return obj
 }
 
 /*
 * Release underlying C context.
 */
-func (obj *Ed25519) Delete() {
+func (obj *ChainedKeyAlg) Delete() {
     if obj == nil {
         return
     }
@@ -117,15 +118,15 @@ func (obj *Ed25519) Delete() {
 /*
 * Release underlying C context.
 */
-func (obj *Ed25519) delete() {
-    C.vscf_ed25519_delete(obj.cCtx)
+func (obj *ChainedKeyAlg) delete() {
+    C.vscf_chained_key_alg_delete(obj.cCtx)
 }
 
 /*
 * Provide algorithm identificator.
 */
-func (obj *Ed25519) AlgId() AlgId {
-    proxyResult := /*pr4*/C.vscf_ed25519_alg_id(obj.cCtx)
+func (obj *ChainedKeyAlg) AlgId() AlgId {
+    proxyResult := /*pr4*/C.vscf_chained_key_alg_alg_id(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
@@ -135,8 +136,8 @@ func (obj *Ed25519) AlgId() AlgId {
 /*
 * Produce object with algorithm information and configuration parameters.
 */
-func (obj *Ed25519) ProduceAlgInfo() (AlgInfo, error) {
-    proxyResult := /*pr4*/C.vscf_ed25519_produce_alg_info(obj.cCtx)
+func (obj *ChainedKeyAlg) ProduceAlgInfo() (AlgInfo, error) {
+    proxyResult := /*pr4*/C.vscf_chained_key_alg_produce_alg_info(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
@@ -146,8 +147,8 @@ func (obj *Ed25519) ProduceAlgInfo() (AlgInfo, error) {
 /*
 * Restore algorithm configuration from the given object.
 */
-func (obj *Ed25519) RestoreAlgInfo(algInfo AlgInfo) error {
-    proxyResult := /*pr4*/C.vscf_ed25519_restore_alg_info(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(algInfo.Ctx())))
+func (obj *ChainedKeyAlg) RestoreAlgInfo(algInfo AlgInfo) error {
+    proxyResult := /*pr4*/C.vscf_chained_key_alg_restore_alg_info(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(algInfo.Ctx())))
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
@@ -164,28 +165,28 @@ func (obj *Ed25519) RestoreAlgInfo(algInfo AlgInfo) error {
 /*
 * Defines whether a public key can be imported or not.
 */
-func (obj *Ed25519) GetCanImportPublicKey() bool {
+func (obj *ChainedKeyAlg) GetCanImportPublicKey() bool {
     return true
 }
 
 /*
 * Define whether a public key can be exported or not.
 */
-func (obj *Ed25519) GetCanExportPublicKey() bool {
+func (obj *ChainedKeyAlg) GetCanExportPublicKey() bool {
     return true
 }
 
 /*
 * Define whether a private key can be imported or not.
 */
-func (obj *Ed25519) GetCanImportPrivateKey() bool {
+func (obj *ChainedKeyAlg) GetCanImportPrivateKey() bool {
     return true
 }
 
 /*
 * Define whether a private key can be exported or not.
 */
-func (obj *Ed25519) GetCanExportPrivateKey() bool {
+func (obj *ChainedKeyAlg) GetCanExportPrivateKey() bool {
     return true
 }
 
@@ -193,11 +194,11 @@ func (obj *Ed25519) GetCanExportPrivateKey() bool {
 * Generate ephemeral private key of the same type.
 * Note, this operation might be slow.
 */
-func (obj *Ed25519) GenerateEphemeralKey(key Key) (PrivateKey, error) {
+func (obj *ChainedKeyAlg) GenerateEphemeralKey(key Key) (PrivateKey, error) {
     var error C.vscf_error_t
     C.vscf_error_reset(&error)
 
-    proxyResult := /*pr4*/C.vscf_ed25519_generate_ephemeral_key(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(key.Ctx())), &error)
+    proxyResult := /*pr4*/C.vscf_chained_key_alg_generate_ephemeral_key(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(key.Ctx())), &error)
 
     err := FoundationErrorHandleStatus(error.status)
     if err != nil {
@@ -223,11 +224,11 @@ func (obj *Ed25519) GenerateEphemeralKey(key Key) (PrivateKey, error) {
 * For instance, RSA public key must be imported from the format defined in
 * RFC 3447 Appendix A.1.1.
 */
-func (obj *Ed25519) ImportPublicKey(rawKey *RawPublicKey) (PublicKey, error) {
+func (obj *ChainedKeyAlg) ImportPublicKey(rawKey *RawPublicKey) (PublicKey, error) {
     var error C.vscf_error_t
     C.vscf_error_reset(&error)
 
-    proxyResult := /*pr4*/C.vscf_ed25519_import_public_key(obj.cCtx, (*C.vscf_raw_public_key_t)(unsafe.Pointer(rawKey.Ctx())), &error)
+    proxyResult := /*pr4*/C.vscf_chained_key_alg_import_public_key(obj.cCtx, (*C.vscf_raw_public_key_t)(unsafe.Pointer(rawKey.Ctx())), &error)
 
     err := FoundationErrorHandleStatus(error.status)
     if err != nil {
@@ -250,11 +251,11 @@ func (obj *Ed25519) ImportPublicKey(rawKey *RawPublicKey) (PublicKey, error) {
 * For instance, RSA public key must be exported in format defined in
 * RFC 3447 Appendix A.1.1.
 */
-func (obj *Ed25519) ExportPublicKey(publicKey PublicKey) (*RawPublicKey, error) {
+func (obj *ChainedKeyAlg) ExportPublicKey(publicKey PublicKey) (*RawPublicKey, error) {
     var error C.vscf_error_t
     C.vscf_error_reset(&error)
 
-    proxyResult := /*pr4*/C.vscf_ed25519_export_public_key(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(publicKey.Ctx())), &error)
+    proxyResult := /*pr4*/C.vscf_chained_key_alg_export_public_key(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(publicKey.Ctx())), &error)
 
     err := FoundationErrorHandleStatus(error.status)
     if err != nil {
@@ -280,11 +281,11 @@ func (obj *Ed25519) ExportPublicKey(publicKey PublicKey) (*RawPublicKey, error) 
 * For instance, RSA private key must be imported from the format defined in
 * RFC 3447 Appendix A.1.2.
 */
-func (obj *Ed25519) ImportPrivateKey(rawKey *RawPrivateKey) (PrivateKey, error) {
+func (obj *ChainedKeyAlg) ImportPrivateKey(rawKey *RawPrivateKey) (PrivateKey, error) {
     var error C.vscf_error_t
     C.vscf_error_reset(&error)
 
-    proxyResult := /*pr4*/C.vscf_ed25519_import_private_key(obj.cCtx, (*C.vscf_raw_private_key_t)(unsafe.Pointer(rawKey.Ctx())), &error)
+    proxyResult := /*pr4*/C.vscf_chained_key_alg_import_private_key(obj.cCtx, (*C.vscf_raw_private_key_t)(unsafe.Pointer(rawKey.Ctx())), &error)
 
     err := FoundationErrorHandleStatus(error.status)
     if err != nil {
@@ -307,11 +308,11 @@ func (obj *Ed25519) ImportPrivateKey(rawKey *RawPrivateKey) (PrivateKey, error) 
 * For instance, RSA private key must be exported in format defined in
 * RFC 3447 Appendix A.1.2.
 */
-func (obj *Ed25519) ExportPrivateKey(privateKey PrivateKey) (*RawPrivateKey, error) {
+func (obj *ChainedKeyAlg) ExportPrivateKey(privateKey PrivateKey) (*RawPrivateKey, error) {
     var error C.vscf_error_t
     C.vscf_error_reset(&error)
 
-    proxyResult := /*pr4*/C.vscf_ed25519_export_private_key(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(privateKey.Ctx())), &error)
+    proxyResult := /*pr4*/C.vscf_chained_key_alg_export_private_key(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(privateKey.Ctx())), &error)
 
     err := FoundationErrorHandleStatus(error.status)
     if err != nil {
@@ -330,8 +331,8 @@ func (obj *Ed25519) ExportPrivateKey(privateKey PrivateKey) (*RawPrivateKey, err
 /*
 * Check if algorithm can encrypt data with a given key.
 */
-func (obj *Ed25519) CanEncrypt(publicKey PublicKey, dataLen uint32) bool {
-    proxyResult := /*pr4*/C.vscf_ed25519_can_encrypt(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(publicKey.Ctx())), (C.size_t)(dataLen)/*pa10*/)
+func (obj *ChainedKeyAlg) CanEncrypt(publicKey PublicKey, dataLen uint32) bool {
+    proxyResult := /*pr4*/C.vscf_chained_key_alg_can_encrypt(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(publicKey.Ctx())), (C.size_t)(dataLen)/*pa10*/)
 
     runtime.KeepAlive(obj)
 
@@ -343,8 +344,8 @@ func (obj *Ed25519) CanEncrypt(publicKey PublicKey, dataLen uint32) bool {
 /*
 * Calculate required buffer length to hold the encrypted data.
 */
-func (obj *Ed25519) EncryptedLen(publicKey PublicKey, dataLen uint32) uint32 {
-    proxyResult := /*pr4*/C.vscf_ed25519_encrypted_len(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(publicKey.Ctx())), (C.size_t)(dataLen)/*pa10*/)
+func (obj *ChainedKeyAlg) EncryptedLen(publicKey PublicKey, dataLen uint32) uint32 {
+    proxyResult := /*pr4*/C.vscf_chained_key_alg_encrypted_len(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(publicKey.Ctx())), (C.size_t)(dataLen)/*pa10*/)
 
     runtime.KeepAlive(obj)
 
@@ -356,7 +357,7 @@ func (obj *Ed25519) EncryptedLen(publicKey PublicKey, dataLen uint32) uint32 {
 /*
 * Encrypt data with a given public key.
 */
-func (obj *Ed25519) Encrypt(publicKey PublicKey, data []byte) ([]byte, error) {
+func (obj *ChainedKeyAlg) Encrypt(publicKey PublicKey, data []byte) ([]byte, error) {
     outBuf, outBufErr := bufferNewBuffer(int(obj.EncryptedLen(publicKey.(PublicKey), uint32(len(data))) /* lg2 */))
     if outBufErr != nil {
         return nil, outBufErr
@@ -364,7 +365,7 @@ func (obj *Ed25519) Encrypt(publicKey PublicKey, data []byte) ([]byte, error) {
     defer outBuf.Delete()
     dataData := helperWrapData (data)
 
-    proxyResult := /*pr4*/C.vscf_ed25519_encrypt(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(publicKey.Ctx())), dataData, outBuf.ctx)
+    proxyResult := /*pr4*/C.vscf_chained_key_alg_encrypt(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(publicKey.Ctx())), dataData, outBuf.ctx)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
@@ -382,8 +383,8 @@ func (obj *Ed25519) Encrypt(publicKey PublicKey, data []byte) ([]byte, error) {
 * Check if algorithm can decrypt data with a given key.
 * However, success result of decryption is not guaranteed.
 */
-func (obj *Ed25519) CanDecrypt(privateKey PrivateKey, dataLen uint32) bool {
-    proxyResult := /*pr4*/C.vscf_ed25519_can_decrypt(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(privateKey.Ctx())), (C.size_t)(dataLen)/*pa10*/)
+func (obj *ChainedKeyAlg) CanDecrypt(privateKey PrivateKey, dataLen uint32) bool {
+    proxyResult := /*pr4*/C.vscf_chained_key_alg_can_decrypt(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(privateKey.Ctx())), (C.size_t)(dataLen)/*pa10*/)
 
     runtime.KeepAlive(obj)
 
@@ -395,8 +396,8 @@ func (obj *Ed25519) CanDecrypt(privateKey PrivateKey, dataLen uint32) bool {
 /*
 * Calculate required buffer length to hold the decrypted data.
 */
-func (obj *Ed25519) DecryptedLen(privateKey PrivateKey, dataLen uint32) uint32 {
-    proxyResult := /*pr4*/C.vscf_ed25519_decrypted_len(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(privateKey.Ctx())), (C.size_t)(dataLen)/*pa10*/)
+func (obj *ChainedKeyAlg) DecryptedLen(privateKey PrivateKey, dataLen uint32) uint32 {
+    proxyResult := /*pr4*/C.vscf_chained_key_alg_decrypted_len(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(privateKey.Ctx())), (C.size_t)(dataLen)/*pa10*/)
 
     runtime.KeepAlive(obj)
 
@@ -408,7 +409,7 @@ func (obj *Ed25519) DecryptedLen(privateKey PrivateKey, dataLen uint32) uint32 {
 /*
 * Decrypt given data.
 */
-func (obj *Ed25519) Decrypt(privateKey PrivateKey, data []byte) ([]byte, error) {
+func (obj *ChainedKeyAlg) Decrypt(privateKey PrivateKey, data []byte) ([]byte, error) {
     outBuf, outBufErr := bufferNewBuffer(int(obj.DecryptedLen(privateKey.(PrivateKey), uint32(len(data))) /* lg2 */))
     if outBufErr != nil {
         return nil, outBufErr
@@ -416,7 +417,7 @@ func (obj *Ed25519) Decrypt(privateKey PrivateKey, data []byte) ([]byte, error) 
     defer outBuf.Delete()
     dataData := helperWrapData (data)
 
-    proxyResult := /*pr4*/C.vscf_ed25519_decrypt(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(privateKey.Ctx())), dataData, outBuf.ctx)
+    proxyResult := /*pr4*/C.vscf_chained_key_alg_decrypt(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(privateKey.Ctx())), dataData, outBuf.ctx)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
@@ -433,8 +434,8 @@ func (obj *Ed25519) Decrypt(privateKey PrivateKey, data []byte) ([]byte, error) 
 /*
 * Check if algorithm can sign data digest with a given key.
 */
-func (obj *Ed25519) CanSign(privateKey PrivateKey) bool {
-    proxyResult := /*pr4*/C.vscf_ed25519_can_sign(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(privateKey.Ctx())))
+func (obj *ChainedKeyAlg) CanSign(privateKey PrivateKey) bool {
+    proxyResult := /*pr4*/C.vscf_chained_key_alg_can_sign(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(privateKey.Ctx())))
 
     runtime.KeepAlive(obj)
 
@@ -447,8 +448,8 @@ func (obj *Ed25519) CanSign(privateKey PrivateKey) bool {
 * Return length in bytes required to hold signature.
 * Return zero if a given private key can not produce signatures.
 */
-func (obj *Ed25519) SignatureLen(privateKey PrivateKey) uint32 {
-    proxyResult := /*pr4*/C.vscf_ed25519_signature_len(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(privateKey.Ctx())))
+func (obj *ChainedKeyAlg) SignatureLen(privateKey PrivateKey) uint32 {
+    proxyResult := /*pr4*/C.vscf_chained_key_alg_signature_len(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(privateKey.Ctx())))
 
     runtime.KeepAlive(obj)
 
@@ -460,7 +461,7 @@ func (obj *Ed25519) SignatureLen(privateKey PrivateKey) uint32 {
 /*
 * Sign data digest with a given private key.
 */
-func (obj *Ed25519) SignHash(privateKey PrivateKey, hashId AlgId, digest []byte) ([]byte, error) {
+func (obj *ChainedKeyAlg) SignHash(privateKey PrivateKey, hashId AlgId, digest []byte) ([]byte, error) {
     signatureBuf, signatureBufErr := bufferNewBuffer(int(obj.SignatureLen(privateKey.(PrivateKey)) /* lg2 */))
     if signatureBufErr != nil {
         return nil, signatureBufErr
@@ -468,7 +469,7 @@ func (obj *Ed25519) SignHash(privateKey PrivateKey, hashId AlgId, digest []byte)
     defer signatureBuf.Delete()
     digestData := helperWrapData (digest)
 
-    proxyResult := /*pr4*/C.vscf_ed25519_sign_hash(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(privateKey.Ctx())), C.vscf_alg_id_t(hashId) /*pa7*/, digestData, signatureBuf.ctx)
+    proxyResult := /*pr4*/C.vscf_chained_key_alg_sign_hash(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(privateKey.Ctx())), C.vscf_alg_id_t(hashId) /*pa7*/, digestData, signatureBuf.ctx)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
@@ -485,8 +486,8 @@ func (obj *Ed25519) SignHash(privateKey PrivateKey, hashId AlgId, digest []byte)
 /*
 * Check if algorithm can verify data digest with a given key.
 */
-func (obj *Ed25519) CanVerify(publicKey PublicKey) bool {
-    proxyResult := /*pr4*/C.vscf_ed25519_can_verify(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(publicKey.Ctx())))
+func (obj *ChainedKeyAlg) CanVerify(publicKey PublicKey) bool {
+    proxyResult := /*pr4*/C.vscf_chained_key_alg_can_verify(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(publicKey.Ctx())))
 
     runtime.KeepAlive(obj)
 
@@ -498,57 +499,15 @@ func (obj *Ed25519) CanVerify(publicKey PublicKey) bool {
 /*
 * Verify data digest with a given public key and signature.
 */
-func (obj *Ed25519) VerifyHash(publicKey PublicKey, hashId AlgId, digest []byte, signature []byte) bool {
+func (obj *ChainedKeyAlg) VerifyHash(publicKey PublicKey, hashId AlgId, digest []byte, signature []byte) bool {
     digestData := helperWrapData (digest)
     signatureData := helperWrapData (signature)
 
-    proxyResult := /*pr4*/C.vscf_ed25519_verify_hash(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(publicKey.Ctx())), C.vscf_alg_id_t(hashId) /*pa7*/, digestData, signatureData)
+    proxyResult := /*pr4*/C.vscf_chained_key_alg_verify_hash(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(publicKey.Ctx())), C.vscf_alg_id_t(hashId) /*pa7*/, digestData, signatureData)
 
     runtime.KeepAlive(obj)
 
     runtime.KeepAlive(publicKey)
 
     return bool(proxyResult) /* r9 */
-}
-
-/*
-* Compute shared key for 2 asymmetric keys.
-* Note, computed shared key can be used only within symmetric cryptography.
-*/
-func (obj *Ed25519) ComputeSharedKey(publicKey PublicKey, privateKey PrivateKey) ([]byte, error) {
-    sharedKeyBuf, sharedKeyBufErr := bufferNewBuffer(int(obj.SharedKeyLen(privateKey.(Key)) /* lg2 */))
-    if sharedKeyBufErr != nil {
-        return nil, sharedKeyBufErr
-    }
-    defer sharedKeyBuf.Delete()
-
-
-    proxyResult := /*pr4*/C.vscf_ed25519_compute_shared_key(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(publicKey.Ctx())), (*C.vscf_impl_t)(unsafe.Pointer(privateKey.Ctx())), sharedKeyBuf.ctx)
-
-    err := FoundationErrorHandleStatus(proxyResult)
-    if err != nil {
-        return nil, err
-    }
-
-    runtime.KeepAlive(obj)
-
-    runtime.KeepAlive(publicKey)
-
-    runtime.KeepAlive(privateKey)
-
-    return sharedKeyBuf.getData() /* r7 */, nil
-}
-
-/*
-* Return number of bytes required to hold shared key.
-* Expect Public Key or Private Key.
-*/
-func (obj *Ed25519) SharedKeyLen(key Key) uint32 {
-    proxyResult := /*pr4*/C.vscf_ed25519_shared_key_len(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(key.Ctx())))
-
-    runtime.KeepAlive(obj)
-
-    runtime.KeepAlive(key)
-
-    return uint32(proxyResult) /* r9 */
 }

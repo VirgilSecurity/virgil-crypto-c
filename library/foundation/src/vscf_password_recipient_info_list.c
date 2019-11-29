@@ -251,8 +251,8 @@ vscf_password_recipient_info_list_cleanup_ctx(vscf_password_recipient_info_list_
 //  Note, ownership is transfered.
 //
 VSCF_PRIVATE void
-vscf_password_recipient_info_list_add(
-        vscf_password_recipient_info_list_t *self, vscf_password_recipient_info_t **password_recipient_info_ref) {
+vscf_password_recipient_info_list_add(vscf_password_recipient_info_list_t *self,
+        vscf_password_recipient_info_t **password_recipient_info_ref) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(password_recipient_info_ref);

@@ -361,40 +361,40 @@ vscr_ratchet_message_deserialize(vsc_data_t input, vscr_error_t *error) {
 
     VSCR_ASSERT(vsc_data_is_valid(input));
 
-    if (input.len > vscr_ratchet_common_MAX_MESSAGE_LEN) {
-        VSCR_ERROR_SAFE_UPDATE(error, vscr_status_ERROR_PROTOBUF_DECODE);
+        if (input.len > vscr_ratchet_common_MAX_MESSAGE_LEN) {
+            VSCR_ERROR_SAFE_UPDATE(error, vscr_status_ERROR_PROTOBUF_DECODE);
 
-        return NULL;
-    }
+            return NULL;
+        }
 
-    vscr_ratchet_message_t *message = vscr_ratchet_message_new();
+        vscr_ratchet_message_t *message = vscr_ratchet_message_new();
 
-    pb_istream_t istream = pb_istream_from_buffer(input.bytes, input.len);
+        pb_istream_t istream = pb_istream_from_buffer(input.bytes, input.len);
 
-    vscr_status_t status = vscr_status_SUCCESS;
+        vscr_status_t status = vscr_status_SUCCESS;
 
-    bool pb_status = pb_decode(&istream, vscr_Message_fields, &message->message_pb);
+        bool pb_status = pb_decode(&istream, vscr_Message_fields, &message->message_pb);
 
-    if (!pb_status) {
-        status = vscr_status_ERROR_PROTOBUF_DECODE;
-        goto err;
-    }
+        if (!pb_status) {
+            status = vscr_status_ERROR_PROTOBUF_DECODE;
+            goto err;
+        }
 
-    pb_istream_t sub_istream = pb_istream_from_buffer(
-            message->message_pb.regular_message.header.bytes, message->message_pb.regular_message.header.size);
+        pb_istream_t sub_istream = pb_istream_from_buffer(
+                message->message_pb.regular_message.header.bytes, message->message_pb.regular_message.header.size);
 
-    pb_status = pb_decode(&sub_istream, vscr_RegularMessageHeader_fields, message->header_pb);
+        pb_status = pb_decode(&sub_istream, vscr_RegularMessageHeader_fields, message->header_pb);
 
-    if (!pb_status) {
-        status = vscr_status_ERROR_PROTOBUF_DECODE;
-        goto err;
-    }
+        if (!pb_status) {
+            status = vscr_status_ERROR_PROTOBUF_DECODE;
+            goto err;
+        }
 
-err:
-    if (status != vscr_status_SUCCESS) {
-        VSCR_ERROR_SAFE_UPDATE(error, status);
-        vscr_ratchet_message_destroy(&message);
-    }
+    err:
+        if (status != vscr_status_SUCCESS) {
+            VSCR_ERROR_SAFE_UPDATE(error, status);
+            vscr_ratchet_message_destroy(&message);
+        }
 
-    return message;
+        return message;
 }

@@ -554,8 +554,8 @@ vscf_recipient_cipher_has_key_recipient(const vscf_recipient_cipher_t *self, vsc
 //  Add recipient defined with id and public key.
 //
 VSCF_PUBLIC void
-vscf_recipient_cipher_add_key_recipient(
-        vscf_recipient_cipher_t *self, vsc_data_t recipient_id, vscf_impl_t *public_key) {
+vscf_recipient_cipher_add_key_recipient(vscf_recipient_cipher_t *self, vsc_data_t recipient_id,
+        vscf_impl_t *public_key) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT(vsc_data_is_valid(recipient_id));
@@ -834,8 +834,8 @@ vscf_recipient_cipher_finish_encryption(vscf_recipient_cipher_t *self, vsc_buffe
 //  Message Info can be empty if it was embedded to encrypted data.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_recipient_cipher_start_decryption_with_key(
-        vscf_recipient_cipher_t *self, vsc_data_t recipient_id, vscf_impl_t *private_key, vsc_data_t message_info) {
+vscf_recipient_cipher_start_decryption_with_key(vscf_recipient_cipher_t *self, vsc_data_t recipient_id,
+        vscf_impl_t *private_key, vsc_data_t message_info) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(vsc_data_is_valid(recipient_id));
@@ -1042,8 +1042,8 @@ vscf_recipient_cipher_signer_infos(const vscf_recipient_cipher_t *self) {
 //  Verify given cipher info.
 //
 VSCF_PUBLIC bool
-vscf_recipient_cipher_verify_signer_info(
-        vscf_recipient_cipher_t *self, const vscf_signer_info_t *signer_info, const vscf_impl_t *public_key) {
+vscf_recipient_cipher_verify_signer_info(vscf_recipient_cipher_t *self, const vscf_signer_info_t *signer_info,
+        const vscf_impl_t *public_key) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(self->message_info);
@@ -1487,81 +1487,81 @@ static vscf_status_t
 vscf_recipient_cipher_accomplish_signed_encryption(vscf_recipient_cipher_t *self) {
 
     VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT(self->is_signed_operation);
-    VSCF_ASSERT_PTR(self->signer_hash);
-    VSCF_ASSERT_PTR(self->message_info_footer);
-    VSCF_ASSERT(vscf_signer_list_has_signer(self->signers));
+        VSCF_ASSERT(self->is_signed_operation);
+        VSCF_ASSERT_PTR(self->signer_hash);
+        VSCF_ASSERT_PTR(self->message_info_footer);
+        VSCF_ASSERT(vscf_signer_list_has_signer(self->signers));
 
-    vscf_error_t error;
-    vscf_error_reset(&error);
+        vscf_error_t error;
+        vscf_error_reset(&error);
 
-    //
-    //  Cleanup previous data.
-    //
-    vscf_message_info_footer_clear_signer_infos(self->message_info_footer);
+        //
+        //  Cleanup previous data.
+        //
+        vscf_message_info_footer_clear_signer_infos(self->message_info_footer);
 
-    //
-    //  Calculate data digest.
-    //
-    vsc_buffer_t *digest = vsc_buffer_new_with_capacity(vscf_hash_digest_len(vscf_hash_api(self->signer_hash)));
-    vscf_hash_finish(self->signer_hash, digest);
-    const vscf_alg_id_t hash_alg_id = vscf_alg_alg_id(self->signer_hash);
+        //
+        //  Calculate data digest.
+        //
+        vsc_buffer_t *digest = vsc_buffer_new_with_capacity(vscf_hash_digest_len(vscf_hash_api(self->signer_hash)));
+        vscf_hash_finish(self->signer_hash, digest);
+        const vscf_alg_id_t hash_alg_id = vscf_alg_alg_id(self->signer_hash);
 
-    //
-    //  Sign digest and add signer infos.
-    //
-    vscf_impl_t *signer = NULL;
-    vsc_buffer_t *signature = NULL;
-    const vscf_signer_list_t *signer_iterator = self->signers;
-    do {
-        vsc_data_t signer_id = vscf_signer_list_signer_id(signer_iterator);
-        const vscf_impl_t *signer_private_key = vscf_signer_list_signer_private_key(signer_iterator);
+        //
+        //  Sign digest and add signer infos.
+        //
+        vscf_impl_t *signer = NULL;
+        vsc_buffer_t *signature = NULL;
+        const vscf_signer_list_t *signer_iterator = self->signers;
+        do {
+            vsc_data_t signer_id = vscf_signer_list_signer_id(signer_iterator);
+            const vscf_impl_t *signer_private_key = vscf_signer_list_signer_private_key(signer_iterator);
 
-        signer = vscf_key_alg_factory_create_from_key(signer_private_key, self->random, &error);
-        if (vscf_error_has_error(&error)) {
-            goto sign_failed;
+            signer = vscf_key_alg_factory_create_from_key(signer_private_key, self->random, &error);
+            if (vscf_error_has_error(&error)) {
+                goto sign_failed;
+            }
+
+            signature = vsc_buffer_new_with_capacity(vscf_key_signer_signature_len(signer, signer_private_key));
+
+            const vscf_status_t sign_status =
+                    vscf_key_signer_sign_hash(signer, signer_private_key, hash_alg_id, vsc_buffer_data(digest), signature);
+
+            if (sign_status != vscf_status_SUCCESS) {
+                vscf_error_update(&error, sign_status);
+                goto sign_failed;
+            }
+
+            vscf_impl_t *signer_alg_info = vscf_impl_shallow_copy((vscf_impl_t *)vscf_key_alg_info(signer_private_key));
+            vscf_signer_info_t *signer_info = vscf_signer_info_new_with_members(signer_id, &signer_alg_info, &signature);
+            vscf_message_info_footer_add_signer_info(self->message_info_footer, &signer_info);
+        } while ((signer_iterator = vscf_signer_list_next(signer_iterator)) != NULL);
+
+        vscf_message_info_footer_set_signer_digest(self->message_info_footer, &digest);
+
+        //
+        //  Configure encryption cipher for encrypting footer.
+        //
+        vsc_data_t key = vscf_recipient_cipher_footer_derived_key(self, self->encryption_cipher);
+        vscf_cipher_set_key(self->encryption_cipher, key);
+
+        vsc_data_t nonce = vscf_recipient_cipher_footer_derived_nonce(self, self->encryption_cipher);
+        vscf_cipher_set_nonce(self->encryption_cipher, nonce);
+
+        if (vscf_cipher_auth_is_implemented(self->encryption_cipher)) {
+            vscf_cipher_auth_set_auth_data(self->encryption_cipher, vsc_data_empty());
         }
 
-        signature = vsc_buffer_new_with_capacity(vscf_key_signer_signature_len(signer, signer_private_key));
+        goto cleanup;
 
-        const vscf_status_t sign_status =
-                vscf_key_signer_sign_hash(signer, signer_private_key, hash_alg_id, vsc_buffer_data(digest), signature);
+    sign_failed:
+        vsc_buffer_destroy(&digest);
+        vsc_buffer_destroy(&signature);
 
-        if (sign_status != vscf_status_SUCCESS) {
-            vscf_error_update(&error, sign_status);
-            goto sign_failed;
-        }
+    cleanup:
+        vscf_impl_destroy(&signer);
 
-        vscf_impl_t *signer_alg_info = vscf_impl_shallow_copy((vscf_impl_t *)vscf_key_alg_info(signer_private_key));
-        vscf_signer_info_t *signer_info = vscf_signer_info_new_with_members(signer_id, &signer_alg_info, &signature);
-        vscf_message_info_footer_add_signer_info(self->message_info_footer, &signer_info);
-    } while ((signer_iterator = vscf_signer_list_next(signer_iterator)) != NULL);
-
-    vscf_message_info_footer_set_signer_digest(self->message_info_footer, &digest);
-
-    //
-    //  Configure encryption cipher for encrypting footer.
-    //
-    vsc_data_t key = vscf_recipient_cipher_footer_derived_key(self, self->encryption_cipher);
-    vscf_cipher_set_key(self->encryption_cipher, key);
-
-    vsc_data_t nonce = vscf_recipient_cipher_footer_derived_nonce(self, self->encryption_cipher);
-    vscf_cipher_set_nonce(self->encryption_cipher, nonce);
-
-    if (vscf_cipher_auth_is_implemented(self->encryption_cipher)) {
-        vscf_cipher_auth_set_auth_data(self->encryption_cipher, vsc_data_empty());
-    }
-
-    goto cleanup;
-
-sign_failed:
-    vsc_buffer_destroy(&digest);
-    vsc_buffer_destroy(&signature);
-
-cleanup:
-    vscf_impl_destroy(&signer);
-
-    return vscf_error_status(&error);
+        return vscf_error_status(&error);
 }
 
 //

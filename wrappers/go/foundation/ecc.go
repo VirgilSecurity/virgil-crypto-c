@@ -452,12 +452,12 @@ func (obj *Ecc) CanSign(privateKey PrivateKey) bool {
 * Return length in bytes required to hold signature.
 * Return zero if a given private key can not produce signatures.
 */
-func (obj *Ecc) SignatureLen(key Key) uint32 {
-    proxyResult := /*pr4*/C.vscf_ecc_signature_len(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(key.Ctx())))
+func (obj *Ecc) SignatureLen(privateKey PrivateKey) uint32 {
+    proxyResult := /*pr4*/C.vscf_ecc_signature_len(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(privateKey.Ctx())))
 
     runtime.KeepAlive(obj)
 
-    runtime.KeepAlive(key)
+    runtime.KeepAlive(privateKey)
 
     return uint32(proxyResult) /* r9 */
 }
@@ -466,7 +466,7 @@ func (obj *Ecc) SignatureLen(key Key) uint32 {
 * Sign data digest with a given private key.
 */
 func (obj *Ecc) SignHash(privateKey PrivateKey, hashId AlgId, digest []byte) ([]byte, error) {
-    signatureBuf, signatureBufErr := bufferNewBuffer(int(obj.SignatureLen(privateKey.(Key)) /* lg2 */))
+    signatureBuf, signatureBufErr := bufferNewBuffer(int(obj.SignatureLen(privateKey.(PrivateKey)) /* lg2 */))
     if signatureBufErr != nil {
         return nil, signatureBufErr
     }

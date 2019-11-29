@@ -575,8 +575,8 @@ vscf_message_info_der_serializer_setup_defaults(vscf_message_info_der_serializer
 //  Return size in bytes enough to hold serialized custom params.
 //
 static size_t
-vscf_message_info_der_serializer_serialized_custom_params_len(
-        const vscf_message_info_der_serializer_t *self, const vscf_message_info_custom_params_t *custom_params) {
+vscf_message_info_der_serializer_serialized_custom_params_len(const vscf_message_info_der_serializer_t *self,
+        const vscf_message_info_custom_params_t *custom_params) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(custom_params);
@@ -629,8 +629,8 @@ vscf_message_info_der_serializer_serialized_custom_params_len(
 //  }
 //
 static size_t
-vscf_message_info_der_serializer_serialize_custom_params(
-        vscf_message_info_der_serializer_t *self, const vscf_message_info_custom_params_t *custom_params) {
+vscf_message_info_der_serializer_serialize_custom_params(vscf_message_info_der_serializer_t *self,
+        const vscf_message_info_custom_params_t *custom_params) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(custom_params);
@@ -697,8 +697,8 @@ vscf_message_info_der_serializer_serialize_custom_params(
 //  }
 //
 static size_t
-vscf_message_info_der_serializer_serialized_footer_info_len(
-        const vscf_message_info_der_serializer_t *self, const vscf_footer_info_t *footer_info) {
+vscf_message_info_der_serializer_serialized_footer_info_len(const vscf_message_info_der_serializer_t *self,
+        const vscf_footer_info_t *footer_info) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(footer_info);
@@ -711,9 +711,9 @@ vscf_message_info_der_serializer_serialized_footer_info_len(
                 vscf_message_info_der_serializer_serialized_signed_data_info_len(self, signed_data_info);
     }
 
-    const size_t len = 1 + 1 + 4 +           //  VirgilFooterInfo ::= SEQUENCE {
-                       1 + 1 + 1 +           //      version INTEGER { v0(0) },
-                       1 + 1 + 8 +           //      dataSize INTEGER,
+    const size_t len = 1 + 1 + 4 + //  VirgilFooterInfo ::= SEQUENCE {
+                       1 + 1 + 1 + //      version INTEGER { v0(0) },
+                       1 + 1 + 8 + //      dataSize INTEGER,
                        signed_data_info_len; //      signedDataInfo [0] EXPLICIT VirgilSignedDataInfo OPTIONAL }
 
     return len;
@@ -729,8 +729,8 @@ vscf_message_info_der_serializer_serialized_footer_info_len(
 //  }
 //
 static size_t
-vscf_message_info_der_serializer_serialize_footer_info(
-        vscf_message_info_der_serializer_t *self, const vscf_footer_info_t *footer_info) {
+vscf_message_info_der_serializer_serialize_footer_info(vscf_message_info_der_serializer_t *self,
+        const vscf_footer_info_t *footer_info) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(footer_info);
@@ -763,8 +763,8 @@ vscf_message_info_der_serializer_serialize_footer_info(
 //  }
 //
 VSCF_PRIVATE size_t
-vscf_message_info_der_serializer_serialized_signed_data_info_len(
-        const vscf_message_info_der_serializer_t *self, const vscf_signed_data_info_t *signed_data_info) {
+vscf_message_info_der_serializer_serialized_signed_data_info_len(const vscf_message_info_der_serializer_t *self,
+        const vscf_signed_data_info_t *signed_data_info) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(self->alg_info_deserializer);
@@ -775,8 +775,8 @@ vscf_message_info_der_serializer_serialized_signed_data_info_len(
             vscf_alg_info_der_serializer_serialized_len(self->alg_info_serializer, hash_alg_info);
 
 
-    const size_t len = 1 + 1 + 1 +            //  VirgilSignedDataInfo ::= SEQUENCE {
-                       1 + 1 + 1 +            //      version INTEGER { v0(0) } DEFAULT v0,
+    const size_t len = 1 + 1 + 1 + //  VirgilSignedDataInfo ::= SEQUENCE {
+                       1 + 1 + 1 + //      version INTEGER { v0(0) } DEFAULT v0,
                        hash_alg_info_len_len; //      digestAlgorithm AlgorithmIdentifier }
 
     return len;
@@ -791,8 +791,8 @@ vscf_message_info_der_serializer_serialized_signed_data_info_len(
 //  }
 //
 VSCF_PRIVATE void
-vscf_message_info_der_serializer_serialize_signed_data_info(
-        vscf_message_info_der_serializer_t *self, const vscf_signed_data_info_t *signed_data_info, vsc_buffer_t *out) {
+vscf_message_info_der_serializer_serialize_signed_data_info(vscf_message_info_der_serializer_t *self,
+        const vscf_signed_data_info_t *signed_data_info, vsc_buffer_t *out) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(self->asn1_writer);
@@ -820,8 +820,8 @@ vscf_message_info_der_serializer_serialize_signed_data_info(
 //  }
 //
 static size_t
-vscf_message_info_der_serializer_serialize_signed_data_info_internal(
-        vscf_message_info_der_serializer_t *self, const vscf_signed_data_info_t *signed_data_info) {
+vscf_message_info_der_serializer_serialize_signed_data_info_internal(vscf_message_info_der_serializer_t *self,
+        const vscf_signed_data_info_t *signed_data_info) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(self->asn1_writer);
@@ -839,8 +839,8 @@ vscf_message_info_der_serializer_serialize_signed_data_info_internal(
 }
 
 static size_t
-vscf_message_info_der_serializer_serialized_key_recipient_info_len(
-        const vscf_message_info_der_serializer_t *self, const vscf_key_recipient_info_t *key_recipient_info) {
+vscf_message_info_der_serializer_serialized_key_recipient_info_len(const vscf_message_info_der_serializer_t *self,
+        const vscf_key_recipient_info_t *key_recipient_info) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(key_recipient_info);
@@ -852,10 +852,10 @@ vscf_message_info_der_serializer_serialized_key_recipient_info_len(
     const size_t key_enc_alg_len =
             vscf_alg_info_der_serializer_serialized_len(self->alg_info_serializer, key_encryption_alg_info);
 
-    const size_t len = 1 + 1 + 3 +                //  KeyTransRecipientInfo ::= SEQUENCE {
-                       1 + 1 + 1 +                //      version CMSVersion, -- always set to 0 or 2
-                       1 + 1 + 64 +               //      rid RecipientIdentifier,
-                       1 + 1 + key_enc_alg_len +  //      keyEncryptionAlgorithm KeyEncryptionAlgorithmIdentifier,
+    const size_t len = 1 + 1 + 3 + //  KeyTransRecipientInfo ::= SEQUENCE {
+                       1 + 1 + 1 + //      version CMSVersion, -- always set to 0 or 2
+                       1 + 1 + 64 + //      rid RecipientIdentifier,
+                       1 + 1 + key_enc_alg_len + //      keyEncryptionAlgorithm KeyEncryptionAlgorithmIdentifier,
                        1 + 4 + encrypted_key_len; //      encryptedKey EncryptedKey }
 
     return len;
@@ -877,8 +877,8 @@ vscf_message_info_der_serializer_serialized_key_recipient_info_len(
 //  EncryptedKey ::= OCTET STRING
 //
 static size_t
-vscf_message_info_der_serializer_serialize_key_recipient_info(
-        vscf_message_info_der_serializer_t *self, const vscf_key_recipient_info_t *key_recipient_info) {
+vscf_message_info_der_serializer_serialize_key_recipient_info(vscf_message_info_der_serializer_t *self,
+        const vscf_key_recipient_info_t *key_recipient_info) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(key_recipient_info);
@@ -922,8 +922,8 @@ vscf_message_info_der_serializer_serialize_key_recipient_info(
 }
 
 static size_t
-vscf_message_info_der_serializer_serialized_password_recipient_info_len(
-        const vscf_message_info_der_serializer_t *self, const vscf_password_recipient_info_t *password_recipient_info) {
+vscf_message_info_der_serializer_serialized_password_recipient_info_len(const vscf_message_info_der_serializer_t *self,
+        const vscf_password_recipient_info_t *password_recipient_info) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(password_recipient_info);
@@ -936,11 +936,11 @@ vscf_message_info_der_serializer_serialized_password_recipient_info_len(
 
     const size_t enc_key_len = vscf_password_recipient_info_encrypted_key(password_recipient_info).len;
 
-    const size_t len = 1 + 2 +               //  PasswordRecipientInfo ::= SEQUENCE {
-                       1 + 1 + 1 +           //    version CMSVersion, -- Always set to 0
-                       0 +                   //    keyDerivationAlgorithm [0] KeyDerivationAlgorithmIdentifier OPTIONAL,
+    const size_t len = 1 + 2 + //  PasswordRecipientInfo ::= SEQUENCE {
+                       1 + 1 + 1 + //    version CMSVersion, -- Always set to 0
+                       0 + //    keyDerivationAlgorithm [0] KeyDerivationAlgorithmIdentifier OPTIONAL,
                        1 + 1 + key_alg_len + //    keyEncryptionAlgorithm KeyEncryptionAlgorithmIdentifier,
-                       1 + 4 + enc_key_len;  //    encryptedKey EncryptedKey }
+                       1 + 4 + enc_key_len; //    encryptedKey EncryptedKey }
 
     return len;
 }
@@ -955,8 +955,8 @@ vscf_message_info_der_serializer_serialized_password_recipient_info_len(
 //  }
 //
 static size_t
-vscf_message_info_der_serializer_serialize_password_recipient_info(
-        vscf_message_info_der_serializer_t *self, const vscf_password_recipient_info_t *password_recipient_info) {
+vscf_message_info_der_serializer_serialize_password_recipient_info(vscf_message_info_der_serializer_t *self,
+        const vscf_password_recipient_info_t *password_recipient_info) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(password_recipient_info);
@@ -991,8 +991,8 @@ vscf_message_info_der_serializer_serialize_password_recipient_info(
 }
 
 static size_t
-vscf_message_info_der_serializer_serialized_recipient_infos_len(
-        const vscf_message_info_der_serializer_t *self, const vscf_message_info_t *message_info) {
+vscf_message_info_der_serializer_serialized_recipient_infos_len(const vscf_message_info_der_serializer_t *self,
+        const vscf_message_info_t *message_info) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(message_info);
@@ -1036,8 +1036,8 @@ vscf_message_info_der_serializer_serialized_recipient_infos_len(
 //  }
 //
 static size_t
-vscf_message_info_der_serializer_serialize_recipient_infos(
-        vscf_message_info_der_serializer_t *self, const vscf_message_info_t *message_info) {
+vscf_message_info_der_serializer_serialize_recipient_infos(vscf_message_info_der_serializer_t *self,
+        const vscf_message_info_t *message_info) {
 
     //  RecipientInfos ::= SET SIZE (1..MAX) OF RecipientInfo
     //
@@ -1086,8 +1086,8 @@ vscf_message_info_der_serializer_serialize_recipient_infos(
 }
 
 static size_t
-vscf_message_info_der_serializer_serialized_encrypted_content_info_len(
-        const vscf_message_info_der_serializer_t *self, const vscf_message_info_t *message_info) {
+vscf_message_info_der_serializer_serialized_encrypted_content_info_len(const vscf_message_info_der_serializer_t *self,
+        const vscf_message_info_t *message_info) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(message_info);
@@ -1097,10 +1097,10 @@ vscf_message_info_der_serializer_serialized_encrypted_content_info_len(
             vscf_alg_info_der_serializer_serialized_len(self->alg_info_serializer, content_encryption_alg_info);
 
 
-    const size_t len = 1 + 1 +               //  EncryptedContentInfo ::= SEQUENCE {
-                       1 + 1 + 9 +           //      contentType ContentType, -- always PKCS#7 'data' OID
+    const size_t len = 1 + 1 + //  EncryptedContentInfo ::= SEQUENCE {
+                       1 + 1 + 9 + //      contentType ContentType, -- always PKCS#7 'data' OID
                        1 + 1 + key_alg_len + //      contentEncryptionAlgorithm ContentEncryptionAlgorithmIdentifier,
-                       0;                    //      encryptedContent [0] IMPLICIT EncryptedContent OPTIONAL }
+                       0; //      encryptedContent [0] IMPLICIT EncryptedContent OPTIONAL }
 
     return len;
 }
@@ -1117,8 +1117,8 @@ vscf_message_info_der_serializer_serialized_encrypted_content_info_len(
 //  EncryptedContent ::= OCTET STRING
 //
 static size_t
-vscf_message_info_der_serializer_serialize_encrypted_content_info(
-        vscf_message_info_der_serializer_t *self, const vscf_message_info_t *message_info) {
+vscf_message_info_der_serializer_serialize_encrypted_content_info(vscf_message_info_der_serializer_t *self,
+        const vscf_message_info_t *message_info) {
 
     //  EncryptedContentInfo ::= SEQUENCE {
     //      contentType ContentType, -- always PKCS#7 'data' OID
@@ -1156,8 +1156,8 @@ vscf_message_info_der_serializer_serialize_encrypted_content_info(
 }
 
 static size_t
-vscf_message_info_der_serializer_serialized_enveloped_data_len(
-        const vscf_message_info_der_serializer_t *self, const vscf_message_info_t *message_info) {
+vscf_message_info_der_serializer_serialized_enveloped_data_len(const vscf_message_info_der_serializer_t *self,
+        const vscf_message_info_t *message_info) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(message_info);
@@ -1167,10 +1167,10 @@ vscf_message_info_der_serializer_serialized_enveloped_data_len(
     size_t encrypted_content_info_len =
             vscf_message_info_der_serializer_serialized_encrypted_content_info_len(self, message_info);
 
-    size_t len = 1 + 1 + 8 +                  //  EnvelopedData ::= SEQUENCE {
-                 1 + 1 + 1 +                  //      version CMSVersion,
-                 0 +                          //      originatorInfo [0] IMPLICIT OriginatorInfo OPTIONAL, -- not used
-                 recipient_infos_len +        //      recipientInfos RecipientInfos,
+    size_t len = 1 + 1 + 8 + //  EnvelopedData ::= SEQUENCE {
+                 1 + 1 + 1 + //      version CMSVersion,
+                 0 + //      originatorInfo [0] IMPLICIT OriginatorInfo OPTIONAL, -- not used
+                 recipient_infos_len + //      recipientInfos RecipientInfos,
                  encrypted_content_info_len + //      encryptedContentInfo EncryptedContentInfo,
                  0; //      unprotectedAttrs [1] IMPLICIT UnprotectedAttributes OPTIONAL -- not used }
 
@@ -1189,8 +1189,8 @@ vscf_message_info_der_serializer_serialized_enveloped_data_len(
 //  CMSVersion ::= INTEGER { v0(0), v1(1), v2(2), v3(3), v4(4), v5(5) }
 //
 static size_t
-vscf_message_info_der_serializer_serialize_enveloped_data(
-        vscf_message_info_der_serializer_t *self, const vscf_message_info_t *message_info) {
+vscf_message_info_der_serializer_serialize_enveloped_data(vscf_message_info_der_serializer_t *self,
+        const vscf_message_info_t *message_info) {
 
     //  EnvelopedData ::= SEQUENCE {
     //      version CMSVersion,
@@ -1231,16 +1231,16 @@ vscf_message_info_der_serializer_serialize_enveloped_data(
 }
 
 static size_t
-vscf_message_info_der_serializer_serialized_cms_content_info_len(
-        const vscf_message_info_der_serializer_t *self, const vscf_message_info_t *message_info) {
+vscf_message_info_der_serializer_serialized_cms_content_info_len(const vscf_message_info_der_serializer_t *self,
+        const vscf_message_info_t *message_info) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(message_info);
 
     size_t enveloped_data_len = vscf_message_info_der_serializer_serialized_enveloped_data_len(self, message_info);
 
-    size_t len = 1 + 1 + 8 +         //  ContentInfo ::= SEQUENCE {
-                 1 + 1 + 9 +         //      contentType ContentType,
+    size_t len = 1 + 1 + 8 + //  ContentInfo ::= SEQUENCE {
+                 1 + 1 + 9 + //      contentType ContentType,
                  enveloped_data_len; //      content [0] EXPLICIT ANY DEFINED BY contentType }
 
     return len;
@@ -1255,8 +1255,8 @@ vscf_message_info_der_serializer_serialized_cms_content_info_len(
 //  ContentType ::= OBJECT IDENTIFIER
 //
 static size_t
-vscf_message_info_der_serializer_serialize_cms_content_info(
-        vscf_message_info_der_serializer_t *self, const vscf_message_info_t *message_info) {
+vscf_message_info_der_serializer_serialize_cms_content_info(vscf_message_info_der_serializer_t *self,
+        const vscf_message_info_t *message_info) {
 
     //  ContentInfo ::= SEQUENCE {
     //      contentType ContentType,
@@ -1284,8 +1284,8 @@ vscf_message_info_der_serializer_serialize_cms_content_info(
 //  VirgilSignerInfos ::= SET SIZE (1..MAX) OF VirgilSignerInfo
 //
 static size_t
-vscf_message_info_der_serializer_serialized_signer_infos_len(
-        const vscf_message_info_der_serializer_t *self, const vscf_message_info_footer_t *message_info_footer) {
+vscf_message_info_der_serializer_serialized_signer_infos_len(const vscf_message_info_der_serializer_t *self,
+        const vscf_message_info_footer_t *message_info_footer) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(message_info_footer);
@@ -1308,8 +1308,8 @@ vscf_message_info_der_serializer_serialized_signer_infos_len(
 //  VirgilSignerInfos ::= SET SIZE (1..MAX) OF VirgilSignerInfo
 //
 static size_t
-vscf_message_info_der_serializer_serialize_signer_infos(
-        vscf_message_info_der_serializer_t *self, const vscf_message_info_footer_t *message_info_footer) {
+vscf_message_info_der_serializer_serialize_signer_infos(vscf_message_info_der_serializer_t *self,
+        const vscf_message_info_footer_t *message_info_footer) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(message_info_footer);
@@ -1350,8 +1350,8 @@ vscf_message_info_der_serializer_serialize_signer_infos(
 //  VirgilSignatureValue ::= OCTET STRING
 //
 static size_t
-vscf_message_info_der_serializer_serialized_signer_info_len(
-        const vscf_message_info_der_serializer_t *self, const vscf_signer_info_t *signer_info) {
+vscf_message_info_der_serializer_serialized_signer_info_len(const vscf_message_info_der_serializer_t *self,
+        const vscf_signer_info_t *signer_info) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(signer_info);
@@ -1364,10 +1364,10 @@ vscf_message_info_der_serializer_serialized_signer_info_len(
             vscf_alg_info_der_serializer_serialized_len(self->alg_info_serializer, signer_alg_info);
 
 
-    const size_t len = 1 + 1 + 2 +                //  VirgilSignerInfo ::= SEQUENCE {
-                       1 + 1 + 1 +                //      version INTEGER { v0(0) } DEFAULT v0,
-                       1 + 1 + signer_id_len +    //      signerIdentifier VirgilSignerIdentifier,
-                       1 + 1 + signer_alg_len +   //      signerAlgorithm VirgilSignerAlgorithm,
+    const size_t len = 1 + 1 + 2 + //  VirgilSignerInfo ::= SEQUENCE {
+                       1 + 1 + 1 + //      version INTEGER { v0(0) } DEFAULT v0,
+                       1 + 1 + signer_id_len + //      signerIdentifier VirgilSignerIdentifier,
+                       1 + 1 + signer_alg_len + //      signerAlgorithm VirgilSignerAlgorithm,
                        1 + 1 + 2 + signature_len; //      signature VirgilSignatureValue }
 
     return len;
@@ -1388,8 +1388,8 @@ vscf_message_info_der_serializer_serialized_signer_info_len(
 //  VirgilSignatureValue ::= OCTET STRING
 //
 static size_t
-vscf_message_info_der_serializer_serialize_signer_info(
-        vscf_message_info_der_serializer_t *self, const vscf_signer_info_t *signer_info) {
+vscf_message_info_der_serializer_serialize_signer_info(vscf_message_info_der_serializer_t *self,
+        const vscf_signer_info_t *signer_info) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(signer_info);
@@ -1496,8 +1496,8 @@ vscf_message_info_der_serializer_deserialize_custom_params(vscf_message_info_der
 //  AlgorithmIdentifier
 //
 static void
-vscf_message_info_der_serializer_deserialize_cipher_kdf(
-        vscf_message_info_der_serializer_t *self, vscf_message_info_t *message_info, vscf_error_t *error) {
+vscf_message_info_der_serializer_deserialize_cipher_kdf(vscf_message_info_der_serializer_t *self,
+        vscf_message_info_t *message_info, vscf_error_t *error) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(self->asn1_reader);
@@ -1529,8 +1529,8 @@ vscf_message_info_der_serializer_deserialize_cipher_kdf(
 //  }
 //
 static void
-vscf_message_info_der_serializer_deserialize_footer_info(
-        vscf_message_info_der_serializer_t *self, vscf_message_info_t *message_info, vscf_error_t *error) {
+vscf_message_info_der_serializer_deserialize_footer_info(vscf_message_info_der_serializer_t *self,
+        vscf_message_info_t *message_info, vscf_error_t *error) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(self->asn1_reader);
@@ -1580,8 +1580,8 @@ vscf_message_info_der_serializer_deserialize_footer_info(
 //  }
 //
 static void
-vscf_message_info_der_serializer_deserialize_signed_data_info(
-        vscf_message_info_der_serializer_t *self, vscf_message_info_t *message_info, vscf_error_t *error) {
+vscf_message_info_der_serializer_deserialize_signed_data_info(vscf_message_info_der_serializer_t *self,
+        vscf_message_info_t *message_info, vscf_error_t *error) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(self->asn1_reader);
@@ -1647,8 +1647,8 @@ vscf_message_info_der_serializer_deserialize_signed_data_info(
 //  EncryptedKey ::= OCTET STRING
 //
 static void
-vscf_message_info_der_serializer_deserialize_key_recipient_info(
-        vscf_message_info_der_serializer_t *self, vscf_message_info_t *message_info, vscf_error_t *error) {
+vscf_message_info_der_serializer_deserialize_key_recipient_info(vscf_message_info_der_serializer_t *self,
+        vscf_message_info_t *message_info, vscf_error_t *error) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(message_info);
@@ -1708,8 +1708,8 @@ vscf_message_info_der_serializer_deserialize_key_recipient_info(
 //  }
 //
 static void
-vscf_message_info_der_serializer_deserialize_password_recipient_info(
-        vscf_message_info_der_serializer_t *self, vscf_message_info_t *message_info, vscf_error_t *error) {
+vscf_message_info_der_serializer_deserialize_password_recipient_info(vscf_message_info_der_serializer_t *self,
+        vscf_message_info_t *message_info, vscf_error_t *error) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(message_info);
@@ -1767,8 +1767,8 @@ vscf_message_info_der_serializer_deserialize_password_recipient_info(
 //  }
 //
 static void
-vscf_message_info_der_serializer_deserialize_recipient_infos(
-        vscf_message_info_der_serializer_t *self, vscf_message_info_t *message_info, vscf_error_t *error) {
+vscf_message_info_der_serializer_deserialize_recipient_infos(vscf_message_info_der_serializer_t *self,
+        vscf_message_info_t *message_info, vscf_error_t *error) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(message_info);
@@ -1823,8 +1823,8 @@ vscf_message_info_der_serializer_deserialize_recipient_infos(
 //  EncryptedContent ::= OCTET STRING
 //
 static void
-vscf_message_info_der_serializer_deserialize_encrypted_content_info(
-        vscf_message_info_der_serializer_t *self, vscf_message_info_t *message_info, vscf_error_t *error) {
+vscf_message_info_der_serializer_deserialize_encrypted_content_info(vscf_message_info_der_serializer_t *self,
+        vscf_message_info_t *message_info, vscf_error_t *error) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(self->asn1_reader);
@@ -1868,8 +1868,8 @@ vscf_message_info_der_serializer_deserialize_encrypted_content_info(
 //  CMSVersion ::= INTEGER { v0(0), v1(1), v2(2), v3(3), v4(4), v5(5) }
 //
 static void
-vscf_message_info_der_serializer_deserialize_enveloped_data(
-        vscf_message_info_der_serializer_t *self, vscf_message_info_t *message_info, vscf_error_t *error) {
+vscf_message_info_der_serializer_deserialize_enveloped_data(vscf_message_info_der_serializer_t *self,
+        vscf_message_info_t *message_info, vscf_error_t *error) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(message_info);
@@ -1925,8 +1925,8 @@ vscf_message_info_der_serializer_deserialize_enveloped_data(
 //  ContentType ::= OBJECT IDENTIFIER
 //
 static void
-vscf_message_info_der_serializer_deserialize_cms_content_info(
-        vscf_message_info_der_serializer_t *self, vscf_message_info_t *message_info, vscf_error_t *error) {
+vscf_message_info_der_serializer_deserialize_cms_content_info(vscf_message_info_der_serializer_t *self,
+        vscf_message_info_t *message_info, vscf_error_t *error) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(self->asn1_reader);
@@ -2073,8 +2073,8 @@ vscf_message_info_der_serializer_deserialize_signer_info(vscf_message_info_der_s
 //  Return buffer size enough to hold serialized message info.
 //
 VSCF_PUBLIC size_t
-vscf_message_info_der_serializer_serialized_len(
-        vscf_message_info_der_serializer_t *self, const vscf_message_info_t *message_info) {
+vscf_message_info_der_serializer_serialized_len(vscf_message_info_der_serializer_t *self,
+        const vscf_message_info_t *message_info) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(message_info);
@@ -2095,11 +2095,11 @@ vscf_message_info_der_serializer_serialized_len(
         footer_info_len += vscf_message_info_der_serializer_serialized_footer_info_len(self, footer_info);
     }
 
-    size_t len = 1 + 1 + 8 +            //  VirgilMessageInfo ::= SEQUENCE {
-                 1 + 1 + 1 +            //      version INTEGER { v0(0) },
+    size_t len = 1 + 1 + 8 + //  VirgilMessageInfo ::= SEQUENCE {
+                 1 + 1 + 1 + //      version INTEGER { v0(0) },
                  cms_content_info_len + //      cmsContent ContentInfo, -- Imports from RFC 5652
-                 custom_params_len +    //      customParams [0] EXPLICIT VirgilCustomParams OPTIONAL,
-                 footer_info_len;       //      footerInfo [1] EXPLICIT VirgilFooterInfo OPTIONAL }
+                 custom_params_len + //      customParams [0] EXPLICIT VirgilCustomParams OPTIONAL,
+                 footer_info_len; //      footerInfo [1] EXPLICIT VirgilFooterInfo OPTIONAL }
 
     return len;
 }
@@ -2108,8 +2108,8 @@ vscf_message_info_der_serializer_serialized_len(
 //  Serialize class "message info".
 //
 VSCF_PUBLIC void
-vscf_message_info_der_serializer_serialize(
-        vscf_message_info_der_serializer_t *self, const vscf_message_info_t *message_info, vsc_buffer_t *out) {
+vscf_message_info_der_serializer_serialize(vscf_message_info_der_serializer_t *self,
+        const vscf_message_info_t *message_info, vsc_buffer_t *out) {
 
     //  VirgilMessageInfo ::= SEQUENCE {
     //      version INTEGER { v0(0) } DEFAULT v0,
@@ -2230,8 +2230,8 @@ vscf_message_info_der_serializer_read_prefix(vscf_message_info_der_serializer_t 
 //  Deserialize class "message info".
 //
 VSCF_PUBLIC vscf_message_info_t *
-vscf_message_info_der_serializer_deserialize(
-        vscf_message_info_der_serializer_t *self, vsc_data_t data, vscf_error_t *error) {
+vscf_message_info_der_serializer_deserialize(vscf_message_info_der_serializer_t *self, vsc_data_t data,
+        vscf_error_t *error) {
 
     //  VirgilMessageInfo ::= SEQUENCE {
     //      version INTEGER { v0(0) } DEFAULT v0,
@@ -2342,8 +2342,8 @@ vscf_message_info_der_serializer_deserialize(
 //  Return buffer size enough to hold serialized message info footer.
 //
 VSCF_PUBLIC size_t
-vscf_message_info_der_serializer_serialized_footer_len(
-        vscf_message_info_der_serializer_t *self, const vscf_message_info_footer_t *message_info_footer) {
+vscf_message_info_der_serializer_serialized_footer_len(vscf_message_info_der_serializer_t *self,
+        const vscf_message_info_footer_t *message_info_footer) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(message_info_footer);
@@ -2355,8 +2355,8 @@ vscf_message_info_der_serializer_serialized_footer_len(
         signer_infos_len += vscf_message_info_der_serializer_serialized_signer_infos_len(self, message_info_footer);
     }
 
-    const size_t len = 1 + 1 + 8 +       //  VirgilMessageInfoFooter ::= SEQUENCE {
-                       1 + 1 + 1 +       //      version INTEGER { v0(0) } DEFAULT v0,
+    const size_t len = 1 + 1 + 8 + //  VirgilMessageInfoFooter ::= SEQUENCE {
+                       1 + 1 + 1 + //      version INTEGER { v0(0) } DEFAULT v0,
                        signer_infos_len; //      signerInfos [0] EXPLICIT VirgilSignerInfos OPTIONAL }
 
     return len;
@@ -2413,53 +2413,53 @@ vscf_message_info_der_serializer_serialize_footer(vscf_message_info_der_serializ
 //  Deserialize class "message info footer".
 //
 VSCF_PUBLIC vscf_message_info_footer_t *
-vscf_message_info_der_serializer_deserialize_footer(
-        vscf_message_info_der_serializer_t *self, vsc_data_t data, vscf_error_t *error) {
+vscf_message_info_der_serializer_deserialize_footer(vscf_message_info_der_serializer_t *self, vsc_data_t data,
+        vscf_error_t *error) {
 
     //  VirgilMessageInfoFooter ::= SEQUENCE {
-    //      version INTEGER { v0(0) } DEFAULT v0,
-    //      signerInfos [0] EXPLICIT VirgilSignerInfos OPTIONAL
-    //  }
+        //      version INTEGER { v0(0) } DEFAULT v0,
+        //      signerInfos [0] EXPLICIT VirgilSignerInfos OPTIONAL
+        //  }
 
-    VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(self->asn1_reader);
-    VSCF_ASSERT(vsc_data_is_valid(data));
+        VSCF_ASSERT_PTR(self);
+        VSCF_ASSERT_PTR(self->asn1_reader);
+        VSCF_ASSERT(vsc_data_is_valid(data));
 
-    vscf_error_t error_ctx;
-    vscf_error_reset(&error_ctx);
+        vscf_error_t error_ctx;
+        vscf_error_reset(&error_ctx);
 
-    vscf_asn1_reader_reset(self->asn1_reader, data);
+        vscf_asn1_reader_reset(self->asn1_reader, data);
 
-    vscf_asn1_reader_read_sequence(self->asn1_reader);
-    const int version = vscf_asn1_reader_read_int(self->asn1_reader);
+        vscf_asn1_reader_read_sequence(self->asn1_reader);
+        const int version = vscf_asn1_reader_read_int(self->asn1_reader);
 
-    if (vscf_asn1_reader_has_error(self->asn1_reader) || version != 0) {
-        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_BAD_MESSAGE_INFO_FOOTER);
-        goto error;
-    }
+        if (vscf_asn1_reader_has_error(self->asn1_reader) || version != 0) {
+            VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_BAD_MESSAGE_INFO_FOOTER);
+            goto error;
+        }
 
-    vscf_message_info_footer_t *footer = vscf_message_info_footer_new();
+        vscf_message_info_footer_t *footer = vscf_message_info_footer_new();
 
-    const size_t signer_infos_tag_len = vscf_asn1_reader_read_context_tag(self->asn1_reader, 0);
-    if (signer_infos_tag_len != 0) {
-        vscf_message_info_der_serializer_deserialize_signer_infos(self, footer, &error_ctx);
-    }
+        const size_t signer_infos_tag_len = vscf_asn1_reader_read_context_tag(self->asn1_reader, 0);
+        if (signer_infos_tag_len != 0) {
+            vscf_message_info_der_serializer_deserialize_signer_infos(self, footer, &error_ctx);
+        }
 
-    if (vscf_asn1_reader_has_error(self->asn1_reader)) {
-        //  TODO: Log underlying error
-        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_BAD_MESSAGE_INFO_FOOTER);
-        goto error;
-    }
+        if (vscf_asn1_reader_has_error(self->asn1_reader)) {
+            //  TODO: Log underlying error
+            VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_BAD_MESSAGE_INFO_FOOTER);
+            goto error;
+        }
 
-    if (vscf_error_has_error(&error_ctx)) {
-        //  TODO: Log underlying error
-        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_BAD_MESSAGE_INFO_FOOTER);
-        goto error;
-    }
+        if (vscf_error_has_error(&error_ctx)) {
+            //  TODO: Log underlying error
+            VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_BAD_MESSAGE_INFO_FOOTER);
+            goto error;
+        }
 
-    return footer;
+        return footer;
 
-error:
-    vscf_message_info_footer_destroy(&footer);
-    return NULL;
+    error:
+        vscf_message_info_footer_destroy(&footer);
+        return NULL;
 }

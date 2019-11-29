@@ -140,6 +140,58 @@ const (
     */
     FoundationErrorErrorMismatchPrivateKeyAndAlgorithm int = -226
     /*
+    * Post-quantum Falcon-Sign public key is corrupted.
+    */
+    FoundationErrorErrorBadFalconPublicKey int = -227
+    /*
+    * Post-quantum Falcon-Sign private key is corrupted.
+    */
+    FoundationErrorErrorBadFalconPrivateKey int = -228
+    /*
+    * Generic Round5 library error.
+    */
+    FoundationErrorErrorRound5 int = -229
+    /*
+    * Post-quantum NIST Round5 public key is corrupted.
+    */
+    FoundationErrorErrorBadRound5PublicKey int = -230
+    /*
+    * Post-quantum NIST Round5 private key is corrupted.
+    */
+    FoundationErrorErrorBadRound5PrivateKey int = -231
+    /*
+    * Compound public key is corrupted.
+    */
+    FoundationErrorErrorBadCompoundPublicKey int = -232
+    /*
+    * Compound private key is corrupted.
+    */
+    FoundationErrorErrorBadCompoundPrivateKey int = -233
+    /*
+    * Compound public chained key is corrupted.
+    */
+    FoundationErrorErrorBadChainedPublicKey int = -234
+    /*
+    * Compound private chained key is corrupted.
+    */
+    FoundationErrorErrorBadChainedPrivateKey int = -235
+    /*
+    * ASN.1 AlgorithmIdentifer is corrupted.
+    */
+    FoundationErrorErrorBadAsn1Algorithm int = -236
+    /*
+    * ASN.1 AlgorithmIdentifer with ECParameters is corrupted.
+    */
+    FoundationErrorErrorBadAsn1AlgorithmEcc int = -237
+    /*
+    * ASN.1 AlgorithmIdentifer with CompoundKeyParams is corrupted.
+    */
+    FoundationErrorErrorBadAsn1AlgorithmCompoundKey int = -238
+    /*
+    * ASN.1 AlgorithmIdentifer with ChainedKeyParams is corrupted.
+    */
+    FoundationErrorErrorBadAsn1AlgorithmChainedKey int = -239
+    /*
     * Decryption failed, because message info was not given explicitly,
     * and was not part of an encrypted message.
     */
@@ -326,6 +378,32 @@ func FoundationErrorHandleStatus(status C.vscf_status_t) error {
             return &FoundationError {int(status), "Key algorithm does not accept given type of public key."}
         case C.vscf_status_ERROR_MISMATCH_PRIVATE_KEY_AND_ALGORITHM:
             return &FoundationError {int(status), "Key algorithm does not accept given type of private key."}
+        case C.vscf_status_ERROR_BAD_FALCON_PUBLIC_KEY:
+            return &FoundationError {int(status), "Post-quantum Falcon-Sign public key is corrupted."}
+        case C.vscf_status_ERROR_BAD_FALCON_PRIVATE_KEY:
+            return &FoundationError {int(status), "Post-quantum Falcon-Sign private key is corrupted."}
+        case C.vscf_status_ERROR_ROUND5:
+            return &FoundationError {int(status), "Generic Round5 library error."}
+        case C.vscf_status_ERROR_BAD_ROUND5_PUBLIC_KEY:
+            return &FoundationError {int(status), "Post-quantum NIST Round5 public key is corrupted."}
+        case C.vscf_status_ERROR_BAD_ROUND5_PRIVATE_KEY:
+            return &FoundationError {int(status), "Post-quantum NIST Round5 private key is corrupted."}
+        case C.vscf_status_ERROR_BAD_COMPOUND_PUBLIC_KEY:
+            return &FoundationError {int(status), "Compound public key is corrupted."}
+        case C.vscf_status_ERROR_BAD_COMPOUND_PRIVATE_KEY:
+            return &FoundationError {int(status), "Compound private key is corrupted."}
+        case C.vscf_status_ERROR_BAD_CHAINED_PUBLIC_KEY:
+            return &FoundationError {int(status), "Compound public chained key is corrupted."}
+        case C.vscf_status_ERROR_BAD_CHAINED_PRIVATE_KEY:
+            return &FoundationError {int(status), "Compound private chained key is corrupted."}
+        case C.vscf_status_ERROR_BAD_ASN1_ALGORITHM:
+            return &FoundationError {int(status), "ASN.1 AlgorithmIdentifer is corrupted."}
+        case C.vscf_status_ERROR_BAD_ASN1_ALGORITHM_ECC:
+            return &FoundationError {int(status), "ASN.1 AlgorithmIdentifer with ECParameters is corrupted."}
+        case C.vscf_status_ERROR_BAD_ASN1_ALGORITHM_COMPOUND_KEY:
+            return &FoundationError {int(status), "ASN.1 AlgorithmIdentifer with CompoundKeyParams is corrupted."}
+        case C.vscf_status_ERROR_BAD_ASN1_ALGORITHM_CHAINED_KEY:
+            return &FoundationError {int(status), "ASN.1 AlgorithmIdentifer with ChainedKeyParams is corrupted."}
         case C.vscf_status_ERROR_NO_MESSAGE_INFO:
             return &FoundationError {int(status), "Decryption failed, because message info was not given explicitly, and was not part of an encrypted message."}
         case C.vscf_status_ERROR_BAD_MESSAGE_INFO:

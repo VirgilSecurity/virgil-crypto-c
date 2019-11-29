@@ -371,43 +371,43 @@ vscf_group_session_message_deserialize(vsc_data_t input, vscf_error_t *error) {
 
     VSCF_ASSERT(vsc_data_is_valid(input));
 
-    if (input.len > vscf_group_session_message_MAX_MESSAGE_LEN) {
-        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_PROTOBUF);
+        if (input.len > vscf_group_session_message_MAX_MESSAGE_LEN) {
+            VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_PROTOBUF);
 
-        return NULL;
-    }
+            return NULL;
+        }
 
-    vscf_group_session_message_t *message = vscf_group_session_message_new();
+        vscf_group_session_message_t *message = vscf_group_session_message_new();
 
-    pb_istream_t istream = pb_istream_from_buffer(input.bytes, input.len);
+        pb_istream_t istream = pb_istream_from_buffer(input.bytes, input.len);
 
-    vscf_status_t status = vscf_status_SUCCESS;
+        vscf_status_t status = vscf_status_SUCCESS;
 
-    bool pb_status = pb_decode(&istream, vscf_GroupMessage_fields, &message->message_pb);
+        bool pb_status = pb_decode(&istream, vscf_GroupMessage_fields, &message->message_pb);
 
-    if (!pb_status || message->message_pb.has_group_info == message->message_pb.has_regular_message) {
-        status = vscf_status_ERROR_PROTOBUF;
-        goto err;
-    }
-
-    if (message->message_pb.has_regular_message) {
-        pb_istream_t sub_istream = pb_istream_from_buffer(
-                message->message_pb.regular_message.header.bytes, message->message_pb.regular_message.header.size);
-
-        message->header_pb = vscf_alloc(sizeof(vscf_RegularGroupMessageHeader));
-        pb_status = pb_decode(&sub_istream, vscf_RegularGroupMessageHeader_fields, message->header_pb);
-
-        if (!pb_status) {
+        if (!pb_status || message->message_pb.has_group_info == message->message_pb.has_regular_message) {
             status = vscf_status_ERROR_PROTOBUF;
             goto err;
         }
-    }
 
-err:
-    if (status != vscf_status_SUCCESS) {
-        VSCF_ERROR_SAFE_UPDATE(error, status);
-        vscf_group_session_message_destroy(&message);
-    }
+        if (message->message_pb.has_regular_message) {
+            pb_istream_t sub_istream = pb_istream_from_buffer(
+                    message->message_pb.regular_message.header.bytes, message->message_pb.regular_message.header.size);
 
-    return message;
+            message->header_pb = vscf_alloc(sizeof(vscf_RegularGroupMessageHeader));
+            pb_status = pb_decode(&sub_istream, vscf_RegularGroupMessageHeader_fields, message->header_pb);
+
+            if (!pb_status) {
+                status = vscf_status_ERROR_PROTOBUF;
+                goto err;
+            }
+        }
+
+    err:
+        if (status != vscf_status_SUCCESS) {
+            VSCF_ERROR_SAFE_UPDATE(error, status);
+            vscf_group_session_message_destroy(&message);
+        }
+
+        return message;
 }

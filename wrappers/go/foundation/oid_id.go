@@ -29,4 +29,9 @@ const (
     OidIdHmacWithSha512 OidId = 22
     OidIdEcGenericKey OidId = 23
     OidIdEcDomainSecp256r1 OidId = 24
+    OidIdCompoundKey OidId = 25
+    OidIdChainedKey OidId = 26
+    OidIdFalcon OidId = 27
+    OidIdRound5 OidId = 28
+    OidIdRound5Nd5pke5d OidId = 29
 )

@@ -102,26 +102,6 @@ func (obj *SaltedKdfAlgInfo) delete() {
 }
 
 /*
-* Create algorithm info with identificator, HASH algorithm info,
-* salt and iteration count.
-*/
-func NewSaltedKdfAlgInfoWithMembers(algId AlgId, hashAlgInfo AlgInfo, salt []byte, iterationCount uint32) *SaltedKdfAlgInfo {
-    saltData := helperWrapData (salt)
-
-    hashAlgInfoCopy := C.vscf_impl_shallow_copy((*C.vscf_impl_t)(unsafe.Pointer(hashAlgInfo.Ctx())))
-
-    proxyResult := /*pr4*/C.vscf_salted_kdf_alg_info_new_with_members(C.vscf_alg_id_t(algId) /*pa7*/, &hashAlgInfoCopy, saltData, (C.size_t)(iterationCount)/*pa10*/)
-
-    runtime.KeepAlive(hashAlgInfo)
-
-    obj := &SaltedKdfAlgInfo {
-        cCtx: proxyResult,
-    }
-    runtime.SetFinalizer(obj, (*SaltedKdfAlgInfo).Delete)
-    return obj
-}
-
-/*
 * Provide algorithm identificator.
 */
 func (obj *SaltedKdfAlgInfo) AlgId() AlgId {

@@ -76,14 +76,6 @@ func (obj *KeyProvider) SetRandom(random Random) {
     runtime.KeepAlive(obj)
 }
 
-func (obj *KeyProvider) SetEcies(ecies Ecies) {
-    C.vscf_key_provider_release_ecies(obj.cCtx)
-    C.vscf_key_provider_use_ecies(obj.cCtx, (*C.vscf_ecies_t)(unsafe.Pointer(ecies.Ctx())))
-
-    runtime.KeepAlive(ecies)
-    runtime.KeepAlive(obj)
-}
-
 /*
 * Setup predefined values to the uninitialized class dependencies.
 */
@@ -112,13 +104,79 @@ func (obj *KeyProvider) SetRsaParams(bitlen uint32) {
 }
 
 /*
-* Generate new private key from the given id.
+* Generate new private key with a given algorithm.
 */
 func (obj *KeyProvider) GeneratePrivateKey(algId AlgId) (PrivateKey, error) {
     var error C.vscf_error_t
     C.vscf_error_reset(&error)
 
     proxyResult := /*pr4*/C.vscf_key_provider_generate_private_key(obj.cCtx, C.vscf_alg_id_t(algId) /*pa7*/, &error)
+
+    err := FoundationErrorHandleStatus(error.status)
+    if err != nil {
+        return nil, err
+    }
+
+    runtime.KeepAlive(obj)
+
+    runtime.KeepAlive(error)
+
+    return FoundationImplementationWrapPrivateKey(proxyResult) /* r4 */
+}
+
+/*
+* Generate new compound private key with given algorithms.
+*/
+func (obj *KeyProvider) GenerateCompoundPrivateKey(cipherAlgId AlgId, signerAlgId AlgId) (PrivateKey, error) {
+    var error C.vscf_error_t
+    C.vscf_error_reset(&error)
+
+    proxyResult := /*pr4*/C.vscf_key_provider_generate_compound_private_key(obj.cCtx, C.vscf_alg_id_t(cipherAlgId) /*pa7*/, C.vscf_alg_id_t(signerAlgId) /*pa7*/, &error)
+
+    err := FoundationErrorHandleStatus(error.status)
+    if err != nil {
+        return nil, err
+    }
+
+    runtime.KeepAlive(obj)
+
+    runtime.KeepAlive(error)
+
+    return FoundationImplementationWrapPrivateKey(proxyResult) /* r4 */
+}
+
+/*
+* Generate new chained private key with given algorithms.
+*/
+func (obj *KeyProvider) GenerateChainedPrivateKey(l1AlgId AlgId, l2AlgId AlgId) (PrivateKey, error) {
+    var error C.vscf_error_t
+    C.vscf_error_reset(&error)
+
+    proxyResult := /*pr4*/C.vscf_key_provider_generate_chained_private_key(obj.cCtx, C.vscf_alg_id_t(l1AlgId) /*pa7*/, C.vscf_alg_id_t(l2AlgId) /*pa7*/, &error)
+
+    err := FoundationErrorHandleStatus(error.status)
+    if err != nil {
+        return nil, err
+    }
+
+    runtime.KeepAlive(obj)
+
+    runtime.KeepAlive(error)
+
+    return FoundationImplementationWrapPrivateKey(proxyResult) /* r4 */
+}
+
+/*
+* Generate new compound private key with nested chained private keys.
+*
+* Note, l2 algorithm identifiers can be NONE, in this case regular key
+* will be crated instead of chained key.
+*/
+func (obj *KeyProvider) GenerateCompoundChainedPrivateKey(cipherL1AlgId AlgId, cipherL2AlgId AlgId, signerL1AlgId AlgId, signerL2AlgId AlgId) (PrivateKey, error) {
+    var error C.vscf_error_t
+    C.vscf_error_reset(&error)
+
+    proxyResult := /*pr4*/C.vscf_key_provider_generate_compound_chained_private_key(obj.cCtx, C.vscf_alg_id_t(cipherL1AlgId) /*pa7*/, C.vscf_alg_id_t(cipherL2AlgId) /*pa7*/, C.vscf_alg_id_t(signerL1AlgId) /*pa7*/, C.vscf_alg_id_t(signerL2AlgId) /*pa7*/, &error)
 
     err := FoundationErrorHandleStatus(error.status)
     if err != nil {

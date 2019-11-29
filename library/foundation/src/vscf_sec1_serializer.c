@@ -155,8 +155,8 @@ vscf_sec1_serializer_setup_defaults(vscf_sec1_serializer_t *self) {
 //  an output buffer.
 //
 VSCF_PUBLIC size_t
-vscf_sec1_serializer_serialize_public_key_inplace(
-        vscf_sec1_serializer_t *self, const vscf_raw_public_key_t *public_key, vscf_error_t *error) {
+vscf_sec1_serializer_serialize_public_key_inplace(vscf_sec1_serializer_t *self, const vscf_raw_public_key_t *public_key,
+        vscf_error_t *error) {
 
     //  SubjectPublicKeyInfo ::= SEQUENCE {
     //          algorithm AlgorithmIdentifier,
@@ -207,8 +207,8 @@ vscf_sec1_serializer_serialize_public_key_inplace(
 //  an output buffer.
 //
 VSCF_PUBLIC size_t
-vscf_sec1_serializer_serialize_private_key_inplace(
-        vscf_sec1_serializer_t *self, const vscf_raw_private_key_t *private_key, vscf_error_t *error) {
+vscf_sec1_serializer_serialize_private_key_inplace(vscf_sec1_serializer_t *self,
+        const vscf_raw_private_key_t *private_key, vscf_error_t *error) {
 
     //  ECPrivateKey ::= SEQUENCE {
     //      version INTEGER { ecPrivkeyVer1(1) } (ecPrivkeyVer1),
@@ -300,16 +300,16 @@ vscf_sec1_serializer_is_ec_key(const vscf_impl_t *key) {
 //  Precondition: public key must be exportable.
 //
 VSCF_PUBLIC size_t
-vscf_sec1_serializer_serialized_public_key_len(
-        const vscf_sec1_serializer_t *self, const vscf_raw_public_key_t *public_key) {
+vscf_sec1_serializer_serialized_public_key_len(const vscf_sec1_serializer_t *self,
+        const vscf_raw_public_key_t *public_key) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(public_key);
     VSCF_ASSERT(vscf_raw_public_key_is_valid(public_key));
 
     size_t wrapped_key_len = vscf_raw_public_key_len(public_key);
-    size_t len = 1 + 4 +                  //  SubjectPublicKeyInfo ::= SEQUENCE {
-                 1 + 1 + 32 +             //          algorithm AlgorithmIdentifier,
+    size_t len = 1 + 4 + //  SubjectPublicKeyInfo ::= SEQUENCE {
+                 1 + 1 + 32 + //          algorithm AlgorithmIdentifier,
                  1 + 4 + wrapped_key_len; //          subjectPublicKey BIT STRING
                                           //  }
 
@@ -322,8 +322,8 @@ vscf_sec1_serializer_serialized_public_key_len(
 //  Precondition: public key must be exportable.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_sec1_serializer_serialize_public_key(
-        vscf_sec1_serializer_t *self, const vscf_raw_public_key_t *public_key, vsc_buffer_t *out) {
+vscf_sec1_serializer_serialize_public_key(vscf_sec1_serializer_t *self, const vscf_raw_public_key_t *public_key,
+        vsc_buffer_t *out) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(public_key);
@@ -355,8 +355,8 @@ vscf_sec1_serializer_serialize_public_key(
 //  Precondition: private key must be exportable.
 //
 VSCF_PUBLIC size_t
-vscf_sec1_serializer_serialized_private_key_len(
-        const vscf_sec1_serializer_t *self, const vscf_raw_private_key_t *private_key) {
+vscf_sec1_serializer_serialized_private_key_len(const vscf_sec1_serializer_t *self,
+        const vscf_raw_private_key_t *private_key) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(private_key);
@@ -364,10 +364,10 @@ vscf_sec1_serializer_serialized_private_key_len(
 
     size_t wrapped_key_len = vscf_raw_private_key_len(private_key);
     size_t wrapped_public_key_len = vscf_raw_public_key_len(vscf_raw_private_key_get_public_key(private_key));
-    size_t len = 1 + 1 + 2 +                             //  ECPrivateKey ::= SEQUENCE {
-                 1 + 1 + 1 +                             //      version INTEGER { ecPrivkeyVer1(1) } (ecPrivkeyVer1),
-                 1 + 1 + wrapped_key_len +               //      privateKey OCTET STRING,
-                 1 + 1 + 1 + 1 + 8 +                     //      parameters [0] ECParameters {{ NamedCurve }} OPTIONAL,
+    size_t len = 1 + 1 + 2 + //  ECPrivateKey ::= SEQUENCE {
+                 1 + 1 + 1 + //      version INTEGER { ecPrivkeyVer1(1) } (ecPrivkeyVer1),
+                 1 + 1 + wrapped_key_len + //      privateKey OCTET STRING,
+                 1 + 1 + 1 + 1 + 8 + //      parameters [0] ECParameters {{ NamedCurve }} OPTIONAL,
                  1 + 2 + 1 + 4 + wrapped_public_key_len; //      publicKey [1] BIT STRING OPTIONAL }
 
     return len;
@@ -379,8 +379,8 @@ vscf_sec1_serializer_serialized_private_key_len(
 //  Precondition: private key must be exportable.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_sec1_serializer_serialize_private_key(
-        vscf_sec1_serializer_t *self, const vscf_raw_private_key_t *private_key, vsc_buffer_t *out) {
+vscf_sec1_serializer_serialize_private_key(vscf_sec1_serializer_t *self, const vscf_raw_private_key_t *private_key,
+        vsc_buffer_t *out) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(private_key);

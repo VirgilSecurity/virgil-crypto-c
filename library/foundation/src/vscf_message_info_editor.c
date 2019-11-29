@@ -364,8 +364,8 @@ vscf_message_info_editor_unpack(vscf_message_info_editor_t *self, vsc_data_t mes
 //  Decrypt encryption key this allows adding new recipients.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_message_info_editor_unlock(
-        vscf_message_info_editor_t *self, vsc_data_t owner_recipient_id, const vscf_impl_t *owner_private_key) {
+vscf_message_info_editor_unlock(vscf_message_info_editor_t *self, vsc_data_t owner_recipient_id,
+        const vscf_impl_t *owner_private_key) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(self->message_info);
@@ -433,8 +433,8 @@ vscf_message_info_editor_unlock(
 //  Add recipient defined with id and public key.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_message_info_editor_add_key_recipient(
-        vscf_message_info_editor_t *self, vsc_data_t recipient_id, const vscf_impl_t *public_key) {
+vscf_message_info_editor_add_key_recipient(vscf_message_info_editor_t *self, vsc_data_t recipient_id,
+        const vscf_impl_t *public_key) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(self->random);

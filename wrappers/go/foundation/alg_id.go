@@ -25,4 +25,10 @@ const (
     AlgIdHkdf AlgId = 15
     AlgIdPkcs5Pbkdf2 AlgId = 16
     AlgIdPkcs5Pbes2 AlgId = 17
+    AlgIdCompoundKey AlgId = 18
+    AlgIdChainedKey AlgId = 19
+    AlgIdFalcon AlgId = 20
+    AlgIdRound5 AlgId = 21
+    AlgIdRound5Nd5pke5d AlgId = 22
+    AlgIdPostQuantum AlgId = 23
 )

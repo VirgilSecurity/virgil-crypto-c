@@ -507,8 +507,8 @@ vscf_aes256_gcm_finish(vscf_aes256_gcm_t *self, vsc_buffer_t *out) {
 //  If 'tag' is not given, then it will written to the 'enc'.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_aes256_gcm_auth_encrypt(
-        vscf_aes256_gcm_t *self, vsc_data_t data, vsc_data_t auth_data, vsc_buffer_t *out, vsc_buffer_t *tag) {
+vscf_aes256_gcm_auth_encrypt(vscf_aes256_gcm_t *self, vsc_data_t data, vsc_data_t auth_data, vsc_buffer_t *out,
+        vsc_buffer_t *tag) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT(vsc_data_is_valid(data));
@@ -548,8 +548,8 @@ vscf_aes256_gcm_auth_encrypted_len(vscf_aes256_gcm_t *self, size_t data_len) {
 //  If 'tag' is not given, then it will be taken from the 'enc'.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_aes256_gcm_auth_decrypt(
-        vscf_aes256_gcm_t *self, vsc_data_t data, vsc_data_t auth_data, vsc_data_t tag, vsc_buffer_t *out) {
+vscf_aes256_gcm_auth_decrypt(vscf_aes256_gcm_t *self, vsc_data_t data, vsc_data_t auth_data, vsc_data_t tag,
+        vsc_buffer_t *out) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT(vsc_data_is_valid(data));

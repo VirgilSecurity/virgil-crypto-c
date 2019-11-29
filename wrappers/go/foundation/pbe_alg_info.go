@@ -90,27 +90,6 @@ func (obj *PbeAlgInfo) delete() {
 }
 
 /*
-* Create algorithm info with identificator, KDF algorithm info and
-* cipher alg info.
-*/
-func NewPbeAlgInfoWithMembers(algId AlgId, kdfAlgInfo AlgInfo, cipherAlgInfo AlgInfo) *PbeAlgInfo {
-    kdfAlgInfoCopy := C.vscf_impl_shallow_copy((*C.vscf_impl_t)(unsafe.Pointer(kdfAlgInfo.Ctx())))
-    cipherAlgInfoCopy := C.vscf_impl_shallow_copy((*C.vscf_impl_t)(unsafe.Pointer(cipherAlgInfo.Ctx())))
-
-    proxyResult := /*pr4*/C.vscf_pbe_alg_info_new_with_members(C.vscf_alg_id_t(algId) /*pa7*/, &kdfAlgInfoCopy, &cipherAlgInfoCopy)
-
-    runtime.KeepAlive(kdfAlgInfo)
-
-    runtime.KeepAlive(cipherAlgInfo)
-
-    obj := &PbeAlgInfo {
-        cCtx: proxyResult,
-    }
-    runtime.SetFinalizer(obj, (*PbeAlgInfo).Delete)
-    return obj
-}
-
-/*
 * Provide algorithm identificator.
 */
 func (obj *PbeAlgInfo) AlgId() AlgId {

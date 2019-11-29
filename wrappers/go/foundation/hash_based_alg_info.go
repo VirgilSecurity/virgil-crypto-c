@@ -79,23 +79,6 @@ func (obj *HashBasedAlgInfo) delete() {
 }
 
 /*
-* Create algorithm info with identificator and HASH algorithm info.
-*/
-func NewHashBasedAlgInfoWithMembers(algId AlgId, hashAlgInfo AlgInfo) *HashBasedAlgInfo {
-    hashAlgInfoCopy := C.vscf_impl_shallow_copy((*C.vscf_impl_t)(unsafe.Pointer(hashAlgInfo.Ctx())))
-
-    proxyResult := /*pr4*/C.vscf_hash_based_alg_info_new_with_members(C.vscf_alg_id_t(algId) /*pa7*/, &hashAlgInfoCopy)
-
-    runtime.KeepAlive(hashAlgInfo)
-
-    obj := &HashBasedAlgInfo {
-        cCtx: proxyResult,
-    }
-    runtime.SetFinalizer(obj, (*HashBasedAlgInfo).Delete)
-    return obj
-}
-
-/*
 * Provide algorithm identificator.
 */
 func (obj *HashBasedAlgInfo) AlgId() AlgId {

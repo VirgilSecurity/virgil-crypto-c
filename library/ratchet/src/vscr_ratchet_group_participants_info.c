@@ -311,8 +311,8 @@ vscr_ratchet_group_participants_info_init_ctx_size(vscr_ratchet_group_participan
 //  Add participant info
 //
 VSCR_PUBLIC vscr_status_t
-vscr_ratchet_group_participants_info_add_participant(
-        vscr_ratchet_group_participants_info_t *self, vsc_data_t id, vsc_data_t pub_key) {
+vscr_ratchet_group_participants_info_add_participant(vscr_ratchet_group_participants_info_t *self, vsc_data_t id,
+        vsc_data_t pub_key) {
 
     VSCR_ASSERT_PTR(self);
     VSCR_ASSERT(self->count < self->size);
