@@ -179,6 +179,58 @@ const initFoundationError = (Module, modules) => {
                 throw new FoundationError("Key algorithm does not accept given type of private key.");
             }
 
+            if (statusCode == -227) {
+                throw new FoundationError("Post-quantum Falcon-Sign public key is corrupted.");
+            }
+
+            if (statusCode == -228) {
+                throw new FoundationError("Post-quantum Falcon-Sign private key is corrupted.");
+            }
+
+            if (statusCode == -229) {
+                throw new FoundationError("Generic Round5 library error.");
+            }
+
+            if (statusCode == -230) {
+                throw new FoundationError("Post-quantum NIST Round5 public key is corrupted.");
+            }
+
+            if (statusCode == -231) {
+                throw new FoundationError("Post-quantum NIST Round5 private key is corrupted.");
+            }
+
+            if (statusCode == -232) {
+                throw new FoundationError("Compound public key is corrupted.");
+            }
+
+            if (statusCode == -233) {
+                throw new FoundationError("Compound private key is corrupted.");
+            }
+
+            if (statusCode == -234) {
+                throw new FoundationError("Compound public chained key is corrupted.");
+            }
+
+            if (statusCode == -235) {
+                throw new FoundationError("Compound private chained key is corrupted.");
+            }
+
+            if (statusCode == -236) {
+                throw new FoundationError("ASN.1 AlgorithmIdentifer is corrupted.");
+            }
+
+            if (statusCode == -237) {
+                throw new FoundationError("ASN.1 AlgorithmIdentifer with ECParameters is corrupted.");
+            }
+
+            if (statusCode == -238) {
+                throw new FoundationError("ASN.1 AlgorithmIdentifer with CompoundKeyParams is corrupted.");
+            }
+
+            if (statusCode == -239) {
+                throw new FoundationError("ASN.1 AlgorithmIdentifer with ChainedKeyParams is corrupted.");
+            }
+
             if (statusCode == -301) {
                 throw new FoundationError("Decryption failed, because message info was not given explicitly, and was not part of an encrypted message.");
             }

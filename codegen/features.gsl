@@ -90,15 +90,6 @@ function _D25_resolve_attr_default (item, parent)
     check_arguments (my, "item", my)
 
     my.item.default ?= "on"
-
-    my.valid_defaults = "on, off"
-
-    if ! string_in (my.item.default, my.valid_defaults)
-        my.component_dump = component_dump (my.item)
-
-        echo_fatal ("Invalid item attribute 'default' '$(my.component_dump:)'. " + \
-                    "Expected {$(my.valid_defaults)}", my)
-    endif
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -214,10 +205,15 @@ function features_list_update_from_library (features_list, library)
         .path = my.library.path
         .library = my.library.name
 
-        new feature to features
-            . = "Enable build of the '$(my.library.name:)' library"
-            .name = "library"
-        endnew
+        my.library_feature = my.library->feature(feature.name = "library") ?
+        if !defined(my.library_feature)
+            new feature to features
+                .name = "library"
+                my.library_feature = feature
+            endnew
+        endif
+        my.library_feature. ?= "Enable build of the '$(my.library.name:)' library"
+
 
         for my.library.feature
             copy feature to features
@@ -250,10 +246,15 @@ function features_list_update_from_project (features_list, project)
         .project = my.project.name
         .cmake_target = my.project.cmake_target
 
-        new feature to features
-            . = "Enable build of the '$(my.project.name:)' library"
-            .name = "library"
-        endnew
+
+        my.library_feature = my.project->feature(feature.name = "library") ?
+        if !defined(my.library_feature)
+            new feature to features
+                .name = "library"
+                my.library_feature = feature
+            endnew
+        endif
+        my.library_feature. ?= "Enable build of the '$(my.project.name:)' library"
 
         for my.project.cmake_compile_definition
             copy cmake_compile_definition to features

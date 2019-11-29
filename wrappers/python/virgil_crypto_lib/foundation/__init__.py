@@ -130,6 +130,16 @@ from .key_asn1_serializer import KeyAsn1Serializer
 from .key_asn1_deserializer import KeyAsn1Deserializer
 from .ed25519 import Ed25519
 from .curve25519 import Curve25519
+from .falcon import Falcon
+from .round5 import Round5
+from .compound_key_alg_info import CompoundKeyAlgInfo
+from .compound_public_key import CompoundPublicKey
+from .compound_private_key import CompoundPrivateKey
+from .compound_key_alg import CompoundKeyAlg
+from .chained_key_alg_info import ChainedKeyAlgInfo
+from .chained_public_key import ChainedPublicKey
+from .chained_private_key import ChainedPrivateKey
+from .chained_key_alg import ChainedKeyAlg
 from .simple_alg_info import SimpleAlgInfo
 from .hash_based_alg_info import HashBasedAlgInfo
 from .cipher_alg_info import CipherAlgInfo

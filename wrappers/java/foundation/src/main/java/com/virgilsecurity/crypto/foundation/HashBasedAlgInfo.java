@@ -55,14 +55,6 @@ public class HashBasedAlgInfo implements AutoCloseable, AlgInfo {
     }
 
     /*
-    * Create algorithm info with identificator and HASH algorithm info.
-    */
-    public HashBasedAlgInfo(AlgId algId, AlgInfo hashAlgInfo) {
-        super();
-        this.cCtx = FoundationJNI.INSTANCE.hashBasedAlgInfo_new(algId, hashAlgInfo);
-    }
-
-    /*
     * Return hash algorithm information.
     */
     public AlgInfo hashAlgInfo() {

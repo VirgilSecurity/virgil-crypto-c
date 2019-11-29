@@ -220,13 +220,6 @@
     </method>
 
 
-    <method name="write str">
-        Copy null-terminated string to the buffer.
-
-        <argument name="str" type="string"/>
-    </method>
-
-
     <method name="write data">
         Copy data to the buffer.
 

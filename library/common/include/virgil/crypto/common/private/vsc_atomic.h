@@ -102,6 +102,16 @@ extern "C" {
 #   define VSC_ATOMIC
 #endif
 
+#if defined(VSC_ATOMIC_COMPARE_EXCHANGE_WEAK)
+#   define VSC_ATOMIC_CRITICAL_SECTION_DECLARE(name) static VSC_ATOMIC int is_busy_##name = 0; int is_not_busy_##name = 0;
+#   define VSC_ATOMIC_CRITICAL_SECTION_BEGIN(name) do { is_not_busy_##name = 0; } while (!VSC_ATOMIC_COMPARE_EXCHANGE_WEAK(&is_busy_##name, &is_not_busy_##name, 1))
+#   define VSC_ATOMIC_CRITICAL_SECTION_END(name) do { is_busy_##name = 0; } while(0)
+#else
+#   define VSC_ATOMIC_CRITICAL_SECTION_DECLARE(name) do {} while(0)
+#   define VSC_ATOMIC_CRITICAL_SECTION_BEGIN(name) do {} while(0)
+#   define VSC_ATOMIC_CRITICAL_SECTION_END(name) do {} while(0)
+#endif
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.

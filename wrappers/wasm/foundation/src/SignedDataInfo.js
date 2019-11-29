@@ -89,15 +89,6 @@ const initSignedDataInfo = (Module, modules) => {
         }
 
         /**
-         * Set information about algorithm that was used to produce data digest.
-         */
-        setHashAlgInfo(hashAlgInfo) {
-            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-            precondition.ensureImplementInterface('hashAlgInfo', hashAlgInfo, 'Foundation.AlgInfo', modules.FoundationInterfaceTag.ALG_INFO, modules.FoundationInterface);
-            Module._vscf_signed_data_info_set_hash_alg_info(this.ctxPtr, hashAlgInfo.ctxPtr);
-        }
-
-        /**
          * Return information about algorithm that was used to produce data digest.
          */
         hashAlgInfo() {

@@ -117,6 +117,7 @@ vscf_raw_private_key_init_ctx_with_data(vscf_raw_private_key_t *self, vsc_data_t
 
     self->alg_info = *alg_info_ref;
     self->buffer = vsc_buffer_new_with_data(key_data);
+    vsc_buffer_make_secure(self->buffer);
 
     *alg_info_ref = NULL;
 }
@@ -139,6 +140,7 @@ vscf_raw_private_key_init_ctx_with_buffer(
 
     self->alg_info = *alg_info_ref;
     self->buffer = *key_data_ref;
+    vsc_buffer_make_secure(self->buffer);
 
     *alg_info_ref = NULL;
     *key_data_ref = NULL;

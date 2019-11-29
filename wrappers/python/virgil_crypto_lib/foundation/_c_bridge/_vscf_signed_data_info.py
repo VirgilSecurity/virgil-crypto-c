@@ -62,13 +62,6 @@ class VscfSignedDataInfo(object):
         vscf_signed_data_info_delete.restype = None
         return vscf_signed_data_info_delete(ctx)
 
-    def vscf_signed_data_info_set_hash_alg_info(self, ctx, hash_alg_info):
-        """Set information about algorithm that was used to produce data digest."""
-        vscf_signed_data_info_set_hash_alg_info = self._lib.vscf_signed_data_info_set_hash_alg_info
-        vscf_signed_data_info_set_hash_alg_info.argtypes = [POINTER(vscf_signed_data_info_t), POINTER(vscf_impl_t)]
-        vscf_signed_data_info_set_hash_alg_info.restype = None
-        return vscf_signed_data_info_set_hash_alg_info(ctx, hash_alg_info)
-
     def vscf_signed_data_info_hash_alg_info(self, ctx):
         """Return information about algorithm that was used to produce data digest."""
         vscf_signed_data_info_hash_alg_info = self._lib.vscf_signed_data_info_hash_alg_info

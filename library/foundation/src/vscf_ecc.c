@@ -663,7 +663,10 @@ vscf_ecc_can_sign(const vscf_ecc_t *self, const vscf_impl_t *private_key) {
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(private_key);
     VSCF_ASSERT(vscf_private_key_is_implemented(private_key));
-    VSCF_ASSERT_SAFE(vscf_key_is_valid(private_key));
+
+    if (!vscf_key_is_valid(private_key)) {
+        return false;
+    }
 
     bool is_my_impl = vscf_key_impl_tag(private_key) == self->info->impl_tag;
     return is_my_impl;
@@ -674,17 +677,22 @@ vscf_ecc_can_sign(const vscf_ecc_t *self, const vscf_impl_t *private_key) {
 //  Return zero if a given private key can not produce signatures.
 //
 VSCF_PUBLIC size_t
-vscf_ecc_signature_len(const vscf_ecc_t *self, const vscf_impl_t *key) {
+vscf_ecc_signature_len(const vscf_ecc_t *self, const vscf_impl_t *private_key) {
 
     VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(key);
+    VSCF_ASSERT_PTR(private_key);
+    VSCF_ASSERT(vscf_key_is_implemented(private_key));
 
     //  ECDSA-Sig-Value ::= SEQUENCE {
     //      r INTEGER,
     //      s INTEGER
     //  }
 
-    size_t len = 2 * vscf_key_len(key) + 9 /* mbedTLS requirement */;
+    if (!vscf_key_is_valid(private_key)) {
+        return 0;
+    }
+
+    size_t len = 2 * vscf_key_len(private_key) + 9 /* mbedTLS requirement */;
     return len;
 }
 

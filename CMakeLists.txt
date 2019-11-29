@@ -32,7 +32,7 @@
 #
 #   Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.12 FATAL_ERROR)
 
 project(virgil_crypto VERSION 0.12.0 LANGUAGES C)
 
@@ -74,6 +74,7 @@ option(BUILD_SHARED_LIBS "On/Off build shared libraries." OFF)
 option(ENABLE_TESTING "On/Off integration tests." ON)
 option(ENABLE_HEAVY_TESTS "On/Off execution of heavy tests." OFF)
 option(ENABLE_PROFILING "On/Off GProf compilation options." OFF)
+option(ENABLE_FUZZY_TESTING "On/Off fyzzy tests." OFF)
 option(ENABLE_BENCHMARKING "On/Off execution of benchmarks." OFF)
 
 #
@@ -96,6 +97,11 @@ option(VIRGIL_LIB_RATCHET "Build 'ratchet' library" ON)
 option(VIRGIL_LIB_PHE "Build 'phe' library" ON)
 
 #
+# Features
+#
+option(VIRGIL_POST_QUANTUM "Enable post-quantum cryptography [experemental]." OFF)
+
+#
 # Wrappers
 #
 option(VIRGIL_WRAP_ALL "Build all available wrappers on the given platform" OFF)
@@ -103,6 +109,7 @@ option(VIRGIL_WRAP_GO "Build 'Golang' wrapper" OFF)
 option(VIRGIL_WRAP_PHP "Build 'PHP' wrapper" OFF)
 option(VIRGIL_WRAP_JAVA "Build 'Java' wrapper" OFF)
 option(VIRGIL_WRAP_WASM "Build 'WebAssembly' wrapper" OFF)
+
 
 # ---------------------------------------------------------------------------
 #   Platfrom specific.
@@ -178,6 +185,14 @@ endif()
 #
 add_subdirectory("thirdparty/nanopb")
 
+#
+# Post-quantum
+#
+if(VIRGIL_POST_QUANTUM)
+    add_subdirectory("thirdparty/keccak")
+    add_subdirectory("thirdparty/round5")
+    add_subdirectory("thirdparty/falcon")
+endif()
 
 # ---------------------------------------------------------------------------
 #   Library core libraries

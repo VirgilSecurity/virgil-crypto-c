@@ -47,11 +47,15 @@
 #include "vscf_fake_random.h"
 
 #include "test_data_recipient_cipher.h"
+#include "test_data_compound_key.h"
+#include "test_data_post_quantum.h"
 
 
-void
-test__encrypt_decrypt__with_ed25519_key_recipient__success(void) {
-
+// --------------------------------------------------------------------------
+//  Encrypt / Decrypt
+// --------------------------------------------------------------------------
+static void
+inner_test__encrypt_decrypt__with_one_key_recipient__success(vsc_data_t public_key_data, vsc_data_t private_key_data) {
     //
     //  Prepare recipients.
     //
@@ -61,19 +65,16 @@ test__encrypt_decrypt__with_ed25519_key_recipient__success(void) {
     vscf_key_provider_t *key_provider = vscf_key_provider_new();
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_key_provider_setup_defaults(key_provider));
 
-    vscf_impl_t *public_key =
-            vscf_key_provider_import_public_key(key_provider, test_data_recipient_cipher_ED25519_PUBLIC_KEY, &error);
+    vscf_impl_t *public_key = vscf_key_provider_import_public_key(key_provider, public_key_data, &error);
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
 
-    vscf_impl_t *private_key =
-            vscf_key_provider_import_private_key(key_provider, test_data_recipient_cipher_ED25519_PRIVATE_KEY, &error);
+    vscf_impl_t *private_key = vscf_key_provider_import_private_key(key_provider, private_key_data, &error);
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
 
 
     vscf_recipient_cipher_t *recipient_cipher = vscf_recipient_cipher_new();
 
-    vscf_recipient_cipher_add_key_recipient(
-            recipient_cipher, test_data_recipient_cipher_ED25519_RECIPIENT_ID, public_key);
+    vscf_recipient_cipher_add_key_recipient(recipient_cipher, test_data_recipient_cipher_RECIPIENT_ID, public_key);
 
     //
     //  Encrypt.
@@ -103,9 +104,9 @@ test__encrypt_decrypt__with_ed25519_key_recipient__success(void) {
             vscf_recipient_cipher_decryption_out_len(recipient_cipher, vsc_buffer_len(enc_msg)) +
             vscf_recipient_cipher_decryption_out_len(recipient_cipher, 0));
 
-    TEST_ASSERT_EQUAL(vscf_status_SUCCESS,
-            vscf_recipient_cipher_start_decryption_with_key(
-                    recipient_cipher, test_data_recipient_cipher_ED25519_RECIPIENT_ID, private_key, vsc_data_empty()));
+    TEST_ASSERT_EQUAL(
+            vscf_status_SUCCESS, vscf_recipient_cipher_start_decryption_with_key(recipient_cipher,
+                                         test_data_recipient_cipher_RECIPIENT_ID, private_key, vsc_data_empty()));
 
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS,
             vscf_recipient_cipher_process_decryption(recipient_cipher, vsc_buffer_data(enc_msg), dec_msg));
@@ -127,6 +128,44 @@ test__encrypt_decrypt__with_ed25519_key_recipient__success(void) {
     vscf_key_provider_destroy(&key_provider);
 }
 
+void
+test__encrypt_decrypt__with_ed25519_key_recipient__success(void) {
+    inner_test__encrypt_decrypt__with_one_key_recipient__success(
+            test_data_recipient_cipher_ED25519_PUBLIC_KEY, test_data_recipient_cipher_ED25519_PRIVATE_KEY);
+}
+
+void
+test__encrypt_decrypt__with_compound_curve25519_ed25519_key_recipient__success(void) {
+    inner_test__encrypt_decrypt__with_one_key_recipient__success(
+            test_data_compound_key_CURVE25519_ED25519_PUBLIC_KEY_PKCS8_DER,
+            test_data_compound_key_CURVE25519_ED25519_PRIVATE_KEY_PKCS8_DER);
+}
+
+void
+test__encrypt_decrypt__with_pqc_curve25519_round5_falcon_key_recipient__success(void) {
+#if VSCF_POST_QUANTUM
+    inner_test__encrypt_decrypt__with_one_key_recipient__success(
+            test_data_pqc_CURVE25519_ROUND5_ND_5PKE_5D_FALCON_PUBLIC_KEY_PKCS8_DER,
+            test_data_pqc_CURVE25519_ROUND5_ND_5PKE_5D_FALCON_PRIVATE_KEY_PKCS8_DER);
+#else
+    TEST_IGNORE_MESSAGE("Feature VSCF_POST_QUANTUM is disabled");
+#endif
+}
+
+void
+test__encrypt_decrypt__with_pqc_curve25519_round5_ed25519_falcon_key_recipient__success(void) {
+#if VSCF_POST_QUANTUM
+    inner_test__encrypt_decrypt__with_one_key_recipient__success(
+            test_data_pqc_CURVE25519_ROUND5_ND_5PKE_5D_ED25519_FALCON_PUBLIC_KEY_PKCS8_DER,
+            test_data_pqc_CURVE25519_ROUND5_ND_5PKE_5D_ED25519_FALCON_PRIVATE_KEY_PKCS8_DER);
+#else
+    TEST_IGNORE_MESSAGE("Feature VSCF_POST_QUANTUM is disabled");
+#endif
+}
+
+// --------------------------------------------------------------------------
+//  Standalone decryption.
+// --------------------------------------------------------------------------
 void
 test__decrypt__with_ed25519_private_key__success(void) {
     //
@@ -249,6 +288,162 @@ test__decrypt__chunks_with_ed25519_key_recipient__success(void) {
     vscf_key_provider_destroy(&key_provider);
 }
 
+// --------------------------------------------------------------------------
+//  Sign then encrypt followed by decrypt then verify.
+// --------------------------------------------------------------------------
+static void
+inner_test__sign_then_encrypt_and_decrypt_then_verify__with_self_signed_key_recipient__success(
+        vsc_data_t public_key_data, vsc_data_t private_key_data) {
+
+    //
+    //  Prepare random.
+    //
+    vscf_fake_random_t *fake_random = vscf_fake_random_new();
+    vscf_fake_random_setup_source_byte(fake_random, 0xAB);
+    vscf_impl_t *random = vscf_fake_random_impl(fake_random);
+
+    //
+    //  Prepare recipients / signers.
+    //
+    vscf_error_t error;
+    vscf_error_reset(&error);
+
+    vscf_key_provider_t *key_provider = vscf_key_provider_new();
+    vscf_key_provider_use_random(key_provider, random);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_key_provider_setup_defaults(key_provider));
+
+    vscf_impl_t *public_key = vscf_key_provider_import_public_key(key_provider, public_key_data, &error);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
+
+    vscf_impl_t *private_key = vscf_key_provider_import_private_key(key_provider, private_key_data, &error);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
+
+
+    vscf_recipient_cipher_t *recipient_cipher = vscf_recipient_cipher_new();
+    vscf_recipient_cipher_use_random(recipient_cipher, random);
+
+    vscf_recipient_cipher_add_key_recipient(recipient_cipher, test_data_recipient_cipher_RECIPIENT_ID, public_key);
+
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS,
+            vscf_recipient_cipher_add_signer(recipient_cipher, test_data_recipient_cipher_RECIPIENT_ID, private_key));
+
+    //
+    //  Signed encryption.
+    //
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS,
+            vscf_recipient_cipher_start_signed_encryption(recipient_cipher, test_data_recipient_cipher_MESSAGE.len));
+
+    size_t message_info_len = vscf_recipient_cipher_message_info_len(recipient_cipher);
+    size_t enc_msg_data_len =
+            vscf_recipient_cipher_encryption_out_len(recipient_cipher, test_data_recipient_cipher_MESSAGE.len) +
+            vscf_recipient_cipher_encryption_out_len(recipient_cipher, 0);
+
+    vsc_buffer_t *enc_msg_header = vsc_buffer_new_with_capacity(message_info_len);
+    vsc_buffer_t *enc_msg_data = vsc_buffer_new_with_capacity(enc_msg_data_len);
+
+    vscf_recipient_cipher_pack_message_info(recipient_cipher, enc_msg_header);
+
+    vscf_status_t enc_status = vscf_recipient_cipher_process_encryption(
+            recipient_cipher, test_data_recipient_cipher_MESSAGE, enc_msg_data);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, enc_status);
+
+    enc_status = vscf_recipient_cipher_finish_encryption(recipient_cipher, enc_msg_data);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, enc_status);
+
+    size_t enc_msg_info_footer_len = vscf_recipient_cipher_message_info_footer_len(recipient_cipher);
+    vsc_buffer_t *enc_msg_footer = vsc_buffer_new_with_capacity(enc_msg_info_footer_len);
+
+    enc_status = vscf_recipient_cipher_pack_message_info_footer(recipient_cipher, enc_msg_footer);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, enc_status);
+
+    print_buffer(enc_msg_header);
+
+    //
+    //  Decrypt.
+    //
+    vscf_status_t dec_status = vscf_recipient_cipher_start_verified_decryption_with_key(recipient_cipher,
+            test_data_recipient_cipher_RECIPIENT_ID, private_key, vsc_buffer_data(enc_msg_header),
+            vsc_buffer_data(enc_msg_footer));
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, dec_status);
+
+    size_t out_len = vscf_recipient_cipher_decryption_out_len(recipient_cipher, vsc_buffer_data(enc_msg_data).len);
+    out_len += vscf_recipient_cipher_decryption_out_len(recipient_cipher, 0);
+
+
+    vsc_buffer_t *out = vsc_buffer_new_with_capacity(out_len);
+    dec_status = vscf_recipient_cipher_process_decryption(recipient_cipher, vsc_buffer_data(enc_msg_data), out);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, dec_status);
+
+    dec_status = vscf_recipient_cipher_finish_decryption(recipient_cipher, out);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, dec_status);
+
+    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_data_recipient_cipher_MESSAGE, out);
+
+    //
+    //  Verify.
+    //
+    TEST_ASSERT_TRUE(vscf_recipient_cipher_is_data_signed(recipient_cipher));
+    const vscf_signer_info_list_t *signer_infos = vscf_recipient_cipher_signer_infos(recipient_cipher);
+    TEST_ASSERT_TRUE(vscf_signer_info_list_has_item(signer_infos));
+    const vscf_signer_info_t *signer_info = vscf_signer_info_list_item(signer_infos);
+
+    TEST_ASSERT_EQUAL_DATA(test_data_recipient_cipher_RECIPIENT_ID, vscf_signer_info_signer_id(signer_info));
+    const bool verified = vscf_recipient_cipher_verify_signer_info(recipient_cipher, signer_info, public_key);
+    TEST_ASSERT_TRUE(verified);
+
+    //
+    //  Cleanup.
+    //
+    vsc_buffer_destroy(&out);
+    vsc_buffer_destroy(&enc_msg_footer);
+    vsc_buffer_destroy(&enc_msg_data);
+    vsc_buffer_destroy(&enc_msg_header);
+    vscf_recipient_cipher_destroy(&recipient_cipher);
+    vscf_impl_destroy(&private_key);
+    vscf_impl_destroy(&public_key);
+    vscf_key_provider_destroy(&key_provider);
+    vscf_impl_destroy(&random);
+}
+
+void
+test__sign_then_encrypt_and_decrypt_then_verify__with_ed25519_key_recipient__success(void) {
+    inner_test__sign_then_encrypt_and_decrypt_then_verify__with_self_signed_key_recipient__success(
+            test_data_recipient_cipher_ED25519_PUBLIC_KEY, test_data_recipient_cipher_ED25519_PRIVATE_KEY);
+}
+
+void
+test__sign_then_encrypt_and_decrypt_then_verify__with_compound_curve25519_ed25519_key_recipient__success(void) {
+    inner_test__sign_then_encrypt_and_decrypt_then_verify__with_self_signed_key_recipient__success(
+            test_data_compound_key_CURVE25519_ED25519_PUBLIC_KEY_PKCS8_DER,
+            test_data_compound_key_CURVE25519_ED25519_PRIVATE_KEY_PKCS8_DER);
+}
+
+void
+test__sign_then_encrypt_and_decrypt_then_verify__with_pqc_curve25519_round5_falcon_key_recipient__success(void) {
+#if VSCF_POST_QUANTUM
+    inner_test__sign_then_encrypt_and_decrypt_then_verify__with_self_signed_key_recipient__success(
+            test_data_pqc_CURVE25519_ROUND5_ND_5PKE_5D_FALCON_PUBLIC_KEY_PKCS8_DER,
+            test_data_pqc_CURVE25519_ROUND5_ND_5PKE_5D_FALCON_PRIVATE_KEY_PKCS8_DER);
+#else
+    TEST_IGNORE_MESSAGE("Feature VSCF_POST_QUANTUM is disabled");
+#endif
+}
+
+void
+test__sign_then_encrypt_and_decrypt_then_verify__with_pqc_curve25519_round5_ed25519_falcon_key_recipient__success(
+        void) {
+#if VSCF_POST_QUANTUM
+    inner_test__sign_then_encrypt_and_decrypt_then_verify__with_self_signed_key_recipient__success(
+            test_data_pqc_CURVE25519_ROUND5_ND_5PKE_5D_ED25519_FALCON_PUBLIC_KEY_PKCS8_DER,
+            test_data_pqc_CURVE25519_ROUND5_ND_5PKE_5D_ED25519_FALCON_PRIVATE_KEY_PKCS8_DER);
+#else
+    TEST_IGNORE_MESSAGE("Feature VSCF_POST_QUANTUM is disabled");
+#endif
+}
+
+// --------------------------------------------------------------------------
+//  Standalone signed encryption / decryption
+// --------------------------------------------------------------------------
 void
 test__sign_then_encrypt__with_self_signed_ed25519_key_recipient__success(void) {
     //
@@ -747,8 +942,18 @@ main(void) {
 
 #if TEST_DEPENDENCIES_AVAILABLE
     RUN_TEST(test__encrypt_decrypt__with_ed25519_key_recipient__success);
+    RUN_TEST(test__encrypt_decrypt__with_compound_curve25519_ed25519_key_recipient__success);
+    RUN_TEST(test__encrypt_decrypt__with_pqc_curve25519_round5_falcon_key_recipient__success);
+    RUN_TEST(test__encrypt_decrypt__with_pqc_curve25519_round5_ed25519_falcon_key_recipient__success);
     RUN_TEST(test__decrypt__with_ed25519_private_key__success);
     RUN_TEST(test__decrypt__chunks_with_ed25519_key_recipient__success);
+
+    RUN_TEST(test__sign_then_encrypt_and_decrypt_then_verify__with_ed25519_key_recipient__success);
+    RUN_TEST(test__sign_then_encrypt_and_decrypt_then_verify__with_compound_curve25519_ed25519_key_recipient__success);
+    RUN_TEST(test__sign_then_encrypt_and_decrypt_then_verify__with_pqc_curve25519_round5_falcon_key_recipient__success);
+    RUN_TEST(
+            test__sign_then_encrypt_and_decrypt_then_verify__with_pqc_curve25519_round5_ed25519_falcon_key_recipient__success);
+
     RUN_TEST(test__sign_then_encrypt__with_self_signed_ed25519_key_recipient__success);
     RUN_TEST(test__decrypt_then_verify__with_ed25519_key_recipient_and_detached_header_and_detached_footer__success);
     RUN_TEST(test__decrypt_then_verify__with_ed25519_key_recipient_and_embedded_header_and_embedded_footer__success);

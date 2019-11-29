@@ -32,7 +32,7 @@
 #
 #   Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.12 FATAL_ERROR)
 
 if (ED25519_AMD64_RADIX_64_24K OR ED25519_AMD64_RADIX_51_30K)
     project(ed25519 VERSION 1.0.0 LANGUAGES C ASM)

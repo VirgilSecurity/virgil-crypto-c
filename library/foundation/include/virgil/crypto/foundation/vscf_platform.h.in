@@ -86,6 +86,10 @@ extern "C" {
 #cmakedefine01 VSCF_MULTI_THREADING
 #endif
 
+#ifndef VSCF_POST_QUANTUM
+#cmakedefine01 VSCF_POST_QUANTUM
+#endif
+
 #ifndef VSCF_CIPHER
 #cmakedefine01 VSCF_CIPHER
 #endif
@@ -340,6 +344,46 @@ extern "C" {
 
 #ifndef VSCF_CURVE25519
 #cmakedefine01 VSCF_CURVE25519
+#endif
+
+#ifndef VSCF_FALCON
+#cmakedefine01 VSCF_FALCON
+#endif
+
+#ifndef VSCF_ROUND5
+#cmakedefine01 VSCF_ROUND5
+#endif
+
+#ifndef VSCF_COMPOUND_KEY_ALG_INFO
+#cmakedefine01 VSCF_COMPOUND_KEY_ALG_INFO
+#endif
+
+#ifndef VSCF_COMPOUND_PUBLIC_KEY
+#cmakedefine01 VSCF_COMPOUND_PUBLIC_KEY
+#endif
+
+#ifndef VSCF_COMPOUND_PRIVATE_KEY
+#cmakedefine01 VSCF_COMPOUND_PRIVATE_KEY
+#endif
+
+#ifndef VSCF_COMPOUND_KEY_ALG
+#cmakedefine01 VSCF_COMPOUND_KEY_ALG
+#endif
+
+#ifndef VSCF_CHAINED_KEY_ALG_INFO
+#cmakedefine01 VSCF_CHAINED_KEY_ALG_INFO
+#endif
+
+#ifndef VSCF_CHAINED_PUBLIC_KEY
+#cmakedefine01 VSCF_CHAINED_PUBLIC_KEY
+#endif
+
+#ifndef VSCF_CHAINED_PRIVATE_KEY
+#cmakedefine01 VSCF_CHAINED_PRIVATE_KEY
+#endif
+
+#ifndef VSCF_CHAINED_KEY_ALG
+#cmakedefine01 VSCF_CHAINED_KEY_ALG
 #endif
 
 #ifndef VSCF_SIMPLE_ALG_INFO

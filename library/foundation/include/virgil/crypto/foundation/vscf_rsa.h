@@ -325,7 +325,7 @@ vscf_rsa_can_sign(const vscf_rsa_t *self, const vscf_impl_t *private_key);
 //  Return zero if a given private key can not produce signatures.
 //
 VSCF_PUBLIC size_t
-vscf_rsa_signature_len(const vscf_rsa_t *self, const vscf_impl_t *key);
+vscf_rsa_signature_len(const vscf_rsa_t *self, const vscf_impl_t *private_key);
 
 //
 //  Sign data digest with a given private key.

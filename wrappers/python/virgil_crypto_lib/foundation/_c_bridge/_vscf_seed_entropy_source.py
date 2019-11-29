@@ -47,9 +47,6 @@ class vscf_seed_entropy_source_t(Structure):
 class VscfSeedEntropySource(object):
     """Deterministic entropy source that is based only on the given seed."""
 
-    # The maximum length of the entropy requested at once.
-    GATHER_LEN_MAX = 48
-
     def __init__(self):
         """Create underlying C context."""
         self._ll = LowLevelLibs()
