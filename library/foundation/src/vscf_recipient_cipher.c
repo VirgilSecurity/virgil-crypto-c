@@ -1393,16 +1393,7 @@ vscf_recipient_cipher_extract_message_info(vscf_recipient_cipher_t *self, vsc_da
     VSCF_ASSERT(self->decryption_state == vscf_recipient_cipher_decryption_state_WAITING_MESSAGE_INFO);
     VSCF_ASSERT(self->message_info_buffer);
 
-    if (vsc_buffer_unused_len(self->message_info_buffer) < data.len) {
-        //  Increase buffer capacity.
-        vsc_buffer_t *new_message_info_buffer =
-                vsc_buffer_new_with_capacity(vsc_buffer_len(self->message_info_buffer) + data.len);
-        vsc_buffer_write_data(new_message_info_buffer, vsc_buffer_data(self->message_info_buffer));
-        vsc_buffer_destroy(&self->message_info_buffer);
-        self->message_info_buffer = new_message_info_buffer;
-    }
-
-    vsc_buffer_write_data(self->message_info_buffer, data);
+    vsc_buffer_append_data(self->message_info_buffer, data);
 
     if (vsc_buffer_len(self->message_info_buffer) < vscf_message_info_der_serializer_PREFIX_LEN) {
         return vscf_status_SUCCESS;
