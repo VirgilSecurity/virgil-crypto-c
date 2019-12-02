@@ -36,9 +36,10 @@ package foundation
 
 import (
 	b64 "encoding/base64"
-	"github.com/stretchr/testify/assert"
 	"math/rand"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestNewEd25519(t *testing.T) {
@@ -208,7 +209,7 @@ func TestEd25519_SignHash(t *testing.T) {
 	signature, err := ed.SignHash(privateKey, AlgIdSha512, data)
 	assert.Nil(t, err)
 	assert.NotNil(t, signature)
-	assert.Equal(t, ed.SignatureLen(privateKey.(Key)), uint32(len(signature)))
+	assert.Equal(t, ed.SignatureLen(privateKey), uint32(len(signature)))
 
 	assert.True(t, ed.VerifyHash(publicKey, AlgIdSha512, data, signature))
 }
@@ -236,8 +237,8 @@ func TestEd25519_VerifyHash_WrongHash(t *testing.T) {
 	publicKey, err := keyProvider.ImportPublicKey(publicKeyData)
 	assert.Nil(t, err)
 	assert.False(t, ed.VerifyHash(publicKey, AlgIdSha512, data, signature))
-}
 
+}
 func newEd25519() *Ed25519 {
 	ed := NewEd25519()
 	_ = ed.SetupDefaults()

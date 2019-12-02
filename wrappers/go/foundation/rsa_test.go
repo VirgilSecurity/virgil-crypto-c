@@ -36,9 +36,10 @@ package foundation
 
 import (
 	b64 "encoding/base64"
-	"github.com/stretchr/testify/assert"
 	"math/rand"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestNewRsa(t *testing.T) {
@@ -221,7 +222,7 @@ func TestRsa_SignHash(t *testing.T) {
 	assert.Nil(t, err)
 
 	assert.NotNil(t, signature)
-	assert.Equal(t, rsa.SignatureLen(privateKey.(Key)), uint32(len(signature)))
+	assert.Equal(t, rsa.SignatureLen(privateKey), uint32(len(signature)))
 
 	assert.True(t, rsa.VerifyHash(publicKey, AlgIdSha512, data, signature))
 }
