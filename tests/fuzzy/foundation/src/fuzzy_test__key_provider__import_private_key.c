@@ -33,13 +33,7 @@
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
 #include "vscf_alg.h"
-#include "vscf_key.h"
 #include "vscf_key_provider.h"
-#include "test_data_deterministic_key.h"
-#include "test_data_key_provider.h"
-#include "test_data_ed25519.h"
-#include "test_data_rsa.h"
-#include "test_data_secp256r1.h"
 
 
 int

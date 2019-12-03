@@ -32,22 +32,24 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#include "vscf_key_asn1_deserializer.h"
+#include "vscf_alg.h"
+#include "vscf_key_provider.h"
 
 
 int
 LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
-    vscf_key_asn1_deserializer_t *key_deserializer = vscf_key_asn1_deserializer_new();
-    vscf_key_asn1_deserializer_setup_defaults(key_deserializer);
-
     vscf_error_t error;
     vscf_error_reset(&error);
 
-    vsc_data_t data_wrapper = vsc_data(data, size);
-    vscf_raw_private_key_t *raw_private_key =
-            vscf_key_asn1_deserializer_deserialize_private_key(key_deserializer, data_wrapper, &error);
+    vscf_key_provider_t *key_provider = vscf_key_provider_new();
+    if (vscf_key_provider_setup_defaults(key_provider) != vscf_status_SUCCESS) {
+        return -1;
+    }
 
-    vscf_raw_private_key_destroy(&raw_private_key);
-    vscf_key_asn1_deserializer_destroy(&key_deserializer);
+    const vsc_data_t test_data = vsc_data(data, size);
+    vscf_impl_t *private_key = vscf_key_provider_import_public_key(key_provider, test_data, &error);
+
+    vscf_impl_destroy(&private_key);
+    vscf_key_provider_destroy(&key_provider);
     return 0;
 }

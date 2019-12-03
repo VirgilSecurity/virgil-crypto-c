@@ -33,10 +33,6 @@
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
 #include "vscf_key_asn1_deserializer.h"
-#include "test_data_rsa.h"
-#include "test_data_rsa.h"
-#include "test_data_ed25519.h"
-#include "test_data_curve25519.h"
 
 
 int
