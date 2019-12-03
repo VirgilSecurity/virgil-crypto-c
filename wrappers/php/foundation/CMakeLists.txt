@@ -55,8 +55,7 @@ set_target_properties(foundation_php PROPERTIES
         DEBUG_POSTFIX "_d"
         OUTPUT_NAME vscf_foundation_php
         PREFIX ""
-        VERSION ${virgil_crypto_foundation_php_VERSION}
-        SOVERSION ${virgil_crypto_foundation_php_VERSION_MAJOR}
+        NO_SONAME 1
         )
 
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
