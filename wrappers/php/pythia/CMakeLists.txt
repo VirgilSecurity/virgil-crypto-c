@@ -53,7 +53,7 @@ add_library(pythia_php SHARED "")
 set_target_properties(pythia_php PROPERTIES
         C_STANDARD 99
         DEBUG_POSTFIX "_d"
-        OUTPUT_NAME vscp_php
+        OUTPUT_NAME vscp_pythia_php
         PREFIX ""
         VERSION ${virgil_crypto_pythia_php_VERSION}
         SOVERSION ${virgil_crypto_pythia_php_VERSION_MAJOR}

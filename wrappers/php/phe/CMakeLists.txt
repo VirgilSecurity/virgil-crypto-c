@@ -98,6 +98,7 @@ if(ENABLE_TESTING AND VIRGIL_PHP_TESTING AND PHP_EXECUTABLE AND PHPUNIT_EXECUTAB
             NAME test_phe_php
             COMMAND "${PHP_EXECUTABLE}"
                     -d "extension=$<TARGET_FILE:phe_php>"
+                    -d "extension=$<TARGET_FILE:foundation_php>"
                     -d safe_mode=Off "${PHPUNIT_EXECUTABLE}"
                     --bootstrap "${CMAKE_CURRENT_LIST_DIR}/vendor/autoload.php" 
                     --include-path "${CMAKE_CURRENT_LIST_DIR}/src" "${CMAKE_CURRENT_LIST_DIR}/tests"

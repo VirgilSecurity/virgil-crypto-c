@@ -53,7 +53,7 @@ add_library(foundation_php SHARED "")
 set_target_properties(foundation_php PROPERTIES
         C_STANDARD 99
         DEBUG_POSTFIX "_d"
-        OUTPUT_NAME vscf_php
+        OUTPUT_NAME vscf_foundation_php
         PREFIX ""
         VERSION ${virgil_crypto_foundation_php_VERSION}
         SOVERSION ${virgil_crypto_foundation_php_VERSION_MAJOR}
