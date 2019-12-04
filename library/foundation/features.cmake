@@ -78,6 +78,7 @@ option(VSCF_ALG_INFO_SERIALIZER "Enable interface 'alg info serializer'." ON)
 option(VSCF_ALG_INFO_DESERIALIZER "Enable interface 'alg info deserializer'." ON)
 option(VSCF_MESSAGE_INFO_SERIALIZER "Enable interface 'message info serializer'." ON)
 option(VSCF_MESSAGE_INFO_FOOTER_SERIALIZER "Enable interface 'message info footer serializer'." ON)
+option(VSCF_PADDING "Enable interface 'padding'." ON)
 option(VSCF_SHA224 "Enable implementation 'sha224'." ON)
 option(VSCF_SHA256 "Enable implementation 'sha256'." ON)
 option(VSCF_SHA384 "Enable implementation 'sha384'." ON)
@@ -105,7 +106,6 @@ option(VSCF_SEED_ENTROPY_SOURCE "Enable implementation 'seed entropy source'." O
 option(VSCF_KEY_MATERIAL_RNG "Enable implementation 'key material rng'." ON)
 option(VSCF_RAW_PUBLIC_KEY "Enable implementation 'raw public key'." ON)
 option(VSCF_RAW_PRIVATE_KEY "Enable implementation 'raw private key'." ON)
-option(VSCF_PADDING_CIPHER "Enable implementation 'padding cipher'." ON)
 option(VSCF_PKCS8_SERIALIZER "Enable implementation 'pkcs8 serializer'." ON)
 option(VSCF_SEC1_SERIALIZER "Enable implementation 'sec1 serializer'." ON)
 option(VSCF_KEY_ASN1_SERIALIZER "Enable implementation 'key asn1 serializer'." ON)
@@ -122,6 +122,8 @@ option(VSCF_PADDING_CIPHER_ALG_INFO "Enable implementation 'padding cipher alg i
 option(VSCF_ALG_INFO_DER_SERIALIZER "Enable implementation 'alg info der serializer'." ON)
 option(VSCF_ALG_INFO_DER_DESERIALIZER "Enable implementation 'alg info der deserializer'." ON)
 option(VSCF_MESSAGE_INFO_DER_SERIALIZER "Enable implementation 'message info der serializer'." ON)
+option(VSCF_RANDOM_PADDING "Enable implementation 'random padding'." ON)
+option(VSCF_PADDING_CIPHER "Enable implementation 'padding cipher'." ON)
 option(VSCF_ERROR "Enable class 'error'." ON)
 option(VSCF_MBEDTLS_BIGNUM_ASN1_WRITER "Enable class 'mbedtls bignum asn1 writer'." ON)
 option(VSCF_MBEDTLS_BIGNUM_ASN1_READER "Enable class 'mbedtls bignum asn1 reader'." ON)
@@ -165,6 +167,7 @@ option(VSCF_MESSAGE_INFO_FOOTER "Enable class 'message info footer'." ON)
 option(VSCF_SIGNED_DATA_INFO "Enable class 'signed data info'." ON)
 option(VSCF_FOOTER_INFO "Enable class 'footer info'." ON)
 option(VSCF_TAIL_FILTER "Enable class 'tail filter'." ON)
+option(VSCF_PADDING_PARAMS "Enable class 'padding params'." ON)
 mark_as_advanced(
         VSCF_LIBRARY
         VSCF_MULTI_THREADING
@@ -199,6 +202,7 @@ mark_as_advanced(
         VSCF_ALG_INFO_DESERIALIZER
         VSCF_MESSAGE_INFO_SERIALIZER
         VSCF_MESSAGE_INFO_FOOTER_SERIALIZER
+        VSCF_PADDING
         VSCF_SHA224
         VSCF_SHA256
         VSCF_SHA384
@@ -226,7 +230,6 @@ mark_as_advanced(
         VSCF_KEY_MATERIAL_RNG
         VSCF_RAW_PUBLIC_KEY
         VSCF_RAW_PRIVATE_KEY
-        VSCF_PADDING_CIPHER
         VSCF_PKCS8_SERIALIZER
         VSCF_SEC1_SERIALIZER
         VSCF_KEY_ASN1_SERIALIZER
@@ -243,6 +246,8 @@ mark_as_advanced(
         VSCF_ALG_INFO_DER_SERIALIZER
         VSCF_ALG_INFO_DER_DESERIALIZER
         VSCF_MESSAGE_INFO_DER_SERIALIZER
+        VSCF_RANDOM_PADDING
+        VSCF_PADDING_CIPHER
         VSCF_ERROR
         VSCF_MBEDTLS_BIGNUM_ASN1_WRITER
         VSCF_MBEDTLS_BIGNUM_ASN1_READER
@@ -286,6 +291,7 @@ mark_as_advanced(
         VSCF_SIGNED_DATA_INFO
         VSCF_FOOTER_INFO
         VSCF_TAIL_FILTER
+        VSCF_PADDING_PARAMS
         )
 
 if(VSCF_MULTI_THREADING AND NOT MBEDTLS_THREADING_C)
@@ -1332,60 +1338,6 @@ if(VSCF_RAW_PRIVATE_KEY AND NOT VSCF_ALG_INFO)
     message(FATAL_ERROR)
 endif()
 
-if(VSCF_PADDING_CIPHER AND NOT VSCF_ALG)
-    message("-- error --")
-    message("--")
-    message("Feature VSCF_PADDING_CIPHER depends on the feature:")
-    message("     VSCF_ALG - which is disabled.")
-    message("--")
-    message(FATAL_ERROR)
-endif()
-
-if(VSCF_PADDING_CIPHER AND NOT VSCF_ALG_INFO)
-    message("-- error --")
-    message("--")
-    message("Feature VSCF_PADDING_CIPHER depends on the feature:")
-    message("     VSCF_ALG_INFO - which is disabled.")
-    message("--")
-    message(FATAL_ERROR)
-endif()
-
-if(VSCF_PADDING_CIPHER AND NOT VSCF_DECRYPT)
-    message("-- error --")
-    message("--")
-    message("Feature VSCF_PADDING_CIPHER depends on the feature:")
-    message("     VSCF_DECRYPT - which is disabled.")
-    message("--")
-    message(FATAL_ERROR)
-endif()
-
-if(VSCF_PADDING_CIPHER AND NOT VSCF_ENCRYPT)
-    message("-- error --")
-    message("--")
-    message("Feature VSCF_PADDING_CIPHER depends on the feature:")
-    message("     VSCF_ENCRYPT - which is disabled.")
-    message("--")
-    message(FATAL_ERROR)
-endif()
-
-if(VSCF_PADDING_CIPHER AND NOT VSCF_PADDING_CIPHER_ALG_INFO)
-    message("-- error --")
-    message("--")
-    message("Feature VSCF_PADDING_CIPHER depends on the feature:")
-    message("     VSCF_PADDING_CIPHER_ALG_INFO - which is disabled.")
-    message("--")
-    message(FATAL_ERROR)
-endif()
-
-if(VSCF_PADDING_CIPHER AND NOT VSCF_ALG_FACTORY)
-    message("-- error --")
-    message("--")
-    message("Feature VSCF_PADDING_CIPHER depends on the feature:")
-    message("     VSCF_ALG_FACTORY - which is disabled.")
-    message("--")
-    message(FATAL_ERROR)
-endif()
-
 if(VSCF_PKCS8_SERIALIZER AND NOT VSCF_OID)
     message("-- error --")
     message("--")
@@ -1881,6 +1833,78 @@ if(VSCF_MESSAGE_INFO_DER_SERIALIZER AND NOT VSCF_OID)
     message(FATAL_ERROR)
 endif()
 
+if(VSCF_RANDOM_PADDING AND NOT VSCF_ALG_INFO)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_RANDOM_PADDING depends on the feature:")
+    message("     VSCF_ALG_INFO - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_RANDOM_PADDING AND NOT VSCF_SIMPLE_ALG_INFO)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_RANDOM_PADDING depends on the feature:")
+    message("     VSCF_SIMPLE_ALG_INFO - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_PADDING_CIPHER AND NOT VSCF_ALG)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_PADDING_CIPHER depends on the feature:")
+    message("     VSCF_ALG - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_PADDING_CIPHER AND NOT VSCF_ALG_INFO)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_PADDING_CIPHER depends on the feature:")
+    message("     VSCF_ALG_INFO - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_PADDING_CIPHER AND NOT VSCF_DECRYPT)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_PADDING_CIPHER depends on the feature:")
+    message("     VSCF_DECRYPT - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_PADDING_CIPHER AND NOT VSCF_ENCRYPT)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_PADDING_CIPHER depends on the feature:")
+    message("     VSCF_ENCRYPT - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_PADDING_CIPHER AND NOT VSCF_PADDING_CIPHER_ALG_INFO)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_PADDING_CIPHER depends on the feature:")
+    message("     VSCF_PADDING_CIPHER_ALG_INFO - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_PADDING_CIPHER AND NOT VSCF_ALG_FACTORY)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_PADDING_CIPHER depends on the feature:")
+    message("     VSCF_ALG_FACTORY - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
 if(VSCF_MBEDTLS_BIGNUM_ASN1_WRITER AND NOT MBEDTLS_BIGNUM_C)
     message("-- error --")
     message("--")
@@ -2138,6 +2162,15 @@ if(VSCF_ALG_FACTORY AND NOT VSCF_ECC)
     message("--")
     message("Feature VSCF_ALG_FACTORY depends on the feature:")
     message("     VSCF_ECC - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_ALG_FACTORY AND NOT VSCF_RANDOM_PADDING)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_ALG_FACTORY depends on the feature:")
+    message("     VSCF_RANDOM_PADDING - which is disabled.")
     message("--")
     message(FATAL_ERROR)
 endif()
@@ -2552,6 +2585,15 @@ if(VSCF_RECIPIENT_CIPHER AND NOT VSCF_HKDF)
     message("--")
     message("Feature VSCF_RECIPIENT_CIPHER depends on the feature:")
     message("     VSCF_HKDF - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_RECIPIENT_CIPHER AND NOT VSCF_RANDOM_PADDING)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_RECIPIENT_CIPHER depends on the feature:")
+    message("     VSCF_RANDOM_PADDING - which is disabled.")
     message("--")
     message(FATAL_ERROR)
 endif()

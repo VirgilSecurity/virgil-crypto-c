@@ -85,15 +85,6 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Public integral constants.
-//
-enum {
-    vscf_padding_cipher_PADDING_FRAME_DEFAULT = 160,
-    vscf_padding_cipher_PADDING_FRAME_MIN = 32,
-    vscf_padding_cipher_PADDING_FRAME_MAX = 8 * 1024
-};
-
-//
 //  Handles implementation details.
 //
 typedef struct vscf_padding_cipher_t vscf_padding_cipher_t;
@@ -158,25 +149,6 @@ VSCF_PUBLIC vscf_padding_cipher_t *
 vscf_padding_cipher_shallow_copy(vscf_padding_cipher_t *self);
 
 //
-//  Setup dependency to the interface 'random' with shared ownership.
-//
-VSCF_PUBLIC void
-vscf_padding_cipher_use_random(vscf_padding_cipher_t *self, vscf_impl_t *random);
-
-//
-//  Setup dependency to the interface 'random' and transfer ownership.
-//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
-//
-VSCF_PUBLIC void
-vscf_padding_cipher_take_random(vscf_padding_cipher_t *self, vscf_impl_t *random);
-
-//
-//  Release dependency to the interface 'random'.
-//
-VSCF_PUBLIC void
-vscf_padding_cipher_release_random(vscf_padding_cipher_t *self);
-
-//
 //  Setup dependency to the interface 'cipher' with shared ownership.
 //
 VSCF_PUBLIC void
@@ -196,11 +168,35 @@ VSCF_PUBLIC void
 vscf_padding_cipher_release_cipher(vscf_padding_cipher_t *self);
 
 //
-//  Setup padding frame in bytes.
-//  The padding frame defines the multiplicator of data length.
+//  Setup dependency to the interface 'padding' with shared ownership.
 //
 VSCF_PUBLIC void
-vscf_padding_cipher_set_padding_frame(vscf_padding_cipher_t *self, size_t padding_frame);
+vscf_padding_cipher_use_padding(vscf_padding_cipher_t *self, vscf_impl_t *padding);
+
+//
+//  Setup dependency to the interface 'padding' and transfer ownership.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCF_PUBLIC void
+vscf_padding_cipher_take_padding(vscf_padding_cipher_t *self, vscf_impl_t *padding);
+
+//
+//  Release dependency to the interface 'padding'.
+//
+VSCF_PUBLIC void
+vscf_padding_cipher_release_padding(vscf_padding_cipher_t *self);
+
+//
+//  Return underlying cipher.
+//
+VSCF_PUBLIC const vscf_impl_t *
+vscf_padding_cipher_get_cipher(vscf_padding_cipher_t *self);
+
+//
+//  Return underlying padding.
+//
+VSCF_PUBLIC const vscf_impl_t *
+vscf_padding_cipher_get_padding(vscf_padding_cipher_t *self);
 
 //
 //  Provide algorithm identificator.
@@ -219,6 +215,31 @@ vscf_padding_cipher_produce_alg_info(const vscf_padding_cipher_t *self);
 //
 VSCF_PUBLIC vscf_status_t
 vscf_padding_cipher_restore_alg_info(vscf_padding_cipher_t *self, const vscf_impl_t *alg_info) VSCF_NODISCARD;
+
+//
+//  Return cipher's nonce length or IV length in bytes,
+//  or 0 if nonce is not required.
+//
+VSCF_PUBLIC size_t
+vscf_padding_cipher_nonce_len(const vscf_padding_cipher_t *self);
+
+//
+//  Return cipher's key length in bytes.
+//
+VSCF_PUBLIC size_t
+vscf_padding_cipher_key_len(const vscf_padding_cipher_t *self);
+
+//
+//  Return cipher's key length in bits.
+//
+VSCF_PUBLIC size_t
+vscf_padding_cipher_key_bitlen(const vscf_padding_cipher_t *self);
+
+//
+//  Return cipher's block length in bytes.
+//
+VSCF_PUBLIC size_t
+vscf_padding_cipher_block_len(const vscf_padding_cipher_t *self);
 
 //
 //  Encrypt given data.
@@ -249,31 +270,6 @@ vscf_padding_cipher_decrypt(vscf_padding_cipher_t *self, vsc_data_t data, vsc_bu
 //
 VSCF_PUBLIC size_t
 vscf_padding_cipher_decrypted_len(const vscf_padding_cipher_t *self, size_t data_len);
-
-//
-//  Return cipher's nonce length or IV length in bytes,
-//  or 0 if nonce is not required.
-//
-VSCF_PUBLIC size_t
-vscf_padding_cipher_nonce_len(const vscf_padding_cipher_t *self);
-
-//
-//  Return cipher's key length in bytes.
-//
-VSCF_PUBLIC size_t
-vscf_padding_cipher_key_len(const vscf_padding_cipher_t *self);
-
-//
-//  Return cipher's key length in bits.
-//
-VSCF_PUBLIC size_t
-vscf_padding_cipher_key_bitlen(const vscf_padding_cipher_t *self);
-
-//
-//  Return cipher's block length in bytes.
-//
-VSCF_PUBLIC size_t
-vscf_padding_cipher_block_len(const vscf_padding_cipher_t *self);
 
 //
 //  Setup IV or nonce.

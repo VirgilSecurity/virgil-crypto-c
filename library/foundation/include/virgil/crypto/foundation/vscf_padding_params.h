@@ -47,12 +47,11 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Create module with functionality common for all 'api' objects.
-//  It is also enumerate all available interfaces within crypto libary.
+//  Handles padding parameters and constraints.
 // --------------------------------------------------------------------------
 
-#ifndef VSCF_API_H_INCLUDED
-#define VSCF_API_H_INCLUDED
+#ifndef VSCF_PADDING_PARAMS_H_INCLUDED
+#define VSCF_PADDING_PARAMS_H_INCLUDED
 
 #include "vscf_library.h"
 
@@ -72,50 +71,99 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Enumerates all possible interfaces within crypto library.
+//  Public integral constants.
 //
-enum vscf_api_tag_t {
-    vscf_api_tag_BEGIN = 0,
-    vscf_api_tag_ALG,
-    vscf_api_tag_ALG_INFO,
-    vscf_api_tag_ALG_INFO_DESERIALIZER,
-    vscf_api_tag_ALG_INFO_SERIALIZER,
-    vscf_api_tag_ASN1_READER,
-    vscf_api_tag_ASN1_WRITER,
-    vscf_api_tag_AUTH_DECRYPT,
-    vscf_api_tag_AUTH_ENCRYPT,
-    vscf_api_tag_CIPHER,
-    vscf_api_tag_CIPHER_AUTH,
-    vscf_api_tag_CIPHER_AUTH_INFO,
-    vscf_api_tag_CIPHER_INFO,
-    vscf_api_tag_COMPUTE_SHARED_KEY,
-    vscf_api_tag_DECRYPT,
-    vscf_api_tag_ENCRYPT,
-    vscf_api_tag_ENTROPY_SOURCE,
-    vscf_api_tag_HASH,
-    vscf_api_tag_KDF,
-    vscf_api_tag_KEY,
-    vscf_api_tag_KEY_ALG,
-    vscf_api_tag_KEY_CIPHER,
-    vscf_api_tag_KEY_DESERIALIZER,
-    vscf_api_tag_KEY_SERIALIZER,
-    vscf_api_tag_KEY_SIGNER,
-    vscf_api_tag_MAC,
-    vscf_api_tag_MESSAGE_INFO_FOOTER_SERIALIZER,
-    vscf_api_tag_MESSAGE_INFO_SERIALIZER,
-    vscf_api_tag_PADDING,
-    vscf_api_tag_PRIVATE_KEY,
-    vscf_api_tag_PUBLIC_KEY,
-    vscf_api_tag_RANDOM,
-    vscf_api_tag_SALTED_KDF,
-    vscf_api_tag_END
+enum {
+    vscf_padding_params_DEFAULT_FRAME = 160,
+    vscf_padding_params_DEFAULT_FRAME_MIN = 32,
+    vscf_padding_params_DEFAULT_FRAME_MAX = 8 * 1024
 };
-typedef enum vscf_api_tag_t vscf_api_tag_t;
 
 //
-//  Generic type for any 'API' object.
+//  Handle 'padding params' context.
 //
-typedef struct vscf_api_t vscf_api_t;
+typedef struct vscf_padding_params_t vscf_padding_params_t;
+
+//
+//  Return size of 'vscf_padding_params_t'.
+//
+VSCF_PUBLIC size_t
+vscf_padding_params_ctx_size(void);
+
+//
+//  Perform initialization of pre-allocated context.
+//
+VSCF_PUBLIC void
+vscf_padding_params_init(vscf_padding_params_t *self);
+
+//
+//  Release all inner resources including class dependencies.
+//
+VSCF_PUBLIC void
+vscf_padding_params_cleanup(vscf_padding_params_t *self);
+
+//
+//  Allocate context and perform it's initialization.
+//
+VSCF_PUBLIC vscf_padding_params_t *
+vscf_padding_params_new(void);
+
+//
+//  Perform initialization of pre-allocated context.
+//  Build padding params with given constraints.
+//  Precondition: frame_length_min <= frame_length <= frame_length_max.
+//  Next formula can clarify what frame is: "padding_length = data_length MOD frame"
+//
+VSCF_PUBLIC void
+vscf_padding_params_init_with_constraints(vscf_padding_params_t *self, size_t frame, size_t frame_min,
+        size_t frame_max);
+
+//
+//  Allocate class context and perform it's initialization.
+//  Build padding params with given constraints.
+//  Precondition: frame_length_min <= frame_length <= frame_length_max.
+//  Next formula can clarify what frame is: "padding_length = data_length MOD frame"
+//
+VSCF_PUBLIC vscf_padding_params_t *
+vscf_padding_params_new_with_constraints(size_t frame, size_t frame_min, size_t frame_max);
+
+//
+//  Release all inner resources and deallocate context if needed.
+//  It is safe to call this method even if the context was statically allocated.
+//
+VSCF_PUBLIC void
+vscf_padding_params_delete(vscf_padding_params_t *self);
+
+//
+//  Delete given context and nullifies reference.
+//  This is a reverse action of the function 'vscf_padding_params_new ()'.
+//
+VSCF_PUBLIC void
+vscf_padding_params_destroy(vscf_padding_params_t **self_ref);
+
+//
+//  Copy given class context by increasing reference counter.
+//
+VSCF_PUBLIC vscf_padding_params_t *
+vscf_padding_params_shallow_copy(vscf_padding_params_t *self);
+
+//
+//  Return padding frame in bytes.
+//
+VSCF_PUBLIC size_t
+vscf_padding_params_frame(const vscf_padding_params_t *self);
+
+//
+//  Return minimum padding frame in bytes.
+//
+VSCF_PUBLIC size_t
+vscf_padding_params_frame_min(const vscf_padding_params_t *self);
+
+//
+//  Return minimum padding frame in bytes.
+//
+VSCF_PUBLIC size_t
+vscf_padding_params_frame_max(const vscf_padding_params_t *self);
 
 
 // --------------------------------------------------------------------------
@@ -131,5 +179,5 @@ typedef struct vscf_api_t vscf_api_t;
 
 
 //  @footer
-#endif // VSCF_API_H_INCLUDED
+#endif // VSCF_PADDING_PARAMS_H_INCLUDED
 //  @end

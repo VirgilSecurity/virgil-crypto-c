@@ -39,10 +39,11 @@
 #include "test_utils.h"
 
 
-#define TEST_DEPENDENCIES_AVAILABLE (VSCF_PADDING_CIPHER && VSCF_AES256_GCM)
+#define TEST_DEPENDENCIES_AVAILABLE (VSCF_RANDOM_PADDING && VSCF_PADDING_CIPHER && VSCF_AES256_GCM)
 #if TEST_DEPENDENCIES_AVAILABLE
 
 #include "vscf_memory.h"
+#include "vscf_random_padding.h"
 #include "vscf_padding_cipher.h"
 #include "vscf_aes256_gcm.h"
 #include "vscf_fake_random.h"
@@ -109,23 +110,26 @@ inner_test__encrypt__with_aes256_gcm_and_padding_frame_160_with_AB_pad__match_gi
     vscf_fake_random_t *fake_random = vscf_fake_random_new();
     vscf_fake_random_setup_source_byte(fake_random, 0xAB);
 
-    vscf_padding_cipher_t *cipher = vscf_padding_cipher_new();
-    vscf_padding_cipher_take_cipher(cipher, vscf_aes256_gcm_impl(vscf_aes256_gcm_new()));
-    vscf_padding_cipher_take_random(cipher, vscf_fake_random_impl(fake_random));
+    vscf_random_padding_t *padding = vscf_random_padding_new();
+    vscf_random_padding_take_random(padding, vscf_fake_random_impl(fake_random));
 
-    vscf_padding_cipher_set_padding_frame(cipher, 160);
-    vscf_padding_cipher_set_nonce(cipher, test_data_padding_cipher_SUITE1_AES256_NONCE);
-    vscf_padding_cipher_set_key(cipher, test_data_padding_cipher_SUITE1_AES256_KEY);
+    vscf_aes256_gcm_t *cipher = vscf_aes256_gcm_new();
+    vscf_aes256_gcm_set_nonce(cipher, test_data_padding_cipher_SUITE1_AES256_NONCE);
+    vscf_aes256_gcm_set_key(cipher, test_data_padding_cipher_SUITE1_AES256_KEY);
+
+    vscf_padding_cipher_t *padding_cipher = vscf_padding_cipher_new();
+    vscf_padding_cipher_take_padding(padding_cipher, vscf_random_padding_impl(padding));
+    vscf_padding_cipher_take_cipher(padding_cipher, vscf_aes256_gcm_impl(cipher));
 
     //
     // Check.
     //
-    inner_test__encrypt__match_given(cipher, plaintext, ciphertext);
+    inner_test__encrypt__match_given(padding_cipher, plaintext, ciphertext);
 
     //
     // Cleanup.
     //
-    vscf_padding_cipher_destroy(&cipher);
+    vscf_padding_cipher_destroy(&padding_cipher);
 }
 
 static void
@@ -135,22 +139,29 @@ inner_test__decrypt__with_aes256_gcm_and_padding_frame_160_with_AB_pad__match_gi
     //
     // Configure algs.
     //
-    vscf_padding_cipher_t *cipher = vscf_padding_cipher_new();
-    vscf_padding_cipher_take_cipher(cipher, vscf_aes256_gcm_impl(vscf_aes256_gcm_new()));
+    vscf_fake_random_t *fake_random = vscf_fake_random_new();
+    vscf_fake_random_setup_source_byte(fake_random, 0xAB);
 
-    vscf_padding_cipher_set_padding_frame(cipher, 160);
-    vscf_padding_cipher_set_nonce(cipher, test_data_padding_cipher_SUITE1_AES256_NONCE);
-    vscf_padding_cipher_set_key(cipher, test_data_padding_cipher_SUITE1_AES256_KEY);
+    vscf_random_padding_t *padding = vscf_random_padding_new();
+    vscf_random_padding_take_random(padding, vscf_fake_random_impl(fake_random));
+
+    vscf_aes256_gcm_t *cipher = vscf_aes256_gcm_new();
+    vscf_aes256_gcm_set_nonce(cipher, test_data_padding_cipher_SUITE1_AES256_NONCE);
+    vscf_aes256_gcm_set_key(cipher, test_data_padding_cipher_SUITE1_AES256_KEY);
+
+    vscf_padding_cipher_t *padding_cipher = vscf_padding_cipher_new();
+    vscf_padding_cipher_take_padding(padding_cipher, vscf_random_padding_impl(padding));
+    vscf_padding_cipher_take_cipher(padding_cipher, vscf_aes256_gcm_impl(cipher));
 
     //
     // Check.
     //
-    inner_test__decrypt__match_given(cipher, ciphertext, plaintext);
+    inner_test__decrypt__match_given(padding_cipher, ciphertext, plaintext);
 
     //
     // Cleanup.
     //
-    vscf_padding_cipher_destroy(&cipher);
+    vscf_padding_cipher_destroy(&padding_cipher);
 }
 
 void

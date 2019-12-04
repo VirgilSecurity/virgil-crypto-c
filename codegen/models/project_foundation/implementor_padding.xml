@@ -1,0 +1,80 @@
+<implementor name="padding" is_default="1">
+    Provides implementation of padding algorithms.
+
+    <implementation name="random padding">
+        Append a random number of padding bytes to a data.
+
+        <require interface="alg info"/>
+        <require impl="simple alg info"/>
+        <require header="pb_decode.h" scope="private"/>
+        <require header="pb_encode.h" scope="private"/>
+
+        <interface name="alg"/>
+        <interface name="padding"/>
+
+        <constant name="padding size len" value="4"/>
+        <constant name="padding len min" value=".(c_class_random_padding_constant_padding_size_len) + 1"/>
+
+        <dependency name="random" interface="random"/>
+        <property name="tail filter" class="tail filter"/>
+        <property name="buffer" class="buffer"/>
+        <property name="unpadded len" type="size"/>
+        <property name="padding frame" type="size"/>
+        <property name="padding frame max" type="size"/>
+    </implementation>
+
+    <implementation name="padding cipher">
+        Wraps any symmetric cipher algorithm to add padding to plaintext
+        to prevent message guessing attacks based on a ciphertext length.
+
+        <require interface="alg"/>
+        <require interface="alg info"/>
+        <require interface="decrypt"/>
+        <require interface="encrypt"/>
+        <require impl="padding cipher alg info"/>
+        <require class="alg factory"/>
+        <require header="pb_decode.h" scope="private"/>
+        <require header="pb_encode.h" scope="private"/>
+
+        <interface name="alg"/>
+        <interface name="cipher info"/>
+        <interface name="encrypt"/>
+        <interface name="decrypt"/>
+        <interface name="cipher"/>
+
+        <dependency name="cipher" interface="cipher"/>
+        <dependency name="padding" interface="padding"/>
+        <property name="padding buffer" class="buffer"/>
+
+        <method name="get cipher" declaration="public">
+            Return underlying cipher.
+
+            <return interface="cipher"/>
+        </method>
+
+        <method name="get padding" declaration="public">
+            Return underlying padding.
+
+            <return interface="padding"/>
+        </method>
+
+        <method name="reset buffer" is_static="1">
+            Reset buffer. Ensures capacity is enough.
+
+            <argument name="buffer" class="buffer"/>
+            <argument name="capacity" type="size"/>
+        </method>
+
+        <method name="finish encryption">
+            <argument name="out" class="buffer"/>
+
+            <return enum="status"/>
+        </method>
+
+        <method name="finish decryption">
+            <argument name="out" class="buffer"/>
+
+            <return enum="status"/>
+        </method>
+    </implementation>
+</implementor>

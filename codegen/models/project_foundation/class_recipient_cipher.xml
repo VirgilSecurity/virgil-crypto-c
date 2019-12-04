@@ -20,11 +20,14 @@
     <require class="key alg factory"/>
     <require class="sha512"/>
     <require class="hkdf"/>
+    <require impl="random padding"/>
     <require module="message info der serializer internal"/>
 
     <dependency name="random" interface="random"/>
     <dependency name="encryption cipher" interface="cipher"/>
     <dependency name="signer hash" interface="hash"/>
+    <dependency name="padding" interface="padding"/>
+    <dependency name="padding params" class="padding params"/>
 
     <property name="key recipients" class="key recipient list"/>
     <property name="signers" class="signer list"/>
@@ -35,6 +38,7 @@
     <property name="decryption recipient key" interface="private key"/>
     <property name="decryption password" class="buffer"/>
     <property name="decryption cipher" interface="cipher"/>
+    <property name="decryption padding" interface="padding"/>
     <property name="verifier hash" interface="hash"/>
     <property name="message info" class="message info"/>
     <property name="message info der serializer" impl="message info der serializer"/>

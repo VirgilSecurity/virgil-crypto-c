@@ -88,6 +88,7 @@ enum vscf_oid_id_t {
     vscf_oid_id_HMAC_WITH_SHA512,
     vscf_oid_id_EC_GENERIC_KEY,
     vscf_oid_id_EC_DOMAIN_SECP256R1,
+    vscf_oid_id_RANDOM_PADDING,
     vscf_oid_id_PADDING_CIPHER
 };
 typedef enum vscf_oid_id_t vscf_oid_id_t;

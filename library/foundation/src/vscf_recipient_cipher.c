@@ -58,6 +58,7 @@
 #include "vscf_random.h"
 #include "vscf_cipher.h"
 #include "vscf_hash.h"
+#include "vscf_padding.h"
 #include "vscf_recipient_cipher_defs.h"
 #include "vscf_alg_info.h"
 #include "vscf_cipher_auth.h"
@@ -76,6 +77,7 @@
 #include "vscf_key_alg_factory.h"
 #include "vscf_sha512.h"
 #include "vscf_hkdf.h"
+#include "vscf_random_padding.h"
 #include "vscf_message_info_der_serializer_internal.h"
 
 // clang-format on
@@ -249,6 +251,8 @@ vscf_recipient_cipher_cleanup(vscf_recipient_cipher_t *self) {
     vscf_recipient_cipher_release_random(self);
     vscf_recipient_cipher_release_encryption_cipher(self);
     vscf_recipient_cipher_release_signer_hash(self);
+    vscf_recipient_cipher_release_padding(self);
+    vscf_recipient_cipher_release_padding_params(self);
 
     vscf_zeroize(self, sizeof(vscf_recipient_cipher_t));
 }
@@ -470,6 +474,86 @@ vscf_recipient_cipher_release_signer_hash(vscf_recipient_cipher_t *self) {
     VSCF_ASSERT_PTR(self);
 
     vscf_impl_destroy(&self->signer_hash);
+}
+
+//
+//  Setup dependency to the interface 'padding' with shared ownership.
+//
+VSCF_PUBLIC void
+vscf_recipient_cipher_use_padding(vscf_recipient_cipher_t *self, vscf_impl_t *padding) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(padding);
+    VSCF_ASSERT(self->padding == NULL);
+
+    VSCF_ASSERT(vscf_padding_is_implemented(padding));
+
+    self->padding = vscf_impl_shallow_copy(padding);
+}
+
+//
+//  Setup dependency to the interface 'padding' and transfer ownership.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCF_PUBLIC void
+vscf_recipient_cipher_take_padding(vscf_recipient_cipher_t *self, vscf_impl_t *padding) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(padding);
+    VSCF_ASSERT(self->padding == NULL);
+
+    VSCF_ASSERT(vscf_padding_is_implemented(padding));
+
+    self->padding = padding;
+}
+
+//
+//  Release dependency to the interface 'padding'.
+//
+VSCF_PUBLIC void
+vscf_recipient_cipher_release_padding(vscf_recipient_cipher_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+
+    vscf_impl_destroy(&self->padding);
+}
+
+//
+//  Setup dependency to the class 'padding params' with shared ownership.
+//
+VSCF_PUBLIC void
+vscf_recipient_cipher_use_padding_params(vscf_recipient_cipher_t *self, vscf_padding_params_t *padding_params) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(padding_params);
+    VSCF_ASSERT(self->padding_params == NULL);
+
+    self->padding_params = vscf_padding_params_shallow_copy(padding_params);
+}
+
+//
+//  Setup dependency to the class 'padding params' and transfer ownership.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCF_PUBLIC void
+vscf_recipient_cipher_take_padding_params(vscf_recipient_cipher_t *self, vscf_padding_params_t *padding_params) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(padding_params);
+    VSCF_ASSERT(self->padding_params == NULL);
+
+    self->padding_params = padding_params;
+}
+
+//
+//  Release dependency to the class 'padding params'.
+//
+VSCF_PUBLIC void
+vscf_recipient_cipher_release_padding_params(vscf_recipient_cipher_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+
+    vscf_padding_params_destroy(&self->padding_params);
 }
 
 

@@ -39,7 +39,7 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  This class filter incoming data stream to keep a tail of the given length.
+//  Handles padding parameters and constraints.
 // --------------------------------------------------------------------------
 
 
@@ -50,10 +50,10 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#include "vscf_tail_filter.h"
+#include "vscf_padding_params.h"
 #include "vscf_memory.h"
 #include "vscf_assert.h"
-#include "vscf_tail_filter_defs.h"
+#include "vscf_padding_params_defs.h"
 
 // clang-format on
 //  @end
@@ -67,11 +67,11 @@
 
 //
 //  Perform context specific initialization.
-//  Note, this method is called automatically when method vscf_tail_filter_init() is called.
+//  Note, this method is called automatically when method vscf_padding_params_init() is called.
 //  Note, that context is already zeroed.
 //
 static void
-vscf_tail_filter_init_ctx(vscf_tail_filter_t *self);
+vscf_padding_params_init_ctx(vscf_padding_params_t *self);
 
 //
 //  Release all inner resources.
@@ -79,63 +79,104 @@ vscf_tail_filter_init_ctx(vscf_tail_filter_t *self);
 //  Note, that context will be zeroed automatically next this method.
 //
 static void
-vscf_tail_filter_cleanup_ctx(vscf_tail_filter_t *self);
+vscf_padding_params_cleanup_ctx(vscf_padding_params_t *self);
 
 //
-//  Shift tail left for a given distance.
+//  Build padding params with given constraints.
+//  Precondition: frame_length_min <= frame_length <= frame_length_max.
+//  Next formula can clarify what frame is: "padding_length = data_length MOD frame"
 //
 static void
-vscf_tail_filter_shift(vscf_tail_filter_t *self, size_t distance);
+vscf_padding_params_init_ctx_with_constraints(vscf_padding_params_t *self, size_t frame, size_t frame_min,
+        size_t frame_max);
 
 //
-//  Return size of 'vscf_tail_filter_t'.
+//  Return size of 'vscf_padding_params_t'.
 //
 VSCF_PUBLIC size_t
-vscf_tail_filter_ctx_size(void) {
+vscf_padding_params_ctx_size(void) {
 
-    return sizeof(vscf_tail_filter_t);
+    return sizeof(vscf_padding_params_t);
 }
 
 //
 //  Perform initialization of pre-allocated context.
 //
 VSCF_PUBLIC void
-vscf_tail_filter_init(vscf_tail_filter_t *self) {
+vscf_padding_params_init(vscf_padding_params_t *self) {
 
     VSCF_ASSERT_PTR(self);
 
-    vscf_zeroize(self, sizeof(vscf_tail_filter_t));
+    vscf_zeroize(self, sizeof(vscf_padding_params_t));
 
     self->refcnt = 1;
 
-    vscf_tail_filter_init_ctx(self);
+    vscf_padding_params_init_ctx(self);
 }
 
 //
 //  Release all inner resources including class dependencies.
 //
 VSCF_PUBLIC void
-vscf_tail_filter_cleanup(vscf_tail_filter_t *self) {
+vscf_padding_params_cleanup(vscf_padding_params_t *self) {
 
     if (self == NULL) {
         return;
     }
 
-    vscf_tail_filter_cleanup_ctx(self);
+    vscf_padding_params_cleanup_ctx(self);
 
-    vscf_zeroize(self, sizeof(vscf_tail_filter_t));
+    vscf_zeroize(self, sizeof(vscf_padding_params_t));
 }
 
 //
 //  Allocate context and perform it's initialization.
 //
-VSCF_PUBLIC vscf_tail_filter_t *
-vscf_tail_filter_new(void) {
+VSCF_PUBLIC vscf_padding_params_t *
+vscf_padding_params_new(void) {
 
-    vscf_tail_filter_t *self = (vscf_tail_filter_t *) vscf_alloc(sizeof (vscf_tail_filter_t));
+    vscf_padding_params_t *self = (vscf_padding_params_t *) vscf_alloc(sizeof (vscf_padding_params_t));
     VSCF_ASSERT_ALLOC(self);
 
-    vscf_tail_filter_init(self);
+    vscf_padding_params_init(self);
+
+    self->self_dealloc_cb = vscf_dealloc;
+
+    return self;
+}
+
+//
+//  Perform initialization of pre-allocated context.
+//  Build padding params with given constraints.
+//  Precondition: frame_length_min <= frame_length <= frame_length_max.
+//  Next formula can clarify what frame is: "padding_length = data_length MOD frame"
+//
+VSCF_PUBLIC void
+vscf_padding_params_init_with_constraints(vscf_padding_params_t *self, size_t frame, size_t frame_min,
+        size_t frame_max) {
+
+    VSCF_ASSERT_PTR(self);
+
+    vscf_zeroize(self, sizeof(vscf_padding_params_t));
+
+    self->refcnt = 1;
+
+    vscf_padding_params_init_ctx_with_constraints(self, frame, frame_min, frame_max);
+}
+
+//
+//  Allocate class context and perform it's initialization.
+//  Build padding params with given constraints.
+//  Precondition: frame_length_min <= frame_length <= frame_length_max.
+//  Next formula can clarify what frame is: "padding_length = data_length MOD frame"
+//
+VSCF_PUBLIC vscf_padding_params_t *
+vscf_padding_params_new_with_constraints(size_t frame, size_t frame_min, size_t frame_max) {
+
+    vscf_padding_params_t *self = (vscf_padding_params_t *) vscf_alloc(sizeof (vscf_padding_params_t));
+    VSCF_ASSERT_ALLOC(self);
+
+    vscf_padding_params_init_with_constraints(self, frame, frame_min, frame_max);
 
     self->self_dealloc_cb = vscf_dealloc;
 
@@ -147,7 +188,7 @@ vscf_tail_filter_new(void) {
 //  It is safe to call this method even if the context was statically allocated.
 //
 VSCF_PUBLIC void
-vscf_tail_filter_delete(vscf_tail_filter_t *self) {
+vscf_padding_params_delete(vscf_padding_params_t *self) {
 
     if (self == NULL) {
         return;
@@ -174,7 +215,7 @@ vscf_tail_filter_delete(vscf_tail_filter_t *self) {
 
     vscf_dealloc_fn self_dealloc_cb = self->self_dealloc_cb;
 
-    vscf_tail_filter_cleanup(self);
+    vscf_padding_params_cleanup(self);
 
     if (self_dealloc_cb != NULL) {
         self_dealloc_cb(self);
@@ -183,24 +224,24 @@ vscf_tail_filter_delete(vscf_tail_filter_t *self) {
 
 //
 //  Delete given context and nullifies reference.
-//  This is a reverse action of the function 'vscf_tail_filter_new ()'.
+//  This is a reverse action of the function 'vscf_padding_params_new ()'.
 //
 VSCF_PUBLIC void
-vscf_tail_filter_destroy(vscf_tail_filter_t **self_ref) {
+vscf_padding_params_destroy(vscf_padding_params_t **self_ref) {
 
     VSCF_ASSERT_PTR(self_ref);
 
-    vscf_tail_filter_t *self = *self_ref;
+    vscf_padding_params_t *self = *self_ref;
     *self_ref = NULL;
 
-    vscf_tail_filter_delete(self);
+    vscf_padding_params_delete(self);
 }
 
 //
 //  Copy given class context by increasing reference counter.
 //
-VSCF_PUBLIC vscf_tail_filter_t *
-vscf_tail_filter_shallow_copy(vscf_tail_filter_t *self) {
+VSCF_PUBLIC vscf_padding_params_t *
+vscf_padding_params_shallow_copy(vscf_padding_params_t *self) {
 
     VSCF_ASSERT_PTR(self);
 
@@ -229,14 +270,13 @@ vscf_tail_filter_shallow_copy(vscf_tail_filter_t *self) {
 
 //
 //  Perform context specific initialization.
-//  Note, this method is called automatically when method vscf_tail_filter_init() is called.
+//  Note, this method is called automatically when method vscf_padding_params_init() is called.
 //  Note, that context is already zeroed.
 //
 static void
-vscf_tail_filter_init_ctx(vscf_tail_filter_t *self) {
+vscf_padding_params_init_ctx(vscf_padding_params_t *self) {
 
     VSCF_ASSERT_PTR(self);
-    self->tail = vsc_buffer_new();
 }
 
 //
@@ -245,86 +285,57 @@ vscf_tail_filter_init_ctx(vscf_tail_filter_t *self) {
 //  Note, that context will be zeroed automatically next this method.
 //
 static void
-vscf_tail_filter_cleanup_ctx(vscf_tail_filter_t *self) {
+vscf_padding_params_cleanup_ctx(vscf_padding_params_t *self) {
 
     VSCF_ASSERT_PTR(self);
-
-    vsc_buffer_destroy(&self->tail);
 }
 
 //
-//  Prepare filter for a new byte stream.
-//
-VSCF_PUBLIC void
-vscf_tail_filter_reset(vscf_tail_filter_t *self, size_t len) {
-
-    VSCF_ASSERT_PTR(self);
-
-    vsc_buffer_release(self->tail);
-    vsc_buffer_alloc(self->tail, len);
-}
-
-//
-//  Return filtered tail.
-//
-VSCF_PUBLIC vsc_data_t
-vscf_tail_filter_tail(vscf_tail_filter_t *self) {
-
-    VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT(vsc_buffer_is_valid(self->tail));
-
-    return vsc_buffer_data(self->tail);
-}
-
-//
-//  Process given data and return filtered data guaranteed without a tail.
-//
-VSCF_PUBLIC void
-vscf_tail_filter_process(vscf_tail_filter_t *self, vsc_data_t data, vsc_buffer_t *out) {
-
-    VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(out);
-    VSCF_ASSERT(vsc_buffer_is_valid(out));
-    VSCF_ASSERT(vsc_buffer_unused_len(out) >= data.len);
-
-    const size_t tail_free_len = vsc_buffer_unused_len(self->tail);
-    const size_t tail_total_len = vsc_buffer_capacity(self->tail);
-
-    if (data.len <= tail_free_len) {
-        vsc_buffer_write_data(self->tail, data);
-
-    } else if (data.len >= tail_total_len) {
-        vsc_buffer_write_data(out, vsc_buffer_data(self->tail));
-        vsc_buffer_write_data(out, vsc_data_slice_beg(data, 0, data.len - tail_total_len));
-        vsc_buffer_reset(self->tail);
-        vsc_buffer_write_data(self->tail, vsc_data_slice_end(data, 0, tail_total_len));
-
-    } else {
-        vsc_buffer_write_data(out, vsc_data_slice_beg(vsc_buffer_data(self->tail), 0, data.len - tail_free_len));
-        vscf_tail_filter_shift(self, data.len - tail_free_len);
-        vsc_buffer_write_data(self->tail, data);
-    }
-}
-
-//
-//  Shift tail left for a given distance.
+//  Build padding params with given constraints.
+//  Precondition: frame_length_min <= frame_length <= frame_length_max.
+//  Next formula can clarify what frame is: "padding_length = data_length MOD frame"
 //
 static void
-vscf_tail_filter_shift(vscf_tail_filter_t *self, size_t distance) {
+vscf_padding_params_init_ctx_with_constraints(
+        vscf_padding_params_t *self, size_t frame, size_t frame_min, size_t frame_max) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT((frame_min <= frame) && (frame_min <= frame_max));
+
+    self->frame = frame;
+    self->frame_min = frame_min;
+    self->frame_max = frame_max;
+}
+
+//
+//  Return padding frame in bytes.
+//
+VSCF_PUBLIC size_t
+vscf_padding_params_frame(const vscf_padding_params_t *self) {
 
     VSCF_ASSERT_PTR(self);
 
-    if (0 == distance) {
-        return;
-    }
+    return self->frame;
+}
 
-    if (distance >= vsc_buffer_len(self->tail)) {
-        vsc_buffer_reset(self->tail);
-    }
+//
+//  Return minimum padding frame in bytes.
+//
+VSCF_PUBLIC size_t
+vscf_padding_params_frame_min(const vscf_padding_params_t *self) {
 
-    byte *tail_begin = vsc_buffer_begin(self->tail);
+    VSCF_ASSERT_PTR(self);
 
-    memmove(tail_begin, tail_begin + distance, vsc_buffer_len(self->tail) - distance);
+    return self->frame_min;
+}
 
-    vsc_buffer_dec_used(self->tail, distance);
+//
+//  Return minimum padding frame in bytes.
+//
+VSCF_PUBLIC size_t
+vscf_padding_params_frame_max(const vscf_padding_params_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+
+    return self->frame_max;
 }

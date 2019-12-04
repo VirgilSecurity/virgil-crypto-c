@@ -117,18 +117,21 @@ test__serialize__padding_cipher_qith_aes256_gcm_and_frame165__returns_valid_der(
     vscf_alg_info_der_serializer_t *serializer = vscf_alg_info_der_serializer_new();
     vscf_alg_info_der_serializer_setup_defaults(serializer);
 
-    vscf_impl_t *underlying_cipher_info = vscf_cipher_alg_info_impl(
+    vscf_impl_t *padding_info =
+            vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_RANDOM_PADDING));
+
+    vscf_impl_t *cipher_info = vscf_cipher_alg_info_impl(
             vscf_cipher_alg_info_new_with_members(vscf_alg_id_AES256_GCM, test_alg_info_AES256_GCM_NONCE));
 
     vscf_impl_t *padding_cipher_info = vscf_padding_cipher_alg_info_impl(
-            vscf_padding_cipher_alg_info_new_with_members(&underlying_cipher_info, 165));
+            vscf_padding_cipher_alg_info_new_with_members(&padding_info, &cipher_info));
 
     vsc_buffer_t *out =
             vsc_buffer_new_with_capacity(vscf_alg_info_der_serializer_serialized_len(serializer, padding_cipher_info));
 
     vscf_alg_info_der_serializer_serialize(serializer, padding_cipher_info, out);
 
-    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_alg_info_PADDING_CIPHER_WITH_AES256_GCM_AND_FRAME_165, out);
+    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_alg_info_PADDING_CIPHER_WITH_RANDOM_PADDING_AND_AES256_GCM, out);
 
     vsc_buffer_destroy(&out);
     vscf_impl_destroy(&padding_cipher_info);

@@ -1,0 +1,39 @@
+<class name="padding params">
+    Handles padding parameters and constraints.
+
+    <constant name="default frame" value="160" definition="public"/>
+    <constant name="default frame min" value="32" definition="public"/>
+    <constant name="default frame max" value="8 * 1024" definition="public"/>
+
+    <property name="frame" type="size"/>
+    <property name="frame min" type="size"/>
+    <property name="frame max" type="size"/>
+
+    <constructor name="with constraints">
+        Build padding params with given constraints.
+        Precondition: frame_length_min &lt;= frame_length &lt;= frame_length_max.
+        Next formula can clarify what frame is: "padding_length = data_length MOD frame"
+
+        <argument name="frame" type="size"/>
+        <argument name="frame min" type="size"/>
+        <argument name="frame max" type="size"/>
+    </constructor>
+
+    <method name="frame" type="size" is_const="1">
+        Return padding frame in bytes.
+
+        <return type="size"/>
+    </method>
+
+    <method name="frame min" type="size" is_const="1">
+        Return minimum padding frame in bytes.
+
+        <return type="size"/>
+    </method>
+
+    <method name="frame max" type="size" is_const="1">
+        Return minimum padding frame in bytes.
+
+        <return type="size"/>
+    </method>
+</class>

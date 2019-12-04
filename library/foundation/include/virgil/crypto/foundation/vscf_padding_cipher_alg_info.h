@@ -141,27 +141,27 @@ vscf_padding_cipher_alg_info_shallow_copy(vscf_padding_cipher_alg_info_t *self);
 //  Create algorithm an underlying cipher alg info and a padding frame.
 //
 VSCF_PUBLIC void
-vscf_padding_cipher_alg_info_init_with_members(vscf_padding_cipher_alg_info_t *self,
-        vscf_impl_t **underlying_cipher_ref, size_t padding_frame);
+vscf_padding_cipher_alg_info_init_with_members(vscf_padding_cipher_alg_info_t *self, vscf_impl_t **padding_alg_info_ref,
+        vscf_impl_t **cipher_alg_info_ref);
 
 //
 //  Allocate implementation context and perform it's initialization.
 //  Create algorithm an underlying cipher alg info and a padding frame.
 //
 VSCF_PUBLIC vscf_padding_cipher_alg_info_t *
-vscf_padding_cipher_alg_info_new_with_members(vscf_impl_t **underlying_cipher_ref, size_t padding_frame);
+vscf_padding_cipher_alg_info_new_with_members(vscf_impl_t **padding_alg_info_ref, vscf_impl_t **cipher_alg_info_ref);
+
+//
+//  Return underlying padding alg info.
+//
+VSCF_PUBLIC const vscf_impl_t *
+vscf_padding_cipher_alg_info_padding(const vscf_padding_cipher_alg_info_t *self);
 
 //
 //  Return underlying cipher alg info.
 //
 VSCF_PUBLIC const vscf_impl_t *
-vscf_padding_cipher_alg_info_underlying_cipher(const vscf_padding_cipher_alg_info_t *self);
-
-//
-//  Return padding frame.
-//
-VSCF_PUBLIC size_t
-vscf_padding_cipher_alg_info_padding_frame(const vscf_padding_cipher_alg_info_t *self);
+vscf_padding_cipher_alg_info_cipher(const vscf_padding_cipher_alg_info_t *self);
 
 //
 //  Provide algorithm identificator.

@@ -92,11 +92,11 @@ struct vscf_padding_cipher_alg_info_t {
     //
     //  Implementation specific context.
     //
-    vscf_impl_t *underlying_cipher;
+    vscf_impl_t *padding;
     //
     //  Implementation specific context.
     //
-    size_t padding_frame;
+    vscf_impl_t *cipher;
 };
 
 

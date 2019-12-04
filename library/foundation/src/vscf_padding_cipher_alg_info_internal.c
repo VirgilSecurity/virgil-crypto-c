@@ -227,8 +227,8 @@ vscf_padding_cipher_alg_info_shallow_copy(vscf_padding_cipher_alg_info_t *self) 
 //  Create algorithm an underlying cipher alg info and a padding frame.
 //
 VSCF_PUBLIC void
-vscf_padding_cipher_alg_info_init_with_members(vscf_padding_cipher_alg_info_t *self,
-        vscf_impl_t **underlying_cipher_ref, size_t padding_frame) {
+vscf_padding_cipher_alg_info_init_with_members(vscf_padding_cipher_alg_info_t *self, vscf_impl_t **padding_alg_info_ref,
+        vscf_impl_t **cipher_alg_info_ref) {
 
     VSCF_ASSERT_PTR(self);
 
@@ -237,7 +237,7 @@ vscf_padding_cipher_alg_info_init_with_members(vscf_padding_cipher_alg_info_t *s
     self->info = &info;
     self->refcnt = 1;
 
-    vscf_padding_cipher_alg_info_init_ctx_with_members(self, underlying_cipher_ref, padding_frame);
+    vscf_padding_cipher_alg_info_init_ctx_with_members(self, padding_alg_info_ref, cipher_alg_info_ref);
 }
 
 //
@@ -245,11 +245,11 @@ vscf_padding_cipher_alg_info_init_with_members(vscf_padding_cipher_alg_info_t *s
 //  Create algorithm an underlying cipher alg info and a padding frame.
 //
 VSCF_PUBLIC vscf_padding_cipher_alg_info_t *
-vscf_padding_cipher_alg_info_new_with_members(vscf_impl_t **underlying_cipher_ref, size_t padding_frame) {
+vscf_padding_cipher_alg_info_new_with_members(vscf_impl_t **padding_alg_info_ref, vscf_impl_t **cipher_alg_info_ref) {
 
     vscf_padding_cipher_alg_info_t *self = vscf_padding_cipher_alg_info_new();
 
-    vscf_padding_cipher_alg_info_init_with_members(self, underlying_cipher_ref, padding_frame);
+    vscf_padding_cipher_alg_info_init_with_members(self, padding_alg_info_ref, cipher_alg_info_ref);
 
     return self;
 }

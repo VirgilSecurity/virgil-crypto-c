@@ -25,6 +25,7 @@
     <require impl="ed25519"/>
     <require impl="curve25519"/>
     <require impl="ecc"/>
+    <require impl="random padding"/>
     <require impl="padding cipher"/>
 
     <method name="create hash from info" is_static="1">
@@ -65,5 +66,14 @@
         <argument name="alg info" interface="alg info"/>
 
         <return interface="cipher" access="disown"/>
+    </method>
+
+    <method name="create padding from info" is_static="1">
+        Create algorithm that implements "padding" interface.
+
+        <argument name="alg info" interface="alg info"/>
+        <argument name="random" interface="random"/>
+
+        <return interface="padding" access="disown"/>
     </method>
 </class>

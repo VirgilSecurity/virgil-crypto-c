@@ -170,26 +170,26 @@
 
         <interface name="alg info"/>
 
-        <property name="underlying cipher" interface="alg info"/>
-        <property name="padding frame" type="size"/>
+        <property name="padding" interface="alg info"/>
+        <property name="cipher" interface="alg info"/>
 
         <constructor name="with members">
             Create algorithm an underlying cipher alg info and a padding frame.
 
-            <argument name="underlying cipher" interface="alg info" access="disown"/>
-            <argument name="padding frame" type="size"/>
+            <argument name="padding alg info" interface="alg info" access="disown"/>
+            <argument name="cipher alg info" interface="alg info" access="disown"/>
         </constructor>
 
-        <method name="underlying cipher" is_const="1" declaration="public">
-            Return underlying cipher alg info.
+        <method name="padding" is_const="1" declaration="public">
+            Return underlying padding alg info.
 
             <return interface="alg info"/>
          </method>
 
-        <method name="padding frame" is_const="1" declaration="public">
-            Return padding frame.
+        <method name="cipher" is_const="1" declaration="public">
+            Return underlying cipher alg info.
 
-            <return type="size"/>
+            <return interface="alg info"/>
          </method>
     </implementation>
 </implementor>

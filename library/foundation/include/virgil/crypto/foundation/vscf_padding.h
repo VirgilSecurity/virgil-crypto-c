@@ -47,14 +47,27 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Create module with functionality common for all 'api' objects.
-//  It is also enumerate all available interfaces within crypto libary.
+//  Provide an interface to add and remove data padding.
 // --------------------------------------------------------------------------
 
-#ifndef VSCF_API_H_INCLUDED
-#define VSCF_API_H_INCLUDED
+#ifndef VSCF_PADDING_H_INCLUDED
+#define VSCF_PADDING_H_INCLUDED
 
 #include "vscf_library.h"
+#include "vscf_impl.h"
+#include "vscf_padding_params.h"
+#include "vscf_status.h"
+#include "vscf_api.h"
+
+#if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <virgil/crypto/common/vsc_data.h>
+#   include <virgil/crypto/common/vsc_buffer.h>
+#endif
+
+#if VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <VSCCommon/vsc_data.h>
+#   include <VSCCommon/vsc_buffer.h>
+#endif
 
 // clang-format on
 //  @end
@@ -72,50 +85,90 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Enumerates all possible interfaces within crypto library.
+//  Contains API requirements of the interface 'padding'.
 //
-enum vscf_api_tag_t {
-    vscf_api_tag_BEGIN = 0,
-    vscf_api_tag_ALG,
-    vscf_api_tag_ALG_INFO,
-    vscf_api_tag_ALG_INFO_DESERIALIZER,
-    vscf_api_tag_ALG_INFO_SERIALIZER,
-    vscf_api_tag_ASN1_READER,
-    vscf_api_tag_ASN1_WRITER,
-    vscf_api_tag_AUTH_DECRYPT,
-    vscf_api_tag_AUTH_ENCRYPT,
-    vscf_api_tag_CIPHER,
-    vscf_api_tag_CIPHER_AUTH,
-    vscf_api_tag_CIPHER_AUTH_INFO,
-    vscf_api_tag_CIPHER_INFO,
-    vscf_api_tag_COMPUTE_SHARED_KEY,
-    vscf_api_tag_DECRYPT,
-    vscf_api_tag_ENCRYPT,
-    vscf_api_tag_ENTROPY_SOURCE,
-    vscf_api_tag_HASH,
-    vscf_api_tag_KDF,
-    vscf_api_tag_KEY,
-    vscf_api_tag_KEY_ALG,
-    vscf_api_tag_KEY_CIPHER,
-    vscf_api_tag_KEY_DESERIALIZER,
-    vscf_api_tag_KEY_SERIALIZER,
-    vscf_api_tag_KEY_SIGNER,
-    vscf_api_tag_MAC,
-    vscf_api_tag_MESSAGE_INFO_FOOTER_SERIALIZER,
-    vscf_api_tag_MESSAGE_INFO_SERIALIZER,
-    vscf_api_tag_PADDING,
-    vscf_api_tag_PRIVATE_KEY,
-    vscf_api_tag_PUBLIC_KEY,
-    vscf_api_tag_RANDOM,
-    vscf_api_tag_SALTED_KDF,
-    vscf_api_tag_END
-};
-typedef enum vscf_api_tag_t vscf_api_tag_t;
+typedef struct vscf_padding_api_t vscf_padding_api_t;
 
 //
-//  Generic type for any 'API' object.
+//  Set new padding parameters.
 //
-typedef struct vscf_api_t vscf_api_t;
+VSCF_PUBLIC void
+vscf_padding_configure(vscf_impl_t *impl, const vscf_padding_params_t *params);
+
+//
+//  Return length in bytes of a data with a padding.
+//
+VSCF_PUBLIC size_t
+vscf_padding_padded_data_len(const vscf_impl_t *impl, size_t data_len);
+
+//
+//  Return an actual number of padding in bytes.
+//  Note, this method might be called right before "finish data processing".
+//
+VSCF_PUBLIC size_t
+vscf_padding_len(const vscf_impl_t *impl);
+
+//
+//  Return a maximum number of padding in bytes.
+//
+VSCF_PUBLIC size_t
+vscf_padding_len_max(const vscf_impl_t *impl);
+
+//
+//  Prepare the algorithm to process data.
+//
+VSCF_PUBLIC void
+vscf_padding_start_data_processing(vscf_impl_t *impl);
+
+//
+//  Only data length is needed to produce padding later.
+//  Return data that should be further proceeded.
+//
+VSCF_PUBLIC vsc_data_t
+vscf_padding_process_data(vscf_impl_t *impl, vsc_data_t data);
+
+//
+//  Accomplish data processing and return padding.
+//
+VSCF_PUBLIC vscf_status_t
+vscf_padding_finish_data_processing(vscf_impl_t *impl, vsc_buffer_t *out) VSCF_NODISCARD;
+
+//
+//  Prepare the algorithm to process padded data.
+//
+VSCF_PUBLIC void
+vscf_padding_start_padded_data_processing(vscf_impl_t *impl);
+
+//
+//  Process padded data.
+//  Return filtered data without padding.
+//
+VSCF_PUBLIC void
+vscf_padding_process_padded_data(vscf_impl_t *impl, vsc_data_t data, vsc_buffer_t *out);
+
+//
+//  Accomplish padded data processing and return left data without a padding.
+//
+VSCF_PUBLIC vscf_status_t
+vscf_padding_finish_padded_data_processing(vscf_impl_t *impl, vsc_buffer_t *out) VSCF_NODISCARD;
+
+//
+//  Return padding API, or NULL if it is not implemented.
+//
+VSCF_PUBLIC const vscf_padding_api_t *
+vscf_padding_api(const vscf_impl_t *impl);
+
+//
+//  Check if given object implements interface 'padding'.
+//
+VSCF_PUBLIC bool
+vscf_padding_is_implemented(const vscf_impl_t *impl);
+
+//
+//  Returns interface unique identifier.
+//
+VSCF_PUBLIC vscf_api_tag_t
+vscf_padding_api_tag(const vscf_padding_api_t *padding_api);
 
 
 // --------------------------------------------------------------------------
@@ -131,5 +184,5 @@ typedef struct vscf_api_t vscf_api_t;
 
 
 //  @footer
-#endif // VSCF_API_H_INCLUDED
+#endif // VSCF_PADDING_H_INCLUDED
 //  @end

@@ -224,6 +224,11 @@ set_property(
 )
 
 set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_padding.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
+)
+
+set_property(
     SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_private_key.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
@@ -399,6 +404,11 @@ set_property(
 )
 
 set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_random_padding.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
+)
+
+set_property(
     SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_raw_private_key.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
@@ -559,6 +569,11 @@ set_property(
 )
 
 set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_padding_params.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
+)
+
+set_property(
     SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_password_recipient_info.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
@@ -707,6 +722,8 @@ target_sources(foundation
             "$<$<BOOL:${VSCF_MESSAGE_INFO_FOOTER_SERIALIZER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_message_info_footer_serializer_api.h>"
             "$<$<BOOL:${VSCF_MESSAGE_INFO_SERIALIZER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_message_info_serializer.h>"
             "$<$<BOOL:${VSCF_MESSAGE_INFO_SERIALIZER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_message_info_serializer_api.h>"
+            "$<$<BOOL:${VSCF_PADDING}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_padding.h>"
+            "$<$<BOOL:${VSCF_PADDING}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_padding_api.h>"
             "$<$<BOOL:${VSCF_PRIVATE_KEY}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_private_key.h>"
             "$<$<BOOL:${VSCF_PRIVATE_KEY}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_private_key_api.h>"
             "$<$<BOOL:${VSCF_PUBLIC_KEY}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_public_key.h>"
@@ -809,6 +826,9 @@ target_sources(foundation
             "$<$<BOOL:${VSCF_PKCS8_SERIALIZER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_pkcs8_serializer.h>"
             "$<$<BOOL:${VSCF_PKCS8_SERIALIZER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_pkcs8_serializer_internal.h>"
             "$<$<BOOL:${VSCF_PKCS8_SERIALIZER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_pkcs8_serializer_defs.h>"
+            "$<$<BOOL:${VSCF_RANDOM_PADDING}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_random_padding.h>"
+            "$<$<BOOL:${VSCF_RANDOM_PADDING}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_random_padding_internal.h>"
+            "$<$<BOOL:${VSCF_RANDOM_PADDING}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_random_padding_defs.h>"
             "$<$<BOOL:${VSCF_RAW_PRIVATE_KEY}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_raw_private_key.h>"
             "$<$<BOOL:${VSCF_RAW_PRIVATE_KEY}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_raw_private_key_internal.h>"
             "$<$<BOOL:${VSCF_RAW_PRIVATE_KEY}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_raw_private_key_defs.h>"
@@ -899,6 +919,8 @@ target_sources(foundation
             "$<$<BOOL:${VSCF_MESSAGE_PADDING}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_message_padding.h>"
             "$<$<BOOL:${VSCF_MESSAGE_PADDING}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_message_padding_defs.h>"
             "$<$<BOOL:${VSCF_OID}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_oid.h>"
+            "$<$<BOOL:${VSCF_PADDING_PARAMS}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_padding_params.h>"
+            "$<$<BOOL:${VSCF_PADDING_PARAMS}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_padding_params_defs.h>"
             "$<$<BOOL:${VSCF_PASSWORD_RECIPIENT_INFO}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_password_recipient_info.h>"
             "$<$<BOOL:${VSCF_PASSWORD_RECIPIENT_INFO}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_password_recipient_info_defs.h>"
             "$<$<BOOL:${VSCF_PASSWORD_RECIPIENT_INFO_LIST}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_password_recipient_info_list.h>"
@@ -998,6 +1020,8 @@ target_sources(foundation
             "$<$<BOOL:${VSCF_MESSAGE_INFO_FOOTER_SERIALIZER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_message_info_footer_serializer_api.c>"
             "$<$<BOOL:${VSCF_MESSAGE_INFO_SERIALIZER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_message_info_serializer.c>"
             "$<$<BOOL:${VSCF_MESSAGE_INFO_SERIALIZER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_message_info_serializer_api.c>"
+            "$<$<BOOL:${VSCF_PADDING}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_padding.c>"
+            "$<$<BOOL:${VSCF_PADDING}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_padding_api.c>"
             "$<$<BOOL:${VSCF_PRIVATE_KEY}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_private_key.c>"
             "$<$<BOOL:${VSCF_PRIVATE_KEY}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_private_key_api.c>"
             "$<$<BOOL:${VSCF_PUBLIC_KEY}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_public_key.c>"
@@ -1099,6 +1123,9 @@ target_sources(foundation
             "$<$<BOOL:${VSCF_PKCS8_SERIALIZER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_pkcs8_serializer.c>"
             "$<$<BOOL:${VSCF_PKCS8_SERIALIZER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_pkcs8_serializer_internal.c>"
             "$<$<BOOL:${VSCF_PKCS8_SERIALIZER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_pkcs8_serializer_defs.c>"
+            "$<$<BOOL:${VSCF_RANDOM_PADDING}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_random_padding.c>"
+            "$<$<BOOL:${VSCF_RANDOM_PADDING}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_random_padding_internal.c>"
+            "$<$<BOOL:${VSCF_RANDOM_PADDING}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_random_padding_defs.c>"
             "$<$<BOOL:${VSCF_RAW_PRIVATE_KEY}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_raw_private_key.c>"
             "$<$<BOOL:${VSCF_RAW_PRIVATE_KEY}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_raw_private_key_internal.c>"
             "$<$<BOOL:${VSCF_RAW_PRIVATE_KEY}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_raw_private_key_defs.c>"
@@ -1186,6 +1213,8 @@ target_sources(foundation
             "$<$<BOOL:${VSCF_MESSAGE_PADDING}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_message_padding.c>"
             "$<$<BOOL:${VSCF_MESSAGE_PADDING}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_message_padding_defs.c>"
             "$<$<BOOL:${VSCF_OID}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_oid.c>"
+            "$<$<BOOL:${VSCF_PADDING_PARAMS}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_padding_params.c>"
+            "$<$<BOOL:${VSCF_PADDING_PARAMS}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_padding_params_defs.c>"
             "$<$<BOOL:${VSCF_PASSWORD_RECIPIENT_INFO}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_password_recipient_info.c>"
             "$<$<BOOL:${VSCF_PASSWORD_RECIPIENT_INFO}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_password_recipient_info_defs.c>"
             "$<$<BOOL:${VSCF_PASSWORD_RECIPIENT_INFO_LIST}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_password_recipient_info_list.c>"

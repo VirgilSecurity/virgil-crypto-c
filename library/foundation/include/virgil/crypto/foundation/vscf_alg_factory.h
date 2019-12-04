@@ -101,6 +101,12 @@ vscf_alg_factory_create_salted_kdf_from_info(const vscf_impl_t *alg_info);
 VSCF_PUBLIC vscf_impl_t *
 vscf_alg_factory_create_cipher_from_info(const vscf_impl_t *alg_info);
 
+//
+//  Create algorithm that implements "padding" interface.
+//
+VSCF_PUBLIC vscf_impl_t *
+vscf_alg_factory_create_padding_from_info(const vscf_impl_t *alg_info, const vscf_impl_t *random);
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.

@@ -45,8 +45,8 @@
 #include "vscf_recipient_cipher.h"
 #include "vscf_key_provider.h"
 #include "vscf_fake_random.h"
-#include "vscf_padding_cipher.h"
 #include "vscf_aes256_gcm.h"
+#include "vscf_random_padding.h"
 
 #include "test_data_recipient_cipher.h"
 
@@ -741,8 +741,8 @@ test__has_key_recipient__with_added_ed25519_recipient_with_empty_and_non_empty_i
 //  Check with padding cipher.
 // --------------------------------------------------------------------------
 void
-test__encrypt_decrypt__with_padding_cipher_and_ed25519_key_recipient__success(void) {
-#if VSCF_PADDING_CIPHER && VSCF_AES256_GCM
+test__encrypt_decrypt__with_padding_and_ed25519_key_recipient__success(void) {
+#if VSCF_RANDOM_PADDING && VSCF_AES256_GCM
     //
     //  Prepare recipients.
     //
@@ -760,19 +760,17 @@ test__encrypt_decrypt__with_padding_cipher_and_ed25519_key_recipient__success(vo
             vscf_key_provider_import_private_key(key_provider, test_data_recipient_cipher_ED25519_PRIVATE_KEY, &error);
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
 
-    vscf_aes256_gcm_t *cipher = vscf_aes256_gcm_new();
     vscf_fake_random_t *fake_random = vscf_fake_random_new();
     vscf_fake_random_setup_source_byte(fake_random, 0xAB);
 
-    vscf_padding_cipher_t *padding_cipher = vscf_padding_cipher_new();
-    vscf_padding_cipher_take_cipher(padding_cipher, vscf_aes256_gcm_impl(cipher));
-    vscf_padding_cipher_take_random(padding_cipher, vscf_fake_random_impl(fake_random));
+    vscf_random_padding_t *random_padding = vscf_random_padding_new();
+    vscf_random_padding_take_random(random_padding, vscf_fake_random_impl(fake_random));
 
     vscf_recipient_cipher_t *recipient_cipher = vscf_recipient_cipher_new();
-    vscf_recipient_cipher_take_encryption_cipher(recipient_cipher, vscf_padding_cipher_impl(padding_cipher));
-
     vscf_recipient_cipher_add_key_recipient(
             recipient_cipher, test_data_recipient_cipher_ED25519_RECIPIENT_ID, public_key);
+
+    vscf_recipient_cipher_take_padding(recipient_cipher, vscf_random_padding_impl(random_padding));
 
     //
     //  Encrypt.
@@ -855,7 +853,7 @@ main(void) {
     RUN_TEST(test__has_key_recipient__with_added_ed25519_recipient_with_empty_and_empty_id__return_true);
     RUN_TEST(test__has_key_recipient__with_added_ed25519_recipient_with_empty_and_non_empty_id__return_false);
 
-    RUN_TEST(test__encrypt_decrypt__with_padding_cipher_and_ed25519_key_recipient__success);
+    RUN_TEST(test__encrypt_decrypt__with_padding_and_ed25519_key_recipient__success);
 #else
     RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
 #endif

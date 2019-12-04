@@ -60,8 +60,15 @@
 #include "vscf_impl_private.h"
 #include "vscf_padding_cipher.h"
 #include "vscf_atomic.h"
-#include "vscf_tail_filter.h"
 #include "vscf_impl.h"
+
+#if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <virgil/crypto/common/vsc_buffer.h>
+#endif
+
+#if VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <VSCCommon/vsc_buffer.h>
+#endif
 
 // clang-format on
 //  @end
@@ -91,25 +98,17 @@ struct vscf_padding_cipher_t {
     //
     VSCF_ATOMIC size_t refcnt;
     //
-    //  Dependency to the interface 'random'.
-    //
-    vscf_impl_t *random;
-    //
     //  Dependency to the interface 'cipher'.
     //
     vscf_impl_t *cipher;
     //
-    //  Implementation specific context.
+    //  Dependency to the interface 'padding'.
     //
-    vscf_tail_filter_t *tail_filter;
-    //
-    //  Implementation specific context.
-    //
-    size_t unpadded_len;
+    vscf_impl_t *padding;
     //
     //  Implementation specific context.
     //
-    size_t padding_frame;
+    vsc_buffer_t *padding_buffer;
 };
 
 

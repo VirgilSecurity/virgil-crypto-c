@@ -94,7 +94,7 @@ vscf_padding_cipher_alg_info_cleanup_ctx(vscf_padding_cipher_alg_info_t *self);
 //
 VSCF_PUBLIC void
 vscf_padding_cipher_alg_info_init_ctx_with_members(vscf_padding_cipher_alg_info_t *self,
-        vscf_impl_t **underlying_cipher_ref, size_t padding_frame);
+        vscf_impl_t **padding_alg_info_ref, vscf_impl_t **cipher_alg_info_ref);
 
 
 // --------------------------------------------------------------------------

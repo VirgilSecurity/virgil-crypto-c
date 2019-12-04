@@ -56,6 +56,7 @@
 #define VSCF_RECIPIENT_CIPHER_H_INCLUDED
 
 #include "vscf_library.h"
+#include "vscf_padding_params.h"
 #include "vscf_message_info_custom_params.h"
 #include "vscf_signer_info_list.h"
 #include "vscf_signer_info.h"
@@ -192,6 +193,44 @@ vscf_recipient_cipher_take_signer_hash(vscf_recipient_cipher_t *self, vscf_impl_
 //
 VSCF_PUBLIC void
 vscf_recipient_cipher_release_signer_hash(vscf_recipient_cipher_t *self);
+
+//
+//  Setup dependency to the interface 'padding' with shared ownership.
+//
+VSCF_PUBLIC void
+vscf_recipient_cipher_use_padding(vscf_recipient_cipher_t *self, vscf_impl_t *padding);
+
+//
+//  Setup dependency to the interface 'padding' and transfer ownership.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCF_PUBLIC void
+vscf_recipient_cipher_take_padding(vscf_recipient_cipher_t *self, vscf_impl_t *padding);
+
+//
+//  Release dependency to the interface 'padding'.
+//
+VSCF_PUBLIC void
+vscf_recipient_cipher_release_padding(vscf_recipient_cipher_t *self);
+
+//
+//  Setup dependency to the class 'padding params' with shared ownership.
+//
+VSCF_PUBLIC void
+vscf_recipient_cipher_use_padding_params(vscf_recipient_cipher_t *self, vscf_padding_params_t *padding_params);
+
+//
+//  Setup dependency to the class 'padding params' and transfer ownership.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCF_PUBLIC void
+vscf_recipient_cipher_take_padding_params(vscf_recipient_cipher_t *self, vscf_padding_params_t *padding_params);
+
+//
+//  Release dependency to the class 'padding params'.
+//
+VSCF_PUBLIC void
+vscf_recipient_cipher_release_padding_params(vscf_recipient_cipher_t *self);
 
 //
 //  Return true if a key recipient with a given id has been added.

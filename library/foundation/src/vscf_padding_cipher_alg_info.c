@@ -95,7 +95,8 @@ vscf_padding_cipher_alg_info_cleanup_ctx(vscf_padding_cipher_alg_info_t *self) {
 
     VSCF_ASSERT_PTR(self);
 
-    vscf_impl_destroy(&self->underlying_cipher);
+    vscf_impl_destroy(&self->padding);
+    vscf_impl_destroy(&self->cipher);
 }
 
 //
@@ -103,40 +104,43 @@ vscf_padding_cipher_alg_info_cleanup_ctx(vscf_padding_cipher_alg_info_t *self) {
 //
 VSCF_PUBLIC void
 vscf_padding_cipher_alg_info_init_ctx_with_members(
-        vscf_padding_cipher_alg_info_t *self, vscf_impl_t **underlying_cipher_ref, size_t padding_frame) {
+        vscf_padding_cipher_alg_info_t *self, vscf_impl_t **padding_alg_info_ref, vscf_impl_t **cipher_alg_info_ref) {
 
     VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(underlying_cipher_ref);
-    VSCF_ASSERT_PTR(*underlying_cipher_ref);
-    VSCF_ASSERT(padding_frame > 0);
+    VSCF_ASSERT_PTR(padding_alg_info_ref);
+    VSCF_ASSERT_PTR(*padding_alg_info_ref);
+    VSCF_ASSERT_PTR(cipher_alg_info_ref);
+    VSCF_ASSERT_PTR(*cipher_alg_info_ref);
 
-    self->underlying_cipher = *underlying_cipher_ref;
-    self->padding_frame = padding_frame;
+    self->padding = *padding_alg_info_ref;
+    self->cipher = *cipher_alg_info_ref;
 
-    *underlying_cipher_ref = NULL;
+    *padding_alg_info_ref = NULL;
+    *cipher_alg_info_ref = NULL;
+}
+
+//
+//  Return underlying padding alg info.
+//
+VSCF_PUBLIC const vscf_impl_t *
+vscf_padding_cipher_alg_info_padding(const vscf_padding_cipher_alg_info_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(self->padding);
+
+    return self->padding;
 }
 
 //
 //  Return underlying cipher alg info.
 //
 VSCF_PUBLIC const vscf_impl_t *
-vscf_padding_cipher_alg_info_underlying_cipher(const vscf_padding_cipher_alg_info_t *self) {
+vscf_padding_cipher_alg_info_cipher(const vscf_padding_cipher_alg_info_t *self) {
 
     VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(self->underlying_cipher);
+    VSCF_ASSERT_PTR(self->cipher);
 
-    return self->underlying_cipher;
-}
-
-//
-//  Return padding frame.
-//
-VSCF_PUBLIC size_t
-vscf_padding_cipher_alg_info_padding_frame(const vscf_padding_cipher_alg_info_t *self) {
-
-    VSCF_ASSERT_PTR(self);
-
-    return self->padding_frame;
+    return self->cipher;
 }
 
 //

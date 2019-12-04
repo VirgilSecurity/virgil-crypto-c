@@ -77,6 +77,7 @@
 #include "vscf_ed25519.h"
 #include "vscf_curve25519.h"
 #include "vscf_ecc.h"
+#include "vscf_random_padding.h"
 #include "vscf_padding_cipher.h"
 
 // clang-format on
@@ -256,10 +257,6 @@ vscf_alg_factory_create_cipher_from_info(const vscf_impl_t *alg_info) {
         cipher = vscf_aes256_cbc_impl(vscf_aes256_cbc_new());
         break;
 
-    case vscf_alg_id_PADDING_CIPHER:
-        cipher = vscf_padding_cipher_impl(vscf_padding_cipher_new());
-        break;
-
     default:
         return NULL;
     }
@@ -271,4 +268,39 @@ vscf_alg_factory_create_cipher_from_info(const vscf_impl_t *alg_info) {
     }
 
     return cipher;
+}
+
+//
+//  Create algorithm that implements "padding" interface.
+//
+VSCF_PUBLIC vscf_impl_t *
+vscf_alg_factory_create_padding_from_info(const vscf_impl_t *alg_info, const vscf_impl_t *random) {
+
+    VSCF_ASSERT_PTR(alg_info);
+    VSCF_ASSERT(vscf_alg_info_alg_id(alg_info) != vscf_alg_id_NONE);
+
+    const vscf_alg_id_t alg_id = vscf_alg_info_alg_id(alg_info);
+
+    vscf_impl_t *alg = NULL;
+    switch (alg_id) {
+    case vscf_alg_id_RANDOM_PADDING: {
+        vscf_random_padding_t *padding = vscf_random_padding_new();
+        if (random != NULL) {
+            vscf_random_padding_use_random(padding, (vscf_impl_t *)random);
+        }
+        alg = vscf_random_padding_impl(padding);
+        break;
+    }
+
+    default:
+        return NULL;
+    }
+
+    const vscf_status_t status = vscf_alg_restore_alg_info(alg, alg_info);
+    if (status != vscf_status_SUCCESS) {
+        vscf_impl_destroy(&alg);
+        //  TODO: Log underlying error.
+    }
+
+    return alg;
 }

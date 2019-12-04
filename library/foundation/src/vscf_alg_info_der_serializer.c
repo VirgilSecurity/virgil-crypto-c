@@ -892,13 +892,15 @@ vscf_alg_info_der_serializer_serialize_padding_cipher_alg_info_len(
     VSCF_ASSERT_PTR(alg_info);
 
     const vscf_padding_cipher_alg_info_t *padding_cipher_alg_info = (const vscf_padding_cipher_alg_info_t *)alg_info;
-    const vscf_impl_t *underlying_cipher = vscf_padding_cipher_alg_info_underlying_cipher(padding_cipher_alg_info);
+    const vscf_impl_t *padding = vscf_padding_cipher_alg_info_padding(padding_cipher_alg_info);
+    const vscf_impl_t *cipher = vscf_padding_cipher_alg_info_cipher(padding_cipher_alg_info);
 
-    const size_t underlying_cipher_len = vscf_alg_info_der_serializer_serialized_len(self, underlying_cipher);
+    const size_t padding_len = vscf_alg_info_der_serializer_serialized_len(self, padding);
+    const size_t cipher_len = vscf_alg_info_der_serializer_serialized_len(self, cipher);
 
-    const size_t params_len = 1 + 1 +                         //  PaddingCipherParameters ::= SEQUENCE {
-                              1 + 1 + underlying_cipher_len + //      underlyingCipher AlgorithmIdentifier,
-                              1 + 1 + 8;                      //      paddingFrame INTEGER(1..MAX) }
+    const size_t params_len = 1 + 1 +               //  PaddingCipherParameters ::= SEQUENCE {
+                              1 + 1 + padding_len + //      padding AlgorithmIdentifier,
+                              1 + 1 + cipher_len;   //      cipher AlgorithmIdentifier }
 
     const size_t len = 1 + 1 +      //  AlgorithmIdentifier ::= SEQUENCE {
                        1 + 1 + 10 + //      algorithm OBJECT IDENTIFIER, -- id-PaddingCipher
@@ -916,8 +918,8 @@ vscf_alg_info_der_serializer_serialize_padding_cipher_alg_info(
         vscf_alg_info_der_serializer_t *self, const vscf_impl_t *alg_info) {
 
     //  PaddingCipherParameters ::= SEQUENCE {
-    //      underlyingCipher AlgorithmIdentifier,
-    //      paddingFrame INTEGER(1..MAX)
+    //      padding AlgorithmIdentifier,
+    //      cipher AlgorithmIdentifier
     //  }
 
     VSCF_ASSERT_PTR(self);
@@ -931,14 +933,13 @@ vscf_alg_info_der_serializer_serialize_padding_cipher_alg_info(
 
     size_t len = 0;
 
+    //  Write ciipher.
+    const vscf_impl_t *cipher = vscf_padding_cipher_alg_info_cipher(padding_cipher_alg_info);
+    len += vscf_alg_info_der_serializer_serialize_inplace(self, cipher);
 
-    //  Write paddingFrame.
-    const size_t paddingFrame = vscf_padding_cipher_alg_info_padding_frame(padding_cipher_alg_info);
-    len += vscf_asn1_writer_write_uint(self->asn1_writer, paddingFrame);
-
-    //  Write underlyingCipher.
-    const vscf_impl_t *underlying_cipher = vscf_padding_cipher_alg_info_underlying_cipher(padding_cipher_alg_info);
-    len += vscf_alg_info_der_serializer_serialize_inplace(self, underlying_cipher);
+    //  Write ciipher.
+    const vscf_impl_t *padding = vscf_padding_cipher_alg_info_padding(padding_cipher_alg_info);
+    len += vscf_alg_info_der_serializer_serialize_inplace(self, padding);
 
     //  Write PaddingCipherParameters.
     len += vscf_asn1_writer_write_sequence(self->asn1_writer, len);
@@ -983,6 +984,7 @@ vscf_alg_info_der_serializer_serialize_inplace(vscf_alg_info_der_serializer_t *s
     case vscf_alg_id_ECC:
     case vscf_alg_id_ED25519:
     case vscf_alg_id_CURVE25519:
+    case vscf_alg_id_RANDOM_PADDING:
         return vscf_alg_info_der_serializer_serialize_simple_alg_info(self, alg_info);
 
     case vscf_alg_id_SECP256R1:
@@ -1043,6 +1045,7 @@ vscf_alg_info_der_serializer_serialized_len(const vscf_alg_info_der_serializer_t
     case vscf_alg_id_ECC:
     case vscf_alg_id_ED25519:
     case vscf_alg_id_CURVE25519:
+    case vscf_alg_id_RANDOM_PADDING:
         return vscf_alg_info_der_serializer_serialized_simple_alg_info_len(self, alg_info);
 
     case vscf_alg_id_SECP256R1:

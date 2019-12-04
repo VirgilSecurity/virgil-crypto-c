@@ -47,14 +47,29 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Create module with functionality common for all 'api' objects.
-//  It is also enumerate all available interfaces within crypto libary.
+//  Types of the 'random padding' implementation.
+//  This types SHOULD NOT be used directly.
+//  The only purpose of including this module is to place implementation
+//  object in the stack memory.
 // --------------------------------------------------------------------------
 
-#ifndef VSCF_API_H_INCLUDED
-#define VSCF_API_H_INCLUDED
+#ifndef VSCF_RANDOM_PADDING_DEFS_H_INCLUDED
+#define VSCF_RANDOM_PADDING_DEFS_H_INCLUDED
 
 #include "vscf_library.h"
+#include "vscf_impl_private.h"
+#include "vscf_random_padding.h"
+#include "vscf_atomic.h"
+#include "vscf_tail_filter.h"
+#include "vscf_impl.h"
+
+#if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <virgil/crypto/common/vsc_buffer.h>
+#endif
+
+#if VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <VSCCommon/vsc_buffer.h>
+#endif
 
 // clang-format on
 //  @end
@@ -72,50 +87,42 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Enumerates all possible interfaces within crypto library.
+//  Handles implementation details.
 //
-enum vscf_api_tag_t {
-    vscf_api_tag_BEGIN = 0,
-    vscf_api_tag_ALG,
-    vscf_api_tag_ALG_INFO,
-    vscf_api_tag_ALG_INFO_DESERIALIZER,
-    vscf_api_tag_ALG_INFO_SERIALIZER,
-    vscf_api_tag_ASN1_READER,
-    vscf_api_tag_ASN1_WRITER,
-    vscf_api_tag_AUTH_DECRYPT,
-    vscf_api_tag_AUTH_ENCRYPT,
-    vscf_api_tag_CIPHER,
-    vscf_api_tag_CIPHER_AUTH,
-    vscf_api_tag_CIPHER_AUTH_INFO,
-    vscf_api_tag_CIPHER_INFO,
-    vscf_api_tag_COMPUTE_SHARED_KEY,
-    vscf_api_tag_DECRYPT,
-    vscf_api_tag_ENCRYPT,
-    vscf_api_tag_ENTROPY_SOURCE,
-    vscf_api_tag_HASH,
-    vscf_api_tag_KDF,
-    vscf_api_tag_KEY,
-    vscf_api_tag_KEY_ALG,
-    vscf_api_tag_KEY_CIPHER,
-    vscf_api_tag_KEY_DESERIALIZER,
-    vscf_api_tag_KEY_SERIALIZER,
-    vscf_api_tag_KEY_SIGNER,
-    vscf_api_tag_MAC,
-    vscf_api_tag_MESSAGE_INFO_FOOTER_SERIALIZER,
-    vscf_api_tag_MESSAGE_INFO_SERIALIZER,
-    vscf_api_tag_PADDING,
-    vscf_api_tag_PRIVATE_KEY,
-    vscf_api_tag_PUBLIC_KEY,
-    vscf_api_tag_RANDOM,
-    vscf_api_tag_SALTED_KDF,
-    vscf_api_tag_END
+struct vscf_random_padding_t {
+    //
+    //  Compile-time known information about this implementation.
+    //
+    const vscf_impl_info_t *info;
+    //
+    //  Reference counter.
+    //
+    VSCF_ATOMIC size_t refcnt;
+    //
+    //  Dependency to the interface 'random'.
+    //
+    vscf_impl_t *random;
+    //
+    //  Implementation specific context.
+    //
+    vscf_tail_filter_t *tail_filter;
+    //
+    //  Implementation specific context.
+    //
+    vsc_buffer_t *buffer;
+    //
+    //  Implementation specific context.
+    //
+    size_t unpadded_len;
+    //
+    //  Implementation specific context.
+    //
+    size_t padding_frame;
+    //
+    //  Implementation specific context.
+    //
+    size_t padding_frame_max;
 };
-typedef enum vscf_api_tag_t vscf_api_tag_t;
-
-//
-//  Generic type for any 'API' object.
-//
-typedef struct vscf_api_t vscf_api_t;
 
 
 // --------------------------------------------------------------------------
@@ -131,5 +138,5 @@ typedef struct vscf_api_t vscf_api_t;
 
 
 //  @footer
-#endif // VSCF_API_H_INCLUDED
+#endif // VSCF_RANDOM_PADDING_DEFS_H_INCLUDED
 //  @end

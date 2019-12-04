@@ -93,8 +93,6 @@ struct vscf_tail_filter_t {
     VSCF_ATOMIC size_t refcnt;
 
     vsc_buffer_t *tail;
-
-    vsc_buffer_t *temp;
 };
 
 

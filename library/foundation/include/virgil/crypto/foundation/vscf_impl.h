@@ -108,6 +108,7 @@ enum vscf_impl_tag_t {
     vscf_impl_tag_PKCS5_PBES2,
     vscf_impl_tag_PKCS5_PBKDF2,
     vscf_impl_tag_PKCS8_SERIALIZER,
+    vscf_impl_tag_RANDOM_PADDING,
     vscf_impl_tag_RAW_PRIVATE_KEY,
     vscf_impl_tag_RAW_PUBLIC_KEY,
     vscf_impl_tag_RSA,

@@ -552,8 +552,8 @@ vscf_alg_info_der_deserializer_deserialize_padding_cipher_alg_info(
         vscf_alg_info_der_deserializer_t *self, vscf_oid_id_t oid_id, vscf_error_t *error) {
 
     //  PaddingCipherParameters ::= SEQUENCE {
-    //      underlyingCipher AlgorithmIdentifier,
-    //      paddingFrame INTEGER(1..MAX)
+    //      padding AlgorithmIdentifier,
+    //      cipher AlgorithmIdentifier
     //  }
 
     VSCF_ASSERT_PTR(self);
@@ -562,19 +562,18 @@ vscf_alg_info_der_deserializer_deserialize_padding_cipher_alg_info(
 
     vscf_asn1_reader_read_sequence(self->asn1_reader);
 
+    vscf_impl_t *padding = vscf_alg_info_der_deserializer_deserialize_inplace(self, error);
+    if (NULL == padding) {
+        return NULL;
+    }
+
     vscf_impl_t *cipher = vscf_alg_info_der_deserializer_deserialize_inplace(self, error);
     if (NULL == cipher) {
+        vscf_impl_destroy(&padding);
         return NULL;
     }
 
-    const size_t paddingFrame = vscf_asn1_reader_read_uint(self->asn1_reader);
-    if (vscf_asn1_reader_has_error(self->asn1_reader) || (paddingFrame == 0)) {
-        vscf_impl_destroy(&cipher);
-        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_BAD_ASN1);
-        return NULL;
-    }
-
-    vscf_padding_cipher_alg_info_t *alg_info = vscf_padding_cipher_alg_info_new_with_members(&cipher, paddingFrame);
+    vscf_padding_cipher_alg_info_t *alg_info = vscf_padding_cipher_alg_info_new_with_members(&padding, &cipher);
 
     return vscf_padding_cipher_alg_info_impl(alg_info);
 }
@@ -623,6 +622,7 @@ vscf_alg_info_der_deserializer_deserialize_inplace(vscf_alg_info_der_deserialize
     case vscf_oid_id_RSA:
     case vscf_oid_id_ED25519:
     case vscf_oid_id_CURVE25519:
+    case vscf_oid_id_RANDOM_PADDING:
         return vscf_alg_info_der_deserializer_deserialize_simple_alg_info(self, oid_id, error);
 
     case vscf_oid_id_EC_GENERIC_KEY:

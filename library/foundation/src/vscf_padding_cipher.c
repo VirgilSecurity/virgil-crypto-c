@@ -59,11 +59,10 @@
 #include "vscf_encrypt.h"
 #include "vscf_padding_cipher_alg_info.h"
 #include "vscf_alg_factory.h"
-#include "vscf_random.h"
 #include "vscf_cipher.h"
+#include "vscf_padding.h"
 #include "vscf_padding_cipher_defs.h"
 #include "vscf_padding_cipher_internal.h"
-#include "vscf_error.h"
 
 #include <pb_decode.h>
 #include <pb_encode.h>
@@ -79,38 +78,10 @@
 // --------------------------------------------------------------------------
 
 //
-//  Private integral constants.
+//  Reset buffer. Ensures capacity is enough.
 //
-enum {
-    vscf_padding_cipher_PADDING_SIZE_LEN = 4,
-    vscf_padding_cipher_PADDING_LEN_MIN = vscf_padding_cipher_PADDING_SIZE_LEN + 1
-};
-
-//
-//  Return padding length (without encoded length) based on
-//  an unpadded plaintext length.
-//
-static size_t
-vscf_padding_cipher_padding_len(const vscf_padding_cipher_t *self, size_t unpadded_len);
-
-//
-//  Return total plaintext length with padding.
-//
-static size_t
-vscf_padding_cipher_padded_len(const vscf_padding_cipher_t *self, size_t data_len);
-
-//
-//  Generate padding.
-//  Padding length is derived from the given data length.
-//
-static vsc_buffer_t *
-vscf_padding_cipher_generate_padding(vscf_padding_cipher_t *self, size_t data_len, vscf_error_t *error);
-
-//
-//  Return data slice without padding.
-//
-static vsc_data_t
-vscf_padding_cipher_trim_padding(vsc_data_t data, vscf_error_t *error);
+static void
+vscf_padding_cipher_reset_buffer(vsc_buffer_t *buffer, size_t capacity);
 
 static vscf_status_t
 vscf_padding_cipher_finish_encryption(vscf_padding_cipher_t *self, vsc_buffer_t *out) VSCF_NODISCARD;
@@ -136,7 +107,7 @@ vscf_padding_cipher_init_ctx(vscf_padding_cipher_t *self) {
 
     VSCF_ASSERT_PTR(self);
 
-    self->padding_frame = vscf_padding_cipher_PADDING_FRAME_DEFAULT;
+    self->padding_buffer = vsc_buffer_new();
 }
 
 //
@@ -149,174 +120,109 @@ vscf_padding_cipher_cleanup_ctx(vscf_padding_cipher_t *self) {
 
     VSCF_ASSERT_PTR(self);
 
-    vscf_tail_filter_destroy(&self->tail_filter);
+    vsc_buffer_destroy(&self->padding_buffer);
 }
 
 //
-//  Setup padding frame in bytes.
-//  The padding frame defines the multiplicator of data length.
+//  Return underlying cipher.
 //
-VSCF_PUBLIC void
-vscf_padding_cipher_set_padding_frame(vscf_padding_cipher_t *self, size_t padding_frame) {
+VSCF_PUBLIC const vscf_impl_t *
+vscf_padding_cipher_get_cipher(vscf_padding_cipher_t *self) {
 
     VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT((vscf_padding_cipher_PADDING_FRAME_MIN <= padding_frame) &&
-                (padding_frame <= vscf_padding_cipher_PADDING_FRAME_MAX));
+    VSCF_ASSERT_PTR(self->cipher);
 
-    self->padding_frame = padding_frame;
+    return self->cipher;
 }
 
 //
-//  Return padding length (without encoded length) based on
-//  an unpadded plaintext length.
+//  Return underlying padding.
 //
-static size_t
-vscf_padding_cipher_padding_len(const vscf_padding_cipher_t *self, size_t unpadded_len) {
+VSCF_PUBLIC const vscf_impl_t *
+vscf_padding_cipher_get_padding(vscf_padding_cipher_t *self) {
 
     VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(self->padding);
 
-    const size_t padding_len =
-            self->padding_frame - (unpadded_len + vscf_padding_cipher_PADDING_SIZE_LEN) % self->padding_frame;
-
-    return padding_len;
+    return self->padding;
 }
 
 //
-//  Return total plaintext length with padding.
+//  Reset buffer. Ensures capacity is enough.
 //
-static size_t
-vscf_padding_cipher_padded_len(const vscf_padding_cipher_t *self, size_t data_len) {
+static void
+vscf_padding_cipher_reset_buffer(vsc_buffer_t *buffer, size_t capacity) {
 
-    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(buffer);
 
-    const size_t full_size = data_len + vscf_padding_cipher_PADDING_SIZE_LEN;
-
-    const size_t factor = full_size / self->padding_frame + 1;
-
-    return factor * self->padding_frame;
-}
-
-//
-//  Generate padding.
-//  Padding length is derived from the given data length.
-//
-static vsc_buffer_t *
-vscf_padding_cipher_generate_padding(vscf_padding_cipher_t *self, size_t data_len, vscf_error_t *error) {
-
-    VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(self->random);
-
-
-    const uint32_t padding_len = (uint32_t)vscf_padding_cipher_padding_len(self, data_len);
-    const size_t total_padding_len = padding_len + vscf_padding_cipher_PADDING_SIZE_LEN;
-
-    vsc_buffer_t *padding = vsc_buffer_new_with_capacity(total_padding_len);
-    const vscf_status_t status = vscf_random(self->random, padding_len, padding);
-
-    if (status != vscf_status_SUCCESS) {
-        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_RANDOM_FAILED);
-        vsc_buffer_destroy(&padding);
-        return NULL;
+    if (vsc_buffer_is_valid(buffer) && vsc_buffer_capacity(buffer) >= capacity) {
+        vsc_buffer_erase(buffer);
+    } else if (capacity > 0) {
+        vsc_buffer_release(buffer);
+        vsc_buffer_alloc(buffer, capacity);
+    } else {
+        vsc_buffer_release(buffer);
     }
-
-    pb_ostream_t stream =
-            pb_ostream_from_buffer(vsc_buffer_unused_bytes(padding), vscf_padding_cipher_PADDING_SIZE_LEN);
-
-    const bool pb_res = pb_encode_fixed32(&stream, &padding_len);
-    VSCF_ASSERT(pb_res);
-    vsc_buffer_inc_used(padding, vscf_padding_cipher_PADDING_SIZE_LEN);
-
-    vsc_buffer_make_secure(padding);
-
-    return padding;
-}
-
-//
-//  Return data slice without padding.
-//
-static vsc_data_t
-vscf_padding_cipher_trim_padding(vsc_data_t data, vscf_error_t *error) {
-
-    VSCF_ASSERT(vsc_data_is_valid(data));
-
-    if (data.len < (vscf_padding_cipher_PADDING_SIZE_LEN + 1)) {
-        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_INVALID_PADDING);
-        return vsc_data_empty();
-    }
-
-    uint32_t padding_len = 0;
-    const vsc_data_t padding_size_data = vsc_data_slice_end(data, 0, vscf_padding_cipher_PADDING_SIZE_LEN);
-    pb_istream_t stream = pb_istream_from_buffer(padding_size_data.bytes, padding_size_data.len);
-    const bool pb_res = pb_decode_fixed32(&stream, &padding_len);
-
-    if (!pb_res) {
-        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_INVALID_PADDING);
-        return vsc_data_empty();
-    }
-
-    const size_t total_padding_len = padding_len + vscf_padding_cipher_PADDING_SIZE_LEN;
-    if (data.len < total_padding_len) {
-        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_INVALID_PADDING);
-        return vsc_data_empty();
-    }
-
-    vsc_data_t trimmed_data = vsc_data_slice_beg(data, 0, data.len - total_padding_len);
-
-    return trimmed_data;
 }
 
 static vscf_status_t
 vscf_padding_cipher_finish_encryption(vscf_padding_cipher_t *self, vsc_buffer_t *out) {
 
     VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(self->random);
+    VSCF_ASSERT_PTR(self->cipher);
+    VSCF_ASSERT_PTR(self->padding);
     VSCF_ASSERT_PTR(out);
+    VSCF_ASSERT(vsc_buffer_is_valid(out));
+    VSCF_ASSERT(vsc_buffer_unused_len(out) >= vscf_padding_cipher_encrypted_out_len(self, 0));
 
-    vscf_error_t error;
-    vscf_error_reset(&error);
+    //
+    //  Create padding.
+    //
+    vscf_padding_cipher_reset_buffer(self->padding_buffer, vscf_padding_len(self->padding));
+    const vscf_status_t padding_status = vscf_padding_finish_data_processing(self->padding, self->padding_buffer);
 
-    vsc_buffer_t *padding = vscf_padding_cipher_generate_padding(self, self->unpadded_len, &error);
-    if (NULL == padding) {
-        return vscf_error_status(&error);
+    if (padding_status != vscf_status_SUCCESS) {
+        return padding_status;
     }
 
-    vscf_cipher_update(self->cipher, vsc_buffer_data(padding), out);
-    vsc_buffer_destroy(&padding);
+    //
+    //  Encrypt padding.
+    //
+    vscf_cipher_update(self->cipher, vsc_buffer_data(self->padding_buffer), out);
+    vsc_buffer_erase(self->padding_buffer);
 
-    const vscf_status_t status = vscf_cipher_finish(self->cipher, out);
+    //
+    //  Finish encryption.
+    //
+    const vscf_status_t enc_status = vscf_cipher_finish(self->cipher, out);
 
-    return status;
+    return enc_status;
 }
 
 static vscf_status_t
 vscf_padding_cipher_finish_decryption(vscf_padding_cipher_t *self, vsc_buffer_t *out) {
 
     VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(self->tail_filter);
+    VSCF_ASSERT_PTR(self->cipher);
+    VSCF_ASSERT_PTR(self->padding);
     VSCF_ASSERT_PTR(out);
+    VSCF_ASSERT(vsc_buffer_is_valid(out));
+    VSCF_ASSERT(vsc_buffer_unused_len(out) >= vscf_padding_cipher_decrypted_out_len(self, 0));
 
-    const size_t buffer_capacity = vscf_cipher_decrypted_out_len(self->cipher, 0);
-    vsc_buffer_t *buffer = vscf_tail_filter_provide_buffer(self->tail_filter, buffer_capacity);
-    const vscf_status_t status = vscf_cipher_finish(self->cipher, buffer);
+    vscf_padding_cipher_reset_buffer(self->padding_buffer, vscf_cipher_decrypted_out_len(self->cipher, 0));
 
+    const vscf_status_t status = vscf_cipher_finish(self->cipher, self->padding_buffer);
     if (status != vscf_status_SUCCESS) {
-        vscf_tail_filter_release(self->tail_filter);
         return status;
     }
 
-    vscf_tail_filter_process_buffer(self->tail_filter, out);
+    vscf_padding_process_padded_data(self->padding, vsc_buffer_data(self->padding_buffer), out);
+    vsc_buffer_erase(self->padding_buffer);
 
-    vscf_error_t error;
-    vscf_error_reset(&error);
-
-    vsc_data_t data = vscf_padding_cipher_trim_padding(vscf_tail_filter_tail(self->tail_filter), &error);
-    if (vscf_error_has_error(&error)) {
-        vscf_tail_filter_release(self->tail_filter);
-        return vscf_error_status(&error);
+    const vscf_status_t trim_status = vscf_padding_finish_padded_data_processing(self->padding, out);
+    if (trim_status != vscf_status_SUCCESS) {
+        return status;
     }
-
-    vsc_buffer_write_data(out, data);
-    vscf_tail_filter_release(self->tail_filter);
 
     return vscf_status_SUCCESS;
 }
@@ -340,12 +246,17 @@ vscf_padding_cipher_produce_alg_info(const vscf_padding_cipher_t *self) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(self->cipher);
+    VSCF_ASSERT_PTR(self->padding);
 
     vscf_impl_t *underlying_cipher_alg_info = vscf_alg_produce_alg_info(self->cipher);
+    vscf_impl_t *underlying_padding_alg_info = vscf_alg_produce_alg_info(self->padding);
+
     vscf_padding_cipher_alg_info_t *alg_info =
-            vscf_padding_cipher_alg_info_new_with_members(&underlying_cipher_alg_info, self->padding_frame);
+            vscf_padding_cipher_alg_info_new_with_members(&underlying_padding_alg_info, &underlying_cipher_alg_info);
 
     return vscf_padding_cipher_alg_info_impl(alg_info);
+
+    return NULL;
 }
 
 //
@@ -359,108 +270,28 @@ vscf_padding_cipher_restore_alg_info(vscf_padding_cipher_t *self, const vscf_imp
     VSCF_ASSERT(vscf_alg_info_alg_id(alg_info) == vscf_alg_id_PADDING_CIPHER);
     VSCF_ASSERT(vscf_impl_tag(alg_info) == vscf_impl_tag_PADDING_CIPHER_ALG_INFO);
 
-    const vscf_padding_cipher_alg_info_t *cipher_alg_info = (const vscf_padding_cipher_alg_info_t *)alg_info;
-    const vscf_impl_t *underlying_cipher_alg_info = vscf_padding_cipher_alg_info_underlying_cipher(cipher_alg_info);
-    const size_t padding_frame = vscf_padding_cipher_alg_info_padding_frame(cipher_alg_info);
+    const vscf_padding_cipher_alg_info_t *padding_cipher_alg_info = (const vscf_padding_cipher_alg_info_t *)alg_info;
+    const vscf_impl_t *padding_alg_info = vscf_padding_cipher_alg_info_padding(padding_cipher_alg_info);
+    const vscf_impl_t *cipher_alg_info = vscf_padding_cipher_alg_info_cipher(padding_cipher_alg_info);
 
-    if (padding_frame < vscf_padding_cipher_PADDING_FRAME_MIN ||
-            padding_frame > vscf_padding_cipher_PADDING_FRAME_MAX) {
+    vscf_impl_t *padding = vscf_alg_factory_create_padding_from_info(padding_alg_info, NULL);
+    if (NULL == padding) {
         return vscf_status_ERROR_UNSUPPORTED_ALGORITHM;
     }
 
-    vscf_impl_t *underlying_cipher = vscf_alg_factory_create_cipher_from_info(underlying_cipher_alg_info);
-    if (NULL == underlying_cipher) {
+    vscf_impl_t *cipher = vscf_alg_factory_create_cipher_from_info(cipher_alg_info);
+    if (NULL == cipher) {
+        vscf_impl_destroy(&padding);
         return vscf_status_ERROR_UNSUPPORTED_ALGORITHM;
     }
+
+    vscf_padding_cipher_release_padding(self);
+    vscf_padding_cipher_take_padding(self, padding);
 
     vscf_padding_cipher_release_cipher(self);
-    vscf_padding_cipher_take_cipher(self, underlying_cipher);
-    vscf_padding_cipher_set_padding_frame(self, padding_frame);
+    vscf_padding_cipher_take_cipher(self, cipher);
 
     return vscf_status_SUCCESS;
-}
-
-//
-//  Encrypt given data.
-//
-VSCF_PUBLIC vscf_status_t
-vscf_padding_cipher_encrypt(vscf_padding_cipher_t *self, vsc_data_t data, vsc_buffer_t *out) {
-
-    VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(self->cipher);
-    VSCF_ASSERT_PTR(self->random);
-    VSCF_ASSERT_PTR(out);
-    VSCF_ASSERT(vsc_data_is_valid(data));
-    VSCF_ASSERT(vsc_buffer_is_valid(out));
-    VSCF_ASSERT(vsc_buffer_unused_len(out) >= vscf_padding_cipher_encrypted_len(self, data.len));
-
-    vscf_padding_cipher_start_encryption(self);
-    vscf_padding_cipher_update(self, data, out);
-    const vscf_status_t status = vscf_padding_cipher_finish(self, out);
-
-    return status;
-}
-
-//
-//  Calculate required buffer length to hold the encrypted data.
-//
-VSCF_PUBLIC size_t
-vscf_padding_cipher_encrypted_len(const vscf_padding_cipher_t *self, size_t data_len) {
-
-    VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(self->cipher);
-
-    const size_t padded_len = vscf_padding_cipher_padded_len(self, data_len);
-    const size_t len = vscf_encrypt_encrypted_len(self->cipher, padded_len);
-    return len;
-}
-
-//
-//  Precise length calculation of encrypted data.
-//
-VSCF_PUBLIC size_t
-vscf_padding_cipher_precise_encrypted_len(const vscf_padding_cipher_t *self, size_t data_len) {
-
-    VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(self->cipher);
-
-    const size_t padded_len = vscf_padding_cipher_padded_len(self, data_len);
-    const size_t len = vscf_encrypt_precise_encrypted_len(self->cipher, padded_len);
-    return len;
-}
-
-//
-//  Decrypt given data.
-//
-VSCF_PUBLIC vscf_status_t
-vscf_padding_cipher_decrypt(vscf_padding_cipher_t *self, vsc_data_t data, vsc_buffer_t *out) {
-
-    VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(self->cipher);
-    VSCF_ASSERT_PTR(out);
-    VSCF_ASSERT(vsc_data_is_valid(data));
-    VSCF_ASSERT(vsc_buffer_is_valid(out));
-    VSCF_ASSERT(vsc_buffer_unused_len(out) >= vscf_padding_cipher_decrypted_len(self, data.len));
-
-    vscf_padding_cipher_start_decryption(self);
-    vscf_padding_cipher_update(self, data, out);
-    const vscf_status_t status = vscf_padding_cipher_finish(self, out);
-
-    return status;
-}
-
-//
-//  Calculate required buffer length to hold the decrypted data.
-//
-VSCF_PUBLIC size_t
-vscf_padding_cipher_decrypted_len(const vscf_padding_cipher_t *self, size_t data_len) {
-
-    VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(self->cipher);
-
-    const size_t len =
-            vscf_padding_cipher_decrypted_out_len(self, data_len) + vscf_padding_cipher_decrypted_out_len(self, 0);
-    return len;
 }
 
 //
@@ -513,6 +344,133 @@ vscf_padding_cipher_block_len(const vscf_padding_cipher_t *self) {
 }
 
 //
+//  Encrypt given data.
+//
+VSCF_PUBLIC vscf_status_t
+vscf_padding_cipher_encrypt(vscf_padding_cipher_t *self, vsc_data_t data, vsc_buffer_t *out) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(self->cipher);
+    VSCF_ASSERT_PTR(self->padding);
+    VSCF_ASSERT_PTR(out);
+    VSCF_ASSERT(vsc_data_is_valid(data));
+    VSCF_ASSERT(vsc_buffer_is_valid(out));
+    VSCF_ASSERT(vsc_buffer_unused_len(out) >= vscf_padding_cipher_encrypted_len(self, data.len));
+
+    //
+    //  Encrypt data.
+    //
+    vscf_cipher_start_encryption(self->cipher);
+    vscf_padding_start_data_processing(self->padding);
+    vscf_cipher_update(self->cipher, vscf_padding_process_data(self->padding, data), out);
+
+    //
+    //  Create padding.
+    //
+    vscf_padding_cipher_reset_buffer(self->padding_buffer, vscf_padding_len(self->padding));
+
+    const vscf_status_t padding_status = vscf_padding_finish_data_processing(self->padding, self->padding_buffer);
+    if (padding_status != vscf_status_SUCCESS) {
+        return padding_status;
+    }
+
+    //
+    //  Encrypt padding.
+    //
+    vscf_cipher_update(self->cipher, vsc_buffer_data(self->padding_buffer), out);
+    vsc_buffer_erase(self->padding_buffer);
+
+    //
+    //  Finish encryption.
+    //
+    const vscf_status_t enc_status = vscf_cipher_finish(self->cipher, out);
+
+    return enc_status;
+}
+
+//
+//  Calculate required buffer length to hold the encrypted data.
+//
+VSCF_PUBLIC size_t
+vscf_padding_cipher_encrypted_len(const vscf_padding_cipher_t *self, size_t data_len) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(self->cipher);
+    VSCF_ASSERT_PTR(self->padding);
+
+    const size_t padded_len = vscf_padding_padded_data_len(self->padding, data_len);
+    const size_t len = vscf_encrypt_encrypted_len(self->cipher, padded_len);
+    return len;
+}
+
+//
+//  Precise length calculation of encrypted data.
+//
+VSCF_PUBLIC size_t
+vscf_padding_cipher_precise_encrypted_len(const vscf_padding_cipher_t *self, size_t data_len) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(self->cipher);
+    VSCF_ASSERT_PTR(self->padding);
+
+    const size_t padded_len = vscf_padding_padded_data_len(self->padding, data_len);
+    const size_t len = vscf_encrypt_precise_encrypted_len(self->cipher, padded_len);
+    return len;
+}
+
+//
+//  Decrypt given data.
+//
+VSCF_PUBLIC vscf_status_t
+vscf_padding_cipher_decrypt(vscf_padding_cipher_t *self, vsc_data_t data, vsc_buffer_t *out) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(self->cipher);
+    VSCF_ASSERT_PTR(self->padding);
+    VSCF_ASSERT_PTR(out);
+    VSCF_ASSERT(vsc_data_is_valid(data));
+    VSCF_ASSERT(vsc_buffer_is_valid(out));
+    VSCF_ASSERT(vsc_buffer_unused_len(out) >= vscf_padding_cipher_decrypted_len(self, data.len));
+
+    vscf_padding_start_padded_data_processing(self->padding);
+    vscf_cipher_start_decryption(self->cipher);
+
+    vscf_padding_cipher_reset_buffer(self->padding_buffer, vscf_cipher_decrypted_out_len(self->cipher, data.len));
+    vscf_cipher_update(self->cipher, data, self->padding_buffer);
+    vscf_padding_process_padded_data(self->padding, vsc_buffer_data(self->padding_buffer), out);
+
+    vscf_padding_cipher_reset_buffer(self->padding_buffer, vscf_cipher_decrypted_out_len(self->cipher, 0));
+    const vscf_status_t status = vscf_cipher_finish(self->cipher, self->padding_buffer);
+    if (status != vscf_status_SUCCESS) {
+        return status;
+    }
+
+    vscf_padding_process_padded_data(self->padding, vsc_buffer_data(self->padding_buffer), out);
+    vsc_buffer_erase(self->padding_buffer);
+
+    const vscf_status_t trim_status = vscf_padding_finish_padded_data_processing(self->padding, out);
+    if (trim_status != vscf_status_SUCCESS) {
+        return status;
+    }
+
+    return vscf_status_SUCCESS;
+}
+
+//
+//  Calculate required buffer length to hold the decrypted data.
+//
+VSCF_PUBLIC size_t
+vscf_padding_cipher_decrypted_len(const vscf_padding_cipher_t *self, size_t data_len) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(self->cipher);
+
+    const size_t len =
+            vscf_padding_cipher_decrypted_out_len(self, data_len) + vscf_padding_cipher_decrypted_out_len(self, 0);
+    return len;
+}
+
+//
 //  Setup IV or nonce.
 //
 VSCF_PUBLIC void
@@ -556,8 +514,9 @@ vscf_padding_cipher_start_encryption(vscf_padding_cipher_t *self) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(self->cipher);
+    VSCF_ASSERT_PTR(self->padding);
 
-    self->unpadded_len = 0;
+    vscf_padding_start_data_processing(self->padding);
     vscf_cipher_start_encryption(self->cipher);
 }
 
@@ -569,12 +528,9 @@ vscf_padding_cipher_start_decryption(vscf_padding_cipher_t *self) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(self->cipher);
+    VSCF_ASSERT_PTR(self->padding);
 
-    if (NULL == self->tail_filter) {
-        self->tail_filter = vscf_tail_filter_new();
-    }
-
-    vscf_tail_filter_reset(self->tail_filter, self->padding_frame + vscf_padding_cipher_PADDING_SIZE_LEN);
+    vscf_padding_start_padded_data_processing(self->padding);
     vscf_cipher_start_decryption(self->cipher);
 }
 
@@ -586,19 +542,16 @@ vscf_padding_cipher_update(vscf_padding_cipher_t *self, vsc_data_t data, vsc_buf
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(self->cipher);
+    VSCF_ASSERT_PTR(self->padding);
     VSCF_ASSERT(vsc_buffer_unused_len(out) >= vscf_padding_cipher_out_len(self, data.len));
     VSCF_ASSERT(vscf_cipher_state(self->cipher) != vscf_cipher_state_INITIAL);
 
     if (vscf_cipher_state(self->cipher) == vscf_cipher_state_ENCRYPTION) {
-        self->unpadded_len += data.len;
-        self->unpadded_len %= self->padding_frame;
-        vscf_cipher_update(self->cipher, data, out);
+        vscf_cipher_update(self->cipher, vscf_padding_process_data(self->padding, data), out);
     } else {
-        VSCF_ASSERT_PTR(self->tail_filter);
-        const size_t buffer_capacity = vscf_cipher_encrypted_out_len(self->cipher, data.len);
-        vsc_buffer_t *buffer = vscf_tail_filter_provide_buffer(self->tail_filter, buffer_capacity);
-        vscf_cipher_update(self->cipher, data, buffer);
-        vscf_tail_filter_process_buffer(self->tail_filter, out);
+        vscf_padding_cipher_reset_buffer(self->padding_buffer, vscf_cipher_decrypted_out_len(self->cipher, data.len));
+        vscf_cipher_update(self->cipher, data, self->padding_buffer);
+        vscf_padding_process_padded_data(self->padding, vsc_buffer_data(self->padding_buffer), out);
     }
 }
 
@@ -631,15 +584,13 @@ vscf_padding_cipher_encrypted_out_len(const vscf_padding_cipher_t *self, size_t 
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(self->cipher);
-    VSCF_ASSERT(vscf_cipher_state(self->cipher) == vscf_cipher_state_ENCRYPTION);
 
     if (data_len > 0) {
         const size_t len = vscf_cipher_encrypted_out_len(self->cipher, data_len);
         return len;
     }
 
-    const size_t padding_len =
-            vscf_padding_cipher_padding_len(self, self->unpadded_len) + vscf_padding_cipher_PADDING_SIZE_LEN;
+    const size_t padding_len = vscf_padding_len(self->padding);
     const size_t len =
             vscf_cipher_encrypted_out_len(self->cipher, padding_len) + vscf_cipher_encrypted_out_len(self->cipher, 0);
     return len;

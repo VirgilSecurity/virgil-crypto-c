@@ -136,30 +136,16 @@ VSCF_PUBLIC void
 vscf_tail_filter_reset(vscf_tail_filter_t *self, size_t len);
 
 //
-//  Release inner buffers.
-//
-VSCF_PUBLIC void
-vscf_tail_filter_release(vscf_tail_filter_t *self);
-
-//
 //  Return filtered tail.
 //
 VSCF_PUBLIC vsc_data_t
 vscf_tail_filter_tail(vscf_tail_filter_t *self);
 
 //
-//  Return writable buffer to hold temporary (not filtered) data.
-//  Call then "processBuffer()" to filter data from this buffer.
-//  Ensures that returned buffer has at least given capacity
-//
-VSCF_PUBLIC vsc_buffer_t *
-vscf_tail_filter_provide_buffer(vscf_tail_filter_t *self, size_t capacity);
-
-//
-//  Write filtered data from the temporary buffer to the out.
+//  Process given data and return filtered data guaranteed without a tail.
 //
 VSCF_PUBLIC void
-vscf_tail_filter_process_buffer(vscf_tail_filter_t *self, vsc_buffer_t *out);
+vscf_tail_filter_process(vscf_tail_filter_t *self, vsc_data_t data, vsc_buffer_t *out);
 
 
 // --------------------------------------------------------------------------
