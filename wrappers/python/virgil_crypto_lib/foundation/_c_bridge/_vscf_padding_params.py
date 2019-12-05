@@ -68,7 +68,7 @@ class VscfPaddingParams(object):
     def vscf_padding_params_new_with_constraints(self, frame, frame_min, frame_max):
         """Build padding params with given constraints.
         Precondition: frame_length_min <= frame_length <= frame_length_max.
-        Next formula can clarify what frame is: "padding_length = data_length MOD frame""""
+        Next formula can clarify what frame is: padding_length = data_length MOD frame"""
         vscf_padding_params_new_with_constraints = self._lib.vscf_padding_params_new_with_constraints
         vscf_padding_params_new_with_constraints.argtypes = [c_size_t, c_size_t, c_size_t]
         vscf_padding_params_new_with_constraints.restype = POINTER(vscf_padding_params_t)

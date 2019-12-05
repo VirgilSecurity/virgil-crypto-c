@@ -84,7 +84,7 @@ vscf_padding_params_cleanup_ctx(vscf_padding_params_t *self);
 //
 //  Build padding params with given constraints.
 //  Precondition: frame_length_min <= frame_length <= frame_length_max.
-//  Next formula can clarify what frame is: "padding_length = data_length MOD frame"
+//  Next formula can clarify what frame is: padding_length = data_length MOD frame
 //
 static void
 vscf_padding_params_init_ctx_with_constraints(vscf_padding_params_t *self, size_t frame, size_t frame_min,
@@ -149,7 +149,7 @@ vscf_padding_params_new(void) {
 //  Perform initialization of pre-allocated context.
 //  Build padding params with given constraints.
 //  Precondition: frame_length_min <= frame_length <= frame_length_max.
-//  Next formula can clarify what frame is: "padding_length = data_length MOD frame"
+//  Next formula can clarify what frame is: padding_length = data_length MOD frame
 //
 VSCF_PUBLIC void
 vscf_padding_params_init_with_constraints(vscf_padding_params_t *self, size_t frame, size_t frame_min,
@@ -168,7 +168,7 @@ vscf_padding_params_init_with_constraints(vscf_padding_params_t *self, size_t fr
 //  Allocate class context and perform it's initialization.
 //  Build padding params with given constraints.
 //  Precondition: frame_length_min <= frame_length <= frame_length_max.
-//  Next formula can clarify what frame is: "padding_length = data_length MOD frame"
+//  Next formula can clarify what frame is: padding_length = data_length MOD frame
 //
 VSCF_PUBLIC vscf_padding_params_t *
 vscf_padding_params_new_with_constraints(size_t frame, size_t frame_min, size_t frame_max) {
@@ -297,7 +297,7 @@ vscf_padding_params_cleanup_ctx(vscf_padding_params_t *self) {
 //
 //  Build padding params with given constraints.
 //  Precondition: frame_length_min <= frame_length <= frame_length_max.
-//  Next formula can clarify what frame is: "padding_length = data_length MOD frame"
+//  Next formula can clarify what frame is: padding_length = data_length MOD frame
 //
 static void
 vscf_padding_params_init_ctx_with_constraints(

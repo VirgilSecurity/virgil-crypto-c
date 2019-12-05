@@ -12,7 +12,7 @@
     <constructor name="with constraints">
         Build padding params with given constraints.
         Precondition: frame_length_min &lt;= frame_length &lt;= frame_length_max.
-        Next formula can clarify what frame is: "padding_length = data_length MOD frame"
+        Next formula can clarify what frame is: padding_length = data_length MOD frame
 
         <argument name="frame" type="size"/>
         <argument name="frame min" type="size"/>

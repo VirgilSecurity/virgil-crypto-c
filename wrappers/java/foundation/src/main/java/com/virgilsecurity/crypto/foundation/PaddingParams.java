@@ -57,7 +57,7 @@ public class PaddingParams implements AutoCloseable {
     /*
     * Build padding params with given constraints.
     * Precondition: frame_length_min <= frame_length <= frame_length_max.
-    * Next formula can clarify what frame is: "padding_length = data_length MOD frame"
+    * Next formula can clarify what frame is: padding_length = data_length MOD frame
     */
     public PaddingParams(int frame, int frameMin, int frameMax) {
         super();

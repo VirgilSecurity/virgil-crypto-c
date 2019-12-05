@@ -68,7 +68,7 @@ import VSCFoundation
 
     /// Build padding params with given constraints.
     /// Precondition: frame_length_min <= frame_length <= frame_length_max.
-    /// Next formula can clarify what frame is: "padding_length = data_length MOD frame"
+    /// Next formula can clarify what frame is: padding_length = data_length MOD frame
     public init(frame: Int, frameMin: Int, frameMax: Int) {
         let proxyResult = vscf_padding_params_new_with_constraints(frame, frameMin, frameMax)
 
