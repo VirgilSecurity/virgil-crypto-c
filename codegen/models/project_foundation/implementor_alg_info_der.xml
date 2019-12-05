@@ -16,7 +16,6 @@
         <require impl="salted kdf alg info"/>
         <require impl="pbe alg info"/>
         <require impl="ecc alg info"/>
-        <require impl="padding cipher alg info"/>
         <require module="buffer defs" project="common"/>
 
         <dependency name="asn1 writer" interface="asn1 writer"/>
@@ -180,24 +179,6 @@
             <return type="size"/>
         </method>
 
-        <method name="serialize padding cipher alg info len" is_const="1">
-            Return buffer size enough to hold ASN.1 structure
-            "AlgorithmIdentifier" with "PaddingCipherParameters".
-
-            <argument name="alg info" interface="alg info"/>
-
-            <return type="size"/>
-        </method>
-
-        <method name="serialize padding cipher alg info">
-            Serialize class "padding cipher alg info" to the ASN.1 structure
-            "AlgorithmIdentifier" with "PaddingCipherParameters".
-
-            <argument name="alg info" interface="alg info"/>
-
-            <return type="size"/>
-        </method>
-
         <method name="serialize inplace" declaration="public">
             Serialize by using internal ASN.1 writer.
             Note, that caller code is responsible to reset ASN.1 writer with
@@ -223,7 +204,6 @@
         <require impl="salted kdf alg info"/>
         <require impl="pbe alg info"/>
         <require impl="ecc alg info"/>
-        <require impl="padding cipher alg info"/>
         <require interface="alg info"/>
 
         <dependency name="asn1 reader" interface="asn1 reader"/>
@@ -303,16 +283,6 @@
         <method name="deserialize ecc alg info">
             Parse ASN.1 structure "AlgorithmIdentifier" with ECParameters
             parameters defined in the RFC 5480.
-
-            <argument name="oid id" enum="oid id"/>
-            <argument name="error" class="error" access="readwrite"/>
-
-            <return interface="alg info" access="disown"/>
-        </method>
-
-        <method name="deserialize padding cipher alg info">
-            Parse ASN.1 structure "AlgorithmIdentifier" with
-            PaddingCipherParameters parameters.
 
             <argument name="oid id" enum="oid id"/>
             <argument name="error" class="error" access="readwrite"/>

@@ -125,7 +125,7 @@
 #include "vscf_message_info_serializer_api.h"
 #include "vscf_message_padding.h"
 #include "vscf_padding_api.h"
-#include "vscf_padding_cipher_alg_info_defs.h"
+#include "vscf_padding_cipher.h"
 #include "vscf_padding_cipher_defs.h"
 #include "vscf_padding_params_defs.h"
 #include "vscf_password_recipient_info_defs.h"

@@ -36,6 +36,7 @@
 from virgil_crypto_lib._libs import *
 from ctypes import *
 from ._vscf_impl import vscf_impl_t
+from ._vscf_padding_params import vscf_padding_params_t
 from virgil_crypto_lib.common._c_bridge import vsc_data_t
 from ._vscf_message_info_custom_params import vscf_message_info_custom_params_t
 from virgil_crypto_lib.common._c_bridge import vsc_buffer_t
@@ -80,6 +81,18 @@ class VscfRecipientCipher(object):
         vscf_recipient_cipher_use_encryption_cipher.argtypes = [POINTER(vscf_recipient_cipher_t), POINTER(vscf_impl_t)]
         vscf_recipient_cipher_use_encryption_cipher.restype = None
         return vscf_recipient_cipher_use_encryption_cipher(ctx, encryption_cipher)
+
+    def vscf_recipient_cipher_use_encryption_padding(self, ctx, encryption_padding):
+        vscf_recipient_cipher_use_encryption_padding = self._lib.vscf_recipient_cipher_use_encryption_padding
+        vscf_recipient_cipher_use_encryption_padding.argtypes = [POINTER(vscf_recipient_cipher_t), POINTER(vscf_impl_t)]
+        vscf_recipient_cipher_use_encryption_padding.restype = None
+        return vscf_recipient_cipher_use_encryption_padding(ctx, encryption_padding)
+
+    def vscf_recipient_cipher_use_padding_params(self, ctx, padding_params):
+        vscf_recipient_cipher_use_padding_params = self._lib.vscf_recipient_cipher_use_padding_params
+        vscf_recipient_cipher_use_padding_params.argtypes = [POINTER(vscf_recipient_cipher_t), POINTER(vscf_padding_params_t)]
+        vscf_recipient_cipher_use_padding_params.restype = None
+        return vscf_recipient_cipher_use_padding_params(ctx, padding_params)
 
     def vscf_recipient_cipher_use_signer_hash(self, ctx, signer_hash):
         vscf_recipient_cipher_use_signer_hash = self._lib.vscf_recipient_cipher_use_signer_hash

@@ -170,6 +170,16 @@ public class FoundationJNI {
     public native AlgInfo messageInfo_cipherKdfAlgInfo(long cCtx);
 
     /*
+    * Return true if cipher padding alg info exists.
+    */
+    public native boolean messageInfo_hasCipherPaddingAlgInfo(long cCtx);
+
+    /*
+    * Return cipher padding alg info.
+    */
+    public native AlgInfo messageInfo_cipherPaddingAlgInfo(long cCtx);
+
+    /*
     * Return true if footer info exists.
     */
     public native boolean messageInfo_hasFooterInfo(long cCtx);
@@ -327,6 +337,11 @@ public class FoundationJNI {
     public native Cipher algFactory_createCipherFromInfo(AlgInfo algInfo);
 
     /*
+    * Create algorithm that implements "padding" interface.
+    */
+    public native Padding algFactory_createPaddingFromInfo(AlgInfo algInfo, Random random);
+
+    /*
     * Create a key algorithm based on an identifier.
     */
     public native KeyAlg keyAlgFactory_createFromAlgId(AlgId algId, Random random) throws FoundationException;
@@ -414,6 +429,10 @@ public class FoundationJNI {
     public native void recipientCipher_setRandom(long cCtx, Random random);
 
     public native void recipientCipher_setEncryptionCipher(long cCtx, Cipher encryptionCipher);
+
+    public native void recipientCipher_setEncryptionPadding(long cCtx, Padding encryptionPadding);
+
+    public native void recipientCipher_setPaddingParams(long cCtx, PaddingParams paddingParams);
 
     public native void recipientCipher_setSignerHash(long cCtx, Hash signerHash);
 
@@ -1045,6 +1064,27 @@ public class FoundationJNI {
     * Return data size.
     */
     public native int footerInfo_dataSize(long cCtx);
+
+    public native long paddingParams_new();
+
+    public native void paddingParams_close(long cCtx);
+
+    public native long paddingParams_new(int frame, int frameMin, int frameMax);
+
+    /*
+    * Return padding frame in bytes.
+    */
+    public native int paddingParams_frame(long cCtx);
+
+    /*
+    * Return minimum padding frame in bytes.
+    */
+    public native int paddingParams_frameMin(long cCtx);
+
+    /*
+    * Return minimum padding frame in bytes.
+    */
+    public native int paddingParams_frameMax(long cCtx);
 
     public native long sha224_new();
 
@@ -2720,132 +2760,6 @@ public class FoundationJNI {
     */
     public native PublicKey rawPrivateKey_extractPublicKey(long cCtx);
 
-    public native void paddingCipher_setRandom(long cCtx, Random random);
-
-    public native void paddingCipher_setCipher(long cCtx, Cipher cipher);
-
-    /*
-    * Setup padding frame in bytes.
-    * The padding frame defines the multiplicator of data length.
-    */
-    public native void paddingCipher_setPaddingFrame(long cCtx, int paddingFrame);
-
-    public native long paddingCipher_new();
-
-    public native void paddingCipher_close(long cCtx);
-
-    /*
-    * Provide algorithm identificator.
-    */
-    public native AlgId paddingCipher_algId(long cCtx);
-
-    /*
-    * Produce object with algorithm information and configuration parameters.
-    */
-    public native AlgInfo paddingCipher_produceAlgInfo(long cCtx);
-
-    /*
-    * Restore algorithm configuration from the given object.
-    */
-    public native void paddingCipher_restoreAlgInfo(long cCtx, AlgInfo algInfo) throws FoundationException;
-
-    /*
-    * Encrypt given data.
-    */
-    public native byte[] paddingCipher_encrypt(long cCtx, byte[] data) throws FoundationException;
-
-    /*
-    * Calculate required buffer length to hold the encrypted data.
-    */
-    public native int paddingCipher_encryptedLen(long cCtx, int dataLen);
-
-    /*
-    * Precise length calculation of encrypted data.
-    */
-    public native int paddingCipher_preciseEncryptedLen(long cCtx, int dataLen);
-
-    /*
-    * Decrypt given data.
-    */
-    public native byte[] paddingCipher_decrypt(long cCtx, byte[] data) throws FoundationException;
-
-    /*
-    * Calculate required buffer length to hold the decrypted data.
-    */
-    public native int paddingCipher_decryptedLen(long cCtx, int dataLen);
-
-    /*
-    * Return cipher's nonce length or IV length in bytes,
-    * or 0 if nonce is not required.
-    */
-    public native int paddingCipher_nonceLen(long cCtx);
-
-    /*
-    * Return cipher's key length in bytes.
-    */
-    public native int paddingCipher_keyLen(long cCtx);
-
-    /*
-    * Return cipher's key length in bits.
-    */
-    public native int paddingCipher_keyBitlen(long cCtx);
-
-    /*
-    * Return cipher's block length in bytes.
-    */
-    public native int paddingCipher_blockLen(long cCtx);
-
-    /*
-    * Setup IV or nonce.
-    */
-    public native void paddingCipher_setNonce(long cCtx, byte[] nonce);
-
-    /*
-    * Set cipher encryption / decryption key.
-    */
-    public native void paddingCipher_setKey(long cCtx, byte[] key);
-
-    /*
-    * Start sequential encryption.
-    */
-    public native void paddingCipher_startEncryption(long cCtx);
-
-    /*
-    * Start sequential decryption.
-    */
-    public native void paddingCipher_startDecryption(long cCtx);
-
-    /*
-    * Process encryption or decryption of the given data chunk.
-    */
-    public native byte[] paddingCipher_update(long cCtx, byte[] data);
-
-    /*
-    * Return buffer length required to hold an output of the methods
-    * "update" or "finish" in an current mode.
-    * Pass zero length to define buffer length of the method "finish".
-    */
-    public native int paddingCipher_outLen(long cCtx, int dataLen);
-
-    /*
-    * Return buffer length required to hold an output of the methods
-    * "update" or "finish" in an encryption mode.
-    * Pass zero length to define buffer length of the method "finish".
-    */
-    public native int paddingCipher_encryptedOutLen(long cCtx, int dataLen);
-
-    /*
-    * Return buffer length required to hold an output of the methods
-    * "update" or "finish" in an decryption mode.
-    * Pass zero length to define buffer length of the method "finish".
-    */
-    public native int paddingCipher_decryptedOutLen(long cCtx, int dataLen);
-
-    /*
-    * Accomplish encryption or decryption process.
-    */
-    public native byte[] paddingCipher_finish(long cCtx) throws FoundationException;
-
     public native void pkcs8Serializer_setAsn1Writer(long cCtx, Asn1Writer asn1Writer);
 
     /*
@@ -3428,27 +3342,6 @@ public class FoundationJNI {
     */
     public native AlgId eccAlgInfo_algId(long cCtx);
 
-    /*
-    * Return underlying cipher alg info.
-    */
-    public native AlgInfo paddingCipherAlgInfo_underlyingCipher(long cCtx);
-
-    /*
-    * Return padding frame.
-    */
-    public native int paddingCipherAlgInfo_paddingFrame(long cCtx);
-
-    public native long paddingCipherAlgInfo_new();
-
-    public native void paddingCipherAlgInfo_close(long cCtx);
-
-    public native long paddingCipherAlgInfo_new(AlgInfo underlyingCipher, int paddingFrame);
-
-    /*
-    * Provide algorithm identificator.
-    */
-    public native AlgId paddingCipherAlgInfo_algId(long cCtx);
-
     public native void algInfoDerSerializer_setAsn1Writer(long cCtx, Asn1Writer asn1Writer);
 
     /*
@@ -3551,5 +3444,79 @@ public class FoundationJNI {
     * Deserialize class "message info footer".
     */
     public native MessageInfoFooter messageInfoDerSerializer_deserializeFooter(long cCtx, byte[] data) throws FoundationException;
+
+    public native void randomPadding_setRandom(long cCtx, Random random);
+
+    public native long randomPadding_new();
+
+    public native void randomPadding_close(long cCtx);
+
+    /*
+    * Provide algorithm identificator.
+    */
+    public native AlgId randomPadding_algId(long cCtx);
+
+    /*
+    * Produce object with algorithm information and configuration parameters.
+    */
+    public native AlgInfo randomPadding_produceAlgInfo(long cCtx);
+
+    /*
+    * Restore algorithm configuration from the given object.
+    */
+    public native void randomPadding_restoreAlgInfo(long cCtx, AlgInfo algInfo) throws FoundationException;
+
+    /*
+    * Set new padding parameters.
+    */
+    public native void randomPadding_configure(long cCtx, PaddingParams params);
+
+    /*
+    * Return length in bytes of a data with a padding.
+    */
+    public native int randomPadding_paddedDataLen(long cCtx, int dataLen);
+
+    /*
+    * Return an actual number of padding in bytes.
+    * Note, this method might be called right before "finish data processing".
+    */
+    public native int randomPadding_len(long cCtx);
+
+    /*
+    * Return a maximum number of padding in bytes.
+    */
+    public native int randomPadding_lenMax(long cCtx);
+
+    /*
+    * Prepare the algorithm to process data.
+    */
+    public native void randomPadding_startDataProcessing(long cCtx);
+
+    /*
+    * Only data length is needed to produce padding later.
+    * Return data that should be further proceeded.
+    */
+    public native byte[] randomPadding_processData(long cCtx, byte[] data);
+
+    /*
+    * Accomplish data processing and return padding.
+    */
+    public native byte[] randomPadding_finishDataProcessing(long cCtx) throws FoundationException;
+
+    /*
+    * Prepare the algorithm to process padded data.
+    */
+    public native void randomPadding_startPaddedDataProcessing(long cCtx);
+
+    /*
+    * Process padded data.
+    * Return filtered data without padding.
+    */
+    public native byte[] randomPadding_processPaddedData(long cCtx, byte[] data);
+
+    /*
+    * Accomplish padded data processing and return left data without a padding.
+    */
+    public native byte[] randomPadding_finishPaddedDataProcessing(long cCtx) throws FoundationException;
 }
 

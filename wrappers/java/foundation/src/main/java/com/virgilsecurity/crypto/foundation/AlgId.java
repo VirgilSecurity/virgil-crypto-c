@@ -59,7 +59,7 @@ public enum AlgId {
     HKDF(15),
     PKCS5_PBKDF2(16),
     PKCS5_PBES2(17),
-    PADDING_CIPHER(18);
+    RANDOM_PADDING(18);
 
     private final int code;
 

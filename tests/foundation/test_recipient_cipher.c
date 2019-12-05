@@ -770,7 +770,7 @@ test__encrypt_decrypt__with_padding_and_ed25519_key_recipient__success(void) {
     vscf_recipient_cipher_add_key_recipient(
             recipient_cipher, test_data_recipient_cipher_ED25519_RECIPIENT_ID, public_key);
 
-    vscf_recipient_cipher_take_padding(recipient_cipher, vscf_random_padding_impl(random_padding));
+    vscf_recipient_cipher_take_encryption_padding(recipient_cipher, vscf_random_padding_impl(random_padding));
 
     //
     //  Encrypt.
@@ -823,9 +823,61 @@ test__encrypt_decrypt__with_padding_and_ed25519_key_recipient__success(void) {
     vscf_impl_destroy(&public_key);
     vscf_key_provider_destroy(&key_provider);
 #else
-    TEST_IGNORE_MESSAGE("Feature VSCF_PADDING_CIPHER and/or VSCF_AES256_GCM is disabled");
+    TEST_IGNORE_MESSAGE("Feature VSCF_RANDOM_PADDING and/or VSCF_AES256_GCM is disabled");
 #endif
 }
+
+void
+test__decrypt__with_padding_and_ed25519_key_recipient__success(void) {
+#if VSCF_RANDOM_PADDING && VSCF_AES256_GCM
+    //
+    //  Prepare decryption key.
+    //
+    vscf_error_t error;
+    vscf_error_reset(&error);
+
+    vscf_key_provider_t *key_provider = vscf_key_provider_new();
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_key_provider_setup_defaults(key_provider));
+
+    vscf_impl_t *private_key =
+            vscf_key_provider_import_private_key(key_provider, test_data_recipient_cipher_ED25519_PRIVATE_KEY, &error);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
+
+    //
+    //  Decrypt.
+    //
+    vscf_recipient_cipher_t *recipient_cipher = vscf_recipient_cipher_new();
+
+    vsc_buffer_t *dec_msg =
+            vsc_buffer_new_with_capacity(vscf_recipient_cipher_decryption_out_len(recipient_cipher,
+                                                 test_data_recipient_cipher_ENCRYPTED_MESSAGE_WITH_PADDING.len) +
+                                         vscf_recipient_cipher_decryption_out_len(recipient_cipher, 0));
+
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS,
+            vscf_recipient_cipher_start_decryption_with_key(
+                    recipient_cipher, test_data_recipient_cipher_ED25519_RECIPIENT_ID, private_key, vsc_data_empty()));
+
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_recipient_cipher_process_decryption(recipient_cipher,
+                                                   test_data_recipient_cipher_ENCRYPTED_MESSAGE_WITH_PADDING, dec_msg));
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_recipient_cipher_finish_decryption(recipient_cipher, dec_msg));
+
+    //
+    //  Check.
+    //
+    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_data_recipient_cipher_MESSAGE, dec_msg);
+
+    //
+    //  Cleanup.
+    //
+    vsc_buffer_destroy(&dec_msg);
+    vscf_recipient_cipher_destroy(&recipient_cipher);
+    vscf_impl_destroy(&private_key);
+    vscf_key_provider_destroy(&key_provider);
+#else
+    TEST_IGNORE_MESSAGE("Feature VSCF_RANDOM_PADDING and/or VSCF_AES256_GCM is disabled");
+#endif
+}
+
 
 #endif // TEST_DEPENDENCIES_AVAILABLE
 
@@ -847,13 +899,14 @@ main(void) {
     RUN_TEST(
             test__decrypt_then_verify__with_ed25519_key_recipient_and_embedded_header_and_embedded_footer_by_chunks__success);
 
+    RUN_TEST(test__encrypt_decrypt__with_padding_and_ed25519_key_recipient__success);
+    RUN_TEST(test__decrypt__with_padding_and_ed25519_key_recipient__success);
+
     RUN_TEST(test__has_key_recipient__with_no_recipients__return_false);
     RUN_TEST(test__has_key_recipient__with_added_ed25519_recipient_and_correct_id__return_true);
     RUN_TEST(test__has_key_recipient__with_added_ed25519_recipient_and_incorrect_id__return_false);
     RUN_TEST(test__has_key_recipient__with_added_ed25519_recipient_with_empty_and_empty_id__return_true);
     RUN_TEST(test__has_key_recipient__with_added_ed25519_recipient_with_empty_and_non_empty_id__return_false);
-
-    RUN_TEST(test__encrypt_decrypt__with_padding_and_ed25519_key_recipient__success);
 #else
     RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
 #endif

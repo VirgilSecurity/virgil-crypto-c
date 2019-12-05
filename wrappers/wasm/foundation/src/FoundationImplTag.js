@@ -90,15 +90,15 @@ const initFoundationImplTag = (Module, modules) => {
 
         PADDING_CIPHER: 26,
 
-        PADDING_CIPHER_ALG_INFO: 27,
+        PBE_ALG_INFO: 27,
 
-        PBE_ALG_INFO: 28,
+        PKCS5_PBES2: 28,
 
-        PKCS5_PBES2: 29,
+        PKCS5_PBKDF2: 29,
 
-        PKCS5_PBKDF2: 30,
+        PKCS8_SERIALIZER: 30,
 
-        PKCS8_SERIALIZER: 31,
+        RANDOM_PADDING: 31,
 
         RAW_PRIVATE_KEY: 32,
 

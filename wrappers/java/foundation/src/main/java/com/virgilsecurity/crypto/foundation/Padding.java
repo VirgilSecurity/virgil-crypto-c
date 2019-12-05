@@ -36,52 +36,62 @@
 
 package com.virgilsecurity.crypto.foundation;
 
-public enum OidId {
+/*
+* Provide an interface to add and remove data padding.
+*/
+public interface Padding {
 
-    NONE(0),
-    RSA(1),
-    ED25519(2),
-    CURVE25519(3),
-    SHA224(4),
-    SHA256(5),
-    SHA384(6),
-    SHA512(7),
-    KDF1(8),
-    KDF2(9),
-    AES256_GCM(10),
-    AES256_CBC(11),
-    PKCS5_PBKDF2(12),
-    PKCS5_PBES2(13),
-    CMS_DATA(14),
-    CMS_ENVELOPED_DATA(15),
-    HKDF_WITH_SHA256(16),
-    HKDF_WITH_SHA384(17),
-    HKDF_WITH_SHA512(18),
-    HMAC_WITH_SHA224(19),
-    HMAC_WITH_SHA256(20),
-    HMAC_WITH_SHA384(21),
-    HMAC_WITH_SHA512(22),
-    EC_GENERIC_KEY(23),
-    EC_DOMAIN_SECP256R1(24),
-    RANDOM_PADDING(25);
+    /*
+    * Set new padding parameters.
+    */
+    void configure(PaddingParams params);
 
-    private final int code;
+    /*
+    * Return length in bytes of a data with a padding.
+    */
+    int paddedDataLen(int dataLen);
 
-    private OidId(int code) {
-        this.code = code;
-    }
+    /*
+    * Return an actual number of padding in bytes.
+    * Note, this method might be called right before "finish data processing".
+    */
+    int len();
 
-    public int getCode() {
-        return code;
-    }
+    /*
+    * Return a maximum number of padding in bytes.
+    */
+    int lenMax();
 
-    public static OidId fromCode(int code) {
-        for (OidId a : OidId.values()) {
-            if (a.code == code) {
-                return a;
-            }
-        }
-        return null;
-    }
+    /*
+    * Prepare the algorithm to process data.
+    */
+    void startDataProcessing();
+
+    /*
+    * Only data length is needed to produce padding later.
+    * Return data that should be further proceeded.
+    */
+    byte[] processData(byte[] data);
+
+    /*
+    * Accomplish data processing and return padding.
+    */
+    byte[] finishDataProcessing() throws FoundationException;
+
+    /*
+    * Prepare the algorithm to process padded data.
+    */
+    void startPaddedDataProcessing();
+
+    /*
+    * Process padded data.
+    * Return filtered data without padding.
+    */
+    byte[] processPaddedData(byte[] data);
+
+    /*
+    * Accomplish padded data processing and return left data without a padding.
+    */
+    byte[] finishPaddedDataProcessing() throws FoundationException;
 }
 

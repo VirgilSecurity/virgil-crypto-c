@@ -7,6 +7,7 @@
     <property name="data encryption alg info" interface="alg info"/>
     <property name="custom params" class="message info custom params"/>
     <property name="cipher kdf alg info" interface="alg info"/>
+    <property name="cipher padding alg info" interface="alg info"/>
     <property name="footer info" class="footer info"/>
 
 
@@ -110,6 +111,31 @@
 
     <method name="remove cipher kdf alg info" visibility="private">
         Remove cipher kdf alg info.
+    </method>
+
+    <method name="has cipher padding alg info" is_const="1">
+        Return true if cipher padding alg info exists.
+
+        <return type="boolean"/>
+    </method>
+
+
+    <method name="set cipher padding alg info" visibility="private">
+        Setup cipher padding alg info.
+
+        <argument name="cipher padding alg info" interface="alg info" access="disown"/>
+    </method>
+
+
+    <method name="cipher padding alg info" is_const="1">
+        Return cipher padding alg info.
+
+        <return interface="alg info"/>
+    </method>
+
+
+    <method name="remove cipher padding alg info" visibility="private">
+        Remove cipher padding alg info.
     </method>
 
 

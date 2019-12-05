@@ -88,7 +88,7 @@ const initOidId = (Module, modules) => {
 
         EC_DOMAIN_SECP256R1: 24,
 
-        PADDING_CIPHER: 25
+        RANDOM_PADDING: 25
     });
 
     return OidId;

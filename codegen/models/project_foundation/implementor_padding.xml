@@ -23,20 +23,15 @@
         <property name="padding frame max" type="size"/>
     </implementation>
 
-    <implementation name="padding cipher">
+    <implementation name="padding cipher" scope="private">
         Wraps any symmetric cipher algorithm to add padding to plaintext
         to prevent message guessing attacks based on a ciphertext length.
 
-        <require interface="alg"/>
-        <require interface="alg info"/>
         <require interface="decrypt"/>
         <require interface="encrypt"/>
-        <require impl="padding cipher alg info"/>
-        <require class="alg factory"/>
         <require header="pb_decode.h" scope="private"/>
         <require header="pb_encode.h" scope="private"/>
 
-        <interface name="alg"/>
         <interface name="cipher info"/>
         <interface name="encrypt"/>
         <interface name="decrypt"/>
@@ -46,32 +41,20 @@
         <dependency name="padding" interface="padding"/>
         <property name="padding buffer" class="buffer"/>
 
-        <method name="get cipher" declaration="public">
-            Return underlying cipher.
-
-            <return interface="cipher"/>
-        </method>
-
-        <method name="get padding" declaration="public">
-            Return underlying padding.
-
-            <return interface="padding"/>
-        </method>
-
-        <method name="reset buffer" is_static="1">
+        <method name="reset buffer" is_static="1" scope="private">
             Reset buffer. Ensures capacity is enough.
 
             <argument name="buffer" class="buffer"/>
             <argument name="capacity" type="size"/>
         </method>
 
-        <method name="finish encryption">
+        <method name="finish encryption" scope="private">
             <argument name="out" class="buffer"/>
 
             <return enum="status"/>
         </method>
 
-        <method name="finish decryption">
+        <method name="finish decryption" scope="private">
             <argument name="out" class="buffer"/>
 
             <return enum="status"/>

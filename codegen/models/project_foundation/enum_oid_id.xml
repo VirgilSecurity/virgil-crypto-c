@@ -25,5 +25,4 @@
     <constant name="ec generic key"/>
     <constant name="ec domain secp256r1"/>
     <constant name="random padding"/>
-    <constant name="padding cipher"/>
 </enum>

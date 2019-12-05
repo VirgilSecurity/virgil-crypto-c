@@ -47,7 +47,6 @@
 #include "vscf_hash_based_alg_info.h"
 #include "vscf_simple_alg_info.h"
 #include "vscf_cipher_alg_info.h"
-#include "vscf_padding_cipher_alg_info.h"
 
 #include "test_data_alg_info_der.h"
 
@@ -156,38 +155,6 @@ test__deserialize__aes256_gcm_v2_compat__returns_valid_cipher_alg_info(void) {
     vscf_alg_info_der_deserializer_destroy(&deserializer);
 }
 
-void
-test__deserialize__padding_cipher_with_aes256_gcm_and_frame_165__returns_valid_padding_cipher_alg_info(void) {
-    vscf_alg_info_der_deserializer_t *deserializer = vscf_alg_info_der_deserializer_new();
-    vscf_alg_info_der_deserializer_setup_defaults(deserializer);
-
-    vscf_error_t error;
-    vscf_error_reset(&error);
-
-    vscf_impl_t *alg_info = vscf_alg_info_der_deserializer_deserialize(
-            deserializer, test_alg_info_PADDING_CIPHER_WITH_RANDOM_PADDING_AND_AES256_GCM, &error);
-    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
-    TEST_ASSERT_NOT_NULL(alg_info);
-    TEST_ASSERT_EQUAL(vscf_impl_tag_PADDING_CIPHER_ALG_INFO, vscf_impl_tag(alg_info));
-    TEST_ASSERT_EQUAL(vscf_alg_id_PADDING_CIPHER, vscf_alg_info_alg_id(alg_info));
-
-    const vscf_padding_cipher_alg_info_t *padding_cipher_alg_info = (const vscf_padding_cipher_alg_info_t *)alg_info;
-
-    const vscf_impl_t *padding_alg_info = vscf_padding_cipher_alg_info_padding(padding_cipher_alg_info);
-    const vscf_impl_t *cipher_alg_info = vscf_padding_cipher_alg_info_cipher(padding_cipher_alg_info);
-
-    TEST_ASSERT_EQUAL(vscf_alg_id_RANDOM_PADDING, vscf_alg_info_alg_id(padding_alg_info));
-
-    TEST_ASSERT_EQUAL(vscf_impl_tag_CIPHER_ALG_INFO, vscf_impl_tag(cipher_alg_info));
-    const vscf_cipher_alg_info_t *aes_cipher_alg_info = (const vscf_cipher_alg_info_t *)cipher_alg_info;
-
-    TEST_ASSERT_EQUAL(vscf_alg_id_AES256_GCM, vscf_cipher_alg_info_alg_id(aes_cipher_alg_info));
-    TEST_ASSERT_EQUAL_DATA(test_alg_info_AES256_GCM_NONCE, vscf_cipher_alg_info_nonce(aes_cipher_alg_info));
-
-    vscf_impl_destroy(&alg_info);
-    vscf_alg_info_der_deserializer_destroy(&deserializer);
-}
-
 #endif // TEST_DEPENDENCIES_AVAILABLE
 
 
@@ -205,7 +172,6 @@ main(void) {
     RUN_TEST(test__deserialize__kdf1_sha256_v2_compat__returns_valid_hash_based_alg_info);
     RUN_TEST(test__deserialize__aes256_gcm__returns_valid_cipher_alg_info);
     RUN_TEST(test__deserialize__aes256_gcm_v2_compat__returns_valid_cipher_alg_info);
-    RUN_TEST(test__deserialize__padding_cipher_with_aes256_gcm_and_frame_165__returns_valid_padding_cipher_alg_info);
 #else
     RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
 #endif

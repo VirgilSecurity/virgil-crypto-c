@@ -277,6 +277,10 @@ static void
 vscf_padding_params_init_ctx(vscf_padding_params_t *self) {
 
     VSCF_ASSERT_PTR(self);
+
+    self->frame = vscf_padding_params_DEFAULT_FRAME;
+    self->frame_min = vscf_padding_params_DEFAULT_FRAME_MIN;
+    self->frame_max = vscf_padding_params_DEFAULT_FRAME_MAX;
 }
 
 //

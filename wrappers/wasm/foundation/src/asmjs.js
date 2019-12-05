@@ -73,6 +73,7 @@ const initSignerInfoList = require('./SignerInfoList');
 const initMessageInfoFooter = require('./MessageInfoFooter');
 const initSignedDataInfo = require('./SignedDataInfo');
 const initFooterInfo = require('./FooterInfo');
+const initPaddingParams = require('./PaddingParams');
 const initSha224 = require('./Sha224');
 const initSha256 = require('./Sha256');
 const initSha384 = require('./Sha384');
@@ -100,7 +101,6 @@ const initSeedEntropySource = require('./SeedEntropySource');
 const initKeyMaterialRng = require('./KeyMaterialRng');
 const initRawPublicKey = require('./RawPublicKey');
 const initRawPrivateKey = require('./RawPrivateKey');
-const initPaddingCipher = require('./PaddingCipher');
 const initPkcs8Serializer = require('./Pkcs8Serializer');
 const initSec1Serializer = require('./Sec1Serializer');
 const initKeyAsn1Serializer = require('./KeyAsn1Serializer');
@@ -113,10 +113,10 @@ const initCipherAlgInfo = require('./CipherAlgInfo');
 const initSaltedKdfAlgInfo = require('./SaltedKdfAlgInfo');
 const initPbeAlgInfo = require('./PbeAlgInfo');
 const initEccAlgInfo = require('./EccAlgInfo');
-const initPaddingCipherAlgInfo = require('./PaddingCipherAlgInfo');
 const initAlgInfoDerSerializer = require('./AlgInfoDerSerializer');
 const initAlgInfoDerDeserializer = require('./AlgInfoDerDeserializer');
 const initMessageInfoDerSerializer = require('./MessageInfoDerSerializer');
+const initRandomPadding = require('./RandomPadding');
 
 const initProject = () => {
     const foundationModule = new FoundationModule();
@@ -158,6 +158,7 @@ const initProject = () => {
     modules.MessageInfoFooter = initMessageInfoFooter(foundationModule, modules);
     modules.SignedDataInfo = initSignedDataInfo(foundationModule, modules);
     modules.FooterInfo = initFooterInfo(foundationModule, modules);
+    modules.PaddingParams = initPaddingParams(foundationModule, modules);
     modules.Sha224 = initSha224(foundationModule, modules);
     modules.Sha256 = initSha256(foundationModule, modules);
     modules.Sha384 = initSha384(foundationModule, modules);
@@ -185,7 +186,6 @@ const initProject = () => {
     modules.KeyMaterialRng = initKeyMaterialRng(foundationModule, modules);
     modules.RawPublicKey = initRawPublicKey(foundationModule, modules);
     modules.RawPrivateKey = initRawPrivateKey(foundationModule, modules);
-    modules.PaddingCipher = initPaddingCipher(foundationModule, modules);
     modules.Pkcs8Serializer = initPkcs8Serializer(foundationModule, modules);
     modules.Sec1Serializer = initSec1Serializer(foundationModule, modules);
     modules.KeyAsn1Serializer = initKeyAsn1Serializer(foundationModule, modules);
@@ -198,10 +198,10 @@ const initProject = () => {
     modules.SaltedKdfAlgInfo = initSaltedKdfAlgInfo(foundationModule, modules);
     modules.PbeAlgInfo = initPbeAlgInfo(foundationModule, modules);
     modules.EccAlgInfo = initEccAlgInfo(foundationModule, modules);
-    modules.PaddingCipherAlgInfo = initPaddingCipherAlgInfo(foundationModule, modules);
     modules.AlgInfoDerSerializer = initAlgInfoDerSerializer(foundationModule, modules);
     modules.AlgInfoDerDeserializer = initAlgInfoDerDeserializer(foundationModule, modules);
     modules.MessageInfoDerSerializer = initMessageInfoDerSerializer(foundationModule, modules);
+    modules.RandomPadding = initRandomPadding(foundationModule, modules);
     return Promise.resolve(modules);
 };
 module.exports = initProject;

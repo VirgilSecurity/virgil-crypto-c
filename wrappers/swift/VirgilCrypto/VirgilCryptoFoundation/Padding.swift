@@ -36,62 +36,39 @@
 import Foundation
 import VSCFoundation
 
-@objc(VSCFOidId) public enum OidId: Int {
+/// Provide an interface to add and remove data padding.
+@objc(VSCFPadding) public protocol Padding : CContext {
 
-    case none
+    /// Set new padding parameters.
+    @objc func configure(params: PaddingParams)
 
-    case rsa
+    /// Return length in bytes of a data with a padding.
+    @objc func paddedDataLen(dataLen: Int) -> Int
 
-    case ed25519
+    /// Return an actual number of padding in bytes.
+    /// Note, this method might be called right before "finish data processing".
+    @objc func len() -> Int
 
-    case curve25519
+    /// Return a maximum number of padding in bytes.
+    @objc func lenMax() -> Int
 
-    case sha224
+    /// Prepare the algorithm to process data.
+    @objc func startDataProcessing()
 
-    case sha256
+    /// Only data length is needed to produce padding later.
+    /// Return data that should be further proceeded.
+    @objc func processData(data: Data) -> Data
 
-    case sha384
+    /// Accomplish data processing and return padding.
+    @objc func finishDataProcessing() throws -> Data
 
-    case sha512
+    /// Prepare the algorithm to process padded data.
+    @objc func startPaddedDataProcessing()
 
-    case kdf1
+    /// Process padded data.
+    /// Return filtered data without padding.
+    @objc func processPaddedData(data: Data) -> Data
 
-    case kdf2
-
-    case aes256Gcm
-
-    case aes256Cbc
-
-    case pkcs5Pbkdf2
-
-    case pkcs5Pbes2
-
-    case cmsData
-
-    case cmsEnvelopedData
-
-    case hkdfWithSha256
-
-    case hkdfWithSha384
-
-    case hkdfWithSha512
-
-    case hmacWithSha224
-
-    case hmacWithSha256
-
-    case hmacWithSha384
-
-    case hmacWithSha512
-
-    case ecGenericKey
-
-    case ecDomainSecp256r1
-
-    case randomPadding
-
-    /// Create enumeration value from the correspond C enumeration value.
-    internal init(fromC oidId: vscf_oid_id_t) {
-        self.init(rawValue: Int(oidId.rawValue))!
-    }
+    /// Accomplish padded data processing and return left data without a padding.
+    @objc func finishPaddedDataProcessing() throws -> Data
 }

@@ -176,42 +176,23 @@ VSCF_PUBLIC void
 vscf_recipient_cipher_release_encryption_cipher(vscf_recipient_cipher_t *self);
 
 //
-//  Setup dependency to the interface 'hash' with shared ownership.
-//
-VSCF_PUBLIC void
-vscf_recipient_cipher_use_signer_hash(vscf_recipient_cipher_t *self, vscf_impl_t *signer_hash);
-
-//
-//  Setup dependency to the interface 'hash' and transfer ownership.
-//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
-//
-VSCF_PUBLIC void
-vscf_recipient_cipher_take_signer_hash(vscf_recipient_cipher_t *self, vscf_impl_t *signer_hash);
-
-//
-//  Release dependency to the interface 'hash'.
-//
-VSCF_PUBLIC void
-vscf_recipient_cipher_release_signer_hash(vscf_recipient_cipher_t *self);
-
-//
 //  Setup dependency to the interface 'padding' with shared ownership.
 //
 VSCF_PUBLIC void
-vscf_recipient_cipher_use_padding(vscf_recipient_cipher_t *self, vscf_impl_t *padding);
+vscf_recipient_cipher_use_encryption_padding(vscf_recipient_cipher_t *self, vscf_impl_t *encryption_padding);
 
 //
 //  Setup dependency to the interface 'padding' and transfer ownership.
 //  Note, transfer ownership does not mean that object is uniquely owned by the target object.
 //
 VSCF_PUBLIC void
-vscf_recipient_cipher_take_padding(vscf_recipient_cipher_t *self, vscf_impl_t *padding);
+vscf_recipient_cipher_take_encryption_padding(vscf_recipient_cipher_t *self, vscf_impl_t *encryption_padding);
 
 //
 //  Release dependency to the interface 'padding'.
 //
 VSCF_PUBLIC void
-vscf_recipient_cipher_release_padding(vscf_recipient_cipher_t *self);
+vscf_recipient_cipher_release_encryption_padding(vscf_recipient_cipher_t *self);
 
 //
 //  Setup dependency to the class 'padding params' with shared ownership.
@@ -231,6 +212,25 @@ vscf_recipient_cipher_take_padding_params(vscf_recipient_cipher_t *self, vscf_pa
 //
 VSCF_PUBLIC void
 vscf_recipient_cipher_release_padding_params(vscf_recipient_cipher_t *self);
+
+//
+//  Setup dependency to the interface 'hash' with shared ownership.
+//
+VSCF_PUBLIC void
+vscf_recipient_cipher_use_signer_hash(vscf_recipient_cipher_t *self, vscf_impl_t *signer_hash);
+
+//
+//  Setup dependency to the interface 'hash' and transfer ownership.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCF_PUBLIC void
+vscf_recipient_cipher_take_signer_hash(vscf_recipient_cipher_t *self, vscf_impl_t *signer_hash);
+
+//
+//  Release dependency to the interface 'hash'.
+//
+VSCF_PUBLIC void
+vscf_recipient_cipher_release_signer_hash(vscf_recipient_cipher_t *self);
 
 //
 //  Return true if a key recipient with a given id has been added.

@@ -97,6 +97,17 @@ class MessageInfo(object):
         instance = VscfImplTag.get_type(result)[0].use_c_ctx(cast(result, POINTER(VscfImplTag.get_type(result)[1])))
         return instance
 
+    def has_cipher_padding_alg_info(self):
+        """Return true if cipher padding alg info exists."""
+        result = self._lib_vscf_message_info.vscf_message_info_has_cipher_padding_alg_info(self.ctx)
+        return result
+
+    def cipher_padding_alg_info(self):
+        """Return cipher padding alg info."""
+        result = self._lib_vscf_message_info.vscf_message_info_cipher_padding_alg_info(self.ctx)
+        instance = VscfImplTag.get_type(result)[0].use_c_ctx(cast(result, POINTER(VscfImplTag.get_type(result)[1])))
+        return instance
+
     def has_footer_info(self):
         """Return true if footer info exists."""
         result = self._lib_vscf_message_info.vscf_message_info_has_footer_info(self.ctx)

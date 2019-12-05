@@ -77,7 +77,7 @@ const initAlgId = (Module, modules) => {
 
         PKCS5_PBES2: 17,
 
-        PADDING_CIPHER: 18
+        RANDOM_PADDING: 18
     });
 
     return AlgId;

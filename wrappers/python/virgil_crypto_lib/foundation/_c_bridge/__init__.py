@@ -92,6 +92,8 @@ from ._vscf_signed_data_info import vscf_signed_data_info_t
 from ._vscf_signed_data_info import VscfSignedDataInfo
 from ._vscf_footer_info import vscf_footer_info_t
 from ._vscf_footer_info import VscfFooterInfo
+from ._vscf_padding_params import vscf_padding_params_t
+from ._vscf_padding_params import VscfPaddingParams
 from ._vscf_sha224 import vscf_sha224_t
 from ._vscf_sha224 import VscfSha224
 from ._vscf_sha256 import vscf_sha256_t
@@ -146,8 +148,6 @@ from ._vscf_raw_public_key import vscf_raw_public_key_t
 from ._vscf_raw_public_key import VscfRawPublicKey
 from ._vscf_raw_private_key import vscf_raw_private_key_t
 from ._vscf_raw_private_key import VscfRawPrivateKey
-from ._vscf_padding_cipher import vscf_padding_cipher_t
-from ._vscf_padding_cipher import VscfPaddingCipher
 from ._vscf_pkcs8_serializer import vscf_pkcs8_serializer_t
 from ._vscf_pkcs8_serializer import VscfPkcs8Serializer
 from ._vscf_sec1_serializer import vscf_sec1_serializer_t
@@ -172,12 +172,12 @@ from ._vscf_pbe_alg_info import vscf_pbe_alg_info_t
 from ._vscf_pbe_alg_info import VscfPbeAlgInfo
 from ._vscf_ecc_alg_info import vscf_ecc_alg_info_t
 from ._vscf_ecc_alg_info import VscfEccAlgInfo
-from ._vscf_padding_cipher_alg_info import vscf_padding_cipher_alg_info_t
-from ._vscf_padding_cipher_alg_info import VscfPaddingCipherAlgInfo
 from ._vscf_alg_info_der_serializer import vscf_alg_info_der_serializer_t
 from ._vscf_alg_info_der_serializer import VscfAlgInfoDerSerializer
 from ._vscf_alg_info_der_deserializer import vscf_alg_info_der_deserializer_t
 from ._vscf_alg_info_der_deserializer import VscfAlgInfoDerDeserializer
 from ._vscf_message_info_der_serializer import vscf_message_info_der_serializer_t
 from ._vscf_message_info_der_serializer import VscfMessageInfoDerSerializer
+from ._vscf_random_padding import vscf_random_padding_t
+from ._vscf_random_padding import VscfRandomPadding
 from ._vscf_impl_tag import VscfImplTag

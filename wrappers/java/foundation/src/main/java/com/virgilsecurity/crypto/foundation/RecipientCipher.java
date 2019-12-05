@@ -78,6 +78,14 @@ public class RecipientCipher implements AutoCloseable {
         FoundationJNI.INSTANCE.recipientCipher_setEncryptionCipher(this.cCtx, encryptionCipher);
     }
 
+    public void setEncryptionPadding(Padding encryptionPadding) {
+        FoundationJNI.INSTANCE.recipientCipher_setEncryptionPadding(this.cCtx, encryptionPadding);
+    }
+
+    public void setPaddingParams(PaddingParams paddingParams) {
+        FoundationJNI.INSTANCE.recipientCipher_setPaddingParams(this.cCtx, paddingParams);
+    }
+
     public void setSignerHash(Hash signerHash) {
         FoundationJNI.INSTANCE.recipientCipher_setSignerHash(this.cCtx, signerHash);
     }

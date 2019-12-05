@@ -75,7 +75,7 @@ import VSCFoundation
 
     case pkcs5Pbes2
 
-    case paddingCipher
+    case randomPadding
 
     /// Create enumeration value from the correspond C enumeration value.
     internal init(fromC algId: vscf_alg_id_t) {

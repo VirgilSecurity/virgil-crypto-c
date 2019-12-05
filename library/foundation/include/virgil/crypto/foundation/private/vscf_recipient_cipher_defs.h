@@ -61,6 +61,7 @@
 #include "vscf_message_info_footer.h"
 #include "vscf_impl.h"
 #include "vscf_padding_params.h"
+#include "vscf_padding_cipher.h"
 #include "vscf_message_info_der_serializer.h"
 #include "vscf_recipient_cipher_decryption_state.h"
 
@@ -108,17 +109,17 @@ struct vscf_recipient_cipher_t {
     //
     vscf_impl_t *encryption_cipher;
     //
-    //  Dependency to the interface 'hash'.
-    //
-    vscf_impl_t *signer_hash;
-    //
     //  Dependency to the interface 'padding'.
     //
-    vscf_impl_t *padding;
+    vscf_impl_t *encryption_padding;
     //
     //  Dependency to the class 'padding params'.
     //
     vscf_padding_params_t *padding_params;
+    //
+    //  Dependency to the interface 'hash'.
+    //
+    vscf_impl_t *signer_hash;
 
     vscf_key_recipient_list_t *key_recipients;
 
@@ -139,6 +140,8 @@ struct vscf_recipient_cipher_t {
     vscf_impl_t *decryption_cipher;
 
     vscf_impl_t *decryption_padding;
+
+    vscf_padding_cipher_t *padding_cipher;
 
     vscf_impl_t *verifier_hash;
 

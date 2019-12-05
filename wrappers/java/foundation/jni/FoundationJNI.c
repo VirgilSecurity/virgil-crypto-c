@@ -110,14 +110,14 @@ char* getAlgClassName (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_ob
     case vscf_impl_tag_PKCS5_PBES2:
         strcat (classFullName, "Pkcs5Pbes2");
         break;
-    case vscf_impl_tag_PADDING_CIPHER:
-        strcat (classFullName, "PaddingCipher");
-        break;
     case vscf_impl_tag_ED25519:
         strcat (classFullName, "Ed25519");
         break;
     case vscf_impl_tag_CURVE25519:
         strcat (classFullName, "Curve25519");
+        break;
+    case vscf_impl_tag_RANDOM_PADDING:
+        strcat (classFullName, "RandomPadding");
         break;
     default:
         free(classFullName);
@@ -218,9 +218,6 @@ char* getEncryptClassName (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* 
     case vscf_impl_tag_PKCS5_PBES2:
         strcat (classFullName, "Pkcs5Pbes2");
         break;
-    case vscf_impl_tag_PADDING_CIPHER:
-        strcat (classFullName, "PaddingCipher");
-        break;
     default:
         free(classFullName);
         VSCF_ASSERT("Unexpected C implementation cast to the Java implementation.");
@@ -269,9 +266,6 @@ char* getDecryptClassName (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* 
     case vscf_impl_tag_PKCS5_PBES2:
         strcat (classFullName, "Pkcs5Pbes2");
         break;
-    case vscf_impl_tag_PADDING_CIPHER:
-        strcat (classFullName, "PaddingCipher");
-        break;
     default:
         free(classFullName);
         VSCF_ASSERT("Unexpected C implementation cast to the Java implementation.");
@@ -317,9 +311,6 @@ char* getCipherInfoClassName (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*
     case vscf_impl_tag_AES256_CBC:
         strcat (classFullName, "Aes256Cbc");
         break;
-    case vscf_impl_tag_PADDING_CIPHER:
-        strcat (classFullName, "PaddingCipher");
-        break;
     default:
         free(classFullName);
         VSCF_ASSERT("Unexpected C implementation cast to the Java implementation.");
@@ -364,9 +355,6 @@ char* getCipherClassName (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c
         break;
     case vscf_impl_tag_AES256_CBC:
         strcat (classFullName, "Aes256Cbc");
-        break;
-    case vscf_impl_tag_PADDING_CIPHER:
-        strcat (classFullName, "PaddingCipher");
         break;
     default:
         free(classFullName);
@@ -1352,9 +1340,6 @@ char* getAlgInfoClassName (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* 
     case vscf_impl_tag_ECC_ALG_INFO:
         strcat (classFullName, "EccAlgInfo");
         break;
-    case vscf_impl_tag_PADDING_CIPHER_ALG_INFO:
-        strcat (classFullName, "PaddingCipherAlgInfo");
-        break;
     default:
         free(classFullName);
         VSCF_ASSERT("Unexpected C implementation cast to the Java implementation.");
@@ -1532,6 +1517,48 @@ char* getMessageInfoFooterSerializerClassName (JNIEnv *jenv, jobject jobj, const
 
 jobject wrapMessageInfoFooterSerializer (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_obj) {
     char *classFullName = getMessageInfoFooterSerializerClassName(jenv, jobj, c_obj);
+    jclass cls = (*jenv)->FindClass(jenv, classFullName);
+    if (NULL == cls) {
+        free(classFullName);
+        VSCF_ASSERT("Class not found.");
+    }
+
+    char *methodSig = malloc(200);
+    strcpy (methodSig, "(J)L");
+    strcat (methodSig, classFullName);
+    strcat (methodSig, ";");
+    jmethodID methodID = (*jenv)->GetStaticMethodID(jenv, cls, "getInstance", methodSig);
+    free(classFullName);
+    free (methodSig);
+    if (NULL == methodID) {
+        VSCF_ASSERT("Class has no 'getInstance' method.");
+    }
+
+    jlong c_ctx = 0;
+    *(const vscf_impl_t /*1*/**) &c_ctx = c_obj;
+    return (*jenv)->CallStaticObjectMethod(jenv, cls, methodID, c_ctx);
+}
+
+char* getPaddingClassName (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_obj) {
+    if (!vscf_padding_is_implemented(c_obj)) {
+        VSCF_ASSERT("Given C implementation does not implement interface Padding.");
+    }
+    char *classFullName = malloc(200);
+    strcpy (classFullName, "com/virgilsecurity/crypto/foundation/");
+    vscf_impl_tag_t implTag = vscf_impl_tag(c_obj);
+    switch(implTag) {
+    case vscf_impl_tag_RANDOM_PADDING:
+        strcat (classFullName, "RandomPadding");
+        break;
+    default:
+        free(classFullName);
+        VSCF_ASSERT("Unexpected C implementation cast to the Java implementation.");
+    }
+    return classFullName;
+}
+
+jobject wrapPadding (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_obj) {
+    char *classFullName = getPaddingClassName(jenv, jobj, c_obj);
     jclass cls = (*jenv)->FindClass(jenv, classFullName);
     if (NULL == cls) {
         free(classFullName);
@@ -1883,6 +1910,24 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
     vscf_message_info_t /*2*/* message_info_ctx = *(vscf_message_info_t /*2*/**) &c_ctx;
 
     const vscf_impl_t */*6*/ proxyResult = vscf_message_info_cipher_kdf_alg_info(message_info_ctx /*a1*/);
+    vscf_impl_shallow_copy((vscf_impl_t */*6*/) proxyResult);
+    jobject ret = wrapAlgInfo(jenv, jobj, proxyResult);
+    return ret;
+}
+
+JNIEXPORT jboolean JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfo_1hasCipherPaddingAlgInfo (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    // Cast class context
+    vscf_message_info_t /*2*/* message_info_ctx = *(vscf_message_info_t /*2*/**) &c_ctx;
+
+    jboolean ret = (jboolean) vscf_message_info_has_cipher_padding_alg_info(message_info_ctx /*a1*/);
+    return ret;
+}
+
+JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfo_1cipherPaddingAlgInfo (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    // Cast class context
+    vscf_message_info_t /*2*/* message_info_ctx = *(vscf_message_info_t /*2*/**) &c_ctx;
+
+    const vscf_impl_t */*6*/ proxyResult = vscf_message_info_cipher_padding_alg_info(message_info_ctx /*a1*/);
     vscf_impl_shallow_copy((vscf_impl_t */*6*/) proxyResult);
     jobject ret = wrapAlgInfo(jenv, jobj, proxyResult);
     return ret;
@@ -2335,6 +2380,35 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
     return ret;
 }
 
+JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_algFactory_1createPaddingFromInfo (JNIEnv *jenv, jobject jobj, jobject jalgInfo, jobject jrandom) {
+    // Wrap Java interfaces
+    jclass alg_info_cls = (*jenv)->GetObjectClass(jenv, jalgInfo);
+    if (NULL == alg_info_cls) {
+        VSCF_ASSERT("Class AlgInfo not found.");
+    }
+    jfieldID alg_info_fidCtx = (*jenv)->GetFieldID(jenv, alg_info_cls, "cCtx", "J");
+    if (NULL == alg_info_fidCtx) {
+        VSCF_ASSERT("Class 'AlgInfo' has no field 'cCtx'.");
+    }
+    jlong alg_info_c_ctx = (*jenv)->GetLongField(jenv, jalgInfo, alg_info_fidCtx);
+    vscf_impl_t */*6*/ alg_info = *(vscf_impl_t */*6*/*)&alg_info_c_ctx;
+
+    jclass random_cls = (*jenv)->GetObjectClass(jenv, jrandom);
+    if (NULL == random_cls) {
+        VSCF_ASSERT("Class Random not found.");
+    }
+    jfieldID random_fidCtx = (*jenv)->GetFieldID(jenv, random_cls, "cCtx", "J");
+    if (NULL == random_fidCtx) {
+        VSCF_ASSERT("Class 'Random' has no field 'cCtx'.");
+    }
+    jlong random_c_ctx = (*jenv)->GetLongField(jenv, jrandom, random_fidCtx);
+    vscf_impl_t */*6*/ random = *(vscf_impl_t */*6*/*)&random_c_ctx;
+
+    const vscf_impl_t */*6*/ proxyResult = vscf_alg_factory_create_padding_from_info(alg_info /*a6*/, random /*a6*/);
+    jobject ret = wrapPadding(jenv, jobj, proxyResult);
+    return ret;
+}
+
 JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyAlgFactory_1createFromAlgId (JNIEnv *jenv, jobject jobj, jobject jalgId, jobject jrandom) {
     // Wrap errors
     struct vscf_error_t /*4*/ error;
@@ -2756,6 +2830,38 @@ JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_r
 
     vscf_recipient_cipher_release_encryption_cipher((vscf_recipient_cipher_t /*2*/ *) c_ctx);
     vscf_recipient_cipher_use_encryption_cipher((vscf_recipient_cipher_t /*2*/ *) c_ctx, encryption_cipher);
+}
+
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_recipientCipher_1setEncryptionPadding (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jencryptionPadding) {
+    jclass encryption_padding_cls = (*jenv)->GetObjectClass(jenv, jencryptionPadding);
+    if (NULL == encryption_padding_cls) {
+        VSCF_ASSERT("Class Padding not found.");
+    }
+    jfieldID encryption_padding_fidCtx = (*jenv)->GetFieldID(jenv, encryption_padding_cls, "cCtx", "J");
+    if (NULL == encryption_padding_fidCtx) {
+        VSCF_ASSERT("Class 'Padding' has no field 'cCtx'.");
+    }
+    jlong encryption_padding_c_ctx = (*jenv)->GetLongField(jenv, jencryptionPadding, encryption_padding_fidCtx);
+    vscf_impl_t */*6*/ encryption_padding = *(vscf_impl_t */*6*/*) &encryption_padding_c_ctx;
+
+    vscf_recipient_cipher_release_encryption_padding((vscf_recipient_cipher_t /*2*/ *) c_ctx);
+    vscf_recipient_cipher_use_encryption_padding((vscf_recipient_cipher_t /*2*/ *) c_ctx, encryption_padding);
+}
+
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_recipientCipher_1setPaddingParams (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jpaddingParams) {
+    jclass padding_params_cls = (*jenv)->GetObjectClass(jenv, jpaddingParams);
+    if (NULL == padding_params_cls) {
+        VSCF_ASSERT("Class PaddingParams not found.");
+    }
+    jfieldID padding_params_fidCtx = (*jenv)->GetFieldID(jenv, padding_params_cls, "cCtx", "J");
+    if (NULL == padding_params_fidCtx) {
+        VSCF_ASSERT("Class 'PaddingParams' has no field 'cCtx'.");
+    }
+    jlong padding_params_c_ctx = (*jenv)->GetLongField(jenv, jpaddingParams, padding_params_fidCtx);
+    vscf_padding_params_t */*5*/ padding_params = *(vscf_padding_params_t */*5*/*) &padding_params_c_ctx;
+
+    vscf_recipient_cipher_release_padding_params((vscf_recipient_cipher_t /*2*/ *) c_ctx);
+    vscf_recipient_cipher_use_padding_params((vscf_recipient_cipher_t /*2*/ *) c_ctx, padding_params);
 }
 
 JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_recipientCipher_1setSignerHash (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jsignerHash) {
@@ -4801,6 +4907,45 @@ JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_f
     vscf_footer_info_t /*2*/* footer_info_ctx = *(vscf_footer_info_t /*2*/**) &c_ctx;
 
     jint ret = (jint) vscf_footer_info_data_size(footer_info_ctx /*a1*/);
+    return ret;
+}
+
+JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_paddingParams_1new__ (JNIEnv *jenv, jobject jobj) {
+    jlong c_ctx = 0;
+    *(vscf_padding_params_t **)&c_ctx = vscf_padding_params_new();
+    return c_ctx;
+}
+
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_paddingParams_1close (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    vscf_padding_params_delete(*(vscf_padding_params_t /*2*/ **) &c_ctx /*5*/);
+}
+
+JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_paddingParams_1new__III (JNIEnv *jenv, jobject jobj, jint jframe, jint jframeMin, jint jframeMax) {
+    jlong proxyResult = (jlong) vscf_padding_params_new_with_constraints(jframe /*a9*/, jframeMin /*a9*/, jframeMax /*a9*/);
+    return proxyResult;
+}
+
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_paddingParams_1frame (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    // Cast class context
+    vscf_padding_params_t /*2*/* padding_params_ctx = *(vscf_padding_params_t /*2*/**) &c_ctx;
+
+    jint ret = (jint) vscf_padding_params_frame(padding_params_ctx /*a1*/);
+    return ret;
+}
+
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_paddingParams_1frameMin (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    // Cast class context
+    vscf_padding_params_t /*2*/* padding_params_ctx = *(vscf_padding_params_t /*2*/**) &c_ctx;
+
+    jint ret = (jint) vscf_padding_params_frame_min(padding_params_ctx /*a1*/);
+    return ret;
+}
+
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_paddingParams_1frameMax (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    // Cast class context
+    vscf_padding_params_t /*2*/* padding_params_ctx = *(vscf_padding_params_t /*2*/**) &c_ctx;
+
+    jint ret = (jint) vscf_padding_params_frame_max(padding_params_ctx /*a1*/);
     return ret;
 }
 
@@ -9324,315 +9469,6 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
     return ret;
 }
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_paddingCipher_1setRandom (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jrandom) {
-    jclass random_cls = (*jenv)->GetObjectClass(jenv, jrandom);
-    if (NULL == random_cls) {
-        VSCF_ASSERT("Class Random not found.");
-    }
-    jfieldID random_fidCtx = (*jenv)->GetFieldID(jenv, random_cls, "cCtx", "J");
-    if (NULL == random_fidCtx) {
-        VSCF_ASSERT("Class 'Random' has no field 'cCtx'.");
-    }
-    jlong random_c_ctx = (*jenv)->GetLongField(jenv, jrandom, random_fidCtx);
-    vscf_impl_t */*6*/ random = *(vscf_impl_t */*6*/*) &random_c_ctx;
-
-    vscf_padding_cipher_release_random((vscf_padding_cipher_t /*9*/ *) c_ctx);
-    vscf_padding_cipher_use_random((vscf_padding_cipher_t /*9*/ *) c_ctx, random);
-}
-
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_paddingCipher_1setCipher (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jcipher) {
-    jclass cipher_cls = (*jenv)->GetObjectClass(jenv, jcipher);
-    if (NULL == cipher_cls) {
-        VSCF_ASSERT("Class Cipher not found.");
-    }
-    jfieldID cipher_fidCtx = (*jenv)->GetFieldID(jenv, cipher_cls, "cCtx", "J");
-    if (NULL == cipher_fidCtx) {
-        VSCF_ASSERT("Class 'Cipher' has no field 'cCtx'.");
-    }
-    jlong cipher_c_ctx = (*jenv)->GetLongField(jenv, jcipher, cipher_fidCtx);
-    vscf_impl_t */*6*/ cipher = *(vscf_impl_t */*6*/*) &cipher_c_ctx;
-
-    vscf_padding_cipher_release_cipher((vscf_padding_cipher_t /*9*/ *) c_ctx);
-    vscf_padding_cipher_use_cipher((vscf_padding_cipher_t /*9*/ *) c_ctx, cipher);
-}
-
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_paddingCipher_1setPaddingFrame (JNIEnv *jenv, jobject jobj, jlong c_ctx, jint jpaddingFrame) {
-    // Cast class context
-    vscf_padding_cipher_t /*9*/* padding_cipher_ctx = *(vscf_padding_cipher_t /*9*/**) &c_ctx;
-
-    vscf_padding_cipher_set_padding_frame(padding_cipher_ctx /*a1*/, jpaddingFrame /*a9*/);
-}
-
-JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_paddingCipher_1new__ (JNIEnv *jenv, jobject jobj) {
-    jlong c_ctx = 0;
-    *(vscf_padding_cipher_t **)&c_ctx = vscf_padding_cipher_new();
-    return c_ctx;
-}
-
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_paddingCipher_1close (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
-    vscf_padding_cipher_delete(*(vscf_padding_cipher_t /*9*/ **) &c_ctx /*5*/);
-}
-
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_paddingCipher_1algId (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
-    // Cast class context
-    vscf_padding_cipher_t /*9*/* padding_cipher_ctx = *(vscf_padding_cipher_t /*9*/**) &c_ctx;
-
-    const vscf_alg_id_t proxyResult = vscf_padding_cipher_alg_id(padding_cipher_ctx /*a1*/);
-    jclass cls = (*jenv)->FindClass(jenv, "com/virgilsecurity/crypto/foundation/AlgId");
-    if (NULL == cls) {
-        VSCF_ASSERT("Enum AlgId not found.");
-    }
-
-    jmethodID methodID = (*jenv)->GetStaticMethodID(jenv, cls, "fromCode", "(I)Lcom/virgilsecurity/crypto/foundation/AlgId;");
-    if (NULL == methodID) {
-        VSCF_ASSERT("Enum AlgId has no method 'fromCode'.");
-    }
-    jobject ret = (*jenv)->CallStaticObjectMethod(jenv, cls, methodID, proxyResult);
-    return ret;
-}
-
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_paddingCipher_1produceAlgInfo (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
-    // Cast class context
-    vscf_padding_cipher_t /*9*/* padding_cipher_ctx = *(vscf_padding_cipher_t /*9*/**) &c_ctx;
-
-    const vscf_impl_t */*6*/ proxyResult = vscf_padding_cipher_produce_alg_info(padding_cipher_ctx /*a1*/);
-    jobject ret = wrapAlgInfo(jenv, jobj, proxyResult);
-    return ret;
-}
-
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_paddingCipher_1restoreAlgInfo (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jalgInfo) {
-    // Cast class context
-    vscf_padding_cipher_t /*9*/* padding_cipher_ctx = *(vscf_padding_cipher_t /*9*/**) &c_ctx;
-    // Wrap Java interfaces
-    jclass alg_info_cls = (*jenv)->GetObjectClass(jenv, jalgInfo);
-    if (NULL == alg_info_cls) {
-        VSCF_ASSERT("Class AlgInfo not found.");
-    }
-    jfieldID alg_info_fidCtx = (*jenv)->GetFieldID(jenv, alg_info_cls, "cCtx", "J");
-    if (NULL == alg_info_fidCtx) {
-        VSCF_ASSERT("Class 'AlgInfo' has no field 'cCtx'.");
-    }
-    jlong alg_info_c_ctx = (*jenv)->GetLongField(jenv, jalgInfo, alg_info_fidCtx);
-    vscf_impl_t */*6*/ alg_info = *(vscf_impl_t */*6*/*)&alg_info_c_ctx;
-
-    vscf_status_t status = vscf_padding_cipher_restore_alg_info(padding_cipher_ctx /*a1*/, alg_info /*a6*/);
-    if (status != vscf_status_SUCCESS) {
-        throwFoundationException(jenv, jobj, status);
-        return;
-    }
-}
-
-JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_paddingCipher_1encrypt (JNIEnv *jenv, jobject jobj, jlong c_ctx, jbyteArray jdata) {
-    // Cast class context
-    vscf_padding_cipher_t /*9*/* padding_cipher_ctx = *(vscf_padding_cipher_t /*9*/**) &c_ctx;
-
-    // Wrap input data
-    byte* data_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jdata, NULL);
-    vsc_data_t data = vsc_data(data_arr, (*jenv)->GetArrayLength(jenv, jdata));
-
-    vsc_buffer_t *out = vsc_buffer_new_with_capacity(vscf_padding_cipher_encrypted_len((vscf_padding_cipher_t /*9*/ *) c_ctx /*3*/, data.len/*a*/));
-
-    vscf_status_t status = vscf_padding_cipher_encrypt(padding_cipher_ctx /*a1*/, data /*a3*/, out /*a3*/);
-    if (status != vscf_status_SUCCESS) {
-        throwFoundationException(jenv, jobj, status);
-        return NULL;
-    }
-    jbyteArray ret = (*jenv)->NewByteArray(jenv, vsc_buffer_len(out));
-    (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(out), (jbyte*) vsc_buffer_bytes(out));
-    // Free resources
-    (*jenv)->ReleaseByteArrayElements(jenv, jdata, (jbyte*) data_arr, 0);
-
-    vsc_buffer_delete(out);
-
-    return ret;
-}
-
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_paddingCipher_1encryptedLen (JNIEnv *jenv, jobject jobj, jlong c_ctx, jint jdataLen) {
-    // Cast class context
-    vscf_padding_cipher_t /*9*/* padding_cipher_ctx = *(vscf_padding_cipher_t /*9*/**) &c_ctx;
-
-    jint ret = (jint) vscf_padding_cipher_encrypted_len(padding_cipher_ctx /*a1*/, jdataLen /*a9*/);
-    return ret;
-}
-
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_paddingCipher_1preciseEncryptedLen (JNIEnv *jenv, jobject jobj, jlong c_ctx, jint jdataLen) {
-    // Cast class context
-    vscf_padding_cipher_t /*9*/* padding_cipher_ctx = *(vscf_padding_cipher_t /*9*/**) &c_ctx;
-
-    jint ret = (jint) vscf_padding_cipher_precise_encrypted_len(padding_cipher_ctx /*a1*/, jdataLen /*a9*/);
-    return ret;
-}
-
-JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_paddingCipher_1decrypt (JNIEnv *jenv, jobject jobj, jlong c_ctx, jbyteArray jdata) {
-    // Cast class context
-    vscf_padding_cipher_t /*9*/* padding_cipher_ctx = *(vscf_padding_cipher_t /*9*/**) &c_ctx;
-
-    // Wrap input data
-    byte* data_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jdata, NULL);
-    vsc_data_t data = vsc_data(data_arr, (*jenv)->GetArrayLength(jenv, jdata));
-
-    vsc_buffer_t *out = vsc_buffer_new_with_capacity(vscf_padding_cipher_decrypted_len((vscf_padding_cipher_t /*9*/ *) c_ctx /*3*/, data.len/*a*/));
-
-    vscf_status_t status = vscf_padding_cipher_decrypt(padding_cipher_ctx /*a1*/, data /*a3*/, out /*a3*/);
-    if (status != vscf_status_SUCCESS) {
-        throwFoundationException(jenv, jobj, status);
-        return NULL;
-    }
-    jbyteArray ret = (*jenv)->NewByteArray(jenv, vsc_buffer_len(out));
-    (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(out), (jbyte*) vsc_buffer_bytes(out));
-    // Free resources
-    (*jenv)->ReleaseByteArrayElements(jenv, jdata, (jbyte*) data_arr, 0);
-
-    vsc_buffer_delete(out);
-
-    return ret;
-}
-
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_paddingCipher_1decryptedLen (JNIEnv *jenv, jobject jobj, jlong c_ctx, jint jdataLen) {
-    // Cast class context
-    vscf_padding_cipher_t /*9*/* padding_cipher_ctx = *(vscf_padding_cipher_t /*9*/**) &c_ctx;
-
-    jint ret = (jint) vscf_padding_cipher_decrypted_len(padding_cipher_ctx /*a1*/, jdataLen /*a9*/);
-    return ret;
-}
-
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_paddingCipher_1nonceLen (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
-    // Cast class context
-    vscf_padding_cipher_t /*9*/* padding_cipher_ctx = *(vscf_padding_cipher_t /*9*/**) &c_ctx;
-
-    jint ret = (jint) vscf_padding_cipher_nonce_len(padding_cipher_ctx /*a1*/);
-    return ret;
-}
-
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_paddingCipher_1keyLen (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
-    // Cast class context
-    vscf_padding_cipher_t /*9*/* padding_cipher_ctx = *(vscf_padding_cipher_t /*9*/**) &c_ctx;
-
-    jint ret = (jint) vscf_padding_cipher_key_len(padding_cipher_ctx /*a1*/);
-    return ret;
-}
-
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_paddingCipher_1keyBitlen (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
-    // Cast class context
-    vscf_padding_cipher_t /*9*/* padding_cipher_ctx = *(vscf_padding_cipher_t /*9*/**) &c_ctx;
-
-    jint ret = (jint) vscf_padding_cipher_key_bitlen(padding_cipher_ctx /*a1*/);
-    return ret;
-}
-
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_paddingCipher_1blockLen (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
-    // Cast class context
-    vscf_padding_cipher_t /*9*/* padding_cipher_ctx = *(vscf_padding_cipher_t /*9*/**) &c_ctx;
-
-    jint ret = (jint) vscf_padding_cipher_block_len(padding_cipher_ctx /*a1*/);
-    return ret;
-}
-
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_paddingCipher_1setNonce (JNIEnv *jenv, jobject jobj, jlong c_ctx, jbyteArray jnonce) {
-    // Cast class context
-    vscf_padding_cipher_t /*9*/* padding_cipher_ctx = *(vscf_padding_cipher_t /*9*/**) &c_ctx;
-
-    // Wrap input data
-    byte* nonce_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jnonce, NULL);
-    vsc_data_t nonce = vsc_data(nonce_arr, (*jenv)->GetArrayLength(jenv, jnonce));
-
-    vscf_padding_cipher_set_nonce(padding_cipher_ctx /*a1*/, nonce /*a3*/);
-    // Free resources
-    (*jenv)->ReleaseByteArrayElements(jenv, jnonce, (jbyte*) nonce_arr, 0);
-}
-
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_paddingCipher_1setKey (JNIEnv *jenv, jobject jobj, jlong c_ctx, jbyteArray jkey) {
-    // Cast class context
-    vscf_padding_cipher_t /*9*/* padding_cipher_ctx = *(vscf_padding_cipher_t /*9*/**) &c_ctx;
-
-    // Wrap input data
-    byte* key_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jkey, NULL);
-    vsc_data_t key = vsc_data(key_arr, (*jenv)->GetArrayLength(jenv, jkey));
-
-    vscf_padding_cipher_set_key(padding_cipher_ctx /*a1*/, key /*a3*/);
-    // Free resources
-    (*jenv)->ReleaseByteArrayElements(jenv, jkey, (jbyte*) key_arr, 0);
-}
-
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_paddingCipher_1startEncryption (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
-    // Cast class context
-    vscf_padding_cipher_t /*9*/* padding_cipher_ctx = *(vscf_padding_cipher_t /*9*/**) &c_ctx;
-
-    vscf_padding_cipher_start_encryption(padding_cipher_ctx /*a1*/);
-}
-
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_paddingCipher_1startDecryption (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
-    // Cast class context
-    vscf_padding_cipher_t /*9*/* padding_cipher_ctx = *(vscf_padding_cipher_t /*9*/**) &c_ctx;
-
-    vscf_padding_cipher_start_decryption(padding_cipher_ctx /*a1*/);
-}
-
-JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_paddingCipher_1update (JNIEnv *jenv, jobject jobj, jlong c_ctx, jbyteArray jdata) {
-    // Cast class context
-    vscf_padding_cipher_t /*9*/* padding_cipher_ctx = *(vscf_padding_cipher_t /*9*/**) &c_ctx;
-
-    // Wrap input data
-    byte* data_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jdata, NULL);
-    vsc_data_t data = vsc_data(data_arr, (*jenv)->GetArrayLength(jenv, jdata));
-
-    vsc_buffer_t *out = vsc_buffer_new_with_capacity(vscf_padding_cipher_out_len((vscf_padding_cipher_t /*9*/ *) c_ctx /*3*/, data.len/*a*/));
-
-    vscf_padding_cipher_update(padding_cipher_ctx /*a1*/, data /*a3*/, out /*a3*/);
-    jbyteArray ret = (*jenv)->NewByteArray(jenv, vsc_buffer_len(out));
-    (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(out), (jbyte*) vsc_buffer_bytes(out));
-    // Free resources
-    (*jenv)->ReleaseByteArrayElements(jenv, jdata, (jbyte*) data_arr, 0);
-
-    vsc_buffer_delete(out);
-
-    return ret;
-}
-
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_paddingCipher_1outLen (JNIEnv *jenv, jobject jobj, jlong c_ctx, jint jdataLen) {
-    // Cast class context
-    vscf_padding_cipher_t /*9*/* padding_cipher_ctx = *(vscf_padding_cipher_t /*9*/**) &c_ctx;
-
-    jint ret = (jint) vscf_padding_cipher_out_len(padding_cipher_ctx /*a1*/, jdataLen /*a9*/);
-    return ret;
-}
-
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_paddingCipher_1encryptedOutLen (JNIEnv *jenv, jobject jobj, jlong c_ctx, jint jdataLen) {
-    // Cast class context
-    vscf_padding_cipher_t /*9*/* padding_cipher_ctx = *(vscf_padding_cipher_t /*9*/**) &c_ctx;
-
-    jint ret = (jint) vscf_padding_cipher_encrypted_out_len(padding_cipher_ctx /*a1*/, jdataLen /*a9*/);
-    return ret;
-}
-
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_paddingCipher_1decryptedOutLen (JNIEnv *jenv, jobject jobj, jlong c_ctx, jint jdataLen) {
-    // Cast class context
-    vscf_padding_cipher_t /*9*/* padding_cipher_ctx = *(vscf_padding_cipher_t /*9*/**) &c_ctx;
-
-    jint ret = (jint) vscf_padding_cipher_decrypted_out_len(padding_cipher_ctx /*a1*/, jdataLen /*a9*/);
-    return ret;
-}
-
-JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_paddingCipher_1finish (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
-    // Cast class context
-    vscf_padding_cipher_t /*9*/* padding_cipher_ctx = *(vscf_padding_cipher_t /*9*/**) &c_ctx;
-
-    // Wrap input buffers
-    vsc_buffer_t *out = vsc_buffer_new_with_capacity(vscf_padding_cipher_out_len((vscf_padding_cipher_t /*9*/ *) c_ctx /*3*/, 0/*b*/));
-
-    vscf_status_t status = vscf_padding_cipher_finish(padding_cipher_ctx /*a1*/, out /*a3*/);
-    if (status != vscf_status_SUCCESS) {
-        throwFoundationException(jenv, jobj, status);
-        return NULL;
-    }
-    jbyteArray ret = (*jenv)->NewByteArray(jenv, vsc_buffer_len(out));
-    (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(out), (jbyte*) vsc_buffer_bytes(out));
-    // Free resources
-    vsc_buffer_delete(out);
-
-    return ret;
-}
-
 JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_pkcs8Serializer_1setAsn1Writer (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jasn1Writer) {
     jclass asn1_writer_cls = (*jenv)->GetObjectClass(jenv, jasn1Writer);
     if (NULL == asn1_writer_cls) {
@@ -11862,71 +11698,6 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
     return ret;
 }
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_paddingCipherAlgInfo_1underlyingCipher (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
-    // Cast class context
-    vscf_padding_cipher_alg_info_t /*9*/* padding_cipher_alg_info_ctx = *(vscf_padding_cipher_alg_info_t /*9*/**) &c_ctx;
-
-    const vscf_impl_t */*6*/ proxyResult = vscf_padding_cipher_alg_info_underlying_cipher(padding_cipher_alg_info_ctx /*a1*/);
-    vscf_impl_shallow_copy((vscf_impl_t */*6*/) proxyResult);
-    jobject ret = wrapAlgInfo(jenv, jobj, proxyResult);
-    return ret;
-}
-
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_paddingCipherAlgInfo_1paddingFrame (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
-    // Cast class context
-    vscf_padding_cipher_alg_info_t /*9*/* padding_cipher_alg_info_ctx = *(vscf_padding_cipher_alg_info_t /*9*/**) &c_ctx;
-
-    jint ret = (jint) vscf_padding_cipher_alg_info_padding_frame(padding_cipher_alg_info_ctx /*a1*/);
-    return ret;
-}
-
-JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_paddingCipherAlgInfo_1new__ (JNIEnv *jenv, jobject jobj) {
-    jlong c_ctx = 0;
-    *(vscf_padding_cipher_alg_info_t **)&c_ctx = vscf_padding_cipher_alg_info_new();
-    return c_ctx;
-}
-
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_paddingCipherAlgInfo_1close (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
-    vscf_padding_cipher_alg_info_delete(*(vscf_padding_cipher_alg_info_t /*9*/ **) &c_ctx /*5*/);
-}
-
-JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_paddingCipherAlgInfo_1new__Lcom_virgilsecurity_crypto_foundation_AlgInfo_2I (JNIEnv *jenv, jobject jobj, jobject junderlyingCipher, jint jpaddingFrame) {
-    // Wrap Java interfaces
-    jclass underlying_cipher_cls = (*jenv)->GetObjectClass(jenv, junderlyingCipher);
-    if (NULL == underlying_cipher_cls) {
-        VSCF_ASSERT("Class AlgInfo not found.");
-    }
-    jfieldID underlying_cipher_fidCtx = (*jenv)->GetFieldID(jenv, underlying_cipher_cls, "cCtx", "J");
-    if (NULL == underlying_cipher_fidCtx) {
-        VSCF_ASSERT("Class 'AlgInfo' has no field 'cCtx'.");
-    }
-    jlong underlying_cipher_c_ctx = (*jenv)->GetLongField(jenv, junderlyingCipher, underlying_cipher_fidCtx);
-    vscf_impl_t */*6*/ underlying_cipher = *(vscf_impl_t */*6*/*)&underlying_cipher_c_ctx;
-
-    //Shallow copy
-    vscf_impl_t */*6*/ underlying_cipher_copy = vscf_impl_shallow_copy(underlying_cipher);
-    jlong proxyResult = (jlong) vscf_padding_cipher_alg_info_new_with_members(&underlying_cipher_copy /*a5*/, jpaddingFrame /*a9*/);
-    return proxyResult;
-}
-
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_paddingCipherAlgInfo_1algId (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
-    // Cast class context
-    vscf_padding_cipher_alg_info_t /*9*/* padding_cipher_alg_info_ctx = *(vscf_padding_cipher_alg_info_t /*9*/**) &c_ctx;
-
-    const vscf_alg_id_t proxyResult = vscf_padding_cipher_alg_info_alg_id(padding_cipher_alg_info_ctx /*a1*/);
-    jclass cls = (*jenv)->FindClass(jenv, "com/virgilsecurity/crypto/foundation/AlgId");
-    if (NULL == cls) {
-        VSCF_ASSERT("Enum AlgId not found.");
-    }
-
-    jmethodID methodID = (*jenv)->GetStaticMethodID(jenv, cls, "fromCode", "(I)Lcom/virgilsecurity/crypto/foundation/AlgId;");
-    if (NULL == methodID) {
-        VSCF_ASSERT("Enum AlgId has no method 'fromCode'.");
-    }
-    jobject ret = (*jenv)->CallStaticObjectMethod(jenv, cls, methodID, proxyResult);
-    return ret;
-}
-
 JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_algInfoDerSerializer_1setAsn1Writer (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jasn1Writer) {
     jclass asn1_writer_cls = (*jenv)->GetObjectClass(jenv, jasn1Writer);
     if (NULL == asn1_writer_cls) {
@@ -12317,6 +12088,218 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
     jobject ret = (*jenv)->CallStaticObjectMethod(jenv, result_cls, result_methodID, (jlong) proxyResult);
     // Free resources
     (*jenv)->ReleaseByteArrayElements(jenv, jdata, (jbyte*) data_arr, 0);
+
+    return ret;
+}
+
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_randomPadding_1setRandom (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jrandom) {
+    jclass random_cls = (*jenv)->GetObjectClass(jenv, jrandom);
+    if (NULL == random_cls) {
+        VSCF_ASSERT("Class Random not found.");
+    }
+    jfieldID random_fidCtx = (*jenv)->GetFieldID(jenv, random_cls, "cCtx", "J");
+    if (NULL == random_fidCtx) {
+        VSCF_ASSERT("Class 'Random' has no field 'cCtx'.");
+    }
+    jlong random_c_ctx = (*jenv)->GetLongField(jenv, jrandom, random_fidCtx);
+    vscf_impl_t */*6*/ random = *(vscf_impl_t */*6*/*) &random_c_ctx;
+
+    vscf_random_padding_release_random((vscf_random_padding_t /*9*/ *) c_ctx);
+    vscf_random_padding_use_random((vscf_random_padding_t /*9*/ *) c_ctx, random);
+}
+
+JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_randomPadding_1new__ (JNIEnv *jenv, jobject jobj) {
+    jlong c_ctx = 0;
+    *(vscf_random_padding_t **)&c_ctx = vscf_random_padding_new();
+    return c_ctx;
+}
+
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_randomPadding_1close (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    vscf_random_padding_delete(*(vscf_random_padding_t /*9*/ **) &c_ctx /*5*/);
+}
+
+JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_randomPadding_1algId (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    // Cast class context
+    vscf_random_padding_t /*9*/* random_padding_ctx = *(vscf_random_padding_t /*9*/**) &c_ctx;
+
+    const vscf_alg_id_t proxyResult = vscf_random_padding_alg_id(random_padding_ctx /*a1*/);
+    jclass cls = (*jenv)->FindClass(jenv, "com/virgilsecurity/crypto/foundation/AlgId");
+    if (NULL == cls) {
+        VSCF_ASSERT("Enum AlgId not found.");
+    }
+
+    jmethodID methodID = (*jenv)->GetStaticMethodID(jenv, cls, "fromCode", "(I)Lcom/virgilsecurity/crypto/foundation/AlgId;");
+    if (NULL == methodID) {
+        VSCF_ASSERT("Enum AlgId has no method 'fromCode'.");
+    }
+    jobject ret = (*jenv)->CallStaticObjectMethod(jenv, cls, methodID, proxyResult);
+    return ret;
+}
+
+JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_randomPadding_1produceAlgInfo (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    // Cast class context
+    vscf_random_padding_t /*9*/* random_padding_ctx = *(vscf_random_padding_t /*9*/**) &c_ctx;
+
+    const vscf_impl_t */*6*/ proxyResult = vscf_random_padding_produce_alg_info(random_padding_ctx /*a1*/);
+    jobject ret = wrapAlgInfo(jenv, jobj, proxyResult);
+    return ret;
+}
+
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_randomPadding_1restoreAlgInfo (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jalgInfo) {
+    // Cast class context
+    vscf_random_padding_t /*9*/* random_padding_ctx = *(vscf_random_padding_t /*9*/**) &c_ctx;
+    // Wrap Java interfaces
+    jclass alg_info_cls = (*jenv)->GetObjectClass(jenv, jalgInfo);
+    if (NULL == alg_info_cls) {
+        VSCF_ASSERT("Class AlgInfo not found.");
+    }
+    jfieldID alg_info_fidCtx = (*jenv)->GetFieldID(jenv, alg_info_cls, "cCtx", "J");
+    if (NULL == alg_info_fidCtx) {
+        VSCF_ASSERT("Class 'AlgInfo' has no field 'cCtx'.");
+    }
+    jlong alg_info_c_ctx = (*jenv)->GetLongField(jenv, jalgInfo, alg_info_fidCtx);
+    vscf_impl_t */*6*/ alg_info = *(vscf_impl_t */*6*/*)&alg_info_c_ctx;
+
+    vscf_status_t status = vscf_random_padding_restore_alg_info(random_padding_ctx /*a1*/, alg_info /*a6*/);
+    if (status != vscf_status_SUCCESS) {
+        throwFoundationException(jenv, jobj, status);
+        return;
+    }
+}
+
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_randomPadding_1configure (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jparams) {
+    // Cast class context
+    vscf_random_padding_t /*9*/* random_padding_ctx = *(vscf_random_padding_t /*9*/**) &c_ctx;
+    // Wrap Java classes
+    jclass params_cls = (*jenv)->FindClass(jenv, "com/virgilsecurity/crypto/foundation/PaddingParams");
+    if (NULL == params_cls) {
+        VSCF_ASSERT("Class PaddingParams not found.");
+    }
+    jfieldID params_fidCtx = (*jenv)->GetFieldID(jenv, params_cls, "cCtx", "J");
+    if (NULL == params_fidCtx) {
+        VSCF_ASSERT("Class 'PaddingParams' has no field 'cCtx'.");
+    }
+    jlong params_c_ctx = (*jenv)->GetLongField(jenv, jparams, params_fidCtx);
+    vscf_padding_params_t */*5*/ params = *(vscf_padding_params_t */*5*/*) &params_c_ctx;
+
+    vscf_random_padding_configure(random_padding_ctx /*a1*/, params /*a6*/);
+}
+
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_randomPadding_1paddedDataLen (JNIEnv *jenv, jobject jobj, jlong c_ctx, jint jdataLen) {
+    // Cast class context
+    vscf_random_padding_t /*9*/* random_padding_ctx = *(vscf_random_padding_t /*9*/**) &c_ctx;
+
+    jint ret = (jint) vscf_random_padding_padded_data_len(random_padding_ctx /*a1*/, jdataLen /*a9*/);
+    return ret;
+}
+
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_randomPadding_1len (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    // Cast class context
+    vscf_random_padding_t /*9*/* random_padding_ctx = *(vscf_random_padding_t /*9*/**) &c_ctx;
+
+    jint ret = (jint) vscf_random_padding_len(random_padding_ctx /*a1*/);
+    return ret;
+}
+
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_randomPadding_1lenMax (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    // Cast class context
+    vscf_random_padding_t /*9*/* random_padding_ctx = *(vscf_random_padding_t /*9*/**) &c_ctx;
+
+    jint ret = (jint) vscf_random_padding_len_max(random_padding_ctx /*a1*/);
+    return ret;
+}
+
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_randomPadding_1startDataProcessing (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    // Cast class context
+    vscf_random_padding_t /*9*/* random_padding_ctx = *(vscf_random_padding_t /*9*/**) &c_ctx;
+
+    vscf_random_padding_start_data_processing(random_padding_ctx /*a1*/);
+}
+
+JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_randomPadding_1processData (JNIEnv *jenv, jobject jobj, jlong c_ctx, jbyteArray jdata) {
+    // Cast class context
+    vscf_random_padding_t /*9*/* random_padding_ctx = *(vscf_random_padding_t /*9*/**) &c_ctx;
+
+    // Wrap input data
+    byte* data_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jdata, NULL);
+    vsc_data_t data = vsc_data(data_arr, (*jenv)->GetArrayLength(jenv, jdata));
+
+    const vsc_data_t /*3*/ proxyResult = vscf_random_padding_process_data(random_padding_ctx /*a1*/, data /*a3*/);
+    jbyteArray ret = NULL;
+    if (proxyResult.len > 0) {
+        ret = (*jenv)->NewByteArray(jenv, proxyResult.len);
+        (*jenv)->SetByteArrayRegion (jenv, ret, 0, proxyResult.len, (jbyte*) proxyResult.bytes);
+    }
+    // Free resources
+    (*jenv)->ReleaseByteArrayElements(jenv, jdata, (jbyte*) data_arr, 0);
+
+    return ret;
+}
+
+JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_randomPadding_1finishDataProcessing (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    // Cast class context
+    vscf_random_padding_t /*9*/* random_padding_ctx = *(vscf_random_padding_t /*9*/**) &c_ctx;
+
+    // Wrap input buffers
+    vsc_buffer_t *out = vsc_buffer_new_with_capacity(vscf_random_padding_len((vscf_random_padding_t /*9*/ *) c_ctx /*3*/));
+
+    vscf_status_t status = vscf_random_padding_finish_data_processing(random_padding_ctx /*a1*/, out /*a3*/);
+    if (status != vscf_status_SUCCESS) {
+        throwFoundationException(jenv, jobj, status);
+        return NULL;
+    }
+    jbyteArray ret = (*jenv)->NewByteArray(jenv, vsc_buffer_len(out));
+    (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(out), (jbyte*) vsc_buffer_bytes(out));
+    // Free resources
+    vsc_buffer_delete(out);
+
+    return ret;
+}
+
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_randomPadding_1startPaddedDataProcessing (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    // Cast class context
+    vscf_random_padding_t /*9*/* random_padding_ctx = *(vscf_random_padding_t /*9*/**) &c_ctx;
+
+    vscf_random_padding_start_padded_data_processing(random_padding_ctx /*a1*/);
+}
+
+JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_randomPadding_1processPaddedData (JNIEnv *jenv, jobject jobj, jlong c_ctx, jbyteArray jdata) {
+    // Cast class context
+    vscf_random_padding_t /*9*/* random_padding_ctx = *(vscf_random_padding_t /*9*/**) &c_ctx;
+
+    // Wrap input data
+    byte* data_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jdata, NULL);
+    vsc_data_t data = vsc_data(data_arr, (*jenv)->GetArrayLength(jenv, jdata));
+
+    vsc_buffer_t *out = vsc_buffer_new_with_capacity(jdata);
+
+    vscf_random_padding_process_padded_data(random_padding_ctx /*a1*/, data /*a3*/, out /*a3*/);
+    jbyteArray ret = (*jenv)->NewByteArray(jenv, vsc_buffer_len(out));
+    (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(out), (jbyte*) vsc_buffer_bytes(out));
+    // Free resources
+    (*jenv)->ReleaseByteArrayElements(jenv, jdata, (jbyte*) data_arr, 0);
+
+    vsc_buffer_delete(out);
+
+    return ret;
+}
+
+JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_randomPadding_1finishPaddedDataProcessing (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    // Cast class context
+    vscf_random_padding_t /*9*/* random_padding_ctx = *(vscf_random_padding_t /*9*/**) &c_ctx;
+
+    // Wrap input buffers
+    vsc_buffer_t *out = vsc_buffer_new_with_capacity(vscf_random_padding_len_max((vscf_random_padding_t /*9*/ *) c_ctx /*3*/));
+
+    vscf_status_t status = vscf_random_padding_finish_padded_data_processing(random_padding_ctx /*a1*/, out /*a3*/);
+    if (status != vscf_status_SUCCESS) {
+        throwFoundationException(jenv, jobj, status);
+        return NULL;
+    }
+    jbyteArray ret = (*jenv)->NewByteArray(jenv, vsc_buffer_len(out));
+    (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(out), (jbyte*) vsc_buffer_bytes(out));
+    // Free resources
+    vsc_buffer_delete(out);
 
     return ret;
 }

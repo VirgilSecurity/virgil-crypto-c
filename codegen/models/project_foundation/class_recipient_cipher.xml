@@ -25,9 +25,9 @@
 
     <dependency name="random" interface="random"/>
     <dependency name="encryption cipher" interface="cipher"/>
-    <dependency name="signer hash" interface="hash"/>
-    <dependency name="padding" interface="padding"/>
+    <dependency name="encryption padding" interface="padding"/>
     <dependency name="padding params" class="padding params"/>
+    <dependency name="signer hash" interface="hash"/>
 
     <property name="key recipients" class="key recipient list"/>
     <property name="signers" class="signer list"/>
@@ -39,6 +39,7 @@
     <property name="decryption password" class="buffer"/>
     <property name="decryption cipher" interface="cipher"/>
     <property name="decryption padding" interface="padding"/>
+    <property name="padding cipher" impl="padding cipher"/>
     <property name="verifier hash" interface="hash"/>
     <property name="message info" class="message info"/>
     <property name="message info der serializer" impl="message info der serializer"/>
@@ -404,5 +405,18 @@
     <method name="decrypt chunk" declaration="private">
         <argument name="data" class="data"/>
         <argument name="out" class="buffer"/>
+    </method>
+
+    <method name="update message info for encryption" declaration="private">
+        Add information related to encryption to a message info.
+
+        <return enum="status"/>
+    </method>
+
+    <method name="configure padding cipher" declaration="private">
+        Configure padding cipher with given padding and cipher.
+
+        <argument name="padding" interface="padding" access="readwrite"/>
+        <argument name="cipher" interface="cipher" access="readwrite"/>
     </method>
 </class>

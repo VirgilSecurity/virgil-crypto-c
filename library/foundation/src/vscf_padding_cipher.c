@@ -53,12 +53,8 @@
 #include "vscf_padding_cipher.h"
 #include "vscf_assert.h"
 #include "vscf_memory.h"
-#include "vscf_alg.h"
-#include "vscf_alg_info.h"
 #include "vscf_decrypt.h"
 #include "vscf_encrypt.h"
-#include "vscf_padding_cipher_alg_info.h"
-#include "vscf_alg_factory.h"
 #include "vscf_cipher.h"
 #include "vscf_padding.h"
 #include "vscf_padding_cipher_defs.h"
@@ -121,30 +117,6 @@ vscf_padding_cipher_cleanup_ctx(vscf_padding_cipher_t *self) {
     VSCF_ASSERT_PTR(self);
 
     vsc_buffer_destroy(&self->padding_buffer);
-}
-
-//
-//  Return underlying cipher.
-//
-VSCF_PUBLIC const vscf_impl_t *
-vscf_padding_cipher_get_cipher(vscf_padding_cipher_t *self) {
-
-    VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(self->cipher);
-
-    return self->cipher;
-}
-
-//
-//  Return underlying padding.
-//
-VSCF_PUBLIC const vscf_impl_t *
-vscf_padding_cipher_get_padding(vscf_padding_cipher_t *self) {
-
-    VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(self->padding);
-
-    return self->padding;
 }
 
 //
@@ -223,73 +195,6 @@ vscf_padding_cipher_finish_decryption(vscf_padding_cipher_t *self, vsc_buffer_t 
     if (trim_status != vscf_status_SUCCESS) {
         return status;
     }
-
-    return vscf_status_SUCCESS;
-}
-
-//
-//  Provide algorithm identificator.
-//
-VSCF_PUBLIC vscf_alg_id_t
-vscf_padding_cipher_alg_id(const vscf_padding_cipher_t *self) {
-
-    VSCF_ASSERT_PTR(self);
-
-    return vscf_alg_id_PADDING_CIPHER;
-}
-
-//
-//  Produce object with algorithm information and configuration parameters.
-//
-VSCF_PUBLIC vscf_impl_t *
-vscf_padding_cipher_produce_alg_info(const vscf_padding_cipher_t *self) {
-
-    VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(self->cipher);
-    VSCF_ASSERT_PTR(self->padding);
-
-    vscf_impl_t *underlying_cipher_alg_info = vscf_alg_produce_alg_info(self->cipher);
-    vscf_impl_t *underlying_padding_alg_info = vscf_alg_produce_alg_info(self->padding);
-
-    vscf_padding_cipher_alg_info_t *alg_info =
-            vscf_padding_cipher_alg_info_new_with_members(&underlying_padding_alg_info, &underlying_cipher_alg_info);
-
-    return vscf_padding_cipher_alg_info_impl(alg_info);
-
-    return NULL;
-}
-
-//
-//  Restore algorithm configuration from the given object.
-//
-VSCF_PUBLIC vscf_status_t
-vscf_padding_cipher_restore_alg_info(vscf_padding_cipher_t *self, const vscf_impl_t *alg_info) {
-
-    VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(alg_info);
-    VSCF_ASSERT(vscf_alg_info_alg_id(alg_info) == vscf_alg_id_PADDING_CIPHER);
-    VSCF_ASSERT(vscf_impl_tag(alg_info) == vscf_impl_tag_PADDING_CIPHER_ALG_INFO);
-
-    const vscf_padding_cipher_alg_info_t *padding_cipher_alg_info = (const vscf_padding_cipher_alg_info_t *)alg_info;
-    const vscf_impl_t *padding_alg_info = vscf_padding_cipher_alg_info_padding(padding_cipher_alg_info);
-    const vscf_impl_t *cipher_alg_info = vscf_padding_cipher_alg_info_cipher(padding_cipher_alg_info);
-
-    vscf_impl_t *padding = vscf_alg_factory_create_padding_from_info(padding_alg_info, NULL);
-    if (NULL == padding) {
-        return vscf_status_ERROR_UNSUPPORTED_ALGORITHM;
-    }
-
-    vscf_impl_t *cipher = vscf_alg_factory_create_cipher_from_info(cipher_alg_info);
-    if (NULL == cipher) {
-        vscf_impl_destroy(&padding);
-        return vscf_status_ERROR_UNSUPPORTED_ALGORITHM;
-    }
-
-    vscf_padding_cipher_release_padding(self);
-    vscf_padding_cipher_take_padding(self, padding);
-
-    vscf_padding_cipher_release_cipher(self);
-    vscf_padding_cipher_take_cipher(self, cipher);
 
     return vscf_status_SUCCESS;
 }

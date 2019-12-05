@@ -128,9 +128,6 @@ const initFoundationInterface = (Module, modules) => {
                 case modules.FoundationImplTag.RAW_PRIVATE_KEY:
                     return modules.RawPrivateKey.newAndTakeCContext(ctxPtr);
 
-                case modules.FoundationImplTag.PADDING_CIPHER:
-                    return modules.PaddingCipher.newAndTakeCContext(ctxPtr);
-
                 case modules.FoundationImplTag.PKCS8_SERIALIZER:
                     return modules.Pkcs8Serializer.newAndTakeCContext(ctxPtr);
 
@@ -167,9 +164,6 @@ const initFoundationInterface = (Module, modules) => {
                 case modules.FoundationImplTag.ECC_ALG_INFO:
                     return modules.EccAlgInfo.newAndTakeCContext(ctxPtr);
 
-                case modules.FoundationImplTag.PADDING_CIPHER_ALG_INFO:
-                    return modules.PaddingCipherAlgInfo.newAndTakeCContext(ctxPtr);
-
                 case modules.FoundationImplTag.ALG_INFO_DER_SERIALIZER:
                     return modules.AlgInfoDerSerializer.newAndTakeCContext(ctxPtr);
 
@@ -178,6 +172,12 @@ const initFoundationInterface = (Module, modules) => {
 
                 case modules.FoundationImplTag.MESSAGE_INFO_DER_SERIALIZER:
                     return modules.MessageInfoDerSerializer.newAndTakeCContext(ctxPtr);
+
+                case modules.FoundationImplTag.RANDOM_PADDING:
+                    return modules.RandomPadding.newAndTakeCContext(ctxPtr);
+
+                case modules.FoundationImplTag.PADDING_CIPHER:
+                    return modules.PaddingCipher.newAndTakeCContext(ctxPtr);
 
                 default:
                     throw new Error('Unexpected implementation tag found: ' + implTag);
