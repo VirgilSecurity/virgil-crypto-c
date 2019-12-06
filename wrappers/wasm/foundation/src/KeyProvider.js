@@ -96,13 +96,6 @@ const initKeyProvider = (Module, modules) => {
             Module._vscf_key_provider_use_random(this.ctxPtr, random.ctxPtr)
         }
 
-        set ecies(ecies) {
-            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-            precondition.ensureClass('ecies', ecies, modules.Ecies);
-            Module._vscf_key_provider_release_ecies(this.ctxPtr)
-            Module._vscf_key_provider_use_ecies(this.ctxPtr, ecies.ctxPtr)
-        }
-
         /**
          * Setup predefined values to the uninitialized class dependencies.
          */
@@ -122,7 +115,7 @@ const initKeyProvider = (Module, modules) => {
         }
 
         /**
-         * Generate new private key from the given id.
+         * Generate new private key with a given algorithm.
          */
         generatePrivateKey(algId) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
@@ -136,6 +129,126 @@ const initKeyProvider = (Module, modules) => {
 
             try {
                 proxyResult = Module._vscf_key_provider_generate_private_key(this.ctxPtr, algId, errorCtxPtr);
+
+                const errorStatus = Module._vscf_error_status(errorCtxPtr);
+                modules.FoundationError.handleStatusCode(errorStatus);
+
+                const jsResult = modules.FoundationInterface.newAndTakeCContext(proxyResult);
+                return jsResult;
+            } finally {
+                Module._free(errorCtxPtr);
+            }
+        }
+
+        /**
+         * Generate new post-quantum private key with default algorithms.
+         * Note, that a post-quantum key combines classic private keys
+         * alongside with post-quantum private keys.
+         * Current structure is "compound private key" where:
+         * - cipher private key is "chained private key" where:
+         * - l1 key is a classic private key;
+         * - l2 key is a post-quantum private key;
+         * - signer private key "chained private key" where:
+         * - l1 key is a classic private key;
+         * - l2 key is a post-quantum private key.
+         */
+        generatePostQuantumPrivateKey() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
+            const errorCtxSize = Module._vscf_error_ctx_size();
+            const errorCtxPtr = Module._malloc(errorCtxSize);
+            Module._vscf_error_reset(errorCtxPtr);
+
+            let proxyResult;
+
+            try {
+                proxyResult = Module._vscf_key_provider_generate_post_quantum_private_key(this.ctxPtr, errorCtxPtr);
+
+                const errorStatus = Module._vscf_error_status(errorCtxPtr);
+                modules.FoundationError.handleStatusCode(errorStatus);
+
+                const jsResult = modules.FoundationInterface.newAndTakeCContext(proxyResult);
+                return jsResult;
+            } finally {
+                Module._free(errorCtxPtr);
+            }
+        }
+
+        /**
+         * Generate new compound private key with given algorithms.
+         */
+        generateCompoundPrivateKey(cipherAlgId, signerAlgId) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureNumber('cipherAlgId', cipherAlgId);
+            precondition.ensureNumber('signerAlgId', signerAlgId);
+
+            const errorCtxSize = Module._vscf_error_ctx_size();
+            const errorCtxPtr = Module._malloc(errorCtxSize);
+            Module._vscf_error_reset(errorCtxPtr);
+
+            let proxyResult;
+
+            try {
+                proxyResult = Module._vscf_key_provider_generate_compound_private_key(this.ctxPtr, cipherAlgId, signerAlgId, errorCtxPtr);
+
+                const errorStatus = Module._vscf_error_status(errorCtxPtr);
+                modules.FoundationError.handleStatusCode(errorStatus);
+
+                const jsResult = modules.FoundationInterface.newAndTakeCContext(proxyResult);
+                return jsResult;
+            } finally {
+                Module._free(errorCtxPtr);
+            }
+        }
+
+        /**
+         * Generate new chained private key with given algorithms.
+         */
+        generateChainedPrivateKey(l1AlgId, l2AlgId) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureNumber('l1AlgId', l1AlgId);
+            precondition.ensureNumber('l2AlgId', l2AlgId);
+
+            const errorCtxSize = Module._vscf_error_ctx_size();
+            const errorCtxPtr = Module._malloc(errorCtxSize);
+            Module._vscf_error_reset(errorCtxPtr);
+
+            let proxyResult;
+
+            try {
+                proxyResult = Module._vscf_key_provider_generate_chained_private_key(this.ctxPtr, l1AlgId, l2AlgId, errorCtxPtr);
+
+                const errorStatus = Module._vscf_error_status(errorCtxPtr);
+                modules.FoundationError.handleStatusCode(errorStatus);
+
+                const jsResult = modules.FoundationInterface.newAndTakeCContext(proxyResult);
+                return jsResult;
+            } finally {
+                Module._free(errorCtxPtr);
+            }
+        }
+
+        /**
+         * Generate new compound private key with nested chained private keys.
+         *
+         * Note, l2 algorithm identifiers can be NONE, in this case regular key
+         * will be crated instead of chained key.
+         */
+        generateCompoundChainedPrivateKey(cipherL1AlgId, cipherL2AlgId, signerL1AlgId, signerL2AlgId) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureNumber('cipherL1AlgId', cipherL1AlgId);
+            precondition.ensureNumber('cipherL2AlgId', cipherL2AlgId);
+            precondition.ensureNumber('signerL1AlgId', signerL1AlgId);
+            precondition.ensureNumber('signerL2AlgId', signerL2AlgId);
+
+            const errorCtxSize = Module._vscf_error_ctx_size();
+            const errorCtxPtr = Module._malloc(errorCtxSize);
+            Module._vscf_error_reset(errorCtxPtr);
+
+            let proxyResult;
+
+            try {
+                proxyResult = Module._vscf_key_provider_generate_compound_chained_private_key(this.ctxPtr, cipherL1AlgId, cipherL2AlgId, signerL1AlgId, signerL2AlgId, errorCtxPtr);
 
                 const errorStatus = Module._vscf_error_status(errorCtxPtr);
                 modules.FoundationError.handleStatusCode(errorStatus);

@@ -49,5 +49,3 @@ extern const vsc_data_t test_curve25519_ENCRYPTED_MESSAGE_WITH_AB_RANDOM;
 //
 extern const vsc_data_t test_curve25519_PUBLIC_KEY_PKCS8_DER;
 extern const vsc_data_t test_curve25519_PRIVATE_KEY_PKCS8_DER;
-\
-

@@ -707,7 +707,8 @@ vscf_message_info_der_serializer_serialized_footer_info_len(
     if (vscf_footer_info_has_signed_data_info(footer_info)) {
         const vscf_signed_data_info_t *signed_data_info = vscf_footer_info_signed_data_info(footer_info);
         signed_data_info_len += 1 + 1; //  [0] OPTIONAL
-        signed_data_info_len = vscf_message_info_der_serializer_serialized_signed_data_info_len(self, signed_data_info);
+        signed_data_info_len +=
+                vscf_message_info_der_serializer_serialized_signed_data_info_len(self, signed_data_info);
     }
 
     const size_t len = 1 + 1 + 4 +           //  VirgilFooterInfo ::= SEQUENCE {
@@ -844,13 +845,18 @@ vscf_message_info_der_serializer_serialized_key_recipient_info_len(
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(key_recipient_info);
 
-    size_t encrypted_key_len = vscf_key_recipient_info_encrypted_key(key_recipient_info).len;
+    const size_t encrypted_key_len = vscf_key_recipient_info_encrypted_key(key_recipient_info).len;
 
-    size_t len = 1 + 1 + 3 +                    //  KeyTransRecipientInfo ::= SEQUENCE {
-                 1 + 1 + 1 +                    //      version CMSVersion, -- always set to 0 or 2
-                 1 + 1 + 64 +                   //      rid RecipientIdentifier,
-                 1 + 1 + 32 +                   //      keyEncryptionAlgorithm KeyEncryptionAlgorithmIdentifier,
-                 1 + 1 + 2 + encrypted_key_len; //      encryptedKey EncryptedKey }
+    const vscf_impl_t *key_encryption_alg_info = vscf_key_recipient_info_key_encryption_algorithm(key_recipient_info);
+
+    const size_t key_enc_alg_len =
+            vscf_alg_info_der_serializer_serialized_len(self->alg_info_serializer, key_encryption_alg_info);
+
+    const size_t len = 1 + 1 + 3 +                //  KeyTransRecipientInfo ::= SEQUENCE {
+                       1 + 1 + 1 +                //      version CMSVersion, -- always set to 0 or 2
+                       1 + 1 + 64 +               //      rid RecipientIdentifier,
+                       1 + 1 + key_enc_alg_len +  //      keyEncryptionAlgorithm KeyEncryptionAlgorithmIdentifier,
+                       1 + 4 + encrypted_key_len; //      encryptedKey EncryptedKey }
 
     return len;
 }
@@ -922,11 +928,19 @@ vscf_message_info_der_serializer_serialized_password_recipient_info_len(
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(password_recipient_info);
 
-    size_t len = 1 + 2 +       //  PasswordRecipientInfo ::= SEQUENCE {
-                 1 + 1 + 1 +   //    version CMSVersion, -- Always set to 0
-                 0 +           //    keyDerivationAlgorithm [0] KeyDerivationAlgorithmIdentifier OPTIONAL, -- not used
-                 1 + 1 + 127 + //    keyEncryptionAlgorithm KeyEncryptionAlgorithmIdentifier,
-                 1 + 1 + 32;   //    encryptedKey EncryptedKey }
+    const vscf_impl_t *key_encryption_alg_info =
+            vscf_password_recipient_info_key_encryption_algorithm(password_recipient_info);
+
+    const size_t key_alg_len =
+            vscf_alg_info_der_serializer_serialized_len(self->alg_info_serializer, key_encryption_alg_info);
+
+    const size_t enc_key_len = vscf_password_recipient_info_encrypted_key(password_recipient_info).len;
+
+    const size_t len = 1 + 2 +               //  PasswordRecipientInfo ::= SEQUENCE {
+                       1 + 1 + 1 +           //    version CMSVersion, -- Always set to 0
+                       0 +                   //    keyDerivationAlgorithm [0] KeyDerivationAlgorithmIdentifier OPTIONAL,
+                       1 + 1 + key_alg_len + //    keyEncryptionAlgorithm KeyEncryptionAlgorithmIdentifier,
+                       1 + 4 + enc_key_len;  //    encryptedKey EncryptedKey }
 
     return len;
 }
@@ -1078,10 +1092,15 @@ vscf_message_info_der_serializer_serialized_encrypted_content_info_len(
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(message_info);
 
-    size_t len = 1 + 1 +      //  EncryptedContentInfo ::= SEQUENCE {
-                 1 + 1 + 9 +  //      contentType ContentType, -- always PKCS#7 'data' OID
-                 1 + 1 + 32 + //      contentEncryptionAlgorithm ContentEncryptionAlgorithmIdentifier,
-                 0;           //      encryptedContent [0] IMPLICIT EncryptedContent OPTIONAL -- not used }
+    const vscf_impl_t *content_encryption_alg_info = vscf_message_info_data_encryption_alg_info(message_info);
+    const size_t key_alg_len =
+            vscf_alg_info_der_serializer_serialized_len(self->alg_info_serializer, content_encryption_alg_info);
+
+
+    const size_t len = 1 + 1 +               //  EncryptedContentInfo ::= SEQUENCE {
+                       1 + 1 + 9 +           //      contentType ContentType, -- always PKCS#7 'data' OID
+                       1 + 1 + key_alg_len + //      contentEncryptionAlgorithm ContentEncryptionAlgorithmIdentifier,
+                       0;                    //      encryptedContent [0] IMPLICIT EncryptedContent OPTIONAL }
 
     return len;
 }
@@ -1340,11 +1359,16 @@ vscf_message_info_der_serializer_serialized_signer_info_len(
     const size_t signer_id_len = vscf_signer_info_signer_id(signer_info).len;
     const size_t signature_len = vscf_signer_info_signature(signer_info).len;
 
-    const size_t len = 1 + 1 + 2 +                 //  VirgilSignerInfo ::= SEQUENCE {
-                       1 + 1 + 1 +                 //      version INTEGER { v0(0) } DEFAULT v0,
-                       1 + 1 + 2 + signer_id_len + //      signerIdentifier VirgilSignerIdentifier,
-                       1 + 1 + 32 +                //      signerAlgorithm VirgilSignerAlgorithm,
-                       1 + 1 + 2 + signature_len;  //      signature VirgilSignatureValue }
+    const vscf_impl_t *signer_alg_info = vscf_signer_info_signer_alg_info(signer_info);
+    const size_t signer_alg_len =
+            vscf_alg_info_der_serializer_serialized_len(self->alg_info_serializer, signer_alg_info);
+
+
+    const size_t len = 1 + 1 + 2 +                //  VirgilSignerInfo ::= SEQUENCE {
+                       1 + 1 + 1 +                //      version INTEGER { v0(0) } DEFAULT v0,
+                       1 + 1 + signer_id_len +    //      signerIdentifier VirgilSignerIdentifier,
+                       1 + 1 + signer_alg_len +   //      signerAlgorithm VirgilSignerAlgorithm,
+                       1 + 1 + 2 + signature_len; //      signature VirgilSignatureValue }
 
     return len;
 }
@@ -2068,7 +2092,7 @@ vscf_message_info_der_serializer_serialized_len(
     if (vscf_message_info_has_footer_info(message_info)) {
         const vscf_footer_info_t *footer_info = vscf_message_info_footer_info((vscf_message_info_t *)message_info);
         footer_info_len += 1 + 1; //  [1] OPTIONAL
-        footer_info_len = vscf_message_info_der_serializer_serialized_footer_info_len(self, footer_info);
+        footer_info_len += vscf_message_info_der_serializer_serialized_footer_info_len(self, footer_info);
     }
 
     size_t len = 1 + 1 + 8 +            //  VirgilMessageInfo ::= SEQUENCE {

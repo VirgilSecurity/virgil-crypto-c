@@ -45,10 +45,6 @@ class vscf_message_info_custom_params_t(Structure):
 
 class VscfMessageInfoCustomParams(object):
 
-    OF_INT_TYPE = 1
-    OF_STRING_TYPE = 2
-    OF_DATA_TYPE = 3
-
     def __init__(self):
         """Create underlying C context."""
         self._ll = LowLevelLibs()

@@ -824,7 +824,7 @@ vscf_recipient_cipher_finish_encryption(vscf_recipient_cipher_t *self, vsc_buffe
         status = vscf_cipher_finish(self->encryption_cipher, out);
     }
 
-    vsc_buffer_destroy(&self->derived_keys);
+    vsc_buffer_release(self->derived_keys);
 
     return status;
 }
@@ -1004,7 +1004,7 @@ vscf_recipient_cipher_finish_decryption(vscf_recipient_cipher_t *self, vsc_buffe
         vscf_recipient_cipher_accomplish_verified_decryption(self);
     }
 
-    vsc_buffer_destroy(&self->derived_keys);
+    vsc_buffer_release(self->derived_keys);
 
     return status;
 }

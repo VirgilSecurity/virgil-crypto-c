@@ -252,8 +252,8 @@ public class Ed25519 implements AutoCloseable, Alg, KeyAlg, KeyCipher, KeySigner
     * Return length in bytes required to hold signature.
     * Return zero if a given private key can not produce signatures.
     */
-    public int signatureLen(Key key) {
-        return FoundationJNI.INSTANCE.ed25519_signatureLen(this.cCtx, key);
+    public int signatureLen(PrivateKey privateKey) {
+        return FoundationJNI.INSTANCE.ed25519_signatureLen(this.cCtx, privateKey);
     }
 
     /*

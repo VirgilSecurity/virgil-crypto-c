@@ -71,6 +71,18 @@
 //  Generated section start.
 // --------------------------------------------------------------------------
 
+//
+//  This method is called when interface 'asn1 writer' was setup.
+//
+VSCF_PRIVATE void
+vscf_pkcs8_serializer_did_setup_asn1_writer(vscf_pkcs8_serializer_t *self);
+
+//
+//  This method is called when interface 'asn1 writer' was released.
+//
+VSCF_PRIVATE void
+vscf_pkcs8_serializer_did_release_asn1_writer(vscf_pkcs8_serializer_t *self);
+
 static const vscf_api_t *
 vscf_pkcs8_serializer_find_api(vscf_api_tag_t api_tag);
 
@@ -148,6 +160,8 @@ vscf_pkcs8_serializer_init(vscf_pkcs8_serializer_t *self) {
 
     self->info = &info;
     self->refcnt = 1;
+
+    vscf_pkcs8_serializer_init_ctx(self);
 }
 
 //
@@ -162,6 +176,8 @@ vscf_pkcs8_serializer_cleanup(vscf_pkcs8_serializer_t *self) {
     }
 
     vscf_pkcs8_serializer_release_asn1_writer(self);
+
+    vscf_pkcs8_serializer_cleanup_ctx(self);
 
     vscf_zeroize(self, sizeof(vscf_pkcs8_serializer_t));
 }
@@ -284,6 +300,8 @@ vscf_pkcs8_serializer_use_asn1_writer(vscf_pkcs8_serializer_t *self, vscf_impl_t
     VSCF_ASSERT(vscf_asn1_writer_is_implemented(asn1_writer));
 
     self->asn1_writer = vscf_impl_shallow_copy(asn1_writer);
+
+    vscf_pkcs8_serializer_did_setup_asn1_writer(self);
 }
 
 //
@@ -300,6 +318,8 @@ vscf_pkcs8_serializer_take_asn1_writer(vscf_pkcs8_serializer_t *self, vscf_impl_
     VSCF_ASSERT(vscf_asn1_writer_is_implemented(asn1_writer));
 
     self->asn1_writer = asn1_writer;
+
+    vscf_pkcs8_serializer_did_setup_asn1_writer(self);
 }
 
 //
@@ -311,6 +331,8 @@ vscf_pkcs8_serializer_release_asn1_writer(vscf_pkcs8_serializer_t *self) {
     VSCF_ASSERT_PTR(self);
 
     vscf_impl_destroy(&self->asn1_writer);
+
+    vscf_pkcs8_serializer_did_release_asn1_writer(self);
 }
 
 static const vscf_api_t *

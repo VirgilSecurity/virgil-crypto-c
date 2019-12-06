@@ -24,7 +24,7 @@
         <property name="alg id" enum="alg id"/>
         <property name="hash alg info" interface="alg info"/>
 
-        <constructor name="with members">
+        <constructor name="with members" visibility="private">
             Create algorithm info with identificator and HASH algorithm info.
 
             <argument name="alg id" enum="alg id"/>
@@ -72,7 +72,7 @@
         <property name="salt" class="buffer"/>
         <property name="iteration count" type="size"/>
 
-        <constructor name="with members">
+        <constructor name="with members" visibility="private">
             Create algorithm info with identificator, HASH algorithm info,
             salt and iteration count.
 
@@ -112,7 +112,7 @@
         <property name="kdf alg info" interface="alg info"/>
         <property name="cipher alg info" interface="alg info"/>
 
-        <constructor name="with members">
+        <constructor name="with members" visibility="private">
             Create algorithm info with identificator, KDF algorithm info and
             cipher alg info.
 

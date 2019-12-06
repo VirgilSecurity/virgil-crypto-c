@@ -107,20 +107,27 @@ vscf_alg_factory_create_hash_from_info(const vscf_impl_t *alg_info) {
     VSCF_ASSERT(alg_id != vscf_alg_id_NONE);
 
     switch (alg_id) {
+#if VSCF_SHA224
     case vscf_alg_id_SHA224:
         return vscf_sha224_impl(vscf_sha224_new());
+#endif // VSCF_SHA224
 
+#if VSCF_SHA256
     case vscf_alg_id_SHA256:
         return vscf_sha256_impl(vscf_sha256_new());
+#endif // VSCF_SHA256
 
+#if VSCF_SHA384
     case vscf_alg_id_SHA384:
         return vscf_sha384_impl(vscf_sha384_new());
+#endif // VSCF_SHA384
 
+#if VSCF_SHA512
     case vscf_alg_id_SHA512:
         return vscf_sha512_impl(vscf_sha512_new());
+#endif // VSCF_SHA512
 
     default:
-        VSCF_ASSERT(0 && "Can not create 'hash stream' algorithm from the given alg id.");
         return NULL;
     }
 }
@@ -136,6 +143,7 @@ vscf_alg_factory_create_mac_from_info(const vscf_impl_t *alg_info) {
     const vscf_alg_id_t alg_id = vscf_alg_info_alg_id(alg_info);
     VSCF_ASSERT(alg_id != vscf_alg_id_NONE);
 
+#if VSCF_HMAC
     if (alg_id == vscf_alg_id_HMAC) {
         const vscf_hash_based_alg_info_t *hash_based_alg_info = (const vscf_hash_based_alg_info_t *)alg_info;
 
@@ -145,8 +153,8 @@ vscf_alg_factory_create_mac_from_info(const vscf_impl_t *alg_info) {
 
         return vscf_hmac_impl(hmac);
     }
+#endif // VSCF_HMAC
 
-    VSCF_ASSERT(0 && "Can not create 'mac stream' algorithm from the given alg id.");
     return NULL;
 }
 
@@ -161,6 +169,7 @@ vscf_alg_factory_create_kdf_from_info(const vscf_impl_t *alg_info) {
     const vscf_alg_id_t alg_id = vscf_alg_info_alg_id(alg_info);
     VSCF_ASSERT(alg_id != vscf_alg_id_NONE);
 
+#if VSCF_KDF1
     if (alg_id == vscf_alg_id_KDF1) {
         const vscf_hash_based_alg_info_t *hash_based_alg_info = (const vscf_hash_based_alg_info_t *)alg_info;
 
@@ -172,7 +181,9 @@ vscf_alg_factory_create_kdf_from_info(const vscf_impl_t *alg_info) {
 
         return vscf_kdf1_impl(kdf1);
     }
+#endif // VSCF_KDF1
 
+#if VSCF_KDF2
     if (alg_id == vscf_alg_id_KDF2) {
         const vscf_hash_based_alg_info_t *hash_based_alg_info = (const vscf_hash_based_alg_info_t *)alg_info;
 
@@ -184,12 +195,12 @@ vscf_alg_factory_create_kdf_from_info(const vscf_impl_t *alg_info) {
 
         return vscf_kdf2_impl(kdf2);
     }
+#endif // VSCF_KDF2
 
     if (alg_id == vscf_alg_id_HKDF || alg_id == vscf_alg_id_PKCS5_PBKDF2) {
         return vscf_alg_factory_create_salted_kdf_from_info(alg_info);
     }
 
-    VSCF_ASSERT(0 && "Can not create 'kdf' algorithm from the given alg id.");
     return NULL;
 }
 
@@ -204,6 +215,7 @@ vscf_alg_factory_create_salted_kdf_from_info(const vscf_impl_t *alg_info) {
     const vscf_alg_id_t alg_id = vscf_alg_info_alg_id(alg_info);
     VSCF_ASSERT(alg_id != vscf_alg_id_NONE);
 
+#if VSCF_HKDF
     if (alg_id == vscf_alg_id_HKDF) {
         const vscf_hash_based_alg_info_t *hash_based_alg_info = (const vscf_hash_based_alg_info_t *)alg_info;
 
@@ -213,7 +225,9 @@ vscf_alg_factory_create_salted_kdf_from_info(const vscf_impl_t *alg_info) {
 
         return vscf_hkdf_impl(hkdf);
     }
+#endif // VSCF_HKDF
 
+#if VSCF_PKCS5_PBKDF2
     if (alg_id == vscf_alg_id_PKCS5_PBKDF2) {
         const vscf_salted_kdf_alg_info_t *salted_kdf_alg_info = (const vscf_salted_kdf_alg_info_t *)alg_info;
 
@@ -228,8 +242,8 @@ vscf_alg_factory_create_salted_kdf_from_info(const vscf_impl_t *alg_info) {
 
         return vscf_pkcs5_pbkdf2_impl(pbkdf2);
     }
+#endif // VSCF_PKCS5_PBKDF2
 
-    VSCF_ASSERT(0 && "Can not create 'salted kdf' algorithm from the given alg id.");
     return NULL;
 }
 
@@ -244,20 +258,23 @@ vscf_alg_factory_create_cipher_from_info(const vscf_impl_t *alg_info) {
     const vscf_alg_id_t alg_id = vscf_alg_info_alg_id(alg_info);
     VSCF_ASSERT(alg_id != vscf_alg_id_NONE);
 
+#if VSCF_AES256_GCM
     if (alg_id == vscf_alg_id_AES256_GCM) {
         const vscf_cipher_alg_info_t *cipher_alg_info = (const vscf_cipher_alg_info_t *)alg_info;
         vscf_aes256_gcm_t *aes256_gcm = vscf_aes256_gcm_new();
         vscf_aes256_gcm_set_nonce(aes256_gcm, vscf_cipher_alg_info_nonce(cipher_alg_info));
         return vscf_aes256_gcm_impl(aes256_gcm);
     }
+#endif // VSCF_AES256_GCM
 
+#if VSCF_AES256_CBC
     if (alg_id == vscf_alg_id_AES256_CBC) {
         const vscf_cipher_alg_info_t *cipher_alg_info = (const vscf_cipher_alg_info_t *)alg_info;
         vscf_aes256_cbc_t *aes256_cbc = vscf_aes256_cbc_new();
         vscf_aes256_cbc_set_nonce(aes256_cbc, vscf_cipher_alg_info_nonce(cipher_alg_info));
         return vscf_aes256_cbc_impl(aes256_cbc);
     }
+#endif // VSCF_AES256_CBC
 
-    VSCF_ASSERT(0 && "Can not create 'cipher' algorithm from the given alg id.");
     return NULL;
 }

@@ -1,0 +1,97 @@
+<implementor name="post quantum" is_default="1">
+
+    <implementation name="falcon">
+        Provide post-quantum signature based on the falcon implementation.
+        For algorithm details check https://falcon-sign.info.
+
+        <feature name="falcon" default="${FALCON_LIBRARY}"/>
+
+        <require library="falcon" feature="library"/>
+        <require header="falcon/falcon.h"/>
+
+        <require interface="public key"/>
+        <require interface="private key"/>
+        <require impl="ctr drbg"/>
+        <require impl="simple alg info"/>
+        <require module="raw public key defs"/>
+        <require module="raw private key defs"/>
+
+        <interface name="alg"/>
+        <interface name="key alg">
+            <constant name="can import public key" value="true"/>
+            <constant name="can export public key" value="true"/>
+            <constant name="can import private key" value="true"/>
+            <constant name="can export private key" value="true"/>
+        </interface>
+        <interface name="key signer"/>
+
+        <constant name="seed len" value="48"/>
+        <constant name="logn 512" value="9"/>
+        <constant name="logn 1024" value="10"/>
+
+        <dependency name="random" interface="random"/>
+
+        <method name="setup defaults" declaration="public">
+            Setup predefined values to the uninitialized class dependencies.
+
+            <return enum="status"/>
+        </method>
+
+        <method name="generate key" declaration="public" is_const="1">
+            Generate new private key.
+            Note, this operation might be slow.
+
+            <argument name="error" class="error" access="readwrite"/>
+
+            <return interface="private key" access="disown"/>
+        </method>
+    </implementation>
+
+
+    <implementation name="round5">
+        Provide post-quantum encryption based on the round5 implementation.
+        For algorithm details check https://github.com/round5/code
+
+        <feature name="round5" default="${ROUND5_LIBRARY}"/>
+
+        <require library="round5" feature="library"/>
+        <require header="round5/rng.h"/>
+        <require header="round5/r5_cca_pke.h"/>
+
+        <require interface="public key"/>
+        <require interface="private key"/>
+        <require impl="ctr drbg"/>
+        <require impl="simple alg info"/>
+        <require module="raw public key defs"/>
+        <require module="raw private key defs"/>
+
+        <interface name="alg"/>
+        <interface name="key alg">
+            <constant name="can import public key" value="true"/>
+            <constant name="can export public key" value="true"/>
+            <constant name="can import private key" value="true"/>
+            <constant name="can export private key" value="true"/>
+        </interface>
+        <interface name="key cipher"/>
+
+        <constant name="seed len" value="48"/>
+
+        <dependency name="random" interface="random"/>
+        <property name="params" class="any"/>
+
+        <method name="setup defaults" declaration="public">
+            Setup predefined values to the uninitialized class dependencies.
+
+            <return enum="status"/>
+        </method>
+
+        <method name="generate key" declaration="public" is_const="1">
+            Generate new private key.
+            Note, this operation might be slow.
+
+            <argument name="error" class="error" access="readwrite"/>
+
+            <return interface="private key" access="disown"/>
+        </method>
+    </implementation>
+</implementor>

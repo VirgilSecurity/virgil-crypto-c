@@ -32,7 +32,7 @@
 #
 #   Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.12 FATAL_ERROR)
 
 project(virgil_crypto_c_foundation VERSION ${virgil_crypto_VERSION} LANGUAGES C)
 
@@ -86,7 +86,27 @@ include("${CMAKE_CURRENT_LIST_DIR}/definitions.cmake")
 #
 # Link to dependencies
 #
-target_link_libraries(foundation PUBLIC vsc::foundation_pb vsc::common mbed::crypto ed25519)
+target_link_libraries(foundation
+        PUBLIC
+            vsc::foundation_pb
+            vsc::common
+            mbed::crypto ed25519
+            $<$<BOOL:${VSCF_POST_QUANTUM}>:round5>
+            $<$<BOOL:${VSCF_POST_QUANTUM}>:falcon>
+        )
+
+#
+# Third-party definitions
+#
+# TODO: Move this to the code generation
+#
+target_compile_definitions(foundation
+        PUBLIC
+            $<BUILD_INTERFACE:MBEDTLS_LIBRARY=$<BOOL:${MBEDTLS_LIBRARY}>>
+            $<BUILD_INTERFACE:ROUND5_LIBRARY=$<BOOL:${ROUND5_LIBRARY}>>
+            $<BUILD_INTERFACE:KECCAK_LIBRARY=$<BOOL:${KECCAK_LIBRARY}>>
+            $<BUILD_INTERFACE:FALCON_LIBRARY=$<BOOL:${FALCON_LIBRARY}>>
+        )
 
 #
 # Define specific compilation and linkage flags.

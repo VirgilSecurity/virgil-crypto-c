@@ -84,7 +84,7 @@ import VSCFoundation
     @objc public func keyEncryptionAlgorithm() -> AlgInfo {
         let proxyResult = vscf_password_recipient_info_key_encryption_algorithm(self.c_ctx)
 
-        return FoundationImplementation.wrapAlgInfo(take: proxyResult!)
+        return FoundationImplementation.wrapAlgInfo(use: proxyResult!)
     }
 
     /// Return an encrypted data encryption key.
