@@ -55,7 +55,6 @@ set_target_properties(ratchet_php PROPERTIES
         DEBUG_POSTFIX "_d"
         OUTPUT_NAME vscr_ratchet_php
         PREFIX ""
-        NO_SONAME 1
         )
 
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")

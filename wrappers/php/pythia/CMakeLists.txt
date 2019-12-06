@@ -55,7 +55,6 @@ set_target_properties(pythia_php PROPERTIES
         DEBUG_POSTFIX "_d"
         OUTPUT_NAME vscp_pythia_php
         PREFIX ""
-        NO_SONAME 1
         )
 
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
