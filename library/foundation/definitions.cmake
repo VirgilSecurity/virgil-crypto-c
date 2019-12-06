@@ -180,6 +180,7 @@ target_compile_definitions(foundation
             "VSCF_MESSAGE_INFO_FOOTER=$<BOOL:${VSCF_MESSAGE_INFO_FOOTER}>"
             "VSCF_SIGNED_DATA_INFO=$<BOOL:${VSCF_SIGNED_DATA_INFO}>"
             "VSCF_FOOTER_INFO=$<BOOL:${VSCF_FOOTER_INFO}>"
+            "VSCF_KEY_INFO=$<BOOL:${VSCF_KEY_INFO}>"
         PRIVATE
             $<$<BOOL:${BUILD_SHARED_LIBS}>:VSCF_BUILD_SHARED_LIBS>
         )

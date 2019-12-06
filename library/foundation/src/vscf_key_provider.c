@@ -453,6 +453,7 @@ vscf_key_provider_generate_private_key(vscf_key_provider_t *self, vscf_alg_id_t 
 //
 VSCF_PUBLIC vscf_impl_t *
 vscf_key_provider_generate_post_quantum_private_key(vscf_key_provider_t *self, vscf_error_t *error) {
+
     VSCF_ASSERT_PTR(self);
 
 #if VSCF_POST_QUANTUM && VSCF_CURVE25519 && VSCF_ED25519 && VSCF_FALCON && VSCF_ROUND5

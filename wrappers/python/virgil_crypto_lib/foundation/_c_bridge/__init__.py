@@ -91,6 +91,8 @@ from ._vscf_signed_data_info import vscf_signed_data_info_t
 from ._vscf_signed_data_info import VscfSignedDataInfo
 from ._vscf_footer_info import vscf_footer_info_t
 from ._vscf_footer_info import VscfFooterInfo
+from ._vscf_key_info import vscf_key_info_t
+from ._vscf_key_info import VscfKeyInfo
 from ._vscf_sha224 import vscf_sha224_t
 from ._vscf_sha224 import VscfSha224
 from ._vscf_sha256 import vscf_sha256_t

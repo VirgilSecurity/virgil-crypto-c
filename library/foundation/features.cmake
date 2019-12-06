@@ -173,6 +173,7 @@ option(VSCF_SIGNER_LIST "Enable class 'signer list'." ON)
 option(VSCF_MESSAGE_INFO_FOOTER "Enable class 'message info footer'." ON)
 option(VSCF_SIGNED_DATA_INFO "Enable class 'signed data info'." ON)
 option(VSCF_FOOTER_INFO "Enable class 'footer info'." ON)
+option(VSCF_KEY_INFO "Enable class 'key info'." ON)
 mark_as_advanced(
         VSCF_LIBRARY
         VSCF_MULTI_THREADING
@@ -302,6 +303,7 @@ mark_as_advanced(
         VSCF_MESSAGE_INFO_FOOTER
         VSCF_SIGNED_DATA_INFO
         VSCF_FOOTER_INFO
+        VSCF_KEY_INFO
         )
 
 if(VSCF_MULTI_THREADING AND NOT MBEDTLS_THREADING_C)
@@ -3243,6 +3245,33 @@ if(VSCF_SIGNER_LIST AND NOT VSCF_PRIVATE_KEY)
     message("--")
     message("Feature VSCF_SIGNER_LIST depends on the feature:")
     message("     VSCF_PRIVATE_KEY - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_KEY_INFO AND NOT VSCF_ALG_INFO)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_KEY_INFO depends on the feature:")
+    message("     VSCF_ALG_INFO - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_KEY_INFO AND NOT VSCF_COMPOUND_KEY_ALG_INFO)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_KEY_INFO depends on the feature:")
+    message("     VSCF_COMPOUND_KEY_ALG_INFO - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_KEY_INFO AND NOT VSCF_CHAINED_KEY_ALG_INFO)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_KEY_INFO depends on the feature:")
+    message("     VSCF_CHAINED_KEY_ALG_INFO - which is disabled.")
     message("--")
     message(FATAL_ERROR)
 endif()

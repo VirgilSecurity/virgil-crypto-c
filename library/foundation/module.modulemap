@@ -99,6 +99,7 @@ framework module VSCFoundation {
     header "vscf_group_session_message.h"
     header "vscf_group_session_ticket.h"
     header "vscf_key_alg_factory.h"
+    header "vscf_key_info.h"
     header "vscf_key_provider.h"
     header "vscf_key_recipient_info.h"
     header "vscf_key_recipient_info_list.h"

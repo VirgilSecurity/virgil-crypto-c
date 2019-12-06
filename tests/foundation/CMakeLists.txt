@@ -109,6 +109,7 @@ _add_test (test_falcon)
 _add_test (test_round5)
 _add_test (test_compound_key_alg)
 _add_test (test_chained_key_alg)
+_add_test (test_key_info)
 
 # ---------------------------------------------------------------------------
 #   Multi-threading tests

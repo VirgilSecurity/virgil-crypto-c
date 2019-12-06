@@ -66,6 +66,7 @@ from .signer_info_list import SignerInfoList
 from .message_info_footer import MessageInfoFooter
 from .signed_data_info import SignedDataInfo
 from .footer_info import FooterInfo
+from .key_info import KeyInfo
 from .cipher import Cipher
 from .auth_encrypt import AuthEncrypt
 from .auth_decrypt import AuthDecrypt

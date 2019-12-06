@@ -173,8 +173,8 @@ vscf_alg_info_der_deserializer_deserialize_compound_key_alg_info(vscf_alg_info_d
 //  id-ChainedKey ::= { 1 3 6 1 4 1 54811 1 2 }
 //
 //  ChainedKeyParams ::= SEQUENCE {
-//      l1CipherAlgorithm AlgorithmIdentifier,
-//      l2CipherAlgorithm AlgorithmIdentifier
+//      l1KeyAlgorithm AlgorithmIdentifier,
+//      l2KeyAlgorithm AlgorithmIdentifier
 //  }
 //
 static vscf_impl_t *
@@ -631,8 +631,8 @@ vscf_alg_info_der_deserializer_deserialize_compound_key_alg_info(
 //  id-ChainedKey ::= { 1 3 6 1 4 1 54811 1 2 }
 //
 //  ChainedKeyParams ::= SEQUENCE {
-//      l1CipherAlgorithm AlgorithmIdentifier,
-//      l2CipherAlgorithm AlgorithmIdentifier
+//      l1KeyAlgorithm AlgorithmIdentifier,
+//      l2KeyAlgorithm AlgorithmIdentifier
 //  }
 //
 static vscf_impl_t *

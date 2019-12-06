@@ -559,6 +559,11 @@ set_property(
 )
 
 set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_key_info.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
+)
+
+set_property(
     SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_key_provider.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
@@ -930,6 +935,8 @@ target_sources(foundation
             "${CMAKE_CURRENT_LIST_DIR}/src/vscf_group_session_ticket_internal.h"
             "$<$<BOOL:${VSCF_GROUP_SESSION_TICKET}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_group_session_ticket_defs.h>"
             "$<$<BOOL:${VSCF_KEY_ALG_FACTORY}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_key_alg_factory.h>"
+            "$<$<BOOL:${VSCF_KEY_INFO}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_key_info.h>"
+            "$<$<BOOL:${VSCF_KEY_INFO}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_key_info_defs.h>"
             "$<$<BOOL:${VSCF_KEY_PROVIDER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_key_provider.h>"
             "$<$<BOOL:${VSCF_KEY_PROVIDER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_key_provider_defs.h>"
             "$<$<BOOL:${VSCF_KEY_RECIPIENT_INFO}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_key_recipient_info.h>"
@@ -1239,6 +1246,8 @@ target_sources(foundation
             "$<$<BOOL:${VSCF_GROUP_SESSION_TICKET}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_group_session_ticket.c>"
             "$<$<BOOL:${VSCF_GROUP_SESSION_TICKET}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_group_session_ticket_defs.c>"
             "$<$<BOOL:${VSCF_KEY_ALG_FACTORY}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_key_alg_factory.c>"
+            "$<$<BOOL:${VSCF_KEY_INFO}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_key_info.c>"
+            "$<$<BOOL:${VSCF_KEY_INFO}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_key_info_defs.c>"
             "$<$<BOOL:${VSCF_KEY_PROVIDER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_key_provider.c>"
             "$<$<BOOL:${VSCF_KEY_PROVIDER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_key_provider_defs.c>"
             "$<$<BOOL:${VSCF_KEY_RECIPIENT_INFO}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_key_recipient_info.c>"

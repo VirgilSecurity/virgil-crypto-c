@@ -234,8 +234,8 @@
             id-ChainedKey ::= { 1 3 6 1 4 1 54811 1 2 }
 
             ChainedKeyParams ::= SEQUENCE {
-                l1CipherAlgorithm AlgorithmIdentifier,
-                l2CipherAlgorithm AlgorithmIdentifier
+                l1KeyAlgorithm AlgorithmIdentifier,
+                l2KeyAlgorithm AlgorithmIdentifier
             }
 
             <argument name="alg info" interface="alg info"/>
@@ -409,8 +409,8 @@
             id-ChainedKey ::= { 1 3 6 1 4 1 54811 1 2 }
 
             ChainedKeyParams ::= SEQUENCE {
-                l1CipherAlgorithm AlgorithmIdentifier,
-                l2CipherAlgorithm AlgorithmIdentifier
+                l1KeyAlgorithm AlgorithmIdentifier,
+                l2KeyAlgorithm AlgorithmIdentifier
             }
 
             <argument name="oid id" enum="oid id"/>

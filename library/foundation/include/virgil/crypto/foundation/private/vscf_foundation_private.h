@@ -115,6 +115,7 @@
 #include "vscf_key_asn1_serializer_defs.h"
 #include "vscf_key_cipher_api.h"
 #include "vscf_key_deserializer_api.h"
+#include "vscf_key_info_defs.h"
 #include "vscf_key_material_rng_defs.h"
 #include "vscf_key_provider_defs.h"
 #include "vscf_key_recipient_info_defs.h"

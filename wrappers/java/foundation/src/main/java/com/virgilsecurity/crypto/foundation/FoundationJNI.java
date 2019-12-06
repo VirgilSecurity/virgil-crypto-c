@@ -1071,6 +1071,114 @@ public class FoundationJNI {
     */
     public native int footerInfo_dataSize(long cCtx);
 
+    public native long keyInfo_new();
+
+    public native void keyInfo_close(long cCtx);
+
+    public native long keyInfo_new(AlgInfo algInfo);
+
+    /*
+    * Return true if a key is a compound key
+    */
+    public native boolean keyInfo_isCompound(long cCtx);
+
+    /*
+    * Return true if a key is a chained key
+    */
+    public native boolean keyInfo_isChained(long cCtx);
+
+    /*
+    * Return true if a key is a compound key and compounds cipher key
+    * and signer key are chained keys.
+    */
+    public native boolean keyInfo_isCompoundChained(long cCtx);
+
+    /*
+    * Return true if a key is a compound key and compounds cipher key
+    * is a chained key.
+    */
+    public native boolean keyInfo_isCompoundChainedCipher(long cCtx);
+
+    /*
+    * Return true if a key is a compound key and compounds signer key
+    * is a chained key.
+    */
+    public native boolean keyInfo_isCompoundChainedSigner(long cCtx);
+
+    /*
+    * Return true if a key is a compound key that contains chained keys
+    * for encryption/decryption and signing/verifying that itself
+    * contains a combination of classic keys and post-quantum keys.
+    */
+    public native boolean keyInfo_isHybridPostQuantum(long cCtx);
+
+    /*
+    * Return true if a key is a compound key that contains a chained key
+    * for encryption/decryption that contains a classic key and
+    * a post-quantum key.
+    */
+    public native boolean keyInfo_isHybridPostQuantumCipher(long cCtx);
+
+    /*
+    * Return true if a key is a compound key that contains a chained key
+    * for signing/verifying that contains a classic key and
+    * a post-quantum key.
+    */
+    public native boolean keyInfo_isHybridPostQuantumSigner(long cCtx);
+
+    /*
+    * Return common type of the key.
+    */
+    public native AlgId keyInfo_algId(long cCtx);
+
+    /*
+    * Return compound's cipher key id, if key is compound.
+    * Return None, otherwise.
+    */
+    public native AlgId keyInfo_compoundCipherAlgId(long cCtx);
+
+    /*
+    * Return compound's signer key id, if key is compound.
+    * Return None, otherwise.
+    */
+    public native AlgId keyInfo_compoundSignerAlgId(long cCtx);
+
+    /*
+    * Return chained l1 key id, if key is chained.
+    * Return None, otherwise.
+    */
+    public native AlgId keyInfo_chainedL1AlgId(long cCtx);
+
+    /*
+    * Return chained l2 key id, if key is chained.
+    * Return None, otherwise.
+    */
+    public native AlgId keyInfo_chainedL2AlgId(long cCtx);
+
+    /*
+    * Return l1 key id of compound's cipher key, if key is compound(chained, ...)
+    * Return None, otherwise.
+    */
+    public native AlgId keyInfo_compoundCipherL1AlgId(long cCtx);
+
+    /*
+    * Return l2 key id of compound's cipher key, if key is compound(chained, ...)
+    * Return None, otherwise.
+    */
+    public native AlgId keyInfo_compoundCipherL2AlgId(long cCtx);
+
+    /*
+    * Return l1 key id of compound's signer key, if key is compound(..., chained)
+    * Return None, otherwise.
+    */
+    public native AlgId keyInfo_compoundSignerL1AlgId(long cCtx);
+
+    /*
+    * Return l2 key id of compound's signer key, if key is compound(..., chained)
+    * Return None, otherwise.
+    */
+    public native AlgId keyInfo_compoundSignerL2AlgId(long cCtx);
+
     public native long sha224_new();
 
     public native void sha224_close(long cCtx);

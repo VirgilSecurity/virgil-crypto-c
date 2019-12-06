@@ -586,6 +586,10 @@ extern "C" {
 #cmakedefine01 VSCF_FOOTER_INFO
 #endif
 
+#ifndef VSCF_KEY_INFO
+#cmakedefine01 VSCF_KEY_INFO
+#endif
+
 //
 //  Defines namespace include prefix for project 'common'.
 //
