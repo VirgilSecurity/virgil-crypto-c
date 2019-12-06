@@ -32,22 +32,23 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#include "vscf_key_asn1_deserializer.h"
+
+#include "vscf_alg_info_der_deserializer.h"
+#include "vscf_cipher_alg_info.h"
 
 
 int
 LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
-    vscf_key_asn1_deserializer_t *key_deserializer = vscf_key_asn1_deserializer_new();
-    vscf_key_asn1_deserializer_setup_defaults(key_deserializer);
+    vscf_alg_info_der_deserializer_t *deserializer = vscf_alg_info_der_deserializer_new();
+    vscf_alg_info_der_deserializer_setup_defaults(deserializer);
 
     vscf_error_t error;
     vscf_error_reset(&error);
-
     vsc_data_t data_wrapper = vsc_data(data, size);
-    vscf_raw_private_key_t *raw_private_key =
-            vscf_key_asn1_deserializer_deserialize_private_key(key_deserializer, data_wrapper, &error);
+    vscf_cipher_alg_info_t *cipher_info =
+            (vscf_cipher_alg_info_t *)vscf_alg_info_der_deserializer_deserialize(deserializer, data_wrapper, &error);
 
-    vscf_raw_private_key_destroy(&raw_private_key);
-    vscf_key_asn1_deserializer_destroy(&key_deserializer);
+    vscf_cipher_alg_info_destroy(&cipher_info);
+    vscf_alg_info_der_deserializer_destroy(&deserializer);
     return 0;
 }
