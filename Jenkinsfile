@@ -285,6 +285,7 @@ def build_LangPHP_Windows(slave) {
                     call "C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\Community\\VC\\Auxiliary\\Build\\vcvars64.bat"
                     cmake -G"NMake Makefiles" ^
                           -Cconfigs/php-config.cmake ^
+                          -DVIRGIL_LIB_PYTHIA=OFF ^
                           -DCMAKE_BUILD_TYPE=Release ^
                           -DVIRGIL_PACKAGE_PLATFORM_ARCH=x86_64 ^
                           -DVIRGIL_PACKAGE_LANGUAGE_VERSION=7.2 ^
@@ -311,6 +312,7 @@ def build_LangPHP_Windows(slave) {
                     call "C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\Community\\VC\\Auxiliary\\Build\\vcvars64.bat"
                     cmake -G"NMake Makefiles" ^
                           -Cconfigs/php-config.cmake ^
+                          -DVIRGIL_LIB_PYTHIA=OFF ^
                           -DCMAKE_BUILD_TYPE=Release ^
                           -DVIRGIL_PACKAGE_PLATFORM_ARCH=x86_64 ^
                           -DVIRGIL_PACKAGE_LANGUAGE_VERSION=7.3 ^
