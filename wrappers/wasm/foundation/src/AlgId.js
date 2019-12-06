@@ -85,9 +85,7 @@ const initAlgId = (Module, modules) => {
 
         ROUND5: 21,
 
-        ROUND5_ND_5PKE_5D: 22,
-
-        POST_QUANTUM: 23
+        ROUND5_ND_5PKE_5D: 22
     });
 
     return AlgId;

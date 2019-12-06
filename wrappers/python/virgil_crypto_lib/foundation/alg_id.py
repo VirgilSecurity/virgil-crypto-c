@@ -62,4 +62,3 @@ class AlgId(object):
     FALCON = 20
     ROUND5 = 21
     ROUND5_ND_5PKE_5D = 22
-    POST_QUANTUM = 23

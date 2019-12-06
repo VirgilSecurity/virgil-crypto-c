@@ -409,14 +409,6 @@ vscf_key_provider_generate_private_key(vscf_key_provider_t *self, vscf_alg_id_t 
 #endif // VSCF_ECC
 
 #if VSCF_POST_QUANTUM
-#if VSCF_CURVE25519 && VSCF_ED25519 && VSCF_FALCON && VSCF_ROUND5
-    case vscf_alg_id_POST_QUANTUM: {
-        key = vscf_key_provider_generate_compound_chained_private_key(self, vscf_alg_id_CURVE25519,
-                vscf_alg_id_ROUND5_ND_5PKE_5D, vscf_alg_id_ED25519, vscf_alg_id_FALCON, error);
-        break;
-    }
-#endif // VSCF_CURVE25519 && VSCF_ED25519 && VSCF_FALCON && VSCF_ROUND5
-
 #if VSCF_FALCON
     case vscf_alg_id_FALCON: {
         vscf_falcon_t *falcon = vscf_falcon_new();
@@ -445,6 +437,31 @@ vscf_key_provider_generate_private_key(vscf_key_provider_t *self, vscf_alg_id_t 
     }
 
     return key;
+}
+
+//
+//  Generate new post-quantum private key with default algorithms.
+//  Note, that a post-quantum key combines classic private keys
+//  alongside with post-quantum private keys.
+//  Current structure is "compound private key" where:
+//      - cipher private key is "chained private key" where:
+//          - l1 key is a classic private key;
+//          - l2 key is a post-quantum private key;
+//      - signer private key "chained private key" where:
+//          - l1 key is a classic private key;
+//          - l2 key is a post-quantum private key.
+//
+VSCF_PUBLIC vscf_impl_t *
+vscf_key_provider_generate_post_quantum_private_key(vscf_key_provider_t *self, vscf_error_t *error) {
+    VSCF_ASSERT_PTR(self);
+
+#if VSCF_POST_QUANTUM && VSCF_CURVE25519 && VSCF_ED25519 && VSCF_FALCON && VSCF_ROUND5
+    return vscf_key_provider_generate_compound_chained_private_key(self, vscf_alg_id_CURVE25519,
+            vscf_alg_id_ROUND5_ND_5PKE_5D, vscf_alg_id_ED25519, vscf_alg_id_FALCON, error);
+#else
+    VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_UNSUPPORTED_ALGORITHM);
+    return NULL;
+#endif // VSCF_POST_QUANTUM && VSCF_CURVE25519 && VSCF_ED25519 && VSCF_FALCON && VSCF_ROUND5
 }
 
 //

@@ -97,6 +97,27 @@ import VSCFoundation
         return FoundationImplementation.wrapPrivateKey(take: proxyResult!)
     }
 
+    /// Generate new post-quantum private key with default algorithms.
+    /// Note, that a post-quantum key combines classic private keys
+    /// alongside with post-quantum private keys.
+    /// Current structure is "compound private key" where:
+    ///     - cipher private key is "chained private key" where:
+    ///         - l1 key is a classic private key;
+    ///         - l2 key is a post-quantum private key;
+    ///     - signer private key "chained private key" where:
+    ///         - l1 key is a classic private key;
+    ///         - l2 key is a post-quantum private key.
+    @objc public func generatePostQuantumPrivateKey() throws -> PrivateKey {
+        var error: vscf_error_t = vscf_error_t()
+        vscf_error_reset(&error)
+
+        let proxyResult = vscf_key_provider_generate_post_quantum_private_key(self.c_ctx, &error)
+
+        try FoundationError.handleStatus(fromC: error.status)
+
+        return FoundationImplementation.wrapPrivateKey(take: proxyResult!)
+    }
+
     /// Generate new compound private key with given algorithms.
     @objc public func generateCompoundPrivateKey(cipherAlgId: AlgId, signerAlgId: AlgId) throws -> PrivateKey {
         var error: vscf_error_t = vscf_error_t()

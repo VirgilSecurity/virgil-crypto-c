@@ -3453,6 +3453,23 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
     return ret;
 }
 
+JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyProvider_1generatePostQuantumPrivateKey (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    // Wrap errors
+    struct vscf_error_t /*4*/ error;
+    vscf_error_reset(&error);
+    // Cast class context
+    vscf_key_provider_t /*2*/* key_provider_ctx = *(vscf_key_provider_t /*2*/**) &c_ctx;
+
+    const vscf_impl_t */*6*/ proxyResult = vscf_key_provider_generate_post_quantum_private_key(key_provider_ctx /*a1*/, &error /*a4*/);
+
+    if (error.status != vscf_status_SUCCESS) {
+        throwFoundationException(jenv, jobj, error.status);
+        return NULL;
+    }
+    jobject ret = wrapPrivateKey(jenv, jobj, proxyResult);
+    return ret;
+}
+
 JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyProvider_1generateCompoundPrivateKey (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jcipherAlgId, jobject jsignerAlgId) {
     // Wrap errors
     struct vscf_error_t /*4*/ error;

@@ -171,7 +171,7 @@ test__generate_post_quantum_key__with_default_rng__success(void) {
     //
     //  Generate key
     //
-    vscf_impl_t *private_key = vscf_key_provider_generate_private_key(key_provider, vscf_alg_id_POST_QUANTUM, &error);
+    vscf_impl_t *private_key = vscf_key_provider_generate_post_quantum_private_key(key_provider, &error);
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
     TEST_ASSERT_NOT_NULL(private_key);
 

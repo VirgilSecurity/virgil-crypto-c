@@ -1156,7 +1156,6 @@ vscf_alg_info_der_serializer_serialize_inplace(vscf_alg_info_der_serializer_t *s
     case vscf_alg_id_FALCON:
     case vscf_alg_id_ROUND5:
     case vscf_alg_id_ROUND5_ND_5PKE_5D:
-    case vscf_alg_id_POST_QUANTUM:
         return vscf_alg_info_der_serializer_serialize_simple_alg_info(self, alg_info);
 
     case vscf_alg_id_SECP256R1:
@@ -1222,7 +1221,6 @@ vscf_alg_info_der_serializer_serialized_len(const vscf_alg_info_der_serializer_t
     case vscf_alg_id_CURVE25519:
     case vscf_alg_id_FALCON:
     case vscf_alg_id_ROUND5:
-    case vscf_alg_id_POST_QUANTUM:
     case vscf_alg_id_ROUND5_ND_5PKE_5D:
         return vscf_alg_info_der_serializer_serialized_simple_alg_info_len(self, alg_info);
 

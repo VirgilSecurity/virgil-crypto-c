@@ -141,6 +141,40 @@ const initKeyProvider = (Module, modules) => {
         }
 
         /**
+         * Generate new post-quantum private key with default algorithms.
+         * Note, that a post-quantum key combines classic private keys
+         * alongside with post-quantum private keys.
+         * Current structure is "compound private key" where:
+         * - cipher private key is "chained private key" where:
+         * - l1 key is a classic private key;
+         * - l2 key is a post-quantum private key;
+         * - signer private key "chained private key" where:
+         * - l1 key is a classic private key;
+         * - l2 key is a post-quantum private key.
+         */
+        generatePostQuantumPrivateKey() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
+            const errorCtxSize = Module._vscf_error_ctx_size();
+            const errorCtxPtr = Module._malloc(errorCtxSize);
+            Module._vscf_error_reset(errorCtxPtr);
+
+            let proxyResult;
+
+            try {
+                proxyResult = Module._vscf_key_provider_generate_post_quantum_private_key(this.ctxPtr, errorCtxPtr);
+
+                const errorStatus = Module._vscf_error_status(errorCtxPtr);
+                modules.FoundationError.handleStatusCode(errorStatus);
+
+                const jsResult = modules.FoundationInterface.newAndTakeCContext(proxyResult);
+                return jsResult;
+            } finally {
+                Module._free(errorCtxPtr);
+            }
+        }
+
+        /**
          * Generate new compound private key with given algorithms.
          */
         generateCompoundPrivateKey(cipherAlgId, signerAlgId) {

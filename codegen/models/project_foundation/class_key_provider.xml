@@ -49,6 +49,23 @@
         <return interface="private key" access="disown"/>
     </method>
 
+    <method name="generate post quantum private key">
+        Generate new post-quantum private key with default algorithms.
+        Note, that a post-quantum key combines classic private keys
+        alongside with post-quantum private keys.
+        Current structure is "compound private key" where:
+            - cipher private key is "chained private key" where:
+                - l1 key is a classic private key;
+                - l2 key is a post-quantum private key;
+            - signer private key "chained private key" where:
+                - l1 key is a classic private key;
+                - l2 key is a post-quantum private key.
+
+        <argument name="error" class="error" access="readwrite"/>
+
+        <return interface="private key" access="disown"/>
+    </method>
+
     <method name="generate compound private key">
         Generate new compound private key with given algorithms.
 

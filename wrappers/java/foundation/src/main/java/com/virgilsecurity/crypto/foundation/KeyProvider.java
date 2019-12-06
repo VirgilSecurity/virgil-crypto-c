@@ -95,6 +95,22 @@ public class KeyProvider implements AutoCloseable {
     }
 
     /*
+    * Generate new post-quantum private key with default algorithms.
+    * Note, that a post-quantum key combines classic private keys
+    * alongside with post-quantum private keys.
+    * Current structure is "compound private key" where:
+    * - cipher private key is "chained private key" where:
+    * - l1 key is a classic private key;
+    * - l2 key is a post-quantum private key;
+    * - signer private key "chained private key" where:
+    * - l1 key is a classic private key;
+    * - l2 key is a post-quantum private key.
+    */
+    public PrivateKey generatePostQuantumPrivateKey() throws FoundationException {
+        return FoundationJNI.INSTANCE.keyProvider_generatePostQuantumPrivateKey(this.cCtx);
+    }
+
+    /*
     * Generate new compound private key with given algorithms.
     */
     public PrivateKey generateCompoundPrivateKey(AlgId cipherAlgId, AlgId signerAlgId) throws FoundationException {

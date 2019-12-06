@@ -637,6 +637,20 @@ public class FoundationJNI {
     public native PrivateKey keyProvider_generatePrivateKey(long cCtx, AlgId algId) throws FoundationException;
 
     /*
+    * Generate new post-quantum private key with default algorithms.
+    * Note, that a post-quantum key combines classic private keys
+    * alongside with post-quantum private keys.
+    * Current structure is "compound private key" where:
+    * - cipher private key is "chained private key" where:
+    * - l1 key is a classic private key;
+    * - l2 key is a post-quantum private key;
+    * - signer private key "chained private key" where:
+    * - l1 key is a classic private key;
+    * - l2 key is a post-quantum private key.
+    */
+    public native PrivateKey keyProvider_generatePostQuantumPrivateKey(long cCtx) throws FoundationException;
+
+    /*
     * Generate new compound private key with given algorithms.
     */
     public native PrivateKey keyProvider_generateCompoundPrivateKey(long cCtx, AlgId cipherAlgId, AlgId signerAlgId) throws FoundationException;
