@@ -487,18 +487,18 @@ function php_finalize_custom_modules (source, php_project, meta)
             .name = "$(my.php_project.project0:) implementation"
             .c_prefix = "c_prefix_$(0.name:c)"
 
-            if count(my.source.implementation)
-                for my.source.implementation as implementation0 by implementation0.name
-                    my.counter ?= 1
+            for my.source.implementation as implementation0 by implementation0.name
+                my.counter ?= 1
 
+                if implementation0.[scope] = "public"
                     new constant to class
                         .name = php_derive_high_level_constant_name(implementation0)
                         .value = my.counter
                     endnew
+                endif
 
-                    my.counter += 1
-                endfor
-            endif
+                my.counter += 1
+            endfor
         endnew
 
         new php_module to my.php_project
