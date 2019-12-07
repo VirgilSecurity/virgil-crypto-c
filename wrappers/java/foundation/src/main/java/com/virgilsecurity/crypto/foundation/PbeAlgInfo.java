@@ -55,15 +55,6 @@ public class PbeAlgInfo implements AutoCloseable, AlgInfo {
     }
 
     /*
-    * Create algorithm info with identificator, KDF algorithm info and
-    * cipher alg info.
-    */
-    public PbeAlgInfo(AlgId algId, AlgInfo kdfAlgInfo, AlgInfo cipherAlgInfo) {
-        super();
-        this.cCtx = FoundationJNI.INSTANCE.pbeAlgInfo_new(algId, kdfAlgInfo, cipherAlgInfo);
-    }
-
-    /*
     * Return KDF algorithm information.
     */
     public AlgInfo kdfAlgInfo() {

@@ -1,4 +1,4 @@
-#   Copyright (c) 2015-2017 Virgil Security Inc.
+#   Copyright (C) 2015-2019 Virgil Security, Inc.
 #
 #   All rights reserved.
 #
@@ -34,7 +34,7 @@
 # ---------------------------------------------------------------------------
 #   Options
 # ---------------------------------------------------------------------------
-set(MBEDTLS_INSTALL_LOCATION ${CMAKE_CURRENT_BINARY_DIR}/mbedtls)
+set(MBEDTLS_INSTALL_LOCATION ${CMAKE_CURRENT_BINARY_DIR}/mbedtls CACHE PATH INTERNAL)
 
 
 # ---------------------------------------------------------------------------

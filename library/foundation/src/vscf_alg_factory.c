@@ -78,7 +78,6 @@
 #include "vscf_curve25519.h"
 #include "vscf_ecc.h"
 #include "vscf_random_padding.h"
-#include "vscf_padding_cipher.h"
 
 // clang-format on
 //  @end
@@ -110,20 +109,27 @@ vscf_alg_factory_create_hash_from_info(const vscf_impl_t *alg_info) {
     VSCF_ASSERT(alg_id != vscf_alg_id_NONE);
 
     switch (alg_id) {
+#if VSCF_SHA224
     case vscf_alg_id_SHA224:
         return vscf_sha224_impl(vscf_sha224_new());
+#endif // VSCF_SHA224
 
+#if VSCF_SHA256
     case vscf_alg_id_SHA256:
         return vscf_sha256_impl(vscf_sha256_new());
+#endif // VSCF_SHA256
 
+#if VSCF_SHA384
     case vscf_alg_id_SHA384:
         return vscf_sha384_impl(vscf_sha384_new());
+#endif // VSCF_SHA384
 
+#if VSCF_SHA512
     case vscf_alg_id_SHA512:
         return vscf_sha512_impl(vscf_sha512_new());
+#endif // VSCF_SHA512
 
     default:
-        VSCF_ASSERT(0 && "Can not create 'hash stream' algorithm from the given alg id.");
         return NULL;
     }
 }
@@ -139,6 +145,7 @@ vscf_alg_factory_create_mac_from_info(const vscf_impl_t *alg_info) {
     const vscf_alg_id_t alg_id = vscf_alg_info_alg_id(alg_info);
     VSCF_ASSERT(alg_id != vscf_alg_id_NONE);
 
+#if VSCF_HMAC
     if (alg_id == vscf_alg_id_HMAC) {
         const vscf_hash_based_alg_info_t *hash_based_alg_info = (const vscf_hash_based_alg_info_t *)alg_info;
 
@@ -148,8 +155,8 @@ vscf_alg_factory_create_mac_from_info(const vscf_impl_t *alg_info) {
 
         return vscf_hmac_impl(hmac);
     }
+#endif // VSCF_HMAC
 
-    VSCF_ASSERT(0 && "Can not create 'mac stream' algorithm from the given alg id.");
     return NULL;
 }
 
@@ -164,6 +171,7 @@ vscf_alg_factory_create_kdf_from_info(const vscf_impl_t *alg_info) {
     const vscf_alg_id_t alg_id = vscf_alg_info_alg_id(alg_info);
     VSCF_ASSERT(alg_id != vscf_alg_id_NONE);
 
+#if VSCF_KDF1
     if (alg_id == vscf_alg_id_KDF1) {
         const vscf_hash_based_alg_info_t *hash_based_alg_info = (const vscf_hash_based_alg_info_t *)alg_info;
 
@@ -175,7 +183,9 @@ vscf_alg_factory_create_kdf_from_info(const vscf_impl_t *alg_info) {
 
         return vscf_kdf1_impl(kdf1);
     }
+#endif // VSCF_KDF1
 
+#if VSCF_KDF2
     if (alg_id == vscf_alg_id_KDF2) {
         const vscf_hash_based_alg_info_t *hash_based_alg_info = (const vscf_hash_based_alg_info_t *)alg_info;
 
@@ -187,12 +197,12 @@ vscf_alg_factory_create_kdf_from_info(const vscf_impl_t *alg_info) {
 
         return vscf_kdf2_impl(kdf2);
     }
+#endif // VSCF_KDF2
 
     if (alg_id == vscf_alg_id_HKDF || alg_id == vscf_alg_id_PKCS5_PBKDF2) {
         return vscf_alg_factory_create_salted_kdf_from_info(alg_info);
     }
 
-    VSCF_ASSERT(0 && "Can not create 'kdf' algorithm from the given alg id.");
     return NULL;
 }
 
@@ -207,6 +217,7 @@ vscf_alg_factory_create_salted_kdf_from_info(const vscf_impl_t *alg_info) {
     const vscf_alg_id_t alg_id = vscf_alg_info_alg_id(alg_info);
     VSCF_ASSERT(alg_id != vscf_alg_id_NONE);
 
+#if VSCF_HKDF
     if (alg_id == vscf_alg_id_HKDF) {
         const vscf_hash_based_alg_info_t *hash_based_alg_info = (const vscf_hash_based_alg_info_t *)alg_info;
 
@@ -216,7 +227,9 @@ vscf_alg_factory_create_salted_kdf_from_info(const vscf_impl_t *alg_info) {
 
         return vscf_hkdf_impl(hkdf);
     }
+#endif // VSCF_HKDF
 
+#if VSCF_PKCS5_PBKDF2
     if (alg_id == vscf_alg_id_PKCS5_PBKDF2) {
         const vscf_salted_kdf_alg_info_t *salted_kdf_alg_info = (const vscf_salted_kdf_alg_info_t *)alg_info;
 
@@ -231,8 +244,8 @@ vscf_alg_factory_create_salted_kdf_from_info(const vscf_impl_t *alg_info) {
 
         return vscf_pkcs5_pbkdf2_impl(pbkdf2);
     }
+#endif // VSCF_PKCS5_PBKDF2
 
-    VSCF_ASSERT(0 && "Can not create 'salted kdf' algorithm from the given alg id.");
     return NULL;
 }
 
@@ -249,13 +262,17 @@ vscf_alg_factory_create_cipher_from_info(const vscf_impl_t *alg_info) {
 
     vscf_impl_t *cipher = NULL;
     switch (alg_id) {
+#if VSCF_AES256_GCM
     case vscf_alg_id_AES256_GCM:
         cipher = vscf_aes256_gcm_impl(vscf_aes256_gcm_new());
         break;
+#endif // VSCF_AES256_GCM
 
+#if VSCF_AES256_CBC
     case vscf_alg_id_AES256_CBC:
         cipher = vscf_aes256_cbc_impl(vscf_aes256_cbc_new());
         break;
+#endif // VSCF_AES256_CBC
 
     default:
         return NULL;
@@ -283,6 +300,7 @@ vscf_alg_factory_create_padding_from_info(const vscf_impl_t *alg_info, const vsc
 
     vscf_impl_t *alg = NULL;
     switch (alg_id) {
+#if VSCF_RANDOM_PADDING
     case vscf_alg_id_RANDOM_PADDING: {
         vscf_random_padding_t *padding = vscf_random_padding_new();
         if (random != NULL) {
@@ -291,6 +309,7 @@ vscf_alg_factory_create_padding_from_info(const vscf_impl_t *alg_info, const vsc
         alg = vscf_random_padding_impl(padding);
         break;
     }
+#endif // VSCF_RANDOM_PADDING
 
     default:
         return NULL;

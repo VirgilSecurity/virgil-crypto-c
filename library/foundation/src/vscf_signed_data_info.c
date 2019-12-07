@@ -248,7 +248,7 @@ vscf_signed_data_info_cleanup_ctx(vscf_signed_data_info_t *self) {
 //
 //  Set information about algorithm that was used to produce data digest.
 //
-VSCF_PUBLIC void
+VSCF_PRIVATE void
 vscf_signed_data_info_set_hash_alg_info(vscf_signed_data_info_t *self, vscf_impl_t **hash_alg_info_ref) {
 
     VSCF_ASSERT_PTR(self);

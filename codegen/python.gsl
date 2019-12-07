@@ -3216,7 +3216,7 @@ function python_create_class_module (class, python_project, meta)
 
             python_map_attr_visibility (python_class, my.class)
 
-            for my.class.constant where constant.scope ?= "public"
+            for my.class.constant where wrapper_should_wrap_class_constant(constant)
                 python_create_class_constant (constant, python_class, my.python_project, my.meta)
             endfor
 
@@ -3324,7 +3324,7 @@ function python_create_enum_module (enum, python_project, meta)
 
             python_map_attr_visibility (python_class, my.enum)
 
-            for my.enum.constant where constant.scope ?= "public"
+            for my.enum.constant
                 python_create_class_constant (constant, python_class, my.python_project, my.meta, index(constant))
             endfor
 
@@ -3380,7 +3380,7 @@ function python_create_enum_module (enum, python_project, meta)
 
             python_map_attr_visibility (python_class, my.enum)
 
-            for my.enum.constant where constant.scope ?= "public"
+            for my.enum.constant
                 python_create_class_constant (constant, python_class, my.python_project, my.meta, index(constant))
             endfor
 

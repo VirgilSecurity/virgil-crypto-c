@@ -88,7 +88,17 @@ const initOidId = (Module, modules) => {
 
         EC_DOMAIN_SECP256R1: 24,
 
-        RANDOM_PADDING: 25
+        COMPOUND_KEY: 25,
+
+        CHAINED_KEY: 26,
+
+        FALCON: 27,
+
+        ROUND5: 28,
+
+        ROUND5_ND_5PKE_5D: 29,
+
+        RANDOM_PADDING: 30
     });
 
     return OidId;

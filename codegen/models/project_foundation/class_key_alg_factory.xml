@@ -3,10 +3,14 @@
 
     <require interface="key"/>
     <require interface="random"/>
-    <require impl="rsa"/>
-    <require impl="ecc"/>
-    <require impl="ed25519"/>
-    <require impl="curve25519"/>
+    <require impl="rsa" is_optional="1"/>
+    <require impl="ecc" is_optional="1"/>
+    <require impl="ed25519" is_optional="1"/>
+    <require impl="curve25519" is_optional="1"/>
+    <require impl="compound key alg" is_optional="1"/>
+    <require impl="chained key alg" is_optional="1"/>
+    <require impl="falcon" is_optional="1"/>
+    <require impl="round5" is_optional="1"/>
 
     <method name="create from alg id" is_static="1">
         Create a key algorithm based on an identifier.

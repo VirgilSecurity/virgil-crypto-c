@@ -486,12 +486,12 @@ const initEcc = (Module, modules) => {
          * Return length in bytes required to hold signature.
          * Return zero if a given private key can not produce signatures.
          */
-        signatureLen(key) {
+        signatureLen(privateKey) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-            precondition.ensureImplementInterface('key', key, 'Foundation.Key', modules.FoundationInterfaceTag.KEY, modules.FoundationInterface);
+            precondition.ensureImplementInterface('privateKey', privateKey, 'Foundation.PrivateKey', modules.FoundationInterfaceTag.PRIVATE_KEY, modules.FoundationInterface);
 
             let proxyResult;
-            proxyResult = Module._vscf_ecc_signature_len(this.ctxPtr, key.ctxPtr);
+            proxyResult = Module._vscf_ecc_signature_len(this.ctxPtr, privateKey.ctxPtr);
             return proxyResult;
         }
 

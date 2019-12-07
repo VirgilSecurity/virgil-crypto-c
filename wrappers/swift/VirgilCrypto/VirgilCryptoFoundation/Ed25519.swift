@@ -297,15 +297,15 @@ import VSCFoundation
 
     /// Return length in bytes required to hold signature.
     /// Return zero if a given private key can not produce signatures.
-    @objc public func signatureLen(key: Key) -> Int {
-        let proxyResult = vscf_ed25519_signature_len(self.c_ctx, key.c_ctx)
+    @objc public func signatureLen(privateKey: PrivateKey) -> Int {
+        let proxyResult = vscf_ed25519_signature_len(self.c_ctx, privateKey.c_ctx)
 
         return proxyResult
     }
 
     /// Sign data digest with a given private key.
     @objc public func signHash(privateKey: PrivateKey, hashId: AlgId, digest: Data) throws -> Data {
-        let signatureCount = self.signatureLen(key: privateKey)
+        let signatureCount = self.signatureLen(privateKey: privateKey)
         var signature = Data(count: signatureCount)
         var signatureBuf = vsc_buffer_new()
         defer {

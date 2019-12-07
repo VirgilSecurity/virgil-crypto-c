@@ -53,16 +53,18 @@
 #include "vscf_alg_info_der_serializer.h"
 #include "vscf_assert.h"
 #include "vscf_memory.h"
+#include "vscf_alg_info.h"
+#include "vscf_asn1_tag.h"
 #include "vscf_asn1wr.h"
 #include "vscf_oid.h"
-#include "vscf_asn1_tag.h"
-#include "vscf_alg_info.h"
 #include "vscf_cipher_alg_info.h"
 #include "vscf_hash_based_alg_info.h"
 #include "vscf_simple_alg_info.h"
 #include "vscf_salted_kdf_alg_info.h"
 #include "vscf_pbe_alg_info.h"
 #include "vscf_ecc_alg_info.h"
+#include "vscf_compound_key_alg_info.h"
+#include "vscf_chained_key_alg_info.h"
 #include "vscf_asn1_writer.h"
 #include "vscf_alg_info_der_serializer_defs.h"
 #include "vscf_alg_info_der_serializer_internal.h"
@@ -212,6 +214,84 @@ vscf_alg_info_der_serializer_serialized_ecc_alg_info_len(const vscf_alg_info_der
 //
 static size_t
 vscf_alg_info_der_serializer_serialize_ecc_alg_info(vscf_alg_info_der_serializer_t *self, const vscf_impl_t *alg_info);
+
+//
+//  Return buffer size enough to hold ASN.1 structure
+//  "AlgorithmIdentifier" with "CompoundKeyParams" parameters.
+//
+//  CompoundKeyAlgorithms ALGORITHM ::= {
+//      { OID id-CompoundKey parameters CompoundKeyParams }
+//  }
+//
+//  id-CompoundKey ::= { 1 3 6 1 4 1 54811 1 1 }
+//
+//  CompoundKeyParams ::= SEQUENCE {
+//      cipherAlgorithm AlgorithmIdentifier
+//      signerAlgorithm AlgorithmIdentifier
+//      signerDigestAlgorithm AlgorithmIdentifier
+//  }
+//
+static size_t
+vscf_alg_info_der_serializer_serialized_compound_key_alg_info_len(const vscf_alg_info_der_serializer_t *self,
+        const vscf_impl_t *alg_info);
+
+//
+//  Serialize class "compound key alg info" to the ASN.1 structure
+//  "AlgorithmIdentifier" with "CompoundKeyParams" parameters.
+//
+//  CompoundKeyAlgorithms ALGORITHM ::= {
+//      { OID id-CompoundKey parameters CompoundKeyParams }
+//  }
+//
+//  id-CompoundKey ::= { 1 3 6 1 4 1 54811 1 1 }
+//
+//  CompoundKeyParams ::= SEQUENCE {
+//      cipherAlgorithm AlgorithmIdentifier
+//      signerAlgorithm AlgorithmIdentifier
+//      signerDigestAlgorithm AlgorithmIdentifier
+//  }
+//
+static size_t
+vscf_alg_info_der_serializer_serialize_compound_key_alg_info(vscf_alg_info_der_serializer_t *self,
+        const vscf_impl_t *alg_info);
+
+//
+//  Return buffer size enough to hold ASN.1 structure
+//  "AlgorithmIdentifier" with "ChainedKeyParams" parameters.
+//
+//  ChainedKeyAlgorithms ALGORITHM ::= {
+//      { OID id-ChainedKey parameters ChainedKeyParams }
+//  }
+//
+//  id-ChainedKey ::= { 1 3 6 1 4 1 54811 1 2 }
+//
+//  ChainedKeyParams ::= SEQUENCE {
+//      l1KeyAlgorithm AlgorithmIdentifier,
+//      l2KeyAlgorithm AlgorithmIdentifier
+//  }
+//
+static size_t
+vscf_alg_info_der_serializer_serialized_chained_key_alg_info_len(const vscf_alg_info_der_serializer_t *self,
+        const vscf_impl_t *alg_info);
+
+//
+//  Serialize class "chained key alg info" to the ASN.1 structure
+//  "AlgorithmIdentifier" with "ChainedKeyParams" parameters.
+//
+//  ChainedKeyAlgorithms ALGORITHM ::= {
+//      { OID id-ChainedKey parameters ChainedKeyParams }
+//  }
+//
+//  id-ChainedKey ::= { 1 3 6 1 4 1 54811 1 2 }
+//
+//  ChainedKeyParams ::= SEQUENCE {
+//      l1CipherAlgorithm AlgorithmIdentifier,
+//      l2CipherAlgorithm AlgorithmIdentifier
+//  }
+//
+static size_t
+vscf_alg_info_der_serializer_serialize_chained_key_alg_info(vscf_alg_info_der_serializer_t *self,
+        const vscf_impl_t *alg_info);
 
 
 // --------------------------------------------------------------------------
@@ -864,6 +944,189 @@ vscf_alg_info_der_serializer_serialize_ecc_alg_info(vscf_alg_info_der_serializer
 }
 
 //
+//  Return buffer size enough to hold ASN.1 structure
+//  "AlgorithmIdentifier" with "CompoundKeyParams" parameters.
+//
+//  CompoundKeyAlgorithms ALGORITHM ::= {
+//      { OID id-CompoundKey parameters CompoundKeyParams }
+//  }
+//
+//  id-CompoundKey ::= { 1 3 6 1 4 1 54811 1 1 }
+//
+//  CompoundKeyParams ::= SEQUENCE {
+//      cipherAlgorithm AlgorithmIdentifier
+//      signerAlgorithm AlgorithmIdentifier
+//      signerDigestAlgorithm AlgorithmIdentifier
+//  }
+//
+static size_t
+vscf_alg_info_der_serializer_serialized_compound_key_alg_info_len(
+        const vscf_alg_info_der_serializer_t *self, const vscf_impl_t *alg_info) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(alg_info);
+
+    const vscf_compound_key_alg_info_t *compound_alg_info = (const vscf_compound_key_alg_info_t *)alg_info;
+    const vscf_impl_t *cipher_alg_info = vscf_compound_key_alg_info_cipher_alg_info(compound_alg_info);
+    const vscf_impl_t *signer_alg_info = vscf_compound_key_alg_info_signer_alg_info(compound_alg_info);
+    const vscf_impl_t *signer_hash_alg_info = vscf_compound_key_alg_info_signer_hash_alg_info(compound_alg_info);
+
+    const size_t cipher_alg_info_len = vscf_alg_info_der_serializer_serialized_len(self, cipher_alg_info);
+    const size_t signer_alg_info_len = vscf_alg_info_der_serializer_serialized_len(self, signer_alg_info);
+    const size_t signer_hash_alg_info_len = vscf_alg_info_der_serializer_serialized_len(self, signer_hash_alg_info);
+
+    const size_t params_len = 1 + 1 +                           //  CompoundKeyParams ::= SEQUENCE {
+                              1 + 1 + cipher_alg_info_len +     //      cipherAlgorithm AlgorithmIdentifier
+                              1 + 1 + signer_alg_info_len +     //      signerAlgorithm AlgorithmIdentifier
+                              1 + 1 + signer_hash_alg_info_len; //      signerDigestAlgorithm AlgorithmIdentifier }
+
+
+    const size_t len = 1 + 1 +     //  AlgorithmIdentifier ::= SEQUENCE {
+                       1 + 1 + 8 + //      algorithm OBJECT IDENTIFIER, -- id-CompoundKey
+                       params_len; //      parameters CompoundKeyParams }
+
+    return len;
+}
+
+//
+//  Serialize class "compound key alg info" to the ASN.1 structure
+//  "AlgorithmIdentifier" with "CompoundKeyParams" parameters.
+//
+//  CompoundKeyAlgorithms ALGORITHM ::= {
+//      { OID id-CompoundKey parameters CompoundKeyParams }
+//  }
+//
+//  id-CompoundKey ::= { 1 3 6 1 4 1 54811 1 1 }
+//
+//  CompoundKeyParams ::= SEQUENCE {
+//      cipherAlgorithm AlgorithmIdentifier
+//      signerAlgorithm AlgorithmIdentifier
+//      signerDigestAlgorithm AlgorithmIdentifier
+//  }
+//
+static size_t
+vscf_alg_info_der_serializer_serialize_compound_key_alg_info(
+        vscf_alg_info_der_serializer_t *self, const vscf_impl_t *alg_info) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(alg_info);
+    VSCF_ASSERT_PTR(self->asn1_writer);
+    VSCF_ASSERT(vscf_asn1_writer_unwritten_len(self->asn1_writer) >=
+                vscf_alg_info_der_serializer_serialized_compound_key_alg_info_len(self, alg_info));
+
+    const vscf_compound_key_alg_info_t *compound_alg_info = (const vscf_compound_key_alg_info_t *)alg_info;
+    const vscf_alg_id_t alg_id = vscf_compound_key_alg_info_alg_id(compound_alg_info);
+    const vscf_impl_t *cipher_alg_info = vscf_compound_key_alg_info_cipher_alg_info(compound_alg_info);
+    const vscf_impl_t *signer_alg_info = vscf_compound_key_alg_info_signer_alg_info(compound_alg_info);
+    const vscf_impl_t *signer_hash_alg_info = vscf_compound_key_alg_info_signer_hash_alg_info(compound_alg_info);
+
+    //
+    //  Write: CompoundKeyParams
+    //
+    size_t len = 0;
+    len += vscf_alg_info_der_serializer_serialize_inplace(self, signer_hash_alg_info);
+    len += vscf_alg_info_der_serializer_serialize_inplace(self, signer_alg_info);
+    len += vscf_alg_info_der_serializer_serialize_inplace(self, cipher_alg_info);
+    len += vscf_asn1_writer_write_sequence(self->asn1_writer, len);
+
+    //
+    //  Write: AlgorithmIdentifier
+    //
+    len += vscf_asn1_writer_write_oid(self->asn1_writer, vscf_oid_from_alg_id(alg_id));
+    len += vscf_asn1_writer_write_sequence(self->asn1_writer, len);
+
+    return len;
+}
+
+//
+//  Return buffer size enough to hold ASN.1 structure
+//  "AlgorithmIdentifier" with "ChainedKeyParams" parameters.
+//
+//  ChainedKeyAlgorithms ALGORITHM ::= {
+//      { OID id-ChainedKey parameters ChainedKeyParams }
+//  }
+//
+//  id-ChainedKey ::= { 1 3 6 1 4 1 54811 1 2 }
+//
+//  ChainedKeyParams ::= SEQUENCE {
+//      l1KeyAlgorithm AlgorithmIdentifier,
+//      l2KeyAlgorithm AlgorithmIdentifier
+//  }
+//
+static size_t
+vscf_alg_info_der_serializer_serialized_chained_key_alg_info_len(
+        const vscf_alg_info_der_serializer_t *self, const vscf_impl_t *alg_info) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(alg_info);
+
+    const vscf_chained_key_alg_info_t *compound_alg_info = (const vscf_chained_key_alg_info_t *)alg_info;
+    const vscf_impl_t *l1_cipher_alg_info = vscf_chained_key_alg_info_l1_key_alg_info(compound_alg_info);
+    const vscf_impl_t *l2_cipher_alg_info = vscf_chained_key_alg_info_l2_key_alg_info(compound_alg_info);
+
+    const size_t l1_cipher_alg_info_len = vscf_alg_info_der_serializer_serialized_len(self, l1_cipher_alg_info);
+    const size_t l2_cipher_alg_info_len = vscf_alg_info_der_serializer_serialized_len(self, l2_cipher_alg_info);
+
+    const size_t params_len = 1 + 1 +                          //  ChainedKeyParams ::= SEQUENCE {
+                              1 + 1 + l1_cipher_alg_info_len + //      l1CipherAlgorithm AlgorithmIdentifier,
+                              1 + 1 + l2_cipher_alg_info_len;  //      l2CipherAlgorithm AlgorithmIdentifier }
+
+
+    const size_t len = 1 + 1 +     //  AlgorithmIdentifier ::= SEQUENCE {
+                       1 + 1 + 8 + //      algorithm OBJECT IDENTIFIER, -- id-ChainedKey
+                       params_len; //      parameters ChainedKeyParams }
+
+    return len;
+}
+
+//
+//  Serialize class "chained key alg info" to the ASN.1 structure
+//  "AlgorithmIdentifier" with "ChainedKeyParams" parameters.
+//
+//  ChainedKeyAlgorithms ALGORITHM ::= {
+//      { OID id-ChainedKey parameters ChainedKeyParams }
+//  }
+//
+//  id-ChainedKey ::= { 1 3 6 1 4 1 54811 1 2 }
+//
+//  ChainedKeyParams ::= SEQUENCE {
+//      l1CipherAlgorithm AlgorithmIdentifier,
+//      l2CipherAlgorithm AlgorithmIdentifier
+//  }
+//
+static size_t
+vscf_alg_info_der_serializer_serialize_chained_key_alg_info(
+        vscf_alg_info_der_serializer_t *self, const vscf_impl_t *alg_info) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(alg_info);
+    VSCF_ASSERT_PTR(self->asn1_writer);
+    VSCF_ASSERT(vscf_asn1_writer_unwritten_len(self->asn1_writer) >=
+                vscf_alg_info_der_serializer_serialized_chained_key_alg_info_len(self, alg_info));
+
+    const vscf_chained_key_alg_info_t *chained_alg_info = (const vscf_chained_key_alg_info_t *)alg_info;
+    const vscf_alg_id_t alg_id = vscf_chained_key_alg_info_alg_id(chained_alg_info);
+    const vscf_impl_t *l1_key_alg_info = vscf_chained_key_alg_info_l1_key_alg_info(chained_alg_info);
+    const vscf_impl_t *l2_key_alg_info = vscf_chained_key_alg_info_l2_key_alg_info(chained_alg_info);
+
+    //
+    //  Write: ChainedKeyParams
+    //
+    size_t len = 0;
+    len += vscf_alg_info_der_serializer_serialize_inplace(self, l2_key_alg_info);
+    len += vscf_alg_info_der_serializer_serialize_inplace(self, l1_key_alg_info);
+    len += vscf_asn1_writer_write_sequence(self->asn1_writer, len);
+
+    //
+    //  Write: AlgorithmIdentifier
+    //
+    len += vscf_asn1_writer_write_oid(self->asn1_writer, vscf_oid_from_alg_id(alg_id));
+    len += vscf_asn1_writer_write_sequence(self->asn1_writer, len);
+
+    return len;
+}
+
+//
 //  Serialize by using internal ASN.1 writer.
 //  Note, that caller code is responsible to reset ASN.1 writer with
 //  an output buffer.
@@ -890,6 +1153,9 @@ vscf_alg_info_der_serializer_serialize_inplace(vscf_alg_info_der_serializer_t *s
     case vscf_alg_id_ECC:
     case vscf_alg_id_ED25519:
     case vscf_alg_id_CURVE25519:
+    case vscf_alg_id_FALCON:
+    case vscf_alg_id_ROUND5:
+    case vscf_alg_id_ROUND5_ND_5PKE_5D:
     case vscf_alg_id_RANDOM_PADDING:
         return vscf_alg_info_der_serializer_serialize_simple_alg_info(self, alg_info);
 
@@ -915,6 +1181,12 @@ vscf_alg_info_der_serializer_serialize_inplace(vscf_alg_info_der_serializer_t *s
 
     case vscf_alg_id_PKCS5_PBES2:
         return vscf_alg_info_der_serializer_serialize_pbes2_alg_info(self, alg_info);
+
+    case vscf_alg_id_COMPOUND_KEY:
+        return vscf_alg_info_der_serializer_serialize_compound_key_alg_info(self, alg_info);
+
+    case vscf_alg_id_CHAINED_KEY:
+        return vscf_alg_info_der_serializer_serialize_chained_key_alg_info(self, alg_info);
 
     case vscf_alg_id_NONE:
         VSCF_ASSERT(0 && "Unhandled alg id.");
@@ -948,6 +1220,9 @@ vscf_alg_info_der_serializer_serialized_len(const vscf_alg_info_der_serializer_t
     case vscf_alg_id_ECC:
     case vscf_alg_id_ED25519:
     case vscf_alg_id_CURVE25519:
+    case vscf_alg_id_FALCON:
+    case vscf_alg_id_ROUND5:
+    case vscf_alg_id_ROUND5_ND_5PKE_5D:
     case vscf_alg_id_RANDOM_PADDING:
         return vscf_alg_info_der_serializer_serialized_simple_alg_info_len(self, alg_info);
 
@@ -973,6 +1248,12 @@ vscf_alg_info_der_serializer_serialized_len(const vscf_alg_info_der_serializer_t
 
     case vscf_alg_id_PKCS5_PBES2:
         return vscf_alg_info_der_serializer_serialized_pbes2_alg_info_len(self, alg_info);
+
+    case vscf_alg_id_COMPOUND_KEY:
+        return vscf_alg_info_der_serializer_serialized_compound_key_alg_info_len(self, alg_info);
+
+    case vscf_alg_id_CHAINED_KEY:
+        return vscf_alg_info_der_serializer_serialized_chained_key_alg_info_len(self, alg_info);
 
     case vscf_alg_id_NONE:
         VSCF_ASSERT(0 && "Unhandled alg id.");

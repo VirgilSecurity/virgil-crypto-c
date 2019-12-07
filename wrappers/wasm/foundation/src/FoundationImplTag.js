@@ -50,81 +50,101 @@ const initFoundationImplTag = (Module, modules) => {
 
         ASN1WR: 6,
 
-        CIPHER_ALG_INFO: 7,
+        CHAINED_KEY_ALG: 7,
 
-        CTR_DRBG: 8,
+        CHAINED_KEY_ALG_INFO: 8,
 
-        CURVE25519: 9,
+        CHAINED_PRIVATE_KEY: 9,
 
-        ECC: 10,
+        CHAINED_PUBLIC_KEY: 10,
 
-        ECC_ALG_INFO: 11,
+        CIPHER_ALG_INFO: 11,
 
-        ECC_PRIVATE_KEY: 12,
+        COMPOUND_KEY_ALG: 12,
 
-        ECC_PUBLIC_KEY: 13,
+        COMPOUND_KEY_ALG_INFO: 13,
 
-        ED25519: 14,
+        COMPOUND_PRIVATE_KEY: 14,
 
-        ENTROPY_ACCUMULATOR: 15,
+        COMPOUND_PUBLIC_KEY: 15,
 
-        FAKE_RANDOM: 16,
+        CTR_DRBG: 16,
 
-        HASH_BASED_ALG_INFO: 17,
+        CURVE25519: 17,
 
-        HKDF: 18,
+        ECC: 18,
 
-        HMAC: 19,
+        ECC_ALG_INFO: 19,
 
-        KDF1: 20,
+        ECC_PRIVATE_KEY: 20,
 
-        KDF2: 21,
+        ECC_PUBLIC_KEY: 21,
 
-        KEY_ASN1_DESERIALIZER: 22,
+        ED25519: 22,
 
-        KEY_ASN1_SERIALIZER: 23,
+        ENTROPY_ACCUMULATOR: 23,
 
-        KEY_MATERIAL_RNG: 24,
+        FAKE_RANDOM: 24,
 
-        MESSAGE_INFO_DER_SERIALIZER: 25,
+        FALCON: 25,
 
-        PADDING_CIPHER: 26,
+        HASH_BASED_ALG_INFO: 26,
 
-        PBE_ALG_INFO: 27,
+        HKDF: 27,
 
-        PKCS5_PBES2: 28,
+        HMAC: 28,
 
-        PKCS5_PBKDF2: 29,
+        KDF1: 29,
 
-        PKCS8_SERIALIZER: 30,
+        KDF2: 30,
 
-        RANDOM_PADDING: 31,
+        KEY_ASN1_DESERIALIZER: 31,
 
-        RAW_PRIVATE_KEY: 32,
+        KEY_ASN1_SERIALIZER: 32,
 
-        RAW_PUBLIC_KEY: 33,
+        KEY_MATERIAL_RNG: 33,
 
-        RSA: 34,
+        MESSAGE_INFO_DER_SERIALIZER: 34,
 
-        RSA_PRIVATE_KEY: 35,
+        PADDING_CIPHER: 35,
 
-        RSA_PUBLIC_KEY: 36,
+        PBE_ALG_INFO: 36,
 
-        SALTED_KDF_ALG_INFO: 37,
+        PKCS5_PBES2: 37,
 
-        SEC1_SERIALIZER: 38,
+        PKCS5_PBKDF2: 38,
 
-        SEED_ENTROPY_SOURCE: 39,
+        PKCS8_SERIALIZER: 39,
 
-        SHA224: 40,
+        RANDOM_PADDING: 40,
 
-        SHA256: 41,
+        RAW_PRIVATE_KEY: 41,
 
-        SHA384: 42,
+        RAW_PUBLIC_KEY: 42,
 
-        SHA512: 43,
+        ROUND5: 43,
 
-        SIMPLE_ALG_INFO: 44
+        RSA: 44,
+
+        RSA_PRIVATE_KEY: 45,
+
+        RSA_PUBLIC_KEY: 46,
+
+        SALTED_KDF_ALG_INFO: 47,
+
+        SEC1_SERIALIZER: 48,
+
+        SEED_ENTROPY_SOURCE: 49,
+
+        SHA224: 50,
+
+        SHA256: 51,
+
+        SHA384: 52,
+
+        SHA512: 53,
+
+        SIMPLE_ALG_INFO: 54
     });
 
     return FoundationImplTag;

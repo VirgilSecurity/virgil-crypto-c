@@ -73,11 +73,6 @@ import VSCFoundation
         vscf_key_provider_use_random(self.c_ctx, random.c_ctx)
     }
 
-    @objc public func setEcies(ecies: Ecies) {
-        vscf_key_provider_release_ecies(self.c_ctx)
-        vscf_key_provider_use_ecies(self.c_ctx, ecies.c_ctx)
-    }
-
     /// Setup predefined values to the uninitialized class dependencies.
     @objc public func setupDefaults() throws {
         let proxyResult = vscf_key_provider_setup_defaults(self.c_ctx)
@@ -90,12 +85,72 @@ import VSCFoundation
         vscf_key_provider_set_rsa_params(self.c_ctx, bitlen)
     }
 
-    /// Generate new private key from the given id.
+    /// Generate new private key with a given algorithm.
     @objc public func generatePrivateKey(algId: AlgId) throws -> PrivateKey {
         var error: vscf_error_t = vscf_error_t()
         vscf_error_reset(&error)
 
         let proxyResult = vscf_key_provider_generate_private_key(self.c_ctx, vscf_alg_id_t(rawValue: UInt32(algId.rawValue)), &error)
+
+        try FoundationError.handleStatus(fromC: error.status)
+
+        return FoundationImplementation.wrapPrivateKey(take: proxyResult!)
+    }
+
+    /// Generate new post-quantum private key with default algorithms.
+    /// Note, that a post-quantum key combines classic private keys
+    /// alongside with post-quantum private keys.
+    /// Current structure is "compound private key" where:
+    ///     - cipher private key is "chained private key" where:
+    ///         - l1 key is a classic private key;
+    ///         - l2 key is a post-quantum private key;
+    ///     - signer private key "chained private key" where:
+    ///         - l1 key is a classic private key;
+    ///         - l2 key is a post-quantum private key.
+    @objc public func generatePostQuantumPrivateKey() throws -> PrivateKey {
+        var error: vscf_error_t = vscf_error_t()
+        vscf_error_reset(&error)
+
+        let proxyResult = vscf_key_provider_generate_post_quantum_private_key(self.c_ctx, &error)
+
+        try FoundationError.handleStatus(fromC: error.status)
+
+        return FoundationImplementation.wrapPrivateKey(take: proxyResult!)
+    }
+
+    /// Generate new compound private key with given algorithms.
+    @objc public func generateCompoundPrivateKey(cipherAlgId: AlgId, signerAlgId: AlgId) throws -> PrivateKey {
+        var error: vscf_error_t = vscf_error_t()
+        vscf_error_reset(&error)
+
+        let proxyResult = vscf_key_provider_generate_compound_private_key(self.c_ctx, vscf_alg_id_t(rawValue: UInt32(cipherAlgId.rawValue)), vscf_alg_id_t(rawValue: UInt32(signerAlgId.rawValue)), &error)
+
+        try FoundationError.handleStatus(fromC: error.status)
+
+        return FoundationImplementation.wrapPrivateKey(take: proxyResult!)
+    }
+
+    /// Generate new chained private key with given algorithms.
+    @objc public func generateChainedPrivateKey(l1AlgId: AlgId, l2AlgId: AlgId) throws -> PrivateKey {
+        var error: vscf_error_t = vscf_error_t()
+        vscf_error_reset(&error)
+
+        let proxyResult = vscf_key_provider_generate_chained_private_key(self.c_ctx, vscf_alg_id_t(rawValue: UInt32(l1AlgId.rawValue)), vscf_alg_id_t(rawValue: UInt32(l2AlgId.rawValue)), &error)
+
+        try FoundationError.handleStatus(fromC: error.status)
+
+        return FoundationImplementation.wrapPrivateKey(take: proxyResult!)
+    }
+
+    /// Generate new compound private key with nested chained private keys.
+    ///
+    /// Note, l2 algorithm identifiers can be NONE, in this case regular key
+    /// will be crated instead of chained key.
+    @objc public func generateCompoundChainedPrivateKey(cipherL1AlgId: AlgId, cipherL2AlgId: AlgId, signerL1AlgId: AlgId, signerL2AlgId: AlgId) throws -> PrivateKey {
+        var error: vscf_error_t = vscf_error_t()
+        vscf_error_reset(&error)
+
+        let proxyResult = vscf_key_provider_generate_compound_chained_private_key(self.c_ctx, vscf_alg_id_t(rawValue: UInt32(cipherL1AlgId.rawValue)), vscf_alg_id_t(rawValue: UInt32(cipherL2AlgId.rawValue)), vscf_alg_id_t(rawValue: UInt32(signerL1AlgId.rawValue)), vscf_alg_id_t(rawValue: UInt32(signerL2AlgId.rawValue)), &error)
 
         try FoundationError.handleStatus(fromC: error.status)
 

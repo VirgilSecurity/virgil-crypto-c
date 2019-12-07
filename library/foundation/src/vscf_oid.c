@@ -137,12 +137,52 @@ static const vsc_data_t oid_ec_domain_secp256r1 = {
 // --------------------------------------------------------------------------
 //  Managed by Virgil Security, Inc.
 //
+//  1.3.6.1.4.1.54811.1.1
+//  iso(1) identified-organization(3) dod(6) internet(1) private(4) enterprise(1) virgil-security(54811)
+//  crypto(1) compound-key(1)
+//
+static const byte oid_compound_key_bytes[] = {0x2B, 0x06, 0x01, 0x04, 0x01, 0x83, 0xAC, 0x1B, 0x01, 0x01};
+static const vsc_data_t oid_compound_key = {oid_compound_key_bytes, sizeof(oid_compound_key_bytes)};
+
+//  1.3.6.1.4.1.54811.1.2
+//  iso(1) identified-organization(3) dod(6) internet(1) private(4) enterprise(1) virgil-security(54811)
+//  crypto(1) chained-key(2)
+//
+static const byte oid_chained_key_bytes[] = {0x2B, 0x06, 0x01, 0x04, 0x01, 0x83, 0xAC, 0x1B, 0x01, 0x02};
+static const vsc_data_t oid_chained_key = {oid_chained_key_bytes, sizeof(oid_chained_key_bytes)};
+
 //  1.3.6.1.4.1.54811.1.3
 //  iso(1) identified-organization(3) dod(6) internet(1) private(4) enterprise(1) virgil-security(54811)
 //  crypto(1) random-padding(3)
 //
 static const byte oid_random_padding_bytes[] = {0x2B, 0x06, 0x01, 0x04, 0x01, 0x83, 0xAC, 0x1B, 0x01, 0x03};
 static const vsc_data_t oid_random_padding = {oid_random_padding_bytes, sizeof(oid_random_padding_bytes)};
+
+//
+//  1.3.6.1.4.1.54811.2.1
+//  iso(1) identified-organization(3) dod(6) internet(1) private(4) enterprise(1) virgil-security(54811)
+//  post-quantum-crypto(2) falcon(1)
+//
+static const byte oid_falcon_bytes[] = {0x2B, 0x06, 0x01, 0x04, 0x01, 0x83, 0xAC, 0x1B, 0x02, 0x01};
+static const vsc_data_t oid_falcon = {oid_falcon_bytes, sizeof(oid_falcon_bytes)};
+
+//
+//  1.3.6.1.4.1.54811.2.2
+//  iso(1) identified-organization(3) dod(6) internet(1) private(4) enterprise(1) virgil-security(54811)
+//  post-quantum-crypto(2) round5(2)
+//
+static const byte oid_round5_bytes[] = {0x2B, 0x06, 0x01, 0x04, 0x01, 0x83, 0xAC, 0x1B, 0x02, 0x02};
+static const vsc_data_t oid_round5 = {oid_round5_bytes, sizeof(oid_round5_bytes)};
+
+//
+//  1.3.6.1.4.1.54811.2.2.1.11
+//  iso(1) identified-organization(3) dod(6) internet(1) private(4) enterprise(1) virgil-security(54811)
+//  post-quantum-crypto(2) round5(2) nd-5pke-5d(11)
+//
+static const byte oid_round5_cca_nd_5pke_5d_bytes[] = {
+        0x2B, 0x06, 0x01, 0x04, 0x01, 0x83, 0xAC, 0x1B, 0x02, 0x02, 0x0B};
+static const vsc_data_t oid_round5_cca_nd_5pke_5d = {
+        oid_round5_cca_nd_5pke_5d_bytes, sizeof(oid_round5_cca_nd_5pke_5d_bytes)};
 //
 // --------------------------------------------------------------------------
 
@@ -208,6 +248,21 @@ vscf_oid_from_alg_id(vscf_alg_id_t alg_id) {
 
     case vscf_alg_id_PKCS5_PBES2:
         return oid_pkcs5_pbes2;
+
+    case vscf_alg_id_COMPOUND_KEY:
+        return oid_compound_key;
+
+    case vscf_alg_id_CHAINED_KEY:
+        return oid_chained_key;
+
+    case vscf_alg_id_FALCON:
+        return oid_falcon;
+
+    case vscf_alg_id_ROUND5:
+        return oid_round5;
+
+    case vscf_alg_id_ROUND5_ND_5PKE_5D:
+        return oid_round5_cca_nd_5pke_5d;
 
     case vscf_alg_id_RANDOM_PADDING:
         return oid_random_padding;
@@ -306,6 +361,26 @@ vscf_oid_to_alg_id(vsc_data_t oid) {
         return vscf_alg_id_HKDF;
     }
 
+    if (vscf_oid_equal(oid, oid_compound_key)) {
+        return vscf_alg_id_COMPOUND_KEY;
+    }
+
+    if (vscf_oid_equal(oid, oid_chained_key)) {
+        return vscf_alg_id_CHAINED_KEY;
+    }
+
+    if (vscf_oid_equal(oid, oid_falcon)) {
+        return vscf_alg_id_FALCON;
+    }
+
+    if (vscf_oid_equal(oid, oid_round5)) {
+        return vscf_alg_id_ROUND5;
+    }
+
+    if (vscf_oid_equal(oid, oid_round5_cca_nd_5pke_5d)) {
+        return vscf_alg_id_ROUND5_ND_5PKE_5D;
+    }
+
     if (vscf_oid_equal(oid, oid_random_padding)) {
         return vscf_alg_id_RANDOM_PADDING;
     }
@@ -392,6 +467,21 @@ vscf_oid_from_id(vscf_oid_id_t oid_id) {
 
     case vscf_oid_id_EC_DOMAIN_SECP256R1:
         return oid_ec_domain_secp256r1;
+
+    case vscf_oid_id_COMPOUND_KEY:
+        return oid_compound_key;
+
+    case vscf_oid_id_CHAINED_KEY:
+        return oid_chained_key;
+
+    case vscf_oid_id_FALCON:
+        return oid_falcon;
+
+    case vscf_oid_id_ROUND5:
+        return oid_round5;
+
+    case vscf_oid_id_ROUND5_ND_5PKE_5D:
+        return oid_round5_cca_nd_5pke_5d;
 
     case vscf_oid_id_RANDOM_PADDING:
         return oid_random_padding;
@@ -506,6 +596,26 @@ vscf_oid_to_id(vsc_data_t oid) {
         return vscf_oid_id_EC_DOMAIN_SECP256R1;
     }
 
+    if (vscf_oid_equal(oid, oid_compound_key)) {
+        return vscf_oid_id_COMPOUND_KEY;
+    }
+
+    if (vscf_oid_equal(oid, oid_chained_key)) {
+        return vscf_oid_id_CHAINED_KEY;
+    }
+
+    if (vscf_oid_equal(oid, oid_falcon)) {
+        return vscf_oid_id_FALCON;
+    }
+
+    if (vscf_oid_equal(oid, oid_round5)) {
+        return vscf_oid_id_ROUND5;
+    }
+
+    if (vscf_oid_equal(oid, oid_round5_cca_nd_5pke_5d)) {
+        return vscf_oid_id_ROUND5_ND_5PKE_5D;
+    }
+
     if (vscf_oid_equal(oid, oid_random_padding)) {
         return vscf_oid_id_RANDOM_PADDING;
     }
@@ -574,6 +684,18 @@ vscf_oid_id_to_alg_id(vscf_oid_id_t oid_id) {
 
     case vscf_oid_id_EC_DOMAIN_SECP256R1:
         return vscf_alg_id_SECP256R1;
+
+    case vscf_oid_id_COMPOUND_KEY:
+        return vscf_alg_id_COMPOUND_KEY;
+
+    case vscf_oid_id_FALCON:
+        return vscf_alg_id_FALCON;
+
+    case vscf_oid_id_ROUND5:
+        return vscf_alg_id_ROUND5;
+
+    case vscf_oid_id_ROUND5_ND_5PKE_5D:
+        return vscf_alg_id_ROUND5_ND_5PKE_5D;
 
     case vscf_oid_id_RANDOM_PADDING:
         return vscf_alg_id_RANDOM_PADDING;

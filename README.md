@@ -67,7 +67,7 @@ Implementation of the [Double Ratchet Algorithm](https://en.wikipedia.org/wiki/D
   - `clang` (version >= 3.6), or
   - `msvc` (version >= 14.0)
 * Build tools:
-  - `cmake` (version >= 3.11)
+  - `cmake` (version >= 3.12)
   - `python` (version >= 2.7)
   - `python-protobuf`
 

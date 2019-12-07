@@ -105,6 +105,32 @@ public class FoundationException extends RuntimeException {
 
     public static final int ERROR_MISMATCH_PRIVATE_KEY_AND_ALGORITHM = -226;
 
+    public static final int ERROR_BAD_FALCON_PUBLIC_KEY = -227;
+
+    public static final int ERROR_BAD_FALCON_PRIVATE_KEY = -228;
+
+    public static final int ERROR_ROUND5 = -229;
+
+    public static final int ERROR_BAD_ROUND5_PUBLIC_KEY = -230;
+
+    public static final int ERROR_BAD_ROUND5_PRIVATE_KEY = -231;
+
+    public static final int ERROR_BAD_COMPOUND_PUBLIC_KEY = -232;
+
+    public static final int ERROR_BAD_COMPOUND_PRIVATE_KEY = -233;
+
+    public static final int ERROR_BAD_CHAINED_PUBLIC_KEY = -234;
+
+    public static final int ERROR_BAD_CHAINED_PRIVATE_KEY = -235;
+
+    public static final int ERROR_BAD_ASN1_ALGORITHM = -236;
+
+    public static final int ERROR_BAD_ASN1_ALGORITHM_ECC = -237;
+
+    public static final int ERROR_BAD_ASN1_ALGORITHM_COMPOUND_KEY = -238;
+
+    public static final int ERROR_BAD_ASN1_ALGORITHM_CHAINED_KEY = -239;
+
     public static final int ERROR_NO_MESSAGE_INFO = -301;
 
     public static final int ERROR_BAD_MESSAGE_INFO = -302;
@@ -239,6 +265,32 @@ public class FoundationException extends RuntimeException {
             return "Key algorithm does not accept given type of public key.";
         case ERROR_MISMATCH_PRIVATE_KEY_AND_ALGORITHM:
             return "Key algorithm does not accept given type of private key.";
+        case ERROR_BAD_FALCON_PUBLIC_KEY:
+            return "Post-quantum Falcon-Sign public key is corrupted.";
+        case ERROR_BAD_FALCON_PRIVATE_KEY:
+            return "Post-quantum Falcon-Sign private key is corrupted.";
+        case ERROR_ROUND5:
+            return "Generic Round5 library error.";
+        case ERROR_BAD_ROUND5_PUBLIC_KEY:
+            return "Post-quantum NIST Round5 public key is corrupted.";
+        case ERROR_BAD_ROUND5_PRIVATE_KEY:
+            return "Post-quantum NIST Round5 private key is corrupted.";
+        case ERROR_BAD_COMPOUND_PUBLIC_KEY:
+            return "Compound public key is corrupted.";
+        case ERROR_BAD_COMPOUND_PRIVATE_KEY:
+            return "Compound private key is corrupted.";
+        case ERROR_BAD_CHAINED_PUBLIC_KEY:
+            return "Compound public chained key is corrupted.";
+        case ERROR_BAD_CHAINED_PRIVATE_KEY:
+            return "Compound private chained key is corrupted.";
+        case ERROR_BAD_ASN1_ALGORITHM:
+            return "ASN.1 AlgorithmIdentifer is corrupted.";
+        case ERROR_BAD_ASN1_ALGORITHM_ECC:
+            return "ASN.1 AlgorithmIdentifer with ECParameters is corrupted.";
+        case ERROR_BAD_ASN1_ALGORITHM_COMPOUND_KEY:
+            return "ASN.1 AlgorithmIdentifer with CompoundKeyParams is corrupted.";
+        case ERROR_BAD_ASN1_ALGORITHM_CHAINED_KEY:
+            return "ASN.1 AlgorithmIdentifer with ChainedKeyParams is corrupted.";
         case ERROR_NO_MESSAGE_INFO:
             return "Decryption failed, because message info was not given explicitly, and was not part of an encrypted message.";
         case ERROR_BAD_MESSAGE_INFO:

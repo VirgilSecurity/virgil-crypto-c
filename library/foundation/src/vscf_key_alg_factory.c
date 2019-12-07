@@ -59,6 +59,10 @@
 #include "vscf_ecc.h"
 #include "vscf_ed25519.h"
 #include "vscf_curve25519.h"
+#include "vscf_compound_key_alg.h"
+#include "vscf_chained_key_alg.h"
+#include "vscf_falcon.h"
+#include "vscf_round5.h"
 
 // clang-format on
 //  @end
@@ -92,15 +96,26 @@ vscf_key_alg_factory_create_from_alg_id(vscf_alg_id_t alg_id, const vscf_impl_t 
 
     vscf_ecies_t *ecies = NULL;
 
-    if (alg_id != vscf_alg_id_RSA) {
+    switch (alg_id) {
+#if VSCF_ECC || VSCF_CURVE25519 || VSCF_ED25519
+    case vscf_alg_id_ECC:
+    case vscf_alg_id_SECP256R1:
+    case vscf_alg_id_ED25519:
+    case vscf_alg_id_CURVE25519: {
         ecies = vscf_ecies_new();
         if (random) {
             vscf_ecies_use_random(ecies, (vscf_impl_t *)random);
         }
         vscf_ecies_setup_defaults_no_random(ecies);
+    } break;
+    default:
+        //  Do nothing
+        break;
     }
+#endif // VSCF_ECC || VSCF_CURVE25519 || VSCF_ED25519
 
     switch (alg_id) {
+#if VSCF_RSA
     case vscf_alg_id_RSA: {
         vscf_rsa_t *rsa = vscf_rsa_new();
         if (random) {
@@ -108,7 +123,31 @@ vscf_key_alg_factory_create_from_alg_id(vscf_alg_id_t alg_id, const vscf_impl_t 
         }
         return vscf_rsa_impl(rsa);
     }
+#endif // VSCF_RSA
 
+#if VSCF_ED25519
+    case vscf_alg_id_ED25519: {
+        vscf_ed25519_t *ed25519 = vscf_ed25519_new();
+        if (random) {
+            vscf_ed25519_use_random(ed25519, (vscf_impl_t *)random);
+        }
+        vscf_ed25519_take_ecies(ed25519, ecies);
+        return vscf_ed25519_impl(ed25519);
+    }
+#endif // VSCF_ED25519
+
+#if VSCF_CURVE25519
+    case vscf_alg_id_CURVE25519: {
+        vscf_curve25519_t *curve25519 = vscf_curve25519_new();
+        if (random) {
+            vscf_curve25519_use_random(curve25519, (vscf_impl_t *)random);
+        }
+        vscf_curve25519_take_ecies(curve25519, ecies);
+        return vscf_curve25519_impl(curve25519);
+    }
+#endif // VSCF_CURVE25519
+
+#if VSCF_ECC
     case vscf_alg_id_ECC:
     case vscf_alg_id_SECP256R1: {
         vscf_ecc_t *ecc = vscf_ecc_new();
@@ -118,24 +157,50 @@ vscf_key_alg_factory_create_from_alg_id(vscf_alg_id_t alg_id, const vscf_impl_t 
         vscf_ecc_take_ecies(ecc, ecies);
         return vscf_ecc_impl(ecc);
     }
+#endif // VSCF_ECC
 
-    case vscf_alg_id_ED25519: {
-        vscf_ed25519_t *ed25519 = vscf_ed25519_new();
+#if VSCF_COMPOUND_KEY_ALG
+    case vscf_alg_id_COMPOUND_KEY: {
+        vscf_compound_key_alg_t *compound_key_alg = vscf_compound_key_alg_new();
         if (random) {
-            vscf_ed25519_use_random(ed25519, (vscf_impl_t *)random);
+            vscf_compound_key_alg_use_random(compound_key_alg, (vscf_impl_t *)random);
         }
-        vscf_ed25519_take_ecies(ed25519, ecies);
-        return vscf_ed25519_impl(ed25519);
+        return vscf_compound_key_alg_impl(compound_key_alg);
     }
+#endif // VSCF_COMPOUND_KEY_ALG
 
-    case vscf_alg_id_CURVE25519: {
-        vscf_curve25519_t *curve25519 = vscf_curve25519_new();
+#if VSCF_CHAINED_KEY_ALG
+    case vscf_alg_id_CHAINED_KEY: {
+        vscf_chained_key_alg_t *chained_key_alg = vscf_chained_key_alg_new();
         if (random) {
-            vscf_curve25519_use_random(curve25519, (vscf_impl_t *)random);
+            vscf_chained_key_alg_use_random(chained_key_alg, (vscf_impl_t *)random);
         }
-        vscf_curve25519_take_ecies(curve25519, ecies);
-        return vscf_curve25519_impl(curve25519);
+        return vscf_chained_key_alg_impl(chained_key_alg);
     }
+#endif // VSCF_CHAINED_KEY_ALG
+
+#if VSCF_POST_QUANTUM
+#if VSCF_FALCON
+    case vscf_alg_id_FALCON: {
+        vscf_falcon_t *falcon = vscf_falcon_new();
+        if (random) {
+            vscf_falcon_use_random(falcon, (vscf_impl_t *)random);
+        }
+        return vscf_falcon_impl(falcon);
+    }
+#endif // VSCF_FALCON
+
+#if VSCF_ROUND5
+    case vscf_alg_id_ROUND5:
+    case vscf_alg_id_ROUND5_ND_5PKE_5D: {
+        vscf_round5_t *round5 = vscf_round5_new();
+        if (random) {
+            vscf_round5_use_random(round5, (vscf_impl_t *)random);
+        }
+        return vscf_round5_impl(round5);
+    }
+#endif // VSCF_ROUND5
+#endif // VSCF_POST_QUANTUM
 
     default:
         vscf_ecies_destroy(&ecies);
@@ -172,8 +237,19 @@ vscf_key_alg_factory_create_from_key(const vscf_impl_t *key, const vscf_impl_t *
     case vscf_impl_tag_CURVE25519:
         return vscf_key_alg_factory_create_from_alg_id(vscf_alg_id_CURVE25519, random, error);
 
+    case vscf_impl_tag_COMPOUND_KEY_ALG:
+        return vscf_key_alg_factory_create_from_alg_id(vscf_alg_id_COMPOUND_KEY, random, error);
+
+    case vscf_impl_tag_CHAINED_KEY_ALG:
+        return vscf_key_alg_factory_create_from_alg_id(vscf_alg_id_CHAINED_KEY, random, error);
+
+    case vscf_impl_tag_FALCON:
+        return vscf_key_alg_factory_create_from_alg_id(vscf_alg_id_FALCON, random, error);
+
+    case vscf_impl_tag_ROUND5:
+        return vscf_key_alg_factory_create_from_alg_id(vscf_alg_id_ROUND5, random, error);
+
     default:
-        VSCF_ASSERT(0 && "Unexpected implementation tag.");
         VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_UNSUPPORTED_ALGORITHM);
         return NULL;
     }

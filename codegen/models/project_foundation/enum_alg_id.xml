@@ -18,5 +18,10 @@
     <constant name="hkdf"/>
     <constant name="pkcs5 pbkdf2"/>
     <constant name="pkcs5 pbes2"/>
+    <constant name="compound key"/>
+    <constant name="chained key"/>
+    <constant name="falcon"/>
+    <constant name="round5"/>
+    <constant name="round5 nd 5pke 5d"/>
     <constant name="random padding"/>
 </enum>

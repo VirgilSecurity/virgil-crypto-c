@@ -39,9 +39,6 @@ import VSCFoundation
 /// Append a random number of padding bytes to a data.
 @objc(VSCFRandomPadding) public class RandomPadding: NSObject, Alg, Padding {
 
-    @objc public static let paddingSizeLen: Int = 4
-    @objc public static let paddingLenMin: Int = vscf_random_padding_PADDING_SIZE_LEN + 1
-
     /// Handle underlying C context.
     @objc public let c_ctx: OpaquePointer
 

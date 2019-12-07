@@ -3,7 +3,7 @@
 
     <property name="hash algorithm" interface="alg info"/>
 
-    <method name="set hash alg info">
+    <method name="set hash alg info" visibility="private">
         Set information about algorithm that was used to produce data digest.
 
         <argument name="hash alg info" interface="alg info" access="disown"/>

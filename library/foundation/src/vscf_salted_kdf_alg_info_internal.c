@@ -227,7 +227,7 @@ vscf_salted_kdf_alg_info_shallow_copy(vscf_salted_kdf_alg_info_t *self) {
 //  Create algorithm info with identificator, HASH algorithm info,
 //  salt and iteration count.
 //
-VSCF_PUBLIC void
+VSCF_PRIVATE void
 vscf_salted_kdf_alg_info_init_with_members(vscf_salted_kdf_alg_info_t *self, vscf_alg_id_t alg_id,
         vscf_impl_t **hash_alg_info_ref, vsc_data_t salt, size_t iteration_count) {
 
@@ -246,7 +246,7 @@ vscf_salted_kdf_alg_info_init_with_members(vscf_salted_kdf_alg_info_t *self, vsc
 //  Create algorithm info with identificator, HASH algorithm info,
 //  salt and iteration count.
 //
-VSCF_PUBLIC vscf_salted_kdf_alg_info_t *
+VSCF_PRIVATE vscf_salted_kdf_alg_info_t *
 vscf_salted_kdf_alg_info_new_with_members(vscf_alg_id_t alg_id, vscf_impl_t **hash_alg_info_ref, vsc_data_t salt,
         size_t iteration_count) {
 

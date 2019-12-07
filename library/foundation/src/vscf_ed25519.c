@@ -472,7 +472,10 @@ vscf_ed25519_can_sign(const vscf_ed25519_t *self, const vscf_impl_t *private_key
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(private_key);
     VSCF_ASSERT(vscf_private_key_is_implemented(private_key));
-    VSCF_ASSERT_SAFE(vscf_key_is_valid(private_key));
+
+    if (!vscf_key_is_valid(private_key)) {
+        return false;
+    }
 
     bool is_my_impl = vscf_key_impl_tag(private_key) == self->info->impl_tag;
     return is_my_impl;
@@ -483,10 +486,15 @@ vscf_ed25519_can_sign(const vscf_ed25519_t *self, const vscf_impl_t *private_key
 //  Return zero if a given private key can not produce signatures.
 //
 VSCF_PUBLIC size_t
-vscf_ed25519_signature_len(const vscf_ed25519_t *self, const vscf_impl_t *key) {
+vscf_ed25519_signature_len(const vscf_ed25519_t *self, const vscf_impl_t *private_key) {
 
     VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(key);
+    VSCF_ASSERT_PTR(private_key);
+    VSCF_ASSERT(vscf_private_key_is_implemented(private_key));
+
+    if (!vscf_key_is_valid(private_key)) {
+        return 0;
+    }
 
     return ED25519_SIG_LEN;
 }

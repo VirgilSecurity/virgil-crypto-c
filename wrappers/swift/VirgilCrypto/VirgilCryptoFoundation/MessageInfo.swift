@@ -72,7 +72,7 @@ import VSCFoundation
     @objc public func dataEncryptionAlgInfo() -> AlgInfo {
         let proxyResult = vscf_message_info_data_encryption_alg_info(self.c_ctx)
 
-        return FoundationImplementation.wrapAlgInfo(take: proxyResult!)
+        return FoundationImplementation.wrapAlgInfo(use: proxyResult!)
     }
 
     /// Return list with a "key recipient info" elements.
@@ -116,7 +116,7 @@ import VSCFoundation
     @objc public func cipherKdfAlgInfo() -> AlgInfo {
         let proxyResult = vscf_message_info_cipher_kdf_alg_info(self.c_ctx)
 
-        return FoundationImplementation.wrapAlgInfo(take: proxyResult!)
+        return FoundationImplementation.wrapAlgInfo(use: proxyResult!)
     }
 
     /// Return true if cipher padding alg info exists.
@@ -130,7 +130,7 @@ import VSCFoundation
     @objc public func cipherPaddingAlgInfo() -> AlgInfo {
         let proxyResult = vscf_message_info_cipher_padding_alg_info(self.c_ctx)
 
-        return FoundationImplementation.wrapAlgInfo(take: proxyResult!)
+        return FoundationImplementation.wrapAlgInfo(use: proxyResult!)
     }
 
     /// Return true if footer info exists.

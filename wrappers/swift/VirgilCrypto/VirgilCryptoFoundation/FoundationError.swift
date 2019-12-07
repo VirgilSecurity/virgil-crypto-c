@@ -134,6 +134,45 @@ import VSCFoundation
     /// Key algorithm does not accept given type of private key.
     case errorMismatchPrivateKeyAndAlgorithm = -226
 
+    /// Post-quantum Falcon-Sign public key is corrupted.
+    case errorBadFalconPublicKey = -227
+
+    /// Post-quantum Falcon-Sign private key is corrupted.
+    case errorBadFalconPrivateKey = -228
+
+    /// Generic Round5 library error.
+    case errorRound5 = -229
+
+    /// Post-quantum NIST Round5 public key is corrupted.
+    case errorBadRound5PublicKey = -230
+
+    /// Post-quantum NIST Round5 private key is corrupted.
+    case errorBadRound5PrivateKey = -231
+
+    /// Compound public key is corrupted.
+    case errorBadCompoundPublicKey = -232
+
+    /// Compound private key is corrupted.
+    case errorBadCompoundPrivateKey = -233
+
+    /// Compound public chained key is corrupted.
+    case errorBadChainedPublicKey = -234
+
+    /// Compound private chained key is corrupted.
+    case errorBadChainedPrivateKey = -235
+
+    /// ASN.1 AlgorithmIdentifer is corrupted.
+    case errorBadAsn1Algorithm = -236
+
+    /// ASN.1 AlgorithmIdentifer with ECParameters is corrupted.
+    case errorBadAsn1AlgorithmEcc = -237
+
+    /// ASN.1 AlgorithmIdentifer with CompoundKeyParams is corrupted.
+    case errorBadAsn1AlgorithmCompoundKey = -238
+
+    /// ASN.1 AlgorithmIdentifer with ChainedKeyParams is corrupted.
+    case errorBadAsn1AlgorithmChainedKey = -239
+
     /// Decryption failed, because message info was not given explicitly,
     /// and was not part of an encrypted message.
     case errorNoMessageInfo = -301

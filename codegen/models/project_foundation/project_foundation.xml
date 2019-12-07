@@ -56,6 +56,14 @@
         <require feature="THREADING C" library="mbedtls"/>
     </feature>
 
+    <feature name="post quantum" default="${VIRGIL_POST_QUANTUM}">
+        Enable post-quantum cryptography for foundation library [experemental].
+
+        <require library="keccak" feature="library" />
+        <require library="round5" feature="library" />
+        <require library="falcon" feature="library" />
+    </feature>
+
     <module name="assert" from="shared"/>
     <module name="library" from="shared"/>
     <module name="memory" from="shared"/>
@@ -149,6 +157,7 @@
     <class name="message info footer"/>
     <class name="signed data info"/>
     <class name="footer info"/>
+    <class name="key info"/>
     <class name="tail filter"/>
     <class name="padding params"/>
 
@@ -158,6 +167,9 @@
     <implementor name="virgil"/>
     <implementor name="virgil key serializer"/>
     <implementor name="ed25519"/>
+    <implementor name="post quantum"/>
+    <implementor name="compound key"/>
+    <implementor name="chained key"/>
 
     <implementor name="alg info"/>
     <implementor name="alg info der"/>

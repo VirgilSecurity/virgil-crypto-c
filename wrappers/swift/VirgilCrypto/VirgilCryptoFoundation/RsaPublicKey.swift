@@ -85,7 +85,7 @@ import VSCFoundation
     @objc public func algInfo() -> AlgInfo {
         let proxyResult = vscf_rsa_public_key_alg_info(self.c_ctx)
 
-        return FoundationImplementation.wrapAlgInfo(take: proxyResult!)
+        return FoundationImplementation.wrapAlgInfo(use: proxyResult!)
     }
 
     /// Length of the key in bytes.

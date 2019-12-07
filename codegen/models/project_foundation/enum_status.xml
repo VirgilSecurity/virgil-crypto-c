@@ -131,6 +131,58 @@
         Key algorithm does not accept given type of private key.
     </constant>
 
+    <constant name="error bad falcon public key" value="-227">
+        Post-quantum Falcon-Sign public key is corrupted.
+    </constant>
+
+    <constant name="error bad falcon private key" value="-228">
+        Post-quantum Falcon-Sign private key is corrupted.
+    </constant>
+
+    <constant name="error round5" value="-229">
+        Generic Round5 library error.
+    </constant>
+
+    <constant name="error bad round5 public key" value="-230">
+        Post-quantum NIST Round5 public key is corrupted.
+    </constant>
+
+    <constant name="error bad round5 private key" value="-231">
+        Post-quantum NIST Round5 private key is corrupted.
+    </constant>
+
+    <constant name="error bad compound public key" value="-232">
+        Compound public key is corrupted.
+    </constant>
+
+    <constant name="error bad compound private key" value="-233">
+        Compound private key is corrupted.
+    </constant>
+
+    <constant name="error bad chained public key" value="-234">
+        Compound public chained key is corrupted.
+    </constant>
+
+    <constant name="error bad chained private key" value="-235">
+        Compound private chained key is corrupted.
+    </constant>
+
+    <constant name="error bad asn1 algorithm" value="-236">
+        ASN.1 AlgorithmIdentifer is corrupted.
+    </constant>
+
+    <constant name="error bad asn1 algorithm ecc" value="-237">
+        ASN.1 AlgorithmIdentifer with ECParameters is corrupted.
+    </constant>
+
+    <constant name="error bad asn1 algorithm compound key" value="-238">
+        ASN.1 AlgorithmIdentifer with CompoundKeyParams is corrupted.
+    </constant>
+
+    <constant name="error bad asn1 algorithm chained key" value="-239">
+        ASN.1 AlgorithmIdentifer with ChainedKeyParams is corrupted.
+    </constant>
+
     <constant name="error no message info" value="-301">
         Decryption failed, because message info was not given explicitly,
         and was not part of an encrypted message.

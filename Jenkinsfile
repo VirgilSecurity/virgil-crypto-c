@@ -128,6 +128,8 @@ def build_LangC_Unix(slave) {
                       -DCPACK_OUTPUT_FILE_PREFIX=c \
                       -DENABLE_CLANGFORMAT=OFF \
                       -DED25519_AMD64_RADIX_64_24K=ON -DED25519_REF10=OFF \
+                      -DVIRGIL_C_MT_TESTING=ON \
+                      -DVIRGIL_POST_QUANTUM=ON \
                       -Bbuild -H.
                 cmake --build build -- -j10
                 cd build
@@ -157,6 +159,7 @@ def build_LangC_Windows(slave) {
                       -DCPACK_OUTPUT_FILE_PREFIX=c ^
                       -DENABLE_CLANGFORMAT=OFF ^
                       -DVIRGIL_C_MT_TESTING=ON ^
+                      -DVIRGIL_POST_QUANTUM=ON ^
                       -Bbuild -H.
                 cmake --build build
                 cd build
@@ -188,6 +191,7 @@ def build_LangPHP_Linux(slave) {
                       -DCPACK_OUTPUT_FILE_PREFIX=php \
                       -DENABLE_CLANGFORMAT=OFF \
                       -DED25519_AMD64_RADIX_64_24K=ON -DED25519_REF10=OFF \
+                      -DVIRGIL_POST_QUANTUM=ON \
                       -Bbuild -H.
                 cmake --build build -- -j10
                 cd build
@@ -208,6 +212,7 @@ def build_LangPHP_Linux(slave) {
                       -DVIRGIL_PACKAGE_LANGUAGE_VERSION=7.3 \
                       -DCPACK_OUTPUT_FILE_PREFIX=php \
                       -DENABLE_CLANGFORMAT=OFF \
+                      -DVIRGIL_POST_QUANTUM=ON \
                       -Bbuild -H.
                 cmake --build build -- -j10
                 cd build
@@ -238,6 +243,7 @@ def build_LangPHP_MacOS(slave) {
                       -DCPACK_OUTPUT_FILE_PREFIX=php \
                       -DENABLE_CLANGFORMAT=OFF \
                       -DED25519_AMD64_RADIX_64_24K=ON -DED25519_REF10=OFF \
+                      -DVIRGIL_POST_QUANTUM=ON \
                       -Bbuild -H.
                 cmake --build build -- -j10
                 cd build
@@ -258,6 +264,7 @@ def build_LangPHP_MacOS(slave) {
                       -DVIRGIL_PACKAGE_LANGUAGE_VERSION=7.3 \
                       -DCPACK_OUTPUT_FILE_PREFIX=php \
                       -DENABLE_CLANGFORMAT=OFF \
+                      -DVIRGIL_POST_QUANTUM=ON \
                       -Bbuild -H.
                 cmake --build build -- -j10
                 cd build
@@ -290,6 +297,7 @@ def build_LangPHP_Windows(slave) {
                           -DVIRGIL_PACKAGE_LANGUAGE_VERSION=7.2 ^
                           -DCPACK_OUTPUT_FILE_PREFIX=php ^
                           -DENABLE_CLANGFORMAT=OFF ^
+                          -DVIRGIL_POST_QUANTUM=ON ^
                           -Bbuild -H.
                     cmake --build build
                     cd build
@@ -316,6 +324,7 @@ def build_LangPHP_Windows(slave) {
                           -DVIRGIL_PACKAGE_LANGUAGE_VERSION=7.3 ^
                           -DCPACK_OUTPUT_FILE_PREFIX=php ^
                           -DENABLE_CLANGFORMAT=OFF ^
+                          -DVIRGIL_POST_QUANTUM=ON ^
                           -Bbuild -H.
                     cmake --build build
                     cd build
@@ -345,6 +354,7 @@ def build_LangJava_Linux(slave) {
                       -DCMAKE_INSTALL_PREFIX="wrappers/java/binaries/linux" \
                       -DENABLE_CLANGFORMAT=OFF \
                       -DED25519_AMD64_RADIX_64_24K=ON -DED25519_REF10=OFF \
+                      -DVIRGIL_POST_QUANTUM=ON \
                       -Bbuild -H.
 
                 cmake --build build --target install -- -j10
@@ -369,6 +379,7 @@ def build_LangJava_MacOS(slave) {
                       -DCMAKE_INSTALL_PREFIX="wrappers/java/binaries/macos" \
                       -DENABLE_CLANGFORMAT=OFF \
                       -DED25519_AMD64_RADIX_64_24K=ON -DED25519_REF10=OFF \
+                      -DVIRGIL_POST_QUANTUM=ON \
                       -Bbuild -H.
 
                 cmake --build build --target install -- -j10
@@ -396,6 +407,7 @@ def build_LangJava_Windows(slave) {
                       -DCMAKE_BUILD_TYPE=Release ^
                       -DCMAKE_INSTALL_PREFIX="wrappers\\java\\binaries\\windows" ^
                       -DENABLE_CLANGFORMAT=OFF ^
+                      -DVIRGIL_POST_QUANTUM=ON ^
                       -Bbuild -H.
                 cmake --build build --target install
 
@@ -421,6 +433,7 @@ def build_LangJava_Android_x86(slave) {
                       -DCMAKE_INSTALL_PREFIX="wrappers/java/binaries/android" \
                       -DCMAKE_INSTALL_LIBDIR="lib/x86" \
                       -DENABLE_CLANGFORMAT=OFF \
+                      -DVIRGIL_POST_QUANTUM=ON \
                       -Bbuild -H.
 
                 cmake --build build --target install -- -j10
@@ -445,6 +458,7 @@ def build_LangJava_Android_x86_64(slave) {
                       -DCMAKE_INSTALL_PREFIX="wrappers/java/binaries/android" \
                       -DCMAKE_INSTALL_LIBDIR="lib/x86_64" \
                       -DENABLE_CLANGFORMAT=OFF \
+                      -DVIRGIL_POST_QUANTUM=ON \
                       -Bbuild -H.
 
                 cmake --build build --target install -- -j10
@@ -469,6 +483,7 @@ def build_LangJava_Android_armeabi_v7a(slave) {
                       -DCMAKE_INSTALL_PREFIX="wrappers/java/binaries/android" \
                       -DCMAKE_INSTALL_LIBDIR="lib/armeabi-v7a" \
                       -DENABLE_CLANGFORMAT=OFF \
+                      -DVIRGIL_POST_QUANTUM=ON \
                       -Bbuild -H.
 
                 cmake --build build --target install -- -j10
@@ -493,6 +508,7 @@ def build_LangJava_Android_arm64_v8a(slave) {
                       -DCMAKE_INSTALL_PREFIX="wrappers/java/binaries/android" \
                       -DCMAKE_INSTALL_LIBDIR="lib/arm64-v8a" \
                       -DENABLE_CLANGFORMAT=OFF \
+                      -DVIRGIL_POST_QUANTUM=ON \
                       -Bbuild -H.
 
                 cmake --build build --target install -- -j10
@@ -518,6 +534,7 @@ def build_LangPython_Linux(slave) {
                       -DCMAKE_INSTALL_PREFIX="wrappers/python/virgil_crypto_lib" \
                       -DCMAKE_INSTALL_LIBDIR=_libs \
                       -DENABLE_CLANGFORMAT=OFF \
+                      -DVIRGIL_POST_QUANTUM=ON \
                       -Bbuild -H.
                 cmake --build build --target install -- -j8
 
@@ -541,6 +558,7 @@ def build_LangPython_MacOS(slave) {
                       -DCMAKE_INSTALL_PREFIX="wrappers/python/virgil_crypto_lib" \
                       -DCMAKE_INSTALL_LIBDIR=_libs \
                       -DENABLE_CLANGFORMAT=OFF \
+                      -DVIRGIL_POST_QUANTUM=ON \
                       -Bbuild -H.
                 cmake --build build --target install -- -j8
 
@@ -569,6 +587,7 @@ def build_LangPython_Windows(slave) {
                       -DCMAKE_INSTALL_LIBDIR=_libs ^
                       -DCMAKE_INSTALL_BINDIR=_libs ^
                       -DENABLE_CLANGFORMAT=OFF ^
+                      -DVIRGIL_POST_QUANTUM=ON ^
                       -Bbuild -H.
                 cmake --build build --target install
 
@@ -592,6 +611,7 @@ def build_LangPython_Windows(slave) {
                       -DCMAKE_INSTALL_LIBDIR=_libs ^
                       -DCMAKE_INSTALL_BINDIR=_libs ^
                       -DENABLE_CLANGFORMAT=OFF ^
+                      -DVIRGIL_POST_QUANTUM=ON ^
                       -Bbuild -H.
                 cmake --build build --target install
 

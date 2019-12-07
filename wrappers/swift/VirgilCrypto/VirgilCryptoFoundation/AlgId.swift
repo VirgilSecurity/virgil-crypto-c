@@ -75,6 +75,16 @@ import VSCFoundation
 
     case pkcs5Pbes2
 
+    case compoundKey
+
+    case chainedKey
+
+    case falcon
+
+    case round5
+
+    case round5Nd5pke5d
+
     case randomPadding
 
     /// Create enumeration value from the correspond C enumeration value.
