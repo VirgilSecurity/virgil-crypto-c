@@ -55,10 +55,6 @@ public class Round5 implements AutoCloseable, Alg, KeyAlg, KeyCipher {
         this.cCtx = contextHolder.cCtx;
     }
 
-    public int getSeedLen() {
-        return 48;
-    }
-
     public void setRandom(Random random) {
         FoundationJNI.INSTANCE.round5_setRandom(this.cCtx, random);
     }

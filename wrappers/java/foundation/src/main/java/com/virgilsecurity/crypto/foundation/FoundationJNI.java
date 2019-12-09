@@ -170,6 +170,16 @@ public class FoundationJNI {
     public native AlgInfo messageInfo_cipherKdfAlgInfo(long cCtx);
 
     /*
+    * Return true if cipher padding alg info exists.
+    */
+    public native boolean messageInfo_hasCipherPaddingAlgInfo(long cCtx);
+
+    /*
+    * Return cipher padding alg info.
+    */
+    public native AlgInfo messageInfo_cipherPaddingAlgInfo(long cCtx);
+
+    /*
     * Return true if footer info exists.
     */
     public native boolean messageInfo_hasFooterInfo(long cCtx);
@@ -327,6 +337,11 @@ public class FoundationJNI {
     public native Cipher algFactory_createCipherFromInfo(AlgInfo algInfo);
 
     /*
+    * Create algorithm that implements "padding" interface.
+    */
+    public native Padding algFactory_createPaddingFromInfo(AlgInfo algInfo, Random random);
+
+    /*
     * Create a key algorithm based on an identifier.
     */
     public native KeyAlg keyAlgFactory_createFromAlgId(AlgId algId, Random random) throws FoundationException;
@@ -414,6 +429,10 @@ public class FoundationJNI {
     public native void recipientCipher_setRandom(long cCtx, Random random);
 
     public native void recipientCipher_setEncryptionCipher(long cCtx, Cipher encryptionCipher);
+
+    public native void recipientCipher_setEncryptionPadding(long cCtx, Padding encryptionPadding);
+
+    public native void recipientCipher_setPaddingParams(long cCtx, PaddingParams paddingParams);
 
     public native void recipientCipher_setSignerHash(long cCtx, Hash signerHash);
 
@@ -1178,6 +1197,27 @@ public class FoundationJNI {
     * Return None, otherwise.
     */
     public native AlgId keyInfo_compoundSignerL2AlgId(long cCtx);
+
+    public native long paddingParams_new();
+
+    public native void paddingParams_close(long cCtx);
+
+    public native long paddingParams_new(int frame, int frameMin, int frameMax);
+
+    /*
+    * Return padding frame in bytes.
+    */
+    public native int paddingParams_frame(long cCtx);
+
+    /*
+    * Return minimum padding frame in bytes.
+    */
+    public native int paddingParams_frameMin(long cCtx);
+
+    /*
+    * Return minimum padding frame in bytes.
+    */
+    public native int paddingParams_frameMax(long cCtx);
 
     public native long sha224_new();
 
@@ -4204,5 +4244,79 @@ public class FoundationJNI {
     * Deserialize class "message info footer".
     */
     public native MessageInfoFooter messageInfoDerSerializer_deserializeFooter(long cCtx, byte[] data) throws FoundationException;
+
+    public native void randomPadding_setRandom(long cCtx, Random random);
+
+    public native long randomPadding_new();
+
+    public native void randomPadding_close(long cCtx);
+
+    /*
+    * Provide algorithm identificator.
+    */
+    public native AlgId randomPadding_algId(long cCtx);
+
+    /*
+    * Produce object with algorithm information and configuration parameters.
+    */
+    public native AlgInfo randomPadding_produceAlgInfo(long cCtx);
+
+    /*
+    * Restore algorithm configuration from the given object.
+    */
+    public native void randomPadding_restoreAlgInfo(long cCtx, AlgInfo algInfo) throws FoundationException;
+
+    /*
+    * Set new padding parameters.
+    */
+    public native void randomPadding_configure(long cCtx, PaddingParams params);
+
+    /*
+    * Return length in bytes of a data with a padding.
+    */
+    public native int randomPadding_paddedDataLen(long cCtx, int dataLen);
+
+    /*
+    * Return an actual number of padding in bytes.
+    * Note, this method might be called right before "finish data processing".
+    */
+    public native int randomPadding_len(long cCtx);
+
+    /*
+    * Return a maximum number of padding in bytes.
+    */
+    public native int randomPadding_lenMax(long cCtx);
+
+    /*
+    * Prepare the algorithm to process data.
+    */
+    public native void randomPadding_startDataProcessing(long cCtx);
+
+    /*
+    * Only data length is needed to produce padding later.
+    * Return data that should be further proceeded.
+    */
+    public native byte[] randomPadding_processData(long cCtx, byte[] data);
+
+    /*
+    * Accomplish data processing and return padding.
+    */
+    public native byte[] randomPadding_finishDataProcessing(long cCtx) throws FoundationException;
+
+    /*
+    * Prepare the algorithm to process padded data.
+    */
+    public native void randomPadding_startPaddedDataProcessing(long cCtx);
+
+    /*
+    * Process padded data.
+    * Return filtered data without padding.
+    */
+    public native byte[] randomPadding_processPaddedData(long cCtx, byte[] data);
+
+    /*
+    * Accomplish padded data processing and return left data without a padding.
+    */
+    public native byte[] randomPadding_finishPaddedDataProcessing(long cCtx) throws FoundationException;
 }
 

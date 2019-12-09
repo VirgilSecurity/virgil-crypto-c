@@ -49,6 +49,7 @@ gsl from "java_h.gsl"
 gsl from "java_java.gsl"
 gsl from "java_jni.gsl"
 gsl from "java_codegen.gsl"
+gsl from "wrapper_helpers.gsl"
 
 # ===========================================================================
 #   Name and type derivation.
@@ -1119,7 +1120,7 @@ function java_create_class_default_constructor (java_class, class, java_project,
     new java_constructor to my.java_class
         . = "/* Wrap underlying C context. */"
         .visibility = "package"
-        
+
         new java_argument to java_constructor
             .name = "contextHolder"
             .type = java_derive_context_holder_class_name (my.java_project)
@@ -1133,7 +1134,7 @@ function java_create_class_default_constructor (java_class, class, java_project,
             "
         endnew
     endnew
-    
+
 
     new java_method to my.java_class
         . = "
@@ -1699,7 +1700,7 @@ function java_create_class_module (class, java_project, meta)
 
             java_map_attr_visibility (java_class, my.class)
 
-            for my.class.constant
+            for my.class.constant where wrapper_should_wrap_class_constant(constant)
                 java_create_class_method_from_constant (constant, java_class, my.java_project, my.meta)
             endfor
 
@@ -1764,11 +1765,11 @@ function java_create_context_holder_class_module (java_project, meta)
                 .access = "readonly"
                 .visibility = "package"
             endnew
-            
+
             new java_constructor to java_class
                 . = "/* Create underlying C context. */"
                 .visibility = "package"
-                
+
                 new java_argument to java_constructor
                     .name = "cCtx"
                     .type = "long"
@@ -1821,7 +1822,7 @@ function java_create_implementation_module (implementation, java_project, meta)
 
             #java_create_class_field_context (java_class)
 
-            for my.implementation.constant
+            for my.implementation.constant where wrapper_should_wrap_class_constant(constant)
                 java_create_class_method_from_constant (constant, java_class, my.java_project, my.meta)
             endfor
 

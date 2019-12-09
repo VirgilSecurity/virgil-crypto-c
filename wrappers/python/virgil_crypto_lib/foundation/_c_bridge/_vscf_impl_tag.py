@@ -72,6 +72,7 @@ from virgil_crypto_lib.foundation._c_bridge import vscf_pbe_alg_info_t
 from virgil_crypto_lib.foundation._c_bridge import vscf_pkcs5_pbes2_t
 from virgil_crypto_lib.foundation._c_bridge import vscf_pkcs5_pbkdf2_t
 from virgil_crypto_lib.foundation._c_bridge import vscf_pkcs8_serializer_t
+from virgil_crypto_lib.foundation._c_bridge import vscf_random_padding_t
 from virgil_crypto_lib.foundation._c_bridge import vscf_raw_private_key_t
 from virgil_crypto_lib.foundation._c_bridge import vscf_raw_public_key_t
 from virgil_crypto_lib.foundation._c_bridge import vscf_round5_t
@@ -135,20 +136,21 @@ class VscfImplTag(object):
             36: ["Pkcs5Pbes2", vscf_pkcs5_pbes2_t],
             37: ["Pkcs5Pbkdf2", vscf_pkcs5_pbkdf2_t],
             38: ["Pkcs8Serializer", vscf_pkcs8_serializer_t],
-            39: ["RawPrivateKey", vscf_raw_private_key_t],
-            40: ["RawPublicKey", vscf_raw_public_key_t],
-            41: ["Round5", vscf_round5_t],
-            42: ["Rsa", vscf_rsa_t],
-            43: ["RsaPrivateKey", vscf_rsa_private_key_t],
-            44: ["RsaPublicKey", vscf_rsa_public_key_t],
-            45: ["SaltedKdfAlgInfo", vscf_salted_kdf_alg_info_t],
-            46: ["Sec1Serializer", vscf_sec1_serializer_t],
-            47: ["SeedEntropySource", vscf_seed_entropy_source_t],
-            48: ["Sha224", vscf_sha224_t],
-            49: ["Sha256", vscf_sha256_t],
-            50: ["Sha384", vscf_sha384_t],
-            51: ["Sha512", vscf_sha512_t],
-            52: ["SimpleAlgInfo", vscf_simple_alg_info_t]
+            39: ["RandomPadding", vscf_random_padding_t],
+            40: ["RawPrivateKey", vscf_raw_private_key_t],
+            41: ["RawPublicKey", vscf_raw_public_key_t],
+            42: ["Round5", vscf_round5_t],
+            43: ["Rsa", vscf_rsa_t],
+            44: ["RsaPrivateKey", vscf_rsa_private_key_t],
+            45: ["RsaPublicKey", vscf_rsa_public_key_t],
+            46: ["SaltedKdfAlgInfo", vscf_salted_kdf_alg_info_t],
+            47: ["Sec1Serializer", vscf_sec1_serializer_t],
+            48: ["SeedEntropySource", vscf_seed_entropy_source_t],
+            49: ["Sha224", vscf_sha224_t],
+            50: ["Sha256", vscf_sha256_t],
+            51: ["Sha384", vscf_sha384_t],
+            52: ["Sha512", vscf_sha512_t],
+            53: ["SimpleAlgInfo", vscf_simple_alg_info_t]
         }
         tag = cls.vscf_impl_tag(impl)
 

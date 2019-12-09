@@ -151,6 +151,13 @@ static const vsc_data_t oid_compound_key = {oid_compound_key_bytes, sizeof(oid_c
 static const byte oid_chained_key_bytes[] = {0x2B, 0x06, 0x01, 0x04, 0x01, 0x83, 0xAC, 0x1B, 0x01, 0x02};
 static const vsc_data_t oid_chained_key = {oid_chained_key_bytes, sizeof(oid_chained_key_bytes)};
 
+//  1.3.6.1.4.1.54811.1.3
+//  iso(1) identified-organization(3) dod(6) internet(1) private(4) enterprise(1) virgil-security(54811)
+//  crypto(1) random-padding(3)
+//
+static const byte oid_random_padding_bytes[] = {0x2B, 0x06, 0x01, 0x04, 0x01, 0x83, 0xAC, 0x1B, 0x01, 0x03};
+static const vsc_data_t oid_random_padding = {oid_random_padding_bytes, sizeof(oid_random_padding_bytes)};
+
 //
 //  1.3.6.1.4.1.54811.2.1
 //  iso(1) identified-organization(3) dod(6) internet(1) private(4) enterprise(1) virgil-security(54811)
@@ -168,7 +175,7 @@ static const byte oid_round5_bytes[] = {0x2B, 0x06, 0x01, 0x04, 0x01, 0x83, 0xAC
 static const vsc_data_t oid_round5 = {oid_round5_bytes, sizeof(oid_round5_bytes)};
 
 //
-//  1.3.6.1.4.1.54811.2.2.1.11
+//  1.3.6.1.4.1.54811.2.2.11
 //  iso(1) identified-organization(3) dod(6) internet(1) private(4) enterprise(1) virgil-security(54811)
 //  post-quantum-crypto(2) round5(2) nd-5pke-5d(11)
 //
@@ -256,6 +263,9 @@ vscf_oid_from_alg_id(vscf_alg_id_t alg_id) {
 
     case vscf_alg_id_ROUND5_ND_5PKE_5D:
         return oid_round5_cca_nd_5pke_5d;
+
+    case vscf_alg_id_RANDOM_PADDING:
+        return oid_random_padding;
 
     default:
         VSCF_ASSERT(0 && "Unhandled algorithm identifier");
@@ -371,6 +381,10 @@ vscf_oid_to_alg_id(vsc_data_t oid) {
         return vscf_alg_id_ROUND5_ND_5PKE_5D;
     }
 
+    if (vscf_oid_equal(oid, oid_random_padding)) {
+        return vscf_alg_id_RANDOM_PADDING;
+    }
+
     return vscf_alg_id_NONE;
 }
 
@@ -468,6 +482,9 @@ vscf_oid_from_id(vscf_oid_id_t oid_id) {
 
     case vscf_oid_id_ROUND5_ND_5PKE_5D:
         return oid_round5_cca_nd_5pke_5d;
+
+    case vscf_oid_id_RANDOM_PADDING:
+        return oid_random_padding;
 
     default:
         VSCF_ASSERT(0 && "Unhandled oid identifier");
@@ -599,6 +616,10 @@ vscf_oid_to_id(vsc_data_t oid) {
         return vscf_oid_id_ROUND5_ND_5PKE_5D;
     }
 
+    if (vscf_oid_equal(oid, oid_random_padding)) {
+        return vscf_oid_id_RANDOM_PADDING;
+    }
+
     return vscf_oid_id_NONE;
 }
 
@@ -676,6 +697,8 @@ vscf_oid_id_to_alg_id(vscf_oid_id_t oid_id) {
     case vscf_oid_id_ROUND5_ND_5PKE_5D:
         return vscf_alg_id_ROUND5_ND_5PKE_5D;
 
+    case vscf_oid_id_RANDOM_PADDING:
+        return vscf_alg_id_RANDOM_PADDING;
 
     case vscf_oid_id_EC_GENERIC_KEY:
     case vscf_oid_id_CMS_ENVELOPED_DATA:

@@ -60,6 +60,7 @@
 #include "vscf_impl_private.h"
 #include "vscf_aes256_cbc.h"
 #include "vscf_atomic.h"
+#include "vscf_cipher_state.h"
 
 #include <mbedtls/cipher.h>
 
@@ -105,7 +106,7 @@ struct vscf_aes256_cbc_t {
     //
     //  Implementation specific context.
     //
-    bool do_decrypt;
+    vscf_cipher_state_t state;
 };
 
 

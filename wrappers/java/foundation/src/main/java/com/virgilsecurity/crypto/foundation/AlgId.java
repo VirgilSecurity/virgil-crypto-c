@@ -63,7 +63,8 @@ public enum AlgId {
     CHAINED_KEY(19),
     FALCON(20),
     ROUND5(21),
-    ROUND5_ND_5PKE_5D(22);
+    ROUND5_ND_5PKE_5D(22),
+    RANDOM_PADDING(23);
 
     private final int code;
 

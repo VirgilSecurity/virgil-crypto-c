@@ -119,6 +119,20 @@ import VSCFoundation
         return FoundationImplementation.wrapAlgInfo(use: proxyResult!)
     }
 
+    /// Return true if cipher padding alg info exists.
+    @objc public func hasCipherPaddingAlgInfo() -> Bool {
+        let proxyResult = vscf_message_info_has_cipher_padding_alg_info(self.c_ctx)
+
+        return proxyResult
+    }
+
+    /// Return cipher padding alg info.
+    @objc public func cipherPaddingAlgInfo() -> AlgInfo {
+        let proxyResult = vscf_message_info_cipher_padding_alg_info(self.c_ctx)
+
+        return FoundationImplementation.wrapAlgInfo(use: proxyResult!)
+    }
+
     /// Return true if footer info exists.
     @objc public func hasFooterInfo() -> Bool {
         let proxyResult = vscf_message_info_has_footer_info(self.c_ctx)

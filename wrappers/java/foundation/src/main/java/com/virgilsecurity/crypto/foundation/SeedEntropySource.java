@@ -55,13 +55,6 @@ public class SeedEntropySource implements AutoCloseable, EntropySource {
     }
 
     /*
-    * The maximum length of the entropy requested at once.
-    */
-    public int getGatherLenMax() {
-        return 48;
-    }
-
-    /*
     * Set a new seed as an entropy source.
     */
     public void resetSeed(byte[] seed) {

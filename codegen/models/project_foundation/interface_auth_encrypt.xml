@@ -25,7 +25,7 @@
     </method>
 
 
-    <method name="auth encrypted len">
+    <method name="auth encrypted len" is_const="1">
         Calculate required buffer length to hold the authenticated encrypted data.
 
         <argument name="data len" type="size"/>

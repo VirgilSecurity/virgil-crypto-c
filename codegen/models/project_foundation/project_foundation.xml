@@ -77,6 +77,7 @@
     <enum name="oid id"/>
     <enum name="recipient cipher decryption state"/>
     <enum name="group msg type"/>
+    <enum name="cipher state"/>
 
     <interface name="cipher"/>
     <interface name="auth encrypt"/>
@@ -112,6 +113,7 @@
     <interface name="alg info deserializer"/>
     <interface name="message info serializer"/>
     <interface name="message info footer serializer"/>
+    <interface name="padding"/>
 
     <class name="error"/>
     <class name="mbedtls bignum asn1 writer"/>
@@ -156,6 +158,9 @@
     <class name="signed data info"/>
     <class name="footer info"/>
     <class name="key info"/>
+    <class name="tail filter"/>
+    <class name="padding params"/>
+    <class name="padding cipher"/>
 
     <implementor name="mbedtls"/>
     <implementor name="mbedtls pk"/>
@@ -170,6 +175,7 @@
     <implementor name="alg info"/>
     <implementor name="alg info der"/>
     <implementor name="message info der serializer"/>
+    <implementor name="padding"/>
 
     <module name="mbedtls bridge random"/>
     <module name="mbedtls bridge entropy"/>

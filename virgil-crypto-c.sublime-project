@@ -292,6 +292,18 @@
 					"shell_cmd": "make -j8 test_utils"
 				},
 				{
+					"name": "test_padding_cipher",
+					"shell_cmd": "make -j8 test_padding_cipher"
+				},
+				{
+					"name": "test_key_info_clangformat",
+					"shell_cmd": "make -j8 test_key_info_clangformat"
+				},
+				{
+					"name": "test_key_info",
+					"shell_cmd": "make -j8 test_key_info"
+				},
+				{
 					"name": "test_chained_key_alg",
 					"shell_cmd": "make -j8 test_chained_key_alg"
 				},
@@ -586,6 +598,10 @@
 				{
 					"name": "test_pkcs5_pbes2",
 					"shell_cmd": "make -j8 test_pkcs5_pbes2"
+				},
+				{
+					"name": "test_padding_cipher_clangformat",
+					"shell_cmd": "make -j8 test_padding_cipher_clangformat"
 				},
 				{
 					"name": "test_ed25519_public_key_clangformat",

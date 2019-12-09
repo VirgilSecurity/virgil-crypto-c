@@ -96,7 +96,9 @@ const initOidId = (Module, modules) => {
 
         ROUND5: 28,
 
-        ROUND5_ND_5PKE_5D: 29
+        ROUND5_ND_5PKE_5D: 29,
+
+        RANDOM_PADDING: 30
     });
 
     return OidId;

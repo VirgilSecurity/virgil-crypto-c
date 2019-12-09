@@ -87,9 +87,13 @@ struct vscf_key_recipient_info_list_t {
     VSCF_ATOMIC size_t refcnt;
 
     vscf_key_recipient_info_t *item;
-
+    //
+    //  Class specific context.
+    //
     vscf_key_recipient_info_list_t *next;
-
+    //
+    //  Class specific context.
+    //
     vscf_key_recipient_info_list_t *prev;
 };
 

@@ -121,6 +121,20 @@ public class MessageInfo implements AutoCloseable {
     }
 
     /*
+    * Return true if cipher padding alg info exists.
+    */
+    public boolean hasCipherPaddingAlgInfo() {
+        return FoundationJNI.INSTANCE.messageInfo_hasCipherPaddingAlgInfo(this.cCtx);
+    }
+
+    /*
+    * Return cipher padding alg info.
+    */
+    public AlgInfo cipherPaddingAlgInfo() {
+        return FoundationJNI.INSTANCE.messageInfo_cipherPaddingAlgInfo(this.cCtx);
+    }
+
+    /*
     * Return true if footer info exists.
     */
     public boolean hasFooterInfo() {

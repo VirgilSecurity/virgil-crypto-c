@@ -1,6 +1,7 @@
 <class name="alg factory" context="none">
     Create algorithms based on the given information.
 
+    <require interface="alg"/>
     <require interface="alg info"/>
     <require interface="public key"/>
     <require interface="private key"/>
@@ -24,6 +25,7 @@
     <require impl="ed25519" is_optional="1"/>
     <require impl="curve25519" is_optional="1"/>
     <require impl="ecc" is_optional="1"/>
+    <require impl="random padding" is_optional="1"/>
 
     <method name="create hash from info" is_static="1">
         Create algorithm that implements "hash stream" interface.
@@ -63,5 +65,14 @@
         <argument name="alg info" interface="alg info"/>
 
         <return interface="cipher" access="disown" is_optional="1"/>
+    </method>
+
+    <method name="create padding from info" is_static="1">
+        Create algorithm that implements "padding" interface.
+
+        <argument name="alg info" interface="alg info"/>
+        <argument name="random" interface="random"/>
+
+        <return interface="padding" access="disown"/>
     </method>
 </class>

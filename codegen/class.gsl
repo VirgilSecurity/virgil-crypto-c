@@ -181,6 +181,7 @@ function class_resolve_property (property, class)
 
     if string_equal (my.property.class ?, "self")
         my.property.class = my.class.name
+        my.property. ?= "Class specific context."
     endif
 endfunction
 

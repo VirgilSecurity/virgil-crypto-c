@@ -94,7 +94,7 @@ typedef vscf_status_t (*vscf_auth_decrypt_api_auth_decrypt_fn)(vscf_impl_t *impl
 //
 //  Callback. Calculate required buffer length to hold the authenticated decrypted data.
 //
-typedef size_t (*vscf_auth_decrypt_api_auth_decrypted_len_fn)(vscf_impl_t *impl, size_t data_len);
+typedef size_t (*vscf_auth_decrypt_api_auth_decrypted_len_fn)(const vscf_impl_t *impl, size_t data_len);
 
 //
 //  Contains API requirements of the interface 'auth decrypt'.
