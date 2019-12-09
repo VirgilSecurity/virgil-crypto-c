@@ -1689,12 +1689,12 @@ function wasm_create_impl_tag_module(source, wasm_project)
 
             for my.source.implementation as impl by impl.name
                 my.counter ?= 1
-
-                new wasm_constant to wasm_enum
-                    .name = wasm_derive_constant_name_str(impl.name)
-                    .value = my.counter
-                endnew
-
+                if impl.scope = "public"
+                    new wasm_constant to wasm_enum
+                        .name = wasm_derive_constant_name_str(impl.name)
+                        .value = my.counter
+                    endnew
+                endif
                 my.counter += 1
             endfor
         endnew
