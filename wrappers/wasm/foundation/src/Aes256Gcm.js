@@ -46,8 +46,7 @@ const initAes256Gcm = (Module, modules) => {
     class Aes256Gcm {
 
         /**
-         * Return cipher's nonce length or IV length in bytes,
-         * or 0 if nonce is not required.
+         * Cipher nfonce length or IV length in bytes, or 0 if nonce is not required.
          */
         static get NONCE_LEN() {
             return 12;
@@ -58,7 +57,7 @@ const initAes256Gcm = (Module, modules) => {
         }
 
         /**
-         * Return cipher's key length in bytes.
+         * Cipher key length in bytes.
          */
         static get KEY_LEN() {
             return 32;
@@ -69,7 +68,7 @@ const initAes256Gcm = (Module, modules) => {
         }
 
         /**
-         * Return cipher's key length in bits.
+         * Cipher key length in bits.
          */
         static get KEY_BITLEN() {
             return 256;
@@ -80,7 +79,7 @@ const initAes256Gcm = (Module, modules) => {
         }
 
         /**
-         * Return cipher's block length in bytes.
+         * Cipher block length in bytes.
          */
         static get BLOCK_LEN() {
             return 16;
@@ -91,7 +90,7 @@ const initAes256Gcm = (Module, modules) => {
         }
 
         /**
-         * Return cipher's authentication tag length in bytes.
+         * Defines authentication tag length in bytes.
          */
         static get AUTH_TAG_LEN() {
             return 16;
@@ -291,51 +290,6 @@ const initAes256Gcm = (Module, modules) => {
         }
 
         /**
-         * Return cipher's nonce length or IV length in bytes,
-         * or 0 if nonce is not required.
-         */
-        nonceLen() {
-            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
-            let proxyResult;
-            proxyResult = Module._vscf_aes256_gcm_nonce_len(this.ctxPtr);
-            return proxyResult;
-        }
-
-        /**
-         * Return cipher's key length in bytes.
-         */
-        keyLen() {
-            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
-            let proxyResult;
-            proxyResult = Module._vscf_aes256_gcm_key_len(this.ctxPtr);
-            return proxyResult;
-        }
-
-        /**
-         * Return cipher's key length in bits.
-         */
-        keyBitlen() {
-            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
-            let proxyResult;
-            proxyResult = Module._vscf_aes256_gcm_key_bitlen(this.ctxPtr);
-            return proxyResult;
-        }
-
-        /**
-         * Return cipher's block length in bytes.
-         */
-        blockLen() {
-            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
-            let proxyResult;
-            proxyResult = Module._vscf_aes256_gcm_block_len(this.ctxPtr);
-            return proxyResult;
-        }
-
-        /**
          * Setup IV or nonce.
          */
         setNonce(nonce) {
@@ -514,17 +468,6 @@ const initAes256Gcm = (Module, modules) => {
             } finally {
                 Module._vsc_buffer_delete(outCtxPtr);
             }
-        }
-
-        /**
-         * Return cipher's authentication tag length in bytes.
-         */
-        authTagLen() {
-            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
-            let proxyResult;
-            proxyResult = Module._vscf_aes256_gcm_auth_tag_len(this.ctxPtr);
-            return proxyResult;
         }
 
         /**

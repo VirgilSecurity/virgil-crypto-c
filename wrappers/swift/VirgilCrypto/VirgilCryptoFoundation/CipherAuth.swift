@@ -38,7 +38,7 @@ import VSCFoundation
 
 /// Mix-in interface that provides specific functionality to authenticated
 /// encryption and decryption (AEAD ciphers).
-@objc(VSCFCipherAuth) public protocol CipherAuth : Cipher, CipherAuthInfo, AuthEncrypt, AuthDecrypt {
+@objc(VSCFCipherAuth) public protocol CipherAuth : Cipher, AuthEncrypt, AuthDecrypt {
 
     /// Set additional data for for AEAD ciphers.
     @objc func setAuthData(authData: Data)

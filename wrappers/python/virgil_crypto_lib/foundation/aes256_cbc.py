@@ -51,14 +51,13 @@ class Aes256Cbc(Alg, Encrypt, Decrypt, CipherInfo, Cipher):
     Note, this implementation contains dynamic memory allocations,
     this should be improved in the future releases."""
 
-    # Return cipher's nonce length or IV length in bytes,
-    # or 0 if nonce is not required.
+    # Cipher nfonce length or IV length in bytes, or 0 if nonce is not required.
     NONCE_LEN = 16
-    # Return cipher's key length in bytes.
+    # Cipher key length in bytes.
     KEY_LEN = 32
-    # Return cipher's key length in bits.
+    # Cipher key length in bits.
     KEY_BITLEN = 256
-    # Return cipher's block length in bytes.
+    # Cipher block length in bytes.
     BLOCK_LEN = 16
 
     def __init__(self):
@@ -117,27 +116,6 @@ class Aes256Cbc(Alg, Encrypt, Decrypt, CipherInfo, Cipher):
     def decrypted_len(self, data_len):
         """Calculate required buffer length to hold the decrypted data."""
         result = self._lib_vscf_aes256_cbc.vscf_aes256_cbc_decrypted_len(self.ctx, data_len)
-        return result
-
-    def nonce_len(self):
-        """Return cipher's nonce length or IV length in bytes,
-        or 0 if nonce is not required."""
-        result = self._lib_vscf_aes256_cbc.vscf_aes256_cbc_nonce_len(self.ctx)
-        return result
-
-    def key_len(self):
-        """Return cipher's key length in bytes."""
-        result = self._lib_vscf_aes256_cbc.vscf_aes256_cbc_key_len(self.ctx)
-        return result
-
-    def key_bitlen(self):
-        """Return cipher's key length in bits."""
-        result = self._lib_vscf_aes256_cbc.vscf_aes256_cbc_key_bitlen(self.ctx)
-        return result
-
-    def block_len(self):
-        """Return cipher's block length in bytes."""
-        result = self._lib_vscf_aes256_cbc.vscf_aes256_cbc_block_len(self.ctx)
         return result
 
     def set_nonce(self, nonce):

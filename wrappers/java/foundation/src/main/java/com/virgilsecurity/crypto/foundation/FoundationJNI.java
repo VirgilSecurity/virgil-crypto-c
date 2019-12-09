@@ -1420,27 +1420,6 @@ public class FoundationJNI {
     public native int aes256Gcm_decryptedLen(long cCtx, int dataLen);
 
     /*
-    * Return cipher's nonce length or IV length in bytes,
-    * or 0 if nonce is not required.
-    */
-    public native int aes256Gcm_nonceLen(long cCtx);
-
-    /*
-    * Return cipher's key length in bytes.
-    */
-    public native int aes256Gcm_keyLen(long cCtx);
-
-    /*
-    * Return cipher's key length in bits.
-    */
-    public native int aes256Gcm_keyBitlen(long cCtx);
-
-    /*
-    * Return cipher's block length in bytes.
-    */
-    public native int aes256Gcm_blockLen(long cCtx);
-
-    /*
     * Setup IV or nonce.
     */
     public native void aes256Gcm_setNonce(long cCtx, byte[] nonce);
@@ -1490,11 +1469,6 @@ public class FoundationJNI {
     * Accomplish encryption or decryption process.
     */
     public native byte[] aes256Gcm_finish(long cCtx) throws FoundationException;
-
-    /*
-    * Return cipher's authentication tag length in bytes.
-    */
-    public native int aes256Gcm_authTagLen(long cCtx);
 
     /*
     * Encrypt given data.
@@ -1582,27 +1556,6 @@ public class FoundationJNI {
     * Calculate required buffer length to hold the decrypted data.
     */
     public native int aes256Cbc_decryptedLen(long cCtx, int dataLen);
-
-    /*
-    * Return cipher's nonce length or IV length in bytes,
-    * or 0 if nonce is not required.
-    */
-    public native int aes256Cbc_nonceLen(long cCtx);
-
-    /*
-    * Return cipher's key length in bytes.
-    */
-    public native int aes256Cbc_keyLen(long cCtx);
-
-    /*
-    * Return cipher's key length in bits.
-    */
-    public native int aes256Cbc_keyBitlen(long cCtx);
-
-    /*
-    * Return cipher's block length in bytes.
-    */
-    public native int aes256Cbc_blockLen(long cCtx);
 
     /*
     * Setup IV or nonce.

@@ -49,14 +49,13 @@ class VscfAes256Cbc(object):
     Note, this implementation contains dynamic memory allocations,
     this should be improved in the future releases."""
 
-    # Return cipher's nonce length or IV length in bytes,
-    # or 0 if nonce is not required.
+    # Cipher nfonce length or IV length in bytes, or 0 if nonce is not required.
     NONCE_LEN = 16
-    # Return cipher's key length in bytes.
+    # Cipher key length in bytes.
     KEY_LEN = 32
-    # Return cipher's key length in bits.
+    # Cipher key length in bits.
     KEY_BITLEN = 256
-    # Return cipher's block length in bytes.
+    # Cipher block length in bytes.
     BLOCK_LEN = 16
 
     def __init__(self):
@@ -131,35 +130,6 @@ class VscfAes256Cbc(object):
         vscf_aes256_cbc_decrypted_len.argtypes = [POINTER(vscf_aes256_cbc_t), c_size_t]
         vscf_aes256_cbc_decrypted_len.restype = c_size_t
         return vscf_aes256_cbc_decrypted_len(ctx, data_len)
-
-    def vscf_aes256_cbc_nonce_len(self, ctx):
-        """Return cipher's nonce length or IV length in bytes,
-        or 0 if nonce is not required."""
-        vscf_aes256_cbc_nonce_len = self._lib.vscf_aes256_cbc_nonce_len
-        vscf_aes256_cbc_nonce_len.argtypes = [POINTER(vscf_aes256_cbc_t)]
-        vscf_aes256_cbc_nonce_len.restype = c_size_t
-        return vscf_aes256_cbc_nonce_len(ctx)
-
-    def vscf_aes256_cbc_key_len(self, ctx):
-        """Return cipher's key length in bytes."""
-        vscf_aes256_cbc_key_len = self._lib.vscf_aes256_cbc_key_len
-        vscf_aes256_cbc_key_len.argtypes = [POINTER(vscf_aes256_cbc_t)]
-        vscf_aes256_cbc_key_len.restype = c_size_t
-        return vscf_aes256_cbc_key_len(ctx)
-
-    def vscf_aes256_cbc_key_bitlen(self, ctx):
-        """Return cipher's key length in bits."""
-        vscf_aes256_cbc_key_bitlen = self._lib.vscf_aes256_cbc_key_bitlen
-        vscf_aes256_cbc_key_bitlen.argtypes = [POINTER(vscf_aes256_cbc_t)]
-        vscf_aes256_cbc_key_bitlen.restype = c_size_t
-        return vscf_aes256_cbc_key_bitlen(ctx)
-
-    def vscf_aes256_cbc_block_len(self, ctx):
-        """Return cipher's block length in bytes."""
-        vscf_aes256_cbc_block_len = self._lib.vscf_aes256_cbc_block_len
-        vscf_aes256_cbc_block_len.argtypes = [POINTER(vscf_aes256_cbc_t)]
-        vscf_aes256_cbc_block_len.restype = c_size_t
-        return vscf_aes256_cbc_block_len(ctx)
 
     def vscf_aes256_cbc_set_nonce(self, ctx, nonce):
         """Setup IV or nonce."""

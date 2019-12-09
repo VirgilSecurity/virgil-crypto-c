@@ -5926,38 +5926,6 @@ JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_a
     return ret;
 }
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Gcm_1nonceLen (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
-    // Cast class context
-    vscf_aes256_gcm_t /*9*/* aes256_gcm_ctx = *(vscf_aes256_gcm_t /*9*/**) &c_ctx;
-
-    jint ret = (jint) vscf_aes256_gcm_nonce_len(aes256_gcm_ctx /*a1*/);
-    return ret;
-}
-
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Gcm_1keyLen (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
-    // Cast class context
-    vscf_aes256_gcm_t /*9*/* aes256_gcm_ctx = *(vscf_aes256_gcm_t /*9*/**) &c_ctx;
-
-    jint ret = (jint) vscf_aes256_gcm_key_len(aes256_gcm_ctx /*a1*/);
-    return ret;
-}
-
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Gcm_1keyBitlen (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
-    // Cast class context
-    vscf_aes256_gcm_t /*9*/* aes256_gcm_ctx = *(vscf_aes256_gcm_t /*9*/**) &c_ctx;
-
-    jint ret = (jint) vscf_aes256_gcm_key_bitlen(aes256_gcm_ctx /*a1*/);
-    return ret;
-}
-
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Gcm_1blockLen (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
-    // Cast class context
-    vscf_aes256_gcm_t /*9*/* aes256_gcm_ctx = *(vscf_aes256_gcm_t /*9*/**) &c_ctx;
-
-    jint ret = (jint) vscf_aes256_gcm_block_len(aes256_gcm_ctx /*a1*/);
-    return ret;
-}
-
 JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Gcm_1setNonce (JNIEnv *jenv, jobject jobj, jlong c_ctx, jbyteArray jnonce) {
     // Cast class context
     vscf_aes256_gcm_t /*9*/* aes256_gcm_ctx = *(vscf_aes256_gcm_t /*9*/**) &c_ctx;
@@ -6060,14 +6028,6 @@ JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_Foundatio
     // Free resources
     vsc_buffer_delete(out);
 
-    return ret;
-}
-
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Gcm_1authTagLen (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
-    // Cast class context
-    vscf_aes256_gcm_t /*9*/* aes256_gcm_ctx = *(vscf_aes256_gcm_t /*9*/**) &c_ctx;
-
-    jint ret = (jint) vscf_aes256_gcm_auth_tag_len(aes256_gcm_ctx /*a1*/);
     return ret;
 }
 
@@ -6372,38 +6332,6 @@ JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_a
     vscf_aes256_cbc_t /*9*/* aes256_cbc_ctx = *(vscf_aes256_cbc_t /*9*/**) &c_ctx;
 
     jint ret = (jint) vscf_aes256_cbc_decrypted_len(aes256_cbc_ctx /*a1*/, jdataLen /*a9*/);
-    return ret;
-}
-
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Cbc_1nonceLen (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
-    // Cast class context
-    vscf_aes256_cbc_t /*9*/* aes256_cbc_ctx = *(vscf_aes256_cbc_t /*9*/**) &c_ctx;
-
-    jint ret = (jint) vscf_aes256_cbc_nonce_len(aes256_cbc_ctx /*a1*/);
-    return ret;
-}
-
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Cbc_1keyLen (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
-    // Cast class context
-    vscf_aes256_cbc_t /*9*/* aes256_cbc_ctx = *(vscf_aes256_cbc_t /*9*/**) &c_ctx;
-
-    jint ret = (jint) vscf_aes256_cbc_key_len(aes256_cbc_ctx /*a1*/);
-    return ret;
-}
-
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Cbc_1keyBitlen (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
-    // Cast class context
-    vscf_aes256_cbc_t /*9*/* aes256_cbc_ctx = *(vscf_aes256_cbc_t /*9*/**) &c_ctx;
-
-    jint ret = (jint) vscf_aes256_cbc_key_bitlen(aes256_cbc_ctx /*a1*/);
-    return ret;
-}
-
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Cbc_1blockLen (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
-    // Cast class context
-    vscf_aes256_cbc_t /*9*/* aes256_cbc_ctx = *(vscf_aes256_cbc_t /*9*/**) &c_ctx;
-
-    jint ret = (jint) vscf_aes256_cbc_block_len(aes256_cbc_ctx /*a1*/);
     return ret;
 }
 

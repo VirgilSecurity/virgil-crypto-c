@@ -57,35 +57,6 @@ public class Aes256Cbc implements AutoCloseable, Alg, Encrypt, Decrypt, CipherIn
     }
 
     /*
-    * Return cipher's nonce length or IV length in bytes,
-    * or 0 if nonce is not required.
-    */
-    public int getNonceLen() {
-        return 16;
-    }
-
-    /*
-    * Return cipher's key length in bytes.
-    */
-    public int getKeyLen() {
-        return 32;
-    }
-
-    /*
-    * Return cipher's key length in bits.
-    */
-    public int getKeyBitlen() {
-        return 256;
-    }
-
-    /*
-    * Return cipher's block length in bytes.
-    */
-    public int getBlockLen() {
-        return 16;
-    }
-
-    /*
     * Acquire C context.
     * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     */
@@ -156,32 +127,31 @@ public class Aes256Cbc implements AutoCloseable, Alg, Encrypt, Decrypt, CipherIn
     }
 
     /*
-    * Return cipher's nonce length or IV length in bytes,
-    * or 0 if nonce is not required.
+    * Cipher nfonce length or IV length in bytes, or 0 if nonce is not required.
     */
-    public int nonceLen() {
-        return FoundationJNI.INSTANCE.aes256Cbc_nonceLen(this.cCtx);
+    public int getNonceLen() {
+        return 16;
     }
 
     /*
-    * Return cipher's key length in bytes.
+    * Cipher key length in bytes.
     */
-    public int keyLen() {
-        return FoundationJNI.INSTANCE.aes256Cbc_keyLen(this.cCtx);
+    public int getKeyLen() {
+        return 32;
     }
 
     /*
-    * Return cipher's key length in bits.
+    * Cipher key length in bits.
     */
-    public int keyBitlen() {
-        return FoundationJNI.INSTANCE.aes256Cbc_keyBitlen(this.cCtx);
+    public int getKeyBitlen() {
+        return 256;
     }
 
     /*
-    * Return cipher's block length in bytes.
+    * Cipher block length in bytes.
     */
-    public int blockLen() {
-        return FoundationJNI.INSTANCE.aes256Cbc_blockLen(this.cCtx);
+    public int getBlockLen() {
+        return 16;
     }
 
     /*

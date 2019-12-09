@@ -40,7 +40,7 @@ package com.virgilsecurity.crypto.foundation;
 * Mix-in interface that provides specific functionality to authenticated
 * encryption and decryption (AEAD ciphers).
 */
-public interface CipherAuth extends Cipher, CipherAuthInfo, AuthEncrypt, AuthDecrypt {
+public interface CipherAuth extends Cipher, AuthEncrypt, AuthDecrypt {
 
     /*
     * Set additional data for for AEAD ciphers.

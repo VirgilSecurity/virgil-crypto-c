@@ -55,16 +55,15 @@ class Aes256Gcm(Alg, Encrypt, Decrypt, CipherInfo, Cipher, CipherAuthInfo, AuthE
     Note, this implementation contains dynamic memory allocations,
     this should be improved in the future releases."""
 
-    # Return cipher's nonce length or IV length in bytes,
-    # or 0 if nonce is not required.
+    # Cipher nfonce length or IV length in bytes, or 0 if nonce is not required.
     NONCE_LEN = 12
-    # Return cipher's key length in bytes.
+    # Cipher key length in bytes.
     KEY_LEN = 32
-    # Return cipher's key length in bits.
+    # Cipher key length in bits.
     KEY_BITLEN = 256
-    # Return cipher's block length in bytes.
+    # Cipher block length in bytes.
     BLOCK_LEN = 16
-    # Return cipher's authentication tag length in bytes.
+    # Defines authentication tag length in bytes.
     AUTH_TAG_LEN = 16
 
     def __init__(self):
@@ -125,27 +124,6 @@ class Aes256Gcm(Alg, Encrypt, Decrypt, CipherInfo, Cipher, CipherAuthInfo, AuthE
         result = self._lib_vscf_aes256_gcm.vscf_aes256_gcm_decrypted_len(self.ctx, data_len)
         return result
 
-    def nonce_len(self):
-        """Return cipher's nonce length or IV length in bytes,
-        or 0 if nonce is not required."""
-        result = self._lib_vscf_aes256_gcm.vscf_aes256_gcm_nonce_len(self.ctx)
-        return result
-
-    def key_len(self):
-        """Return cipher's key length in bytes."""
-        result = self._lib_vscf_aes256_gcm.vscf_aes256_gcm_key_len(self.ctx)
-        return result
-
-    def key_bitlen(self):
-        """Return cipher's key length in bits."""
-        result = self._lib_vscf_aes256_gcm.vscf_aes256_gcm_key_bitlen(self.ctx)
-        return result
-
-    def block_len(self):
-        """Return cipher's block length in bytes."""
-        result = self._lib_vscf_aes256_gcm.vscf_aes256_gcm_block_len(self.ctx)
-        return result
-
     def set_nonce(self, nonce):
         """Setup IV or nonce."""
         d_nonce = Data(nonce)
@@ -203,11 +181,6 @@ class Aes256Gcm(Alg, Encrypt, Decrypt, CipherInfo, Cipher, CipherAuthInfo, AuthE
         status = self._lib_vscf_aes256_gcm.vscf_aes256_gcm_finish(self.ctx, out.c_buffer)
         VscfStatus.handle_status(status)
         return out.get_bytes()
-
-    def auth_tag_len(self):
-        """Return cipher's authentication tag length in bytes."""
-        result = self._lib_vscf_aes256_gcm.vscf_aes256_gcm_auth_tag_len(self.ctx)
-        return result
 
     def auth_encrypt(self, data, auth_data):
         """Encrypt given data.
