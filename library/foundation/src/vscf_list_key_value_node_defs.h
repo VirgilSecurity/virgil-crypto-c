@@ -98,9 +98,13 @@ struct vscf_list_key_value_node_t {
     void *value;
 
     int value_tag;
-
+    //
+    //  Class specific context.
+    //
     vscf_list_key_value_node_t *next;
-
+    //
+    //  Class specific context.
+    //
     vscf_list_key_value_node_t *prev;
 };
 
