@@ -1368,7 +1368,7 @@ PHP_FUNCTION(vscr_ratchet_session_use_rng_php) {
     // Proxy call
     //
     vscr_ratchet_session_t *ratchet_session = zend_fetch_resource_ex(in_ctx, vscr_ratchet_session_t_php_res_name, le_vscr_ratchet_session_t);
-    vscf_impl_t *rng = zend_fetch_resource_ex(in_rng, vscf_impl_t_php_res_name, le_vscf_impl_t);
+    vscf_impl_t *rng = zend_fetch_resource_ex(in_rng, vscf_get_impl_t_php_res_name(), vscf_get_le_vscf_impl_t());
 
     //
     // Call main function
@@ -2093,7 +2093,7 @@ PHP_FUNCTION(vscr_ratchet_group_ticket_use_rng_php) {
     // Proxy call
     //
     vscr_ratchet_group_ticket_t *ratchet_group_ticket = zend_fetch_resource_ex(in_ctx, vscr_ratchet_group_ticket_t_php_res_name, le_vscr_ratchet_group_ticket_t);
-    vscf_impl_t *rng = zend_fetch_resource_ex(in_rng, vscf_impl_t_php_res_name, le_vscf_impl_t);
+    vscf_impl_t *rng = zend_fetch_resource_ex(in_rng, vscf_get_impl_t_php_res_name(), vscf_get_le_vscf_impl_t());
 
     //
     // Call main function
@@ -3181,7 +3181,7 @@ PHP_FUNCTION(vscr_ratchet_group_session_use_rng_php) {
     // Proxy call
     //
     vscr_ratchet_group_session_t *ratchet_group_session = zend_fetch_resource_ex(in_ctx, vscr_ratchet_group_session_t_php_res_name, le_vscr_ratchet_group_session_t);
-    vscf_impl_t *rng = zend_fetch_resource_ex(in_rng, vscf_impl_t_php_res_name, le_vscf_impl_t);
+    vscf_impl_t *rng = zend_fetch_resource_ex(in_rng, vscf_get_impl_t_php_res_name(), vscf_get_le_vscf_impl_t());
 
     //
     // Call main function

@@ -696,7 +696,7 @@ PHP_FUNCTION(vsce_phe_server_use_random_php) {
     // Proxy call
     //
     vsce_phe_server_t *phe_server = zend_fetch_resource_ex(in_ctx, vsce_phe_server_t_php_res_name, le_vsce_phe_server_t);
-    vscf_impl_t *random = zend_fetch_resource_ex(in_random, vscf_impl_t_php_res_name, le_vscf_impl_t);
+    vscf_impl_t *random = zend_fetch_resource_ex(in_random, vscf_get_impl_t_php_res_name(), vscf_get_le_vscf_impl_t());
 
     //
     // Call main function
@@ -739,7 +739,7 @@ PHP_FUNCTION(vsce_phe_server_use_operation_random_php) {
     // Proxy call
     //
     vsce_phe_server_t *phe_server = zend_fetch_resource_ex(in_ctx, vsce_phe_server_t_php_res_name, le_vsce_phe_server_t);
-    vscf_impl_t *operation_random = zend_fetch_resource_ex(in_operation_random, vscf_impl_t_php_res_name, le_vscf_impl_t);
+    vscf_impl_t *operation_random = zend_fetch_resource_ex(in_operation_random, vscf_get_impl_t_php_res_name(), vscf_get_le_vscf_impl_t());
 
     //
     // Call main function
@@ -1496,7 +1496,7 @@ PHP_FUNCTION(vsce_phe_client_use_random_php) {
     // Proxy call
     //
     vsce_phe_client_t *phe_client = zend_fetch_resource_ex(in_ctx, vsce_phe_client_t_php_res_name, le_vsce_phe_client_t);
-    vscf_impl_t *random = zend_fetch_resource_ex(in_random, vscf_impl_t_php_res_name, le_vscf_impl_t);
+    vscf_impl_t *random = zend_fetch_resource_ex(in_random, vscf_get_impl_t_php_res_name(), vscf_get_le_vscf_impl_t());
 
     //
     // Call main function
@@ -1539,7 +1539,7 @@ PHP_FUNCTION(vsce_phe_client_use_operation_random_php) {
     // Proxy call
     //
     vsce_phe_client_t *phe_client = zend_fetch_resource_ex(in_ctx, vsce_phe_client_t_php_res_name, le_vsce_phe_client_t);
-    vscf_impl_t *operation_random = zend_fetch_resource_ex(in_operation_random, vscf_impl_t_php_res_name, le_vscf_impl_t);
+    vscf_impl_t *operation_random = zend_fetch_resource_ex(in_operation_random, vscf_get_impl_t_php_res_name(), vscf_get_le_vscf_impl_t());
 
     //
     // Call main function
@@ -2092,7 +2092,7 @@ PHP_FUNCTION(vsce_phe_cipher_use_random_php) {
     // Proxy call
     //
     vsce_phe_cipher_t *phe_cipher = zend_fetch_resource_ex(in_ctx, vsce_phe_cipher_t_php_res_name, le_vsce_phe_cipher_t);
-    vscf_impl_t *random = zend_fetch_resource_ex(in_random, vscf_impl_t_php_res_name, le_vscf_impl_t);
+    vscf_impl_t *random = zend_fetch_resource_ex(in_random, vscf_get_impl_t_php_res_name(), vscf_get_le_vscf_impl_t());
 
     //
     // Call main function
