@@ -14931,7 +14931,7 @@ JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_Foundatio
     byte* data_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jdata, NULL);
     vsc_data_t data = vsc_data(data_arr, (*jenv)->GetArrayLength(jenv, jdata));
 
-    vsc_buffer_t *out = vsc_buffer_new_with_capacity(jdata);
+    vsc_buffer_t *out = vsc_buffer_new_with_capacity(data.len);
 
     vscf_random_padding_process_padded_data(random_padding_ctx /*a1*/, data /*a3*/, out /*a3*/);
     jbyteArray ret = (*jenv)->NewByteArray(jenv, vsc_buffer_len(out));

@@ -269,7 +269,7 @@ const initRandomPadding = (Module, modules) => {
             //  Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(dataCtxPtr, dataPtr, dataSize);
 
-            const outCapacity = data;
+            const outCapacity = dataSize;
             const outCtxPtr = Module._vsc_buffer_new_with_capacity(outCapacity);
 
             try {

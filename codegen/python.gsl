@@ -454,7 +454,11 @@ function python_class_derive_buffer_length_getter (class, method, argument, pyth
         return "$(my.proxy_object:).$(my.proxy_constant:)"
 
     elsif defined (my.length.argument)
-        my.proxy_argument = python_derive_argument_name_str (my.length.argument)
+        if string_in (my.length.cast, "data_length")
+            my.proxy_argument = "len(" + python_derive_argument_name_str (my.length.argument) + ")"
+        else
+            my.proxy_argument = python_derive_argument_name_str (my.length.argument)
+        endif
         return my.proxy_argument
     endif
 endfunction

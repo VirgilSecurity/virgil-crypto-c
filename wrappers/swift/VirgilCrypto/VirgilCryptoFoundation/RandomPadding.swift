@@ -165,7 +165,7 @@ import VSCFoundation
     /// Process padded data.
     /// Return filtered data without padding.
     @objc public func processPaddedData(data: Data) -> Data {
-        let outCount = data
+        let outCount = data.count
         var out = Data(count: outCount)
         var outBuf = vsc_buffer_new()
         defer {

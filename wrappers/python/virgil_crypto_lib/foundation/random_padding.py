@@ -124,7 +124,7 @@ class RandomPadding(Alg, Padding):
         """Process padded data.
         Return filtered data without padding."""
         d_data = Data(data)
-        out = Buffer(data)
+        out = Buffer(len(data))
         self._lib_vscf_random_padding.vscf_random_padding_process_padded_data(self.ctx, d_data.data, out.c_buffer)
         return out.get_bytes()
 
