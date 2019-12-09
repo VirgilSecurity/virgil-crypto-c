@@ -57,7 +57,6 @@
 #include "vscf_library.h"
 #include "vscf_impl.h"
 #include "vscf_cipher.h"
-#include "vscf_cipher_auth_info.h"
 #include "vscf_auth_encrypt.h"
 #include "vscf_auth_decrypt.h"
 #include "vscf_status.h"
@@ -128,12 +127,6 @@ vscf_cipher_auth_api(const vscf_impl_t *impl);
 //
 VSCF_PUBLIC const vscf_cipher_api_t *
 vscf_cipher_auth_cipher_api(const vscf_cipher_auth_api_t *cipher_auth_api);
-
-//
-//  Return cipher auth info API.
-//
-VSCF_PUBLIC const vscf_cipher_auth_info_api_t *
-vscf_cipher_auth_cipher_auth_info_api(const vscf_cipher_auth_api_t *cipher_auth_api);
 
 //
 //  Return auth encrypt API.

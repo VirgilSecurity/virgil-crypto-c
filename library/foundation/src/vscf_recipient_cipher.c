@@ -1756,9 +1756,11 @@ vscf_recipient_cipher_derive_decryption_cipher_keys_and_nonces(vscf_recipient_ci
     VSCF_ASSERT(vscf_message_info_has_cipher_kdf_alg_info(self->message_info));
     VSCF_ASSERT(vsc_data_is_valid(master_key));
 
-    const size_t cipher_key_len = vscf_cipher_info_key_len(self->decryption_cipher);
+    const size_t cipher_key_len =
+            vscf_cipher_info_key_len(vscf_cipher_cipher_info_api(vscf_cipher_api(self->decryption_cipher)));
 
-    const size_t cipher_nonce_len = vscf_cipher_info_nonce_len(self->decryption_cipher);
+    const size_t cipher_nonce_len =
+            vscf_cipher_info_nonce_len(vscf_cipher_cipher_info_api(vscf_cipher_api(self->decryption_cipher)));
 
     const size_t derived_keys_len = 2 * cipher_key_len + 2 * cipher_nonce_len;
     vsc_buffer_release(self->derived_keys);
@@ -1804,9 +1806,9 @@ vscf_recipient_cipher_data_derived_key(const vscf_recipient_cipher_t *self, cons
     VSCF_ASSERT(vsc_buffer_is_valid(self->derived_keys));
     VSCF_ASSERT_PTR(cipher);
 
-    const size_t cipher_key_len = vscf_cipher_info_key_len(cipher);
+    const size_t cipher_key_len = vscf_cipher_info_key_len(vscf_cipher_cipher_info_api(vscf_cipher_api(cipher)));
 
-    const size_t cipher_nonce_len = vscf_cipher_info_nonce_len(cipher);
+    const size_t cipher_nonce_len = vscf_cipher_info_nonce_len(vscf_cipher_cipher_info_api(vscf_cipher_api(cipher)));
 
     const size_t derived_keys_len = 2 * cipher_key_len + 2 * cipher_nonce_len;
 
@@ -1822,9 +1824,9 @@ vscf_recipient_cipher_data_derived_nonce(const vscf_recipient_cipher_t *self, co
     VSCF_ASSERT(vsc_buffer_is_valid(self->derived_keys));
     VSCF_ASSERT_PTR(cipher);
 
-    const size_t cipher_key_len = vscf_cipher_info_key_len(cipher);
+    const size_t cipher_key_len = vscf_cipher_info_key_len(vscf_cipher_cipher_info_api(vscf_cipher_api(cipher)));
 
-    const size_t cipher_nonce_len = vscf_cipher_info_nonce_len(cipher);
+    const size_t cipher_nonce_len = vscf_cipher_info_nonce_len(vscf_cipher_cipher_info_api(vscf_cipher_api(cipher)));
 
     const size_t derived_keys_len = 2 * cipher_key_len + 2 * cipher_nonce_len;
 
@@ -1840,9 +1842,9 @@ vscf_recipient_cipher_footer_derived_key(const vscf_recipient_cipher_t *self, co
     VSCF_ASSERT(vsc_buffer_is_valid(self->derived_keys));
     VSCF_ASSERT_PTR(cipher);
 
-    const size_t cipher_key_len = vscf_cipher_info_key_len(cipher);
+    const size_t cipher_key_len = vscf_cipher_info_key_len(vscf_cipher_cipher_info_api(vscf_cipher_api(cipher)));
 
-    const size_t cipher_nonce_len = vscf_cipher_info_nonce_len(cipher);
+    const size_t cipher_nonce_len = vscf_cipher_info_nonce_len(vscf_cipher_cipher_info_api(vscf_cipher_api(cipher)));
 
     const size_t derived_keys_len = 2 * cipher_key_len + 2 * cipher_nonce_len;
 
@@ -1858,9 +1860,9 @@ vscf_recipient_cipher_footer_derived_nonce(const vscf_recipient_cipher_t *self, 
     VSCF_ASSERT(vsc_buffer_is_valid(self->derived_keys));
     VSCF_ASSERT_PTR(cipher);
 
-    const size_t cipher_key_len = vscf_cipher_info_key_len(cipher);
+    const size_t cipher_key_len = vscf_cipher_info_key_len(vscf_cipher_cipher_info_api(vscf_cipher_api(cipher)));
 
-    const size_t cipher_nonce_len = vscf_cipher_info_nonce_len(cipher);
+    const size_t cipher_nonce_len = vscf_cipher_info_nonce_len(vscf_cipher_cipher_info_api(vscf_cipher_api(cipher)));
 
     const size_t derived_keys_len = 2 * cipher_key_len + 2 * cipher_nonce_len;
 
@@ -1919,7 +1921,8 @@ vscf_recipient_cipher_configure_encryption_cipher(vscf_recipient_cipher_t *self)
     //
     //  Generate cipher key.
     //
-    const size_t cipher_key_len = vscf_cipher_info_key_len(self->encryption_cipher);
+    const size_t cipher_key_len =
+            vscf_cipher_info_key_len(vscf_cipher_cipher_info_api(vscf_cipher_api(self->encryption_cipher)));
     vsc_buffer_release(self->master_key);
     vsc_buffer_alloc(self->master_key, cipher_key_len);
 
@@ -1931,7 +1934,8 @@ vscf_recipient_cipher_configure_encryption_cipher(vscf_recipient_cipher_t *self)
     //
     //  Generate cipher nonce.
     //
-    const size_t cipher_nonce_len = vscf_cipher_info_nonce_len(self->encryption_cipher);
+    const size_t cipher_nonce_len =
+            vscf_cipher_info_nonce_len(vscf_cipher_cipher_info_api(vscf_cipher_api(self->encryption_cipher)));
     vsc_buffer_t *cipher_nonce = vsc_buffer_new_with_capacity(cipher_nonce_len);
 
     status = vscf_random(self->random, cipher_nonce_len, cipher_nonce);
@@ -1976,9 +1980,11 @@ vscf_recipient_cipher_configure_kdf_feeded_encryption_cipher(vscf_recipient_ciph
     //
     //  Reconfigure cipher KDF.
     //
-    const size_t cipher_key_len = vscf_cipher_info_key_len(self->encryption_cipher);
+    const size_t cipher_key_len =
+            vscf_cipher_info_key_len(vscf_cipher_cipher_info_api(vscf_cipher_api(self->encryption_cipher)));
 
-    const size_t cipher_nonce_len = vscf_cipher_info_nonce_len(self->encryption_cipher);
+    const size_t cipher_nonce_len =
+            vscf_cipher_info_nonce_len(vscf_cipher_cipher_info_api(vscf_cipher_api(self->encryption_cipher)));
 
     const size_t derived_keys_len = 2 * cipher_key_len + 2 * cipher_nonce_len;
     vsc_buffer_release(self->derived_keys);

@@ -189,7 +189,7 @@ vscf_pkcs5_pbes2_encrypt(vscf_pkcs5_pbes2_t *self, vsc_data_t data, vsc_buffer_t
     VSCF_ASSERT(vsc_buffer_is_valid(out));
     VSCF_ASSERT(vsc_buffer_unused_len(out) >= vscf_pkcs5_pbes2_encrypted_len(self, data.len));
 
-    size_t key_len = vscf_cipher_info_key_len(self->cipher);
+    size_t key_len = vscf_cipher_info_key_len(vscf_cipher_cipher_info_api(vscf_cipher_api(self->cipher)));
     vsc_buffer_t *key = vsc_buffer_new_with_capacity(key_len);
     vsc_buffer_make_secure(key);
 
@@ -246,7 +246,7 @@ vscf_pkcs5_pbes2_decrypt(vscf_pkcs5_pbes2_t *self, vsc_data_t data, vsc_buffer_t
     VSCF_ASSERT(vsc_buffer_is_valid(out));
     VSCF_ASSERT(vsc_buffer_unused_len(out) >= vscf_pkcs5_pbes2_decrypted_len(self, data.len));
 
-    size_t key_len = vscf_cipher_info_key_len(self->cipher);
+    size_t key_len = vscf_cipher_info_key_len(vscf_cipher_cipher_info_api(vscf_cipher_api(self->cipher)));
     vsc_buffer_t *key = vsc_buffer_new_with_capacity(key_len);
     vsc_buffer_make_secure(key);
 

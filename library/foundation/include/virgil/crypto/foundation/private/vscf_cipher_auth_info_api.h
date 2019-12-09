@@ -73,11 +73,6 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Callback. Return cipher's authentication tag length in bytes.
-//
-typedef size_t (*vscf_cipher_auth_info_api_auth_tag_len_fn)(const vscf_impl_t *impl);
-
-//
 //  Contains API requirements of the interface 'cipher auth info'.
 //
 struct vscf_cipher_auth_info_api_t {
@@ -91,9 +86,9 @@ struct vscf_cipher_auth_info_api_t {
     //
     vscf_impl_tag_t impl_tag;
     //
-    //  Return cipher's authentication tag length in bytes.
+    //  Defines authentication tag length in bytes.
     //
-    vscf_cipher_auth_info_api_auth_tag_len_fn auth_tag_len_cb;
+    size_t auth_tag_len;
 };
 
 

@@ -172,22 +172,21 @@ static const vscf_cipher_info_api_t cipher_info_api = {
     //
     vscf_impl_tag_AES256_CBC,
     //
-    //  Return cipher's nonce length or IV length in bytes,
-    //  or 0 if nonce is not required.
+    //  Cipher nfonce length or IV length in bytes, or 0 if nonce is not required.
     //
-    (vscf_cipher_info_api_nonce_len_fn)vscf_aes256_cbc_nonce_len,
+    vscf_aes256_cbc_NONCE_LEN,
     //
-    //  Return cipher's key length in bytes.
+    //  Cipher key length in bytes.
     //
-    (vscf_cipher_info_api_key_len_fn)vscf_aes256_cbc_key_len,
+    vscf_aes256_cbc_KEY_LEN,
     //
-    //  Return cipher's key length in bits.
+    //  Cipher key length in bits.
     //
-    (vscf_cipher_info_api_key_bitlen_fn)vscf_aes256_cbc_key_bitlen,
+    vscf_aes256_cbc_KEY_BITLEN,
     //
-    //  Return cipher's block length in bytes.
+    //  Cipher block length in bytes.
     //
-    (vscf_cipher_info_api_block_len_fn)vscf_aes256_cbc_block_len
+    vscf_aes256_cbc_BLOCK_LEN
 };
 
 //
@@ -392,6 +391,15 @@ vscf_aes256_cbc_shallow_copy(vscf_aes256_cbc_t *self) {
 
     // Proxy to the parent implementation.
     return (vscf_aes256_cbc_t *)vscf_impl_shallow_copy((vscf_impl_t *)self);
+}
+
+//
+//  Returns instance of the implemented interface 'cipher info'.
+//
+VSCF_PUBLIC const vscf_cipher_info_api_t *
+vscf_aes256_cbc_cipher_info_api(void) {
+
+    return &cipher_info_api;
 }
 
 //

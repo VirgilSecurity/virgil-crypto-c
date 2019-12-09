@@ -59,16 +59,14 @@
 // --------------------------------------------------------------------------
 
 //
-//  Return cipher's authentication tag length in bytes.
+//  Returns constant 'auth tag len'.
 //
 VSCF_PUBLIC size_t
-vscf_cipher_auth_info_auth_tag_len(const vscf_impl_t *impl) {
+vscf_cipher_auth_info_auth_tag_len(const vscf_cipher_auth_info_api_t *cipher_auth_info_api) {
 
-    const vscf_cipher_auth_info_api_t *cipher_auth_info_api = vscf_cipher_auth_info_api(impl);
     VSCF_ASSERT_PTR (cipher_auth_info_api);
 
-    VSCF_ASSERT_PTR (cipher_auth_info_api->auth_tag_len_cb);
-    return cipher_auth_info_api->auth_tag_len_cb (impl);
+    return cipher_auth_info_api->auth_tag_len;
 }
 
 //

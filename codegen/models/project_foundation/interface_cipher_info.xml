@@ -1,28 +1,19 @@
-<interface name="cipher info">
+<interface name="cipher info" of_class="cipher">
     Provides compile time knownledge about algorithm.
 
-    <method name="nonce len" is_const="1">
-        Return cipher's nonce length or IV length in bytes,
-        or 0 if nonce is not required.
+    <constant name="nonce len" type="size" value="0">
+        Cipher nfonce length or IV length in bytes, or 0 if nonce is not required.
+    </constant>
 
-        <return type="size"/>
-    </method>
+    <constant name="key len" type="size">
+        Cipher key length in bytes.
+    </constant>
 
-    <method name="key len" is_const="1">
-        Return cipher's key length in bytes.
+    <constant name="key bitlen" type="size">
+        Cipher key length in bits.
+    </constant>
 
-        <return type="size"/>
-    </method>
-
-    <method name="key bitlen" is_const="1">
-        Return cipher's key length in bits.
-
-        <return type="size"/>
-    </method>
-
-    <method name="block len" is_const="1">
-        Return cipher's block length in bytes.
-
-        <return type="size"/>
-    </method>
+    <constant name="block len" type="size">
+        Cipher block length in bytes.
+    </constant>
 </interface>

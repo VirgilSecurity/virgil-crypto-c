@@ -72,10 +72,10 @@ extern "C" {
 typedef struct vscf_cipher_auth_info_api_t vscf_cipher_auth_info_api_t;
 
 //
-//  Return cipher's authentication tag length in bytes.
+//  Returns constant 'auth tag len'.
 //
 VSCF_PUBLIC size_t
-vscf_cipher_auth_info_auth_tag_len(const vscf_impl_t *impl);
+vscf_cipher_auth_info_auth_tag_len(const vscf_cipher_auth_info_api_t *cipher_auth_info_api);
 
 //
 //  Return cipher auth info API, or NULL if it is not implemented.

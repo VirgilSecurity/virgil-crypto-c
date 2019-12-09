@@ -3,7 +3,6 @@
     encryption and decryption (AEAD ciphers).
 
     <inherit interface="cipher"/>
-    <inherit interface="cipher auth info"/>
     <inherit interface="auth encrypt"/>
     <inherit interface="auth decrypt"/>
 

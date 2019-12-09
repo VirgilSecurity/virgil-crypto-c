@@ -1,7 +1,5 @@
 <interface name="cipher auth info">
-    <method name="auth tag len" is_const="1">
-        Return cipher's authentication tag length in bytes.
-
-        <return type="size"/>
-    </method>
+    <constant name="auth tag len" type="size">
+        Defines authentication tag length in bytes.
+    </constant>
 </interface>

@@ -65,56 +65,47 @@
 // --------------------------------------------------------------------------
 
 //
-//  Return cipher's nonce length or IV length in bytes,
-//  or 0 if nonce is not required.
+//  Returns constant 'nonce len'.
 //
 VSCF_PUBLIC size_t
-vscf_cipher_info_nonce_len(const vscf_impl_t *impl) {
+vscf_cipher_info_nonce_len(const vscf_cipher_info_api_t *cipher_info_api) {
 
-    const vscf_cipher_info_api_t *cipher_info_api = vscf_cipher_info_api(impl);
     VSCF_ASSERT_PTR (cipher_info_api);
 
-    VSCF_ASSERT_PTR (cipher_info_api->nonce_len_cb);
-    return cipher_info_api->nonce_len_cb (impl);
+    return cipher_info_api->nonce_len;
 }
 
 //
-//  Return cipher's key length in bytes.
+//  Returns constant 'key len'.
 //
 VSCF_PUBLIC size_t
-vscf_cipher_info_key_len(const vscf_impl_t *impl) {
+vscf_cipher_info_key_len(const vscf_cipher_info_api_t *cipher_info_api) {
 
-    const vscf_cipher_info_api_t *cipher_info_api = vscf_cipher_info_api(impl);
     VSCF_ASSERT_PTR (cipher_info_api);
 
-    VSCF_ASSERT_PTR (cipher_info_api->key_len_cb);
-    return cipher_info_api->key_len_cb (impl);
+    return cipher_info_api->key_len;
 }
 
 //
-//  Return cipher's key length in bits.
+//  Returns constant 'key bitlen'.
 //
 VSCF_PUBLIC size_t
-vscf_cipher_info_key_bitlen(const vscf_impl_t *impl) {
+vscf_cipher_info_key_bitlen(const vscf_cipher_info_api_t *cipher_info_api) {
 
-    const vscf_cipher_info_api_t *cipher_info_api = vscf_cipher_info_api(impl);
     VSCF_ASSERT_PTR (cipher_info_api);
 
-    VSCF_ASSERT_PTR (cipher_info_api->key_bitlen_cb);
-    return cipher_info_api->key_bitlen_cb (impl);
+    return cipher_info_api->key_bitlen;
 }
 
 //
-//  Return cipher's block length in bytes.
+//  Returns constant 'block len'.
 //
 VSCF_PUBLIC size_t
-vscf_cipher_info_block_len(const vscf_impl_t *impl) {
+vscf_cipher_info_block_len(const vscf_cipher_info_api_t *cipher_info_api) {
 
-    const vscf_cipher_info_api_t *cipher_info_api = vscf_cipher_info_api(impl);
     VSCF_ASSERT_PTR (cipher_info_api);
 
-    VSCF_ASSERT_PTR (cipher_info_api->block_len_cb);
-    return cipher_info_api->block_len_cb (impl);
+    return cipher_info_api->block_len;
 }
 
 //
