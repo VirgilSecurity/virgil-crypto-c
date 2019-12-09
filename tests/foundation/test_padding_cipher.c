@@ -58,10 +58,12 @@ inner_test__encrypt__match_given(vscf_padding_cipher_t *cipher, vsc_data_t plain
     //
     //  Encrypt.
     //
-    const size_t out_len = vscf_padding_cipher_encrypted_len(cipher, plaintext.len);
+    vscf_padding_cipher_start_encryption(cipher);
+    const size_t out_len = vscf_padding_cipher_out_len(cipher, plaintext.len) + vscf_padding_cipher_out_len(cipher, 0);
     vsc_buffer_t *out = vsc_buffer_new_with_capacity(out_len);
 
-    const vscf_status_t status = vscf_padding_cipher_encrypt(cipher, plaintext, out);
+    vscf_padding_cipher_update(cipher, plaintext, out);
+    const vscf_status_t status = vscf_padding_cipher_finish(cipher, out);
 
     //
     // Check.
@@ -80,10 +82,12 @@ inner_test__decrypt__match_given(vscf_padding_cipher_t *cipher, vsc_data_t ciphe
     //
     //  Decrypt.
     //
-    const size_t out_len = vscf_padding_cipher_decrypted_len(cipher, ciphertext.len);
+    vscf_padding_cipher_start_decryption(cipher);
+    const size_t out_len = vscf_padding_cipher_out_len(cipher, ciphertext.len) + vscf_padding_cipher_out_len(cipher, 0);
     vsc_buffer_t *out = vsc_buffer_new_with_capacity(out_len);
 
-    const vscf_status_t status = vscf_padding_cipher_decrypt(cipher, ciphertext, out);
+    vscf_padding_cipher_update(cipher, ciphertext, out);
+    const vscf_status_t status = vscf_padding_cipher_finish(cipher, out);
 
     //
     // Check.

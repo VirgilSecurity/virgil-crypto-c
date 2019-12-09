@@ -426,10 +426,6 @@ extern "C" {
 #cmakedefine01 VSCF_RANDOM_PADDING
 #endif
 
-#ifndef VSCF_PADDING_CIPHER
-#cmakedefine01 VSCF_PADDING_CIPHER
-#endif
-
 #ifndef VSCF_ERROR
 #cmakedefine01 VSCF_ERROR
 #endif
@@ -608,6 +604,10 @@ extern "C" {
 
 #ifndef VSCF_PADDING_PARAMS
 #cmakedefine01 VSCF_PADDING_PARAMS
+#endif
+
+#ifndef VSCF_PADDING_CIPHER
+#cmakedefine01 VSCF_PADDING_CIPHER
 #endif
 
 //

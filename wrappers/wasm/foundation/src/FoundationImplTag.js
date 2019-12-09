@@ -106,45 +106,43 @@ const initFoundationImplTag = (Module, modules) => {
 
         MESSAGE_INFO_DER_SERIALIZER: 34,
 
-        PADDING_CIPHER: 35,
+        PBE_ALG_INFO: 35,
 
-        PBE_ALG_INFO: 36,
+        PKCS5_PBES2: 36,
 
-        PKCS5_PBES2: 37,
+        PKCS5_PBKDF2: 37,
 
-        PKCS5_PBKDF2: 38,
+        PKCS8_SERIALIZER: 38,
 
-        PKCS8_SERIALIZER: 39,
+        RANDOM_PADDING: 39,
 
-        RANDOM_PADDING: 40,
+        RAW_PRIVATE_KEY: 40,
 
-        RAW_PRIVATE_KEY: 41,
+        RAW_PUBLIC_KEY: 41,
 
-        RAW_PUBLIC_KEY: 42,
+        ROUND5: 42,
 
-        ROUND5: 43,
+        RSA: 43,
 
-        RSA: 44,
+        RSA_PRIVATE_KEY: 44,
 
-        RSA_PRIVATE_KEY: 45,
+        RSA_PUBLIC_KEY: 45,
 
-        RSA_PUBLIC_KEY: 46,
+        SALTED_KDF_ALG_INFO: 46,
 
-        SALTED_KDF_ALG_INFO: 47,
+        SEC1_SERIALIZER: 47,
 
-        SEC1_SERIALIZER: 48,
+        SEED_ENTROPY_SOURCE: 48,
 
-        SEED_ENTROPY_SOURCE: 49,
+        SHA224: 49,
 
-        SHA224: 50,
+        SHA256: 50,
 
-        SHA256: 51,
+        SHA384: 51,
 
-        SHA384: 52,
+        SHA512: 52,
 
-        SHA512: 53,
-
-        SIMPLE_ALG_INFO: 54
+        SIMPLE_ALG_INFO: 53
     });
 
     return FoundationImplTag;

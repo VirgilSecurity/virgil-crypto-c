@@ -160,6 +160,7 @@
     <class name="key info"/>
     <class name="tail filter"/>
     <class name="padding params"/>
+    <class name="padding cipher"/>
 
     <implementor name="mbedtls"/>
     <implementor name="mbedtls pk"/>

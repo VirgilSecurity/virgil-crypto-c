@@ -22,42 +22,4 @@
         <property name="padding frame" type="size"/>
         <property name="padding frame max" type="size"/>
     </implementation>
-
-    <implementation name="padding cipher" scope="private">
-        Wraps any symmetric cipher algorithm to add padding to plaintext
-        to prevent message guessing attacks based on a ciphertext length.
-
-        <require interface="decrypt"/>
-        <require interface="encrypt"/>
-        <require header="pb_decode.h" scope="private"/>
-        <require header="pb_encode.h" scope="private"/>
-
-        <interface name="cipher info"/>
-        <interface name="encrypt"/>
-        <interface name="decrypt"/>
-        <interface name="cipher"/>
-
-        <dependency name="cipher" interface="cipher"/>
-        <dependency name="padding" interface="padding"/>
-        <property name="padding buffer" class="buffer"/>
-
-        <method name="reset buffer" is_static="1" scope="private">
-            Reset buffer. Ensures capacity is enough.
-
-            <argument name="buffer" class="buffer"/>
-            <argument name="capacity" type="size"/>
-        </method>
-
-        <method name="finish encryption" scope="private">
-            <argument name="out" class="buffer"/>
-
-            <return enum="status"/>
-        </method>
-
-        <method name="finish decryption" scope="private">
-            <argument name="out" class="buffer"/>
-
-            <return enum="status"/>
-        </method>
-    </implementation>
 </implementor>

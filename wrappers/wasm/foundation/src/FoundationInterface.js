@@ -206,9 +206,6 @@ const initFoundationInterface = (Module, modules) => {
                 case modules.FoundationImplTag.RANDOM_PADDING:
                     return modules.RandomPadding.newAndTakeCContext(ctxPtr);
 
-                case modules.FoundationImplTag.PADDING_CIPHER:
-                    return modules.PaddingCipher.newAndTakeCContext(ctxPtr);
-
                 default:
                     throw new Error('Unexpected implementation tag found: ' + implTag);
             }

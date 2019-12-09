@@ -133,7 +133,6 @@ option(VSCF_ALG_INFO_DER_SERIALIZER "Enable class 'alg info der serializer'." ON
 option(VSCF_ALG_INFO_DER_DESERIALIZER "Enable class 'alg info der deserializer'." ON)
 option(VSCF_MESSAGE_INFO_DER_SERIALIZER "Enable class 'message info der serializer'." ON)
 option(VSCF_RANDOM_PADDING "Enable class 'random padding'." ON)
-option(VSCF_PADDING_CIPHER "Enable class 'padding cipher'." ON)
 option(VSCF_ERROR "Enable class 'error'." ON)
 option(VSCF_MBEDTLS_BIGNUM_ASN1_WRITER "Enable class 'mbedtls bignum asn1 writer'." ON)
 option(VSCF_MBEDTLS_BIGNUM_ASN1_READER "Enable class 'mbedtls bignum asn1 reader'." ON)
@@ -179,6 +178,7 @@ option(VSCF_FOOTER_INFO "Enable class 'footer info'." ON)
 option(VSCF_KEY_INFO "Enable class 'key info'." ON)
 option(VSCF_TAIL_FILTER "Enable class 'tail filter'." ON)
 option(VSCF_PADDING_PARAMS "Enable class 'padding params'." ON)
+option(VSCF_PADDING_CIPHER "Enable class 'padding cipher'." ON)
 mark_as_advanced(
         VSCF_LIBRARY
         VSCF_MULTI_THREADING
@@ -268,7 +268,6 @@ mark_as_advanced(
         VSCF_ALG_INFO_DER_DESERIALIZER
         VSCF_MESSAGE_INFO_DER_SERIALIZER
         VSCF_RANDOM_PADDING
-        VSCF_PADDING_CIPHER
         VSCF_ERROR
         VSCF_MBEDTLS_BIGNUM_ASN1_WRITER
         VSCF_MBEDTLS_BIGNUM_ASN1_READER
@@ -314,6 +313,7 @@ mark_as_advanced(
         VSCF_KEY_INFO
         VSCF_TAIL_FILTER
         VSCF_PADDING_PARAMS
+        VSCF_PADDING_CIPHER
         )
 
 if(VSCF_MULTI_THREADING AND NOT MBEDTLS_THREADING_C)
@@ -2382,24 +2382,6 @@ if(VSCF_RANDOM_PADDING AND NOT VSCF_SIMPLE_ALG_INFO)
     message("--")
     message("Feature VSCF_RANDOM_PADDING depends on the feature:")
     message("     VSCF_SIMPLE_ALG_INFO - which is disabled.")
-    message("--")
-    message(FATAL_ERROR)
-endif()
-
-if(VSCF_PADDING_CIPHER AND NOT VSCF_DECRYPT)
-    message("-- error --")
-    message("--")
-    message("Feature VSCF_PADDING_CIPHER depends on the feature:")
-    message("     VSCF_DECRYPT - which is disabled.")
-    message("--")
-    message(FATAL_ERROR)
-endif()
-
-if(VSCF_PADDING_CIPHER AND NOT VSCF_ENCRYPT)
-    message("-- error --")
-    message("--")
-    message("Feature VSCF_PADDING_CIPHER depends on the feature:")
-    message("     VSCF_ENCRYPT - which is disabled.")
     message("--")
     message(FATAL_ERROR)
 endif()

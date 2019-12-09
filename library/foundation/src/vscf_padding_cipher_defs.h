@@ -47,18 +47,13 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Types of the 'padding cipher' implementation.
-//  This types SHOULD NOT be used directly.
-//  The only purpose of including this module is to place implementation
-//  object in the stack memory.
+//  Class 'padding cipher' types definition.
 // --------------------------------------------------------------------------
 
 #ifndef VSCF_PADDING_CIPHER_DEFS_H_INCLUDED
 #define VSCF_PADDING_CIPHER_DEFS_H_INCLUDED
 
 #include "vscf_library.h"
-#include "vscf_impl_private.h"
-#include "vscf_padding_cipher.h"
 #include "vscf_atomic.h"
 #include "vscf_impl.h"
 
@@ -86,13 +81,13 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Handles implementation details.
+//  Handle 'padding cipher' context.
 //
 struct vscf_padding_cipher_t {
     //
-    //  Compile-time known information about this implementation.
+    //  Function do deallocate self context.
     //
-    const vscf_impl_info_t *info;
+    vscf_dealloc_fn self_dealloc_cb;
     //
     //  Reference counter.
     //
@@ -105,9 +100,7 @@ struct vscf_padding_cipher_t {
     //  Dependency to the interface 'padding'.
     //
     vscf_impl_t *padding;
-    //
-    //  Implementation specific context.
-    //
+
     vsc_buffer_t *padding_buffer;
 };
 
