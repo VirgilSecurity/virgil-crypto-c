@@ -226,9 +226,8 @@ vscf_alg_info_der_serializer_serialize_ecc_alg_info(vscf_alg_info_der_serializer
 //  id-CompoundKey ::= { 1 3 6 1 4 1 54811 1 1 }
 //
 //  CompoundKeyParams ::= SEQUENCE {
-//      cipherAlgorithm AlgorithmIdentifier
+//      cipherAlgorithm AlgorithmIdentifier,
 //      signerAlgorithm AlgorithmIdentifier
-//      signerDigestAlgorithm AlgorithmIdentifier
 //  }
 //
 static size_t
@@ -246,9 +245,8 @@ vscf_alg_info_der_serializer_serialized_compound_key_alg_info_len(const vscf_alg
 //  id-CompoundKey ::= { 1 3 6 1 4 1 54811 1 1 }
 //
 //  CompoundKeyParams ::= SEQUENCE {
-//      cipherAlgorithm AlgorithmIdentifier
+//      cipherAlgorithm AlgorithmIdentifier,
 //      signerAlgorithm AlgorithmIdentifier
-//      signerDigestAlgorithm AlgorithmIdentifier
 //  }
 //
 static size_t
@@ -954,9 +952,8 @@ vscf_alg_info_der_serializer_serialize_ecc_alg_info(vscf_alg_info_der_serializer
 //  id-CompoundKey ::= { 1 3 6 1 4 1 54811 1 1 }
 //
 //  CompoundKeyParams ::= SEQUENCE {
-//      cipherAlgorithm AlgorithmIdentifier
+//      cipherAlgorithm AlgorithmIdentifier,
 //      signerAlgorithm AlgorithmIdentifier
-//      signerDigestAlgorithm AlgorithmIdentifier
 //  }
 //
 static size_t
@@ -969,16 +966,13 @@ vscf_alg_info_der_serializer_serialized_compound_key_alg_info_len(
     const vscf_compound_key_alg_info_t *compound_alg_info = (const vscf_compound_key_alg_info_t *)alg_info;
     const vscf_impl_t *cipher_alg_info = vscf_compound_key_alg_info_cipher_alg_info(compound_alg_info);
     const vscf_impl_t *signer_alg_info = vscf_compound_key_alg_info_signer_alg_info(compound_alg_info);
-    const vscf_impl_t *signer_hash_alg_info = vscf_compound_key_alg_info_signer_hash_alg_info(compound_alg_info);
 
     const size_t cipher_alg_info_len = vscf_alg_info_der_serializer_serialized_len(self, cipher_alg_info);
     const size_t signer_alg_info_len = vscf_alg_info_der_serializer_serialized_len(self, signer_alg_info);
-    const size_t signer_hash_alg_info_len = vscf_alg_info_der_serializer_serialized_len(self, signer_hash_alg_info);
 
-    const size_t params_len = 1 + 1 +                           //  CompoundKeyParams ::= SEQUENCE {
-                              1 + 1 + cipher_alg_info_len +     //      cipherAlgorithm AlgorithmIdentifier
-                              1 + 1 + signer_alg_info_len +     //      signerAlgorithm AlgorithmIdentifier
-                              1 + 1 + signer_hash_alg_info_len; //      signerDigestAlgorithm AlgorithmIdentifier }
+    const size_t params_len = 1 + 1 +                       //  CompoundKeyParams ::= SEQUENCE {
+                              1 + 1 + cipher_alg_info_len + //      cipherAlgorithm AlgorithmIdentifier,
+                              1 + 1 + signer_alg_info_len;  //      signerAlgorithm AlgorithmIdentifier }
 
 
     const size_t len = 1 + 1 +     //  AlgorithmIdentifier ::= SEQUENCE {
@@ -999,9 +993,8 @@ vscf_alg_info_der_serializer_serialized_compound_key_alg_info_len(
 //  id-CompoundKey ::= { 1 3 6 1 4 1 54811 1 1 }
 //
 //  CompoundKeyParams ::= SEQUENCE {
-//      cipherAlgorithm AlgorithmIdentifier
+//      cipherAlgorithm AlgorithmIdentifier,
 //      signerAlgorithm AlgorithmIdentifier
-//      signerDigestAlgorithm AlgorithmIdentifier
 //  }
 //
 static size_t
@@ -1018,13 +1011,11 @@ vscf_alg_info_der_serializer_serialize_compound_key_alg_info(
     const vscf_alg_id_t alg_id = vscf_compound_key_alg_info_alg_id(compound_alg_info);
     const vscf_impl_t *cipher_alg_info = vscf_compound_key_alg_info_cipher_alg_info(compound_alg_info);
     const vscf_impl_t *signer_alg_info = vscf_compound_key_alg_info_signer_alg_info(compound_alg_info);
-    const vscf_impl_t *signer_hash_alg_info = vscf_compound_key_alg_info_signer_hash_alg_info(compound_alg_info);
 
     //
     //  Write: CompoundKeyParams
     //
     size_t len = 0;
-    len += vscf_alg_info_der_serializer_serialize_inplace(self, signer_hash_alg_info);
     len += vscf_alg_info_der_serializer_serialize_inplace(self, signer_alg_info);
     len += vscf_alg_info_der_serializer_serialize_inplace(self, cipher_alg_info);
     len += vscf_asn1_writer_write_sequence(self->asn1_writer, len);

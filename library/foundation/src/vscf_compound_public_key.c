@@ -99,46 +99,40 @@ vscf_compound_public_key_cleanup_ctx(vscf_compound_public_key_t *self) {
     vscf_impl_destroy(&self->alg_info);
     vscf_impl_destroy(&self->cipher_key);
     vscf_impl_destroy(&self->signer_key);
-    vsc_buffer_destroy(&self->signature);
 }
 
 //
-//  Create a compound public key with a cipher public key,
-//  a signer public key, and a cipher public key signature.
+//  Create a compound public key with a cipher public key and
+//  a signer public key.
 //
 VSCF_PUBLIC void
 vscf_compound_public_key_init_ctx_with_keys(vscf_compound_public_key_t *self, vscf_impl_t **alg_info_ref,
-        const vscf_impl_t *cipher_key, const vscf_impl_t *signer_key, vsc_buffer_t **signature_ref) {
+        const vscf_impl_t *cipher_key, const vscf_impl_t *signer_key) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(alg_info_ref);
     VSCF_ASSERT_PTR(*alg_info_ref);
     VSCF_ASSERT_PTR(cipher_key);
     VSCF_ASSERT_PTR(signer_key);
-    VSCF_ASSERT_PTR(signature_ref);
-    VSCF_ASSERT_PTR(*signature_ref);
     VSCF_ASSERT(vscf_alg_info_is_implemented(*alg_info_ref));
     VSCF_ASSERT(vscf_alg_info_alg_id(*alg_info_ref) != vscf_alg_id_NONE);
     VSCF_ASSERT(vscf_public_key_is_implemented(cipher_key));
     VSCF_ASSERT(vscf_public_key_is_implemented(signer_key));
-    VSCF_ASSERT(vsc_buffer_is_valid(*signature_ref));
 
     self->alg_info = *alg_info_ref;
     self->cipher_key = (vscf_impl_t *)vscf_impl_shallow_copy_const(cipher_key);
     self->signer_key = (vscf_impl_t *)vscf_impl_shallow_copy_const(signer_key);
-    self->signature = *signature_ref;
 
     *alg_info_ref = NULL;
-    *signature_ref = NULL;
 }
 
 //
-//  Create a compound public key with a cipher public key,
-//  a signer public key, and a cipher public key signature.
+//  Create a compound public key with a cipher public key and
+//  a signer public key.
 //
 VSCF_PUBLIC void
-vscf_compound_public_key_init_ctx_with_imported_keys(vscf_compound_public_key_t *self, const vscf_impl_t *alg_info,
-        vscf_impl_t **cipher_key_ref, vscf_impl_t **signer_key_ref, vsc_data_t signature) {
+vscf_compound_public_key_init_ctx_with_keys_disown(vscf_compound_public_key_t *self, const vscf_impl_t *alg_info,
+        vscf_impl_t **cipher_key_ref, vscf_impl_t **signer_key_ref) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(alg_info);
@@ -150,12 +144,10 @@ vscf_compound_public_key_init_ctx_with_imported_keys(vscf_compound_public_key_t 
     VSCF_ASSERT(vscf_alg_info_alg_id(alg_info) != vscf_alg_id_NONE);
     VSCF_ASSERT(vscf_public_key_is_implemented(*cipher_key_ref));
     VSCF_ASSERT(vscf_public_key_is_implemented(*signer_key_ref));
-    VSCF_ASSERT(vsc_data_is_valid(signature));
 
     self->alg_info = (vscf_impl_t *)vscf_impl_shallow_copy_const(alg_info);
     self->cipher_key = *cipher_key_ref;
     self->signer_key = *signer_key_ref;
-    self->signature = vsc_buffer_new_with_data(signature);
 
     *cipher_key_ref = NULL;
     *signer_key_ref = NULL;
@@ -183,18 +175,6 @@ vscf_compound_public_key_signer_key(const vscf_compound_public_key_t *self) {
     VSCF_ASSERT_PTR(self->signer_key);
 
     return self->signer_key;
-}
-
-//
-//  Return cipher public key signature.
-//
-VSCF_PUBLIC vsc_data_t
-vscf_compound_public_key_signature(const vscf_compound_public_key_t *self) {
-
-    VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(self->signature);
-
-    return vsc_buffer_data(self->signature);
 }
 
 //

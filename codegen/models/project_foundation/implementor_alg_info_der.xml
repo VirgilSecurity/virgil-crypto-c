@@ -192,9 +192,8 @@
             id-CompoundKey ::= { 1 3 6 1 4 1 54811 1 1 }
 
             CompoundKeyParams ::= SEQUENCE {
-                cipherAlgorithm AlgorithmIdentifier
+                cipherAlgorithm AlgorithmIdentifier,
                 signerAlgorithm AlgorithmIdentifier
-                signerDigestAlgorithm AlgorithmIdentifier
             }
 
             <argument name="alg info" interface="alg info"/>
@@ -213,9 +212,8 @@
             id-CompoundKey ::= { 1 3 6 1 4 1 54811 1 1 }
 
             CompoundKeyParams ::= SEQUENCE {
-                cipherAlgorithm AlgorithmIdentifier
+                cipherAlgorithm AlgorithmIdentifier,
                 signerAlgorithm AlgorithmIdentifier
-                signerDigestAlgorithm AlgorithmIdentifier
             }
 
             <argument name="alg info" interface="alg info"/>
@@ -387,9 +385,8 @@
             id-CompoundKey ::= { 1 3 6 1 4 1 54811 1 1 }
 
             CompoundKeyParams ::= SEQUENCE {
-                cipherAlgorithm AlgorithmIdentifier
+                cipherAlgorithm AlgorithmIdentifier,
                 signerAlgorithm AlgorithmIdentifier
-                signerDigestAlgorithm AlgorithmIdentifier
             }
 
             <argument name="oid id" enum="oid id"/>

@@ -153,9 +153,8 @@ vscf_alg_info_der_deserializer_deserialize_ecc_alg_info(vscf_alg_info_der_deseri
 //  id-CompoundKey ::= { 1 3 6 1 4 1 54811 1 1 }
 //
 //  CompoundKeyParams ::= SEQUENCE {
-//      cipherAlgorithm AlgorithmIdentifier
+//      cipherAlgorithm AlgorithmIdentifier,
 //      signerAlgorithm AlgorithmIdentifier
-//      signerDigestAlgorithm AlgorithmIdentifier
 //  }
 //
 static vscf_impl_t *
@@ -586,9 +585,8 @@ vscf_alg_info_der_deserializer_deserialize_ecc_alg_info(
 //  id-CompoundKey ::= { 1 3 6 1 4 1 54811 1 1 }
 //
 //  CompoundKeyParams ::= SEQUENCE {
-//      cipherAlgorithm AlgorithmIdentifier
+//      cipherAlgorithm AlgorithmIdentifier,
 //      signerAlgorithm AlgorithmIdentifier
-//      signerDigestAlgorithm AlgorithmIdentifier
 //  }
 //
 static vscf_impl_t *
@@ -605,18 +603,16 @@ vscf_alg_info_der_deserializer_deserialize_compound_key_alg_info(
     vscf_asn1_reader_read_sequence(self->asn1_reader);
     vscf_impl_t *cipher_alg_info = vscf_alg_info_der_deserializer_deserialize_inplace(self, error);
     vscf_impl_t *signer_alg_info = vscf_alg_info_der_deserializer_deserialize_inplace(self, error);
-    vscf_impl_t *signer_hash_alg_info = vscf_alg_info_der_deserializer_deserialize_inplace(self, error);
 
     if (vscf_asn1_reader_has_error(self->asn1_reader)) {
         vscf_impl_destroy(&cipher_alg_info);
         vscf_impl_destroy(&signer_alg_info);
-        vscf_impl_destroy(&signer_hash_alg_info);
         VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_BAD_ASN1_ALGORITHM_COMPOUND_KEY);
         return NULL;
     }
 
     vscf_compound_key_alg_info_t *alg_info = vscf_compound_key_alg_info_new_with_infos_disown(
-            vscf_alg_id_COMPOUND_KEY, &cipher_alg_info, &signer_alg_info, &signer_hash_alg_info);
+            vscf_alg_id_COMPOUND_KEY, &cipher_alg_info, &signer_alg_info);
     return vscf_compound_key_alg_info_impl(alg_info);
 }
 

@@ -531,6 +531,7 @@ inner_test__import_public_key__then_export__are_equals(vsc_data_t public_key_dat
 
     vsc_buffer_t *exported_public_key =
             vsc_buffer_new_with_capacity(vscf_key_provider_exported_public_key_len(key_provider, public_key));
+
     TEST_ASSERT_EQUAL(
             vscf_status_SUCCESS, vscf_key_provider_export_public_key(key_provider, public_key, exported_public_key));
 
@@ -562,6 +563,35 @@ inner_test__import_private_key__then_export__are_equals(vsc_data_t private_key_d
     TEST_ASSERT_EQUAL_DATA_AND_BUFFER(private_key_data, exported_private_key);
 
     vsc_buffer_destroy(&exported_private_key);
+    vscf_impl_destroy(&private_key);
+    vscf_key_provider_destroy(&key_provider);
+}
+
+static void
+inner_test__import_private_key__then_export_public_key__are_equals(
+        vsc_data_t private_key_data, vsc_data_t public_key_data) {
+
+    vscf_error_t error;
+    vscf_error_reset(&error);
+
+    vscf_key_provider_t *key_provider = vscf_key_provider_new();
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_key_provider_setup_defaults(key_provider));
+
+    vscf_impl_t *private_key = vscf_key_provider_import_private_key(key_provider, private_key_data, &error);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
+    TEST_ASSERT_NOT_NULL(vscf_key_alg_info(private_key));
+
+    vscf_impl_t *public_key = vscf_private_key_extract_public_key(private_key);
+
+    vsc_buffer_t *exported_public_key =
+            vsc_buffer_new_with_capacity(vscf_key_provider_exported_public_key_len(key_provider, public_key));
+    TEST_ASSERT_EQUAL(
+            vscf_status_SUCCESS, vscf_key_provider_export_public_key(key_provider, public_key, exported_public_key));
+
+    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(public_key_data, exported_public_key);
+
+    vsc_buffer_destroy(&exported_public_key);
+    vscf_impl_destroy(&public_key);
     vscf_impl_destroy(&private_key);
     vscf_key_provider_destroy(&key_provider);
 }
@@ -636,6 +666,12 @@ test__import_private_key__curve25519_and_then_export__are_equals(void) {
 }
 
 void
+test__import_private_key__curve25519_and_then_export_public_key__are_equals(void) {
+    inner_test__import_private_key__then_export_public_key__are_equals(
+            test_curve25519_PRIVATE_KEY_PKCS8_DER, test_curve25519_PUBLIC_KEY_PKCS8_DER);
+}
+
+void
 test__import_private_key__ed25519_and_then_export__are_equals(void) {
     inner_test__import_private_key__then_export__are_equals(test_ed25519_PRIVATE_KEY_PKCS8_DER);
 }
@@ -679,10 +715,21 @@ test__import_private_key__curve25519_round5_falcon_and_then_export__are_equals(v
 }
 
 void
-test__import_private_key__curve25519_round5__ed25519falcon_and_then_export__are_equals(void) {
+test__import_private_key__curve25519_round5_ed25519_falcon_and_then_export__are_equals(void) {
 #if VSCF_POST_QUANTUM && VSCF_ROUND5 && VSCF_FALCON
     inner_test__import_private_key__then_export__are_equals(
             test_data_pqc_CURVE25519_ROUND5_ND_5PKE_5D_ED25519_FALCON_PRIVATE_KEY_PKCS8_DER);
+#else
+    TEST_IGNORE_MESSAGE("Feature VSCF_POST_QUANTUM and/or VSCF_ROUND5 and/or VSCF_FALCON are disabled");
+#endif
+}
+
+void
+test__import_private_key__curve25519_round5_ed25519_falcon_and_then_export_public_key__are_equals(void) {
+#if VSCF_POST_QUANTUM && VSCF_ROUND5 && VSCF_FALCON
+    inner_test__import_private_key__then_export_public_key__are_equals(
+            test_data_pqc_CURVE25519_ROUND5_ND_5PKE_5D_ED25519_FALCON_PRIVATE_KEY_PKCS8_DER,
+            test_data_pqc_CURVE25519_ROUND5_ND_5PKE_5D_ED25519_FALCON_PUBLIC_KEY_PKCS8_DER);
 #else
     TEST_IGNORE_MESSAGE("Feature VSCF_POST_QUANTUM and/or VSCF_ROUND5 and/or VSCF_FALCON are disabled");
 #endif
@@ -877,7 +924,8 @@ main(void) {
     RUN_TEST(test__import_private_key__round5_and_then_export__are_equals);
     RUN_TEST(test__import_private_key__falcon_and_then_export__are_equals);
     RUN_TEST(test__import_private_key__curve25519_round5_falcon_and_then_export__are_equals);
-    RUN_TEST(test__import_private_key__curve25519_round5__ed25519falcon_and_then_export__are_equals);
+    RUN_TEST(test__import_private_key__curve25519_round5_ed25519_falcon_and_then_export__are_equals);
+    RUN_TEST(test__import_private_key__curve25519_round5_ed25519_falcon_and_then_export_public_key__are_equals);
 
     RUN_TEST(test__import_public_key__invalid_public_key__expected_status_bad_der_public_key);
     RUN_TEST(test__import_private_key__invalid_private_key__expected_status_bad_der_private_key);

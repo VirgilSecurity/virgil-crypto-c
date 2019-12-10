@@ -236,6 +236,50 @@ test__export_private_key__from_generated_key__valid_alg_and_key_length(void) {
     vscf_round5_destroy(&round5);
 }
 
+void
+test__extract_public_key__from_imported_private_key__when_exported_are_equals(void) {
+
+    //  Create raw private key
+    vscf_impl_t *alg_info =
+            vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_ROUND5_ND_5PKE_5D));
+    vscf_raw_private_key_t *raw_private_key =
+            vscf_raw_private_key_new_with_data(test_data_round5_ND_5PKE_5D_PRIVATE_KEY, &alg_info);
+
+    //  Configure key algorithm
+    vscf_round5_t *round5 = vscf_round5_new();
+
+    vscf_fake_random_t *fake_random = vscf_fake_random_new();
+    vscf_fake_random_setup_source_byte(fake_random, 0xAB);
+    vscf_round5_take_random(round5, vscf_fake_random_impl(fake_random));
+
+    //  Import private key
+    vscf_error_t error;
+    vscf_error_reset(&error);
+
+    vscf_impl_t *private_key = vscf_round5_import_private_key(round5, raw_private_key, &error);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
+    TEST_ASSERT_NOT_NULL(private_key);
+
+    //  Extract public key
+    vscf_impl_t *public_key = vscf_private_key_extract_public_key(private_key);
+    TEST_ASSERT_NOT_NULL(public_key);
+
+    //  Export public key
+    vscf_raw_public_key_t *raw_public_key = vscf_round5_export_public_key(round5, public_key, &error);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
+    TEST_ASSERT_NOT_NULL(raw_public_key);
+
+    //   Check
+    TEST_ASSERT_EQUAL_DATA(test_data_round5_ND_5PKE_5D_PUBLIC_KEY, vscf_raw_public_key_data(raw_public_key));
+
+    //  Cleanup
+    vscf_round5_destroy(&round5);
+    vscf_impl_destroy(&private_key);
+    vscf_impl_destroy(&public_key);
+    vscf_raw_private_key_destroy(&raw_private_key);
+    vscf_raw_public_key_destroy(&raw_public_key);
+}
+
 #endif // TEST_DEPENDENCIES_AVAILABLE
 
 
@@ -252,6 +296,7 @@ main(void) {
     RUN_TEST(test__decrypt__success);
     RUN_TEST(test__export_public_key__from_generated_key__valid_alg_and_key_length);
     RUN_TEST(test__export_private_key__from_generated_key__valid_alg_and_key_length);
+    RUN_TEST(test__extract_public_key__from_imported_private_key__when_exported_are_equals);
 #else
     RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
 #endif

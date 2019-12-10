@@ -36,7 +36,6 @@
 from ctypes import *
 from ._c_bridge import VscfCompoundPrivateKey
 from ._c_bridge import VscfImplTag
-from virgil_crypto_lib.common._c_bridge import Data
 from .key import Key
 from .private_key import PrivateKey
 
@@ -46,8 +45,7 @@ class CompoundPrivateKey(Key, PrivateKey):
 
     Compound private key contains 2 private keys and signature:
         - cipher key - is used for decryption;
-        - signer key - is used for signing;
-        - signature - signature of the "cipher public key"."""
+        - signer key - is used for signing."""
 
     def __init__(self):
         """Create underlying C context."""
@@ -109,13 +107,6 @@ class CompoundPrivateKey(Key, PrivateKey):
         result = self._lib_vscf_compound_private_key.vscf_compound_private_key_signer_key(self.ctx)
         instance = VscfImplTag.get_type(result)[0].use_c_ctx(cast(result, POINTER(VscfImplTag.get_type(result)[1])))
         return instance
-
-    def signature(self):
-        """Return the cipher public key signature."""
-        result = self._lib_vscf_compound_private_key.vscf_compound_private_key_signature(self.ctx)
-        instance = Data.take_c_ctx(result)
-        cleaned_bytes = bytearray(instance)
-        return cleaned_bytes
 
     @classmethod
     def take_c_ctx(cls, c_ctx):

@@ -41,8 +41,7 @@ package com.virgilsecurity.crypto.foundation;
 *
 * Compound public key contains 2 public keys and signature:
 * - cipher key - is used for encryption;
-* - signer key - is used for verifying;
-* - signature - signature of the "cipher public key".
+* - signer key - is used for verifying.
 */
 public class CompoundPublicKey implements AutoCloseable, Key, PublicKey {
 
@@ -71,13 +70,6 @@ public class CompoundPublicKey implements AutoCloseable, Key, PublicKey {
     */
     public PublicKey signerKey() {
         return FoundationJNI.INSTANCE.compoundPublicKey_signerKey(this.cCtx);
-    }
-
-    /*
-    * Return cipher public key signature.
-    */
-    public byte[] signature() {
-        return FoundationJNI.INSTANCE.compoundPublicKey_signature(this.cCtx);
     }
 
     /*

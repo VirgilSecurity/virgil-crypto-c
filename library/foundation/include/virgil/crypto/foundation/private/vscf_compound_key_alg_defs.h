@@ -93,10 +93,6 @@ struct vscf_compound_key_alg_t {
     //  Dependency to the interface 'random'.
     //
     vscf_impl_t *random;
-    //
-    //  Dependency to the interface 'hash'.
-    //
-    vscf_impl_t *hash;
 };
 
 
