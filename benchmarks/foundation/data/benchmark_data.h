@@ -52,6 +52,3 @@ extern const vsc_data_t benchmark_signer_RSA2048_SHA384_SIGNATURE_V2_COMPAT;
 
 extern const vsc_data_t bench_data_padding_cipher_AES256_NONCE;
 extern const vsc_data_t bench_data_padding_cipher_AES256_KEY;
-extern const vsc_data_t bench_data_padding_cipher_PLAINTEXT_1024_ZERO_BYTES;
-extern const vsc_data_t bench_data_padding_cipher_ENCRYPTED_1024_ZERO_BYTES;
-extern const vsc_data_t bench_data_padding_cipher_ENCRYPTED_WITH_PADDING_1024_ZERO_BYTES;
