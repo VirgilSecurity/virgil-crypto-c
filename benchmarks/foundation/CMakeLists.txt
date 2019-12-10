@@ -37,7 +37,7 @@ project(virgil_crypto_c_foundation_benchmarks VERSION ${virgil_crypto_c_benchmar
 
 add_subdirectory(data)
 
-add_executable(bench)
+add_executable(bench benchmark_padding.cpp)
 set_target_properties(bench PROPERTIES CXX_STANDARD 11)
 target_link_libraries(bench benchmark_data_foundation vsc::foundation benchmark::benchmark_main)
 
@@ -57,3 +57,4 @@ _add_benchmark(benchmark_key)
 _add_benchmark(benchmark_hash)
 _add_benchmark(benchmark_recipient_cipher)
 _add_benchmark(benchmark_signer_verifier)
+_add_benchmark(benchmark_padding)
