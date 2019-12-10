@@ -581,7 +581,7 @@ static byte SUITE1_AES256_NONCE[] = {
         0xf3, 0x9d, 0xa9, 0x6b
 };
 
-const vsc_data_t test_data_padding_cipher_SUITE1_AES256_NONCE = {
+const vsc_data_t bench_data_padding_cipher_AES256_NONCE = {
         SUITE1_AES256_NONCE, sizeof(SUITE1_AES256_NONCE)
 };
 
@@ -593,7 +593,7 @@ static byte SUITE1_AES256_KEY[] = {
         0x8a, 0xbd, 0xf2, 0x13, 0x0e, 0x8b, 0xec, 0xb8,
 };
 
-const vsc_data_t test_data_padding_cipher_SUITE1_AES256_KEY = {
+const vsc_data_t bench_data_padding_cipher_AES256_KEY = {
         SUITE1_AES256_KEY, sizeof(SUITE1_AES256_KEY)
 };
 
@@ -665,7 +665,7 @@ static byte SUITE1_PLAINTEXT_1024_ZERO_BYTES[] = {
         0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
 };
 
-const vsc_data_t test_data_padding_cipher_PLAINTEXT_1024_ZERO_BYTES = {
+const vsc_data_t bench_data_padding_cipher_PLAINTEXT_1024_ZERO_BYTES = {
         SUITE1_PLAINTEXT_1024_ZERO_BYTES, sizeof(SUITE1_PLAINTEXT_1024_ZERO_BYTES)
 };
 
@@ -738,7 +738,7 @@ static byte SUITE1_ENCRYPTED_1024_ZERO_BYTES[] = {
         0xE6, 0x59, 0xDE, 0x29, 0x84, 0x13, 0xC3, 0x2D, 0xA7, 0x56, 0xF8, 0x3B, 0xAA, 0x5E, 0xFB, 0x99
 };
 
-const vsc_data_t test_data_padding_cipher_ENCRYPTED_1024_ZERO_BYTES = {
+const vsc_data_t bench_data_padding_cipher_ENCRYPTED_1024_ZERO_BYTES = {
         SUITE1_ENCRYPTED_1024_ZERO_BYTES, sizeof(SUITE1_ENCRYPTED_1024_ZERO_BYTES)
 };
 
@@ -816,6 +816,6 @@ static byte SUITE1_ENCRYPTED_WITH_PADDING_1024_ZERO_BYTES[] = {
         0xDF, 0x8E, 0x02, 0x10, 0xED, 0x5B, 0xA6, 0x13, 0x21, 0xDA, 0xCA, 0x05, 0xCC, 0x6B, 0xC8, 0x05
 };
 
-const vsc_data_t test_data_padding_cipher_ENCRYPTED_WITH_PADDING_1024_ZERO_BYTES = {
+const vsc_data_t bench_data_padding_cipher_ENCRYPTED_WITH_PADDING_1024_ZERO_BYTES = {
         SUITE1_ENCRYPTED_1024_ZERO_BYTES, sizeof(SUITE1_ENCRYPTED_1024_ZERO_BYTES)
 };

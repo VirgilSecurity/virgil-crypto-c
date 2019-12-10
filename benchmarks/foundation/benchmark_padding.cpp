@@ -44,91 +44,72 @@
 
 #include "benchmark_data.h"
 
-void
-encrypt__1kb_chunked_manualy_by_32_bytes_with_aes256_gcm__success(benchmark::State &state) {
+static const size_t chunk_size = 32;
 
+void
+bench_encrypt__1kb_chunked_by_32_bytes_with_aes256_gcm(benchmark::State &state) {
     vscf_aes256_gcm_t *aes256_gcm = vscf_aes256_gcm_new();
 
     vsc_buffer_t *out = vsc_buffer_new_with_capacity(
-            vscf_aes256_gcm_encrypted_len(aes256_gcm, test_data_padding_cipher_PLAINTEXT_1024_ZERO_BYTES.len));
+            vscf_aes256_gcm_encrypted_len(aes256_gcm, bench_data_padding_cipher_PLAINTEXT_1024_ZERO_BYTES.len));
 
-
-    vscf_aes256_gcm_set_key(aes256_gcm, test_data_padding_cipher_SUITE1_AES256_KEY);
-    vscf_aes256_gcm_set_nonce(aes256_gcm, test_data_padding_cipher_SUITE1_AES256_NONCE);
-
+    vscf_aes256_gcm_set_key(aes256_gcm, bench_data_padding_cipher_AES256_KEY);
+    vscf_aes256_gcm_set_nonce(aes256_gcm, bench_data_padding_cipher_AES256_NONCE);
 
     for (auto _ : state) {
+        vscf_aes256_gcm_start_encryption(aes256_gcm);
 
-        for (int i = 0; i < test_data_padding_cipher_PLAINTEXT_1024_ZERO_BYTES.len; i += 32) {
-            size_t chunk_size = i + 32 < test_data_padding_cipher_PLAINTEXT_1024_ZERO_BYTES.len
-                                        ? 32
-                                        : test_data_padding_cipher_PLAINTEXT_1024_ZERO_BYTES.len - i;
+        for (int i = 0; i < bench_data_padding_cipher_PLAINTEXT_1024_ZERO_BYTES.len; i += chunk_size) {
+            size_t current_chunk_size = chunk_size;
+            if (i + current_chunk_size > bench_data_padding_cipher_PLAINTEXT_1024_ZERO_BYTES.len) {
+                current_chunk_size = bench_data_padding_cipher_PLAINTEXT_1024_ZERO_BYTES.len - i;
+            }
 
-            vscf_aes256_gcm_encrypt(aes256_gcm,
-                    vsc_data_slice_beg(test_data_padding_cipher_PLAINTEXT_1024_ZERO_BYTES, i, chunk_size), out);
-            vsc_buffer_reset(out);
+            vscf_aes256_gcm_update(aes256_gcm,
+                    vsc_data_slice_beg(bench_data_padding_cipher_PLAINTEXT_1024_ZERO_BYTES, i, current_chunk_size),
+                    out);
         }
+
+        vscf_aes256_gcm_finish(aes256_gcm, out);
+        vsc_buffer_reset(out);
     }
     vscf_aes256_gcm_destroy(&aes256_gcm);
     vsc_buffer_destroy(&out);
 }
 
 void
-decrypt__encrypted_1kb_chunked_manualy_by_32_bytes_with_aes256_gcm__success(benchmark::State &state) {
-
+bench_decrypt__1kb_chunked_by_32_bytes_with_aes256_gcm(benchmark::State &state) {
     vscf_aes256_gcm_t *aes256_gcm = vscf_aes256_gcm_new();
 
     vsc_buffer_t *out = vsc_buffer_new_with_capacity(
-            vscf_aes256_gcm_decrypted_len(aes256_gcm, test_data_padding_cipher_ENCRYPTED_1024_ZERO_BYTES.len));
+            vscf_aes256_gcm_decrypted_len(aes256_gcm, bench_data_padding_cipher_ENCRYPTED_1024_ZERO_BYTES.len));
 
-
-    vscf_aes256_gcm_set_key(aes256_gcm, test_data_padding_cipher_SUITE1_AES256_KEY);
-    vscf_aes256_gcm_set_nonce(aes256_gcm, test_data_padding_cipher_SUITE1_AES256_NONCE);
-
+    vscf_aes256_gcm_set_key(aes256_gcm, bench_data_padding_cipher_AES256_KEY);
+    vscf_aes256_gcm_set_nonce(aes256_gcm, bench_data_padding_cipher_AES256_NONCE);
 
     for (auto _ : state) {
-        for (int i = 0; i < test_data_padding_cipher_ENCRYPTED_1024_ZERO_BYTES.len; i += 32) {
-            size_t chunk_size = i + 32 < test_data_padding_cipher_ENCRYPTED_1024_ZERO_BYTES.len
-                                        ? 32
-                                        : test_data_padding_cipher_ENCRYPTED_1024_ZERO_BYTES.len - i;
+        vscf_aes256_gcm_start_decryption(aes256_gcm);
+        for (int i = 0; i < bench_data_padding_cipher_ENCRYPTED_1024_ZERO_BYTES.len; i += chunk_size) {
+            size_t current_chunk_size = chunk_size;
+            if (i + current_chunk_size > bench_data_padding_cipher_PLAINTEXT_1024_ZERO_BYTES.len) {
+                current_chunk_size = bench_data_padding_cipher_PLAINTEXT_1024_ZERO_BYTES.len - i;
+            }
 
-            vscf_aes256_gcm_decrypt(aes256_gcm,
-                    vsc_data_slice_beg(test_data_padding_cipher_ENCRYPTED_1024_ZERO_BYTES, i, chunk_size), out);
-            vsc_buffer_reset(out);
+            vscf_aes256_gcm_update(aes256_gcm,
+                    vsc_data_slice_beg(bench_data_padding_cipher_ENCRYPTED_1024_ZERO_BYTES, i, current_chunk_size),
+                    out);
         }
+        vscf_aes256_gcm_finish(aes256_gcm, out);
+        vsc_buffer_reset(out);
     }
 
     vscf_aes256_gcm_destroy(&aes256_gcm);
     vsc_buffer_destroy(&out);
 }
 
-static void
-inner_test__encrypt__match_given(vscf_padding_cipher_t *cipher, vsc_data_t plaintext, vsc_data_t ciphertext) {
-    //
-    //  Encrypt.
-    //
-    vscf_padding_cipher_start_encryption(cipher);
-    const size_t out_len = vscf_padding_cipher_out_len(cipher, plaintext.len) + vscf_padding_cipher_out_len(cipher, 0);
-    vsc_buffer_t *out = vsc_buffer_new_with_capacity(out_len);
 
-    vscf_padding_cipher_update(cipher, plaintext, out);
-    const vscf_status_t status = vscf_padding_cipher_finish(cipher, out);
-
-    //
-    //  Cleanup.
-    //
-    vsc_buffer_reset(out);
-}
-// --------------------------------------------------------------------------
-//  Suite 1: AES256-GCM, frame 160.
-// --------------------------------------------------------------------------
-static void
-inner_test__encrypt__with_aes256_gcm_and_padding_frame_160_with_AB_pad__match_given(
-        benchmark::State &state, vsc_data_t plaintext, vsc_data_t ciphertext) {
-
-    //
-    // Configure algs.
-    //
+void
+bench_encrypt__1kb_chunked_by_32_bytes_with_pading_cipher_random_padding_and_aes256_gcm(benchmark::State &state) {
     vscf_fake_random_t *fake_random = vscf_fake_random_new();
     vscf_fake_random_setup_source_byte(fake_random, 0xAB);
 
@@ -138,56 +119,33 @@ inner_test__encrypt__with_aes256_gcm_and_padding_frame_160_with_AB_pad__match_gi
     vscf_random_padding_configure(padding, vscf_padding_params_new_with_constraints(32, 32, 32));
 
     vscf_aes256_gcm_t *cipher = vscf_aes256_gcm_new();
-    vscf_aes256_gcm_set_nonce(cipher, test_data_padding_cipher_SUITE1_AES256_NONCE);
-    vscf_aes256_gcm_set_key(cipher, test_data_padding_cipher_SUITE1_AES256_KEY);
+    vscf_aes256_gcm_set_nonce(cipher, bench_data_padding_cipher_AES256_NONCE);
+    vscf_aes256_gcm_set_key(cipher, bench_data_padding_cipher_AES256_KEY);
 
     vscf_padding_cipher_t *padding_cipher = vscf_padding_cipher_new();
     vscf_padding_cipher_take_padding(padding_cipher, vscf_random_padding_impl(padding));
     vscf_padding_cipher_take_cipher(padding_cipher, vscf_aes256_gcm_impl(cipher));
 
-    //
-    // Check.
-    //
 
     for (auto _ : state) {
-        inner_test__encrypt__match_given(padding_cipher, plaintext, ciphertext);
+        vscf_padding_cipher_start_encryption(padding_cipher);
+
+        const size_t out_len =
+                vscf_padding_cipher_out_len(padding_cipher, bench_data_padding_cipher_ENCRYPTED_1024_ZERO_BYTES.len) +
+                vscf_padding_cipher_out_len(padding_cipher, 0);
+        vsc_buffer_t *out = vsc_buffer_new_with_capacity(out_len);
+
+        vscf_padding_cipher_update(padding_cipher, bench_data_padding_cipher_ENCRYPTED_1024_ZERO_BYTES, out);
+        vscf_padding_cipher_finish(padding_cipher, out);
+
+        vsc_buffer_reset(out);
     }
 
-    //
-    // Cleanup.
-    //
     vscf_padding_cipher_destroy(&padding_cipher);
 }
 
 void
-encrypt__1kb_chunked_with_pading_cipher_by_32_bytes_aes256_gcm__success(benchmark::State &state) {
-    inner_test__encrypt__with_aes256_gcm_and_padding_frame_160_with_AB_pad__match_given(state,
-            test_data_padding_cipher_PLAINTEXT_1024_ZERO_BYTES, test_data_padding_cipher_ENCRYPTED_1024_ZERO_BYTES);
-}
-
-
-static void
-inner_test__decrypt__match_given(vscf_padding_cipher_t *cipher, vsc_data_t ciphertext, vsc_data_t plaintext) {
-    //
-    //  Decrypt.
-    //
-    vscf_padding_cipher_start_decryption(cipher);
-    const size_t out_len = vscf_padding_cipher_out_len(cipher, ciphertext.len) + vscf_padding_cipher_out_len(cipher, 0);
-    vsc_buffer_t *out = vsc_buffer_new_with_capacity(out_len);
-
-    vscf_padding_cipher_update(cipher, ciphertext, out);
-    const vscf_status_t status = vscf_padding_cipher_finish(cipher, out);
-
-    vsc_buffer_reset(out);
-}
-
-static void
-inner_test__decrypt__with_aes256_gcm_and_padding_frame_160_with_AB_pad__match_given(
-        benchmark::State &state, vsc_data_t ciphertext, vsc_data_t plaintext) {
-
-    //
-    // Configure algs.
-    //
+bench_decrypt__1kb_chunked_by_32_bytes_with_pading_cipher_random_padding_and_aes256_gcm(benchmark::State &state) {
     vscf_fake_random_t *fake_random = vscf_fake_random_new();
     vscf_fake_random_setup_source_byte(fake_random, 0xAB);
 
@@ -198,36 +156,33 @@ inner_test__decrypt__with_aes256_gcm_and_padding_frame_160_with_AB_pad__match_gi
 
 
     vscf_aes256_gcm_t *cipher = vscf_aes256_gcm_new();
-    vscf_aes256_gcm_set_nonce(cipher, test_data_padding_cipher_SUITE1_AES256_NONCE);
-    vscf_aes256_gcm_set_key(cipher, test_data_padding_cipher_SUITE1_AES256_KEY);
+    vscf_aes256_gcm_set_nonce(cipher, bench_data_padding_cipher_AES256_NONCE);
+    vscf_aes256_gcm_set_key(cipher, bench_data_padding_cipher_AES256_KEY);
 
     vscf_padding_cipher_t *padding_cipher = vscf_padding_cipher_new();
     vscf_padding_cipher_take_padding(padding_cipher, vscf_random_padding_impl(padding));
     vscf_padding_cipher_take_cipher(padding_cipher, vscf_aes256_gcm_impl(cipher));
 
-    //
-    // Check.
-    //
     for (auto _ : state) {
-        inner_test__decrypt__match_given(padding_cipher, ciphertext, plaintext);
+        vscf_padding_cipher_start_decryption(padding_cipher);
+
+        const size_t out_len = vscf_padding_cipher_out_len(padding_cipher,
+                                       bench_data_padding_cipher_ENCRYPTED_WITH_PADDING_1024_ZERO_BYTES.len) +
+                               vscf_padding_cipher_out_len(padding_cipher, 0);
+
+        vsc_buffer_t *out = vsc_buffer_new_with_capacity(out_len);
+
+        vscf_padding_cipher_update(
+                padding_cipher, bench_data_padding_cipher_ENCRYPTED_WITH_PADDING_1024_ZERO_BYTES, out);
+        vscf_padding_cipher_finish(padding_cipher, out);
+
+        vsc_buffer_reset(out);
     }
 
-    //
-    // Cleanup.
-    //
     vscf_padding_cipher_destroy(&padding_cipher);
 }
 
-void
-decrypt__encrypted_1kb_chunked_with_pading_cipher_by_32_bytes_aes256_gcm__success(benchmark::State &state) {
-
-    inner_test__decrypt__with_aes256_gcm_and_padding_frame_160_with_AB_pad__match_given(state,
-            test_data_padding_cipher_ENCRYPTED_WITH_PADDING_1024_ZERO_BYTES,
-            test_data_padding_cipher_PLAINTEXT_1024_ZERO_BYTES);
-}
-
-
-BENCHMARK(encrypt__1kb_chunked_manualy_by_32_bytes_with_aes256_gcm__success);
-BENCHMARK(encrypt__1kb_chunked_with_pading_cipher_by_32_bytes_aes256_gcm__success);
-BENCHMARK(decrypt__encrypted_1kb_chunked_manualy_by_32_bytes_with_aes256_gcm__success);
-BENCHMARK(decrypt__encrypted_1kb_chunked_with_pading_cipher_by_32_bytes_aes256_gcm__success);
+BENCHMARK(bench_encrypt__1kb_chunked_by_32_bytes_with_aes256_gcm);
+BENCHMARK(bench_encrypt__1kb_chunked_by_32_bytes_with_pading_cipher_random_padding_and_aes256_gcm);
+BENCHMARK(bench_decrypt__1kb_chunked_by_32_bytes_with_aes256_gcm);
+BENCHMARK(bench_decrypt__1kb_chunked_by_32_bytes_with_pading_cipher_random_padding_and_aes256_gcm);
