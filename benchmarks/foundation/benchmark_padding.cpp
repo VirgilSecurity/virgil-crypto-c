@@ -60,9 +60,12 @@ encrypt__1kb_chunked_manualy_by_32_bytes_with_aes256_gcm__success(benchmark::Sta
     for (auto _ : state) {
 
         for (int i = 0; i < test_data_padding_cipher_PLAINTEXT_1024_ZERO_BYTES.len; i += 32) {
+            size_t chunk_size = i + 32 < test_data_padding_cipher_PLAINTEXT_1024_ZERO_BYTES.len
+                                        ? 32
+                                        : test_data_padding_cipher_PLAINTEXT_1024_ZERO_BYTES.len - i;
 
-            vscf_aes256_gcm_encrypt(
-                    aes256_gcm, vsc_data_slice_beg(test_data_padding_cipher_PLAINTEXT_1024_ZERO_BYTES, i, 32), out);
+            vscf_aes256_gcm_encrypt(aes256_gcm,
+                    vsc_data_slice_beg(test_data_padding_cipher_PLAINTEXT_1024_ZERO_BYTES, i, chunk_size), out);
             vsc_buffer_reset(out);
         }
     }
@@ -84,12 +87,13 @@ decrypt__encrypted_1kb_chunked_manualy_by_32_bytes_with_aes256_gcm__success(benc
 
 
     for (auto _ : state) {
-        // length of enc message is 1040 so it's not fully encrypted that's why i + 32
-        for (int i = 0; i + 32 < test_data_padding_cipher_ENCRYPTED_1024_ZERO_BYTES.len; i += 32) {
+        for (int i = 0; i < test_data_padding_cipher_ENCRYPTED_1024_ZERO_BYTES.len; i += 32) {
+            size_t chunk_size = i + 32 < test_data_padding_cipher_ENCRYPTED_1024_ZERO_BYTES.len
+                                        ? 32
+                                        : test_data_padding_cipher_ENCRYPTED_1024_ZERO_BYTES.len - i;
 
-
-            vscf_aes256_gcm_decrypt(
-                    aes256_gcm, vsc_data_slice_beg(test_data_padding_cipher_ENCRYPTED_1024_ZERO_BYTES, i, 32), out);
+            vscf_aes256_gcm_decrypt(aes256_gcm,
+                    vsc_data_slice_beg(test_data_padding_cipher_ENCRYPTED_1024_ZERO_BYTES, i, chunk_size), out);
             vsc_buffer_reset(out);
         }
     }
@@ -215,7 +219,7 @@ inner_test__decrypt__with_aes256_gcm_and_padding_frame_160_with_AB_pad__match_gi
 }
 
 void
-decrypt___encrypted_1kb_chunked_with_pading_cipher_by_32_bytes_aes256_gcm__success(benchmark::State &state) {
+decrypt__encrypted_1kb_chunked_with_pading_cipher_by_32_bytes_aes256_gcm__success(benchmark::State &state) {
 
     inner_test__decrypt__with_aes256_gcm_and_padding_frame_160_with_AB_pad__match_given(state,
             test_data_padding_cipher_ENCRYPTED_WITH_PADDING_1024_ZERO_BYTES,
@@ -224,7 +228,6 @@ decrypt___encrypted_1kb_chunked_with_pading_cipher_by_32_bytes_aes256_gcm__succe
 
 
 BENCHMARK(encrypt__1kb_chunked_manualy_by_32_bytes_with_aes256_gcm__success);
-BENCHMARK(decrypt__encrypted_1kb_chunked_manualy_by_32_bytes_with_aes256_gcm__success);
-
 BENCHMARK(encrypt__1kb_chunked_with_pading_cipher_by_32_bytes_aes256_gcm__success);
-BENCHMARK(decrypt___encrypted_1kb_chunked_with_pading_cipher_by_32_bytes_aes256_gcm__success);
+BENCHMARK(decrypt__encrypted_1kb_chunked_manualy_by_32_bytes_with_aes256_gcm__success);
+BENCHMARK(decrypt__encrypted_1kb_chunked_with_pading_cipher_by_32_bytes_aes256_gcm__success);
