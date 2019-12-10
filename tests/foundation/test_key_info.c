@@ -98,10 +98,8 @@ test__curve25519_ed25519_compound_key_alg_info__is_valid(void) {
 
     vscf_impl_t *ed25519_info = vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_ED25519));
 
-    vscf_impl_t *sha256_info = vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_SHA256));
-
     vscf_impl_t *alg_info = vscf_compound_key_alg_info_impl(vscf_compound_key_alg_info_new_with_infos_disown(
-            vscf_alg_id_COMPOUND_KEY, &curve25519_info, &ed25519_info, &sha256_info));
+            vscf_alg_id_COMPOUND_KEY, &curve25519_info, &ed25519_info));
 
     vscf_key_info_t *key_info = vscf_key_info_new_with_alg_info(alg_info);
 
@@ -183,8 +181,6 @@ test__curve25519_round5_ed25519_falcon_compound_chained_key_alg_info__is_valid(v
     //
     //  Create key alg info.
     //
-    vscf_impl_t *sha256_info = vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_SHA256));
-
     vscf_impl_t *curve25519_info =
             vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_CURVE25519));
 
@@ -202,7 +198,7 @@ test__curve25519_round5_ed25519_falcon_compound_chained_key_alg_info__is_valid(v
             vscf_chained_key_alg_info_new_with_infos_disown(vscf_alg_id_CHAINED_KEY, &ed25519_info, &falcon_info));
 
     vscf_impl_t *alg_info = vscf_compound_key_alg_info_impl(vscf_compound_key_alg_info_new_with_infos_disown(
-            vscf_alg_id_COMPOUND_KEY, &cipher_alg_info, &signer_alg_info, &sha256_info));
+            vscf_alg_id_COMPOUND_KEY, &cipher_alg_info, &signer_alg_info));
 
 
     vscf_key_info_t *key_info = vscf_key_info_new_with_alg_info(alg_info);

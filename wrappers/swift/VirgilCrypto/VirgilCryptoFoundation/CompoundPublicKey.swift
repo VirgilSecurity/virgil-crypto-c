@@ -40,8 +40,7 @@ import VSCFoundation
 ///
 /// Compound public key contains 2 public keys and signature:
 ///     - cipher key - is used for encryption;
-///     - signer key - is used for verifying;
-///     - signature - signature of the "cipher public key".
+///     - signer key - is used for verifying.
 @objc(VSCFCompoundPublicKey) public class CompoundPublicKey: NSObject, Key, PublicKey {
 
     /// Handle underlying C context.
@@ -84,13 +83,6 @@ import VSCFoundation
         let proxyResult = vscf_compound_public_key_signer_key(self.c_ctx)
 
         return FoundationImplementation.wrapPublicKey(use: proxyResult!)
-    }
-
-    /// Return cipher public key signature.
-    @objc public func signature() -> Data {
-        let proxyResult = vscf_compound_public_key_signature(self.c_ctx)
-
-        return Data.init(bytes: proxyResult.bytes, count: proxyResult.len)
     }
 
     /// Algorithm identifier the key belongs to.

@@ -270,12 +270,12 @@ vscf_compound_private_key_shallow_copy(vscf_compound_private_key_t *self) {
 
 //
 //  Perform initialization of pre-allocated context.
-//  Create a compound private key with a cipher private key,
-//  a signer private key, and a cipher public key signature.
+//  Create a compound private key with a cipher private key and
+//  a signer private key.
 //
 VSCF_PRIVATE void
 vscf_compound_private_key_init_with_keys(vscf_compound_private_key_t *self, vscf_impl_t **alg_info_ref,
-        const vscf_impl_t *cipher_key, const vscf_impl_t *signer_key, vsc_buffer_t **signature_ref) {
+        const vscf_impl_t *cipher_key, const vscf_impl_t *signer_key) {
 
     VSCF_ASSERT_PTR(self);
 
@@ -284,33 +284,33 @@ vscf_compound_private_key_init_with_keys(vscf_compound_private_key_t *self, vscf
     self->info = &info;
     self->refcnt = 1;
 
-    vscf_compound_private_key_init_ctx_with_keys(self, alg_info_ref, cipher_key, signer_key, signature_ref);
+    vscf_compound_private_key_init_ctx_with_keys(self, alg_info_ref, cipher_key, signer_key);
 }
 
 //
 //  Allocate implementation context and perform it's initialization.
-//  Create a compound private key with a cipher private key,
-//  a signer private key, and a cipher public key signature.
+//  Create a compound private key with a cipher private key and
+//  a signer private key.
 //
 VSCF_PRIVATE vscf_compound_private_key_t *
 vscf_compound_private_key_new_with_keys(vscf_impl_t **alg_info_ref, const vscf_impl_t *cipher_key,
-        const vscf_impl_t *signer_key, vsc_buffer_t **signature_ref) {
+        const vscf_impl_t *signer_key) {
 
     vscf_compound_private_key_t *self = vscf_compound_private_key_new();
 
-    vscf_compound_private_key_init_with_keys(self, alg_info_ref, cipher_key, signer_key, signature_ref);
+    vscf_compound_private_key_init_with_keys(self, alg_info_ref, cipher_key, signer_key);
 
     return self;
 }
 
 //
 //  Perform initialization of pre-allocated context.
-//  Create a compound private key with a cipher private key,
-//  a signer private key, and a cipher public key signature.
+//  Create a compound private key with a cipher private key and
+//  a signer private key.
 //
 VSCF_PRIVATE void
-vscf_compound_private_key_init_with_imported_keys(vscf_compound_private_key_t *self, const vscf_impl_t *alg_info,
-        vscf_impl_t **cipher_key_ref, vscf_impl_t **signer_key_ref, vsc_buffer_t **signature_ref) {
+vscf_compound_private_key_init_with_keys_disown(vscf_compound_private_key_t *self, const vscf_impl_t *alg_info,
+        vscf_impl_t **cipher_key_ref, vscf_impl_t **signer_key_ref) {
 
     VSCF_ASSERT_PTR(self);
 
@@ -319,21 +319,21 @@ vscf_compound_private_key_init_with_imported_keys(vscf_compound_private_key_t *s
     self->info = &info;
     self->refcnt = 1;
 
-    vscf_compound_private_key_init_ctx_with_imported_keys(self, alg_info, cipher_key_ref, signer_key_ref, signature_ref);
+    vscf_compound_private_key_init_ctx_with_keys_disown(self, alg_info, cipher_key_ref, signer_key_ref);
 }
 
 //
 //  Allocate implementation context and perform it's initialization.
-//  Create a compound private key with a cipher private key,
-//  a signer private key, and a cipher public key signature.
+//  Create a compound private key with a cipher private key and
+//  a signer private key.
 //
 VSCF_PRIVATE vscf_compound_private_key_t *
-vscf_compound_private_key_new_with_imported_keys(const vscf_impl_t *alg_info, vscf_impl_t **cipher_key_ref,
-        vscf_impl_t **signer_key_ref, vsc_buffer_t **signature_ref) {
+vscf_compound_private_key_new_with_keys_disown(const vscf_impl_t *alg_info, vscf_impl_t **cipher_key_ref,
+        vscf_impl_t **signer_key_ref) {
 
     vscf_compound_private_key_t *self = vscf_compound_private_key_new();
 
-    vscf_compound_private_key_init_with_imported_keys(self, alg_info, cipher_key_ref, signer_key_ref, signature_ref);
+    vscf_compound_private_key_init_with_keys_disown(self, alg_info, cipher_key_ref, signer_key_ref);
 
     return self;
 }

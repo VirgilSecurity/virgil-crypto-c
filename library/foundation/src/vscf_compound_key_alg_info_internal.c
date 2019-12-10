@@ -230,8 +230,7 @@ vscf_compound_key_alg_info_shallow_copy(vscf_compound_key_alg_info_t *self) {
 //
 VSCF_PRIVATE void
 vscf_compound_key_alg_info_init_with_infos(vscf_compound_key_alg_info_t *self, vscf_alg_id_t alg_id,
-        const vscf_impl_t *cipher_alg_info, const vscf_impl_t *signer_alg_info,
-        const vscf_impl_t *signer_hash_alg_info) {
+        const vscf_impl_t *cipher_alg_info, const vscf_impl_t *signer_alg_info) {
 
     VSCF_ASSERT_PTR(self);
 
@@ -240,7 +239,7 @@ vscf_compound_key_alg_info_init_with_infos(vscf_compound_key_alg_info_t *self, v
     self->info = &info;
     self->refcnt = 1;
 
-    vscf_compound_key_alg_info_init_ctx_with_infos(self, alg_id, cipher_alg_info, signer_alg_info, signer_hash_alg_info);
+    vscf_compound_key_alg_info_init_ctx_with_infos(self, alg_id, cipher_alg_info, signer_alg_info);
 }
 
 //
@@ -251,11 +250,11 @@ vscf_compound_key_alg_info_init_with_infos(vscf_compound_key_alg_info_t *self, v
 //
 VSCF_PRIVATE vscf_compound_key_alg_info_t *
 vscf_compound_key_alg_info_new_with_infos(vscf_alg_id_t alg_id, const vscf_impl_t *cipher_alg_info,
-        const vscf_impl_t *signer_alg_info, const vscf_impl_t *signer_hash_alg_info) {
+        const vscf_impl_t *signer_alg_info) {
 
     vscf_compound_key_alg_info_t *self = vscf_compound_key_alg_info_new();
 
-    vscf_compound_key_alg_info_init_with_infos(self, alg_id, cipher_alg_info, signer_alg_info, signer_hash_alg_info);
+    vscf_compound_key_alg_info_init_with_infos(self, alg_id, cipher_alg_info, signer_alg_info);
 
     return self;
 }
@@ -268,7 +267,7 @@ vscf_compound_key_alg_info_new_with_infos(vscf_alg_id_t alg_id, const vscf_impl_
 //
 VSCF_PRIVATE void
 vscf_compound_key_alg_info_init_with_infos_disown(vscf_compound_key_alg_info_t *self, vscf_alg_id_t alg_id,
-        vscf_impl_t **cipher_alg_info_ref, vscf_impl_t **signer_alg_info_ref, vscf_impl_t **signer_hash_alg_info_ref) {
+        vscf_impl_t **cipher_alg_info_ref, vscf_impl_t **signer_alg_info_ref) {
 
     VSCF_ASSERT_PTR(self);
 
@@ -277,7 +276,7 @@ vscf_compound_key_alg_info_init_with_infos_disown(vscf_compound_key_alg_info_t *
     self->info = &info;
     self->refcnt = 1;
 
-    vscf_compound_key_alg_info_init_ctx_with_infos_disown(self, alg_id, cipher_alg_info_ref, signer_alg_info_ref, signer_hash_alg_info_ref);
+    vscf_compound_key_alg_info_init_ctx_with_infos_disown(self, alg_id, cipher_alg_info_ref, signer_alg_info_ref);
 }
 
 //
@@ -288,11 +287,11 @@ vscf_compound_key_alg_info_init_with_infos_disown(vscf_compound_key_alg_info_t *
 //
 VSCF_PRIVATE vscf_compound_key_alg_info_t *
 vscf_compound_key_alg_info_new_with_infos_disown(vscf_alg_id_t alg_id, vscf_impl_t **cipher_alg_info_ref,
-        vscf_impl_t **signer_alg_info_ref, vscf_impl_t **signer_hash_alg_info_ref) {
+        vscf_impl_t **signer_alg_info_ref) {
 
     vscf_compound_key_alg_info_t *self = vscf_compound_key_alg_info_new();
 
-    vscf_compound_key_alg_info_init_with_infos_disown(self, alg_id, cipher_alg_info_ref, signer_alg_info_ref, signer_hash_alg_info_ref);
+    vscf_compound_key_alg_info_init_with_infos_disown(self, alg_id, cipher_alg_info_ref, signer_alg_info_ref);
 
     return self;
 }

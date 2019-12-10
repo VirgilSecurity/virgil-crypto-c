@@ -531,6 +531,7 @@ inner_test__import_public_key__then_export__are_equals(vsc_data_t public_key_dat
 
     vsc_buffer_t *exported_public_key =
             vsc_buffer_new_with_capacity(vscf_key_provider_exported_public_key_len(key_provider, public_key));
+
     TEST_ASSERT_EQUAL(
             vscf_status_SUCCESS, vscf_key_provider_export_public_key(key_provider, public_key, exported_public_key));
 

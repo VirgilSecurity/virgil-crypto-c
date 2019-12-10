@@ -81,13 +81,6 @@ import VSCFoundation
         return FoundationImplementation.wrapAlgInfo(use: proxyResult!)
     }
 
-    /// Return information about hash algorithm that is used with signing.
-    @objc public func signerHashAlgInfo() -> AlgInfo {
-        let proxyResult = vscf_compound_key_alg_info_signer_hash_alg_info(self.c_ctx)
-
-        return FoundationImplementation.wrapAlgInfo(use: proxyResult!)
-    }
-
     /// Provide algorithm identificator.
     @objc public func algId() -> AlgId {
         let proxyResult = vscf_compound_key_alg_info_alg_id(self.c_ctx)

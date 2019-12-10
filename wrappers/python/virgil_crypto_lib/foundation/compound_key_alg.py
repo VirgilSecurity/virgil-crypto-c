@@ -77,9 +77,6 @@ class CompoundKeyAlg(Alg, KeyAlg, KeyCipher, KeySigner):
     def set_random(self, random):
         self._lib_vscf_compound_key_alg.vscf_compound_key_alg_use_random(self.ctx, random.c_impl)
 
-    def set_hash(self, hash):
-        self._lib_vscf_compound_key_alg.vscf_compound_key_alg_use_hash(self.ctx, hash.c_impl)
-
     def alg_id(self):
         """Provide algorithm identificator."""
         result = self._lib_vscf_compound_key_alg.vscf_compound_key_alg_alg_id(self.ctx)

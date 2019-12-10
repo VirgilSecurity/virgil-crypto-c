@@ -85,12 +85,6 @@ class VscfCompoundKeyAlg(object):
         vscf_compound_key_alg_use_random.restype = None
         return vscf_compound_key_alg_use_random(ctx, random)
 
-    def vscf_compound_key_alg_use_hash(self, ctx, hash):
-        vscf_compound_key_alg_use_hash = self._lib.vscf_compound_key_alg_use_hash
-        vscf_compound_key_alg_use_hash.argtypes = [POINTER(vscf_compound_key_alg_t), POINTER(vscf_impl_t)]
-        vscf_compound_key_alg_use_hash.restype = None
-        return vscf_compound_key_alg_use_hash(ctx, hash)
-
     def vscf_compound_key_alg_alg_id(self, ctx):
         """Provide algorithm identificator."""
         vscf_compound_key_alg_alg_id = self._lib.vscf_compound_key_alg_alg_id

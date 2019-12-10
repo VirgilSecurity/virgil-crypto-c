@@ -3543,11 +3543,6 @@ public class FoundationJNI {
     */
     public native AlgInfo compoundKeyAlgInfo_signerAlgInfo(long cCtx);
 
-    /*
-    * Return information about hash algorithm that is used with signing.
-    */
-    public native AlgInfo compoundKeyAlgInfo_signerHashAlgInfo(long cCtx);
-
     public native long compoundKeyAlgInfo_new();
 
     public native void compoundKeyAlgInfo_close(long cCtx);
@@ -3566,11 +3561,6 @@ public class FoundationJNI {
     * Return public key suitable for verifying.
     */
     public native PublicKey compoundPublicKey_signerKey(long cCtx);
-
-    /*
-    * Return cipher public key signature.
-    */
-    public native byte[] compoundPublicKey_signature(long cCtx);
 
     public native long compoundPublicKey_new();
 
@@ -3612,11 +3602,6 @@ public class FoundationJNI {
     */
     public native PrivateKey compoundPrivateKey_signerKey(long cCtx);
 
-    /*
-    * Return the cipher public key signature.
-    */
-    public native byte[] compoundPrivateKey_signature(long cCtx);
-
     public native long compoundPrivateKey_new();
 
     public native void compoundPrivateKey_close(long cCtx);
@@ -3653,8 +3638,6 @@ public class FoundationJNI {
     public native PublicKey compoundPrivateKey_extractPublicKey(long cCtx);
 
     public native void compoundKeyAlg_setRandom(long cCtx, Random random);
-
-    public native void compoundKeyAlg_setHash(long cCtx, Hash hash);
 
     /*
     * Setup predefined values to the uninitialized class dependencies.

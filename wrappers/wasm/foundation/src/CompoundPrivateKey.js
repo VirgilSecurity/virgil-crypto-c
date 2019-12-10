@@ -43,8 +43,7 @@ const initCompoundPrivateKey = (Module, modules) => {
      *
      * Compound private key contains 2 private keys and signature:
      * - cipher key - is used for decryption;
-     * - signer key - is used for signing;
-     * - signature - signature of the "cipher public key".
+     * - signer key - is used for signing.
      */
     class CompoundPrivateKey {
 
@@ -201,28 +200,6 @@ const initCompoundPrivateKey = (Module, modules) => {
 
             const jsResult = modules.FoundationInterface.newAndUseCContext(proxyResult);
             return jsResult;
-        }
-
-        /**
-         * Return the cipher public key signature.
-         */
-        signature() {
-            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
-            //  Create C structure vsc_data_t.
-            const dataResultCtxSize = Module._vsc_data_ctx_size();
-            const dataResultCtxPtr = Module._malloc(dataResultCtxSize);
-
-            try {
-                Module._vscf_compound_private_key_signature(dataResultCtxPtr, this.ctxPtr);
-
-                const dataResultSize = Module._vsc_data_len(dataResultCtxPtr);
-                const dataResultPtr = Module._vsc_data_bytes(dataResultCtxPtr);
-                const dataResult = Module.HEAPU8.slice(dataResultPtr, dataResultPtr + dataResultSize);
-                return dataResult;
-            } finally {
-                Module._free(dataResultCtxPtr);
-            }
         }
     }
 

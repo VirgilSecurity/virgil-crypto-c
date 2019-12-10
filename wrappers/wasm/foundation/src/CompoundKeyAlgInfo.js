@@ -124,19 +124,6 @@ const initCompoundKeyAlgInfo = (Module, modules) => {
             const jsResult = modules.FoundationInterface.newAndUseCContext(proxyResult);
             return jsResult;
         }
-
-        /**
-         * Return information about hash algorithm that is used with signing.
-         */
-        signerHashAlgInfo() {
-            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
-            let proxyResult;
-            proxyResult = Module._vscf_compound_key_alg_info_signer_hash_alg_info(this.ctxPtr);
-
-            const jsResult = modules.FoundationInterface.newAndUseCContext(proxyResult);
-            return jsResult;
-        }
     }
 
     return CompoundKeyAlgInfo;

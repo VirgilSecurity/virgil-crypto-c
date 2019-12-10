@@ -36,7 +36,6 @@
 from virgil_crypto_lib._libs import *
 from ctypes import *
 from ._vscf_impl import vscf_impl_t
-from virgil_crypto_lib.common._c_bridge import vsc_data_t
 
 
 class vscf_compound_public_key_t(Structure):
@@ -48,8 +47,7 @@ class VscfCompoundPublicKey(object):
 
     Compound public key contains 2 public keys and signature:
         - cipher key - is used for encryption;
-        - signer key - is used for verifying;
-        - signature - signature of the "cipher public key"."""
+        - signer key - is used for verifying."""
 
     def __init__(self):
         """Create underlying C context."""
@@ -124,13 +122,6 @@ class VscfCompoundPublicKey(object):
         vscf_compound_public_key_signer_key.argtypes = [POINTER(vscf_compound_public_key_t)]
         vscf_compound_public_key_signer_key.restype = POINTER(vscf_impl_t)
         return vscf_compound_public_key_signer_key(ctx)
-
-    def vscf_compound_public_key_signature(self, ctx):
-        """Return cipher public key signature."""
-        vscf_compound_public_key_signature = self._lib.vscf_compound_public_key_signature
-        vscf_compound_public_key_signature.argtypes = [POINTER(vscf_compound_public_key_t)]
-        vscf_compound_public_key_signature.restype = vsc_data_t
-        return vscf_compound_public_key_signature(ctx)
 
     def vscf_compound_public_key_shallow_copy(self, ctx):
         vscf_compound_public_key_shallow_copy = self._lib.vscf_compound_public_key_shallow_copy

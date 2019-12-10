@@ -142,13 +142,6 @@ const initCompoundKeyAlg = (Module, modules) => {
             Module._vscf_compound_key_alg_use_random(this.ctxPtr, random.ctxPtr)
         }
 
-        set hash(hash) {
-            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-            precondition.ensureImplementInterface('hash', hash, 'Foundation.Hash', modules.FoundationInterfaceTag.HASH, modules.FoundationInterface);
-            Module._vscf_compound_key_alg_release_hash(this.ctxPtr)
-            Module._vscf_compound_key_alg_use_hash(this.ctxPtr, hash.ctxPtr)
-        }
-
         /**
          * Provide algorithm identificator.
          */

@@ -12431,16 +12431,6 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
     return ret;
 }
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_compoundKeyAlgInfo_1signerHashAlgInfo (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
-    // Cast class context
-    vscf_compound_key_alg_info_t /*9*/* compound_key_alg_info_ctx = *(vscf_compound_key_alg_info_t /*9*/**) &c_ctx;
-
-    const vscf_impl_t */*6*/ proxyResult = vscf_compound_key_alg_info_signer_hash_alg_info(compound_key_alg_info_ctx /*a1*/);
-    vscf_impl_shallow_copy((vscf_impl_t */*6*/) proxyResult);
-    jobject ret = wrapAlgInfo(jenv, jobj, proxyResult);
-    return ret;
-}
-
 JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_compoundKeyAlgInfo_1new__ (JNIEnv *jenv, jobject jobj) {
     jlong c_ctx = 0;
     *(vscf_compound_key_alg_info_t **)&c_ctx = vscf_compound_key_alg_info_new();
@@ -12486,19 +12476,6 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
     const vscf_impl_t */*6*/ proxyResult = vscf_compound_public_key_signer_key(compound_public_key_ctx /*a1*/);
     vscf_impl_shallow_copy((vscf_impl_t */*6*/) proxyResult);
     jobject ret = wrapPublicKey(jenv, jobj, proxyResult);
-    return ret;
-}
-
-JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_compoundPublicKey_1signature (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
-    // Cast class context
-    vscf_compound_public_key_t /*9*/* compound_public_key_ctx = *(vscf_compound_public_key_t /*9*/**) &c_ctx;
-
-    const vsc_data_t /*3*/ proxyResult = vscf_compound_public_key_signature(compound_public_key_ctx /*a1*/);
-    jbyteArray ret = NULL;
-    if (proxyResult.len > 0) {
-        ret = (*jenv)->NewByteArray(jenv, proxyResult.len);
-        (*jenv)->SetByteArrayRegion (jenv, ret, 0, proxyResult.len, (jbyte*) proxyResult.bytes);
-    }
     return ret;
 }
 
@@ -12581,19 +12558,6 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
     const vscf_impl_t */*6*/ proxyResult = vscf_compound_private_key_signer_key(compound_private_key_ctx /*a1*/);
     vscf_impl_shallow_copy((vscf_impl_t */*6*/) proxyResult);
     jobject ret = wrapPrivateKey(jenv, jobj, proxyResult);
-    return ret;
-}
-
-JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_compoundPrivateKey_1signature (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
-    // Cast class context
-    vscf_compound_private_key_t /*9*/* compound_private_key_ctx = *(vscf_compound_private_key_t /*9*/**) &c_ctx;
-
-    const vsc_data_t /*3*/ proxyResult = vscf_compound_private_key_signature(compound_private_key_ctx /*a1*/);
-    jbyteArray ret = NULL;
-    if (proxyResult.len > 0) {
-        ret = (*jenv)->NewByteArray(jenv, proxyResult.len);
-        (*jenv)->SetByteArrayRegion (jenv, ret, 0, proxyResult.len, (jbyte*) proxyResult.bytes);
-    }
     return ret;
 }
 
@@ -12682,22 +12646,6 @@ JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_c
 
     vscf_compound_key_alg_release_random((vscf_compound_key_alg_t /*9*/ *) c_ctx);
     vscf_compound_key_alg_use_random((vscf_compound_key_alg_t /*9*/ *) c_ctx, random);
-}
-
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_compoundKeyAlg_1setHash (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jhash) {
-    jclass hash_cls = (*jenv)->GetObjectClass(jenv, jhash);
-    if (NULL == hash_cls) {
-        VSCF_ASSERT("Class Hash not found.");
-    }
-    jfieldID hash_fidCtx = (*jenv)->GetFieldID(jenv, hash_cls, "cCtx", "J");
-    if (NULL == hash_fidCtx) {
-        VSCF_ASSERT("Class 'Hash' has no field 'cCtx'.");
-    }
-    jlong hash_c_ctx = (*jenv)->GetLongField(jenv, jhash, hash_fidCtx);
-    vscf_impl_t */*6*/ hash = *(vscf_impl_t */*6*/*) &hash_c_ctx;
-
-    vscf_compound_key_alg_release_hash((vscf_compound_key_alg_t /*9*/ *) c_ctx);
-    vscf_compound_key_alg_use_hash((vscf_compound_key_alg_t /*9*/ *) c_ctx, hash);
 }
 
 JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_compoundKeyAlg_1setupDefaults (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
