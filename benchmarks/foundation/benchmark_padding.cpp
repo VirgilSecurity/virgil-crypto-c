@@ -159,7 +159,7 @@ bench_encrypt__data_chunked_by_32_bytes_with_pading_cipher_random_padding_and_ae
 }
 
 void
-bench_decrypt__1kb_chunked_by_32_bytes_with_pading_cipher_random_padding_and_aes256_gcm(benchmark::State &state) {
+bench_decrypt__data_chunked_by_32_bytes_with_pading_cipher_random_padding_and_aes256_gcm(benchmark::State &state) {
     vscf_fake_random_t *fake_random = vscf_fake_random_new();
     vscf_fake_random_setup_source_byte(fake_random, 0xAB);
 
@@ -213,11 +213,18 @@ bench_decrypt__1kb_chunked_by_32_bytes_with_pading_cipher_random_padding_and_aes
     vscf_padding_cipher_destroy(&padding_cipher);
 }
 
-BENCHMARK(bench_encrypt__data_chunked_by_32_bytes_with_aes256_gcm)->Arg(1024)->Arg(1024 * 1024 * 4);
-BENCHMARK(bench_decrypt__data_chunked_by_32_bytes_with_aes256_gcm)->Arg(1024)->Arg(1024 * 1024 * 4);
+BENCHMARK(bench_encrypt__data_chunked_by_32_bytes_with_aes256_gcm)->Arg(1024);
+BENCHMARK(bench_encrypt__data_chunked_by_32_bytes_with_pading_cipher_random_padding_and_aes256_gcm)->Arg(1024);
+
+BENCHMARK(bench_encrypt__data_chunked_by_32_bytes_with_aes256_gcm)->Arg(1024 * 1024 * 4);
 BENCHMARK(bench_encrypt__data_chunked_by_32_bytes_with_pading_cipher_random_padding_and_aes256_gcm)
-        ->Arg(1024)
         ->Arg(1024 * 1024 * 4);
-BENCHMARK(bench_decrypt__1kb_chunked_by_32_bytes_with_pading_cipher_random_padding_and_aes256_gcm)
-        ->Arg(1024)
+
+
+BENCHMARK(bench_decrypt__data_chunked_by_32_bytes_with_aes256_gcm)->Arg(1024);
+BENCHMARK(bench_decrypt__data_chunked_by_32_bytes_with_pading_cipher_random_padding_and_aes256_gcm)->Arg(1024);
+
+
+BENCHMARK(bench_decrypt__data_chunked_by_32_bytes_with_aes256_gcm)->Arg(1024 * 1024 * 4);
+BENCHMARK(bench_decrypt__data_chunked_by_32_bytes_with_pading_cipher_random_padding_and_aes256_gcm)
         ->Arg(1024 * 1024 * 4);
