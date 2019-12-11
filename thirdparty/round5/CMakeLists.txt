@@ -100,6 +100,8 @@ ExternalProject_Add(round5-ext
             https://github.com/round5/code
         GIT_TAG
             24b9738b0e39ce2115cc6b1f639359f5f459bd3e
+        GIT_CONFIG
+            core.symlinks=true
         UPDATE_COMMAND
             ${CMAKE_COMMAND} -E copy_if_different
                     "${CMAKE_CURRENT_LIST_DIR}/round5.CMakeLists.txt"
