@@ -46,6 +46,7 @@
 #include <round5/rng.h>
 #include <round5/r5_cpa_kem.h>
 #include <round5/r5_cca_pke.h>
+#include <round5/r5_parameter_sets.h>
 
 #define ROUND5_KEM_ENABLED (CRYPTO_CIPHERTEXTBYTES != 0)
 #define ROUND5_PKE_ENABLED (CRYPTO_CIPHERTEXTBYTES == 0)
@@ -58,10 +59,7 @@ test__cpa_kem_keygen__returns_success(void) {
 
     randombytes_init((unsigned char *)test_data_round5_RNG_SEED.bytes, NULL, 1);
 
-    parameters *params = set_parameters_from_api();
-    TEST_ASSERT_NOT_NULL(params);
-
-    int status = r5_cpa_kem_keygen(pk, sk, params);
+    int status = r5_cpa_kem_keygen(pk, sk);
     TEST_ASSERT_EQUAL(0, status);
 #else
     TEST_IGNORE_MESSAGE("KEM is not available");
@@ -78,13 +76,10 @@ test__cpa_kem_encapsulate__returns_success(void) {
 
     randombytes_init((unsigned char *)test_data_round5_RNG_SEED.bytes, NULL, 1);
 
-    parameters *params = set_parameters_from_api();
-    TEST_ASSERT_NOT_NULL(params);
-
-    int status = r5_cpa_kem_keygen(pk, sk, params);
+    int status = r5_cpa_kem_keygen(pk, sk);
     TEST_ASSERT_EQUAL(0, status);
 
-    status = r5_cpa_kem_encapsulate(ciphertext, shared_secret, pk, params);
+    status = r5_cpa_kem_encapsulate(ciphertext, shared_secret, pk);
     TEST_ASSERT_EQUAL(0, status);
 #else
     TEST_IGNORE_MESSAGE("KEM is not available");
@@ -96,16 +91,13 @@ test__cca_pke_keygen__return_success(void) {
 #if ROUND5_PKE_ENABLED
     randombytes_init((unsigned char *)test_data_round5_RNG_SEED.bytes, NULL, 1);
 
-    parameters *params = set_parameters_from_api();
-    TEST_ASSERT_NOT_NULL(params);
-
-    const size_t sk_len = get_crypto_secret_key_bytes(params, 1);
-    const size_t pk_len = get_crypto_public_key_bytes(params);
+    const size_t sk_len = CRYPTO_SECRETKEYBYTES;
+    const size_t pk_len = CRYPTO_PUBLICKEYBYTES;
 
     vsc_buffer_t *sk = vsc_buffer_new_with_capacity(sk_len);
     vsc_buffer_t *pk = vsc_buffer_new_with_capacity(pk_len);
 
-    int status = r5_cca_pke_keygen(vsc_buffer_unused_bytes(pk), vsc_buffer_unused_bytes(sk), params);
+    int status = r5_cca_pke_keygen(vsc_buffer_unused_bytes(pk), vsc_buffer_unused_bytes(sk));
     TEST_ASSERT_EQUAL(0, status);
 
     vsc_buffer_inc_used(pk, pk_len);
@@ -123,16 +115,13 @@ test__cca_pke_encrypt__return_success(void) {
 #if ROUND5_PKE_ENABLED
     randombytes_init((unsigned char *)test_data_round5_RNG_SEED.bytes, NULL, 1);
 
-    parameters *params = set_parameters_from_api();
-    TEST_ASSERT_NOT_NULL(params);
-
-    const size_t enc_overhead_len = get_crypto_bytes(params, 1 /* is_encrypt */);
+    const size_t enc_overhead_len = CRYPTO_BYTES;
     const size_t enc_len_max = enc_overhead_len + test_data_round5_ND_5PKE_5D_MESSAGE.len;
     vsc_buffer_t *enc = vsc_buffer_new_with_capacity(enc_len_max);
 
     unsigned long long enc_len = 0;
     int status = r5_cca_pke_encrypt(vsc_buffer_unused_bytes(enc), &enc_len, test_data_round5_ND_5PKE_5D_MESSAGE.bytes,
-            test_data_round5_ND_5PKE_5D_MESSAGE.len, test_data_round5_ND_5PKE_5D_PUBLIC_KEY.bytes, params);
+            test_data_round5_ND_5PKE_5D_MESSAGE.len, test_data_round5_ND_5PKE_5D_PUBLIC_KEY.bytes);
     TEST_ASSERT_EQUAL(0, status);
     vsc_buffer_inc_used(enc, enc_len);
 
@@ -147,17 +136,14 @@ test__cca_pke_decrypt__return_success(void) {
 #if ROUND5_PKE_ENABLED
     randombytes_init((unsigned char *)test_data_round5_RNG_SEED.bytes, NULL, 1);
 
-    parameters *params = set_parameters_from_api();
-    TEST_ASSERT_NOT_NULL(params);
-
-    const size_t enc_overhead_len = get_crypto_bytes(params, 1 /* is_encrypt */);
+    const size_t enc_overhead_len = CRYPTO_BYTES;
     const size_t message_len_max = test_data_round5_ND_5PKE_5D_ENC_MESSAGE.len - enc_overhead_len;
     vsc_buffer_t *message = vsc_buffer_new_with_capacity(message_len_max);
 
     unsigned long long message_len = 0;
     int status = r5_cca_pke_decrypt(vsc_buffer_unused_bytes(message), &message_len,
             test_data_round5_ND_5PKE_5D_ENC_MESSAGE.bytes, test_data_round5_ND_5PKE_5D_ENC_MESSAGE.len,
-            test_data_round5_ND_5PKE_5D_PRIVATE_KEY.bytes, params);
+            test_data_round5_ND_5PKE_5D_PRIVATE_KEY.bytes);
     TEST_ASSERT_EQUAL(0, status);
     vsc_buffer_inc_used(message, message_len);
 

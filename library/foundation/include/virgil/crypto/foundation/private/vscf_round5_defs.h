@@ -93,10 +93,6 @@ struct vscf_round5_t {
     //  Dependency to the interface 'random'.
     //
     vscf_impl_t *random;
-    //
-    //  Implementation specific context.
-    //
-    void *params;
 };
 
 
