@@ -247,4 +247,52 @@ function php_format_low_level_status_exception (in_enum, in_php_module)
     return my._res
 endfunction
 
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_format_low_level_wrapp_func_const (in_name, in_prefix, in_is_h)
+    check_arguments (my, "in_name, in_prefix, in_is_h", my)
+
+    my._func_name = php_derive_low_level_wrapp_func_const (my.in_name, my.in_prefix)
+
+    if my.in_is_h = 1
+        my._res = format_left("\
+        $(my.in_prefix:UPPER)_PUBLIC const char*
+        $(my._func_name:)(void);
+        ", 0)
+    else
+        my._res = format_left("\
+        $(my.in_prefix:UPPER)_PUBLIC const char* $(my._func_name:)(void) {
+            return $(my.in_prefix:c)_$(my.in_name:)_php_res_name;
+        }
+        ", 0)
+    endif
+
+    return my._res
+endfunction
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_format_low_level_wrapp_func_rr (in_name, in_prefix, in_is_h)
+    check_arguments (my, "in_name, in_prefix, in_is_h", my)
+
+    my._func_name = php_derive_low_level_wrapp_func_rr (my.in_name, my.in_prefix)
+
+    if my.in_is_h = 1
+        my._res = format_left("\
+        $(my.in_prefix:UPPER)_PUBLIC int 
+        $(my._func_name:)(void);
+        ", 0)
+    else
+        my._res = format_left("\
+        $(my.in_prefix:UPPER)_PUBLIC int $(my._func_name:)(void) {
+            return le_$(my.in_prefix:)_$(my.in_name:);
+        }
+        ", 0)
+    endif
+
+    return my._res
+endfunction
+
 .endtemplate
