@@ -162,6 +162,41 @@ static const char vscr_ratchet_group_participants_ids_t_php_res_name[] = "vscr_r
 static const char vscr_ratchet_group_session_t_php_res_name[] = "vscr_ratchet_group_session_t";
 
 //
+// Constants func wrapping
+//
+VSCR_PUBLIC const char* vs_get_vscr_ratchet_key_id_t_php_res_name(void) {
+    return vscr_ratchet_key_id_t_php_res_name;
+}
+
+VSCR_PUBLIC const char* vs_get_vscr_ratchet_message_t_php_res_name(void) {
+    return vscr_ratchet_message_t_php_res_name;
+}
+
+VSCR_PUBLIC const char* vs_get_vscr_ratchet_session_t_php_res_name(void) {
+    return vscr_ratchet_session_t_php_res_name;
+}
+
+VSCR_PUBLIC const char* vs_get_vscr_ratchet_group_participants_info_t_php_res_name(void) {
+    return vscr_ratchet_group_participants_info_t_php_res_name;
+}
+
+VSCR_PUBLIC const char* vs_get_vscr_ratchet_group_message_t_php_res_name(void) {
+    return vscr_ratchet_group_message_t_php_res_name;
+}
+
+VSCR_PUBLIC const char* vs_get_vscr_ratchet_group_ticket_t_php_res_name(void) {
+    return vscr_ratchet_group_ticket_t_php_res_name;
+}
+
+VSCR_PUBLIC const char* vs_get_vscr_ratchet_group_participants_ids_t_php_res_name(void) {
+    return vscr_ratchet_group_participants_ids_t_php_res_name;
+}
+
+VSCR_PUBLIC const char* vs_get_vscr_ratchet_group_session_t_php_res_name(void) {
+    return vscr_ratchet_group_session_t_php_res_name;
+}
+
+//
 // Registered resources
 //
 int le_vscr_ratchet_key_id_t;
@@ -172,6 +207,41 @@ int le_vscr_ratchet_group_message_t;
 int le_vscr_ratchet_group_ticket_t;
 int le_vscr_ratchet_group_participants_ids_t;
 int le_vscr_ratchet_group_session_t;
+
+//
+// Registered resources func wrapping
+//
+VSCR_PUBLIC int vs_get_le_vscr_ratchet_key_id_t(void) {
+    return le_vscr_ratchet_key_id_t;
+}
+
+VSCR_PUBLIC int vs_get_le_vscr_ratchet_message_t(void) {
+    return le_vscr_ratchet_message_t;
+}
+
+VSCR_PUBLIC int vs_get_le_vscr_ratchet_session_t(void) {
+    return le_vscr_ratchet_session_t;
+}
+
+VSCR_PUBLIC int vs_get_le_vscr_ratchet_group_participants_info_t(void) {
+    return le_vscr_ratchet_group_participants_info_t;
+}
+
+VSCR_PUBLIC int vs_get_le_vscr_ratchet_group_message_t(void) {
+    return le_vscr_ratchet_group_message_t;
+}
+
+VSCR_PUBLIC int vs_get_le_vscr_ratchet_group_ticket_t(void) {
+    return le_vscr_ratchet_group_ticket_t;
+}
+
+VSCR_PUBLIC int vs_get_le_vscr_ratchet_group_participants_ids_t(void) {
+    return le_vscr_ratchet_group_participants_ids_t;
+}
+
+VSCR_PUBLIC int vs_get_le_vscr_ratchet_group_session_t(void) {
+    return le_vscr_ratchet_group_session_t;
+}
 
 //
 // Extension init functions declaration

@@ -66,7 +66,15 @@ const char VSCP_PYTHIA_PHP_VERSION[] = "0.11.1";
 const char VSCP_PYTHIA_PHP_EXTNAME[] = "vscp_pythia_php";
 
 //
+// Constants func wrapping
+//
+
+//
 // Registered resources
+//
+
+//
+// Registered resources func wrapping
 //
 
 //

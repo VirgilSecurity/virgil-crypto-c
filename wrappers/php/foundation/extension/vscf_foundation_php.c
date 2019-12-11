@@ -326,6 +326,101 @@ static const char vscf_signed_data_info_t_php_res_name[] = "vscf_signed_data_inf
 static const char vscf_footer_info_t_php_res_name[] = "vscf_footer_info_t";
 
 //
+// Constants func wrapping
+//
+VSCF_PUBLIC const char* vs_get_vscf_impl_t_php_res_name(void) {
+    return vscf_impl_t_php_res_name;
+}
+
+VSCF_PUBLIC const char* vs_get_vscf_message_info_t_php_res_name(void) {
+    return vscf_message_info_t_php_res_name;
+}
+
+VSCF_PUBLIC const char* vs_get_vscf_key_recipient_info_t_php_res_name(void) {
+    return vscf_key_recipient_info_t_php_res_name;
+}
+
+VSCF_PUBLIC const char* vs_get_vscf_key_recipient_info_list_t_php_res_name(void) {
+    return vscf_key_recipient_info_list_t_php_res_name;
+}
+
+VSCF_PUBLIC const char* vs_get_vscf_password_recipient_info_t_php_res_name(void) {
+    return vscf_password_recipient_info_t_php_res_name;
+}
+
+VSCF_PUBLIC const char* vs_get_vscf_password_recipient_info_list_t_php_res_name(void) {
+    return vscf_password_recipient_info_list_t_php_res_name;
+}
+
+VSCF_PUBLIC const char* vs_get_vscf_ecies_t_php_res_name(void) {
+    return vscf_ecies_t_php_res_name;
+}
+
+VSCF_PUBLIC const char* vs_get_vscf_recipient_cipher_t_php_res_name(void) {
+    return vscf_recipient_cipher_t_php_res_name;
+}
+
+VSCF_PUBLIC const char* vs_get_vscf_message_info_custom_params_t_php_res_name(void) {
+    return vscf_message_info_custom_params_t_php_res_name;
+}
+
+VSCF_PUBLIC const char* vs_get_vscf_key_provider_t_php_res_name(void) {
+    return vscf_key_provider_t_php_res_name;
+}
+
+VSCF_PUBLIC const char* vs_get_vscf_signer_t_php_res_name(void) {
+    return vscf_signer_t_php_res_name;
+}
+
+VSCF_PUBLIC const char* vs_get_vscf_verifier_t_php_res_name(void) {
+    return vscf_verifier_t_php_res_name;
+}
+
+VSCF_PUBLIC const char* vs_get_vscf_brainkey_client_t_php_res_name(void) {
+    return vscf_brainkey_client_t_php_res_name;
+}
+
+VSCF_PUBLIC const char* vs_get_vscf_brainkey_server_t_php_res_name(void) {
+    return vscf_brainkey_server_t_php_res_name;
+}
+
+VSCF_PUBLIC const char* vs_get_vscf_group_session_message_t_php_res_name(void) {
+    return vscf_group_session_message_t_php_res_name;
+}
+
+VSCF_PUBLIC const char* vs_get_vscf_group_session_ticket_t_php_res_name(void) {
+    return vscf_group_session_ticket_t_php_res_name;
+}
+
+VSCF_PUBLIC const char* vs_get_vscf_group_session_t_php_res_name(void) {
+    return vscf_group_session_t_php_res_name;
+}
+
+VSCF_PUBLIC const char* vs_get_vscf_message_info_editor_t_php_res_name(void) {
+    return vscf_message_info_editor_t_php_res_name;
+}
+
+VSCF_PUBLIC const char* vs_get_vscf_signer_info_t_php_res_name(void) {
+    return vscf_signer_info_t_php_res_name;
+}
+
+VSCF_PUBLIC const char* vs_get_vscf_signer_info_list_t_php_res_name(void) {
+    return vscf_signer_info_list_t_php_res_name;
+}
+
+VSCF_PUBLIC const char* vs_get_vscf_message_info_footer_t_php_res_name(void) {
+    return vscf_message_info_footer_t_php_res_name;
+}
+
+VSCF_PUBLIC const char* vs_get_vscf_signed_data_info_t_php_res_name(void) {
+    return vscf_signed_data_info_t_php_res_name;
+}
+
+VSCF_PUBLIC const char* vs_get_vscf_footer_info_t_php_res_name(void) {
+    return vscf_footer_info_t_php_res_name;
+}
+
+//
 // Registered resources
 //
 int le_vscf_impl_t;
@@ -351,6 +446,101 @@ int le_vscf_signer_info_list_t;
 int le_vscf_message_info_footer_t;
 int le_vscf_signed_data_info_t;
 int le_vscf_footer_info_t;
+
+//
+// Registered resources func wrapping
+//
+VSCF_PUBLIC int vs_get_le_vscf_impl_t(void) {
+    return le_vscf_impl_t;
+}
+
+VSCF_PUBLIC int vs_get_le_vscf_message_info_t(void) {
+    return le_vscf_message_info_t;
+}
+
+VSCF_PUBLIC int vs_get_le_vscf_key_recipient_info_t(void) {
+    return le_vscf_key_recipient_info_t;
+}
+
+VSCF_PUBLIC int vs_get_le_vscf_key_recipient_info_list_t(void) {
+    return le_vscf_key_recipient_info_list_t;
+}
+
+VSCF_PUBLIC int vs_get_le_vscf_password_recipient_info_t(void) {
+    return le_vscf_password_recipient_info_t;
+}
+
+VSCF_PUBLIC int vs_get_le_vscf_password_recipient_info_list_t(void) {
+    return le_vscf_password_recipient_info_list_t;
+}
+
+VSCF_PUBLIC int vs_get_le_vscf_ecies_t(void) {
+    return le_vscf_ecies_t;
+}
+
+VSCF_PUBLIC int vs_get_le_vscf_recipient_cipher_t(void) {
+    return le_vscf_recipient_cipher_t;
+}
+
+VSCF_PUBLIC int vs_get_le_vscf_message_info_custom_params_t(void) {
+    return le_vscf_message_info_custom_params_t;
+}
+
+VSCF_PUBLIC int vs_get_le_vscf_key_provider_t(void) {
+    return le_vscf_key_provider_t;
+}
+
+VSCF_PUBLIC int vs_get_le_vscf_signer_t(void) {
+    return le_vscf_signer_t;
+}
+
+VSCF_PUBLIC int vs_get_le_vscf_verifier_t(void) {
+    return le_vscf_verifier_t;
+}
+
+VSCF_PUBLIC int vs_get_le_vscf_brainkey_client_t(void) {
+    return le_vscf_brainkey_client_t;
+}
+
+VSCF_PUBLIC int vs_get_le_vscf_brainkey_server_t(void) {
+    return le_vscf_brainkey_server_t;
+}
+
+VSCF_PUBLIC int vs_get_le_vscf_group_session_message_t(void) {
+    return le_vscf_group_session_message_t;
+}
+
+VSCF_PUBLIC int vs_get_le_vscf_group_session_ticket_t(void) {
+    return le_vscf_group_session_ticket_t;
+}
+
+VSCF_PUBLIC int vs_get_le_vscf_group_session_t(void) {
+    return le_vscf_group_session_t;
+}
+
+VSCF_PUBLIC int vs_get_le_vscf_message_info_editor_t(void) {
+    return le_vscf_message_info_editor_t;
+}
+
+VSCF_PUBLIC int vs_get_le_vscf_signer_info_t(void) {
+    return le_vscf_signer_info_t;
+}
+
+VSCF_PUBLIC int vs_get_le_vscf_signer_info_list_t(void) {
+    return le_vscf_signer_info_list_t;
+}
+
+VSCF_PUBLIC int vs_get_le_vscf_message_info_footer_t(void) {
+    return le_vscf_message_info_footer_t;
+}
+
+VSCF_PUBLIC int vs_get_le_vscf_signed_data_info_t(void) {
+    return le_vscf_signed_data_info_t;
+}
+
+VSCF_PUBLIC int vs_get_le_vscf_footer_info_t(void) {
+    return le_vscf_footer_info_t;
+}
 
 //
 // Extension init functions declaration

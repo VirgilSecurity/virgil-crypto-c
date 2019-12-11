@@ -1456,7 +1456,8 @@ function php_map_low_level_extension (in_php_project, out_php_module)
     endnew
 
     new constants_func_wrapp to my.out_php_module
-        . = my._constants_func_wrapp
+        my._c = php_format_extension_comment ("Constants func wrapping")
+        . = my._c + my._constants_func_wrapp
     endnew
 
     new header_include to my.out_php_module
@@ -1465,23 +1466,21 @@ function php_map_low_level_extension (in_php_project, out_php_module)
 
     new header_constants to my.out_php_module
         my._c = php_format_extension_comment ("Constants")
-
         . = my._c + my._header_constants
     endnew
 
     new registered_resources to my.out_php_module
         my._c = php_format_extension_comment ("Registered resources")
-
         . = my._c + my._registered_resources
     endnew
 
     new registered_resources_func_wrapp to my.out_php_module
-        . = my._registered_resources_func_wrapp
+        my._c = php_format_extension_comment ("Registered resources func wrapping")
+        . = my._c + my._registered_resources_func_wrapp
     endnew
 
     new header_registered_resources to my.out_php_module
         my._c = php_format_extension_comment ("Registered resources")
-
         . = my._c + my._header_registered_resources
     endnew
 

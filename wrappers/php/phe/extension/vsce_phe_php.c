@@ -86,11 +86,41 @@ static const char vsce_phe_client_t_php_res_name[] = "vsce_phe_client_t";
 static const char vsce_phe_cipher_t_php_res_name[] = "vsce_phe_cipher_t";
 
 //
+// Constants func wrapping
+//
+VSCE_PUBLIC const char* vs_get_vsce_phe_server_t_php_res_name(void) {
+    return vsce_phe_server_t_php_res_name;
+}
+
+VSCE_PUBLIC const char* vs_get_vsce_phe_client_t_php_res_name(void) {
+    return vsce_phe_client_t_php_res_name;
+}
+
+VSCE_PUBLIC const char* vs_get_vsce_phe_cipher_t_php_res_name(void) {
+    return vsce_phe_cipher_t_php_res_name;
+}
+
+//
 // Registered resources
 //
 int le_vsce_phe_server_t;
 int le_vsce_phe_client_t;
 int le_vsce_phe_cipher_t;
+
+//
+// Registered resources func wrapping
+//
+VSCE_PUBLIC int vs_get_le_vsce_phe_server_t(void) {
+    return le_vsce_phe_server_t;
+}
+
+VSCE_PUBLIC int vs_get_le_vsce_phe_client_t(void) {
+    return le_vsce_phe_client_t;
+}
+
+VSCE_PUBLIC int vs_get_le_vsce_phe_cipher_t(void) {
+    return le_vsce_phe_cipher_t;
+}
 
 //
 // Extension init functions declaration
