@@ -133,21 +133,10 @@ endfunction
 # ---------------------------------------------------------------------------
 #   
 # ---------------------------------------------------------------------------
-function php_derive_low_level_wrapp_func_const (in_name, in_prefix)
-    check_arguments (my, "in_name, in_prefix", my)
+function php_derive_low_level_wrapp_func_full_name (in)
+    check_arguments (my, "in", my)
 
-    my._res = "$(my.in_prefix:)_get_$(my.in_name:)_php_res_name"
-
-    return my._res
-endfunction
-
-# ---------------------------------------------------------------------------
-#   
-# ---------------------------------------------------------------------------
-function php_derive_low_level_wrapp_func_rr (in_name, in_prefix)
-    check_arguments (my, "in_name, in_prefix", my)
-
-    my._res = "$(my.in_prefix:)_get_le_$(my.in_prefix:c)_$(my.in_name:)"
+    my._res = "vs_get_$(my.in:)"
 
     return my._res
 endfunction

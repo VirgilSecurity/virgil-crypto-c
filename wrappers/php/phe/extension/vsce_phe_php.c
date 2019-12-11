@@ -80,9 +80,10 @@ vsce_handle_throw_exception(vsce_status_t status) {
 //
 const char VSCE_PHE_PHP_VERSION[] = "0.11.1";
 const char VSCE_PHE_PHP_EXTNAME[] = "vsce_phe_php";
-const char vsce_phe_server_t_php_res_name[] = "vsce_phe_server_t";
-const char vsce_phe_client_t_php_res_name[] = "vsce_phe_client_t";
-const char vsce_phe_cipher_t_php_res_name[] = "vsce_phe_cipher_t";
+
+static const char vsce_phe_server_t_php_res_name[] = "vsce_phe_server_t";
+static const char vsce_phe_client_t_php_res_name[] = "vsce_phe_client_t";
+static const char vsce_phe_cipher_t_php_res_name[] = "vsce_phe_cipher_t";
 
 //
 // Registered resources
@@ -113,7 +114,7 @@ ZEND_END_ARG_INFO()
 
 PHP_FUNCTION(vsce_phe_server_new_php) {
     vsce_phe_server_t *phe_server = vsce_phe_server_new();
-    zend_resource *phe_server_res = zend_register_resource(phe_server, le_vsce_phe_server_t);
+    zend_resource *phe_server_res = zend_register_resource(phe_server, vs_get_le_vsce_phe_server_t());
     RETVAL_RES(phe_server_res);
 }
 
@@ -146,8 +147,7 @@ PHP_FUNCTION(vsce_phe_server_delete_php) {
     //
     // Fetch for type checking and then release
     //
-    vsce_phe_server_t *phe_server = zend_fetch_resource_ex(in_ctx, vsce_phe_server_t_php_res_name,
-    le_vsce_phe_server_t);
+    vsce_phe_server_t *phe_server = zend_fetch_resource_ex(in_ctx, vs_get_vsce_phe_server_t_php_res_name(), vs_get_le_vsce_phe_server_t());
     zend_list_close(Z_RES_P(in_ctx));
     RETURN_TRUE;
 }
@@ -183,7 +183,7 @@ PHP_FUNCTION(vsce_phe_server_setup_defaults_php) {
     //
     // Proxy call
     //
-    vsce_phe_server_t *phe_server = zend_fetch_resource_ex(in_ctx, vsce_phe_server_t_php_res_name, le_vsce_phe_server_t);
+    vsce_phe_server_t *phe_server = zend_fetch_resource_ex(in_ctx, vs_get_vsce_phe_server_t_php_res_name(), vs_get_le_vsce_phe_server_t());
 
     //
     // Call main function
@@ -227,7 +227,7 @@ PHP_FUNCTION(vsce_phe_server_generate_server_key_pair_php) {
     //
     // Proxy call
     //
-    vsce_phe_server_t *phe_server = zend_fetch_resource_ex(in_ctx, vsce_phe_server_t_php_res_name, le_vsce_phe_server_t);
+    vsce_phe_server_t *phe_server = zend_fetch_resource_ex(in_ctx, vs_get_vsce_phe_server_t_php_res_name(), vs_get_le_vsce_phe_server_t());
 
     //
     // Allocate output buffer for output 'server_private_key'
@@ -306,7 +306,7 @@ PHP_FUNCTION(vsce_phe_server_enrollment_response_len_php) {
     //
     // Proxy call
     //
-    vsce_phe_server_t *phe_server = zend_fetch_resource_ex(in_ctx, vsce_phe_server_t_php_res_name, le_vsce_phe_server_t);
+    vsce_phe_server_t *phe_server = zend_fetch_resource_ex(in_ctx, vs_get_vsce_phe_server_t_php_res_name(), vs_get_le_vsce_phe_server_t());
 
     //
     // Call main function
@@ -358,7 +358,7 @@ PHP_FUNCTION(vsce_phe_server_get_enrollment_php) {
     //
     // Proxy call
     //
-    vsce_phe_server_t *phe_server = zend_fetch_resource_ex(in_ctx, vsce_phe_server_t_php_res_name, le_vsce_phe_server_t);
+    vsce_phe_server_t *phe_server = zend_fetch_resource_ex(in_ctx, vs_get_vsce_phe_server_t_php_res_name(), vs_get_le_vsce_phe_server_t());
     vsc_data_t server_private_key = vsc_data((const byte*)in_server_private_key, in_server_private_key_len);
     vsc_data_t server_public_key = vsc_data((const byte*)in_server_public_key, in_server_public_key_len);
 
@@ -427,7 +427,7 @@ PHP_FUNCTION(vsce_phe_server_verify_password_response_len_php) {
     //
     // Proxy call
     //
-    vsce_phe_server_t *phe_server = zend_fetch_resource_ex(in_ctx, vsce_phe_server_t_php_res_name, le_vsce_phe_server_t);
+    vsce_phe_server_t *phe_server = zend_fetch_resource_ex(in_ctx, vs_get_vsce_phe_server_t_php_res_name(), vs_get_le_vsce_phe_server_t());
 
     //
     // Call main function
@@ -483,7 +483,7 @@ PHP_FUNCTION(vsce_phe_server_verify_password_php) {
     //
     // Proxy call
     //
-    vsce_phe_server_t *phe_server = zend_fetch_resource_ex(in_ctx, vsce_phe_server_t_php_res_name, le_vsce_phe_server_t);
+    vsce_phe_server_t *phe_server = zend_fetch_resource_ex(in_ctx, vs_get_vsce_phe_server_t_php_res_name(), vs_get_le_vsce_phe_server_t());
     vsc_data_t server_private_key = vsc_data((const byte*)in_server_private_key, in_server_private_key_len);
     vsc_data_t server_public_key = vsc_data((const byte*)in_server_public_key, in_server_public_key_len);
     vsc_data_t verify_password_request = vsc_data((const byte*)in_verify_password_request, in_verify_password_request_len);
@@ -553,7 +553,7 @@ PHP_FUNCTION(vsce_phe_server_update_token_len_php) {
     //
     // Proxy call
     //
-    vsce_phe_server_t *phe_server = zend_fetch_resource_ex(in_ctx, vsce_phe_server_t_php_res_name, le_vsce_phe_server_t);
+    vsce_phe_server_t *phe_server = zend_fetch_resource_ex(in_ctx, vs_get_vsce_phe_server_t_php_res_name(), vs_get_le_vsce_phe_server_t());
 
     //
     // Call main function
@@ -601,7 +601,7 @@ PHP_FUNCTION(vsce_phe_server_rotate_keys_php) {
     //
     // Proxy call
     //
-    vsce_phe_server_t *phe_server = zend_fetch_resource_ex(in_ctx, vsce_phe_server_t_php_res_name, le_vsce_phe_server_t);
+    vsce_phe_server_t *phe_server = zend_fetch_resource_ex(in_ctx, vs_get_vsce_phe_server_t_php_res_name(), vs_get_le_vsce_phe_server_t());
     vsc_data_t server_private_key = vsc_data((const byte*)in_server_private_key, in_server_private_key_len);
 
     //
@@ -695,8 +695,8 @@ PHP_FUNCTION(vsce_phe_server_use_random_php) {
     //
     // Proxy call
     //
-    vsce_phe_server_t *phe_server = zend_fetch_resource_ex(in_ctx, vsce_phe_server_t_php_res_name, le_vsce_phe_server_t);
-    vscf_impl_t *random = zend_fetch_resource_ex(in_random, vscf_get_impl_t_php_res_name(), vscf_get_le_vscf_impl_t());
+    vsce_phe_server_t *phe_server = zend_fetch_resource_ex(in_ctx, vs_get_vsce_phe_server_t_php_res_name(), vs_get_le_vsce_phe_server_t());
+    vscf_impl_t *random = zend_fetch_resource_ex(in_random, vs_get_vscf_impl_t_php_res_name(), vs_get_le_vscf_impl_t());
 
     //
     // Call main function
@@ -738,8 +738,8 @@ PHP_FUNCTION(vsce_phe_server_use_operation_random_php) {
     //
     // Proxy call
     //
-    vsce_phe_server_t *phe_server = zend_fetch_resource_ex(in_ctx, vsce_phe_server_t_php_res_name, le_vsce_phe_server_t);
-    vscf_impl_t *operation_random = zend_fetch_resource_ex(in_operation_random, vscf_get_impl_t_php_res_name(), vscf_get_le_vscf_impl_t());
+    vsce_phe_server_t *phe_server = zend_fetch_resource_ex(in_ctx, vs_get_vsce_phe_server_t_php_res_name(), vs_get_le_vsce_phe_server_t());
+    vscf_impl_t *operation_random = zend_fetch_resource_ex(in_operation_random, vs_get_vscf_impl_t_php_res_name(), vs_get_le_vscf_impl_t());
 
     //
     // Call main function
@@ -760,7 +760,7 @@ ZEND_END_ARG_INFO()
 
 PHP_FUNCTION(vsce_phe_client_new_php) {
     vsce_phe_client_t *phe_client = vsce_phe_client_new();
-    zend_resource *phe_client_res = zend_register_resource(phe_client, le_vsce_phe_client_t);
+    zend_resource *phe_client_res = zend_register_resource(phe_client, vs_get_le_vsce_phe_client_t());
     RETVAL_RES(phe_client_res);
 }
 
@@ -793,8 +793,7 @@ PHP_FUNCTION(vsce_phe_client_delete_php) {
     //
     // Fetch for type checking and then release
     //
-    vsce_phe_client_t *phe_client = zend_fetch_resource_ex(in_ctx, vsce_phe_client_t_php_res_name,
-    le_vsce_phe_client_t);
+    vsce_phe_client_t *phe_client = zend_fetch_resource_ex(in_ctx, vs_get_vsce_phe_client_t_php_res_name(), vs_get_le_vsce_phe_client_t());
     zend_list_close(Z_RES_P(in_ctx));
     RETURN_TRUE;
 }
@@ -830,7 +829,7 @@ PHP_FUNCTION(vsce_phe_client_setup_defaults_php) {
     //
     // Proxy call
     //
-    vsce_phe_client_t *phe_client = zend_fetch_resource_ex(in_ctx, vsce_phe_client_t_php_res_name, le_vsce_phe_client_t);
+    vsce_phe_client_t *phe_client = zend_fetch_resource_ex(in_ctx, vs_get_vsce_phe_client_t_php_res_name(), vs_get_le_vsce_phe_client_t());
 
     //
     // Call main function
@@ -882,7 +881,7 @@ PHP_FUNCTION(vsce_phe_client_set_keys_php) {
     //
     // Proxy call
     //
-    vsce_phe_client_t *phe_client = zend_fetch_resource_ex(in_ctx, vsce_phe_client_t_php_res_name, le_vsce_phe_client_t);
+    vsce_phe_client_t *phe_client = zend_fetch_resource_ex(in_ctx, vs_get_vsce_phe_client_t_php_res_name(), vs_get_le_vsce_phe_client_t());
     vsc_data_t client_private_key = vsc_data((const byte*)in_client_private_key, in_client_private_key_len);
     vsc_data_t server_public_key = vsc_data((const byte*)in_server_public_key, in_server_public_key_len);
 
@@ -928,7 +927,7 @@ PHP_FUNCTION(vsce_phe_client_generate_client_private_key_php) {
     //
     // Proxy call
     //
-    vsce_phe_client_t *phe_client = zend_fetch_resource_ex(in_ctx, vsce_phe_client_t_php_res_name, le_vsce_phe_client_t);
+    vsce_phe_client_t *phe_client = zend_fetch_resource_ex(in_ctx, vs_get_vsce_phe_client_t_php_res_name(), vs_get_le_vsce_phe_client_t());
 
     //
     // Allocate output buffer for output 'client_private_key'
@@ -995,7 +994,7 @@ PHP_FUNCTION(vsce_phe_client_enrollment_record_len_php) {
     //
     // Proxy call
     //
-    vsce_phe_client_t *phe_client = zend_fetch_resource_ex(in_ctx, vsce_phe_client_t_php_res_name, le_vsce_phe_client_t);
+    vsce_phe_client_t *phe_client = zend_fetch_resource_ex(in_ctx, vs_get_vsce_phe_client_t_php_res_name(), vs_get_le_vsce_phe_client_t());
 
     //
     // Call main function
@@ -1047,7 +1046,7 @@ PHP_FUNCTION(vsce_phe_client_enroll_account_php) {
     //
     // Proxy call
     //
-    vsce_phe_client_t *phe_client = zend_fetch_resource_ex(in_ctx, vsce_phe_client_t_php_res_name, le_vsce_phe_client_t);
+    vsce_phe_client_t *phe_client = zend_fetch_resource_ex(in_ctx, vs_get_vsce_phe_client_t_php_res_name(), vs_get_le_vsce_phe_client_t());
     vsc_data_t enrollment_response = vsc_data((const byte*)in_enrollment_response, in_enrollment_response_len);
     vsc_data_t password = vsc_data((const byte*)in_password, in_password_len);
 
@@ -1128,7 +1127,7 @@ PHP_FUNCTION(vsce_phe_client_verify_password_request_len_php) {
     //
     // Proxy call
     //
-    vsce_phe_client_t *phe_client = zend_fetch_resource_ex(in_ctx, vsce_phe_client_t_php_res_name, le_vsce_phe_client_t);
+    vsce_phe_client_t *phe_client = zend_fetch_resource_ex(in_ctx, vs_get_vsce_phe_client_t_php_res_name(), vs_get_le_vsce_phe_client_t());
 
     //
     // Call main function
@@ -1180,7 +1179,7 @@ PHP_FUNCTION(vsce_phe_client_create_verify_password_request_php) {
     //
     // Proxy call
     //
-    vsce_phe_client_t *phe_client = zend_fetch_resource_ex(in_ctx, vsce_phe_client_t_php_res_name, le_vsce_phe_client_t);
+    vsce_phe_client_t *phe_client = zend_fetch_resource_ex(in_ctx, vs_get_vsce_phe_client_t_php_res_name(), vs_get_le_vsce_phe_client_t());
     vsc_data_t password = vsc_data((const byte*)in_password, in_password_len);
     vsc_data_t enrollment_record = vsc_data((const byte*)in_enrollment_record, in_enrollment_record_len);
 
@@ -1261,7 +1260,7 @@ PHP_FUNCTION(vsce_phe_client_check_response_and_decrypt_php) {
     //
     // Proxy call
     //
-    vsce_phe_client_t *phe_client = zend_fetch_resource_ex(in_ctx, vsce_phe_client_t_php_res_name, le_vsce_phe_client_t);
+    vsce_phe_client_t *phe_client = zend_fetch_resource_ex(in_ctx, vs_get_vsce_phe_client_t_php_res_name(), vs_get_le_vsce_phe_client_t());
     vsc_data_t password = vsc_data((const byte*)in_password, in_password_len);
     vsc_data_t enrollment_record = vsc_data((const byte*)in_enrollment_record, in_enrollment_record_len);
     vsc_data_t verify_password_response = vsc_data((const byte*)in_verify_password_response, in_verify_password_response_len);
@@ -1335,7 +1334,7 @@ PHP_FUNCTION(vsce_phe_client_rotate_keys_php) {
     //
     // Proxy call
     //
-    vsce_phe_client_t *phe_client = zend_fetch_resource_ex(in_ctx, vsce_phe_client_t_php_res_name, le_vsce_phe_client_t);
+    vsce_phe_client_t *phe_client = zend_fetch_resource_ex(in_ctx, vs_get_vsce_phe_client_t_php_res_name(), vs_get_le_vsce_phe_client_t());
     vsc_data_t update_token = vsc_data((const byte*)in_update_token, in_update_token_len);
 
     //
@@ -1423,7 +1422,7 @@ PHP_FUNCTION(vsce_phe_client_update_enrollment_record_php) {
     //
     // Proxy call
     //
-    vsce_phe_client_t *phe_client = zend_fetch_resource_ex(in_ctx, vsce_phe_client_t_php_res_name, le_vsce_phe_client_t);
+    vsce_phe_client_t *phe_client = zend_fetch_resource_ex(in_ctx, vs_get_vsce_phe_client_t_php_res_name(), vs_get_le_vsce_phe_client_t());
     vsc_data_t enrollment_record = vsc_data((const byte*)in_enrollment_record, in_enrollment_record_len);
     vsc_data_t update_token = vsc_data((const byte*)in_update_token, in_update_token_len);
 
@@ -1495,8 +1494,8 @@ PHP_FUNCTION(vsce_phe_client_use_random_php) {
     //
     // Proxy call
     //
-    vsce_phe_client_t *phe_client = zend_fetch_resource_ex(in_ctx, vsce_phe_client_t_php_res_name, le_vsce_phe_client_t);
-    vscf_impl_t *random = zend_fetch_resource_ex(in_random, vscf_get_impl_t_php_res_name(), vscf_get_le_vscf_impl_t());
+    vsce_phe_client_t *phe_client = zend_fetch_resource_ex(in_ctx, vs_get_vsce_phe_client_t_php_res_name(), vs_get_le_vsce_phe_client_t());
+    vscf_impl_t *random = zend_fetch_resource_ex(in_random, vs_get_vscf_impl_t_php_res_name(), vs_get_le_vscf_impl_t());
 
     //
     // Call main function
@@ -1538,8 +1537,8 @@ PHP_FUNCTION(vsce_phe_client_use_operation_random_php) {
     //
     // Proxy call
     //
-    vsce_phe_client_t *phe_client = zend_fetch_resource_ex(in_ctx, vsce_phe_client_t_php_res_name, le_vsce_phe_client_t);
-    vscf_impl_t *operation_random = zend_fetch_resource_ex(in_operation_random, vscf_get_impl_t_php_res_name(), vscf_get_le_vscf_impl_t());
+    vsce_phe_client_t *phe_client = zend_fetch_resource_ex(in_ctx, vs_get_vsce_phe_client_t_php_res_name(), vs_get_le_vsce_phe_client_t());
+    vscf_impl_t *operation_random = zend_fetch_resource_ex(in_operation_random, vs_get_vscf_impl_t_php_res_name(), vs_get_le_vscf_impl_t());
 
     //
     // Call main function
@@ -1560,7 +1559,7 @@ ZEND_END_ARG_INFO()
 
 PHP_FUNCTION(vsce_phe_cipher_new_php) {
     vsce_phe_cipher_t *phe_cipher = vsce_phe_cipher_new();
-    zend_resource *phe_cipher_res = zend_register_resource(phe_cipher, le_vsce_phe_cipher_t);
+    zend_resource *phe_cipher_res = zend_register_resource(phe_cipher, vs_get_le_vsce_phe_cipher_t());
     RETVAL_RES(phe_cipher_res);
 }
 
@@ -1593,8 +1592,7 @@ PHP_FUNCTION(vsce_phe_cipher_delete_php) {
     //
     // Fetch for type checking and then release
     //
-    vsce_phe_cipher_t *phe_cipher = zend_fetch_resource_ex(in_ctx, vsce_phe_cipher_t_php_res_name,
-    le_vsce_phe_cipher_t);
+    vsce_phe_cipher_t *phe_cipher = zend_fetch_resource_ex(in_ctx, vs_get_vsce_phe_cipher_t_php_res_name(), vs_get_le_vsce_phe_cipher_t());
     zend_list_close(Z_RES_P(in_ctx));
     RETURN_TRUE;
 }
@@ -1630,7 +1628,7 @@ PHP_FUNCTION(vsce_phe_cipher_setup_defaults_php) {
     //
     // Proxy call
     //
-    vsce_phe_cipher_t *phe_cipher = zend_fetch_resource_ex(in_ctx, vsce_phe_cipher_t_php_res_name, le_vsce_phe_cipher_t);
+    vsce_phe_cipher_t *phe_cipher = zend_fetch_resource_ex(in_ctx, vs_get_vsce_phe_cipher_t_php_res_name(), vs_get_le_vsce_phe_cipher_t());
 
     //
     // Call main function
@@ -1677,7 +1675,7 @@ PHP_FUNCTION(vsce_phe_cipher_encrypt_len_php) {
     //
     // Proxy call
     //
-    vsce_phe_cipher_t *phe_cipher = zend_fetch_resource_ex(in_ctx, vsce_phe_cipher_t_php_res_name, le_vsce_phe_cipher_t);
+    vsce_phe_cipher_t *phe_cipher = zend_fetch_resource_ex(in_ctx, vs_get_vsce_phe_cipher_t_php_res_name(), vs_get_le_vsce_phe_cipher_t());
     size_t plain_text_len = in_plain_text_len;
 
     //
@@ -1725,7 +1723,7 @@ PHP_FUNCTION(vsce_phe_cipher_decrypt_len_php) {
     //
     // Proxy call
     //
-    vsce_phe_cipher_t *phe_cipher = zend_fetch_resource_ex(in_ctx, vsce_phe_cipher_t_php_res_name, le_vsce_phe_cipher_t);
+    vsce_phe_cipher_t *phe_cipher = zend_fetch_resource_ex(in_ctx, vs_get_vsce_phe_cipher_t_php_res_name(), vs_get_le_vsce_phe_cipher_t());
     size_t cipher_text_len = in_cipher_text_len;
 
     //
@@ -1778,7 +1776,7 @@ PHP_FUNCTION(vsce_phe_cipher_encrypt_php) {
     //
     // Proxy call
     //
-    vsce_phe_cipher_t *phe_cipher = zend_fetch_resource_ex(in_ctx, vsce_phe_cipher_t_php_res_name, le_vsce_phe_cipher_t);
+    vsce_phe_cipher_t *phe_cipher = zend_fetch_resource_ex(in_ctx, vs_get_vsce_phe_cipher_t_php_res_name(), vs_get_le_vsce_phe_cipher_t());
     vsc_data_t plain_text = vsc_data((const byte*)in_plain_text, in_plain_text_len);
     vsc_data_t account_key = vsc_data((const byte*)in_account_key, in_account_key_len);
 
@@ -1855,7 +1853,7 @@ PHP_FUNCTION(vsce_phe_cipher_decrypt_php) {
     //
     // Proxy call
     //
-    vsce_phe_cipher_t *phe_cipher = zend_fetch_resource_ex(in_ctx, vsce_phe_cipher_t_php_res_name, le_vsce_phe_cipher_t);
+    vsce_phe_cipher_t *phe_cipher = zend_fetch_resource_ex(in_ctx, vs_get_vsce_phe_cipher_t_php_res_name(), vs_get_le_vsce_phe_cipher_t());
     vsc_data_t cipher_text = vsc_data((const byte*)in_cipher_text, in_cipher_text_len);
     vsc_data_t account_key = vsc_data((const byte*)in_account_key, in_account_key_len);
 
@@ -1936,7 +1934,7 @@ PHP_FUNCTION(vsce_phe_cipher_auth_encrypt_php) {
     //
     // Proxy call
     //
-    vsce_phe_cipher_t *phe_cipher = zend_fetch_resource_ex(in_ctx, vsce_phe_cipher_t_php_res_name, le_vsce_phe_cipher_t);
+    vsce_phe_cipher_t *phe_cipher = zend_fetch_resource_ex(in_ctx, vs_get_vsce_phe_cipher_t_php_res_name(), vs_get_le_vsce_phe_cipher_t());
     vsc_data_t plain_text = vsc_data((const byte*)in_plain_text, in_plain_text_len);
     vsc_data_t additional_data = vsc_data((const byte*)in_additional_data, in_additional_data_len);
     vsc_data_t account_key = vsc_data((const byte*)in_account_key, in_account_key_len);
@@ -2018,7 +2016,7 @@ PHP_FUNCTION(vsce_phe_cipher_auth_decrypt_php) {
     //
     // Proxy call
     //
-    vsce_phe_cipher_t *phe_cipher = zend_fetch_resource_ex(in_ctx, vsce_phe_cipher_t_php_res_name, le_vsce_phe_cipher_t);
+    vsce_phe_cipher_t *phe_cipher = zend_fetch_resource_ex(in_ctx, vs_get_vsce_phe_cipher_t_php_res_name(), vs_get_le_vsce_phe_cipher_t());
     vsc_data_t cipher_text = vsc_data((const byte*)in_cipher_text, in_cipher_text_len);
     vsc_data_t additional_data = vsc_data((const byte*)in_additional_data, in_additional_data_len);
     vsc_data_t account_key = vsc_data((const byte*)in_account_key, in_account_key_len);
@@ -2091,8 +2089,8 @@ PHP_FUNCTION(vsce_phe_cipher_use_random_php) {
     //
     // Proxy call
     //
-    vsce_phe_cipher_t *phe_cipher = zend_fetch_resource_ex(in_ctx, vsce_phe_cipher_t_php_res_name, le_vsce_phe_cipher_t);
-    vscf_impl_t *random = zend_fetch_resource_ex(in_random, vscf_get_impl_t_php_res_name(), vscf_get_le_vscf_impl_t());
+    vsce_phe_cipher_t *phe_cipher = zend_fetch_resource_ex(in_ctx, vs_get_vsce_phe_cipher_t_php_res_name(), vs_get_le_vsce_phe_cipher_t());
+    vscf_impl_t *random = zend_fetch_resource_ex(in_random, vs_get_vscf_impl_t_php_res_name(), vs_get_le_vscf_impl_t());
 
     //
     // Call main function
@@ -2178,9 +2176,9 @@ static void vsce_phe_cipher_dtor_php(zend_resource *rsrc) {
     vsce_phe_cipher_delete((vsce_phe_cipher_t *)rsrc->ptr);
 }
 PHP_MINIT_FUNCTION(vsce_phe_php) {
-    le_vsce_phe_server_t = zend_register_list_destructors_ex(vsce_phe_server_dtor_php, NULL, vsce_phe_server_t_php_res_name, module_number);
-    le_vsce_phe_client_t = zend_register_list_destructors_ex(vsce_phe_client_dtor_php, NULL, vsce_phe_client_t_php_res_name, module_number);
-    le_vsce_phe_cipher_t = zend_register_list_destructors_ex(vsce_phe_cipher_dtor_php, NULL, vsce_phe_cipher_t_php_res_name, module_number);
+    le_vsce_phe_server_t = zend_register_list_destructors_ex(vsce_phe_server_dtor_php, NULL, vs_get_vsce_phe_server_t_php_res_name(), module_number);
+    le_vsce_phe_client_t = zend_register_list_destructors_ex(vsce_phe_client_dtor_php, NULL, vs_get_vsce_phe_client_t_php_res_name(), module_number);
+    le_vsce_phe_cipher_t = zend_register_list_destructors_ex(vsce_phe_cipher_dtor_php, NULL, vs_get_vsce_phe_cipher_t_php_res_name(), module_number);
     return SUCCESS;
 }
 PHP_MSHUTDOWN_FUNCTION(vsce_phe_php) {

@@ -34,16 +34,28 @@
 // Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 //
 
+#include "vsce_library.h"
+
 //
 // Constants
 //
-extern const char vsce_phe_server_t_php_res_name[];
-extern const char vsce_phe_client_t_php_res_name[];
-extern const char vsce_phe_cipher_t_php_res_name[];
+VSCE_PUBLIC const char*
+vs_get_vsce_phe_server_t_php_res_name(void);
+
+VSCE_PUBLIC const char*
+vs_get_vsce_phe_client_t_php_res_name(void);
+
+VSCE_PUBLIC const char*
+vs_get_vsce_phe_cipher_t_php_res_name(void);
 
 //
 // Registered resources
 //
-extern int le_vsce_phe_server_t;
-extern int le_vsce_phe_client_t;
-extern int le_vsce_phe_cipher_t;
+VSCE_PUBLIC int
+vs_get_le_vsce_phe_server_t(void);
+
+VSCE_PUBLIC int
+vs_get_le_vsce_phe_client_t(void);
+
+VSCE_PUBLIC int
+vs_get_le_vsce_phe_cipher_t(void);

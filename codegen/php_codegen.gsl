@@ -166,6 +166,10 @@ function php_generate_source_low_level (in_php_module)
 
         php_insert_code (my.in_php_module->licence, 0)
         newline()
+
+        php_insert_code (my.in_php_module->header_include, 0)
+        newline()
+
         php_insert_code (my.in_php_module->header_constants, 0)
         newline()
         php_insert_code (my.in_php_module->header_registered_resources, 0)
@@ -182,12 +186,20 @@ function php_generate_source_low_level (in_php_module)
         newline()
         php_insert_code (my.in_php_module->constants, 0)
         newline()
-        php_insert_code (my.in_php_module->constants_func_wrapp, 0)
-        newline()
+
+        if (defined (my.in_php_module.constants_func_wrapp) & (my.in_php_module->constants_func_wrapp. <> ""))
+            php_insert_code (my.in_php_module->constants_func_wrapp, 0)
+            newline()
+        endif
+
         php_insert_code (my.in_php_module->registered_resources, 0)
         newline()
-        php_insert_code (my.in_php_module->registered_resources_func_wrapp, 0)
-        newline()
+
+        if (defined (my.in_php_module.registered_resources_func_wrapp) & (my.in_php_module->registered_resources_func_wrapp. <> ""))
+            php_insert_code (my.in_php_module->registered_resources_func_wrapp, 0)
+            newline()
+        endif
+
         php_insert_code (my.in_php_module->init_func_declaration, 0)
         newline()
         php_insert_code (my.in_php_module->func_wrapping, 0)

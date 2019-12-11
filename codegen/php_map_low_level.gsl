@@ -66,11 +66,11 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
         endnew
 
         new registered_resource_func_wrapp to my.out_low_level
-            . = php_format_low_level_wrapp_func_rr("$(my.out_low_level.name0:)_t", "$(my.in_php_project.prefix:)", 0)
+            . = php_format_low_level_wrapp_func_rr("le_$(my.in_php_project.prefix:)_$(my.out_low_level.name0:)_t", "$(my.in_php_project.prefix:)", 0)
         endnew
 
         new header_registered_resource to my.out_low_level
-            . = php_format_low_level_wrapp_func_rr("$(my.out_low_level.name0:)_t", "$(my.in_php_project.prefix:)", 1)
+            . = php_format_low_level_wrapp_func_rr("le_$(my.in_php_project.prefix:)_$(my.out_low_level.name0:)_t", "$(my.in_php_project.prefix:)", 1)
         endnew
 
         new constant to my.out_low_level
@@ -78,11 +78,11 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
         endnew
 
         new constant_func_wrapp to my.out_low_level
-            . = php_format_low_level_wrapp_func_const("$(my.out_low_level.name0:)_t", "$(my.in_php_project.prefix:)", 0)
+            . = php_format_low_level_wrapp_func_const("$(my.in_php_project.prefix:)_$(my.out_low_level.name0:)_t_php_res_name", "$(my.in_php_project.prefix:)", 0)
         endnew
 
         new header_constant to my.out_low_level
-            . = php_format_low_level_wrapp_func_const("$(my.out_low_level.name0:)_t", "$(my.in_php_project.prefix:)", 1)
+            . = php_format_low_level_wrapp_func_const("$(my.in_php_project.prefix:)_$(my.out_low_level.name0:)_t_php_res_name", "$(my.in_php_project.prefix:)", 1)
         endnew
 
         new init_func_def_dtor to my.out_low_level
@@ -94,8 +94,10 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
         endnew
 
         new init_func_def_list_destr to my.out_low_level
+
+            my.__f1 = php_derive_low_level_wrapp_func_full_name("$(my._t:)_php_res_name")
             . = format_left("\
-                le_$(my._t:) = zend_register_list_destructors_ex($(my._wot:)_dtor_php, NULL, $(my._t:)_php_res_name, module_number);
+                le_$(my._t:) = zend_register_list_destructors_ex($(my._wot:)_dtor_php, NULL, $(my.__f1:)(), module_number);
                 ", 0)
         endnew
 
@@ -342,8 +344,11 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
                         my._le = "le_$(my.in_php_project.prefix:c)_impl_t"
                     endif
 
+                    my.__f1 = php_derive_low_level_wrapp_func_full_name("$(my._res_name:)")
+                    my.__f2 = php_derive_low_level_wrapp_func_full_name("$(my._le:)")
+
                     my._proxy_call = format_left("\
-                        $(my._t:c) *$(my.out_low_level.name0:c) = zend_fetch_resource_ex(in_ctx, $(my._res_name:), $(my._le:));
+                        $(my._t:c) *$(my.out_low_level.name0:c) = zend_fetch_resource_ex(in_ctx, $(my.__f1:)(), $(my.__f2:)());
                         ", 0)
                 endif
 
@@ -352,13 +357,19 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
                         my._proxy_call += format_left("vsc_data_t $(argument0.name:) = vsc_data((const byte*)in_$(argument0.name:), in_$(argument0.name:)_len);", 0)
                     elsif string_in (argument0.type0, "interface, class, impl")
                         if string_in(argument0.type0, "class, interface")
+
+                            my.__f1 = php_derive_low_level_wrapp_func_full_name ("$(argument0.type_c:)_php_res_name")
+                            my.__f2 = php_derive_low_level_wrapp_func_full_name ("le_$(argument0.type_c:)")
                             my._proxy_call += format_left("\
-                                $(argument0.type_c:) *$(argument0.name:c) = zend_fetch_resource_ex(in_$(argument0.name:), $(argument0.type_c:)_php_res_name, le_$(argument0.type_c:));
+                                $(argument0.type_c:) *$(argument0.name:c) = zend_fetch_resource_ex(in_$(argument0.name:), $(my.__f1:)(), $(my.__f2)());
                                 ", 0)
                         else
                             my._a = [function].prefix0
+
+                            my.__f1 = php_derive_low_level_wrapp_func_full_name ("$(my._a:)_impl_t_php_res_name")
+                            my.__f2 = php_derive_low_level_wrapp_func_full_name ("le_$(my._a:)_impl_t")
                             my._proxy_call += format_left("\
-                                $(argument0.type_c:) *$(argument0.name:c) = zend_fetch_resource_ex(in_$(argument0.name:), $(my._a:)_impl_t_php_res_name, le_$(my._a:)_impl_t);
+                                $(argument0.type_c:) *$(argument0.name:c) = zend_fetch_resource_ex(in_$(argument0.name:), $(my.__f1:)(), $(my.__f2:)());
                                 ", 0)
                         endif
                     elsif argument0.type0 = "size"
@@ -718,13 +729,18 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
                     for [function].return_argument as return_argument0
                         if string_in (return_argument0.type0, "class, interface, implementation")
                             if return_argument0.type0 = "class"
+
+                                my.__f1 = php_derive_low_level_wrapp_func_full_name("le_$(return_argument0.type_t:)")
+
                                 my._ret += format_left("\
-                                    zend_resource *$(return_argument0.name:)_res = zend_register_resource($(return_argument0.name:)$(my._rs), le_$(return_argument0.type_t:));
+                                    zend_resource *$(return_argument0.name:)_res = zend_register_resource($(return_argument0.name:)$(my._rs), $(my.__f1:)());
                                     RETVAL_RES($(return_argument0.name:)_res);
                                     ", 0)
                             else
+
+                                my.__f1 = php_derive_low_level_wrapp_func_full_name("le_$(my.in_php_project.prefix:)_impl_t")
                                 my._ret += format_left("\
-                                    zend_resource *$(return_argument0.name:)_res = zend_register_resource($(return_argument0.name:)$(my._rs), le_$(my.in_php_project.prefix:)_impl_t);
+                                    zend_resource *$(return_argument0.name:)_res = zend_register_resource($(return_argument0.name:)$(my._rs), $(my.__f1:)());
                                     RETVAL_RES($(return_argument0.name:)_res);
                                     ", 0)
                             endif
@@ -837,10 +853,12 @@ function php_map_low_level_constructor_destructor (in_module, out_low_level, in_
             endif
 
             new custom_code to wrapper
+
+                my.__f1 = php_derive_low_level_wrapp_func_full_name("$(my._le:)")
                 my._custom_code = format_left("\
                     PHP_FUNCTION($([function].name:)) {
                         $(my._a:)_t *$([function].entity0:c) = $([function].name0:)();
-                        zend_resource *$([function].entity0:c)_res = zend_register_resource($([function].entity0:c), $(my._le:));
+                        zend_resource *$([function].entity0:c)_res = zend_register_resource($([function].entity0:c), $(my.__f1:)());
                         RETVAL_RES($([function].entity0:c)_res);
                     }
                     ", 0)
@@ -893,6 +911,10 @@ function php_map_low_level_constructor_destructor (in_module, out_low_level, in_
             endif
 
             new custom_code to wrapper
+
+                my.__f1 = php_derive_low_level_wrapp_func_full_name("$(my._a:)_t_php_res_name")
+                my.__f2 = php_derive_low_level_wrapp_func_full_name("le_$(my._a:)_t")
+
                 my._custom_code = format_left("\
                     PHP_FUNCTION($([function].name:)) {
                         //
@@ -910,8 +932,7 @@ function php_map_low_level_constructor_destructor (in_module, out_low_level, in_
                         //
                         // Fetch for type checking and then release
                         //
-                        $(my._a:)_t *$([function].entity0:c) = zend_fetch_resource_ex(in_ctx, $(my._a:)_t_php_res_name,
-                        le_$(my._a:)_t);
+                        $(my._a:)_t *$([function].entity0:c) = zend_fetch_resource_ex(in_ctx, $(my.__f1:)(), $(my.__f2:)());
                         zend_list_close(Z_RES_P(in_ctx));
                         RETURN_TRUE;
                     }
@@ -1288,12 +1309,12 @@ function php_map_low_level_extension (in_php_project, out_php_module)
 
     if count(my.in_php_project.interfaces)
         my._registered_resources = format_left("int le_$(my.in_php_project.prefix)_impl_t;", 0)
-        my._registered_resources_func_wrapp = php_format_low_level_wrapp_func_rr("impl_t", "$(my.in_php_project.prefix:)", 0) + "\n"
-        my._header_registered_resources = php_format_low_level_wrapp_func_rr("impl_t", "$(my.in_php_project.prefix:)", 1) + "\n"
+        my._registered_resources_func_wrapp = php_format_low_level_wrapp_func_rr("le_$(my.in_php_project.prefix:)_impl_t", "$(my.in_php_project.prefix:)", 0) + "\n"
+        my._header_registered_resources = php_format_low_level_wrapp_func_rr("le_$(my.in_php_project.prefix:)_impl_t", "$(my.in_php_project.prefix:)", 1) + "\n"
 
         my._constants = format_left("static const char $(my.in_php_project.prefix:)_impl_t_php_res_name[] = \"$(my.in_php_project.prefix)_impl_t\";", 0)
-        my._constants_func_wrapp = php_format_low_level_wrapp_func_const("impl_t", "$(my.in_php_project.prefix:)", 0) + "\n"
-        my._header_constants = php_format_low_level_wrapp_func_const("impl_t", "$(my.in_php_project.prefix:)", 1) + "\n"
+        my._constants_func_wrapp = php_format_low_level_wrapp_func_const("$(my.in_php_project.prefix:)_impl_t_php_res_name", "$(my.in_php_project.prefix:)", 0) + "\n"
+        my._header_constants = php_format_low_level_wrapp_func_const("$(my.in_php_project.prefix:)_impl_t_php_res_name", "$(my.in_php_project.prefix:)", 1) + "\n"
 
         my._p = my.in_php_project.prefix
 
@@ -1303,8 +1324,10 @@ function php_map_low_level_extension (in_php_project, out_php_module)
             }
             ", 0)
 
+        my.__f1 = php_derive_low_level_wrapp_func_full_name("$(my._p:)_impl_t_php_res_name")
+
         my._init_func_def_list_destr += format_left("\
-            le_$(my._p:)_impl_t = zend_register_list_destructors_ex($(my._p:)_impl_dtor_php, NULL, $(my._p:)_impl_t_php_res_name, module_number);
+            le_$(my._p:)_impl_t = zend_register_list_destructors_ex($(my._p:)_impl_dtor_php, NULL, $(my.__f1:)(), module_number);
             ", 0)
     endif
 
@@ -1434,6 +1457,10 @@ function php_map_low_level_extension (in_php_project, out_php_module)
 
     new constants_func_wrapp to my.out_php_module
         . = my._constants_func_wrapp
+    endnew
+
+    new header_include to my.out_php_module
+        . = format_left("#include \"$(my.in_php_project.prefix:)_library.h\"", 0)
     endnew
 
     new header_constants to my.out_php_module

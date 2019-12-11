@@ -34,6 +34,8 @@
 // Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 //
 
+#include "vscp_library.h"
+
 //
 // Constants
 //
