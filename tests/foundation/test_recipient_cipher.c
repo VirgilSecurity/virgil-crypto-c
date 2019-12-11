@@ -358,8 +358,6 @@ inner_test__sign_then_encrypt_and_decrypt_then_verify__with_self_signed_key_reci
     enc_status = vscf_recipient_cipher_pack_message_info_footer(recipient_cipher, enc_msg_footer);
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, enc_status);
 
-    print_buffer(enc_msg_header);
-
     //
     //  Decrypt.
     //
