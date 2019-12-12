@@ -43,6 +43,7 @@
 #include "vscf_padding_params.h"
 
 #include "benchmark_data.h"
+#include <chrono>
 
 static const size_t chunk_size = 32;
 
@@ -213,18 +214,198 @@ bench_decrypt__data_chunked_by_32_bytes_with_pading_cipher_random_padding_and_ae
     vscf_padding_cipher_destroy(&padding_cipher);
 }
 
-BENCHMARK(bench_encrypt__data_chunked_by_32_bytes_with_aes256_gcm)->Arg(1024);
-BENCHMARK(bench_encrypt__data_chunked_by_32_bytes_with_pading_cipher_random_padding_and_aes256_gcm)->Arg(1024);
+void
+compare_encrypt(benchmark::State &state) {
+    // manual initialize
+    vscf_aes256_gcm_t *aes256_gcm = vscf_aes256_gcm_new();
 
-BENCHMARK(bench_encrypt__data_chunked_by_32_bytes_with_aes256_gcm)->Arg(1024 * 1024 * 4);
-BENCHMARK(bench_encrypt__data_chunked_by_32_bytes_with_pading_cipher_random_padding_and_aes256_gcm)
+    size_t array_len = state.range(0);
+    byte *array = (byte *)calloc(array_len, 1);
+
+    vsc_buffer_t *out = vsc_buffer_new_with_capacity(vscf_aes256_gcm_encrypted_len(aes256_gcm, array_len));
+
+    vscf_aes256_gcm_set_key(aes256_gcm, bench_data_padding_cipher_AES256_KEY);
+    vscf_aes256_gcm_set_nonce(aes256_gcm, bench_data_padding_cipher_AES256_NONCE);
+
+    vsc_data_t data = vsc_data(array, array_len);
+
+    // padding initialize
+    vscf_fake_random_t *fake_random = vscf_fake_random_new();
+    vscf_fake_random_setup_source_byte(fake_random, 0xAB);
+
+
+    vscf_random_padding_t *padding = vscf_random_padding_new();
+    vscf_random_padding_take_random(padding, vscf_fake_random_impl(fake_random));
+
+    vscf_random_padding_configure(padding, vscf_padding_params_new_with_constraints(32, 32, 32));
+
+    vscf_aes256_gcm_t *cipher = vscf_aes256_gcm_new();
+    vscf_aes256_gcm_set_nonce(cipher, bench_data_padding_cipher_AES256_NONCE);
+    vscf_aes256_gcm_set_key(cipher, bench_data_padding_cipher_AES256_KEY);
+
+    vscf_padding_cipher_t *padding_cipher = vscf_padding_cipher_new();
+    vscf_padding_cipher_take_padding(padding_cipher, vscf_random_padding_impl(padding));
+    vscf_padding_cipher_take_cipher(padding_cipher, vscf_aes256_gcm_impl(cipher));
+
+    for (auto _ : state) {
+
+        auto start_manual = std::chrono::high_resolution_clock::now();
+        vscf_aes256_gcm_start_encryption(aes256_gcm);
+
+        for (int i = 0; i < array_len; i += chunk_size) {
+            size_t current_chunk_size = chunk_size;
+            if (i + current_chunk_size > array_len) {
+                current_chunk_size = array_len - i;
+            }
+
+            vscf_aes256_gcm_update(aes256_gcm, vsc_data_slice_beg(data, i, current_chunk_size), out);
+        }
+
+        vscf_aes256_gcm_finish(aes256_gcm, out);
+
+        auto end_manual = std::chrono::high_resolution_clock::now();
+        auto elapsed_seconds_manual =
+                std::chrono::duration_cast<std::chrono::duration<double>>(end_manual - start_manual);
+
+        vsc_buffer_reset(out);
+
+        auto start_padding = std::chrono::high_resolution_clock::now();
+
+        vscf_padding_cipher_start_encryption(padding_cipher);
+
+        const size_t out_len =
+                vscf_padding_cipher_out_len(padding_cipher, array_len) + vscf_padding_cipher_out_len(padding_cipher, 0);
+        vsc_buffer_t *out = vsc_buffer_new_with_capacity(out_len);
+
+        vscf_padding_cipher_update(padding_cipher, data, out);
+        vscf_padding_cipher_finish(padding_cipher, out);
+
+        auto end_padding = std::chrono::high_resolution_clock::now();
+        auto elapsed_seconds_padding =
+                std::chrono::duration_cast<std::chrono::duration<double>>(end_padding - start_padding);
+
+
+        vsc_buffer_reset(out);
+
+
+        state.counters["padding"] =
+                std::chrono::duration_cast<std::chrono::nanoseconds>(elapsed_seconds_padding).count();
+        state.counters["manual"] = std::chrono::duration_cast<std::chrono::nanoseconds>(elapsed_seconds_manual).count();
+
+        state.counters["relation p / m %"] = elapsed_seconds_padding.count() / elapsed_seconds_manual.count() * 100;
+    }
+    vscf_aes256_gcm_destroy(&aes256_gcm);
+    vsc_buffer_destroy(&out);
+}
+
+void
+compare_decrypt(benchmark::State &state) {
+
+    // manual initialize
+    vscf_aes256_gcm_t *aes256_gcm = vscf_aes256_gcm_new();
+
+    size_t zero_len = state.range(0);
+    byte *array = (byte *)calloc(zero_len, 1);
+
+    vsc_data_t zeroes = vsc_data(array, zero_len);
+
+    vscf_aes256_gcm_set_key(aes256_gcm, bench_data_padding_cipher_AES256_KEY);
+    vscf_aes256_gcm_set_nonce(aes256_gcm, bench_data_padding_cipher_AES256_NONCE);
+
+    // encrypt zeros
+    vsc_buffer_t *encrypted = vsc_buffer_new_with_capacity(vscf_aes256_gcm_encrypted_len(aes256_gcm, zero_len));
+    vscf_aes256_gcm_encrypt(aes256_gcm, zeroes, encrypted);
+    vsc_data_t data = vsc_buffer_data(encrypted);
+    vsc_buffer_t *out = vsc_buffer_new_with_capacity(vscf_aes256_gcm_decrypted_len(aes256_gcm, data.len));
+    size_t array_len = data.len;
+
+    // padding initialize
+    vscf_fake_random_t *fake_random = vscf_fake_random_new();
+    vscf_fake_random_setup_source_byte(fake_random, 0xAB);
+
+    vscf_random_padding_t *padding = vscf_random_padding_new();
+    vscf_random_padding_take_random(padding, vscf_fake_random_impl(fake_random));
+
+    vscf_random_padding_configure(padding, vscf_padding_params_new_with_constraints(32, 32, 32));
+
+    vscf_aes256_gcm_t *cipher = vscf_aes256_gcm_new();
+    vscf_aes256_gcm_set_nonce(cipher, bench_data_padding_cipher_AES256_NONCE);
+    vscf_aes256_gcm_set_key(cipher, bench_data_padding_cipher_AES256_KEY);
+
+    vscf_padding_cipher_t *padding_cipher = vscf_padding_cipher_new();
+    vscf_padding_cipher_take_padding(padding_cipher, vscf_random_padding_impl(padding));
+    vscf_padding_cipher_take_cipher(padding_cipher, vscf_aes256_gcm_impl(cipher));
+
+
+    for (auto _ : state) {
+
+        auto start_manual = std::chrono::high_resolution_clock::now();
+        vscf_aes256_gcm_start_decryption(aes256_gcm);
+        for (int i = 0; i < array_len; i += chunk_size) {
+            size_t current_chunk_size = chunk_size;
+            if (i + current_chunk_size > array_len) {
+                current_chunk_size = array_len - i;
+            }
+
+            vscf_aes256_gcm_update(aes256_gcm, vsc_data_slice_beg(data, i, current_chunk_size), out);
+        }
+        vscf_aes256_gcm_finish(aes256_gcm, out);
+
+        auto end_manual = std::chrono::high_resolution_clock::now();
+        auto elapsed_seconds_manual =
+                std::chrono::duration_cast<std::chrono::duration<double>>(end_manual - start_manual);
+        vsc_buffer_reset(out);
+
+        auto start_padding = std::chrono::high_resolution_clock::now();
+
+        vscf_padding_cipher_start_decryption(padding_cipher);
+
+        const size_t out_len =
+                vscf_padding_cipher_out_len(padding_cipher, data.len) + vscf_padding_cipher_out_len(padding_cipher, 0);
+
+        vsc_buffer_t *out = vsc_buffer_new_with_capacity(out_len);
+
+        vscf_padding_cipher_update(padding_cipher, data, out);
+        vscf_padding_cipher_finish(padding_cipher, out);
+
+        auto end_padding = std::chrono::high_resolution_clock::now();
+        auto elapsed_seconds_padding =
+                std::chrono::duration_cast<std::chrono::duration<double>>(end_padding - start_padding);
+
+        state.counters["padding"] =
+                std::chrono::duration_cast<std::chrono::nanoseconds>(elapsed_seconds_padding).count();
+        state.counters["manual"] = std::chrono::duration_cast<std::chrono::nanoseconds>(elapsed_seconds_manual).count();
+
+        state.counters["relation p / m %"] = elapsed_seconds_padding.count() / elapsed_seconds_manual.count() * 100;
+
+        vsc_buffer_reset(out);
+    }
+
+    vscf_aes256_gcm_destroy(&aes256_gcm);
+    vsc_buffer_destroy(&out);
+}
+
+
+ BENCHMARK(bench_encrypt__data_chunked_by_32_bytes_with_aes256_gcm)->Arg(1024);
+ BENCHMARK(bench_encrypt__data_chunked_by_32_bytes_with_pading_cipher_random_padding_and_aes256_gcm)->Arg(1024);
+
+ BENCHMARK(bench_encrypt__data_chunked_by_32_bytes_with_aes256_gcm)->Arg(1024 * 1024 * 4);
+ BENCHMARK(bench_encrypt__data_chunked_by_32_bytes_with_pading_cipher_random_padding_and_aes256_gcm)
         ->Arg(1024 * 1024 * 4);
 
 
-BENCHMARK(bench_decrypt__data_chunked_by_32_bytes_with_aes256_gcm)->Arg(1024);
-BENCHMARK(bench_decrypt__data_chunked_by_32_bytes_with_pading_cipher_random_padding_and_aes256_gcm)->Arg(1024);
+ BENCHMARK(bench_decrypt__data_chunked_by_32_bytes_with_aes256_gcm)->Arg(1024);
+ BENCHMARK(bench_decrypt__data_chunked_by_32_bytes_with_pading_cipher_random_padding_and_aes256_gcm)->Arg(1024);
 
 
-BENCHMARK(bench_decrypt__data_chunked_by_32_bytes_with_aes256_gcm)->Arg(1024 * 1024 * 4);
-BENCHMARK(bench_decrypt__data_chunked_by_32_bytes_with_pading_cipher_random_padding_and_aes256_gcm)
+ BENCHMARK(bench_decrypt__data_chunked_by_32_bytes_with_aes256_gcm)->Arg(1024 * 1024 * 4);
+ BENCHMARK(bench_decrypt__data_chunked_by_32_bytes_with_pading_cipher_random_padding_and_aes256_gcm)
         ->Arg(1024 * 1024 * 4);
+
+BENCHMARK(compare_encrypt)->Arg(1024);
+BENCHMARK(compare_decrypt)->Arg(1024);
+
+// add this to program argument --benchmark_counters_tabular=true
+// note that time in this benchmark is just total time of 2
+BENCHMARK(compare_encrypt)->Arg(1024 * 1024 * 4);
+BENCHMARK(compare_decrypt)->Arg(1024 * 1024 * 4);
