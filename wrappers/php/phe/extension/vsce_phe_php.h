@@ -40,22 +40,22 @@
 // Constants
 //
 VSCE_PUBLIC const char*
-vs_get_vsce_phe_server_t_php_res_name(void);
+vsce_phe_server_t_php_res_name(void);
 
 VSCE_PUBLIC const char*
-vs_get_vsce_phe_client_t_php_res_name(void);
+vsce_phe_client_t_php_res_name(void);
 
 VSCE_PUBLIC const char*
-vs_get_vsce_phe_cipher_t_php_res_name(void);
+vsce_phe_cipher_t_php_res_name(void);
 
 //
 // Registered resources
 //
 VSCE_PUBLIC int
-vs_get_le_vsce_phe_server_t(void);
+le_vsce_phe_server_t(void);
 
 VSCE_PUBLIC int
-vs_get_le_vsce_phe_client_t(void);
+le_vsce_phe_client_t(void);
 
 VSCE_PUBLIC int
-vs_get_le_vsce_phe_cipher_t(void);
+le_vsce_phe_cipher_t(void);

@@ -40,52 +40,52 @@
 // Constants
 //
 VSCR_PUBLIC const char*
-vs_get_vscr_ratchet_key_id_t_php_res_name(void);
+vscr_ratchet_key_id_t_php_res_name(void);
 
 VSCR_PUBLIC const char*
-vs_get_vscr_ratchet_message_t_php_res_name(void);
+vscr_ratchet_message_t_php_res_name(void);
 
 VSCR_PUBLIC const char*
-vs_get_vscr_ratchet_session_t_php_res_name(void);
+vscr_ratchet_session_t_php_res_name(void);
 
 VSCR_PUBLIC const char*
-vs_get_vscr_ratchet_group_participants_info_t_php_res_name(void);
+vscr_ratchet_group_participants_info_t_php_res_name(void);
 
 VSCR_PUBLIC const char*
-vs_get_vscr_ratchet_group_message_t_php_res_name(void);
+vscr_ratchet_group_message_t_php_res_name(void);
 
 VSCR_PUBLIC const char*
-vs_get_vscr_ratchet_group_ticket_t_php_res_name(void);
+vscr_ratchet_group_ticket_t_php_res_name(void);
 
 VSCR_PUBLIC const char*
-vs_get_vscr_ratchet_group_participants_ids_t_php_res_name(void);
+vscr_ratchet_group_participants_ids_t_php_res_name(void);
 
 VSCR_PUBLIC const char*
-vs_get_vscr_ratchet_group_session_t_php_res_name(void);
+vscr_ratchet_group_session_t_php_res_name(void);
 
 //
 // Registered resources
 //
 VSCR_PUBLIC int
-vs_get_le_vscr_ratchet_key_id_t(void);
+le_vscr_ratchet_key_id_t(void);
 
 VSCR_PUBLIC int
-vs_get_le_vscr_ratchet_message_t(void);
+le_vscr_ratchet_message_t(void);
 
 VSCR_PUBLIC int
-vs_get_le_vscr_ratchet_session_t(void);
+le_vscr_ratchet_session_t(void);
 
 VSCR_PUBLIC int
-vs_get_le_vscr_ratchet_group_participants_info_t(void);
+le_vscr_ratchet_group_participants_info_t(void);
 
 VSCR_PUBLIC int
-vs_get_le_vscr_ratchet_group_message_t(void);
+le_vscr_ratchet_group_message_t(void);
 
 VSCR_PUBLIC int
-vs_get_le_vscr_ratchet_group_ticket_t(void);
+le_vscr_ratchet_group_ticket_t(void);
 
 VSCR_PUBLIC int
-vs_get_le_vscr_ratchet_group_participants_ids_t(void);
+le_vscr_ratchet_group_participants_ids_t(void);
 
 VSCR_PUBLIC int
-vs_get_le_vscr_ratchet_group_session_t(void);
+le_vscr_ratchet_group_session_t(void);

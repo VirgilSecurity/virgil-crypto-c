@@ -40,142 +40,142 @@
 // Constants
 //
 VSCF_PUBLIC const char*
-vs_get_vscf_impl_t_php_res_name(void);
+vscf_impl_t_php_res_name(void);
 
 VSCF_PUBLIC const char*
-vs_get_vscf_message_info_t_php_res_name(void);
+vscf_message_info_t_php_res_name(void);
 
 VSCF_PUBLIC const char*
-vs_get_vscf_key_recipient_info_t_php_res_name(void);
+vscf_key_recipient_info_t_php_res_name(void);
 
 VSCF_PUBLIC const char*
-vs_get_vscf_key_recipient_info_list_t_php_res_name(void);
+vscf_key_recipient_info_list_t_php_res_name(void);
 
 VSCF_PUBLIC const char*
-vs_get_vscf_password_recipient_info_t_php_res_name(void);
+vscf_password_recipient_info_t_php_res_name(void);
 
 VSCF_PUBLIC const char*
-vs_get_vscf_password_recipient_info_list_t_php_res_name(void);
+vscf_password_recipient_info_list_t_php_res_name(void);
 
 VSCF_PUBLIC const char*
-vs_get_vscf_ecies_t_php_res_name(void);
+vscf_ecies_t_php_res_name(void);
 
 VSCF_PUBLIC const char*
-vs_get_vscf_recipient_cipher_t_php_res_name(void);
+vscf_recipient_cipher_t_php_res_name(void);
 
 VSCF_PUBLIC const char*
-vs_get_vscf_message_info_custom_params_t_php_res_name(void);
+vscf_message_info_custom_params_t_php_res_name(void);
 
 VSCF_PUBLIC const char*
-vs_get_vscf_key_provider_t_php_res_name(void);
+vscf_key_provider_t_php_res_name(void);
 
 VSCF_PUBLIC const char*
-vs_get_vscf_signer_t_php_res_name(void);
+vscf_signer_t_php_res_name(void);
 
 VSCF_PUBLIC const char*
-vs_get_vscf_verifier_t_php_res_name(void);
+vscf_verifier_t_php_res_name(void);
 
 VSCF_PUBLIC const char*
-vs_get_vscf_brainkey_client_t_php_res_name(void);
+vscf_brainkey_client_t_php_res_name(void);
 
 VSCF_PUBLIC const char*
-vs_get_vscf_brainkey_server_t_php_res_name(void);
+vscf_brainkey_server_t_php_res_name(void);
 
 VSCF_PUBLIC const char*
-vs_get_vscf_group_session_message_t_php_res_name(void);
+vscf_group_session_message_t_php_res_name(void);
 
 VSCF_PUBLIC const char*
-vs_get_vscf_group_session_ticket_t_php_res_name(void);
+vscf_group_session_ticket_t_php_res_name(void);
 
 VSCF_PUBLIC const char*
-vs_get_vscf_group_session_t_php_res_name(void);
+vscf_group_session_t_php_res_name(void);
 
 VSCF_PUBLIC const char*
-vs_get_vscf_message_info_editor_t_php_res_name(void);
+vscf_message_info_editor_t_php_res_name(void);
 
 VSCF_PUBLIC const char*
-vs_get_vscf_signer_info_t_php_res_name(void);
+vscf_signer_info_t_php_res_name(void);
 
 VSCF_PUBLIC const char*
-vs_get_vscf_signer_info_list_t_php_res_name(void);
+vscf_signer_info_list_t_php_res_name(void);
 
 VSCF_PUBLIC const char*
-vs_get_vscf_message_info_footer_t_php_res_name(void);
+vscf_message_info_footer_t_php_res_name(void);
 
 VSCF_PUBLIC const char*
-vs_get_vscf_signed_data_info_t_php_res_name(void);
+vscf_signed_data_info_t_php_res_name(void);
 
 VSCF_PUBLIC const char*
-vs_get_vscf_footer_info_t_php_res_name(void);
+vscf_footer_info_t_php_res_name(void);
 
 //
 // Registered resources
 //
 VSCF_PUBLIC int
-vs_get_le_vscf_impl_t(void);
+le_vscf_impl_t(void);
 
 VSCF_PUBLIC int
-vs_get_le_vscf_message_info_t(void);
+le_vscf_message_info_t(void);
 
 VSCF_PUBLIC int
-vs_get_le_vscf_key_recipient_info_t(void);
+le_vscf_key_recipient_info_t(void);
 
 VSCF_PUBLIC int
-vs_get_le_vscf_key_recipient_info_list_t(void);
+le_vscf_key_recipient_info_list_t(void);
 
 VSCF_PUBLIC int
-vs_get_le_vscf_password_recipient_info_t(void);
+le_vscf_password_recipient_info_t(void);
 
 VSCF_PUBLIC int
-vs_get_le_vscf_password_recipient_info_list_t(void);
+le_vscf_password_recipient_info_list_t(void);
 
 VSCF_PUBLIC int
-vs_get_le_vscf_ecies_t(void);
+le_vscf_ecies_t(void);
 
 VSCF_PUBLIC int
-vs_get_le_vscf_recipient_cipher_t(void);
+le_vscf_recipient_cipher_t(void);
 
 VSCF_PUBLIC int
-vs_get_le_vscf_message_info_custom_params_t(void);
+le_vscf_message_info_custom_params_t(void);
 
 VSCF_PUBLIC int
-vs_get_le_vscf_key_provider_t(void);
+le_vscf_key_provider_t(void);
 
 VSCF_PUBLIC int
-vs_get_le_vscf_signer_t(void);
+le_vscf_signer_t(void);
 
 VSCF_PUBLIC int
-vs_get_le_vscf_verifier_t(void);
+le_vscf_verifier_t(void);
 
 VSCF_PUBLIC int
-vs_get_le_vscf_brainkey_client_t(void);
+le_vscf_brainkey_client_t(void);
 
 VSCF_PUBLIC int
-vs_get_le_vscf_brainkey_server_t(void);
+le_vscf_brainkey_server_t(void);
 
 VSCF_PUBLIC int
-vs_get_le_vscf_group_session_message_t(void);
+le_vscf_group_session_message_t(void);
 
 VSCF_PUBLIC int
-vs_get_le_vscf_group_session_ticket_t(void);
+le_vscf_group_session_ticket_t(void);
 
 VSCF_PUBLIC int
-vs_get_le_vscf_group_session_t(void);
+le_vscf_group_session_t(void);
 
 VSCF_PUBLIC int
-vs_get_le_vscf_message_info_editor_t(void);
+le_vscf_message_info_editor_t(void);
 
 VSCF_PUBLIC int
-vs_get_le_vscf_signer_info_t(void);
+le_vscf_signer_info_t(void);
 
 VSCF_PUBLIC int
-vs_get_le_vscf_signer_info_list_t(void);
+le_vscf_signer_info_list_t(void);
 
 VSCF_PUBLIC int
-vs_get_le_vscf_message_info_footer_t(void);
+le_vscf_message_info_footer_t(void);
 
 VSCF_PUBLIC int
-vs_get_le_vscf_signed_data_info_t(void);
+le_vscf_signed_data_info_t(void);
 
 VSCF_PUBLIC int
-vs_get_le_vscf_footer_info_t(void);
+le_vscf_footer_info_t(void);

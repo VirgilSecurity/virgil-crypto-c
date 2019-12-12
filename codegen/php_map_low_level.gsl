@@ -62,7 +62,7 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
         endnew
 
         new registered_resource to my.out_low_level
-            . = format_left("int le_$(my.in_php_project.prefix:)_$(my.out_low_level.name0:)_t;", 0)
+            . = format_left("int LE_$(my.in_php_project.prefix:UPPER)_$(my.out_low_level.name0:UPPER)_T;", 0)
         endnew
 
         new registered_resource_func_wrapp to my.out_low_level
@@ -74,15 +74,15 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
         endnew
 
         new constant to my.out_low_level
-            . = format_left("static const char $(my.out_low_level.constant:)[] = \"$(my._t:)\";", 0)
+            . = format_left("static const char $(my.out_low_level.constant:UPPER)[] = \"$(my._t:)\";", 0)
         endnew
 
         new constant_func_wrapp to my.out_low_level
-            . = php_format_low_level_wrapp_func_const("$(my.in_php_project.prefix:)_$(my.out_low_level.name0:)_t_php_res_name", "$(my.in_php_project.prefix:)", 0)
+            . = php_format_low_level_wrapp_func_const("$(my.in_php_project.prefix:UPPER)_$(my.out_low_level.name0:UPPER)_T_PHP_RES_NAME", "$(my.in_php_project.prefix:)", 0)
         endnew
 
         new header_constant to my.out_low_level
-            . = php_format_low_level_wrapp_func_const("$(my.in_php_project.prefix:)_$(my.out_low_level.name0:)_t_php_res_name", "$(my.in_php_project.prefix:)", 1)
+            . = php_format_low_level_wrapp_func_const("$(my.in_php_project.prefix:UPPER)_$(my.out_low_level.name0:UPPER)_T_PHP_RES_NAME", "$(my.in_php_project.prefix:)", 1)
         endnew
 
         new init_func_def_dtor to my.out_low_level
@@ -97,7 +97,7 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
 
             my.__f1 = php_derive_low_level_wrapp_func_full_name("$(my._t:)_php_res_name")
             . = format_left("\
-                le_$(my._t:) = zend_register_list_destructors_ex($(my._wot:)_dtor_php, NULL, $(my.__f1:)(), module_number);
+                LE_$(my._t:UPPER) = zend_register_list_destructors_ex($(my._wot:)_dtor_php, NULL, $(my.__f1:)(), module_number);
                 ", 0)
         endnew
 
@@ -336,12 +336,12 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
 
                 if is_false([function].is_static)
 
-                    my._res_name = "$(my._t:)_php_res_name"
-                    my._le = "le_$(my._t:)"
+                    my._res_name = "$(my._t:UPPER)_PHP_RES_NAME"
+                    my._le = "LE_$(my._t:UPPER)"
 
                     if my.in_type = "implementation"
-                        my._res_name = "$(my.in_php_project.prefix:)_impl_t_php_res_name"
-                        my._le = "le_$(my.in_php_project.prefix:c)_impl_t"
+                        my._res_name = "$(my.in_php_project.prefix:UPPER)_IMPL_T_PHP_RES_NAME"
+                        my._le = "LE_$(my.in_php_project.prefix:c)_IMPL_T"
                     endif
 
                     my.__f1 = php_derive_low_level_wrapp_func_full_name("$(my._res_name:)")
@@ -1308,13 +1308,13 @@ function php_map_low_level_extension (in_php_project, out_php_module)
     my._init_func_def_list_destr = ""
 
     if count(my.in_php_project.interfaces)
-        my._registered_resources = format_left("int le_$(my.in_php_project.prefix)_impl_t;", 0)
-        my._registered_resources_func_wrapp = php_format_low_level_wrapp_func_rr("le_$(my.in_php_project.prefix:)_impl_t", "$(my.in_php_project.prefix:)", 0) + "\n"
-        my._header_registered_resources = php_format_low_level_wrapp_func_rr("le_$(my.in_php_project.prefix:)_impl_t", "$(my.in_php_project.prefix:)", 1) + "\n"
+        my._registered_resources = format_left("int LE_$(my.in_php_project.prefix:UPPER)_IMPL_T;", 0)
+        my._registered_resources_func_wrapp = php_format_low_level_wrapp_func_rr("LE_$(my.in_php_project.prefix:UPPER)_IMPL_T", "$(my.in_php_project.prefix:)", 0) + "\n"
+        my._header_registered_resources = php_format_low_level_wrapp_func_rr("LE_$(my.in_php_project.prefix:UPPER)_IMPL_T", "$(my.in_php_project.prefix:)", 1) + "\n"
 
-        my._constants = format_left("static const char $(my.in_php_project.prefix:)_impl_t_php_res_name[] = \"$(my.in_php_project.prefix)_impl_t\";", 0)
-        my._constants_func_wrapp = php_format_low_level_wrapp_func_const("$(my.in_php_project.prefix:)_impl_t_php_res_name", "$(my.in_php_project.prefix:)", 0) + "\n"
-        my._header_constants = php_format_low_level_wrapp_func_const("$(my.in_php_project.prefix:)_impl_t_php_res_name", "$(my.in_php_project.prefix:)", 1) + "\n"
+        my._constants = format_left("static const char $(my.in_php_project.prefix:UPPER)_IMPL_T_PHP_RES_NAME[] = \"$(my.in_php_project.prefix)_impl_t\";", 0)
+        my._constants_func_wrapp = php_format_low_level_wrapp_func_const("$(my.in_php_project.prefix:UPPER)_IMPL_T_PHP_RES_NAME", "$(my.in_php_project.prefix:)", 0) + "\n"
+        my._header_constants = php_format_low_level_wrapp_func_const("$(my.in_php_project.prefix:UPPER)_IMPL_T_PHP_RES_NAME", "$(my.in_php_project.prefix:)", 1) + "\n"
 
         my._p = my.in_php_project.prefix
 
@@ -1327,7 +1327,7 @@ function php_map_low_level_extension (in_php_project, out_php_module)
         my.__f1 = php_derive_low_level_wrapp_func_full_name("$(my._p:)_impl_t_php_res_name")
 
         my._init_func_def_list_destr += format_left("\
-            le_$(my._p:)_impl_t = zend_register_list_destructors_ex($(my._p:)_impl_dtor_php, NULL, $(my.__f1:)(), module_number);
+            LE_$(my._p:UPPER)_IMPL_T = zend_register_list_destructors_ex($(my._p:)_impl_dtor_php, NULL, $(my.__f1:)(), module_number);
             ", 0)
     endif
 
@@ -1448,8 +1448,8 @@ function php_map_low_level_extension (in_php_project, out_php_module)
 
         my._c = php_format_extension_comment ("Constants")
         my._h = format_left("\
-            const char $(my._ext_name:)_VERSION[] = \"$(my.in_php_project.version:)\";
-            const char $(my._ext_name:)_EXTNAME[] = \"$(my._ext_name0:)\"; 
+            const char $(my._ext_name:UPPER)_VERSION[] = \"$(my.in_php_project.version:)\";
+            const char $(my._ext_name:UPPER)_EXTNAME[] = \"$(my._ext_name0:)\"; 
             ", 0)
 
         . = my._c + my._h + "\n" + my._constants

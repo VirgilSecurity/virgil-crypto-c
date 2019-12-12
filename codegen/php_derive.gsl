@@ -136,7 +136,7 @@ endfunction
 function php_derive_low_level_wrapp_func_full_name (in)
     check_arguments (my, "in", my)
 
-    my._res = "vs_get_$(my.in:)"
+    my._res = "$(my.in:lower)"
 
     return my._res
 endfunction
