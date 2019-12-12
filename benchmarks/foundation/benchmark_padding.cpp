@@ -220,6 +220,8 @@ compare_encrypt(benchmark::State &state) {
     vscf_aes256_gcm_t *aes256_gcm = vscf_aes256_gcm_new();
 
     size_t array_len = state.range(0);
+    size_t len = state.range(1);
+    state.KeepRunningBatch(len);
     byte *array = (byte *)calloc(array_len, 1);
 
     vsc_buffer_t *out = vsc_buffer_new_with_capacity(vscf_aes256_gcm_encrypted_len(aes256_gcm, array_len));
@@ -309,6 +311,8 @@ compare_decrypt(benchmark::State &state) {
     vscf_aes256_gcm_t *aes256_gcm = vscf_aes256_gcm_new();
 
     size_t zero_len = state.range(0);
+    size_t len = state.range(1);
+    state.KeepRunningBatch(len);
     byte *array = (byte *)calloc(zero_len, 1);
 
     vsc_data_t zeroes = vsc_data(array, zero_len);
@@ -411,11 +415,11 @@ compare_decrypt(benchmark::State &state) {
 // BENCHMARK(bench_decrypt__data_chunked_by_32_bytes_with_pading_cipher_random_padding_and_aes256_gcm)
 //->Arg(1024 * 1024 * 4);
 
-BENCHMARK(compare_encrypt)->Arg(1024);
-BENCHMARK(compare_encrypt)->Arg(1024 * 1024 * 4);
+BENCHMARK(compare_encrypt)->ArgPair(1024, 10000000);
+BENCHMARK(compare_encrypt)->ArgPair(1024 * 1024 * 4, 10000);
 
 // add this to program argument --benchmark_counters_tabular=true
 // note that time in this benchmark is just total time of 2
 
-BENCHMARK(compare_decrypt)->Arg(1024);
-BENCHMARK(compare_decrypt)->Arg(1024 * 1024 * 4);
+BENCHMARK(compare_decrypt)->ArgPair(1024, 10000000);
+BENCHMARK(compare_decrypt)->ArgPair(1024 * 1024 * 4, 10000);
