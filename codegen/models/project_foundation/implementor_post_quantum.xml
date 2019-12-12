@@ -57,6 +57,7 @@
         <require library="round5" feature="library"/>
         <require header="round5/rng.h"/>
         <require header="round5/r5_cca_pke.h"/>
+        <require header="round5/r5_parameter_sets.h"/>
 
         <require interface="public key"/>
         <require interface="private key"/>
