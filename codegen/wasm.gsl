@@ -1061,23 +1061,25 @@ function wasm_create_class_constructor(class, constructor, wasm_class, wasm_proj
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Create singlr <wasm_imported_class/> entry.
+#   Create single <wasm_imported_module/> entry.
 # ---------------------------------------------------------------------------
-function wasm_create_imported_class(ext_wasm_class, ext_wasm_project, wasm_project)
-    check_arguments(my, "ext_wasm_class, ext_wasm_project, wasm_project", my)
+function wasm_create_imported_module(ext_wasm_module, ext_wasm_project, wasm_project)
+    check_arguments(my, "ext_wasm_module, ext_wasm_project, wasm_project", my)
 
-    new wasm_imported_class to my.wasm_project
-        .name = my.ext_wasm_class.name
+    new wasm_imported_module to my.wasm_project
+        .name = my.ext_wasm_module.name
         .source_dir = cat_path("..", my.ext_wasm_project.name)
 
-        for my.ext_wasm_class.wasm_imported_function
-            copy wasm_imported_function to wasm_imported_class
+        for my.ext_wasm_module.wasm_class
+            for wasm_class.wasm_imported_function
+                copy wasm_imported_function to wasm_imported_module
+            endfor
         endfor
     endnew
 endfunction
 
 # ---------------------------------------------------------------------------
-#   Create <wasm_imported_class/> entries.
+#   Create <wasm_imported_module/> entries.
 # ---------------------------------------------------------------------------
 function wasm_create_project_imported_classes(project, wasm_project, wrapper)
     check_arguments(my, "project, wasm_project, wrapper", my)
@@ -1086,31 +1088,53 @@ function wasm_create_project_imported_classes(project, wasm_project, wrapper)
         my.imported_wasm_project = wrapper_find_project(my.wrapper, require.project)
 
         if count(require.require)
-            #   Import only specified classes.
-
-            if count(require.require, defined(interface) | defined(impl))
-                my.name = my.imported_wasm_project.interface_class_name
+            #   Import helper modules as well.
+            if defined(my.imported_wasm_project.error_class_name)
+                my.name = my.imported_wasm_project.error_class_name
                 my.imported_module = my.imported_wasm_project->wasm_module(name = my.name)
-                wasm_create_imported_class(my.imported_module->wasm_class, my.imported_wasm_project, my.wasm_project)
+                wasm_create_imported_module(my.imported_module, my.imported_wasm_project, my.wasm_project)
             endif
 
+            if defined(my.imported_wasm_project.interface_class_name)
+                my.name = my.imported_wasm_project.interface_class_name
+                my.imported_module = my.imported_wasm_project->wasm_module(name = my.name)
+                wasm_create_imported_module(my.imported_module, my.imported_wasm_project, my.wasm_project)
+            endif
+
+            if defined(my.imported_wasm_project.interface_enum_tag_name)
+                my.name = my.imported_wasm_project.interface_enum_tag_name
+                my.imported_module = my.imported_wasm_project->wasm_module(name = my.name)
+                wasm_create_imported_module(my.imported_module, my.imported_wasm_project, my.wasm_project)
+            endif
+
+            if defined(my.imported_wasm_project.impl_tag_enum_name)
+                my.name = my.imported_wasm_project.impl_tag_enum_name
+                my.imported_module = my.imported_wasm_project->wasm_module(name = my.name)
+                wasm_create_imported_module(my.imported_module, my.imported_wasm_project, my.wasm_project)
+            endif
+
+            #   Import only specified classes.
             for require.require as inner_require where defined(inner_require.impl)
                 my.name = wasm_derive_class_name_str(inner_require.impl)
                 my.imported_module = my.imported_wasm_project->wasm_module(name = my.name)
-                wasm_create_imported_class(my.imported_module->wasm_class, my.imported_wasm_project, my.wasm_project)
+                wasm_create_imported_module(my.imported_module, my.imported_wasm_project, my.wasm_project)
             endfor
 
             for require.require as inner_require where defined(inner_require.class)
                 my.name = wasm_derive_class_name_str(inner_require.class)
                 my.imported_module = my.imported_wasm_project->wasm_module(name = my.name)
-                wasm_create_imported_class(my.imported_module->wasm_class, my.imported_wasm_project, my.wasm_project)
+                wasm_create_imported_module(my.imported_module, my.imported_wasm_project, my.wasm_project)
+            endfor
+
+            for require.require as inner_require where defined(inner_require.enum)
+                my.name = wasm_derive_enum_name_str(inner_require.enum)
+                my.imported_module = my.imported_wasm_project->wasm_module(name = my.name)
+                wasm_create_imported_module(my.imported_module, my.imported_wasm_project, my.wasm_project)
             endfor
         else
             #   Import all.
             for my.imported_wasm_project.wasm_module
-                for wasm_module.wasm_class
-                    wasm_create_imported_class(wasm_class, my.imported_wasm_project, my.wasm_project)
-                endfor
+                wasm_create_imported_module(wasm_module, my.imported_wasm_project, my.wasm_project)
             endfor
         endif
 
@@ -1145,10 +1169,16 @@ function wasm_create_project_module(project, wrapper)
         .description = string_to_singleline(wasm_project)
         .source_dir = cat_path(my.wrapper.source_dir, 0.name)
         .src_source_dir = cat_path(my.wrapper.source_dir, 0.name, "src")
-        .impl_tag_enum_name = wasm_derive_class_name_str(cat(wasm_project.name, "impl tag"))
-        .error_class_name = wasm_derive_error_class_name(wasm_project)
-        .interface_class_name = wasm_derive_class_name_str(cat(wasm_project.name, "interface"))
-        .interface_enum_tag_name = wasm_derive_class_name_str(cat(wasm_project.name, "interface tag"))
+        if count(my.project.enum, name = "status")
+            .error_class_name = wasm_derive_error_class_name(wasm_project)
+        endif
+        if count(my.project.interface)
+            .interface_class_name = wasm_derive_class_name_str(cat(wasm_project.name, "interface"))
+            .interface_enum_tag_name = wasm_derive_class_name_str(cat(wasm_project.name, "interface tag"))
+        endif
+        if count(my.project.implementor)
+            .impl_tag_enum_name = wasm_derive_class_name_str(cat(wasm_project.name, "impl tag"))
+        endif
         .cmake_wasm_target = 0.lib_name
         .cmake_c_target = my.project.cmake_target
         .cmake_c_export_target = my.project.cmake_export_target
@@ -1469,16 +1499,16 @@ function wasm_create_index_module(wasm_project)
 
         my.code += terminator
 
-        for my.wasm_project.wasm_imported_class
+        for my.wasm_project.wasm_imported_module
             my.code += format_left("
-                const init$(wasm_imported_class.name:Pascal) = \
-                        require('$(wasm_imported_class.source_dir)/$(wasm_imported_class.name:)');
+                const init$(wasm_imported_module.name:Pascal) = \
+                        require('$(wasm_imported_module.source_dir)/$(wasm_imported_module.name:)');
             ")
 
             my.init_code ?= ""
             my.init_code += format_left("
-                  modules.$(wasm_imported_class.name:Pascal) =\
-                        init$(wasm_imported_class.name:Pascal)($(my.module_inst:), modules);
+                  modules.$(wasm_imported_module.name:Pascal) =\
+                        init$(wasm_imported_module.name:Pascal)($(my.module_inst:), modules);
             ")
         endfor
 
@@ -1543,16 +1573,16 @@ function wasm_create_asmjs_module(wasm_project)
 
         my.code += terminator
 
-        for my.wasm_project.wasm_imported_class
+        for my.wasm_project.wasm_imported_module
             my.code += format_left("
-                const init$(wasm_imported_class.name:Pascal) = \
-                        require('$(wasm_imported_class.source_dir)/$(wasm_imported_class.name:)');
+                const init$(wasm_imported_module.name:Pascal) = \
+                        require('$(wasm_imported_module.source_dir)/$(wasm_imported_module.name:)');
             ")
 
             my.init_code ?= ""
             my.init_code += format_left("
-                  modules.$(wasm_imported_class.name:Pascal) =\
-                        init$(wasm_imported_class.name:Pascal)($(my.module_inst:), modules);
+                  modules.$(wasm_imported_module.name:Pascal) =\
+                        init$(wasm_imported_module.name:Pascal)($(my.module_inst:), modules);
             ")
         endfor
 
@@ -1659,12 +1689,12 @@ function wasm_create_impl_tag_module(source, wasm_project)
 
             for my.source.implementation as impl by impl.name
                 my.counter ?= 1
-
-                new wasm_constant to wasm_enum
-                    .name = wasm_derive_constant_name_str(impl.name)
-                    .value = my.counter
-                endnew
-
+                if impl.scope = "public"
+                    new wasm_constant to wasm_enum
+                        .name = wasm_derive_constant_name_str(impl.name)
+                        .value = my.counter
+                    endnew
+                endif
                 my.counter += 1
             endfor
         endnew
@@ -1704,8 +1734,8 @@ function wasm_create_exported_functions_module(wasm_project)
 
         my.container = XML.new("container")
 
-        for my.wasm_project.wasm_imported_class
-            for wasm_imported_class.wasm_imported_function
+        for my.wasm_project.wasm_imported_module
+            for wasm_imported_module.wasm_imported_function
                 copy wasm_imported_function to my.container
             endfor
         endfor
@@ -1756,7 +1786,7 @@ function wasm_create_project_cmake_module(wasm_project)
 
         new cmake_code
             . = format_left('
-                cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
+                cmake_minimum_required(VERSION 3.12 FATAL_ERROR)
 
                 project(virgil_crypto_$(my.wasm_project.cmake_c_target:)_wasm \
                         VERSION ${virgil_crypto_VERSION} LANGUAGES C)
@@ -2001,7 +2031,7 @@ function wasm_create_toplevel_modules(wrapper)
         endnew
 
         my.code = format_left('
-            cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
+            cmake_minimum_required(VERSION 3.12 FATAL_ERROR)
 
             project(virgil_crypto_wasm VERSION ${virgil_crypto_VERSION} LANGUAGES C)
 

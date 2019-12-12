@@ -1,0 +1,3 @@
+<library name="keccak" path="../thirdparty/keccak">
+    External library: https://github.com/XKCP/XKCP
+</library>

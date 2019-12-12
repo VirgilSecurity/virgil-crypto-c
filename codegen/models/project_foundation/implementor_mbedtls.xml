@@ -113,7 +113,7 @@
 
         <property name="auth data" class="buffer"/>
 
-        <property name="do decrypt" type="boolean"/>
+        <property name="state" enum="cipher state"/>
 
         <property name="cached data" type="byte">
             <array length="fixed" length_constant=".(class_aes256_gcm_constant_block_len)"/>
@@ -170,7 +170,7 @@
             <array length="fixed" length_constant=".(class_aes256_cbc_constant_nonce_len)"/>
         </property>
 
-        <property name="do decrypt" type="boolean"/>
+        <property name="state" enum="cipher state"/>
     </implementation>
 
 

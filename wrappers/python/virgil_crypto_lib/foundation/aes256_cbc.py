@@ -128,6 +128,11 @@ class Aes256Cbc(Alg, Encrypt, Decrypt, CipherInfo, Cipher):
         d_key = Data(key)
         self._lib_vscf_aes256_cbc.vscf_aes256_cbc_set_key(self.ctx, d_key.data)
 
+    def state(self):
+        """Return cipher's current state."""
+        result = self._lib_vscf_aes256_cbc.vscf_aes256_cbc_state(self.ctx)
+        return result
+
     def start_encryption(self):
         """Start sequential encryption."""
         self._lib_vscf_aes256_cbc.vscf_aes256_cbc_start_encryption(self.ctx)

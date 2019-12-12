@@ -103,6 +103,7 @@ enum vscf_api_tag_t {
     vscf_api_tag_MAC,
     vscf_api_tag_MESSAGE_INFO_FOOTER_SERIALIZER,
     vscf_api_tag_MESSAGE_INFO_SERIALIZER,
+    vscf_api_tag_PADDING,
     vscf_api_tag_PRIVATE_KEY,
     vscf_api_tag_PUBLIC_KEY,
     vscf_api_tag_RANDOM,

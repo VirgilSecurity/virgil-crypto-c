@@ -82,9 +82,13 @@ struct vscf_group_session_epoch_node_t {
     VSCF_ATOMIC size_t refcnt;
 
     vscf_group_session_epoch_t *value;
-
+    //
+    //  Class specific context.
+    //
     vscf_group_session_epoch_node_t *prev;
-
+    //
+    //  Class specific context.
+    //
     vscf_group_session_epoch_node_t *next;
 };
 

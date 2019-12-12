@@ -10,7 +10,9 @@
         <require class="oid"/>
         <require class="asn1wr"/>
 
-        <dependency name="asn1 writer" interface="asn1 writer"/>
+        <property name="alg info der serializer" impl="alg info der serializer"/>
+
+        <dependency name="asn1 writer" interface="asn1 writer" has_observers="1"/>
 
         <method name="setup defaults" declaration="public">
             Setup predefined values to the uninitialized class dependencies.

@@ -74,3 +74,9 @@ class AlgFactory(object):
         result = self._lib_vscf_alg_factory.vscf_alg_factory_create_cipher_from_info(alg_info.c_impl)
         instance = VscfImplTag.get_type(result)[0].take_c_ctx(cast(result, POINTER(VscfImplTag.get_type(result)[1])))
         return instance
+
+    def create_padding_from_info(self, alg_info, random):
+        """Create algorithm that implements "padding" interface."""
+        result = self._lib_vscf_alg_factory.vscf_alg_factory_create_padding_from_info(alg_info.c_impl, random.c_impl)
+        instance = VscfImplTag.get_type(result)[0].take_c_ctx(cast(result, POINTER(VscfImplTag.get_type(result)[1])))
+        return instance

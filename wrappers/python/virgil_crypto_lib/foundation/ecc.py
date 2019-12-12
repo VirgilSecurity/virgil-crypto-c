@@ -201,16 +201,16 @@ class Ecc(Alg, KeyAlg, KeyCipher, KeySigner, ComputeSharedKey):
         result = self._lib_vscf_ecc.vscf_ecc_can_sign(self.ctx, private_key.c_impl)
         return result
 
-    def signature_len(self, key):
+    def signature_len(self, private_key):
         """Return length in bytes required to hold signature.
         Return zero if a given private key can not produce signatures."""
-        result = self._lib_vscf_ecc.vscf_ecc_signature_len(self.ctx, key.c_impl)
+        result = self._lib_vscf_ecc.vscf_ecc_signature_len(self.ctx, private_key.c_impl)
         return result
 
     def sign_hash(self, private_key, hash_id, digest):
         """Sign data digest with a given private key."""
         d_digest = Data(digest)
-        signature = Buffer(self.signature_len(key=private_key))
+        signature = Buffer(self.signature_len(private_key=private_key))
         status = self._lib_vscf_ecc.vscf_ecc_sign_hash(self.ctx, private_key.c_impl, hash_id, d_digest.data, signature.c_buffer)
         VscfStatus.handle_status(status)
         return signature.get_bytes()

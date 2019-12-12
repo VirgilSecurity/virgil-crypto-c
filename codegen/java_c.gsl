@@ -571,7 +571,11 @@ function java_derive_buffer_length_getter (class, method, argument, java_project
             return "$(my.proxy_constant:)"
         endif
     elsif defined (my.length.argument)
-        my.proxy_argument = "j$(java_derive_argument_name_str (my.length.argument):)"
+        if string_in (my.length.cast, "data_length")
+            my.proxy_argument = "$(java_derive_argument_name_str (my.length.argument):).len"
+        else
+            my.proxy_argument = "j$(java_derive_argument_name_str (my.length.argument):)"
+        endif
         return my.proxy_argument
     endif
 endfunction

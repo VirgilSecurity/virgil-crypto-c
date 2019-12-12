@@ -1,0 +1,13 @@
+<library name="falcon" path="../thirdparty/falcon">
+    External library: https://falcon-sign.info
+
+    <feature name="library" default="${VIRGIL_POST_QUANTUM}"/>
+
+    <feature name="ENABLE TESTING" default="off">
+        On/Off tests.
+    </feature>
+
+    <feature name="BUILD SPEEDTEST" default="off">
+         On/Off build of the speed program.
+    </feature>
+</library>

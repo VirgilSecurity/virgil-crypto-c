@@ -58,7 +58,13 @@ public enum AlgId {
     HMAC(14),
     HKDF(15),
     PKCS5_PBKDF2(16),
-    PKCS5_PBES2(17);
+    PKCS5_PBES2(17),
+    COMPOUND_KEY(18),
+    CHAINED_KEY(19),
+    FALCON(20),
+    ROUND5(21),
+    ROUND5_ND_5PKE_5D(22),
+    RANDOM_PADDING(23);
 
     private final int code;
 

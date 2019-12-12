@@ -9,7 +9,7 @@
         wrappers="java,python,wasm,php"
         >
 
-    <version major="0" minor="11" patch="1"/>
+    <version major="0" minor="12" patch="0"/>
 
     <license>
         Copyright (C) 2015-2019 Virgil Security, Inc.
@@ -50,7 +50,7 @@
     <require project="common" feature="library"/>
 
     <require project="foundation" feature="library">
-        <require impl="ctr drbg"/>
+    <require impl="ctr drbg"/>
         <require impl="hmac"/>
         <require impl="hkdf"/>
         <require impl="sha512"/>

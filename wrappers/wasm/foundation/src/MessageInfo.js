@@ -183,6 +183,32 @@ const initMessageInfo = (Module, modules) => {
         }
 
         /**
+         * Return true if cipher padding alg info exists.
+         */
+        hasCipherPaddingAlgInfo() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
+            let proxyResult;
+            proxyResult = Module._vscf_message_info_has_cipher_padding_alg_info(this.ctxPtr);
+
+            const booleanResult = !!proxyResult;
+            return booleanResult;
+        }
+
+        /**
+         * Return cipher padding alg info.
+         */
+        cipherPaddingAlgInfo() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
+            let proxyResult;
+            proxyResult = Module._vscf_message_info_cipher_padding_alg_info(this.ctxPtr);
+
+            const jsResult = modules.FoundationInterface.newAndUseCContext(proxyResult);
+            return jsResult;
+        }
+
+        /**
          * Return true if footer info exists.
          */
         hasFooterInfo() {

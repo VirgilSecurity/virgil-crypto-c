@@ -146,6 +146,36 @@ const initFoundationInterface = (Module, modules) => {
                 case modules.FoundationImplTag.CURVE25519:
                     return modules.Curve25519.newAndTakeCContext(ctxPtr);
 
+                case modules.FoundationImplTag.FALCON:
+                    return modules.Falcon.newAndTakeCContext(ctxPtr);
+
+                case modules.FoundationImplTag.ROUND5:
+                    return modules.Round5.newAndTakeCContext(ctxPtr);
+
+                case modules.FoundationImplTag.COMPOUND_KEY_ALG_INFO:
+                    return modules.CompoundKeyAlgInfo.newAndTakeCContext(ctxPtr);
+
+                case modules.FoundationImplTag.COMPOUND_PUBLIC_KEY:
+                    return modules.CompoundPublicKey.newAndTakeCContext(ctxPtr);
+
+                case modules.FoundationImplTag.COMPOUND_PRIVATE_KEY:
+                    return modules.CompoundPrivateKey.newAndTakeCContext(ctxPtr);
+
+                case modules.FoundationImplTag.COMPOUND_KEY_ALG:
+                    return modules.CompoundKeyAlg.newAndTakeCContext(ctxPtr);
+
+                case modules.FoundationImplTag.CHAINED_KEY_ALG_INFO:
+                    return modules.ChainedKeyAlgInfo.newAndTakeCContext(ctxPtr);
+
+                case modules.FoundationImplTag.CHAINED_PUBLIC_KEY:
+                    return modules.ChainedPublicKey.newAndTakeCContext(ctxPtr);
+
+                case modules.FoundationImplTag.CHAINED_PRIVATE_KEY:
+                    return modules.ChainedPrivateKey.newAndTakeCContext(ctxPtr);
+
+                case modules.FoundationImplTag.CHAINED_KEY_ALG:
+                    return modules.ChainedKeyAlg.newAndTakeCContext(ctxPtr);
+
                 case modules.FoundationImplTag.SIMPLE_ALG_INFO:
                     return modules.SimpleAlgInfo.newAndTakeCContext(ctxPtr);
 
@@ -172,6 +202,9 @@ const initFoundationInterface = (Module, modules) => {
 
                 case modules.FoundationImplTag.MESSAGE_INFO_DER_SERIALIZER:
                     return modules.MessageInfoDerSerializer.newAndTakeCContext(ctxPtr);
+
+                case modules.FoundationImplTag.RANDOM_PADDING:
+                    return modules.RandomPadding.newAndTakeCContext(ctxPtr);
 
                 default:
                     throw new Error('Unexpected implementation tag found: ' + implTag);

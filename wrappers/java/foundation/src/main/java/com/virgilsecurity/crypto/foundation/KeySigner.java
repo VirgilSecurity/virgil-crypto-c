@@ -51,7 +51,7 @@ public interface KeySigner extends KeyAlg {
     * Return length in bytes required to hold signature.
     * Return zero if a given private key can not produce signatures.
     */
-    int signatureLen(Key key);
+    int signatureLen(PrivateKey privateKey);
 
     /*
     * Sign data digest with a given private key.

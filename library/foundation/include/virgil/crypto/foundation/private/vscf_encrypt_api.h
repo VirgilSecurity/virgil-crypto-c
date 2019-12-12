@@ -91,12 +91,12 @@ typedef vscf_status_t (*vscf_encrypt_api_encrypt_fn)(vscf_impl_t *impl, vsc_data
 //
 //  Callback. Calculate required buffer length to hold the encrypted data.
 //
-typedef size_t (*vscf_encrypt_api_encrypted_len_fn)(vscf_impl_t *impl, size_t data_len);
+typedef size_t (*vscf_encrypt_api_encrypted_len_fn)(const vscf_impl_t *impl, size_t data_len);
 
 //
 //  Callback. Precise length calculation of encrypted data.
 //
-typedef size_t (*vscf_encrypt_api_precise_encrypted_len_fn)(vscf_impl_t *impl, size_t data_len);
+typedef size_t (*vscf_encrypt_api_precise_encrypted_len_fn)(const vscf_impl_t *impl, size_t data_len);
 
 //
 //  Contains API requirements of the interface 'encrypt'.

@@ -223,6 +223,10 @@ static const vscf_cipher_api_t cipher_api = {
     //
     (vscf_cipher_api_set_key_fn)vscf_aes256_cbc_set_key,
     //
+    //  Return cipher's current state.
+    //
+    (vscf_cipher_api_state_fn)vscf_aes256_cbc_state,
+    //
     //  Start sequential encryption.
     //
     (vscf_cipher_api_start_encryption_fn)vscf_aes256_cbc_start_encryption,

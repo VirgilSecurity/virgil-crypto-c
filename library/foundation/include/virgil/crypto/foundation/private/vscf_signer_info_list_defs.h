@@ -87,9 +87,13 @@ struct vscf_signer_info_list_t {
     VSCF_ATOMIC size_t refcnt;
 
     vscf_signer_info_t *item;
-
+    //
+    //  Class specific context.
+    //
     vscf_signer_info_list_t *next;
-
+    //
+    //  Class specific context.
+    //
     vscf_signer_info_list_t *prev;
 };
 

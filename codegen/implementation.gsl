@@ -383,26 +383,33 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Create 'feature' for given 'implementation'.
 # ---------------------------------------------------------------------------
-function implementation_create_feature (implementation, project, destination)
-    check_arguments (my, "implementation, project, destination", my)
+function implementation_create_feature (impl, project, destination)
+    check_arguments (my, "impl, project, destination", my)
 
-    new feature to my.destination
-        . = "Enable implementation '$(my.implementation.name)'."
-        .name = my.implementation.name
-        .project = my.project.name
+    my.impl_feature = my.impl->feature(feature.name = my.impl.name) ?
+    if !defined(my.impl_feature)
+        new feature to my.destination
+            .name = my.impl.name
+            my.impl_feature = feature
+        endnew
+    else
+        my.impl_feature = item_copy_to(my.impl_feature, my.destination)
+    endif
+    my.impl_feature. ?= "Enable class '$(my.impl.name)'."
+    my.impl_feature.project = my.project.name
 
-        for my.implementation.require where defined (0.feature)
-            copy require to feature
-        endfor
+    for my.impl.require where defined (0.feature)
+        copy require to my.impl_feature
+    endfor
 
-        for my.implementation.require where has_one_of_attribute (require, "class, interface, impl")
-            new require to feature
-                .feature = -1.class ? -1.interface ? -1.impl
-                .scope = -1.scope ?
-                .project = -1.project ?
-            endnew
-        endfor
-    endnew
+    for my.impl.require where has_one_of_attribute (require, "class, interface, impl")
+        new require to my.impl_feature
+            .feature = -1.class ? -1.interface ? -1.impl
+            .scope = -1.scope ?
+            .project = -1.project ?
+            .is_optional = -1.is_optional ?
+        endnew
+    endfor
 endfunction
 
 # ---------------------------------------------------------------------------

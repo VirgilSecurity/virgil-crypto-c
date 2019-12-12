@@ -79,6 +79,16 @@ import VSCFoundation
         vscf_recipient_cipher_use_encryption_cipher(self.c_ctx, encryptionCipher.c_ctx)
     }
 
+    @objc public func setEncryptionPadding(encryptionPadding: Padding) {
+        vscf_recipient_cipher_release_encryption_padding(self.c_ctx)
+        vscf_recipient_cipher_use_encryption_padding(self.c_ctx, encryptionPadding.c_ctx)
+    }
+
+    @objc public func setPaddingParams(paddingParams: PaddingParams) {
+        vscf_recipient_cipher_release_padding_params(self.c_ctx)
+        vscf_recipient_cipher_use_padding_params(self.c_ctx, paddingParams.c_ctx)
+    }
+
     @objc public func setSignerHash(signerHash: Hash) {
         vscf_recipient_cipher_release_signer_hash(self.c_ctx)
         vscf_recipient_cipher_use_signer_hash(self.c_ctx, signerHash.c_ctx)

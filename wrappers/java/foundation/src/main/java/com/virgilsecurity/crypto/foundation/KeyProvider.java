@@ -73,10 +73,6 @@ public class KeyProvider implements AutoCloseable {
         FoundationJNI.INSTANCE.keyProvider_setRandom(this.cCtx, random);
     }
 
-    public void setEcies(Ecies ecies) {
-        FoundationJNI.INSTANCE.keyProvider_setEcies(this.cCtx, ecies);
-    }
-
     /*
     * Setup predefined values to the uninitialized class dependencies.
     */
@@ -92,10 +88,50 @@ public class KeyProvider implements AutoCloseable {
     }
 
     /*
-    * Generate new private key from the given id.
+    * Generate new private key with a given algorithm.
     */
     public PrivateKey generatePrivateKey(AlgId algId) throws FoundationException {
         return FoundationJNI.INSTANCE.keyProvider_generatePrivateKey(this.cCtx, algId);
+    }
+
+    /*
+    * Generate new post-quantum private key with default algorithms.
+    * Note, that a post-quantum key combines classic private keys
+    * alongside with post-quantum private keys.
+    * Current structure is "compound private key" where:
+    * - cipher private key is "chained private key" where:
+    * - l1 key is a classic private key;
+    * - l2 key is a post-quantum private key;
+    * - signer private key "chained private key" where:
+    * - l1 key is a classic private key;
+    * - l2 key is a post-quantum private key.
+    */
+    public PrivateKey generatePostQuantumPrivateKey() throws FoundationException {
+        return FoundationJNI.INSTANCE.keyProvider_generatePostQuantumPrivateKey(this.cCtx);
+    }
+
+    /*
+    * Generate new compound private key with given algorithms.
+    */
+    public PrivateKey generateCompoundPrivateKey(AlgId cipherAlgId, AlgId signerAlgId) throws FoundationException {
+        return FoundationJNI.INSTANCE.keyProvider_generateCompoundPrivateKey(this.cCtx, cipherAlgId, signerAlgId);
+    }
+
+    /*
+    * Generate new chained private key with given algorithms.
+    */
+    public PrivateKey generateChainedPrivateKey(AlgId l1AlgId, AlgId l2AlgId) throws FoundationException {
+        return FoundationJNI.INSTANCE.keyProvider_generateChainedPrivateKey(this.cCtx, l1AlgId, l2AlgId);
+    }
+
+    /*
+    * Generate new compound private key with nested chained private keys.
+    *
+    * Note, l2 algorithm identifiers can be NONE, in this case regular key
+    * will be crated instead of chained key.
+    */
+    public PrivateKey generateCompoundChainedPrivateKey(AlgId cipherL1AlgId, AlgId cipherL2AlgId, AlgId signerL1AlgId, AlgId signerL2AlgId) throws FoundationException {
+        return FoundationJNI.INSTANCE.keyProvider_generateCompoundChainedPrivateKey(this.cCtx, cipherL1AlgId, cipherL2AlgId, signerL1AlgId, signerL2AlgId);
     }
 
     /*

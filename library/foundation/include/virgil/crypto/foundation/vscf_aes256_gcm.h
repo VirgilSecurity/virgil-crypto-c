@@ -59,6 +59,7 @@
 #include "vscf_cipher_auth_info.h"
 #include "vscf_alg_id.h"
 #include "vscf_status.h"
+#include "vscf_cipher_state.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_data.h>
@@ -215,13 +216,13 @@ vscf_aes256_gcm_encrypt(vscf_aes256_gcm_t *self, vsc_data_t data, vsc_buffer_t *
 //  Calculate required buffer length to hold the encrypted data.
 //
 VSCF_PUBLIC size_t
-vscf_aes256_gcm_encrypted_len(vscf_aes256_gcm_t *self, size_t data_len);
+vscf_aes256_gcm_encrypted_len(const vscf_aes256_gcm_t *self, size_t data_len);
 
 //
 //  Precise length calculation of encrypted data.
 //
 VSCF_PUBLIC size_t
-vscf_aes256_gcm_precise_encrypted_len(vscf_aes256_gcm_t *self, size_t data_len);
+vscf_aes256_gcm_precise_encrypted_len(const vscf_aes256_gcm_t *self, size_t data_len);
 
 //
 //  Decrypt given data.
@@ -233,7 +234,7 @@ vscf_aes256_gcm_decrypt(vscf_aes256_gcm_t *self, vsc_data_t data, vsc_buffer_t *
 //  Calculate required buffer length to hold the decrypted data.
 //
 VSCF_PUBLIC size_t
-vscf_aes256_gcm_decrypted_len(vscf_aes256_gcm_t *self, size_t data_len);
+vscf_aes256_gcm_decrypted_len(const vscf_aes256_gcm_t *self, size_t data_len);
 
 //
 //  Setup IV or nonce.
@@ -246,6 +247,12 @@ vscf_aes256_gcm_set_nonce(vscf_aes256_gcm_t *self, vsc_data_t nonce);
 //
 VSCF_PUBLIC void
 vscf_aes256_gcm_set_key(vscf_aes256_gcm_t *self, vsc_data_t key);
+
+//
+//  Return cipher's current state.
+//
+VSCF_PRIVATE vscf_cipher_state_t
+vscf_aes256_gcm_state(const vscf_aes256_gcm_t *self);
 
 //
 //  Start sequential encryption.
@@ -279,7 +286,7 @@ vscf_aes256_gcm_out_len(vscf_aes256_gcm_t *self, size_t data_len);
 //  Pass zero length to define buffer length of the method "finish".
 //
 VSCF_PUBLIC size_t
-vscf_aes256_gcm_encrypted_out_len(vscf_aes256_gcm_t *self, size_t data_len);
+vscf_aes256_gcm_encrypted_out_len(const vscf_aes256_gcm_t *self, size_t data_len);
 
 //
 //  Return buffer length required to hold an output of the methods
@@ -287,7 +294,7 @@ vscf_aes256_gcm_encrypted_out_len(vscf_aes256_gcm_t *self, size_t data_len);
 //  Pass zero length to define buffer length of the method "finish".
 //
 VSCF_PUBLIC size_t
-vscf_aes256_gcm_decrypted_out_len(vscf_aes256_gcm_t *self, size_t data_len);
+vscf_aes256_gcm_decrypted_out_len(const vscf_aes256_gcm_t *self, size_t data_len);
 
 //
 //  Accomplish encryption or decryption process.
@@ -307,7 +314,7 @@ vscf_aes256_gcm_auth_encrypt(vscf_aes256_gcm_t *self, vsc_data_t data, vsc_data_
 //  Calculate required buffer length to hold the authenticated encrypted data.
 //
 VSCF_PUBLIC size_t
-vscf_aes256_gcm_auth_encrypted_len(vscf_aes256_gcm_t *self, size_t data_len);
+vscf_aes256_gcm_auth_encrypted_len(const vscf_aes256_gcm_t *self, size_t data_len);
 
 //
 //  Decrypt given data.
@@ -321,7 +328,7 @@ vscf_aes256_gcm_auth_decrypt(vscf_aes256_gcm_t *self, vsc_data_t data, vsc_data_
 //  Calculate required buffer length to hold the authenticated decrypted data.
 //
 VSCF_PUBLIC size_t
-vscf_aes256_gcm_auth_decrypted_len(vscf_aes256_gcm_t *self, size_t data_len);
+vscf_aes256_gcm_auth_decrypted_len(const vscf_aes256_gcm_t *self, size_t data_len);
 
 //
 //  Set additional data for for AEAD ciphers.

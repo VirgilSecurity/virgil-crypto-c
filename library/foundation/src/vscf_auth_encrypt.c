@@ -82,7 +82,7 @@ vscf_auth_encrypt(vscf_impl_t *impl, vsc_data_t data, vsc_data_t auth_data, vsc_
 //  Calculate required buffer length to hold the authenticated encrypted data.
 //
 VSCF_PUBLIC size_t
-vscf_auth_encrypt_auth_encrypted_len(vscf_impl_t *impl, size_t data_len) {
+vscf_auth_encrypt_auth_encrypted_len(const vscf_impl_t *impl, size_t data_len) {
 
     const vscf_auth_encrypt_api_t *auth_encrypt_api = vscf_auth_encrypt_api(impl);
     VSCF_ASSERT_PTR (auth_encrypt_api);

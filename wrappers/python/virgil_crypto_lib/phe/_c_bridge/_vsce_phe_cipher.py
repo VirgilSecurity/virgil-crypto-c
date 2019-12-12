@@ -48,10 +48,6 @@ class VscePheCipher(object):
     """Class for encryption using PHE account key
     This class is thread-safe."""
 
-    SALT_LEN = 32
-    KEY_LEN = 32
-    NONCE_LEN = 12
-
     def __init__(self):
         """Create underlying C context."""
         self._ll = LowLevelLibs()

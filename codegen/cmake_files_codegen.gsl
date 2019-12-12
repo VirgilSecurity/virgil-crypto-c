@@ -259,7 +259,7 @@ function cmake_generate_features (source, license)
 
 
         for c_features.c_feature where count (c_feature.c_require)
-            for c_feature.c_require
+            for c_feature.c_require where is_false(c_require.is_optional)
                 newline ()
 
                 for c_require.c_alternative

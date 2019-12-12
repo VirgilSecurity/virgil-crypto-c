@@ -48,7 +48,7 @@ class KeySigner(object):
         raise NotImplementedError()
 
     @abstractmethod
-    def signature_len(self, key):
+    def signature_len(self, private_key):
         """Return length in bytes required to hold signature.
         Return zero if a given private key can not produce signatures."""
         raise NotImplementedError()

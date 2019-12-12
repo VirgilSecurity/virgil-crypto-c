@@ -1,6 +1,6 @@
 {
   "name": "@virgilsecurity/crypto",
-  "version": "0.11.1",
+  "version": "0.12.0",
   "description": "Virgil Crypto C wrapper",
   "repository": "https://github.com/VirgilSecurity/virgil-crypto-c",
   "author": "Virgil Security Inc. <support@virgilsecurity.com>",
@@ -16,7 +16,6 @@
     "prepare": "npm run clean && npm run build:foundation && npm run build:phe && npm run build:pythia && npm run build:ratchet"
   },
   "devDependencies": {
-    "@ampproject/rollup-plugin-closure-compiler": "^0.9.0",
     "builtin-modules": "^3.1.0",
     "cross-env": "^5.2.0",
     "jest": "^24.8.0",

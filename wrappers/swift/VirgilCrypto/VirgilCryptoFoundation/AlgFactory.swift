@@ -73,4 +73,11 @@ import VSCFoundation
 
         return FoundationImplementation.wrapCipher(take: proxyResult!)
     }
+
+    /// Create algorithm that implements "padding" interface.
+    @objc public static func createPaddingFromInfo(algInfo: AlgInfo, random: Random) -> Padding {
+        let proxyResult = vscf_alg_factory_create_padding_from_info(algInfo.c_ctx, random.c_ctx)
+
+        return FoundationImplementation.wrapPadding(take: proxyResult!)
+    }
 }

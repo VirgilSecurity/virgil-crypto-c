@@ -2,7 +2,7 @@
     Public and private key serialization to an interchangeable format.
 
 
-    <method name="serialized public key len">
+    <method name="serialized public key len" is_const="1">
         Calculate buffer size enough to hold serialized public key.
 
         Precondition: public key must be exportable.
@@ -30,7 +30,7 @@
     </method>
 
 
-    <method name="serialized private key len">
+    <method name="serialized private key len" is_const="1">
         Calculate buffer size enough to hold serialized private key.
 
         Precondition: private key must be exportable.

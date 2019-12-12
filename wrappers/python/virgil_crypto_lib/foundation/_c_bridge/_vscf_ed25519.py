@@ -218,13 +218,13 @@ class VscfEd25519(object):
         vscf_ed25519_can_sign.restype = c_bool
         return vscf_ed25519_can_sign(ctx, private_key)
 
-    def vscf_ed25519_signature_len(self, ctx, key):
+    def vscf_ed25519_signature_len(self, ctx, private_key):
         """Return length in bytes required to hold signature.
         Return zero if a given private key can not produce signatures."""
         vscf_ed25519_signature_len = self._lib.vscf_ed25519_signature_len
         vscf_ed25519_signature_len.argtypes = [POINTER(vscf_ed25519_t), POINTER(vscf_impl_t)]
         vscf_ed25519_signature_len.restype = c_size_t
-        return vscf_ed25519_signature_len(ctx, key)
+        return vscf_ed25519_signature_len(ctx, private_key)
 
     def vscf_ed25519_sign_hash(self, ctx, private_key, hash_id, digest, signature):
         """Sign data digest with a given private key."""

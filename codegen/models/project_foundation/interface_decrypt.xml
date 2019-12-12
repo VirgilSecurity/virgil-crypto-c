@@ -15,7 +15,7 @@
     </method>
 
 
-    <method name="decrypted len">
+    <method name="decrypted len" is_const="1">
         Calculate required buffer length to hold the decrypted data.
 
         <argument name="data len" type="size"/>
