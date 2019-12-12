@@ -293,7 +293,8 @@ compare_encrypt(benchmark::State &state) {
                 std::chrono::duration_cast<std::chrono::nanoseconds>(elapsed_seconds_padding).count();
 
 
-        state.counters["3. p/m %"] = elapsed_seconds_padding.count() / elapsed_seconds_manual.count() * 100;
+        state.counters["3. p/m %"] = ((elapsed_seconds_padding.count() - elapsed_seconds_manual.count()) /
+                                      elapsed_seconds_manual.count() * 100);
         state.SetIterationTime(elapsed_seconds_manual.count() + elapsed_seconds_padding.count());
     }
 
@@ -381,7 +382,8 @@ compare_decrypt(benchmark::State &state) {
                 std::chrono::duration_cast<std::chrono::nanoseconds>(elapsed_seconds_padding).count();
 
 
-        state.counters["3. p/m %"] = elapsed_seconds_padding.count() / elapsed_seconds_manual.count() * 100;
+        state.counters["3. p/m %"] = ((elapsed_seconds_padding.count() - elapsed_seconds_manual.count()) /
+                                      elapsed_seconds_manual.count() * 100);
         state.SetIterationTime(elapsed_seconds_manual.count() + elapsed_seconds_padding.count());
 
 
@@ -410,9 +412,10 @@ compare_decrypt(benchmark::State &state) {
 //->Arg(1024 * 1024 * 4);
 
 BENCHMARK(compare_encrypt)->Arg(1024);
-BENCHMARK(compare_decrypt)->Arg(1024);
+BENCHMARK(compare_encrypt)->Arg(1024 * 1024 * 4);
 
 // add this to program argument --benchmark_counters_tabular=true
 // note that time in this benchmark is just total time of 2
-BENCHMARK(compare_encrypt)->Arg(1024 * 1024 * 4);
+
+BENCHMARK(compare_decrypt)->Arg(1024);
 BENCHMARK(compare_decrypt)->Arg(1024 * 1024 * 4);
