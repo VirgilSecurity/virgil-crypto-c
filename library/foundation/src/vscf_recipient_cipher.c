@@ -2163,6 +2163,16 @@ vscf_recipient_cipher_update_message_info_for_encryption(vscf_recipient_cipher_t
     if (self->encryption_padding) {
         vscf_impl_t *padding_alg_info = vscf_alg_produce_alg_info(self->encryption_padding);
         vscf_message_info_set_cipher_padding_alg_info(self->message_info, &padding_alg_info);
+
+        if (self->is_signed_operation) {
+            //
+            //  Adjust plaintext size due to a padding.
+            //
+            vscf_footer_info_t *footer_info = vscf_message_info_footer_info_m(self->message_info);
+            const size_t data_size = vscf_footer_info_data_size(footer_info);
+            const size_t padded_data_size = vscf_padding_padded_data_len(self->encryption_padding, data_size);
+            vscf_footer_info_set_data_size(footer_info, padded_data_size);
+        }
     }
 
     //
