@@ -287,13 +287,16 @@ compare_encrypt(benchmark::State &state) {
 
         vsc_buffer_reset(out);
 
-
-        state.counters["padding"] =
+        state.counters["1. manual"] =
+                std::chrono::duration_cast<std::chrono::nanoseconds>(elapsed_seconds_manual).count();
+        state.counters["2. padding"] =
                 std::chrono::duration_cast<std::chrono::nanoseconds>(elapsed_seconds_padding).count();
-        state.counters["manual"] = std::chrono::duration_cast<std::chrono::nanoseconds>(elapsed_seconds_manual).count();
 
-        state.counters["relation p / m %"] = elapsed_seconds_padding.count() / elapsed_seconds_manual.count() * 100;
+
+        state.counters["3. p/m %"] = elapsed_seconds_padding.count() / elapsed_seconds_manual.count() * 100;
+        state.SetIterationTime(elapsed_seconds_manual.count() + elapsed_seconds_padding.count());
     }
+
     vscf_aes256_gcm_destroy(&aes256_gcm);
     vsc_buffer_destroy(&out);
 }
@@ -372,11 +375,15 @@ compare_decrypt(benchmark::State &state) {
         auto elapsed_seconds_padding =
                 std::chrono::duration_cast<std::chrono::duration<double>>(end_padding - start_padding);
 
-        state.counters["padding"] =
+        state.counters["1. manual"] =
+                std::chrono::duration_cast<std::chrono::nanoseconds>(elapsed_seconds_manual).count();
+        state.counters["2. padding"] =
                 std::chrono::duration_cast<std::chrono::nanoseconds>(elapsed_seconds_padding).count();
-        state.counters["manual"] = std::chrono::duration_cast<std::chrono::nanoseconds>(elapsed_seconds_manual).count();
 
-        state.counters["relation p / m %"] = elapsed_seconds_padding.count() / elapsed_seconds_manual.count() * 100;
+
+        state.counters["3. p/m %"] = elapsed_seconds_padding.count() / elapsed_seconds_manual.count() * 100;
+        state.SetIterationTime(elapsed_seconds_manual.count() + elapsed_seconds_padding.count());
+
 
         vsc_buffer_reset(out);
     }
@@ -386,21 +393,21 @@ compare_decrypt(benchmark::State &state) {
 }
 
 
- BENCHMARK(bench_encrypt__data_chunked_by_32_bytes_with_aes256_gcm)->Arg(1024);
- BENCHMARK(bench_encrypt__data_chunked_by_32_bytes_with_pading_cipher_random_padding_and_aes256_gcm)->Arg(1024);
-
- BENCHMARK(bench_encrypt__data_chunked_by_32_bytes_with_aes256_gcm)->Arg(1024 * 1024 * 4);
- BENCHMARK(bench_encrypt__data_chunked_by_32_bytes_with_pading_cipher_random_padding_and_aes256_gcm)
-        ->Arg(1024 * 1024 * 4);
-
-
- BENCHMARK(bench_decrypt__data_chunked_by_32_bytes_with_aes256_gcm)->Arg(1024);
- BENCHMARK(bench_decrypt__data_chunked_by_32_bytes_with_pading_cipher_random_padding_and_aes256_gcm)->Arg(1024);
-
-
- BENCHMARK(bench_decrypt__data_chunked_by_32_bytes_with_aes256_gcm)->Arg(1024 * 1024 * 4);
- BENCHMARK(bench_decrypt__data_chunked_by_32_bytes_with_pading_cipher_random_padding_and_aes256_gcm)
-        ->Arg(1024 * 1024 * 4);
+// BENCHMARK(bench_encrypt__data_chunked_by_32_bytes_with_aes256_gcm)->Arg(1024);
+// BENCHMARK(bench_encrypt__data_chunked_by_32_bytes_with_pading_cipher_random_padding_and_aes256_gcm)->Arg(1024);
+//
+// BENCHMARK(bench_encrypt__data_chunked_by_32_bytes_with_aes256_gcm)->Arg(1024 * 1024 * 4);
+// BENCHMARK(bench_encrypt__data_chunked_by_32_bytes_with_pading_cipher_random_padding_and_aes256_gcm)
+//        ->Arg(1024 * 1024 * 4);
+//
+//
+// BENCHMARK(bench_decrypt__data_chunked_by_32_bytes_with_aes256_gcm)->Arg(1024);
+// BENCHMARK(bench_decrypt__data_chunked_by_32_bytes_with_pading_cipher_random_padding_and_aes256_gcm)->Arg(1024);
+//
+//
+// BENCHMARK(bench_decrypt__data_chunked_by_32_bytes_with_aes256_gcm)->Arg(1024 * 1024 * 4);
+// BENCHMARK(bench_decrypt__data_chunked_by_32_bytes_with_pading_cipher_random_padding_and_aes256_gcm)
+//->Arg(1024 * 1024 * 4);
 
 BENCHMARK(compare_encrypt)->Arg(1024);
 BENCHMARK(compare_decrypt)->Arg(1024);
