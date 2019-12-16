@@ -204,15 +204,15 @@ compare_decrypt(benchmark::State &state) {
         vsc_buffer_reset(out);
     }
 
+    vscf_padding_cipher_destroy(&padding_cipher);
     vscf_aes256_gcm_destroy(&aes256_gcm);
     vsc_buffer_destroy(&out);
 }
 
-
 BENCHMARK(compare_encrypt)->Arg(1024)->Iterations(100000);
-BENCHMARK(compare_encrypt)->Arg(1024 * 1024 * 4)->Iterations(10);
+BENCHMARK(compare_encrypt)->Arg(1024 * 1024 * 4)->Iterations(100);
 
 // add this to program argument --benchmark_counters_tabular=true
 // note that time in this benchmark is just total time of 2
 BENCHMARK(compare_decrypt)->Arg(1024)->Iterations(100000);
-BENCHMARK(compare_decrypt)->Arg(1024 * 1024 * 4)->Iterations(10);
+BENCHMARK(compare_decrypt)->Arg(1024 * 1024 * 4)->Iterations(100);
