@@ -53,6 +53,8 @@ option(VSCE_PHE_HASH "Enable class 'phe hash'." ON)
 option(VSCE_PHE_SERVER "Enable class 'phe server'." ON)
 option(VSCE_PHE_CLIENT "Enable class 'phe client'." ON)
 option(VSCE_PHE_CIPHER "Enable class 'phe cipher'." ON)
+option(VSCE_UOKMS_CLIENT "Enable class 'uokms client'." ON)
+option(VSCE_UOKMS_SERVER "Enable class 'uokms server'." ON)
 mark_as_advanced(
         VSCE_LIBRARY
         VSCE_MULTI_THREADING
@@ -62,6 +64,8 @@ mark_as_advanced(
         VSCE_PHE_SERVER
         VSCE_PHE_CLIENT
         VSCE_PHE_CIPHER
+        VSCE_UOKMS_CLIENT
+        VSCE_UOKMS_SERVER
         )
 
 if(VSCE_PHE_HASH AND NOT VSCE_PHE_COMMON)
@@ -168,6 +172,69 @@ if(VSCE_PHE_CIPHER AND NOT VSCF_AES256_GCM)
     message("--")
     message("Feature VSCE_PHE_CIPHER depends on the feature:")
     message("     VSCF_AES256_GCM - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCE_UOKMS_CLIENT AND NOT VSCE_PHE_COMMON)
+    message("-- error --")
+    message("--")
+    message("Feature VSCE_UOKMS_CLIENT depends on the feature:")
+    message("     VSCE_PHE_COMMON - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCE_UOKMS_CLIENT AND NOT VSCF_CTR_DRBG)
+    message("-- error --")
+    message("--")
+    message("Feature VSCE_UOKMS_CLIENT depends on the feature:")
+    message("     VSCF_CTR_DRBG - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCE_UOKMS_CLIENT AND NOT VSCE_PHE_COMMON)
+    message("-- error --")
+    message("--")
+    message("Feature VSCE_UOKMS_CLIENT depends on the feature:")
+    message("     VSCE_PHE_COMMON - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCE_UOKMS_CLIENT AND NOT VSCF_HKDF)
+    message("-- error --")
+    message("--")
+    message("Feature VSCE_UOKMS_CLIENT depends on the feature:")
+    message("     VSCF_HKDF - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCE_UOKMS_CLIENT AND NOT VSCF_SHA512)
+    message("-- error --")
+    message("--")
+    message("Feature VSCE_UOKMS_CLIENT depends on the feature:")
+    message("     VSCF_SHA512 - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCE_UOKMS_SERVER AND NOT VSCE_PHE_COMMON)
+    message("-- error --")
+    message("--")
+    message("Feature VSCE_UOKMS_SERVER depends on the feature:")
+    message("     VSCE_PHE_COMMON - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCE_UOKMS_SERVER AND NOT VSCF_CTR_DRBG)
+    message("-- error --")
+    message("--")
+    message("Feature VSCE_UOKMS_SERVER depends on the feature:")
+    message("     VSCF_CTR_DRBG - which is disabled.")
     message("--")
     message(FATAL_ERROR)
 endif()

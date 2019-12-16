@@ -37,6 +37,12 @@
 // clang-format off
 
 
+//  @description
+// --------------------------------------------------------------------------
+//  Class 'uokms server' types definition.
+// --------------------------------------------------------------------------
+
+
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -44,22 +50,10 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-
-//  @description
-// --------------------------------------------------------------------------
-//  This file contains platform specific information that is known during compilation.
-// --------------------------------------------------------------------------
-
-#ifndef VSCE_PLATFORM_H_INCLUDED
-#define VSCE_PLATFORM_H_INCLUDED
+#include "vsce_uokms_server_defs.h"
 
 // clang-format on
 //  @end
-
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 
 //  @generated
@@ -68,83 +62,9 @@ extern "C" {
 //  Generated section start.
 // --------------------------------------------------------------------------
 
-#cmakedefine01 VSCE_HAVE_ASSERT_H
-#if VSCE_HAVE_ASSERT_H
-#   include <assert.h>
-#endif
-
-#cmakedefine01 VSCE_HAVE_STDATOMIC_H
-#if VSCE_HAVE_STDATOMIC_H
-#   include <stdatomic.h>
-#endif
-
-#ifndef VSCE_MULTI_THREADING
-#cmakedefine01 VSCE_MULTI_THREADING
-#endif
-
-#ifndef VSCE_ERROR
-#cmakedefine01 VSCE_ERROR
-#endif
-
-#ifndef VSCE_PHE_COMMON
-#cmakedefine01 VSCE_PHE_COMMON
-#endif
-
-#ifndef VSCE_PHE_HASH
-#cmakedefine01 VSCE_PHE_HASH
-#endif
-
-#ifndef VSCE_PHE_SERVER
-#cmakedefine01 VSCE_PHE_SERVER
-#endif
-
-#ifndef VSCE_PHE_CLIENT
-#cmakedefine01 VSCE_PHE_CLIENT
-#endif
-
-#ifndef VSCE_PHE_CIPHER
-#cmakedefine01 VSCE_PHE_CIPHER
-#endif
-
-#ifndef VSCE_UOKMS_CLIENT
-#cmakedefine01 VSCE_UOKMS_CLIENT
-#endif
-
-#ifndef VSCE_UOKMS_SERVER
-#cmakedefine01 VSCE_UOKMS_SERVER
-#endif
-
-//
-//  Defines namespace include prefix for project 'common'.
-//
-#if !defined(VSCE_INTERNAL_BUILD)
-#cmakedefine01 VSCE_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#else
-#define VSCE_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK 0
-#endif
-
-//
-//  Defines namespace include prefix for project 'foundation'.
-//
-#if !defined(VSCE_INTERNAL_BUILD)
-#cmakedefine01 VSCE_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
-#else
-#define VSCE_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK 0
-#endif
-
 
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
-//  @end
-
-
-#ifdef __cplusplus
-}
-#endif
-
-
-//  @footer
-#endif // VSCE_PLATFORM_H_INCLUDED
 //  @end

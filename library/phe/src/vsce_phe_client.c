@@ -440,14 +440,12 @@ vsce_phe_client_set_keys(vsce_phe_client_t *self, vsc_data_t client_private_key,
     self->keys_are_set = true;
 
     VSCE_ASSERT(client_private_key.len == vsce_phe_common_PHE_PRIVATE_KEY_LENGTH);
-    memcpy(self->client_private_key, client_private_key.bytes, client_private_key.len);
-
     VSCE_ASSERT(server_public_key.len == vsce_phe_common_PHE_PUBLIC_KEY_LENGTH);
     memcpy(self->server_public_key, server_public_key.bytes, server_public_key.len);
 
     int mbedtls_status = 0;
 
-    mbedtls_status = mbedtls_mpi_read_binary(&self->y, self->client_private_key, sizeof(self->client_private_key));
+    mbedtls_status = mbedtls_mpi_read_binary(&self->y, client_private_key.bytes, client_private_key.len);
     VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
 
     vsce_status_t status = vsce_status_SUCCESS;
@@ -464,8 +462,6 @@ vsce_phe_client_set_keys(vsce_phe_client_t *self, vsc_data_t client_private_key,
     mbedtls_status = mbedtls_mpi_inv_mod(&self->y_inv, &self->y, &self->group.N);
     VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
 
-    mbedtls_status = mbedtls_ecp_point_read_binary(
-            &self->group, &self->x, self->server_public_key, sizeof(self->server_public_key));
 
     if (mbedtls_status != 0 || mbedtls_ecp_check_pubkey(&self->group, &self->x) != 0) {
         status = vsce_status_ERROR_INVALID_PUBLIC_KEY;

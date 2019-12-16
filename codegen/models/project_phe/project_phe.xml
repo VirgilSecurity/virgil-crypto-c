@@ -77,4 +77,6 @@
     <class name="phe server"/>
     <class name="phe client"/>
     <class name="phe cipher"/>
+    <class name="uokms client"/>
+    <class name="uokms server"/>
 </project>

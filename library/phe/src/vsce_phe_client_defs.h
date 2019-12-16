@@ -109,8 +109,6 @@ struct vsce_phe_client_t {
 
     mbedtls_ecp_group group;
 
-    byte client_private_key[vsce_phe_common_PHE_PRIVATE_KEY_LENGTH];
-
     byte server_public_key[vsce_phe_common_PHE_PUBLIC_KEY_LENGTH];
 
     bool keys_are_set;

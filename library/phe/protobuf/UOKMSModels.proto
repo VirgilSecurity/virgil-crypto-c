@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+message DecryptRequest {
+  bytes u = 1;
+}
+
+message DecryptResponse {
+  bytes v = 1;
+}
+
+message UpdateToken {
+  bytes a = 1;
+}

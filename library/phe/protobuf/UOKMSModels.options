@@ -1,0 +1,5 @@
+DecryptRequest.u max_size:65 fixed_length:true
+
+DecryptResponse.v max_size:65 fixed_length:true
+
+UpdateToken.a max_size:32 fixed_length:true

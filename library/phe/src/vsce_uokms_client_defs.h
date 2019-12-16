@@ -47,11 +47,26 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  This file contains platform specific information that is known during compilation.
+//  Class 'uokms client' types definition.
 // --------------------------------------------------------------------------
 
-#ifndef VSCE_PLATFORM_H_INCLUDED
-#define VSCE_PLATFORM_H_INCLUDED
+#ifndef VSCE_UOKMS_CLIENT_DEFS_H_INCLUDED
+#define VSCE_UOKMS_CLIENT_DEFS_H_INCLUDED
+
+#include "vsce_library.h"
+#include "vsce_atomic.h"
+#include "vsce_phe_common.h"
+
+#include <mbedtls/ecp.h>
+#include <mbedtls/bignum.h>
+
+#if !VSCE_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
+#   include <virgil/crypto/foundation/vscf_impl.h>
+#endif
+
+#if VSCE_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
+#   include <VSCFoundation/vscf_impl.h>
+#endif
 
 // clang-format on
 //  @end
@@ -68,69 +83,37 @@ extern "C" {
 //  Generated section start.
 // --------------------------------------------------------------------------
 
-#cmakedefine01 VSCE_HAVE_ASSERT_H
-#if VSCE_HAVE_ASSERT_H
-#   include <assert.h>
-#endif
-
-#cmakedefine01 VSCE_HAVE_STDATOMIC_H
-#if VSCE_HAVE_STDATOMIC_H
-#   include <stdatomic.h>
-#endif
-
-#ifndef VSCE_MULTI_THREADING
-#cmakedefine01 VSCE_MULTI_THREADING
-#endif
-
-#ifndef VSCE_ERROR
-#cmakedefine01 VSCE_ERROR
-#endif
-
-#ifndef VSCE_PHE_COMMON
-#cmakedefine01 VSCE_PHE_COMMON
-#endif
-
-#ifndef VSCE_PHE_HASH
-#cmakedefine01 VSCE_PHE_HASH
-#endif
-
-#ifndef VSCE_PHE_SERVER
-#cmakedefine01 VSCE_PHE_SERVER
-#endif
-
-#ifndef VSCE_PHE_CLIENT
-#cmakedefine01 VSCE_PHE_CLIENT
-#endif
-
-#ifndef VSCE_PHE_CIPHER
-#cmakedefine01 VSCE_PHE_CIPHER
-#endif
-
-#ifndef VSCE_UOKMS_CLIENT
-#cmakedefine01 VSCE_UOKMS_CLIENT
-#endif
-
-#ifndef VSCE_UOKMS_SERVER
-#cmakedefine01 VSCE_UOKMS_SERVER
-#endif
-
 //
-//  Defines namespace include prefix for project 'common'.
+//  Handle 'uokms client' context.
 //
-#if !defined(VSCE_INTERNAL_BUILD)
-#cmakedefine01 VSCE_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#else
-#define VSCE_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK 0
-#endif
+struct vsce_uokms_client_t {
+    //
+    //  Function do deallocate self context.
+    //
+    vsce_dealloc_fn self_dealloc_cb;
+    //
+    //  Reference counter.
+    //
+    VSCE_ATOMIC size_t refcnt;
+    //
+    //  Dependency to the interface 'random'.
+    //
+    vscf_impl_t *random;
+    //
+    //  Dependency to the interface 'random'.
+    //
+    vscf_impl_t *operation_random;
 
-//
-//  Defines namespace include prefix for project 'foundation'.
-//
-#if !defined(VSCE_INTERNAL_BUILD)
-#cmakedefine01 VSCE_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
-#else
-#define VSCE_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK 0
-#endif
+    mbedtls_ecp_group group;
+
+    mbedtls_mpi kc_private;
+
+    mbedtls_ecp_point ks_public;
+
+    mbedtls_ecp_point k_public;
+
+    bool keys_are_set;
+};
 
 
 // --------------------------------------------------------------------------
@@ -146,5 +129,5 @@ extern "C" {
 
 
 //  @footer
-#endif // VSCE_PLATFORM_H_INCLUDED
+#endif // VSCE_UOKMS_CLIENT_DEFS_H_INCLUDED
 //  @end
