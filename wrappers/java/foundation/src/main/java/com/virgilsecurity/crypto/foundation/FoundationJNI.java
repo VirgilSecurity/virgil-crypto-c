@@ -170,6 +170,16 @@ public class FoundationJNI {
     public native AlgInfo messageInfo_cipherKdfAlgInfo(long cCtx);
 
     /*
+    * Return true if cipher padding alg info exists.
+    */
+    public native boolean messageInfo_hasCipherPaddingAlgInfo(long cCtx);
+
+    /*
+    * Return cipher padding alg info.
+    */
+    public native AlgInfo messageInfo_cipherPaddingAlgInfo(long cCtx);
+
+    /*
     * Return true if footer info exists.
     */
     public native boolean messageInfo_hasFooterInfo(long cCtx);
@@ -327,6 +337,11 @@ public class FoundationJNI {
     public native Cipher algFactory_createCipherFromInfo(AlgInfo algInfo);
 
     /*
+    * Create algorithm that implements "padding" interface.
+    */
+    public native Padding algFactory_createPaddingFromInfo(AlgInfo algInfo, Random random);
+
+    /*
     * Create a key algorithm based on an identifier.
     */
     public native KeyAlg keyAlgFactory_createFromAlgId(AlgId algId, Random random) throws FoundationException;
@@ -414,6 +429,10 @@ public class FoundationJNI {
     public native void recipientCipher_setRandom(long cCtx, Random random);
 
     public native void recipientCipher_setEncryptionCipher(long cCtx, Cipher encryptionCipher);
+
+    public native void recipientCipher_setEncryptionPadding(long cCtx, Padding encryptionPadding);
+
+    public native void recipientCipher_setPaddingParams(long cCtx, PaddingParams paddingParams);
 
     public native void recipientCipher_setSignerHash(long cCtx, Hash signerHash);
 
@@ -635,6 +654,20 @@ public class FoundationJNI {
     * Generate new private key with a given algorithm.
     */
     public native PrivateKey keyProvider_generatePrivateKey(long cCtx, AlgId algId) throws FoundationException;
+
+    /*
+    * Generate new post-quantum private key with default algorithms.
+    * Note, that a post-quantum key combines classic private keys
+    * alongside with post-quantum private keys.
+    * Current structure is "compound private key" where:
+    * - cipher private key is "chained private key" where:
+    * - l1 key is a classic private key;
+    * - l2 key is a post-quantum private key;
+    * - signer private key "chained private key" where:
+    * - l1 key is a classic private key;
+    * - l2 key is a post-quantum private key.
+    */
+    public native PrivateKey keyProvider_generatePostQuantumPrivateKey(long cCtx) throws FoundationException;
 
     /*
     * Generate new compound private key with given algorithms.
@@ -1056,6 +1089,135 @@ public class FoundationJNI {
     * Return data size.
     */
     public native int footerInfo_dataSize(long cCtx);
+
+    public native long keyInfo_new();
+
+    public native void keyInfo_close(long cCtx);
+
+    public native long keyInfo_new(AlgInfo algInfo);
+
+    /*
+    * Return true if a key is a compound key
+    */
+    public native boolean keyInfo_isCompound(long cCtx);
+
+    /*
+    * Return true if a key is a chained key
+    */
+    public native boolean keyInfo_isChained(long cCtx);
+
+    /*
+    * Return true if a key is a compound key and compounds cipher key
+    * and signer key are chained keys.
+    */
+    public native boolean keyInfo_isCompoundChained(long cCtx);
+
+    /*
+    * Return true if a key is a compound key and compounds cipher key
+    * is a chained key.
+    */
+    public native boolean keyInfo_isCompoundChainedCipher(long cCtx);
+
+    /*
+    * Return true if a key is a compound key and compounds signer key
+    * is a chained key.
+    */
+    public native boolean keyInfo_isCompoundChainedSigner(long cCtx);
+
+    /*
+    * Return true if a key is a compound key that contains chained keys
+    * for encryption/decryption and signing/verifying that itself
+    * contains a combination of classic keys and post-quantum keys.
+    */
+    public native boolean keyInfo_isHybridPostQuantum(long cCtx);
+
+    /*
+    * Return true if a key is a compound key that contains a chained key
+    * for encryption/decryption that contains a classic key and
+    * a post-quantum key.
+    */
+    public native boolean keyInfo_isHybridPostQuantumCipher(long cCtx);
+
+    /*
+    * Return true if a key is a compound key that contains a chained key
+    * for signing/verifying that contains a classic key and
+    * a post-quantum key.
+    */
+    public native boolean keyInfo_isHybridPostQuantumSigner(long cCtx);
+
+    /*
+    * Return common type of the key.
+    */
+    public native AlgId keyInfo_algId(long cCtx);
+
+    /*
+    * Return compound's cipher key id, if key is compound.
+    * Return None, otherwise.
+    */
+    public native AlgId keyInfo_compoundCipherAlgId(long cCtx);
+
+    /*
+    * Return compound's signer key id, if key is compound.
+    * Return None, otherwise.
+    */
+    public native AlgId keyInfo_compoundSignerAlgId(long cCtx);
+
+    /*
+    * Return chained l1 key id, if key is chained.
+    * Return None, otherwise.
+    */
+    public native AlgId keyInfo_chainedL1AlgId(long cCtx);
+
+    /*
+    * Return chained l2 key id, if key is chained.
+    * Return None, otherwise.
+    */
+    public native AlgId keyInfo_chainedL2AlgId(long cCtx);
+
+    /*
+    * Return l1 key id of compound's cipher key, if key is compound(chained, ...)
+    * Return None, otherwise.
+    */
+    public native AlgId keyInfo_compoundCipherL1AlgId(long cCtx);
+
+    /*
+    * Return l2 key id of compound's cipher key, if key is compound(chained, ...)
+    * Return None, otherwise.
+    */
+    public native AlgId keyInfo_compoundCipherL2AlgId(long cCtx);
+
+    /*
+    * Return l1 key id of compound's signer key, if key is compound(..., chained)
+    * Return None, otherwise.
+    */
+    public native AlgId keyInfo_compoundSignerL1AlgId(long cCtx);
+
+    /*
+    * Return l2 key id of compound's signer key, if key is compound(..., chained)
+    * Return None, otherwise.
+    */
+    public native AlgId keyInfo_compoundSignerL2AlgId(long cCtx);
+
+    public native long paddingParams_new();
+
+    public native void paddingParams_close(long cCtx);
+
+    public native long paddingParams_new(int frame, int frameMin, int frameMax);
+
+    /*
+    * Return padding frame in bytes.
+    */
+    public native int paddingParams_frame(long cCtx);
+
+    /*
+    * Return minimum padding frame in bytes.
+    */
+    public native int paddingParams_frameMin(long cCtx);
+
+    /*
+    * Return minimum padding frame in bytes.
+    */
+    public native int paddingParams_frameMax(long cCtx);
 
     public native long sha224_new();
 
@@ -3381,11 +3543,6 @@ public class FoundationJNI {
     */
     public native AlgInfo compoundKeyAlgInfo_signerAlgInfo(long cCtx);
 
-    /*
-    * Return information about hash algorithm that is used with signing.
-    */
-    public native AlgInfo compoundKeyAlgInfo_signerHashAlgInfo(long cCtx);
-
     public native long compoundKeyAlgInfo_new();
 
     public native void compoundKeyAlgInfo_close(long cCtx);
@@ -3404,11 +3561,6 @@ public class FoundationJNI {
     * Return public key suitable for verifying.
     */
     public native PublicKey compoundPublicKey_signerKey(long cCtx);
-
-    /*
-    * Return cipher public key signature.
-    */
-    public native byte[] compoundPublicKey_signature(long cCtx);
 
     public native long compoundPublicKey_new();
 
@@ -3450,11 +3602,6 @@ public class FoundationJNI {
     */
     public native PrivateKey compoundPrivateKey_signerKey(long cCtx);
 
-    /*
-    * Return the cipher public key signature.
-    */
-    public native byte[] compoundPrivateKey_signature(long cCtx);
-
     public native long compoundPrivateKey_new();
 
     public native void compoundPrivateKey_close(long cCtx);
@@ -3491,8 +3638,6 @@ public class FoundationJNI {
     public native PublicKey compoundPrivateKey_extractPublicKey(long cCtx);
 
     public native void compoundKeyAlg_setRandom(long cCtx, Random random);
-
-    public native void compoundKeyAlg_setHash(long cCtx, Hash hash);
 
     /*
     * Setup predefined values to the uninitialized class dependencies.
@@ -4082,5 +4227,79 @@ public class FoundationJNI {
     * Deserialize class "message info footer".
     */
     public native MessageInfoFooter messageInfoDerSerializer_deserializeFooter(long cCtx, byte[] data) throws FoundationException;
+
+    public native void randomPadding_setRandom(long cCtx, Random random);
+
+    public native long randomPadding_new();
+
+    public native void randomPadding_close(long cCtx);
+
+    /*
+    * Provide algorithm identificator.
+    */
+    public native AlgId randomPadding_algId(long cCtx);
+
+    /*
+    * Produce object with algorithm information and configuration parameters.
+    */
+    public native AlgInfo randomPadding_produceAlgInfo(long cCtx);
+
+    /*
+    * Restore algorithm configuration from the given object.
+    */
+    public native void randomPadding_restoreAlgInfo(long cCtx, AlgInfo algInfo) throws FoundationException;
+
+    /*
+    * Set new padding parameters.
+    */
+    public native void randomPadding_configure(long cCtx, PaddingParams params);
+
+    /*
+    * Return length in bytes of a data with a padding.
+    */
+    public native int randomPadding_paddedDataLen(long cCtx, int dataLen);
+
+    /*
+    * Return an actual number of padding in bytes.
+    * Note, this method might be called right before "finish data processing".
+    */
+    public native int randomPadding_len(long cCtx);
+
+    /*
+    * Return a maximum number of padding in bytes.
+    */
+    public native int randomPadding_lenMax(long cCtx);
+
+    /*
+    * Prepare the algorithm to process data.
+    */
+    public native void randomPadding_startDataProcessing(long cCtx);
+
+    /*
+    * Only data length is needed to produce padding later.
+    * Return data that should be further proceeded.
+    */
+    public native byte[] randomPadding_processData(long cCtx, byte[] data);
+
+    /*
+    * Accomplish data processing and return padding.
+    */
+    public native byte[] randomPadding_finishDataProcessing(long cCtx) throws FoundationException;
+
+    /*
+    * Prepare the algorithm to process padded data.
+    */
+    public native void randomPadding_startPaddedDataProcessing(long cCtx);
+
+    /*
+    * Process padded data.
+    * Return filtered data without padding.
+    */
+    public native byte[] randomPadding_processPaddedData(long cCtx, byte[] data);
+
+    /*
+    * Accomplish padded data processing and return left data without a padding.
+    */
+    public native byte[] randomPadding_finishPaddedDataProcessing(long cCtx) throws FoundationException;
 }
 

@@ -86,6 +86,8 @@ import VSCFoundation
             return CompoundKeyAlg(take: c_ctx)
         case vscf_impl_tag_CHAINED_KEY_ALG:
             return ChainedKeyAlg(take: c_ctx)
+        case vscf_impl_tag_RANDOM_PADDING:
+            return RandomPadding(take: c_ctx)
         default:
             fatalError("Unexpected C implementation cast to the Swift implementation.")
         }
@@ -851,5 +853,26 @@ import VSCFoundation
     @objc static func wrapMessageInfoFooterSerializer(use c_ctx: OpaquePointer) -> MessageInfoFooterSerializer {
         let shallowCopy = vscf_impl_shallow_copy(c_ctx)!
         return FoundationImplementation.wrapMessageInfoFooterSerializer(take:shallowCopy)
+    }
+
+    /// Wrap C implementation object to the Swift object that implements protocol Padding.
+    @objc static func wrapPadding(take c_ctx: OpaquePointer) -> Padding {
+        if (!vscf_padding_is_implemented(c_ctx)) {
+            fatalError("Given C implementation does not implement interface Padding.")
+        }
+
+        let implTag = vscf_impl_tag(c_ctx)
+        switch(implTag) {
+        case vscf_impl_tag_RANDOM_PADDING:
+            return RandomPadding(take: c_ctx)
+        default:
+            fatalError("Unexpected C implementation cast to the Swift implementation.")
+        }
+    }
+
+    /// Wrap C implementation object to the Swift object that implements protocol Padding.
+    @objc static func wrapPadding(use c_ctx: OpaquePointer) -> Padding {
+        let shallowCopy = vscf_impl_shallow_copy(c_ctx)!
+        return FoundationImplementation.wrapPadding(take:shallowCopy)
     }
 }

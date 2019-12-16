@@ -333,6 +333,17 @@ const initAes256Cbc = (Module, modules) => {
         }
 
         /**
+         * Return cipher's current state.
+         */
+        state() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
+            let proxyResult;
+            proxyResult = Module._vscf_aes256_cbc_state(this.ctxPtr);
+            return proxyResult;
+        }
+
+        /**
          * Start sequential encryption.
          */
         startEncryption() {

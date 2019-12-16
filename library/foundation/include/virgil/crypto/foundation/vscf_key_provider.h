@@ -172,6 +172,21 @@ VSCF_PUBLIC vscf_impl_t *
 vscf_key_provider_generate_private_key(vscf_key_provider_t *self, vscf_alg_id_t alg_id, vscf_error_t *error);
 
 //
+//  Generate new post-quantum private key with default algorithms.
+//  Note, that a post-quantum key combines classic private keys
+//  alongside with post-quantum private keys.
+//  Current structure is "compound private key" where:
+//      - cipher private key is "chained private key" where:
+//          - l1 key is a classic private key;
+//          - l2 key is a post-quantum private key;
+//      - signer private key "chained private key" where:
+//          - l1 key is a classic private key;
+//          - l2 key is a post-quantum private key.
+//
+VSCF_PUBLIC vscf_impl_t *
+vscf_key_provider_generate_post_quantum_private_key(vscf_key_provider_t *self, vscf_error_t *error);
+
+//
 //  Generate new compound private key with given algorithms.
 //
 VSCF_PUBLIC vscf_impl_t *

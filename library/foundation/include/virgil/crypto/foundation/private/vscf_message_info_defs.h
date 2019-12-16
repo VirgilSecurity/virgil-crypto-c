@@ -99,6 +99,8 @@ struct vscf_message_info_t {
 
     vscf_impl_t *cipher_kdf_alg_info;
 
+    vscf_impl_t *cipher_padding_alg_info;
+
     vscf_footer_info_t *footer_info;
 };
 

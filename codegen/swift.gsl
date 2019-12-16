@@ -839,6 +839,11 @@ function class_derive_buffer_length_getter (class, method, argument)
 
     elsif defined (my.length.argument)
         my.proxy_argument = swift_derive_argument_name_str (my.length.argument)
+
+        if string_in (my.length.cast, "data_length")
+            my.proxy_argument += ".count"
+        endif
+
         return my.proxy_argument
     endif
 endfunction

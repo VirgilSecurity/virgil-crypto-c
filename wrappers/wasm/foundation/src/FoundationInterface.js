@@ -203,6 +203,9 @@ const initFoundationInterface = (Module, modules) => {
                 case modules.FoundationImplTag.MESSAGE_INFO_DER_SERIALIZER:
                     return modules.MessageInfoDerSerializer.newAndTakeCContext(ctxPtr);
 
+                case modules.FoundationImplTag.RANDOM_PADDING:
+                    return modules.RandomPadding.newAndTakeCContext(ctxPtr);
+
                 default:
                     throw new Error('Unexpected implementation tag found: ' + implTag);
             }

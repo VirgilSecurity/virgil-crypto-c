@@ -104,6 +104,20 @@ const initRecipientCipher = (Module, modules) => {
             Module._vscf_recipient_cipher_use_encryption_cipher(this.ctxPtr, encryptionCipher.ctxPtr)
         }
 
+        set encryptionPadding(encryptionPadding) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureImplementInterface('encryptionPadding', encryptionPadding, 'Foundation.Padding', modules.FoundationInterfaceTag.PADDING, modules.FoundationInterface);
+            Module._vscf_recipient_cipher_release_encryption_padding(this.ctxPtr)
+            Module._vscf_recipient_cipher_use_encryption_padding(this.ctxPtr, encryptionPadding.ctxPtr)
+        }
+
+        set paddingParams(paddingParams) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureClass('paddingParams', paddingParams, modules.PaddingParams);
+            Module._vscf_recipient_cipher_release_padding_params(this.ctxPtr)
+            Module._vscf_recipient_cipher_use_padding_params(this.ctxPtr, paddingParams.ctxPtr)
+        }
+
         set signerHash(signerHash) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureImplementInterface('signerHash', signerHash, 'Foundation.Hash', modules.FoundationInterfaceTag.HASH, modules.FoundationInterface);

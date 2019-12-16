@@ -93,6 +93,22 @@ class VscfKeyProvider(object):
         vscf_key_provider_generate_private_key.restype = POINTER(vscf_impl_t)
         return vscf_key_provider_generate_private_key(ctx, alg_id, error)
 
+    def vscf_key_provider_generate_post_quantum_private_key(self, ctx, error):
+        """Generate new post-quantum private key with default algorithms.
+        Note, that a post-quantum key combines classic private keys
+        alongside with post-quantum private keys.
+        Current structure is "compound private key" where:
+            - cipher private key is "chained private key" where:
+                - l1 key is a classic private key;
+                - l2 key is a post-quantum private key;
+            - signer private key "chained private key" where:
+                - l1 key is a classic private key;
+                - l2 key is a post-quantum private key."""
+        vscf_key_provider_generate_post_quantum_private_key = self._lib.vscf_key_provider_generate_post_quantum_private_key
+        vscf_key_provider_generate_post_quantum_private_key.argtypes = [POINTER(vscf_key_provider_t), POINTER(vscf_error_t)]
+        vscf_key_provider_generate_post_quantum_private_key.restype = POINTER(vscf_impl_t)
+        return vscf_key_provider_generate_post_quantum_private_key(ctx, error)
+
     def vscf_key_provider_generate_compound_private_key(self, ctx, cipher_alg_id, signer_alg_id, error):
         """Generate new compound private key with given algorithms."""
         vscf_key_provider_generate_compound_private_key = self._lib.vscf_key_provider_generate_compound_private_key

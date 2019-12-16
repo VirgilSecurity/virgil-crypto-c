@@ -11,8 +11,7 @@ import unsafe "unsafe"
 *
 * Compound private key contains 2 private keys and signature:
 * - cipher key - is used for decryption;
-* - signer key - is used for signing;
-* - signature - signature of the "cipher public key".
+* - signer key - is used for signing.
 */
 type CompoundPrivateKey struct {
     cCtx *C.vscf_compound_private_key_t /*ct10*/
@@ -38,17 +37,6 @@ func (obj *CompoundPrivateKey) SignerKey() (PrivateKey, error) {
     runtime.KeepAlive(obj)
 
     return FoundationImplementationWrapPrivateKey(proxyResult) /* r4 */
-}
-
-/*
-* Return the cipher public key signature.
-*/
-func (obj *CompoundPrivateKey) Signature() []byte {
-    proxyResult := /*pr4*/C.vscf_compound_private_key_signature(obj.cCtx)
-
-    runtime.KeepAlive(obj)
-
-    return helperExtractData(proxyResult) /* r1 */
 }
 
 /* Handle underlying C context. */

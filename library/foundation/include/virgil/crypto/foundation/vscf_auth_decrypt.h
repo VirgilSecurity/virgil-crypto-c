@@ -101,7 +101,7 @@ vscf_auth_decrypt(vscf_impl_t *impl, vsc_data_t data, vsc_data_t auth_data, vsc_
 //  Calculate required buffer length to hold the authenticated decrypted data.
 //
 VSCF_PUBLIC size_t
-vscf_auth_decrypt_auth_decrypted_len(vscf_impl_t *impl, size_t data_len);
+vscf_auth_decrypt_auth_decrypted_len(const vscf_impl_t *impl, size_t data_len);
 
 //
 //  Return auth decrypt API, or NULL if it is not implemented.

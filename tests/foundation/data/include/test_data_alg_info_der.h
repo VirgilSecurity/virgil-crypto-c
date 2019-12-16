@@ -41,3 +41,4 @@ extern const vsc_data_t test_alg_info_KDF1_SHA256_DER_V2_COMPAT;
 extern const vsc_data_t test_alg_info_AES256_GCM_DER;
 extern const vsc_data_t test_alg_info_AES256_GCM_DER_V2_COMPAT;
 extern const vsc_data_t test_alg_info_AES256_GCM_NONCE;
+extern const vsc_data_t test_alg_info_PADDING_CIPHER_WITH_RANDOM_PADDING_AND_AES256_GCM;

@@ -55,6 +55,8 @@ func FoundationImplementationWrapAlg(ctx *C.vscf_impl_t) (Alg, error) {
         return newCompoundKeyAlgWithCtx((*C.vscf_compound_key_alg_t /*ct10*/)(ctx)), nil
     case C.vscf_impl_tag_CHAINED_KEY_ALG:
         return newChainedKeyAlgWithCtx((*C.vscf_chained_key_alg_t /*ct10*/)(ctx)), nil
+    case C.vscf_impl_tag_RANDOM_PADDING:
+        return newRandomPaddingWithCtx((*C.vscf_random_padding_t /*ct10*/)(ctx)), nil
     default:
         return nil, &FoundationError{-1,"Unexpected C implementation cast to the Go implementation."}
     }
@@ -631,6 +633,21 @@ func FoundationImplementationWrapMessageInfoFooterSerializer(ctx *C.vscf_impl_t)
     switch (implTag) {
     case C.vscf_impl_tag_MESSAGE_INFO_DER_SERIALIZER:
         return newMessageInfoDerSerializerWithCtx((*C.vscf_message_info_der_serializer_t /*ct10*/)(ctx)), nil
+    default:
+        return nil, &FoundationError{-1,"Unexpected C implementation cast to the Go implementation."}
+    }
+}
+
+/* Wrap C implementation object to the Go object that implements interface Padding. */
+func FoundationImplementationWrapPadding(ctx *C.vscf_impl_t) (Padding, error) {
+    if (!C.vscf_padding_is_implemented(ctx)) {
+        return nil, &FoundationError{-1,"Given C implementation does not implement interface Padding."}
+    }
+
+    implTag := C.vscf_impl_tag(ctx)
+    switch (implTag) {
+    case C.vscf_impl_tag_RANDOM_PADDING:
+        return newRandomPaddingWithCtx((*C.vscf_random_padding_t /*ct10*/)(ctx)), nil
     default:
         return nil, &FoundationError{-1,"Unexpected C implementation cast to the Go implementation."}
     }

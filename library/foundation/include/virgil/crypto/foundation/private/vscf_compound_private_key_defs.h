@@ -62,14 +62,6 @@
 #include "vscf_atomic.h"
 #include "vscf_impl.h"
 
-#if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <virgil/crypto/common/vsc_buffer.h>
-#endif
-
-#if VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <VSCCommon/vsc_buffer.h>
-#endif
-
 // clang-format on
 //  @end
 
@@ -109,10 +101,6 @@ struct vscf_compound_private_key_t {
     //  Implementation specific context.
     //
     vscf_impl_t *signer_key;
-    //
-    //  Implementation specific context.
-    //
-    vsc_buffer_t *signature;
 };
 
 

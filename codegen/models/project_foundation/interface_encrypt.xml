@@ -15,7 +15,7 @@
     </method>
 
 
-    <method name="encrypted len">
+    <method name="encrypted len" is_const="1">
         Calculate required buffer length to hold the encrypted data.
 
         <argument name="data len" type="size"/>
@@ -24,7 +24,7 @@
     </method>
 
 
-    <method name="precise encrypted len">
+    <method name="precise encrypted len" is_const="1">
         Precise length calculation of encrypted data.
 
         <argument name="data len" type="size"/>

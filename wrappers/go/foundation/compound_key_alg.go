@@ -24,14 +24,6 @@ func (obj *CompoundKeyAlg) SetRandom(random Random) {
     runtime.KeepAlive(obj)
 }
 
-func (obj *CompoundKeyAlg) SetHash(hash Hash) {
-    C.vscf_compound_key_alg_release_hash(obj.cCtx)
-    C.vscf_compound_key_alg_use_hash(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(hash.Ctx())))
-
-    runtime.KeepAlive(hash)
-    runtime.KeepAlive(obj)
-}
-
 /*
 * Setup predefined values to the uninitialized class dependencies.
 */

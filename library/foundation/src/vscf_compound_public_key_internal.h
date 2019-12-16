@@ -58,16 +58,6 @@
 #include "vscf_compound_public_key.h"
 #include "vscf_impl.h"
 
-#if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <virgil/crypto/common/vsc_buffer.h>
-#   include <virgil/crypto/common/vsc_data.h>
-#endif
-
-#if VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <VSCCommon/vsc_buffer.h>
-#   include <VSCCommon/vsc_data.h>
-#endif
-
 // clang-format on
 //  @end
 
@@ -100,20 +90,20 @@ VSCF_PRIVATE void
 vscf_compound_public_key_cleanup_ctx(vscf_compound_public_key_t *self);
 
 //
-//  Create a compound public key with a cipher public key,
-//  a signer public key, and a cipher public key signature.
+//  Create a compound public key with a cipher public key and
+//  a signer public key.
 //
 VSCF_PUBLIC void
 vscf_compound_public_key_init_ctx_with_keys(vscf_compound_public_key_t *self, vscf_impl_t **alg_info_ref,
-        const vscf_impl_t *cipher_key, const vscf_impl_t *signer_key, vsc_buffer_t **signature_ref);
+        const vscf_impl_t *cipher_key, const vscf_impl_t *signer_key);
 
 //
-//  Create a compound public key with a cipher public key,
-//  a signer public key, and a cipher public key signature.
+//  Create a compound public key with a cipher public key and
+//  a signer public key.
 //
 VSCF_PUBLIC void
-vscf_compound_public_key_init_ctx_with_imported_keys(vscf_compound_public_key_t *self, const vscf_impl_t *alg_info,
-        vscf_impl_t **cipher_key_ref, vscf_impl_t **signer_key_ref, vsc_data_t signature);
+vscf_compound_public_key_init_ctx_with_keys_disown(vscf_compound_public_key_t *self, const vscf_impl_t *alg_info,
+        vscf_impl_t **cipher_key_ref, vscf_impl_t **signer_key_ref);
 
 
 // --------------------------------------------------------------------------

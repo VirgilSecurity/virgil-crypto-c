@@ -57,18 +57,6 @@ public class PheCipher implements AutoCloseable {
         this.cCtx = contextHolder.cCtx;
     }
 
-    public int getSaltLen() {
-        return 32;
-    }
-
-    public int getKeyLen() {
-        return 32;
-    }
-
-    public int getNonceLen() {
-        return 12;
-    }
-
     /*
     * Acquire C context.
     * Note. This method is used in generated code only, and SHOULD NOT be used in another way.

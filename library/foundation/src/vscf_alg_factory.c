@@ -53,6 +53,7 @@
 #include "vscf_alg_factory.h"
 #include "vscf_memory.h"
 #include "vscf_assert.h"
+#include "vscf_alg.h"
 #include "vscf_alg_info.h"
 #include "vscf_public_key.h"
 #include "vscf_private_key.h"
@@ -76,6 +77,7 @@
 #include "vscf_ed25519.h"
 #include "vscf_curve25519.h"
 #include "vscf_ecc.h"
+#include "vscf_random_padding.h"
 
 // clang-format on
 //  @end
@@ -258,23 +260,66 @@ vscf_alg_factory_create_cipher_from_info(const vscf_impl_t *alg_info) {
     const vscf_alg_id_t alg_id = vscf_alg_info_alg_id(alg_info);
     VSCF_ASSERT(alg_id != vscf_alg_id_NONE);
 
+    vscf_impl_t *cipher = NULL;
+    switch (alg_id) {
 #if VSCF_AES256_GCM
-    if (alg_id == vscf_alg_id_AES256_GCM) {
-        const vscf_cipher_alg_info_t *cipher_alg_info = (const vscf_cipher_alg_info_t *)alg_info;
-        vscf_aes256_gcm_t *aes256_gcm = vscf_aes256_gcm_new();
-        vscf_aes256_gcm_set_nonce(aes256_gcm, vscf_cipher_alg_info_nonce(cipher_alg_info));
-        return vscf_aes256_gcm_impl(aes256_gcm);
-    }
+    case vscf_alg_id_AES256_GCM:
+        cipher = vscf_aes256_gcm_impl(vscf_aes256_gcm_new());
+        break;
 #endif // VSCF_AES256_GCM
 
 #if VSCF_AES256_CBC
-    if (alg_id == vscf_alg_id_AES256_CBC) {
-        const vscf_cipher_alg_info_t *cipher_alg_info = (const vscf_cipher_alg_info_t *)alg_info;
-        vscf_aes256_cbc_t *aes256_cbc = vscf_aes256_cbc_new();
-        vscf_aes256_cbc_set_nonce(aes256_cbc, vscf_cipher_alg_info_nonce(cipher_alg_info));
-        return vscf_aes256_cbc_impl(aes256_cbc);
-    }
+    case vscf_alg_id_AES256_CBC:
+        cipher = vscf_aes256_cbc_impl(vscf_aes256_cbc_new());
+        break;
 #endif // VSCF_AES256_CBC
 
-    return NULL;
+    default:
+        return NULL;
+    }
+
+    const vscf_status_t status = vscf_alg_restore_alg_info(cipher, alg_info);
+    if (status != vscf_status_SUCCESS) {
+        vscf_impl_destroy(&cipher);
+        //  TODO: Log underlying error.
+    }
+
+    return cipher;
+}
+
+//
+//  Create algorithm that implements "padding" interface.
+//
+VSCF_PUBLIC vscf_impl_t *
+vscf_alg_factory_create_padding_from_info(const vscf_impl_t *alg_info, const vscf_impl_t *random) {
+
+    VSCF_ASSERT_PTR(alg_info);
+    VSCF_ASSERT(vscf_alg_info_alg_id(alg_info) != vscf_alg_id_NONE);
+
+    const vscf_alg_id_t alg_id = vscf_alg_info_alg_id(alg_info);
+
+    vscf_impl_t *alg = NULL;
+    switch (alg_id) {
+#if VSCF_RANDOM_PADDING
+    case vscf_alg_id_RANDOM_PADDING: {
+        vscf_random_padding_t *padding = vscf_random_padding_new();
+        if (random != NULL) {
+            vscf_random_padding_use_random(padding, (vscf_impl_t *)random);
+        }
+        alg = vscf_random_padding_impl(padding);
+        break;
+    }
+#endif // VSCF_RANDOM_PADDING
+
+    default:
+        return NULL;
+    }
+
+    const vscf_status_t status = vscf_alg_restore_alg_info(alg, alg_info);
+    if (status != vscf_status_SUCCESS) {
+        vscf_impl_destroy(&alg);
+        //  TODO: Log underlying error.
+    }
+
+    return alg;
 }

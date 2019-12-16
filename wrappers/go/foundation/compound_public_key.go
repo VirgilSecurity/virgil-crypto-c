@@ -11,8 +11,7 @@ import unsafe "unsafe"
 *
 * Compound public key contains 2 public keys and signature:
 * - cipher key - is used for encryption;
-* - signer key - is used for verifying;
-* - signature - signature of the "cipher public key".
+* - signer key - is used for verifying.
 */
 type CompoundPublicKey struct {
     cCtx *C.vscf_compound_public_key_t /*ct10*/
@@ -38,17 +37,6 @@ func (obj *CompoundPublicKey) SignerKey() (PublicKey, error) {
     runtime.KeepAlive(obj)
 
     return FoundationImplementationWrapPublicKey(proxyResult) /* r4 */
-}
-
-/*
-* Return cipher public key signature.
-*/
-func (obj *CompoundPublicKey) Signature() []byte {
-    proxyResult := /*pr4*/C.vscf_compound_public_key_signature(obj.cCtx)
-
-    runtime.KeepAlive(obj)
-
-    return helperExtractData(proxyResult) /* r1 */
 }
 
 /* Handle underlying C context. */

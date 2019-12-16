@@ -68,3 +68,4 @@ class VscfOidId(object):
     FALCON = 27
     ROUND5 = 28
     ROUND5_ND_5PKE_5D = 29
+    RANDOM_PADDING = 30

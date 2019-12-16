@@ -85,6 +85,22 @@ func (obj *RecipientCipher) SetEncryptionCipher(encryptionCipher Cipher) {
     runtime.KeepAlive(obj)
 }
 
+func (obj *RecipientCipher) SetEncryptionPadding(encryptionPadding Padding) {
+    C.vscf_recipient_cipher_release_encryption_padding(obj.cCtx)
+    C.vscf_recipient_cipher_use_encryption_padding(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(encryptionPadding.Ctx())))
+
+    runtime.KeepAlive(encryptionPadding)
+    runtime.KeepAlive(obj)
+}
+
+func (obj *RecipientCipher) SetPaddingParams(paddingParams PaddingParams) {
+    C.vscf_recipient_cipher_release_padding_params(obj.cCtx)
+    C.vscf_recipient_cipher_use_padding_params(obj.cCtx, (*C.vscf_padding_params_t)(unsafe.Pointer(paddingParams.Ctx())))
+
+    runtime.KeepAlive(paddingParams)
+    runtime.KeepAlive(obj)
+}
+
 func (obj *RecipientCipher) SetSignerHash(signerHash Hash) {
     C.vscf_recipient_cipher_release_signer_hash(obj.cCtx)
     C.vscf_recipient_cipher_use_signer_hash(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(signerHash.Ctx())))

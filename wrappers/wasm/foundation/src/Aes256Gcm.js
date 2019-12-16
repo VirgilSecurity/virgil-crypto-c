@@ -344,6 +344,17 @@ const initAes256Gcm = (Module, modules) => {
         }
 
         /**
+         * Return cipher's current state.
+         */
+        state() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
+            let proxyResult;
+            proxyResult = Module._vscf_aes256_gcm_state(this.ctxPtr);
+            return proxyResult;
+        }
+
+        /**
          * Start sequential encryption.
          */
         startEncryption() {

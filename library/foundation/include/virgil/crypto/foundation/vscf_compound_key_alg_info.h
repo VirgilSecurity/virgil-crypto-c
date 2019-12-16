@@ -144,8 +144,7 @@ vscf_compound_key_alg_info_shallow_copy(vscf_compound_key_alg_info_t *self);
 //
 VSCF_PRIVATE void
 vscf_compound_key_alg_info_init_with_infos(vscf_compound_key_alg_info_t *self, vscf_alg_id_t alg_id,
-        const vscf_impl_t *cipher_alg_info, const vscf_impl_t *signer_alg_info,
-        const vscf_impl_t *signer_hash_alg_info);
+        const vscf_impl_t *cipher_alg_info, const vscf_impl_t *signer_alg_info);
 
 //
 //  Allocate implementation context and perform it's initialization.
@@ -155,7 +154,7 @@ vscf_compound_key_alg_info_init_with_infos(vscf_compound_key_alg_info_t *self, v
 //
 VSCF_PRIVATE vscf_compound_key_alg_info_t *
 vscf_compound_key_alg_info_new_with_infos(vscf_alg_id_t alg_id, const vscf_impl_t *cipher_alg_info,
-        const vscf_impl_t *signer_alg_info, const vscf_impl_t *signer_hash_alg_info);
+        const vscf_impl_t *signer_alg_info);
 
 //
 //  Perform initialization of pre-allocated context.
@@ -165,7 +164,7 @@ vscf_compound_key_alg_info_new_with_infos(vscf_alg_id_t alg_id, const vscf_impl_
 //
 VSCF_PRIVATE void
 vscf_compound_key_alg_info_init_with_infos_disown(vscf_compound_key_alg_info_t *self, vscf_alg_id_t alg_id,
-        vscf_impl_t **cipher_alg_info_ref, vscf_impl_t **signer_alg_info_ref, vscf_impl_t **signer_hash_alg_info_ref);
+        vscf_impl_t **cipher_alg_info_ref, vscf_impl_t **signer_alg_info_ref);
 
 //
 //  Allocate implementation context and perform it's initialization.
@@ -175,7 +174,7 @@ vscf_compound_key_alg_info_init_with_infos_disown(vscf_compound_key_alg_info_t *
 //
 VSCF_PRIVATE vscf_compound_key_alg_info_t *
 vscf_compound_key_alg_info_new_with_infos_disown(vscf_alg_id_t alg_id, vscf_impl_t **cipher_alg_info_ref,
-        vscf_impl_t **signer_alg_info_ref, vscf_impl_t **signer_hash_alg_info_ref);
+        vscf_impl_t **signer_alg_info_ref);
 
 //
 //  Return information about encrypt/decrypt algorithm.
@@ -188,12 +187,6 @@ vscf_compound_key_alg_info_cipher_alg_info(const vscf_compound_key_alg_info_t *s
 //
 VSCF_PUBLIC const vscf_impl_t *
 vscf_compound_key_alg_info_signer_alg_info(const vscf_compound_key_alg_info_t *self);
-
-//
-//  Return information about hash algorithm that is used with signing.
-//
-VSCF_PUBLIC const vscf_impl_t *
-vscf_compound_key_alg_info_signer_hash_alg_info(const vscf_compound_key_alg_info_t *self);
 
 //
 //  Provide algorithm identificator.

@@ -403,10 +403,8 @@ test__serialize_public_key__compound_curve25519_ed25519__equals_der(void) {
     vscf_impl_t *ed25519_alg_info =
             vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_ED25519));
 
-    vscf_impl_t *hash_alg_info = vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_SHA512));
-
     vscf_impl_t *alg_info = vscf_compound_key_alg_info_impl(vscf_compound_key_alg_info_new_with_infos_disown(
-            vscf_alg_id_COMPOUND_KEY, &curve25519_alg_info, &ed25519_alg_info, &hash_alg_info));
+            vscf_alg_id_COMPOUND_KEY, &curve25519_alg_info, &ed25519_alg_info));
 
     vscf_raw_public_key_t *raw_public_key =
             vscf_raw_public_key_new_with_data(test_data_compound_key_CURVE25519_ED25519_PUBLIC_KEY, &alg_info);
@@ -434,10 +432,8 @@ test__serialize_private_key__compound_curve25519_ed25519__equals_der(void) {
     vscf_impl_t *ed25519_alg_info =
             vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_ED25519));
 
-    vscf_impl_t *hash_alg_info = vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_SHA512));
-
     vscf_impl_t *alg_info = vscf_compound_key_alg_info_impl(vscf_compound_key_alg_info_new_with_infos_disown(
-            vscf_alg_id_COMPOUND_KEY, &curve25519_alg_info, &ed25519_alg_info, &hash_alg_info));
+            vscf_alg_id_COMPOUND_KEY, &curve25519_alg_info, &ed25519_alg_info));
 
     vscf_raw_private_key_t *raw_private_key =
             vscf_raw_private_key_new_with_data(test_data_compound_key_CURVE25519_ED25519_PRIVATE_KEY, &alg_info);

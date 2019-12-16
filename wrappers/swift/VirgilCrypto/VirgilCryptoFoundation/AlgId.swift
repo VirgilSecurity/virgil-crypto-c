@@ -85,7 +85,7 @@ import VSCFoundation
 
     case round5Nd5pke5d
 
-    case postQuantum
+    case randomPadding
 
     /// Create enumeration value from the correspond C enumeration value.
     internal init(fromC algId: vscf_alg_id_t) {

@@ -78,6 +78,7 @@ target_sources(test_data_foundation
             "${CMAKE_CURRENT_LIST_DIR}/include/test_data_compound_key.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/test_data_chained_key.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/test_data_post_quantum.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/test_data_padding_cipher.h"
 
         PRIVATE
             "${CMAKE_CURRENT_LIST_DIR}/src/test_data_aes256_gcm.c"
@@ -119,6 +120,7 @@ target_sources(test_data_foundation
             "${CMAKE_CURRENT_LIST_DIR}/src/test_data_compound_key.c"
             "${CMAKE_CURRENT_LIST_DIR}/src/test_data_chained_key.c"
             "${CMAKE_CURRENT_LIST_DIR}/src/test_data_post_quantum.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/test_data_padding_cipher.c"
         )
 
 target_include_directories(test_data_foundation

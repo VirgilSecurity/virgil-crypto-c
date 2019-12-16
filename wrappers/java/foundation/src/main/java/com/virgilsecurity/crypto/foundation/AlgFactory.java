@@ -75,5 +75,12 @@ public class AlgFactory {
     public static Cipher createCipherFromInfo(AlgInfo algInfo) {
         return FoundationJNI.INSTANCE.algFactory_createCipherFromInfo(algInfo);
     }
+
+    /*
+    * Create algorithm that implements "padding" interface.
+    */
+    public static Padding createPaddingFromInfo(AlgInfo algInfo, Random random) {
+        return FoundationJNI.INSTANCE.algFactory_createPaddingFromInfo(algInfo, random);
+    }
 }
 

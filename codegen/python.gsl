@@ -454,7 +454,11 @@ function python_class_derive_buffer_length_getter (class, method, argument, pyth
         return "$(my.proxy_object:).$(my.proxy_constant:)"
 
     elsif defined (my.length.argument)
-        my.proxy_argument = python_derive_argument_name_str (my.length.argument)
+        if string_in (my.length.cast, "data_length")
+            my.proxy_argument = "len(" + python_derive_argument_name_str (my.length.argument) + ")"
+        else
+            my.proxy_argument = python_derive_argument_name_str (my.length.argument)
+        endif
         return my.proxy_argument
     endif
 endfunction
@@ -2193,13 +2197,18 @@ function python_create_impl_tag_class(source, python_project, meta)
                 endif
             endfor
 
-            for my.impl_tag_struct.key
-                module_index = index(key)
-                impl_tag = "$(module_index:): [\"$(key.name:)\", $(key.low_level_name:)]"
-                if ! last ()
-                    impl_tag += ","
-                endif
-                my.impl_tag_dict += format_left ("$(impl_tag:)")
+            for my.source.implementation by implementation.name
+                module_index = index(implementation)
+                derived_source_impl_name = python_derive_class_name_str(implementation.name, my.python_project)
+                for my.impl_tag_struct.key
+                    if key.name = derived_source_impl_name
+                        impl_tag = "$(module_index:): [\"$(key.name:)\", $(key.low_level_name:)]"
+                        if ! last ()
+                            impl_tag += ","
+                        endif
+                        my.impl_tag_dict += format_left ("$(impl_tag:)")
+                    endif
+                endfor
             endfor
 
             new python_code to python_class

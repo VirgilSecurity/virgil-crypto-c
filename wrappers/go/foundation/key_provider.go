@@ -123,6 +123,34 @@ func (obj *KeyProvider) GeneratePrivateKey(algId AlgId) (PrivateKey, error) {
 }
 
 /*
+* Generate new post-quantum private key with default algorithms.
+* Note, that a post-quantum key combines classic private keys
+* alongside with post-quantum private keys.
+* Current structure is "compound private key" where:
+* - cipher private key is "chained private key" where:
+* - l1 key is a classic private key;
+* - l2 key is a post-quantum private key;
+* - signer private key "chained private key" where:
+* - l1 key is a classic private key;
+* - l2 key is a post-quantum private key.
+*/
+func (obj *KeyProvider) GeneratePostQuantumPrivateKey() (PrivateKey, error) {
+    var error C.vscf_error_t
+    C.vscf_error_reset(&error)
+
+    proxyResult := /*pr4*/C.vscf_key_provider_generate_post_quantum_private_key(obj.cCtx, &error)
+
+    err := FoundationErrorHandleStatus(error.status)
+    if err != nil {
+        return nil, err
+    }
+
+    runtime.KeepAlive(obj)
+
+    return FoundationImplementationWrapPrivateKey(proxyResult) /* r4 */
+}
+
+/*
 * Generate new compound private key with given algorithms.
 */
 func (obj *KeyProvider) GenerateCompoundPrivateKey(cipherAlgId AlgId, signerAlgId AlgId) (PrivateKey, error) {

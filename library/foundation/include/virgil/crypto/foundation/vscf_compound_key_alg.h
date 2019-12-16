@@ -192,25 +192,6 @@ VSCF_PUBLIC void
 vscf_compound_key_alg_release_random(vscf_compound_key_alg_t *self);
 
 //
-//  Setup dependency to the interface 'hash' with shared ownership.
-//
-VSCF_PUBLIC void
-vscf_compound_key_alg_use_hash(vscf_compound_key_alg_t *self, vscf_impl_t *hash);
-
-//
-//  Setup dependency to the interface 'hash' and transfer ownership.
-//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
-//
-VSCF_PUBLIC void
-vscf_compound_key_alg_take_hash(vscf_compound_key_alg_t *self, vscf_impl_t *hash);
-
-//
-//  Release dependency to the interface 'hash'.
-//
-VSCF_PUBLIC void
-vscf_compound_key_alg_release_hash(vscf_compound_key_alg_t *self);
-
-//
 //  Setup predefined values to the uninitialized class dependencies.
 //
 VSCF_PUBLIC vscf_status_t

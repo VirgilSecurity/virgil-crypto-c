@@ -30,5 +30,5 @@ const (
     AlgIdFalcon AlgId = 20
     AlgIdRound5 AlgId = 21
     AlgIdRound5Nd5pke5d AlgId = 22
-    AlgIdPostQuantum AlgId = 23
+    AlgIdRandomPadding AlgId = 23
 )

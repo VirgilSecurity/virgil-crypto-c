@@ -66,3 +66,16 @@ func AlgFactoryCreateCipherFromInfo(algInfo AlgInfo) (Cipher, error) {
 
     return FoundationImplementationWrapCipher(proxyResult) /* r4 */
 }
+
+/*
+* Create algorithm that implements "padding" interface.
+*/
+func AlgFactoryCreatePaddingFromInfo(algInfo AlgInfo, random Random) (Padding, error) {
+    proxyResult := /*pr4*/C.vscf_alg_factory_create_padding_from_info((*C.vscf_impl_t)(unsafe.Pointer(algInfo.Ctx())), (*C.vscf_impl_t)(unsafe.Pointer(random.Ctx())))
+
+    runtime.KeepAlive(algInfo)
+
+    runtime.KeepAlive(random)
+
+    return FoundationImplementationWrapPadding(proxyResult) /* r4 */
+}

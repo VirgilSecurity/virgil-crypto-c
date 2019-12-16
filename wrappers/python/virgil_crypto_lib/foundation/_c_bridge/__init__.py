@@ -40,6 +40,7 @@ from ._vscf_asn1_tag import VscfAsn1Tag
 from ._vscf_alg_id import VscfAlgId
 from ._vscf_oid_id import VscfOidId
 from ._vscf_group_msg_type import VscfGroupMsgType
+from ._vscf_cipher_state import VscfCipherState
 from ._vscf_error import vscf_error_t
 from ._vscf_error import VscfError
 from ._vscf_oid import VscfOid
@@ -91,6 +92,10 @@ from ._vscf_signed_data_info import vscf_signed_data_info_t
 from ._vscf_signed_data_info import VscfSignedDataInfo
 from ._vscf_footer_info import vscf_footer_info_t
 from ._vscf_footer_info import VscfFooterInfo
+from ._vscf_key_info import vscf_key_info_t
+from ._vscf_key_info import VscfKeyInfo
+from ._vscf_padding_params import vscf_padding_params_t
+from ._vscf_padding_params import VscfPaddingParams
 from ._vscf_sha224 import vscf_sha224_t
 from ._vscf_sha224 import VscfSha224
 from ._vscf_sha256 import vscf_sha256_t
@@ -195,4 +200,6 @@ from ._vscf_alg_info_der_deserializer import vscf_alg_info_der_deserializer_t
 from ._vscf_alg_info_der_deserializer import VscfAlgInfoDerDeserializer
 from ._vscf_message_info_der_serializer import vscf_message_info_der_serializer_t
 from ._vscf_message_info_der_serializer import VscfMessageInfoDerSerializer
+from ._vscf_random_padding import vscf_random_padding_t
+from ._vscf_random_padding import VscfRandomPadding
 from ._vscf_impl_tag import VscfImplTag

@@ -62,6 +62,12 @@ class RecipientCipher(object):
     def set_encryption_cipher(self, encryption_cipher):
         self._lib_vscf_recipient_cipher.vscf_recipient_cipher_use_encryption_cipher(self.ctx, encryption_cipher.c_impl)
 
+    def set_encryption_padding(self, encryption_padding):
+        self._lib_vscf_recipient_cipher.vscf_recipient_cipher_use_encryption_padding(self.ctx, encryption_padding.c_impl)
+
+    def set_padding_params(self, padding_params):
+        self._lib_vscf_recipient_cipher.vscf_recipient_cipher_use_padding_params(self.ctx, padding_params.ctx)
+
     def set_signer_hash(self, signer_hash):
         self._lib_vscf_recipient_cipher.vscf_recipient_cipher_use_signer_hash(self.ctx, signer_hash.c_impl)
 

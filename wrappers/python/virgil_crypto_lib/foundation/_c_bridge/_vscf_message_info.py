@@ -118,6 +118,20 @@ class VscfMessageInfo(object):
         vscf_message_info_cipher_kdf_alg_info.restype = POINTER(vscf_impl_t)
         return vscf_message_info_cipher_kdf_alg_info(ctx)
 
+    def vscf_message_info_has_cipher_padding_alg_info(self, ctx):
+        """Return true if cipher padding alg info exists."""
+        vscf_message_info_has_cipher_padding_alg_info = self._lib.vscf_message_info_has_cipher_padding_alg_info
+        vscf_message_info_has_cipher_padding_alg_info.argtypes = [POINTER(vscf_message_info_t)]
+        vscf_message_info_has_cipher_padding_alg_info.restype = c_bool
+        return vscf_message_info_has_cipher_padding_alg_info(ctx)
+
+    def vscf_message_info_cipher_padding_alg_info(self, ctx):
+        """Return cipher padding alg info."""
+        vscf_message_info_cipher_padding_alg_info = self._lib.vscf_message_info_cipher_padding_alg_info
+        vscf_message_info_cipher_padding_alg_info.argtypes = [POINTER(vscf_message_info_t)]
+        vscf_message_info_cipher_padding_alg_info.restype = POINTER(vscf_impl_t)
+        return vscf_message_info_cipher_padding_alg_info(ctx)
+
     def vscf_message_info_has_footer_info(self, ctx):
         """Return true if footer info exists."""
         vscf_message_info_has_footer_info = self._lib.vscf_message_info_has_footer_info

@@ -58,6 +58,7 @@
 #include "vscf_encrypt.h"
 #include "vscf_decrypt.h"
 #include "vscf_cipher_info.h"
+#include "vscf_cipher_state.h"
 #include "vscf_status.h"
 #include "vscf_api.h"
 
@@ -104,6 +105,12 @@ VSCF_PUBLIC void
 vscf_cipher_set_key(vscf_impl_t *impl, vsc_data_t key);
 
 //
+//  Return cipher's current state.
+//
+VSCF_PRIVATE vscf_cipher_state_t
+vscf_cipher_state(const vscf_impl_t *impl);
+
+//
 //  Start sequential encryption.
 //
 VSCF_PUBLIC void
@@ -135,7 +142,7 @@ vscf_cipher_out_len(vscf_impl_t *impl, size_t data_len);
 //  Pass zero length to define buffer length of the method "finish".
 //
 VSCF_PUBLIC size_t
-vscf_cipher_encrypted_out_len(vscf_impl_t *impl, size_t data_len);
+vscf_cipher_encrypted_out_len(const vscf_impl_t *impl, size_t data_len);
 
 //
 //  Return buffer length required to hold an output of the methods
@@ -143,7 +150,7 @@ vscf_cipher_encrypted_out_len(vscf_impl_t *impl, size_t data_len);
 //  Pass zero length to define buffer length of the method "finish".
 //
 VSCF_PUBLIC size_t
-vscf_cipher_decrypted_out_len(vscf_impl_t *impl, size_t data_len);
+vscf_cipher_decrypted_out_len(const vscf_impl_t *impl, size_t data_len);
 
 //
 //  Accomplish encryption or decryption process.

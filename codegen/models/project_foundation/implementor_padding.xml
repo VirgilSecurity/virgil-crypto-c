@@ -1,0 +1,25 @@
+<implementor name="padding" is_default="1">
+    Provides implementation of padding algorithms.
+
+    <implementation name="random padding">
+        Append a random number of padding bytes to a data.
+
+        <require interface="alg info"/>
+        <require impl="simple alg info"/>
+        <require header="pb_decode.h" scope="private"/>
+        <require header="pb_encode.h" scope="private"/>
+
+        <interface name="alg"/>
+        <interface name="padding"/>
+
+        <constant name="padding size len" value="4"/>
+        <constant name="padding len min" value=".(c_class_random_padding_constant_padding_size_len) + 1"/>
+
+        <dependency name="random" interface="random"/>
+        <property name="tail filter" class="tail filter"/>
+        <property name="buffer" class="buffer"/>
+        <property name="unpadded len" type="size"/>
+        <property name="padding frame" type="size"/>
+        <property name="padding frame max" type="size"/>
+    </implementation>
+</implementor>

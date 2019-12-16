@@ -148,6 +148,28 @@ func (obj *MessageInfo) CipherKdfAlgInfo() (AlgInfo, error) {
 }
 
 /*
+* Return true if cipher padding alg info exists.
+*/
+func (obj *MessageInfo) HasCipherPaddingAlgInfo() bool {
+    proxyResult := /*pr4*/C.vscf_message_info_has_cipher_padding_alg_info(obj.cCtx)
+
+    runtime.KeepAlive(obj)
+
+    return bool(proxyResult) /* r9 */
+}
+
+/*
+* Return cipher padding alg info.
+*/
+func (obj *MessageInfo) CipherPaddingAlgInfo() (AlgInfo, error) {
+    proxyResult := /*pr4*/C.vscf_message_info_cipher_padding_alg_info(obj.cCtx)
+
+    runtime.KeepAlive(obj)
+
+    return FoundationImplementationWrapAlgInfo(proxyResult) /* r4 */
+}
+
+/*
 * Return true if footer info exists.
 */
 func (obj *MessageInfo) HasFooterInfo() bool {

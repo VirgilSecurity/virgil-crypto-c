@@ -44,6 +44,7 @@
 #include "vscf_falcon.h"
 #include "vscf_fake_random.h"
 #include "vscf_private_key.h"
+#include "vscf_simple_alg_info.h"
 
 #include "test_data_falcon.h"
 
@@ -254,6 +255,48 @@ test__export_private_key__from_generate_key__valid_alg_and_key_data(void) {
     vscf_falcon_destroy(&falcon);
 }
 
+void
+test__extract_public_key__from_imported_private_key__when_exported_are_equals(void) {
+    //  Create raw private key
+    vscf_impl_t *alg_info = vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_FALCON));
+    vscf_raw_private_key_t *raw_private_key =
+            vscf_raw_private_key_new_with_data(test_data_falcon_PRIVATE_KEY_512, &alg_info);
+
+    //  Configure key algorithm
+    vscf_falcon_t *falcon = vscf_falcon_new();
+
+    vscf_fake_random_t *fake_random = vscf_fake_random_new();
+    vscf_fake_random_setup_source_byte(fake_random, 0xAB);
+    vscf_falcon_take_random(falcon, vscf_fake_random_impl(fake_random));
+
+    //  Import private key
+    vscf_error_t error;
+    vscf_error_reset(&error);
+
+    vscf_impl_t *private_key = vscf_falcon_import_private_key(falcon, raw_private_key, &error);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
+    TEST_ASSERT_NOT_NULL(private_key);
+
+    //  Extract public key
+    vscf_impl_t *public_key = vscf_private_key_extract_public_key(private_key);
+    TEST_ASSERT_NOT_NULL(public_key);
+
+    //  Export public key
+    vscf_raw_public_key_t *raw_public_key = vscf_falcon_export_public_key(falcon, public_key, &error);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
+    TEST_ASSERT_NOT_NULL(raw_public_key);
+
+    //   Check
+    TEST_ASSERT_EQUAL_DATA(test_data_falcon_PUBLIC_KEY_512, vscf_raw_public_key_data(raw_public_key));
+
+    //  Cleanup
+    vscf_falcon_destroy(&falcon);
+    vscf_impl_destroy(&private_key);
+    vscf_impl_destroy(&public_key);
+    vscf_raw_private_key_destroy(&raw_private_key);
+    vscf_raw_public_key_destroy(&raw_public_key);
+}
+
 #endif // TEST_DEPENDENCIES_AVAILABLE
 
 
@@ -271,6 +314,7 @@ main(void) {
     RUN_TEST(test__verify_hash__sha512_digest_and_const_signature_with_512_degree_key__success);
     RUN_TEST(test__export_public_key__from_generate_key__valid_alg_and_key_data);
     RUN_TEST(test__export_private_key__from_generate_key__valid_alg_and_key_data);
+    RUN_TEST(test__extract_public_key__from_imported_private_key__when_exported_are_equals);
 #else
     RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
 #endif

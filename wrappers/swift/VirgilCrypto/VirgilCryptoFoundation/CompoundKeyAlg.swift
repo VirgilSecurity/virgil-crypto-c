@@ -87,11 +87,6 @@ import VSCFoundation
         vscf_compound_key_alg_use_random(self.c_ctx, random.c_ctx)
     }
 
-    @objc public func setHash(hash: Hash) {
-        vscf_compound_key_alg_release_hash(self.c_ctx)
-        vscf_compound_key_alg_use_hash(self.c_ctx, hash.c_ctx)
-    }
-
     /// Setup predefined values to the uninitialized class dependencies.
     @objc public func setupDefaults() throws {
         let proxyResult = vscf_compound_key_alg_setup_defaults(self.c_ctx)

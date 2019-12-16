@@ -34,4 +34,5 @@ const (
     OidIdFalcon OidId = 27
     OidIdRound5 OidId = 28
     OidIdRound5Nd5pke5d OidId = 29
+    OidIdRandomPadding OidId = 30
 )

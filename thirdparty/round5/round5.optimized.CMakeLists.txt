@@ -1,0 +1,239 @@
+#   Copyright (C) 2015-2019 Virgil Security, Inc.
+#
+#   All rights reserved.
+#
+#   Redistribution and use in source and binary forms, with or without
+#   modification, are permitted provided that the following conditions are
+#   met:
+#
+#       (1) Redistributions of source code must retain the above copyright
+#       notice, this list of conditions and the following disclaimer.
+#
+#       (2) Redistributions in binary form must reproduce the above copyright
+#       notice, this list of conditions and the following disclaimer in
+#       the documentation and/or other materials provided with the
+#       distribution.
+#
+#       (3) Neither the name of the copyright holder nor the names of its
+#       contributors may be used to endorse or promote products derived from
+#       this software without specific prior written permission.
+#
+#   THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
+#   IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+#   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+#   DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT,
+#   INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+#   (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+#   SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+#   HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+#   STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+#   IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+#   POSSIBILITY OF SUCH DAMAGE.
+
+cmake_minimum_required(VERSION 3.12 FATAL_ERROR)
+
+project(round5-optimized VERSION 0.0.1 LANGUAGES C)
+
+# ---------------------------------------------------------------------------
+#   Options.
+# ---------------------------------------------------------------------------
+option(CM_CACHE "On/Off timing and cache attack countermeasures" YES)
+option(SHIFT_LEFT64_CONSTANT_TIME
+        "Indicate that the 64-bit shift left operator with a variable amount can be considered constant-time" OFF)
+
+# ---------------------------------------------------------------------------
+#   Helpers.
+# ---------------------------------------------------------------------------
+include(GNUInstallDirs)
+
+# ---------------------------------------------------------------------------
+#   Define sources.
+# ---------------------------------------------------------------------------
+add_library(round5-optimized)
+
+set(HEADERS
+        "${CMAKE_CURRENT_LIST_DIR}/../configurable/src/r5_hash.h"
+
+        "${CMAKE_CURRENT_LIST_DIR}/../reference/src/little_endian.h"
+        "${CMAKE_CURRENT_LIST_DIR}/../reference/src/r5_memory.h"
+        "${CMAKE_CURRENT_LIST_DIR}/../reference/src/rng.h"
+        "${CMAKE_CURRENT_LIST_DIR}/../reference/src/misc.h"
+        "${CMAKE_CURRENT_LIST_DIR}/../reference/src/xef.h"
+        "${CMAKE_CURRENT_LIST_DIR}/../reference/src/shake.h"
+
+        "${CMAKE_CURRENT_LIST_DIR}/src/r5_parameter_sets.h"
+        "${CMAKE_CURRENT_LIST_DIR}/src/ringmul.h"
+        "${CMAKE_CURRENT_LIST_DIR}/src/probe_cm.h"
+        "${CMAKE_CURRENT_LIST_DIR}/src/r5_cca_kem.h"
+        "${CMAKE_CURRENT_LIST_DIR}/src/r5_cca_pke.h"
+        "${CMAKE_CURRENT_LIST_DIR}/src/r5_cpa_kem.h"
+        "${CMAKE_CURRENT_LIST_DIR}/src/r5_cpa_pke.h"
+        "${CMAKE_CURRENT_LIST_DIR}/src/r5_dem.h"
+        "${CMAKE_CURRENT_LIST_DIR}/src/matmul.h"
+        "${CMAKE_CURRENT_LIST_DIR}/src/drbg.h"
+        "${CMAKE_CURRENT_LIST_DIR}/src/a_fixed.h"
+        "${CMAKE_CURRENT_LIST_DIR}/src/a_random.h"
+        "${CMAKE_CURRENT_LIST_DIR}/src/cca_encrypt.h"
+        "${CMAKE_CURRENT_LIST_DIR}/src/cpa_kem.h"
+    )
+
+set(SOURCES
+        "${CMAKE_CURRENT_LIST_DIR}/../configurable/src/xe2_c16.c"
+        "${CMAKE_CURRENT_LIST_DIR}/../configurable/src/xe4_c64.c"
+        "${CMAKE_CURRENT_LIST_DIR}/../configurable/src/xe5_c64.c"
+
+        "${CMAKE_CURRENT_LIST_DIR}/../reference/src/little_endian.c"
+        "${CMAKE_CURRENT_LIST_DIR}/../reference/src/misc.c"
+        "${CMAKE_CURRENT_LIST_DIR}/../reference/src/r5_hash.c"
+        "${CMAKE_CURRENT_LIST_DIR}/../reference/src/r5_memory.c"
+        "${CMAKE_CURRENT_LIST_DIR}/../reference/src/shake.c"
+        "${CMAKE_CURRENT_LIST_DIR}/../reference/src/xef_ref.c"
+
+        "${CMAKE_CURRENT_LIST_DIR}/src/ringmul.c"
+        "${CMAKE_CURRENT_LIST_DIR}/src/ringmul_cm.c"
+        "${CMAKE_CURRENT_LIST_DIR}/src/probe_cm.c"
+        "${CMAKE_CURRENT_LIST_DIR}/src/probe_cm_avx2.c"
+        "${CMAKE_CURRENT_LIST_DIR}/src/r5_cca_kem.c"
+        "${CMAKE_CURRENT_LIST_DIR}/src/r5_cca_pke.c"
+        "${CMAKE_CURRENT_LIST_DIR}/src/r5_cpa_kem.c"
+        "${CMAKE_CURRENT_LIST_DIR}/src/r5_cpa_pke_n1.c"
+        "${CMAKE_CURRENT_LIST_DIR}/src/r5_cpa_pke_nd.c"
+        "${CMAKE_CURRENT_LIST_DIR}/src/matmul.c"
+        "${CMAKE_CURRENT_LIST_DIR}/src/matmul_avx2.c"
+        "${CMAKE_CURRENT_LIST_DIR}/src/matmul_cm.c"
+        "${CMAKE_CURRENT_LIST_DIR}/src/drbg.c"
+        "${CMAKE_CURRENT_LIST_DIR}/src/a_fixed.c"
+        "${CMAKE_CURRENT_LIST_DIR}/src/a_random.c"
+        "${CMAKE_CURRENT_LIST_DIR}/src/cca_encrypt.c"
+        "${CMAKE_CURRENT_LIST_DIR}/src/cpa_kem.c"
+    )
+
+if(CRYPTO_ENGINE_MBEDTLS)
+    list(APPEND SOURCES "${CMAKE_CURRENT_LIST_DIR}/src/r5_dem_mbedtls.c")
+else()
+    list(APPEND SOURCES "${CMAKE_CURRENT_LIST_DIR}/src/r5_dem.c")
+endif()
+
+if(NIST_KAT_GENERATION)
+    if(NOT CRYPTO_ENGINE_OPENSSL)
+        message(FATAL_ERROR "NIST_KAT_GENERATION requires CRYPTO_ENGINE_OPENSSL to be enabled")
+    endif()
+    list(APPEND SOURCES "${CMAKE_CURRENT_LIST_DIR}/../reference/src/rng/nist_rng.c")
+else()
+    list(APPEND SOURCES "${CMAKE_CURRENT_LIST_DIR}/../reference/src/rng/shake_rng.c")
+endif()
+
+target_sources(round5-optimized PRIVATE ${HEADERS} ${SOURCES})
+
+target_include_directories(round5-optimized
+        PUBLIC
+            $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/src>
+            $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+        )
+
+target_compile_features(round5-optimized PUBLIC c_std_99)
+
+set_target_properties(round5-optimized PROPERTIES OUTPUT_NAME "round5")
+
+# ---------------------------------------------------------------------------
+#   Define definitions.
+# ---------------------------------------------------------------------------
+target_compile_definitions(round5-optimized PUBLIC ${ALG})
+
+if(NIST_KAT_GENERATION)
+    target_compile_definitions(round5-optimized PUBLIC NIST_KAT_GENERATION)
+endif()
+
+if(TAU)
+    target_compile_definitions(round5-optimized PUBLIC ROUND5_API_TAU=${TAU})
+endif()
+
+if(TAU_LEN)
+    target_compile_definitions(round5-optimized PUBLIC ROUND5_API_TAU2_LEN=${TAU2_LEN})
+endif()
+
+if(NO_OPENSSL_SHAKE)
+    target_compile_definitions(round5-optimized PUBLIC NO_OPENSSL_SHAKE)
+endif()
+
+if(USE_AES_DRBG)
+    target_compile_definitions(round5-optimized PUBLIC USE_AES_DRBG)
+endif()
+
+if(CM_CACHE)
+    target_compile_definitions(round5-optimized PUBLIC CM_CACHE)
+endif()
+
+if(SHIFT_LEFT64_CONSTANT_TIME)
+    target_compile_definitions(round5-optimized PUBLIC SHIFT_LEFT64_CONSTANT_TIME)
+endif()
+
+
+# ---------------------------------------------------------------------------
+#   Define compilation flags.
+# ---------------------------------------------------------------------------
+target_compile_options(round5-optimized
+        PRIVATE
+            $<$<OR:$<C_COMPILER_ID:GNU>,$<C_COMPILER_ID:Clang>,$<C_COMPILER_ID:AppleClang>>:
+                    -pedantic -Wall -Wextra -Wconversion -Wcast-qual -Wcast-align>
+        )
+
+target_link_libraries(round5-optimized
+        PUBLIC
+            XKCP::keccak
+            $<$<BOOL:${CRYPTO_ENGINE_OPENSSL}>:OpenSSL::Crypto>
+            $<$<BOOL:${CRYPTO_ENGINE_MBEDTLS}>:mbed::crypto>
+            $<$<OR:$<C_COMPILER_ID:GNU>,$<C_COMPILER_ID:Clang>,$<C_COMPILER_ID:AppleClang>>:-lm>
+        )
+
+# ---------------------------------------------------------------------------
+#   Install library.
+# ---------------------------------------------------------------------------
+#
+# Install headers.
+#
+
+install(FILES ${HEADERS} DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/round5")
+
+#
+# Install libraries.
+#
+install(
+        TARGETS round5-optimized
+        EXPORT round5Targets
+        LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}"
+        ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}"
+        FRAMEWORK DESTINATION "${CMAKE_INSTALL_LIBDIR}"
+        RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}"
+        )
+
+# ---------------------------------------------------------------------------
+#   Build examples.
+# ---------------------------------------------------------------------------
+if(BUILD_EXAMPLES)
+    add_executable(example "${CMAKE_CURRENT_LIST_DIR}/src/examples/example.c")
+    target_link_libraries(example round5-optimized)
+
+    add_executable(createAfixed "${CMAKE_CURRENT_LIST_DIR}/src/createAfixed/createAfixed.c")
+    target_link_libraries(createAfixed round5-optimized)
+
+    install(
+            TARGETS example createAfixed
+            RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}"
+            )
+endif()
+
+if(BUILD_SPEEDTEST)
+    add_executable(speedtest)
+    target_sources(speedtest
+            PRIVATE
+                "${CMAKE_CURRENT_LIST_DIR}/../speedtest/src/speedtest_optimized.c"
+                "${CMAKE_CURRENT_LIST_DIR}/../speedtest/src/test_utils.c"
+            )
+    target_link_libraries(speedtest round5-optimized)
+
+    install(
+            TARGETS speedtest
+            RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}"
+            )
+endif()

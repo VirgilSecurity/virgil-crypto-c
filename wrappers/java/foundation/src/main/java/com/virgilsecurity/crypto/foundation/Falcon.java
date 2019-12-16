@@ -55,18 +55,6 @@ public class Falcon implements AutoCloseable, Alg, KeyAlg, KeySigner {
         this.cCtx = contextHolder.cCtx;
     }
 
-    public int getSeedLen() {
-        return 48;
-    }
-
-    public int getLogn512() {
-        return 9;
-    }
-
-    public int getLogn1024() {
-        return 10;
-    }
-
     public void setRandom(Random random) {
         FoundationJNI.INSTANCE.falcon_setRandom(this.cCtx, random);
     }

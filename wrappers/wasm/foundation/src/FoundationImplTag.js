@@ -114,33 +114,35 @@ const initFoundationImplTag = (Module, modules) => {
 
         PKCS8_SERIALIZER: 38,
 
-        RAW_PRIVATE_KEY: 39,
+        RANDOM_PADDING: 39,
 
-        RAW_PUBLIC_KEY: 40,
+        RAW_PRIVATE_KEY: 40,
 
-        ROUND5: 41,
+        RAW_PUBLIC_KEY: 41,
 
-        RSA: 42,
+        ROUND5: 42,
 
-        RSA_PRIVATE_KEY: 43,
+        RSA: 43,
 
-        RSA_PUBLIC_KEY: 44,
+        RSA_PRIVATE_KEY: 44,
 
-        SALTED_KDF_ALG_INFO: 45,
+        RSA_PUBLIC_KEY: 45,
 
-        SEC1_SERIALIZER: 46,
+        SALTED_KDF_ALG_INFO: 46,
 
-        SEED_ENTROPY_SOURCE: 47,
+        SEC1_SERIALIZER: 47,
 
-        SHA224: 48,
+        SEED_ENTROPY_SOURCE: 48,
 
-        SHA256: 49,
+        SHA224: 49,
 
-        SHA384: 50,
+        SHA256: 50,
 
-        SHA512: 51,
+        SHA384: 51,
 
-        SIMPLE_ALG_INFO: 52
+        SHA512: 52,
+
+        SIMPLE_ALG_INFO: 53
     });
 
     return FoundationImplTag;

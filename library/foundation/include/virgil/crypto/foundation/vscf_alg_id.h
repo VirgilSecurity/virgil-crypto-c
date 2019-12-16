@@ -95,7 +95,7 @@ enum vscf_alg_id_t {
     vscf_alg_id_FALCON,
     vscf_alg_id_ROUND5,
     vscf_alg_id_ROUND5_ND_5PKE_5D,
-    vscf_alg_id_POST_QUANTUM
+    vscf_alg_id_RANDOM_PADDING
 };
 typedef enum vscf_alg_id_t vscf_alg_id_t;
 

@@ -35,17 +35,6 @@ func (obj *CompoundKeyAlgInfo) SignerAlgInfo() (AlgInfo, error) {
     return FoundationImplementationWrapAlgInfo(proxyResult) /* r4 */
 }
 
-/*
-* Return information about hash algorithm that is used with signing.
-*/
-func (obj *CompoundKeyAlgInfo) SignerHashAlgInfo() (AlgInfo, error) {
-    proxyResult := /*pr4*/C.vscf_compound_key_alg_info_signer_hash_alg_info(obj.cCtx)
-
-    runtime.KeepAlive(obj)
-
-    return FoundationImplementationWrapAlgInfo(proxyResult) /* r4 */
-}
-
 /* Handle underlying C context. */
 func (obj *CompoundKeyAlgInfo) Ctx() uintptr {
     return uintptr(unsafe.Pointer(obj.cCtx))

@@ -81,7 +81,7 @@ vscf_encrypt(vscf_impl_t *impl, vsc_data_t data, vsc_buffer_t *out) {
 //  Calculate required buffer length to hold the encrypted data.
 //
 VSCF_PUBLIC size_t
-vscf_encrypt_encrypted_len(vscf_impl_t *impl, size_t data_len) {
+vscf_encrypt_encrypted_len(const vscf_impl_t *impl, size_t data_len) {
 
     const vscf_encrypt_api_t *encrypt_api = vscf_encrypt_api(impl);
     VSCF_ASSERT_PTR (encrypt_api);
@@ -94,7 +94,7 @@ vscf_encrypt_encrypted_len(vscf_impl_t *impl, size_t data_len) {
 //  Precise length calculation of encrypted data.
 //
 VSCF_PUBLIC size_t
-vscf_encrypt_precise_encrypted_len(vscf_impl_t *impl, size_t data_len) {
+vscf_encrypt_precise_encrypted_len(const vscf_impl_t *impl, size_t data_len) {
 
     const vscf_encrypt_api_t *encrypt_api = vscf_encrypt_api(impl);
     VSCF_ASSERT_PTR (encrypt_api);

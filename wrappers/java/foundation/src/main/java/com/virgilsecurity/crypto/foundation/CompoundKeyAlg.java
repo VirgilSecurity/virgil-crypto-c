@@ -61,10 +61,6 @@ public class CompoundKeyAlg implements AutoCloseable, Alg, KeyAlg, KeyCipher, Ke
         FoundationJNI.INSTANCE.compoundKeyAlg_setRandom(this.cCtx, random);
     }
 
-    public void setHash(Hash hash) {
-        FoundationJNI.INSTANCE.compoundKeyAlg_setHash(this.cCtx, hash);
-    }
-
     /*
     * Setup predefined values to the uninitialized class dependencies.
     */
