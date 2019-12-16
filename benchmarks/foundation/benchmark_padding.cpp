@@ -423,13 +423,14 @@ BENCHMARK(encrypt_padding_cipher)->Arg(4 * 1024 * 1024)->Iterations(20);
 
 BENCHMARK(decrypt_aes256_gcm)->Arg(1024)->Iterations(100000);
 BENCHMARK(decrypt_padding_cipher)->Arg(1024)->Iterations(100000);
-BENCHMARK(decrypt_aes256_gcm)->Arg(4 * 1024 * 1024)->Iterations(100000);
-BENCHMARK(decrypt_padding_cipher)->Arg(4 * 1024 * 1024)->Iterations(100000);
+BENCHMARK(decrypt_aes256_gcm)->Arg(4 * 1024 * 1024)->Iterations(20);
+BENCHMARK(decrypt_padding_cipher)->Arg(4 * 1024 * 1024)->Iterations(20);
 
 
 // add this to program argument --benchmark_counters_tabular=true
 // note that time in this benchmark is just total time of 2
 BENCHMARK(compare_encrypt)->Arg(1024)->Iterations(100000)->UseManualTime();
 BENCHMARK(compare_encrypt)->Arg(1024 * 1024 * 4)->Iterations(20)->UseManualTime();
+
 BENCHMARK(compare_decrypt)->Arg(1024)->Iterations(100000)->UseManualTime();
 BENCHMARK(compare_decrypt)->Arg(1024 * 1024 * 4)->Iterations(20)->UseManualTime();
