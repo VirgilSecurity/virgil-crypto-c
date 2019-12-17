@@ -462,7 +462,8 @@ vsce_phe_client_set_keys(vsce_phe_client_t *self, vsc_data_t client_private_key,
     mbedtls_status = mbedtls_mpi_inv_mod(&self->y_inv, &self->y, &self->group.N);
     VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
 
-
+    mbedtls_status = mbedtls_ecp_point_read_binary(
+            &self->group, &self->x, self->server_public_key, sizeof(self->server_public_key));
     if (mbedtls_status != 0 || mbedtls_ecp_check_pubkey(&self->group, &self->x) != 0) {
         status = vsce_status_ERROR_INVALID_PUBLIC_KEY;
         goto err;
