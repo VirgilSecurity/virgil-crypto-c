@@ -35,7 +35,7 @@
 * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 */
 
-namespace VirgilCrypto\Foundation;
+namespace Virgil\CryptoWrapper\Foundation;
 
 /**
 * Handle KDF algorithms that are configured with salt and iteration count.
@@ -47,22 +47,6 @@ class SaltedKdfAlgInfo implements AlgInfo
     * @var
     */
     private $ctx;
-
-    /**
-    * Create algorithm info with identificator, HASH algorithm info,
-    * salt and iteration count.
-    *
-    * @param AlgId $algId
-    * @param AlgInfo $hashAlgInfo
-    * @param string $salt
-    * @param int $iterationCount
-    * @return SaltedKdfAlgInfo
-    */
-    public static function withMembers(AlgId $algId, AlgInfo $hashAlgInfo, string $salt, int $iterationCount): SaltedKdfAlgInfo
-    {
-        $ctx = vscf_salted_kdf_alg_info_with_members_php($algId, $hashAlgInfo, $salt, $iterationCount);
-        return new SaltedKdfAlgInfo($ctx);
-    }
 
     /**
     * Create underlying C context.

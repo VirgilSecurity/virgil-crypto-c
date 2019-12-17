@@ -1,6 +1,7 @@
 <wrapper 
     lang="php"
     dir="../wrappers/php/"
-    project="virgil crypto">
+    namespace="Virgil\\CryptoWrapper"
+    project="virgil crypto wrapper">
     Wrapper to the PHP programming language.
 </wrapper>

@@ -35,7 +35,7 @@
 * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 */
 
-namespace VirgilCrypto\Foundation;
+namespace Virgil\CryptoWrapper\Foundation;
 
 /**
 * Group ticket used to start group session, remove participants or proactive to rotate encryption key.

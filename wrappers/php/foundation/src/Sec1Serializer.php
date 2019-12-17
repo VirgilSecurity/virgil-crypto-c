@@ -35,7 +35,7 @@
 * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 */
 
-namespace VirgilCrypto\Foundation;
+namespace Virgil\CryptoWrapper\Foundation;
 
 /**
 * Implements SEC 1 key serialization to DER format.

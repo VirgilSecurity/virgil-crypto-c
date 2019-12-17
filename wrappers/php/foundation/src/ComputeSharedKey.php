@@ -35,7 +35,7 @@
 * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 */
 
-namespace VirgilCrypto\Foundation;
+namespace Virgil\CryptoWrapper\Foundation;
 
 /**
 * Provide interface to compute shared key for 2 asymmetric keys.

@@ -35,7 +35,7 @@
 * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 */
 
-namespace VirgilCrypto\Phe;
+namespace Virgil\CryptoWrapper\Phe;
 
 /**
 * Class for server-side PHE crypto operations.
@@ -69,19 +69,19 @@ class PheServer
     }
 
     /**
-    * @param VirgilCrypto\Foundation\Random $random
+    * @param VirgilCryptoWrapper\Foundation\Random $random
     * @return void
     */
-    public function useRandom(VirgilCrypto\Foundation\Random $random): void
+    public function useRandom(VirgilCryptoWrapper\Foundation\Random $random): void
     {
         vsce_phe_server_use_random_php($this->ctx, $random->getCtx());
     }
 
     /**
-    * @param VirgilCrypto\Foundation\Random $operationRandom
+    * @param VirgilCryptoWrapper\Foundation\Random $operationRandom
     * @return void
     */
-    public function useOperationRandom(VirgilCrypto\Foundation\Random $operationRandom): void
+    public function useOperationRandom(VirgilCryptoWrapper\Foundation\Random $operationRandom): void
     {
         vsce_phe_server_use_operation_random_php($this->ctx, $operationRandom->getCtx());
     }

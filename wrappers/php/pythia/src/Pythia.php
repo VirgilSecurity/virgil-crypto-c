@@ -35,7 +35,7 @@
 * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 */
 
-namespace VirgilCrypto\Pythia;
+namespace Virgil\CryptoWrapper\Pythia;
 
 /**
 * Provide Pythia implementation based on the Virgil Security.

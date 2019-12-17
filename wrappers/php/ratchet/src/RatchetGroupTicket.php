@@ -35,7 +35,7 @@
 * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 */
 
-namespace VirgilCrypto\Ratchet;
+namespace Virgil\CryptoWrapper\Ratchet;
 
 /**
 * Group ticket used to start group session or change participants.
@@ -68,10 +68,10 @@ class RatchetGroupTicket
     }
 
     /**
-    * @param VirgilCrypto\Foundation\Random $rng
+    * @param VirgilCryptoWrapper\Foundation\Random $rng
     * @return void
     */
-    public function useRng(VirgilCrypto\Foundation\Random $rng): void
+    public function useRng(VirgilCryptoWrapper\Foundation\Random $rng): void
     {
         vscr_ratchet_group_ticket_use_rng_php($this->ctx, $rng->getCtx());
     }

@@ -88,7 +88,7 @@ endfunction
 function php_derive_high_level_namespace (in_php_module)
     check_arguments (my, "in_php_module", my)
 
-    my._res = "$(my.in_php_module.main_project0:Pascal)\\\\$(my.in_php_module.project0:Pascal)"
+    my._res = "$(my.in_php_module.namespace:)\\\\$(my.in_php_module.project0:Pascal)"
 
     return my._res
 endfunction
@@ -110,7 +110,7 @@ function php_derive_high_level_namespace_use (in_php_module, in_dependency)
         echo_fatal("Not implemented (CZ1000)", my)
     endif
 
-    my._res = "use $(my.in_php_module.main_project0:Pascal)\\\\$(my.in_dependency.project:Pascal)\\\\$(my._dep_class:Pascal);"
+    my._res = "use $(my.in_php_module.namespace:Pascal)\\\\$(my.in_dependency.project:Pascal)\\\\$(my._dep_class:Pascal);"
 
     return my._res
 endfunction

@@ -35,7 +35,7 @@
 * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 */
 
-namespace VirgilCrypto\Foundation;
+namespace Virgil\CryptoWrapper\Foundation;
 
 /**
 * Handle hashed based algorithm information, i.e. HKDF, HMAC, etc.
@@ -47,19 +47,6 @@ class HashBasedAlgInfo implements AlgInfo
     * @var
     */
     private $ctx;
-
-    /**
-    * Create algorithm info with identificator and HASH algorithm info.
-    *
-    * @param AlgId $algId
-    * @param AlgInfo $hashAlgInfo
-    * @return HashBasedAlgInfo
-    */
-    public static function withMembers(AlgId $algId, AlgInfo $hashAlgInfo): HashBasedAlgInfo
-    {
-        $ctx = vscf_hash_based_alg_info_with_members_php($algId, $hashAlgInfo);
-        return new HashBasedAlgInfo($ctx);
-    }
 
     /**
     * Create underlying C context.

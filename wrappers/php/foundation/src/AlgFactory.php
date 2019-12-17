@@ -35,7 +35,7 @@
 * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 */
 
-namespace VirgilCrypto\Foundation;
+namespace Virgil\CryptoWrapper\Foundation;
 
 /**
 * Create algorithms based on the given information.
@@ -106,5 +106,19 @@ class AlgFactory
     {
         $ctx = vscf_alg_factory_create_cipher_from_info_php($algInfo->getCtx());
         return FoundationImplementation::wrapCipher($ctx);
+    }
+
+    /**
+    * Create algorithm that implements "padding" interface.
+    *
+    * @param AlgInfo $algInfo
+    * @param Random $random
+    * @return Padding
+    * @throws \Exception
+    */
+    public static function createPaddingFromInfo(AlgInfo $algInfo, Random $random): Padding
+    {
+        $ctx = vscf_alg_factory_create_padding_from_info_php($algInfo->getCtx(), $random->getCtx());
+        return FoundationImplementation::wrapPadding($ctx);
     }
 }

@@ -35,7 +35,7 @@
 * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 */
 
-namespace VirgilCrypto\Foundation;
+namespace Virgil\CryptoWrapper\Foundation;
 
 use MyCLabs\Enum\Enum;
 
@@ -63,4 +63,10 @@ class AlgId extends Enum
     private const HKDF = 15;
     private const PKCS5_PBKDF2 = 16;
     private const PKCS5_PBES2 = 17;
+    private const COMPOUND_KEY = 18;
+    private const CHAINED_KEY = 19;
+    private const FALCON = 20;
+    private const ROUND5 = 21;
+    private const ROUND5_ND_5PKE_5D = 22;
+    private const RANDOM_PADDING = 23;
 }

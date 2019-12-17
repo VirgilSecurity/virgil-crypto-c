@@ -72,6 +72,7 @@ function php_create_project_module (project, wrapper)
         .description = my.project.brief
         .prefix = my.project.prefix
         .version = my.project.version_string
+        .namespace = my.wrapper.namespace
         .main_project0 = my.wrapper.project
         .main_project = "$(0.main_project0:Pascal)"
         .project0 = my.project.name
@@ -150,6 +151,7 @@ function php_create_class_module (class, php_project, meta)
         .source_file_path = cat_path (0.source_dir, 0.source_file_name)
         .prefix = my.php_project.prefix
         .type = my._type
+        .namespace = my.php_project.namespace
         .main_project0 = my.php_project.main_project0
         .project0 = my.php_project.project0
         .implementation_class0 = "$(my.php_project.name0:) implementation"
@@ -192,6 +194,7 @@ function php_create_interface_module (interface, php_project, meta)
         .source_file_path = cat_path (0.source_dir, 0.source_file_name)
         .prefix = my.php_project.prefix
         .type = my._type
+        .namespace = my.php_project.namespace
         .main_project0 = my.php_project.main_project0
         .project0 = my.php_project.project0
         .implementation_class0 = "$(my.php_project.name0:) implementation"
@@ -232,6 +235,7 @@ function php_create_implementation_module (implementation, php_project, meta)
         .source_file_path = cat_path (0.source_dir, 0.source_file_name)
         .prefix = my.php_project.prefix
         .type = my._type
+        .namespace = my.php_project.namespace
         .main_project0 = my.php_project.main_project0
         .project0 = my.php_project.project0
         .implementation_class0 = "$(my.php_project.name0:) implementation"
@@ -275,6 +279,7 @@ function php_create_enum_module (enum, php_project, meta)
             .name0 = "extension status"
             .name = 0.name0
             .prefix = my.php_project.prefix
+            .namespace = my.php_project.namespace
             .main_project0 = my.php_project.main_project0
             .project0 = my.php_project.project0
             .type = "extension"
@@ -291,6 +296,7 @@ function php_create_enum_module (enum, php_project, meta)
             .source_dir = cat_path (my.php_project.source_dir, "src")
             .source_file_path = cat_path (0.source_dir, 0.source_file_name)
             .type = "enum"
+            .namespace = my.php_project.namespace
             .main_project0 = my.php_project.main_project0
             .project0 = my.php_project.project0
 
@@ -319,67 +325,6 @@ function php_create_custom_modules (source, php_project, meta)
         echo_fatal ("Can not create directory: $(.source_dir:). ", my)
     endif
 
-    new json_module to my.php_project
-        .name = "composer"
-        .name0 = 0.name
-        .source_file_name = 0.name + ".json"
-        .source_dir = cat_path (my.php_project.source_dir)
-        .source_file_path = cat_path (0.source_dir, 0.source_file_name)
-
-        my._require = ""
-
-        for my.php_project->require as require0 where require0.name0 <> "common"
-            my._d = ""
-            if ! last()
-                my._d = ","
-            endif
-
-            my._require += "\"virgil/crypto-$(require0.name0:)\": \"@dev\"$(my._d:)"
-        endfor
-
-        my._r = ""
-
-        if my._require <> ""
-            my._r = ","
-        endif
-
-        my._require_block = format_left("\
-            \"php\": \"^7.2\",
-            \"myclabs/php-enum\": \"^1.7\"$(my._r:)
-            $(my._require:)
-            ", 5)
-
-        new code to json_module
-            .= format_left("\
-            {
-                \"name\": \"virgil/crypto-$(my.php_project.name:)\",
-                \"description\": \"$(my.php_project.description:)\",
-                \"keywords\": [],
-                \"homepage\": \"https://virgilsecurity.com\",
-                \"license\": \"BSD-3-Clause\",
-                \"authors\": [
-                    {
-                        \"name\": \"Virgil Security, Inc\",
-                        \"email\": \"support@virgilsecurity.com\",
-                        \"homepage\": \"https://virgilsecurity.com\"
-                    }
-                ],
-                \"require\": {$(my._require_block:)
-                },
-                \"autoload\": {
-                    \"psr-4\": {
-                        \"VirgilCrypto\\\\\\\\$(my.php_project.name:Pascal)\": \"src\"
-                    }
-                },
-                \"scripts\": {
-                    \"setup-extension\": [
-                    ]
-                }
-            }
-            ", 0)
-        endnew
-    endnew
-
     if defined(my.php_project->interfaces)
         echo_info ("Create <php_module/> from interface: 'ctx'", my)
         my._type = "interface"
@@ -407,6 +352,7 @@ function php_create_custom_modules (source, php_project, meta)
             .source_file_path = cat_path (0.source_dir, 0.source_file_name)
             .prefix = my.php_project.prefix
             .type = my._type
+            .namespace = my.php_project.namespace
             .main_project0 = my.php_project.main_project0
             .project0 = my.php_project.project0
 
@@ -436,6 +382,7 @@ function php_create_custom_modules (source, php_project, meta)
             .name0 = "$(0.name:c)"
             .prefix = my.php_project.prefix
             .type = my._type
+            .namespace = my.php_project.namespace
             .main_project0 = my.php_project.main_project0
             .project0 = my.php_project.project0
 
@@ -509,6 +456,7 @@ function php_finalize_custom_modules (source, php_project, meta)
             .source_file_path = cat_path (0.source_dir, 0.source_file_name)
             .prefix = my.php_project.prefix
             .type = my._type
+            .namespace = my.php_project.namespace
             .main_project0 = my.php_project.main_project0
             .project0 = my.php_project.project0
 

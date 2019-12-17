@@ -149,7 +149,7 @@ vscr_handle_throw_exception(vscr_status_t status) {
 //
 // Constants
 //
-const char VSCR_RATCHET_PHP_VERSION[] = "0.11.1";
+const char VSCR_RATCHET_PHP_VERSION[] = "0.12.0";
 const char VSCR_RATCHET_PHP_EXTNAME[] = "vscr_ratchet_php";
 
 static const char VSCR_RATCHET_KEY_ID_T_PHP_RES_NAME[] = "vscr_ratchet_key_id_t";

@@ -35,7 +35,7 @@
 * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 */
 
-namespace VirgilCrypto\Foundation;
+namespace Virgil\CryptoWrapper\Foundation;
 
 use MyCLabs\Enum\Enum;
 
@@ -67,4 +67,10 @@ class OidId extends Enum
     private const HMAC_WITH_SHA512 = 22;
     private const EC_GENERIC_KEY = 23;
     private const EC_DOMAIN_SECP256R1 = 24;
+    private const COMPOUND_KEY = 25;
+    private const CHAINED_KEY = 26;
+    private const FALCON = 27;
+    private const ROUND5 = 28;
+    private const ROUND5_ND_5PKE_5D = 29;
+    private const RANDOM_PADDING = 30;
 }

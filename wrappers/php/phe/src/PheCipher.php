@@ -35,7 +35,7 @@
 * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 */
 
-namespace VirgilCrypto\Phe;
+namespace Virgil\CryptoWrapper\Phe;
 
 /**
 * Class for encryption using PHE account key
@@ -73,10 +73,10 @@ class PheCipher
     }
 
     /**
-    * @param VirgilCrypto\Foundation\Random $random
+    * @param VirgilCryptoWrapper\Foundation\Random $random
     * @return void
     */
-    public function useRandom(VirgilCrypto\Foundation\Random $random): void
+    public function useRandom(VirgilCryptoWrapper\Foundation\Random $random): void
     {
         vsce_phe_cipher_use_random_php($this->ctx, $random->getCtx());
     }

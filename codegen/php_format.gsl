@@ -97,13 +97,13 @@ function php_format_high_level_method_body (in_php_method)
 
     elsif is_true(my.in_php_method.return_interface)
 
-        my._arguments = "$this->ctx"
-        my._dd = ", "
+        my._ctx_arg = "$this->ctx"
 
         if my.in_php_method.declaration = "public static "
-            my._arguments = ""
-            my._dd = ""
+            my._ctx_arg = ""
         endif
+
+        my._arguments = ""
 
         for my.in_php_method.php_argument as php_argument0
 
@@ -117,17 +117,19 @@ function php_format_high_level_method_body (in_php_method)
                 endif
             endif
 
-            if first() & my._dd <> ""
-                my._d = ", "
-            endif
-
             my._d = ""
             if ! last()
                 my._d = ", "
             endif
 
-            my._arguments += my._dd + my._arg + my._d
+            my._arguments += my._arg + my._d
         endfor
+
+        if my._ctx_arg <> "" & my._arguments <> ""
+            my._arguments = my._ctx_arg + ", " + my._arguments
+        elsif my._ctx_arg <> "" & my._arguments = ""
+            my._arguments = my._ctx_arg
+        endif
 
         my._function_name = my.in_php_method.function_name
 

@@ -35,7 +35,7 @@
 * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 */
 
-namespace VirgilCrypto\Ratchet;
+namespace Virgil\CryptoWrapper\Ratchet;
 
 /**
 * Utils class for working with keys formats.

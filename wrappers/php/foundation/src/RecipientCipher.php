@@ -35,7 +35,7 @@
 * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 */
 
-namespace VirgilCrypto\Foundation;
+namespace Virgil\CryptoWrapper\Foundation;
 
 /**
 * This class provides hybrid encryption algorithm that combines symmetric
@@ -85,6 +85,24 @@ class RecipientCipher
     public function useEncryptionCipher(Cipher $encryptionCipher): void
     {
         vscf_recipient_cipher_use_encryption_cipher_php($this->ctx, $encryptionCipher->getCtx());
+    }
+
+    /**
+    * @param Padding $encryptionPadding
+    * @return void
+    */
+    public function useEncryptionPadding(Padding $encryptionPadding): void
+    {
+        vscf_recipient_cipher_use_encryption_padding_php($this->ctx, $encryptionPadding->getCtx());
+    }
+
+    /**
+    * @param PaddingParams $paddingParams
+    * @return void
+    */
+    public function usePaddingParams(PaddingParams $paddingParams): void
+    {
+        vscf_recipient_cipher_use_padding_params_php($this->ctx, $paddingParams->getCtx());
     }
 
     /**

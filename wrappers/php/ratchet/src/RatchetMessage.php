@@ -35,7 +35,7 @@
 * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 */
 
-namespace VirgilCrypto\Ratchet;
+namespace Virgil\CryptoWrapper\Ratchet;
 
 /**
 * Class represents ratchet message

@@ -35,7 +35,7 @@
 * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 */
 
-namespace VirgilCrypto\Foundation;
+namespace Virgil\CryptoWrapper\Foundation;
 
 /**
 * This is implementation of Ed25519 elliptic curve algorithms.
@@ -325,12 +325,12 @@ class Ed25519 implements Alg, KeyAlg, KeyCipher, KeySigner, ComputeSharedKey
     * Return length in bytes required to hold signature.
     * Return zero if a given private key can not produce signatures.
     *
-    * @param Key $key
+    * @param PrivateKey $privateKey
     * @return int
     */
-    public function signatureLen(Key $key): int
+    public function signatureLen(PrivateKey $privateKey): int
     {
-        return vscf_ed25519_signature_len_php($this->ctx, $key->getCtx());
+        return vscf_ed25519_signature_len_php($this->ctx, $privateKey->getCtx());
     }
 
     /**

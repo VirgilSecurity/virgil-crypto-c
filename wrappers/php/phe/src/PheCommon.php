@@ -35,7 +35,7 @@
 * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 */
 
-namespace VirgilCrypto\Phe;
+namespace Virgil\CryptoWrapper\Phe;
 
 class PheCommon
 {

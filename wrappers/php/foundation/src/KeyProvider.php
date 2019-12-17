@@ -35,7 +35,7 @@
 * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 */
 
-namespace VirgilCrypto\Foundation;
+namespace Virgil\CryptoWrapper\Foundation;
 
 /**
 * Provide functionality for private key generation and importing that
@@ -78,15 +78,6 @@ class KeyProvider
     }
 
     /**
-    * @param Ecies $ecies
-    * @return void
-    */
-    public function useEcies(Ecies $ecies): void
-    {
-        vscf_key_provider_use_ecies_php($this->ctx, $ecies->getCtx());
-    }
-
-    /**
     * Setup predefined values to the uninitialized class dependencies.
     *
     * @return void
@@ -109,7 +100,7 @@ class KeyProvider
     }
 
     /**
-    * Generate new private key from the given id.
+    * Generate new private key with a given algorithm.
     *
     * @param AlgId $algId
     * @return PrivateKey
@@ -118,6 +109,74 @@ class KeyProvider
     public function generatePrivateKey(AlgId $algId): PrivateKey
     {
         $ctx = vscf_key_provider_generate_private_key_php($this->ctx, $algId->getValue());
+        return FoundationImplementation::wrapPrivateKey($ctx);
+    }
+
+    /**
+    * Generate new post-quantum private key with default algorithms.
+    * Note, that a post-quantum key combines classic private keys
+    * alongside with post-quantum private keys.
+    * Current structure is "compound private key" where:
+    * - cipher private key is "chained private key" where:
+    * - l1 key is a classic private key;
+    * - l2 key is a post-quantum private key;
+    * - signer private key "chained private key" where:
+    * - l1 key is a classic private key;
+    * - l2 key is a post-quantum private key.
+    *
+    * @return PrivateKey
+    * @throws \Exception
+    */
+    public function generatePostQuantumPrivateKey(): PrivateKey
+    {
+        $ctx = vscf_key_provider_generate_post_quantum_private_key_php($this->ctx);
+        return FoundationImplementation::wrapPrivateKey($ctx);
+    }
+
+    /**
+    * Generate new compound private key with given algorithms.
+    *
+    * @param AlgId $cipherAlgId
+    * @param AlgId $signerAlgId
+    * @return PrivateKey
+    * @throws \Exception
+    */
+    public function generateCompoundPrivateKey(AlgId $cipherAlgId, AlgId $signerAlgId): PrivateKey
+    {
+        $ctx = vscf_key_provider_generate_compound_private_key_php($this->ctx, $cipherAlgId->getValue(), $signerAlgId->getValue());
+        return FoundationImplementation::wrapPrivateKey($ctx);
+    }
+
+    /**
+    * Generate new chained private key with given algorithms.
+    *
+    * @param AlgId $l1AlgId
+    * @param AlgId $l2AlgId
+    * @return PrivateKey
+    * @throws \Exception
+    */
+    public function generateChainedPrivateKey(AlgId $l1AlgId, AlgId $l2AlgId): PrivateKey
+    {
+        $ctx = vscf_key_provider_generate_chained_private_key_php($this->ctx, $l1AlgId->getValue(), $l2AlgId->getValue());
+        return FoundationImplementation::wrapPrivateKey($ctx);
+    }
+
+    /**
+    * Generate new compound private key with nested chained private keys.
+    *
+    * Note, l2 algorithm identifiers can be NONE, in this case regular key
+    * will be crated instead of chained key.
+    *
+    * @param AlgId $cipherL1AlgId
+    * @param AlgId $cipherL2AlgId
+    * @param AlgId $signerL1AlgId
+    * @param AlgId $signerL2AlgId
+    * @return PrivateKey
+    * @throws \Exception
+    */
+    public function generateCompoundChainedPrivateKey(AlgId $cipherL1AlgId, AlgId $cipherL2AlgId, AlgId $signerL1AlgId, AlgId $signerL2AlgId): PrivateKey
+    {
+        $ctx = vscf_key_provider_generate_compound_chained_private_key_php($this->ctx, $cipherL1AlgId->getValue(), $cipherL2AlgId->getValue(), $signerL1AlgId->getValue(), $signerL2AlgId->getValue());
         return FoundationImplementation::wrapPrivateKey($ctx);
     }
 

@@ -35,7 +35,7 @@
 * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 */
 
-namespace VirgilCrypto\Foundation;
+namespace Virgil\CryptoWrapper\Foundation;
 
 /**
 * Handle meta information about signed data.
@@ -65,17 +65,6 @@ class SignedDataInfo
     public function __destructor()
     {
         vscf_signed_data_info_delete_php($this->ctx);
-    }
-
-    /**
-    * Set information about algorithm that was used to produce data digest.
-    *
-    * @param AlgInfo $hashAlgInfo
-    * @return void
-    */
-    public function setHashAlgInfo(AlgInfo $hashAlgInfo): void
-    {
-        vscf_signed_data_info_set_hash_alg_info_php($this->ctx, $hashAlgInfo->getCtx());
     }
 
     /**

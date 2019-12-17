@@ -1,4 +1,4 @@
-rm -rf VirgilCrypto
+rm -rf VirgilCryptoWrapper
 for project in phe foundation ratchet pythia
 do
 	for dir in extension src vendor
@@ -17,10 +17,8 @@ for project in phe foundation ratchet pythia
 do
 	for dir in extension src
 	do
-		cp -R wrappers/php/VirgilCrypto/$project/$dir/ wrappers/php/$project/$dir
+		cp -R wrappers/php/VirgilCryptoWrapper/$project/$dir/ wrappers/php/$project/$dir
 	done
 
-	cp wrappers/php/VirgilCrypto/$project/composer.json wrappers/php/$project/composer.json
+	cp wrappers/php/VirgilCryptoWrapper/$project/composer.json wrappers/php/$project/composer.json
 done
-
-rm -rf wrappers/php/VirgilCrypto

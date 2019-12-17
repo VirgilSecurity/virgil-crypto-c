@@ -35,7 +35,7 @@
 * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 */
 
-namespace VirgilCrypto\Foundation;
+namespace Virgil\CryptoWrapper\Foundation;
 
 /**
 * Provide an interface for signing and verifying data digest
@@ -56,10 +56,10 @@ interface KeySigner extends Ctx
     * Return length in bytes required to hold signature.
     * Return zero if a given private key can not produce signatures.
     *
-    * @param Key $key
+    * @param PrivateKey $privateKey
     * @return int
     */
-    public function signatureLen(Key $key): int;
+    public function signatureLen(PrivateKey $privateKey): int;
 
     /**
     * Sign data digest with a given private key.

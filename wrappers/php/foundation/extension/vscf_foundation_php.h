@@ -108,6 +108,12 @@ vscf_signed_data_info_t_php_res_name(void);
 VSCF_PUBLIC const char*
 vscf_footer_info_t_php_res_name(void);
 
+VSCF_PUBLIC const char*
+vscf_key_info_t_php_res_name(void);
+
+VSCF_PUBLIC const char*
+vscf_padding_params_t_php_res_name(void);
+
 //
 // Registered resources
 //
@@ -179,3 +185,9 @@ le_vscf_signed_data_info_t(void);
 
 VSCF_PUBLIC int
 le_vscf_footer_info_t(void);
+
+VSCF_PUBLIC int
+le_vscf_key_info_t(void);
+
+VSCF_PUBLIC int
+le_vscf_padding_params_t(void);
