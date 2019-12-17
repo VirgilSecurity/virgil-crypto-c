@@ -442,6 +442,12 @@ vsce_uokms_server_process_decrypt_request(vsce_uokms_server_t *self, vsc_data_t 
         vsc_data_t decrypt_request, vsc_buffer_t *decrypt_response) {
 
     VSCE_ASSERT_PTR(self);
+    VSCE_ASSERT(
+            vsc_data_is_valid(server_private_key) && server_private_key.len == vsce_phe_common_PHE_PRIVATE_KEY_LENGTH);
+    VSCE_ASSERT(vsc_data_is_valid(decrypt_request) && decrypt_request.len == vsce_phe_common_PHE_PUBLIC_KEY_LENGTH);
+    VSCE_ASSERT_PTR(decrypt_response);
+    VSCE_ASSERT(vsc_buffer_len(decrypt_response) == 0 &&
+                vsc_buffer_capacity(decrypt_response) >= vsce_phe_common_PHE_PUBLIC_KEY_LENGTH);
 
     vsce_status_t status = vsce_status_SUCCESS;
 
@@ -486,17 +492,6 @@ err1:
     mbedtls_ecp_point_free(&U);
 
     return status;
-}
-
-//
-//  Buffer size needed to fit UpdateToken
-//
-VSCE_PUBLIC size_t
-vsce_uokms_server_update_token_len(vsce_uokms_server_t *self) {
-
-    VSCE_ASSERT_PTR(self);
-
-    return vsce_phe_common_PHE_POINT_LENGTH;
 }
 
 //

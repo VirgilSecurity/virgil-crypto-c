@@ -68,14 +68,6 @@
         </return>
     </method>
 
-    <method name="update token len">
-        Buffer size needed to fit UpdateToken
-
-        <return type="size">
-            Buffer size needed to fit UpdateToken
-        </return>
-    </method>
-
     <method name="rotate keys">
         Updates server's private and public keys and issues an update token for use on client's side
 

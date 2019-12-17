@@ -68,14 +68,6 @@
         </return>
     </method>
 
-    <method name="encrypt wrap len">
-        Buffer size needed to fit EnrollmentRecord
-
-        <return type="size">
-            Buffer size needed to fit EnrollmentRecord
-        </return>
-    </method>
-
     <method name="generate encrypt wrap">
         Uses fresh EnrollmentResponse from PHE server (see get enrollment func) and user's password (or its hash) to create
         a new EnrollmentRecord which is then supposed to be stored in a database for further authentication
@@ -87,9 +79,13 @@
 
             <length constant="phe public key length" class="phe common"/>
         </argument>
+        <argument name="encryption key len" type="size"/>
+
         <argument name="encryption key" class="buffer" access="writeonly">
             Random seed which can be used to generate symmetric or private key to protect user's data
             Buffer size should be >= .(class_phe_common_constant_phe_account_key_length)
+
+            <length argument="encryption key len"/>
         </argument>
 
         <return enum="status">
@@ -97,14 +93,6 @@
             - vsce_error_INVALID_ECP if input points are invalid
             - vsce_error_INVALID_SUCCESS_PROOF if provided proof is not valid
             - vsce_error_RNG_ERROR if rng failed
-        </return>
-    </method>
-
-    <method name="decrypt request len">
-        Buffer size needed to fit EnrollmentRecord
-
-        <return type="size">
-            Buffer size needed to fit EnrollmentRecord
         </return>
     </method>
 
@@ -135,6 +123,10 @@
     <method name="process decrypt response">
         Decrypts data (and verifies additional data) using account key
 
+        <argument name="wrap" class="data">
+            Encrypted data
+        </argument>
+
         <argument name="decrypt response" class="data">
             Encrypted data
         </argument>
@@ -143,9 +135,12 @@
             Encrypted data
         </argument>
 
+        <argument name="encryption key len" type="size"/>
+
         <argument name="encryption key" class="buffer" access="writeonly">
             Random seed which can be used to generate symmetric or private key to protect user's data
             Buffer size should be >= .(class_phe_common_constant_phe_account_key_length)
+            <length argument="encryption key len"/>
         </argument>
 
         <return enum="status">

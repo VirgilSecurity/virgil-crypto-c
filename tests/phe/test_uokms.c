@@ -43,7 +43,6 @@
 #if TEST_DEPENDENCIES_AVAILABLE
 
 #include <virgil/crypto/common/private/vsc_buffer_defs.h>
-#include <virgil/crypto/foundation/private/vscf_ctr_drbg_defs.h>
 #include <vsce_uokms_server.h>
 #include <vsce_uokms_client.h>
 
@@ -83,7 +82,7 @@ init(vsce_uokms_server_t **server_ref, vsce_uokms_client_t **client_ref, vsc_buf
 }
 
 void
-test__1(void) {
+test__encrypt_decrypt__full_flow__key_should_match(void) {
     vsce_uokms_server_t *server;
     vsce_uokms_client_t *client;
     vsc_buffer_t *server_private_key, *server_public_key;
@@ -93,7 +92,7 @@ test__1(void) {
     vsc_buffer_t *wrap = vsc_buffer_new_with_capacity(vsce_phe_common_PHE_PUBLIC_KEY_LENGTH);
     vsc_buffer_t *key = vsc_buffer_new_with_capacity(44);
 
-    TEST_ASSERT_EQUAL(vsce_status_SUCCESS, vsce_uokms_client_generate_encrypt_wrap(client, wrap, key));
+    TEST_ASSERT_EQUAL(vsce_status_SUCCESS, vsce_uokms_client_generate_encrypt_wrap(client, wrap, 44, key));
 
     vsc_buffer_t *deblind_factor = vsc_buffer_new_with_capacity(vsce_phe_common_PHE_PRIVATE_KEY_LENGTH);
     vsc_buffer_t *decrypt_request = vsc_buffer_new_with_capacity(vsce_phe_common_PHE_PUBLIC_KEY_LENGTH);
@@ -110,8 +109,8 @@ test__1(void) {
     vsc_buffer_t *key2 = vsc_buffer_new_with_capacity(44);
 
     TEST_ASSERT_EQUAL(
-            vsce_status_SUCCESS, vsce_uokms_client_process_decrypt_response(client, vsc_buffer_data(decrypt_response),
-                                         vsc_buffer_data(deblind_factor), key2));
+            vsce_status_SUCCESS, vsce_uokms_client_process_decrypt_response(client, vsc_buffer_data(wrap),
+                                         vsc_buffer_data(decrypt_response), vsc_buffer_data(deblind_factor), 44, key2));
 
     TEST_ASSERT_EQUAL_DATA_AND_BUFFER(vsc_buffer_data(key), key2);
 
@@ -133,7 +132,7 @@ main(void) {
     UNITY_BEGIN();
 
 #if TEST_DEPENDENCIES_AVAILABLE
-    RUN_TEST(test__1);
+    RUN_TEST(test__encrypt_decrypt__full_flow__key_should_match);
 #else
     RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
 #endif

@@ -199,25 +199,13 @@ vsce_uokms_client_generate_client_private_key(vsce_uokms_client_t *self,
         vsc_buffer_t *client_private_key) VSCE_NODISCARD;
 
 //
-//  Buffer size needed to fit EnrollmentRecord
-//
-VSCE_PUBLIC size_t
-vsce_uokms_client_encrypt_wrap_len(vsce_uokms_client_t *self);
-
-//
 //  Uses fresh EnrollmentResponse from PHE server (see get enrollment func) and user's password (or its hash) to create
 //  a new EnrollmentRecord which is then supposed to be stored in a database for further authentication
 //  Also generates a random seed which then can be used to generate symmetric or private key to protect user's data
 //
 VSCE_PUBLIC vsce_status_t
-vsce_uokms_client_generate_encrypt_wrap(vsce_uokms_client_t *self, vsc_buffer_t *wrap,
+vsce_uokms_client_generate_encrypt_wrap(vsce_uokms_client_t *self, vsc_buffer_t *wrap, size_t encryption_key_len,
         vsc_buffer_t *encryption_key) VSCE_NODISCARD;
-
-//
-//  Buffer size needed to fit EnrollmentRecord
-//
-VSCE_PUBLIC size_t
-vsce_uokms_client_decrypt_request_len(vsce_uokms_client_t *self);
 
 //
 //  Decrypts data (and verifies additional data) using account key
@@ -230,8 +218,8 @@ vsce_uokms_client_generate_decrypt_request(vsce_uokms_client_t *self, vsc_data_t
 //  Decrypts data (and verifies additional data) using account key
 //
 VSCE_PUBLIC vsce_status_t
-vsce_uokms_client_process_decrypt_response(vsce_uokms_client_t *self, vsc_data_t decrypt_response,
-        vsc_data_t deblind_factor, vsc_buffer_t *encryption_key) VSCE_NODISCARD;
+vsce_uokms_client_process_decrypt_response(vsce_uokms_client_t *self, vsc_data_t wrap, vsc_data_t decrypt_response,
+        vsc_data_t deblind_factor, size_t encryption_key_len, vsc_buffer_t *encryption_key) VSCE_NODISCARD;
 
 //
 //  Updates client's private key and server's public key using server's update token

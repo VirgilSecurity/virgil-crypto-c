@@ -395,18 +395,18 @@ vsce_uokms_client_set_keys(vsce_uokms_client_t *self, vsc_data_t client_private_
 
     VSCE_ASSERT_PTR(self);
     VSCE_ASSERT(!self->keys_are_set);
+    VSCE_ASSERT(
+            vsc_data_is_valid(client_private_key) && client_private_key.len == vsce_phe_common_PHE_PRIVATE_KEY_LENGTH);
+    VSCE_ASSERT(vsc_data_is_valid(server_public_key) && server_public_key.len == vsce_phe_common_PHE_PUBLIC_KEY_LENGTH);
+
+    vsce_status_t status = vsce_status_SUCCESS;
 
     self->keys_are_set = true;
-
-    VSCE_ASSERT(client_private_key.len == vsce_phe_common_PHE_PRIVATE_KEY_LENGTH);
-    VSCE_ASSERT(server_public_key.len == vsce_phe_common_PHE_PUBLIC_KEY_LENGTH);
 
     int mbedtls_status = 0;
 
     mbedtls_status = mbedtls_mpi_read_binary(&self->kc_private, client_private_key.bytes, client_private_key.len);
     VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
-
-    vsce_status_t status = vsce_status_SUCCESS;
 
     mbedtls_status = mbedtls_ecp_check_privkey(&self->group, &self->kc_private);
     if (mbedtls_status != 0) {
@@ -433,10 +433,9 @@ vsce_uokms_client_set_keys(vsce_uokms_client_t *self, vsc_data_t client_private_
     VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
 
     vsce_uokms_client_free_op_group(op_group);
-
-err:
     mbedtls_mpi_free(&one);
 
+err:
     return status;
 }
 
@@ -447,9 +446,10 @@ VSCE_PUBLIC vsce_status_t
 vsce_uokms_client_generate_client_private_key(vsce_uokms_client_t *self, vsc_buffer_t *client_private_key) {
 
     VSCE_ASSERT_PTR(self);
-
     VSCE_ASSERT(vsc_buffer_len(client_private_key) == 0);
     VSCE_ASSERT(vsc_buffer_unused_len(client_private_key) >= vsce_phe_common_PHE_PRIVATE_KEY_LENGTH);
+
+    vsc_buffer_make_secure(client_private_key);
 
     vsce_status_t status = vsce_status_SUCCESS;
 
@@ -476,26 +476,23 @@ err:
 }
 
 //
-//  Buffer size needed to fit EnrollmentRecord
-//
-VSCE_PUBLIC size_t
-vsce_uokms_client_encrypt_wrap_len(vsce_uokms_client_t *self) {
-
-    VSCE_ASSERT_PTR(self);
-
-    return vsce_phe_common_PHE_POINT_LENGTH;
-}
-
-//
 //  Uses fresh EnrollmentResponse from PHE server (see get enrollment func) and user's password (or its hash) to create
 //  a new EnrollmentRecord which is then supposed to be stored in a database for further authentication
 //  Also generates a random seed which then can be used to generate symmetric or private key to protect user's data
 //
 VSCE_PUBLIC vsce_status_t
-vsce_uokms_client_generate_encrypt_wrap(vsce_uokms_client_t *self, vsc_buffer_t *wrap, vsc_buffer_t *encryption_key) {
+vsce_uokms_client_generate_encrypt_wrap(
+        vsce_uokms_client_t *self, vsc_buffer_t *wrap, size_t encryption_key_len, vsc_buffer_t *encryption_key) {
 
     VSCE_ASSERT_PTR(self);
     VSCE_ASSERT(self->keys_are_set);
+    VSCE_ASSERT_PTR(wrap);
+    VSCE_ASSERT(vsc_buffer_len(wrap) == 0 && vsc_buffer_capacity(wrap) >= vsce_phe_common_PHE_PUBLIC_KEY_LENGTH);
+    VSCE_ASSERT(encryption_key_len > 0);
+    VSCE_ASSERT_PTR(encryption_key);
+    VSCE_ASSERT(vsc_buffer_len(encryption_key) == 0 && vsc_buffer_capacity(encryption_key) >= encryption_key_len);
+
+    vsc_buffer_make_secure(encryption_key);
 
     vsce_status_t status = vsce_status_SUCCESS;
 
@@ -533,6 +530,8 @@ vsce_uokms_client_generate_encrypt_wrap(vsce_uokms_client_t *self, vsc_buffer_t 
     mbedtls_status = mbedtls_ecp_mul(op_group, &S, &r, &self->k_public, vscf_mbedtls_bridge_random, self->random);
     VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
 
+    vsce_uokms_client_free_op_group(op_group);
+
     byte seed[vsce_phe_common_PHE_POINT_LENGTH];
 
     olen = 0;
@@ -541,35 +540,22 @@ vsce_uokms_client_generate_encrypt_wrap(vsce_uokms_client_t *self, vsc_buffer_t 
     VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
     VSCE_ASSERT(olen == vsce_phe_common_PHE_PUBLIC_KEY_LENGTH);
 
+    mbedtls_ecp_point_free(&S);
+
     vscf_hkdf_t *hkdf = vscf_hkdf_new();
 
     vscf_hkdf_take_hash(hkdf, vscf_sha512_impl(vscf_sha512_new()));
     // TODO: Add some hkdf info
-    vscf_hkdf_derive(hkdf, vsc_data(seed, sizeof(seed)), vsc_buffer_capacity(encryption_key), encryption_key);
-
-    vsce_zeroize(seed, sizeof(seed));
+    vscf_hkdf_derive(hkdf, vsc_data(seed, sizeof(seed)), encryption_key_len, encryption_key);
 
     vscf_hkdf_destroy(&hkdf);
 
-    vsce_uokms_client_free_op_group(op_group);
-
-    mbedtls_ecp_point_free(&S);
+    vsce_zeroize(seed, sizeof(seed));
 
 err:
     mbedtls_mpi_free(&r);
 
     return status;
-}
-
-//
-//  Buffer size needed to fit EnrollmentRecord
-//
-VSCE_PUBLIC size_t
-vsce_uokms_client_decrypt_request_len(vsce_uokms_client_t *self) {
-
-    VSCE_ASSERT_PTR(self);
-
-    return vsce_phe_common_PHE_POINT_LENGTH;
 }
 
 //
@@ -581,6 +567,15 @@ vsce_uokms_client_generate_decrypt_request(
 
     VSCE_ASSERT_PTR(self);
     VSCE_ASSERT(self->keys_are_set);
+    VSCE_ASSERT(vsc_data_is_valid(wrap) && wrap.len == vsce_phe_common_PHE_PUBLIC_KEY_LENGTH);
+    VSCE_ASSERT_PTR(deblind_factor);
+    VSCE_ASSERT(vsc_buffer_len(deblind_factor) == 0 &&
+                vsc_buffer_capacity(deblind_factor) >= vsce_phe_common_PHE_PRIVATE_KEY_LENGTH);
+    VSCE_ASSERT_PTR(decrypt_request);
+    VSCE_ASSERT(vsc_buffer_len(decrypt_request) == 0 &&
+                vsc_buffer_capacity(decrypt_request) >= vsce_phe_common_PHE_PUBLIC_KEY_LENGTH);
+
+    vsc_buffer_make_secure(deblind_factor);
 
     vsce_status_t status = vsce_status_SUCCESS;
 
@@ -598,7 +593,6 @@ vsce_uokms_client_generate_decrypt_request(
     mbedtls_mpi_init(&b);
 
     mbedtls_status = mbedtls_ecp_gen_privkey(&self->group, &b, vscf_mbedtls_bridge_random, self->random);
-
     if (mbedtls_status != 0) {
         status = vsce_status_ERROR_RNG_FAILED;
         goto err2;
@@ -608,16 +602,14 @@ vsce_uokms_client_generate_decrypt_request(
     mbedtls_mpi_init(&bInv);
 
     mbedtls_status = mbedtls_mpi_inv_mod(&bInv, &b, &self->group.N);
-
-    if (mbedtls_status != 0) {
-        status = vsce_status_ERROR_RNG_FAILED;
-        goto err3;
-    }
+    VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
 
     mbedtls_status = mbedtls_mpi_write_binary(
             &bInv, vsc_buffer_unused_bytes(deblind_factor), vsce_phe_common_PHE_PRIVATE_KEY_LENGTH);
     vsc_buffer_inc_used(deblind_factor, vsce_phe_common_PHE_PRIVATE_KEY_LENGTH);
     VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
+
+    mbedtls_mpi_free(&bInv);
 
     mbedtls_ecp_point U;
     mbedtls_ecp_point_init(&U);
@@ -627,6 +619,8 @@ vsce_uokms_client_generate_decrypt_request(
     mbedtls_status = mbedtls_ecp_mul(op_group, &U, &b, &W, vscf_mbedtls_bridge_random, self->random);
     VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
 
+    vsce_uokms_client_free_op_group(op_group);
+
     size_t olen = 0;
     mbedtls_status = mbedtls_ecp_point_write_binary(&self->group, &U, MBEDTLS_ECP_PF_UNCOMPRESSED, &olen,
             vsc_buffer_unused_bytes(decrypt_request), vsce_phe_common_PHE_PUBLIC_KEY_LENGTH);
@@ -634,12 +628,7 @@ vsce_uokms_client_generate_decrypt_request(
     VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
     VSCE_ASSERT(olen == vsce_phe_common_PHE_PUBLIC_KEY_LENGTH);
 
-    vsce_uokms_client_free_op_group(op_group);
-
     mbedtls_ecp_point_free(&U);
-
-err3:
-    mbedtls_mpi_free(&bInv);
 
 err2:
     mbedtls_mpi_free(&b);
@@ -654,27 +643,42 @@ err1:
 //  Decrypts data (and verifies additional data) using account key
 //
 VSCE_PUBLIC vsce_status_t
-vsce_uokms_client_process_decrypt_response(vsce_uokms_client_t *self, vsc_data_t decrypt_response,
-        vsc_data_t deblind_factor, vsc_buffer_t *encryption_key) {
+vsce_uokms_client_process_decrypt_response(vsce_uokms_client_t *self, vsc_data_t wrap, vsc_data_t decrypt_response,
+        vsc_data_t deblind_factor, size_t encryption_key_len, vsc_buffer_t *encryption_key) {
 
     VSCE_ASSERT_PTR(self);
     VSCE_ASSERT(self->keys_are_set);
+    VSCE_ASSERT(vsc_data_is_valid(wrap) && wrap.len == vsce_phe_common_PHE_PUBLIC_KEY_LENGTH);
+    VSCE_ASSERT(vsc_data_is_valid(decrypt_response) && decrypt_response.len == vsce_phe_common_PHE_PUBLIC_KEY_LENGTH);
+    VSCE_ASSERT(vsc_data_is_valid(deblind_factor) && deblind_factor.len == vsce_phe_common_PHE_PRIVATE_KEY_LENGTH);
+    VSCE_ASSERT(encryption_key_len > 0);
+    VSCE_ASSERT_PTR(encryption_key);
+    VSCE_ASSERT(vsc_buffer_len(encryption_key) == 0 && vsc_buffer_capacity(encryption_key) >= encryption_key_len);
+
+    vsc_buffer_make_secure(encryption_key);
 
     vsce_status_t status = vsce_status_SUCCESS;
 
-    mbedtls_ecp_point V;
-    mbedtls_ecp_point_init(&V);
+    mbedtls_ecp_point W;
+    mbedtls_ecp_point_init(&W);
 
-    int mbedtls_status = mbedtls_ecp_point_read_binary(&self->group, &V, decrypt_response.bytes, decrypt_response.len);
-    if (mbedtls_status != 0 || mbedtls_ecp_check_pubkey(&self->group, &V) != 0) {
+    int mbedtls_status = mbedtls_ecp_point_read_binary(&self->group, &W, wrap.bytes, wrap.len);
+    if (mbedtls_status != 0 || mbedtls_ecp_check_pubkey(&self->group, &W) != 0) {
         status = vsce_status_ERROR_INVALID_PUBLIC_KEY;
         goto err1;
     }
 
+    mbedtls_ecp_point V;
+    mbedtls_ecp_point_init(&V);
+
+    mbedtls_status = mbedtls_ecp_point_read_binary(&self->group, &V, decrypt_response.bytes, decrypt_response.len);
+    if (mbedtls_status != 0 || mbedtls_ecp_check_pubkey(&self->group, &V) != 0) {
+        status = vsce_status_ERROR_INVALID_PUBLIC_KEY;
+        goto err2;
+    }
+
     mbedtls_mpi bInv;
     mbedtls_mpi_init(&bInv);
-
-    VSCE_ASSERT(deblind_factor.len == vsce_phe_common_PHE_PRIVATE_KEY_LENGTH);
 
     mbedtls_status = mbedtls_mpi_read_binary(&bInv, deblind_factor.bytes, deblind_factor.len);
     VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
@@ -684,11 +688,10 @@ vsce_uokms_client_process_decrypt_response(vsce_uokms_client_t *self, vsc_data_t
 
     mbedtls_ecp_group *op_group = vsce_uokms_client_get_op_group(self);
 
-    mbedtls_status = mbedtls_ecp_mul(op_group, &S, &bInv, &V, vscf_mbedtls_bridge_random, self->random);
+    mbedtls_status = mbedtls_ecp_muladd(op_group, &S, &bInv, &V, &self->kc_private, &W);
     VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
 
-    mbedtls_status = mbedtls_ecp_mul(op_group, &S, &self->kc_private, &S, vscf_mbedtls_bridge_random, self->random);
-    VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
+    vsce_uokms_client_free_op_group(op_group);
 
     byte seed[vsce_phe_common_PHE_POINT_LENGTH];
 
@@ -702,20 +705,21 @@ vsce_uokms_client_process_decrypt_response(vsce_uokms_client_t *self, vsc_data_t
 
     vscf_hkdf_take_hash(hkdf, vscf_sha512_impl(vscf_sha512_new()));
     // TODO: Add some hkdf info
-    vscf_hkdf_derive(hkdf, vsc_data(seed, sizeof(seed)), vsc_buffer_capacity(encryption_key), encryption_key);
+    vscf_hkdf_derive(hkdf, vsc_data(seed, sizeof(seed)), encryption_key_len, encryption_key);
 
     vsce_zeroize(seed, sizeof(seed));
 
     vscf_hkdf_destroy(&hkdf);
 
-    vsce_uokms_client_free_op_group(op_group);
-
     mbedtls_ecp_point_free(&S);
 
     mbedtls_mpi_free(&bInv);
 
-err1:
+err2:
     mbedtls_ecp_point_free(&V);
+
+err1:
+    mbedtls_ecp_point_free(&W);
 
     return status;
 }

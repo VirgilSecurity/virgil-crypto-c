@@ -197,12 +197,6 @@ vsce_uokms_server_process_decrypt_request(vsce_uokms_server_t *self, vsc_data_t 
         vsc_data_t decrypt_request, vsc_buffer_t *decrypt_response) VSCE_NODISCARD;
 
 //
-//  Buffer size needed to fit UpdateToken
-//
-VSCE_PUBLIC size_t
-vsce_uokms_server_update_token_len(vsce_uokms_server_t *self);
-
-//
 //  Updates server's private and public keys and issues an update token for use on client's side
 //
 VSCE_PUBLIC vsce_status_t
