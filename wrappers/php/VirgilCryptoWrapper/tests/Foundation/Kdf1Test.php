@@ -35,10 +35,10 @@
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
 
-namespace VirgilCrypto\Foundation\Tests;
+namespace Virgil\CryptoWrapperTests\Foundation;
 
-use VirgilCrypto\Foundation\Kdf1;
-use VirgilCrypto\Foundation\Sha256;
+use Virgil\CryptoWrapper\Foundation\Kdf1;
+use Virgil\CryptoWrapper\Foundation\Sha256;
 
 class Kdf1Test extends \PHPUnit\Framework\TestCase
 {

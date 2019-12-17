@@ -35,9 +35,9 @@
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
 
-namespace VirgilCrypto\Pythia\Tests;
+namespace Virgil\CryptoWrapperTests\Pythia;
 
-use VirgilCrypto\Pythia\Pythia;
+use Virgil\CryptoWrapper\Pythia\Pythia;
 
 class PythiaTest extends \PHPUnit\Framework\TestCase
 {

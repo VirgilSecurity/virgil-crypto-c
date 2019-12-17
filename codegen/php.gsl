@@ -77,7 +77,8 @@ function php_create_project_module (project, wrapper)
         .main_project = "$(0.main_project0:Pascal)"
         .project0 = my.project.name
         .project = "$(0.project0:Pascal)"
-        .source_dir = cat_path (my.wrapper.dir, php_project.main_project, php_project.project)
+        .source_dir = cat_path (my.wrapper.dir, php_project.main_project, "src", php_project.project)
+        .source_dir0 = cat_path (my.wrapper.dir, php_project.main_project)
 
         copy my.project->license to php_project
 
@@ -147,7 +148,7 @@ function php_create_class_module (class, php_project, meta)
         .name = "$(my.class.name:Pascal)"
         .name0 = "$(my.class.name:c)"
         .source_file_name = 0.name + ".php"
-        .source_dir = cat_path (my.php_project.source_dir, "src")
+        .source_dir = cat_path (my.php_project.source_dir)
         .source_file_path = cat_path (0.source_dir, 0.source_file_name)
         .prefix = my.php_project.prefix
         .type = my._type
@@ -190,7 +191,7 @@ function php_create_interface_module (interface, php_project, meta)
         .name = "$(my.interface.name:Pascal)"
         .name0 = "$(my.interface.name:c)"
         .source_file_name = 0.name + ".php"
-        .source_dir = cat_path (my.php_project.source_dir, "src")
+        .source_dir = cat_path (my.php_project.source_dir)
         .source_file_path = cat_path (0.source_dir, 0.source_file_name)
         .prefix = my.php_project.prefix
         .type = my._type
@@ -231,7 +232,7 @@ function php_create_implementation_module (implementation, php_project, meta)
         .name0 = "$(my.implementation.name:c)"
         .name_ = my.implementation.name
         .source_file_name = 0.name + ".php"
-        .source_dir = cat_path (my.php_project.source_dir, "src")
+        .source_dir = cat_path (my.php_project.source_dir)
         .source_file_path = cat_path (0.source_dir, 0.source_file_name)
         .prefix = my.php_project.prefix
         .type = my._type
@@ -293,7 +294,7 @@ function php_create_enum_module (enum, php_project, meta)
             .name = "$(my.enum.name:Pascal)"
             .name0 = "$(0.name:c)"
             .source_file_name = 0.name + ".php"
-            .source_dir = cat_path (my.php_project.source_dir, "src")
+            .source_dir = cat_path (my.php_project.source_dir)
             .source_file_path = cat_path (0.source_dir, 0.source_file_name)
             .type = "enum"
             .namespace = my.php_project.namespace
@@ -348,7 +349,7 @@ function php_create_custom_modules (source, php_project, meta)
             .name = "$(my._ctx->interface.name:Pascal)"
             .name0 = "$(my._ctx->interface.name:c)"
             .source_file_name = 0.name + ".php"
-            .source_dir = cat_path (my.php_project.source_dir, "src")
+            .source_dir = cat_path (my.php_project.source_dir)
             .source_file_path = cat_path (0.source_dir, 0.source_file_name)
             .prefix = my.php_project.prefix
             .type = my._type
@@ -403,7 +404,7 @@ function php_finalize_custom_modules (source, php_project, meta)
         .name = "$(my.php_project.prefix:c)_$(my.php_project.name:c)_php"
         .name0 = 0.name
         .source_file_name = 0.name + ".h"
-        .source_dir = cat_path (my.php_project.source_dir, "extension")
+        .source_dir = cat_path (my.php_project.source_dir0, "extensions", "$(my.php_project.project:lower)")
         .source_file_path = cat_path (0.source_dir, 0.source_file_name)
         .version = my.php_project.version
         .type = "extension"
@@ -416,7 +417,7 @@ function php_finalize_custom_modules (source, php_project, meta)
         .name = "$(my.php_project.prefix:c)_$(my.php_project.name:c)_php"
         .name0 = 0.name
         .source_file_name = 0.name + ".c"
-        .source_dir = cat_path (my.php_project.source_dir, "extension")
+        .source_dir = cat_path (my.php_project.source_dir0, "extensions", "$(my.php_project.project:lower)")
         .source_file_path = cat_path (0.source_dir, 0.source_file_name)
         .version = my.php_project.version
         .type = "extension"
@@ -452,7 +453,7 @@ function php_finalize_custom_modules (source, php_project, meta)
             .name = "$(my._i->class.name:Pascal)"
             .name0 = "$(my._i->class.name:c)"
             .source_file_name = 0.name + ".php"
-            .source_dir = cat_path (my.php_project.source_dir, "src")
+            .source_dir = cat_path (my.php_project.source_dir)
             .source_file_path = cat_path (0.source_dir, 0.source_file_name)
             .prefix = my.php_project.prefix
             .type = my._type

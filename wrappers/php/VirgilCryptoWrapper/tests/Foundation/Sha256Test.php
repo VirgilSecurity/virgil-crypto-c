@@ -35,9 +35,9 @@
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
 
-namespace VirgilCrypto\Foundation\Tests;
+namespace Virgil\CryptoWrapperTests\Foundation;
 
-use VirgilCrypto\Foundation\Sha256;
+use Virgil\CryptoWrapper\Foundation\Sha256;
 
 class Sha256Test extends \PHPUnit\Framework\TestCase
 {

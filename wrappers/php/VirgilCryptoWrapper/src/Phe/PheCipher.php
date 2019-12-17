@@ -73,10 +73,10 @@ class PheCipher
     }
 
     /**
-    * @param VirgilCryptoWrapper\Foundation\Random $random
+    * @param Virgil\CryptoWrapper\Foundation\Random $random
     * @return void
     */
-    public function useRandom(VirgilCryptoWrapper\Foundation\Random $random): void
+    public function useRandom(Virgil\CryptoWrapper\Foundation\Random $random): void
     {
         vsce_phe_cipher_use_random_php($this->ctx, $random->getCtx());
     }

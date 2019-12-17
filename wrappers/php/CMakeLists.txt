@@ -86,7 +86,7 @@ endif()
 # ---------------------------------------------------------------------------
 #   Add per project extension build
 # ---------------------------------------------------------------------------
-add_subdirectory(foundation)
-add_subdirectory(phe)
-add_subdirectory(ratchet)
-add_subdirectory(pythia)
+add_subdirectory(VirgilCryptoWrapper/cmakelists/foundation)
+add_subdirectory(VirgilCryptoWrapper/cmakelists/phe)
+add_subdirectory(VirgilCryptoWrapper/cmakelists/ratchet)
+add_subdirectory(VirgilCryptoWrapper/cmakelists/pythia)

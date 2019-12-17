@@ -35,11 +35,11 @@
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
 
-namespace VirgilCrypto\Foundation\Tests;
+namespace Virgil\CryptoWrapperTests\Foundation;
 
-use VirgilCrypto\Foundation\KeyAsn1Deserializer;
-use VirgilCrypto\Foundation\KeyProvider;
-use VirgilCrypto\Foundation\RecipientCipher;
+use Virgil\CryptoWrapper\Foundation\KeyAsn1Deserializer;
+use Virgil\CryptoWrapper\Foundation\KeyProvider;
+use Virgil\CryptoWrapper\Foundation\RecipientCipher;
 
 class RecipientCipherTest extends \PHPUnit\Framework\TestCase
 {

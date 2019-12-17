@@ -35,15 +35,15 @@
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
 
-namespace VirgilCrypto\Foundation\Tests;
+namespace Virgil\CryptoWrapperTests\Foundation;
 
-use VirgilCrypto\Foundation\AlgId;
-use VirgilCrypto\Foundation\Ed25519;
-use VirgilCrypto\Foundation\KeyAsn1Deserializer;
-use VirgilCrypto\Foundation\KeyMaterialRng;
-use VirgilCrypto\Foundation\KeyProvider;
-use VirgilCrypto\Foundation\RecipientCipher;
-use VirgilCrypto\Foundation\Rsa;
+use Virgil\CryptoWrapper\Foundation\AlgId;
+use Virgil\CryptoWrapper\Foundation\Ed25519;
+use Virgil\CryptoWrapper\Foundation\KeyAsn1Deserializer;
+use Virgil\CryptoWrapper\Foundation\KeyMaterialRng;
+use Virgil\CryptoWrapper\Foundation\KeyProvider;
+use Virgil\CryptoWrapper\Foundation\RecipientCipher;
+use Virgil\CryptoWrapper\Foundation\Rsa;
 
 class KeyProviderTest extends \PHPUnit\Framework\TestCase
 {

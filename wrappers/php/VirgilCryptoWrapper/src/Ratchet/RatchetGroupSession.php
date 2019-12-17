@@ -68,10 +68,10 @@ class RatchetGroupSession
     }
 
     /**
-    * @param VirgilCryptoWrapper\Foundation\Random $rng
+    * @param Virgil\CryptoWrapper\Foundation\Random $rng
     * @return void
     */
-    public function useRng(VirgilCryptoWrapper\Foundation\Random $rng): void
+    public function useRng(Virgil\CryptoWrapper\Foundation\Random $rng): void
     {
         vscr_ratchet_group_session_use_rng_php($this->ctx, $rng->getCtx());
     }
