@@ -74,9 +74,12 @@
     <class name="error"/>
     <class name="phe common"/>
     <class name="phe hash"/>
+    <class name="proof generator"/>
+    <class name="proof verifier"/>
     <class name="phe server"/>
     <class name="phe client"/>
     <class name="phe cipher"/>
     <class name="uokms client"/>
     <class name="uokms server"/>
+    <class name="uokms wrap rotation"/>
 </project>

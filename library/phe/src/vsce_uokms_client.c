@@ -734,7 +734,7 @@ vsce_uokms_client_rotate_keys(vsce_uokms_client_t *self, vsc_data_t update_token
 
     VSCE_ASSERT_PTR(self);
     VSCE_ASSERT(self->keys_are_set);
-    VSCE_ASSERT(update_token.len == vsce_phe_common_PHE_POINT_LENGTH);
+    VSCE_ASSERT(update_token.len == vsce_phe_common_PHE_PRIVATE_KEY_LENGTH);
     VSCE_ASSERT(vsc_buffer_len(new_client_private_key) == 0);
     VSCE_ASSERT(vsc_buffer_unused_len(new_client_private_key) >= vsce_phe_common_PHE_PRIVATE_KEY_LENGTH);
     vsc_buffer_make_secure(new_client_private_key);

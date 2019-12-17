@@ -12,14 +12,15 @@
     <require module="buffer defs" scope="private" project="common"/>
     <require module="mbedtls bridge random" scope="private" project="foundation"/>
 
-    <dependency name="random" interface="random" project="foundation">
+    <dependency name="random" interface="random" project="foundation" has_observers="1">
         Random used for key generation, proofs, etc.
     </dependency>
-    <dependency name="operation random" interface="random" project="foundation">
+    <dependency name="operation random" interface="random" project="foundation" has_observers="1">
         Random used for crypto operations to make them const-time
     </dependency>
 
     <property name="phe hash" class="phe hash"/>
+    <property name="proof generator" class="proof generator"/>
     <property name="group" class="mbedtls_ecp_group" library="mbedtls" access="readwrite" is_reference="0"/>
 
     <method name="setup defaults">
@@ -110,31 +111,6 @@
             - vsce_error_INVALID_PRIVATE_KEY if provided private key in invalid
             - vsce_error_RNG_ERROR in case rng failed
         </return>
-    </method>
-
-    <method name="prove success" declaration="private">
-        <argument name="op group" class="mbedtls_ecp_group" library="mbedtls" access="readwrite"/>
-        <argument name="server private key" class="data"/>
-        <argument name="server public key" class="data"/>
-        <argument name="hs0" class="mbedtls_ecp_point" library="mbedtls"/>
-        <argument name="hs1" class="mbedtls_ecp_point" library="mbedtls"/>
-        <argument name="c0" class="mbedtls_ecp_point" library="mbedtls"/>
-        <argument name="c1" class="mbedtls_ecp_point" library="mbedtls"/>
-        <argument name="success proof" class="ProofOfSuccess" library="nanopb" access="writeonly"/>
-
-        <return enum="status"/>
-    </method>
-
-    <method name="prove failure" declaration="private">
-        <argument name="op group" class="mbedtls_ecp_group" library="mbedtls" access="readwrite"/>
-        <argument name="server private key" class="data"/>
-        <argument name="server public key" class="data"/>
-        <argument name="c0" class="mbedtls_ecp_point" library="mbedtls"/>
-        <argument name="hs0" class="mbedtls_ecp_point" library="mbedtls"/>
-        <argument name="c1" class="mbedtls_ecp_point" library="mbedtls" access="writeonly"/>
-        <argument name="failure proof" class="ProofOfFail" library="nanopb" access="writeonly"/>
-
-        <return enum="status"/>
     </method>
 
     <method name="update token len">

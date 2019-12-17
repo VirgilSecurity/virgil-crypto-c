@@ -119,6 +119,85 @@ test__encrypt_decrypt__full_flow__key_should_match(void) {
 
     vsc_buffer_destroy(&server_private_key);
     vsc_buffer_destroy(&server_public_key);
+
+    vsc_buffer_destroy(&wrap);
+    vsc_buffer_destroy(&key);
+    vsc_buffer_destroy(&deblind_factor);
+    vsc_buffer_destroy(&decrypt_request);
+    vsc_buffer_destroy(&decrypt_response);
+    vsc_buffer_destroy(&key2);
+}
+
+void
+test__rotate__full_flow__key_should_match(void) {
+    vsce_uokms_server_t *server;
+    vsce_uokms_client_t *client;
+    vsc_buffer_t *server_private_key, *server_public_key;
+
+    init(&server, &client, &server_private_key, &server_public_key);
+
+    vsc_buffer_t *wrap = vsc_buffer_new_with_capacity(vsce_phe_common_PHE_PUBLIC_KEY_LENGTH);
+    vsc_buffer_t *key = vsc_buffer_new_with_capacity(44);
+
+    TEST_ASSERT_EQUAL(vsce_status_SUCCESS, vsce_uokms_client_generate_encrypt_wrap(client, wrap, 44, key));
+
+    vsc_buffer_t *new_server_private_key = vsc_buffer_new_with_capacity(vsce_phe_common_PHE_PRIVATE_KEY_LENGTH);
+    vsc_buffer_t *new_server_public_key = vsc_buffer_new_with_capacity(vsce_phe_common_PHE_PUBLIC_KEY_LENGTH);
+    vsc_buffer_t *update_token = vsc_buffer_new_with_capacity(vsce_phe_common_PHE_PRIVATE_KEY_LENGTH);
+
+    TEST_ASSERT_EQUAL(vsce_status_SUCCESS, vsce_uokms_server_rotate_keys(server, vsc_buffer_data(server_private_key),
+                                                   new_server_private_key, new_server_public_key, update_token));
+
+    vsc_buffer_t *new_server_public_key2 = vsc_buffer_new_with_capacity(vsce_phe_common_PHE_PUBLIC_KEY_LENGTH);
+    vsc_buffer_t *new_client_private_key = vsc_buffer_new_with_capacity(vsce_phe_common_PHE_PRIVATE_KEY_LENGTH);
+
+    TEST_ASSERT_EQUAL(vsce_status_SUCCESS, vsce_uokms_client_rotate_keys(client, vsc_buffer_data(update_token),
+                                                   new_client_private_key, new_server_public_key2));
+
+    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(vsc_buffer_data(new_server_public_key), new_server_public_key2);
+
+    vsc_buffer_t *new_wrap = vsc_buffer_new_with_capacity(vsce_phe_common_PHE_PUBLIC_KEY_LENGTH);
+
+    TEST_ASSERT_EQUAL(vsce_status_SUCCESS,
+            vsce_uokms_server_update_wrap(server, vsc_buffer_data(wrap), vsc_buffer_data(update_token), new_wrap));
+
+    vsce_uokms_client_t *client2 = vsce_uokms_client_new();
+    TEST_ASSERT_EQUAL(vsce_status_SUCCESS, vsce_uokms_client_setup_defaults(client2));
+    TEST_ASSERT_EQUAL(vsce_status_SUCCESS, vsce_uokms_client_set_keys(client2, vsc_buffer_data(new_client_private_key),
+                                                   vsc_buffer_data(new_server_public_key)));
+
+    vsc_buffer_t *deblind_factor = vsc_buffer_new_with_capacity(vsce_phe_common_PHE_PRIVATE_KEY_LENGTH);
+    vsc_buffer_t *decrypt_request = vsc_buffer_new_with_capacity(vsce_phe_common_PHE_PUBLIC_KEY_LENGTH);
+
+    TEST_ASSERT_EQUAL(vsce_status_SUCCESS, vsce_uokms_client_generate_decrypt_request(client2,
+                                                   vsc_buffer_data(new_wrap), deblind_factor, decrypt_request));
+
+    vsc_buffer_t *decrypt_response = vsc_buffer_new_with_capacity(vsce_phe_common_PHE_PUBLIC_KEY_LENGTH);
+
+    TEST_ASSERT_EQUAL(vsce_status_SUCCESS,
+            vsce_uokms_server_process_decrypt_request(server, vsc_buffer_data(new_server_private_key),
+                    vsc_buffer_data(decrypt_request), decrypt_response));
+
+    vsc_buffer_t *key2 = vsc_buffer_new_with_capacity(44);
+
+    TEST_ASSERT_EQUAL(
+            vsce_status_SUCCESS, vsce_uokms_client_process_decrypt_response(client2, vsc_buffer_data(new_wrap),
+                                         vsc_buffer_data(decrypt_response), vsc_buffer_data(deblind_factor), 44, key2));
+
+    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(vsc_buffer_data(key), key2);
+
+    vsce_uokms_client_destroy(&client);
+    vsce_uokms_server_destroy(&server);
+
+    vsc_buffer_destroy(&server_private_key);
+    vsc_buffer_destroy(&server_public_key);
+
+    vsc_buffer_destroy(&wrap);
+    vsc_buffer_destroy(&key);
+    vsc_buffer_destroy(&deblind_factor);
+    vsc_buffer_destroy(&decrypt_request);
+    vsc_buffer_destroy(&decrypt_response);
+    vsc_buffer_destroy(&key2);
 }
 
 #endif // TEST_DEPENDENCIES_AVAILABLE
@@ -133,6 +212,7 @@ main(void) {
 
 #if TEST_DEPENDENCIES_AVAILABLE
     RUN_TEST(test__encrypt_decrypt__full_flow__key_should_match);
+    RUN_TEST(test__rotate__full_flow__key_should_match);
 #else
     RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
 #endif

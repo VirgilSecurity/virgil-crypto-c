@@ -44,22 +44,30 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#ifndef VSCE_PHE_HASH_H_INCLUDED
-#define VSCE_PHE_HASH_H_INCLUDED
+#ifndef VSCE_PROOF_VERIFIER_H_INCLUDED
+#define VSCE_PROOF_VERIFIER_H_INCLUDED
 
 #include "vsce_library.h"
 #include "vsce_phe_common.h"
+#include "vsce_status.h"
 
+#include <PHEModels.pb.h>
 #include <mbedtls/ecp.h>
 
 #if !VSCE_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <virgil/crypto/common/vsc_buffer.h>
 #   include <virgil/crypto/common/vsc_data.h>
 #endif
 
+#if !VSCE_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
+#   include <virgil/crypto/foundation/vscf_impl.h>
+#endif
+
 #if VSCE_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <VSCCommon/vsc_buffer.h>
 #   include <VSCCommon/vsc_data.h>
+#endif
+
+#if VSCE_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
+#   include <VSCFoundation/vscf_impl.h>
 #endif
 
 // clang-format on
@@ -78,78 +86,107 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Handle 'phe hash' context.
+//  Handle 'proof verifier' context.
 //
-typedef struct vsce_phe_hash_t vsce_phe_hash_t;
+typedef struct vsce_proof_verifier_t vsce_proof_verifier_t;
 
 //
-//  Return size of 'vsce_phe_hash_t'.
+//  Return size of 'vsce_proof_verifier_t'.
 //
 VSCE_PUBLIC size_t
-vsce_phe_hash_ctx_size(void);
+vsce_proof_verifier_ctx_size(void);
 
 //
 //  Perform initialization of pre-allocated context.
 //
 VSCE_PUBLIC void
-vsce_phe_hash_init(vsce_phe_hash_t *self);
+vsce_proof_verifier_init(vsce_proof_verifier_t *self);
 
 //
 //  Release all inner resources including class dependencies.
 //
 VSCE_PUBLIC void
-vsce_phe_hash_cleanup(vsce_phe_hash_t *self);
+vsce_proof_verifier_cleanup(vsce_proof_verifier_t *self);
 
 //
 //  Allocate context and perform it's initialization.
 //
-VSCE_PUBLIC vsce_phe_hash_t *
-vsce_phe_hash_new(void);
+VSCE_PUBLIC vsce_proof_verifier_t *
+vsce_proof_verifier_new(void);
 
 //
 //  Release all inner resources and deallocate context if needed.
 //  It is safe to call this method even if the context was statically allocated.
 //
 VSCE_PUBLIC void
-vsce_phe_hash_delete(vsce_phe_hash_t *self);
+vsce_proof_verifier_delete(vsce_proof_verifier_t *self);
 
 //
 //  Delete given context and nullifies reference.
-//  This is a reverse action of the function 'vsce_phe_hash_new ()'.
+//  This is a reverse action of the function 'vsce_proof_verifier_new ()'.
 //
 VSCE_PUBLIC void
-vsce_phe_hash_destroy(vsce_phe_hash_t **self_ref);
+vsce_proof_verifier_destroy(vsce_proof_verifier_t **self_ref);
 
 //
 //  Copy given class context by increasing reference counter.
 //
-VSCE_PUBLIC vsce_phe_hash_t *
-vsce_phe_hash_shallow_copy(vsce_phe_hash_t *self);
+VSCE_PUBLIC vsce_proof_verifier_t *
+vsce_proof_verifier_shallow_copy(vsce_proof_verifier_t *self);
 
+//
+//  Setup dependency to the interface 'random' with shared ownership.
+//
 VSCE_PUBLIC void
-vsce_phe_hash_derive_account_key(vsce_phe_hash_t *self, const mbedtls_ecp_point *m, vsc_buffer_t *account_key);
+vsce_proof_verifier_use_random(vsce_proof_verifier_t *self, vscf_impl_t *random);
 
+//
+//  Setup dependency to the interface 'random' and transfer ownership.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
 VSCE_PUBLIC void
-vsce_phe_hash_hc0(vsce_phe_hash_t *self, vsc_data_t nc, vsc_data_t password, mbedtls_ecp_point *hc0);
+vsce_proof_verifier_take_random(vsce_proof_verifier_t *self, vscf_impl_t *random);
 
+//
+//  Release dependency to the interface 'random'.
+//
 VSCE_PUBLIC void
-vsce_phe_hash_hc1(vsce_phe_hash_t *self, vsc_data_t nc, vsc_data_t password, mbedtls_ecp_point *hc1);
+vsce_proof_verifier_release_random(vsce_proof_verifier_t *self);
 
+//
+//  Setup dependency to the interface 'random' with shared ownership.
+//
 VSCE_PUBLIC void
-vsce_phe_hash_hs0(vsce_phe_hash_t *self, vsc_data_t ns, mbedtls_ecp_point *hs0);
+vsce_proof_verifier_use_operation_random(vsce_proof_verifier_t *self, vscf_impl_t *operation_random);
 
+//
+//  Setup dependency to the interface 'random' and transfer ownership.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
 VSCE_PUBLIC void
-vsce_phe_hash_hs1(vsce_phe_hash_t *self, vsc_data_t ns, mbedtls_ecp_point *hs1);
+vsce_proof_verifier_take_operation_random(vsce_proof_verifier_t *self, vscf_impl_t *operation_random);
 
+//
+//  Release dependency to the interface 'random'.
+//
 VSCE_PUBLIC void
-vsce_phe_hash_hash_z_success(vsce_phe_hash_t *self, const mbedtls_ecp_point *pub, const mbedtls_ecp_point *p2,
-        const mbedtls_ecp_point *q2, const mbedtls_ecp_point *term1, const mbedtls_ecp_point *term2,
-        const mbedtls_ecp_point *term3, mbedtls_mpi *z);
+vsce_proof_verifier_release_operation_random(vsce_proof_verifier_t *self);
 
-VSCE_PUBLIC void
-vsce_phe_hash_hash_z_failure(vsce_phe_hash_t *self, vsc_data_t server_public_key, const mbedtls_ecp_point *c0,
-        const mbedtls_ecp_point *c1, const mbedtls_ecp_point *term1, const mbedtls_ecp_point *term2,
-        const mbedtls_ecp_point *term3, const mbedtls_ecp_point *term4, mbedtls_mpi *z);
+VSCE_PUBLIC vsce_status_t
+vsce_proof_verifier_check_phe_success_proof(vsce_proof_verifier_t *self, mbedtls_ecp_group *op_group,
+        const ProofOfSuccess *success_proof, vsc_data_t server_public_key, const mbedtls_ecp_point *x, vsc_data_t ns,
+        const mbedtls_ecp_point *c0, const mbedtls_ecp_point *c1) VSCE_NODISCARD;
+
+VSCE_PUBLIC vsce_status_t
+vsce_proof_verifier_check_success_proof(vsce_proof_verifier_t *self, mbedtls_ecp_group *op_group,
+        const mbedtls_ecp_point *pub, const mbedtls_mpi *blind_x, const mbedtls_ecp_point *t1,
+        const mbedtls_ecp_point *t2, const mbedtls_ecp_point *t3, const mbedtls_ecp_point *p2,
+        const mbedtls_ecp_point *q2) VSCE_NODISCARD;
+
+VSCE_PUBLIC vsce_status_t
+vsce_proof_verifier_check_fail_proof(vsce_proof_verifier_t *self, mbedtls_ecp_group *op_group,
+        const ProofOfFail *fail_proof, vsc_data_t server_public_key, const mbedtls_ecp_point *x,
+        const mbedtls_ecp_point *c0, const mbedtls_ecp_point *c1, const mbedtls_ecp_point *hs0) VSCE_NODISCARD;
 
 
 // --------------------------------------------------------------------------
@@ -165,5 +202,5 @@ vsce_phe_hash_hash_z_failure(vsce_phe_hash_t *self, vsc_data_t server_public_key
 
 
 //  @footer
-#endif // VSCE_PHE_HASH_H_INCLUDED
+#endif // VSCE_PROOF_VERIFIER_H_INCLUDED
 //  @end

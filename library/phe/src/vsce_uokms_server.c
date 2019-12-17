@@ -502,9 +502,10 @@ vsce_uokms_server_rotate_keys(vsce_uokms_server_t *self, vsc_data_t server_priva
         vsc_buffer_t *new_server_private_key, vsc_buffer_t *new_server_public_key, vsc_buffer_t *update_token) {
 
     VSCE_ASSERT_PTR(self);
-    VSCE_ASSERT(server_private_key.len == vsce_phe_common_PHE_PRIVATE_KEY_LENGTH);
+    VSCE_ASSERT(
+            vsc_data_is_valid(server_private_key) && server_private_key.len == vsce_phe_common_PHE_PRIVATE_KEY_LENGTH);
     VSCE_ASSERT(vsc_buffer_len(update_token) == 0);
-    VSCE_ASSERT(vsc_buffer_unused_len(update_token) >= vsce_phe_common_PHE_PUBLIC_KEY_LENGTH);
+    VSCE_ASSERT(vsc_buffer_unused_len(update_token) >= vsce_phe_common_PHE_PRIVATE_KEY_LENGTH);
     VSCE_ASSERT(vsc_buffer_len(new_server_private_key) == 0);
     VSCE_ASSERT(vsc_buffer_unused_len(new_server_private_key) >= vsce_phe_common_PHE_PRIVATE_KEY_LENGTH);
     vsc_buffer_make_secure(new_server_private_key);
@@ -599,6 +600,10 @@ vsce_uokms_server_update_wrap(
         vsce_uokms_server_t *self, vsc_data_t wrap, vsc_data_t update_token, vsc_buffer_t *new_wrap) {
 
     VSCE_ASSERT_PTR(self);
+    VSCE_ASSERT(vsc_data_is_valid(wrap) && wrap.len == vsce_phe_common_PHE_PUBLIC_KEY_LENGTH);
+    VSCE_ASSERT(vsc_data_is_valid(update_token) && update_token.len == vsce_phe_common_PHE_PRIVATE_KEY_LENGTH);
+    VSCE_ASSERT(vsc_buffer_len(new_wrap) == 0);
+    VSCE_ASSERT(vsc_buffer_unused_len(new_wrap) >= vsce_phe_common_PHE_PUBLIC_KEY_LENGTH);
 
     vsce_status_t status = vsce_status_SUCCESS;
 
@@ -629,11 +634,13 @@ vsce_uokms_server_update_wrap(
     vsce_uokms_server_free_op_group(op_group);
 
     size_t olen = 0;
-    mbedtls_status = mbedtls_ecp_point_write_binary(&self->group, &W, MBEDTLS_ECP_PF_UNCOMPRESSED, &olen,
+    mbedtls_status = mbedtls_ecp_point_write_binary(&self->group, &new_W, MBEDTLS_ECP_PF_UNCOMPRESSED, &olen,
             vsc_buffer_unused_bytes(new_wrap), vsce_phe_common_PHE_PUBLIC_KEY_LENGTH);
     vsc_buffer_inc_used(new_wrap, vsce_phe_common_PHE_PUBLIC_KEY_LENGTH);
     VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
     VSCE_ASSERT(olen == vsce_phe_common_PHE_PUBLIC_KEY_LENGTH);
+
+    mbedtls_ecp_point_free(&new_W);
 
 err:
     mbedtls_ecp_point_free(&W);

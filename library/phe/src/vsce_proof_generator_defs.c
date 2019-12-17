@@ -37,6 +37,12 @@
 // clang-format off
 
 
+//  @description
+// --------------------------------------------------------------------------
+//  Class 'proof generator' types definition.
+// --------------------------------------------------------------------------
+
+
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -44,36 +50,10 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-
-//  @description
-// --------------------------------------------------------------------------
-//  This ia an umbrella header that includes library public headers.
-// --------------------------------------------------------------------------
-
-#ifndef VSCE_PHE_PUBLIC_H_INCLUDED
-#define VSCE_PHE_PUBLIC_H_INCLUDED
-
-#include "vsce_assert.h"
-#include "vsce_error.h"
-#include "vsce_library.h"
-#include "vsce_memory.h"
-#include "vsce_phe_cipher.h"
-#include "vsce_phe_client.h"
-#include "vsce_phe_common.h"
-#include "vsce_phe_server.h"
-#include "vsce_platform.h"
-#include "vsce_status.h"
-#include "vsce_uokms_client.h"
-#include "vsce_uokms_server.h"
-#include "vsce_uokms_wrap_rotation.h"
+#include "vsce_proof_generator_defs.h"
 
 // clang-format on
 //  @end
-
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 
 //  @generated
@@ -87,14 +67,4 @@ extern "C" {
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
-//  @end
-
-
-#ifdef __cplusplus
-}
-#endif
-
-
-//  @footer
-#endif // VSCE_PHE_PUBLIC_H_INCLUDED
 //  @end

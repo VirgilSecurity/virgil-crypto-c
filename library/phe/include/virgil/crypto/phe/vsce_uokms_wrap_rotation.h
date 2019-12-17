@@ -44,22 +44,21 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#ifndef VSCE_PHE_HASH_H_INCLUDED
-#define VSCE_PHE_HASH_H_INCLUDED
+#ifndef VSCE_UOKMS_WRAP_ROTATION_H_INCLUDED
+#define VSCE_UOKMS_WRAP_ROTATION_H_INCLUDED
 
 #include "vsce_library.h"
 #include "vsce_phe_common.h"
-
-#include <mbedtls/ecp.h>
+#include "vsce_status.h"
 
 #if !VSCE_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <virgil/crypto/common/vsc_buffer.h>
 #   include <virgil/crypto/common/vsc_data.h>
+#   include <virgil/crypto/common/vsc_buffer.h>
 #endif
 
 #if VSCE_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <VSCCommon/vsc_buffer.h>
 #   include <VSCCommon/vsc_data.h>
+#   include <VSCCommon/vsc_buffer.h>
 #endif
 
 // clang-format on
@@ -78,78 +77,60 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Handle 'phe hash' context.
+//  Handle 'uokms wrap rotation' context.
 //
-typedef struct vsce_phe_hash_t vsce_phe_hash_t;
+typedef struct vsce_uokms_wrap_rotation_t vsce_uokms_wrap_rotation_t;
 
 //
-//  Return size of 'vsce_phe_hash_t'.
+//  Return size of 'vsce_uokms_wrap_rotation_t'.
 //
 VSCE_PUBLIC size_t
-vsce_phe_hash_ctx_size(void);
+vsce_uokms_wrap_rotation_ctx_size(void);
 
 //
 //  Perform initialization of pre-allocated context.
 //
 VSCE_PUBLIC void
-vsce_phe_hash_init(vsce_phe_hash_t *self);
+vsce_uokms_wrap_rotation_init(vsce_uokms_wrap_rotation_t *self);
 
 //
 //  Release all inner resources including class dependencies.
 //
 VSCE_PUBLIC void
-vsce_phe_hash_cleanup(vsce_phe_hash_t *self);
+vsce_uokms_wrap_rotation_cleanup(vsce_uokms_wrap_rotation_t *self);
 
 //
 //  Allocate context and perform it's initialization.
 //
-VSCE_PUBLIC vsce_phe_hash_t *
-vsce_phe_hash_new(void);
+VSCE_PUBLIC vsce_uokms_wrap_rotation_t *
+vsce_uokms_wrap_rotation_new(void);
 
 //
 //  Release all inner resources and deallocate context if needed.
 //  It is safe to call this method even if the context was statically allocated.
 //
 VSCE_PUBLIC void
-vsce_phe_hash_delete(vsce_phe_hash_t *self);
+vsce_uokms_wrap_rotation_delete(vsce_uokms_wrap_rotation_t *self);
 
 //
 //  Delete given context and nullifies reference.
-//  This is a reverse action of the function 'vsce_phe_hash_new ()'.
+//  This is a reverse action of the function 'vsce_uokms_wrap_rotation_new ()'.
 //
 VSCE_PUBLIC void
-vsce_phe_hash_destroy(vsce_phe_hash_t **self_ref);
+vsce_uokms_wrap_rotation_destroy(vsce_uokms_wrap_rotation_t **self_ref);
 
 //
 //  Copy given class context by increasing reference counter.
 //
-VSCE_PUBLIC vsce_phe_hash_t *
-vsce_phe_hash_shallow_copy(vsce_phe_hash_t *self);
+VSCE_PUBLIC vsce_uokms_wrap_rotation_t *
+vsce_uokms_wrap_rotation_shallow_copy(vsce_uokms_wrap_rotation_t *self);
 
-VSCE_PUBLIC void
-vsce_phe_hash_derive_account_key(vsce_phe_hash_t *self, const mbedtls_ecp_point *m, vsc_buffer_t *account_key);
-
-VSCE_PUBLIC void
-vsce_phe_hash_hc0(vsce_phe_hash_t *self, vsc_data_t nc, vsc_data_t password, mbedtls_ecp_point *hc0);
-
-VSCE_PUBLIC void
-vsce_phe_hash_hc1(vsce_phe_hash_t *self, vsc_data_t nc, vsc_data_t password, mbedtls_ecp_point *hc1);
-
-VSCE_PUBLIC void
-vsce_phe_hash_hs0(vsce_phe_hash_t *self, vsc_data_t ns, mbedtls_ecp_point *hs0);
-
-VSCE_PUBLIC void
-vsce_phe_hash_hs1(vsce_phe_hash_t *self, vsc_data_t ns, mbedtls_ecp_point *hs1);
-
-VSCE_PUBLIC void
-vsce_phe_hash_hash_z_success(vsce_phe_hash_t *self, const mbedtls_ecp_point *pub, const mbedtls_ecp_point *p2,
-        const mbedtls_ecp_point *q2, const mbedtls_ecp_point *term1, const mbedtls_ecp_point *term2,
-        const mbedtls_ecp_point *term3, mbedtls_mpi *z);
-
-VSCE_PUBLIC void
-vsce_phe_hash_hash_z_failure(vsce_phe_hash_t *self, vsc_data_t server_public_key, const mbedtls_ecp_point *c0,
-        const mbedtls_ecp_point *c1, const mbedtls_ecp_point *term1, const mbedtls_ecp_point *term2,
-        const mbedtls_ecp_point *term3, const mbedtls_ecp_point *term4, mbedtls_mpi *z);
+//
+//  Updates EnrollmentRecord using server's update token
+//
+VSCE_PUBLIC vsce_status_t
+vsce_uokms_wrap_rotation_update_wrap(vsce_uokms_wrap_rotation_t *self, vsc_data_t wrap, vsc_data_t update_token,
+        vsc_buffer_t *new_wrap) VSCE_NODISCARD;
 
 
 // --------------------------------------------------------------------------
@@ -165,5 +146,5 @@ vsce_phe_hash_hash_z_failure(vsce_phe_hash_t *self, vsc_data_t server_public_key
 
 
 //  @footer
-#endif // VSCE_PHE_HASH_H_INCLUDED
+#endif // VSCE_UOKMS_WRAP_ROTATION_H_INCLUDED
 //  @end

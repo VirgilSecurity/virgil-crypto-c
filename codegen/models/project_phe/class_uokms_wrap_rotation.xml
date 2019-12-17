@@ -1,0 +1,43 @@
+<class name="uokms wrap rotation" context="internal">
+
+    <require class="phe common" scope="public"/>
+
+    <require header="mbedtls/ecp.h" scope="context"/>
+    <require header="mbedtls/bignum.h" scope="context"/>
+
+    <require module="buffer defs" scope="private" project="common"/>
+    <require module="mbedtls bridge random" scope="private" project="foundation"/>
+
+    <property name="group" class="mbedtls_ecp_group" library="mbedtls" access="readwrite" is_reference="0"/>
+
+    <method name="update wrap">
+        Updates EnrollmentRecord using server's update token
+
+        <argument name="wrap" class="data">
+            EnrollmentRecord created and stored at enroll account step
+        </argument>
+        <argument name="update token" class="data">
+            Update token provided by PHE server
+        </argument>
+        <argument name="new wrap" class="buffer" access="writeonly">
+            Updated EnrollmentRecord
+            Buffer size should be >= enrollment record len
+
+            <length constant="phe public key length" class="phe common"/>
+        </argument>
+
+        <return enum="status">
+            - vsce_error_PROTOBUF_DECODE_ERROR if input model is invalid
+            - vsce_error_INVALID_ECP if input points are invalid
+            - vsce_error_INVALID_PRIVATE_KEY if provided private key in invalid
+        </return>
+    </method>
+
+    <method name="get op group" declaration="private">
+        <return class="mbedtls_ecp_group" library="mbedtls" access="readwrite"/>
+    </method>
+
+    <method name="free op group" declaration="private" is_static="1">
+        <argument name="op group" class="mbedtls_ecp_group" library="mbedtls" access="readwrite"/>
+    </method>
+</class>
