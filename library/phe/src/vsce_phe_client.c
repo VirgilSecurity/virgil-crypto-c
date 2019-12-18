@@ -399,7 +399,7 @@ vsce_phe_client_init_ctx(vsce_phe_client_t *self) {
     mbedtls_mpi_init(&self->y_inv);
     mbedtls_ecp_point_init(&self->x);
 
-    self->proof_verifier = vsce_proof_verifier_new();
+    self->proof_verifier = vsce_phe_proof_verifier_new();
 
     self->keys_are_set = false;
 }
@@ -414,7 +414,7 @@ vsce_phe_client_cleanup_ctx(vsce_phe_client_t *self) {
 
     VSCE_ASSERT_PTR(self);
 
-    vsce_proof_verifier_destroy(&self->proof_verifier);
+    vsce_phe_proof_verifier_destroy(&self->proof_verifier);
 
     vscf_simple_swu_destroy(&self->simple_swu);
     mbedtls_ecp_group_free(&self->group);
@@ -438,8 +438,8 @@ vsce_phe_client_did_setup_random(vsce_phe_client_t *self) {
     VSCE_ASSERT_PTR(self);
 
     if (self->random) {
-        vsce_proof_verifier_release_random(self->proof_verifier);
-        vsce_proof_verifier_use_random(self->proof_verifier, self->random);
+        vsce_phe_proof_verifier_release_random(self->proof_verifier);
+        vsce_phe_proof_verifier_use_random(self->proof_verifier, self->random);
     }
 }
 
@@ -461,8 +461,8 @@ vsce_phe_client_did_setup_operation_random(vsce_phe_client_t *self) {
     VSCE_ASSERT_PTR(self);
 
     if (self->operation_random) {
-        vsce_proof_verifier_release_operation_random(self->proof_verifier);
-        vsce_proof_verifier_use_operation_random(self->proof_verifier, self->operation_random);
+        vsce_phe_proof_verifier_release_operation_random(self->proof_verifier);
+        vsce_phe_proof_verifier_use_operation_random(self->proof_verifier, self->operation_random);
     }
 }
 
@@ -650,8 +650,7 @@ vsce_phe_client_enroll_account(vsce_phe_client_t *self, vsc_data_t enrollment_re
         goto proof_err;
     }
 
-    status = vsce_proof_verifier_check_phe_success_proof(self->proof_verifier, op_group, &response.proof,
-            vsc_data(self->server_public_key, sizeof(self->server_public_key)),
+    status = vsce_phe_proof_verifier_check_success_proof(self->proof_verifier, op_group, &response.proof, &self->x,
             vsc_data(response.ns, sizeof(response.ns)), &c0, &c1);
 
     if (status != vsce_status_SUCCESS) {
@@ -933,9 +932,8 @@ vsce_phe_client_check_response_and_decrypt(vsce_phe_client_t *self, vsc_data_t p
     VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
 
     if (response.res) {
-        status = vsce_proof_verifier_check_phe_success_proof(self->proof_verifier, op_group, &response.proof.success,
-                vsc_data(self->server_public_key, sizeof(self->server_public_key)),
-                vsc_data(record.ns, sizeof(record.ns)), &c0, &c1);
+        status = vsce_phe_proof_verifier_check_success_proof(self->proof_verifier, op_group, &response.proof.success,
+                &self->x, vsc_data(record.ns, sizeof(record.ns)), &c0, &c1);
 
         if (status != vsce_status_SUCCESS) {
             goto err;
@@ -962,8 +960,8 @@ vsce_phe_client_check_response_and_decrypt(vsce_phe_client_t *self, vsc_data_t p
 
         vsce_phe_hash_hs0(self->phe_hash, vsc_data(record.ns, sizeof(record.ns)), &hs0);
 
-        status = vsce_proof_verifier_check_fail_proof(self->proof_verifier, op_group, &response.proof.fail,
-                vsc_data(self->server_public_key, sizeof(self->server_public_key)), &c0, &c1, &hs0);
+        status = vsce_phe_proof_verifier_check_fail_proof(self->proof_verifier, op_group, &response.proof.fail,
+                vsc_data(self->server_public_key, sizeof(self->server_public_key)), &self->x, &c0, &c1, &hs0);
         if (status != vsce_status_SUCCESS) {
             mbedtls_ecp_point_free(&hs0);
             goto err;

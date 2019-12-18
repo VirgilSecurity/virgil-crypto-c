@@ -20,7 +20,7 @@
     </dependency>
 
     <property name="phe hash" class="phe hash"/>
-    <property name="proof generator" class="proof generator"/>
+    <property name="proof generator" class="phe proof generator"/>
     <property name="group" class="mbedtls_ecp_group" library="mbedtls" access="readwrite" is_reference="0"/>
 
     <method name="setup defaults">

@@ -56,7 +56,7 @@
 #include "vsce_library.h"
 #include "vsce_atomic.h"
 #include "vsce_phe_hash.h"
-#include "vsce_proof_verifier.h"
+#include "vsce_phe_proof_verifier.h"
 
 #include <virgil/crypto/foundation/private/vscf_simple_swu.h>
 
@@ -108,7 +108,7 @@ struct vsce_phe_client_t {
 
     vsce_phe_hash_t *phe_hash;
 
-    vsce_proof_verifier_t *proof_verifier;
+    vsce_phe_proof_verifier_t *proof_verifier;
 
     mbedtls_ecp_group group;
 

@@ -21,7 +21,7 @@
 
     <property name="simple swu" class="simple swu" project="foundation"/>
     <property name="phe hash" class="phe hash" access="readwrite"/>
-    <property name="proof verifier" class="proof verifier"/>
+    <property name="proof verifier" class="phe proof verifier"/>
     <property name="group" class="mbedtls_ecp_group" library="mbedtls" access="readwrite" is_reference="0"/>
     <property name="server public key" type="byte" access="readwrite">
         <array length="fixed" length_constant=".(class_phe_common_constant_phe_public_key_length)"/>

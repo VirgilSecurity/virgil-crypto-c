@@ -1,13 +1,12 @@
 syntax = "proto3";
 
-message DecryptRequest {
-  bytes u = 1;
+message ProofOfSuccess {
+  bytes term1 = 1;
+  bytes term2 = 2;
+  bytes blind_x = 3;
 }
 
 message DecryptResponse {
   bytes v = 1;
-}
-
-message UpdateToken {
-  bytes a = 1;
+  ProofOfSuccess proof = 2;
 }

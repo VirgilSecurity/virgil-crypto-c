@@ -384,7 +384,7 @@ vsce_phe_server_init_ctx(vsce_phe_server_t *self) {
     int status = mbedtls_ecp_group_load(&self->group, MBEDTLS_ECP_DP_SECP256R1);
     VSCE_ASSERT(status == 0);
 
-    self->proof_generator = vsce_proof_generator_new();
+    self->proof_generator = vsce_phe_proof_generator_new();
 }
 
 //
@@ -399,7 +399,7 @@ vsce_phe_server_cleanup_ctx(vsce_phe_server_t *self) {
 
     vsce_phe_hash_destroy(&self->phe_hash);
     mbedtls_ecp_group_free(&self->group);
-    vsce_proof_generator_destroy(&self->proof_generator);
+    vsce_phe_proof_generator_destroy(&self->proof_generator);
 }
 
 //
@@ -411,8 +411,8 @@ vsce_phe_server_did_setup_random(vsce_phe_server_t *self) {
     VSCE_ASSERT_PTR(self);
 
     if (self->random) {
-        vsce_proof_generator_release_random(self->proof_generator);
-        vsce_proof_generator_use_random(self->proof_generator, self->random);
+        vsce_phe_proof_generator_release_random(self->proof_generator);
+        vsce_phe_proof_generator_use_random(self->proof_generator, self->random);
     }
 }
 
@@ -434,8 +434,8 @@ vsce_phe_server_did_setup_operation_random(vsce_phe_server_t *self) {
     VSCE_ASSERT_PTR(self);
 
     if (self->operation_random) {
-        vsce_proof_generator_release_operation_random(self->proof_generator);
-        vsce_proof_generator_use_operation_random(self->proof_generator, self->operation_random);
+        vsce_phe_proof_generator_release_operation_random(self->proof_generator);
+        vsce_phe_proof_generator_use_operation_random(self->proof_generator, self->operation_random);
     }
 }
 
@@ -621,7 +621,7 @@ vsce_phe_server_get_enrollment(vsce_phe_server_t *self, vsc_data_t server_privat
     VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
     VSCE_ASSERT(olen == vsce_phe_common_PHE_POINT_LENGTH);
 
-    status = vsce_proof_generator_phe_prove_success(
+    status = vsce_phe_proof_generator_prove_success(
             self->proof_generator, op_group, &x, &X, &hs0, &hs1, &c0, &c1, &response.proof);
 
     if (status != vsce_status_SUCCESS) {
@@ -757,7 +757,7 @@ vsce_phe_server_verify_password(vsce_phe_server_t *self, vsc_data_t server_priva
         response.res = true;
 
         response.which_proof = VerifyPasswordResponse_success_tag;
-        status = vsce_proof_generator_phe_prove_success(
+        status = vsce_phe_proof_generator_prove_success(
                 self->proof_generator, op_group, &x, &X, &hs0, &hs1, &c0, &c1, &response.proof.success);
 
         if (status != vsce_status_SUCCESS) {
@@ -782,7 +782,7 @@ vsce_phe_server_verify_password(vsce_phe_server_t *self, vsc_data_t server_priva
         response.res = false;
 
         response.which_proof = VerifyPasswordResponse_fail_tag;
-        status = vsce_proof_generator_prove_failure(self->proof_generator, op_group, server_private_key,
+        status = vsce_phe_proof_generator_prove_failure(self->proof_generator, op_group, server_private_key,
                 server_public_key, &c0, &hs0, &c1, &response.proof.fail);
 
         if (status != vsce_status_SUCCESS) {

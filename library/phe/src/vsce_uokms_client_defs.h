@@ -56,6 +56,7 @@
 #include "vsce_library.h"
 #include "vsce_atomic.h"
 #include "vsce_phe_common.h"
+#include "vsce_uokms_proof_verifier.h"
 
 #include <mbedtls/ecp.h>
 #include <mbedtls/bignum.h>
@@ -103,6 +104,8 @@ struct vsce_uokms_client_t {
     //  Dependency to the interface 'random'.
     //
     vscf_impl_t *operation_random;
+
+    vsce_uokms_proof_verifier_t *proof_verifier;
 
     mbedtls_ecp_group group;
 

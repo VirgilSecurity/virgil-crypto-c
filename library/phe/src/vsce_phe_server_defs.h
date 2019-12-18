@@ -56,7 +56,7 @@
 #include "vsce_library.h"
 #include "vsce_atomic.h"
 #include "vsce_phe_hash.h"
-#include "vsce_proof_generator.h"
+#include "vsce_phe_proof_generator.h"
 
 #if !VSCE_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
 #   include <virgil/crypto/foundation/vscf_impl.h>
@@ -104,7 +104,7 @@ struct vsce_phe_server_t {
 
     vsce_phe_hash_t *phe_hash;
 
-    vsce_proof_generator_t *proof_generator;
+    vsce_phe_proof_generator_t *proof_generator;
 
     mbedtls_ecp_group group;
 };

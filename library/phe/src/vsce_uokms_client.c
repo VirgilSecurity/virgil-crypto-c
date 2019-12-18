@@ -86,6 +86,30 @@ vsce_uokms_client_init_ctx(vsce_uokms_client_t *self);
 static void
 vsce_uokms_client_cleanup_ctx(vsce_uokms_client_t *self);
 
+//
+//  This method is called when interface 'random' was setup.
+//
+static void
+vsce_uokms_client_did_setup_random(vsce_uokms_client_t *self);
+
+//
+//  This method is called when interface 'random' was released.
+//
+static void
+vsce_uokms_client_did_release_random(vsce_uokms_client_t *self);
+
+//
+//  This method is called when interface 'random' was setup.
+//
+static void
+vsce_uokms_client_did_setup_operation_random(vsce_uokms_client_t *self);
+
+//
+//  This method is called when interface 'random' was released.
+//
+static void
+vsce_uokms_client_did_release_operation_random(vsce_uokms_client_t *self);
+
 static mbedtls_ecp_group *
 vsce_uokms_client_get_op_group(vsce_uokms_client_t *self);
 
@@ -242,6 +266,8 @@ vsce_uokms_client_use_random(vsce_uokms_client_t *self, vscf_impl_t *random) {
     VSCE_ASSERT(vscf_random_is_implemented(random));
 
     self->random = vscf_impl_shallow_copy(random);
+
+    vsce_uokms_client_did_setup_random(self);
 }
 
 //
@@ -260,6 +286,8 @@ vsce_uokms_client_take_random(vsce_uokms_client_t *self, vscf_impl_t *random) {
     VSCE_ASSERT(vscf_random_is_implemented(random));
 
     self->random = random;
+
+    vsce_uokms_client_did_setup_random(self);
 }
 
 //
@@ -271,6 +299,8 @@ vsce_uokms_client_release_random(vsce_uokms_client_t *self) {
     VSCE_ASSERT_PTR(self);
 
     vscf_impl_destroy(&self->random);
+
+    vsce_uokms_client_did_release_random(self);
 }
 
 //
@@ -288,6 +318,8 @@ vsce_uokms_client_use_operation_random(vsce_uokms_client_t *self, vscf_impl_t *o
     VSCE_ASSERT(vscf_random_is_implemented(operation_random));
 
     self->operation_random = vscf_impl_shallow_copy(operation_random);
+
+    vsce_uokms_client_did_setup_operation_random(self);
 }
 
 //
@@ -306,6 +338,8 @@ vsce_uokms_client_take_operation_random(vsce_uokms_client_t *self, vscf_impl_t *
     VSCE_ASSERT(vscf_random_is_implemented(operation_random));
 
     self->operation_random = operation_random;
+
+    vsce_uokms_client_did_setup_operation_random(self);
 }
 
 //
@@ -317,6 +351,8 @@ vsce_uokms_client_release_operation_random(vsce_uokms_client_t *self) {
     VSCE_ASSERT_PTR(self);
 
     vscf_impl_destroy(&self->operation_random);
+
+    vsce_uokms_client_did_release_operation_random(self);
 }
 
 
@@ -342,6 +378,8 @@ vsce_uokms_client_init_ctx(vsce_uokms_client_t *self) {
     VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
 
     self->keys_are_set = false;
+
+    self->proof_verifier = vsce_uokms_proof_verifier_new();
 }
 
 //
@@ -355,6 +393,54 @@ vsce_uokms_client_cleanup_ctx(vsce_uokms_client_t *self) {
     VSCE_ASSERT_PTR(self);
 
     mbedtls_ecp_group_free(&self->group);
+
+    vsce_uokms_proof_verifier_destroy(&self->proof_verifier);
+}
+
+//
+//  This method is called when interface 'random' was setup.
+//
+static void
+vsce_uokms_client_did_setup_random(vsce_uokms_client_t *self) {
+
+    VSCE_ASSERT_PTR(self);
+
+    if (self->random) {
+        vsce_uokms_proof_verifier_release_random(self->proof_verifier);
+        vsce_uokms_proof_verifier_use_random(self->proof_verifier, self->random);
+    }
+}
+
+//
+//  This method is called when interface 'random' was released.
+//
+static void
+vsce_uokms_client_did_release_random(vsce_uokms_client_t *self) {
+
+    VSCE_ASSERT_PTR(self);
+}
+
+//
+//  This method is called when interface 'random' was setup.
+//
+static void
+vsce_uokms_client_did_setup_operation_random(vsce_uokms_client_t *self) {
+
+    VSCE_ASSERT_PTR(self);
+
+    if (self->operation_random) {
+        vsce_uokms_proof_verifier_release_operation_random(self->proof_verifier);
+        vsce_uokms_proof_verifier_use_operation_random(self->proof_verifier, self->operation_random);
+    }
+}
+
+//
+//  This method is called when interface 'random' was released.
+//
+static void
+vsce_uokms_client_did_release_operation_random(vsce_uokms_client_t *self) {
+
+    VSCE_ASSERT_PTR(self);
 }
 
 VSCE_PUBLIC vsce_status_t

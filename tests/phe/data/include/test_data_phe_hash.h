@@ -55,8 +55,8 @@ extern const vsc_data_t test_phe_hash_hc1_pwd;
 extern const char test_phe_hash_hc1_x_DEC[];
 extern const char test_phe_hash_hc1_y_DEC[];
 
-
-extern const vsc_data_t test_phe_hash_z_s_pub;
+extern const char test_phe_hash_z_s_pub_x_DEC[];
+extern const char test_phe_hash_z_s_pub_y_DEC[];
 extern const char test_phe_hash_z_s_c0_x_DEC[];
 extern const char test_phe_hash_z_s_c0_y_DEC[];
 extern const char test_phe_hash_z_s_c1_x_DEC[];

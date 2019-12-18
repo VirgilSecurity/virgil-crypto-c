@@ -13,13 +13,14 @@
     <require module="buffer defs" scope="private" project="common"/>
     <require module="mbedtls bridge random" scope="private" project="foundation"/>
 
-    <dependency name="random" interface="random" project="foundation">
+    <dependency name="random" interface="random" project="foundation" has_observers="1">
         Random used for key generation, proofs, etc.
     </dependency>
-    <dependency name="operation random" interface="random" project="foundation">
+    <dependency name="operation random" interface="random" project="foundation" has_observers="1">
         Random used for crypto operations to make them const-time
     </dependency>
 
+    <property name="proof generator" class="uokms proof generator"/>
     <property name="group" class="mbedtls_ecp_group" library="mbedtls" access="readwrite" is_reference="0"/>
 
     <method name="setup defaults">

@@ -489,6 +489,7 @@ vsce_phe_hash_hash_z_success(vsce_phe_hash_t *self, const mbedtls_ecp_point *pub
     VSCE_ASSERT_PTR(p2);
     VSCE_ASSERT_PTR(term1);
     VSCE_ASSERT_PTR(term2);
+    VSCE_ASSERT((term3 == NULL && q2 == NULL) || (term3 != NULL && q2 != NULL));
 
     size_t points_count = 6;
 

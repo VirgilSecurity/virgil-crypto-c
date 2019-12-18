@@ -1,7 +1,6 @@
 <class name="proof generator" context="internal" scope="internal">
 
     <require class="phe common" scope="public"/>
-    <require header="PHEModels.pb.h" scope="public"/>
 
     <require header="mbedtls/ecp.h" scope="public"/>
     <require header="mbedtls/bignum.h" scope="context"/>
@@ -12,19 +11,6 @@
     <dependency name="random" interface="random" project="foundation"/>
     <dependency name="operation random" interface="random" project="foundation"/>
 
-    <method name="phe prove success">
-        <argument name="op group" class="mbedtls_ecp_group" library="mbedtls" access="readwrite"/>
-        <argument name="priv" class="mbedtls_mpi" library="mbedtls"/>
-        <argument name="pub" class="mbedtls_ecp_point" library="mbedtls"/>
-        <argument name="hs0" class="mbedtls_ecp_point" library="mbedtls"/>
-        <argument name="hs1" class="mbedtls_ecp_point" library="mbedtls"/>
-        <argument name="c0" class="mbedtls_ecp_point" library="mbedtls"/>
-        <argument name="c1" class="mbedtls_ecp_point" library="mbedtls"/>
-        <argument name="success proof" class="ProofOfSuccess" library="nanopb" access="writeonly"/>
-
-        <return enum="status"/>
-    </method>
-
     <method name="prove success">
         <argument name="op group" class="mbedtls_ecp_group" library="mbedtls" access="readwrite"/>
         <argument name="priv" class="mbedtls_mpi" library="mbedtls"/>
@@ -34,21 +20,9 @@
         <argument name="Q1" class="mbedtls_ecp_point" library="mbedtls"/>
         <argument name="Q2" class="mbedtls_ecp_point" library="mbedtls"/>
         <argument name="blind X" class="mbedtls_mpi" library="mbedtls" access="readwrite"/>
-        <argument name="T1" class="mbedtls_ecp_point" library="mbedtls" access="readwrite"/>
-        <argument name="T2" class="mbedtls_ecp_point" library="mbedtls" access="readwrite"/>
-        <argument name="T3" class="mbedtls_ecp_point" library="mbedtls" access="readwrite"/>
-
-        <return enum="status"/>
-    </method>
-
-    <method name="prove failure">
-        <argument name="op group" class="mbedtls_ecp_group" library="mbedtls" access="readwrite"/>
-        <argument name="server private key" class="data"/>
-        <argument name="server public key" class="data"/>
-        <argument name="c0" class="mbedtls_ecp_point" library="mbedtls"/>
-        <argument name="hs0" class="mbedtls_ecp_point" library="mbedtls"/>
-        <argument name="c1" class="mbedtls_ecp_point" library="mbedtls" access="writeonly"/>
-        <argument name="failure proof" class="ProofOfFail" library="nanopb" access="writeonly"/>
+        <argument name="term1" class="mbedtls_ecp_point" library="mbedtls" access="readwrite"/>
+        <argument name="term2" class="mbedtls_ecp_point" library="mbedtls" access="readwrite"/>
+        <argument name="term3" class="mbedtls_ecp_point" library="mbedtls" access="readwrite"/>
 
         <return enum="status"/>
     </method>

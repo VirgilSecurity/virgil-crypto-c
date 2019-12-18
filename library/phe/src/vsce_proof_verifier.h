@@ -51,19 +51,10 @@
 #include "vsce_phe_common.h"
 #include "vsce_status.h"
 
-#include <PHEModels.pb.h>
 #include <mbedtls/ecp.h>
-
-#if !VSCE_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <virgil/crypto/common/vsc_data.h>
-#endif
 
 #if !VSCE_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
 #   include <virgil/crypto/foundation/vscf_impl.h>
-#endif
-
-#if VSCE_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <VSCCommon/vsc_data.h>
 #endif
 
 #if VSCE_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
@@ -173,20 +164,10 @@ VSCE_PUBLIC void
 vsce_proof_verifier_release_operation_random(vsce_proof_verifier_t *self);
 
 VSCE_PUBLIC vsce_status_t
-vsce_proof_verifier_check_phe_success_proof(vsce_proof_verifier_t *self, mbedtls_ecp_group *op_group,
-        const ProofOfSuccess *success_proof, vsc_data_t server_public_key, const mbedtls_ecp_point *x, vsc_data_t ns,
-        const mbedtls_ecp_point *c0, const mbedtls_ecp_point *c1) VSCE_NODISCARD;
-
-VSCE_PUBLIC vsce_status_t
 vsce_proof_verifier_check_success_proof(vsce_proof_verifier_t *self, mbedtls_ecp_group *op_group,
-        const mbedtls_ecp_point *pub, const mbedtls_mpi *blind_x, const mbedtls_ecp_point *t1,
-        const mbedtls_ecp_point *t2, const mbedtls_ecp_point *t3, const mbedtls_ecp_point *p2,
-        const mbedtls_ecp_point *q2) VSCE_NODISCARD;
-
-VSCE_PUBLIC vsce_status_t
-vsce_proof_verifier_check_fail_proof(vsce_proof_verifier_t *self, mbedtls_ecp_group *op_group,
-        const ProofOfFail *fail_proof, vsc_data_t server_public_key, const mbedtls_ecp_point *x,
-        const mbedtls_ecp_point *c0, const mbedtls_ecp_point *c1, const mbedtls_ecp_point *hs0) VSCE_NODISCARD;
+        const mbedtls_ecp_point *pub, const mbedtls_mpi *blind_x, const mbedtls_ecp_point *term1,
+        const mbedtls_ecp_point *term2, const mbedtls_ecp_point *term3, const mbedtls_ecp_point *p1,
+        const mbedtls_ecp_point *p2, const mbedtls_ecp_point *q1, const mbedtls_ecp_point *q2) VSCE_NODISCARD;
 
 
 // --------------------------------------------------------------------------
