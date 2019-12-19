@@ -54,16 +54,8 @@
 #include <UOKMSModels.pb.h>
 #include <mbedtls/ecp.h>
 
-#if !VSCE_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <virgil/crypto/common/vsc_data.h>
-#endif
-
 #if !VSCE_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
 #   include <virgil/crypto/foundation/vscf_impl.h>
-#endif
-
-#if VSCE_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <VSCCommon/vsc_data.h>
 #endif
 
 #if VSCE_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
@@ -174,7 +166,7 @@ vsce_uokms_proof_verifier_release_operation_random(vsce_uokms_proof_verifier_t *
 
 VSCE_PUBLIC vsce_status_t
 vsce_uokms_proof_verifier_check_success_proof(vsce_uokms_proof_verifier_t *self, mbedtls_ecp_group *op_group,
-        const ProofOfSuccess *success_proof, const mbedtls_ecp_point *pub, vsc_data_t u,
+        const ProofOfSuccess *success_proof, const mbedtls_ecp_point *pub, const mbedtls_ecp_point *u,
         const mbedtls_ecp_point *v) VSCE_NODISCARD;
 
 

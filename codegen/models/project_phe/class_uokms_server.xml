@@ -48,6 +48,14 @@
         </return>
     </method>
 
+    <method name="decrypt response len">
+        Buffer size needed to fit VerifyPasswordResponse
+
+        <return type="size">
+            Buffer size needed to fit VerifyPasswordResponse
+        </return>
+    </method>
+
     <method name="process decrypt request">
         Generates a new random enrollment and proof for a new user
 
@@ -57,10 +65,10 @@
         <argument name="decrypt request" class="data">
         </argument>
         <argument name="decrypt response" class="buffer" access="writeonly">
-            Generated EnrollmentResponse which should be passed to client's enroll account function
-            Buffer size should be >= enrollment response len
+            VerifyPasswordResponse which should be passed to client's check response and decrypt func
+            Buffer size should be >= verify password response len
 
-            <length constant="phe public key length" class="phe common"/>
+            <length method="decrypt response len"/>
         </argument>
 
         <return enum="status">

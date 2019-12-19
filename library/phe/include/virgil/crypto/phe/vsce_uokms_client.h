@@ -218,8 +218,9 @@ vsce_uokms_client_generate_decrypt_request(vsce_uokms_client_t *self, vsc_data_t
 //  Decrypts data (and verifies additional data) using account key
 //
 VSCE_PUBLIC vsce_status_t
-vsce_uokms_client_process_decrypt_response(vsce_uokms_client_t *self, vsc_data_t wrap, vsc_data_t decrypt_response,
-        vsc_data_t deblind_factor, size_t encryption_key_len, vsc_buffer_t *encryption_key) VSCE_NODISCARD;
+vsce_uokms_client_process_decrypt_response(vsce_uokms_client_t *self, vsc_data_t wrap, vsc_data_t decrypt_request,
+        vsc_data_t decrypt_response, vsc_data_t deblind_factor, size_t encryption_key_len,
+        vsc_buffer_t *encryption_key) VSCE_NODISCARD;
 
 //
 //  Updates client's private key and server's public key using server's update token

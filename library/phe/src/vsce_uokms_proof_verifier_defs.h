@@ -55,7 +55,6 @@
 
 #include "vsce_library.h"
 #include "vsce_atomic.h"
-#include "vsce_phe_hash.h"
 #include "vsce_proof_verifier.h"
 
 #include <mbedtls/bignum.h>
@@ -104,11 +103,7 @@ struct vsce_uokms_proof_verifier_t {
     //
     vscf_impl_t *operation_random;
 
-    vsce_phe_hash_t *phe_hash;
-
     vsce_proof_verifier_t *proof_verifier;
-
-    mbedtls_mpi one;
 };
 
 

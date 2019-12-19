@@ -84,6 +84,30 @@ vsce_uokms_server_init_ctx(vsce_uokms_server_t *self);
 static void
 vsce_uokms_server_cleanup_ctx(vsce_uokms_server_t *self);
 
+//
+//  This method is called when interface 'random' was setup.
+//
+static void
+vsce_uokms_server_did_setup_random(vsce_uokms_server_t *self);
+
+//
+//  This method is called when interface 'random' was released.
+//
+static void
+vsce_uokms_server_did_release_random(vsce_uokms_server_t *self);
+
+//
+//  This method is called when interface 'random' was setup.
+//
+static void
+vsce_uokms_server_did_setup_operation_random(vsce_uokms_server_t *self);
+
+//
+//  This method is called when interface 'random' was released.
+//
+static void
+vsce_uokms_server_did_release_operation_random(vsce_uokms_server_t *self);
+
 static mbedtls_ecp_group *
 vsce_uokms_server_get_op_group(vsce_uokms_server_t *self);
 
@@ -240,6 +264,8 @@ vsce_uokms_server_use_random(vsce_uokms_server_t *self, vscf_impl_t *random) {
     VSCE_ASSERT(vscf_random_is_implemented(random));
 
     self->random = vscf_impl_shallow_copy(random);
+
+    vsce_uokms_server_did_setup_random(self);
 }
 
 //
@@ -258,6 +284,8 @@ vsce_uokms_server_take_random(vsce_uokms_server_t *self, vscf_impl_t *random) {
     VSCE_ASSERT(vscf_random_is_implemented(random));
 
     self->random = random;
+
+    vsce_uokms_server_did_setup_random(self);
 }
 
 //
@@ -269,6 +297,8 @@ vsce_uokms_server_release_random(vsce_uokms_server_t *self) {
     VSCE_ASSERT_PTR(self);
 
     vscf_impl_destroy(&self->random);
+
+    vsce_uokms_server_did_release_random(self);
 }
 
 //
@@ -286,6 +316,8 @@ vsce_uokms_server_use_operation_random(vsce_uokms_server_t *self, vscf_impl_t *o
     VSCE_ASSERT(vscf_random_is_implemented(operation_random));
 
     self->operation_random = vscf_impl_shallow_copy(operation_random);
+
+    vsce_uokms_server_did_setup_operation_random(self);
 }
 
 //
@@ -304,6 +336,8 @@ vsce_uokms_server_take_operation_random(vsce_uokms_server_t *self, vscf_impl_t *
     VSCE_ASSERT(vscf_random_is_implemented(operation_random));
 
     self->operation_random = operation_random;
+
+    vsce_uokms_server_did_setup_operation_random(self);
 }
 
 //
@@ -315,6 +349,8 @@ vsce_uokms_server_release_operation_random(vsce_uokms_server_t *self) {
     VSCE_ASSERT_PTR(self);
 
     vscf_impl_destroy(&self->operation_random);
+
+    vsce_uokms_server_did_release_operation_random(self);
 }
 
 
@@ -338,6 +374,8 @@ vsce_uokms_server_init_ctx(vsce_uokms_server_t *self) {
     mbedtls_ecp_group_init(&self->group);
     int mbedtls_status = mbedtls_ecp_group_load(&self->group, MBEDTLS_ECP_DP_SECP256R1);
     VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
+
+    self->proof_generator = vsce_uokms_proof_generator_new();
 }
 
 //
@@ -351,6 +389,53 @@ vsce_uokms_server_cleanup_ctx(vsce_uokms_server_t *self) {
     VSCE_ASSERT_PTR(self);
 
     mbedtls_ecp_group_free(&self->group);
+    vsce_uokms_proof_generator_destroy(&self->proof_generator);
+}
+
+//
+//  This method is called when interface 'random' was setup.
+//
+static void
+vsce_uokms_server_did_setup_random(vsce_uokms_server_t *self) {
+
+    VSCE_ASSERT_PTR(self);
+
+    if (self->random) {
+        vsce_uokms_proof_generator_release_random(self->proof_generator);
+        vsce_uokms_proof_generator_use_random(self->proof_generator, self->random);
+    }
+}
+
+//
+//  This method is called when interface 'random' was released.
+//
+static void
+vsce_uokms_server_did_release_random(vsce_uokms_server_t *self) {
+
+    VSCE_ASSERT_PTR(self);
+}
+
+//
+//  This method is called when interface 'random' was setup.
+//
+static void
+vsce_uokms_server_did_setup_operation_random(vsce_uokms_server_t *self) {
+
+    VSCE_ASSERT_PTR(self);
+
+    if (self->operation_random) {
+        vsce_uokms_proof_generator_release_operation_random(self->proof_generator);
+        vsce_uokms_proof_generator_use_operation_random(self->proof_generator, self->operation_random);
+    }
+}
+
+//
+//  This method is called when interface 'random' was released.
+//
+static void
+vsce_uokms_server_did_release_operation_random(vsce_uokms_server_t *self) {
+
+    VSCE_ASSERT_PTR(self);
 }
 
 VSCE_PUBLIC vsce_status_t
@@ -435,6 +520,17 @@ err:
 }
 
 //
+//  Buffer size needed to fit VerifyPasswordResponse
+//
+VSCE_PUBLIC size_t
+vsce_uokms_server_decrypt_response_len(vsce_uokms_server_t *self) {
+
+    VSCE_UNUSED(self);
+
+    return DecryptResponse_size;
+}
+
+//
 //  Generates a new random enrollment and proof for a new user
 //
 VSCE_PUBLIC vsce_status_t
@@ -447,7 +543,7 @@ vsce_uokms_server_process_decrypt_request(vsce_uokms_server_t *self, vsc_data_t 
     VSCE_ASSERT(vsc_data_is_valid(decrypt_request) && decrypt_request.len == vsce_phe_common_PHE_PUBLIC_KEY_LENGTH);
     VSCE_ASSERT_PTR(decrypt_response);
     VSCE_ASSERT(vsc_buffer_len(decrypt_response) == 0 &&
-                vsc_buffer_capacity(decrypt_response) >= vsce_phe_common_PHE_PUBLIC_KEY_LENGTH);
+                vsc_buffer_capacity(decrypt_response) >= vsce_uokms_server_decrypt_response_len(self));
 
     vsce_status_t status = vsce_status_SUCCESS;
 
@@ -466,26 +562,60 @@ vsce_uokms_server_process_decrypt_request(vsce_uokms_server_t *self, vsc_data_t 
 
     mbedtls_status = mbedtls_mpi_read_binary(&ks, server_private_key.bytes, server_private_key.len);
     VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
+    mbedtls_status = mbedtls_ecp_check_privkey(&self->group, &ks);
+    if (mbedtls_status != 0) {
+        status = vsce_status_ERROR_INVALID_PRIVATE_KEY;
+        goto priv_err;
+    }
+
+    mbedtls_ecp_group *op_group = vsce_uokms_server_get_op_group(self);
+
+    mbedtls_ecp_point Ks;
+    mbedtls_ecp_point_init(&Ks);
+
+    mbedtls_status = mbedtls_ecp_mul(op_group, &Ks, &ks, &op_group->G, vscf_mbedtls_bridge_random, self->random);
+    VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
 
     mbedtls_ecp_point V;
     mbedtls_ecp_point_init(&V);
 
-    mbedtls_ecp_group *op_group = vsce_uokms_server_get_op_group(self);
-
     mbedtls_status = mbedtls_ecp_mul(op_group, &V, &ks, &U, vscf_mbedtls_bridge_random, self->random);
     VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
 
-    vsce_uokms_server_free_op_group(op_group);
+    DecryptResponse response = DecryptResponse_init_zero;
 
     size_t olen = 0;
-    mbedtls_status = mbedtls_ecp_point_write_binary(&self->group, &V, MBEDTLS_ECP_PF_UNCOMPRESSED, &olen,
-            vsc_buffer_unused_bytes(decrypt_response), vsce_phe_common_PHE_PUBLIC_KEY_LENGTH);
-    vsc_buffer_inc_used(decrypt_response, vsce_phe_common_PHE_PUBLIC_KEY_LENGTH);
+    mbedtls_status = mbedtls_ecp_point_write_binary(
+            &self->group, &V, MBEDTLS_ECP_PF_UNCOMPRESSED, &olen, response.v, sizeof(response.v));
     VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
     VSCE_ASSERT(olen == vsce_phe_common_PHE_PUBLIC_KEY_LENGTH);
 
-    mbedtls_ecp_point_free(&V);
+    status = vsce_uokms_proof_generator_prove_success(
+            self->proof_generator, op_group, &ks, &Ks, &U, &V, &response.proof);
 
+    vsce_uokms_server_free_op_group(op_group);
+
+    if (status != vsce_status_SUCCESS) {
+        goto err;
+    }
+
+    olen = 0;
+    mbedtls_status = mbedtls_ecp_point_write_binary(
+            &self->group, &V, MBEDTLS_ECP_PF_UNCOMPRESSED, &olen, response.v, sizeof(response.v));
+    VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
+    VSCE_ASSERT(olen == vsce_phe_common_PHE_POINT_LENGTH);
+
+    pb_ostream_t ostream =
+            pb_ostream_from_buffer(vsc_buffer_unused_bytes(decrypt_response), vsc_buffer_capacity(decrypt_response));
+    VSCE_ASSERT(pb_encode(&ostream, DecryptResponse_fields, &response));
+    vsc_buffer_inc_used(decrypt_response, ostream.bytes_written);
+    vsce_zeroize(&response, sizeof(response));
+
+err:
+    mbedtls_ecp_point_free(&V);
+    mbedtls_ecp_point_free(&Ks);
+
+priv_err:
     mbedtls_mpi_free(&ks);
 
 err1:
@@ -614,6 +744,12 @@ vsce_uokms_server_update_wrap(
     mbedtls_status = mbedtls_mpi_read_binary(&a, update_token.bytes, update_token.len);
     VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
 
+    mbedtls_status = mbedtls_ecp_check_privkey(&self->group, &a);
+    if (mbedtls_status != 0) {
+        status = vsce_status_ERROR_INVALID_PRIVATE_KEY;
+        goto priv_err;
+    }
+
     mbedtls_ecp_point W;
     mbedtls_ecp_point_init(&W);
 
@@ -645,6 +781,7 @@ vsce_uokms_server_update_wrap(
 err:
     mbedtls_ecp_point_free(&W);
 
+priv_err:
     mbedtls_mpi_free(&a);
 
     return status;

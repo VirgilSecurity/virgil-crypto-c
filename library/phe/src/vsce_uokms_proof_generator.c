@@ -350,7 +350,9 @@ vsce_uokms_proof_generator_release_operation_random(vsce_uokms_proof_generator_t
 static void
 vsce_uokms_proof_generator_init_ctx(vsce_uokms_proof_generator_t *self) {
 
-    //  TODO: This is STUB. Implement me.
+    VSCE_ASSERT_PTR(self);
+
+    self->proof_generator = vsce_proof_generator_new();
 }
 
 //
@@ -363,7 +365,7 @@ vsce_uokms_proof_generator_cleanup_ctx(vsce_uokms_proof_generator_t *self) {
 
     VSCE_ASSERT_PTR(self);
 
-    //  TODO: Release all inner resources.
+    vsce_proof_generator_destroy(&self->proof_generator);
 }
 
 //
@@ -372,7 +374,12 @@ vsce_uokms_proof_generator_cleanup_ctx(vsce_uokms_proof_generator_t *self) {
 static void
 vsce_uokms_proof_generator_did_setup_random(vsce_uokms_proof_generator_t *self) {
 
-    //  TODO: This is STUB. Implement me.
+    VSCE_ASSERT_PTR(self);
+
+    if (self->random) {
+        vsce_proof_generator_release_random(self->proof_generator);
+        vsce_proof_generator_use_random(self->proof_generator, self->random);
+    }
 }
 
 //
@@ -381,7 +388,7 @@ vsce_uokms_proof_generator_did_setup_random(vsce_uokms_proof_generator_t *self) 
 static void
 vsce_uokms_proof_generator_did_release_random(vsce_uokms_proof_generator_t *self) {
 
-    //  TODO: This is STUB. Implement me.
+    VSCE_ASSERT_PTR(self);
 }
 
 //
@@ -390,7 +397,12 @@ vsce_uokms_proof_generator_did_release_random(vsce_uokms_proof_generator_t *self
 static void
 vsce_uokms_proof_generator_did_setup_operation_random(vsce_uokms_proof_generator_t *self) {
 
-    //  TODO: This is STUB. Implement me.
+    VSCE_ASSERT_PTR(self);
+
+    if (self->operation_random) {
+        vsce_proof_generator_release_operation_random(self->proof_generator);
+        vsce_proof_generator_use_operation_random(self->proof_generator, self->operation_random);
+    }
 }
 
 //
@@ -399,7 +411,7 @@ vsce_uokms_proof_generator_did_setup_operation_random(vsce_uokms_proof_generator
 static void
 vsce_uokms_proof_generator_did_release_operation_random(vsce_uokms_proof_generator_t *self) {
 
-    //  TODO: This is STUB. Implement me.
+    VSCE_ASSERT_PTR(self);
 }
 
 VSCE_PUBLIC vsce_status_t
@@ -407,5 +419,41 @@ vsce_uokms_proof_generator_prove_success(vsce_uokms_proof_generator_t *self, mbe
         const mbedtls_mpi *priv, const mbedtls_ecp_point *pub, const mbedtls_ecp_point *u, const mbedtls_ecp_point *v,
         ProofOfSuccess *success_proof) {
 
-    //  TODO: This is STUB. Implement me.
+    vsce_status_t status = vsce_status_SUCCESS;
+
+    mbedtls_ecp_point term1, term2;
+    mbedtls_ecp_point_init(&term1);
+    mbedtls_ecp_point_init(&term2);
+
+    mbedtls_mpi blind_x;
+    mbedtls_mpi_init(&blind_x);
+
+    status = vsce_proof_generator_prove_success(
+            self->proof_generator, op_group, priv, pub, u, v, NULL, NULL, &blind_x, &term1, &term2, NULL);
+
+    if (status != vsce_status_SUCCESS) {
+        goto err;
+    }
+    size_t olen = 0;
+    int mbedtls_status = mbedtls_ecp_point_write_binary(
+            op_group, &term1, MBEDTLS_ECP_PF_UNCOMPRESSED, &olen, success_proof->term1, sizeof(success_proof->term1));
+    VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
+    VSCE_ASSERT(olen == sizeof(success_proof->term1));
+
+    olen = 0;
+    mbedtls_status = mbedtls_ecp_point_write_binary(
+            op_group, &term2, MBEDTLS_ECP_PF_UNCOMPRESSED, &olen, success_proof->term2, sizeof(success_proof->term2));
+    VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
+    VSCE_ASSERT(olen == sizeof(success_proof->term2));
+
+    mbedtls_status = mbedtls_mpi_write_binary(&blind_x, success_proof->blind_x, sizeof(success_proof->blind_x));
+    VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
+
+err:
+    mbedtls_mpi_free(&blind_x);
+
+    mbedtls_ecp_point_free(&term1);
+    mbedtls_ecp_point_free(&term2);
+
+    return status;
 }

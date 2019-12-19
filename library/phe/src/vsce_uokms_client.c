@@ -729,13 +729,16 @@ err1:
 //  Decrypts data (and verifies additional data) using account key
 //
 VSCE_PUBLIC vsce_status_t
-vsce_uokms_client_process_decrypt_response(vsce_uokms_client_t *self, vsc_data_t wrap, vsc_data_t decrypt_response,
-        vsc_data_t deblind_factor, size_t encryption_key_len, vsc_buffer_t *encryption_key) {
+vsce_uokms_client_process_decrypt_response(vsce_uokms_client_t *self, vsc_data_t wrap, vsc_data_t decrypt_request,
+        vsc_data_t decrypt_response, vsc_data_t deblind_factor, size_t encryption_key_len,
+        vsc_buffer_t *encryption_key) {
 
     VSCE_ASSERT_PTR(self);
     VSCE_ASSERT(self->keys_are_set);
+    // FIXME
     VSCE_ASSERT(vsc_data_is_valid(wrap) && wrap.len == vsce_phe_common_PHE_PUBLIC_KEY_LENGTH);
-    VSCE_ASSERT(vsc_data_is_valid(decrypt_response) && decrypt_response.len == vsce_phe_common_PHE_PUBLIC_KEY_LENGTH);
+    VSCE_ASSERT(vsc_data_is_valid(decrypt_request));
+    VSCE_ASSERT(vsc_data_is_valid(decrypt_response));
     VSCE_ASSERT(vsc_data_is_valid(deblind_factor) && deblind_factor.len == vsce_phe_common_PHE_PRIVATE_KEY_LENGTH);
     VSCE_ASSERT(encryption_key_len > 0);
     VSCE_ASSERT_PTR(encryption_key);
@@ -744,6 +747,20 @@ vsce_uokms_client_process_decrypt_response(vsce_uokms_client_t *self, vsc_data_t
     vsc_buffer_make_secure(encryption_key);
 
     vsce_status_t status = vsce_status_SUCCESS;
+
+    DecryptResponse response = DecryptResponse_init_zero;
+
+    if (decrypt_response.len > DecryptResponse_size) {
+        status = vsce_status_ERROR_PROTOBUF_DECODE_FAILED;
+        goto pb_err;
+    }
+
+    pb_istream_t istream = pb_istream_from_buffer(decrypt_response.bytes, decrypt_response.len);
+    bool pb_status = pb_decode(&istream, DecryptResponse_fields, &response);
+    if (!pb_status) {
+        status = vsce_status_ERROR_PROTOBUF_DECODE_FAILED;
+        goto pb_err;
+    }
 
     mbedtls_ecp_point W;
     mbedtls_ecp_point_init(&W);
@@ -754,13 +771,31 @@ vsce_uokms_client_process_decrypt_response(vsce_uokms_client_t *self, vsc_data_t
         goto err1;
     }
 
+    mbedtls_ecp_point U;
+    mbedtls_ecp_point_init(&U);
+
+    mbedtls_status = mbedtls_ecp_point_read_binary(&self->group, &U, decrypt_request.bytes, decrypt_request.len);
+    if (mbedtls_status != 0 || mbedtls_ecp_check_pubkey(&self->group, &U) != 0) {
+        status = vsce_status_ERROR_INVALID_PUBLIC_KEY;
+        goto err2;
+    }
+
     mbedtls_ecp_point V;
     mbedtls_ecp_point_init(&V);
 
-    mbedtls_status = mbedtls_ecp_point_read_binary(&self->group, &V, decrypt_response.bytes, decrypt_response.len);
+    mbedtls_status = mbedtls_ecp_point_read_binary(&self->group, &V, response.v, sizeof(response.v));
     if (mbedtls_status != 0 || mbedtls_ecp_check_pubkey(&self->group, &V) != 0) {
         status = vsce_status_ERROR_INVALID_PUBLIC_KEY;
-        goto err2;
+        goto err3;
+    }
+
+    mbedtls_ecp_group *op_group = vsce_uokms_client_get_op_group(self);
+
+    status = vsce_uokms_proof_verifier_check_success_proof(
+            self->proof_verifier, op_group, &response.proof, &self->ks_public, &U, &V);
+
+    if (status != vsce_status_SUCCESS) {
+        goto proof_err;
     }
 
     mbedtls_mpi bInv;
@@ -769,15 +804,17 @@ vsce_uokms_client_process_decrypt_response(vsce_uokms_client_t *self, vsc_data_t
     mbedtls_status = mbedtls_mpi_read_binary(&bInv, deblind_factor.bytes, deblind_factor.len);
     VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
 
+    mbedtls_status = mbedtls_ecp_check_privkey(&self->group, &bInv);
+    if (mbedtls_status != 0) {
+        status = vsce_status_ERROR_INVALID_PRIVATE_KEY;
+        goto priv_err;
+    }
+
     mbedtls_ecp_point S;
     mbedtls_ecp_point_init(&S);
 
-    mbedtls_ecp_group *op_group = vsce_uokms_client_get_op_group(self);
-
     mbedtls_status = mbedtls_ecp_muladd(op_group, &S, &bInv, &V, &self->kc_private, &W);
     VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
-
-    vsce_uokms_client_free_op_group(op_group);
 
     byte seed[vsce_phe_common_PHE_POINT_LENGTH];
 
@@ -799,14 +836,22 @@ vsce_uokms_client_process_decrypt_response(vsce_uokms_client_t *self, vsc_data_t
 
     mbedtls_ecp_point_free(&S);
 
+priv_err:
     mbedtls_mpi_free(&bInv);
 
-err2:
+proof_err:
+    vsce_uokms_client_free_op_group(op_group);
+
+err3:
     mbedtls_ecp_point_free(&V);
+
+err2:
+    mbedtls_ecp_point_free(&U);
 
 err1:
     mbedtls_ecp_point_free(&W);
 
+pb_err:
     return status;
 }
 

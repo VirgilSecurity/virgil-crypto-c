@@ -350,7 +350,9 @@ vsce_uokms_proof_verifier_release_operation_random(vsce_uokms_proof_verifier_t *
 static void
 vsce_uokms_proof_verifier_init_ctx(vsce_uokms_proof_verifier_t *self) {
 
-    //  TODO: This is STUB. Implement me.
+    VSCE_ASSERT_PTR(self);
+
+    self->proof_verifier = vsce_proof_verifier_new();
 }
 
 //
@@ -363,7 +365,7 @@ vsce_uokms_proof_verifier_cleanup_ctx(vsce_uokms_proof_verifier_t *self) {
 
     VSCE_ASSERT_PTR(self);
 
-    //  TODO: Release all inner resources.
+    vsce_proof_verifier_destroy(&self->proof_verifier);
 }
 
 //
@@ -372,7 +374,12 @@ vsce_uokms_proof_verifier_cleanup_ctx(vsce_uokms_proof_verifier_t *self) {
 static void
 vsce_uokms_proof_verifier_did_setup_random(vsce_uokms_proof_verifier_t *self) {
 
-    //  TODO: This is STUB. Implement me.
+    VSCE_ASSERT_PTR(self);
+
+    if (self->random) {
+        vsce_proof_verifier_release_random(self->proof_verifier);
+        vsce_proof_verifier_use_random(self->proof_verifier, self->random);
+    }
 }
 
 //
@@ -381,7 +388,7 @@ vsce_uokms_proof_verifier_did_setup_random(vsce_uokms_proof_verifier_t *self) {
 static void
 vsce_uokms_proof_verifier_did_release_random(vsce_uokms_proof_verifier_t *self) {
 
-    //  TODO: This is STUB. Implement me.
+    VSCE_ASSERT_PTR(self);
 }
 
 //
@@ -390,7 +397,12 @@ vsce_uokms_proof_verifier_did_release_random(vsce_uokms_proof_verifier_t *self) 
 static void
 vsce_uokms_proof_verifier_did_setup_operation_random(vsce_uokms_proof_verifier_t *self) {
 
-    //  TODO: This is STUB. Implement me.
+    VSCE_ASSERT_PTR(self);
+
+    if (self->operation_random) {
+        vsce_proof_verifier_release_operation_random(self->proof_verifier);
+        vsce_proof_verifier_use_operation_random(self->proof_verifier, self->operation_random);
+    }
 }
 
 //
@@ -399,12 +411,63 @@ vsce_uokms_proof_verifier_did_setup_operation_random(vsce_uokms_proof_verifier_t
 static void
 vsce_uokms_proof_verifier_did_release_operation_random(vsce_uokms_proof_verifier_t *self) {
 
-    //  TODO: This is STUB. Implement me.
+    VSCE_ASSERT_PTR(self);
 }
 
 VSCE_PUBLIC vsce_status_t
 vsce_uokms_proof_verifier_check_success_proof(vsce_uokms_proof_verifier_t *self, mbedtls_ecp_group *op_group,
-        const ProofOfSuccess *success_proof, const mbedtls_ecp_point *pub, vsc_data_t u, const mbedtls_ecp_point *v) {
+        const ProofOfSuccess *success_proof, const mbedtls_ecp_point *pub, const mbedtls_ecp_point *u,
+        const mbedtls_ecp_point *v) {
 
-    //  TODO: This is STUB. Implement me.
+    VSCE_ASSERT_PTR(self);
+    VSCE_ASSERT_PTR(op_group);
+    VSCE_ASSERT_PTR(success_proof);
+    VSCE_ASSERT_PTR(pub);
+    VSCE_ASSERT_PTR(u);
+    VSCE_ASSERT_PTR(v);
+
+    vsce_status_t status = vsce_status_SUCCESS;
+
+    mbedtls_ecp_point term1, term2;
+    mbedtls_ecp_point_init(&term1);
+    mbedtls_ecp_point_init(&term2);
+
+    int mbedtls_status = 0;
+    mbedtls_status =
+            mbedtls_ecp_point_read_binary(op_group, &term1, success_proof->term1, sizeof(success_proof->term1));
+    if (mbedtls_status != 0 || mbedtls_ecp_check_pubkey(op_group, &term1) != 0) {
+        status = vsce_status_ERROR_INVALID_PUBLIC_KEY;
+        goto ecp_err;
+    }
+
+    mbedtls_status =
+            mbedtls_ecp_point_read_binary(op_group, &term2, success_proof->term2, sizeof(success_proof->term2));
+    if (mbedtls_status != 0 || mbedtls_ecp_check_pubkey(op_group, &term2) != 0) {
+        status = vsce_status_ERROR_INVALID_PUBLIC_KEY;
+        goto ecp_err;
+    }
+
+    mbedtls_mpi blind_x;
+    mbedtls_mpi_init(&blind_x);
+
+    mbedtls_status = mbedtls_mpi_read_binary(&blind_x, success_proof->blind_x, sizeof(success_proof->blind_x));
+    VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
+
+    mbedtls_status = mbedtls_ecp_check_privkey(op_group, &blind_x);
+    if (mbedtls_status != 0) {
+        status = vsce_status_ERROR_INVALID_PRIVATE_KEY;
+        goto priv_err;
+    }
+
+    status = vsce_proof_verifier_check_success_proof(
+            self->proof_verifier, op_group, pub, &blind_x, &term1, &term2, NULL, u, v, NULL, NULL);
+
+priv_err:
+    mbedtls_mpi_free(&blind_x);
+
+ecp_err:
+    mbedtls_ecp_point_free(&term1);
+    mbedtls_ecp_point_free(&term2);
+
+    return status;
 }

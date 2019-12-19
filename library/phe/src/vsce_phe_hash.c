@@ -491,10 +491,10 @@ vsce_phe_hash_hash_z_success(vsce_phe_hash_t *self, const mbedtls_ecp_point *pub
     VSCE_ASSERT_PTR(term2);
     VSCE_ASSERT((term3 == NULL && q2 == NULL) || (term3 != NULL && q2 != NULL));
 
-    size_t points_count = 6;
+    size_t points_count = 7;
 
-    if (q2 != NULL) {
-        points_count++;
+    if (q2 == NULL) {
+        points_count = 5;
     }
 
     byte buffer[7 * vsce_phe_common_PHE_POINT_LENGTH];
@@ -503,7 +503,7 @@ vsce_phe_hash_hash_z_success(vsce_phe_hash_t *self, const mbedtls_ecp_point *pub
     vsc_buffer_init(&buff);
     vsc_buffer_use(&buff, buffer, points_count * vsce_phe_common_PHE_POINT_LENGTH);
 
-    vsce_phe_hash_push_points_to_buffer(self, &buff, points_count, pub, &self->group.G, p2, q2, term2, term3, term1);
+    vsce_phe_hash_push_points_to_buffer(self, &buff, 7, pub, &self->group.G, p2, q2, term2, term3, term1);
     VSCE_ASSERT(vsc_buffer_unused_len(&buff) == 0);
 
     vsce_phe_hash_derive_z(self, vsc_buffer_data(&buff), true, z);

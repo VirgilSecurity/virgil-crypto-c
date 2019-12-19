@@ -100,7 +100,7 @@ test__encrypt_decrypt__full_flow__key_should_match(void) {
     TEST_ASSERT_EQUAL(vsce_status_SUCCESS,
             vsce_uokms_client_generate_decrypt_request(client, vsc_buffer_data(wrap), deblind_factor, decrypt_request));
 
-    vsc_buffer_t *decrypt_response = vsc_buffer_new_with_capacity(vsce_phe_common_PHE_PUBLIC_KEY_LENGTH);
+    vsc_buffer_t *decrypt_response = vsc_buffer_new_with_capacity(vsce_uokms_server_decrypt_response_len(server));
 
     TEST_ASSERT_EQUAL(
             vsce_status_SUCCESS, vsce_uokms_server_process_decrypt_request(server, vsc_buffer_data(server_private_key),
@@ -108,9 +108,9 @@ test__encrypt_decrypt__full_flow__key_should_match(void) {
 
     vsc_buffer_t *key2 = vsc_buffer_new_with_capacity(44);
 
-    TEST_ASSERT_EQUAL(
-            vsce_status_SUCCESS, vsce_uokms_client_process_decrypt_response(client, vsc_buffer_data(wrap),
-                                         vsc_buffer_data(decrypt_response), vsc_buffer_data(deblind_factor), 44, key2));
+    TEST_ASSERT_EQUAL(vsce_status_SUCCESS,
+            vsce_uokms_client_process_decrypt_response(client, vsc_buffer_data(wrap), vsc_buffer_data(decrypt_request),
+                    vsc_buffer_data(decrypt_response), vsc_buffer_data(deblind_factor), 44, key2));
 
     TEST_ASSERT_EQUAL_DATA_AND_BUFFER(vsc_buffer_data(key), key2);
 
@@ -172,7 +172,7 @@ test__rotate__full_flow__key_should_match(void) {
     TEST_ASSERT_EQUAL(vsce_status_SUCCESS, vsce_uokms_client_generate_decrypt_request(client2,
                                                    vsc_buffer_data(new_wrap), deblind_factor, decrypt_request));
 
-    vsc_buffer_t *decrypt_response = vsc_buffer_new_with_capacity(vsce_phe_common_PHE_PUBLIC_KEY_LENGTH);
+    vsc_buffer_t *decrypt_response = vsc_buffer_new_with_capacity(vsce_uokms_server_decrypt_response_len(server));
 
     TEST_ASSERT_EQUAL(vsce_status_SUCCESS,
             vsce_uokms_server_process_decrypt_request(server, vsc_buffer_data(new_server_private_key),
@@ -182,7 +182,8 @@ test__rotate__full_flow__key_should_match(void) {
 
     TEST_ASSERT_EQUAL(
             vsce_status_SUCCESS, vsce_uokms_client_process_decrypt_response(client2, vsc_buffer_data(new_wrap),
-                                         vsc_buffer_data(decrypt_response), vsc_buffer_data(deblind_factor), 44, key2));
+                                         vsc_buffer_data(decrypt_request), vsc_buffer_data(decrypt_response),
+                                         vsc_buffer_data(deblind_factor), 44, key2));
 
     TEST_ASSERT_EQUAL_DATA_AND_BUFFER(vsc_buffer_data(key), key2);
 

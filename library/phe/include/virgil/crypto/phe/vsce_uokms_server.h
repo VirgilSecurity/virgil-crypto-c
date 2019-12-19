@@ -190,6 +190,12 @@ vsce_uokms_server_generate_server_key_pair(vsce_uokms_server_t *self, vsc_buffer
         vsc_buffer_t *server_public_key) VSCE_NODISCARD;
 
 //
+//  Buffer size needed to fit VerifyPasswordResponse
+//
+VSCE_PUBLIC size_t
+vsce_uokms_server_decrypt_response_len(vsce_uokms_server_t *self);
+
+//
 //  Generates a new random enrollment and proof for a new user
 //
 VSCE_PUBLIC vsce_status_t
