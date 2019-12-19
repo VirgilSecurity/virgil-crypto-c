@@ -38,6 +38,9 @@
 const precondition = require('./precondition');
 
 const initUokmsClient = (Module, modules) => {
+    /**
+     * Class implements UOKMS for client-side.
+     */
     class UokmsClient {
 
         /**
@@ -105,6 +108,9 @@ const initUokmsClient = (Module, modules) => {
             Module._vsce_uokms_client_use_operation_random(this.ctxPtr, operationRandom.ctxPtr)
         }
 
+        /**
+         * Setups dependencies with default values.
+         */
         setupDefaults() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             const proxyResult = Module._vsce_uokms_client_setup_defaults(this.ctxPtr);
@@ -113,7 +119,7 @@ const initUokmsClient = (Module, modules) => {
 
         /**
          * Sets client private and server public key
-         * Call this method before any other methods except `update enrollment record` and `generate client private key`
+         * Call this method before any other methods
          * This function should be called only once
          */
         setKeys(clientPrivateKey, serverPublicKey) {
@@ -179,9 +185,8 @@ const initUokmsClient = (Module, modules) => {
         }
 
         /**
-         * Uses fresh EnrollmentResponse from PHE server (see get enrollment func) and user's password (or its hash) to create
-         * a new EnrollmentRecord which is then supposed to be stored in a database for further authentication
-         * Also generates a random seed which then can be used to generate symmetric or private key to protect user's data
+         * Generates new encrypt wrap (which should be stored and then used for decryption) + encryption key
+         * of "encryption key len" that can be used for symmetric encryption
          */
         generateEncryptWrap(encryptionKeyLen) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
@@ -212,7 +217,8 @@ const initUokmsClient = (Module, modules) => {
         }
 
         /**
-         * Decrypts data (and verifies additional data) using account key
+         * Generates request to decrypt data, this request should be sent to the server.
+         * Server response is then passed to "process decrypt response" where encryption key can be decapsulated
          */
         generateDecryptRequest(wrap) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
@@ -257,11 +263,12 @@ const initUokmsClient = (Module, modules) => {
         }
 
         /**
-         * Decrypts data (and verifies additional data) using account key
+         * Processed server response, checks server proof and decapsulates encryption key
          */
-        processDecryptResponse(wrap, decryptResponse, deblindFactor, encryptionKeyLen) {
+        processDecryptResponse(wrap, decryptRequest, decryptResponse, deblindFactor, encryptionKeyLen) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('wrap', wrap);
+            precondition.ensureByteArray('decryptRequest', decryptRequest);
             precondition.ensureByteArray('decryptResponse', decryptResponse);
             precondition.ensureByteArray('deblindFactor', deblindFactor);
             precondition.ensureNumber('encryptionKeyLen', encryptionKeyLen);
@@ -277,6 +284,18 @@ const initUokmsClient = (Module, modules) => {
 
             //  Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(wrapCtxPtr, wrapPtr, wrapSize);
+
+            //  Copy bytes from JS memory to the WASM memory.
+            const decryptRequestSize = decryptRequest.length * decryptRequest.BYTES_PER_ELEMENT;
+            const decryptRequestPtr = Module._malloc(decryptRequestSize);
+            Module.HEAP8.set(decryptRequest, decryptRequestPtr);
+
+            //  Create C structure vsc_data_t.
+            const decryptRequestCtxSize = Module._vsc_data_ctx_size();
+            const decryptRequestCtxPtr = Module._malloc(decryptRequestCtxSize);
+
+            //  Point created vsc_data_t object to the copied bytes.
+            Module._vsc_data(decryptRequestCtxPtr, decryptRequestPtr, decryptRequestSize);
 
             //  Copy bytes from JS memory to the WASM memory.
             const decryptResponseSize = decryptResponse.length * decryptResponse.BYTES_PER_ELEMENT;
@@ -306,7 +325,7 @@ const initUokmsClient = (Module, modules) => {
             const encryptionKeyCtxPtr = Module._vsc_buffer_new_with_capacity(encryptionKeyCapacity);
 
             try {
-                const proxyResult = Module._vsce_uokms_client_process_decrypt_response(this.ctxPtr, wrapCtxPtr, decryptResponseCtxPtr, deblindFactorCtxPtr, encryptionKeyLen, encryptionKeyCtxPtr);
+                const proxyResult = Module._vsce_uokms_client_process_decrypt_response(this.ctxPtr, wrapCtxPtr, decryptRequestCtxPtr, decryptResponseCtxPtr, deblindFactorCtxPtr, encryptionKeyLen, encryptionKeyCtxPtr);
                 modules.PheError.handleStatusCode(proxyResult);
 
                 const encryptionKeyPtr = Module._vsc_buffer_bytes(encryptionKeyCtxPtr);
@@ -316,6 +335,8 @@ const initUokmsClient = (Module, modules) => {
             } finally {
                 Module._free(wrapPtr);
                 Module._free(wrapCtxPtr);
+                Module._free(decryptRequestPtr);
+                Module._free(decryptRequestCtxPtr);
                 Module._free(decryptResponsePtr);
                 Module._free(decryptResponseCtxPtr);
                 Module._free(deblindFactorPtr);
@@ -325,8 +346,7 @@ const initUokmsClient = (Module, modules) => {
         }
 
         /**
-         * Updates client's private key and server's public key using server's update token
-         * Use output values to instantiate new client instance with new keys
+         * Rotates client and server keys using given update token obtained from server
          */
         rotateKeys(updateToken) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);

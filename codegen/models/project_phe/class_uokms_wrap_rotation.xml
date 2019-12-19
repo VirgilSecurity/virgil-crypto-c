@@ -1,4 +1,5 @@
 <class name="uokms wrap rotation" context="internal">
+    Implements wrap rotation.
 
     <require class="phe common" scope="public"/>
     <require impl="ctr drbg" project="foundation" scope="private"/>
@@ -17,23 +18,22 @@
     <property name="a" class="mbedtls_mpi" library="mbedtls" access="readwrite" is_reference="0"/>
 
     <method name="setup defaults">
-        <return enum="status"/>
+        Setups dependencies with default values.
+
+        <return enum="status">
+            - vsce_status_ERROR_RNG_FAILED in case rng failed
+        </return>
     </method>
 
     <method name="set update token">
-        Sets client private and server public key
-        Call this method before any other methods except `update enrollment record` and `generate client private key`
-        This function should be called only once
+        Sets update token. Should be called only once and before any other function
 
         <argument name="update token" class="data">
-            Client's private key
-            Use `generate client private key` to generate this key, or generate NIST P-256 private key yourself
+            Update token
         </argument>
 
         <return enum="status">
-            - vsce_SUCCESS if operation succeeded
-            - vsce_error_INVALID_PRIVATE_KEY if private key is invalid
-            - vsce_error_INVALID_ECP if public key is invalid
+            - vsce_status_ERROR_INVALID_PRIVATE_KEY if private key is invalid
         </return>
     </method>
 
@@ -51,9 +51,7 @@
         </argument>
 
         <return enum="status">
-            - vsce_error_PROTOBUF_DECODE_ERROR if input model is invalid
-            - vsce_error_INVALID_ECP if input points are invalid
-            - vsce_error_INVALID_PRIVATE_KEY if provided private key in invalid
+            - vsce_status_ERROR_INVALID_PUBLIC_KEY if input points are invalid
         </return>
     </method>
 

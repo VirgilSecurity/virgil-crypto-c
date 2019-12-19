@@ -131,7 +131,7 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsClient_
 
 JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsClient_1generateDecryptRequest (JNIEnv *, jobject, jlong, jbyteArray);
 
-JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsClient_1processDecryptResponse (JNIEnv *, jobject, jlong, jbyteArray, jbyteArray, jbyteArray, jint);
+JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsClient_1processDecryptResponse (JNIEnv *, jobject, jlong, jbyteArray, jbyteArray, jbyteArray, jbyteArray, jint);
 
 JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsClient_1rotateKeys (JNIEnv *, jobject, jlong, jbyteArray);
 
@@ -147,17 +147,23 @@ JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsServer_1se
 
 JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsServer_1generateServerKeyPair (JNIEnv *, jobject, jlong);
 
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsServer_1decryptResponseLen (JNIEnv *, jobject, jlong);
+
 JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsServer_1processDecryptRequest (JNIEnv *, jobject, jlong, jbyteArray, jbyteArray);
 
 JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsServer_1rotateKeys (JNIEnv *, jobject, jlong, jbyteArray);
-
-JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsServer_1updateWrap (JNIEnv *, jobject, jlong, jbyteArray, jbyteArray);
 
 JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsWrapRotation_1new__ (JNIEnv *, jobject);
 
 JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsWrapRotation_1close (JNIEnv *, jobject, jlong);
 
-JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsWrapRotation_1updateWrap (JNIEnv *, jobject, jlong, jbyteArray, jbyteArray);
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsWrapRotation_1setOperationRandom (JNIEnv *, jobject, jlong, jobject);
+
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsWrapRotation_1setupDefaults (JNIEnv *, jobject, jlong);
+
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsWrapRotation_1setUpdateToken (JNIEnv *, jobject, jlong, jbyteArray);
+
+JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsWrapRotation_1updateWrap (JNIEnv *, jobject, jlong, jbyteArray);
 
 #ifdef __cplusplus
 }

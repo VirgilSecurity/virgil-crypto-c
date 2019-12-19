@@ -156,7 +156,6 @@ test__rotate__full_flow__key_should_match(void) {
                                                    new_client_private_key, new_server_public_key2));
 
     vsce_uokms_wrap_rotation_t *wrap_rotation = vsce_uokms_wrap_rotation_new();
-    vsce_uokms_wrap_rotation_destroy(&wrap_rotation);
     TEST_ASSERT_EQUAL(vsce_status_SUCCESS, vsce_uokms_wrap_rotation_setup_defaults(wrap_rotation));
     TEST_ASSERT_EQUAL(vsce_status_SUCCESS,
             vsce_uokms_wrap_rotation_set_update_token(wrap_rotation, vsc_buffer_data(update_token)));

@@ -38,6 +38,9 @@ package com.virgilsecurity.crypto.phe;
 
 import com.virgilsecurity.crypto.foundation.*;
 
+/*
+* Class implements UOKMS for client-side.
+*/
 public class UokmsClient implements AutoCloseable {
 
     public long cCtx;
@@ -81,13 +84,16 @@ public class UokmsClient implements AutoCloseable {
         PheJNI.INSTANCE.uokmsClient_setOperationRandom(this.cCtx, operationRandom);
     }
 
+    /*
+    * Setups dependencies with default values.
+    */
     public void setupDefaults() throws PheException {
         PheJNI.INSTANCE.uokmsClient_setupDefaults(this.cCtx);
     }
 
     /*
     * Sets client private and server public key
-    * Call this method before any other methods except `update enrollment record` and `generate client private key`
+    * Call this method before any other methods
     * This function should be called only once
     */
     public void setKeys(byte[] clientPrivateKey, byte[] serverPublicKey) throws PheException {
@@ -102,31 +108,30 @@ public class UokmsClient implements AutoCloseable {
     }
 
     /*
-    * Uses fresh EnrollmentResponse from PHE server (see get enrollment func) and user's password (or its hash) to create
-    * a new EnrollmentRecord which is then supposed to be stored in a database for further authentication
-    * Also generates a random seed which then can be used to generate symmetric or private key to protect user's data
+    * Generates new encrypt wrap (which should be stored and then used for decryption) + encryption key
+    * of "encryption key len" that can be used for symmetric encryption
     */
     public UokmsClientGenerateEncryptWrapResult generateEncryptWrap(int encryptionKeyLen) throws PheException {
         return PheJNI.INSTANCE.uokmsClient_generateEncryptWrap(this.cCtx, encryptionKeyLen);
     }
 
     /*
-    * Decrypts data (and verifies additional data) using account key
+    * Generates request to decrypt data, this request should be sent to the server.
+    * Server response is then passed to "process decrypt response" where encryption key can be decapsulated
     */
     public UokmsClientGenerateDecryptRequestResult generateDecryptRequest(byte[] wrap) throws PheException {
         return PheJNI.INSTANCE.uokmsClient_generateDecryptRequest(this.cCtx, wrap);
     }
 
     /*
-    * Decrypts data (and verifies additional data) using account key
+    * Processed server response, checks server proof and decapsulates encryption key
     */
-    public byte[] processDecryptResponse(byte[] wrap, byte[] decryptResponse, byte[] deblindFactor, int encryptionKeyLen) throws PheException {
-        return PheJNI.INSTANCE.uokmsClient_processDecryptResponse(this.cCtx, wrap, decryptResponse, deblindFactor, encryptionKeyLen);
+    public byte[] processDecryptResponse(byte[] wrap, byte[] decryptRequest, byte[] decryptResponse, byte[] deblindFactor, int encryptionKeyLen) throws PheException {
+        return PheJNI.INSTANCE.uokmsClient_processDecryptResponse(this.cCtx, wrap, decryptRequest, decryptResponse, deblindFactor, encryptionKeyLen);
     }
 
     /*
-    * Updates client's private key and server's public key using server's update token
-    * Use output values to instantiate new client instance with new keys
+    * Rotates client and server keys using given update token obtained from server
     */
     public UokmsClientRotateKeysResult rotateKeys(byte[] updateToken) throws PheException {
         return PheJNI.INSTANCE.uokmsClient_rotateKeys(this.cCtx, updateToken);

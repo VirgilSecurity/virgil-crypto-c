@@ -37,6 +37,12 @@
 // clang-format off
 
 
+//  @description
+// --------------------------------------------------------------------------
+//  Class implements UOKMS for server-side.
+// --------------------------------------------------------------------------
+
+
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -437,6 +443,9 @@ vsce_uokms_server_did_release_operation_random(vsce_uokms_server_t *self) {
     VSCE_ASSERT_PTR(self);
 }
 
+//
+//  Setups dependencies with default values.
+//
 VSCE_PUBLIC vsce_status_t
 vsce_uokms_server_setup_defaults(vsce_uokms_server_t *self) {
 
@@ -519,7 +528,7 @@ err:
 }
 
 //
-//  Buffer size needed to fit VerifyPasswordResponse
+//  Buffer size needed to fit DecryptResponse
 //
 VSCE_PUBLIC size_t
 vsce_uokms_server_decrypt_response_len(vsce_uokms_server_t *self) {
@@ -530,21 +539,30 @@ vsce_uokms_server_decrypt_response_len(vsce_uokms_server_t *self) {
 }
 
 //
-//  Generates a new random enrollment and proof for a new user
+//  Processed client's decrypt request
 //
 VSCE_PUBLIC vsce_status_t
 vsce_uokms_server_process_decrypt_request(vsce_uokms_server_t *self, vsc_data_t server_private_key,
         vsc_data_t decrypt_request, vsc_buffer_t *decrypt_response) {
 
     VSCE_ASSERT_PTR(self);
-    VSCE_ASSERT(
-            vsc_data_is_valid(server_private_key) && server_private_key.len == vsce_phe_common_PHE_PRIVATE_KEY_LENGTH);
-    VSCE_ASSERT(vsc_data_is_valid(decrypt_request) && decrypt_request.len == vsce_phe_common_PHE_PUBLIC_KEY_LENGTH);
+    VSCE_ASSERT(vsc_data_is_valid(server_private_key));
+    VSCE_ASSERT(vsc_data_is_valid(decrypt_request));
     VSCE_ASSERT_PTR(decrypt_response);
     VSCE_ASSERT(vsc_buffer_len(decrypt_response) == 0 &&
                 vsc_buffer_capacity(decrypt_response) >= vsce_uokms_server_decrypt_response_len(self));
 
     vsce_status_t status = vsce_status_SUCCESS;
+
+    if (server_private_key.len != vsce_phe_common_PHE_PRIVATE_KEY_LENGTH) {
+        status = vsce_status_ERROR_INVALID_PRIVATE_KEY;
+        goto err2;
+    }
+
+    if (decrypt_request.len != vsce_phe_common_PHE_PUBLIC_KEY_LENGTH) {
+        status = vsce_status_ERROR_INVALID_PUBLIC_KEY;
+        goto err2;
+    }
 
     mbedtls_ecp_point U;
     mbedtls_ecp_point_init(&U);
@@ -621,6 +639,8 @@ priv_err:
 err1:
     mbedtls_ecp_point_free(&U);
 
+err2:
+
     return status;
 }
 
@@ -632,19 +652,24 @@ vsce_uokms_server_rotate_keys(vsce_uokms_server_t *self, vsc_data_t server_priva
         vsc_buffer_t *new_server_private_key, vsc_buffer_t *new_server_public_key, vsc_buffer_t *update_token) {
 
     VSCE_ASSERT_PTR(self);
-    VSCE_ASSERT(
-            vsc_data_is_valid(server_private_key) && server_private_key.len == vsce_phe_common_PHE_PRIVATE_KEY_LENGTH);
+    VSCE_ASSERT(vsc_data_is_valid(server_private_key));
     VSCE_ASSERT(vsc_buffer_len(update_token) == 0);
     VSCE_ASSERT(vsc_buffer_unused_len(update_token) >= vsce_phe_common_PHE_PRIVATE_KEY_LENGTH);
+    vsc_buffer_make_secure(update_token);
     VSCE_ASSERT(vsc_buffer_len(new_server_private_key) == 0);
     VSCE_ASSERT(vsc_buffer_unused_len(new_server_private_key) >= vsce_phe_common_PHE_PRIVATE_KEY_LENGTH);
     vsc_buffer_make_secure(new_server_private_key);
     VSCE_ASSERT(vsc_buffer_len(new_server_public_key) == 0);
     VSCE_ASSERT(vsc_buffer_unused_len(new_server_public_key) >= vsce_phe_common_PHE_PUBLIC_KEY_LENGTH);
 
-    mbedtls_ecp_group *op_group = vsce_uokms_server_get_op_group(self);
-
     vsce_status_t status = vsce_status_SUCCESS;
+
+    if (server_private_key.len != vsce_phe_common_PHE_PRIVATE_KEY_LENGTH) {
+        status = vsce_status_ERROR_INVALID_PRIVATE_KEY;
+        goto err2;
+    }
+
+    mbedtls_ecp_group *op_group = vsce_uokms_server_get_op_group(self);
 
     mbedtls_mpi ks;
     mbedtls_mpi_init(&ks);
@@ -718,6 +743,8 @@ priv_err:
     mbedtls_mpi_free(&ks);
 
     vsce_uokms_server_free_op_group(op_group);
+
+err2:
 
     return status;
 }

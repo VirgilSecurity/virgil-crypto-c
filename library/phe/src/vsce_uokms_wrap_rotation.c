@@ -37,6 +37,12 @@
 // clang-format off
 
 
+//  @description
+// --------------------------------------------------------------------------
+//  Implements wrap rotation.
+// --------------------------------------------------------------------------
+
+
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -303,6 +309,9 @@ vsce_uokms_wrap_rotation_cleanup_ctx(vsce_uokms_wrap_rotation_t *self) {
     mbedtls_mpi_free(&self->a);
 }
 
+//
+//  Setups dependencies with default values.
+//
 VSCE_PUBLIC vsce_status_t
 vsce_uokms_wrap_rotation_setup_defaults(vsce_uokms_wrap_rotation_t *self) {
 
@@ -322,9 +331,7 @@ vsce_uokms_wrap_rotation_setup_defaults(vsce_uokms_wrap_rotation_t *self) {
 }
 
 //
-//  Sets client private and server public key
-//  Call this method before any other methods except `update enrollment record` and `generate client private key`
-//  This function should be called only once
+//  Sets update token. Should be called only once and before any other function
 //
 VSCE_PUBLIC vsce_status_t
 vsce_uokms_wrap_rotation_set_update_token(vsce_uokms_wrap_rotation_t *self, vsc_data_t update_token) {
@@ -353,11 +360,16 @@ VSCE_PUBLIC vsce_status_t
 vsce_uokms_wrap_rotation_update_wrap(vsce_uokms_wrap_rotation_t *self, vsc_data_t wrap, vsc_buffer_t *new_wrap) {
 
     VSCE_ASSERT_PTR(self);
-    VSCE_ASSERT(vsc_data_is_valid(wrap) && wrap.len == vsce_phe_common_PHE_PUBLIC_KEY_LENGTH);
+    VSCE_ASSERT(vsc_data_is_valid(wrap));
     VSCE_ASSERT(vsc_buffer_len(new_wrap) == 0);
     VSCE_ASSERT(vsc_buffer_unused_len(new_wrap) >= vsce_phe_common_PHE_PUBLIC_KEY_LENGTH);
 
     vsce_status_t status = vsce_status_SUCCESS;
+
+    if (wrap.len != vsce_phe_common_PHE_PUBLIC_KEY_LENGTH) {
+        status = vsce_status_ERROR_INVALID_PUBLIC_KEY;
+        goto err1;
+    }
 
     mbedtls_ecp_point W;
     mbedtls_ecp_point_init(&W);
@@ -390,6 +402,8 @@ vsce_uokms_wrap_rotation_update_wrap(vsce_uokms_wrap_rotation_t *self, vsc_data_
 
 err:
     mbedtls_ecp_point_free(&W);
+
+err1:
 
     return status;
 }

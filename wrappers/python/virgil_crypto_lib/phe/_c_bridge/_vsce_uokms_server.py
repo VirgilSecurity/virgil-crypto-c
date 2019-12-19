@@ -45,6 +45,7 @@ class vsce_uokms_server_t(Structure):
 
 
 class VsceUokmsServer(object):
+    """Class implements UOKMS for server-side."""
 
     def __init__(self):
         """Create underlying C context."""
@@ -78,6 +79,7 @@ class VsceUokmsServer(object):
         return vsce_uokms_server_use_operation_random(ctx, operation_random)
 
     def vsce_uokms_server_setup_defaults(self, ctx):
+        """Setups dependencies with default values."""
         vsce_uokms_server_setup_defaults = self._lib.vsce_uokms_server_setup_defaults
         vsce_uokms_server_setup_defaults.argtypes = [POINTER(vsce_uokms_server_t)]
         vsce_uokms_server_setup_defaults.restype = c_int
@@ -90,8 +92,15 @@ class VsceUokmsServer(object):
         vsce_uokms_server_generate_server_key_pair.restype = c_int
         return vsce_uokms_server_generate_server_key_pair(ctx, server_private_key, server_public_key)
 
+    def vsce_uokms_server_decrypt_response_len(self, ctx):
+        """Buffer size needed to fit DecryptResponse"""
+        vsce_uokms_server_decrypt_response_len = self._lib.vsce_uokms_server_decrypt_response_len
+        vsce_uokms_server_decrypt_response_len.argtypes = [POINTER(vsce_uokms_server_t)]
+        vsce_uokms_server_decrypt_response_len.restype = c_size_t
+        return vsce_uokms_server_decrypt_response_len(ctx)
+
     def vsce_uokms_server_process_decrypt_request(self, ctx, server_private_key, decrypt_request, decrypt_response):
-        """Generates a new random enrollment and proof for a new user"""
+        """Processed client's decrypt request"""
         vsce_uokms_server_process_decrypt_request = self._lib.vsce_uokms_server_process_decrypt_request
         vsce_uokms_server_process_decrypt_request.argtypes = [POINTER(vsce_uokms_server_t), vsc_data_t, vsc_data_t, POINTER(vsc_buffer_t)]
         vsce_uokms_server_process_decrypt_request.restype = c_int
@@ -103,13 +112,6 @@ class VsceUokmsServer(object):
         vsce_uokms_server_rotate_keys.argtypes = [POINTER(vsce_uokms_server_t), vsc_data_t, POINTER(vsc_buffer_t), POINTER(vsc_buffer_t), POINTER(vsc_buffer_t)]
         vsce_uokms_server_rotate_keys.restype = c_int
         return vsce_uokms_server_rotate_keys(ctx, server_private_key, new_server_private_key, new_server_public_key, update_token)
-
-    def vsce_uokms_server_update_wrap(self, ctx, wrap, update_token, new_wrap):
-        """Updates EnrollmentRecord using server's update token"""
-        vsce_uokms_server_update_wrap = self._lib.vsce_uokms_server_update_wrap
-        vsce_uokms_server_update_wrap.argtypes = [POINTER(vsce_uokms_server_t), vsc_data_t, vsc_data_t, POINTER(vsc_buffer_t)]
-        vsce_uokms_server_update_wrap.restype = c_int
-        return vsce_uokms_server_update_wrap(ctx, wrap, update_token, new_wrap)
 
     def vsce_uokms_server_shallow_copy(self, ctx):
         vsce_uokms_server_shallow_copy = self._lib.vsce_uokms_server_shallow_copy

@@ -38,6 +38,9 @@ package com.virgilsecurity.crypto.phe;
 
 import com.virgilsecurity.crypto.foundation.*;
 
+/*
+* Class implements UOKMS for server-side.
+*/
 public class UokmsServer implements AutoCloseable {
 
     public long cCtx;
@@ -81,6 +84,9 @@ public class UokmsServer implements AutoCloseable {
         PheJNI.INSTANCE.uokmsServer_setOperationRandom(this.cCtx, operationRandom);
     }
 
+    /*
+    * Setups dependencies with default values.
+    */
     public void setupDefaults() throws PheException {
         PheJNI.INSTANCE.uokmsServer_setupDefaults(this.cCtx);
     }
@@ -93,7 +99,14 @@ public class UokmsServer implements AutoCloseable {
     }
 
     /*
-    * Generates a new random enrollment and proof for a new user
+    * Buffer size needed to fit DecryptResponse
+    */
+    public int decryptResponseLen() {
+        return PheJNI.INSTANCE.uokmsServer_decryptResponseLen(this.cCtx);
+    }
+
+    /*
+    * Processed client's decrypt request
     */
     public byte[] processDecryptRequest(byte[] serverPrivateKey, byte[] decryptRequest) throws PheException {
         return PheJNI.INSTANCE.uokmsServer_processDecryptRequest(this.cCtx, serverPrivateKey, decryptRequest);
@@ -104,13 +117,6 @@ public class UokmsServer implements AutoCloseable {
     */
     public UokmsServerRotateKeysResult rotateKeys(byte[] serverPrivateKey) throws PheException {
         return PheJNI.INSTANCE.uokmsServer_rotateKeys(this.cCtx, serverPrivateKey);
-    }
-
-    /*
-    * Updates EnrollmentRecord using server's update token
-    */
-    public byte[] updateWrap(byte[] wrap, byte[] updateToken) throws PheException {
-        return PheJNI.INSTANCE.uokmsServer_updateWrap(this.cCtx, wrap, updateToken);
     }
 }
 

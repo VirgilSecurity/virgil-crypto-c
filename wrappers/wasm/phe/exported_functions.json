@@ -134,11 +134,15 @@
     "_vsce_uokms_server_use_operation_random",
     "_vsce_uokms_server_setup_defaults",
     "_vsce_uokms_server_generate_server_key_pair",
+    "_vsce_uokms_server_decrypt_response_len",
     "_vsce_uokms_server_process_decrypt_request",
     "_vsce_uokms_server_rotate_keys",
-    "_vsce_uokms_server_update_wrap",
     "_vsce_uokms_wrap_rotation_new",
     "_vsce_uokms_wrap_rotation_shallow_copy",
     "_vsce_uokms_wrap_rotation_delete",
+    "_vsce_uokms_wrap_rotation_release_operation_random",
+    "_vsce_uokms_wrap_rotation_use_operation_random",
+    "_vsce_uokms_wrap_rotation_setup_defaults",
+    "_vsce_uokms_wrap_rotation_set_update_token",
     "_vsce_uokms_wrap_rotation_update_wrap"
 ]

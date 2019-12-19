@@ -24,7 +24,11 @@
     <property name="group" class="mbedtls_ecp_group" library="mbedtls" access="readwrite" is_reference="0"/>
 
     <method name="setup defaults">
-        <return enum="status"/>
+        Setups dependencies with default values.
+
+        <return enum="status">
+            - vsce_status_ERROR_RNG_FAILED in case rng failed
+        </return>
     </method>
 
     <method name="generate server key pair">
@@ -44,7 +48,7 @@
         </argument>
 
         <return enum="status">
-            - vsce_error_RNG_ERROR in case rng failed
+            - vsce_status_ERROR_RNG_FAILED in case rng failed
         </return>
     </method>
 
@@ -73,8 +77,8 @@
         </argument>
 
         <return enum="status">
-            - vsce_error_INVALID_PRIVATE_KEY if provided private key in invalid
-            - vsce_error_RNG_ERROR in case rng failed
+            - vsce_status_ERROR_INVALID_PRIVATE_KEY if private key is invalid
+            - vsce_status_ERROR_RNG_FAILED in case rng failed
         </return>
     </method>
 
@@ -100,16 +104,16 @@
         </argument>
         <argument name="verify password response" class="buffer" access="writeonly">
             VerifyPasswordResponse which should be passed to client's check response and decrypt func
-            Buffer size should be >= verify password response len
+            Buffer size should be >= "verify password response len"
 
             <length method="verify password response len"/>
         </argument>
 
         <return enum="status">
-            - vsce_error_PROTOBUF_DECODE_ERROR if input model is invalid
-            - vsce_error_INVALID_ECP if input points are invalid
-            - vsce_error_INVALID_PRIVATE_KEY if provided private key in invalid
-            - vsce_error_RNG_ERROR in case rng failed
+            - vsce_status_ERROR_PROTOBUF_DECODE_FAILED if input model is invalid
+            - vsce_status_ERROR_INVALID_PUBLIC_KEY if input points are invalid
+            - vsce_status_ERROR_INVALID_PRIVATE_KEY if private key is invalid
+            - vsce_status_ERROR_RNG_FAILED in case rng failed
         </return>
     </method>
 
@@ -135,7 +139,7 @@
         </argument>
         <argument name="new server public key" class="buffer" access="writeonly">
             New server's public key for corresponding client
-            Buffer size should be >= .(class_phe_common_constant_phe_public_key_length) password response len
+            Buffer size should be >= .(class_phe_common_constant_phe_public_key_length)
 
             <length constant="phe public key length" class="phe common"/>
         </argument>
@@ -147,8 +151,8 @@
         </argument>
 
         <return enum="status">
-            - vsce_error_INVALID_PRIVATE_KEY if provided private key in invalid
-            - vsce_error_RNG_ERROR in case rng failed
+            - vsce_status_ERROR_INVALID_PRIVATE_KEY if private key is invalid
+            - vsce_status_ERROR_RNG_FAILED in case rng failed
         </return>
     </method>
 

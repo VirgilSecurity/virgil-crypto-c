@@ -475,6 +475,9 @@ vsce_phe_client_did_release_operation_random(vsce_phe_client_t *self) {
     VSCE_UNUSED(self);
 }
 
+//
+//  Setups dependencies with default values.
+//
 VSCE_PUBLIC vsce_status_t
 vsce_phe_client_setup_defaults(vsce_phe_client_t *self) {
 

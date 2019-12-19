@@ -66,6 +66,9 @@ public class PheJNI {
     */
     public native void pheServer_setOperationRandom(long cCtx, Random operationRandom) throws PheException;
 
+    /*
+    * Setups dependencies with default values.
+    */
     public native void pheServer_setupDefaults(long cCtx) throws PheException;
 
     /*
@@ -117,6 +120,9 @@ public class PheJNI {
     */
     public native void pheClient_setOperationRandom(long cCtx, Random operationRandom) throws PheException;
 
+    /*
+    * Setups dependencies with default values.
+    */
     public native void pheClient_setupDefaults(long cCtx) throws PheException;
 
     /*
@@ -222,18 +228,21 @@ public class PheJNI {
     /*
     * Random used for key generation, proofs, etc.
     */
-    public native void uokmsClient_setRandom(long cCtx, Random random);
+    public native void uokmsClient_setRandom(long cCtx, Random random) throws PheException;
 
     /*
     * Random used for crypto operations to make them const-time
     */
-    public native void uokmsClient_setOperationRandom(long cCtx, Random operationRandom);
+    public native void uokmsClient_setOperationRandom(long cCtx, Random operationRandom) throws PheException;
 
+    /*
+    * Setups dependencies with default values.
+    */
     public native void uokmsClient_setupDefaults(long cCtx) throws PheException;
 
     /*
     * Sets client private and server public key
-    * Call this method before any other methods except `update enrollment record` and `generate client private key`
+    * Call this method before any other methods
     * This function should be called only once
     */
     public native void uokmsClient_setKeys(long cCtx, byte[] clientPrivateKey, byte[] serverPublicKey) throws PheException;
@@ -244,25 +253,24 @@ public class PheJNI {
     public native byte[] uokmsClient_generateClientPrivateKey(long cCtx) throws PheException;
 
     /*
-    * Uses fresh EnrollmentResponse from PHE server (see get enrollment func) and user's password (or its hash) to create
-    * a new EnrollmentRecord which is then supposed to be stored in a database for further authentication
-    * Also generates a random seed which then can be used to generate symmetric or private key to protect user's data
+    * Generates new encrypt wrap (which should be stored and then used for decryption) + encryption key
+    * of "encryption key len" that can be used for symmetric encryption
     */
     public native UokmsClientGenerateEncryptWrapResult uokmsClient_generateEncryptWrap(long cCtx, int encryptionKeyLen) throws PheException;
 
     /*
-    * Decrypts data (and verifies additional data) using account key
+    * Generates request to decrypt data, this request should be sent to the server.
+    * Server response is then passed to "process decrypt response" where encryption key can be decapsulated
     */
     public native UokmsClientGenerateDecryptRequestResult uokmsClient_generateDecryptRequest(long cCtx, byte[] wrap) throws PheException;
 
     /*
-    * Decrypts data (and verifies additional data) using account key
+    * Processed server response, checks server proof and decapsulates encryption key
     */
-    public native byte[] uokmsClient_processDecryptResponse(long cCtx, byte[] wrap, byte[] decryptResponse, byte[] deblindFactor, int encryptionKeyLen) throws PheException;
+    public native byte[] uokmsClient_processDecryptResponse(long cCtx, byte[] wrap, byte[] decryptRequest, byte[] decryptResponse, byte[] deblindFactor, int encryptionKeyLen) throws PheException;
 
     /*
-    * Updates client's private key and server's public key using server's update token
-    * Use output values to instantiate new client instance with new keys
+    * Rotates client and server keys using given update token obtained from server
     */
     public native UokmsClientRotateKeysResult uokmsClient_rotateKeys(long cCtx, byte[] updateToken) throws PheException;
 
@@ -273,13 +281,16 @@ public class PheJNI {
     /*
     * Random used for key generation, proofs, etc.
     */
-    public native void uokmsServer_setRandom(long cCtx, Random random);
+    public native void uokmsServer_setRandom(long cCtx, Random random) throws PheException;
 
     /*
     * Random used for crypto operations to make them const-time
     */
-    public native void uokmsServer_setOperationRandom(long cCtx, Random operationRandom);
+    public native void uokmsServer_setOperationRandom(long cCtx, Random operationRandom) throws PheException;
 
+    /*
+    * Setups dependencies with default values.
+    */
     public native void uokmsServer_setupDefaults(long cCtx) throws PheException;
 
     /*
@@ -288,7 +299,12 @@ public class PheJNI {
     public native UokmsServerGenerateServerKeyPairResult uokmsServer_generateServerKeyPair(long cCtx) throws PheException;
 
     /*
-    * Generates a new random enrollment and proof for a new user
+    * Buffer size needed to fit DecryptResponse
+    */
+    public native int uokmsServer_decryptResponseLen(long cCtx);
+
+    /*
+    * Processed client's decrypt request
     */
     public native byte[] uokmsServer_processDecryptRequest(long cCtx, byte[] serverPrivateKey, byte[] decryptRequest) throws PheException;
 
@@ -297,18 +313,28 @@ public class PheJNI {
     */
     public native UokmsServerRotateKeysResult uokmsServer_rotateKeys(long cCtx, byte[] serverPrivateKey) throws PheException;
 
-    /*
-    * Updates EnrollmentRecord using server's update token
-    */
-    public native byte[] uokmsServer_updateWrap(long cCtx, byte[] wrap, byte[] updateToken) throws PheException;
-
     public native long uokmsWrapRotation_new();
 
     public native void uokmsWrapRotation_close(long cCtx);
 
     /*
+    * Random used for crypto operations to make them const-time
+    */
+    public native void uokmsWrapRotation_setOperationRandom(long cCtx, Random operationRandom);
+
+    /*
+    * Setups dependencies with default values.
+    */
+    public native void uokmsWrapRotation_setupDefaults(long cCtx) throws PheException;
+
+    /*
+    * Sets update token. Should be called only once and before any other function
+    */
+    public native void uokmsWrapRotation_setUpdateToken(long cCtx, byte[] updateToken) throws PheException;
+
+    /*
     * Updates EnrollmentRecord using server's update token
     */
-    public native byte[] uokmsWrapRotation_updateWrap(long cCtx, byte[] wrap, byte[] updateToken) throws PheException;
+    public native byte[] uokmsWrapRotation_updateWrap(long cCtx, byte[] wrap) throws PheException;
 }
 

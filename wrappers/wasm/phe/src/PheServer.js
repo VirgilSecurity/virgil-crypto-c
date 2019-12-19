@@ -109,6 +109,9 @@ const initPheServer = (Module, modules) => {
             Module._vsce_phe_server_use_operation_random(this.ctxPtr, operationRandom.ctxPtr)
         }
 
+        /**
+         * Setups dependencies with default values.
+         */
         setupDefaults() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             const proxyResult = Module._vsce_phe_server_setup_defaults(this.ctxPtr);

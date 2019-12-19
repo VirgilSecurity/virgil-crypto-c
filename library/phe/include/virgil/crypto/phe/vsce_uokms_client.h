@@ -44,6 +44,12 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
+
+//  @description
+// --------------------------------------------------------------------------
+//  Class implements UOKMS for client-side.
+// --------------------------------------------------------------------------
+
 #ifndef VSCE_UOKMS_CLIENT_H_INCLUDED
 #define VSCE_UOKMS_CLIENT_H_INCLUDED
 
@@ -179,12 +185,15 @@ vsce_uokms_client_take_operation_random(vsce_uokms_client_t *self, vscf_impl_t *
 VSCE_PUBLIC void
 vsce_uokms_client_release_operation_random(vsce_uokms_client_t *self);
 
+//
+//  Setups dependencies with default values.
+//
 VSCE_PUBLIC vsce_status_t
 vsce_uokms_client_setup_defaults(vsce_uokms_client_t *self) VSCE_NODISCARD;
 
 //
 //  Sets client private and server public key
-//  Call this method before any other methods except `update enrollment record` and `generate client private key`
+//  Call this method before any other methods
 //  This function should be called only once
 //
 VSCE_PUBLIC vsce_status_t
@@ -199,23 +208,23 @@ vsce_uokms_client_generate_client_private_key(vsce_uokms_client_t *self,
         vsc_buffer_t *client_private_key) VSCE_NODISCARD;
 
 //
-//  Uses fresh EnrollmentResponse from PHE server (see get enrollment func) and user's password (or its hash) to create
-//  a new EnrollmentRecord which is then supposed to be stored in a database for further authentication
-//  Also generates a random seed which then can be used to generate symmetric or private key to protect user's data
+//  Generates new encrypt wrap (which should be stored and then used for decryption) + encryption key
+//  of "encryption key len" that can be used for symmetric encryption
 //
 VSCE_PUBLIC vsce_status_t
 vsce_uokms_client_generate_encrypt_wrap(vsce_uokms_client_t *self, vsc_buffer_t *wrap, size_t encryption_key_len,
         vsc_buffer_t *encryption_key) VSCE_NODISCARD;
 
 //
-//  Decrypts data (and verifies additional data) using account key
+//  Generates request to decrypt data, this request should be sent to the server.
+//  Server response is then passed to "process decrypt response" where encryption key can be decapsulated
 //
 VSCE_PUBLIC vsce_status_t
 vsce_uokms_client_generate_decrypt_request(vsce_uokms_client_t *self, vsc_data_t wrap, vsc_buffer_t *deblind_factor,
         vsc_buffer_t *decrypt_request) VSCE_NODISCARD;
 
 //
-//  Decrypts data (and verifies additional data) using account key
+//  Processed server response, checks server proof and decapsulates encryption key
 //
 VSCE_PUBLIC vsce_status_t
 vsce_uokms_client_process_decrypt_response(vsce_uokms_client_t *self, vsc_data_t wrap, vsc_data_t decrypt_request,
@@ -223,8 +232,7 @@ vsce_uokms_client_process_decrypt_response(vsce_uokms_client_t *self, vsc_data_t
         vsc_buffer_t *encryption_key) VSCE_NODISCARD;
 
 //
-//  Updates client's private key and server's public key using server's update token
-//  Use output values to instantiate new client instance with new keys
+//  Rotates client and server keys using given update token obtained from server
 //
 VSCE_PUBLIC vsce_status_t
 vsce_uokms_client_rotate_keys(vsce_uokms_client_t *self, vsc_data_t update_token, vsc_buffer_t *new_client_private_key,

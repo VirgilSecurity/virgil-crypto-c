@@ -1,4 +1,5 @@
 <class name="uokms server" context="internal">
+    Class implements UOKMS for server-side.
 
     <require class="phe common" scope="public"/>
     <require impl="ctr drbg" project="foundation" scope="private"/>
@@ -23,7 +24,11 @@
     <property name="group" class="mbedtls_ecp_group" library="mbedtls" access="readwrite" is_reference="0"/>
 
     <method name="setup defaults">
-        <return enum="status"/>
+        Setups dependencies with default values.
+
+        <return enum="status">
+            - vsce_status_ERROR_RNG_FAILED in case rng failed
+        </return>
     </method>
 
     <method name="generate server key pair">
@@ -43,36 +48,37 @@
         </argument>
 
         <return enum="status">
-            - vsce_error_RNG_ERROR in case rng failed
+            - vsce_status_ERROR_RNG_FAILED in case rng failed
         </return>
     </method>
 
     <method name="decrypt response len">
-        Buffer size needed to fit VerifyPasswordResponse
+        Buffer size needed to fit DecryptResponse
 
         <return type="size">
-            Buffer size needed to fit VerifyPasswordResponse
+            Buffer size needed to fit DecryptResponse
         </return>
     </method>
 
     <method name="process decrypt request">
-        Generates a new random enrollment and proof for a new user
+        Processed client's decrypt request
 
         <argument name="server private key" class="data">
             Server's private key for corresponding client
         </argument>
         <argument name="decrypt request" class="data">
+            Decrypt request from the client
         </argument>
         <argument name="decrypt response" class="buffer" access="writeonly">
-            VerifyPasswordResponse which should be passed to client's check response and decrypt func
-            Buffer size should be >= verify password response len
+            Decrypt response sent to client
+            Buffer size should be >= "decrypt response len"
 
             <length method="decrypt response len"/>
         </argument>
 
         <return enum="status">
-            - vsce_error_INVALID_PRIVATE_KEY if provided private key in invalid
-            - vsce_error_RNG_ERROR in case rng failed
+            - vsce_status_ERROR_INVALID_PRIVATE_KEY if private key is invalid
+            - vsce_status_ERROR_INVALID_PUBLIC_KEY if input points are invalid
         </return>
     </method>
 
@@ -90,20 +96,20 @@
         </argument>
         <argument name="new server public key" class="buffer" access="writeonly">
             New server's public key for corresponding client
-            Buffer size should be >= .(class_phe_common_constant_phe_public_key_length) password response len
+            Buffer size should be >= .(class_phe_common_constant_phe_public_key_length)
 
             <length constant="phe public key length" class="phe common"/>
         </argument>
         <argument name="update token" class="buffer" access="writeonly">
             Update token that should be passed to client
-            Buffer size should be >= update token len
+            Buffer size should be >= "phe public key length"
 
             <length constant="phe public key length" class="phe common"/>
         </argument>
 
         <return enum="status">
-            - vsce_error_INVALID_PRIVATE_KEY if provided private key in invalid
-            - vsce_error_RNG_ERROR in case rng failed
+            - vsce_status_ERROR_INVALID_PRIVATE_KEY if private key is invalid
+            - vsce_status_ERROR_RNG_FAILED in case rng failed
         </return>
     </method>
 

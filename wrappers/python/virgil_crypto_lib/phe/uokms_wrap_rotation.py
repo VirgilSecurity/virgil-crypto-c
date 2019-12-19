@@ -35,13 +35,14 @@
 
 from ctypes import *
 from ._c_bridge import VsceUokmsWrapRotation
-from .common import Common
-from virgil_crypto_lib.common._c_bridge import Data
-from virgil_crypto_lib.common._c_bridge import Buffer
 from ._c_bridge import VsceStatus
+from virgil_crypto_lib.common._c_bridge import Data
+from .common import Common
+from virgil_crypto_lib.common._c_bridge import Buffer
 
 
 class UokmsWrapRotation(object):
+    """Implements wrap rotation."""
 
     def __init__(self):
         """Create underlying C context."""
@@ -52,12 +53,26 @@ class UokmsWrapRotation(object):
         """Destroy underlying C context."""
         self._lib_vsce_uokms_wrap_rotation.vsce_uokms_wrap_rotation_delete(self.ctx)
 
-    def update_wrap(self, wrap, update_token):
+    def set_operation_random(self, operation_random):
+        """Random used for crypto operations to make them const-time"""
+        self._lib_vsce_uokms_wrap_rotation.vsce_uokms_wrap_rotation_use_operation_random(self.ctx, operation_random.c_impl)
+
+    def setup_defaults(self):
+        """Setups dependencies with default values."""
+        status = self._lib_vsce_uokms_wrap_rotation.vsce_uokms_wrap_rotation_setup_defaults(self.ctx)
+        VsceStatus.handle_status(status)
+
+    def set_update_token(self, update_token):
+        """Sets update token. Should be called only once and before any other function"""
+        d_update_token = Data(update_token)
+        status = self._lib_vsce_uokms_wrap_rotation.vsce_uokms_wrap_rotation_set_update_token(self.ctx, d_update_token.data)
+        VsceStatus.handle_status(status)
+
+    def update_wrap(self, wrap):
         """Updates EnrollmentRecord using server's update token"""
         d_wrap = Data(wrap)
-        d_update_token = Data(update_token)
         new_wrap = Buffer(Common.PHE_PUBLIC_KEY_LENGTH)
-        status = self._lib_vsce_uokms_wrap_rotation.vsce_uokms_wrap_rotation_update_wrap(self.ctx, d_wrap.data, d_update_token.data, new_wrap.c_buffer)
+        status = self._lib_vsce_uokms_wrap_rotation.vsce_uokms_wrap_rotation_update_wrap(self.ctx, d_wrap.data, new_wrap.c_buffer)
         VsceStatus.handle_status(status)
         return new_wrap.get_bytes()
 

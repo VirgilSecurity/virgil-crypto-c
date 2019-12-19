@@ -44,6 +44,12 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
+
+//  @description
+// --------------------------------------------------------------------------
+//  Class implements UOKMS for server-side.
+// --------------------------------------------------------------------------
+
 #ifndef VSCE_UOKMS_SERVER_H_INCLUDED
 #define VSCE_UOKMS_SERVER_H_INCLUDED
 
@@ -179,6 +185,9 @@ vsce_uokms_server_take_operation_random(vsce_uokms_server_t *self, vscf_impl_t *
 VSCE_PUBLIC void
 vsce_uokms_server_release_operation_random(vsce_uokms_server_t *self);
 
+//
+//  Setups dependencies with default values.
+//
 VSCE_PUBLIC vsce_status_t
 vsce_uokms_server_setup_defaults(vsce_uokms_server_t *self) VSCE_NODISCARD;
 
@@ -190,13 +199,13 @@ vsce_uokms_server_generate_server_key_pair(vsce_uokms_server_t *self, vsc_buffer
         vsc_buffer_t *server_public_key) VSCE_NODISCARD;
 
 //
-//  Buffer size needed to fit VerifyPasswordResponse
+//  Buffer size needed to fit DecryptResponse
 //
 VSCE_PUBLIC size_t
 vsce_uokms_server_decrypt_response_len(vsce_uokms_server_t *self);
 
 //
-//  Generates a new random enrollment and proof for a new user
+//  Processed client's decrypt request
 //
 VSCE_PUBLIC vsce_status_t
 vsce_uokms_server_process_decrypt_request(vsce_uokms_server_t *self, vsc_data_t server_private_key,

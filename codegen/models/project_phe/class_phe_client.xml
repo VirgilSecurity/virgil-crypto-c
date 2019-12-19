@@ -35,7 +35,11 @@
     <property name="minus one" class="mbedtls_mpi" library="mbedtls" access="readwrite" is_reference="0"/>
 
     <method name="setup defaults">
-        <return enum="status"/>
+        Setups dependencies with default values.
+
+        <return enum="status">
+            - vsce_status_ERROR_RNG_FAILED in case rng failed
+        </return>
     </method>
 
     <method name="set keys">
@@ -52,9 +56,8 @@
         </argument>
 
         <return enum="status">
-            - vsce_SUCCESS if operation succeeded
-            - vsce_error_INVALID_PRIVATE_KEY if private key is invalid
-            - vsce_error_INVALID_ECP if public key is invalid
+            - vsce_status_ERROR_INVALID_PRIVATE_KEY if private key is invalid
+            - vsce_status_ERROR_INVALID_PUBLIC_KEY if public key is invalid
         </return>
     </method>
 
@@ -62,14 +65,14 @@
         Generates client private key
 
         <argument name="client private key" class="buffer" access="writeonly">
-            Client's private key phe_common_constant_phe_private_key_length
+            Client's private key
             Buffer size should be >= .(class_phe_common_constant_phe_private_key_length)
 
             <length constant="phe private key length" class="phe common"/>
         </argument>
 
         <return enum="status">
-            - vsce_error_RNG_ERROR in case rng failed
+            - vsce_status_ERROR_RNG_FAILED in case rng failed
         </return>
     </method>
 
@@ -106,10 +109,10 @@
         </argument>
 
         <return enum="status">
-            - vsce_error_PROTOBUF_DECODE_ERROR if input model is invalid
-            - vsce_error_INVALID_ECP if input points are invalid
-            - vsce_error_INVALID_SUCCESS_PROOF if provided proof is not valid
-            - vsce_error_RNG_ERROR if rng failed
+            - vsce_status_ERROR_PROTOBUF_DECODE_FAILED if input model is invalid
+            - vsce_status_ERROR_INVALID_PUBLIC_KEY if input points are invalid
+            - vsce_status_ERROR_INVALID_SUCCESS_PROOF if provided proof is not valid
+            - vsce_status_ERROR_RNG_FAILED in case rng failed
         </return>
     </method>
 
@@ -138,8 +141,8 @@
         </argument>
 
         <return enum="status">
-            - vsce_error_PROTOBUF_DECODE_ERROR if input model is invalid
-            - vsce_error_INVALID_ECP if input points are invalid
+            - vsce_status_ERROR_PROTOBUF_DECODE_FAILED if input model is invalid
+            - vsce_status_ERROR_INVALID_PUBLIC_KEY if input points are invalid
         </return>
     </method>
 
@@ -165,11 +168,11 @@
         </argument>
 
         <return enum="status">
-            - vsce_error_PROTOBUF_DECODE_ERROR if input model is invalid
-            - vsce_error_INVALID_ECP if input points are invalid
-            - vsce_error_INVALID_PRIVATE_KEY if provided private key in invalid
-            - vsce_error_INVALID_SUCCESS_PROOF if provided proof is not valid
-            - vsce_error_INVALID_FAIL_PROOF if provided proof is not valid
+            - vsce_status_ERROR_PROTOBUF_DECODE_FAILED if input model is invalid
+            - vsce_status_ERROR_INVALID_PUBLIC_KEY if input points are invalid
+            - vsce_status_ERROR_INVALID_PRIVATE_KEY if private key is invalid
+            - vsce_status_ERROR_INVALID_SUCCESS_PROOF if provided proof is not valid
+            - vsce_status_ERROR_INVALID_FAIL_PROOF if provided proof is not valid
         </return>
     </method>
 
@@ -194,7 +197,8 @@
         </argument>
 
         <return enum="status">
-
+            - vsce_status_ERROR_PROTOBUF_DECODE_FAILED if input model is invalid
+            - vsce_status_ERROR_INVALID_PRIVATE_KEY if private key is invalid
         </return>
     </method>
 
@@ -215,9 +219,9 @@
         </argument>
 
         <return enum="status">
-            - vsce_error_PROTOBUF_DECODE_ERROR if input model is invalid
-            - vsce_error_INVALID_ECP if input points are invalid
-            - vsce_error_INVALID_PRIVATE_KEY if provided private key in invalid
+            - vsce_status_ERROR_PROTOBUF_DECODE_FAILED if input model is invalid
+            - vsce_status_ERROR_INVALID_PUBLIC_KEY if input points are invalid
+            - vsce_status_ERROR_INVALID_PRIVATE_KEY if private key is invalid
         </return>
     </method>
 

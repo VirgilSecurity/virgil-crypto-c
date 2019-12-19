@@ -38,6 +38,9 @@
 const precondition = require('./precondition');
 
 const initUokmsWrapRotation = (Module, modules) => {
+    /**
+     * Implements wrap rotation.
+     */
     class UokmsWrapRotation {
 
         /**
@@ -86,24 +89,30 @@ const initUokmsWrapRotation = (Module, modules) => {
         }
 
         /**
-         * Updates EnrollmentRecord using server's update token
+         * Random used for crypto operations to make them const-time
          */
-        updateWrap(wrap, updateToken) {
+        set operationRandom(operationRandom) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-            precondition.ensureByteArray('wrap', wrap);
+            precondition.ensureImplementInterface('operationRandom', operationRandom, 'Foundation.Random', modules.FoundationInterfaceTag.RANDOM, modules.FoundationInterface);
+            Module._vsce_uokms_wrap_rotation_release_operation_random(this.ctxPtr)
+            Module._vsce_uokms_wrap_rotation_use_operation_random(this.ctxPtr, operationRandom.ctxPtr)
+        }
+
+        /**
+         * Setups dependencies with default values.
+         */
+        setupDefaults() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            const proxyResult = Module._vsce_uokms_wrap_rotation_setup_defaults(this.ctxPtr);
+            modules.PheError.handleStatusCode(proxyResult);
+        }
+
+        /**
+         * Sets update token. Should be called only once and before any other function
+         */
+        setUpdateToken(updateToken) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('updateToken', updateToken);
-
-            //  Copy bytes from JS memory to the WASM memory.
-            const wrapSize = wrap.length * wrap.BYTES_PER_ELEMENT;
-            const wrapPtr = Module._malloc(wrapSize);
-            Module.HEAP8.set(wrap, wrapPtr);
-
-            //  Create C structure vsc_data_t.
-            const wrapCtxSize = Module._vsc_data_ctx_size();
-            const wrapCtxPtr = Module._malloc(wrapCtxSize);
-
-            //  Point created vsc_data_t object to the copied bytes.
-            Module._vsc_data(wrapCtxPtr, wrapPtr, wrapSize);
 
             //  Copy bytes from JS memory to the WASM memory.
             const updateTokenSize = updateToken.length * updateToken.BYTES_PER_ELEMENT;
@@ -117,11 +126,39 @@ const initUokmsWrapRotation = (Module, modules) => {
             //  Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(updateTokenCtxPtr, updateTokenPtr, updateTokenSize);
 
+            try {
+                const proxyResult = Module._vsce_uokms_wrap_rotation_set_update_token(this.ctxPtr, updateTokenCtxPtr);
+                modules.PheError.handleStatusCode(proxyResult);
+            } finally {
+                Module._free(updateTokenPtr);
+                Module._free(updateTokenCtxPtr);
+            }
+        }
+
+        /**
+         * Updates EnrollmentRecord using server's update token
+         */
+        updateWrap(wrap) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureByteArray('wrap', wrap);
+
+            //  Copy bytes from JS memory to the WASM memory.
+            const wrapSize = wrap.length * wrap.BYTES_PER_ELEMENT;
+            const wrapPtr = Module._malloc(wrapSize);
+            Module.HEAP8.set(wrap, wrapPtr);
+
+            //  Create C structure vsc_data_t.
+            const wrapCtxSize = Module._vsc_data_ctx_size();
+            const wrapCtxPtr = Module._malloc(wrapCtxSize);
+
+            //  Point created vsc_data_t object to the copied bytes.
+            Module._vsc_data(wrapCtxPtr, wrapPtr, wrapSize);
+
             const newWrapCapacity = modules.PheCommon.PHE_PUBLIC_KEY_LENGTH;
             const newWrapCtxPtr = Module._vsc_buffer_new_with_capacity(newWrapCapacity);
 
             try {
-                const proxyResult = Module._vsce_uokms_wrap_rotation_update_wrap(this.ctxPtr, wrapCtxPtr, updateTokenCtxPtr, newWrapCtxPtr);
+                const proxyResult = Module._vsce_uokms_wrap_rotation_update_wrap(this.ctxPtr, wrapCtxPtr, newWrapCtxPtr);
                 modules.PheError.handleStatusCode(proxyResult);
 
                 const newWrapPtr = Module._vsc_buffer_bytes(newWrapCtxPtr);
@@ -131,8 +168,6 @@ const initUokmsWrapRotation = (Module, modules) => {
             } finally {
                 Module._free(wrapPtr);
                 Module._free(wrapCtxPtr);
-                Module._free(updateTokenPtr);
-                Module._free(updateTokenCtxPtr);
                 Module._vsc_buffer_delete(newWrapCtxPtr);
             }
         }

@@ -37,6 +37,12 @@
 // clang-format off
 
 
+//  @description
+// --------------------------------------------------------------------------
+//  Class implements UOKMS for client-side.
+// --------------------------------------------------------------------------
+
+
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -397,7 +403,7 @@ vsce_uokms_client_cleanup_ctx(vsce_uokms_client_t *self) {
 
     mbedtls_mpi_free(&self->kc_private);
     mbedtls_ecp_point_free(&self->ks_public);
-    mbedtls_ecp_point_free(&self->k_public);}
+}
 
 //
 //  This method is called when interface 'random' was setup.
@@ -445,6 +451,9 @@ vsce_uokms_client_did_release_operation_random(vsce_uokms_client_t *self) {
     VSCE_ASSERT_PTR(self);
 }
 
+//
+//  Setups dependencies with default values.
+//
 VSCE_PUBLIC vsce_status_t
 vsce_uokms_client_setup_defaults(vsce_uokms_client_t *self) {
 
@@ -475,7 +484,7 @@ vsce_uokms_client_setup_defaults(vsce_uokms_client_t *self) {
 
 //
 //  Sets client private and server public key
-//  Call this method before any other methods except `update enrollment record` and `generate client private key`
+//  Call this method before any other methods
 //  This function should be called only once
 //
 VSCE_PUBLIC vsce_status_t
@@ -495,7 +504,6 @@ vsce_uokms_client_set_keys(vsce_uokms_client_t *self, vsc_data_t client_private_
 
     mbedtls_status = mbedtls_mpi_read_binary(&self->kc_private, client_private_key.bytes, client_private_key.len);
     VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
-
     mbedtls_status = mbedtls_ecp_check_privkey(&self->group, &self->kc_private);
     if (mbedtls_status != 0) {
         status = vsce_status_ERROR_INVALID_PRIVATE_KEY;
@@ -564,9 +572,8 @@ err:
 }
 
 //
-//  Uses fresh EnrollmentResponse from PHE server (see get enrollment func) and user's password (or its hash) to create
-//  a new EnrollmentRecord which is then supposed to be stored in a database for further authentication
-//  Also generates a random seed which then can be used to generate symmetric or private key to protect user's data
+//  Generates new encrypt wrap (which should be stored and then used for decryption) + encryption key
+//  of "encryption key len" that can be used for symmetric encryption
 //
 VSCE_PUBLIC vsce_status_t
 vsce_uokms_client_generate_encrypt_wrap(
@@ -649,7 +656,8 @@ err:
 }
 
 //
-//  Decrypts data (and verifies additional data) using account key
+//  Generates request to decrypt data, this request should be sent to the server.
+//  Server response is then passed to "process decrypt response" where encryption key can be decapsulated
 //
 VSCE_PUBLIC vsce_status_t
 vsce_uokms_client_generate_decrypt_request(
@@ -657,7 +665,7 @@ vsce_uokms_client_generate_decrypt_request(
 
     VSCE_ASSERT_PTR(self);
     VSCE_ASSERT(self->keys_are_set);
-    VSCE_ASSERT(vsc_data_is_valid(wrap) && wrap.len == vsce_phe_common_PHE_PUBLIC_KEY_LENGTH);
+    VSCE_ASSERT(vsc_data_is_valid(wrap));
     VSCE_ASSERT_PTR(deblind_factor);
     VSCE_ASSERT(vsc_buffer_len(deblind_factor) == 0 &&
                 vsc_buffer_capacity(deblind_factor) >= vsce_phe_common_PHE_PRIVATE_KEY_LENGTH);
@@ -668,6 +676,11 @@ vsce_uokms_client_generate_decrypt_request(
     vsc_buffer_make_secure(deblind_factor);
 
     vsce_status_t status = vsce_status_SUCCESS;
+
+    if (wrap.len != vsce_phe_common_PHE_PUBLIC_KEY_LENGTH) {
+        status = vsce_status_ERROR_INVALID_PUBLIC_KEY;
+        goto err;
+    }
 
     mbedtls_ecp_point W;
     mbedtls_ecp_point_init(&W);
@@ -726,11 +739,13 @@ err2:
 err1:
     mbedtls_ecp_point_free(&W);
 
+err:
+
     return status;
 }
 
 //
-//  Decrypts data (and verifies additional data) using account key
+//  Processed server response, checks server proof and decapsulates encryption key
 //
 VSCE_PUBLIC vsce_status_t
 vsce_uokms_client_process_decrypt_response(vsce_uokms_client_t *self, vsc_data_t wrap, vsc_data_t decrypt_request,
@@ -739,9 +754,8 @@ vsce_uokms_client_process_decrypt_response(vsce_uokms_client_t *self, vsc_data_t
 
     VSCE_ASSERT_PTR(self);
     VSCE_ASSERT(self->keys_are_set);
-    // FIXME
     VSCE_ASSERT(vsc_data_is_valid(wrap) && wrap.len == vsce_phe_common_PHE_PUBLIC_KEY_LENGTH);
-    VSCE_ASSERT(vsc_data_is_valid(decrypt_request));
+    VSCE_ASSERT(vsc_data_is_valid(decrypt_request) && decrypt_request.len == vsce_phe_common_PHE_PUBLIC_KEY_LENGTH);
     VSCE_ASSERT(vsc_data_is_valid(decrypt_response));
     VSCE_ASSERT(vsc_data_is_valid(deblind_factor) && deblind_factor.len == vsce_phe_common_PHE_PRIVATE_KEY_LENGTH);
     VSCE_ASSERT(encryption_key_len > 0);
@@ -860,8 +874,7 @@ pb_err:
 }
 
 //
-//  Updates client's private key and server's public key using server's update token
-//  Use output values to instantiate new client instance with new keys
+//  Rotates client and server keys using given update token obtained from server
 //
 VSCE_PUBLIC vsce_status_t
 vsce_uokms_client_rotate_keys(vsce_uokms_client_t *self, vsc_data_t update_token, vsc_buffer_t *new_client_private_key,
@@ -869,16 +882,23 @@ vsce_uokms_client_rotate_keys(vsce_uokms_client_t *self, vsc_data_t update_token
 
     VSCE_ASSERT_PTR(self);
     VSCE_ASSERT(self->keys_are_set);
-    VSCE_ASSERT(update_token.len == vsce_phe_common_PHE_PRIVATE_KEY_LENGTH);
     VSCE_ASSERT(vsc_buffer_len(new_client_private_key) == 0);
     VSCE_ASSERT(vsc_buffer_unused_len(new_client_private_key) >= vsce_phe_common_PHE_PRIVATE_KEY_LENGTH);
     vsc_buffer_make_secure(new_client_private_key);
     VSCE_ASSERT(vsc_buffer_len(new_server_public_key) == 0);
     VSCE_ASSERT(vsc_buffer_unused_len(new_server_public_key) >= vsce_phe_common_PHE_PUBLIC_KEY_LENGTH);
 
+    vsc_buffer_make_secure(new_client_private_key);
+    vsc_buffer_make_secure(new_server_public_key);
+
     mbedtls_ecp_group *op_group = vsce_uokms_client_get_op_group(self);
 
     vsce_status_t status = vsce_status_SUCCESS;
+
+    if (update_token.len != vsce_phe_common_PHE_PRIVATE_KEY_LENGTH) {
+        status = vsce_status_ERROR_INVALID_PUBLIC_KEY;
+        goto err;
+    }
 
     mbedtls_mpi a;
     mbedtls_mpi_init(&a);
@@ -886,7 +906,6 @@ vsce_uokms_client_rotate_keys(vsce_uokms_client_t *self, vsc_data_t update_token
     int mbedtls_status = 0;
     mbedtls_status = mbedtls_mpi_read_binary(&a, update_token.bytes, update_token.len);
     VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
-
     mbedtls_status = mbedtls_ecp_check_privkey(&self->group, &a);
     if (mbedtls_status != 0) {
         status = vsce_status_ERROR_INVALID_PRIVATE_KEY;
@@ -934,6 +953,7 @@ vsce_uokms_client_rotate_keys(vsce_uokms_client_t *self, vsc_data_t update_token
 priv_err:
     mbedtls_mpi_free(&a);
 
+err:
     vsce_uokms_client_free_op_group(op_group);
 
     return status;

@@ -38,6 +38,9 @@ package com.virgilsecurity.crypto.phe;
 
 import com.virgilsecurity.crypto.foundation.*;
 
+/*
+* Implements wrap rotation.
+*/
 public class UokmsWrapRotation implements AutoCloseable {
 
     public long cCtx;
@@ -68,10 +71,31 @@ public class UokmsWrapRotation implements AutoCloseable {
     }
 
     /*
+    * Random used for crypto operations to make them const-time
+    */
+    public void setOperationRandom(Random operationRandom) {
+        PheJNI.INSTANCE.uokmsWrapRotation_setOperationRandom(this.cCtx, operationRandom);
+    }
+
+    /*
+    * Setups dependencies with default values.
+    */
+    public void setupDefaults() throws PheException {
+        PheJNI.INSTANCE.uokmsWrapRotation_setupDefaults(this.cCtx);
+    }
+
+    /*
+    * Sets update token. Should be called only once and before any other function
+    */
+    public void setUpdateToken(byte[] updateToken) throws PheException {
+        PheJNI.INSTANCE.uokmsWrapRotation_setUpdateToken(this.cCtx, updateToken);
+    }
+
+    /*
     * Updates EnrollmentRecord using server's update token
     */
-    public byte[] updateWrap(byte[] wrap, byte[] updateToken) throws PheException {
-        return PheJNI.INSTANCE.uokmsWrapRotation_updateWrap(this.cCtx, wrap, updateToken);
+    public byte[] updateWrap(byte[] wrap) throws PheException {
+        return PheJNI.INSTANCE.uokmsWrapRotation_updateWrap(this.cCtx, wrap);
     }
 }
 

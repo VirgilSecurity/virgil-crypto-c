@@ -35,6 +35,7 @@
 
 from virgil_crypto_lib._libs import *
 from ctypes import *
+from virgil_crypto_lib.foundation._c_bridge._vscf_impl import vscf_impl_t
 from virgil_crypto_lib.common._c_bridge import vsc_data_t
 from virgil_crypto_lib.common._c_bridge import vsc_buffer_t
 
@@ -44,6 +45,7 @@ class vsce_uokms_wrap_rotation_t(Structure):
 
 
 class VsceUokmsWrapRotation(object):
+    """Implements wrap rotation."""
 
     def __init__(self):
         """Create underlying C context."""
@@ -62,12 +64,33 @@ class VsceUokmsWrapRotation(object):
         vsce_uokms_wrap_rotation_delete.restype = None
         return vsce_uokms_wrap_rotation_delete(ctx)
 
-    def vsce_uokms_wrap_rotation_update_wrap(self, ctx, wrap, update_token, new_wrap):
+    def vsce_uokms_wrap_rotation_use_operation_random(self, ctx, operation_random):
+        """Random used for crypto operations to make them const-time"""
+        vsce_uokms_wrap_rotation_use_operation_random = self._lib.vsce_uokms_wrap_rotation_use_operation_random
+        vsce_uokms_wrap_rotation_use_operation_random.argtypes = [POINTER(vsce_uokms_wrap_rotation_t), POINTER(vscf_impl_t)]
+        vsce_uokms_wrap_rotation_use_operation_random.restype = None
+        return vsce_uokms_wrap_rotation_use_operation_random(ctx, operation_random)
+
+    def vsce_uokms_wrap_rotation_setup_defaults(self, ctx):
+        """Setups dependencies with default values."""
+        vsce_uokms_wrap_rotation_setup_defaults = self._lib.vsce_uokms_wrap_rotation_setup_defaults
+        vsce_uokms_wrap_rotation_setup_defaults.argtypes = [POINTER(vsce_uokms_wrap_rotation_t)]
+        vsce_uokms_wrap_rotation_setup_defaults.restype = c_int
+        return vsce_uokms_wrap_rotation_setup_defaults(ctx)
+
+    def vsce_uokms_wrap_rotation_set_update_token(self, ctx, update_token):
+        """Sets update token. Should be called only once and before any other function"""
+        vsce_uokms_wrap_rotation_set_update_token = self._lib.vsce_uokms_wrap_rotation_set_update_token
+        vsce_uokms_wrap_rotation_set_update_token.argtypes = [POINTER(vsce_uokms_wrap_rotation_t), vsc_data_t]
+        vsce_uokms_wrap_rotation_set_update_token.restype = c_int
+        return vsce_uokms_wrap_rotation_set_update_token(ctx, update_token)
+
+    def vsce_uokms_wrap_rotation_update_wrap(self, ctx, wrap, new_wrap):
         """Updates EnrollmentRecord using server's update token"""
         vsce_uokms_wrap_rotation_update_wrap = self._lib.vsce_uokms_wrap_rotation_update_wrap
-        vsce_uokms_wrap_rotation_update_wrap.argtypes = [POINTER(vsce_uokms_wrap_rotation_t), vsc_data_t, vsc_data_t, POINTER(vsc_buffer_t)]
+        vsce_uokms_wrap_rotation_update_wrap.argtypes = [POINTER(vsce_uokms_wrap_rotation_t), vsc_data_t, POINTER(vsc_buffer_t)]
         vsce_uokms_wrap_rotation_update_wrap.restype = c_int
-        return vsce_uokms_wrap_rotation_update_wrap(ctx, wrap, update_token, new_wrap)
+        return vsce_uokms_wrap_rotation_update_wrap(ctx, wrap, new_wrap)
 
     def vsce_uokms_wrap_rotation_shallow_copy(self, ctx):
         vsce_uokms_wrap_rotation_shallow_copy = self._lib.vsce_uokms_wrap_rotation_shallow_copy

@@ -42,6 +42,7 @@ from virgil_crypto_lib.common._c_bridge import Data
 
 
 class UokmsServer(object):
+    """Class implements UOKMS for server-side."""
 
     def __init__(self):
         """Create underlying C context."""
@@ -61,6 +62,7 @@ class UokmsServer(object):
         self._lib_vsce_uokms_server.vsce_uokms_server_use_operation_random(self.ctx, operation_random.c_impl)
 
     def setup_defaults(self):
+        """Setups dependencies with default values."""
         status = self._lib_vsce_uokms_server.vsce_uokms_server_setup_defaults(self.ctx)
         VsceStatus.handle_status(status)
 
@@ -72,11 +74,16 @@ class UokmsServer(object):
         VsceStatus.handle_status(status)
         return server_private_key.get_bytes(), server_public_key.get_bytes()
 
+    def decrypt_response_len(self):
+        """Buffer size needed to fit DecryptResponse"""
+        result = self._lib_vsce_uokms_server.vsce_uokms_server_decrypt_response_len(self.ctx)
+        return result
+
     def process_decrypt_request(self, server_private_key, decrypt_request):
-        """Generates a new random enrollment and proof for a new user"""
+        """Processed client's decrypt request"""
         d_server_private_key = Data(server_private_key)
         d_decrypt_request = Data(decrypt_request)
-        decrypt_response = Buffer(Common.PHE_PUBLIC_KEY_LENGTH)
+        decrypt_response = Buffer(self.decrypt_response_len())
         status = self._lib_vsce_uokms_server.vsce_uokms_server_process_decrypt_request(self.ctx, d_server_private_key.data, d_decrypt_request.data, decrypt_response.c_buffer)
         VsceStatus.handle_status(status)
         return decrypt_response.get_bytes()
@@ -90,15 +97,6 @@ class UokmsServer(object):
         status = self._lib_vsce_uokms_server.vsce_uokms_server_rotate_keys(self.ctx, d_server_private_key.data, new_server_private_key.c_buffer, new_server_public_key.c_buffer, update_token.c_buffer)
         VsceStatus.handle_status(status)
         return new_server_private_key.get_bytes(), new_server_public_key.get_bytes(), update_token.get_bytes()
-
-    def update_wrap(self, wrap, update_token):
-        """Updates EnrollmentRecord using server's update token"""
-        d_wrap = Data(wrap)
-        d_update_token = Data(update_token)
-        new_wrap = Buffer(Common.PHE_PUBLIC_KEY_LENGTH)
-        status = self._lib_vsce_uokms_server.vsce_uokms_server_update_wrap(self.ctx, d_wrap.data, d_update_token.data, new_wrap.c_buffer)
-        VsceStatus.handle_status(status)
-        return new_wrap.get_bytes()
 
     @classmethod
     def take_c_ctx(cls, c_ctx):

@@ -44,6 +44,12 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
+
+//  @description
+// --------------------------------------------------------------------------
+//  Implements wrap rotation.
+// --------------------------------------------------------------------------
+
 #ifndef VSCE_UOKMS_WRAP_ROTATION_H_INCLUDED
 #define VSCE_UOKMS_WRAP_ROTATION_H_INCLUDED
 
@@ -156,13 +162,14 @@ vsce_uokms_wrap_rotation_take_operation_random(vsce_uokms_wrap_rotation_t *self,
 VSCE_PUBLIC void
 vsce_uokms_wrap_rotation_release_operation_random(vsce_uokms_wrap_rotation_t *self);
 
+//
+//  Setups dependencies with default values.
+//
 VSCE_PUBLIC vsce_status_t
 vsce_uokms_wrap_rotation_setup_defaults(vsce_uokms_wrap_rotation_t *self) VSCE_NODISCARD;
 
 //
-//  Sets client private and server public key
-//  Call this method before any other methods except `update enrollment record` and `generate client private key`
-//  This function should be called only once
+//  Sets update token. Should be called only once and before any other function
 //
 VSCE_PUBLIC vsce_status_t
 vsce_uokms_wrap_rotation_set_update_token(vsce_uokms_wrap_rotation_t *self, vsc_data_t update_token) VSCE_NODISCARD;

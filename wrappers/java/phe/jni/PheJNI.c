@@ -935,13 +935,16 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsClient_
     return newObj;
 }
 
-JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsClient_1processDecryptResponse (JNIEnv *jenv, jobject jobj, jlong c_ctx, jbyteArray jwrap, jbyteArray jdecryptResponse, jbyteArray jdeblindFactor, jint jencryptionKeyLen) {
+JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsClient_1processDecryptResponse (JNIEnv *jenv, jobject jobj, jlong c_ctx, jbyteArray jwrap, jbyteArray jdecryptRequest, jbyteArray jdecryptResponse, jbyteArray jdeblindFactor, jint jencryptionKeyLen) {
     // Cast class context
     vsce_uokms_client_t /*2*/* uokms_client_ctx = *(vsce_uokms_client_t /*2*/**) &c_ctx;
 
     // Wrap input data
     byte* wrap_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jwrap, NULL);
     vsc_data_t wrap = vsc_data(wrap_arr, (*jenv)->GetArrayLength(jenv, jwrap));
+
+    byte* decrypt_request_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jdecryptRequest, NULL);
+    vsc_data_t decrypt_request = vsc_data(decrypt_request_arr, (*jenv)->GetArrayLength(jenv, jdecryptRequest));
 
     byte* decrypt_response_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jdecryptResponse, NULL);
     vsc_data_t decrypt_response = vsc_data(decrypt_response_arr, (*jenv)->GetArrayLength(jenv, jdecryptResponse));
@@ -951,7 +954,7 @@ JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsClie
 
     vsc_buffer_t *encryption_key = vsc_buffer_new_with_capacity(jencryptionKeyLen);
 
-    vsce_status_t status = vsce_uokms_client_process_decrypt_response(uokms_client_ctx /*a1*/, wrap /*a3*/, decrypt_response /*a3*/, deblind_factor /*a3*/, jencryptionKeyLen /*a9*/, encryption_key /*a3*/);
+    vsce_status_t status = vsce_uokms_client_process_decrypt_response(uokms_client_ctx /*a1*/, wrap /*a3*/, decrypt_request /*a3*/, decrypt_response /*a3*/, deblind_factor /*a3*/, jencryptionKeyLen /*a9*/, encryption_key /*a3*/);
     if (status != vsce_status_SUCCESS) {
         throwPheException(jenv, jobj, status);
         return NULL;
@@ -960,6 +963,8 @@ JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsClie
     (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(encryption_key), (jbyte*) vsc_buffer_bytes(encryption_key));
     // Free resources
     (*jenv)->ReleaseByteArrayElements(jenv, jwrap, (jbyte*) wrap_arr, 0);
+
+    (*jenv)->ReleaseByteArrayElements(jenv, jdecryptRequest, (jbyte*) decrypt_request_arr, 0);
 
     (*jenv)->ReleaseByteArrayElements(jenv, jdecryptResponse, (jbyte*) decrypt_response_arr, 0);
 
@@ -1100,6 +1105,14 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsServer_
     return newObj;
 }
 
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsServer_1decryptResponseLen (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    // Cast class context
+    vsce_uokms_server_t /*2*/* uokms_server_ctx = *(vsce_uokms_server_t /*2*/**) &c_ctx;
+
+    jint ret = (jint) vsce_uokms_server_decrypt_response_len(uokms_server_ctx /*a1*/);
+    return ret;
+}
+
 JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsServer_1processDecryptRequest (JNIEnv *jenv, jobject jobj, jlong c_ctx, jbyteArray jserverPrivateKey, jbyteArray jdecryptRequest) {
     // Cast class context
     vsce_uokms_server_t /*2*/* uokms_server_ctx = *(vsce_uokms_server_t /*2*/**) &c_ctx;
@@ -1111,7 +1124,7 @@ JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsServ
     byte* decrypt_request_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jdecryptRequest, NULL);
     vsc_data_t decrypt_request = vsc_data(decrypt_request_arr, (*jenv)->GetArrayLength(jenv, jdecryptRequest));
 
-    vsc_buffer_t *decrypt_response = vsc_buffer_new_with_capacity(vsce_phe_common_PHE_PUBLIC_KEY_LENGTH);
+    vsc_buffer_t *decrypt_response = vsc_buffer_new_with_capacity(vsce_uokms_server_decrypt_response_len((vsce_uokms_server_t /*2*/ *) c_ctx /*3*/));
 
     vsce_status_t status = vsce_uokms_server_process_decrypt_request(uokms_server_ctx /*a1*/, server_private_key /*a3*/, decrypt_request /*a3*/, decrypt_response /*a3*/);
     if (status != vsce_status_SUCCESS) {
@@ -1179,36 +1192,6 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsServer_
     return newObj;
 }
 
-JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsServer_1updateWrap (JNIEnv *jenv, jobject jobj, jlong c_ctx, jbyteArray jwrap, jbyteArray jupdateToken) {
-    // Cast class context
-    vsce_uokms_server_t /*2*/* uokms_server_ctx = *(vsce_uokms_server_t /*2*/**) &c_ctx;
-
-    // Wrap input data
-    byte* wrap_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jwrap, NULL);
-    vsc_data_t wrap = vsc_data(wrap_arr, (*jenv)->GetArrayLength(jenv, jwrap));
-
-    byte* update_token_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jupdateToken, NULL);
-    vsc_data_t update_token = vsc_data(update_token_arr, (*jenv)->GetArrayLength(jenv, jupdateToken));
-
-    vsc_buffer_t *new_wrap = vsc_buffer_new_with_capacity(vsce_phe_common_PHE_PUBLIC_KEY_LENGTH);
-
-    vsce_status_t status = vsce_uokms_server_update_wrap(uokms_server_ctx /*a1*/, wrap /*a3*/, update_token /*a3*/, new_wrap /*a3*/);
-    if (status != vsce_status_SUCCESS) {
-        throwPheException(jenv, jobj, status);
-        return NULL;
-    }
-    jbyteArray ret = (*jenv)->NewByteArray(jenv, vsc_buffer_len(new_wrap));
-    (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(new_wrap), (jbyte*) vsc_buffer_bytes(new_wrap));
-    // Free resources
-    (*jenv)->ReleaseByteArrayElements(jenv, jwrap, (jbyte*) wrap_arr, 0);
-
-    (*jenv)->ReleaseByteArrayElements(jenv, jupdateToken, (jbyte*) update_token_arr, 0);
-
-    vsc_buffer_delete(new_wrap);
-
-    return ret;
-}
-
 JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsWrapRotation_1new__ (JNIEnv *jenv, jobject jobj) {
     jlong c_ctx = 0;
     *(vsce_uokms_wrap_rotation_t **)&c_ctx = vsce_uokms_wrap_rotation_new();
@@ -1219,7 +1202,51 @@ JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsWrapRotati
     vsce_uokms_wrap_rotation_delete(*(vsce_uokms_wrap_rotation_t /*2*/ **) &c_ctx /*5*/);
 }
 
-JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsWrapRotation_1updateWrap (JNIEnv *jenv, jobject jobj, jlong c_ctx, jbyteArray jwrap, jbyteArray jupdateToken) {
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsWrapRotation_1setOperationRandom (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject joperationRandom) {
+    jclass operation_random_cls = (*jenv)->GetObjectClass(jenv, joperationRandom);
+    if (NULL == operation_random_cls) {
+        VSCE_ASSERT("Class Random not found.");
+    }
+    jfieldID operation_random_fidCtx = (*jenv)->GetFieldID(jenv, operation_random_cls, "cCtx", "J");
+    if (NULL == operation_random_fidCtx) {
+        VSCE_ASSERT("Class 'Random' has no field 'cCtx'.");
+    }
+    jlong operation_random_c_ctx = (*jenv)->GetLongField(jenv, joperationRandom, operation_random_fidCtx);
+    vscf_impl_t */*6*/ operation_random = *(vscf_impl_t */*6*/*) &operation_random_c_ctx;
+
+    vsce_uokms_wrap_rotation_release_operation_random((vsce_uokms_wrap_rotation_t /*2*/ *) c_ctx);
+    vsce_uokms_wrap_rotation_use_operation_random((vsce_uokms_wrap_rotation_t /*2*/ *) c_ctx, operation_random);
+}
+
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsWrapRotation_1setupDefaults (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    // Cast class context
+    vsce_uokms_wrap_rotation_t /*2*/* uokms_wrap_rotation_ctx = *(vsce_uokms_wrap_rotation_t /*2*/**) &c_ctx;
+
+    vsce_status_t status = vsce_uokms_wrap_rotation_setup_defaults(uokms_wrap_rotation_ctx /*a1*/);
+    if (status != vsce_status_SUCCESS) {
+        throwPheException(jenv, jobj, status);
+        return;
+    }
+}
+
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsWrapRotation_1setUpdateToken (JNIEnv *jenv, jobject jobj, jlong c_ctx, jbyteArray jupdateToken) {
+    // Cast class context
+    vsce_uokms_wrap_rotation_t /*2*/* uokms_wrap_rotation_ctx = *(vsce_uokms_wrap_rotation_t /*2*/**) &c_ctx;
+
+    // Wrap input data
+    byte* update_token_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jupdateToken, NULL);
+    vsc_data_t update_token = vsc_data(update_token_arr, (*jenv)->GetArrayLength(jenv, jupdateToken));
+
+    vsce_status_t status = vsce_uokms_wrap_rotation_set_update_token(uokms_wrap_rotation_ctx /*a1*/, update_token /*a3*/);
+    if (status != vsce_status_SUCCESS) {
+        throwPheException(jenv, jobj, status);
+        return;
+    }
+    // Free resources
+    (*jenv)->ReleaseByteArrayElements(jenv, jupdateToken, (jbyte*) update_token_arr, 0);
+}
+
+JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsWrapRotation_1updateWrap (JNIEnv *jenv, jobject jobj, jlong c_ctx, jbyteArray jwrap) {
     // Cast class context
     vsce_uokms_wrap_rotation_t /*2*/* uokms_wrap_rotation_ctx = *(vsce_uokms_wrap_rotation_t /*2*/**) &c_ctx;
 
@@ -1227,12 +1254,9 @@ JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsWrap
     byte* wrap_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jwrap, NULL);
     vsc_data_t wrap = vsc_data(wrap_arr, (*jenv)->GetArrayLength(jenv, jwrap));
 
-    byte* update_token_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jupdateToken, NULL);
-    vsc_data_t update_token = vsc_data(update_token_arr, (*jenv)->GetArrayLength(jenv, jupdateToken));
-
     vsc_buffer_t *new_wrap = vsc_buffer_new_with_capacity(vsce_phe_common_PHE_PUBLIC_KEY_LENGTH);
 
-    vsce_status_t status = vsce_uokms_wrap_rotation_update_wrap(uokms_wrap_rotation_ctx /*a1*/, wrap /*a3*/, update_token /*a3*/, new_wrap /*a3*/);
+    vsce_status_t status = vsce_uokms_wrap_rotation_update_wrap(uokms_wrap_rotation_ctx /*a1*/, wrap /*a3*/, new_wrap /*a3*/);
     if (status != vsce_status_SUCCESS) {
         throwPheException(jenv, jobj, status);
         return NULL;
@@ -1241,8 +1265,6 @@ JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsWrap
     (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(new_wrap), (jbyte*) vsc_buffer_bytes(new_wrap));
     // Free resources
     (*jenv)->ReleaseByteArrayElements(jenv, jwrap, (jbyte*) wrap_arr, 0);
-
-    (*jenv)->ReleaseByteArrayElements(jenv, jupdateToken, (jbyte*) update_token_arr, 0);
 
     vsc_buffer_delete(new_wrap);
 

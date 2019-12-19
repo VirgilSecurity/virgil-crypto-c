@@ -45,6 +45,7 @@ class vsce_uokms_client_t(Structure):
 
 
 class VsceUokmsClient(object):
+    """Class implements UOKMS for client-side."""
 
     def __init__(self):
         """Create underlying C context."""
@@ -78,6 +79,7 @@ class VsceUokmsClient(object):
         return vsce_uokms_client_use_operation_random(ctx, operation_random)
 
     def vsce_uokms_client_setup_defaults(self, ctx):
+        """Setups dependencies with default values."""
         vsce_uokms_client_setup_defaults = self._lib.vsce_uokms_client_setup_defaults
         vsce_uokms_client_setup_defaults.argtypes = [POINTER(vsce_uokms_client_t)]
         vsce_uokms_client_setup_defaults.restype = c_int
@@ -85,7 +87,7 @@ class VsceUokmsClient(object):
 
     def vsce_uokms_client_set_keys(self, ctx, client_private_key, server_public_key):
         """Sets client private and server public key
-        Call this method before any other methods except `update enrollment record` and `generate client private key`
+        Call this method before any other methods
         This function should be called only once"""
         vsce_uokms_client_set_keys = self._lib.vsce_uokms_client_set_keys
         vsce_uokms_client_set_keys.argtypes = [POINTER(vsce_uokms_client_t), vsc_data_t, vsc_data_t]
@@ -100,31 +102,30 @@ class VsceUokmsClient(object):
         return vsce_uokms_client_generate_client_private_key(ctx, client_private_key)
 
     def vsce_uokms_client_generate_encrypt_wrap(self, ctx, wrap, encryption_key_len, encryption_key):
-        """Uses fresh EnrollmentResponse from PHE server (see get enrollment func) and user's password (or its hash) to create
-        a new EnrollmentRecord which is then supposed to be stored in a database for further authentication
-        Also generates a random seed which then can be used to generate symmetric or private key to protect user's data"""
+        """Generates new encrypt wrap (which should be stored and then used for decryption) + encryption key
+        of "encryption key len" that can be used for symmetric encryption"""
         vsce_uokms_client_generate_encrypt_wrap = self._lib.vsce_uokms_client_generate_encrypt_wrap
         vsce_uokms_client_generate_encrypt_wrap.argtypes = [POINTER(vsce_uokms_client_t), POINTER(vsc_buffer_t), c_size_t, POINTER(vsc_buffer_t)]
         vsce_uokms_client_generate_encrypt_wrap.restype = c_int
         return vsce_uokms_client_generate_encrypt_wrap(ctx, wrap, encryption_key_len, encryption_key)
 
     def vsce_uokms_client_generate_decrypt_request(self, ctx, wrap, deblind_factor, decrypt_request):
-        """Decrypts data (and verifies additional data) using account key"""
+        """Generates request to decrypt data, this request should be sent to the server.
+        Server response is then passed to "process decrypt response" where encryption key can be decapsulated"""
         vsce_uokms_client_generate_decrypt_request = self._lib.vsce_uokms_client_generate_decrypt_request
         vsce_uokms_client_generate_decrypt_request.argtypes = [POINTER(vsce_uokms_client_t), vsc_data_t, POINTER(vsc_buffer_t), POINTER(vsc_buffer_t)]
         vsce_uokms_client_generate_decrypt_request.restype = c_int
         return vsce_uokms_client_generate_decrypt_request(ctx, wrap, deblind_factor, decrypt_request)
 
-    def vsce_uokms_client_process_decrypt_response(self, ctx, wrap, decrypt_response, deblind_factor, encryption_key_len, encryption_key):
-        """Decrypts data (and verifies additional data) using account key"""
+    def vsce_uokms_client_process_decrypt_response(self, ctx, wrap, decrypt_request, decrypt_response, deblind_factor, encryption_key_len, encryption_key):
+        """Processed server response, checks server proof and decapsulates encryption key"""
         vsce_uokms_client_process_decrypt_response = self._lib.vsce_uokms_client_process_decrypt_response
-        vsce_uokms_client_process_decrypt_response.argtypes = [POINTER(vsce_uokms_client_t), vsc_data_t, vsc_data_t, vsc_data_t, c_size_t, POINTER(vsc_buffer_t)]
+        vsce_uokms_client_process_decrypt_response.argtypes = [POINTER(vsce_uokms_client_t), vsc_data_t, vsc_data_t, vsc_data_t, vsc_data_t, c_size_t, POINTER(vsc_buffer_t)]
         vsce_uokms_client_process_decrypt_response.restype = c_int
-        return vsce_uokms_client_process_decrypt_response(ctx, wrap, decrypt_response, deblind_factor, encryption_key_len, encryption_key)
+        return vsce_uokms_client_process_decrypt_response(ctx, wrap, decrypt_request, decrypt_response, deblind_factor, encryption_key_len, encryption_key)
 
     def vsce_uokms_client_rotate_keys(self, ctx, update_token, new_client_private_key, new_server_public_key):
-        """Updates client's private key and server's public key using server's update token
-        Use output values to instantiate new client instance with new keys"""
+        """Rotates client and server keys using given update token obtained from server"""
         vsce_uokms_client_rotate_keys = self._lib.vsce_uokms_client_rotate_keys
         vsce_uokms_client_rotate_keys.argtypes = [POINTER(vsce_uokms_client_t), vsc_data_t, POINTER(vsc_buffer_t), POINTER(vsc_buffer_t)]
         vsce_uokms_client_rotate_keys.restype = c_int
