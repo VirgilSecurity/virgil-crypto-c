@@ -59,6 +59,14 @@
 #include <mbedtls/ecp.h>
 #include <mbedtls/bignum.h>
 
+#if !VSCE_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
+#   include <virgil/crypto/foundation/vscf_impl.h>
+#endif
+
+#if VSCE_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
+#   include <VSCFoundation/vscf_impl.h>
+#endif
+
 // clang-format on
 //  @end
 
@@ -86,8 +94,14 @@ struct vsce_uokms_wrap_rotation_t {
     //  Reference counter.
     //
     VSCE_ATOMIC size_t refcnt;
+    //
+    //  Dependency to the interface 'random'.
+    //
+    vscf_impl_t *operation_random;
 
     mbedtls_ecp_group group;
+
+    mbedtls_mpi a;
 };
 
 

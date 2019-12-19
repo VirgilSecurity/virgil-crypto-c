@@ -8,7 +8,6 @@
 
     <require header="UOKMSModels.pb.h" scope="private"/>
     <require header="pb_decode.h" scope="private"/>
-    <require header="pb_encode.h" scope="private"/>
 
     <require impl="hkdf" project="foundation" scope="private"/>
     <require impl="sha512" project="foundation" scope="private"/>

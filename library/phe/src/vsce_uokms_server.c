@@ -53,7 +53,6 @@
 #include <virgil/crypto/foundation/vscf_random.h>
 #include <virgil/crypto/foundation/vscf_ctr_drbg.h>
 #include <UOKMSModels.pb.h>
-#include <pb_decode.h>
 #include <pb_encode.h>
 #include <virgil/crypto/common/private/vsc_buffer_defs.h>
 #include <virgil/crypto/foundation/private/vscf_mbedtls_bridge_random.h>
@@ -573,13 +572,14 @@ vsce_uokms_server_process_decrypt_request(vsce_uokms_server_t *self, vsc_data_t 
     mbedtls_ecp_point Ks;
     mbedtls_ecp_point_init(&Ks);
 
-    mbedtls_status = mbedtls_ecp_mul(op_group, &Ks, &ks, &op_group->G, vscf_mbedtls_bridge_random, self->random);
+    mbedtls_status =
+            mbedtls_ecp_mul(op_group, &Ks, &ks, &op_group->G, vscf_mbedtls_bridge_random, self->operation_random);
     VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
 
     mbedtls_ecp_point V;
     mbedtls_ecp_point_init(&V);
 
-    mbedtls_status = mbedtls_ecp_mul(op_group, &V, &ks, &U, vscf_mbedtls_bridge_random, self->random);
+    mbedtls_status = mbedtls_ecp_mul(op_group, &V, &ks, &U, vscf_mbedtls_bridge_random, self->operation_random);
     VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
 
     DecryptResponse response = DecryptResponse_init_zero;
@@ -718,71 +718,6 @@ priv_err:
     mbedtls_mpi_free(&ks);
 
     vsce_uokms_server_free_op_group(op_group);
-
-    return status;
-}
-
-//
-//  Updates EnrollmentRecord using server's update token
-//
-VSCE_PUBLIC vsce_status_t
-vsce_uokms_server_update_wrap(
-        vsce_uokms_server_t *self, vsc_data_t wrap, vsc_data_t update_token, vsc_buffer_t *new_wrap) {
-
-    VSCE_ASSERT_PTR(self);
-    VSCE_ASSERT(vsc_data_is_valid(wrap) && wrap.len == vsce_phe_common_PHE_PUBLIC_KEY_LENGTH);
-    VSCE_ASSERT(vsc_data_is_valid(update_token) && update_token.len == vsce_phe_common_PHE_PRIVATE_KEY_LENGTH);
-    VSCE_ASSERT(vsc_buffer_len(new_wrap) == 0);
-    VSCE_ASSERT(vsc_buffer_unused_len(new_wrap) >= vsce_phe_common_PHE_PUBLIC_KEY_LENGTH);
-
-    vsce_status_t status = vsce_status_SUCCESS;
-
-    mbedtls_mpi a;
-    mbedtls_mpi_init(&a);
-
-    int mbedtls_status = 0;
-    mbedtls_status = mbedtls_mpi_read_binary(&a, update_token.bytes, update_token.len);
-    VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
-
-    mbedtls_status = mbedtls_ecp_check_privkey(&self->group, &a);
-    if (mbedtls_status != 0) {
-        status = vsce_status_ERROR_INVALID_PRIVATE_KEY;
-        goto priv_err;
-    }
-
-    mbedtls_ecp_point W;
-    mbedtls_ecp_point_init(&W);
-
-    mbedtls_status = mbedtls_ecp_point_read_binary(&self->group, &W, wrap.bytes, wrap.len);
-    if (mbedtls_status != 0 || mbedtls_ecp_check_pubkey(&self->group, &W) != 0) {
-        status = vsce_status_ERROR_INVALID_PUBLIC_KEY;
-        goto err;
-    }
-
-    mbedtls_ecp_point new_W;
-    mbedtls_ecp_point_init(&new_W);
-
-    mbedtls_ecp_group *op_group = vsce_uokms_server_get_op_group(self);
-
-    mbedtls_status = mbedtls_ecp_mul(op_group, &new_W, &a, &W, vscf_mbedtls_bridge_random, self->random);
-    VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
-
-    vsce_uokms_server_free_op_group(op_group);
-
-    size_t olen = 0;
-    mbedtls_status = mbedtls_ecp_point_write_binary(&self->group, &new_W, MBEDTLS_ECP_PF_UNCOMPRESSED, &olen,
-            vsc_buffer_unused_bytes(new_wrap), vsce_phe_common_PHE_PUBLIC_KEY_LENGTH);
-    vsc_buffer_inc_used(new_wrap, vsce_phe_common_PHE_PUBLIC_KEY_LENGTH);
-    VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
-    VSCE_ASSERT(olen == vsce_phe_common_PHE_PUBLIC_KEY_LENGTH);
-
-    mbedtls_ecp_point_free(&new_W);
-
-err:
-    mbedtls_ecp_point_free(&W);
-
-priv_err:
-    mbedtls_mpi_free(&a);
 
     return status;
 }

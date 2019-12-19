@@ -210,13 +210,6 @@ vsce_uokms_server_rotate_keys(vsce_uokms_server_t *self, vsc_data_t server_priva
         vsc_buffer_t *new_server_private_key, vsc_buffer_t *new_server_public_key,
         vsc_buffer_t *update_token) VSCE_NODISCARD;
 
-//
-//  Updates EnrollmentRecord using server's update token
-//
-VSCE_PUBLIC vsce_status_t
-vsce_uokms_server_update_wrap(vsce_uokms_server_t *self, vsc_data_t wrap, vsc_data_t update_token,
-        vsc_buffer_t *new_wrap) VSCE_NODISCARD;
-
 
 // --------------------------------------------------------------------------
 //  Generated section end.

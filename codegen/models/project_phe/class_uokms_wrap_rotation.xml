@@ -1,6 +1,7 @@
 <class name="uokms wrap rotation" context="internal">
 
     <require class="phe common" scope="public"/>
+    <require impl="ctr drbg" project="foundation" scope="private"/>
 
     <require header="mbedtls/ecp.h" scope="context"/>
     <require header="mbedtls/bignum.h" scope="context"/>
@@ -8,16 +9,39 @@
     <require module="buffer defs" scope="private" project="common"/>
     <require module="mbedtls bridge random" scope="private" project="foundation"/>
 
+    <dependency name="operation random" interface="random" project="foundation">
+        Random used for crypto operations to make them const-time
+    </dependency>
+
     <property name="group" class="mbedtls_ecp_group" library="mbedtls" access="readwrite" is_reference="0"/>
+    <property name="a" class="mbedtls_mpi" library="mbedtls" access="readwrite" is_reference="0"/>
+
+    <method name="setup defaults">
+        <return enum="status"/>
+    </method>
+
+    <method name="set update token">
+        Sets client private and server public key
+        Call this method before any other methods except `update enrollment record` and `generate client private key`
+        This function should be called only once
+
+        <argument name="update token" class="data">
+            Client's private key
+            Use `generate client private key` to generate this key, or generate NIST P-256 private key yourself
+        </argument>
+
+        <return enum="status">
+            - vsce_SUCCESS if operation succeeded
+            - vsce_error_INVALID_PRIVATE_KEY if private key is invalid
+            - vsce_error_INVALID_ECP if public key is invalid
+        </return>
+    </method>
 
     <method name="update wrap">
         Updates EnrollmentRecord using server's update token
 
         <argument name="wrap" class="data">
             EnrollmentRecord created and stored at enroll account step
-        </argument>
-        <argument name="update token" class="data">
-            Update token provided by PHE server
         </argument>
         <argument name="new wrap" class="buffer" access="writeonly">
             Updated EnrollmentRecord

@@ -503,6 +503,7 @@ vsce_phe_hash_hash_z_success(vsce_phe_hash_t *self, const mbedtls_ecp_point *pub
     vsc_buffer_init(&buff);
     vsc_buffer_use(&buff, buffer, points_count * vsce_phe_common_PHE_POINT_LENGTH);
 
+    // Order is changed for backwards compatibility
     vsce_phe_hash_push_points_to_buffer(self, &buff, 7, pub, &self->group.G, p2, q2, term2, term3, term1);
     VSCE_ASSERT(vsc_buffer_unused_len(&buff) == 0);
 

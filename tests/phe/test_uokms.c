@@ -45,6 +45,7 @@
 #include <virgil/crypto/common/private/vsc_buffer_defs.h>
 #include <vsce_uokms_server.h>
 #include <vsce_uokms_client.h>
+#include <vsce_uokms_wrap_rotation.h>
 
 
 // --------------------------------------------------------------------------
@@ -154,12 +155,18 @@ test__rotate__full_flow__key_should_match(void) {
     TEST_ASSERT_EQUAL(vsce_status_SUCCESS, vsce_uokms_client_rotate_keys(client, vsc_buffer_data(update_token),
                                                    new_client_private_key, new_server_public_key2));
 
+    vsce_uokms_wrap_rotation_t *wrap_rotation = vsce_uokms_wrap_rotation_new();
+    vsce_uokms_wrap_rotation_destroy(&wrap_rotation);
+    TEST_ASSERT_EQUAL(vsce_status_SUCCESS, vsce_uokms_wrap_rotation_setup_defaults(wrap_rotation));
+    TEST_ASSERT_EQUAL(vsce_status_SUCCESS,
+            vsce_uokms_wrap_rotation_set_update_token(wrap_rotation, vsc_buffer_data(update_token)));
+
     TEST_ASSERT_EQUAL_DATA_AND_BUFFER(vsc_buffer_data(new_server_public_key), new_server_public_key2);
 
     vsc_buffer_t *new_wrap = vsc_buffer_new_with_capacity(vsce_phe_common_PHE_PUBLIC_KEY_LENGTH);
 
-    TEST_ASSERT_EQUAL(vsce_status_SUCCESS,
-            vsce_uokms_server_update_wrap(server, vsc_buffer_data(wrap), vsc_buffer_data(update_token), new_wrap));
+    TEST_ASSERT_EQUAL(
+            vsce_status_SUCCESS, vsce_uokms_wrap_rotation_update_wrap(wrap_rotation, vsc_buffer_data(wrap), new_wrap));
 
     vsce_uokms_client_t *client2 = vsce_uokms_client_new();
     TEST_ASSERT_EQUAL(vsce_status_SUCCESS, vsce_uokms_client_setup_defaults(client2));
@@ -188,11 +195,21 @@ test__rotate__full_flow__key_should_match(void) {
     TEST_ASSERT_EQUAL_DATA_AND_BUFFER(vsc_buffer_data(key), key2);
 
     vsce_uokms_client_destroy(&client);
+    vsce_uokms_client_destroy(&client2);
     vsce_uokms_server_destroy(&server);
+    vsce_uokms_wrap_rotation_destroy(&wrap_rotation);
+
+    vsc_buffer_destroy(&new_server_private_key);
+    vsc_buffer_destroy(&new_server_public_key);
+    vsc_buffer_destroy(&update_token);
+    vsc_buffer_destroy(&new_client_private_key);
+
+    vsc_buffer_destroy(&new_server_public_key2);
 
     vsc_buffer_destroy(&server_private_key);
     vsc_buffer_destroy(&server_public_key);
 
+    vsc_buffer_destroy(&new_wrap);
     vsc_buffer_destroy(&wrap);
     vsc_buffer_destroy(&key);
     vsc_buffer_destroy(&deblind_factor);

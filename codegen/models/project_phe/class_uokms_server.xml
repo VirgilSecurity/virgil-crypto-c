@@ -7,7 +7,6 @@
     <require header="mbedtls/bignum.h" scope="context"/>
 
     <require header="UOKMSModels.pb.h" scope="private"/>
-    <require header="pb_decode.h" scope="private"/>
     <require header="pb_encode.h" scope="private"/>
 
     <require module="buffer defs" scope="private" project="common"/>
@@ -105,29 +104,6 @@
         <return enum="status">
             - vsce_error_INVALID_PRIVATE_KEY if provided private key in invalid
             - vsce_error_RNG_ERROR in case rng failed
-        </return>
-    </method>
-
-    <method name="update wrap">
-        Updates EnrollmentRecord using server's update token
-
-        <argument name="wrap" class="data">
-            EnrollmentRecord created and stored at enroll account step
-        </argument>
-        <argument name="update token" class="data">
-            Update token provided by PHE server
-        </argument>
-        <argument name="new wrap" class="buffer" access="writeonly">
-            Updated EnrollmentRecord
-            Buffer size should be >= enrollment record len
-
-            <length constant="phe public key length" class="phe common"/>
-        </argument>
-
-        <return enum="status">
-            - vsce_error_PROTOBUF_DECODE_ERROR if input model is invalid
-            - vsce_error_INVALID_ECP if input points are invalid
-            - vsce_error_INVALID_PRIVATE_KEY if provided private key in invalid
         </return>
     </method>
 

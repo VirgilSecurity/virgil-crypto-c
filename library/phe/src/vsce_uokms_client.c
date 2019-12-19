@@ -54,7 +54,6 @@
 #include <virgil/crypto/foundation/vscf_ctr_drbg.h>
 #include <UOKMSModels.pb.h>
 #include <pb_decode.h>
-#include <pb_encode.h>
 #include <virgil/crypto/foundation/vscf_hkdf.h>
 #include <virgil/crypto/foundation/vscf_sha512.h>
 #include <virgil/crypto/common/private/vsc_buffer_defs.h>
@@ -395,7 +394,10 @@ vsce_uokms_client_cleanup_ctx(vsce_uokms_client_t *self) {
     mbedtls_ecp_group_free(&self->group);
 
     vsce_uokms_proof_verifier_destroy(&self->proof_verifier);
-}
+
+    mbedtls_mpi_free(&self->kc_private);
+    mbedtls_ecp_point_free(&self->ks_public);
+    mbedtls_ecp_point_free(&self->k_public);}
 
 //
 //  This method is called when interface 'random' was setup.
@@ -598,7 +600,8 @@ vsce_uokms_client_generate_encrypt_wrap(
 
     mbedtls_ecp_group *op_group = vsce_uokms_client_get_op_group(self);
 
-    mbedtls_status = mbedtls_ecp_mul(op_group, &W, &r, &self->group.G, vscf_mbedtls_bridge_random, self->random);
+    mbedtls_status =
+            mbedtls_ecp_mul(op_group, &W, &r, &self->group.G, vscf_mbedtls_bridge_random, self->operation_random);
     VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
 
     size_t olen = 0;
@@ -613,7 +616,8 @@ vsce_uokms_client_generate_encrypt_wrap(
     mbedtls_ecp_point S;
     mbedtls_ecp_point_init(&S);
 
-    mbedtls_status = mbedtls_ecp_mul(op_group, &S, &r, &self->k_public, vscf_mbedtls_bridge_random, self->random);
+    mbedtls_status =
+            mbedtls_ecp_mul(op_group, &S, &r, &self->k_public, vscf_mbedtls_bridge_random, self->operation_random);
     VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
 
     vsce_uokms_client_free_op_group(op_group);
@@ -702,7 +706,7 @@ vsce_uokms_client_generate_decrypt_request(
 
     mbedtls_ecp_group *op_group = vsce_uokms_client_get_op_group(self);
 
-    mbedtls_status = mbedtls_ecp_mul(op_group, &U, &b, &W, vscf_mbedtls_bridge_random, self->random);
+    mbedtls_status = mbedtls_ecp_mul(op_group, &U, &b, &W, vscf_mbedtls_bridge_random, self->operation_random);
     VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
 
     vsce_uokms_client_free_op_group(op_group);

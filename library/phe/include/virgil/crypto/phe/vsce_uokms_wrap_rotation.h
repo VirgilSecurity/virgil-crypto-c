@@ -52,13 +52,21 @@
 #include "vsce_status.h"
 
 #if !VSCE_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <virgil/crypto/common/vsc_data.h>
 #   include <virgil/crypto/common/vsc_buffer.h>
+#   include <virgil/crypto/common/vsc_data.h>
+#endif
+
+#if !VSCE_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
+#   include <virgil/crypto/foundation/vscf_impl.h>
 #endif
 
 #if VSCE_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <VSCCommon/vsc_data.h>
 #   include <VSCCommon/vsc_buffer.h>
+#endif
+
+#if VSCE_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
+#   include <VSCFoundation/vscf_impl.h>
 #endif
 
 // clang-format on
@@ -126,10 +134,44 @@ VSCE_PUBLIC vsce_uokms_wrap_rotation_t *
 vsce_uokms_wrap_rotation_shallow_copy(vsce_uokms_wrap_rotation_t *self);
 
 //
+//  Random used for crypto operations to make them const-time
+//
+//  Note, ownership is shared.
+//
+VSCE_PUBLIC void
+vsce_uokms_wrap_rotation_use_operation_random(vsce_uokms_wrap_rotation_t *self, vscf_impl_t *operation_random);
+
+//
+//  Random used for crypto operations to make them const-time
+//
+//  Note, ownership is transfered.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCE_PUBLIC void
+vsce_uokms_wrap_rotation_take_operation_random(vsce_uokms_wrap_rotation_t *self, vscf_impl_t *operation_random);
+
+//
+//  Release dependency to the interface 'random'.
+//
+VSCE_PUBLIC void
+vsce_uokms_wrap_rotation_release_operation_random(vsce_uokms_wrap_rotation_t *self);
+
+VSCE_PUBLIC vsce_status_t
+vsce_uokms_wrap_rotation_setup_defaults(vsce_uokms_wrap_rotation_t *self) VSCE_NODISCARD;
+
+//
+//  Sets client private and server public key
+//  Call this method before any other methods except `update enrollment record` and `generate client private key`
+//  This function should be called only once
+//
+VSCE_PUBLIC vsce_status_t
+vsce_uokms_wrap_rotation_set_update_token(vsce_uokms_wrap_rotation_t *self, vsc_data_t update_token) VSCE_NODISCARD;
+
+//
 //  Updates EnrollmentRecord using server's update token
 //
 VSCE_PUBLIC vsce_status_t
-vsce_uokms_wrap_rotation_update_wrap(vsce_uokms_wrap_rotation_t *self, vsc_data_t wrap, vsc_data_t update_token,
+vsce_uokms_wrap_rotation_update_wrap(vsce_uokms_wrap_rotation_t *self, vsc_data_t wrap,
         vsc_buffer_t *new_wrap) VSCE_NODISCARD;
 
 
