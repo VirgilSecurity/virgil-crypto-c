@@ -64,6 +64,8 @@ test__generate_private_key__mocked_rnd__should_match(void) {
 
     vsc_buffer_destroy(&priv);
     vsce_uokms_client_destroy(&client);
+
+    vscf_fake_random_destroy(&fake_random);
 }
 
 void
@@ -91,6 +93,8 @@ test__encrypt__mocked_rnd__should_match(void) {
     vsc_buffer_destroy(&wrap);
     vsc_buffer_destroy(&key);
     vsce_uokms_client_destroy(&client);
+
+    vscf_fake_random_destroy(&fake_random);
 }
 
 void
@@ -118,6 +122,8 @@ test__decrypt_request__mocked_rnd__should_match(void) {
     vsc_buffer_destroy(&deblind_factor);
     vsc_buffer_destroy(&decrypt_request);
     vsce_uokms_client_destroy(&client);
+
+    vscf_fake_random_destroy(&fake_random);
 }
 
 void

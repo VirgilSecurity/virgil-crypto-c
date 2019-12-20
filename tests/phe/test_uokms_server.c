@@ -68,6 +68,8 @@ test__generate_server_key__mocked_rnd__should_match(void) {
     vsc_buffer_destroy(&pub);
     vsc_buffer_destroy(&priv);
     vsce_uokms_server_destroy(&server);
+
+    vscf_fake_random_destroy(&fake_random);
 }
 
 void
@@ -89,6 +91,10 @@ test__process_decrypt_request__mocked_rnd__should_match(void) {
     TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_uokms_mocked_decrypt_response, decrypt_response);
 
     vsce_uokms_server_destroy(&server);
+
+    vscf_fake_random_destroy(&fake_random);
+
+    vsc_buffer_destroy(&decrypt_response);
 }
 
 void
@@ -113,6 +119,12 @@ test__rotate_keys__mocked_rnd__should_match(void) {
     TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_uokms_mocked_update_token, update_token);
 
     vsce_uokms_server_destroy(&server);
+
+    vscf_fake_random_destroy(&fake_random);
+
+    vsc_buffer_destroy(&new_server_private_key);
+    vsc_buffer_destroy(&new_server_public_key);
+    vsc_buffer_destroy(&update_token);
 }
 
 #endif // TEST_DEPENDENCIES_AVAILABLE
