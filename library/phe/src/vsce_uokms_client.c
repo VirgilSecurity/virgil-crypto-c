@@ -54,6 +54,7 @@
 #include "vsce_memory.h"
 #include "vsce_assert.h"
 #include "vsce_uokms_client_defs.h"
+#include "vsce_const.h"
 
 #include <virgil/crypto/foundation/vscf_random.h>
 #include <virgil/crypto/foundation/vscf_random.h>
@@ -403,6 +404,7 @@ vsce_uokms_client_cleanup_ctx(vsce_uokms_client_t *self) {
 
     mbedtls_mpi_free(&self->kc_private);
     mbedtls_ecp_point_free(&self->ks_public);
+    mbedtls_ecp_point_free(&self->k_public);
 }
 
 //
@@ -642,7 +644,7 @@ vsce_uokms_client_generate_encrypt_wrap(
     vscf_hkdf_t *hkdf = vscf_hkdf_new();
 
     vscf_hkdf_take_hash(hkdf, vscf_sha512_impl(vscf_sha512_new()));
-    // TODO: Add some hkdf info
+    vscf_hkdf_set_info(hkdf, k_kdf_info_uokms_key);
     vscf_hkdf_derive(hkdf, vsc_data(seed, sizeof(seed)), encryption_key_len, encryption_key);
 
     vscf_hkdf_destroy(&hkdf);
@@ -845,7 +847,7 @@ vsce_uokms_client_process_decrypt_response(vsce_uokms_client_t *self, vsc_data_t
     vscf_hkdf_t *hkdf = vscf_hkdf_new();
 
     vscf_hkdf_take_hash(hkdf, vscf_sha512_impl(vscf_sha512_new()));
-    // TODO: Add some hkdf info
+    vscf_hkdf_set_info(hkdf, k_kdf_info_uokms_key);
     vscf_hkdf_derive(hkdf, vsc_data(seed, sizeof(seed)), encryption_key_len, encryption_key);
 
     vsce_zeroize(seed, sizeof(seed));

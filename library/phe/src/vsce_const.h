@@ -90,6 +90,8 @@ VSCE_PUBLIC extern const vsc_data_t k_kdf_info_z;
 
 VSCE_PUBLIC extern const vsc_data_t k_kdf_info_client_key;
 
+VSCE_PUBLIC extern const vsc_data_t k_kdf_info_uokms_key;
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.

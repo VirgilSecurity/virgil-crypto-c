@@ -4,6 +4,7 @@
     <require class="phe common" scope="public"/>
     <require impl="ctr drbg" project="foundation" scope="private"/>
 
+    <require module="const" scope="private"/>
     <require class="phe common" scope="context"/>
     <require header="mbedtls/ecp.h" scope="context"/>
     <require header="mbedtls/bignum.h" scope="context"/>

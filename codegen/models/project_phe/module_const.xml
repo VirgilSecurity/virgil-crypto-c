@@ -63,6 +63,12 @@
         <value value="0x39"/>
     </variable>
 
+    <variable name="k kdf info uokms key bytes" type="byte" c_prefix="" declaration="private">
+        <array length="derived"/>
+        <value value="COMMON_PREFIX"/>
+        <value value="0x40"/>
+    </variable>
+
     <variable name="k proof ok" class="data" c_prefix="">
         <value value="k_proof_ok_bytes" type="byte">
             <array length="derived"/>
@@ -96,5 +102,12 @@
             <array length="derived"/>
         </value>
         <value value="sizeof(k_kdf_info_client_key_bytes)" type="size"/>
+    </variable>
+
+    <variable name="k kdf info uokms key" class="data" c_prefix="">
+        <value value="k_kdf_info_uokms_key_bytes" type="byte">
+            <array length="derived"/>
+        </value>
+        <value value="sizeof(k_kdf_info_uokms_key_bytes)" type="size"/>
     </variable>
 </module>
