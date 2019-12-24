@@ -3,6 +3,7 @@
     cipher for data encryption and asymmetric cipher and password based
     cipher for symmetric key encryption.
 
+    <require interface="alg"/>
     <require interface="alg info"/>
     <require interface="cipher auth"/>
     <require interface="decrypt"/>

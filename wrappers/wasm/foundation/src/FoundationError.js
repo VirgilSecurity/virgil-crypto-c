@@ -208,11 +208,11 @@ const initFoundationError = (Module, modules) => {
             }
 
             if (statusCode == -234) {
-                throw new FoundationError("Compound public chained key is corrupted.");
+                throw new FoundationError("Compound public hybrid key is corrupted.");
             }
 
             if (statusCode == -235) {
-                throw new FoundationError("Compound private chained key is corrupted.");
+                throw new FoundationError("Compound private hybrid key is corrupted.");
             }
 
             if (statusCode == -236) {
@@ -228,7 +228,7 @@ const initFoundationError = (Module, modules) => {
             }
 
             if (statusCode == -239) {
-                throw new FoundationError("ASN.1 AlgorithmIdentifer with ChainedKeyParams is corrupted.");
+                throw new FoundationError("ASN.1 AlgorithmIdentifer with HybridKeyParams is corrupted.");
             }
 
             if (statusCode == -301) {
@@ -305,6 +305,10 @@ const initFoundationError = (Module, modules) => {
 
             if (statusCode == -410) {
                 throw new FoundationError("Brainkey identity secret is invalid.");
+            }
+
+            if (statusCode == -411) {
+                throw new FoundationError("KEM encapsulated key is invalid or does not correspond to the private key.");
             }
 
             if (statusCode == -501) {

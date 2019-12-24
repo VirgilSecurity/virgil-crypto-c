@@ -37,7 +37,7 @@ import Foundation
 import VSCFoundation
 
 /// Common information about asymmetric key algorithm.
-@objc(VSCFKeyAlg) public protocol KeyAlg : Alg {
+@objc(VSCFKeyAlg) public protocol KeyAlg : CContext {
     /// Defines whether a public key can be imported or not.
     @objc var canImportPublicKey: Bool { get }
     /// Define whether a public key can be exported or not.

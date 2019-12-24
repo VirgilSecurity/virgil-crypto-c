@@ -100,13 +100,13 @@ import VSCFoundation
     /// Generate new post-quantum private key with default algorithms.
     /// Note, that a post-quantum key combines classic private keys
     /// alongside with post-quantum private keys.
-    /// Current structure is "compound private key" where:
-    ///     - cipher private key is "chained private key" where:
-    ///         - l1 key is a classic private key;
-    ///         - l2 key is a post-quantum private key;
-    ///     - signer private key "chained private key" where:
-    ///         - l1 key is a classic private key;
-    ///         - l2 key is a post-quantum private key.
+    /// Current structure is "compound private key" is:
+    ///     - cipher private key is "hybrid private key" where:
+    ///         - first key is a classic private key;
+    ///         - second key is a post-quantum private key;
+    ///     - signer private key "hybrid private key" where:
+    ///         - first key is a classic private key;
+    ///         - second key is a post-quantum private key.
     @objc public func generatePostQuantumPrivateKey() throws -> PrivateKey {
         var error: vscf_error_t = vscf_error_t()
         vscf_error_reset(&error)
@@ -130,27 +130,27 @@ import VSCFoundation
         return FoundationImplementation.wrapPrivateKey(take: proxyResult!)
     }
 
-    /// Generate new chained private key with given algorithms.
-    @objc public func generateChainedPrivateKey(l1AlgId: AlgId, l2AlgId: AlgId) throws -> PrivateKey {
+    /// Generate new hybrid private key with given algorithms.
+    @objc public func generateHybridPrivateKey(firstKeyAlgId: AlgId, secondKeyAlgId: AlgId) throws -> PrivateKey {
         var error: vscf_error_t = vscf_error_t()
         vscf_error_reset(&error)
 
-        let proxyResult = vscf_key_provider_generate_chained_private_key(self.c_ctx, vscf_alg_id_t(rawValue: UInt32(l1AlgId.rawValue)), vscf_alg_id_t(rawValue: UInt32(l2AlgId.rawValue)), &error)
+        let proxyResult = vscf_key_provider_generate_hybrid_private_key(self.c_ctx, vscf_alg_id_t(rawValue: UInt32(firstKeyAlgId.rawValue)), vscf_alg_id_t(rawValue: UInt32(secondKeyAlgId.rawValue)), &error)
 
         try FoundationError.handleStatus(fromC: error.status)
 
         return FoundationImplementation.wrapPrivateKey(take: proxyResult!)
     }
 
-    /// Generate new compound private key with nested chained private keys.
+    /// Generate new compound private key with nested hybrid private keys.
     ///
-    /// Note, l2 algorithm identifiers can be NONE, in this case regular key
-    /// will be crated instead of chained key.
-    @objc public func generateCompoundChainedPrivateKey(cipherL1AlgId: AlgId, cipherL2AlgId: AlgId, signerL1AlgId: AlgId, signerL2AlgId: AlgId) throws -> PrivateKey {
+    /// Note, second key algorithm identifiers can be NONE, in this case,
+    /// a regular key will be crated instead of a hybrid key.
+    @objc public func generateCompoundHybridPrivateKey(cipherFirstKeyAlgId: AlgId, cipherSecondKeyAlgId: AlgId, signerFirstKeyAlgId: AlgId, signerSecondKeyAlgId: AlgId) throws -> PrivateKey {
         var error: vscf_error_t = vscf_error_t()
         vscf_error_reset(&error)
 
-        let proxyResult = vscf_key_provider_generate_compound_chained_private_key(self.c_ctx, vscf_alg_id_t(rawValue: UInt32(cipherL1AlgId.rawValue)), vscf_alg_id_t(rawValue: UInt32(cipherL2AlgId.rawValue)), vscf_alg_id_t(rawValue: UInt32(signerL1AlgId.rawValue)), vscf_alg_id_t(rawValue: UInt32(signerL2AlgId.rawValue)), &error)
+        let proxyResult = vscf_key_provider_generate_compound_hybrid_private_key(self.c_ctx, vscf_alg_id_t(rawValue: UInt32(cipherFirstKeyAlgId.rawValue)), vscf_alg_id_t(rawValue: UInt32(cipherSecondKeyAlgId.rawValue)), vscf_alg_id_t(rawValue: UInt32(signerFirstKeyAlgId.rawValue)), vscf_alg_id_t(rawValue: UInt32(signerSecondKeyAlgId.rawValue)), &error)
 
         try FoundationError.handleStatus(fromC: error.status)
 

@@ -101,6 +101,7 @@ from .alg_info_deserializer import AlgInfoDeserializer
 from .message_info_serializer import MessageInfoSerializer
 from .message_info_footer_serializer import MessageInfoFooterSerializer
 from .padding import Padding
+from .kem import Kem
 from .sha224 import Sha224
 from .sha256 import Sha256
 from .sha384 import Sha384
@@ -140,10 +141,10 @@ from .compound_key_alg_info import CompoundKeyAlgInfo
 from .compound_public_key import CompoundPublicKey
 from .compound_private_key import CompoundPrivateKey
 from .compound_key_alg import CompoundKeyAlg
-from .chained_key_alg_info import ChainedKeyAlgInfo
-from .chained_public_key import ChainedPublicKey
-from .chained_private_key import ChainedPrivateKey
-from .chained_key_alg import ChainedKeyAlg
+from .hybrid_key_alg_info import HybridKeyAlgInfo
+from .hybrid_public_key import HybridPublicKey
+from .hybrid_private_key import HybridPrivateKey
+from .hybrid_key_alg import HybridKeyAlg
 from .simple_alg_info import SimpleAlgInfo
 from .hash_based_alg_info import HashBasedAlgInfo
 from .cipher_alg_info import CipherAlgInfo

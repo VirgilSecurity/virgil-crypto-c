@@ -147,8 +147,8 @@ void
 test__encrypt_decrypt__with_pqc_curve25519_round5_falcon_key_recipient__success(void) {
 #if VSCF_POST_QUANTUM
     inner_test__encrypt_decrypt__with_one_key_recipient__success(
-            test_data_pqc_CURVE25519_ROUND5_ND_5PKE_5D_FALCON_PUBLIC_KEY_PKCS8_DER,
-            test_data_pqc_CURVE25519_ROUND5_ND_5PKE_5D_FALCON_PRIVATE_KEY_PKCS8_DER);
+            test_data_pqc_CURVE25519_ROUND5_ND_5KEM_5D_FALCON_PUBLIC_KEY_PKCS8_DER,
+            test_data_pqc_CURVE25519_ROUND5_ND_5KEM_5D_FALCON_PRIVATE_KEY_PKCS8_DER);
 #else
     TEST_IGNORE_MESSAGE("Feature VSCF_POST_QUANTUM is disabled");
 #endif
@@ -158,8 +158,8 @@ void
 test__encrypt_decrypt__with_pqc_curve25519_round5_ed25519_falcon_key_recipient__success(void) {
 #if VSCF_POST_QUANTUM
     inner_test__encrypt_decrypt__with_one_key_recipient__success(
-            test_data_pqc_CURVE25519_ROUND5_ND_5PKE_5D_ED25519_FALCON_PUBLIC_KEY_PKCS8_DER,
-            test_data_pqc_CURVE25519_ROUND5_ND_5PKE_5D_ED25519_FALCON_PRIVATE_KEY_PKCS8_DER);
+            test_data_pqc_CURVE25519_ROUND5_ND_5KEM_5D_ED25519_FALCON_PUBLIC_KEY_PKCS8_DER,
+            test_data_pqc_CURVE25519_ROUND5_ND_5KEM_5D_ED25519_FALCON_PRIVATE_KEY_PKCS8_DER);
 #else
     TEST_IGNORE_MESSAGE("Feature VSCF_POST_QUANTUM is disabled");
 #endif
@@ -422,8 +422,8 @@ void
 test__sign_then_encrypt_and_decrypt_then_verify__with_pqc_curve25519_round5_falcon_key_recipient__success(void) {
 #if VSCF_POST_QUANTUM
     inner_test__sign_then_encrypt_and_decrypt_then_verify__with_self_signed_key_recipient__success(
-            test_data_pqc_CURVE25519_ROUND5_ND_5PKE_5D_FALCON_PUBLIC_KEY_PKCS8_DER,
-            test_data_pqc_CURVE25519_ROUND5_ND_5PKE_5D_FALCON_PRIVATE_KEY_PKCS8_DER);
+            test_data_pqc_CURVE25519_ROUND5_ND_5KEM_5D_FALCON_PUBLIC_KEY_PKCS8_DER,
+            test_data_pqc_CURVE25519_ROUND5_ND_5KEM_5D_FALCON_PRIVATE_KEY_PKCS8_DER);
 #else
     TEST_IGNORE_MESSAGE("Feature VSCF_POST_QUANTUM is disabled");
 #endif
@@ -434,8 +434,8 @@ test__sign_then_encrypt_and_decrypt_then_verify__with_pqc_curve25519_round5_ed25
         void) {
 #if VSCF_POST_QUANTUM
     inner_test__sign_then_encrypt_and_decrypt_then_verify__with_self_signed_key_recipient__success(
-            test_data_pqc_CURVE25519_ROUND5_ND_5PKE_5D_ED25519_FALCON_PUBLIC_KEY_PKCS8_DER,
-            test_data_pqc_CURVE25519_ROUND5_ND_5PKE_5D_ED25519_FALCON_PRIVATE_KEY_PKCS8_DER);
+            test_data_pqc_CURVE25519_ROUND5_ND_5KEM_5D_ED25519_FALCON_PUBLIC_KEY_PKCS8_DER,
+            test_data_pqc_CURVE25519_ROUND5_ND_5KEM_5D_ED25519_FALCON_PRIVATE_KEY_PKCS8_DER);
 #else
     TEST_IGNORE_MESSAGE("Feature VSCF_POST_QUANTUM is disabled");
 #endif
@@ -1208,8 +1208,8 @@ main(void) {
     UNITY_BEGIN();
 
 #if TEST_DEPENDENCIES_AVAILABLE
-    RUN_TEST(test__encrypt_decrypt__with_ed25519_key_recipient__success);
-    RUN_TEST(test__encrypt_decrypt__with_compound_curve25519_ed25519_key_recipient__success);
+    // RUN_TEST(test__encrypt_decrypt__with_ed25519_key_recipient__success);
+    // RUN_TEST(test__encrypt_decrypt__with_compound_curve25519_ed25519_key_recipient__success);
     RUN_TEST(test__encrypt_decrypt__with_pqc_curve25519_round5_falcon_key_recipient__success);
     RUN_TEST(test__encrypt_decrypt__with_pqc_curve25519_round5_ed25519_falcon_key_recipient__success);
     RUN_TEST(test__decrypt__with_ed25519_private_key__success);

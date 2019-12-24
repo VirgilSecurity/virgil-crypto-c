@@ -98,13 +98,13 @@ public class KeyProvider implements AutoCloseable {
     * Generate new post-quantum private key with default algorithms.
     * Note, that a post-quantum key combines classic private keys
     * alongside with post-quantum private keys.
-    * Current structure is "compound private key" where:
-    * - cipher private key is "chained private key" where:
-    * - l1 key is a classic private key;
-    * - l2 key is a post-quantum private key;
-    * - signer private key "chained private key" where:
-    * - l1 key is a classic private key;
-    * - l2 key is a post-quantum private key.
+    * Current structure is "compound private key" is:
+    * - cipher private key is "hybrid private key" where:
+    * - first key is a classic private key;
+    * - second key is a post-quantum private key;
+    * - signer private key "hybrid private key" where:
+    * - first key is a classic private key;
+    * - second key is a post-quantum private key.
     */
     public PrivateKey generatePostQuantumPrivateKey() throws FoundationException {
         return FoundationJNI.INSTANCE.keyProvider_generatePostQuantumPrivateKey(this.cCtx);
@@ -118,20 +118,20 @@ public class KeyProvider implements AutoCloseable {
     }
 
     /*
-    * Generate new chained private key with given algorithms.
+    * Generate new hybrid private key with given algorithms.
     */
-    public PrivateKey generateChainedPrivateKey(AlgId l1AlgId, AlgId l2AlgId) throws FoundationException {
-        return FoundationJNI.INSTANCE.keyProvider_generateChainedPrivateKey(this.cCtx, l1AlgId, l2AlgId);
+    public PrivateKey generateHybridPrivateKey(AlgId firstKeyAlgId, AlgId secondKeyAlgId) throws FoundationException {
+        return FoundationJNI.INSTANCE.keyProvider_generateHybridPrivateKey(this.cCtx, firstKeyAlgId, secondKeyAlgId);
     }
 
     /*
-    * Generate new compound private key with nested chained private keys.
+    * Generate new compound private key with nested hybrid private keys.
     *
-    * Note, l2 algorithm identifiers can be NONE, in this case regular key
-    * will be crated instead of chained key.
+    * Note, second key algorithm identifiers can be NONE, in this case,
+    * a regular key will be crated instead of a hybrid key.
     */
-    public PrivateKey generateCompoundChainedPrivateKey(AlgId cipherL1AlgId, AlgId cipherL2AlgId, AlgId signerL1AlgId, AlgId signerL2AlgId) throws FoundationException {
-        return FoundationJNI.INSTANCE.keyProvider_generateCompoundChainedPrivateKey(this.cCtx, cipherL1AlgId, cipherL2AlgId, signerL1AlgId, signerL2AlgId);
+    public PrivateKey generateCompoundHybridPrivateKey(AlgId cipherFirstKeyAlgId, AlgId cipherSecondKeyAlgId, AlgId signerFirstKeyAlgId, AlgId signerSecondKeyAlgId) throws FoundationException {
+        return FoundationJNI.INSTANCE.keyProvider_generateCompoundHybridPrivateKey(this.cCtx, cipherFirstKeyAlgId, cipherSecondKeyAlgId, signerFirstKeyAlgId, signerSecondKeyAlgId);
     }
 
     /*

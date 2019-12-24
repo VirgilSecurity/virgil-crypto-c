@@ -159,12 +159,12 @@
         Compound private key is corrupted.
     </constant>
 
-    <constant name="error bad chained public key" value="-234">
-        Compound public chained key is corrupted.
+    <constant name="error bad hybrid public key" value="-234">
+        Compound public hybrid key is corrupted.
     </constant>
 
-    <constant name="error bad chained private key" value="-235">
-        Compound private chained key is corrupted.
+    <constant name="error bad hybrid private key" value="-235">
+        Compound private hybrid key is corrupted.
     </constant>
 
     <constant name="error bad asn1 algorithm" value="-236">
@@ -179,8 +179,8 @@
         ASN.1 AlgorithmIdentifer with CompoundKeyParams is corrupted.
     </constant>
 
-    <constant name="error bad asn1 algorithm chained key" value="-239">
-        ASN.1 AlgorithmIdentifer with ChainedKeyParams is corrupted.
+    <constant name="error bad asn1 algorithm hybrid key" value="-239">
+        ASN.1 AlgorithmIdentifer with HybridKeyParams is corrupted.
     </constant>
 
     <constant name="error no message info" value="-301">
@@ -260,6 +260,10 @@
 
     <constant name="error invalid identity secret" value="-410">
         Brainkey identity secret is invalid.
+    </constant>
+
+    <constant name="error invalid kem encapsulated key" value="-411">
+        KEM encapsulated key is invalid or does not correspond to the private key.
     </constant>
 
     <constant name="error invalid padding" value="-501">

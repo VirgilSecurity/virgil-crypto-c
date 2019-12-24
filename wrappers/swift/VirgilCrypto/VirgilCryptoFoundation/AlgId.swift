@@ -55,8 +55,6 @@ import VSCFoundation
 
     case rsa
 
-    case ecc
-
     case ed25519
 
     case curve25519
@@ -77,13 +75,11 @@ import VSCFoundation
 
     case compoundKey
 
-    case chainedKey
+    case hybridKey
 
     case falcon
 
-    case round5
-
-    case round5Nd5pke5d
+    case round5Nd5kem5d
 
     case randomPadding
 

@@ -39,7 +39,7 @@ package com.virgilsecurity.crypto.foundation;
 /*
 * This is implementation of Curve25519 elliptic curve algorithms.
 */
-public class Curve25519 implements AutoCloseable, Alg, KeyAlg, KeyCipher, ComputeSharedKey {
+public class Curve25519 implements AutoCloseable, KeyAlg, KeyCipher, ComputeSharedKey, Kem {
 
     public long cCtx;
 
@@ -89,27 +89,6 @@ public class Curve25519 implements AutoCloseable, Alg, KeyAlg, KeyCipher, Comput
     /* Close resource. */
     public void close() {
         FoundationJNI.INSTANCE.curve25519_close(this.cCtx);
-    }
-
-    /*
-    * Provide algorithm identificator.
-    */
-    public AlgId algId() {
-        return FoundationJNI.INSTANCE.curve25519_algId(this.cCtx);
-    }
-
-    /*
-    * Produce object with algorithm information and configuration parameters.
-    */
-    public AlgInfo produceAlgInfo() {
-        return FoundationJNI.INSTANCE.curve25519_produceAlgInfo(this.cCtx);
-    }
-
-    /*
-    * Restore algorithm configuration from the given object.
-    */
-    public void restoreAlgInfo(AlgInfo algInfo) throws FoundationException {
-        FoundationJNI.INSTANCE.curve25519_restoreAlgInfo(this.cCtx, algInfo);
     }
 
     /*
@@ -255,6 +234,34 @@ public class Curve25519 implements AutoCloseable, Alg, KeyAlg, KeyCipher, Comput
     */
     public int sharedKeyLen(Key key) {
         return FoundationJNI.INSTANCE.curve25519_sharedKeyLen(this.cCtx, key);
+    }
+
+    /*
+    * Return length in bytes required to hold encapsulated shared key.
+    */
+    public int kemSharedKeyLen(Key key) {
+        return FoundationJNI.INSTANCE.curve25519_kemSharedKeyLen(this.cCtx, key);
+    }
+
+    /*
+    * Return length in bytes required to hold encapsulated key.
+    */
+    public int kemEncapsulatedKeyLen(PublicKey publicKey) {
+        return FoundationJNI.INSTANCE.curve25519_kemEncapsulatedKeyLen(this.cCtx, publicKey);
+    }
+
+    /*
+    * Generate a shared key and a key encapsulated message.
+    */
+    public KemKemEncapsulateResult kemEncapsulate(PublicKey publicKey) throws FoundationException {
+        return FoundationJNI.INSTANCE.curve25519_kemEncapsulate(this.cCtx, publicKey);
+    }
+
+    /*
+    * Decapsulate the shared key.
+    */
+    public byte[] kemDecapsulate(byte[] encapsulatedKey, PrivateKey privateKey) throws FoundationException {
+        return FoundationJNI.INSTANCE.curve25519_kemDecapsulate(this.cCtx, encapsulatedKey, privateKey);
     }
 }
 

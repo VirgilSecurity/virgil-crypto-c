@@ -136,34 +136,34 @@ VSCF_PUBLIC bool
 vscf_key_info_is_compound(const vscf_key_info_t *self);
 
 //
-//  Return true if a key is a chained key
+//  Return true if a key is a hybrid key
 //
 VSCF_PUBLIC bool
-vscf_key_info_is_chained(const vscf_key_info_t *self);
+vscf_key_info_is_hybrid(const vscf_key_info_t *self);
 
 //
 //  Return true if a key is a compound key and compounds cipher key
-//  and signer key are chained keys.
+//  and signer key are hybrid keys.
 //
 VSCF_PUBLIC bool
-vscf_key_info_is_compound_chained(const vscf_key_info_t *self);
+vscf_key_info_is_compound_hybrid(const vscf_key_info_t *self);
 
 //
 //  Return true if a key is a compound key and compounds cipher key
-//  is a chained key.
+//  is a hybrid key.
 //
 VSCF_PUBLIC bool
-vscf_key_info_is_compound_chained_cipher(const vscf_key_info_t *self);
+vscf_key_info_is_compound_hybrid_cipher(const vscf_key_info_t *self);
 
 //
 //  Return true if a key is a compound key and compounds signer key
-//  is a chained key.
+//  is a hybrid key.
 //
 VSCF_PUBLIC bool
-vscf_key_info_is_compound_chained_signer(const vscf_key_info_t *self);
+vscf_key_info_is_compound_hybrid_signer(const vscf_key_info_t *self);
 
 //
-//  Return true if a key is a compound key that contains chained keys
+//  Return true if a key is a compound key that contains hybrid keys
 //  for encryption/decryption and signing/verifying that itself
 //  contains a combination of classic keys and post-quantum keys.
 //
@@ -171,7 +171,7 @@ VSCF_PUBLIC bool
 vscf_key_info_is_hybrid_post_quantum(const vscf_key_info_t *self);
 
 //
-//  Return true if a key is a compound key that contains a chained key
+//  Return true if a key is a compound key that contains a hybrid key
 //  for encryption/decryption that contains a classic key and
 //  a post-quantum key.
 //
@@ -179,7 +179,7 @@ VSCF_PUBLIC bool
 vscf_key_info_is_hybrid_post_quantum_cipher(const vscf_key_info_t *self);
 
 //
-//  Return true if a key is a compound key that contains a chained key
+//  Return true if a key is a compound key that contains a hybrid key
 //  for signing/verifying that contains a classic key and
 //  a post-quantum key.
 //
@@ -207,46 +207,46 @@ VSCF_PUBLIC vscf_alg_id_t
 vscf_key_info_compound_signer_alg_id(const vscf_key_info_t *self);
 
 //
-//  Return chained l1 key id, if key is chained.
+//  Return hybrid's first key id, if key is hybrid.
 //  Return None, otherwise.
 //
 VSCF_PUBLIC vscf_alg_id_t
-vscf_key_info_chained_l1_alg_id(const vscf_key_info_t *self);
+vscf_key_info_hybrid_first_key_alg_id(const vscf_key_info_t *self);
 
 //
-//  Return chained l2 key id, if key is chained.
+//  Return hybrid's second key id, if key is hybrid.
 //  Return None, otherwise.
 //
 VSCF_PUBLIC vscf_alg_id_t
-vscf_key_info_chained_l2_alg_id(const vscf_key_info_t *self);
+vscf_key_info_hybrid_second_key_alg_id(const vscf_key_info_t *self);
 
 //
-//  Return l1 key id of compound's cipher key, if key is compound(chained, ...)
-//  Return None, otherwise.
+//  Return hybrid's first key id of compound's cipher key,
+//  if key is compound(hybrid, ...), None - otherwise.
 //
 VSCF_PUBLIC vscf_alg_id_t
-vscf_key_info_compound_cipher_l1_alg_id(const vscf_key_info_t *self);
+vscf_key_info_compound_hybrid_cipher_first_key_alg_id(const vscf_key_info_t *self);
 
 //
-//  Return l2 key id of compound's cipher key, if key is compound(chained, ...)
-//  Return None, otherwise.
+//  Return hybrid's second key id of compound's cipher key,
+//  if key is compound(hybrid, ...), None - otherwise.
 //
 VSCF_PUBLIC vscf_alg_id_t
-vscf_key_info_compound_cipher_l2_alg_id(const vscf_key_info_t *self);
+vscf_key_info_compound_hybrid_cipher_second_key_alg_id(const vscf_key_info_t *self);
 
 //
-//  Return l1 key id of compound's signer key, if key is compound(..., chained)
-//  Return None, otherwise.
+//  Return hybrid's first key id of compound's signer key,
+//  if key is compound(..., hybrid), None - otherwise.
 //
 VSCF_PUBLIC vscf_alg_id_t
-vscf_key_info_compound_signer_l1_alg_id(const vscf_key_info_t *self);
+vscf_key_info_compound_hybrid_signer_first_key_alg_id(const vscf_key_info_t *self);
 
 //
-//  Return l2 key id of compound's signer key, if key is compound(..., chained)
-//  Return None, otherwise.
+//  Return hybrid's second key id of compound's signer key,
+//  if key is compound(..., hybrid), None - otherwise.
 //
 VSCF_PUBLIC vscf_alg_id_t
-vscf_key_info_compound_signer_l2_alg_id(const vscf_key_info_t *self);
+vscf_key_info_compound_hybrid_signer_second_key_alg_id(const vscf_key_info_t *self);
 
 
 // --------------------------------------------------------------------------

@@ -97,13 +97,13 @@ class VscfKeyProvider(object):
         """Generate new post-quantum private key with default algorithms.
         Note, that a post-quantum key combines classic private keys
         alongside with post-quantum private keys.
-        Current structure is "compound private key" where:
-            - cipher private key is "chained private key" where:
-                - l1 key is a classic private key;
-                - l2 key is a post-quantum private key;
-            - signer private key "chained private key" where:
-                - l1 key is a classic private key;
-                - l2 key is a post-quantum private key."""
+        Current structure is "compound private key" is:
+            - cipher private key is "hybrid private key" where:
+                - first key is a classic private key;
+                - second key is a post-quantum private key;
+            - signer private key "hybrid private key" where:
+                - first key is a classic private key;
+                - second key is a post-quantum private key."""
         vscf_key_provider_generate_post_quantum_private_key = self._lib.vscf_key_provider_generate_post_quantum_private_key
         vscf_key_provider_generate_post_quantum_private_key.argtypes = [POINTER(vscf_key_provider_t), POINTER(vscf_error_t)]
         vscf_key_provider_generate_post_quantum_private_key.restype = POINTER(vscf_impl_t)
@@ -116,22 +116,22 @@ class VscfKeyProvider(object):
         vscf_key_provider_generate_compound_private_key.restype = POINTER(vscf_impl_t)
         return vscf_key_provider_generate_compound_private_key(ctx, cipher_alg_id, signer_alg_id, error)
 
-    def vscf_key_provider_generate_chained_private_key(self, ctx, l1_alg_id, l2_alg_id, error):
-        """Generate new chained private key with given algorithms."""
-        vscf_key_provider_generate_chained_private_key = self._lib.vscf_key_provider_generate_chained_private_key
-        vscf_key_provider_generate_chained_private_key.argtypes = [POINTER(vscf_key_provider_t), c_int, c_int, POINTER(vscf_error_t)]
-        vscf_key_provider_generate_chained_private_key.restype = POINTER(vscf_impl_t)
-        return vscf_key_provider_generate_chained_private_key(ctx, l1_alg_id, l2_alg_id, error)
+    def vscf_key_provider_generate_hybrid_private_key(self, ctx, first_key_alg_id, second_key_alg_id, error):
+        """Generate new hybrid private key with given algorithms."""
+        vscf_key_provider_generate_hybrid_private_key = self._lib.vscf_key_provider_generate_hybrid_private_key
+        vscf_key_provider_generate_hybrid_private_key.argtypes = [POINTER(vscf_key_provider_t), c_int, c_int, POINTER(vscf_error_t)]
+        vscf_key_provider_generate_hybrid_private_key.restype = POINTER(vscf_impl_t)
+        return vscf_key_provider_generate_hybrid_private_key(ctx, first_key_alg_id, second_key_alg_id, error)
 
-    def vscf_key_provider_generate_compound_chained_private_key(self, ctx, cipher_l1_alg_id, cipher_l2_alg_id, signer_l1_alg_id, signer_l2_alg_id, error):
-        """Generate new compound private key with nested chained private keys.
+    def vscf_key_provider_generate_compound_hybrid_private_key(self, ctx, cipher_first_key_alg_id, cipher_second_key_alg_id, signer_first_key_alg_id, signer_second_key_alg_id, error):
+        """Generate new compound private key with nested hybrid private keys.
 
-        Note, l2 algorithm identifiers can be NONE, in this case regular key
-        will be crated instead of chained key."""
-        vscf_key_provider_generate_compound_chained_private_key = self._lib.vscf_key_provider_generate_compound_chained_private_key
-        vscf_key_provider_generate_compound_chained_private_key.argtypes = [POINTER(vscf_key_provider_t), c_int, c_int, c_int, c_int, POINTER(vscf_error_t)]
-        vscf_key_provider_generate_compound_chained_private_key.restype = POINTER(vscf_impl_t)
-        return vscf_key_provider_generate_compound_chained_private_key(ctx, cipher_l1_alg_id, cipher_l2_alg_id, signer_l1_alg_id, signer_l2_alg_id, error)
+        Note, second key algorithm identifiers can be NONE, in this case,
+        a regular key will be crated instead of a hybrid key."""
+        vscf_key_provider_generate_compound_hybrid_private_key = self._lib.vscf_key_provider_generate_compound_hybrid_private_key
+        vscf_key_provider_generate_compound_hybrid_private_key.argtypes = [POINTER(vscf_key_provider_t), c_int, c_int, c_int, c_int, POINTER(vscf_error_t)]
+        vscf_key_provider_generate_compound_hybrid_private_key.restype = POINTER(vscf_impl_t)
+        return vscf_key_provider_generate_compound_hybrid_private_key(ctx, cipher_first_key_alg_id, cipher_second_key_alg_id, signer_first_key_alg_id, signer_second_key_alg_id, error)
 
     def vscf_key_provider_import_private_key(self, ctx, key_data, error):
         """Import private key from the PKCS#8 format."""

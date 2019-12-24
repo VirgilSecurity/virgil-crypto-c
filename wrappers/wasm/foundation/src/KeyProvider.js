@@ -144,13 +144,13 @@ const initKeyProvider = (Module, modules) => {
          * Generate new post-quantum private key with default algorithms.
          * Note, that a post-quantum key combines classic private keys
          * alongside with post-quantum private keys.
-         * Current structure is "compound private key" where:
-         * - cipher private key is "chained private key" where:
-         * - l1 key is a classic private key;
-         * - l2 key is a post-quantum private key;
-         * - signer private key "chained private key" where:
-         * - l1 key is a classic private key;
-         * - l2 key is a post-quantum private key.
+         * Current structure is "compound private key" is:
+         * - cipher private key is "hybrid private key" where:
+         * - first key is a classic private key;
+         * - second key is a post-quantum private key;
+         * - signer private key "hybrid private key" where:
+         * - first key is a classic private key;
+         * - second key is a post-quantum private key.
          */
         generatePostQuantumPrivateKey() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
@@ -202,12 +202,12 @@ const initKeyProvider = (Module, modules) => {
         }
 
         /**
-         * Generate new chained private key with given algorithms.
+         * Generate new hybrid private key with given algorithms.
          */
-        generateChainedPrivateKey(l1AlgId, l2AlgId) {
+        generateHybridPrivateKey(firstKeyAlgId, secondKeyAlgId) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-            precondition.ensureNumber('l1AlgId', l1AlgId);
-            precondition.ensureNumber('l2AlgId', l2AlgId);
+            precondition.ensureNumber('firstKeyAlgId', firstKeyAlgId);
+            precondition.ensureNumber('secondKeyAlgId', secondKeyAlgId);
 
             const errorCtxSize = Module._vscf_error_ctx_size();
             const errorCtxPtr = Module._malloc(errorCtxSize);
@@ -216,7 +216,7 @@ const initKeyProvider = (Module, modules) => {
             let proxyResult;
 
             try {
-                proxyResult = Module._vscf_key_provider_generate_chained_private_key(this.ctxPtr, l1AlgId, l2AlgId, errorCtxPtr);
+                proxyResult = Module._vscf_key_provider_generate_hybrid_private_key(this.ctxPtr, firstKeyAlgId, secondKeyAlgId, errorCtxPtr);
 
                 const errorStatus = Module._vscf_error_status(errorCtxPtr);
                 modules.FoundationError.handleStatusCode(errorStatus);
@@ -229,17 +229,17 @@ const initKeyProvider = (Module, modules) => {
         }
 
         /**
-         * Generate new compound private key with nested chained private keys.
+         * Generate new compound private key with nested hybrid private keys.
          *
-         * Note, l2 algorithm identifiers can be NONE, in this case regular key
-         * will be crated instead of chained key.
+         * Note, second key algorithm identifiers can be NONE, in this case,
+         * a regular key will be crated instead of a hybrid key.
          */
-        generateCompoundChainedPrivateKey(cipherL1AlgId, cipherL2AlgId, signerL1AlgId, signerL2AlgId) {
+        generateCompoundHybridPrivateKey(cipherFirstKeyAlgId, cipherSecondKeyAlgId, signerFirstKeyAlgId, signerSecondKeyAlgId) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-            precondition.ensureNumber('cipherL1AlgId', cipherL1AlgId);
-            precondition.ensureNumber('cipherL2AlgId', cipherL2AlgId);
-            precondition.ensureNumber('signerL1AlgId', signerL1AlgId);
-            precondition.ensureNumber('signerL2AlgId', signerL2AlgId);
+            precondition.ensureNumber('cipherFirstKeyAlgId', cipherFirstKeyAlgId);
+            precondition.ensureNumber('cipherSecondKeyAlgId', cipherSecondKeyAlgId);
+            precondition.ensureNumber('signerFirstKeyAlgId', signerFirstKeyAlgId);
+            precondition.ensureNumber('signerSecondKeyAlgId', signerSecondKeyAlgId);
 
             const errorCtxSize = Module._vscf_error_ctx_size();
             const errorCtxPtr = Module._malloc(errorCtxSize);
@@ -248,7 +248,7 @@ const initKeyProvider = (Module, modules) => {
             let proxyResult;
 
             try {
-                proxyResult = Module._vscf_key_provider_generate_compound_chained_private_key(this.ctxPtr, cipherL1AlgId, cipherL2AlgId, signerL1AlgId, signerL2AlgId, errorCtxPtr);
+                proxyResult = Module._vscf_key_provider_generate_compound_hybrid_private_key(this.ctxPtr, cipherFirstKeyAlgId, cipherSecondKeyAlgId, signerFirstKeyAlgId, signerSecondKeyAlgId, errorCtxPtr);
 
                 const errorStatus = Module._vscf_error_status(errorCtxPtr);
                 modules.FoundationError.handleStatusCode(errorStatus);
