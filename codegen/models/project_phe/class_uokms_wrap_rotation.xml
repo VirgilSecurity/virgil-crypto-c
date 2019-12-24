@@ -1,0 +1,65 @@
+<class name="uokms wrap rotation" context="internal">
+    Implements wrap rotation.
+
+    <require class="phe common" scope="public"/>
+    <require impl="ctr drbg" project="foundation" scope="private"/>
+
+    <require header="mbedtls/ecp.h" scope="context"/>
+    <require header="mbedtls/bignum.h" scope="context"/>
+
+    <require module="buffer defs" scope="private" project="common"/>
+    <require module="mbedtls bridge random" scope="private" project="foundation"/>
+
+    <dependency name="operation random" interface="random" project="foundation">
+        Random used for crypto operations to make them const-time
+    </dependency>
+
+    <property name="group" class="mbedtls_ecp_group" library="mbedtls" access="readwrite" is_reference="0"/>
+    <property name="a" class="mbedtls_mpi" library="mbedtls" access="readwrite" is_reference="0"/>
+
+    <method name="setup defaults">
+        Setups dependencies with default values.
+
+        <return enum="status">
+            - vsce_status_ERROR_RNG_FAILED in case rng failed
+        </return>
+    </method>
+
+    <method name="set update token">
+        Sets update token. Should be called only once and before any other function
+
+        <argument name="update token" class="data">
+            Update token
+        </argument>
+
+        <return enum="status">
+            - vsce_status_ERROR_INVALID_PRIVATE_KEY if private key is invalid
+        </return>
+    </method>
+
+    <method name="update wrap">
+        Updates EnrollmentRecord using server's update token
+
+        <argument name="wrap" class="data">
+            EnrollmentRecord created and stored at enroll account step
+        </argument>
+        <argument name="new wrap" class="buffer" access="writeonly">
+            Updated EnrollmentRecord
+            Buffer size should be >= enrollment record len
+
+            <length constant="phe public key length" class="phe common"/>
+        </argument>
+
+        <return enum="status">
+            - vsce_status_ERROR_INVALID_PUBLIC_KEY if input points are invalid
+        </return>
+    </method>
+
+    <method name="get op group" declaration="private">
+        <return class="mbedtls_ecp_group" library="mbedtls" access="readwrite"/>
+    </method>
+
+    <method name="free op group" declaration="private" is_static="1">
+        <argument name="op group" class="mbedtls_ecp_group" library="mbedtls" access="readwrite"/>
+    </method>
+</class>

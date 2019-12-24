@@ -63,6 +63,9 @@
 #include "vsce_phe_server.h"
 #include "vsce_platform.h"
 #include "vsce_status.h"
+#include "vsce_uokms_client.h"
+#include "vsce_uokms_server.h"
+#include "vsce_uokms_wrap_rotation.h"
 
 // clang-format on
 //  @end
