@@ -99,7 +99,7 @@ option(VIRGIL_LIB_PHE "Build 'phe' library" ON)
 #
 # Features
 #
-option(VIRGIL_POST_QUANTUM "Enable post-quantum cryptography [experemental]." OFF)
+option(VIRGIL_POST_QUANTUM "Enable post-quantum cryptography [experemental]." ON)
 
 #
 # Wrappers
