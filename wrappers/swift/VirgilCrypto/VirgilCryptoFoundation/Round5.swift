@@ -204,7 +204,7 @@ import VSCFoundation
 
     /// Generate a shared key and a key encapsulated message.
     @objc public func kemEncapsulate(publicKey: PublicKey) throws -> KemKemEncapsulateResult {
-        let sharedKeyCount = self.encapsulatedSharedKeyLen(key: publicKey)
+        let sharedKeyCount = self.kemSharedKeyLen(key: publicKey)
         var sharedKey = Data(count: sharedKeyCount)
         var sharedKeyBuf = vsc_buffer_new()
         defer {
@@ -237,7 +237,7 @@ import VSCFoundation
 
     /// Decapsulate the shared key.
     @objc public func kemDecapsulate(encapsulatedKey: Data, privateKey: PrivateKey) throws -> Data {
-        let sharedKeyCount = self.encapsulatedSharedKeyLen(key: privateKey)
+        let sharedKeyCount = self.kemSharedKeyLen(key: privateKey)
         var sharedKey = Data(count: sharedKeyCount)
         var sharedKeyBuf = vsc_buffer_new()
         defer {

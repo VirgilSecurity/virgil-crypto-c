@@ -253,7 +253,7 @@ class Curve25519(KeyAlg, KeyCipher, ComputeSharedKey, Kem):
 
     def kem_encapsulate(self, public_key):
         """Generate a shared key and a key encapsulated message."""
-        shared_key = Buffer(self.encapsulated_shared_key_len(key=public_key))
+        shared_key = Buffer(self.kem_shared_key_len(key=public_key))
         encapsulated_key = Buffer(self.encapsulated_key_len(public_key=public_key))
         status = self._lib_vscf_curve25519.vscf_curve25519_kem_encapsulate(self.ctx, public_key.c_impl, shared_key.c_buffer, encapsulated_key.c_buffer)
         VscfStatus.handle_status(status)
@@ -262,7 +262,7 @@ class Curve25519(KeyAlg, KeyCipher, ComputeSharedKey, Kem):
     def kem_decapsulate(self, encapsulated_key, private_key):
         """Decapsulate the shared key."""
         d_encapsulated_key = Data(encapsulated_key)
-        shared_key = Buffer(self.encapsulated_shared_key_len(key=private_key))
+        shared_key = Buffer(self.kem_shared_key_len(key=private_key))
         status = self._lib_vscf_curve25519.vscf_curve25519_kem_decapsulate(self.ctx, d_encapsulated_key.data, private_key.c_impl, shared_key.c_buffer)
         VscfStatus.handle_status(status)
         return shared_key.get_bytes()

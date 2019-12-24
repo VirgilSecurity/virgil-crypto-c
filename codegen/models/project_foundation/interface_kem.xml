@@ -25,7 +25,7 @@
         <argument name="public key" interface="public key"/>
 
         <argument name="shared key" class="buffer">
-            <length method="encapsulated shared key len">
+            <length method="kem shared key len">
                 <proxy argument="public key" to="key"/>
             </length>
         </argument>
@@ -46,7 +46,7 @@
         <argument name="encapsulated key" class="data"/>
         <argument name="private key" interface="private key"/>
         <argument name="shared key" class="buffer">
-            <length method="encapsulated shared key len">
+            <length method="kem shared key len">
                 <proxy argument="private key" to="key"/>
             </length>
         </argument>

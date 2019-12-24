@@ -792,7 +792,7 @@ const initEcc = (Module, modules) => {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureImplementInterface('publicKey', publicKey, 'Foundation.PublicKey', modules.FoundationInterfaceTag.PUBLIC_KEY, modules.FoundationInterface);
 
-            const sharedKeyCapacity = this.encapsulatedSharedKeyLen(publicKey);
+            const sharedKeyCapacity = this.kemSharedKeyLen(publicKey);
             const sharedKeyCtxPtr = Module._vsc_buffer_new_with_capacity(sharedKeyCapacity);
 
             const encapsulatedKeyCapacity = this.encapsulatedKeyLen(publicKey);
@@ -836,7 +836,7 @@ const initEcc = (Module, modules) => {
             //  Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(encapsulatedKeyCtxPtr, encapsulatedKeyPtr, encapsulatedKeySize);
 
-            const sharedKeyCapacity = this.encapsulatedSharedKeyLen(privateKey);
+            const sharedKeyCapacity = this.kemSharedKeyLen(privateKey);
             const sharedKeyCtxPtr = Module._vsc_buffer_new_with_capacity(sharedKeyCapacity);
 
             try {
