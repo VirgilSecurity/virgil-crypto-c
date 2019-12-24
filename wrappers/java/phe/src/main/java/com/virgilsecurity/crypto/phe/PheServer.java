@@ -85,6 +85,9 @@ public class PheServer implements AutoCloseable {
         PheJNI.INSTANCE.pheServer_setOperationRandom(this.cCtx, operationRandom);
     }
 
+    /*
+    * Setups dependencies with default values.
+    */
     public void setupDefaults() throws PheException {
         PheJNI.INSTANCE.pheServer_setupDefaults(this.cCtx);
     }

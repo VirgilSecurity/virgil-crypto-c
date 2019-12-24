@@ -204,12 +204,17 @@ test__hash_z_s_success__const_hash__should_match(void) {
 
     vsce_phe_hash_t *phe_hash = vsce_phe_hash_new();
 
-    mbedtls_ecp_point c0, c1, term1, term2, term3;
+    mbedtls_ecp_point pub, c0, c1, term1, term2, term3;
+    mbedtls_ecp_point_init(&pub);
     mbedtls_ecp_point_init(&c0);
     mbedtls_ecp_point_init(&c1);
     mbedtls_ecp_point_init(&term1);
     mbedtls_ecp_point_init(&term2);
     mbedtls_ecp_point_init(&term3);
+
+    mbedtls_mpi_read_string(&pub.X, 10, test_phe_hash_z_s_pub_x_DEC);
+    mbedtls_mpi_read_string(&pub.Y, 10, test_phe_hash_z_s_pub_y_DEC);
+    mbedtls_mpi_lset(&pub.Z, 1);
 
     mbedtls_mpi_read_string(&c0.X, 10, test_phe_hash_z_s_c0_x_DEC);
     mbedtls_mpi_read_string(&c0.Y, 10, test_phe_hash_z_s_c0_y_DEC);
@@ -234,7 +239,7 @@ test__hash_z_s_success__const_hash__should_match(void) {
     mbedtls_mpi z;
     mbedtls_mpi_init(&z);
 
-    vsce_phe_hash_hash_z_success(phe_hash, test_phe_hash_z_s_pub, &c0, &c1, &term1, &term2, &term3, &z);
+    vsce_phe_hash_hash_z_success(phe_hash, &pub, &c0, &c1, &term3, &term1, &term2, &z);
 
     mbedtls_mpi z_exp;
     mbedtls_mpi_init(&z_exp);
@@ -244,6 +249,7 @@ test__hash_z_s_success__const_hash__should_match(void) {
 
     vsce_phe_hash_destroy(&phe_hash);
 
+    mbedtls_ecp_point_free(&pub);
     mbedtls_ecp_point_free(&c0);
     mbedtls_ecp_point_free(&c1);
     mbedtls_ecp_point_free(&term1);

@@ -1,0 +1,5 @@
+DecryptResponse.v max_size:65 fixed_length:true
+
+ProofOfSuccess.term1 max_size:65 fixed_length:true
+ProofOfSuccess.term2 max_size:65 fixed_length:true
+ProofOfSuccess.blind_x max_size:32 fixed_length:true

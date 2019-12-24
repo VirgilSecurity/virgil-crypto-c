@@ -59,13 +59,16 @@ public class PheJNI {
     /*
     * Random used for key generation, proofs, etc.
     */
-    public native void pheServer_setRandom(long cCtx, Random random);
+    public native void pheServer_setRandom(long cCtx, Random random) throws PheException;
 
     /*
     * Random used for crypto operations to make them const-time
     */
-    public native void pheServer_setOperationRandom(long cCtx, Random operationRandom);
+    public native void pheServer_setOperationRandom(long cCtx, Random operationRandom) throws PheException;
 
+    /*
+    * Setups dependencies with default values.
+    */
     public native void pheServer_setupDefaults(long cCtx) throws PheException;
 
     /*
@@ -110,13 +113,16 @@ public class PheJNI {
     /*
     * Random used for key generation, proofs, etc.
     */
-    public native void pheClient_setRandom(long cCtx, Random random);
+    public native void pheClient_setRandom(long cCtx, Random random) throws PheException;
 
     /*
     * Random used for crypto operations to make them const-time
     */
-    public native void pheClient_setOperationRandom(long cCtx, Random operationRandom);
+    public native void pheClient_setOperationRandom(long cCtx, Random operationRandom) throws PheException;
 
+    /*
+    * Setups dependencies with default values.
+    */
     public native void pheClient_setupDefaults(long cCtx) throws PheException;
 
     /*
@@ -214,5 +220,121 @@ public class PheJNI {
     * Decrypts data (and verifies additional data) using account key
     */
     public native byte[] pheCipher_authDecrypt(long cCtx, byte[] cipherText, byte[] additionalData, byte[] accountKey) throws PheException;
+
+    public native long uokmsClient_new();
+
+    public native void uokmsClient_close(long cCtx);
+
+    /*
+    * Random used for key generation, proofs, etc.
+    */
+    public native void uokmsClient_setRandom(long cCtx, Random random) throws PheException;
+
+    /*
+    * Random used for crypto operations to make them const-time
+    */
+    public native void uokmsClient_setOperationRandom(long cCtx, Random operationRandom) throws PheException;
+
+    /*
+    * Setups dependencies with default values.
+    */
+    public native void uokmsClient_setupDefaults(long cCtx) throws PheException;
+
+    /*
+    * Sets client private and server public key
+    * Call this method before any other methods
+    * This function should be called only once
+    */
+    public native void uokmsClient_setKeys(long cCtx, byte[] clientPrivateKey, byte[] serverPublicKey) throws PheException;
+
+    /*
+    * Generates client private key
+    */
+    public native byte[] uokmsClient_generateClientPrivateKey(long cCtx) throws PheException;
+
+    /*
+    * Generates new encrypt wrap (which should be stored and then used for decryption) + encryption key
+    * of "encryption key len" that can be used for symmetric encryption
+    */
+    public native UokmsClientGenerateEncryptWrapResult uokmsClient_generateEncryptWrap(long cCtx, int encryptionKeyLen) throws PheException;
+
+    /*
+    * Generates request to decrypt data, this request should be sent to the server.
+    * Server response is then passed to "process decrypt response" where encryption key can be decapsulated
+    */
+    public native UokmsClientGenerateDecryptRequestResult uokmsClient_generateDecryptRequest(long cCtx, byte[] wrap) throws PheException;
+
+    /*
+    * Processed server response, checks server proof and decapsulates encryption key
+    */
+    public native byte[] uokmsClient_processDecryptResponse(long cCtx, byte[] wrap, byte[] decryptRequest, byte[] decryptResponse, byte[] deblindFactor, int encryptionKeyLen) throws PheException;
+
+    /*
+    * Rotates client and server keys using given update token obtained from server
+    */
+    public native UokmsClientRotateKeysResult uokmsClient_rotateKeys(long cCtx, byte[] updateToken) throws PheException;
+
+    public native long uokmsServer_new();
+
+    public native void uokmsServer_close(long cCtx);
+
+    /*
+    * Random used for key generation, proofs, etc.
+    */
+    public native void uokmsServer_setRandom(long cCtx, Random random) throws PheException;
+
+    /*
+    * Random used for crypto operations to make them const-time
+    */
+    public native void uokmsServer_setOperationRandom(long cCtx, Random operationRandom) throws PheException;
+
+    /*
+    * Setups dependencies with default values.
+    */
+    public native void uokmsServer_setupDefaults(long cCtx) throws PheException;
+
+    /*
+    * Generates new NIST P-256 server key pair for some client
+    */
+    public native UokmsServerGenerateServerKeyPairResult uokmsServer_generateServerKeyPair(long cCtx) throws PheException;
+
+    /*
+    * Buffer size needed to fit DecryptResponse
+    */
+    public native int uokmsServer_decryptResponseLen(long cCtx);
+
+    /*
+    * Processed client's decrypt request
+    */
+    public native byte[] uokmsServer_processDecryptRequest(long cCtx, byte[] serverPrivateKey, byte[] decryptRequest) throws PheException;
+
+    /*
+    * Updates server's private and public keys and issues an update token for use on client's side
+    */
+    public native UokmsServerRotateKeysResult uokmsServer_rotateKeys(long cCtx, byte[] serverPrivateKey) throws PheException;
+
+    public native long uokmsWrapRotation_new();
+
+    public native void uokmsWrapRotation_close(long cCtx);
+
+    /*
+    * Random used for crypto operations to make them const-time
+    */
+    public native void uokmsWrapRotation_setOperationRandom(long cCtx, Random operationRandom);
+
+    /*
+    * Setups dependencies with default values.
+    */
+    public native void uokmsWrapRotation_setupDefaults(long cCtx) throws PheException;
+
+    /*
+    * Sets update token. Should be called only once and before any other function
+    */
+    public native void uokmsWrapRotation_setUpdateToken(long cCtx, byte[] updateToken) throws PheException;
+
+    /*
+    * Updates EnrollmentRecord using server's update token
+    */
+    public native byte[] uokmsWrapRotation_updateWrap(long cCtx, byte[] wrap) throws PheException;
 }
 

@@ -1,0 +1,123 @@
+<class name="uokms server" context="internal">
+    Class implements UOKMS for server-side.
+
+    <require class="phe common" scope="public"/>
+    <require impl="ctr drbg" project="foundation" scope="private"/>
+
+    <require header="mbedtls/ecp.h" scope="context"/>
+    <require header="mbedtls/bignum.h" scope="context"/>
+
+    <require header="UOKMSModels.pb.h" scope="private"/>
+    <require header="pb_encode.h" scope="private"/>
+
+    <require module="buffer defs" scope="private" project="common"/>
+    <require module="mbedtls bridge random" scope="private" project="foundation"/>
+
+    <dependency name="random" interface="random" project="foundation" has_observers="1">
+        Random used for key generation, proofs, etc.
+    </dependency>
+    <dependency name="operation random" interface="random" project="foundation" has_observers="1">
+        Random used for crypto operations to make them const-time
+    </dependency>
+
+    <property name="proof generator" class="uokms proof generator"/>
+    <property name="group" class="mbedtls_ecp_group" library="mbedtls" access="readwrite" is_reference="0"/>
+
+    <method name="setup defaults">
+        Setups dependencies with default values.
+
+        <return enum="status">
+            - vsce_status_ERROR_RNG_FAILED in case rng failed
+        </return>
+    </method>
+
+    <method name="generate server key pair">
+        Generates new NIST P-256 server key pair for some client
+
+        <argument name="server private key" class="buffer" access="writeonly">
+            New server private key
+            Buffer size should be >= .(class_phe_common_constant_phe_private_key_length)
+
+            <length constant="phe private key length" class="phe common"/>
+        </argument>
+        <argument name="server public key" class="buffer" access="writeonly">
+            New server public key
+            Buffer size should be >= .(class_phe_common_constant_phe_public_key_length)
+
+            <length constant="phe public key length" class="phe common"/>
+        </argument>
+
+        <return enum="status">
+            - vsce_status_ERROR_RNG_FAILED in case rng failed
+        </return>
+    </method>
+
+    <method name="decrypt response len">
+        Buffer size needed to fit DecryptResponse
+
+        <return type="size">
+            Buffer size needed to fit DecryptResponse
+        </return>
+    </method>
+
+    <method name="process decrypt request">
+        Processed client's decrypt request
+
+        <argument name="server private key" class="data">
+            Server's private key for corresponding client
+        </argument>
+        <argument name="decrypt request" class="data">
+            Decrypt request from the client
+        </argument>
+        <argument name="decrypt response" class="buffer" access="writeonly">
+            Decrypt response sent to client
+            Buffer size should be >= "decrypt response len"
+
+            <length method="decrypt response len"/>
+        </argument>
+
+        <return enum="status">
+            - vsce_status_ERROR_INVALID_PRIVATE_KEY if private key is invalid
+            - vsce_status_ERROR_INVALID_PUBLIC_KEY if input points are invalid
+        </return>
+    </method>
+
+    <method name="rotate keys">
+        Updates server's private and public keys and issues an update token for use on client's side
+
+        <argument name="server private key" class="data">
+            Server's private key for corresponding client
+        </argument>
+        <argument name="new server private key" class="buffer" access="writeonly">
+            New server's private key for corresponding client
+            Buffer size should be >= .(class_phe_common_constant_phe_private_key_length)
+
+            <length constant="phe private key length" class="phe common"/>
+        </argument>
+        <argument name="new server public key" class="buffer" access="writeonly">
+            New server's public key for corresponding client
+            Buffer size should be >= .(class_phe_common_constant_phe_public_key_length)
+
+            <length constant="phe public key length" class="phe common"/>
+        </argument>
+        <argument name="update token" class="buffer" access="writeonly">
+            Update token that should be passed to client
+            Buffer size should be >= "phe public key length"
+
+            <length constant="phe public key length" class="phe common"/>
+        </argument>
+
+        <return enum="status">
+            - vsce_status_ERROR_INVALID_PRIVATE_KEY if private key is invalid
+            - vsce_status_ERROR_RNG_FAILED in case rng failed
+        </return>
+    </method>
+
+    <method name="get op group" declaration="private">
+        <return class="mbedtls_ecp_group" library="mbedtls" access="readwrite"/>
+    </method>
+
+    <method name="free op group" declaration="private" is_static="1">
+        <argument name="op group" class="mbedtls_ecp_group" library="mbedtls" access="readwrite"/>
+    </method>
+</class>

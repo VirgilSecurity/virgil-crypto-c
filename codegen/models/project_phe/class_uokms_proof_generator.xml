@@ -1,0 +1,26 @@
+<class name="uokms proof generator" context="internal" scope="internal">
+
+    <require class="phe common" scope="public"/>
+    <require header="UOKMSModels.pb.h" scope="public"/>
+
+    <require header="mbedtls/ecp.h" scope="public"/>
+    <require header="mbedtls/bignum.h" scope="context"/>
+    <require module="mbedtls bridge random" scope="private" project="foundation"/>
+
+    <property name="phe hash" class="phe hash"/>
+    <property name="proof generator" class="proof generator"/>
+
+    <dependency name="random" interface="random" project="foundation" has_observers="1"/>
+    <dependency name="operation random" interface="random" project="foundation" has_observers="1"/>
+
+    <method name="prove success">
+        <argument name="op group" class="mbedtls_ecp_group" library="mbedtls" access="readwrite"/>
+        <argument name="priv" class="mbedtls_mpi" library="mbedtls"/>
+        <argument name="pub" class="mbedtls_ecp_point" library="mbedtls"/>
+        <argument name="U" class="mbedtls_ecp_point" library="mbedtls"/>
+        <argument name="V" class="mbedtls_ecp_point" library="mbedtls"/>
+        <argument name="success proof" class="ProofOfSuccess" library="nanopb" access="writeonly"/>
+
+        <return enum="status"/>
+    </method>
+</class>
