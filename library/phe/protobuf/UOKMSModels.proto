@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-message ProofOfSuccess {
+message UOKMSProofOfSuccess {
   bytes term1 = 1;
   bytes term2 = 2;
   bytes blind_x = 3;
@@ -8,5 +8,5 @@ message ProofOfSuccess {
 
 message DecryptResponse {
   bytes v = 1;
-  ProofOfSuccess proof = 2;
+  UOKMSProofOfSuccess proof = 2;
 }
