@@ -57,7 +57,7 @@
     </feature>
 
     <feature name="post quantum" default="${VIRGIL_POST_QUANTUM}">
-        Enable post-quantum cryptography for foundation library [experemental].
+        Enable post-quantum cryptography for foundation library [experimental].
 
         <require library="keccak" feature="library"/>
         <require library="round5" feature="library"/>
