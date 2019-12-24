@@ -58,10 +58,6 @@ import VSCFoundation
             return Aes256Gcm(take: c_ctx)
         case vscf_impl_tag_AES256_CBC:
             return Aes256Cbc(take: c_ctx)
-        case vscf_impl_tag_RSA:
-            return Rsa(take: c_ctx)
-        case vscf_impl_tag_ECC:
-            return Ecc(take: c_ctx)
         case vscf_impl_tag_HMAC:
             return Hmac(take: c_ctx)
         case vscf_impl_tag_HKDF:
@@ -74,18 +70,10 @@ import VSCFoundation
             return Pkcs5Pbkdf2(take: c_ctx)
         case vscf_impl_tag_PKCS5_PBES2:
             return Pkcs5Pbes2(take: c_ctx)
-        case vscf_impl_tag_ED25519:
-            return Ed25519(take: c_ctx)
-        case vscf_impl_tag_CURVE25519:
-            return Curve25519(take: c_ctx)
         case vscf_impl_tag_FALCON:
             return Falcon(take: c_ctx)
-        case vscf_impl_tag_ROUND5:
-            return Round5(take: c_ctx)
         case vscf_impl_tag_COMPOUND_KEY_ALG:
             return CompoundKeyAlg(take: c_ctx)
-        case vscf_impl_tag_CHAINED_KEY_ALG:
-            return ChainedKeyAlg(take: c_ctx)
         case vscf_impl_tag_RANDOM_PADDING:
             return RandomPadding(take: c_ctx)
         default:
@@ -372,10 +360,10 @@ import VSCFoundation
             return CompoundPublicKey(take: c_ctx)
         case vscf_impl_tag_COMPOUND_PRIVATE_KEY:
             return CompoundPrivateKey(take: c_ctx)
-        case vscf_impl_tag_CHAINED_PUBLIC_KEY:
-            return ChainedPublicKey(take: c_ctx)
-        case vscf_impl_tag_CHAINED_PRIVATE_KEY:
-            return ChainedPrivateKey(take: c_ctx)
+        case vscf_impl_tag_HYBRID_PUBLIC_KEY:
+            return HybridPublicKey(take: c_ctx)
+        case vscf_impl_tag_HYBRID_PRIVATE_KEY:
+            return HybridPrivateKey(take: c_ctx)
         default:
             fatalError("Unexpected C implementation cast to the Swift implementation.")
         }
@@ -403,8 +391,8 @@ import VSCFoundation
             return RawPublicKey(take: c_ctx)
         case vscf_impl_tag_COMPOUND_PUBLIC_KEY:
             return CompoundPublicKey(take: c_ctx)
-        case vscf_impl_tag_CHAINED_PUBLIC_KEY:
-            return ChainedPublicKey(take: c_ctx)
+        case vscf_impl_tag_HYBRID_PUBLIC_KEY:
+            return HybridPublicKey(take: c_ctx)
         default:
             fatalError("Unexpected C implementation cast to the Swift implementation.")
         }
@@ -432,8 +420,8 @@ import VSCFoundation
             return RawPrivateKey(take: c_ctx)
         case vscf_impl_tag_COMPOUND_PRIVATE_KEY:
             return CompoundPrivateKey(take: c_ctx)
-        case vscf_impl_tag_CHAINED_PRIVATE_KEY:
-            return ChainedPrivateKey(take: c_ctx)
+        case vscf_impl_tag_HYBRID_PRIVATE_KEY:
+            return HybridPrivateKey(take: c_ctx)
         default:
             fatalError("Unexpected C implementation cast to the Swift implementation.")
         }
@@ -467,8 +455,8 @@ import VSCFoundation
             return Round5(take: c_ctx)
         case vscf_impl_tag_COMPOUND_KEY_ALG:
             return CompoundKeyAlg(take: c_ctx)
-        case vscf_impl_tag_CHAINED_KEY_ALG:
-            return ChainedKeyAlg(take: c_ctx)
+        case vscf_impl_tag_HYBRID_KEY_ALG:
+            return HybridKeyAlg(take: c_ctx)
         default:
             fatalError("Unexpected C implementation cast to the Swift implementation.")
         }
@@ -496,12 +484,10 @@ import VSCFoundation
             return Ed25519(take: c_ctx)
         case vscf_impl_tag_CURVE25519:
             return Curve25519(take: c_ctx)
-        case vscf_impl_tag_ROUND5:
-            return Round5(take: c_ctx)
         case vscf_impl_tag_COMPOUND_KEY_ALG:
             return CompoundKeyAlg(take: c_ctx)
-        case vscf_impl_tag_CHAINED_KEY_ALG:
-            return ChainedKeyAlg(take: c_ctx)
+        case vscf_impl_tag_HYBRID_KEY_ALG:
+            return HybridKeyAlg(take: c_ctx)
         default:
             fatalError("Unexpected C implementation cast to the Swift implementation.")
         }
@@ -531,8 +517,8 @@ import VSCFoundation
             return Falcon(take: c_ctx)
         case vscf_impl_tag_COMPOUND_KEY_ALG:
             return CompoundKeyAlg(take: c_ctx)
-        case vscf_impl_tag_CHAINED_KEY_ALG:
-            return ChainedKeyAlg(take: c_ctx)
+        case vscf_impl_tag_HYBRID_KEY_ALG:
+            return HybridKeyAlg(take: c_ctx)
         default:
             fatalError("Unexpected C implementation cast to the Swift implementation.")
         }
@@ -567,6 +553,33 @@ import VSCFoundation
     @objc static func wrapComputeSharedKey(use c_ctx: OpaquePointer) -> ComputeSharedKey {
         let shallowCopy = vscf_impl_shallow_copy(c_ctx)!
         return FoundationImplementation.wrapComputeSharedKey(take:shallowCopy)
+    }
+
+    /// Wrap C implementation object to the Swift object that implements protocol Kem.
+    @objc static func wrapKem(take c_ctx: OpaquePointer) -> Kem {
+        if (!vscf_kem_is_implemented(c_ctx)) {
+            fatalError("Given C implementation does not implement interface Kem.")
+        }
+
+        let implTag = vscf_impl_tag(c_ctx)
+        switch(implTag) {
+        case vscf_impl_tag_ECC:
+            return Ecc(take: c_ctx)
+        case vscf_impl_tag_ED25519:
+            return Ed25519(take: c_ctx)
+        case vscf_impl_tag_CURVE25519:
+            return Curve25519(take: c_ctx)
+        case vscf_impl_tag_ROUND5:
+            return Round5(take: c_ctx)
+        default:
+            fatalError("Unexpected C implementation cast to the Swift implementation.")
+        }
+    }
+
+    /// Wrap C implementation object to the Swift object that implements protocol Kem.
+    @objc static func wrapKem(use c_ctx: OpaquePointer) -> Kem {
+        let shallowCopy = vscf_impl_shallow_copy(c_ctx)!
+        return FoundationImplementation.wrapKem(take:shallowCopy)
     }
 
     /// Wrap C implementation object to the Swift object that implements protocol EntropySource.
@@ -746,8 +759,8 @@ import VSCFoundation
         switch(implTag) {
         case vscf_impl_tag_COMPOUND_KEY_ALG_INFO:
             return CompoundKeyAlgInfo(take: c_ctx)
-        case vscf_impl_tag_CHAINED_KEY_ALG_INFO:
-            return ChainedKeyAlgInfo(take: c_ctx)
+        case vscf_impl_tag_HYBRID_KEY_ALG_INFO:
+            return HybridKeyAlgInfo(take: c_ctx)
         case vscf_impl_tag_SIMPLE_ALG_INFO:
             return SimpleAlgInfo(take: c_ctx)
         case vscf_impl_tag_HASH_BASED_ALG_INFO:

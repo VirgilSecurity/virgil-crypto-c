@@ -54,8 +54,8 @@
 #include "vscf_key_alg_factory.h"
 #include "vscf_compound_public_key.h"
 #include "vscf_compound_private_key.h"
-#include "vscf_chained_public_key.h"
-#include "vscf_chained_private_key.h"
+#include "vscf_hybrid_public_key.h"
+#include "vscf_hybrid_private_key.h"
 
 #include "test_data_deterministic_key.h"
 #include "test_data_key_provider.h"
@@ -147,7 +147,7 @@ test__generate_private_key__falcon__success(void) {
 void
 test__generate_private_key__round5__success(void) {
 #if VSCF_POST_QUANTUM && VSCF_ROUND5
-    inner_test__generate_private_key__success(vscf_alg_id_ROUND5_ND_5PKE_5D, 8336);
+    inner_test__generate_private_key__success(vscf_alg_id_ROUND5_ND_5KEM_5D, 8336);
 #else
     TEST_IGNORE_MESSAGE("Feature VSCF_POST_QUANTUM and/or VSCF_ROUND5 are disabled");
 #endif
@@ -183,35 +183,33 @@ test__generate_post_quantum_key__with_default_rng__success(void) {
 
     const vscf_impl_t *cipher_private_key = vscf_compound_private_key_cipher_key(compound_private_key);
     TEST_ASSERT_NOT_NULL(cipher_private_key);
-    TEST_ASSERT_EQUAL(vscf_alg_id_CHAINED_KEY, vscf_key_alg_id(cipher_private_key));
+    TEST_ASSERT_EQUAL(vscf_alg_id_HYBRID_KEY, vscf_key_alg_id(cipher_private_key));
 
-    TEST_ASSERT_EQUAL(vscf_impl_tag_CHAINED_PRIVATE_KEY, vscf_impl_tag(cipher_private_key));
-    const vscf_chained_private_key_t *cipher_chained_private_key =
-            (const vscf_chained_private_key_t *)cipher_private_key;
+    TEST_ASSERT_EQUAL(vscf_impl_tag_HYBRID_PRIVATE_KEY, vscf_impl_tag(cipher_private_key));
+    const vscf_hybrid_private_key_t *cipher_hybrid_private_key = (const vscf_hybrid_private_key_t *)cipher_private_key;
 
-    const vscf_impl_t *l1_cipher_private_key = vscf_chained_private_key_l1_key(cipher_chained_private_key);
-    TEST_ASSERT_NOT_NULL(l1_cipher_private_key);
-    TEST_ASSERT_EQUAL(vscf_alg_id_CURVE25519, vscf_key_alg_id(l1_cipher_private_key));
+    const vscf_impl_t *hybrid_cipher_first_private_key = vscf_hybrid_private_key_first_key(cipher_hybrid_private_key);
+    TEST_ASSERT_NOT_NULL(hybrid_cipher_first_private_key);
+    TEST_ASSERT_EQUAL(vscf_alg_id_CURVE25519, vscf_key_alg_id(hybrid_cipher_first_private_key));
 
-    const vscf_impl_t *l2_cipher_private_key = vscf_chained_private_key_l2_key(cipher_chained_private_key);
-    TEST_ASSERT_NOT_NULL(l2_cipher_private_key);
-    TEST_ASSERT_EQUAL(vscf_alg_id_ROUND5_ND_5PKE_5D, vscf_key_alg_id(l2_cipher_private_key));
+    const vscf_impl_t *hybrid_cipher_second_private_key = vscf_hybrid_private_key_second_key(cipher_hybrid_private_key);
+    TEST_ASSERT_NOT_NULL(hybrid_cipher_second_private_key);
+    TEST_ASSERT_EQUAL(vscf_alg_id_ROUND5_ND_5KEM_5D, vscf_key_alg_id(hybrid_cipher_second_private_key));
 
     const vscf_impl_t *signer_private_key = vscf_compound_private_key_signer_key(compound_private_key);
     TEST_ASSERT_NOT_NULL(signer_private_key);
-    TEST_ASSERT_EQUAL(vscf_alg_id_CHAINED_KEY, vscf_key_alg_id(cipher_private_key));
+    TEST_ASSERT_EQUAL(vscf_alg_id_HYBRID_KEY, vscf_key_alg_id(cipher_private_key));
 
-    TEST_ASSERT_EQUAL(vscf_impl_tag_CHAINED_PRIVATE_KEY, vscf_impl_tag(cipher_private_key));
-    const vscf_chained_private_key_t *signer_chained_private_key =
-            (const vscf_chained_private_key_t *)signer_private_key;
+    TEST_ASSERT_EQUAL(vscf_impl_tag_HYBRID_PRIVATE_KEY, vscf_impl_tag(cipher_private_key));
+    const vscf_hybrid_private_key_t *signer_hybrid_private_key = (const vscf_hybrid_private_key_t *)signer_private_key;
 
-    const vscf_impl_t *l1_signer_private_key = vscf_chained_private_key_l1_key(signer_chained_private_key);
-    TEST_ASSERT_NOT_NULL(l1_signer_private_key);
-    TEST_ASSERT_EQUAL(vscf_alg_id_ED25519, vscf_key_alg_id(l1_signer_private_key));
+    const vscf_impl_t *hybrid_signer_first_private_key = vscf_hybrid_private_key_first_key(signer_hybrid_private_key);
+    TEST_ASSERT_NOT_NULL(hybrid_signer_first_private_key);
+    TEST_ASSERT_EQUAL(vscf_alg_id_ED25519, vscf_key_alg_id(hybrid_signer_first_private_key));
 
-    const vscf_impl_t *l2_signer_private_key = vscf_chained_private_key_l2_key(signer_chained_private_key);
-    TEST_ASSERT_NOT_NULL(l2_signer_private_key);
-    TEST_ASSERT_EQUAL(vscf_alg_id_FALCON, vscf_key_alg_id(l2_signer_private_key));
+    const vscf_impl_t *hybrid_signer_second_private_key = vscf_hybrid_private_key_second_key(signer_hybrid_private_key);
+    TEST_ASSERT_NOT_NULL(hybrid_signer_second_private_key);
+    TEST_ASSERT_EQUAL(vscf_alg_id_FALCON, vscf_key_alg_id(hybrid_signer_second_private_key));
 
     //
     //  Check public keys
@@ -222,33 +220,33 @@ test__generate_post_quantum_key__with_default_rng__success(void) {
 
     const vscf_impl_t *cipher_public_key = vscf_compound_public_key_cipher_key(compound_public_key);
     TEST_ASSERT_NOT_NULL(cipher_public_key);
-    TEST_ASSERT_EQUAL(vscf_alg_id_CHAINED_KEY, vscf_key_alg_id(cipher_public_key));
+    TEST_ASSERT_EQUAL(vscf_alg_id_HYBRID_KEY, vscf_key_alg_id(cipher_public_key));
 
-    TEST_ASSERT_EQUAL(vscf_impl_tag_CHAINED_PUBLIC_KEY, vscf_impl_tag(cipher_public_key));
-    const vscf_chained_public_key_t *chained_public_key = (const vscf_chained_public_key_t *)cipher_public_key;
+    TEST_ASSERT_EQUAL(vscf_impl_tag_HYBRID_PUBLIC_KEY, vscf_impl_tag(cipher_public_key));
+    const vscf_hybrid_public_key_t *hybrid_public_key = (const vscf_hybrid_public_key_t *)cipher_public_key;
 
-    const vscf_impl_t *l1_cipher_public_key = vscf_chained_public_key_l1_key(chained_public_key);
-    TEST_ASSERT_NOT_NULL(l1_cipher_public_key);
-    TEST_ASSERT_EQUAL(vscf_alg_id_CURVE25519, vscf_key_alg_id(l1_cipher_public_key));
+    const vscf_impl_t *hybrid_cipher_first_public_key = vscf_hybrid_public_key_first_key(hybrid_public_key);
+    TEST_ASSERT_NOT_NULL(hybrid_cipher_first_public_key);
+    TEST_ASSERT_EQUAL(vscf_alg_id_CURVE25519, vscf_key_alg_id(hybrid_cipher_first_public_key));
 
-    const vscf_impl_t *l2_cipher_public_key = vscf_chained_public_key_l2_key(chained_public_key);
-    TEST_ASSERT_NOT_NULL(l2_cipher_public_key);
-    TEST_ASSERT_EQUAL(vscf_alg_id_ROUND5_ND_5PKE_5D, vscf_key_alg_id(l2_cipher_public_key));
+    const vscf_impl_t *hybrid_cipher_second_public_key = vscf_hybrid_public_key_second_key(hybrid_public_key);
+    TEST_ASSERT_NOT_NULL(hybrid_cipher_second_public_key);
+    TEST_ASSERT_EQUAL(vscf_alg_id_ROUND5_ND_5KEM_5D, vscf_key_alg_id(hybrid_cipher_second_public_key));
 
     const vscf_impl_t *signer_public_key = vscf_compound_public_key_signer_key(compound_public_key);
     TEST_ASSERT_NOT_NULL(signer_public_key);
-    TEST_ASSERT_EQUAL(vscf_alg_id_CHAINED_KEY, vscf_key_alg_id(signer_public_key));
+    TEST_ASSERT_EQUAL(vscf_alg_id_HYBRID_KEY, vscf_key_alg_id(signer_public_key));
 
-    TEST_ASSERT_EQUAL(vscf_impl_tag_CHAINED_PUBLIC_KEY, vscf_impl_tag(signer_public_key));
-    const vscf_chained_public_key_t *signer_chained_public_key = (const vscf_chained_public_key_t *)signer_public_key;
+    TEST_ASSERT_EQUAL(vscf_impl_tag_HYBRID_PUBLIC_KEY, vscf_impl_tag(signer_public_key));
+    const vscf_hybrid_public_key_t *signer_hybrid_public_key = (const vscf_hybrid_public_key_t *)signer_public_key;
 
-    const vscf_impl_t *l1_signer_public_key = vscf_chained_public_key_l1_key(signer_chained_public_key);
-    TEST_ASSERT_NOT_NULL(l1_signer_public_key);
-    TEST_ASSERT_EQUAL(vscf_alg_id_ED25519, vscf_key_alg_id(l1_signer_public_key));
+    const vscf_impl_t *hybrid_signer_first_public_key = vscf_hybrid_public_key_first_key(signer_hybrid_public_key);
+    TEST_ASSERT_NOT_NULL(hybrid_signer_first_public_key);
+    TEST_ASSERT_EQUAL(vscf_alg_id_ED25519, vscf_key_alg_id(hybrid_signer_first_public_key));
 
-    const vscf_impl_t *l2_signer_public_key = vscf_chained_public_key_l2_key(signer_chained_public_key);
-    TEST_ASSERT_NOT_NULL(l2_signer_public_key);
-    TEST_ASSERT_EQUAL(vscf_alg_id_FALCON, vscf_key_alg_id(l2_signer_public_key));
+    const vscf_impl_t *hybrid_signer_second_public_key = vscf_hybrid_public_key_second_key(signer_hybrid_public_key);
+    TEST_ASSERT_NOT_NULL(hybrid_signer_second_public_key);
+    TEST_ASSERT_EQUAL(vscf_alg_id_FALCON, vscf_key_alg_id(hybrid_signer_second_public_key));
 
     //
     //  Cleanup
@@ -348,15 +346,6 @@ test__generate_private_key__secp256r1_and_then_do_encrypt_decrypt__plain_text_ma
 void
 test__generate_private_key__rsa2048_and_then_do_encrypt_decrypt__plain_text_match(void) {
     inner_test__generate_private_key__and_then_do_encrypt_decrypt__plain_text_match(vscf_alg_id_RSA, 2048);
-}
-
-void
-test__generate_private_key__round5_and_then_do_encrypt_decrypt__plain_text_match(void) {
-#if VSCF_POST_QUANTUM && VSCF_ROUND5
-    inner_test__generate_private_key__and_then_do_encrypt_decrypt__plain_text_match(vscf_alg_id_ROUND5_ND_5PKE_5D, 0);
-#else
-    TEST_IGNORE_MESSAGE("Feature VSCF_POST_QUANTUM and/or VSCF_ROUND5 are disabled");
-#endif
 }
 
 // --------------------------------------------------------------------------
@@ -622,7 +611,7 @@ test__import_public_key__rsa2048_and_then_export__are_equals(void) {
 void
 test__import_public_key__round5_and_then_export__are_equals(void) {
 #if VSCF_POST_QUANTUM && VSCF_ROUND5
-    inner_test__import_public_key__then_export__are_equals(test_data_round5_ND_5PKE_5D_PUBLIC_KEY_PKCS8_DER);
+    inner_test__import_public_key__then_export__are_equals(test_data_round5_ND_5KEM_5D_PUBLIC_KEY_PKCS8_DER);
 #else
     TEST_IGNORE_MESSAGE("Feature VSCF_POST_QUANTUM and/or VSCF_ROUND5 are disabled");
 #endif
@@ -641,7 +630,7 @@ void
 test__import_public_key__curve25519_round5_falcon_and_then_export__are_equals(void) {
 #if VSCF_POST_QUANTUM && VSCF_ROUND5 && VSCF_FALCON
     inner_test__import_public_key__then_export__are_equals(
-            test_data_pqc_CURVE25519_ROUND5_ND_5PKE_5D_FALCON_PUBLIC_KEY_PKCS8_DER);
+            test_data_pqc_CURVE25519_ROUND5_ND_5KEM_5D_FALCON_PUBLIC_KEY_PKCS8_DER);
 #else
     TEST_IGNORE_MESSAGE("Feature VSCF_POST_QUANTUM and/or VSCF_ROUND5 and/or VSCF_FALCON are disabled");
 #endif
@@ -651,7 +640,7 @@ void
 test__import_public_key__curve25519_round5_ed25519_falcon_and_then_export__are_equals(void) {
 #if VSCF_POST_QUANTUM && VSCF_ROUND5 && VSCF_FALCON
     inner_test__import_public_key__then_export__are_equals(
-            test_data_pqc_CURVE25519_ROUND5_ND_5PKE_5D_ED25519_FALCON_PUBLIC_KEY_PKCS8_DER);
+            test_data_pqc_CURVE25519_ROUND5_ND_5KEM_5D_ED25519_FALCON_PUBLIC_KEY_PKCS8_DER);
 #else
     TEST_IGNORE_MESSAGE("Feature VSCF_POST_QUANTUM and/or VSCF_ROUND5 and/or VSCF_FALCON are disabled");
 #endif
@@ -689,7 +678,7 @@ test__import_private_key__rsa2048_and_then_export__are_equals(void) {
 void
 test__import_private_key__round5_and_then_export__are_equals(void) {
 #if VSCF_POST_QUANTUM && VSCF_ROUND5
-    inner_test__import_private_key__then_export__are_equals(test_data_round5_ND_5PKE_5D_PRIVATE_KEY_PKCS8_DER);
+    inner_test__import_private_key__then_export__are_equals(test_data_round5_ND_5KEM_5D_PRIVATE_KEY_PKCS8_DER);
 #else
     TEST_IGNORE_MESSAGE("Feature VSCF_POST_QUANTUM and/or VSCF_ROUND5 are disabled");
 #endif
@@ -708,7 +697,7 @@ void
 test__import_private_key__curve25519_round5_falcon_and_then_export__are_equals(void) {
 #if VSCF_POST_QUANTUM && VSCF_ROUND5 && VSCF_FALCON
     inner_test__import_private_key__then_export__are_equals(
-            test_data_pqc_CURVE25519_ROUND5_ND_5PKE_5D_FALCON_PRIVATE_KEY_PKCS8_DER);
+            test_data_pqc_CURVE25519_ROUND5_ND_5KEM_5D_FALCON_PRIVATE_KEY_PKCS8_DER);
 #else
     TEST_IGNORE_MESSAGE("Feature VSCF_POST_QUANTUM and/or VSCF_ROUND5 and/or VSCF_FALCON are disabled");
 #endif
@@ -718,7 +707,7 @@ void
 test__import_private_key__curve25519_round5_ed25519_falcon_and_then_export__are_equals(void) {
 #if VSCF_POST_QUANTUM && VSCF_ROUND5 && VSCF_FALCON
     inner_test__import_private_key__then_export__are_equals(
-            test_data_pqc_CURVE25519_ROUND5_ND_5PKE_5D_ED25519_FALCON_PRIVATE_KEY_PKCS8_DER);
+            test_data_pqc_CURVE25519_ROUND5_ND_5KEM_5D_ED25519_FALCON_PRIVATE_KEY_PKCS8_DER);
 #else
     TEST_IGNORE_MESSAGE("Feature VSCF_POST_QUANTUM and/or VSCF_ROUND5 and/or VSCF_FALCON are disabled");
 #endif
@@ -728,8 +717,8 @@ void
 test__import_private_key__curve25519_round5_ed25519_falcon_and_then_export_public_key__are_equals(void) {
 #if VSCF_POST_QUANTUM && VSCF_ROUND5 && VSCF_FALCON
     inner_test__import_private_key__then_export_public_key__are_equals(
-            test_data_pqc_CURVE25519_ROUND5_ND_5PKE_5D_ED25519_FALCON_PRIVATE_KEY_PKCS8_DER,
-            test_data_pqc_CURVE25519_ROUND5_ND_5PKE_5D_ED25519_FALCON_PUBLIC_KEY_PKCS8_DER);
+            test_data_pqc_CURVE25519_ROUND5_ND_5KEM_5D_ED25519_FALCON_PRIVATE_KEY_PKCS8_DER,
+            test_data_pqc_CURVE25519_ROUND5_ND_5KEM_5D_ED25519_FALCON_PUBLIC_KEY_PKCS8_DER);
 #else
     TEST_IGNORE_MESSAGE("Feature VSCF_POST_QUANTUM and/or VSCF_ROUND5 and/or VSCF_FALCON are disabled");
 #endif
@@ -897,7 +886,6 @@ main(void) {
     RUN_TEST(test__generate_private_key__ed25519_and_then_do_encrypt_decrypt__plain_text_match);
     RUN_TEST(test__generate_private_key__secp256r1_and_then_do_encrypt_decrypt__plain_text_match);
     RUN_TEST(test__generate_private_key__rsa2048_and_then_do_encrypt_decrypt__plain_text_match);
-    RUN_TEST(test__generate_private_key__round5_and_then_do_encrypt_decrypt__plain_text_match);
 
     RUN_TEST(test__generate_private_key__ed25519_and_then_do_sign_verify__success);
     RUN_TEST(test__generate_private_key__secp256r1_and_then_do_sign_verify__success);
@@ -915,7 +903,6 @@ main(void) {
     RUN_TEST(test__import_public_key__falcon_and_then_export__are_equals);
     RUN_TEST(test__import_public_key__curve25519_round5_falcon_and_then_export__are_equals);
     RUN_TEST(test__import_public_key__curve25519_round5_ed25519_falcon_and_then_export__are_equals);
-
 
     RUN_TEST(test__import_private_key__curve25519_and_then_export__are_equals);
     RUN_TEST(test__import_private_key__ed25519_and_then_export__are_equals);

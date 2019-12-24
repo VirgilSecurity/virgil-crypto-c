@@ -112,13 +112,13 @@ const initKeyInfo = (Module, modules) => {
         }
 
         /**
-         * Return true if a key is a chained key
+         * Return true if a key is a hybrid key
          */
-        isChained() {
+        isHybrid() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
             let proxyResult;
-            proxyResult = Module._vscf_key_info_is_chained(this.ctxPtr);
+            proxyResult = Module._vscf_key_info_is_hybrid(this.ctxPtr);
 
             const booleanResult = !!proxyResult;
             return booleanResult;
@@ -126,13 +126,13 @@ const initKeyInfo = (Module, modules) => {
 
         /**
          * Return true if a key is a compound key and compounds cipher key
-         * and signer key are chained keys.
+         * and signer key are hybrid keys.
          */
-        isCompoundChained() {
+        isCompoundHybrid() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
             let proxyResult;
-            proxyResult = Module._vscf_key_info_is_compound_chained(this.ctxPtr);
+            proxyResult = Module._vscf_key_info_is_compound_hybrid(this.ctxPtr);
 
             const booleanResult = !!proxyResult;
             return booleanResult;
@@ -140,13 +140,13 @@ const initKeyInfo = (Module, modules) => {
 
         /**
          * Return true if a key is a compound key and compounds cipher key
-         * is a chained key.
+         * is a hybrid key.
          */
-        isCompoundChainedCipher() {
+        isCompoundHybridCipher() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
             let proxyResult;
-            proxyResult = Module._vscf_key_info_is_compound_chained_cipher(this.ctxPtr);
+            proxyResult = Module._vscf_key_info_is_compound_hybrid_cipher(this.ctxPtr);
 
             const booleanResult = !!proxyResult;
             return booleanResult;
@@ -154,20 +154,20 @@ const initKeyInfo = (Module, modules) => {
 
         /**
          * Return true if a key is a compound key and compounds signer key
-         * is a chained key.
+         * is a hybrid key.
          */
-        isCompoundChainedSigner() {
+        isCompoundHybridSigner() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
             let proxyResult;
-            proxyResult = Module._vscf_key_info_is_compound_chained_signer(this.ctxPtr);
+            proxyResult = Module._vscf_key_info_is_compound_hybrid_signer(this.ctxPtr);
 
             const booleanResult = !!proxyResult;
             return booleanResult;
         }
 
         /**
-         * Return true if a key is a compound key that contains chained keys
+         * Return true if a key is a compound key that contains hybrid keys
          * for encryption/decryption and signing/verifying that itself
          * contains a combination of classic keys and post-quantum keys.
          */
@@ -182,7 +182,7 @@ const initKeyInfo = (Module, modules) => {
         }
 
         /**
-         * Return true if a key is a compound key that contains a chained key
+         * Return true if a key is a compound key that contains a hybrid key
          * for encryption/decryption that contains a classic key and
          * a post-quantum key.
          */
@@ -197,7 +197,7 @@ const initKeyInfo = (Module, modules) => {
         }
 
         /**
-         * Return true if a key is a compound key that contains a chained key
+         * Return true if a key is a compound key that contains a hybrid key
          * for signing/verifying that contains a classic key and
          * a post-quantum key.
          */
@@ -247,74 +247,74 @@ const initKeyInfo = (Module, modules) => {
         }
 
         /**
-         * Return chained l1 key id, if key is chained.
+         * Return hybrid's first key id, if key is hybrid.
          * Return None, otherwise.
          */
-        chainedL1AlgId() {
+        hybridFirstKeyAlgId() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
             let proxyResult;
-            proxyResult = Module._vscf_key_info_chained_l1_alg_id(this.ctxPtr);
+            proxyResult = Module._vscf_key_info_hybrid_first_key_alg_id(this.ctxPtr);
             return proxyResult;
         }
 
         /**
-         * Return chained l2 key id, if key is chained.
+         * Return hybrid's second key id, if key is hybrid.
          * Return None, otherwise.
          */
-        chainedL2AlgId() {
+        hybridSecondKeyAlgId() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
             let proxyResult;
-            proxyResult = Module._vscf_key_info_chained_l2_alg_id(this.ctxPtr);
+            proxyResult = Module._vscf_key_info_hybrid_second_key_alg_id(this.ctxPtr);
             return proxyResult;
         }
 
         /**
-         * Return l1 key id of compound's cipher key, if key is compound(chained, ...)
-         * Return None, otherwise.
+         * Return hybrid's first key id of compound's cipher key,
+         * if key is compound(hybrid, ...), None - otherwise.
          */
-        compoundCipherL1AlgId() {
+        compoundHybridCipherFirstKeyAlgId() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
             let proxyResult;
-            proxyResult = Module._vscf_key_info_compound_cipher_l1_alg_id(this.ctxPtr);
+            proxyResult = Module._vscf_key_info_compound_hybrid_cipher_first_key_alg_id(this.ctxPtr);
             return proxyResult;
         }
 
         /**
-         * Return l2 key id of compound's cipher key, if key is compound(chained, ...)
-         * Return None, otherwise.
+         * Return hybrid's second key id of compound's cipher key,
+         * if key is compound(hybrid, ...), None - otherwise.
          */
-        compoundCipherL2AlgId() {
+        compoundHybridCipherSecondKeyAlgId() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
             let proxyResult;
-            proxyResult = Module._vscf_key_info_compound_cipher_l2_alg_id(this.ctxPtr);
+            proxyResult = Module._vscf_key_info_compound_hybrid_cipher_second_key_alg_id(this.ctxPtr);
             return proxyResult;
         }
 
         /**
-         * Return l1 key id of compound's signer key, if key is compound(..., chained)
-         * Return None, otherwise.
+         * Return hybrid's first key id of compound's signer key,
+         * if key is compound(..., hybrid), None - otherwise.
          */
-        compoundSignerL1AlgId() {
+        compoundHybridSignerFirstKeyAlgId() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
             let proxyResult;
-            proxyResult = Module._vscf_key_info_compound_signer_l1_alg_id(this.ctxPtr);
+            proxyResult = Module._vscf_key_info_compound_hybrid_signer_first_key_alg_id(this.ctxPtr);
             return proxyResult;
         }
 
         /**
-         * Return l2 key id of compound's signer key, if key is compound(..., chained)
-         * Return None, otherwise.
+         * Return hybrid's second key id of compound's signer key,
+         * if key is compound(..., hybrid), None - otherwise.
          */
-        compoundSignerL2AlgId() {
+        compoundHybridSignerSecondKeyAlgId() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
             let proxyResult;
-            proxyResult = Module._vscf_key_info_compound_signer_l2_alg_id(this.ctxPtr);
+            proxyResult = Module._vscf_key_info_compound_hybrid_signer_second_key_alg_id(this.ctxPtr);
             return proxyResult;
         }
     }

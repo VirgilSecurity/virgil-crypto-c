@@ -42,11 +42,12 @@
 #define TEST_DEPENDENCIES_AVAILABLE VSCF_KEY_INFO
 #if TEST_DEPENDENCIES_AVAILABLE
 
+#include "vscf_alg.h"
 #include "vscf_alg_info.h"
 #include "vscf_key_info.h"
 #include "vscf_simple_alg_info.h"
 #include "vscf_compound_key_alg_info.h"
-#include "vscf_chained_key_alg_info.h"
+#include "vscf_hybrid_key_alg_info.h"
 
 
 void
@@ -63,22 +64,22 @@ test__ed25519_simple_alg_info__is_valid(void) {
     //  Check.
     //
     TEST_ASSERT_FALSE(vscf_key_info_is_compound(key_info));
-    TEST_ASSERT_FALSE(vscf_key_info_is_chained(key_info));
-    TEST_ASSERT_FALSE(vscf_key_info_is_compound_chained(key_info));
-    TEST_ASSERT_FALSE(vscf_key_info_is_compound_chained_cipher(key_info));
-    TEST_ASSERT_FALSE(vscf_key_info_is_compound_chained_signer(key_info));
+    TEST_ASSERT_FALSE(vscf_key_info_is_hybrid(key_info));
+    TEST_ASSERT_FALSE(vscf_key_info_is_compound_hybrid(key_info));
+    TEST_ASSERT_FALSE(vscf_key_info_is_compound_hybrid_cipher(key_info));
+    TEST_ASSERT_FALSE(vscf_key_info_is_compound_hybrid_signer(key_info));
     TEST_ASSERT_FALSE(vscf_key_info_is_hybrid_post_quantum(key_info));
     TEST_ASSERT_FALSE(vscf_key_info_is_hybrid_post_quantum_cipher(key_info));
     TEST_ASSERT_FALSE(vscf_key_info_is_hybrid_post_quantum_signer(key_info));
     TEST_ASSERT_EQUAL(vscf_alg_id_ED25519, vscf_key_info_alg_id(key_info));
     TEST_ASSERT_EQUAL(vscf_alg_id_NONE, vscf_key_info_compound_cipher_alg_id(key_info));
     TEST_ASSERT_EQUAL(vscf_alg_id_NONE, vscf_key_info_compound_signer_alg_id(key_info));
-    TEST_ASSERT_EQUAL(vscf_alg_id_NONE, vscf_key_info_chained_l1_alg_id(key_info));
-    TEST_ASSERT_EQUAL(vscf_alg_id_NONE, vscf_key_info_chained_l2_alg_id(key_info));
-    TEST_ASSERT_EQUAL(vscf_alg_id_NONE, vscf_key_info_compound_cipher_l1_alg_id(key_info));
-    TEST_ASSERT_EQUAL(vscf_alg_id_NONE, vscf_key_info_compound_cipher_l2_alg_id(key_info));
-    TEST_ASSERT_EQUAL(vscf_alg_id_NONE, vscf_key_info_compound_signer_l1_alg_id(key_info));
-    TEST_ASSERT_EQUAL(vscf_alg_id_NONE, vscf_key_info_compound_signer_l2_alg_id(key_info));
+    TEST_ASSERT_EQUAL(vscf_alg_id_NONE, vscf_key_info_hybrid_first_key_alg_id(key_info));
+    TEST_ASSERT_EQUAL(vscf_alg_id_NONE, vscf_key_info_hybrid_second_key_alg_id(key_info));
+    TEST_ASSERT_EQUAL(vscf_alg_id_NONE, vscf_key_info_compound_hybrid_cipher_first_key_alg_id(key_info));
+    TEST_ASSERT_EQUAL(vscf_alg_id_NONE, vscf_key_info_compound_hybrid_cipher_second_key_alg_id(key_info));
+    TEST_ASSERT_EQUAL(vscf_alg_id_NONE, vscf_key_info_compound_hybrid_signer_first_key_alg_id(key_info));
+    TEST_ASSERT_EQUAL(vscf_alg_id_NONE, vscf_key_info_compound_hybrid_signer_second_key_alg_id(key_info));
 
     //
     //  Cleanup.
@@ -107,22 +108,22 @@ test__curve25519_ed25519_compound_key_alg_info__is_valid(void) {
     //  Check.
     //
     TEST_ASSERT_TRUE(vscf_key_info_is_compound(key_info));
-    TEST_ASSERT_FALSE(vscf_key_info_is_chained(key_info));
-    TEST_ASSERT_FALSE(vscf_key_info_is_compound_chained(key_info));
-    TEST_ASSERT_FALSE(vscf_key_info_is_compound_chained_cipher(key_info));
-    TEST_ASSERT_FALSE(vscf_key_info_is_compound_chained_signer(key_info));
+    TEST_ASSERT_FALSE(vscf_key_info_is_hybrid(key_info));
+    TEST_ASSERT_FALSE(vscf_key_info_is_compound_hybrid(key_info));
+    TEST_ASSERT_FALSE(vscf_key_info_is_compound_hybrid_cipher(key_info));
+    TEST_ASSERT_FALSE(vscf_key_info_is_compound_hybrid_signer(key_info));
     TEST_ASSERT_FALSE(vscf_key_info_is_hybrid_post_quantum(key_info));
     TEST_ASSERT_FALSE(vscf_key_info_is_hybrid_post_quantum_cipher(key_info));
     TEST_ASSERT_FALSE(vscf_key_info_is_hybrid_post_quantum_signer(key_info));
     TEST_ASSERT_EQUAL(vscf_alg_id_COMPOUND_KEY, vscf_key_info_alg_id(key_info));
     TEST_ASSERT_EQUAL(vscf_alg_id_CURVE25519, vscf_key_info_compound_cipher_alg_id(key_info));
     TEST_ASSERT_EQUAL(vscf_alg_id_ED25519, vscf_key_info_compound_signer_alg_id(key_info));
-    TEST_ASSERT_EQUAL(vscf_alg_id_NONE, vscf_key_info_chained_l1_alg_id(key_info));
-    TEST_ASSERT_EQUAL(vscf_alg_id_NONE, vscf_key_info_chained_l2_alg_id(key_info));
-    TEST_ASSERT_EQUAL(vscf_alg_id_NONE, vscf_key_info_compound_cipher_l1_alg_id(key_info));
-    TEST_ASSERT_EQUAL(vscf_alg_id_NONE, vscf_key_info_compound_cipher_l2_alg_id(key_info));
-    TEST_ASSERT_EQUAL(vscf_alg_id_NONE, vscf_key_info_compound_signer_l1_alg_id(key_info));
-    TEST_ASSERT_EQUAL(vscf_alg_id_NONE, vscf_key_info_compound_signer_l2_alg_id(key_info));
+    TEST_ASSERT_EQUAL(vscf_alg_id_NONE, vscf_key_info_hybrid_first_key_alg_id(key_info));
+    TEST_ASSERT_EQUAL(vscf_alg_id_NONE, vscf_key_info_hybrid_second_key_alg_id(key_info));
+    TEST_ASSERT_EQUAL(vscf_alg_id_NONE, vscf_key_info_compound_hybrid_cipher_first_key_alg_id(key_info));
+    TEST_ASSERT_EQUAL(vscf_alg_id_NONE, vscf_key_info_compound_hybrid_cipher_second_key_alg_id(key_info));
+    TEST_ASSERT_EQUAL(vscf_alg_id_NONE, vscf_key_info_compound_hybrid_signer_first_key_alg_id(key_info));
+    TEST_ASSERT_EQUAL(vscf_alg_id_NONE, vscf_key_info_compound_hybrid_signer_second_key_alg_id(key_info));
 
     //
     //  Cleanup.
@@ -132,7 +133,7 @@ test__curve25519_ed25519_compound_key_alg_info__is_valid(void) {
 }
 
 void
-test__curve25519_ed25519_chained_key_alg_info__is_valid(void) {
+test__curve25519_ed25519_hybrid_key_alg_info__is_valid(void) {
 
     //
     //  Create key alg info.
@@ -142,8 +143,8 @@ test__curve25519_ed25519_chained_key_alg_info__is_valid(void) {
 
     vscf_impl_t *ed25519_info = vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_ED25519));
 
-    vscf_impl_t *alg_info = vscf_chained_key_alg_info_impl(
-            vscf_chained_key_alg_info_new_with_infos_disown(vscf_alg_id_CHAINED_KEY, &curve25519_info, &ed25519_info));
+    vscf_impl_t *alg_info = vscf_hybrid_key_alg_info_impl(
+            vscf_hybrid_key_alg_info_new_with_infos_disown(vscf_alg_id_HYBRID_KEY, &curve25519_info, &ed25519_info));
 
     vscf_key_info_t *key_info = vscf_key_info_new_with_alg_info(alg_info);
 
@@ -151,22 +152,22 @@ test__curve25519_ed25519_chained_key_alg_info__is_valid(void) {
     //  Check.
     //
     TEST_ASSERT_FALSE(vscf_key_info_is_compound(key_info));
-    TEST_ASSERT_TRUE(vscf_key_info_is_chained(key_info));
-    TEST_ASSERT_FALSE(vscf_key_info_is_compound_chained(key_info));
-    TEST_ASSERT_FALSE(vscf_key_info_is_compound_chained_cipher(key_info));
-    TEST_ASSERT_FALSE(vscf_key_info_is_compound_chained_signer(key_info));
+    TEST_ASSERT_TRUE(vscf_key_info_is_hybrid(key_info));
+    TEST_ASSERT_FALSE(vscf_key_info_is_compound_hybrid(key_info));
+    TEST_ASSERT_FALSE(vscf_key_info_is_compound_hybrid_cipher(key_info));
+    TEST_ASSERT_FALSE(vscf_key_info_is_compound_hybrid_signer(key_info));
     TEST_ASSERT_FALSE(vscf_key_info_is_hybrid_post_quantum(key_info));
     TEST_ASSERT_FALSE(vscf_key_info_is_hybrid_post_quantum_cipher(key_info));
     TEST_ASSERT_FALSE(vscf_key_info_is_hybrid_post_quantum_signer(key_info));
-    TEST_ASSERT_EQUAL(vscf_alg_id_CHAINED_KEY, vscf_key_info_alg_id(key_info));
+    TEST_ASSERT_EQUAL(vscf_alg_id_HYBRID_KEY, vscf_key_info_alg_id(key_info));
     TEST_ASSERT_EQUAL(vscf_alg_id_NONE, vscf_key_info_compound_cipher_alg_id(key_info));
     TEST_ASSERT_EQUAL(vscf_alg_id_NONE, vscf_key_info_compound_signer_alg_id(key_info));
-    TEST_ASSERT_EQUAL(vscf_alg_id_CURVE25519, vscf_key_info_chained_l1_alg_id(key_info));
-    TEST_ASSERT_EQUAL(vscf_alg_id_ED25519, vscf_key_info_chained_l2_alg_id(key_info));
-    TEST_ASSERT_EQUAL(vscf_alg_id_NONE, vscf_key_info_compound_cipher_l1_alg_id(key_info));
-    TEST_ASSERT_EQUAL(vscf_alg_id_NONE, vscf_key_info_compound_cipher_l2_alg_id(key_info));
-    TEST_ASSERT_EQUAL(vscf_alg_id_NONE, vscf_key_info_compound_signer_l1_alg_id(key_info));
-    TEST_ASSERT_EQUAL(vscf_alg_id_NONE, vscf_key_info_compound_signer_l2_alg_id(key_info));
+    TEST_ASSERT_EQUAL(vscf_alg_id_CURVE25519, vscf_key_info_hybrid_first_key_alg_id(key_info));
+    TEST_ASSERT_EQUAL(vscf_alg_id_ED25519, vscf_key_info_hybrid_second_key_alg_id(key_info));
+    TEST_ASSERT_EQUAL(vscf_alg_id_NONE, vscf_key_info_compound_hybrid_cipher_first_key_alg_id(key_info));
+    TEST_ASSERT_EQUAL(vscf_alg_id_NONE, vscf_key_info_compound_hybrid_cipher_second_key_alg_id(key_info));
+    TEST_ASSERT_EQUAL(vscf_alg_id_NONE, vscf_key_info_compound_hybrid_signer_first_key_alg_id(key_info));
+    TEST_ASSERT_EQUAL(vscf_alg_id_NONE, vscf_key_info_compound_hybrid_signer_second_key_alg_id(key_info));
 
     //
     //  Cleanup.
@@ -176,7 +177,7 @@ test__curve25519_ed25519_chained_key_alg_info__is_valid(void) {
 }
 
 void
-test__curve25519_round5_ed25519_falcon_compound_chained_key_alg_info__is_valid(void) {
+test__curve25519_round5_ed25519_falcon_compound_hybrid_key_alg_info__is_valid(void) {
 
     //
     //  Create key alg info.
@@ -187,15 +188,15 @@ test__curve25519_round5_ed25519_falcon_compound_chained_key_alg_info__is_valid(v
     vscf_impl_t *ed25519_info = vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_ED25519));
 
     vscf_impl_t *round5_info =
-            vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_ROUND5_ND_5PKE_5D));
+            vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_ROUND5_ND_5KEM_5D));
 
     vscf_impl_t *falcon_info = vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_FALCON));
 
-    vscf_impl_t *cipher_alg_info = vscf_chained_key_alg_info_impl(
-            vscf_chained_key_alg_info_new_with_infos_disown(vscf_alg_id_CHAINED_KEY, &curve25519_info, &round5_info));
+    vscf_impl_t *cipher_alg_info = vscf_hybrid_key_alg_info_impl(
+            vscf_hybrid_key_alg_info_new_with_infos_disown(vscf_alg_id_HYBRID_KEY, &curve25519_info, &round5_info));
 
-    vscf_impl_t *signer_alg_info = vscf_chained_key_alg_info_impl(
-            vscf_chained_key_alg_info_new_with_infos_disown(vscf_alg_id_CHAINED_KEY, &ed25519_info, &falcon_info));
+    vscf_impl_t *signer_alg_info = vscf_hybrid_key_alg_info_impl(
+            vscf_hybrid_key_alg_info_new_with_infos_disown(vscf_alg_id_HYBRID_KEY, &ed25519_info, &falcon_info));
 
     vscf_impl_t *alg_info = vscf_compound_key_alg_info_impl(vscf_compound_key_alg_info_new_with_infos_disown(
             vscf_alg_id_COMPOUND_KEY, &cipher_alg_info, &signer_alg_info));
@@ -207,22 +208,22 @@ test__curve25519_round5_ed25519_falcon_compound_chained_key_alg_info__is_valid(v
     //  Check.
     //
     TEST_ASSERT_TRUE(vscf_key_info_is_compound(key_info));
-    TEST_ASSERT_FALSE(vscf_key_info_is_chained(key_info));
-    TEST_ASSERT_TRUE(vscf_key_info_is_compound_chained(key_info));
-    TEST_ASSERT_TRUE(vscf_key_info_is_compound_chained_cipher(key_info));
-    TEST_ASSERT_TRUE(vscf_key_info_is_compound_chained_signer(key_info));
+    TEST_ASSERT_FALSE(vscf_key_info_is_hybrid(key_info));
+    TEST_ASSERT_TRUE(vscf_key_info_is_compound_hybrid(key_info));
+    TEST_ASSERT_TRUE(vscf_key_info_is_compound_hybrid_cipher(key_info));
+    TEST_ASSERT_TRUE(vscf_key_info_is_compound_hybrid_signer(key_info));
     TEST_ASSERT_TRUE(vscf_key_info_is_hybrid_post_quantum(key_info));
     TEST_ASSERT_TRUE(vscf_key_info_is_hybrid_post_quantum_cipher(key_info));
     TEST_ASSERT_TRUE(vscf_key_info_is_hybrid_post_quantum_signer(key_info));
     TEST_ASSERT_EQUAL(vscf_alg_id_COMPOUND_KEY, vscf_key_info_alg_id(key_info));
-    TEST_ASSERT_EQUAL(vscf_alg_id_CHAINED_KEY, vscf_key_info_compound_cipher_alg_id(key_info));
-    TEST_ASSERT_EQUAL(vscf_alg_id_CHAINED_KEY, vscf_key_info_compound_signer_alg_id(key_info));
-    TEST_ASSERT_EQUAL(vscf_alg_id_NONE, vscf_key_info_chained_l1_alg_id(key_info));
-    TEST_ASSERT_EQUAL(vscf_alg_id_NONE, vscf_key_info_chained_l2_alg_id(key_info));
-    TEST_ASSERT_EQUAL(vscf_alg_id_CURVE25519, vscf_key_info_compound_cipher_l1_alg_id(key_info));
-    TEST_ASSERT_EQUAL(vscf_alg_id_ROUND5_ND_5PKE_5D, vscf_key_info_compound_cipher_l2_alg_id(key_info));
-    TEST_ASSERT_EQUAL(vscf_alg_id_ED25519, vscf_key_info_compound_signer_l1_alg_id(key_info));
-    TEST_ASSERT_EQUAL(vscf_alg_id_FALCON, vscf_key_info_compound_signer_l2_alg_id(key_info));
+    TEST_ASSERT_EQUAL(vscf_alg_id_HYBRID_KEY, vscf_key_info_compound_cipher_alg_id(key_info));
+    TEST_ASSERT_EQUAL(vscf_alg_id_HYBRID_KEY, vscf_key_info_compound_signer_alg_id(key_info));
+    TEST_ASSERT_EQUAL(vscf_alg_id_NONE, vscf_key_info_hybrid_first_key_alg_id(key_info));
+    TEST_ASSERT_EQUAL(vscf_alg_id_NONE, vscf_key_info_hybrid_second_key_alg_id(key_info));
+    TEST_ASSERT_EQUAL(vscf_alg_id_CURVE25519, vscf_key_info_compound_hybrid_cipher_first_key_alg_id(key_info));
+    TEST_ASSERT_EQUAL(vscf_alg_id_ROUND5_ND_5KEM_5D, vscf_key_info_compound_hybrid_cipher_second_key_alg_id(key_info));
+    TEST_ASSERT_EQUAL(vscf_alg_id_ED25519, vscf_key_info_compound_hybrid_signer_first_key_alg_id(key_info));
+    TEST_ASSERT_EQUAL(vscf_alg_id_FALCON, vscf_key_info_compound_hybrid_signer_second_key_alg_id(key_info));
 
     //
     //  Cleanup.
@@ -243,8 +244,8 @@ main(void) {
 #if TEST_DEPENDENCIES_AVAILABLE
     RUN_TEST(test__ed25519_simple_alg_info__is_valid);
     RUN_TEST(test__curve25519_ed25519_compound_key_alg_info__is_valid);
-    RUN_TEST(test__curve25519_ed25519_chained_key_alg_info__is_valid);
-    RUN_TEST(test__curve25519_round5_ed25519_falcon_compound_chained_key_alg_info__is_valid);
+    RUN_TEST(test__curve25519_ed25519_hybrid_key_alg_info__is_valid);
+    RUN_TEST(test__curve25519_round5_ed25519_falcon_compound_hybrid_key_alg_info__is_valid);
 #else
     RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
 #endif

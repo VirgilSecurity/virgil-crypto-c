@@ -35,21 +35,21 @@
 
 from ctypes import *
 from ._c_bridge import VscfEcc
+from ._c_bridge._vscf_error import vscf_error_t
 from ._c_bridge import VscfImplTag
 from ._c_bridge import VscfStatus
-from ._c_bridge._vscf_error import vscf_error_t
-from .raw_public_key import RawPublicKey
-from .raw_private_key import RawPrivateKey
 from virgil_crypto_lib.common._c_bridge import Data
+from .raw_public_key import RawPublicKey
 from virgil_crypto_lib.common._c_bridge import Buffer
-from .alg import Alg
+from .raw_private_key import RawPrivateKey
 from .key_alg import KeyAlg
 from .key_cipher import KeyCipher
 from .key_signer import KeySigner
 from .compute_shared_key import ComputeSharedKey
+from .kem import Kem
 
 
-class Ecc(Alg, KeyAlg, KeyCipher, KeySigner, ComputeSharedKey):
+class Ecc(KeyAlg, KeyCipher, KeySigner, ComputeSharedKey, Kem):
     """Elliptic curve cryptography implementation.
     Supported curves:
         - secp256r1."""
@@ -80,22 +80,6 @@ class Ecc(Alg, KeyAlg, KeyCipher, KeySigner, ComputeSharedKey):
     def set_ecies(self, ecies):
         self._lib_vscf_ecc.vscf_ecc_use_ecies(self.ctx, ecies.ctx)
 
-    def alg_id(self):
-        """Provide algorithm identificator."""
-        result = self._lib_vscf_ecc.vscf_ecc_alg_id(self.ctx)
-        return result
-
-    def produce_alg_info(self):
-        """Produce object with algorithm information and configuration parameters."""
-        result = self._lib_vscf_ecc.vscf_ecc_produce_alg_info(self.ctx)
-        instance = VscfImplTag.get_type(result)[0].take_c_ctx(cast(result, POINTER(VscfImplTag.get_type(result)[1])))
-        return instance
-
-    def restore_alg_info(self, alg_info):
-        """Restore algorithm configuration from the given object."""
-        status = self._lib_vscf_ecc.vscf_ecc_restore_alg_info(self.ctx, alg_info.c_impl)
-        VscfStatus.handle_status(status)
-
     def generate_ephemeral_key(self, key):
         """Generate ephemeral private key of the same type.
         Note, this operation might be slow."""
@@ -120,6 +104,15 @@ class Ecc(Alg, KeyAlg, KeyCipher, KeySigner, ComputeSharedKey):
         instance = VscfImplTag.get_type(result)[0].take_c_ctx(cast(result, POINTER(VscfImplTag.get_type(result)[1])))
         return instance
 
+    def import_public_key_data(self, key_data, key_alg_info):
+        """Import public key from the raw binary format."""
+        d_key_data = Data(key_data)
+        error = vscf_error_t()
+        result = self._lib_vscf_ecc.vscf_ecc_import_public_key_data(self.ctx, d_key_data.data, key_alg_info.c_impl, error)
+        VscfStatus.handle_status(error.status)
+        instance = VscfImplTag.get_type(result)[0].take_c_ctx(cast(result, POINTER(VscfImplTag.get_type(result)[1])))
+        return instance
+
     def export_public_key(self, public_key):
         """Export public key to the raw binary format.
 
@@ -131,6 +124,22 @@ class Ecc(Alg, KeyAlg, KeyCipher, KeySigner, ComputeSharedKey):
         VscfStatus.handle_status(error.status)
         instance = RawPublicKey.take_c_ctx(result)
         return instance
+
+    def exported_public_key_data_len(self, public_key):
+        """Return length in bytes required to hold exported public key."""
+        result = self._lib_vscf_ecc.vscf_ecc_exported_public_key_data_len(self.ctx, public_key.c_impl)
+        return result
+
+    def export_public_key_data(self, public_key):
+        """Export public key to the raw binary format without algorithm information.
+
+        Binary format must be defined in the key specification.
+        For instance, RSA public key must be exported in format defined in
+        RFC 3447 Appendix A.1.1."""
+        out = Buffer(self.exported_public_key_data_len(public_key=public_key))
+        status = self._lib_vscf_ecc.vscf_ecc_export_public_key_data(self.ctx, public_key.c_impl, out.c_buffer)
+        VscfStatus.handle_status(status)
+        return out.get_bytes()
 
     def import_private_key(self, raw_key):
         """Import private key from the raw binary format.
@@ -147,6 +156,15 @@ class Ecc(Alg, KeyAlg, KeyCipher, KeySigner, ComputeSharedKey):
         instance = VscfImplTag.get_type(result)[0].take_c_ctx(cast(result, POINTER(VscfImplTag.get_type(result)[1])))
         return instance
 
+    def import_private_key_data(self, key_data, key_alg_info):
+        """Import private key from the raw binary format."""
+        d_key_data = Data(key_data)
+        error = vscf_error_t()
+        result = self._lib_vscf_ecc.vscf_ecc_import_private_key_data(self.ctx, d_key_data.data, key_alg_info.c_impl, error)
+        VscfStatus.handle_status(error.status)
+        instance = VscfImplTag.get_type(result)[0].take_c_ctx(cast(result, POINTER(VscfImplTag.get_type(result)[1])))
+        return instance
+
     def export_private_key(self, private_key):
         """Export private key in the raw binary format.
 
@@ -158,6 +176,22 @@ class Ecc(Alg, KeyAlg, KeyCipher, KeySigner, ComputeSharedKey):
         VscfStatus.handle_status(error.status)
         instance = RawPrivateKey.take_c_ctx(result)
         return instance
+
+    def exported_private_key_data_len(self, private_key):
+        """Return length in bytes required to hold exported private key."""
+        result = self._lib_vscf_ecc.vscf_ecc_exported_private_key_data_len(self.ctx, private_key.c_impl)
+        return result
+
+    def export_private_key_data(self, private_key):
+        """Export private key to the raw binary format without algorithm information.
+
+        Binary format must be defined in the key specification.
+        For instance, RSA private key must be exported in format defined in
+        RFC 3447 Appendix A.1.2."""
+        out = Buffer(self.exported_private_key_data_len(private_key=private_key))
+        status = self._lib_vscf_ecc.vscf_ecc_export_private_key_data(self.ctx, private_key.c_impl, out.c_buffer)
+        VscfStatus.handle_status(status)
+        return out.get_bytes()
 
     def can_encrypt(self, public_key, data_len):
         """Check if algorithm can encrypt data with a given key."""
@@ -240,6 +274,32 @@ class Ecc(Alg, KeyAlg, KeyCipher, KeySigner, ComputeSharedKey):
         Expect Public Key or Private Key."""
         result = self._lib_vscf_ecc.vscf_ecc_shared_key_len(self.ctx, key.c_impl)
         return result
+
+    def kem_shared_key_len(self, key):
+        """Return length in bytes required to hold encapsulated shared key."""
+        result = self._lib_vscf_ecc.vscf_ecc_kem_shared_key_len(self.ctx, key.c_impl)
+        return result
+
+    def kem_encapsulated_key_len(self, public_key):
+        """Return length in bytes required to hold encapsulated key."""
+        result = self._lib_vscf_ecc.vscf_ecc_kem_encapsulated_key_len(self.ctx, public_key.c_impl)
+        return result
+
+    def kem_encapsulate(self, public_key):
+        """Generate a shared key and a key encapsulated message."""
+        shared_key = Buffer(self.encapsulated_shared_key_len(key=public_key))
+        encapsulated_key = Buffer(self.encapsulated_key_len(public_key=public_key))
+        status = self._lib_vscf_ecc.vscf_ecc_kem_encapsulate(self.ctx, public_key.c_impl, shared_key.c_buffer, encapsulated_key.c_buffer)
+        VscfStatus.handle_status(status)
+        return shared_key.get_bytes(), encapsulated_key.get_bytes()
+
+    def kem_decapsulate(self, encapsulated_key, private_key):
+        """Decapsulate the shared key."""
+        d_encapsulated_key = Data(encapsulated_key)
+        shared_key = Buffer(self.encapsulated_shared_key_len(key=private_key))
+        status = self._lib_vscf_ecc.vscf_ecc_kem_decapsulate(self.ctx, d_encapsulated_key.data, private_key.c_impl, shared_key.c_buffer)
+        VscfStatus.handle_status(status)
+        return shared_key.get_bytes()
 
     def setup_defaults(self):
         """Setup predefined values to the uninitialized class dependencies."""

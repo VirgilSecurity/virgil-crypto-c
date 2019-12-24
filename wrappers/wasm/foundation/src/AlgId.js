@@ -57,37 +57,33 @@ const initAlgId = (Module, modules) => {
 
         RSA: 7,
 
-        ECC: 8,
+        ED25519: 8,
 
-        ED25519: 9,
+        CURVE25519: 9,
 
-        CURVE25519: 10,
+        SECP256R1: 10,
 
-        SECP256R1: 11,
+        AES256_GCM: 11,
 
-        AES256_GCM: 12,
+        AES256_CBC: 12,
 
-        AES256_CBC: 13,
+        HMAC: 13,
 
-        HMAC: 14,
+        HKDF: 14,
 
-        HKDF: 15,
+        PKCS5_PBKDF2: 15,
 
-        PKCS5_PBKDF2: 16,
+        PKCS5_PBES2: 16,
 
-        PKCS5_PBES2: 17,
+        COMPOUND_KEY: 17,
 
-        COMPOUND_KEY: 18,
+        HYBRID_KEY: 18,
 
-        CHAINED_KEY: 19,
+        FALCON: 19,
 
-        FALCON: 20,
+        ROUND5_ND_5KEM_5D: 20,
 
-        ROUND5: 21,
-
-        ROUND5_ND_5PKE_5D: 22,
-
-        RANDOM_PADDING: 23
+        RANDOM_PADDING: 21
     });
 
     return AlgId;

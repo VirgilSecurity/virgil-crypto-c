@@ -19,8 +19,8 @@
     <require impl="round5" is_optional="1"/>
     <require impl="compound key alg" is_optional="1"/>
     <require module="compound key alg defs" is_optional="1"/>
-    <require impl="chained key alg" is_optional="1"/>
-    <require module="chained key alg defs" is_optional="1"/>
+    <require impl="hybrid key alg" is_optional="1"/>
+    <require module="hybrid key alg defs" is_optional="1"/>
 
     <dependency name="random" interface="random"/>
 
@@ -53,13 +53,13 @@
         Generate new post-quantum private key with default algorithms.
         Note, that a post-quantum key combines classic private keys
         alongside with post-quantum private keys.
-        Current structure is "compound private key" where:
-            - cipher private key is "chained private key" where:
-                - l1 key is a classic private key;
-                - l2 key is a post-quantum private key;
-            - signer private key "chained private key" where:
-                - l1 key is a classic private key;
-                - l2 key is a post-quantum private key.
+        Current structure is "compound private key" is:
+            - cipher private key is "hybrid private key" where:
+                - first key is a classic private key;
+                - second key is a post-quantum private key;
+            - signer private key "hybrid private key" where:
+                - first key is a classic private key;
+                - second key is a post-quantum private key.
 
         <argument name="error" class="error" access="readwrite"/>
 
@@ -76,26 +76,26 @@
         <return interface="private key" access="disown"/>
     </method>
 
-    <method name="generate chained private key">
-        Generate new chained private key with given algorithms.
+    <method name="generate hybrid private key">
+        Generate new hybrid private key with given algorithms.
 
-        <argument name="l1 alg id" enum="alg id"/>
-        <argument name="l2 alg id" enum="alg id"/>
+        <argument name="first key alg id" enum="alg id"/>
+        <argument name="second key alg id" enum="alg id"/>
         <argument name="error" class="error" access="readwrite"/>
 
         <return interface="private key" access="disown"/>
     </method>
 
-    <method name="generate compound chained private key">
-        Generate new compound private key with nested chained private keys.
+    <method name="generate compound hybrid private key">
+        Generate new compound private key with nested hybrid private keys.
 
-        Note, l2 algorithm identifiers can be NONE, in this case regular key
-        will be crated instead of chained key.
+        Note, second key algorithm identifiers can be NONE, in this case,
+        a regular key will be crated instead of a hybrid key.
 
-        <argument name="cipher l1 alg id" enum="alg id"/>
-        <argument name="cipher l2 alg id" enum="alg id"/>
-        <argument name="signer l1 alg id" enum="alg id"/>
-        <argument name="signer l2 alg id" enum="alg id"/>
+        <argument name="cipher first key alg id" enum="alg id"/>
+        <argument name="cipher second key alg id" enum="alg id"/>
+        <argument name="signer first key alg id" enum="alg id"/>
+        <argument name="signer second key alg id" enum="alg id"/>
         <argument name="error" class="error" access="readwrite"/>
 
         <return interface="private key" access="disown"/>

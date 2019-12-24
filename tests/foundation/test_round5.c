@@ -59,7 +59,7 @@ test__generate_key__success(void) {
     vscf_error_t error;
     vscf_error_reset(&error);
 
-    vscf_impl_t *private_key = vscf_round5_generate_key(round5, &error);
+    vscf_impl_t *private_key = vscf_round5_generate_key(round5, vscf_alg_id_ROUND5_ND_5KEM_5D, &error);
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
 
     vscf_impl_destroy(&private_key);
@@ -67,7 +67,7 @@ test__generate_key__success(void) {
 }
 
 void
-test__encrypt__success(void) {
+test__encapsulate__success(void) {
     //
     //  Configure alg.
     //
@@ -81,9 +81,9 @@ test__encrypt__success(void) {
     //  Import public key.
     //
     vscf_impl_t *alg_info =
-            vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_ROUND5_ND_5PKE_5D));
+            vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_ROUND5_ND_5KEM_5D));
     vscf_raw_public_key_t *raw_public_key =
-            vscf_raw_public_key_new_with_data(test_data_round5_ND_5PKE_5D_PUBLIC_KEY, &alg_info);
+            vscf_raw_public_key_new_with_data(test_data_round5_ND_5KEM_5D_PUBLIC_KEY, &alg_info);
 
     vscf_error_t error;
     vscf_error_reset(&error);
@@ -92,42 +92,44 @@ test__encrypt__success(void) {
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
 
     //
-    //  Encrypt.
+    //  Encapsulate.
     //
-    TEST_ASSERT_TRUE(vscf_round5_can_encrypt(round5, public_key, test_data_round5_ND_5PKE_5D_MESSAGE.len));
+    const size_t encapsulated_key_len = vscf_round5_kem_encapsulated_key_len(round5, public_key);
+    const size_t shared_key_len = vscf_round5_kem_shared_key_len(round5, public_key);
+    TEST_ASSERT_GREATER_THAN(0, encapsulated_key_len);
+    TEST_ASSERT_GREATER_THAN(0, shared_key_len);
 
-    const size_t enc_len = vscf_round5_encrypted_len(round5, public_key, test_data_round5_ND_5PKE_5D_MESSAGE.len);
-    TEST_ASSERT_GREATER_THAN(0, enc_len);
+    vsc_buffer_t *encapsulated_key = vsc_buffer_new_with_capacity(encapsulated_key_len);
+    vsc_buffer_t *shared_key = vsc_buffer_new_with_capacity(shared_key_len);
 
-    vsc_buffer_t *enc = vsc_buffer_new_with_capacity(enc_len);
-    const vscf_status_t status = vscf_round5_encrypt(round5, public_key, test_data_round5_ND_5PKE_5D_MESSAGE, enc);
+    const vscf_status_t status = vscf_round5_kem_encapsulate(round5, public_key, shared_key, encapsulated_key);
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, status);
 
-    vsc_buffer_destroy(&enc);
+    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_data_round5_ND_5KEM_5D_ENCAPSULATED_KEY, encapsulated_key);
+    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_data_round5_ND_5KEM_5D_ENCAPSULATED_SHARED_KEY, shared_key);
+
+    vsc_buffer_destroy(&encapsulated_key);
+    vsc_buffer_destroy(&shared_key);
     vscf_impl_destroy(&public_key);
     vscf_raw_public_key_destroy(&raw_public_key);
     vscf_round5_destroy(&round5);
 }
 
 void
-test__decrypt__success(void) {
+test__decapsulate__success(void) {
 
     //
     //  Configure alg.
     //
-    vscf_fake_random_t *fake_random = vscf_fake_random_new();
-    vscf_fake_random_setup_source_data(fake_random, test_data_round5_RNG_SEED);
-
     vscf_round5_t *round5 = vscf_round5_new();
-    vscf_round5_take_random(round5, vscf_fake_random_impl(fake_random));
 
     //
     //  Import private key.
     //
     vscf_impl_t *alg_info =
-            vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_ROUND5_ND_5PKE_5D));
+            vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_ROUND5_ND_5KEM_5D));
     vscf_raw_private_key_t *raw_private_key =
-            vscf_raw_private_key_new_with_data(test_data_round5_ND_5PKE_5D_PRIVATE_KEY, &alg_info);
+            vscf_raw_private_key_new_with_data(test_data_round5_ND_5KEM_5D_PRIVATE_KEY, &alg_info);
 
     vscf_error_t error;
     vscf_error_reset(&error);
@@ -138,15 +140,17 @@ test__decrypt__success(void) {
     //
     //  Decrypt.
     //
-    TEST_ASSERT_TRUE(vscf_round5_can_decrypt(round5, private_key, test_data_round5_ND_5PKE_5D_ENC_MESSAGE.len));
+    const size_t shared_key_len = vscf_round5_kem_shared_key_len(round5, private_key);
+    TEST_ASSERT_GREATER_THAN(0, shared_key_len);
+    vsc_buffer_t *shared_key = vsc_buffer_new_with_capacity(shared_key_len);
 
-    const size_t msg_len = vscf_round5_decrypted_len(round5, private_key, test_data_round5_ND_5PKE_5D_ENC_MESSAGE.len);
-
-    vsc_buffer_t *msg = vsc_buffer_new_with_capacity(msg_len);
-    const vscf_status_t status = vscf_round5_decrypt(round5, private_key, test_data_round5_ND_5PKE_5D_ENC_MESSAGE, msg);
+    const vscf_status_t status =
+            vscf_round5_kem_decapsulate(round5, test_data_round5_ND_5KEM_5D_ENCAPSULATED_KEY, private_key, shared_key);
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, status);
 
-    vsc_buffer_destroy(&msg);
+    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_data_round5_ND_5KEM_5D_ENCAPSULATED_SHARED_KEY, shared_key);
+
+    vsc_buffer_destroy(&shared_key);
     vscf_impl_destroy(&private_key);
     vscf_raw_private_key_destroy(&raw_private_key);
     vscf_round5_destroy(&round5);
@@ -169,7 +173,7 @@ test__export_public_key__from_generated_key__valid_alg_and_key_length(void) {
     //
     //  Generate key.
     //
-    vscf_impl_t *private_key = vscf_round5_generate_key(round5, &error);
+    vscf_impl_t *private_key = vscf_round5_generate_key(round5, vscf_alg_id_ROUND5_ND_5KEM_5D, &error);
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
 
     //
@@ -183,7 +187,7 @@ test__export_public_key__from_generated_key__valid_alg_and_key_length(void) {
     // Check.
     //
     const vscf_alg_id_t alg_id = vscf_raw_public_key_alg_id(raw_public_key);
-    TEST_ASSERT_EQUAL(vscf_alg_id_ROUND5_ND_5PKE_5D, alg_id);
+    TEST_ASSERT_EQUAL(vscf_alg_id_ROUND5_ND_5KEM_5D, alg_id);
     TEST_ASSERT_EQUAL(978, vscf_raw_public_key_data(raw_public_key).len);
 
     //
@@ -212,7 +216,7 @@ test__export_private_key__from_generated_key__valid_alg_and_key_length(void) {
     //
     //  Generate key.
     //
-    vscf_impl_t *private_key = vscf_round5_generate_key(round5, &error);
+    vscf_impl_t *private_key = vscf_round5_generate_key(round5, vscf_alg_id_ROUND5_ND_5KEM_5D, &error);
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
 
     //
@@ -225,7 +229,7 @@ test__export_private_key__from_generated_key__valid_alg_and_key_length(void) {
     // Check.
     //
     const vscf_alg_id_t alg_id = vscf_raw_private_key_alg_id(raw_private_key);
-    TEST_ASSERT_EQUAL(vscf_alg_id_ROUND5_ND_5PKE_5D, alg_id);
+    TEST_ASSERT_EQUAL(vscf_alg_id_ROUND5_ND_5KEM_5D, alg_id);
     TEST_ASSERT_EQUAL(1042, vscf_raw_private_key_data(raw_private_key).len);
 
     //
@@ -241,9 +245,9 @@ test__extract_public_key__from_imported_private_key__when_exported_are_equals(vo
 
     //  Create raw private key
     vscf_impl_t *alg_info =
-            vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_ROUND5_ND_5PKE_5D));
+            vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_ROUND5_ND_5KEM_5D));
     vscf_raw_private_key_t *raw_private_key =
-            vscf_raw_private_key_new_with_data(test_data_round5_ND_5PKE_5D_PRIVATE_KEY, &alg_info);
+            vscf_raw_private_key_new_with_data(test_data_round5_ND_5KEM_5D_PRIVATE_KEY, &alg_info);
 
     //  Configure key algorithm
     vscf_round5_t *round5 = vscf_round5_new();
@@ -270,7 +274,7 @@ test__extract_public_key__from_imported_private_key__when_exported_are_equals(vo
     TEST_ASSERT_NOT_NULL(raw_public_key);
 
     //   Check
-    TEST_ASSERT_EQUAL_DATA(test_data_round5_ND_5PKE_5D_PUBLIC_KEY, vscf_raw_public_key_data(raw_public_key));
+    TEST_ASSERT_EQUAL_DATA(test_data_round5_ND_5KEM_5D_PUBLIC_KEY, vscf_raw_public_key_data(raw_public_key));
 
     //  Cleanup
     vscf_round5_destroy(&round5);
@@ -292,8 +296,8 @@ main(void) {
 
 #if TEST_DEPENDENCIES_AVAILABLE
     RUN_TEST(test__generate_key__success);
-    RUN_TEST(test__encrypt__success);
-    RUN_TEST(test__decrypt__success);
+    RUN_TEST(test__encapsulate__success);
+    RUN_TEST(test__decapsulate__success);
     RUN_TEST(test__export_public_key__from_generated_key__valid_alg_and_key_length);
     RUN_TEST(test__export_private_key__from_generated_key__valid_alg_and_key_length);
     RUN_TEST(test__extract_public_key__from_imported_private_key__when_exported_are_equals);

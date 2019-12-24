@@ -1,0 +1,207 @@
+<implementor name="hybrid key" is_default="1">
+    Contains public and private "hybrid key".
+
+    <implementation name="hybrid key alg info">
+        Handle information about hybrid key algorithm.
+
+        <interface name="alg info"/>
+
+        <property name="alg id" enum="alg id"/>
+        <property name="first key alg info" interface="alg info"/>
+        <property name="second key alg info" interface="alg info"/>
+
+        <constructor name="with infos" visibility="private">
+            Create hybrid algorithm information.
+
+            Note, keys ownership is preserved.
+
+            <argument name="alg id" enum="alg id"/>
+            <argument name="first key alg info" interface="alg info"/>
+            <argument name="second key alg info" interface="alg info"/>
+        </constructor>
+
+        <constructor name="with infos disown" visibility="private">
+            Create hybrid algorithm information.
+
+            Note, keys ownership is transferred.
+
+            <argument name="alg id" enum="alg id"/>
+            <argument name="first key alg info" interface="alg info" access="disown"/>
+            <argument name="second key alg info" interface="alg info" access="disown"/>
+        </constructor>
+
+        <method name="first key alg info" is_const="1" declaration="public">
+            Return algorithm information about the first key.
+
+            <return interface="alg info"/>
+        </method>
+
+        <method name="second key alg info" is_const="1" declaration="public">
+            Return algorithm information about the second key.
+
+            <return interface="alg info" is_optional="1"/>
+        </method>
+    </implementation>
+
+    <implementation name="hybrid public key">
+        Handles a hybrid public key.
+
+        The hybrid public key contains 2 public keys.
+
+        <require interface="alg info"/>
+        <require interface="public key"/>
+
+        <property name="alg info" interface="alg info"/>
+        <property name="first key" interface="public key"/>
+        <property name="second key" interface="public key"/>
+
+        <interface name="key"/>
+        <interface name="public key"/>
+
+        <constructor name="with keys" visibility="private">
+            Create a hybrid public key with 2 public keys.
+
+            Note, keys ownership is kept.
+
+            <argument name="alg info" interface="alg info" access="disown"/>
+            <argument name="first key" interface="public key"/>
+            <argument name="second key" interface="public key"/>
+        </constructor>
+
+        <constructor name="with keys disown" visibility="private">
+            Create a hybrid public key with 2 public keys.
+
+            Note, keys ownership is transferred.
+
+            <argument name="alg info" interface="alg info"/>
+            <argument name="first key" interface="public key" access="disown"/>
+            <argument name="second key" interface="public key" access="disown"/>
+        </constructor>
+
+        <method name="first key" declaration="public" is_const="1">
+            Return the first public key.
+
+            <return interface="public key"/>
+        </method>
+
+        <method name="second key" declaration="public" is_const="1">
+            Return the second public key.
+
+            <return interface="public key" is_optional="1"/>
+        </method>
+    </implementation>
+
+    <implementation name="hybrid private key">
+        Handles a hybrid private key.
+
+        The hybrid private key contains 2 private keys.
+
+        <require interface="alg info"/>
+        <require interface="private key"/>
+        <require impl="hybrid public key"/>
+
+        <property name="alg info" interface="alg info"/>
+        <property name="first key" interface="private key"/>
+        <property name="second key" interface="private key"/>
+
+        <interface name="key"/>
+        <interface name="private key"/>
+
+        <constructor name="with keys" visibility="private">
+            Create a hybrid private key with 2 keys.
+
+            Note, keys ownership is kept.
+
+            <argument name="alg info" interface="alg info" access="disown"/>
+            <argument name="first key" interface="public key"/>
+            <argument name="second key" interface="public key"/>
+        </constructor>
+
+        <constructor name="with keys disown" visibility="private">
+            Create a hybrid private key with 2 keys.
+
+            Note, keys ownership is transferred.
+
+            <argument name="alg info" interface="alg info"/>
+            <argument name="first key" interface="public key" access="disown"/>
+            <argument name="second key" interface="public key" access="disown"/>
+        </constructor>
+
+        <method name="first key" declaration="public" is_const="1">
+            Return first private key.
+
+            <return interface="private key"/>
+        </method>
+
+        <method name="second key" declaration="public" is_const="1">
+            Return second private key.
+
+            <return interface="private key" is_optional="1"/>
+        </method>
+    </implementation>
+
+    <implementation name="hybrid key alg">
+        Implements public key cryptography over hybrid keys.
+        Hybrid encryption - TODO
+        Hybrid signatures - TODO
+
+        <require class="oid"/>
+        <require class="alg factory"/>
+        <require class="key alg factory"/>
+        <require interface="alg"/>
+        <require interface="alg info"/>
+        <require interface="public key"/>
+        <require interface="private key"/>
+        <require interface="kem"/>
+        <require interface="key signer"/>
+        <require interface="compute shared key"/>
+        <require impl="ctr drbg"/>
+        <require impl="sha512"/>
+        <require impl="aes256 gcm"/>
+        <require impl="hybrid public key"/>
+        <require impl="hybrid private key"/>
+        <require impl="hybrid key alg info"/>
+        <require impl="asn1rd"/>
+        <require impl="asn1wr"/>
+        <require module="asn1rd defs"/>
+        <require module="asn1wr defs"/>
+        <require module="hkdf private"/>
+
+        <interface name="key alg">
+            <constant name="can import public key" value="true"/>
+            <constant name="can export public key" value="true"/>
+            <constant name="can import private key" value="true"/>
+            <constant name="can export private key" value="true"/>
+        </interface>
+        <interface name="key cipher"/>
+        <interface name="key signer"/>
+
+        <dependency name="random" interface="random"/>
+        <dependency name="cipher" interface="cipher auth"/>
+        <dependency name="hash" interface="hash"/>
+
+        <method name="setup defaults" declaration="public">
+            Setup predefined values to the uninitialized class dependencies.
+
+            <return enum="status"/>
+        </method>
+
+        <method name="make key" declaration="public" is_const="1">
+            Make hybrid private key from given keys.
+
+            <argument name="first key" interface="private key"/>
+            <argument name="second key" interface="private key"/>
+            <argument name="error" class="error" access="readwrite"/>
+
+            <return interface="private key" access="disown"/>
+        </method>
+
+        <method name="config cipher" is_static="1">
+            Derive cipher key and nonce and configure the given cipher.
+
+            <argument name="cipher" interface="cipher" access="readwrite"/>
+            <argument name="hash" interface="hash" access="readwrite"/>
+            <argument name="shared key" class="data"/>
+        </method>
+    </implementation>
+</implementor>

@@ -76,7 +76,7 @@ target_sources(test_data_foundation
             "${CMAKE_CURRENT_LIST_DIR}/include/test_data_falcon.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/test_data_round5.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/test_data_compound_key.h"
-            "${CMAKE_CURRENT_LIST_DIR}/include/test_data_chained_key.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/test_data_hybrid_key.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/test_data_post_quantum.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/test_data_padding_cipher.h"
 
@@ -118,7 +118,7 @@ target_sources(test_data_foundation
             "${CMAKE_CURRENT_LIST_DIR}/src/test_data_falcon.c"
             "${CMAKE_CURRENT_LIST_DIR}/src/test_data_round5.c"
             "${CMAKE_CURRENT_LIST_DIR}/src/test_data_compound_key.c"
-            "${CMAKE_CURRENT_LIST_DIR}/src/test_data_chained_key.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/test_data_hybrid_key.c"
             "${CMAKE_CURRENT_LIST_DIR}/src/test_data_post_quantum.c"
             "${CMAKE_CURRENT_LIST_DIR}/src/test_data_padding_cipher.c"
         )

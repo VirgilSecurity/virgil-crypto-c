@@ -119,10 +119,6 @@ static const vscf_key_alg_api_t key_alg_api = {
     //
     vscf_impl_tag_FALCON,
     //
-    //  Link to the inherited interface API 'alg'.
-    //
-    &alg_api,
-    //
     //  Generate ephemeral private key of the same type.
     //  Note, this operation might be slow.
     //
@@ -139,6 +135,10 @@ static const vscf_key_alg_api_t key_alg_api = {
     //
     (vscf_key_alg_api_import_public_key_fn)vscf_falcon_import_public_key,
     //
+    //  Import public key from the raw binary format.
+    //
+    (vscf_key_alg_api_import_public_key_data_fn)vscf_falcon_import_public_key_data,
+    //
     //  Export public key to the raw binary format.
     //
     //  Binary format must be defined in the key specification.
@@ -146,6 +146,18 @@ static const vscf_key_alg_api_t key_alg_api = {
     //  RFC 3447 Appendix A.1.1.
     //
     (vscf_key_alg_api_export_public_key_fn)vscf_falcon_export_public_key,
+    //
+    //  Return length in bytes required to hold exported public key.
+    //
+    (vscf_key_alg_api_exported_public_key_data_len_fn)vscf_falcon_exported_public_key_data_len,
+    //
+    //  Export public key to the raw binary format without algorithm information.
+    //
+    //  Binary format must be defined in the key specification.
+    //  For instance, RSA public key must be exported in format defined in
+    //  RFC 3447 Appendix A.1.1.
+    //
+    (vscf_key_alg_api_export_public_key_data_fn)vscf_falcon_export_public_key_data,
     //
     //  Import private key from the raw binary format.
     //
@@ -158,6 +170,10 @@ static const vscf_key_alg_api_t key_alg_api = {
     //
     (vscf_key_alg_api_import_private_key_fn)vscf_falcon_import_private_key,
     //
+    //  Import private key from the raw binary format.
+    //
+    (vscf_key_alg_api_import_private_key_data_fn)vscf_falcon_import_private_key_data,
+    //
     //  Export private key in the raw binary format.
     //
     //  Binary format must be defined in the key specification.
@@ -165,6 +181,18 @@ static const vscf_key_alg_api_t key_alg_api = {
     //  RFC 3447 Appendix A.1.2.
     //
     (vscf_key_alg_api_export_private_key_fn)vscf_falcon_export_private_key,
+    //
+    //  Return length in bytes required to hold exported private key.
+    //
+    (vscf_key_alg_api_exported_private_key_data_len_fn)vscf_falcon_exported_private_key_data_len,
+    //
+    //  Export private key to the raw binary format without algorithm information.
+    //
+    //  Binary format must be defined in the key specification.
+    //  For instance, RSA private key must be exported in format defined in
+    //  RFC 3447 Appendix A.1.2.
+    //
+    (vscf_key_alg_api_export_private_key_data_fn)vscf_falcon_export_private_key_data,
     //
     //  Defines whether a public key can be imported or not.
     //

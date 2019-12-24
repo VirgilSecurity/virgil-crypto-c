@@ -81,38 +81,38 @@ public class KeyInfo implements AutoCloseable {
     }
 
     /*
-    * Return true if a key is a chained key
+    * Return true if a key is a hybrid key
     */
-    public boolean isChained() {
-        return FoundationJNI.INSTANCE.keyInfo_isChained(this.cCtx);
+    public boolean isHybrid() {
+        return FoundationJNI.INSTANCE.keyInfo_isHybrid(this.cCtx);
     }
 
     /*
     * Return true if a key is a compound key and compounds cipher key
-    * and signer key are chained keys.
+    * and signer key are hybrid keys.
     */
-    public boolean isCompoundChained() {
-        return FoundationJNI.INSTANCE.keyInfo_isCompoundChained(this.cCtx);
+    public boolean isCompoundHybrid() {
+        return FoundationJNI.INSTANCE.keyInfo_isCompoundHybrid(this.cCtx);
     }
 
     /*
     * Return true if a key is a compound key and compounds cipher key
-    * is a chained key.
+    * is a hybrid key.
     */
-    public boolean isCompoundChainedCipher() {
-        return FoundationJNI.INSTANCE.keyInfo_isCompoundChainedCipher(this.cCtx);
+    public boolean isCompoundHybridCipher() {
+        return FoundationJNI.INSTANCE.keyInfo_isCompoundHybridCipher(this.cCtx);
     }
 
     /*
     * Return true if a key is a compound key and compounds signer key
-    * is a chained key.
+    * is a hybrid key.
     */
-    public boolean isCompoundChainedSigner() {
-        return FoundationJNI.INSTANCE.keyInfo_isCompoundChainedSigner(this.cCtx);
+    public boolean isCompoundHybridSigner() {
+        return FoundationJNI.INSTANCE.keyInfo_isCompoundHybridSigner(this.cCtx);
     }
 
     /*
-    * Return true if a key is a compound key that contains chained keys
+    * Return true if a key is a compound key that contains hybrid keys
     * for encryption/decryption and signing/verifying that itself
     * contains a combination of classic keys and post-quantum keys.
     */
@@ -121,7 +121,7 @@ public class KeyInfo implements AutoCloseable {
     }
 
     /*
-    * Return true if a key is a compound key that contains a chained key
+    * Return true if a key is a compound key that contains a hybrid key
     * for encryption/decryption that contains a classic key and
     * a post-quantum key.
     */
@@ -130,7 +130,7 @@ public class KeyInfo implements AutoCloseable {
     }
 
     /*
-    * Return true if a key is a compound key that contains a chained key
+    * Return true if a key is a compound key that contains a hybrid key
     * for signing/verifying that contains a classic key and
     * a post-quantum key.
     */
@@ -162,51 +162,51 @@ public class KeyInfo implements AutoCloseable {
     }
 
     /*
-    * Return chained l1 key id, if key is chained.
+    * Return hybrid's first key id, if key is hybrid.
     * Return None, otherwise.
     */
-    public AlgId chainedL1AlgId() {
-        return FoundationJNI.INSTANCE.keyInfo_chainedL1AlgId(this.cCtx);
+    public AlgId hybridFirstKeyAlgId() {
+        return FoundationJNI.INSTANCE.keyInfo_hybridFirstKeyAlgId(this.cCtx);
     }
 
     /*
-    * Return chained l2 key id, if key is chained.
+    * Return hybrid's second key id, if key is hybrid.
     * Return None, otherwise.
     */
-    public AlgId chainedL2AlgId() {
-        return FoundationJNI.INSTANCE.keyInfo_chainedL2AlgId(this.cCtx);
+    public AlgId hybridSecondKeyAlgId() {
+        return FoundationJNI.INSTANCE.keyInfo_hybridSecondKeyAlgId(this.cCtx);
     }
 
     /*
-    * Return l1 key id of compound's cipher key, if key is compound(chained, ...)
-    * Return None, otherwise.
+    * Return hybrid's first key id of compound's cipher key,
+    * if key is compound(hybrid, ...), None - otherwise.
     */
-    public AlgId compoundCipherL1AlgId() {
-        return FoundationJNI.INSTANCE.keyInfo_compoundCipherL1AlgId(this.cCtx);
+    public AlgId compoundHybridCipherFirstKeyAlgId() {
+        return FoundationJNI.INSTANCE.keyInfo_compoundHybridCipherFirstKeyAlgId(this.cCtx);
     }
 
     /*
-    * Return l2 key id of compound's cipher key, if key is compound(chained, ...)
-    * Return None, otherwise.
+    * Return hybrid's second key id of compound's cipher key,
+    * if key is compound(hybrid, ...), None - otherwise.
     */
-    public AlgId compoundCipherL2AlgId() {
-        return FoundationJNI.INSTANCE.keyInfo_compoundCipherL2AlgId(this.cCtx);
+    public AlgId compoundHybridCipherSecondKeyAlgId() {
+        return FoundationJNI.INSTANCE.keyInfo_compoundHybridCipherSecondKeyAlgId(this.cCtx);
     }
 
     /*
-    * Return l1 key id of compound's signer key, if key is compound(..., chained)
-    * Return None, otherwise.
+    * Return hybrid's first key id of compound's signer key,
+    * if key is compound(..., hybrid), None - otherwise.
     */
-    public AlgId compoundSignerL1AlgId() {
-        return FoundationJNI.INSTANCE.keyInfo_compoundSignerL1AlgId(this.cCtx);
+    public AlgId compoundHybridSignerFirstKeyAlgId() {
+        return FoundationJNI.INSTANCE.keyInfo_compoundHybridSignerFirstKeyAlgId(this.cCtx);
     }
 
     /*
-    * Return l2 key id of compound's signer key, if key is compound(..., chained)
-    * Return None, otherwise.
+    * Return hybrid's second key id of compound's signer key,
+    * if key is compound(..., hybrid), None - otherwise.
     */
-    public AlgId compoundSignerL2AlgId() {
-        return FoundationJNI.INSTANCE.keyInfo_compoundSignerL2AlgId(this.cCtx);
+    public AlgId compoundHybridSignerSecondKeyAlgId() {
+        return FoundationJNI.INSTANCE.keyInfo_compoundHybridSignerSecondKeyAlgId(this.cCtx);
     }
 }
 

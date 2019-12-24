@@ -74,33 +74,35 @@ const initFoundationInterfaceTag = (Module, modules) => {
 
         KDF: 18,
 
-        KEY: 19,
+        KEM: 19,
 
-        KEY_ALG: 20,
+        KEY: 20,
 
-        KEY_CIPHER: 21,
+        KEY_ALG: 21,
 
-        KEY_DESERIALIZER: 22,
+        KEY_CIPHER: 22,
 
-        KEY_SERIALIZER: 23,
+        KEY_DESERIALIZER: 23,
 
-        KEY_SIGNER: 24,
+        KEY_SERIALIZER: 24,
 
-        MAC: 25,
+        KEY_SIGNER: 25,
 
-        MESSAGE_INFO_FOOTER_SERIALIZER: 26,
+        MAC: 26,
 
-        MESSAGE_INFO_SERIALIZER: 27,
+        MESSAGE_INFO_FOOTER_SERIALIZER: 27,
 
-        PADDING: 28,
+        MESSAGE_INFO_SERIALIZER: 28,
 
-        PRIVATE_KEY: 29,
+        PADDING: 29,
 
-        PUBLIC_KEY: 30,
+        PRIVATE_KEY: 30,
 
-        RANDOM: 31,
+        PUBLIC_KEY: 31,
 
-        SALTED_KDF: 32
+        RANDOM: 32,
+
+        SALTED_KDF: 33
     });
 
     return FoundationInterfaceTag;

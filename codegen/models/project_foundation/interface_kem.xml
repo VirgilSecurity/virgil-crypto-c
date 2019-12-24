@@ -1,0 +1,56 @@
+<interface name="kem">
+    Provides generic interface to the Key Encapsulation Mechanism (KEM).
+
+    <method name="kem shared key len" is_const="1">
+        Return length in bytes required to hold encapsulated shared key.
+
+        <argument name="key" interface="key"/>
+
+        <return type="size"/>
+    </method>
+
+
+    <method name="kem encapsulated key len" is_const="1">
+        Return length in bytes required to hold encapsulated key.
+
+        <argument name="public key" interface="public key"/>
+
+        <return type="size"/>
+    </method>
+
+
+    <method name="kem encapsulate" is_const="1">
+        Generate a shared key and a key encapsulated message.
+
+        <argument name="public key" interface="public key"/>
+
+        <argument name="shared key" class="buffer">
+            <length method="encapsulated shared key len">
+                <proxy argument="public key" to="key"/>
+            </length>
+        </argument>
+
+        <argument name="encapsulated key" class="buffer">
+            <length method="encapsulated key len">
+                <proxy argument="public key" to="public key"/>
+            </length>
+        </argument>
+
+        <return enum="status"/>
+    </method>
+
+
+    <method name="kem decapsulate" is_const="1">
+        Decapsulate the shared key.
+
+        <argument name="encapsulated key" class="data"/>
+        <argument name="private key" interface="private key"/>
+        <argument name="shared key" class="buffer">
+            <length method="encapsulated shared key len">
+                <proxy argument="private key" to="key"/>
+            </length>
+        </argument>
+
+        <return enum="status"/>
+    </method>
+</interface>

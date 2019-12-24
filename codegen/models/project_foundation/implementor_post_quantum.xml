@@ -56,7 +56,8 @@
 
         <require library="round5" feature="library"/>
         <require header="round5/rng.h"/>
-        <require header="round5/r5_cca_pke.h"/>
+        <require header="round5/r5_cca_kem.h"/>
+        <require header="round5/r5_parameter_sets.h"/>
 
         <require interface="public key"/>
         <require interface="private key"/>
@@ -65,19 +66,17 @@
         <require module="raw public key defs"/>
         <require module="raw private key defs"/>
 
-        <interface name="alg"/>
         <interface name="key alg">
             <constant name="can import public key" value="true"/>
             <constant name="can export public key" value="true"/>
             <constant name="can import private key" value="true"/>
             <constant name="can export private key" value="true"/>
         </interface>
-        <interface name="key cipher"/>
+        <interface name="kem"/>
 
         <constant name="seed len" value="48"/>
 
         <dependency name="random" interface="random"/>
-        <property name="params" class="any"/>
 
         <method name="setup defaults" declaration="public">
             Setup predefined values to the uninitialized class dependencies.
@@ -88,6 +87,8 @@
         <method name="generate key" declaration="public" is_const="1">
             Generate new private key.
             Note, this operation might be slow.
+
+            <argument name="alg id" enum="alg id"/>
 
             <argument name="error" class="error" access="readwrite"/>
 

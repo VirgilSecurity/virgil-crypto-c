@@ -304,8 +304,8 @@
 					"shell_cmd": "make -j8 test_key_info"
 				},
 				{
-					"name": "test_chained_key_alg",
-					"shell_cmd": "make -j8 test_chained_key_alg"
+					"name": "test_hybrid_key_alg_clangformat",
+					"shell_cmd": "make -j8 test_hybrid_key_alg_clangformat"
 				},
 				{
 					"name": "test_round5",
@@ -652,6 +652,10 @@
 					"shell_cmd": "make -j8 test_aes256_cbc_clangformat"
 				},
 				{
+					"name": "test_hybrid_key_alg",
+					"shell_cmd": "make -j8 test_hybrid_key_alg"
+				},
+				{
 					"name": "test_asn1wr",
 					"shell_cmd": "make -j8 test_asn1wr"
 				},
@@ -706,10 +710,6 @@
 				{
 					"name": "test_kdf2_clangformat",
 					"shell_cmd": "make -j8 test_kdf2_clangformat"
-				},
-				{
-					"name": "test_chained_key_alg_clangformat",
-					"shell_cmd": "make -j8 test_chained_key_alg_clangformat"
 				},
 				{
 					"name": "test_curve25519_public_key",

@@ -45,10 +45,15 @@ if(NOT EXISTS "${SOURCE_FILE}")
 endif()
 
 file(STRINGS "${SOURCE_FILE}" file_lines NEWLINE_CONSUME)
-file(WRITE "${SOURCE_FILE}" "")
+file(WRITE "${SOURCE_FILE}.tmp" "")
 foreach(line IN LISTS file_lines)
     string(REGEX REPLACE "(const uint32_t r5_parameter_sets)" "extern \\1" line "${line}")
     string(REGEX REPLACE "(const char [*]r5_parameter_set_names)" "extern \\1" line "${line}")
     string(REGEX REPLACE "extern extern" "extern" line "${line}")
-    file(APPEND "${SOURCE_FILE}" "${line}")
+    file(APPEND "${SOURCE_FILE}.tmp" "${line}")
 endforeach()
+
+execute_process(
+        COMMAND
+            ${CMAKE_COMMAND} -E copy_if_different "${SOURCE_FILE}.tmp" "${SOURCE_FILE}"
+        )

@@ -50,49 +50,49 @@ const initFoundationImplTag = (Module, modules) => {
 
         ASN1WR: 6,
 
-        CHAINED_KEY_ALG: 7,
+        CIPHER_ALG_INFO: 7,
 
-        CHAINED_KEY_ALG_INFO: 8,
+        COMPOUND_KEY_ALG: 8,
 
-        CHAINED_PRIVATE_KEY: 9,
+        COMPOUND_KEY_ALG_INFO: 9,
 
-        CHAINED_PUBLIC_KEY: 10,
+        COMPOUND_PRIVATE_KEY: 10,
 
-        CIPHER_ALG_INFO: 11,
+        COMPOUND_PUBLIC_KEY: 11,
 
-        COMPOUND_KEY_ALG: 12,
+        CTR_DRBG: 12,
 
-        COMPOUND_KEY_ALG_INFO: 13,
+        CURVE25519: 13,
 
-        COMPOUND_PRIVATE_KEY: 14,
+        ECC: 14,
 
-        COMPOUND_PUBLIC_KEY: 15,
+        ECC_ALG_INFO: 15,
 
-        CTR_DRBG: 16,
+        ECC_PRIVATE_KEY: 16,
 
-        CURVE25519: 17,
+        ECC_PUBLIC_KEY: 17,
 
-        ECC: 18,
+        ED25519: 18,
 
-        ECC_ALG_INFO: 19,
+        ENTROPY_ACCUMULATOR: 19,
 
-        ECC_PRIVATE_KEY: 20,
+        FAKE_RANDOM: 20,
 
-        ECC_PUBLIC_KEY: 21,
+        FALCON: 21,
 
-        ED25519: 22,
+        HASH_BASED_ALG_INFO: 22,
 
-        ENTROPY_ACCUMULATOR: 23,
+        HKDF: 23,
 
-        FAKE_RANDOM: 24,
+        HMAC: 24,
 
-        FALCON: 25,
+        HYBRID_KEY_ALG: 25,
 
-        HASH_BASED_ALG_INFO: 26,
+        HYBRID_KEY_ALG_INFO: 26,
 
-        HKDF: 27,
+        HYBRID_PRIVATE_KEY: 27,
 
-        HMAC: 28,
+        HYBRID_PUBLIC_KEY: 28,
 
         KDF1: 29,
 

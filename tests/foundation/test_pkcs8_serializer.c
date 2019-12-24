@@ -47,7 +47,7 @@
 #include "vscf_pkcs8_serializer.h"
 #include "vscf_simple_alg_info.h"
 #include "vscf_compound_key_alg_info.h"
-#include "vscf_chained_key_alg_info.h"
+#include "vscf_hybrid_key_alg_info.h"
 
 #include "test_data_rsa.h"
 #include "test_data_ed25519.h"
@@ -55,7 +55,7 @@
 #include "test_data_round5.h"
 #include "test_data_falcon.h"
 #include "test_data_compound_key.h"
-#include "test_data_chained_key.h"
+#include "test_data_hybrid_key.h"
 
 
 // --------------------------------------------------------------------------
@@ -290,17 +290,17 @@ test__serialize_public_key__round5__equals_der(void) {
     vscf_pkcs8_serializer_setup_defaults(pkcs8);
 
     vscf_impl_t *alg_info =
-            vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_ROUND5_ND_5PKE_5D));
+            vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_ROUND5_ND_5KEM_5D));
 
     vscf_raw_public_key_t *raw_public_key =
-            vscf_raw_public_key_new_with_data(test_data_round5_ND_5PKE_5D_PUBLIC_KEY, &alg_info);
+            vscf_raw_public_key_new_with_data(test_data_round5_ND_5KEM_5D_PUBLIC_KEY, &alg_info);
 
     size_t len = vscf_pkcs8_serializer_serialized_public_key_len(pkcs8, raw_public_key);
     vsc_buffer_t *out = vsc_buffer_new_with_capacity(len);
     vscf_status_t status = vscf_pkcs8_serializer_serialize_public_key(pkcs8, raw_public_key, out);
 
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, status);
-    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_data_round5_ND_5PKE_5D_PUBLIC_KEY_PKCS8_DER, out);
+    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_data_round5_ND_5KEM_5D_PUBLIC_KEY_PKCS8_DER, out);
 
     vsc_buffer_destroy(&out);
     vscf_raw_public_key_destroy(&raw_public_key);
@@ -317,17 +317,17 @@ test__serialize_private_key__round5__equals_der(void) {
     vscf_pkcs8_serializer_setup_defaults(pkcs8);
 
     vscf_impl_t *alg_info =
-            vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_ROUND5_ND_5PKE_5D));
+            vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_ROUND5_ND_5KEM_5D));
 
     vscf_raw_private_key_t *raw_private_key =
-            vscf_raw_private_key_new_with_data(test_data_round5_ND_5PKE_5D_PRIVATE_KEY, &alg_info);
+            vscf_raw_private_key_new_with_data(test_data_round5_ND_5KEM_5D_PRIVATE_KEY, &alg_info);
 
     size_t len = vscf_pkcs8_serializer_serialized_private_key_len(pkcs8, raw_private_key);
     vsc_buffer_t *out = vsc_buffer_new_with_capacity(len);
     vscf_status_t status = vscf_pkcs8_serializer_serialize_private_key(pkcs8, raw_private_key, out);
 
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, status);
-    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_data_round5_ND_5PKE_5D_PRIVATE_KEY_PKCS8_DER, out);
+    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_data_round5_ND_5KEM_5D_PRIVATE_KEY_PKCS8_DER, out);
 
     vsc_buffer_destroy(&out);
     vscf_raw_private_key_destroy(&raw_private_key);
@@ -454,28 +454,28 @@ test__serialize_private_key__compound_curve25519_ed25519__equals_der(void) {
 // PKCS#8 Chained Keys.
 // --------------------------------------------------------------------------
 void
-test__serialize_public_key__chained_curve25519_curve25519__equals_der(void) {
+test__serialize_public_key__hybrid_curve25519_curve25519__equals_der(void) {
     vscf_pkcs8_serializer_t *pkcs8 = vscf_pkcs8_serializer_new();
     vscf_pkcs8_serializer_setup_defaults(pkcs8);
 
-    vscf_impl_t *l1_curve25519_alg_info =
+    vscf_impl_t *first_key_curve25519_alg_info =
             vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_CURVE25519));
 
-    vscf_impl_t *l2_curve25519_alg_info =
+    vscf_impl_t *second_key_curve25519_alg_info =
             vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_CURVE25519));
 
-    vscf_impl_t *alg_info = vscf_chained_key_alg_info_impl(vscf_chained_key_alg_info_new_with_infos_disown(
-            vscf_alg_id_CHAINED_KEY, &l1_curve25519_alg_info, &l2_curve25519_alg_info));
+    vscf_impl_t *alg_info = vscf_hybrid_key_alg_info_impl(vscf_hybrid_key_alg_info_new_with_infos_disown(
+            vscf_alg_id_HYBRID_KEY, &first_key_curve25519_alg_info, &second_key_curve25519_alg_info));
 
     vscf_raw_public_key_t *raw_public_key =
-            vscf_raw_public_key_new_with_data(test_data_chained_key_CURVE25519_CURVE25519_PUBLIC_KEY, &alg_info);
+            vscf_raw_public_key_new_with_data(test_data_hybrid_key_CURVE25519_CURVE25519_PUBLIC_KEY, &alg_info);
 
     size_t len = vscf_pkcs8_serializer_serialized_public_key_len(pkcs8, raw_public_key);
     vsc_buffer_t *out = vsc_buffer_new_with_capacity(len);
     vscf_status_t status = vscf_pkcs8_serializer_serialize_public_key(pkcs8, raw_public_key, out);
 
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, status);
-    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_data_chained_key_CURVE25519_CURVE25519_PUBLIC_KEY_PKCS8_DER, out);
+    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_data_hybrid_key_CURVE25519_CURVE25519_PUBLIC_KEY_PKCS8_DER, out);
 
     vsc_buffer_destroy(&out);
     vscf_raw_public_key_destroy(&raw_public_key);
@@ -483,28 +483,28 @@ test__serialize_public_key__chained_curve25519_curve25519__equals_der(void) {
 }
 
 void
-test__serialize_private_key__chained_curve25519_curve25519__equals_der(void) {
+test__serialize_private_key__hybrid_curve25519_curve25519__equals_der(void) {
     vscf_pkcs8_serializer_t *pkcs8 = vscf_pkcs8_serializer_new();
     vscf_pkcs8_serializer_setup_defaults(pkcs8);
 
-    vscf_impl_t *l1_curve25519_alg_info =
+    vscf_impl_t *first_key_curve25519_alg_info =
             vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_CURVE25519));
 
-    vscf_impl_t *l2_curve25519_alg_info =
+    vscf_impl_t *second_key_curve25519_alg_info =
             vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_CURVE25519));
 
-    vscf_impl_t *alg_info = vscf_chained_key_alg_info_impl(vscf_chained_key_alg_info_new_with_infos_disown(
-            vscf_alg_id_CHAINED_KEY, &l1_curve25519_alg_info, &l2_curve25519_alg_info));
+    vscf_impl_t *alg_info = vscf_hybrid_key_alg_info_impl(vscf_hybrid_key_alg_info_new_with_infos_disown(
+            vscf_alg_id_HYBRID_KEY, &first_key_curve25519_alg_info, &second_key_curve25519_alg_info));
 
     vscf_raw_private_key_t *raw_private_key =
-            vscf_raw_private_key_new_with_data(test_data_chained_key_CURVE25519_CURVE25519_PRIVATE_KEY, &alg_info);
+            vscf_raw_private_key_new_with_data(test_data_hybrid_key_CURVE25519_CURVE25519_PRIVATE_KEY, &alg_info);
 
     size_t len = vscf_pkcs8_serializer_serialized_private_key_len(pkcs8, raw_private_key);
     vsc_buffer_t *out = vsc_buffer_new_with_capacity(len);
     vscf_status_t status = vscf_pkcs8_serializer_serialize_private_key(pkcs8, raw_private_key, out);
 
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, status);
-    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_data_chained_key_CURVE25519_CURVE25519_PRIVATE_KEY_PKCS8_DER, out);
+    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_data_hybrid_key_CURVE25519_CURVE25519_PRIVATE_KEY_PKCS8_DER, out);
 
     vsc_buffer_destroy(&out);
     vscf_raw_private_key_destroy(&raw_private_key);
@@ -512,29 +512,29 @@ test__serialize_private_key__chained_curve25519_curve25519__equals_der(void) {
 }
 
 void
-test__serialize_public_key__chained_curve25519_round5__equals_der(void) {
+test__serialize_public_key__hybrid_curve25519_round5__equals_der(void) {
 #if VSCF_POST_QUANTUM
     vscf_pkcs8_serializer_t *pkcs8 = vscf_pkcs8_serializer_new();
     vscf_pkcs8_serializer_setup_defaults(pkcs8);
 
-    vscf_impl_t *l1_curve25519_alg_info =
+    vscf_impl_t *first_key_curve25519_alg_info =
             vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_CURVE25519));
 
-    vscf_impl_t *l2_round5_alg_info =
-            vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_ROUND5_ND_5PKE_5D));
+    vscf_impl_t *second_key_round5_alg_info =
+            vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_ROUND5_ND_5KEM_5D));
 
-    vscf_impl_t *alg_info = vscf_chained_key_alg_info_impl(vscf_chained_key_alg_info_new_with_infos_disown(
-            vscf_alg_id_CHAINED_KEY, &l1_curve25519_alg_info, &l2_round5_alg_info));
+    vscf_impl_t *alg_info = vscf_hybrid_key_alg_info_impl(vscf_hybrid_key_alg_info_new_with_infos_disown(
+            vscf_alg_id_HYBRID_KEY, &first_key_curve25519_alg_info, &second_key_round5_alg_info));
 
     vscf_raw_public_key_t *raw_public_key =
-            vscf_raw_public_key_new_with_data(test_data_chained_key_CURVE25519_ROUND5_ND_5PKE_5D_PUBLIC_KEY, &alg_info);
+            vscf_raw_public_key_new_with_data(test_data_hybrid_key_CURVE25519_ROUND5_ND_5KEM_5D_PUBLIC_KEY, &alg_info);
 
     size_t len = vscf_pkcs8_serializer_serialized_public_key_len(pkcs8, raw_public_key);
     vsc_buffer_t *out = vsc_buffer_new_with_capacity(len);
     vscf_status_t status = vscf_pkcs8_serializer_serialize_public_key(pkcs8, raw_public_key, out);
 
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, status);
-    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_data_chained_key_CURVE25519_ROUND5_ND_5PKE_5D_PUBLIC_KEY_PKCS8_DER, out);
+    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_data_hybrid_key_CURVE25519_ROUND5_ND_5KEM_5D_PUBLIC_KEY_PKCS8_DER, out);
 
     vsc_buffer_destroy(&out);
     vscf_raw_public_key_destroy(&raw_public_key);
@@ -545,29 +545,29 @@ test__serialize_public_key__chained_curve25519_round5__equals_der(void) {
 }
 
 void
-test__serialize_private_key__chained_curve25519_round5__equals_der(void) {
+test__serialize_private_key__hybrid_curve25519_round5__equals_der(void) {
 #if VSCF_POST_QUANTUM
     vscf_pkcs8_serializer_t *pkcs8 = vscf_pkcs8_serializer_new();
     vscf_pkcs8_serializer_setup_defaults(pkcs8);
 
-    vscf_impl_t *l1_curve25519_alg_info =
+    vscf_impl_t *first_key_curve25519_alg_info =
             vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_CURVE25519));
 
-    vscf_impl_t *l2_round5_alg_info =
-            vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_ROUND5_ND_5PKE_5D));
+    vscf_impl_t *second_key_round5_alg_info =
+            vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_ROUND5_ND_5KEM_5D));
 
-    vscf_impl_t *alg_info = vscf_chained_key_alg_info_impl(vscf_chained_key_alg_info_new_with_infos_disown(
-            vscf_alg_id_CHAINED_KEY, &l1_curve25519_alg_info, &l2_round5_alg_info));
+    vscf_impl_t *alg_info = vscf_hybrid_key_alg_info_impl(vscf_hybrid_key_alg_info_new_with_infos_disown(
+            vscf_alg_id_HYBRID_KEY, &first_key_curve25519_alg_info, &second_key_round5_alg_info));
 
     vscf_raw_private_key_t *raw_private_key = vscf_raw_private_key_new_with_data(
-            test_data_chained_key_CURVE25519_ROUND5_ND_5PKE_5D_PRIVATE_KEY, &alg_info);
+            test_data_hybrid_key_CURVE25519_ROUND5_ND_5KEM_5D_PRIVATE_KEY, &alg_info);
 
     size_t len = vscf_pkcs8_serializer_serialized_private_key_len(pkcs8, raw_private_key);
     vsc_buffer_t *out = vsc_buffer_new_with_capacity(len);
     vscf_status_t status = vscf_pkcs8_serializer_serialize_private_key(pkcs8, raw_private_key, out);
 
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, status);
-    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_data_chained_key_CURVE25519_ROUND5_ND_5PKE_5D_PRIVATE_KEY_PKCS8_DER, out);
+    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_data_hybrid_key_CURVE25519_ROUND5_ND_5KEM_5D_PRIVATE_KEY_PKCS8_DER, out);
 
     vsc_buffer_destroy(&out);
     vscf_raw_private_key_destroy(&raw_private_key);
@@ -611,10 +611,10 @@ main(void) {
     RUN_TEST(test__serialize_public_key__compound_curve25519_ed25519__equals_der);
     RUN_TEST(test__serialize_private_key__compound_curve25519_ed25519__equals_der);
 
-    RUN_TEST(test__serialize_public_key__chained_curve25519_curve25519__equals_der);
-    RUN_TEST(test__serialize_private_key__chained_curve25519_curve25519__equals_der);
-    RUN_TEST(test__serialize_public_key__chained_curve25519_round5__equals_der);
-    RUN_TEST(test__serialize_private_key__chained_curve25519_round5__equals_der);
+    RUN_TEST(test__serialize_public_key__hybrid_curve25519_curve25519__equals_der);
+    RUN_TEST(test__serialize_private_key__hybrid_curve25519_curve25519__equals_der);
+    RUN_TEST(test__serialize_public_key__hybrid_curve25519_round5__equals_der);
+    RUN_TEST(test__serialize_private_key__hybrid_curve25519_round5__equals_der);
 #else
     RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
 #endif

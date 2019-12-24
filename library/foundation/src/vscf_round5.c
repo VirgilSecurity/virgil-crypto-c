@@ -64,7 +64,8 @@
 #include "vscf_round5_internal.h"
 
 #include <round5/rng.h>
-#include <round5/r5_cca_pke.h>
+#include <round5/r5_cca_kem.h>
+#include <round5/r5_parameter_sets.h>
 
 // clang-format on
 //  @end
@@ -90,36 +91,6 @@ enum {
 // --------------------------------------------------------------------------
 //  @end
 
-
-//
-//  Provides initialization of the implementation specific context.
-//  Note, this method is called automatically when method vscf_round5_init() is called.
-//  Note, that context is already zeroed.
-//
-VSCF_PRIVATE void
-vscf_round5_init_ctx(vscf_round5_t *self) {
-
-    VSCF_ASSERT_PTR(self);
-
-    VSCF_ATOMIC_CRITICAL_SECTION_DECLARE(params);
-    VSCF_ATOMIC_CRITICAL_SECTION_BEGIN(params);
-    self->params = (void *)set_parameters_from_api();
-    VSCF_ATOMIC_CRITICAL_SECTION_END(params);
-    VSCF_ASSERT_PTR(self->params);
-}
-
-//
-//  Release resources of the implementation specific context.
-//  Note, this method is called automatically once when class is completely cleaning up.
-//  Note, that context will be zeroed automatically next this method.
-//
-VSCF_PRIVATE void
-vscf_round5_cleanup_ctx(vscf_round5_t *self) {
-
-    VSCF_ASSERT_PTR(self);
-
-    self->params = NULL;
-}
 
 //
 //  Setup predefined values to the uninitialized class dependencies.
@@ -149,14 +120,19 @@ vscf_round5_setup_defaults(vscf_round5_t *self) {
 //  Note, this operation might be slow.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_round5_generate_key(const vscf_round5_t *self, vscf_error_t *error) {
+vscf_round5_generate_key(const vscf_round5_t *self, vscf_alg_id_t alg_id, vscf_error_t *error) {
 
     VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(self->params);
     VSCF_ASSERT_PTR(self->random);
+    VSCF_ASSERT_PTR(alg_id != vscf_alg_id_NONE);
 
-    const size_t sk_len = get_crypto_secret_key_bytes((parameters *)self->params, 1);
-    const size_t pk_len = get_crypto_public_key_bytes((parameters *)self->params);
+    if (alg_id != vscf_alg_id_ROUND5_ND_5KEM_5D) {
+        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_UNSUPPORTED_ALGORITHM);
+        return NULL;
+    }
+
+    const size_t sk_len = CRYPTO_SECRETKEYBYTES;
+    const size_t pk_len = CRYPTO_PUBLICKEYBYTES;
 
     //
     //  Make random SEED
@@ -183,8 +159,7 @@ vscf_round5_generate_key(const vscf_round5_t *self, vscf_error_t *error) {
     //
     //  Generate keys
     //
-    const int gen_status =
-            r5_cca_pke_keygen(vsc_buffer_unused_bytes(pk), vsc_buffer_unused_bytes(sk), (parameters *)self->params);
+    const int gen_status = r5_cca_kem_keygen(vsc_buffer_unused_bytes(pk), vsc_buffer_unused_bytes(sk));
     VSCF_ATOMIC_CRITICAL_SECTION_END(keygen);
     vsc_buffer_destroy(&seed);
 
@@ -199,7 +174,7 @@ vscf_round5_generate_key(const vscf_round5_t *self, vscf_error_t *error) {
     vsc_buffer_inc_used(sk, sk_len);
 
     vscf_impl_t *pub_alg_info =
-            vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_ROUND5_ND_5PKE_5D));
+            vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_ROUND5_ND_5KEM_5D));
     vscf_impl_t *priv_alg_info = vscf_impl_shallow_copy(pub_alg_info);
 
     vscf_raw_public_key_t *raw_public_key = vscf_raw_public_key_new_with_buffer(&pk, &pub_alg_info);
@@ -211,43 +186,6 @@ vscf_round5_generate_key(const vscf_round5_t *self, vscf_error_t *error) {
     vscf_raw_private_key_set_public_key(raw_private_key, &raw_public_key);
 
     return vscf_raw_private_key_impl(raw_private_key);
-}
-
-//
-//  Provide algorithm identificator.
-//
-VSCF_PUBLIC vscf_alg_id_t
-vscf_round5_alg_id(const vscf_round5_t *self) {
-
-    VSCF_ASSERT_PTR(self);
-
-    return vscf_alg_id_ROUND5;
-}
-
-//
-//  Produce object with algorithm information and configuration parameters.
-//
-VSCF_PUBLIC vscf_impl_t *
-vscf_round5_produce_alg_info(const vscf_round5_t *self) {
-
-    VSCF_ASSERT_PTR(self);
-
-    vscf_simple_alg_info_t *alg_info = vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_ROUND5);
-
-    return vscf_simple_alg_info_impl(alg_info);
-}
-
-//
-//  Restore algorithm configuration from the given object.
-//
-VSCF_PUBLIC vscf_status_t
-vscf_round5_restore_alg_info(vscf_round5_t *self, const vscf_impl_t *alg_info) {
-
-    VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(alg_info);
-    VSCF_ASSERT(vscf_alg_info_alg_id(alg_info) == vscf_alg_id_ROUND5);
-
-    return vscf_status_SUCCESS;
 }
 
 //
@@ -266,7 +204,7 @@ vscf_round5_generate_ephemeral_key(const vscf_round5_t *self, const vscf_impl_t 
         return NULL;
     }
 
-    return vscf_round5_generate_key(self, error);
+    return vscf_round5_generate_key(self, vscf_key_alg_id(key), error);
 }
 
 //
@@ -283,24 +221,37 @@ VSCF_PUBLIC vscf_impl_t *
 vscf_round5_import_public_key(const vscf_round5_t *self, const vscf_raw_public_key_t *raw_key, vscf_error_t *error) {
 
     VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(self->params);
     VSCF_ASSERT_PTR(raw_key);
     VSCF_ASSERT_SAFE(vscf_raw_public_key_is_valid(raw_key));
 
-    if (vscf_raw_public_key_alg_id(raw_key) != vscf_alg_id_ROUND5_ND_5PKE_5D) {
+    return vscf_round5_import_public_key_data(
+            self, vscf_raw_public_key_data(raw_key), vscf_raw_public_key_alg_info(raw_key), error);
+}
+
+//
+//  Import public key from the raw binary format.
+//
+VSCF_PRIVATE vscf_impl_t *
+vscf_round5_import_public_key_data(
+        const vscf_round5_t *self, vsc_data_t key_data, const vscf_impl_t *key_alg_info, vscf_error_t *error) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT(vsc_data_is_valid(key_data));
+    VSCF_ASSERT_PTR(key_alg_info);
+
+    if (vscf_alg_info_alg_id(key_alg_info) != vscf_alg_id_ROUND5_ND_5KEM_5D) {
         VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_MISMATCH_PUBLIC_KEY_AND_ALGORITHM);
         return NULL;
     }
 
-    const size_t pk_len = get_crypto_public_key_bytes((parameters *)self->params);
-
-    vsc_data_t raw_key_data = vscf_raw_public_key_data(raw_key);
-    if (raw_key_data.len != pk_len) {
+    if (key_data.len != CRYPTO_PUBLICKEYBYTES) {
         VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_BAD_ROUND5_PUBLIC_KEY);
         return NULL;
     }
 
-    vscf_raw_public_key_t *public_key = vscf_raw_public_key_new_with_redefined_impl_tag(raw_key, self->info->impl_tag);
+    vscf_raw_public_key_t *public_key =
+            vscf_raw_public_key_new_with_members(key_data, key_alg_info, self->info->impl_tag);
+
     return vscf_raw_public_key_impl(public_key);
 }
 
@@ -331,6 +282,50 @@ vscf_round5_export_public_key(const vscf_round5_t *self, const vscf_impl_t *publ
 }
 
 //
+//  Return length in bytes required to hold exported public key.
+//
+VSCF_PRIVATE size_t
+vscf_round5_exported_public_key_data_len(const vscf_round5_t *self, const vscf_impl_t *public_key) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(public_key);
+    VSCF_ASSERT(vscf_public_key_is_implemented(public_key));
+    VSCF_ASSERT_SAFE(vscf_key_is_valid(public_key));
+
+    return CRYPTO_PUBLICKEYBYTES;
+}
+
+//
+//  Export public key to the raw binary format without algorithm information.
+//
+//  Binary format must be defined in the key specification.
+//  For instance, RSA public key must be exported in format defined in
+//  RFC 3447 Appendix A.1.1.
+//
+VSCF_PRIVATE vscf_status_t
+vscf_round5_export_public_key_data(const vscf_round5_t *self, const vscf_impl_t *public_key, vsc_buffer_t *out) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(public_key);
+    VSCF_ASSERT(vscf_public_key_is_implemented(public_key));
+    VSCF_ASSERT_SAFE(vscf_key_is_valid(public_key));
+    VSCF_ASSERT_PTR(out);
+    VSCF_ASSERT(vsc_buffer_is_valid(out));
+    VSCF_ASSERT(vsc_buffer_unused_len(out) >= vscf_round5_exported_public_key_data_len(self, public_key));
+
+    if (vscf_key_impl_tag(public_key) != self->info->impl_tag) {
+        return vscf_status_ERROR_MISMATCH_PUBLIC_KEY_AND_ALGORITHM;
+    }
+
+    VSCF_ASSERT(vscf_impl_tag(public_key) == vscf_impl_tag_RAW_PUBLIC_KEY);
+    vscf_raw_public_key_t *raw_public_key = (vscf_raw_public_key_t *)(public_key);
+
+    vsc_buffer_write_data(out, vscf_raw_public_key_data(raw_public_key));
+
+    return vscf_status_SUCCESS;
+}
+
+//
 //  Import private key from the raw binary format.
 //
 //  Return private key that is adopted and optimized to be used
@@ -344,21 +339,34 @@ VSCF_PUBLIC vscf_impl_t *
 vscf_round5_import_private_key(const vscf_round5_t *self, const vscf_raw_private_key_t *raw_key, vscf_error_t *error) {
 
     VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(self->params);
     VSCF_ASSERT_PTR(raw_key);
     VSCF_ASSERT_SAFE(vscf_raw_private_key_is_valid(raw_key));
 
-    if (vscf_raw_private_key_alg_id(raw_key) != vscf_alg_id_ROUND5_ND_5PKE_5D) {
+    return vscf_round5_import_private_key_data(
+            self, vscf_raw_private_key_data(raw_key), vscf_raw_private_key_alg_info(raw_key), error);
+}
+
+//
+//  Import private key from the raw binary format.
+//
+VSCF_PRIVATE vscf_impl_t *
+vscf_round5_import_private_key_data(
+        const vscf_round5_t *self, vsc_data_t key_data, const vscf_impl_t *key_alg_info, vscf_error_t *error) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT(vsc_data_is_valid(key_data));
+    VSCF_ASSERT_PTR(key_alg_info);
+
+    if (vscf_alg_info_alg_id(key_alg_info) != vscf_alg_id_ROUND5_ND_5KEM_5D) {
         VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_MISMATCH_PRIVATE_KEY_AND_ALGORITHM);
         return NULL;
     }
 
-    const size_t pk_len = get_crypto_public_key_bytes((parameters *)self->params);
-    const size_t sk_len = get_crypto_secret_key_bytes((parameters *)self->params, 1);
+    const size_t pk_len = CRYPTO_PUBLICKEYBYTES;
+    const size_t sk_len = CRYPTO_SECRETKEYBYTES;
 
-    vsc_data_t raw_key_data = vscf_raw_private_key_data(raw_key);
-    if (raw_key_data.len != sk_len) {
-        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_BAD_ROUND5_PRIVATE_KEY);
+    if (key_data.len != CRYPTO_SECRETKEYBYTES) {
+        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_BAD_FALCON_PRIVATE_KEY);
         return NULL;
     }
 
@@ -366,17 +374,16 @@ vscf_round5_import_private_key(const vscf_round5_t *self, const vscf_raw_private
     //  Extract public key (private key includes public key)
     //
     VSCF_ASSERT(pk_len < sk_len);
-    vsc_buffer_t *public_key_buf = vsc_buffer_new_with_data(vsc_data_slice_end(raw_key_data, 0, pk_len));
+    vsc_buffer_t *public_key_buf = vsc_buffer_new_with_data(vsc_data_slice_end(key_data, 0, pk_len));
 
-    vscf_impl_t *alg_info = vscf_impl_shallow_copy((vscf_impl_t *)vscf_raw_private_key_alg_info(raw_key));
-    VSCF_ASSERT_PTR(alg_info);
-
-    vscf_raw_public_key_t *raw_public_key = vscf_raw_public_key_new_with_buffer(&public_key_buf, &alg_info);
+    vscf_raw_public_key_t *raw_public_key = vscf_raw_public_key_new();
+    raw_public_key->buffer = public_key_buf;
+    raw_public_key->alg_info = vscf_impl_shallow_copy((vscf_impl_t *)key_alg_info);
     raw_public_key->impl_tag = self->info->impl_tag;
 
-    //  Configure privat key
+    //  Configure private key.
     vscf_raw_private_key_t *raw_private_key =
-            vscf_raw_private_key_new_with_redefined_impl_tag(raw_key, self->info->impl_tag);
+            vscf_raw_private_key_new_with_members(key_data, key_alg_info, self->info->impl_tag);
     vscf_raw_private_key_set_public_key(raw_private_key, &raw_public_key);
 
     return vscf_raw_private_key_impl(raw_private_key);
@@ -409,69 +416,89 @@ vscf_round5_export_private_key(const vscf_round5_t *self, const vscf_impl_t *pri
 }
 
 //
-//  Check if algorithm can encrypt data with a given key.
+//  Return length in bytes required to hold exported private key.
 //
-VSCF_PUBLIC bool
-vscf_round5_can_encrypt(const vscf_round5_t *self, const vscf_impl_t *public_key, size_t data_len) {
+VSCF_PRIVATE size_t
+vscf_round5_exported_private_key_data_len(const vscf_round5_t *self, const vscf_impl_t *private_key) {
 
     VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(self->params);
-    VSCF_ASSERT_PTR(public_key);
-    VSCF_UNUSED(data_len);
+    VSCF_ASSERT_PTR(private_key);
+    VSCF_ASSERT(vscf_private_key_is_implemented(private_key));
+    VSCF_ASSERT_SAFE(vscf_key_is_valid(private_key));
 
-    VSCF_ASSERT(vscf_impl_tag(public_key) == vscf_impl_tag_RAW_PUBLIC_KEY);
-
-    if (vscf_key_impl_tag(public_key) != self->info->impl_tag) {
-        return false;
-    }
-
-    const size_t pk_len = get_crypto_public_key_bytes((parameters *)self->params);
-
-    vsc_data_t public_key_data = vscf_raw_public_key_data((vscf_raw_public_key_t *)public_key);
-    if (public_key_data.len != pk_len) {
-        return false;
-    }
-
-    return true;
+    return CRYPTO_SECRETKEYBYTES;
 }
 
 //
-//  Calculate required buffer length to hold the encrypted data.
+//  Export private key to the raw binary format without algorithm information.
 //
-VSCF_PUBLIC size_t
-vscf_round5_encrypted_len(const vscf_round5_t *self, const vscf_impl_t *public_key, size_t data_len) {
+//  Binary format must be defined in the key specification.
+//  For instance, RSA private key must be exported in format defined in
+//  RFC 3447 Appendix A.1.2.
+//
+VSCF_PRIVATE vscf_status_t
+vscf_round5_export_private_key_data(const vscf_round5_t *self, const vscf_impl_t *private_key, vsc_buffer_t *out) {
 
     VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(self->params);
-    VSCF_ASSERT_PTR(public_key);
-
-    VSCF_ASSERT(vscf_impl_tag(public_key) == vscf_impl_tag_RAW_PUBLIC_KEY);
-    if (vscf_key_impl_tag(public_key) != self->info->impl_tag) {
-        return 0;
-    }
-
-
-    const size_t enc_overhead_len = get_crypto_bytes((parameters *)self->params, 1 /* is_encrypt */);
-    const size_t enc_len_max = enc_overhead_len + data_len;
-
-    return enc_len_max;
-}
-
-//
-//  Encrypt data with a given public key.
-//
-VSCF_PUBLIC vscf_status_t
-vscf_round5_encrypt(const vscf_round5_t *self, const vscf_impl_t *public_key, vsc_data_t data, vsc_buffer_t *out) {
-
-    VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(self->params);
-    VSCF_ASSERT_PTR(self->random);
-    VSCF_ASSERT_PTR(public_key);
-    VSCF_ASSERT(vscf_round5_can_encrypt(self, public_key, data.len));
-    VSCF_ASSERT(vsc_data_is_valid(data));
+    VSCF_ASSERT_PTR(private_key);
+    VSCF_ASSERT(vscf_private_key_is_implemented(private_key));
+    VSCF_ASSERT_SAFE(vscf_key_is_valid(private_key));
     VSCF_ASSERT_PTR(out);
     VSCF_ASSERT(vsc_buffer_is_valid(out));
-    VSCF_ASSERT(vsc_buffer_unused_len(out) >= vscf_round5_encrypted_len(self, public_key, data.len));
+    VSCF_ASSERT(vsc_buffer_unused_len(out) >= vscf_round5_exported_private_key_data_len(self, private_key));
+
+    if (vscf_key_impl_tag(private_key) != self->info->impl_tag) {
+        return vscf_status_ERROR_MISMATCH_PRIVATE_KEY_AND_ALGORITHM;
+    }
+
+    VSCF_ASSERT(vscf_impl_tag(private_key) == vscf_impl_tag_RAW_PRIVATE_KEY);
+    vscf_raw_private_key_t *raw_private_key = (vscf_raw_private_key_t *)(private_key);
+
+    vsc_buffer_write_data(out, vscf_raw_private_key_data(raw_private_key));
+
+    return vscf_status_SUCCESS;
+}
+
+//
+//  Return length in bytes required to hold encapsulated shared key.
+//
+VSCF_PUBLIC size_t
+vscf_round5_kem_shared_key_len(const vscf_round5_t *self, const vscf_impl_t *key) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(key);
+
+    return PARAMS_KAPPA_BYTES;
+}
+
+//
+//  Return length in bytes required to hold encapsulated key.
+//
+VSCF_PUBLIC size_t
+vscf_round5_kem_encapsulated_key_len(const vscf_round5_t *self, const vscf_impl_t *public_key) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(public_key);
+
+    return PARAMS_CT_SIZE + PARAMS_KAPPA_BYTES;
+}
+
+//
+//  Generate a shared key and a key encapsulated message.
+//
+VSCF_PUBLIC vscf_status_t
+vscf_round5_kem_encapsulate(const vscf_round5_t *self, const vscf_impl_t *public_key, vsc_buffer_t *shared_key,
+        vsc_buffer_t *encapsulated_key) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(self->random);
+    VSCF_ASSERT_PTR(public_key);
+    VSCF_ASSERT_PTR(shared_key);
+    VSCF_ASSERT(vsc_buffer_is_valid(shared_key));
+    VSCF_ASSERT(vsc_buffer_unused_len(shared_key) >= vscf_round5_kem_shared_key_len(self, public_key));
+    VSCF_ASSERT_PTR(encapsulated_key);
+    VSCF_ASSERT(vsc_buffer_is_valid(encapsulated_key));
+    VSCF_ASSERT(vsc_buffer_unused_len(encapsulated_key) >= vscf_round5_kem_encapsulated_key_len(self, public_key));
 
     //
     //  Make random SEED
@@ -484,28 +511,27 @@ vscf_round5_encrypt(const vscf_round5_t *self, const vscf_impl_t *public_key, vs
     }
     vsc_buffer_make_secure(seed);
 
-
     vsc_data_t public_key_data = vscf_raw_public_key_data((vscf_raw_public_key_t *)public_key);
-    unsigned long long out_len = 0;
 
     //
     //  Initialize DRBG
     //
-    VSCF_ATOMIC_CRITICAL_SECTION_DECLARE(encrypt);
-    VSCF_ATOMIC_CRITICAL_SECTION_BEGIN(encrypt);
+    VSCF_ATOMIC_CRITICAL_SECTION_DECLARE(encapsulate);
+    VSCF_ATOMIC_CRITICAL_SECTION_BEGIN(encapsulate);
     randombytes_init(vsc_buffer_begin(seed), NULL, 1 /* is not used, so can be any */);
 
     //
     //  Encrypt
     //
-    const int enc_status = r5_cca_pke_encrypt(vsc_buffer_unused_bytes(out), &out_len, data.bytes, data.len,
-            public_key_data.bytes, (parameters *)self->params);
+    const int enc_status = r5_cca_kem_encapsulate(
+            vsc_buffer_unused_bytes(encapsulated_key), vsc_buffer_unused_bytes(shared_key), public_key_data.bytes);
 
-    VSCF_ATOMIC_CRITICAL_SECTION_END(encrypt);
+    VSCF_ATOMIC_CRITICAL_SECTION_END(encapsulate);
     vsc_buffer_destroy(&seed);
 
     if (enc_status == 0) {
-        vsc_buffer_inc_used(out, out_len);
+        vsc_buffer_inc_used(encapsulated_key, vscf_round5_kem_encapsulated_key_len(self, public_key));
+        vsc_buffer_inc_used(shared_key, vscf_round5_kem_shared_key_len(self, public_key));
         return vscf_status_SUCCESS;
     }
 
@@ -513,87 +539,28 @@ vscf_round5_encrypt(const vscf_round5_t *self, const vscf_impl_t *public_key, vs
 }
 
 //
-//  Check if algorithm can decrypt data with a given key.
-//  However, success result of decryption is not guaranteed.
-//
-VSCF_PUBLIC bool
-vscf_round5_can_decrypt(const vscf_round5_t *self, const vscf_impl_t *private_key, size_t data_len) {
-
-    VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(self->params);
-    VSCF_ASSERT_PTR(private_key);
-    VSCF_UNUSED(data_len);
-
-    VSCF_ASSERT(vscf_impl_tag(private_key) == vscf_impl_tag_RAW_PRIVATE_KEY);
-
-    if (vscf_key_impl_tag(private_key) != self->info->impl_tag) {
-        return false;
-    }
-
-    const size_t sk_len = get_crypto_secret_key_bytes((parameters *)self->params, 1);
-
-    vsc_data_t private_key_data = vscf_raw_private_key_data((vscf_raw_private_key_t *)private_key);
-    if (private_key_data.len != sk_len) {
-        return false;
-    }
-
-    return true;
-}
-
-//
-//  Calculate required buffer length to hold the decrypted data.
-//
-VSCF_PUBLIC size_t
-vscf_round5_decrypted_len(const vscf_round5_t *self, const vscf_impl_t *private_key, size_t data_len) {
-
-    VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(self->params);
-    VSCF_ASSERT_PTR(private_key);
-
-    VSCF_ASSERT(vscf_impl_tag(private_key) == vscf_impl_tag_RAW_PRIVATE_KEY);
-
-    if (vscf_key_impl_tag(private_key) != self->info->impl_tag) {
-        return 0;
-    }
-
-    const size_t sk_len = get_crypto_secret_key_bytes((parameters *)self->params, 1);
-
-    vsc_data_t private_key_data = vscf_raw_private_key_data((vscf_raw_private_key_t *)private_key);
-    if (private_key_data.len != sk_len) {
-        return 0;
-    }
-
-    const size_t enc_overhead_len = get_crypto_bytes((parameters *)self->params, 1 /* is_encrypt */);
-    if (data_len > enc_overhead_len) {
-        return data_len - enc_overhead_len;
-    } else {
-        return 0;
-    }
-}
-
-//
-//  Decrypt given data.
+//  Decapsulate the shared key.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_round5_decrypt(const vscf_round5_t *self, const vscf_impl_t *private_key, vsc_data_t data, vsc_buffer_t *out) {
+vscf_round5_kem_decapsulate(const vscf_round5_t *self, vsc_data_t encapsulated_key, const vscf_impl_t *private_key,
+        vsc_buffer_t *shared_key) {
 
     VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(self->params);
     VSCF_ASSERT_PTR(private_key);
-    VSCF_ASSERT_PTR(vscf_round5_can_decrypt(self, private_key, data.len));
-    VSCF_ASSERT(vsc_data_is_valid(data));
-    VSCF_ASSERT_PTR(out);
-    VSCF_ASSERT(vsc_buffer_is_valid(out));
-    VSCF_ASSERT(vsc_buffer_unused_len(out) >= vscf_round5_decrypted_len(self, private_key, data.len));
+    VSCF_ASSERT_PTR(shared_key);
+    VSCF_ASSERT(vsc_buffer_is_valid(shared_key));
+    VSCF_ASSERT(vsc_buffer_unused_len(shared_key) >= vscf_round5_kem_shared_key_len(self, private_key));
 
+    if (encapsulated_key.len != vscf_round5_kem_encapsulated_key_len(self, private_key)) {
+        return vscf_status_ERROR_ROUND5;
+    }
 
     vsc_data_t private_key_data = vscf_raw_private_key_data((vscf_raw_private_key_t *)private_key);
-    unsigned long long out_len = 0;
-    const int status = r5_cca_pke_decrypt(vsc_buffer_unused_bytes(out), &out_len, data.bytes, data.len,
-            private_key_data.bytes, (parameters *)self->params);
+    const int status =
+            r5_cca_kem_decapsulate(vsc_buffer_unused_bytes(shared_key), encapsulated_key.bytes, private_key_data.bytes);
 
     if (status == 0) {
-        vsc_buffer_inc_used(out, out_len);
+        vsc_buffer_inc_used(shared_key, vscf_round5_kem_shared_key_len(self, private_key));
         return vscf_status_SUCCESS;
     }
 

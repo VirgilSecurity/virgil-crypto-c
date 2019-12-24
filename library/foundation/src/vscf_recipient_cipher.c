@@ -60,6 +60,7 @@
 #include "vscf_padding.h"
 #include "vscf_hash.h"
 #include "vscf_recipient_cipher_defs.h"
+#include "vscf_alg.h"
 #include "vscf_alg_info.h"
 #include "vscf_cipher_auth.h"
 #include "vscf_decrypt.h"

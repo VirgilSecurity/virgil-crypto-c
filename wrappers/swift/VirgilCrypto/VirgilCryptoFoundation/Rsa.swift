@@ -37,7 +37,7 @@ import Foundation
 import VSCFoundation
 
 /// RSA implementation.
-@objc(VSCFRsa) public class Rsa: NSObject, Alg, KeyAlg, KeyCipher, KeySigner {
+@objc(VSCFRsa) public class Rsa: NSObject, KeyAlg, KeyCipher, KeySigner {
 
     /// Handle underlying C context.
     @objc public let c_ctx: OpaquePointer
@@ -102,27 +102,6 @@ import VSCFoundation
         try FoundationError.handleStatus(fromC: error.status)
 
         return FoundationImplementation.wrapPrivateKey(take: proxyResult!)
-    }
-
-    /// Provide algorithm identificator.
-    @objc public func algId() -> AlgId {
-        let proxyResult = vscf_rsa_alg_id(self.c_ctx)
-
-        return AlgId.init(fromC: proxyResult)
-    }
-
-    /// Produce object with algorithm information and configuration parameters.
-    @objc public func produceAlgInfo() -> AlgInfo {
-        let proxyResult = vscf_rsa_produce_alg_info(self.c_ctx)
-
-        return FoundationImplementation.wrapAlgInfo(take: proxyResult!)
-    }
-
-    /// Restore algorithm configuration from the given object.
-    @objc public func restoreAlgInfo(algInfo: AlgInfo) throws {
-        let proxyResult = vscf_rsa_restore_alg_info(self.c_ctx, algInfo.c_ctx)
-
-        try FoundationError.handleStatus(fromC: proxyResult)
     }
 
     /// Generate ephemeral private key of the same type.
