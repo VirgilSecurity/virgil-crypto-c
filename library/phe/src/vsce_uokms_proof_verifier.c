@@ -416,7 +416,7 @@ vsce_uokms_proof_verifier_did_release_operation_random(vsce_uokms_proof_verifier
 
 VSCE_PUBLIC vsce_status_t
 vsce_uokms_proof_verifier_check_success_proof(vsce_uokms_proof_verifier_t *self, mbedtls_ecp_group *op_group,
-        const ProofOfSuccess *success_proof, const mbedtls_ecp_point *pub, const mbedtls_ecp_point *u,
+        const UOKMSProofOfSuccess *success_proof, const mbedtls_ecp_point *pub, const mbedtls_ecp_point *u,
         const mbedtls_ecp_point *v) {
 
     VSCE_ASSERT_PTR(self);

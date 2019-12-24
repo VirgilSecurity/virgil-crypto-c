@@ -417,7 +417,7 @@ vsce_uokms_proof_generator_did_release_operation_random(vsce_uokms_proof_generat
 VSCE_PUBLIC vsce_status_t
 vsce_uokms_proof_generator_prove_success(vsce_uokms_proof_generator_t *self, mbedtls_ecp_group *op_group,
         const mbedtls_mpi *priv, const mbedtls_ecp_point *pub, const mbedtls_ecp_point *u, const mbedtls_ecp_point *v,
-        ProofOfSuccess *success_proof) {
+        UOKMSProofOfSuccess *success_proof) {
 
     vsce_status_t status = vsce_status_SUCCESS;
 
