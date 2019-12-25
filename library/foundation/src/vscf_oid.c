@@ -167,7 +167,7 @@ static const byte oid_falcon_bytes[] = {0x2B, 0x06, 0x01, 0x04, 0x01, 0x83, 0xAC
 static const vsc_data_t oid_falcon = {oid_falcon_bytes, sizeof(oid_falcon_bytes)};
 
 //
-//  1.3.6.1.4.1.54811.2.2.11
+//  1.3.6.1.4.1.54811.2.2.8
 //  iso(1) identified-organization(3) dod(6) internet(1) private(4) enterprise(1) virgil-security(54811)
 //  post-quantum-crypto(2) round5(2) nd-5kem-5d(8)
 //
