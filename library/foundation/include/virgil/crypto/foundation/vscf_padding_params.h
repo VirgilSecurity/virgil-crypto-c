@@ -74,9 +74,9 @@ extern "C" {
 //  Public integral constants.
 //
 enum {
-    vscf_padding_params_DEFAULT_FRAME = 160,
     vscf_padding_params_DEFAULT_FRAME_MIN = 32,
-    vscf_padding_params_DEFAULT_FRAME_MAX = 8 * 1024
+    vscf_padding_params_DEFAULT_FRAME = 160,
+    vscf_padding_params_DEFAULT_FRAME_MAX = 256
 };
 
 //
@@ -111,21 +111,18 @@ vscf_padding_params_new(void);
 //
 //  Perform initialization of pre-allocated context.
 //  Build padding params with given constraints.
-//  Precondition: frame_length_min <= frame_length <= frame_length_max.
 //  Next formula can clarify what frame is: padding_length = data_length MOD frame
 //
 VSCF_PUBLIC void
-vscf_padding_params_init_with_constraints(vscf_padding_params_t *self, size_t frame, size_t frame_min,
-        size_t frame_max);
+vscf_padding_params_init_with_constraints(vscf_padding_params_t *self, size_t frame, size_t frame_max);
 
 //
 //  Allocate class context and perform it's initialization.
 //  Build padding params with given constraints.
-//  Precondition: frame_length_min <= frame_length <= frame_length_max.
 //  Next formula can clarify what frame is: padding_length = data_length MOD frame
 //
 VSCF_PUBLIC vscf_padding_params_t *
-vscf_padding_params_new_with_constraints(size_t frame, size_t frame_min, size_t frame_max);
+vscf_padding_params_new_with_constraints(size_t frame, size_t frame_max);
 
 //
 //  Release all inner resources and deallocate context if needed.
@@ -154,13 +151,7 @@ VSCF_PUBLIC size_t
 vscf_padding_params_frame(const vscf_padding_params_t *self);
 
 //
-//  Return minimum padding frame in bytes.
-//
-VSCF_PUBLIC size_t
-vscf_padding_params_frame_min(const vscf_padding_params_t *self);
-
-//
-//  Return minimum padding frame in bytes.
+//  Return maximum padding frame in bytes.
 //
 VSCF_PUBLIC size_t
 vscf_padding_params_frame_max(const vscf_padding_params_t *self);

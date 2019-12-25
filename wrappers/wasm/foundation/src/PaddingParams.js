@@ -43,14 +43,6 @@ const initPaddingParams = (Module, modules) => {
      */
     class PaddingParams {
 
-        static get DEFAULT_FRAME() {
-            return 160;
-        }
-
-        get DEFAULT_FRAME() {
-            return PaddingParams.DEFAULT_FRAME;
-        }
-
         static get DEFAULT_FRAME_MIN() {
             return 32;
         }
@@ -59,8 +51,16 @@ const initPaddingParams = (Module, modules) => {
             return PaddingParams.DEFAULT_FRAME_MIN;
         }
 
+        static get DEFAULT_FRAME() {
+            return 160;
+        }
+
+        get DEFAULT_FRAME() {
+            return PaddingParams.DEFAULT_FRAME;
+        }
+
         static get DEFAULT_FRAME_MAX() {
-            return 8 * 1024;
+            return 256;
         }
 
         get DEFAULT_FRAME_MAX() {
@@ -114,16 +114,14 @@ const initPaddingParams = (Module, modules) => {
 
         /**
          * Build padding params with given constraints.
-         * Precondition: frame_length_min <= frame_length <= frame_length_max.
          * Next formula can clarify what frame is: padding_length = data_length MOD frame
          */
-        static newWithConstraints(frame, frameMin, frameMax) {
+        static newWithConstraints(frame, frameMax) {
             precondition.ensureNumber('frame', frame);
-            precondition.ensureNumber('frameMin', frameMin);
             precondition.ensureNumber('frameMax', frameMax);
 
             let proxyResult;
-            proxyResult = Module._vscf_padding_params_new_with_constraints(frame, frameMin, frameMax);
+            proxyResult = Module._vscf_padding_params_new_with_constraints(frame, frameMax);
 
             const jsResult = PaddingParams.newAndTakeCContext(proxyResult);
             return jsResult;
@@ -141,18 +139,7 @@ const initPaddingParams = (Module, modules) => {
         }
 
         /**
-         * Return minimum padding frame in bytes.
-         */
-        frameMin() {
-            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
-            let proxyResult;
-            proxyResult = Module._vscf_padding_params_frame_min(this.ctxPtr);
-            return proxyResult;
-        }
-
-        /**
-         * Return minimum padding frame in bytes.
+         * Return maximum padding frame in bytes.
          */
         frameMax() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);

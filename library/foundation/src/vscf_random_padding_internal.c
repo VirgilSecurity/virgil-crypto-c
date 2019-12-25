@@ -156,6 +156,11 @@ static const vscf_padding_api_t padding_api = {
     //
     (vscf_padding_api_process_padded_data_fn)vscf_random_padding_process_padded_data,
     //
+    //  Return length in bytes required hold output of the method
+    //  "finish padded data processing".
+    //
+    (vscf_padding_api_finish_padded_data_processing_out_len_fn)vscf_random_padding_finish_padded_data_processing_out_len,
+    //
     //  Accomplish padded data processing and return left data without a padding.
     //
     (vscf_padding_api_finish_padded_data_processing_fn)vscf_random_padding_finish_padded_data_processing

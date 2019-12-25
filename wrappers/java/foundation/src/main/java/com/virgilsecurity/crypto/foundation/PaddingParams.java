@@ -56,24 +56,23 @@ public class PaddingParams implements AutoCloseable {
 
     /*
     * Build padding params with given constraints.
-    * Precondition: frame_length_min <= frame_length <= frame_length_max.
     * Next formula can clarify what frame is: padding_length = data_length MOD frame
     */
-    public PaddingParams(int frame, int frameMin, int frameMax) {
+    public PaddingParams(int frame, int frameMax) {
         super();
-        this.cCtx = FoundationJNI.INSTANCE.paddingParams_new(frame, frameMin, frameMax);
-    }
-
-    public int getDefaultFrame() {
-        return 160;
+        this.cCtx = FoundationJNI.INSTANCE.paddingParams_new(frame, frameMax);
     }
 
     public int getDefaultFrameMin() {
         return 32;
     }
 
+    public int getDefaultFrame() {
+        return 160;
+    }
+
     public int getDefaultFrameMax() {
-        return 8 * 1024;
+        return 256;
     }
 
     /*
@@ -98,14 +97,7 @@ public class PaddingParams implements AutoCloseable {
     }
 
     /*
-    * Return minimum padding frame in bytes.
-    */
-    public int frameMin() {
-        return FoundationJNI.INSTANCE.paddingParams_frameMin(this.cCtx);
-    }
-
-    /*
-    * Return minimum padding frame in bytes.
+    * Return maximum padding frame in bytes.
     */
     public int frameMax() {
         return FoundationJNI.INSTANCE.paddingParams_frameMax(this.cCtx);

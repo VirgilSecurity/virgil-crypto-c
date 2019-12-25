@@ -86,8 +86,6 @@ struct vscf_padding_params_t {
 
     size_t frame;
 
-    size_t frame_min;
-
     size_t frame_max;
 };
 

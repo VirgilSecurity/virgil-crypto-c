@@ -286,9 +286,9 @@ function build_macosx {
 }
 
 build_ios "${BUILD_DIR}/iOS" "${IOS_DESTINATION_DIR}"
-build_tvos "${BUILD_DIR}/tvOS" "${TVOS_DESTINATION_DIR}"
-build_watchos "${BUILD_DIR}/watchOS" "${WATCHOS_DESTINATION_DIR}"
-build_macosx "${BUILD_DIR}/macOS" "${MACOS_DESTINATION_DIR}"
+# build_tvos "${BUILD_DIR}/tvOS" "${TVOS_DESTINATION_DIR}"
+# build_watchos "${BUILD_DIR}/watchOS" "${WATCHOS_DESTINATION_DIR}"
+# build_macosx "${BUILD_DIR}/macOS" "${MACOS_DESTINATION_DIR}"
 
 PREPARE_RELEASE="YES"
 

@@ -90,6 +90,12 @@ public interface Padding {
     byte[] processPaddedData(byte[] data);
 
     /*
+    * Return length in bytes required hold output of the method
+    * "finish padded data processing".
+    */
+    int finishPaddedDataProcessingOutLen();
+
+    /*
     * Accomplish padded data processing and return left data without a padding.
     */
     byte[] finishPaddedDataProcessing() throws FoundationException;
