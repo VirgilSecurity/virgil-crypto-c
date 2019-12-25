@@ -1208,8 +1208,8 @@ main(void) {
     UNITY_BEGIN();
 
 #if TEST_DEPENDENCIES_AVAILABLE
-    // RUN_TEST(test__encrypt_decrypt__with_ed25519_key_recipient__success);
-    // RUN_TEST(test__encrypt_decrypt__with_compound_curve25519_ed25519_key_recipient__success);
+    RUN_TEST(test__encrypt_decrypt__with_ed25519_key_recipient__success);
+    RUN_TEST(test__encrypt_decrypt__with_compound_curve25519_ed25519_key_recipient__success);
     RUN_TEST(test__encrypt_decrypt__with_pqc_curve25519_round5_falcon_key_recipient__success);
     RUN_TEST(test__encrypt_decrypt__with_pqc_curve25519_round5_ed25519_falcon_key_recipient__success);
     RUN_TEST(test__decrypt__with_ed25519_private_key__success);
