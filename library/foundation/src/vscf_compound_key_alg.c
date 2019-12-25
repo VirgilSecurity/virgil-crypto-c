@@ -301,15 +301,29 @@ vscf_compound_key_alg_import_public_key(
     VSCF_ASSERT_PTR(raw_key);
     VSCF_ASSERT_SAFE(vscf_raw_public_key_is_valid(raw_key));
 
+    return vscf_compound_key_alg_import_public_key_data(
+            self, vscf_raw_public_key_data(raw_key), vscf_raw_public_key_alg_info(raw_key), error);
+}
+
+//
+//  Import public key from the raw binary format.
+//
+VSCF_PRIVATE vscf_impl_t *
+vscf_compound_key_alg_import_public_key_data(const vscf_compound_key_alg_t *self, vsc_data_t key_data,
+        const vscf_impl_t *key_alg_info, vscf_error_t *error) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT(vsc_data_is_valid(key_data));
+    VSCF_ASSERT_PTR(key_alg_info);
+
     //
     //  Check if raw key is appropriate.
     //
-    const vscf_impl_t *alg_info = vscf_raw_public_key_alg_info(raw_key);
-    if (vscf_impl_tag(alg_info) != vscf_impl_tag_COMPOUND_KEY_ALG_INFO) {
+    if (vscf_impl_tag(key_alg_info) != vscf_impl_tag_COMPOUND_KEY_ALG_INFO) {
         VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_MISMATCH_PUBLIC_KEY_AND_ALGORITHM);
         return NULL;
     }
-    VSCF_ASSERT(vscf_alg_info_alg_id(alg_info) == vscf_alg_id_COMPOUND_KEY);
+    VSCF_ASSERT(vscf_alg_info_alg_id(key_alg_info) == vscf_alg_id_COMPOUND_KEY);
 
     //
     // Write to the ASN.1 structure.
@@ -321,7 +335,7 @@ vscf_compound_key_alg_import_public_key(
     //
     vscf_asn1rd_t asn1rd;
     vscf_asn1rd_init(&asn1rd);
-    vscf_asn1rd_reset(&asn1rd, vscf_raw_public_key_data(raw_key));
+    vscf_asn1rd_reset(&asn1rd, key_data);
     vscf_asn1rd_read_sequence(&asn1rd);
 
     vsc_data_t cipher_key_data = vscf_asn1rd_read_octet_str(&asn1rd);
@@ -338,7 +352,7 @@ vscf_compound_key_alg_import_public_key(
     //
     //  Prepare keys to be imported.
     //
-    const vscf_compound_key_alg_info_t *compound_alg_info = (const vscf_compound_key_alg_info_t *)alg_info;
+    const vscf_compound_key_alg_info_t *compound_alg_info = (const vscf_compound_key_alg_info_t *)key_alg_info;
     const vscf_impl_t *cipher_alg_info = vscf_compound_key_alg_info_cipher_alg_info(compound_alg_info);
     const vscf_impl_t *signer_alg_info = vscf_compound_key_alg_info_signer_alg_info(compound_alg_info);
 
@@ -401,7 +415,7 @@ vscf_compound_key_alg_import_public_key(
     //  Make compound key.
     //
     public_key = vscf_compound_public_key_impl(
-            vscf_compound_public_key_new_with_keys_disown(alg_info, &cipher_key, &signer_key));
+            vscf_compound_public_key_new_with_keys_disown(key_alg_info, &cipher_key, &signer_key));
 
 cleanup:
     vscf_raw_public_key_destroy(&raw_cipher_key);
@@ -428,77 +442,84 @@ vscf_compound_key_alg_export_public_key(
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(public_key);
 
-    //
-    //  Prepare keys.
-    //
     if (vscf_key_impl_tag(public_key) != self->info->impl_tag) {
         VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_MISMATCH_PUBLIC_KEY_AND_ALGORITHM);
         return NULL;
     }
+    VSCF_ASSERT(vscf_impl_tag(public_key) == vscf_impl_tag_COMPOUND_PUBLIC_KEY);
 
+    //
+    //  Export key data.
+    //
+    const size_t raw_key_buf_size = vscf_compound_key_alg_exported_public_key_data_len(self, public_key);
+    vsc_buffer_t *raw_key_buf = vsc_buffer_new_with_capacity(raw_key_buf_size);
+
+    const vscf_status_t export_status = vscf_compound_key_alg_export_public_key_data(self, public_key, raw_key_buf);
+    if (export_status != vscf_status_SUCCESS) {
+        VSCF_ERROR_SAFE_UPDATE(error, export_status);
+        return NULL;
+    }
+
+    //
+    //  Export key alg info.
+    //
+    vscf_impl_t *alg_info = (vscf_impl_t *)vscf_impl_shallow_copy_const(vscf_key_alg_info(public_key));
+    vscf_raw_public_key_t *raw_key = vscf_raw_public_key_new_with_buffer(&raw_key_buf, &alg_info);
+
+    return raw_key;
+}
+
+//
+//  Return length in bytes required to hold exported public key.
+//
+VSCF_PRIVATE size_t
+vscf_compound_key_alg_exported_public_key_data_len(const vscf_compound_key_alg_t *self, const vscf_impl_t *public_key) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(public_key);
+
+    if (vscf_key_impl_tag(public_key) != self->info->impl_tag) {
+        return 0;
+    }
+
+    //
+    //  Get correspond key algorithms.
+    //
     VSCF_ASSERT(vscf_impl_tag(public_key) == vscf_impl_tag_COMPOUND_PUBLIC_KEY);
     const vscf_compound_public_key_t *compound_public_key = (const vscf_compound_public_key_t *)public_key;
 
     const vscf_impl_t *cipher_key = vscf_compound_public_key_cipher_key(compound_public_key);
     const vscf_impl_t *signer_key = vscf_compound_public_key_signer_key(compound_public_key);
 
-    //
-    //  Prepare result variables.
-    //
-    vscf_asn1wr_t asn1wr;
-    vscf_asn1wr_init(&asn1wr);
-
-    vsc_buffer_t *raw_key_buf = vsc_buffer_new();
-    size_t raw_key_buf_len = 0;
-
-    vscf_raw_public_key_t *raw_key = NULL;
-    size_t raw_key_len = 0;
-
-    vscf_raw_public_key_t *raw_cipher_key = NULL;
-    size_t raw_cipher_key_len = 0;
-
-    vscf_raw_public_key_t *raw_signer_key = NULL;
-    size_t raw_signer_key_len = 0;
-
-    //
-    //  Create correspond algs.
-    //
-    vscf_impl_t *alg_info =
-            (vscf_impl_t *)vscf_impl_shallow_copy_const(vscf_compound_public_key_alg_info(compound_public_key));
-
-    vscf_impl_t *cipher_key_alg = vscf_key_alg_factory_create_from_key(cipher_key, self->random, error);
+    vscf_impl_t *cipher_key_alg = vscf_key_alg_factory_create_from_key(cipher_key, self->random, NULL);
     VSCF_ASSERT_PTR(cipher_key_alg);
 
-    vscf_impl_t *signer_key_alg = vscf_key_alg_factory_create_from_key(signer_key, self->random, error);
+    vscf_impl_t *signer_key_alg = vscf_key_alg_factory_create_from_key(signer_key, self->random, NULL);
     VSCF_ASSERT_PTR(signer_key_alg);
 
-    //
-    //  Check if keys are exportable.
-    //
-    if (!vscf_key_alg_can_export_public_key(vscf_key_alg_api(cipher_key_alg))) {
-        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_UNSUPPORTED_ALGORITHM);
-        goto cleanup;
-    }
+    const size_t cipher_data_key_len = vscf_key_alg_exported_public_key_data_len(cipher_key_alg, cipher_key);
+    const size_t signer_data_key_len = vscf_key_alg_exported_public_key_data_len(signer_key_alg, signer_key);
 
-    if (!vscf_key_alg_can_export_public_key(vscf_key_alg_api(signer_key_alg))) {
-        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_UNSUPPORTED_ALGORITHM);
-        goto cleanup;
-    }
+    const size_t key_data_len = 1 + 4 +                       // CompoundPublicKey ::= SEQUENCE {
+                                1 + 4 + cipher_data_key_len + //     cipherKey OCTET STRING,
+                                1 + 4 + signer_data_key_len;  //     signerKey OCTET STRING }
 
-    //
-    //  Export.
-    //
-    raw_cipher_key = vscf_key_alg_export_public_key(cipher_key_alg, cipher_key, error);
-    if (NULL == raw_cipher_key) {
-        goto cleanup;
-    }
-    raw_cipher_key_len = vscf_raw_public_key_data(raw_cipher_key).len;
+    vscf_impl_destroy(&cipher_key_alg);
+    vscf_impl_destroy(&signer_key_alg);
 
-    raw_signer_key = vscf_key_alg_export_public_key(signer_key_alg, signer_key, error);
-    if (NULL == raw_signer_key) {
-        goto cleanup;
-    }
-    raw_signer_key_len = vscf_raw_public_key_data(raw_signer_key).len;
+    return key_data_len;
+}
+
+//
+//  Export public key to the raw binary format without algorithm information.
+//
+//  Binary format must be defined in the key specification.
+//  For instance, RSA public key must be exported in format defined in
+//  RFC 3447 Appendix A.1.1.
+//
+VSCF_PRIVATE vscf_status_t
+vscf_compound_key_alg_export_public_key_data(
+        const vscf_compound_key_alg_t *self, const vscf_impl_t *public_key, vsc_buffer_t *out) {
 
     //
     // Write to the ASN.1 structure.
@@ -509,36 +530,86 @@ vscf_compound_key_alg_export_public_key(
     // }
     //
 
-    raw_key_buf_len = 1 + 4 +                      // CompoundPublicKey ::= SEQUENCE {
-                      1 + 4 + raw_cipher_key_len + //     cipherKey OCTET STRING,
-                      1 + 4 + raw_signer_key_len;  //     signerKey OCTET STRING }
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(public_key);
+    VSCF_ASSERT_SAFE(vscf_key_is_valid(public_key));
+    VSCF_ASSERT_PTR(out);
+    VSCF_ASSERT(vsc_buffer_is_valid(out));
+    VSCF_ASSERT(vsc_buffer_unused_len(out) >= vscf_compound_key_alg_exported_public_key_data_len(self, public_key));
 
-    vsc_buffer_alloc(raw_key_buf, raw_key_buf_len);
-    vscf_asn1wr_reset(&asn1wr, vsc_buffer_unused_bytes(raw_key_buf), vsc_buffer_unused_len(raw_key_buf));
+    if (vscf_key_impl_tag(public_key) != self->info->impl_tag) {
+        return vscf_status_ERROR_MISMATCH_PUBLIC_KEY_AND_ALGORITHM;
+    }
+
+    vscf_error_t error;
+    vscf_error_reset(&error);
+
+    VSCF_ASSERT(vscf_impl_tag(public_key) == vscf_impl_tag_COMPOUND_PUBLIC_KEY);
+    const vscf_compound_public_key_t *compound_public_key = (const vscf_compound_public_key_t *)public_key;
+
+    const vscf_impl_t *cipher_key = vscf_compound_public_key_cipher_key(compound_public_key);
+    const vscf_impl_t *signer_key = vscf_compound_public_key_signer_key(compound_public_key);
+
+    //
+    //  Get correspond key algorithms.
+    //
+    vscf_impl_t *cipher_key_alg = vscf_key_alg_factory_create_from_key(cipher_key, self->random, &error);
+    VSCF_ASSERT_PTR(cipher_key_alg);
+
+    vscf_impl_t *signer_key_alg = vscf_key_alg_factory_create_from_key(signer_key, self->random, &error);
+    VSCF_ASSERT_PTR(signer_key_alg);
+
+    vscf_raw_public_key_t *raw_cipher_key = NULL;
+    vscf_raw_public_key_t *raw_signer_key = NULL;
+
+    //
+    //  Check if keys are exportable.
+    //
+    if (!vscf_key_alg_can_export_public_key(vscf_key_alg_api(cipher_key_alg))) {
+        vscf_error_update(&error, vscf_status_ERROR_UNSUPPORTED_ALGORITHM);
+        goto cleanup;
+    }
+
+    if (!vscf_key_alg_can_export_public_key(vscf_key_alg_api(signer_key_alg))) {
+        vscf_error_update(&error, vscf_status_ERROR_UNSUPPORTED_ALGORITHM);
+        goto cleanup;
+    }
+
+    //  TODO: Optimize memcpy by writing directly to the out.
+    raw_cipher_key = vscf_key_alg_export_public_key(cipher_key_alg, cipher_key, &error);
+    if (vscf_error_has_error(&error)) {
+        goto cleanup;
+    }
+
+    raw_signer_key = vscf_key_alg_export_public_key(signer_key_alg, signer_key, &error);
+    if (NULL == raw_signer_key) {
+        goto cleanup;
+    }
 
     //
     //  Write.
     //
+    vscf_asn1wr_t asn1wr;
+    vscf_asn1wr_init(&asn1wr);
+    vscf_asn1wr_reset(&asn1wr, vsc_buffer_unused_bytes(out), vsc_buffer_unused_len(out));
+    size_t raw_key_len = 0;
     raw_key_len += vscf_asn1wr_write_octet_str(&asn1wr, vscf_raw_public_key_data(raw_signer_key));
     raw_key_len += vscf_asn1wr_write_octet_str(&asn1wr, vscf_raw_public_key_data(raw_cipher_key));
     raw_key_len += vscf_asn1wr_write_sequence(&asn1wr, raw_key_len);
+
     VSCF_ASSERT(!vscf_asn1wr_has_error(&asn1wr));
+    vscf_asn1wr_finish(&asn1wr, vsc_buffer_is_reverse(out));
+    vscf_asn1wr_cleanup(&asn1wr);
 
-    vscf_asn1wr_finish(&asn1wr, false);
-    vsc_buffer_inc_used(raw_key_buf, raw_key_len);
-
-    raw_key = vscf_raw_public_key_new_with_buffer(&raw_key_buf, &alg_info);
+    vsc_buffer_inc_used(out, raw_key_len);
 
 cleanup:
-    vscf_asn1wr_cleanup(&asn1wr);
     vscf_raw_public_key_destroy(&raw_cipher_key);
     vscf_raw_public_key_destroy(&raw_signer_key);
-    vsc_buffer_destroy(&raw_key_buf);
-    vscf_impl_destroy(&alg_info);
     vscf_impl_destroy(&cipher_key_alg);
     vscf_impl_destroy(&signer_key_alg);
 
-    return raw_key;
+    return vscf_error_status(&error);
 }
 
 //
@@ -559,15 +630,29 @@ vscf_compound_key_alg_import_private_key(
     VSCF_ASSERT_PTR(raw_key);
     VSCF_ASSERT_SAFE(vscf_raw_private_key_is_valid(raw_key));
 
+    return vscf_compound_key_alg_import_private_key_data(
+            self, vscf_raw_private_key_data(raw_key), vscf_raw_private_key_alg_info(raw_key), error);
+}
+
+//
+//  Import private key from the raw binary format.
+//
+VSCF_PRIVATE vscf_impl_t *
+vscf_compound_key_alg_import_private_key_data(const vscf_compound_key_alg_t *self, vsc_data_t key_data,
+        const vscf_impl_t *key_alg_info, vscf_error_t *error) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT(vsc_data_is_valid(key_data));
+    VSCF_ASSERT_PTR(key_alg_info);
+
     //
     //  Check if raw key is appropriate.
     //
-    const vscf_impl_t *alg_info = vscf_raw_private_key_alg_info(raw_key);
-    if (vscf_impl_tag(alg_info) != vscf_impl_tag_COMPOUND_KEY_ALG_INFO) {
+    if (vscf_impl_tag(key_alg_info) != vscf_impl_tag_COMPOUND_KEY_ALG_INFO) {
         VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_MISMATCH_PUBLIC_KEY_AND_ALGORITHM);
         return NULL;
     }
-    VSCF_ASSERT(vscf_alg_info_alg_id(alg_info) == vscf_alg_id_COMPOUND_KEY);
+    VSCF_ASSERT(vscf_alg_info_alg_id(key_alg_info) == vscf_alg_id_COMPOUND_KEY);
 
     //
     // Write to the ASN.1 structure.
@@ -579,7 +664,7 @@ vscf_compound_key_alg_import_private_key(
     //
     vscf_asn1rd_t asn1rd;
     vscf_asn1rd_init(&asn1rd);
-    vscf_asn1rd_reset(&asn1rd, vscf_raw_private_key_data(raw_key));
+    vscf_asn1rd_reset(&asn1rd, key_data);
     vscf_asn1rd_read_sequence(&asn1rd);
 
     vsc_data_t cipher_key_data = vscf_asn1rd_read_octet_str(&asn1rd);
@@ -596,7 +681,7 @@ vscf_compound_key_alg_import_private_key(
     //
     //  Prepare keys to be imported.
     //
-    const vscf_compound_key_alg_info_t *compound_alg_info = (const vscf_compound_key_alg_info_t *)alg_info;
+    const vscf_compound_key_alg_info_t *compound_alg_info = (const vscf_compound_key_alg_info_t *)key_alg_info;
     const vscf_impl_t *cipher_alg_info = vscf_compound_key_alg_info_cipher_alg_info(compound_alg_info);
     const vscf_impl_t *signer_alg_info = vscf_compound_key_alg_info_signer_alg_info(compound_alg_info);
 
@@ -659,7 +744,7 @@ vscf_compound_key_alg_import_private_key(
     //  Make compound key.
     //
     private_key = vscf_compound_private_key_impl(
-            vscf_compound_private_key_new_with_keys_disown(alg_info, &cipher_key, &signer_key));
+            vscf_compound_private_key_new_with_keys_disown(key_alg_info, &cipher_key, &signer_key));
 
 cleanup:
     vscf_raw_private_key_destroy(&raw_cipher_key);
@@ -686,77 +771,80 @@ vscf_compound_key_alg_export_private_key(
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(private_key);
 
-    //
-    //  Prepare keys.
-    //
     if (vscf_key_impl_tag(private_key) != self->info->impl_tag) {
         VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_MISMATCH_PUBLIC_KEY_AND_ALGORITHM);
         return NULL;
     }
+    VSCF_ASSERT(vscf_impl_tag(private_key) == vscf_impl_tag_COMPOUND_PRIVATE_KEY);
 
+    const size_t raw_key_buf_size = vscf_compound_key_alg_exported_private_key_data_len(self, private_key);
+    vsc_buffer_t *raw_key_buf = vsc_buffer_new_with_capacity(raw_key_buf_size);
+
+    const vscf_status_t export_status = vscf_compound_key_alg_export_private_key_data(self, private_key, raw_key_buf);
+
+    if (export_status != vscf_status_SUCCESS) {
+        VSCF_ERROR_SAFE_UPDATE(error, export_status);
+        return NULL;
+    }
+
+    vscf_impl_t *alg_info = (vscf_impl_t *)vscf_impl_shallow_copy_const(vscf_key_alg_info(private_key));
+    vscf_raw_private_key_t *raw_key = vscf_raw_private_key_new_with_buffer(&raw_key_buf, &alg_info);
+
+    return raw_key;
+}
+
+//
+//  Return length in bytes required to hold exported private key.
+//
+VSCF_PRIVATE size_t
+vscf_compound_key_alg_exported_private_key_data_len(
+        const vscf_compound_key_alg_t *self, const vscf_impl_t *private_key) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(private_key);
+
+    if (vscf_key_impl_tag(private_key) != self->info->impl_tag) {
+        return 0;
+    }
+
+    //
+    //  Get correspond key algorithms.
+    //
     VSCF_ASSERT(vscf_impl_tag(private_key) == vscf_impl_tag_COMPOUND_PRIVATE_KEY);
     const vscf_compound_private_key_t *compound_private_key = (const vscf_compound_private_key_t *)private_key;
 
     const vscf_impl_t *cipher_key = vscf_compound_private_key_cipher_key(compound_private_key);
     const vscf_impl_t *signer_key = vscf_compound_private_key_signer_key(compound_private_key);
 
-    //
-    //  Prepare result variables.
-    //
-    vscf_asn1wr_t asn1wr;
-    vscf_asn1wr_init(&asn1wr);
-
-    vsc_buffer_t *raw_key_buf = vsc_buffer_new();
-    size_t raw_key_buf_len = 0;
-
-    vscf_raw_private_key_t *raw_key = NULL;
-    size_t raw_key_len = 0;
-
-    vscf_raw_private_key_t *raw_cipher_key = NULL;
-    size_t raw_cipher_key_len = 0;
-
-    vscf_raw_private_key_t *raw_signer_key = NULL;
-    size_t raw_signer_key_len = 0;
-
-    //
-    //  Create correspond algs.
-    //
-    vscf_impl_t *alg_info =
-            (vscf_impl_t *)vscf_impl_shallow_copy_const(vscf_compound_private_key_alg_info(compound_private_key));
-
-    vscf_impl_t *cipher_key_alg = vscf_key_alg_factory_create_from_key(cipher_key, self->random, error);
+    vscf_impl_t *cipher_key_alg = vscf_key_alg_factory_create_from_key(cipher_key, self->random, NULL);
     VSCF_ASSERT_PTR(cipher_key_alg);
 
-    vscf_impl_t *signer_key_alg = vscf_key_alg_factory_create_from_key(signer_key, self->random, error);
+    vscf_impl_t *signer_key_alg = vscf_key_alg_factory_create_from_key(signer_key, self->random, NULL);
     VSCF_ASSERT_PTR(signer_key_alg);
 
-    //
-    //  Check if keys are exportable.
-    //
-    if (!vscf_key_alg_can_export_private_key(vscf_key_alg_api(cipher_key_alg))) {
-        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_UNSUPPORTED_ALGORITHM);
-        goto cleanup;
-    }
+    const size_t cipher_data_key_len = vscf_key_alg_exported_private_key_data_len(cipher_key_alg, cipher_key);
+    const size_t signer_data_key_len = vscf_key_alg_exported_private_key_data_len(signer_key_alg, signer_key);
 
-    if (!vscf_key_alg_can_export_private_key(vscf_key_alg_api(signer_key_alg))) {
-        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_UNSUPPORTED_ALGORITHM);
-        goto cleanup;
-    }
+    const size_t key_data_len = 1 + 4 +                       // CompoundPrivateKey ::= SEQUENCE {
+                                1 + 4 + cipher_data_key_len + //     cipherKey OCTET STRING,
+                                1 + 4 + signer_data_key_len;  //     signerKey OCTET STRING }
 
-    //
-    //  Export.
-    //
-    raw_cipher_key = vscf_key_alg_export_private_key(cipher_key_alg, cipher_key, error);
-    if (NULL == raw_cipher_key) {
-        goto cleanup;
-    }
-    raw_cipher_key_len = vscf_raw_private_key_data(raw_cipher_key).len;
+    vscf_impl_destroy(&cipher_key_alg);
+    vscf_impl_destroy(&signer_key_alg);
 
-    raw_signer_key = vscf_key_alg_export_private_key(signer_key_alg, signer_key, error);
-    if (NULL == raw_signer_key) {
-        goto cleanup;
-    }
-    raw_signer_key_len = vscf_raw_private_key_data(raw_signer_key).len;
+    return key_data_len;
+}
+
+//
+//  Export private key to the raw binary format without algorithm information.
+//
+//  Binary format must be defined in the key specification.
+//  For instance, RSA private key must be exported in format defined in
+//  RFC 3447 Appendix A.1.2.
+//
+VSCF_PRIVATE vscf_status_t
+vscf_compound_key_alg_export_private_key_data(
+        const vscf_compound_key_alg_t *self, const vscf_impl_t *private_key, vsc_buffer_t *out) {
 
     //
     // Write to the ASN.1 structure.
@@ -767,36 +855,86 @@ vscf_compound_key_alg_export_private_key(
     // }
     //
 
-    raw_key_buf_len = 1 + 4 +                      // CompoundPublicKey ::= SEQUENCE {
-                      1 + 4 + raw_cipher_key_len + //     cipherKey OCTET STRING,
-                      1 + 4 + raw_signer_key_len;  //     signerKey OCTET STRING }
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(private_key);
+    VSCF_ASSERT_SAFE(vscf_key_is_valid(private_key));
+    VSCF_ASSERT_PTR(out);
+    VSCF_ASSERT(vsc_buffer_is_valid(out));
+    VSCF_ASSERT(vsc_buffer_unused_len(out) >= vscf_compound_key_alg_exported_private_key_data_len(self, private_key));
 
-    vsc_buffer_alloc(raw_key_buf, raw_key_buf_len);
-    vscf_asn1wr_reset(&asn1wr, vsc_buffer_unused_bytes(raw_key_buf), vsc_buffer_unused_len(raw_key_buf));
+    if (vscf_key_impl_tag(private_key) != self->info->impl_tag) {
+        return vscf_status_ERROR_MISMATCH_PUBLIC_KEY_AND_ALGORITHM;
+    }
+
+    vscf_error_t error;
+    vscf_error_reset(&error);
+
+    VSCF_ASSERT(vscf_impl_tag(private_key) == vscf_impl_tag_COMPOUND_PRIVATE_KEY);
+    const vscf_compound_private_key_t *compound_private_key = (const vscf_compound_private_key_t *)private_key;
+
+    const vscf_impl_t *cipher_key = vscf_compound_private_key_cipher_key(compound_private_key);
+    const vscf_impl_t *signer_key = vscf_compound_private_key_signer_key(compound_private_key);
+
+    //
+    //  Get correspond key algorithms.
+    //
+    vscf_impl_t *cipher_key_alg = vscf_key_alg_factory_create_from_key(cipher_key, self->random, &error);
+    VSCF_ASSERT_PTR(cipher_key_alg);
+
+    vscf_impl_t *signer_key_alg = vscf_key_alg_factory_create_from_key(signer_key, self->random, &error);
+    VSCF_ASSERT_PTR(signer_key_alg);
+
+    vscf_raw_private_key_t *raw_cipher_key = NULL;
+    vscf_raw_private_key_t *raw_signer_key = NULL;
+
+    //
+    //  Check if keys are exportable.
+    //
+    if (!vscf_key_alg_can_export_private_key(vscf_key_alg_api(cipher_key_alg))) {
+        vscf_error_update(&error, vscf_status_ERROR_UNSUPPORTED_ALGORITHM);
+        goto cleanup;
+    }
+
+    if (!vscf_key_alg_can_export_private_key(vscf_key_alg_api(signer_key_alg))) {
+        vscf_error_update(&error, vscf_status_ERROR_UNSUPPORTED_ALGORITHM);
+        goto cleanup;
+    }
+
+    //  TODO: Optimize memcpy by writing directly to the out.
+    raw_cipher_key = vscf_key_alg_export_private_key(cipher_key_alg, cipher_key, &error);
+    if (vscf_error_has_error(&error)) {
+        goto cleanup;
+    }
+
+    raw_signer_key = vscf_key_alg_export_private_key(signer_key_alg, signer_key, &error);
+    if (NULL == raw_signer_key) {
+        goto cleanup;
+    }
 
     //
     //  Write.
     //
+    vscf_asn1wr_t asn1wr;
+    vscf_asn1wr_init(&asn1wr);
+    vscf_asn1wr_reset(&asn1wr, vsc_buffer_unused_bytes(out), vsc_buffer_unused_len(out));
+    size_t raw_key_len = 0;
     raw_key_len += vscf_asn1wr_write_octet_str(&asn1wr, vscf_raw_private_key_data(raw_signer_key));
     raw_key_len += vscf_asn1wr_write_octet_str(&asn1wr, vscf_raw_private_key_data(raw_cipher_key));
     raw_key_len += vscf_asn1wr_write_sequence(&asn1wr, raw_key_len);
+
     VSCF_ASSERT(!vscf_asn1wr_has_error(&asn1wr));
+    vscf_asn1wr_finish(&asn1wr, vsc_buffer_is_reverse(out));
+    vscf_asn1wr_cleanup(&asn1wr);
 
-    vscf_asn1wr_finish(&asn1wr, false);
-    vsc_buffer_inc_used(raw_key_buf, raw_key_len);
-
-    raw_key = vscf_raw_private_key_new_with_buffer(&raw_key_buf, &alg_info);
+    vsc_buffer_inc_used(out, raw_key_len);
 
 cleanup:
-    vscf_asn1wr_cleanup(&asn1wr);
     vscf_raw_private_key_destroy(&raw_cipher_key);
     vscf_raw_private_key_destroy(&raw_signer_key);
-    vsc_buffer_destroy(&raw_key_buf);
-    vscf_impl_destroy(&alg_info);
     vscf_impl_destroy(&cipher_key_alg);
     vscf_impl_destroy(&signer_key_alg);
 
-    return raw_key;
+    return vscf_error_status(&error);
 }
 
 //

@@ -39,7 +39,7 @@ package com.virgilsecurity.crypto.foundation;
 /*
 * Common information about asymmetric key algorithm.
 */
-public interface KeyAlg extends Alg {
+public interface KeyAlg {
 
     /*
     * Defines whether a public key can be imported or not.

@@ -99,6 +99,20 @@ vscf_key_alg_import_public_key(const vscf_impl_t *impl, const vscf_raw_public_ke
 }
 
 //
+//  Import public key from the raw binary format.
+//
+VSCF_PRIVATE vscf_impl_t *
+vscf_key_alg_import_public_key_data(const vscf_impl_t *impl, vsc_data_t key_data, const vscf_impl_t *key_alg_info,
+        vscf_error_t *error) {
+
+    const vscf_key_alg_api_t *key_alg_api = vscf_key_alg_api(impl);
+    VSCF_ASSERT_PTR (key_alg_api);
+
+    VSCF_ASSERT_PTR (key_alg_api->import_public_key_data_cb);
+    return key_alg_api->import_public_key_data_cb (impl, key_data, key_alg_info, error);
+}
+
+//
 //  Export public key to the raw binary format.
 //
 //  Binary format must be defined in the key specification.
@@ -113,6 +127,36 @@ vscf_key_alg_export_public_key(const vscf_impl_t *impl, const vscf_impl_t *publi
 
     VSCF_ASSERT_PTR (key_alg_api->export_public_key_cb);
     return key_alg_api->export_public_key_cb (impl, public_key, error);
+}
+
+//
+//  Return length in bytes required to hold exported public key.
+//
+VSCF_PRIVATE size_t
+vscf_key_alg_exported_public_key_data_len(const vscf_impl_t *impl, const vscf_impl_t *public_key) {
+
+    const vscf_key_alg_api_t *key_alg_api = vscf_key_alg_api(impl);
+    VSCF_ASSERT_PTR (key_alg_api);
+
+    VSCF_ASSERT_PTR (key_alg_api->exported_public_key_data_len_cb);
+    return key_alg_api->exported_public_key_data_len_cb (impl, public_key);
+}
+
+//
+//  Export public key to the raw binary format without algorithm information.
+//
+//  Binary format must be defined in the key specification.
+//  For instance, RSA public key must be exported in format defined in
+//  RFC 3447 Appendix A.1.1.
+//
+VSCF_PRIVATE vscf_status_t
+vscf_key_alg_export_public_key_data(const vscf_impl_t *impl, const vscf_impl_t *public_key, vsc_buffer_t *out) {
+
+    const vscf_key_alg_api_t *key_alg_api = vscf_key_alg_api(impl);
+    VSCF_ASSERT_PTR (key_alg_api);
+
+    VSCF_ASSERT_PTR (key_alg_api->export_public_key_data_cb);
+    return key_alg_api->export_public_key_data_cb (impl, public_key, out);
 }
 
 //
@@ -136,6 +180,20 @@ vscf_key_alg_import_private_key(const vscf_impl_t *impl, const vscf_raw_private_
 }
 
 //
+//  Import private key from the raw binary format.
+//
+VSCF_PRIVATE vscf_impl_t *
+vscf_key_alg_import_private_key_data(const vscf_impl_t *impl, vsc_data_t key_data, const vscf_impl_t *key_alg_info,
+        vscf_error_t *error) {
+
+    const vscf_key_alg_api_t *key_alg_api = vscf_key_alg_api(impl);
+    VSCF_ASSERT_PTR (key_alg_api);
+
+    VSCF_ASSERT_PTR (key_alg_api->import_private_key_data_cb);
+    return key_alg_api->import_private_key_data_cb (impl, key_data, key_alg_info, error);
+}
+
+//
 //  Export private key in the raw binary format.
 //
 //  Binary format must be defined in the key specification.
@@ -150,6 +208,36 @@ vscf_key_alg_export_private_key(const vscf_impl_t *impl, const vscf_impl_t *priv
 
     VSCF_ASSERT_PTR (key_alg_api->export_private_key_cb);
     return key_alg_api->export_private_key_cb (impl, private_key, error);
+}
+
+//
+//  Return length in bytes required to hold exported private key.
+//
+VSCF_PRIVATE size_t
+vscf_key_alg_exported_private_key_data_len(const vscf_impl_t *impl, const vscf_impl_t *private_key) {
+
+    const vscf_key_alg_api_t *key_alg_api = vscf_key_alg_api(impl);
+    VSCF_ASSERT_PTR (key_alg_api);
+
+    VSCF_ASSERT_PTR (key_alg_api->exported_private_key_data_len_cb);
+    return key_alg_api->exported_private_key_data_len_cb (impl, private_key);
+}
+
+//
+//  Export private key to the raw binary format without algorithm information.
+//
+//  Binary format must be defined in the key specification.
+//  For instance, RSA private key must be exported in format defined in
+//  RFC 3447 Appendix A.1.2.
+//
+VSCF_PRIVATE vscf_status_t
+vscf_key_alg_export_private_key_data(const vscf_impl_t *impl, const vscf_impl_t *private_key, vsc_buffer_t *out) {
+
+    const vscf_key_alg_api_t *key_alg_api = vscf_key_alg_api(impl);
+    VSCF_ASSERT_PTR (key_alg_api);
+
+    VSCF_ASSERT_PTR (key_alg_api->export_private_key_data_cb);
+    return key_alg_api->export_private_key_data_cb (impl, private_key, out);
 }
 
 //
@@ -206,17 +294,6 @@ vscf_key_alg_api(const vscf_impl_t *impl) {
 
     const vscf_api_t *api = vscf_impl_api(impl, vscf_api_tag_KEY_ALG);
     return (const vscf_key_alg_api_t *) api;
-}
-
-//
-//  Return alg API.
-//
-VSCF_PUBLIC const vscf_alg_api_t *
-vscf_key_alg_alg_api(const vscf_key_alg_api_t *key_alg_api) {
-
-    VSCF_ASSERT_PTR (key_alg_api);
-
-    return key_alg_api->alg_api;
 }
 
 //

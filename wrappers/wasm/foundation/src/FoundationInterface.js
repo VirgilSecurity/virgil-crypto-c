@@ -164,17 +164,17 @@ const initFoundationInterface = (Module, modules) => {
                 case modules.FoundationImplTag.COMPOUND_KEY_ALG:
                     return modules.CompoundKeyAlg.newAndTakeCContext(ctxPtr);
 
-                case modules.FoundationImplTag.CHAINED_KEY_ALG_INFO:
-                    return modules.ChainedKeyAlgInfo.newAndTakeCContext(ctxPtr);
+                case modules.FoundationImplTag.HYBRID_KEY_ALG_INFO:
+                    return modules.HybridKeyAlgInfo.newAndTakeCContext(ctxPtr);
 
-                case modules.FoundationImplTag.CHAINED_PUBLIC_KEY:
-                    return modules.ChainedPublicKey.newAndTakeCContext(ctxPtr);
+                case modules.FoundationImplTag.HYBRID_PUBLIC_KEY:
+                    return modules.HybridPublicKey.newAndTakeCContext(ctxPtr);
 
-                case modules.FoundationImplTag.CHAINED_PRIVATE_KEY:
-                    return modules.ChainedPrivateKey.newAndTakeCContext(ctxPtr);
+                case modules.FoundationImplTag.HYBRID_PRIVATE_KEY:
+                    return modules.HybridPrivateKey.newAndTakeCContext(ctxPtr);
 
-                case modules.FoundationImplTag.CHAINED_KEY_ALG:
-                    return modules.ChainedKeyAlg.newAndTakeCContext(ctxPtr);
+                case modules.FoundationImplTag.HYBRID_KEY_ALG:
+                    return modules.HybridKeyAlg.newAndTakeCContext(ctxPtr);
 
                 case modules.FoundationImplTag.SIMPLE_ALG_INFO:
                     return modules.SimpleAlgInfo.newAndTakeCContext(ctxPtr);

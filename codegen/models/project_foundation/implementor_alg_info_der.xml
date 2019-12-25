@@ -17,7 +17,7 @@
         <require impl="pbe alg info"/>
         <require impl="ecc alg info"/>
         <require impl="compound key alg info"/>
-        <require impl="chained key alg info"/>
+        <require impl="hybrid key alg info"/>
         <require module="buffer defs" project="common"/>
 
         <dependency name="asn1 writer" interface="asn1 writer"/>
@@ -221,19 +221,19 @@
             <return type="size"/>
         </method>
 
-        <method name="serialized chained key alg info len" is_const="1">
+        <method name="serialized hybrid key alg info len" is_const="1">
             Return buffer size enough to hold ASN.1 structure
-            "AlgorithmIdentifier" with "ChainedKeyParams" parameters.
+            "AlgorithmIdentifier" with "HybridKeyParams" parameters.
 
-            ChainedKeyAlgorithms ALGORITHM ::= {
-                { OID id-ChainedKey parameters ChainedKeyParams }
+            HybridKeyAlgorithms ALGORITHM ::= {
+                { OID id-HybridKey parameters HybridKeyParams }
             }
 
-            id-ChainedKey ::= { 1 3 6 1 4 1 54811 1 2 }
+            id-HybridKey ::= { 1 3 6 1 4 1 54811 1 2 }
 
-            ChainedKeyParams ::= SEQUENCE {
-                l1KeyAlgorithm AlgorithmIdentifier,
-                l2KeyAlgorithm AlgorithmIdentifier
+            HybridKeyParams ::= SEQUENCE {
+                firstKeyAlgorithm AlgorithmIdentifier,
+                secondKeyAlgorithm AlgorithmIdentifier
             }
 
             <argument name="alg info" interface="alg info"/>
@@ -241,19 +241,19 @@
             <return type="size"/>
         </method>
 
-        <method name="serialize chained key alg info">
-            Serialize class "chained key alg info" to the ASN.1 structure
-            "AlgorithmIdentifier" with "ChainedKeyParams" parameters.
+        <method name="serialize hybrid key alg info">
+            Serialize class "hybrid key alg info" to the ASN.1 structure
+            "AlgorithmIdentifier" with "HybridKeyParams" parameters.
 
-            ChainedKeyAlgorithms ALGORITHM ::= {
-                { OID id-ChainedKey parameters ChainedKeyParams }
+            HybridKeyAlgorithms ALGORITHM ::= {
+                { OID id-HybridKey parameters HybridKeyParams }
             }
 
-            id-ChainedKey ::= { 1 3 6 1 4 1 54811 1 2 }
+            id-HybridKey ::= { 1 3 6 1 4 1 54811 1 2 }
 
-            ChainedKeyParams ::= SEQUENCE {
-                l1CipherAlgorithm AlgorithmIdentifier,
-                l2CipherAlgorithm AlgorithmIdentifier
+            HybridKeyParams ::= SEQUENCE {
+                firstKeyAlgorithm AlgorithmIdentifier,
+                secondKeyAlgorithm AlgorithmIdentifier
             }
 
             <argument name="alg info" interface="alg info"/>
@@ -288,7 +288,7 @@
         <require impl="pbe alg info"/>
         <require impl="ecc alg info"/>
         <require impl="compound key alg info"/>
-        <require impl="chained key alg info"/>
+        <require impl="hybrid key alg info"/>
 
         <dependency name="asn1 reader" interface="asn1 reader"/>
 
@@ -395,19 +395,19 @@
             <return interface="alg info" access="disown"/>
         </method>
 
-        <method name="deserialize chained key alg info">
+        <method name="deserialize hybrid key alg info">
             Parse ASN.1 structure "AlgorithmIdentifier" with
-            "ChainedKeyParams" parameters.
+            "HybridKeyParams" parameters.
 
-            ChainedKeyAlgorithms ALGORITHM ::= {
-                { OID id-ChainedKey parameters ChainedKeyParams }
+            HybridKeyAlgorithms ALGORITHM ::= {
+                { OID id-HybridKey parameters HybridKeyParams }
             }
 
-            id-ChainedKey ::= { 1 3 6 1 4 1 54811 1 2 }
+            id-HybridKey ::= { 1 3 6 1 4 1 54811 1 2 }
 
-            ChainedKeyParams ::= SEQUENCE {
-                l1KeyAlgorithm AlgorithmIdentifier,
-                l2KeyAlgorithm AlgorithmIdentifier
+            HybridKeyParams ::= SEQUENCE {
+                firstKeyAlgorithm AlgorithmIdentifier,
+                secondKeyAlgorithm AlgorithmIdentifier
             }
 
             <argument name="oid id" enum="oid id"/>

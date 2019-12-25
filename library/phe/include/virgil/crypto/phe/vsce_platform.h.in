@@ -98,6 +98,22 @@ extern "C" {
 #cmakedefine01 VSCE_PHE_HASH
 #endif
 
+#ifndef VSCE_PROOF_GENERATOR
+#cmakedefine01 VSCE_PROOF_GENERATOR
+#endif
+
+#ifndef VSCE_PHE_PROOF_GENERATOR
+#cmakedefine01 VSCE_PHE_PROOF_GENERATOR
+#endif
+
+#ifndef VSCE_PROOF_VERIFIER
+#cmakedefine01 VSCE_PROOF_VERIFIER
+#endif
+
+#ifndef VSCE_PHE_PROOF_VERIFIER
+#cmakedefine01 VSCE_PHE_PROOF_VERIFIER
+#endif
+
 #ifndef VSCE_PHE_SERVER
 #cmakedefine01 VSCE_PHE_SERVER
 #endif
@@ -108,6 +124,26 @@ extern "C" {
 
 #ifndef VSCE_PHE_CIPHER
 #cmakedefine01 VSCE_PHE_CIPHER
+#endif
+
+#ifndef VSCE_UOKMS_PROOF_GENERATOR
+#cmakedefine01 VSCE_UOKMS_PROOF_GENERATOR
+#endif
+
+#ifndef VSCE_UOKMS_PROOF_VERIFIER
+#cmakedefine01 VSCE_UOKMS_PROOF_VERIFIER
+#endif
+
+#ifndef VSCE_UOKMS_CLIENT
+#cmakedefine01 VSCE_UOKMS_CLIENT
+#endif
+
+#ifndef VSCE_UOKMS_SERVER
+#cmakedefine01 VSCE_UOKMS_SERVER
+#endif
+
+#ifndef VSCE_UOKMS_WRAP_ROTATION
+#cmakedefine01 VSCE_UOKMS_WRAP_ROTATION
 #endif
 
 //

@@ -244,18 +244,34 @@ vscf_falcon_import_public_key(const vscf_falcon_t *self, const vscf_raw_public_k
     VSCF_ASSERT_PTR(raw_key);
     VSCF_ASSERT_SAFE(vscf_raw_public_key_is_valid(raw_key));
 
-    if (vscf_raw_public_key_alg_id(raw_key) != vscf_alg_id_FALCON) {
+    return vscf_falcon_import_public_key_data(
+            self, vscf_raw_public_key_data(raw_key), vscf_raw_public_key_alg_info(raw_key), error);
+}
+
+//
+//  Import public key from the raw binary format.
+//
+VSCF_PRIVATE vscf_impl_t *
+vscf_falcon_import_public_key_data(
+        const vscf_falcon_t *self, vsc_data_t key_data, const vscf_impl_t *key_alg_info, vscf_error_t *error) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT(vsc_data_is_valid(key_data));
+    VSCF_ASSERT_PTR(key_alg_info);
+
+    if (vscf_alg_info_alg_id(key_alg_info) != vscf_alg_id_FALCON) {
         VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_MISMATCH_PUBLIC_KEY_AND_ALGORITHM);
         return NULL;
     }
 
-    vsc_data_t raw_key_data = vscf_raw_public_key_data(raw_key);
-    if (raw_key_data.len != FALCON_PUBKEY_SIZE(vscf_falcon_LOGN_512)) {
+    if (key_data.len != FALCON_PUBKEY_SIZE(vscf_falcon_LOGN_512)) {
         VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_BAD_FALCON_PUBLIC_KEY);
         return NULL;
     }
 
-    vscf_raw_public_key_t *public_key = vscf_raw_public_key_new_with_redefined_impl_tag(raw_key, self->info->impl_tag);
+    vscf_raw_public_key_t *public_key =
+            vscf_raw_public_key_new_with_members(key_data, key_alg_info, self->info->impl_tag);
+
     return vscf_raw_public_key_impl(public_key);
 }
 
@@ -286,6 +302,50 @@ vscf_falcon_export_public_key(const vscf_falcon_t *self, const vscf_impl_t *publ
 }
 
 //
+//  Return length in bytes required to hold exported public key.
+//
+VSCF_PRIVATE size_t
+vscf_falcon_exported_public_key_data_len(const vscf_falcon_t *self, const vscf_impl_t *public_key) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(public_key);
+    VSCF_ASSERT(vscf_public_key_is_implemented(public_key));
+    VSCF_ASSERT_SAFE(vscf_key_is_valid(public_key));
+
+    return FALCON_PUBKEY_SIZE(vscf_falcon_LOGN_512);
+}
+
+//
+//  Export public key to the raw binary format without algorithm information.
+//
+//  Binary format must be defined in the key specification.
+//  For instance, RSA public key must be exported in format defined in
+//  RFC 3447 Appendix A.1.1.
+//
+VSCF_PRIVATE vscf_status_t
+vscf_falcon_export_public_key_data(const vscf_falcon_t *self, const vscf_impl_t *public_key, vsc_buffer_t *out) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(public_key);
+    VSCF_ASSERT(vscf_public_key_is_implemented(public_key));
+    VSCF_ASSERT_SAFE(vscf_key_is_valid(public_key));
+    VSCF_ASSERT_PTR(out);
+    VSCF_ASSERT(vsc_buffer_is_valid(out));
+    VSCF_ASSERT(vsc_buffer_unused_len(out) >= vscf_falcon_exported_public_key_data_len(self, public_key));
+
+    if (vscf_key_impl_tag(public_key) != self->info->impl_tag) {
+        return vscf_status_ERROR_MISMATCH_PUBLIC_KEY_AND_ALGORITHM;
+    }
+
+    VSCF_ASSERT(vscf_impl_tag(public_key) == vscf_impl_tag_RAW_PUBLIC_KEY);
+    vscf_raw_public_key_t *raw_public_key = (vscf_raw_public_key_t *)(public_key);
+
+    vsc_buffer_write_data(out, vscf_raw_public_key_data(raw_public_key));
+
+    return vscf_status_SUCCESS;
+}
+
+//
 //  Import private key from the raw binary format.
 //
 //  Return private key that is adopted and optimized to be used
@@ -302,33 +362,47 @@ vscf_falcon_import_private_key(const vscf_falcon_t *self, const vscf_raw_private
     VSCF_ASSERT_PTR(raw_key);
     VSCF_ASSERT_SAFE(vscf_raw_private_key_is_valid(raw_key));
 
-    if (vscf_raw_private_key_alg_id(raw_key) != vscf_alg_id_FALCON) {
+    return vscf_falcon_import_private_key_data(
+            self, vscf_raw_private_key_data(raw_key), vscf_raw_private_key_alg_info(raw_key), error);
+}
+
+//
+//  Import private key from the raw binary format.
+//
+VSCF_PRIVATE vscf_impl_t *
+vscf_falcon_import_private_key_data(
+        const vscf_falcon_t *self, vsc_data_t key_data, const vscf_impl_t *key_alg_info, vscf_error_t *error) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT(vsc_data_is_valid(key_data));
+    VSCF_ASSERT_PTR(key_alg_info);
+
+    if (vscf_alg_info_alg_id(key_alg_info) != vscf_alg_id_FALCON) {
         VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_MISMATCH_PRIVATE_KEY_AND_ALGORITHM);
         return NULL;
     }
-    vsc_data_t raw_key_data = vscf_raw_private_key_data(raw_key);
-    if (raw_key_data.len != FALCON_PRIVKEY_SIZE(vscf_falcon_LOGN_512)) {
+
+    if (key_data.len != FALCON_PRIVKEY_SIZE(vscf_falcon_LOGN_512)) {
         VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_BAD_FALCON_PRIVATE_KEY);
         return NULL;
     }
 
-    //  Extract public key
+    //  Extract public key.
     byte tmp[FALCON_TMPSIZE_MAKEPUB(vscf_falcon_LOGN_512)];
     vsc_buffer_t *public_key_buf = vsc_buffer_new_with_capacity(FALCON_PUBKEY_SIZE(vscf_falcon_LOGN_512));
     const int ret = falcon_make_public(vsc_buffer_unused_bytes(public_key_buf), vsc_buffer_unused_len(public_key_buf),
-            vscf_raw_private_key_data(raw_key).bytes, vscf_raw_private_key_data(raw_key).len, tmp, sizeof(tmp));
+            key_data.bytes, key_data.len, tmp, sizeof(tmp));
     VSCF_ASSERT(ret == 0);
     vsc_buffer_inc_used(public_key_buf, FALCON_PUBKEY_SIZE(vscf_falcon_LOGN_512));
 
-    vscf_impl_t *alg_info = vscf_impl_shallow_copy((vscf_impl_t *)vscf_raw_private_key_alg_info(raw_key));
-    VSCF_ASSERT_PTR(alg_info);
-
-    vscf_raw_public_key_t *raw_public_key = vscf_raw_public_key_new_with_buffer(&public_key_buf, &alg_info);
+    vscf_raw_public_key_t *raw_public_key = vscf_raw_public_key_new();
+    raw_public_key->buffer = public_key_buf;
+    raw_public_key->alg_info = vscf_impl_shallow_copy((vscf_impl_t *)key_alg_info);
     raw_public_key->impl_tag = self->info->impl_tag;
 
-    //  Configure privat key
+    //  Configure private key.
     vscf_raw_private_key_t *raw_private_key =
-            vscf_raw_private_key_new_with_redefined_impl_tag(raw_key, self->info->impl_tag);
+            vscf_raw_private_key_new_with_members(key_data, key_alg_info, self->info->impl_tag);
     vscf_raw_private_key_set_public_key(raw_private_key, &raw_public_key);
 
     return vscf_raw_private_key_impl(raw_private_key);
@@ -358,6 +432,50 @@ vscf_falcon_export_private_key(const vscf_falcon_t *self, const vscf_impl_t *pri
     vscf_raw_private_key_t *raw_private_key = (vscf_raw_private_key_t *)(private_key);
 
     return vscf_raw_private_key_shallow_copy(raw_private_key);
+}
+
+//
+//  Return length in bytes required to hold exported private key.
+//
+VSCF_PRIVATE size_t
+vscf_falcon_exported_private_key_data_len(const vscf_falcon_t *self, const vscf_impl_t *private_key) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(private_key);
+    VSCF_ASSERT(vscf_private_key_is_implemented(private_key));
+    VSCF_ASSERT_SAFE(vscf_key_is_valid(private_key));
+
+    return FALCON_PRIVKEY_SIZE(vscf_falcon_LOGN_512);
+}
+
+//
+//  Export private key to the raw binary format without algorithm information.
+//
+//  Binary format must be defined in the key specification.
+//  For instance, RSA private key must be exported in format defined in
+//  RFC 3447 Appendix A.1.2.
+//
+VSCF_PRIVATE vscf_status_t
+vscf_falcon_export_private_key_data(const vscf_falcon_t *self, const vscf_impl_t *private_key, vsc_buffer_t *out) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(private_key);
+    VSCF_ASSERT(vscf_private_key_is_implemented(private_key));
+    VSCF_ASSERT_SAFE(vscf_key_is_valid(private_key));
+    VSCF_ASSERT_PTR(out);
+    VSCF_ASSERT(vsc_buffer_is_valid(out));
+    VSCF_ASSERT(vsc_buffer_unused_len(out) >= vscf_falcon_exported_private_key_data_len(self, private_key));
+
+    if (vscf_key_impl_tag(private_key) != self->info->impl_tag) {
+        return vscf_status_ERROR_MISMATCH_PRIVATE_KEY_AND_ALGORITHM;
+    }
+
+    VSCF_ASSERT(vscf_impl_tag(private_key) == vscf_impl_tag_RAW_PRIVATE_KEY);
+    vscf_raw_private_key_t *raw_private_key = (vscf_raw_private_key_t *)(private_key);
+
+    vsc_buffer_write_data(out, vscf_raw_private_key_data(raw_private_key));
+
+    return vscf_status_SUCCESS;
 }
 
 //

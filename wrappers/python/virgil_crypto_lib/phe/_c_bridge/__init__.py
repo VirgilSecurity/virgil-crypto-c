@@ -44,3 +44,9 @@ from ._vsce_phe_client import vsce_phe_client_t
 from ._vsce_phe_client import VscePheClient
 from ._vsce_phe_cipher import vsce_phe_cipher_t
 from ._vsce_phe_cipher import VscePheCipher
+from ._vsce_uokms_client import vsce_uokms_client_t
+from ._vsce_uokms_client import VsceUokmsClient
+from ._vsce_uokms_server import vsce_uokms_server_t
+from ._vsce_uokms_server import VsceUokmsServer
+from ._vsce_uokms_wrap_rotation import vsce_uokms_wrap_rotation_t
+from ._vsce_uokms_wrap_rotation import VsceUokmsWrapRotation

@@ -8,6 +8,9 @@ framework module VSCPhe {
     header "vsce_phe_client.h"
     header "vsce_phe_common.h"
     header "vsce_phe_server.h"
+    header "vsce_uokms_client.h"
+    header "vsce_uokms_server.h"
+    header "vsce_uokms_wrap_rotation.h"
     header "vsce_status.h"
     header "vsce_phe_public.h"
     export *

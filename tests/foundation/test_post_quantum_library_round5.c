@@ -48,7 +48,7 @@
 #include <round5/r5_cca_pke.h>
 #include <round5/r5_parameter_sets.h>
 
-#define ROUND5_KEM_ENABLED (CRYPTO_CIPHERTEXTBYTES != 0)
+#define ROUND5_KEM_ENABLED 1
 #define ROUND5_PKE_ENABLED (CRYPTO_CIPHERTEXTBYTES == 0)
 
 void
@@ -67,20 +67,26 @@ test__cpa_kem_keygen__returns_success(void) {
 }
 
 void
-test__cpa_kem_encapsulate__returns_success(void) {
+test__cpa_kem_encapsulate__then_decapsulate__shared_key_match(void) {
 #if ROUND5_KEM_ENABLED
     unsigned char pk[CRYPTO_PUBLICKEYBYTES] = {0x00};
     unsigned char sk[CRYPTO_SECRETKEYBYTES] = {0x00};
-    unsigned char shared_secret[CRYPTO_BYTES] = {0x00};
-    unsigned char ciphertext[CRYPTO_CIPHERTEXTBYTES] = {0x00};
+    unsigned char shared_secret1[PARAMS_KAPPA_BYTES] = {0x00};
+    unsigned char shared_secret2[PARAMS_KAPPA_BYTES] = {0x00};
+    unsigned char ciphertext[PARAMS_CT_SIZE + PARAMS_KAPPA_BYTES] = {0x00};
 
     randombytes_init((unsigned char *)test_data_round5_RNG_SEED.bytes, NULL, 1);
 
     int status = r5_cpa_kem_keygen(pk, sk);
     TEST_ASSERT_EQUAL(0, status);
 
-    status = r5_cpa_kem_encapsulate(ciphertext, shared_secret, pk);
+    status = r5_cpa_kem_encapsulate(ciphertext, shared_secret1, pk);
     TEST_ASSERT_EQUAL(0, status);
+
+    status = r5_cpa_kem_decapsulate(shared_secret2, ciphertext, sk);
+    TEST_ASSERT_EQUAL(0, status);
+
+    TEST_ASSERT_EQUAL_UINT8_ARRAY(shared_secret1, shared_secret2, sizeof(shared_secret1));
 #else
     TEST_IGNORE_MESSAGE("KEM is not available");
 #endif
@@ -167,7 +173,7 @@ main(void) {
 
 #if TEST_DEPENDENCIES_AVAILABLE
     RUN_TEST(test__cpa_kem_keygen__returns_success);
-    RUN_TEST(test__cpa_kem_encapsulate__returns_success);
+    RUN_TEST(test__cpa_kem_encapsulate__then_decapsulate__shared_key_match);
 
     RUN_TEST(test__cca_pke_keygen__return_success);
     RUN_TEST(test__cca_pke_encrypt__return_success);

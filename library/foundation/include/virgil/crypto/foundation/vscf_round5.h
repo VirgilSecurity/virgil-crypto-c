@@ -202,25 +202,7 @@ vscf_round5_setup_defaults(vscf_round5_t *self) VSCF_NODISCARD;
 //  Note, this operation might be slow.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_round5_generate_key(const vscf_round5_t *self, vscf_error_t *error);
-
-//
-//  Provide algorithm identificator.
-//
-VSCF_PUBLIC vscf_alg_id_t
-vscf_round5_alg_id(const vscf_round5_t *self);
-
-//
-//  Produce object with algorithm information and configuration parameters.
-//
-VSCF_PUBLIC vscf_impl_t *
-vscf_round5_produce_alg_info(const vscf_round5_t *self);
-
-//
-//  Restore algorithm configuration from the given object.
-//
-VSCF_PUBLIC vscf_status_t
-vscf_round5_restore_alg_info(vscf_round5_t *self, const vscf_impl_t *alg_info) VSCF_NODISCARD;
+vscf_round5_generate_key(const vscf_round5_t *self, vscf_alg_id_t alg_id, vscf_error_t *error);
 
 //
 //  Generate ephemeral private key of the same type.
@@ -243,6 +225,13 @@ VSCF_PUBLIC vscf_impl_t *
 vscf_round5_import_public_key(const vscf_round5_t *self, const vscf_raw_public_key_t *raw_key, vscf_error_t *error);
 
 //
+//  Import public key from the raw binary format.
+//
+VSCF_PRIVATE vscf_impl_t *
+vscf_round5_import_public_key_data(const vscf_round5_t *self, vsc_data_t key_data, const vscf_impl_t *key_alg_info,
+        vscf_error_t *error);
+
+//
 //  Export public key to the raw binary format.
 //
 //  Binary format must be defined in the key specification.
@@ -251,6 +240,23 @@ vscf_round5_import_public_key(const vscf_round5_t *self, const vscf_raw_public_k
 //
 VSCF_PUBLIC vscf_raw_public_key_t *
 vscf_round5_export_public_key(const vscf_round5_t *self, const vscf_impl_t *public_key, vscf_error_t *error);
+
+//
+//  Return length in bytes required to hold exported public key.
+//
+VSCF_PRIVATE size_t
+vscf_round5_exported_public_key_data_len(const vscf_round5_t *self, const vscf_impl_t *public_key);
+
+//
+//  Export public key to the raw binary format without algorithm information.
+//
+//  Binary format must be defined in the key specification.
+//  For instance, RSA public key must be exported in format defined in
+//  RFC 3447 Appendix A.1.1.
+//
+VSCF_PRIVATE vscf_status_t
+vscf_round5_export_public_key_data(const vscf_round5_t *self, const vscf_impl_t *public_key,
+        vsc_buffer_t *out) VSCF_NODISCARD;
 
 //
 //  Import private key from the raw binary format.
@@ -266,6 +272,13 @@ VSCF_PUBLIC vscf_impl_t *
 vscf_round5_import_private_key(const vscf_round5_t *self, const vscf_raw_private_key_t *raw_key, vscf_error_t *error);
 
 //
+//  Import private key from the raw binary format.
+//
+VSCF_PRIVATE vscf_impl_t *
+vscf_round5_import_private_key_data(const vscf_round5_t *self, vsc_data_t key_data, const vscf_impl_t *key_alg_info,
+        vscf_error_t *error);
+
+//
 //  Export private key in the raw binary format.
 //
 //  Binary format must be defined in the key specification.
@@ -276,43 +289,47 @@ VSCF_PUBLIC vscf_raw_private_key_t *
 vscf_round5_export_private_key(const vscf_round5_t *self, const vscf_impl_t *private_key, vscf_error_t *error);
 
 //
-//  Check if algorithm can encrypt data with a given key.
+//  Return length in bytes required to hold exported private key.
 //
-VSCF_PUBLIC bool
-vscf_round5_can_encrypt(const vscf_round5_t *self, const vscf_impl_t *public_key, size_t data_len);
+VSCF_PRIVATE size_t
+vscf_round5_exported_private_key_data_len(const vscf_round5_t *self, const vscf_impl_t *private_key);
 
 //
-//  Calculate required buffer length to hold the encrypted data.
+//  Export private key to the raw binary format without algorithm information.
 //
-VSCF_PUBLIC size_t
-vscf_round5_encrypted_len(const vscf_round5_t *self, const vscf_impl_t *public_key, size_t data_len);
-
+//  Binary format must be defined in the key specification.
+//  For instance, RSA private key must be exported in format defined in
+//  RFC 3447 Appendix A.1.2.
 //
-//  Encrypt data with a given public key.
-//
-VSCF_PUBLIC vscf_status_t
-vscf_round5_encrypt(const vscf_round5_t *self, const vscf_impl_t *public_key, vsc_data_t data,
+VSCF_PRIVATE vscf_status_t
+vscf_round5_export_private_key_data(const vscf_round5_t *self, const vscf_impl_t *private_key,
         vsc_buffer_t *out) VSCF_NODISCARD;
 
 //
-//  Check if algorithm can decrypt data with a given key.
-//  However, success result of decryption is not guaranteed.
-//
-VSCF_PUBLIC bool
-vscf_round5_can_decrypt(const vscf_round5_t *self, const vscf_impl_t *private_key, size_t data_len);
-
-//
-//  Calculate required buffer length to hold the decrypted data.
+//  Return length in bytes required to hold encapsulated shared key.
 //
 VSCF_PUBLIC size_t
-vscf_round5_decrypted_len(const vscf_round5_t *self, const vscf_impl_t *private_key, size_t data_len);
+vscf_round5_kem_shared_key_len(const vscf_round5_t *self, const vscf_impl_t *key);
 
 //
-//  Decrypt given data.
+//  Return length in bytes required to hold encapsulated key.
+//
+VSCF_PUBLIC size_t
+vscf_round5_kem_encapsulated_key_len(const vscf_round5_t *self, const vscf_impl_t *public_key);
+
+//
+//  Generate a shared key and a key encapsulated message.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_round5_decrypt(const vscf_round5_t *self, const vscf_impl_t *private_key, vsc_data_t data,
-        vsc_buffer_t *out) VSCF_NODISCARD;
+vscf_round5_kem_encapsulate(const vscf_round5_t *self, const vscf_impl_t *public_key, vsc_buffer_t *shared_key,
+        vsc_buffer_t *encapsulated_key) VSCF_NODISCARD;
+
+//
+//  Decapsulate the shared key.
+//
+VSCF_PUBLIC vscf_status_t
+vscf_round5_kem_decapsulate(const vscf_round5_t *self, vsc_data_t encapsulated_key, const vscf_impl_t *private_key,
+        vsc_buffer_t *shared_key) VSCF_NODISCARD;
 
 
 // --------------------------------------------------------------------------

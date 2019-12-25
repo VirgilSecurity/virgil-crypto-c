@@ -30,7 +30,7 @@
         <require class="alg factory"/>
         <require impl="hash based alg info"/>
 
-        <dependency name="hash" interface="hash"/>
+        <dependency name="hash" interface="hash" has_observers="1"/>
 
         <property name="salt" class="buffer"/>
         <property name="context info" class="buffer"/>
@@ -42,13 +42,15 @@
             Extracts fixed-length pseudorandom key from keying material.
 
             <argument name="data" class="data"/>
+            <argument name="salt" class="data"/>
             <argument name="pr key" class="buffer"/>
         </method>
 
         <method name="expand" scope="private" declaration="public" visibility="private">
             Expands the pseudorandom key to the desired length.
 
-            <argument name="pr key" class="buffer"/>
+            <argument name="pr key" class="data"/>
+            <argument name="info" class="data"/>
             <argument name="key" class="buffer"/>
             <argument name="key len" type="size"/>
         </method>
@@ -262,6 +264,14 @@
             <argument name="impl tag" enum="impl/tag"/>
         </constructor>
 
+        <constructor name="with members" visibility="private">
+            Creates a fully defined raw key.
+
+            <argument name="key data" class="data"/>
+            <argument name="alg info" interface="alg info"/>
+            <argument name="impl tag" enum="impl/tag"/>
+        </constructor>
+
         <method name="data" is_const="1" declaration="public">
             Return key data.
 
@@ -304,6 +314,14 @@
             Note, data is not copied, but new instance of key is created.s
 
             <argument name="other" class="self" access="readonly"/>
+            <argument name="impl tag" enum="impl/tag"/>
+        </constructor>
+
+        <constructor name="with members" visibility="private">
+            Creates a fully defined raw key.
+
+            <argument name="key data" class="data"/>
+            <argument name="alg info" interface="alg info"/>
             <argument name="impl tag" enum="impl/tag"/>
         </constructor>
 

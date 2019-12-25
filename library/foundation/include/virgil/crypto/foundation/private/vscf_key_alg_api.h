@@ -56,10 +56,20 @@
 #include "vscf_library.h"
 #include "vscf_api.h"
 #include "vscf_impl.h"
-#include "vscf_alg.h"
 #include "vscf_error.h"
 #include "vscf_raw_public_key.h"
+#include "vscf_status.h"
 #include "vscf_raw_private_key.h"
+
+#if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <virgil/crypto/common/vsc_data.h>
+#   include <virgil/crypto/common/vsc_buffer.h>
+#endif
+
+#if VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <VSCCommon/vsc_data.h>
+#   include <VSCCommon/vsc_buffer.h>
+#endif
 
 // clang-format on
 //  @end
@@ -97,6 +107,12 @@ typedef vscf_impl_t * (*vscf_key_alg_api_import_public_key_fn)(const vscf_impl_t
         const vscf_raw_public_key_t *raw_key, vscf_error_t *error);
 
 //
+//  Callback. Import public key from the raw binary format.
+//
+typedef vscf_impl_t * (*vscf_key_alg_api_import_public_key_data_fn)(const vscf_impl_t *impl, vsc_data_t key_data,
+        const vscf_impl_t *key_alg_info, vscf_error_t *error);
+
+//
 //  Callback. Export public key to the raw binary format.
 //
 //          Binary format must be defined in the key specification.
@@ -105,6 +121,22 @@ typedef vscf_impl_t * (*vscf_key_alg_api_import_public_key_fn)(const vscf_impl_t
 //
 typedef vscf_raw_public_key_t * (*vscf_key_alg_api_export_public_key_fn)(const vscf_impl_t *impl,
         const vscf_impl_t *public_key, vscf_error_t *error);
+
+//
+//  Callback. Return length in bytes required to hold exported public key.
+//
+typedef size_t (*vscf_key_alg_api_exported_public_key_data_len_fn)(const vscf_impl_t *impl,
+        const vscf_impl_t *public_key);
+
+//
+//  Callback. Export public key to the raw binary format without algorithm information.
+//
+//          Binary format must be defined in the key specification.
+//          For instance, RSA public key must be exported in format defined in
+//          RFC 3447 Appendix A.1.1.
+//
+typedef vscf_status_t (*vscf_key_alg_api_export_public_key_data_fn)(const vscf_impl_t *impl,
+        const vscf_impl_t *public_key, vsc_buffer_t *out);
 
 //
 //  Callback. Import private key from the raw binary format.
@@ -120,6 +152,12 @@ typedef vscf_impl_t * (*vscf_key_alg_api_import_private_key_fn)(const vscf_impl_
         const vscf_raw_private_key_t *raw_key, vscf_error_t *error);
 
 //
+//  Callback. Import private key from the raw binary format.
+//
+typedef vscf_impl_t * (*vscf_key_alg_api_import_private_key_data_fn)(const vscf_impl_t *impl, vsc_data_t key_data,
+        const vscf_impl_t *key_alg_info, vscf_error_t *error);
+
+//
 //  Callback. Export private key in the raw binary format.
 //
 //          Binary format must be defined in the key specification.
@@ -128,6 +166,22 @@ typedef vscf_impl_t * (*vscf_key_alg_api_import_private_key_fn)(const vscf_impl_
 //
 typedef vscf_raw_private_key_t * (*vscf_key_alg_api_export_private_key_fn)(const vscf_impl_t *impl,
         const vscf_impl_t *private_key, vscf_error_t *error);
+
+//
+//  Callback. Return length in bytes required to hold exported private key.
+//
+typedef size_t (*vscf_key_alg_api_exported_private_key_data_len_fn)(const vscf_impl_t *impl,
+        const vscf_impl_t *private_key);
+
+//
+//  Callback. Export private key to the raw binary format without algorithm information.
+//
+//          Binary format must be defined in the key specification.
+//          For instance, RSA private key must be exported in format defined in
+//          RFC 3447 Appendix A.1.2.
+//
+typedef vscf_status_t (*vscf_key_alg_api_export_private_key_data_fn)(const vscf_impl_t *impl,
+        const vscf_impl_t *private_key, vsc_buffer_t *out);
 
 //
 //  Contains API requirements of the interface 'key alg'.
@@ -142,10 +196,6 @@ struct vscf_key_alg_api_t {
     //  Implementation unique identifier, MUST be second in the structure.
     //
     vscf_impl_tag_t impl_tag;
-    //
-    //  Link to the inherited interface API 'alg'.
-    //
-    const vscf_alg_api_t *alg_api;
     //
     //  Generate ephemeral private key of the same type.
     //  Note, this operation might be slow.
@@ -163,6 +213,10 @@ struct vscf_key_alg_api_t {
     //
     vscf_key_alg_api_import_public_key_fn import_public_key_cb;
     //
+    //  Import public key from the raw binary format.
+    //
+    vscf_key_alg_api_import_public_key_data_fn import_public_key_data_cb;
+    //
     //  Export public key to the raw binary format.
     //
     //  Binary format must be defined in the key specification.
@@ -170,6 +224,18 @@ struct vscf_key_alg_api_t {
     //  RFC 3447 Appendix A.1.1.
     //
     vscf_key_alg_api_export_public_key_fn export_public_key_cb;
+    //
+    //  Return length in bytes required to hold exported public key.
+    //
+    vscf_key_alg_api_exported_public_key_data_len_fn exported_public_key_data_len_cb;
+    //
+    //  Export public key to the raw binary format without algorithm information.
+    //
+    //  Binary format must be defined in the key specification.
+    //  For instance, RSA public key must be exported in format defined in
+    //  RFC 3447 Appendix A.1.1.
+    //
+    vscf_key_alg_api_export_public_key_data_fn export_public_key_data_cb;
     //
     //  Import private key from the raw binary format.
     //
@@ -182,6 +248,10 @@ struct vscf_key_alg_api_t {
     //
     vscf_key_alg_api_import_private_key_fn import_private_key_cb;
     //
+    //  Import private key from the raw binary format.
+    //
+    vscf_key_alg_api_import_private_key_data_fn import_private_key_data_cb;
+    //
     //  Export private key in the raw binary format.
     //
     //  Binary format must be defined in the key specification.
@@ -189,6 +259,18 @@ struct vscf_key_alg_api_t {
     //  RFC 3447 Appendix A.1.2.
     //
     vscf_key_alg_api_export_private_key_fn export_private_key_cb;
+    //
+    //  Return length in bytes required to hold exported private key.
+    //
+    vscf_key_alg_api_exported_private_key_data_len_fn exported_private_key_data_len_cb;
+    //
+    //  Export private key to the raw binary format without algorithm information.
+    //
+    //  Binary format must be defined in the key specification.
+    //  For instance, RSA private key must be exported in format defined in
+    //  RFC 3447 Appendix A.1.2.
+    //
+    vscf_key_alg_api_export_private_key_data_fn export_private_key_data_cb;
     //
     //  Defines whether a public key can be imported or not.
     //

@@ -90,15 +90,13 @@ const initOidId = (Module, modules) => {
 
         COMPOUND_KEY: 25,
 
-        CHAINED_KEY: 26,
+        HYBRID_KEY: 26,
 
         FALCON: 27,
 
-        ROUND5: 28,
+        ROUND5_ND_5KEM_5D: 28,
 
-        ROUND5_ND_5PKE_5D: 29,
-
-        RANDOM_PADDING: 30
+        RANDOM_PADDING: 29
     });
 
     return OidId;

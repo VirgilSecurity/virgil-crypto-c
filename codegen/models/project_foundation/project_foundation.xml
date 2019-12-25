@@ -59,11 +59,11 @@
     </feature>
 
     <feature name="post quantum" default="${VIRGIL_POST_QUANTUM}">
-        Enable post-quantum cryptography for foundation library [experemental].
+        Enable post-quantum cryptography for foundation library [experimental].
 
-        <require library="keccak" feature="library" />
-        <require library="round5" feature="library" />
-        <require library="falcon" feature="library" />
+        <require library="keccak" feature="library"/>
+        <require library="round5" feature="library"/>
+        <require library="falcon" feature="library"/>
     </feature>
 
     <module name="assert" from="shared"/>
@@ -116,6 +116,7 @@
     <interface name="message info serializer"/>
     <interface name="message info footer serializer"/>
     <interface name="padding"/>
+    <interface name="kem"/>
 
     <class name="error"/>
     <class name="mbedtls bignum asn1 writer"/>
@@ -172,7 +173,7 @@
     <implementor name="ed25519"/>
     <implementor name="post quantum"/>
     <implementor name="compound key"/>
-    <implementor name="chained key"/>
+    <implementor name="hybrid key"/>
 
     <implementor name="alg info"/>
     <implementor name="alg info der"/>

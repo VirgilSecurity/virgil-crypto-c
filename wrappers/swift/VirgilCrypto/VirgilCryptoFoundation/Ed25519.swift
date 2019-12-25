@@ -37,7 +37,7 @@ import Foundation
 import VSCFoundation
 
 /// This is implementation of Ed25519 elliptic curve algorithms.
-@objc(VSCFEd25519) public class Ed25519: NSObject, Alg, KeyAlg, KeyCipher, KeySigner, ComputeSharedKey {
+@objc(VSCFEd25519) public class Ed25519: NSObject, KeyAlg, KeyCipher, KeySigner, ComputeSharedKey, Kem {
 
     /// Handle underlying C context.
     @objc public let c_ctx: OpaquePointer
@@ -107,27 +107,6 @@ import VSCFoundation
         try FoundationError.handleStatus(fromC: error.status)
 
         return FoundationImplementation.wrapPrivateKey(take: proxyResult!)
-    }
-
-    /// Provide algorithm identificator.
-    @objc public func algId() -> AlgId {
-        let proxyResult = vscf_ed25519_alg_id(self.c_ctx)
-
-        return AlgId.init(fromC: proxyResult)
-    }
-
-    /// Produce object with algorithm information and configuration parameters.
-    @objc public func produceAlgInfo() -> AlgInfo {
-        let proxyResult = vscf_ed25519_produce_alg_info(self.c_ctx)
-
-        return FoundationImplementation.wrapAlgInfo(take: proxyResult!)
-    }
-
-    /// Restore algorithm configuration from the given object.
-    @objc public func restoreAlgInfo(algInfo: AlgInfo) throws {
-        let proxyResult = vscf_ed25519_restore_alg_info(self.c_ctx, algInfo.c_ctx)
-
-        try FoundationError.handleStatus(fromC: proxyResult)
     }
 
     /// Generate ephemeral private key of the same type.
@@ -373,5 +352,75 @@ import VSCFoundation
         let proxyResult = vscf_ed25519_shared_key_len(self.c_ctx, key.c_ctx)
 
         return proxyResult
+    }
+
+    /// Return length in bytes required to hold encapsulated shared key.
+    @objc public func kemSharedKeyLen(key: Key) -> Int {
+        let proxyResult = vscf_ed25519_kem_shared_key_len(self.c_ctx, key.c_ctx)
+
+        return proxyResult
+    }
+
+    /// Return length in bytes required to hold encapsulated key.
+    @objc public func kemEncapsulatedKeyLen(publicKey: PublicKey) -> Int {
+        let proxyResult = vscf_ed25519_kem_encapsulated_key_len(self.c_ctx, publicKey.c_ctx)
+
+        return proxyResult
+    }
+
+    /// Generate a shared key and a key encapsulated message.
+    @objc public func kemEncapsulate(publicKey: PublicKey) throws -> KemKemEncapsulateResult {
+        let sharedKeyCount = self.kemSharedKeyLen(key: publicKey)
+        var sharedKey = Data(count: sharedKeyCount)
+        var sharedKeyBuf = vsc_buffer_new()
+        defer {
+            vsc_buffer_delete(sharedKeyBuf)
+        }
+
+        let encapsulatedKeyCount = self.encapsulatedKeyLen(publicKey: publicKey)
+        var encapsulatedKey = Data(count: encapsulatedKeyCount)
+        var encapsulatedKeyBuf = vsc_buffer_new()
+        defer {
+            vsc_buffer_delete(encapsulatedKeyBuf)
+        }
+
+        let proxyResult = sharedKey.withUnsafeMutableBytes({ (sharedKeyPointer: UnsafeMutableRawBufferPointer) -> vscf_status_t in
+            encapsulatedKey.withUnsafeMutableBytes({ (encapsulatedKeyPointer: UnsafeMutableRawBufferPointer) -> vscf_status_t in
+                vsc_buffer_use(sharedKeyBuf, sharedKeyPointer.bindMemory(to: byte.self).baseAddress, sharedKeyCount)
+
+                vsc_buffer_use(encapsulatedKeyBuf, encapsulatedKeyPointer.bindMemory(to: byte.self).baseAddress, encapsulatedKeyCount)
+
+                return vscf_ed25519_kem_encapsulate(self.c_ctx, publicKey.c_ctx, sharedKeyBuf, encapsulatedKeyBuf)
+            })
+        })
+        sharedKey.count = vsc_buffer_len(sharedKeyBuf)
+        encapsulatedKey.count = vsc_buffer_len(encapsulatedKeyBuf)
+
+        try FoundationError.handleStatus(fromC: proxyResult)
+
+        return KemKemEncapsulateResult(sharedKey: sharedKey, encapsulatedKey: encapsulatedKey)
+    }
+
+    /// Decapsulate the shared key.
+    @objc public func kemDecapsulate(encapsulatedKey: Data, privateKey: PrivateKey) throws -> Data {
+        let sharedKeyCount = self.kemSharedKeyLen(key: privateKey)
+        var sharedKey = Data(count: sharedKeyCount)
+        var sharedKeyBuf = vsc_buffer_new()
+        defer {
+            vsc_buffer_delete(sharedKeyBuf)
+        }
+
+        let proxyResult = encapsulatedKey.withUnsafeBytes({ (encapsulatedKeyPointer: UnsafeRawBufferPointer) -> vscf_status_t in
+            sharedKey.withUnsafeMutableBytes({ (sharedKeyPointer: UnsafeMutableRawBufferPointer) -> vscf_status_t in
+                vsc_buffer_use(sharedKeyBuf, sharedKeyPointer.bindMemory(to: byte.self).baseAddress, sharedKeyCount)
+
+                return vscf_ed25519_kem_decapsulate(self.c_ctx, vsc_data(encapsulatedKeyPointer.bindMemory(to: byte.self).baseAddress, encapsulatedKey.count), privateKey.c_ctx, sharedKeyBuf)
+            })
+        })
+        sharedKey.count = vsc_buffer_len(sharedKeyBuf)
+
+        try FoundationError.handleStatus(fromC: proxyResult)
+
+        return sharedKey
     }
 }

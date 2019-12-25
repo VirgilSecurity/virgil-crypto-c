@@ -2,17 +2,17 @@
 
     <require interface="alg info"/>
     <require impl="compound key alg info"/>
-    <require impl="chained key alg info"/>
+    <require impl="hybrid key alg info"/>
 
     <property name="alg id" enum="alg id"/>
-    <property name="chained l1 alg id" enum="alg id"/>
-    <property name="chained l2 alg id" enum="alg id"/>
+    <property name="hybrid first key alg id" enum="alg id"/>
+    <property name="hybrid second key alg id" enum="alg id"/>
     <property name="compound cipher alg id" enum="alg id"/>
     <property name="compound signer alg id" enum="alg id"/>
-    <property name="compound cipher l1 alg id" enum="alg id"/>
-    <property name="compound cipher l2 alg id" enum="alg id"/>
-    <property name="compound signer l1 alg id" enum="alg id"/>
-    <property name="compound signer l2 alg id" enum="alg id"/>
+    <property name="compound hybrid cipher first key alg id" enum="alg id"/>
+    <property name="compound hybrid cipher second key alg id" enum="alg id"/>
+    <property name="compound hybrid signer first key alg id" enum="alg id"/>
+    <property name="compound hybrid signer second key alg id" enum="alg id"/>
 
     <constructor name="with alg info">
         Build key information based on the generic algorithm information.
@@ -26,35 +26,35 @@
         <return type="boolean"/>
     </method>
 
-    <method name="is chained" is_const="1">
-        Return true if a key is a chained key
+    <method name="is hybrid" is_const="1">
+        Return true if a key is a hybrid key
 
         <return type="boolean"/>
     </method>
 
-    <method name="is compound chained" is_const="1">
+    <method name="is compound hybrid" is_const="1">
         Return true if a key is a compound key and compounds cipher key
-        and signer key are chained keys.
+        and signer key are hybrid keys.
 
         <return type="boolean"/>
     </method>
 
-    <method name="is compound chained cipher" is_const="1">
+    <method name="is compound hybrid cipher" is_const="1">
         Return true if a key is a compound key and compounds cipher key
-        is a chained key.
+        is a hybrid key.
 
         <return type="boolean"/>
     </method>
 
-    <method name="is compound chained signer" is_const="1">
+    <method name="is compound hybrid signer" is_const="1">
         Return true if a key is a compound key and compounds signer key
-        is a chained key.
+        is a hybrid key.
 
         <return type="boolean"/>
     </method>
 
     <method name="is hybrid post quantum" is_const="1">
-        Return true if a key is a compound key that contains chained keys
+        Return true if a key is a compound key that contains hybrid keys
         for encryption/decryption and signing/verifying that itself
         contains a combination of classic keys and post-quantum keys.
 
@@ -62,7 +62,7 @@
     </method>
 
     <method name="is hybrid post quantum cipher" is_const="1">
-        Return true if a key is a compound key that contains a chained key
+        Return true if a key is a compound key that contains a hybrid key
         for encryption/decryption that contains a classic key and
         a post-quantum key.
 
@@ -70,7 +70,7 @@
     </method>
 
     <method name="is hybrid post quantum signer" is_const="1">
-        Return true if a key is a compound key that contains a chained key
+        Return true if a key is a compound key that contains a hybrid key
         for signing/verifying that contains a classic key and
         a post-quantum key.
 
@@ -97,44 +97,44 @@
         <return enum="alg id"/>
     </method>
 
-    <method name="chained l1 alg id" is_const="1">
-        Return chained l1 key id, if key is chained.
+    <method name="hybrid first key alg id" is_const="1">
+        Return hybrid's first key id, if key is hybrid.
         Return None, otherwise.
 
         <return enum="alg id"/>
     </method>
 
-    <method name="chained l2 alg id" is_const="1">
-        Return chained l2 key id, if key is chained.
+    <method name="hybrid second key alg id" is_const="1">
+        Return hybrid's second key id, if key is hybrid.
         Return None, otherwise.
 
         <return enum="alg id"/>
     </method>
 
-    <method name="compound cipher l1 alg id" is_const="1">
-        Return l1 key id of compound's cipher key, if key is compound(chained, ...)
-        Return None, otherwise.
+    <method name="compound hybrid cipher first key alg id" is_const="1">
+        Return hybrid's first key id of compound's cipher key,
+        if key is compound(hybrid, ...), None - otherwise.
 
         <return enum="alg id"/>
     </method>
 
-    <method name="compound cipher l2 alg id" is_const="1">
-        Return l2 key id of compound's cipher key, if key is compound(chained, ...)
-        Return None, otherwise.
+    <method name="compound hybrid cipher second key alg id" is_const="1">
+        Return hybrid's second key id of compound's cipher key,
+        if key is compound(hybrid, ...), None - otherwise.
 
         <return enum="alg id"/>
     </method>
 
-    <method name="compound signer l1 alg id" is_const="1">
-        Return l1 key id of compound's signer key, if key is compound(..., chained)
-        Return None, otherwise.
+    <method name="compound hybrid signer first key alg id" is_const="1">
+        Return hybrid's first key id of compound's signer key,
+        if key is compound(..., hybrid), None - otherwise.
 
         <return enum="alg id"/>
     </method>
 
-    <method name="compound signer l2 alg id" is_const="1">
-        Return l2 key id of compound's signer key, if key is compound(..., chained)
-        Return None, otherwise.
+    <method name="compound hybrid signer second key alg id" is_const="1">
+        Return hybrid's second key id of compound's signer key,
+        if key is compound(..., hybrid), None - otherwise.
 
         <return enum="alg id"/>
     </method>

@@ -60,7 +60,7 @@
 #include "vscf_ed25519.h"
 #include "vscf_curve25519.h"
 #include "vscf_compound_key_alg.h"
-#include "vscf_chained_key_alg.h"
+#include "vscf_hybrid_key_alg.h"
 #include "vscf_falcon.h"
 #include "vscf_round5.h"
 
@@ -98,7 +98,6 @@ vscf_key_alg_factory_create_from_alg_id(vscf_alg_id_t alg_id, const vscf_impl_t 
 
     switch (alg_id) {
 #if VSCF_ECC || VSCF_CURVE25519 || VSCF_ED25519
-    case vscf_alg_id_ECC:
     case vscf_alg_id_SECP256R1:
     case vscf_alg_id_ED25519:
     case vscf_alg_id_CURVE25519: {
@@ -148,7 +147,6 @@ vscf_key_alg_factory_create_from_alg_id(vscf_alg_id_t alg_id, const vscf_impl_t 
 #endif // VSCF_CURVE25519
 
 #if VSCF_ECC
-    case vscf_alg_id_ECC:
     case vscf_alg_id_SECP256R1: {
         vscf_ecc_t *ecc = vscf_ecc_new();
         if (random) {
@@ -169,15 +167,22 @@ vscf_key_alg_factory_create_from_alg_id(vscf_alg_id_t alg_id, const vscf_impl_t 
     }
 #endif // VSCF_COMPOUND_KEY_ALG
 
-#if VSCF_CHAINED_KEY_ALG
-    case vscf_alg_id_CHAINED_KEY: {
-        vscf_chained_key_alg_t *chained_key_alg = vscf_chained_key_alg_new();
+#if VSCF_HYBRID_KEY_ALG
+    case vscf_alg_id_HYBRID_KEY: {
+        vscf_hybrid_key_alg_t *hybrid_key_alg = vscf_hybrid_key_alg_new();
         if (random) {
-            vscf_chained_key_alg_use_random(chained_key_alg, (vscf_impl_t *)random);
+            vscf_hybrid_key_alg_use_random(hybrid_key_alg, (vscf_impl_t *)random);
         }
-        return vscf_chained_key_alg_impl(chained_key_alg);
+        const vscf_status_t status = vscf_hybrid_key_alg_setup_defaults(hybrid_key_alg);
+        if (status == vscf_status_SUCCESS) {
+            return vscf_hybrid_key_alg_impl(hybrid_key_alg);
+        } else {
+            vscf_hybrid_key_alg_destroy(&hybrid_key_alg);
+            VSCF_ERROR_SAFE_UPDATE(error, status);
+            return NULL;
+        }
     }
-#endif // VSCF_CHAINED_KEY_ALG
+#endif // VSCF_HYBRID_KEY_ALG
 
 #if VSCF_POST_QUANTUM
 #if VSCF_FALCON
@@ -191,8 +196,7 @@ vscf_key_alg_factory_create_from_alg_id(vscf_alg_id_t alg_id, const vscf_impl_t 
 #endif // VSCF_FALCON
 
 #if VSCF_ROUND5
-    case vscf_alg_id_ROUND5:
-    case vscf_alg_id_ROUND5_ND_5PKE_5D: {
+    case vscf_alg_id_ROUND5_ND_5KEM_5D: {
         vscf_round5_t *round5 = vscf_round5_new();
         if (random) {
             vscf_round5_use_random(round5, (vscf_impl_t *)random);
@@ -229,7 +233,7 @@ vscf_key_alg_factory_create_from_key(const vscf_impl_t *key, const vscf_impl_t *
         return vscf_key_alg_factory_create_from_alg_id(vscf_alg_id_RSA, random, error);
 
     case vscf_impl_tag_ECC:
-        return vscf_key_alg_factory_create_from_alg_id(vscf_alg_id_ECC, random, error);
+        return vscf_key_alg_factory_create_from_alg_id(vscf_alg_id_SECP256R1, random, error);
 
     case vscf_impl_tag_ED25519:
         return vscf_key_alg_factory_create_from_alg_id(vscf_alg_id_ED25519, random, error);
@@ -240,14 +244,14 @@ vscf_key_alg_factory_create_from_key(const vscf_impl_t *key, const vscf_impl_t *
     case vscf_impl_tag_COMPOUND_KEY_ALG:
         return vscf_key_alg_factory_create_from_alg_id(vscf_alg_id_COMPOUND_KEY, random, error);
 
-    case vscf_impl_tag_CHAINED_KEY_ALG:
-        return vscf_key_alg_factory_create_from_alg_id(vscf_alg_id_CHAINED_KEY, random, error);
+    case vscf_impl_tag_HYBRID_KEY_ALG:
+        return vscf_key_alg_factory_create_from_alg_id(vscf_alg_id_HYBRID_KEY, random, error);
 
     case vscf_impl_tag_FALCON:
         return vscf_key_alg_factory_create_from_alg_id(vscf_alg_id_FALCON, random, error);
 
     case vscf_impl_tag_ROUND5:
-        return vscf_key_alg_factory_create_from_alg_id(vscf_alg_id_ROUND5, random, error);
+        return vscf_key_alg_factory_create_from_alg_id(vscf_alg_id_ROUND5_ND_5KEM_5D, random, error);
 
     default:
         VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_UNSUPPORTED_ALGORITHM);
