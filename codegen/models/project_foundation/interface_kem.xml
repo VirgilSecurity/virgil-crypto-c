@@ -31,7 +31,7 @@
         </argument>
 
         <argument name="encapsulated key" class="buffer">
-            <length method="encapsulated key len">
+            <length method="kem encapsulated key len">
                 <proxy argument="public key" to="public key"/>
             </length>
         </argument>

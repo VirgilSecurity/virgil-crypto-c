@@ -795,7 +795,7 @@ const initEcc = (Module, modules) => {
             const sharedKeyCapacity = this.kemSharedKeyLen(publicKey);
             const sharedKeyCtxPtr = Module._vsc_buffer_new_with_capacity(sharedKeyCapacity);
 
-            const encapsulatedKeyCapacity = this.encapsulatedKeyLen(publicKey);
+            const encapsulatedKeyCapacity = this.kemEncapsulatedKeyLen(publicKey);
             const encapsulatedKeyCtxPtr = Module._vsc_buffer_new_with_capacity(encapsulatedKeyCapacity);
 
             try {
