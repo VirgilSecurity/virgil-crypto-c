@@ -66,11 +66,18 @@
         </argument>
     </method>
 
+    <method name="finish padded data processing out len" is_const="1">
+        Return length in bytes required hold output of the method
+        "finish padded data processing".
+
+        <return type="size"/>
+    </method>
+
     <method name="finish padded data processing">
         Accomplish padded data processing and return left data without a padding.
 
         <argument name="out" class="buffer">
-            <length method="len max"/>
+            <length method="finish padded data processing out len"/>
         </argument>
 
         <return enum="status"/>

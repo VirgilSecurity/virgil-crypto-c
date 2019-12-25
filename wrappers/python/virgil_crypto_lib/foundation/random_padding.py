@@ -128,9 +128,15 @@ class RandomPadding(Alg, Padding):
         self._lib_vscf_random_padding.vscf_random_padding_process_padded_data(self.ctx, d_data.data, out.c_buffer)
         return out.get_bytes()
 
+    def finish_padded_data_processing_out_len(self):
+        """Return length in bytes required hold output of the method
+        "finish padded data processing"."""
+        result = self._lib_vscf_random_padding.vscf_random_padding_finish_padded_data_processing_out_len(self.ctx)
+        return result
+
     def finish_padded_data_processing(self):
         """Accomplish padded data processing and return left data without a padding."""
-        out = Buffer(self.len_max())
+        out = Buffer(self.finish_padded_data_processing_out_len())
         status = self._lib_vscf_random_padding.vscf_random_padding_finish_padded_data_processing(self.ctx, out.c_buffer)
         VscfStatus.handle_status(status)
         return out.get_bytes()

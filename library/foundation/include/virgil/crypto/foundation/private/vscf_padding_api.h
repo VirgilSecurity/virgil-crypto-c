@@ -133,6 +133,12 @@ typedef void (*vscf_padding_api_start_padded_data_processing_fn)(vscf_impl_t *im
 typedef void (*vscf_padding_api_process_padded_data_fn)(vscf_impl_t *impl, vsc_data_t data, vsc_buffer_t *out);
 
 //
+//  Callback. Return length in bytes required hold output of the method
+//          "finish padded data processing".
+//
+typedef size_t (*vscf_padding_api_finish_padded_data_processing_out_len_fn)(const vscf_impl_t *impl);
+
+//
 //  Callback. Accomplish padded data processing and return left data without a padding.
 //
 typedef vscf_status_t (*vscf_padding_api_finish_padded_data_processing_fn)(vscf_impl_t *impl, vsc_buffer_t *out);
@@ -189,6 +195,11 @@ struct vscf_padding_api_t {
     //  Return filtered data without padding.
     //
     vscf_padding_api_process_padded_data_fn process_padded_data_cb;
+    //
+    //  Return length in bytes required hold output of the method
+    //  "finish padded data processing".
+    //
+    vscf_padding_api_finish_padded_data_processing_out_len_fn finish_padded_data_processing_out_len_cb;
     //
     //  Accomplish padded data processing and return left data without a padding.
     //

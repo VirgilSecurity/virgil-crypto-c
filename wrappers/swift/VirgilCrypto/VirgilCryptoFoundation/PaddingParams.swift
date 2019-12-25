@@ -39,9 +39,9 @@ import VSCFoundation
 /// Handles padding parameters and constraints.
 @objc(VSCFPaddingParams) public class PaddingParams: NSObject {
 
-    @objc public static let defaultFrame: Int = 160
     @objc public static let defaultFrameMin: Int = 32
-    @objc public static let defaultFrameMax: Int = 8 * 1024
+    @objc public static let defaultFrame: Int = 160
+    @objc public static let defaultFrameMax: Int = 256
 
     /// Handle underlying C context.
     @objc public let c_ctx: OpaquePointer
@@ -67,10 +67,9 @@ import VSCFoundation
     }
 
     /// Build padding params with given constraints.
-    /// Precondition: frame_length_min <= frame_length <= frame_length_max.
     /// Next formula can clarify what frame is: padding_length = data_length MOD frame
-    public init(frame: Int, frameMin: Int, frameMax: Int) {
-        let proxyResult = vscf_padding_params_new_with_constraints(frame, frameMin, frameMax)
+    public init(frame: Int, frameMax: Int) {
+        let proxyResult = vscf_padding_params_new_with_constraints(frame, frameMax)
 
         self.c_ctx = proxyResult!
     }
@@ -87,14 +86,7 @@ import VSCFoundation
         return proxyResult
     }
 
-    /// Return minimum padding frame in bytes.
-    @objc public func frameMin() -> Int {
-        let proxyResult = vscf_padding_params_frame_min(self.c_ctx)
-
-        return proxyResult
-    }
-
-    /// Return minimum padding frame in bytes.
+    /// Return maximum padding frame in bytes.
     @objc public func frameMax() -> Int {
         let proxyResult = vscf_padding_params_frame_max(self.c_ctx)
 

@@ -69,6 +69,10 @@ import VSCFoundation
     /// Return filtered data without padding.
     @objc func processPaddedData(data: Data) -> Data
 
+    /// Return length in bytes required hold output of the method
+    /// "finish padded data processing".
+    @objc func finishPaddedDataProcessingOutLen() -> Int
+
     /// Accomplish padded data processing and return left data without a padding.
     @objc func finishPaddedDataProcessing() throws -> Data
 }

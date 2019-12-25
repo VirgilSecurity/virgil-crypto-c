@@ -185,6 +185,20 @@ vscf_padding_process_padded_data(vscf_impl_t *impl, vsc_data_t data, vsc_buffer_
 }
 
 //
+//  Return length in bytes required hold output of the method
+//  "finish padded data processing".
+//
+VSCF_PUBLIC size_t
+vscf_padding_finish_padded_data_processing_out_len(const vscf_impl_t *impl) {
+
+    const vscf_padding_api_t *padding_api = vscf_padding_api(impl);
+    VSCF_ASSERT_PTR (padding_api);
+
+    VSCF_ASSERT_PTR (padding_api->finish_padded_data_processing_out_len_cb);
+    return padding_api->finish_padded_data_processing_out_len_cb (impl);
+}
+
+//
 //  Accomplish padded data processing and return left data without a padding.
 //
 VSCF_PUBLIC vscf_status_t

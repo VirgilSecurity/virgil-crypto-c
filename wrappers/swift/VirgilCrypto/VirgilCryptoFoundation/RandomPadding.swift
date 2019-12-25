@@ -184,9 +184,17 @@ import VSCFoundation
         return out
     }
 
+    /// Return length in bytes required hold output of the method
+    /// "finish padded data processing".
+    @objc public func finishPaddedDataProcessingOutLen() -> Int {
+        let proxyResult = vscf_random_padding_finish_padded_data_processing_out_len(self.c_ctx)
+
+        return proxyResult
+    }
+
     /// Accomplish padded data processing and return left data without a padding.
     @objc public func finishPaddedDataProcessing() throws -> Data {
-        let outCount = self.lenMax()
+        let outCount = self.finishPaddedDataProcessingOutLen()
         var out = Data(count: outCount)
         var outBuf = vsc_buffer_new()
         defer {
