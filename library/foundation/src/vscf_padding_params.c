@@ -83,12 +83,10 @@ vscf_padding_params_cleanup_ctx(vscf_padding_params_t *self);
 
 //
 //  Build padding params with given constraints.
-//  Precondition: frame_length_min <= frame_length <= frame_length_max.
 //  Next formula can clarify what frame is: padding_length = data_length MOD frame
 //
 static void
-vscf_padding_params_init_ctx_with_constraints(vscf_padding_params_t *self, size_t frame, size_t frame_min,
-        size_t frame_max);
+vscf_padding_params_init_ctx_with_constraints(vscf_padding_params_t *self, size_t frame, size_t frame_max);
 
 //
 //  Return size of 'vscf_padding_params_t'.
@@ -148,12 +146,10 @@ vscf_padding_params_new(void) {
 //
 //  Perform initialization of pre-allocated context.
 //  Build padding params with given constraints.
-//  Precondition: frame_length_min <= frame_length <= frame_length_max.
 //  Next formula can clarify what frame is: padding_length = data_length MOD frame
 //
 VSCF_PUBLIC void
-vscf_padding_params_init_with_constraints(vscf_padding_params_t *self, size_t frame, size_t frame_min,
-        size_t frame_max) {
+vscf_padding_params_init_with_constraints(vscf_padding_params_t *self, size_t frame, size_t frame_max) {
 
     VSCF_ASSERT_PTR(self);
 
@@ -161,22 +157,21 @@ vscf_padding_params_init_with_constraints(vscf_padding_params_t *self, size_t fr
 
     self->refcnt = 1;
 
-    vscf_padding_params_init_ctx_with_constraints(self, frame, frame_min, frame_max);
+    vscf_padding_params_init_ctx_with_constraints(self, frame, frame_max);
 }
 
 //
 //  Allocate class context and perform it's initialization.
 //  Build padding params with given constraints.
-//  Precondition: frame_length_min <= frame_length <= frame_length_max.
 //  Next formula can clarify what frame is: padding_length = data_length MOD frame
 //
 VSCF_PUBLIC vscf_padding_params_t *
-vscf_padding_params_new_with_constraints(size_t frame, size_t frame_min, size_t frame_max) {
+vscf_padding_params_new_with_constraints(size_t frame, size_t frame_max) {
 
     vscf_padding_params_t *self = (vscf_padding_params_t *) vscf_alloc(sizeof (vscf_padding_params_t));
     VSCF_ASSERT_ALLOC(self);
 
-    vscf_padding_params_init_with_constraints(self, frame, frame_min, frame_max);
+    vscf_padding_params_init_with_constraints(self, frame, frame_max);
 
     self->self_dealloc_cb = vscf_dealloc;
 
@@ -279,7 +274,6 @@ vscf_padding_params_init_ctx(vscf_padding_params_t *self) {
     VSCF_ASSERT_PTR(self);
 
     self->frame = vscf_padding_params_DEFAULT_FRAME;
-    self->frame_min = vscf_padding_params_DEFAULT_FRAME_MIN;
     self->frame_max = vscf_padding_params_DEFAULT_FRAME_MAX;
 }
 
@@ -296,18 +290,15 @@ vscf_padding_params_cleanup_ctx(vscf_padding_params_t *self) {
 
 //
 //  Build padding params with given constraints.
-//  Precondition: frame_length_min <= frame_length <= frame_length_max.
 //  Next formula can clarify what frame is: padding_length = data_length MOD frame
 //
 static void
-vscf_padding_params_init_ctx_with_constraints(
-        vscf_padding_params_t *self, size_t frame, size_t frame_min, size_t frame_max) {
+vscf_padding_params_init_ctx_with_constraints(vscf_padding_params_t *self, size_t frame, size_t frame_max) {
 
     VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT((frame_min <= frame) && (frame_min <= frame_max));
+    VSCF_ASSERT((vscf_padding_params_DEFAULT_FRAME_MIN <= frame) && (frame <= frame_max));
 
     self->frame = frame;
-    self->frame_min = frame_min;
     self->frame_max = frame_max;
 }
 
@@ -323,18 +314,7 @@ vscf_padding_params_frame(const vscf_padding_params_t *self) {
 }
 
 //
-//  Return minimum padding frame in bytes.
-//
-VSCF_PUBLIC size_t
-vscf_padding_params_frame_min(const vscf_padding_params_t *self) {
-
-    VSCF_ASSERT_PTR(self);
-
-    return self->frame_min;
-}
-
-//
-//  Return minimum padding frame in bytes.
+//  Return maximum padding frame in bytes.
 //
 VSCF_PUBLIC size_t
 vscf_padding_params_frame_max(const vscf_padding_params_t *self) {

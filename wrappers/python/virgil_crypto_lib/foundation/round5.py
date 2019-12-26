@@ -199,7 +199,7 @@ class Round5(KeyAlg, Kem):
     def kem_encapsulate(self, public_key):
         """Generate a shared key and a key encapsulated message."""
         shared_key = Buffer(self.kem_shared_key_len(key=public_key))
-        encapsulated_key = Buffer(self.encapsulated_key_len(public_key=public_key))
+        encapsulated_key = Buffer(self.kem_encapsulated_key_len(public_key=public_key))
         status = self._lib_vscf_round5.vscf_round5_kem_encapsulate(self.ctx, public_key.c_impl, shared_key.c_buffer, encapsulated_key.c_buffer)
         VscfStatus.handle_status(status)
         return shared_key.get_bytes(), encapsulated_key.get_bytes()

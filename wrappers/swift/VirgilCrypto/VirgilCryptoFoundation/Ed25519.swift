@@ -377,7 +377,7 @@ import VSCFoundation
             vsc_buffer_delete(sharedKeyBuf)
         }
 
-        let encapsulatedKeyCount = self.encapsulatedKeyLen(publicKey: publicKey)
+        let encapsulatedKeyCount = self.kemEncapsulatedKeyLen(publicKey: publicKey)
         var encapsulatedKey = Data(count: encapsulatedKeyCount)
         var encapsulatedKeyBuf = vsc_buffer_new()
         defer {

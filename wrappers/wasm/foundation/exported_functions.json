@@ -317,7 +317,6 @@
     "_vscf_padding_params_delete",
     "_vscf_padding_params_new_with_constraints",
     "_vscf_padding_params_frame",
-    "_vscf_padding_params_frame_min",
     "_vscf_padding_params_frame_max",
     "_vscf_sha224_new",
     "_vscf_sha224_shallow_copy",
@@ -1084,5 +1083,6 @@
     "_vscf_random_padding_finish_data_processing",
     "_vscf_random_padding_start_padded_data_processing",
     "_vscf_random_padding_process_padded_data",
+    "_vscf_random_padding_finish_padded_data_processing_out_len",
     "_vscf_random_padding_finish_padded_data_processing"
 ]

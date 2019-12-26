@@ -5342,8 +5342,8 @@ JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_p
     vscf_padding_params_delete(*(vscf_padding_params_t /*2*/ **) &c_ctx /*5*/);
 }
 
-JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_paddingParams_1new__III (JNIEnv *jenv, jobject jobj, jint jframe, jint jframeMin, jint jframeMax) {
-    jlong proxyResult = (jlong) vscf_padding_params_new_with_constraints(jframe /*a9*/, jframeMin /*a9*/, jframeMax /*a9*/);
+JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_paddingParams_1new__II (JNIEnv *jenv, jobject jobj, jint jframe, jint jframeMax) {
+    jlong proxyResult = (jlong) vscf_padding_params_new_with_constraints(jframe /*a9*/, jframeMax /*a9*/);
     return proxyResult;
 }
 
@@ -5352,14 +5352,6 @@ JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_p
     vscf_padding_params_t /*2*/* padding_params_ctx = *(vscf_padding_params_t /*2*/**) &c_ctx;
 
     jint ret = (jint) vscf_padding_params_frame(padding_params_ctx /*a1*/);
-    return ret;
-}
-
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_paddingParams_1frameMin (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
-    // Cast class context
-    vscf_padding_params_t /*2*/* padding_params_ctx = *(vscf_padding_params_t /*2*/**) &c_ctx;
-
-    jint ret = (jint) vscf_padding_params_frame_min(padding_params_ctx /*a1*/);
     return ret;
 }
 
@@ -8444,7 +8436,7 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
     // Wrap input buffers
     vsc_buffer_t *shared_key = vsc_buffer_new_with_capacity(vscf_ecc_kem_shared_key_len((vscf_ecc_t /*9*/ *) c_ctx /*3*/, public_key/*a*/));
 
-    vsc_buffer_t *encapsulated_key = vsc_buffer_new_with_capacity(vscf_ecc_encapsulated_key_len((vscf_ecc_t /*9*/ *) c_ctx /*3*/, public_key/*a*/));
+    vsc_buffer_t *encapsulated_key = vsc_buffer_new_with_capacity(vscf_ecc_kem_encapsulated_key_len((vscf_ecc_t /*9*/ *) c_ctx /*3*/, public_key/*a*/));
 
     vscf_status_t status = vscf_ecc_kem_encapsulate(ecc_ctx /*a1*/, public_key /*a6*/, shared_key /*a3*/, encapsulated_key /*a3*/);
     if (status != vscf_status_SUCCESS) {
@@ -11181,7 +11173,7 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
     // Wrap input buffers
     vsc_buffer_t *shared_key = vsc_buffer_new_with_capacity(vscf_ed25519_kem_shared_key_len((vscf_ed25519_t /*9*/ *) c_ctx /*3*/, public_key/*a*/));
 
-    vsc_buffer_t *encapsulated_key = vsc_buffer_new_with_capacity(vscf_ed25519_encapsulated_key_len((vscf_ed25519_t /*9*/ *) c_ctx /*3*/, public_key/*a*/));
+    vsc_buffer_t *encapsulated_key = vsc_buffer_new_with_capacity(vscf_ed25519_kem_encapsulated_key_len((vscf_ed25519_t /*9*/ *) c_ctx /*3*/, public_key/*a*/));
 
     vscf_status_t status = vscf_ed25519_kem_encapsulate(ed25519_ctx /*a1*/, public_key /*a6*/, shared_key /*a3*/, encapsulated_key /*a3*/);
     if (status != vscf_status_SUCCESS) {
@@ -11739,7 +11731,7 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
     // Wrap input buffers
     vsc_buffer_t *shared_key = vsc_buffer_new_with_capacity(vscf_curve25519_kem_shared_key_len((vscf_curve25519_t /*9*/ *) c_ctx /*3*/, public_key/*a*/));
 
-    vsc_buffer_t *encapsulated_key = vsc_buffer_new_with_capacity(vscf_curve25519_encapsulated_key_len((vscf_curve25519_t /*9*/ *) c_ctx /*3*/, public_key/*a*/));
+    vsc_buffer_t *encapsulated_key = vsc_buffer_new_with_capacity(vscf_curve25519_kem_encapsulated_key_len((vscf_curve25519_t /*9*/ *) c_ctx /*3*/, public_key/*a*/));
 
     vscf_status_t status = vscf_curve25519_kem_encapsulate(curve25519_ctx /*a1*/, public_key /*a6*/, shared_key /*a3*/, encapsulated_key /*a3*/);
     if (status != vscf_status_SUCCESS) {
@@ -12472,7 +12464,7 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
     // Wrap input buffers
     vsc_buffer_t *shared_key = vsc_buffer_new_with_capacity(vscf_round5_kem_shared_key_len((vscf_round5_t /*9*/ *) c_ctx /*3*/, public_key/*a*/));
 
-    vsc_buffer_t *encapsulated_key = vsc_buffer_new_with_capacity(vscf_round5_encapsulated_key_len((vscf_round5_t /*9*/ *) c_ctx /*3*/, public_key/*a*/));
+    vsc_buffer_t *encapsulated_key = vsc_buffer_new_with_capacity(vscf_round5_kem_encapsulated_key_len((vscf_round5_t /*9*/ *) c_ctx /*3*/, public_key/*a*/));
 
     vscf_status_t status = vscf_round5_kem_encapsulate(round5_ctx /*a1*/, public_key /*a6*/, shared_key /*a3*/, encapsulated_key /*a3*/);
     if (status != vscf_status_SUCCESS) {
@@ -15001,12 +14993,20 @@ JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_Foundatio
     return ret;
 }
 
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_randomPadding_1finishPaddedDataProcessingOutLen (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    // Cast class context
+    vscf_random_padding_t /*9*/* random_padding_ctx = *(vscf_random_padding_t /*9*/**) &c_ctx;
+
+    jint ret = (jint) vscf_random_padding_finish_padded_data_processing_out_len(random_padding_ctx /*a1*/);
+    return ret;
+}
+
 JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_randomPadding_1finishPaddedDataProcessing (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
     // Cast class context
     vscf_random_padding_t /*9*/* random_padding_ctx = *(vscf_random_padding_t /*9*/**) &c_ctx;
 
     // Wrap input buffers
-    vsc_buffer_t *out = vsc_buffer_new_with_capacity(vscf_random_padding_len_max((vscf_random_padding_t /*9*/ *) c_ctx /*3*/));
+    vsc_buffer_t *out = vsc_buffer_new_with_capacity(vscf_random_padding_finish_padded_data_processing_out_len((vscf_random_padding_t /*9*/ *) c_ctx /*3*/));
 
     vscf_status_t status = vscf_random_padding_finish_padded_data_processing(random_padding_ctx /*a1*/, out /*a3*/);
     if (status != vscf_status_SUCCESS) {

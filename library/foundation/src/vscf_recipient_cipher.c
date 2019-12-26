@@ -596,6 +596,7 @@ vscf_recipient_cipher_init_ctx(vscf_recipient_cipher_t *self) {
     self->derived_keys = vsc_buffer_new();
     vsc_buffer_make_secure(self->derived_keys);
     self->is_signed_operation = false;
+    self->padding_params = vscf_padding_params_new();
     //  Another properties are allocated by request.
 }
 
@@ -1060,14 +1061,31 @@ vscf_recipient_cipher_decryption_out_len(vscf_recipient_cipher_t *self, size_t d
 
     VSCF_ASSERT_PTR(self);
 
+    if (self->decryption_padding) {
+        return vscf_padding_cipher_decrypted_out_len(self->padding_cipher, data_len);
+    }
+
+    if (self->decryption_cipher) {
+        return vscf_cipher_decrypted_out_len(self->decryption_cipher, data_len);
+    }
+
     //
-    //  Use constant value, because underlying cipher is not known before,
-    //  message info is read.
+    //  Underlying cipher is not known before message info is read, so return maximum at this point.
     //
-    //  The size is doubled to be able to decrypt tail
-    //  after message info will be extracted.
-    //
-    size_t len = 2 * (64 + data_len);
+    size_t len = 0;
+
+    if (self->message_info_buffer) {
+        const size_t message_info_tail_len = vsc_buffer_len(self->message_info_buffer);
+        len += message_info_tail_len;
+    }
+
+    if (data_len > 0) {
+        len += data_len;
+    } else {
+        const size_t padding_tail_len = vscf_padding_params_frame_max(self->padding_params);
+        len += padding_tail_len;
+    }
+
     return len;
 }
 
@@ -1289,6 +1307,7 @@ vscf_recipient_cipher_configure_decryption_cipher(vscf_recipient_cipher_t *self,
         if (NULL == self->decryption_padding) {
             return vscf_status_ERROR_UNSUPPORTED_ALGORITHM;
         }
+        vscf_padding_configure(self->decryption_padding, self->padding_params);
         vscf_recipient_cipher_configure_padding_cipher(self, self->decryption_padding, self->decryption_cipher);
     }
 
@@ -1906,6 +1925,7 @@ vscf_recipient_cipher_setup_encryption_defaults(vscf_recipient_cipher_t *self) {
     }
 
     if (self->encryption_padding != NULL) {
+        vscf_padding_configure(self->encryption_padding, self->padding_params);
         vscf_recipient_cipher_configure_padding_cipher(self, self->encryption_padding, self->encryption_cipher);
     }
 

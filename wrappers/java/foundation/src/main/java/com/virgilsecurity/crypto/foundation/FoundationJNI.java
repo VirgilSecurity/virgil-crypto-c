@@ -1202,7 +1202,7 @@ public class FoundationJNI {
 
     public native void paddingParams_close(long cCtx);
 
-    public native long paddingParams_new(int frame, int frameMin, int frameMax);
+    public native long paddingParams_new(int frame, int frameMax);
 
     /*
     * Return padding frame in bytes.
@@ -1210,12 +1210,7 @@ public class FoundationJNI {
     public native int paddingParams_frame(long cCtx);
 
     /*
-    * Return minimum padding frame in bytes.
-    */
-    public native int paddingParams_frameMin(long cCtx);
-
-    /*
-    * Return minimum padding frame in bytes.
+    * Return maximum padding frame in bytes.
     */
     public native int paddingParams_frameMax(long cCtx);
 
@@ -4255,6 +4250,12 @@ public class FoundationJNI {
     * Return filtered data without padding.
     */
     public native byte[] randomPadding_processPaddedData(long cCtx, byte[] data);
+
+    /*
+    * Return length in bytes required hold output of the method
+    * "finish padded data processing".
+    */
+    public native int randomPadding_finishPaddedDataProcessingOutLen(long cCtx);
 
     /*
     * Accomplish padded data processing and return left data without a padding.

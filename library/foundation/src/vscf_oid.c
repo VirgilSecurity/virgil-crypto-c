@@ -115,17 +115,14 @@ static const vsc_data_t oid_hmac_with_sha384 = {oid_hmac_with_sha384_bytes, size
 static const byte oid_hmac_with_sha512_bytes[] = {0x2A, 0x86, 0x48, 0x86, 0xF7, 0x0D, 0x02, 0x0B};
 static const vsc_data_t oid_hmac_with_sha512 = {oid_hmac_with_sha512_bytes, sizeof(oid_hmac_with_sha512_bytes)};
 
-static const byte oid_hkdf_with_sha256_bytes[] = {
-        0x06, 0x0B, 0x2A, 0x86, 0x48, 0x86, 0xF7, 0x0D, 0x01, 0x09, 0x10, 0x03, 0x1C};
+static const byte oid_hkdf_with_sha256_bytes[] = {0x2A, 0x86, 0x48, 0x86, 0xF7, 0x0D, 0x01, 0x09, 0x10, 0x03, 0x1C};
 static const vsc_data_t oid_hkdf_with_sha256 = {oid_hkdf_with_sha256_bytes, sizeof(oid_hkdf_with_sha256_bytes)};
 
-static const byte oid_hkdf_with_384_bytes[] = {
-        0x06, 0x0B, 0x2A, 0x86, 0x48, 0x86, 0xF7, 0x0D, 0x01, 0x09, 0x10, 0x03, 0x1D};
-static const vsc_data_t oid_hkdf_with_sha384 = {oid_hkdf_with_384_bytes, sizeof(oid_hkdf_with_384_bytes)};
+static const byte oid_hkdf_with_sha384_bytes[] = {0x2A, 0x86, 0x48, 0x86, 0xF7, 0x0D, 0x01, 0x09, 0x10, 0x03, 0x1D};
+static const vsc_data_t oid_hkdf_with_sha384 = {oid_hkdf_with_sha384_bytes, sizeof(oid_hkdf_with_sha384_bytes)};
 
-static const byte oid_hkdf_with_512_bytes[] = {
-        0x06, 0x0B, 0x2A, 0x86, 0x48, 0x86, 0xF7, 0x0D, 0x01, 0x09, 0x10, 0x03, 0x1E};
-static const vsc_data_t oid_hkdf_with_sha512 = {oid_hkdf_with_512_bytes, sizeof(oid_hkdf_with_512_bytes)};
+static const byte oid_hkdf_with_sha512_bytes[] = {0x2A, 0x86, 0x48, 0x86, 0xF7, 0x0D, 0x01, 0x09, 0x10, 0x03, 0x1E};
+static const vsc_data_t oid_hkdf_with_sha512 = {oid_hkdf_with_sha512_bytes, sizeof(oid_hkdf_with_sha512_bytes)};
 
 static const byte oid_ec_generic_key_bytes[] = {0x2A, 0x86, 0x48, 0xCE, 0x3D, 0x02, 0x01};
 static const vsc_data_t oid_ec_generic_key = {oid_ec_generic_key_bytes, sizeof(oid_ec_generic_key_bytes)};
