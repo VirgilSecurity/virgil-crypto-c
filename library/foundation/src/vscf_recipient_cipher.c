@@ -996,8 +996,9 @@ vscf_recipient_cipher_start_decryption_with_key(
     }
 
     vsc_buffer_destroy(&self->decryption_recipient_id);
-    vscf_impl_destroy(&self->decryption_recipient_key);
     vsc_buffer_destroy(&self->message_info_buffer);
+    vscf_impl_destroy(&self->decryption_recipient_key);
+    vscf_impl_destroy(&self->decryption_cipher);
 
     self->decryption_recipient_id = vsc_buffer_new_with_data(recipient_id);
     self->decryption_recipient_key = vscf_impl_shallow_copy(private_key);
