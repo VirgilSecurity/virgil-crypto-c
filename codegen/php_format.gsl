@@ -75,6 +75,41 @@ endfunction
 # ---------------------------------------------------------------------------
 #   
 # ---------------------------------------------------------------------------
+function php_format_cmakelists_comment (in_comment)
+    check_argument (my, "in_comment", my)
+
+    my.str = my.in_comment
+    my.str = string_indent (my.str)
+    my.str = "#   $(my.str:left, block, no)$(terminator)"
+    my.str = string_multi_rtrim (my.str)
+    my.str = "#   $(terminator)$(my.str:)$(terminator)#"
+
+    return my.str
+endfunction
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_format_cmakelists_comment_inline (in_comment)
+    check_argument (my, "in_comment", my)
+
+    my.str = my.in_comment
+    my.str = string_indent (my.str)
+    my.str = "#   $(my.str:left, block, no)$(terminator)"
+    my.str = string_multi_rtrim (my.str)
+
+    my._line = format_left("\
+        #---------------------------------------------------------------------------
+        ",0)
+
+    my._res = my._line + "\n" + my.str + my._line
+
+    return my._res
+endfunction
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
 function php_format_high_level_method_body (in_php_method)
     check_argument (my, "in_php_method", my)
 

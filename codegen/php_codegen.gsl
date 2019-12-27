@@ -65,6 +65,10 @@ function php_generate_sources (php_project)
     for my.php_project.php_module as php_module0 where php_module0.type = "extension" & php_module0.name <> "extension status"
         php_generate_source_low_level (php_module0)
     endfor
+
+    for my.php_project.php_module as php_module0 where php_module0.type = "cmakelists"
+        php_generate_source_custom_cmakelists (php_module0)
+    endfor
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -198,6 +202,36 @@ function php_generate_source_low_level (in_php_module)
         newline()
         php_insert_code (my.in_php_module->init_func_definitions, 0)
     endif
+endfunction
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_generate_source_custom_cmakelists (in_php_module)
+    check_arguments (my, "in_php_module", my)
+
+    if defined (my.in_php_module.source_dir)
+        if -1 = directory.create (my.in_php_module.source_dir)
+            echo_fatal ("Can not create directory: $(my.in_php_module.source_dir:)")
+        endif
+    endif
+
+    echo_trace ("Generate $(my.in_php_module.name:).txt", my)
+
+    output my.in_php_module.source_file_path
+
+    php_insert_code(my.in_php_module->licence, 0)
+    newline()
+    php_insert_code(my.in_php_module->header, 0)
+    newline()
+    php_insert_code(my.in_php_module->check_dependencies, 0)
+    newline()
+    php_insert_code(my.in_php_module->create_php_extension_library, 0)
+    newline()
+    php_insert_code(my.in_php_module->test, 0)
+    newline()
+    php_insert_code(my.in_php_module->install, 0)
+    newline()
 endfunction
 
 # ---------------------------------------------------------------------------

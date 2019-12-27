@@ -48,6 +48,7 @@ gsl from "php_codegen.gsl"
 gsl from "php_derive.gsl"
 gsl from "php_map_high_level.gsl"
 gsl from "php_map_low_level.gsl"
+gsl from "php_map_custom.gsl"
 gsl from "php_resolve.gsl"
 gsl from "php_format.gsl"
 
@@ -423,6 +424,18 @@ function php_finalize_custom_modules (source, php_project, meta)
         .type = "extension"
 
         php_map_low_level_extension(my.php_project, php_module)
+    endnew
+
+    new php_module to my.php_project
+        .name = "CMakeLists"
+        .name0 = 0.name
+        .source_file_name = 0.name + ".txt"
+        .source_dir = cat_path (my.php_project.source_dir0, "extensions", "$(my.php_project.project:lower)")
+        .source_file_path = cat_path (0.source_dir, 0.source_file_name)
+        .version = my.php_project.version
+        .type = "cmakelists"
+
+        php_map_custom_cmakelists (my.php_project, php_module)
     endnew
 
     if defined (my.php_project.with_implementation) & my.php_project.with_implementation = "1"
