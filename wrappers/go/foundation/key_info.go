@@ -91,10 +91,10 @@ func (obj *KeyInfo) IsCompound() bool {
 }
 
 /*
-* Return true if a key is a chained key
+* Return true if a key is a hybrid key
 */
-func (obj *KeyInfo) IsChained() bool {
-    proxyResult := /*pr4*/C.vscf_key_info_is_chained(obj.cCtx)
+func (obj *KeyInfo) IsHybrid() bool {
+    proxyResult := /*pr4*/C.vscf_key_info_is_hybrid(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
@@ -103,10 +103,10 @@ func (obj *KeyInfo) IsChained() bool {
 
 /*
 * Return true if a key is a compound key and compounds cipher key
-* and signer key are chained keys.
+* and signer key are hybrid keys.
 */
-func (obj *KeyInfo) IsCompoundChained() bool {
-    proxyResult := /*pr4*/C.vscf_key_info_is_compound_chained(obj.cCtx)
+func (obj *KeyInfo) IsCompoundHybrid() bool {
+    proxyResult := /*pr4*/C.vscf_key_info_is_compound_hybrid(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
@@ -115,10 +115,10 @@ func (obj *KeyInfo) IsCompoundChained() bool {
 
 /*
 * Return true if a key is a compound key and compounds cipher key
-* is a chained key.
+* is a hybrid key.
 */
-func (obj *KeyInfo) IsCompoundChainedCipher() bool {
-    proxyResult := /*pr4*/C.vscf_key_info_is_compound_chained_cipher(obj.cCtx)
+func (obj *KeyInfo) IsCompoundHybridCipher() bool {
+    proxyResult := /*pr4*/C.vscf_key_info_is_compound_hybrid_cipher(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
@@ -127,10 +127,10 @@ func (obj *KeyInfo) IsCompoundChainedCipher() bool {
 
 /*
 * Return true if a key is a compound key and compounds signer key
-* is a chained key.
+* is a hybrid key.
 */
-func (obj *KeyInfo) IsCompoundChainedSigner() bool {
-    proxyResult := /*pr4*/C.vscf_key_info_is_compound_chained_signer(obj.cCtx)
+func (obj *KeyInfo) IsCompoundHybridSigner() bool {
+    proxyResult := /*pr4*/C.vscf_key_info_is_compound_hybrid_signer(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
@@ -138,7 +138,7 @@ func (obj *KeyInfo) IsCompoundChainedSigner() bool {
 }
 
 /*
-* Return true if a key is a compound key that contains chained keys
+* Return true if a key is a compound key that contains hybrid keys
 * for encryption/decryption and signing/verifying that itself
 * contains a combination of classic keys and post-quantum keys.
 */
@@ -151,7 +151,7 @@ func (obj *KeyInfo) IsHybridPostQuantum() bool {
 }
 
 /*
-* Return true if a key is a compound key that contains a chained key
+* Return true if a key is a compound key that contains a hybrid key
 * for encryption/decryption that contains a classic key and
 * a post-quantum key.
 */
@@ -164,7 +164,7 @@ func (obj *KeyInfo) IsHybridPostQuantumCipher() bool {
 }
 
 /*
-* Return true if a key is a compound key that contains a chained key
+* Return true if a key is a compound key that contains a hybrid key
 * for signing/verifying that contains a classic key and
 * a post-quantum key.
 */
@@ -212,11 +212,11 @@ func (obj *KeyInfo) CompoundSignerAlgId() AlgId {
 }
 
 /*
-* Return chained l1 key id, if key is chained.
+* Return hybrid's first key id, if key is hybrid.
 * Return None, otherwise.
 */
-func (obj *KeyInfo) ChainedL1AlgId() AlgId {
-    proxyResult := /*pr4*/C.vscf_key_info_chained_l1_alg_id(obj.cCtx)
+func (obj *KeyInfo) HybridFirstKeyAlgId() AlgId {
+    proxyResult := /*pr4*/C.vscf_key_info_hybrid_first_key_alg_id(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
@@ -224,11 +224,11 @@ func (obj *KeyInfo) ChainedL1AlgId() AlgId {
 }
 
 /*
-* Return chained l2 key id, if key is chained.
+* Return hybrid's second key id, if key is hybrid.
 * Return None, otherwise.
 */
-func (obj *KeyInfo) ChainedL2AlgId() AlgId {
-    proxyResult := /*pr4*/C.vscf_key_info_chained_l2_alg_id(obj.cCtx)
+func (obj *KeyInfo) HybridSecondKeyAlgId() AlgId {
+    proxyResult := /*pr4*/C.vscf_key_info_hybrid_second_key_alg_id(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
@@ -236,11 +236,11 @@ func (obj *KeyInfo) ChainedL2AlgId() AlgId {
 }
 
 /*
-* Return l1 key id of compound's cipher key, if key is compound(chained, ...)
-* Return None, otherwise.
+* Return hybrid's first key id of compound's cipher key,
+* if key is compound(hybrid, ...), None - otherwise.
 */
-func (obj *KeyInfo) CompoundCipherL1AlgId() AlgId {
-    proxyResult := /*pr4*/C.vscf_key_info_compound_cipher_l1_alg_id(obj.cCtx)
+func (obj *KeyInfo) CompoundHybridCipherFirstKeyAlgId() AlgId {
+    proxyResult := /*pr4*/C.vscf_key_info_compound_hybrid_cipher_first_key_alg_id(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
@@ -248,11 +248,11 @@ func (obj *KeyInfo) CompoundCipherL1AlgId() AlgId {
 }
 
 /*
-* Return l2 key id of compound's cipher key, if key is compound(chained, ...)
-* Return None, otherwise.
+* Return hybrid's second key id of compound's cipher key,
+* if key is compound(hybrid, ...), None - otherwise.
 */
-func (obj *KeyInfo) CompoundCipherL2AlgId() AlgId {
-    proxyResult := /*pr4*/C.vscf_key_info_compound_cipher_l2_alg_id(obj.cCtx)
+func (obj *KeyInfo) CompoundHybridCipherSecondKeyAlgId() AlgId {
+    proxyResult := /*pr4*/C.vscf_key_info_compound_hybrid_cipher_second_key_alg_id(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
@@ -260,11 +260,11 @@ func (obj *KeyInfo) CompoundCipherL2AlgId() AlgId {
 }
 
 /*
-* Return l1 key id of compound's signer key, if key is compound(..., chained)
-* Return None, otherwise.
+* Return hybrid's first key id of compound's signer key,
+* if key is compound(..., hybrid), None - otherwise.
 */
-func (obj *KeyInfo) CompoundSignerL1AlgId() AlgId {
-    proxyResult := /*pr4*/C.vscf_key_info_compound_signer_l1_alg_id(obj.cCtx)
+func (obj *KeyInfo) CompoundHybridSignerFirstKeyAlgId() AlgId {
+    proxyResult := /*pr4*/C.vscf_key_info_compound_hybrid_signer_first_key_alg_id(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
@@ -272,11 +272,11 @@ func (obj *KeyInfo) CompoundSignerL1AlgId() AlgId {
 }
 
 /*
-* Return l2 key id of compound's signer key, if key is compound(..., chained)
-* Return None, otherwise.
+* Return hybrid's second key id of compound's signer key,
+* if key is compound(..., hybrid), None - otherwise.
 */
-func (obj *KeyInfo) CompoundSignerL2AlgId() AlgId {
-    proxyResult := /*pr4*/C.vscf_key_info_compound_signer_l2_alg_id(obj.cCtx)
+func (obj *KeyInfo) CompoundHybridSignerSecondKeyAlgId() AlgId {
+    proxyResult := /*pr4*/C.vscf_key_info_compound_hybrid_signer_second_key_alg_id(obj.cCtx)
 
     runtime.KeepAlive(obj)
 

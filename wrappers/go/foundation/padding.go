@@ -58,6 +58,12 @@ type Padding interface {
     ProcessPaddedData (data []byte) []byte
 
     /*
+    * Return length in bytes required hold output of the method
+    * "finish padded data processing".
+    */
+    FinishPaddedDataProcessingOutLen () uint32
+
+    /*
     * Accomplish padded data processing and return left data without a padding.
     */
     FinishPaddedDataProcessing () ([]byte, error)

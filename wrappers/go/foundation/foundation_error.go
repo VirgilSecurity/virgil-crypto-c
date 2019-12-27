@@ -168,13 +168,13 @@ const (
     */
     FoundationErrorErrorBadCompoundPrivateKey int = -233
     /*
-    * Compound public chained key is corrupted.
+    * Compound public hybrid key is corrupted.
     */
-    FoundationErrorErrorBadChainedPublicKey int = -234
+    FoundationErrorErrorBadHybridPublicKey int = -234
     /*
-    * Compound private chained key is corrupted.
+    * Compound private hybrid key is corrupted.
     */
-    FoundationErrorErrorBadChainedPrivateKey int = -235
+    FoundationErrorErrorBadHybridPrivateKey int = -235
     /*
     * ASN.1 AlgorithmIdentifer is corrupted.
     */
@@ -188,9 +188,9 @@ const (
     */
     FoundationErrorErrorBadAsn1AlgorithmCompoundKey int = -238
     /*
-    * ASN.1 AlgorithmIdentifer with ChainedKeyParams is corrupted.
+    * ASN.1 AlgorithmIdentifer with HybridKeyParams is corrupted.
     */
-    FoundationErrorErrorBadAsn1AlgorithmChainedKey int = -239
+    FoundationErrorErrorBadAsn1AlgorithmHybridKey int = -239
     /*
     * Decryption failed, because message info was not given explicitly,
     * and was not part of an encrypted message.
@@ -270,6 +270,10 @@ const (
     * Brainkey identity secret is invalid.
     */
     FoundationErrorErrorInvalidIdentitySecret int = -410
+    /*
+    * KEM encapsulated key is invalid or does not correspond to the private key.
+    */
+    FoundationErrorErrorInvalidKemEncapsulatedKey int = -411
     /*
     * Invalid padding.
     */
@@ -392,18 +396,18 @@ func FoundationErrorHandleStatus(status C.vscf_status_t) error {
             return &FoundationError {int(status), "Compound public key is corrupted."}
         case C.vscf_status_ERROR_BAD_COMPOUND_PRIVATE_KEY:
             return &FoundationError {int(status), "Compound private key is corrupted."}
-        case C.vscf_status_ERROR_BAD_CHAINED_PUBLIC_KEY:
-            return &FoundationError {int(status), "Compound public chained key is corrupted."}
-        case C.vscf_status_ERROR_BAD_CHAINED_PRIVATE_KEY:
-            return &FoundationError {int(status), "Compound private chained key is corrupted."}
+        case C.vscf_status_ERROR_BAD_HYBRID_PUBLIC_KEY:
+            return &FoundationError {int(status), "Compound public hybrid key is corrupted."}
+        case C.vscf_status_ERROR_BAD_HYBRID_PRIVATE_KEY:
+            return &FoundationError {int(status), "Compound private hybrid key is corrupted."}
         case C.vscf_status_ERROR_BAD_ASN1_ALGORITHM:
             return &FoundationError {int(status), "ASN.1 AlgorithmIdentifer is corrupted."}
         case C.vscf_status_ERROR_BAD_ASN1_ALGORITHM_ECC:
             return &FoundationError {int(status), "ASN.1 AlgorithmIdentifer with ECParameters is corrupted."}
         case C.vscf_status_ERROR_BAD_ASN1_ALGORITHM_COMPOUND_KEY:
             return &FoundationError {int(status), "ASN.1 AlgorithmIdentifer with CompoundKeyParams is corrupted."}
-        case C.vscf_status_ERROR_BAD_ASN1_ALGORITHM_CHAINED_KEY:
-            return &FoundationError {int(status), "ASN.1 AlgorithmIdentifer with ChainedKeyParams is corrupted."}
+        case C.vscf_status_ERROR_BAD_ASN1_ALGORITHM_HYBRID_KEY:
+            return &FoundationError {int(status), "ASN.1 AlgorithmIdentifer with HybridKeyParams is corrupted."}
         case C.vscf_status_ERROR_NO_MESSAGE_INFO:
             return &FoundationError {int(status), "Decryption failed, because message info was not given explicitly, and was not part of an encrypted message."}
         case C.vscf_status_ERROR_BAD_MESSAGE_INFO:
@@ -442,6 +446,8 @@ func FoundationErrorHandleStatus(status C.vscf_status_t) error {
             return &FoundationError {int(status), "Brainkey seed buffer length capacity should be >= 32 byte."}
         case C.vscf_status_ERROR_INVALID_IDENTITY_SECRET:
             return &FoundationError {int(status), "Brainkey identity secret is invalid."}
+        case C.vscf_status_ERROR_INVALID_KEM_ENCAPSULATED_KEY:
+            return &FoundationError {int(status), "KEM encapsulated key is invalid or does not correspond to the private key."}
         case C.vscf_status_ERROR_INVALID_PADDING:
             return &FoundationError {int(status), "Invalid padding."}
         case C.vscf_status_ERROR_PROTOBUF:

@@ -70,6 +70,4 @@ target_compile_definitions(phe
             "VSCE_UOKMS_CLIENT=$<BOOL:${VSCE_UOKMS_CLIENT}>"
             "VSCE_UOKMS_SERVER=$<BOOL:${VSCE_UOKMS_SERVER}>"
             "VSCE_UOKMS_WRAP_ROTATION=$<BOOL:${VSCE_UOKMS_WRAP_ROTATION}>"
-        PRIVATE
-            $<$<BOOL:${BUILD_SHARED_LIBS}>:VSCE_BUILD_SHARED_LIBS>
         )

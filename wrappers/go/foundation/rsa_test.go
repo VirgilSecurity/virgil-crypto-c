@@ -63,12 +63,6 @@ func TestRsa_GenerateKey(t *testing.T) {
 	assert.Equal(t, bitlen, rsaKey.Bitlen())
 }
 
-func TestRsa_AlgId(t *testing.T) {
-	rsa := newRsa()
-
-	assert.Equal(t, AlgIdRsa, rsa.AlgId())
-}
-
 func TestRsa_CanSign(t *testing.T) {
 	bitlen := uint32(2048)
 	rsa := newRsa()

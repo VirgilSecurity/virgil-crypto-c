@@ -112,46 +112,6 @@ func (obj *Rsa) delete() {
 }
 
 /*
-* Provide algorithm identificator.
-*/
-func (obj *Rsa) AlgId() AlgId {
-    proxyResult := /*pr4*/C.vscf_rsa_alg_id(obj.cCtx)
-
-    runtime.KeepAlive(obj)
-
-    return AlgId(proxyResult) /* r8 */
-}
-
-/*
-* Produce object with algorithm information and configuration parameters.
-*/
-func (obj *Rsa) ProduceAlgInfo() (AlgInfo, error) {
-    proxyResult := /*pr4*/C.vscf_rsa_produce_alg_info(obj.cCtx)
-
-    runtime.KeepAlive(obj)
-
-    return FoundationImplementationWrapAlgInfo(proxyResult) /* r4 */
-}
-
-/*
-* Restore algorithm configuration from the given object.
-*/
-func (obj *Rsa) RestoreAlgInfo(algInfo AlgInfo) error {
-    proxyResult := /*pr4*/C.vscf_rsa_restore_alg_info(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(algInfo.Ctx())))
-
-    err := FoundationErrorHandleStatus(proxyResult)
-    if err != nil {
-        return err
-    }
-
-    runtime.KeepAlive(obj)
-
-    runtime.KeepAlive(algInfo)
-
-    return nil
-}
-
-/*
 * Defines whether a public key can be imported or not.
 */
 func (obj *Rsa) GetCanImportPublicKey() bool {

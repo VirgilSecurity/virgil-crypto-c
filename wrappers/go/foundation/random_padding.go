@@ -2,10 +2,8 @@ package foundation
 
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
-import (
-	"runtime"
-	unsafe "unsafe"
-)
+import unsafe "unsafe"
+import "runtime"
 
 /*
 * Append a random number of padding bytes to a data.
@@ -246,10 +244,22 @@ func (obj *RandomPadding) ProcessPaddedData(data []byte) []byte {
 }
 
 /*
+* Return length in bytes required hold output of the method
+* "finish padded data processing".
+ */
+func (obj *RandomPadding) FinishPaddedDataProcessingOutLen() uint32 {
+	proxyResult := /*pr4*/ C.vscf_random_padding_finish_padded_data_processing_out_len(obj.cCtx)
+
+	runtime.KeepAlive(obj)
+
+	return uint32(proxyResult) /* r9 */
+}
+
+/*
 * Accomplish padded data processing and return left data without a padding.
  */
 func (obj *RandomPadding) FinishPaddedDataProcessing() ([]byte, error) {
-	outBuf, outBufErr := bufferNewBuffer(int(obj.LenMax() /* lg2 */))
+	outBuf, outBufErr := bufferNewBuffer(int(obj.FinishPaddedDataProcessingOutLen() /* lg2 */))
 	if outBufErr != nil {
 		return nil, outBufErr
 	}

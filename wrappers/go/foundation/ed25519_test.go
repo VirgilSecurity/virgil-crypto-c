@@ -60,12 +60,6 @@ func TestEd25519_GenerateKey(t *testing.T) {
 	assert.Equal(t, AlgIdEd25519, edKey.AlgId())
 }
 
-func TestEd25519_AlgId(t *testing.T) {
-	ed := newEd25519()
-
-	assert.Equal(t, AlgIdEd25519, ed.AlgId())
-}
-
 func TestEd25519_CanSign(t *testing.T) {
 	ed := newEd25519()
 	privateKey, err := ed.GenerateKey()

@@ -91,6 +91,9 @@ func (obj *PheClient) SetOperationRandom(operationRandom foundation.Random) {
     runtime.KeepAlive(obj)
 }
 
+/*
+* Setups dependencies with default values.
+*/
 func (obj *PheClient) SetupDefaults() error {
     proxyResult := /*pr4*/C.vsce_phe_client_setup_defaults(obj.cCtx)
 

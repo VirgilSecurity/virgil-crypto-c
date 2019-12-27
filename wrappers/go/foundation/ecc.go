@@ -125,46 +125,6 @@ func (obj *Ecc) delete() {
 }
 
 /*
-* Provide algorithm identificator.
-*/
-func (obj *Ecc) AlgId() AlgId {
-    proxyResult := /*pr4*/C.vscf_ecc_alg_id(obj.cCtx)
-
-    runtime.KeepAlive(obj)
-
-    return AlgId(proxyResult) /* r8 */
-}
-
-/*
-* Produce object with algorithm information and configuration parameters.
-*/
-func (obj *Ecc) ProduceAlgInfo() (AlgInfo, error) {
-    proxyResult := /*pr4*/C.vscf_ecc_produce_alg_info(obj.cCtx)
-
-    runtime.KeepAlive(obj)
-
-    return FoundationImplementationWrapAlgInfo(proxyResult) /* r4 */
-}
-
-/*
-* Restore algorithm configuration from the given object.
-*/
-func (obj *Ecc) RestoreAlgInfo(algInfo AlgInfo) error {
-    proxyResult := /*pr4*/C.vscf_ecc_restore_alg_info(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(algInfo.Ctx())))
-
-    err := FoundationErrorHandleStatus(proxyResult)
-    if err != nil {
-        return err
-    }
-
-    runtime.KeepAlive(obj)
-
-    runtime.KeepAlive(algInfo)
-
-    return nil
-}
-
-/*
 * Defines whether a public key can be imported or not.
 */
 func (obj *Ecc) GetCanImportPublicKey() bool {
@@ -544,4 +504,86 @@ func (obj *Ecc) SharedKeyLen(key Key) uint32 {
     runtime.KeepAlive(key)
 
     return uint32(proxyResult) /* r9 */
+}
+
+/*
+* Return length in bytes required to hold encapsulated shared key.
+*/
+func (obj *Ecc) KemSharedKeyLen(key Key) uint32 {
+    proxyResult := /*pr4*/C.vscf_ecc_kem_shared_key_len(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(key.Ctx())))
+
+    runtime.KeepAlive(obj)
+
+    runtime.KeepAlive(key)
+
+    return uint32(proxyResult) /* r9 */
+}
+
+/*
+* Return length in bytes required to hold encapsulated key.
+*/
+func (obj *Ecc) KemEncapsulatedKeyLen(publicKey PublicKey) uint32 {
+    proxyResult := /*pr4*/C.vscf_ecc_kem_encapsulated_key_len(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(publicKey.Ctx())))
+
+    runtime.KeepAlive(obj)
+
+    runtime.KeepAlive(publicKey)
+
+    return uint32(proxyResult) /* r9 */
+}
+
+/*
+* Generate a shared key and a key encapsulated message.
+*/
+func (obj *Ecc) KemEncapsulate(publicKey PublicKey) ([]byte, []byte, error) {
+    sharedKeyBuf, sharedKeyBufErr := bufferNewBuffer(int(obj.KemSharedKeyLen(publicKey.(Key)) /* lg2 */))
+    if sharedKeyBufErr != nil {
+        return nil, nil, sharedKeyBufErr
+    }
+    defer sharedKeyBuf.Delete()
+
+    encapsulatedKeyBuf, encapsulatedKeyBufErr := bufferNewBuffer(int(obj.KemEncapsulatedKeyLen(publicKey.(PublicKey)) /* lg2 */))
+    if encapsulatedKeyBufErr != nil {
+        return nil, nil, encapsulatedKeyBufErr
+    }
+    defer encapsulatedKeyBuf.Delete()
+
+
+    proxyResult := /*pr4*/C.vscf_ecc_kem_encapsulate(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(publicKey.Ctx())), sharedKeyBuf.ctx, encapsulatedKeyBuf.ctx)
+
+    err := FoundationErrorHandleStatus(proxyResult)
+    if err != nil {
+        return nil, nil, err
+    }
+
+    runtime.KeepAlive(obj)
+
+    runtime.KeepAlive(publicKey)
+
+    return sharedKeyBuf.getData() /* r7 */, encapsulatedKeyBuf.getData() /* r7 */, nil
+}
+
+/*
+* Decapsulate the shared key.
+*/
+func (obj *Ecc) KemDecapsulate(encapsulatedKey []byte, privateKey PrivateKey) ([]byte, error) {
+    sharedKeyBuf, sharedKeyBufErr := bufferNewBuffer(int(obj.KemSharedKeyLen(privateKey.(Key)) /* lg2 */))
+    if sharedKeyBufErr != nil {
+        return nil, sharedKeyBufErr
+    }
+    defer sharedKeyBuf.Delete()
+    encapsulatedKeyData := helperWrapData (encapsulatedKey)
+
+    proxyResult := /*pr4*/C.vscf_ecc_kem_decapsulate(obj.cCtx, encapsulatedKeyData, (*C.vscf_impl_t)(unsafe.Pointer(privateKey.Ctx())), sharedKeyBuf.ctx)
+
+    err := FoundationErrorHandleStatus(proxyResult)
+    if err != nil {
+        return nil, err
+    }
+
+    runtime.KeepAlive(obj)
+
+    runtime.KeepAlive(privateKey)
+
+    return sharedKeyBuf.getData() /* r7 */, nil
 }

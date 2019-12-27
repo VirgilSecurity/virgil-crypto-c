@@ -58,12 +58,6 @@ func TestEcc_GenerateKey(t *testing.T) {
 	assert.Equal(t, AlgIdSecp256r1, eccKey.AlgId())
 }
 
-func TestEcc_AlgId(t *testing.T) {
-	ecc := newEcc()
-
-	assert.Equal(t, AlgIdEcc, ecc.AlgId())
-}
-
 func TestEcc_CanSign(t *testing.T) {
 	ecc := newEcc()
 	privateKey, err := ecc.GenerateKey(AlgIdSecp256r1)
