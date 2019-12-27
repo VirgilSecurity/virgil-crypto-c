@@ -13,11 +13,6 @@ import "runtime"
 type Falcon struct {
     cCtx *C.vscf_falcon_t /*ct10*/
 }
-const (
-    FalconSeedLen uint32 = 48
-    FalconLogn512 uint32 = 9
-    FalconLogn1024 uint32 = 10
-)
 
 func (obj *Falcon) SetRandom(random Random) {
     C.vscf_falcon_release_random(obj.cCtx)

@@ -174,6 +174,11 @@ function go_derive_buffer_length_getter (class, method, argument)
 
     elsif defined (my.length.argument)
         my.proxy_argument = go_derive_argument_name_str (my.length.argument)
+
+        if string_in (my.length.cast, "data_length")
+            my.proxy_argument = "len($(my.proxy_argument:))"
+        endif
+
         return my.proxy_argument
     endif
 endfunction
@@ -1975,9 +1980,8 @@ function go_create_class_module (class, go_project, meta)
                 endif
             endif
 
-            for my.class.constant
+            for my.class.constant where wrapper_should_wrap_class_constant(constant)
                 go_create_constant (constant, my.class, go_struct, my.go_project, my.meta)
-                #TODO go_create_func_from_constant (my.class, constant, go_struct, my.go_project, my.meta)
             endfor
 
             for my.class.dependency
@@ -2203,9 +2207,8 @@ function go_create_implementation_module (implementation, go_project, meta)
 
             go_map_attr_visibility (go_struct, my.implementation)
 
-            for my.implementation.constant
+            for my.implementation.constant where wrapper_should_wrap_class_constant(constant)
                 go_create_constant (constant, my.implementation, go_struct, my.go_project, my.meta)
-                #TODO go_create_func_from_constant (my.implementation, constant, go_struct, my.go_project, my.meta)
             endfor
 
             for my.implementation.dependency

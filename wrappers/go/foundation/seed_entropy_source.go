@@ -12,12 +12,6 @@ import unsafe "unsafe"
 type SeedEntropySource struct {
     cCtx *C.vscf_seed_entropy_source_t /*ct10*/
 }
-const (
-    /*
-    * The maximum length of the entropy requested at once.
-    */
-    SeedEntropySourceGatherLenMax uint32 = 48
-)
 
 /*
 * Set a new seed as an entropy source.

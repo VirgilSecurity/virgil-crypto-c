@@ -13,9 +13,6 @@ import "runtime"
 type Round5 struct {
     cCtx *C.vscf_round5_t /*ct10*/
 }
-const (
-    Round5SeedLen uint32 = 48
-)
 
 func (obj *Round5) SetRandom(random Random) {
     C.vscf_round5_release_random(obj.cCtx)

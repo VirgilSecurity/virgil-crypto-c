@@ -14,11 +14,6 @@ import foundation "virgil/foundation"
 type PheCipher struct {
     cCtx *C.vsce_phe_cipher_t /*ct2*/
 }
-const (
-    PheCipherSaltLen uint32 = 32
-    PheCipherKeyLen uint32 = 32
-    PheCipherNonceLen uint32 = 12
-)
 
 /* Handle underlying C context. */
 func (obj *PheCipher) Ctx() uintptr {

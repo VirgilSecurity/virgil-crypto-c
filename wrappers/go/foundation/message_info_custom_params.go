@@ -9,11 +9,6 @@ import "runtime"
 type MessageInfoCustomParams struct {
     cCtx *C.vscf_message_info_custom_params_t /*ct2*/
 }
-const (
-    MessageInfoCustomParamsOfIntType uint32 = 1
-    MessageInfoCustomParamsOfStringType uint32 = 2
-    MessageInfoCustomParamsOfDataType uint32 = 3
-)
 
 /* Handle underlying C context. */
 func (obj *MessageInfoCustomParams) Ctx() uintptr {

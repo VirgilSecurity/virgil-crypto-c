@@ -12,9 +12,6 @@ import "runtime"
 type Hkdf struct {
     cCtx *C.vscf_hkdf_t /*ct10*/
 }
-const (
-    HkdfHashCounterMax uint32 = 255
-)
 
 func (obj *Hkdf) SetHash(hash Hash) {
     C.vscf_hkdf_release_hash(obj.cCtx)
