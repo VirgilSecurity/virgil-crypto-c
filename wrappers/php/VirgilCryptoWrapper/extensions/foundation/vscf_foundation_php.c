@@ -40939,7 +40939,7 @@ PHP_FUNCTION(vscf_random_padding_process_padded_data_php) {
     //
     // Allocate output buffer for output 'out'
     //
-    zend_string *out_out = zend_string_alloc(data, 0);
+    zend_string *out_out = zend_string_alloc(data.len, 0);
     vsc_buffer_t *out = vsc_buffer_new();
     vsc_buffer_use(out, (byte *)ZSTR_VAL(out_out), ZSTR_LEN(out_out));
 

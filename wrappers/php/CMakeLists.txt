@@ -36,6 +36,8 @@ cmake_minimum_required(VERSION 3.12 FATAL_ERROR)
 
 project(virgil_crypto_php VERSION ${virgil_crypto_VERSION} LANGUAGES C)
 
+set(VIRGIL_CRYPTO_WRAPPER_MAIN_DIR "${CMAKE_CURRENT_SOURCE_DIR}/VirgilCryptoWrapper" ${VIRGIL_CRYPTO_WRAPPER_MAIN_DIR})
+
 # ---------------------------------------------------------------------------
 #   PHP wrapper build and install options
 # ---------------------------------------------------------------------------

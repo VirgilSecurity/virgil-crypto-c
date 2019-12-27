@@ -49,38 +49,38 @@ endif()
 #---------------------------------------------------------------------------
 #   Create PHP extension library
 #---------------------------------------------------------------------------
-    add_library(phe_php SHARED "")
-    set_target_properties(phe_php PROPERTIES
-            C_STANDARD 99
-            DEBUG_POSTFIX "_d"
-            OUTPUT_NAME vsce_phe_php
-            PREFIX ""
-            )
-
-    if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
-        set_target_properties(phe_php PROPERTIES SUFFIX ".dll")
-    else()
-        set_target_properties(phe_php PROPERTIES SUFFIX ".so")
-    endif()
-
-    target_sources(phe_php
-            PRIVATE
-                $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/extension/vsce_phe_php.c>
-            )
-
-    target_include_directories(phe_php
-            PUBLIC
-                $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/extension>
-            )
-
-    target_link_libraries(phe_php
-        PUBLIC
-            vsc::phe
-foundation_php
-        PRIVATE
-            phplib
-            "$<$<STREQUAL:${CMAKE_SYSTEM_NAME},Darwin>:-undefined dynamic_lookup>"
+add_library(phe_php SHARED "")
+set_target_properties(phe_php PROPERTIES
+        C_STANDARD 99
+        DEBUG_POSTFIX "_d"
+        OUTPUT_NAME vsce_phe_php
+        PREFIX ""
         )
+
+if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+    set_target_properties(phe_php PROPERTIES SUFFIX ".dll")
+else()
+    set_target_properties(phe_php PROPERTIES SUFFIX ".so")
+endif()
+
+target_sources(phe_php
+        PRIVATE
+            $<BUILD_INTERFACE:vsce_phe_php.c>
+        )
+
+target_include_directories(phe_php
+        PUBLIC
+            $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}>
+        )
+
+target_link_libraries(phe_php
+    PUBLIC
+        vsc::phe
+        foundation_php
+    PRIVATE
+        phplib
+        "$<$<STREQUAL:${CMAKE_SYSTEM_NAME},Darwin>:-undefined dynamic_lookup>"
+    )
 
 #---------------------------------------------------------------------------
 #   Test
@@ -89,17 +89,17 @@ if(ENABLE_TESTING AND VIRGIL_PHP_TESTING AND PHP_EXECUTABLE AND PHPUNIT_EXECUTAB
     add_custom_target(test_composer_phe_php ALL
             COMMAND COMPOSER=composer_dev.json "${COMPOSER_EXECUTABLE}" install
             COMMENT "Running composer install..."
-            WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
+            WORKING_DIRECTORY ${VIRGIL_CRYPTO_WRAPPER_MAIN_DIR}
             )
 
     add_test(
             NAME test_phe_php
             COMMAND "${PHP_EXECUTABLE}"
                     -d "extension=$<TARGET_FILE:phe_php>"
-        -d "extension=$<TARGET_FILE:foundation_php>"
+                    -d "extension=$<TARGET_FILE:foundation_php>"
                     -d safe_mode=Off "${PHPUNIT_EXECUTABLE}"
-                    --bootstrap "${CMAKE_CURRENT_LIST_DIR}/vendor/autoload.php"
-                    --include-path "${CMAKE_CURRENT_LIST_DIR}/src" "${CMAKE_CURRENT_LIST_DIR}/tests"
+                    --bootstrap "${VIRGIL_CRYPTO_WRAPPER_MAIN_DIR}/vendor/autoload.php"
+                    --include-path "${VIRGIL_CRYPTO_WRAPPER_MAIN_DIR}/src" "${VIRGIL_CRYPTO_WRAPPER_MAIN_DIR}/tests/Phe"
             )
 endif()
 
@@ -116,9 +116,9 @@ endif()
 if(VIRGIL_INSTALL_WRAP_SRCS)
     install(
             DIRECTORY
-                "${CMAKE_CURRENT_LIST_DIR}/src/"
+                "${VIRGIL_CRYPTO_WRAPPER_MAIN_DIR}/src/"
             DESTINATION
-                "${VIRGIL_INSTALL_PHP_SRCDIR}/phe"
+                "${VIRGIL_INSTALL_PHP_SRCDIR}/Phe"
             FILES_MATCHING PATTERN
                 "*.php"
             )

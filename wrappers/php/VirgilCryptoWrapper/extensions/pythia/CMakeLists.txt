@@ -65,12 +65,12 @@ endif()
 
 target_sources(pythia_php
         PRIVATE
-            $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/extension/vscp_pythia_php.c>
+            $<BUILD_INTERFACE:vscp_pythia_php.c>
         )
 
 target_include_directories(pythia_php
         PUBLIC
-            $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/extension>
+            $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}>
         )
 
 target_link_libraries(pythia_php
@@ -88,7 +88,7 @@ if(ENABLE_TESTING AND VIRGIL_PHP_TESTING AND PHP_EXECUTABLE AND PHPUNIT_EXECUTAB
     add_custom_target(test_composer_pythia_php ALL
             COMMAND COMPOSER=composer_dev.json "${COMPOSER_EXECUTABLE}" install
             COMMENT "Running composer install..."
-            WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
+            WORKING_DIRECTORY ${VIRGIL_CRYPTO_WRAPPER_MAIN_DIR}
             )
 
     add_test(
@@ -96,8 +96,8 @@ if(ENABLE_TESTING AND VIRGIL_PHP_TESTING AND PHP_EXECUTABLE AND PHPUNIT_EXECUTAB
             COMMAND "${PHP_EXECUTABLE}"
                     -d "extension=$<TARGET_FILE:pythia_php>"
                     -d safe_mode=Off "${PHPUNIT_EXECUTABLE}"
-                    --bootstrap "${CMAKE_CURRENT_LIST_DIR}/vendor/autoload.php"
-                    --include-path "${CMAKE_CURRENT_LIST_DIR}/src" "${CMAKE_CURRENT_LIST_DIR}/tests"
+                    --bootstrap "${VIRGIL_CRYPTO_WRAPPER_MAIN_DIR}/vendor/autoload.php"
+                    --include-path "${VIRGIL_CRYPTO_WRAPPER_MAIN_DIR}/src" "${VIRGIL_CRYPTO_WRAPPER_MAIN_DIR}/tests/Pythia"
             )
 endif()
 
@@ -114,9 +114,9 @@ endif()
 if(VIRGIL_INSTALL_WRAP_SRCS)
     install(
             DIRECTORY
-                "${CMAKE_CURRENT_LIST_DIR}/src/"
+                "${VIRGIL_CRYPTO_WRAPPER_MAIN_DIR}/src/"
             DESTINATION
-                "${VIRGIL_INSTALL_PHP_SRCDIR}/pythia"
+                "${VIRGIL_INSTALL_PHP_SRCDIR}/Pythia"
             FILES_MATCHING PATTERN
                 "*.php"
             )

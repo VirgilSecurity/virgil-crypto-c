@@ -1113,8 +1113,13 @@ function php_map_low_level_return (in_method, in_php_project, out_function)
                     return_argument.length = "$(my._prefix:c)_$(my._e:c)_$(argument0->length.constant:c,UPPER)"
                     return_argument.length_type = "constant"
                 elsif defined (argument0->length.argument)
+
                     return_argument.length = "$(argument0->length.argument:c)"
+                    if defined (argument0->length.cast) & argument0->length.cast = "data_length"
+                        return_argument.length += ".len"
+                    endif
                     return_argument.length_type = "argument"
+
                 else
                     echo_debug_item(argument0)
                     echo_fatal("Not implemented (AA1000)", my)
