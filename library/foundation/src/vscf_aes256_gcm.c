@@ -124,6 +124,7 @@ vscf_aes256_gcm_update_internal(vscf_aes256_gcm_t *self, vsc_data_t data, vsc_bu
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT(vsc_data_is_valid(data));
     VSCF_ASSERT(vsc_buffer_is_valid(out));
+    VSCF_ASSERT(vsc_buffer_unused_len(out) >= vscf_aes256_gcm_out_len(self, data.len));
 
     int status = 0;
     size_t written_len = 0;
@@ -142,7 +143,6 @@ vscf_aes256_gcm_update_internal(vscf_aes256_gcm_t *self, vsc_data_t data, vsc_bu
 
         //  process cache
         VSCF_ASSERT(vscf_aes256_gcm_BLOCK_LEN == self->cached_data_len);
-        VSCF_ASSERT(vsc_buffer_unused_len(out) >= vscf_aes256_gcm_out_len(self, self->cached_data_len));
 
         status = mbedtls_cipher_update(&self->cipher_ctx, self->cached_data, self->cached_data_len,
                 vsc_buffer_unused_bytes(out), &written_len);
@@ -158,7 +158,6 @@ vscf_aes256_gcm_update_internal(vscf_aes256_gcm_t *self, vsc_data_t data, vsc_bu
     vsc_data_t processed_data = vsc_data_slice_beg(data, 0, data.len - unprocessed_data_len);
     if (!vsc_data_is_empty(processed_data)) {
         //  process data that is aligned to the block size
-        VSCF_ASSERT(vsc_buffer_unused_len(out) >= vscf_aes256_gcm_out_len(self, processed_data.len));
         status = mbedtls_cipher_update(&self->cipher_ctx, processed_data.bytes, processed_data.len,
                 vsc_buffer_unused_bytes(out), &written_len);
         VSCF_ASSERT_LIBRARY_MBEDTLS_SUCCESS(status);
@@ -494,7 +493,7 @@ vscf_aes256_gcm_decrypted_out_len(const vscf_aes256_gcm_t *self, size_t data_len
 
     VSCF_ASSERT_PTR(self);
 
-    return data_len + vscf_aes256_gcm_BLOCK_LEN;
+    return data_len + self->cached_data_len + vscf_aes256_gcm_BLOCK_LEN;
 }
 
 //

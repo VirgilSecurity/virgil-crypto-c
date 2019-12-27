@@ -1062,17 +1062,6 @@ vscf_recipient_cipher_decryption_out_len(vscf_recipient_cipher_t *self, size_t d
 
     VSCF_ASSERT_PTR(self);
 
-    if (self->decryption_padding) {
-        return vscf_padding_cipher_decrypted_out_len(self->padding_cipher, data_len);
-    }
-
-    if (self->decryption_cipher) {
-        return vscf_cipher_decrypted_out_len(self->decryption_cipher, data_len);
-    }
-
-    //
-    //  Underlying cipher is not known before message info is read, so return maximum at this point.
-    //
     size_t len = 0;
 
     if (self->message_info_buffer) {
@@ -1080,11 +1069,22 @@ vscf_recipient_cipher_decryption_out_len(vscf_recipient_cipher_t *self, size_t d
         len += message_info_tail_len;
     }
 
-    if (data_len > 0) {
-        len += data_len;
+    if (self->decryption_padding) {
+        len += vscf_padding_cipher_decrypted_out_len(self->padding_cipher, data_len);
+    } else if (self->decryption_cipher) {
+        len += vscf_cipher_decrypted_out_len(self->decryption_cipher, data_len);
     } else {
-        const size_t padding_tail_len = vscf_padding_params_frame_max(self->padding_params);
-        len += padding_tail_len;
+        //
+        //  Underlying cipher is not known before message info is read, so return maximum at this point.
+        //
+        len += 16; // Maximum block length of any cipher in bytes.
+        len += 16; // Maximum tag length of any cipher in bytes.
+        if (data_len > 0) {
+            len += data_len;
+        } else {
+            const size_t padding_tail_len = vscf_padding_params_frame_max(self->padding_params);
+            len += padding_tail_len;
+        }
     }
 
     return len;
