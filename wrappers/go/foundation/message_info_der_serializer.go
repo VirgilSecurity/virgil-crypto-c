@@ -94,21 +94,21 @@ func (obj *MessageInfoDerSerializer) delete() {
     C.vscf_message_info_der_serializer_delete(obj.cCtx)
 }
 
-func (obj *MessageInfoDerSerializer) GetPrefixLen() uint32 {
+func (obj *MessageInfoDerSerializer) GetPrefixLen() int {
     return 32
 }
 
 /*
 * Return buffer size enough to hold serialized message info.
 */
-func (obj *MessageInfoDerSerializer) SerializedLen(messageInfo *MessageInfo) uint32 {
+func (obj *MessageInfoDerSerializer) SerializedLen(messageInfo *MessageInfo) int {
     proxyResult := /*pr4*/C.vscf_message_info_der_serializer_serialized_len(obj.cCtx, (*C.vscf_message_info_t)(unsafe.Pointer(messageInfo.Ctx())))
 
     runtime.KeepAlive(obj)
 
     runtime.KeepAlive(messageInfo)
 
-    return uint32(proxyResult) /* r9 */
+    return int(proxyResult) /* r9 */
 }
 
 /*
@@ -138,14 +138,14 @@ func (obj *MessageInfoDerSerializer) Serialize(messageInfo *MessageInfo) []byte 
 * Zero returned if length can not be determined from the given data,
 * and this means that there is no message info at the data beginning.
 */
-func (obj *MessageInfoDerSerializer) ReadPrefix(data []byte) uint32 {
+func (obj *MessageInfoDerSerializer) ReadPrefix(data []byte) int {
     dataData := helperWrapData (data)
 
     proxyResult := /*pr4*/C.vscf_message_info_der_serializer_read_prefix(obj.cCtx, dataData)
 
     runtime.KeepAlive(obj)
 
-    return uint32(proxyResult) /* r9 */
+    return int(proxyResult) /* r9 */
 }
 
 /*
@@ -171,14 +171,14 @@ func (obj *MessageInfoDerSerializer) Deserialize(data []byte) (*MessageInfo, err
 /*
 * Return buffer size enough to hold serialized message info footer.
 */
-func (obj *MessageInfoDerSerializer) SerializedFooterLen(messageInfoFooter *MessageInfoFooter) uint32 {
+func (obj *MessageInfoDerSerializer) SerializedFooterLen(messageInfoFooter *MessageInfoFooter) int {
     proxyResult := /*pr4*/C.vscf_message_info_der_serializer_serialized_footer_len(obj.cCtx, (*C.vscf_message_info_footer_t)(unsafe.Pointer(messageInfoFooter.Ctx())))
 
     runtime.KeepAlive(obj)
 
     runtime.KeepAlive(messageInfoFooter)
 
-    return uint32(proxyResult) /* r9 */
+    return int(proxyResult) /* r9 */
 }
 
 /*

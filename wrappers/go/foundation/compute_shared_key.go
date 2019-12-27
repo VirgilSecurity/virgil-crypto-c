@@ -19,7 +19,7 @@ type ComputeSharedKey interface {
     * Return number of bytes required to hold shared key.
     * Expect Public Key or Private Key.
     */
-    SharedKeyLen (key Key) uint32
+    SharedKeyLen (key Key) int
 
     /*
     * Release underlying C context.

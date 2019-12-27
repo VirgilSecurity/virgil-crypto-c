@@ -134,20 +134,20 @@ func TestAes256Cbc_Decrypt_WitCipher(t *testing.T) {
 
 func TestAes256Cbc_GetNonceLen(t *testing.T) {
 	aes256Cbc := NewAes256Cbc()
-	assert.Equal(t, uint32(TEST_AES256_CBC_NONCE_LEN), aes256Cbc.GetNonceLen())
+	assert.Equal(t, TEST_AES256_CBC_NONCE_LEN, aes256Cbc.GetNonceLen())
 }
 
 func TestAes256Cbc_GetKeyLen(t *testing.T) {
 	aes256Cbc := NewAes256Cbc()
-	assert.Equal(t, uint32(TEST_AES256_CBC_KEY_LEN), aes256Cbc.GetKeyLen())
+	assert.Equal(t, TEST_AES256_CBC_KEY_LEN, aes256Cbc.GetKeyLen())
 }
 
 func TestAes256Cbc_GetKeyBitLen(t *testing.T) {
 	aes256Cbc := NewAes256Cbc()
-	assert.Equal(t, uint32(TEST_AES256_CBC_KEY_BIT_LEN), aes256Cbc.GetKeyBitlen())
+	assert.Equal(t, TEST_AES256_CBC_KEY_BIT_LEN, aes256Cbc.GetKeyBitlen())
 }
 
 func TestAes256Cbc_GetBlockLen(t *testing.T) {
 	aes256Cbc := NewAes256Cbc()
-	assert.Equal(t, uint32(TEST_AES256_CBC_BLOCK_LEN), aes256Cbc.GetBlockLen())
+	assert.Equal(t, TEST_AES256_CBC_BLOCK_LEN, aes256Cbc.GetBlockLen())
 }

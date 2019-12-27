@@ -17,7 +17,7 @@ type EntropySource interface {
     /*
     * Gather entropy of the requested length.
     */
-    Gather (len uint32) ([]byte, error)
+    Gather (len int) ([]byte, error)
 
     /*
     * Release underlying C context.

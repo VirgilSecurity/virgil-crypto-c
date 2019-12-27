@@ -92,23 +92,23 @@ func (obj *RsaPrivateKey) AlgInfo() (AlgInfo, error) {
 /*
 * Length of the key in bytes.
 */
-func (obj *RsaPrivateKey) Len() uint32 {
+func (obj *RsaPrivateKey) Len() int {
     proxyResult := /*pr4*/C.vscf_rsa_private_key_len(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return uint32(proxyResult) /* r9 */
+    return int(proxyResult) /* r9 */
 }
 
 /*
 * Length of the key in bits.
 */
-func (obj *RsaPrivateKey) Bitlen() uint32 {
+func (obj *RsaPrivateKey) Bitlen() int {
     proxyResult := /*pr4*/C.vscf_rsa_private_key_bitlen(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return uint32(proxyResult) /* r9 */
+    return int(proxyResult) /* r9 */
 }
 
 /*

@@ -13,7 +13,7 @@ type Random interface {
     * Generate random bytes.
     * All RNG implementations must be thread-safe.
     */
-    Random (dataLen uint32) ([]byte, error)
+    Random (dataLen int) ([]byte, error)
 
     /*
     * Retrieve new seed data from the entropy sources.

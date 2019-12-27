@@ -16,12 +16,12 @@ type RsaPublicKey struct {
 /*
 * Return public key exponent.
 */
-func (obj *RsaPublicKey) KeyExponent() uint32 {
+func (obj *RsaPublicKey) KeyExponent() int {
     proxyResult := /*pr4*/C.vscf_rsa_public_key_key_exponent(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return uint32(proxyResult) /* r9 */
+    return int(proxyResult) /* r9 */
 }
 
 /* Handle underlying C context. */
@@ -103,23 +103,23 @@ func (obj *RsaPublicKey) AlgInfo() (AlgInfo, error) {
 /*
 * Length of the key in bytes.
 */
-func (obj *RsaPublicKey) Len() uint32 {
+func (obj *RsaPublicKey) Len() int {
     proxyResult := /*pr4*/C.vscf_rsa_public_key_len(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return uint32(proxyResult) /* r9 */
+    return int(proxyResult) /* r9 */
 }
 
 /*
 * Length of the key in bits.
 */
-func (obj *RsaPublicKey) Bitlen() uint32 {
+func (obj *RsaPublicKey) Bitlen() int {
     proxyResult := /*pr4*/C.vscf_rsa_public_key_bitlen(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return uint32(proxyResult) /* r9 */
+    return int(proxyResult) /* r9 */
 }
 
 /*

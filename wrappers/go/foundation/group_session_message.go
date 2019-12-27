@@ -16,11 +16,11 @@ const (
     /*
     * Max message len
     */
-    GroupSessionMessageMaxMessageLen uint32 = 30188
+    GroupSessionMessageMaxMessageLen int = 30188
     /*
     * Message version
     */
-    GroupSessionMessageMessageVersion uint32 = 1
+    GroupSessionMessageMessageVersion int = 1
 )
 
 /* Handle underlying C context. */
@@ -114,12 +114,12 @@ func (obj *GroupSessionMessage) GetEpoch() uint32 {
 /*
 * Buffer len to serialize this class.
 */
-func (obj *GroupSessionMessage) SerializeLen() uint32 {
+func (obj *GroupSessionMessage) SerializeLen() int {
     proxyResult := /*pr4*/C.vscf_group_session_message_serialize_len(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return uint32(proxyResult) /* r9 */
+    return int(proxyResult) /* r9 */
 }
 
 /*

@@ -13,33 +13,33 @@ const (
     /*
     * Max plain text length allowed to be encrypted
     */
-    RatchetCommonMaxPlainTextLen uint32 = 30000
+    RatchetCommonMaxPlainTextLen int = 30000
     /*
     * Max message length
     */
-    RatchetCommonMaxMessageLen uint32 = 32975
+    RatchetCommonMaxMessageLen int = 32975
     /*
     * Key pair id length
     */
-    RatchetCommonKeyIdLen uint32 = 8
+    RatchetCommonKeyIdLen int = 8
     /*
     * Participant id length
     */
-    RatchetCommonParticipantIdLen uint32 = 32
+    RatchetCommonParticipantIdLen int = 32
     /*
     * Session id length
     */
-    RatchetCommonSessionIdLen uint32 = 32
+    RatchetCommonSessionIdLen int = 32
     /*
     * Max number of group chat participants
     */
-    RatchetCommonMaxParticipantsCount uint32 = 100
+    RatchetCommonMaxParticipantsCount int = 100
     /*
     * Min number of group chat participants
     */
-    RatchetCommonMinParticipantsCount uint32 = 2
+    RatchetCommonMinParticipantsCount int = 2
     /*
     * Max group message length
     */
-    RatchetCommonMaxGroupMessageLen uint32 = 32918
+    RatchetCommonMaxGroupMessageLen int = 32918
 )

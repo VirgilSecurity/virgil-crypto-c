@@ -291,7 +291,7 @@ func (obj *HybridKeyAlg) ExportPrivateKey(privateKey PrivateKey) (*RawPrivateKey
 /*
 * Check if algorithm can encrypt data with a given key.
 */
-func (obj *HybridKeyAlg) CanEncrypt(publicKey PublicKey, dataLen uint32) bool {
+func (obj *HybridKeyAlg) CanEncrypt(publicKey PublicKey, dataLen int) bool {
     proxyResult := /*pr4*/C.vscf_hybrid_key_alg_can_encrypt(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(publicKey.Ctx())), (C.size_t)(dataLen)/*pa10*/)
 
     runtime.KeepAlive(obj)
@@ -304,21 +304,21 @@ func (obj *HybridKeyAlg) CanEncrypt(publicKey PublicKey, dataLen uint32) bool {
 /*
 * Calculate required buffer length to hold the encrypted data.
 */
-func (obj *HybridKeyAlg) EncryptedLen(publicKey PublicKey, dataLen uint32) uint32 {
+func (obj *HybridKeyAlg) EncryptedLen(publicKey PublicKey, dataLen int) int {
     proxyResult := /*pr4*/C.vscf_hybrid_key_alg_encrypted_len(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(publicKey.Ctx())), (C.size_t)(dataLen)/*pa10*/)
 
     runtime.KeepAlive(obj)
 
     runtime.KeepAlive(publicKey)
 
-    return uint32(proxyResult) /* r9 */
+    return int(proxyResult) /* r9 */
 }
 
 /*
 * Encrypt data with a given public key.
 */
 func (obj *HybridKeyAlg) Encrypt(publicKey PublicKey, data []byte) ([]byte, error) {
-    outBuf, outBufErr := bufferNewBuffer(int(obj.EncryptedLen(publicKey.(PublicKey), uint32(len(data))) /* lg2 */))
+    outBuf, outBufErr := bufferNewBuffer(int(obj.EncryptedLen(publicKey.(PublicKey), len(data)) /* lg2 */))
     if outBufErr != nil {
         return nil, outBufErr
     }
@@ -343,7 +343,7 @@ func (obj *HybridKeyAlg) Encrypt(publicKey PublicKey, data []byte) ([]byte, erro
 * Check if algorithm can decrypt data with a given key.
 * However, success result of decryption is not guaranteed.
 */
-func (obj *HybridKeyAlg) CanDecrypt(privateKey PrivateKey, dataLen uint32) bool {
+func (obj *HybridKeyAlg) CanDecrypt(privateKey PrivateKey, dataLen int) bool {
     proxyResult := /*pr4*/C.vscf_hybrid_key_alg_can_decrypt(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(privateKey.Ctx())), (C.size_t)(dataLen)/*pa10*/)
 
     runtime.KeepAlive(obj)
@@ -356,21 +356,21 @@ func (obj *HybridKeyAlg) CanDecrypt(privateKey PrivateKey, dataLen uint32) bool 
 /*
 * Calculate required buffer length to hold the decrypted data.
 */
-func (obj *HybridKeyAlg) DecryptedLen(privateKey PrivateKey, dataLen uint32) uint32 {
+func (obj *HybridKeyAlg) DecryptedLen(privateKey PrivateKey, dataLen int) int {
     proxyResult := /*pr4*/C.vscf_hybrid_key_alg_decrypted_len(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(privateKey.Ctx())), (C.size_t)(dataLen)/*pa10*/)
 
     runtime.KeepAlive(obj)
 
     runtime.KeepAlive(privateKey)
 
-    return uint32(proxyResult) /* r9 */
+    return int(proxyResult) /* r9 */
 }
 
 /*
 * Decrypt given data.
 */
 func (obj *HybridKeyAlg) Decrypt(privateKey PrivateKey, data []byte) ([]byte, error) {
-    outBuf, outBufErr := bufferNewBuffer(int(obj.DecryptedLen(privateKey.(PrivateKey), uint32(len(data))) /* lg2 */))
+    outBuf, outBufErr := bufferNewBuffer(int(obj.DecryptedLen(privateKey.(PrivateKey), len(data)) /* lg2 */))
     if outBufErr != nil {
         return nil, outBufErr
     }
@@ -408,14 +408,14 @@ func (obj *HybridKeyAlg) CanSign(privateKey PrivateKey) bool {
 * Return length in bytes required to hold signature.
 * Return zero if a given private key can not produce signatures.
 */
-func (obj *HybridKeyAlg) SignatureLen(privateKey PrivateKey) uint32 {
+func (obj *HybridKeyAlg) SignatureLen(privateKey PrivateKey) int {
     proxyResult := /*pr4*/C.vscf_hybrid_key_alg_signature_len(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(privateKey.Ctx())))
 
     runtime.KeepAlive(obj)
 
     runtime.KeepAlive(privateKey)
 
-    return uint32(proxyResult) /* r9 */
+    return int(proxyResult) /* r9 */
 }
 
 /*

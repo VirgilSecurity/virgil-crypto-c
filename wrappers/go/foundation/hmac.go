@@ -118,12 +118,12 @@ func (obj *Hmac) RestoreAlgInfo(algInfo AlgInfo) error {
 /*
 * Size of the digest (mac output) in bytes.
 */
-func (obj *Hmac) DigestLen() uint32 {
+func (obj *Hmac) DigestLen() int {
     proxyResult := /*pr4*/C.vscf_hmac_digest_len(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return uint32(proxyResult) /* r9 */
+    return int(proxyResult) /* r9 */
 }
 
 /*

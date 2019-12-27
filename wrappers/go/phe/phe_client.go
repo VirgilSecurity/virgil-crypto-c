@@ -154,12 +154,12 @@ func (obj *PheClient) GenerateClientPrivateKey() ([]byte, error) {
 /*
 * Buffer size needed to fit EnrollmentRecord
 */
-func (obj *PheClient) EnrollmentRecordLen() uint32 {
+func (obj *PheClient) EnrollmentRecordLen() int {
     proxyResult := /*pr4*/C.vsce_phe_client_enrollment_record_len(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return uint32(proxyResult) /* r9 */
+    return int(proxyResult) /* r9 */
 }
 
 /*
@@ -197,12 +197,12 @@ func (obj *PheClient) EnrollAccount(enrollmentResponse []byte, password []byte) 
 /*
 * Buffer size needed to fit VerifyPasswordRequest
 */
-func (obj *PheClient) VerifyPasswordRequestLen() uint32 {
+func (obj *PheClient) VerifyPasswordRequestLen() int {
     proxyResult := /*pr4*/C.vsce_phe_client_verify_password_request_len(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return uint32(proxyResult) /* r9 */
+    return int(proxyResult) /* r9 */
 }
 
 /*

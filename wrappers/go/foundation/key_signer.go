@@ -19,7 +19,7 @@ type KeySigner interface {
     * Return length in bytes required to hold signature.
     * Return zero if a given private key can not produce signatures.
     */
-    SignatureLen (privateKey PrivateKey) uint32
+    SignatureLen (privateKey PrivateKey) int
 
     /*
     * Sign data digest with a given private key.

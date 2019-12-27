@@ -12,7 +12,7 @@ type AlgInfoSerializer interface {
     /*
     * Return buffer size enough to hold serialized algorithm.
     */
-    SerializedLen (algInfo AlgInfo) uint32
+    SerializedLen (algInfo AlgInfo) int
 
     /*
     * Serialize algorithm info to buffer class.

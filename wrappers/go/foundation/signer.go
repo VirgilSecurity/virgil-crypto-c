@@ -110,14 +110,14 @@ func (obj *Signer) AppendData(data []byte) {
 /*
 * Return length of the signature.
 */
-func (obj *Signer) SignatureLen(privateKey PrivateKey) uint32 {
+func (obj *Signer) SignatureLen(privateKey PrivateKey) int {
     proxyResult := /*pr4*/C.vscf_signer_signature_len(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(privateKey.Ctx())))
 
     runtime.KeepAlive(obj)
 
     runtime.KeepAlive(privateKey)
 
-    return uint32(proxyResult) /* r9 */
+    return int(proxyResult) /* r9 */
 }
 
 /*

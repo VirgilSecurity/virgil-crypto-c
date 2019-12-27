@@ -140,7 +140,7 @@ func (obj *Pkcs5Pbes2) RestoreAlgInfo(algInfo AlgInfo) error {
 * Encrypt given data.
 */
 func (obj *Pkcs5Pbes2) Encrypt(data []byte) ([]byte, error) {
-    outBuf, outBufErr := bufferNewBuffer(int(obj.EncryptedLen(uint32(len(data))) /* lg2 */))
+    outBuf, outBufErr := bufferNewBuffer(int(obj.EncryptedLen(len(data)) /* lg2 */))
     if outBufErr != nil {
         return nil, outBufErr
     }
@@ -162,30 +162,30 @@ func (obj *Pkcs5Pbes2) Encrypt(data []byte) ([]byte, error) {
 /*
 * Calculate required buffer length to hold the encrypted data.
 */
-func (obj *Pkcs5Pbes2) EncryptedLen(dataLen uint32) uint32 {
+func (obj *Pkcs5Pbes2) EncryptedLen(dataLen int) int {
     proxyResult := /*pr4*/C.vscf_pkcs5_pbes2_encrypted_len(obj.cCtx, (C.size_t)(dataLen)/*pa10*/)
 
     runtime.KeepAlive(obj)
 
-    return uint32(proxyResult) /* r9 */
+    return int(proxyResult) /* r9 */
 }
 
 /*
 * Precise length calculation of encrypted data.
 */
-func (obj *Pkcs5Pbes2) PreciseEncryptedLen(dataLen uint32) uint32 {
+func (obj *Pkcs5Pbes2) PreciseEncryptedLen(dataLen int) int {
     proxyResult := /*pr4*/C.vscf_pkcs5_pbes2_precise_encrypted_len(obj.cCtx, (C.size_t)(dataLen)/*pa10*/)
 
     runtime.KeepAlive(obj)
 
-    return uint32(proxyResult) /* r9 */
+    return int(proxyResult) /* r9 */
 }
 
 /*
 * Decrypt given data.
 */
 func (obj *Pkcs5Pbes2) Decrypt(data []byte) ([]byte, error) {
-    outBuf, outBufErr := bufferNewBuffer(int(obj.DecryptedLen(uint32(len(data))) /* lg2 */))
+    outBuf, outBufErr := bufferNewBuffer(int(obj.DecryptedLen(len(data)) /* lg2 */))
     if outBufErr != nil {
         return nil, outBufErr
     }
@@ -207,10 +207,10 @@ func (obj *Pkcs5Pbes2) Decrypt(data []byte) ([]byte, error) {
 /*
 * Calculate required buffer length to hold the decrypted data.
 */
-func (obj *Pkcs5Pbes2) DecryptedLen(dataLen uint32) uint32 {
+func (obj *Pkcs5Pbes2) DecryptedLen(dataLen int) int {
     proxyResult := /*pr4*/C.vscf_pkcs5_pbes2_decrypted_len(obj.cCtx, (C.size_t)(dataLen)/*pa10*/)
 
     runtime.KeepAlive(obj)
 
-    return uint32(proxyResult) /* r9 */
+    return int(proxyResult) /* r9 */
 }

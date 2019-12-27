@@ -10,45 +10,45 @@ const (
     /*
     * PHE elliptic curve point binary length
     */
-    PheCommonPhePointLength uint32 = 65
+    PheCommonPhePointLength int = 65
     /*
     * PHE max password length
     */
-    PheCommonPheMaxPasswordLength uint32 = 128
+    PheCommonPheMaxPasswordLength int = 128
     /*
     * PHE server identifier length
     */
-    PheCommonPheServerIdentifierLength uint32 = 32
+    PheCommonPheServerIdentifierLength int = 32
     /*
     * PHE client identifier length
     */
-    PheCommonPheClientIdentifierLength uint32 = 32
+    PheCommonPheClientIdentifierLength int = 32
     /*
     * PHE account key length
     */
-    PheCommonPheAccountKeyLength uint32 = 32
+    PheCommonPheAccountKeyLength int = 32
     /*
     * PHE private key length
     */
-    PheCommonPhePrivateKeyLength uint32 = 32
+    PheCommonPhePrivateKeyLength int = 32
     /*
     * PHE public key length
     */
-    PheCommonPhePublicKeyLength uint32 = 65
+    PheCommonPhePublicKeyLength int = 65
     /*
     * PHE hash length
     */
-    PheCommonPheHashLen uint32 = 32
+    PheCommonPheHashLen int = 32
     /*
     * Maximum data size to encrypt
     */
-    PheCommonPheMaxEncryptLen uint32 = 1024 * 1024 - 64
+    PheCommonPheMaxEncryptLen int = 1024 * 1024 - 64
     /*
     * Maximum data size to decrypt
     */
-    PheCommonPheMaxDecryptLen uint32 = 1024 * 1024
+    PheCommonPheMaxDecryptLen int = 1024 * 1024
     /*
     * Maximum data to authenticate
     */
-    PheCommonPheMaxAuthLen uint32 = 1024
+    PheCommonPheMaxAuthLen int = 1024
 )

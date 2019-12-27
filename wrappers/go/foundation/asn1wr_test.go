@@ -47,7 +47,7 @@ func TestNewAsn1wr(t *testing.T) {
 
 func TestAsn1wr_Finish(t *testing.T) {
 	asn1_encoded_INT_2 := []byte{0x02, 0x01, 0x02}
-	outLen := uint32(2 * len(asn1_encoded_INT_2))
+	outLen := 2 * len(asn1_encoded_INT_2)
 	out := make([]byte, outLen, outLen)
 
 	asn1wr := NewAsn1wr()
@@ -56,6 +56,6 @@ func TestAsn1wr_Finish(t *testing.T) {
 	writteneLen := asn1wr.WriteInt(2)
 	writtenBytes := asn1wr.Finish(false)
 
-	assert.Equal(t, uint32(3), writtenBytes)
-	assert.Equal(t, uint32(len(asn1_encoded_INT_2)), writteneLen)
+	assert.Equal(t, 3, writtenBytes)
+	assert.Equal(t, len(asn1_encoded_INT_2), writteneLen)
 }

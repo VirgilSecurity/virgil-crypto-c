@@ -12,7 +12,7 @@ type MessageInfoFooterSerializer interface {
     /*
     * Return buffer size enough to hold serialized message info footer.
     */
-    SerializedFooterLen (messageInfoFooter *MessageInfoFooter) uint32
+    SerializedFooterLen (messageInfoFooter *MessageInfoFooter) int
 
     /*
     * Serialize class "message info footer".

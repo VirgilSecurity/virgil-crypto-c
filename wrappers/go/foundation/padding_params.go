@@ -13,9 +13,9 @@ type PaddingParams struct {
     cCtx *C.vscf_padding_params_t /*ct2*/
 }
 const (
-    PaddingParamsDefaultFrameMin uint32 = 32
-    PaddingParamsDefaultFrame uint32 = 160
-    PaddingParamsDefaultFrameMax uint32 = 256
+    PaddingParamsDefaultFrameMin int = 32
+    PaddingParamsDefaultFrame int = 160
+    PaddingParamsDefaultFrameMax int = 256
 )
 
 /* Handle underlying C context. */
@@ -76,7 +76,7 @@ func (obj *PaddingParams) delete() {
 * Build padding params with given constraints.
 * Next formula can clarify what frame is: padding_length = data_length MOD frame
 */
-func NewPaddingParamsWithConstraints(frame uint32, frameMax uint32) *PaddingParams {
+func NewPaddingParamsWithConstraints(frame int, frameMax int) *PaddingParams {
     proxyResult := /*pr4*/C.vscf_padding_params_new_with_constraints((C.size_t)(frame)/*pa10*/, (C.size_t)(frameMax)/*pa10*/)
 
     obj := &PaddingParams {
@@ -89,21 +89,21 @@ func NewPaddingParamsWithConstraints(frame uint32, frameMax uint32) *PaddingPara
 /*
 * Return padding frame in bytes.
 */
-func (obj *PaddingParams) Frame() uint32 {
+func (obj *PaddingParams) Frame() int {
     proxyResult := /*pr4*/C.vscf_padding_params_frame(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return uint32(proxyResult) /* r9 */
+    return int(proxyResult) /* r9 */
 }
 
 /*
 * Return maximum padding frame in bytes.
 */
-func (obj *PaddingParams) FrameMax() uint32 {
+func (obj *PaddingParams) FrameMax() int {
     proxyResult := /*pr4*/C.vscf_padding_params_frame_max(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return uint32(proxyResult) /* r9 */
+    return int(proxyResult) /* r9 */
 }

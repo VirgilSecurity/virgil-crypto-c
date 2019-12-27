@@ -159,25 +159,25 @@ func TestAes256Gcm_Decrypt_WitCipher(t *testing.T) {
 
 func TestAes256Gcm_GetNonceLen(t *testing.T) {
 	aes256Gcm := NewAes256Gcm()
-	assert.Equal(t, uint32(TEST_AES256_GCM_NONCE_LEN), aes256Gcm.GetNonceLen())
+	assert.Equal(t, TEST_AES256_GCM_NONCE_LEN, aes256Gcm.GetNonceLen())
 }
 
 func TestAes256Gcm_GetKeyLen(t *testing.T) {
 	aes256Gcm := NewAes256Gcm()
-	assert.Equal(t, uint32(TEST_AES256_GCM_KEY_LEN), aes256Gcm.GetKeyLen())
+	assert.Equal(t, TEST_AES256_GCM_KEY_LEN, aes256Gcm.GetKeyLen())
 }
 
 func TestAes256Gcm_GetKeyBitLen(t *testing.T) {
 	aes256Gcm := NewAes256Gcm()
-	assert.Equal(t, uint32(TEST_AES256_GCM_KEY_BIT_LEN), aes256Gcm.GetKeyBitlen())
+	assert.Equal(t, TEST_AES256_GCM_KEY_BIT_LEN, aes256Gcm.GetKeyBitlen())
 }
 
 func TestAes256Gcm_GetBlockLen(t *testing.T) {
 	aes256Gcm := NewAes256Gcm()
-	assert.Equal(t, uint32(TEST_AES256_GCM_BLOCK_LEN), aes256Gcm.GetBlockLen())
+	assert.Equal(t, TEST_AES256_GCM_BLOCK_LEN, aes256Gcm.GetBlockLen())
 }
 
 func TestAes256Gcm_GetAuthTagLen(t *testing.T) {
 	aes256Gcm := NewAes256Gcm()
-	assert.Equal(t, uint32(TEST_AES256_GCM_AUTH_TAG_LEN), aes256Gcm.GetAuthTagLen())
+	assert.Equal(t, TEST_AES256_GCM_AUTH_TAG_LEN, aes256Gcm.GetAuthTagLen())
 }

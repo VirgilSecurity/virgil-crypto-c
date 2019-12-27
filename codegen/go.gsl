@@ -120,7 +120,7 @@ function go_derive_buffer_length_getter (class, method, argument)
             my.arg_name = go_derive_argument_name_str (proxy.argument)
 
             if string_in (proxy.cast, "data_length")
-                my.proxy_args += "uint32(len($(my.arg_name:)))"
+                my.proxy_args += "len($(my.arg_name:))"
             else
                 my.is_interface = "0"
                 for my.method.argument where string_equal (proxy.argument, argument.name)
@@ -513,7 +513,7 @@ function go_derive_instance_type (instance)
             my.primitive_type = "byte"
 
         elsif my.instance.type = "size"
-            my.primitive_type = "uint32"
+            my.primitive_type = "int"
 
         elsif my.instance.type = "char"
             if count(my.instance.string)
@@ -2297,7 +2297,6 @@ function go_format_c_proxy_args (class, method)
 
         elsif defined (argument.enum)
             my.enum_type = class_derive_c_instance_type (argument)
-            #my.proxy_arg = "$(my.enum_type:)(rawValue: UInt32($(my.arg_name:).rawValue)) /*pa7*/"
             my.proxy_arg = "C.$(my.enum_type:)($(my.arg_name:)) /*pa7*/"
 
         else

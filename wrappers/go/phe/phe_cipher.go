@@ -99,30 +99,30 @@ func (obj *PheCipher) SetupDefaults() error {
 /*
 * Returns buffer capacity needed to fit cipher text
 */
-func (obj *PheCipher) EncryptLen(plainTextLen uint32) uint32 {
+func (obj *PheCipher) EncryptLen(plainTextLen int) int {
     proxyResult := /*pr4*/C.vsce_phe_cipher_encrypt_len(obj.cCtx, (C.size_t)(plainTextLen)/*pa10*/)
 
     runtime.KeepAlive(obj)
 
-    return uint32(proxyResult) /* r9 */
+    return int(proxyResult) /* r9 */
 }
 
 /*
 * Returns buffer capacity needed to fit plain text
 */
-func (obj *PheCipher) DecryptLen(cipherTextLen uint32) uint32 {
+func (obj *PheCipher) DecryptLen(cipherTextLen int) int {
     proxyResult := /*pr4*/C.vsce_phe_cipher_decrypt_len(obj.cCtx, (C.size_t)(cipherTextLen)/*pa10*/)
 
     runtime.KeepAlive(obj)
 
-    return uint32(proxyResult) /* r9 */
+    return int(proxyResult) /* r9 */
 }
 
 /*
 * Encrypts data using account key
 */
 func (obj *PheCipher) Encrypt(plainText []byte, accountKey []byte) ([]byte, error) {
-    cipherTextBuf, cipherTextBufErr := bufferNewBuffer(int(obj.EncryptLen(uint32(len(plainText))) /* lg2 */))
+    cipherTextBuf, cipherTextBufErr := bufferNewBuffer(int(obj.EncryptLen(len(plainText)) /* lg2 */))
     if cipherTextBufErr != nil {
         return nil, cipherTextBufErr
     }
@@ -146,7 +146,7 @@ func (obj *PheCipher) Encrypt(plainText []byte, accountKey []byte) ([]byte, erro
 * Decrypts data using account key
 */
 func (obj *PheCipher) Decrypt(cipherText []byte, accountKey []byte) ([]byte, error) {
-    plainTextBuf, plainTextBufErr := bufferNewBuffer(int(obj.DecryptLen(uint32(len(cipherText))) /* lg2 */))
+    plainTextBuf, plainTextBufErr := bufferNewBuffer(int(obj.DecryptLen(len(cipherText)) /* lg2 */))
     if plainTextBufErr != nil {
         return nil, plainTextBufErr
     }
@@ -170,7 +170,7 @@ func (obj *PheCipher) Decrypt(cipherText []byte, accountKey []byte) ([]byte, err
 * Encrypts data (and authenticates additional data) using account key
 */
 func (obj *PheCipher) AuthEncrypt(plainText []byte, additionalData []byte, accountKey []byte) ([]byte, error) {
-    cipherTextBuf, cipherTextBufErr := bufferNewBuffer(int(obj.EncryptLen(uint32(len(plainText))) /* lg2 */))
+    cipherTextBuf, cipherTextBufErr := bufferNewBuffer(int(obj.EncryptLen(len(plainText)) /* lg2 */))
     if cipherTextBufErr != nil {
         return nil, cipherTextBufErr
     }
@@ -195,7 +195,7 @@ func (obj *PheCipher) AuthEncrypt(plainText []byte, additionalData []byte, accou
 * Decrypts data (and verifies additional data) using account key
 */
 func (obj *PheCipher) AuthDecrypt(cipherText []byte, additionalData []byte, accountKey []byte) ([]byte, error) {
-    plainTextBuf, plainTextBufErr := bufferNewBuffer(int(obj.DecryptLen(uint32(len(cipherText))) /* lg2 */))
+    plainTextBuf, plainTextBufErr := bufferNewBuffer(int(obj.DecryptLen(len(cipherText)) /* lg2 */))
     if plainTextBufErr != nil {
         return nil, plainTextBufErr
     }

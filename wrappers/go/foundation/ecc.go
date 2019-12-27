@@ -283,7 +283,7 @@ func (obj *Ecc) ExportPrivateKey(privateKey PrivateKey) (*RawPrivateKey, error) 
 /*
 * Check if algorithm can encrypt data with a given key.
 */
-func (obj *Ecc) CanEncrypt(publicKey PublicKey, dataLen uint32) bool {
+func (obj *Ecc) CanEncrypt(publicKey PublicKey, dataLen int) bool {
     proxyResult := /*pr4*/C.vscf_ecc_can_encrypt(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(publicKey.Ctx())), (C.size_t)(dataLen)/*pa10*/)
 
     runtime.KeepAlive(obj)
@@ -296,21 +296,21 @@ func (obj *Ecc) CanEncrypt(publicKey PublicKey, dataLen uint32) bool {
 /*
 * Calculate required buffer length to hold the encrypted data.
 */
-func (obj *Ecc) EncryptedLen(publicKey PublicKey, dataLen uint32) uint32 {
+func (obj *Ecc) EncryptedLen(publicKey PublicKey, dataLen int) int {
     proxyResult := /*pr4*/C.vscf_ecc_encrypted_len(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(publicKey.Ctx())), (C.size_t)(dataLen)/*pa10*/)
 
     runtime.KeepAlive(obj)
 
     runtime.KeepAlive(publicKey)
 
-    return uint32(proxyResult) /* r9 */
+    return int(proxyResult) /* r9 */
 }
 
 /*
 * Encrypt data with a given public key.
 */
 func (obj *Ecc) Encrypt(publicKey PublicKey, data []byte) ([]byte, error) {
-    outBuf, outBufErr := bufferNewBuffer(int(obj.EncryptedLen(publicKey.(PublicKey), uint32(len(data))) /* lg2 */))
+    outBuf, outBufErr := bufferNewBuffer(int(obj.EncryptedLen(publicKey.(PublicKey), len(data)) /* lg2 */))
     if outBufErr != nil {
         return nil, outBufErr
     }
@@ -335,7 +335,7 @@ func (obj *Ecc) Encrypt(publicKey PublicKey, data []byte) ([]byte, error) {
 * Check if algorithm can decrypt data with a given key.
 * However, success result of decryption is not guaranteed.
 */
-func (obj *Ecc) CanDecrypt(privateKey PrivateKey, dataLen uint32) bool {
+func (obj *Ecc) CanDecrypt(privateKey PrivateKey, dataLen int) bool {
     proxyResult := /*pr4*/C.vscf_ecc_can_decrypt(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(privateKey.Ctx())), (C.size_t)(dataLen)/*pa10*/)
 
     runtime.KeepAlive(obj)
@@ -348,21 +348,21 @@ func (obj *Ecc) CanDecrypt(privateKey PrivateKey, dataLen uint32) bool {
 /*
 * Calculate required buffer length to hold the decrypted data.
 */
-func (obj *Ecc) DecryptedLen(privateKey PrivateKey, dataLen uint32) uint32 {
+func (obj *Ecc) DecryptedLen(privateKey PrivateKey, dataLen int) int {
     proxyResult := /*pr4*/C.vscf_ecc_decrypted_len(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(privateKey.Ctx())), (C.size_t)(dataLen)/*pa10*/)
 
     runtime.KeepAlive(obj)
 
     runtime.KeepAlive(privateKey)
 
-    return uint32(proxyResult) /* r9 */
+    return int(proxyResult) /* r9 */
 }
 
 /*
 * Decrypt given data.
 */
 func (obj *Ecc) Decrypt(privateKey PrivateKey, data []byte) ([]byte, error) {
-    outBuf, outBufErr := bufferNewBuffer(int(obj.DecryptedLen(privateKey.(PrivateKey), uint32(len(data))) /* lg2 */))
+    outBuf, outBufErr := bufferNewBuffer(int(obj.DecryptedLen(privateKey.(PrivateKey), len(data)) /* lg2 */))
     if outBufErr != nil {
         return nil, outBufErr
     }
@@ -400,14 +400,14 @@ func (obj *Ecc) CanSign(privateKey PrivateKey) bool {
 * Return length in bytes required to hold signature.
 * Return zero if a given private key can not produce signatures.
 */
-func (obj *Ecc) SignatureLen(privateKey PrivateKey) uint32 {
+func (obj *Ecc) SignatureLen(privateKey PrivateKey) int {
     proxyResult := /*pr4*/C.vscf_ecc_signature_len(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(privateKey.Ctx())))
 
     runtime.KeepAlive(obj)
 
     runtime.KeepAlive(privateKey)
 
-    return uint32(proxyResult) /* r9 */
+    return int(proxyResult) /* r9 */
 }
 
 /*
@@ -496,40 +496,40 @@ func (obj *Ecc) ComputeSharedKey(publicKey PublicKey, privateKey PrivateKey) ([]
 * Return number of bytes required to hold shared key.
 * Expect Public Key or Private Key.
 */
-func (obj *Ecc) SharedKeyLen(key Key) uint32 {
+func (obj *Ecc) SharedKeyLen(key Key) int {
     proxyResult := /*pr4*/C.vscf_ecc_shared_key_len(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(key.Ctx())))
 
     runtime.KeepAlive(obj)
 
     runtime.KeepAlive(key)
 
-    return uint32(proxyResult) /* r9 */
+    return int(proxyResult) /* r9 */
 }
 
 /*
 * Return length in bytes required to hold encapsulated shared key.
 */
-func (obj *Ecc) KemSharedKeyLen(key Key) uint32 {
+func (obj *Ecc) KemSharedKeyLen(key Key) int {
     proxyResult := /*pr4*/C.vscf_ecc_kem_shared_key_len(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(key.Ctx())))
 
     runtime.KeepAlive(obj)
 
     runtime.KeepAlive(key)
 
-    return uint32(proxyResult) /* r9 */
+    return int(proxyResult) /* r9 */
 }
 
 /*
 * Return length in bytes required to hold encapsulated key.
 */
-func (obj *Ecc) KemEncapsulatedKeyLen(publicKey PublicKey) uint32 {
+func (obj *Ecc) KemEncapsulatedKeyLen(publicKey PublicKey) int {
     proxyResult := /*pr4*/C.vscf_ecc_kem_encapsulated_key_len(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(publicKey.Ctx())))
 
     runtime.KeepAlive(obj)
 
     runtime.KeepAlive(publicKey)
 
-    return uint32(proxyResult) /* r9 */
+    return int(proxyResult) /* r9 */
 }
 
 /*

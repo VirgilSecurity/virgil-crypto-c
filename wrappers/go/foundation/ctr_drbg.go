@@ -18,11 +18,11 @@ const (
     /*
     * The interval before reseed is performed by default.
     */
-    CtrDrbgReseedInterval uint32 = 10000
+    CtrDrbgReseedInterval int = 10000
     /*
     * The amount of entropy used per seed by default.
     */
-    CtrDrbgEntropyLen uint32 = 48
+    CtrDrbgEntropyLen int = 48
 )
 
 func (obj *CtrDrbg) SetEntropySource(entropySource EntropySource) error {
@@ -72,7 +72,7 @@ func (obj *CtrDrbg) EnablePredictionResistance() {
 * Sets the reseed interval.
 * Default value is reseed interval.
 */
-func (obj *CtrDrbg) SetReseedInterval(interval uint32) {
+func (obj *CtrDrbg) SetReseedInterval(interval int) {
     C.vscf_ctr_drbg_set_reseed_interval(obj.cCtx, (C.size_t)(interval)/*pa10*/)
 
     runtime.KeepAlive(obj)
@@ -84,7 +84,7 @@ func (obj *CtrDrbg) SetReseedInterval(interval uint32) {
 * Sets the amount of entropy grabbed on each seed or reseed.
 * The default value is entropy len.
 */
-func (obj *CtrDrbg) SetEntropyLen(len uint32) {
+func (obj *CtrDrbg) SetEntropyLen(len int) {
     C.vscf_ctr_drbg_set_entropy_len(obj.cCtx, (C.size_t)(len)/*pa10*/)
 
     runtime.KeepAlive(obj)
@@ -150,7 +150,7 @@ func (obj *CtrDrbg) delete() {
 * Generate random bytes.
 * All RNG implementations must be thread-safe.
 */
-func (obj *CtrDrbg) Random(dataLen uint32) ([]byte, error) {
+func (obj *CtrDrbg) Random(dataLen int) ([]byte, error) {
     dataBuf, dataBufErr := bufferNewBuffer(int(dataLen))
     if dataBufErr != nil {
         return nil, dataBufErr

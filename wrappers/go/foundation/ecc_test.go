@@ -154,13 +154,13 @@ func TestEcc_Encrypt(t *testing.T) {
 
 	publicKey, err := privateKey.ExtractPublicKey()
 	assert.Nil(t, err)
-	assert.True(t, ecc.CanEncrypt(publicKey, uint32(len(data))))
+	assert.True(t, ecc.CanEncrypt(publicKey, len(data)))
 
 	encrypteccData, err := ecc.Encrypt(publicKey, data)
 	assert.Nil(t, err)
 	assert.NotNil(t, encrypteccData)
 
-	assert.True(t, ecc.CanDecrypt(privateKey, uint32(len(encrypteccData))))
+	assert.True(t, ecc.CanDecrypt(privateKey, len(encrypteccData)))
 
 	decrypteccData, err := ecc.Decrypt(privateKey, encrypteccData)
 	assert.Nil(t, err)

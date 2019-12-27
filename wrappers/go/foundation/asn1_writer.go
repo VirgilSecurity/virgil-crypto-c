@@ -15,7 +15,7 @@ type Asn1Writer interface {
     /*
     * Reset all internal states and prepare to new ASN.1 writing operations.
     */
-    Reset (out []byte, outLen uint32)
+    Reset (out []byte, outLen int)
 
     /*
     * Finalize writing and forbid further operations.
@@ -26,7 +26,7 @@ type Asn1Writer interface {
     *
     * Returns length of the written bytes.
     */
-    Finish (doNotAdjust bool) uint32
+    Finish (doNotAdjust bool) int
 
     /*
     * Returns pointer to the inner buffer.
@@ -36,17 +36,17 @@ type Asn1Writer interface {
     /*
     * Returns total inner buffer length.
     */
-    Len () uint32
+    Len () int
 
     /*
     * Returns how many bytes were already written to the ASN.1 structure.
     */
-    WrittenLen () uint32
+    WrittenLen () int
 
     /*
     * Returns how many bytes are available for writing.
     */
-    UnwrittenLen () uint32
+    UnwrittenLen () int
 
     /*
     * Return true if status is not "success".
@@ -62,140 +62,140 @@ type Asn1Writer interface {
     * Move writing position backward for the given length.
     * Return current writing position.
     */
-    Reserve (len uint32) unsafe.Pointer
+    Reserve (len int) unsafe.Pointer
 
     /*
     * Write ASN.1 tag.
     * Return count of written bytes.
     */
-    WriteTag (tag int32) uint32
+    WriteTag (tag int32) int
 
     /*
     * Write context-specific ASN.1 tag.
     * Return count of written bytes.
     */
-    WriteContextTag (tag int32, len uint32) uint32
+    WriteContextTag (tag int32, len int) int
 
     /*
     * Write length of the following data.
     * Return count of written bytes.
     */
-    WriteLen (len uint32) uint32
+    WriteLen (len int) int
 
     /*
     * Write ASN.1 type: INTEGER.
     * Return count of written bytes.
     */
-    WriteInt (value int32) uint32
+    WriteInt (value int32) int
 
     /*
     * Write ASN.1 type: INTEGER.
     * Return count of written bytes.
     */
-    WriteInt8 (value int8) uint32
+    WriteInt8 (value int8) int
 
     /*
     * Write ASN.1 type: INTEGER.
     * Return count of written bytes.
     */
-    WriteInt16 (value int16) uint32
+    WriteInt16 (value int16) int
 
     /*
     * Write ASN.1 type: INTEGER.
     * Return count of written bytes.
     */
-    WriteInt32 (value int32) uint32
+    WriteInt32 (value int32) int
 
     /*
     * Write ASN.1 type: INTEGER.
     * Return count of written bytes.
     */
-    WriteInt64 (value int64) uint32
+    WriteInt64 (value int64) int
 
     /*
     * Write ASN.1 type: INTEGER.
     * Return count of written bytes.
     */
-    WriteUint (value uint32) uint32
+    WriteUint (value uint32) int
 
     /*
     * Write ASN.1 type: INTEGER.
     * Return count of written bytes.
     */
-    WriteUint8 (value uint8) uint32
+    WriteUint8 (value uint8) int
 
     /*
     * Write ASN.1 type: INTEGER.
     * Return count of written bytes.
     */
-    WriteUint16 (value uint16) uint32
+    WriteUint16 (value uint16) int
 
     /*
     * Write ASN.1 type: INTEGER.
     * Return count of written bytes.
     */
-    WriteUint32 (value uint32) uint32
+    WriteUint32 (value uint32) int
 
     /*
     * Write ASN.1 type: INTEGER.
     * Return count of written bytes.
     */
-    WriteUint64 (value uint64) uint32
+    WriteUint64 (value uint64) int
 
     /*
     * Write ASN.1 type: BOOLEAN.
     * Return count of written bytes.
     */
-    WriteBool (value bool) uint32
+    WriteBool (value bool) int
 
     /*
     * Write ASN.1 type: NULL.
     */
-    WriteNull () uint32
+    WriteNull () int
 
     /*
     * Write ASN.1 type: OCTET STRING.
     * Return count of written bytes.
     */
-    WriteOctetStr (value []byte) uint32
+    WriteOctetStr (value []byte) int
 
     /*
     * Write ASN.1 type: BIT STRING with all zero unused bits.
     *
     * Return count of written bytes.
     */
-    WriteOctetStrAsBitstring (value []byte) uint32
+    WriteOctetStrAsBitstring (value []byte) int
 
     /*
     * Write raw data directly to the ASN.1 structure.
     * Return count of written bytes.
     * Note, use this method carefully.
     */
-    WriteData (data []byte) uint32
+    WriteData (data []byte) int
 
     /*
     * Write ASN.1 type: UTF8String.
     * Return count of written bytes.
     */
-    WriteUtf8Str (value []byte) uint32
+    WriteUtf8Str (value []byte) int
 
     /*
     * Write ASN.1 type: OID.
     * Return count of written bytes.
     */
-    WriteOid (value []byte) uint32
+    WriteOid (value []byte) int
 
     /*
     * Mark previously written data of given length as ASN.1 type: SEQUENCE.
     * Return count of written bytes.
     */
-    WriteSequence (len uint32) uint32
+    WriteSequence (len int) int
 
     /*
     * Mark previously written data of given length as ASN.1 type: SET.
     * Return count of written bytes.
     */
-    WriteSet (len uint32) uint32
+    WriteSet (len int) int
 
     /*
     * Release underlying C context.

@@ -50,7 +50,7 @@ func TestNewRsa(t *testing.T) {
 
 func TestRsa_GenerateKey(t *testing.T) {
 	rsa := newRsa()
-	bitlen := uint32(2048)
+	bitlen := 2048
 
 	privateKey, err := rsa.GenerateKey(bitlen)
 	assert.Nil(t, err)
@@ -64,7 +64,7 @@ func TestRsa_GenerateKey(t *testing.T) {
 }
 
 func TestRsa_CanSign(t *testing.T) {
-	bitlen := uint32(2048)
+	bitlen := 2048
 	rsa := newRsa()
 	privateKey, err := rsa.GenerateKey(bitlen)
 	assert.Nil(t, err)
@@ -97,7 +97,7 @@ func TestRsa_GetCanImportPrivateKey(t *testing.T) {
 }
 
 func TestRsa_ExportPrivateKey(t *testing.T) {
-	bitlen := uint32(2048)
+	bitlen := 2048
 	rsa := newRsa()
 
 	privateKey, err := rsa.GenerateKey(bitlen)
@@ -125,7 +125,7 @@ func TestRsa_ExportPrivateKey(t *testing.T) {
 }
 
 func TestRsa_ExportPublicKey(t *testing.T) {
-	bitlen := uint32(2048)
+	bitlen := 2048
 	rsa := newRsa()
 
 	privateKey, err := rsa.GenerateKey(bitlen)
@@ -159,7 +159,7 @@ func TestRsa_Encrypt(t *testing.T) {
 	data := make([]byte, 100)
 	rand.Read(data)
 
-	bitlen := uint32(2048)
+	bitlen := 2048
 	rsa := newRsa()
 
 	privateKey, err := rsa.GenerateKey(bitlen)
@@ -167,13 +167,13 @@ func TestRsa_Encrypt(t *testing.T) {
 	publicKey, err := privateKey.ExtractPublicKey()
 	assert.Nil(t, err)
 
-	assert.True(t, rsa.CanEncrypt(publicKey, uint32(len(data))))
+	assert.True(t, rsa.CanEncrypt(publicKey, len(data)))
 
 	encryptedData, err := rsa.Encrypt(publicKey, data)
 	assert.Nil(t, err)
 	assert.NotNil(t, encryptedData)
 
-	assert.True(t, rsa.CanDecrypt(privateKey, uint32(len(encryptedData))))
+	assert.True(t, rsa.CanDecrypt(privateKey, len(encryptedData)))
 
 	decryptedData, err := rsa.Decrypt(privateKey, encryptedData)
 	assert.Nil(t, err)
@@ -216,7 +216,7 @@ func TestRsa_SignHash(t *testing.T) {
 	assert.Nil(t, err)
 
 	assert.NotNil(t, signature)
-	assert.Equal(t, rsa.SignatureLen(privateKey), uint32(len(signature)))
+	assert.Equal(t, rsa.SignatureLen(privateKey), len(signature))
 
 	assert.True(t, rsa.VerifyHash(publicKey, AlgIdSha512, data, signature))
 }

@@ -57,7 +57,7 @@ func TestSha512_AlgId(t *testing.T) {
 func TestSha512_GetDigestLen(t *testing.T) {
 	sha := NewSha512()
 
-	assert.Equal(t, uint32(TEST_SHA512_DIGEST_LEN), sha.GetDigestLen())
+	assert.Equal(t, TEST_SHA512_DIGEST_LEN, sha.GetDigestLen())
 }
 
 func TestSha512_Hash(t *testing.T) {

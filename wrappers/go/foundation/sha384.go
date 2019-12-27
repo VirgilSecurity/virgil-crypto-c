@@ -110,14 +110,14 @@ func (obj *Sha384) RestoreAlgInfo(algInfo AlgInfo) error {
 /*
 * Length of the digest (hashing output) in bytes.
 */
-func (obj *Sha384) GetDigestLen() uint32 {
+func (obj *Sha384) GetDigestLen() int {
     return 48
 }
 
 /*
 * Block length of the digest function in bytes.
 */
-func (obj *Sha384) GetBlockLen() uint32 {
+func (obj *Sha384) GetBlockLen() int {
     return 128
 }
 

@@ -10,8 +10,8 @@ type BrainkeyServer struct {
     cCtx *C.vscf_brainkey_server_t /*ct2*/
 }
 const (
-    BrainkeyServerPointLen uint32 = 65
-    BrainkeyServerMpiLen uint32 = 32
+    BrainkeyServerPointLen int = 65
+    BrainkeyServerMpiLen int = 32
 )
 
 /* Handle underlying C context. */

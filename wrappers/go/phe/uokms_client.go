@@ -154,7 +154,7 @@ func (obj *UokmsClient) GenerateClientPrivateKey() ([]byte, error) {
 * Generates new encrypt wrap (which should be stored and then used for decryption) + encryption key
 * of "encryption key len" that can be used for symmetric encryption
 */
-func (obj *UokmsClient) GenerateEncryptWrap(encryptionKeyLen uint32) ([]byte, []byte, error) {
+func (obj *UokmsClient) GenerateEncryptWrap(encryptionKeyLen int) ([]byte, []byte, error) {
     wrapBuf, wrapBufErr := bufferNewBuffer(int(PheCommonPhePublicKeyLength /* lg4 */))
     if wrapBufErr != nil {
         return nil, nil, wrapBufErr
@@ -213,7 +213,7 @@ func (obj *UokmsClient) GenerateDecryptRequest(wrap []byte) ([]byte, []byte, err
 /*
 * Processed server response, checks server proof and decapsulates encryption key
 */
-func (obj *UokmsClient) ProcessDecryptResponse(wrap []byte, decryptRequest []byte, decryptResponse []byte, deblindFactor []byte, encryptionKeyLen uint32) ([]byte, error) {
+func (obj *UokmsClient) ProcessDecryptResponse(wrap []byte, decryptRequest []byte, decryptResponse []byte, deblindFactor []byte, encryptionKeyLen int) ([]byte, error) {
     encryptionKeyBuf, encryptionKeyBufErr := bufferNewBuffer(int(encryptionKeyLen))
     if encryptionKeyBufErr != nil {
         return nil, encryptionKeyBufErr

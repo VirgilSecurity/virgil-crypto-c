@@ -118,7 +118,7 @@ func (obj *Kdf2) RestoreAlgInfo(algInfo AlgInfo) error {
 /*
 * Derive key of the requested length from the given data.
 */
-func (obj *Kdf2) Derive(data []byte, keyLen uint32) []byte {
+func (obj *Kdf2) Derive(data []byte, keyLen int) []byte {
     keyBuf, keyBufErr := bufferNewBuffer(int(keyLen))
     if keyBufErr != nil {
         return nil
