@@ -112,6 +112,8 @@ _add_test (test_hybrid_key_alg)
 _add_test (test_key_info)
 _add_test (test_padding_cipher)
 
+_add_test (functional_test_recipient_cipher)
+
 # ---------------------------------------------------------------------------
 #   Multi-threading tests
 # ---------------------------------------------------------------------------
