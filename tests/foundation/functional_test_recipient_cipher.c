@@ -58,7 +58,7 @@ enum {
 // --------------------------------------------------------------------------
 //  Encrypt / Decrypt / No Signature / No Padding
 // --------------------------------------------------------------------------
-static void
+void
 inner_test__encrypt_decrypt__no_signature_no_padding__success(
         vsc_data_t public_key_data, vsc_data_t private_key_data, size_t data_range_from, size_t data_range_to) {
     //
@@ -163,7 +163,7 @@ test__encrypt_decrypt__no_signature_no_padding_with_ed25519_key_recipient__succe
 // --------------------------------------------------------------------------
 //  Encrypt / Decrypt / No Signature / Random Padding
 // --------------------------------------------------------------------------
-static void
+void
 inner_test__encrypt_decrypt__no_signature_with_random_padding__success(
         vsc_data_t public_key_data, vsc_data_t private_key_data, size_t data_range_from, size_t data_range_to) {
 
@@ -281,7 +281,7 @@ test__encrypt_decrypt__no_signature_with_random_padding_and_ed25519_key_recipien
 // --------------------------------------------------------------------------
 //  Encrypt / Decrypt / Signature / Random Padding
 // --------------------------------------------------------------------------
-static void
+void
 inner_test__encrypt_decrypt__with_signature_and_random_padding__success(
         vsc_data_t public_key_data, vsc_data_t private_key_data, size_t data_range_from, size_t data_range_to) {
 
