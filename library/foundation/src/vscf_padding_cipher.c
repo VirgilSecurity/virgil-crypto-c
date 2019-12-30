@@ -459,7 +459,7 @@ vscf_padding_cipher_decrypted_out_len(const vscf_padding_cipher_t *self, size_t 
         return decrypted_len;
     }
 
-    const size_t padding_len_max = vscf_padding_len_max(self->padding);
+    const size_t padding_len_max = vscf_padding_finish_padded_data_processing_out_len(self->padding);
 
     return decrypted_len + padding_len_max;
 }

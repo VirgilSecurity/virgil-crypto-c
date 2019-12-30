@@ -82,11 +82,6 @@ public class Ed25519InstrumentedTest {
     }
 
     @Test
-    public void algId() {
-        assertEquals(AlgId.ED25519, this.ed.algId());
-    }
-
-    @Test
     public void canSign() {
         PrivateKey privateKey = this.ed.generateKey();
         assertTrue(this.ed.canSign(privateKey));
