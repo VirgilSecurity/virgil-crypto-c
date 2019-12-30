@@ -279,8 +279,7 @@ def build_LangPHP_Windows(slave) {
             clearContentWindows()
             unstash 'src'
             withEnv(["PHP_HOME=C:\\php-7.2.18",
-                     "PHP_DEVEL_HOME=C:\\php-7.2.18-devel",
-                     "PHPUNIT_HOME=C:\\phpunit-7.2.4"]) {
+                     "PHP_DEVEL_HOME=C:\\php-7.2.18-devel"]) {
                 bat '''
                     set PATH=%PATH:"=%
                     call "C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\Community\\VC\\Auxiliary\\Build\\vcvars64.bat"
@@ -306,8 +305,7 @@ def build_LangPHP_Windows(slave) {
             clearContentWindows()
             unstash 'src'
             withEnv(["PHP_HOME=C:\\php-7.3.5",
-                     "PHP_DEVEL_HOME=C:\\php-7.3.5-devel",
-                     "PHPUNIT_HOME=C:\\phpunit-7.2.4"]) {
+                     "PHP_DEVEL_HOME=C:\\php-7.3.5-devel"]) {
                 bat '''
                     set PATH=%PATH:"=%
                     call "C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\Community\\VC\\Auxiliary\\Build\\vcvars64.bat"
