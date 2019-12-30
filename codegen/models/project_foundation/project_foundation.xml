@@ -51,6 +51,7 @@
     <require library="mbedtls" feature="library"/>
 
     <cgo_link libraries="-lvsc_foundation -lvsc_foundation_pb -led25519 -lprotobuf-nanopb -lvsc_common -lmbedcrypto -lround5 -lfalcon -lkeccak"/>
+    <cgo_link platform="linux" libraries="-lpthread"/>
 
     <feature name="multi threading" default="on">
         Enable multi-threading safety for foundation library.

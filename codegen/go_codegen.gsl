@@ -316,7 +316,13 @@ function go_insert_cgo_flag (go_cgo_flag)
 
     assert_attributes (my.go_cgo_flag, "name, value", my)
 
-    go_insert_code ("// #cgo $(my.go_cgo_flag.name:): $(my.go_cgo_flag.value:)")
+    if defined (my.go_cgo_flag.platform)
+        my.platform = "$(my.go_cgo_flag.platform:) "
+    else
+        my.platform = ""
+    endif
+
+    go_insert_code ("// #cgo $(my.platform:)$(my.go_cgo_flag.name:): $(my.go_cgo_flag.value:)")
 endfunction
 
 # ---------------------------------------------------------------------------
