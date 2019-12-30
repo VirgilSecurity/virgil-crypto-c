@@ -299,6 +299,7 @@ function implementation_resolve (implementation, parent, project)
     my.implementation.visibility ?= "public"
     my.implementation.c_prefix ?= my.project.prefix
     my.implementation.uid = make_id ("implelemntation", my.implementation.name)
+    my.implementation.is_default = "1"
 
     for my.implementation.c_include
         implementation_resolve_c_include (c_include, my.implementation)

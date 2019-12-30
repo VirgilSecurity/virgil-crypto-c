@@ -108,9 +108,11 @@ _add_test (test_post_quantum_library_falcon)
 _add_test (test_falcon)
 _add_test (test_round5)
 _add_test (test_compound_key_alg)
-_add_test (test_chained_key_alg)
+_add_test (test_hybrid_key_alg)
 _add_test (test_key_info)
 _add_test (test_padding_cipher)
+
+_add_test (functional_test_recipient_cipher)
 
 # ---------------------------------------------------------------------------
 #   Multi-threading tests

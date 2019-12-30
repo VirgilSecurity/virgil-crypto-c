@@ -155,11 +155,11 @@ import VSCFoundation
     /// Compound private key is corrupted.
     case errorBadCompoundPrivateKey = -233
 
-    /// Compound public chained key is corrupted.
-    case errorBadChainedPublicKey = -234
+    /// Compound public hybrid key is corrupted.
+    case errorBadHybridPublicKey = -234
 
-    /// Compound private chained key is corrupted.
-    case errorBadChainedPrivateKey = -235
+    /// Compound private hybrid key is corrupted.
+    case errorBadHybridPrivateKey = -235
 
     /// ASN.1 AlgorithmIdentifer is corrupted.
     case errorBadAsn1Algorithm = -236
@@ -170,8 +170,8 @@ import VSCFoundation
     /// ASN.1 AlgorithmIdentifer with CompoundKeyParams is corrupted.
     case errorBadAsn1AlgorithmCompoundKey = -238
 
-    /// ASN.1 AlgorithmIdentifer with ChainedKeyParams is corrupted.
-    case errorBadAsn1AlgorithmChainedKey = -239
+    /// ASN.1 AlgorithmIdentifer with HybridKeyParams is corrupted.
+    case errorBadAsn1AlgorithmHybridKey = -239
 
     /// Decryption failed, because message info was not given explicitly,
     /// and was not part of an encrypted message.
@@ -232,6 +232,9 @@ import VSCFoundation
 
     /// Brainkey identity secret is invalid.
     case errorInvalidIdentitySecret = -410
+
+    /// KEM encapsulated key is invalid or does not correspond to the private key.
+    case errorInvalidKemEncapsulatedKey = -411
 
     /// Invalid padding.
     case errorInvalidPadding = -501

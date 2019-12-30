@@ -80,38 +80,38 @@ import VSCFoundation
         return proxyResult
     }
 
-    /// Return true if a key is a chained key
-    @objc public func isChained() -> Bool {
-        let proxyResult = vscf_key_info_is_chained(self.c_ctx)
+    /// Return true if a key is a hybrid key
+    @objc public func isHybrid() -> Bool {
+        let proxyResult = vscf_key_info_is_hybrid(self.c_ctx)
 
         return proxyResult
     }
 
     /// Return true if a key is a compound key and compounds cipher key
-    /// and signer key are chained keys.
-    @objc public func isCompoundChained() -> Bool {
-        let proxyResult = vscf_key_info_is_compound_chained(self.c_ctx)
+    /// and signer key are hybrid keys.
+    @objc public func isCompoundHybrid() -> Bool {
+        let proxyResult = vscf_key_info_is_compound_hybrid(self.c_ctx)
 
         return proxyResult
     }
 
     /// Return true if a key is a compound key and compounds cipher key
-    /// is a chained key.
-    @objc public func isCompoundChainedCipher() -> Bool {
-        let proxyResult = vscf_key_info_is_compound_chained_cipher(self.c_ctx)
+    /// is a hybrid key.
+    @objc public func isCompoundHybridCipher() -> Bool {
+        let proxyResult = vscf_key_info_is_compound_hybrid_cipher(self.c_ctx)
 
         return proxyResult
     }
 
     /// Return true if a key is a compound key and compounds signer key
-    /// is a chained key.
-    @objc public func isCompoundChainedSigner() -> Bool {
-        let proxyResult = vscf_key_info_is_compound_chained_signer(self.c_ctx)
+    /// is a hybrid key.
+    @objc public func isCompoundHybridSigner() -> Bool {
+        let proxyResult = vscf_key_info_is_compound_hybrid_signer(self.c_ctx)
 
         return proxyResult
     }
 
-    /// Return true if a key is a compound key that contains chained keys
+    /// Return true if a key is a compound key that contains hybrid keys
     /// for encryption/decryption and signing/verifying that itself
     /// contains a combination of classic keys and post-quantum keys.
     @objc public func isHybridPostQuantum() -> Bool {
@@ -120,7 +120,7 @@ import VSCFoundation
         return proxyResult
     }
 
-    /// Return true if a key is a compound key that contains a chained key
+    /// Return true if a key is a compound key that contains a hybrid key
     /// for encryption/decryption that contains a classic key and
     /// a post-quantum key.
     @objc public func isHybridPostQuantumCipher() -> Bool {
@@ -129,7 +129,7 @@ import VSCFoundation
         return proxyResult
     }
 
-    /// Return true if a key is a compound key that contains a chained key
+    /// Return true if a key is a compound key that contains a hybrid key
     /// for signing/verifying that contains a classic key and
     /// a post-quantum key.
     @objc public func isHybridPostQuantumSigner() -> Bool {
@@ -161,50 +161,50 @@ import VSCFoundation
         return AlgId.init(fromC: proxyResult)
     }
 
-    /// Return chained l1 key id, if key is chained.
+    /// Return hybrid's first key id, if key is hybrid.
     /// Return None, otherwise.
-    @objc public func chainedL1AlgId() -> AlgId {
-        let proxyResult = vscf_key_info_chained_l1_alg_id(self.c_ctx)
+    @objc public func hybridFirstKeyAlgId() -> AlgId {
+        let proxyResult = vscf_key_info_hybrid_first_key_alg_id(self.c_ctx)
 
         return AlgId.init(fromC: proxyResult)
     }
 
-    /// Return chained l2 key id, if key is chained.
+    /// Return hybrid's second key id, if key is hybrid.
     /// Return None, otherwise.
-    @objc public func chainedL2AlgId() -> AlgId {
-        let proxyResult = vscf_key_info_chained_l2_alg_id(self.c_ctx)
+    @objc public func hybridSecondKeyAlgId() -> AlgId {
+        let proxyResult = vscf_key_info_hybrid_second_key_alg_id(self.c_ctx)
 
         return AlgId.init(fromC: proxyResult)
     }
 
-    /// Return l1 key id of compound's cipher key, if key is compound(chained, ...)
-    /// Return None, otherwise.
-    @objc public func compoundCipherL1AlgId() -> AlgId {
-        let proxyResult = vscf_key_info_compound_cipher_l1_alg_id(self.c_ctx)
+    /// Return hybrid's first key id of compound's cipher key,
+    /// if key is compound(hybrid, ...), None - otherwise.
+    @objc public func compoundHybridCipherFirstKeyAlgId() -> AlgId {
+        let proxyResult = vscf_key_info_compound_hybrid_cipher_first_key_alg_id(self.c_ctx)
 
         return AlgId.init(fromC: proxyResult)
     }
 
-    /// Return l2 key id of compound's cipher key, if key is compound(chained, ...)
-    /// Return None, otherwise.
-    @objc public func compoundCipherL2AlgId() -> AlgId {
-        let proxyResult = vscf_key_info_compound_cipher_l2_alg_id(self.c_ctx)
+    /// Return hybrid's second key id of compound's cipher key,
+    /// if key is compound(hybrid, ...), None - otherwise.
+    @objc public func compoundHybridCipherSecondKeyAlgId() -> AlgId {
+        let proxyResult = vscf_key_info_compound_hybrid_cipher_second_key_alg_id(self.c_ctx)
 
         return AlgId.init(fromC: proxyResult)
     }
 
-    /// Return l1 key id of compound's signer key, if key is compound(..., chained)
-    /// Return None, otherwise.
-    @objc public func compoundSignerL1AlgId() -> AlgId {
-        let proxyResult = vscf_key_info_compound_signer_l1_alg_id(self.c_ctx)
+    /// Return hybrid's first key id of compound's signer key,
+    /// if key is compound(..., hybrid), None - otherwise.
+    @objc public func compoundHybridSignerFirstKeyAlgId() -> AlgId {
+        let proxyResult = vscf_key_info_compound_hybrid_signer_first_key_alg_id(self.c_ctx)
 
         return AlgId.init(fromC: proxyResult)
     }
 
-    /// Return l2 key id of compound's signer key, if key is compound(..., chained)
-    /// Return None, otherwise.
-    @objc public func compoundSignerL2AlgId() -> AlgId {
-        let proxyResult = vscf_key_info_compound_signer_l2_alg_id(self.c_ctx)
+    /// Return hybrid's second key id of compound's signer key,
+    /// if key is compound(..., hybrid), None - otherwise.
+    @objc public func compoundHybridSignerSecondKeyAlgId() -> AlgId {
+        let proxyResult = vscf_key_info_compound_hybrid_signer_second_key_alg_id(self.c_ctx)
 
         return AlgId.init(fromC: proxyResult)
     }

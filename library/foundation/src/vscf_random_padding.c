@@ -99,6 +99,7 @@ vscf_random_padding_init_ctx(vscf_random_padding_t *self) {
     VSCF_ASSERT_PTR(self);
 
     self->padding_frame = vscf_padding_params_DEFAULT_FRAME;
+    self->padding_frame_max = vscf_padding_params_DEFAULT_FRAME_MAX;
 }
 
 //
@@ -159,10 +160,7 @@ vscf_random_padding_configure(vscf_random_padding_t *self, const vscf_padding_pa
     VSCF_ASSERT_PTR(params);
 
     const size_t padding_frame = vscf_padding_params_frame(params);
-    const size_t padding_frame_min = vscf_padding_params_frame_min(params);
     const size_t padding_frame_max = vscf_padding_params_frame_max(params);
-
-    VSCF_ASSERT_SAFE((padding_frame_min <= padding_frame) && (padding_frame <= padding_frame_max));
 
     self->padding_frame = padding_frame;
     self->padding_frame_max = padding_frame_max;
@@ -208,7 +206,7 @@ vscf_random_padding_len_max(const vscf_random_padding_t *self) {
 
     VSCF_ASSERT_PTR(self);
 
-    const size_t padding_len_max = self->padding_frame_max + vscf_random_padding_PADDING_SIZE_LEN;
+    const size_t padding_len_max = self->padding_frame + vscf_random_padding_PADDING_SIZE_LEN;
 
     return padding_len_max;
 }
@@ -282,7 +280,7 @@ vscf_random_padding_start_padded_data_processing(vscf_random_padding_t *self) {
         self->tail_filter = vscf_tail_filter_new();
     }
 
-    vscf_tail_filter_reset(self->tail_filter, self->padding_frame + vscf_random_padding_PADDING_SIZE_LEN);
+    vscf_tail_filter_reset(self->tail_filter, self->padding_frame_max + vscf_random_padding_PADDING_SIZE_LEN);
 }
 
 //
@@ -302,6 +300,20 @@ vscf_random_padding_process_padded_data(vscf_random_padding_t *self, vsc_data_t 
 }
 
 //
+//  Return length in bytes required hold output of the method
+//  "finish padded data processing".
+//
+VSCF_PUBLIC size_t
+vscf_random_padding_finish_padded_data_processing_out_len(const vscf_random_padding_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+
+    vsc_data_t padding = vscf_tail_filter_tail(self->tail_filter);
+
+    return padding.len;
+}
+
+//
 //  Accomplish padded data processing and return left data without a padding.
 //
 VSCF_PUBLIC vscf_status_t
@@ -311,7 +323,7 @@ vscf_random_padding_finish_padded_data_processing(vscf_random_padding_t *self, v
     VSCF_ASSERT_PTR(self->tail_filter);
     VSCF_ASSERT_PTR(out);
     VSCF_ASSERT(vsc_buffer_is_valid(out));
-    VSCF_ASSERT(vsc_buffer_unused_len(out) >= vscf_random_padding_len_max(self));
+    VSCF_ASSERT(vsc_buffer_unused_len(out) >= vscf_random_padding_finish_padded_data_processing_out_len(self));
 
     vsc_data_t padding = vscf_tail_filter_tail(self->tail_filter);
 

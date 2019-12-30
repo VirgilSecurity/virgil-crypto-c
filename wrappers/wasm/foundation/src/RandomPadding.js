@@ -287,12 +287,24 @@ const initRandomPadding = (Module, modules) => {
         }
 
         /**
+         * Return length in bytes required hold output of the method
+         * "finish padded data processing".
+         */
+        finishPaddedDataProcessingOutLen() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
+            let proxyResult;
+            proxyResult = Module._vscf_random_padding_finish_padded_data_processing_out_len(this.ctxPtr);
+            return proxyResult;
+        }
+
+        /**
          * Accomplish padded data processing and return left data without a padding.
          */
         finishPaddedDataProcessing() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
-            const outCapacity = this.lenMax();
+            const outCapacity = this.finishPaddedDataProcessingOutLen();
             const outCtxPtr = Module._vsc_buffer_new_with_capacity(outCapacity);
 
             try {

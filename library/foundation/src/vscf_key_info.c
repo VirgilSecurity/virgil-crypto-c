@@ -50,7 +50,7 @@
 #include "vscf_key_info_defs.h"
 #include "vscf_alg_info.h"
 #include "vscf_compound_key_alg_info.h"
-#include "vscf_chained_key_alg_info.h"
+#include "vscf_hybrid_key_alg_info.h"
 
 // clang-format on
 //  @end
@@ -268,10 +268,14 @@ vscf_key_info_init_ctx(vscf_key_info_t *self) {
     VSCF_ASSERT_PTR(self);
 
     self->alg_id = vscf_alg_id_NONE;
-    self->compound_cipher_l1_alg_id = vscf_alg_id_NONE;
-    self->compound_cipher_l2_alg_id = vscf_alg_id_NONE;
-    self->compound_signer_l1_alg_id = vscf_alg_id_NONE;
-    self->compound_signer_l2_alg_id = vscf_alg_id_NONE;
+    self->hybrid_first_key_alg_id = vscf_alg_id_NONE;
+    self->hybrid_second_key_alg_id = vscf_alg_id_NONE;
+    self->compound_cipher_alg_id = vscf_alg_id_NONE;
+    self->compound_signer_alg_id = vscf_alg_id_NONE;
+    self->compound_hybrid_cipher_first_key_alg_id = vscf_alg_id_NONE;
+    self->compound_hybrid_cipher_second_key_alg_id = vscf_alg_id_NONE;
+    self->compound_hybrid_signer_first_key_alg_id = vscf_alg_id_NONE;
+    self->compound_hybrid_signer_second_key_alg_id = vscf_alg_id_NONE;
 }
 
 //
@@ -296,14 +300,14 @@ vscf_key_info_init_ctx_with_alg_info(vscf_key_info_t *self, const vscf_impl_t *a
     VSCF_ASSERT(vscf_alg_info_is_implemented(alg_info));
 
     self->alg_id = vscf_alg_info_alg_id(alg_info);
-    self->chained_l1_alg_id = vscf_alg_id_NONE;
-    self->chained_l2_alg_id = vscf_alg_id_NONE;
+    self->hybrid_first_key_alg_id = vscf_alg_id_NONE;
+    self->hybrid_second_key_alg_id = vscf_alg_id_NONE;
     self->compound_cipher_alg_id = vscf_alg_id_NONE;
     self->compound_signer_alg_id = vscf_alg_id_NONE;
-    self->compound_cipher_l1_alg_id = vscf_alg_id_NONE;
-    self->compound_cipher_l2_alg_id = vscf_alg_id_NONE;
-    self->compound_signer_l1_alg_id = vscf_alg_id_NONE;
-    self->compound_signer_l2_alg_id = vscf_alg_id_NONE;
+    self->compound_hybrid_cipher_first_key_alg_id = vscf_alg_id_NONE;
+    self->compound_hybrid_cipher_second_key_alg_id = vscf_alg_id_NONE;
+    self->compound_hybrid_signer_first_key_alg_id = vscf_alg_id_NONE;
+    self->compound_hybrid_signer_second_key_alg_id = vscf_alg_id_NONE;
 
     if (vscf_impl_tag(alg_info) == vscf_impl_tag_COMPOUND_KEY_ALG_INFO) {
         const vscf_compound_key_alg_info_t *compound_key_alg_info = (const vscf_compound_key_alg_info_t *)alg_info;
@@ -313,35 +317,33 @@ vscf_key_info_init_ctx_with_alg_info(vscf_key_info_t *self, const vscf_impl_t *a
         self->compound_cipher_alg_id = vscf_alg_info_alg_id(cipher_alg_info);
         self->compound_signer_alg_id = vscf_alg_info_alg_id(signer_alg_info);
 
-        if (vscf_impl_tag(cipher_alg_info) == vscf_impl_tag_CHAINED_KEY_ALG_INFO) {
-            const vscf_chained_key_alg_info_t *chained_key_alg_info =
-                    (const vscf_chained_key_alg_info_t *)cipher_alg_info;
-            const vscf_impl_t *l1_key_alg_info = vscf_chained_key_alg_info_l1_key_alg_info(chained_key_alg_info);
-            const vscf_impl_t *l2_key_alg_info = vscf_chained_key_alg_info_l2_key_alg_info(chained_key_alg_info);
+        if (vscf_impl_tag(cipher_alg_info) == vscf_impl_tag_HYBRID_KEY_ALG_INFO) {
+            const vscf_hybrid_key_alg_info_t *hybrid_key_alg_info = (const vscf_hybrid_key_alg_info_t *)cipher_alg_info;
+            const vscf_impl_t *first_key_alg_info = vscf_hybrid_key_alg_info_first_key_alg_info(hybrid_key_alg_info);
+            const vscf_impl_t *second_key_alg_info = vscf_hybrid_key_alg_info_second_key_alg_info(hybrid_key_alg_info);
 
-            self->compound_cipher_l1_alg_id = vscf_alg_info_alg_id(l1_key_alg_info);
-            self->compound_cipher_l2_alg_id = vscf_alg_info_alg_id(l2_key_alg_info);
+            self->compound_hybrid_cipher_first_key_alg_id = vscf_alg_info_alg_id(first_key_alg_info);
+            self->compound_hybrid_cipher_second_key_alg_id = vscf_alg_info_alg_id(second_key_alg_info);
         }
 
-        if (vscf_impl_tag(signer_alg_info) == vscf_impl_tag_CHAINED_KEY_ALG_INFO) {
-            const vscf_chained_key_alg_info_t *chained_key_alg_info =
-                    (const vscf_chained_key_alg_info_t *)signer_alg_info;
-            const vscf_impl_t *l1_key_alg_info = vscf_chained_key_alg_info_l1_key_alg_info(chained_key_alg_info);
-            const vscf_impl_t *l2_key_alg_info = vscf_chained_key_alg_info_l2_key_alg_info(chained_key_alg_info);
+        if (vscf_impl_tag(signer_alg_info) == vscf_impl_tag_HYBRID_KEY_ALG_INFO) {
+            const vscf_hybrid_key_alg_info_t *hybrid_key_alg_info = (const vscf_hybrid_key_alg_info_t *)signer_alg_info;
+            const vscf_impl_t *first_key_alg_info = vscf_hybrid_key_alg_info_first_key_alg_info(hybrid_key_alg_info);
+            const vscf_impl_t *second_key_alg_info = vscf_hybrid_key_alg_info_second_key_alg_info(hybrid_key_alg_info);
 
-            self->compound_signer_l1_alg_id = vscf_alg_info_alg_id(l1_key_alg_info);
-            self->compound_signer_l2_alg_id = vscf_alg_info_alg_id(l2_key_alg_info);
+            self->compound_hybrid_signer_first_key_alg_id = vscf_alg_info_alg_id(first_key_alg_info);
+            self->compound_hybrid_signer_second_key_alg_id = vscf_alg_info_alg_id(second_key_alg_info);
         }
     }
 
 
-    if (vscf_impl_tag(alg_info) == vscf_impl_tag_CHAINED_KEY_ALG_INFO) {
-        const vscf_chained_key_alg_info_t *chained_key_alg_info = (const vscf_chained_key_alg_info_t *)alg_info;
-        const vscf_impl_t *l1_key_alg_info = vscf_chained_key_alg_info_l1_key_alg_info(chained_key_alg_info);
-        const vscf_impl_t *l2_key_alg_info = vscf_chained_key_alg_info_l2_key_alg_info(chained_key_alg_info);
+    if (vscf_impl_tag(alg_info) == vscf_impl_tag_HYBRID_KEY_ALG_INFO) {
+        const vscf_hybrid_key_alg_info_t *hybrid_key_alg_info = (const vscf_hybrid_key_alg_info_t *)alg_info;
+        const vscf_impl_t *first_key_alg_info = vscf_hybrid_key_alg_info_first_key_alg_info(hybrid_key_alg_info);
+        const vscf_impl_t *second_key_alg_info = vscf_hybrid_key_alg_info_second_key_alg_info(hybrid_key_alg_info);
 
-        self->chained_l1_alg_id = vscf_alg_info_alg_id(l1_key_alg_info);
-        self->chained_l2_alg_id = vscf_alg_info_alg_id(l2_key_alg_info);
+        self->hybrid_first_key_alg_id = vscf_alg_info_alg_id(first_key_alg_info);
+        self->hybrid_second_key_alg_id = vscf_alg_info_alg_id(second_key_alg_info);
     }
 }
 
@@ -357,56 +359,56 @@ vscf_key_info_is_compound(const vscf_key_info_t *self) {
 }
 
 //
-//  Return true if a key is a chained key
+//  Return true if a key is a hybrid key
 //
 VSCF_PUBLIC bool
-vscf_key_info_is_chained(const vscf_key_info_t *self) {
+vscf_key_info_is_hybrid(const vscf_key_info_t *self) {
 
     VSCF_ASSERT_PTR(self);
 
-    return vscf_alg_id_CHAINED_KEY == self->alg_id;
+    return vscf_alg_id_HYBRID_KEY == self->alg_id;
 }
 
 //
 //  Return true if a key is a compound key and compounds cipher key
-//  and signer key are chained keys.
+//  and signer key are hybrid keys.
 //
 VSCF_PUBLIC bool
-vscf_key_info_is_compound_chained(const vscf_key_info_t *self) {
+vscf_key_info_is_compound_hybrid(const vscf_key_info_t *self) {
 
     VSCF_ASSERT_PTR(self);
 
-    return vscf_key_info_is_compound_chained_cipher(self) && vscf_key_info_is_compound_chained_signer(self);
+    return vscf_key_info_is_compound_hybrid_cipher(self) && vscf_key_info_is_compound_hybrid_signer(self);
 }
 
 //
 //  Return true if a key is a compound key and compounds cipher key
-//  is a chained key.
+//  is a hybrid key.
 //
 VSCF_PUBLIC bool
-vscf_key_info_is_compound_chained_cipher(const vscf_key_info_t *self) {
+vscf_key_info_is_compound_hybrid_cipher(const vscf_key_info_t *self) {
 
     VSCF_ASSERT_PTR(self);
 
-    return (self->compound_cipher_l1_alg_id != vscf_alg_id_NONE) &&
-           (self->compound_cipher_l2_alg_id != vscf_alg_id_NONE);
+    return (self->compound_hybrid_cipher_first_key_alg_id != vscf_alg_id_NONE) &&
+           (self->compound_hybrid_cipher_second_key_alg_id != vscf_alg_id_NONE);
 }
 
 //
 //  Return true if a key is a compound key and compounds signer key
-//  is a chained key.
+//  is a hybrid key.
 //
 VSCF_PUBLIC bool
-vscf_key_info_is_compound_chained_signer(const vscf_key_info_t *self) {
+vscf_key_info_is_compound_hybrid_signer(const vscf_key_info_t *self) {
 
     VSCF_ASSERT_PTR(self);
 
-    return (self->compound_signer_l1_alg_id != vscf_alg_id_NONE) &&
-           (self->compound_signer_l2_alg_id != vscf_alg_id_NONE);
+    return (self->compound_hybrid_signer_first_key_alg_id != vscf_alg_id_NONE) &&
+           (self->compound_hybrid_signer_second_key_alg_id != vscf_alg_id_NONE);
 }
 
 //
-//  Return true if a key is a compound key that contains chained keys
+//  Return true if a key is a compound key that contains hybrid keys
 //  for encryption/decryption and signing/verifying that itself
 //  contains a combination of classic keys and post-quantum keys.
 //
@@ -419,7 +421,7 @@ vscf_key_info_is_hybrid_post_quantum(const vscf_key_info_t *self) {
 }
 
 //
-//  Return true if a key is a compound key that contains a chained key
+//  Return true if a key is a compound key that contains a hybrid key
 //  for encryption/decryption that contains a classic key and
 //  a post-quantum key.
 //
@@ -428,17 +430,19 @@ vscf_key_info_is_hybrid_post_quantum_cipher(const vscf_key_info_t *self) {
 
     VSCF_ASSERT_PTR(self);
 
-    const bool is_l1_post_quantum = (vscf_alg_id_ROUND5_ND_5PKE_5D == self->compound_cipher_l1_alg_id) &&
-                                    (self->compound_cipher_l1_alg_id != self->compound_cipher_l2_alg_id);
+    const bool is_first_post_quantum =
+            (vscf_alg_id_ROUND5_ND_5KEM_5D == self->compound_hybrid_cipher_first_key_alg_id) &&
+            (self->compound_hybrid_cipher_first_key_alg_id != self->compound_hybrid_cipher_second_key_alg_id);
 
-    const bool is_l2_post_quantum = (vscf_alg_id_ROUND5_ND_5PKE_5D == self->compound_cipher_l2_alg_id) &&
-                                    (self->compound_cipher_l1_alg_id != self->compound_cipher_l2_alg_id);
+    const bool is_second_post_quantum =
+            (vscf_alg_id_ROUND5_ND_5KEM_5D == self->compound_hybrid_cipher_second_key_alg_id) &&
+            (self->compound_hybrid_cipher_first_key_alg_id != self->compound_hybrid_cipher_second_key_alg_id);
 
-    return vscf_key_info_is_compound_chained_signer(self) && (is_l1_post_quantum || is_l2_post_quantum);
+    return vscf_key_info_is_compound_hybrid_signer(self) && (is_first_post_quantum || is_second_post_quantum);
 }
 
 //
-//  Return true if a key is a compound key that contains a chained key
+//  Return true if a key is a compound key that contains a hybrid key
 //  for signing/verifying that contains a classic key and
 //  a post-quantum key.
 //
@@ -447,13 +451,15 @@ vscf_key_info_is_hybrid_post_quantum_signer(const vscf_key_info_t *self) {
 
     VSCF_ASSERT_PTR(self);
 
-    const bool is_l1_post_quantum = (vscf_alg_id_FALCON == self->compound_signer_l1_alg_id) &&
-                                    (self->compound_signer_l1_alg_id != self->compound_signer_l2_alg_id);
+    const bool is_first_post_quantum =
+            (vscf_alg_id_FALCON == self->compound_hybrid_signer_first_key_alg_id) &&
+            (self->compound_hybrid_signer_first_key_alg_id != self->compound_hybrid_signer_second_key_alg_id);
 
-    const bool is_l2_post_quantum = (vscf_alg_id_FALCON == self->compound_signer_l2_alg_id) &&
-                                    (self->compound_signer_l1_alg_id != self->compound_signer_l2_alg_id);
+    const bool is_second_post_quantum =
+            (vscf_alg_id_FALCON == self->compound_hybrid_signer_second_key_alg_id) &&
+            (self->compound_hybrid_signer_first_key_alg_id != self->compound_hybrid_signer_second_key_alg_id);
 
-    return vscf_key_info_is_compound_chained_signer(self) && (is_l1_post_quantum || is_l2_post_quantum);
+    return vscf_key_info_is_compound_hybrid_signer(self) && (is_first_post_quantum || is_second_post_quantum);
 }
 
 //
@@ -492,73 +498,73 @@ vscf_key_info_compound_signer_alg_id(const vscf_key_info_t *self) {
 }
 
 //
-//  Return chained l1 key id, if key is chained.
+//  Return hybrid's first key id, if key is hybrid.
 //  Return None, otherwise.
 //
 VSCF_PUBLIC vscf_alg_id_t
-vscf_key_info_chained_l1_alg_id(const vscf_key_info_t *self) {
+vscf_key_info_hybrid_first_key_alg_id(const vscf_key_info_t *self) {
 
     VSCF_ASSERT_PTR(self);
 
-    return self->chained_l1_alg_id;
+    return self->hybrid_first_key_alg_id;
 }
 
 //
-//  Return chained l2 key id, if key is chained.
+//  Return hybrid's second key id, if key is hybrid.
 //  Return None, otherwise.
 //
 VSCF_PUBLIC vscf_alg_id_t
-vscf_key_info_chained_l2_alg_id(const vscf_key_info_t *self) {
+vscf_key_info_hybrid_second_key_alg_id(const vscf_key_info_t *self) {
 
     VSCF_ASSERT_PTR(self);
 
-    return self->chained_l2_alg_id;
+    return self->hybrid_second_key_alg_id;
 }
 
 //
-//  Return l1 key id of compound's cipher key, if key is compound(chained, ...)
-//  Return None, otherwise.
+//  Return hybrid's first key id of compound's cipher key,
+//  if key is compound(hybrid, ...), None - otherwise.
 //
 VSCF_PUBLIC vscf_alg_id_t
-vscf_key_info_compound_cipher_l1_alg_id(const vscf_key_info_t *self) {
+vscf_key_info_compound_hybrid_cipher_first_key_alg_id(const vscf_key_info_t *self) {
 
     VSCF_ASSERT_PTR(self);
 
-    return self->compound_cipher_l1_alg_id;
+    return self->compound_hybrid_cipher_first_key_alg_id;
 }
 
 //
-//  Return l2 key id of compound's cipher key, if key is compound(chained, ...)
-//  Return None, otherwise.
+//  Return hybrid's second key id of compound's cipher key,
+//  if key is compound(hybrid, ...), None - otherwise.
 //
 VSCF_PUBLIC vscf_alg_id_t
-vscf_key_info_compound_cipher_l2_alg_id(const vscf_key_info_t *self) {
+vscf_key_info_compound_hybrid_cipher_second_key_alg_id(const vscf_key_info_t *self) {
 
     VSCF_ASSERT_PTR(self);
 
-    return self->compound_cipher_l2_alg_id;
+    return self->compound_hybrid_cipher_second_key_alg_id;
 }
 
 //
-//  Return l1 key id of compound's signer key, if key is compound(..., chained)
-//  Return None, otherwise.
+//  Return hybrid's first key id of compound's signer key,
+//  if key is compound(..., hybrid), None - otherwise.
 //
 VSCF_PUBLIC vscf_alg_id_t
-vscf_key_info_compound_signer_l1_alg_id(const vscf_key_info_t *self) {
+vscf_key_info_compound_hybrid_signer_first_key_alg_id(const vscf_key_info_t *self) {
 
     VSCF_ASSERT_PTR(self);
 
-    return self->compound_signer_l1_alg_id;
+    return self->compound_hybrid_signer_first_key_alg_id;
 }
 
 //
-//  Return l2 key id of compound's signer key, if key is compound(..., chained)
-//  Return None, otherwise.
+//  Return hybrid's second key id of compound's signer key,
+//  if key is compound(..., hybrid), None - otherwise.
 //
 VSCF_PUBLIC vscf_alg_id_t
-vscf_key_info_compound_signer_l2_alg_id(const vscf_key_info_t *self) {
+vscf_key_info_compound_hybrid_signer_second_key_alg_id(const vscf_key_info_t *self) {
 
     VSCF_ASSERT_PTR(self);
 
-    return self->compound_signer_l2_alg_id;
+    return self->compound_hybrid_signer_second_key_alg_id;
 }

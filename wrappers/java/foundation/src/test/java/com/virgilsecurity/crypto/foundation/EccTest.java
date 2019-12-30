@@ -81,11 +81,6 @@ public class EccTest extends SampleBasedTest {
 	}
 
 	@Test
-	public void algId() {
-		assertEquals(AlgId.ECC, this.ecc.algId());
-	}
-
-	@Test
 	public void canSign() {
 		PrivateKey privateKey = this.ecc.generateKey(this.algId);
 		assertTrue(this.ecc.canSign(privateKey));

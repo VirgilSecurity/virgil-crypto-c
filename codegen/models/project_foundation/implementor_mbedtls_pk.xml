@@ -135,7 +135,6 @@
             <return enum="status"/>
         </method>
 
-        <interface name="alg"/>
         <interface name="key alg">
             <constant name="can import public key" value="true"/>
             <constant name="can export public key" value="true"/>
@@ -237,7 +236,6 @@
             <return enum="status"/>
         </method>
 
-        <interface name="alg"/>
         <interface name="key alg">
             <constant name="can import public key" value="true"/>
             <constant name="can export public key" value="true"/>
@@ -247,6 +245,7 @@
         <interface name="key cipher"/>
         <interface name="key signer"/>
         <interface name="compute shared key"/>
+        <interface name="kem"/>
 
         <method name="write signature" is_static="1">
             Write R and S to ASN.1 structure.

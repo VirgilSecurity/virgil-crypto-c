@@ -18,7 +18,6 @@
         <dependency name="random" interface="random"/>
         <dependency name="ecies" class="ecies" has_observers="1"/>
 
-        <interface name="alg"/>
         <interface name="key alg">
             <constant name="can import public key" value="true"/>
             <constant name="can export public key" value="true"/>
@@ -28,6 +27,7 @@
         <interface name="key cipher"/>
         <interface name="key signer"/>
         <interface name="compute shared key"/>
+        <interface name="kem"/>
 
         <method name="setup defaults" declaration="public">
             Setup predefined values to the uninitialized class dependencies.
@@ -64,7 +64,6 @@
         <dependency name="random" interface="random"/>
         <dependency name="ecies" class="ecies" has_observers="1"/>
 
-        <interface name="alg"/>
         <interface name="key alg">
             <constant name="can import public key" value="true"/>
             <constant name="can export public key" value="true"/>
@@ -73,6 +72,7 @@
         </interface>
         <interface name="key cipher"/>
         <interface name="compute shared key"/>
+        <interface name="kem"/>
 
         <method name="setup defaults" declaration="public">
             Setup predefined values to the uninitialized class dependencies.

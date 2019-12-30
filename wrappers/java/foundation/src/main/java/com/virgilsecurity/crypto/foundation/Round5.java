@@ -40,7 +40,7 @@ package com.virgilsecurity.crypto.foundation;
 * Provide post-quantum encryption based on the round5 implementation.
 * For algorithm details check https://github.com/round5/code
 */
-public class Round5 implements AutoCloseable, Alg, KeyAlg, KeyCipher {
+public class Round5 implements AutoCloseable, KeyAlg, Kem {
 
     public long cCtx;
 
@@ -70,8 +70,8 @@ public class Round5 implements AutoCloseable, Alg, KeyAlg, KeyCipher {
     * Generate new private key.
     * Note, this operation might be slow.
     */
-    public PrivateKey generateKey() throws FoundationException {
-        return FoundationJNI.INSTANCE.round5_generateKey(this.cCtx);
+    public PrivateKey generateKey(AlgId algId) throws FoundationException {
+        return FoundationJNI.INSTANCE.round5_generateKey(this.cCtx, algId);
     }
 
     /*
@@ -86,27 +86,6 @@ public class Round5 implements AutoCloseable, Alg, KeyAlg, KeyCipher {
     /* Close resource. */
     public void close() {
         FoundationJNI.INSTANCE.round5_close(this.cCtx);
-    }
-
-    /*
-    * Provide algorithm identificator.
-    */
-    public AlgId algId() {
-        return FoundationJNI.INSTANCE.round5_algId(this.cCtx);
-    }
-
-    /*
-    * Produce object with algorithm information and configuration parameters.
-    */
-    public AlgInfo produceAlgInfo() {
-        return FoundationJNI.INSTANCE.round5_produceAlgInfo(this.cCtx);
-    }
-
-    /*
-    * Restore algorithm configuration from the given object.
-    */
-    public void restoreAlgInfo(AlgInfo algInfo) throws FoundationException {
-        FoundationJNI.INSTANCE.round5_restoreAlgInfo(this.cCtx, algInfo);
     }
 
     /*
@@ -196,46 +175,31 @@ public class Round5 implements AutoCloseable, Alg, KeyAlg, KeyCipher {
     }
 
     /*
-    * Check if algorithm can encrypt data with a given key.
+    * Return length in bytes required to hold encapsulated shared key.
     */
-    public boolean canEncrypt(PublicKey publicKey, int dataLen) {
-        return FoundationJNI.INSTANCE.round5_canEncrypt(this.cCtx, publicKey, dataLen);
+    public int kemSharedKeyLen(Key key) {
+        return FoundationJNI.INSTANCE.round5_kemSharedKeyLen(this.cCtx, key);
     }
 
     /*
-    * Calculate required buffer length to hold the encrypted data.
+    * Return length in bytes required to hold encapsulated key.
     */
-    public int encryptedLen(PublicKey publicKey, int dataLen) {
-        return FoundationJNI.INSTANCE.round5_encryptedLen(this.cCtx, publicKey, dataLen);
+    public int kemEncapsulatedKeyLen(PublicKey publicKey) {
+        return FoundationJNI.INSTANCE.round5_kemEncapsulatedKeyLen(this.cCtx, publicKey);
     }
 
     /*
-    * Encrypt data with a given public key.
+    * Generate a shared key and a key encapsulated message.
     */
-    public byte[] encrypt(PublicKey publicKey, byte[] data) throws FoundationException {
-        return FoundationJNI.INSTANCE.round5_encrypt(this.cCtx, publicKey, data);
+    public KemKemEncapsulateResult kemEncapsulate(PublicKey publicKey) throws FoundationException {
+        return FoundationJNI.INSTANCE.round5_kemEncapsulate(this.cCtx, publicKey);
     }
 
     /*
-    * Check if algorithm can decrypt data with a given key.
-    * However, success result of decryption is not guaranteed.
+    * Decapsulate the shared key.
     */
-    public boolean canDecrypt(PrivateKey privateKey, int dataLen) {
-        return FoundationJNI.INSTANCE.round5_canDecrypt(this.cCtx, privateKey, dataLen);
-    }
-
-    /*
-    * Calculate required buffer length to hold the decrypted data.
-    */
-    public int decryptedLen(PrivateKey privateKey, int dataLen) {
-        return FoundationJNI.INSTANCE.round5_decryptedLen(this.cCtx, privateKey, dataLen);
-    }
-
-    /*
-    * Decrypt given data.
-    */
-    public byte[] decrypt(PrivateKey privateKey, byte[] data) throws FoundationException {
-        return FoundationJNI.INSTANCE.round5_decrypt(this.cCtx, privateKey, data);
+    public byte[] kemDecapsulate(byte[] encapsulatedKey, PrivateKey privateKey) throws FoundationException {
+        return FoundationJNI.INSTANCE.round5_kemDecapsulate(this.cCtx, encapsulatedKey, privateKey);
     }
 }
 

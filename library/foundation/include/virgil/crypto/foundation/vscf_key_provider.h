@@ -175,13 +175,13 @@ vscf_key_provider_generate_private_key(vscf_key_provider_t *self, vscf_alg_id_t 
 //  Generate new post-quantum private key with default algorithms.
 //  Note, that a post-quantum key combines classic private keys
 //  alongside with post-quantum private keys.
-//  Current structure is "compound private key" where:
-//      - cipher private key is "chained private key" where:
-//          - l1 key is a classic private key;
-//          - l2 key is a post-quantum private key;
-//      - signer private key "chained private key" where:
-//          - l1 key is a classic private key;
-//          - l2 key is a post-quantum private key.
+//  Current structure is "compound private key" is:
+//      - cipher private key is "hybrid private key" where:
+//          - first key is a classic private key;
+//          - second key is a post-quantum private key;
+//      - signer private key "hybrid private key" where:
+//          - first key is a classic private key;
+//          - second key is a post-quantum private key.
 //
 VSCF_PUBLIC vscf_impl_t *
 vscf_key_provider_generate_post_quantum_private_key(vscf_key_provider_t *self, vscf_error_t *error);
@@ -194,22 +194,22 @@ vscf_key_provider_generate_compound_private_key(vscf_key_provider_t *self, vscf_
         vscf_alg_id_t signer_alg_id, vscf_error_t *error);
 
 //
-//  Generate new chained private key with given algorithms.
+//  Generate new hybrid private key with given algorithms.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_key_provider_generate_chained_private_key(vscf_key_provider_t *self, vscf_alg_id_t l1_alg_id,
-        vscf_alg_id_t l2_alg_id, vscf_error_t *error);
+vscf_key_provider_generate_hybrid_private_key(vscf_key_provider_t *self, vscf_alg_id_t first_key_alg_id,
+        vscf_alg_id_t second_key_alg_id, vscf_error_t *error);
 
 //
-//  Generate new compound private key with nested chained private keys.
+//  Generate new compound private key with nested hybrid private keys.
 //
-//  Note, l2 algorithm identifiers can be NONE, in this case regular key
-//  will be crated instead of chained key.
+//  Note, second key algorithm identifiers can be NONE, in this case,
+//  a regular key will be crated instead of a hybrid key.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_key_provider_generate_compound_chained_private_key(vscf_key_provider_t *self, vscf_alg_id_t cipher_l1_alg_id,
-        vscf_alg_id_t cipher_l2_alg_id, vscf_alg_id_t signer_l1_alg_id, vscf_alg_id_t signer_l2_alg_id,
-        vscf_error_t *error);
+vscf_key_provider_generate_compound_hybrid_private_key(vscf_key_provider_t *self, vscf_alg_id_t cipher_first_key_alg_id,
+        vscf_alg_id_t cipher_second_key_alg_id, vscf_alg_id_t signer_first_key_alg_id,
+        vscf_alg_id_t signer_second_key_alg_id, vscf_error_t *error);
 
 //
 //  Import private key from the PKCS#8 format.

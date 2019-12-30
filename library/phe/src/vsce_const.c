@@ -109,6 +109,11 @@ static const byte k_kdf_info_client_key_bytes[] = {
     0x39
 };
 
+static const byte k_kdf_info_uokms_key_bytes[] = {
+    COMMON_PREFIX,
+    0x40
+};
+
 VSCE_PUBLIC const vsc_data_t k_proof_ok = {
     k_proof_ok_bytes,
     sizeof(k_proof_ok_bytes)
@@ -132,6 +137,11 @@ VSCE_PUBLIC const vsc_data_t k_kdf_info_z = {
 VSCE_PUBLIC const vsc_data_t k_kdf_info_client_key = {
     k_kdf_info_client_key_bytes,
     sizeof(k_kdf_info_client_key_bytes)
+};
+
+VSCE_PUBLIC const vsc_data_t k_kdf_info_uokms_key = {
+    k_kdf_info_uokms_key_bytes,
+    sizeof(k_kdf_info_uokms_key_bytes)
 };
 
 

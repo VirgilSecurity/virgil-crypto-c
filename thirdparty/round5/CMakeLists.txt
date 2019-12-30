@@ -40,6 +40,17 @@ if(NOT ROUND5_LIBRARY)
     message(STATUS "Skip building library 'round5' - option ROUND5_LIBRARY is OFF.")
 endif()
 
+#
+#  The optimized version is used for now.
+#  The reference implementation of the round5 can be built, however,
+#  the "foundation" library build will be broken.
+#
+set(ROUND5_OPTIMIZED YES)
+if(ROUND5_OPTIMIZED)
+    set(ROUND5_REFERENCE NO)
+else()
+    set(ROUND5_REFERENCE YES)
+endif()
 
 # ---------------------------------------------------------------------------
 #   Check dependencies
@@ -89,21 +100,41 @@ ExternalProject_Add(round5-ext
             https://github.com/round5/code
         GIT_TAG
             24b9738b0e39ce2115cc6b1f639359f5f459bd3e
+        GIT_CONFIG
+            core.symlinks=true
         UPDATE_COMMAND
             ${CMAKE_COMMAND} -E copy_if_different
                     "${CMAKE_CURRENT_LIST_DIR}/round5.CMakeLists.txt"
                     "<SOURCE_DIR>/CMakeLists.txt" &&
+            #
+            #   Patch reference implementation.
+            #
             ${CMAKE_COMMAND} -E copy_if_different
                     "${CMAKE_CURRENT_LIST_DIR}/round5.reference.CMakeLists.txt"
                     "<SOURCE_DIR>/reference/CMakeLists.txt" &&
             ${CMAKE_COMMAND} -E copy_if_different
-                    "${CMAKE_CURRENT_LIST_DIR}/r5_dem_mbedtls.c"
+                    "${CMAKE_CURRENT_LIST_DIR}/round5.reference.r5_dem_mbedtls.c"
                     "<SOURCE_DIR>/reference/src/r5_dem_mbedtls.c" &&
             ${CMAKE_COMMAND}
                     -D "SOURCE_FILE=<SOURCE_DIR>/reference/src/r5_parameter_sets.h"
                     -P "${CMAKE_CURRENT_LIST_DIR}/fix_global_non_extern_variables.cmake" &&
             ${CMAKE_COMMAND}
                     -D "SOURCE_FILE=<SOURCE_DIR>/reference/src/r5_memory.h"
+                    -P "${CMAKE_CURRENT_LIST_DIR}/fix_restrict_keyword_for_msvc.cmake" &&
+            #
+            #   Patch optimized implementation.
+            #
+            ${CMAKE_COMMAND} -E copy_if_different
+                    "${CMAKE_CURRENT_LIST_DIR}/round5.optimized.CMakeLists.txt"
+                    "<SOURCE_DIR>/optimized/CMakeLists.txt" &&
+            ${CMAKE_COMMAND} -E copy_if_different
+                    "${CMAKE_CURRENT_LIST_DIR}/round5.optimized.r5_dem_mbedtls.c"
+                    "<SOURCE_DIR>/optimized/src/r5_dem_mbedtls.c" &&
+            ${CMAKE_COMMAND}
+                    -D "SOURCE_FILE=<SOURCE_DIR>/optimized/src/r5_parameter_sets.h"
+                    -P "${CMAKE_CURRENT_LIST_DIR}/fix_global_non_extern_variables.cmake" &&
+            ${CMAKE_COMMAND}
+                    -D "SOURCE_FILE=<SOURCE_DIR>/optimized/src/r5_memory.h"
                     -P "${CMAKE_CURRENT_LIST_DIR}/fix_restrict_keyword_for_msvc.cmake"
 
         CMAKE_ARGS
@@ -115,8 +146,11 @@ ExternalProject_Add(round5-ext
             "-DALG=R5ND_5PKE_5d"
             "-DNO_OPENSSL_SHAKE=YES"
             "-DUSE_AES_DRBG=NO"
-            "-DOPTIMIZED=OFF"
+            "-DREFERENCE=${ROUND5_REFERENCE}"
+            "-DOPTIMIZED=${ROUND5_OPTIMIZED}"
             "-DCONFIGURABLE=OFF"
+            "-DCM_CACHE=ON"
+            "-DSHIFT_LEFT64_CONSTANT_TIME=ON"
             "-DCRYPTO_ENGINE_MBEDTLS=${ROUND5_USE_MBEDTLS}"
             "-DCRYPTO_ENGINE_OPENSSL=${ROUND5_USE_OPENSSL}"
             "-DNIST_KAT_GENERATION=${ROUND5_NIST_KAT_GEN}"
@@ -140,6 +174,7 @@ add_dependencies(round5 round5-ext)
 set_property(TARGET round5
         PROPERTY INTERFACE_COMPILE_DEFINITIONS
             R5ND_5PKE_5d
+            "ROUND5_OPTIMIZED=$<BOOL:${ROUND5_OPTIMIZED}>"
         )
 
 set_property(TARGET round5

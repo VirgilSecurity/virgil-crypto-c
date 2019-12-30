@@ -1,8 +1,6 @@
 <interface name="key alg">
     Common information about asymmetric key algorithm.
 
-    <inherit interface="alg"/>
-
     <constant name="can import public key" type="boolean">
         Defines whether a public key can be imported or not.
     </constant>
@@ -48,6 +46,17 @@
     </method>
 
 
+    <method name="import public key data" is_const="1" visibility="private">
+        Import public key from the raw binary format.
+
+        <argument name="key data" class="data"/>
+        <argument name="key alg info" interface="alg info"/>
+        <argument name="error" class="error" access="readwrite"/>
+
+        <return interface="public key" access="disown"/>
+    </method>
+
+
     <method name="export public key" is_const="1">
         Export public key to the raw binary format.
 
@@ -59,6 +68,33 @@
         <argument name="error" class="error" access="readwrite"/>
 
         <return impl="raw public key" access="disown"/>
+    </method>
+
+
+    <method name="exported public key data len" is_const="1" visibility="private">
+        Return length in bytes required to hold exported public key.
+
+        <argument name="public key" interface="public key"/>
+
+        <return type="size"/>
+    </method>
+
+
+    <method name="export public key data" is_const="1" visibility="private">
+        Export public key to the raw binary format without algorithm information.
+
+        Binary format must be defined in the key specification.
+        For instance, RSA public key must be exported in format defined in
+        RFC 3447 Appendix A.1.1.
+
+        <argument name="public key" interface="public key"/>
+        <argument name="out" class="buffer">
+            <length method="exported public key data len">
+                <proxy argument="public key" to="public key"/>
+            </length>
+        </argument>
+
+        <return enum="status"/>
     </method>
 
 
@@ -79,6 +115,17 @@
     </method>
 
 
+    <method name="import private key data" is_const="1" visibility="private">
+        Import private key from the raw binary format.
+
+        <argument name="key data" class="data"/>
+        <argument name="key alg info" interface="alg info"/>
+        <argument name="error" class="error" access="readwrite"/>
+
+        <return interface="private key" access="disown"/>
+    </method>
+
+
     <method name="export private key" is_const="1">
         Export private key in the raw binary format.
 
@@ -90,5 +137,32 @@
         <argument name="error" class="error" access="readwrite"/>
 
         <return impl="raw private key" access="disown"/>
+    </method>
+
+
+    <method name="exported private key data len" is_const="1" visibility="private">
+        Return length in bytes required to hold exported private key.
+
+        <argument name="private key" interface="private key"/>
+
+        <return type="size"/>
+    </method>
+
+
+    <method name="export private key data" is_const="1" visibility="private">
+        Export private key to the raw binary format without algorithm information.
+
+        Binary format must be defined in the key specification.
+        For instance, RSA private key must be exported in format defined in
+        RFC 3447 Appendix A.1.2.
+
+        <argument name="private key" interface="private key"/>
+        <argument name="out" class="buffer">
+            <length method="exported private key data len">
+                <proxy argument="private key" to="private key"/>
+            </length>
+        </argument>
+
+        <return enum="status"/>
     </method>
 </interface>

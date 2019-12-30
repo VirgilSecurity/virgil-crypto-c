@@ -714,9 +714,18 @@ VSC_PUBLIC void
 vsc_buffer_append_data(vsc_buffer_t *self, vsc_data_t data) {
 
     VSC_ASSERT_PTR(self);
+    VSC_ASSERT(vsc_data_is_valid(data));
+
+    if (vsc_data_is_empty(data)) {
+        return;
+    }
+
+    if (NULL == self->bytes) {
+        vsc_buffer_alloc(self, data.len);
+    }
+
     VSC_ASSERT_PTR(self->is_owner);
     VSC_ASSERT(vsc_buffer_is_valid(self));
-    VSC_ASSERT(vsc_data_is_valid(data));
 
     if (data.len <= vsc_buffer_unused_len(self)) {
         vsc_buffer_write_data(self, data);

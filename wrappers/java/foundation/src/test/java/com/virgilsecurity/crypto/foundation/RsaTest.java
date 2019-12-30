@@ -78,11 +78,6 @@ public class RsaTest extends SampleBasedTest {
 	}
 
 	@Test
-	public void algId() {
-		assertEquals(AlgId.RSA, this.rsa.algId());
-	}
-
-	@Test
 	public void canSign() {
 		PrivateKey privateKey = this.rsa.generateKey(bitlen);
 		assertTrue(this.rsa.canSign(privateKey));

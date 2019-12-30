@@ -61,45 +61,45 @@ class KeyInfo(object):
         result = self._lib_vscf_key_info.vscf_key_info_is_compound(self.ctx)
         return result
 
-    def is_chained(self):
-        """Return true if a key is a chained key"""
-        result = self._lib_vscf_key_info.vscf_key_info_is_chained(self.ctx)
+    def is_hybrid(self):
+        """Return true if a key is a hybrid key"""
+        result = self._lib_vscf_key_info.vscf_key_info_is_hybrid(self.ctx)
         return result
 
-    def is_compound_chained(self):
+    def is_compound_hybrid(self):
         """Return true if a key is a compound key and compounds cipher key
-        and signer key are chained keys."""
-        result = self._lib_vscf_key_info.vscf_key_info_is_compound_chained(self.ctx)
+        and signer key are hybrid keys."""
+        result = self._lib_vscf_key_info.vscf_key_info_is_compound_hybrid(self.ctx)
         return result
 
-    def is_compound_chained_cipher(self):
+    def is_compound_hybrid_cipher(self):
         """Return true if a key is a compound key and compounds cipher key
-        is a chained key."""
-        result = self._lib_vscf_key_info.vscf_key_info_is_compound_chained_cipher(self.ctx)
+        is a hybrid key."""
+        result = self._lib_vscf_key_info.vscf_key_info_is_compound_hybrid_cipher(self.ctx)
         return result
 
-    def is_compound_chained_signer(self):
+    def is_compound_hybrid_signer(self):
         """Return true if a key is a compound key and compounds signer key
-        is a chained key."""
-        result = self._lib_vscf_key_info.vscf_key_info_is_compound_chained_signer(self.ctx)
+        is a hybrid key."""
+        result = self._lib_vscf_key_info.vscf_key_info_is_compound_hybrid_signer(self.ctx)
         return result
 
     def is_hybrid_post_quantum(self):
-        """Return true if a key is a compound key that contains chained keys
+        """Return true if a key is a compound key that contains hybrid keys
         for encryption/decryption and signing/verifying that itself
         contains a combination of classic keys and post-quantum keys."""
         result = self._lib_vscf_key_info.vscf_key_info_is_hybrid_post_quantum(self.ctx)
         return result
 
     def is_hybrid_post_quantum_cipher(self):
-        """Return true if a key is a compound key that contains a chained key
+        """Return true if a key is a compound key that contains a hybrid key
         for encryption/decryption that contains a classic key and
         a post-quantum key."""
         result = self._lib_vscf_key_info.vscf_key_info_is_hybrid_post_quantum_cipher(self.ctx)
         return result
 
     def is_hybrid_post_quantum_signer(self):
-        """Return true if a key is a compound key that contains a chained key
+        """Return true if a key is a compound key that contains a hybrid key
         for signing/verifying that contains a classic key and
         a post-quantum key."""
         result = self._lib_vscf_key_info.vscf_key_info_is_hybrid_post_quantum_signer(self.ctx)
@@ -122,40 +122,40 @@ class KeyInfo(object):
         result = self._lib_vscf_key_info.vscf_key_info_compound_signer_alg_id(self.ctx)
         return result
 
-    def chained_l1_alg_id(self):
-        """Return chained l1 key id, if key is chained.
+    def hybrid_first_key_alg_id(self):
+        """Return hybrid's first key id, if key is hybrid.
         Return None, otherwise."""
-        result = self._lib_vscf_key_info.vscf_key_info_chained_l1_alg_id(self.ctx)
+        result = self._lib_vscf_key_info.vscf_key_info_hybrid_first_key_alg_id(self.ctx)
         return result
 
-    def chained_l2_alg_id(self):
-        """Return chained l2 key id, if key is chained.
+    def hybrid_second_key_alg_id(self):
+        """Return hybrid's second key id, if key is hybrid.
         Return None, otherwise."""
-        result = self._lib_vscf_key_info.vscf_key_info_chained_l2_alg_id(self.ctx)
+        result = self._lib_vscf_key_info.vscf_key_info_hybrid_second_key_alg_id(self.ctx)
         return result
 
-    def compound_cipher_l1_alg_id(self):
-        """Return l1 key id of compound's cipher key, if key is compound(chained, ...)
-        Return None, otherwise."""
-        result = self._lib_vscf_key_info.vscf_key_info_compound_cipher_l1_alg_id(self.ctx)
+    def compound_hybrid_cipher_first_key_alg_id(self):
+        """Return hybrid's first key id of compound's cipher key,
+        if key is compound(hybrid, ...), None - otherwise."""
+        result = self._lib_vscf_key_info.vscf_key_info_compound_hybrid_cipher_first_key_alg_id(self.ctx)
         return result
 
-    def compound_cipher_l2_alg_id(self):
-        """Return l2 key id of compound's cipher key, if key is compound(chained, ...)
-        Return None, otherwise."""
-        result = self._lib_vscf_key_info.vscf_key_info_compound_cipher_l2_alg_id(self.ctx)
+    def compound_hybrid_cipher_second_key_alg_id(self):
+        """Return hybrid's second key id of compound's cipher key,
+        if key is compound(hybrid, ...), None - otherwise."""
+        result = self._lib_vscf_key_info.vscf_key_info_compound_hybrid_cipher_second_key_alg_id(self.ctx)
         return result
 
-    def compound_signer_l1_alg_id(self):
-        """Return l1 key id of compound's signer key, if key is compound(..., chained)
-        Return None, otherwise."""
-        result = self._lib_vscf_key_info.vscf_key_info_compound_signer_l1_alg_id(self.ctx)
+    def compound_hybrid_signer_first_key_alg_id(self):
+        """Return hybrid's first key id of compound's signer key,
+        if key is compound(..., hybrid), None - otherwise."""
+        result = self._lib_vscf_key_info.vscf_key_info_compound_hybrid_signer_first_key_alg_id(self.ctx)
         return result
 
-    def compound_signer_l2_alg_id(self):
-        """Return l2 key id of compound's signer key, if key is compound(..., chained)
-        Return None, otherwise."""
-        result = self._lib_vscf_key_info.vscf_key_info_compound_signer_l2_alg_id(self.ctx)
+    def compound_hybrid_signer_second_key_alg_id(self):
+        """Return hybrid's second key id of compound's signer key,
+        if key is compound(..., hybrid), None - otherwise."""
+        result = self._lib_vscf_key_info.vscf_key_info_compound_hybrid_signer_second_key_alg_id(self.ctx)
         return result
 
     @classmethod

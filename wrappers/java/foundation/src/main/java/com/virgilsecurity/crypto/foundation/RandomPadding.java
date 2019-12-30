@@ -160,6 +160,14 @@ public class RandomPadding implements AutoCloseable, Alg, Padding {
     }
 
     /*
+    * Return length in bytes required hold output of the method
+    * "finish padded data processing".
+    */
+    public int finishPaddedDataProcessingOutLen() {
+        return FoundationJNI.INSTANCE.randomPadding_finishPaddedDataProcessingOutLen(this.cCtx);
+    }
+
+    /*
     * Accomplish padded data processing and return left data without a padding.
     */
     public byte[] finishPaddedDataProcessing() throws FoundationException {

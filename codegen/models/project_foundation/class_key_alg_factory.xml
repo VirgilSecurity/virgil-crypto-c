@@ -8,7 +8,7 @@
     <require impl="ed25519" is_optional="1"/>
     <require impl="curve25519" is_optional="1"/>
     <require impl="compound key alg" is_optional="1"/>
-    <require impl="chained key alg" is_optional="1"/>
+    <require impl="hybrid key alg" is_optional="1"/>
     <require impl="falcon" is_optional="1"/>
     <require impl="round5" is_optional="1"/>
 

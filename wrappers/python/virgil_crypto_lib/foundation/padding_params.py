@@ -40,9 +40,9 @@ from ._c_bridge import VscfPaddingParams
 class PaddingParams(object):
     """Handles padding parameters and constraints."""
 
-    DEFAULT_FRAME = 160
     DEFAULT_FRAME_MIN = 32
-    DEFAULT_FRAME_MAX = 8 * 1024
+    DEFAULT_FRAME = 160
+    DEFAULT_FRAME_MAX = 256
 
     def __init__(self):
         """Create underlying C context."""
@@ -54,13 +54,12 @@ class PaddingParams(object):
         self._lib_vscf_padding_params.vscf_padding_params_delete(self.ctx)
 
     @classmethod
-    def with_constraints(cls, frame, frame_min, frame_max):
+    def with_constraints(cls, frame, frame_max):
         """Build padding params with given constraints.
-        Precondition: frame_length_min <= frame_length <= frame_length_max.
         Next formula can clarify what frame is: padding_length = data_length MOD frame"""
         inst = cls.__new__(cls)
         inst._lib_vscf_padding_params = VscfPaddingParams()
-        inst.ctx = inst._lib_vscf_padding_params.vscf_padding_params_new_with_constraints(frame, frame_min, frame_max)
+        inst.ctx = inst._lib_vscf_padding_params.vscf_padding_params_new_with_constraints(frame, frame_max)
         return inst
 
     def frame(self):
@@ -68,13 +67,8 @@ class PaddingParams(object):
         result = self._lib_vscf_padding_params.vscf_padding_params_frame(self.ctx)
         return result
 
-    def frame_min(self):
-        """Return minimum padding frame in bytes."""
-        result = self._lib_vscf_padding_params.vscf_padding_params_frame_min(self.ctx)
-        return result
-
     def frame_max(self):
-        """Return minimum padding frame in bytes."""
+        """Return maximum padding frame in bytes."""
         result = self._lib_vscf_padding_params.vscf_padding_params_frame_max(self.ctx)
         return result
 

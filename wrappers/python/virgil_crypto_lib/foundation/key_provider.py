@@ -79,13 +79,13 @@ class KeyProvider(object):
         """Generate new post-quantum private key with default algorithms.
         Note, that a post-quantum key combines classic private keys
         alongside with post-quantum private keys.
-        Current structure is "compound private key" where:
-            - cipher private key is "chained private key" where:
-                - l1 key is a classic private key;
-                - l2 key is a post-quantum private key;
-            - signer private key "chained private key" where:
-                - l1 key is a classic private key;
-                - l2 key is a post-quantum private key."""
+        Current structure is "compound private key" is:
+            - cipher private key is "hybrid private key" where:
+                - first key is a classic private key;
+                - second key is a post-quantum private key;
+            - signer private key "hybrid private key" where:
+                - first key is a classic private key;
+                - second key is a post-quantum private key."""
         error = vscf_error_t()
         result = self._lib_vscf_key_provider.vscf_key_provider_generate_post_quantum_private_key(self.ctx, error)
         VscfStatus.handle_status(error.status)
@@ -100,21 +100,21 @@ class KeyProvider(object):
         instance = VscfImplTag.get_type(result)[0].take_c_ctx(cast(result, POINTER(VscfImplTag.get_type(result)[1])))
         return instance
 
-    def generate_chained_private_key(self, l1_alg_id, l2_alg_id):
-        """Generate new chained private key with given algorithms."""
+    def generate_hybrid_private_key(self, first_key_alg_id, second_key_alg_id):
+        """Generate new hybrid private key with given algorithms."""
         error = vscf_error_t()
-        result = self._lib_vscf_key_provider.vscf_key_provider_generate_chained_private_key(self.ctx, l1_alg_id, l2_alg_id, error)
+        result = self._lib_vscf_key_provider.vscf_key_provider_generate_hybrid_private_key(self.ctx, first_key_alg_id, second_key_alg_id, error)
         VscfStatus.handle_status(error.status)
         instance = VscfImplTag.get_type(result)[0].take_c_ctx(cast(result, POINTER(VscfImplTag.get_type(result)[1])))
         return instance
 
-    def generate_compound_chained_private_key(self, cipher_l1_alg_id, cipher_l2_alg_id, signer_l1_alg_id, signer_l2_alg_id):
-        """Generate new compound private key with nested chained private keys.
+    def generate_compound_hybrid_private_key(self, cipher_first_key_alg_id, cipher_second_key_alg_id, signer_first_key_alg_id, signer_second_key_alg_id):
+        """Generate new compound private key with nested hybrid private keys.
 
-        Note, l2 algorithm identifiers can be NONE, in this case regular key
-        will be crated instead of chained key."""
+        Note, second key algorithm identifiers can be NONE, in this case,
+        a regular key will be crated instead of a hybrid key."""
         error = vscf_error_t()
-        result = self._lib_vscf_key_provider.vscf_key_provider_generate_compound_chained_private_key(self.ctx, cipher_l1_alg_id, cipher_l2_alg_id, signer_l1_alg_id, signer_l2_alg_id, error)
+        result = self._lib_vscf_key_provider.vscf_key_provider_generate_compound_hybrid_private_key(self.ctx, cipher_first_key_alg_id, cipher_second_key_alg_id, signer_first_key_alg_id, signer_second_key_alg_id, error)
         VscfStatus.handle_status(error.status)
         instance = VscfImplTag.get_type(result)[0].take_c_ctx(cast(result, POINTER(VscfImplTag.get_type(result)[1])))
         return instance

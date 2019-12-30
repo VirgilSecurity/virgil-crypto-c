@@ -55,12 +55,10 @@
 #include "vscf_memory.h"
 #include "vscf_assert.h"
 #include "vscf_round5_defs.h"
-#include "vscf_alg.h"
-#include "vscf_alg_api.h"
 #include "vscf_key_alg.h"
 #include "vscf_key_alg_api.h"
-#include "vscf_key_cipher.h"
-#include "vscf_key_cipher_api.h"
+#include "vscf_kem.h"
+#include "vscf_kem_api.h"
 #include "vscf_random.h"
 #include "vscf_impl.h"
 #include "vscf_api.h"
@@ -79,33 +77,6 @@ static const vscf_api_t *
 vscf_round5_find_api(vscf_api_tag_t api_tag);
 
 //
-//  Configuration of the interface API 'alg api'.
-//
-static const vscf_alg_api_t alg_api = {
-    //
-    //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'alg' MUST be equal to the 'vscf_api_tag_ALG'.
-    //
-    vscf_api_tag_ALG,
-    //
-    //  Implementation unique identifier, MUST be second in the structure.
-    //
-    vscf_impl_tag_ROUND5,
-    //
-    //  Provide algorithm identificator.
-    //
-    (vscf_alg_api_alg_id_fn)vscf_round5_alg_id,
-    //
-    //  Produce object with algorithm information and configuration parameters.
-    //
-    (vscf_alg_api_produce_alg_info_fn)vscf_round5_produce_alg_info,
-    //
-    //  Restore algorithm configuration from the given object.
-    //
-    (vscf_alg_api_restore_alg_info_fn)vscf_round5_restore_alg_info
-};
-
-//
 //  Configuration of the interface API 'key alg api'.
 //
 static const vscf_key_alg_api_t key_alg_api = {
@@ -118,10 +89,6 @@ static const vscf_key_alg_api_t key_alg_api = {
     //  Implementation unique identifier, MUST be second in the structure.
     //
     vscf_impl_tag_ROUND5,
-    //
-    //  Link to the inherited interface API 'alg'.
-    //
-    &alg_api,
     //
     //  Generate ephemeral private key of the same type.
     //  Note, this operation might be slow.
@@ -139,6 +106,10 @@ static const vscf_key_alg_api_t key_alg_api = {
     //
     (vscf_key_alg_api_import_public_key_fn)vscf_round5_import_public_key,
     //
+    //  Import public key from the raw binary format.
+    //
+    (vscf_key_alg_api_import_public_key_data_fn)vscf_round5_import_public_key_data,
+    //
     //  Export public key to the raw binary format.
     //
     //  Binary format must be defined in the key specification.
@@ -146,6 +117,18 @@ static const vscf_key_alg_api_t key_alg_api = {
     //  RFC 3447 Appendix A.1.1.
     //
     (vscf_key_alg_api_export_public_key_fn)vscf_round5_export_public_key,
+    //
+    //  Return length in bytes required to hold exported public key.
+    //
+    (vscf_key_alg_api_exported_public_key_data_len_fn)vscf_round5_exported_public_key_data_len,
+    //
+    //  Export public key to the raw binary format without algorithm information.
+    //
+    //  Binary format must be defined in the key specification.
+    //  For instance, RSA public key must be exported in format defined in
+    //  RFC 3447 Appendix A.1.1.
+    //
+    (vscf_key_alg_api_export_public_key_data_fn)vscf_round5_export_public_key_data,
     //
     //  Import private key from the raw binary format.
     //
@@ -158,6 +141,10 @@ static const vscf_key_alg_api_t key_alg_api = {
     //
     (vscf_key_alg_api_import_private_key_fn)vscf_round5_import_private_key,
     //
+    //  Import private key from the raw binary format.
+    //
+    (vscf_key_alg_api_import_private_key_data_fn)vscf_round5_import_private_key_data,
+    //
     //  Export private key in the raw binary format.
     //
     //  Binary format must be defined in the key specification.
@@ -165,6 +152,18 @@ static const vscf_key_alg_api_t key_alg_api = {
     //  RFC 3447 Appendix A.1.2.
     //
     (vscf_key_alg_api_export_private_key_fn)vscf_round5_export_private_key,
+    //
+    //  Return length in bytes required to hold exported private key.
+    //
+    (vscf_key_alg_api_exported_private_key_data_len_fn)vscf_round5_exported_private_key_data_len,
+    //
+    //  Export private key to the raw binary format without algorithm information.
+    //
+    //  Binary format must be defined in the key specification.
+    //  For instance, RSA private key must be exported in format defined in
+    //  RFC 3447 Appendix A.1.2.
+    //
+    (vscf_key_alg_api_export_private_key_data_fn)vscf_round5_export_private_key_data,
     //
     //  Defines whether a public key can be imported or not.
     //
@@ -184,47 +183,34 @@ static const vscf_key_alg_api_t key_alg_api = {
 };
 
 //
-//  Configuration of the interface API 'key cipher api'.
+//  Configuration of the interface API 'kem api'.
 //
-static const vscf_key_cipher_api_t key_cipher_api = {
+static const vscf_kem_api_t kem_api = {
     //
     //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'key_cipher' MUST be equal to the 'vscf_api_tag_KEY_CIPHER'.
+    //  For interface 'kem' MUST be equal to the 'vscf_api_tag_KEM'.
     //
-    vscf_api_tag_KEY_CIPHER,
+    vscf_api_tag_KEM,
     //
     //  Implementation unique identifier, MUST be second in the structure.
     //
     vscf_impl_tag_ROUND5,
     //
-    //  Link to the inherited interface API 'key alg'.
+    //  Return length in bytes required to hold encapsulated shared key.
     //
-    &key_alg_api,
+    (vscf_kem_api_kem_shared_key_len_fn)vscf_round5_kem_shared_key_len,
     //
-    //  Check if algorithm can encrypt data with a given key.
+    //  Return length in bytes required to hold encapsulated key.
     //
-    (vscf_key_cipher_api_can_encrypt_fn)vscf_round5_can_encrypt,
+    (vscf_kem_api_kem_encapsulated_key_len_fn)vscf_round5_kem_encapsulated_key_len,
     //
-    //  Calculate required buffer length to hold the encrypted data.
+    //  Generate a shared key and a key encapsulated message.
     //
-    (vscf_key_cipher_api_encrypted_len_fn)vscf_round5_encrypted_len,
+    (vscf_kem_api_kem_encapsulate_fn)vscf_round5_kem_encapsulate,
     //
-    //  Encrypt data with a given public key.
+    //  Decapsulate the shared key.
     //
-    (vscf_key_cipher_api_encrypt_fn)vscf_round5_encrypt,
-    //
-    //  Check if algorithm can decrypt data with a given key.
-    //  However, success result of decryption is not guaranteed.
-    //
-    (vscf_key_cipher_api_can_decrypt_fn)vscf_round5_can_decrypt,
-    //
-    //  Calculate required buffer length to hold the decrypted data.
-    //
-    (vscf_key_cipher_api_decrypted_len_fn)vscf_round5_decrypted_len,
-    //
-    //  Decrypt given data.
-    //
-    (vscf_key_cipher_api_decrypt_fn)vscf_round5_decrypt
+    (vscf_kem_api_kem_decapsulate_fn)vscf_round5_kem_decapsulate
 };
 
 //
@@ -262,8 +248,6 @@ vscf_round5_init(vscf_round5_t *self) {
 
     self->info = &info;
     self->refcnt = 1;
-
-    vscf_round5_init_ctx(self);
 }
 
 //
@@ -278,8 +262,6 @@ vscf_round5_cleanup(vscf_round5_t *self) {
     }
 
     vscf_round5_release_random(self);
-
-    vscf_round5_cleanup_ctx(self);
 
     vscf_zeroize(self, sizeof(vscf_round5_t));
 }
@@ -435,12 +417,10 @@ static const vscf_api_t *
 vscf_round5_find_api(vscf_api_tag_t api_tag) {
 
     switch(api_tag) {
-        case vscf_api_tag_ALG:
-            return (const vscf_api_t *) &alg_api;
+        case vscf_api_tag_KEM:
+            return (const vscf_api_t *) &kem_api;
         case vscf_api_tag_KEY_ALG:
             return (const vscf_api_t *) &key_alg_api;
-        case vscf_api_tag_KEY_CIPHER:
-            return (const vscf_api_t *) &key_cipher_api;
         default:
             return NULL;
     }

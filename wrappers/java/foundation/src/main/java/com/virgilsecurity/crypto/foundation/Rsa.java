@@ -39,7 +39,7 @@ package com.virgilsecurity.crypto.foundation;
 /*
 * RSA implementation.
 */
-public class Rsa implements AutoCloseable, Alg, KeyAlg, KeyCipher, KeySigner {
+public class Rsa implements AutoCloseable, KeyAlg, KeyCipher, KeySigner {
 
     public long cCtx;
 
@@ -85,27 +85,6 @@ public class Rsa implements AutoCloseable, Alg, KeyAlg, KeyCipher, KeySigner {
     /* Close resource. */
     public void close() {
         FoundationJNI.INSTANCE.rsa_close(this.cCtx);
-    }
-
-    /*
-    * Provide algorithm identificator.
-    */
-    public AlgId algId() {
-        return FoundationJNI.INSTANCE.rsa_algId(this.cCtx);
-    }
-
-    /*
-    * Produce object with algorithm information and configuration parameters.
-    */
-    public AlgInfo produceAlgInfo() {
-        return FoundationJNI.INSTANCE.rsa_produceAlgInfo(this.cCtx);
-    }
-
-    /*
-    * Restore algorithm configuration from the given object.
-    */
-    public void restoreAlgInfo(AlgInfo algInfo) throws FoundationException {
-        FoundationJNI.INSTANCE.rsa_restoreAlgInfo(this.cCtx, algInfo);
     }
 
     /*

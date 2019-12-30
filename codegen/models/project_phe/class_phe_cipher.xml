@@ -23,7 +23,9 @@
     <method name="setup defaults">
         Setups dependencies with default values.
 
-        <return enum="status"/>
+        <return enum="status">
+            - vsce_status_ERROR_RNG_FAILED in case rng failed
+        </return>
     </method>
 
     <method name="encrypt len">
@@ -66,8 +68,8 @@
         </argument>
 
         <return enum="status">
-            - vsce_error_AES_ERROR in case AES returned error
-            - vsce_error_RNG_ERROR in case rng failed
+            - vsce_status_ERROR_AES_FAILED in case AES returned error
+            - vsce_status_ERROR_RNG_FAILED in case rng failed
         </return>
     </method>
 
@@ -91,7 +93,7 @@
         </argument>
 
         <return enum="status">
-            - vsce_error_AES_ERROR in case AES returned error
+            - vsce_status_ERROR_AES_FAILED in case AES returned error
         </return>
     </method>
 
@@ -119,8 +121,8 @@
         </argument>
 
         <return enum="status">
-            - vsce_error_AES_ERROR in case AES returned error
-            - vsce_error_RNG_ERROR in case rng failed
+            - vsce_status_ERROR_AES_FAILED in case AES returned error
+            - vsce_status_ERROR_RNG_FAILED in case rng failed
         </return>
     </method>
 
@@ -148,7 +150,7 @@
         </argument>
 
         <return enum="status">
-            - vsce_error_AES_ERROR in case AES returned error
+            - vsce_status_ERROR_AES_FAILED in case AES returned error
         </return>
     </method>
 

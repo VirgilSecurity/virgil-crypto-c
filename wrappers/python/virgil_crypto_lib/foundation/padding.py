@@ -90,6 +90,12 @@ class Padding(object):
         raise NotImplementedError()
 
     @abstractmethod
+    def finish_padded_data_processing_out_len(self):
+        """Return length in bytes required hold output of the method
+        "finish padded data processing"."""
+        raise NotImplementedError()
+
+    @abstractmethod
     def finish_padded_data_processing(self):
         """Accomplish padded data processing and return left data without a padding."""
         raise NotImplementedError()

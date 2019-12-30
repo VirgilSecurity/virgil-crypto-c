@@ -40,10 +40,6 @@ from virgil_crypto_lib.foundation._c_bridge import vscf_alg_info_der_deserialize
 from virgil_crypto_lib.foundation._c_bridge import vscf_alg_info_der_serializer_t
 from virgil_crypto_lib.foundation._c_bridge import vscf_asn1rd_t
 from virgil_crypto_lib.foundation._c_bridge import vscf_asn1wr_t
-from virgil_crypto_lib.foundation._c_bridge import vscf_chained_key_alg_t
-from virgil_crypto_lib.foundation._c_bridge import vscf_chained_key_alg_info_t
-from virgil_crypto_lib.foundation._c_bridge import vscf_chained_private_key_t
-from virgil_crypto_lib.foundation._c_bridge import vscf_chained_public_key_t
 from virgil_crypto_lib.foundation._c_bridge import vscf_cipher_alg_info_t
 from virgil_crypto_lib.foundation._c_bridge import vscf_compound_key_alg_t
 from virgil_crypto_lib.foundation._c_bridge import vscf_compound_key_alg_info_t
@@ -62,6 +58,10 @@ from virgil_crypto_lib.foundation._c_bridge import vscf_falcon_t
 from virgil_crypto_lib.foundation._c_bridge import vscf_hash_based_alg_info_t
 from virgil_crypto_lib.foundation._c_bridge import vscf_hkdf_t
 from virgil_crypto_lib.foundation._c_bridge import vscf_hmac_t
+from virgil_crypto_lib.foundation._c_bridge import vscf_hybrid_key_alg_t
+from virgil_crypto_lib.foundation._c_bridge import vscf_hybrid_key_alg_info_t
+from virgil_crypto_lib.foundation._c_bridge import vscf_hybrid_private_key_t
+from virgil_crypto_lib.foundation._c_bridge import vscf_hybrid_public_key_t
 from virgil_crypto_lib.foundation._c_bridge import vscf_kdf1_t
 from virgil_crypto_lib.foundation._c_bridge import vscf_kdf2_t
 from virgil_crypto_lib.foundation._c_bridge import vscf_key_asn1_deserializer_t
@@ -104,28 +104,28 @@ class VscfImplTag(object):
             4: ["AlgInfoDerSerializer", vscf_alg_info_der_serializer_t],
             5: ["Asn1rd", vscf_asn1rd_t],
             6: ["Asn1wr", vscf_asn1wr_t],
-            7: ["ChainedKeyAlg", vscf_chained_key_alg_t],
-            8: ["ChainedKeyAlgInfo", vscf_chained_key_alg_info_t],
-            9: ["ChainedPrivateKey", vscf_chained_private_key_t],
-            10: ["ChainedPublicKey", vscf_chained_public_key_t],
-            11: ["CipherAlgInfo", vscf_cipher_alg_info_t],
-            12: ["CompoundKeyAlg", vscf_compound_key_alg_t],
-            13: ["CompoundKeyAlgInfo", vscf_compound_key_alg_info_t],
-            14: ["CompoundPrivateKey", vscf_compound_private_key_t],
-            15: ["CompoundPublicKey", vscf_compound_public_key_t],
-            16: ["CtrDrbg", vscf_ctr_drbg_t],
-            17: ["Curve25519", vscf_curve25519_t],
-            18: ["Ecc", vscf_ecc_t],
-            19: ["EccAlgInfo", vscf_ecc_alg_info_t],
-            20: ["EccPrivateKey", vscf_ecc_private_key_t],
-            21: ["EccPublicKey", vscf_ecc_public_key_t],
-            22: ["Ed25519", vscf_ed25519_t],
-            23: ["EntropyAccumulator", vscf_entropy_accumulator_t],
-            24: ["FakeRandom", vscf_fake_random_t],
-            25: ["Falcon", vscf_falcon_t],
-            26: ["HashBasedAlgInfo", vscf_hash_based_alg_info_t],
-            27: ["Hkdf", vscf_hkdf_t],
-            28: ["Hmac", vscf_hmac_t],
+            7: ["CipherAlgInfo", vscf_cipher_alg_info_t],
+            8: ["CompoundKeyAlg", vscf_compound_key_alg_t],
+            9: ["CompoundKeyAlgInfo", vscf_compound_key_alg_info_t],
+            10: ["CompoundPrivateKey", vscf_compound_private_key_t],
+            11: ["CompoundPublicKey", vscf_compound_public_key_t],
+            12: ["CtrDrbg", vscf_ctr_drbg_t],
+            13: ["Curve25519", vscf_curve25519_t],
+            14: ["Ecc", vscf_ecc_t],
+            15: ["EccAlgInfo", vscf_ecc_alg_info_t],
+            16: ["EccPrivateKey", vscf_ecc_private_key_t],
+            17: ["EccPublicKey", vscf_ecc_public_key_t],
+            18: ["Ed25519", vscf_ed25519_t],
+            19: ["EntropyAccumulator", vscf_entropy_accumulator_t],
+            20: ["FakeRandom", vscf_fake_random_t],
+            21: ["Falcon", vscf_falcon_t],
+            22: ["HashBasedAlgInfo", vscf_hash_based_alg_info_t],
+            23: ["Hkdf", vscf_hkdf_t],
+            24: ["Hmac", vscf_hmac_t],
+            25: ["HybridKeyAlg", vscf_hybrid_key_alg_t],
+            26: ["HybridKeyAlgInfo", vscf_hybrid_key_alg_info_t],
+            27: ["HybridPrivateKey", vscf_hybrid_private_key_t],
+            28: ["HybridPublicKey", vscf_hybrid_public_key_t],
             29: ["Kdf1", vscf_kdf1_t],
             30: ["Kdf2", vscf_kdf2_t],
             31: ["KeyAsn1Deserializer", vscf_key_asn1_deserializer_t],

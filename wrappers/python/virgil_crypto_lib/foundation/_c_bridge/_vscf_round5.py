@@ -38,9 +38,9 @@ from ctypes import *
 from ._vscf_impl import vscf_impl_t
 from ._vscf_error import vscf_error_t
 from ._vscf_raw_public_key import vscf_raw_public_key_t
-from ._vscf_raw_private_key import vscf_raw_private_key_t
 from virgil_crypto_lib.common._c_bridge import vsc_data_t
 from virgil_crypto_lib.common._c_bridge import vsc_buffer_t
+from ._vscf_raw_private_key import vscf_raw_private_key_t
 
 
 class vscf_round5_t(Structure):
@@ -83,27 +83,6 @@ class VscfRound5(object):
         vscf_round5_use_random.restype = None
         return vscf_round5_use_random(ctx, random)
 
-    def vscf_round5_alg_id(self, ctx):
-        """Provide algorithm identificator."""
-        vscf_round5_alg_id = self._lib.vscf_round5_alg_id
-        vscf_round5_alg_id.argtypes = [POINTER(vscf_round5_t)]
-        vscf_round5_alg_id.restype = c_int
-        return vscf_round5_alg_id(ctx)
-
-    def vscf_round5_produce_alg_info(self, ctx):
-        """Produce object with algorithm information and configuration parameters."""
-        vscf_round5_produce_alg_info = self._lib.vscf_round5_produce_alg_info
-        vscf_round5_produce_alg_info.argtypes = [POINTER(vscf_round5_t)]
-        vscf_round5_produce_alg_info.restype = POINTER(vscf_impl_t)
-        return vscf_round5_produce_alg_info(ctx)
-
-    def vscf_round5_restore_alg_info(self, ctx, alg_info):
-        """Restore algorithm configuration from the given object."""
-        vscf_round5_restore_alg_info = self._lib.vscf_round5_restore_alg_info
-        vscf_round5_restore_alg_info.argtypes = [POINTER(vscf_round5_t), POINTER(vscf_impl_t)]
-        vscf_round5_restore_alg_info.restype = c_int
-        return vscf_round5_restore_alg_info(ctx, alg_info)
-
     def vscf_round5_generate_ephemeral_key(self, ctx, key, error):
         """Generate ephemeral private key of the same type.
         Note, this operation might be slow."""
@@ -126,6 +105,13 @@ class VscfRound5(object):
         vscf_round5_import_public_key.restype = POINTER(vscf_impl_t)
         return vscf_round5_import_public_key(ctx, raw_key, error)
 
+    def vscf_round5_import_public_key_data(self, ctx, key_data, key_alg_info, error):
+        """Import public key from the raw binary format."""
+        vscf_round5_import_public_key_data = self._lib.vscf_round5_import_public_key_data
+        vscf_round5_import_public_key_data.argtypes = [POINTER(vscf_round5_t), vsc_data_t, POINTER(vscf_impl_t), POINTER(vscf_error_t)]
+        vscf_round5_import_public_key_data.restype = POINTER(vscf_impl_t)
+        return vscf_round5_import_public_key_data(ctx, key_data, key_alg_info, error)
+
     def vscf_round5_export_public_key(self, ctx, public_key, error):
         """Export public key to the raw binary format.
 
@@ -136,6 +122,24 @@ class VscfRound5(object):
         vscf_round5_export_public_key.argtypes = [POINTER(vscf_round5_t), POINTER(vscf_impl_t), POINTER(vscf_error_t)]
         vscf_round5_export_public_key.restype = POINTER(vscf_raw_public_key_t)
         return vscf_round5_export_public_key(ctx, public_key, error)
+
+    def vscf_round5_exported_public_key_data_len(self, ctx, public_key):
+        """Return length in bytes required to hold exported public key."""
+        vscf_round5_exported_public_key_data_len = self._lib.vscf_round5_exported_public_key_data_len
+        vscf_round5_exported_public_key_data_len.argtypes = [POINTER(vscf_round5_t), POINTER(vscf_impl_t)]
+        vscf_round5_exported_public_key_data_len.restype = c_size_t
+        return vscf_round5_exported_public_key_data_len(ctx, public_key)
+
+    def vscf_round5_export_public_key_data(self, ctx, public_key, out):
+        """Export public key to the raw binary format without algorithm information.
+
+        Binary format must be defined in the key specification.
+        For instance, RSA public key must be exported in format defined in
+        RFC 3447 Appendix A.1.1."""
+        vscf_round5_export_public_key_data = self._lib.vscf_round5_export_public_key_data
+        vscf_round5_export_public_key_data.argtypes = [POINTER(vscf_round5_t), POINTER(vscf_impl_t), POINTER(vsc_buffer_t)]
+        vscf_round5_export_public_key_data.restype = c_int
+        return vscf_round5_export_public_key_data(ctx, public_key, out)
 
     def vscf_round5_import_private_key(self, ctx, raw_key, error):
         """Import private key from the raw binary format.
@@ -151,6 +155,13 @@ class VscfRound5(object):
         vscf_round5_import_private_key.restype = POINTER(vscf_impl_t)
         return vscf_round5_import_private_key(ctx, raw_key, error)
 
+    def vscf_round5_import_private_key_data(self, ctx, key_data, key_alg_info, error):
+        """Import private key from the raw binary format."""
+        vscf_round5_import_private_key_data = self._lib.vscf_round5_import_private_key_data
+        vscf_round5_import_private_key_data.argtypes = [POINTER(vscf_round5_t), vsc_data_t, POINTER(vscf_impl_t), POINTER(vscf_error_t)]
+        vscf_round5_import_private_key_data.restype = POINTER(vscf_impl_t)
+        return vscf_round5_import_private_key_data(ctx, key_data, key_alg_info, error)
+
     def vscf_round5_export_private_key(self, ctx, private_key, error):
         """Export private key in the raw binary format.
 
@@ -162,48 +173,51 @@ class VscfRound5(object):
         vscf_round5_export_private_key.restype = POINTER(vscf_raw_private_key_t)
         return vscf_round5_export_private_key(ctx, private_key, error)
 
-    def vscf_round5_can_encrypt(self, ctx, public_key, data_len):
-        """Check if algorithm can encrypt data with a given key."""
-        vscf_round5_can_encrypt = self._lib.vscf_round5_can_encrypt
-        vscf_round5_can_encrypt.argtypes = [POINTER(vscf_round5_t), POINTER(vscf_impl_t), c_size_t]
-        vscf_round5_can_encrypt.restype = c_bool
-        return vscf_round5_can_encrypt(ctx, public_key, data_len)
+    def vscf_round5_exported_private_key_data_len(self, ctx, private_key):
+        """Return length in bytes required to hold exported private key."""
+        vscf_round5_exported_private_key_data_len = self._lib.vscf_round5_exported_private_key_data_len
+        vscf_round5_exported_private_key_data_len.argtypes = [POINTER(vscf_round5_t), POINTER(vscf_impl_t)]
+        vscf_round5_exported_private_key_data_len.restype = c_size_t
+        return vscf_round5_exported_private_key_data_len(ctx, private_key)
 
-    def vscf_round5_encrypted_len(self, ctx, public_key, data_len):
-        """Calculate required buffer length to hold the encrypted data."""
-        vscf_round5_encrypted_len = self._lib.vscf_round5_encrypted_len
-        vscf_round5_encrypted_len.argtypes = [POINTER(vscf_round5_t), POINTER(vscf_impl_t), c_size_t]
-        vscf_round5_encrypted_len.restype = c_size_t
-        return vscf_round5_encrypted_len(ctx, public_key, data_len)
+    def vscf_round5_export_private_key_data(self, ctx, private_key, out):
+        """Export private key to the raw binary format without algorithm information.
 
-    def vscf_round5_encrypt(self, ctx, public_key, data, out):
-        """Encrypt data with a given public key."""
-        vscf_round5_encrypt = self._lib.vscf_round5_encrypt
-        vscf_round5_encrypt.argtypes = [POINTER(vscf_round5_t), POINTER(vscf_impl_t), vsc_data_t, POINTER(vsc_buffer_t)]
-        vscf_round5_encrypt.restype = c_int
-        return vscf_round5_encrypt(ctx, public_key, data, out)
+        Binary format must be defined in the key specification.
+        For instance, RSA private key must be exported in format defined in
+        RFC 3447 Appendix A.1.2."""
+        vscf_round5_export_private_key_data = self._lib.vscf_round5_export_private_key_data
+        vscf_round5_export_private_key_data.argtypes = [POINTER(vscf_round5_t), POINTER(vscf_impl_t), POINTER(vsc_buffer_t)]
+        vscf_round5_export_private_key_data.restype = c_int
+        return vscf_round5_export_private_key_data(ctx, private_key, out)
 
-    def vscf_round5_can_decrypt(self, ctx, private_key, data_len):
-        """Check if algorithm can decrypt data with a given key.
-        However, success result of decryption is not guaranteed."""
-        vscf_round5_can_decrypt = self._lib.vscf_round5_can_decrypt
-        vscf_round5_can_decrypt.argtypes = [POINTER(vscf_round5_t), POINTER(vscf_impl_t), c_size_t]
-        vscf_round5_can_decrypt.restype = c_bool
-        return vscf_round5_can_decrypt(ctx, private_key, data_len)
+    def vscf_round5_kem_shared_key_len(self, ctx, key):
+        """Return length in bytes required to hold encapsulated shared key."""
+        vscf_round5_kem_shared_key_len = self._lib.vscf_round5_kem_shared_key_len
+        vscf_round5_kem_shared_key_len.argtypes = [POINTER(vscf_round5_t), POINTER(vscf_impl_t)]
+        vscf_round5_kem_shared_key_len.restype = c_size_t
+        return vscf_round5_kem_shared_key_len(ctx, key)
 
-    def vscf_round5_decrypted_len(self, ctx, private_key, data_len):
-        """Calculate required buffer length to hold the decrypted data."""
-        vscf_round5_decrypted_len = self._lib.vscf_round5_decrypted_len
-        vscf_round5_decrypted_len.argtypes = [POINTER(vscf_round5_t), POINTER(vscf_impl_t), c_size_t]
-        vscf_round5_decrypted_len.restype = c_size_t
-        return vscf_round5_decrypted_len(ctx, private_key, data_len)
+    def vscf_round5_kem_encapsulated_key_len(self, ctx, public_key):
+        """Return length in bytes required to hold encapsulated key."""
+        vscf_round5_kem_encapsulated_key_len = self._lib.vscf_round5_kem_encapsulated_key_len
+        vscf_round5_kem_encapsulated_key_len.argtypes = [POINTER(vscf_round5_t), POINTER(vscf_impl_t)]
+        vscf_round5_kem_encapsulated_key_len.restype = c_size_t
+        return vscf_round5_kem_encapsulated_key_len(ctx, public_key)
 
-    def vscf_round5_decrypt(self, ctx, private_key, data, out):
-        """Decrypt given data."""
-        vscf_round5_decrypt = self._lib.vscf_round5_decrypt
-        vscf_round5_decrypt.argtypes = [POINTER(vscf_round5_t), POINTER(vscf_impl_t), vsc_data_t, POINTER(vsc_buffer_t)]
-        vscf_round5_decrypt.restype = c_int
-        return vscf_round5_decrypt(ctx, private_key, data, out)
+    def vscf_round5_kem_encapsulate(self, ctx, public_key, shared_key, encapsulated_key):
+        """Generate a shared key and a key encapsulated message."""
+        vscf_round5_kem_encapsulate = self._lib.vscf_round5_kem_encapsulate
+        vscf_round5_kem_encapsulate.argtypes = [POINTER(vscf_round5_t), POINTER(vscf_impl_t), POINTER(vsc_buffer_t), POINTER(vsc_buffer_t)]
+        vscf_round5_kem_encapsulate.restype = c_int
+        return vscf_round5_kem_encapsulate(ctx, public_key, shared_key, encapsulated_key)
+
+    def vscf_round5_kem_decapsulate(self, ctx, encapsulated_key, private_key, shared_key):
+        """Decapsulate the shared key."""
+        vscf_round5_kem_decapsulate = self._lib.vscf_round5_kem_decapsulate
+        vscf_round5_kem_decapsulate.argtypes = [POINTER(vscf_round5_t), vsc_data_t, POINTER(vscf_impl_t), POINTER(vsc_buffer_t)]
+        vscf_round5_kem_decapsulate.restype = c_int
+        return vscf_round5_kem_decapsulate(ctx, encapsulated_key, private_key, shared_key)
 
     def vscf_round5_setup_defaults(self, ctx):
         """Setup predefined values to the uninitialized class dependencies."""
@@ -212,13 +226,13 @@ class VscfRound5(object):
         vscf_round5_setup_defaults.restype = c_int
         return vscf_round5_setup_defaults(ctx)
 
-    def vscf_round5_generate_key(self, ctx, error):
+    def vscf_round5_generate_key(self, ctx, alg_id, error):
         """Generate new private key.
         Note, this operation might be slow."""
         vscf_round5_generate_key = self._lib.vscf_round5_generate_key
-        vscf_round5_generate_key.argtypes = [POINTER(vscf_round5_t), POINTER(vscf_error_t)]
+        vscf_round5_generate_key.argtypes = [POINTER(vscf_round5_t), c_int, POINTER(vscf_error_t)]
         vscf_round5_generate_key.restype = POINTER(vscf_impl_t)
-        return vscf_round5_generate_key(ctx, error)
+        return vscf_round5_generate_key(ctx, alg_id, error)
 
     def vscf_round5_shallow_copy(self, ctx):
         vscf_round5_shallow_copy = self._lib.vscf_round5_shallow_copy

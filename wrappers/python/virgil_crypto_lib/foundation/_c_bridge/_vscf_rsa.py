@@ -38,9 +38,9 @@ from ctypes import *
 from ._vscf_impl import vscf_impl_t
 from ._vscf_error import vscf_error_t
 from ._vscf_raw_public_key import vscf_raw_public_key_t
-from ._vscf_raw_private_key import vscf_raw_private_key_t
 from virgil_crypto_lib.common._c_bridge import vsc_data_t
 from virgil_crypto_lib.common._c_bridge import vsc_buffer_t
+from ._vscf_raw_private_key import vscf_raw_private_key_t
 
 
 class vscf_rsa_t(Structure):
@@ -82,27 +82,6 @@ class VscfRsa(object):
         vscf_rsa_use_random.restype = None
         return vscf_rsa_use_random(ctx, random)
 
-    def vscf_rsa_alg_id(self, ctx):
-        """Provide algorithm identificator."""
-        vscf_rsa_alg_id = self._lib.vscf_rsa_alg_id
-        vscf_rsa_alg_id.argtypes = [POINTER(vscf_rsa_t)]
-        vscf_rsa_alg_id.restype = c_int
-        return vscf_rsa_alg_id(ctx)
-
-    def vscf_rsa_produce_alg_info(self, ctx):
-        """Produce object with algorithm information and configuration parameters."""
-        vscf_rsa_produce_alg_info = self._lib.vscf_rsa_produce_alg_info
-        vscf_rsa_produce_alg_info.argtypes = [POINTER(vscf_rsa_t)]
-        vscf_rsa_produce_alg_info.restype = POINTER(vscf_impl_t)
-        return vscf_rsa_produce_alg_info(ctx)
-
-    def vscf_rsa_restore_alg_info(self, ctx, alg_info):
-        """Restore algorithm configuration from the given object."""
-        vscf_rsa_restore_alg_info = self._lib.vscf_rsa_restore_alg_info
-        vscf_rsa_restore_alg_info.argtypes = [POINTER(vscf_rsa_t), POINTER(vscf_impl_t)]
-        vscf_rsa_restore_alg_info.restype = c_int
-        return vscf_rsa_restore_alg_info(ctx, alg_info)
-
     def vscf_rsa_generate_ephemeral_key(self, ctx, key, error):
         """Generate ephemeral private key of the same type.
         Note, this operation might be slow."""
@@ -125,6 +104,13 @@ class VscfRsa(object):
         vscf_rsa_import_public_key.restype = POINTER(vscf_impl_t)
         return vscf_rsa_import_public_key(ctx, raw_key, error)
 
+    def vscf_rsa_import_public_key_data(self, ctx, key_data, key_alg_info, error):
+        """Import public key from the raw binary format."""
+        vscf_rsa_import_public_key_data = self._lib.vscf_rsa_import_public_key_data
+        vscf_rsa_import_public_key_data.argtypes = [POINTER(vscf_rsa_t), vsc_data_t, POINTER(vscf_impl_t), POINTER(vscf_error_t)]
+        vscf_rsa_import_public_key_data.restype = POINTER(vscf_impl_t)
+        return vscf_rsa_import_public_key_data(ctx, key_data, key_alg_info, error)
+
     def vscf_rsa_export_public_key(self, ctx, public_key, error):
         """Export public key to the raw binary format.
 
@@ -135,6 +121,24 @@ class VscfRsa(object):
         vscf_rsa_export_public_key.argtypes = [POINTER(vscf_rsa_t), POINTER(vscf_impl_t), POINTER(vscf_error_t)]
         vscf_rsa_export_public_key.restype = POINTER(vscf_raw_public_key_t)
         return vscf_rsa_export_public_key(ctx, public_key, error)
+
+    def vscf_rsa_exported_public_key_data_len(self, ctx, public_key):
+        """Return length in bytes required to hold exported public key."""
+        vscf_rsa_exported_public_key_data_len = self._lib.vscf_rsa_exported_public_key_data_len
+        vscf_rsa_exported_public_key_data_len.argtypes = [POINTER(vscf_rsa_t), POINTER(vscf_impl_t)]
+        vscf_rsa_exported_public_key_data_len.restype = c_size_t
+        return vscf_rsa_exported_public_key_data_len(ctx, public_key)
+
+    def vscf_rsa_export_public_key_data(self, ctx, public_key, out):
+        """Export public key to the raw binary format without algorithm information.
+
+        Binary format must be defined in the key specification.
+        For instance, RSA public key must be exported in format defined in
+        RFC 3447 Appendix A.1.1."""
+        vscf_rsa_export_public_key_data = self._lib.vscf_rsa_export_public_key_data
+        vscf_rsa_export_public_key_data.argtypes = [POINTER(vscf_rsa_t), POINTER(vscf_impl_t), POINTER(vsc_buffer_t)]
+        vscf_rsa_export_public_key_data.restype = c_int
+        return vscf_rsa_export_public_key_data(ctx, public_key, out)
 
     def vscf_rsa_import_private_key(self, ctx, raw_key, error):
         """Import private key from the raw binary format.
@@ -150,6 +154,13 @@ class VscfRsa(object):
         vscf_rsa_import_private_key.restype = POINTER(vscf_impl_t)
         return vscf_rsa_import_private_key(ctx, raw_key, error)
 
+    def vscf_rsa_import_private_key_data(self, ctx, key_data, key_alg_info, error):
+        """Import private key from the raw binary format."""
+        vscf_rsa_import_private_key_data = self._lib.vscf_rsa_import_private_key_data
+        vscf_rsa_import_private_key_data.argtypes = [POINTER(vscf_rsa_t), vsc_data_t, POINTER(vscf_impl_t), POINTER(vscf_error_t)]
+        vscf_rsa_import_private_key_data.restype = POINTER(vscf_impl_t)
+        return vscf_rsa_import_private_key_data(ctx, key_data, key_alg_info, error)
+
     def vscf_rsa_export_private_key(self, ctx, private_key, error):
         """Export private key in the raw binary format.
 
@@ -160,6 +171,24 @@ class VscfRsa(object):
         vscf_rsa_export_private_key.argtypes = [POINTER(vscf_rsa_t), POINTER(vscf_impl_t), POINTER(vscf_error_t)]
         vscf_rsa_export_private_key.restype = POINTER(vscf_raw_private_key_t)
         return vscf_rsa_export_private_key(ctx, private_key, error)
+
+    def vscf_rsa_exported_private_key_data_len(self, ctx, private_key):
+        """Return length in bytes required to hold exported private key."""
+        vscf_rsa_exported_private_key_data_len = self._lib.vscf_rsa_exported_private_key_data_len
+        vscf_rsa_exported_private_key_data_len.argtypes = [POINTER(vscf_rsa_t), POINTER(vscf_impl_t)]
+        vscf_rsa_exported_private_key_data_len.restype = c_size_t
+        return vscf_rsa_exported_private_key_data_len(ctx, private_key)
+
+    def vscf_rsa_export_private_key_data(self, ctx, private_key, out):
+        """Export private key to the raw binary format without algorithm information.
+
+        Binary format must be defined in the key specification.
+        For instance, RSA private key must be exported in format defined in
+        RFC 3447 Appendix A.1.2."""
+        vscf_rsa_export_private_key_data = self._lib.vscf_rsa_export_private_key_data
+        vscf_rsa_export_private_key_data.argtypes = [POINTER(vscf_rsa_t), POINTER(vscf_impl_t), POINTER(vsc_buffer_t)]
+        vscf_rsa_export_private_key_data.restype = c_int
+        return vscf_rsa_export_private_key_data(ctx, private_key, out)
 
     def vscf_rsa_can_encrypt(self, ctx, public_key, data_len):
         """Check if algorithm can encrypt data with a given key."""

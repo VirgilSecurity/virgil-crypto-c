@@ -12,19 +12,17 @@
     <require module="buffer defs" scope="private" project="common"/>
     <require module="mbedtls bridge random" scope="private" project="foundation"/>
 
-    <dependency name="random" interface="random" project="foundation">
+    <dependency name="random" interface="random" project="foundation" has_observers="1">
         Random used for key generation, proofs, etc.
     </dependency>
-    <dependency name="operation random" interface="random" project="foundation">
+    <dependency name="operation random" interface="random" project="foundation" has_observers="1">
         Random used for crypto operations to make them const-time
     </dependency>
 
     <property name="simple swu" class="simple swu" project="foundation"/>
     <property name="phe hash" class="phe hash" access="readwrite"/>
+    <property name="proof verifier" class="phe proof verifier"/>
     <property name="group" class="mbedtls_ecp_group" library="mbedtls" access="readwrite" is_reference="0"/>
-    <property name="client private key" type="byte" access="readwrite">
-        <array length="fixed" length_constant=".(class_phe_common_constant_phe_private_key_length)"/>
-    </property>
     <property name="server public key" type="byte" access="readwrite">
         <array length="fixed" length_constant=".(class_phe_common_constant_phe_public_key_length)"/>
     </property>
@@ -37,7 +35,11 @@
     <property name="minus one" class="mbedtls_mpi" library="mbedtls" access="readwrite" is_reference="0"/>
 
     <method name="setup defaults">
-        <return enum="status"/>
+        Setups dependencies with default values.
+
+        <return enum="status">
+            - vsce_status_ERROR_RNG_FAILED in case rng failed
+        </return>
     </method>
 
     <method name="set keys">
@@ -54,9 +56,8 @@
         </argument>
 
         <return enum="status">
-            - vsce_SUCCESS if operation succeeded
-            - vsce_error_INVALID_PRIVATE_KEY if private key is invalid
-            - vsce_error_INVALID_ECP if public key is invalid
+            - vsce_status_ERROR_INVALID_PRIVATE_KEY if private key is invalid
+            - vsce_status_ERROR_INVALID_PUBLIC_KEY if public key is invalid
         </return>
     </method>
 
@@ -64,14 +65,14 @@
         Generates client private key
 
         <argument name="client private key" class="buffer" access="writeonly">
-            Client's private key phe_common_constant_phe_private_key_length
+            Client's private key
             Buffer size should be >= .(class_phe_common_constant_phe_private_key_length)
 
             <length constant="phe private key length" class="phe common"/>
         </argument>
 
         <return enum="status">
-            - vsce_error_RNG_ERROR in case rng failed
+            - vsce_status_ERROR_RNG_FAILED in case rng failed
         </return>
     </method>
 
@@ -108,10 +109,10 @@
         </argument>
 
         <return enum="status">
-            - vsce_error_PROTOBUF_DECODE_ERROR if input model is invalid
-            - vsce_error_INVALID_ECP if input points are invalid
-            - vsce_error_INVALID_SUCCESS_PROOF if provided proof is not valid
-            - vsce_error_RNG_ERROR if rng failed
+            - vsce_status_ERROR_PROTOBUF_DECODE_FAILED if input model is invalid
+            - vsce_status_ERROR_INVALID_PUBLIC_KEY if input points are invalid
+            - vsce_status_ERROR_INVALID_SUCCESS_PROOF if provided proof is not valid
+            - vsce_status_ERROR_RNG_FAILED in case rng failed
         </return>
     </method>
 
@@ -140,8 +141,8 @@
         </argument>
 
         <return enum="status">
-            - vsce_error_PROTOBUF_DECODE_ERROR if input model is invalid
-            - vsce_error_INVALID_ECP if input points are invalid
+            - vsce_status_ERROR_PROTOBUF_DECODE_FAILED if input model is invalid
+            - vsce_status_ERROR_INVALID_PUBLIC_KEY if input points are invalid
         </return>
     </method>
 
@@ -167,32 +168,12 @@
         </argument>
 
         <return enum="status">
-            - vsce_error_PROTOBUF_DECODE_ERROR if input model is invalid
-            - vsce_error_INVALID_ECP if input points are invalid
-            - vsce_error_INVALID_PRIVATE_KEY if provided private key in invalid
-            - vsce_error_INVALID_SUCCESS_PROOF if provided proof is not valid
-            - vsce_error_INVALID_FAIL_PROOF if provided proof is not valid
+            - vsce_status_ERROR_PROTOBUF_DECODE_FAILED if input model is invalid
+            - vsce_status_ERROR_INVALID_PUBLIC_KEY if input points are invalid
+            - vsce_status_ERROR_INVALID_PRIVATE_KEY if private key is invalid
+            - vsce_status_ERROR_INVALID_SUCCESS_PROOF if provided proof is not valid
+            - vsce_status_ERROR_INVALID_FAIL_PROOF if provided proof is not valid
         </return>
-    </method>
-
-    <method name="check success proof" declaration="private">
-        <argument name="op group" class="mbedtls_ecp_group" library="mbedtls" access="readwrite"/>
-        <argument name="success proof" class="ProofOfSuccess" library="nanopb"/>
-        <argument name="ns" class="data"/>
-        <argument name="c0" class="mbedtls_ecp_point" library="mbedtls"/>
-        <argument name="c1" class="mbedtls_ecp_point" library="mbedtls"/>
-
-        <return enum="status"/>
-    </method>
-
-    <method name="check fail proof" declaration="private">
-        <argument name="op group" class="mbedtls_ecp_group" library="mbedtls" access="readwrite"/>
-        <argument name="fail proof" class="ProofOfFail" library="nanopb"/>
-        <argument name="c0" class="mbedtls_ecp_point" library="mbedtls"/>
-        <argument name="c1" class="mbedtls_ecp_point" library="mbedtls"/>
-        <argument name="hs0" class="mbedtls_ecp_point" library="mbedtls"/>
-
-        <return enum="status"/>
     </method>
 
     <method name="rotate keys">
@@ -216,7 +197,8 @@
         </argument>
 
         <return enum="status">
-
+            - vsce_status_ERROR_PROTOBUF_DECODE_FAILED if input model is invalid
+            - vsce_status_ERROR_INVALID_PRIVATE_KEY if private key is invalid
         </return>
     </method>
 
@@ -237,9 +219,9 @@
         </argument>
 
         <return enum="status">
-            - vsce_error_PROTOBUF_DECODE_ERROR if input model is invalid
-            - vsce_error_INVALID_ECP if input points are invalid
-            - vsce_error_INVALID_PRIVATE_KEY if provided private key in invalid
+            - vsce_status_ERROR_PROTOBUF_DECODE_FAILED if input model is invalid
+            - vsce_status_ERROR_INVALID_PUBLIC_KEY if input points are invalid
+            - vsce_status_ERROR_INVALID_PRIVATE_KEY if private key is invalid
         </return>
     </method>
 

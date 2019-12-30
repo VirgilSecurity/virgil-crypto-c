@@ -57,7 +57,7 @@ include("cmake/protobuf.cmake")
 # ---------------------------------------------------------------------------
 #   Version options
 # ---------------------------------------------------------------------------
-set(VIRGIL_CRYPTO_VERSION_LABEL "dev1" CACHE STRING "Version label, i.e. beta, rc1.")
+set(VIRGIL_CRYPTO_VERSION_LABEL "dev3" CACHE STRING "Version label, i.e. beta, rc1.")
 
 # ---------------------------------------------------------------------------
 #   Build options
@@ -99,7 +99,7 @@ option(VIRGIL_LIB_PHE "Build 'phe' library" ON)
 #
 # Features
 #
-option(VIRGIL_POST_QUANTUM "Enable post-quantum cryptography [experemental]." OFF)
+option(VIRGIL_POST_QUANTUM "Enable post-quantum cryptography [experimental]." ON)
 
 #
 # Wrappers

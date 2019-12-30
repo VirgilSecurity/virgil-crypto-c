@@ -453,8 +453,15 @@ vscf_padding_cipher_decrypted_out_len(const vscf_padding_cipher_t *self, size_t 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(self->cipher);
 
-    const size_t len = vscf_cipher_decrypted_out_len(self->cipher, data_len);
-    return len;
+    const size_t decrypted_len = vscf_cipher_decrypted_out_len(self->cipher, data_len);
+
+    if (data_len > 0) {
+        return decrypted_len;
+    }
+
+    const size_t padding_len_max = vscf_padding_finish_padded_data_processing_out_len(self->padding);
+
+    return decrypted_len + padding_len_max;
 }
 
 //

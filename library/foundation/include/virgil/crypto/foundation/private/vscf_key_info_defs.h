@@ -87,21 +87,21 @@ struct vscf_key_info_t {
 
     vscf_alg_id_t alg_id;
 
-    vscf_alg_id_t chained_l1_alg_id;
+    vscf_alg_id_t hybrid_first_key_alg_id;
 
-    vscf_alg_id_t chained_l2_alg_id;
+    vscf_alg_id_t hybrid_second_key_alg_id;
 
     vscf_alg_id_t compound_cipher_alg_id;
 
     vscf_alg_id_t compound_signer_alg_id;
 
-    vscf_alg_id_t compound_cipher_l1_alg_id;
+    vscf_alg_id_t compound_hybrid_cipher_first_key_alg_id;
 
-    vscf_alg_id_t compound_cipher_l2_alg_id;
+    vscf_alg_id_t compound_hybrid_cipher_second_key_alg_id;
 
-    vscf_alg_id_t compound_signer_l1_alg_id;
+    vscf_alg_id_t compound_hybrid_signer_first_key_alg_id;
 
-    vscf_alg_id_t compound_signer_l2_alg_id;
+    vscf_alg_id_t compound_hybrid_signer_second_key_alg_id;
 };
 
 

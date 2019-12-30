@@ -38,7 +38,7 @@ import VSCFoundation
 
 /// Provide post-quantum encryption based on the round5 implementation.
 /// For algorithm details check https://github.com/round5/code
-@objc(VSCFRound5) public class Round5: NSObject, Alg, KeyAlg, KeyCipher {
+@objc(VSCFRound5) public class Round5: NSObject, KeyAlg, Kem {
 
     /// Handle underlying C context.
     @objc public let c_ctx: OpaquePointer
@@ -94,36 +94,15 @@ import VSCFoundation
 
     /// Generate new private key.
     /// Note, this operation might be slow.
-    @objc public func generateKey() throws -> PrivateKey {
+    @objc public func generateKey(algId: AlgId) throws -> PrivateKey {
         var error: vscf_error_t = vscf_error_t()
         vscf_error_reset(&error)
 
-        let proxyResult = vscf_round5_generate_key(self.c_ctx, &error)
+        let proxyResult = vscf_round5_generate_key(self.c_ctx, vscf_alg_id_t(rawValue: UInt32(algId.rawValue)), &error)
 
         try FoundationError.handleStatus(fromC: error.status)
 
         return FoundationImplementation.wrapPrivateKey(take: proxyResult!)
-    }
-
-    /// Provide algorithm identificator.
-    @objc public func algId() -> AlgId {
-        let proxyResult = vscf_round5_alg_id(self.c_ctx)
-
-        return AlgId.init(fromC: proxyResult)
-    }
-
-    /// Produce object with algorithm information and configuration parameters.
-    @objc public func produceAlgInfo() -> AlgInfo {
-        let proxyResult = vscf_round5_produce_alg_info(self.c_ctx)
-
-        return FoundationImplementation.wrapAlgInfo(take: proxyResult!)
-    }
-
-    /// Restore algorithm configuration from the given object.
-    @objc public func restoreAlgInfo(algInfo: AlgInfo) throws {
-        let proxyResult = vscf_round5_restore_alg_info(self.c_ctx, algInfo.c_ctx)
-
-        try FoundationError.handleStatus(fromC: proxyResult)
     }
 
     /// Generate ephemeral private key of the same type.
@@ -209,78 +188,73 @@ import VSCFoundation
         return RawPrivateKey.init(take: proxyResult!)
     }
 
-    /// Check if algorithm can encrypt data with a given key.
-    @objc public func canEncrypt(publicKey: PublicKey, dataLen: Int) -> Bool {
-        let proxyResult = vscf_round5_can_encrypt(self.c_ctx, publicKey.c_ctx, dataLen)
+    /// Return length in bytes required to hold encapsulated shared key.
+    @objc public func kemSharedKeyLen(key: Key) -> Int {
+        let proxyResult = vscf_round5_kem_shared_key_len(self.c_ctx, key.c_ctx)
 
         return proxyResult
     }
 
-    /// Calculate required buffer length to hold the encrypted data.
-    @objc public func encryptedLen(publicKey: PublicKey, dataLen: Int) -> Int {
-        let proxyResult = vscf_round5_encrypted_len(self.c_ctx, publicKey.c_ctx, dataLen)
+    /// Return length in bytes required to hold encapsulated key.
+    @objc public func kemEncapsulatedKeyLen(publicKey: PublicKey) -> Int {
+        let proxyResult = vscf_round5_kem_encapsulated_key_len(self.c_ctx, publicKey.c_ctx)
 
         return proxyResult
     }
 
-    /// Encrypt data with a given public key.
-    @objc public func encrypt(publicKey: PublicKey, data: Data) throws -> Data {
-        let outCount = self.encryptedLen(publicKey: publicKey, dataLen: data.count)
-        var out = Data(count: outCount)
-        var outBuf = vsc_buffer_new()
+    /// Generate a shared key and a key encapsulated message.
+    @objc public func kemEncapsulate(publicKey: PublicKey) throws -> KemKemEncapsulateResult {
+        let sharedKeyCount = self.kemSharedKeyLen(key: publicKey)
+        var sharedKey = Data(count: sharedKeyCount)
+        var sharedKeyBuf = vsc_buffer_new()
         defer {
-            vsc_buffer_delete(outBuf)
+            vsc_buffer_delete(sharedKeyBuf)
         }
 
-        let proxyResult = data.withUnsafeBytes({ (dataPointer: UnsafeRawBufferPointer) -> vscf_status_t in
-            out.withUnsafeMutableBytes({ (outPointer: UnsafeMutableRawBufferPointer) -> vscf_status_t in
-                vsc_buffer_use(outBuf, outPointer.bindMemory(to: byte.self).baseAddress, outCount)
+        let encapsulatedKeyCount = self.kemEncapsulatedKeyLen(publicKey: publicKey)
+        var encapsulatedKey = Data(count: encapsulatedKeyCount)
+        var encapsulatedKeyBuf = vsc_buffer_new()
+        defer {
+            vsc_buffer_delete(encapsulatedKeyBuf)
+        }
 
-                return vscf_round5_encrypt(self.c_ctx, publicKey.c_ctx, vsc_data(dataPointer.bindMemory(to: byte.self).baseAddress, data.count), outBuf)
+        let proxyResult = sharedKey.withUnsafeMutableBytes({ (sharedKeyPointer: UnsafeMutableRawBufferPointer) -> vscf_status_t in
+            encapsulatedKey.withUnsafeMutableBytes({ (encapsulatedKeyPointer: UnsafeMutableRawBufferPointer) -> vscf_status_t in
+                vsc_buffer_use(sharedKeyBuf, sharedKeyPointer.bindMemory(to: byte.self).baseAddress, sharedKeyCount)
+
+                vsc_buffer_use(encapsulatedKeyBuf, encapsulatedKeyPointer.bindMemory(to: byte.self).baseAddress, encapsulatedKeyCount)
+
+                return vscf_round5_kem_encapsulate(self.c_ctx, publicKey.c_ctx, sharedKeyBuf, encapsulatedKeyBuf)
             })
         })
-        out.count = vsc_buffer_len(outBuf)
+        sharedKey.count = vsc_buffer_len(sharedKeyBuf)
+        encapsulatedKey.count = vsc_buffer_len(encapsulatedKeyBuf)
 
         try FoundationError.handleStatus(fromC: proxyResult)
 
-        return out
+        return KemKemEncapsulateResult(sharedKey: sharedKey, encapsulatedKey: encapsulatedKey)
     }
 
-    /// Check if algorithm can decrypt data with a given key.
-    /// However, success result of decryption is not guaranteed.
-    @objc public func canDecrypt(privateKey: PrivateKey, dataLen: Int) -> Bool {
-        let proxyResult = vscf_round5_can_decrypt(self.c_ctx, privateKey.c_ctx, dataLen)
-
-        return proxyResult
-    }
-
-    /// Calculate required buffer length to hold the decrypted data.
-    @objc public func decryptedLen(privateKey: PrivateKey, dataLen: Int) -> Int {
-        let proxyResult = vscf_round5_decrypted_len(self.c_ctx, privateKey.c_ctx, dataLen)
-
-        return proxyResult
-    }
-
-    /// Decrypt given data.
-    @objc public func decrypt(privateKey: PrivateKey, data: Data) throws -> Data {
-        let outCount = self.decryptedLen(privateKey: privateKey, dataLen: data.count)
-        var out = Data(count: outCount)
-        var outBuf = vsc_buffer_new()
+    /// Decapsulate the shared key.
+    @objc public func kemDecapsulate(encapsulatedKey: Data, privateKey: PrivateKey) throws -> Data {
+        let sharedKeyCount = self.kemSharedKeyLen(key: privateKey)
+        var sharedKey = Data(count: sharedKeyCount)
+        var sharedKeyBuf = vsc_buffer_new()
         defer {
-            vsc_buffer_delete(outBuf)
+            vsc_buffer_delete(sharedKeyBuf)
         }
 
-        let proxyResult = data.withUnsafeBytes({ (dataPointer: UnsafeRawBufferPointer) -> vscf_status_t in
-            out.withUnsafeMutableBytes({ (outPointer: UnsafeMutableRawBufferPointer) -> vscf_status_t in
-                vsc_buffer_use(outBuf, outPointer.bindMemory(to: byte.self).baseAddress, outCount)
+        let proxyResult = encapsulatedKey.withUnsafeBytes({ (encapsulatedKeyPointer: UnsafeRawBufferPointer) -> vscf_status_t in
+            sharedKey.withUnsafeMutableBytes({ (sharedKeyPointer: UnsafeMutableRawBufferPointer) -> vscf_status_t in
+                vsc_buffer_use(sharedKeyBuf, sharedKeyPointer.bindMemory(to: byte.self).baseAddress, sharedKeyCount)
 
-                return vscf_round5_decrypt(self.c_ctx, privateKey.c_ctx, vsc_data(dataPointer.bindMemory(to: byte.self).baseAddress, data.count), outBuf)
+                return vscf_round5_kem_decapsulate(self.c_ctx, vsc_data(encapsulatedKeyPointer.bindMemory(to: byte.self).baseAddress, encapsulatedKey.count), privateKey.c_ctx, sharedKeyBuf)
             })
         })
-        out.count = vsc_buffer_len(outBuf)
+        sharedKey.count = vsc_buffer_len(sharedKeyBuf)
 
         try FoundationError.handleStatus(fromC: proxyResult)
 
-        return out
+        return sharedKey
     }
 }

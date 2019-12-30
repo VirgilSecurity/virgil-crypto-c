@@ -75,6 +75,18 @@
 //  Generated section start.
 // --------------------------------------------------------------------------
 
+//
+//  This method is called when interface 'hash' was setup.
+//
+VSCF_PRIVATE void
+vscf_hkdf_did_setup_hash(vscf_hkdf_t *self);
+
+//
+//  This method is called when interface 'hash' was released.
+//
+VSCF_PRIVATE void
+vscf_hkdf_did_release_hash(vscf_hkdf_t *self);
+
 static const vscf_api_t *
 vscf_hkdf_find_api(vscf_api_tag_t api_tag);
 
@@ -327,6 +339,8 @@ vscf_hkdf_use_hash(vscf_hkdf_t *self, vscf_impl_t *hash) {
     VSCF_ASSERT(vscf_hash_is_implemented(hash));
 
     self->hash = vscf_impl_shallow_copy(hash);
+
+    vscf_hkdf_did_setup_hash(self);
 }
 
 //
@@ -343,6 +357,8 @@ vscf_hkdf_take_hash(vscf_hkdf_t *self, vscf_impl_t *hash) {
     VSCF_ASSERT(vscf_hash_is_implemented(hash));
 
     self->hash = hash;
+
+    vscf_hkdf_did_setup_hash(self);
 }
 
 //
@@ -354,6 +370,8 @@ vscf_hkdf_release_hash(vscf_hkdf_t *self) {
     VSCF_ASSERT_PTR(self);
 
     vscf_impl_destroy(&self->hash);
+
+    vscf_hkdf_did_release_hash(self);
 }
 
 static const vscf_api_t *

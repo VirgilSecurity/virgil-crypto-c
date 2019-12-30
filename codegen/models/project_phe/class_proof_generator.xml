@@ -1,0 +1,29 @@
+<class name="proof generator" context="internal" scope="internal">
+
+    <require class="phe common" scope="public"/>
+
+    <require header="mbedtls/ecp.h" scope="public"/>
+    <require header="mbedtls/bignum.h" scope="context"/>
+    <require module="mbedtls bridge random" scope="private" project="foundation"/>
+
+    <property name="phe hash" class="phe hash"/>
+
+    <dependency name="random" interface="random" project="foundation"/>
+    <dependency name="operation random" interface="random" project="foundation"/>
+
+    <method name="prove success">
+        <argument name="op group" class="mbedtls_ecp_group" library="mbedtls" access="readwrite"/>
+        <argument name="priv" class="mbedtls_mpi" library="mbedtls"/>
+        <argument name="pub" class="mbedtls_ecp_point" library="mbedtls"/>
+        <argument name="P1" class="mbedtls_ecp_point" library="mbedtls"/>
+        <argument name="P2" class="mbedtls_ecp_point" library="mbedtls"/>
+        <argument name="Q1" class="mbedtls_ecp_point" library="mbedtls"/>
+        <argument name="Q2" class="mbedtls_ecp_point" library="mbedtls"/>
+        <argument name="blind X" class="mbedtls_mpi" library="mbedtls" access="readwrite"/>
+        <argument name="term1" class="mbedtls_ecp_point" library="mbedtls" access="readwrite"/>
+        <argument name="term2" class="mbedtls_ecp_point" library="mbedtls" access="readwrite"/>
+        <argument name="term3" class="mbedtls_ecp_point" library="mbedtls" access="readwrite"/>
+
+        <return enum="status"/>
+    </method>
+</class>

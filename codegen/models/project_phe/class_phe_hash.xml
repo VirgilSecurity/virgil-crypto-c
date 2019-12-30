@@ -49,9 +49,9 @@
     </method>
 
     <method name="hash Z success" declaration="public">
-        <argument name="server public key" class="data"/>
-        <argument name="c0" class="mbedtls_ecp_point" library="mbedtls"/>
-        <argument name="c1" class="mbedtls_ecp_point" library="mbedtls"/>
+        <argument name="pub" class="mbedtls_ecp_point" library="mbedtls"/>
+        <argument name="p2" class="mbedtls_ecp_point" library="mbedtls"/>
+        <argument name="q2" class="mbedtls_ecp_point" library="mbedtls"/>
         <argument name="term1" class="mbedtls_ecp_point" library="mbedtls"/>
         <argument name="term2" class="mbedtls_ecp_point" library="mbedtls"/>
         <argument name="term3" class="mbedtls_ecp_point" library="mbedtls"/>
