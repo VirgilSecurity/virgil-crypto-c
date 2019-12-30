@@ -64,15 +64,15 @@
 #   PHP_VERSION           - This is set to: $major[.$minor[.$patch]]
 #   PHP_FOUND             - TRUE if all components are found.
 #   PHP_<component>_FOUND - TRUE if <component> is found.
-#   PHPUNIT_EXECUTABLE    - the full path to the 'phpunit' executable
-#   PHPUNIT_FOUND         - TRUE if 'phpunit' executable is found
-#   PHPUNIT_VERSION       - PHPUnit version as $major[.$minor[.$patch]]
+#   COMPOSER_EXECUTABLE   - the full path to the 'composer' executable
+#   COMPOSER_FOUND        - TRUE if 'composer' executable is found
+#   COMPOSER_VERSION      - COMPOSER version as $major[.$minor[.$patch]]
 #   COMPOSER_FOUND        - TRUE if 'composer' executable is found
 #   COMPOSER_VERSION      - composer version as $major[.$minor[.$patch]]
 #
 #
 # Note, for Unix-like systems 'php-config' utility is used to find 'Devel' components.
-# Note, for Windows 'PHP_HOME', 'PHP_DEVEL_HOME' and 'PHPUNIT_HOME' environment variable are used find requested components.
+# Note, for Windows 'PHP_HOME', 'PHP_DEVEL_HOME' and 'COMPOSER_HOME' environment variable are used find requested components.
 
 # ---------------------------------------------------------------------------
 #   Find PHP within Windows OS
@@ -89,26 +89,25 @@ if(WIN32)
         set(PHP_DEVEL_HOME "$ENV{PHP_DEVEL_HOME}")
     endif()
 
-    if(NOT DEFINED PHPUNIT_HOME AND DEFINED ENV{PHPUNIT_HOME})
-        set(PHPUNIT_HOME "$ENV{PHPUNIT_HOME}")
+    if(NOT DEFINED COMPOSER_HOME AND DEFINED ENV{COMPOSER_HOME})
+        set(COMPOSER_HOME "$ENV{COMPOSER_HOME}")
     endif()
 
     #
     # Find executables
     #
     find_program(PHP_EXECUTABLE NAMES php.exe PATHS "${PHP_HOME}")
-    find_program(PHPUNIT_EXECUTABLE NAMES phpunit phpunit.phar PATHS "${PHPUNIT_HOME}")
-    find_program(COMPOSER_EXECUTABLE NAMES composer composer.phar)
+    find_program(COMPOSER_EXECUTABLE NAMES composer composer.phar PATHS "${COMPOSER_HOME}")
 
     #
-    # Set 'PHP_HOME' and 'PHPUNIT_HOME' if executables are found and variable are not defined.
+    # Set 'PHP_HOME' and 'COMPOSER_HOME' if executables are found and variable are not defined.
     #
     if(NOT PHP_HOME AND PHP_EXECUTABLE)
         get_filename_component(PHP_HOME "${PHP_EXECUTABLE}" DIRECTORY)
     endif()
 
-    if(NOT PHPUNIT_HOME AND PHPUNIT_EXECUTABLE)
-        get_filename_component(PHPUNIT_HOME "${PHPUNIT_EXECUTABLE}" DIRECTORY)
+    if(NOT COMPOSER_HOME AND COMPOSER_EXECUTABLE)
+        get_filename_component(COMPOSER_HOME "${COMPOSER_EXECUTABLE}" DIRECTORY)
     endif()
 
     #
@@ -160,7 +159,6 @@ if(WIN32)
 # ---------------------------------------------------------------------------
 else()
     find_program(PHP_CONFIG_EXECUTABLE NAMES php5-config php-config)
-    find_program(PHPUNIT_EXECUTABLE NAMES phpunit phpunit.phar)
     find_program(COMPOSER_EXECUTABLE NAMES composer composer.phar)
 
 
@@ -264,27 +262,26 @@ if(PHP_INFO)
     set(PHP_VERSION "${PHP_VERSION_MAJOR}.${PHP_VERSION_MINOR}.${PHP_VERSION_PATCH}")
 endif()
 
-
 # ---------------------------------------------------------------------------
-#   Get information from 'phpunit --version' output
+#   Get information from 'composer --version' output
 # ---------------------------------------------------------------------------
-if(PHPUNIT_EXECUTABLE)
+if(COMPOSER_EXECUTABLE)
     execute_process(
-            COMMAND "${PHPUNIT_EXECUTABLE}" "--version"
-            RESULT_VARIABLE phpunit_info_res
-            OUTPUT_VARIABLE phpunit_info_var
-            ERROR_VARIABLE phpunit_info_err
+            COMMAND "${COMPOSER_EXECUTABLE}" "--version"
+            RESULT_VARIABLE composer_info_res
+            OUTPUT_VARIABLE composer_info_var
+            ERROR_VARIABLE composer_info_err
             OUTPUT_STRIP_TRAILING_WHITESPACE
             ERROR_STRIP_TRAILING_WHITESPACE
             )
 
-    if(phpunit_info_res EQUAL 0)
-        set(PHPUNIT_INFO "${phpunit_info_var}")
+    if(composer_info_res EQUAL 0)
+        set(COMPOSER_INFO "${composer_info_var}")
     endif()
 endif()
 
-if(PHPUNIT_INFO)
-    string(REGEX REPLACE "PHPUnit ([0-9]+\\.[0-9]+\\.[0-9]+).+" "\\1" PHPUNIT_VERSION "${PHPUNIT_INFO}")
+if(COMPOSER_INFO)
+    string(REGEX REPLACE "Composer version ([0-9]+\\.[0-9]+\\.[0-9]+).+" "\\1" COMPOSER_VERSION "${COMPOSER_INFO}")
 endif()
 
 
@@ -328,12 +325,10 @@ if(PHP_FIND_COMPONENTS)
             endif()
 
         elseif(component STREQUAL "Test")
-            set(_PHP_TEST_REQUIRED_VARS PHPUNIT_EXECUTABLE)
+            set(_PHP_TEST_REQUIRED_VARS PHP_EXECUTABLE COMPOSER_EXECUTABLE)
 
-            if(PHPUNIT_EXECUTABLE)
+            if(PHP_EXECUTABLE AND COMPOSER_EXECUTABLE)
                 set(PHP_Test_FOUND TRUE)
-                set(PHPUNIT_FOUND TRUE)
-                set(COMPOSER_FOUND TRUE)
             endif()
         endif()
     endforeach()
@@ -389,7 +384,7 @@ else()
             set(PHP_Devel_FOUND TRUE)
         endif()
 
-        if(PHPUNIT_EXECUTABLE AND COMPOSER_EXECUTABLE)
+        if(PHP_EXECUTABLE AND COMPOSER_EXECUTABLE)
             set(PHP_Test_FOUND TRUE)
         endif()
     endif()
@@ -404,7 +399,6 @@ set(PHP_LIBRARIES "${PHP_LIBRARIES}" CACHE STRING "The list of paths to PHP libr
 mark_as_advanced(
         PHP_EXECUTABLE
         PHP_CONFIG_EXECUTABLE
-        PHPUNIT_EXECUTABLE
         COMPOSER_EXECUTABLE
         PHP_INCLUDE_DIR
         PHP_INCLUDE_DIRS

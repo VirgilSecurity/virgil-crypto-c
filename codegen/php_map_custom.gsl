@@ -43,7 +43,7 @@
 gsl from "common.gsl"
 
 # ---------------------------------------------------------------------------
-#   
+#
 # ---------------------------------------------------------------------------
 function php_map_custom_cmakelists (in_php_project, out_php_module)
     check_arguments (my, "in_php_project, out_php_module", my)
@@ -131,20 +131,24 @@ function php_map_custom_cmakelists (in_php_project, out_php_module)
         my._c = php_format_cmakelists_comment_inline ("Test")
 
         my._h = format_left("\
-            if(ENABLE_TESTING AND VIRGIL_PHP_TESTING AND PHP_EXECUTABLE AND PHPUNIT_EXECUTABLE AND COMPOSER_EXECUTABLE)
+            if(ENABLE_TESTING)
                 add_custom_target(test_composer_$(my._project:)_php ALL
                         COMMAND COMPOSER=composer_dev.json \"${COMPOSER_EXECUTABLE}\" install
                         COMMENT \"Running composer install...\"
-                        WORKING_DIRECTORY ${VIRGIL_CRYPTO_WRAPPER_MAIN_DIR}
+                        WORKING_DIRECTORY ${VIRGIL_CRYPTO_WRAPPER_PROJECT_DIR}
                         )
 
                 add_test(
                         NAME test_$(my._project:)_php
-                        COMMAND \"${PHP_EXECUTABLE}\" 
+                        COMMAND \"${PHP_EXECUTABLE}\"
                                 -d \"extension=$<TARGET_FILE:$(my._project:)_php>\"$(my._dep_ext:)
-                                -d safe_mode=Off \"${PHPUNIT_EXECUTABLE}\"
-                                --bootstrap \"${VIRGIL_CRYPTO_WRAPPER_MAIN_DIR}/vendor/autoload.php\" 
-                                --include-path \"${VIRGIL_CRYPTO_WRAPPER_MAIN_DIR}/src\" \"${VIRGIL_CRYPTO_WRAPPER_MAIN_DIR}/tests/$(my._project:Pascal)\"
+                                -d safe_mode=Off
+                                \"${VIRGIL_CRYPTO_WRAPPER_PROJECT_DIR}/vendor/bin/phpunit\"
+                                    --bootstrap
+                                        \"${VIRGIL_CRYPTO_WRAPPER_PROJECT_DIR}/vendor/autoload.php\"
+                                    --include-path
+                                        \"${VIRGIL_CRYPTO_WRAPPER_PROJECT_DIR}/src\"
+                                        \"${VIRGIL_CRYPTO_WRAPPER_PROJECT_DIR}/tests/$(my._project:Pascal)\"
                         )
             endif()
             ", 0)
@@ -167,7 +171,7 @@ function php_map_custom_cmakelists (in_php_project, out_php_module)
             if(VIRGIL_INSTALL_WRAP_SRCS)
                 install(
                         DIRECTORY
-                            \"${VIRGIL_CRYPTO_WRAPPER_MAIN_DIR}/src/\"
+                            \"${VIRGIL_CRYPTO_WRAPPER_PROJECT_DIR}/src/\"
                         DESTINATION
                             \"${VIRGIL_INSTALL_PHP_SRCDIR}/$(my._project:Pascal)\"
                         FILES_MATCHING PATTERN

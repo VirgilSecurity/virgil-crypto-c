@@ -84,20 +84,24 @@ target_link_libraries(pythia_php
 #---------------------------------------------------------------------------
 #   Test
 #---------------------------------------------------------------------------
-if(ENABLE_TESTING AND VIRGIL_PHP_TESTING AND PHP_EXECUTABLE AND PHPUNIT_EXECUTABLE AND COMPOSER_EXECUTABLE)
+if(ENABLE_TESTING)
     add_custom_target(test_composer_pythia_php ALL
             COMMAND COMPOSER=composer_dev.json "${COMPOSER_EXECUTABLE}" install
             COMMENT "Running composer install..."
-            WORKING_DIRECTORY ${VIRGIL_CRYPTO_WRAPPER_MAIN_DIR}
+            WORKING_DIRECTORY ${VIRGIL_CRYPTO_WRAPPER_PROJECT_DIR}
             )
 
     add_test(
             NAME test_pythia_php
             COMMAND "${PHP_EXECUTABLE}"
                     -d "extension=$<TARGET_FILE:pythia_php>"
-                    -d safe_mode=Off "${PHPUNIT_EXECUTABLE}"
-                    --bootstrap "${VIRGIL_CRYPTO_WRAPPER_MAIN_DIR}/vendor/autoload.php"
-                    --include-path "${VIRGIL_CRYPTO_WRAPPER_MAIN_DIR}/src" "${VIRGIL_CRYPTO_WRAPPER_MAIN_DIR}/tests/Pythia"
+                    -d safe_mode=Off
+                    "${VIRGIL_CRYPTO_WRAPPER_PROJECT_DIR}/vendor/bin/phpunit"
+                        --bootstrap
+                            "${VIRGIL_CRYPTO_WRAPPER_PROJECT_DIR}/vendor/autoload.php"
+                        --include-path
+                            "${VIRGIL_CRYPTO_WRAPPER_PROJECT_DIR}/src"
+                            "${VIRGIL_CRYPTO_WRAPPER_PROJECT_DIR}/tests/Pythia"
             )
 endif()
 
@@ -114,7 +118,7 @@ endif()
 if(VIRGIL_INSTALL_WRAP_SRCS)
     install(
             DIRECTORY
-                "${VIRGIL_CRYPTO_WRAPPER_MAIN_DIR}/src/"
+                "${VIRGIL_CRYPTO_WRAPPER_PROJECT_DIR}/src/"
             DESTINATION
                 "${VIRGIL_INSTALL_PHP_SRCDIR}/Pythia"
             FILES_MATCHING PATTERN

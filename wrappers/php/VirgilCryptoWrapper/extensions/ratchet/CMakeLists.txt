@@ -85,11 +85,11 @@ target_link_libraries(ratchet_php
 #---------------------------------------------------------------------------
 #   Test
 #---------------------------------------------------------------------------
-if(ENABLE_TESTING AND VIRGIL_PHP_TESTING AND PHP_EXECUTABLE AND PHPUNIT_EXECUTABLE AND COMPOSER_EXECUTABLE)
+if(ENABLE_TESTING)
     add_custom_target(test_composer_ratchet_php ALL
             COMMAND COMPOSER=composer_dev.json "${COMPOSER_EXECUTABLE}" install
             COMMENT "Running composer install..."
-            WORKING_DIRECTORY ${VIRGIL_CRYPTO_WRAPPER_MAIN_DIR}
+            WORKING_DIRECTORY ${VIRGIL_CRYPTO_WRAPPER_PROJECT_DIR}
             )
 
     add_test(
@@ -97,9 +97,13 @@ if(ENABLE_TESTING AND VIRGIL_PHP_TESTING AND PHP_EXECUTABLE AND PHPUNIT_EXECUTAB
             COMMAND "${PHP_EXECUTABLE}"
                     -d "extension=$<TARGET_FILE:ratchet_php>"
                     -d "extension=$<TARGET_FILE:foundation_php>"
-                    -d safe_mode=Off "${PHPUNIT_EXECUTABLE}"
-                    --bootstrap "${VIRGIL_CRYPTO_WRAPPER_MAIN_DIR}/vendor/autoload.php"
-                    --include-path "${VIRGIL_CRYPTO_WRAPPER_MAIN_DIR}/src" "${VIRGIL_CRYPTO_WRAPPER_MAIN_DIR}/tests/Ratchet"
+                    -d safe_mode=Off
+                    "${VIRGIL_CRYPTO_WRAPPER_PROJECT_DIR}/vendor/bin/phpunit"
+                        --bootstrap
+                            "${VIRGIL_CRYPTO_WRAPPER_PROJECT_DIR}/vendor/autoload.php"
+                        --include-path
+                            "${VIRGIL_CRYPTO_WRAPPER_PROJECT_DIR}/src"
+                            "${VIRGIL_CRYPTO_WRAPPER_PROJECT_DIR}/tests/Ratchet"
             )
 endif()
 
@@ -116,7 +120,7 @@ endif()
 if(VIRGIL_INSTALL_WRAP_SRCS)
     install(
             DIRECTORY
-                "${VIRGIL_CRYPTO_WRAPPER_MAIN_DIR}/src/"
+                "${VIRGIL_CRYPTO_WRAPPER_PROJECT_DIR}/src/"
             DESTINATION
                 "${VIRGIL_INSTALL_PHP_SRCDIR}/Ratchet"
             FILES_MATCHING PATTERN
