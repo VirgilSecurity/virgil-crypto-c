@@ -48,6 +48,15 @@ vsce_phe_client_t_php_res_name(void);
 VSCE_PUBLIC const char*
 vsce_phe_cipher_t_php_res_name(void);
 
+VSCE_PUBLIC const char*
+vsce_uokms_client_t_php_res_name(void);
+
+VSCE_PUBLIC const char*
+vsce_uokms_server_t_php_res_name(void);
+
+VSCE_PUBLIC const char*
+vsce_uokms_wrap_rotation_t_php_res_name(void);
+
 //
 // Registered resources
 //
@@ -59,3 +68,12 @@ le_vsce_phe_client_t(void);
 
 VSCE_PUBLIC int
 le_vsce_phe_cipher_t(void);
+
+VSCE_PUBLIC int
+le_vsce_uokms_client_t(void);
+
+VSCE_PUBLIC int
+le_vsce_uokms_server_t(void);
+
+VSCE_PUBLIC int
+le_vsce_uokms_wrap_rotation_t(void);

@@ -44,6 +44,9 @@
 #include "vsce_phe_server.h"
 #include "vsce_phe_client.h"
 #include "vsce_phe_cipher.h"
+#include "vsce_uokms_client.h"
+#include "vsce_uokms_server.h"
+#include "vsce_uokms_wrap_rotation.h"
 
 #define VSCE_HANDLE_STATUS(status) do { if(status != vsce_status_SUCCESS) { vsce_handle_throw_exception(status); } } while (false)
 
@@ -84,6 +87,9 @@ const char VSCE_PHE_PHP_EXTNAME[] = "vsce_phe_php";
 static const char VSCE_PHE_SERVER_T_PHP_RES_NAME[] = "vsce_phe_server_t";
 static const char VSCE_PHE_CLIENT_T_PHP_RES_NAME[] = "vsce_phe_client_t";
 static const char VSCE_PHE_CIPHER_T_PHP_RES_NAME[] = "vsce_phe_cipher_t";
+static const char VSCE_UOKMS_CLIENT_T_PHP_RES_NAME[] = "vsce_uokms_client_t";
+static const char VSCE_UOKMS_SERVER_T_PHP_RES_NAME[] = "vsce_uokms_server_t";
+static const char VSCE_UOKMS_WRAP_ROTATION_T_PHP_RES_NAME[] = "vsce_uokms_wrap_rotation_t";
 
 //
 // Constants func wrapping
@@ -100,12 +106,27 @@ VSCE_PUBLIC const char* vsce_phe_cipher_t_php_res_name(void) {
     return VSCE_PHE_CIPHER_T_PHP_RES_NAME;
 }
 
+VSCE_PUBLIC const char* vsce_uokms_client_t_php_res_name(void) {
+    return VSCE_UOKMS_CLIENT_T_PHP_RES_NAME;
+}
+
+VSCE_PUBLIC const char* vsce_uokms_server_t_php_res_name(void) {
+    return VSCE_UOKMS_SERVER_T_PHP_RES_NAME;
+}
+
+VSCE_PUBLIC const char* vsce_uokms_wrap_rotation_t_php_res_name(void) {
+    return VSCE_UOKMS_WRAP_ROTATION_T_PHP_RES_NAME;
+}
+
 //
 // Registered resources
 //
 int LE_VSCE_PHE_SERVER_T;
 int LE_VSCE_PHE_CLIENT_T;
 int LE_VSCE_PHE_CIPHER_T;
+int LE_VSCE_UOKMS_CLIENT_T;
+int LE_VSCE_UOKMS_SERVER_T;
+int LE_VSCE_UOKMS_WRAP_ROTATION_T;
 
 //
 // Registered resources func wrapping
@@ -120,6 +141,18 @@ VSCE_PUBLIC int le_vsce_phe_client_t(void) {
 
 VSCE_PUBLIC int le_vsce_phe_cipher_t(void) {
     return LE_VSCE_PHE_CIPHER_T;
+}
+
+VSCE_PUBLIC int le_vsce_uokms_client_t(void) {
+    return LE_VSCE_UOKMS_CLIENT_T;
+}
+
+VSCE_PUBLIC int le_vsce_uokms_server_t(void) {
+    return LE_VSCE_UOKMS_SERVER_T;
+}
+
+VSCE_PUBLIC int le_vsce_uokms_wrap_rotation_t(void) {
+    return LE_VSCE_UOKMS_WRAP_ROTATION_T;
 }
 
 //
@@ -2129,6 +2162,1385 @@ PHP_FUNCTION(vsce_phe_cipher_use_random_php) {
 }
 
 //
+// Wrap method: vsce_uokms_client_new
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+        arginfo_vsce_uokms_client_new_php,
+        0 /*return_reference*/,
+        0 /*required_num_args*/,
+        IS_RESOURCE /*type*/,
+        0 /*allow_null*/)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vsce_uokms_client_new_php) {
+    vsce_uokms_client_t *uokms_client = vsce_uokms_client_new();
+    zend_resource *uokms_client_res = zend_register_resource(uokms_client, le_vsce_uokms_client_t());
+    RETVAL_RES(uokms_client_res);
+}
+
+//
+// Wrap method: vsce_uokms_client_delete
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+        arginfo_vsce_uokms_client_delete_php,
+        0 /*return_reference*/,
+        1 /*required_num_args*/,
+        IS_VOID /*type*/,
+        0 /*allow_null*/)
+
+        ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vsce_uokms_client_delete_php) {
+    //
+    // Declare input arguments
+    //
+    zval *in_ctx = NULL;
+
+    //
+    // Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 1, 1)
+        Z_PARAM_RESOURCE_EX(in_ctx, 1, 0)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    // Fetch for type checking and then release
+    //
+    vsce_uokms_client_t *uokms_client = zend_fetch_resource_ex(in_ctx, vsce_uokms_client_t_php_res_name(), le_vsce_uokms_client_t());
+    zend_list_close(Z_RES_P(in_ctx));
+    RETURN_TRUE;
+}
+
+//
+// Wrap method: vsce_uokms_client_setup_defaults
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+    arginfo_vsce_uokms_client_setup_defaults_php,
+    0 /*return_reference*/,
+    1 /*required_num_args*/,
+    IS_VOID /*type*/,
+    0 /*allow_null*/)
+
+
+    ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vsce_uokms_client_setup_defaults_php) {
+
+    //
+    // Declare input argument
+    //
+    zval *in_ctx = NULL;
+
+    //
+    // Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 1, 1)
+        Z_PARAM_RESOURCE_EX(in_ctx, 1, 0)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    // Proxy call
+    //
+    vsce_uokms_client_t *uokms_client = zend_fetch_resource_ex(in_ctx, vsce_uokms_client_t_php_res_name(), le_vsce_uokms_client_t());
+
+    //
+    // Call main function
+    //
+    vsce_status_t status =vsce_uokms_client_setup_defaults(uokms_client);
+
+    //
+    // Handle error
+    //
+    VSCE_HANDLE_STATUS(status);
+}
+
+//
+// Wrap method: vsce_uokms_client_set_keys
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+    arginfo_vsce_uokms_client_set_keys_php,
+    0 /*return_reference*/,
+    3 /*required_num_args*/,
+    IS_VOID /*type*/,
+    0 /*allow_null*/)
+
+
+    ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
+    ZEND_ARG_TYPE_INFO(0, in_client_private_key, IS_STRING, 0)
+    ZEND_ARG_TYPE_INFO(0, in_server_public_key, IS_STRING, 0)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vsce_uokms_client_set_keys_php) {
+
+    //
+    // Declare input argument
+    //
+    zval *in_ctx = NULL;
+    char *in_client_private_key = NULL;
+    size_t in_client_private_key_len = 0;
+    char *in_server_public_key = NULL;
+    size_t in_server_public_key_len = 0;
+
+    //
+    // Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 3, 3)
+        Z_PARAM_RESOURCE_EX(in_ctx, 1, 0)
+        Z_PARAM_STRING_EX(in_client_private_key, in_client_private_key_len, 1 /*check_null*/, 0 /*separate*/)
+        Z_PARAM_STRING_EX(in_server_public_key, in_server_public_key_len, 1 /*check_null*/, 0 /*separate*/)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    // Proxy call
+    //
+    vsce_uokms_client_t *uokms_client = zend_fetch_resource_ex(in_ctx, vsce_uokms_client_t_php_res_name(), le_vsce_uokms_client_t());
+    vsc_data_t client_private_key = vsc_data((const byte*)in_client_private_key, in_client_private_key_len);
+    vsc_data_t server_public_key = vsc_data((const byte*)in_server_public_key, in_server_public_key_len);
+
+    //
+    // Call main function
+    //
+    vsce_status_t status =vsce_uokms_client_set_keys(uokms_client, client_private_key, server_public_key);
+
+    //
+    // Handle error
+    //
+    VSCE_HANDLE_STATUS(status);
+}
+
+//
+// Wrap method: vsce_uokms_client_generate_client_private_key
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+    arginfo_vsce_uokms_client_generate_client_private_key_php,
+    0 /*return_reference*/,
+    1 /*required_num_args*/,
+    IS_STRING /*type*/,
+    0 /*allow_null*/)
+
+
+    ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vsce_uokms_client_generate_client_private_key_php) {
+
+    //
+    // Declare input argument
+    //
+    zval *in_ctx = NULL;
+
+    //
+    // Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 1, 1)
+        Z_PARAM_RESOURCE_EX(in_ctx, 1, 0)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    // Proxy call
+    //
+    vsce_uokms_client_t *uokms_client = zend_fetch_resource_ex(in_ctx, vsce_uokms_client_t_php_res_name(), le_vsce_uokms_client_t());
+
+    //
+    // Allocate output buffer for output 'client_private_key'
+    //
+    zend_string *out_client_private_key = zend_string_alloc(vsce_phe_common_PHE_PRIVATE_KEY_LENGTH, 0);
+    vsc_buffer_t *client_private_key = vsc_buffer_new();
+    vsc_buffer_use(client_private_key, (byte *)ZSTR_VAL(out_client_private_key), ZSTR_LEN(out_client_private_key));
+
+    //
+    // Call main function
+    //
+    vsce_status_t status =vsce_uokms_client_generate_client_private_key(uokms_client, client_private_key);
+
+    //
+    // Handle error
+    //
+    VSCE_HANDLE_STATUS(status);
+
+    //
+    // Correct string length to the actual
+    //
+    ZSTR_LEN(out_client_private_key) = vsc_buffer_len(client_private_key);
+
+    //
+    // Write returned result
+    //
+    if (status == vsce_status_SUCCESS) {
+        RETVAL_STR(out_client_private_key);
+        vsc_buffer_destroy(&client_private_key);
+    }
+    else {
+        zend_string_free(out_client_private_key);
+    }
+}
+
+//
+// Wrap method: vsce_uokms_client_generate_encrypt_wrap
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+    arginfo_vsce_uokms_client_generate_encrypt_wrap_php,
+    0 /*return_reference*/,
+    2 /*required_num_args*/,
+    IS_ARRAY /*type*/,
+    0 /*allow_null*/)
+
+
+    ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
+    ZEND_ARG_TYPE_INFO(0, in_encryption_key_len, IS_LONG, 0)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vsce_uokms_client_generate_encrypt_wrap_php) {
+
+    //
+    // Declare input argument
+    //
+    zval *in_ctx = NULL;
+    zend_long in_encryption_key_len = 0;
+
+    //
+    // Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 2, 2)
+        Z_PARAM_RESOURCE_EX(in_ctx, 1, 0)
+        Z_PARAM_LONG(in_encryption_key_len)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    // Proxy call
+    //
+    vsce_uokms_client_t *uokms_client = zend_fetch_resource_ex(in_ctx, vsce_uokms_client_t_php_res_name(), le_vsce_uokms_client_t());
+    size_t encryption_key_len = in_encryption_key_len;
+
+    //
+    // Allocate output buffer for output 'wrap'
+    //
+    zend_string *out_wrap = zend_string_alloc(vsce_phe_common_PHE_PUBLIC_KEY_LENGTH, 0);
+    vsc_buffer_t *wrap = vsc_buffer_new();
+    vsc_buffer_use(wrap, (byte *)ZSTR_VAL(out_wrap), ZSTR_LEN(out_wrap));
+
+    //
+    // Allocate output buffer for output 'encryption_key'
+    //
+    zend_string *out_encryption_key = zend_string_alloc(encryption_key_len, 0);
+    vsc_buffer_t *encryption_key = vsc_buffer_new();
+    vsc_buffer_use(encryption_key, (byte *)ZSTR_VAL(out_encryption_key), ZSTR_LEN(out_encryption_key));
+
+    //
+    // Call main function
+    //
+    vsce_status_t status =vsce_uokms_client_generate_encrypt_wrap(uokms_client, wrap, encryption_key_len, encryption_key);
+
+    //
+    // Handle error
+    //
+    VSCE_HANDLE_STATUS(status);
+
+    //
+    // Correct string length to the actual
+    //
+    ZSTR_LEN(out_wrap) = vsc_buffer_len(wrap);
+    ZSTR_LEN(out_encryption_key) = vsc_buffer_len(encryption_key);
+
+    //
+    // Write returned result
+    //
+    if (status == vsce_status_SUCCESS) {
+        array_init(return_value);
+        add_next_index_str(return_value, out_wrap);
+        add_next_index_str(return_value, out_encryption_key);
+        vsc_buffer_destroy(&wrap);
+        vsc_buffer_destroy(&encryption_key);
+    }
+    else {
+        zend_string_free(out_wrap);
+        zend_string_free(out_encryption_key);
+    }
+}
+
+//
+// Wrap method: vsce_uokms_client_generate_decrypt_request
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+    arginfo_vsce_uokms_client_generate_decrypt_request_php,
+    0 /*return_reference*/,
+    2 /*required_num_args*/,
+    IS_ARRAY /*type*/,
+    0 /*allow_null*/)
+
+
+    ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
+    ZEND_ARG_TYPE_INFO(0, in_wrap, IS_STRING, 0)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vsce_uokms_client_generate_decrypt_request_php) {
+
+    //
+    // Declare input argument
+    //
+    zval *in_ctx = NULL;
+    char *in_wrap = NULL;
+    size_t in_wrap_len = 0;
+
+    //
+    // Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 2, 2)
+        Z_PARAM_RESOURCE_EX(in_ctx, 1, 0)
+        Z_PARAM_STRING_EX(in_wrap, in_wrap_len, 1 /*check_null*/, 0 /*separate*/)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    // Proxy call
+    //
+    vsce_uokms_client_t *uokms_client = zend_fetch_resource_ex(in_ctx, vsce_uokms_client_t_php_res_name(), le_vsce_uokms_client_t());
+    vsc_data_t wrap = vsc_data((const byte*)in_wrap, in_wrap_len);
+
+    //
+    // Allocate output buffer for output 'deblind_factor'
+    //
+    zend_string *out_deblind_factor = zend_string_alloc(vsce_phe_common_PHE_PRIVATE_KEY_LENGTH, 0);
+    vsc_buffer_t *deblind_factor = vsc_buffer_new();
+    vsc_buffer_use(deblind_factor, (byte *)ZSTR_VAL(out_deblind_factor), ZSTR_LEN(out_deblind_factor));
+
+    //
+    // Allocate output buffer for output 'decrypt_request'
+    //
+    zend_string *out_decrypt_request = zend_string_alloc(vsce_phe_common_PHE_PUBLIC_KEY_LENGTH, 0);
+    vsc_buffer_t *decrypt_request = vsc_buffer_new();
+    vsc_buffer_use(decrypt_request, (byte *)ZSTR_VAL(out_decrypt_request), ZSTR_LEN(out_decrypt_request));
+
+    //
+    // Call main function
+    //
+    vsce_status_t status =vsce_uokms_client_generate_decrypt_request(uokms_client, wrap, deblind_factor, decrypt_request);
+
+    //
+    // Handle error
+    //
+    VSCE_HANDLE_STATUS(status);
+
+    //
+    // Correct string length to the actual
+    //
+    ZSTR_LEN(out_deblind_factor) = vsc_buffer_len(deblind_factor);
+    ZSTR_LEN(out_decrypt_request) = vsc_buffer_len(decrypt_request);
+
+    //
+    // Write returned result
+    //
+    if (status == vsce_status_SUCCESS) {
+        array_init(return_value);
+        add_next_index_str(return_value, out_deblind_factor);
+        add_next_index_str(return_value, out_decrypt_request);
+        vsc_buffer_destroy(&deblind_factor);
+        vsc_buffer_destroy(&decrypt_request);
+    }
+    else {
+        zend_string_free(out_deblind_factor);
+        zend_string_free(out_decrypt_request);
+    }
+}
+
+//
+// Wrap method: vsce_uokms_client_process_decrypt_response
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+    arginfo_vsce_uokms_client_process_decrypt_response_php,
+    0 /*return_reference*/,
+    6 /*required_num_args*/,
+    IS_STRING /*type*/,
+    0 /*allow_null*/)
+
+
+    ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
+    ZEND_ARG_TYPE_INFO(0, in_wrap, IS_STRING, 0)
+    ZEND_ARG_TYPE_INFO(0, in_decrypt_request, IS_STRING, 0)
+    ZEND_ARG_TYPE_INFO(0, in_decrypt_response, IS_STRING, 0)
+    ZEND_ARG_TYPE_INFO(0, in_deblind_factor, IS_STRING, 0)
+    ZEND_ARG_TYPE_INFO(0, in_encryption_key_len, IS_LONG, 0)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vsce_uokms_client_process_decrypt_response_php) {
+
+    //
+    // Declare input argument
+    //
+    zval *in_ctx = NULL;
+    char *in_wrap = NULL;
+    size_t in_wrap_len = 0;
+    char *in_decrypt_request = NULL;
+    size_t in_decrypt_request_len = 0;
+    char *in_decrypt_response = NULL;
+    size_t in_decrypt_response_len = 0;
+    char *in_deblind_factor = NULL;
+    size_t in_deblind_factor_len = 0;
+    zend_long in_encryption_key_len = 0;
+
+    //
+    // Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 6, 6)
+        Z_PARAM_RESOURCE_EX(in_ctx, 1, 0)
+        Z_PARAM_STRING_EX(in_wrap, in_wrap_len, 1 /*check_null*/, 0 /*separate*/)
+        Z_PARAM_STRING_EX(in_decrypt_request, in_decrypt_request_len, 1 /*check_null*/, 0 /*separate*/)
+        Z_PARAM_STRING_EX(in_decrypt_response, in_decrypt_response_len, 1 /*check_null*/, 0 /*separate*/)
+        Z_PARAM_STRING_EX(in_deblind_factor, in_deblind_factor_len, 1 /*check_null*/, 0 /*separate*/)
+        Z_PARAM_LONG(in_encryption_key_len)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    // Proxy call
+    //
+    vsce_uokms_client_t *uokms_client = zend_fetch_resource_ex(in_ctx, vsce_uokms_client_t_php_res_name(), le_vsce_uokms_client_t());
+    vsc_data_t wrap = vsc_data((const byte*)in_wrap, in_wrap_len);
+    vsc_data_t decrypt_request = vsc_data((const byte*)in_decrypt_request, in_decrypt_request_len);
+    vsc_data_t decrypt_response = vsc_data((const byte*)in_decrypt_response, in_decrypt_response_len);
+    vsc_data_t deblind_factor = vsc_data((const byte*)in_deblind_factor, in_deblind_factor_len);
+    size_t encryption_key_len = in_encryption_key_len;
+
+    //
+    // Allocate output buffer for output 'encryption_key'
+    //
+    zend_string *out_encryption_key = zend_string_alloc(encryption_key_len, 0);
+    vsc_buffer_t *encryption_key = vsc_buffer_new();
+    vsc_buffer_use(encryption_key, (byte *)ZSTR_VAL(out_encryption_key), ZSTR_LEN(out_encryption_key));
+
+    //
+    // Call main function
+    //
+    vsce_status_t status =vsce_uokms_client_process_decrypt_response(uokms_client, wrap, decrypt_request, decrypt_response, deblind_factor, encryption_key_len, encryption_key);
+
+    //
+    // Handle error
+    //
+    VSCE_HANDLE_STATUS(status);
+
+    //
+    // Correct string length to the actual
+    //
+    ZSTR_LEN(out_encryption_key) = vsc_buffer_len(encryption_key);
+
+    //
+    // Write returned result
+    //
+    if (status == vsce_status_SUCCESS) {
+        RETVAL_STR(out_encryption_key);
+        vsc_buffer_destroy(&encryption_key);
+    }
+    else {
+        zend_string_free(out_encryption_key);
+    }
+}
+
+//
+// Wrap method: vsce_uokms_client_rotate_keys
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+    arginfo_vsce_uokms_client_rotate_keys_php,
+    0 /*return_reference*/,
+    2 /*required_num_args*/,
+    IS_ARRAY /*type*/,
+    0 /*allow_null*/)
+
+
+    ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
+    ZEND_ARG_TYPE_INFO(0, in_update_token, IS_STRING, 0)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vsce_uokms_client_rotate_keys_php) {
+
+    //
+    // Declare input argument
+    //
+    zval *in_ctx = NULL;
+    char *in_update_token = NULL;
+    size_t in_update_token_len = 0;
+
+    //
+    // Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 2, 2)
+        Z_PARAM_RESOURCE_EX(in_ctx, 1, 0)
+        Z_PARAM_STRING_EX(in_update_token, in_update_token_len, 1 /*check_null*/, 0 /*separate*/)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    // Proxy call
+    //
+    vsce_uokms_client_t *uokms_client = zend_fetch_resource_ex(in_ctx, vsce_uokms_client_t_php_res_name(), le_vsce_uokms_client_t());
+    vsc_data_t update_token = vsc_data((const byte*)in_update_token, in_update_token_len);
+
+    //
+    // Allocate output buffer for output 'new_client_private_key'
+    //
+    zend_string *out_new_client_private_key = zend_string_alloc(vsce_phe_common_PHE_PRIVATE_KEY_LENGTH, 0);
+    vsc_buffer_t *new_client_private_key = vsc_buffer_new();
+    vsc_buffer_use(new_client_private_key, (byte *)ZSTR_VAL(out_new_client_private_key), ZSTR_LEN(out_new_client_private_key));
+
+    //
+    // Allocate output buffer for output 'new_server_public_key'
+    //
+    zend_string *out_new_server_public_key = zend_string_alloc(vsce_phe_common_PHE_PUBLIC_KEY_LENGTH, 0);
+    vsc_buffer_t *new_server_public_key = vsc_buffer_new();
+    vsc_buffer_use(new_server_public_key, (byte *)ZSTR_VAL(out_new_server_public_key), ZSTR_LEN(out_new_server_public_key));
+
+    //
+    // Call main function
+    //
+    vsce_status_t status =vsce_uokms_client_rotate_keys(uokms_client, update_token, new_client_private_key, new_server_public_key);
+
+    //
+    // Handle error
+    //
+    VSCE_HANDLE_STATUS(status);
+
+    //
+    // Correct string length to the actual
+    //
+    ZSTR_LEN(out_new_client_private_key) = vsc_buffer_len(new_client_private_key);
+    ZSTR_LEN(out_new_server_public_key) = vsc_buffer_len(new_server_public_key);
+
+    //
+    // Write returned result
+    //
+    if (status == vsce_status_SUCCESS) {
+        array_init(return_value);
+        add_next_index_str(return_value, out_new_client_private_key);
+        add_next_index_str(return_value, out_new_server_public_key);
+        vsc_buffer_destroy(&new_client_private_key);
+        vsc_buffer_destroy(&new_server_public_key);
+    }
+    else {
+        zend_string_free(out_new_client_private_key);
+        zend_string_free(out_new_server_public_key);
+    }
+}
+
+//
+// Wrap method: vsce_uokms_client_use_random
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+    arginfo_vsce_uokms_client_use_random_php,
+    0 /*return_reference*/,
+    2 /*required_num_args*/,
+    IS_VOID /*type*/,
+    0 /*allow_null*/)
+
+
+    ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
+    ZEND_ARG_TYPE_INFO(0, in_random, IS_RESOURCE, 0)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vsce_uokms_client_use_random_php) {
+
+    //
+    // Declare input argument
+    //
+    zval *in_ctx = NULL;
+    zval *in_random = NULL;
+
+    //
+    // Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 2, 2)
+        Z_PARAM_RESOURCE_EX(in_ctx, 1, 0)
+        Z_PARAM_RESOURCE_EX(in_random, 1 /*check_null*/, 0 /*separate*/)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    // Proxy call
+    //
+    vsce_uokms_client_t *uokms_client = zend_fetch_resource_ex(in_ctx, vsce_uokms_client_t_php_res_name(), le_vsce_uokms_client_t());
+    vscf_impl_t *random = zend_fetch_resource_ex(in_random, vscf_impl_t_php_res_name(), le_vscf_impl_t());
+
+    //
+    // Call main function
+    //
+    vsce_uokms_client_use_random(uokms_client, random);
+}
+
+//
+// Wrap method: vsce_uokms_client_use_operation_random
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+    arginfo_vsce_uokms_client_use_operation_random_php,
+    0 /*return_reference*/,
+    2 /*required_num_args*/,
+    IS_VOID /*type*/,
+    0 /*allow_null*/)
+
+
+    ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
+    ZEND_ARG_TYPE_INFO(0, in_operation_random, IS_RESOURCE, 0)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vsce_uokms_client_use_operation_random_php) {
+
+    //
+    // Declare input argument
+    //
+    zval *in_ctx = NULL;
+    zval *in_operation_random = NULL;
+
+    //
+    // Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 2, 2)
+        Z_PARAM_RESOURCE_EX(in_ctx, 1, 0)
+        Z_PARAM_RESOURCE_EX(in_operation_random, 1 /*check_null*/, 0 /*separate*/)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    // Proxy call
+    //
+    vsce_uokms_client_t *uokms_client = zend_fetch_resource_ex(in_ctx, vsce_uokms_client_t_php_res_name(), le_vsce_uokms_client_t());
+    vscf_impl_t *operation_random = zend_fetch_resource_ex(in_operation_random, vscf_impl_t_php_res_name(), le_vscf_impl_t());
+
+    //
+    // Call main function
+    //
+    vsce_uokms_client_use_operation_random(uokms_client, operation_random);
+}
+
+//
+// Wrap method: vsce_uokms_server_new
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+        arginfo_vsce_uokms_server_new_php,
+        0 /*return_reference*/,
+        0 /*required_num_args*/,
+        IS_RESOURCE /*type*/,
+        0 /*allow_null*/)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vsce_uokms_server_new_php) {
+    vsce_uokms_server_t *uokms_server = vsce_uokms_server_new();
+    zend_resource *uokms_server_res = zend_register_resource(uokms_server, le_vsce_uokms_server_t());
+    RETVAL_RES(uokms_server_res);
+}
+
+//
+// Wrap method: vsce_uokms_server_delete
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+        arginfo_vsce_uokms_server_delete_php,
+        0 /*return_reference*/,
+        1 /*required_num_args*/,
+        IS_VOID /*type*/,
+        0 /*allow_null*/)
+
+        ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vsce_uokms_server_delete_php) {
+    //
+    // Declare input arguments
+    //
+    zval *in_ctx = NULL;
+
+    //
+    // Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 1, 1)
+        Z_PARAM_RESOURCE_EX(in_ctx, 1, 0)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    // Fetch for type checking and then release
+    //
+    vsce_uokms_server_t *uokms_server = zend_fetch_resource_ex(in_ctx, vsce_uokms_server_t_php_res_name(), le_vsce_uokms_server_t());
+    zend_list_close(Z_RES_P(in_ctx));
+    RETURN_TRUE;
+}
+
+//
+// Wrap method: vsce_uokms_server_setup_defaults
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+    arginfo_vsce_uokms_server_setup_defaults_php,
+    0 /*return_reference*/,
+    1 /*required_num_args*/,
+    IS_VOID /*type*/,
+    0 /*allow_null*/)
+
+
+    ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vsce_uokms_server_setup_defaults_php) {
+
+    //
+    // Declare input argument
+    //
+    zval *in_ctx = NULL;
+
+    //
+    // Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 1, 1)
+        Z_PARAM_RESOURCE_EX(in_ctx, 1, 0)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    // Proxy call
+    //
+    vsce_uokms_server_t *uokms_server = zend_fetch_resource_ex(in_ctx, vsce_uokms_server_t_php_res_name(), le_vsce_uokms_server_t());
+
+    //
+    // Call main function
+    //
+    vsce_status_t status =vsce_uokms_server_setup_defaults(uokms_server);
+
+    //
+    // Handle error
+    //
+    VSCE_HANDLE_STATUS(status);
+}
+
+//
+// Wrap method: vsce_uokms_server_generate_server_key_pair
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+    arginfo_vsce_uokms_server_generate_server_key_pair_php,
+    0 /*return_reference*/,
+    1 /*required_num_args*/,
+    IS_ARRAY /*type*/,
+    0 /*allow_null*/)
+
+
+    ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vsce_uokms_server_generate_server_key_pair_php) {
+
+    //
+    // Declare input argument
+    //
+    zval *in_ctx = NULL;
+
+    //
+    // Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 1, 1)
+        Z_PARAM_RESOURCE_EX(in_ctx, 1, 0)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    // Proxy call
+    //
+    vsce_uokms_server_t *uokms_server = zend_fetch_resource_ex(in_ctx, vsce_uokms_server_t_php_res_name(), le_vsce_uokms_server_t());
+
+    //
+    // Allocate output buffer for output 'server_private_key'
+    //
+    zend_string *out_server_private_key = zend_string_alloc(vsce_phe_common_PHE_PRIVATE_KEY_LENGTH, 0);
+    vsc_buffer_t *server_private_key = vsc_buffer_new();
+    vsc_buffer_use(server_private_key, (byte *)ZSTR_VAL(out_server_private_key), ZSTR_LEN(out_server_private_key));
+
+    //
+    // Allocate output buffer for output 'server_public_key'
+    //
+    zend_string *out_server_public_key = zend_string_alloc(vsce_phe_common_PHE_PUBLIC_KEY_LENGTH, 0);
+    vsc_buffer_t *server_public_key = vsc_buffer_new();
+    vsc_buffer_use(server_public_key, (byte *)ZSTR_VAL(out_server_public_key), ZSTR_LEN(out_server_public_key));
+
+    //
+    // Call main function
+    //
+    vsce_status_t status =vsce_uokms_server_generate_server_key_pair(uokms_server, server_private_key, server_public_key);
+
+    //
+    // Handle error
+    //
+    VSCE_HANDLE_STATUS(status);
+
+    //
+    // Correct string length to the actual
+    //
+    ZSTR_LEN(out_server_private_key) = vsc_buffer_len(server_private_key);
+    ZSTR_LEN(out_server_public_key) = vsc_buffer_len(server_public_key);
+
+    //
+    // Write returned result
+    //
+    if (status == vsce_status_SUCCESS) {
+        array_init(return_value);
+        add_next_index_str(return_value, out_server_private_key);
+        add_next_index_str(return_value, out_server_public_key);
+        vsc_buffer_destroy(&server_private_key);
+        vsc_buffer_destroy(&server_public_key);
+    }
+    else {
+        zend_string_free(out_server_private_key);
+        zend_string_free(out_server_public_key);
+    }
+}
+
+//
+// Wrap method: vsce_uokms_server_decrypt_response_len
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+    arginfo_vsce_uokms_server_decrypt_response_len_php,
+    0 /*return_reference*/,
+    1 /*required_num_args*/,
+    IS_LONG /*type*/,
+    0 /*allow_null*/)
+
+
+    ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vsce_uokms_server_decrypt_response_len_php) {
+
+    //
+    // Declare input argument
+    //
+    zval *in_ctx = NULL;
+
+    //
+    // Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 1, 1)
+        Z_PARAM_RESOURCE_EX(in_ctx, 1, 0)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    // Proxy call
+    //
+    vsce_uokms_server_t *uokms_server = zend_fetch_resource_ex(in_ctx, vsce_uokms_server_t_php_res_name(), le_vsce_uokms_server_t());
+
+    //
+    // Call main function
+    //
+    size_t res =vsce_uokms_server_decrypt_response_len(uokms_server);
+
+    //
+    // Write returned result
+    //
+    RETVAL_LONG(res);
+}
+
+//
+// Wrap method: vsce_uokms_server_process_decrypt_request
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+    arginfo_vsce_uokms_server_process_decrypt_request_php,
+    0 /*return_reference*/,
+    3 /*required_num_args*/,
+    IS_STRING /*type*/,
+    0 /*allow_null*/)
+
+
+    ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
+    ZEND_ARG_TYPE_INFO(0, in_server_private_key, IS_STRING, 0)
+    ZEND_ARG_TYPE_INFO(0, in_decrypt_request, IS_STRING, 0)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vsce_uokms_server_process_decrypt_request_php) {
+
+    //
+    // Declare input argument
+    //
+    zval *in_ctx = NULL;
+    char *in_server_private_key = NULL;
+    size_t in_server_private_key_len = 0;
+    char *in_decrypt_request = NULL;
+    size_t in_decrypt_request_len = 0;
+
+    //
+    // Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 3, 3)
+        Z_PARAM_RESOURCE_EX(in_ctx, 1, 0)
+        Z_PARAM_STRING_EX(in_server_private_key, in_server_private_key_len, 1 /*check_null*/, 0 /*separate*/)
+        Z_PARAM_STRING_EX(in_decrypt_request, in_decrypt_request_len, 1 /*check_null*/, 0 /*separate*/)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    // Proxy call
+    //
+    vsce_uokms_server_t *uokms_server = zend_fetch_resource_ex(in_ctx, vsce_uokms_server_t_php_res_name(), le_vsce_uokms_server_t());
+    vsc_data_t server_private_key = vsc_data((const byte*)in_server_private_key, in_server_private_key_len);
+    vsc_data_t decrypt_request = vsc_data((const byte*)in_decrypt_request, in_decrypt_request_len);
+
+    //
+    // Allocate output buffer for output 'decrypt_response'
+    //
+    zend_string *out_decrypt_response = zend_string_alloc(vsce_uokms_server_decrypt_response_len(uokms_server), 0);
+    vsc_buffer_t *decrypt_response = vsc_buffer_new();
+    vsc_buffer_use(decrypt_response, (byte *)ZSTR_VAL(out_decrypt_response), ZSTR_LEN(out_decrypt_response));
+
+    //
+    // Call main function
+    //
+    vsce_status_t status =vsce_uokms_server_process_decrypt_request(uokms_server, server_private_key, decrypt_request, decrypt_response);
+
+    //
+    // Handle error
+    //
+    VSCE_HANDLE_STATUS(status);
+
+    //
+    // Correct string length to the actual
+    //
+    ZSTR_LEN(out_decrypt_response) = vsc_buffer_len(decrypt_response);
+
+    //
+    // Write returned result
+    //
+    if (status == vsce_status_SUCCESS) {
+        RETVAL_STR(out_decrypt_response);
+        vsc_buffer_destroy(&decrypt_response);
+    }
+    else {
+        zend_string_free(out_decrypt_response);
+    }
+}
+
+//
+// Wrap method: vsce_uokms_server_rotate_keys
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+    arginfo_vsce_uokms_server_rotate_keys_php,
+    0 /*return_reference*/,
+    2 /*required_num_args*/,
+    IS_ARRAY /*type*/,
+    0 /*allow_null*/)
+
+
+    ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
+    ZEND_ARG_TYPE_INFO(0, in_server_private_key, IS_STRING, 0)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vsce_uokms_server_rotate_keys_php) {
+
+    //
+    // Declare input argument
+    //
+    zval *in_ctx = NULL;
+    char *in_server_private_key = NULL;
+    size_t in_server_private_key_len = 0;
+
+    //
+    // Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 2, 2)
+        Z_PARAM_RESOURCE_EX(in_ctx, 1, 0)
+        Z_PARAM_STRING_EX(in_server_private_key, in_server_private_key_len, 1 /*check_null*/, 0 /*separate*/)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    // Proxy call
+    //
+    vsce_uokms_server_t *uokms_server = zend_fetch_resource_ex(in_ctx, vsce_uokms_server_t_php_res_name(), le_vsce_uokms_server_t());
+    vsc_data_t server_private_key = vsc_data((const byte*)in_server_private_key, in_server_private_key_len);
+
+    //
+    // Allocate output buffer for output 'new_server_private_key'
+    //
+    zend_string *out_new_server_private_key = zend_string_alloc(vsce_phe_common_PHE_PRIVATE_KEY_LENGTH, 0);
+    vsc_buffer_t *new_server_private_key = vsc_buffer_new();
+    vsc_buffer_use(new_server_private_key, (byte *)ZSTR_VAL(out_new_server_private_key), ZSTR_LEN(out_new_server_private_key));
+
+    //
+    // Allocate output buffer for output 'new_server_public_key'
+    //
+    zend_string *out_new_server_public_key = zend_string_alloc(vsce_phe_common_PHE_PUBLIC_KEY_LENGTH, 0);
+    vsc_buffer_t *new_server_public_key = vsc_buffer_new();
+    vsc_buffer_use(new_server_public_key, (byte *)ZSTR_VAL(out_new_server_public_key), ZSTR_LEN(out_new_server_public_key));
+
+    //
+    // Allocate output buffer for output 'update_token'
+    //
+    zend_string *out_update_token = zend_string_alloc(vsce_phe_common_PHE_PUBLIC_KEY_LENGTH, 0);
+    vsc_buffer_t *update_token = vsc_buffer_new();
+    vsc_buffer_use(update_token, (byte *)ZSTR_VAL(out_update_token), ZSTR_LEN(out_update_token));
+
+    //
+    // Call main function
+    //
+    vsce_status_t status =vsce_uokms_server_rotate_keys(uokms_server, server_private_key, new_server_private_key, new_server_public_key, update_token);
+
+    //
+    // Handle error
+    //
+    VSCE_HANDLE_STATUS(status);
+
+    //
+    // Correct string length to the actual
+    //
+    ZSTR_LEN(out_new_server_private_key) = vsc_buffer_len(new_server_private_key);
+    ZSTR_LEN(out_new_server_public_key) = vsc_buffer_len(new_server_public_key);
+    ZSTR_LEN(out_update_token) = vsc_buffer_len(update_token);
+
+    //
+    // Write returned result
+    //
+    if (status == vsce_status_SUCCESS) {
+        array_init(return_value);
+        add_next_index_str(return_value, out_new_server_private_key);
+        add_next_index_str(return_value, out_new_server_public_key);
+        add_next_index_str(return_value, out_update_token);
+        vsc_buffer_destroy(&new_server_private_key);
+        vsc_buffer_destroy(&new_server_public_key);
+        vsc_buffer_destroy(&update_token);
+    }
+    else {
+        zend_string_free(out_new_server_private_key);
+        zend_string_free(out_new_server_public_key);
+        zend_string_free(out_update_token);
+    }
+}
+
+//
+// Wrap method: vsce_uokms_server_use_random
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+    arginfo_vsce_uokms_server_use_random_php,
+    0 /*return_reference*/,
+    2 /*required_num_args*/,
+    IS_VOID /*type*/,
+    0 /*allow_null*/)
+
+
+    ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
+    ZEND_ARG_TYPE_INFO(0, in_random, IS_RESOURCE, 0)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vsce_uokms_server_use_random_php) {
+
+    //
+    // Declare input argument
+    //
+    zval *in_ctx = NULL;
+    zval *in_random = NULL;
+
+    //
+    // Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 2, 2)
+        Z_PARAM_RESOURCE_EX(in_ctx, 1, 0)
+        Z_PARAM_RESOURCE_EX(in_random, 1 /*check_null*/, 0 /*separate*/)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    // Proxy call
+    //
+    vsce_uokms_server_t *uokms_server = zend_fetch_resource_ex(in_ctx, vsce_uokms_server_t_php_res_name(), le_vsce_uokms_server_t());
+    vscf_impl_t *random = zend_fetch_resource_ex(in_random, vscf_impl_t_php_res_name(), le_vscf_impl_t());
+
+    //
+    // Call main function
+    //
+    vsce_uokms_server_use_random(uokms_server, random);
+}
+
+//
+// Wrap method: vsce_uokms_server_use_operation_random
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+    arginfo_vsce_uokms_server_use_operation_random_php,
+    0 /*return_reference*/,
+    2 /*required_num_args*/,
+    IS_VOID /*type*/,
+    0 /*allow_null*/)
+
+
+    ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
+    ZEND_ARG_TYPE_INFO(0, in_operation_random, IS_RESOURCE, 0)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vsce_uokms_server_use_operation_random_php) {
+
+    //
+    // Declare input argument
+    //
+    zval *in_ctx = NULL;
+    zval *in_operation_random = NULL;
+
+    //
+    // Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 2, 2)
+        Z_PARAM_RESOURCE_EX(in_ctx, 1, 0)
+        Z_PARAM_RESOURCE_EX(in_operation_random, 1 /*check_null*/, 0 /*separate*/)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    // Proxy call
+    //
+    vsce_uokms_server_t *uokms_server = zend_fetch_resource_ex(in_ctx, vsce_uokms_server_t_php_res_name(), le_vsce_uokms_server_t());
+    vscf_impl_t *operation_random = zend_fetch_resource_ex(in_operation_random, vscf_impl_t_php_res_name(), le_vscf_impl_t());
+
+    //
+    // Call main function
+    //
+    vsce_uokms_server_use_operation_random(uokms_server, operation_random);
+}
+
+//
+// Wrap method: vsce_uokms_wrap_rotation_new
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+        arginfo_vsce_uokms_wrap_rotation_new_php,
+        0 /*return_reference*/,
+        0 /*required_num_args*/,
+        IS_RESOURCE /*type*/,
+        0 /*allow_null*/)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vsce_uokms_wrap_rotation_new_php) {
+    vsce_uokms_wrap_rotation_t *uokms_wrap_rotation = vsce_uokms_wrap_rotation_new();
+    zend_resource *uokms_wrap_rotation_res = zend_register_resource(uokms_wrap_rotation, le_vsce_uokms_wrap_rotation_t());
+    RETVAL_RES(uokms_wrap_rotation_res);
+}
+
+//
+// Wrap method: vsce_uokms_wrap_rotation_delete
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+        arginfo_vsce_uokms_wrap_rotation_delete_php,
+        0 /*return_reference*/,
+        1 /*required_num_args*/,
+        IS_VOID /*type*/,
+        0 /*allow_null*/)
+
+        ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vsce_uokms_wrap_rotation_delete_php) {
+    //
+    // Declare input arguments
+    //
+    zval *in_ctx = NULL;
+
+    //
+    // Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 1, 1)
+        Z_PARAM_RESOURCE_EX(in_ctx, 1, 0)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    // Fetch for type checking and then release
+    //
+    vsce_uokms_wrap_rotation_t *uokms_wrap_rotation = zend_fetch_resource_ex(in_ctx, vsce_uokms_wrap_rotation_t_php_res_name(), le_vsce_uokms_wrap_rotation_t());
+    zend_list_close(Z_RES_P(in_ctx));
+    RETURN_TRUE;
+}
+
+//
+// Wrap method: vsce_uokms_wrap_rotation_setup_defaults
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+    arginfo_vsce_uokms_wrap_rotation_setup_defaults_php,
+    0 /*return_reference*/,
+    1 /*required_num_args*/,
+    IS_VOID /*type*/,
+    0 /*allow_null*/)
+
+
+    ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vsce_uokms_wrap_rotation_setup_defaults_php) {
+
+    //
+    // Declare input argument
+    //
+    zval *in_ctx = NULL;
+
+    //
+    // Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 1, 1)
+        Z_PARAM_RESOURCE_EX(in_ctx, 1, 0)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    // Proxy call
+    //
+    vsce_uokms_wrap_rotation_t *uokms_wrap_rotation = zend_fetch_resource_ex(in_ctx, vsce_uokms_wrap_rotation_t_php_res_name(), le_vsce_uokms_wrap_rotation_t());
+
+    //
+    // Call main function
+    //
+    vsce_status_t status =vsce_uokms_wrap_rotation_setup_defaults(uokms_wrap_rotation);
+
+    //
+    // Handle error
+    //
+    VSCE_HANDLE_STATUS(status);
+}
+
+//
+// Wrap method: vsce_uokms_wrap_rotation_set_update_token
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+    arginfo_vsce_uokms_wrap_rotation_set_update_token_php,
+    0 /*return_reference*/,
+    2 /*required_num_args*/,
+    IS_VOID /*type*/,
+    0 /*allow_null*/)
+
+
+    ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
+    ZEND_ARG_TYPE_INFO(0, in_update_token, IS_STRING, 0)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vsce_uokms_wrap_rotation_set_update_token_php) {
+
+    //
+    // Declare input argument
+    //
+    zval *in_ctx = NULL;
+    char *in_update_token = NULL;
+    size_t in_update_token_len = 0;
+
+    //
+    // Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 2, 2)
+        Z_PARAM_RESOURCE_EX(in_ctx, 1, 0)
+        Z_PARAM_STRING_EX(in_update_token, in_update_token_len, 1 /*check_null*/, 0 /*separate*/)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    // Proxy call
+    //
+    vsce_uokms_wrap_rotation_t *uokms_wrap_rotation = zend_fetch_resource_ex(in_ctx, vsce_uokms_wrap_rotation_t_php_res_name(), le_vsce_uokms_wrap_rotation_t());
+    vsc_data_t update_token = vsc_data((const byte*)in_update_token, in_update_token_len);
+
+    //
+    // Call main function
+    //
+    vsce_status_t status =vsce_uokms_wrap_rotation_set_update_token(uokms_wrap_rotation, update_token);
+
+    //
+    // Handle error
+    //
+    VSCE_HANDLE_STATUS(status);
+}
+
+//
+// Wrap method: vsce_uokms_wrap_rotation_update_wrap
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+    arginfo_vsce_uokms_wrap_rotation_update_wrap_php,
+    0 /*return_reference*/,
+    2 /*required_num_args*/,
+    IS_STRING /*type*/,
+    0 /*allow_null*/)
+
+
+    ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
+    ZEND_ARG_TYPE_INFO(0, in_wrap, IS_STRING, 0)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vsce_uokms_wrap_rotation_update_wrap_php) {
+
+    //
+    // Declare input argument
+    //
+    zval *in_ctx = NULL;
+    char *in_wrap = NULL;
+    size_t in_wrap_len = 0;
+
+    //
+    // Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 2, 2)
+        Z_PARAM_RESOURCE_EX(in_ctx, 1, 0)
+        Z_PARAM_STRING_EX(in_wrap, in_wrap_len, 1 /*check_null*/, 0 /*separate*/)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    // Proxy call
+    //
+    vsce_uokms_wrap_rotation_t *uokms_wrap_rotation = zend_fetch_resource_ex(in_ctx, vsce_uokms_wrap_rotation_t_php_res_name(), le_vsce_uokms_wrap_rotation_t());
+    vsc_data_t wrap = vsc_data((const byte*)in_wrap, in_wrap_len);
+
+    //
+    // Allocate output buffer for output 'new_wrap'
+    //
+    zend_string *out_new_wrap = zend_string_alloc(vsce_phe_common_PHE_PUBLIC_KEY_LENGTH, 0);
+    vsc_buffer_t *new_wrap = vsc_buffer_new();
+    vsc_buffer_use(new_wrap, (byte *)ZSTR_VAL(out_new_wrap), ZSTR_LEN(out_new_wrap));
+
+    //
+    // Call main function
+    //
+    vsce_status_t status =vsce_uokms_wrap_rotation_update_wrap(uokms_wrap_rotation, wrap, new_wrap);
+
+    //
+    // Handle error
+    //
+    VSCE_HANDLE_STATUS(status);
+
+    //
+    // Correct string length to the actual
+    //
+    ZSTR_LEN(out_new_wrap) = vsc_buffer_len(new_wrap);
+
+    //
+    // Write returned result
+    //
+    if (status == vsce_status_SUCCESS) {
+        RETVAL_STR(out_new_wrap);
+        vsc_buffer_destroy(&new_wrap);
+    }
+    else {
+        zend_string_free(out_new_wrap);
+    }
+}
+
+//
+// Wrap method: vsce_uokms_wrap_rotation_use_operation_random
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+    arginfo_vsce_uokms_wrap_rotation_use_operation_random_php,
+    0 /*return_reference*/,
+    2 /*required_num_args*/,
+    IS_VOID /*type*/,
+    0 /*allow_null*/)
+
+
+    ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
+    ZEND_ARG_TYPE_INFO(0, in_operation_random, IS_RESOURCE, 0)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vsce_uokms_wrap_rotation_use_operation_random_php) {
+
+    //
+    // Declare input argument
+    //
+    zval *in_ctx = NULL;
+    zval *in_operation_random = NULL;
+
+    //
+    // Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 2, 2)
+        Z_PARAM_RESOURCE_EX(in_ctx, 1, 0)
+        Z_PARAM_RESOURCE_EX(in_operation_random, 1 /*check_null*/, 0 /*separate*/)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    // Proxy call
+    //
+    vsce_uokms_wrap_rotation_t *uokms_wrap_rotation = zend_fetch_resource_ex(in_ctx, vsce_uokms_wrap_rotation_t_php_res_name(), le_vsce_uokms_wrap_rotation_t());
+    vscf_impl_t *operation_random = zend_fetch_resource_ex(in_operation_random, vscf_impl_t_php_res_name(), le_vscf_impl_t());
+
+    //
+    // Call main function
+    //
+    vsce_uokms_wrap_rotation_use_operation_random(uokms_wrap_rotation, operation_random);
+}
+
+//
 // Define all function entries
 //
 static zend_function_entry vsce_phe_php_functions[] = {
@@ -2168,6 +3580,32 @@ static zend_function_entry vsce_phe_php_functions[] = {
     PHP_FE(vsce_phe_cipher_auth_encrypt_php, arginfo_vsce_phe_cipher_auth_encrypt_php)
     PHP_FE(vsce_phe_cipher_auth_decrypt_php, arginfo_vsce_phe_cipher_auth_decrypt_php)
     PHP_FE(vsce_phe_cipher_use_random_php, arginfo_vsce_phe_cipher_use_random_php)
+    PHP_FE(vsce_uokms_client_new_php, arginfo_vsce_uokms_client_new_php)
+    PHP_FE(vsce_uokms_client_delete_php, arginfo_vsce_uokms_client_delete_php)
+    PHP_FE(vsce_uokms_client_setup_defaults_php, arginfo_vsce_uokms_client_setup_defaults_php)
+    PHP_FE(vsce_uokms_client_set_keys_php, arginfo_vsce_uokms_client_set_keys_php)
+    PHP_FE(vsce_uokms_client_generate_client_private_key_php, arginfo_vsce_uokms_client_generate_client_private_key_php)
+    PHP_FE(vsce_uokms_client_generate_encrypt_wrap_php, arginfo_vsce_uokms_client_generate_encrypt_wrap_php)
+    PHP_FE(vsce_uokms_client_generate_decrypt_request_php, arginfo_vsce_uokms_client_generate_decrypt_request_php)
+    PHP_FE(vsce_uokms_client_process_decrypt_response_php, arginfo_vsce_uokms_client_process_decrypt_response_php)
+    PHP_FE(vsce_uokms_client_rotate_keys_php, arginfo_vsce_uokms_client_rotate_keys_php)
+    PHP_FE(vsce_uokms_client_use_random_php, arginfo_vsce_uokms_client_use_random_php)
+    PHP_FE(vsce_uokms_client_use_operation_random_php, arginfo_vsce_uokms_client_use_operation_random_php)
+    PHP_FE(vsce_uokms_server_new_php, arginfo_vsce_uokms_server_new_php)
+    PHP_FE(vsce_uokms_server_delete_php, arginfo_vsce_uokms_server_delete_php)
+    PHP_FE(vsce_uokms_server_setup_defaults_php, arginfo_vsce_uokms_server_setup_defaults_php)
+    PHP_FE(vsce_uokms_server_generate_server_key_pair_php, arginfo_vsce_uokms_server_generate_server_key_pair_php)
+    PHP_FE(vsce_uokms_server_decrypt_response_len_php, arginfo_vsce_uokms_server_decrypt_response_len_php)
+    PHP_FE(vsce_uokms_server_process_decrypt_request_php, arginfo_vsce_uokms_server_process_decrypt_request_php)
+    PHP_FE(vsce_uokms_server_rotate_keys_php, arginfo_vsce_uokms_server_rotate_keys_php)
+    PHP_FE(vsce_uokms_server_use_random_php, arginfo_vsce_uokms_server_use_random_php)
+    PHP_FE(vsce_uokms_server_use_operation_random_php, arginfo_vsce_uokms_server_use_operation_random_php)
+    PHP_FE(vsce_uokms_wrap_rotation_new_php, arginfo_vsce_uokms_wrap_rotation_new_php)
+    PHP_FE(vsce_uokms_wrap_rotation_delete_php, arginfo_vsce_uokms_wrap_rotation_delete_php)
+    PHP_FE(vsce_uokms_wrap_rotation_setup_defaults_php, arginfo_vsce_uokms_wrap_rotation_setup_defaults_php)
+    PHP_FE(vsce_uokms_wrap_rotation_set_update_token_php, arginfo_vsce_uokms_wrap_rotation_set_update_token_php)
+    PHP_FE(vsce_uokms_wrap_rotation_update_wrap_php, arginfo_vsce_uokms_wrap_rotation_update_wrap_php)
+    PHP_FE(vsce_uokms_wrap_rotation_use_operation_random_php, arginfo_vsce_uokms_wrap_rotation_use_operation_random_php)
     PHP_FE_END
 };
 
@@ -2205,10 +3643,22 @@ static void vsce_phe_client_dtor_php(zend_resource *rsrc) {
 static void vsce_phe_cipher_dtor_php(zend_resource *rsrc) {
     vsce_phe_cipher_delete((vsce_phe_cipher_t *)rsrc->ptr);
 }
+static void vsce_uokms_client_dtor_php(zend_resource *rsrc) {
+    vsce_uokms_client_delete((vsce_uokms_client_t *)rsrc->ptr);
+}
+static void vsce_uokms_server_dtor_php(zend_resource *rsrc) {
+    vsce_uokms_server_delete((vsce_uokms_server_t *)rsrc->ptr);
+}
+static void vsce_uokms_wrap_rotation_dtor_php(zend_resource *rsrc) {
+    vsce_uokms_wrap_rotation_delete((vsce_uokms_wrap_rotation_t *)rsrc->ptr);
+}
 PHP_MINIT_FUNCTION(vsce_phe_php) {
     LE_VSCE_PHE_SERVER_T = zend_register_list_destructors_ex(vsce_phe_server_dtor_php, NULL, vsce_phe_server_t_php_res_name(), module_number);
     LE_VSCE_PHE_CLIENT_T = zend_register_list_destructors_ex(vsce_phe_client_dtor_php, NULL, vsce_phe_client_t_php_res_name(), module_number);
     LE_VSCE_PHE_CIPHER_T = zend_register_list_destructors_ex(vsce_phe_cipher_dtor_php, NULL, vsce_phe_cipher_t_php_res_name(), module_number);
+    LE_VSCE_UOKMS_CLIENT_T = zend_register_list_destructors_ex(vsce_uokms_client_dtor_php, NULL, vsce_uokms_client_t_php_res_name(), module_number);
+    LE_VSCE_UOKMS_SERVER_T = zend_register_list_destructors_ex(vsce_uokms_server_dtor_php, NULL, vsce_uokms_server_t_php_res_name(), module_number);
+    LE_VSCE_UOKMS_WRAP_ROTATION_T = zend_register_list_destructors_ex(vsce_uokms_wrap_rotation_dtor_php, NULL, vsce_uokms_wrap_rotation_t_php_res_name(), module_number);
     return SUCCESS;
 }
 PHP_MSHUTDOWN_FUNCTION(vsce_phe_php) {

@@ -40,7 +40,7 @@ namespace Virgil\CryptoWrapper\Foundation;
 /**
 * This is implementation of Curve25519 elliptic curve algorithms.
 */
-class Curve25519 implements Alg, KeyAlg, KeyCipher, ComputeSharedKey
+class Curve25519 implements KeyAlg, KeyCipher, ComputeSharedKey, Kem
 {
 
     /**
@@ -112,41 +112,6 @@ class Curve25519 implements Alg, KeyAlg, KeyCipher, ComputeSharedKey
     {
         $ctx = vscf_curve25519_generate_key_php($this->ctx);
         return FoundationImplementation::wrapPrivateKey($ctx);
-    }
-
-    /**
-    * Provide algorithm identificator.
-    *
-    * @return AlgId
-    */
-    public function algId(): AlgId
-    {
-        $enum = vscf_curve25519_alg_id_php($this->ctx);
-        return new AlgId($enum);
-    }
-
-    /**
-    * Produce object with algorithm information and configuration parameters.
-    *
-    * @return AlgInfo
-    * @throws \Exception
-    */
-    public function produceAlgInfo(): AlgInfo
-    {
-        $ctx = vscf_curve25519_produce_alg_info_php($this->ctx);
-        return FoundationImplementation::wrapAlgInfo($ctx);
-    }
-
-    /**
-    * Restore algorithm configuration from the given object.
-    *
-    * @param AlgInfo $algInfo
-    * @return void
-    * @throws \Exception
-    */
-    public function restoreAlgInfo(AlgInfo $algInfo): void
-    {
-        vscf_curve25519_restore_alg_info_php($this->ctx, $algInfo->getCtx());
     }
 
     /**
@@ -334,6 +299,53 @@ class Curve25519 implements Alg, KeyAlg, KeyCipher, ComputeSharedKey
     public function sharedKeyLen(Key $key): int
     {
         return vscf_curve25519_shared_key_len_php($this->ctx, $key->getCtx());
+    }
+
+    /**
+    * Return length in bytes required to hold encapsulated shared key.
+    *
+    * @param Key $key
+    * @return int
+    */
+    public function kemSharedKeyLen(Key $key): int
+    {
+        return vscf_curve25519_kem_shared_key_len_php($this->ctx, $key->getCtx());
+    }
+
+    /**
+    * Return length in bytes required to hold encapsulated key.
+    *
+    * @param PublicKey $publicKey
+    * @return int
+    */
+    public function kemEncapsulatedKeyLen(PublicKey $publicKey): int
+    {
+        return vscf_curve25519_kem_encapsulated_key_len_php($this->ctx, $publicKey->getCtx());
+    }
+
+    /**
+    * Generate a shared key and a key encapsulated message.
+    *
+    * @param PublicKey $publicKey
+    * @return array
+    * @throws \Exception
+    */
+    public function kemEncapsulate(PublicKey $publicKey): array // [shared_key, encapsulated_key]
+    {
+        return vscf_curve25519_kem_encapsulate_php($this->ctx, $publicKey->getCtx());
+    }
+
+    /**
+    * Decapsulate the shared key.
+    *
+    * @param string $encapsulatedKey
+    * @param PrivateKey $privateKey
+    * @return string
+    * @throws \Exception
+    */
+    public function kemDecapsulate(string $encapsulatedKey, PrivateKey $privateKey): string
+    {
+        return vscf_curve25519_kem_decapsulate_php($this->ctx, $encapsulatedKey, $privateKey->getCtx());
     }
 
     /**

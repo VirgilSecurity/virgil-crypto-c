@@ -38,11 +38,11 @@
 namespace Virgil\CryptoWrapper\Foundation;
 
 /**
-* Implements public key cryptography over chained keys.
-* Chained encryption pseudo-code: encrypt(l2_key, encrypt(l1_key, data))
-* Chained decryption pseudo-code: decrypt(l1_key, decrypt(l2_key, data))
+* Implements public key cryptography over hybrid keys.
+* Hybrid encryption - TODO
+* Hybrid signatures - TODO
 */
-class ChainedKeyAlg implements Alg, KeyAlg, KeyCipher, KeySigner
+class HybridKeyAlg implements KeyAlg, KeyCipher, KeySigner
 {
 
     /**
@@ -62,7 +62,7 @@ class ChainedKeyAlg implements Alg, KeyAlg, KeyCipher, KeySigner
     */
     public function __construct($ctx = null)
     {
-        $this->ctx = is_null($ctx) ? vscf_chained_key_alg_new_php() : $ctx;
+        $this->ctx = is_null($ctx) ? vscf_hybrid_key_alg_new_php() : $ctx;
     }
 
     /**
@@ -71,7 +71,7 @@ class ChainedKeyAlg implements Alg, KeyAlg, KeyCipher, KeySigner
     */
     public function __destructor()
     {
-        vscf_chained_key_alg_delete_php($this->ctx);
+        vscf_hybrid_key_alg_delete_php($this->ctx);
     }
 
     /**
@@ -80,7 +80,25 @@ class ChainedKeyAlg implements Alg, KeyAlg, KeyCipher, KeySigner
     */
     public function useRandom(Random $random): void
     {
-        vscf_chained_key_alg_use_random_php($this->ctx, $random->getCtx());
+        vscf_hybrid_key_alg_use_random_php($this->ctx, $random->getCtx());
+    }
+
+    /**
+    * @param CipherAuth $cipher
+    * @return void
+    */
+    public function useCipher(CipherAuth $cipher): void
+    {
+        vscf_hybrid_key_alg_use_cipher_php($this->ctx, $cipher->getCtx());
+    }
+
+    /**
+    * @param Hash $hash
+    * @return void
+    */
+    public function useHash(Hash $hash): void
+    {
+        vscf_hybrid_key_alg_use_hash_php($this->ctx, $hash->getCtx());
     }
 
     /**
@@ -91,60 +109,21 @@ class ChainedKeyAlg implements Alg, KeyAlg, KeyCipher, KeySigner
     */
     public function setupDefaults(): void
     {
-        vscf_chained_key_alg_setup_defaults_php($this->ctx);
+        vscf_hybrid_key_alg_setup_defaults_php($this->ctx);
     }
 
     /**
-    * Make chained private key from given keys that are suitable for
-    * encryption and decrypt, and/or signing verifying.
+    * Make hybrid private key from given keys.
     *
-    * Note, l2 should be able to encrypt data produced by the l1 cipher,
-    * if keys are used for encryption.
-    *
-    * @param PrivateKey $l1Key
-    * @param PrivateKey $l2Key
+    * @param PrivateKey $firstKey
+    * @param PrivateKey $secondKey
     * @return PrivateKey
     * @throws \Exception
     */
-    public function makeKey(PrivateKey $l1Key, PrivateKey $l2Key): PrivateKey
+    public function makeKey(PrivateKey $firstKey, PrivateKey $secondKey): PrivateKey
     {
-        $ctx = vscf_chained_key_alg_make_key_php($this->ctx, $l1Key->getCtx(), $l2Key->getCtx());
+        $ctx = vscf_hybrid_key_alg_make_key_php($this->ctx, $firstKey->getCtx(), $secondKey->getCtx());
         return FoundationImplementation::wrapPrivateKey($ctx);
-    }
-
-    /**
-    * Provide algorithm identificator.
-    *
-    * @return AlgId
-    */
-    public function algId(): AlgId
-    {
-        $enum = vscf_chained_key_alg_alg_id_php($this->ctx);
-        return new AlgId($enum);
-    }
-
-    /**
-    * Produce object with algorithm information and configuration parameters.
-    *
-    * @return AlgInfo
-    * @throws \Exception
-    */
-    public function produceAlgInfo(): AlgInfo
-    {
-        $ctx = vscf_chained_key_alg_produce_alg_info_php($this->ctx);
-        return FoundationImplementation::wrapAlgInfo($ctx);
-    }
-
-    /**
-    * Restore algorithm configuration from the given object.
-    *
-    * @param AlgInfo $algInfo
-    * @return void
-    * @throws \Exception
-    */
-    public function restoreAlgInfo(AlgInfo $algInfo): void
-    {
-        vscf_chained_key_alg_restore_alg_info_php($this->ctx, $algInfo->getCtx());
     }
 
     /**
@@ -157,7 +136,7 @@ class ChainedKeyAlg implements Alg, KeyAlg, KeyCipher, KeySigner
     */
     public function generateEphemeralKey(Key $key): PrivateKey
     {
-        $ctx = vscf_chained_key_alg_generate_ephemeral_key_php($this->ctx, $key->getCtx());
+        $ctx = vscf_hybrid_key_alg_generate_ephemeral_key_php($this->ctx, $key->getCtx());
         return FoundationImplementation::wrapPrivateKey($ctx);
     }
 
@@ -177,7 +156,7 @@ class ChainedKeyAlg implements Alg, KeyAlg, KeyCipher, KeySigner
     */
     public function importPublicKey(RawPublicKey $rawKey): PublicKey
     {
-        $ctx = vscf_chained_key_alg_import_public_key_php($this->ctx, $rawKey->getCtx());
+        $ctx = vscf_hybrid_key_alg_import_public_key_php($this->ctx, $rawKey->getCtx());
         return FoundationImplementation::wrapPublicKey($ctx);
     }
 
@@ -193,7 +172,7 @@ class ChainedKeyAlg implements Alg, KeyAlg, KeyCipher, KeySigner
     */
     public function exportPublicKey(PublicKey $publicKey): RawPublicKey
     {
-        $ctx = vscf_chained_key_alg_export_public_key_php($this->ctx, $publicKey->getCtx());
+        $ctx = vscf_hybrid_key_alg_export_public_key_php($this->ctx, $publicKey->getCtx());
         return new RawPublicKey($ctx);
     }
 
@@ -213,7 +192,7 @@ class ChainedKeyAlg implements Alg, KeyAlg, KeyCipher, KeySigner
     */
     public function importPrivateKey(RawPrivateKey $rawKey): PrivateKey
     {
-        $ctx = vscf_chained_key_alg_import_private_key_php($this->ctx, $rawKey->getCtx());
+        $ctx = vscf_hybrid_key_alg_import_private_key_php($this->ctx, $rawKey->getCtx());
         return FoundationImplementation::wrapPrivateKey($ctx);
     }
 
@@ -229,7 +208,7 @@ class ChainedKeyAlg implements Alg, KeyAlg, KeyCipher, KeySigner
     */
     public function exportPrivateKey(PrivateKey $privateKey): RawPrivateKey
     {
-        $ctx = vscf_chained_key_alg_export_private_key_php($this->ctx, $privateKey->getCtx());
+        $ctx = vscf_hybrid_key_alg_export_private_key_php($this->ctx, $privateKey->getCtx());
         return new RawPrivateKey($ctx);
     }
 
@@ -242,7 +221,7 @@ class ChainedKeyAlg implements Alg, KeyAlg, KeyCipher, KeySigner
     */
     public function canEncrypt(PublicKey $publicKey, int $dataLen): bool
     {
-        return vscf_chained_key_alg_can_encrypt_php($this->ctx, $publicKey->getCtx(), $dataLen);
+        return vscf_hybrid_key_alg_can_encrypt_php($this->ctx, $publicKey->getCtx(), $dataLen);
     }
 
     /**
@@ -254,7 +233,7 @@ class ChainedKeyAlg implements Alg, KeyAlg, KeyCipher, KeySigner
     */
     public function encryptedLen(PublicKey $publicKey, int $dataLen): int
     {
-        return vscf_chained_key_alg_encrypted_len_php($this->ctx, $publicKey->getCtx(), $dataLen);
+        return vscf_hybrid_key_alg_encrypted_len_php($this->ctx, $publicKey->getCtx(), $dataLen);
     }
 
     /**
@@ -267,7 +246,7 @@ class ChainedKeyAlg implements Alg, KeyAlg, KeyCipher, KeySigner
     */
     public function encrypt(PublicKey $publicKey, string $data): string
     {
-        return vscf_chained_key_alg_encrypt_php($this->ctx, $publicKey->getCtx(), $data);
+        return vscf_hybrid_key_alg_encrypt_php($this->ctx, $publicKey->getCtx(), $data);
     }
 
     /**
@@ -280,7 +259,7 @@ class ChainedKeyAlg implements Alg, KeyAlg, KeyCipher, KeySigner
     */
     public function canDecrypt(PrivateKey $privateKey, int $dataLen): bool
     {
-        return vscf_chained_key_alg_can_decrypt_php($this->ctx, $privateKey->getCtx(), $dataLen);
+        return vscf_hybrid_key_alg_can_decrypt_php($this->ctx, $privateKey->getCtx(), $dataLen);
     }
 
     /**
@@ -292,7 +271,7 @@ class ChainedKeyAlg implements Alg, KeyAlg, KeyCipher, KeySigner
     */
     public function decryptedLen(PrivateKey $privateKey, int $dataLen): int
     {
-        return vscf_chained_key_alg_decrypted_len_php($this->ctx, $privateKey->getCtx(), $dataLen);
+        return vscf_hybrid_key_alg_decrypted_len_php($this->ctx, $privateKey->getCtx(), $dataLen);
     }
 
     /**
@@ -305,7 +284,7 @@ class ChainedKeyAlg implements Alg, KeyAlg, KeyCipher, KeySigner
     */
     public function decrypt(PrivateKey $privateKey, string $data): string
     {
-        return vscf_chained_key_alg_decrypt_php($this->ctx, $privateKey->getCtx(), $data);
+        return vscf_hybrid_key_alg_decrypt_php($this->ctx, $privateKey->getCtx(), $data);
     }
 
     /**
@@ -316,7 +295,7 @@ class ChainedKeyAlg implements Alg, KeyAlg, KeyCipher, KeySigner
     */
     public function canSign(PrivateKey $privateKey): bool
     {
-        return vscf_chained_key_alg_can_sign_php($this->ctx, $privateKey->getCtx());
+        return vscf_hybrid_key_alg_can_sign_php($this->ctx, $privateKey->getCtx());
     }
 
     /**
@@ -328,7 +307,7 @@ class ChainedKeyAlg implements Alg, KeyAlg, KeyCipher, KeySigner
     */
     public function signatureLen(PrivateKey $privateKey): int
     {
-        return vscf_chained_key_alg_signature_len_php($this->ctx, $privateKey->getCtx());
+        return vscf_hybrid_key_alg_signature_len_php($this->ctx, $privateKey->getCtx());
     }
 
     /**
@@ -342,7 +321,7 @@ class ChainedKeyAlg implements Alg, KeyAlg, KeyCipher, KeySigner
     */
     public function signHash(PrivateKey $privateKey, AlgId $hashId, string $digest): string
     {
-        return vscf_chained_key_alg_sign_hash_php($this->ctx, $privateKey->getCtx(), $hashId->getValue(), $digest);
+        return vscf_hybrid_key_alg_sign_hash_php($this->ctx, $privateKey->getCtx(), $hashId->getValue(), $digest);
     }
 
     /**
@@ -353,7 +332,7 @@ class ChainedKeyAlg implements Alg, KeyAlg, KeyCipher, KeySigner
     */
     public function canVerify(PublicKey $publicKey): bool
     {
-        return vscf_chained_key_alg_can_verify_php($this->ctx, $publicKey->getCtx());
+        return vscf_hybrid_key_alg_can_verify_php($this->ctx, $publicKey->getCtx());
     }
 
     /**
@@ -367,7 +346,7 @@ class ChainedKeyAlg implements Alg, KeyAlg, KeyCipher, KeySigner
     */
     public function verifyHash(PublicKey $publicKey, AlgId $hashId, string $digest, string $signature): bool
     {
-        return vscf_chained_key_alg_verify_hash_php($this->ctx, $publicKey->getCtx(), $hashId->getValue(), $digest, $signature);
+        return vscf_hybrid_key_alg_verify_hash_php($this->ctx, $publicKey->getCtx(), $hashId->getValue(), $digest, $signature);
     }
 
     /**

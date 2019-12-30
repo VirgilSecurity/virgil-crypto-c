@@ -87,6 +87,8 @@ class PheClient
     }
 
     /**
+    * Setups dependencies with default values.
+    *
     * @return void
     * @throws \Exception
     */

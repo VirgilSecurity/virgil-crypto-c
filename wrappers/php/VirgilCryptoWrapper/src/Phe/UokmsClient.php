@@ -38,10 +38,9 @@
 namespace Virgil\CryptoWrapper\Phe;
 
 /**
-* Class for server-side PHE crypto operations.
-* This class is thread-safe in case if VSCE_MULTI_THREADING defined.
+* Class implements UOKMS for client-side.
 */
-class PheServer
+class UokmsClient
 {
 
     /**
@@ -56,7 +55,7 @@ class PheServer
     */
     public function __construct($ctx = null)
     {
-        $this->ctx = is_null($ctx) ? vsce_phe_server_new_php() : $ctx;
+        $this->ctx = is_null($ctx) ? vsce_uokms_client_new_php() : $ctx;
     }
 
     /**
@@ -65,7 +64,7 @@ class PheServer
     */
     public function __destructor()
     {
-        vsce_phe_server_delete_php($this->ctx);
+        vsce_uokms_client_delete_php($this->ctx);
     }
 
     /**
@@ -74,7 +73,7 @@ class PheServer
     */
     public function useRandom(Virgil\CryptoWrapper\Foundation\Random $random): void
     {
-        vsce_phe_server_use_random_php($this->ctx, $random->getCtx());
+        vsce_uokms_client_use_random_php($this->ctx, $random->getCtx());
     }
 
     /**
@@ -83,7 +82,7 @@ class PheServer
     */
     public function useOperationRandom(Virgil\CryptoWrapper\Foundation\Random $operationRandom): void
     {
-        vsce_phe_server_use_operation_random_php($this->ctx, $operationRandom->getCtx());
+        vsce_uokms_client_use_operation_random_php($this->ctx, $operationRandom->getCtx());
     }
 
     /**
@@ -94,87 +93,87 @@ class PheServer
     */
     public function setupDefaults(): void
     {
-        vsce_phe_server_setup_defaults_php($this->ctx);
+        vsce_uokms_client_setup_defaults_php($this->ctx);
     }
 
     /**
-    * Generates new NIST P-256 server key pair for some client
+    * Sets client private and server public key
+    * Call this method before any other methods
+    * This function should be called only once
     *
-    * @return array
+    * @param string $clientPrivateKey
+    * @param string $serverPublicKey
+    * @return void
     * @throws \Exception
     */
-    public function generateServerKeyPair(): array // [server_private_key, server_public_key]
+    public function setKeys(string $clientPrivateKey, string $serverPublicKey): void
     {
-        return vsce_phe_server_generate_server_key_pair_php($this->ctx);
+        vsce_uokms_client_set_keys_php($this->ctx, $clientPrivateKey, $serverPublicKey);
     }
 
     /**
-    * Buffer size needed to fit EnrollmentResponse
+    * Generates client private key
     *
-    * @return int
-    */
-    public function enrollmentResponseLen(): int
-    {
-        return vsce_phe_server_enrollment_response_len_php($this->ctx);
-    }
-
-    /**
-    * Generates a new random enrollment and proof for a new user
-    *
-    * @param string $serverPrivateKey
-    * @param string $serverPublicKey
     * @return string
     * @throws \Exception
     */
-    public function getEnrollment(string $serverPrivateKey, string $serverPublicKey): string
+    public function generateClientPrivateKey(): string
     {
-        return vsce_phe_server_get_enrollment_php($this->ctx, $serverPrivateKey, $serverPublicKey);
+        return vsce_uokms_client_generate_client_private_key_php($this->ctx);
     }
 
     /**
-    * Buffer size needed to fit VerifyPasswordResponse
+    * Generates new encrypt wrap (which should be stored and then used for decryption) + encryption key
+    * of "encryption key len" that can be used for symmetric encryption
     *
-    * @return int
-    */
-    public function verifyPasswordResponseLen(): int
-    {
-        return vsce_phe_server_verify_password_response_len_php($this->ctx);
-    }
-
-    /**
-    * Verifies existing user's password and generates response with proof
-    *
-    * @param string $serverPrivateKey
-    * @param string $serverPublicKey
-    * @param string $verifyPasswordRequest
-    * @return string
-    * @throws \Exception
-    */
-    public function verifyPassword(string $serverPrivateKey, string $serverPublicKey, string $verifyPasswordRequest): string
-    {
-        return vsce_phe_server_verify_password_php($this->ctx, $serverPrivateKey, $serverPublicKey, $verifyPasswordRequest);
-    }
-
-    /**
-    * Buffer size needed to fit UpdateToken
-    *
-    * @return int
-    */
-    public function updateTokenLen(): int
-    {
-        return vsce_phe_server_update_token_len_php($this->ctx);
-    }
-
-    /**
-    * Updates server's private and public keys and issues an update token for use on client's side
-    *
-    * @param string $serverPrivateKey
+    * @param int $encryptionKeyLen
     * @return array
     * @throws \Exception
     */
-    public function rotateKeys(string $serverPrivateKey): array // [new_server_private_key, new_server_public_key, update_token]
+    public function generateEncryptWrap(int $encryptionKeyLen): array // [wrap, encryption_key]
     {
-        return vsce_phe_server_rotate_keys_php($this->ctx, $serverPrivateKey);
+        return vsce_uokms_client_generate_encrypt_wrap_php($this->ctx, $encryptionKeyLen);
+    }
+
+    /**
+    * Generates request to decrypt data, this request should be sent to the server.
+    * Server response is then passed to "process decrypt response" where encryption key can be decapsulated
+    *
+    * @param string $wrap
+    * @return array
+    * @throws \Exception
+    */
+    public function generateDecryptRequest(string $wrap): array // [deblind_factor, decrypt_request]
+    {
+        return vsce_uokms_client_generate_decrypt_request_php($this->ctx, $wrap);
+    }
+
+    /**
+    * Processed server response, checks server proof and decapsulates encryption key
+    *
+    * @param string $wrap
+    * @param string $decryptRequest
+    * @param string $decryptResponse
+    * @param string $deblindFactor
+    * @param int $encryptionKeyLen
+    * @return string
+    * @throws \Exception
+    */
+    public function processDecryptResponse(string $wrap, string $decryptRequest, string $decryptResponse, string $deblindFactor, int $encryptionKeyLen): string
+    {
+        return vsce_uokms_client_process_decrypt_response_php($this->ctx, $wrap, $decryptRequest, $decryptResponse, $deblindFactor, $encryptionKeyLen);
+    }
+
+    /**
+    * Rotates client and server keys using given update token obtained from server
+    *
+    * @param string $updateToken
+    * @return array
+    * @throws \Exception
+    */
+    public function rotateKeys(string $updateToken): array // [new_client_private_key, new_server_public_key]
+    {
+        return vsce_uokms_client_rotate_keys_php($this->ctx, $updateToken);
     }
 
     /**

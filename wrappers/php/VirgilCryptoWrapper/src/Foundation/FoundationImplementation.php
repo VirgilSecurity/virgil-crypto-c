@@ -46,28 +46,28 @@ class FoundationImplementation
     const ALG_INFO_DER_SERIALIZER = 4;
     const ASN1RD = 5;
     const ASN1WR = 6;
-    const CHAINED_KEY_ALG = 7;
-    const CHAINED_KEY_ALG_INFO = 8;
-    const CHAINED_PRIVATE_KEY = 9;
-    const CHAINED_PUBLIC_KEY = 10;
-    const CIPHER_ALG_INFO = 11;
-    const COMPOUND_KEY_ALG = 12;
-    const COMPOUND_KEY_ALG_INFO = 13;
-    const COMPOUND_PRIVATE_KEY = 14;
-    const COMPOUND_PUBLIC_KEY = 15;
-    const CTR_DRBG = 16;
-    const CURVE25519 = 17;
-    const ECC = 18;
-    const ECC_ALG_INFO = 19;
-    const ECC_PRIVATE_KEY = 20;
-    const ECC_PUBLIC_KEY = 21;
-    const ED25519 = 22;
-    const ENTROPY_ACCUMULATOR = 23;
-    const FAKE_RANDOM = 24;
-    const FALCON = 25;
-    const HASH_BASED_ALG_INFO = 26;
-    const HKDF = 27;
-    const HMAC = 28;
+    const CIPHER_ALG_INFO = 7;
+    const COMPOUND_KEY_ALG = 8;
+    const COMPOUND_KEY_ALG_INFO = 9;
+    const COMPOUND_PRIVATE_KEY = 10;
+    const COMPOUND_PUBLIC_KEY = 11;
+    const CTR_DRBG = 12;
+    const CURVE25519 = 13;
+    const ECC = 14;
+    const ECC_ALG_INFO = 15;
+    const ECC_PRIVATE_KEY = 16;
+    const ECC_PUBLIC_KEY = 17;
+    const ED25519 = 18;
+    const ENTROPY_ACCUMULATOR = 19;
+    const FAKE_RANDOM = 20;
+    const FALCON = 21;
+    const HASH_BASED_ALG_INFO = 22;
+    const HKDF = 23;
+    const HMAC = 24;
+    const HYBRID_KEY_ALG = 25;
+    const HYBRID_KEY_ALG_INFO = 26;
+    const HYBRID_PRIVATE_KEY = 27;
+    const HYBRID_PUBLIC_KEY = 28;
     const KDF1 = 29;
     const KDF2 = 30;
     const KEY_ASN1_DESERIALIZER = 31;
@@ -475,11 +475,11 @@ class FoundationImplementation
             case self::COMPOUND_PRIVATE_KEY:
                 return (new CompoundPrivateKey($ctx));
                 break;
-            case self::CHAINED_PUBLIC_KEY:
-                return (new ChainedPublicKey($ctx));
+            case self::HYBRID_PUBLIC_KEY:
+                return (new HybridPublicKey($ctx));
                 break;
-            case self::CHAINED_PRIVATE_KEY:
-                return (new ChainedPrivateKey($ctx));
+            case self::HYBRID_PRIVATE_KEY:
+                return (new HybridPrivateKey($ctx));
                 break;
             default:
                 throw new \Exception("Unexpected C implementation cast to the PHP implementation.");
@@ -520,8 +520,8 @@ class FoundationImplementation
             case self::COMPOUND_KEY_ALG:
                 return (new CompoundKeyAlg($ctx));
                 break;
-            case self::CHAINED_KEY_ALG:
-                return (new ChainedKeyAlg($ctx));
+            case self::HYBRID_KEY_ALG:
+                return (new HybridKeyAlg($ctx));
                 break;
             default:
                 throw new \Exception("Unexpected C implementation cast to the PHP implementation.");
@@ -553,8 +553,8 @@ class FoundationImplementation
             case self::COMPOUND_PUBLIC_KEY:
                 return (new CompoundPublicKey($ctx));
                 break;
-            case self::CHAINED_PUBLIC_KEY:
-                return (new ChainedPublicKey($ctx));
+            case self::HYBRID_PUBLIC_KEY:
+                return (new HybridPublicKey($ctx));
                 break;
             default:
                 throw new \Exception("Unexpected C implementation cast to the PHP implementation.");
@@ -586,8 +586,8 @@ class FoundationImplementation
             case self::COMPOUND_PRIVATE_KEY:
                 return (new CompoundPrivateKey($ctx));
                 break;
-            case self::CHAINED_PRIVATE_KEY:
-                return (new ChainedPrivateKey($ctx));
+            case self::HYBRID_PRIVATE_KEY:
+                return (new HybridPrivateKey($ctx));
                 break;
             default:
                 throw new \Exception("Unexpected C implementation cast to the PHP implementation.");
@@ -619,14 +619,11 @@ class FoundationImplementation
             case self::CURVE25519:
                 return (new Curve25519($ctx));
                 break;
-            case self::ROUND5:
-                return (new Round5($ctx));
-                break;
             case self::COMPOUND_KEY_ALG:
                 return (new CompoundKeyAlg($ctx));
                 break;
-            case self::CHAINED_KEY_ALG:
-                return (new ChainedKeyAlg($ctx));
+            case self::HYBRID_KEY_ALG:
+                return (new HybridKeyAlg($ctx));
                 break;
             default:
                 throw new \Exception("Unexpected C implementation cast to the PHP implementation.");
@@ -661,8 +658,8 @@ class FoundationImplementation
             case self::COMPOUND_KEY_ALG:
                 return (new CompoundKeyAlg($ctx));
                 break;
-            case self::CHAINED_KEY_ALG:
-                return (new ChainedKeyAlg($ctx));
+            case self::HYBRID_KEY_ALG:
+                return (new HybridKeyAlg($ctx));
                 break;
             default:
                 throw new \Exception("Unexpected C implementation cast to the PHP implementation.");
@@ -817,12 +814,6 @@ class FoundationImplementation
             case self::AES256_CBC:
                 return (new Aes256Cbc($ctx));
                 break;
-            case self::RSA:
-                return (new Rsa($ctx));
-                break;
-            case self::ECC:
-                return (new Ecc($ctx));
-                break;
             case self::HMAC:
                 return (new Hmac($ctx));
                 break;
@@ -841,23 +832,11 @@ class FoundationImplementation
             case self::PKCS5_PBES2:
                 return (new Pkcs5Pbes2($ctx));
                 break;
-            case self::ED25519:
-                return (new Ed25519($ctx));
-                break;
-            case self::CURVE25519:
-                return (new Curve25519($ctx));
-                break;
             case self::FALCON:
                 return (new Falcon($ctx));
                 break;
-            case self::ROUND5:
-                return (new Round5($ctx));
-                break;
             case self::COMPOUND_KEY_ALG:
                 return (new CompoundKeyAlg($ctx));
-                break;
-            case self::CHAINED_KEY_ALG:
-                return (new ChainedKeyAlg($ctx));
                 break;
             case self::RANDOM_PADDING:
                 return (new RandomPadding($ctx));
@@ -883,8 +862,8 @@ class FoundationImplementation
             case self::COMPOUND_KEY_ALG_INFO:
                 return (new CompoundKeyAlgInfo($ctx));
                 break;
-            case self::CHAINED_KEY_ALG_INFO:
-                return (new ChainedKeyAlgInfo($ctx));
+            case self::HYBRID_KEY_ALG_INFO:
+                return (new HybridKeyAlgInfo($ctx));
                 break;
             case self::SIMPLE_ALG_INFO:
                 return (new SimpleAlgInfo($ctx));
@@ -1008,6 +987,36 @@ class FoundationImplementation
         switch ($implTag) {
             case self::RANDOM_PADDING:
                 return (new RandomPadding($ctx));
+                break;
+            default:
+                throw new \Exception("Unexpected C implementation cast to the PHP implementation.");
+                break;
+        }
+    }
+
+    /**
+    * Wrap C implementation object to the PHP object that implements protocol Kem.
+    *
+    * @param $ctx
+    * @return Kem
+    * @throws \Exception
+    */
+    public static function wrapKem($ctx): Kem
+    {
+        $implTag = vscf_impl_tag_php($ctx);
+
+        switch ($implTag) {
+            case self::ECC:
+                return (new Ecc($ctx));
+                break;
+            case self::ED25519:
+                return (new Ed25519($ctx));
+                break;
+            case self::CURVE25519:
+                return (new Curve25519($ctx));
+                break;
+            case self::ROUND5:
+                return (new Round5($ctx));
                 break;
             default:
                 throw new \Exception("Unexpected C implementation cast to the PHP implementation.");

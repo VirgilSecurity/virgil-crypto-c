@@ -41,7 +41,7 @@ namespace Virgil\CryptoWrapper\Foundation;
 * Provide post-quantum encryption based on the round5 implementation.
 * For algorithm details check https://github.com/round5/code
 */
-class Round5 implements Alg, KeyAlg, KeyCipher
+class Round5 implements KeyAlg, Kem
 {
 
     /**
@@ -98,48 +98,14 @@ class Round5 implements Alg, KeyAlg, KeyCipher
     * Generate new private key.
     * Note, this operation might be slow.
     *
+    * @param AlgId $algId
     * @return PrivateKey
     * @throws \Exception
     */
-    public function generateKey(): PrivateKey
+    public function generateKey(AlgId $algId): PrivateKey
     {
-        $ctx = vscf_round5_generate_key_php($this->ctx);
+        $ctx = vscf_round5_generate_key_php($this->ctx, $algId->getValue());
         return FoundationImplementation::wrapPrivateKey($ctx);
-    }
-
-    /**
-    * Provide algorithm identificator.
-    *
-    * @return AlgId
-    */
-    public function algId(): AlgId
-    {
-        $enum = vscf_round5_alg_id_php($this->ctx);
-        return new AlgId($enum);
-    }
-
-    /**
-    * Produce object with algorithm information and configuration parameters.
-    *
-    * @return AlgInfo
-    * @throws \Exception
-    */
-    public function produceAlgInfo(): AlgInfo
-    {
-        $ctx = vscf_round5_produce_alg_info_php($this->ctx);
-        return FoundationImplementation::wrapAlgInfo($ctx);
-    }
-
-    /**
-    * Restore algorithm configuration from the given object.
-    *
-    * @param AlgInfo $algInfo
-    * @return void
-    * @throws \Exception
-    */
-    public function restoreAlgInfo(AlgInfo $algInfo): void
-    {
-        vscf_round5_restore_alg_info_php($this->ctx, $algInfo->getCtx());
     }
 
     /**
@@ -229,78 +195,50 @@ class Round5 implements Alg, KeyAlg, KeyCipher
     }
 
     /**
-    * Check if algorithm can encrypt data with a given key.
+    * Return length in bytes required to hold encapsulated shared key.
     *
-    * @param PublicKey $publicKey
-    * @param int $dataLen
-    * @return bool
-    */
-    public function canEncrypt(PublicKey $publicKey, int $dataLen): bool
-    {
-        return vscf_round5_can_encrypt_php($this->ctx, $publicKey->getCtx(), $dataLen);
-    }
-
-    /**
-    * Calculate required buffer length to hold the encrypted data.
-    *
-    * @param PublicKey $publicKey
-    * @param int $dataLen
+    * @param Key $key
     * @return int
     */
-    public function encryptedLen(PublicKey $publicKey, int $dataLen): int
+    public function kemSharedKeyLen(Key $key): int
     {
-        return vscf_round5_encrypted_len_php($this->ctx, $publicKey->getCtx(), $dataLen);
+        return vscf_round5_kem_shared_key_len_php($this->ctx, $key->getCtx());
     }
 
     /**
-    * Encrypt data with a given public key.
+    * Return length in bytes required to hold encapsulated key.
     *
     * @param PublicKey $publicKey
-    * @param string $data
+    * @return int
+    */
+    public function kemEncapsulatedKeyLen(PublicKey $publicKey): int
+    {
+        return vscf_round5_kem_encapsulated_key_len_php($this->ctx, $publicKey->getCtx());
+    }
+
+    /**
+    * Generate a shared key and a key encapsulated message.
+    *
+    * @param PublicKey $publicKey
+    * @return array
+    * @throws \Exception
+    */
+    public function kemEncapsulate(PublicKey $publicKey): array // [shared_key, encapsulated_key]
+    {
+        return vscf_round5_kem_encapsulate_php($this->ctx, $publicKey->getCtx());
+    }
+
+    /**
+    * Decapsulate the shared key.
+    *
+    * @param string $encapsulatedKey
+    * @param PrivateKey $privateKey
     * @return string
     * @throws \Exception
     */
-    public function encrypt(PublicKey $publicKey, string $data): string
+    public function kemDecapsulate(string $encapsulatedKey, PrivateKey $privateKey): string
     {
-        return vscf_round5_encrypt_php($this->ctx, $publicKey->getCtx(), $data);
-    }
-
-    /**
-    * Check if algorithm can decrypt data with a given key.
-    * However, success result of decryption is not guaranteed.
-    *
-    * @param PrivateKey $privateKey
-    * @param int $dataLen
-    * @return bool
-    */
-    public function canDecrypt(PrivateKey $privateKey, int $dataLen): bool
-    {
-        return vscf_round5_can_decrypt_php($this->ctx, $privateKey->getCtx(), $dataLen);
-    }
-
-    /**
-    * Calculate required buffer length to hold the decrypted data.
-    *
-    * @param PrivateKey $privateKey
-    * @param int $dataLen
-    * @return int
-    */
-    public function decryptedLen(PrivateKey $privateKey, int $dataLen): int
-    {
-        return vscf_round5_decrypted_len_php($this->ctx, $privateKey->getCtx(), $dataLen);
-    }
-
-    /**
-    * Decrypt given data.
-    *
-    * @param PrivateKey $privateKey
-    * @param string $data
-    * @return string
-    * @throws \Exception
-    */
-    public function decrypt(PrivateKey $privateKey, string $data): string
-    {
-        return vscf_round5_decrypt_php($this->ctx, $privateKey->getCtx(), $data);
+        return vscf_round5_kem_decapsulate_php($this->ctx, $encapsulatedKey, $privateKey->getCtx());
     }
 
     /**

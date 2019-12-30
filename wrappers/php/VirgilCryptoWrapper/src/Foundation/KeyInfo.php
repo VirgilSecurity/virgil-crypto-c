@@ -87,50 +87,50 @@ class KeyInfo
     }
 
     /**
-    * Return true if a key is a chained key
+    * Return true if a key is a hybrid key
     *
     * @return bool
     */
-    public function isChained(): bool
+    public function isHybrid(): bool
     {
-        return vscf_key_info_is_chained_php($this->ctx);
+        return vscf_key_info_is_hybrid_php($this->ctx);
     }
 
     /**
     * Return true if a key is a compound key and compounds cipher key
-    * and signer key are chained keys.
+    * and signer key are hybrid keys.
     *
     * @return bool
     */
-    public function isCompoundChained(): bool
+    public function isCompoundHybrid(): bool
     {
-        return vscf_key_info_is_compound_chained_php($this->ctx);
+        return vscf_key_info_is_compound_hybrid_php($this->ctx);
     }
 
     /**
     * Return true if a key is a compound key and compounds cipher key
-    * is a chained key.
+    * is a hybrid key.
     *
     * @return bool
     */
-    public function isCompoundChainedCipher(): bool
+    public function isCompoundHybridCipher(): bool
     {
-        return vscf_key_info_is_compound_chained_cipher_php($this->ctx);
+        return vscf_key_info_is_compound_hybrid_cipher_php($this->ctx);
     }
 
     /**
     * Return true if a key is a compound key and compounds signer key
-    * is a chained key.
+    * is a hybrid key.
     *
     * @return bool
     */
-    public function isCompoundChainedSigner(): bool
+    public function isCompoundHybridSigner(): bool
     {
-        return vscf_key_info_is_compound_chained_signer_php($this->ctx);
+        return vscf_key_info_is_compound_hybrid_signer_php($this->ctx);
     }
 
     /**
-    * Return true if a key is a compound key that contains chained keys
+    * Return true if a key is a compound key that contains hybrid keys
     * for encryption/decryption and signing/verifying that itself
     * contains a combination of classic keys and post-quantum keys.
     *
@@ -142,7 +142,7 @@ class KeyInfo
     }
 
     /**
-    * Return true if a key is a compound key that contains a chained key
+    * Return true if a key is a compound key that contains a hybrid key
     * for encryption/decryption that contains a classic key and
     * a post-quantum key.
     *
@@ -154,7 +154,7 @@ class KeyInfo
     }
 
     /**
-    * Return true if a key is a compound key that contains a chained key
+    * Return true if a key is a compound key that contains a hybrid key
     * for signing/verifying that contains a classic key and
     * a post-quantum key.
     *
@@ -201,74 +201,74 @@ class KeyInfo
     }
 
     /**
-    * Return chained l1 key id, if key is chained.
+    * Return hybrid's first key id, if key is hybrid.
     * Return None, otherwise.
     *
     * @return AlgId
     */
-    public function chainedL1AlgId(): AlgId
+    public function hybridFirstKeyAlgId(): AlgId
     {
-        $enum = vscf_key_info_chained_l1_alg_id_php($this->ctx);
+        $enum = vscf_key_info_hybrid_first_key_alg_id_php($this->ctx);
         return new AlgId($enum);
     }
 
     /**
-    * Return chained l2 key id, if key is chained.
+    * Return hybrid's second key id, if key is hybrid.
     * Return None, otherwise.
     *
     * @return AlgId
     */
-    public function chainedL2AlgId(): AlgId
+    public function hybridSecondKeyAlgId(): AlgId
     {
-        $enum = vscf_key_info_chained_l2_alg_id_php($this->ctx);
+        $enum = vscf_key_info_hybrid_second_key_alg_id_php($this->ctx);
         return new AlgId($enum);
     }
 
     /**
-    * Return l1 key id of compound's cipher key, if key is compound(chained, ...)
-    * Return None, otherwise.
+    * Return hybrid's first key id of compound's cipher key,
+    * if key is compound(hybrid, ...), None - otherwise.
     *
     * @return AlgId
     */
-    public function compoundCipherL1AlgId(): AlgId
+    public function compoundHybridCipherFirstKeyAlgId(): AlgId
     {
-        $enum = vscf_key_info_compound_cipher_l1_alg_id_php($this->ctx);
+        $enum = vscf_key_info_compound_hybrid_cipher_first_key_alg_id_php($this->ctx);
         return new AlgId($enum);
     }
 
     /**
-    * Return l2 key id of compound's cipher key, if key is compound(chained, ...)
-    * Return None, otherwise.
+    * Return hybrid's second key id of compound's cipher key,
+    * if key is compound(hybrid, ...), None - otherwise.
     *
     * @return AlgId
     */
-    public function compoundCipherL2AlgId(): AlgId
+    public function compoundHybridCipherSecondKeyAlgId(): AlgId
     {
-        $enum = vscf_key_info_compound_cipher_l2_alg_id_php($this->ctx);
+        $enum = vscf_key_info_compound_hybrid_cipher_second_key_alg_id_php($this->ctx);
         return new AlgId($enum);
     }
 
     /**
-    * Return l1 key id of compound's signer key, if key is compound(..., chained)
-    * Return None, otherwise.
+    * Return hybrid's first key id of compound's signer key,
+    * if key is compound(..., hybrid), None - otherwise.
     *
     * @return AlgId
     */
-    public function compoundSignerL1AlgId(): AlgId
+    public function compoundHybridSignerFirstKeyAlgId(): AlgId
     {
-        $enum = vscf_key_info_compound_signer_l1_alg_id_php($this->ctx);
+        $enum = vscf_key_info_compound_hybrid_signer_first_key_alg_id_php($this->ctx);
         return new AlgId($enum);
     }
 
     /**
-    * Return l2 key id of compound's signer key, if key is compound(..., chained)
-    * Return None, otherwise.
+    * Return hybrid's second key id of compound's signer key,
+    * if key is compound(..., hybrid), None - otherwise.
     *
     * @return AlgId
     */
-    public function compoundSignerL2AlgId(): AlgId
+    public function compoundHybridSignerSecondKeyAlgId(): AlgId
     {
-        $enum = vscf_key_info_compound_signer_l2_alg_id_php($this->ctx);
+        $enum = vscf_key_info_compound_hybrid_signer_second_key_alg_id_php($this->ctx);
         return new AlgId($enum);
     }
 

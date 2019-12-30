@@ -115,6 +115,14 @@ interface Padding extends Ctx
     public function processPaddedData(string $data): string;
 
     /**
+    * Return length in bytes required hold output of the method
+    * "finish padded data processing".
+    *
+    * @return int
+    */
+    public function finishPaddedDataProcessingOutLen(): int;
+
+    /**
     * Accomplish padded data processing and return left data without a padding.
     *
     * @return string

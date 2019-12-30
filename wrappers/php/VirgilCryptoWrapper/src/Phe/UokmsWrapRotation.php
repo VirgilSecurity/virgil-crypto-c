@@ -35,36 +35,18 @@
 * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 */
 
-namespace Virgil\CryptoWrapper\Foundation;
+namespace Virgil\CryptoWrapper\Phe;
 
 /**
-* Handles padding parameters and constraints.
+* Implements wrap rotation.
 */
-class PaddingParams
+class UokmsWrapRotation
 {
 
     /**
     * @var
     */
     private $ctx;
-
-    const DEFAULT_FRAME_MIN = 32;
-    const DEFAULT_FRAME = 160;
-    const DEFAULT_FRAME_MAX = 256;
-
-    /**
-    * Build padding params with given constraints.
-    * Next formula can clarify what frame is: padding_length = data_length MOD frame
-    *
-    * @param int $frame
-    * @param int $frameMax
-    * @return PaddingParams
-    */
-    public static function withConstraints(int $frame, int $frameMax): PaddingParams
-    {
-        $ctx = vscf_padding_params_with_constraints_php($frame, $frameMax);
-        return new PaddingParams($ctx);
-    }
 
     /**
     * Create underlying C context.
@@ -73,7 +55,7 @@ class PaddingParams
     */
     public function __construct($ctx = null)
     {
-        $this->ctx = is_null($ctx) ? vscf_padding_params_new_php() : $ctx;
+        $this->ctx = is_null($ctx) ? vsce_uokms_wrap_rotation_new_php() : $ctx;
     }
 
     /**
@@ -82,27 +64,51 @@ class PaddingParams
     */
     public function __destructor()
     {
-        vscf_padding_params_delete_php($this->ctx);
+        vsce_uokms_wrap_rotation_delete_php($this->ctx);
     }
 
     /**
-    * Return padding frame in bytes.
-    *
-    * @return int
+    * @param Virgil\CryptoWrapper\Foundation\Random $operationRandom
+    * @return void
     */
-    public function frame(): int
+    public function useOperationRandom(Virgil\CryptoWrapper\Foundation\Random $operationRandom): void
     {
-        return vscf_padding_params_frame_php($this->ctx);
+        vsce_uokms_wrap_rotation_use_operation_random_php($this->ctx, $operationRandom->getCtx());
     }
 
     /**
-    * Return maximum padding frame in bytes.
+    * Setups dependencies with default values.
     *
-    * @return int
+    * @return void
+    * @throws \Exception
     */
-    public function frameMax(): int
+    public function setupDefaults(): void
     {
-        return vscf_padding_params_frame_max_php($this->ctx);
+        vsce_uokms_wrap_rotation_setup_defaults_php($this->ctx);
+    }
+
+    /**
+    * Sets update token. Should be called only once and before any other function
+    *
+    * @param string $updateToken
+    * @return void
+    * @throws \Exception
+    */
+    public function setUpdateToken(string $updateToken): void
+    {
+        vsce_uokms_wrap_rotation_set_update_token_php($this->ctx, $updateToken);
+    }
+
+    /**
+    * Updates EnrollmentRecord using server's update token
+    *
+    * @param string $wrap
+    * @return string
+    * @throws \Exception
+    */
+    public function updateWrap(string $wrap): string
+    {
+        return vsce_uokms_wrap_rotation_update_wrap_php($this->ctx, $wrap);
     }
 
     /**

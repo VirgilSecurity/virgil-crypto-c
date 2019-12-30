@@ -213,6 +213,17 @@ class RandomPadding implements Alg, Padding
     }
 
     /**
+    * Return length in bytes required hold output of the method
+    * "finish padded data processing".
+    *
+    * @return int
+    */
+    public function finishPaddedDataProcessingOutLen(): int
+    {
+        return vscf_random_padding_finish_padded_data_processing_out_len_php($this->ctx);
+    }
+
+    /**
     * Accomplish padded data processing and return left data without a padding.
     *
     * @return string

@@ -37,39 +37,44 @@
 
 namespace Virgil\CryptoWrapper\Foundation;
 
-use MyCLabs\Enum\Enum;
-
-class OidId extends Enum
+/**
+* Provides generic interface to the Key Encapsulation Mechanism (KEM).
+*/
+interface Kem extends Ctx
 {
 
-    private const NONE = 0;
-    private const RSA = 1;
-    private const ED25519 = 2;
-    private const CURVE25519 = 3;
-    private const SHA224 = 4;
-    private const SHA256 = 5;
-    private const SHA384 = 6;
-    private const SHA512 = 7;
-    private const KDF1 = 8;
-    private const KDF2 = 9;
-    private const AES256_GCM = 10;
-    private const AES256_CBC = 11;
-    private const PKCS5_PBKDF2 = 12;
-    private const PKCS5_PBES2 = 13;
-    private const CMS_DATA = 14;
-    private const CMS_ENVELOPED_DATA = 15;
-    private const HKDF_WITH_SHA256 = 16;
-    private const HKDF_WITH_SHA384 = 17;
-    private const HKDF_WITH_SHA512 = 18;
-    private const HMAC_WITH_SHA224 = 19;
-    private const HMAC_WITH_SHA256 = 20;
-    private const HMAC_WITH_SHA384 = 21;
-    private const HMAC_WITH_SHA512 = 22;
-    private const EC_GENERIC_KEY = 23;
-    private const EC_DOMAIN_SECP256R1 = 24;
-    private const COMPOUND_KEY = 25;
-    private const HYBRID_KEY = 26;
-    private const FALCON = 27;
-    private const ROUND5_ND_5KEM_5D = 28;
-    private const RANDOM_PADDING = 29;
+    /**
+    * Return length in bytes required to hold encapsulated shared key.
+    *
+    * @param Key $key
+    * @return int
+    */
+    public function kemSharedKeyLen(Key $key): int;
+
+    /**
+    * Return length in bytes required to hold encapsulated key.
+    *
+    * @param PublicKey $publicKey
+    * @return int
+    */
+    public function kemEncapsulatedKeyLen(PublicKey $publicKey): int;
+
+    /**
+    * Generate a shared key and a key encapsulated message.
+    *
+    * @param PublicKey $publicKey
+    * @return array
+    * @throws \Exception
+    */
+    public function kemEncapsulate(PublicKey $publicKey): array; // [shared_key, encapsulated_key]
+
+    /**
+    * Decapsulate the shared key.
+    *
+    * @param string $encapsulatedKey
+    * @param PrivateKey $privateKey
+    * @return string
+    * @throws \Exception
+    */
+    public function kemDecapsulate(string $encapsulatedKey, PrivateKey $privateKey): string;
 }

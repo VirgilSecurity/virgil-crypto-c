@@ -35,20 +35,12 @@
 * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 */
 
-namespace Virgil\CryptoWrapper\Foundation;
+namespace Virgil\CryptoWrapper\Phe;
 
 /**
-* Handles chained private key.
-*
-* Chained private key contains 2 private keys:
-* - l1 key:
-* - can be used for decryption data decrypted by the l2;
-* - can be used to produce l1 signature;
-* - l2 key:
-* - can be used for decryption data;
-* - can be used to produce l1 signature.
+* Class implements UOKMS for server-side.
 */
-class ChainedPrivateKey implements Key, PrivateKey
+class UokmsServer
 {
 
     /**
@@ -63,7 +55,7 @@ class ChainedPrivateKey implements Key, PrivateKey
     */
     public function __construct($ctx = null)
     {
-        $this->ctx = is_null($ctx) ? vscf_chained_private_key_new_php() : $ctx;
+        $this->ctx = is_null($ctx) ? vsce_uokms_server_new_php() : $ctx;
     }
 
     /**
@@ -72,97 +64,82 @@ class ChainedPrivateKey implements Key, PrivateKey
     */
     public function __destructor()
     {
-        vscf_chained_private_key_delete_php($this->ctx);
+        vsce_uokms_server_delete_php($this->ctx);
     }
 
     /**
-    * Return l1 private key.
+    * @param Virgil\CryptoWrapper\Foundation\Random $random
+    * @return void
+    */
+    public function useRandom(Virgil\CryptoWrapper\Foundation\Random $random): void
+    {
+        vsce_uokms_server_use_random_php($this->ctx, $random->getCtx());
+    }
+
+    /**
+    * @param Virgil\CryptoWrapper\Foundation\Random $operationRandom
+    * @return void
+    */
+    public function useOperationRandom(Virgil\CryptoWrapper\Foundation\Random $operationRandom): void
+    {
+        vsce_uokms_server_use_operation_random_php($this->ctx, $operationRandom->getCtx());
+    }
+
+    /**
+    * Setups dependencies with default values.
     *
-    * @return PrivateKey
+    * @return void
     * @throws \Exception
     */
-    public function l1Key(): PrivateKey
+    public function setupDefaults(): void
     {
-        $ctx = vscf_chained_private_key_l1_key_php($this->ctx);
-        return FoundationImplementation::wrapPrivateKey($ctx);
+        vsce_uokms_server_setup_defaults_php($this->ctx);
     }
 
     /**
-    * Return l2 private key.
+    * Generates new NIST P-256 server key pair for some client
     *
-    * @return PrivateKey
+    * @return array
     * @throws \Exception
     */
-    public function l2Key(): PrivateKey
+    public function generateServerKeyPair(): array // [server_private_key, server_public_key]
     {
-        $ctx = vscf_chained_private_key_l2_key_php($this->ctx);
-        return FoundationImplementation::wrapPrivateKey($ctx);
+        return vsce_uokms_server_generate_server_key_pair_php($this->ctx);
     }
 
     /**
-    * Algorithm identifier the key belongs to.
-    *
-    * @return AlgId
-    */
-    public function algId(): AlgId
-    {
-        $enum = vscf_chained_private_key_alg_id_php($this->ctx);
-        return new AlgId($enum);
-    }
-
-    /**
-    * Return algorithm information that can be used for serialization.
-    *
-    * @return AlgInfo
-    * @throws \Exception
-    */
-    public function algInfo(): AlgInfo
-    {
-        $ctx = vscf_chained_private_key_alg_info_php($this->ctx);
-        return FoundationImplementation::wrapAlgInfo($ctx);
-    }
-
-    /**
-    * Length of the key in bytes.
+    * Buffer size needed to fit DecryptResponse
     *
     * @return int
     */
-    public function len(): int
+    public function decryptResponseLen(): int
     {
-        return vscf_chained_private_key_len_php($this->ctx);
+        return vsce_uokms_server_decrypt_response_len_php($this->ctx);
     }
 
     /**
-    * Length of the key in bits.
+    * Processed client's decrypt request
     *
-    * @return int
-    */
-    public function bitlen(): int
-    {
-        return vscf_chained_private_key_bitlen_php($this->ctx);
-    }
-
-    /**
-    * Check that key is valid.
-    * Note, this operation can be slow.
-    *
-    * @return bool
-    */
-    public function isValid(): bool
-    {
-        return vscf_chained_private_key_is_valid_php($this->ctx);
-    }
-
-    /**
-    * Extract public key from the private key.
-    *
-    * @return PublicKey
+    * @param string $serverPrivateKey
+    * @param string $decryptRequest
+    * @return string
     * @throws \Exception
     */
-    public function extractPublicKey(): PublicKey
+    public function processDecryptRequest(string $serverPrivateKey, string $decryptRequest): string
     {
-        $ctx = vscf_chained_private_key_extract_public_key_php($this->ctx);
-        return FoundationImplementation::wrapPublicKey($ctx);
+        return vsce_uokms_server_process_decrypt_request_php($this->ctx, $serverPrivateKey, $decryptRequest);
+    }
+
+    /**
+    * Updates server's private and public keys and issues an update token for use on client's side
+    *
+    * @param string $serverPrivateKey
+    * @return array
+    * @throws \Exception
+    */
+    public function rotateKeys(string $serverPrivateKey): array // [new_server_private_key, new_server_public_key, update_token]
+    {
+        return vsce_uokms_server_rotate_keys_php($this->ctx, $serverPrivateKey);
     }
 
     /**

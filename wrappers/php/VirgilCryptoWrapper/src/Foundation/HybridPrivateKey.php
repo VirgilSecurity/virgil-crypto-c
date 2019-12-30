@@ -38,17 +38,11 @@
 namespace Virgil\CryptoWrapper\Foundation;
 
 /**
-* Handles chained public key.
+* Handles a hybrid private key.
 *
-* Chained public key contains 2 public keys:
-* - l1 key:
-* - can be used for plain text encryption;
-* - can be used to verify l1 signature;
-* - l2 key:
-* - can be used for l1 output encryption;
-* - can be used to verify l2 signature.
+* The hybrid private key contains 2 private keys.
 */
-class ChainedPublicKey implements Key, PublicKey
+class HybridPrivateKey implements Key, PrivateKey
 {
 
     /**
@@ -63,7 +57,7 @@ class ChainedPublicKey implements Key, PublicKey
     */
     public function __construct($ctx = null)
     {
-        $this->ctx = is_null($ctx) ? vscf_chained_public_key_new_php() : $ctx;
+        $this->ctx = is_null($ctx) ? vscf_hybrid_private_key_new_php() : $ctx;
     }
 
     /**
@@ -72,31 +66,31 @@ class ChainedPublicKey implements Key, PublicKey
     */
     public function __destructor()
     {
-        vscf_chained_public_key_delete_php($this->ctx);
+        vscf_hybrid_private_key_delete_php($this->ctx);
     }
 
     /**
-    * Return l1 public key.
+    * Return first private key.
     *
-    * @return PublicKey
+    * @return PrivateKey
     * @throws \Exception
     */
-    public function l1Key(): PublicKey
+    public function firstKey(): PrivateKey
     {
-        $ctx = vscf_chained_public_key_l1_key_php($this->ctx);
-        return FoundationImplementation::wrapPublicKey($ctx);
+        $ctx = vscf_hybrid_private_key_first_key_php($this->ctx);
+        return FoundationImplementation::wrapPrivateKey($ctx);
     }
 
     /**
-    * Return l2 public key.
+    * Return second private key.
     *
-    * @return PublicKey
+    * @return PrivateKey
     * @throws \Exception
     */
-    public function l2Key(): PublicKey
+    public function secondKey(): PrivateKey
     {
-        $ctx = vscf_chained_public_key_l2_key_php($this->ctx);
-        return FoundationImplementation::wrapPublicKey($ctx);
+        $ctx = vscf_hybrid_private_key_second_key_php($this->ctx);
+        return FoundationImplementation::wrapPrivateKey($ctx);
     }
 
     /**
@@ -106,7 +100,7 @@ class ChainedPublicKey implements Key, PublicKey
     */
     public function algId(): AlgId
     {
-        $enum = vscf_chained_public_key_alg_id_php($this->ctx);
+        $enum = vscf_hybrid_private_key_alg_id_php($this->ctx);
         return new AlgId($enum);
     }
 
@@ -118,7 +112,7 @@ class ChainedPublicKey implements Key, PublicKey
     */
     public function algInfo(): AlgInfo
     {
-        $ctx = vscf_chained_public_key_alg_info_php($this->ctx);
+        $ctx = vscf_hybrid_private_key_alg_info_php($this->ctx);
         return FoundationImplementation::wrapAlgInfo($ctx);
     }
 
@@ -129,7 +123,7 @@ class ChainedPublicKey implements Key, PublicKey
     */
     public function len(): int
     {
-        return vscf_chained_public_key_len_php($this->ctx);
+        return vscf_hybrid_private_key_len_php($this->ctx);
     }
 
     /**
@@ -139,7 +133,7 @@ class ChainedPublicKey implements Key, PublicKey
     */
     public function bitlen(): int
     {
-        return vscf_chained_public_key_bitlen_php($this->ctx);
+        return vscf_hybrid_private_key_bitlen_php($this->ctx);
     }
 
     /**
@@ -150,7 +144,19 @@ class ChainedPublicKey implements Key, PublicKey
     */
     public function isValid(): bool
     {
-        return vscf_chained_public_key_is_valid_php($this->ctx);
+        return vscf_hybrid_private_key_is_valid_php($this->ctx);
+    }
+
+    /**
+    * Extract public key from the private key.
+    *
+    * @return PublicKey
+    * @throws \Exception
+    */
+    public function extractPublicKey(): PublicKey
+    {
+        $ctx = vscf_hybrid_private_key_extract_public_key_php($this->ctx);
+        return FoundationImplementation::wrapPublicKey($ctx);
     }
 
     /**

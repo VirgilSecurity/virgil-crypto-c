@@ -38,33 +38,17 @@
 namespace Virgil\CryptoWrapper\Foundation;
 
 /**
-* Handles padding parameters and constraints.
+* Handles a hybrid public key.
+*
+* The hybrid public key contains 2 public keys.
 */
-class PaddingParams
+class HybridPublicKey implements Key, PublicKey
 {
 
     /**
     * @var
     */
     private $ctx;
-
-    const DEFAULT_FRAME_MIN = 32;
-    const DEFAULT_FRAME = 160;
-    const DEFAULT_FRAME_MAX = 256;
-
-    /**
-    * Build padding params with given constraints.
-    * Next formula can clarify what frame is: padding_length = data_length MOD frame
-    *
-    * @param int $frame
-    * @param int $frameMax
-    * @return PaddingParams
-    */
-    public static function withConstraints(int $frame, int $frameMax): PaddingParams
-    {
-        $ctx = vscf_padding_params_with_constraints_php($frame, $frameMax);
-        return new PaddingParams($ctx);
-    }
 
     /**
     * Create underlying C context.
@@ -73,7 +57,7 @@ class PaddingParams
     */
     public function __construct($ctx = null)
     {
-        $this->ctx = is_null($ctx) ? vscf_padding_params_new_php() : $ctx;
+        $this->ctx = is_null($ctx) ? vscf_hybrid_public_key_new_php() : $ctx;
     }
 
     /**
@@ -82,27 +66,85 @@ class PaddingParams
     */
     public function __destructor()
     {
-        vscf_padding_params_delete_php($this->ctx);
+        vscf_hybrid_public_key_delete_php($this->ctx);
     }
 
     /**
-    * Return padding frame in bytes.
+    * Return the first public key.
     *
-    * @return int
+    * @return PublicKey
+    * @throws \Exception
     */
-    public function frame(): int
+    public function firstKey(): PublicKey
     {
-        return vscf_padding_params_frame_php($this->ctx);
+        $ctx = vscf_hybrid_public_key_first_key_php($this->ctx);
+        return FoundationImplementation::wrapPublicKey($ctx);
     }
 
     /**
-    * Return maximum padding frame in bytes.
+    * Return the second public key.
+    *
+    * @return PublicKey
+    * @throws \Exception
+    */
+    public function secondKey(): PublicKey
+    {
+        $ctx = vscf_hybrid_public_key_second_key_php($this->ctx);
+        return FoundationImplementation::wrapPublicKey($ctx);
+    }
+
+    /**
+    * Algorithm identifier the key belongs to.
+    *
+    * @return AlgId
+    */
+    public function algId(): AlgId
+    {
+        $enum = vscf_hybrid_public_key_alg_id_php($this->ctx);
+        return new AlgId($enum);
+    }
+
+    /**
+    * Return algorithm information that can be used for serialization.
+    *
+    * @return AlgInfo
+    * @throws \Exception
+    */
+    public function algInfo(): AlgInfo
+    {
+        $ctx = vscf_hybrid_public_key_alg_info_php($this->ctx);
+        return FoundationImplementation::wrapAlgInfo($ctx);
+    }
+
+    /**
+    * Length of the key in bytes.
     *
     * @return int
     */
-    public function frameMax(): int
+    public function len(): int
     {
-        return vscf_padding_params_frame_max_php($this->ctx);
+        return vscf_hybrid_public_key_len_php($this->ctx);
+    }
+
+    /**
+    * Length of the key in bits.
+    *
+    * @return int
+    */
+    public function bitlen(): int
+    {
+        return vscf_hybrid_public_key_bitlen_php($this->ctx);
+    }
+
+    /**
+    * Check that key is valid.
+    * Note, this operation can be slow.
+    *
+    * @return bool
+    */
+    public function isValid(): bool
+    {
+        return vscf_hybrid_public_key_is_valid_php($this->ctx);
     }
 
     /**

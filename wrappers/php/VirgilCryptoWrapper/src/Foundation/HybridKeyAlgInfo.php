@@ -38,9 +38,9 @@
 namespace Virgil\CryptoWrapper\Foundation;
 
 /**
-* Handle information about chained key algorithm.
+* Handle information about hybrid key algorithm.
 */
-class ChainedKeyAlgInfo implements AlgInfo
+class HybridKeyAlgInfo implements AlgInfo
 {
 
     /**
@@ -55,7 +55,7 @@ class ChainedKeyAlgInfo implements AlgInfo
     */
     public function __construct($ctx = null)
     {
-        $this->ctx = is_null($ctx) ? vscf_chained_key_alg_info_new_php() : $ctx;
+        $this->ctx = is_null($ctx) ? vscf_hybrid_key_alg_info_new_php() : $ctx;
     }
 
     /**
@@ -64,30 +64,30 @@ class ChainedKeyAlgInfo implements AlgInfo
     */
     public function __destructor()
     {
-        vscf_chained_key_alg_info_delete_php($this->ctx);
+        vscf_hybrid_key_alg_info_delete_php($this->ctx);
     }
 
     /**
-    * Return algorithm information about l1 key.
+    * Return algorithm information about the first key.
     *
     * @return AlgInfo
     * @throws \Exception
     */
-    public function l1KeyAlgInfo(): AlgInfo
+    public function firstKeyAlgInfo(): AlgInfo
     {
-        $ctx = vscf_chained_key_alg_info_l1_key_alg_info_php($this->ctx);
+        $ctx = vscf_hybrid_key_alg_info_first_key_alg_info_php($this->ctx);
         return FoundationImplementation::wrapAlgInfo($ctx);
     }
 
     /**
-    * Return algorithm information about l2 key.
+    * Return algorithm information about the second key.
     *
     * @return AlgInfo
     * @throws \Exception
     */
-    public function l2KeyAlgInfo(): AlgInfo
+    public function secondKeyAlgInfo(): AlgInfo
     {
-        $ctx = vscf_chained_key_alg_info_l2_key_alg_info_php($this->ctx);
+        $ctx = vscf_hybrid_key_alg_info_second_key_alg_info_php($this->ctx);
         return FoundationImplementation::wrapAlgInfo($ctx);
     }
 
@@ -98,7 +98,7 @@ class ChainedKeyAlgInfo implements AlgInfo
     */
     public function algId(): AlgId
     {
-        $enum = vscf_chained_key_alg_info_alg_id_php($this->ctx);
+        $enum = vscf_hybrid_key_alg_info_alg_id_php($this->ctx);
         return new AlgId($enum);
     }
 

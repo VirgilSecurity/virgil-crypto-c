@@ -116,13 +116,13 @@ class KeyProvider
     * Generate new post-quantum private key with default algorithms.
     * Note, that a post-quantum key combines classic private keys
     * alongside with post-quantum private keys.
-    * Current structure is "compound private key" where:
-    * - cipher private key is "chained private key" where:
-    * - l1 key is a classic private key;
-    * - l2 key is a post-quantum private key;
-    * - signer private key "chained private key" where:
-    * - l1 key is a classic private key;
-    * - l2 key is a post-quantum private key.
+    * Current structure is "compound private key" is:
+    * - cipher private key is "hybrid private key" where:
+    * - first key is a classic private key;
+    * - second key is a post-quantum private key;
+    * - signer private key "hybrid private key" where:
+    * - first key is a classic private key;
+    * - second key is a post-quantum private key.
     *
     * @return PrivateKey
     * @throws \Exception
@@ -148,35 +148,35 @@ class KeyProvider
     }
 
     /**
-    * Generate new chained private key with given algorithms.
+    * Generate new hybrid private key with given algorithms.
     *
-    * @param AlgId $l1AlgId
-    * @param AlgId $l2AlgId
+    * @param AlgId $firstKeyAlgId
+    * @param AlgId $secondKeyAlgId
     * @return PrivateKey
     * @throws \Exception
     */
-    public function generateChainedPrivateKey(AlgId $l1AlgId, AlgId $l2AlgId): PrivateKey
+    public function generateHybridPrivateKey(AlgId $firstKeyAlgId, AlgId $secondKeyAlgId): PrivateKey
     {
-        $ctx = vscf_key_provider_generate_chained_private_key_php($this->ctx, $l1AlgId->getValue(), $l2AlgId->getValue());
+        $ctx = vscf_key_provider_generate_hybrid_private_key_php($this->ctx, $firstKeyAlgId->getValue(), $secondKeyAlgId->getValue());
         return FoundationImplementation::wrapPrivateKey($ctx);
     }
 
     /**
-    * Generate new compound private key with nested chained private keys.
+    * Generate new compound private key with nested hybrid private keys.
     *
-    * Note, l2 algorithm identifiers can be NONE, in this case regular key
-    * will be crated instead of chained key.
+    * Note, second key algorithm identifiers can be NONE, in this case,
+    * a regular key will be crated instead of a hybrid key.
     *
-    * @param AlgId $cipherL1AlgId
-    * @param AlgId $cipherL2AlgId
-    * @param AlgId $signerL1AlgId
-    * @param AlgId $signerL2AlgId
+    * @param AlgId $cipherFirstKeyAlgId
+    * @param AlgId $cipherSecondKeyAlgId
+    * @param AlgId $signerFirstKeyAlgId
+    * @param AlgId $signerSecondKeyAlgId
     * @return PrivateKey
     * @throws \Exception
     */
-    public function generateCompoundChainedPrivateKey(AlgId $cipherL1AlgId, AlgId $cipherL2AlgId, AlgId $signerL1AlgId, AlgId $signerL2AlgId): PrivateKey
+    public function generateCompoundHybridPrivateKey(AlgId $cipherFirstKeyAlgId, AlgId $cipherSecondKeyAlgId, AlgId $signerFirstKeyAlgId, AlgId $signerSecondKeyAlgId): PrivateKey
     {
-        $ctx = vscf_key_provider_generate_compound_chained_private_key_php($this->ctx, $cipherL1AlgId->getValue(), $cipherL2AlgId->getValue(), $signerL1AlgId->getValue(), $signerL2AlgId->getValue());
+        $ctx = vscf_key_provider_generate_compound_hybrid_private_key_php($this->ctx, $cipherFirstKeyAlgId->getValue(), $cipherSecondKeyAlgId->getValue(), $signerFirstKeyAlgId->getValue(), $signerSecondKeyAlgId->getValue());
         return FoundationImplementation::wrapPrivateKey($ctx);
     }
 

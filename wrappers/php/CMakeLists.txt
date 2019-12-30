@@ -36,7 +36,7 @@ cmake_minimum_required(VERSION 3.12 FATAL_ERROR)
 
 project(virgil_crypto_php VERSION ${virgil_crypto_VERSION} LANGUAGES C)
 
-set(VIRGIL_CRYPTO_WRAPPER_MAIN_DIR "${CMAKE_CURRENT_SOURCE_DIR}/VirgilCryptoWrapper" ${VIRGIL_CRYPTO_WRAPPER_MAIN_DIR})
+set(VIRGIL_CRYPTO_WRAPPER_PROJECT_DIR "${CMAKE_CURRENT_LIST_DIR}/VirgilCryptoWrapper")
 
 # ---------------------------------------------------------------------------
 #   PHP wrapper build and install options
@@ -50,10 +50,17 @@ set(VIRGIL_INSTALL_PHP_SRCDIR "phpsrc" CACHE STRING "Directory name where PHP so
 # ---------------------------------------------------------------------------
 set (CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
 
+set(PHP_REQUIRED_COMPONENTS Runtime Devel)
+
+if(ENABLE_TESTING)
+    list(APPEND PHP_REQUIRED_COMPONENTS Test)
+endif()
+
+
 if(PHP_VERSION)
-    find_package(PHP ${PHP_VERSION} EXACT REQUIRED)
+    find_package(PHP ${PHP_VERSION} EXACT REQUIRED COMPONENTS ${PHP_REQUIRED_COMPONENTS})
 else()
-    find_package(PHP REQUIRED)
+    find_package(PHP REQUIRED COMPONENTS ${PHP_REQUIRED_COMPONENTS})
 endif()
 
 if(NOT PHP_FOUND)
@@ -71,18 +78,6 @@ target_include_directories(phplib SYSTEM INTERFACE "${PHP_INCLUDE_DIRS}")
 
 if(PHP_DEFINITIONS)
     target_compile_definitions(phplib INTERFACE ${PHP_DEFINITIONS} ZEND_DEBUG=0)
-endif()
-
-if(PHP_EXECUTABLE)
-    message(STATUS "Found PHP (cli): ${PHP_EXECUTABLE} (found version: ${PHP_VERSION})")
-else()
-    message(WARNING "PHP (cli) is not found - PHP tests will be disabled!")
-endif()
-
-if(PHPUNIT_EXECUTABLE)
-    message(STATUS "Found PHPUnit: ${PHPUNIT_EXECUTABLE} (found version: ${PHPUNIT_VERSION})")
-else()
-    message(WARNING "PHPUnit is not found - PHP tests will be disabled!")
 endif()
 
 # ---------------------------------------------------------------------------
