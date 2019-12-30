@@ -55,7 +55,9 @@
         <require impl="sha512"/>
     </require>
 
-    <cgo_link libraries="-lvsc_ratchet -lvsc_ratchet_pb -lvsc_foundation -lvsc_foundation_pb -led25519 -lprotobuf-nanopb -lvsc_common -lmbedcrypto"/>
+    <cgo_link platform="darwin" libraries="-lvsc_ratchet -lvsc_ratchet_pb -lvsc_foundation -lvsc_foundation_pb -led25519 -lprotobuf-nanopb -lvsc_common -lmbedcrypto"/>
+    <cgo_link platform="linux" libraries="-lvsc_ratchet -lvsc_ratchet_pb -lvsc_foundation -lvsc_foundation_pb -led25519 -lprotobuf-nanopb -lvsc_common -lmbedcrypto"/>
+    <cgo_link platform="windows" libraries="-lvsc_ratchet -lvsc_ratchet_pb -lvsc_foundation -lvsc_foundation_pb -led25519 -lprotobuf-nanopb -lvsc_common -lmbedcrypto"/>
 
     <feature name="multi threading" default="on">
         Enable multi-threading safety for ratchet library.

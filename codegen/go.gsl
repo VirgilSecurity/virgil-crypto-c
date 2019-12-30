@@ -1168,7 +1168,7 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Create <go_cgo_flag/> for <go_instance/>
 # ---------------------------------------------------------------------------
-function go_create_cgo_flag (name, value, platform, go_instance)
+function go_create_cgo_flag (name, platform, value, go_instance)
     check_arguments (my, "name, value, go_instance", my)
 
     new go_cgo_flag to my.go_instance
@@ -1208,10 +1208,12 @@ function go_create_cgo_instructions (go_module, go_project)
     check_arguments (my, "go_module, go_project", my)
 
     # Define CGO instructions
-    go_create_cgo_flag ("CFLAGS", "-I${SRCDIR}/../binaries/include/", , my.go_module)
 
     for my.go_project.cgo_link
-        go_create_cgo_flag ("LDFLAGS", "-L${SRCDIR}/../binaries/lib $(cgo_link.libraries:)", cgo_link.platform, my.go_module)
+        my.path = "${SRCDIR}/../pkg/$(cgo_link.platform:)_amd64"
+
+        go_create_cgo_flag ("CFLAGS", cgo_link.platform, "-I$(my.path:)/include/", my.go_module)
+        go_create_cgo_flag ("LDFLAGS", cgo_link.platform, "-L$(my.path:)/lib $(cgo_link.libraries:)", my.go_module)
     endfor
 endfunction
 
@@ -2660,7 +2662,6 @@ function go_finalize_implementation_helper_modules (go_project, meta)
             . = go_format_license (my.go_project->license) ?
         endnew
 
-        go_create_cgo_instructions (go_module, my.go_project)
         go_create_cgo_include_instructions (go_module, my.go_project)
 
         for my.go_project.go_import
@@ -2854,6 +2855,25 @@ function go_finalize_implementation_helper_modules (go_project, meta)
                 ")
             endnew
         endnew
+    endnew
+
+    new go_module to my.go_project
+        . = "/* Platform. */"
+        .name = "platform"
+        .package = my.go_project.package
+        .package_dir = my.go_project.package_dir
+        .source_file_name = "$(0.name:).go"
+        .source_file_path = cat_path (my.go_project.source_dir, 0.source_file_name)
+
+        new go_license to go_module
+            . = go_format_license (my.go_project->license) ?
+        endnew
+
+        go_create_cgo_instructions (go_module, my.go_project)
+
+        for my.go_project.go_import
+            copy go_import to go_module
+        endfor
     endnew
     
     go_create_context_module (my.go_project, my.meta)

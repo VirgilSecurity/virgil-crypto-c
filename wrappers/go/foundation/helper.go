@@ -1,8 +1,5 @@
 package foundation
 
-// #cgo CFLAGS: -I${SRCDIR}/../binaries/include/
-// #cgo LDFLAGS: -L${SRCDIR}/../binaries/lib -lvsc_foundation -lvsc_foundation_pb -led25519 -lprotobuf-nanopb -lvsc_common -lmbedcrypto -lround5 -lfalcon -lkeccak
-// #cgo linux LDFLAGS: -L${SRCDIR}/../binaries/lib -lpthread
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
 import unsafe "unsafe"
