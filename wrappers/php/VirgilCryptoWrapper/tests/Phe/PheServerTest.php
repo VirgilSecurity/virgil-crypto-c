@@ -45,7 +45,7 @@ class PheServerTest extends \PHPUnit\Framework\TestCase
     private $client;
     private $server;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->server = new PheServer();
         $this->server->setupDefaults();
@@ -53,7 +53,7 @@ class PheServerTest extends \PHPUnit\Framework\TestCase
         $this->client->setupDefaults();
     }
 
-    protected function tearDown()
+    protected function tearDown(): void
     {
         unset($this->client);
         unset($this->server);

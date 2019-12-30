@@ -45,13 +45,13 @@ class Kdf1Test extends \PHPUnit\Framework\TestCase
     private $kdf1;
     private $sha256;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->kdf1 = new KDF1();
         $this->sha256 = new Sha256();
     }
 
-    protected function tearDown()
+    protected function tearDown(): void
     {
         unset($this->sha256);
         unset($this->kdf1);

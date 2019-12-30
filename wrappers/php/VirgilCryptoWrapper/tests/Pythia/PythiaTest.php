@@ -53,7 +53,7 @@ class PythiaTest extends \PHPUnit\Framework\TestCase
     private $kPythiaScopeSecret;
     private $kNewPythiaScopeSecret;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->pythia = new Pythia();
         Pythia::configure();
@@ -69,7 +69,7 @@ class PythiaTest extends \PHPUnit\Framework\TestCase
         $this->kNewPythiaScopeSecret = "new server secret";
     }
 
-    protected function tearDown()
+    protected function tearDown(): void
     {
         Pythia::cleanup();
         unset($this->pythia);

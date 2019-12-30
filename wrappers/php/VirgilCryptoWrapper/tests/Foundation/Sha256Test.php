@@ -50,12 +50,12 @@ class Sha256Test extends \PHPUnit\Framework\TestCase
     const SHA256_VECTOR_3_INPUT_BYTES = "5FD4";
     const SHA256_VECTOR_3_DIGEST_BYTES = "7C4FBF484498D21B487B9D61DE8914B2EADAF2698712936D47C3ADA2558F6788";
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->sha256 = new Sha256();
     }
 
-    protected function tearDown()
+    protected function tearDown(): void
     {
         unset($this->sha256);
     }
