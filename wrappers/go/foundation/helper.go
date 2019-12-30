@@ -36,7 +36,7 @@ type buffer struct {
     data []byte
 }
 
-func bufferNewBuffer(cap int) (*buffer, error) {
+func newBuffer(cap int) (*buffer, error) {
     capacity := C.size_t(cap)
     if capacity == 0 {
         return nil, &FoundationError{-1,"Buffer with zero capacity is not allowed."}
@@ -76,6 +76,6 @@ func (obj *buffer) len() int {
 /*
 * Release underlying C context.
 */
-func (obj *buffer) Delete() {
+func (obj *buffer) delete() {
     C.vsc_buffer_delete(obj.ctx)
 }

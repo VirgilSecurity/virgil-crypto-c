@@ -71,11 +71,11 @@ func (obj *RatchetKeyId) delete() {
 * Computes 8 bytes key pair id from Curve25519 (in PKCS8 or raw format) public key
 */
 func (obj *RatchetKeyId) ComputePublicKeyId(publicKey []byte) ([]byte, error) {
-    keyIdBuf, keyIdBufErr := bufferNewBuffer(int(RatchetCommonKeyIdLen /* lg4 */))
+    keyIdBuf, keyIdBufErr := newBuffer(int(RatchetCommonKeyIdLen /* lg4 */))
     if keyIdBufErr != nil {
         return nil, keyIdBufErr
     }
-    defer keyIdBuf.Delete()
+    defer keyIdBuf.delete()
     publicKeyData := helperWrapData (publicKey)
 
     proxyResult := /*pr4*/C.vscr_ratchet_key_id_compute_public_key_id(obj.cCtx, publicKeyData, keyIdBuf.ctx)

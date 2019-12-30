@@ -115,11 +115,11 @@ func (obj *MessageInfoDerSerializer) SerializedLen(messageInfo *MessageInfo) uin
 * Serialize class "message info".
 */
 func (obj *MessageInfoDerSerializer) Serialize(messageInfo *MessageInfo) []byte {
-    outBuf, outBufErr := bufferNewBuffer(int(obj.SerializedLen(messageInfo) /* lg2 */))
+    outBuf, outBufErr := newBuffer(int(obj.SerializedLen(messageInfo) /* lg2 */))
     if outBufErr != nil {
         return nil
     }
-    defer outBuf.Delete()
+    defer outBuf.delete()
 
 
     C.vscf_message_info_der_serializer_serialize(obj.cCtx, (*C.vscf_message_info_t)(unsafe.Pointer(messageInfo.Ctx())), outBuf.ctx)
@@ -185,11 +185,11 @@ func (obj *MessageInfoDerSerializer) SerializedFooterLen(messageInfoFooter *Mess
 * Serialize class "message info footer".
 */
 func (obj *MessageInfoDerSerializer) SerializeFooter(messageInfoFooter *MessageInfoFooter) []byte {
-    outBuf, outBufErr := bufferNewBuffer(int(obj.SerializedFooterLen(messageInfoFooter) /* lg2 */))
+    outBuf, outBufErr := newBuffer(int(obj.SerializedFooterLen(messageInfoFooter) /* lg2 */))
     if outBufErr != nil {
         return nil
     }
-    defer outBuf.Delete()
+    defer outBuf.delete()
 
 
     C.vscf_message_info_der_serializer_serialize_footer(obj.cCtx, (*C.vscf_message_info_footer_t)(unsafe.Pointer(messageInfoFooter.Ctx())), outBuf.ctx)

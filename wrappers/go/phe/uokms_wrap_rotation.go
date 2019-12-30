@@ -117,11 +117,11 @@ func (obj *UokmsWrapRotation) SetUpdateToken(updateToken []byte) error {
 * Updates EnrollmentRecord using server's update token
 */
 func (obj *UokmsWrapRotation) UpdateWrap(wrap []byte) ([]byte, error) {
-    newWrapBuf, newWrapBufErr := bufferNewBuffer(int(PheCommonPhePublicKeyLength /* lg4 */))
+    newWrapBuf, newWrapBufErr := newBuffer(int(PheCommonPhePublicKeyLength /* lg4 */))
     if newWrapBufErr != nil {
         return nil, newWrapBufErr
     }
-    defer newWrapBuf.Delete()
+    defer newWrapBuf.delete()
     wrapData := helperWrapData (wrap)
 
     proxyResult := /*pr4*/C.vsce_uokms_wrap_rotation_update_wrap(obj.cCtx, wrapData, newWrapBuf.ctx)

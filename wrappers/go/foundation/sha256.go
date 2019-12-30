@@ -125,11 +125,11 @@ func (obj *Sha256) GetBlockLen() uint {
 * Calculate hash over given data.
 */
 func (obj *Sha256) Hash(data []byte) []byte {
-    digestBuf, digestBufErr := bufferNewBuffer(int(obj.GetDigestLen() /* lg3 */))
+    digestBuf, digestBufErr := newBuffer(int(obj.GetDigestLen() /* lg3 */))
     if digestBufErr != nil {
         return nil
     }
-    defer digestBuf.Delete()
+    defer digestBuf.delete()
     dataData := helperWrapData (data)
 
     C.vscf_sha256_hash(dataData, digestBuf.ctx)
@@ -167,11 +167,11 @@ func (obj *Sha256) Update(data []byte) {
 * Accompilsh hashing and return it's result (a message digest).
 */
 func (obj *Sha256) Finish() []byte {
-    digestBuf, digestBufErr := bufferNewBuffer(int(obj.GetDigestLen() /* lg3 */))
+    digestBuf, digestBufErr := newBuffer(int(obj.GetDigestLen() /* lg3 */))
     if digestBufErr != nil {
         return nil
     }
-    defer digestBuf.Delete()
+    defer digestBuf.delete()
 
 
     C.vscf_sha256_finish(obj.cCtx, digestBuf.ctx)

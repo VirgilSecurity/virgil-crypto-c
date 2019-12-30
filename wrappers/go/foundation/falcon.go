@@ -339,11 +339,11 @@ func (obj *Falcon) SignatureLen(privateKey PrivateKey) uint {
 * Sign data digest with a given private key.
 */
 func (obj *Falcon) SignHash(privateKey PrivateKey, hashId AlgId, digest []byte) ([]byte, error) {
-    signatureBuf, signatureBufErr := bufferNewBuffer(int(obj.SignatureLen(privateKey.(PrivateKey)) /* lg2 */))
+    signatureBuf, signatureBufErr := newBuffer(int(obj.SignatureLen(privateKey.(PrivateKey)) /* lg2 */))
     if signatureBufErr != nil {
         return nil, signatureBufErr
     }
-    defer signatureBuf.Delete()
+    defer signatureBuf.delete()
     digestData := helperWrapData (digest)
 
     proxyResult := /*pr4*/C.vscf_falcon_sign_hash(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(privateKey.Ctx())), C.vscf_alg_id_t(hashId) /*pa7*/, digestData, signatureBuf.ctx)

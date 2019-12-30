@@ -298,17 +298,17 @@ func (obj *Round5) KemEncapsulatedKeyLen(publicKey PublicKey) uint {
 * Generate a shared key and a key encapsulated message.
 */
 func (obj *Round5) KemEncapsulate(publicKey PublicKey) ([]byte, []byte, error) {
-    sharedKeyBuf, sharedKeyBufErr := bufferNewBuffer(int(obj.KemSharedKeyLen(publicKey.(Key)) /* lg2 */))
+    sharedKeyBuf, sharedKeyBufErr := newBuffer(int(obj.KemSharedKeyLen(publicKey.(Key)) /* lg2 */))
     if sharedKeyBufErr != nil {
         return nil, nil, sharedKeyBufErr
     }
-    defer sharedKeyBuf.Delete()
+    defer sharedKeyBuf.delete()
 
-    encapsulatedKeyBuf, encapsulatedKeyBufErr := bufferNewBuffer(int(obj.KemEncapsulatedKeyLen(publicKey.(PublicKey)) /* lg2 */))
+    encapsulatedKeyBuf, encapsulatedKeyBufErr := newBuffer(int(obj.KemEncapsulatedKeyLen(publicKey.(PublicKey)) /* lg2 */))
     if encapsulatedKeyBufErr != nil {
         return nil, nil, encapsulatedKeyBufErr
     }
-    defer encapsulatedKeyBuf.Delete()
+    defer encapsulatedKeyBuf.delete()
 
 
     proxyResult := /*pr4*/C.vscf_round5_kem_encapsulate(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(publicKey.Ctx())), sharedKeyBuf.ctx, encapsulatedKeyBuf.ctx)
@@ -329,11 +329,11 @@ func (obj *Round5) KemEncapsulate(publicKey PublicKey) ([]byte, []byte, error) {
 * Decapsulate the shared key.
 */
 func (obj *Round5) KemDecapsulate(encapsulatedKey []byte, privateKey PrivateKey) ([]byte, error) {
-    sharedKeyBuf, sharedKeyBufErr := bufferNewBuffer(int(obj.KemSharedKeyLen(privateKey.(Key)) /* lg2 */))
+    sharedKeyBuf, sharedKeyBufErr := newBuffer(int(obj.KemSharedKeyLen(privateKey.(Key)) /* lg2 */))
     if sharedKeyBufErr != nil {
         return nil, sharedKeyBufErr
     }
-    defer sharedKeyBuf.Delete()
+    defer sharedKeyBuf.delete()
     encapsulatedKeyData := helperWrapData (encapsulatedKey)
 
     proxyResult := /*pr4*/C.vscf_round5_kem_decapsulate(obj.cCtx, encapsulatedKeyData, (*C.vscf_impl_t)(unsafe.Pointer(privateKey.Ctx())), sharedKeyBuf.ctx)

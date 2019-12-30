@@ -182,11 +182,11 @@ func (obj *Ecies) EncryptedLen(publicKey PublicKey, dataLen uint) uint {
 * Encrypt data with a given public key.
 */
 func (obj *Ecies) Encrypt(publicKey PublicKey, data []byte) ([]byte, error) {
-    outBuf, outBufErr := bufferNewBuffer(int(obj.EncryptedLen(publicKey.(PublicKey), uint(len(data))) /* lg2 */))
+    outBuf, outBufErr := newBuffer(int(obj.EncryptedLen(publicKey.(PublicKey), uint(len(data))) /* lg2 */))
     if outBufErr != nil {
         return nil, outBufErr
     }
-    defer outBuf.Delete()
+    defer outBuf.delete()
     dataData := helperWrapData (data)
 
     proxyResult := /*pr4*/C.vscf_ecies_encrypt(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(publicKey.Ctx())), dataData, outBuf.ctx)
@@ -220,11 +220,11 @@ func (obj *Ecies) DecryptedLen(privateKey PrivateKey, dataLen uint) uint {
 * Decrypt given data.
 */
 func (obj *Ecies) Decrypt(privateKey PrivateKey, data []byte) ([]byte, error) {
-    outBuf, outBufErr := bufferNewBuffer(int(obj.DecryptedLen(privateKey.(PrivateKey), uint(len(data))) /* lg2 */))
+    outBuf, outBufErr := newBuffer(int(obj.DecryptedLen(privateKey.(PrivateKey), uint(len(data))) /* lg2 */))
     if outBufErr != nil {
         return nil, outBufErr
     }
-    defer outBuf.Delete()
+    defer outBuf.delete()
     dataData := helperWrapData (data)
 
     proxyResult := /*pr4*/C.vscf_ecies_decrypt(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(privateKey.Ctx())), dataData, outBuf.ctx)

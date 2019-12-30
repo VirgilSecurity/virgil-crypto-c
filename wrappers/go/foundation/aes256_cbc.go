@@ -113,11 +113,11 @@ func (obj *Aes256Cbc) RestoreAlgInfo(algInfo AlgInfo) error {
 * Encrypt given data.
 */
 func (obj *Aes256Cbc) Encrypt(data []byte) ([]byte, error) {
-    outBuf, outBufErr := bufferNewBuffer(int(obj.EncryptedLen(uint(len(data))) /* lg2 */))
+    outBuf, outBufErr := newBuffer(int(obj.EncryptedLen(uint(len(data))) /* lg2 */))
     if outBufErr != nil {
         return nil, outBufErr
     }
-    defer outBuf.Delete()
+    defer outBuf.delete()
     dataData := helperWrapData (data)
 
     proxyResult := /*pr4*/C.vscf_aes256_cbc_encrypt(obj.cCtx, dataData, outBuf.ctx)
@@ -158,11 +158,11 @@ func (obj *Aes256Cbc) PreciseEncryptedLen(dataLen uint) uint {
 * Decrypt given data.
 */
 func (obj *Aes256Cbc) Decrypt(data []byte) ([]byte, error) {
-    outBuf, outBufErr := bufferNewBuffer(int(obj.DecryptedLen(uint(len(data))) /* lg2 */))
+    outBuf, outBufErr := newBuffer(int(obj.DecryptedLen(uint(len(data))) /* lg2 */))
     if outBufErr != nil {
         return nil, outBufErr
     }
-    defer outBuf.Delete()
+    defer outBuf.delete()
     dataData := helperWrapData (data)
 
     proxyResult := /*pr4*/C.vscf_aes256_cbc_decrypt(obj.cCtx, dataData, outBuf.ctx)
@@ -268,11 +268,11 @@ func (obj *Aes256Cbc) StartDecryption() {
 * Process encryption or decryption of the given data chunk.
 */
 func (obj *Aes256Cbc) Update(data []byte) []byte {
-    outBuf, outBufErr := bufferNewBuffer(int(obj.OutLen(uint(len(data))) /* lg2 */))
+    outBuf, outBufErr := newBuffer(int(obj.OutLen(uint(len(data))) /* lg2 */))
     if outBufErr != nil {
         return nil
     }
-    defer outBuf.Delete()
+    defer outBuf.delete()
     dataData := helperWrapData (data)
 
     C.vscf_aes256_cbc_update(obj.cCtx, dataData, outBuf.ctx)
@@ -325,11 +325,11 @@ func (obj *Aes256Cbc) DecryptedOutLen(dataLen uint) uint {
 * Accomplish encryption or decryption process.
 */
 func (obj *Aes256Cbc) Finish() ([]byte, error) {
-    outBuf, outBufErr := bufferNewBuffer(int(obj.OutLen(0) /* lg2 */))
+    outBuf, outBufErr := newBuffer(int(obj.OutLen(0) /* lg2 */))
     if outBufErr != nil {
         return nil, outBufErr
     }
-    defer outBuf.Delete()
+    defer outBuf.delete()
 
 
     proxyResult := /*pr4*/C.vscf_aes256_cbc_finish(obj.cCtx, outBuf.ctx)

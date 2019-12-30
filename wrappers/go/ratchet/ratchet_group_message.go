@@ -127,11 +127,11 @@ func (obj *RatchetGroupMessage) SerializeLen() uint {
 * Serializes instance.
 */
 func (obj *RatchetGroupMessage) Serialize() []byte {
-    outputBuf, outputBufErr := bufferNewBuffer(int(obj.SerializeLen() /* lg2 */))
+    outputBuf, outputBufErr := newBuffer(int(obj.SerializeLen() /* lg2 */))
     if outputBufErr != nil {
         return nil
     }
-    defer outputBuf.Delete()
+    defer outputBuf.delete()
 
 
     C.vscr_ratchet_group_message_serialize(obj.cCtx, outputBuf.ctx)

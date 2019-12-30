@@ -193,11 +193,11 @@ func (obj *GroupSession) DecryptLen(message *GroupSessionMessage) uint {
 * Decrypts message
 */
 func (obj *GroupSession) Decrypt(message *GroupSessionMessage, publicKey PublicKey) ([]byte, error) {
-    plainTextBuf, plainTextBufErr := bufferNewBuffer(int(obj.DecryptLen(message) /* lg2 */))
+    plainTextBuf, plainTextBufErr := newBuffer(int(obj.DecryptLen(message) /* lg2 */))
     if plainTextBufErr != nil {
         return nil, plainTextBufErr
     }
-    defer plainTextBuf.Delete()
+    defer plainTextBuf.delete()
 
 
     proxyResult := /*pr4*/C.vscf_group_session_decrypt(obj.cCtx, (*C.vscf_group_session_message_t)(unsafe.Pointer(message.Ctx())), (*C.vscf_impl_t)(unsafe.Pointer(publicKey.Ctx())), plainTextBuf.ctx)

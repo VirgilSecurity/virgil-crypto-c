@@ -254,11 +254,11 @@ func (obj *RecipientCipher) MessageInfoLen() uint {
 * algorithm information, etc.
 */
 func (obj *RecipientCipher) PackMessageInfo() []byte {
-    messageInfoBuf, messageInfoBufErr := bufferNewBuffer(int(obj.MessageInfoLen() /* lg2 */))
+    messageInfoBuf, messageInfoBufErr := newBuffer(int(obj.MessageInfoLen() /* lg2 */))
     if messageInfoBufErr != nil {
         return nil
     }
-    defer messageInfoBuf.Delete()
+    defer messageInfoBuf.delete()
 
 
     C.vscf_recipient_cipher_pack_message_info(obj.cCtx, messageInfoBuf.ctx)
@@ -284,11 +284,11 @@ func (obj *RecipientCipher) EncryptionOutLen(dataLen uint) uint {
 * Process encryption of a new portion of data.
 */
 func (obj *RecipientCipher) ProcessEncryption(data []byte) ([]byte, error) {
-    outBuf, outBufErr := bufferNewBuffer(int(obj.EncryptionOutLen(uint(len(data))) /* lg2 */))
+    outBuf, outBufErr := newBuffer(int(obj.EncryptionOutLen(uint(len(data))) /* lg2 */))
     if outBufErr != nil {
         return nil, outBufErr
     }
-    defer outBuf.Delete()
+    defer outBuf.delete()
     dataData := helperWrapData (data)
 
     proxyResult := /*pr4*/C.vscf_recipient_cipher_process_encryption(obj.cCtx, dataData, outBuf.ctx)
@@ -307,11 +307,11 @@ func (obj *RecipientCipher) ProcessEncryption(data []byte) ([]byte, error) {
 * Accomplish encryption.
 */
 func (obj *RecipientCipher) FinishEncryption() ([]byte, error) {
-    outBuf, outBufErr := bufferNewBuffer(int(obj.EncryptionOutLen(0) /* lg2 */))
+    outBuf, outBufErr := newBuffer(int(obj.EncryptionOutLen(0) /* lg2 */))
     if outBufErr != nil {
         return nil, outBufErr
     }
-    defer outBuf.Delete()
+    defer outBuf.delete()
 
 
     proxyResult := /*pr4*/C.vscf_recipient_cipher_finish_encryption(obj.cCtx, outBuf.ctx)
@@ -390,11 +390,11 @@ func (obj *RecipientCipher) DecryptionOutLen(dataLen uint) uint {
 * Return error if data can not be encrypted or decrypted.
 */
 func (obj *RecipientCipher) ProcessDecryption(data []byte) ([]byte, error) {
-    outBuf, outBufErr := bufferNewBuffer(int(obj.DecryptionOutLen(uint(len(data))) /* lg2 */))
+    outBuf, outBufErr := newBuffer(int(obj.DecryptionOutLen(uint(len(data))) /* lg2 */))
     if outBufErr != nil {
         return nil, outBufErr
     }
-    defer outBuf.Delete()
+    defer outBuf.delete()
     dataData := helperWrapData (data)
 
     proxyResult := /*pr4*/C.vscf_recipient_cipher_process_decryption(obj.cCtx, dataData, outBuf.ctx)
@@ -413,11 +413,11 @@ func (obj *RecipientCipher) ProcessDecryption(data []byte) ([]byte, error) {
 * Accomplish decryption.
 */
 func (obj *RecipientCipher) FinishDecryption() ([]byte, error) {
-    outBuf, outBufErr := bufferNewBuffer(int(obj.DecryptionOutLen(0) /* lg2 */))
+    outBuf, outBufErr := newBuffer(int(obj.DecryptionOutLen(0) /* lg2 */))
     if outBufErr != nil {
         return nil, outBufErr
     }
-    defer outBuf.Delete()
+    defer outBuf.delete()
 
 
     proxyResult := /*pr4*/C.vscf_recipient_cipher_finish_decryption(obj.cCtx, outBuf.ctx)
@@ -499,11 +499,11 @@ func (obj *RecipientCipher) MessageInfoFooterLen() uint {
 * Return message info footer - signers public information, etc.
 */
 func (obj *RecipientCipher) PackMessageInfoFooter() ([]byte, error) {
-    outBuf, outBufErr := bufferNewBuffer(int(obj.MessageInfoFooterLen() /* lg2 */))
+    outBuf, outBufErr := newBuffer(int(obj.MessageInfoFooterLen() /* lg2 */))
     if outBufErr != nil {
         return nil, outBufErr
     }
-    defer outBuf.Delete()
+    defer outBuf.delete()
 
 
     proxyResult := /*pr4*/C.vscf_recipient_cipher_pack_message_info_footer(obj.cCtx, outBuf.ctx)

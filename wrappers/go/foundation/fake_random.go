@@ -97,11 +97,11 @@ func (obj *FakeRandom) delete() {
 * All RNG implementations must be thread-safe.
 */
 func (obj *FakeRandom) Random(dataLen uint) ([]byte, error) {
-    dataBuf, dataBufErr := bufferNewBuffer(int(dataLen))
+    dataBuf, dataBufErr := newBuffer(int(dataLen))
     if dataBufErr != nil {
         return nil, dataBufErr
     }
-    defer dataBuf.Delete()
+    defer dataBuf.delete()
 
 
     proxyResult := /*pr4*/C.vscf_fake_random_random(obj.cCtx, (C.size_t)(dataLen)/*pa10*/, dataBuf.ctx)
@@ -147,11 +147,11 @@ func (obj *FakeRandom) IsStrong() bool {
 * Gather entropy of the requested length.
 */
 func (obj *FakeRandom) Gather(len uint) ([]byte, error) {
-    outBuf, outBufErr := bufferNewBuffer(int(len))
+    outBuf, outBufErr := newBuffer(int(len))
     if outBufErr != nil {
         return nil, outBufErr
     }
-    defer outBuf.Delete()
+    defer outBuf.delete()
 
 
     proxyResult := /*pr4*/C.vscf_fake_random_gather(obj.cCtx, (C.size_t)(len)/*pa10*/, outBuf.ctx)

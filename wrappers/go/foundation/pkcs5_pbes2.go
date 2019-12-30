@@ -140,11 +140,11 @@ func (obj *Pkcs5Pbes2) RestoreAlgInfo(algInfo AlgInfo) error {
 * Encrypt given data.
 */
 func (obj *Pkcs5Pbes2) Encrypt(data []byte) ([]byte, error) {
-    outBuf, outBufErr := bufferNewBuffer(int(obj.EncryptedLen(uint(len(data))) /* lg2 */))
+    outBuf, outBufErr := newBuffer(int(obj.EncryptedLen(uint(len(data))) /* lg2 */))
     if outBufErr != nil {
         return nil, outBufErr
     }
-    defer outBuf.Delete()
+    defer outBuf.delete()
     dataData := helperWrapData (data)
 
     proxyResult := /*pr4*/C.vscf_pkcs5_pbes2_encrypt(obj.cCtx, dataData, outBuf.ctx)
@@ -185,11 +185,11 @@ func (obj *Pkcs5Pbes2) PreciseEncryptedLen(dataLen uint) uint {
 * Decrypt given data.
 */
 func (obj *Pkcs5Pbes2) Decrypt(data []byte) ([]byte, error) {
-    outBuf, outBufErr := bufferNewBuffer(int(obj.DecryptedLen(uint(len(data))) /* lg2 */))
+    outBuf, outBufErr := newBuffer(int(obj.DecryptedLen(uint(len(data))) /* lg2 */))
     if outBufErr != nil {
         return nil, outBufErr
     }
-    defer outBuf.Delete()
+    defer outBuf.delete()
     dataData := helperWrapData (data)
 
     proxyResult := /*pr4*/C.vscf_pkcs5_pbes2_decrypt(obj.cCtx, dataData, outBuf.ctx)

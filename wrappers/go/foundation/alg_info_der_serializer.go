@@ -118,11 +118,11 @@ func (obj *AlgInfoDerSerializer) SerializedLen(algInfo AlgInfo) uint {
 * Serialize algorithm info to buffer class.
 */
 func (obj *AlgInfoDerSerializer) Serialize(algInfo AlgInfo) []byte {
-    outBuf, outBufErr := bufferNewBuffer(int(obj.SerializedLen(algInfo.(AlgInfo)) /* lg2 */))
+    outBuf, outBufErr := newBuffer(int(obj.SerializedLen(algInfo.(AlgInfo)) /* lg2 */))
     if outBufErr != nil {
         return nil
     }
-    defer outBuf.Delete()
+    defer outBuf.delete()
 
 
     C.vscf_alg_info_der_serializer_serialize(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(algInfo.Ctx())), outBuf.ctx)

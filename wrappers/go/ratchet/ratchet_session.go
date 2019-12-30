@@ -210,11 +210,11 @@ func (obj *RatchetSession) DecryptLen(message *RatchetMessage) uint {
 * Decrypts message
 */
 func (obj *RatchetSession) Decrypt(message *RatchetMessage) ([]byte, error) {
-    plainTextBuf, plainTextBufErr := bufferNewBuffer(int(obj.DecryptLen(message) /* lg2 */))
+    plainTextBuf, plainTextBufErr := newBuffer(int(obj.DecryptLen(message) /* lg2 */))
     if plainTextBufErr != nil {
         return nil, plainTextBufErr
     }
-    defer plainTextBuf.Delete()
+    defer plainTextBuf.delete()
 
 
     proxyResult := /*pr4*/C.vscr_ratchet_session_decrypt(obj.cCtx, (*C.vscr_ratchet_message_t)(unsafe.Pointer(message.Ctx())), plainTextBuf.ctx)

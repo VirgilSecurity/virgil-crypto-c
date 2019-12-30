@@ -126,11 +126,11 @@ func (obj *GroupSessionMessage) SerializeLen() uint {
 * Serializes instance.
 */
 func (obj *GroupSessionMessage) Serialize() []byte {
-    outputBuf, outputBufErr := bufferNewBuffer(int(obj.SerializeLen() /* lg2 */))
+    outputBuf, outputBufErr := newBuffer(int(obj.SerializeLen() /* lg2 */))
     if outputBufErr != nil {
         return nil
     }
-    defer outputBuf.Delete()
+    defer outputBuf.delete()
 
 
     C.vscf_group_session_message_serialize(obj.cCtx, outputBuf.ctx)

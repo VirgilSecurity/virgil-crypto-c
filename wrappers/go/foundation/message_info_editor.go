@@ -199,11 +199,11 @@ func (obj *MessageInfoEditor) PackedLen() uint {
 * Precondition: this method can be called after "apply".
 */
 func (obj *MessageInfoEditor) Pack() []byte {
-    messageInfoBuf, messageInfoBufErr := bufferNewBuffer(int(obj.PackedLen() /* lg2 */))
+    messageInfoBuf, messageInfoBufErr := newBuffer(int(obj.PackedLen() /* lg2 */))
     if messageInfoBufErr != nil {
         return nil
     }
-    defer messageInfoBuf.Delete()
+    defer messageInfoBuf.delete()
 
 
     C.vscf_message_info_editor_pack(obj.cCtx, messageInfoBuf.ctx)

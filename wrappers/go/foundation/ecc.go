@@ -310,11 +310,11 @@ func (obj *Ecc) EncryptedLen(publicKey PublicKey, dataLen uint) uint {
 * Encrypt data with a given public key.
 */
 func (obj *Ecc) Encrypt(publicKey PublicKey, data []byte) ([]byte, error) {
-    outBuf, outBufErr := bufferNewBuffer(int(obj.EncryptedLen(publicKey.(PublicKey), uint(len(data))) /* lg2 */))
+    outBuf, outBufErr := newBuffer(int(obj.EncryptedLen(publicKey.(PublicKey), uint(len(data))) /* lg2 */))
     if outBufErr != nil {
         return nil, outBufErr
     }
-    defer outBuf.Delete()
+    defer outBuf.delete()
     dataData := helperWrapData (data)
 
     proxyResult := /*pr4*/C.vscf_ecc_encrypt(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(publicKey.Ctx())), dataData, outBuf.ctx)
@@ -362,11 +362,11 @@ func (obj *Ecc) DecryptedLen(privateKey PrivateKey, dataLen uint) uint {
 * Decrypt given data.
 */
 func (obj *Ecc) Decrypt(privateKey PrivateKey, data []byte) ([]byte, error) {
-    outBuf, outBufErr := bufferNewBuffer(int(obj.DecryptedLen(privateKey.(PrivateKey), uint(len(data))) /* lg2 */))
+    outBuf, outBufErr := newBuffer(int(obj.DecryptedLen(privateKey.(PrivateKey), uint(len(data))) /* lg2 */))
     if outBufErr != nil {
         return nil, outBufErr
     }
-    defer outBuf.Delete()
+    defer outBuf.delete()
     dataData := helperWrapData (data)
 
     proxyResult := /*pr4*/C.vscf_ecc_decrypt(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(privateKey.Ctx())), dataData, outBuf.ctx)
@@ -414,11 +414,11 @@ func (obj *Ecc) SignatureLen(privateKey PrivateKey) uint {
 * Sign data digest with a given private key.
 */
 func (obj *Ecc) SignHash(privateKey PrivateKey, hashId AlgId, digest []byte) ([]byte, error) {
-    signatureBuf, signatureBufErr := bufferNewBuffer(int(obj.SignatureLen(privateKey.(PrivateKey)) /* lg2 */))
+    signatureBuf, signatureBufErr := newBuffer(int(obj.SignatureLen(privateKey.(PrivateKey)) /* lg2 */))
     if signatureBufErr != nil {
         return nil, signatureBufErr
     }
-    defer signatureBuf.Delete()
+    defer signatureBuf.delete()
     digestData := helperWrapData (digest)
 
     proxyResult := /*pr4*/C.vscf_ecc_sign_hash(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(privateKey.Ctx())), C.vscf_alg_id_t(hashId) /*pa7*/, digestData, signatureBuf.ctx)
@@ -469,11 +469,11 @@ func (obj *Ecc) VerifyHash(publicKey PublicKey, hashId AlgId, digest []byte, sig
 * Note, computed shared key can be used only within symmetric cryptography.
 */
 func (obj *Ecc) ComputeSharedKey(publicKey PublicKey, privateKey PrivateKey) ([]byte, error) {
-    sharedKeyBuf, sharedKeyBufErr := bufferNewBuffer(int(obj.SharedKeyLen(privateKey.(Key)) /* lg2 */))
+    sharedKeyBuf, sharedKeyBufErr := newBuffer(int(obj.SharedKeyLen(privateKey.(Key)) /* lg2 */))
     if sharedKeyBufErr != nil {
         return nil, sharedKeyBufErr
     }
-    defer sharedKeyBuf.Delete()
+    defer sharedKeyBuf.delete()
 
 
     proxyResult := /*pr4*/C.vscf_ecc_compute_shared_key(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(publicKey.Ctx())), (*C.vscf_impl_t)(unsafe.Pointer(privateKey.Ctx())), sharedKeyBuf.ctx)
@@ -536,17 +536,17 @@ func (obj *Ecc) KemEncapsulatedKeyLen(publicKey PublicKey) uint {
 * Generate a shared key and a key encapsulated message.
 */
 func (obj *Ecc) KemEncapsulate(publicKey PublicKey) ([]byte, []byte, error) {
-    sharedKeyBuf, sharedKeyBufErr := bufferNewBuffer(int(obj.KemSharedKeyLen(publicKey.(Key)) /* lg2 */))
+    sharedKeyBuf, sharedKeyBufErr := newBuffer(int(obj.KemSharedKeyLen(publicKey.(Key)) /* lg2 */))
     if sharedKeyBufErr != nil {
         return nil, nil, sharedKeyBufErr
     }
-    defer sharedKeyBuf.Delete()
+    defer sharedKeyBuf.delete()
 
-    encapsulatedKeyBuf, encapsulatedKeyBufErr := bufferNewBuffer(int(obj.KemEncapsulatedKeyLen(publicKey.(PublicKey)) /* lg2 */))
+    encapsulatedKeyBuf, encapsulatedKeyBufErr := newBuffer(int(obj.KemEncapsulatedKeyLen(publicKey.(PublicKey)) /* lg2 */))
     if encapsulatedKeyBufErr != nil {
         return nil, nil, encapsulatedKeyBufErr
     }
-    defer encapsulatedKeyBuf.Delete()
+    defer encapsulatedKeyBuf.delete()
 
 
     proxyResult := /*pr4*/C.vscf_ecc_kem_encapsulate(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(publicKey.Ctx())), sharedKeyBuf.ctx, encapsulatedKeyBuf.ctx)
@@ -567,11 +567,11 @@ func (obj *Ecc) KemEncapsulate(publicKey PublicKey) ([]byte, []byte, error) {
 * Decapsulate the shared key.
 */
 func (obj *Ecc) KemDecapsulate(encapsulatedKey []byte, privateKey PrivateKey) ([]byte, error) {
-    sharedKeyBuf, sharedKeyBufErr := bufferNewBuffer(int(obj.KemSharedKeyLen(privateKey.(Key)) /* lg2 */))
+    sharedKeyBuf, sharedKeyBufErr := newBuffer(int(obj.KemSharedKeyLen(privateKey.(Key)) /* lg2 */))
     if sharedKeyBufErr != nil {
         return nil, sharedKeyBufErr
     }
-    defer sharedKeyBuf.Delete()
+    defer sharedKeyBuf.delete()
     encapsulatedKeyData := helperWrapData (encapsulatedKey)
 
     proxyResult := /*pr4*/C.vscf_ecc_kem_decapsulate(obj.cCtx, encapsulatedKeyData, (*C.vscf_impl_t)(unsafe.Pointer(privateKey.Ctx())), sharedKeyBuf.ctx)

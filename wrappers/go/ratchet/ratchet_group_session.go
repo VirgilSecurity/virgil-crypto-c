@@ -287,11 +287,11 @@ func (obj *RatchetGroupSession) DecryptLen(message *RatchetGroupMessage) uint {
 * Decrypts message
 */
 func (obj *RatchetGroupSession) Decrypt(message *RatchetGroupMessage, senderId []byte) ([]byte, error) {
-    plainTextBuf, plainTextBufErr := bufferNewBuffer(int(obj.DecryptLen(message) /* lg2 */))
+    plainTextBuf, plainTextBufErr := newBuffer(int(obj.DecryptLen(message) /* lg2 */))
     if plainTextBufErr != nil {
         return nil, plainTextBufErr
     }
-    defer plainTextBuf.Delete()
+    defer plainTextBuf.delete()
     senderIdData := helperWrapData (senderId)
 
     proxyResult := /*pr4*/C.vscr_ratchet_group_session_decrypt(obj.cCtx, (*C.vscr_ratchet_group_message_t)(unsafe.Pointer(message.Ctx())), senderIdData, plainTextBuf.ctx)

@@ -425,7 +425,11 @@ function go_insert_func (go_instance, go_func)
         endif
         go_insert_code("func $(my.prefix:)$(my.go_instance.name:)$(my.go_func.name:)($(my.method_args?:)) $(my.method_return?:) {")
     elsif is_true (my.go_func.is_static)
-        go_insert_code("func $(my.go_instance.name:)$(my.go_func.name:)($(my.method_args?:)) $(my.method_return?:) {")
+        if is_true (my.go_func.is_skip_struct_name)
+            go_insert_code("func $(my.go_func.name:)($(my.method_args?:)) $(my.method_return?:) {")
+        else
+            go_insert_code("func $(my.go_instance.name:)$(my.go_func.name:)($(my.method_args?:)) $(my.method_return?:) {")
+        endif
     else
         go_insert_code("func (obj *$(my.go_instance.name:)) $(my.go_func.name:)($(my.method_args?:)) $(my.method_return?:) {")
     endif

@@ -191,11 +191,11 @@ func (obj *RandomPadding) ProcessData(data []byte) []byte {
 * Accomplish data processing and return padding.
 */
 func (obj *RandomPadding) FinishDataProcessing() ([]byte, error) {
-    outBuf, outBufErr := bufferNewBuffer(int(obj.Len() /* lg2 */))
+    outBuf, outBufErr := newBuffer(int(obj.Len() /* lg2 */))
     if outBufErr != nil {
         return nil, outBufErr
     }
-    defer outBuf.Delete()
+    defer outBuf.delete()
 
 
     proxyResult := /*pr4*/C.vscf_random_padding_finish_data_processing(obj.cCtx, outBuf.ctx)
@@ -226,11 +226,11 @@ func (obj *RandomPadding) StartPaddedDataProcessing() {
 * Return filtered data without padding.
 */
 func (obj *RandomPadding) ProcessPaddedData(data []byte) []byte {
-    outBuf, outBufErr := bufferNewBuffer(int(len(data)))
+    outBuf, outBufErr := newBuffer(int(len(data)))
     if outBufErr != nil {
         return nil
     }
-    defer outBuf.Delete()
+    defer outBuf.delete()
     dataData := helperWrapData (data)
 
     C.vscf_random_padding_process_padded_data(obj.cCtx, dataData, outBuf.ctx)
@@ -256,11 +256,11 @@ func (obj *RandomPadding) FinishPaddedDataProcessingOutLen() uint {
 * Accomplish padded data processing and return left data without a padding.
 */
 func (obj *RandomPadding) FinishPaddedDataProcessing() ([]byte, error) {
-    outBuf, outBufErr := bufferNewBuffer(int(obj.FinishPaddedDataProcessingOutLen() /* lg2 */))
+    outBuf, outBufErr := newBuffer(int(obj.FinishPaddedDataProcessingOutLen() /* lg2 */))
     if outBufErr != nil {
         return nil, outBufErr
     }
-    defer outBuf.Delete()
+    defer outBuf.delete()
 
 
     proxyResult := /*pr4*/C.vscf_random_padding_finish_padded_data_processing(obj.cCtx, outBuf.ctx)

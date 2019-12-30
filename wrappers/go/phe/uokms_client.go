@@ -131,11 +131,11 @@ func (obj *UokmsClient) SetKeys(clientPrivateKey []byte, serverPublicKey []byte)
 * Generates client private key
 */
 func (obj *UokmsClient) GenerateClientPrivateKey() ([]byte, error) {
-    clientPrivateKeyBuf, clientPrivateKeyBufErr := bufferNewBuffer(int(PheCommonPhePrivateKeyLength /* lg4 */))
+    clientPrivateKeyBuf, clientPrivateKeyBufErr := newBuffer(int(PheCommonPhePrivateKeyLength /* lg4 */))
     if clientPrivateKeyBufErr != nil {
         return nil, clientPrivateKeyBufErr
     }
-    defer clientPrivateKeyBuf.Delete()
+    defer clientPrivateKeyBuf.delete()
 
 
     proxyResult := /*pr4*/C.vsce_uokms_client_generate_client_private_key(obj.cCtx, clientPrivateKeyBuf.ctx)
@@ -155,17 +155,17 @@ func (obj *UokmsClient) GenerateClientPrivateKey() ([]byte, error) {
 * of "encryption key len" that can be used for symmetric encryption
 */
 func (obj *UokmsClient) GenerateEncryptWrap(encryptionKeyLen uint) ([]byte, []byte, error) {
-    wrapBuf, wrapBufErr := bufferNewBuffer(int(PheCommonPhePublicKeyLength /* lg4 */))
+    wrapBuf, wrapBufErr := newBuffer(int(PheCommonPhePublicKeyLength /* lg4 */))
     if wrapBufErr != nil {
         return nil, nil, wrapBufErr
     }
-    defer wrapBuf.Delete()
+    defer wrapBuf.delete()
 
-    encryptionKeyBuf, encryptionKeyBufErr := bufferNewBuffer(int(encryptionKeyLen))
+    encryptionKeyBuf, encryptionKeyBufErr := newBuffer(int(encryptionKeyLen))
     if encryptionKeyBufErr != nil {
         return nil, nil, encryptionKeyBufErr
     }
-    defer encryptionKeyBuf.Delete()
+    defer encryptionKeyBuf.delete()
 
 
     proxyResult := /*pr4*/C.vsce_uokms_client_generate_encrypt_wrap(obj.cCtx, wrapBuf.ctx, (C.size_t)(encryptionKeyLen)/*pa10*/, encryptionKeyBuf.ctx)
@@ -185,17 +185,17 @@ func (obj *UokmsClient) GenerateEncryptWrap(encryptionKeyLen uint) ([]byte, []by
 * Server response is then passed to "process decrypt response" where encryption key can be decapsulated
 */
 func (obj *UokmsClient) GenerateDecryptRequest(wrap []byte) ([]byte, []byte, error) {
-    deblindFactorBuf, deblindFactorBufErr := bufferNewBuffer(int(PheCommonPhePrivateKeyLength /* lg4 */))
+    deblindFactorBuf, deblindFactorBufErr := newBuffer(int(PheCommonPhePrivateKeyLength /* lg4 */))
     if deblindFactorBufErr != nil {
         return nil, nil, deblindFactorBufErr
     }
-    defer deblindFactorBuf.Delete()
+    defer deblindFactorBuf.delete()
 
-    decryptRequestBuf, decryptRequestBufErr := bufferNewBuffer(int(PheCommonPhePublicKeyLength /* lg4 */))
+    decryptRequestBuf, decryptRequestBufErr := newBuffer(int(PheCommonPhePublicKeyLength /* lg4 */))
     if decryptRequestBufErr != nil {
         return nil, nil, decryptRequestBufErr
     }
-    defer decryptRequestBuf.Delete()
+    defer decryptRequestBuf.delete()
     wrapData := helperWrapData (wrap)
 
     proxyResult := /*pr4*/C.vsce_uokms_client_generate_decrypt_request(obj.cCtx, wrapData, deblindFactorBuf.ctx, decryptRequestBuf.ctx)
@@ -214,11 +214,11 @@ func (obj *UokmsClient) GenerateDecryptRequest(wrap []byte) ([]byte, []byte, err
 * Processed server response, checks server proof and decapsulates encryption key
 */
 func (obj *UokmsClient) ProcessDecryptResponse(wrap []byte, decryptRequest []byte, decryptResponse []byte, deblindFactor []byte, encryptionKeyLen uint) ([]byte, error) {
-    encryptionKeyBuf, encryptionKeyBufErr := bufferNewBuffer(int(encryptionKeyLen))
+    encryptionKeyBuf, encryptionKeyBufErr := newBuffer(int(encryptionKeyLen))
     if encryptionKeyBufErr != nil {
         return nil, encryptionKeyBufErr
     }
-    defer encryptionKeyBuf.Delete()
+    defer encryptionKeyBuf.delete()
     wrapData := helperWrapData (wrap)
     decryptRequestData := helperWrapData (decryptRequest)
     decryptResponseData := helperWrapData (decryptResponse)
@@ -240,17 +240,17 @@ func (obj *UokmsClient) ProcessDecryptResponse(wrap []byte, decryptRequest []byt
 * Rotates client and server keys using given update token obtained from server
 */
 func (obj *UokmsClient) RotateKeys(updateToken []byte) ([]byte, []byte, error) {
-    newClientPrivateKeyBuf, newClientPrivateKeyBufErr := bufferNewBuffer(int(PheCommonPhePrivateKeyLength /* lg4 */))
+    newClientPrivateKeyBuf, newClientPrivateKeyBufErr := newBuffer(int(PheCommonPhePrivateKeyLength /* lg4 */))
     if newClientPrivateKeyBufErr != nil {
         return nil, nil, newClientPrivateKeyBufErr
     }
-    defer newClientPrivateKeyBuf.Delete()
+    defer newClientPrivateKeyBuf.delete()
 
-    newServerPublicKeyBuf, newServerPublicKeyBufErr := bufferNewBuffer(int(PheCommonPhePublicKeyLength /* lg4 */))
+    newServerPublicKeyBuf, newServerPublicKeyBufErr := newBuffer(int(PheCommonPhePublicKeyLength /* lg4 */))
     if newServerPublicKeyBufErr != nil {
         return nil, nil, newServerPublicKeyBufErr
     }
-    defer newServerPublicKeyBuf.Delete()
+    defer newServerPublicKeyBuf.delete()
     updateTokenData := helperWrapData (updateToken)
 
     proxyResult := /*pr4*/C.vsce_uokms_client_rotate_keys(obj.cCtx, updateTokenData, newClientPrivateKeyBuf.ctx, newServerPublicKeyBuf.ctx)

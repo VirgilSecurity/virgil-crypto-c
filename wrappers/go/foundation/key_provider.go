@@ -271,11 +271,11 @@ func (obj *KeyProvider) ExportedPublicKeyLen(publicKey PublicKey) uint {
 * Precondition: public key must be exportable.
 */
 func (obj *KeyProvider) ExportPublicKey(publicKey PublicKey) ([]byte, error) {
-    outBuf, outBufErr := bufferNewBuffer(int(obj.ExportedPublicKeyLen(publicKey.(PublicKey)) /* lg2 */))
+    outBuf, outBufErr := newBuffer(int(obj.ExportedPublicKeyLen(publicKey.(PublicKey)) /* lg2 */))
     if outBufErr != nil {
         return nil, outBufErr
     }
-    defer outBuf.Delete()
+    defer outBuf.delete()
 
 
     proxyResult := /*pr4*/C.vscf_key_provider_export_public_key(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(publicKey.Ctx())), outBuf.ctx)
@@ -313,11 +313,11 @@ func (obj *KeyProvider) ExportedPrivateKeyLen(privateKey PrivateKey) uint {
 * Precondition: private key must be exportable.
 */
 func (obj *KeyProvider) ExportPrivateKey(privateKey PrivateKey) ([]byte, error) {
-    outBuf, outBufErr := bufferNewBuffer(int(obj.ExportedPrivateKeyLen(privateKey.(PrivateKey)) /* lg2 */))
+    outBuf, outBufErr := newBuffer(int(obj.ExportedPrivateKeyLen(privateKey.(PrivateKey)) /* lg2 */))
     if outBufErr != nil {
         return nil, outBufErr
     }
-    defer outBuf.Delete()
+    defer outBuf.delete()
 
 
     proxyResult := /*pr4*/C.vscf_key_provider_export_private_key(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(privateKey.Ctx())), outBuf.ctx)

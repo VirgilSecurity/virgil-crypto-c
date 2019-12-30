@@ -32,11 +32,11 @@ func PemWrap(title string, data []byte) []byte {
     titleStr := C.CString(title)
     defer C.free(unsafe.Pointer(titleStr))
 
-    pemBuf, pemBufErr := bufferNewBuffer(int(PemWrappedLen(title, uint(len(data))) /* lg1 */))
+    pemBuf, pemBufErr := newBuffer(int(PemWrappedLen(title, uint(len(data))) /* lg1 */))
     if pemBufErr != nil {
         return nil
     }
-    defer pemBuf.Delete()
+    defer pemBuf.delete()
     dataData := helperWrapData (data)
 
     C.vscf_pem_wrap(titleStr/*pa9*/, dataData, pemBuf.ctx)
@@ -57,11 +57,11 @@ func PemUnwrappedLen(pemLen uint) uint {
 * Takes PEM data and extract binary data from it.
 */
 func PemUnwrap(pem []byte) ([]byte, error) {
-    dataBuf, dataBufErr := bufferNewBuffer(int(PemUnwrappedLen(uint(len(pem))) /* lg1 */))
+    dataBuf, dataBufErr := newBuffer(int(PemUnwrappedLen(uint(len(pem))) /* lg1 */))
     if dataBufErr != nil {
         return nil, dataBufErr
     }
-    defer dataBuf.Delete()
+    defer dataBuf.delete()
     pemData := helperWrapData (pem)
 
     proxyResult := /*pr4*/C.vscf_pem_unwrap(pemData, dataBuf.ctx)

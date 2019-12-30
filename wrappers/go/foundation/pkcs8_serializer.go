@@ -153,11 +153,11 @@ func (obj *Pkcs8Serializer) SerializedPublicKeyLen(publicKey *RawPublicKey) uint
 * Precondition: public key must be exportable.
 */
 func (obj *Pkcs8Serializer) SerializePublicKey(publicKey *RawPublicKey) ([]byte, error) {
-    outBuf, outBufErr := bufferNewBuffer(int(obj.SerializedPublicKeyLen(publicKey) /* lg2 */))
+    outBuf, outBufErr := newBuffer(int(obj.SerializedPublicKeyLen(publicKey) /* lg2 */))
     if outBufErr != nil {
         return nil, outBufErr
     }
-    defer outBuf.Delete()
+    defer outBuf.delete()
 
 
     proxyResult := /*pr4*/C.vscf_pkcs8_serializer_serialize_public_key(obj.cCtx, (*C.vscf_raw_public_key_t)(unsafe.Pointer(publicKey.Ctx())), outBuf.ctx)
@@ -195,11 +195,11 @@ func (obj *Pkcs8Serializer) SerializedPrivateKeyLen(privateKey *RawPrivateKey) u
 * Precondition: private key must be exportable.
 */
 func (obj *Pkcs8Serializer) SerializePrivateKey(privateKey *RawPrivateKey) ([]byte, error) {
-    outBuf, outBufErr := bufferNewBuffer(int(obj.SerializedPrivateKeyLen(privateKey) /* lg2 */))
+    outBuf, outBufErr := newBuffer(int(obj.SerializedPrivateKeyLen(privateKey) /* lg2 */))
     if outBufErr != nil {
         return nil, outBufErr
     }
-    defer outBuf.Delete()
+    defer outBuf.delete()
 
 
     proxyResult := /*pr4*/C.vscf_pkcs8_serializer_serialize_private_key(obj.cCtx, (*C.vscf_raw_private_key_t)(unsafe.Pointer(privateKey.Ctx())), outBuf.ctx)

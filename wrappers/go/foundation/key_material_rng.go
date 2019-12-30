@@ -97,11 +97,11 @@ func (obj *KeyMaterialRng) delete() {
 * All RNG implementations must be thread-safe.
 */
 func (obj *KeyMaterialRng) Random(dataLen uint) ([]byte, error) {
-    dataBuf, dataBufErr := bufferNewBuffer(int(dataLen))
+    dataBuf, dataBufErr := newBuffer(int(dataLen))
     if dataBufErr != nil {
         return nil, dataBufErr
     }
-    defer dataBuf.Delete()
+    defer dataBuf.delete()
 
 
     proxyResult := /*pr4*/C.vscf_key_material_rng_random(obj.cCtx, (C.size_t)(dataLen)/*pa10*/, dataBuf.ctx)

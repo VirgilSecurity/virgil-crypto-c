@@ -107,17 +107,17 @@ func (obj *BrainkeyClient) SetupDefaults() error {
 }
 
 func (obj *BrainkeyClient) Blind(password []byte) ([]byte, []byte, error) {
-    deblindFactorBuf, deblindFactorBufErr := bufferNewBuffer(int(BrainkeyClientMpiLen /* lg4 */))
+    deblindFactorBuf, deblindFactorBufErr := newBuffer(int(BrainkeyClientMpiLen /* lg4 */))
     if deblindFactorBufErr != nil {
         return nil, nil, deblindFactorBufErr
     }
-    defer deblindFactorBuf.Delete()
+    defer deblindFactorBuf.delete()
 
-    blindedPointBuf, blindedPointBufErr := bufferNewBuffer(int(BrainkeyClientPointLen /* lg4 */))
+    blindedPointBuf, blindedPointBufErr := newBuffer(int(BrainkeyClientPointLen /* lg4 */))
     if blindedPointBufErr != nil {
         return nil, nil, blindedPointBufErr
     }
-    defer blindedPointBuf.Delete()
+    defer blindedPointBuf.delete()
     passwordData := helperWrapData (password)
 
     proxyResult := /*pr4*/C.vscf_brainkey_client_blind(obj.cCtx, passwordData, deblindFactorBuf.ctx, blindedPointBuf.ctx)
@@ -133,11 +133,11 @@ func (obj *BrainkeyClient) Blind(password []byte) ([]byte, []byte, error) {
 }
 
 func (obj *BrainkeyClient) Deblind(password []byte, hardenedPoint []byte, deblindFactor []byte, keyName []byte) ([]byte, error) {
-    seedBuf, seedBufErr := bufferNewBuffer(int(BrainkeyClientPointLen /* lg4 */))
+    seedBuf, seedBufErr := newBuffer(int(BrainkeyClientPointLen /* lg4 */))
     if seedBufErr != nil {
         return nil, seedBufErr
     }
-    defer seedBuf.Delete()
+    defer seedBuf.delete()
     passwordData := helperWrapData (password)
     hardenedPointData := helperWrapData (hardenedPoint)
     deblindFactorData := helperWrapData (deblindFactor)

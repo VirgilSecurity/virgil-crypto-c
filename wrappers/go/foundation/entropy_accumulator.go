@@ -111,11 +111,11 @@ func (obj *EntropyAccumulator) IsStrong() bool {
 * Gather entropy of the requested length.
 */
 func (obj *EntropyAccumulator) Gather(len uint) ([]byte, error) {
-    outBuf, outBufErr := bufferNewBuffer(int(len))
+    outBuf, outBufErr := newBuffer(int(len))
     if outBufErr != nil {
         return nil, outBufErr
     }
-    defer outBuf.Delete()
+    defer outBuf.delete()
 
 
     proxyResult := /*pr4*/C.vscf_entropy_accumulator_gather(obj.cCtx, (C.size_t)(len)/*pa10*/, outBuf.ctx)

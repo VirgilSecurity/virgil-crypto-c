@@ -24,11 +24,11 @@ func Base64EncodedLen(dataLen uint) uint {
 * Note, written buffer is NOT null-terminated.
 */
 func Base64Encode(data []byte) []byte {
-    strBuf, strBufErr := bufferNewBuffer(int(Base64EncodedLen(uint(len(data))) /* lg1 */))
+    strBuf, strBufErr := newBuffer(int(Base64EncodedLen(uint(len(data))) /* lg1 */))
     if strBufErr != nil {
         return nil
     }
-    defer strBuf.Delete()
+    defer strBuf.delete()
     dataData := helperWrapData (data)
 
     C.vscf_base64_encode(dataData, strBuf.ctx)
@@ -49,11 +49,11 @@ func Base64DecodedLen(strLen uint) uint {
 * Decode given data from the base64 format.
 */
 func Base64Decode(str []byte) ([]byte, error) {
-    dataBuf, dataBufErr := bufferNewBuffer(int(Base64DecodedLen(uint(len(str))) /* lg1 */))
+    dataBuf, dataBufErr := newBuffer(int(Base64DecodedLen(uint(len(str))) /* lg1 */))
     if dataBufErr != nil {
         return nil, dataBufErr
     }
-    defer dataBuf.Delete()
+    defer dataBuf.delete()
     strData := helperWrapData (str)
 
     proxyResult := /*pr4*/C.vscf_base64_decode(strData, dataBuf.ctx)

@@ -124,11 +124,11 @@ func (obj *Signer) SignatureLen(privateKey PrivateKey) uint {
 * Accomplish signing and return signature.
 */
 func (obj *Signer) Sign(privateKey PrivateKey) ([]byte, error) {
-    signatureBuf, signatureBufErr := bufferNewBuffer(int(obj.SignatureLen(privateKey.(PrivateKey)) /* lg2 */))
+    signatureBuf, signatureBufErr := newBuffer(int(obj.SignatureLen(privateKey.(PrivateKey)) /* lg2 */))
     if signatureBufErr != nil {
         return nil, signatureBufErr
     }
-    defer signatureBuf.Delete()
+    defer signatureBuf.delete()
 
 
     proxyResult := /*pr4*/C.vscf_signer_sign(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(privateKey.Ctx())), signatureBuf.ctx)

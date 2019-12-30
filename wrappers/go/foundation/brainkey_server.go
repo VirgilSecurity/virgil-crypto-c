@@ -104,11 +104,11 @@ func (obj *BrainkeyServer) SetupDefaults() error {
 }
 
 func (obj *BrainkeyServer) GenerateIdentitySecret() ([]byte, error) {
-    identitySecretBuf, identitySecretBufErr := bufferNewBuffer(int(BrainkeyServerMpiLen /* lg4 */))
+    identitySecretBuf, identitySecretBufErr := newBuffer(int(BrainkeyServerMpiLen /* lg4 */))
     if identitySecretBufErr != nil {
         return nil, identitySecretBufErr
     }
-    defer identitySecretBuf.Delete()
+    defer identitySecretBuf.delete()
 
 
     proxyResult := /*pr4*/C.vscf_brainkey_server_generate_identity_secret(obj.cCtx, identitySecretBuf.ctx)
@@ -124,11 +124,11 @@ func (obj *BrainkeyServer) GenerateIdentitySecret() ([]byte, error) {
 }
 
 func (obj *BrainkeyServer) Harden(identitySecret []byte, blindedPoint []byte) ([]byte, error) {
-    hardenedPointBuf, hardenedPointBufErr := bufferNewBuffer(int(BrainkeyServerPointLen /* lg4 */))
+    hardenedPointBuf, hardenedPointBufErr := newBuffer(int(BrainkeyServerPointLen /* lg4 */))
     if hardenedPointBufErr != nil {
         return nil, hardenedPointBufErr
     }
-    defer hardenedPointBuf.Delete()
+    defer hardenedPointBuf.delete()
     identitySecretData := helperWrapData (identitySecret)
     blindedPointData := helperWrapData (blindedPoint)
 
