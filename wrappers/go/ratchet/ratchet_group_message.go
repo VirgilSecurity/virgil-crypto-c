@@ -115,12 +115,12 @@ func (obj *RatchetGroupMessage) GetEpoch() uint32 {
 /*
 * Buffer len to serialize this class.
 */
-func (obj *RatchetGroupMessage) SerializeLen() int {
+func (obj *RatchetGroupMessage) SerializeLen() uint {
     proxyResult := /*pr4*/C.vscr_ratchet_group_message_serialize_len(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return int(proxyResult) /* r9 */
+    return uint(proxyResult) /* r9 */
 }
 
 /*

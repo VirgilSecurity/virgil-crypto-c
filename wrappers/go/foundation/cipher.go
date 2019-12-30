@@ -39,21 +39,21 @@ type Cipher interface {
     * "update" or "finish" in an current mode.
     * Pass zero length to define buffer length of the method "finish".
     */
-    OutLen (dataLen int) int
+    OutLen (dataLen uint) uint
 
     /*
     * Return buffer length required to hold an output of the methods
     * "update" or "finish" in an encryption mode.
     * Pass zero length to define buffer length of the method "finish".
     */
-    EncryptedOutLen (dataLen int) int
+    EncryptedOutLen (dataLen uint) uint
 
     /*
     * Return buffer length required to hold an output of the methods
     * "update" or "finish" in an decryption mode.
     * Pass zero length to define buffer length of the method "finish".
     */
-    DecryptedOutLen (dataLen int) int
+    DecryptedOutLen (dataLen uint) uint
 
     /*
     * Accomplish encryption or decryption process.

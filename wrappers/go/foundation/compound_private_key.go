@@ -118,23 +118,23 @@ func (obj *CompoundPrivateKey) AlgInfo() (AlgInfo, error) {
 /*
 * Length of the key in bytes.
 */
-func (obj *CompoundPrivateKey) Len() int {
+func (obj *CompoundPrivateKey) Len() uint {
     proxyResult := /*pr4*/C.vscf_compound_private_key_len(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return int(proxyResult) /* r9 */
+    return uint(proxyResult) /* r9 */
 }
 
 /*
 * Length of the key in bits.
 */
-func (obj *CompoundPrivateKey) Bitlen() int {
+func (obj *CompoundPrivateKey) Bitlen() uint {
     proxyResult := /*pr4*/C.vscf_compound_private_key_bitlen(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return int(proxyResult) /* r9 */
+    return uint(proxyResult) /* r9 */
 }
 
 /*

@@ -10,11 +10,11 @@ type BrainkeyClient struct {
     cCtx *C.vscf_brainkey_client_t /*ct2*/
 }
 const (
-    BrainkeyClientPointLen int = 65
-    BrainkeyClientMpiLen int = 32
-    BrainkeyClientSeedLen int = 32
-    BrainkeyClientMaxPasswordLen int = 128
-    BrainkeyClientMaxKeyNameLen int = 128
+    BrainkeyClientPointLen uint = 65
+    BrainkeyClientMpiLen uint = 32
+    BrainkeyClientSeedLen uint = 32
+    BrainkeyClientMaxPasswordLen uint = 128
+    BrainkeyClientMaxKeyNameLen uint = 128
 )
 
 /* Handle underlying C context. */

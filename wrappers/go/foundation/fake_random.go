@@ -96,7 +96,7 @@ func (obj *FakeRandom) delete() {
 * Generate random bytes.
 * All RNG implementations must be thread-safe.
 */
-func (obj *FakeRandom) Random(dataLen int) ([]byte, error) {
+func (obj *FakeRandom) Random(dataLen uint) ([]byte, error) {
     dataBuf, dataBufErr := bufferNewBuffer(int(dataLen))
     if dataBufErr != nil {
         return nil, dataBufErr
@@ -146,7 +146,7 @@ func (obj *FakeRandom) IsStrong() bool {
 /*
 * Gather entropy of the requested length.
 */
-func (obj *FakeRandom) Gather(len int) ([]byte, error) {
+func (obj *FakeRandom) Gather(len uint) ([]byte, error) {
     outBuf, outBufErr := bufferNewBuffer(int(len))
     if outBufErr != nil {
         return nil, outBufErr

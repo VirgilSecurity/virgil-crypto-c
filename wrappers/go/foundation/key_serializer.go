@@ -14,7 +14,7 @@ type KeySerializer interface {
     *
     * Precondition: public key must be exportable.
     */
-    SerializedPublicKeyLen (publicKey *RawPublicKey) int
+    SerializedPublicKeyLen (publicKey *RawPublicKey) uint
 
     /*
     * Serialize given public key to an interchangeable format.
@@ -28,7 +28,7 @@ type KeySerializer interface {
     *
     * Precondition: private key must be exportable.
     */
-    SerializedPrivateKeyLen (privateKey *RawPrivateKey) int
+    SerializedPrivateKeyLen (privateKey *RawPrivateKey) uint
 
     /*
     * Serialize given private key to an interchangeable format.

@@ -116,23 +116,23 @@ func (obj *HybridPublicKey) AlgInfo() (AlgInfo, error) {
 /*
 * Length of the key in bytes.
 */
-func (obj *HybridPublicKey) Len() int {
+func (obj *HybridPublicKey) Len() uint {
     proxyResult := /*pr4*/C.vscf_hybrid_public_key_len(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return int(proxyResult) /* r9 */
+    return uint(proxyResult) /* r9 */
 }
 
 /*
 * Length of the key in bits.
 */
-func (obj *HybridPublicKey) Bitlen() int {
+func (obj *HybridPublicKey) Bitlen() uint {
     proxyResult := /*pr4*/C.vscf_hybrid_public_key_bitlen(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return int(proxyResult) /* r9 */
+    return uint(proxyResult) /* r9 */
 }
 
 /*

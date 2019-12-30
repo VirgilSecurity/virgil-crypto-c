@@ -94,21 +94,21 @@ func (obj *MessageInfoDerSerializer) delete() {
     C.vscf_message_info_der_serializer_delete(obj.cCtx)
 }
 
-func (obj *MessageInfoDerSerializer) GetPrefixLen() int {
+func (obj *MessageInfoDerSerializer) GetPrefixLen() uint {
     return 32
 }
 
 /*
 * Return buffer size enough to hold serialized message info.
 */
-func (obj *MessageInfoDerSerializer) SerializedLen(messageInfo *MessageInfo) int {
+func (obj *MessageInfoDerSerializer) SerializedLen(messageInfo *MessageInfo) uint {
     proxyResult := /*pr4*/C.vscf_message_info_der_serializer_serialized_len(obj.cCtx, (*C.vscf_message_info_t)(unsafe.Pointer(messageInfo.Ctx())))
 
     runtime.KeepAlive(obj)
 
     runtime.KeepAlive(messageInfo)
 
-    return int(proxyResult) /* r9 */
+    return uint(proxyResult) /* r9 */
 }
 
 /*
@@ -138,14 +138,14 @@ func (obj *MessageInfoDerSerializer) Serialize(messageInfo *MessageInfo) []byte 
 * Zero returned if length can not be determined from the given data,
 * and this means that there is no message info at the data beginning.
 */
-func (obj *MessageInfoDerSerializer) ReadPrefix(data []byte) int {
+func (obj *MessageInfoDerSerializer) ReadPrefix(data []byte) uint {
     dataData := helperWrapData (data)
 
     proxyResult := /*pr4*/C.vscf_message_info_der_serializer_read_prefix(obj.cCtx, dataData)
 
     runtime.KeepAlive(obj)
 
-    return int(proxyResult) /* r9 */
+    return uint(proxyResult) /* r9 */
 }
 
 /*
@@ -171,14 +171,14 @@ func (obj *MessageInfoDerSerializer) Deserialize(data []byte) (*MessageInfo, err
 /*
 * Return buffer size enough to hold serialized message info footer.
 */
-func (obj *MessageInfoDerSerializer) SerializedFooterLen(messageInfoFooter *MessageInfoFooter) int {
+func (obj *MessageInfoDerSerializer) SerializedFooterLen(messageInfoFooter *MessageInfoFooter) uint {
     proxyResult := /*pr4*/C.vscf_message_info_der_serializer_serialized_footer_len(obj.cCtx, (*C.vscf_message_info_footer_t)(unsafe.Pointer(messageInfoFooter.Ctx())))
 
     runtime.KeepAlive(obj)
 
     runtime.KeepAlive(messageInfoFooter)
 
-    return int(proxyResult) /* r9 */
+    return uint(proxyResult) /* r9 */
 }
 
 /*

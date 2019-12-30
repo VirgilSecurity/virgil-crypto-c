@@ -139,12 +139,12 @@ func (obj *PheServer) GenerateServerKeyPair() ([]byte, []byte, error) {
 /*
 * Buffer size needed to fit EnrollmentResponse
 */
-func (obj *PheServer) EnrollmentResponseLen() int {
+func (obj *PheServer) EnrollmentResponseLen() uint {
     proxyResult := /*pr4*/C.vsce_phe_server_enrollment_response_len(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return int(proxyResult) /* r9 */
+    return uint(proxyResult) /* r9 */
 }
 
 /*
@@ -174,12 +174,12 @@ func (obj *PheServer) GetEnrollment(serverPrivateKey []byte, serverPublicKey []b
 /*
 * Buffer size needed to fit VerifyPasswordResponse
 */
-func (obj *PheServer) VerifyPasswordResponseLen() int {
+func (obj *PheServer) VerifyPasswordResponseLen() uint {
     proxyResult := /*pr4*/C.vsce_phe_server_verify_password_response_len(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return int(proxyResult) /* r9 */
+    return uint(proxyResult) /* r9 */
 }
 
 /*
@@ -210,12 +210,12 @@ func (obj *PheServer) VerifyPassword(serverPrivateKey []byte, serverPublicKey []
 /*
 * Buffer size needed to fit UpdateToken
 */
-func (obj *PheServer) UpdateTokenLen() int {
+func (obj *PheServer) UpdateTokenLen() uint {
     proxyResult := /*pr4*/C.vsce_phe_server_update_token_len(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return int(proxyResult) /* r9 */
+    return uint(proxyResult) /* r9 */
 }
 
 /*

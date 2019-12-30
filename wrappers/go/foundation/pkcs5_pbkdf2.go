@@ -129,7 +129,7 @@ func (obj *Pkcs5Pbkdf2) RestoreAlgInfo(algInfo AlgInfo) error {
 /*
 * Derive key of the requested length from the given data.
 */
-func (obj *Pkcs5Pbkdf2) Derive(data []byte, keyLen int) []byte {
+func (obj *Pkcs5Pbkdf2) Derive(data []byte, keyLen uint) []byte {
     keyBuf, keyBufErr := bufferNewBuffer(int(keyLen))
     if keyBufErr != nil {
         return nil
@@ -147,7 +147,7 @@ func (obj *Pkcs5Pbkdf2) Derive(data []byte, keyLen int) []byte {
 /*
 * Prepare algorithm to derive new key.
 */
-func (obj *Pkcs5Pbkdf2) Reset(salt []byte, iterationCount int) {
+func (obj *Pkcs5Pbkdf2) Reset(salt []byte, iterationCount uint) {
     saltData := helperWrapData (salt)
 
     C.vscf_pkcs5_pbkdf2_reset(obj.cCtx, saltData, (C.size_t)(iterationCount)/*pa10*/)

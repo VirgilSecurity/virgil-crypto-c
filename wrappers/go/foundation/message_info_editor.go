@@ -186,12 +186,12 @@ func (obj *MessageInfoEditor) RemoveAll() {
 * Return length of serialized message info.
 * Actual length can be obtained right after applying changes.
 */
-func (obj *MessageInfoEditor) PackedLen() int {
+func (obj *MessageInfoEditor) PackedLen() uint {
     proxyResult := /*pr4*/C.vscf_message_info_editor_packed_len(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return int(proxyResult) /* r9 */
+    return uint(proxyResult) /* r9 */
 }
 
 /*

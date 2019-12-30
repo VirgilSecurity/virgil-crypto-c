@@ -113,7 +113,7 @@ func (obj *Aes256Cbc) RestoreAlgInfo(algInfo AlgInfo) error {
 * Encrypt given data.
 */
 func (obj *Aes256Cbc) Encrypt(data []byte) ([]byte, error) {
-    outBuf, outBufErr := bufferNewBuffer(int(obj.EncryptedLen(len(data)) /* lg2 */))
+    outBuf, outBufErr := bufferNewBuffer(int(obj.EncryptedLen(uint(len(data))) /* lg2 */))
     if outBufErr != nil {
         return nil, outBufErr
     }
@@ -135,30 +135,30 @@ func (obj *Aes256Cbc) Encrypt(data []byte) ([]byte, error) {
 /*
 * Calculate required buffer length to hold the encrypted data.
 */
-func (obj *Aes256Cbc) EncryptedLen(dataLen int) int {
+func (obj *Aes256Cbc) EncryptedLen(dataLen uint) uint {
     proxyResult := /*pr4*/C.vscf_aes256_cbc_encrypted_len(obj.cCtx, (C.size_t)(dataLen)/*pa10*/)
 
     runtime.KeepAlive(obj)
 
-    return int(proxyResult) /* r9 */
+    return uint(proxyResult) /* r9 */
 }
 
 /*
 * Precise length calculation of encrypted data.
 */
-func (obj *Aes256Cbc) PreciseEncryptedLen(dataLen int) int {
+func (obj *Aes256Cbc) PreciseEncryptedLen(dataLen uint) uint {
     proxyResult := /*pr4*/C.vscf_aes256_cbc_precise_encrypted_len(obj.cCtx, (C.size_t)(dataLen)/*pa10*/)
 
     runtime.KeepAlive(obj)
 
-    return int(proxyResult) /* r9 */
+    return uint(proxyResult) /* r9 */
 }
 
 /*
 * Decrypt given data.
 */
 func (obj *Aes256Cbc) Decrypt(data []byte) ([]byte, error) {
-    outBuf, outBufErr := bufferNewBuffer(int(obj.DecryptedLen(len(data)) /* lg2 */))
+    outBuf, outBufErr := bufferNewBuffer(int(obj.DecryptedLen(uint(len(data))) /* lg2 */))
     if outBufErr != nil {
         return nil, outBufErr
     }
@@ -180,39 +180,39 @@ func (obj *Aes256Cbc) Decrypt(data []byte) ([]byte, error) {
 /*
 * Calculate required buffer length to hold the decrypted data.
 */
-func (obj *Aes256Cbc) DecryptedLen(dataLen int) int {
+func (obj *Aes256Cbc) DecryptedLen(dataLen uint) uint {
     proxyResult := /*pr4*/C.vscf_aes256_cbc_decrypted_len(obj.cCtx, (C.size_t)(dataLen)/*pa10*/)
 
     runtime.KeepAlive(obj)
 
-    return int(proxyResult) /* r9 */
+    return uint(proxyResult) /* r9 */
 }
 
 /*
 * Cipher nfonce length or IV length in bytes, or 0 if nonce is not required.
 */
-func (obj *Aes256Cbc) GetNonceLen() int {
+func (obj *Aes256Cbc) GetNonceLen() uint {
     return 16
 }
 
 /*
 * Cipher key length in bytes.
 */
-func (obj *Aes256Cbc) GetKeyLen() int {
+func (obj *Aes256Cbc) GetKeyLen() uint {
     return 32
 }
 
 /*
 * Cipher key length in bits.
 */
-func (obj *Aes256Cbc) GetKeyBitlen() int {
+func (obj *Aes256Cbc) GetKeyBitlen() uint {
     return 256
 }
 
 /*
 * Cipher block length in bytes.
 */
-func (obj *Aes256Cbc) GetBlockLen() int {
+func (obj *Aes256Cbc) GetBlockLen() uint {
     return 16
 }
 
@@ -268,7 +268,7 @@ func (obj *Aes256Cbc) StartDecryption() {
 * Process encryption or decryption of the given data chunk.
 */
 func (obj *Aes256Cbc) Update(data []byte) []byte {
-    outBuf, outBufErr := bufferNewBuffer(int(obj.OutLen(len(data)) /* lg2 */))
+    outBuf, outBufErr := bufferNewBuffer(int(obj.OutLen(uint(len(data))) /* lg2 */))
     if outBufErr != nil {
         return nil
     }
@@ -287,12 +287,12 @@ func (obj *Aes256Cbc) Update(data []byte) []byte {
 * "update" or "finish" in an current mode.
 * Pass zero length to define buffer length of the method "finish".
 */
-func (obj *Aes256Cbc) OutLen(dataLen int) int {
+func (obj *Aes256Cbc) OutLen(dataLen uint) uint {
     proxyResult := /*pr4*/C.vscf_aes256_cbc_out_len(obj.cCtx, (C.size_t)(dataLen)/*pa10*/)
 
     runtime.KeepAlive(obj)
 
-    return int(proxyResult) /* r9 */
+    return uint(proxyResult) /* r9 */
 }
 
 /*
@@ -300,12 +300,12 @@ func (obj *Aes256Cbc) OutLen(dataLen int) int {
 * "update" or "finish" in an encryption mode.
 * Pass zero length to define buffer length of the method "finish".
 */
-func (obj *Aes256Cbc) EncryptedOutLen(dataLen int) int {
+func (obj *Aes256Cbc) EncryptedOutLen(dataLen uint) uint {
     proxyResult := /*pr4*/C.vscf_aes256_cbc_encrypted_out_len(obj.cCtx, (C.size_t)(dataLen)/*pa10*/)
 
     runtime.KeepAlive(obj)
 
-    return int(proxyResult) /* r9 */
+    return uint(proxyResult) /* r9 */
 }
 
 /*
@@ -313,12 +313,12 @@ func (obj *Aes256Cbc) EncryptedOutLen(dataLen int) int {
 * "update" or "finish" in an decryption mode.
 * Pass zero length to define buffer length of the method "finish".
 */
-func (obj *Aes256Cbc) DecryptedOutLen(dataLen int) int {
+func (obj *Aes256Cbc) DecryptedOutLen(dataLen uint) uint {
     proxyResult := /*pr4*/C.vscf_aes256_cbc_decrypted_out_len(obj.cCtx, (C.size_t)(dataLen)/*pa10*/)
 
     runtime.KeepAlive(obj)
 
-    return int(proxyResult) /* r9 */
+    return uint(proxyResult) /* r9 */
 }
 
 /*

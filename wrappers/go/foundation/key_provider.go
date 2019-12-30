@@ -95,7 +95,7 @@ func (obj *KeyProvider) SetupDefaults() error {
 /*
 * Setup parameters that is used during RSA key generation.
 */
-func (obj *KeyProvider) SetRsaParams(bitlen int) {
+func (obj *KeyProvider) SetRsaParams(bitlen uint) {
     C.vscf_key_provider_set_rsa_params(obj.cCtx, (C.size_t)(bitlen)/*pa10*/)
 
     runtime.KeepAlive(obj)
@@ -255,14 +255,14 @@ func (obj *KeyProvider) ImportPublicKey(keyData []byte) (PublicKey, error) {
 *
 * Precondition: public key must be exportable.
 */
-func (obj *KeyProvider) ExportedPublicKeyLen(publicKey PublicKey) int {
+func (obj *KeyProvider) ExportedPublicKeyLen(publicKey PublicKey) uint {
     proxyResult := /*pr4*/C.vscf_key_provider_exported_public_key_len(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(publicKey.Ctx())))
 
     runtime.KeepAlive(obj)
 
     runtime.KeepAlive(publicKey)
 
-    return int(proxyResult) /* r9 */
+    return uint(proxyResult) /* r9 */
 }
 
 /*
@@ -297,14 +297,14 @@ func (obj *KeyProvider) ExportPublicKey(publicKey PublicKey) ([]byte, error) {
 *
 * Precondition: private key must be exportable.
 */
-func (obj *KeyProvider) ExportedPrivateKeyLen(privateKey PrivateKey) int {
+func (obj *KeyProvider) ExportedPrivateKeyLen(privateKey PrivateKey) uint {
     proxyResult := /*pr4*/C.vscf_key_provider_exported_private_key_len(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(privateKey.Ctx())))
 
     runtime.KeepAlive(obj)
 
     runtime.KeepAlive(privateKey)
 
-    return int(proxyResult) /* r9 */
+    return uint(proxyResult) /* r9 */
 }
 
 /*

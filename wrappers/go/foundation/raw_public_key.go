@@ -103,23 +103,23 @@ func (obj *RawPublicKey) AlgInfo() (AlgInfo, error) {
 /*
 * Length of the key in bytes.
 */
-func (obj *RawPublicKey) Len() int {
+func (obj *RawPublicKey) Len() uint {
     proxyResult := /*pr4*/C.vscf_raw_public_key_len(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return int(proxyResult) /* r9 */
+    return uint(proxyResult) /* r9 */
 }
 
 /*
 * Length of the key in bits.
 */
-func (obj *RawPublicKey) Bitlen() int {
+func (obj *RawPublicKey) Bitlen() uint {
     proxyResult := /*pr4*/C.vscf_raw_public_key_bitlen(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return int(proxyResult) /* r9 */
+    return uint(proxyResult) /* r9 */
 }
 
 /*

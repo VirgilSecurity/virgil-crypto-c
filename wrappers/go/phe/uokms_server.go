@@ -138,12 +138,12 @@ func (obj *UokmsServer) GenerateServerKeyPair() ([]byte, []byte, error) {
 /*
 * Buffer size needed to fit DecryptResponse
 */
-func (obj *UokmsServer) DecryptResponseLen() int {
+func (obj *UokmsServer) DecryptResponseLen() uint {
     proxyResult := /*pr4*/C.vsce_uokms_server_decrypt_response_len(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return int(proxyResult) /* r9 */
+    return uint(proxyResult) /* r9 */
 }
 
 /*

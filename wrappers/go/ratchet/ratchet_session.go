@@ -196,14 +196,14 @@ func (obj *RatchetSession) Encrypt(plainText []byte) (*RatchetMessage, error) {
 /*
 * Calculates size of buffer sufficient to store decrypted message
 */
-func (obj *RatchetSession) DecryptLen(message *RatchetMessage) int {
+func (obj *RatchetSession) DecryptLen(message *RatchetMessage) uint {
     proxyResult := /*pr4*/C.vscr_ratchet_session_decrypt_len(obj.cCtx, (*C.vscr_ratchet_message_t)(unsafe.Pointer(message.Ctx())))
 
     runtime.KeepAlive(obj)
 
     runtime.KeepAlive(message)
 
-    return int(proxyResult) /* r9 */
+    return uint(proxyResult) /* r9 */
 }
 
 /*

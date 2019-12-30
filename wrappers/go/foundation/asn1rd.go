@@ -83,12 +83,12 @@ func (obj *Asn1rd) Reset(data []byte) {
 /*
 * Return length in bytes how many bytes are left for reading.
 */
-func (obj *Asn1rd) LeftLen() int {
+func (obj *Asn1rd) LeftLen() uint {
     proxyResult := /*pr4*/C.vscf_asn1rd_left_len(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return int(proxyResult) /* r9 */
+    return uint(proxyResult) /* r9 */
 }
 
 /*
@@ -132,35 +132,35 @@ func (obj *Asn1rd) GetTag() int32 {
 /*
 * Get length of the current ASN.1 element.
 */
-func (obj *Asn1rd) GetLen() int {
+func (obj *Asn1rd) GetLen() uint {
     proxyResult := /*pr4*/C.vscf_asn1rd_get_len(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return int(proxyResult) /* r9 */
+    return uint(proxyResult) /* r9 */
 }
 
 /*
 * Get length of the current ASN.1 element with tag and length itself.
 */
-func (obj *Asn1rd) GetDataLen() int {
+func (obj *Asn1rd) GetDataLen() uint {
     proxyResult := /*pr4*/C.vscf_asn1rd_get_data_len(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return int(proxyResult) /* r9 */
+    return uint(proxyResult) /* r9 */
 }
 
 /*
 * Read ASN.1 type: TAG.
 * Return element length.
 */
-func (obj *Asn1rd) ReadTag(tag int32) int {
+func (obj *Asn1rd) ReadTag(tag int32) uint {
     proxyResult := /*pr4*/C.vscf_asn1rd_read_tag(obj.cCtx, (C.int32_t)(tag)/*pa10*/)
 
     runtime.KeepAlive(obj)
 
-    return int(proxyResult) /* r9 */
+    return uint(proxyResult) /* r9 */
 }
 
 /*
@@ -168,12 +168,12 @@ func (obj *Asn1rd) ReadTag(tag int32) int {
 * Return element length.
 * Return 0 if current position do not points to the requested tag.
 */
-func (obj *Asn1rd) ReadContextTag(tag int32) int {
+func (obj *Asn1rd) ReadContextTag(tag int32) uint {
     proxyResult := /*pr4*/C.vscf_asn1rd_read_context_tag(obj.cCtx, (C.int32_t)(tag)/*pa10*/)
 
     runtime.KeepAlive(obj)
 
-    return int(proxyResult) /* r9 */
+    return uint(proxyResult) /* r9 */
 }
 
 /*
@@ -367,7 +367,7 @@ func (obj *Asn1rd) ReadOid() []byte {
 /*
 * Read raw data of given length.
 */
-func (obj *Asn1rd) ReadData(len int) []byte {
+func (obj *Asn1rd) ReadData(len uint) []byte {
     proxyResult := /*pr4*/C.vscf_asn1rd_read_data(obj.cCtx, (C.size_t)(len)/*pa10*/)
 
     runtime.KeepAlive(obj)
@@ -379,22 +379,22 @@ func (obj *Asn1rd) ReadData(len int) []byte {
 * Read ASN.1 type: SEQUENCE.
 * Return element length.
 */
-func (obj *Asn1rd) ReadSequence() int {
+func (obj *Asn1rd) ReadSequence() uint {
     proxyResult := /*pr4*/C.vscf_asn1rd_read_sequence(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return int(proxyResult) /* r9 */
+    return uint(proxyResult) /* r9 */
 }
 
 /*
 * Read ASN.1 type: SET.
 * Return element length.
 */
-func (obj *Asn1rd) ReadSet() int {
+func (obj *Asn1rd) ReadSet() uint {
     proxyResult := /*pr4*/C.vscf_asn1rd_read_set(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return int(proxyResult) /* r9 */
+    return uint(proxyResult) /* r9 */
 }

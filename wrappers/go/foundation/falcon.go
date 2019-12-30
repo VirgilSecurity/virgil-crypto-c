@@ -325,14 +325,14 @@ func (obj *Falcon) CanSign(privateKey PrivateKey) bool {
 * Return length in bytes required to hold signature.
 * Return zero if a given private key can not produce signatures.
 */
-func (obj *Falcon) SignatureLen(privateKey PrivateKey) int {
+func (obj *Falcon) SignatureLen(privateKey PrivateKey) uint {
     proxyResult := /*pr4*/C.vscf_falcon_signature_len(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(privateKey.Ctx())))
 
     runtime.KeepAlive(obj)
 
     runtime.KeepAlive(privateKey)
 
-    return int(proxyResult) /* r9 */
+    return uint(proxyResult) /* r9 */
 }
 
 /*

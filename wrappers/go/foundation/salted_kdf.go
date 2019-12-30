@@ -13,7 +13,7 @@ type SaltedKdf interface {
     /*
     * Prepare algorithm to derive new key.
     */
-    Reset (salt []byte, iterationCount int)
+    Reset (salt []byte, iterationCount uint)
 
     /*
     * Setup application specific information (optional).

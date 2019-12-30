@@ -318,7 +318,7 @@ func (obj *CompoundKeyAlg) ExportPrivateKey(privateKey PrivateKey) (*RawPrivateK
 /*
 * Check if algorithm can encrypt data with a given key.
 */
-func (obj *CompoundKeyAlg) CanEncrypt(publicKey PublicKey, dataLen int) bool {
+func (obj *CompoundKeyAlg) CanEncrypt(publicKey PublicKey, dataLen uint) bool {
     proxyResult := /*pr4*/C.vscf_compound_key_alg_can_encrypt(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(publicKey.Ctx())), (C.size_t)(dataLen)/*pa10*/)
 
     runtime.KeepAlive(obj)
@@ -331,21 +331,21 @@ func (obj *CompoundKeyAlg) CanEncrypt(publicKey PublicKey, dataLen int) bool {
 /*
 * Calculate required buffer length to hold the encrypted data.
 */
-func (obj *CompoundKeyAlg) EncryptedLen(publicKey PublicKey, dataLen int) int {
+func (obj *CompoundKeyAlg) EncryptedLen(publicKey PublicKey, dataLen uint) uint {
     proxyResult := /*pr4*/C.vscf_compound_key_alg_encrypted_len(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(publicKey.Ctx())), (C.size_t)(dataLen)/*pa10*/)
 
     runtime.KeepAlive(obj)
 
     runtime.KeepAlive(publicKey)
 
-    return int(proxyResult) /* r9 */
+    return uint(proxyResult) /* r9 */
 }
 
 /*
 * Encrypt data with a given public key.
 */
 func (obj *CompoundKeyAlg) Encrypt(publicKey PublicKey, data []byte) ([]byte, error) {
-    outBuf, outBufErr := bufferNewBuffer(int(obj.EncryptedLen(publicKey.(PublicKey), len(data)) /* lg2 */))
+    outBuf, outBufErr := bufferNewBuffer(int(obj.EncryptedLen(publicKey.(PublicKey), uint(len(data))) /* lg2 */))
     if outBufErr != nil {
         return nil, outBufErr
     }
@@ -370,7 +370,7 @@ func (obj *CompoundKeyAlg) Encrypt(publicKey PublicKey, data []byte) ([]byte, er
 * Check if algorithm can decrypt data with a given key.
 * However, success result of decryption is not guaranteed.
 */
-func (obj *CompoundKeyAlg) CanDecrypt(privateKey PrivateKey, dataLen int) bool {
+func (obj *CompoundKeyAlg) CanDecrypt(privateKey PrivateKey, dataLen uint) bool {
     proxyResult := /*pr4*/C.vscf_compound_key_alg_can_decrypt(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(privateKey.Ctx())), (C.size_t)(dataLen)/*pa10*/)
 
     runtime.KeepAlive(obj)
@@ -383,21 +383,21 @@ func (obj *CompoundKeyAlg) CanDecrypt(privateKey PrivateKey, dataLen int) bool {
 /*
 * Calculate required buffer length to hold the decrypted data.
 */
-func (obj *CompoundKeyAlg) DecryptedLen(privateKey PrivateKey, dataLen int) int {
+func (obj *CompoundKeyAlg) DecryptedLen(privateKey PrivateKey, dataLen uint) uint {
     proxyResult := /*pr4*/C.vscf_compound_key_alg_decrypted_len(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(privateKey.Ctx())), (C.size_t)(dataLen)/*pa10*/)
 
     runtime.KeepAlive(obj)
 
     runtime.KeepAlive(privateKey)
 
-    return int(proxyResult) /* r9 */
+    return uint(proxyResult) /* r9 */
 }
 
 /*
 * Decrypt given data.
 */
 func (obj *CompoundKeyAlg) Decrypt(privateKey PrivateKey, data []byte) ([]byte, error) {
-    outBuf, outBufErr := bufferNewBuffer(int(obj.DecryptedLen(privateKey.(PrivateKey), len(data)) /* lg2 */))
+    outBuf, outBufErr := bufferNewBuffer(int(obj.DecryptedLen(privateKey.(PrivateKey), uint(len(data))) /* lg2 */))
     if outBufErr != nil {
         return nil, outBufErr
     }
@@ -435,14 +435,14 @@ func (obj *CompoundKeyAlg) CanSign(privateKey PrivateKey) bool {
 * Return length in bytes required to hold signature.
 * Return zero if a given private key can not produce signatures.
 */
-func (obj *CompoundKeyAlg) SignatureLen(privateKey PrivateKey) int {
+func (obj *CompoundKeyAlg) SignatureLen(privateKey PrivateKey) uint {
     proxyResult := /*pr4*/C.vscf_compound_key_alg_signature_len(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(privateKey.Ctx())))
 
     runtime.KeepAlive(obj)
 
     runtime.KeepAlive(privateKey)
 
-    return int(proxyResult) /* r9 */
+    return uint(proxyResult) /* r9 */
 }
 
 /*

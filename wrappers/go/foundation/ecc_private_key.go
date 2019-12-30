@@ -92,23 +92,23 @@ func (obj *EccPrivateKey) AlgInfo() (AlgInfo, error) {
 /*
 * Length of the key in bytes.
 */
-func (obj *EccPrivateKey) Len() int {
+func (obj *EccPrivateKey) Len() uint {
     proxyResult := /*pr4*/C.vscf_ecc_private_key_len(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return int(proxyResult) /* r9 */
+    return uint(proxyResult) /* r9 */
 }
 
 /*
 * Length of the key in bits.
 */
-func (obj *EccPrivateKey) Bitlen() int {
+func (obj *EccPrivateKey) Bitlen() uint {
     proxyResult := /*pr4*/C.vscf_ecc_private_key_bitlen(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return int(proxyResult) /* r9 */
+    return uint(proxyResult) /* r9 */
 }
 
 /*

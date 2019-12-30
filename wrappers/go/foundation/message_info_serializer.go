@@ -9,12 +9,12 @@ type MessageInfoSerializer interface {
 
     context
 
-    GetPrefixLen () int
+    GetPrefixLen () uint
 
     /*
     * Return buffer size enough to hold serialized message info.
     */
-    SerializedLen (messageInfo *MessageInfo) int
+    SerializedLen (messageInfo *MessageInfo) uint
 
     /*
     * Serialize class "message info".
@@ -28,7 +28,7 @@ type MessageInfoSerializer interface {
     * Zero returned if length can not be determined from the given data,
     * and this means that there is no message info at the data beginning.
     */
-    ReadPrefix (data []byte) int
+    ReadPrefix (data []byte) uint
 
     /*
     * Deserialize class "message info".

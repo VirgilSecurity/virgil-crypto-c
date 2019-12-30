@@ -114,12 +114,12 @@ func (obj *RatchetMessage) GetOneTimePublicKey() []byte {
 /*
 * Buffer len to serialize this class.
 */
-func (obj *RatchetMessage) SerializeLen() int {
+func (obj *RatchetMessage) SerializeLen() uint {
     proxyResult := /*pr4*/C.vscr_ratchet_message_serialize_len(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return int(proxyResult) /* r9 */
+    return uint(proxyResult) /* r9 */
 }
 
 /*

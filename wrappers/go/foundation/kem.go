@@ -12,12 +12,12 @@ type Kem interface {
     /*
     * Return length in bytes required to hold encapsulated shared key.
     */
-    KemSharedKeyLen (key Key) int
+    KemSharedKeyLen (key Key) uint
 
     /*
     * Return length in bytes required to hold encapsulated key.
     */
-    KemEncapsulatedKeyLen (publicKey PublicKey) int
+    KemEncapsulatedKeyLen (publicKey PublicKey) uint
 
     /*
     * Generate a shared key and a key encapsulated message.

@@ -94,7 +94,7 @@ func (obj *SeedEntropySource) IsStrong() bool {
 /*
 * Gather entropy of the requested length.
 */
-func (obj *SeedEntropySource) Gather(len int) ([]byte, error) {
+func (obj *SeedEntropySource) Gather(len uint) ([]byte, error) {
     outBuf, outBufErr := bufferNewBuffer(int(len))
     if outBufErr != nil {
         return nil, outBufErr

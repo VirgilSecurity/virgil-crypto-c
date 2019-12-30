@@ -12,7 +12,7 @@ type Mac interface {
     /*
     * Size of the digest (mac output) in bytes.
     */
-    DigestLen () int
+    DigestLen () uint
 
     /*
     * Calculate MAC over given data.

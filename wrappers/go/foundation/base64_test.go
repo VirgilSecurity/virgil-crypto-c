@@ -51,9 +51,9 @@ func TestBase64Encode(t *testing.T) {
 }
 
 func TestBase64EncodedLen(t *testing.T) {
-	assert.Equal(t, 0, Base64EncodedLen(0))
-	assert.Equal(t, 5, Base64EncodedLen(1))
-	assert.Equal(t, 9, Base64EncodedLen(4))
+	assert.Equal(t, uint(0), Base64EncodedLen(0))
+	assert.Equal(t, uint(5), Base64EncodedLen(1))
+	assert.Equal(t, uint(9), Base64EncodedLen(4))
 }
 
 func TestBase64Decode(t *testing.T) {
@@ -68,6 +68,6 @@ func TestBase64Decode(t *testing.T) {
 }
 
 func TestBase64DecodedLen(t *testing.T) {
-	assert.Equal(t, 0, Base64DecodedLen(0))
-	assert.Equal(t, 4, Base64DecodedLen(1))
+	assert.Equal(t, uint(0), Base64DecodedLen(0))
+	assert.Equal(t, uint(4), Base64DecodedLen(1))
 }

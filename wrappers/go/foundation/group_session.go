@@ -16,19 +16,19 @@ const (
     /*
     * Sender id len
     */
-    GroupSessionSenderIdLen int = 32
+    GroupSessionSenderIdLen uint = 32
     /*
     * Max plain text len
     */
-    GroupSessionMaxPlainTextLen int = 30000
+    GroupSessionMaxPlainTextLen uint = 30000
     /*
     * Max epochs count
     */
-    GroupSessionMaxEpochsCount int = 50
+    GroupSessionMaxEpochsCount uint = 50
     /*
     * Salt size
     */
-    GroupSessionSaltSize int = 32
+    GroupSessionSaltSize uint = 32
 )
 
 /* Handle underlying C context. */
@@ -179,14 +179,14 @@ func (obj *GroupSession) Encrypt(plainText []byte, privateKey PrivateKey) (*Grou
 /*
 * Calculates size of buffer sufficient to store decrypted message
 */
-func (obj *GroupSession) DecryptLen(message *GroupSessionMessage) int {
+func (obj *GroupSession) DecryptLen(message *GroupSessionMessage) uint {
     proxyResult := /*pr4*/C.vscf_group_session_decrypt_len(obj.cCtx, (*C.vscf_group_session_message_t)(unsafe.Pointer(message.Ctx())))
 
     runtime.KeepAlive(obj)
 
     runtime.KeepAlive(message)
 
-    return int(proxyResult) /* r9 */
+    return uint(proxyResult) /* r9 */
 }
 
 /*

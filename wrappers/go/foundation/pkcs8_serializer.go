@@ -37,7 +37,7 @@ func (obj *Pkcs8Serializer) SetupDefaults() {
 * Note, that caller code is responsible to reset ASN.1 writer with
 * an output buffer.
 */
-func (obj *Pkcs8Serializer) SerializePublicKeyInplace(publicKey *RawPublicKey) (int, error) {
+func (obj *Pkcs8Serializer) SerializePublicKeyInplace(publicKey *RawPublicKey) (uint, error) {
     var error C.vscf_error_t
     C.vscf_error_reset(&error)
 
@@ -52,7 +52,7 @@ func (obj *Pkcs8Serializer) SerializePublicKeyInplace(publicKey *RawPublicKey) (
 
     runtime.KeepAlive(publicKey)
 
-    return int(proxyResult) /* r9 */, nil
+    return uint(proxyResult) /* r9 */, nil
 }
 
 /*
@@ -60,7 +60,7 @@ func (obj *Pkcs8Serializer) SerializePublicKeyInplace(publicKey *RawPublicKey) (
 * Note, that caller code is responsible to reset ASN.1 writer with
 * an output buffer.
 */
-func (obj *Pkcs8Serializer) SerializePrivateKeyInplace(privateKey *RawPrivateKey) (int, error) {
+func (obj *Pkcs8Serializer) SerializePrivateKeyInplace(privateKey *RawPrivateKey) (uint, error) {
     var error C.vscf_error_t
     C.vscf_error_reset(&error)
 
@@ -75,7 +75,7 @@ func (obj *Pkcs8Serializer) SerializePrivateKeyInplace(privateKey *RawPrivateKey
 
     runtime.KeepAlive(privateKey)
 
-    return int(proxyResult) /* r9 */, nil
+    return uint(proxyResult) /* r9 */, nil
 }
 
 /* Handle underlying C context. */
@@ -137,14 +137,14 @@ func (obj *Pkcs8Serializer) delete() {
 *
 * Precondition: public key must be exportable.
 */
-func (obj *Pkcs8Serializer) SerializedPublicKeyLen(publicKey *RawPublicKey) int {
+func (obj *Pkcs8Serializer) SerializedPublicKeyLen(publicKey *RawPublicKey) uint {
     proxyResult := /*pr4*/C.vscf_pkcs8_serializer_serialized_public_key_len(obj.cCtx, (*C.vscf_raw_public_key_t)(unsafe.Pointer(publicKey.Ctx())))
 
     runtime.KeepAlive(obj)
 
     runtime.KeepAlive(publicKey)
 
-    return int(proxyResult) /* r9 */
+    return uint(proxyResult) /* r9 */
 }
 
 /*
@@ -179,14 +179,14 @@ func (obj *Pkcs8Serializer) SerializePublicKey(publicKey *RawPublicKey) ([]byte,
 *
 * Precondition: private key must be exportable.
 */
-func (obj *Pkcs8Serializer) SerializedPrivateKeyLen(privateKey *RawPrivateKey) int {
+func (obj *Pkcs8Serializer) SerializedPrivateKeyLen(privateKey *RawPrivateKey) uint {
     proxyResult := /*pr4*/C.vscf_pkcs8_serializer_serialized_private_key_len(obj.cCtx, (*C.vscf_raw_private_key_t)(unsafe.Pointer(privateKey.Ctx())))
 
     runtime.KeepAlive(obj)
 
     runtime.KeepAlive(privateKey)
 
-    return int(proxyResult) /* r9 */
+    return uint(proxyResult) /* r9 */
 }
 
 /*

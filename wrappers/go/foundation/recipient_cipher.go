@@ -215,7 +215,7 @@ func (obj *RecipientCipher) StartEncryption() error {
 * Precondition: At least one signer should be added.
 * Note, store message info footer as well.
 */
-func (obj *RecipientCipher) StartSignedEncryption(dataSize int) error {
+func (obj *RecipientCipher) StartSignedEncryption(dataSize uint) error {
     proxyResult := /*pr4*/C.vscf_recipient_cipher_start_signed_encryption(obj.cCtx, (C.size_t)(dataSize)/*pa10*/)
 
     err := FoundationErrorHandleStatus(proxyResult)
@@ -233,12 +233,12 @@ func (obj *RecipientCipher) StartSignedEncryption(dataSize int) error {
 * "pack message info" method.
 * Precondition: all recipients and custom parameters should be set.
 */
-func (obj *RecipientCipher) MessageInfoLen() int {
+func (obj *RecipientCipher) MessageInfoLen() uint {
     proxyResult := /*pr4*/C.vscf_recipient_cipher_message_info_len(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return int(proxyResult) /* r9 */
+    return uint(proxyResult) /* r9 */
 }
 
 /*
@@ -272,19 +272,19 @@ func (obj *RecipientCipher) PackMessageInfo() []byte {
 * Return buffer length required to hold output of the method
 * "process encryption" and method "finish" during encryption.
 */
-func (obj *RecipientCipher) EncryptionOutLen(dataLen int) int {
+func (obj *RecipientCipher) EncryptionOutLen(dataLen uint) uint {
     proxyResult := /*pr4*/C.vscf_recipient_cipher_encryption_out_len(obj.cCtx, (C.size_t)(dataLen)/*pa10*/)
 
     runtime.KeepAlive(obj)
 
-    return int(proxyResult) /* r9 */
+    return uint(proxyResult) /* r9 */
 }
 
 /*
 * Process encryption of a new portion of data.
 */
 func (obj *RecipientCipher) ProcessEncryption(data []byte) ([]byte, error) {
-    outBuf, outBufErr := bufferNewBuffer(int(obj.EncryptionOutLen(len(data)) /* lg2 */))
+    outBuf, outBufErr := bufferNewBuffer(int(obj.EncryptionOutLen(uint(len(data))) /* lg2 */))
     if outBufErr != nil {
         return nil, outBufErr
     }
@@ -377,12 +377,12 @@ func (obj *RecipientCipher) StartVerifiedDecryptionWithKey(recipientId []byte, p
 * Return buffer length required to hold output of the method
 * "process decryption" and method "finish" during decryption.
 */
-func (obj *RecipientCipher) DecryptionOutLen(dataLen int) int {
+func (obj *RecipientCipher) DecryptionOutLen(dataLen uint) uint {
     proxyResult := /*pr4*/C.vscf_recipient_cipher_decryption_out_len(obj.cCtx, (C.size_t)(dataLen)/*pa10*/)
 
     runtime.KeepAlive(obj)
 
-    return int(proxyResult) /* r9 */
+    return uint(proxyResult) /* r9 */
 }
 
 /*
@@ -390,7 +390,7 @@ func (obj *RecipientCipher) DecryptionOutLen(dataLen int) int {
 * Return error if data can not be encrypted or decrypted.
 */
 func (obj *RecipientCipher) ProcessDecryption(data []byte) ([]byte, error) {
-    outBuf, outBufErr := bufferNewBuffer(int(obj.DecryptionOutLen(len(data)) /* lg2 */))
+    outBuf, outBufErr := bufferNewBuffer(int(obj.DecryptionOutLen(uint(len(data))) /* lg2 */))
     if outBufErr != nil {
         return nil, outBufErr
     }
@@ -480,12 +480,12 @@ func (obj *RecipientCipher) VerifySignerInfo(signerInfo *SignerInfo, publicKey P
 *
 * Precondition: this method should be called after "finish encryption".
 */
-func (obj *RecipientCipher) MessageInfoFooterLen() int {
+func (obj *RecipientCipher) MessageInfoFooterLen() uint {
     proxyResult := /*pr4*/C.vscf_recipient_cipher_message_info_footer_len(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return int(proxyResult) /* r9 */
+    return uint(proxyResult) /* r9 */
 }
 
 /*

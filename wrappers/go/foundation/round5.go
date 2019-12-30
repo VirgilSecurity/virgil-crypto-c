@@ -271,27 +271,27 @@ func (obj *Round5) ExportPrivateKey(privateKey PrivateKey) (*RawPrivateKey, erro
 /*
 * Return length in bytes required to hold encapsulated shared key.
 */
-func (obj *Round5) KemSharedKeyLen(key Key) int {
+func (obj *Round5) KemSharedKeyLen(key Key) uint {
     proxyResult := /*pr4*/C.vscf_round5_kem_shared_key_len(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(key.Ctx())))
 
     runtime.KeepAlive(obj)
 
     runtime.KeepAlive(key)
 
-    return int(proxyResult) /* r9 */
+    return uint(proxyResult) /* r9 */
 }
 
 /*
 * Return length in bytes required to hold encapsulated key.
 */
-func (obj *Round5) KemEncapsulatedKeyLen(publicKey PublicKey) int {
+func (obj *Round5) KemEncapsulatedKeyLen(publicKey PublicKey) uint {
     proxyResult := /*pr4*/C.vscf_round5_kem_encapsulated_key_len(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(publicKey.Ctx())))
 
     runtime.KeepAlive(obj)
 
     runtime.KeepAlive(publicKey)
 
-    return int(proxyResult) /* r9 */
+    return uint(proxyResult) /* r9 */
 }
 
 /*

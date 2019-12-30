@@ -39,12 +39,12 @@ func (obj *SaltedKdfAlgInfo) Salt() []byte {
 * Return KDF iteration count.
 * Note, can be 0 if KDF does not need the iteration count.
 */
-func (obj *SaltedKdfAlgInfo) IterationCount() int {
+func (obj *SaltedKdfAlgInfo) IterationCount() uint {
     proxyResult := /*pr4*/C.vscf_salted_kdf_alg_info_iteration_count(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return int(proxyResult) /* r9 */
+    return uint(proxyResult) /* r9 */
 }
 
 /* Handle underlying C context. */

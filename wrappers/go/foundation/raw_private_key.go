@@ -140,23 +140,23 @@ func (obj *RawPrivateKey) AlgInfo() (AlgInfo, error) {
 /*
 * Length of the key in bytes.
 */
-func (obj *RawPrivateKey) Len() int {
+func (obj *RawPrivateKey) Len() uint {
     proxyResult := /*pr4*/C.vscf_raw_private_key_len(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return int(proxyResult) /* r9 */
+    return uint(proxyResult) /* r9 */
 }
 
 /*
 * Length of the key in bits.
 */
-func (obj *RawPrivateKey) Bitlen() int {
+func (obj *RawPrivateKey) Bitlen() uint {
     proxyResult := /*pr4*/C.vscf_raw_private_key_bitlen(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return int(proxyResult) /* r9 */
+    return uint(proxyResult) /* r9 */
 }
 
 /*

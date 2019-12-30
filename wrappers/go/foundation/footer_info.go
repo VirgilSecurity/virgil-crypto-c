@@ -92,7 +92,7 @@ func (obj *FooterInfo) SignedDataInfo() *SignedDataInfo {
 /*
 * Set data size.
 */
-func (obj *FooterInfo) SetDataSize(dataSize int) {
+func (obj *FooterInfo) SetDataSize(dataSize uint) {
     C.vscf_footer_info_set_data_size(obj.cCtx, (C.size_t)(dataSize)/*pa10*/)
 
     runtime.KeepAlive(obj)
@@ -103,10 +103,10 @@ func (obj *FooterInfo) SetDataSize(dataSize int) {
 /*
 * Return data size.
 */
-func (obj *FooterInfo) DataSize() int {
+func (obj *FooterInfo) DataSize() uint {
     proxyResult := /*pr4*/C.vscf_footer_info_data_size(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return int(proxyResult) /* r9 */
+    return uint(proxyResult) /* r9 */
 }

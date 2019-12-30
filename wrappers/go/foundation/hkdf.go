@@ -118,7 +118,7 @@ func (obj *Hkdf) RestoreAlgInfo(algInfo AlgInfo) error {
 /*
 * Derive key of the requested length from the given data.
 */
-func (obj *Hkdf) Derive(data []byte, keyLen int) []byte {
+func (obj *Hkdf) Derive(data []byte, keyLen uint) []byte {
     keyBuf, keyBufErr := bufferNewBuffer(int(keyLen))
     if keyBufErr != nil {
         return nil
@@ -136,7 +136,7 @@ func (obj *Hkdf) Derive(data []byte, keyLen int) []byte {
 /*
 * Prepare algorithm to derive new key.
 */
-func (obj *Hkdf) Reset(salt []byte, iterationCount int) {
+func (obj *Hkdf) Reset(salt []byte, iterationCount uint) {
     saltData := helperWrapData (salt)
 
     C.vscf_hkdf_reset(obj.cCtx, saltData, (C.size_t)(iterationCount)/*pa10*/)

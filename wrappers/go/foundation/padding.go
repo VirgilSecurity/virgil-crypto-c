@@ -17,18 +17,18 @@ type Padding interface {
     /*
     * Return length in bytes of a data with a padding.
     */
-    PaddedDataLen (dataLen int) int
+    PaddedDataLen (dataLen uint) uint
 
     /*
     * Return an actual number of padding in bytes.
     * Note, this method might be called right before "finish data processing".
     */
-    Len () int
+    Len () uint
 
     /*
     * Return a maximum number of padding in bytes.
     */
-    LenMax () int
+    LenMax () uint
 
     /*
     * Prepare the algorithm to process data.
@@ -61,7 +61,7 @@ type Padding interface {
     * Return length in bytes required hold output of the method
     * "finish padded data processing".
     */
-    FinishPaddedDataProcessingOutLen () int
+    FinishPaddedDataProcessingOutLen () uint
 
     /*
     * Accomplish padded data processing and return left data without a padding.

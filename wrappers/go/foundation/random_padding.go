@@ -131,35 +131,35 @@ func (obj *RandomPadding) Configure(params *PaddingParams) {
 /*
 * Return length in bytes of a data with a padding.
 */
-func (obj *RandomPadding) PaddedDataLen(dataLen int) int {
+func (obj *RandomPadding) PaddedDataLen(dataLen uint) uint {
     proxyResult := /*pr4*/C.vscf_random_padding_padded_data_len(obj.cCtx, (C.size_t)(dataLen)/*pa10*/)
 
     runtime.KeepAlive(obj)
 
-    return int(proxyResult) /* r9 */
+    return uint(proxyResult) /* r9 */
 }
 
 /*
 * Return an actual number of padding in bytes.
 * Note, this method might be called right before "finish data processing".
 */
-func (obj *RandomPadding) Len() int {
+func (obj *RandomPadding) Len() uint {
     proxyResult := /*pr4*/C.vscf_random_padding_len(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return int(proxyResult) /* r9 */
+    return uint(proxyResult) /* r9 */
 }
 
 /*
 * Return a maximum number of padding in bytes.
 */
-func (obj *RandomPadding) LenMax() int {
+func (obj *RandomPadding) LenMax() uint {
     proxyResult := /*pr4*/C.vscf_random_padding_len_max(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return int(proxyResult) /* r9 */
+    return uint(proxyResult) /* r9 */
 }
 
 /*
@@ -244,12 +244,12 @@ func (obj *RandomPadding) ProcessPaddedData(data []byte) []byte {
 * Return length in bytes required hold output of the method
 * "finish padded data processing".
 */
-func (obj *RandomPadding) FinishPaddedDataProcessingOutLen() int {
+func (obj *RandomPadding) FinishPaddedDataProcessingOutLen() uint {
     proxyResult := /*pr4*/C.vscf_random_padding_finish_padded_data_processing_out_len(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return int(proxyResult) /* r9 */
+    return uint(proxyResult) /* r9 */
 }
 
 /*
