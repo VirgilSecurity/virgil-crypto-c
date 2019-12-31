@@ -6,7 +6,7 @@
         prefix="vsce"
         path="../library/phe"
         work_path = "generated/phe/"
-        wrappers="java,python,wasm"
+        wrappers="java,python,wasm,go"
         >
 
     <version major="0" minor="12" patch="0"/>
@@ -57,6 +57,10 @@
     </require>
 
     <require library="mbedtls" feature="library"/>
+
+    <cgo_link platform="darwin" libraries="-lvsc_phe -lvsc_phe_pb -lvsc_foundation -lvsc_foundation_pb -led25519 -lprotobuf-nanopb -lvsc_common -lmbedcrypto"/>
+    <cgo_link platform="linux" libraries="-lvsc_phe -lvsc_phe_pb -lvsc_foundation -lvsc_foundation_pb -led25519 -lprotobuf-nanopb -lvsc_common -lmbedcrypto"/>
+    <cgo_link platform="windows" libraries="-lvsc_phe -lvsc_phe_pb -lvsc_foundation -lvsc_foundation_pb -led25519 -lprotobuf-nanopb -lvsc_common -lmbedcrypto"/>
 
     <feature name="multi threading" default="on">
         Enable multi-threading safety for PHE library.

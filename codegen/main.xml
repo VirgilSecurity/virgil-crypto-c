@@ -55,4 +55,5 @@
     <wrapper lang="java"/>
     <wrapper lang="wasm"/>
     <wrapper lang="python"/>
+    <wrapper lang="go"/>
 </main>
