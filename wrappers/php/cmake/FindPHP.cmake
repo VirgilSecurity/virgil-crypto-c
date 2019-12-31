@@ -68,8 +68,6 @@
 #   COMPOSER_FOUND        - TRUE if 'composer' executable is found
 #   COMPOSER_VERSION      - COMPOSER version as $major[.$minor[.$patch]]
 #   COMPOSER_FOUND        - TRUE if 'composer' executable is found
-#   COMPOSER_VERSION      - composer version as $major[.$minor[.$patch]]
-#
 #
 # Note, for Unix-like systems 'php-config' utility is used to find 'Devel' components.
 # Note, for Windows 'PHP_HOME', 'PHP_DEVEL_HOME' and 'COMPOSER_HOME' environment variable are used find requested components.
