@@ -28,13 +28,15 @@ This library contains basic cryptographic algorithms and can be used as building
 | Key Generation, PRNG        | CTR_DRBG [NIST SP 800-90A](http://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-90Ar1.pdf) |
 | Key Derivation              | [KDF1, KDF2](https://www.shoup.net/iso/std6.pdf),  [HKDF](https://tools.ietf.org/html/rfc5869), [PBKDF2](https://tools.ietf.org/html/rfc8018#section-5.2) |
 | Key Exchange                | [X25519](https://tools.ietf.org/html/rfc7748), [RSA](http://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-56Br1.pdf), [ECDH](https://www.secg.org/sec1-v2.pdf) |
+| Key Encapsulation Mechanism | [Round5](https://github.com/round5/code), ECIES-KEM          |
 | Hashing                     | [SHA-2 (224/256/384/512)](https://tools.ietf.org/html/rfc4634) |
 | Message Authentication Code | [HMAC](https://www.ietf.org/rfc/rfc2104.txt)                 |
-| Digital Signature           | [Ed25519](https://tools.ietf.org/html/rfc8032), [RSASSA-PSS](https://tools.ietf.org/html/rfc4056), [ECDSA](https://www.secg.org/sec1-v2.pdf) |
+| Digital Signature           | [Ed25519](https://tools.ietf.org/html/rfc8032), [RSASSA-PSS](https://tools.ietf.org/html/rfc4056), [ECDSA](https://www.secg.org/sec1-v2.pdf), [Falcon](https://falcon-sign.info) |
 | Entropy Source              | Linux, macOS [/dev/urandom](https://tls.mbed.org/module-level-design-rng),<br>Windows [CryptGenRandom()](https://tls.mbed.org/module-level-design-rng) |
 | Symmetric Algorithms        | [AES-256-GCM](http://nvlpubs.nist.gov/nistpubs/Legacy/SP/nistspecialpublication800-38d.pdf), [AES-256-CBC](https://tools.ietf.org/html/rfc3602) |
 | Encryption schemes          | [PBES2](https://tools.ietf.org/html/rfc8018#section-6.2)     |
 | Elliptic Curves             | [Ed25519](https://tools.ietf.org/html/rfc8032), [Curve25519](https://tools.ietf.org/html/rfc7748), [secp256R1](https://www.secg.org/sec1-v2.pdf) |
+| Post-quantum cryptography   | [Falcon](https://falcon-sign.info), [Round5](https://github.com/round5/code) |
 
 ### Library: PHE
 
@@ -53,10 +55,10 @@ Implementation of the [Double Ratchet Algorithm](https://en.wikipedia.org/wiki/D
 
 | Library    | Platforms    | Languages / Binaries                                         |
 | ---------- | ------------ | ------------------------------------------------------------ |
-| foundation | all          | [C](https://cdn.virgilsecurity.com/virgil-crypto-c/c), [Swift](https://github.com/VirgilSecurity/virgil-cryptowrapper-x), [Java](https://mvnrepository.com/artifact/com.virgilsecurity.crypto), [JS](https://github.com/VirgilSecurity/virgil-crypto-javascript), [Python](https://pypi.org/project/virgil-crypto-lib) |
+| foundation | all          | [C](https://cdn.virgilsecurity.com/virgil-crypto-c/c), [Swift](https://github.com/VirgilSecurity/virgil-cryptowrapper-x), [Java](https://mvnrepository.com/artifact/com.virgilsecurity.crypto), [JS](https://github.com/VirgilSecurity/virgil-crypto-javascript), [Python](https://pypi.org/project/virgil-crypto-lib), [Go](https://github.com/VirgilSecurity/virgil-sdk-go/tree/master/crypto/internal) |
 | pythia     | linux, macOS | [C](https://cdn.virgilsecurity.com/virgil-crypto-c/c), [Swift](https://github.com/VirgilSecurity/virgil-cryptowrapper-x), [Java](https://mvnrepository.com/artifact/com.virgilsecurity.crypto), [JS](https://github.com/VirgilSecurity/virgil-crypto-javascript), [Python](https://pypi.org/project/virgil-crypto-lib) |
-| phe        | all          | [C](https://cdn.virgilsecurity.com/virgil-crypto-c/c), [PHP](https://cdn.virgilsecurity.com/virgil-crypto-c/php), [Java](https://mvnrepository.com/artifact/com.virgilsecurity.crypto), [JS](https://github.com/VirgilSecurity/virgil-crypto-javascript), [Python](https://pypi.org/project/virgil-crypto-lib) |
-| ratchet    | all          | [C](https://cdn.virgilsecurity.com/virgil-crypto-c/c), [Swift](https://github.com/VirgilSecurity/virgil-cryptowrapper-x), [Java](https://mvnrepository.com/artifact/com.virgilsecurity.crypto), [JS](https://github.com/VirgilSecurity/virgil-crypto-javascript), [Python](https://pypi.org/project/virgil-crypto-lib) |
+| phe        | all          | [C](https://cdn.virgilsecurity.com/virgil-crypto-c/c), [PHP](https://cdn.virgilsecurity.com/virgil-crypto-c/php), [Java](https://mvnrepository.com/artifact/com.virgilsecurity.crypto), [JS](https://github.com/VirgilSecurity/virgil-crypto-javascript), [Python](https://pypi.org/project/virgil-crypto-lib), [Go](https://github.com/VirgilSecurity/virgil-sdk-go/tree/master/crypto/internal) |
+| ratchet    | all          | [C](https://cdn.virgilsecurity.com/virgil-crypto-c/c), [Swift](https://github.com/VirgilSecurity/virgil-cryptowrapper-x), [Java](https://mvnrepository.com/artifact/com.virgilsecurity.crypto), [JS](https://github.com/VirgilSecurity/virgil-crypto-javascript), [Python](https://pypi.org/project/virgil-crypto-lib), [Go](https://github.com/VirgilSecurity/virgil-sdk-go/tree/master/crypto/internal) |
 
 ## Build from sources
 
