@@ -417,7 +417,7 @@ def build_LangJava_Android_x86(slave) {
             withEnv(['ANDROID_NDK=/Users/virgil/Library/VirgilEnviroment/android-ndk-r19c']) {
                 sh '''
                 cmake -Cconfigs/java-config.cmake \
-                      -DCMAKE_C_FLAGS="-fvisibility=hidden" \
+                      -DTRANSITIVE_C_FLAGS="-fvisibility=hidden" \
                       -DANDROID_ABI="x86" \
                       -DCMAKE_TOOLCHAIN_FILE="${ANDROID_NDK}/build/cmake/android.toolchain.cmake" \
                       -DCMAKE_INSTALL_PREFIX="wrappers/java/binaries/android" \
@@ -442,7 +442,7 @@ def build_LangJava_Android_x86_64(slave) {
             withEnv(['ANDROID_NDK=/Users/virgil/Library/VirgilEnviroment/android-ndk-r19c']) {
                 sh '''
                 cmake -Cconfigs/java-config.cmake \
-                      -DCMAKE_C_FLAGS="-fvisibility=hidden" \
+                      -DTRANSITIVE_C_FLAGS="-fvisibility=hidden" \
                       -DANDROID_ABI="x86_64" \
                       -DCMAKE_TOOLCHAIN_FILE="${ANDROID_NDK}/build/cmake/android.toolchain.cmake" \
                       -DCMAKE_INSTALL_PREFIX="wrappers/java/binaries/android" \
@@ -467,7 +467,7 @@ def build_LangJava_Android_armeabi_v7a(slave) {
             withEnv(['ANDROID_NDK=/Users/virgil/Library/VirgilEnviroment/android-ndk-r19c']) {
                 sh '''
                 cmake -Cconfigs/java-config.cmake \
-                      -DCMAKE_C_FLAGS="-fvisibility=hidden" \
+                      -DTRANSITIVE_C_FLAGS="-fvisibility=hidden" \
                       -DANDROID_ABI="armeabi-v7a" \
                       -DCMAKE_TOOLCHAIN_FILE="${ANDROID_NDK}/build/cmake/android.toolchain.cmake" \
                       -DCMAKE_INSTALL_PREFIX="wrappers/java/binaries/android" \
@@ -492,7 +492,7 @@ def build_LangJava_Android_arm64_v8a(slave) {
             withEnv(['ANDROID_NDK=/Users/virgil/Library/VirgilEnviroment/android-ndk-r19c']) {
                 sh '''
                 cmake -Cconfigs/java-config.cmake \
-                      -DCMAKE_C_FLAGS="-fvisibility=hidden" \
+                      -DTRANSITIVE_C_FLAGS="-fvisibility=hidden" \
                       -DANDROID_ABI="arm64-v8a" \
                       -DCMAKE_TOOLCHAIN_FILE="${ANDROID_NDK}/build/cmake/android.toolchain.cmake" \
                       -DCMAKE_INSTALL_PREFIX="wrappers/java/binaries/android" \
