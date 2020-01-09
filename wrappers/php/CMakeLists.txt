@@ -50,17 +50,10 @@ set(VIRGIL_INSTALL_PHP_SRCDIR "phpsrc" CACHE STRING "Directory name where PHP so
 # ---------------------------------------------------------------------------
 set (CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
 
-set(PHP_REQUIRED_COMPONENTS Runtime Devel)
-
-if(ENABLE_TESTING)
-    list(APPEND PHP_REQUIRED_COMPONENTS Test)
-endif()
-
-
 if(PHP_VERSION)
-    find_package(PHP ${PHP_VERSION} EXACT REQUIRED COMPONENTS ${PHP_REQUIRED_COMPONENTS})
+    find_package(PHP ${PHP_VERSION} EXACT REQUIRED COMPONENTS Runtime Devel)
 else()
-    find_package(PHP REQUIRED COMPONENTS ${PHP_REQUIRED_COMPONENTS})
+    find_package(PHP REQUIRED COMPONENTS Runtime Devel)
 endif()
 
 if(NOT PHP_FOUND)
@@ -78,6 +71,33 @@ target_include_directories(phplib SYSTEM INTERFACE "${PHP_INCLUDE_DIRS}")
 
 if(PHP_DEFINITIONS)
     target_compile_definitions(phplib INTERFACE ${PHP_DEFINITIONS} ZEND_DEBUG=0)
+endif()
+
+if(ENABLE_TESTING AND NOT COMPOSER_EXECUTABLE)
+    set(COMPOSER_VERSION "1.9.1")
+    set(COMPOSER_DOWNLOADED "${CMAKE_CURRENT_BINARY_DIR}/tmp/composer")
+
+    file(
+        DOWNLOAD
+            https://getcomposer.org/download/${COMPOSER_VERSION}/composer.phar "${COMPOSER_DOWNLOADED}"
+        SHOW_PROGRESS
+    )
+
+    file(SHA256 "${COMPOSER_DOWNLOADED}" COMPOSER_DOWNLOADED_HASH)
+    if(NOT "${COMPOSER_DOWNLOADED_HASH}" STREQUAL "1f210b9037fcf82670d75892dfc44400f13fe9ada7af9e787f93e50e3b764111")
+        message(FATAL_ERROR "Download 'composer.phar' file hash mismatch")
+    endif()
+
+    file(
+        COPY "${COMPOSER_DOWNLOADED}" DESTINATION "${CMAKE_CURRENT_BINARY_DIR}"
+        FILE_PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE
+    )
+
+    set(COMPOSER_EXECUTABLE "${CMAKE_CURRENT_BINARY_DIR}/composer" CACHE STRING "Path to the PHP composer" FORCE)
+endif()
+
+if(COMPOSER_EXECUTABLE)
+    message(" Found Composer: ${COMPOSER_EXECUTABLE} (found version \"${COMPOSER_VERSION}\")")
 endif()
 
 # ---------------------------------------------------------------------------
