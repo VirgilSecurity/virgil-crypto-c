@@ -59,13 +59,6 @@ function(TRANSITIVE_ARGS_INIT)
         file(WRITE "${TRANSITIVE_ARGS_FILE}"
                 "set(TRANSITIVE_ARGS_FILE \"${TRANSITIVE_ARGS_FILE}\" CACHE FILEPATH \"\")\n")
     endif()
-
-    file(APPEND "${TRANSITIVE_ARGS_FILE}" "set(CMAKE_C_FLAGS \"${TRANSITIVE_C_FLAGS}\" CACHE INTERNAL \"\")\n")
-    file(APPEND "${TRANSITIVE_ARGS_FILE}" "set(CMAKE_CXX_FLAGS \"${TRANSITIVE_CXX_FLAGS}\" CACHE INTERNAL \"\")\n")
-    file(APPEND "${TRANSITIVE_ARGS_FILE}" "set(CMAKE_EXE_LINKER_FLAGS \"${TRANSITIVE_EXE_LINKER_FLAGS}\" CACHE INTERNAL \"\")\n")
-    file(APPEND "${TRANSITIVE_ARGS_FILE}" "set(CMAKE_MODULE_LINKER_FLAGS \"${TRANSITIVE_MODULE_LINKER_FLAGS}\" CACHE INTERNAL \"\")\n")
-    file(APPEND "${TRANSITIVE_ARGS_FILE}" "set(CMAKE_SHARED_LINKER_FLAGS \"${TRANSITIVE_SHARED_LINKER_FLAGS}\" CACHE INTERNAL \"\")\n")
-    file(APPEND "${TRANSITIVE_ARGS_FILE}" "set(CMAKE_STATIC_LINKER_FLAGS \"${TRANSITIVE_STATIC_LINKER_FLAGS}\" CACHE INTERNAL \"\")\n")
 endfunction()
 
 
@@ -85,6 +78,23 @@ function(TRANSITIVE_ARGS_ADD)
             file(APPEND "${TRANSITIVE_ARGS_FILE}" "set(${var} \"${${var}}\" CACHE INTERNAL \"\")\n")
         endif()
     endforeach()
+endfunction()
+
+
+function(TRANSITIVE_ARGS_ADD_VALUE name value)
+    if(NOT TRANSITIVE_ARGS_FILE)
+        message(FATAL_ERROR "[INTERNAL] TransitiveArgs.cmake: variable TRANSITIVE_ARGS_FILE is not defined")
+    endif ()
+
+    if(NOT EXISTS "${TRANSITIVE_ARGS_FILE}")
+        message(FATAL_ERROR "[INTERNAL] TransitiveArgs.cmake: file '${TRANSITIVE_ARGS_FILE}' does not exists")
+    endif ()
+
+    file(STRINGS "${TRANSITIVE_ARGS_FILE}" file_content)
+
+    if(NOT file_content MATCHES "${name}")
+        file(APPEND "${TRANSITIVE_ARGS_FILE}" "set(${name} \"${value}\" CACHE INTERNAL \"\")\n")
+    endif()
 endfunction()
 
 

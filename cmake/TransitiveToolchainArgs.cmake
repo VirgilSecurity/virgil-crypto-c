@@ -117,6 +117,13 @@ function(TRANSITIVE_ANDROID_ARGS_ADD)
                 ANDROID_DISABLE_RELRO
                 ANDROID_DISABLE_FORMAT_STRING_CHECKS
                 ANDROID_CCACHE)
+
+        transitive_args_add_value(CMAKE_C_FLAGS "${TRANSITIVE_C_FLAGS}")
+        transitive_args_add_value(CMAKE_CXX_FLAGS "${TRANSITIVE_CXX_FLAGS}")
+        transitive_args_add_value(CMAKE_EXE_LINKER_FLAGS "${TRANSITIVE_EXE_LINKER_FLAGS}")
+        transitive_args_add_value(CMAKE_MODULE_LINKER_FLAGS "${TRANSITIVE_MODULE_LINKER_FLAGS}")
+        transitive_args_add_value(CMAKE_SHARED_LINKER_FLAGS "${TRANSITIVE_SHARED_LINKER_FLAGS}")
+        transitive_args_add_value(CMAKE_STATIC_LINKER_FLAGS "${TRANSITIVE_STATIC_LINKER_FLAGS}")
     endif()
 endfunction()
 
