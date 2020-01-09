@@ -36,4 +36,4 @@ bin/
 .vs/
 
 Carthage
-/wrappers/php/VirgilCryptoWrapper/cmakelists/phe/vendor/autoload.php
+!/wrappers/php/VirgilCryptoWrapper/composer.lock
