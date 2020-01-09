@@ -86,7 +86,7 @@ target_link_libraries(pythia_php
 #---------------------------------------------------------------------------
 if(ENABLE_TESTING)
     add_custom_target(test_composer_pythia_php ALL
-            COMMAND COMPOSER=composer_dev.json "${COMPOSER_EXECUTABLE}" install
+            COMMAND "${COMPOSER_EXECUTABLE}" install
             COMMENT "Running composer install..."
             WORKING_DIRECTORY ${VIRGIL_CRYPTO_WRAPPER_PROJECT_DIR}
             )

@@ -87,7 +87,7 @@ target_link_libraries(phe_php
 #---------------------------------------------------------------------------
 if(ENABLE_TESTING)
     add_custom_target(test_composer_phe_php ALL
-            COMMAND COMPOSER=composer_dev.json "${COMPOSER_EXECUTABLE}" install
+            COMMAND "${COMPOSER_EXECUTABLE}" install
             COMMENT "Running composer install..."
             WORKING_DIRECTORY ${VIRGIL_CRYPTO_WRAPPER_PROJECT_DIR}
             )
