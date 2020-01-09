@@ -133,7 +133,7 @@ function php_map_custom_cmakelists (in_php_project, out_php_module)
         my._h = format_left("\
             if(ENABLE_TESTING)
                 add_custom_target(test_composer_$(my._project:)_php ALL
-                        COMMAND COMPOSER=composer_dev.json \"${COMPOSER_EXECUTABLE}\" install
+                        COMMAND \"${COMPOSER_EXECUTABLE}\" install
                         COMMENT \"Running composer install...\"
                         WORKING_DIRECTORY ${VIRGIL_CRYPTO_WRAPPER_PROJECT_DIR}
                         )
