@@ -87,17 +87,19 @@ extern "C" {
 #endif // BYTE_DEFINED
 
 #if defined(_WIN32) || defined(__CYGWIN__)
-#   ifdef VSCP_BUILD_SHARED_LIBS
-#       ifdef __GNUC__
-#           define VSCP_PUBLIC __attribute__ ((dllexport))
+#   if VSCP_SHARED_LIBRARY
+#       if defined(VSCP_INTERNAL_BUILD)
+#           ifdef __GNUC__
+#               define VSCP_PUBLIC __attribute__ ((dllexport))
+#           else
+#               define VSCP_PUBLIC __declspec(dllexport)
+#           endif
 #       else
-#           define VSCP_PUBLIC __declspec(dllexport)
-#       endif
-#   elif !defined(VSCP_INTERNAL_BUILD)
-#       ifdef __GNUC__
-#           define VSCP_PUBLIC __attribute__ ((dllimport))
-#       else
-#           define VSCP_PUBLIC __declspec(dllimport)
+#           ifdef __GNUC__
+#               define VSCP_PUBLIC __attribute__ ((dllimport))
+#           else
+#               define VSCP_PUBLIC __declspec(dllimport)
+#           endif
 #       endif
 #   else
 #       define VSCP_PUBLIC

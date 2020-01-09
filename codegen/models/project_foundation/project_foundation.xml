@@ -6,7 +6,7 @@
         prefix="vscf"
         path="../library/foundation/"
         work_path="generated/foundation/"
-        wrappers="swift,java,python,wasm,php"
+        wrappers="swift,java,python,wasm,go,php"
         >
 
     <version major="0" minor="12" patch="0"/>
@@ -49,6 +49,10 @@
 
     <require project="common" feature="library"/>
     <require library="mbedtls" feature="library"/>
+
+    <cgo_link platform="darwin" libraries="-lvsc_foundation -lvsc_foundation_pb -led25519 -lprotobuf-nanopb -lvsc_common -lmbedcrypto -lround5 -lfalcon -lkeccak"/>
+    <cgo_link platform="linux" libraries="-lvsc_foundation -lvsc_foundation_pb -led25519 -lprotobuf-nanopb -lvsc_common -lmbedcrypto -lround5 -lfalcon -lkeccak -lpthread"/>
+    <cgo_link platform="windows" libraries="-lvsc_foundation -lvsc_foundation_pb -led25519 -lprotobuf-nanopb -lvsc_common -lmbedcrypto -lround5 -lfalcon -lkeccak"/>
 
     <feature name="multi threading" default="on">
         Enable multi-threading safety for foundation library.

@@ -51,6 +51,8 @@
     <require library="mbedtls" feature="library"/>
     <require library="relic" feature="library"/>
 
+    <cgo_link libraries="-lvsc_pythia -lrelic_s -lvsc_foundation -lvsc_foundation_pb -led25519 -lprotobuf-nanopb -lvsc_common -lmbedcrypto"/>
+
     <feature name="multi threading" default="on">
         Enable multi-threading safety for Pythia library.
     </feature>

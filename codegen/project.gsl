@@ -85,6 +85,12 @@ function project_resolve (project)
     my.project.cmake_target ?= "$(my.project.name:c)"
 
     my.project.wrappers ?= "all"
+
+    new cmake_compile_definition to my.project
+        .prefix = my.project.prefix
+        .name = "shared library"
+        .value = "BUILD_SHARED_LIBS"
+    endnew
 endfunction
 
 # ---------------------------------------------------------------------------

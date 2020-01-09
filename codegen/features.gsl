@@ -256,6 +256,10 @@ function features_list_update_from_project (features_list, project)
         endif
         my.library_feature. ?= "Enable build of the '$(my.project.name:)' library"
 
+        for my.project.cmake_compile_definition
+            copy cmake_compile_definition to features
+        endfor
+
         for my.project.feature
             copy feature to features
         endfor

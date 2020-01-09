@@ -87,17 +87,19 @@ extern "C" {
 #endif // BYTE_DEFINED
 
 #if defined(_WIN32) || defined(__CYGWIN__)
-#   ifdef VSC_BUILD_SHARED_LIBS
-#       ifdef __GNUC__
-#           define VSC_PUBLIC __attribute__ ((dllexport))
+#   if VSC_SHARED_LIBRARY
+#       if defined(VSC_INTERNAL_BUILD)
+#           ifdef __GNUC__
+#               define VSC_PUBLIC __attribute__ ((dllexport))
+#           else
+#               define VSC_PUBLIC __declspec(dllexport)
+#           endif
 #       else
-#           define VSC_PUBLIC __declspec(dllexport)
-#       endif
-#   elif !defined(VSC_INTERNAL_BUILD)
-#       ifdef __GNUC__
-#           define VSC_PUBLIC __attribute__ ((dllimport))
-#       else
-#           define VSC_PUBLIC __declspec(dllimport)
+#           ifdef __GNUC__
+#               define VSC_PUBLIC __attribute__ ((dllimport))
+#           else
+#               define VSC_PUBLIC __declspec(dllimport)
+#           endif
 #       endif
 #   else
 #       define VSC_PUBLIC

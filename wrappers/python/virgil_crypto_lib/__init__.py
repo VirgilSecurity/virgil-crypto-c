@@ -34,4 +34,4 @@
 
 
 __author__ = "Virgil Security"
-__version__ = "0.12.0-dev3"
+__version__ = "0.12.0-dev4"
