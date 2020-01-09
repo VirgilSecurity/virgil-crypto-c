@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2019 Virgil Security, Inc.
+# Copyright (C) 2015-2020 Virgil Security, Inc.
 #
 # All rights reserved.
 #
@@ -47,10 +47,6 @@ class vsce_phe_cipher_t(Structure):
 class VscePheCipher(object):
     """Class for encryption using PHE account key
     This class is thread-safe."""
-
-    SALT_LEN = 32
-    KEY_LEN = 32
-    NONCE_LEN = 12
 
     def __init__(self):
         """Create underlying C context."""

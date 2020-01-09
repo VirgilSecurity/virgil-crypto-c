@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2019 Virgil Security, Inc.
+//  Copyright (C) 2015-2020 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -55,8 +55,6 @@
 #include "vscf_memory.h"
 #include "vscf_assert.h"
 #include "vscf_rsa_defs.h"
-#include "vscf_alg.h"
-#include "vscf_alg_api.h"
 #include "vscf_key_alg.h"
 #include "vscf_key_alg_api.h"
 #include "vscf_key_cipher.h"
@@ -81,33 +79,6 @@ static const vscf_api_t *
 vscf_rsa_find_api(vscf_api_tag_t api_tag);
 
 //
-//  Configuration of the interface API 'alg api'.
-//
-static const vscf_alg_api_t alg_api = {
-    //
-    //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'alg' MUST be equal to the 'vscf_api_tag_ALG'.
-    //
-    vscf_api_tag_ALG,
-    //
-    //  Implementation unique identifier, MUST be second in the structure.
-    //
-    vscf_impl_tag_RSA,
-    //
-    //  Provide algorithm identificator.
-    //
-    (vscf_alg_api_alg_id_fn)vscf_rsa_alg_id,
-    //
-    //  Produce object with algorithm information and configuration parameters.
-    //
-    (vscf_alg_api_produce_alg_info_fn)vscf_rsa_produce_alg_info,
-    //
-    //  Restore algorithm configuration from the given object.
-    //
-    (vscf_alg_api_restore_alg_info_fn)vscf_rsa_restore_alg_info
-};
-
-//
 //  Configuration of the interface API 'key alg api'.
 //
 static const vscf_key_alg_api_t key_alg_api = {
@@ -120,10 +91,6 @@ static const vscf_key_alg_api_t key_alg_api = {
     //  Implementation unique identifier, MUST be second in the structure.
     //
     vscf_impl_tag_RSA,
-    //
-    //  Link to the inherited interface API 'alg'.
-    //
-    &alg_api,
     //
     //  Generate ephemeral private key of the same type.
     //  Note, this operation might be slow.
@@ -141,6 +108,10 @@ static const vscf_key_alg_api_t key_alg_api = {
     //
     (vscf_key_alg_api_import_public_key_fn)vscf_rsa_import_public_key,
     //
+    //  Import public key from the raw binary format.
+    //
+    (vscf_key_alg_api_import_public_key_data_fn)vscf_rsa_import_public_key_data,
+    //
     //  Export public key to the raw binary format.
     //
     //  Binary format must be defined in the key specification.
@@ -148,6 +119,18 @@ static const vscf_key_alg_api_t key_alg_api = {
     //  RFC 3447 Appendix A.1.1.
     //
     (vscf_key_alg_api_export_public_key_fn)vscf_rsa_export_public_key,
+    //
+    //  Return length in bytes required to hold exported public key.
+    //
+    (vscf_key_alg_api_exported_public_key_data_len_fn)vscf_rsa_exported_public_key_data_len,
+    //
+    //  Export public key to the raw binary format without algorithm information.
+    //
+    //  Binary format must be defined in the key specification.
+    //  For instance, RSA public key must be exported in format defined in
+    //  RFC 3447 Appendix A.1.1.
+    //
+    (vscf_key_alg_api_export_public_key_data_fn)vscf_rsa_export_public_key_data,
     //
     //  Import private key from the raw binary format.
     //
@@ -160,6 +143,10 @@ static const vscf_key_alg_api_t key_alg_api = {
     //
     (vscf_key_alg_api_import_private_key_fn)vscf_rsa_import_private_key,
     //
+    //  Import private key from the raw binary format.
+    //
+    (vscf_key_alg_api_import_private_key_data_fn)vscf_rsa_import_private_key_data,
+    //
     //  Export private key in the raw binary format.
     //
     //  Binary format must be defined in the key specification.
@@ -167,6 +154,18 @@ static const vscf_key_alg_api_t key_alg_api = {
     //  RFC 3447 Appendix A.1.2.
     //
     (vscf_key_alg_api_export_private_key_fn)vscf_rsa_export_private_key,
+    //
+    //  Return length in bytes required to hold exported private key.
+    //
+    (vscf_key_alg_api_exported_private_key_data_len_fn)vscf_rsa_exported_private_key_data_len,
+    //
+    //  Export private key to the raw binary format without algorithm information.
+    //
+    //  Binary format must be defined in the key specification.
+    //  For instance, RSA private key must be exported in format defined in
+    //  RFC 3447 Appendix A.1.2.
+    //
+    (vscf_key_alg_api_export_private_key_data_fn)vscf_rsa_export_private_key_data,
     //
     //  Defines whether a public key can be imported or not.
     //
@@ -473,8 +472,6 @@ static const vscf_api_t *
 vscf_rsa_find_api(vscf_api_tag_t api_tag) {
 
     switch(api_tag) {
-        case vscf_api_tag_ALG:
-            return (const vscf_api_t *) &alg_api;
         case vscf_api_tag_KEY_ALG:
             return (const vscf_api_t *) &key_alg_api;
         case vscf_api_tag_KEY_CIPHER:

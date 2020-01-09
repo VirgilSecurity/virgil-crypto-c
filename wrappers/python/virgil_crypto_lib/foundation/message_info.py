@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2019 Virgil Security, Inc.
+# Copyright (C) 2015-2020 Virgil Security, Inc.
 #
 # All rights reserved.
 #
@@ -94,6 +94,17 @@ class MessageInfo(object):
     def cipher_kdf_alg_info(self):
         """Return cipher kdf alg info."""
         result = self._lib_vscf_message_info.vscf_message_info_cipher_kdf_alg_info(self.ctx)
+        instance = VscfImplTag.get_type(result)[0].use_c_ctx(cast(result, POINTER(VscfImplTag.get_type(result)[1])))
+        return instance
+
+    def has_cipher_padding_alg_info(self):
+        """Return true if cipher padding alg info exists."""
+        result = self._lib_vscf_message_info.vscf_message_info_has_cipher_padding_alg_info(self.ctx)
+        return result
+
+    def cipher_padding_alg_info(self):
+        """Return cipher padding alg info."""
+        result = self._lib_vscf_message_info.vscf_message_info_cipher_padding_alg_info(self.ctx)
         instance = VscfImplTag.get_type(result)[0].use_c_ctx(cast(result, POINTER(VscfImplTag.get_type(result)[1])))
         return instance
 

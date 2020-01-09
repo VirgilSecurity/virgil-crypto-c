@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2019 Virgil Security, Inc.
+//  Copyright (C) 2015-2020 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -55,7 +55,6 @@
 #define VSCF_KEY_PROVIDER_H_INCLUDED
 
 #include "vscf_library.h"
-#include "vscf_ecies.h"
 #include "vscf_error.h"
 #include "vscf_impl.h"
 #include "vscf_status.h"
@@ -155,25 +154,6 @@ VSCF_PUBLIC void
 vscf_key_provider_release_random(vscf_key_provider_t *self);
 
 //
-//  Setup dependency to the class 'ecies' with shared ownership.
-//
-VSCF_PUBLIC void
-vscf_key_provider_use_ecies(vscf_key_provider_t *self, vscf_ecies_t *ecies);
-
-//
-//  Setup dependency to the class 'ecies' and transfer ownership.
-//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
-//
-VSCF_PUBLIC void
-vscf_key_provider_take_ecies(vscf_key_provider_t *self, vscf_ecies_t *ecies);
-
-//
-//  Release dependency to the class 'ecies'.
-//
-VSCF_PUBLIC void
-vscf_key_provider_release_ecies(vscf_key_provider_t *self);
-
-//
 //  Setup predefined values to the uninitialized class dependencies.
 //
 VSCF_PUBLIC vscf_status_t
@@ -186,10 +166,50 @@ VSCF_PUBLIC void
 vscf_key_provider_set_rsa_params(vscf_key_provider_t *self, size_t bitlen);
 
 //
-//  Generate new private key from the given id.
+//  Generate new private key with a given algorithm.
 //
 VSCF_PUBLIC vscf_impl_t *
 vscf_key_provider_generate_private_key(vscf_key_provider_t *self, vscf_alg_id_t alg_id, vscf_error_t *error);
+
+//
+//  Generate new post-quantum private key with default algorithms.
+//  Note, that a post-quantum key combines classic private keys
+//  alongside with post-quantum private keys.
+//  Current structure is "compound private key" is:
+//      - cipher private key is "hybrid private key" where:
+//          - first key is a classic private key;
+//          - second key is a post-quantum private key;
+//      - signer private key "hybrid private key" where:
+//          - first key is a classic private key;
+//          - second key is a post-quantum private key.
+//
+VSCF_PUBLIC vscf_impl_t *
+vscf_key_provider_generate_post_quantum_private_key(vscf_key_provider_t *self, vscf_error_t *error);
+
+//
+//  Generate new compound private key with given algorithms.
+//
+VSCF_PUBLIC vscf_impl_t *
+vscf_key_provider_generate_compound_private_key(vscf_key_provider_t *self, vscf_alg_id_t cipher_alg_id,
+        vscf_alg_id_t signer_alg_id, vscf_error_t *error);
+
+//
+//  Generate new hybrid private key with given algorithms.
+//
+VSCF_PUBLIC vscf_impl_t *
+vscf_key_provider_generate_hybrid_private_key(vscf_key_provider_t *self, vscf_alg_id_t first_key_alg_id,
+        vscf_alg_id_t second_key_alg_id, vscf_error_t *error);
+
+//
+//  Generate new compound private key with nested hybrid private keys.
+//
+//  Note, second key algorithm identifiers can be NONE, in this case,
+//  a regular key will be crated instead of a hybrid key.
+//
+VSCF_PUBLIC vscf_impl_t *
+vscf_key_provider_generate_compound_hybrid_private_key(vscf_key_provider_t *self, vscf_alg_id_t cipher_first_key_alg_id,
+        vscf_alg_id_t cipher_second_key_alg_id, vscf_alg_id_t signer_first_key_alg_id,
+        vscf_alg_id_t signer_second_key_alg_id, vscf_error_t *error);
 
 //
 //  Import private key from the PKCS#8 format.

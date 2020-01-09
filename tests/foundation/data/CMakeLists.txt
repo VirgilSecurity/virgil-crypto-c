@@ -1,4 +1,4 @@
-#   Copyright (C) 2015-2019 Virgil Security, Inc.
+#   Copyright (C) 2015-2020 Virgil Security, Inc.
 #
 #   All rights reserved.
 #
@@ -32,7 +32,7 @@
 #
 #   Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.12 FATAL_ERROR)
 
 project(test_data_foundation VERSION ${virgil_crypto_c_foundation_tests_VERSION} LANGUAGES C)
 
@@ -73,6 +73,12 @@ target_sources(test_data_foundation
             "${CMAKE_CURRENT_LIST_DIR}/include/test_data_simple_swu.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/test_data_group_session.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/test_data_message_info.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/test_data_falcon.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/test_data_round5.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/test_data_compound_key.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/test_data_hybrid_key.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/test_data_post_quantum.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/test_data_padding_cipher.h"
 
         PRIVATE
             "${CMAKE_CURRENT_LIST_DIR}/src/test_data_aes256_gcm.c"
@@ -109,10 +115,16 @@ target_sources(test_data_foundation
             "${CMAKE_CURRENT_LIST_DIR}/src/test_data_simple_swu.c"
             "${CMAKE_CURRENT_LIST_DIR}/src/test_data_group_session.c"
             "${CMAKE_CURRENT_LIST_DIR}/src/test_data_message_info.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/test_data_falcon.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/test_data_round5.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/test_data_compound_key.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/test_data_hybrid_key.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/test_data_post_quantum.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/test_data_padding_cipher.c"
         )
 
 target_include_directories(test_data_foundation
         PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
         )
 
-target_link_libraries(test_data_foundation vsc::common)
+target_link_libraries(test_data_foundation PUBLIC vsc::common)

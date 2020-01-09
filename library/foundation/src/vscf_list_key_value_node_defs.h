@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2019 Virgil Security, Inc.
+//  Copyright (C) 2015-2020 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -98,9 +98,13 @@ struct vscf_list_key_value_node_t {
     void *value;
 
     int value_tag;
-
+    //
+    //  Class specific context.
+    //
     vscf_list_key_value_node_t *next;
-
+    //
+    //  Class specific context.
+    //
     vscf_list_key_value_node_t *prev;
 };
 

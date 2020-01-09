@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2019 Virgil Security, Inc.
+//  Copyright (C) 2015-2020 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -78,8 +78,16 @@ extern "C" {
 #   include <stdatomic.h>
 #endif
 
+#ifndef VSCF_SHARED_LIBRARY
+#cmakedefine01 VSCF_SHARED_LIBRARY
+#endif
+
 #ifndef VSCF_MULTI_THREADING
 #cmakedefine01 VSCF_MULTI_THREADING
+#endif
+
+#ifndef VSCF_POST_QUANTUM
+#cmakedefine01 VSCF_POST_QUANTUM
 #endif
 
 #ifndef VSCF_CIPHER
@@ -204,6 +212,14 @@ extern "C" {
 
 #ifndef VSCF_MESSAGE_INFO_FOOTER_SERIALIZER
 #cmakedefine01 VSCF_MESSAGE_INFO_FOOTER_SERIALIZER
+#endif
+
+#ifndef VSCF_PADDING
+#cmakedefine01 VSCF_PADDING
+#endif
+
+#ifndef VSCF_KEM
+#cmakedefine01 VSCF_KEM
 #endif
 
 #ifndef VSCF_SHA224
@@ -338,6 +354,46 @@ extern "C" {
 #cmakedefine01 VSCF_CURVE25519
 #endif
 
+#ifndef VSCF_FALCON
+#cmakedefine01 VSCF_FALCON
+#endif
+
+#ifndef VSCF_ROUND5
+#cmakedefine01 VSCF_ROUND5
+#endif
+
+#ifndef VSCF_COMPOUND_KEY_ALG_INFO
+#cmakedefine01 VSCF_COMPOUND_KEY_ALG_INFO
+#endif
+
+#ifndef VSCF_COMPOUND_PUBLIC_KEY
+#cmakedefine01 VSCF_COMPOUND_PUBLIC_KEY
+#endif
+
+#ifndef VSCF_COMPOUND_PRIVATE_KEY
+#cmakedefine01 VSCF_COMPOUND_PRIVATE_KEY
+#endif
+
+#ifndef VSCF_COMPOUND_KEY_ALG
+#cmakedefine01 VSCF_COMPOUND_KEY_ALG
+#endif
+
+#ifndef VSCF_HYBRID_KEY_ALG_INFO
+#cmakedefine01 VSCF_HYBRID_KEY_ALG_INFO
+#endif
+
+#ifndef VSCF_HYBRID_PUBLIC_KEY
+#cmakedefine01 VSCF_HYBRID_PUBLIC_KEY
+#endif
+
+#ifndef VSCF_HYBRID_PRIVATE_KEY
+#cmakedefine01 VSCF_HYBRID_PRIVATE_KEY
+#endif
+
+#ifndef VSCF_HYBRID_KEY_ALG
+#cmakedefine01 VSCF_HYBRID_KEY_ALG
+#endif
+
 #ifndef VSCF_SIMPLE_ALG_INFO
 #cmakedefine01 VSCF_SIMPLE_ALG_INFO
 #endif
@@ -372,6 +428,10 @@ extern "C" {
 
 #ifndef VSCF_MESSAGE_INFO_DER_SERIALIZER
 #cmakedefine01 VSCF_MESSAGE_INFO_DER_SERIALIZER
+#endif
+
+#ifndef VSCF_RANDOM_PADDING
+#cmakedefine01 VSCF_RANDOM_PADDING
 #endif
 
 #ifndef VSCF_ERROR
@@ -540,6 +600,22 @@ extern "C" {
 
 #ifndef VSCF_FOOTER_INFO
 #cmakedefine01 VSCF_FOOTER_INFO
+#endif
+
+#ifndef VSCF_KEY_INFO
+#cmakedefine01 VSCF_KEY_INFO
+#endif
+
+#ifndef VSCF_TAIL_FILTER
+#cmakedefine01 VSCF_TAIL_FILTER
+#endif
+
+#ifndef VSCF_PADDING_PARAMS
+#cmakedefine01 VSCF_PADDING_PARAMS
+#endif
+
+#ifndef VSCF_PADDING_CIPHER
+#cmakedefine01 VSCF_PADDING_CIPHER
 #endif
 
 //

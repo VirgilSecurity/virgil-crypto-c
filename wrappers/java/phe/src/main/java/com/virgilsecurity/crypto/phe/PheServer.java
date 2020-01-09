@@ -1,5 +1,5 @@
 /*
-* Copyright (C) 2015-2019 Virgil Security, Inc.
+* Copyright (C) 2015-2020 Virgil Security, Inc.
 *
 * All rights reserved.
 *
@@ -85,6 +85,9 @@ public class PheServer implements AutoCloseable {
         PheJNI.INSTANCE.pheServer_setOperationRandom(this.cCtx, operationRandom);
     }
 
+    /*
+    * Setups dependencies with default values.
+    */
     public void setupDefaults() throws PheException {
         PheJNI.INSTANCE.pheServer_setupDefaults(this.cCtx);
     }

@@ -1,5 +1,5 @@
 /*
-* Copyright (C) 2015-2019 Virgil Security, Inc.
+* Copyright (C) 2015-2020 Virgil Security, Inc.
 *
 * All rights reserved.
 *
@@ -66,13 +66,6 @@ public class SignedDataInfo implements AutoCloseable {
     /* Close resource. */
     public void close() {
         FoundationJNI.INSTANCE.signedDataInfo_close(this.cCtx);
-    }
-
-    /*
-    * Set information about algorithm that was used to produce data digest.
-    */
-    public void setHashAlgInfo(AlgInfo hashAlgInfo) {
-        FoundationJNI.INSTANCE.signedDataInfo_setHashAlgInfo(this.cCtx, hashAlgInfo);
     }
 
     /*

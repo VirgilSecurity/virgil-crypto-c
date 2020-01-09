@@ -1,0 +1,189 @@
+<class name="uokms client" context="internal">
+    Class implements UOKMS for client-side.
+
+    <require class="phe common" scope="public"/>
+    <require impl="ctr drbg" project="foundation" scope="private"/>
+
+    <require module="const" scope="private"/>
+    <require class="phe common" scope="context"/>
+    <require header="mbedtls/ecp.h" scope="context"/>
+    <require header="mbedtls/bignum.h" scope="context"/>
+
+    <require header="UOKMSModels.pb.h" scope="private"/>
+    <require header="pb_decode.h" scope="private"/>
+
+    <require impl="hkdf" project="foundation" scope="private"/>
+    <require impl="sha512" project="foundation" scope="private"/>
+
+    <require module="buffer defs" scope="private" project="common"/>
+    <require module="mbedtls bridge random" scope="private" project="foundation"/>
+
+    <dependency name="random" interface="random" project="foundation"  has_observers="1">
+        Random used for key generation, proofs, etc.
+    </dependency>
+    <dependency name="operation random" interface="random" project="foundation"  has_observers="1">
+        Random used for crypto operations to make them const-time
+    </dependency>
+
+    <property name="proof verifier" class="uokms proof verifier"/>
+    <property name="group" class="mbedtls_ecp_group" library="mbedtls" access="readwrite" is_reference="0"/>
+    <property name="kc private" class="mbedtls_mpi" library="mbedtls" access="readwrite" is_reference="0"/>
+    <property name="ks public" class="mbedtls_ecp_point" library="mbedtls" access="readwrite" is_reference="0"/>
+    <property name="k public" class="mbedtls_ecp_point" library="mbedtls" access="readwrite" is_reference="0"/>
+    <property name="keys are set" type="boolean"/>
+
+    <method name="setup defaults">
+        Setups dependencies with default values.
+
+        <return enum="status">
+            - vsce_status_ERROR_RNG_FAILED in case rng failed
+        </return>
+    </method>
+
+    <method name="set keys">
+        Sets client private and server public key
+        Call this method before any other methods
+        This function should be called only once
+
+        <argument name="client private key" class="data">
+            Client's private key
+            Use `generate client private key` to generate this key, or generate NIST P-256 private key yourself
+        </argument>
+        <argument name="server public key" class="data">
+            Server's public key. Get it from server
+        </argument>
+
+        <return enum="status">
+            - vsce_status_ERROR_INVALID_PRIVATE_KEY if private key is invalid
+            - vsce_status_ERROR_INVALID_PUBLIC_KEY if public key is invalid
+        </return>
+    </method>
+
+    <method name="generate client private key">
+        Generates client private key
+
+        <argument name="client private key" class="buffer" access="writeonly">
+            Client's private key
+            Buffer size should be >= .(class_phe_common_constant_phe_private_key_length)
+
+            <length constant="phe private key length" class="phe common"/>
+        </argument>
+
+        <return enum="status">
+            - vsce_status_ERROR_RNG_FAILED in case rng failed
+        </return>
+    </method>
+
+    <method name="generate encrypt wrap">
+        Generates new encrypt wrap (which should be stored and then used for decryption) + encryption key
+        of "encryption key len" that can be used for symmetric encryption
+
+        <argument name="wrap" class="buffer" access="writeonly">
+            Wrap that should be stored along with encrypted blob
+
+            <length constant="phe public key length" class="phe common"/>
+        </argument>
+        <argument name="encryption key len" type="size">
+            Length of encryption key that should be derived
+        </argument>
+        <argument name="encryption key" class="buffer" access="writeonly">
+            Buffer to store encryption key, will be filled with "encryption key len" bytes.
+            Buffer size should be >= "encryption key len"
+
+            <length argument="encryption key len"/>
+        </argument>
+
+        <return enum="status">
+            - vsce_status_ERROR_RNG_FAILED in case rng failed
+        </return>
+    </method>
+
+    <method name="generate decrypt request">
+        Generates request to decrypt data, this request should be sent to the server.
+        Server response is then passed to "process decrypt response" where encryption key can be decapsulated
+
+        <argument name="wrap" class="data">
+            Wrap stored with encrypted blob
+        </argument>
+        <argument name="deblind factor" class="buffer" access="writeonly">
+            Deblind factor needed for "process decrypt response" function.
+            Buffer size should be >= .(class_phe_common_constant_phe_private_key_length)
+
+            <length constant="phe private key length" class="phe common"/>
+        </argument>
+        <argument name="decrypt request" class="buffer" access="writeonly">
+            Decrypt request that should be sent to server
+            Buffer size should be >= .(class_phe_common_constant_phe_public_key_length)
+
+            <length constant="phe public key length" class="phe common"/>
+        </argument>
+
+        <return enum="status">
+            - vsce_status_ERROR_AES_FAILED in case AES returned error
+        </return>
+    </method>
+
+    <method name="process decrypt response">
+        Processed server response, checks server proof and decapsulates encryption key
+
+        <argument name="wrap" class="data">
+            Wrap stored with encrypted blob
+        </argument>
+        <argument name="decrypt request" class="data">
+            Decrypt request obtained from "generate decrypt request" function
+        </argument>
+        <argument name="decrypt response" class="data">
+            Decrypt response obtained from server
+        </argument>
+        <argument name="deblind factor" class="data">
+            Deblind factor obtained from "generate decrypt request"
+        </argument>
+        <argument name="encryption key len" type="size">
+            Length of encryption key that should be derived
+        </argument>
+        <argument name="encryption key" class="buffer" access="writeonly">
+            Buffer to store encryption key, will be filled with "encryption key len" bytes.
+            Buffer size should be >= "encryption key len"
+
+            <length argument="encryption key len"/>
+        </argument>
+
+        <return enum="status">
+            - vsce_status_ERROR_INVALID_PUBLIC_KEY if public key is invalid
+            - vsce_status_ERROR_RNG_FAILED in case rng failed
+        </return>
+    </method>
+
+    <method name="rotate keys">
+        Rotates client and server keys using given update token obtained from server
+
+        <argument name="update token" class="data">
+            Update token provided by the server
+        </argument>
+        <argument name="new client private key" class="buffer" access="writeonly">
+            New client private key
+            Buffer size should be >= .(class_phe_common_constant_phe_private_key_length)
+
+            <length constant="phe private key length" class="phe common"/>
+        </argument>
+        <argument name="new server public key" class="buffer" access="writeonly">
+            New server public key
+            Buffer size should be >= .(class_phe_common_constant_phe_public_key_length)
+
+            <length constant="phe public key length" class="phe common"/>
+        </argument>
+
+        <return enum="status">
+            - vsce_status_ERROR_INVALID_PUBLIC_KEY if public key is invalid
+            - vsce_status_ERROR_INVALID_PRIVATE_KEY if private key is invalid
+        </return>
+    </method>
+
+    <method name="get op group" declaration="private">
+        <return class="mbedtls_ecp_group" library="mbedtls" access="readwrite"/>
+    </method>
+
+    <method name="free op group" declaration="private" is_static="1">
+        <argument name="op group" class="mbedtls_ecp_group" library="mbedtls" access="readwrite"/>
+    </method>
+</class>

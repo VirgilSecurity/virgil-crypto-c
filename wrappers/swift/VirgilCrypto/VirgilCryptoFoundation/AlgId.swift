@@ -1,4 +1,4 @@
-/// Copyright (C) 2015-2019 Virgil Security, Inc.
+/// Copyright (C) 2015-2020 Virgil Security, Inc.
 ///
 /// All rights reserved.
 ///
@@ -55,8 +55,6 @@ import VSCFoundation
 
     case rsa
 
-    case ecc
-
     case ed25519
 
     case curve25519
@@ -74,6 +72,16 @@ import VSCFoundation
     case pkcs5Pbkdf2
 
     case pkcs5Pbes2
+
+    case compoundKey
+
+    case hybridKey
+
+    case falcon
+
+    case round5Nd5kem5d
+
+    case randomPadding
 
     /// Create enumeration value from the correspond C enumeration value.
     internal init(fromC algId: vscf_alg_id_t) {

@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2019 Virgil Security, Inc.
+//  Copyright (C) 2015-2020 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -303,44 +303,10 @@ vscf_ecc_produce_alg_info_for_key(const vscf_ecc_t *self, const vscf_impl_t *key
         return NULL;
     }
 
-
     vscf_ecc_alg_info_t *ecc_alg_info =
             vscf_ecc_alg_info_new_with_members(alg_id, vscf_oid_id_EC_GENERIC_KEY, domain_oid_id);
 
     return vscf_ecc_alg_info_impl(ecc_alg_info);
-}
-
-//
-//  Provide algorithm identificator.
-//
-VSCF_PUBLIC vscf_alg_id_t
-vscf_ecc_alg_id(const vscf_ecc_t *self) {
-
-    VSCF_ASSERT_PTR(self);
-    return vscf_alg_id_ECC;
-}
-
-//
-//  Produce object with algorithm information and configuration parameters.
-//
-VSCF_PUBLIC vscf_impl_t *
-vscf_ecc_produce_alg_info(const vscf_ecc_t *self) {
-
-    VSCF_ASSERT_PTR(self);
-    return vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_ECC));
-}
-
-//
-//  Restore algorithm configuration from the given object.
-//
-VSCF_PUBLIC vscf_status_t
-vscf_ecc_restore_alg_info(vscf_ecc_t *self, const vscf_impl_t *alg_info) {
-
-    VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(alg_info);
-    VSCF_ASSERT(vscf_alg_info_alg_id(alg_info) == vscf_alg_id_ECC);
-
-    return vscf_status_SUCCESS;
 }
 
 //
@@ -375,21 +341,35 @@ vscf_ecc_import_public_key(const vscf_ecc_t *self, const vscf_raw_public_key_t *
     VSCF_ASSERT_PTR(raw_key);
     VSCF_ASSERT_SAFE(vscf_raw_public_key_is_valid(raw_key));
 
+    return vscf_ecc_import_public_key_data(
+            self, vscf_raw_public_key_data(raw_key), vscf_raw_public_key_alg_info(raw_key), error);
+}
+
+//
+//  Import public key from the raw binary format.
+//
+VSCF_PRIVATE vscf_impl_t *
+vscf_ecc_import_public_key_data(
+        const vscf_ecc_t *self, vsc_data_t key_data, const vscf_impl_t *key_alg_info, vscf_error_t *error) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT(vsc_data_is_valid(key_data));
+    VSCF_ASSERT_PTR(key_alg_info);
+
     vscf_ecc_public_key_t *ecc_public_key = vscf_ecc_public_key_new();
-    ecc_public_key->alg_info = vscf_impl_shallow_copy((vscf_impl_t *)vscf_raw_public_key_alg_info(raw_key));
+    ecc_public_key->alg_info = vscf_impl_shallow_copy((vscf_impl_t *)key_alg_info);
     ecc_public_key->impl_tag = self->info->impl_tag;
 
     const vscf_status_t status =
-            vscf_mbedtls_ecp_group_load(vscf_raw_public_key_alg_id(raw_key), &ecc_public_key->ecc_grp);
+            vscf_mbedtls_ecp_group_load(vscf_alg_info_alg_id(key_alg_info), &ecc_public_key->ecc_grp);
     if (status != vscf_status_SUCCESS) {
         vscf_ecc_public_key_destroy(&ecc_public_key);
         VSCF_ERROR_SAFE_UPDATE(error, status);
         return NULL;
     }
 
-    vsc_data_t key = vscf_raw_public_key_data(raw_key);
-    const int mbed_status =
-            mbedtls_ecp_point_read_binary(&ecc_public_key->ecc_grp, &ecc_public_key->ecc_pub, key.bytes, key.len);
+    const int mbed_status = mbedtls_ecp_point_read_binary(
+            &ecc_public_key->ecc_grp, &ecc_public_key->ecc_pub, key_data.bytes, key_data.len);
 
     if (mbed_status != 0) {
         VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_BAD_SEC1_PUBLIC_KEY);
@@ -420,23 +400,74 @@ vscf_ecc_export_public_key(const vscf_ecc_t *self, const vscf_impl_t *public_key
         return NULL;
     }
 
-    VSCF_ASSERT(vscf_impl_tag(public_key) == vscf_impl_tag_ECC_PUBLIC_KEY);
-    const vscf_ecc_public_key_t *ecc_public_key = (const vscf_ecc_public_key_t *)public_key;
-
-    const size_t buffer_len = 2 * mbedtls_mpi_size(&ecc_public_key->ecc_grp.P) + 1 /* compression flag */;
+    const size_t buffer_len = vscf_ecc_exported_public_key_data_len(self, public_key);
     vsc_buffer_t *buffer = vsc_buffer_new_with_capacity(buffer_len);
 
-    size_t out_len = 0;
-    const int mbed_status = mbedtls_ecp_point_write_binary(&ecc_public_key->ecc_grp, &ecc_public_key->ecc_pub,
-            MBEDTLS_ECP_PF_UNCOMPRESSED, &out_len, vsc_buffer_unused_bytes(buffer), vsc_buffer_unused_len(buffer));
-
-    VSCF_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbed_status);
-    vsc_buffer_inc_used(buffer, out_len);
+    const vscf_status_t export_status = vscf_ecc_export_public_key_data(self, public_key, buffer);
+    VSCF_ASSERT(export_status == vscf_status_SUCCESS);
 
     vscf_impl_t *alg_info = vscf_ecc_produce_alg_info_for_key(self, public_key);
     vscf_raw_public_key_t *raw_public_key = vscf_raw_public_key_new_with_buffer(&buffer, &alg_info);
 
     return raw_public_key;
+}
+
+//
+//  Return length in bytes required to hold exported public key.
+//
+VSCF_PRIVATE size_t
+vscf_ecc_exported_public_key_data_len(const vscf_ecc_t *self, const vscf_impl_t *public_key) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(public_key);
+    VSCF_ASSERT(vscf_public_key_is_implemented(public_key));
+    VSCF_ASSERT_SAFE(vscf_key_is_valid(public_key));
+
+    if (vscf_key_impl_tag(public_key) != self->info->impl_tag) {
+        return 0;
+    }
+
+    VSCF_ASSERT(vscf_impl_tag(public_key) == vscf_impl_tag_ECC_PUBLIC_KEY);
+    const vscf_ecc_public_key_t *ecc_public_key = (const vscf_ecc_public_key_t *)public_key;
+
+    const size_t key_data_len = 2 * mbedtls_mpi_size(&ecc_public_key->ecc_grp.P) + 1 /* compression flag */;
+
+    return key_data_len;
+}
+
+//
+//  Export public key to the raw binary format without algorithm information.
+//
+//  Binary format must be defined in the key specification.
+//  For instance, RSA public key must be exported in format defined in
+//  RFC 3447 Appendix A.1.1.
+//
+VSCF_PRIVATE vscf_status_t
+vscf_ecc_export_public_key_data(const vscf_ecc_t *self, const vscf_impl_t *public_key, vsc_buffer_t *out) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(public_key);
+    VSCF_ASSERT(vscf_public_key_is_implemented(public_key));
+    VSCF_ASSERT_SAFE(vscf_key_is_valid(public_key));
+    VSCF_ASSERT_PTR(out);
+    VSCF_ASSERT(vsc_buffer_is_valid(out));
+    VSCF_ASSERT(vsc_buffer_unused_len(out) >= vscf_ecc_exported_public_key_data_len(self, public_key));
+
+    if (vscf_key_impl_tag(public_key) != self->info->impl_tag) {
+        return vscf_status_ERROR_MISMATCH_PUBLIC_KEY_AND_ALGORITHM;
+    }
+
+    VSCF_ASSERT(vscf_impl_tag(public_key) == vscf_impl_tag_ECC_PUBLIC_KEY);
+    const vscf_ecc_public_key_t *ecc_public_key = (const vscf_ecc_public_key_t *)public_key;
+
+    size_t out_len = 0;
+    const int mbed_status = mbedtls_ecp_point_write_binary(&ecc_public_key->ecc_grp, &ecc_public_key->ecc_pub,
+            MBEDTLS_ECP_PF_UNCOMPRESSED, &out_len, vsc_buffer_unused_bytes(out), vsc_buffer_unused_len(out));
+
+    VSCF_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbed_status);
+    vsc_buffer_inc_used(out, out_len);
+
+    return vscf_status_SUCCESS;
 }
 
 //
@@ -457,9 +488,25 @@ vscf_ecc_import_private_key(const vscf_ecc_t *self, const vscf_raw_private_key_t
     VSCF_ASSERT_PTR(raw_key);
     VSCF_ASSERT_SAFE(vscf_raw_private_key_is_valid(raw_key));
 
+    return vscf_ecc_import_private_key_data(
+            self, vscf_raw_private_key_data(raw_key), vscf_raw_private_key_alg_info(raw_key), error);
+}
+
+//
+//  Import private key from the raw binary format.
+//
+VSCF_PRIVATE vscf_impl_t *
+vscf_ecc_import_private_key_data(
+        const vscf_ecc_t *self, vsc_data_t key_data, const vscf_impl_t *key_alg_info, vscf_error_t *error) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(self->random);
+    VSCF_ASSERT(vsc_data_is_valid(key_data));
+    VSCF_ASSERT_PTR(key_alg_info);
+
     vscf_ecc_private_key_t *ecc_private_key = vscf_ecc_private_key_new();
 
-    const vscf_alg_id_t alg_id = vscf_raw_private_key_alg_id(raw_key);
+    const vscf_alg_id_t alg_id = vscf_alg_info_alg_id(key_alg_info);
     const mbedtls_ecp_group_id grp_id = vscf_mbedtls_ecp_group_id_from_alg_id(alg_id);
 
     if (grp_id == MBEDTLS_ECP_DP_NONE) {
@@ -474,8 +521,7 @@ vscf_ecc_import_private_key(const vscf_ecc_t *self, const vscf_raw_private_key_t
     VSCF_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbed_status);
 
     //  Import private
-    vsc_data_t raw_key_data = vscf_raw_private_key_data(raw_key);
-    mbed_status = mbedtls_mpi_read_binary(&ecc_private_key->ecc_priv, raw_key_data.bytes, raw_key_data.len);
+    mbed_status = mbedtls_mpi_read_binary(&ecc_private_key->ecc_priv, key_data.bytes, key_data.len);
     VSCF_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbed_status);
 
     if (0 != mbedtls_ecp_check_privkey(&ecc_private_key->ecc_grp, &ecc_private_key->ecc_priv)) {
@@ -495,7 +541,7 @@ vscf_ecc_import_private_key(const vscf_ecc_t *self, const vscf_raw_private_key_t
         return NULL;
     }
 
-    ecc_private_key->alg_info = vscf_impl_shallow_copy((vscf_impl_t *)vscf_raw_private_key_alg_info(raw_key));
+    ecc_private_key->alg_info = vscf_impl_shallow_copy((vscf_impl_t *)key_alg_info);
     ecc_private_key->impl_tag = self->info->impl_tag;
 
     return vscf_ecc_private_key_impl(ecc_private_key);
@@ -516,6 +562,15 @@ vscf_ecc_export_private_key(const vscf_ecc_t *self, const vscf_impl_t *private_k
     VSCF_ASSERT(vscf_private_key_is_implemented(private_key));
     VSCF_ASSERT_SAFE(vscf_key_is_valid(private_key));
 
+    //
+    //  ECPrivateKey ::= SEQUENCE {
+    //       version INTEGER ,
+    //       privateKey OCTET STRING,
+    //       parameters [0] ECParameters OPTIONAL,
+    //       publicKey [1] BIT STRING OPTIONAL
+    //  }
+    //
+
     if (vscf_key_impl_tag(private_key) != self->info->impl_tag) {
         VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_MISMATCH_PRIVATE_KEY_AND_ALGORITHM);
         return NULL;
@@ -524,8 +579,10 @@ vscf_ecc_export_private_key(const vscf_ecc_t *self, const vscf_impl_t *private_k
     VSCF_ASSERT(vscf_impl_tag(private_key) == vscf_impl_tag_ECC_PRIVATE_KEY);
     const vscf_ecc_private_key_t *ecc_private_key = (const vscf_ecc_private_key_t *)private_key;
 
-    //  Export private key
-    const size_t priv_buf_len = mbedtls_mpi_size(&ecc_private_key->ecc_priv);
+    //
+    //  Export private key.
+    //
+    const size_t priv_buf_len = vscf_ecc_exported_private_key_data_len(self, private_key);
     vsc_buffer_t *priv_buf = vsc_buffer_new_with_capacity(priv_buf_len);
 
     const int priv_mbed_status =
@@ -534,7 +591,9 @@ vscf_ecc_export_private_key(const vscf_ecc_t *self, const vscf_impl_t *private_k
     VSCF_ASSERT_LIBRARY_MBEDTLS_SUCCESS(priv_mbed_status);
     vsc_buffer_inc_used(priv_buf, priv_buf_len);
 
-    //  Export public key
+    //
+    //  Export public key.
+    //
     const size_t pub_buf_len = 2 * mbedtls_mpi_size(&ecc_private_key->ecc_grp.P) + 1 /* compression flag */;
     vsc_buffer_t *pub_buf = vsc_buffer_new_with_capacity(pub_buf_len);
 
@@ -553,6 +612,58 @@ vscf_ecc_export_private_key(const vscf_ecc_t *self, const vscf_impl_t *private_k
     vscf_raw_private_key_set_public_key(raw_private_key, &raw_public_key);
 
     return raw_private_key;
+}
+
+//
+//  Return length in bytes required to hold exported private key.
+//
+VSCF_PRIVATE size_t
+vscf_ecc_exported_private_key_data_len(const vscf_ecc_t *self, const vscf_impl_t *private_key) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(private_key);
+    VSCF_ASSERT(vscf_private_key_is_implemented(private_key));
+    VSCF_ASSERT_SAFE(vscf_key_is_valid(private_key));
+
+    if (vscf_key_impl_tag(private_key) != self->info->impl_tag) {
+        return 0;
+    }
+
+    const size_t private_key_data_len = vscf_key_len(private_key);
+
+    return private_key_data_len;
+}
+
+//
+//  Export private key to the raw binary format without algorithm information.
+//
+//  Binary format must be defined in the key specification.
+//  For instance, RSA private key must be exported in format defined in
+//  RFC 3447 Appendix A.1.2.
+//
+VSCF_PRIVATE vscf_status_t
+vscf_ecc_export_private_key_data(const vscf_ecc_t *self, const vscf_impl_t *private_key, vsc_buffer_t *out) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(private_key);
+    VSCF_ASSERT(vscf_private_key_is_implemented(private_key));
+    VSCF_ASSERT_SAFE(vscf_key_is_valid(private_key));
+
+    if (vscf_key_impl_tag(private_key) != self->info->impl_tag) {
+        return vscf_status_ERROR_MISMATCH_PRIVATE_KEY_AND_ALGORITHM;
+    }
+
+    VSCF_ASSERT(vscf_impl_tag(private_key) == vscf_impl_tag_ECC_PRIVATE_KEY);
+    const vscf_ecc_private_key_t *ecc_private_key = (const vscf_ecc_private_key_t *)private_key;
+
+    const size_t out_len = vscf_ecc_exported_private_key_data_len(self, private_key);
+    const int priv_mbed_status =
+            mbedtls_mpi_write_binary(&ecc_private_key->ecc_priv, vsc_buffer_unused_bytes(out), out_len);
+
+    VSCF_ASSERT_LIBRARY_MBEDTLS_SUCCESS(priv_mbed_status);
+    vsc_buffer_inc_used(out, out_len);
+
+    return vscf_status_SUCCESS;
 }
 
 //
@@ -663,7 +774,10 @@ vscf_ecc_can_sign(const vscf_ecc_t *self, const vscf_impl_t *private_key) {
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(private_key);
     VSCF_ASSERT(vscf_private_key_is_implemented(private_key));
-    VSCF_ASSERT_SAFE(vscf_key_is_valid(private_key));
+
+    if (!vscf_key_is_valid(private_key)) {
+        return false;
+    }
 
     bool is_my_impl = vscf_key_impl_tag(private_key) == self->info->impl_tag;
     return is_my_impl;
@@ -674,17 +788,22 @@ vscf_ecc_can_sign(const vscf_ecc_t *self, const vscf_impl_t *private_key) {
 //  Return zero if a given private key can not produce signatures.
 //
 VSCF_PUBLIC size_t
-vscf_ecc_signature_len(const vscf_ecc_t *self, const vscf_impl_t *key) {
+vscf_ecc_signature_len(const vscf_ecc_t *self, const vscf_impl_t *private_key) {
 
     VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(key);
+    VSCF_ASSERT_PTR(private_key);
+    VSCF_ASSERT(vscf_key_is_implemented(private_key));
 
     //  ECDSA-Sig-Value ::= SEQUENCE {
     //      r INTEGER,
     //      s INTEGER
     //  }
 
-    size_t len = 2 * vscf_key_len(key) + 9 /* mbedTLS requirement */;
+    if (!vscf_key_is_valid(private_key)) {
+        return 0;
+    }
+
+    size_t len = 2 * vscf_key_len(private_key) + 9 /* mbedTLS requirement */;
     return len;
 }
 
@@ -895,4 +1014,112 @@ vscf_ecc_shared_key_len(const vscf_ecc_t *self, const vscf_impl_t *key) {
         const vscf_ecc_private_key_t *ecc_private_key = (const vscf_ecc_private_key_t *)key;
         return VSCF_CEIL(ecc_private_key->ecc_grp.pbits, 8);
     }
+}
+
+//
+//  Return length in bytes required to hold encapsulated shared key.
+//
+VSCF_PUBLIC size_t
+vscf_ecc_kem_shared_key_len(const vscf_ecc_t *self, const vscf_impl_t *key) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(key);
+    VSCF_ASSERT(vscf_key_is_implemented(key));
+
+    return vscf_ecc_shared_key_len(self, key);
+}
+
+//
+//  Return length in bytes required to hold encapsulated key.
+//
+VSCF_PUBLIC size_t
+vscf_ecc_kem_encapsulated_key_len(const vscf_ecc_t *self, const vscf_impl_t *public_key) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(public_key);
+    VSCF_ASSERT(vscf_public_key_is_implemented(public_key));
+
+    return vscf_ecc_exported_public_key_data_len(self, public_key);
+}
+
+//
+//  Generate a shared key and a key encapsulated message.
+//
+VSCF_PUBLIC vscf_status_t
+vscf_ecc_kem_encapsulate(const vscf_ecc_t *self, const vscf_impl_t *public_key, vsc_buffer_t *shared_key,
+        vsc_buffer_t *encapsulated_key) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(self->random);
+    VSCF_ASSERT_PTR(public_key);
+    VSCF_ASSERT(vscf_public_key_is_implemented(public_key));
+    VSCF_ASSERT_PTR(shared_key);
+    VSCF_ASSERT(vsc_buffer_is_valid(shared_key));
+    VSCF_ASSERT(vsc_buffer_unused_len(shared_key) >= vscf_ecc_kem_shared_key_len(self, public_key));
+    VSCF_ASSERT_PTR(encapsulated_key);
+    VSCF_ASSERT(vsc_buffer_is_valid(encapsulated_key));
+    VSCF_ASSERT(vsc_buffer_unused_len(encapsulated_key) >= vscf_ecc_kem_encapsulated_key_len(self, public_key));
+
+    vscf_error_t error;
+    vscf_error_reset(&error);
+
+    vscf_impl_t *ephemeral_key = NULL;
+    vscf_impl_t *ephemeral_public_key = NULL;
+
+    ephemeral_key = vscf_ecc_generate_ephemeral_key(self, public_key, &error);
+    if (vscf_error_has_error(&error)) {
+        goto cleanup;
+    }
+
+    error.status = vscf_ecc_compute_shared_key(self, public_key, ephemeral_key, shared_key);
+    if (vscf_error_has_error(&error)) {
+        goto cleanup;
+    }
+
+    ephemeral_public_key = vscf_private_key_extract_public_key(ephemeral_key);
+
+    error.status = vscf_ecc_export_public_key_data(self, ephemeral_public_key, encapsulated_key);
+
+cleanup:
+    vscf_impl_destroy(&ephemeral_key);
+    vscf_impl_destroy(&ephemeral_public_key);
+
+    return vscf_error_status(&error);
+}
+
+//
+//  Decapsulate the shared key.
+//
+VSCF_PUBLIC vscf_status_t
+vscf_ecc_kem_decapsulate(
+        const vscf_ecc_t *self, vsc_data_t encapsulated_key, const vscf_impl_t *private_key, vsc_buffer_t *shared_key) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(self->random);
+    VSCF_ASSERT(vsc_data_is_valid(encapsulated_key));
+    VSCF_ASSERT_PTR(private_key);
+    VSCF_ASSERT(vscf_private_key_is_implemented(private_key));
+    VSCF_ASSERT(vsc_buffer_is_valid(shared_key));
+    VSCF_ASSERT(vsc_buffer_unused_len(shared_key) >= vscf_ecc_kem_shared_key_len(self, private_key));
+
+    vscf_error_t error;
+    vscf_error_reset(&error);
+
+    vscf_impl_t *ephemeral_public_key =
+            vscf_ecc_import_public_key_data(self, encapsulated_key, vscf_key_alg_info(private_key), &error);
+
+    if (vscf_error_has_error(&error)) {
+        error.status = vscf_status_ERROR_INVALID_KEM_ENCAPSULATED_KEY;
+        goto cleanup;
+    }
+
+    error.status = vscf_ecc_compute_shared_key(self, ephemeral_public_key, private_key, shared_key);
+    if (vscf_error_has_error(&error)) {
+        goto cleanup;
+    }
+
+cleanup:
+    vscf_impl_destroy(&ephemeral_public_key);
+
+    return vscf_error_status(&error);
 }

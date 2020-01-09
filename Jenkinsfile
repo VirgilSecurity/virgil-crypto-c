@@ -56,21 +56,21 @@ def nodes = [:]
 //
 nodes['lang-c-platform-linux'] = build_LangC_Unix('build-centos7')
 nodes['lang-c-platform-macos'] = build_LangC_Unix('build-os-x')
-nodes['lang-c-platform-windows'] = build_LangC_Windows('build-win8')
+nodes['lang-c-platform-windows'] = build_LangC_Windows('build-win10')
 
 //
 //  Language: PHP
 //
 nodes['lang-php-platform-linux'] = build_LangPHP_Linux('build-centos7')
 nodes['lang-php-platform-macos'] = build_LangPHP_MacOS('build-os-x')
-nodes['lang-php-platform-windows'] = build_LangPHP_Windows('build-win8')
+nodes['lang-php-platform-windows'] = build_LangPHP_Windows('build-win10')
 
 //
 //  Language: Java
 //
 nodes['lang-java-platform-linux'] = build_LangJava_Linux('build-centos7')
 nodes['lang-java-platform-macos'] = build_LangJava_MacOS('build-os-x')
-nodes['lang-java-platform-windows'] = build_LangJava_Windows('build-win8')
+nodes['lang-java-platform-windows'] = build_LangJava_Windows('build-win10')
 nodes['lang-java-platform-android-x86'] = build_LangJava_Android_x86('build-os-x')
 nodes['lang-java-platform-android-x86_64'] = build_LangJava_Android_x86_64('build-os-x')
 nodes['lang-java-platform-android-armeabi-v7a'] = build_LangJava_Android_armeabi_v7a('build-os-x')
@@ -81,7 +81,7 @@ nodes['lang-java-platform-android-arm64-v8a'] = build_LangJava_Android_arm64_v8a
 //
 nodes['lang-python-platform-linux'] = build_LangPython_Linux('build-centos7')
 nodes['lang-python-platform-macos'] = build_LangPython_MacOS('build-os-x')
-nodes['lang-python-platform-windows'] = build_LangPython_Windows('build-win8')
+nodes['lang-python-platform-windows'] = build_LangPython_Windows('build-win10')
 
 stage('Build') {
     parallel(nodes)
@@ -128,6 +128,7 @@ def build_LangC_Unix(slave) {
                       -DCPACK_OUTPUT_FILE_PREFIX=c \
                       -DENABLE_CLANGFORMAT=OFF \
                       -DED25519_AMD64_RADIX_64_24K=ON -DED25519_REF10=OFF \
+                      -DVIRGIL_C_MT_TESTING=ON \
                       -Bbuild -H.
                 cmake --build build -- -j10
                 cd build
@@ -416,6 +417,7 @@ def build_LangJava_Android_x86(slave) {
             withEnv(['ANDROID_NDK=/Users/virgil/Library/VirgilEnviroment/android-ndk-r19c']) {
                 sh '''
                 cmake -Cconfigs/java-config.cmake \
+                      -DTRANSITIVE_C_FLAGS="-fvisibility=hidden" \
                       -DANDROID_ABI="x86" \
                       -DCMAKE_TOOLCHAIN_FILE="${ANDROID_NDK}/build/cmake/android.toolchain.cmake" \
                       -DCMAKE_INSTALL_PREFIX="wrappers/java/binaries/android" \
@@ -440,6 +442,7 @@ def build_LangJava_Android_x86_64(slave) {
             withEnv(['ANDROID_NDK=/Users/virgil/Library/VirgilEnviroment/android-ndk-r19c']) {
                 sh '''
                 cmake -Cconfigs/java-config.cmake \
+                      -DTRANSITIVE_C_FLAGS="-fvisibility=hidden" \
                       -DANDROID_ABI="x86_64" \
                       -DCMAKE_TOOLCHAIN_FILE="${ANDROID_NDK}/build/cmake/android.toolchain.cmake" \
                       -DCMAKE_INSTALL_PREFIX="wrappers/java/binaries/android" \
@@ -464,6 +467,7 @@ def build_LangJava_Android_armeabi_v7a(slave) {
             withEnv(['ANDROID_NDK=/Users/virgil/Library/VirgilEnviroment/android-ndk-r19c']) {
                 sh '''
                 cmake -Cconfigs/java-config.cmake \
+                      -DTRANSITIVE_C_FLAGS="-fvisibility=hidden" \
                       -DANDROID_ABI="armeabi-v7a" \
                       -DCMAKE_TOOLCHAIN_FILE="${ANDROID_NDK}/build/cmake/android.toolchain.cmake" \
                       -DCMAKE_INSTALL_PREFIX="wrappers/java/binaries/android" \
@@ -488,6 +492,7 @@ def build_LangJava_Android_arm64_v8a(slave) {
             withEnv(['ANDROID_NDK=/Users/virgil/Library/VirgilEnviroment/android-ndk-r19c']) {
                 sh '''
                 cmake -Cconfigs/java-config.cmake \
+                      -DTRANSITIVE_C_FLAGS="-fvisibility=hidden" \
                       -DANDROID_ABI="arm64-v8a" \
                       -DCMAKE_TOOLCHAIN_FILE="${ANDROID_NDK}/build/cmake/android.toolchain.cmake" \
                       -DCMAKE_INSTALL_PREFIX="wrappers/java/binaries/android" \

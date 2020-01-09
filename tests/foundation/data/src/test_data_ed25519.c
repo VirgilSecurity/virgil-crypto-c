@@ -135,7 +135,6 @@ const char test_ed25519_PUBLIC_KEY_PKCS8_PEM_STR[] = {
     "-----BEGIN PUBLIC KEY-----\n"
     "MCowBQYDK2VwAyEA5zSd1esjIzdm8xkuLZ1NJtiiZx1x6K7UgFO0f1X0cDI=\n"
     "-----END PUBLIC KEY-----"
-
 };
 
 const vsc_data_t test_ed25519_PUBLIC_KEY_PKCS8_PEM = {

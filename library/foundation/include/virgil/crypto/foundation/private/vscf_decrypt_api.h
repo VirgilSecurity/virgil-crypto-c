@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2019 Virgil Security, Inc.
+//  Copyright (C) 2015-2020 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -91,7 +91,7 @@ typedef vscf_status_t (*vscf_decrypt_api_decrypt_fn)(vscf_impl_t *impl, vsc_data
 //
 //  Callback. Calculate required buffer length to hold the decrypted data.
 //
-typedef size_t (*vscf_decrypt_api_decrypted_len_fn)(vscf_impl_t *impl, size_t data_len);
+typedef size_t (*vscf_decrypt_api_decrypted_len_fn)(const vscf_impl_t *impl, size_t data_len);
 
 //
 //  Contains API requirements of the interface 'decrypt'.

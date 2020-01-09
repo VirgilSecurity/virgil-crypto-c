@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2019 Virgil Security, Inc.
+//  Copyright (C) 2015-2020 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -54,6 +54,7 @@
 #define VSCF_ALG_FACTORY_H_INCLUDED
 
 #include "vscf_library.h"
+#include "vscf_alg_id.h"
 #include "vscf_impl.h"
 
 // clang-format on
@@ -74,8 +75,20 @@ extern "C" {
 //
 //  Create algorithm that implements "hash stream" interface.
 //
+VSCF_PRIVATE vscf_impl_t *
+vscf_alg_factory_create_hash_from_alg_id(vscf_alg_id_t alg_id);
+
+//
+//  Create algorithm that implements "hash stream" interface.
+//
 VSCF_PUBLIC vscf_impl_t *
 vscf_alg_factory_create_hash_from_info(const vscf_impl_t *alg_info);
+
+//
+//  Create algorithm that implements "mac stream" interface.
+//
+VSCF_PRIVATE vscf_impl_t *
+vscf_alg_factory_create_mac_from_alg_id(vscf_alg_id_t alg_id);
 
 //
 //  Create algorithm that implements "mac stream" interface.
@@ -86,8 +99,20 @@ vscf_alg_factory_create_mac_from_info(const vscf_impl_t *alg_info);
 //
 //  Create algorithm that implements "kdf" interface.
 //
+VSCF_PRIVATE vscf_impl_t *
+vscf_alg_factory_create_kdf_from_alg_id(vscf_alg_id_t alg_id);
+
+//
+//  Create algorithm that implements "kdf" interface.
+//
 VSCF_PUBLIC vscf_impl_t *
 vscf_alg_factory_create_kdf_from_info(const vscf_impl_t *alg_info);
+
+//
+//  Create algorithm that implements "salted kdf" interface.
+//
+VSCF_PRIVATE vscf_impl_t *
+vscf_alg_factory_create_salted_kdf_from_alg_id(vscf_alg_id_t alg_id);
 
 //
 //  Create algorithm that implements "salted kdf" interface.
@@ -98,8 +123,26 @@ vscf_alg_factory_create_salted_kdf_from_info(const vscf_impl_t *alg_info);
 //
 //  Create algorithm that implements "cipher" interface.
 //
+VSCF_PRIVATE vscf_impl_t *
+vscf_alg_factory_create_cipher_from_alg_id(vscf_alg_id_t alg_id);
+
+//
+//  Create algorithm that implements "cipher" interface.
+//
 VSCF_PUBLIC vscf_impl_t *
 vscf_alg_factory_create_cipher_from_info(const vscf_impl_t *alg_info);
+
+//
+//  Create algorithm that implements "padding" interface.
+//
+VSCF_PRIVATE vscf_impl_t *
+vscf_alg_factory_create_padding_from_alg_id(vscf_alg_id_t alg_id, const vscf_impl_t *random);
+
+//
+//  Create algorithm that implements "padding" interface.
+//
+VSCF_PUBLIC vscf_impl_t *
+vscf_alg_factory_create_padding_from_info(const vscf_impl_t *alg_info, const vscf_impl_t *random);
 
 
 // --------------------------------------------------------------------------

@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2019 Virgil Security, Inc.
+# Copyright (C) 2015-2020 Virgil Security, Inc.
 #
 # All rights reserved.
 #
@@ -63,6 +63,7 @@ class Server(object):
         self._lib_vsce_phe_server.vsce_phe_server_use_operation_random(self.ctx, operation_random.c_impl)
 
     def setup_defaults(self):
+        """Setups dependencies with default values."""
         status = self._lib_vsce_phe_server.vsce_phe_server_setup_defaults(self.ctx)
         VsceStatus.handle_status(status)
 

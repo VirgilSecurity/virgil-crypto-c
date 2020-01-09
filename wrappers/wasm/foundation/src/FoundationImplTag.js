@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2015-2019 Virgil Security, Inc.
+ * Copyright (C) 2015-2020 Virgil Security, Inc.
  *
  * All rights reserved.
  *
@@ -52,75 +52,97 @@ const initFoundationImplTag = (Module, modules) => {
 
         CIPHER_ALG_INFO: 7,
 
-        CTR_DRBG: 8,
+        COMPOUND_KEY_ALG: 8,
 
-        CURVE25519: 9,
+        COMPOUND_KEY_ALG_INFO: 9,
 
-        ECC: 10,
+        COMPOUND_PRIVATE_KEY: 10,
 
-        ECC_ALG_INFO: 11,
+        COMPOUND_PUBLIC_KEY: 11,
 
-        ECC_PRIVATE_KEY: 12,
+        CTR_DRBG: 12,
 
-        ECC_PUBLIC_KEY: 13,
+        CURVE25519: 13,
 
-        ED25519: 14,
+        ECC: 14,
 
-        ENTROPY_ACCUMULATOR: 15,
+        ECC_ALG_INFO: 15,
 
-        FAKE_RANDOM: 16,
+        ECC_PRIVATE_KEY: 16,
 
-        HASH_BASED_ALG_INFO: 17,
+        ECC_PUBLIC_KEY: 17,
 
-        HKDF: 18,
+        ED25519: 18,
 
-        HMAC: 19,
+        ENTROPY_ACCUMULATOR: 19,
 
-        KDF1: 20,
+        FAKE_RANDOM: 20,
 
-        KDF2: 21,
+        FALCON: 21,
 
-        KEY_ASN1_DESERIALIZER: 22,
+        HASH_BASED_ALG_INFO: 22,
 
-        KEY_ASN1_SERIALIZER: 23,
+        HKDF: 23,
 
-        KEY_MATERIAL_RNG: 24,
+        HMAC: 24,
 
-        MESSAGE_INFO_DER_SERIALIZER: 25,
+        HYBRID_KEY_ALG: 25,
 
-        PBE_ALG_INFO: 26,
+        HYBRID_KEY_ALG_INFO: 26,
 
-        PKCS5_PBES2: 27,
+        HYBRID_PRIVATE_KEY: 27,
 
-        PKCS5_PBKDF2: 28,
+        HYBRID_PUBLIC_KEY: 28,
 
-        PKCS8_SERIALIZER: 29,
+        KDF1: 29,
 
-        RAW_PRIVATE_KEY: 30,
+        KDF2: 30,
 
-        RAW_PUBLIC_KEY: 31,
+        KEY_ASN1_DESERIALIZER: 31,
 
-        RSA: 32,
+        KEY_ASN1_SERIALIZER: 32,
 
-        RSA_PRIVATE_KEY: 33,
+        KEY_MATERIAL_RNG: 33,
 
-        RSA_PUBLIC_KEY: 34,
+        MESSAGE_INFO_DER_SERIALIZER: 34,
 
-        SALTED_KDF_ALG_INFO: 35,
+        PBE_ALG_INFO: 35,
 
-        SEC1_SERIALIZER: 36,
+        PKCS5_PBES2: 36,
 
-        SEED_ENTROPY_SOURCE: 37,
+        PKCS5_PBKDF2: 37,
 
-        SHA224: 38,
+        PKCS8_SERIALIZER: 38,
 
-        SHA256: 39,
+        RANDOM_PADDING: 39,
 
-        SHA384: 40,
+        RAW_PRIVATE_KEY: 40,
 
-        SHA512: 41,
+        RAW_PUBLIC_KEY: 41,
 
-        SIMPLE_ALG_INFO: 42
+        ROUND5: 42,
+
+        RSA: 43,
+
+        RSA_PRIVATE_KEY: 44,
+
+        RSA_PUBLIC_KEY: 45,
+
+        SALTED_KDF_ALG_INFO: 46,
+
+        SEC1_SERIALIZER: 47,
+
+        SEED_ENTROPY_SOURCE: 48,
+
+        SHA224: 49,
+
+        SHA256: 50,
+
+        SHA384: 51,
+
+        SHA512: 52,
+
+        SIMPLE_ALG_INFO: 53
     });
 
     return FoundationImplTag;

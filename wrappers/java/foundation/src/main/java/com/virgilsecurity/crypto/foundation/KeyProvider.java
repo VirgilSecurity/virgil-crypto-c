@@ -1,5 +1,5 @@
 /*
-* Copyright (C) 2015-2019 Virgil Security, Inc.
+* Copyright (C) 2015-2020 Virgil Security, Inc.
 *
 * All rights reserved.
 *
@@ -73,10 +73,6 @@ public class KeyProvider implements AutoCloseable {
         FoundationJNI.INSTANCE.keyProvider_setRandom(this.cCtx, random);
     }
 
-    public void setEcies(Ecies ecies) {
-        FoundationJNI.INSTANCE.keyProvider_setEcies(this.cCtx, ecies);
-    }
-
     /*
     * Setup predefined values to the uninitialized class dependencies.
     */
@@ -92,10 +88,50 @@ public class KeyProvider implements AutoCloseable {
     }
 
     /*
-    * Generate new private key from the given id.
+    * Generate new private key with a given algorithm.
     */
     public PrivateKey generatePrivateKey(AlgId algId) throws FoundationException {
         return FoundationJNI.INSTANCE.keyProvider_generatePrivateKey(this.cCtx, algId);
+    }
+
+    /*
+    * Generate new post-quantum private key with default algorithms.
+    * Note, that a post-quantum key combines classic private keys
+    * alongside with post-quantum private keys.
+    * Current structure is "compound private key" is:
+    * - cipher private key is "hybrid private key" where:
+    * - first key is a classic private key;
+    * - second key is a post-quantum private key;
+    * - signer private key "hybrid private key" where:
+    * - first key is a classic private key;
+    * - second key is a post-quantum private key.
+    */
+    public PrivateKey generatePostQuantumPrivateKey() throws FoundationException {
+        return FoundationJNI.INSTANCE.keyProvider_generatePostQuantumPrivateKey(this.cCtx);
+    }
+
+    /*
+    * Generate new compound private key with given algorithms.
+    */
+    public PrivateKey generateCompoundPrivateKey(AlgId cipherAlgId, AlgId signerAlgId) throws FoundationException {
+        return FoundationJNI.INSTANCE.keyProvider_generateCompoundPrivateKey(this.cCtx, cipherAlgId, signerAlgId);
+    }
+
+    /*
+    * Generate new hybrid private key with given algorithms.
+    */
+    public PrivateKey generateHybridPrivateKey(AlgId firstKeyAlgId, AlgId secondKeyAlgId) throws FoundationException {
+        return FoundationJNI.INSTANCE.keyProvider_generateHybridPrivateKey(this.cCtx, firstKeyAlgId, secondKeyAlgId);
+    }
+
+    /*
+    * Generate new compound private key with nested hybrid private keys.
+    *
+    * Note, second key algorithm identifiers can be NONE, in this case,
+    * a regular key will be crated instead of a hybrid key.
+    */
+    public PrivateKey generateCompoundHybridPrivateKey(AlgId cipherFirstKeyAlgId, AlgId cipherSecondKeyAlgId, AlgId signerFirstKeyAlgId, AlgId signerSecondKeyAlgId) throws FoundationException {
+        return FoundationJNI.INSTANCE.keyProvider_generateCompoundHybridPrivateKey(this.cCtx, cipherFirstKeyAlgId, cipherSecondKeyAlgId, signerFirstKeyAlgId, signerSecondKeyAlgId);
     }
 
     /*

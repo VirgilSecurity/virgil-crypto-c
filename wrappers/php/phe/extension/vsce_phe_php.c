@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2019 Virgil Security, Inc.
+//  Copyright (C) 2015-2020 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -51,7 +51,7 @@
 // --------------------------------------------------------------------------
 //  Constants
 // --------------------------------------------------------------------------
-const char VSCE_PHE_PHP_VERSION[] = "0.11.1";
+const char VSCE_PHE_PHP_VERSION[] = "0.12.0";
 const char VSCE_PHE_PHP_EXTNAME[] = "vsce_phe_php";
 
 const char VSCE_PHE_CLIENT_PHP_RES_NAME[] = "vsce_phe_client_t";

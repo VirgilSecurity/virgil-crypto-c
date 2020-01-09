@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2019 Virgil Security, Inc.
+//  Copyright (C) 2015-2020 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -56,7 +56,6 @@
 #include "vscf_library.h"
 #include "vscf_atomic.h"
 #include "vscf_impl.h"
-#include "vscf_ecies.h"
 
 // clang-format on
 //  @end
@@ -89,10 +88,6 @@ struct vscf_key_provider_t {
     //  Dependency to the interface 'random'.
     //
     vscf_impl_t *random;
-    //
-    //  Dependency to the class 'ecies'.
-    //
-    vscf_ecies_t *ecies;
 
     size_t rsa_bitlen;
 

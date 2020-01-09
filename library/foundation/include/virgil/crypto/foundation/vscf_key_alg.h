@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2019 Virgil Security, Inc.
+//  Copyright (C) 2015-2020 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -55,11 +55,21 @@
 
 #include "vscf_library.h"
 #include "vscf_impl.h"
-#include "vscf_alg.h"
 #include "vscf_error.h"
 #include "vscf_raw_public_key.h"
+#include "vscf_status.h"
 #include "vscf_raw_private_key.h"
 #include "vscf_api.h"
+
+#if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <virgil/crypto/common/vsc_data.h>
+#   include <virgil/crypto/common/vsc_buffer.h>
+#endif
+
+#if VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <VSCCommon/vsc_data.h>
+#   include <VSCCommon/vsc_buffer.h>
+#endif
 
 // clang-format on
 //  @end
@@ -102,6 +112,13 @@ VSCF_PUBLIC vscf_impl_t *
 vscf_key_alg_import_public_key(const vscf_impl_t *impl, const vscf_raw_public_key_t *raw_key, vscf_error_t *error);
 
 //
+//  Import public key from the raw binary format.
+//
+VSCF_PRIVATE vscf_impl_t *
+vscf_key_alg_import_public_key_data(const vscf_impl_t *impl, vsc_data_t key_data, const vscf_impl_t *key_alg_info,
+        vscf_error_t *error);
+
+//
 //  Export public key to the raw binary format.
 //
 //  Binary format must be defined in the key specification.
@@ -110,6 +127,23 @@ vscf_key_alg_import_public_key(const vscf_impl_t *impl, const vscf_raw_public_ke
 //
 VSCF_PUBLIC vscf_raw_public_key_t *
 vscf_key_alg_export_public_key(const vscf_impl_t *impl, const vscf_impl_t *public_key, vscf_error_t *error);
+
+//
+//  Return length in bytes required to hold exported public key.
+//
+VSCF_PRIVATE size_t
+vscf_key_alg_exported_public_key_data_len(const vscf_impl_t *impl, const vscf_impl_t *public_key);
+
+//
+//  Export public key to the raw binary format without algorithm information.
+//
+//  Binary format must be defined in the key specification.
+//  For instance, RSA public key must be exported in format defined in
+//  RFC 3447 Appendix A.1.1.
+//
+VSCF_PRIVATE vscf_status_t
+vscf_key_alg_export_public_key_data(const vscf_impl_t *impl, const vscf_impl_t *public_key,
+        vsc_buffer_t *out) VSCF_NODISCARD;
 
 //
 //  Import private key from the raw binary format.
@@ -125,6 +159,13 @@ VSCF_PUBLIC vscf_impl_t *
 vscf_key_alg_import_private_key(const vscf_impl_t *impl, const vscf_raw_private_key_t *raw_key, vscf_error_t *error);
 
 //
+//  Import private key from the raw binary format.
+//
+VSCF_PRIVATE vscf_impl_t *
+vscf_key_alg_import_private_key_data(const vscf_impl_t *impl, vsc_data_t key_data, const vscf_impl_t *key_alg_info,
+        vscf_error_t *error);
+
+//
 //  Export private key in the raw binary format.
 //
 //  Binary format must be defined in the key specification.
@@ -133,6 +174,23 @@ vscf_key_alg_import_private_key(const vscf_impl_t *impl, const vscf_raw_private_
 //
 VSCF_PUBLIC vscf_raw_private_key_t *
 vscf_key_alg_export_private_key(const vscf_impl_t *impl, const vscf_impl_t *private_key, vscf_error_t *error);
+
+//
+//  Return length in bytes required to hold exported private key.
+//
+VSCF_PRIVATE size_t
+vscf_key_alg_exported_private_key_data_len(const vscf_impl_t *impl, const vscf_impl_t *private_key);
+
+//
+//  Export private key to the raw binary format without algorithm information.
+//
+//  Binary format must be defined in the key specification.
+//  For instance, RSA private key must be exported in format defined in
+//  RFC 3447 Appendix A.1.2.
+//
+VSCF_PRIVATE vscf_status_t
+vscf_key_alg_export_private_key_data(const vscf_impl_t *impl, const vscf_impl_t *private_key,
+        vsc_buffer_t *out) VSCF_NODISCARD;
 
 //
 //  Returns constant 'can import public key'.
@@ -163,12 +221,6 @@ vscf_key_alg_can_export_private_key(const vscf_key_alg_api_t *key_alg_api);
 //
 VSCF_PUBLIC const vscf_key_alg_api_t *
 vscf_key_alg_api(const vscf_impl_t *impl);
-
-//
-//  Return alg API.
-//
-VSCF_PUBLIC const vscf_alg_api_t *
-vscf_key_alg_alg_api(const vscf_key_alg_api_t *key_alg_api);
 
 //
 //  Check if given object implements interface 'key alg'.

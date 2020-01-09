@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2015-2019 Virgil Security, Inc.
+ * Copyright (C) 2015-2020 Virgil Security, Inc.
  *
  * All rights reserved.
  *
@@ -330,6 +330,17 @@ const initAes256Cbc = (Module, modules) => {
                 Module._free(keyPtr);
                 Module._free(keyCtxPtr);
             }
+        }
+
+        /**
+         * Return cipher's current state.
+         */
+        state() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
+            let proxyResult;
+            proxyResult = Module._vscf_aes256_cbc_state(this.ctxPtr);
+            return proxyResult;
         }
 
         /**

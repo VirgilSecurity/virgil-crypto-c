@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2019 Virgil Security, Inc.
+//  Copyright (C) 2015-2020 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -59,6 +59,7 @@
 #include "vscf_encrypt.h"
 #include "vscf_decrypt.h"
 #include "vscf_cipher_info.h"
+#include "vscf_cipher_state.h"
 #include "vscf_status.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
@@ -97,6 +98,11 @@ typedef void (*vscf_cipher_api_set_nonce_fn)(vscf_impl_t *impl, vsc_data_t nonce
 typedef void (*vscf_cipher_api_set_key_fn)(vscf_impl_t *impl, vsc_data_t key);
 
 //
+//  Callback. Return cipher's current state.
+//
+typedef vscf_cipher_state_t (*vscf_cipher_api_state_fn)(const vscf_impl_t *impl);
+
+//
 //  Callback. Start sequential encryption.
 //
 typedef void (*vscf_cipher_api_start_encryption_fn)(vscf_impl_t *impl);
@@ -123,14 +129,14 @@ typedef size_t (*vscf_cipher_api_out_len_fn)(vscf_impl_t *impl, size_t data_len)
 //          "update" or "finish" in an encryption mode.
 //          Pass zero length to define buffer length of the method "finish".
 //
-typedef size_t (*vscf_cipher_api_encrypted_out_len_fn)(vscf_impl_t *impl, size_t data_len);
+typedef size_t (*vscf_cipher_api_encrypted_out_len_fn)(const vscf_impl_t *impl, size_t data_len);
 
 //
 //  Callback. Return buffer length required to hold an output of the methods
 //          "update" or "finish" in an decryption mode.
 //          Pass zero length to define buffer length of the method "finish".
 //
-typedef size_t (*vscf_cipher_api_decrypted_out_len_fn)(vscf_impl_t *impl, size_t data_len);
+typedef size_t (*vscf_cipher_api_decrypted_out_len_fn)(const vscf_impl_t *impl, size_t data_len);
 
 //
 //  Callback. Accomplish encryption or decryption process.
@@ -170,6 +176,10 @@ struct vscf_cipher_api_t {
     //  Set cipher encryption / decryption key.
     //
     vscf_cipher_api_set_key_fn set_key_cb;
+    //
+    //  Return cipher's current state.
+    //
+    vscf_cipher_api_state_fn state_cb;
     //
     //  Start sequential encryption.
     //

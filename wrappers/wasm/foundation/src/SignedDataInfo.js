@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2015-2019 Virgil Security, Inc.
+ * Copyright (C) 2015-2020 Virgil Security, Inc.
  *
  * All rights reserved.
  *
@@ -86,15 +86,6 @@ const initSignedDataInfo = (Module, modules) => {
                 Module._vscf_signed_data_info_delete(this.ctxPtr);
                 this.ctxPtr = null;
             }
-        }
-
-        /**
-         * Set information about algorithm that was used to produce data digest.
-         */
-        setHashAlgInfo(hashAlgInfo) {
-            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-            precondition.ensureImplementInterface('hashAlgInfo', hashAlgInfo, 'Foundation.AlgInfo', modules.FoundationInterfaceTag.ALG_INFO, modules.FoundationInterface);
-            Module._vscf_signed_data_info_set_hash_alg_info(this.ctxPtr, hashAlgInfo.ctxPtr);
         }
 
         /**

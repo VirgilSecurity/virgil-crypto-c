@@ -1,6 +1,6 @@
 #   @license
 #   -------------------------------------------------------------------------
-#   Copyright (C) 2015-2019 Virgil Security, Inc.
+#   Copyright (C) 2015-2020 Virgil Security, Inc.
 #
 #   All rights reserved.
 #
@@ -104,6 +104,21 @@ set_property(
 )
 
 set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/phe/vsce_uokms_client.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
+)
+
+set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/phe/vsce_uokms_server.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
+)
+
+set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/phe/vsce_uokms_wrap_rotation.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
+)
+
+set_property(
     SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/phe/vsce_status.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
@@ -129,8 +144,26 @@ target_sources(phe
             "$<$<BOOL:${VSCE_PHE_COMMON}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/phe/vsce_phe_common.h>"
             "$<$<BOOL:${VSCE_PHE_HASH}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_phe_hash.h>"
             "$<$<BOOL:${VSCE_PHE_HASH}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_phe_hash_defs.h>"
+            "$<$<BOOL:${VSCE_PHE_PROOF_GENERATOR}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_phe_proof_generator.h>"
+            "$<$<BOOL:${VSCE_PHE_PROOF_GENERATOR}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_phe_proof_generator_defs.h>"
+            "$<$<BOOL:${VSCE_PHE_PROOF_VERIFIER}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_phe_proof_verifier.h>"
+            "$<$<BOOL:${VSCE_PHE_PROOF_VERIFIER}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_phe_proof_verifier_defs.h>"
             "$<$<BOOL:${VSCE_PHE_SERVER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/phe/vsce_phe_server.h>"
             "$<$<BOOL:${VSCE_PHE_SERVER}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_phe_server_defs.h>"
+            "$<$<BOOL:${VSCE_PROOF_GENERATOR}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_proof_generator.h>"
+            "$<$<BOOL:${VSCE_PROOF_GENERATOR}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_proof_generator_defs.h>"
+            "$<$<BOOL:${VSCE_PROOF_VERIFIER}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_proof_verifier.h>"
+            "$<$<BOOL:${VSCE_PROOF_VERIFIER}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_proof_verifier_defs.h>"
+            "$<$<BOOL:${VSCE_UOKMS_CLIENT}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/phe/vsce_uokms_client.h>"
+            "$<$<BOOL:${VSCE_UOKMS_CLIENT}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_uokms_client_defs.h>"
+            "$<$<BOOL:${VSCE_UOKMS_PROOF_GENERATOR}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_uokms_proof_generator.h>"
+            "$<$<BOOL:${VSCE_UOKMS_PROOF_GENERATOR}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_uokms_proof_generator_defs.h>"
+            "$<$<BOOL:${VSCE_UOKMS_PROOF_VERIFIER}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_uokms_proof_verifier.h>"
+            "$<$<BOOL:${VSCE_UOKMS_PROOF_VERIFIER}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_uokms_proof_verifier_defs.h>"
+            "$<$<BOOL:${VSCE_UOKMS_SERVER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/phe/vsce_uokms_server.h>"
+            "$<$<BOOL:${VSCE_UOKMS_SERVER}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_uokms_server_defs.h>"
+            "$<$<BOOL:${VSCE_UOKMS_WRAP_ROTATION}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/phe/vsce_uokms_wrap_rotation.h>"
+            "$<$<BOOL:${VSCE_UOKMS_WRAP_ROTATION}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_uokms_wrap_rotation_defs.h>"
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/phe/vsce_status.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/phe/vsce_phe_public.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/phe/private/vsce_phe_private.h"
@@ -147,8 +180,26 @@ target_sources(phe
             "$<$<BOOL:${VSCE_PHE_COMMON}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_phe_common.c>"
             "$<$<BOOL:${VSCE_PHE_HASH}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_phe_hash.c>"
             "$<$<BOOL:${VSCE_PHE_HASH}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_phe_hash_defs.c>"
+            "$<$<BOOL:${VSCE_PHE_PROOF_GENERATOR}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_phe_proof_generator.c>"
+            "$<$<BOOL:${VSCE_PHE_PROOF_GENERATOR}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_phe_proof_generator_defs.c>"
+            "$<$<BOOL:${VSCE_PHE_PROOF_VERIFIER}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_phe_proof_verifier.c>"
+            "$<$<BOOL:${VSCE_PHE_PROOF_VERIFIER}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_phe_proof_verifier_defs.c>"
             "$<$<BOOL:${VSCE_PHE_SERVER}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_phe_server.c>"
             "$<$<BOOL:${VSCE_PHE_SERVER}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_phe_server_defs.c>"
+            "$<$<BOOL:${VSCE_PROOF_GENERATOR}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_proof_generator.c>"
+            "$<$<BOOL:${VSCE_PROOF_GENERATOR}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_proof_generator_defs.c>"
+            "$<$<BOOL:${VSCE_PROOF_VERIFIER}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_proof_verifier.c>"
+            "$<$<BOOL:${VSCE_PROOF_VERIFIER}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_proof_verifier_defs.c>"
+            "$<$<BOOL:${VSCE_UOKMS_CLIENT}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_uokms_client.c>"
+            "$<$<BOOL:${VSCE_UOKMS_CLIENT}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_uokms_client_defs.c>"
+            "$<$<BOOL:${VSCE_UOKMS_PROOF_GENERATOR}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_uokms_proof_generator.c>"
+            "$<$<BOOL:${VSCE_UOKMS_PROOF_GENERATOR}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_uokms_proof_generator_defs.c>"
+            "$<$<BOOL:${VSCE_UOKMS_PROOF_VERIFIER}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_uokms_proof_verifier.c>"
+            "$<$<BOOL:${VSCE_UOKMS_PROOF_VERIFIER}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_uokms_proof_verifier_defs.c>"
+            "$<$<BOOL:${VSCE_UOKMS_SERVER}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_uokms_server.c>"
+            "$<$<BOOL:${VSCE_UOKMS_SERVER}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_uokms_server_defs.c>"
+            "$<$<BOOL:${VSCE_UOKMS_WRAP_ROTATION}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_uokms_wrap_rotation.c>"
+            "$<$<BOOL:${VSCE_UOKMS_WRAP_ROTATION}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_uokms_wrap_rotation_defs.c>"
             "${CMAKE_CURRENT_LIST_DIR}/src/vsce_status.c"
         )
 

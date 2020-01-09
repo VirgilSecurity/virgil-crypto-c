@@ -1,5 +1,5 @@
 /*
-* Copyright (C) 2015-2019 Virgil Security, Inc.
+* Copyright (C) 2015-2020 Virgil Security, Inc.
 *
 * All rights reserved.
 *
@@ -52,14 +52,6 @@ public class HashBasedAlgInfo implements AutoCloseable, AlgInfo {
     /* Wrap underlying C context. */
     HashBasedAlgInfo(FoundationContextHolder contextHolder) {
         this.cCtx = contextHolder.cCtx;
-    }
-
-    /*
-    * Create algorithm info with identificator and HASH algorithm info.
-    */
-    public HashBasedAlgInfo(AlgId algId, AlgInfo hashAlgInfo) {
-        super();
-        this.cCtx = FoundationJNI.INSTANCE.hashBasedAlgInfo_new(algId, hashAlgInfo);
     }
 
     /*

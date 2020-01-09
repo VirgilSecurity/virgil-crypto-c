@@ -8,7 +8,6 @@
     <constant name="kdf1"/>
     <constant name="kdf2"/>
     <constant name="rsa"/>
-    <constant name="ecc"/>
     <constant name="ed25519"/>
     <constant name="curve25519"/>
     <constant name="secp256r1"/>
@@ -18,4 +17,9 @@
     <constant name="hkdf"/>
     <constant name="pkcs5 pbkdf2"/>
     <constant name="pkcs5 pbes2"/>
+    <constant name="compound key"/>
+    <constant name="hybrid key"/>
+    <constant name="falcon"/>
+    <constant name="round5 nd 5kem 5d"/>
+    <constant name="random padding"/>
 </enum>

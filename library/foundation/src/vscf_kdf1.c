@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2019 Virgil Security, Inc.
+//  Copyright (C) 2015-2020 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -113,7 +113,7 @@ vscf_kdf1_restore_alg_info(vscf_kdf1_t *self, const vscf_impl_t *alg_info) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(alg_info);
-    VSCF_ASSERT(vscf_alg_info_alg_id(alg_info) == vscf_alg_id_HMAC);
+    VSCF_ASSERT(vscf_alg_info_alg_id(alg_info) == vscf_alg_id_KDF1);
 
     const vscf_hash_based_alg_info_t *hash_based_alg_info = (const vscf_hash_based_alg_info_t *)alg_info;
 

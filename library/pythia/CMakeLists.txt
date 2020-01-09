@@ -1,4 +1,4 @@
-#   Copyright (C) 2015-2019 Virgil Security, Inc.
+#   Copyright (C) 2015-2020 Virgil Security, Inc.
 #
 #   All rights reserved.
 #
@@ -32,7 +32,7 @@
 #
 #   Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.12 FATAL_ERROR)
 
 project(virgil_crypto_c_pythia VERSION ${virgil_crypto_VERSION} LANGUAGES C)
 
@@ -142,6 +142,7 @@ endif()
 #
 if(COMMAND enable_target_pedantic)
     enable_target_pedantic(pythia)
+    target_compile_options(pythia PRIVATE $<$<C_COMPILER_ID:GNU>:-Wno-error>)
 else()
     message(STATUS "To enable pedantic mode create function 'enable_target_pedantic(<target>)'.")
 endif()

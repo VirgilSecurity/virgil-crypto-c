@@ -1,4 +1,4 @@
-/// Copyright (C) 2015-2019 Virgil Security, Inc.
+/// Copyright (C) 2015-2020 Virgil Security, Inc.
 ///
 /// All rights reserved.
 ///
@@ -67,17 +67,10 @@ import VSCFoundation
         vscf_signed_data_info_delete(self.c_ctx)
     }
 
-    /// Set information about algorithm that was used to produce data digest.
-    @objc public func setHashAlgInfo(hashAlgInfo: AlgInfo) {
-        var hashAlgInfoCopy = vscf_impl_shallow_copy(hashAlgInfo.c_ctx)
-
-        vscf_signed_data_info_set_hash_alg_info(self.c_ctx, &hashAlgInfoCopy)
-    }
-
     /// Return information about algorithm that was used to produce data digest.
     @objc public func hashAlgInfo() -> AlgInfo {
         let proxyResult = vscf_signed_data_info_hash_alg_info(self.c_ctx)
 
-        return FoundationImplementation.wrapAlgInfo(take: proxyResult!)
+        return FoundationImplementation.wrapAlgInfo(use: proxyResult!)
     }
 }

@@ -1,5 +1,5 @@
 /*
-* Copyright (C) 2015-2019 Virgil Security, Inc.
+* Copyright (C) 2015-2020 Virgil Security, Inc.
 *
 * All rights reserved.
 *
@@ -75,11 +75,6 @@ public class RsaTest extends SampleBasedTest {
 		assertNotNull(privateKey);
 		assertEquals(AlgId.RSA, privateKey.algId());
 		assertEquals(this.bitlen, privateKey.bitlen());
-	}
-
-	@Test
-	public void algId() {
-		assertEquals(AlgId.RSA, this.rsa.algId());
 	}
 
 	@Test

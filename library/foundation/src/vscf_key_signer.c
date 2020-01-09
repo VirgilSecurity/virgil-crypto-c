@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2019 Virgil Security, Inc.
+//  Copyright (C) 2015-2020 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -83,13 +83,13 @@ vscf_key_signer_can_sign(const vscf_impl_t *impl, const vscf_impl_t *private_key
 //  Return zero if a given private key can not produce signatures.
 //
 VSCF_PUBLIC size_t
-vscf_key_signer_signature_len(const vscf_impl_t *impl, const vscf_impl_t *key) {
+vscf_key_signer_signature_len(const vscf_impl_t *impl, const vscf_impl_t *private_key) {
 
     const vscf_key_signer_api_t *key_signer_api = vscf_key_signer_api(impl);
     VSCF_ASSERT_PTR (key_signer_api);
 
     VSCF_ASSERT_PTR (key_signer_api->signature_len_cb);
-    return key_signer_api->signature_len_cb (impl, key);
+    return key_signer_api->signature_len_cb (impl, private_key);
 }
 
 //

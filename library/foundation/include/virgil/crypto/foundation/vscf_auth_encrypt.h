@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2019 Virgil Security, Inc.
+//  Copyright (C) 2015-2020 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -101,7 +101,7 @@ vscf_auth_encrypt(vscf_impl_t *impl, vsc_data_t data, vsc_data_t auth_data, vsc_
 //  Calculate required buffer length to hold the authenticated encrypted data.
 //
 VSCF_PUBLIC size_t
-vscf_auth_encrypt_auth_encrypted_len(vscf_impl_t *impl, size_t data_len);
+vscf_auth_encrypt_auth_encrypted_len(const vscf_impl_t *impl, size_t data_len);
 
 //
 //  Return auth encrypt API, or NULL if it is not implemented.

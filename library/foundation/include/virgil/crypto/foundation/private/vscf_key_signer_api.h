@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2019 Virgil Security, Inc.
+//  Copyright (C) 2015-2020 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -94,7 +94,7 @@ typedef bool (*vscf_key_signer_api_can_sign_fn)(const vscf_impl_t *impl, const v
 //  Callback. Return length in bytes required to hold signature.
 //          Return zero if a given private key can not produce signatures.
 //
-typedef size_t (*vscf_key_signer_api_signature_len_fn)(const vscf_impl_t *impl, const vscf_impl_t *key);
+typedef size_t (*vscf_key_signer_api_signature_len_fn)(const vscf_impl_t *impl, const vscf_impl_t *private_key);
 
 //
 //  Callback. Sign data digest with a given private key.

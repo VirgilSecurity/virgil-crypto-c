@@ -7,17 +7,22 @@
     <require interface="private key"/>
     <require interface="key serializer"/>
     <require interface="key deserializer"/>
+    <require class="key alg factory"/>
     <require impl="ctr drbg"/>
-    <require impl="rsa"/>
-    <require impl="ed25519"/>
-    <require impl="curve25519"/>
-    <require impl="ecc"/>
     <require impl="key asn1 deserializer"/>
     <require impl="key asn1 serializer"/>
-    <require class="key alg factory"/>
+    <require impl="rsa" is_optional="1"/>
+    <require impl="ed25519" is_optional="1"/>
+    <require impl="curve25519" is_optional="1"/>
+    <require impl="ecc" is_optional="1"/>
+    <require impl="falcon" is_optional="1"/>
+    <require impl="round5" is_optional="1"/>
+    <require impl="compound key alg" is_optional="1"/>
+    <require module="compound key alg defs" is_optional="1"/>
+    <require impl="hybrid key alg" is_optional="1"/>
+    <require module="hybrid key alg defs" is_optional="1"/>
 
     <dependency name="random" interface="random"/>
-    <dependency name="ecies" class="ecies"/>
 
     <property name="rsa bitlen" type="size"/>
     <property name="key asn1 serializer" interface="key serialzier"/>
@@ -36,9 +41,61 @@
     </method>
 
     <method name="generate private key">
-        Generate new private key from the given id.
+        Generate new private key with a given algorithm.
 
         <argument name="alg id" enum="alg id"/>
+        <argument name="error" class="error" access="readwrite"/>
+
+        <return interface="private key" access="disown"/>
+    </method>
+
+    <method name="generate post quantum private key">
+        Generate new post-quantum private key with default algorithms.
+        Note, that a post-quantum key combines classic private keys
+        alongside with post-quantum private keys.
+        Current structure is "compound private key" is:
+            - cipher private key is "hybrid private key" where:
+                - first key is a classic private key;
+                - second key is a post-quantum private key;
+            - signer private key "hybrid private key" where:
+                - first key is a classic private key;
+                - second key is a post-quantum private key.
+
+        <argument name="error" class="error" access="readwrite"/>
+
+        <return interface="private key" access="disown"/>
+    </method>
+
+    <method name="generate compound private key">
+        Generate new compound private key with given algorithms.
+
+        <argument name="cipher alg id" enum="alg id"/>
+        <argument name="signer alg id" enum="alg id"/>
+        <argument name="error" class="error" access="readwrite"/>
+
+        <return interface="private key" access="disown"/>
+    </method>
+
+    <method name="generate hybrid private key">
+        Generate new hybrid private key with given algorithms.
+
+        <argument name="first key alg id" enum="alg id"/>
+        <argument name="second key alg id" enum="alg id"/>
+        <argument name="error" class="error" access="readwrite"/>
+
+        <return interface="private key" access="disown"/>
+    </method>
+
+    <method name="generate compound hybrid private key">
+        Generate new compound private key with nested hybrid private keys.
+
+        Note, second key algorithm identifiers can be NONE, in this case,
+        a regular key will be crated instead of a hybrid key.
+
+        <argument name="cipher first key alg id" enum="alg id"/>
+        <argument name="cipher second key alg id" enum="alg id"/>
+        <argument name="signer first key alg id" enum="alg id"/>
+        <argument name="signer second key alg id" enum="alg id"/>
         <argument name="error" class="error" access="readwrite"/>
 
         <return interface="private key" access="disown"/>

@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2019 Virgil Security, Inc.
+# Copyright (C) 2015-2020 Virgil Security, Inc.
 #
 # All rights reserved.
 #
@@ -80,6 +80,7 @@ class VscePheClient(object):
         return vsce_phe_client_use_operation_random(ctx, operation_random)
 
     def vsce_phe_client_setup_defaults(self, ctx):
+        """Setups dependencies with default values."""
         vsce_phe_client_setup_defaults = self._lib.vsce_phe_client_setup_defaults
         vsce_phe_client_setup_defaults.argtypes = [POINTER(vsce_phe_client_t)]
         vsce_phe_client_setup_defaults.restype = c_int

@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2019 Virgil Security, Inc.
+//  Copyright (C) 2015-2020 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -60,6 +60,7 @@
 #include "vscf_impl_private.h"
 #include "vscf_aes256_gcm.h"
 #include "vscf_atomic.h"
+#include "vscf_cipher_state.h"
 
 #include <mbedtls/cipher.h>
 
@@ -117,7 +118,7 @@ struct vscf_aes256_gcm_t {
     //
     //  Implementation specific context.
     //
-    bool do_decrypt;
+    vscf_cipher_state_t state;
     //
     //  Implementation specific context.
     //

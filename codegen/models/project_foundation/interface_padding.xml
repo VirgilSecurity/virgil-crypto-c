@@ -1,0 +1,85 @@
+<interface name="padding">
+    Provide an interface to add and remove data padding.
+
+    <method name="configure">
+        Set new padding parameters.
+
+        <argument name="params" class="padding params"/>
+    </method>
+
+    <method name="padded data len" is_const="1">
+        Return length in bytes of a data with a padding.
+
+        <argument name="data len" type="size"/>
+
+        <return type="size"/>
+    </method>
+
+    <method name="len" is_const="1">
+        Return an actual number of padding in bytes.
+        Note, this method might be called right before "finish data processing".
+
+        <return type="size"/>
+    </method>
+
+    <method name="len max" is_const="1">
+        Return a maximum number of padding in bytes.
+
+        <return type="size"/>
+    </method>
+
+    <method name="start data processing">
+        Prepare the algorithm to process data.
+    </method>
+
+    <method name="process data">
+        Only data length is needed to produce padding later.
+        Return data that should be further proceeded.
+
+        <argument name="data" class="data"/>
+
+        <return class="data"/>
+    </method>
+
+    <method name="finish data processing">
+        Accomplish data processing and return padding.
+
+        <argument name="out" class="buffer">
+            <length method="len"/>
+        </argument>
+
+        <return enum="status"/>
+    </method>
+
+    <method name="start padded data processing">
+        Prepare the algorithm to process padded data.
+    </method>
+
+    <method name="process padded data">
+        Process padded data.
+        Return filtered data without padding.
+
+        <argument name="data" class="data"/>
+
+        <argument name="out" class="buffer">
+            <length argument="data" cast="data_length"/>
+        </argument>
+    </method>
+
+    <method name="finish padded data processing out len" is_const="1">
+        Return length in bytes required hold output of the method
+        "finish padded data processing".
+
+        <return type="size"/>
+    </method>
+
+    <method name="finish padded data processing">
+        Accomplish padded data processing and return left data without a padding.
+
+        <argument name="out" class="buffer">
+            <length method="finish padded data processing out len"/>
+        </argument>
+
+        <return enum="status"/>
+    </method>
+</interface>

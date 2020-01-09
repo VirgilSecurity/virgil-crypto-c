@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2019 Virgil Security, Inc.
+# Copyright (C) 2015-2020 Virgil Security, Inc.
 #
 # All rights reserved.
 #
@@ -80,3 +80,10 @@ class VscfAlgFactory(object):
         vscf_alg_factory_create_cipher_from_info.argtypes = [POINTER(vscf_impl_t)]
         vscf_alg_factory_create_cipher_from_info.restype = POINTER(vscf_impl_t)
         return vscf_alg_factory_create_cipher_from_info(alg_info)
+
+    def vscf_alg_factory_create_padding_from_info(self, alg_info, random):
+        """Create algorithm that implements "padding" interface."""
+        vscf_alg_factory_create_padding_from_info = self._lib.vscf_alg_factory_create_padding_from_info
+        vscf_alg_factory_create_padding_from_info.argtypes = [POINTER(vscf_impl_t), POINTER(vscf_impl_t)]
+        vscf_alg_factory_create_padding_from_info.restype = POINTER(vscf_impl_t)
+        return vscf_alg_factory_create_padding_from_info(alg_info, random)

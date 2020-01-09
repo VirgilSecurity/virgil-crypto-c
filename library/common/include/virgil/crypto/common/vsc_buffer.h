@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2019 Virgil Security, Inc.
+//  Copyright (C) 2015-2020 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -292,12 +292,6 @@ vsc_buffer_inc_used(vsc_buffer_t *self, size_t len);
 //
 VSC_PUBLIC void
 vsc_buffer_dec_used(vsc_buffer_t *self, size_t len);
-
-//
-//  Copy null-terminated string to the buffer.
-//
-VSC_PUBLIC void
-vsc_buffer_write_str(vsc_buffer_t *self, const char *str);
 
 //
 //  Copy data to the buffer.

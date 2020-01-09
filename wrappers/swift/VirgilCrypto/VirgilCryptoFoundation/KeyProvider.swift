@@ -1,4 +1,4 @@
-/// Copyright (C) 2015-2019 Virgil Security, Inc.
+/// Copyright (C) 2015-2020 Virgil Security, Inc.
 ///
 /// All rights reserved.
 ///
@@ -73,11 +73,6 @@ import VSCFoundation
         vscf_key_provider_use_random(self.c_ctx, random.c_ctx)
     }
 
-    @objc public func setEcies(ecies: Ecies) {
-        vscf_key_provider_release_ecies(self.c_ctx)
-        vscf_key_provider_use_ecies(self.c_ctx, ecies.c_ctx)
-    }
-
     /// Setup predefined values to the uninitialized class dependencies.
     @objc public func setupDefaults() throws {
         let proxyResult = vscf_key_provider_setup_defaults(self.c_ctx)
@@ -90,12 +85,72 @@ import VSCFoundation
         vscf_key_provider_set_rsa_params(self.c_ctx, bitlen)
     }
 
-    /// Generate new private key from the given id.
+    /// Generate new private key with a given algorithm.
     @objc public func generatePrivateKey(algId: AlgId) throws -> PrivateKey {
         var error: vscf_error_t = vscf_error_t()
         vscf_error_reset(&error)
 
         let proxyResult = vscf_key_provider_generate_private_key(self.c_ctx, vscf_alg_id_t(rawValue: UInt32(algId.rawValue)), &error)
+
+        try FoundationError.handleStatus(fromC: error.status)
+
+        return FoundationImplementation.wrapPrivateKey(take: proxyResult!)
+    }
+
+    /// Generate new post-quantum private key with default algorithms.
+    /// Note, that a post-quantum key combines classic private keys
+    /// alongside with post-quantum private keys.
+    /// Current structure is "compound private key" is:
+    ///     - cipher private key is "hybrid private key" where:
+    ///         - first key is a classic private key;
+    ///         - second key is a post-quantum private key;
+    ///     - signer private key "hybrid private key" where:
+    ///         - first key is a classic private key;
+    ///         - second key is a post-quantum private key.
+    @objc public func generatePostQuantumPrivateKey() throws -> PrivateKey {
+        var error: vscf_error_t = vscf_error_t()
+        vscf_error_reset(&error)
+
+        let proxyResult = vscf_key_provider_generate_post_quantum_private_key(self.c_ctx, &error)
+
+        try FoundationError.handleStatus(fromC: error.status)
+
+        return FoundationImplementation.wrapPrivateKey(take: proxyResult!)
+    }
+
+    /// Generate new compound private key with given algorithms.
+    @objc public func generateCompoundPrivateKey(cipherAlgId: AlgId, signerAlgId: AlgId) throws -> PrivateKey {
+        var error: vscf_error_t = vscf_error_t()
+        vscf_error_reset(&error)
+
+        let proxyResult = vscf_key_provider_generate_compound_private_key(self.c_ctx, vscf_alg_id_t(rawValue: UInt32(cipherAlgId.rawValue)), vscf_alg_id_t(rawValue: UInt32(signerAlgId.rawValue)), &error)
+
+        try FoundationError.handleStatus(fromC: error.status)
+
+        return FoundationImplementation.wrapPrivateKey(take: proxyResult!)
+    }
+
+    /// Generate new hybrid private key with given algorithms.
+    @objc public func generateHybridPrivateKey(firstKeyAlgId: AlgId, secondKeyAlgId: AlgId) throws -> PrivateKey {
+        var error: vscf_error_t = vscf_error_t()
+        vscf_error_reset(&error)
+
+        let proxyResult = vscf_key_provider_generate_hybrid_private_key(self.c_ctx, vscf_alg_id_t(rawValue: UInt32(firstKeyAlgId.rawValue)), vscf_alg_id_t(rawValue: UInt32(secondKeyAlgId.rawValue)), &error)
+
+        try FoundationError.handleStatus(fromC: error.status)
+
+        return FoundationImplementation.wrapPrivateKey(take: proxyResult!)
+    }
+
+    /// Generate new compound private key with nested hybrid private keys.
+    ///
+    /// Note, second key algorithm identifiers can be NONE, in this case,
+    /// a regular key will be crated instead of a hybrid key.
+    @objc public func generateCompoundHybridPrivateKey(cipherFirstKeyAlgId: AlgId, cipherSecondKeyAlgId: AlgId, signerFirstKeyAlgId: AlgId, signerSecondKeyAlgId: AlgId) throws -> PrivateKey {
+        var error: vscf_error_t = vscf_error_t()
+        vscf_error_reset(&error)
+
+        let proxyResult = vscf_key_provider_generate_compound_hybrid_private_key(self.c_ctx, vscf_alg_id_t(rawValue: UInt32(cipherFirstKeyAlgId.rawValue)), vscf_alg_id_t(rawValue: UInt32(cipherSecondKeyAlgId.rawValue)), vscf_alg_id_t(rawValue: UInt32(signerFirstKeyAlgId.rawValue)), vscf_alg_id_t(rawValue: UInt32(signerSecondKeyAlgId.rawValue)), &error)
 
         try FoundationError.handleStatus(fromC: error.status)
 

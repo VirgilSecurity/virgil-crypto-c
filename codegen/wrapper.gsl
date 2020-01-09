@@ -1,5 +1,5 @@
 .template 0
-#   Copyright (C) 2015-2019 Virgil Security, Inc.
+#   Copyright (C) 2015-2020 Virgil Security, Inc.
 #
 #   All rights reserved.
 #
@@ -71,6 +71,7 @@ gsl from "java.gsl"
 gsl from "php.gsl"
 gsl from "wasm.gsl"
 gsl from "python.gsl"
+gsl from "go.gsl"
 
 # ---------------------------------------------------------------------------
 #   Create project root module, for instance:

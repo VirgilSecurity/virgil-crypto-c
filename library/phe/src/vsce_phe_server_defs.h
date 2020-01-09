@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2019 Virgil Security, Inc.
+//  Copyright (C) 2015-2020 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -56,6 +56,7 @@
 #include "vsce_library.h"
 #include "vsce_atomic.h"
 #include "vsce_phe_hash.h"
+#include "vsce_phe_proof_generator.h"
 
 #if !VSCE_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
 #   include <virgil/crypto/foundation/vscf_impl.h>
@@ -102,6 +103,8 @@ struct vsce_phe_server_t {
     vscf_impl_t *operation_random;
 
     vsce_phe_hash_t *phe_hash;
+
+    vsce_phe_proof_generator_t *proof_generator;
 
     mbedtls_ecp_group group;
 };

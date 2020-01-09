@@ -1,4 +1,4 @@
-/// Copyright (C) 2015-2019 Virgil Security, Inc.
+/// Copyright (C) 2015-2020 Virgil Security, Inc.
 ///
 /// All rights reserved.
 ///
@@ -38,9 +38,6 @@ import VSCFoundation
 
 /// Deterministic entropy source that is based only on the given seed.
 @objc(VSCFSeedEntropySource) public class SeedEntropySource: NSObject, EntropySource {
-
-    /// The maximum length of the entropy requested at once.
-    @objc public static let gatherLenMax: Int = 48
 
     /// Handle underlying C context.
     @objc public let c_ctx: OpaquePointer

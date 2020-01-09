@@ -1,4 +1,4 @@
-//  Copyright (C) 2015-2019 Virgil Security, Inc.
+//  Copyright (C) 2015-2020 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -128,16 +128,12 @@ const vsc_data_t test_phe_hash_hc1_pwd = {
         test_phe_hash_hc1_pwd_BYTES, sizeof(test_phe_hash_hc1_pwd_BYTES)
 };
 
-const byte test_phe_hash_z_s_pub_BYTES[] = {
-        0x04, 0x21, 0xc3, 0x71, 0x95, 0x74, 0xaf, 0xce,
-        0xc6, 0x5e, 0x35, 0xbd, 0x77, 0x5a, 0x5b, 0xe3,
-        0x6c, 0x77, 0xc0, 0xbe, 0x45, 0x01, 0xf5, 0xd7,
-        0x0f, 0xf0, 0x70, 0xd5, 0x1a, 0x89, 0x3a, 0xd8,
-        0xe0, 0x0c, 0xe6, 0xb8, 0x9b, 0x17, 0x88, 0xe6,
-        0xc1, 0x27, 0xa0, 0xe1, 0x25, 0xd9, 0xde, 0x6a,
-        0x71, 0x16, 0x46, 0xa0, 0x38, 0x0f, 0xc4, 0xe9,
-        0x5a, 0x74, 0xe5, 0x2c, 0x89, 0xf1, 0x12, 0x2a,
-        0x7c,
+const char test_phe_hash_z_s_pub_x_DEC[] = {
+        "15271643107537365432090467784252242908002323455374810046702533972287599335648"
+};
+
+const char test_phe_hash_z_s_pub_y_DEC[] = {
+        "5835403110496268599898341723519915473045685703332520226763759318760934222460"
 };
 
 const char test_phe_hash_z_s_c0_x_DEC[] = {
@@ -182,10 +178,6 @@ const char test_phe_hash_z_s_term3_y_DEC[] = {
 
 const char test_phe_hash_z_s_challenge_DEC[] = {
         "93919747365284119397236447539917482315419780885577135068398876525953972539838"
-};
-
-const vsc_data_t test_phe_hash_z_s_pub = {
-        test_phe_hash_z_s_pub_BYTES, sizeof(test_phe_hash_z_s_pub_BYTES)
 };
 
 const byte test_phe_hash_z_f_pub_BYTES[] = {

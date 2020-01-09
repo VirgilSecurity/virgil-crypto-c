@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2019 Virgil Security, Inc.
+//  Copyright (C) 2015-2020 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -94,6 +94,7 @@ enum vscf_api_tag_t {
     vscf_api_tag_ENTROPY_SOURCE,
     vscf_api_tag_HASH,
     vscf_api_tag_KDF,
+    vscf_api_tag_KEM,
     vscf_api_tag_KEY,
     vscf_api_tag_KEY_ALG,
     vscf_api_tag_KEY_CIPHER,
@@ -103,6 +104,7 @@ enum vscf_api_tag_t {
     vscf_api_tag_MAC,
     vscf_api_tag_MESSAGE_INFO_FOOTER_SERIALIZER,
     vscf_api_tag_MESSAGE_INFO_SERIALIZER,
+    vscf_api_tag_PADDING,
     vscf_api_tag_PRIVATE_KEY,
     vscf_api_tag_PUBLIC_KEY,
     vscf_api_tag_RANDOM,

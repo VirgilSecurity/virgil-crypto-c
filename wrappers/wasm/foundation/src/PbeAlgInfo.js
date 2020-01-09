@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2015-2019 Virgil Security, Inc.
+ * Copyright (C) 2015-2020 Virgil Security, Inc.
  *
  * All rights reserved.
  *
@@ -86,22 +86,6 @@ const initPbeAlgInfo = (Module, modules) => {
                 Module._vscf_pbe_alg_info_delete(this.ctxPtr);
                 this.ctxPtr = null;
             }
-        }
-
-        /**
-         * Create algorithm info with identificator, KDF algorithm info and
-         * cipher alg info.
-         */
-        static newWithMembers(algId, kdfAlgInfo, cipherAlgInfo) {
-            precondition.ensureNumber('algId', algId);
-            precondition.ensureImplementInterface('kdfAlgInfo', kdfAlgInfo, 'Foundation.AlgInfo', modules.FoundationInterfaceTag.ALG_INFO, modules.FoundationInterface);
-            precondition.ensureImplementInterface('cipherAlgInfo', cipherAlgInfo, 'Foundation.AlgInfo', modules.FoundationInterfaceTag.ALG_INFO, modules.FoundationInterface);
-
-            let proxyResult;
-            proxyResult = Module._vscf_pbe_alg_info_new_with_members(algId, kdfAlgInfo.ctxPtr, cipherAlgInfo.ctxPtr);
-
-            const jsResult = PbeAlgInfo.newAndTakeCContext(proxyResult);
-            return jsResult;
         }
 
         /**

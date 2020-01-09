@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2019 Virgil Security, Inc.
+//  Copyright (C) 2015-2020 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -84,6 +84,10 @@ enum vscf_impl_tag_t {
     vscf_impl_tag_ASN1RD,
     vscf_impl_tag_ASN1WR,
     vscf_impl_tag_CIPHER_ALG_INFO,
+    vscf_impl_tag_COMPOUND_KEY_ALG,
+    vscf_impl_tag_COMPOUND_KEY_ALG_INFO,
+    vscf_impl_tag_COMPOUND_PRIVATE_KEY,
+    vscf_impl_tag_COMPOUND_PUBLIC_KEY,
     vscf_impl_tag_CTR_DRBG,
     vscf_impl_tag_CURVE25519,
     vscf_impl_tag_ECC,
@@ -93,9 +97,14 @@ enum vscf_impl_tag_t {
     vscf_impl_tag_ED25519,
     vscf_impl_tag_ENTROPY_ACCUMULATOR,
     vscf_impl_tag_FAKE_RANDOM,
+    vscf_impl_tag_FALCON,
     vscf_impl_tag_HASH_BASED_ALG_INFO,
     vscf_impl_tag_HKDF,
     vscf_impl_tag_HMAC,
+    vscf_impl_tag_HYBRID_KEY_ALG,
+    vscf_impl_tag_HYBRID_KEY_ALG_INFO,
+    vscf_impl_tag_HYBRID_PRIVATE_KEY,
+    vscf_impl_tag_HYBRID_PUBLIC_KEY,
     vscf_impl_tag_KDF1,
     vscf_impl_tag_KDF2,
     vscf_impl_tag_KEY_ASN1_DESERIALIZER,
@@ -106,8 +115,10 @@ enum vscf_impl_tag_t {
     vscf_impl_tag_PKCS5_PBES2,
     vscf_impl_tag_PKCS5_PBKDF2,
     vscf_impl_tag_PKCS8_SERIALIZER,
+    vscf_impl_tag_RANDOM_PADDING,
     vscf_impl_tag_RAW_PRIVATE_KEY,
     vscf_impl_tag_RAW_PUBLIC_KEY,
+    vscf_impl_tag_ROUND5,
     vscf_impl_tag_RSA,
     vscf_impl_tag_RSA_PRIVATE_KEY,
     vscf_impl_tag_RSA_PUBLIC_KEY,

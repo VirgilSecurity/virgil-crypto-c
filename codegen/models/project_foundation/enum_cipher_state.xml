@@ -1,0 +1,15 @@
+<enum name="cipher state" definition="public">
+    Enumerates possible sequentail cipher's states.
+
+    <constant name="initial">
+        Cipher is ready for new encryption / decryption operation.
+    </constant>
+
+    <constant name="encryption">
+        Cipher is configured for encryption.
+    </constant>
+
+    <constant name="decryption">
+        Cipher is configured for decryption.
+    </constant>
+</enum>

@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2019 Virgil Security, Inc.
+//  Copyright (C) 2015-2020 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -203,6 +203,58 @@ enum vscf_status_t {
     //
     vscf_status_ERROR_MISMATCH_PRIVATE_KEY_AND_ALGORITHM = -226,
     //
+    //  Post-quantum Falcon-Sign public key is corrupted.
+    //
+    vscf_status_ERROR_BAD_FALCON_PUBLIC_KEY = -227,
+    //
+    //  Post-quantum Falcon-Sign private key is corrupted.
+    //
+    vscf_status_ERROR_BAD_FALCON_PRIVATE_KEY = -228,
+    //
+    //  Generic Round5 library error.
+    //
+    vscf_status_ERROR_ROUND5 = -229,
+    //
+    //  Post-quantum NIST Round5 public key is corrupted.
+    //
+    vscf_status_ERROR_BAD_ROUND5_PUBLIC_KEY = -230,
+    //
+    //  Post-quantum NIST Round5 private key is corrupted.
+    //
+    vscf_status_ERROR_BAD_ROUND5_PRIVATE_KEY = -231,
+    //
+    //  Compound public key is corrupted.
+    //
+    vscf_status_ERROR_BAD_COMPOUND_PUBLIC_KEY = -232,
+    //
+    //  Compound private key is corrupted.
+    //
+    vscf_status_ERROR_BAD_COMPOUND_PRIVATE_KEY = -233,
+    //
+    //  Compound public hybrid key is corrupted.
+    //
+    vscf_status_ERROR_BAD_HYBRID_PUBLIC_KEY = -234,
+    //
+    //  Compound private hybrid key is corrupted.
+    //
+    vscf_status_ERROR_BAD_HYBRID_PRIVATE_KEY = -235,
+    //
+    //  ASN.1 AlgorithmIdentifer is corrupted.
+    //
+    vscf_status_ERROR_BAD_ASN1_ALGORITHM = -236,
+    //
+    //  ASN.1 AlgorithmIdentifer with ECParameters is corrupted.
+    //
+    vscf_status_ERROR_BAD_ASN1_ALGORITHM_ECC = -237,
+    //
+    //  ASN.1 AlgorithmIdentifer with CompoundKeyParams is corrupted.
+    //
+    vscf_status_ERROR_BAD_ASN1_ALGORITHM_COMPOUND_KEY = -238,
+    //
+    //  ASN.1 AlgorithmIdentifer with HybridKeyParams is corrupted.
+    //
+    vscf_status_ERROR_BAD_ASN1_ALGORITHM_HYBRID_KEY = -239,
+    //
     //  Decryption failed, because message info was not given explicitly,
     //  and was not part of an encrypted message.
     //
@@ -281,6 +333,10 @@ enum vscf_status_t {
     //  Brainkey identity secret is invalid.
     //
     vscf_status_ERROR_INVALID_IDENTITY_SECRET = -410,
+    //
+    //  KEM encapsulated key is invalid or does not correspond to the private key.
+    //
+    vscf_status_ERROR_INVALID_KEM_ENCAPSULATED_KEY = -411,
     //
     //  Invalid padding.
     //

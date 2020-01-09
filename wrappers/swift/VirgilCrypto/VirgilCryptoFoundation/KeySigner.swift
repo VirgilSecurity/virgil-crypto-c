@@ -1,4 +1,4 @@
-/// Copyright (C) 2015-2019 Virgil Security, Inc.
+/// Copyright (C) 2015-2020 Virgil Security, Inc.
 ///
 /// All rights reserved.
 ///
@@ -45,7 +45,7 @@ import VSCFoundation
 
     /// Return length in bytes required to hold signature.
     /// Return zero if a given private key can not produce signatures.
-    @objc func signatureLen(key: Key) -> Int
+    @objc func signatureLen(privateKey: PrivateKey) -> Int
 
     /// Sign data digest with a given private key.
     @objc func signHash(privateKey: PrivateKey, hashId: AlgId, digest: Data) throws -> Data

@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2019 Virgil Security, Inc.
+# Copyright (C) 2015-2020 Virgil Security, Inc.
 #
 # All rights reserved.
 #
@@ -52,15 +52,6 @@ class PbeAlgInfo(AlgInfo):
     def __delete__(self, instance):
         """Destroy underlying C context."""
         self._lib_vscf_pbe_alg_info.vscf_pbe_alg_info_delete(self.ctx)
-
-    @classmethod
-    def with_members(cls, alg_id, kdf_alg_info, cipher_alg_info):
-        """Create algorithm info with identificator, KDF algorithm info and
-        cipher alg info."""
-        inst = cls.__new__(cls)
-        inst._lib_vscf_pbe_alg_info = VscfPbeAlgInfo()
-        inst.ctx = inst._lib_vscf_pbe_alg_info.vscf_pbe_alg_info_new_with_members(alg_id, kdf_alg_info.c_impl, cipher_alg_info.c_impl)
-        return inst
 
     def alg_id(self):
         """Provide algorithm identificator."""

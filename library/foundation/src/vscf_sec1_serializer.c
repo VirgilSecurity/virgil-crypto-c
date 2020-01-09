@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2019 Virgil Security, Inc.
+//  Copyright (C) 2015-2020 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -300,7 +300,8 @@ vscf_sec1_serializer_is_ec_key(const vscf_impl_t *key) {
 //  Precondition: public key must be exportable.
 //
 VSCF_PUBLIC size_t
-vscf_sec1_serializer_serialized_public_key_len(vscf_sec1_serializer_t *self, const vscf_raw_public_key_t *public_key) {
+vscf_sec1_serializer_serialized_public_key_len(
+        const vscf_sec1_serializer_t *self, const vscf_raw_public_key_t *public_key) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(public_key);
@@ -355,7 +356,7 @@ vscf_sec1_serializer_serialize_public_key(
 //
 VSCF_PUBLIC size_t
 vscf_sec1_serializer_serialized_private_key_len(
-        vscf_sec1_serializer_t *self, const vscf_raw_private_key_t *private_key) {
+        const vscf_sec1_serializer_t *self, const vscf_raw_private_key_t *private_key) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(private_key);

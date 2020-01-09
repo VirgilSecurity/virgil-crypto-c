@@ -1,4 +1,4 @@
-#   Copyright (C) 2015-2019 Virgil Security, Inc.
+#   Copyright (C) 2015-2020 Virgil Security, Inc.
 #
 #   All rights reserved.
 #
@@ -32,7 +32,7 @@
 #
 #   Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.12 FATAL_ERROR)
 
 project(virgil_crypto_c_phe_pb VERSION ${virgil_crypto_c_phe_VERSION} LANGUAGES C)
 
@@ -67,6 +67,7 @@ target_include_directories(phe_pb
 
 target_protobuf_sources(phe_pb
         "${CMAKE_CURRENT_SOURCE_DIR}/PHEModels.proto"
+        "${CMAKE_CURRENT_SOURCE_DIR}/UOKMSModels.proto"
         )
 
 target_link_libraries(phe_pb nanopb::protobuf-nanopb)

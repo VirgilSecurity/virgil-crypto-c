@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2019 Virgil Security, Inc.
+//  Copyright (C) 2015-2020 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -80,6 +80,11 @@
 #include "vscf_cipher_auth.h"
 #include "vscf_cipher_auth_info.h"
 #include "vscf_cipher_info.h"
+#include "vscf_cipher_state.h"
+#include "vscf_compound_key_alg.h"
+#include "vscf_compound_key_alg_info.h"
+#include "vscf_compound_private_key.h"
+#include "vscf_compound_public_key.h"
 #include "vscf_compute_shared_key.h"
 #include "vscf_ctr_drbg.h"
 #include "vscf_curve25519.h"
@@ -95,6 +100,7 @@
 #include "vscf_entropy_source.h"
 #include "vscf_error.h"
 #include "vscf_fake_random.h"
+#include "vscf_falcon.h"
 #include "vscf_footer_info.h"
 #include "vscf_group_msg_type.h"
 #include "vscf_group_session.h"
@@ -104,10 +110,15 @@
 #include "vscf_hash_based_alg_info.h"
 #include "vscf_hkdf.h"
 #include "vscf_hmac.h"
+#include "vscf_hybrid_key_alg.h"
+#include "vscf_hybrid_key_alg_info.h"
+#include "vscf_hybrid_private_key.h"
+#include "vscf_hybrid_public_key.h"
 #include "vscf_impl.h"
 #include "vscf_kdf.h"
 #include "vscf_kdf1.h"
 #include "vscf_kdf2.h"
+#include "vscf_kem.h"
 #include "vscf_key.h"
 #include "vscf_key_alg.h"
 #include "vscf_key_alg_factory.h"
@@ -115,6 +126,7 @@
 #include "vscf_key_asn1_serializer.h"
 #include "vscf_key_cipher.h"
 #include "vscf_key_deserializer.h"
+#include "vscf_key_info.h"
 #include "vscf_key_material_rng.h"
 #include "vscf_key_provider.h"
 #include "vscf_key_recipient_info.h"
@@ -133,6 +145,8 @@
 #include "vscf_message_info_serializer.h"
 #include "vscf_oid.h"
 #include "vscf_oid_id.h"
+#include "vscf_padding.h"
+#include "vscf_padding_params.h"
 #include "vscf_password_recipient_info.h"
 #include "vscf_password_recipient_info_list.h"
 #include "vscf_pbe_alg_info.h"
@@ -144,9 +158,11 @@
 #include "vscf_private_key.h"
 #include "vscf_public_key.h"
 #include "vscf_random.h"
+#include "vscf_random_padding.h"
 #include "vscf_raw_private_key.h"
 #include "vscf_raw_public_key.h"
 #include "vscf_recipient_cipher.h"
+#include "vscf_round5.h"
 #include "vscf_rsa.h"
 #include "vscf_rsa_private_key.h"
 #include "vscf_rsa_public_key.h"

@@ -1,4 +1,4 @@
-/// Copyright (C) 2015-2019 Virgil Security, Inc.
+/// Copyright (C) 2015-2020 Virgil Security, Inc.
 ///
 /// All rights reserved.
 ///
@@ -134,6 +134,45 @@ import VSCFoundation
     /// Key algorithm does not accept given type of private key.
     case errorMismatchPrivateKeyAndAlgorithm = -226
 
+    /// Post-quantum Falcon-Sign public key is corrupted.
+    case errorBadFalconPublicKey = -227
+
+    /// Post-quantum Falcon-Sign private key is corrupted.
+    case errorBadFalconPrivateKey = -228
+
+    /// Generic Round5 library error.
+    case errorRound5 = -229
+
+    /// Post-quantum NIST Round5 public key is corrupted.
+    case errorBadRound5PublicKey = -230
+
+    /// Post-quantum NIST Round5 private key is corrupted.
+    case errorBadRound5PrivateKey = -231
+
+    /// Compound public key is corrupted.
+    case errorBadCompoundPublicKey = -232
+
+    /// Compound private key is corrupted.
+    case errorBadCompoundPrivateKey = -233
+
+    /// Compound public hybrid key is corrupted.
+    case errorBadHybridPublicKey = -234
+
+    /// Compound private hybrid key is corrupted.
+    case errorBadHybridPrivateKey = -235
+
+    /// ASN.1 AlgorithmIdentifer is corrupted.
+    case errorBadAsn1Algorithm = -236
+
+    /// ASN.1 AlgorithmIdentifer with ECParameters is corrupted.
+    case errorBadAsn1AlgorithmEcc = -237
+
+    /// ASN.1 AlgorithmIdentifer with CompoundKeyParams is corrupted.
+    case errorBadAsn1AlgorithmCompoundKey = -238
+
+    /// ASN.1 AlgorithmIdentifer with HybridKeyParams is corrupted.
+    case errorBadAsn1AlgorithmHybridKey = -239
+
     /// Decryption failed, because message info was not given explicitly,
     /// and was not part of an encrypted message.
     case errorNoMessageInfo = -301
@@ -193,6 +232,9 @@ import VSCFoundation
 
     /// Brainkey identity secret is invalid.
     case errorInvalidIdentitySecret = -410
+
+    /// KEM encapsulated key is invalid or does not correspond to the private key.
+    case errorInvalidKemEncapsulatedKey = -411
 
     /// Invalid padding.
     case errorInvalidPadding = -501

@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2019 Virgil Security, Inc.
+//  Copyright (C) 2015-2020 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -480,27 +480,31 @@ vsce_phe_hash_derive_z(vsce_phe_hash_t *self, vsc_data_t buffer, bool success, m
 }
 
 VSCE_PUBLIC void
-vsce_phe_hash_hash_z_success(vsce_phe_hash_t *self, vsc_data_t server_public_key, const mbedtls_ecp_point *c0,
-        const mbedtls_ecp_point *c1, const mbedtls_ecp_point *term1, const mbedtls_ecp_point *term2,
+vsce_phe_hash_hash_z_success(vsce_phe_hash_t *self, const mbedtls_ecp_point *pub, const mbedtls_ecp_point *p2,
+        const mbedtls_ecp_point *q2, const mbedtls_ecp_point *term1, const mbedtls_ecp_point *term2,
         const mbedtls_ecp_point *term3, mbedtls_mpi *z) {
 
     VSCE_ASSERT_PTR(self);
-    VSCE_ASSERT_PTR(c0);
-    VSCE_ASSERT_PTR(c1);
+    VSCE_ASSERT_PTR(pub);
+    VSCE_ASSERT_PTR(p2);
     VSCE_ASSERT_PTR(term1);
     VSCE_ASSERT_PTR(term2);
-    VSCE_ASSERT_PTR(term3);
+    VSCE_ASSERT((term3 == NULL && q2 == NULL) || (term3 != NULL && q2 != NULL));
 
-    byte buffer[vsce_phe_common_PHE_PUBLIC_KEY_LENGTH + 6 * vsce_phe_common_PHE_POINT_LENGTH];
+    size_t points_count = 7;
+
+    if (q2 == NULL) {
+        points_count = 5;
+    }
+
+    byte buffer[7 * vsce_phe_common_PHE_POINT_LENGTH];
 
     vsc_buffer_t buff;
     vsc_buffer_init(&buff);
-    vsc_buffer_use(&buff, buffer, sizeof(buffer));
+    vsc_buffer_use(&buff, buffer, points_count * vsce_phe_common_PHE_POINT_LENGTH);
 
-    memcpy(vsc_buffer_unused_bytes(&buff), server_public_key.bytes, server_public_key.len);
-    vsc_buffer_inc_used(&buff, server_public_key.len);
-
-    vsce_phe_hash_push_points_to_buffer(self, &buff, 6, &self->group.G, c0, c1, term1, term2, term3);
+    // Order is changed for backwards compatibility
+    vsce_phe_hash_push_points_to_buffer(self, &buff, 7, pub, &self->group.G, p2, q2, term2, term3, term1);
     VSCE_ASSERT(vsc_buffer_unused_len(&buff) == 0);
 
     vsce_phe_hash_derive_z(self, vsc_buffer_data(&buff), true, z);
@@ -550,11 +554,14 @@ vsce_phe_hash_push_points_to_buffer(vsce_phe_hash_t *self, vsc_buffer_t *buffer,
 
     for (size_t i = 0; i < count; i++) {
         const mbedtls_ecp_point *p = va_arg(points, const mbedtls_ecp_point *);
-        mbedtls_ecp_point_write_binary(&self->group, p, MBEDTLS_ECP_PF_UNCOMPRESSED, &olen,
-                vsc_buffer_unused_bytes(buffer), vsc_buffer_unused_len(buffer));
-        vsc_buffer_inc_used(buffer, olen);
-        VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
-        VSCE_ASSERT(olen == vsce_phe_common_PHE_POINT_LENGTH);
+
+        if (p != NULL) {
+            mbedtls_ecp_point_write_binary(&self->group, p, MBEDTLS_ECP_PF_UNCOMPRESSED, &olen,
+                    vsc_buffer_unused_bytes(buffer), vsc_buffer_unused_len(buffer));
+            vsc_buffer_inc_used(buffer, olen);
+            VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
+            VSCE_ASSERT(olen == vsce_phe_common_PHE_POINT_LENGTH);
+        }
     }
 
     va_end(points);

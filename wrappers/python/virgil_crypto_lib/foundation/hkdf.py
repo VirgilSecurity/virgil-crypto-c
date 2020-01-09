@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2019 Virgil Security, Inc.
+# Copyright (C) 2015-2020 Virgil Security, Inc.
 #
 # All rights reserved.
 #
@@ -46,8 +46,6 @@ from .salted_kdf import SaltedKdf
 
 class Hkdf(Alg, Kdf, SaltedKdf):
     """Virgil Security implementation of the HKDF (RFC 6234) algorithm."""
-
-    HASH_COUNTER_MAX = 255
 
     def __init__(self):
         """Create underlying C context."""

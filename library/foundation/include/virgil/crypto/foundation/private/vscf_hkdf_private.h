@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2019 Virgil Security, Inc.
+//  Copyright (C) 2015-2020 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -78,13 +78,13 @@ extern "C" {
 //  Extracts fixed-length pseudorandom key from keying material.
 //
 VSCF_PRIVATE void
-vscf_hkdf_extract(vscf_hkdf_t *self, vsc_data_t data, vsc_buffer_t *pr_key);
+vscf_hkdf_extract(vscf_hkdf_t *self, vsc_data_t data, vsc_data_t salt, vsc_buffer_t *pr_key);
 
 //
 //  Expands the pseudorandom key to the desired length.
 //
 VSCF_PRIVATE void
-vscf_hkdf_expand(vscf_hkdf_t *self, vsc_buffer_t *pr_key, vsc_buffer_t *key, size_t key_len);
+vscf_hkdf_expand(vscf_hkdf_t *self, vsc_data_t pr_key, vsc_data_t info, vsc_buffer_t *key, size_t key_len);
 
 
 // --------------------------------------------------------------------------

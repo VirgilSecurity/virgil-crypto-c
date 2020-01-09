@@ -1,5 +1,5 @@
 /*
-* Copyright (C) 2015-2019 Virgil Security, Inc.
+* Copyright (C) 2015-2020 Virgil Security, Inc.
 *
 * All rights reserved.
 *
@@ -52,15 +52,6 @@ public class PbeAlgInfo implements AutoCloseable, AlgInfo {
     /* Wrap underlying C context. */
     PbeAlgInfo(FoundationContextHolder contextHolder) {
         this.cCtx = contextHolder.cCtx;
-    }
-
-    /*
-    * Create algorithm info with identificator, KDF algorithm info and
-    * cipher alg info.
-    */
-    public PbeAlgInfo(AlgId algId, AlgInfo kdfAlgInfo, AlgInfo cipherAlgInfo) {
-        super();
-        this.cCtx = FoundationJNI.INSTANCE.pbeAlgInfo_new(algId, kdfAlgInfo, cipherAlgInfo);
     }
 
     /*

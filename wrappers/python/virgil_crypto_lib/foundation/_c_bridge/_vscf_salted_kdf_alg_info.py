@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2019 Virgil Security, Inc.
+# Copyright (C) 2015-2020 Virgil Security, Inc.
 #
 # All rights reserved.
 #
@@ -62,14 +62,6 @@ class VscfSaltedKdfAlgInfo(object):
         vscf_salted_kdf_alg_info_delete.argtypes = [POINTER(vscf_salted_kdf_alg_info_t)]
         vscf_salted_kdf_alg_info_delete.restype = None
         return vscf_salted_kdf_alg_info_delete(ctx)
-
-    def vscf_salted_kdf_alg_info_new_with_members(self, alg_id, hash_alg_info, salt, iteration_count):
-        """Create algorithm info with identificator, HASH algorithm info,
-        salt and iteration count."""
-        vscf_salted_kdf_alg_info_new_with_members = self._lib.vscf_salted_kdf_alg_info_new_with_members
-        vscf_salted_kdf_alg_info_new_with_members.argtypes = [c_int, POINTER(vscf_impl_t), vsc_data_t, c_size_t]
-        vscf_salted_kdf_alg_info_new_with_members.restype = POINTER(vscf_salted_kdf_alg_info_t)
-        return vscf_salted_kdf_alg_info_new_with_members(alg_id, hash_alg_info, salt, iteration_count)
 
     def vscf_salted_kdf_alg_info_alg_id(self, ctx):
         """Provide algorithm identificator."""

@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2019 Virgil Security, Inc.
+//  Copyright (C) 2015-2020 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -227,7 +227,7 @@ vscf_pbe_alg_info_shallow_copy(vscf_pbe_alg_info_t *self) {
 //  Create algorithm info with identificator, KDF algorithm info and
 //  cipher alg info.
 //
-VSCF_PUBLIC void
+VSCF_PRIVATE void
 vscf_pbe_alg_info_init_with_members(vscf_pbe_alg_info_t *self, vscf_alg_id_t alg_id, vscf_impl_t **kdf_alg_info_ref,
         vscf_impl_t **cipher_alg_info_ref) {
 
@@ -246,7 +246,7 @@ vscf_pbe_alg_info_init_with_members(vscf_pbe_alg_info_t *self, vscf_alg_id_t alg
 //  Create algorithm info with identificator, KDF algorithm info and
 //  cipher alg info.
 //
-VSCF_PUBLIC vscf_pbe_alg_info_t *
+VSCF_PRIVATE vscf_pbe_alg_info_t *
 vscf_pbe_alg_info_new_with_members(vscf_alg_id_t alg_id, vscf_impl_t **kdf_alg_info_ref,
         vscf_impl_t **cipher_alg_info_ref) {
 

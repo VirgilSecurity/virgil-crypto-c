@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2019 Virgil Security, Inc.
+//  Copyright (C) 2015-2020 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -87,7 +87,12 @@ enum vscf_oid_id_t {
     vscf_oid_id_HMAC_WITH_SHA384,
     vscf_oid_id_HMAC_WITH_SHA512,
     vscf_oid_id_EC_GENERIC_KEY,
-    vscf_oid_id_EC_DOMAIN_SECP256R1
+    vscf_oid_id_EC_DOMAIN_SECP256R1,
+    vscf_oid_id_COMPOUND_KEY,
+    vscf_oid_id_HYBRID_KEY,
+    vscf_oid_id_FALCON,
+    vscf_oid_id_ROUND5_ND_5KEM_5D,
+    vscf_oid_id_RANDOM_PADDING
 };
 typedef enum vscf_oid_id_t vscf_oid_id_t;
 

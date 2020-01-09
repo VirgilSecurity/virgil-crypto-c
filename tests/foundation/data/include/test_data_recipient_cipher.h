@@ -1,4 +1,4 @@
-//  Copyright (C) 2015-2019 Virgil Security, Inc.
+//  Copyright (C) 2015-2020 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -35,6 +35,7 @@
 
 #include "vsc_data.h"
 
+extern vsc_data_t test_data_recipient_cipher_RECIPIENT_ID;
 extern vsc_data_t test_data_recipient_cipher_MESSAGE;
 extern vsc_data_t test_data_recipient_cipher_MESSAGE_2;
 extern vsc_data_t test_data_recipient_cipher_ED25519_RECIPIENT_ID;
@@ -42,7 +43,26 @@ extern vsc_data_t test_data_recipient_cipher_ED25519_PUBLIC_KEY;
 extern vsc_data_t test_data_recipient_cipher_ED25519_PRIVATE_KEY;
 
 extern vsc_data_t test_data_recipient_cipher_ENCRYPTED_MESSAGE;
-extern const vsc_data_t test_data_recipient_cipher_SIGNED_THEN_ENCRYPTED_MESSAGE_HEADER;
-extern const vsc_data_t test_data_recipient_cipher_SIGNED_THEN_ENCRYPTED_MESSAGE_DATA;
-extern const vsc_data_t test_data_recipient_cipher_SIGNED_THEN_ENCRYPTED_MESSAGE_FOOTER;
-extern const vsc_data_t test_data_recipient_cipher_SIGNED_THEN_ENCRYPTED_MESSAGE;
+extern vsc_data_t test_data_recipient_cipher_ENCRYPTED_MESSAGE_WITH_PADDING;
+
+extern vsc_data_t test_data_recipient_cipher_SIGNED_THEN_ENCRYPTED_MESSAGE_HEADER;
+extern vsc_data_t test_data_recipient_cipher_SIGNED_THEN_ENCRYPTED_MESSAGE_DATA;
+extern vsc_data_t test_data_recipient_cipher_SIGNED_THEN_ENCRYPTED_MESSAGE_FOOTER;
+extern vsc_data_t test_data_recipient_cipher_SIGNED_THEN_ENCRYPTED_MESSAGE;
+
+extern vsc_data_t test_data_recipient_cipher_SIGNED_THEN_ENCRYPTED_MESSAGE_WITH_PADDING_HEADER;
+extern vsc_data_t test_data_recipient_cipher_SIGNED_THEN_ENCRYPTED_MESSAGE_WITH_PADDING_DATA;
+extern vsc_data_t test_data_recipient_cipher_SIGNED_THEN_ENCRYPTED_MESSAGE_WITH_PADDING_FOOTER;
+extern vsc_data_t test_data_recipient_cipher_SIGNED_THEN_ENCRYPTED_MESSAGE_WITH_PADDING;
+
+extern vsc_data_t test_data_recipient_cipher_SET2_MESSAGE;
+extern vsc_data_t test_data_recipient_cipher_SET2_ED25519_RECIPIENT_ID;
+extern vsc_data_t test_data_recipient_cipher_SET2_ED25519_PUBLIC_KEY;
+extern vsc_data_t test_data_recipient_cipher_SET2_ED25519_PRIVATE_KEY;
+extern vsc_data_t test_data_recipient_cipher_SET2_SIGNED_THEN_ENCRYPTED_MESSAGE;
+
+extern vsc_data_t test_data_recipient_cipher_SET3_MESSAGE;
+extern vsc_data_t test_data_recipient_cipher_SET3_ED25519_RECIPIENT_ID;
+extern vsc_data_t test_data_recipient_cipher_SET3_ED25519_PRIVATE_KEY;
+extern vsc_data_t test_data_recipient_cipher_SET3_ENCRYPTED_MESSAGE_PART1;
+extern vsc_data_t test_data_recipient_cipher_SET3_ENCRYPTED_MESSAGE_PART2;

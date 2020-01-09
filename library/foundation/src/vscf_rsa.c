@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2019 Virgil Security, Inc.
+//  Copyright (C) 2015-2020 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -118,7 +118,7 @@ vscf_rsa_generate_key(const vscf_rsa_t *self, size_t bitlen, vscf_error_t *error
     VSCF_ASSERT_PTR(self->random);
 
     vscf_rsa_private_key_t *rsa_private_key = vscf_rsa_private_key_new();
-    rsa_private_key->alg_info = vscf_rsa_produce_alg_info(self);
+    rsa_private_key->alg_info = vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_RSA));
 
     const int mbed_status = mbedtls_rsa_gen_key(
             &rsa_private_key->rsa_ctx, vscf_mbedtls_bridge_random, self->random, (unsigned int)bitlen, 65537);
@@ -130,40 +130,6 @@ vscf_rsa_generate_key(const vscf_rsa_t *self, size_t bitlen, vscf_error_t *error
     }
 
     return vscf_rsa_private_key_impl(rsa_private_key);
-}
-
-//
-//  Provide algorithm identificator.
-//
-VSCF_PUBLIC vscf_alg_id_t
-vscf_rsa_alg_id(const vscf_rsa_t *self) {
-
-    VSCF_ASSERT_PTR(self);
-
-    return vscf_alg_id_RSA;
-}
-
-//
-//  Produce object with algorithm information and configuration parameters.
-//
-VSCF_PUBLIC vscf_impl_t *
-vscf_rsa_produce_alg_info(const vscf_rsa_t *self) {
-
-    VSCF_ASSERT_PTR(self);
-    return vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_RSA));
-}
-
-//
-//  Restore algorithm configuration from the given object.
-//
-VSCF_PUBLIC vscf_status_t
-vscf_rsa_restore_alg_info(vscf_rsa_t *self, const vscf_impl_t *alg_info) {
-
-    VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(alg_info);
-    VSCF_ASSERT(vscf_alg_info_alg_id(alg_info) == vscf_alg_id_RSA);
-
-    return vscf_status_SUCCESS;
 }
 
 //
@@ -228,6 +194,22 @@ vscf_rsa_import_public_key(const vscf_rsa_t *self, const vscf_raw_public_key_t *
 }
 
 //
+//  Import public key from the raw binary format.
+//
+VSCF_PRIVATE vscf_impl_t *
+vscf_rsa_import_public_key_data(
+        const vscf_rsa_t *self, vsc_data_t key_data, const vscf_impl_t *key_alg_info, vscf_error_t *error) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT(vsc_data_is_valid(key_data));
+    VSCF_ASSERT_PTR(key_alg_info);
+
+    VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_UNSUPPORTED_ALGORITHM);
+
+    return NULL;
+}
+
+//
 //  Export public key to the raw binary format.
 //
 //  Binary format must be defined in the key specification.
@@ -250,6 +232,41 @@ vscf_rsa_export_public_key(const vscf_rsa_t *self, const vscf_impl_t *public_key
     const vscf_rsa_public_key_t *rsa_public_key = (const vscf_rsa_public_key_t *)public_key;
 
     return vscf_rsa_public_key_export(rsa_public_key);
+}
+
+//
+//  Return length in bytes required to hold exported public key.
+//
+VSCF_PRIVATE size_t
+vscf_rsa_exported_public_key_data_len(const vscf_rsa_t *self, const vscf_impl_t *public_key) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(public_key);
+    VSCF_ASSERT(vscf_public_key_is_implemented(public_key));
+
+    //  Unsupported algorithm.
+
+    return 0;
+}
+
+//
+//  Export public key to the raw binary format without algorithm information.
+//
+//  Binary format must be defined in the key specification.
+//  For instance, RSA public key must be exported in format defined in
+//  RFC 3447 Appendix A.1.1.
+//
+VSCF_PRIVATE vscf_status_t
+vscf_rsa_export_public_key_data(const vscf_rsa_t *self, const vscf_impl_t *public_key, vsc_buffer_t *out) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(public_key);
+    VSCF_ASSERT(vscf_public_key_is_implemented(public_key));
+    VSCF_ASSERT_PTR(out);
+    VSCF_ASSERT(vsc_buffer_is_valid(out));
+    VSCF_ASSERT(vsc_buffer_unused_len(out) >= vscf_rsa_exported_public_key_data_len(self, public_key));
+
+    return vscf_status_ERROR_UNSUPPORTED_ALGORITHM;
 }
 
 //
@@ -282,6 +299,23 @@ vscf_rsa_import_private_key(const vscf_rsa_t *self, const vscf_raw_private_key_t
 }
 
 //
+//  Import private key from the raw binary format.
+//
+VSCF_PRIVATE vscf_impl_t *
+vscf_rsa_import_private_key_data(
+        const vscf_rsa_t *self, vsc_data_t key_data, const vscf_impl_t *key_alg_info, vscf_error_t *error) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT(vsc_data_is_valid(key_data));
+    VSCF_ASSERT_PTR(key_alg_info);
+    VSCF_UNUSED(error);
+
+    VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_UNSUPPORTED_ALGORITHM);
+
+    return NULL;
+}
+
+//
 //  Export private key in the raw binary format.
 //
 //  Binary format must be defined in the key specification.
@@ -304,6 +338,41 @@ vscf_rsa_export_private_key(const vscf_rsa_t *self, const vscf_impl_t *private_k
     const vscf_rsa_private_key_t *rsa_private_key = (const vscf_rsa_private_key_t *)private_key;
 
     return vscf_rsa_private_key_export(rsa_private_key);
+}
+
+//
+//  Return length in bytes required to hold exported private key.
+//
+VSCF_PRIVATE size_t
+vscf_rsa_exported_private_key_data_len(const vscf_rsa_t *self, const vscf_impl_t *private_key) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(private_key);
+    VSCF_ASSERT(vscf_private_key_is_implemented(private_key));
+
+    //  Unsupported algorithm.
+
+    return 0;
+}
+
+//
+//  Export private key to the raw binary format without algorithm information.
+//
+//  Binary format must be defined in the key specification.
+//  For instance, RSA private key must be exported in format defined in
+//  RFC 3447 Appendix A.1.2.
+//
+VSCF_PRIVATE vscf_status_t
+vscf_rsa_export_private_key_data(const vscf_rsa_t *self, const vscf_impl_t *private_key, vsc_buffer_t *out) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(private_key);
+    VSCF_ASSERT(vscf_private_key_is_implemented(private_key));
+    VSCF_ASSERT_PTR(out);
+    VSCF_ASSERT(vsc_buffer_is_valid(out));
+    VSCF_ASSERT(vsc_buffer_unused_len(out) >= vscf_rsa_exported_private_key_data_len(self, private_key));
+
+    return vscf_status_ERROR_UNSUPPORTED_ALGORITHM;
 }
 
 //
@@ -485,14 +554,14 @@ vscf_rsa_can_sign(const vscf_rsa_t *self, const vscf_impl_t *private_key) {
 //  Return zero if a given private key can not produce signatures.
 //
 VSCF_PUBLIC size_t
-vscf_rsa_signature_len(const vscf_rsa_t *self, const vscf_impl_t *key) {
+vscf_rsa_signature_len(const vscf_rsa_t *self, const vscf_impl_t *private_key) {
 
     VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(key);
-    VSCF_ASSERT(vscf_key_is_implemented(key));
-    VSCF_ASSERT_SAFE(vscf_key_is_valid(key));
+    VSCF_ASSERT_PTR(private_key);
+    VSCF_ASSERT(vscf_key_is_implemented(private_key));
+    VSCF_ASSERT_SAFE(vscf_key_is_valid(private_key));
 
-    return vscf_key_len(key);
+    return vscf_key_len(private_key);
 }
 
 //

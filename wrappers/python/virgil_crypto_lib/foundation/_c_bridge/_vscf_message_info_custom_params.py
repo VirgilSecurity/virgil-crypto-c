@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2019 Virgil Security, Inc.
+# Copyright (C) 2015-2020 Virgil Security, Inc.
 #
 # All rights reserved.
 #
@@ -44,10 +44,6 @@ class vscf_message_info_custom_params_t(Structure):
 
 
 class VscfMessageInfoCustomParams(object):
-
-    OF_INT_TYPE = 1
-    OF_STRING_TYPE = 2
-    OF_DATA_TYPE = 3
 
     def __init__(self):
         """Create underlying C context."""

@@ -1,5 +1,5 @@
 /*
-* Copyright (C) 2015-2019 Virgil Security, Inc.
+* Copyright (C) 2015-2020 Virgil Security, Inc.
 *
 * All rights reserved.
 *
@@ -76,6 +76,14 @@ public class RecipientCipher implements AutoCloseable {
 
     public void setEncryptionCipher(Cipher encryptionCipher) {
         FoundationJNI.INSTANCE.recipientCipher_setEncryptionCipher(this.cCtx, encryptionCipher);
+    }
+
+    public void setEncryptionPadding(Padding encryptionPadding) {
+        FoundationJNI.INSTANCE.recipientCipher_setEncryptionPadding(this.cCtx, encryptionPadding);
+    }
+
+    public void setPaddingParams(PaddingParams paddingParams) {
+        FoundationJNI.INSTANCE.recipientCipher_setPaddingParams(this.cCtx, paddingParams);
     }
 
     public void setSignerHash(Hash signerHash) {

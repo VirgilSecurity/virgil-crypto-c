@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2019 Virgil Security, Inc.
+# Copyright (C) 2015-2020 Virgil Security, Inc.
 #
 # All rights reserved.
 #
@@ -144,6 +144,13 @@ class VscfAes256Cbc(object):
         vscf_aes256_cbc_set_key.argtypes = [POINTER(vscf_aes256_cbc_t), vsc_data_t]
         vscf_aes256_cbc_set_key.restype = None
         return vscf_aes256_cbc_set_key(ctx, key)
+
+    def vscf_aes256_cbc_state(self, ctx):
+        """Return cipher's current state."""
+        vscf_aes256_cbc_state = self._lib.vscf_aes256_cbc_state
+        vscf_aes256_cbc_state.argtypes = [POINTER(vscf_aes256_cbc_t)]
+        vscf_aes256_cbc_state.restype = c_int
+        return vscf_aes256_cbc_state(ctx)
 
     def vscf_aes256_cbc_start_encryption(self, ctx):
         """Start sequential encryption."""

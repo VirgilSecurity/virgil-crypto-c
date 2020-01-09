@@ -1,6 +1,6 @@
 #   @license
 #   -------------------------------------------------------------------------
-#   Copyright (C) 2015-2019 Virgil Security, Inc.
+#   Copyright (C) 2015-2020 Virgil Security, Inc.
 #
 #   All rights reserved.
 #
@@ -52,14 +52,22 @@ endif()
 target_compile_definitions(phe
         PUBLIC
             $<BUILD_INTERFACE:VSCE_INTERNAL_BUILD>
+            "VSCE_SHARED_LIBRARY=$<BOOL:${BUILD_SHARED_LIBS}>"
             "VSCE_LIBRARY=$<BOOL:${VSCE_LIBRARY}>"
             "VSCE_MULTI_THREADING=$<BOOL:${VSCE_MULTI_THREADING}>"
             "VSCE_ERROR=$<BOOL:${VSCE_ERROR}>"
             "VSCE_PHE_COMMON=$<BOOL:${VSCE_PHE_COMMON}>"
             "VSCE_PHE_HASH=$<BOOL:${VSCE_PHE_HASH}>"
+            "VSCE_PROOF_GENERATOR=$<BOOL:${VSCE_PROOF_GENERATOR}>"
+            "VSCE_PHE_PROOF_GENERATOR=$<BOOL:${VSCE_PHE_PROOF_GENERATOR}>"
+            "VSCE_PROOF_VERIFIER=$<BOOL:${VSCE_PROOF_VERIFIER}>"
+            "VSCE_PHE_PROOF_VERIFIER=$<BOOL:${VSCE_PHE_PROOF_VERIFIER}>"
             "VSCE_PHE_SERVER=$<BOOL:${VSCE_PHE_SERVER}>"
             "VSCE_PHE_CLIENT=$<BOOL:${VSCE_PHE_CLIENT}>"
             "VSCE_PHE_CIPHER=$<BOOL:${VSCE_PHE_CIPHER}>"
-        PRIVATE
-            $<$<BOOL:${BUILD_SHARED_LIBS}>:VSCE_BUILD_SHARED_LIBS>
+            "VSCE_UOKMS_PROOF_GENERATOR=$<BOOL:${VSCE_UOKMS_PROOF_GENERATOR}>"
+            "VSCE_UOKMS_PROOF_VERIFIER=$<BOOL:${VSCE_UOKMS_PROOF_VERIFIER}>"
+            "VSCE_UOKMS_CLIENT=$<BOOL:${VSCE_UOKMS_CLIENT}>"
+            "VSCE_UOKMS_SERVER=$<BOOL:${VSCE_UOKMS_SERVER}>"
+            "VSCE_UOKMS_WRAP_ROTATION=$<BOOL:${VSCE_UOKMS_WRAP_ROTATION}>"
         )

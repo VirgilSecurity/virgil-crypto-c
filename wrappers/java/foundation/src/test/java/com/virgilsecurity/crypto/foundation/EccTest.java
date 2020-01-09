@@ -1,5 +1,5 @@
 /*
-* Copyright (C) 2015-2019 Virgil Security, Inc.
+* Copyright (C) 2015-2020 Virgil Security, Inc.
 *
 * All rights reserved.
 *
@@ -78,11 +78,6 @@ public class EccTest extends SampleBasedTest {
 		PrivateKey privateKey = this.ecc.generateKey(this.algId);
 		assertNotNull(privateKey);
 		assertEquals(this.algId, privateKey.algId());
-	}
-
-	@Test
-	public void algId() {
-		assertEquals(AlgId.ECC, this.ecc.algId());
 	}
 
 	@Test

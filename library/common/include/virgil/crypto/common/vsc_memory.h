@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2019 Virgil Security, Inc.
+//  Copyright (C) 2015-2020 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -118,6 +118,13 @@ vsc_erase(void *mem, size_t size);
 //
 VSC_PUBLIC bool
 vsc_memory_secure_equal(const void *a, const void *b, size_t len);
+
+//
+//  Find the first occurrence of find in s, where the search is limited to the
+//  first slen characters of s.
+//
+VSC_PUBLIC char *
+vsc_strnstr(const char *s, const char *find, size_t slen);
 
 
 // --------------------------------------------------------------------------

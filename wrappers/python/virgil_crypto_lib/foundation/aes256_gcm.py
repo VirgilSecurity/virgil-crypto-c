@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2019 Virgil Security, Inc.
+# Copyright (C) 2015-2020 Virgil Security, Inc.
 #
 # All rights reserved.
 #
@@ -133,6 +133,11 @@ class Aes256Gcm(Alg, Encrypt, Decrypt, CipherInfo, Cipher, CipherAuthInfo, AuthE
         """Set cipher encryption / decryption key."""
         d_key = Data(key)
         self._lib_vscf_aes256_gcm.vscf_aes256_gcm_set_key(self.ctx, d_key.data)
+
+    def state(self):
+        """Return cipher's current state."""
+        result = self._lib_vscf_aes256_gcm.vscf_aes256_gcm_state(self.ctx)
+        return result
 
     def start_encryption(self):
         """Start sequential encryption."""

@@ -1,4 +1,4 @@
-/// Copyright (C) 2015-2019 Virgil Security, Inc.
+/// Copyright (C) 2015-2020 Virgil Security, Inc.
 ///
 /// All rights reserved.
 ///
@@ -79,7 +79,7 @@ import VSCFoundation
     @objc public func signerAlgInfo() -> AlgInfo {
         let proxyResult = vscf_signer_info_signer_alg_info(self.c_ctx)
 
-        return FoundationImplementation.wrapAlgInfo(take: proxyResult!)
+        return FoundationImplementation.wrapAlgInfo(use: proxyResult!)
     }
 
     /// Return data signature.

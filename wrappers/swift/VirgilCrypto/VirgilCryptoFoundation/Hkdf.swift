@@ -1,4 +1,4 @@
-/// Copyright (C) 2015-2019 Virgil Security, Inc.
+/// Copyright (C) 2015-2020 Virgil Security, Inc.
 ///
 /// All rights reserved.
 ///
@@ -38,8 +38,6 @@ import VSCFoundation
 
 /// Virgil Security implementation of the HKDF (RFC 6234) algorithm.
 @objc(VSCFHkdf) public class Hkdf: NSObject, Alg, Kdf, SaltedKdf {
-
-    @objc public static let hashCounterMax: Int = 255
 
     /// Handle underlying C context.
     @objc public let c_ctx: OpaquePointer

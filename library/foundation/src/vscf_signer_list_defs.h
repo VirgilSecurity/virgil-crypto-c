@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2019 Virgil Security, Inc.
+//  Copyright (C) 2015-2020 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -97,9 +97,13 @@ struct vscf_signer_list_t {
     vsc_buffer_t *signer_id;
 
     vscf_impl_t *signer_private_key;
-
+    //
+    //  Class specific context.
+    //
     vscf_signer_list_t *next;
-
+    //
+    //  Class specific context.
+    //
     vscf_signer_list_t *prev;
 };
 

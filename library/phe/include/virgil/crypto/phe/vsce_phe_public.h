@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2019 Virgil Security, Inc.
+//  Copyright (C) 2015-2020 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -63,6 +63,9 @@
 #include "vsce_phe_server.h"
 #include "vsce_platform.h"
 #include "vsce_status.h"
+#include "vsce_uokms_client.h"
+#include "vsce_uokms_server.h"
+#include "vsce_uokms_wrap_rotation.h"
 
 // clang-format on
 //  @end

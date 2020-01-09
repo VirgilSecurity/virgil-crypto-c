@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2019 Virgil Security, Inc.
+//  Copyright (C) 2015-2020 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -230,6 +230,10 @@ static const vscf_cipher_api_t cipher_api = {
     //  Set cipher encryption / decryption key.
     //
     (vscf_cipher_api_set_key_fn)vscf_aes256_gcm_set_key,
+    //
+    //  Return cipher's current state.
+    //
+    (vscf_cipher_api_state_fn)vscf_aes256_gcm_state,
     //
     //  Start sequential encryption.
     //

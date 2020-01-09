@@ -1,4 +1,4 @@
-//  Copyright (C) 2015-2019 Virgil Security, Inc.
+//  Copyright (C) 2015-2020 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -125,7 +125,7 @@ test__deserialize__aes256_gcm__returns_valid_cipher_alg_info(void) {
             deserializer, test_alg_info_AES256_GCM_DER, &error);
 
 
-    TEST_ASSERT_FALSE(vscf_error_has_error(&error));
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
     TEST_ASSERT_NOT_NULL(cipher_info);
     TEST_ASSERT_EQUAL(vscf_alg_id_AES256_GCM, vscf_cipher_alg_info_alg_id(cipher_info));
     TEST_ASSERT_EQUAL_DATA(test_alg_info_AES256_GCM_NONCE, vscf_cipher_alg_info_nonce(cipher_info));
@@ -146,7 +146,7 @@ test__deserialize__aes256_gcm_v2_compat__returns_valid_cipher_alg_info(void) {
             deserializer, test_alg_info_AES256_GCM_DER, &error);
 
 
-    TEST_ASSERT_FALSE(vscf_error_has_error(&error));
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
     TEST_ASSERT_NOT_NULL(cipher_info);
     TEST_ASSERT_EQUAL(vscf_alg_id_AES256_GCM, vscf_cipher_alg_info_alg_id(cipher_info));
     TEST_ASSERT_EQUAL_DATA(test_alg_info_AES256_GCM_NONCE, vscf_cipher_alg_info_nonce(cipher_info));
@@ -172,7 +172,6 @@ main(void) {
     RUN_TEST(test__deserialize__kdf1_sha256_v2_compat__returns_valid_hash_based_alg_info);
     RUN_TEST(test__deserialize__aes256_gcm__returns_valid_cipher_alg_info);
     RUN_TEST(test__deserialize__aes256_gcm_v2_compat__returns_valid_cipher_alg_info);
-
 #else
     RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
 #endif

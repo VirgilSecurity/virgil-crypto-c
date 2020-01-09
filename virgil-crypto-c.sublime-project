@@ -2,16 +2,917 @@
 	"build_systems":
 	[
 		{
+			"file_patterns":
+			[
+				"*.gsl",
+				"*.xml"
+			],
 			"name": "codegen",
 			"shell_cmd": "./codegen.sh",
-			"working_dir": "${project_path}",
-			"file_patterns": ["*.gsl", "*.xml"]
+			"working_dir": "${project_path}"
 		},
 		{
+			"file_patterns":
+			[
+				"*.xnf"
+			],
 			"name": "docgen",
 			"shell_cmd": "./docgen.sh",
-			"working_dir": "${project_path}",
-			"file_patterns": ["*.xnf"]
+			"working_dir": "${project_path}"
+		},
+		{
+			"file_regex": "(.+[^:]):(\\d+):(\\d+): (?:fatal )?((?:error|warning): .+)$",
+			"name": "virgil-crypto-c (OSX)",
+			"shell_cmd": "make -j8",
+			"syntax": "Packages/CMakeBuilder/Syntax/Make.sublime-syntax",
+			"variants":
+			[
+				{
+					"name": "clean",
+					"shell_cmd": "make -j8 clean"
+				},
+				{
+					"name": "install/strip",
+					"shell_cmd": "make -j8 install/strip"
+				},
+				{
+					"name": "list_install_components",
+					"shell_cmd": "make -j8 list_install_components"
+				},
+				{
+					"name": "cloc",
+					"shell_cmd": "make -j8 cloc"
+				},
+				{
+					"name": "install/local",
+					"shell_cmd": "make -j8 install/local"
+				},
+				{
+					"name": "cloc-ratchet",
+					"shell_cmd": "make -j8 cloc-ratchet"
+				},
+				{
+					"name": "rebuild_cache",
+					"shell_cmd": "make -j8 rebuild_cache"
+				},
+				{
+					"name": "cloc-pythia",
+					"shell_cmd": "make -j8 cloc-pythia"
+				},
+				{
+					"name": "cloc-foundation",
+					"shell_cmd": "make -j8 cloc-foundation"
+				},
+				{
+					"name": "package_source",
+					"shell_cmd": "make -j8 package_source"
+				},
+				{
+					"name": "ContinuousCoverage",
+					"shell_cmd": "make -j8 ContinuousCoverage"
+				},
+				{
+					"name": "ContinuousTest",
+					"shell_cmd": "make -j8 ContinuousTest"
+				},
+				{
+					"name": "ContinuousBuild",
+					"shell_cmd": "make -j8 ContinuousBuild"
+				},
+				{
+					"name": "ContinuousStart",
+					"shell_cmd": "make -j8 ContinuousStart"
+				},
+				{
+					"name": "ExperimentalBuild",
+					"shell_cmd": "make -j8 ExperimentalBuild"
+				},
+				{
+					"name": "ExperimentalCoverage",
+					"shell_cmd": "make -j8 ExperimentalCoverage"
+				},
+				{
+					"name": "ExperimentalSubmit",
+					"shell_cmd": "make -j8 ExperimentalSubmit"
+				},
+				{
+					"name": "ContinuousUpdate",
+					"shell_cmd": "make -j8 ContinuousUpdate"
+				},
+				{
+					"name": "ExperimentalUpdate",
+					"shell_cmd": "make -j8 ExperimentalUpdate"
+				},
+				{
+					"name": "install",
+					"shell_cmd": "make -j8 install"
+				},
+				{
+					"name": "ExperimentalStart",
+					"shell_cmd": "make -j8 ExperimentalStart"
+				},
+				{
+					"name": "cloc-common",
+					"shell_cmd": "make -j8 cloc-common"
+				},
+				{
+					"name": "ContinuousSubmit",
+					"shell_cmd": "make -j8 ContinuousSubmit"
+				},
+				{
+					"name": "ExperimentalTest",
+					"shell_cmd": "make -j8 ExperimentalTest"
+				},
+				{
+					"name": "NightlySubmit",
+					"shell_cmd": "make -j8 NightlySubmit"
+				},
+				{
+					"name": "NightlyMemCheck",
+					"shell_cmd": "make -j8 NightlyMemCheck"
+				},
+				{
+					"name": "test",
+					"shell_cmd": "make -j8 test"
+				},
+				{
+					"name": "package",
+					"shell_cmd": "make -j8 package"
+				},
+				{
+					"name": "ExperimentalConfigure",
+					"shell_cmd": "make -j8 ExperimentalConfigure"
+				},
+				{
+					"name": "NightlyCoverage",
+					"shell_cmd": "make -j8 NightlyCoverage"
+				},
+				{
+					"name": "NightlyTest",
+					"shell_cmd": "make -j8 NightlyTest"
+				},
+				{
+					"name": "ContinuousMemCheck",
+					"shell_cmd": "make -j8 ContinuousMemCheck"
+				},
+				{
+					"name": "NightlyBuild",
+					"shell_cmd": "make -j8 NightlyBuild"
+				},
+				{
+					"name": "NightlyConfigure",
+					"shell_cmd": "make -j8 NightlyConfigure"
+				},
+				{
+					"name": "NightlyUpdate",
+					"shell_cmd": "make -j8 NightlyUpdate"
+				},
+				{
+					"name": "NightlyMemoryCheck",
+					"shell_cmd": "make -j8 NightlyMemoryCheck"
+				},
+				{
+					"name": "ContinuousConfigure",
+					"shell_cmd": "make -j8 ContinuousConfigure"
+				},
+				{
+					"name": "Nightly",
+					"shell_cmd": "make -j8 Nightly"
+				},
+				{
+					"name": "NightlyStart",
+					"shell_cmd": "make -j8 NightlyStart"
+				},
+				{
+					"name": "ExperimentalMemCheck",
+					"shell_cmd": "make -j8 ExperimentalMemCheck"
+				},
+				{
+					"name": "Continuous",
+					"shell_cmd": "make -j8 Continuous"
+				},
+				{
+					"name": "Experimental",
+					"shell_cmd": "make -j8 Experimental"
+				},
+				{
+					"name": "mbedtls-ext",
+					"shell_cmd": "make -j8 mbedtls-ext"
+				},
+				{
+					"name": "relic-ext",
+					"shell_cmd": "make -j8 relic-ext"
+				},
+				{
+					"name": "ed25519",
+					"shell_cmd": "make -j8 ed25519"
+				},
+				{
+					"name": "protobuf-nanopb-ext",
+					"shell_cmd": "make -j8 protobuf-nanopb-ext"
+				},
+				{
+					"name": "protobuf-bin-ext",
+					"shell_cmd": "make -j8 protobuf-bin-ext"
+				},
+				{
+					"name": "keccak-ext",
+					"shell_cmd": "make -j8 keccak-ext"
+				},
+				{
+					"name": "round5-ext",
+					"shell_cmd": "make -j8 round5-ext"
+				},
+				{
+					"name": "falcon-ext",
+					"shell_cmd": "make -j8 falcon-ext"
+				},
+				{
+					"name": "common_clangformat",
+					"shell_cmd": "make -j8 common_clangformat"
+				},
+				{
+					"name": "common",
+					"shell_cmd": "make -j8 common"
+				},
+				{
+					"name": "foundation_clangformat",
+					"shell_cmd": "make -j8 foundation_clangformat"
+				},
+				{
+					"name": "foundation",
+					"shell_cmd": "make -j8 foundation"
+				},
+				{
+					"name": "foundation_pb",
+					"shell_cmd": "make -j8 foundation_pb"
+				},
+				{
+					"name": "pythia",
+					"shell_cmd": "make -j8 pythia"
+				},
+				{
+					"name": "pythia_clangformat",
+					"shell_cmd": "make -j8 pythia_clangformat"
+				},
+				{
+					"name": "ratchet_clangformat",
+					"shell_cmd": "make -j8 ratchet_clangformat"
+				},
+				{
+					"name": "ratchet",
+					"shell_cmd": "make -j8 ratchet"
+				},
+				{
+					"name": "ratchet_pb",
+					"shell_cmd": "make -j8 ratchet_pb"
+				},
+				{
+					"name": "phe_clangformat",
+					"shell_cmd": "make -j8 phe_clangformat"
+				},
+				{
+					"name": "phe",
+					"shell_cmd": "make -j8 phe"
+				},
+				{
+					"name": "phe_pb",
+					"shell_cmd": "make -j8 phe_pb"
+				},
+				{
+					"name": "unity",
+					"shell_cmd": "make -j8 unity"
+				},
+				{
+					"name": "test_utils_clangformat",
+					"shell_cmd": "make -j8 test_utils_clangformat"
+				},
+				{
+					"name": "test_utils",
+					"shell_cmd": "make -j8 test_utils"
+				},
+				{
+					"name": "test_padding_cipher",
+					"shell_cmd": "make -j8 test_padding_cipher"
+				},
+				{
+					"name": "test_key_info_clangformat",
+					"shell_cmd": "make -j8 test_key_info_clangformat"
+				},
+				{
+					"name": "test_key_info",
+					"shell_cmd": "make -j8 test_key_info"
+				},
+				{
+					"name": "test_hybrid_key_alg_clangformat",
+					"shell_cmd": "make -j8 test_hybrid_key_alg_clangformat"
+				},
+				{
+					"name": "test_round5",
+					"shell_cmd": "make -j8 test_round5"
+				},
+				{
+					"name": "test_post_quantum_library_falcon_clangformat",
+					"shell_cmd": "make -j8 test_post_quantum_library_falcon_clangformat"
+				},
+				{
+					"name": "test_post_quantum_library_keccak",
+					"shell_cmd": "make -j8 test_post_quantum_library_keccak"
+				},
+				{
+					"name": "test_post_quantum_library_keccak_clangformat",
+					"shell_cmd": "make -j8 test_post_quantum_library_keccak_clangformat"
+				},
+				{
+					"name": "test_ecies_envelope_clangformat",
+					"shell_cmd": "make -j8 test_ecies_envelope_clangformat"
+				},
+				{
+					"name": "test_message_info_editor",
+					"shell_cmd": "make -j8 test_message_info_editor"
+				},
+				{
+					"name": "test_group_session_clangformat",
+					"shell_cmd": "make -j8 test_group_session_clangformat"
+				},
+				{
+					"name": "test_simple_swu_clangformat",
+					"shell_cmd": "make -j8 test_simple_swu_clangformat"
+				},
+				{
+					"name": "test_pem_clangformat",
+					"shell_cmd": "make -j8 test_pem_clangformat"
+				},
+				{
+					"name": "test_simple_swu",
+					"shell_cmd": "make -j8 test_simple_swu"
+				},
+				{
+					"name": "test_brainkey_server",
+					"shell_cmd": "make -j8 test_brainkey_server"
+				},
+				{
+					"name": "test_rsa_private_key_clangformat",
+					"shell_cmd": "make -j8 test_rsa_private_key_clangformat"
+				},
+				{
+					"name": "test_brainkey_clangformat",
+					"shell_cmd": "make -j8 test_brainkey_clangformat"
+				},
+				{
+					"name": "test_brainkey",
+					"shell_cmd": "make -j8 test_brainkey"
+				},
+				{
+					"name": "test_secp256r1_public_key_clangformat",
+					"shell_cmd": "make -j8 test_secp256r1_public_key_clangformat"
+				},
+				{
+					"name": "test_signer_verifier",
+					"shell_cmd": "make -j8 test_signer_verifier"
+				},
+				{
+					"name": "test_secp256r1_public_key",
+					"shell_cmd": "make -j8 test_secp256r1_public_key"
+				},
+				{
+					"name": "test_kdf1_clangformat",
+					"shell_cmd": "make -j8 test_kdf1_clangformat"
+				},
+				{
+					"name": "test_secp256r1_private_key",
+					"shell_cmd": "make -j8 test_secp256r1_private_key"
+				},
+				{
+					"name": "test_curve25519_public_key_clangformat",
+					"shell_cmd": "make -j8 test_curve25519_public_key_clangformat"
+				},
+				{
+					"name": "test_pkcs5_pbkdf2_clangformat",
+					"shell_cmd": "make -j8 test_pkcs5_pbkdf2_clangformat"
+				},
+				{
+					"name": "test_curve25519_private_key_clangformat",
+					"shell_cmd": "make -j8 test_curve25519_private_key_clangformat"
+				},
+				{
+					"name": "test_asn1rd",
+					"shell_cmd": "make -j8 test_asn1rd"
+				},
+				{
+					"name": "test_curve25519_private_key",
+					"shell_cmd": "make -j8 test_curve25519_private_key"
+				},
+				{
+					"name": "test_brainkey_server_clangformat",
+					"shell_cmd": "make -j8 test_brainkey_server_clangformat"
+				},
+				{
+					"name": "test_signer_verifier_clangformat",
+					"shell_cmd": "make -j8 test_signer_verifier_clangformat"
+				},
+				{
+					"name": "test_group_session",
+					"shell_cmd": "make -j8 test_group_session"
+				},
+				{
+					"name": "test_secp256r1_private_key_clangformat",
+					"shell_cmd": "make -j8 test_secp256r1_private_key_clangformat"
+				},
+				{
+					"name": "test_signer",
+					"shell_cmd": "make -j8 test_signer"
+				},
+				{
+					"name": "test_verifier",
+					"shell_cmd": "make -j8 test_verifier"
+				},
+				{
+					"name": "test_recipient_cipher",
+					"shell_cmd": "make -j8 test_recipient_cipher"
+				},
+				{
+					"name": "test_asn1wr_clangformat",
+					"shell_cmd": "make -j8 test_asn1wr_clangformat"
+				},
+				{
+					"name": "test_ecies",
+					"shell_cmd": "make -j8 test_ecies"
+				},
+				{
+					"name": "test_ecies_envelope",
+					"shell_cmd": "make -j8 test_ecies_envelope"
+				},
+				{
+					"name": "test_hmac",
+					"shell_cmd": "make -j8 test_hmac"
+				},
+				{
+					"name": "test_pkcs5_pbes2_clangformat",
+					"shell_cmd": "make -j8 test_pkcs5_pbes2_clangformat"
+				},
+				{
+					"name": "test_ecies_clangformat",
+					"shell_cmd": "make -j8 test_ecies_clangformat"
+				},
+				{
+					"name": "test_signer_clangformat",
+					"shell_cmd": "make -j8 test_signer_clangformat"
+				},
+				{
+					"name": "test_message_info_der_serializer_clangformat",
+					"shell_cmd": "make -j8 test_message_info_der_serializer_clangformat"
+				},
+				{
+					"name": "test_key_provider",
+					"shell_cmd": "make -j8 test_key_provider"
+				},
+				{
+					"name": "test_alg_info_der_deserializer_clangformat",
+					"shell_cmd": "make -j8 test_alg_info_der_deserializer_clangformat"
+				},
+				{
+					"name": "test_ed25519_public_key",
+					"shell_cmd": "make -j8 test_ed25519_public_key"
+				},
+				{
+					"name": "test_ed25519_private_key",
+					"shell_cmd": "make -j8 test_ed25519_private_key"
+				},
+				{
+					"name": "test_hmac_clangformat",
+					"shell_cmd": "make -j8 test_hmac_clangformat"
+				},
+				{
+					"name": "test_pem",
+					"shell_cmd": "make -j8 test_pem"
+				},
+				{
+					"name": "test_message_info_editor_clangformat",
+					"shell_cmd": "make -j8 test_message_info_editor_clangformat"
+				},
+				{
+					"name": "test_base64",
+					"shell_cmd": "make -j8 test_base64"
+				},
+				{
+					"name": "test_key_asn1_deserializer_clangformat",
+					"shell_cmd": "make -j8 test_key_asn1_deserializer_clangformat"
+				},
+				{
+					"name": "test_key_asn1_deserializer",
+					"shell_cmd": "make -j8 test_key_asn1_deserializer"
+				},
+				{
+					"name": "test_compound_key_alg_clangformat",
+					"shell_cmd": "make -j8 test_compound_key_alg_clangformat"
+				},
+				{
+					"name": "test_pkcs8_serializer_clangformat",
+					"shell_cmd": "make -j8 test_pkcs8_serializer_clangformat"
+				},
+				{
+					"name": "test_hkdf",
+					"shell_cmd": "make -j8 test_hkdf"
+				},
+				{
+					"name": "test_alg_info_der_serializer_clangformat",
+					"shell_cmd": "make -j8 test_alg_info_der_serializer_clangformat"
+				},
+				{
+					"name": "test_brainkey_client_clangformat",
+					"shell_cmd": "make -j8 test_brainkey_client_clangformat"
+				},
+				{
+					"name": "test_entropy_accumulator_clangformat",
+					"shell_cmd": "make -j8 test_entropy_accumulator_clangformat"
+				},
+				{
+					"name": "test_post_quantum_library_falcon",
+					"shell_cmd": "make -j8 test_post_quantum_library_falcon"
+				},
+				{
+					"name": "test_group_message",
+					"shell_cmd": "make -j8 test_group_message"
+				},
+				{
+					"name": "test_group_message_clangformat",
+					"shell_cmd": "make -j8 test_group_message_clangformat"
+				},
+				{
+					"name": "test_alg_info_der_serializer",
+					"shell_cmd": "make -j8 test_alg_info_der_serializer"
+				},
+				{
+					"name": "test_post_quantum_library_round5",
+					"shell_cmd": "make -j8 test_post_quantum_library_round5"
+				},
+				{
+					"name": "test_sha512",
+					"shell_cmd": "make -j8 test_sha512"
+				},
+				{
+					"name": "test_rsa_public_key_clangformat",
+					"shell_cmd": "make -j8 test_rsa_public_key_clangformat"
+				},
+				{
+					"name": "test_ed25519_private_key_clangformat",
+					"shell_cmd": "make -j8 test_ed25519_private_key_clangformat"
+				},
+				{
+					"name": "test_post_quantum_library_round5_clangformat",
+					"shell_cmd": "make -j8 test_post_quantum_library_round5_clangformat"
+				},
+				{
+					"name": "test_rsa_private_key",
+					"shell_cmd": "make -j8 test_rsa_private_key"
+				},
+				{
+					"name": "test_aes256_cbc",
+					"shell_cmd": "make -j8 test_aes256_cbc"
+				},
+				{
+					"name": "test_rsa_public_key",
+					"shell_cmd": "make -j8 test_rsa_public_key"
+				},
+				{
+					"name": "test_round5_clangformat",
+					"shell_cmd": "make -j8 test_round5_clangformat"
+				},
+				{
+					"name": "test_message_info_der_serializer",
+					"shell_cmd": "make -j8 test_message_info_der_serializer"
+				},
+				{
+					"name": "test_pkcs8_serializer",
+					"shell_cmd": "make -j8 test_pkcs8_serializer"
+				},
+				{
+					"name": "test_key_provider_clangformat",
+					"shell_cmd": "make -j8 test_key_provider_clangformat"
+				},
+				{
+					"name": "test_alg_info_der_deserializer",
+					"shell_cmd": "make -j8 test_alg_info_der_deserializer"
+				},
+				{
+					"name": "test_pkcs5_pbes2",
+					"shell_cmd": "make -j8 test_pkcs5_pbes2"
+				},
+				{
+					"name": "test_padding_cipher_clangformat",
+					"shell_cmd": "make -j8 test_padding_cipher_clangformat"
+				},
+				{
+					"name": "test_ed25519_public_key_clangformat",
+					"shell_cmd": "make -j8 test_ed25519_public_key_clangformat"
+				},
+				{
+					"name": "test_sha256_clangformat",
+					"shell_cmd": "make -j8 test_sha256_clangformat"
+				},
+				{
+					"name": "test_compound_key_alg",
+					"shell_cmd": "make -j8 test_compound_key_alg"
+				},
+				{
+					"name": "test_asn1rd_clangformat",
+					"shell_cmd": "make -j8 test_asn1rd_clangformat"
+				},
+				{
+					"name": "test_verifier_clangformat",
+					"shell_cmd": "make -j8 test_verifier_clangformat"
+				},
+				{
+					"name": "test_recipient_cipher_clangformat",
+					"shell_cmd": "make -j8 test_recipient_cipher_clangformat"
+				},
+				{
+					"name": "test_aes256_gcm_clangformat",
+					"shell_cmd": "make -j8 test_aes256_gcm_clangformat"
+				},
+				{
+					"name": "test_ctr_drbg_clangformat",
+					"shell_cmd": "make -j8 test_ctr_drbg_clangformat"
+				},
+				{
+					"name": "test_kdf2",
+					"shell_cmd": "make -j8 test_kdf2"
+				},
+				{
+					"name": "test_hkdf_clangformat",
+					"shell_cmd": "make -j8 test_hkdf_clangformat"
+				},
+				{
+					"name": "test_sha384_clangformat",
+					"shell_cmd": "make -j8 test_sha384_clangformat"
+				},
+				{
+					"name": "test_aes256_cbc_clangformat",
+					"shell_cmd": "make -j8 test_aes256_cbc_clangformat"
+				},
+				{
+					"name": "test_hybrid_key_alg",
+					"shell_cmd": "make -j8 test_hybrid_key_alg"
+				},
+				{
+					"name": "test_asn1wr",
+					"shell_cmd": "make -j8 test_asn1wr"
+				},
+				{
+					"name": "test_aes256_gcm",
+					"shell_cmd": "make -j8 test_aes256_gcm"
+				},
+				{
+					"name": "test_pkcs5_pbkdf2",
+					"shell_cmd": "make -j8 test_pkcs5_pbkdf2"
+				},
+				{
+					"name": "test_sha224_clangformat",
+					"shell_cmd": "make -j8 test_sha224_clangformat"
+				},
+				{
+					"name": "test_sha512_clangformat",
+					"shell_cmd": "make -j8 test_sha512_clangformat"
+				},
+				{
+					"name": "test_sha224",
+					"shell_cmd": "make -j8 test_sha224"
+				},
+				{
+					"name": "test_sha256",
+					"shell_cmd": "make -j8 test_sha256"
+				},
+				{
+					"name": "test_falcon",
+					"shell_cmd": "make -j8 test_falcon"
+				},
+				{
+					"name": "test_brainkey_client",
+					"shell_cmd": "make -j8 test_brainkey_client"
+				},
+				{
+					"name": "test_falcon_clangformat",
+					"shell_cmd": "make -j8 test_falcon_clangformat"
+				},
+				{
+					"name": "test_ctr_drbg",
+					"shell_cmd": "make -j8 test_ctr_drbg"
+				},
+				{
+					"name": "test_sha384",
+					"shell_cmd": "make -j8 test_sha384"
+				},
+				{
+					"name": "test_base64_clangformat",
+					"shell_cmd": "make -j8 test_base64_clangformat"
+				},
+				{
+					"name": "test_kdf2_clangformat",
+					"shell_cmd": "make -j8 test_kdf2_clangformat"
+				},
+				{
+					"name": "test_curve25519_public_key",
+					"shell_cmd": "make -j8 test_curve25519_public_key"
+				},
+				{
+					"name": "test_entropy_accumulator",
+					"shell_cmd": "make -j8 test_entropy_accumulator"
+				},
+				{
+					"name": "test_kdf1",
+					"shell_cmd": "make -j8 test_kdf1"
+				},
+				{
+					"name": "test_data_foundation",
+					"shell_cmd": "make -j8 test_data_foundation"
+				},
+				{
+					"name": "test_pythia",
+					"shell_cmd": "make -j8 test_pythia"
+				},
+				{
+					"name": "benchmark_pythia_c_clangformat",
+					"shell_cmd": "make -j8 benchmark_pythia_c_clangformat"
+				},
+				{
+					"name": "test_pythia_w",
+					"shell_cmd": "make -j8 test_pythia_w"
+				},
+				{
+					"name": "test_pythia_mt_clangformat",
+					"shell_cmd": "make -j8 test_pythia_mt_clangformat"
+				},
+				{
+					"name": "test_pythia_mt",
+					"shell_cmd": "make -j8 test_pythia_mt"
+				},
+				{
+					"name": "benchmark_pythia_c",
+					"shell_cmd": "make -j8 benchmark_pythia_c"
+				},
+				{
+					"name": "test_pythia_c_clangformat",
+					"shell_cmd": "make -j8 test_pythia_c_clangformat"
+				},
+				{
+					"name": "test_pythia_c",
+					"shell_cmd": "make -j8 test_pythia_c"
+				},
+				{
+					"name": "test_pythia_w_clangformat",
+					"shell_cmd": "make -j8 test_pythia_w_clangformat"
+				},
+				{
+					"name": "test_pythia_clangformat",
+					"shell_cmd": "make -j8 test_pythia_clangformat"
+				},
+				{
+					"name": "test_ratchet_group_session_change_members_clangformat",
+					"shell_cmd": "make -j8 test_ratchet_group_session_change_members_clangformat"
+				},
+				{
+					"name": "test_ratchet_group_session_integration_serialization_clangformat",
+					"shell_cmd": "make -j8 test_ratchet_group_session_integration_serialization_clangformat"
+				},
+				{
+					"name": "test_ratchet_group_session_integration_serialization",
+					"shell_cmd": "make -j8 test_ratchet_group_session_integration_serialization"
+				},
+				{
+					"name": "test_ratchet_skipped_messages_clangformat",
+					"shell_cmd": "make -j8 test_ratchet_skipped_messages_clangformat"
+				},
+				{
+					"name": "test_ratchet_group_session_integration",
+					"shell_cmd": "make -j8 test_ratchet_group_session_integration"
+				},
+				{
+					"name": "test_ratchet_group_message_clangformat",
+					"shell_cmd": "make -j8 test_ratchet_group_message_clangformat"
+				},
+				{
+					"name": "test_ratchet_group_session_integration_clangformat",
+					"shell_cmd": "make -j8 test_ratchet_group_session_integration_clangformat"
+				},
+				{
+					"name": "test_ratchet_cipher",
+					"shell_cmd": "make -j8 test_ratchet_cipher"
+				},
+				{
+					"name": "test_ratchet_group_message",
+					"shell_cmd": "make -j8 test_ratchet_group_message"
+				},
+				{
+					"name": "test_ratchet_keys",
+					"shell_cmd": "make -j8 test_ratchet_keys"
+				},
+				{
+					"name": "test_ratchet_group_session_change_members",
+					"shell_cmd": "make -j8 test_ratchet_group_session_change_members"
+				},
+				{
+					"name": "test_ratchet_skipped_messages",
+					"shell_cmd": "make -j8 test_ratchet_skipped_messages"
+				},
+				{
+					"name": "test_ratchet_x3dh_clangformat",
+					"shell_cmd": "make -j8 test_ratchet_x3dh_clangformat"
+				},
+				{
+					"name": "test_ratchet_key_utils",
+					"shell_cmd": "make -j8 test_ratchet_key_utils"
+				},
+				{
+					"name": "test_ratchet_cipher_clangformat",
+					"shell_cmd": "make -j8 test_ratchet_cipher_clangformat"
+				},
+				{
+					"name": "test_ratchet_key_utils_clangformat",
+					"shell_cmd": "make -j8 test_ratchet_key_utils_clangformat"
+				},
+				{
+					"name": "test_ratchet_message_clangformat",
+					"shell_cmd": "make -j8 test_ratchet_message_clangformat"
+				},
+				{
+					"name": "test_ratchet_x3dh",
+					"shell_cmd": "make -j8 test_ratchet_x3dh"
+				},
+				{
+					"name": "test_ratchet_keys_clangformat",
+					"shell_cmd": "make -j8 test_ratchet_keys_clangformat"
+				},
+				{
+					"name": "test_ratchet_session_serialization",
+					"shell_cmd": "make -j8 test_ratchet_session_serialization"
+				},
+				{
+					"name": "test_ratchet_session_serialization_clangformat",
+					"shell_cmd": "make -j8 test_ratchet_session_serialization_clangformat"
+				},
+				{
+					"name": "test_ratchet_session_integration_clangformat",
+					"shell_cmd": "make -j8 test_ratchet_session_integration_clangformat"
+				},
+				{
+					"name": "test_ratchet_session_integration",
+					"shell_cmd": "make -j8 test_ratchet_session_integration"
+				},
+				{
+					"name": "test_ratchet_message",
+					"shell_cmd": "make -j8 test_ratchet_message"
+				},
+				{
+					"name": "test_data_ratchet",
+					"shell_cmd": "make -j8 test_data_ratchet"
+				},
+				{
+					"name": "test_phe_clangformat",
+					"shell_cmd": "make -j8 test_phe_clangformat"
+				},
+				{
+					"name": "test_phe_cipher_clangformat",
+					"shell_cmd": "make -j8 test_phe_cipher_clangformat"
+				},
+				{
+					"name": "test_phe_client_clangformat",
+					"shell_cmd": "make -j8 test_phe_client_clangformat"
+				},
+				{
+					"name": "test_phe_client",
+					"shell_cmd": "make -j8 test_phe_client"
+				},
+				{
+					"name": "test_phe_server",
+					"shell_cmd": "make -j8 test_phe_server"
+				},
+				{
+					"name": "test_phe",
+					"shell_cmd": "make -j8 test_phe"
+				},
+				{
+					"name": "test_phe_cipher",
+					"shell_cmd": "make -j8 test_phe_cipher"
+				},
+				{
+					"name": "test_phe_server_clangformat",
+					"shell_cmd": "make -j8 test_phe_server_clangformat"
+				},
+				{
+					"name": "test_phe_hash_clangformat",
+					"shell_cmd": "make -j8 test_phe_hash_clangformat"
+				},
+				{
+					"name": "test_phe_hash",
+					"shell_cmd": "make -j8 test_phe_hash"
+				},
+				{
+					"name": "test_data_phe",
+					"shell_cmd": "make -j8 test_data_phe"
+				}
+			],
+			"working_dir": "$folder/build"
 		}
 	],
 	"folders":
@@ -20,8 +921,16 @@
 			"path": "."
 		}
 	],
-    "settings":
-    {
-		"rulers": [77,120]
+	"settings":
+	{
+		"cmake":
+		{
+			"build_folder": "$folder/build"
+		},
+		"rulers":
+		[
+			77,
+			120
+		]
 	}
 }

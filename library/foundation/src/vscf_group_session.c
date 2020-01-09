@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2019 Virgil Security, Inc.
+//  Copyright (C) 2015-2020 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -636,11 +636,8 @@ vscf_group_session_decrypt(vscf_group_session_t *self, const vscf_group_session_
 
     vscf_ed25519_t *ed25519 = vscf_ed25519_new();
 
-    size_t signature_len = vscf_ed25519_signature_len(ed25519, public_key);
-
-    VSCF_ASSERT(sizeof(message->message_pb.regular_message.signature) == signature_len);
-
-    vsc_data_t signature = vsc_data(message->message_pb.regular_message.signature, signature_len);
+    vsc_data_t signature = vsc_data(
+            message->message_pb.regular_message.signature, sizeof(message->message_pb.regular_message.signature));
     vsc_data_t digest = vsc_data(message->message_pb.regular_message.cipher_text->bytes,
             message->message_pb.regular_message.cipher_text->size);
 

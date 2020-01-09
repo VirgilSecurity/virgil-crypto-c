@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2019 Virgil Security, Inc.
+# Copyright (C) 2015-2020 Virgil Security, Inc.
 #
 # All rights reserved.
 #
@@ -61,14 +61,6 @@ class VscfPbeAlgInfo(object):
         vscf_pbe_alg_info_delete.argtypes = [POINTER(vscf_pbe_alg_info_t)]
         vscf_pbe_alg_info_delete.restype = None
         return vscf_pbe_alg_info_delete(ctx)
-
-    def vscf_pbe_alg_info_new_with_members(self, alg_id, kdf_alg_info, cipher_alg_info):
-        """Create algorithm info with identificator, KDF algorithm info and
-        cipher alg info."""
-        vscf_pbe_alg_info_new_with_members = self._lib.vscf_pbe_alg_info_new_with_members
-        vscf_pbe_alg_info_new_with_members.argtypes = [c_int, POINTER(vscf_impl_t), POINTER(vscf_impl_t)]
-        vscf_pbe_alg_info_new_with_members.restype = POINTER(vscf_pbe_alg_info_t)
-        return vscf_pbe_alg_info_new_with_members(alg_id, kdf_alg_info, cipher_alg_info)
 
     def vscf_pbe_alg_info_alg_id(self, ctx):
         """Provide algorithm identificator."""

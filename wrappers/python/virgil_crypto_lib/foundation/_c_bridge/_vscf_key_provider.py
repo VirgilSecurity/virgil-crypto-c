@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2019 Virgil Security, Inc.
+# Copyright (C) 2015-2020 Virgil Security, Inc.
 #
 # All rights reserved.
 #
@@ -36,7 +36,6 @@
 from virgil_crypto_lib._libs import *
 from ctypes import *
 from ._vscf_impl import vscf_impl_t
-from ._vscf_ecies import vscf_ecies_t
 from ._vscf_error import vscf_error_t
 from virgil_crypto_lib.common._c_bridge import vsc_data_t
 from virgil_crypto_lib.common._c_bridge import vsc_buffer_t
@@ -73,12 +72,6 @@ class VscfKeyProvider(object):
         vscf_key_provider_use_random.restype = None
         return vscf_key_provider_use_random(ctx, random)
 
-    def vscf_key_provider_use_ecies(self, ctx, ecies):
-        vscf_key_provider_use_ecies = self._lib.vscf_key_provider_use_ecies
-        vscf_key_provider_use_ecies.argtypes = [POINTER(vscf_key_provider_t), POINTER(vscf_ecies_t)]
-        vscf_key_provider_use_ecies.restype = None
-        return vscf_key_provider_use_ecies(ctx, ecies)
-
     def vscf_key_provider_setup_defaults(self, ctx):
         """Setup predefined values to the uninitialized class dependencies."""
         vscf_key_provider_setup_defaults = self._lib.vscf_key_provider_setup_defaults
@@ -94,11 +87,51 @@ class VscfKeyProvider(object):
         return vscf_key_provider_set_rsa_params(ctx, bitlen)
 
     def vscf_key_provider_generate_private_key(self, ctx, alg_id, error):
-        """Generate new private key from the given id."""
+        """Generate new private key with a given algorithm."""
         vscf_key_provider_generate_private_key = self._lib.vscf_key_provider_generate_private_key
         vscf_key_provider_generate_private_key.argtypes = [POINTER(vscf_key_provider_t), c_int, POINTER(vscf_error_t)]
         vscf_key_provider_generate_private_key.restype = POINTER(vscf_impl_t)
         return vscf_key_provider_generate_private_key(ctx, alg_id, error)
+
+    def vscf_key_provider_generate_post_quantum_private_key(self, ctx, error):
+        """Generate new post-quantum private key with default algorithms.
+        Note, that a post-quantum key combines classic private keys
+        alongside with post-quantum private keys.
+        Current structure is "compound private key" is:
+            - cipher private key is "hybrid private key" where:
+                - first key is a classic private key;
+                - second key is a post-quantum private key;
+            - signer private key "hybrid private key" where:
+                - first key is a classic private key;
+                - second key is a post-quantum private key."""
+        vscf_key_provider_generate_post_quantum_private_key = self._lib.vscf_key_provider_generate_post_quantum_private_key
+        vscf_key_provider_generate_post_quantum_private_key.argtypes = [POINTER(vscf_key_provider_t), POINTER(vscf_error_t)]
+        vscf_key_provider_generate_post_quantum_private_key.restype = POINTER(vscf_impl_t)
+        return vscf_key_provider_generate_post_quantum_private_key(ctx, error)
+
+    def vscf_key_provider_generate_compound_private_key(self, ctx, cipher_alg_id, signer_alg_id, error):
+        """Generate new compound private key with given algorithms."""
+        vscf_key_provider_generate_compound_private_key = self._lib.vscf_key_provider_generate_compound_private_key
+        vscf_key_provider_generate_compound_private_key.argtypes = [POINTER(vscf_key_provider_t), c_int, c_int, POINTER(vscf_error_t)]
+        vscf_key_provider_generate_compound_private_key.restype = POINTER(vscf_impl_t)
+        return vscf_key_provider_generate_compound_private_key(ctx, cipher_alg_id, signer_alg_id, error)
+
+    def vscf_key_provider_generate_hybrid_private_key(self, ctx, first_key_alg_id, second_key_alg_id, error):
+        """Generate new hybrid private key with given algorithms."""
+        vscf_key_provider_generate_hybrid_private_key = self._lib.vscf_key_provider_generate_hybrid_private_key
+        vscf_key_provider_generate_hybrid_private_key.argtypes = [POINTER(vscf_key_provider_t), c_int, c_int, POINTER(vscf_error_t)]
+        vscf_key_provider_generate_hybrid_private_key.restype = POINTER(vscf_impl_t)
+        return vscf_key_provider_generate_hybrid_private_key(ctx, first_key_alg_id, second_key_alg_id, error)
+
+    def vscf_key_provider_generate_compound_hybrid_private_key(self, ctx, cipher_first_key_alg_id, cipher_second_key_alg_id, signer_first_key_alg_id, signer_second_key_alg_id, error):
+        """Generate new compound private key with nested hybrid private keys.
+
+        Note, second key algorithm identifiers can be NONE, in this case,
+        a regular key will be crated instead of a hybrid key."""
+        vscf_key_provider_generate_compound_hybrid_private_key = self._lib.vscf_key_provider_generate_compound_hybrid_private_key
+        vscf_key_provider_generate_compound_hybrid_private_key.argtypes = [POINTER(vscf_key_provider_t), c_int, c_int, c_int, c_int, POINTER(vscf_error_t)]
+        vscf_key_provider_generate_compound_hybrid_private_key.restype = POINTER(vscf_impl_t)
+        return vscf_key_provider_generate_compound_hybrid_private_key(ctx, cipher_first_key_alg_id, cipher_second_key_alg_id, signer_first_key_alg_id, signer_second_key_alg_id, error)
 
     def vscf_key_provider_import_private_key(self, ctx, key_data, error):
         """Import private key from the PKCS#8 format."""

@@ -1,5 +1,5 @@
 /*
-* Copyright (C) 2015-2019 Virgil Security, Inc.
+* Copyright (C) 2015-2020 Virgil Security, Inc.
 *
 * All rights reserved.
 *
@@ -55,18 +55,6 @@ public class PheCipher implements AutoCloseable {
     /* Wrap underlying C context. */
     PheCipher(PheContextHolder contextHolder) {
         this.cCtx = contextHolder.cCtx;
-    }
-
-    public int getSaltLen() {
-        return 32;
-    }
-
-    public int getKeyLen() {
-        return 32;
-    }
-
-    public int getNonceLen() {
-        return 12;
     }
 
     /*

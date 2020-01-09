@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2015-2019 Virgil Security, Inc.
+ * Copyright (C) 2015-2020 Virgil Security, Inc.
  *
  * All rights reserved.
  *
@@ -96,13 +96,6 @@ const initKeyProvider = (Module, modules) => {
             Module._vscf_key_provider_use_random(this.ctxPtr, random.ctxPtr)
         }
 
-        set ecies(ecies) {
-            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-            precondition.ensureClass('ecies', ecies, modules.Ecies);
-            Module._vscf_key_provider_release_ecies(this.ctxPtr)
-            Module._vscf_key_provider_use_ecies(this.ctxPtr, ecies.ctxPtr)
-        }
-
         /**
          * Setup predefined values to the uninitialized class dependencies.
          */
@@ -122,7 +115,7 @@ const initKeyProvider = (Module, modules) => {
         }
 
         /**
-         * Generate new private key from the given id.
+         * Generate new private key with a given algorithm.
          */
         generatePrivateKey(algId) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
@@ -136,6 +129,126 @@ const initKeyProvider = (Module, modules) => {
 
             try {
                 proxyResult = Module._vscf_key_provider_generate_private_key(this.ctxPtr, algId, errorCtxPtr);
+
+                const errorStatus = Module._vscf_error_status(errorCtxPtr);
+                modules.FoundationError.handleStatusCode(errorStatus);
+
+                const jsResult = modules.FoundationInterface.newAndTakeCContext(proxyResult);
+                return jsResult;
+            } finally {
+                Module._free(errorCtxPtr);
+            }
+        }
+
+        /**
+         * Generate new post-quantum private key with default algorithms.
+         * Note, that a post-quantum key combines classic private keys
+         * alongside with post-quantum private keys.
+         * Current structure is "compound private key" is:
+         * - cipher private key is "hybrid private key" where:
+         * - first key is a classic private key;
+         * - second key is a post-quantum private key;
+         * - signer private key "hybrid private key" where:
+         * - first key is a classic private key;
+         * - second key is a post-quantum private key.
+         */
+        generatePostQuantumPrivateKey() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
+            const errorCtxSize = Module._vscf_error_ctx_size();
+            const errorCtxPtr = Module._malloc(errorCtxSize);
+            Module._vscf_error_reset(errorCtxPtr);
+
+            let proxyResult;
+
+            try {
+                proxyResult = Module._vscf_key_provider_generate_post_quantum_private_key(this.ctxPtr, errorCtxPtr);
+
+                const errorStatus = Module._vscf_error_status(errorCtxPtr);
+                modules.FoundationError.handleStatusCode(errorStatus);
+
+                const jsResult = modules.FoundationInterface.newAndTakeCContext(proxyResult);
+                return jsResult;
+            } finally {
+                Module._free(errorCtxPtr);
+            }
+        }
+
+        /**
+         * Generate new compound private key with given algorithms.
+         */
+        generateCompoundPrivateKey(cipherAlgId, signerAlgId) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureNumber('cipherAlgId', cipherAlgId);
+            precondition.ensureNumber('signerAlgId', signerAlgId);
+
+            const errorCtxSize = Module._vscf_error_ctx_size();
+            const errorCtxPtr = Module._malloc(errorCtxSize);
+            Module._vscf_error_reset(errorCtxPtr);
+
+            let proxyResult;
+
+            try {
+                proxyResult = Module._vscf_key_provider_generate_compound_private_key(this.ctxPtr, cipherAlgId, signerAlgId, errorCtxPtr);
+
+                const errorStatus = Module._vscf_error_status(errorCtxPtr);
+                modules.FoundationError.handleStatusCode(errorStatus);
+
+                const jsResult = modules.FoundationInterface.newAndTakeCContext(proxyResult);
+                return jsResult;
+            } finally {
+                Module._free(errorCtxPtr);
+            }
+        }
+
+        /**
+         * Generate new hybrid private key with given algorithms.
+         */
+        generateHybridPrivateKey(firstKeyAlgId, secondKeyAlgId) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureNumber('firstKeyAlgId', firstKeyAlgId);
+            precondition.ensureNumber('secondKeyAlgId', secondKeyAlgId);
+
+            const errorCtxSize = Module._vscf_error_ctx_size();
+            const errorCtxPtr = Module._malloc(errorCtxSize);
+            Module._vscf_error_reset(errorCtxPtr);
+
+            let proxyResult;
+
+            try {
+                proxyResult = Module._vscf_key_provider_generate_hybrid_private_key(this.ctxPtr, firstKeyAlgId, secondKeyAlgId, errorCtxPtr);
+
+                const errorStatus = Module._vscf_error_status(errorCtxPtr);
+                modules.FoundationError.handleStatusCode(errorStatus);
+
+                const jsResult = modules.FoundationInterface.newAndTakeCContext(proxyResult);
+                return jsResult;
+            } finally {
+                Module._free(errorCtxPtr);
+            }
+        }
+
+        /**
+         * Generate new compound private key with nested hybrid private keys.
+         *
+         * Note, second key algorithm identifiers can be NONE, in this case,
+         * a regular key will be crated instead of a hybrid key.
+         */
+        generateCompoundHybridPrivateKey(cipherFirstKeyAlgId, cipherSecondKeyAlgId, signerFirstKeyAlgId, signerSecondKeyAlgId) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureNumber('cipherFirstKeyAlgId', cipherFirstKeyAlgId);
+            precondition.ensureNumber('cipherSecondKeyAlgId', cipherSecondKeyAlgId);
+            precondition.ensureNumber('signerFirstKeyAlgId', signerFirstKeyAlgId);
+            precondition.ensureNumber('signerSecondKeyAlgId', signerSecondKeyAlgId);
+
+            const errorCtxSize = Module._vscf_error_ctx_size();
+            const errorCtxPtr = Module._malloc(errorCtxSize);
+            Module._vscf_error_reset(errorCtxPtr);
+
+            let proxyResult;
+
+            try {
+                proxyResult = Module._vscf_key_provider_generate_compound_hybrid_private_key(this.ctxPtr, cipherFirstKeyAlgId, cipherSecondKeyAlgId, signerFirstKeyAlgId, signerSecondKeyAlgId, errorCtxPtr);
 
                 const errorStatus = Module._vscf_error_status(errorCtxPtr);
                 modules.FoundationError.handleStatusCode(errorStatus);

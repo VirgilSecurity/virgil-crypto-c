@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2019 Virgil Security, Inc.
+//  Copyright (C) 2015-2020 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -89,6 +89,8 @@ VSCE_PUBLIC extern const vsc_data_t k_encrypt;
 VSCE_PUBLIC extern const vsc_data_t k_kdf_info_z;
 
 VSCE_PUBLIC extern const vsc_data_t k_kdf_info_client_key;
+
+VSCE_PUBLIC extern const vsc_data_t k_kdf_info_uokms_key;
 
 
 // --------------------------------------------------------------------------

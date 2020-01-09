@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2015-2019 Virgil Security, Inc.
+ * Copyright (C) 2015-2020 Virgil Security, Inc.
  *
  * All rights reserved.
  *
@@ -102,6 +102,20 @@ const initRecipientCipher = (Module, modules) => {
             precondition.ensureImplementInterface('encryptionCipher', encryptionCipher, 'Foundation.Cipher', modules.FoundationInterfaceTag.CIPHER, modules.FoundationInterface);
             Module._vscf_recipient_cipher_release_encryption_cipher(this.ctxPtr)
             Module._vscf_recipient_cipher_use_encryption_cipher(this.ctxPtr, encryptionCipher.ctxPtr)
+        }
+
+        set encryptionPadding(encryptionPadding) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureImplementInterface('encryptionPadding', encryptionPadding, 'Foundation.Padding', modules.FoundationInterfaceTag.PADDING, modules.FoundationInterface);
+            Module._vscf_recipient_cipher_release_encryption_padding(this.ctxPtr)
+            Module._vscf_recipient_cipher_use_encryption_padding(this.ctxPtr, encryptionPadding.ctxPtr)
+        }
+
+        set paddingParams(paddingParams) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureClass('paddingParams', paddingParams, modules.PaddingParams);
+            Module._vscf_recipient_cipher_release_padding_params(this.ctxPtr)
+            Module._vscf_recipient_cipher_use_padding_params(this.ctxPtr, paddingParams.ctxPtr)
         }
 
         set signerHash(signerHash) {

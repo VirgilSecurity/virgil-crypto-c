@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2019 Virgil Security, Inc.
+# Copyright (C) 2015-2020 Virgil Security, Inc.
 #
 # All rights reserved.
 #
@@ -35,20 +35,19 @@
 
 from ctypes import *
 from ._c_bridge import VscfRsa
+from ._c_bridge._vscf_error import vscf_error_t
 from ._c_bridge import VscfImplTag
 from ._c_bridge import VscfStatus
-from ._c_bridge._vscf_error import vscf_error_t
-from .raw_public_key import RawPublicKey
-from .raw_private_key import RawPrivateKey
 from virgil_crypto_lib.common._c_bridge import Data
+from .raw_public_key import RawPublicKey
 from virgil_crypto_lib.common._c_bridge import Buffer
-from .alg import Alg
+from .raw_private_key import RawPrivateKey
 from .key_alg import KeyAlg
 from .key_cipher import KeyCipher
 from .key_signer import KeySigner
 
 
-class Rsa(Alg, KeyAlg, KeyCipher, KeySigner):
+class Rsa(KeyAlg, KeyCipher, KeySigner):
     """RSA implementation."""
 
     # Defines whether a public key can be imported or not.
@@ -74,22 +73,6 @@ class Rsa(Alg, KeyAlg, KeyCipher, KeySigner):
     def set_random(self, random):
         self._lib_vscf_rsa.vscf_rsa_use_random(self.ctx, random.c_impl)
 
-    def alg_id(self):
-        """Provide algorithm identificator."""
-        result = self._lib_vscf_rsa.vscf_rsa_alg_id(self.ctx)
-        return result
-
-    def produce_alg_info(self):
-        """Produce object with algorithm information and configuration parameters."""
-        result = self._lib_vscf_rsa.vscf_rsa_produce_alg_info(self.ctx)
-        instance = VscfImplTag.get_type(result)[0].take_c_ctx(cast(result, POINTER(VscfImplTag.get_type(result)[1])))
-        return instance
-
-    def restore_alg_info(self, alg_info):
-        """Restore algorithm configuration from the given object."""
-        status = self._lib_vscf_rsa.vscf_rsa_restore_alg_info(self.ctx, alg_info.c_impl)
-        VscfStatus.handle_status(status)
-
     def generate_ephemeral_key(self, key):
         """Generate ephemeral private key of the same type.
         Note, this operation might be slow."""
@@ -114,6 +97,15 @@ class Rsa(Alg, KeyAlg, KeyCipher, KeySigner):
         instance = VscfImplTag.get_type(result)[0].take_c_ctx(cast(result, POINTER(VscfImplTag.get_type(result)[1])))
         return instance
 
+    def import_public_key_data(self, key_data, key_alg_info):
+        """Import public key from the raw binary format."""
+        d_key_data = Data(key_data)
+        error = vscf_error_t()
+        result = self._lib_vscf_rsa.vscf_rsa_import_public_key_data(self.ctx, d_key_data.data, key_alg_info.c_impl, error)
+        VscfStatus.handle_status(error.status)
+        instance = VscfImplTag.get_type(result)[0].take_c_ctx(cast(result, POINTER(VscfImplTag.get_type(result)[1])))
+        return instance
+
     def export_public_key(self, public_key):
         """Export public key to the raw binary format.
 
@@ -125,6 +117,22 @@ class Rsa(Alg, KeyAlg, KeyCipher, KeySigner):
         VscfStatus.handle_status(error.status)
         instance = RawPublicKey.take_c_ctx(result)
         return instance
+
+    def exported_public_key_data_len(self, public_key):
+        """Return length in bytes required to hold exported public key."""
+        result = self._lib_vscf_rsa.vscf_rsa_exported_public_key_data_len(self.ctx, public_key.c_impl)
+        return result
+
+    def export_public_key_data(self, public_key):
+        """Export public key to the raw binary format without algorithm information.
+
+        Binary format must be defined in the key specification.
+        For instance, RSA public key must be exported in format defined in
+        RFC 3447 Appendix A.1.1."""
+        out = Buffer(self.exported_public_key_data_len(public_key=public_key))
+        status = self._lib_vscf_rsa.vscf_rsa_export_public_key_data(self.ctx, public_key.c_impl, out.c_buffer)
+        VscfStatus.handle_status(status)
+        return out.get_bytes()
 
     def import_private_key(self, raw_key):
         """Import private key from the raw binary format.
@@ -141,6 +149,15 @@ class Rsa(Alg, KeyAlg, KeyCipher, KeySigner):
         instance = VscfImplTag.get_type(result)[0].take_c_ctx(cast(result, POINTER(VscfImplTag.get_type(result)[1])))
         return instance
 
+    def import_private_key_data(self, key_data, key_alg_info):
+        """Import private key from the raw binary format."""
+        d_key_data = Data(key_data)
+        error = vscf_error_t()
+        result = self._lib_vscf_rsa.vscf_rsa_import_private_key_data(self.ctx, d_key_data.data, key_alg_info.c_impl, error)
+        VscfStatus.handle_status(error.status)
+        instance = VscfImplTag.get_type(result)[0].take_c_ctx(cast(result, POINTER(VscfImplTag.get_type(result)[1])))
+        return instance
+
     def export_private_key(self, private_key):
         """Export private key in the raw binary format.
 
@@ -152,6 +169,22 @@ class Rsa(Alg, KeyAlg, KeyCipher, KeySigner):
         VscfStatus.handle_status(error.status)
         instance = RawPrivateKey.take_c_ctx(result)
         return instance
+
+    def exported_private_key_data_len(self, private_key):
+        """Return length in bytes required to hold exported private key."""
+        result = self._lib_vscf_rsa.vscf_rsa_exported_private_key_data_len(self.ctx, private_key.c_impl)
+        return result
+
+    def export_private_key_data(self, private_key):
+        """Export private key to the raw binary format without algorithm information.
+
+        Binary format must be defined in the key specification.
+        For instance, RSA private key must be exported in format defined in
+        RFC 3447 Appendix A.1.2."""
+        out = Buffer(self.exported_private_key_data_len(private_key=private_key))
+        status = self._lib_vscf_rsa.vscf_rsa_export_private_key_data(self.ctx, private_key.c_impl, out.c_buffer)
+        VscfStatus.handle_status(status)
+        return out.get_bytes()
 
     def can_encrypt(self, public_key, data_len):
         """Check if algorithm can encrypt data with a given key."""
@@ -195,16 +228,16 @@ class Rsa(Alg, KeyAlg, KeyCipher, KeySigner):
         result = self._lib_vscf_rsa.vscf_rsa_can_sign(self.ctx, private_key.c_impl)
         return result
 
-    def signature_len(self, key):
+    def signature_len(self, private_key):
         """Return length in bytes required to hold signature.
         Return zero if a given private key can not produce signatures."""
-        result = self._lib_vscf_rsa.vscf_rsa_signature_len(self.ctx, key.c_impl)
+        result = self._lib_vscf_rsa.vscf_rsa_signature_len(self.ctx, private_key.c_impl)
         return result
 
     def sign_hash(self, private_key, hash_id, digest):
         """Sign data digest with a given private key."""
         d_digest = Data(digest)
-        signature = Buffer(self.signature_len(key=private_key))
+        signature = Buffer(self.signature_len(private_key=private_key))
         status = self._lib_vscf_rsa.vscf_rsa_sign_hash(self.ctx, private_key.c_impl, hash_id, d_digest.data, signature.c_buffer)
         VscfStatus.handle_status(status)
         return signature.get_bytes()

@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2019 Virgil Security, Inc.
+//  Copyright (C) 2015-2020 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -56,6 +56,7 @@
 #include "vsce_library.h"
 #include "vsce_atomic.h"
 #include "vsce_phe_hash.h"
+#include "vsce_phe_proof_verifier.h"
 
 #include <virgil/crypto/foundation/private/vscf_simple_swu.h>
 
@@ -107,9 +108,9 @@ struct vsce_phe_client_t {
 
     vsce_phe_hash_t *phe_hash;
 
-    mbedtls_ecp_group group;
+    vsce_phe_proof_verifier_t *proof_verifier;
 
-    byte client_private_key[vsce_phe_common_PHE_PRIVATE_KEY_LENGTH];
+    mbedtls_ecp_group group;
 
     byte server_public_key[vsce_phe_common_PHE_PUBLIC_KEY_LENGTH];
 

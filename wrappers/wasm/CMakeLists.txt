@@ -1,6 +1,6 @@
 #   @license
 #   -------------------------------------------------------------------------
-#   Copyright (C) 2015-2019 Virgil Security, Inc.
+#   Copyright (C) 2015-2020 Virgil Security, Inc.
 #
 #   All rights reserved.
 #
@@ -43,7 +43,7 @@
 #   @end
 
 
-cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.12 FATAL_ERROR)
 
 project(virgil_crypto_wasm VERSION ${virgil_crypto_VERSION} LANGUAGES C)
 
@@ -84,7 +84,7 @@ add_custom_target(copy_wasm_tests ALL
 # ---------------------------------------------------------------------------
 #   Add per project wrapper build
 # ---------------------------------------------------------------------------
+add_subdirectory("foundation")
 add_subdirectory("pythia")
 add_subdirectory("ratchet")
 add_subdirectory("phe")
-add_subdirectory("foundation")

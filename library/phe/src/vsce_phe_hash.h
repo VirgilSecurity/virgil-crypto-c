@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2019 Virgil Security, Inc.
+//  Copyright (C) 2015-2020 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -142,8 +142,8 @@ VSCE_PUBLIC void
 vsce_phe_hash_hs1(vsce_phe_hash_t *self, vsc_data_t ns, mbedtls_ecp_point *hs1);
 
 VSCE_PUBLIC void
-vsce_phe_hash_hash_z_success(vsce_phe_hash_t *self, vsc_data_t server_public_key, const mbedtls_ecp_point *c0,
-        const mbedtls_ecp_point *c1, const mbedtls_ecp_point *term1, const mbedtls_ecp_point *term2,
+vsce_phe_hash_hash_z_success(vsce_phe_hash_t *self, const mbedtls_ecp_point *pub, const mbedtls_ecp_point *p2,
+        const mbedtls_ecp_point *q2, const mbedtls_ecp_point *term1, const mbedtls_ecp_point *term2,
         const mbedtls_ecp_point *term3, mbedtls_mpi *z);
 
 VSCE_PUBLIC void

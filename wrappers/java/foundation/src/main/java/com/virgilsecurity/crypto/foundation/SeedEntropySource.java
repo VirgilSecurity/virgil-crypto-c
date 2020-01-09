@@ -1,5 +1,5 @@
 /*
-* Copyright (C) 2015-2019 Virgil Security, Inc.
+* Copyright (C) 2015-2020 Virgil Security, Inc.
 *
 * All rights reserved.
 *
@@ -52,13 +52,6 @@ public class SeedEntropySource implements AutoCloseable, EntropySource {
     /* Wrap underlying C context. */
     SeedEntropySource(FoundationContextHolder contextHolder) {
         this.cCtx = contextHolder.cCtx;
-    }
-
-    /*
-    * The maximum length of the entropy requested at once.
-    */
-    public int getGatherLenMax() {
-        return 48;
     }
 
     /*

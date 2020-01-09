@@ -1,5 +1,5 @@
 /*
-* Copyright (C) 2015-2019 Virgil Security, Inc.
+* Copyright (C) 2015-2020 Virgil Security, Inc.
 *
 * All rights reserved.
 *
@@ -49,18 +49,6 @@ public class MessageInfoCustomParams implements AutoCloseable {
     /* Wrap underlying C context. */
     MessageInfoCustomParams(FoundationContextHolder contextHolder) {
         this.cCtx = contextHolder.cCtx;
-    }
-
-    public int getOfIntType() {
-        return 1;
-    }
-
-    public int getOfStringType() {
-        return 2;
-    }
-
-    public int getOfDataType() {
-        return 3;
     }
 
     /*

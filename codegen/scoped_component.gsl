@@ -1,5 +1,5 @@
 .template 0
-#   Copyright (C) 2015-2019 Virgil Security, Inc.
+#   Copyright (C) 2015-2020 Virgil Security, Inc.
 #
 #   All rights reserved.
 #
@@ -50,17 +50,17 @@ gsl from "common.gsl"
 function class_has_scoped_item_with_scope (class, scope)
     check_arguments (my, "class, scope", my)
 
-    if count (my.class.constant, scope = my.scope)
+    if count (my.class.constant, scope = my.scope) & my.scope <> my.class.scope
         return "1"
-    elsif count (my.class.enum, scope = my.scope)
+    elsif count (my.class.enum, scope = my.scope) & my.scope <> my.class.scope
         return "1"
-    elsif count (my.class.callback, scope = my.scope)
+    elsif count (my.class.callback, scope = my.scope) & my.scope <> my.class.scope
         return "1"
-    elsif count (my.class.method, scope = my.scope)
+    elsif count (my.class.method, scope = my.scope) & my.scope <> my.class.scope
         return "1"
-    elsif count (my.class.struct, scope = my.scope)
+    elsif count (my.class.struct, scope = my.scope) & my.scope <> my.class.scope
         return "1"
-    elsif count (my.class.variable, scope = my.scope)
+    elsif count (my.class.variable, scope = my.scope) & my.scope <> my.class.scope
         return "1"
     else
         return "0"

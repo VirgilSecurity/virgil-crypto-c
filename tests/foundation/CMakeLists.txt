@@ -1,4 +1,4 @@
-#   Copyright (C) 2015-2019 Virgil Security, Inc.
+#   Copyright (C) 2015-2020 Virgil Security, Inc.
 #
 #   All rights reserved.
 #
@@ -32,7 +32,7 @@
 #
 #   Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.12 FATAL_ERROR)
 
 project(virgil_crypto_c_foundation_tests VERSION ${virgil_crypto_c_tests_VERSION} LANGUAGES C)
 
@@ -90,6 +90,7 @@ _add_test (test_recipient_cipher)
 _add_test (test_key_provider)
 _add_test (test_signer)
 _add_test (test_verifier)
+_add_test (test_signer_verifier)
 _add_test (test_curve25519_private_key)
 _add_test (test_curve25519_public_key)
 _add_test (test_secp256r1_private_key)
@@ -101,6 +102,17 @@ _add_test (test_simple_swu)
 _add_test (test_group_session)
 _add_test (test_group_message)
 _add_test (test_message_info_editor)
+_add_test (test_post_quantum_library_keccak)
+_add_test (test_post_quantum_library_round5)
+_add_test (test_post_quantum_library_falcon)
+_add_test (test_falcon)
+_add_test (test_round5)
+_add_test (test_compound_key_alg)
+_add_test (test_hybrid_key_alg)
+_add_test (test_key_info)
+_add_test (test_padding_cipher)
+
+_add_test (functional_test_recipient_cipher)
 
 # ---------------------------------------------------------------------------
 #   Multi-threading tests
@@ -116,5 +128,6 @@ if (VIRGIL_C_MT_TESTING AND VSCF_MULTI_THREADING)
         _add_test_mt(test_mt_win32_refcnt)
     else()
         _add_test_mt(test_mt_refcnt)
+        _add_test_mt(test_mt_round5)
     endif()
 endif()

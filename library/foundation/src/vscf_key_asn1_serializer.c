@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2019 Virgil Security, Inc.
+//  Copyright (C) 2015-2020 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -201,7 +201,7 @@ vscf_key_asn1_serializer_serialize_private_key_inplace(
 //
 VSCF_PUBLIC size_t
 vscf_key_asn1_serializer_serialized_public_key_len(
-        vscf_key_asn1_serializer_t *self, const vscf_raw_public_key_t *public_key) {
+        const vscf_key_asn1_serializer_t *self, const vscf_raw_public_key_t *public_key) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(public_key);
@@ -249,7 +249,7 @@ vscf_key_asn1_serializer_serialize_public_key(
 //
 VSCF_PUBLIC size_t
 vscf_key_asn1_serializer_serialized_private_key_len(
-        vscf_key_asn1_serializer_t *self, const vscf_raw_private_key_t *private_key) {
+        const vscf_key_asn1_serializer_t *self, const vscf_raw_private_key_t *private_key) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(private_key);

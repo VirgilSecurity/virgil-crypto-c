@@ -1,4 +1,4 @@
-/// Copyright (C) 2015-2019 Virgil Security, Inc.
+/// Copyright (C) 2015-2020 Virgil Security, Inc.
 ///
 /// All rights reserved.
 ///
@@ -77,6 +77,16 @@ import VSCFoundation
     @objc public func setEncryptionCipher(encryptionCipher: Cipher) {
         vscf_recipient_cipher_release_encryption_cipher(self.c_ctx)
         vscf_recipient_cipher_use_encryption_cipher(self.c_ctx, encryptionCipher.c_ctx)
+    }
+
+    @objc public func setEncryptionPadding(encryptionPadding: Padding) {
+        vscf_recipient_cipher_release_encryption_padding(self.c_ctx)
+        vscf_recipient_cipher_use_encryption_padding(self.c_ctx, encryptionPadding.c_ctx)
+    }
+
+    @objc public func setPaddingParams(paddingParams: PaddingParams) {
+        vscf_recipient_cipher_release_padding_params(self.c_ctx)
+        vscf_recipient_cipher_use_padding_params(self.c_ctx, paddingParams.c_ctx)
     }
 
     @objc public func setSignerHash(signerHash: Hash) {

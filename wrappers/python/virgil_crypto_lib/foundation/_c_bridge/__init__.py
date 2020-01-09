@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2019 Virgil Security, Inc.
+# Copyright (C) 2015-2020 Virgil Security, Inc.
 #
 # All rights reserved.
 #
@@ -40,6 +40,7 @@ from ._vscf_asn1_tag import VscfAsn1Tag
 from ._vscf_alg_id import VscfAlgId
 from ._vscf_oid_id import VscfOidId
 from ._vscf_group_msg_type import VscfGroupMsgType
+from ._vscf_cipher_state import VscfCipherState
 from ._vscf_error import vscf_error_t
 from ._vscf_error import VscfError
 from ._vscf_oid import VscfOid
@@ -91,6 +92,10 @@ from ._vscf_signed_data_info import vscf_signed_data_info_t
 from ._vscf_signed_data_info import VscfSignedDataInfo
 from ._vscf_footer_info import vscf_footer_info_t
 from ._vscf_footer_info import VscfFooterInfo
+from ._vscf_key_info import vscf_key_info_t
+from ._vscf_key_info import VscfKeyInfo
+from ._vscf_padding_params import vscf_padding_params_t
+from ._vscf_padding_params import VscfPaddingParams
 from ._vscf_sha224 import vscf_sha224_t
 from ._vscf_sha224 import VscfSha224
 from ._vscf_sha256 import vscf_sha256_t
@@ -157,6 +162,26 @@ from ._vscf_ed25519 import vscf_ed25519_t
 from ._vscf_ed25519 import VscfEd25519
 from ._vscf_curve25519 import vscf_curve25519_t
 from ._vscf_curve25519 import VscfCurve25519
+from ._vscf_falcon import vscf_falcon_t
+from ._vscf_falcon import VscfFalcon
+from ._vscf_round5 import vscf_round5_t
+from ._vscf_round5 import VscfRound5
+from ._vscf_compound_key_alg_info import vscf_compound_key_alg_info_t
+from ._vscf_compound_key_alg_info import VscfCompoundKeyAlgInfo
+from ._vscf_compound_public_key import vscf_compound_public_key_t
+from ._vscf_compound_public_key import VscfCompoundPublicKey
+from ._vscf_compound_private_key import vscf_compound_private_key_t
+from ._vscf_compound_private_key import VscfCompoundPrivateKey
+from ._vscf_compound_key_alg import vscf_compound_key_alg_t
+from ._vscf_compound_key_alg import VscfCompoundKeyAlg
+from ._vscf_hybrid_key_alg_info import vscf_hybrid_key_alg_info_t
+from ._vscf_hybrid_key_alg_info import VscfHybridKeyAlgInfo
+from ._vscf_hybrid_public_key import vscf_hybrid_public_key_t
+from ._vscf_hybrid_public_key import VscfHybridPublicKey
+from ._vscf_hybrid_private_key import vscf_hybrid_private_key_t
+from ._vscf_hybrid_private_key import VscfHybridPrivateKey
+from ._vscf_hybrid_key_alg import vscf_hybrid_key_alg_t
+from ._vscf_hybrid_key_alg import VscfHybridKeyAlg
 from ._vscf_simple_alg_info import vscf_simple_alg_info_t
 from ._vscf_simple_alg_info import VscfSimpleAlgInfo
 from ._vscf_hash_based_alg_info import vscf_hash_based_alg_info_t
@@ -175,4 +200,6 @@ from ._vscf_alg_info_der_deserializer import vscf_alg_info_der_deserializer_t
 from ._vscf_alg_info_der_deserializer import VscfAlgInfoDerDeserializer
 from ._vscf_message_info_der_serializer import vscf_message_info_der_serializer_t
 from ._vscf_message_info_der_serializer import VscfMessageInfoDerSerializer
+from ._vscf_random_padding import vscf_random_padding_t
+from ._vscf_random_padding import VscfRandomPadding
 from ._vscf_impl_tag import VscfImplTag

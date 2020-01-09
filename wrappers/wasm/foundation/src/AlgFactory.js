@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2015-2019 Virgil Security, Inc.
+ * Copyright (C) 2015-2020 Virgil Security, Inc.
  *
  * All rights reserved.
  *
@@ -103,6 +103,20 @@ const initAlgFactory = (Module, modules) => {
 
             let proxyResult;
             proxyResult = Module._vscf_alg_factory_create_cipher_from_info(algInfo.ctxPtr);
+
+            const jsResult = modules.FoundationInterface.newAndTakeCContext(proxyResult);
+            return jsResult;
+        }
+
+        /**
+         * Create algorithm that implements "padding" interface.
+         */
+        static createPaddingFromInfo(algInfo, random) {
+            precondition.ensureImplementInterface('algInfo', algInfo, 'Foundation.AlgInfo', modules.FoundationInterfaceTag.ALG_INFO, modules.FoundationInterface);
+            precondition.ensureImplementInterface('random', random, 'Foundation.Random', modules.FoundationInterfaceTag.RANDOM, modules.FoundationInterface);
+
+            let proxyResult;
+            proxyResult = Module._vscf_alg_factory_create_padding_from_info(algInfo.ctxPtr, random.ctxPtr);
 
             const jsResult = modules.FoundationInterface.newAndTakeCContext(proxyResult);
             return jsResult;

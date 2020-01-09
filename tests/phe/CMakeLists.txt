@@ -1,4 +1,4 @@
-#   Copyright (C) 2015-2019 Virgil Security, Inc.
+#   Copyright (C) 2015-2020 Virgil Security, Inc.
 #
 #   All rights reserved.
 #
@@ -32,7 +32,7 @@
 #
 #   Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.12 FATAL_ERROR)
 
 project(virgil_crypto_c_phe_tests VERSION ${virgil_crypto_c_tests_VERSION} LANGUAGES C)
 
@@ -55,3 +55,7 @@ _add_test (test_phe)
 _add_test (test_phe_server)
 _add_test (test_phe_client)
 _add_test (test_phe_cipher)
+_add_test (test_uokms)
+_add_test (test_uokms_client)
+_add_test (test_uokms_server)
+_add_test (test_uokms_wrap_rotation)

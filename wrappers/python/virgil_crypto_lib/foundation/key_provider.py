@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2019 Virgil Security, Inc.
+# Copyright (C) 2015-2020 Virgil Security, Inc.
 #
 # All rights reserved.
 #
@@ -58,9 +58,6 @@ class KeyProvider(object):
     def set_random(self, random):
         self._lib_vscf_key_provider.vscf_key_provider_use_random(self.ctx, random.c_impl)
 
-    def set_ecies(self, ecies):
-        self._lib_vscf_key_provider.vscf_key_provider_use_ecies(self.ctx, ecies.ctx)
-
     def setup_defaults(self):
         """Setup predefined values to the uninitialized class dependencies."""
         status = self._lib_vscf_key_provider.vscf_key_provider_setup_defaults(self.ctx)
@@ -71,9 +68,53 @@ class KeyProvider(object):
         self._lib_vscf_key_provider.vscf_key_provider_set_rsa_params(self.ctx, bitlen)
 
     def generate_private_key(self, alg_id):
-        """Generate new private key from the given id."""
+        """Generate new private key with a given algorithm."""
         error = vscf_error_t()
         result = self._lib_vscf_key_provider.vscf_key_provider_generate_private_key(self.ctx, alg_id, error)
+        VscfStatus.handle_status(error.status)
+        instance = VscfImplTag.get_type(result)[0].take_c_ctx(cast(result, POINTER(VscfImplTag.get_type(result)[1])))
+        return instance
+
+    def generate_post_quantum_private_key(self):
+        """Generate new post-quantum private key with default algorithms.
+        Note, that a post-quantum key combines classic private keys
+        alongside with post-quantum private keys.
+        Current structure is "compound private key" is:
+            - cipher private key is "hybrid private key" where:
+                - first key is a classic private key;
+                - second key is a post-quantum private key;
+            - signer private key "hybrid private key" where:
+                - first key is a classic private key;
+                - second key is a post-quantum private key."""
+        error = vscf_error_t()
+        result = self._lib_vscf_key_provider.vscf_key_provider_generate_post_quantum_private_key(self.ctx, error)
+        VscfStatus.handle_status(error.status)
+        instance = VscfImplTag.get_type(result)[0].take_c_ctx(cast(result, POINTER(VscfImplTag.get_type(result)[1])))
+        return instance
+
+    def generate_compound_private_key(self, cipher_alg_id, signer_alg_id):
+        """Generate new compound private key with given algorithms."""
+        error = vscf_error_t()
+        result = self._lib_vscf_key_provider.vscf_key_provider_generate_compound_private_key(self.ctx, cipher_alg_id, signer_alg_id, error)
+        VscfStatus.handle_status(error.status)
+        instance = VscfImplTag.get_type(result)[0].take_c_ctx(cast(result, POINTER(VscfImplTag.get_type(result)[1])))
+        return instance
+
+    def generate_hybrid_private_key(self, first_key_alg_id, second_key_alg_id):
+        """Generate new hybrid private key with given algorithms."""
+        error = vscf_error_t()
+        result = self._lib_vscf_key_provider.vscf_key_provider_generate_hybrid_private_key(self.ctx, first_key_alg_id, second_key_alg_id, error)
+        VscfStatus.handle_status(error.status)
+        instance = VscfImplTag.get_type(result)[0].take_c_ctx(cast(result, POINTER(VscfImplTag.get_type(result)[1])))
+        return instance
+
+    def generate_compound_hybrid_private_key(self, cipher_first_key_alg_id, cipher_second_key_alg_id, signer_first_key_alg_id, signer_second_key_alg_id):
+        """Generate new compound private key with nested hybrid private keys.
+
+        Note, second key algorithm identifiers can be NONE, in this case,
+        a regular key will be crated instead of a hybrid key."""
+        error = vscf_error_t()
+        result = self._lib_vscf_key_provider.vscf_key_provider_generate_compound_hybrid_private_key(self.ctx, cipher_first_key_alg_id, cipher_second_key_alg_id, signer_first_key_alg_id, signer_second_key_alg_id, error)
         VscfStatus.handle_status(error.status)
         instance = VscfImplTag.get_type(result)[0].take_c_ctx(cast(result, POINTER(VscfImplTag.get_type(result)[1])))
         return instance

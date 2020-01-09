@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2019 Virgil Security, Inc.
+//  Copyright (C) 2015-2020 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -48,7 +48,7 @@
 // --------------------------------------------------------------------------
 //  Constants
 // --------------------------------------------------------------------------
-const char VSCP_PYTHIA_PHP_VERSION[] = "0.11.1";
+const char VSCP_PYTHIA_PHP_VERSION[] = "0.12.0";
 const char VSCP_PYTHIA_PHP_EXTNAME[] = "vscp_pythia_php";
 const char VSCP_PYTHIA_PHP_RES_NAME[] = "vscp_pythia_t";
 

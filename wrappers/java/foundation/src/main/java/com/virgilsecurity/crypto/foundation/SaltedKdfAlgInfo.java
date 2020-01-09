@@ -1,5 +1,5 @@
 /*
-* Copyright (C) 2015-2019 Virgil Security, Inc.
+* Copyright (C) 2015-2020 Virgil Security, Inc.
 *
 * All rights reserved.
 *
@@ -52,15 +52,6 @@ public class SaltedKdfAlgInfo implements AutoCloseable, AlgInfo {
     /* Wrap underlying C context. */
     SaltedKdfAlgInfo(FoundationContextHolder contextHolder) {
         this.cCtx = contextHolder.cCtx;
-    }
-
-    /*
-    * Create algorithm info with identificator, HASH algorithm info,
-    * salt and iteration count.
-    */
-    public SaltedKdfAlgInfo(AlgId algId, AlgInfo hashAlgInfo, byte[] salt, int iterationCount) {
-        super();
-        this.cCtx = FoundationJNI.INSTANCE.saltedKdfAlgInfo_new(algId, hashAlgInfo, salt, iterationCount);
     }
 
     /*

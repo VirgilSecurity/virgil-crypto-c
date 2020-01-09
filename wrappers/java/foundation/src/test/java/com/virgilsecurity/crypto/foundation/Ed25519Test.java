@@ -1,5 +1,5 @@
 /*
-* Copyright (C) 2015-2019 Virgil Security, Inc.
+* Copyright (C) 2015-2020 Virgil Security, Inc.
 *
 * All rights reserved.
 *
@@ -73,11 +73,6 @@ public class Ed25519Test extends SampleBasedTest {
 		PrivateKey privateKey = this.ed.generateKey();
 		assertNotNull(privateKey);
 		assertEquals(AlgId.ED25519, privateKey.algId());
-	}
-
-	@Test
-	public void algId() {
-		assertEquals(AlgId.ED25519, this.ed.algId());
 	}
 
 	@Test

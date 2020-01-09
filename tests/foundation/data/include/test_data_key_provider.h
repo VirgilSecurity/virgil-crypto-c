@@ -1,4 +1,4 @@
-//  Copyright (C) 2015-2019 Virgil Security, Inc.
+//  Copyright (C) 2015-2020 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -35,5 +35,5 @@
 #include "vsc_data.h"
 
 extern const vsc_data_t test_key_provider_MESSAGE_SHA512_DIGEST;
-extern const vsc_data_t test_key_provider_INVALID_PRIVATE_KEY_VALID_MESSAGE_INFO_WITH_ENCRYPTED_DATA;
-extern const vsc_data_t test_key_provider_INVALID_PRIVATE_KEY_VALID_MESSAGE_INFO;
+extern const vsc_data_t test_key_provider_INVALID_KEY_VALID_MESSAGE_INFO_WITH_ENCRYPTED_DATA;
+extern const vsc_data_t test_key_provider_INVALID_KEY_VALID_MESSAGE_INFO;

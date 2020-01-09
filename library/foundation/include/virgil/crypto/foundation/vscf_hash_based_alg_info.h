@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2019 Virgil Security, Inc.
+//  Copyright (C) 2015-2020 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -140,7 +140,7 @@ vscf_hash_based_alg_info_shallow_copy(vscf_hash_based_alg_info_t *self);
 //  Perform initialization of pre-allocated context.
 //  Create algorithm info with identificator and HASH algorithm info.
 //
-VSCF_PUBLIC void
+VSCF_PRIVATE void
 vscf_hash_based_alg_info_init_with_members(vscf_hash_based_alg_info_t *self, vscf_alg_id_t alg_id,
         vscf_impl_t **hash_alg_info_ref);
 
@@ -148,7 +148,7 @@ vscf_hash_based_alg_info_init_with_members(vscf_hash_based_alg_info_t *self, vsc
 //  Allocate implementation context and perform it's initialization.
 //  Create algorithm info with identificator and HASH algorithm info.
 //
-VSCF_PUBLIC vscf_hash_based_alg_info_t *
+VSCF_PRIVATE vscf_hash_based_alg_info_t *
 vscf_hash_based_alg_info_new_with_members(vscf_alg_id_t alg_id, vscf_impl_t **hash_alg_info_ref);
 
 //

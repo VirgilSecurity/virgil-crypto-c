@@ -1,5 +1,5 @@
 /*
-* Copyright (C) 2015-2019 Virgil Security, Inc.
+* Copyright (C) 2015-2020 Virgil Security, Inc.
 *
 * All rights reserved.
 *
@@ -118,6 +118,20 @@ public class MessageInfo implements AutoCloseable {
     */
     public AlgInfo cipherKdfAlgInfo() {
         return FoundationJNI.INSTANCE.messageInfo_cipherKdfAlgInfo(this.cCtx);
+    }
+
+    /*
+    * Return true if cipher padding alg info exists.
+    */
+    public boolean hasCipherPaddingAlgInfo() {
+        return FoundationJNI.INSTANCE.messageInfo_hasCipherPaddingAlgInfo(this.cCtx);
+    }
+
+    /*
+    * Return cipher padding alg info.
+    */
+    public AlgInfo cipherPaddingAlgInfo() {
+        return FoundationJNI.INSTANCE.messageInfo_cipherPaddingAlgInfo(this.cCtx);
     }
 
     /*

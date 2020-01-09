@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2019 Virgil Security, Inc.
+//  Copyright (C) 2015-2020 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -115,10 +115,10 @@ vscf_pem_wrap(const char *title, vsc_data_t data, vsc_buffer_t *pem) {
     //
     //  Write header.
     //
-    vsc_buffer_write_str(pem, k_header_begin);
-    vsc_buffer_write_str(pem, title);
-    vsc_buffer_write_str(pem, k_title_tail);
-    vsc_buffer_write_str(pem, "\n");
+    vsc_buffer_write_data(pem, vsc_data_from_str(k_header_begin, strlen(k_header_begin)));
+    vsc_buffer_write_data(pem, vsc_data_from_str(title, strlen(title)));
+    vsc_buffer_write_data(pem, vsc_data_from_str(k_title_tail, strlen(k_title_tail)));
+    vsc_buffer_write_data(pem, vsc_data_from_str("\n", 1));
 
     //
     //  Write base64 formatted body.
@@ -134,7 +134,7 @@ vscf_pem_wrap(const char *title, vsc_data_t data, vsc_buffer_t *pem) {
         str_len = bytes_left < k_line_len_max ? bytes_left : k_line_len_max;
         vsc_data_t line = vsc_data_slice_beg(base64, read_pos, str_len);
         vsc_buffer_write_data(pem, line);
-        vsc_buffer_write_str(pem, "\n");
+        vsc_buffer_write_data(pem, vsc_data_from_str("\n", 1));
     }
 
     base64 = vsc_data_empty();
@@ -143,9 +143,9 @@ vscf_pem_wrap(const char *title, vsc_data_t data, vsc_buffer_t *pem) {
     //
     //  Write footer.
     //
-    vsc_buffer_write_str(pem, k_footer_begin);
-    vsc_buffer_write_str(pem, title);
-    vsc_buffer_write_str(pem, k_title_tail);
+    vsc_buffer_write_data(pem, vsc_data_from_str(k_footer_begin, strlen(k_footer_begin)));
+    vsc_buffer_write_data(pem, vsc_data_from_str(title, strlen(title)));
+    vsc_buffer_write_data(pem, vsc_data_from_str(k_title_tail, strlen(k_title_tail)));
 
     *vsc_buffer_unused_bytes(pem) = 0x00;
 }
@@ -174,43 +174,53 @@ vscf_pem_unwrap(vsc_data_t pem, vsc_buffer_t *data) {
     //
     //  Grab PEM header.
     //
-    const char *header_begin = strstr((const char *)pem.bytes, k_header_begin);
-    if (NULL == header_begin) {
+    const char *pem_search_ptr = (const char *)pem.bytes;
+    const char *const pem_end_ptr = pem_search_ptr + pem.len;
+    const char *header_begin = vscf_strnstr(pem_search_ptr, k_header_begin, pem_end_ptr - pem_search_ptr);
+    if (header_begin != pem_search_ptr) {
         return vscf_status_ERROR_BAD_PEM;
     }
 
-    const char *header_end = strstr(header_begin + strlen(k_header_begin), k_title_tail);
+    const size_t header_begin_len = strlen(k_header_begin);
+    pem_search_ptr += header_begin_len;
+
+    const char *header_end = vscf_strnstr(pem_search_ptr, k_title_tail, pem_end_ptr - pem_search_ptr);
     if (NULL == header_end) {
         return vscf_status_ERROR_BAD_PEM;
     }
-    header_end += strlen(k_title_tail);
+    const size_t title_tail_len = strlen(k_title_tail);
+    pem_search_ptr = header_end + title_tail_len;
 
-    //
-    //  Grab PEM body.
-    //
-    const char *body_begin = header_end;
-
-    if ('\r' == *body_begin) {
-        ++body_begin;
+    const size_t footer_begin_len = strlen(k_footer_begin);
+    if (pem_end_ptr - pem_search_ptr < (ptrdiff_t)(footer_begin_len + title_tail_len)) {
+        return vscf_status_ERROR_BAD_PEM;
     }
 
-    if ('\n' == *body_begin) {
-        ++body_begin;
+    if ('\r' == *pem_search_ptr) {
+        ++pem_search_ptr;
     }
 
+    if ('\n' == *pem_search_ptr) {
+        ++pem_search_ptr;
+    }
+
+    const char *body_begin = pem_search_ptr;
+
     //
-    //  Grab PEN footer.
+    //  Grab PEM footer.
     //
-    const char *footer_begin = strstr((const char *)pem.bytes, k_footer_begin);
+    const char *footer_begin = vscf_strnstr(pem_search_ptr, k_footer_begin, pem_end_ptr - pem_search_ptr);
     if (NULL == footer_begin || footer_begin < body_begin) {
         return vscf_status_ERROR_BAD_PEM;
     }
 
-    const char *footer_end = strstr(footer_begin + strlen(k_footer_begin), k_title_tail);
+    pem_search_ptr = footer_begin + footer_begin_len;
+
+    const char *footer_end = vscf_strnstr(pem_search_ptr, k_title_tail, pem_end_ptr - pem_search_ptr);
     if (NULL == footer_end) {
         return vscf_status_ERROR_BAD_PEM;
     }
-    footer_end += strlen(k_title_tail);
+    footer_end += title_tail_len;
 
     if (footer_end - header_begin > (ptrdiff_t)pem.len) {
         return vscf_status_ERROR_BAD_PEM;
@@ -237,21 +247,27 @@ vscf_pem_title(vsc_data_t pem) {
 
     VSCF_ASSERT(vsc_data_is_valid(pem));
 
-    const char *header_begin = strstr((const char *)pem.bytes, k_header_begin);
-    if (NULL == header_begin) {
+    if (vsc_data_is_empty(pem)) {
+        return vsc_data_empty();
+    }
+
+    const char *pem_begin = (const char *)pem.bytes;
+    const size_t pem_len = pem.len;
+
+    const char *header_begin = vscf_strnstr(pem_begin, k_header_begin, pem_len);
+    if (header_begin != pem_begin) {
         return vsc_data_empty();
     }
 
     const char *title_begin = header_begin + strlen(k_header_begin);
 
-    const char *title_end = strstr(title_begin, k_title_tail);
+    const size_t from_title_begin_to_end_len = pem_len - (title_begin - pem_begin);
+    const char *title_end = vscf_strnstr(title_begin, k_title_tail, from_title_begin_to_end_len);
     if (NULL == title_end) {
         return vsc_data_empty();
     }
 
-    if (title_end - header_begin > (ptrdiff_t)pem.len) {
-        return vsc_data_empty();
-    }
+    VSCF_ASSERT(title_end - header_begin < (ptrdiff_t)pem.len);
 
     return vsc_data_from_str(title_begin, title_end - title_begin);
 }

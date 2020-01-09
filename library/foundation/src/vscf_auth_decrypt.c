@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2019 Virgil Security, Inc.
+//  Copyright (C) 2015-2020 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -82,7 +82,7 @@ vscf_auth_decrypt(vscf_impl_t *impl, vsc_data_t data, vsc_data_t auth_data, vsc_
 //  Calculate required buffer length to hold the authenticated decrypted data.
 //
 VSCF_PUBLIC size_t
-vscf_auth_decrypt_auth_decrypted_len(vscf_impl_t *impl, size_t data_len) {
+vscf_auth_decrypt_auth_decrypted_len(const vscf_impl_t *impl, size_t data_len) {
 
     const vscf_auth_decrypt_api_t *auth_decrypt_api = vscf_auth_decrypt_api(impl);
     VSCF_ASSERT_PTR (auth_decrypt_api);

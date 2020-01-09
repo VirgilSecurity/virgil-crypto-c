@@ -1,4 +1,4 @@
-//  Copyright (C) 2015-2019 Virgil Security, Inc.
+//  Copyright (C) 2015-2020 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -33,9 +33,10 @@
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
 
-#include "vsc_data.h"
+#include "test_data_key_provider.h"
 
-const byte MESSAGE_SHA512_DIGEST[] = {
+// --------------------------------------------------------------------------
+static const byte MESSAGE_SHA512_DIGEST[] = {
     0x6d, 0x49, 0xd5, 0xe3, 0x4a, 0xd7, 0xa0, 0x35,
     0x9f, 0xb0, 0x06, 0x28, 0xaa, 0xcd, 0x41, 0xda,
     0x3c, 0x62, 0x34, 0x1e, 0xf2, 0x04, 0x00, 0x8e,
@@ -50,7 +51,8 @@ const vsc_data_t test_key_provider_MESSAGE_SHA512_DIGEST = {
     MESSAGE_SHA512_DIGEST, sizeof(MESSAGE_SHA512_DIGEST)
 };
 
-const byte INVALID_PRIVATE_KEY_VALID_MESSAGE_INFO_WITH_ENCRYPTED_DATA[] = {
+// --------------------------------------------------------------------------
+static const byte INVALID_KEY_VALID_MESSAGE_INFO_WITH_ENCRYPTED_DATA[] = {
     0x30, 0x82, 0x01, 0xe1, 0x02, 0x01, 0x00, 0x30,
     0x82, 0x01, 0x3f, 0x06, 0x09, 0x2a, 0x86, 0x48,
     0x86, 0xf7, 0x0d, 0x01, 0x07, 0x03, 0xa0, 0x82,
@@ -122,11 +124,12 @@ const byte INVALID_PRIVATE_KEY_VALID_MESSAGE_INFO_WITH_ENCRYPTED_DATA[] = {
     0xa5, 0x9d, 0x01, 0xd5, 0x3d
 };
 
-const vsc_data_t test_key_provider_INVALID_PRIVATE_KEY_VALID_MESSAGE_INFO_WITH_ENCRYPTED_DATA = {
-    INVALID_PRIVATE_KEY_VALID_MESSAGE_INFO_WITH_ENCRYPTED_DATA, sizeof(INVALID_PRIVATE_KEY_VALID_MESSAGE_INFO_WITH_ENCRYPTED_DATA)
+const vsc_data_t test_key_provider_INVALID_KEY_VALID_MESSAGE_INFO_WITH_ENCRYPTED_DATA = {
+    INVALID_KEY_VALID_MESSAGE_INFO_WITH_ENCRYPTED_DATA, sizeof(INVALID_KEY_VALID_MESSAGE_INFO_WITH_ENCRYPTED_DATA)
 };
 
-const byte INVALID_PRIVATE_KEY_VALID_MESSAGE_INFO[]= {
+// --------------------------------------------------------------------------
+static const byte INVALID_KEY_VALID_MESSAGE_INFO[]= {
     0x30, 0x82, 0x01, 0xE1, 0x02, 0x01, 0x00, 0x30,
     0x82, 0x01, 0x3F, 0x06, 0x09, 0x2A, 0x86, 0x48,
     0x86, 0xF7, 0x0D, 0x01, 0x07, 0x03, 0xA0, 0x82,
@@ -190,6 +193,6 @@ const byte INVALID_PRIVATE_KEY_VALID_MESSAGE_INFO[]= {
     0x88, 0x6B, 0x7E, 0xD5, 0x09
 };
 
-const vsc_data_t test_key_provider_INVALID_PRIVATE_KEY_VALID_MESSAGE_INFO = {
-    INVALID_PRIVATE_KEY_VALID_MESSAGE_INFO, sizeof(INVALID_PRIVATE_KEY_VALID_MESSAGE_INFO)
+const vsc_data_t test_key_provider_INVALID_KEY_VALID_MESSAGE_INFO = {
+    INVALID_KEY_VALID_MESSAGE_INFO, sizeof(INVALID_KEY_VALID_MESSAGE_INFO)
 };

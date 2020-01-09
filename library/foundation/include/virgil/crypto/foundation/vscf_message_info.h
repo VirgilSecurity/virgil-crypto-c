@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2019 Virgil Security, Inc.
+//  Copyright (C) 2015-2020 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -219,6 +219,30 @@ vscf_message_info_cipher_kdf_alg_info(const vscf_message_info_t *self);
 //
 VSCF_PRIVATE void
 vscf_message_info_remove_cipher_kdf_alg_info(vscf_message_info_t *self);
+
+//
+//  Return true if cipher padding alg info exists.
+//
+VSCF_PUBLIC bool
+vscf_message_info_has_cipher_padding_alg_info(const vscf_message_info_t *self);
+
+//
+//  Setup cipher padding alg info.
+//
+VSCF_PRIVATE void
+vscf_message_info_set_cipher_padding_alg_info(vscf_message_info_t *self, vscf_impl_t **cipher_padding_alg_info_ref);
+
+//
+//  Return cipher padding alg info.
+//
+VSCF_PUBLIC const vscf_impl_t *
+vscf_message_info_cipher_padding_alg_info(const vscf_message_info_t *self);
+
+//
+//  Remove cipher padding alg info.
+//
+VSCF_PRIVATE void
+vscf_message_info_remove_cipher_padding_alg_info(vscf_message_info_t *self);
 
 //
 //  Return true if footer info exists.

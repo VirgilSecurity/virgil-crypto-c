@@ -1,5 +1,5 @@
 /*
-* Copyright (C) 2015-2019 Virgil Security, Inc.
+* Copyright (C) 2015-2020 Virgil Security, Inc.
 *
 * All rights reserved.
 *
@@ -74,6 +74,13 @@ public class AlgFactory {
     */
     public static Cipher createCipherFromInfo(AlgInfo algInfo) {
         return FoundationJNI.INSTANCE.algFactory_createCipherFromInfo(algInfo);
+    }
+
+    /*
+    * Create algorithm that implements "padding" interface.
+    */
+    public static Padding createPaddingFromInfo(AlgInfo algInfo, Random random) {
+        return FoundationJNI.INSTANCE.algFactory_createPaddingFromInfo(algInfo, random);
     }
 }
 

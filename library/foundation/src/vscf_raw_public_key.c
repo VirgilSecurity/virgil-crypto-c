@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2019 Virgil Security, Inc.
+//  Copyright (C) 2015-2020 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -158,6 +158,22 @@ vscf_raw_public_key_init_ctx_with_redefined_impl_tag(
 
     self->buffer = vsc_buffer_shallow_copy((vsc_buffer_t *)other->buffer);
     self->alg_info = vscf_impl_shallow_copy((vscf_impl_t *)other->alg_info);
+    self->impl_tag = impl_tag;
+}
+
+//
+//  Creates a fully defined raw key.
+//
+VSCF_PUBLIC void
+vscf_raw_public_key_init_ctx_with_members(
+        vscf_raw_public_key_t *self, vsc_data_t key_data, const vscf_impl_t *alg_info, vscf_impl_tag_t impl_tag) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT(vsc_data_is_valid(key_data));
+    VSCF_ASSERT_PTR(alg_info);
+
+    self->buffer = vsc_buffer_new_with_data(key_data);
+    self->alg_info = vscf_impl_shallow_copy((vscf_impl_t *)alg_info);
     self->impl_tag = impl_tag;
 }
 

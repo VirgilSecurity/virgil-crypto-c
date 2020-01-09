@@ -1,4 +1,4 @@
-#   Copyright (C) 2015-2019 Virgil Security, Inc.
+#   Copyright (C) 2015-2020 Virgil Security, Inc.
 #
 #   All rights reserved.
 #
@@ -32,7 +32,7 @@
 #
 #   Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.12 FATAL_ERROR)
 
 project(virgil_crypto_c_tests VERSION ${virgil_crypto_VERSION} LANGUAGES C)
 
@@ -62,3 +62,8 @@ endif()
 if(TARGET vsc::phe)
     add_subdirectory(phe)
 endif()
+
+if(ENABLE_FUZZY_TESTING)
+    add_subdirectory(fuzzy)
+endif(ENABLE_FUZZY_TESTING)
+

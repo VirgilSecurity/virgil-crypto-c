@@ -1,6 +1,6 @@
 #   @license
 #   -------------------------------------------------------------------------
-#   Copyright (C) 2015-2019 Virgil Security, Inc.
+#   Copyright (C) 2015-2020 Virgil Security, Inc.
 #
 #   All rights reserved.
 #
@@ -50,18 +50,36 @@ option(VSCE_MULTI_THREADING "Enable multi-threading safety for PHE library." ON)
 option(VSCE_ERROR "Enable class 'error'." ON)
 option(VSCE_PHE_COMMON "Enable class 'phe common'." ON)
 option(VSCE_PHE_HASH "Enable class 'phe hash'." ON)
+option(VSCE_PROOF_GENERATOR "Enable class 'proof generator'." ON)
+option(VSCE_PHE_PROOF_GENERATOR "Enable class 'phe proof generator'." ON)
+option(VSCE_PROOF_VERIFIER "Enable class 'proof verifier'." ON)
+option(VSCE_PHE_PROOF_VERIFIER "Enable class 'phe proof verifier'." ON)
 option(VSCE_PHE_SERVER "Enable class 'phe server'." ON)
 option(VSCE_PHE_CLIENT "Enable class 'phe client'." ON)
 option(VSCE_PHE_CIPHER "Enable class 'phe cipher'." ON)
+option(VSCE_UOKMS_PROOF_GENERATOR "Enable class 'uokms proof generator'." ON)
+option(VSCE_UOKMS_PROOF_VERIFIER "Enable class 'uokms proof verifier'." ON)
+option(VSCE_UOKMS_CLIENT "Enable class 'uokms client'." ON)
+option(VSCE_UOKMS_SERVER "Enable class 'uokms server'." ON)
+option(VSCE_UOKMS_WRAP_ROTATION "Enable class 'uokms wrap rotation'." ON)
 mark_as_advanced(
         VSCE_LIBRARY
         VSCE_MULTI_THREADING
         VSCE_ERROR
         VSCE_PHE_COMMON
         VSCE_PHE_HASH
+        VSCE_PROOF_GENERATOR
+        VSCE_PHE_PROOF_GENERATOR
+        VSCE_PROOF_VERIFIER
+        VSCE_PHE_PROOF_VERIFIER
         VSCE_PHE_SERVER
         VSCE_PHE_CLIENT
         VSCE_PHE_CIPHER
+        VSCE_UOKMS_PROOF_GENERATOR
+        VSCE_UOKMS_PROOF_VERIFIER
+        VSCE_UOKMS_CLIENT
+        VSCE_UOKMS_SERVER
+        VSCE_UOKMS_WRAP_ROTATION
         )
 
 if(VSCE_PHE_HASH AND NOT VSCE_PHE_COMMON)
@@ -87,6 +105,42 @@ if(VSCE_PHE_HASH AND NOT VSCF_SHA512)
     message("--")
     message("Feature VSCE_PHE_HASH depends on the feature:")
     message("     VSCF_SHA512 - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCE_PROOF_GENERATOR AND NOT VSCE_PHE_COMMON)
+    message("-- error --")
+    message("--")
+    message("Feature VSCE_PROOF_GENERATOR depends on the feature:")
+    message("     VSCE_PHE_COMMON - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCE_PHE_PROOF_GENERATOR AND NOT VSCE_PHE_COMMON)
+    message("-- error --")
+    message("--")
+    message("Feature VSCE_PHE_PROOF_GENERATOR depends on the feature:")
+    message("     VSCE_PHE_COMMON - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCE_PROOF_VERIFIER AND NOT VSCE_PHE_COMMON)
+    message("-- error --")
+    message("--")
+    message("Feature VSCE_PROOF_VERIFIER depends on the feature:")
+    message("     VSCE_PHE_COMMON - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCE_PHE_PROOF_VERIFIER AND NOT VSCE_PHE_COMMON)
+    message("-- error --")
+    message("--")
+    message("Feature VSCE_PHE_PROOF_VERIFIER depends on the feature:")
+    message("     VSCE_PHE_COMMON - which is disabled.")
     message("--")
     message(FATAL_ERROR)
 endif()
@@ -168,6 +222,105 @@ if(VSCE_PHE_CIPHER AND NOT VSCF_AES256_GCM)
     message("--")
     message("Feature VSCE_PHE_CIPHER depends on the feature:")
     message("     VSCF_AES256_GCM - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCE_UOKMS_PROOF_GENERATOR AND NOT VSCE_PHE_COMMON)
+    message("-- error --")
+    message("--")
+    message("Feature VSCE_UOKMS_PROOF_GENERATOR depends on the feature:")
+    message("     VSCE_PHE_COMMON - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCE_UOKMS_PROOF_VERIFIER AND NOT VSCE_PHE_COMMON)
+    message("-- error --")
+    message("--")
+    message("Feature VSCE_UOKMS_PROOF_VERIFIER depends on the feature:")
+    message("     VSCE_PHE_COMMON - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCE_UOKMS_CLIENT AND NOT VSCE_PHE_COMMON)
+    message("-- error --")
+    message("--")
+    message("Feature VSCE_UOKMS_CLIENT depends on the feature:")
+    message("     VSCE_PHE_COMMON - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCE_UOKMS_CLIENT AND NOT VSCF_CTR_DRBG)
+    message("-- error --")
+    message("--")
+    message("Feature VSCE_UOKMS_CLIENT depends on the feature:")
+    message("     VSCF_CTR_DRBG - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCE_UOKMS_CLIENT AND NOT VSCE_PHE_COMMON)
+    message("-- error --")
+    message("--")
+    message("Feature VSCE_UOKMS_CLIENT depends on the feature:")
+    message("     VSCE_PHE_COMMON - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCE_UOKMS_CLIENT AND NOT VSCF_HKDF)
+    message("-- error --")
+    message("--")
+    message("Feature VSCE_UOKMS_CLIENT depends on the feature:")
+    message("     VSCF_HKDF - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCE_UOKMS_CLIENT AND NOT VSCF_SHA512)
+    message("-- error --")
+    message("--")
+    message("Feature VSCE_UOKMS_CLIENT depends on the feature:")
+    message("     VSCF_SHA512 - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCE_UOKMS_SERVER AND NOT VSCE_PHE_COMMON)
+    message("-- error --")
+    message("--")
+    message("Feature VSCE_UOKMS_SERVER depends on the feature:")
+    message("     VSCE_PHE_COMMON - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCE_UOKMS_SERVER AND NOT VSCF_CTR_DRBG)
+    message("-- error --")
+    message("--")
+    message("Feature VSCE_UOKMS_SERVER depends on the feature:")
+    message("     VSCF_CTR_DRBG - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCE_UOKMS_WRAP_ROTATION AND NOT VSCE_PHE_COMMON)
+    message("-- error --")
+    message("--")
+    message("Feature VSCE_UOKMS_WRAP_ROTATION depends on the feature:")
+    message("     VSCE_PHE_COMMON - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCE_UOKMS_WRAP_ROTATION AND NOT VSCF_CTR_DRBG)
+    message("-- error --")
+    message("--")
+    message("Feature VSCE_UOKMS_WRAP_ROTATION depends on the feature:")
+    message("     VSCF_CTR_DRBG - which is disabled.")
     message("--")
     message(FATAL_ERROR)
 endif()

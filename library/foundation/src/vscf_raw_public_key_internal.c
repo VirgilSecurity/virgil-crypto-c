@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2019 Virgil Security, Inc.
+//  Copyright (C) 2015-2020 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -361,6 +361,38 @@ vscf_raw_public_key_new_with_redefined_impl_tag(const vscf_raw_public_key_t *oth
     vscf_raw_public_key_t *self = vscf_raw_public_key_new();
 
     vscf_raw_public_key_init_with_redefined_impl_tag(self, other, impl_tag);
+
+    return self;
+}
+
+//
+//  Perform initialization of pre-allocated context.
+//  Creates a fully defined raw key.
+//
+VSCF_PRIVATE void
+vscf_raw_public_key_init_with_members(vscf_raw_public_key_t *self, vsc_data_t key_data, const vscf_impl_t *alg_info,
+        vscf_impl_tag_t impl_tag) {
+
+    VSCF_ASSERT_PTR(self);
+
+    vscf_zeroize(self, sizeof(vscf_raw_public_key_t));
+
+    self->info = &info;
+    self->refcnt = 1;
+
+    vscf_raw_public_key_init_ctx_with_members(self, key_data, alg_info, impl_tag);
+}
+
+//
+//  Allocate implementation context and perform it's initialization.
+//  Creates a fully defined raw key.
+//
+VSCF_PRIVATE vscf_raw_public_key_t *
+vscf_raw_public_key_new_with_members(vsc_data_t key_data, const vscf_impl_t *alg_info, vscf_impl_tag_t impl_tag) {
+
+    vscf_raw_public_key_t *self = vscf_raw_public_key_new();
+
+    vscf_raw_public_key_init_with_members(self, key_data, alg_info, impl_tag);
 
     return self;
 }

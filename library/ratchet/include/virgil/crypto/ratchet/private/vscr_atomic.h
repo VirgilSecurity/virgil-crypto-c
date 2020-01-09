@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2019 Virgil Security, Inc.
+//  Copyright (C) 2015-2020 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -100,6 +100,16 @@ extern "C" {
 #   endif
 #else
 #   define VSCR_ATOMIC
+#endif
+
+#if defined(VSCR_ATOMIC_COMPARE_EXCHANGE_WEAK)
+#   define VSCR_ATOMIC_CRITICAL_SECTION_DECLARE(name) static VSCR_ATOMIC int is_busy_##name = 0; int is_not_busy_##name = 0;
+#   define VSCR_ATOMIC_CRITICAL_SECTION_BEGIN(name) do { is_not_busy_##name = 0; } while (!VSCR_ATOMIC_COMPARE_EXCHANGE_WEAK(&is_busy_##name, &is_not_busy_##name, 1))
+#   define VSCR_ATOMIC_CRITICAL_SECTION_END(name) do { is_busy_##name = 0; } while(0)
+#else
+#   define VSCR_ATOMIC_CRITICAL_SECTION_DECLARE(name) do {} while(0)
+#   define VSCR_ATOMIC_CRITICAL_SECTION_BEGIN(name) do {} while(0)
+#   define VSCR_ATOMIC_CRITICAL_SECTION_END(name) do {} while(0)
 #endif
 
 

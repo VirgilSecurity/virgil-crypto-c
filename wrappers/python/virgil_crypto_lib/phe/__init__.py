@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2019 Virgil Security, Inc.
+# Copyright (C) 2015-2020 Virgil Security, Inc.
 #
 # All rights reserved.
 #
@@ -39,3 +39,6 @@ from .common import Common
 from .server import Server
 from .client import Client
 from .cipher import Cipher
+from .uokms_client import UokmsClient
+from .uokms_server import UokmsServer
+from .uokms_wrap_rotation import UokmsWrapRotation

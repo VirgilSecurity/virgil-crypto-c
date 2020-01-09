@@ -1,4 +1,4 @@
-/// Copyright (C) 2015-2019 Virgil Security, Inc.
+/// Copyright (C) 2015-2020 Virgil Security, Inc.
 ///
 /// All rights reserved.
 ///
@@ -37,7 +37,7 @@ import Foundation
 import VSCFoundation
 
 /// RSA implementation.
-@objc(VSCFRsa) public class Rsa: NSObject, Alg, KeyAlg, KeyCipher, KeySigner {
+@objc(VSCFRsa) public class Rsa: NSObject, KeyAlg, KeyCipher, KeySigner {
 
     /// Handle underlying C context.
     @objc public let c_ctx: OpaquePointer
@@ -102,27 +102,6 @@ import VSCFoundation
         try FoundationError.handleStatus(fromC: error.status)
 
         return FoundationImplementation.wrapPrivateKey(take: proxyResult!)
-    }
-
-    /// Provide algorithm identificator.
-    @objc public func algId() -> AlgId {
-        let proxyResult = vscf_rsa_alg_id(self.c_ctx)
-
-        return AlgId.init(fromC: proxyResult)
-    }
-
-    /// Produce object with algorithm information and configuration parameters.
-    @objc public func produceAlgInfo() -> AlgInfo {
-        let proxyResult = vscf_rsa_produce_alg_info(self.c_ctx)
-
-        return FoundationImplementation.wrapAlgInfo(take: proxyResult!)
-    }
-
-    /// Restore algorithm configuration from the given object.
-    @objc public func restoreAlgInfo(algInfo: AlgInfo) throws {
-        let proxyResult = vscf_rsa_restore_alg_info(self.c_ctx, algInfo.c_ctx)
-
-        try FoundationError.handleStatus(fromC: proxyResult)
     }
 
     /// Generate ephemeral private key of the same type.
@@ -292,15 +271,15 @@ import VSCFoundation
 
     /// Return length in bytes required to hold signature.
     /// Return zero if a given private key can not produce signatures.
-    @objc public func signatureLen(key: Key) -> Int {
-        let proxyResult = vscf_rsa_signature_len(self.c_ctx, key.c_ctx)
+    @objc public func signatureLen(privateKey: PrivateKey) -> Int {
+        let proxyResult = vscf_rsa_signature_len(self.c_ctx, privateKey.c_ctx)
 
         return proxyResult
     }
 
     /// Sign data digest with a given private key.
     @objc public func signHash(privateKey: PrivateKey, hashId: AlgId, digest: Data) throws -> Data {
-        let signatureCount = self.signatureLen(key: privateKey)
+        let signatureCount = self.signatureLen(privateKey: privateKey)
         var signature = Data(count: signatureCount)
         var signatureBuf = vsc_buffer_new()
         defer {

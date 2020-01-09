@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+message UOKMSProofOfSuccess {
+  bytes term1 = 1;
+  bytes term2 = 2;
+  bytes blind_x = 3;
+}
+
+message DecryptResponse {
+  bytes v = 1;
+  UOKMSProofOfSuccess proof = 2;
+}

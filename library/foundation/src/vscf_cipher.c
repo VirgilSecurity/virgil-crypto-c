@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2019 Virgil Security, Inc.
+//  Copyright (C) 2015-2020 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -91,6 +91,19 @@ vscf_cipher_set_key(vscf_impl_t *impl, vsc_data_t key) {
 }
 
 //
+//  Return cipher's current state.
+//
+VSCF_PRIVATE vscf_cipher_state_t
+vscf_cipher_state(const vscf_impl_t *impl) {
+
+    const vscf_cipher_api_t *cipher_api = vscf_cipher_api(impl);
+    VSCF_ASSERT_PTR (cipher_api);
+
+    VSCF_ASSERT_PTR (cipher_api->state_cb);
+    return cipher_api->state_cb (impl);
+}
+
+//
 //  Start sequential encryption.
 //
 VSCF_PUBLIC void
@@ -150,7 +163,7 @@ vscf_cipher_out_len(vscf_impl_t *impl, size_t data_len) {
 //  Pass zero length to define buffer length of the method "finish".
 //
 VSCF_PUBLIC size_t
-vscf_cipher_encrypted_out_len(vscf_impl_t *impl, size_t data_len) {
+vscf_cipher_encrypted_out_len(const vscf_impl_t *impl, size_t data_len) {
 
     const vscf_cipher_api_t *cipher_api = vscf_cipher_api(impl);
     VSCF_ASSERT_PTR (cipher_api);
@@ -165,7 +178,7 @@ vscf_cipher_encrypted_out_len(vscf_impl_t *impl, size_t data_len) {
 //  Pass zero length to define buffer length of the method "finish".
 //
 VSCF_PUBLIC size_t
-vscf_cipher_decrypted_out_len(vscf_impl_t *impl, size_t data_len) {
+vscf_cipher_decrypted_out_len(const vscf_impl_t *impl, size_t data_len) {
 
     const vscf_cipher_api_t *cipher_api = vscf_cipher_api(impl);
     VSCF_ASSERT_PTR (cipher_api);

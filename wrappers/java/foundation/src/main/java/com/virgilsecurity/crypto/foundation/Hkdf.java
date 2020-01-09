@@ -1,5 +1,5 @@
 /*
-* Copyright (C) 2015-2019 Virgil Security, Inc.
+* Copyright (C) 2015-2020 Virgil Security, Inc.
 *
 * All rights reserved.
 *
@@ -52,10 +52,6 @@ public class Hkdf implements AutoCloseable, Alg, Kdf, SaltedKdf {
     /* Wrap underlying C context. */
     Hkdf(FoundationContextHolder contextHolder) {
         this.cCtx = contextHolder.cCtx;
-    }
-
-    public int getHashCounterMax() {
-        return 255;
     }
 
     public void setHash(Hash hash) {

@@ -1,4 +1,4 @@
-/// Copyright (C) 2015-2019 Virgil Security, Inc.
+/// Copyright (C) 2015-2020 Virgil Security, Inc.
 ///
 /// All rights reserved.
 ///
@@ -62,17 +62,6 @@ import VSCFoundation
         super.init()
     }
 
-    /// Create algorithm info with identificator, KDF algorithm info and
-    /// cipher alg info.
-    public init(algId: AlgId, kdfAlgInfo: AlgInfo, cipherAlgInfo: AlgInfo) {
-        var kdfAlgInfoCopy = vscf_impl_shallow_copy(kdfAlgInfo.c_ctx)
-        var cipherAlgInfoCopy = vscf_impl_shallow_copy(cipherAlgInfo.c_ctx)
-
-        let proxyResult = vscf_pbe_alg_info_new_with_members(vscf_alg_id_t(rawValue: UInt32(algId.rawValue)), &kdfAlgInfoCopy, &cipherAlgInfoCopy)
-
-        self.c_ctx = proxyResult!
-    }
-
     /// Release underlying C context.
     deinit {
         vscf_pbe_alg_info_delete(self.c_ctx)
@@ -82,14 +71,14 @@ import VSCFoundation
     @objc public func kdfAlgInfo() -> AlgInfo {
         let proxyResult = vscf_pbe_alg_info_kdf_alg_info(self.c_ctx)
 
-        return FoundationImplementation.wrapAlgInfo(take: proxyResult!)
+        return FoundationImplementation.wrapAlgInfo(use: proxyResult!)
     }
 
     /// Return cipher algorithm information.
     @objc public func cipherAlgInfo() -> AlgInfo {
         let proxyResult = vscf_pbe_alg_info_cipher_alg_info(self.c_ctx)
 
-        return FoundationImplementation.wrapAlgInfo(take: proxyResult!)
+        return FoundationImplementation.wrapAlgInfo(use: proxyResult!)
     }
 
     /// Provide algorithm identificator.

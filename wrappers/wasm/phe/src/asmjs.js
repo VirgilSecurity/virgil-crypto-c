@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2015-2019 Virgil Security, Inc.
+ * Copyright (C) 2015-2020 Virgil Security, Inc.
  *
  * All rights reserved.
  *
@@ -50,6 +50,9 @@ const initPheCommon = require('./PheCommon');
 const initPheServer = require('./PheServer');
 const initPheClient = require('./PheClient');
 const initPheCipher = require('./PheCipher');
+const initUokmsClient = require('./UokmsClient');
+const initUokmsServer = require('./UokmsServer');
+const initUokmsWrapRotation = require('./UokmsWrapRotation');
 
 const initProject = () => {
     const pheModule = new PheModule();
@@ -68,6 +71,9 @@ const initProject = () => {
     modules.PheServer = initPheServer(pheModule, modules);
     modules.PheClient = initPheClient(pheModule, modules);
     modules.PheCipher = initPheCipher(pheModule, modules);
+    modules.UokmsClient = initUokmsClient(pheModule, modules);
+    modules.UokmsServer = initUokmsServer(pheModule, modules);
+    modules.UokmsWrapRotation = initUokmsWrapRotation(pheModule, modules);
     return Promise.resolve(modules);
 };
 module.exports = initProject;

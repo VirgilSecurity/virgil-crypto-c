@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2019 Virgil Security, Inc.
+//  Copyright (C) 2015-2020 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -116,20 +116,43 @@ vscf_hkdf_cleanup_ctx(vscf_hkdf_t *self) {
 }
 
 //
+//  This method is called when interface 'hash' was setup.
+//
+VSCF_PRIVATE void
+vscf_hkdf_did_setup_hash(vscf_hkdf_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+
+    vscf_hmac_use_hash(&self->hmac, self->hash);
+}
+
+//
+//  This method is called when interface 'hash' was released.
+//
+VSCF_PRIVATE void
+vscf_hkdf_did_release_hash(vscf_hkdf_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+
+    vscf_hmac_release_hash(&self->hmac);
+}
+
+//
 //  Extracts fixed-length pseudorandom key from keying material.
 //
 VSCF_PRIVATE void
-vscf_hkdf_extract(vscf_hkdf_t *self, vsc_data_t data, vsc_buffer_t *pr_key) {
+vscf_hkdf_extract(vscf_hkdf_t *self, vsc_data_t data, vsc_data_t salt, vsc_buffer_t *pr_key) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT(vsc_data_is_valid(data));
     VSCF_ASSERT_PTR(pr_key);
     VSCF_ASSERT(vsc_buffer_is_valid(pr_key));
 
-    if (self->salt) {
-        VSCF_ASSERT(vsc_buffer_is_valid(self->salt));
-        vscf_hmac_start(&self->hmac, vsc_buffer_data(self->salt));
+    if (salt.bytes) {
+        vscf_hmac_start(&self->hmac, salt);
     } else {
+        //  At this point the salt should be all zeroes (RFC 5869 sec. 2.2),
+        //  but "(0 octets)" is passed instead to preserve backward compatibility.
         vscf_hmac_start(&self->hmac, vsc_data_empty());
     }
     vscf_hmac_update(&self->hmac, data);
@@ -140,37 +163,35 @@ vscf_hkdf_extract(vscf_hkdf_t *self, vsc_data_t data, vsc_buffer_t *pr_key) {
 //  Expands the pseudorandom key to the desired length.
 //
 VSCF_PRIVATE void
-vscf_hkdf_expand(vscf_hkdf_t *self, vsc_buffer_t *pr_key, vsc_buffer_t *key, size_t key_len) {
+vscf_hkdf_expand(vscf_hkdf_t *self, vsc_data_t pr_key, vsc_data_t info, vsc_buffer_t *key, size_t key_len) {
 
     VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(pr_key);
-    VSCF_ASSERT(vsc_buffer_is_valid(pr_key));
+    VSCF_ASSERT(vsc_data_is_valid(pr_key));
+    VSCF_ASSERT(vsc_data_is_valid(info));
     VSCF_ASSERT_PTR(key);
     VSCF_ASSERT(vsc_buffer_is_valid(key));
 
     unsigned char counter = 0x00;
     size_t hmac_len = vscf_hmac_digest_len(&self->hmac);
 
-    vscf_hmac_start(&self->hmac, vsc_buffer_data(pr_key));
+    vscf_hmac_start(&self->hmac, pr_key);
     vsc_data_t previous_mac = vsc_data_empty();
     do {
         ++counter;
         size_t need = key_len - ((counter - 1) * hmac_len);
         vscf_hmac_reset(&self->hmac);
         vscf_hmac_update(&self->hmac, previous_mac);
-        if (self->context_info != NULL) {
-            vscf_hmac_update(&self->hmac, vsc_buffer_data(self->context_info));
-        }
+        vscf_hmac_update(&self->hmac, info);
         vscf_hmac_update(&self->hmac, vsc_data(&counter, 1));
 
         if (need >= hmac_len) {
             vscf_hmac_finish(&self->hmac, key);
             previous_mac = vsc_data(vsc_buffer_unused_bytes(key) - hmac_len, hmac_len);
         } else {
-            vsc_buffer_reset(pr_key);
-            vscf_hmac_finish(&self->hmac, pr_key);
-            memcpy(vsc_buffer_unused_bytes(key), vsc_buffer_bytes(pr_key), need);
-            vsc_buffer_inc_used(key, need);
+            vsc_buffer_t *tmp = vsc_buffer_new_with_capacity(hmac_len);
+            vscf_hmac_finish(&self->hmac, tmp);
+            vsc_buffer_write_data(key, vsc_data_slice_beg(vsc_buffer_data(tmp), 0, need));
+            vsc_buffer_destroy(&tmp);
         }
     } while (counter * hmac_len < key_len);
 }
@@ -235,16 +256,22 @@ vscf_hkdf_derive(vscf_hkdf_t *self, vsc_data_t data, size_t key_len, vsc_buffer_
     VSCF_ASSERT(key_len > 0);
     VSCF_ASSERT(vsc_buffer_unused_len(key) >= key_len);
 
-    vscf_hmac_release_hash(&self->hmac);
-    vscf_hmac_use_hash(&self->hmac, self->hash);
-
     size_t pr_key_len = vscf_hmac_digest_len(&self->hmac);
     VSCF_ASSERT_OPT(key_len <= vscf_hkdf_HASH_COUNTER_MAX * pr_key_len);
 
     vsc_buffer_t *pr_key = vsc_buffer_new_with_capacity(pr_key_len);
 
-    vscf_hkdf_extract(self, data, pr_key);
-    vscf_hkdf_expand(self, pr_key, key, key_len);
+    if (self->salt) {
+        vscf_hkdf_extract(self, data, vsc_buffer_data(self->salt), pr_key);
+    } else {
+        vscf_hkdf_extract(self, data, vsc_data_empty(), pr_key);
+    }
+
+    if (self->context_info) {
+        vscf_hkdf_expand(self, vsc_buffer_data(pr_key), vsc_buffer_data(self->context_info), key, key_len);
+    } else {
+        vscf_hkdf_expand(self, vsc_buffer_data(pr_key), vsc_data_empty(), key, key_len);
+    }
 
     vsc_buffer_destroy(&pr_key);
 }

@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2019 Virgil Security, Inc.
+# Copyright (C) 2015-2020 Virgil Security, Inc.
 #
 # All rights reserved.
 #
@@ -61,13 +61,6 @@ class VscfHashBasedAlgInfo(object):
         vscf_hash_based_alg_info_delete.argtypes = [POINTER(vscf_hash_based_alg_info_t)]
         vscf_hash_based_alg_info_delete.restype = None
         return vscf_hash_based_alg_info_delete(ctx)
-
-    def vscf_hash_based_alg_info_new_with_members(self, alg_id, hash_alg_info):
-        """Create algorithm info with identificator and HASH algorithm info."""
-        vscf_hash_based_alg_info_new_with_members = self._lib.vscf_hash_based_alg_info_new_with_members
-        vscf_hash_based_alg_info_new_with_members.argtypes = [c_int, POINTER(vscf_impl_t)]
-        vscf_hash_based_alg_info_new_with_members.restype = POINTER(vscf_hash_based_alg_info_t)
-        return vscf_hash_based_alg_info_new_with_members(alg_id, hash_alg_info)
 
     def vscf_hash_based_alg_info_alg_id(self, ctx):
         """Provide algorithm identificator."""

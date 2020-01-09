@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2019 Virgil Security, Inc.
+# Copyright (C) 2015-2020 Virgil Security, Inc.
 #
 # All rights reserved.
 #
@@ -49,10 +49,6 @@ class SignedDataInfo(object):
     def __delete__(self, instance):
         """Destroy underlying C context."""
         self._lib_vscf_signed_data_info.vscf_signed_data_info_delete(self.ctx)
-
-    def set_hash_alg_info(self, hash_alg_info):
-        """Set information about algorithm that was used to produce data digest."""
-        self._lib_vscf_signed_data_info.vscf_signed_data_info_set_hash_alg_info(self.ctx, hash_alg_info.c_impl)
 
     def hash_alg_info(self):
         """Return information about algorithm that was used to produce data digest."""

@@ -1,4 +1,4 @@
-/// Copyright (C) 2015-2019 Virgil Security, Inc.
+/// Copyright (C) 2015-2020 Virgil Security, Inc.
 ///
 /// All rights reserved.
 ///
@@ -85,7 +85,7 @@ import VSCFoundation
     @objc public func signerHashAlgInfo() -> AlgInfo {
         let proxyResult = vscf_message_info_footer_signer_hash_alg_info(self.c_ctx)
 
-        return FoundationImplementation.wrapAlgInfo(take: proxyResult!)
+        return FoundationImplementation.wrapAlgInfo(use: proxyResult!)
     }
 
     /// Return plain text digest that was used to produce signature.

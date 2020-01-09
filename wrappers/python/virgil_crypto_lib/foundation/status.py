@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2019 Virgil Security, Inc.
+# Copyright (C) 2015-2020 Virgil Security, Inc.
 #
 # All rights reserved.
 #
@@ -109,6 +109,32 @@ class Status(object):
     ERROR_MISMATCH_PUBLIC_KEY_AND_ALGORITHM = -225
     # Key algorithm does not accept given type of private key.
     ERROR_MISMATCH_PRIVATE_KEY_AND_ALGORITHM = -226
+    # Post-quantum Falcon-Sign public key is corrupted.
+    ERROR_BAD_FALCON_PUBLIC_KEY = -227
+    # Post-quantum Falcon-Sign private key is corrupted.
+    ERROR_BAD_FALCON_PRIVATE_KEY = -228
+    # Generic Round5 library error.
+    ERROR_ROUND5 = -229
+    # Post-quantum NIST Round5 public key is corrupted.
+    ERROR_BAD_ROUND5_PUBLIC_KEY = -230
+    # Post-quantum NIST Round5 private key is corrupted.
+    ERROR_BAD_ROUND5_PRIVATE_KEY = -231
+    # Compound public key is corrupted.
+    ERROR_BAD_COMPOUND_PUBLIC_KEY = -232
+    # Compound private key is corrupted.
+    ERROR_BAD_COMPOUND_PRIVATE_KEY = -233
+    # Compound public hybrid key is corrupted.
+    ERROR_BAD_HYBRID_PUBLIC_KEY = -234
+    # Compound private hybrid key is corrupted.
+    ERROR_BAD_HYBRID_PRIVATE_KEY = -235
+    # ASN.1 AlgorithmIdentifer is corrupted.
+    ERROR_BAD_ASN1_ALGORITHM = -236
+    # ASN.1 AlgorithmIdentifer with ECParameters is corrupted.
+    ERROR_BAD_ASN1_ALGORITHM_ECC = -237
+    # ASN.1 AlgorithmIdentifer with CompoundKeyParams is corrupted.
+    ERROR_BAD_ASN1_ALGORITHM_COMPOUND_KEY = -238
+    # ASN.1 AlgorithmIdentifer with HybridKeyParams is corrupted.
+    ERROR_BAD_ASN1_ALGORITHM_HYBRID_KEY = -239
     # Decryption failed, because message info was not given explicitly,
     # and was not part of an encrypted message.
     ERROR_NO_MESSAGE_INFO = -301
@@ -150,6 +176,8 @@ class Status(object):
     ERROR_INVALID_BRAINKEY_SEED_BUFFER_LEN = -409
     # Brainkey identity secret is invalid.
     ERROR_INVALID_IDENTITY_SECRET = -410
+    # KEM encapsulated key is invalid or does not correspond to the private key.
+    ERROR_INVALID_KEM_ENCAPSULATED_KEY = -411
     # Invalid padding.
     ERROR_INVALID_PADDING = -501
     # Protobuf error.
@@ -202,6 +230,19 @@ class Status(object):
         -224: "ASN.1 representation of a private key is corrupted.",
         -225: "Key algorithm does not accept given type of public key.",
         -226: "Key algorithm does not accept given type of private key.",
+        -227: "Post-quantum Falcon-Sign public key is corrupted.",
+        -228: "Post-quantum Falcon-Sign private key is corrupted.",
+        -229: "Generic Round5 library error.",
+        -230: "Post-quantum NIST Round5 public key is corrupted.",
+        -231: "Post-quantum NIST Round5 private key is corrupted.",
+        -232: "Compound public key is corrupted.",
+        -233: "Compound private key is corrupted.",
+        -234: "Compound public hybrid key is corrupted.",
+        -235: "Compound private hybrid key is corrupted.",
+        -236: "ASN.1 AlgorithmIdentifer is corrupted.",
+        -237: "ASN.1 AlgorithmIdentifer with ECParameters is corrupted.",
+        -238: "ASN.1 AlgorithmIdentifer with CompoundKeyParams is corrupted.",
+        -239: "ASN.1 AlgorithmIdentifer with HybridKeyParams is corrupted.",
         -301: "Decryption failed, because message info was not given explicitly, and was not part of an encrypted message.",
         -302: "Message Info is corrupted.",
         -303: "Recipient defined with id is not found within message info during data decryption.",
@@ -221,6 +262,7 @@ class Status(object):
         -408: "Brainkey point buffer length capacity should be >= 32 byte.",
         -409: "Brainkey seed buffer length capacity should be >= 32 byte.",
         -410: "Brainkey identity secret is invalid.",
+        -411: "KEM encapsulated key is invalid or does not correspond to the private key.",
         -501: "Invalid padding.",
         -601: "Protobuf error.",
         -701: "Session id doesnt match.",

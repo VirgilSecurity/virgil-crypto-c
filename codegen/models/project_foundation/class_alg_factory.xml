@@ -1,36 +1,54 @@
 <class name="alg factory" context="none">
     Create algorithms based on the given information.
 
+    <require interface="alg"/>
     <require interface="alg info"/>
     <require interface="public key"/>
     <require interface="private key"/>
-    <require impl="sha224"/>
-    <require impl="sha256"/>
-    <require impl="sha384"/>
-    <require impl="sha512"/>
-    <require impl="kdf1"/>
-    <require impl="kdf2"/>
-    <require impl="hmac"/>
-    <require impl="hkdf"/>
-    <require impl="aes256 gcm"/>
-    <require impl="aes256 cbc"/>
-    <require impl="hash based alg info"/>
-    <require impl="cipher alg info"/>
-    <require impl="salted kdf alg info"/>
-    <require impl="pbe alg info"/>
-    <require impl="pkcs5 pbkdf2"/>
-    <require impl="pkcs5 pbes2"/>
-    <require impl="rsa"/>
-    <require impl="ed25519"/>
-    <require impl="curve25519"/>
-    <require impl="ecc"/>
+    <require impl="sha224" is_optional="1"/>
+    <require impl="sha256" is_optional="1"/>
+    <require impl="sha384" is_optional="1"/>
+    <require impl="sha512" is_optional="1"/>
+    <require impl="kdf1" is_optional="1"/>
+    <require impl="kdf2" is_optional="1"/>
+    <require impl="hmac" is_optional="1"/>
+    <require impl="hkdf" is_optional="1"/>
+    <require impl="aes256 gcm" is_optional="1"/>
+    <require impl="aes256 cbc" is_optional="1"/>
+    <require impl="hash based alg info" is_optional="1"/>
+    <require impl="cipher alg info" is_optional="1"/>
+    <require impl="salted kdf alg info" is_optional="1"/>
+    <require impl="pbe alg info" is_optional="1"/>
+    <require impl="pkcs5 pbkdf2" is_optional="1"/>
+    <require impl="pkcs5 pbes2" is_optional="1"/>
+    <require impl="rsa" is_optional="1"/>
+    <require impl="ed25519" is_optional="1"/>
+    <require impl="curve25519" is_optional="1"/>
+    <require impl="ecc" is_optional="1"/>
+    <require impl="random padding" is_optional="1"/>
+
+    <method name="create hash from alg id" is_static="1" visibility="private">
+        Create algorithm that implements "hash stream" interface.
+
+        <argument name="alg id" enum="alg id"/>
+
+        <return interface="hash" access="disown" is_optional="1"/>
+    </method>
 
     <method name="create hash from info" is_static="1">
         Create algorithm that implements "hash stream" interface.
 
         <argument name="alg info" interface="alg info"/>
 
-        <return interface="hash" access="disown"/>
+        <return interface="hash" access="disown" is_optional="1"/>
+    </method>
+
+    <method name="create mac from alg id" is_static="1" visibility="private">
+        Create algorithm that implements "mac stream" interface.
+
+        <argument name="alg id" enum="alg id"/>
+
+        <return interface="mac" access="disown" is_optional="1"/>
     </method>
 
     <method name="create mac from info" is_static="1">
@@ -38,7 +56,15 @@
 
         <argument name="alg info" interface="alg info"/>
 
-        <return interface="mac" access="disown"/>
+        <return interface="mac" access="disown" is_optional="1"/>
+    </method>
+
+    <method name="create kdf from alg id" is_static="1" visibility="private">
+        Create algorithm that implements "kdf" interface.
+
+        <argument name="alg id" enum="alg id"/>
+
+        <return interface="kdf" access="disown" is_optional="1"/>
     </method>
 
     <method name="create kdf from info" is_static="1">
@@ -46,7 +72,15 @@
 
         <argument name="alg info" interface="alg info"/>
 
-        <return interface="kdf" access="disown"/>
+        <return interface="kdf" access="disown" is_optional="1"/>
+    </method>
+
+    <method name="create salted kdf from alg id" is_static="1" visibility="private">
+        Create algorithm that implements "salted kdf" interface.
+
+        <argument name="alg id" enum="alg id"/>
+
+        <return interface="salted kdf" access="disown" is_optional="1"/>
     </method>
 
     <method name="create salted kdf from info" is_static="1">
@@ -54,7 +88,15 @@
 
         <argument name="alg info" interface="alg info"/>
 
-        <return interface="salted kdf" access="disown"/>
+        <return interface="salted kdf" access="disown" is_optional="1"/>
+    </method>
+
+    <method name="create cipher from alg id" is_static="1" visibility="private">
+        Create algorithm that implements "cipher" interface.
+
+        <argument name="alg id" enum="alg id"/>
+
+        <return interface="cipher" access="disown" is_optional="1"/>
     </method>
 
     <method name="create cipher from info" is_static="1">
@@ -62,6 +104,34 @@
 
         <argument name="alg info" interface="alg info"/>
 
-        <return interface="cipher" access="disown"/>
+        <return interface="cipher" access="disown" is_optional="1"/>
+    </method>
+
+    <method name="create padding from alg id" is_static="1" visibility="private">
+        Create algorithm that implements "padding" interface.
+
+        <argument name="alg id" enum="alg id"/>
+        <argument name="random" interface="random"/>
+
+        <return interface="padding" access="disown"/>
+    </method>
+
+    <method name="create padding from info" is_static="1">
+        Create algorithm that implements "padding" interface.
+
+        <argument name="alg info" interface="alg info"/>
+        <argument name="random" interface="random"/>
+
+        <return interface="padding" access="disown"/>
+    </method>
+
+    <method name="restore alg info and return" is_static="1" declaration="private">
+        Restore algorithm info within a given algorithm and returns it if success,
+        or delete it and returns NULL;
+
+        <argument name="alg" interface="alg" access="disown"/>
+        <argument name="alg info" interface="alg info"/>
+
+        <return interface="alg" access="disown"/>
     </method>
 </class>

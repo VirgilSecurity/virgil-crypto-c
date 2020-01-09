@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2019 Virgil Security, Inc.
+//  Copyright (C) 2015-2020 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -186,6 +186,9 @@ vsce_phe_client_take_operation_random(vsce_phe_client_t *self, vscf_impl_t *oper
 VSCE_PUBLIC void
 vsce_phe_client_release_operation_random(vsce_phe_client_t *self);
 
+//
+//  Setups dependencies with default values.
+//
 VSCE_PUBLIC vsce_status_t
 vsce_phe_client_setup_defaults(vsce_phe_client_t *self) VSCE_NODISCARD;
 

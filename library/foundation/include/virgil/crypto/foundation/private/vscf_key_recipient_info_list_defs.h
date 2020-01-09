@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2019 Virgil Security, Inc.
+//  Copyright (C) 2015-2020 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -87,9 +87,13 @@ struct vscf_key_recipient_info_list_t {
     VSCF_ATOMIC size_t refcnt;
 
     vscf_key_recipient_info_t *item;
-
+    //
+    //  Class specific context.
+    //
     vscf_key_recipient_info_list_t *next;
-
+    //
+    //  Class specific context.
+    //
     vscf_key_recipient_info_list_t *prev;
 };
 

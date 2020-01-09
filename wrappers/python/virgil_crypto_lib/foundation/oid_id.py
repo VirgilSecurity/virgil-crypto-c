@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2019 Virgil Security, Inc.
+# Copyright (C) 2015-2020 Virgil Security, Inc.
 #
 # All rights reserved.
 #
@@ -63,3 +63,8 @@ class OidId(object):
     HMAC_WITH_SHA512 = 22
     EC_GENERIC_KEY = 23
     EC_DOMAIN_SECP256R1 = 24
+    COMPOUND_KEY = 25
+    HYBRID_KEY = 26
+    FALCON = 27
+    ROUND5_ND_5KEM_5D = 28
+    RANDOM_PADDING = 29

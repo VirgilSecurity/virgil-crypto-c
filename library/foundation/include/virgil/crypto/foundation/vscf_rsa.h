@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2019 Virgil Security, Inc.
+//  Copyright (C) 2015-2020 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -57,9 +57,9 @@
 #include "vscf_error.h"
 #include "vscf_impl.h"
 #include "vscf_status.h"
-#include "vscf_alg_id.h"
 #include "vscf_raw_public_key.h"
 #include "vscf_raw_private_key.h"
+#include "vscf_alg_id.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_data.h>
@@ -205,24 +205,6 @@ VSCF_PUBLIC vscf_impl_t *
 vscf_rsa_generate_key(const vscf_rsa_t *self, size_t bitlen, vscf_error_t *error);
 
 //
-//  Provide algorithm identificator.
-//
-VSCF_PUBLIC vscf_alg_id_t
-vscf_rsa_alg_id(const vscf_rsa_t *self);
-
-//
-//  Produce object with algorithm information and configuration parameters.
-//
-VSCF_PUBLIC vscf_impl_t *
-vscf_rsa_produce_alg_info(const vscf_rsa_t *self);
-
-//
-//  Restore algorithm configuration from the given object.
-//
-VSCF_PUBLIC vscf_status_t
-vscf_rsa_restore_alg_info(vscf_rsa_t *self, const vscf_impl_t *alg_info) VSCF_NODISCARD;
-
-//
 //  Generate ephemeral private key of the same type.
 //  Note, this operation might be slow.
 //
@@ -243,6 +225,13 @@ VSCF_PUBLIC vscf_impl_t *
 vscf_rsa_import_public_key(const vscf_rsa_t *self, const vscf_raw_public_key_t *raw_key, vscf_error_t *error);
 
 //
+//  Import public key from the raw binary format.
+//
+VSCF_PRIVATE vscf_impl_t *
+vscf_rsa_import_public_key_data(const vscf_rsa_t *self, vsc_data_t key_data, const vscf_impl_t *key_alg_info,
+        vscf_error_t *error);
+
+//
 //  Export public key to the raw binary format.
 //
 //  Binary format must be defined in the key specification.
@@ -251,6 +240,23 @@ vscf_rsa_import_public_key(const vscf_rsa_t *self, const vscf_raw_public_key_t *
 //
 VSCF_PUBLIC vscf_raw_public_key_t *
 vscf_rsa_export_public_key(const vscf_rsa_t *self, const vscf_impl_t *public_key, vscf_error_t *error);
+
+//
+//  Return length in bytes required to hold exported public key.
+//
+VSCF_PRIVATE size_t
+vscf_rsa_exported_public_key_data_len(const vscf_rsa_t *self, const vscf_impl_t *public_key);
+
+//
+//  Export public key to the raw binary format without algorithm information.
+//
+//  Binary format must be defined in the key specification.
+//  For instance, RSA public key must be exported in format defined in
+//  RFC 3447 Appendix A.1.1.
+//
+VSCF_PRIVATE vscf_status_t
+vscf_rsa_export_public_key_data(const vscf_rsa_t *self, const vscf_impl_t *public_key,
+        vsc_buffer_t *out) VSCF_NODISCARD;
 
 //
 //  Import private key from the raw binary format.
@@ -266,6 +272,13 @@ VSCF_PUBLIC vscf_impl_t *
 vscf_rsa_import_private_key(const vscf_rsa_t *self, const vscf_raw_private_key_t *raw_key, vscf_error_t *error);
 
 //
+//  Import private key from the raw binary format.
+//
+VSCF_PRIVATE vscf_impl_t *
+vscf_rsa_import_private_key_data(const vscf_rsa_t *self, vsc_data_t key_data, const vscf_impl_t *key_alg_info,
+        vscf_error_t *error);
+
+//
 //  Export private key in the raw binary format.
 //
 //  Binary format must be defined in the key specification.
@@ -274,6 +287,23 @@ vscf_rsa_import_private_key(const vscf_rsa_t *self, const vscf_raw_private_key_t
 //
 VSCF_PUBLIC vscf_raw_private_key_t *
 vscf_rsa_export_private_key(const vscf_rsa_t *self, const vscf_impl_t *private_key, vscf_error_t *error);
+
+//
+//  Return length in bytes required to hold exported private key.
+//
+VSCF_PRIVATE size_t
+vscf_rsa_exported_private_key_data_len(const vscf_rsa_t *self, const vscf_impl_t *private_key);
+
+//
+//  Export private key to the raw binary format without algorithm information.
+//
+//  Binary format must be defined in the key specification.
+//  For instance, RSA private key must be exported in format defined in
+//  RFC 3447 Appendix A.1.2.
+//
+VSCF_PRIVATE vscf_status_t
+vscf_rsa_export_private_key_data(const vscf_rsa_t *self, const vscf_impl_t *private_key,
+        vsc_buffer_t *out) VSCF_NODISCARD;
 
 //
 //  Check if algorithm can encrypt data with a given key.
@@ -325,7 +355,7 @@ vscf_rsa_can_sign(const vscf_rsa_t *self, const vscf_impl_t *private_key);
 //  Return zero if a given private key can not produce signatures.
 //
 VSCF_PUBLIC size_t
-vscf_rsa_signature_len(const vscf_rsa_t *self, const vscf_impl_t *key);
+vscf_rsa_signature_len(const vscf_rsa_t *self, const vscf_impl_t *private_key);
 
 //
 //  Sign data digest with a given private key.

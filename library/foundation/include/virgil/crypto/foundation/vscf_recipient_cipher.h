@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2019 Virgil Security, Inc.
+//  Copyright (C) 2015-2020 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -56,6 +56,7 @@
 #define VSCF_RECIPIENT_CIPHER_H_INCLUDED
 
 #include "vscf_library.h"
+#include "vscf_padding_params.h"
 #include "vscf_message_info_custom_params.h"
 #include "vscf_signer_info_list.h"
 #include "vscf_signer_info.h"
@@ -173,6 +174,44 @@ vscf_recipient_cipher_take_encryption_cipher(vscf_recipient_cipher_t *self, vscf
 //
 VSCF_PUBLIC void
 vscf_recipient_cipher_release_encryption_cipher(vscf_recipient_cipher_t *self);
+
+//
+//  Setup dependency to the interface 'padding' with shared ownership.
+//
+VSCF_PUBLIC void
+vscf_recipient_cipher_use_encryption_padding(vscf_recipient_cipher_t *self, vscf_impl_t *encryption_padding);
+
+//
+//  Setup dependency to the interface 'padding' and transfer ownership.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCF_PUBLIC void
+vscf_recipient_cipher_take_encryption_padding(vscf_recipient_cipher_t *self, vscf_impl_t *encryption_padding);
+
+//
+//  Release dependency to the interface 'padding'.
+//
+VSCF_PUBLIC void
+vscf_recipient_cipher_release_encryption_padding(vscf_recipient_cipher_t *self);
+
+//
+//  Setup dependency to the class 'padding params' with shared ownership.
+//
+VSCF_PUBLIC void
+vscf_recipient_cipher_use_padding_params(vscf_recipient_cipher_t *self, vscf_padding_params_t *padding_params);
+
+//
+//  Setup dependency to the class 'padding params' and transfer ownership.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCF_PUBLIC void
+vscf_recipient_cipher_take_padding_params(vscf_recipient_cipher_t *self, vscf_padding_params_t *padding_params);
+
+//
+//  Release dependency to the class 'padding params'.
+//
+VSCF_PUBLIC void
+vscf_recipient_cipher_release_padding_params(vscf_recipient_cipher_t *self);
 
 //
 //  Setup dependency to the interface 'hash' with shared ownership.

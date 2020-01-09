@@ -1,5 +1,5 @@
 .template 0
-#   Copyright (C) 2015-2019 Virgil Security, Inc.
+#   Copyright (C) 2015-2020 Virgil Security, Inc.
 #
 #   All rights reserved.
 #
@@ -61,6 +61,18 @@ function _F21_derive_feature_name (feature)
 endfunction
 
 # ---------------------------------------------------------------------------
+#   Derive C style in-project cmake compile definition full name.
+# ---------------------------------------------------------------------------
+function _F21_derive_cmake_compile_definition_name (cmake_compile_definition)
+    check_argument (my, "cmake_compile_definition", my)
+
+    assert_attribute (my.cmake_compile_definition, "name", my)
+    assert_attribute (my.cmake_compile_definition, "prefix", my)
+
+    return c_format_macros_name (my.cmake_compile_definition.prefix, my.cmake_compile_definition.name)
+endfunction
+
+# ---------------------------------------------------------------------------
 #   Derive C style in-project require full name.
 # ---------------------------------------------------------------------------
 function _F21_derive_require_name (require)
@@ -93,6 +105,7 @@ function _F21_create_require (require, destination)
 
         else
             .feature = _F21_derive_require_name (my.require)
+            .is_optional = my.require.is_optional ?
         endfor
     endnew
 endfunction
@@ -106,6 +119,19 @@ function _F21_map_attr_default (c_feature, feature)
     my.c_feature.default ?= my.feature.default
 endfunction
 
+
+# ---------------------------------------------------------------------------
+#   Create 'c_cmake_compile_definition' from 'cmake_compile_definition'.
+# ---------------------------------------------------------------------------
+function c_cmake_compile_definition_create (cmake_compile_definition, destination)
+    check_arguments (my, "cmake_compile_definition, destination", my)
+
+    new c_cmake_compile_definition to my.destination
+        . = my.cmake_compile_definition. ?
+        .name = _F21_derive_cmake_compile_definition_name (my.cmake_compile_definition)
+        .value = my.cmake_compile_definition.value
+    endnew
+endfunction
 
 # ---------------------------------------------------------------------------
 #   Create 'c_feature' from 'feature'.
@@ -149,7 +175,10 @@ function c_features_create (source, destination)
             .path = features.path
             .cmake_target = features.cmake_target ?
             .internal_build = "$(features.prefix:c,UPPER)_INTERNAL_BUILD"
-            .build_shared_libs = "$(features.prefix:c,UPPER)_BUILD_SHARED_LIBS"
+
+            for features.cmake_compile_definition
+                c_cmake_compile_definition_create (cmake_compile_definition, c_features)
+            endfor
 
             for features.feature
                 c_feature_create (feature, c_features)

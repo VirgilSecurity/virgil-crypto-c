@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2019 Virgil Security, Inc.
+//  Copyright (C) 2015-2020 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -209,7 +209,7 @@ vscf_pkcs5_pbes2_encrypt(vscf_pkcs5_pbes2_t *self, vsc_data_t data, vsc_buffer_t
 //  Calculate required buffer length to hold the encrypted data.
 //
 VSCF_PUBLIC size_t
-vscf_pkcs5_pbes2_encrypted_len(vscf_pkcs5_pbes2_t *self, size_t data_len) {
+vscf_pkcs5_pbes2_encrypted_len(const vscf_pkcs5_pbes2_t *self, size_t data_len) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(self->cipher);
@@ -222,7 +222,7 @@ vscf_pkcs5_pbes2_encrypted_len(vscf_pkcs5_pbes2_t *self, size_t data_len) {
 //  Precise length calculation of encrypted data.
 //
 VSCF_PUBLIC size_t
-vscf_pkcs5_pbes2_precise_encrypted_len(vscf_pkcs5_pbes2_t *self, size_t data_len) {
+vscf_pkcs5_pbes2_precise_encrypted_len(const vscf_pkcs5_pbes2_t *self, size_t data_len) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(self->cipher);
@@ -266,7 +266,7 @@ vscf_pkcs5_pbes2_decrypt(vscf_pkcs5_pbes2_t *self, vsc_data_t data, vsc_buffer_t
 //  Calculate required buffer length to hold the decrypted data.
 //
 VSCF_PUBLIC size_t
-vscf_pkcs5_pbes2_decrypted_len(vscf_pkcs5_pbes2_t *self, size_t data_len) {
+vscf_pkcs5_pbes2_decrypted_len(const vscf_pkcs5_pbes2_t *self, size_t data_len) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(self->cipher);

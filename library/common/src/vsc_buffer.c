@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2019 Virgil Security, Inc.
+//  Copyright (C) 2015-2020 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -681,30 +681,6 @@ vsc_buffer_dec_used(vsc_buffer_t *self, size_t len) {
 }
 
 //
-//  Copy null-terminated string to the buffer.
-//
-VSC_PUBLIC void
-vsc_buffer_write_str(vsc_buffer_t *self, const char *str) {
-
-    VSC_ASSERT_PTR(self);
-    VSC_ASSERT(vsc_buffer_is_valid(self));
-    VSC_ASSERT_PTR(str);
-
-    size_t str_len = strlen(str);
-    VSC_ASSERT(str_len <= vsc_buffer_unused_len(self));
-
-    size_t write_len = str_len > vsc_buffer_unused_len(self) ? vsc_buffer_unused_len(self) : str_len;
-
-    if (self->is_reverse) {
-        memcpy(vsc_buffer_unused_bytes(self) - write_len + 1, (const byte *)str, write_len);
-    } else {
-        memcpy(vsc_buffer_unused_bytes(self), (const byte *)str, write_len);
-    }
-
-    self->len += write_len;
-}
-
-//
 //  Copy data to the buffer.
 //
 VSC_PUBLIC void
@@ -738,9 +714,18 @@ VSC_PUBLIC void
 vsc_buffer_append_data(vsc_buffer_t *self, vsc_data_t data) {
 
     VSC_ASSERT_PTR(self);
+    VSC_ASSERT(vsc_data_is_valid(data));
+
+    if (vsc_data_is_empty(data)) {
+        return;
+    }
+
+    if (NULL == self->bytes) {
+        vsc_buffer_alloc(self, data.len);
+    }
+
     VSC_ASSERT_PTR(self->is_owner);
     VSC_ASSERT(vsc_buffer_is_valid(self));
-    VSC_ASSERT(vsc_data_is_valid(data));
 
     if (data.len <= vsc_buffer_unused_len(self)) {
         vsc_buffer_write_data(self, data);

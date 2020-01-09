@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2019 Virgil Security, Inc.
+//  Copyright (C) 2015-2020 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -98,6 +98,8 @@ struct vscf_message_info_t {
     vscf_message_info_custom_params_t *custom_params;
 
     vscf_impl_t *cipher_kdf_alg_info;
+
+    vscf_impl_t *cipher_padding_alg_info;
 
     vscf_footer_info_t *footer_info;
 };

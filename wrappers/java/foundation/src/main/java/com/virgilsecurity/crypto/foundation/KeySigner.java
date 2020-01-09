@@ -1,5 +1,5 @@
 /*
-* Copyright (C) 2015-2019 Virgil Security, Inc.
+* Copyright (C) 2015-2020 Virgil Security, Inc.
 *
 * All rights reserved.
 *
@@ -51,7 +51,7 @@ public interface KeySigner extends KeyAlg {
     * Return length in bytes required to hold signature.
     * Return zero if a given private key can not produce signatures.
     */
-    int signatureLen(Key key);
+    int signatureLen(PrivateKey privateKey);
 
     /*
     * Sign data digest with a given private key.
