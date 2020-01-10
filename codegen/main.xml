@@ -1,6 +1,6 @@
 <main script="main.gsl" work_path="generated/main" echo_level="debug">
     <license>
-        Copyright (C) 2015-2019 Virgil Security, Inc.
+        Copyright (C) 2015-2020 Virgil Security, Inc.
 
         All rights reserved.
 
@@ -43,7 +43,7 @@
     <library name="round5"/>
     <library name="falcon"/>
 
-    <version major="0" minor="12" patch="0" label="dev4"/>
+    <version major="0" minor="12" patch="0"/>
 
     <project name="common" skip_codegen="0" skip_codegen_c="0" skip_codegen_wrappers="0"/>
     <project name="foundation" skip_codegen="0" skip_codegen_c="0" skip_codegen_wrappers="0"/>

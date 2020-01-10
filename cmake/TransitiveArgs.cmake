@@ -1,4 +1,4 @@
-#   Copyright (C) 2015-2019 Virgil Security, Inc.
+#   Copyright (C) 2015-2020 Virgil Security, Inc.
 #
 #   All rights reserved.
 #
@@ -47,6 +47,12 @@ endif()
 function(TRANSITIVE_ARGS_INIT)
     set(TRANSITIVE_ARGS_FILE "${CMAKE_BINARY_DIR}/transitive-args.cmake" CACHE FILEPATH "")
     set(TRANSITIVE_ARGS "-C${TRANSITIVE_ARGS_FILE}" CACHE STRING "Pass this value to ExternalProject_Add(CMAKE_ARGS ...)")
+    set(TRANSITIVE_C_FLAGS "" CACHE STRING "Transitive CMAKE_C_FLAGS")
+    set(TRANSITIVE_CXX_FLAGS "" CACHE STRING "Transitive CMAKE_CXX_FLAGS")
+    set(TRANSITIVE_EXE_LINKER_FLAGS "" CACHE STRING "Transitive CMAKE_EXE_LINKER_FLAGS")
+    set(TRANSITIVE_MODULE_LINKER_FLAGS "" CACHE STRING "Transitive CMAKE_MODULE_LINKER_FLAGS")
+    set(TRANSITIVE_SHARED_LINKER_FLAGS "" CACHE STRING "Transitive CMAKE_SHARED_LINKER_FLAGS")
+    set(TRANSITIVE_STATIC_LINKER_FLAGS "" CACHE STRING "Transitive CMAKE_STATIC_LINKER_FLAGS")
 
 
     if(NOT EXISTS "${TRANSITIVE_ARGS_FILE}")
@@ -72,6 +78,23 @@ function(TRANSITIVE_ARGS_ADD)
             file(APPEND "${TRANSITIVE_ARGS_FILE}" "set(${var} \"${${var}}\" CACHE INTERNAL \"\")\n")
         endif()
     endforeach()
+endfunction()
+
+
+function(TRANSITIVE_ARGS_ADD_VALUE name value)
+    if(NOT TRANSITIVE_ARGS_FILE)
+        message(FATAL_ERROR "[INTERNAL] TransitiveArgs.cmake: variable TRANSITIVE_ARGS_FILE is not defined")
+    endif ()
+
+    if(NOT EXISTS "${TRANSITIVE_ARGS_FILE}")
+        message(FATAL_ERROR "[INTERNAL] TransitiveArgs.cmake: file '${TRANSITIVE_ARGS_FILE}' does not exists")
+    endif ()
+
+    file(STRINGS "${TRANSITIVE_ARGS_FILE}" file_content)
+
+    if(NOT file_content MATCHES "${name}")
+        file(APPEND "${TRANSITIVE_ARGS_FILE}" "set(${name} \"${value}\" CACHE INTERNAL \"\")\n")
+    endif()
 endfunction()
 
 

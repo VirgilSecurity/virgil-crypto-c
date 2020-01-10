@@ -21,7 +21,7 @@ allprojects {
         mavenLocal()
     }
     group "com.virgilsecurity.crypto"
-    version "0.12.0-SNAPSHOT"
+    version "0.12.0"
 
     def authentication_username = hasProperty('authentication_username') ? authentication_username : System.getenv('authentication_username')
     def authentication_password = hasProperty('authentication_password') ? authentication_password : System.getenv('authentication_password')

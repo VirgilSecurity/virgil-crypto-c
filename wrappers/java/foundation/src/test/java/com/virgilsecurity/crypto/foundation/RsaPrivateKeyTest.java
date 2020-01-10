@@ -1,5 +1,5 @@
 /*
-* Copyright (C) 2015-2019 Virgil Security, Inc.
+* Copyright (C) 2015-2020 Virgil Security, Inc.
 *
 * All rights reserved.
 *
@@ -53,10 +53,10 @@ public class RsaPrivateKeyTest extends SampleBasedTest {
 	public void init() {
 		this.rsa = new Rsa();
 		this.rsa.setupDefaults();
-		
+
 		this.privateKey = (RsaPrivateKey) this.rsa.generateKey(this.bitlen);
 	}
-	
+
 	@After
 	public void tearDown() {
 		this.rsa.close();
