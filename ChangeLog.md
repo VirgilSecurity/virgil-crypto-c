@@ -1,6 +1,23 @@
 # virgil-crypto-c ChangeLog (Sorted by date)
 
 
+## Version 0.12.0 released 2020-01-09
+
+### Features
+
+- Lib/Foundation: Added Post-Quantum cryptography for KEM - round5 (experimental)
+- Lib/Foundation: Added Post-Quantum cryptography for signatures - falcon (experimental)
+- Lib/Foundation: Added Compound Keys Algorithm
+- Lib/Foundation: Added Hybrid Keys Algorithm
+- Lib/PHE: Added PHE KMS
+- Wrapper/Go: Added wrapper for Go
+
+### Bugfix
+
+- Lib/Foundation: Fixed strnstr - read memory out of range
+- Lib/Foundation: Fixed HKDF OIDs
+
+
 ## Version 0.11.1 released 2019-11-18
 
 ### Bugfix
