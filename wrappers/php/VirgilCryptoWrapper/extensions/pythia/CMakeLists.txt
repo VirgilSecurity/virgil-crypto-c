@@ -81,12 +81,14 @@ target_link_libraries(pythia_php
         "$<$<STREQUAL:${CMAKE_SYSTEM_NAME},Darwin>:-undefined dynamic_lookup>"
     )
 
+target_compile_definitions(pythia_php PRIVATE VSCP_PHP_INTERNAL_BUILD)
+
 #---------------------------------------------------------------------------
 #   Test
 #---------------------------------------------------------------------------
 if(ENABLE_TESTING)
     add_custom_target(test_composer_pythia_php ALL
-            COMMAND "${COMPOSER_EXECUTABLE}" install
+            COMMAND "${PHP_EXECUTABLE}" "${COMPOSER_EXECUTABLE}" install
             COMMENT "Running composer install..."
             WORKING_DIRECTORY ${VIRGIL_CRYPTO_WRAPPER_PROJECT_DIR}
             )

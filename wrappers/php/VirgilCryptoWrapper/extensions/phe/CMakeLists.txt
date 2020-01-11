@@ -82,12 +82,14 @@ target_link_libraries(phe_php
         "$<$<STREQUAL:${CMAKE_SYSTEM_NAME},Darwin>:-undefined dynamic_lookup>"
     )
 
+target_compile_definitions(phe_php PRIVATE VSCE_PHP_INTERNAL_BUILD)
+
 #---------------------------------------------------------------------------
 #   Test
 #---------------------------------------------------------------------------
 if(ENABLE_TESTING)
     add_custom_target(test_composer_phe_php ALL
-            COMMAND "${COMPOSER_EXECUTABLE}" install
+            COMMAND "${PHP_EXECUTABLE}" "${COMPOSER_EXECUTABLE}" install
             COMMENT "Running composer install..."
             WORKING_DIRECTORY ${VIRGIL_CRYPTO_WRAPPER_PROJECT_DIR}
             )
