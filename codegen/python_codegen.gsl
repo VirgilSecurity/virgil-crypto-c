@@ -1,5 +1,5 @@
 .template 0
-#   Copyright (C) 2015-2019 Virgil Security, Inc.
+#   Copyright (C) 2015-2020 Virgil Security, Inc.
 #
 #   All rights reserved.
 #
@@ -243,7 +243,7 @@ function python_insert_abstract_class_property (python_property)
 
     my.property_modifiers = (my.python_property.access = "readonly") ?? "{ get }" ? "{ get set }"
 
-    
+
     python_insert_code("\
         @property
         @abstractmethod
@@ -259,12 +259,12 @@ function python_insert_enum_constant (python_constant)
     check_arguments (my, "python_constant", my)
 
     my.value = defined (my.python_constant.value) ?? " = $(my.python_constant.value:)" ? ""
-    
+
     python_insert_comment (my.python_constant, 1)
     python_insert_code ("\
         $(my.python_constant.name:c,UPPER) = $(my.value:)
     ", 1)
-    
+
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -305,7 +305,7 @@ function python_insert_constructor (python_constructor)
     my.method_args = string.search_replace (my.method_args, "self, ", "") ?
     my.override = is_true (my.python_constructor.override) ?? "override" ?
 
-    
+
     python_insert_code("\
          def __init__(self$(' ,'+my.method_args?:)):
     ", 1)
@@ -346,7 +346,7 @@ endfunction
 function python_insert_destructor (python_destructor)
     check_arguments (my, "python_destructor", my)
 
-    
+
     python_insert_code("\
          def __delete__(self, instance):
     ", 1)
@@ -368,7 +368,7 @@ function python_insert_abstract_class_method (python_method)
     my.method_args = python_format_argument_list(my.python_method) ?
     my.method_return = python_format_return_list(my.python_method) ?
 
-    
+
     python_insert_code("\
         @abstractmethod
         def $(my.python_method.name:)($(my.method_args?:)):
@@ -381,12 +381,12 @@ endfunction
 # ---------------------------------------------------------------------------
 function python_insert_class_constant (python_constant)
     check_arguments (my, "python_constant", my)
-    
+
     python_insert_comment (my.python_constant, 1)
     python_insert_code ("\
         $(my.python_constant.name:c,UPPER) = $(my.python_constant.value:)
     ", 1)
-    
+
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -467,7 +467,7 @@ function python_insert_enum_method (python_method)
     my.method_args = python_format_argument_list(my.python_method) ?
     my.method_return = python_format_return_list(my.python_method) ?
 
-    
+
     python_insert_code("\
         def $(my.python_method.name:)($(my.method_args?:)):
     ", 1)
@@ -493,7 +493,7 @@ function python_insert_abstract_class (python_abstract_class)
         endif
     endfor
 
-    
+
     newline ()
     python_insert_code ("\
         class $(my.python_abstract_class.name:)$(my.python_inheritance_list?:):

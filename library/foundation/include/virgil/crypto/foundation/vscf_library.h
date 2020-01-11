@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2019 Virgil Security, Inc.
+//  Copyright (C) 2015-2020 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -118,7 +118,7 @@ extern "C" {
 
 #define VSCF_VERSION_MINOR 12
 
-#define VSCF_VERSION_PATCH 0
+#define VSCF_VERSION_PATCH 1
 
 #define VSCF_VERSION_MAKE(major, minor, patch) ((major) * 10000 + (minor) * 100 + (patch))
 

@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2015-2019 Virgil Security, Inc.
+# Copyright (C) 2015-2020 Virgil Security, Inc.
 #
 # All rights reserved.
 #
@@ -292,8 +292,8 @@ set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
 # ---------------------------------------------------------------------------
 
 # Pass minimum version flag and bitcode flag.
-set(CMAKE_C_FLAGS "${APPLE_VERSION_FLAG} ${APPLE_BITCODE_FLAG} ${APPLE_EXTENSION_FLAG}" CACHE STRING "")
-set(CMAKE_CXX_FLAGS "${APPLE_VERSION_FLAG} ${APPLE_BITCODE_FLAG} ${APPLE_EXTENSION_FLAG}" CACHE STRING "")
+set(CMAKE_C_FLAGS "-fvisibility=hidden ${APPLE_VERSION_FLAG} ${APPLE_BITCODE_FLAG} ${APPLE_EXTENSION_FLAG}" CACHE STRING "")
+set(CMAKE_CXX_FLAGS "-fvisibility=hidden ${APPLE_VERSION_FLAG} ${APPLE_BITCODE_FLAG} ${APPLE_EXTENSION_FLAG}" CACHE STRING "")
 
 # ---------------------------------------------------------------------------
 #   Define naming library conventions
