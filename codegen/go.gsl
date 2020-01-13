@@ -282,6 +282,7 @@ function go_derive_dependency_type (dependency)
     check_arguments (my, "dependency", my)
 
     my.project_uid = component_derive_project_uid (my.dependency)
+    my.is_pointer = "0"
 
     if defined (my.dependency.interface)
         my.type_uid = make_id ("interface", "$(my.dependency.interface:Pascal)")
@@ -291,9 +292,11 @@ function go_derive_dependency_type (dependency)
 
     elsif defined (my.dependency.class)
         my.type_uid = make_id ("struct", "$(my.dependency.class:Pascal)")
+        my.is_pointer = "1"
 
     elsif defined (my.dependency.impl)
         my.type_uid = make_id ("struct", "$(my.dependency.impl:Pascal)")
+        my.is_pointer = "1"
 
     else
         echo_debug_item (my.dependency, my)
@@ -303,8 +306,12 @@ function go_derive_dependency_type (dependency)
     if defined (my.dependency.project)
         return "$(my.dependency.project:).$(make_ref_go (make_id(my.project_uid, my.type_uid)))"
     endif
-
-    return make_ref_go (make_id(my.project_uid, my.type_uid))
+    
+    if is_true (my.is_pointer)
+        return "*$(make_ref_go (make_id(my.project_uid, my.type_uid)))"
+    else
+        return make_ref_go (make_id(my.project_uid, my.type_uid))
+    endif
 endfunction
 
 # ---------------------------------------------------------------------------

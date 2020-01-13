@@ -93,7 +93,7 @@ func (obj *RecipientCipher) SetEncryptionPadding(encryptionPadding Padding) {
     runtime.KeepAlive(obj)
 }
 
-func (obj *RecipientCipher) SetPaddingParams(paddingParams PaddingParams) {
+func (obj *RecipientCipher) SetPaddingParams(paddingParams *PaddingParams) {
     C.vscf_recipient_cipher_release_padding_params(obj.cCtx)
     C.vscf_recipient_cipher_use_padding_params(obj.cCtx, (*C.vscf_padding_params_t)(unsafe.Pointer(paddingParams.Ctx())))
 

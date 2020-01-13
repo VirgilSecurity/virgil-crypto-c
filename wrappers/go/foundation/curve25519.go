@@ -21,7 +21,7 @@ func (obj *Curve25519) SetRandom(random Random) {
     runtime.KeepAlive(obj)
 }
 
-func (obj *Curve25519) SetEcies(ecies Ecies) {
+func (obj *Curve25519) SetEcies(ecies *Ecies) {
     C.vscf_curve25519_release_ecies(obj.cCtx)
     C.vscf_curve25519_use_ecies(obj.cCtx, (*C.vscf_ecies_t)(unsafe.Pointer(ecies.Ctx())))
 
