@@ -1,5 +1,5 @@
 .template 0
-#   Copyright (C) 2015-2019 Virgil Security, Inc.
+#   Copyright (C) 2015-2020 Virgil Security, Inc.
 #
 #   All rights reserved.
 #
@@ -90,6 +90,24 @@ function c_module_platform_create (project, destination, meta)
 
         c_module_platform_create_cmake_include_file_check("assert.h", module)
         c_module_platform_create_cmake_include_file_check("stdatomic.h", module)
+
+        for my.project.cmake_compile_definition
+            new macroses to module
+                new macros to macroses
+                    .name = cmake_compile_definition.name
+                    .of_class = "global"
+                endnew
+
+                new code to macroses
+                    my.macros_c_name = make_ref_c(make_id("global macros", cmake_compile_definition.name))
+                    . = "
+                        #ifndef $(my.macros_c_name:)
+                        #cmakedefine01 $(my.macros_c_name:)
+                        #endif
+                    "
+                endnew
+            endnew
+        endfor
 
         for my.project.feature
             new macroses to module

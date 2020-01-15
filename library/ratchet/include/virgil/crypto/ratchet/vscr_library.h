@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2019 Virgil Security, Inc.
+//  Copyright (C) 2015-2020 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -87,17 +87,19 @@ extern "C" {
 #endif // BYTE_DEFINED
 
 #if defined(_WIN32) || defined(__CYGWIN__)
-#   ifdef VSCR_BUILD_SHARED_LIBS
-#       ifdef __GNUC__
-#           define VSCR_PUBLIC __attribute__ ((dllexport))
+#   if VSCR_SHARED_LIBRARY
+#       if defined(VSCR_INTERNAL_BUILD)
+#           ifdef __GNUC__
+#               define VSCR_PUBLIC __attribute__ ((dllexport))
+#           else
+#               define VSCR_PUBLIC __declspec(dllexport)
+#           endif
 #       else
-#           define VSCR_PUBLIC __declspec(dllexport)
-#       endif
-#   elif !defined(VSCR_INTERNAL_BUILD)
-#       ifdef __GNUC__
-#           define VSCR_PUBLIC __attribute__ ((dllimport))
-#       else
-#           define VSCR_PUBLIC __declspec(dllimport)
+#           ifdef __GNUC__
+#               define VSCR_PUBLIC __attribute__ ((dllimport))
+#           else
+#               define VSCR_PUBLIC __declspec(dllimport)
+#           endif
 #       endif
 #   else
 #       define VSCR_PUBLIC
@@ -116,7 +118,7 @@ extern "C" {
 
 #define VSCR_VERSION_MINOR 12
 
-#define VSCR_VERSION_PATCH 0
+#define VSCR_VERSION_PATCH 1
 
 #define VSCR_VERSION_MAKE(major, minor, patch) ((major) * 10000 + (minor) * 100 + (patch))
 

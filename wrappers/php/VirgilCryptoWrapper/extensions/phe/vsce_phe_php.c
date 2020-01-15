@@ -81,7 +81,7 @@ vsce_handle_throw_exception(vsce_status_t status) {
 //
 // Constants
 //
-const char VSCE_PHE_PHP_VERSION[] = "0.12.0";
+const char VSCE_PHE_PHP_VERSION[] = "0.12.1";
 const char VSCE_PHE_PHP_EXTNAME[] = "vsce_phe_php";
 
 static const char VSCE_PHE_SERVER_T_PHP_RES_NAME[] = "vsce_phe_server_t";
@@ -94,27 +94,27 @@ static const char VSCE_UOKMS_WRAP_ROTATION_T_PHP_RES_NAME[] = "vsce_uokms_wrap_r
 //
 // Constants func wrapping
 //
-VSCE_PUBLIC const char* vsce_phe_server_t_php_res_name(void) {
+VSCE_PHP_PUBLIC const char* vsce_phe_server_t_php_res_name(void) {
     return VSCE_PHE_SERVER_T_PHP_RES_NAME;
 }
 
-VSCE_PUBLIC const char* vsce_phe_client_t_php_res_name(void) {
+VSCE_PHP_PUBLIC const char* vsce_phe_client_t_php_res_name(void) {
     return VSCE_PHE_CLIENT_T_PHP_RES_NAME;
 }
 
-VSCE_PUBLIC const char* vsce_phe_cipher_t_php_res_name(void) {
+VSCE_PHP_PUBLIC const char* vsce_phe_cipher_t_php_res_name(void) {
     return VSCE_PHE_CIPHER_T_PHP_RES_NAME;
 }
 
-VSCE_PUBLIC const char* vsce_uokms_client_t_php_res_name(void) {
+VSCE_PHP_PUBLIC const char* vsce_uokms_client_t_php_res_name(void) {
     return VSCE_UOKMS_CLIENT_T_PHP_RES_NAME;
 }
 
-VSCE_PUBLIC const char* vsce_uokms_server_t_php_res_name(void) {
+VSCE_PHP_PUBLIC const char* vsce_uokms_server_t_php_res_name(void) {
     return VSCE_UOKMS_SERVER_T_PHP_RES_NAME;
 }
 
-VSCE_PUBLIC const char* vsce_uokms_wrap_rotation_t_php_res_name(void) {
+VSCE_PHP_PUBLIC const char* vsce_uokms_wrap_rotation_t_php_res_name(void) {
     return VSCE_UOKMS_WRAP_ROTATION_T_PHP_RES_NAME;
 }
 
@@ -131,27 +131,27 @@ int LE_VSCE_UOKMS_WRAP_ROTATION_T;
 //
 // Registered resources func wrapping
 //
-VSCE_PUBLIC int le_vsce_phe_server_t(void) {
+VSCE_PHP_PUBLIC int le_vsce_phe_server_t(void) {
     return LE_VSCE_PHE_SERVER_T;
 }
 
-VSCE_PUBLIC int le_vsce_phe_client_t(void) {
+VSCE_PHP_PUBLIC int le_vsce_phe_client_t(void) {
     return LE_VSCE_PHE_CLIENT_T;
 }
 
-VSCE_PUBLIC int le_vsce_phe_cipher_t(void) {
+VSCE_PHP_PUBLIC int le_vsce_phe_cipher_t(void) {
     return LE_VSCE_PHE_CIPHER_T;
 }
 
-VSCE_PUBLIC int le_vsce_uokms_client_t(void) {
+VSCE_PHP_PUBLIC int le_vsce_uokms_client_t(void) {
     return LE_VSCE_UOKMS_CLIENT_T;
 }
 
-VSCE_PUBLIC int le_vsce_uokms_server_t(void) {
+VSCE_PHP_PUBLIC int le_vsce_uokms_server_t(void) {
     return LE_VSCE_UOKMS_SERVER_T;
 }
 
-VSCE_PUBLIC int le_vsce_uokms_wrap_rotation_t(void) {
+VSCE_PHP_PUBLIC int le_vsce_uokms_wrap_rotation_t(void) {
     return LE_VSCE_UOKMS_WRAP_ROTATION_T;
 }
 

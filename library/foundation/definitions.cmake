@@ -1,6 +1,6 @@
 #   @license
 #   -------------------------------------------------------------------------
-#   Copyright (C) 2015-2019 Virgil Security, Inc.
+#   Copyright (C) 2015-2020 Virgil Security, Inc.
 #
 #   All rights reserved.
 #
@@ -52,6 +52,7 @@ endif()
 target_compile_definitions(foundation
         PUBLIC
             $<BUILD_INTERFACE:VSCF_INTERNAL_BUILD>
+            "VSCF_SHARED_LIBRARY=$<BOOL:${BUILD_SHARED_LIBS}>"
             "VSCF_LIBRARY=$<BOOL:${VSCF_LIBRARY}>"
             "VSCF_MULTI_THREADING=$<BOOL:${VSCF_MULTI_THREADING}>"
             "VSCF_POST_QUANTUM=$<BOOL:${VSCF_POST_QUANTUM}>"
@@ -187,6 +188,4 @@ target_compile_definitions(foundation
             "VSCF_TAIL_FILTER=$<BOOL:${VSCF_TAIL_FILTER}>"
             "VSCF_PADDING_PARAMS=$<BOOL:${VSCF_PADDING_PARAMS}>"
             "VSCF_PADDING_CIPHER=$<BOOL:${VSCF_PADDING_CIPHER}>"
-        PRIVATE
-            $<$<BOOL:${BUILD_SHARED_LIBS}>:VSCF_BUILD_SHARED_LIBS>
         )

@@ -1,5 +1,5 @@
 .template 0
-#   Copyright (C) 2015-2019 Virgil Security, Inc.
+#   Copyright (C) 2015-2020 Virgil Security, Inc.
 #
 #   All rights reserved.
 #
@@ -387,15 +387,15 @@ function cmake_generate_definitions (source, license)
                         $<BUILD_INTERFACE:$(c_features.internal_build:)>
         ")
 
+        for c_features.c_cmake_compile_definition
+            cmake_insert ("\"$(c_cmake_compile_definition.name:)=$<BOOL:${$(c_cmake_compile_definition.value:)}>\"", 3)
+        endfor
+
         for c_features.c_feature
             cmake_insert ("\"$(c_feature.name:)=$<BOOL:${$(c_feature.name:)}>\"", 3)
         endfor
 
-        cmake_insert ("\
-            PRIVATE
-                $<$<BOOL:${BUILD_SHARED_LIBS}>:$(c_features.build_shared_libs:)>
-            )
-        ", 2)
+        cmake_insert (")", 2)
     endfor
 endfunction
 

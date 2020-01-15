@@ -1,6 +1,6 @@
 #   @license
 #   -------------------------------------------------------------------------
-#   Copyright (C) 2015-2019 Virgil Security, Inc.
+#   Copyright (C) 2015-2020 Virgil Security, Inc.
 #
 #   All rights reserved.
 #
@@ -84,7 +84,7 @@ add_custom_target(copy_wasm_tests ALL
 # ---------------------------------------------------------------------------
 #   Add per project wrapper build
 # ---------------------------------------------------------------------------
+add_subdirectory("foundation")
 add_subdirectory("pythia")
 add_subdirectory("ratchet")
 add_subdirectory("phe")
-add_subdirectory("foundation")

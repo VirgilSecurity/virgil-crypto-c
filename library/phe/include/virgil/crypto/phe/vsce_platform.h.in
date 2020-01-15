@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2019 Virgil Security, Inc.
+//  Copyright (C) 2015-2020 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -76,6 +76,10 @@ extern "C" {
 #cmakedefine01 VSCE_HAVE_STDATOMIC_H
 #if VSCE_HAVE_STDATOMIC_H
 #   include <stdatomic.h>
+#endif
+
+#ifndef VSCE_SHARED_LIBRARY
+#cmakedefine01 VSCE_SHARED_LIBRARY
 #endif
 
 #ifndef VSCE_MULTI_THREADING

@@ -1,6 +1,6 @@
 #   @license
 #   -------------------------------------------------------------------------
-#   Copyright (C) 2015-2019 Virgil Security, Inc.
+#   Copyright (C) 2015-2020 Virgil Security, Inc.
 #
 #   All rights reserved.
 #
@@ -52,6 +52,7 @@ endif()
 target_compile_definitions(phe
         PUBLIC
             $<BUILD_INTERFACE:VSCE_INTERNAL_BUILD>
+            "VSCE_SHARED_LIBRARY=$<BOOL:${BUILD_SHARED_LIBS}>"
             "VSCE_LIBRARY=$<BOOL:${VSCE_LIBRARY}>"
             "VSCE_MULTI_THREADING=$<BOOL:${VSCE_MULTI_THREADING}>"
             "VSCE_ERROR=$<BOOL:${VSCE_ERROR}>"
@@ -69,6 +70,4 @@ target_compile_definitions(phe
             "VSCE_UOKMS_CLIENT=$<BOOL:${VSCE_UOKMS_CLIENT}>"
             "VSCE_UOKMS_SERVER=$<BOOL:${VSCE_UOKMS_SERVER}>"
             "VSCE_UOKMS_WRAP_ROTATION=$<BOOL:${VSCE_UOKMS_WRAP_ROTATION}>"
-        PRIVATE
-            $<$<BOOL:${BUILD_SHARED_LIBS}>:VSCE_BUILD_SHARED_LIBS>
         )

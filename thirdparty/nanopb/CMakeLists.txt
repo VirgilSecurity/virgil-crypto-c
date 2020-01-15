@@ -1,4 +1,4 @@
-#   Copyright (C) 2015-2019 Virgil Security, Inc.
+#   Copyright (C) 2015-2020 Virgil Security, Inc.
 #
 #   All rights reserved.
 #
@@ -60,11 +60,6 @@ else()
     set(PROTOC_BIN_URL "https://github.com/protocolbuffers/protobuf/releases/download/v3.6.1/protoc-3.6.1-linux-x86_64.zip")
     set(PROTOC_BIN_HASH "6003de742ea3fcf703cfec1cd4a3380fd143081a2eb0e559065563496af27807")
 endif()
-
-# ---------------------------------------------------------------------------
-#   Dependencies
-# ---------------------------------------------------------------------------
-find_host_package(PythonInterp 2.7 REQUIRED)
 
 # ---------------------------------------------------------------------------
 #   Optionally load and import protobuf generator as an external project
@@ -148,17 +143,6 @@ ExternalProject_Add(protobuf-nanopb-ext
             "${NANOPB_INSTALL_LOCATION}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}protobuf-nanopbd${CMAKE_STATIC_LIBRARY_SUFFIX}"
         )
 
-ExternalProject_Add_Step(protobuf-nanopb-ext patch-protobuf-generator
-        COMMAND "${CMAKE_COMMAND}"
-            -DGENERATOR_FILE=<SOURCE_DIR>/generator/nanopb_generator.py
-            -DPYTHON_EXECUTABLE=${PYTHON_EXECUTABLE}
-            -P ${CMAKE_CURRENT_LIST_DIR}/patch_nanopb_generator.py.cmake
-        COMMENT
-            "Patch protobuf generator"
-        DEPENDEES
-            install
-        )
-
 ExternalProject_Add_Step(protobuf-nanopb-ext install-protobuf-generator
         COMMAND
             "${CMAKE_COMMAND}" -E copy_directory
@@ -167,7 +151,7 @@ ExternalProject_Add_Step(protobuf-nanopb-ext install-protobuf-generator
         COMMENT
             "Install protobuf generator"
         DEPENDEES
-            patch-protobuf-generator
+            install
         )
 
 ExternalProject_Add_Step(protobuf-nanopb-ext build-protobuf-generator-model-nanopb
