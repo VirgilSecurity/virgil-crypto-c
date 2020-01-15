@@ -96,7 +96,7 @@ if(ENABLE_TESTING)
             COMMAND "${PHP_EXECUTABLE}"
                     -d "extension=$<TARGET_FILE:pythia_php>"
                     -d safe_mode=Off
-                    "${VIRGIL_CRYPTO_WRAPPER_PROJECT_DIR}/vendor/bin/phpunit"
+                    "${VIRGIL_CRYPTO_WRAPPER_PROJECT_DIR}/vendor/phpunit/phpunit/phpunit"
                         --bootstrap
                             "${VIRGIL_CRYPTO_WRAPPER_PROJECT_DIR}/vendor/autoload.php"
                         --include-path

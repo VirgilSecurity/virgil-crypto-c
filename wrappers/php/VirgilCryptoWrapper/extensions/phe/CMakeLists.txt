@@ -98,7 +98,7 @@ if(ENABLE_TESTING)
                     -d "extension=$<TARGET_FILE:phe_php>"
                     -d "extension=$<TARGET_FILE:foundation_php>"
                     -d safe_mode=Off
-                    "${VIRGIL_CRYPTO_WRAPPER_PROJECT_DIR}/vendor/bin/phpunit"
+                    "${VIRGIL_CRYPTO_WRAPPER_PROJECT_DIR}/vendor/phpunit/phpunit/phpunit"
                         --bootstrap
                             "${VIRGIL_CRYPTO_WRAPPER_PROJECT_DIR}/vendor/autoload.php"
                         --include-path
