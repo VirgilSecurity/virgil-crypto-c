@@ -63,6 +63,10 @@
 extern "C" {
 #endif
 
+#define VSCF_HAVE_STDATOMIC_H 1
+#if VSCF_HAVE_STDATOMIC_H
+#include <stdatomic.h>
+#endif
 
 //  @generated
 // --------------------------------------------------------------------------

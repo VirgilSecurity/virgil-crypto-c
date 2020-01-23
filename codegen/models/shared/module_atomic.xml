@@ -2,6 +2,7 @@
     This module contains macroses for cross-platform atomicity.
 
     <require module="library"/>
+    <c_include file="stdatomic.h" is_system="1" />
 
     <method name="compare exchange weak" declaration="external" definition="external"/>
     <code definition="public">

@@ -89,7 +89,6 @@ function c_module_platform_create (project, destination, meta)
         .name = my.names.module_platform
 
         c_module_platform_create_cmake_include_file_check("assert.h", module)
-        c_module_platform_create_cmake_include_file_check("stdatomic.h", module)
 
         for my.project.cmake_compile_definition
             new macroses to module
