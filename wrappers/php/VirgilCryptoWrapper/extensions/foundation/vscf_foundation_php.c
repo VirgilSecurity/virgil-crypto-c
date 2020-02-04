@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2015-2019 Virgil Security, Inc.
+// Copyright (C) 2015-2020 Virgil Security, Inc.
 //
 // All rights reserved.
 //
@@ -385,103 +385,103 @@ static const char VSCF_PADDING_PARAMS_T_PHP_RES_NAME[] = "vscf_padding_params_t"
 //
 // Constants func wrapping
 //
-VSCF_PHP_PUBLIC const char* vscf_impl_t_php_res_name(void) {
+VSCF_PUBLIC const char* vscf_impl_t_php_res_name(void) {
     return VSCF_IMPL_T_PHP_RES_NAME;
 }
 
-VSCF_PHP_PUBLIC const char* vscf_message_info_t_php_res_name(void) {
+VSCF_PUBLIC const char* vscf_message_info_t_php_res_name(void) {
     return VSCF_MESSAGE_INFO_T_PHP_RES_NAME;
 }
 
-VSCF_PHP_PUBLIC const char* vscf_key_recipient_info_t_php_res_name(void) {
+VSCF_PUBLIC const char* vscf_key_recipient_info_t_php_res_name(void) {
     return VSCF_KEY_RECIPIENT_INFO_T_PHP_RES_NAME;
 }
 
-VSCF_PHP_PUBLIC const char* vscf_key_recipient_info_list_t_php_res_name(void) {
+VSCF_PUBLIC const char* vscf_key_recipient_info_list_t_php_res_name(void) {
     return VSCF_KEY_RECIPIENT_INFO_LIST_T_PHP_RES_NAME;
 }
 
-VSCF_PHP_PUBLIC const char* vscf_password_recipient_info_t_php_res_name(void) {
+VSCF_PUBLIC const char* vscf_password_recipient_info_t_php_res_name(void) {
     return VSCF_PASSWORD_RECIPIENT_INFO_T_PHP_RES_NAME;
 }
 
-VSCF_PHP_PUBLIC const char* vscf_password_recipient_info_list_t_php_res_name(void) {
+VSCF_PUBLIC const char* vscf_password_recipient_info_list_t_php_res_name(void) {
     return VSCF_PASSWORD_RECIPIENT_INFO_LIST_T_PHP_RES_NAME;
 }
 
-VSCF_PHP_PUBLIC const char* vscf_ecies_t_php_res_name(void) {
+VSCF_PUBLIC const char* vscf_ecies_t_php_res_name(void) {
     return VSCF_ECIES_T_PHP_RES_NAME;
 }
 
-VSCF_PHP_PUBLIC const char* vscf_recipient_cipher_t_php_res_name(void) {
+VSCF_PUBLIC const char* vscf_recipient_cipher_t_php_res_name(void) {
     return VSCF_RECIPIENT_CIPHER_T_PHP_RES_NAME;
 }
 
-VSCF_PHP_PUBLIC const char* vscf_message_info_custom_params_t_php_res_name(void) {
+VSCF_PUBLIC const char* vscf_message_info_custom_params_t_php_res_name(void) {
     return VSCF_MESSAGE_INFO_CUSTOM_PARAMS_T_PHP_RES_NAME;
 }
 
-VSCF_PHP_PUBLIC const char* vscf_key_provider_t_php_res_name(void) {
+VSCF_PUBLIC const char* vscf_key_provider_t_php_res_name(void) {
     return VSCF_KEY_PROVIDER_T_PHP_RES_NAME;
 }
 
-VSCF_PHP_PUBLIC const char* vscf_signer_t_php_res_name(void) {
+VSCF_PUBLIC const char* vscf_signer_t_php_res_name(void) {
     return VSCF_SIGNER_T_PHP_RES_NAME;
 }
 
-VSCF_PHP_PUBLIC const char* vscf_verifier_t_php_res_name(void) {
+VSCF_PUBLIC const char* vscf_verifier_t_php_res_name(void) {
     return VSCF_VERIFIER_T_PHP_RES_NAME;
 }
 
-VSCF_PHP_PUBLIC const char* vscf_brainkey_client_t_php_res_name(void) {
+VSCF_PUBLIC const char* vscf_brainkey_client_t_php_res_name(void) {
     return VSCF_BRAINKEY_CLIENT_T_PHP_RES_NAME;
 }
 
-VSCF_PHP_PUBLIC const char* vscf_brainkey_server_t_php_res_name(void) {
+VSCF_PUBLIC const char* vscf_brainkey_server_t_php_res_name(void) {
     return VSCF_BRAINKEY_SERVER_T_PHP_RES_NAME;
 }
 
-VSCF_PHP_PUBLIC const char* vscf_group_session_message_t_php_res_name(void) {
+VSCF_PUBLIC const char* vscf_group_session_message_t_php_res_name(void) {
     return VSCF_GROUP_SESSION_MESSAGE_T_PHP_RES_NAME;
 }
 
-VSCF_PHP_PUBLIC const char* vscf_group_session_ticket_t_php_res_name(void) {
+VSCF_PUBLIC const char* vscf_group_session_ticket_t_php_res_name(void) {
     return VSCF_GROUP_SESSION_TICKET_T_PHP_RES_NAME;
 }
 
-VSCF_PHP_PUBLIC const char* vscf_group_session_t_php_res_name(void) {
+VSCF_PUBLIC const char* vscf_group_session_t_php_res_name(void) {
     return VSCF_GROUP_SESSION_T_PHP_RES_NAME;
 }
 
-VSCF_PHP_PUBLIC const char* vscf_message_info_editor_t_php_res_name(void) {
+VSCF_PUBLIC const char* vscf_message_info_editor_t_php_res_name(void) {
     return VSCF_MESSAGE_INFO_EDITOR_T_PHP_RES_NAME;
 }
 
-VSCF_PHP_PUBLIC const char* vscf_signer_info_t_php_res_name(void) {
+VSCF_PUBLIC const char* vscf_signer_info_t_php_res_name(void) {
     return VSCF_SIGNER_INFO_T_PHP_RES_NAME;
 }
 
-VSCF_PHP_PUBLIC const char* vscf_signer_info_list_t_php_res_name(void) {
+VSCF_PUBLIC const char* vscf_signer_info_list_t_php_res_name(void) {
     return VSCF_SIGNER_INFO_LIST_T_PHP_RES_NAME;
 }
 
-VSCF_PHP_PUBLIC const char* vscf_message_info_footer_t_php_res_name(void) {
+VSCF_PUBLIC const char* vscf_message_info_footer_t_php_res_name(void) {
     return VSCF_MESSAGE_INFO_FOOTER_T_PHP_RES_NAME;
 }
 
-VSCF_PHP_PUBLIC const char* vscf_signed_data_info_t_php_res_name(void) {
+VSCF_PUBLIC const char* vscf_signed_data_info_t_php_res_name(void) {
     return VSCF_SIGNED_DATA_INFO_T_PHP_RES_NAME;
 }
 
-VSCF_PHP_PUBLIC const char* vscf_footer_info_t_php_res_name(void) {
+VSCF_PUBLIC const char* vscf_footer_info_t_php_res_name(void) {
     return VSCF_FOOTER_INFO_T_PHP_RES_NAME;
 }
 
-VSCF_PHP_PUBLIC const char* vscf_key_info_t_php_res_name(void) {
+VSCF_PUBLIC const char* vscf_key_info_t_php_res_name(void) {
     return VSCF_KEY_INFO_T_PHP_RES_NAME;
 }
 
-VSCF_PHP_PUBLIC const char* vscf_padding_params_t_php_res_name(void) {
+VSCF_PUBLIC const char* vscf_padding_params_t_php_res_name(void) {
     return VSCF_PADDING_PARAMS_T_PHP_RES_NAME;
 }
 
@@ -517,103 +517,103 @@ int LE_VSCF_PADDING_PARAMS_T;
 //
 // Registered resources func wrapping
 //
-VSCF_PHP_PUBLIC int le_vscf_impl_t(void) {
+VSCF_PUBLIC int le_vscf_impl_t(void) {
     return LE_VSCF_IMPL_T;
 }
 
-VSCF_PHP_PUBLIC int le_vscf_message_info_t(void) {
+VSCF_PUBLIC int le_vscf_message_info_t(void) {
     return LE_VSCF_MESSAGE_INFO_T;
 }
 
-VSCF_PHP_PUBLIC int le_vscf_key_recipient_info_t(void) {
+VSCF_PUBLIC int le_vscf_key_recipient_info_t(void) {
     return LE_VSCF_KEY_RECIPIENT_INFO_T;
 }
 
-VSCF_PHP_PUBLIC int le_vscf_key_recipient_info_list_t(void) {
+VSCF_PUBLIC int le_vscf_key_recipient_info_list_t(void) {
     return LE_VSCF_KEY_RECIPIENT_INFO_LIST_T;
 }
 
-VSCF_PHP_PUBLIC int le_vscf_password_recipient_info_t(void) {
+VSCF_PUBLIC int le_vscf_password_recipient_info_t(void) {
     return LE_VSCF_PASSWORD_RECIPIENT_INFO_T;
 }
 
-VSCF_PHP_PUBLIC int le_vscf_password_recipient_info_list_t(void) {
+VSCF_PUBLIC int le_vscf_password_recipient_info_list_t(void) {
     return LE_VSCF_PASSWORD_RECIPIENT_INFO_LIST_T;
 }
 
-VSCF_PHP_PUBLIC int le_vscf_ecies_t(void) {
+VSCF_PUBLIC int le_vscf_ecies_t(void) {
     return LE_VSCF_ECIES_T;
 }
 
-VSCF_PHP_PUBLIC int le_vscf_recipient_cipher_t(void) {
+VSCF_PUBLIC int le_vscf_recipient_cipher_t(void) {
     return LE_VSCF_RECIPIENT_CIPHER_T;
 }
 
-VSCF_PHP_PUBLIC int le_vscf_message_info_custom_params_t(void) {
+VSCF_PUBLIC int le_vscf_message_info_custom_params_t(void) {
     return LE_VSCF_MESSAGE_INFO_CUSTOM_PARAMS_T;
 }
 
-VSCF_PHP_PUBLIC int le_vscf_key_provider_t(void) {
+VSCF_PUBLIC int le_vscf_key_provider_t(void) {
     return LE_VSCF_KEY_PROVIDER_T;
 }
 
-VSCF_PHP_PUBLIC int le_vscf_signer_t(void) {
+VSCF_PUBLIC int le_vscf_signer_t(void) {
     return LE_VSCF_SIGNER_T;
 }
 
-VSCF_PHP_PUBLIC int le_vscf_verifier_t(void) {
+VSCF_PUBLIC int le_vscf_verifier_t(void) {
     return LE_VSCF_VERIFIER_T;
 }
 
-VSCF_PHP_PUBLIC int le_vscf_brainkey_client_t(void) {
+VSCF_PUBLIC int le_vscf_brainkey_client_t(void) {
     return LE_VSCF_BRAINKEY_CLIENT_T;
 }
 
-VSCF_PHP_PUBLIC int le_vscf_brainkey_server_t(void) {
+VSCF_PUBLIC int le_vscf_brainkey_server_t(void) {
     return LE_VSCF_BRAINKEY_SERVER_T;
 }
 
-VSCF_PHP_PUBLIC int le_vscf_group_session_message_t(void) {
+VSCF_PUBLIC int le_vscf_group_session_message_t(void) {
     return LE_VSCF_GROUP_SESSION_MESSAGE_T;
 }
 
-VSCF_PHP_PUBLIC int le_vscf_group_session_ticket_t(void) {
+VSCF_PUBLIC int le_vscf_group_session_ticket_t(void) {
     return LE_VSCF_GROUP_SESSION_TICKET_T;
 }
 
-VSCF_PHP_PUBLIC int le_vscf_group_session_t(void) {
+VSCF_PUBLIC int le_vscf_group_session_t(void) {
     return LE_VSCF_GROUP_SESSION_T;
 }
 
-VSCF_PHP_PUBLIC int le_vscf_message_info_editor_t(void) {
+VSCF_PUBLIC int le_vscf_message_info_editor_t(void) {
     return LE_VSCF_MESSAGE_INFO_EDITOR_T;
 }
 
-VSCF_PHP_PUBLIC int le_vscf_signer_info_t(void) {
+VSCF_PUBLIC int le_vscf_signer_info_t(void) {
     return LE_VSCF_SIGNER_INFO_T;
 }
 
-VSCF_PHP_PUBLIC int le_vscf_signer_info_list_t(void) {
+VSCF_PUBLIC int le_vscf_signer_info_list_t(void) {
     return LE_VSCF_SIGNER_INFO_LIST_T;
 }
 
-VSCF_PHP_PUBLIC int le_vscf_message_info_footer_t(void) {
+VSCF_PUBLIC int le_vscf_message_info_footer_t(void) {
     return LE_VSCF_MESSAGE_INFO_FOOTER_T;
 }
 
-VSCF_PHP_PUBLIC int le_vscf_signed_data_info_t(void) {
+VSCF_PUBLIC int le_vscf_signed_data_info_t(void) {
     return LE_VSCF_SIGNED_DATA_INFO_T;
 }
 
-VSCF_PHP_PUBLIC int le_vscf_footer_info_t(void) {
+VSCF_PUBLIC int le_vscf_footer_info_t(void) {
     return LE_VSCF_FOOTER_INFO_T;
 }
 
-VSCF_PHP_PUBLIC int le_vscf_key_info_t(void) {
+VSCF_PUBLIC int le_vscf_key_info_t(void) {
     return LE_VSCF_KEY_INFO_T;
 }
 
-VSCF_PHP_PUBLIC int le_vscf_padding_params_t(void) {
+VSCF_PUBLIC int le_vscf_padding_params_t(void) {
     return LE_VSCF_PADDING_PARAMS_T;
 }
 

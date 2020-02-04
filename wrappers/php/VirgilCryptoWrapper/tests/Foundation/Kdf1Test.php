@@ -96,6 +96,7 @@ class Kdf1Test extends \PHPUnit\Framework\TestCase
         $this->assertEquals($vector3KeyBytes, $key);
     }
 
+
     /**
      * @param string $string
      * @return string

@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2015-2019 Virgil Security, Inc.
+// Copyright (C) 2015-2020 Virgil Security, Inc.
 //
 // All rights reserved.
 //
@@ -34,74 +34,46 @@
 // Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 //
 
-#ifndef VSCE_PHE_PHP_H
-#define VSCE_PHE_PHP_H
-
-
-#if defined(_WIN32) || defined(__CYGWIN__)
-#   if defined(VSCE_PHP_INTERNAL_BUILD)
-#       ifdef __GNUC__
-#           define VSCE_PHP_PUBLIC __attribute__ ((dllexport))
-#       else
-#           define VSCE_PHP_PUBLIC __declspec(dllexport)
-#       endif
-#   else
-#       ifdef __GNUC__
-#           define VSCE_PHP_PUBLIC __attribute__ ((dllimport))
-#       else
-#           define VSCE_PHP_PUBLIC __declspec(dllimport)
-#       endif
-#   endif
-#   define VSC_PRIVATE
-#else
-#   if (defined(__GNUC__) && __GNUC__ >= 4) || defined(__INTEL_COMPILER) || defined(__clang__)
-#       define VSCE_PHP_PUBLIC __attribute__ ((visibility ("default")))
-#       define VSCE_PHP_PRIVATE __attribute__ ((visibility ("hidden")))
-#   else
-#       define VSCE_PHP_PRIVATE
-#   endif
-#endif
+#include "vsce_library.h"
 
 //
 // Constants
 //
-VSCE_PHP_PUBLIC const char*
+VSCE_PUBLIC const char*
 vsce_phe_server_t_php_res_name(void);
 
-VSCE_PHP_PUBLIC const char*
+VSCE_PUBLIC const char*
 vsce_phe_client_t_php_res_name(void);
 
-VSCE_PHP_PUBLIC const char*
+VSCE_PUBLIC const char*
 vsce_phe_cipher_t_php_res_name(void);
 
-VSCE_PHP_PUBLIC const char*
+VSCE_PUBLIC const char*
 vsce_uokms_client_t_php_res_name(void);
 
-VSCE_PHP_PUBLIC const char*
+VSCE_PUBLIC const char*
 vsce_uokms_server_t_php_res_name(void);
 
-VSCE_PHP_PUBLIC const char*
+VSCE_PUBLIC const char*
 vsce_uokms_wrap_rotation_t_php_res_name(void);
 
 //
 // Registered resources
 //
-VSCE_PHP_PUBLIC int
+VSCE_PUBLIC int
 le_vsce_phe_server_t(void);
 
-VSCE_PHP_PUBLIC int
+VSCE_PUBLIC int
 le_vsce_phe_client_t(void);
 
-VSCE_PHP_PUBLIC int
+VSCE_PUBLIC int
 le_vsce_phe_cipher_t(void);
 
-VSCE_PHP_PUBLIC int
+VSCE_PUBLIC int
 le_vsce_uokms_client_t(void);
 
-VSCE_PHP_PUBLIC int
+VSCE_PUBLIC int
 le_vsce_uokms_server_t(void);
 
-VSCE_PHP_PUBLIC int
+VSCE_PUBLIC int
 le_vsce_uokms_wrap_rotation_t(void);
-
-#endif // VSCE_PHE_PHP_H
