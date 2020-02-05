@@ -485,6 +485,17 @@ vsce_uokms_client_setup_defaults(vsce_uokms_client_t *self) {
 }
 
 //
+//  Sets client private
+//  Call this method before any other methods
+//  This function should be called only once
+//
+VSCE_PUBLIC vsce_status_t
+vsce_uokms_client_set_keys_oneparty(vsce_uokms_client_t *self, vsc_data_t client_private_key) {
+
+    return vsce_uokms_client_set_keys(self, client_private_key, vsc_data_empty());
+}
+
+//
 //  Sets client private and server public key
 //  Call this method before any other methods
 //  This function should be called only once
@@ -496,7 +507,8 @@ vsce_uokms_client_set_keys(vsce_uokms_client_t *self, vsc_data_t client_private_
     VSCE_ASSERT(!self->keys_are_set);
     VSCE_ASSERT(
             vsc_data_is_valid(client_private_key) && client_private_key.len == vsce_phe_common_PHE_PRIVATE_KEY_LENGTH);
-    VSCE_ASSERT(vsc_data_is_valid(server_public_key) && server_public_key.len == vsce_phe_common_PHE_PUBLIC_KEY_LENGTH);
+
+    VSCE_ASSERT(vsc_data_is_valid(server_public_key));
 
     vsce_status_t status = vsce_status_SUCCESS;
 
@@ -512,26 +524,38 @@ vsce_uokms_client_set_keys(vsce_uokms_client_t *self, vsc_data_t client_private_
         goto err;
     }
 
-    mbedtls_status = mbedtls_ecp_point_read_binary(
-            &self->group, &self->ks_public, server_public_key.bytes, server_public_key.len);
-    if (mbedtls_status != 0 || mbedtls_ecp_check_pubkey(&self->group, &self->ks_public) != 0) {
-        status = vsce_status_ERROR_INVALID_PUBLIC_KEY;
-        goto err;
-    }
-
-    mbedtls_mpi one;
-    mbedtls_mpi_init(&one);
-    mbedtls_status = mbedtls_mpi_lset(&one, 1);
-    VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
-
     mbedtls_ecp_group *op_group = vsce_uokms_client_get_op_group(self);
 
-    mbedtls_status =
-            mbedtls_ecp_muladd(op_group, &self->k_public, &self->kc_private, &self->group.G, &one, &self->ks_public);
-    VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
+    if (server_public_key.len == 0) {
+        self->multiparty_mode = false;
+
+        mbedtls_status = mbedtls_ecp_mul(op_group, &self->k_public, &self->kc_private, &self->group.G,
+                vscf_mbedtls_bridge_random, self->operation_random);
+        VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
+    } else {
+        self->multiparty_mode = true;
+        VSCE_ASSERT(server_public_key.len == vsce_phe_common_PHE_PUBLIC_KEY_LENGTH);
+
+        mbedtls_status = mbedtls_ecp_point_read_binary(
+                &self->group, &self->ks_public, server_public_key.bytes, server_public_key.len);
+        if (mbedtls_status != 0 || mbedtls_ecp_check_pubkey(&self->group, &self->ks_public) != 0) {
+            status = vsce_status_ERROR_INVALID_PUBLIC_KEY;
+            goto err;
+        }
+
+        mbedtls_mpi one;
+        mbedtls_mpi_init(&one);
+        mbedtls_status = mbedtls_mpi_lset(&one, 1);
+        VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
+
+        mbedtls_status = mbedtls_ecp_muladd(
+                op_group, &self->k_public, &self->kc_private, &self->group.G, &one, &self->ks_public);
+        VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
+
+        mbedtls_mpi_free(&one);
+    }
 
     vsce_uokms_client_free_op_group(op_group);
-    mbedtls_mpi_free(&one);
 
 err:
     return status;
@@ -658,6 +682,70 @@ err:
 }
 
 //
+//  Decrypt
+//
+VSCE_PUBLIC vsce_status_t
+vsce_uokms_client_decrypt_oneparty(
+        vsce_uokms_client_t *self, vsc_data_t wrap, size_t encryption_key_len, vsc_buffer_t *encryption_key) {
+
+    VSCE_ASSERT_PTR(self);
+    VSCE_ASSERT(self->keys_are_set && !self->multiparty_mode);
+    VSCE_ASSERT(vsc_data_is_valid(wrap) && wrap.len == vsce_phe_common_PHE_PUBLIC_KEY_LENGTH);
+    VSCE_ASSERT(encryption_key_len > 0);
+    VSCE_ASSERT_PTR(encryption_key);
+    VSCE_ASSERT(vsc_buffer_len(encryption_key) == 0 && vsc_buffer_capacity(encryption_key) >= encryption_key_len);
+
+    vsc_buffer_make_secure(encryption_key);
+
+    vsce_status_t status = vsce_status_SUCCESS;
+
+    mbedtls_ecp_point W;
+    mbedtls_ecp_point_init(&W);
+
+    int mbedtls_status = mbedtls_ecp_point_read_binary(&self->group, &W, wrap.bytes, wrap.len);
+    if (mbedtls_status != 0 || mbedtls_ecp_check_pubkey(&self->group, &W) != 0) {
+        status = vsce_status_ERROR_INVALID_PUBLIC_KEY;
+        goto err1;
+    }
+
+    mbedtls_ecp_group *op_group = vsce_uokms_client_get_op_group(self);
+
+    mbedtls_ecp_point S;
+    mbedtls_ecp_point_init(&S);
+
+    mbedtls_status =
+            mbedtls_ecp_mul(op_group, &S, &self->kc_private, &W, vscf_mbedtls_bridge_random, self->operation_random);
+    VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
+
+    byte seed[vsce_phe_common_PHE_POINT_LENGTH];
+
+    size_t olen = 0;
+    mbedtls_status = mbedtls_ecp_point_write_binary(
+            &self->group, &S, MBEDTLS_ECP_PF_UNCOMPRESSED, &olen, seed, vsce_phe_common_PHE_PUBLIC_KEY_LENGTH);
+    VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
+    VSCE_ASSERT(olen == vsce_phe_common_PHE_PUBLIC_KEY_LENGTH);
+
+    vscf_hkdf_t *hkdf = vscf_hkdf_new();
+
+    vscf_hkdf_take_hash(hkdf, vscf_sha512_impl(vscf_sha512_new()));
+    vscf_hkdf_set_info(hkdf, k_kdf_info_uokms_key);
+    vscf_hkdf_derive(hkdf, vsc_data(seed, sizeof(seed)), encryption_key_len, encryption_key);
+
+    vsce_zeroize(seed, sizeof(seed));
+
+    vscf_hkdf_destroy(&hkdf);
+
+    mbedtls_ecp_point_free(&S);
+
+    vsce_uokms_client_free_op_group(op_group);
+
+err1:
+    mbedtls_ecp_point_free(&W);
+
+    return status;
+}
+
+//
 //  Generates request to decrypt data, this request should be sent to the server.
 //  Server response is then passed to "process decrypt response" where encryption key can be decapsulated
 //
@@ -666,7 +754,7 @@ vsce_uokms_client_generate_decrypt_request(
         vsce_uokms_client_t *self, vsc_data_t wrap, vsc_buffer_t *deblind_factor, vsc_buffer_t *decrypt_request) {
 
     VSCE_ASSERT_PTR(self);
-    VSCE_ASSERT(self->keys_are_set);
+    VSCE_ASSERT(self->keys_are_set && self->multiparty_mode);
     VSCE_ASSERT(vsc_data_is_valid(wrap));
     VSCE_ASSERT_PTR(deblind_factor);
     VSCE_ASSERT(vsc_buffer_len(deblind_factor) == 0 &&
@@ -755,7 +843,7 @@ vsce_uokms_client_process_decrypt_response(vsce_uokms_client_t *self, vsc_data_t
         vsc_buffer_t *encryption_key) {
 
     VSCE_ASSERT_PTR(self);
-    VSCE_ASSERT(self->keys_are_set);
+    VSCE_ASSERT(self->keys_are_set && self->multiparty_mode);
     VSCE_ASSERT(vsc_data_is_valid(wrap) && wrap.len == vsce_phe_common_PHE_PUBLIC_KEY_LENGTH);
     VSCE_ASSERT(vsc_data_is_valid(decrypt_request) && decrypt_request.len == vsce_phe_common_PHE_PUBLIC_KEY_LENGTH);
     VSCE_ASSERT(vsc_data_is_valid(decrypt_response));
@@ -876,6 +964,50 @@ pb_err:
 }
 
 //
+//  Rotates client key using given update token obtained from server
+//
+VSCE_PUBLIC vsce_status_t
+vsce_uokms_client_rotate_keys_oneparty(
+        vsce_uokms_client_t *self, vsc_data_t update_token, vsc_buffer_t *new_client_private_key) {
+
+    VSCE_ASSERT_PTR(self);
+    VSCE_ASSERT(!self->multiparty_mode);
+
+    return vsce_uokms_client_rotate_keys(self, update_token, new_client_private_key, NULL);
+}
+
+VSCE_PUBLIC vsce_status_t
+vsce_uokms_client_generate_update_token_oneparty(vsce_uokms_client_t *self, vsc_buffer_t *update_token) {
+
+    VSCE_ASSERT_PTR(self);
+    VSCE_ASSERT(vsc_buffer_len(update_token) == 0);
+    VSCE_ASSERT(vsc_buffer_unused_len(update_token) >= vsce_phe_common_PHE_PRIVATE_KEY_LENGTH);
+    vsc_buffer_make_secure(update_token);
+
+    vsce_status_t status = vsce_status_SUCCESS;
+
+    mbedtls_mpi a;
+    mbedtls_mpi_init(&a);
+
+    int mbedtls_status = mbedtls_ecp_gen_privkey(&self->group, &a, vscf_mbedtls_bridge_random, self->random);
+
+    if (mbedtls_status != 0) {
+        status = vsce_status_ERROR_RNG_FAILED;
+        goto err;
+    }
+
+    mbedtls_status =
+            mbedtls_mpi_write_binary(&a, vsc_buffer_unused_bytes(update_token), vsce_phe_common_PHE_PRIVATE_KEY_LENGTH);
+    vsc_buffer_inc_used(update_token, vsce_phe_common_PHE_PRIVATE_KEY_LENGTH);
+    VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
+
+err:
+    mbedtls_mpi_free(&a);
+
+    return status;
+}
+
+//
 //  Rotates client and server keys using given update token obtained from server
 //
 VSCE_PUBLIC vsce_status_t
@@ -887,18 +1019,24 @@ vsce_uokms_client_rotate_keys(vsce_uokms_client_t *self, vsc_data_t update_token
     VSCE_ASSERT(vsc_buffer_len(new_client_private_key) == 0);
     VSCE_ASSERT(vsc_buffer_unused_len(new_client_private_key) >= vsce_phe_common_PHE_PRIVATE_KEY_LENGTH);
     vsc_buffer_make_secure(new_client_private_key);
-    VSCE_ASSERT(vsc_buffer_len(new_server_public_key) == 0);
-    VSCE_ASSERT(vsc_buffer_unused_len(new_server_public_key) >= vsce_phe_common_PHE_PUBLIC_KEY_LENGTH);
+
+    if (self->multiparty_mode) {
+        VSCE_ASSERT_PTR(new_server_public_key);
+        VSCE_ASSERT(vsc_buffer_len(new_server_public_key) == 0);
+        VSCE_ASSERT(vsc_buffer_unused_len(new_server_public_key) >= vsce_phe_common_PHE_PUBLIC_KEY_LENGTH);
+        vsc_buffer_make_secure(new_server_public_key);
+    } else {
+        VSCE_ASSERT(new_server_public_key == NULL);
+    }
 
     vsc_buffer_make_secure(new_client_private_key);
-    vsc_buffer_make_secure(new_server_public_key);
 
     mbedtls_ecp_group *op_group = vsce_uokms_client_get_op_group(self);
 
     vsce_status_t status = vsce_status_SUCCESS;
 
     if (update_token.len != vsce_phe_common_PHE_PRIVATE_KEY_LENGTH) {
-        status = vsce_status_ERROR_INVALID_PUBLIC_KEY;
+        status = vsce_status_ERROR_INVALID_PRIVATE_KEY;
         goto err;
     }
 
@@ -933,21 +1071,23 @@ vsce_uokms_client_rotate_keys(vsce_uokms_client_t *self, vsc_data_t update_token
     vsc_buffer_inc_used(new_client_private_key, vsce_phe_common_PHE_PRIVATE_KEY_LENGTH);
     VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
 
-    mbedtls_ecp_point new_Ks;
-    mbedtls_ecp_point_init(&new_Ks);
+    if (self->multiparty_mode) {
+        mbedtls_ecp_point new_Ks;
+        mbedtls_ecp_point_init(&new_Ks);
 
-    mbedtls_status = mbedtls_ecp_mul(
-            op_group, &new_Ks, &aInv, &self->ks_public, vscf_mbedtls_bridge_random, self->operation_random);
-    VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
+        mbedtls_status = mbedtls_ecp_mul(
+                op_group, &new_Ks, &aInv, &self->ks_public, vscf_mbedtls_bridge_random, self->operation_random);
+        VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
 
-    size_t olen = 0;
-    mbedtls_status = mbedtls_ecp_point_write_binary(&self->group, &new_Ks, MBEDTLS_ECP_PF_UNCOMPRESSED, &olen,
-            vsc_buffer_unused_bytes(new_server_public_key), vsce_phe_common_PHE_PUBLIC_KEY_LENGTH);
-    vsc_buffer_inc_used(new_server_public_key, vsce_phe_common_PHE_PUBLIC_KEY_LENGTH);
-    VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
-    VSCE_ASSERT(olen == vsce_phe_common_PHE_PUBLIC_KEY_LENGTH);
+        size_t olen = 0;
+        mbedtls_status = mbedtls_ecp_point_write_binary(&self->group, &new_Ks, MBEDTLS_ECP_PF_UNCOMPRESSED, &olen,
+                vsc_buffer_unused_bytes(new_server_public_key), vsce_phe_common_PHE_PUBLIC_KEY_LENGTH);
+        vsc_buffer_inc_used(new_server_public_key, vsce_phe_common_PHE_PUBLIC_KEY_LENGTH);
+        VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
+        VSCE_ASSERT(olen == vsce_phe_common_PHE_PUBLIC_KEY_LENGTH);
 
-    mbedtls_ecp_point_free(&new_Ks);
+        mbedtls_ecp_point_free(&new_Ks);
+    }
 
     mbedtls_mpi_free(&new_kc);
 

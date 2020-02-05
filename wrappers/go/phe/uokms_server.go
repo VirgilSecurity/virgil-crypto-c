@@ -186,7 +186,7 @@ func (obj *UokmsServer) RotateKeys(serverPrivateKey []byte) ([]byte, []byte, []b
     }
     defer newServerPublicKeyBuf.delete()
 
-    updateTokenBuf, updateTokenBufErr := newBuffer(int(PheCommonPhePublicKeyLength /* lg4 */))
+    updateTokenBuf, updateTokenBufErr := newBuffer(int(PheCommonPhePrivateKeyLength /* lg4 */))
     if updateTokenBufErr != nil {
         return nil, nil, nil, updateTokenBufErr
     }

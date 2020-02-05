@@ -92,6 +92,15 @@ public class UokmsClient implements AutoCloseable {
     }
 
     /*
+    * Sets client private
+    * Call this method before any other methods
+    * This function should be called only once
+    */
+    public void setKeysOneparty(byte[] clientPrivateKey) throws PheException {
+        PheJNI.INSTANCE.uokmsClient_setKeysOneparty(this.cCtx, clientPrivateKey);
+    }
+
+    /*
     * Sets client private and server public key
     * Call this method before any other methods
     * This function should be called only once
@@ -116,6 +125,13 @@ public class UokmsClient implements AutoCloseable {
     }
 
     /*
+    * Decrypt
+    */
+    public byte[] decryptOneparty(byte[] wrap, int encryptionKeyLen) throws PheException {
+        return PheJNI.INSTANCE.uokmsClient_decryptOneparty(this.cCtx, wrap, encryptionKeyLen);
+    }
+
+    /*
     * Generates request to decrypt data, this request should be sent to the server.
     * Server response is then passed to "process decrypt response" where encryption key can be decapsulated
     */
@@ -128,6 +144,17 @@ public class UokmsClient implements AutoCloseable {
     */
     public byte[] processDecryptResponse(byte[] wrap, byte[] decryptRequest, byte[] decryptResponse, byte[] deblindFactor, int encryptionKeyLen) throws PheException {
         return PheJNI.INSTANCE.uokmsClient_processDecryptResponse(this.cCtx, wrap, decryptRequest, decryptResponse, deblindFactor, encryptionKeyLen);
+    }
+
+    /*
+    * Rotates client key using given update token obtained from server
+    */
+    public byte[] rotateKeysOneparty(byte[] updateToken) throws PheException {
+        return PheJNI.INSTANCE.uokmsClient_rotateKeysOneparty(this.cCtx, updateToken);
+    }
+
+    public byte[] generateUpdateTokenOneparty() throws PheException {
+        return PheJNI.INSTANCE.uokmsClient_generateUpdateTokenOneparty(this.cCtx);
     }
 
     /*

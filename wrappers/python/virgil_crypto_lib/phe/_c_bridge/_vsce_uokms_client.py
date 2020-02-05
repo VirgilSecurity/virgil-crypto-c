@@ -85,6 +85,15 @@ class VsceUokmsClient(object):
         vsce_uokms_client_setup_defaults.restype = c_int
         return vsce_uokms_client_setup_defaults(ctx)
 
+    def vsce_uokms_client_set_keys_oneparty(self, ctx, client_private_key):
+        """Sets client private
+        Call this method before any other methods
+        This function should be called only once"""
+        vsce_uokms_client_set_keys_oneparty = self._lib.vsce_uokms_client_set_keys_oneparty
+        vsce_uokms_client_set_keys_oneparty.argtypes = [POINTER(vsce_uokms_client_t), vsc_data_t]
+        vsce_uokms_client_set_keys_oneparty.restype = c_int
+        return vsce_uokms_client_set_keys_oneparty(ctx, client_private_key)
+
     def vsce_uokms_client_set_keys(self, ctx, client_private_key, server_public_key):
         """Sets client private and server public key
         Call this method before any other methods
@@ -109,6 +118,13 @@ class VsceUokmsClient(object):
         vsce_uokms_client_generate_encrypt_wrap.restype = c_int
         return vsce_uokms_client_generate_encrypt_wrap(ctx, wrap, encryption_key_len, encryption_key)
 
+    def vsce_uokms_client_decrypt_oneparty(self, ctx, wrap, encryption_key_len, encryption_key):
+        """Decrypt"""
+        vsce_uokms_client_decrypt_oneparty = self._lib.vsce_uokms_client_decrypt_oneparty
+        vsce_uokms_client_decrypt_oneparty.argtypes = [POINTER(vsce_uokms_client_t), vsc_data_t, c_size_t, POINTER(vsc_buffer_t)]
+        vsce_uokms_client_decrypt_oneparty.restype = c_int
+        return vsce_uokms_client_decrypt_oneparty(ctx, wrap, encryption_key_len, encryption_key)
+
     def vsce_uokms_client_generate_decrypt_request(self, ctx, wrap, deblind_factor, decrypt_request):
         """Generates request to decrypt data, this request should be sent to the server.
         Server response is then passed to "process decrypt response" where encryption key can be decapsulated"""
@@ -123,6 +139,19 @@ class VsceUokmsClient(object):
         vsce_uokms_client_process_decrypt_response.argtypes = [POINTER(vsce_uokms_client_t), vsc_data_t, vsc_data_t, vsc_data_t, vsc_data_t, c_size_t, POINTER(vsc_buffer_t)]
         vsce_uokms_client_process_decrypt_response.restype = c_int
         return vsce_uokms_client_process_decrypt_response(ctx, wrap, decrypt_request, decrypt_response, deblind_factor, encryption_key_len, encryption_key)
+
+    def vsce_uokms_client_rotate_keys_oneparty(self, ctx, update_token, new_client_private_key):
+        """Rotates client key using given update token obtained from server"""
+        vsce_uokms_client_rotate_keys_oneparty = self._lib.vsce_uokms_client_rotate_keys_oneparty
+        vsce_uokms_client_rotate_keys_oneparty.argtypes = [POINTER(vsce_uokms_client_t), vsc_data_t, POINTER(vsc_buffer_t)]
+        vsce_uokms_client_rotate_keys_oneparty.restype = c_int
+        return vsce_uokms_client_rotate_keys_oneparty(ctx, update_token, new_client_private_key)
+
+    def vsce_uokms_client_generate_update_token_oneparty(self, ctx, update_token):
+        vsce_uokms_client_generate_update_token_oneparty = self._lib.vsce_uokms_client_generate_update_token_oneparty
+        vsce_uokms_client_generate_update_token_oneparty.argtypes = [POINTER(vsce_uokms_client_t), POINTER(vsc_buffer_t)]
+        vsce_uokms_client_generate_update_token_oneparty.restype = c_int
+        return vsce_uokms_client_generate_update_token_oneparty(ctx, update_token)
 
     def vsce_uokms_client_rotate_keys(self, ctx, update_token, new_client_private_key, new_server_public_key):
         """Rotates client and server keys using given update token obtained from server"""

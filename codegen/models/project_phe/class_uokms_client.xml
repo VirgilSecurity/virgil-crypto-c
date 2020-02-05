@@ -31,12 +31,29 @@
     <property name="ks public" class="mbedtls_ecp_point" library="mbedtls" access="readwrite" is_reference="0"/>
     <property name="k public" class="mbedtls_ecp_point" library="mbedtls" access="readwrite" is_reference="0"/>
     <property name="keys are set" type="boolean"/>
+    <property name="multiparty mode" type="boolean"/>
 
     <method name="setup defaults">
         Setups dependencies with default values.
 
         <return enum="status">
             - vsce_status_ERROR_RNG_FAILED in case rng failed
+        </return>
+    </method>
+
+    <method name="set keys oneparty">
+        Sets client private
+        Call this method before any other methods
+        This function should be called only once
+
+        <argument name="client private key" class="data">
+            Client's private key
+            Use `generate client private key` to generate this key, or generate NIST P-256 private key yourself
+        </argument>
+
+        <return enum="status">
+            - vsce_status_ERROR_INVALID_PRIVATE_KEY if private key is invalid
+            - vsce_status_ERROR_INVALID_PUBLIC_KEY if public key is invalid
         </return>
     </method>
 
@@ -98,6 +115,27 @@
         </return>
     </method>
 
+    <method name="decrypt oneparty">
+        Decrypt
+
+        <argument name="wrap" class="data">
+            Wrap stored with encrypted blob
+        </argument>
+        <argument name="encryption key len" type="size">
+            Length of encryption key that should be derived
+        </argument>
+        <argument name="encryption key" class="buffer" access="writeonly">
+            Buffer to store encryption key, will be filled with "encryption key len" bytes.
+            Buffer size should be >= "encryption key len"
+
+            <length argument="encryption key len"/>
+        </argument>
+
+        <return enum="status">
+            - vsce_status_ERROR_AES_FAILED in case AES returned error
+        </return>
+    </method>
+
     <method name="generate decrypt request">
         Generates request to decrypt data, this request should be sent to the server.
         Server response is then passed to "process decrypt response" where encryption key can be decapsulated
@@ -154,6 +192,37 @@
         </return>
     </method>
 
+    <method name="rotate keys oneparty">
+        Rotates client key using given update token obtained from server
+
+        <argument name="update token" class="data">
+            Update token provided by the server
+        </argument>
+        <argument name="new client private key" class="buffer" access="writeonly">
+            New client private key
+            Buffer size should be >= .(class_phe_common_constant_phe_private_key_length)
+
+            <length constant="phe private key length" class="phe common"/>
+        </argument>
+
+        <return enum="status">
+            - vsce_status_ERROR_INVALID_PRIVATE_KEY if private key is invalid
+        </return>
+    </method>
+
+    <method name="generate update token oneparty">
+        <argument name="update token" class="buffer" access="writeonly">
+            Update token that should be passed to client
+            Buffer size should be >= "phe private key length"
+
+            <length constant="phe private key length" class="phe common"/>
+        </argument>
+
+        <return enum="status">
+            - vsce_status_ERROR_RNG_FAILED in case rng failed
+        </return>
+    </method>
+
     <method name="rotate keys">
         Rotates client and server keys using given update token obtained from server
 
@@ -174,7 +243,6 @@
         </argument>
 
         <return enum="status">
-            - vsce_status_ERROR_INVALID_PUBLIC_KEY if public key is invalid
             - vsce_status_ERROR_INVALID_PRIVATE_KEY if private key is invalid
         </return>
     </method>

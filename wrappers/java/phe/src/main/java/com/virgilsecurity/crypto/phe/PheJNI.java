@@ -241,6 +241,13 @@ public class PheJNI {
     public native void uokmsClient_setupDefaults(long cCtx) throws PheException;
 
     /*
+    * Sets client private
+    * Call this method before any other methods
+    * This function should be called only once
+    */
+    public native void uokmsClient_setKeysOneparty(long cCtx, byte[] clientPrivateKey) throws PheException;
+
+    /*
     * Sets client private and server public key
     * Call this method before any other methods
     * This function should be called only once
@@ -259,6 +266,11 @@ public class PheJNI {
     public native UokmsClientGenerateEncryptWrapResult uokmsClient_generateEncryptWrap(long cCtx, int encryptionKeyLen) throws PheException;
 
     /*
+    * Decrypt
+    */
+    public native byte[] uokmsClient_decryptOneparty(long cCtx, byte[] wrap, int encryptionKeyLen) throws PheException;
+
+    /*
     * Generates request to decrypt data, this request should be sent to the server.
     * Server response is then passed to "process decrypt response" where encryption key can be decapsulated
     */
@@ -268,6 +280,13 @@ public class PheJNI {
     * Processed server response, checks server proof and decapsulates encryption key
     */
     public native byte[] uokmsClient_processDecryptResponse(long cCtx, byte[] wrap, byte[] decryptRequest, byte[] decryptResponse, byte[] deblindFactor, int encryptionKeyLen) throws PheException;
+
+    /*
+    * Rotates client key using given update token obtained from server
+    */
+    public native byte[] uokmsClient_rotateKeysOneparty(long cCtx, byte[] updateToken) throws PheException;
+
+    public native byte[] uokmsClient_generateUpdateTokenOneparty(long cCtx) throws PheException;
 
     /*
     * Rotates client and server keys using given update token obtained from server

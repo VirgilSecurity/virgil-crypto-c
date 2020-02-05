@@ -107,6 +107,26 @@ func (obj *UokmsClient) SetupDefaults() error {
 }
 
 /*
+* Sets client private
+* Call this method before any other methods
+* This function should be called only once
+*/
+func (obj *UokmsClient) SetKeysOneparty(clientPrivateKey []byte) error {
+    clientPrivateKeyData := helperWrapData (clientPrivateKey)
+
+    proxyResult := /*pr4*/C.vsce_uokms_client_set_keys_oneparty(obj.cCtx, clientPrivateKeyData)
+
+    err := PheErrorHandleStatus(proxyResult)
+    if err != nil {
+        return err
+    }
+
+    runtime.KeepAlive(obj)
+
+    return nil
+}
+
+/*
 * Sets client private and server public key
 * Call this method before any other methods
 * This function should be called only once
@@ -181,6 +201,29 @@ func (obj *UokmsClient) GenerateEncryptWrap(encryptionKeyLen uint) ([]byte, []by
 }
 
 /*
+* Decrypt
+*/
+func (obj *UokmsClient) DecryptOneparty(wrap []byte, encryptionKeyLen uint) ([]byte, error) {
+    encryptionKeyBuf, encryptionKeyBufErr := newBuffer(int(encryptionKeyLen))
+    if encryptionKeyBufErr != nil {
+        return nil, encryptionKeyBufErr
+    }
+    defer encryptionKeyBuf.delete()
+    wrapData := helperWrapData (wrap)
+
+    proxyResult := /*pr4*/C.vsce_uokms_client_decrypt_oneparty(obj.cCtx, wrapData, (C.size_t)(encryptionKeyLen)/*pa10*/, encryptionKeyBuf.ctx)
+
+    err := PheErrorHandleStatus(proxyResult)
+    if err != nil {
+        return nil, err
+    }
+
+    runtime.KeepAlive(obj)
+
+    return encryptionKeyBuf.getData() /* r7 */, nil
+}
+
+/*
 * Generates request to decrypt data, this request should be sent to the server.
 * Server response is then passed to "process decrypt response" where encryption key can be decapsulated
 */
@@ -234,6 +277,49 @@ func (obj *UokmsClient) ProcessDecryptResponse(wrap []byte, decryptRequest []byt
     runtime.KeepAlive(obj)
 
     return encryptionKeyBuf.getData() /* r7 */, nil
+}
+
+/*
+* Rotates client key using given update token obtained from server
+*/
+func (obj *UokmsClient) RotateKeysOneparty(updateToken []byte) ([]byte, error) {
+    newClientPrivateKeyBuf, newClientPrivateKeyBufErr := newBuffer(int(PheCommonPhePrivateKeyLength /* lg4 */))
+    if newClientPrivateKeyBufErr != nil {
+        return nil, newClientPrivateKeyBufErr
+    }
+    defer newClientPrivateKeyBuf.delete()
+    updateTokenData := helperWrapData (updateToken)
+
+    proxyResult := /*pr4*/C.vsce_uokms_client_rotate_keys_oneparty(obj.cCtx, updateTokenData, newClientPrivateKeyBuf.ctx)
+
+    err := PheErrorHandleStatus(proxyResult)
+    if err != nil {
+        return nil, err
+    }
+
+    runtime.KeepAlive(obj)
+
+    return newClientPrivateKeyBuf.getData() /* r7 */, nil
+}
+
+func (obj *UokmsClient) GenerateUpdateTokenOneparty() ([]byte, error) {
+    updateTokenBuf, updateTokenBufErr := newBuffer(int(PheCommonPhePrivateKeyLength /* lg4 */))
+    if updateTokenBufErr != nil {
+        return nil, updateTokenBufErr
+    }
+    defer updateTokenBuf.delete()
+
+
+    proxyResult := /*pr4*/C.vsce_uokms_client_generate_update_token_oneparty(obj.cCtx, updateTokenBuf.ctx)
+
+    err := PheErrorHandleStatus(proxyResult)
+    if err != nil {
+        return nil, err
+    }
+
+    runtime.KeepAlive(obj)
+
+    return updateTokenBuf.getData() /* r7 */, nil
 }
 
 /*

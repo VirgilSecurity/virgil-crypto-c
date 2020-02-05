@@ -46,8 +46,11 @@ extern const vsc_data_t test_uokms_server_private_key;
 extern const vsc_data_t test_uokms_server_public_key;
 extern const vsc_data_t test_uokms_mocked_wrap;
 extern const vsc_data_t test_uokms_mocked_key;
+extern const vsc_data_t test_uokms_mocked_oneparty_wrap;
+extern const vsc_data_t test_uokms_mocked_oneparty_key;
 extern const vsc_data_t test_uokms_wrap;
 extern const vsc_data_t test_uokms_key;
+extern const vsc_data_t test_uokms_oneparty_key;
 extern const vsc_data_t test_uokms_mocked_deblind_factor;
 extern const vsc_data_t test_uokms_mocked_decrypt_request;
 extern const vsc_data_t test_uokms_deblind_factor;
@@ -61,5 +64,6 @@ extern const vsc_data_t test_uokms_new_server_public_key;
 extern const vsc_data_t test_uokms_new_client_private_key;
 extern const vsc_data_t test_uokms_update_token;
 extern const vsc_data_t test_uokms_new_wrap;
+extern const vsc_data_t test_uokms_mocked_client_update_token;
 
 #endif //VIRGIL_CRYPTO_C_TOP_TEST_DATA_PHE_SERVER_H

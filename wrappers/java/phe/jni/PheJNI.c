@@ -816,6 +816,23 @@ JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsClient_1se
     }
 }
 
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsClient_1setKeysOneparty (JNIEnv *jenv, jobject jobj, jlong c_ctx, jbyteArray jclientPrivateKey) {
+    // Cast class context
+    vsce_uokms_client_t /*2*/* uokms_client_ctx = *(vsce_uokms_client_t /*2*/**) &c_ctx;
+
+    // Wrap input data
+    byte* client_private_key_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jclientPrivateKey, NULL);
+    vsc_data_t client_private_key = vsc_data(client_private_key_arr, (*jenv)->GetArrayLength(jenv, jclientPrivateKey));
+
+    vsce_status_t status = vsce_uokms_client_set_keys_oneparty(uokms_client_ctx /*a1*/, client_private_key /*a3*/);
+    if (status != vsce_status_SUCCESS) {
+        throwPheException(jenv, jobj, status);
+        return;
+    }
+    // Free resources
+    (*jenv)->ReleaseByteArrayElements(jenv, jclientPrivateKey, (jbyte*) client_private_key_arr, 0);
+}
+
 JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsClient_1setKeys (JNIEnv *jenv, jobject jobj, jlong c_ctx, jbyteArray jclientPrivateKey, jbyteArray jserverPublicKey) {
     // Cast class context
     vsce_uokms_client_t /*2*/* uokms_client_ctx = *(vsce_uokms_client_t /*2*/**) &c_ctx;
@@ -892,6 +909,31 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsClient_
     vsc_buffer_delete(encryption_key);
 
     return newObj;
+}
+
+JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsClient_1decryptOneparty (JNIEnv *jenv, jobject jobj, jlong c_ctx, jbyteArray jwrap, jint jencryptionKeyLen) {
+    // Cast class context
+    vsce_uokms_client_t /*2*/* uokms_client_ctx = *(vsce_uokms_client_t /*2*/**) &c_ctx;
+
+    // Wrap input data
+    byte* wrap_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jwrap, NULL);
+    vsc_data_t wrap = vsc_data(wrap_arr, (*jenv)->GetArrayLength(jenv, jwrap));
+
+    vsc_buffer_t *encryption_key = vsc_buffer_new_with_capacity(jencryptionKeyLen);
+
+    vsce_status_t status = vsce_uokms_client_decrypt_oneparty(uokms_client_ctx /*a1*/, wrap /*a3*/, jencryptionKeyLen /*a9*/, encryption_key /*a3*/);
+    if (status != vsce_status_SUCCESS) {
+        throwPheException(jenv, jobj, status);
+        return NULL;
+    }
+    jbyteArray ret = (*jenv)->NewByteArray(jenv, vsc_buffer_len(encryption_key));
+    (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(encryption_key), (jbyte*) vsc_buffer_bytes(encryption_key));
+    // Free resources
+    (*jenv)->ReleaseByteArrayElements(jenv, jwrap, (jbyte*) wrap_arr, 0);
+
+    vsc_buffer_delete(encryption_key);
+
+    return ret;
 }
 
 JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsClient_1generateDecryptRequest (JNIEnv *jenv, jobject jobj, jlong c_ctx, jbyteArray jwrap) {
@@ -971,6 +1013,51 @@ JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsClie
     (*jenv)->ReleaseByteArrayElements(jenv, jdeblindFactor, (jbyte*) deblind_factor_arr, 0);
 
     vsc_buffer_delete(encryption_key);
+
+    return ret;
+}
+
+JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsClient_1rotateKeysOneparty (JNIEnv *jenv, jobject jobj, jlong c_ctx, jbyteArray jupdateToken) {
+    // Cast class context
+    vsce_uokms_client_t /*2*/* uokms_client_ctx = *(vsce_uokms_client_t /*2*/**) &c_ctx;
+
+    // Wrap input data
+    byte* update_token_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jupdateToken, NULL);
+    vsc_data_t update_token = vsc_data(update_token_arr, (*jenv)->GetArrayLength(jenv, jupdateToken));
+
+    vsc_buffer_t *new_client_private_key = vsc_buffer_new_with_capacity(vsce_phe_common_PHE_PRIVATE_KEY_LENGTH);
+
+    vsce_status_t status = vsce_uokms_client_rotate_keys_oneparty(uokms_client_ctx /*a1*/, update_token /*a3*/, new_client_private_key /*a3*/);
+    if (status != vsce_status_SUCCESS) {
+        throwPheException(jenv, jobj, status);
+        return NULL;
+    }
+    jbyteArray ret = (*jenv)->NewByteArray(jenv, vsc_buffer_len(new_client_private_key));
+    (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(new_client_private_key), (jbyte*) vsc_buffer_bytes(new_client_private_key));
+    // Free resources
+    (*jenv)->ReleaseByteArrayElements(jenv, jupdateToken, (jbyte*) update_token_arr, 0);
+
+    vsc_buffer_delete(new_client_private_key);
+
+    return ret;
+}
+
+JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsClient_1generateUpdateTokenOneparty (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    // Cast class context
+    vsce_uokms_client_t /*2*/* uokms_client_ctx = *(vsce_uokms_client_t /*2*/**) &c_ctx;
+
+    // Wrap input buffers
+    vsc_buffer_t *update_token = vsc_buffer_new_with_capacity(vsce_phe_common_PHE_PRIVATE_KEY_LENGTH);
+
+    vsce_status_t status = vsce_uokms_client_generate_update_token_oneparty(uokms_client_ctx /*a1*/, update_token /*a3*/);
+    if (status != vsce_status_SUCCESS) {
+        throwPheException(jenv, jobj, status);
+        return NULL;
+    }
+    jbyteArray ret = (*jenv)->NewByteArray(jenv, vsc_buffer_len(update_token));
+    (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(update_token), (jbyte*) vsc_buffer_bytes(update_token));
+    // Free resources
+    vsc_buffer_delete(update_token);
 
     return ret;
 }
@@ -1155,7 +1242,7 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsServer_
 
     vsc_buffer_t *new_server_public_key = vsc_buffer_new_with_capacity(vsce_phe_common_PHE_PUBLIC_KEY_LENGTH);
 
-    vsc_buffer_t *update_token = vsc_buffer_new_with_capacity(vsce_phe_common_PHE_PUBLIC_KEY_LENGTH);
+    vsc_buffer_t *update_token = vsc_buffer_new_with_capacity(vsce_phe_common_PHE_PRIVATE_KEY_LENGTH);
 
     vsce_status_t status = vsce_uokms_server_rotate_keys(uokms_server_ctx /*a1*/, server_private_key /*a3*/, new_server_private_key /*a3*/, new_server_public_key /*a3*/, update_token /*a3*/);
     if (status != vsce_status_SUCCESS) {
