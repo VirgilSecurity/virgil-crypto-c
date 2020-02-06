@@ -82,6 +82,26 @@ init(vsce_uokms_server_t **server_ref, vsce_uokms_client_t **client_ref, vsc_buf
                     vsc_buffer_data(*server_public_key_ref)));
 }
 
+static void
+init_oneparty(vsce_uokms_client_t **client_ref) {
+    byte client_private_key[vsce_phe_common_PHE_PRIVATE_KEY_LENGTH];
+
+    vsc_buffer_t buffer;
+    vsc_buffer_init(&buffer);
+
+    vsc_buffer_use(&buffer, client_private_key, sizeof(client_private_key));
+
+    *client_ref = vsce_uokms_client_new();
+    TEST_ASSERT_EQUAL(vsce_status_SUCCESS, vsce_uokms_client_setup_defaults(*client_ref));
+
+    TEST_ASSERT_EQUAL(vsce_status_SUCCESS, vsce_uokms_client_generate_client_private_key(*client_ref, &buffer));
+
+    vsc_buffer_delete(&buffer);
+
+    TEST_ASSERT_EQUAL(vsce_status_SUCCESS,
+            vsce_uokms_client_set_keys_oneparty(*client_ref, vsc_data(client_private_key, sizeof(client_private_key))));
+}
+
 void
 test__encrypt_decrypt__full_flow__key_should_match(void) {
     vsce_uokms_server_t *server;
@@ -126,6 +146,29 @@ test__encrypt_decrypt__full_flow__key_should_match(void) {
     vsc_buffer_destroy(&deblind_factor);
     vsc_buffer_destroy(&decrypt_request);
     vsc_buffer_destroy(&decrypt_response);
+    vsc_buffer_destroy(&key2);
+}
+
+void
+test__encrypt_decrypt__full_oneparty_flow__key_should_match(void) {
+    vsce_uokms_client_t *client;
+
+    init_oneparty(&client);
+
+    vsc_buffer_t *wrap = vsc_buffer_new_with_capacity(vsce_phe_common_PHE_PUBLIC_KEY_LENGTH);
+    vsc_buffer_t *key = vsc_buffer_new_with_capacity(44);
+
+    TEST_ASSERT_EQUAL(vsce_status_SUCCESS, vsce_uokms_client_generate_encrypt_wrap(client, wrap, 44, key));
+
+    vsc_buffer_t *key2 = vsc_buffer_new_with_capacity(44);
+
+    TEST_ASSERT_EQUAL(vsce_status_SUCCESS, vsce_uokms_client_decrypt_oneparty(client, vsc_buffer_data(wrap), 44, key2));
+
+    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(vsc_buffer_data(key), key2);
+
+    vsce_uokms_client_destroy(&client);
+    vsc_buffer_destroy(&wrap);
+    vsc_buffer_destroy(&key);
     vsc_buffer_destroy(&key2);
 }
 
@@ -269,6 +312,61 @@ test__rotate__full_flow__key_should_match(void) {
     vsc_buffer_destroy(&key2);
 }
 
+void
+test__rotate__full_oneparty_flow__key_should_match(void) {
+    vsce_uokms_client_t *client;
+
+    init_oneparty(&client);
+
+    vsc_buffer_t *wrap = vsc_buffer_new_with_capacity(vsce_phe_common_PHE_PUBLIC_KEY_LENGTH);
+    vsc_buffer_t *key = vsc_buffer_new_with_capacity(44);
+
+    TEST_ASSERT_EQUAL(vsce_status_SUCCESS, vsce_uokms_client_generate_encrypt_wrap(client, wrap, 44, key));
+
+    vsc_buffer_t *update_token = vsc_buffer_new_with_capacity(vsce_phe_common_PHE_PRIVATE_KEY_LENGTH);
+
+    TEST_ASSERT_EQUAL(vsce_status_SUCCESS, vsce_uokms_client_generate_update_token_oneparty(client, update_token));
+
+    vsc_buffer_t *new_client_private_key = vsc_buffer_new_with_capacity(vsce_phe_common_PHE_PRIVATE_KEY_LENGTH);
+
+    TEST_ASSERT_EQUAL(vsce_status_SUCCESS,
+            vsce_uokms_client_rotate_keys_oneparty(client, vsc_buffer_data(update_token), new_client_private_key));
+
+    vsce_uokms_wrap_rotation_t *wrap_rotation = vsce_uokms_wrap_rotation_new();
+    TEST_ASSERT_EQUAL(vsce_status_SUCCESS, vsce_uokms_wrap_rotation_setup_defaults(wrap_rotation));
+    TEST_ASSERT_EQUAL(vsce_status_SUCCESS,
+            vsce_uokms_wrap_rotation_set_update_token(wrap_rotation, vsc_buffer_data(update_token)));
+
+    vsc_buffer_t *new_wrap = vsc_buffer_new_with_capacity(vsce_phe_common_PHE_PUBLIC_KEY_LENGTH);
+
+    TEST_ASSERT_EQUAL(
+            vsce_status_SUCCESS, vsce_uokms_wrap_rotation_update_wrap(wrap_rotation, vsc_buffer_data(wrap), new_wrap));
+
+    vsce_uokms_client_t *client2 = vsce_uokms_client_new();
+    TEST_ASSERT_EQUAL(vsce_status_SUCCESS, vsce_uokms_client_setup_defaults(client2));
+    TEST_ASSERT_EQUAL(
+            vsce_status_SUCCESS, vsce_uokms_client_set_keys_oneparty(client2, vsc_buffer_data(new_client_private_key)));
+
+    vsc_buffer_t *key2 = vsc_buffer_new_with_capacity(44);
+
+    TEST_ASSERT_EQUAL(
+            vsce_status_SUCCESS, vsce_uokms_client_decrypt_oneparty(client2, vsc_buffer_data(new_wrap), 44, key2));
+
+    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(vsc_buffer_data(key), key2);
+
+    vsce_uokms_client_destroy(&client);
+    vsce_uokms_client_destroy(&client2);
+    vsce_uokms_wrap_rotation_destroy(&wrap_rotation);
+
+    vsc_buffer_destroy(&update_token);
+    vsc_buffer_destroy(&new_client_private_key);
+
+    vsc_buffer_destroy(&new_wrap);
+    vsc_buffer_destroy(&wrap);
+    vsc_buffer_destroy(&key);
+    vsc_buffer_destroy(&key2);
+}
+
 #endif // TEST_DEPENDENCIES_AVAILABLE
 
 
@@ -281,8 +379,10 @@ main(void) {
 
 #if TEST_DEPENDENCIES_AVAILABLE
     RUN_TEST(test__encrypt_decrypt__full_flow__key_should_match);
+    RUN_TEST(test__encrypt_decrypt__full_oneparty_flow__key_should_match);
     RUN_TEST(test__encrypt_decrypt__invalid_proof__should_not_succeed);
     RUN_TEST(test__rotate__full_flow__key_should_match);
+    RUN_TEST(test__rotate__full_oneparty_flow__key_should_match);
 #else
     RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
 #endif

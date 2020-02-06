@@ -93,7 +93,7 @@ class UokmsServer(object):
         d_server_private_key = Data(server_private_key)
         new_server_private_key = Buffer(Common.PHE_PRIVATE_KEY_LENGTH)
         new_server_public_key = Buffer(Common.PHE_PUBLIC_KEY_LENGTH)
-        update_token = Buffer(Common.PHE_PUBLIC_KEY_LENGTH)
+        update_token = Buffer(Common.PHE_PRIVATE_KEY_LENGTH)
         status = self._lib_vsce_uokms_server.vsce_uokms_server_rotate_keys(self.ctx, d_server_private_key.data, new_server_private_key.c_buffer, new_server_public_key.c_buffer, update_token.c_buffer)
         VsceStatus.handle_status(status)
         return new_server_private_key.get_bytes(), new_server_public_key.get_bytes(), update_token.get_bytes()
