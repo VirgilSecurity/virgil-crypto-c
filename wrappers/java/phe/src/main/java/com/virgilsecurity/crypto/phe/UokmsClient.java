@@ -153,6 +153,9 @@ public class UokmsClient implements AutoCloseable {
         return PheJNI.INSTANCE.uokmsClient_rotateKeysOneparty(this.cCtx, updateToken);
     }
 
+    /*
+    * Generates update token for one-party mode
+    */
     public byte[] generateUpdateTokenOneparty() throws PheException {
         return PheJNI.INSTANCE.uokmsClient_generateUpdateTokenOneparty(this.cCtx);
     }

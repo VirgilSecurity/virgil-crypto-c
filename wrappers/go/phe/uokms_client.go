@@ -302,6 +302,9 @@ func (obj *UokmsClient) RotateKeysOneparty(updateToken []byte) ([]byte, error) {
     return newClientPrivateKeyBuf.getData() /* r7 */, nil
 }
 
+/*
+* Generates update token for one-party mode
+*/
 func (obj *UokmsClient) GenerateUpdateTokenOneparty() ([]byte, error) {
     updateTokenBuf, updateTokenBufErr := newBuffer(int(PheCommonPhePrivateKeyLength /* lg4 */))
     if updateTokenBufErr != nil {

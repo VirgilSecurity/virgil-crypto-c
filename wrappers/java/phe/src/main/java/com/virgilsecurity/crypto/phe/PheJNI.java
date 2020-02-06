@@ -286,6 +286,9 @@ public class PheJNI {
     */
     public native byte[] uokmsClient_rotateKeysOneparty(long cCtx, byte[] updateToken) throws PheException;
 
+    /*
+    * Generates update token for one-party mode
+    */
     public native byte[] uokmsClient_generateUpdateTokenOneparty(long cCtx) throws PheException;
 
     /*

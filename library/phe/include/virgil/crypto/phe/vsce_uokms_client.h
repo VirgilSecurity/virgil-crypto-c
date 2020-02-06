@@ -253,6 +253,9 @@ VSCE_PUBLIC vsce_status_t
 vsce_uokms_client_rotate_keys_oneparty(vsce_uokms_client_t *self, vsc_data_t update_token,
         vsc_buffer_t *new_client_private_key) VSCE_NODISCARD;
 
+//
+//  Generates update token for one-party mode
+//
 VSCE_PUBLIC vsce_status_t
 vsce_uokms_client_generate_update_token_oneparty(vsce_uokms_client_t *self, vsc_buffer_t *update_token) VSCE_NODISCARD;
 

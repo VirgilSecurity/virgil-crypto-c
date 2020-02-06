@@ -211,6 +211,8 @@
     </method>
 
     <method name="generate update token oneparty">
+        Generates update token for one-party mode
+
         <argument name="update token" class="buffer" access="writeonly">
             Update token that should be passed to client
             Buffer size should be >= "phe private key length"

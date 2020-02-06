@@ -137,6 +137,7 @@ class UokmsClient(object):
         return new_client_private_key.get_bytes()
 
     def generate_update_token_oneparty(self):
+        """Generates update token for one-party mode"""
         update_token = Buffer(Common.PHE_PRIVATE_KEY_LENGTH)
         status = self._lib_vsce_uokms_client.vsce_uokms_client_generate_update_token_oneparty(self.ctx, update_token.c_buffer)
         VsceStatus.handle_status(status)

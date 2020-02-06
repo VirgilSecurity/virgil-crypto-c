@@ -148,6 +148,7 @@ class VsceUokmsClient(object):
         return vsce_uokms_client_rotate_keys_oneparty(ctx, update_token, new_client_private_key)
 
     def vsce_uokms_client_generate_update_token_oneparty(self, ctx, update_token):
+        """Generates update token for one-party mode"""
         vsce_uokms_client_generate_update_token_oneparty = self._lib.vsce_uokms_client_generate_update_token_oneparty
         vsce_uokms_client_generate_update_token_oneparty.argtypes = [POINTER(vsce_uokms_client_t), POINTER(vsc_buffer_t)]
         vsce_uokms_client_generate_update_token_oneparty.restype = c_int

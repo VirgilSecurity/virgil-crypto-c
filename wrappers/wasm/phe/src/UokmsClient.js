@@ -450,6 +450,9 @@ const initUokmsClient = (Module, modules) => {
             }
         }
 
+        /**
+         * Generates update token for one-party mode
+         */
         generateUpdateTokenOneparty() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
