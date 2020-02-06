@@ -1217,7 +1217,11 @@ function go_create_cgo_instructions (go_module, go_project)
     # Define CGO instructions
 
     for my.go_project.cgo_link
-        my.path = "${SRCDIR}/../pkg/$(cgo_link.platform:)_amd64"
+        if defined (cgo_link.path)
+            my.path = "${SRCDIR}/../pkg/$(cgo_link.path:)"
+        else
+            my.path = "${SRCDIR}/../pkg/$(cgo_link.platform:)_amd64"
+        endif
 
         go_create_cgo_flag ("CFLAGS", cgo_link.platform, "-I$(my.path:)/include/", my.go_module)
         go_create_cgo_flag ("LDFLAGS", cgo_link.platform, "-L$(my.path:)/lib $(cgo_link.libraries:)", my.go_module)
