@@ -1,6 +1,17 @@
 # virgil-crypto-c ChangeLog (Sorted by date)
 
 
+## Version 0.12.1 released 2020-02-13
+
+### Features
+
+- Lib/PHE: Added one-party UOKMS
+
+### Changes
+
+- Wrapper/Javar: Added resources cleanup on finalize
+
+
 ## Version 0.12.0 released 2020-01-09
 
 ### Features
