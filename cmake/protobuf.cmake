@@ -36,6 +36,7 @@
 #
 # Add generated sources to a target based on the gievn items.
 # Add protobuf sources to a target.
+# given target as an Apple Framework
 #
 # target_protobuf_sources(<target> [source1...])
 #
@@ -91,7 +92,7 @@ function(target_protobuf_sources target)
         get_filename_component(proto_file_name "${proto_file}" NAME_WE)
 
         if(EXISTS "${proto_file_path}/${proto_file_name}.options")
-            set(proto_options_file "${proto_file_path}/${proto_file_name}.options")
+            set(proto_options_file "${proto_file_name}.options")
             set(proto_options "-f${proto_options_file}")
         else()
             set(proto_options_file "")
