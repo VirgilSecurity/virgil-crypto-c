@@ -70,9 +70,23 @@ public class HashBasedAlgInfo implements AutoCloseable, AlgInfo {
         return new HashBasedAlgInfo(ctxHolder);
     }
 
+    /* Clear resources. */
+    private void clearResources() {
+        long ctx = this.cCtx;
+        if (this.cCtx > 0) {
+            this.cCtx = 0;
+            FoundationJNI.INSTANCE.hashBasedAlgInfo_close(ctx);
+        }
+    }
+
     /* Close resource. */
     public void close() {
-        FoundationJNI.INSTANCE.hashBasedAlgInfo_close(this.cCtx);
+        clearResources();
+    }
+
+    /* Finalize resource. */
+    protected void finalize() throws Throwable {
+        clearResources();
     }
 
     /*

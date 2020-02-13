@@ -64,9 +64,23 @@ public class Verifier implements AutoCloseable {
         return new Verifier(ctxHolder);
     }
 
+    /* Clear resources. */
+    private void clearResources() {
+        long ctx = this.cCtx;
+        if (this.cCtx > 0) {
+            this.cCtx = 0;
+            FoundationJNI.INSTANCE.verifier_close(ctx);
+        }
+    }
+
     /* Close resource. */
     public void close() {
-        FoundationJNI.INSTANCE.verifier_close(this.cCtx);
+        clearResources();
+    }
+
+    /* Finalize resource. */
+    protected void finalize() throws Throwable {
+        clearResources();
     }
 
     /*

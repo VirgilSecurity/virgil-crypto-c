@@ -71,9 +71,23 @@ public class SimpleAlgInfo implements AutoCloseable, AlgInfo {
         return new SimpleAlgInfo(ctxHolder);
     }
 
+    /* Clear resources. */
+    private void clearResources() {
+        long ctx = this.cCtx;
+        if (this.cCtx > 0) {
+            this.cCtx = 0;
+            FoundationJNI.INSTANCE.simpleAlgInfo_close(ctx);
+        }
+    }
+
     /* Close resource. */
     public void close() {
-        FoundationJNI.INSTANCE.simpleAlgInfo_close(this.cCtx);
+        clearResources();
+    }
+
+    /* Finalize resource. */
+    protected void finalize() throws Throwable {
+        clearResources();
     }
 
     /*

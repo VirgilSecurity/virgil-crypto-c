@@ -65,9 +65,23 @@ public class RatchetGroupSession implements AutoCloseable {
         return new RatchetGroupSession(ctxHolder);
     }
 
+    /* Clear resources. */
+    private void clearResources() {
+        long ctx = this.cCtx;
+        if (this.cCtx > 0) {
+            this.cCtx = 0;
+            RatchetJNI.INSTANCE.ratchetGroupSession_close(ctx);
+        }
+    }
+
     /* Close resource. */
     public void close() {
-        RatchetJNI.INSTANCE.ratchetGroupSession_close(this.cCtx);
+        clearResources();
+    }
+
+    /* Finalize resource. */
+    protected void finalize() throws Throwable {
+        clearResources();
     }
 
     /*

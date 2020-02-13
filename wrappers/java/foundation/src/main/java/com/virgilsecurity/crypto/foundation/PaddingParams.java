@@ -84,9 +84,23 @@ public class PaddingParams implements AutoCloseable {
         return new PaddingParams(ctxHolder);
     }
 
+    /* Clear resources. */
+    private void clearResources() {
+        long ctx = this.cCtx;
+        if (this.cCtx > 0) {
+            this.cCtx = 0;
+            FoundationJNI.INSTANCE.paddingParams_close(ctx);
+        }
+    }
+
     /* Close resource. */
     public void close() {
-        FoundationJNI.INSTANCE.paddingParams_close(this.cCtx);
+        clearResources();
+    }
+
+    /* Finalize resource. */
+    protected void finalize() throws Throwable {
+        clearResources();
     }
 
     /*

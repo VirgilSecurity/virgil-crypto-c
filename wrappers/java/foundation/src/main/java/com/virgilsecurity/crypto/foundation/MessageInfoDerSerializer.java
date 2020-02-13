@@ -78,9 +78,23 @@ public class MessageInfoDerSerializer implements AutoCloseable, MessageInfoSeria
         return new MessageInfoDerSerializer(ctxHolder);
     }
 
+    /* Clear resources. */
+    private void clearResources() {
+        long ctx = this.cCtx;
+        if (this.cCtx > 0) {
+            this.cCtx = 0;
+            FoundationJNI.INSTANCE.messageInfoDerSerializer_close(ctx);
+        }
+    }
+
     /* Close resource. */
     public void close() {
-        FoundationJNI.INSTANCE.messageInfoDerSerializer_close(this.cCtx);
+        clearResources();
+    }
+
+    /* Finalize resource. */
+    protected void finalize() throws Throwable {
+        clearResources();
     }
 
     public int getPrefixLen() {
