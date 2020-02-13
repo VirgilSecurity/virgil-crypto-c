@@ -9,7 +9,7 @@
 
 ### Changes
 
-- Wrapper/Javar: Added resources cleanup on finalize
+- Wrapper/Java: Added resources cleanup on finalize
 
 
 ## Version 0.12.0 released 2020-01-09
