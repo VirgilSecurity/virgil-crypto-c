@@ -94,6 +94,32 @@ test__encrypt__mocked_rnd__should_match(void) {
 }
 
 void
+test__encrypt_oneparty__mocked_rnd__should_match(void) {
+    vsce_uokms_client_t *client = vsce_uokms_client_new();
+    TEST_ASSERT_EQUAL(vsce_status_SUCCESS, vsce_uokms_client_setup_defaults(client));
+
+    vscf_fake_random_t *fake_random = vscf_fake_random_new();
+    vscf_fake_random_setup_source_data(fake_random, test_uokms_server_rnd);
+    vsce_uokms_client_release_random(client);
+    vsce_uokms_client_take_random(client, vscf_fake_random_impl(fake_random));
+
+    TEST_ASSERT_EQUAL(vsce_status_SUCCESS, vsce_uokms_client_set_keys_oneparty(client, test_uokms_client_private_key));
+
+    vsc_buffer_t *wrap = vsc_buffer_new_with_capacity(vsce_phe_common_PHE_PUBLIC_KEY_LENGTH);
+    vsc_buffer_t *key = vsc_buffer_new_with_capacity(test_uokms_key.len);
+
+    TEST_ASSERT_EQUAL(
+            vsce_status_SUCCESS, vsce_uokms_client_generate_encrypt_wrap(client, wrap, test_uokms_key.len, key));
+
+    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_uokms_mocked_oneparty_wrap, wrap);
+    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_uokms_mocked_oneparty_key, key);
+
+    vsc_buffer_destroy(&wrap);
+    vsc_buffer_destroy(&key);
+    vsce_uokms_client_destroy(&client);
+}
+
+void
 test__decrypt_request__mocked_rnd__should_match(void) {
     vsce_uokms_client_t *client = vsce_uokms_client_new();
     TEST_ASSERT_EQUAL(vsce_status_SUCCESS, vsce_uokms_client_setup_defaults(client));
@@ -141,6 +167,24 @@ test__decrypt__mocked_rnd__should_match(void) {
 }
 
 void
+test__decrypt_oneparty__mocked_rnd__should_match(void) {
+    vsce_uokms_client_t *client = vsce_uokms_client_new();
+    TEST_ASSERT_EQUAL(vsce_status_SUCCESS, vsce_uokms_client_setup_defaults(client));
+
+    TEST_ASSERT_EQUAL(vsce_status_SUCCESS, vsce_uokms_client_set_keys_oneparty(client, test_uokms_client_private_key));
+
+    vsc_buffer_t *key = vsc_buffer_new_with_capacity(test_uokms_key.len);
+
+    TEST_ASSERT_EQUAL(
+            vsce_status_SUCCESS, vsce_uokms_client_decrypt_oneparty(client, test_uokms_wrap, test_uokms_key.len, key));
+
+    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_uokms_oneparty_key, key);
+
+    vsc_buffer_destroy(&key);
+    vsce_uokms_client_destroy(&client);
+}
+
+void
 test__rotate_keys__mocked_rnd__should_match(void) {
     vsce_uokms_client_t *client = vsce_uokms_client_new();
     TEST_ASSERT_EQUAL(vsce_status_SUCCESS, vsce_uokms_client_setup_defaults(client));
@@ -162,6 +206,45 @@ test__rotate_keys__mocked_rnd__should_match(void) {
     vsce_uokms_client_destroy(&client);
 }
 
+void
+test__rotate_keys_oneparty__mocked_rnd__should_match(void) {
+    vsce_uokms_client_t *client = vsce_uokms_client_new();
+    TEST_ASSERT_EQUAL(vsce_status_SUCCESS, vsce_uokms_client_setup_defaults(client));
+
+    TEST_ASSERT_EQUAL(vsce_status_SUCCESS, vsce_uokms_client_set_keys_oneparty(client, test_uokms_client_private_key));
+
+    vsc_buffer_t *new_client_private_key = vsc_buffer_new_with_capacity(vsce_phe_common_PHE_PRIVATE_KEY_LENGTH);
+
+    TEST_ASSERT_EQUAL(vsce_status_SUCCESS,
+            vsce_uokms_client_rotate_keys_oneparty(client, test_uokms_update_token, new_client_private_key));
+
+    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_uokms_new_client_private_key, new_client_private_key);
+
+    vsc_buffer_destroy(&new_client_private_key);
+    vsce_uokms_client_destroy(&client);
+}
+
+void
+test__generate_update_token_oneparty__mocked_rnd__should_match(void) {
+    vsce_uokms_client_t *client = vsce_uokms_client_new();
+
+    TEST_ASSERT_EQUAL(vsce_status_SUCCESS, vsce_uokms_client_setup_defaults(client));
+
+    vscf_fake_random_t *fake_random = vscf_fake_random_new();
+    vscf_fake_random_setup_source_data(fake_random, test_uokms_server_rnd);
+    vsce_uokms_client_release_random(client);
+    vsce_uokms_client_take_random(client, vscf_fake_random_impl(fake_random));
+
+    vsc_buffer_t *update_token = vsc_buffer_new_with_capacity(vsce_phe_common_PHE_PRIVATE_KEY_LENGTH);
+
+    TEST_ASSERT_EQUAL(vsce_status_SUCCESS, vsce_uokms_client_generate_update_token_oneparty(client, update_token));
+
+    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_uokms_mocked_client_update_token, update_token);
+
+    vsc_buffer_destroy(&update_token);
+    vsce_uokms_client_destroy(&client);
+}
+
 #endif // TEST_DEPENDENCIES_AVAILABLE
 
 // --------------------------------------------------------------------------
@@ -174,9 +257,13 @@ main(void) {
 #if TEST_DEPENDENCIES_AVAILABLE
     RUN_TEST(test__generate_private_key__mocked_rnd__should_match);
     RUN_TEST(test__encrypt__mocked_rnd__should_match);
+    RUN_TEST(test__encrypt_oneparty__mocked_rnd__should_match);
     RUN_TEST(test__decrypt_request__mocked_rnd__should_match);
     RUN_TEST(test__decrypt__mocked_rnd__should_match);
+    RUN_TEST(test__decrypt_oneparty__mocked_rnd__should_match);
     RUN_TEST(test__rotate_keys__mocked_rnd__should_match);
+    RUN_TEST(test__rotate_keys_oneparty__mocked_rnd__should_match);
+    RUN_TEST(test__generate_update_token_oneparty__mocked_rnd__should_match);
 #else
     RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
 #endif

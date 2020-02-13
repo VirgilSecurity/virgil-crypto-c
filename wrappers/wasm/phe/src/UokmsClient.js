@@ -118,6 +118,36 @@ const initUokmsClient = (Module, modules) => {
         }
 
         /**
+         * Sets client private
+         * Call this method before any other methods
+         * This function should be called only once
+         */
+        setKeysOneparty(clientPrivateKey) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureByteArray('clientPrivateKey', clientPrivateKey);
+
+            //  Copy bytes from JS memory to the WASM memory.
+            const clientPrivateKeySize = clientPrivateKey.length * clientPrivateKey.BYTES_PER_ELEMENT;
+            const clientPrivateKeyPtr = Module._malloc(clientPrivateKeySize);
+            Module.HEAP8.set(clientPrivateKey, clientPrivateKeyPtr);
+
+            //  Create C structure vsc_data_t.
+            const clientPrivateKeyCtxSize = Module._vsc_data_ctx_size();
+            const clientPrivateKeyCtxPtr = Module._malloc(clientPrivateKeyCtxSize);
+
+            //  Point created vsc_data_t object to the copied bytes.
+            Module._vsc_data(clientPrivateKeyCtxPtr, clientPrivateKeyPtr, clientPrivateKeySize);
+
+            try {
+                const proxyResult = Module._vsce_uokms_client_set_keys_oneparty(this.ctxPtr, clientPrivateKeyCtxPtr);
+                modules.PheError.handleStatusCode(proxyResult);
+            } finally {
+                Module._free(clientPrivateKeyPtr);
+                Module._free(clientPrivateKeyCtxPtr);
+            }
+        }
+
+        /**
          * Sets client private and server public key
          * Call this method before any other methods
          * This function should be called only once
@@ -212,6 +242,44 @@ const initUokmsClient = (Module, modules) => {
                 return { wrap, encryptionKey };
             } finally {
                 Module._vsc_buffer_delete(wrapCtxPtr);
+                Module._vsc_buffer_delete(encryptionKeyCtxPtr);
+            }
+        }
+
+        /**
+         * Decrypt
+         */
+        decryptOneparty(wrap, encryptionKeyLen) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureByteArray('wrap', wrap);
+            precondition.ensureNumber('encryptionKeyLen', encryptionKeyLen);
+
+            //  Copy bytes from JS memory to the WASM memory.
+            const wrapSize = wrap.length * wrap.BYTES_PER_ELEMENT;
+            const wrapPtr = Module._malloc(wrapSize);
+            Module.HEAP8.set(wrap, wrapPtr);
+
+            //  Create C structure vsc_data_t.
+            const wrapCtxSize = Module._vsc_data_ctx_size();
+            const wrapCtxPtr = Module._malloc(wrapCtxSize);
+
+            //  Point created vsc_data_t object to the copied bytes.
+            Module._vsc_data(wrapCtxPtr, wrapPtr, wrapSize);
+
+            const encryptionKeyCapacity = encryptionKeyLen;
+            const encryptionKeyCtxPtr = Module._vsc_buffer_new_with_capacity(encryptionKeyCapacity);
+
+            try {
+                const proxyResult = Module._vsce_uokms_client_decrypt_oneparty(this.ctxPtr, wrapCtxPtr, encryptionKeyLen, encryptionKeyCtxPtr);
+                modules.PheError.handleStatusCode(proxyResult);
+
+                const encryptionKeyPtr = Module._vsc_buffer_bytes(encryptionKeyCtxPtr);
+                const encryptionKeyPtrLen = Module._vsc_buffer_len(encryptionKeyCtxPtr);
+                const encryptionKey = Module.HEAPU8.slice(encryptionKeyPtr, encryptionKeyPtr + encryptionKeyPtrLen);
+                return encryptionKey;
+            } finally {
+                Module._free(wrapPtr);
+                Module._free(wrapCtxPtr);
                 Module._vsc_buffer_delete(encryptionKeyCtxPtr);
             }
         }
@@ -342,6 +410,65 @@ const initUokmsClient = (Module, modules) => {
                 Module._free(deblindFactorPtr);
                 Module._free(deblindFactorCtxPtr);
                 Module._vsc_buffer_delete(encryptionKeyCtxPtr);
+            }
+        }
+
+        /**
+         * Rotates client key using given update token obtained from server
+         */
+        rotateKeysOneparty(updateToken) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureByteArray('updateToken', updateToken);
+
+            //  Copy bytes from JS memory to the WASM memory.
+            const updateTokenSize = updateToken.length * updateToken.BYTES_PER_ELEMENT;
+            const updateTokenPtr = Module._malloc(updateTokenSize);
+            Module.HEAP8.set(updateToken, updateTokenPtr);
+
+            //  Create C structure vsc_data_t.
+            const updateTokenCtxSize = Module._vsc_data_ctx_size();
+            const updateTokenCtxPtr = Module._malloc(updateTokenCtxSize);
+
+            //  Point created vsc_data_t object to the copied bytes.
+            Module._vsc_data(updateTokenCtxPtr, updateTokenPtr, updateTokenSize);
+
+            const newClientPrivateKeyCapacity = modules.PheCommon.PHE_PRIVATE_KEY_LENGTH;
+            const newClientPrivateKeyCtxPtr = Module._vsc_buffer_new_with_capacity(newClientPrivateKeyCapacity);
+
+            try {
+                const proxyResult = Module._vsce_uokms_client_rotate_keys_oneparty(this.ctxPtr, updateTokenCtxPtr, newClientPrivateKeyCtxPtr);
+                modules.PheError.handleStatusCode(proxyResult);
+
+                const newClientPrivateKeyPtr = Module._vsc_buffer_bytes(newClientPrivateKeyCtxPtr);
+                const newClientPrivateKeyPtrLen = Module._vsc_buffer_len(newClientPrivateKeyCtxPtr);
+                const newClientPrivateKey = Module.HEAPU8.slice(newClientPrivateKeyPtr, newClientPrivateKeyPtr + newClientPrivateKeyPtrLen);
+                return newClientPrivateKey;
+            } finally {
+                Module._free(updateTokenPtr);
+                Module._free(updateTokenCtxPtr);
+                Module._vsc_buffer_delete(newClientPrivateKeyCtxPtr);
+            }
+        }
+
+        /**
+         * Generates update token for one-party mode
+         */
+        generateUpdateTokenOneparty() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
+            const updateTokenCapacity = modules.PheCommon.PHE_PRIVATE_KEY_LENGTH;
+            const updateTokenCtxPtr = Module._vsc_buffer_new_with_capacity(updateTokenCapacity);
+
+            try {
+                const proxyResult = Module._vsce_uokms_client_generate_update_token_oneparty(this.ctxPtr, updateTokenCtxPtr);
+                modules.PheError.handleStatusCode(proxyResult);
+
+                const updateTokenPtr = Module._vsc_buffer_bytes(updateTokenCtxPtr);
+                const updateTokenPtrLen = Module._vsc_buffer_len(updateTokenCtxPtr);
+                const updateToken = Module.HEAPU8.slice(updateTokenPtr, updateTokenPtr + updateTokenPtrLen);
+                return updateToken;
+            } finally {
+                Module._vsc_buffer_delete(updateTokenCtxPtr);
             }
         }
 

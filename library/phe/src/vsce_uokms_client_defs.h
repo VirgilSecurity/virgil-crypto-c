@@ -116,6 +116,8 @@ struct vsce_uokms_client_t {
     mbedtls_ecp_point k_public;
 
     bool keys_are_set;
+
+    bool multiparty_mode;
 };
 
 

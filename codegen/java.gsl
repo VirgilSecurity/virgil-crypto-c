@@ -1213,15 +1213,40 @@ function java_create_class_close (java_class, class, java_project, meta)
     endnew
 
     new java_method to my.java_class
+        . = "/* Clear resources. */"
+        .name = "clearResources"
+        .visibility = "private"
+
+        new java_code to java_method
+            . = format_left("\
+                long ctx = this.cCtx;
+                if (this.cCtx > 0) {
+                    this.cCtx = 0;
+                    $(java_derive_jni_context_class_name(my.java_project)).INSTANCE.$(my.class.name:Camel)_close(ctx);
+                }
+            ")
+        endnew
+    endnew
+
+    new java_method to my.java_class
         . = "/* Close resource. */"
         .name = "close"
         .visibility = "public"
 
         new java_code to java_method
-            . = "$(java_derive_jni_context_class_name(my.java_project)).INSTANCE.$(my.class.name:Camel)_$(java_method.name:)(this.cCtx);"
+            . = "clearResources();"
         endnew
+    endnew
 
-        return java_method
+    new java_method to my.java_class
+        . = "/* Finalize resource. */"
+        .name = "finalize"
+        .visibility = "protected"
+        .throws = "Throwable"
+
+        new java_code to java_method
+            . = "clearResources();"
+        endnew
     endnew
 endfunction
 

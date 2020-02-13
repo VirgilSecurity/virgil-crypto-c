@@ -23,7 +23,7 @@ func (obj *Ecc) SetRandom(random Random) {
     runtime.KeepAlive(obj)
 }
 
-func (obj *Ecc) SetEcies(ecies Ecies) {
+func (obj *Ecc) SetEcies(ecies *Ecies) {
     C.vscf_ecc_release_ecies(obj.cCtx)
     C.vscf_ecc_use_ecies(obj.cCtx, (*C.vscf_ecies_t)(unsafe.Pointer(ecies.Ctx())))
 

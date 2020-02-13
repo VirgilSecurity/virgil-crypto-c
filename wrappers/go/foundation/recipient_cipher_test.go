@@ -151,3 +151,9 @@ func TestRecipientCipher_Encrypt_RSA(t *testing.T) {
 	decryptedData := append(processDecryptionData, finishDecryptionData...)
 	assert.Equal(t, data, decryptedData)
 }
+
+func TestRecipientCipher_SetPaddingParams(t *testing.T) {
+	paddingParams := NewPaddingParams()
+	recipientCipher := NewRecipientCipher()
+	recipientCipher.SetPaddingParams(paddingParams)
+}
