@@ -327,7 +327,7 @@ vscf_key_recipient_info_list_has_next(const vscf_key_recipient_info_list_t *self
 //
 //  Return next list node if exists, or NULL otherwise.
 //
-VSCF_PUBLIC vscf_key_recipient_info_list_t *
+VSCF_PUBLIC const vscf_key_recipient_info_list_t *
 vscf_key_recipient_info_list_next(const vscf_key_recipient_info_list_t *self) {
 
     VSCF_ASSERT_PTR(self);
@@ -360,7 +360,7 @@ vscf_key_recipient_info_list_has_prev(const vscf_key_recipient_info_list_t *self
 //
 //  Return previous list node if exists, or NULL otherwise.
 //
-VSCF_PUBLIC vscf_key_recipient_info_list_t *
+VSCF_PUBLIC const vscf_key_recipient_info_list_t *
 vscf_key_recipient_info_list_prev(const vscf_key_recipient_info_list_t *self) {
 
     VSCF_ASSERT_PTR(self);

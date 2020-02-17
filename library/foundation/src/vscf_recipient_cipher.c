@@ -638,7 +638,7 @@ vscf_recipient_cipher_has_key_recipient(const vscf_recipient_cipher_t *self, vsc
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT(vsc_data_is_valid(recipient_id));
 
-    for (vscf_key_recipient_list_t *curr = self->key_recipients;
+    for (const vscf_key_recipient_list_t *curr = self->key_recipients;
             curr != NULL && vscf_key_recipient_list_has_key_recipient(curr);
             curr = vscf_key_recipient_list_next(curr)) {
 

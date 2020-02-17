@@ -92,7 +92,7 @@ import VSCFoundation
     @objc public func next() -> KeyRecipientInfoList {
         let proxyResult = vscf_key_recipient_info_list_next(self.c_ctx)
 
-        return KeyRecipientInfoList.init(take: proxyResult!)
+        return KeyRecipientInfoList.init(use: proxyResult!)
     }
 
     /// Return true if list has previous item.
@@ -106,7 +106,7 @@ import VSCFoundation
     @objc public func prev() -> KeyRecipientInfoList {
         let proxyResult = vscf_key_recipient_info_list_prev(self.c_ctx)
 
-        return KeyRecipientInfoList.init(take: proxyResult!)
+        return KeyRecipientInfoList.init(use: proxyResult!)
     }
 
     /// Remove all items.

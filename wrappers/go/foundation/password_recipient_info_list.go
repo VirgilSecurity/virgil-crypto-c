@@ -108,7 +108,7 @@ func (obj *PasswordRecipientInfoList) Next() *PasswordRecipientInfoList {
 
     runtime.KeepAlive(obj)
 
-    return newPasswordRecipientInfoListWithCtx(proxyResult) /* r6 */
+    return newPasswordRecipientInfoListCopy(proxyResult) /* r5 */
 }
 
 /*
@@ -130,7 +130,7 @@ func (obj *PasswordRecipientInfoList) Prev() *PasswordRecipientInfoList {
 
     runtime.KeepAlive(obj)
 
-    return newPasswordRecipientInfoListWithCtx(proxyResult) /* r6 */
+    return newPasswordRecipientInfoListCopy(proxyResult) /* r5 */
 }
 
 /*

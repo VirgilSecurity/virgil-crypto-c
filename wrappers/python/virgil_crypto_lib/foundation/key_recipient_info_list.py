@@ -69,7 +69,7 @@ class KeyRecipientInfoList(object):
     def next(self):
         """Return next list node if exists, or NULL otherwise."""
         result = self._lib_vscf_key_recipient_info_list.vscf_key_recipient_info_list_next(self.ctx)
-        instance = KeyRecipientInfoList.take_c_ctx(result)
+        instance = KeyRecipientInfoList.use_c_ctx(result)
         return instance
 
     def has_prev(self):
@@ -80,7 +80,7 @@ class KeyRecipientInfoList(object):
     def prev(self):
         """Return previous list node if exists, or NULL otherwise."""
         result = self._lib_vscf_key_recipient_info_list.vscf_key_recipient_info_list_prev(self.ctx)
-        instance = KeyRecipientInfoList.take_c_ctx(result)
+        instance = KeyRecipientInfoList.use_c_ctx(result)
         return instance
 
     def clear(self):

@@ -150,7 +150,7 @@ vscf_password_recipient_info_list_has_next(const vscf_password_recipient_info_li
 //
 //  Return next list node if exists, or NULL otherwise.
 //
-VSCF_PUBLIC vscf_password_recipient_info_list_t *
+VSCF_PUBLIC const vscf_password_recipient_info_list_t *
 vscf_password_recipient_info_list_next(const vscf_password_recipient_info_list_t *self);
 
 //
@@ -162,7 +162,7 @@ vscf_password_recipient_info_list_has_prev(const vscf_password_recipient_info_li
 //
 //  Return previous list node if exists, or NULL otherwise.
 //
-VSCF_PUBLIC vscf_password_recipient_info_list_t *
+VSCF_PUBLIC const vscf_password_recipient_info_list_t *
 vscf_password_recipient_info_list_prev(const vscf_password_recipient_info_list_t *self);
 
 //
