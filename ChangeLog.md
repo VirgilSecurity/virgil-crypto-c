@@ -1,6 +1,13 @@
 # virgil-crypto-c ChangeLog (Sorted by date)
 
 
+## Version 0.12.2 released 2020-02-17
+
+### Bugfix
+
+- Wrappers: Fix a problem that leads to abort when use "list" classes
+
+
 ## Version 0.12.1 released 2020-02-13
 
 ### Features
