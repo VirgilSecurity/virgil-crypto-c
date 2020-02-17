@@ -92,7 +92,7 @@ import VSCFoundation
     @objc public func next() -> PasswordRecipientInfoList {
         let proxyResult = vscf_password_recipient_info_list_next(self.c_ctx)
 
-        return PasswordRecipientInfoList.init(take: proxyResult!)
+        return PasswordRecipientInfoList.init(use: proxyResult!)
     }
 
     /// Return true if list has previous item.
@@ -106,7 +106,7 @@ import VSCFoundation
     @objc public func prev() -> PasswordRecipientInfoList {
         let proxyResult = vscf_password_recipient_info_list_prev(self.c_ctx)
 
-        return PasswordRecipientInfoList.init(take: proxyResult!)
+        return PasswordRecipientInfoList.init(use: proxyResult!)
     }
 
     /// Remove all items.

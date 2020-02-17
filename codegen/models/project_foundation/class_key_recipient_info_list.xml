@@ -42,7 +42,7 @@
     <method name="next" is_const="1">
         Return next list node if exists, or NULL otherwise.
 
-        <return class="self"/>
+        <return class="self" access="readonly"/>
     </method>
 
 
@@ -63,9 +63,8 @@
     <method name="prev" is_const="1">
         Return previous list node if exists, or NULL otherwise.
 
-        <return class="self"/>
+        <return class="self" access="readonly"/>
     </method>
-
 
     <method name="clear">
         Remove all items.

@@ -108,7 +108,7 @@ func (obj *KeyRecipientInfoList) Next() *KeyRecipientInfoList {
 
     runtime.KeepAlive(obj)
 
-    return newKeyRecipientInfoListWithCtx(proxyResult) /* r6 */
+    return newKeyRecipientInfoListCopy(proxyResult) /* r5 */
 }
 
 /*
@@ -130,7 +130,7 @@ func (obj *KeyRecipientInfoList) Prev() *KeyRecipientInfoList {
 
     runtime.KeepAlive(obj)
 
-    return newKeyRecipientInfoListWithCtx(proxyResult) /* r6 */
+    return newKeyRecipientInfoListCopy(proxyResult) /* r5 */
 }
 
 /*

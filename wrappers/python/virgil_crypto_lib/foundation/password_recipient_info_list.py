@@ -69,7 +69,7 @@ class PasswordRecipientInfoList(object):
     def next(self):
         """Return next list node if exists, or NULL otherwise."""
         result = self._lib_vscf_password_recipient_info_list.vscf_password_recipient_info_list_next(self.ctx)
-        instance = PasswordRecipientInfoList.take_c_ctx(result)
+        instance = PasswordRecipientInfoList.use_c_ctx(result)
         return instance
 
     def has_prev(self):
@@ -80,7 +80,7 @@ class PasswordRecipientInfoList(object):
     def prev(self):
         """Return previous list node if exists, or NULL otherwise."""
         result = self._lib_vscf_password_recipient_info_list.vscf_password_recipient_info_list_prev(self.ctx)
-        instance = PasswordRecipientInfoList.take_c_ctx(result)
+        instance = PasswordRecipientInfoList.use_c_ctx(result)
         return instance
 
     def clear(self):

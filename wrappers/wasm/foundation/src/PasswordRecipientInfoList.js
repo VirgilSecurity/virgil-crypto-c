@@ -136,7 +136,7 @@ const initPasswordRecipientInfoList = (Module, modules) => {
             let proxyResult;
             proxyResult = Module._vscf_password_recipient_info_list_next(this.ctxPtr);
 
-            const jsResult = PasswordRecipientInfoList.newAndTakeCContext(proxyResult);
+            const jsResult = PasswordRecipientInfoList.newAndUseCContext(proxyResult);
             return jsResult;
         }
 
@@ -162,7 +162,7 @@ const initPasswordRecipientInfoList = (Module, modules) => {
             let proxyResult;
             proxyResult = Module._vscf_password_recipient_info_list_prev(this.ctxPtr);
 
-            const jsResult = PasswordRecipientInfoList.newAndTakeCContext(proxyResult);
+            const jsResult = PasswordRecipientInfoList.newAndUseCContext(proxyResult);
             return jsResult;
         }
 
