@@ -66,6 +66,14 @@ class UokmsClient(object):
         status = self._lib_vsce_uokms_client.vsce_uokms_client_setup_defaults(self.ctx)
         VsceStatus.handle_status(status)
 
+    def set_keys_oneparty(self, client_private_key):
+        """Sets client private
+        Call this method before any other methods
+        This function should be called only once"""
+        d_client_private_key = Data(client_private_key)
+        status = self._lib_vsce_uokms_client.vsce_uokms_client_set_keys_oneparty(self.ctx, d_client_private_key.data)
+        VsceStatus.handle_status(status)
+
     def set_keys(self, client_private_key, server_public_key):
         """Sets client private and server public key
         Call this method before any other methods
@@ -91,6 +99,14 @@ class UokmsClient(object):
         VsceStatus.handle_status(status)
         return wrap.get_bytes(), encryption_key.get_bytes()
 
+    def decrypt_oneparty(self, wrap, encryption_key_len):
+        """Decrypt"""
+        d_wrap = Data(wrap)
+        encryption_key = Buffer(encryption_key_len)
+        status = self._lib_vsce_uokms_client.vsce_uokms_client_decrypt_oneparty(self.ctx, d_wrap.data, encryption_key_len, encryption_key.c_buffer)
+        VsceStatus.handle_status(status)
+        return encryption_key.get_bytes()
+
     def generate_decrypt_request(self, wrap):
         """Generates request to decrypt data, this request should be sent to the server.
         Server response is then passed to "process decrypt response" where encryption key can be decapsulated"""
@@ -111,6 +127,21 @@ class UokmsClient(object):
         status = self._lib_vsce_uokms_client.vsce_uokms_client_process_decrypt_response(self.ctx, d_wrap.data, d_decrypt_request.data, d_decrypt_response.data, d_deblind_factor.data, encryption_key_len, encryption_key.c_buffer)
         VsceStatus.handle_status(status)
         return encryption_key.get_bytes()
+
+    def rotate_keys_oneparty(self, update_token):
+        """Rotates client key using given update token obtained from server"""
+        d_update_token = Data(update_token)
+        new_client_private_key = Buffer(Common.PHE_PRIVATE_KEY_LENGTH)
+        status = self._lib_vsce_uokms_client.vsce_uokms_client_rotate_keys_oneparty(self.ctx, d_update_token.data, new_client_private_key.c_buffer)
+        VsceStatus.handle_status(status)
+        return new_client_private_key.get_bytes()
+
+    def generate_update_token_oneparty(self):
+        """Generates update token for one-party mode"""
+        update_token = Buffer(Common.PHE_PRIVATE_KEY_LENGTH)
+        status = self._lib_vsce_uokms_client.vsce_uokms_client_generate_update_token_oneparty(self.ctx, update_token.c_buffer)
+        VsceStatus.handle_status(status)
+        return update_token.get_bytes()
 
     def rotate_keys(self, update_token):
         """Rotates client and server keys using given update token obtained from server"""

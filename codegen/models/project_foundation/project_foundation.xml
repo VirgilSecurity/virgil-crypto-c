@@ -9,7 +9,7 @@
         wrappers="swift,java,python,wasm,go,php"
         >
 
-    <version major="0" minor="12" patch="1"/>
+    <version major="0" minor="12" patch="3"/>
 
     <license>
         Copyright (C) 2015-2020 Virgil Security, Inc.
@@ -51,7 +51,8 @@
     <require library="mbedtls" feature="library"/>
 
     <cgo_link platform="darwin" libraries="-lvsc_foundation -lvsc_foundation_pb -led25519 -lprotobuf-nanopb -lvsc_common -lmbedcrypto -lround5 -lfalcon -lkeccak"/>
-    <cgo_link platform="linux" libraries="-lvsc_foundation -lvsc_foundation_pb -led25519 -lprotobuf-nanopb -lvsc_common -lmbedcrypto -lround5 -lfalcon -lkeccak -lpthread"/>
+    <cgo_link platform="linux,!legacy" path="linux_amd64" libraries="-lvsc_foundation -lvsc_foundation_pb -led25519 -lprotobuf-nanopb -lvsc_common -lmbedcrypto -lround5 -lfalcon -lkeccak -lpthread"/>
+    <cgo_link platform="linux,legacy" path="linux_amd64__legacy_os" libraries="-lvsc_foundation -lvsc_foundation_pb -led25519 -lprotobuf-nanopb -lvsc_common -lmbedcrypto -lround5 -lfalcon -lkeccak -lpthread"/>
     <cgo_link platform="windows" libraries="-lvsc_foundation -lvsc_foundation_pb -led25519 -lprotobuf-nanopb -lvsc_common -lmbedcrypto -lround5 -lfalcon -lkeccak"/>
 
     <feature name="multi threading" default="on">

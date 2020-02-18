@@ -73,9 +73,23 @@ public class RatchetGroupParticipantsIds implements AutoCloseable {
         return new RatchetGroupParticipantsIds(ctxHolder);
     }
 
+    /* Clear resources. */
+    private void clearResources() {
+        long ctx = this.cCtx;
+        if (this.cCtx > 0) {
+            this.cCtx = 0;
+            RatchetJNI.INSTANCE.ratchetGroupParticipantsIds_close(ctx);
+        }
+    }
+
     /* Close resource. */
     public void close() {
-        RatchetJNI.INSTANCE.ratchetGroupParticipantsIds_close(this.cCtx);
+        clearResources();
+    }
+
+    /* Finalize resource. */
+    protected void finalize() throws Throwable {
+        clearResources();
     }
 
     /*

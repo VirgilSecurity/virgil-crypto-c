@@ -65,9 +65,23 @@ public class RatchetGroupTicket implements AutoCloseable {
         return new RatchetGroupTicket(ctxHolder);
     }
 
+    /* Clear resources. */
+    private void clearResources() {
+        long ctx = this.cCtx;
+        if (this.cCtx > 0) {
+            this.cCtx = 0;
+            RatchetJNI.INSTANCE.ratchetGroupTicket_close(ctx);
+        }
+    }
+
     /* Close resource. */
     public void close() {
-        RatchetJNI.INSTANCE.ratchetGroupTicket_close(this.cCtx);
+        clearResources();
+    }
+
+    /* Finalize resource. */
+    protected void finalize() throws Throwable {
+        clearResources();
     }
 
     /*

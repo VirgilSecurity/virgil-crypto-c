@@ -2200,7 +2200,7 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
     if (NULL == result_methodID) {
         VSCF_ASSERT("Class KeyRecipientInfoList has no 'getInstance' method.");
     }
-
+    vscf_key_recipient_info_list_shallow_copy((vscf_key_recipient_info_list_t */*5*/) proxyResult);
     jobject ret = (*jenv)->CallStaticObjectMethod(jenv, result_cls, result_methodID, (jlong) proxyResult);
     return ret;
 }
@@ -2226,7 +2226,7 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
     if (NULL == result_methodID) {
         VSCF_ASSERT("Class KeyRecipientInfoList has no 'getInstance' method.");
     }
-
+    vscf_key_recipient_info_list_shallow_copy((vscf_key_recipient_info_list_t */*5*/) proxyResult);
     jobject ret = (*jenv)->CallStaticObjectMethod(jenv, result_cls, result_methodID, (jlong) proxyResult);
     return ret;
 }
@@ -2354,7 +2354,7 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
     if (NULL == result_methodID) {
         VSCF_ASSERT("Class PasswordRecipientInfoList has no 'getInstance' method.");
     }
-
+    vscf_password_recipient_info_list_shallow_copy((vscf_password_recipient_info_list_t */*5*/) proxyResult);
     jobject ret = (*jenv)->CallStaticObjectMethod(jenv, result_cls, result_methodID, (jlong) proxyResult);
     return ret;
 }
@@ -2380,7 +2380,7 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
     if (NULL == result_methodID) {
         VSCF_ASSERT("Class PasswordRecipientInfoList has no 'getInstance' method.");
     }
-
+    vscf_password_recipient_info_list_shallow_copy((vscf_password_recipient_info_list_t */*5*/) proxyResult);
     jobject ret = (*jenv)->CallStaticObjectMethod(jenv, result_cls, result_methodID, (jlong) proxyResult);
     return ret;
 }

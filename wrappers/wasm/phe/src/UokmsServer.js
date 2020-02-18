@@ -235,7 +235,7 @@ const initUokmsServer = (Module, modules) => {
             const newServerPublicKeyCapacity = modules.PheCommon.PHE_PUBLIC_KEY_LENGTH;
             const newServerPublicKeyCtxPtr = Module._vsc_buffer_new_with_capacity(newServerPublicKeyCapacity);
 
-            const updateTokenCapacity = modules.PheCommon.PHE_PUBLIC_KEY_LENGTH;
+            const updateTokenCapacity = modules.PheCommon.PHE_PRIVATE_KEY_LENGTH;
             const updateTokenCtxPtr = Module._vsc_buffer_new_with_capacity(updateTokenCapacity);
 
             try {

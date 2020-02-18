@@ -192,6 +192,14 @@ VSCE_PUBLIC vsce_status_t
 vsce_uokms_client_setup_defaults(vsce_uokms_client_t *self) VSCE_NODISCARD;
 
 //
+//  Sets client private
+//  Call this method before any other methods
+//  This function should be called only once
+//
+VSCE_PUBLIC vsce_status_t
+vsce_uokms_client_set_keys_oneparty(vsce_uokms_client_t *self, vsc_data_t client_private_key) VSCE_NODISCARD;
+
+//
 //  Sets client private and server public key
 //  Call this method before any other methods
 //  This function should be called only once
@@ -216,6 +224,13 @@ vsce_uokms_client_generate_encrypt_wrap(vsce_uokms_client_t *self, vsc_buffer_t 
         vsc_buffer_t *encryption_key) VSCE_NODISCARD;
 
 //
+//  Decrypt
+//
+VSCE_PUBLIC vsce_status_t
+vsce_uokms_client_decrypt_oneparty(vsce_uokms_client_t *self, vsc_data_t wrap, size_t encryption_key_len,
+        vsc_buffer_t *encryption_key) VSCE_NODISCARD;
+
+//
 //  Generates request to decrypt data, this request should be sent to the server.
 //  Server response is then passed to "process decrypt response" where encryption key can be decapsulated
 //
@@ -230,6 +245,19 @@ VSCE_PUBLIC vsce_status_t
 vsce_uokms_client_process_decrypt_response(vsce_uokms_client_t *self, vsc_data_t wrap, vsc_data_t decrypt_request,
         vsc_data_t decrypt_response, vsc_data_t deblind_factor, size_t encryption_key_len,
         vsc_buffer_t *encryption_key) VSCE_NODISCARD;
+
+//
+//  Rotates client key using given update token obtained from server
+//
+VSCE_PUBLIC vsce_status_t
+vsce_uokms_client_rotate_keys_oneparty(vsce_uokms_client_t *self, vsc_data_t update_token,
+        vsc_buffer_t *new_client_private_key) VSCE_NODISCARD;
+
+//
+//  Generates update token for one-party mode
+//
+VSCE_PUBLIC vsce_status_t
+vsce_uokms_client_generate_update_token_oneparty(vsce_uokms_client_t *self, vsc_buffer_t *update_token) VSCE_NODISCARD;
 
 //
 //  Rotates client and server keys using given update token obtained from server

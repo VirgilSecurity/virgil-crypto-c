@@ -83,9 +83,23 @@ public class Round5 implements AutoCloseable, KeyAlg, Kem {
         return new Round5(ctxHolder);
     }
 
+    /* Clear resources. */
+    private void clearResources() {
+        long ctx = this.cCtx;
+        if (this.cCtx > 0) {
+            this.cCtx = 0;
+            FoundationJNI.INSTANCE.round5_close(ctx);
+        }
+    }
+
     /* Close resource. */
     public void close() {
-        FoundationJNI.INSTANCE.round5_close(this.cCtx);
+        clearResources();
+    }
+
+    /* Finalize resource. */
+    protected void finalize() throws Throwable {
+        clearResources();
     }
 
     /*
