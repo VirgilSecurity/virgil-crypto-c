@@ -97,6 +97,20 @@ class UokmsClient
     }
 
     /**
+    * Sets client private
+    * Call this method before any other methods
+    * This function should be called only once
+    *
+    * @param string $clientPrivateKey
+    * @return void
+    * @throws \Exception
+    */
+    public function setKeysOneparty(string $clientPrivateKey): void
+    {
+        vsce_uokms_client_set_keys_oneparty_php($this->ctx, $clientPrivateKey);
+    }
+
+    /**
     * Sets client private and server public key
     * Call this method before any other methods
     * This function should be called only once
@@ -136,6 +150,19 @@ class UokmsClient
     }
 
     /**
+    * Decrypt
+    *
+    * @param string $wrap
+    * @param int $encryptionKeyLen
+    * @return string
+    * @throws \Exception
+    */
+    public function decryptOneparty(string $wrap, int $encryptionKeyLen): string
+    {
+        return vsce_uokms_client_decrypt_oneparty_php($this->ctx, $wrap, $encryptionKeyLen);
+    }
+
+    /**
     * Generates request to decrypt data, this request should be sent to the server.
     * Server response is then passed to "process decrypt response" where encryption key can be decapsulated
     *
@@ -162,6 +189,29 @@ class UokmsClient
     public function processDecryptResponse(string $wrap, string $decryptRequest, string $decryptResponse, string $deblindFactor, int $encryptionKeyLen): string
     {
         return vsce_uokms_client_process_decrypt_response_php($this->ctx, $wrap, $decryptRequest, $decryptResponse, $deblindFactor, $encryptionKeyLen);
+    }
+
+    /**
+    * Rotates client key using given update token obtained from server
+    *
+    * @param string $updateToken
+    * @return string
+    * @throws \Exception
+    */
+    public function rotateKeysOneparty(string $updateToken): string
+    {
+        return vsce_uokms_client_rotate_keys_oneparty_php($this->ctx, $updateToken);
+    }
+
+    /**
+    * Generates update token for one-party mode
+    *
+    * @return string
+    * @throws \Exception
+    */
+    public function generateUpdateTokenOneparty(): string
+    {
+        return vsce_uokms_client_generate_update_token_oneparty_php($this->ctx);
     }
 
     /**

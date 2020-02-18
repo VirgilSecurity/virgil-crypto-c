@@ -81,7 +81,7 @@ vsce_handle_throw_exception(vsce_status_t status) {
 //
 // Constants
 //
-const char VSCE_PHE_PHP_VERSION[] = "0.12.1";
+const char VSCE_PHE_PHP_VERSION[] = "0.12.3";
 const char VSCE_PHE_PHP_EXTNAME[] = "vsce_phe_php";
 
 static const char VSCE_PHE_SERVER_T_PHP_RES_NAME[] = "vsce_phe_server_t";
@@ -2257,6 +2257,55 @@ PHP_FUNCTION(vsce_uokms_client_setup_defaults_php) {
 }
 
 //
+// Wrap method: vsce_uokms_client_set_keys_oneparty
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+    arginfo_vsce_uokms_client_set_keys_oneparty_php,
+    0 /*return_reference*/,
+    2 /*required_num_args*/,
+    IS_VOID /*type*/,
+    0 /*allow_null*/)
+
+
+    ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
+    ZEND_ARG_TYPE_INFO(0, in_client_private_key, IS_STRING, 0)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vsce_uokms_client_set_keys_oneparty_php) {
+
+    //
+    // Declare input argument
+    //
+    zval *in_ctx = NULL;
+    char *in_client_private_key = NULL;
+    size_t in_client_private_key_len = 0;
+
+    //
+    // Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 2, 2)
+        Z_PARAM_RESOURCE_EX(in_ctx, 1, 0)
+        Z_PARAM_STRING_EX(in_client_private_key, in_client_private_key_len, 1 /*check_null*/, 0 /*separate*/)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    // Proxy call
+    //
+    vsce_uokms_client_t *uokms_client = zend_fetch_resource_ex(in_ctx, vsce_uokms_client_t_php_res_name(), le_vsce_uokms_client_t());
+    vsc_data_t client_private_key = vsc_data((const byte*)in_client_private_key, in_client_private_key_len);
+
+    //
+    // Call main function
+    //
+    vsce_status_t status =vsce_uokms_client_set_keys_oneparty(uokms_client, client_private_key);
+
+    //
+    // Handle error
+    //
+    VSCE_HANDLE_STATUS(status);
+}
+
+//
 // Wrap method: vsce_uokms_client_set_keys
 //
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
@@ -2461,6 +2510,82 @@ PHP_FUNCTION(vsce_uokms_client_generate_encrypt_wrap_php) {
 }
 
 //
+// Wrap method: vsce_uokms_client_decrypt_oneparty
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+    arginfo_vsce_uokms_client_decrypt_oneparty_php,
+    0 /*return_reference*/,
+    3 /*required_num_args*/,
+    IS_STRING /*type*/,
+    0 /*allow_null*/)
+
+
+    ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
+    ZEND_ARG_TYPE_INFO(0, in_wrap, IS_STRING, 0)
+    ZEND_ARG_TYPE_INFO(0, in_encryption_key_len, IS_LONG, 0)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vsce_uokms_client_decrypt_oneparty_php) {
+
+    //
+    // Declare input argument
+    //
+    zval *in_ctx = NULL;
+    char *in_wrap = NULL;
+    size_t in_wrap_len = 0;
+    zend_long in_encryption_key_len = 0;
+
+    //
+    // Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 3, 3)
+        Z_PARAM_RESOURCE_EX(in_ctx, 1, 0)
+        Z_PARAM_STRING_EX(in_wrap, in_wrap_len, 1 /*check_null*/, 0 /*separate*/)
+        Z_PARAM_LONG(in_encryption_key_len)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    // Proxy call
+    //
+    vsce_uokms_client_t *uokms_client = zend_fetch_resource_ex(in_ctx, vsce_uokms_client_t_php_res_name(), le_vsce_uokms_client_t());
+    vsc_data_t wrap = vsc_data((const byte*)in_wrap, in_wrap_len);
+    size_t encryption_key_len = in_encryption_key_len;
+
+    //
+    // Allocate output buffer for output 'encryption_key'
+    //
+    zend_string *out_encryption_key = zend_string_alloc(encryption_key_len, 0);
+    vsc_buffer_t *encryption_key = vsc_buffer_new();
+    vsc_buffer_use(encryption_key, (byte *)ZSTR_VAL(out_encryption_key), ZSTR_LEN(out_encryption_key));
+
+    //
+    // Call main function
+    //
+    vsce_status_t status =vsce_uokms_client_decrypt_oneparty(uokms_client, wrap, encryption_key_len, encryption_key);
+
+    //
+    // Handle error
+    //
+    VSCE_HANDLE_STATUS(status);
+
+    //
+    // Correct string length to the actual
+    //
+    ZSTR_LEN(out_encryption_key) = vsc_buffer_len(encryption_key);
+
+    //
+    // Write returned result
+    //
+    if (status == vsce_status_SUCCESS) {
+        RETVAL_STR(out_encryption_key);
+        vsc_buffer_destroy(&encryption_key);
+    }
+    else {
+        zend_string_free(out_encryption_key);
+    }
+}
+
+//
 // Wrap method: vsce_uokms_client_generate_decrypt_request
 //
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
@@ -2632,6 +2757,145 @@ PHP_FUNCTION(vsce_uokms_client_process_decrypt_response_php) {
     }
     else {
         zend_string_free(out_encryption_key);
+    }
+}
+
+//
+// Wrap method: vsce_uokms_client_rotate_keys_oneparty
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+    arginfo_vsce_uokms_client_rotate_keys_oneparty_php,
+    0 /*return_reference*/,
+    2 /*required_num_args*/,
+    IS_STRING /*type*/,
+    0 /*allow_null*/)
+
+
+    ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
+    ZEND_ARG_TYPE_INFO(0, in_update_token, IS_STRING, 0)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vsce_uokms_client_rotate_keys_oneparty_php) {
+
+    //
+    // Declare input argument
+    //
+    zval *in_ctx = NULL;
+    char *in_update_token = NULL;
+    size_t in_update_token_len = 0;
+
+    //
+    // Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 2, 2)
+        Z_PARAM_RESOURCE_EX(in_ctx, 1, 0)
+        Z_PARAM_STRING_EX(in_update_token, in_update_token_len, 1 /*check_null*/, 0 /*separate*/)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    // Proxy call
+    //
+    vsce_uokms_client_t *uokms_client = zend_fetch_resource_ex(in_ctx, vsce_uokms_client_t_php_res_name(), le_vsce_uokms_client_t());
+    vsc_data_t update_token = vsc_data((const byte*)in_update_token, in_update_token_len);
+
+    //
+    // Allocate output buffer for output 'new_client_private_key'
+    //
+    zend_string *out_new_client_private_key = zend_string_alloc(vsce_phe_common_PHE_PRIVATE_KEY_LENGTH, 0);
+    vsc_buffer_t *new_client_private_key = vsc_buffer_new();
+    vsc_buffer_use(new_client_private_key, (byte *)ZSTR_VAL(out_new_client_private_key), ZSTR_LEN(out_new_client_private_key));
+
+    //
+    // Call main function
+    //
+    vsce_status_t status =vsce_uokms_client_rotate_keys_oneparty(uokms_client, update_token, new_client_private_key);
+
+    //
+    // Handle error
+    //
+    VSCE_HANDLE_STATUS(status);
+
+    //
+    // Correct string length to the actual
+    //
+    ZSTR_LEN(out_new_client_private_key) = vsc_buffer_len(new_client_private_key);
+
+    //
+    // Write returned result
+    //
+    if (status == vsce_status_SUCCESS) {
+        RETVAL_STR(out_new_client_private_key);
+        vsc_buffer_destroy(&new_client_private_key);
+    }
+    else {
+        zend_string_free(out_new_client_private_key);
+    }
+}
+
+//
+// Wrap method: vsce_uokms_client_generate_update_token_oneparty
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+    arginfo_vsce_uokms_client_generate_update_token_oneparty_php,
+    0 /*return_reference*/,
+    1 /*required_num_args*/,
+    IS_STRING /*type*/,
+    0 /*allow_null*/)
+
+
+    ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vsce_uokms_client_generate_update_token_oneparty_php) {
+
+    //
+    // Declare input argument
+    //
+    zval *in_ctx = NULL;
+
+    //
+    // Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 1, 1)
+        Z_PARAM_RESOURCE_EX(in_ctx, 1, 0)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    // Proxy call
+    //
+    vsce_uokms_client_t *uokms_client = zend_fetch_resource_ex(in_ctx, vsce_uokms_client_t_php_res_name(), le_vsce_uokms_client_t());
+
+    //
+    // Allocate output buffer for output 'update_token'
+    //
+    zend_string *out_update_token = zend_string_alloc(vsce_phe_common_PHE_PRIVATE_KEY_LENGTH, 0);
+    vsc_buffer_t *update_token = vsc_buffer_new();
+    vsc_buffer_use(update_token, (byte *)ZSTR_VAL(out_update_token), ZSTR_LEN(out_update_token));
+
+    //
+    // Call main function
+    //
+    vsce_status_t status =vsce_uokms_client_generate_update_token_oneparty(uokms_client, update_token);
+
+    //
+    // Handle error
+    //
+    VSCE_HANDLE_STATUS(status);
+
+    //
+    // Correct string length to the actual
+    //
+    ZSTR_LEN(out_update_token) = vsc_buffer_len(update_token);
+
+    //
+    // Write returned result
+    //
+    if (status == vsce_status_SUCCESS) {
+        RETVAL_STR(out_update_token);
+        vsc_buffer_destroy(&update_token);
+    }
+    else {
+        zend_string_free(out_update_token);
     }
 }
 
@@ -3155,7 +3419,7 @@ PHP_FUNCTION(vsce_uokms_server_rotate_keys_php) {
     //
     // Allocate output buffer for output 'update_token'
     //
-    zend_string *out_update_token = zend_string_alloc(vsce_phe_common_PHE_PUBLIC_KEY_LENGTH, 0);
+    zend_string *out_update_token = zend_string_alloc(vsce_phe_common_PHE_PRIVATE_KEY_LENGTH, 0);
     vsc_buffer_t *update_token = vsc_buffer_new();
     vsc_buffer_use(update_token, (byte *)ZSTR_VAL(out_update_token), ZSTR_LEN(out_update_token));
 
@@ -3583,11 +3847,15 @@ static zend_function_entry vsce_phe_php_functions[] = {
     PHP_FE(vsce_uokms_client_new_php, arginfo_vsce_uokms_client_new_php)
     PHP_FE(vsce_uokms_client_delete_php, arginfo_vsce_uokms_client_delete_php)
     PHP_FE(vsce_uokms_client_setup_defaults_php, arginfo_vsce_uokms_client_setup_defaults_php)
+    PHP_FE(vsce_uokms_client_set_keys_oneparty_php, arginfo_vsce_uokms_client_set_keys_oneparty_php)
     PHP_FE(vsce_uokms_client_set_keys_php, arginfo_vsce_uokms_client_set_keys_php)
     PHP_FE(vsce_uokms_client_generate_client_private_key_php, arginfo_vsce_uokms_client_generate_client_private_key_php)
     PHP_FE(vsce_uokms_client_generate_encrypt_wrap_php, arginfo_vsce_uokms_client_generate_encrypt_wrap_php)
+    PHP_FE(vsce_uokms_client_decrypt_oneparty_php, arginfo_vsce_uokms_client_decrypt_oneparty_php)
     PHP_FE(vsce_uokms_client_generate_decrypt_request_php, arginfo_vsce_uokms_client_generate_decrypt_request_php)
     PHP_FE(vsce_uokms_client_process_decrypt_response_php, arginfo_vsce_uokms_client_process_decrypt_response_php)
+    PHP_FE(vsce_uokms_client_rotate_keys_oneparty_php, arginfo_vsce_uokms_client_rotate_keys_oneparty_php)
+    PHP_FE(vsce_uokms_client_generate_update_token_oneparty_php, arginfo_vsce_uokms_client_generate_update_token_oneparty_php)
     PHP_FE(vsce_uokms_client_rotate_keys_php, arginfo_vsce_uokms_client_rotate_keys_php)
     PHP_FE(vsce_uokms_client_use_random_php, arginfo_vsce_uokms_client_use_random_php)
     PHP_FE(vsce_uokms_client_use_operation_random_php, arginfo_vsce_uokms_client_use_operation_random_php)

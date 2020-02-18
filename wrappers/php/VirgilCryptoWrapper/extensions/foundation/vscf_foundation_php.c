@@ -353,7 +353,7 @@ vscf_handle_throw_exception(vscf_status_t status) {
 //
 // Constants
 //
-const char VSCF_FOUNDATION_PHP_VERSION[] = "0.12.1";
+const char VSCF_FOUNDATION_PHP_VERSION[] = "0.12.3";
 const char VSCF_FOUNDATION_PHP_EXTNAME[] = "vscf_foundation_php";
 
 static const char VSCF_IMPL_T_PHP_RES_NAME[] = "vscf_impl_t";
@@ -2430,7 +2430,8 @@ PHP_FUNCTION(vscf_key_recipient_info_list_next_php) {
     //
     // Call main function
     //
-    vscf_key_recipient_info_list_t *key_recipient_info_list_rs =vscf_key_recipient_info_list_next(key_recipient_info_list);
+    vscf_key_recipient_info_list_t *key_recipient_info_list_rs =(vscf_key_recipient_info_list_t *)vscf_key_recipient_info_list_next(key_recipient_info_list);
+    key_recipient_info_list = vscf_key_recipient_info_list_shallow_copy(key_recipient_info_list);
 
     //
     // Write returned result
@@ -2519,7 +2520,8 @@ PHP_FUNCTION(vscf_key_recipient_info_list_prev_php) {
     //
     // Call main function
     //
-    vscf_key_recipient_info_list_t *key_recipient_info_list_rs =vscf_key_recipient_info_list_prev(key_recipient_info_list);
+    vscf_key_recipient_info_list_t *key_recipient_info_list_rs =(vscf_key_recipient_info_list_t *)vscf_key_recipient_info_list_prev(key_recipient_info_list);
+    key_recipient_info_list = vscf_key_recipient_info_list_shallow_copy(key_recipient_info_list);
 
     //
     // Write returned result
@@ -2930,7 +2932,8 @@ PHP_FUNCTION(vscf_password_recipient_info_list_next_php) {
     //
     // Call main function
     //
-    vscf_password_recipient_info_list_t *password_recipient_info_list_rs =vscf_password_recipient_info_list_next(password_recipient_info_list);
+    vscf_password_recipient_info_list_t *password_recipient_info_list_rs =(vscf_password_recipient_info_list_t *)vscf_password_recipient_info_list_next(password_recipient_info_list);
+    password_recipient_info_list = vscf_password_recipient_info_list_shallow_copy(password_recipient_info_list);
 
     //
     // Write returned result
@@ -3019,7 +3022,8 @@ PHP_FUNCTION(vscf_password_recipient_info_list_prev_php) {
     //
     // Call main function
     //
-    vscf_password_recipient_info_list_t *password_recipient_info_list_rs =vscf_password_recipient_info_list_prev(password_recipient_info_list);
+    vscf_password_recipient_info_list_t *password_recipient_info_list_rs =(vscf_password_recipient_info_list_t *)vscf_password_recipient_info_list_prev(password_recipient_info_list);
+    password_recipient_info_list = vscf_password_recipient_info_list_shallow_copy(password_recipient_info_list);
 
     //
     // Write returned result
