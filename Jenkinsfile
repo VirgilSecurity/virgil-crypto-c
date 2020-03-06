@@ -226,7 +226,7 @@ def build_LangPHP_MacOS(slave) {
     return { node(slave) {
         def jobPath = pathFromJobName(env.JOB_NAME)
         ws("workspace/${jobPath}") {
-            def phpVersions = "php php@7.0 php@7.1 php@7.2 php@7.3"
+            def phpVersions = "php php@7.2 php@7.3 php@7.4"
 
             clearContentUnix()
             unstash 'src'
@@ -257,6 +257,26 @@ def build_LangPHP_MacOS(slave) {
                       -DCMAKE_BUILD_TYPE=Release \
                       -DVIRGIL_PACKAGE_PLATFORM_ARCH=$(uname -m) \
                       -DVIRGIL_PACKAGE_LANGUAGE_VERSION=7.3 \
+                      -DCPACK_OUTPUT_FILE_PREFIX=php \
+                      -DENABLE_CLANGFORMAT=OFF \
+                      -Bbuild -H.
+                cmake --build build -- -j10
+                cd build
+                ctest --verbose
+                cpack
+            '''
+            dir('build') {
+                archiveArtifacts('php/**')
+            }
+
+            clearContentUnix()
+            unstash 'src'
+            sh '''
+                brew unlink ${phpVersions} && brew link php@7.4--force
+                cmake -Cconfigs/php-config.cmake \
+                      -DCMAKE_BUILD_TYPE=Release \
+                      -DVIRGIL_PACKAGE_PLATFORM_ARCH=$(uname -m) \
+                      -DVIRGIL_PACKAGE_LANGUAGE_VERSION=7.4 \
                       -DCPACK_OUTPUT_FILE_PREFIX=php \
                       -DENABLE_CLANGFORMAT=OFF \
                       -Bbuild -H.
