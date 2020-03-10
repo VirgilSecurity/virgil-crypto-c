@@ -57,6 +57,13 @@ set_target_properties(foundation_php PROPERTIES
         PREFIX ""
         )
 
+target_compile_definitions(foundation_php
+    PUBLIC
+        VSCF_PHP_SHARED_LIBRARY
+    PRIVATE
+        $<BUILD_INTERFACE:VSCF_PHP_INTERNAL_BUILD=1>
+    )
+
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     set_target_properties(foundation_php PROPERTIES SUFFIX ".dll")
 else()

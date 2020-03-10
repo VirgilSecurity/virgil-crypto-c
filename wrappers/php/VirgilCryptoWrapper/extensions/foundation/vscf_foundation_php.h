@@ -34,160 +34,201 @@
 // Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 //
 
-#include "vscf_library.h"
+#ifndef VSCF_PHP_FOUNDATION_PHP_H_INCLUDED
+#define VSCF_PHP_FOUNDATION_PHP_H_INCLUDED
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+
+#if defined(_WIN32) || defined(__CYGWIN__)
+#   if VSCF_PHP_SHARED_LIBRARY
+#       if defined(VSCF_PHP_INTERNAL_BUILD)
+#           ifdef __GNUC__
+#               define VSCF_PHP_PUBLIC __attribute__ ((dllexport))
+#           else
+#               define VSCF_PHP_PUBLIC __declspec(dllexport)
+#           endif
+#       else
+#           ifdef __GNUC__
+#               define VSCF_PHP_PUBLIC __attribute__ ((dllimport))
+#           else
+#               define VSCF_PHP_PUBLIC __declspec(dllimport)
+#           endif
+#       endif
+#   else
+#       define VSCF_PHP_PUBLIC
+#   endif
+#   define VSCF_PHP_PRIVATE
+#else
+#   if (defined(__GNUC__) && __GNUC__ >= 4) || defined(__INTEL_COMPILER) || defined(__clang__)
+#       define VSCF_PHP_PUBLIC __attribute__ ((visibility ("default")))
+#       define VSCF_PHP_PRIVATE __attribute__ ((visibility ("hidden")))
+#   else
+#       define VSCF_PHP_PRIVATE
+#   endif
+#endif
+
 
 //
 // Constants
 //
-VSCF_PUBLIC const char*
+VSCF_PHP_PUBLIC const char*
 vscf_impl_t_php_res_name(void);
 
-VSCF_PUBLIC const char*
+VSCF_PHP_PUBLIC const char*
 vscf_message_info_t_php_res_name(void);
 
-VSCF_PUBLIC const char*
+VSCF_PHP_PUBLIC const char*
 vscf_key_recipient_info_t_php_res_name(void);
 
-VSCF_PUBLIC const char*
+VSCF_PHP_PUBLIC const char*
 vscf_key_recipient_info_list_t_php_res_name(void);
 
-VSCF_PUBLIC const char*
+VSCF_PHP_PUBLIC const char*
 vscf_password_recipient_info_t_php_res_name(void);
 
-VSCF_PUBLIC const char*
+VSCF_PHP_PUBLIC const char*
 vscf_password_recipient_info_list_t_php_res_name(void);
 
-VSCF_PUBLIC const char*
+VSCF_PHP_PUBLIC const char*
 vscf_ecies_t_php_res_name(void);
 
-VSCF_PUBLIC const char*
+VSCF_PHP_PUBLIC const char*
 vscf_recipient_cipher_t_php_res_name(void);
 
-VSCF_PUBLIC const char*
+VSCF_PHP_PUBLIC const char*
 vscf_message_info_custom_params_t_php_res_name(void);
 
-VSCF_PUBLIC const char*
+VSCF_PHP_PUBLIC const char*
 vscf_key_provider_t_php_res_name(void);
 
-VSCF_PUBLIC const char*
+VSCF_PHP_PUBLIC const char*
 vscf_signer_t_php_res_name(void);
 
-VSCF_PUBLIC const char*
+VSCF_PHP_PUBLIC const char*
 vscf_verifier_t_php_res_name(void);
 
-VSCF_PUBLIC const char*
+VSCF_PHP_PUBLIC const char*
 vscf_brainkey_client_t_php_res_name(void);
 
-VSCF_PUBLIC const char*
+VSCF_PHP_PUBLIC const char*
 vscf_brainkey_server_t_php_res_name(void);
 
-VSCF_PUBLIC const char*
+VSCF_PHP_PUBLIC const char*
 vscf_group_session_message_t_php_res_name(void);
 
-VSCF_PUBLIC const char*
+VSCF_PHP_PUBLIC const char*
 vscf_group_session_ticket_t_php_res_name(void);
 
-VSCF_PUBLIC const char*
+VSCF_PHP_PUBLIC const char*
 vscf_group_session_t_php_res_name(void);
 
-VSCF_PUBLIC const char*
+VSCF_PHP_PUBLIC const char*
 vscf_message_info_editor_t_php_res_name(void);
 
-VSCF_PUBLIC const char*
+VSCF_PHP_PUBLIC const char*
 vscf_signer_info_t_php_res_name(void);
 
-VSCF_PUBLIC const char*
+VSCF_PHP_PUBLIC const char*
 vscf_signer_info_list_t_php_res_name(void);
 
-VSCF_PUBLIC const char*
+VSCF_PHP_PUBLIC const char*
 vscf_message_info_footer_t_php_res_name(void);
 
-VSCF_PUBLIC const char*
+VSCF_PHP_PUBLIC const char*
 vscf_signed_data_info_t_php_res_name(void);
 
-VSCF_PUBLIC const char*
+VSCF_PHP_PUBLIC const char*
 vscf_footer_info_t_php_res_name(void);
 
-VSCF_PUBLIC const char*
+VSCF_PHP_PUBLIC const char*
 vscf_key_info_t_php_res_name(void);
 
-VSCF_PUBLIC const char*
+VSCF_PHP_PUBLIC const char*
 vscf_padding_params_t_php_res_name(void);
 
 //
 // Registered resources
 //
-VSCF_PUBLIC int
+VSCF_PHP_PUBLIC int
 le_vscf_impl_t(void);
 
-VSCF_PUBLIC int
+VSCF_PHP_PUBLIC int
 le_vscf_message_info_t(void);
 
-VSCF_PUBLIC int
+VSCF_PHP_PUBLIC int
 le_vscf_key_recipient_info_t(void);
 
-VSCF_PUBLIC int
+VSCF_PHP_PUBLIC int
 le_vscf_key_recipient_info_list_t(void);
 
-VSCF_PUBLIC int
+VSCF_PHP_PUBLIC int
 le_vscf_password_recipient_info_t(void);
 
-VSCF_PUBLIC int
+VSCF_PHP_PUBLIC int
 le_vscf_password_recipient_info_list_t(void);
 
-VSCF_PUBLIC int
+VSCF_PHP_PUBLIC int
 le_vscf_ecies_t(void);
 
-VSCF_PUBLIC int
+VSCF_PHP_PUBLIC int
 le_vscf_recipient_cipher_t(void);
 
-VSCF_PUBLIC int
+VSCF_PHP_PUBLIC int
 le_vscf_message_info_custom_params_t(void);
 
-VSCF_PUBLIC int
+VSCF_PHP_PUBLIC int
 le_vscf_key_provider_t(void);
 
-VSCF_PUBLIC int
+VSCF_PHP_PUBLIC int
 le_vscf_signer_t(void);
 
-VSCF_PUBLIC int
+VSCF_PHP_PUBLIC int
 le_vscf_verifier_t(void);
 
-VSCF_PUBLIC int
+VSCF_PHP_PUBLIC int
 le_vscf_brainkey_client_t(void);
 
-VSCF_PUBLIC int
+VSCF_PHP_PUBLIC int
 le_vscf_brainkey_server_t(void);
 
-VSCF_PUBLIC int
+VSCF_PHP_PUBLIC int
 le_vscf_group_session_message_t(void);
 
-VSCF_PUBLIC int
+VSCF_PHP_PUBLIC int
 le_vscf_group_session_ticket_t(void);
 
-VSCF_PUBLIC int
+VSCF_PHP_PUBLIC int
 le_vscf_group_session_t(void);
 
-VSCF_PUBLIC int
+VSCF_PHP_PUBLIC int
 le_vscf_message_info_editor_t(void);
 
-VSCF_PUBLIC int
+VSCF_PHP_PUBLIC int
 le_vscf_signer_info_t(void);
 
-VSCF_PUBLIC int
+VSCF_PHP_PUBLIC int
 le_vscf_signer_info_list_t(void);
 
-VSCF_PUBLIC int
+VSCF_PHP_PUBLIC int
 le_vscf_message_info_footer_t(void);
 
-VSCF_PUBLIC int
+VSCF_PHP_PUBLIC int
 le_vscf_signed_data_info_t(void);
 
-VSCF_PUBLIC int
+VSCF_PHP_PUBLIC int
 le_vscf_footer_info_t(void);
 
-VSCF_PUBLIC int
+VSCF_PHP_PUBLIC int
 le_vscf_key_info_t(void);
 
-VSCF_PUBLIC int
+VSCF_PHP_PUBLIC int
 le_vscf_padding_params_t(void);
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif // VSCF_PHP_FOUNDATION_PHP_H_INCLUDED
