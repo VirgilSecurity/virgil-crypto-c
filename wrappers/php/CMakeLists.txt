@@ -101,6 +101,17 @@ if(COMPOSER_EXECUTABLE)
 endif()
 
 # ---------------------------------------------------------------------------
+#   Common step for all tests
+# ---------------------------------------------------------------------------
+if(ENABLE_TESTING)
+    add_custom_target(run_composer_install ALL
+            COMMAND "${COMPOSER_EXECUTABLE}" install
+            COMMENT "Running composer install..."
+            WORKING_DIRECTORY ${VIRGIL_CRYPTO_WRAPPER_PROJECT_DIR}
+            )
+endif()
+
+# ---------------------------------------------------------------------------
 #   Add per project extension build
 # ---------------------------------------------------------------------------
 add_subdirectory(VirgilCryptoWrapper/extensions/foundation)

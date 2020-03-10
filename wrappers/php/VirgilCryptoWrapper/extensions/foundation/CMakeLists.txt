@@ -85,12 +85,6 @@ target_link_libraries(foundation_php
 #   Test
 #---------------------------------------------------------------------------
 if(ENABLE_TESTING)
-    add_custom_target(test_composer_foundation_php ALL
-            COMMAND "${COMPOSER_EXECUTABLE}" install
-            COMMENT "Running composer install..."
-            WORKING_DIRECTORY ${VIRGIL_CRYPTO_WRAPPER_PROJECT_DIR}
-            )
-
     add_test(
             NAME test_foundation_php
             COMMAND "${PHP_EXECUTABLE}"
