@@ -105,7 +105,7 @@ endif()
 # ---------------------------------------------------------------------------
 if(ENABLE_TESTING)
     add_custom_target(run_composer_install ALL
-            COMMAND "${COMPOSER_EXECUTABLE}" install
+            COMMAND "${PHP_EXECUTABLE}" "${COMPOSER_EXECUTABLE}" install
             COMMENT "Running composer install..."
             WORKING_DIRECTORY ${VIRGIL_CRYPTO_WRAPPER_PROJECT_DIR}
             )
