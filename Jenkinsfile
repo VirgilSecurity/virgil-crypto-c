@@ -319,8 +319,8 @@ def build_LangPHP_Windows(slave) {
         ws("workspace\\${jobPath}") {
             clearContentWindows()
             unstash 'src'
-            withEnv(["PHP_HOME=C:\\php-7.2.18",
-                     "PHP_DEVEL_HOME=C:\\php-7.2.18-devel"]) {
+            withEnv(["PHP_HOME=C:\\php-7.2.28",
+                     "PHP_DEVEL_HOME=C:\\php-7.2.28-devel"]) {
                 bat '''
                     set PATH=%PATH:"=%
                     call "C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\Community\\VC\\Auxiliary\\Build\\vcvars64.bat"
@@ -345,8 +345,8 @@ def build_LangPHP_Windows(slave) {
 
             clearContentWindows()
             unstash 'src'
-            withEnv(["PHP_HOME=C:\\php-7.3.5",
-                     "PHP_DEVEL_HOME=C:\\php-7.3.5-devel"]) {
+            withEnv(["PHP_HOME=C:\\php-7.3.15",
+                     "PHP_DEVEL_HOME=C:\\php-7.3.15-devel"]) {
                 bat '''
                     set PATH=%PATH:"=%
                     call "C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\Community\\VC\\Auxiliary\\Build\\vcvars64.bat"
@@ -356,6 +356,32 @@ def build_LangPHP_Windows(slave) {
                           -DCMAKE_BUILD_TYPE=Release ^
                           -DVIRGIL_PACKAGE_PLATFORM_ARCH=x86_64 ^
                           -DVIRGIL_PACKAGE_LANGUAGE_VERSION=7.3 ^
+                          -DCPACK_OUTPUT_FILE_PREFIX=php ^
+                          -DENABLE_CLANGFORMAT=OFF ^
+                          -Bbuild -H.
+                    cmake --build build
+                    cd build
+                    ctest --verbose
+                    cpack
+                '''
+            }
+            dir('build') {
+                archiveArtifacts('php/**')
+            }
+
+            clearContentWindows()
+            unstash 'src'
+            withEnv(["PHP_HOME=C:\\php-7.4.3",
+                     "PHP_DEVEL_HOME=C:\\php-7.4.3-devel"]) {
+                bat '''
+                    set PATH=%PATH:"=%
+                    call "C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\Community\\VC\\Auxiliary\\Build\\vcvars64.bat"
+                    cmake -G"NMake Makefiles" ^
+                          -Cconfigs/php-config.cmake ^
+                          -DVIRGIL_LIB_PYTHIA=OFF ^
+                          -DCMAKE_BUILD_TYPE=Release ^
+                          -DVIRGIL_PACKAGE_PLATFORM_ARCH=x86_64 ^
+                          -DVIRGIL_PACKAGE_LANGUAGE_VERSION=7.4 ^
                           -DCPACK_OUTPUT_FILE_PREFIX=php ^
                           -DENABLE_CLANGFORMAT=OFF ^
                           -Bbuild -H.
