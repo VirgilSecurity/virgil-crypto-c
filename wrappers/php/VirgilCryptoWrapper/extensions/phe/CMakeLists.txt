@@ -89,8 +89,8 @@ if(ENABLE_TESTING)
     add_test(
             NAME test_phe_php
             COMMAND "${PHP_EXECUTABLE}"
-                    -d "extension=$<TARGET_FILE:phe_php>"
                     -d "extension=$<TARGET_FILE:foundation_php>"
+                    -d "extension=$<TARGET_FILE:phe_php>"
                     -d safe_mode=Off
                     "${VIRGIL_CRYPTO_WRAPPER_PROJECT_DIR}/vendor/phpunit/phpunit/phpunit"
                         --bootstrap
