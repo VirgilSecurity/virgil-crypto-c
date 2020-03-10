@@ -56,24 +56,32 @@ const initUokmsWrapRotation = require('./UokmsWrapRotation');
 
 const initProject = () => {
     const pheModule = new PheModule();
-    const modules = {};
+    return new Promise((resolve, reject) => {
+        pheModule.onRuntimeInitialized = () => {
+            const modules = {};
 
-    modules.FoundationError = initFoundationError(pheModule, modules);
-    modules.FoundationInterface = initFoundationInterface(pheModule, modules);
-    modules.FoundationInterfaceTag = initFoundationInterfaceTag(pheModule, modules);
-    modules.FoundationImplTag = initFoundationImplTag(pheModule, modules);
-    modules.CtrDrbg = initCtrDrbg(pheModule, modules);
-    modules.Hmac = initHmac(pheModule, modules);
-    modules.Hkdf = initHkdf(pheModule, modules);
-    modules.Sha512 = initSha512(pheModule, modules);
-    modules.PheError = initPheError(pheModule, modules);
-    modules.PheCommon = initPheCommon(pheModule, modules);
-    modules.PheServer = initPheServer(pheModule, modules);
-    modules.PheClient = initPheClient(pheModule, modules);
-    modules.PheCipher = initPheCipher(pheModule, modules);
-    modules.UokmsClient = initUokmsClient(pheModule, modules);
-    modules.UokmsServer = initUokmsServer(pheModule, modules);
-    modules.UokmsWrapRotation = initUokmsWrapRotation(pheModule, modules);
-    return Promise.resolve(modules);
+            modules.FoundationError = initFoundationError(pheModule, modules);
+            modules.FoundationInterface = initFoundationInterface(pheModule, modules);
+            modules.FoundationInterfaceTag = initFoundationInterfaceTag(pheModule, modules);
+            modules.FoundationImplTag = initFoundationImplTag(pheModule, modules);
+            modules.CtrDrbg = initCtrDrbg(pheModule, modules);
+            modules.Hmac = initHmac(pheModule, modules);
+            modules.Hkdf = initHkdf(pheModule, modules);
+            modules.Sha512 = initSha512(pheModule, modules);
+            modules.PheError = initPheError(pheModule, modules);
+            modules.PheCommon = initPheCommon(pheModule, modules);
+            modules.PheServer = initPheServer(pheModule, modules);
+            modules.PheClient = initPheClient(pheModule, modules);
+            modules.PheCipher = initPheCipher(pheModule, modules);
+            modules.UokmsClient = initUokmsClient(pheModule, modules);
+            modules.UokmsServer = initUokmsServer(pheModule, modules);
+            modules.UokmsWrapRotation = initUokmsWrapRotation(pheModule, modules);
+            resolve(modules);
+        };
+
+        pheModule.onAbort = message => {
+            reject(new Error(message));
+        };
+    });
 };
 module.exports = initProject;

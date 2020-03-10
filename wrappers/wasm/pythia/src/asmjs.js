@@ -42,10 +42,18 @@ const initPythia = require('./Pythia');
 
 const initProject = () => {
     const pythiaModule = new PythiaModule();
-    const modules = {};
+    return new Promise((resolve, reject) => {
+        pythiaModule.onRuntimeInitialized = () => {
+            const modules = {};
 
-    modules.PythiaError = initPythiaError(pythiaModule, modules);
-    modules.Pythia = initPythia(pythiaModule, modules);
-    return Promise.resolve(modules);
+            modules.PythiaError = initPythiaError(pythiaModule, modules);
+            modules.Pythia = initPythia(pythiaModule, modules);
+            resolve(modules);
+        };
+
+        pythiaModule.onAbort = message => {
+            reject(new Error(message));
+        };
+    });
 };
 module.exports = initProject;

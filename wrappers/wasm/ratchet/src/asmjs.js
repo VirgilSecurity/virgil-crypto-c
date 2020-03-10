@@ -60,28 +60,36 @@ const initRatchetGroupSession = require('./RatchetGroupSession');
 
 const initProject = () => {
     const ratchetModule = new RatchetModule();
-    const modules = {};
+    return new Promise((resolve, reject) => {
+        ratchetModule.onRuntimeInitialized = () => {
+            const modules = {};
 
-    modules.FoundationError = initFoundationError(ratchetModule, modules);
-    modules.FoundationInterface = initFoundationInterface(ratchetModule, modules);
-    modules.FoundationInterfaceTag = initFoundationInterfaceTag(ratchetModule, modules);
-    modules.FoundationImplTag = initFoundationImplTag(ratchetModule, modules);
-    modules.CtrDrbg = initCtrDrbg(ratchetModule, modules);
-    modules.Hmac = initHmac(ratchetModule, modules);
-    modules.Hkdf = initHkdf(ratchetModule, modules);
-    modules.Sha512 = initSha512(ratchetModule, modules);
-    modules.RatchetError = initRatchetError(ratchetModule, modules);
-    modules.MsgType = initMsgType(ratchetModule, modules);
-    modules.GroupMsgType = initGroupMsgType(ratchetModule, modules);
-    modules.RatchetCommon = initRatchetCommon(ratchetModule, modules);
-    modules.RatchetKeyId = initRatchetKeyId(ratchetModule, modules);
-    modules.RatchetMessage = initRatchetMessage(ratchetModule, modules);
-    modules.RatchetSession = initRatchetSession(ratchetModule, modules);
-    modules.RatchetGroupParticipantsInfo = initRatchetGroupParticipantsInfo(ratchetModule, modules);
-    modules.RatchetGroupMessage = initRatchetGroupMessage(ratchetModule, modules);
-    modules.RatchetGroupTicket = initRatchetGroupTicket(ratchetModule, modules);
-    modules.RatchetGroupParticipantsIds = initRatchetGroupParticipantsIds(ratchetModule, modules);
-    modules.RatchetGroupSession = initRatchetGroupSession(ratchetModule, modules);
-    return Promise.resolve(modules);
+            modules.FoundationError = initFoundationError(ratchetModule, modules);
+            modules.FoundationInterface = initFoundationInterface(ratchetModule, modules);
+            modules.FoundationInterfaceTag = initFoundationInterfaceTag(ratchetModule, modules);
+            modules.FoundationImplTag = initFoundationImplTag(ratchetModule, modules);
+            modules.CtrDrbg = initCtrDrbg(ratchetModule, modules);
+            modules.Hmac = initHmac(ratchetModule, modules);
+            modules.Hkdf = initHkdf(ratchetModule, modules);
+            modules.Sha512 = initSha512(ratchetModule, modules);
+            modules.RatchetError = initRatchetError(ratchetModule, modules);
+            modules.MsgType = initMsgType(ratchetModule, modules);
+            modules.GroupMsgType = initGroupMsgType(ratchetModule, modules);
+            modules.RatchetCommon = initRatchetCommon(ratchetModule, modules);
+            modules.RatchetKeyId = initRatchetKeyId(ratchetModule, modules);
+            modules.RatchetMessage = initRatchetMessage(ratchetModule, modules);
+            modules.RatchetSession = initRatchetSession(ratchetModule, modules);
+            modules.RatchetGroupParticipantsInfo = initRatchetGroupParticipantsInfo(ratchetModule, modules);
+            modules.RatchetGroupMessage = initRatchetGroupMessage(ratchetModule, modules);
+            modules.RatchetGroupTicket = initRatchetGroupTicket(ratchetModule, modules);
+            modules.RatchetGroupParticipantsIds = initRatchetGroupParticipantsIds(ratchetModule, modules);
+            modules.RatchetGroupSession = initRatchetGroupSession(ratchetModule, modules);
+            resolve(modules);
+        };
+
+        ratchetModule.onAbort = message => {
+            reject(new Error(message));
+        };
+    });
 };
 module.exports = initProject;
