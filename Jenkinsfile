@@ -230,11 +230,11 @@ def build_LangPHP_MacOS(slave) {
 
             clearContentUnix()
             unstash 'src'
-            sh '''
+            sh """
                 brew unlink ${phpVersions} && brew link php@7.2 --force
                 cmake -Cconfigs/php-config.cmake \
                       -DCMAKE_BUILD_TYPE=Release \
-                      -DVIRGIL_PACKAGE_PLATFORM_ARCH=$(uname -m) \
+                      -DVIRGIL_PACKAGE_PLATFORM_ARCH=\$(uname -m) \
                       -DVIRGIL_PACKAGE_LANGUAGE_VERSION=7.2 \
                       -DCPACK_OUTPUT_FILE_PREFIX=php \
                       -DENABLE_CLANGFORMAT=OFF \
@@ -244,18 +244,18 @@ def build_LangPHP_MacOS(slave) {
                 cd build
                 ctest --verbose
                 cpack
-            '''
+            """
             dir('build') {
                 archiveArtifacts('php/**')
             }
 
             clearContentUnix()
             unstash 'src'
-            sh '''
+            sh """
                 brew unlink ${phpVersions} && brew link php@7.3 --force
                 cmake -Cconfigs/php-config.cmake \
                       -DCMAKE_BUILD_TYPE=Release \
-                      -DVIRGIL_PACKAGE_PLATFORM_ARCH=$(uname -m) \
+                      -DVIRGIL_PACKAGE_PLATFORM_ARCH=\$(uname -m) \
                       -DVIRGIL_PACKAGE_LANGUAGE_VERSION=7.3 \
                       -DCPACK_OUTPUT_FILE_PREFIX=php \
                       -DENABLE_CLANGFORMAT=OFF \
@@ -264,18 +264,18 @@ def build_LangPHP_MacOS(slave) {
                 cd build
                 ctest --verbose
                 cpack
-            '''
+            """
             dir('build') {
                 archiveArtifacts('php/**')
             }
 
             clearContentUnix()
             unstash 'src'
-            sh '''
+            sh """
                 brew unlink ${phpVersions} && brew link php@7.4--force
                 cmake -Cconfigs/php-config.cmake \
                       -DCMAKE_BUILD_TYPE=Release \
-                      -DVIRGIL_PACKAGE_PLATFORM_ARCH=$(uname -m) \
+                      -DVIRGIL_PACKAGE_PLATFORM_ARCH=\$(uname -m) \
                       -DVIRGIL_PACKAGE_LANGUAGE_VERSION=7.4 \
                       -DCPACK_OUTPUT_FILE_PREFIX=php \
                       -DENABLE_CLANGFORMAT=OFF \
@@ -284,7 +284,7 @@ def build_LangPHP_MacOS(slave) {
                 cd build
                 ctest --verbose
                 cpack
-            '''
+            """
             dir('build') {
                 archiveArtifacts('php/**')
             }
