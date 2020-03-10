@@ -218,6 +218,27 @@ def build_LangPHP_Linux(slave) {
             dir('build') {
                 archiveArtifacts('php/**')
             }
+
+            clearContentUnix()
+            unstash 'src'
+            sh '''
+                source /opt/remi/php74/enable
+                cmake -Cconfigs/php-config.cmake \
+                      -DCMAKE_BUILD_TYPE=Release \
+                      -DVIRGIL_PACKAGE_PLATFORM_ARCH=$(uname -m) \
+                      -DVIRGIL_PACKAGE_LANGUAGE_VERSION=7.4 \
+                      -DCPACK_OUTPUT_FILE_PREFIX=php \
+                      -DENABLE_CLANGFORMAT=OFF \
+                      -DED25519_AMD64_RADIX_64_24K=ON -DED25519_REF10=OFF \
+                      -Bbuild -H.
+                cmake --build build -- -j10
+                cd build
+                ctest --verbose
+                cpack
+            '''
+            dir('build') {
+                archiveArtifacts('php/**')
+            }
         }
     }}
 }
