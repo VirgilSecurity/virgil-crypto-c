@@ -272,7 +272,7 @@ def build_LangPHP_MacOS(slave) {
             clearContentUnix()
             unstash 'src'
             sh """
-                brew unlink ${phpVersions} && brew link php@7.4--force
+                brew unlink ${phpVersions} && brew link php@7.4 --force
                 cmake -Cconfigs/php-config.cmake \
                       -DCMAKE_BUILD_TYPE=Release \
                       -DVIRGIL_PACKAGE_PLATFORM_ARCH=\$(uname -m) \
