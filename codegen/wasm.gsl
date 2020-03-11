@@ -1474,15 +1474,15 @@ endfunction
 # ===========================================================================
 
 # ---------------------------------------------------------------------------
-#   Create module describing entrypoint.
+#   Create module describing "index.js".
 # ---------------------------------------------------------------------------
-function wasm_create_entrypoint_module(wasm_project, name)
+function wasm_create_entrypoint_module(wasm_project)
     check_arguments(my, "wasm_project", my)
 
-    echo_info("Create custom <wasm_module/>: '$(my.name)'", my)
+    echo_info("Create custom <wasm_module/>: 'index'", my)
 
     new wasm_module to my.wasm_project
-        .name = my.name
+        .name = "index"
         .source_file_name = "$(0.name).js"
         .source_file_path = cat_path(my.wasm_project.src_source_dir, 0.source_file_name)
 
@@ -1940,8 +1940,7 @@ function wasm_finalize_custom_modules(source, wasm_project, meta)
     check_arguments(my, "source, wasm_project, meta", my)
 
     wasm_create_exported_functions_module(my.wasm_project)
-    wasm_create_entrypoint_module(my.wasm_project, "index")
-    wasm_create_entrypoint_module(my.wasm_project, "asmjs")
+    wasm_create_entrypoint_module(my.wasm_project)
 endfunction
 
 # ---------------------------------------------------------------------------

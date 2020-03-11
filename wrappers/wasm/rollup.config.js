@@ -79,19 +79,19 @@ const createEntries = format => [
     path.join(outputPath, `worker.${format}.js`),
   ),
   createAsmjsEntry(
-    path.join(sourcePath, 'asmjs.js'),
+    path.join(sourcePath, 'index.js'),
     path.join(sourcePath, `lib${project}.asmjs.js`),
     format,
     path.join(outputPath, `node.asmjs.${format}.js`),
   ),
   createAsmjsEntry(
-    path.join(sourcePath, 'asmjs.js'),
+    path.join(sourcePath, 'index.js'),
     path.join(sourcePath, `lib${project}.browser.asmjs.js`),
     format,
     path.join(outputPath, `browser.asmjs.${format}.js`),
   ),
   createAsmjsEntry(
-    path.join(sourcePath, 'asmjs.js'),
+    path.join(sourcePath, 'index.js'),
     path.join(sourcePath, `lib${project}.worker.asmjs.js`),
     format,
     path.join(outputPath, `worker.asmjs.${format}.js`),
