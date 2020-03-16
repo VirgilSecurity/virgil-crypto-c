@@ -34,8 +34,8 @@
 // Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 //
 
-#ifndef VSCP_PHP_PYTHIA_PHP_H_INCLUDED
-#define VSCP_PHP_PYTHIA_PHP_H_INCLUDED
+#ifndef VSCP_PYTHIA_PHP_H_INCLUDED
+#define VSCP_PYTHIA_PHP_H_INCLUDED
 
 #ifdef __cplusplus
 extern "C" {
@@ -82,4 +82,4 @@ extern "C" {
 }
 #endif
 
-#endif // VSCP_PHP_PYTHIA_PHP_H_INCLUDED
+#endif // VSCP_PYTHIA_PHP_H_INCLUDED

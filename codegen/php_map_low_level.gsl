@@ -1467,8 +1467,8 @@ function php_map_low_level_extension (in_php_project, out_php_module)
 
     new header_top to my.out_php_module
         . = format_left("\
-            #ifndef $(my.in_php_project.prefix:UPPER)_PHP_$(my.in_php_project.project0:UPPER)_PHP_H_INCLUDED
-            #define $(my.in_php_project.prefix:UPPER)_PHP_$(my.in_php_project.project0:UPPER)_PHP_H_INCLUDED
+            #ifndef $(my.in_php_project.prefix:UPPER)_$(my.in_php_project.project0:UPPER)_PHP_H_INCLUDED
+            #define $(my.in_php_project.prefix:UPPER)_$(my.in_php_project.project0:UPPER)_PHP_H_INCLUDED
 
             #ifdef __cplusplus
             extern \"C\" {
@@ -1511,7 +1511,7 @@ function php_map_low_level_extension (in_php_project, out_php_module)
             }
             #endif
 
-            #endif // $(my.in_php_project.prefix:UPPER)_PHP_$(my.in_php_project.project0:UPPER)_PHP_H_INCLUDED
+            #endif // $(my.in_php_project.prefix:UPPER)_$(my.in_php_project.project0:UPPER)_PHP_H_INCLUDED
             ", 0)
     endnew
 

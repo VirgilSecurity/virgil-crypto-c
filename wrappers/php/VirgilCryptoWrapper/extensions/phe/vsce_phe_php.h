@@ -34,8 +34,8 @@
 // Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 //
 
-#ifndef VSCE_PHP_PHE_PHP_H_INCLUDED
-#define VSCE_PHP_PHE_PHP_H_INCLUDED
+#ifndef VSCE_PHE_PHP_H_INCLUDED
+#define VSCE_PHE_PHP_H_INCLUDED
 
 #ifdef __cplusplus
 extern "C" {
@@ -116,4 +116,4 @@ le_vsce_uokms_wrap_rotation_t(void);
 }
 #endif
 
-#endif // VSCE_PHP_PHE_PHP_H_INCLUDED
+#endif // VSCE_PHE_PHP_H_INCLUDED

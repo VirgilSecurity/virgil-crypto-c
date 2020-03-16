@@ -34,8 +34,8 @@
 // Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 //
 
-#ifndef VSCF_PHP_FOUNDATION_PHP_H_INCLUDED
-#define VSCF_PHP_FOUNDATION_PHP_H_INCLUDED
+#ifndef VSCF_FOUNDATION_PHP_H_INCLUDED
+#define VSCF_FOUNDATION_PHP_H_INCLUDED
 
 #ifdef __cplusplus
 extern "C" {
@@ -230,4 +230,4 @@ le_vscf_padding_params_t(void);
 }
 #endif
 
-#endif // VSCF_PHP_FOUNDATION_PHP_H_INCLUDED
+#endif // VSCF_FOUNDATION_PHP_H_INCLUDED
