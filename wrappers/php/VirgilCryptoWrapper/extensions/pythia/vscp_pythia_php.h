@@ -34,7 +34,41 @@
 // Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 //
 
-#include "vscp_library.h"
+#ifndef VSCP_PHP_PYTHIA_PHP_H_INCLUDED
+#define VSCP_PHP_PYTHIA_PHP_H_INCLUDED
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+
+#if defined(_WIN32) || defined(__CYGWIN__)
+#   if VSCP_PHP_SHARED_LIBRARY
+#       if defined(VSCP_PHP_INTERNAL_BUILD)
+#           ifdef __GNUC__
+#               define VSCP_PHP_PUBLIC __attribute__ ((dllexport))
+#           else
+#               define VSCP_PHP_PUBLIC __declspec(dllexport)
+#           endif
+#       else
+#           ifdef __GNUC__
+#               define VSCP_PHP_PUBLIC __attribute__ ((dllimport))
+#           else
+#               define VSCP_PHP_PUBLIC __declspec(dllimport)
+#           endif
+#       endif
+#   else
+#       define VSCP_PHP_PUBLIC
+#   endif
+#   define VSCP_PHP_PRIVATE
+#else
+#   if (defined(__GNUC__) && __GNUC__ >= 4) || defined(__INTEL_COMPILER) || defined(__clang__)
+#       define VSCP_PHP_PUBLIC __attribute__ ((visibility ("default")))
+#       define VSCP_PHP_PRIVATE __attribute__ ((visibility ("hidden")))
+#   else
+#       define VSCP_PHP_PRIVATE
+#   endif
+#endif
 
 //
 // Constants
@@ -43,3 +77,9 @@
 //
 // Registered resources
 //
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif // VSCP_PHP_PYTHIA_PHP_H_INCLUDED

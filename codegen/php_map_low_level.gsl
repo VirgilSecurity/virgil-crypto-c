@@ -1465,8 +1465,54 @@ function php_map_low_level_extension (in_php_project, out_php_module)
         . = my._c + my._constants_func_wrapp
     endnew
 
-    new header_include to my.out_php_module
-        . = format_left("#include \"$(my.in_php_project.prefix:)_library.h\"", 0)
+    new header_top to my.out_php_module
+        . = format_left("\
+            #ifndef $(my.in_php_project.prefix:UPPER)_PHP_$(my.in_php_project.project0:UPPER)_PHP_H_INCLUDED
+            #define $(my.in_php_project.prefix:UPPER)_PHP_$(my.in_php_project.project0:UPPER)_PHP_H_INCLUDED
+
+            #ifdef __cplusplus
+            extern \"C\" {
+            #endif
+
+
+            #if defined(_WIN32) || defined(__CYGWIN__)
+            #   if $(my.in_php_project.prefix:UPPER)_PHP_SHARED_LIBRARY
+            #       if defined($(my.in_php_project.prefix:UPPER)_PHP_INTERNAL_BUILD)
+            #           ifdef __GNUC__
+            #               define $(my.in_php_project.prefix:UPPER)_PHP_PUBLIC __attribute__ ((dllexport))
+            #           else
+            #               define $(my.in_php_project.prefix:UPPER)_PHP_PUBLIC __declspec(dllexport)
+            #           endif
+            #       else
+            #           ifdef __GNUC__
+            #               define $(my.in_php_project.prefix:UPPER)_PHP_PUBLIC __attribute__ ((dllimport))
+            #           else
+            #               define $(my.in_php_project.prefix:UPPER)_PHP_PUBLIC __declspec(dllimport)
+            #           endif
+            #       endif
+            #   else
+            #       define $(my.in_php_project.prefix:UPPER)_PHP_PUBLIC
+            #   endif
+            #   define $(my.in_php_project.prefix:UPPER)_PHP_PRIVATE
+            #else
+            #   if (defined(__GNUC__) && __GNUC__ >= 4) || defined(__INTEL_COMPILER) || defined(__clang__)
+            #       define $(my.in_php_project.prefix:UPPER)_PHP_PUBLIC __attribute__ ((visibility (\"default\")))
+            #       define $(my.in_php_project.prefix:UPPER)_PHP_PRIVATE __attribute__ ((visibility (\"hidden\")))
+            #   else
+            #       define $(my.in_php_project.prefix:UPPER)_PHP_PRIVATE
+            #   endif
+            #endif
+            ", 0)
+    endnew
+
+    new header_bottom to my.out_php_module
+        . = format_left("\
+            #ifdef __cplusplus
+            }
+            #endif
+
+            #endif // $(my.in_php_project.prefix:UPPER)_PHP_$(my.in_php_project.project0:UPPER)_PHP_H_INCLUDED
+            ", 0)
     endnew
 
     new header_constants to my.out_php_module

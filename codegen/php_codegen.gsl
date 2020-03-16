@@ -167,12 +167,16 @@ function php_generate_source_low_level (in_php_module)
         php_insert_code (my.in_php_module->licence, 0)
         newline()
 
-        php_insert_code (my.in_php_module->header_include, 0)
+        php_insert_code (my.in_php_module->header_top, 0)
         newline()
 
         php_insert_code (my.in_php_module->header_constants, 0)
         newline()
+        
         php_insert_code (my.in_php_module->header_registered_resources, 0)
+        newline()
+
+        php_insert_code (my.in_php_module->header_bottom, 0)
     else
         echo_trace ("Generate $(my.in_php_module.name:).c", my)
 

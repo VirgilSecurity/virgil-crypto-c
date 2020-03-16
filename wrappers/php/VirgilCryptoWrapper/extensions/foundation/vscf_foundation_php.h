@@ -70,7 +70,6 @@ extern "C" {
 #   endif
 #endif
 
-
 //
 // Constants
 //

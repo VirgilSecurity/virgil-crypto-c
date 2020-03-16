@@ -57,6 +57,13 @@ set_target_properties(pythia_php PROPERTIES
         PREFIX ""
         )
 
+target_compile_definitions(pythia_php
+    PUBLIC
+        VSCP_PHP_SHARED_LIBRARY
+    PRIVATE
+        $<BUILD_INTERFACE:VSCP_PHP_INTERNAL_BUILD=1>
+    )
+
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     set_target_properties(pythia_php PROPERTIES SUFFIX ".dll")
 else()
@@ -88,6 +95,7 @@ if(ENABLE_TESTING)
     add_test(
             NAME test_pythia_php
             COMMAND "${PHP_EXECUTABLE}"
+
                     -d "extension=$<TARGET_FILE:pythia_php>"
                     -d safe_mode=Off
                     "${VIRGIL_CRYPTO_WRAPPER_PROJECT_DIR}/vendor/phpunit/phpunit/phpunit"

@@ -57,6 +57,13 @@ set_target_properties(phe_php PROPERTIES
         PREFIX ""
         )
 
+target_compile_definitions(phe_php
+    PUBLIC
+        VSCE_PHP_SHARED_LIBRARY
+    PRIVATE
+        $<BUILD_INTERFACE:VSCE_PHP_INTERNAL_BUILD=1>
+    )
+
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     set_target_properties(phe_php PROPERTIES SUFFIX ".dll")
 else()
@@ -89,6 +96,7 @@ if(ENABLE_TESTING)
     add_test(
             NAME test_phe_php
             COMMAND "${PHP_EXECUTABLE}"
+
                     -d "extension=$<TARGET_FILE:foundation_php>"
                     -d "extension=$<TARGET_FILE:phe_php>"
                     -d safe_mode=Off
