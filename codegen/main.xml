@@ -43,7 +43,7 @@
     <library name="round5"/>
     <library name="falcon"/>
 
-    <version major="0" minor="12" patch="2"/>
+    <version major="0" minor="12" patch="3" label="dev1"/>
 
     <project name="common" skip_codegen="0" skip_codegen_c="0" skip_codegen_wrappers="0"/>
     <project name="foundation" skip_codegen="0" skip_codegen_c="0" skip_codegen_wrappers="0"/>
