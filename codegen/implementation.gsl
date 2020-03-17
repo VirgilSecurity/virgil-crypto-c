@@ -249,6 +249,14 @@ function implementation_resolve_method (method, impl)
         .class = my.impl.name
     endfor
 
+    for my.method.argument
+        for argument.length where defined(length.class)
+            if length.class = "self"
+                length.class = my.impl.name
+            endif
+        endfor
+    endfor
+
     for my.method.return where string_equal (0.class ?, "self")
         .access ?= "disown"
         .class = my.impl.name

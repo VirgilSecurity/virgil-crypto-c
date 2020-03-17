@@ -1330,7 +1330,7 @@ function lang_ref (maybe_ref, lang)
     check_arguments (my, "maybe_ref, lang", my)
 
     my.lang = "$(my.lang:lower)"
-    my.valid_langs = "c, java, csharp, swift, python, wasm, go"
+    my.valid_langs = "c, java, csharp, swift, python, wasm, go, php"
 
     if ! string_in (my.lang, my.valid_langs)
         echo_fatal ("Attempt to resolve reference for invalid language '$(my.lang:)'." + \

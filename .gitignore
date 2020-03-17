@@ -36,3 +36,4 @@ bin/
 .vs/
 
 Carthage
+!/wrappers/php/VirgilCryptoWrapper/composer.lock
