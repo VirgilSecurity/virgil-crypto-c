@@ -56,4 +56,5 @@
     <wrapper lang="wasm"/>
     <wrapper lang="python"/>
     <wrapper lang="go"/>
+    <wrapper lang="php"/>
 </main>

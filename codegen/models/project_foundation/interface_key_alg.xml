@@ -67,7 +67,7 @@
         <argument name="public key" interface="public key"/>
         <argument name="error" class="error" access="readwrite"/>
 
-        <return class="raw public key" access="disown"/>
+        <return impl="raw public key" access="disown"/>
     </method>
 
 
@@ -108,7 +108,7 @@
         For instance, RSA private key must be imported from the format defined in
         RFC 3447 Appendix A.1.2.
 
-        <argument name="raw key" class="raw private key"/>
+        <argument name="raw key" impl="raw private key"/>
         <argument name="error" class="error" access="readwrite"/>
 
         <return interface="private key" access="disown"/>
@@ -136,7 +136,7 @@
         <argument name="private key" interface="private key"/>
         <argument name="error" class="error" access="readwrite"/>
 
-        <return class="raw private key" access="disown"/>
+        <return impl="raw private key" access="disown"/>
     </method>
 
 

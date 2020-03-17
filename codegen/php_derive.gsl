@@ -1,0 +1,144 @@
+.template 0
+#   Copyright (C) 2015-2019 Virgil Security, Inc.
+#
+#   All rights reserved.
+#
+#   Redistribution and use in source and binary forms, with or without
+#   modification, are permitted provided that the following conditions are
+#   met:
+#
+#       (1) Redistributions of source code must retain the above copyright
+#       notice, this list of conditions and the following disclaimer.
+#
+#       (2) Redistributions in binary form must reproduce the above copyright
+#       notice, this list of conditions and the following disclaimer in
+#       the documentation and/or other materials provided with the
+#       distribution.
+#
+#       (3) Neither the name of the copyright holder nor the names of its
+#       contributors may be used to endorse or promote products derived from
+#       this software without specific prior written permission.
+#
+#   THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
+#   IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+#   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+#   DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT,
+#   INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+#   (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+#   SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+#   HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+#   STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+#   IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+#   POSSIBILITY OF SUCH DAMAGE.
+#
+#   Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
+
+# ---------------------------------------------------------------------------
+#   Functions for PHP primitives generation: protocol, class, enum, etc.
+# ---------------------------------------------------------------------------
+#   This is a code generator built using the iMatix GSL code generation
+#   language. See https://github.com/imatix/gsl for details.
+# ---------------------------------------------------------------------------
+
+gsl from "common.gsl"
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_derive_high_level_constant_name (in_constant)
+    check_arguments (my, "in_constant", my)
+
+    if defined (my.in_constant.name_)
+        my._res = "$(my.in_constant.name_:c, UPPER)"
+    else 
+        my._res = "$(my.in_constant.name:c, UPPER)"
+    endif
+
+    return my._res
+endfunction
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_derive_low_level_constant_name (in_constant)
+    check_arguments (my, "in_constant", my)
+
+    my._res = "$(my.in_constant.name:c, UPPER)"
+    return my._res
+endfunction
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_derive_high_level_function_name (in_php_method)
+    check_arguments (my, "in_php_method", my)
+
+    my._prefix = "$(my.in_php_method.prefix:c)"
+    my._class = "$(my.in_php_method.entity0:c)"
+    my._method_name = "$(my.in_php_method.name0:c)"
+
+    my._res = "$(my._prefix:)_$(my._class:)_$(my._method_name:)_php"
+
+    return my._res
+endfunction
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_derive_high_level_namespace (in_php_module)
+    check_arguments (my, "in_php_module", my)
+
+    my._res = "$(my.in_php_module.namespace:)\\\\$(my.in_php_module.project0:Pascal)"
+
+    return my._res
+endfunction
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_derive_high_level_namespace_use (in_php_module, in_dependency)
+    check_arguments (my, "in_php_module, in_dependency", my)
+
+    if defined (my.in_dependency.interface)
+        my._dep_class = my.in_dependency.interface
+    elsif defined (my.in_dependency.class)
+        my._dep_class = my.in_dependency.class
+    elsif defined (my.in_dependency.impl)
+        my._dep_class = my.in_dependency.impl
+    else
+        echo_debug_item(my.in_dependency)
+        echo_fatal("Not implemented (CZ1000)", my)
+    endif
+
+    my._res = "use $(my.in_php_module.namespace:Pascal)\\\\$(my.in_dependency.project:Pascal)\\\\$(my._dep_class:Pascal);"
+
+    return my._res
+endfunction
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_derive_low_level_function_name (in_php_method, in_method)
+    check_arguments (my, "in_php_method, in_method", my)
+
+    my._prefix = "$(my.in_php_method.prefix0:c)"
+    my._entity = "$(my.in_php_method.entity0:c)"
+    my._method_name = "$(my.in_method.name:c)"
+
+    my._res = "$(my._prefix:)_$(my._entity:)_$(my._method_name:)"
+
+    return my._res
+endfunction
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_derive_low_level_wrapp_func_full_name (in)
+    check_arguments (my, "in", my)
+
+    my._res = "$(my.in:lower)"
+
+    return my._res
+endfunction
+
+.endtemplate

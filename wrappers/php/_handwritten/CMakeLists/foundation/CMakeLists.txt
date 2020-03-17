@@ -1,4 +1,4 @@
-#   Copyright (C) 2015-2020 Virgil Security, Inc.
+#   Copyright (C) 2015-2019 Virgil Security, Inc.
 #
 #   All rights reserved.
 #
@@ -32,16 +32,16 @@
 #
 #   Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-cmake_minimum_required(VERSION 3.12 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.11 FATAL_ERROR)
 
-project(virgil_crypto_pythia_php VERSION ${virgil_crypto_php_VERSION} LANGUAGES C)
+project(virgil_crypto_foundation_php VERSION ${virgil_crypto_php_VERSION} LANGUAGES C)
 
 
 # ---------------------------------------------------------------------------
 #   Check dependencies
 # ---------------------------------------------------------------------------
-if(NOT VIRGIL_LIB_PYTHIA)
-    message(STATUS "Skip building the PHP wrapper for library Pythia, which is not built.")
+if(NOT VIRGIL_LIB_FOUNDATION)
+    message(STATUS "Skip building the PHP wrapper for library 'foundation', which is not built.")
     return()
 endif()
 
@@ -49,30 +49,33 @@ endif()
 # ---------------------------------------------------------------------------
 #   Create PHP extension library
 # ---------------------------------------------------------------------------
-add_library(pythia_php SHARED "")
-set_target_properties(pythia_php PROPERTIES
+add_library(foundation_php SHARED "")
+set_target_properties(foundation_php PROPERTIES
         C_STANDARD 99
         DEBUG_POSTFIX "_d"
-        OUTPUT_NAME vscp_pythia_php
+        OUTPUT_NAME vscf_foundation_php
         PREFIX ""
-        VERSION ${virgil_crypto_pythia_php_VERSION}
-        SOVERSION ${virgil_crypto_pythia_php_VERSION_MAJOR}
         )
 
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
-    set_target_properties(pythia_php PROPERTIES SUFFIX ".dll")
+    set_target_properties(foundation_php PROPERTIES SUFFIX ".dll")
 else()
-    set_target_properties(pythia_php PROPERTIES SUFFIX ".so")
+    set_target_properties(foundation_php PROPERTIES SUFFIX ".so")
 endif()
 
-target_sources(pythia_php
+target_sources(foundation_php
         PRIVATE
-            $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/extension/vscp_pythia_php.c>
+            $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/extension/vscf_foundation_php.c>
         )
 
-target_link_libraries(pythia_php
+target_include_directories(foundation_php
+        PUBLIC
+            $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/extension>
+        )
+
+target_link_libraries(foundation_php
     PUBLIC
-        vsc::pythia
+        vsc::foundation
     PRIVATE
         phplib
         "$<$<STREQUAL:${CMAKE_SYSTEM_NAME},Darwin>:-undefined dynamic_lookup>"
@@ -81,19 +84,29 @@ target_link_libraries(pythia_php
 # ---------------------------------------------------------------------------
 #   Test
 # ---------------------------------------------------------------------------
-if(ENABLE_TESTING AND VIRGIL_PHP_TESTING AND PHP_EXECUTABLE AND PHPUNIT_EXECUTABLE)
+if(ENABLE_TESTING AND VIRGIL_PHP_TESTING AND PHP_EXECUTABLE AND PHPUNIT_EXECUTABLE AND COMPOSER_EXECUTABLE)
+    add_custom_target(test_composer_foundation_php ALL
+            COMMAND COMPOSER=composer_dev.json "${COMPOSER_EXECUTABLE}" install
+            COMMENT "Running composer install..."
+            WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
+            )
+
     add_test(
-            NAME test_pythia_php
-            COMMAND "${PHP_EXECUTABLE}" -d "extension=$<TARGET_FILE:pythia_php>" -d safe_mode=Off "${PHPUNIT_EXECUTABLE}"
-                    --include-path "${CMAKE_CURRENT_LIST_DIR}/src" "${CMAKE_CURRENT_LIST_DIR}/tests/PythiaTest.php"
+            NAME test_foundation_php
+            COMMAND "${PHP_EXECUTABLE}" 
+                    -d "extension=$<TARGET_FILE:foundation_php>" 
+                    -d safe_mode=Off "${PHPUNIT_EXECUTABLE}"
+                    --bootstrap "${CMAKE_CURRENT_LIST_DIR}/vendor/autoload.php" 
+                    --include-path "${CMAKE_CURRENT_LIST_DIR}/src" "${CMAKE_CURRENT_LIST_DIR}/tests"
             )
 endif()
+
 
 # ---------------------------------------------------------------------------
 #   Install
 # ---------------------------------------------------------------------------
 if(VIRGIL_INSTALL_WRAP_LIBS)
-    install(TARGETS pythia_php
+    install(TARGETS foundation_php
             LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
             RUNTIME DESTINATION ${CMAKE_INSTALL_LIBDIR}
             )
@@ -102,9 +115,9 @@ endif()
 if(VIRGIL_INSTALL_WRAP_SRCS)
     install(
             DIRECTORY
-                "${CMAKE_CURRENT_LIST_DIR}/src"
+                "${CMAKE_CURRENT_LIST_DIR}/src/"
             DESTINATION
-                "${VIRGIL_INSTALL_PHP_SRCDIR}/pythia"
+                "${VIRGIL_INSTALL_PHP_SRCDIR}/foundation"
             FILES_MATCHING PATTERN
                 "*.php"
             )

@@ -1,0 +1,93 @@
+.template 0
+#   Copyright (C) 2015-2019 Virgil Security, Inc.
+#
+#   All rights reserved.
+#
+#   Redistribution and use in source and binary forms, with or without
+#   modification, are permitted provided that the following conditions are
+#   met:
+#
+#       (1) Redistributions of source code must retain the above copyright
+#       notice, this list of conditions and the following disclaimer.
+#
+#       (2) Redistributions in binary form must reproduce the above copyright
+#       notice, this list of conditions and the following disclaimer in
+#       the documentation and/or other materials provided with the
+#       distribution.
+#
+#       (3) Neither the name of the copyright holder nor the names of its
+#       contributors may be used to endorse or promote products derived from
+#       this software without specific prior written permission.
+#
+#   THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
+#   IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+#   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+#   DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT,
+#   INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+#   (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+#   SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+#   HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+#   STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+#   IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+#   POSSIBILITY OF SUCH DAMAGE.
+#
+#   Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
+
+# ---------------------------------------------------------------------------
+#   Contains API for PHP wrapper generation.
+# ---------------------------------------------------------------------------
+#   This is a code generator built using the iMatix GSL code generation
+#   language. See https://github.com/imatix/gsl for details.
+# ---------------------------------------------------------------------------
+
+gsl from "common.gsl"
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_resolve_toplevel (wrapper, license)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_resolve_project (project, wrapper, projects_api)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Resolve UIDs for given component and all inner components.
+# ---------------------------------------------------------------------------
+function php_module_resolve_uids (php_component, parent_uid)
+    check_arguments (my, "php_component", my)
+
+    if defined (my.parent_uid) & string.prefixed (my.parent_uid, "php_module")
+        my.parent_uid = # Undefined
+    endif
+
+    my.component_name = name (my.php_component)
+    if  defined (my.parent_uid) & string.prefixed (my.component_name, "php_")
+        regexp.match ("php_(.+)", my.component_name, my.component_name)
+    endif
+
+    my.php_component.uid = make_id (my.parent_uid, my.component_name, my.php_component.name)
+
+    for my.php_component. as inner_component where is_item (inner_component) & defined (inner_component.name)
+        php_module_resolve_uids (inner_component, my.php_component.uid)
+    endfor
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Add auto-resolving attributes:
+#       - uid.
+# ---------------------------------------------------------------------------
+function php_module_resolve (php_module, php_project)
+    check_arguments (my, "php_module, php_project", my)
+
+    echo_trace ("Resolving <$(name (my.php_module)) name=\"$(my.php_module.name:)\"/>", my)
+
+    assert_attribute (my.php_module, "name", my)
+
+    php_module_resolve_uids (my.php_module)
+endfunction
+
+.endtemplate
