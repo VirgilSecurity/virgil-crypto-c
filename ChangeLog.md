@@ -1,6 +1,17 @@
 # virgil-crypto-c ChangeLog (Sorted by date)
 
 
+## Version 0.13.0 released 2020-03-18
+
+### Features
+
+- Wrapper/PHP: Added wrapper for PHP
+
+### Bugfix
+
+- Wrapper/JS: Fixed asm.js entrypoint - used index.js instead of asmjs.js
+
+
 ## Version 0.12.2 released 2020-02-17
 
 ### Bugfix
