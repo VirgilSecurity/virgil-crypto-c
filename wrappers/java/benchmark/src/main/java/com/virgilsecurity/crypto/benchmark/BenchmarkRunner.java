@@ -42,14 +42,18 @@ import org.openjdk.jmh.runner.options.OptionsBuilder;
 
 import com.virgilsecurity.crypto.benchmark.foundation.HashBenchmark;
 import com.virgilsecurity.crypto.benchmark.foundation.RecipientCipherBenchmark;
+import com.virgilsecurity.crypto.benchmark.foundation.RecipientCipherWithHybridKeysBenchmark;
 import com.virgilsecurity.crypto.benchmark.foundation.SignatureBenchmark;
 
 public class BenchmarkRunner {
 
 	public static void main(String[] args) throws Exception {
-		Options opt = new OptionsBuilder().include(HashBenchmark.class.getSimpleName())
+		Options opt = new OptionsBuilder()
+				.include(HashBenchmark.class.getSimpleName())
 				.include(RecipientCipherBenchmark.class.getSimpleName())
-				.include(SignatureBenchmark.class.getSimpleName()).forks(1).warmupIterations(1).measurementIterations(2)
+				.include(RecipientCipherWithHybridKeysBenchmark.class.getSimpleName())
+				.include(SignatureBenchmark.class.getSimpleName())
+				.forks(1).warmupIterations(1).measurementIterations(2)
 				.build();
 
 		new Runner(opt).run();
