@@ -53,12 +53,12 @@ import org.junit.runner.RunWith;
 import java.nio.charset.StandardCharsets;
 
 @RunWith(AndroidJUnit4.class)
-public class Round5Benchmark {
+public class RecipientCipherWithHybridKeysBenchmark {
 
 	private static final byte[] DATA = "this string will be encrypted".getBytes(StandardCharsets.UTF_8);
 	private static final byte[] RECIPIENT_ID = "2e8176ba-34db-4c65-b977-c5eac687c4ac".getBytes(StandardCharsets.UTF_8);
 
-	private CompoundHybridKeyType keyType;
+	private HybridKeyType keyType;
 	private RecipientCipher recipientCipher;
 	private PrivateKey privateKey;
 	private PublicKey publicKey;
@@ -77,24 +77,24 @@ public class Round5Benchmark {
 	}
 
 	@Test
-	public void encrypt_ed25519() {
-		setup(new CompoundHybridKeyType(AlgId.CURVE25519, AlgId.ROUND5_ND_5KEM_5D, AlgId.ED25519, AlgId.FALCON));
+	public void encrypt_curve25519_round5() {
+		setup(new HybridKeyType(AlgId.CURVE25519, AlgId.ROUND5_ND_5KEM_5D));
 		encrypt();
 	}
 
 	@Test
-	public void decrypt_ed25519() {
-		setup(new CompoundHybridKeyType(AlgId.CURVE25519, AlgId.ROUND5_ND_5KEM_5D, AlgId.ED25519, AlgId.FALCON));
+	public void decrypt_curve25519_round5() {
+		setup(new HybridKeyType(AlgId.CURVE25519, AlgId.ROUND5_ND_5KEM_5D));
 		decrypt();
 	}
 
-	public void setup(CompoundHybridKeyType keyType) {
+	public void setup(HybridKeyType keyType) {
 		this.keyType = keyType;
 
 		try (KeyProvider keyProvider = new KeyProvider()) {
 			keyProvider.setupDefaults();
 
-			this.privateKey = keyProvider.generateCompoundHybridPrivateKey(keyType.cipherFirstKeyAlgId, keyType.cipherSecondKeyAlgId, keyType.signerFirstKeyAlgId, keyType.signerSecondKeyAlgId);
+			this.privateKey = keyProvider.generateHybridPrivateKey(keyType.cipherFirstKeyAlgId, keyType.cipherSecondKeyAlgId);
 			this.publicKey = this.privateKey.extractPublicKey();
 		}
 
@@ -119,7 +119,7 @@ public class Round5Benchmark {
 		}
 		long endTime = System.nanoTime();
 		long avgTime = (endTime - startTime) / BenchmarkOptions.MEASUREMENTS;
-		Log.i(BenchmarkOptions.TAG, "Encrypt with " + this.keyType + " in " + avgTime + " ns");
+		Log.i(BenchmarkOptions.TAG, "Encrypt with " + this.keyType.cipherFirstKeyAlgId + "/" + this.keyType.cipherSecondKeyAlgId + " in " + avgTime + " ns");
 	}
 
 	private void decrypt() {
@@ -131,7 +131,7 @@ public class Round5Benchmark {
 		}
 		long endTime = System.nanoTime();
 		long avgTime = (endTime - startTime) / BenchmarkOptions.MEASUREMENTS;
-		Log.i(BenchmarkOptions.TAG, "Decrypt with " + this.keyType + " in " + avgTime + " ns");
+		Log.i(BenchmarkOptions.TAG, "Decrypt with " + this.keyType.cipherFirstKeyAlgId + "/" + this.keyType.cipherSecondKeyAlgId + " in " + avgTime + " ns");
 	}
 
 	/**
@@ -150,17 +150,13 @@ public class Round5Benchmark {
 		return result;
 	}
 
-	private class CompoundHybridKeyType {
+	private class HybridKeyType {
 		AlgId cipherFirstKeyAlgId;
 		AlgId cipherSecondKeyAlgId;
-		AlgId signerFirstKeyAlgId;
-		AlgId signerSecondKeyAlgId;
 
-		CompoundHybridKeyType (AlgId cipherFirstKeyAlgId, AlgId cipherSecondKeyAlgId, AlgId signerFirstKeyAlgId, AlgId signerSecondKeyAlgId) {
+		HybridKeyType (AlgId cipherFirstKeyAlgId, AlgId cipherSecondKeyAlgId) {
 			this.cipherFirstKeyAlgId = cipherFirstKeyAlgId;
 			this.cipherSecondKeyAlgId = cipherSecondKeyAlgId;
-			this.signerFirstKeyAlgId = signerFirstKeyAlgId;
-			this.signerSecondKeyAlgId = signerSecondKeyAlgId;
 		}
 	}
 
