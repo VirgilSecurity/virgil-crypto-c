@@ -50,6 +50,9 @@ const vsc_data_t k_data = vsc_data_from_str(k_data_str, sizeof(k_data_str) - 1);
 
 constexpr const size_t k_enc_len_max = 2048;
 
+// --------------------------------------------------------------------------
+//  Bench simple keys
+// --------------------------------------------------------------------------
 
 static void
 recipient_cipher_encrypt(benchmark::State &state) {
@@ -140,3 +143,90 @@ BENCHMARK(recipient_cipher_decrypt)->ArgNames({"Ed25519"})->Arg(vscf_alg_id_ED25
 BENCHMARK(recipient_cipher_decrypt)->ArgNames({"Curve25519"})->Arg(vscf_alg_id_CURVE25519);
 BENCHMARK(recipient_cipher_decrypt)->ArgNames({"secp256r1"})->Arg(vscf_alg_id_SECP256R1);
 BENCHMARK(recipient_cipher_decrypt)->ArgNames({"RSA"})->Args({vscf_alg_id_RSA, 4096});
+
+// --------------------------------------------------------------------------
+//  Bench hybrid keys
+// --------------------------------------------------------------------------
+static void
+recipient_cipher_encrypt_with_hybrid_keys(benchmark::State &state) {
+
+    vscf_key_provider_t *key_provider = vscf_key_provider_new();
+    (void)vscf_key_provider_setup_defaults(key_provider);
+
+    const vscf_alg_id_t first_alg_id = (vscf_alg_id_t)state.range(0);
+    const vscf_alg_id_t second_alg_id = (vscf_alg_id_t)state.range(1);
+
+    vscf_impl_t *private_key =
+            vscf_key_provider_generate_hybrid_private_key(key_provider, first_alg_id, second_alg_id, NULL);
+    vscf_impl_t *public_key = vscf_private_key_extract_public_key(private_key);
+
+    vscf_recipient_cipher_t *cipher = vscf_recipient_cipher_new();
+    vscf_recipient_cipher_add_key_recipient(cipher, k_recipient_id, public_key);
+
+    vsc_buffer_t *enc = vsc_buffer_new_with_capacity(k_enc_len_max);
+    for (auto _ : state) {
+        (void)vscf_recipient_cipher_start_encryption(cipher);
+        (void)vscf_recipient_cipher_pack_message_info(cipher, enc);
+        (void)vscf_recipient_cipher_process_encryption(cipher, k_data, enc);
+        (void)vscf_recipient_cipher_finish_encryption(cipher, enc);
+        vsc_buffer_reset(enc);
+    }
+
+    vsc_buffer_destroy(&enc);
+    vscf_recipient_cipher_destroy(&cipher);
+    vscf_impl_destroy(&public_key);
+    vscf_impl_destroy(&private_key);
+    vscf_key_provider_destroy(&key_provider);
+
+    state.counters["op"] = benchmark::Counter(state.iterations(), benchmark::Counter::kIsRate);
+}
+
+
+static void
+recipient_cipher_decrypt_with_hybrid_keys(benchmark::State &state) {
+    vscf_key_provider_t *key_provider = vscf_key_provider_new();
+    (void)vscf_key_provider_setup_defaults(key_provider);
+
+    const vscf_alg_id_t first_alg_id = (vscf_alg_id_t)state.range(0);
+    const vscf_alg_id_t second_alg_id = (vscf_alg_id_t)state.range(1);
+
+    vscf_impl_t *private_key =
+            vscf_key_provider_generate_hybrid_private_key(key_provider, first_alg_id, second_alg_id, NULL);
+    vscf_impl_t *public_key = vscf_private_key_extract_public_key(private_key);
+
+    vscf_recipient_cipher_t *cipher = vscf_recipient_cipher_new();
+    vscf_recipient_cipher_add_key_recipient(cipher, k_recipient_id, public_key);
+    vsc_buffer_t *enc = vsc_buffer_new_with_capacity(k_enc_len_max);
+    vsc_buffer_t *plain = vsc_buffer_new_with_capacity(k_enc_len_max);
+
+    (void)vscf_recipient_cipher_start_encryption(cipher);
+    (void)vscf_recipient_cipher_pack_message_info(cipher, enc);
+    (void)vscf_recipient_cipher_process_encryption(cipher, k_data, enc);
+    (void)vscf_recipient_cipher_finish_encryption(cipher, enc);
+
+    vsc_data_t enc_data = vsc_buffer_data(enc);
+    for (auto _ : state) {
+        (void)vscf_recipient_cipher_start_decryption_with_key(cipher, k_recipient_id, private_key, vsc_data_empty());
+        (void)vscf_recipient_cipher_process_decryption(cipher, enc_data, plain);
+        (void)vscf_recipient_cipher_finish_decryption(cipher, plain);
+        vsc_buffer_reset(plain);
+    }
+
+    vsc_buffer_destroy(&plain);
+    vsc_buffer_destroy(&enc);
+    vscf_recipient_cipher_destroy(&cipher);
+    vscf_impl_destroy(&public_key);
+    vscf_impl_destroy(&private_key);
+    vscf_key_provider_destroy(&key_provider);
+
+    state.counters["op"] = benchmark::Counter(state.iterations(), benchmark::Counter::kIsRate);
+}
+
+
+BENCHMARK(recipient_cipher_encrypt_with_hybrid_keys)
+        ->ArgNames({"Curve25519/Round5"})
+        ->Args({vscf_alg_id_CURVE25519, vscf_alg_id_ROUND5_ND_5KEM_5D});
+
+BENCHMARK(recipient_cipher_decrypt_with_hybrid_keys)
+        ->ArgNames({"Curve25519/Round5"})
+        ->Args({vscf_alg_id_CURVE25519, vscf_alg_id_ROUND5_ND_5KEM_5D});
