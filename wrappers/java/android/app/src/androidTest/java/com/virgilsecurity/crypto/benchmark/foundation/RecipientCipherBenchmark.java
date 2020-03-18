@@ -58,6 +58,7 @@ public class RecipientCipherBenchmark {
 	private static final byte[] RECIPIENT_ID = "2e8176ba-34db-4c65-b977-c5eac687c4ac".getBytes(StandardCharsets.UTF_8);
 
 	private AlgId algId;
+	private HybridKeyType keyType;
 	private RecipientCipher recipientCipher;
 	private PrivateKey privateKey;
 	private PublicKey publicKey;
@@ -125,6 +126,18 @@ public class RecipientCipherBenchmark {
 		decrypt();
 	}
 
+	@Test
+	public void encrypt_curve25519_round5() {
+		setup(new HybridKeyType(AlgId.CURVE25519, AlgId.ROUND5_ND_5KEM_5D));
+		encrypt();
+	}
+
+	@Test
+	public void decrypt_curve25519_round5() {
+		setup(new HybridKeyType(AlgId.CURVE25519, AlgId.ROUND5_ND_5KEM_5D));
+		decrypt();
+	}
+
 	public void setup(AlgId algId) {
 		this.algId = algId;
 
@@ -149,6 +162,26 @@ public class RecipientCipherBenchmark {
 		this.encryptedData = concatenate(messageInfo, concatenate(data, finish));
 	}
 
+	public void setup(HybridKeyType keyType) {
+		this.keyType = keyType;
+
+		try (KeyProvider keyProvider = new KeyProvider()) {
+			keyProvider.setupDefaults();
+
+			this.privateKey = keyProvider.generateHybridPrivateKey(keyType.cipherFirstKeyAlgId, keyType.cipherSecondKeyAlgId);
+			this.publicKey = this.privateKey.extractPublicKey();
+		}
+
+		this.recipientCipher = new RecipientCipher();
+		this.recipientCipher.addKeyRecipient(RECIPIENT_ID, this.publicKey);
+
+		this.recipientCipher.startEncryption();
+		byte[] messageInfo = this.recipientCipher.packMessageInfo();
+		byte[] data = this.recipientCipher.processEncryption(DATA);
+		byte[] finish = this.recipientCipher.finishEncryption();
+
+		this.encryptedData = concatenate(messageInfo, concatenate(data, finish));
+	}
 	private void encrypt() {
 		long startTime = System.nanoTime();
 		for (int i = BenchmarkOptions.MEASUREMENTS; i > 0; i--) {
@@ -190,4 +223,13 @@ public class RecipientCipherBenchmark {
 		return result;
 	}
 
+	private class HybridKeyType {
+		AlgId cipherFirstKeyAlgId;
+		AlgId cipherSecondKeyAlgId;
+
+		HybridKeyType (AlgId cipherFirstKeyAlgId, AlgId cipherSecondKeyAlgId) {
+			this.cipherFirstKeyAlgId = cipherFirstKeyAlgId;
+			this.cipherSecondKeyAlgId = cipherSecondKeyAlgId;
+		}
+	}
 }
