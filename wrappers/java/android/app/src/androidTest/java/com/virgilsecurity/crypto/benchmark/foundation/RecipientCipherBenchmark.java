@@ -57,8 +57,7 @@ public class RecipientCipherBenchmark {
 	private static final byte[] DATA = "this string will be encrypted".getBytes(StandardCharsets.UTF_8);
 	private static final byte[] RECIPIENT_ID = "2e8176ba-34db-4c65-b977-c5eac687c4ac".getBytes(StandardCharsets.UTF_8);
 
-	private AlgId algId;
-	private HybridKeyType keyType;
+	private String algName;
 	private RecipientCipher recipientCipher;
 	private PrivateKey privateKey;
 	private PublicKey publicKey;
@@ -139,7 +138,7 @@ public class RecipientCipherBenchmark {
 	}
 
 	public void setup(AlgId algId) {
-		this.algId = algId;
+		this.algName = "" + algId;
 
 		try (KeyProvider keyProvider = new KeyProvider()) {
 			keyProvider.setupDefaults();
@@ -163,7 +162,7 @@ public class RecipientCipherBenchmark {
 	}
 
 	public void setup(HybridKeyType keyType) {
-		this.keyType = keyType;
+		this.algName = "" + keyType.cipherFirstKeyAlgId + "/" + keyType.cipherSecondKeyAlgId;
 
 		try (KeyProvider keyProvider = new KeyProvider()) {
 			keyProvider.setupDefaults();
@@ -192,7 +191,7 @@ public class RecipientCipherBenchmark {
 		}
 		long endTime = System.nanoTime();
 		long avgTime = (endTime - startTime) / BenchmarkOptions.MEASUREMENTS;
-		Log.i(BenchmarkOptions.TAG, "Encrypt with " + this.algId + " in " + avgTime + " ns");
+		Log.i(BenchmarkOptions.TAG, "Encrypt with " + this.algName + " in " + avgTime + " ns");
 	}
 
 	private void decrypt() {
@@ -204,7 +203,7 @@ public class RecipientCipherBenchmark {
 		}
 		long endTime = System.nanoTime();
 		long avgTime = (endTime - startTime) / BenchmarkOptions.MEASUREMENTS;
-		Log.i(BenchmarkOptions.TAG, "Decrypt with " + this.algId + " in " + avgTime + " ns");
+		Log.i(BenchmarkOptions.TAG, "Decrypt with " + this.algName + " in " + avgTime + " ns");
 	}
 
 	/**
