@@ -1,0 +1,191 @@
+.template 0
+#   Copyright (C) 2015-2019 Virgil Security, Inc.
+#
+#   All rights reserved.
+#
+#   Redistribution and use in source and binary forms, with or without
+#   modification, are permitted provided that the following conditions are
+#   met:
+#
+#       (1) Redistributions of source code must retain the above copyright
+#       notice, this list of conditions and the following disclaimer.
+#
+#       (2) Redistributions in binary form must reproduce the above copyright
+#       notice, this list of conditions and the following disclaimer in
+#       the documentation and/or other materials provided with the
+#       distribution.
+#
+#       (3) Neither the name of the copyright holder nor the names of its
+#       contributors may be used to endorse or promote products derived from
+#       this software without specific prior written permission.
+#
+#   THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
+#   IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+#   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+#   DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT,
+#   INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+#   (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+#   SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+#   HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+#   STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+#   IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+#   POSSIBILITY OF SUCH DAMAGE.
+#
+#   Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
+
+# ---------------------------------------------------------------------------
+#   Functions for PHP primitives generation: protocol, class, enum, etc.
+# ---------------------------------------------------------------------------
+#   This is a code generator built using the iMatix GSL code generation
+#   language. See https://github.com/imatix/gsl for details.
+# ---------------------------------------------------------------------------
+
+gsl from "common.gsl"
+
+# ---------------------------------------------------------------------------
+#
+# ---------------------------------------------------------------------------
+function php_map_custom_cmakelists (in_php_project, out_php_module)
+    check_arguments (my, "in_php_project, out_php_module", my)
+
+    my._prefix = my.in_php_project.prefix
+    my._project = my.in_php_project.project0
+
+    my._dep_link = ""
+    my._dep_ext = ""
+
+    for my.in_php_project->require_projects.require_project as require_project0
+        my._dep_link += format_left("$(require_project0.name0:)_php", 5)
+        my._dep_ext += format_left("-d \"extension=$<TARGET_FILE:$(require_project0.name0:)_php>\"", 8)
+    endfor
+
+    new licence to my.out_php_module
+        . = php_format_cmakelists_comment (my.in_php_project->license)
+    endnew
+
+    new header to my.out_php_module
+        . = format_left("\
+            cmake_minimum_required(VERSION 3.12 FATAL_ERROR)
+
+            project(virgil_crypto_$(my._project:)_php VERSION ${virgil_crypto_php_VERSION} LANGUAGES C)
+            ", 0)
+    endnew
+
+    new check_dependencies to my.out_php_module
+        my._c = php_format_cmakelists_comment_inline ("Check dependencies")
+
+        my._h = format_left("
+            if(NOT VIRGIL_LIB_$(my._project:UPPER))
+                message(STATUS \"Skip building the PHP wrapper for library '$(my._project:)', which is not built.\")
+                return()
+            endif()
+            ", 0)
+
+        my._res = my._c + my._h
+
+        . = my._res
+    endnew
+
+    new create_php_extension_library to my.out_php_module
+        my._c = php_format_cmakelists_comment_inline ("Create PHP extension library")
+
+        my._h = format_left("\
+            add_library($(my._project:)_php SHARED \"\")
+            set_target_properties($(my._project:)_php PROPERTIES
+                    C_STANDARD 99
+                    DEBUG_POSTFIX \"_d\"
+                    OUTPUT_NAME $(my._prefix:)_$(my._project:)_php
+                    PREFIX \"\"
+                    )
+
+            target_compile_definitions($(my._project:)_php
+                PUBLIC
+                    $(my._prefix:UPPER)_PHP_SHARED_LIBRARY
+                PRIVATE
+                    $<BUILD_INTERFACE:$(my._prefix:UPPER)_PHP_INTERNAL_BUILD=1>
+                )
+
+            if(CMAKE_SYSTEM_NAME STREQUAL \"Windows\")
+                set_target_properties($(my._project:)_php PROPERTIES SUFFIX \".dll\")
+            else()
+                set_target_properties($(my._project:)_php PROPERTIES SUFFIX \".so\")
+            endif()
+
+            target_sources($(my._project:)_php
+                    PRIVATE
+                        $<BUILD_INTERFACE:$(my._prefix:)_$(my._project:)_php.c>
+                    )
+
+            target_include_directories($(my._project:)_php
+                    PUBLIC
+                        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}>
+                    )
+
+            target_link_libraries($(my._project:)_php
+                PUBLIC
+                    vsc::$(my._project:)$(my._dep_link:)
+                PRIVATE
+                    phplib
+                    \"$<$<STREQUAL:${CMAKE_SYSTEM_NAME},Darwin>:-undefined dynamic_lookup>\"
+                )
+            ", 0)
+
+        my._res = my._c + my._h
+        . = my._res
+    endnew
+
+    new test to my.out_php_module
+        my._c = php_format_cmakelists_comment_inline ("Test")
+
+        my._h = format_left("\
+            if(ENABLE_TESTING)
+                add_test(
+                        NAME test_$(my._project:)_php
+                        COMMAND \"${PHP_EXECUTABLE}\"
+                                $(my._dep_ext:) 
+                                -d \"extension=$<TARGET_FILE:$(my._project:)_php>\"
+                                -d safe_mode=Off
+                                \"${VIRGIL_CRYPTO_WRAPPER_PROJECT_DIR}/vendor/phpunit/phpunit/phpunit\"
+                                    --bootstrap
+                                        \"${VIRGIL_CRYPTO_WRAPPER_PROJECT_DIR}/vendor/autoload.php\"
+                                    --include-path
+                                        \"${VIRGIL_CRYPTO_WRAPPER_PROJECT_DIR}/src\"
+                                        \"${VIRGIL_CRYPTO_WRAPPER_PROJECT_DIR}/tests/$(my._project:Pascal)\"
+                        )
+            endif()
+            ", 0)
+
+        my._res = my._c + my._h
+        . = my._res
+    endnew
+
+    new install to my.out_php_module
+        my._c = php_format_cmakelists_comment_inline ("Install")
+
+        my._h = format_left("\
+            if(VIRGIL_INSTALL_WRAP_LIBS)
+                install(TARGETS $(my._project:)_php
+                        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+                        RUNTIME DESTINATION ${CMAKE_INSTALL_LIBDIR}
+                        )
+            endif()
+
+            if(VIRGIL_INSTALL_WRAP_SRCS)
+                install(
+                        DIRECTORY
+                            \"${VIRGIL_CRYPTO_WRAPPER_PROJECT_DIR}/src/\"
+                        DESTINATION
+                            \"${VIRGIL_INSTALL_PHP_SRCDIR}/$(my._project:Pascal)\"
+                        FILES_MATCHING PATTERN
+                            \"*.php\"
+                        )
+            endif()
+            ", 0)
+
+        my._res = my._c + my._h
+        . = my._res
+    endnew
+
+endfunction
+
+.endtemplate

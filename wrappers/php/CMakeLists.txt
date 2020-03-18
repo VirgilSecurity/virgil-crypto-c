@@ -36,6 +36,8 @@ cmake_minimum_required(VERSION 3.12 FATAL_ERROR)
 
 project(virgil_crypto_php VERSION ${virgil_crypto_VERSION} LANGUAGES C)
 
+set(VIRGIL_CRYPTO_WRAPPER_PROJECT_DIR "${CMAKE_CURRENT_LIST_DIR}/VirgilCryptoWrapper")
+
 # ---------------------------------------------------------------------------
 #   PHP wrapper build and install options
 # ---------------------------------------------------------------------------
@@ -49,9 +51,9 @@ set(VIRGIL_INSTALL_PHP_SRCDIR "phpsrc" CACHE STRING "Directory name where PHP so
 set (CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
 
 if(PHP_VERSION)
-    find_package(PHP ${PHP_VERSION} EXACT REQUIRED)
+    find_package(PHP ${PHP_VERSION} EXACT REQUIRED COMPONENTS Runtime Devel)
 else()
-    find_package(PHP REQUIRED)
+    find_package(PHP REQUIRED COMPONENTS Runtime Devel)
 endif()
 
 if(NOT PHP_FOUND)
@@ -71,21 +73,47 @@ if(PHP_DEFINITIONS)
     target_compile_definitions(phplib INTERFACE ${PHP_DEFINITIONS} ZEND_DEBUG=0)
 endif()
 
-if(PHP_EXECUTABLE)
-    message(STATUS "Found PHP (cli): ${PHP_EXECUTABLE} (found version: ${PHP_VERSION})")
-else()
-    message(WARNING "PHP (cli) is not found - PHP tests will be disabled!")
+if(ENABLE_TESTING AND NOT COMPOSER_EXECUTABLE)
+    set(COMPOSER_VERSION "1.9.1")
+    set(COMPOSER_DOWNLOADED "${CMAKE_CURRENT_BINARY_DIR}/tmp/composer")
+
+    file(
+        DOWNLOAD
+            https://getcomposer.org/download/${COMPOSER_VERSION}/composer.phar "${COMPOSER_DOWNLOADED}"
+        SHOW_PROGRESS
+    )
+
+    file(SHA256 "${COMPOSER_DOWNLOADED}" COMPOSER_DOWNLOADED_HASH)
+    if(NOT "${COMPOSER_DOWNLOADED_HASH}" STREQUAL "1f210b9037fcf82670d75892dfc44400f13fe9ada7af9e787f93e50e3b764111")
+        message(FATAL_ERROR "Download 'composer.phar' file hash mismatch")
+    endif()
+
+    file(
+        COPY "${COMPOSER_DOWNLOADED}" DESTINATION "${CMAKE_CURRENT_BINARY_DIR}"
+        FILE_PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE
+    )
+
+    set(COMPOSER_EXECUTABLE "${CMAKE_CURRENT_BINARY_DIR}/composer" CACHE STRING "Path to the PHP composer" FORCE)
 endif()
 
-if(PHPUNIT_EXECUTABLE)
-    message(STATUS "Found PHPUnit: ${PHPUNIT_EXECUTABLE} (found version: ${PHPUNIT_VERSION})")
-else()
-    message(WARNING "PHPUnit is not found - PHP tests will be disabled!")
+if(COMPOSER_EXECUTABLE)
+    message(" Found Composer: ${COMPOSER_EXECUTABLE} (found version \"${COMPOSER_VERSION}\")")
 endif()
 
+# ---------------------------------------------------------------------------
+#   Common step for all tests
+# ---------------------------------------------------------------------------
+if(ENABLE_TESTING)
+    add_custom_target(run_composer_install ALL
+            COMMAND "${PHP_EXECUTABLE}" "${COMPOSER_EXECUTABLE}" install
+            COMMENT "Running composer install..."
+            WORKING_DIRECTORY ${VIRGIL_CRYPTO_WRAPPER_PROJECT_DIR}
+            )
+endif()
 
 # ---------------------------------------------------------------------------
 #   Add per project extension build
 # ---------------------------------------------------------------------------
-add_subdirectory(pythia)
-add_subdirectory(phe)
+add_subdirectory(VirgilCryptoWrapper/extensions/foundation)
+add_subdirectory(VirgilCryptoWrapper/extensions/phe)
+add_subdirectory(VirgilCryptoWrapper/extensions/pythia)

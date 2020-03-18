@@ -1476,14 +1476,14 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Create module describing "index.js".
 # ---------------------------------------------------------------------------
-function wasm_create_index_module(wasm_project)
+function wasm_create_entrypoint_module(wasm_project)
     check_arguments(my, "wasm_project", my)
 
     echo_info("Create custom <wasm_module/>: 'index'", my)
 
     new wasm_module to my.wasm_project
         .name = "index"
-        .source_file_name = 0.name + ".js"
+        .source_file_name = "$(0.name).js"
         .source_file_path = cat_path(my.wasm_project.src_source_dir, 0.source_file_name)
 
         new wasm_license to wasm_module
@@ -1537,72 +1537,6 @@ function wasm_create_index_module(wasm_project)
                         reject(new Error(message));
                     };
                 });
-            };
-            module.exports = initProject;
-        ")
-
-        new wasm_code to wasm_module
-            . = my.code
-        endnew
-    endnew
-endfunction
-
-# ---------------------------------------------------------------------------
-#   Create module describing "asmjs.js".
-# ---------------------------------------------------------------------------
-function wasm_create_asmjs_module(wasm_project)
-    check_arguments(my, "wasm_project", my)
-
-    echo_info("Create custom <wasm_module/>: 'asmjs'", my)
-
-    new wasm_module to my.wasm_project
-        .name = "asmjs"
-        .source_file_name = 0.name + ".js"
-        .source_file_path = cat_path(my.wasm_project.src_source_dir, 0.source_file_name)
-
-        new wasm_license to wasm_module
-            . = wasm_format_license(my.wasm_project->license) ?
-        endnew
-
-        my.module_inst = "$(my.wasm_project.name:Camel)Module"
-
-        my.code = ""
-        my.code += format_left("
-            const $(my.wasm_project.module_name:) = require(process.env.PROJECT_MODULE);
-        ")
-
-        my.code += terminator
-
-        for my.wasm_project.wasm_imported_module
-            my.code += format_left("
-                const init$(wasm_imported_module.name:Pascal) = \
-                        require('$(wasm_imported_module.source_dir)/$(wasm_imported_module.name:)');
-            ")
-
-            my.init_code ?= ""
-            my.init_code += format_left("
-                  modules.$(wasm_imported_module.name:Pascal) =\
-                        init$(wasm_imported_module.name:Pascal)($(my.module_inst:), modules);
-            ")
-        endfor
-
-        for my.wasm_project.wasm_module where wasm_module_is_not_helper(wasm_module)
-            my.code += format_left("
-                const init$(wasm_module.name:Pascal) = require('./$(wasm_module.name:)');
-            ")
-
-            my.init_code ?= ""
-            my.init_code += format_left("
-                  modules.$(wasm_module.name:Pascal) = init$(wasm_module.name:Pascal)($(my.module_inst:), modules);
-            ")
-        endfor
-
-        my.code += terminator + format_left("
-            const initProject = () => {
-                const $(my.module_inst:) = new $(my.wasm_project.module_name:)();
-                const modules = {};
-                $(format_left(my.init_code, 4))
-                return Promise.resolve(modules);
             };
             module.exports = initProject;
         ")
@@ -2006,8 +1940,7 @@ function wasm_finalize_custom_modules(source, wasm_project, meta)
     check_arguments(my, "source, wasm_project, meta", my)
 
     wasm_create_exported_functions_module(my.wasm_project)
-    wasm_create_index_module(my.wasm_project)
-    wasm_create_asmjs_module(my.wasm_project)
+    wasm_create_entrypoint_module(my.wasm_project)
 endfunction
 
 # ---------------------------------------------------------------------------
