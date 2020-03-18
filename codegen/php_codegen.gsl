@@ -42,4 +42,228 @@
 
 gsl from "common.gsl"
 
+# ---------------------------------------------------------------------------
+#   Generate project files.
+# ---------------------------------------------------------------------------
+function php_generate_project (wrapper_project)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Generate source files from <php_module/> entities.
+# ---------------------------------------------------------------------------
+function php_generate_sources (php_project)
+    check_arguments (my, "php_project", my)
+
+    if -1 = directory.create (my.php_project.source_dir)
+        echo_fatal ("Can not create directory: $(my.wrapper.source_dir:)")
+    endif
+
+    for my.php_project.php_module as php_module0 where string_in (php_module0.type, "class, interface, implementation, enum, implementation_class")
+        php_generate_source_high_level (php_module0)
+    endfor
+
+    for my.php_project.php_module as php_module0 where php_module0.type = "extension" & php_module0.name <> "extension status"
+        php_generate_source_low_level (php_module0)
+    endfor
+
+    for my.php_project.php_module as php_module0 where php_module0.type = "cmakelists"
+        php_generate_source_custom_cmakelists (php_module0)
+    endfor
+endfunction
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_generate_source_high_level (in_php_module)
+    check_arguments (my, "in_php_module", my)
+
+    if defined (my.in_php_module.source_dir)
+        if -1 = directory.create (my.in_php_module.source_dir)
+            echo_fatal ("Can not create directory: $(my.in_php_module.source_dir:)")
+        endif
+    endif
+
+    echo_trace ("Generate PHP $(my.in_php_module.type:) $(my.in_php_module.name:)", my)
+
+    output my.in_php_module.source_file_path
+
+    php_insert_code ("<?php", 0)
+    php_insert_description (my.in_php_module->php_license)
+
+    newline()
+
+    my._namespace = my.in_php_module->high_level->namespace.
+    php_insert_code(my._namespace, 0)
+    newline()
+
+    if defined (my.in_php_module->high_level->use.)
+        my._use = my.in_php_module->high_level->use.
+        php_insert_code(my._use, 0)
+        newline()
+    endif
+
+    if defined (my.in_php_module->high_level.)
+        my._info = my.in_php_module->high_level.
+        php_insert_code(my._info, 0)
+    endif
+
+    my._signature = my.in_php_module->high_level->signature.
+    php_insert_code(my._signature, 0)
+
+    php_insert_code("{", 0)
+
+    if defined (my.in_php_module->high_level->property.)
+        if ! first()
+            newline()
+        endif
+        my._property = my.in_php_module->high_level->property.
+        php_insert_code(my._property, 1)
+    endif
+
+    if defined (my.in_php_module->high_level->constants.)
+        if ! first()
+            newline()
+        endif
+
+        my._constants = my.in_php_module->high_level->constants.
+        php_insert_code(my._constants, 1)
+    endif
+
+    for my.in_php_module->high_level.php_method as php_method0
+        newline()
+        php_insert_code(php_method0->docblock., 1)
+
+        my._signature = php_method0->signature.
+        php_insert_code(my._signature, 1)
+
+        if my.in_php_module.type <> "interface"
+            php_insert_code("{", 1)
+            php_insert_code(php_method0->body., 2)
+            php_insert_code("}", 1)
+        endif
+
+    endfor
+
+    php_insert_code("}",0)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_generate_source_low_level (in_php_module)
+    check_arguments (my, "in_php_module", my)
+
+    if defined (my.in_php_module.source_dir)
+        if -1 = directory.create (my.in_php_module.source_dir)
+            echo_fatal ("Can not create directory: $(my.in_php_module.source_dir:)")
+        endif
+    endif
+
+    if is_true(my.in_php_module.is_header)
+        echo_trace ("Generate $(my.in_php_module.name:).h", my)
+
+        output my.in_php_module.source_file_path
+
+        php_insert_code (my.in_php_module->licence, 0)
+        newline()
+
+        php_insert_code (my.in_php_module->header_top, 0)
+        newline()
+
+        php_insert_code (my.in_php_module->header_constants, 0)
+        newline()
+        
+        php_insert_code (my.in_php_module->header_registered_resources, 0)
+        newline()
+
+        php_insert_code (my.in_php_module->header_bottom, 0)
+    else
+        echo_trace ("Generate $(my.in_php_module.name:).c", my)
+
+        output my.in_php_module.source_file_path
+
+        php_insert_code (my.in_php_module->licence, 0)
+        newline()
+        php_insert_code (my.in_php_module->[include], 0)
+        newline()
+        php_insert_code(my.in_php_module->extension_status, 0)
+        newline()
+        php_insert_code (my.in_php_module->constants, 0)
+        newline()
+        php_insert_code (my.in_php_module->constants_func_wrapp, 0)
+        newline()
+        php_insert_code (my.in_php_module->registered_resources, 0)
+        newline()
+        php_insert_code (my.in_php_module->registered_resources_func_wrapp, 0)
+        newline()
+        php_insert_code (my.in_php_module->init_func_declaration, 0)
+        newline()
+        php_insert_code (my.in_php_module->func_wrapping, 0)
+        newline()
+        php_insert_code (my.in_php_module->define_all_func_entries, 0)
+        newline()
+        php_insert_code (my.in_php_module->module_definitions, 0)
+        newline()
+        php_insert_code (my.in_php_module->init_func_definitions, 0)
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_generate_source_custom_cmakelists (in_php_module)
+    check_arguments (my, "in_php_module", my)
+
+    if defined (my.in_php_module.source_dir)
+        if -1 = directory.create (my.in_php_module.source_dir)
+            echo_fatal ("Can not create directory: $(my.in_php_module.source_dir:)")
+        endif
+    endif
+
+    echo_trace ("Generate $(my.in_php_module.name:).txt", my)
+
+    output my.in_php_module.source_file_path
+
+    php_insert_code(my.in_php_module->licence, 0)
+    newline()
+    php_insert_code(my.in_php_module->header, 0)
+    newline()
+    php_insert_code(my.in_php_module->check_dependencies, 0)
+    newline()
+    php_insert_code(my.in_php_module->create_php_extension_library, 0)
+    newline()
+    php_insert_code(my.in_php_module->test, 0)
+    newline()
+    php_insert_code(my.in_php_module->install, 0)
+    newline()
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Insert description of the given object.
+# ---------------------------------------------------------------------------
+function php_insert_description (obj, tab_count)
+    my.description = my.obj. ?
+    my.tab_count ?= 0
+    if string_empty (my.description)
+        return
+    endif
+    php_insert_code (my.description, my.tab_count)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Insert given multiline code.
+# ---------------------------------------------------------------------------
+function php_insert_code (code, tab_count)
+    check_argument (my, "code", my)
+
+    my.code = "$(my.code:left,no)"
+    my.code = string_trim (my.code)
+    my.code = code_collapse_spaces (my.code)
+
+    my.code = string_indent (my.code, my.tab_count)
+    my.code = string_multi_rtrim (my.code)
+
+    out (my.code)
+endfunction
+
 .endtemplate

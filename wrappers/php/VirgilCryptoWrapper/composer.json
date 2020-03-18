@@ -1,0 +1,31 @@
+{
+  "name": "virgil/crypto-wrapper",
+  "description": "Virgil Security Crypto Wrapper",
+  "keywords": [],
+  "homepage": "https://virgilsecurity.com",
+  "license": "BSD-3-Clause",
+  "authors": [
+    {
+      "name": "Virgil Security, Inc",
+      "email": "support@virgilsecurity.com",
+      "homepage": "https://virgilsecurity.com"
+    }
+  ],
+  "require": {
+    "php": "^7.2",
+    "myclabs/php-enum": "^1.7"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^8.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "Virgil\\CryptoWrapper\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Virgil\\CryptoWrapperTests\\": "tests/"
+    }
+  }
+}

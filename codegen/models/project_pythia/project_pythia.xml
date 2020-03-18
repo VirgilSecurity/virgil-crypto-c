@@ -6,10 +6,10 @@
         prefix="vscp"
         path="../library/pythia/"
         work_path="generated/pythia/"
-        wrappers="java,swift,python,wasm"
+        wrappers="java,swift,python,wasm,php"
         >
 
-    <version major="0" minor="12" patch="2"/>
+    <version major="0" minor="13" patch="0"/>
 
     <license>
         Copyright (C) 2015-2020 Virgil Security, Inc.

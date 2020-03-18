@@ -1,0 +1,704 @@
+.template 0
+#   Copyright (C) 2015-2019 Virgil Security, Inc.
+#
+#   All rights reserved.
+#
+#   Redistribution and use in source and binary forms, with or without
+#   modification, are permitted provided that the following conditions are
+#   met:
+#
+#       (1) Redistributions of source code must retain the above copyright
+#       notice, this list of conditions and the following disclaimer.
+#
+#       (2) Redistributions in binary form must reproduce the above copyright
+#       notice, this list of conditions and the following disclaimer in
+#       the documentation and/or other materials provided with the
+#       distribution.
+#
+#       (3) Neither the name of the copyright holder nor the names of its
+#       contributors may be used to endorse or promote products derived from
+#       this software without specific prior written permission.
+#
+#   THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
+#   IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+#   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+#   DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT,
+#   INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+#   (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+#   SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+#   HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+#   STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+#   IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+#   POSSIBILITY OF SUCH DAMAGE.
+#
+#   Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
+
+# ---------------------------------------------------------------------------
+#   Functions for PHP primitives generation: protocol, class, enum, etc.
+# ---------------------------------------------------------------------------
+#   This is a code generator built using the iMatix GSL code generation
+#   language. See https://github.com/imatix/gsl for details.
+# ---------------------------------------------------------------------------
+
+gsl from "common.gsl"
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_map_high_level (in_module, in_php_module, in_php_project, out_high_level, in_type)
+    check_arguments (my, "in_module, in_php_module, in_php_project, out_high_level, in_type", my)
+
+    if ! string_empty(my.in_module.)
+        my.out_high_level. = php_format_comment (my.in_module.)
+    endif
+
+    my.out_high_level.name = "$(my.in_module.name:Pascal)"
+    my.out_high_level.name0 = "$(my.in_module.name:c)"
+    my.out_high_level.namespace = php_derive_high_level_namespace(my.in_php_module)
+
+    new namespace to my.out_high_level
+        . = format_left("namespace $(my.out_high_level.namespace:);", 0)
+    endnew
+
+    my._implements = ""
+
+    my._type = "class"
+    if my.in_type = "interface"
+        my._type = "interface"
+    endif
+
+    if ! string_in(my.in_type, "interface, implementation_class")
+        if !string_equal(my.in_module.context, "none")
+            new property to my.out_high_level
+                my._db = php_format_comment("@var")
+                my._property = "private $ctx;"
+
+                my._res = format_left(my._db + "\n" + my._property, 0)
+
+                . = my._res
+            endnew
+        endif
+    endif
+
+    for my.in_module.constructor as constructor0 where constructor0.visibility = "public" & constructor0.declaration = "public" & constructor0.[scope] = "public"
+        constructor0.is_constructor = "1"
+        new php_method to my.out_high_level
+            php_map_high_level_method (constructor0, my.in_php_module, my.in_type, php_method)
+        endnew
+    endfor
+
+    my._constant = ""
+
+    if string_in(my.in_type, "class, implementation")
+        for my.in_module.constant as constant0
+            new constant to high_level
+                .name = php_derive_high_level_constant_name(constant0)
+                .value = constant0.value
+
+                my._constant += format_left("const $(constant.name:) = $(constant.value:);", 0)
+            endnew
+        endfor
+    endif
+
+    if my.in_type = "implementation_class"
+        for my.in_module.constant as constant0
+            new constant to high_level
+                .name = constant0.name
+                .value = constant0.value
+
+                my._constant += format_left("const $(constant.name:) = $(constant.value:);", 0)
+            endnew
+        endfor
+    else
+        for my.in_module.interface as interface0
+            my._d = ""
+            if ! last()
+                my._d = ", "
+            endif
+
+            new interface to my.out_high_level
+                interface.name = "$(interface0.name:Pascal)"
+                my._name = interface.name
+                my._implements += my._name + my._d
+            endnew
+
+            for interface0.constant as constant0
+                new constant to high_level
+                    constant.name = php_derive_high_level_constant_name(constant0)
+                    constant.value = constant0.value
+
+                    my._constant += format_left("const $(constant.name:) = $(constant.value:);", 0)
+                endnew
+            endfor
+        endfor
+    endif
+
+    new constants to my.out_high_level
+        . = format_left(my._constant, 0)
+    endnew
+
+    if ! string_in (my.in_type, "interface, implementation_class")
+        if !string_equal(my.in_module.context, "none")
+            php_map_high_level_constructor_destructor (my.in_module, my.out_high_level)
+        endif
+    endif
+
+    if my._implements <> ""
+        my._implements = "implements $(my._implements:)"
+    endif
+
+    for my.in_module.dependency as dependency0
+
+        my._dep_name = dependency0.name
+
+        if defined (dependency0.interface)
+            my._dep_class = dependency0.interface
+        elsif defined (dependency0.class)
+            my._dep_class = dependency0.class
+        elsif defined (dependency0.impl)
+            my._dep_class = dependency0.impl
+        else
+            echo_debug_item(dependency0)
+            echo_fatal("Not implemented (BX1000)", my)
+        endif
+
+        new php_method to my.out_high_level
+
+            my._dependency_method = XML.new()
+
+            new method to my._dependency_method
+                .name = "use $(my._dep_name:)"
+                .visibility = "public"
+                .[scope] = "public"
+                .declaration = "public"
+                .is_static = 0
+                .return_type = "void"
+
+                new argument to method
+                    .name = my._dep_name
+                    .class = my._dep_class
+
+                    if defined (dependency0.project)
+                        .class_with_namespace = "$(my.in_php_module.namespace:)\\\\$(dependency0.project:Pascal)\\\\$(my._dep_class:Pascal)"
+                    endif
+                endnew
+
+                if is_true(dependency0.is_observers_return_status)
+                    new return to method
+                        .enum = "status"
+                        .is_reference = 0
+                    endnew
+                endif
+            endnew
+
+            php_map_high_level_method (my._dependency_method->method, my.in_php_module, my.in_type, php_method)
+        endnew
+    endfor
+
+    if string_in (my.in_type, "class, implementation")
+        if !string_equal(my.in_module.context, "none")
+            new method to my.in_module
+                .name = "get ctx"
+                .visibility = "public"
+                .declaration = "public"
+                .[scope] = "public"
+                .is_static = "0"
+                .return_type = "resource"
+                .throws_exception = "0"
+
+                new custom_code to method
+                    . = format_left("return $this->ctx;", 0)
+                endnew
+
+                . = "Get C context."
+            endnew
+        endif
+    endif
+
+    if my.in_type = "implementation_class"
+
+        for my.in_php_project->interfaces.interface as interface0
+            my._custom_code = format_left("\
+                $implTag = vscf_impl_tag_php($ctx);
+
+                switch ($implTag) {
+                ", 0)
+
+            for my.in_php_project.php_module as php_module0 where php_module0.type = "implementation"
+                for php_module0->high_level.interface as interface1 where interface1.name = "$(interface0.name0:Pascal)"
+                    my._n = php_derive_high_level_constant_name(php_module0)
+                    my._custom_code += format_left("\
+                        case self::$(my._n:):
+                            return (new $(php_module0.name:Pascal)($ctx));
+                            break;
+                        ", 1)
+                endfor
+            endfor
+
+            my._custom_code += format_left("\
+                    default:
+                        throw new \\\\Exception(\"Unexpected C implementation cast to the PHP implementation.\");
+                        break;
+                }
+                ", 0)
+
+            new method to my.in_module
+                .name = "wrap $(interface0.name0:)"
+                .visibility = "public"
+                .declaration = "public"
+                .[scope] = "public"
+                .is_static = "1"
+                .return_type = "$(interface0.name0:Pascal)"
+                .throws_exception = "1"
+
+                new argument to method
+                    .name = "ctx"
+                    .class = "ctx"
+                endnew
+
+                new custom_code to method
+                    . = format_left(my._custom_code, 0)
+                endnew
+
+                . = "Wrap C implementation object to the PHP object that implements protocol $(interface0.name0:Pascal)."
+            endnew
+        endfor
+    endif
+
+    for my.in_module.method as method0 where method0.visibility = "public" & method0.declaration = "public" & method0.[scope] = "public"
+        new php_method to my.out_high_level
+            php_map_high_level_method (method0, my.in_php_module, my.in_type, php_method)
+        endnew
+    endfor
+
+    new signature to my.out_high_level
+
+        my._implem = "$(my._implements:)"
+        if my._type = "interface" & my.in_php_module.name0 <> "ctx"
+            my._implem = "extends Ctx"
+        endif
+
+        . = format_left("$(my._type:) $(my.out_high_level.name:) $(my._implem:)", 0)
+    endnew
+endfunction
+
+# ---------------------------------------------------------------------------
+# 
+# ---------------------------------------------------------------------------
+function php_map_high_level_constructor_destructor (in_module, out_high_level)
+    check_arguments (my, "in_module, out_high_level", my)
+
+    new php_method to my.out_high_level
+        .name = "__construct"
+        .name0 = "new"
+        .return_type = "void"
+        .return_data = ""
+        .throws_exception = "0"
+        .declaration = "public"
+        .prefix = "$(my.in_module.c_prefix:c)"
+        .entity0 = "$(my.in_module.name:c)"
+        .class = "$(my.in_module.name:c)"
+        .function_name = php_derive_high_level_function_name(0)
+
+        new docblock to php_method
+            my._docblock = format_left("\
+            Create underlying C context.
+            @param null $ctx
+            @return void
+            ", 0)
+
+            . = php_format_comment (my._docblock)
+        endnew
+
+        new signature to php_method
+            . = "$(php_method.declaration:) function $(php_method.name:)($ctx = null)"
+        endnew
+
+        new body to php_method
+            . = format_left("\
+                $this->ctx = is_null($ctx) ? $(php_method.function_name:)() : $ctx;
+                ", 0)
+        endnew
+    endnew
+
+    new php_method to my.out_high_level
+        .name = "__destructor"
+        .name0 = "delete"
+        .return_type = "void"
+        .return_data = ""
+        .throws_exception = "0"
+        .declaration = "public"
+        .prefix = "$(my.in_module.c_prefix:c)"
+        .entity0 = "$(my.in_module.name:c)"
+        .class = "$(my.in_module.name:c)"
+        .function_name = php_derive_high_level_function_name(0)
+
+        new docblock to php_method
+            my._docblock = format_left("\
+            Destroy underlying C context.
+            @return void
+            ", 0)
+
+            . = php_format_comment (my._docblock)
+        endnew
+
+        new signature to php_method
+            . = "$(php_method.declaration:) function $(php_method.name:)()"
+        endnew
+
+        new body to php_method
+            . = "$(php_method.function_name:)($this->ctx);"
+        endnew
+    endnew
+endfunction
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_map_high_level_method (in_method, in_php_module, in_type, out_php_method)
+    check_arguments (my, "in_method, in_php_module, in_type, out_php_method", my)
+
+    my._docblock_data = ""
+
+    if defined (my.in_method.)
+        my._docblock_data += format_left(my.in_method., 0) + "\n"
+    endif
+
+    my.out_php_method.name = "$(my.in_method.name:Camel)"
+    my.out_php_method.name0 = "$(my.in_method.name:c)"
+    my.out_php_method.prefix = "$(my.in_php_module.prefix:c)"
+    my.out_php_method.class = "$(my.in_php_module.name0:c)"
+    my.out_php_method.entity0 = "$(my.in_php_module.name0:c)"
+
+    if defined (my.in_php_module.implementation_class0)
+        my.out_php_method.implementation_class0 = my.in_php_module.implementation_class0
+    endif
+
+    my.out_php_method.is_constructor = 0
+
+    if is_true(my.in_method.is_constructor)
+        my.out_php_method.is_constructor = "1"
+    endif
+
+    php_map_high_level_return (my.in_method, my.in_php_module, my.out_php_method)
+
+    my._md = ""
+
+    if my.in_method.is_static="1"
+        my._md = "static "
+    endif
+
+    my.out_php_method.declaration = "public $(my._md:)"
+
+    if my.in_type = "interface"
+        my.out_php_method.function_name = ""
+    else 
+        my.out_php_method.function_name = php_derive_high_level_function_name(my.out_php_method)
+    endif
+
+    my._method_arguments = ""
+    my._function_arguments = ""
+
+    for my.in_method.argument as argument0 where (defined(argument0.class) & !string_in(argument0.class, "error, buffer")) | !defined(argument0.class)
+        my._d = ""
+        if ! last()
+            my._d = ", "
+        endif
+
+        new php_argument to php_method
+            php_map_high_level_argument (argument0, my.in_php_module, php_argument)
+            my._docblock_data += format_left("@param $(0.type:) $(0.name:)\n", 0)
+            my._type = ""
+            if 0.type <> ""
+                my._type = "$(0.type:) "
+            endif
+            my._method_arguments += "$(my._type:)$(0.name:)" + my._d
+            my._function_arguments += "$(0.name:)" + my._d
+        endnew
+    endfor
+
+    my._docblock_data += format_left("@return $(0.return_type:)\n", 0)
+
+    if is_true(0.throw_exception) | (is_true(my.in_method.throws_exception) | is_true(my.out_php_method.return_interface))
+        my._docblock_data += format_left("@throws \\\\Exception", 0)
+    endif
+
+    new docblock to my.out_php_method
+        . = php_format_comment(my._docblock_data)
+    endnew
+
+    my._declaration = 0.declaration
+    my._name = 0.name
+    my._return_type = 0.return_type
+    my._return_data = 0.return_data
+
+    my._return_type = ": $(my._return_type:)"
+
+    if my._return_type = ": resource"
+        my._return_type = ""
+    endif
+
+    new signature to my.out_php_method
+
+        my._i = ""
+        if my.in_type = "interface"
+            my._i = ";"
+        endif
+
+        . = "$(my._declaration:) function $(my._name:)($(my._method_arguments:))$(my._return_type:)$(my._i:) $(my._return_data:)"
+    endnew
+
+    if my.in_type <> "interface"
+        new body to my.out_php_method
+            if count (my.in_method.custom_code)
+                . = my.in_method->custom_code.
+            else
+                . = php_format_high_level_method_body(my.out_php_method)
+            endif
+        endnew
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_map_high_level_return (in_method, in_php_module, out_php_method)
+    check_arguments (my, "in_method, in_php_module, out_php_method", my)
+
+    my._return_type = "void"
+    my._return_data = ""
+    my._instance = "0"
+    my._namespace = ""
+    my._throw_exception = "0"
+    my._return_data_list = ""
+    my._return_interface = "0"
+    my._return_enum = "0"
+    my._return_class_impl = "0"
+
+    my._argument_buffer_count = 0
+
+    if defined (my.in_method.return_type)
+        if my.in_method.return_type = "resource"
+            my._return_type = "resource"
+        else
+            my._return_type = my.in_method.return_type
+        endif
+    endif
+
+    if is_true(my.in_method.is_constructor)
+        my._return_type = "$(my.in_php_module.name0:Pascal)"
+        my._instance = "1"
+    endif
+
+    for my.in_method.argument as argument0 where defined (argument0.class)
+        if argument0.class = "buffer"
+            my._argument_buffer_count = my._argument_buffer_count + 1
+            my._return_data_list += "$(argument0.name:c)"
+            if ! last()
+                my._return_data_list += ", "
+            endif
+        endif
+    endfor
+
+    if my._argument_buffer_count = 1
+        my._return_type = "string"
+    elsif my._argument_buffer_count > 1
+        my._return_type = "array"
+        my._return_data = "// [$(my._return_data_list)]"
+    endif
+
+    for my.in_method.return as return0
+
+        if defined (return0.type)
+            if return0.type = "size" | return0.type = "integer" | return0.type = "unsigned"
+                my._return_type = "int"
+            elsif return0.type = "boolean"
+                my._return_type = "bool"
+            elsif return0.type = "byte"
+                my._return_type = "string"
+            else
+                echo_debug_item(my.in_method)
+                echo_debug_item(return0)
+                echo_fatal("Not implemented (BA1001)", my)
+            endif
+        endif
+
+        my._r = ""
+
+        if defined (return0.class)
+            if return0.class = "data"
+                my._return_type = "string"
+                my._return_data = ""
+            else
+                my._r = return0.class
+                my._namespace = php_derive_high_level_namespace(my.in_php_module)
+                my._instance = "1"
+                my._return_class_impl = "1"
+            endif
+        elsif defined (return0.interface)
+            my._r = return0.interface
+            my._namespace = php_derive_high_level_namespace(my.in_php_module)
+            my._instance = "1"
+            my._return_interface = "1"
+        elsif defined (return0.impl)
+            my._r = return0.impl
+            my._namespace = php_derive_high_level_namespace(my.in_php_module)
+            my._instance = "1"
+            my._return_class_impl = "1"
+        endif
+
+        if (defined (return0.class) & return0.class <> "data") | defined (return0.interface) | defined (return0.impl)
+            my._return_type = "$(my._r:Pascal)"
+        endif
+
+        if defined (return0.enum)
+            if return0.enum = "status"
+                my._throw_exception = "1"
+            else
+                my._return_type = "$(return0.enum:Pascal)"
+                my._instance = "1"
+                my._return_enum = "1"
+            endif
+        endif
+    endfor
+
+    my.out_php_method.return_type = my._return_type
+    my.out_php_method.return_data = my._return_data
+    my.out_php_method.instance = my._instance
+    my.out_php_method.namespace = my._namespace
+    my.out_php_method.throw_exception = my._throw_exception
+    my.out_php_method.return_interface = my._return_interface
+    my.out_php_method.return_enum = my._return_enum
+    my.out_php_method.return_class_impl = my._return_class_impl
+
+    if defined (my.in_php_module.implementation_class0)
+        my.out_php_method.implementation_class0 = my.in_php_module.implementation_class0
+    endif
+
+endfunction
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_map_high_level_argument (in_argument, in_php_module, out_php_argument)
+    check_arguments (my, "in_argument, in_php_module, out_php_argument", my)
+
+    my.out_php_argument.name = "$$(my.in_argument.name:Camel)"
+
+    my._type = ""
+    my._instance = "0"
+    my._namespace = ""
+    my._is_enum = "0"
+
+    if defined (my.in_argument.class) & ! string_in (my.in_argument.class, "error, buffer")
+            if string_in(my.in_argument.class, "data") 
+                my._type = "string"
+            elsif my.in_argument.class = "ctx"
+                my._type = ""
+            else
+                my._type = "$(my.in_argument.class:Pascal)"
+                my._instance = "1"
+                my._namespace = php_derive_high_level_namespace(my.in_php_module)
+            endif
+    endif
+
+    if defined (my.in_argument.interface)
+        my._type = "$(my.in_argument.interface:Pascal)"
+        my._instance = "1"
+        my._namespace = php_derive_high_level_namespace(my.in_php_module)
+    endif
+
+    if defined (my.in_argument.impl)
+        my._type = "$(my.in_argument.impl:Pascal)"
+        my._instance = "1"
+        my._namespace = php_derive_high_level_namespace(my.in_php_module)
+    endif
+
+    if defined (my.in_argument.type)
+        if string_in(my.in_argument.type, "size, integer, unsigned")
+            my._type = "int"
+        elsif my.in_argument.type = "char"
+            my._type = "string"
+        elsif my.in_argument.type = "byte"
+            if is_true(my.in_argument.is_reference)
+                my._type = "string"
+            else 
+                my._type = "int"
+            endif
+        elsif my.in_argument.type = "boolean"
+            my._type = "bool"
+        else
+            echo_debug_item(my.in_argument)
+            echo_fatal("Not implemented (AS2301)", my)
+        endif
+    endif
+
+    if defined (my.in_argument.enum)
+        my._type = "$(my.in_argument.enum:Pascal)"
+        my._instance = "1"
+        my._is_enum = "1"
+    endif
+
+    if defined (my.in_argument.class_with_namespace)
+        my._type = my.in_argument.class_with_namespace
+    endif
+
+    my.out_php_argument.type = my._type
+    my.out_php_argument.instance = my._instance
+    my.out_php_argument.namespace = my._namespace
+    my.out_php_argument.is_enum = my._is_enum
+
+endfunction
+
+# ---------------------------------------------------------------------------
+#   
+# ---------------------------------------------------------------------------
+function php_map_high_level_enum (in_module, in_php_module, out_high_level)
+    check_arguments (my, "in_module, in_php_module, out_high_level", my)
+
+    if ! string_empty(my.in_module.)
+        my.out_high_level. = php_format_comment (my.in_module.)
+    endif
+
+    my.out_high_level.name = "$(my.in_module.name:Pascal)"
+    my.out_high_level.name0 = "$(my.in_module.name:c)"
+    my.out_high_level.namespace = php_derive_high_level_namespace(my.in_php_module)
+
+    new namespace to my.out_high_level
+        . = format_left("namespace $(my.out_high_level.namespace:);", 0)
+    endnew
+
+    new constants to my.out_high_level
+
+        my._constants = ""
+
+        my._value = 0
+
+        for my.in_module.constant as constant0
+            new constant to my.out_high_level
+                .name = php_derive_high_level_constant_name(constant0)
+                if defined (constant0.value)
+                    my._value = "\"$(constant0.value:)\""
+                endif
+                .value = my._value
+                my._value = my._value + 1
+                my._constants += format_left("private const $(0.name:) = $(0.value:);", 0)
+            endnew
+        endfor
+
+        . = format_left(my._constants, 0)
+    endnew
+
+    new signature to my.out_high_level
+        . = format_left("class $(my.out_high_level.name:) extends Enum")
+    endnew
+
+    new use to my.out_high_level
+        . = "use MyCLabs\\\\Enum\\\\Enum;"
+    endnew
+
+    new body to my.out_high_level
+    endnew
+
+endfunction
+.endtemplate

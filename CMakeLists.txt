@@ -34,7 +34,7 @@
 
 cmake_minimum_required(VERSION 3.12 FATAL_ERROR)
 
-project(virgil_crypto VERSION 0.12.2 LANGUAGES C)
+project(virgil_crypto VERSION 0.13.0 LANGUAGES C)
 
 
 # ---------------------------------------------------------------------------
@@ -84,7 +84,6 @@ option(ENABLE_CLANGFORMAT "On/Off formatting source code with clangformat." ON)
 
 option(VIRGIL_C_TESTING "On/Off C library integration tests." ON)
 option(VIRGIL_C_MT_TESTING "On/Off C library multi-threading tests." OFF)
-option(VIRGIL_PHP_TESTING "On/Off PHP wrapper integration tests." ON)
 
 #
 # Libraries
