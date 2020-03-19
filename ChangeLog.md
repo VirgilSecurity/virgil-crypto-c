@@ -1,6 +1,13 @@
 # virgil-crypto-c ChangeLog (Sorted by date)
 
 
+## Version 0.13.1 released 2020-03-19
+
+### Bugfix
+
+- Wrapper/Java: Fixed Android builds (debug mode was accidentally on)
+
+
 ## Version 0.13.0 released 2020-03-18
 
 ### Features
