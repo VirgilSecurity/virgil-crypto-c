@@ -1524,8 +1524,8 @@ function wasm_create_entrypoint_module(wasm_project)
         endfor
 
         my.code += terminator + format_left("
-            const initProject = () => {
-                const $(my.module_inst:) = new $(my.wasm_project.module_name:)();
+            const initProject = options => {
+                const $(my.module_inst:) = new $(my.wasm_project.module_name:)(options);
                 return new Promise((resolve, reject) => {
                     $(my.module_inst:).onRuntimeInitialized = () => {
                         const modules = {};

@@ -129,8 +129,8 @@ const initAlgInfoDerDeserializer = require('./AlgInfoDerDeserializer');
 const initMessageInfoDerSerializer = require('./MessageInfoDerSerializer');
 const initRandomPadding = require('./RandomPadding');
 
-const initProject = () => {
-    const foundationModule = new FoundationModule();
+const initProject = options => {
+    const foundationModule = new FoundationModule(options);
     return new Promise((resolve, reject) => {
         foundationModule.onRuntimeInitialized = () => {
             const modules = {};

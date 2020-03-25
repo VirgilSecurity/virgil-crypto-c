@@ -167,10 +167,10 @@ const initBrainkeyClient = (Module, modules) => {
             //  Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(passwordCtxPtr, passwordPtr, passwordSize);
 
-            const deblindFactorCapacity = BrainkeyClient.MPI_LEN;
+            const deblindFactorCapacity = modules.BrainkeyClient.MPI_LEN;
             const deblindFactorCtxPtr = Module._vsc_buffer_new_with_capacity(deblindFactorCapacity);
 
-            const blindedPointCapacity = BrainkeyClient.POINT_LEN;
+            const blindedPointCapacity = modules.BrainkeyClient.POINT_LEN;
             const blindedPointCtxPtr = Module._vsc_buffer_new_with_capacity(blindedPointCapacity);
 
             try {
@@ -248,7 +248,7 @@ const initBrainkeyClient = (Module, modules) => {
             //  Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(keyNameCtxPtr, keyNamePtr, keyNameSize);
 
-            const seedCapacity = BrainkeyClient.POINT_LEN;
+            const seedCapacity = modules.BrainkeyClient.POINT_LEN;
             const seedCtxPtr = Module._vsc_buffer_new_with_capacity(seedCapacity);
 
             try {

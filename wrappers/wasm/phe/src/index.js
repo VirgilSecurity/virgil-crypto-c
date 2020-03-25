@@ -54,8 +54,8 @@ const initUokmsClient = require('./UokmsClient');
 const initUokmsServer = require('./UokmsServer');
 const initUokmsWrapRotation = require('./UokmsWrapRotation');
 
-const initProject = () => {
-    const pheModule = new PheModule();
+const initProject = options => {
+    const pheModule = new PheModule(options);
     return new Promise((resolve, reject) => {
         pheModule.onRuntimeInitialized = () => {
             const modules = {};

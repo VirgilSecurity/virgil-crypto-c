@@ -73,7 +73,7 @@ const initBase64 = (Module, modules) => {
             //  Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(dataCtxPtr, dataPtr, dataSize);
 
-            const strCapacity = Base64.encodedLen(data.length);
+            const strCapacity = modules.Base64.encodedLen(data.length);
             const strCtxPtr = Module._vsc_buffer_new_with_capacity(strCapacity);
 
             try {
@@ -119,7 +119,7 @@ const initBase64 = (Module, modules) => {
             //  Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(strCtxPtr, strPtr, strSize);
 
-            const dataCapacity = Base64.decodedLen(str.length);
+            const dataCapacity = modules.Base64.decodedLen(str.length);
             const dataCtxPtr = Module._vsc_buffer_new_with_capacity(dataCapacity);
 
             try {
