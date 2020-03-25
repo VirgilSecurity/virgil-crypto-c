@@ -1,6 +1,6 @@
 {
   "name": "@virgilsecurity/crypto",
-  "version": "0.13.1",
+  "version": "0.13.2",
   "description": "Virgil Crypto C wrapper",
   "repository": "https://github.com/VirgilSecurity/virgil-crypto-c",
   "author": "Virgil Security Inc. <support@virgilsecurity.com>",
