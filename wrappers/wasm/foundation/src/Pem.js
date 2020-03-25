@@ -76,7 +76,7 @@ const initPem = (Module, modules) => {
             //  Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(dataCtxPtr, dataPtr, dataSize);
 
-            const pemCapacity = Pem.wrappedLen(title, data.length);
+            const pemCapacity = modules.Pem.wrappedLen(title, data.length);
             const pemCtxPtr = Module._vsc_buffer_new_with_capacity(pemCapacity);
 
             try {
@@ -122,7 +122,7 @@ const initPem = (Module, modules) => {
             //  Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(pemCtxPtr, pemPtr, pemSize);
 
-            const dataCapacity = Pem.unwrappedLen(pem.length);
+            const dataCapacity = modules.Pem.unwrappedLen(pem.length);
             const dataCtxPtr = Module._vsc_buffer_new_with_capacity(dataCapacity);
 
             try {

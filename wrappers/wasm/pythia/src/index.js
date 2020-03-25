@@ -40,8 +40,8 @@ const PythiaModule = require(process.env.PROJECT_MODULE);
 const initPythiaError = require('./PythiaError');
 const initPythia = require('./Pythia');
 
-const initProject = () => {
-    const pythiaModule = new PythiaModule();
+const initProject = options => {
+    const pythiaModule = new PythiaModule(options);
     return new Promise((resolve, reject) => {
         pythiaModule.onRuntimeInitialized = () => {
             const modules = {};
