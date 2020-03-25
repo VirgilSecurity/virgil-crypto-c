@@ -353,7 +353,7 @@ vscf_handle_throw_exception(vscf_status_t status) {
 //
 // Constants
 //
-const char VSCF_FOUNDATION_PHP_VERSION[] = "0.13.1";
+const char VSCF_FOUNDATION_PHP_VERSION[] = "0.13.2";
 const char VSCF_FOUNDATION_PHP_EXTNAME[] = "vscf_foundation_php";
 
 static const char VSCF_IMPL_T_PHP_RES_NAME[] = "vscf_impl_t";
