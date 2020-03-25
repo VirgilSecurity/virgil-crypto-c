@@ -36,7 +36,6 @@
 from ctypes import *
 from ._c_bridge import VscfBrainkeyClient
 from ._c_bridge import VscfStatus
-from .brainkeyclient import BrainkeyClient
 from virgil_crypto_lib.common._c_bridge import Data
 from virgil_crypto_lib.common._c_bridge import Buffer
 
@@ -72,8 +71,8 @@ class BrainkeyClient(object):
 
     def blind(self, password):
         d_password = Data(password)
-        deblind_factor = Buffer(BrainkeyClient.MPI_LEN)
-        blinded_point = Buffer(BrainkeyClient.POINT_LEN)
+        deblind_factor = Buffer(self.MPI_LEN)
+        blinded_point = Buffer(self.POINT_LEN)
         status = self._lib_vscf_brainkey_client.vscf_brainkey_client_blind(self.ctx, d_password.data, deblind_factor.c_buffer, blinded_point.c_buffer)
         VscfStatus.handle_status(status)
         return deblind_factor.get_bytes(), blinded_point.get_bytes()
@@ -83,7 +82,7 @@ class BrainkeyClient(object):
         d_hardened_point = Data(hardened_point)
         d_deblind_factor = Data(deblind_factor)
         d_key_name = Data(key_name)
-        seed = Buffer(BrainkeyClient.POINT_LEN)
+        seed = Buffer(self.POINT_LEN)
         status = self._lib_vscf_brainkey_client.vscf_brainkey_client_deblind(self.ctx, d_password.data, d_hardened_point.data, d_deblind_factor.data, d_key_name.data, seed.c_buffer)
         VscfStatus.handle_status(status)
         return seed.get_bytes()

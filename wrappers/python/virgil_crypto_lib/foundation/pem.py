@@ -57,7 +57,7 @@ class Pem(object):
         additional information just header-base64-footer.
         Note, written buffer is NOT null-terminated."""
         d_data = Data(data)
-        pem = Buffer(Pem.wrapped_len(title=title, data_len=len(data)))
+        pem = Buffer(self.wrapped_len(title=title, data_len=len(data)))
         self._lib_vscf_pem.vscf_pem_wrap(title, d_data.data, pem.c_buffer)
         return pem.get_bytes()
 
@@ -69,7 +69,7 @@ class Pem(object):
     def unwrap(self, pem):
         """Takes PEM data and extract binary data from it."""
         d_pem = Data(pem)
-        data = Buffer(Pem.unwrapped_len(pem_len=len(pem)))
+        data = Buffer(self.unwrapped_len(pem_len=len(pem)))
         status = self._lib_vscf_pem.vscf_pem_unwrap(d_pem.data, data.c_buffer)
         VscfStatus.handle_status(status)
         return data.get_bytes()

@@ -422,12 +422,8 @@ function python_class_derive_buffer_length_getter (class, method, argument, pyth
     endfor
 
     my.specified_proxy_object = get_one_of_attribute (my.length, "class, interface, impl") ?
-    if defined (my.specified_proxy_object)
-        if my.specified_proxy_object <> "self"
-            my.proxy_object = python_derive_class_name_str (my.specified_proxy_object, my.python_project)
-        else
-            my.proxy_object = my.specified_proxy_object
-        endif
+    if defined (my.specified_proxy_object) & (my.specified_proxy_object <> my.class.name)
+        my.proxy_object = python_derive_class_name_str (my.specified_proxy_object, my.python_project)
     else
         my.proxy_object = "self"
     endif
