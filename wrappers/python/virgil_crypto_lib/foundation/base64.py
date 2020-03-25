@@ -56,7 +56,7 @@ class Base64(object):
         """Encode given data to the base64 format.
         Note, written buffer is NOT null-terminated."""
         d_data = Data(data)
-        str = Buffer(self.encoded_len(data_len=len(data)))
+        str = Buffer(Base64.encoded_len(data_len=len(data)))
         self._lib_vscf_base64.vscf_base64_encode(d_data.data, str.c_buffer)
         return str.get_bytes()
 
@@ -68,7 +68,7 @@ class Base64(object):
     def decode(self, str):
         """Decode given data from the base64 format."""
         d_str = Data(str)
-        data = Buffer(self.decoded_len(str_len=len(str)))
+        data = Buffer(Base64.decoded_len(str_len=len(str)))
         status = self._lib_vscf_base64.vscf_base64_decode(d_str.data, data.c_buffer)
         VscfStatus.handle_status(status)
         return data.get_bytes()

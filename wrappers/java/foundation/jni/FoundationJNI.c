@@ -2601,7 +2601,7 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
         VSCF_ASSERT("Class 'RawPublicKey' has no field 'cCtx'.");
     }
     jlong public_key_c_ctx = (*jenv)->GetLongField(jenv, jpublicKey, public_key_fidCtx);
-    vscf_raw_public_key_t */*5*/ public_key = *(vscf_raw_public_key_t */*5*/*) &public_key_c_ctx;
+    vscf_raw_public_key_t * /*7*/ public_key = *(vscf_raw_public_key_t * /*7*/*) &public_key_c_ctx;
 
     const vscf_impl_t */*6*/ proxyResult = vscf_key_alg_factory_create_from_raw_public_key(public_key /*a6*/, random /*a6*/, &error /*a4*/);
 
@@ -2637,7 +2637,7 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
         VSCF_ASSERT("Class 'RawPrivateKey' has no field 'cCtx'.");
     }
     jlong private_key_c_ctx = (*jenv)->GetLongField(jenv, jprivateKey, private_key_fidCtx);
-    vscf_raw_private_key_t */*5*/ private_key = *(vscf_raw_private_key_t */*5*/*) &private_key_c_ctx;
+    vscf_raw_private_key_t * /*7*/ private_key = *(vscf_raw_private_key_t * /*7*/*) &private_key_c_ctx;
 
     const vscf_impl_t */*6*/ proxyResult = vscf_key_alg_factory_create_from_raw_private_key(private_key /*a6*/, random /*a6*/, &error /*a4*/);
 
@@ -7305,7 +7305,7 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
     jlong public_key_c_ctx = (*jenv)->GetLongField(jenv, jpublicKey, public_key_fidCtx);
     vscf_impl_t */*6*/ public_key = *(vscf_impl_t */*6*/*)&public_key_c_ctx;
 
-    const vscf_raw_public_key_t */*5*/ proxyResult = vscf_rsa_export_public_key(rsa_ctx /*a1*/, public_key /*a6*/, &error /*a4*/);
+    const vscf_raw_public_key_t * /*7*/ proxyResult = vscf_rsa_export_public_key(rsa_ctx /*a1*/, public_key /*a6*/, &error /*a4*/);
 
     if (error.status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, error.status);
@@ -7340,7 +7340,7 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
         VSCF_ASSERT("Class 'RawPrivateKey' has no field 'cCtx'.");
     }
     jlong raw_key_c_ctx = (*jenv)->GetLongField(jenv, jrawKey, raw_key_fidCtx);
-    vscf_raw_private_key_t */*5*/ raw_key = *(vscf_raw_private_key_t */*5*/*) &raw_key_c_ctx;
+    vscf_raw_private_key_t * /*7*/ raw_key = *(vscf_raw_private_key_t * /*7*/*) &raw_key_c_ctx;
 
     const vscf_impl_t */*6*/ proxyResult = vscf_rsa_import_private_key(rsa_ctx /*a1*/, raw_key /*a6*/, &error /*a4*/);
 
@@ -7370,7 +7370,7 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
     jlong private_key_c_ctx = (*jenv)->GetLongField(jenv, jprivateKey, private_key_fidCtx);
     vscf_impl_t */*6*/ private_key = *(vscf_impl_t */*6*/*)&private_key_c_ctx;
 
-    const vscf_raw_private_key_t */*5*/ proxyResult = vscf_rsa_export_private_key(rsa_ctx /*a1*/, private_key /*a6*/, &error /*a4*/);
+    const vscf_raw_private_key_t * /*7*/ proxyResult = vscf_rsa_export_private_key(rsa_ctx /*a1*/, private_key /*a6*/, &error /*a4*/);
 
     if (error.status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, error.status);
@@ -7953,7 +7953,7 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
     jlong public_key_c_ctx = (*jenv)->GetLongField(jenv, jpublicKey, public_key_fidCtx);
     vscf_impl_t */*6*/ public_key = *(vscf_impl_t */*6*/*)&public_key_c_ctx;
 
-    const vscf_raw_public_key_t */*5*/ proxyResult = vscf_ecc_export_public_key(ecc_ctx /*a1*/, public_key /*a6*/, &error /*a4*/);
+    const vscf_raw_public_key_t * /*7*/ proxyResult = vscf_ecc_export_public_key(ecc_ctx /*a1*/, public_key /*a6*/, &error /*a4*/);
 
     if (error.status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, error.status);
@@ -7988,7 +7988,7 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
         VSCF_ASSERT("Class 'RawPrivateKey' has no field 'cCtx'.");
     }
     jlong raw_key_c_ctx = (*jenv)->GetLongField(jenv, jrawKey, raw_key_fidCtx);
-    vscf_raw_private_key_t */*5*/ raw_key = *(vscf_raw_private_key_t */*5*/*) &raw_key_c_ctx;
+    vscf_raw_private_key_t * /*7*/ raw_key = *(vscf_raw_private_key_t * /*7*/*) &raw_key_c_ctx;
 
     const vscf_impl_t */*6*/ proxyResult = vscf_ecc_import_private_key(ecc_ctx /*a1*/, raw_key /*a6*/, &error /*a4*/);
 
@@ -8018,7 +8018,7 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
     jlong private_key_c_ctx = (*jenv)->GetLongField(jenv, jprivateKey, private_key_fidCtx);
     vscf_impl_t */*6*/ private_key = *(vscf_impl_t */*6*/*)&private_key_c_ctx;
 
-    const vscf_raw_private_key_t */*5*/ proxyResult = vscf_ecc_export_private_key(ecc_ctx /*a1*/, private_key /*a6*/, &error /*a4*/);
+    const vscf_raw_private_key_t * /*7*/ proxyResult = vscf_ecc_export_private_key(ecc_ctx /*a1*/, private_key /*a6*/, &error /*a4*/);
 
     if (error.status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, error.status);
@@ -10690,7 +10690,7 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
     jlong public_key_c_ctx = (*jenv)->GetLongField(jenv, jpublicKey, public_key_fidCtx);
     vscf_impl_t */*6*/ public_key = *(vscf_impl_t */*6*/*)&public_key_c_ctx;
 
-    const vscf_raw_public_key_t */*5*/ proxyResult = vscf_ed25519_export_public_key(ed25519_ctx /*a1*/, public_key /*a6*/, &error /*a4*/);
+    const vscf_raw_public_key_t * /*7*/ proxyResult = vscf_ed25519_export_public_key(ed25519_ctx /*a1*/, public_key /*a6*/, &error /*a4*/);
 
     if (error.status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, error.status);
@@ -10725,7 +10725,7 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
         VSCF_ASSERT("Class 'RawPrivateKey' has no field 'cCtx'.");
     }
     jlong raw_key_c_ctx = (*jenv)->GetLongField(jenv, jrawKey, raw_key_fidCtx);
-    vscf_raw_private_key_t */*5*/ raw_key = *(vscf_raw_private_key_t */*5*/*) &raw_key_c_ctx;
+    vscf_raw_private_key_t * /*7*/ raw_key = *(vscf_raw_private_key_t * /*7*/*) &raw_key_c_ctx;
 
     const vscf_impl_t */*6*/ proxyResult = vscf_ed25519_import_private_key(ed25519_ctx /*a1*/, raw_key /*a6*/, &error /*a4*/);
 
@@ -10755,7 +10755,7 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
     jlong private_key_c_ctx = (*jenv)->GetLongField(jenv, jprivateKey, private_key_fidCtx);
     vscf_impl_t */*6*/ private_key = *(vscf_impl_t */*6*/*)&private_key_c_ctx;
 
-    const vscf_raw_private_key_t */*5*/ proxyResult = vscf_ed25519_export_private_key(ed25519_ctx /*a1*/, private_key /*a6*/, &error /*a4*/);
+    const vscf_raw_private_key_t * /*7*/ proxyResult = vscf_ed25519_export_private_key(ed25519_ctx /*a1*/, private_key /*a6*/, &error /*a4*/);
 
     if (error.status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, error.status);
@@ -11382,7 +11382,7 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
     jlong public_key_c_ctx = (*jenv)->GetLongField(jenv, jpublicKey, public_key_fidCtx);
     vscf_impl_t */*6*/ public_key = *(vscf_impl_t */*6*/*)&public_key_c_ctx;
 
-    const vscf_raw_public_key_t */*5*/ proxyResult = vscf_curve25519_export_public_key(curve25519_ctx /*a1*/, public_key /*a6*/, &error /*a4*/);
+    const vscf_raw_public_key_t * /*7*/ proxyResult = vscf_curve25519_export_public_key(curve25519_ctx /*a1*/, public_key /*a6*/, &error /*a4*/);
 
     if (error.status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, error.status);
@@ -11417,7 +11417,7 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
         VSCF_ASSERT("Class 'RawPrivateKey' has no field 'cCtx'.");
     }
     jlong raw_key_c_ctx = (*jenv)->GetLongField(jenv, jrawKey, raw_key_fidCtx);
-    vscf_raw_private_key_t */*5*/ raw_key = *(vscf_raw_private_key_t */*5*/*) &raw_key_c_ctx;
+    vscf_raw_private_key_t * /*7*/ raw_key = *(vscf_raw_private_key_t * /*7*/*) &raw_key_c_ctx;
 
     const vscf_impl_t */*6*/ proxyResult = vscf_curve25519_import_private_key(curve25519_ctx /*a1*/, raw_key /*a6*/, &error /*a4*/);
 
@@ -11447,7 +11447,7 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
     jlong private_key_c_ctx = (*jenv)->GetLongField(jenv, jprivateKey, private_key_fidCtx);
     vscf_impl_t */*6*/ private_key = *(vscf_impl_t */*6*/*)&private_key_c_ctx;
 
-    const vscf_raw_private_key_t */*5*/ proxyResult = vscf_curve25519_export_private_key(curve25519_ctx /*a1*/, private_key /*a6*/, &error /*a4*/);
+    const vscf_raw_private_key_t * /*7*/ proxyResult = vscf_curve25519_export_private_key(curve25519_ctx /*a1*/, private_key /*a6*/, &error /*a4*/);
 
     if (error.status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, error.status);
@@ -11973,7 +11973,7 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
     jlong public_key_c_ctx = (*jenv)->GetLongField(jenv, jpublicKey, public_key_fidCtx);
     vscf_impl_t */*6*/ public_key = *(vscf_impl_t */*6*/*)&public_key_c_ctx;
 
-    const vscf_raw_public_key_t */*5*/ proxyResult = vscf_falcon_export_public_key(falcon_ctx /*a1*/, public_key /*a6*/, &error /*a4*/);
+    const vscf_raw_public_key_t * /*7*/ proxyResult = vscf_falcon_export_public_key(falcon_ctx /*a1*/, public_key /*a6*/, &error /*a4*/);
 
     if (error.status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, error.status);
@@ -12008,7 +12008,7 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
         VSCF_ASSERT("Class 'RawPrivateKey' has no field 'cCtx'.");
     }
     jlong raw_key_c_ctx = (*jenv)->GetLongField(jenv, jrawKey, raw_key_fidCtx);
-    vscf_raw_private_key_t */*5*/ raw_key = *(vscf_raw_private_key_t */*5*/*) &raw_key_c_ctx;
+    vscf_raw_private_key_t * /*7*/ raw_key = *(vscf_raw_private_key_t * /*7*/*) &raw_key_c_ctx;
 
     const vscf_impl_t */*6*/ proxyResult = vscf_falcon_import_private_key(falcon_ctx /*a1*/, raw_key /*a6*/, &error /*a4*/);
 
@@ -12038,7 +12038,7 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
     jlong private_key_c_ctx = (*jenv)->GetLongField(jenv, jprivateKey, private_key_fidCtx);
     vscf_impl_t */*6*/ private_key = *(vscf_impl_t */*6*/*)&private_key_c_ctx;
 
-    const vscf_raw_private_key_t */*5*/ proxyResult = vscf_falcon_export_private_key(falcon_ctx /*a1*/, private_key /*a6*/, &error /*a4*/);
+    const vscf_raw_private_key_t * /*7*/ proxyResult = vscf_falcon_export_private_key(falcon_ctx /*a1*/, private_key /*a6*/, &error /*a4*/);
 
     if (error.status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, error.status);
@@ -12324,7 +12324,7 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
     jlong public_key_c_ctx = (*jenv)->GetLongField(jenv, jpublicKey, public_key_fidCtx);
     vscf_impl_t */*6*/ public_key = *(vscf_impl_t */*6*/*)&public_key_c_ctx;
 
-    const vscf_raw_public_key_t */*5*/ proxyResult = vscf_round5_export_public_key(round5_ctx /*a1*/, public_key /*a6*/, &error /*a4*/);
+    const vscf_raw_public_key_t * /*7*/ proxyResult = vscf_round5_export_public_key(round5_ctx /*a1*/, public_key /*a6*/, &error /*a4*/);
 
     if (error.status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, error.status);
@@ -12359,7 +12359,7 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
         VSCF_ASSERT("Class 'RawPrivateKey' has no field 'cCtx'.");
     }
     jlong raw_key_c_ctx = (*jenv)->GetLongField(jenv, jrawKey, raw_key_fidCtx);
-    vscf_raw_private_key_t */*5*/ raw_key = *(vscf_raw_private_key_t */*5*/*) &raw_key_c_ctx;
+    vscf_raw_private_key_t * /*7*/ raw_key = *(vscf_raw_private_key_t * /*7*/*) &raw_key_c_ctx;
 
     const vscf_impl_t */*6*/ proxyResult = vscf_round5_import_private_key(round5_ctx /*a1*/, raw_key /*a6*/, &error /*a4*/);
 
@@ -12389,7 +12389,7 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
     jlong private_key_c_ctx = (*jenv)->GetLongField(jenv, jprivateKey, private_key_fidCtx);
     vscf_impl_t */*6*/ private_key = *(vscf_impl_t */*6*/*)&private_key_c_ctx;
 
-    const vscf_raw_private_key_t */*5*/ proxyResult = vscf_round5_export_private_key(round5_ctx /*a1*/, private_key /*a6*/, &error /*a4*/);
+    const vscf_raw_private_key_t * /*7*/ proxyResult = vscf_round5_export_private_key(round5_ctx /*a1*/, private_key /*a6*/, &error /*a4*/);
 
     if (error.status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, error.status);
@@ -12949,7 +12949,7 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
     jlong public_key_c_ctx = (*jenv)->GetLongField(jenv, jpublicKey, public_key_fidCtx);
     vscf_impl_t */*6*/ public_key = *(vscf_impl_t */*6*/*)&public_key_c_ctx;
 
-    const vscf_raw_public_key_t */*5*/ proxyResult = vscf_compound_key_alg_export_public_key(compound_key_alg_ctx /*a1*/, public_key /*a6*/, &error /*a4*/);
+    const vscf_raw_public_key_t * /*7*/ proxyResult = vscf_compound_key_alg_export_public_key(compound_key_alg_ctx /*a1*/, public_key /*a6*/, &error /*a4*/);
 
     if (error.status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, error.status);
@@ -12984,7 +12984,7 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
         VSCF_ASSERT("Class 'RawPrivateKey' has no field 'cCtx'.");
     }
     jlong raw_key_c_ctx = (*jenv)->GetLongField(jenv, jrawKey, raw_key_fidCtx);
-    vscf_raw_private_key_t */*5*/ raw_key = *(vscf_raw_private_key_t */*5*/*) &raw_key_c_ctx;
+    vscf_raw_private_key_t * /*7*/ raw_key = *(vscf_raw_private_key_t * /*7*/*) &raw_key_c_ctx;
 
     const vscf_impl_t */*6*/ proxyResult = vscf_compound_key_alg_import_private_key(compound_key_alg_ctx /*a1*/, raw_key /*a6*/, &error /*a4*/);
 
@@ -13014,7 +13014,7 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
     jlong private_key_c_ctx = (*jenv)->GetLongField(jenv, jprivateKey, private_key_fidCtx);
     vscf_impl_t */*6*/ private_key = *(vscf_impl_t */*6*/*)&private_key_c_ctx;
 
-    const vscf_raw_private_key_t */*5*/ proxyResult = vscf_compound_key_alg_export_private_key(compound_key_alg_ctx /*a1*/, private_key /*a6*/, &error /*a4*/);
+    const vscf_raw_private_key_t * /*7*/ proxyResult = vscf_compound_key_alg_export_private_key(compound_key_alg_ctx /*a1*/, private_key /*a6*/, &error /*a4*/);
 
     if (error.status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, error.status);
@@ -13718,7 +13718,7 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
     jlong public_key_c_ctx = (*jenv)->GetLongField(jenv, jpublicKey, public_key_fidCtx);
     vscf_impl_t */*6*/ public_key = *(vscf_impl_t */*6*/*)&public_key_c_ctx;
 
-    const vscf_raw_public_key_t */*5*/ proxyResult = vscf_hybrid_key_alg_export_public_key(hybrid_key_alg_ctx /*a1*/, public_key /*a6*/, &error /*a4*/);
+    const vscf_raw_public_key_t * /*7*/ proxyResult = vscf_hybrid_key_alg_export_public_key(hybrid_key_alg_ctx /*a1*/, public_key /*a6*/, &error /*a4*/);
 
     if (error.status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, error.status);
@@ -13753,7 +13753,7 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
         VSCF_ASSERT("Class 'RawPrivateKey' has no field 'cCtx'.");
     }
     jlong raw_key_c_ctx = (*jenv)->GetLongField(jenv, jrawKey, raw_key_fidCtx);
-    vscf_raw_private_key_t */*5*/ raw_key = *(vscf_raw_private_key_t */*5*/*) &raw_key_c_ctx;
+    vscf_raw_private_key_t * /*7*/ raw_key = *(vscf_raw_private_key_t * /*7*/*) &raw_key_c_ctx;
 
     const vscf_impl_t */*6*/ proxyResult = vscf_hybrid_key_alg_import_private_key(hybrid_key_alg_ctx /*a1*/, raw_key /*a6*/, &error /*a4*/);
 
@@ -13783,7 +13783,7 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
     jlong private_key_c_ctx = (*jenv)->GetLongField(jenv, jprivateKey, private_key_fidCtx);
     vscf_impl_t */*6*/ private_key = *(vscf_impl_t */*6*/*)&private_key_c_ctx;
 
-    const vscf_raw_private_key_t */*5*/ proxyResult = vscf_hybrid_key_alg_export_private_key(hybrid_key_alg_ctx /*a1*/, private_key /*a6*/, &error /*a4*/);
+    const vscf_raw_private_key_t * /*7*/ proxyResult = vscf_hybrid_key_alg_export_private_key(hybrid_key_alg_ctx /*a1*/, private_key /*a6*/, &error /*a4*/);
 
     if (error.status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, error.status);
