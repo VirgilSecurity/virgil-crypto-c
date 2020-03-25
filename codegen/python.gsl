@@ -251,7 +251,7 @@ function python_derive_high_level_instance_type (instance, python_project)
             return "$(class_name:Pascal)"
         endif
     endif
-    return ""
+    return
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -525,9 +525,9 @@ function python_map_instance_type (python_instance, instance, python_project)
 
     my.python_instance.type = python_derive_instance_type (my.instance)
 
-    high_level_type = python_derive_high_level_instance_type (my.instance, my.python_project)
-    if ! string_empty (high_level_type)
-        my.python_instance.high_level_type = high_level_type
+    my.high_level_type = python_derive_high_level_instance_type (my.instance, my.python_project) ?
+    if defined (my.high_level_type)
+        my.python_instance.high_level_type = my.high_level_type
     endif
 
     class_module_name = python_derive_class_module_name (my.instance, my.python_project)
