@@ -50,13 +50,10 @@
 
 #define VSCE_HANDLE_STATUS(status) do { if(status != vsce_status_SUCCESS) { vsce_handle_throw_exception(status); } } while (false)
 
+zend_class_entry* vsce_exception_ce;
+
 void
 vsce_handle_throw_exception(vsce_status_t status) {
-
-    zend_class_entry* vsce_exception_ce;
-    zend_class_entry vsce_ce;
-    INIT_CLASS_ENTRY(vsce_ce, "PheException", NULL);
-    vsce_exception_ce = zend_register_internal_class_ex(&vsce_ce, zend_exception_get_default());
 
     switch(status) {
 
@@ -3927,6 +3924,9 @@ static void vsce_uokms_wrap_rotation_dtor_php(zend_resource *rsrc) {
     vsce_uokms_wrap_rotation_delete((vsce_uokms_wrap_rotation_t *)rsrc->ptr);
 }
 PHP_MINIT_FUNCTION(vsce_phe_php) {
+    zend_class_entry vsce_ce;
+    INIT_CLASS_ENTRY(vsce_ce, "PheException", NULL);
+    vsce_exception_ce = zend_register_internal_class_ex(&vsce_ce, zend_exception_get_default());
     LE_VSCE_PHE_SERVER_T = zend_register_list_destructors_ex(vsce_phe_server_dtor_php, NULL, vsce_phe_server_t_php_res_name(), module_number);
     LE_VSCE_PHE_CLIENT_T = zend_register_list_destructors_ex(vsce_phe_client_dtor_php, NULL, vsce_phe_client_t_php_res_name(), module_number);
     LE_VSCE_PHE_CIPHER_T = zend_register_list_destructors_ex(vsce_phe_cipher_dtor_php, NULL, vsce_phe_cipher_t_php_res_name(), module_number);

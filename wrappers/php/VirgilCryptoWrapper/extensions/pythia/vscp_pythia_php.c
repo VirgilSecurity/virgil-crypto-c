@@ -43,13 +43,10 @@
 
 #define VSCP_HANDLE_STATUS(status) do { if(status != vscp_status_SUCCESS) { vscp_handle_throw_exception(status); } } while (false)
 
+zend_class_entry* vscp_exception_ce;
+
 void
 vscp_handle_throw_exception(vscp_status_t status) {
-
-    zend_class_entry* vscp_exception_ce;
-    zend_class_entry vscp_ce;
-    INIT_CLASS_ENTRY(vscp_ce, "PythiaException", NULL);
-    vscp_exception_ce = zend_register_internal_class_ex(&vscp_ce, zend_exception_get_default());
 
     switch(status) {
 
@@ -1206,6 +1203,9 @@ ZEND_GET_MODULE(vscp_pythia_php)
 //
 
 PHP_MINIT_FUNCTION(vscp_pythia_php) {
+    zend_class_entry vscp_ce;
+    INIT_CLASS_ENTRY(vscp_ce, "PythiaException", NULL);
+    vscp_exception_ce = zend_register_internal_class_ex(&vscp_ce, zend_exception_get_default());
 
     return SUCCESS;
 }

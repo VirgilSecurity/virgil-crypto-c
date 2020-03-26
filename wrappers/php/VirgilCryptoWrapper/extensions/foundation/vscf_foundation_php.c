@@ -124,13 +124,10 @@
 
 #define VSCF_HANDLE_STATUS(status) do { if(status != vscf_status_SUCCESS) { vscf_handle_throw_exception(status); } } while (false)
 
+zend_class_entry* vscf_exception_ce;
+
 void
 vscf_handle_throw_exception(vscf_status_t status) {
-
-    zend_class_entry* vscf_exception_ce;
-    zend_class_entry vscf_ce;
-    INIT_CLASS_ENTRY(vscf_ce, "FoundationException", NULL);
-    vscf_exception_ce = zend_register_internal_class_ex(&vscf_ce, zend_exception_get_default());
 
     switch(status) {
 
@@ -41996,6 +41993,9 @@ static void vscf_padding_params_dtor_php(zend_resource *rsrc) {
     vscf_padding_params_delete((vscf_padding_params_t *)rsrc->ptr);
 }
 PHP_MINIT_FUNCTION(vscf_foundation_php) {
+    zend_class_entry vscf_ce;
+    INIT_CLASS_ENTRY(vscf_ce, "FoundationException", NULL);
+    vscf_exception_ce = zend_register_internal_class_ex(&vscf_ce, zend_exception_get_default());
     LE_VSCF_IMPL_T = zend_register_list_destructors_ex(vscf_impl_dtor_php, NULL, vscf_impl_t_php_res_name(), module_number);
     LE_VSCF_MESSAGE_INFO_T = zend_register_list_destructors_ex(vscf_message_info_dtor_php, NULL, vscf_message_info_t_php_res_name(), module_number);
     LE_VSCF_KEY_RECIPIENT_INFO_T = zend_register_list_destructors_ex(vscf_key_recipient_info_dtor_php, NULL, vscf_key_recipient_info_t_php_res_name(), module_number);
