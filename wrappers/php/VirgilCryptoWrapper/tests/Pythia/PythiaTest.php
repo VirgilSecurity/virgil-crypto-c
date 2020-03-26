@@ -92,7 +92,7 @@ class PythiaTest extends \PHPUnit\Framework\TestCase
             $this->assertEquals($this->kDeblindedPassword, unpack("H*", $deblind)[1]);
 
         } catch (\Exception $e) {
-            $this->expectException(\Exception::class);
+            $this->fail($e->getMessage());
         }
     }
 
@@ -117,9 +117,8 @@ class PythiaTest extends \PHPUnit\Framework\TestCase
 
             $this->assertTrue($isVerify);
 
-
         } catch (\Exception $e) {
-            $this->expectException(\Exception::class);
+            $this->fail($e->getMessage());
         }
     }
 
@@ -158,7 +157,7 @@ class PythiaTest extends \PHPUnit\Framework\TestCase
             $this->assertTrue($isVerify);
 
         } catch (\Exception $e) {
-            $this->expectException(\Exception::class);
+            $this->fail($e->getMessage());
         }
     }
 }

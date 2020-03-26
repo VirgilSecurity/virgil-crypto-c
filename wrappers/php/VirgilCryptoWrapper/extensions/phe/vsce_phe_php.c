@@ -52,28 +52,34 @@
 
 void
 vsce_handle_throw_exception(vsce_status_t status) {
+
+    zend_class_entry* vsce_exception_ce;
+    zend_class_entry vsce_ce;
+    INIT_CLASS_ENTRY(vsce_ce, "PheException", NULL);
+    vsce_exception_ce = zend_register_internal_class_ex(&vsce_ce, zend_exception_get_default());
+
     switch(status) {
 
     case vsce_status_ERROR_INVALID_SUCCESS_PROOF:
-        zend_throw_exception(NULL, "VSCE: Success proof check failed.", -1);
+        zend_throw_exception_ex(vsce_exception_ce, -1, "Success proof check failed.");
         break;
     case vsce_status_ERROR_INVALID_FAIL_PROOF:
-        zend_throw_exception(NULL, "VSCE: Failure proof check failed.", -2);
+        zend_throw_exception_ex(vsce_exception_ce, -2, "Failure proof check failed.");
         break;
     case vsce_status_ERROR_RNG_FAILED:
-        zend_throw_exception(NULL, "VSCE: RNG returned error.", -3);
+        zend_throw_exception_ex(vsce_exception_ce, -3, "RNG returned error.");
         break;
     case vsce_status_ERROR_PROTOBUF_DECODE_FAILED:
-        zend_throw_exception(NULL, "VSCE: Protobuf decode failed.", -4);
+        zend_throw_exception_ex(vsce_exception_ce, -4, "Protobuf decode failed.");
         break;
     case vsce_status_ERROR_INVALID_PUBLIC_KEY:
-        zend_throw_exception(NULL, "VSCE: Invalid public key.", -5);
+        zend_throw_exception_ex(vsce_exception_ce, -5, "Invalid public key.");
         break;
     case vsce_status_ERROR_INVALID_PRIVATE_KEY:
-        zend_throw_exception(NULL, "VSCE: Invalid private key.", -6);
+        zend_throw_exception_ex(vsce_exception_ce, -6, "Invalid private key.");
         break;
     case vsce_status_ERROR_AES_FAILED:
-        zend_throw_exception(NULL, "VSCE: AES error occurred.", -7);
+        zend_throw_exception_ex(vsce_exception_ce, -7, "AES error occurred.");
         break;
     }
 }
