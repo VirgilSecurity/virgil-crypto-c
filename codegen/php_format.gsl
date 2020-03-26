@@ -245,6 +245,7 @@ function php_format_low_level_status_exception (in_enum, in_php_module)
     check_arguments (my, "in_enum, in_php_module", my)
 
     my._prefix = my.in_php_module.prefix
+    my._project = my.in_php_module.project0
 
     my._macro_name = "$(my._prefix:UPPER)_HANDLE_STATUS"
     my._func_name = "$(my._prefix:)_handle_throw_exception"
@@ -258,7 +259,7 @@ function php_format_low_level_status_exception (in_enum, in_php_module)
 
         my._case += format_left("\
         case $(my._const:):
-            zend_throw_exception(NULL, \"$(my._prefix:UPPER): $(my._msg:)\", $(constant0.value:));
+            zend_throw_exception_ex($(my._prefix:lower)_exception_ce, $(constant0.value:), \"$(my._msg:)\");
             break;
         ", 0)
     endfor
@@ -273,8 +274,11 @@ function php_format_low_level_status_exception (in_enum, in_php_module)
         }\
     } while (false)
 
+    zend_class_entry* $(my._prefix:)_exception_ce;
+
     void
     $(my._func_name:)($(my._prefix:)_status_t status) {
+
         switch(status) {
             $(my._case:)
         }

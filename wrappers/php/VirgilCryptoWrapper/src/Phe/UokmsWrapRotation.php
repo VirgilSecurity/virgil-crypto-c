@@ -68,10 +68,10 @@ class UokmsWrapRotation
     }
 
     /**
-    * @param Virgil\CryptoWrapper\Foundation\Random $operationRandom
+    * @param \Virgil\CryptoWrapper\Foundation\Random $operationRandom
     * @return void
     */
-    public function useOperationRandom(Virgil\CryptoWrapper\Foundation\Random $operationRandom): void
+    public function useOperationRandom(\Virgil\CryptoWrapper\Foundation\Random $operationRandom): void
     {
         vsce_uokms_wrap_rotation_use_operation_random_php($this->ctx, $operationRandom->getCtx());
     }
