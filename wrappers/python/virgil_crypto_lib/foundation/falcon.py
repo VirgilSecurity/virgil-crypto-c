@@ -39,7 +39,9 @@ from ._c_bridge import VscfImplTag
 from ._c_bridge import VscfStatus
 from ._c_bridge._vscf_error import vscf_error_t
 from virgil_crypto_lib.common._c_bridge import Data
+from .raw_public_key import RawPublicKey
 from virgil_crypto_lib.common._c_bridge import Buffer
+from .raw_private_key import RawPrivateKey
 from .alg import Alg
 from .key_alg import KeyAlg
 from .key_signer import KeySigner
@@ -130,7 +132,8 @@ class Falcon(Alg, KeyAlg, KeySigner):
         error = vscf_error_t()
         result = self._lib_vscf_falcon.vscf_falcon_export_public_key(self.ctx, public_key.c_impl, error)
         VscfStatus.handle_status(error.status)
-        return result
+        instance = RawPublicKey.take_c_ctx(result)
+        return instance
 
     def exported_public_key_data_len(self, public_key):
         """Return length in bytes required to hold exported public key."""
@@ -181,7 +184,8 @@ class Falcon(Alg, KeyAlg, KeySigner):
         error = vscf_error_t()
         result = self._lib_vscf_falcon.vscf_falcon_export_private_key(self.ctx, private_key.c_impl, error)
         VscfStatus.handle_status(error.status)
-        return result
+        instance = RawPrivateKey.take_c_ctx(result)
+        return instance
 
     def exported_private_key_data_len(self, private_key):
         """Return length in bytes required to hold exported private key."""

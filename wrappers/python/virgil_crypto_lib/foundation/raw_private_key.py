@@ -37,6 +37,7 @@ from ctypes import *
 from ._c_bridge import VscfRawPrivateKey
 from ._c_bridge import VscfImplTag
 from virgil_crypto_lib.common._c_bridge import Data
+from .raw_public_key import RawPublicKey
 from .key import Key
 from .private_key import PrivateKey
 
@@ -112,7 +113,8 @@ class RawPrivateKey(Key, PrivateKey):
     def get_public_key(self):
         """Return public key related to the private key."""
         result = self._lib_vscf_raw_private_key.vscf_raw_private_key_get_public_key(self.ctx)
-        return result
+        instance = RawPublicKey.use_c_ctx(result)
+        return instance
 
     @classmethod
     def take_c_ctx(cls, c_ctx):
