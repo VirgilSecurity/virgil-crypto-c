@@ -37,7 +37,9 @@ from ctypes import *
 from ._c_bridge import VscfKeyAsn1Deserializer
 from virgil_crypto_lib.common._c_bridge import Data
 from ._c_bridge._vscf_error import vscf_error_t
+from .raw_public_key import RawPublicKey
 from ._c_bridge import VscfStatus
+from .raw_private_key import RawPrivateKey
 from .key_deserializer import KeyDeserializer
 
 
@@ -64,7 +66,8 @@ class KeyAsn1Deserializer(KeyDeserializer):
         error = vscf_error_t()
         result = self._lib_vscf_key_asn1_deserializer.vscf_key_asn1_deserializer_deserialize_public_key(self.ctx, d_public_key_data.data, error)
         VscfStatus.handle_status(error.status)
-        return result
+        instance = RawPublicKey.take_c_ctx(result)
+        return instance
 
     def deserialize_private_key(self, private_key_data):
         """Deserialize given private key as an interchangeable format to the object."""
@@ -72,7 +75,8 @@ class KeyAsn1Deserializer(KeyDeserializer):
         error = vscf_error_t()
         result = self._lib_vscf_key_asn1_deserializer.vscf_key_asn1_deserializer_deserialize_private_key(self.ctx, d_private_key_data.data, error)
         VscfStatus.handle_status(error.status)
-        return result
+        instance = RawPrivateKey.take_c_ctx(result)
+        return instance
 
     def setup_defaults(self):
         """Setup predefined values to the uninitialized class dependencies."""
@@ -85,7 +89,8 @@ class KeyAsn1Deserializer(KeyDeserializer):
         error = vscf_error_t()
         result = self._lib_vscf_key_asn1_deserializer.vscf_key_asn1_deserializer_deserialize_public_key_inplace(self.ctx, error)
         VscfStatus.handle_status(error.status)
-        return result
+        instance = RawPublicKey.take_c_ctx(result)
+        return instance
 
     def deserialize_private_key_inplace(self):
         """Deserialize Private Key by using internal ASN.1 reader.
@@ -94,7 +99,8 @@ class KeyAsn1Deserializer(KeyDeserializer):
         error = vscf_error_t()
         result = self._lib_vscf_key_asn1_deserializer.vscf_key_asn1_deserializer_deserialize_private_key_inplace(self.ctx, error)
         VscfStatus.handle_status(error.status)
-        return result
+        instance = RawPrivateKey.take_c_ctx(result)
+        return instance
 
     @classmethod
     def take_c_ctx(cls, c_ctx):
