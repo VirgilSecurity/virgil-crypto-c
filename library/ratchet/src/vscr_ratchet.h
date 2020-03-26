@@ -159,13 +159,13 @@ VSCR_PUBLIC void
 vscr_ratchet_release_rng(vscr_ratchet_t *self);
 
 VSCR_PUBLIC vscr_status_t
-vscr_ratchet_respond(vscr_ratchet_t *self, vscr_ratchet_symmetric_key_t shared_key,
-        const vscr_ratchet_private_key_t receiver_long_term_private_key, const vscr_RegularMessage *message,
-        const vscr_RegularMessageHeader *regular_message_header) VSCR_NODISCARD;
+vscr_ratchet_initiate(vscr_ratchet_t *self, vscr_ratchet_symmetric_key_t shared_key,
+        const vscf_impl_t *receiver_long_term_public_key, bool enable_post_quantum) VSCR_NODISCARD;
 
 VSCR_PUBLIC vscr_status_t
-vscr_ratchet_initiate(vscr_ratchet_t *self, vscr_ratchet_symmetric_key_t shared_key,
-        const vscr_ratchet_public_key_t receiver_long_term_public_key) VSCR_NODISCARD;
+vscr_ratchet_respond(vscr_ratchet_t *self, vscr_ratchet_symmetric_key_t shared_key,
+        const vscf_impl_t *receiver_long_term_private_key, const vscr_RegularMessage *message,
+        const vscr_RegularMessageHeader *regular_message_header, bool enable_post_quantum) VSCR_NODISCARD;
 
 VSCR_PUBLIC size_t
 vscr_ratchet_encrypt_len(vscr_ratchet_t *self, size_t plain_text_len);

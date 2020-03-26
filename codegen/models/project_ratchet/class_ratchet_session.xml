@@ -1,9 +1,16 @@
 <class name="ratchet session" context="internal">
     Class for ratchet session between 2 participants
 
+    <require interface="private key" project="foundation"/>
+    <require interface="public key" project="foundation"/>
+
+    <require class="key provider" project="foundation"/>
+    <require class="key info" project="foundation"/>
+
+    <require class="ratchet pb utils" scope="context"/>
     <require class="ratchet common" scope="public"/>
     <require class="ratchet common hidden" scope="context"/>
-    <require class="ratchet x3dh" scope="private"/>
+    <require class="ratchet xxdh" scope="private"/>
 
     <require module="buffer defs" scope="private" project="common"/>
 
@@ -26,16 +33,22 @@
     </dependency>
 
     <property name="key utils" class="ratchet key utils"/>
+    <property name="key provider" class="key provider" project="foundation"/>
     <property name="ratchet" class="ratchet"/>
 
     <property name="is initiator" type="boolean"/>
     <property name="received first response" type="boolean"/>
 
-    <property name="sender identity public key" class="vscr_ratchet_public_key_t" is_reference="0" library="internal" access="readwrite"/>
-    <property name="sender ephemeral public key" class="vscr_ratchet_public_key_t" is_reference="0" library="internal" access="readwrite"/>
-    <property name="receiver long term public key" class="vscr_ratchet_public_key_t" is_reference="0" library="internal" access="readwrite"/>
-    <property name="receiver has one time public key" type="boolean" access="readwrite"/>
-    <property name="receiver one time public key" class="vscr_ratchet_public_key_t" is_reference="0" library="internal" access="readwrite"/>
+    <property name="sender identity public key first" class="vscr_ratchet_public_key_t" is_reference="0" library="internal" access="readwrite"/>
+    <property name="sender ephemeral public key first" class="vscr_ratchet_public_key_t" is_reference="0" library="internal" access="readwrite"/>
+    <property name="receiver long term public key first" class="vscr_ratchet_public_key_t" is_reference="0" library="internal" access="readwrite"/>
+    <property name="receiver has one time public key first" type="boolean" access="readwrite"/>
+    <property name="receiver one time public key first" class="vscr_ratchet_public_key_t" is_reference="0" library="internal" access="readwrite"/>
+
+    <property name="sender identity public key second" class="buffer" access="readwrite"/>
+    <property name="sender ephemeral public key second" class="buffer" access="readwrite"/>
+    <property name="receiver long term public key second" class="buffer" access="readwrite"/>
+    <property name="receiver one time public key second" class="buffer" access="readwrite"/>
 
     <method name="setup defaults">
         Setups default dependencies:
@@ -47,17 +60,21 @@
     <method name="initiate">
         Initiates session
 
-        <argument name="sender identity private key" class="data">
+        <argument name="sender identity private key" interface="private key" project="foundation">
             Sender identity private key
         </argument>
-        <argument name="receiver identity public key" class="data">
+        <argument name="receiver identity public key" interface="public key" project="foundation">
             Receiver identity public key
         </argument>
-        <argument name="receiver long term public key" class="data">
+        <argument name="receiver long term public key" interface="public key" project="foundation" access="retain">
             Receiver long-term public key
         </argument>
-        <argument name="receiver one time public key" class="data">
+        <argument name="receiver one time public key" interface="public key" project="foundation" access="retain">
             Receiver one-time public key (optional)
+        </argument>
+        <argument name="enable post quantum" type="boolean">
+            Ephemeral keys will consist of curve25519 and round5 keys.
+            Ephemeral keys without round5 key won't be accepted
         </argument>
 
         <return enum="status">
@@ -68,20 +85,24 @@
     <method name="respond">
         Responds to session initiation
 
-        <argument name="sender identity public key" class="data">
+        <argument name="sender identity public key" interface="public key" project="foundation" access="retain">
             Sender identity public key
         </argument>
-        <argument name="receiver identity private key" class="data">
+        <argument name="receiver identity private key" interface="private key" project="foundation">
             Receiver identity private key
         </argument>
-        <argument name="receiver long term private key" class="data">
+        <argument name="receiver long term private key" interface="private key" project="foundation">
             Receiver long-term private key
         </argument>
-        <argument name="receiver one time private key" class="data">
+        <argument name="receiver one time private key" interface="private key" project="foundation">
             Receiver one-time private key (optional)
         </argument>
         <argument name="message" class="ratchet message">
             Message received from initiator
+        </argument>
+        <argument name="enable post quantum" type="boolean">
+            Ephemeral keys will consist of curve25519 and round5 keys.
+            Ephemeral keys without round5 key won't be accepted
         </argument>
 
         <return enum="status">

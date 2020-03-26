@@ -1,7 +1,7 @@
 <class name="ratchet common hidden" context="none" scope="private">
-    <constant name="message version" value="1"/>
+    <constant name="message version" value="2"/>
     <constant name="group message version" value="1"/>
-    <constant name="session version" value="1"/>
+    <constant name="session version" value="2"/>
     <constant name="group session version" value="1"/>
 
     <constant name="shared key len" value="32"/>

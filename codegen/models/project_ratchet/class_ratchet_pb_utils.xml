@@ -1,0 +1,24 @@
+<class name="ratchet pb utils" scope="internal" context="internal">
+    Utils class for working with protobug.
+
+    <require header="pb.h" scope="public"/>
+    <require header="pb_decode.h" scope="private"/>
+    <require header="pb_encode.h" scope="private"/>
+
+    <method name="serialize buffer" is_static="1">
+        <argument name="buffer" class="buffer" project="common"/>
+        <argument name="pb buffer" class="pb_bytes_array_t" library="nanopb" access="disown"/>
+    </method>
+
+    <method name="deserialize buffer" is_static="1">
+        <argument name="pb buffer" class="pb_bytes_array_t" library="nanopb"/>
+
+        <return class="buffer" project="common"/>
+    </method>
+
+    <method name="buffer to data" is_static="1">
+        <argument name="pb buffer" class="pb_bytes_array_t" library="nanopb"/>
+
+        <return class="data" project="common"/>
+    </method>
+</class>

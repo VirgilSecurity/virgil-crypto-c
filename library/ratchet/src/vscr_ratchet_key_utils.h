@@ -57,15 +57,24 @@
 #include "vscr_ratchet_common.h"
 #include "vscr_error.h"
 #include "vscr_ratchet_chain_key.h"
+#include "vscr_status.h"
 
 #if !VSCR_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <virgil/crypto/common/vsc_data.h>
 #   include <virgil/crypto/common/vsc_buffer.h>
+#   include <virgil/crypto/common/vsc_data.h>
+#endif
+
+#if !VSCR_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
+#   include <virgil/crypto/foundation/vscf_impl.h>
 #endif
 
 #if VSCR_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <VSCCommon/vsc_data.h>
 #   include <VSCCommon/vsc_buffer.h>
+#endif
+
+#if VSCR_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
+#   include <VSCFoundation/vscf_impl.h>
 #endif
 
 // clang-format on
@@ -131,6 +140,30 @@ vscr_ratchet_key_utils_destroy(vscr_ratchet_key_utils_t **self_ref);
 //
 VSCR_PUBLIC vscr_ratchet_key_utils_t *
 vscr_ratchet_key_utils_shallow_copy(vscr_ratchet_key_utils_t *self);
+
+//
+//  Setup dependency to the interface 'random' with shared ownership.
+//
+VSCR_PUBLIC void
+vscr_ratchet_key_utils_use_rng(vscr_ratchet_key_utils_t *self, vscf_impl_t *rng);
+
+//
+//  Setup dependency to the interface 'random' and transfer ownership.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCR_PUBLIC void
+vscr_ratchet_key_utils_take_rng(vscr_ratchet_key_utils_t *self, vscf_impl_t *rng);
+
+//
+//  Release dependency to the interface 'random'.
+//
+VSCR_PUBLIC void
+vscr_ratchet_key_utils_release_rng(vscr_ratchet_key_utils_t *self);
+
+VSCR_PUBLIC vscr_status_t
+vscr_ratchet_key_utils_import_private_key(vscr_ratchet_key_utils_t *self, const vscf_impl_t *private_key,
+        const vscr_ratchet_private_key_t *private_key_first, vscf_impl_t **private_key_second_ref,
+        bool enable_post_quantum, bool allow_signer) VSCR_NODISCARD;
 
 VSCR_PUBLIC vsc_buffer_t *
 vscr_ratchet_key_utils_extract_ratchet_public_key(vscr_ratchet_key_utils_t *self, vsc_data_t data, bool ed25519,

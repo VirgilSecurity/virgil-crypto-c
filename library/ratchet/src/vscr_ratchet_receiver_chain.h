@@ -58,6 +58,22 @@
 #include <pb_decode.h>
 #include <pb_encode.h>
 
+#if !VSCR_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <virgil/crypto/common/vsc_buffer.h>
+#endif
+
+#if !VSCR_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
+#   include <virgil/crypto/foundation/vscf_impl.h>
+#endif
+
+#if VSCR_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <VSCCommon/vsc_buffer.h>
+#endif
+
+#if VSCR_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
+#   include <VSCFoundation/vscf_impl.h>
+#endif
+
 // clang-format on
 //  @end
 
@@ -87,7 +103,13 @@ struct vscr_ratchet_receiver_chain_t {
     //
     VSCR_ATOMIC size_t refcnt;
 
-    vscr_ratchet_public_key_t public_key;
+    vscf_impl_t *public_key_first;
+
+    vscr_ratchet_public_key_t public_key_first_data;
+
+    vscf_impl_t *public_key_second;
+
+    vsc_buffer_t *public_key_second_data;
 
     vscr_ratchet_chain_key_t chain_key;
 };

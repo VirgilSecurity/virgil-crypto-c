@@ -1,5 +1,10 @@
 <class name="ratchet" context="internal" scope="internal">
 
+    <require interface="private key" project="foundation"/>
+    <require interface="public key" project="foundation"/>
+
+    <require class="key provider" project="foundation"/>
+
     <require impl="sha512" project="foundation" scope="private"/>
     <require impl="hmac" project="foundation" scope="private"/>
     <require impl="hkdf" project="foundation" scope="private"/>
@@ -7,6 +12,7 @@
 
     <require module="ratchet typedefs" scope="public"/>
 
+    <require class="ratchet pb utils" scope="context"/>
     <require class="ratchet common hidden" scope="context"/>
     <require class="ratchet chain key" scope="private"/>
     <require class="ratchet receiver chain" scope="private"/>
@@ -21,6 +27,8 @@
     <require header="ed25519/ed25519.h" scope="private"/>
 
     <dependency name="rng" interface="random" project="foundation" has_observers="1"/>
+    <property name="key provider" class="key provider" project="foundation"/>
+    <property name="enable post quantum" type="boolean"/>
     <property name="cipher" class="ratchet cipher" access="readwrite"/>
     <property name="padding" class="message padding" project="foundation" access="readwrite"/>
     <property name="sender chain" class="ratchet sender chain" access="readwrite"/>
@@ -46,18 +54,20 @@
         <return enum="status"/>
     </method>
 
-    <method name="respond">
+    <method name="initiate">
         <argument name="shared key" class="vscr_ratchet_symmetric_key_t" is_reference="0" library="internal"/>
-        <argument name="receiver long term private key" class="const vscr_ratchet_private_key_t" is_reference="0" library="internal" access="readonly"/>
-        <argument name="message" class="vscr_RegularMessage" library="nanopb" access="readonly"/>
-        <argument name="regular message header" class="vscr_RegularMessageHeader" library="nanopb" access="readonly"/>
+        <argument name="receiver long term public key" interface="public key" project="foundation"/>
+        <argument name="enable post quantum" type="boolean"/>
 
         <return enum="status"/>
     </method>
 
-    <method name="initiate">
+    <method name="respond">
         <argument name="shared key" class="vscr_ratchet_symmetric_key_t" is_reference="0" library="internal"/>
-        <argument name="receiver long term public key" class="const vscr_ratchet_public_key_t" is_reference="0" library="internal" access="readonly"/>
+        <argument name="receiver long term private key" interface="private key" project="foundation"/>
+        <argument name="message" class="vscr_RegularMessage" library="nanopb" access="readonly"/>
+        <argument name="regular message header" class="vscr_RegularMessageHeader" library="nanopb" access="readonly"/>
+        <argument name="enable post quantum" type="boolean"/>
 
         <return enum="status"/>
     </method>

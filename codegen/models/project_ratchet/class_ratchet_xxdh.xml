@@ -1,0 +1,46 @@
+<class name="ratchet xxdh" context="none" scope="internal">
+
+    <require interface="private key" project="foundation"/>
+    <require interface="public key" project="foundation"/>
+
+    <require interface="compute shared key" project="foundation" scope="private"/>
+
+    <require class="buffer" project="common" scope="private"/>
+    <require module="buffer defs" project="common" scope="private"/>
+
+    <require impl="sha512" project="foundation" scope="private"/>
+    <require impl="hkdf" project="foundation" scope="private"/>
+
+    <require module="ratchet typedefs" scope="public"/>
+    <require class="ratchet common hidden" scope="private"/>
+
+    <method name="compute initiator xxdh secret" is_static="1">
+        <argument name="sender identity private key" interface="private key" project="foundation"/>
+        <argument name="sender ephemeral private key" interface="private key" project="foundation"/>
+        <argument name="receiver identity public key" interface="public key" project="foundation"/>
+        <argument name="receiver long term public key" interface="public key" project="foundation"/>
+        <argument name="receiver one time public key" interface="public key" project="foundation"/>
+
+        <argument name="shared key" class="vscr_ratchet_symmetric_key_t" is_reference="0" library="internal" access="readwrite"/>
+
+        <return enum="status"/>
+    </method>
+
+    <method name="compute responder xxdh secret" is_static="1">
+        <argument name="sender identity public key" interface="public key" project="foundation"/>
+        <argument name="sender ephemeral public key" interface="public key" project="foundation"/>
+        <argument name="receiver identity private key" interface="private key" project="foundation"/>
+        <argument name="receiver long term private key" interface="private key" project="foundation"/>
+        <argument name="receiver one time private key" interface="private key" project="foundation"/>
+
+        <argument name="shared key" class="vscr_ratchet_symmetric_key_t" is_reference="0" library="internal" access="readwrite"/>
+
+        <return enum="status"/>
+    </method>
+
+    <method name="derive key" is_static="1" scope="internal">
+        <argument name="shared secret" class="data"/>
+        <argument name="shared key" class="vscr_ratchet_symmetric_key_t" is_reference="0" library="internal" access="readwrite"/>
+    </method>
+
+</class>

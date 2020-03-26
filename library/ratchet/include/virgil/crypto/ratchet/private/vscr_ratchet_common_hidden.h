@@ -71,9 +71,9 @@ extern "C" {
 //  Public integral constants.
 //
 enum {
-    vscr_ratchet_common_hidden_MESSAGE_VERSION = 1,
+    vscr_ratchet_common_hidden_MESSAGE_VERSION = 2,
     vscr_ratchet_common_hidden_GROUP_MESSAGE_VERSION = 1,
-    vscr_ratchet_common_hidden_SESSION_VERSION = 1,
+    vscr_ratchet_common_hidden_SESSION_VERSION = 2,
     vscr_ratchet_common_hidden_GROUP_SESSION_VERSION = 1,
     vscr_ratchet_common_hidden_SHARED_KEY_LEN = 32,
     vscr_ratchet_common_hidden_KEY_LEN = 32,

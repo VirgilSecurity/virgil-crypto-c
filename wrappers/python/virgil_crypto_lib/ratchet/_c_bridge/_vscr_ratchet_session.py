@@ -36,8 +36,8 @@
 from virgil_crypto_lib._libs import *
 from ctypes import *
 from virgil_crypto_lib.foundation._c_bridge._vscf_impl import vscf_impl_t
-from virgil_crypto_lib.common._c_bridge import vsc_data_t
 from ._vscr_ratchet_message import vscr_ratchet_message_t
+from virgil_crypto_lib.common._c_bridge import vsc_data_t
 from ._vscr_error import vscr_error_t
 from virgil_crypto_lib.common._c_bridge import vsc_buffer_t
 
@@ -84,14 +84,14 @@ class VscrRatchetSession(object):
     def vscr_ratchet_session_initiate(self, ctx, sender_identity_private_key, receiver_identity_public_key, receiver_long_term_public_key, receiver_one_time_public_key):
         """Initiates session"""
         vscr_ratchet_session_initiate = self._lib.vscr_ratchet_session_initiate
-        vscr_ratchet_session_initiate.argtypes = [POINTER(vscr_ratchet_session_t), vsc_data_t, vsc_data_t, vsc_data_t, vsc_data_t]
+        vscr_ratchet_session_initiate.argtypes = [POINTER(vscr_ratchet_session_t), POINTER(vscf_impl_t), POINTER(vscf_impl_t), POINTER(vscf_impl_t), POINTER(vscf_impl_t)]
         vscr_ratchet_session_initiate.restype = c_int
         return vscr_ratchet_session_initiate(ctx, sender_identity_private_key, receiver_identity_public_key, receiver_long_term_public_key, receiver_one_time_public_key)
 
     def vscr_ratchet_session_respond(self, ctx, sender_identity_public_key, receiver_identity_private_key, receiver_long_term_private_key, receiver_one_time_private_key, message):
         """Responds to session initiation"""
         vscr_ratchet_session_respond = self._lib.vscr_ratchet_session_respond
-        vscr_ratchet_session_respond.argtypes = [POINTER(vscr_ratchet_session_t), vsc_data_t, vsc_data_t, vsc_data_t, vsc_data_t, POINTER(vscr_ratchet_message_t)]
+        vscr_ratchet_session_respond.argtypes = [POINTER(vscr_ratchet_session_t), POINTER(vscf_impl_t), POINTER(vscf_impl_t), POINTER(vscf_impl_t), POINTER(vscf_impl_t), POINTER(vscr_ratchet_message_t)]
         vscr_ratchet_session_respond.restype = c_int
         return vscr_ratchet_session_respond(ctx, sender_identity_public_key, receiver_identity_private_key, receiver_long_term_private_key, receiver_one_time_private_key, message)
 

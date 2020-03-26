@@ -106,8 +106,8 @@ extern "C" {
 #cmakedefine01 VSCR_ERROR
 #endif
 
-#ifndef VSCR_RATCHET_X3DH
-#cmakedefine01 VSCR_RATCHET_X3DH
+#ifndef VSCR_RATCHET_XXDH
+#cmakedefine01 VSCR_RATCHET_XXDH
 #endif
 
 #ifndef VSCR_RATCHET_MESSAGE
@@ -148,6 +148,10 @@ extern "C" {
 
 #ifndef VSCR_RATCHET_KEYS
 #cmakedefine01 VSCR_RATCHET_KEYS
+#endif
+
+#ifndef VSCR_RATCHET_PB_UTILS
+#cmakedefine01 VSCR_RATCHET_PB_UTILS
 #endif
 
 #ifndef VSCR_RATCHET

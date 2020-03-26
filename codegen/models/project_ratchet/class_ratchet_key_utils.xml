@@ -1,6 +1,11 @@
 <class name="ratchet key utils" scope="internal" context="internal">
     Utils class for working with keys formats.
 
+    <require class="key info" scope="private" project="foundation"/>
+    <require class="compound private key" scope="private" project="foundation"/>
+    <require class="hybrid private key" scope="private" project="foundation"/>
+    <require class="private key" scope="private" project="foundation"/>
+
     <require class="ratchet common" scope="public"/>
     <require class="ratchet common hidden" scope="context"/>
     <require impl="key asn1 deserializer" scope="private" project="foundation"/>
@@ -10,7 +15,22 @@
     <require module="hkdf private" scope="private" project="foundation"/>
     <require module="buffer defs" scope="private" project="common"/>
 
+    <dependency name="rng" interface="random" project="foundation" has_observers="1"/>
+
+    <property name="key provider" class="key provider" project="foundation"/>
     <property name="key asn1 deserializer" impl="key asn1 deserializer" project="foundation"/>
+
+    <method name="import private key">
+        <argument name="private key" interface="private key" project="foundation"/>
+
+        <argument name="private key first" class="vscr_ratchet_private_key_t" library="internal"/>
+        <argument name="private key second" interface="private key" project="foundation" is_const="1" access="disown"/>
+
+        <argument name="enable post quantum" type="boolean"/>
+        <argument name="allow signer" type="boolean"/>
+
+        <return enum="status"/>
+    </method>
 
     <method name="extract ratchet public key">
         <argument name="data" class="data"/>

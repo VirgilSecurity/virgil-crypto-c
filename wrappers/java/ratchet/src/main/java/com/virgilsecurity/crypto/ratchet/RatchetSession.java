@@ -102,14 +102,14 @@ public class RatchetSession implements AutoCloseable {
     /*
     * Initiates session
     */
-    public void initiate(byte[] senderIdentityPrivateKey, byte[] receiverIdentityPublicKey, byte[] receiverLongTermPublicKey, byte[] receiverOneTimePublicKey) throws RatchetException {
+    public void initiate(PrivateKey senderIdentityPrivateKey, PublicKey receiverIdentityPublicKey, PublicKey receiverLongTermPublicKey, PublicKey receiverOneTimePublicKey) throws RatchetException {
         RatchetJNI.INSTANCE.ratchetSession_initiate(this.cCtx, senderIdentityPrivateKey, receiverIdentityPublicKey, receiverLongTermPublicKey, receiverOneTimePublicKey);
     }
 
     /*
     * Responds to session initiation
     */
-    public void respond(byte[] senderIdentityPublicKey, byte[] receiverIdentityPrivateKey, byte[] receiverLongTermPrivateKey, byte[] receiverOneTimePrivateKey, RatchetMessage message) throws RatchetException {
+    public void respond(PublicKey senderIdentityPublicKey, PrivateKey receiverIdentityPrivateKey, PrivateKey receiverLongTermPrivateKey, PrivateKey receiverOneTimePrivateKey, RatchetMessage message) throws RatchetException {
         RatchetJNI.INSTANCE.ratchetSession_respond(this.cCtx, senderIdentityPublicKey, receiverIdentityPrivateKey, receiverLongTermPrivateKey, receiverOneTimePrivateKey, message);
     }
 

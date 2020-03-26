@@ -49,11 +49,12 @@
 #include "vscr_assert.h"
 #include "vscr_ratchet_keys_defs.h"
 
+#include <virgil/crypto/foundation/vscf_private_key.h>
+#include <virgil/crypto/foundation/vscf_public_key.h>
 #include <virgil/crypto/foundation/vscf_sha512.h>
 #include <virgil/crypto/foundation/vscf_hmac.h>
 #include <virgil/crypto/foundation/vscf_hkdf.h>
 #include <virgil/crypto/common/private/vsc_buffer_defs.h>
-#include <ed25519/ed25519.h>
 
 // clang-format on
 //  @end
@@ -265,9 +266,8 @@ vscr_ratchet_keys_cleanup_ctx(vscr_ratchet_keys_t *self) {
 }
 
 VSCR_PUBLIC vscr_status_t
-vscr_ratchet_keys_create_chain_key(const vscr_ratchet_symmetric_key_t root_key,
-        const vscr_ratchet_private_key_t private_key, const vscr_ratchet_public_key_t public_key,
-        vscr_ratchet_symmetric_key_t new_root_key, vscr_ratchet_chain_key_t *chain_key) {
+vscr_ratchet_keys_create_chain_key(const vscr_ratchet_symmetric_key_t root_key, const vscf_impl_t *private_key,
+        const vscf_impl_t *public_key, vscr_ratchet_symmetric_key_t new_root_key, vscr_ratchet_chain_key_t *chain_key) {
 
     VSCR_ASSERT_PTR(chain_key);
 

@@ -44,23 +44,27 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#ifndef VSCR_RATCHET_SKIPPED_MESSAGES_H_INCLUDED
-#define VSCR_RATCHET_SKIPPED_MESSAGES_H_INCLUDED
+
+//  @description
+// --------------------------------------------------------------------------
+//  Utils class for working with protobug.
+// --------------------------------------------------------------------------
+
+#ifndef VSCR_RATCHET_PB_UTILS_H_INCLUDED
+#define VSCR_RATCHET_PB_UTILS_H_INCLUDED
 
 #include "vscr_library.h"
-#include "vscr_ratchet_message_key.h"
-#include "vscr_ratchet_skipped_messages.h"
 
-#include <vscr_RatchetSession.pb.h>
-#include <pb_decode.h>
-#include <pb_encode.h>
+#include <pb.h>
 
-#if !VSCR_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
-#   include <virgil/crypto/foundation/vscf_impl.h>
+#if !VSCR_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <virgil/crypto/common/vsc_buffer.h>
+#   include <virgil/crypto/common/vsc_data.h>
 #endif
 
-#if VSCR_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
-#   include <VSCFoundation/vscf_impl.h>
+#if VSCR_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <VSCCommon/vsc_buffer.h>
+#   include <VSCCommon/vsc_data.h>
 #endif
 
 // clang-format on
@@ -79,80 +83,62 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Handle 'ratchet skipped messages' context.
+//  Handle 'ratchet pb utils' context.
 //
-typedef struct vscr_ratchet_skipped_messages_t vscr_ratchet_skipped_messages_t;
+typedef struct vscr_ratchet_pb_utils_t vscr_ratchet_pb_utils_t;
 
 //
-//  Return size of 'vscr_ratchet_skipped_messages_t'.
+//  Return size of 'vscr_ratchet_pb_utils_t'.
 //
 VSCR_PUBLIC size_t
-vscr_ratchet_skipped_messages_ctx_size(void);
+vscr_ratchet_pb_utils_ctx_size(void);
 
 //
 //  Perform initialization of pre-allocated context.
 //
 VSCR_PUBLIC void
-vscr_ratchet_skipped_messages_init(vscr_ratchet_skipped_messages_t *self);
+vscr_ratchet_pb_utils_init(vscr_ratchet_pb_utils_t *self);
 
 //
 //  Release all inner resources including class dependencies.
 //
 VSCR_PUBLIC void
-vscr_ratchet_skipped_messages_cleanup(vscr_ratchet_skipped_messages_t *self);
+vscr_ratchet_pb_utils_cleanup(vscr_ratchet_pb_utils_t *self);
 
 //
 //  Allocate context and perform it's initialization.
 //
-VSCR_PUBLIC vscr_ratchet_skipped_messages_t *
-vscr_ratchet_skipped_messages_new(void);
+VSCR_PUBLIC vscr_ratchet_pb_utils_t *
+vscr_ratchet_pb_utils_new(void);
 
 //
 //  Release all inner resources and deallocate context if needed.
 //  It is safe to call this method even if the context was statically allocated.
 //
 VSCR_PUBLIC void
-vscr_ratchet_skipped_messages_delete(vscr_ratchet_skipped_messages_t *self);
+vscr_ratchet_pb_utils_delete(vscr_ratchet_pb_utils_t *self);
 
 //
 //  Delete given context and nullifies reference.
-//  This is a reverse action of the function 'vscr_ratchet_skipped_messages_new ()'.
+//  This is a reverse action of the function 'vscr_ratchet_pb_utils_new ()'.
 //
 VSCR_PUBLIC void
-vscr_ratchet_skipped_messages_destroy(vscr_ratchet_skipped_messages_t **self_ref);
+vscr_ratchet_pb_utils_destroy(vscr_ratchet_pb_utils_t **self_ref);
 
 //
 //  Copy given class context by increasing reference counter.
 //
-VSCR_PUBLIC vscr_ratchet_skipped_messages_t *
-vscr_ratchet_skipped_messages_shallow_copy(vscr_ratchet_skipped_messages_t *self);
-
-VSCR_PUBLIC vscr_ratchet_message_key_t *
-vscr_ratchet_skipped_messages_find_key(const vscr_ratchet_skipped_messages_t *self, uint32_t counter,
-        const vscf_impl_t *public_key);
-
-VSCR_PUBLIC uint32_t
-vscr_ratchet_skipped_messages_find_public_key(const vscr_ratchet_skipped_messages_t *self,
-        const vscf_impl_t *public_key);
+VSCR_PUBLIC vscr_ratchet_pb_utils_t *
+vscr_ratchet_pb_utils_shallow_copy(vscr_ratchet_pb_utils_t *self);
 
 VSCR_PUBLIC void
-vscr_ratchet_skipped_messages_delete_key(vscr_ratchet_skipped_messages_t *self, const vscf_impl_t *public_key,
-        vscr_ratchet_message_key_t *message_key);
+vscr_ratchet_pb_utils_serialize_buffer(vsc_buffer_t *buffer, pb_bytes_array_t **pb_buffer_ref);
 
-VSCR_PUBLIC void
-vscr_ratchet_skipped_messages_add_public_key(vscr_ratchet_skipped_messages_t *self, const vscf_impl_t *public_key);
+VSCR_PUBLIC vsc_buffer_t *
+vscr_ratchet_pb_utils_deserialize_buffer(const pb_bytes_array_t *pb_buffer);
 
-VSCR_PUBLIC void
-vscr_ratchet_skipped_messages_add_key(vscr_ratchet_skipped_messages_t *self, const vscf_impl_t *public_key,
-        vscr_ratchet_message_key_t *message_key);
-
-VSCR_PUBLIC void
-vscr_ratchet_skipped_messages_serialize(const vscr_ratchet_skipped_messages_t *self,
-        vscr_SkippedMessages *skipped_messages_pb);
-
-VSCR_PUBLIC void
-vscr_ratchet_skipped_messages_deserialize(const vscr_SkippedMessages *skipped_messages_pb,
-        vscr_ratchet_skipped_messages_t *skipped_messages);
+VSCR_PUBLIC vsc_data_t
+vscr_ratchet_pb_utils_buffer_to_data(const pb_bytes_array_t *pb_buffer);
 
 
 // --------------------------------------------------------------------------
@@ -168,5 +154,5 @@ vscr_ratchet_skipped_messages_deserialize(const vscr_SkippedMessages *skipped_me
 
 
 //  @footer
-#endif // VSCR_RATCHET_SKIPPED_MESSAGES_H_INCLUDED
+#endif // VSCR_RATCHET_PB_UTILS_H_INCLUDED
 //  @end

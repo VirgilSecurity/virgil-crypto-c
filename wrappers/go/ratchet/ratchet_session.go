@@ -99,13 +99,8 @@ func (obj *RatchetSession) SetupDefaults() error {
 /*
 * Initiates session
 */
-func (obj *RatchetSession) Initiate(senderIdentityPrivateKey []byte, receiverIdentityPublicKey []byte, receiverLongTermPublicKey []byte, receiverOneTimePublicKey []byte) error {
-    senderIdentityPrivateKeyData := helperWrapData (senderIdentityPrivateKey)
-    receiverIdentityPublicKeyData := helperWrapData (receiverIdentityPublicKey)
-    receiverLongTermPublicKeyData := helperWrapData (receiverLongTermPublicKey)
-    receiverOneTimePublicKeyData := helperWrapData (receiverOneTimePublicKey)
-
-    proxyResult := /*pr4*/C.vscr_ratchet_session_initiate(obj.cCtx, senderIdentityPrivateKeyData, receiverIdentityPublicKeyData, receiverLongTermPublicKeyData, receiverOneTimePublicKeyData)
+func (obj *RatchetSession) Initiate(senderIdentityPrivateKey PrivateKey, receiverIdentityPublicKey PublicKey, receiverLongTermPublicKey PublicKey, receiverOneTimePublicKey PublicKey) error {
+    proxyResult := /*pr4*/C.vscr_ratchet_session_initiate(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(senderIdentityPrivateKey.Ctx())), (*C.vscf_impl_t)(unsafe.Pointer(receiverIdentityPublicKey.Ctx())), (*C.vscf_impl_t)(unsafe.Pointer(receiverLongTermPublicKey.Ctx())), (*C.vscf_impl_t)(unsafe.Pointer(receiverOneTimePublicKey.Ctx())))
 
     err := RatchetErrorHandleStatus(proxyResult)
     if err != nil {
@@ -113,6 +108,14 @@ func (obj *RatchetSession) Initiate(senderIdentityPrivateKey []byte, receiverIde
     }
 
     runtime.KeepAlive(obj)
+
+    runtime.KeepAlive(senderIdentityPrivateKey)
+
+    runtime.KeepAlive(receiverIdentityPublicKey)
+
+    runtime.KeepAlive(receiverLongTermPublicKey)
+
+    runtime.KeepAlive(receiverOneTimePublicKey)
 
     return nil
 }
@@ -120,13 +123,8 @@ func (obj *RatchetSession) Initiate(senderIdentityPrivateKey []byte, receiverIde
 /*
 * Responds to session initiation
 */
-func (obj *RatchetSession) Respond(senderIdentityPublicKey []byte, receiverIdentityPrivateKey []byte, receiverLongTermPrivateKey []byte, receiverOneTimePrivateKey []byte, message *RatchetMessage) error {
-    senderIdentityPublicKeyData := helperWrapData (senderIdentityPublicKey)
-    receiverIdentityPrivateKeyData := helperWrapData (receiverIdentityPrivateKey)
-    receiverLongTermPrivateKeyData := helperWrapData (receiverLongTermPrivateKey)
-    receiverOneTimePrivateKeyData := helperWrapData (receiverOneTimePrivateKey)
-
-    proxyResult := /*pr4*/C.vscr_ratchet_session_respond(obj.cCtx, senderIdentityPublicKeyData, receiverIdentityPrivateKeyData, receiverLongTermPrivateKeyData, receiverOneTimePrivateKeyData, (*C.vscr_ratchet_message_t)(unsafe.Pointer(message.Ctx())))
+func (obj *RatchetSession) Respond(senderIdentityPublicKey PublicKey, receiverIdentityPrivateKey PrivateKey, receiverLongTermPrivateKey PrivateKey, receiverOneTimePrivateKey PrivateKey, message *RatchetMessage) error {
+    proxyResult := /*pr4*/C.vscr_ratchet_session_respond(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(senderIdentityPublicKey.Ctx())), (*C.vscf_impl_t)(unsafe.Pointer(receiverIdentityPrivateKey.Ctx())), (*C.vscf_impl_t)(unsafe.Pointer(receiverLongTermPrivateKey.Ctx())), (*C.vscf_impl_t)(unsafe.Pointer(receiverOneTimePrivateKey.Ctx())), (*C.vscr_ratchet_message_t)(unsafe.Pointer(message.Ctx())))
 
     err := RatchetErrorHandleStatus(proxyResult)
     if err != nil {
@@ -134,6 +132,14 @@ func (obj *RatchetSession) Respond(senderIdentityPublicKey []byte, receiverIdent
     }
 
     runtime.KeepAlive(obj)
+
+    runtime.KeepAlive(senderIdentityPublicKey)
+
+    runtime.KeepAlive(receiverIdentityPrivateKey)
+
+    runtime.KeepAlive(receiverLongTermPrivateKey)
+
+    runtime.KeepAlive(receiverOneTimePrivateKey)
 
     runtime.KeepAlive(message)
 

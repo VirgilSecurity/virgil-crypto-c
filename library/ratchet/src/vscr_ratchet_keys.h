@@ -52,6 +52,14 @@
 #include "vscr_ratchet_message_key.h"
 #include "vscr_status.h"
 
+#if !VSCR_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
+#   include <virgil/crypto/foundation/vscf_impl.h>
+#endif
+
+#if VSCR_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
+#   include <VSCFoundation/vscf_impl.h>
+#endif
+
 // clang-format on
 //  @end
 
@@ -117,9 +125,9 @@ VSCR_PUBLIC vscr_ratchet_keys_t *
 vscr_ratchet_keys_shallow_copy(vscr_ratchet_keys_t *self);
 
 VSCR_PUBLIC vscr_status_t
-vscr_ratchet_keys_create_chain_key(const vscr_ratchet_symmetric_key_t root_key,
-        const vscr_ratchet_private_key_t private_key, const vscr_ratchet_public_key_t public_key,
-        vscr_ratchet_symmetric_key_t new_root_key, vscr_ratchet_chain_key_t *chain_key) VSCR_NODISCARD;
+vscr_ratchet_keys_create_chain_key(const vscr_ratchet_symmetric_key_t root_key, const vscf_impl_t *private_key,
+        const vscf_impl_t *public_key, vscr_ratchet_symmetric_key_t new_root_key,
+        vscr_ratchet_chain_key_t *chain_key) VSCR_NODISCARD;
 
 VSCR_PUBLIC void
 vscr_ratchet_keys_advance_chain_key(vscr_ratchet_chain_key_t *chain_key);

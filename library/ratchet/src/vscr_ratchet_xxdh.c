@@ -44,12 +44,14 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#include "vscr_ratchet_x3dh.h"
+#include "vscr_ratchet_xxdh.h"
 #include "vscr_memory.h"
 #include "vscr_assert.h"
 #include "vscr_ratchet_common_hidden.h"
 
-#include <ed25519/ed25519.h>
+#include <virgil/crypto/foundation/vscf_private_key.h>
+#include <virgil/crypto/foundation/vscf_public_key.h>
+#include <virgil/crypto/foundation/vscf_compute_shared_key.h>
 #include <virgil/crypto/common/vsc_buffer.h>
 #include <virgil/crypto/common/private/vsc_buffer_defs.h>
 #include <virgil/crypto/foundation/vscf_sha512.h>
@@ -87,11 +89,10 @@ static const uint8_t ratchet_kdf_root_info[] = {
 
 
 VSCR_PUBLIC vscr_status_t
-vscr_ratchet_x3dh_compute_initiator_x3dh_secret(const vscr_ratchet_private_key_t sender_identity_private_key,
-        const vscr_ratchet_private_key_t sender_ephemeral_private_key,
-        const vscr_ratchet_public_key_t receiver_identity_public_key,
-        const vscr_ratchet_public_key_t receiver_long_term_public_key, bool receiver_has_one_time_key,
-        const vscr_ratchet_public_key_t receiver_one_time_public_key, vscr_ratchet_symmetric_key_t shared_key) {
+vscr_ratchet_xxdh_compute_initiator_xxdh_secret(const vscf_impl_t *sender_identity_private_key,
+        const vscf_impl_t *sender_ephemeral_private_key, const vscf_impl_t *receiver_identity_public_key,
+        const vscf_impl_t *receiver_long_term_public_key, const vscf_impl_t *receiver_one_time_public_key,
+        vscr_ratchet_symmetric_key_t shared_key) {
 
     size_t shared_secret_count = receiver_has_one_time_key ? 4 : 3;
 
@@ -142,7 +143,7 @@ vscr_ratchet_x3dh_compute_initiator_x3dh_secret(const vscr_ratchet_private_key_t
         }
     }
 
-    vscr_ratchet_x3dh_derive_key(vsc_buffer_data(&shared_secret), shared_key);
+    vscr_ratchet_xxdh_derive_key(vsc_buffer_data(&shared_secret), shared_key);
 
 curve_err:
     vsc_buffer_delete(&shared_secret);
@@ -153,11 +154,10 @@ curve_err:
 }
 
 VSCR_PUBLIC vscr_status_t
-vscr_ratchet_x3dh_compute_responder_x3dh_secret(const vscr_ratchet_public_key_t sender_identity_public_key,
-        const vscr_ratchet_public_key_t sender_ephemeral_public_key,
-        const vscr_ratchet_private_key_t receiver_identity_private_key,
-        const vscr_ratchet_private_key_t receiver_long_term_private_key, bool receiver_has_one_time_key,
-        const vscr_ratchet_private_key_t receiver_one_time_private_key, vscr_ratchet_symmetric_key_t shared_key) {
+vscr_ratchet_xxdh_compute_responder_xxdh_secret(const vscf_impl_t *sender_identity_public_key,
+        const vscf_impl_t *sender_ephemeral_public_key, const vscf_impl_t *receiver_identity_private_key,
+        const vscf_impl_t *receiver_long_term_private_key, const vscf_impl_t *receiver_one_time_private_key,
+        vscr_ratchet_symmetric_key_t shared_key) {
 
     size_t shared_secret_count = receiver_has_one_time_key ? 4 : 3;
 
@@ -207,7 +207,7 @@ vscr_ratchet_x3dh_compute_responder_x3dh_secret(const vscr_ratchet_public_key_t 
         }
     }
 
-    vscr_ratchet_x3dh_derive_key(vsc_buffer_data(&shared_secret), shared_key);
+    vscr_ratchet_xxdh_derive_key(vsc_buffer_data(&shared_secret), shared_key);
 
 curve_err:
     vsc_buffer_delete(&shared_secret);
@@ -218,7 +218,7 @@ curve_err:
 }
 
 VSCR_PUBLIC void
-vscr_ratchet_x3dh_derive_key(vsc_data_t shared_secret, vscr_ratchet_symmetric_key_t shared_key) {
+vscr_ratchet_xxdh_derive_key(vsc_data_t shared_secret, vscr_ratchet_symmetric_key_t shared_key) {
 
     VSCR_ASSERT(shared_secret.len == 3 * ED25519_DH_LEN || shared_secret.len == 4 * ED25519_DH_LEN);
 

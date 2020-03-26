@@ -3,7 +3,8 @@ syntax = "proto2";
 message vscr_RegularMessageHeader {
     required uint32 counter = 1;
     required uint32 prev_chain_count = 2;
-    required bytes public_key = 3;
+    required bytes public_key_first = 3;
+    optional bytes public_key_second = 4;
 }
 
 message vscr_RegularMessage {
@@ -12,10 +13,14 @@ message vscr_RegularMessage {
 }
 
 message vscr_PrekeyMessage {
-    required bytes sender_identity_key = 1;
-    required bytes sender_ephemeral_key = 2;
-    required bytes receiver_long_term_key = 3;
-    optional bytes receiver_one_time_key = 4;
+    required bytes sender_identity_key_first = 1;
+    optional bytes sender_identity_key_second = 2;
+    required bytes sender_ephemeral_key_first = 3;
+    optional bytes sender_ephemeral_key_second = 4;
+    required bytes receiver_long_term_key_first = 5;
+    optional bytes receiver_long_term_key_second = 6;
+    optional bytes receiver_one_time_key_first = 7;
+    optional bytes receiver_one_time_key_second = 8;
 }
 
 message vscr_Message {

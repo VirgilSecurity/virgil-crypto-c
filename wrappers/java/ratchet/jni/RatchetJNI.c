@@ -248,41 +248,108 @@ JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratchet
     }
 }
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratchetSession_1initiate (JNIEnv *jenv, jobject jobj, jlong c_ctx, jbyteArray jsenderIdentityPrivateKey, jbyteArray jreceiverIdentityPublicKey, jbyteArray jreceiverLongTermPublicKey, jbyteArray jreceiverOneTimePublicKey) {
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratchetSession_1initiate (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jsenderIdentityPrivateKey, jobject jreceiverIdentityPublicKey, jobject jreceiverLongTermPublicKey, jobject jreceiverOneTimePublicKey) {
     // Cast class context
     vscr_ratchet_session_t /*2*/* ratchet_session_ctx = *(vscr_ratchet_session_t /*2*/**) &c_ctx;
+    // Wrap Java interfaces
+    jclass sender_identity_private_key_cls = (*jenv)->GetObjectClass(jenv, jsenderIdentityPrivateKey);
+    if (NULL == sender_identity_private_key_cls) {
+        VSCR_ASSERT("Class PrivateKey not found.");
+    }
+    jfieldID sender_identity_private_key_fidCtx = (*jenv)->GetFieldID(jenv, sender_identity_private_key_cls, "cCtx", "J");
+    if (NULL == sender_identity_private_key_fidCtx) {
+        VSCR_ASSERT("Class 'PrivateKey' has no field 'cCtx'.");
+    }
+    jlong sender_identity_private_key_c_ctx = (*jenv)->GetLongField(jenv, jsenderIdentityPrivateKey, sender_identity_private_key_fidCtx);
+    vscf_impl_t */*6*/ sender_identity_private_key = *(vscf_impl_t */*6*/*)&sender_identity_private_key_c_ctx;
 
-    // Wrap input data
-    byte* sender_identity_private_key_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jsenderIdentityPrivateKey, NULL);
-    vsc_data_t sender_identity_private_key = vsc_data(sender_identity_private_key_arr, (*jenv)->GetArrayLength(jenv, jsenderIdentityPrivateKey));
+    jclass receiver_identity_public_key_cls = (*jenv)->GetObjectClass(jenv, jreceiverIdentityPublicKey);
+    if (NULL == receiver_identity_public_key_cls) {
+        VSCR_ASSERT("Class PublicKey not found.");
+    }
+    jfieldID receiver_identity_public_key_fidCtx = (*jenv)->GetFieldID(jenv, receiver_identity_public_key_cls, "cCtx", "J");
+    if (NULL == receiver_identity_public_key_fidCtx) {
+        VSCR_ASSERT("Class 'PublicKey' has no field 'cCtx'.");
+    }
+    jlong receiver_identity_public_key_c_ctx = (*jenv)->GetLongField(jenv, jreceiverIdentityPublicKey, receiver_identity_public_key_fidCtx);
+    vscf_impl_t */*6*/ receiver_identity_public_key = *(vscf_impl_t */*6*/*)&receiver_identity_public_key_c_ctx;
 
-    byte* receiver_identity_public_key_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jreceiverIdentityPublicKey, NULL);
-    vsc_data_t receiver_identity_public_key = vsc_data(receiver_identity_public_key_arr, (*jenv)->GetArrayLength(jenv, jreceiverIdentityPublicKey));
+    jclass receiver_long_term_public_key_cls = (*jenv)->GetObjectClass(jenv, jreceiverLongTermPublicKey);
+    if (NULL == receiver_long_term_public_key_cls) {
+        VSCR_ASSERT("Class PublicKey not found.");
+    }
+    jfieldID receiver_long_term_public_key_fidCtx = (*jenv)->GetFieldID(jenv, receiver_long_term_public_key_cls, "cCtx", "J");
+    if (NULL == receiver_long_term_public_key_fidCtx) {
+        VSCR_ASSERT("Class 'PublicKey' has no field 'cCtx'.");
+    }
+    jlong receiver_long_term_public_key_c_ctx = (*jenv)->GetLongField(jenv, jreceiverLongTermPublicKey, receiver_long_term_public_key_fidCtx);
+    vscf_impl_t */*6*/ receiver_long_term_public_key = *(vscf_impl_t */*6*/*)&receiver_long_term_public_key_c_ctx;
 
-    byte* receiver_long_term_public_key_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jreceiverLongTermPublicKey, NULL);
-    vsc_data_t receiver_long_term_public_key = vsc_data(receiver_long_term_public_key_arr, (*jenv)->GetArrayLength(jenv, jreceiverLongTermPublicKey));
+    jclass receiver_one_time_public_key_cls = (*jenv)->GetObjectClass(jenv, jreceiverOneTimePublicKey);
+    if (NULL == receiver_one_time_public_key_cls) {
+        VSCR_ASSERT("Class PublicKey not found.");
+    }
+    jfieldID receiver_one_time_public_key_fidCtx = (*jenv)->GetFieldID(jenv, receiver_one_time_public_key_cls, "cCtx", "J");
+    if (NULL == receiver_one_time_public_key_fidCtx) {
+        VSCR_ASSERT("Class 'PublicKey' has no field 'cCtx'.");
+    }
+    jlong receiver_one_time_public_key_c_ctx = (*jenv)->GetLongField(jenv, jreceiverOneTimePublicKey, receiver_one_time_public_key_fidCtx);
+    vscf_impl_t */*6*/ receiver_one_time_public_key = *(vscf_impl_t */*6*/*)&receiver_one_time_public_key_c_ctx;
 
-    byte* receiver_one_time_public_key_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jreceiverOneTimePublicKey, NULL);
-    vsc_data_t receiver_one_time_public_key = vsc_data(receiver_one_time_public_key_arr, (*jenv)->GetArrayLength(jenv, jreceiverOneTimePublicKey));
-
-    vscr_status_t status = vscr_ratchet_session_initiate(ratchet_session_ctx /*a1*/, sender_identity_private_key /*a3*/, receiver_identity_public_key /*a3*/, receiver_long_term_public_key /*a3*/, receiver_one_time_public_key /*a3*/);
+    vscr_status_t status = vscr_ratchet_session_initiate(ratchet_session_ctx /*a1*/, sender_identity_private_key /*a6*/, receiver_identity_public_key /*a6*/, receiver_long_term_public_key /*a6*/, receiver_one_time_public_key /*a6*/);
     if (status != vscr_status_SUCCESS) {
         throwRatchetException(jenv, jobj, status);
         return;
     }
-    // Free resources
-    (*jenv)->ReleaseByteArrayElements(jenv, jsenderIdentityPrivateKey, (jbyte*) sender_identity_private_key_arr, 0);
-
-    (*jenv)->ReleaseByteArrayElements(jenv, jreceiverIdentityPublicKey, (jbyte*) receiver_identity_public_key_arr, 0);
-
-    (*jenv)->ReleaseByteArrayElements(jenv, jreceiverLongTermPublicKey, (jbyte*) receiver_long_term_public_key_arr, 0);
-
-    (*jenv)->ReleaseByteArrayElements(jenv, jreceiverOneTimePublicKey, (jbyte*) receiver_one_time_public_key_arr, 0);
 }
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratchetSession_1respond (JNIEnv *jenv, jobject jobj, jlong c_ctx, jbyteArray jsenderIdentityPublicKey, jbyteArray jreceiverIdentityPrivateKey, jbyteArray jreceiverLongTermPrivateKey, jbyteArray jreceiverOneTimePrivateKey, jobject jmessage) {
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratchetSession_1respond (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jsenderIdentityPublicKey, jobject jreceiverIdentityPrivateKey, jobject jreceiverLongTermPrivateKey, jobject jreceiverOneTimePrivateKey, jobject jmessage) {
     // Cast class context
     vscr_ratchet_session_t /*2*/* ratchet_session_ctx = *(vscr_ratchet_session_t /*2*/**) &c_ctx;
+    // Wrap Java interfaces
+    jclass sender_identity_public_key_cls = (*jenv)->GetObjectClass(jenv, jsenderIdentityPublicKey);
+    if (NULL == sender_identity_public_key_cls) {
+        VSCR_ASSERT("Class PublicKey not found.");
+    }
+    jfieldID sender_identity_public_key_fidCtx = (*jenv)->GetFieldID(jenv, sender_identity_public_key_cls, "cCtx", "J");
+    if (NULL == sender_identity_public_key_fidCtx) {
+        VSCR_ASSERT("Class 'PublicKey' has no field 'cCtx'.");
+    }
+    jlong sender_identity_public_key_c_ctx = (*jenv)->GetLongField(jenv, jsenderIdentityPublicKey, sender_identity_public_key_fidCtx);
+    vscf_impl_t */*6*/ sender_identity_public_key = *(vscf_impl_t */*6*/*)&sender_identity_public_key_c_ctx;
+
+    jclass receiver_identity_private_key_cls = (*jenv)->GetObjectClass(jenv, jreceiverIdentityPrivateKey);
+    if (NULL == receiver_identity_private_key_cls) {
+        VSCR_ASSERT("Class PrivateKey not found.");
+    }
+    jfieldID receiver_identity_private_key_fidCtx = (*jenv)->GetFieldID(jenv, receiver_identity_private_key_cls, "cCtx", "J");
+    if (NULL == receiver_identity_private_key_fidCtx) {
+        VSCR_ASSERT("Class 'PrivateKey' has no field 'cCtx'.");
+    }
+    jlong receiver_identity_private_key_c_ctx = (*jenv)->GetLongField(jenv, jreceiverIdentityPrivateKey, receiver_identity_private_key_fidCtx);
+    vscf_impl_t */*6*/ receiver_identity_private_key = *(vscf_impl_t */*6*/*)&receiver_identity_private_key_c_ctx;
+
+    jclass receiver_long_term_private_key_cls = (*jenv)->GetObjectClass(jenv, jreceiverLongTermPrivateKey);
+    if (NULL == receiver_long_term_private_key_cls) {
+        VSCR_ASSERT("Class PrivateKey not found.");
+    }
+    jfieldID receiver_long_term_private_key_fidCtx = (*jenv)->GetFieldID(jenv, receiver_long_term_private_key_cls, "cCtx", "J");
+    if (NULL == receiver_long_term_private_key_fidCtx) {
+        VSCR_ASSERT("Class 'PrivateKey' has no field 'cCtx'.");
+    }
+    jlong receiver_long_term_private_key_c_ctx = (*jenv)->GetLongField(jenv, jreceiverLongTermPrivateKey, receiver_long_term_private_key_fidCtx);
+    vscf_impl_t */*6*/ receiver_long_term_private_key = *(vscf_impl_t */*6*/*)&receiver_long_term_private_key_c_ctx;
+
+    jclass receiver_one_time_private_key_cls = (*jenv)->GetObjectClass(jenv, jreceiverOneTimePrivateKey);
+    if (NULL == receiver_one_time_private_key_cls) {
+        VSCR_ASSERT("Class PrivateKey not found.");
+    }
+    jfieldID receiver_one_time_private_key_fidCtx = (*jenv)->GetFieldID(jenv, receiver_one_time_private_key_cls, "cCtx", "J");
+    if (NULL == receiver_one_time_private_key_fidCtx) {
+        VSCR_ASSERT("Class 'PrivateKey' has no field 'cCtx'.");
+    }
+    jlong receiver_one_time_private_key_c_ctx = (*jenv)->GetLongField(jenv, jreceiverOneTimePrivateKey, receiver_one_time_private_key_fidCtx);
+    vscf_impl_t */*6*/ receiver_one_time_private_key = *(vscf_impl_t */*6*/*)&receiver_one_time_private_key_c_ctx;
     // Wrap Java classes
     jclass message_cls = (*jenv)->FindClass(jenv, "com/virgilsecurity/crypto/ratchet/RatchetMessage");
     if (NULL == message_cls) {
@@ -295,32 +362,11 @@ JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratchet
     jlong message_c_ctx = (*jenv)->GetLongField(jenv, jmessage, message_fidCtx);
     vscr_ratchet_message_t */*5*/ message = *(vscr_ratchet_message_t */*5*/*) &message_c_ctx;
 
-    // Wrap input data
-    byte* sender_identity_public_key_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jsenderIdentityPublicKey, NULL);
-    vsc_data_t sender_identity_public_key = vsc_data(sender_identity_public_key_arr, (*jenv)->GetArrayLength(jenv, jsenderIdentityPublicKey));
-
-    byte* receiver_identity_private_key_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jreceiverIdentityPrivateKey, NULL);
-    vsc_data_t receiver_identity_private_key = vsc_data(receiver_identity_private_key_arr, (*jenv)->GetArrayLength(jenv, jreceiverIdentityPrivateKey));
-
-    byte* receiver_long_term_private_key_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jreceiverLongTermPrivateKey, NULL);
-    vsc_data_t receiver_long_term_private_key = vsc_data(receiver_long_term_private_key_arr, (*jenv)->GetArrayLength(jenv, jreceiverLongTermPrivateKey));
-
-    byte* receiver_one_time_private_key_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jreceiverOneTimePrivateKey, NULL);
-    vsc_data_t receiver_one_time_private_key = vsc_data(receiver_one_time_private_key_arr, (*jenv)->GetArrayLength(jenv, jreceiverOneTimePrivateKey));
-
-    vscr_status_t status = vscr_ratchet_session_respond(ratchet_session_ctx /*a1*/, sender_identity_public_key /*a3*/, receiver_identity_private_key /*a3*/, receiver_long_term_private_key /*a3*/, receiver_one_time_private_key /*a3*/, message /*a6*/);
+    vscr_status_t status = vscr_ratchet_session_respond(ratchet_session_ctx /*a1*/, sender_identity_public_key /*a6*/, receiver_identity_private_key /*a6*/, receiver_long_term_private_key /*a6*/, receiver_one_time_private_key /*a6*/, message /*a6*/);
     if (status != vscr_status_SUCCESS) {
         throwRatchetException(jenv, jobj, status);
         return;
     }
-    // Free resources
-    (*jenv)->ReleaseByteArrayElements(jenv, jsenderIdentityPublicKey, (jbyte*) sender_identity_public_key_arr, 0);
-
-    (*jenv)->ReleaseByteArrayElements(jenv, jreceiverIdentityPrivateKey, (jbyte*) receiver_identity_private_key_arr, 0);
-
-    (*jenv)->ReleaseByteArrayElements(jenv, jreceiverLongTermPrivateKey, (jbyte*) receiver_long_term_private_key_arr, 0);
-
-    (*jenv)->ReleaseByteArrayElements(jenv, jreceiverOneTimePrivateKey, (jbyte*) receiver_one_time_private_key_arr, 0);
 }
 
 JNIEXPORT jboolean JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratchetSession_1isInitiator (JNIEnv *jenv, jobject jobj, jlong c_ctx) {

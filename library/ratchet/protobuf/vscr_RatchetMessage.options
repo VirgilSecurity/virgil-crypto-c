@@ -1,10 +1,18 @@
-vscr_RegularMessageHeader.public_key max_size:32 fixed_length:true
+vscr_RegularMessageHeader.public_key_first max_size:32 fixed_length:true
+vscr_RegularMessageHeader.public_key_second max_size:1092 type:FT_POINTER
 
-vscr_RegularMessage.header max_size:52 fixed_length:false
+vscr_RegularMessage.header max_size:1152 type:FT_POINTER
 
-vscr_PrekeyMessage.sender_identity_key max_size:32 fixed_length:true
-vscr_PrekeyMessage.sender_ephemeral_key max_size:32 fixed_length:true
-vscr_PrekeyMessage.receiver_long_term_key max_size:32 fixed_length:true
-vscr_PrekeyMessage.receiver_one_time_key max_size:32 fixed_length:true
+vscr_PrekeyMessage.sender_identity_key_first max_size:32 fixed_length:true
+vscr_PrekeyMessage.sender_identity_key_second max_size:1092 type:FT_POINTER
+
+vscr_PrekeyMessage.sender_ephemeral_key_first max_size:32 fixed_length:true
+vscr_PrekeyMessage.sender_ephemeral_key_second max_size:1092 type:FT_POINTER
+
+vscr_PrekeyMessage.receiver_long_term_key_first max_size:32 fixed_length:true
+vscr_PrekeyMessage.receiver_long_term_key_second max_size:1092 type:FT_POINTER
+
+vscr_PrekeyMessage.receiver_one_time_key_first max_size:32 fixed_length:true
+vscr_PrekeyMessage.receiver_one_time_key_second max_size:1092 type:FT_POINTER
 
 vscr_RegularMessage.cipher_text max_size:32975 type:FT_POINTER

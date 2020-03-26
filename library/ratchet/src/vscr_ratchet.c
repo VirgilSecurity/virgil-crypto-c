@@ -54,6 +54,9 @@
 #include "vscr_ratchet_sender_chain.h"
 
 #include <virgil/crypto/foundation/vscf_random.h>
+#include <virgil/crypto/foundation/vscf_private_key.h>
+#include <virgil/crypto/foundation/vscf_public_key.h>
+#include <virgil/crypto/foundation/vscf_key_provider.h>
 #include <virgil/crypto/foundation/vscf_sha512.h>
 #include <virgil/crypto/foundation/vscf_hmac.h>
 #include <virgil/crypto/foundation/vscf_hkdf.h>
@@ -318,6 +321,7 @@ vscr_ratchet_init_ctx(vscr_ratchet_t *self) {
     self->skipped_messages = vscr_ratchet_skipped_messages_new();
     self->cipher = vscr_ratchet_cipher_new();
     self->padding = vscf_message_padding_new();
+    self->key_provider = vscf_key_provider_new();
 }
 
 //
@@ -335,6 +339,7 @@ vscr_ratchet_cleanup_ctx(vscr_ratchet_t *self) {
     vscr_ratchet_skipped_messages_destroy(&self->skipped_messages);
     vscr_ratchet_cipher_destroy(&self->cipher);
     vscf_message_padding_destroy(&self->padding);
+    vscf_key_provider_destroy(&self->key_provider);
 }
 
 //
@@ -347,6 +352,7 @@ vscr_ratchet_did_setup_rng(vscr_ratchet_t *self) {
 
     if (self->rng) {
         vscf_message_padding_use_rng(self->padding, self->rng);
+        vscf_key_provider_use_random(self->key_provider, self->rng);
     }
 }
 
@@ -394,8 +400,8 @@ vscr_ratchet_decrypt_for_existing_chain(vscr_ratchet_t *self, const vscr_ratchet
     vscr_ratchet_message_key_t *message_key = vscr_ratchet_keys_create_message_key(new_chain_key);
 
     vscr_status_t result = vscr_ratchet_cipher_decrypt_then_remove_pad(self->cipher,
-            vsc_data(message->cipher_text->bytes, message->cipher_text->size), message_key,
-            vsc_data(message->header.bytes, message->header.size), buffer);
+            vscr_ratchet_pb_utils_buffer_to_data(message->cipher_text), message_key,
+            vscr_ratchet_pb_utils_buffer_to_data(message->header), buffer);
 
     vscr_ratchet_chain_key_destroy(&new_chain_key);
     vscr_ratchet_message_key_destroy(&message_key);
@@ -412,6 +418,8 @@ vscr_ratchet_decrypt_for_new_chain(vscr_ratchet_t *self, const vscr_RegularMessa
     VSCR_ASSERT_PTR(buffer);
     VSCR_ASSERT_PTR(regular_message_header);
 
+    vscr_status_t result = vscr_status_SUCCESS;
+
     if (!self->sender_chain) {
         return vscr_status_ERROR_SENDER_CHAIN_MISSING;
     }
@@ -422,9 +430,29 @@ vscr_ratchet_decrypt_for_new_chain(vscr_ratchet_t *self, const vscr_RegularMessa
 
     byte new_root_key[vscr_ratchet_common_hidden_SHARED_KEY_LEN];
 
+    vscf_key_provider_t *key_provider = vscf_key_provider_new();
+    vscf_key_provider_use_random(key_provider, self->rng);
+    vscf_status_t f_status = vscf_key_provider_setup_defaults(key_provider);
+
+    if (f_status != vscf_status_SUCCESS) {
+        result = vscr_status_ERROR_RNG_FAILED;
+        goto err1;
+    }
+
+    vscf_error_t error_ctx;
+    vscf_error_reset(&error_ctx);
+
+    vscf_impl_t *public_key = vscf_key_provider_import_public_key(
+            key_provider, vscr_ratchet_pb_utils_buffer_to_data(regular_message_header->public_key), &error_ctx);
+
+    if (public_key == NULL || error_ctx.status != vscf_status_SUCCESS) {
+        result = vscr_status_ERROR_INVALID_KEY_TYPE;
+        goto err2;
+    }
+
     vscr_ratchet_receiver_chain_t *new_chain = vscr_ratchet_receiver_chain_new();
-    vscr_status_t result = vscr_ratchet_keys_create_chain_key(self->root_key, self->sender_chain->private_key,
-            regular_message_header->public_key, new_root_key, &new_chain->chain_key);
+    result = vscr_ratchet_keys_create_chain_key(
+            self->root_key, self->sender_chain->private_key, public_key, new_root_key, &new_chain->chain_key);
 
     if (result != vscr_status_SUCCESS) {
         goto err;
@@ -432,6 +460,12 @@ vscr_ratchet_decrypt_for_new_chain(vscr_ratchet_t *self, const vscr_RegularMessa
 
     result = vscr_ratchet_decrypt_for_existing_chain(
             self, &new_chain->chain_key, message, regular_message_header, buffer);
+
+err2:
+    vscf_impl_destroy(&public_key);
+
+err1:
+    vscf_key_provider_destroy(&key_provider);
 
 err:
     vscr_ratchet_receiver_chain_destroy(&new_chain);
@@ -441,47 +475,8 @@ err:
 }
 
 VSCR_PUBLIC vscr_status_t
-vscr_ratchet_respond(vscr_ratchet_t *self, vscr_ratchet_symmetric_key_t shared_key,
-        const vscr_ratchet_private_key_t receiver_long_term_private_key, const vscr_RegularMessage *message,
-        const vscr_RegularMessageHeader *regular_message_header) {
-
-    VSCR_ASSERT_PTR(self);
-    VSCR_ASSERT_PTR(message);
-
-    VSCR_ASSERT(!self->receiver_chain);
-
-    vscr_ratchet_receiver_chain_t *receiver_chain = vscr_ratchet_receiver_chain_new();
-
-    vscr_status_t status = vscr_ratchet_keys_create_chain_key(shared_key, receiver_long_term_private_key,
-            regular_message_header->public_key, self->root_key, &receiver_chain->chain_key);
-
-    if (status != vscr_status_SUCCESS) {
-        vscr_ratchet_receiver_chain_destroy(&receiver_chain);
-        return status;
-    }
-
-    memcpy(receiver_chain->public_key, regular_message_header->public_key, sizeof(regular_message_header->public_key));
-
-    self->receiver_chain = receiver_chain;
-
-    vscr_ratchet_skipped_messages_add_public_key(self->skipped_messages, regular_message_header->public_key);
-
-    // TODO: Optimize. Prevent double decrypt for first message if possible
-    // At this moment decrypting message using symmetric authenticated encryption is the only way to check
-    // message authenticity. Further in decrypt method first message will be decrypted for the second time.
-
-    vsc_buffer_t *msg_buffer = vsc_buffer_new_with_capacity(vscr_ratchet_decrypt_len(self, message->cipher_text->size));
-    vsc_buffer_make_secure(msg_buffer);
-    status = vscr_ratchet_decrypt_for_existing_chain(
-            self, &receiver_chain->chain_key, message, regular_message_header, msg_buffer);
-    vsc_buffer_destroy(&msg_buffer);
-
-    return status;
-}
-
-VSCR_PUBLIC vscr_status_t
 vscr_ratchet_initiate(vscr_ratchet_t *self, vscr_ratchet_symmetric_key_t shared_key,
-        const vscr_ratchet_public_key_t receiver_long_term_public_key) {
+        const vscf_impl_t *receiver_long_term_public_key, bool enable_post_quantum) {
 
     VSCR_ASSERT_PTR(self);
     VSCR_ASSERT(!self->sender_chain);
@@ -507,6 +502,61 @@ vscr_ratchet_initiate(vscr_ratchet_t *self, vscr_ratchet_symmetric_key_t shared_
 
     self->sender_chain = sender_chain;
 
+    return status;
+}
+
+VSCR_PUBLIC vscr_status_t
+vscr_ratchet_respond(vscr_ratchet_t *self, vscr_ratchet_symmetric_key_t shared_key,
+        const vscf_impl_t *receiver_long_term_private_key, const vscr_RegularMessage *message,
+        const vscr_RegularMessageHeader *regular_message_header, bool enable_post_quantum) {
+
+    VSCR_ASSERT_PTR(self);
+    VSCR_ASSERT_PTR(message);
+
+    VSCR_ASSERT(!self->receiver_chain);
+
+    vscr_status_t status = vscr_status_SUCCESS;
+
+    vscr_ratchet_receiver_chain_t *receiver_chain = vscr_ratchet_receiver_chain_new();
+
+    vscf_error_t error_ctx;
+    vscf_error_reset(&error_ctx);
+
+    vscf_impl_t *public_key = vscf_key_provider_import_public_key(
+            self->key_provider, vscr_ratchet_pb_utils_buffer_to_data(regular_message_header->public_key), &error_ctx);
+
+    if (public_key == NULL || error_ctx.status != vscf_status_SUCCESS) {
+        // FIXME
+        status = vscr_status_ERROR_INVALID_KEY_TYPE;
+        vscf_impl_destroy(&public_key);
+        goto err;
+    }
+
+    status = vscr_ratchet_keys_create_chain_key(
+            shared_key, receiver_long_term_private_key, public_key, self->root_key, &receiver_chain->chain_key);
+
+    if (status != vscr_status_SUCCESS) {
+        vscr_ratchet_receiver_chain_destroy(&receiver_chain);
+        return status;
+    }
+
+    receiver_chain->public_key = public_key;
+
+    self->receiver_chain = receiver_chain;
+
+    vscr_ratchet_skipped_messages_add_public_key(self->skipped_messages, public_key);
+
+    // TODO: Optimize. Prevent double decrypt for first message if possible
+    // At this moment decrypting message using symmetric authenticated encryption is the only way to check
+    // message authenticity. Further in decrypt method first message will be decrypted for the second time.
+
+    vsc_buffer_t *msg_buffer = vsc_buffer_new_with_capacity(vscr_ratchet_decrypt_len(self, message->cipher_text->size));
+    vsc_buffer_make_secure(msg_buffer);
+    status = vscr_ratchet_decrypt_for_existing_chain(
+            self, &receiver_chain->chain_key, message, regular_message_header, msg_buffer);
+    vsc_buffer_destroy(&msg_buffer);
+
+err:
     return status;
 }
 
@@ -759,6 +809,7 @@ vscr_ratchet_serialize(const vscr_ratchet_t *self, vscr_Ratchet *ratchet_pb) {
     }
 
     ratchet_pb->prev_sender_chain_count = self->prev_sender_chain_count;
+    ratchet_pb->ephemeral_keys_are_hybrid = self->ephemeral_keys_are_hybrid;
 
     if (self->receiver_chain) {
         ratchet_pb->has_receiver_chain = true;
@@ -784,6 +835,7 @@ vscr_ratchet_deserialize(const vscr_Ratchet *ratchet_pb, vscr_ratchet_t *ratchet
     }
 
     ratchet->prev_sender_chain_count = ratchet_pb->prev_sender_chain_count;
+    ratchet->ephemeral_keys_are_hybrid = ratchet_pb->ephemeral_keys_are_hybrid;
 
     if (ratchet_pb->has_receiver_chain) {
         ratchet->receiver_chain = vscr_ratchet_receiver_chain_new();

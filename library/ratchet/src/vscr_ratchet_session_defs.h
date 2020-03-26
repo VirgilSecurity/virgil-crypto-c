@@ -55,16 +55,27 @@
 
 #include "vscr_library.h"
 #include "vscr_atomic.h"
+#include "vscr_ratchet_pb_utils.h"
 #include "vscr_ratchet_common_hidden.h"
 #include "vscr_ratchet_typedefs.h"
 #include "vscr_ratchet_key_utils.h"
 #include "vscr_ratchet.h"
 
+#if !VSCR_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <virgil/crypto/common/vsc_buffer.h>
+#endif
+
 #if !VSCR_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
 #   include <virgil/crypto/foundation/vscf_impl.h>
+#   include <virgil/crypto/foundation/vscf_key_provider.h>
+#endif
+
+#if VSCR_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <VSCCommon/vsc_buffer.h>
 #endif
 
 #if VSCR_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
+#   include <VSCFoundation/vscf_key_provider.h>
 #   include <VSCFoundation/vscf_impl.h>
 #endif
 
@@ -102,21 +113,31 @@ struct vscr_ratchet_session_t {
 
     vscr_ratchet_key_utils_t *key_utils;
 
+    vscf_key_provider_t *key_provider;
+
     vscr_ratchet_t *ratchet;
 
     bool is_initiator;
 
     bool received_first_response;
 
-    vscr_ratchet_public_key_t sender_identity_public_key;
+    vscr_ratchet_public_key_t sender_identity_public_key_first;
 
-    vscr_ratchet_public_key_t sender_ephemeral_public_key;
+    vscr_ratchet_public_key_t sender_ephemeral_public_key_first;
 
-    vscr_ratchet_public_key_t receiver_long_term_public_key;
+    vscr_ratchet_public_key_t receiver_long_term_public_key_first;
 
-    bool receiver_has_one_time_public_key;
+    bool receiver_has_one_time_public_key_first;
 
-    vscr_ratchet_public_key_t receiver_one_time_public_key;
+    vscr_ratchet_public_key_t receiver_one_time_public_key_first;
+
+    vsc_buffer_t *sender_identity_public_key_second;
+
+    vsc_buffer_t *sender_ephemeral_public_key_second;
+
+    vsc_buffer_t *receiver_long_term_public_key_second;
+
+    vsc_buffer_t *receiver_one_time_public_key_second;
 };
 
 

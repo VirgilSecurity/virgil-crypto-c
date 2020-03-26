@@ -55,6 +55,11 @@
 #include "vscr_assert.h"
 #include "vscr_ratchet_key_utils_defs.h"
 
+#include <virgil/crypto/foundation/vscf_random.h>
+#include <virgil/crypto/foundation/vscf_key_info.h>
+#include <virgil/crypto/foundation/vscf_compound_private_key.h>
+#include <virgil/crypto/foundation/vscf_hybrid_private_key.h>
+#include <virgil/crypto/foundation/vscf_private_key.h>
 #include <virgil/crypto/foundation/vscf_key_asn1_deserializer.h>
 #include <ed25519/ed25519.h>
 #include <virgil/crypto/foundation/vscf_sha512.h>
@@ -87,6 +92,18 @@ vscr_ratchet_key_utils_init_ctx(vscr_ratchet_key_utils_t *self);
 //
 static void
 vscr_ratchet_key_utils_cleanup_ctx(vscr_ratchet_key_utils_t *self);
+
+//
+//  This method is called when interface 'random' was setup.
+//
+static void
+vscr_ratchet_key_utils_did_setup_rng(vscr_ratchet_key_utils_t *self);
+
+//
+//  This method is called when interface 'random' was released.
+//
+static void
+vscr_ratchet_key_utils_did_release_rng(vscr_ratchet_key_utils_t *self);
 
 //
 //  Return size of 'vscr_ratchet_key_utils_t'.
@@ -123,6 +140,8 @@ vscr_ratchet_key_utils_cleanup(vscr_ratchet_key_utils_t *self) {
     }
 
     vscr_ratchet_key_utils_cleanup_ctx(self);
+
+    vscr_ratchet_key_utils_release_rng(self);
 
     vscr_zeroize(self, sizeof(vscr_ratchet_key_utils_t));
 }
@@ -220,6 +239,54 @@ vscr_ratchet_key_utils_shallow_copy(vscr_ratchet_key_utils_t *self) {
     return self;
 }
 
+//
+//  Setup dependency to the interface 'random' with shared ownership.
+//
+VSCR_PUBLIC void
+vscr_ratchet_key_utils_use_rng(vscr_ratchet_key_utils_t *self, vscf_impl_t *rng) {
+
+    VSCR_ASSERT_PTR(self);
+    VSCR_ASSERT_PTR(rng);
+    VSCR_ASSERT(self->rng == NULL);
+
+    VSCR_ASSERT(vscf_random_is_implemented(rng));
+
+    self->rng = vscf_impl_shallow_copy(rng);
+
+    vscr_ratchet_key_utils_did_setup_rng(self);
+}
+
+//
+//  Setup dependency to the interface 'random' and transfer ownership.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCR_PUBLIC void
+vscr_ratchet_key_utils_take_rng(vscr_ratchet_key_utils_t *self, vscf_impl_t *rng) {
+
+    VSCR_ASSERT_PTR(self);
+    VSCR_ASSERT_PTR(rng);
+    VSCR_ASSERT(self->rng == NULL);
+
+    VSCR_ASSERT(vscf_random_is_implemented(rng));
+
+    self->rng = rng;
+
+    vscr_ratchet_key_utils_did_setup_rng(self);
+}
+
+//
+//  Release dependency to the interface 'random'.
+//
+VSCR_PUBLIC void
+vscr_ratchet_key_utils_release_rng(vscr_ratchet_key_utils_t *self) {
+
+    VSCR_ASSERT_PTR(self);
+
+    vscf_impl_destroy(&self->rng);
+
+    vscr_ratchet_key_utils_did_release_rng(self);
+}
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.
@@ -240,6 +307,7 @@ vscr_ratchet_key_utils_init_ctx(vscr_ratchet_key_utils_t *self) {
 
     self->key_asn1_deserializer = vscf_key_asn1_deserializer_new();
     vscf_key_asn1_deserializer_setup_defaults(self->key_asn1_deserializer);
+    self->key_provider = vscf_key_provider_new();
 }
 
 //
@@ -253,6 +321,110 @@ vscr_ratchet_key_utils_cleanup_ctx(vscr_ratchet_key_utils_t *self) {
     VSCR_ASSERT_PTR(self);
 
     vscf_key_asn1_deserializer_destroy(&self->key_asn1_deserializer);
+    vscf_key_provider_destroy(&self->key_provider);
+}
+
+//
+//  This method is called when interface 'random' was setup.
+//
+static void
+vscr_ratchet_key_utils_did_setup_rng(vscr_ratchet_key_utils_t *self) {
+
+    VSCR_ASSERT_PTR(self);
+
+    if (self->rng != NULL) {
+        vscf_key_provider_use_random(self->key_provider, self->rng);
+    }
+}
+
+//
+//  This method is called when interface 'random' was released.
+//
+static void
+vscr_ratchet_key_utils_did_release_rng(vscr_ratchet_key_utils_t *self) {
+
+    VSCR_ASSERT_PTR(self);
+}
+
+VSCR_PUBLIC vscr_status_t
+vscr_ratchet_key_utils_import_private_key(vscr_ratchet_key_utils_t *self, const vscf_impl_t *private_key,
+        const vscr_ratchet_private_key_t *private_key_first, vscf_impl_t **private_key_second_ref,
+        bool enable_post_quantum, bool allow_signer) {
+
+    VSCR_ASSERT_PTR(self);
+    VSCR_ASSERT_PTR(self->key_provider);
+
+    vscr_status_t status = vscr_status_SUCCESS;
+
+    vscf_key_info_t *key_info = vscf_key_info_new_with_alg_info(vscf_key_alg_info(private_key));
+
+    const vscf_impl_t *key = NULL;
+
+    if (vscf_key_info_is_compound(key_info)) {
+        if (!allow_signer) {
+            status = vscr_status_ERROR_INVALID_KEY_TYPE;
+            goto err1;
+        }
+
+        key = vscf_compound_private_key_cipher_key((vscf_compound_private_key_t *)private_key);
+        VSCR_ASSERT_PTR(key);
+
+        vscf_key_info_destroy(&key_info);
+
+        key_info = vscf_key_info_new_with_alg_info(vscf_key_alg_info(key));
+        VSCR_ASSERT(!vscf_key_info_is_compound(key_info));
+    }
+
+    if (enable_post_quantum != vscf_key_info_is_hybrid(key_info)) {
+        status = vscr_status_ERROR_INVALID_KEY_TYPE;
+        goto err1;
+    }
+
+    const vscf_impl_t *curve25519_private_key;
+
+    if (vscf_key_info_is_hybrid(key_info)) {
+        const vscf_impl_t *first_key = vscf_hybrid_private_key_first_key((vscf_hybrid_private_key_t *)key);
+        const vscf_impl_t *second_key = vscf_hybrid_private_key_second_key((vscf_hybrid_private_key_t *)key);
+
+        vscf_key_info_destroy(&key_info);
+        key_info = vscf_key_info_new_with_alg_info(vscf_key_alg_info(first_key));
+
+        if (vscf_key_info_alg_id(key_info) == vscf_alg_id_ROUND5_ND_5KEM_5D) {
+            const vscf_impl_t *temp = first_key;
+            first_key = second_key;
+            second_key = temp;
+        }
+
+        vscf_key_info_destroy(&key_info);
+        key_info = vscf_key_info_new_with_alg_info(vscf_key_alg_info(first_key));
+
+        if (vscf_key_info_alg_id(key_info) != vscf_alg_id_CURVE25519) {
+            status = vscr_status_ERROR_INVALID_KEY_TYPE;
+            goto err1;
+        }
+
+        vscf_key_info_destroy(&key_info);
+        key_info = vscf_key_info_new_with_alg_info(vscf_key_alg_info(second_key));
+
+        if (vscf_key_info_alg_id(key_info) != vscf_alg_id_ROUND5_ND_5KEM_5D) {
+            status = vscr_status_ERROR_INVALID_KEY_TYPE;
+            goto err1;
+        }
+
+        *private_key_second_ref = second_key;
+        curve25519_private_key = first_key;
+    } else {
+        // TODO: convert ed25519 to curve25519 if needed
+        curve25519_private_key = key;
+        *private_key_second_ref = NULL;
+    }
+
+    // TODO: export curve25519_private_key to private_key_first_ref
+
+err1:
+    vscf_key_info_destroy(&key_info);
+
+    return status;
 }
 
 VSCR_PUBLIC vsc_buffer_t *

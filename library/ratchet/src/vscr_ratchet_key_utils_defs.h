@@ -58,10 +58,14 @@
 #include "vscr_ratchet_common_hidden.h"
 
 #if !VSCR_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
+#   include <virgil/crypto/foundation/vscf_impl.h>
 #   include <virgil/crypto/foundation/vscf_key_asn1_deserializer.h>
+#   include <virgil/crypto/foundation/vscf_key_provider.h>
 #endif
 
 #if VSCR_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
+#   include <VSCFoundation/vscf_key_provider.h>
+#   include <VSCFoundation/vscf_impl.h>
 #   include <VSCFoundation/vscf_key_asn1_deserializer.h>
 #endif
 
@@ -92,6 +96,12 @@ struct vscr_ratchet_key_utils_t {
     //  Reference counter.
     //
     VSCR_ATOMIC size_t refcnt;
+    //
+    //  Dependency to the interface 'random'.
+    //
+    vscf_impl_t *rng;
+
+    vscf_key_provider_t *key_provider;
 
     vscf_key_asn1_deserializer_t *key_asn1_deserializer;
 };

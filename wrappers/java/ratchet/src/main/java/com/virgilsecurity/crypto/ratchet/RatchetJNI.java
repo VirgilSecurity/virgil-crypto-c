@@ -118,12 +118,12 @@ public class RatchetJNI {
     /*
     * Initiates session
     */
-    public native void ratchetSession_initiate(long cCtx, byte[] senderIdentityPrivateKey, byte[] receiverIdentityPublicKey, byte[] receiverLongTermPublicKey, byte[] receiverOneTimePublicKey) throws RatchetException;
+    public native void ratchetSession_initiate(long cCtx, PrivateKey senderIdentityPrivateKey, PublicKey receiverIdentityPublicKey, PublicKey receiverLongTermPublicKey, PublicKey receiverOneTimePublicKey) throws RatchetException;
 
     /*
     * Responds to session initiation
     */
-    public native void ratchetSession_respond(long cCtx, byte[] senderIdentityPublicKey, byte[] receiverIdentityPrivateKey, byte[] receiverLongTermPrivateKey, byte[] receiverOneTimePrivateKey, RatchetMessage message) throws RatchetException;
+    public native void ratchetSession_respond(long cCtx, PublicKey senderIdentityPublicKey, PrivateKey receiverIdentityPrivateKey, PrivateKey receiverLongTermPrivateKey, PrivateKey receiverOneTimePrivateKey, RatchetMessage message) throws RatchetException;
 
     /*
     * Returns flag that indicates is this session was initiated or responded

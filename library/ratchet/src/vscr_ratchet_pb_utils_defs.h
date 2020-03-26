@@ -47,33 +47,14 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Class 'ratchet' types definition.
+//  Class 'ratchet pb utils' types definition.
 // --------------------------------------------------------------------------
 
-#ifndef VSCR_RATCHET_DEFS_H_INCLUDED
-#define VSCR_RATCHET_DEFS_H_INCLUDED
+#ifndef VSCR_RATCHET_PB_UTILS_DEFS_H_INCLUDED
+#define VSCR_RATCHET_PB_UTILS_DEFS_H_INCLUDED
 
 #include "vscr_library.h"
 #include "vscr_atomic.h"
-#include "vscr_ratchet_pb_utils.h"
-#include "vscr_ratchet_common_hidden.h"
-#include "vscr_ratchet_keys.h"
-#include "vscr_ratchet_cipher.h"
-#include "vscr_ratchet_sender_chain.h"
-#include "vscr_ratchet_receiver_chain.h"
-#include "vscr_ratchet_skipped_messages.h"
-
-#include <virgil/crypto/foundation/private/vscf_message_padding.h>
-
-#if !VSCR_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
-#   include <virgil/crypto/foundation/vscf_impl.h>
-#   include <virgil/crypto/foundation/vscf_key_provider.h>
-#endif
-
-#if VSCR_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
-#   include <VSCFoundation/vscf_impl.h>
-#   include <VSCFoundation/vscf_key_provider.h>
-#endif
 
 // clang-format on
 //  @end
@@ -91,9 +72,9 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Handle 'ratchet' context.
+//  Handle 'ratchet pb utils' context.
 //
-struct vscr_ratchet_t {
+struct vscr_ratchet_pb_utils_t {
     //
     //  Function do deallocate self context.
     //
@@ -102,28 +83,6 @@ struct vscr_ratchet_t {
     //  Reference counter.
     //
     VSCR_ATOMIC size_t refcnt;
-    //
-    //  Dependency to the interface 'random'.
-    //
-    vscf_impl_t *rng;
-
-    vscf_key_provider_t *key_provider;
-
-    bool enable_post_quantum;
-
-    vscr_ratchet_cipher_t *cipher;
-
-    vscf_message_padding_t *padding;
-
-    vscr_ratchet_sender_chain_t *sender_chain;
-
-    uint32_t prev_sender_chain_count;
-
-    vscr_ratchet_receiver_chain_t *receiver_chain;
-
-    vscr_ratchet_skipped_messages_t *skipped_messages;
-
-    vscr_ratchet_symmetric_key_t root_key;
 };
 
 
@@ -140,5 +99,5 @@ struct vscr_ratchet_t {
 
 
 //  @footer
-#endif // VSCR_RATCHET_DEFS_H_INCLUDED
+#endif // VSCR_RATCHET_PB_UTILS_DEFS_H_INCLUDED
 //  @end

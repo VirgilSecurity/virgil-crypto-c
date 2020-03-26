@@ -6,12 +6,12 @@
 
     <require module="ratchet typedefs" scope="context"/>
 
-    <require header="ed25519/ed25519.h" is_system="1" scope="private"/>
-
     <require class="ratchet common hidden" scope="context"/>
 
-    <property name="private key" class="vscr_ratchet_private_key_t" is_reference="0" library="internal" access="readwrite"/>
-    <property name="public key" class="vscr_ratchet_public_key_t" is_reference="0" library="internal" access="readwrite"/>
+    <property name="public key first" interface="public key" project="foundation" access="readwrite"/>
+    <property name="public key first data" class="vscr_ratchet_public_key_t" is_reference="0" library="internal" access="readwrite"/>
+    <property name="public key second" interface="public key" project="foundation" access="readwrite"/>
+    <property name="public key second data" class="buffer" access="readwrite"/>
     <property name="chain key" class="ratchet chain key" access="readwrite" is_reference="0"/>
 
     <method name="serialize" is_const="1">

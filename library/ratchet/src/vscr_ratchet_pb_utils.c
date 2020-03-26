@@ -37,6 +37,12 @@
 // clang-format off
 
 
+//  @description
+// --------------------------------------------------------------------------
+//  Utils class for working with protobug.
+// --------------------------------------------------------------------------
+
+
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -44,9 +50,13 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#include "vscr_ratchet_sender_chain.h"
+#include "vscr_ratchet_pb_utils.h"
 #include "vscr_memory.h"
 #include "vscr_assert.h"
+#include "vscr_ratchet_pb_utils_defs.h"
+
+#include <pb_decode.h>
+#include <pb_encode.h>
 
 // clang-format on
 //  @end
@@ -60,11 +70,11 @@
 
 //
 //  Perform context specific initialization.
-//  Note, this method is called automatically when method vscr_ratchet_sender_chain_init() is called.
+//  Note, this method is called automatically when method vscr_ratchet_pb_utils_init() is called.
 //  Note, that context is already zeroed.
 //
 static void
-vscr_ratchet_sender_chain_init_ctx(vscr_ratchet_sender_chain_t *self);
+vscr_ratchet_pb_utils_init_ctx(vscr_ratchet_pb_utils_t *self);
 
 //
 //  Release all inner resources.
@@ -72,57 +82,57 @@ vscr_ratchet_sender_chain_init_ctx(vscr_ratchet_sender_chain_t *self);
 //  Note, that context will be zeroed automatically next this method.
 //
 static void
-vscr_ratchet_sender_chain_cleanup_ctx(vscr_ratchet_sender_chain_t *self);
+vscr_ratchet_pb_utils_cleanup_ctx(vscr_ratchet_pb_utils_t *self);
 
 //
-//  Return size of 'vscr_ratchet_sender_chain_t'.
+//  Return size of 'vscr_ratchet_pb_utils_t'.
 //
 VSCR_PUBLIC size_t
-vscr_ratchet_sender_chain_ctx_size(void) {
+vscr_ratchet_pb_utils_ctx_size(void) {
 
-    return sizeof(vscr_ratchet_sender_chain_t);
+    return sizeof(vscr_ratchet_pb_utils_t);
 }
 
 //
 //  Perform initialization of pre-allocated context.
 //
 VSCR_PUBLIC void
-vscr_ratchet_sender_chain_init(vscr_ratchet_sender_chain_t *self) {
+vscr_ratchet_pb_utils_init(vscr_ratchet_pb_utils_t *self) {
 
     VSCR_ASSERT_PTR(self);
 
-    vscr_zeroize(self, sizeof(vscr_ratchet_sender_chain_t));
+    vscr_zeroize(self, sizeof(vscr_ratchet_pb_utils_t));
 
     self->refcnt = 1;
 
-    vscr_ratchet_sender_chain_init_ctx(self);
+    vscr_ratchet_pb_utils_init_ctx(self);
 }
 
 //
 //  Release all inner resources including class dependencies.
 //
 VSCR_PUBLIC void
-vscr_ratchet_sender_chain_cleanup(vscr_ratchet_sender_chain_t *self) {
+vscr_ratchet_pb_utils_cleanup(vscr_ratchet_pb_utils_t *self) {
 
     if (self == NULL) {
         return;
     }
 
-    vscr_ratchet_sender_chain_cleanup_ctx(self);
+    vscr_ratchet_pb_utils_cleanup_ctx(self);
 
-    vscr_zeroize(self, sizeof(vscr_ratchet_sender_chain_t));
+    vscr_zeroize(self, sizeof(vscr_ratchet_pb_utils_t));
 }
 
 //
 //  Allocate context and perform it's initialization.
 //
-VSCR_PUBLIC vscr_ratchet_sender_chain_t *
-vscr_ratchet_sender_chain_new(void) {
+VSCR_PUBLIC vscr_ratchet_pb_utils_t *
+vscr_ratchet_pb_utils_new(void) {
 
-    vscr_ratchet_sender_chain_t *self = (vscr_ratchet_sender_chain_t *) vscr_alloc(sizeof (vscr_ratchet_sender_chain_t));
+    vscr_ratchet_pb_utils_t *self = (vscr_ratchet_pb_utils_t *) vscr_alloc(sizeof (vscr_ratchet_pb_utils_t));
     VSCR_ASSERT_ALLOC(self);
 
-    vscr_ratchet_sender_chain_init(self);
+    vscr_ratchet_pb_utils_init(self);
 
     self->self_dealloc_cb = vscr_dealloc;
 
@@ -134,7 +144,7 @@ vscr_ratchet_sender_chain_new(void) {
 //  It is safe to call this method even if the context was statically allocated.
 //
 VSCR_PUBLIC void
-vscr_ratchet_sender_chain_delete(vscr_ratchet_sender_chain_t *self) {
+vscr_ratchet_pb_utils_delete(vscr_ratchet_pb_utils_t *self) {
 
     if (self == NULL) {
         return;
@@ -161,7 +171,7 @@ vscr_ratchet_sender_chain_delete(vscr_ratchet_sender_chain_t *self) {
 
     vscr_dealloc_fn self_dealloc_cb = self->self_dealloc_cb;
 
-    vscr_ratchet_sender_chain_cleanup(self);
+    vscr_ratchet_pb_utils_cleanup(self);
 
     if (self_dealloc_cb != NULL) {
         self_dealloc_cb(self);
@@ -170,24 +180,24 @@ vscr_ratchet_sender_chain_delete(vscr_ratchet_sender_chain_t *self) {
 
 //
 //  Delete given context and nullifies reference.
-//  This is a reverse action of the function 'vscr_ratchet_sender_chain_new ()'.
+//  This is a reverse action of the function 'vscr_ratchet_pb_utils_new ()'.
 //
 VSCR_PUBLIC void
-vscr_ratchet_sender_chain_destroy(vscr_ratchet_sender_chain_t **self_ref) {
+vscr_ratchet_pb_utils_destroy(vscr_ratchet_pb_utils_t **self_ref) {
 
     VSCR_ASSERT_PTR(self_ref);
 
-    vscr_ratchet_sender_chain_t *self = *self_ref;
+    vscr_ratchet_pb_utils_t *self = *self_ref;
     *self_ref = NULL;
 
-    vscr_ratchet_sender_chain_delete(self);
+    vscr_ratchet_pb_utils_delete(self);
 }
 
 //
 //  Copy given class context by increasing reference counter.
 //
-VSCR_PUBLIC vscr_ratchet_sender_chain_t *
-vscr_ratchet_sender_chain_shallow_copy(vscr_ratchet_sender_chain_t *self) {
+VSCR_PUBLIC vscr_ratchet_pb_utils_t *
+vscr_ratchet_pb_utils_shallow_copy(vscr_ratchet_pb_utils_t *self) {
 
     VSCR_ASSERT_PTR(self);
 
@@ -216,15 +226,13 @@ vscr_ratchet_sender_chain_shallow_copy(vscr_ratchet_sender_chain_t *self) {
 
 //
 //  Perform context specific initialization.
-//  Note, this method is called automatically when method vscr_ratchet_sender_chain_init() is called.
+//  Note, this method is called automatically when method vscr_ratchet_pb_utils_init() is called.
 //  Note, that context is already zeroed.
 //
 static void
-vscr_ratchet_sender_chain_init_ctx(vscr_ratchet_sender_chain_t *self) {
+vscr_ratchet_pb_utils_init_ctx(vscr_ratchet_pb_utils_t *self) {
 
     VSCR_ASSERT_PTR(self);
-
-    vscr_ratchet_chain_key_init(&self->chain_key);
 }
 
 //
@@ -233,33 +241,36 @@ vscr_ratchet_sender_chain_init_ctx(vscr_ratchet_sender_chain_t *self) {
 //  Note, that context will be zeroed automatically next this method.
 //
 static void
-vscr_ratchet_sender_chain_cleanup_ctx(vscr_ratchet_sender_chain_t *self) {
+vscr_ratchet_pb_utils_cleanup_ctx(vscr_ratchet_pb_utils_t *self) {
 
     VSCR_ASSERT_PTR(self);
-
-    vscr_ratchet_chain_key_cleanup(&self->chain_key);
 }
 
 VSCR_PUBLIC void
-vscr_ratchet_sender_chain_serialize(const vscr_ratchet_sender_chain_t *self, vscr_SenderChain *sender_chain_pb) {
+vscr_ratchet_pb_utils_serialize_buffer(vsc_buffer_t *buffer, pb_bytes_array_t **pb_buffer_ref) {
 
-    VSCR_ASSERT_PTR(self);
-    VSCR_ASSERT_PTR(sender_chain_pb);
+    VSCR_ASSERT_PTR(buffer);
+    VSCR_ASSERT_PTR(pb_buffer_ref);
 
-    vscr_ratchet_chain_key_serialize(&self->chain_key, &sender_chain_pb->chain_key);
-    memcpy(sender_chain_pb->public_key, self->public_key, sizeof(sender_chain_pb->public_key));
-    memcpy(sender_chain_pb->private_key, self->private_key, sizeof(sender_chain_pb->private_key));
+    *pb_buffer_ref = vscr_alloc(PB_BYTES_ARRAY_T_ALLOCSIZE(vsc_buffer_len(buffer)));
+    memcpy((*pb_buffer_ref)->bytes, vsc_buffer_bytes(buffer), vsc_buffer_len(buffer));
+    (*pb_buffer_ref)->size = vsc_buffer_len(buffer);
 }
 
-VSCR_PUBLIC void
-vscr_ratchet_sender_chain_deserialize(
-        const vscr_SenderChain *sender_chain_pb, vscr_ratchet_sender_chain_t *sender_chain) {
+VSCR_PUBLIC vsc_buffer_t *
+vscr_ratchet_pb_utils_deserialize_buffer(const pb_bytes_array_t *pb_buffer) {
 
-    VSCR_ASSERT_PTR(sender_chain);
-    VSCR_ASSERT_PTR(sender_chain_pb);
+    if (pb_buffer == NULL) {
+        return NULL;
+    }
 
-    vscr_ratchet_chain_key_deserialize(&sender_chain_pb->chain_key, &sender_chain->chain_key);
+    return vsc_buffer_new_with_data(vsc_data(pb_buffer->bytes, pb_buffer->size));
+}
 
-    memcpy(sender_chain->public_key, sender_chain_pb->public_key, sizeof(sender_chain_pb->public_key));
-    memcpy(sender_chain->private_key, sender_chain_pb->private_key, sizeof(sender_chain_pb->private_key));
+VSCR_PUBLIC vsc_data_t
+vscr_ratchet_pb_utils_buffer_to_data(const pb_bytes_array_t *pb_buffer) {
+
+    VSCR_ASSERT_PTR(pb_buffer);
+
+    return vsc_data(pb_buffer->bytes, pb_buffer->size);
 }

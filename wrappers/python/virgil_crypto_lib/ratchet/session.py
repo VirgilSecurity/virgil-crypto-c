@@ -67,20 +67,12 @@ class Session(object):
 
     def initiate(self, sender_identity_private_key, receiver_identity_public_key, receiver_long_term_public_key, receiver_one_time_public_key):
         """Initiates session"""
-        d_sender_identity_private_key = Data(sender_identity_private_key)
-        d_receiver_identity_public_key = Data(receiver_identity_public_key)
-        d_receiver_long_term_public_key = Data(receiver_long_term_public_key)
-        d_receiver_one_time_public_key = Data(receiver_one_time_public_key)
-        status = self._lib_vscr_ratchet_session.vscr_ratchet_session_initiate(self.ctx, d_sender_identity_private_key.data, d_receiver_identity_public_key.data, d_receiver_long_term_public_key.data, d_receiver_one_time_public_key.data)
+        status = self._lib_vscr_ratchet_session.vscr_ratchet_session_initiate(self.ctx, sender_identity_private_key.c_impl, receiver_identity_public_key.c_impl, receiver_long_term_public_key.c_impl, receiver_one_time_public_key.c_impl)
         VscrStatus.handle_status(status)
 
     def respond(self, sender_identity_public_key, receiver_identity_private_key, receiver_long_term_private_key, receiver_one_time_private_key, message):
         """Responds to session initiation"""
-        d_sender_identity_public_key = Data(sender_identity_public_key)
-        d_receiver_identity_private_key = Data(receiver_identity_private_key)
-        d_receiver_long_term_private_key = Data(receiver_long_term_private_key)
-        d_receiver_one_time_private_key = Data(receiver_one_time_private_key)
-        status = self._lib_vscr_ratchet_session.vscr_ratchet_session_respond(self.ctx, d_sender_identity_public_key.data, d_receiver_identity_private_key.data, d_receiver_long_term_private_key.data, d_receiver_one_time_private_key.data, message.ctx)
+        status = self._lib_vscr_ratchet_session.vscr_ratchet_session_respond(self.ctx, sender_identity_public_key.c_impl, receiver_identity_private_key.c_impl, receiver_long_term_private_key.c_impl, receiver_one_time_private_key.c_impl, message.ctx)
         VscrStatus.handle_status(status)
 
     def is_initiator(self):
