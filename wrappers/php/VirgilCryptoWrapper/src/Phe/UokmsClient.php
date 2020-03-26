@@ -68,19 +68,19 @@ class UokmsClient
     }
 
     /**
-    * @param Virgil\CryptoWrapper\Foundation\Random $random
+    * @param \Virgil\CryptoWrapper\Foundation\Random $random
     * @return void
     */
-    public function useRandom(Virgil\CryptoWrapper\Foundation\Random $random): void
+    public function useRandom(\Virgil\CryptoWrapper\Foundation\Random $random): void
     {
         vsce_uokms_client_use_random_php($this->ctx, $random->getCtx());
     }
 
     /**
-    * @param Virgil\CryptoWrapper\Foundation\Random $operationRandom
+    * @param \Virgil\CryptoWrapper\Foundation\Random $operationRandom
     * @return void
     */
-    public function useOperationRandom(Virgil\CryptoWrapper\Foundation\Random $operationRandom): void
+    public function useOperationRandom(\Virgil\CryptoWrapper\Foundation\Random $operationRandom): void
     {
         vsce_uokms_client_use_operation_random_php($this->ctx, $operationRandom->getCtx());
     }
