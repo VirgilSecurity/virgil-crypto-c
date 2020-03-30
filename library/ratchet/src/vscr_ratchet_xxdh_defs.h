@@ -47,16 +47,26 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Class 'ratchet key id' types definition.
+//  Class 'ratchet xxdh' types definition.
 // --------------------------------------------------------------------------
 
-#ifndef VSCR_RATCHET_KEY_ID_DEFS_H_INCLUDED
-#define VSCR_RATCHET_KEY_ID_DEFS_H_INCLUDED
+#ifndef VSCR_RATCHET_XXDH_DEFS_H_INCLUDED
+#define VSCR_RATCHET_XXDH_DEFS_H_INCLUDED
 
 #include "vscr_library.h"
 #include "vscr_atomic.h"
-#include "vscr_ratchet_common_hidden.h"
-#include "vscr_ratchet_key_utils.h"
+
+#if !VSCR_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
+#   include <virgil/crypto/foundation/vscf_impl.h>
+#   include <virgil/crypto/foundation/vscf_falcon.h>
+#   include <virgil/crypto/foundation/vscf_round5.h>
+#endif
+
+#if VSCR_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
+#   include <VSCFoundation/vscf_round5.h>
+#   include <VSCFoundation/vscf_impl.h>
+#   include <VSCFoundation/vscf_falcon.h>
+#endif
 
 // clang-format on
 //  @end
@@ -74,9 +84,9 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Handle 'ratchet key id' context.
+//  Handle 'ratchet xxdh' context.
 //
-struct vscr_ratchet_key_id_t {
+struct vscr_ratchet_xxdh_t {
     //
     //  Function do deallocate self context.
     //
@@ -85,8 +95,14 @@ struct vscr_ratchet_key_id_t {
     //  Reference counter.
     //
     VSCR_ATOMIC size_t refcnt;
+    //
+    //  Dependency to the interface 'random'.
+    //
+    vscf_impl_t *rng;
 
-    vscr_ratchet_key_utils_t *key_utils;
+    vscf_round5_t *round5;
+
+    vscf_falcon_t *falcon;
 };
 
 
@@ -103,5 +119,5 @@ struct vscr_ratchet_key_id_t {
 
 
 //  @footer
-#endif // VSCR_RATCHET_KEY_ID_DEFS_H_INCLUDED
+#endif // VSCR_RATCHET_XXDH_DEFS_H_INCLUDED
 //  @end

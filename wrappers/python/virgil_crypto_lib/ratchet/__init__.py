@@ -38,7 +38,6 @@ from .status import Status
 from .msg_type import MsgType
 from .group_msg_type import GroupMsgType
 from .common import Common
-from .key_id import KeyId
 from .message import Message
 from .session import Session
 from .group_participants_info import GroupParticipantsInfo

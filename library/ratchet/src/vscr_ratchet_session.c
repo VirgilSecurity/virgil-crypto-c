@@ -60,8 +60,15 @@
 #include "vscr_ratchet_skipped_messages_defs.h"
 
 #include <virgil/crypto/foundation/vscf_random.h>
+#include <virgil/crypto/foundation/vscf_key_info.h>
+#include <virgil/crypto/foundation/vscf_compound_private_key.h>
+#include <virgil/crypto/foundation/vscf_hybrid_private_key.h>
 #include <virgil/crypto/foundation/vscf_private_key.h>
+#include <virgil/crypto/foundation/vscf_compound_public_key.h>
+#include <virgil/crypto/foundation/vscf_hybrid_public_key.h>
 #include <virgil/crypto/foundation/vscf_public_key.h>
+#include <virgil/crypto/foundation/vscf_raw_public_key.h>
+#include <virgil/crypto/foundation/vscf_raw_private_key.h>
 #include <virgil/crypto/foundation/vscf_key_provider.h>
 #include <virgil/crypto/foundation/vscf_key_info.h>
 #include <virgil/crypto/common/private/vsc_buffer_defs.h>
@@ -318,6 +325,7 @@ vscr_ratchet_session_init_ctx(vscr_ratchet_session_t *self) {
     self->ratchet = vscr_ratchet_new();
     self->key_utils = vscr_ratchet_key_utils_new();
     self->key_provider = vscf_key_provider_new();
+    self->xxdh = vscr_ratchet_xxdh_new();
 }
 
 //
@@ -330,14 +338,15 @@ vscr_ratchet_session_cleanup_ctx(vscr_ratchet_session_t *self) {
 
     VSCR_ASSERT_PTR(self);
 
-    vsc_buffer_destroy(&self->sender_identity_public_key_second);
-    vsc_buffer_destroy(&self->sender_ephemeral_public_key_second);
-    vsc_buffer_destroy(&self->receiver_long_term_public_key_second);
-    vsc_buffer_destroy(&self->receiver_one_time_public_key_second);
+    vsc_buffer_destroy(&self->encapsulated_key_1);
+    vsc_buffer_destroy(&self->encapsulated_key_2);
+    vsc_buffer_destroy(&self->encapsulated_key_3);
+    vsc_buffer_destroy(&self->decapsulated_keys_signature);
 
     vscr_ratchet_destroy(&self->ratchet);
     vscr_ratchet_key_utils_destroy(&self->key_utils);
     vscf_key_provider_destroy(&self->key_provider);
+    vscr_ratchet_xxdh_destroy(&self->xxdh);
 }
 
 //
@@ -352,6 +361,7 @@ vscr_ratchet_session_did_setup_rng(vscr_ratchet_session_t *self) {
         vscr_ratchet_use_rng(self->ratchet, self->rng);
         vscf_key_provider_use_random(self->key_provider, self->rng);
         vscr_ratchet_key_utils_use_rng(self->key_utils, self->rng);
+        vscr_ratchet_xxdh_use_rng(self->xxdh, self->rng);
     }
 }
 
@@ -402,140 +412,127 @@ vscr_ratchet_session_initiate(vscr_ratchet_session_t *self, const vscf_impl_t *s
 
     VSCR_ASSERT_PTR(sender_identity_private_key);
     VSCR_ASSERT(vscf_private_key_is_implemented(sender_identity_private_key));
+    VSCR_ASSERT(sender_identity_key_id.len == sizeof(self->sender_identity_key_id));
+
     VSCR_ASSERT_PTR(receiver_identity_public_key);
     VSCR_ASSERT(vscf_public_key_is_implemented(receiver_identity_public_key));
+    VSCR_ASSERT(receiver_identity_key_id.len == sizeof(self->receiver_identity_key_id));
+
     VSCR_ASSERT_PTR(receiver_long_term_public_key);
     VSCR_ASSERT(vscf_public_key_is_implemented(receiver_long_term_public_key));
+    VSCR_ASSERT(receiver_long_term_key_id.len == sizeof(self->receiver_long_term_key_id));
 
     if (receiver_one_time_public_key != NULL) {
         VSCR_ASSERT(vscf_public_key_is_implemented(receiver_one_time_public_key));
+        VSCR_ASSERT(receiver_one_time_key_id.len == sizeof(self->receiver_one_time_key_id));
     }
-
-    const vscf_impl_t *sender_identity_private_key_first, *sender_identity_private_key_second;
-    const vscf_impl_t *receiver_identity_public_key_first, *receiver_identity_public_key_second;
-    const vscf_impl_t *receiver_long_term_public_key_first, *receiver_long_term_public_key_second;
-    const vscf_impl_t *receiver_one_time_public_key_first, *receiver_one_time_public_key_second;
 
     vscr_status_t status = vscr_status_SUCCESS;
 
+    vscr_ratchet_private_key_t sender_identity_private_key_first;
+    const vscf_impl_t *sender_identity_private_key_second, *sender_identity_private_key_second_signer;
 
-    vscf_impl_t *public_key = vscf_private_key_extract_public_key(key);
-    self->sender_identity_public_key_second =
-            vsc_buffer_new_with_capacity(vscf_key_provider_exported_public_key_len(self->key_provider, public_key));
+    status = vscr_ratchet_key_utils_import_private_key(self->key_utils, sender_identity_private_key,
+            &sender_identity_private_key_first, &sender_identity_private_key_second,
+            &sender_identity_private_key_second_signer, enable_post_quantum, true);
 
-    vscf_status_t f_status = vscf_key_provider_export_public_key(
-            self->key_provider, sender_identity_public_key, self->sender_identity_public_key);
-
-    if (f_status != vscf_status_SUCCESS) {
-        // FIXME
-        status = vscr_status_ERROR_RNG_FAILED;
+    if (status != vscr_status_SUCCESS) {
         goto err1;
     }
 
-    if (enable_post_quantum && vscf_key_info_is_hybrid_post_quantum(key_info))
+    memcpy(self->sender_identity_key_id, sender_identity_key_id.bytes, sizeof(self->sender_identity_key_id));
 
-        vscf_key_info_destroy(&key_info);
+    vscr_ratchet_public_key_t sender_identity_public_key_first;
+    int curve25519_status = curve25519_get_pubkey(sender_identity_public_key_first, sender_identity_private_key_first);
 
-
-    vscf_key_info_t *receiver_long_term_key_info =
-            vscf_key_info_new_with_alg_info(vscf_key_alg_info(receiver_identity_public_key));
-
-    if (|| vscf_key_info_is_hybrid_post_quantum(receiver_long_term_key_info)) {
-        ephemeral_keys_are_hybrid = true;
-    }
-
-
-    vscf_key_info_destroy(&receiver_long_term_key_info);
-
-    self->receiver_long_term_public_key = vsc_buffer_new_with_capacity(
-            vscf_key_provider_exported_public_key_len(self->key_provider, receiver_long_term_public_key));
-    f_status = vscf_key_provider_export_public_key(
-            self->key_provider, receiver_long_term_public_key, self->receiver_long_term_public_key);
-
-    if (f_status != vscf_status_SUCCESS) {
-        // FIXME
-        status = vscr_status_ERROR_RNG_FAILED;
+    if (curve25519_status != 0) {
+        status = vscr_status_ERROR_CURVE25519;
         goto err1;
     }
+
+    vscr_ratchet_public_key_t receiver_identity_public_key_first;
+    const vscf_impl_t *receiver_identity_public_key_second;
+
+    status = vscr_ratchet_key_utils_import_public_key(self->key_utils, receiver_identity_public_key,
+            &receiver_identity_public_key_first, &receiver_identity_public_key_second, NULL, enable_post_quantum, true);
+    if (status != vscr_status_SUCCESS) {
+        goto err1;
+    }
+
+    vscr_ratchet_private_key_t receiver_long_term_public_key_first;
+    const vscf_impl_t *receiver_long_term_public_key_second;
+    status = vscr_ratchet_key_utils_import_public_key(self->key_utils, receiver_long_term_public_key,
+            &receiver_long_term_public_key_first, &receiver_long_term_public_key_second, NULL, enable_post_quantum,
+            false);
+    if (status != vscr_status_SUCCESS) {
+        goto err1;
+    }
+
+    vscr_ratchet_public_key_t receiver_one_time_public_key_first;
+    const vscf_impl_t *receiver_one_time_public_key_second;
 
     if (receiver_one_time_public_key != NULL) {
-        vscf_key_info_t *receiver_one_time_key_info =
-                vscf_key_info_new_with_alg_info(vscf_key_alg_info(receiver_identity_public_key));
-
-        if (vscf_key_info_is_hybrid_post_quantum(receiver_one_time_key_info)) {
-            ephemeral_keys_are_hybrid = true;
-        }
-
-        vscf_key_info_destroy(&receiver_one_time_key_info);
-
-        self->receiver_one_time_public_key = vsc_buffer_new_with_capacity(
-                vscf_key_provider_exported_public_key_len(self->key_provider, receiver_one_time_public_key));
-        f_status = vscf_key_provider_export_public_key(
-                self->key_provider, receiver_one_time_public_key, self->receiver_one_time_public_key);
-
-        if (f_status != vscf_status_SUCCESS) {
-            // FIXME
-            status = vscr_status_ERROR_RNG_FAILED;
+        status = vscr_ratchet_key_utils_import_public_key(self->key_utils, receiver_one_time_public_key,
+                &receiver_one_time_public_key_first, &receiver_one_time_public_key_second, NULL, enable_post_quantum,
+                false);
+        if (status != vscr_status_SUCCESS) {
             goto err1;
         }
-    }
 
-    vscf_key_info_t *sender_identity_private_key_info =
-            vscf_key_info_new_with_alg_info(vscf_key_alg_info(sender_identity_private_key));
-
-    if (!vscf_key_info_is_hybrid_post_quantum(sender_identity_private_key_info)) {
-        ephemeral_keys_are_hybrid = false;
-    }
-
-    vscf_key_info_destroy(&sender_identity_private_key_info);
-
-    vscf_impl_t *ephemeral_private_key = NULL;
-    vscf_error_t error_ctx;
-    vscf_error_reset(&error_ctx);
-
-    if (ephemeral_keys_are_hybrid) {
-        ephemeral_private_key = vscf_key_provider_generate_hybrid_private_key(
-                self->key_provider, vscf_alg_id_CURVE25519, vscf_alg_id_ROUND5_ND_5KEM_5D, &error_ctx);
+        self->receiver_has_one_time_key_first = true;
     } else {
-        ephemeral_private_key =
-                vscf_key_provider_generate_private_key(self->key_provider, vscf_alg_id_CURVE25519, &error_ctx);
+        self->receiver_has_one_time_key_first = false;
+        receiver_one_time_public_key_second = NULL;
     }
 
-    if (ephemeral_private_key == NULL || error_ctx.status != vscf_status_SUCCESS) {
+    vscr_ratchet_private_key_t ephemeral_private_key_first;
+
+    vsc_buffer_t buff;
+    vsc_buffer_init(&buff);
+    vsc_buffer_use(&buff, ephemeral_private_key_first, sizeof(ephemeral_private_key_first));
+
+    vscf_status_t f_status = vscf_random(self->rng, sizeof(ephemeral_private_key_first), &buff);
+
+    vsc_buffer_delete(&buff);
+
+    if (f_status != vscf_status_SUCCESS) {
         status = vscr_status_ERROR_RNG_FAILED;
         goto err2;
     }
 
-    self->sender_ephemeral_public_key = vsc_buffer_new_with_capacity(
-            vscf_key_provider_exported_public_key_len(self->key_provider, ephemeral_private_key));
-    f_status = vscf_key_provider_export_public_key(
-            self->key_provider, ephemeral_private_key, self->sender_ephemeral_public_key);
+    curve25519_status = curve25519_get_pubkey(self->sender_ephemeral_public_key_first, ephemeral_private_key_first);
 
-    if (f_status != vscf_status_SUCCESS) {
-        // FIXME
-        status = vscr_status_ERROR_RNG_FAILED;
+    if (curve25519_status != 0) {
+        status = vscr_status_ERROR_CURVE25519;
         goto err2;
     }
 
     vscr_ratchet_symmetric_key_t shared_key;
 
-    status = vscr_ratchet_xxdh_compute_initiator_xxdh_secret(sender_identity_private_key, ephemeral_private_key,
-            receiver_identity_public_key, receiver_long_term_public_key, receiver_one_time_public_key, shared_key);
+    status = vscr_ratchet_xxdh_compute_initiator_xxdh_secret(self->xxdh, sender_identity_private_key_first,
+            ephemeral_private_key_first, receiver_identity_public_key_first, receiver_long_term_public_key_first,
+            self->receiver_has_one_time_key_first, receiver_one_time_public_key_first,
+            sender_identity_private_key_second_signer, receiver_identity_public_key_second,
+            receiver_long_term_public_key_second, receiver_one_time_public_key_second, shared_key,
+            &self->encapsulated_key_1, &self->encapsulated_key_2, &self->encapsulated_key_3,
+            &self->decapsulated_keys_signature);
 
     if (status != vscr_status_SUCCESS) {
         goto err2;
     }
 
-    // TODO: pass ephemeral_keys_are_hybrid
-    status = vscr_ratchet_initiate(self->ratchet, shared_key, receiver_long_term_public_key);
+    status = vscr_ratchet_initiate(self->ratchet, shared_key, receiver_long_term_public_key_first,
+            receiver_long_term_public_key_second, enable_post_quantum);
 
     self->is_initiator = true;
 
+    // TODO: zeroize private keys
+
 err2:
-    vscf_impl_destroy(&ephemeral_private_key);
+    vscr_zeroize(ephemeral_private_key_first, sizeof(ephemeral_private_key_first));
 
 err1:
-    vscf_impl_destroy(&sender_identity_public_key);
+    vscr_zeroize(sender_identity_private_key_first, sizeof(sender_identity_private_key_first));
 
     return status;
 }
@@ -545,9 +542,10 @@ err1:
 //
 VSCR_PUBLIC vscr_status_t
 vscr_ratchet_session_respond(vscr_ratchet_session_t *self, vscf_impl_t *sender_identity_public_key,
-        const vscf_impl_t *receiver_identity_private_key, const vscf_impl_t *receiver_long_term_private_key,
-        const vscf_impl_t *receiver_one_time_private_key, const vscr_ratchet_message_t *message,
-        bool enable_post_quantum) {
+        vsc_data_t sender_identity_key_id, const vscf_impl_t *receiver_identity_private_key,
+        vsc_data_t receiver_identity_key_id, const vscf_impl_t *receiver_long_term_private_key,
+        vsc_data_t receiver_long_term_key_id, const vscf_impl_t *receiver_one_time_private_key,
+        vsc_data_t receiver_one_time_key_id, const vscr_ratchet_message_t *message, bool enable_post_quantum) {
 
     VSCR_ASSERT_PTR(self);
     VSCR_ASSERT_PTR(self->rng);
@@ -567,21 +565,6 @@ vscr_ratchet_session_respond(vscr_ratchet_session_t *self, vscf_impl_t *sender_i
 
     VSCR_ASSERT_PTR(message);
 
-    vscf_key_info_t *receiver_identity_private_key_info =
-            vscf_key_info_new_with_alg_info(vscf_key_alg_info(receiver_identity_private_key));
-    vscf_key_info_t *receiver_long_term_private_key_info =
-            vscf_key_info_new_with_alg_info(vscf_key_alg_info(receiver_long_term_private_key));
-
-    bool ephemeral_keys_are_hybrid = false;
-
-    if (vscf_key_info_is_hybrid_post_quantum(receiver_identity_private_key_info) ||
-            vscf_key_info_is_hybrid_post_quantum(receiver_long_term_private_key_info)) {
-        ephemeral_keys_are_hybrid = true;
-    }
-
-    vscf_key_info_destroy(&receiver_identity_private_key_info);
-    vscf_key_info_destroy(&receiver_long_term_private_key_info);
-
     vscr_status_t status = vscr_status_SUCCESS;
 
     if (!message->message_pb.has_prekey_message) {
@@ -589,114 +572,93 @@ vscr_ratchet_session_respond(vscr_ratchet_session_t *self, vscf_impl_t *sender_i
         goto err1;
     }
 
-    self->sender_identity_public_key = vsc_buffer_new_with_capacity(
-            vscf_key_provider_exported_public_key_len(self->key_provider, sender_identity_public_key));
-    vscf_status_t f_status = vscf_key_provider_export_public_key(
-            self->key_provider, sender_identity_public_key, self->sender_identity_public_key);
+    const vscr_PrekeyMessage *prekey_message = &message->message_pb.prekey_message;
 
-    if (f_status != vscf_status_SUCCESS) {
-        // FIXME
-        status = vscr_status_ERROR_RNG_FAILED;
+    vscr_ratchet_public_key_t sender_identity_public_key_first;
+    const vscf_impl_t *sender_identity_public_key_second, *sender_identity_public_key_second_verifier;
+
+    status = vscr_ratchet_key_utils_import_public_key(self->key_utils, sender_identity_public_key,
+            &sender_identity_public_key_first, &sender_identity_public_key_second,
+            &sender_identity_public_key_second_verifier, enable_post_quantum, true);
+
+    if (status != vscr_status_SUCCESS) {
         goto err1;
     }
 
-    vscf_error_t error_ctx;
-    vscf_error_reset(&error_ctx);
+    vscr_ratchet_private_key_t receiver_identity_private_key_first;
+    const vscf_impl_t *receiver_identity_private_key_second;
 
-    vsc_data_t ephemeral_public_key_data = vsc_data(message->message_pb.prekey_message.sender_ephemeral_key->bytes,
-            message->message_pb.prekey_message.sender_ephemeral_key->size);
+    status = vscr_ratchet_key_utils_import_private_key(self->key_utils, receiver_identity_private_key,
+            &receiver_identity_private_key_first, &receiver_identity_private_key_second, NULL, enable_post_quantum,
+            true);
 
-    vscf_impl_t *ephemeral_public_key =
-            vscf_key_provider_import_public_key(self->key_provider, ephemeral_public_key_data, &error_ctx);
-
-    if (error_ctx.status != vscf_status_SUCCESS) {
-        // FIXME
-        status = vscr_status_ERROR_RNG_FAILED;
+    if (status != vscr_status_SUCCESS) {
         goto err2;
     }
 
-    self->sender_ephemeral_public_key = vsc_buffer_new_with_data(ephemeral_public_key_data);
+    vscr_ratchet_private_key_t receiver_long_term_private_key_first;
+    const vscf_impl_t *receiver_long_term_private_key_second;
 
-    // FIXME: Extract subkey from self->sender_identity_public_key key if needed
-    if (message->message_pb.prekey_message.sender_identity_key->size !=
-                    vsc_buffer_len(self->sender_identity_public_key) ||
-            memcmp(message->message_pb.prekey_message.sender_identity_key->bytes,
-                    vsc_buffer_bytes(self->sender_identity_public_key),
-                    vsc_buffer_len(self->sender_identity_public_key)) != 0) {
-        status = vscr_status_ERROR_IDENTITY_KEY_DOESNT_MATCH;
-        goto err2;
-    }
-
-    vscf_impl_t *receiver_long_term_public_key = vscf_private_key_extract_public_key(receiver_long_term_private_key);
-
-    self->receiver_long_term_public_key = vsc_buffer_new_with_capacity(
-            vscf_key_provider_exported_public_key_len(self->key_provider, receiver_long_term_public_key));
-    f_status = vscf_key_provider_export_public_key(
-            self->key_provider, receiver_long_term_public_key, self->receiver_long_term_public_key);
-
-    vscf_impl_destroy(&receiver_long_term_public_key);
-
-    if (f_status != vscf_status_SUCCESS) {
-        // FIXME
-        status = vscr_status_ERROR_RNG_FAILED;
-        goto err2;
-    }
-
-    if (receiver_one_time_private_key != NULL) {
-        vscf_impl_t *receiver_one_time_public_key = vscf_private_key_extract_public_key(receiver_one_time_private_key);
-
-        self->receiver_one_time_public_key = vsc_buffer_new_with_capacity(
-                vscf_key_provider_exported_public_key_len(self->key_provider, receiver_one_time_public_key));
-        f_status = vscf_key_provider_export_public_key(
-                self->key_provider, receiver_one_time_public_key, self->receiver_one_time_public_key);
-
-        vscf_impl_destroy(&receiver_one_time_public_key);
-
-        if (f_status != vscf_status_SUCCESS) {
-            // FIXME
-            status = vscr_status_ERROR_RNG_FAILED;
-            goto err2;
-        }
-
-        vscf_key_info_t *receiver_one_time_private_key_info =
-                vscf_key_info_new_with_alg_info(vscf_key_alg_info(receiver_one_time_private_key));
-
-        if (vscf_key_info_is_hybrid_post_quantum(receiver_one_time_private_key_info)) {
-            ephemeral_keys_are_hybrid = true;
-        }
-
-        vscf_key_info_destroy(&receiver_one_time_private_key_info);
-    }
-
-    vscf_key_info_t *sender_identity_public_key_info =
-            vscf_key_info_new_with_alg_info(vscf_key_alg_info(sender_identity_public_key));
-
-    if (!vscf_key_info_is_hybrid_post_quantum(sender_identity_public_key_info)) {
-        ephemeral_keys_are_hybrid = false;
-    }
-
-    vscf_key_info_destroy(&sender_identity_public_key_info);
-
-    vscr_ratchet_symmetric_key_t shared_key;
-
-    status = vscr_ratchet_xxdh_compute_responder_xxdh_secret(sender_identity_public_key, ephemeral_public_key,
-            receiver_identity_private_key, receiver_long_term_private_key, receiver_one_time_private_key, shared_key);
+    status = vscr_ratchet_key_utils_import_private_key(self->key_utils, receiver_long_term_private_key,
+            &receiver_long_term_private_key_first, &receiver_long_term_private_key_second, NULL, enable_post_quantum,
+            false);
 
     if (status != vscr_status_SUCCESS) {
         goto err3;
     }
 
+    vscr_ratchet_private_key_t receiver_one_time_private_key_first;
+    const vscf_impl_t *receiver_one_time_private_key_second;
+
+    if (receiver_one_time_private_key != NULL) {
+        self->receiver_has_one_time_key_first = true;
+
+        status = vscr_ratchet_key_utils_import_private_key(self->key_utils, receiver_one_time_private_key,
+                &receiver_one_time_private_key_first, &receiver_one_time_private_key_second, NULL, enable_post_quantum,
+                false);
+
+        if (status != vscr_status_SUCCESS) {
+            goto err4;
+        }
+    } else {
+        self->receiver_has_one_time_key_first = false;
+        receiver_one_time_private_key_second = NULL;
+    }
+
+    vscr_ratchet_symmetric_key_t shared_key;
+
+    status = vscr_ratchet_xxdh_compute_responder_xxdh_secret(self->xxdh, sender_identity_public_key_first,
+            prekey_message->sender_ephemeral_key_first, receiver_identity_private_key_first,
+            receiver_long_term_private_key_first, self->receiver_has_one_time_key_first,
+            receiver_one_time_private_key_first, sender_identity_public_key_second_verifier,
+            receiver_identity_private_key_second, receiver_long_term_private_key_second,
+            receiver_one_time_private_key_second,
+            vscr_ratchet_pb_utils_buffer_to_data(prekey_message->encapsulated_key1),
+            vscr_ratchet_pb_utils_buffer_to_data(prekey_message->encapsulated_key2),
+            vscr_ratchet_pb_utils_buffer_to_data(prekey_message->encapsulated_key3),
+            vscr_ratchet_pb_utils_buffer_to_data(prekey_message->decapsulated_keys_signature), shared_key);
+
+    if (status != vscr_status_SUCCESS) {
+        goto err5;
+    }
+
     // TODO: Initiate and pass ephemeral_keys_are_hybrid
     status = vscr_ratchet_respond(self->ratchet, shared_key, receiver_long_term_private_key,
-            &message->message_pb.regular_message, message->header_pb);
+            &message->message_pb.regular_message, message->header_pb, enable_post_quantum);
 
     self->is_initiator = false;
 
-err3:
+err5:
     vscr_zeroize(shared_key, sizeof(shared_key));
 
+err4:
+    vscr_zeroize(receiver_one_time_private_key_first, sizeof(receiver_one_time_private_key_first));
+
+err3:
+    vscr_zeroize(receiver_long_term_private_key_first, sizeof(receiver_long_term_private_key_first));
+
 err2:
-    vscf_impl_destroy(&ephemeral_public_key);
+    vscr_zeroize(receiver_identity_private_key_first, sizeof(receiver_identity_private_key_first));
 
 err1:
     return status;

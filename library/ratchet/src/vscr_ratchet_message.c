@@ -293,33 +293,36 @@ vscr_ratchet_message_get_counter(const vscr_ratchet_message_t *self) {
 //  Returns long-term public key, if message is prekey message.
 //
 VSCR_PUBLIC vsc_data_t
-vscr_ratchet_message_get_long_term_public_key(vscr_ratchet_message_t *self) {
+vscr_ratchet_message_get_sender_identity_key_id(vscr_ratchet_message_t *self) {
 
-    VSCR_ASSERT_PTR(self);
+    //  TODO: This is STUB. Implement me.
+}
 
-    if (!self->message_pb.has_prekey_message)
-        return vsc_data_empty();
+//
+//  Returns long-term public key, if message is prekey message.
+//
+VSCR_PUBLIC vsc_data_t
+vscr_ratchet_message_get_receiver_identity_key_id(vscr_ratchet_message_t *self) {
 
-    return vsc_data(self->message_pb.prekey_message.receiver_long_term_key,
-            sizeof(self->message_pb.prekey_message.receiver_long_term_key));
+    //  TODO: This is STUB. Implement me.
+}
+
+//
+//  Returns long-term public key, if message is prekey message.
+//
+VSCR_PUBLIC vsc_data_t
+vscr_ratchet_message_get_receiver_long_term_key_id(vscr_ratchet_message_t *self) {
+
+    //  TODO: This is STUB. Implement me.
 }
 
 //
 //  Returns one-time public key, if message is prekey message and if one-time key is present, empty result otherwise.
 //
 VSCR_PUBLIC vsc_data_t
-vscr_ratchet_message_get_one_time_public_key(vscr_ratchet_message_t *self) {
+vscr_ratchet_message_get_receiver_one_time_key_id(vscr_ratchet_message_t *self) {
 
-    VSCR_ASSERT_PTR(self);
-
-    if (!self->message_pb.has_prekey_message)
-        return vsc_data_empty();
-
-    if (!self->message_pb.prekey_message.has_receiver_one_time_key)
-        return vsc_data_empty();
-
-    return vsc_data(self->message_pb.prekey_message.receiver_one_time_key,
-            sizeof(self->message_pb.prekey_message.receiver_one_time_key));
+    //  TODO: This is STUB. Implement me.
 }
 
 //

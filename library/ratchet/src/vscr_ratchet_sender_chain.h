@@ -103,13 +103,13 @@ struct vscr_ratchet_sender_chain_t {
     //
     VSCR_ATOMIC size_t refcnt;
 
-    vscf_impl_t *public_key_first;
+    vscr_ratchet_private_key_t private_key_first;
 
-    vscr_ratchet_public_key_t public_key_first_data;
+    vscf_impl_t *private_key_second;
 
-    vscf_impl_t *public_key_second;
+    vscr_ratchet_public_key_t public_key_first;
 
-    vsc_buffer_t *public_key_second_data;
+    vsc_buffer_t *dh_kem;
 
     vscr_ratchet_chain_key_t chain_key;
 };

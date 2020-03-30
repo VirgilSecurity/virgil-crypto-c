@@ -476,7 +476,8 @@ err:
 
 VSCR_PUBLIC vscr_status_t
 vscr_ratchet_initiate(vscr_ratchet_t *self, vscr_ratchet_symmetric_key_t shared_key,
-        const vscf_impl_t *receiver_long_term_public_key, bool enable_post_quantum) {
+        vscr_ratchet_public_key_t receiver_long_term_public_key_first,
+        const vscf_impl_t *receiver_long_term_public_key_second, bool enable_post_quantum) {
 
     VSCR_ASSERT_PTR(self);
     VSCR_ASSERT(!self->sender_chain);
@@ -757,7 +758,7 @@ vscr_ratchet_generate_sender_chain_keypair(vscr_ratchet_t *self, vscr_ratchet_se
 
     vsc_buffer_t ratchet_private_key;
     vsc_buffer_init(&ratchet_private_key);
-    vsc_buffer_use(&ratchet_private_key, sender_chain->private_key, sizeof(sender_chain->private_key));
+    vsc_buffer_use(&ratchet_private_key, sender_chain->private_key_first, sizeof(sender_chain->private_key_first));
 
     vscf_status_t f_status = vscf_random(self->rng, vscr_ratchet_common_hidden_KEY_LEN, &ratchet_private_key);
     vsc_buffer_delete(&ratchet_private_key);

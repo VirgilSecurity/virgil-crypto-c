@@ -98,10 +98,6 @@ extern "C" {
 #cmakedefine01 VSCR_RATCHET_KEY_UTILS
 #endif
 
-#ifndef VSCR_RATCHET_KEY_ID
-#cmakedefine01 VSCR_RATCHET_KEY_ID
-#endif
-
 #ifndef VSCR_ERROR
 #cmakedefine01 VSCR_ERROR
 #endif

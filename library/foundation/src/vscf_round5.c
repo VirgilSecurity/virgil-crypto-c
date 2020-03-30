@@ -466,7 +466,7 @@ VSCF_PUBLIC size_t
 vscf_round5_kem_shared_key_len(const vscf_round5_t *self, const vscf_impl_t *key) {
 
     VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(key);
+    VSCF_UNUSED(key);
 
     return PARAMS_KAPPA_BYTES;
 }
@@ -478,7 +478,7 @@ VSCF_PUBLIC size_t
 vscf_round5_kem_encapsulated_key_len(const vscf_round5_t *self, const vscf_impl_t *public_key) {
 
     VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(public_key);
+    VSCF_UNUSED(public_key);
 
     return PARAMS_CT_SIZE + PARAMS_KAPPA_BYTES;
 }

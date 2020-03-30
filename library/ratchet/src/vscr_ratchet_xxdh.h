@@ -51,6 +51,8 @@
 #include "vscr_ratchet_typedefs.h"
 #include "vscr_status.h"
 
+#include <virgil/crypto/common/vsc_buffer.h>
+
 #if !VSCR_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_data.h>
 #endif
@@ -60,6 +62,7 @@
 #endif
 
 #if VSCR_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <VSCCommon/vsc_buffer.h>
 #   include <VSCCommon/vsc_data.h>
 #endif
 
@@ -82,16 +85,111 @@ extern "C" {
 //  Generated section start.
 // --------------------------------------------------------------------------
 
-VSCR_PUBLIC vscr_status_t
-vscr_ratchet_xxdh_compute_initiator_xxdh_secret(const vscf_impl_t *sender_identity_private_key,
-        const vscf_impl_t *sender_ephemeral_private_key, const vscf_impl_t *receiver_identity_public_key,
-        const vscf_impl_t *receiver_long_term_public_key, const vscf_impl_t *receiver_one_time_public_key,
-        vscr_ratchet_symmetric_key_t shared_key) VSCR_NODISCARD;
+//
+//  Handle 'ratchet xxdh' context.
+//
+typedef struct vscr_ratchet_xxdh_t vscr_ratchet_xxdh_t;
+
+//
+//  Return size of 'vscr_ratchet_xxdh_t'.
+//
+VSCR_PUBLIC size_t
+vscr_ratchet_xxdh_ctx_size(void);
+
+//
+//  Perform initialization of pre-allocated context.
+//
+VSCR_PUBLIC void
+vscr_ratchet_xxdh_init(vscr_ratchet_xxdh_t *self);
+
+//
+//  Release all inner resources including class dependencies.
+//
+VSCR_PUBLIC void
+vscr_ratchet_xxdh_cleanup(vscr_ratchet_xxdh_t *self);
+
+//
+//  Allocate context and perform it's initialization.
+//
+VSCR_PUBLIC vscr_ratchet_xxdh_t *
+vscr_ratchet_xxdh_new(void);
+
+//
+//  Release all inner resources and deallocate context if needed.
+//  It is safe to call this method even if the context was statically allocated.
+//
+VSCR_PUBLIC void
+vscr_ratchet_xxdh_delete(vscr_ratchet_xxdh_t *self);
+
+//
+//  Delete given context and nullifies reference.
+//  This is a reverse action of the function 'vscr_ratchet_xxdh_new ()'.
+//
+VSCR_PUBLIC void
+vscr_ratchet_xxdh_destroy(vscr_ratchet_xxdh_t **self_ref);
+
+//
+//  Copy given class context by increasing reference counter.
+//
+VSCR_PUBLIC vscr_ratchet_xxdh_t *
+vscr_ratchet_xxdh_shallow_copy(vscr_ratchet_xxdh_t *self);
+
+//
+//  Setup dependency to the interface 'random' with shared ownership.
+//
+VSCR_PUBLIC void
+vscr_ratchet_xxdh_use_rng(vscr_ratchet_xxdh_t *self, vscf_impl_t *rng);
+
+//
+//  Setup dependency to the interface 'random' and transfer ownership.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCR_PUBLIC void
+vscr_ratchet_xxdh_take_rng(vscr_ratchet_xxdh_t *self, vscf_impl_t *rng);
+
+//
+//  Release dependency to the interface 'random'.
+//
+VSCR_PUBLIC void
+vscr_ratchet_xxdh_release_rng(vscr_ratchet_xxdh_t *self);
 
 VSCR_PUBLIC vscr_status_t
-vscr_ratchet_xxdh_compute_responder_xxdh_secret(const vscf_impl_t *sender_identity_public_key,
-        const vscf_impl_t *sender_ephemeral_public_key, const vscf_impl_t *receiver_identity_private_key,
-        const vscf_impl_t *receiver_long_term_private_key, const vscf_impl_t *receiver_one_time_private_key,
+vscr_ratchet_xxdh_encapsulate_pqc_key(vscr_ratchet_xxdh_t *self, const vscf_impl_t *public_key,
+        vsc_buffer_t **encapsulated_key_ref, vsc_buffer_t *shared_secret) VSCR_NODISCARD;
+
+VSCR_PUBLIC vscr_status_t
+vscr_ratchet_xxdh_decapsulate_pqc_key(vscr_ratchet_xxdh_t *self, const vscf_impl_t *private_key,
+        vsc_data_t encapsulated_key, vsc_buffer_t *shared_secret) VSCR_NODISCARD;
+
+VSCR_PUBLIC vscr_status_t
+vscr_ratchet_xxdh_compute_initiator_xxdh_secret(vscr_ratchet_xxdh_t *self,
+        const vscr_ratchet_private_key_t sender_identity_private_key_first,
+        const vscr_ratchet_private_key_t sender_ephemeral_private_key_first,
+        const vscr_ratchet_public_key_t receiver_identity_public_key_first,
+        const vscr_ratchet_public_key_t receiver_long_term_public_key_first, bool receiver_has_one_time_key,
+        const vscr_ratchet_public_key_t receiver_one_time_public_key_first,
+        const vscf_impl_t *sender_identity_private_key_second_signer,
+        const vscf_impl_t *receiver_identity_public_key_second,
+        const vscf_impl_t *receiver_long_term_public_key_second,
+        const vscf_impl_t *receiver_one_time_public_key_second, vscr_ratchet_symmetric_key_t shared_key,
+        vsc_buffer_t **encapsulated_key_1_ref, vsc_buffer_t **encapsulated_key_2_ref,
+        vsc_buffer_t **encapsulated_key_3_ref, vsc_buffer_t **decapsulated_keys_signature_ref) VSCR_NODISCARD;
+
+//
+//  Z
+//
+VSCR_PUBLIC vscr_status_t
+vscr_ratchet_xxdh_compute_responder_xxdh_secret(vscr_ratchet_xxdh_t *self,
+        const vscr_ratchet_public_key_t sender_identity_public_key_first,
+        const vscr_ratchet_public_key_t sender_ephemeral_public_key_first,
+        const vscr_ratchet_private_key_t receiver_identity_private_key_first,
+        const vscr_ratchet_private_key_t receiver_long_term_private_key_first, bool receiver_has_one_time_key,
+        const vscr_ratchet_private_key_t receiver_one_time_private_key_first,
+        const vscf_impl_t *sender_identity_public_key_second_verifier,
+        const vscf_impl_t *receiver_identity_private_key_second,
+        const vscf_impl_t *receiver_long_term_private_key_second,
+        const vscf_impl_t *receiver_one_time_private_key_second, vsc_data_t encapsulated_key_1,
+        vsc_data_t encapsulated_key_2, vsc_data_t encapsulated_key_3, vsc_data_t decapsulated_keys_signature,
         vscr_ratchet_symmetric_key_t shared_key) VSCR_NODISCARD;
 
 VSCR_PUBLIC void

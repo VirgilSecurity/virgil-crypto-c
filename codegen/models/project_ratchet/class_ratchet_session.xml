@@ -1,8 +1,15 @@
 <class name="ratchet session" context="internal">
     Class for ratchet session between 2 participants
 
-    <require interface="private key" project="foundation"/>
-    <require interface="public key" project="foundation"/>
+    <require class="key info" scope="private" project="foundation"/>
+    <require class="compound private key" scope="private" project="foundation"/>
+    <require class="hybrid private key" scope="private" project="foundation"/>
+    <require class="private key" scope="private" project="foundation"/>
+    <require class="compound public key" scope="private" project="foundation"/>
+    <require class="hybrid public key" scope="private" project="foundation"/>
+    <require class="public key" scope="private" project="foundation"/>
+    <require class="raw public key" scope="private" project="foundation"/>
+    <require class="raw private key" scope="private" project="foundation"/>
 
     <require class="key provider" project="foundation"/>
     <require class="key info" project="foundation"/>
@@ -34,21 +41,23 @@
 
     <property name="key utils" class="ratchet key utils"/>
     <property name="key provider" class="key provider" project="foundation"/>
+    <property name="xxdh" class="ratchet xxdh"/>
     <property name="ratchet" class="ratchet"/>
 
     <property name="is initiator" type="boolean"/>
     <property name="received first response" type="boolean"/>
 
-    <property name="sender identity public key first" class="vscr_ratchet_public_key_t" is_reference="0" library="internal" access="readwrite"/>
+    <property name="sender identity key id" class="vscr_ratchet_key_id_t" is_reference="0" library="internal" access="readwrite"/>
     <property name="sender ephemeral public key first" class="vscr_ratchet_public_key_t" is_reference="0" library="internal" access="readwrite"/>
-    <property name="receiver long term public key first" class="vscr_ratchet_public_key_t" is_reference="0" library="internal" access="readwrite"/>
-    <property name="receiver has one time public key first" type="boolean" access="readwrite"/>
-    <property name="receiver one time public key first" class="vscr_ratchet_public_key_t" is_reference="0" library="internal" access="readwrite"/>
+    <property name="receiver identity key id" class="vscr_ratchet_key_id_t" is_reference="0" library="internal" access="readwrite"/>
+    <property name="receiver long term key id" class="vscr_ratchet_key_id_t" is_reference="0" library="internal" access="readwrite"/>
+    <property name="receiver has one time key first" type="boolean" access="readwrite"/>
+    <property name="receiver one time key id" class="vscr_ratchet_key_id_t" is_reference="0" library="internal" access="readwrite"/>
 
-    <property name="sender identity public key second" class="buffer" access="readwrite"/>
-    <property name="sender ephemeral public key second" class="buffer" access="readwrite"/>
-    <property name="receiver long term public key second" class="buffer" access="readwrite"/>
-    <property name="receiver one time public key second" class="buffer" access="readwrite"/>
+    <property name="encapsulated key 1" class="buffer" access="readwrite"/>
+    <property name="encapsulated key 2" class="buffer" access="readwrite"/>
+    <property name="encapsulated key 3" class="buffer" access="readwrite"/>
+    <property name="decapsulated keys signature" class="buffer" access="readwrite"/>
 
     <method name="setup defaults">
         Setups default dependencies:
@@ -88,14 +97,26 @@
         <argument name="sender identity public key" interface="public key" project="foundation" access="retain">
             Sender identity public key
         </argument>
+        <argument name="sender identity key id" class="data">
+            Sender identity key id
+        </argument>
         <argument name="receiver identity private key" interface="private key" project="foundation">
             Receiver identity private key
+        </argument>
+        <argument name="receiver identity key id" class="data">
+            Sender identity key id
         </argument>
         <argument name="receiver long term private key" interface="private key" project="foundation">
             Receiver long-term private key
         </argument>
+        <argument name="receiver long term key id" class="data">
+            Receiver long-term key id
+        </argument>
         <argument name="receiver one time private key" interface="private key" project="foundation">
             Receiver one-time private key (optional)
+        </argument>
+        <argument name="receiver one time key id" class="data">
+            Receiver one-time key id
         </argument>
         <argument name="message" class="ratchet message">
             Message received from initiator

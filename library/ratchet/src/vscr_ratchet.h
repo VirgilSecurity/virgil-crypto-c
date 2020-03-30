@@ -160,7 +160,8 @@ vscr_ratchet_release_rng(vscr_ratchet_t *self);
 
 VSCR_PUBLIC vscr_status_t
 vscr_ratchet_initiate(vscr_ratchet_t *self, vscr_ratchet_symmetric_key_t shared_key,
-        const vscf_impl_t *receiver_long_term_public_key, bool enable_post_quantum) VSCR_NODISCARD;
+        vscr_ratchet_public_key_t receiver_long_term_public_key_first,
+        const vscf_impl_t *receiver_long_term_public_key_second, bool enable_post_quantum) VSCR_NODISCARD;
 
 VSCR_PUBLIC vscr_status_t
 vscr_ratchet_respond(vscr_ratchet_t *self, vscr_ratchet_symmetric_key_t shared_key,

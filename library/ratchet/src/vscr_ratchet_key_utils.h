@@ -162,8 +162,13 @@ vscr_ratchet_key_utils_release_rng(vscr_ratchet_key_utils_t *self);
 
 VSCR_PUBLIC vscr_status_t
 vscr_ratchet_key_utils_import_private_key(vscr_ratchet_key_utils_t *self, const vscf_impl_t *private_key,
-        const vscr_ratchet_private_key_t *private_key_first, vscf_impl_t **private_key_second_ref,
-        bool enable_post_quantum, bool allow_signer) VSCR_NODISCARD;
+        vscr_ratchet_private_key_t *private_key_first, const vscf_impl_t **private_key_second_ref,
+        const vscf_impl_t **private_key_second_signer_ref, bool enable_post_quantum, bool with_signer) VSCR_NODISCARD;
+
+VSCR_PUBLIC vscr_status_t
+vscr_ratchet_key_utils_import_public_key(vscr_ratchet_key_utils_t *self, const vscf_impl_t *public_key,
+        vscr_ratchet_public_key_t *public_key_first, const vscf_impl_t **public_key_second_ref,
+        const vscf_impl_t **public_key_second_signer_ref, bool enable_post_quantum, bool with_signer) VSCR_NODISCARD;
 
 VSCR_PUBLIC vsc_buffer_t *
 vscr_ratchet_key_utils_extract_ratchet_public_key(vscr_ratchet_key_utils_t *self, vsc_data_t data, bool ed25519,

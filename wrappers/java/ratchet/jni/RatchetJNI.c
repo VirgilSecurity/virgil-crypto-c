@@ -60,41 +60,6 @@ jint throwRatchetException (JNIEnv *jenv, jobject jobj, jint statusCode) {
     return (*jenv)->Throw(jenv, obj);
 }
 
-JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratchetKeyId_1new__ (JNIEnv *jenv, jobject jobj) {
-    jlong c_ctx = 0;
-    *(vscr_ratchet_key_id_t **)&c_ctx = vscr_ratchet_key_id_new();
-    return c_ctx;
-}
-
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratchetKeyId_1close (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
-    vscr_ratchet_key_id_delete(*(vscr_ratchet_key_id_t /*2*/ **) &c_ctx /*5*/);
-}
-
-JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratchetKeyId_1computePublicKeyId (JNIEnv *jenv, jobject jobj, jlong c_ctx, jbyteArray jpublicKey) {
-    // Cast class context
-    vscr_ratchet_key_id_t /*2*/* ratchet_key_id_ctx = *(vscr_ratchet_key_id_t /*2*/**) &c_ctx;
-
-    // Wrap input data
-    byte* public_key_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jpublicKey, NULL);
-    vsc_data_t public_key = vsc_data(public_key_arr, (*jenv)->GetArrayLength(jenv, jpublicKey));
-
-    vsc_buffer_t *key_id = vsc_buffer_new_with_capacity(vscr_ratchet_common_KEY_ID_LEN);
-
-    vscr_status_t status = vscr_ratchet_key_id_compute_public_key_id(ratchet_key_id_ctx /*a1*/, public_key /*a3*/, key_id /*a3*/);
-    if (status != vscr_status_SUCCESS) {
-        throwRatchetException(jenv, jobj, status);
-        return NULL;
-    }
-    jbyteArray ret = (*jenv)->NewByteArray(jenv, vsc_buffer_len(key_id));
-    (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(key_id), (jbyte*) vsc_buffer_bytes(key_id));
-    // Free resources
-    (*jenv)->ReleaseByteArrayElements(jenv, jpublicKey, (jbyte*) public_key_arr, 0);
-
-    vsc_buffer_delete(key_id);
-
-    return ret;
-}
-
 JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratchetMessage_1new__ (JNIEnv *jenv, jobject jobj) {
     jlong c_ctx = 0;
     *(vscr_ratchet_message_t **)&c_ctx = vscr_ratchet_message_new();
@@ -248,7 +213,7 @@ JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratchet
     }
 }
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratchetSession_1initiate (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jsenderIdentityPrivateKey, jobject jreceiverIdentityPublicKey, jobject jreceiverLongTermPublicKey, jobject jreceiverOneTimePublicKey) {
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratchetSession_1initiate (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jsenderIdentityPrivateKey, jobject jreceiverIdentityPublicKey, jobject jreceiverLongTermPublicKey, jobject jreceiverOneTimePublicKey, jboolean jenablePostQuantum) {
     // Cast class context
     vscr_ratchet_session_t /*2*/* ratchet_session_ctx = *(vscr_ratchet_session_t /*2*/**) &c_ctx;
     // Wrap Java interfaces
@@ -296,14 +261,14 @@ JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratchet
     jlong receiver_one_time_public_key_c_ctx = (*jenv)->GetLongField(jenv, jreceiverOneTimePublicKey, receiver_one_time_public_key_fidCtx);
     vscf_impl_t */*6*/ receiver_one_time_public_key = *(vscf_impl_t */*6*/*)&receiver_one_time_public_key_c_ctx;
 
-    vscr_status_t status = vscr_ratchet_session_initiate(ratchet_session_ctx /*a1*/, sender_identity_private_key /*a6*/, receiver_identity_public_key /*a6*/, receiver_long_term_public_key /*a6*/, receiver_one_time_public_key /*a6*/);
+    vscr_status_t status = vscr_ratchet_session_initiate(ratchet_session_ctx /*a1*/, sender_identity_private_key /*a6*/, receiver_identity_public_key /*a6*/, receiver_long_term_public_key /*a6*/, receiver_one_time_public_key /*a6*/, jenablePostQuantum /*a9*/);
     if (status != vscr_status_SUCCESS) {
         throwRatchetException(jenv, jobj, status);
         return;
     }
 }
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratchetSession_1respond (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jsenderIdentityPublicKey, jobject jreceiverIdentityPrivateKey, jobject jreceiverLongTermPrivateKey, jobject jreceiverOneTimePrivateKey, jobject jmessage) {
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratchetSession_1respond (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jsenderIdentityPublicKey, jbyteArray jsenderIdentityKeyId, jobject jreceiverIdentityPrivateKey, jbyteArray jreceiverIdentityKeyId, jobject jreceiverLongTermPrivateKey, jbyteArray jreceiverLongTermKeyId, jobject jreceiverOneTimePrivateKey, jbyteArray jreceiverOneTimeKeyId, jobject jmessage, jboolean jenablePostQuantum) {
     // Cast class context
     vscr_ratchet_session_t /*2*/* ratchet_session_ctx = *(vscr_ratchet_session_t /*2*/**) &c_ctx;
     // Wrap Java interfaces
@@ -362,11 +327,32 @@ JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratchet
     jlong message_c_ctx = (*jenv)->GetLongField(jenv, jmessage, message_fidCtx);
     vscr_ratchet_message_t */*5*/ message = *(vscr_ratchet_message_t */*5*/*) &message_c_ctx;
 
-    vscr_status_t status = vscr_ratchet_session_respond(ratchet_session_ctx /*a1*/, sender_identity_public_key /*a6*/, receiver_identity_private_key /*a6*/, receiver_long_term_private_key /*a6*/, receiver_one_time_private_key /*a6*/, message /*a6*/);
+    // Wrap input data
+    byte* sender_identity_key_id_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jsenderIdentityKeyId, NULL);
+    vsc_data_t sender_identity_key_id = vsc_data(sender_identity_key_id_arr, (*jenv)->GetArrayLength(jenv, jsenderIdentityKeyId));
+
+    byte* receiver_identity_key_id_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jreceiverIdentityKeyId, NULL);
+    vsc_data_t receiver_identity_key_id = vsc_data(receiver_identity_key_id_arr, (*jenv)->GetArrayLength(jenv, jreceiverIdentityKeyId));
+
+    byte* receiver_long_term_key_id_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jreceiverLongTermKeyId, NULL);
+    vsc_data_t receiver_long_term_key_id = vsc_data(receiver_long_term_key_id_arr, (*jenv)->GetArrayLength(jenv, jreceiverLongTermKeyId));
+
+    byte* receiver_one_time_key_id_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jreceiverOneTimeKeyId, NULL);
+    vsc_data_t receiver_one_time_key_id = vsc_data(receiver_one_time_key_id_arr, (*jenv)->GetArrayLength(jenv, jreceiverOneTimeKeyId));
+
+    vscr_status_t status = vscr_ratchet_session_respond(ratchet_session_ctx /*a1*/, sender_identity_public_key /*a6*/, sender_identity_key_id /*a3*/, receiver_identity_private_key /*a6*/, receiver_identity_key_id /*a3*/, receiver_long_term_private_key /*a6*/, receiver_long_term_key_id /*a3*/, receiver_one_time_private_key /*a6*/, receiver_one_time_key_id /*a3*/, message /*a6*/, jenablePostQuantum /*a9*/);
     if (status != vscr_status_SUCCESS) {
         throwRatchetException(jenv, jobj, status);
         return;
     }
+    // Free resources
+    (*jenv)->ReleaseByteArrayElements(jenv, jsenderIdentityKeyId, (jbyte*) sender_identity_key_id_arr, 0);
+
+    (*jenv)->ReleaseByteArrayElements(jenv, jreceiverIdentityKeyId, (jbyte*) receiver_identity_key_id_arr, 0);
+
+    (*jenv)->ReleaseByteArrayElements(jenv, jreceiverLongTermKeyId, (jbyte*) receiver_long_term_key_id_arr, 0);
+
+    (*jenv)->ReleaseByteArrayElements(jenv, jreceiverOneTimeKeyId, (jbyte*) receiver_one_time_key_id_arr, 0);
 }
 
 JNIEXPORT jboolean JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratchetSession_1isInitiator (JNIEnv *jenv, jobject jobj, jlong c_ctx) {

@@ -39,7 +39,7 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Class 'ratchet key id' types definition.
+//  Class 'ratchet xxdh' types definition.
 // --------------------------------------------------------------------------
 
 
@@ -50,7 +50,7 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#include "vscr_ratchet_key_id_defs.h"
+#include "vscr_ratchet_xxdh_defs.h"
 
 // clang-format on
 //  @end

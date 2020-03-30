@@ -102,15 +102,15 @@ public class RatchetSession implements AutoCloseable {
     /*
     * Initiates session
     */
-    public void initiate(PrivateKey senderIdentityPrivateKey, PublicKey receiverIdentityPublicKey, PublicKey receiverLongTermPublicKey, PublicKey receiverOneTimePublicKey) throws RatchetException {
-        RatchetJNI.INSTANCE.ratchetSession_initiate(this.cCtx, senderIdentityPrivateKey, receiverIdentityPublicKey, receiverLongTermPublicKey, receiverOneTimePublicKey);
+    public void initiate(PrivateKey senderIdentityPrivateKey, PublicKey receiverIdentityPublicKey, PublicKey receiverLongTermPublicKey, PublicKey receiverOneTimePublicKey, boolean enablePostQuantum) throws RatchetException {
+        RatchetJNI.INSTANCE.ratchetSession_initiate(this.cCtx, senderIdentityPrivateKey, receiverIdentityPublicKey, receiverLongTermPublicKey, receiverOneTimePublicKey, enablePostQuantum);
     }
 
     /*
     * Responds to session initiation
     */
-    public void respond(PublicKey senderIdentityPublicKey, PrivateKey receiverIdentityPrivateKey, PrivateKey receiverLongTermPrivateKey, PrivateKey receiverOneTimePrivateKey, RatchetMessage message) throws RatchetException {
-        RatchetJNI.INSTANCE.ratchetSession_respond(this.cCtx, senderIdentityPublicKey, receiverIdentityPrivateKey, receiverLongTermPrivateKey, receiverOneTimePrivateKey, message);
+    public void respond(PublicKey senderIdentityPublicKey, byte[] senderIdentityKeyId, PrivateKey receiverIdentityPrivateKey, byte[] receiverIdentityKeyId, PrivateKey receiverLongTermPrivateKey, byte[] receiverLongTermKeyId, PrivateKey receiverOneTimePrivateKey, byte[] receiverOneTimeKeyId, RatchetMessage message, boolean enablePostQuantum) throws RatchetException {
+        RatchetJNI.INSTANCE.ratchetSession_respond(this.cCtx, senderIdentityPublicKey, senderIdentityKeyId, receiverIdentityPrivateKey, receiverIdentityKeyId, receiverLongTermPrivateKey, receiverLongTermKeyId, receiverOneTimePrivateKey, receiverOneTimeKeyId, message, enablePostQuantum);
     }
 
     /*

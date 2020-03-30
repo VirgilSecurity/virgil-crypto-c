@@ -52,15 +52,6 @@ public class RatchetJNI {
     private RatchetJNI() {
     }
 
-    public native long ratchetKeyId_new();
-
-    public native void ratchetKeyId_close(long cCtx);
-
-    /*
-    * Computes 8 bytes key pair id from Curve25519 (in PKCS8 or raw format) public key
-    */
-    public native byte[] ratchetKeyId_computePublicKeyId(long cCtx, byte[] publicKey) throws RatchetException;
-
     public native long ratchetMessage_new();
 
     public native void ratchetMessage_close(long cCtx);
@@ -118,12 +109,12 @@ public class RatchetJNI {
     /*
     * Initiates session
     */
-    public native void ratchetSession_initiate(long cCtx, PrivateKey senderIdentityPrivateKey, PublicKey receiverIdentityPublicKey, PublicKey receiverLongTermPublicKey, PublicKey receiverOneTimePublicKey) throws RatchetException;
+    public native void ratchetSession_initiate(long cCtx, PrivateKey senderIdentityPrivateKey, PublicKey receiverIdentityPublicKey, PublicKey receiverLongTermPublicKey, PublicKey receiverOneTimePublicKey, boolean enablePostQuantum) throws RatchetException;
 
     /*
     * Responds to session initiation
     */
-    public native void ratchetSession_respond(long cCtx, PublicKey senderIdentityPublicKey, PrivateKey receiverIdentityPrivateKey, PrivateKey receiverLongTermPrivateKey, PrivateKey receiverOneTimePrivateKey, RatchetMessage message) throws RatchetException;
+    public native void ratchetSession_respond(long cCtx, PublicKey senderIdentityPublicKey, byte[] senderIdentityKeyId, PrivateKey receiverIdentityPrivateKey, byte[] receiverIdentityKeyId, PrivateKey receiverLongTermPrivateKey, byte[] receiverLongTermKeyId, PrivateKey receiverOneTimePrivateKey, byte[] receiverOneTimeKeyId, RatchetMessage message, boolean enablePostQuantum) throws RatchetException;
 
     /*
     * Returns flag that indicates is this session was initiated or responded

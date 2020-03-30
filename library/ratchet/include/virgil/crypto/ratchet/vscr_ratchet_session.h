@@ -185,8 +185,10 @@ vscr_ratchet_session_initiate(vscr_ratchet_session_t *self, const vscf_impl_t *s
 //
 VSCR_PUBLIC vscr_status_t
 vscr_ratchet_session_respond(vscr_ratchet_session_t *self, vscf_impl_t *sender_identity_public_key,
-        const vscf_impl_t *receiver_identity_private_key, const vscf_impl_t *receiver_long_term_private_key,
-        const vscf_impl_t *receiver_one_time_private_key, const vscr_ratchet_message_t *message,
+        vsc_data_t sender_identity_key_id, const vscf_impl_t *receiver_identity_private_key,
+        vsc_data_t receiver_identity_key_id, const vscf_impl_t *receiver_long_term_private_key,
+        vsc_data_t receiver_long_term_key_id, const vscf_impl_t *receiver_one_time_private_key,
+        vsc_data_t receiver_one_time_key_id, const vscr_ratchet_message_t *message,
         bool enable_post_quantum) VSCR_NODISCARD;
 
 //

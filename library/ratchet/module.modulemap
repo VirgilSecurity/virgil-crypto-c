@@ -10,7 +10,6 @@ framework module VSCRatchet {
     header "vscr_ratchet_group_participants_info.h"
     header "vscr_ratchet_group_session.h"
     header "vscr_ratchet_group_ticket.h"
-    header "vscr_ratchet_key_id.h"
     header "vscr_ratchet_message.h"
     header "vscr_ratchet_session.h"
     header "vscr_status.h"
