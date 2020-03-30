@@ -160,10 +160,10 @@ const initPythia = (Module, modules) => {
             //  Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(passwordCtxPtr, passwordPtr, passwordSize);
 
-            const blindedPasswordCapacity = Pythia.blindedPasswordBufLen();
+            const blindedPasswordCapacity = modules.Pythia.blindedPasswordBufLen();
             const blindedPasswordCtxPtr = Module._vsc_buffer_new_with_capacity(blindedPasswordCapacity);
 
-            const blindingSecretCapacity = Pythia.blindingSecretBufLen();
+            const blindingSecretCapacity = modules.Pythia.blindingSecretBufLen();
             const blindingSecretCtxPtr = Module._vsc_buffer_new_with_capacity(blindingSecretCapacity);
 
             try {
@@ -217,7 +217,7 @@ const initPythia = (Module, modules) => {
             //  Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(blindingSecretCtxPtr, blindingSecretPtr, blindingSecretSize);
 
-            const deblindedPasswordCapacity = Pythia.deblindedPasswordBufLen();
+            const deblindedPasswordCapacity = modules.Pythia.deblindedPasswordBufLen();
             const deblindedPasswordCtxPtr = Module._vsc_buffer_new_with_capacity(deblindedPasswordCapacity);
 
             try {
@@ -281,10 +281,10 @@ const initPythia = (Module, modules) => {
             //  Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(pythiaScopeSecretCtxPtr, pythiaScopeSecretPtr, pythiaScopeSecretSize);
 
-            const transformationPrivateKeyCapacity = Pythia.transformationPrivateKeyBufLen();
+            const transformationPrivateKeyCapacity = modules.Pythia.transformationPrivateKeyBufLen();
             const transformationPrivateKeyCtxPtr = Module._vsc_buffer_new_with_capacity(transformationPrivateKeyCapacity);
 
-            const transformationPublicKeyCapacity = Pythia.transformationPublicKeyBufLen();
+            const transformationPublicKeyCapacity = modules.Pythia.transformationPublicKeyBufLen();
             const transformationPublicKeyCtxPtr = Module._vsc_buffer_new_with_capacity(transformationPublicKeyCapacity);
 
             try {
@@ -355,10 +355,10 @@ const initPythia = (Module, modules) => {
             //  Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(transformationPrivateKeyCtxPtr, transformationPrivateKeyPtr, transformationPrivateKeySize);
 
-            const transformedPasswordCapacity = Pythia.transformedPasswordBufLen();
+            const transformedPasswordCapacity = modules.Pythia.transformedPasswordBufLen();
             const transformedPasswordCtxPtr = Module._vsc_buffer_new_with_capacity(transformedPasswordCapacity);
 
-            const transformedTweakCapacity = Pythia.transformedTweakBufLen();
+            const transformedTweakCapacity = modules.Pythia.transformedTweakBufLen();
             const transformedTweakCtxPtr = Module._vsc_buffer_new_with_capacity(transformedTweakCapacity);
 
             try {
@@ -455,10 +455,10 @@ const initPythia = (Module, modules) => {
             //  Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(transformationPublicKeyCtxPtr, transformationPublicKeyPtr, transformationPublicKeySize);
 
-            const proofValueCCapacity = Pythia.proofValueBufLen();
+            const proofValueCCapacity = modules.Pythia.proofValueBufLen();
             const proofValueCCtxPtr = Module._vsc_buffer_new_with_capacity(proofValueCCapacity);
 
-            const proofValueUCapacity = Pythia.proofValueBufLen();
+            const proofValueUCapacity = modules.Pythia.proofValueBufLen();
             const proofValueUCtxPtr = Module._vsc_buffer_new_with_capacity(proofValueUCapacity);
 
             try {
@@ -638,7 +638,7 @@ const initPythia = (Module, modules) => {
             //  Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(newTransformationPrivateKeyCtxPtr, newTransformationPrivateKeyPtr, newTransformationPrivateKeySize);
 
-            const passwordUpdateTokenCapacity = Pythia.passwordUpdateTokenBufLen();
+            const passwordUpdateTokenCapacity = modules.Pythia.passwordUpdateTokenBufLen();
             const passwordUpdateTokenCtxPtr = Module._vsc_buffer_new_with_capacity(passwordUpdateTokenCapacity);
 
             try {
@@ -690,7 +690,7 @@ const initPythia = (Module, modules) => {
             //  Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(passwordUpdateTokenCtxPtr, passwordUpdateTokenPtr, passwordUpdateTokenSize);
 
-            const updatedDeblindedPasswordCapacity = Pythia.deblindedPasswordBufLen();
+            const updatedDeblindedPasswordCapacity = modules.Pythia.deblindedPasswordBufLen();
             const updatedDeblindedPasswordCtxPtr = Module._vsc_buffer_new_with_capacity(updatedDeblindedPasswordCapacity);
 
             try {

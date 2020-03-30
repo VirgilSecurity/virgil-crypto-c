@@ -1312,6 +1312,15 @@ function php_map_low_level_extension (in_php_project, out_php_module)
     my._init_func_def_dtor = ""
     my._init_func_def_list_destr = ""
 
+    my._prefix = my.in_php_project.prefix
+    my._project = my.in_php_project.project
+
+    my._init_func_def_exception = format_left("\
+        zend_class_entry $(my._prefix:)_ce;
+        INIT_CLASS_ENTRY($(my._prefix:)_ce, \"$(my._project:)Exception\", NULL);
+        $(my._prefix:)_exception_ce = zend_register_internal_class_ex(&$(my._prefix:)_ce, zend_exception_get_default());
+        ", 0)
+
     if count(my.in_php_project.interfaces)
         my._registered_resources = format_left("int LE_$(my.in_php_project.prefix:UPPER)_IMPL_T;", 0)
         my._registered_resources_func_wrapp = php_format_low_level_wrapp_func_rr("LE_$(my.in_php_project.prefix:UPPER)_IMPL_T", "$(my.in_php_project.prefix:)", 0) + "\n"
@@ -1597,20 +1606,21 @@ function php_map_low_level_extension (in_php_project, out_php_module)
 
         my._h1 = format_left("$(my._init_func_def_dtor:)", 0)
         my._h2 = format_left("PHP_MINIT_FUNCTION($(my._ext_name0:)) {", 0)
-        my._h3 = format_left("$(my._init_func_def_list_destr:)", 1)
+        my._h3 = format_left("$(my._init_func_def_exception:)", 1)
+        my._h4 = format_left("$(my._init_func_def_list_destr:)", 1)
 
-        my._h4 = format_left("\
+        my._h5 = format_left("\
                 return SUCCESS;
             }
             ", 0)
 
-        my._h5 = format_left("\
+        my._h6 = format_left("\
             PHP_MSHUTDOWN_FUNCTION($(my._ext_name0:)) {
                 return SUCCESS;
             }
             ", 0)
 
-        . = my._c + my._h1 + my._h2 + my._h3 + my._h4 + my._h5
+        . = my._c + my._h1 + my._h2 + my._h3 + my._h4 + my._h5 + my._h6
     endnew
 
     new extension_status to my.out_php_module

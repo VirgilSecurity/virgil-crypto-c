@@ -58,8 +58,8 @@ const initRatchetGroupTicket = require('./RatchetGroupTicket');
 const initRatchetGroupParticipantsIds = require('./RatchetGroupParticipantsIds');
 const initRatchetGroupSession = require('./RatchetGroupSession');
 
-const initProject = () => {
-    const ratchetModule = new RatchetModule();
+const initProject = options => {
+    const ratchetModule = new RatchetModule(options);
     return new Promise((resolve, reject) => {
         ratchetModule.onRuntimeInitialized = () => {
             const modules = {};

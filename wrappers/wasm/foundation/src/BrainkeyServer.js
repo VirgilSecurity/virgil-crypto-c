@@ -130,7 +130,7 @@ const initBrainkeyServer = (Module, modules) => {
         generateIdentitySecret() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
-            const identitySecretCapacity = BrainkeyServer.MPI_LEN;
+            const identitySecretCapacity = modules.BrainkeyServer.MPI_LEN;
             const identitySecretCtxPtr = Module._vsc_buffer_new_with_capacity(identitySecretCapacity);
 
             try {
@@ -175,7 +175,7 @@ const initBrainkeyServer = (Module, modules) => {
             //  Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(blindedPointCtxPtr, blindedPointPtr, blindedPointSize);
 
-            const hardenedPointCapacity = BrainkeyServer.POINT_LEN;
+            const hardenedPointCapacity = modules.BrainkeyServer.POINT_LEN;
             const hardenedPointCtxPtr = Module._vsc_buffer_new_with_capacity(hardenedPointCapacity);
 
             try {

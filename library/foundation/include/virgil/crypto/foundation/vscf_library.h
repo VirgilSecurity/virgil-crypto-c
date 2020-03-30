@@ -118,7 +118,7 @@ extern "C" {
 
 #define VSCF_VERSION_MINOR 13
 
-#define VSCF_VERSION_PATCH 1
+#define VSCF_VERSION_PATCH 2
 
 #define VSCF_VERSION_MAKE(major, minor, patch) ((major) * 10000 + (minor) * 100 + (patch))
 

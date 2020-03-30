@@ -179,7 +179,7 @@ function php_map_high_level (in_module, in_php_module, in_php_project, out_high_
                     .class = my._dep_class
 
                     if defined (dependency0.project)
-                        .class_with_namespace = "$(my.in_php_module.namespace:)\\\\$(dependency0.project:Pascal)\\\\$(my._dep_class:Pascal)"
+                        .class_with_namespace = "\\\\$(my.in_php_module.namespace:)\\\\$(dependency0.project:Pascal)\\\\$(my._dep_class:Pascal)"
                     endif
                 endnew
 

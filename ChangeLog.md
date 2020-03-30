@@ -1,6 +1,23 @@
 # virgil-crypto-c ChangeLog (Sorted by date)
 
 
+## Version 0.13.2 released 2020-03-30
+
+
+### Features
+
+- Wrapper/JS: Added module options that allow runtime WASM configuration
+
+### Bugfix
+
+- Wrapper/Python: Fixed code generation (python source code was not changed)
+- Wrapper/PHP: Fixed dependent namespaces
+
+### Changes
+
+- Wrapper/PHP: Added module level exceptions, e.g. FoundationException, instead of generic Exception
+
+
 ## Version 0.13.1 released 2020-03-19
 
 ### Bugfix

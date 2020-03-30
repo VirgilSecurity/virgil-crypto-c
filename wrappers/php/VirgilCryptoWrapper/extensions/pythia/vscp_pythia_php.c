@@ -43,18 +43,21 @@
 
 #define VSCP_HANDLE_STATUS(status) do { if(status != vscp_status_SUCCESS) { vscp_handle_throw_exception(status); } } while (false)
 
+zend_class_entry* vscp_exception_ce;
+
 void
 vscp_handle_throw_exception(vscp_status_t status) {
+
     switch(status) {
 
     case vscp_status_ERROR_BAD_ARGUMENTS:
-        zend_throw_exception(NULL, "VSCP: This error should not be returned if assertions is enabled.", -1);
+        zend_throw_exception_ex(vscp_exception_ce, -1, "This error should not be returned if assertions is enabled.");
         break;
     case vscp_status_ERROR_PYTHIA_INNER_FAIL:
-        zend_throw_exception(NULL, "VSCP: Underlying pythia library returns -1.", -200);
+        zend_throw_exception_ex(vscp_exception_ce, -200, "Underlying pythia library returns -1.");
         break;
     case vscp_status_ERROR_RNG_FAILED:
-        zend_throw_exception(NULL, "VSCP: Underlying random number generator failed.", -202);
+        zend_throw_exception_ex(vscp_exception_ce, -202, "Underlying random number generator failed.");
         break;
     }
 }
@@ -62,7 +65,7 @@ vscp_handle_throw_exception(vscp_status_t status) {
 //
 // Constants
 //
-const char VSCP_PYTHIA_PHP_VERSION[] = "0.13.1";
+const char VSCP_PYTHIA_PHP_VERSION[] = "0.13.2";
 const char VSCP_PYTHIA_PHP_EXTNAME[] = "vscp_pythia_php";
 
 //
@@ -1200,6 +1203,9 @@ ZEND_GET_MODULE(vscp_pythia_php)
 //
 
 PHP_MINIT_FUNCTION(vscp_pythia_php) {
+    zend_class_entry vscp_ce;
+    INIT_CLASS_ENTRY(vscp_ce, "PythiaException", NULL);
+    vscp_exception_ce = zend_register_internal_class_ex(&vscp_ce, zend_exception_get_default());
 
     return SUCCESS;
 }
