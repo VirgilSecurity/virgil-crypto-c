@@ -52,8 +52,18 @@
 #include "vscr_ratchet_message_key.h"
 #include "vscr_status.h"
 
+#if !VSCR_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <virgil/crypto/common/vsc_data.h>
+#   include <virgil/crypto/common/vsc_buffer.h>
+#endif
+
 #if !VSCR_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
 #   include <virgil/crypto/foundation/vscf_impl.h>
+#endif
+
+#if VSCR_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <VSCCommon/vsc_buffer.h>
+#   include <VSCCommon/vsc_data.h>
 #endif
 
 #if VSCR_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
@@ -124,9 +134,35 @@ vscr_ratchet_keys_destroy(vscr_ratchet_keys_t **self_ref);
 VSCR_PUBLIC vscr_ratchet_keys_t *
 vscr_ratchet_keys_shallow_copy(vscr_ratchet_keys_t *self);
 
+//
+//  Setup dependency to the interface 'random' with shared ownership.
+//
+VSCR_PUBLIC void
+vscr_ratchet_keys_use_rng(vscr_ratchet_keys_t *self, vscf_impl_t *rng);
+
+//
+//  Setup dependency to the interface 'random' and transfer ownership.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCR_PUBLIC void
+vscr_ratchet_keys_take_rng(vscr_ratchet_keys_t *self, vscf_impl_t *rng);
+
+//
+//  Release dependency to the interface 'random'.
+//
+VSCR_PUBLIC void
+vscr_ratchet_keys_release_rng(vscr_ratchet_keys_t *self);
+
 VSCR_PUBLIC vscr_status_t
-vscr_ratchet_keys_create_chain_key(const vscr_ratchet_symmetric_key_t root_key, const vscf_impl_t *private_key,
-        const vscf_impl_t *public_key, vscr_ratchet_symmetric_key_t new_root_key,
+vscr_ratchet_keys_create_chain_key_sender(vscr_ratchet_keys_t *self, const vscr_ratchet_symmetric_key_t root_key,
+        const vscr_ratchet_private_key_t private_key_first, const vscr_ratchet_public_key_t public_key_first,
+        const vscf_impl_t *public_key_second, vsc_buffer_t **encapsulated_key_ref,
+        vscr_ratchet_symmetric_key_t new_root_key, vscr_ratchet_chain_key_t *chain_key) VSCR_NODISCARD;
+
+VSCR_PUBLIC vscr_status_t
+vscr_ratchet_keys_create_chain_key_receiver(vscr_ratchet_keys_t *self, const vscr_ratchet_symmetric_key_t root_key,
+        const vscr_ratchet_private_key_t private_key_first, const vscr_ratchet_public_key_t public_key_first,
+        const vscf_impl_t *private_key_second, vsc_data_t encapsulated_key, vscr_ratchet_symmetric_key_t new_root_key,
         vscr_ratchet_chain_key_t *chain_key) VSCR_NODISCARD;
 
 VSCR_PUBLIC void

@@ -58,8 +58,8 @@
 #include <pb_encode.h>
 
 #if !VSCR_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <virgil/crypto/common/vsc_data.h>
 #   include <virgil/crypto/common/vsc_buffer.h>
+#   include <virgil/crypto/common/vsc_data.h>
 #endif
 
 #if !VSCR_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
@@ -67,8 +67,8 @@
 #endif
 
 #if VSCR_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <VSCCommon/vsc_buffer.h>
 #   include <VSCCommon/vsc_data.h>
+#   include <VSCCommon/vsc_buffer.h>
 #endif
 
 #if VSCR_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
@@ -165,7 +165,8 @@ vscr_ratchet_initiate(vscr_ratchet_t *self, vscr_ratchet_symmetric_key_t shared_
 
 VSCR_PUBLIC vscr_status_t
 vscr_ratchet_respond(vscr_ratchet_t *self, vscr_ratchet_symmetric_key_t shared_key,
-        const vscf_impl_t *receiver_long_term_private_key, const vscr_RegularMessage *message,
+        vscr_ratchet_private_key_t receiver_long_term_private_key_first,
+        const vscf_impl_t *receiver_long_term_private_key_second, const vscr_RegularMessage *message,
         const vscr_RegularMessageHeader *regular_message_header, bool enable_post_quantum) VSCR_NODISCARD;
 
 VSCR_PUBLIC size_t

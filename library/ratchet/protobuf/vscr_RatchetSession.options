@@ -2,12 +2,16 @@ vscr_ChainKey.key max_size:32 fixed_length:true
 
 vscr_MessageKey.key max_size:32 fixed_length:true
 
-vscr_SenderChain.private_key max_size:1152 type:FT_POINTER
-vscr_SenderChain.public_key max_size:1092 type:FT_POINTER
+vscr_SenderChain.private_key_first max_size:32 fixed_length:true
+vscr_SenderChain.public_key_first max_size:32 fixed_length:true
+vscr_SenderChain.private_key_second max_size:1152 type:FT_POINTER
+vscr_SenderChain.public_key_second max_size:1092 type:FT_POINTER
+vscr_SenderChain.encapsulated_key max_size:1152 type:FT_POINTER
 
-vscr_ReceiverChain.public_key max_size:1092 type:FT_POINTER
+vscr_ReceiverChain.public_key_first max_size:32 fixed_length:true
+vscr_ReceiverChain.public_key_second max_size:1092 type:FT_POINTER
 
-vscr_SkippedMessageKey.public_key max_size:1092 type:FT_POINTER
+vscr_SkippedMessageKey.public_key_id max_size:8 fixed_length:true
 
 vscr_Ratchet.root_key max_size:32 fixed_length:true
 vscr_SkippedMessages.keys max_count:5 fixed_count:false

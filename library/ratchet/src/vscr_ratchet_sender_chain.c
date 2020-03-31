@@ -241,25 +241,33 @@ vscr_ratchet_sender_chain_cleanup_ctx(vscr_ratchet_sender_chain_t *self) {
 }
 
 VSCR_PUBLIC void
-vscr_ratchet_sender_chain_serialize(const vscr_ratchet_sender_chain_t *self, vscr_SenderChain *sender_chain_pb) {
+vscr_ratchet_sender_chain_serialize(const vscr_ratchet_sender_chain_t *self, vscr_SenderChain *sender_chain_pb,
+        const vscf_key_provider_t *key_provider) {
 
     VSCR_ASSERT_PTR(self);
     VSCR_ASSERT_PTR(sender_chain_pb);
+    VSCR_ASSERT_PTR(key_provider);
 
     vscr_ratchet_chain_key_serialize(&self->chain_key, &sender_chain_pb->chain_key);
-    memcpy(sender_chain_pb->public_key, self->public_key, sizeof(sender_chain_pb->public_key));
-    memcpy(sender_chain_pb->private_key, self->private_key, sizeof(sender_chain_pb->private_key));
+
+    memcpy(sender_chain_pb->public_key_first, self->public_key_first, sizeof(sender_chain_pb->public_key_first));
+    memcpy(sender_chain_pb->private_key_first, self->private_key_first, sizeof(sender_chain_pb->private_key_first));
+
+    //    sender_chain_pb->public_key_second = vscr_alloc(PB_BYTES_ARRAY_T_ALLOCSIZE())
 }
 
 VSCR_PUBLIC void
-vscr_ratchet_sender_chain_deserialize(
-        const vscr_SenderChain *sender_chain_pb, vscr_ratchet_sender_chain_t *sender_chain) {
+vscr_ratchet_sender_chain_deserialize(const vscr_SenderChain *sender_chain_pb,
+        vscr_ratchet_sender_chain_t *sender_chain, const vscf_key_provider_t *key_provider) {
 
     VSCR_ASSERT_PTR(sender_chain);
     VSCR_ASSERT_PTR(sender_chain_pb);
+    VSCR_ASSERT_PTR(key_provider);
 
     vscr_ratchet_chain_key_deserialize(&sender_chain_pb->chain_key, &sender_chain->chain_key);
 
-    memcpy(sender_chain->public_key, sender_chain_pb->public_key, sizeof(sender_chain_pb->public_key));
-    memcpy(sender_chain->private_key, sender_chain_pb->private_key, sizeof(sender_chain_pb->private_key));
+    memcpy(sender_chain->public_key_first, sender_chain_pb->public_key_first,
+            sizeof(sender_chain_pb->public_key_first));
+    memcpy(sender_chain->private_key_first, sender_chain_pb->private_key_first,
+            sizeof(sender_chain_pb->private_key_first));
 }

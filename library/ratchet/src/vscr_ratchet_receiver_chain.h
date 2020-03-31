@@ -103,9 +103,9 @@ struct vscr_ratchet_receiver_chain_t {
     //
     VSCR_ATOMIC size_t refcnt;
 
-    vscf_impl_t *public_key_first;
+    vscr_ratchet_key_id_t public_key_id;
 
-    vscr_ratchet_public_key_t public_key_first_data;
+    vscr_ratchet_public_key_t public_key_first;
 
     vscf_impl_t *public_key_second;
 

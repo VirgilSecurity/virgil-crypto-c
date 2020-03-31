@@ -11,9 +11,12 @@ message vscr_MessageKey {
 }
 
 message vscr_SenderChain {
-	required bytes public_key_first = 1;
-	optional bytes public_key_second = 2;
-	required vscr_ChainKey chain_key = 3;
+	required bytes private_key_first = 1;
+	required bytes public_key_first = 2;
+	optional bytes private_key_second = 3;
+	optional bytes public_key_second = 4;
+	optional bytes encapsulated_key = 5;
+	required vscr_ChainKey chain_key = 6;
 }
 
 message vscr_ReceiverChain {

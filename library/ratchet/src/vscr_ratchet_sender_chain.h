@@ -63,6 +63,7 @@
 #endif
 
 #if !VSCR_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
+#   include <virgil/crypto/foundation/vscf_key_provider.h>
 #   include <virgil/crypto/foundation/vscf_impl.h>
 #endif
 
@@ -72,6 +73,7 @@
 
 #if VSCR_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
 #   include <VSCFoundation/vscf_impl.h>
+#   include <VSCFoundation/vscf_key_provider.h>
 #endif
 
 // clang-format on
@@ -105,11 +107,13 @@ struct vscr_ratchet_sender_chain_t {
 
     vscr_ratchet_private_key_t private_key_first;
 
-    vscf_impl_t *private_key_second;
-
     vscr_ratchet_public_key_t public_key_first;
 
-    vsc_buffer_t *dh_kem;
+    vscf_impl_t *private_key_second;
+
+    vscf_impl_t *public_key_second;
+
+    vsc_buffer_t *encapsulated_key;
 
     vscr_ratchet_chain_key_t chain_key;
 };
@@ -159,11 +163,12 @@ VSCR_PUBLIC vscr_ratchet_sender_chain_t *
 vscr_ratchet_sender_chain_shallow_copy(vscr_ratchet_sender_chain_t *self);
 
 VSCR_PUBLIC void
-vscr_ratchet_sender_chain_serialize(const vscr_ratchet_sender_chain_t *self, vscr_SenderChain *sender_chain_pb);
+vscr_ratchet_sender_chain_serialize(const vscr_ratchet_sender_chain_t *self, vscr_SenderChain *sender_chain_pb,
+        const vscf_key_provider_t *key_provider);
 
 VSCR_PUBLIC void
 vscr_ratchet_sender_chain_deserialize(const vscr_SenderChain *sender_chain_pb,
-        vscr_ratchet_sender_chain_t *sender_chain);
+        vscr_ratchet_sender_chain_t *sender_chain, const vscf_key_provider_t *key_provider);
 
 
 // --------------------------------------------------------------------------

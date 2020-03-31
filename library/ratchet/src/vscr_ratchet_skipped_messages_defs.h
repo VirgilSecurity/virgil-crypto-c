@@ -59,14 +59,6 @@
 #include "vscr_ratchet_typedefs.h"
 #include "vscr_ratchet_skipped_messages_root_node.h"
 
-#if !VSCR_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
-#   include <virgil/crypto/foundation/vscf_impl.h>
-#endif
-
-#if VSCR_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
-#   include <VSCFoundation/vscf_impl.h>
-#endif
-
 // clang-format on
 //  @end
 
@@ -97,7 +89,7 @@ struct vscr_ratchet_skipped_messages_t {
 
     uint32_t roots_count;
 
-    vscf_impl_t *public_keys[vscr_ratchet_common_hidden_MAX_SKIPPED_DH];
+    vscr_ratchet_public_key_t key_ids[vscr_ratchet_common_hidden_MAX_SKIPPED_DH];
 
     vscr_ratchet_skipped_messages_root_node_t *root_nodes[vscr_ratchet_common_hidden_MAX_SKIPPED_DH];
 };

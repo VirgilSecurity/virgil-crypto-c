@@ -1,10 +1,16 @@
 syntax = "proto2";
 
+message vscr_RegularMessageHeaderPqcInfo {
+    required bytes public_key = 1;
+    required bytes encapsulated_key = 2;
+}
+
 message vscr_RegularMessageHeader {
     required uint32 counter = 1;
     required uint32 prev_chain_count = 2;
-    required bytes public_key_first = 3;
-    optional bytes public_key_second = 4;
+    required bytes public_key_id = 3;
+    required bytes public_key = 4;
+    optional vscr_RegularMessageHeaderPqcInfo pqc_info = 5;
 }
 
 message vscr_RegularMessage {
@@ -12,16 +18,20 @@ message vscr_RegularMessage {
     required bytes cipher_text = 2;
 }
 
+message vscr_PrekeyMessagePqcInfo {
+    required bytes encapsulated_key1 = 6;
+    required bytes encapsulated_key2 = 7;
+    optional bytes encapsulated_key3 = 8;
+    required bytes decapsulated_keys_signature = 9;
+}
+
 message vscr_PrekeyMessage {
     required bytes sender_identity_key_id = 1;
-    required bytes sender_ephemeral_key_first = 2;
+    required bytes sender_ephemeral_key = 2;
     required bytes receiver_identity_key_id = 3;
     required bytes receiver_long_term_key_id = 4;
     optional bytes receiver_one_time_key_id = 5;
-    optional bytes encapsulated_key1 = 6;
-    optional bytes encapsulated_key2 = 7;
-    optional bytes encapsulated_key3 = 8;
-    optional bytes decapsulated_keys_signature = 9;
+    optional vscr_PrekeyMessagePqcInfo pqc_info = 6;
 }
 
 message vscr_Message {

@@ -295,7 +295,11 @@ vscr_ratchet_message_get_counter(const vscr_ratchet_message_t *self) {
 VSCR_PUBLIC vsc_data_t
 vscr_ratchet_message_get_sender_identity_key_id(vscr_ratchet_message_t *self) {
 
-    //  TODO: This is STUB. Implement me.
+    VSCR_ASSERT_PTR(self);
+    VSCR_ASSERT(self->message_pb.has_prekey_message);
+
+    return vsc_data(self->message_pb.prekey_message.sender_identity_key_id,
+            sizeof(self->message_pb.prekey_message.sender_identity_key_id));
 }
 
 //
@@ -304,7 +308,11 @@ vscr_ratchet_message_get_sender_identity_key_id(vscr_ratchet_message_t *self) {
 VSCR_PUBLIC vsc_data_t
 vscr_ratchet_message_get_receiver_identity_key_id(vscr_ratchet_message_t *self) {
 
-    //  TODO: This is STUB. Implement me.
+    VSCR_ASSERT_PTR(self);
+    VSCR_ASSERT(self->message_pb.has_prekey_message);
+
+    return vsc_data(self->message_pb.prekey_message.receiver_identity_key_id,
+            sizeof(self->message_pb.prekey_message.receiver_identity_key_id));
 }
 
 //
@@ -313,7 +321,11 @@ vscr_ratchet_message_get_receiver_identity_key_id(vscr_ratchet_message_t *self) 
 VSCR_PUBLIC vsc_data_t
 vscr_ratchet_message_get_receiver_long_term_key_id(vscr_ratchet_message_t *self) {
 
-    //  TODO: This is STUB. Implement me.
+    VSCR_ASSERT_PTR(self);
+    VSCR_ASSERT(self->message_pb.has_prekey_message);
+
+    return vsc_data(self->message_pb.prekey_message.receiver_long_term_key_id,
+            sizeof(self->message_pb.prekey_message.receiver_long_term_key_id));
 }
 
 //
@@ -322,7 +334,15 @@ vscr_ratchet_message_get_receiver_long_term_key_id(vscr_ratchet_message_t *self)
 VSCR_PUBLIC vsc_data_t
 vscr_ratchet_message_get_receiver_one_time_key_id(vscr_ratchet_message_t *self) {
 
-    //  TODO: This is STUB. Implement me.
+    VSCR_ASSERT_PTR(self);
+    VSCR_ASSERT(self->message_pb.has_prekey_message);
+
+    if (!self->message_pb.prekey_message.has_receiver_one_time_key_id) {
+        return vsc_data_empty();
+    }
+
+    return vsc_data(self->message_pb.prekey_message.receiver_one_time_key_id,
+            sizeof(self->message_pb.prekey_message.receiver_one_time_key_id));
 }
 
 //
@@ -384,7 +404,7 @@ vscr_ratchet_message_deserialize(vsc_data_t input, vscr_error_t *error) {
     }
 
     pb_istream_t sub_istream = pb_istream_from_buffer(
-            message->message_pb.regular_message.header.bytes, message->message_pb.regular_message.header.size);
+            message->message_pb.regular_message.header->bytes, message->message_pb.regular_message.header->size);
 
     pb_status = pb_decode(&sub_istream, vscr_RegularMessageHeader_fields, message->header_pb);
 

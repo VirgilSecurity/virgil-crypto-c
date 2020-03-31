@@ -523,7 +523,7 @@ vscr_ratchet_key_utils_import_public_key(vscr_ratchet_key_utils_t *self, const v
     if (vscf_key_info_is_compound(key_info)) {
         VSCR_ASSERT(vscf_impl_tag(public_key) == vscf_impl_tag_COMPOUND_PUBLIC_KEY);
 
-        if (enable_post_quantum && with_signer && private_key_second_signer_ref != NULL) {
+        if (enable_post_quantum && with_signer && public_key_second_signer_ref != NULL) {
             const vscf_impl_t *signer_key =
                     vscf_compound_public_key_signer_key((vscf_compound_public_key_t *)public_key);
 

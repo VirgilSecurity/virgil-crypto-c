@@ -10,7 +10,7 @@
     <require header="pb_encode.h" scope="public"/>
 
     <property name="roots count" type="unsigned" size="4" access="readwrite"/>
-    <property name="public keys" interface="private key" project="foundation" access="readwrite">
+    <property name="key ids" class="vscr_ratchet_public_key_t" is_reference="0" library="internal" access="readwrite">
         <array length="fixed" length_constant=".(class_ratchet_common_hidden_constant_max_skipped_dh)"/>
     </property>
     <property name="root nodes" class="ratchet skipped messages root node" access="readwrite">
@@ -19,28 +19,28 @@
 
     <method name="find key" is_const="1">
         <argument name="counter" type="unsigned" size="4"/>
-        <argument name="public key" interface="private key" project="foundation" access="readonly"/>
+        <argument name="key id" class="vscr_ratchet_public_key_t" is_reference="0" library="internal"/>
 
         <return class="ratchet message key" access="readwrite"/>
     </method>
 
     <method name="find public key" is_const="1" scope="private">
-        <argument name="public key" interface="private key" project="foundation" access="readonly"/>
+        <argument name="key id" class="vscr_ratchet_public_key_t" is_reference="0" library="internal"/>
 
         <return type="unsigned" size="4"/>
     </method>
 
     <method name="delete key">
-        <argument name="public key" interface="private key" project="foundation" access="readonly"/>
+        <argument name="key id" class="vscr_ratchet_public_key_t" is_reference="0" library="internal"/>
         <argument name="message key" class="ratchet message key" access="readwrite"/>
     </method>
 
     <method name="add public key">
-        <argument name="public key" interface="private key" project="foundation" access="readonly"/>
+        <argument name="key id" class="vscr_ratchet_public_key_t" is_reference="0" library="internal"/>
     </method>
 
     <method name="add key">
-        <argument name="public key" interface="private key" project="foundation" access="readonly"/>
+        <argument name="key id" class="vscr_ratchet_public_key_t" is_reference="0" library="internal"/>
         <argument name="message key" class="ratchet message key" access="readwrite"/>
     </method>
 
@@ -52,5 +52,4 @@
         <argument name="skipped messages pb" class="vscr_SkippedMessages" library="nanopb"/>
         <argument name="skipped messages" class="self" access="readwrite"/>
     </method>
-
 </class>

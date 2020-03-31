@@ -58,6 +58,7 @@
 #include "vscr_ratchet_pb_utils.h"
 #include "vscr_ratchet_common_hidden.h"
 #include "vscr_ratchet_keys.h"
+#include "vscr_ratchet_key_utils.h"
 #include "vscr_ratchet_cipher.h"
 #include "vscr_ratchet_sender_chain.h"
 #include "vscr_ratchet_receiver_chain.h"
@@ -109,9 +110,13 @@ struct vscr_ratchet_t {
     //
     vscf_impl_t *rng;
 
+    vscr_ratchet_key_utils_t *ratchet_key_utils;
+
+    vscr_ratchet_keys_t *ratchet_keys;
+
     vscf_key_provider_t *key_provider;
 
-    vscf_round5_t *round;
+    vscf_round5_t *round5;
 
     bool enable_post_quantum;
 

@@ -27,8 +27,10 @@
     <require header="ed25519/ed25519.h" scope="private"/>
 
     <dependency name="rng" interface="random" project="foundation" has_observers="1"/>
+    <property name="ratchet key utils" class="ratchet key utils"/>
+    <property name="ratchet keys" class="ratchet keys"/>
     <property name="key provider" class="key provider" project="foundation"/>
-    <property name="round" class="round5" project="foundation"/>
+    <property name="round5" class="round5" project="foundation"/>
     <property name="enable post quantum" type="boolean"/>
     <property name="cipher" class="ratchet cipher" access="readwrite"/>
     <property name="padding" class="message padding" project="foundation" access="readwrite"/>
@@ -37,23 +39,6 @@
     <property name="receiver chain" class="ratchet receiver chain" access="readwrite"/>
     <property name="skipped messages" class="ratchet skipped messages" access="readwrite"/>
     <property name="root key" class="vscr_ratchet_symmetric_key_t" is_reference="0" library="internal" access="readwrite"/>
-
-    <method name="decrypt for existing chain" declaration="private">
-        <argument name="chain key" class="ratchet chain key"/>
-        <argument name="message" class="vscr_RegularMessage" library="nanopb" access="readonly"/>
-        <argument name="regular message header" class="vscr_RegularMessageHeader" library="nanopb" access="readonly"/>
-        <argument name="buffer" class="buffer"/>
-
-        <return enum="status"/>
-    </method>
-
-    <method name="decrypt for new chain" declaration="private">
-        <argument name="message" class="vscr_RegularMessage" library="nanopb" access="readonly"/>
-        <argument name="regular message header" class="vscr_RegularMessageHeader" library="nanopb" access="readonly"/>
-        <argument name="buffer" class="buffer"/>
-
-        <return enum="status"/>
-    </method>
 
     <method name="initiate">
         <argument name="shared key" class="vscr_ratchet_symmetric_key_t" is_reference="0" library="internal"/>
@@ -66,7 +51,8 @@
 
     <method name="respond">
         <argument name="shared key" class="vscr_ratchet_symmetric_key_t" is_reference="0" library="internal"/>
-        <argument name="receiver long term private key" interface="private key" project="foundation"/>
+        <argument name="receiver long term private key first" class="vscr_ratchet_private_key_t" is_reference="0" library="internal"/>
+        <argument name="receiver long term private key second" interface="private key" project="foundation"/>
         <argument name="message" class="vscr_RegularMessage" library="nanopb" access="readonly"/>
         <argument name="regular message header" class="vscr_RegularMessageHeader" library="nanopb" access="readonly"/>
         <argument name="enable post quantum" type="boolean"/>
@@ -102,6 +88,15 @@
                 <proxy argument="cipher text" to="cipher text len" cast="data_length"/>
             </length>
         </argument>
+
+        <return enum="status"/>
+    </method>
+
+    <method name="decrypt for existing chain" declaration="private">
+        <argument name="chain key" class="ratchet chain key"/>
+        <argument name="message" class="vscr_RegularMessage" library="nanopb" access="readonly"/>
+        <argument name="regular message header" class="vscr_RegularMessageHeader" library="nanopb" access="readonly"/>
+        <argument name="buffer" class="buffer"/>
 
         <return enum="status"/>
     </method>

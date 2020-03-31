@@ -5,8 +5,6 @@
 
     <require header="ed25519/ed25519.h" scope="private"/>
 
-    <require interface="compute shared key" project="foundation" scope="private"/>
-
     <require class="buffer" project="common" scope="private"/>
     <require module="buffer defs" project="common" scope="private"/>
 

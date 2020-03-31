@@ -72,14 +72,26 @@
         <argument name="sender identity private key" interface="private key" project="foundation">
             Sender identity private key
         </argument>
+        <argument name="sender identity key id" class="data">
+            Sender identity key id
+        </argument>
         <argument name="receiver identity public key" interface="public key" project="foundation">
             Receiver identity public key
+        </argument>
+        <argument name="receiver identity key id" class="data">
+            Sender identity key id
         </argument>
         <argument name="receiver long term public key" interface="public key" project="foundation" access="retain">
             Receiver long-term public key
         </argument>
+        <argument name="receiver long term key id" class="data">
+            Receiver long-term key id
+        </argument>
         <argument name="receiver one time public key" interface="public key" project="foundation" access="retain">
             Receiver one-time public key (optional)
+        </argument>
+        <argument name="receiver one time key id" class="data">
+            Receiver one-time key id
         </argument>
         <argument name="enable post quantum" type="boolean">
             Ephemeral keys will consist of curve25519 and round5 keys.
@@ -97,26 +109,14 @@
         <argument name="sender identity public key" interface="public key" project="foundation" access="retain">
             Sender identity public key
         </argument>
-        <argument name="sender identity key id" class="data">
-            Sender identity key id
-        </argument>
         <argument name="receiver identity private key" interface="private key" project="foundation">
             Receiver identity private key
-        </argument>
-        <argument name="receiver identity key id" class="data">
-            Sender identity key id
         </argument>
         <argument name="receiver long term private key" interface="private key" project="foundation">
             Receiver long-term private key
         </argument>
-        <argument name="receiver long term key id" class="data">
-            Receiver long-term key id
-        </argument>
         <argument name="receiver one time private key" interface="private key" project="foundation">
             Receiver one-time private key (optional)
-        </argument>
-        <argument name="receiver one time key id" class="data">
-            Receiver one-time key id
         </argument>
         <argument name="message" class="ratchet message">
             Message received from initiator

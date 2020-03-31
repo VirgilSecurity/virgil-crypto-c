@@ -54,7 +54,6 @@
 #include <virgil/crypto/foundation/vscf_private_key.h>
 #include <virgil/crypto/foundation/vscf_public_key.h>
 #include <ed25519/ed25519.h>
-#include <virgil/crypto/foundation/vscf_compute_shared_key.h>
 #include <virgil/crypto/common/private/vsc_buffer_defs.h>
 #include <virgil/crypto/foundation/vscf_sha512.h>
 #include <virgil/crypto/foundation/vscf_hkdf.h>

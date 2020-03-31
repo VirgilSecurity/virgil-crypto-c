@@ -247,7 +247,7 @@ vscr_ratchet_receiver_chain_serialize(
     VSCR_ASSERT_PTR(self);
     VSCR_ASSERT_PTR(receiver_chain_pb);
 
-    memcpy(receiver_chain_pb->public_key, self->public_key, sizeof(receiver_chain_pb->public_key));
+    memcpy(receiver_chain_pb->public_key_first, self->public_key_first, sizeof(receiver_chain_pb->public_key_first));
     vscr_ratchet_chain_key_serialize(&self->chain_key, &receiver_chain_pb->chain_key);
 }
 
@@ -258,6 +258,7 @@ vscr_ratchet_receiver_chain_deserialize(
     VSCR_ASSERT_PTR(receiver_chain);
     VSCR_ASSERT_PTR(receiver_chain_pb);
 
-    memcpy(receiver_chain->public_key, receiver_chain_pb->public_key, sizeof(receiver_chain_pb->public_key));
+    memcpy(receiver_chain->public_key_first, receiver_chain_pb->public_key_first,
+            sizeof(receiver_chain_pb->public_key_first));
     vscr_ratchet_chain_key_deserialize(&receiver_chain_pb->chain_key, &receiver_chain->chain_key);
 }

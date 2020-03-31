@@ -55,14 +55,6 @@
 #include <pb_decode.h>
 #include <pb_encode.h>
 
-#if !VSCR_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
-#   include <virgil/crypto/foundation/vscf_impl.h>
-#endif
-
-#if VSCR_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
-#   include <VSCFoundation/vscf_impl.h>
-#endif
-
 // clang-format on
 //  @end
 
@@ -129,21 +121,21 @@ vscr_ratchet_skipped_messages_shallow_copy(vscr_ratchet_skipped_messages_t *self
 
 VSCR_PUBLIC vscr_ratchet_message_key_t *
 vscr_ratchet_skipped_messages_find_key(const vscr_ratchet_skipped_messages_t *self, uint32_t counter,
-        const vscf_impl_t *public_key);
+        vscr_ratchet_public_key_t key_id);
 
 VSCR_PUBLIC uint32_t
 vscr_ratchet_skipped_messages_find_public_key(const vscr_ratchet_skipped_messages_t *self,
-        const vscf_impl_t *public_key);
+        vscr_ratchet_public_key_t key_id);
 
 VSCR_PUBLIC void
-vscr_ratchet_skipped_messages_delete_key(vscr_ratchet_skipped_messages_t *self, const vscf_impl_t *public_key,
+vscr_ratchet_skipped_messages_delete_key(vscr_ratchet_skipped_messages_t *self, vscr_ratchet_public_key_t key_id,
         vscr_ratchet_message_key_t *message_key);
 
 VSCR_PUBLIC void
-vscr_ratchet_skipped_messages_add_public_key(vscr_ratchet_skipped_messages_t *self, const vscf_impl_t *public_key);
+vscr_ratchet_skipped_messages_add_public_key(vscr_ratchet_skipped_messages_t *self, vscr_ratchet_public_key_t key_id);
 
 VSCR_PUBLIC void
-vscr_ratchet_skipped_messages_add_key(vscr_ratchet_skipped_messages_t *self, const vscf_impl_t *public_key,
+vscr_ratchet_skipped_messages_add_key(vscr_ratchet_skipped_messages_t *self, vscr_ratchet_public_key_t key_id,
         vscr_ratchet_message_key_t *message_key);
 
 VSCR_PUBLIC void
