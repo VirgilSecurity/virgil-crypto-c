@@ -86,7 +86,7 @@ ExternalProject_Add(mbedtls-ext
         GIT_REPOSITORY
             https://github.com/VirgilSecurity/mbedtls
         GIT_TAG
-            virgil-mbedtls-2.14.0-patched
+            virgil-mbedtls-2.14.0-patched-cmake-fix
         CMAKE_ARGS
             "${TRANSITIVE_ARGS}"
             "-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}"
