@@ -4,6 +4,8 @@
     <require header="pb_decode.h" scope="public"/>
     <require header="pb_encode.h" scope="public"/>
 
+    <require class="ratchet pb utils" scope="context"/>
+
     <require module="ratchet typedefs" scope="context"/>
 
     <require header="ed25519/ed25519.h" is_system="1" scope="private"/>
@@ -13,7 +15,6 @@
     <property name="public key id" class="vscr_ratchet_key_id_t" is_reference="0" library="internal" access="readwrite"/>
     <property name="public key first" class="vscr_ratchet_public_key_t" is_reference="0" library="internal" access="readwrite"/>
     <property name="public key second" interface="private key" project="foundation" access="readwrite"/>
-    <property name="public key second data" class="buffer" access="readwrite"/>
     <property name="chain key" class="ratchet chain key" access="readwrite" is_reference="0"/>
 
     <method name="serialize" is_const="1">
@@ -23,6 +24,9 @@
     <method name="deserialize" is_static="1">
         <argument name="receiver chain pb" class="vscr_ReceiverChain" library="nanopb"/>
         <argument name="receiver chain" class="self" access="readwrite"/>
+        <argument name="round5" class="round5" project="foundation" access="readwrite"/>
+
+        <return enum="status"/>
     </method>
 
 </class>

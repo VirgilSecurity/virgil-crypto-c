@@ -186,8 +186,8 @@ vscr_ratchet_decrypt(vscr_ratchet_t *self, const vscr_RegularMessage *regular_me
 VSCR_PUBLIC void
 vscr_ratchet_serialize(const vscr_ratchet_t *self, vscr_Ratchet *ratchet_pb);
 
-VSCR_PUBLIC void
-vscr_ratchet_deserialize(const vscr_Ratchet *ratchet_pb, vscr_ratchet_t *ratchet);
+VSCR_PUBLIC vscr_status_t
+vscr_ratchet_deserialize(const vscr_Ratchet *ratchet_pb, vscr_ratchet_t *ratchet) VSCR_NODISCARD;
 
 
 // --------------------------------------------------------------------------

@@ -3,8 +3,6 @@
     <require interface="private key" project="foundation"/>
     <require interface="public key" project="foundation"/>
 
-    <require class="key provider" project="foundation"/>
-
     <require impl="sha512" project="foundation" scope="private"/>
     <require impl="hmac" project="foundation" scope="private"/>
     <require impl="hkdf" project="foundation" scope="private"/>
@@ -29,7 +27,6 @@
     <dependency name="rng" interface="random" project="foundation" has_observers="1"/>
     <property name="ratchet key utils" class="ratchet key utils"/>
     <property name="ratchet keys" class="ratchet keys"/>
-    <property name="key provider" class="key provider" project="foundation"/>
     <property name="round5" class="round5" project="foundation"/>
     <property name="enable post quantum" type="boolean"/>
     <property name="cipher" class="ratchet cipher" access="readwrite"/>
@@ -121,6 +118,7 @@
     <method name="deserialize" is_static="1">
         <argument name="ratchet pb" class="vscr_Ratchet" library="nanopb"/>
         <argument name="ratchet" class="self" access="readwrite"/>
+        <return enum="status"/>
     </method>
 
 </class>

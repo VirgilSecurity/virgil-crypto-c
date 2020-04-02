@@ -1,10 +1,10 @@
 vscr_RegularMessageHeader.public_key_id max_size:8 fixed_length:true
 vscr_RegularMessageHeader.public_key max_size:32 fixed_length:true
 
-vscr_RegularMessageHeaderPqcInfo.encapsulated_key max_size:1092 type:FT_POINTER
-vscr_RegularMessageHeaderPqcInfo.public_key max_size:1092 type:FT_POINTER
+vscr_RegularMessageHeaderPqcInfo.encapsulated_key max_size:1285 type:FT_POINTER
+vscr_RegularMessageHeaderPqcInfo.public_key max_size:1037 type:FT_POINTER
 
-vscr_RegularMessage.header max_size:1152 type:FT_POINTER
+vscr_RegularMessage.header max_size:4096 type:FT_POINTER
 
 vscr_PrekeyMessage.sender_identity_key_id max_size:8 fixed_length:true
 vscr_PrekeyMessage.sender_ephemeral_key max_size:32 fixed_length:true

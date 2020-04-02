@@ -11,7 +11,6 @@
     <require class="raw public key" scope="private" project="foundation"/>
     <require class="raw private key" scope="private" project="foundation"/>
 
-    <require class="key provider" project="foundation"/>
     <require class="key info" project="foundation"/>
 
     <require class="ratchet pb utils" scope="context"/>
@@ -40,13 +39,12 @@
     </dependency>
 
     <property name="key utils" class="ratchet key utils"/>
-    <property name="key provider" class="key provider" project="foundation"/>
     <property name="xxdh" class="ratchet xxdh"/>
     <property name="ratchet" class="ratchet"/>
 
     <property name="is initiator" type="boolean"/>
     <property name="received first response" type="boolean"/>
-
+    <property name="enable post quantum" type="boolean"/>
     <property name="sender identity key id" class="vscr_ratchet_key_id_t" is_reference="0" library="internal" access="readwrite"/>
     <property name="sender ephemeral public key first" class="vscr_ratchet_public_key_t" is_reference="0" library="internal" access="readwrite"/>
     <property name="receiver identity key id" class="vscr_ratchet_key_id_t" is_reference="0" library="internal" access="readwrite"/>

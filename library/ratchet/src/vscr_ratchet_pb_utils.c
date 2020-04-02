@@ -57,6 +57,7 @@
 
 #include <pb_decode.h>
 #include <pb_encode.h>
+#include <virgil/crypto/foundation/vscf_simple_alg_info.h>
 
 // clang-format on
 //  @end
@@ -247,14 +248,21 @@ vscr_ratchet_pb_utils_cleanup_ctx(vscr_ratchet_pb_utils_t *self) {
 }
 
 VSCR_PUBLIC void
+vscr_ratchet_pb_utils_serialize_data(vsc_data_t data, pb_bytes_array_t **pb_buffer_ref) {
+
+    VSCR_ASSERT_PTR(pb_buffer_ref);
+
+    *pb_buffer_ref = vscr_alloc(PB_BYTES_ARRAY_T_ALLOCSIZE(data.len));
+    memcpy((*pb_buffer_ref)->bytes, data.bytes, data.len);
+    (*pb_buffer_ref)->size = data.len;
+}
+
+VSCR_PUBLIC void
 vscr_ratchet_pb_utils_serialize_buffer(vsc_buffer_t *buffer, pb_bytes_array_t **pb_buffer_ref) {
 
     VSCR_ASSERT_PTR(buffer);
-    VSCR_ASSERT_PTR(pb_buffer_ref);
 
-    *pb_buffer_ref = vscr_alloc(PB_BYTES_ARRAY_T_ALLOCSIZE(vsc_buffer_len(buffer)));
-    memcpy((*pb_buffer_ref)->bytes, vsc_buffer_bytes(buffer), vsc_buffer_len(buffer));
-    (*pb_buffer_ref)->size = vsc_buffer_len(buffer);
+    vscr_ratchet_pb_utils_serialize_data(vsc_buffer_data(buffer), pb_buffer_ref);
 }
 
 VSCR_PUBLIC vsc_buffer_t *
@@ -270,7 +278,83 @@ vscr_ratchet_pb_utils_deserialize_buffer(const pb_bytes_array_t *pb_buffer) {
 VSCR_PUBLIC vsc_data_t
 vscr_ratchet_pb_utils_buffer_to_data(const pb_bytes_array_t *pb_buffer) {
 
-    VSCR_ASSERT_PTR(pb_buffer);
+    if (pb_buffer == NULL) {
+        return vsc_data_empty();
+    }
 
     return vsc_data(pb_buffer->bytes, pb_buffer->size);
+}
+
+VSCR_PUBLIC void
+vscr_ratchet_pb_utils_serialize_public_key(vscf_impl_t *key, pb_bytes_array_t **pb_buffer_ref) {
+
+    VSCR_ASSERT_PTR(key);
+    VSCR_ASSERT_PTR(pb_buffer_ref);
+
+    VSCR_ASSERT(vscf_impl_tag(key) == vscf_impl_tag_RAW_PUBLIC_KEY);
+    vscr_ratchet_pb_utils_serialize_data(vscf_raw_public_key_data((vscf_raw_public_key_t *)key), pb_buffer_ref);
+}
+
+VSCR_PUBLIC vscr_status_t
+vscr_ratchet_pb_utils_deserialize_public_key(
+        vscf_round5_t *round5, const pb_bytes_array_t *pb_buffer, vscf_impl_t **public_key_ref) {
+
+    VSCR_ASSERT_PTR(round5);
+    VSCR_ASSERT_PTR(pb_buffer);
+    VSCR_ASSERT_PTR(public_key_ref);
+
+    vsc_data_t data = vsc_data(pb_buffer->bytes, pb_buffer->size);
+
+    vscf_impl_t *alg_info =
+            vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_ROUND5_ND_5KEM_5D));
+    vscf_raw_public_key_t *raw_public_key = vscf_raw_public_key_new_with_data(data, &alg_info);
+
+    vscf_error_t error_ctx;
+    vscf_error_reset(&error_ctx);
+
+    *public_key_ref = vscf_round5_import_public_key(round5, raw_public_key, &error_ctx);
+
+    if (error_ctx.status != vscf_status_SUCCESS) {
+        // FIXME
+        return vscr_status_ERROR_RNG_FAILED;
+    }
+
+    return vscr_status_SUCCESS;
+}
+
+VSCR_PUBLIC void
+vscr_ratchet_pb_utils_serialize_private_key(vscf_impl_t *key, pb_bytes_array_t **pb_buffer_ref) {
+
+    VSCR_ASSERT_PTR(key);
+    VSCR_ASSERT_PTR(pb_buffer_ref);
+
+    VSCR_ASSERT(vscf_impl_tag(key) == vscf_impl_tag_RAW_PRIVATE_KEY);
+    vscr_ratchet_pb_utils_serialize_data(vscf_raw_public_key_data((vscf_raw_public_key_t *)key), pb_buffer_ref);
+}
+
+VSCR_PUBLIC vscr_status_t
+vscr_ratchet_pb_utils_deserialize_private_key(
+        vscf_round5_t *round5, const pb_bytes_array_t *pb_buffer, vscf_impl_t **private_key_ref) {
+
+    VSCR_ASSERT_PTR(round5);
+    VSCR_ASSERT_PTR(pb_buffer);
+    VSCR_ASSERT_PTR(private_key_ref);
+
+    vsc_data_t data = vsc_data(pb_buffer->bytes, pb_buffer->size);
+
+    vscf_impl_t *alg_info =
+            vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_ROUND5_ND_5KEM_5D));
+    vscf_raw_private_key_t *raw_private_key = vscf_raw_private_key_new_with_data(data, &alg_info);
+
+    vscf_error_t error_ctx;
+    vscf_error_reset(&error_ctx);
+
+    *private_key_ref = vscf_round5_import_private_key(round5, raw_private_key, &error_ctx);
+
+    if (error_ctx.status != vscf_status_SUCCESS) {
+        // FIXME
+        return vscr_status_ERROR_RNG_FAILED;
+    }
+
+    return vscr_status_SUCCESS;
 }

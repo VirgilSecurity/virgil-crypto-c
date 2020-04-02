@@ -8,9 +8,8 @@ message vscr_RegularMessageHeaderPqcInfo {
 message vscr_RegularMessageHeader {
     required uint32 counter = 1;
     required uint32 prev_chain_count = 2;
-    required bytes public_key_id = 3;
-    required bytes public_key = 4;
-    optional vscr_RegularMessageHeaderPqcInfo pqc_info = 5;
+    required bytes public_key = 3;
+    optional vscr_RegularMessageHeaderPqcInfo pqc_info = 4;
 }
 
 message vscr_RegularMessage {

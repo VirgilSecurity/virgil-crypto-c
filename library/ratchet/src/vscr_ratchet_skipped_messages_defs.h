@@ -89,7 +89,7 @@ struct vscr_ratchet_skipped_messages_t {
 
     uint32_t roots_count;
 
-    vscr_ratchet_public_key_t key_ids[vscr_ratchet_common_hidden_MAX_SKIPPED_DH];
+    vscr_ratchet_key_id_t key_ids[vscr_ratchet_common_hidden_MAX_SKIPPED_DH];
 
     vscr_ratchet_skipped_messages_root_node_t *root_nodes[vscr_ratchet_common_hidden_MAX_SKIPPED_DH];
 };

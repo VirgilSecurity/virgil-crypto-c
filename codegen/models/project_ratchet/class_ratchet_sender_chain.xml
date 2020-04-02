@@ -6,6 +6,8 @@
 
     <require module="ratchet typedefs" scope="context"/>
 
+    <require class="ratchet pb utils" scope="context"/>
+
     <require class="ratchet common hidden" scope="context"/>
 
     <property name="private key first" class="vscr_ratchet_private_key_t" is_reference="0" library="internal" access="readwrite"/>
@@ -17,13 +19,14 @@
 
     <method name="serialize" is_const="1">
         <argument name="sender chain pb" class="vscr_SenderChain" library="nanopb" access="readwrite"/>
-        <argument name="key provider" class="key provider" project="foundation"/>
     </method>
 
     <method name="deserialize" is_static="1">
         <argument name="sender chain pb" class="vscr_SenderChain" library="nanopb"/>
         <argument name="sender chain" class="self" access="readwrite"/>
-        <argument name="key provider" class="key provider" project="foundation"/>
+        <argument name="round5" class="round5" project="foundation" access="readwrite"/>
+
+        <return enum="status"/>
     </method>
 
 </class>

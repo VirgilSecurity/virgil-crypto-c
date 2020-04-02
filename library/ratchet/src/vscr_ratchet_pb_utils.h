@@ -54,17 +54,28 @@
 #define VSCR_RATCHET_PB_UTILS_H_INCLUDED
 
 #include "vscr_library.h"
+#include "vscr_status.h"
 
 #include <pb.h>
 
 #if !VSCR_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <virgil/crypto/common/vsc_buffer.h>
 #   include <virgil/crypto/common/vsc_data.h>
+#   include <virgil/crypto/common/vsc_buffer.h>
+#endif
+
+#if !VSCR_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
+#   include <virgil/crypto/foundation/vscf_impl.h>
+#   include <virgil/crypto/foundation/vscf_round5.h>
 #endif
 
 #if VSCR_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <VSCCommon/vsc_buffer.h>
 #   include <VSCCommon/vsc_data.h>
+#   include <VSCCommon/vsc_buffer.h>
+#endif
+
+#if VSCR_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
+#   include <VSCFoundation/vscf_impl.h>
+#   include <VSCFoundation/vscf_round5.h>
 #endif
 
 // clang-format on
@@ -132,6 +143,9 @@ VSCR_PUBLIC vscr_ratchet_pb_utils_t *
 vscr_ratchet_pb_utils_shallow_copy(vscr_ratchet_pb_utils_t *self);
 
 VSCR_PUBLIC void
+vscr_ratchet_pb_utils_serialize_data(vsc_data_t data, pb_bytes_array_t **pb_buffer_ref);
+
+VSCR_PUBLIC void
 vscr_ratchet_pb_utils_serialize_buffer(vsc_buffer_t *buffer, pb_bytes_array_t **pb_buffer_ref);
 
 VSCR_PUBLIC vsc_buffer_t *
@@ -139,6 +153,20 @@ vscr_ratchet_pb_utils_deserialize_buffer(const pb_bytes_array_t *pb_buffer);
 
 VSCR_PUBLIC vsc_data_t
 vscr_ratchet_pb_utils_buffer_to_data(const pb_bytes_array_t *pb_buffer);
+
+VSCR_PUBLIC void
+vscr_ratchet_pb_utils_serialize_public_key(vscf_impl_t *key, pb_bytes_array_t **pb_buffer_ref);
+
+VSCR_PUBLIC vscr_status_t
+vscr_ratchet_pb_utils_deserialize_public_key(vscf_round5_t *round5, const pb_bytes_array_t *pb_buffer,
+        vscf_impl_t **public_key_ref) VSCR_NODISCARD;
+
+VSCR_PUBLIC void
+vscr_ratchet_pb_utils_serialize_private_key(vscf_impl_t *key, pb_bytes_array_t **pb_buffer_ref);
+
+VSCR_PUBLIC vscr_status_t
+vscr_ratchet_pb_utils_deserialize_private_key(vscf_round5_t *round5, const pb_bytes_array_t *pb_buffer,
+        vscf_impl_t **private_key_ref) VSCR_NODISCARD;
 
 
 // --------------------------------------------------------------------------

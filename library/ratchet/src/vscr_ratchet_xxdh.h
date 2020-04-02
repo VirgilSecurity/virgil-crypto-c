@@ -164,33 +164,51 @@ vscr_ratchet_xxdh_decapsulate_pqc_key(vscr_ratchet_xxdh_t *self, const vscf_impl
 VSCR_PUBLIC vscr_status_t
 vscr_ratchet_xxdh_compute_initiator_xxdh_secret(vscr_ratchet_xxdh_t *self,
         const vscr_ratchet_private_key_t sender_identity_private_key_first,
-        const vscr_ratchet_private_key_t sender_ephemeral_private_key_first,
         const vscr_ratchet_public_key_t receiver_identity_public_key_first,
         const vscr_ratchet_public_key_t receiver_long_term_public_key_first, bool receiver_has_one_time_key,
         const vscr_ratchet_public_key_t receiver_one_time_public_key_first,
+        vscr_ratchet_public_key_t ephemeral_public_key_first,
         const vscf_impl_t *sender_identity_private_key_second_signer,
         const vscf_impl_t *receiver_identity_public_key_second,
         const vscf_impl_t *receiver_long_term_public_key_second,
-        const vscf_impl_t *receiver_one_time_public_key_second, vscr_ratchet_symmetric_key_t shared_key,
-        vsc_buffer_t **encapsulated_key_1_ref, vsc_buffer_t **encapsulated_key_2_ref,
-        vsc_buffer_t **encapsulated_key_3_ref, vsc_buffer_t **decapsulated_keys_signature_ref) VSCR_NODISCARD;
+        const vscf_impl_t *receiver_one_time_public_key_second, vsc_buffer_t **encapsulated_key_1_ref,
+        vsc_buffer_t **encapsulated_key_2_ref, vsc_buffer_t **encapsulated_key_3_ref,
+        vsc_buffer_t **decapsulated_keys_signature_ref, vscr_ratchet_symmetric_key_t shared_key) VSCR_NODISCARD;
 
-//
-//  Z
-//
+VSCR_PUBLIC vscr_status_t
+vscr_ratchet_xxdh_compute_initiator_pqc_shared_secret(vscr_ratchet_xxdh_t *self,
+        const vscf_impl_t *sender_identity_private_key_second_signer,
+        const vscf_impl_t *receiver_identity_public_key_second,
+        const vscf_impl_t *receiver_long_term_public_key_second,
+        const vscf_impl_t *receiver_one_time_public_key_second, vsc_buffer_t **encapsulated_key_1_ref,
+        vsc_buffer_t **encapsulated_key_2_ref, vsc_buffer_t **encapsulated_key_3_ref,
+        vsc_buffer_t **decapsulated_keys_signature_ref, vsc_buffer_t *shared_secret) VSCR_NODISCARD;
+
 VSCR_PUBLIC vscr_status_t
 vscr_ratchet_xxdh_compute_responder_xxdh_secret(vscr_ratchet_xxdh_t *self,
         const vscr_ratchet_public_key_t sender_identity_public_key_first,
-        const vscr_ratchet_public_key_t sender_ephemeral_public_key_first,
         const vscr_ratchet_private_key_t receiver_identity_private_key_first,
         const vscr_ratchet_private_key_t receiver_long_term_private_key_first, bool receiver_has_one_time_key,
         const vscr_ratchet_private_key_t receiver_one_time_private_key_first,
+        const vscr_ratchet_public_key_t sender_ephemeral_public_key_first,
         const vscf_impl_t *sender_identity_public_key_second_verifier,
         const vscf_impl_t *receiver_identity_private_key_second,
         const vscf_impl_t *receiver_long_term_private_key_second,
         const vscf_impl_t *receiver_one_time_private_key_second, vsc_data_t encapsulated_key_1,
         vsc_data_t encapsulated_key_2, vsc_data_t encapsulated_key_3, vsc_data_t decapsulated_keys_signature,
         vscr_ratchet_symmetric_key_t shared_key) VSCR_NODISCARD;
+
+//
+//  Z
+//
+VSCR_PUBLIC vscr_status_t
+vscr_ratchet_xxdh_compute_responder_pqc_shared_secret(vscr_ratchet_xxdh_t *self,
+        const vscf_impl_t *sender_identity_public_key_second_verifier,
+        const vscf_impl_t *receiver_identity_private_key_second,
+        const vscf_impl_t *receiver_long_term_private_key_second,
+        const vscf_impl_t *receiver_one_time_private_key_second, vsc_data_t encapsulated_key_1,
+        vsc_data_t encapsulated_key_2, vsc_data_t encapsulated_key_3, vsc_data_t decapsulated_keys_signature,
+        vsc_buffer_t *shared_secret) VSCR_NODISCARD;
 
 VSCR_PUBLIC void
 vscr_ratchet_xxdh_derive_key(vsc_data_t shared_secret, vscr_ratchet_symmetric_key_t shared_key);

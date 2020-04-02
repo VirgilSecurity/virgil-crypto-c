@@ -20,9 +20,6 @@
     <require module="hkdf private" scope="private" project="foundation"/>
     <require module="buffer defs" scope="private" project="common"/>
 
-    <dependency name="rng" interface="random" project="foundation" has_observers="1"/>
-
-    <property name="key provider" class="key provider" project="foundation"/>
     <property name="key asn1 deserializer" impl="key asn1 deserializer" project="foundation"/>
 
     <method name="import private key">
@@ -49,6 +46,12 @@
         <argument name="with signer" type="boolean"/>
 
         <return enum="status"/>
+    </method>
+
+    <method name="compute public key id">
+        <argument name="public key first" class="const vscr_ratchet_public_key_t" is_reference="0" library="internal"/>
+        <argument name="public key second" class="data"/>
+        <argument name="key id" class="vscr_ratchet_key_id_t" is_reference="0" library="internal"/>
     </method>
 
     <method name="extract ratchet public key">

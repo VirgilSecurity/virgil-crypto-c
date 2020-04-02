@@ -56,7 +56,6 @@
 #include <virgil/crypto/foundation/vscf_random.h>
 #include <virgil/crypto/foundation/vscf_private_key.h>
 #include <virgil/crypto/foundation/vscf_public_key.h>
-#include <virgil/crypto/foundation/vscf_key_provider.h>
 #include <virgil/crypto/foundation/vscf_sha512.h>
 #include <virgil/crypto/foundation/vscf_hmac.h>
 #include <virgil/crypto/foundation/vscf_hkdf.h>
@@ -317,8 +316,9 @@ vscr_ratchet_init_ctx(vscr_ratchet_t *self) {
     self->skipped_messages = vscr_ratchet_skipped_messages_new();
     self->cipher = vscr_ratchet_cipher_new();
     self->padding = vscf_message_padding_new();
-    self->key_provider = vscf_key_provider_new();
     self->ratchet_keys = vscr_ratchet_keys_new();
+    self->ratchet_key_utils = vscr_ratchet_key_utils_new();
+    self->round5 = vscf_round5_new();
 }
 
 //
@@ -336,8 +336,9 @@ vscr_ratchet_cleanup_ctx(vscr_ratchet_t *self) {
     vscr_ratchet_skipped_messages_destroy(&self->skipped_messages);
     vscr_ratchet_cipher_destroy(&self->cipher);
     vscf_message_padding_destroy(&self->padding);
-    vscf_key_provider_destroy(&self->key_provider);
     vscr_ratchet_keys_destroy(&self->ratchet_keys);
+    vscf_round5_destroy(&self->round5);
+    vscr_ratchet_key_utils_destroy(&self->ratchet_key_utils);
 }
 
 //
@@ -350,8 +351,8 @@ vscr_ratchet_did_setup_rng(vscr_ratchet_t *self) {
 
     if (self->rng) {
         vscf_message_padding_use_rng(self->padding, self->rng);
-        vscf_key_provider_use_random(self->key_provider, self->rng);
         vscr_ratchet_keys_use_rng(self->ratchet_keys, self->rng);
+        vscf_round5_use_random(self->round5, self->rng);
     }
 }
 
@@ -432,14 +433,28 @@ vscr_ratchet_respond(vscr_ratchet_t *self, vscr_ratchet_symmetric_key_t shared_k
         return status;
     }
 
-    // FIXME
-    //    memcpy(receiver_chain->public_key_first, regular_message_header->public_key,
-    //    sizeof(receiver_chain->public_key_firstirst)); receiver_chain->public_key_first = public_key;
+    memcpy(receiver_chain->public_key_first, regular_message_header->public_key,
+            sizeof(receiver_chain->public_key_first));
+
+    if (enable_post_quantum) {
+        status = vscr_ratchet_pb_utils_deserialize_public_key(
+                self->round5, regular_message_header->pqc_info.public_key, &receiver_chain->public_key_second);
+
+        if (status != vscf_status_SUCCESS) {
+            vscr_ratchet_receiver_chain_destroy(&receiver_chain);
+            goto err;
+        }
+    }
+
+    vscr_ratchet_key_utils_compute_public_key_id(self->ratchet_key_utils, receiver_chain->public_key_first,
+            enable_post_quantum ? vsc_data(regular_message_header->pqc_info.public_key->bytes,
+                                          regular_message_header->pqc_info.public_key->size)
+                                : vsc_data_empty(),
+            receiver_chain->public_key_id);
 
     self->receiver_chain = receiver_chain;
 
-    // TODO: replace public key as hash of concat of public keys
-    //    vscr_ratchet_skipped_messages_add_public_key(self->skipped_messages, public_key);
+    vscr_ratchet_skipped_messages_add_public_key(self->skipped_messages, receiver_chain->public_key_id);
 
     // TODO: Optimize. Prevent double decrypt for first message if possible
     // At this moment decrypting message using symmetric authenticated encryption is the only way to check
@@ -510,20 +525,34 @@ vscr_ratchet_encrypt(vscr_ratchet_t *self, vsc_data_t plain_text, vscr_RegularMe
 
     memcpy(regular_message_header->public_key, self->sender_chain->public_key_first,
             sizeof(self->sender_chain->public_key_first));
-    // TODO: regular_message_header->pqc_info
+
+    if (self->enable_post_quantum) {
+        regular_message_header->has_pqc_info = true;
+
+        vscr_RegularMessageHeaderPqcInfo *pqc_info = &regular_message_header->pqc_info;
+
+        vscr_ratchet_pb_utils_serialize_public_key(self->sender_chain->public_key_second, &pqc_info->public_key);
+        vscr_ratchet_pb_utils_serialize_buffer(
+                self->sender_chain->encapsulated_key, &regular_message_header->pqc_info.encapsulated_key);
+    } else {
+        regular_message_header->has_pqc_info = false;
+    }
 
     size_t size = 0;
     VSCR_ASSERT(pb_get_encoded_size(&size, vscr_RegularMessageHeader_fields, regular_message_header));
     regular_message->header = vscr_alloc(PB_BYTES_ARRAY_T_ALLOCSIZE(size));
 
-    pb_ostream_t ostream = pb_ostream_from_buffer(regular_message->header->bytes, regular_message->header->size);
+    pb_ostream_t ostream = pb_ostream_from_buffer(regular_message->header->bytes, size);
     VSCR_ASSERT(pb_encode(&ostream, vscr_RegularMessageHeader_fields, regular_message_header));
 
     regular_message->header->size = ostream.bytes_written;
 
+    size_t len = vscr_ratchet_encrypt_len(self, plain_text.len);
+    regular_message->cipher_text = vscr_alloc(PB_BYTES_ARRAY_T_ALLOCSIZE(len));
+
     vsc_buffer_t buffer;
     vsc_buffer_init(&buffer);
-    vsc_buffer_use(&buffer, regular_message->cipher_text->bytes, regular_message->cipher_text->size);
+    vsc_buffer_use(&buffer, regular_message->cipher_text->bytes, len);
 
     result = vscr_ratchet_cipher_pad_then_encrypt(self->cipher, self->padding, plain_text, message_key,
             vsc_data(regular_message->header->bytes, regular_message->header->size), &buffer);
@@ -559,39 +588,51 @@ vscr_ratchet_decrypt(vscr_ratchet_t *self, const vscr_RegularMessage *regular_me
 
     vscr_ratchet_receiver_chain_t *receiver_chain = NULL;
 
-    // TODO: Validation key id size
-    if (self->receiver_chain && memcmp(regular_message_header->public_key_id, self->receiver_chain->public_key_id,
-                                        sizeof(regular_message_header->public_key_id)) == 0) {
+    if (self->enable_post_quantum != regular_message_header->has_pqc_info) {
+        status = vscr_status_ERROR_INVALID_KEY_TYPE;
+        goto err;
+    }
+
+    vsc_data_t public_key_second;
+    if (self->enable_post_quantum) {
+        public_key_second = vscr_ratchet_pb_utils_buffer_to_data(regular_message_header->pqc_info.public_key);
+    } else {
+        public_key_second = vsc_data_empty();
+    }
+
+    vscr_ratchet_key_id_t key_id;
+    vscr_ratchet_key_utils_compute_public_key_id(
+            self->ratchet_key_utils, regular_message_header->public_key, public_key_second, key_id);
+
+    if (self->receiver_chain && memcmp(key_id, self->receiver_chain->public_key_id, sizeof(key_id)) == 0) {
         receiver_chain = self->receiver_chain;
     }
 
     // TODO: Check enable_post_quantum
 
-    // TODO
-    //    if (!receiver_chain || receiver_chain->chain_key.index > regular_message_header->counter) {
-    //        vscr_ratchet_message_key_t *skipped_message_key = vscr_ratchet_skipped_messages_find_key(
-    //                self->skipped_messages, regular_message_header->counter, regular_message_header->public_key);
-    //
-    //        if (!skipped_message_key) {
-    //            if (receiver_chain) {
-    //                return vscr_status_ERROR_SKIPPED_MESSAGE_MISSING;
-    //            }
-    //        } else {
-    //            vscr_status_t result = vscr_ratchet_cipher_decrypt_then_remove_pad(self->cipher,
-    //                    vsc_data(regular_message->cipher_text->bytes, regular_message->cipher_text->size),
-    //                    skipped_message_key, vsc_data(regular_message->header.bytes, regular_message->header.size),
-    //                    plain_text);
-    //
-    //            if (result != vscr_status_SUCCESS) {
-    //                return result;
-    //            }
-    //
-    //            vscr_ratchet_skipped_messages_delete_key(
-    //                    self->skipped_messages, regular_message_header->public_key, skipped_message_key);
-    //
-    //            return vscr_status_SUCCESS;
-    //        }
-    //    }
+    if (!receiver_chain || receiver_chain->chain_key.index > regular_message_header->counter) {
+        vscr_ratchet_message_key_t *skipped_message_key =
+                vscr_ratchet_skipped_messages_find_key(self->skipped_messages, regular_message_header->counter, key_id);
+
+        if (!skipped_message_key) {
+            if (receiver_chain) {
+                return vscr_status_ERROR_SKIPPED_MESSAGE_MISSING;
+            }
+        } else {
+            vscr_status_t result = vscr_ratchet_cipher_decrypt_then_remove_pad(self->cipher,
+                    vsc_data(regular_message->cipher_text->bytes, regular_message->cipher_text->size),
+                    skipped_message_key, vsc_data(regular_message->header->bytes, regular_message->header->size),
+                    plain_text);
+
+            if (result != vscr_status_SUCCESS) {
+                return result;
+            }
+
+            vscr_ratchet_skipped_messages_delete_key(self->skipped_messages, key_id, skipped_message_key);
+
+            return vscr_status_SUCCESS;
+        }
+    }
 
     vscr_ratchet_receiver_chain_t *old_chain = NULL;
 
@@ -611,20 +652,22 @@ vscr_ratchet_decrypt(vscr_ratchet_t *self, const vscr_RegularMessage *regular_me
         vscf_error_t error_ctx;
         vscf_error_reset(&error_ctx);
 
-        vscf_impl_t *public_key = vscf_key_provider_import_public_key(self->key_provider,
-                vscr_ratchet_pb_utils_buffer_to_data(regular_message_header->pqc_info.public_key), &error_ctx);
+        vscf_impl_t *public_key;
+        vsc_data_t encapsulated_key;
 
-        // TODO: Check key type
-        if (public_key == NULL || error_ctx.status != vscf_status_SUCCESS) {
-            status = vscr_status_ERROR_INVALID_KEY_TYPE;
-            vscf_impl_destroy(&public_key);
-            goto err;
+        if (self->enable_post_quantum) {
+            status = vscr_ratchet_pb_utils_deserialize_public_key(
+                    self->round5, regular_message_header->pqc_info.public_key, &public_key);
+
+            if (status != vscr_status_SUCCESS) {
+                goto err;
+            }
+
+            encapsulated_key = vscr_ratchet_pb_utils_buffer_to_data(regular_message_header->pqc_info.encapsulated_key);
+        } else {
+            public_key = NULL;
+            encapsulated_key = vsc_data_empty();
         }
-
-        vsc_data_t encapsulated_key =
-                self->enable_post_quantum
-                        ? vscr_ratchet_pb_utils_buffer_to_data(regular_message_header->pqc_info.encapsulated_key)
-                        : vsc_data_empty();
 
         vscr_ratchet_receiver_chain_t *new_chain = vscr_ratchet_receiver_chain_new();
         status = vscr_ratchet_keys_create_chain_key_receiver(self->ratchet_keys, self->root_key,
@@ -636,9 +679,6 @@ vscr_ratchet_decrypt(vscr_ratchet_t *self, const vscr_RegularMessage *regular_me
             vscr_ratchet_receiver_chain_destroy(&new_chain);
             goto err;
         }
-
-        memcpy(new_chain->public_key_first, regular_message_header->public_key,
-                sizeof(regular_message_header->public_key));
 
         status = vscr_ratchet_decrypt_for_existing_chain(
                 self, &new_chain->chain_key, regular_message, regular_message_header, plain_text);
@@ -658,14 +698,14 @@ vscr_ratchet_decrypt(vscr_ratchet_t *self, const vscr_RegularMessage *regular_me
         receiver_chain = new_chain;
 
         memcpy(self->root_key, new_root_key, sizeof(new_root_key));
-
+        memcpy(new_chain->public_key_id, key_id, sizeof(key_id));
+        memcpy(new_chain->public_key_first, regular_message_header->public_key,
+                sizeof(regular_message_header->public_key));
         new_chain->public_key_second = public_key;
+
         vscr_zeroize(new_root_key, sizeof(new_root_key));
 
-
-        // TODO
-        //        vscr_ratchet_skipped_messages_add_public_key(self->skipped_messages,
-        //        regular_message_header->public_key);
+        vscr_ratchet_skipped_messages_add_public_key(self->skipped_messages, key_id);
     } else {
         vscr_status_t result = vscr_ratchet_decrypt_for_existing_chain(
                 self, &receiver_chain->chain_key, regular_message, regular_message_header, plain_text);
@@ -817,7 +857,7 @@ vscr_ratchet_serialize(const vscr_ratchet_t *self, vscr_Ratchet *ratchet_pb) {
 
     if (self->sender_chain) {
         ratchet_pb->has_sender_chain = true;
-        vscr_ratchet_sender_chain_serialize(self->sender_chain, &ratchet_pb->sender_chain, self->key_provider);
+        vscr_ratchet_sender_chain_serialize(self->sender_chain, &ratchet_pb->sender_chain);
     } else {
         ratchet_pb->has_sender_chain = false;
     }
@@ -837,15 +877,21 @@ vscr_ratchet_serialize(const vscr_ratchet_t *self, vscr_Ratchet *ratchet_pb) {
     vscr_ratchet_skipped_messages_serialize(self->skipped_messages, &ratchet_pb->skipped_messages);
 }
 
-VSCR_PUBLIC void
+VSCR_PUBLIC vscr_status_t
 vscr_ratchet_deserialize(const vscr_Ratchet *ratchet_pb, vscr_ratchet_t *ratchet) {
 
     VSCR_ASSERT_PTR(ratchet);
     VSCR_ASSERT_PTR(ratchet_pb);
 
+    vscr_status_t status = vscr_status_SUCCESS;
+
     if (ratchet_pb->has_sender_chain) {
         ratchet->sender_chain = vscr_ratchet_sender_chain_new();
-        vscr_ratchet_sender_chain_deserialize(&ratchet_pb->sender_chain, ratchet->sender_chain, ratchet->key_provider);
+        status = vscr_ratchet_sender_chain_deserialize(
+                &ratchet_pb->sender_chain, ratchet->sender_chain, ratchet->round5);
+        if (status != vscr_status_SUCCESS) {
+            goto err;
+        }
     }
 
     ratchet->prev_sender_chain_count = ratchet_pb->prev_sender_chain_count;
@@ -853,10 +899,18 @@ vscr_ratchet_deserialize(const vscr_Ratchet *ratchet_pb, vscr_ratchet_t *ratchet
 
     if (ratchet_pb->has_receiver_chain) {
         ratchet->receiver_chain = vscr_ratchet_receiver_chain_new();
-        vscr_ratchet_receiver_chain_deserialize(&ratchet_pb->receiver_chain, ratchet->receiver_chain);
+        status = vscr_ratchet_receiver_chain_deserialize(
+                &ratchet_pb->receiver_chain, ratchet->receiver_chain, ratchet->round5);
+
+        if (status != vscr_status_SUCCESS) {
+            goto err;
+        }
     }
 
     memcpy(ratchet->root_key, ratchet_pb->root_key, sizeof(ratchet->root_key));
 
     vscr_ratchet_skipped_messages_deserialize(&ratchet_pb->skipped_messages, ratchet->skipped_messages);
+
+err:
+    return status;
 }

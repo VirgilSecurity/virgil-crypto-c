@@ -141,25 +141,6 @@ vscr_ratchet_key_utils_destroy(vscr_ratchet_key_utils_t **self_ref);
 VSCR_PUBLIC vscr_ratchet_key_utils_t *
 vscr_ratchet_key_utils_shallow_copy(vscr_ratchet_key_utils_t *self);
 
-//
-//  Setup dependency to the interface 'random' with shared ownership.
-//
-VSCR_PUBLIC void
-vscr_ratchet_key_utils_use_rng(vscr_ratchet_key_utils_t *self, vscf_impl_t *rng);
-
-//
-//  Setup dependency to the interface 'random' and transfer ownership.
-//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
-//
-VSCR_PUBLIC void
-vscr_ratchet_key_utils_take_rng(vscr_ratchet_key_utils_t *self, vscf_impl_t *rng);
-
-//
-//  Release dependency to the interface 'random'.
-//
-VSCR_PUBLIC void
-vscr_ratchet_key_utils_release_rng(vscr_ratchet_key_utils_t *self);
-
 VSCR_PUBLIC vscr_status_t
 vscr_ratchet_key_utils_import_private_key(vscr_ratchet_key_utils_t *self, const vscf_impl_t *private_key,
         vscr_ratchet_private_key_t *private_key_first, const vscf_impl_t **private_key_second_ref,
@@ -169,6 +150,10 @@ VSCR_PUBLIC vscr_status_t
 vscr_ratchet_key_utils_import_public_key(vscr_ratchet_key_utils_t *self, const vscf_impl_t *public_key,
         vscr_ratchet_public_key_t *public_key_first, const vscf_impl_t **public_key_second_ref,
         const vscf_impl_t **public_key_second_signer_ref, bool enable_post_quantum, bool with_signer) VSCR_NODISCARD;
+
+VSCR_PUBLIC void
+vscr_ratchet_key_utils_compute_public_key_id(vscr_ratchet_key_utils_t *self,
+        const vscr_ratchet_public_key_t public_key_first, vsc_data_t public_key_second, vscr_ratchet_key_id_t key_id);
 
 VSCR_PUBLIC vsc_buffer_t *
 vscr_ratchet_key_utils_extract_ratchet_public_key(vscr_ratchet_key_utils_t *self, vsc_data_t data, bool ed25519,

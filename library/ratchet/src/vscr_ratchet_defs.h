@@ -69,11 +69,9 @@
 #if !VSCR_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
 #   include <virgil/crypto/foundation/vscf_impl.h>
 #   include <virgil/crypto/foundation/vscf_round5.h>
-#   include <virgil/crypto/foundation/vscf_key_provider.h>
 #endif
 
 #if VSCR_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
-#   include <VSCFoundation/vscf_key_provider.h>
 #   include <VSCFoundation/vscf_impl.h>
 #   include <VSCFoundation/vscf_round5.h>
 #endif
@@ -113,8 +111,6 @@ struct vscr_ratchet_t {
     vscr_ratchet_key_utils_t *ratchet_key_utils;
 
     vscr_ratchet_keys_t *ratchet_keys;
-
-    vscf_key_provider_t *key_provider;
 
     vscf_round5_t *round5;
 

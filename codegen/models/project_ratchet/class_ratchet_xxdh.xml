@@ -38,32 +38,69 @@
 
     <method name="compute initiator xxdh secret">
         <argument name="sender identity private key first" class="const vscr_ratchet_private_key_t" is_reference="0" library="internal" access="readonly"/>
-        <argument name="sender ephemeral private key first" class="const vscr_ratchet_private_key_t" is_reference="0" library="internal" access="readonly"/>
         <argument name="receiver identity public key first" class="const vscr_ratchet_public_key_t" is_reference="0" library="internal" access="readonly"/>
         <argument name="receiver long term public key first" class="const vscr_ratchet_public_key_t" is_reference="0" library="internal" access="readonly"/>
         <argument name="receiver has one time key" type="boolean"/>
         <argument name="receiver one time public key first" class="const vscr_ratchet_public_key_t" is_reference="0" library="internal" access="readonly"/>
+
+        <argument name="ephemeral public key first" class="vscr_ratchet_public_key_t" is_reference="0" library="internal" access="readwrite"/>
+
         <argument name="sender identity private key second signer" interface="private key" project="foundation"/>
         <argument name="receiver identity public key second" interface="public key" project="foundation"/>
         <argument name="receiver long term public key second" interface="public key" project="foundation"/>
         <argument name="receiver one time public key second" interface="public key" project="foundation"/>
 
-        <argument name="shared key" class="vscr_ratchet_symmetric_key_t" is_reference="0" library="internal" access="readwrite"/>
         <argument name="encapsulated key 1" class="buffer" access="disown"/>
         <argument name="encapsulated key 2" class="buffer" access="disown"/>
         <argument name="encapsulated key 3" class="buffer" access="disown"/>
         <argument name="decapsulated keys signature" class="buffer" access="disown"/>
+
+        <argument name="shared key" class="vscr_ratchet_symmetric_key_t" is_reference="0" library="internal" access="readwrite"/>
+
+        <return enum="status"/>
+    </method>
+
+    <method name="compute initiator pqc shared secret" scope="internal">
+        <argument name="sender identity private key second signer" interface="private key" project="foundation"/>
+        <argument name="receiver identity public key second" interface="public key" project="foundation"/>
+        <argument name="receiver long term public key second" interface="public key" project="foundation"/>
+        <argument name="receiver one time public key second" interface="public key" project="foundation"/>
+
+        <argument name="encapsulated key 1" class="buffer" access="disown"/>
+        <argument name="encapsulated key 2" class="buffer" access="disown"/>
+        <argument name="encapsulated key 3" class="buffer" access="disown"/>
+        <argument name="decapsulated keys signature" class="buffer" access="disown"/>
+
+        <argument name="shared secret" class="buffer"  access="readwrite"/>
 
         <return enum="status"/>
     </method>
 
     <method name="compute responder xxdh secret">
         <argument name="sender identity public key first" class="const vscr_ratchet_public_key_t" is_reference="0" library="internal" access="readonly"/>
-        <argument name="sender ephemeral public key first" class="const vscr_ratchet_public_key_t" is_reference="0" library="internal" access="readonly"/>
         <argument name="receiver identity private key first" class="const vscr_ratchet_private_key_t" is_reference="0" library="internal" access="readonly"/>
         <argument name="receiver long term private key first" class="const vscr_ratchet_private_key_t" is_reference="0" library="internal" access="readonly"/>
         <argument name="receiver has one time key" type="boolean"/>
         <argument name="receiver one time private key first" class="const vscr_ratchet_private_key_t" is_reference="0" library="internal" access="readonly"/>
+
+        <argument name="sender ephemeral public key first" class="const vscr_ratchet_public_key_t" is_reference="0" library="internal" access="readonly"/>
+
+        <argument name="sender identity public key second verifier" interface="private key" project="foundation"/>
+        <argument name="receiver identity private key second" interface="public key" project="foundation"/>
+        <argument name="receiver long term private key second" interface="public key" project="foundation"/>
+        <argument name="receiver one time private key second" interface="public key" project="foundation"/>
+
+        <argument name="encapsulated key 1" class="data"/>
+        <argument name="encapsulated key 2" class="data"/>
+        <argument name="encapsulated key 3" class="data"/>
+        <argument name="decapsulated keys signature" class="data"/>
+
+        <argument name="shared key" class="vscr_ratchet_symmetric_key_t" is_reference="0" library="internal" access="readwrite"/>
+
+        <return enum="status"/>
+    </method>
+
+    <method name="compute responder pqc shared secret" scope="internal">
         <argument name="sender identity public key second verifier" interface="private key" project="foundation"/>
         <argument name="receiver identity private key second" interface="public key" project="foundation"/>
         <argument name="receiver long term private key second" interface="public key" project="foundation"/>
@@ -74,7 +111,7 @@
         <argument name="encapsulated key 3" class="data"/>
         <argument name="decapsulated keys signature" class="data"/>Z
 
-        <argument name="shared key" class="vscr_ratchet_symmetric_key_t" is_reference="0" library="internal" access="readwrite"/>
+        <argument name="shared secret" class="buffer"  access="readwrite"/>
 
         <return enum="status"/>
     </method>

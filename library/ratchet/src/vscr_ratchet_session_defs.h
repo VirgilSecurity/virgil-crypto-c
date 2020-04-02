@@ -68,7 +68,6 @@
 
 #if !VSCR_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
 #   include <virgil/crypto/foundation/vscf_impl.h>
-#   include <virgil/crypto/foundation/vscf_key_provider.h>
 #endif
 
 #if VSCR_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
@@ -76,7 +75,6 @@
 #endif
 
 #if VSCR_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
-#   include <VSCFoundation/vscf_key_provider.h>
 #   include <VSCFoundation/vscf_impl.h>
 #endif
 
@@ -114,8 +112,6 @@ struct vscr_ratchet_session_t {
 
     vscr_ratchet_key_utils_t *key_utils;
 
-    vscf_key_provider_t *key_provider;
-
     vscr_ratchet_xxdh_t *xxdh;
 
     vscr_ratchet_t *ratchet;
@@ -123,6 +119,8 @@ struct vscr_ratchet_session_t {
     bool is_initiator;
 
     bool received_first_response;
+
+    bool enable_post_quantum;
 
     vscr_ratchet_key_id_t sender_identity_key_id;
 

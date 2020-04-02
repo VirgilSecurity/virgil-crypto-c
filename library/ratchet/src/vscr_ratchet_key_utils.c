@@ -55,7 +55,6 @@
 #include "vscr_assert.h"
 #include "vscr_ratchet_key_utils_defs.h"
 
-#include <virgil/crypto/foundation/vscf_random.h>
 #include <virgil/crypto/foundation/vscf_key_info.h>
 #include <virgil/crypto/foundation/vscf_compound_private_key.h>
 #include <virgil/crypto/foundation/vscf_hybrid_private_key.h>
@@ -99,18 +98,6 @@ static void
 vscr_ratchet_key_utils_cleanup_ctx(vscr_ratchet_key_utils_t *self);
 
 //
-//  This method is called when interface 'random' was setup.
-//
-static void
-vscr_ratchet_key_utils_did_setup_rng(vscr_ratchet_key_utils_t *self);
-
-//
-//  This method is called when interface 'random' was released.
-//
-static void
-vscr_ratchet_key_utils_did_release_rng(vscr_ratchet_key_utils_t *self);
-
-//
 //  Return size of 'vscr_ratchet_key_utils_t'.
 //
 VSCR_PUBLIC size_t
@@ -145,8 +132,6 @@ vscr_ratchet_key_utils_cleanup(vscr_ratchet_key_utils_t *self) {
     }
 
     vscr_ratchet_key_utils_cleanup_ctx(self);
-
-    vscr_ratchet_key_utils_release_rng(self);
 
     vscr_zeroize(self, sizeof(vscr_ratchet_key_utils_t));
 }
@@ -244,54 +229,6 @@ vscr_ratchet_key_utils_shallow_copy(vscr_ratchet_key_utils_t *self) {
     return self;
 }
 
-//
-//  Setup dependency to the interface 'random' with shared ownership.
-//
-VSCR_PUBLIC void
-vscr_ratchet_key_utils_use_rng(vscr_ratchet_key_utils_t *self, vscf_impl_t *rng) {
-
-    VSCR_ASSERT_PTR(self);
-    VSCR_ASSERT_PTR(rng);
-    VSCR_ASSERT(self->rng == NULL);
-
-    VSCR_ASSERT(vscf_random_is_implemented(rng));
-
-    self->rng = vscf_impl_shallow_copy(rng);
-
-    vscr_ratchet_key_utils_did_setup_rng(self);
-}
-
-//
-//  Setup dependency to the interface 'random' and transfer ownership.
-//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
-//
-VSCR_PUBLIC void
-vscr_ratchet_key_utils_take_rng(vscr_ratchet_key_utils_t *self, vscf_impl_t *rng) {
-
-    VSCR_ASSERT_PTR(self);
-    VSCR_ASSERT_PTR(rng);
-    VSCR_ASSERT(self->rng == NULL);
-
-    VSCR_ASSERT(vscf_random_is_implemented(rng));
-
-    self->rng = rng;
-
-    vscr_ratchet_key_utils_did_setup_rng(self);
-}
-
-//
-//  Release dependency to the interface 'random'.
-//
-VSCR_PUBLIC void
-vscr_ratchet_key_utils_release_rng(vscr_ratchet_key_utils_t *self) {
-
-    VSCR_ASSERT_PTR(self);
-
-    vscf_impl_destroy(&self->rng);
-
-    vscr_ratchet_key_utils_did_release_rng(self);
-}
-
 
 // --------------------------------------------------------------------------
 //  Generated section end.
@@ -312,7 +249,6 @@ vscr_ratchet_key_utils_init_ctx(vscr_ratchet_key_utils_t *self) {
 
     self->key_asn1_deserializer = vscf_key_asn1_deserializer_new();
     vscf_key_asn1_deserializer_setup_defaults(self->key_asn1_deserializer);
-    self->key_provider = vscf_key_provider_new();
 }
 
 //
@@ -326,29 +262,6 @@ vscr_ratchet_key_utils_cleanup_ctx(vscr_ratchet_key_utils_t *self) {
     VSCR_ASSERT_PTR(self);
 
     vscf_key_asn1_deserializer_destroy(&self->key_asn1_deserializer);
-    vscf_key_provider_destroy(&self->key_provider);
-}
-
-//
-//  This method is called when interface 'random' was setup.
-//
-static void
-vscr_ratchet_key_utils_did_setup_rng(vscr_ratchet_key_utils_t *self) {
-
-    VSCR_ASSERT_PTR(self);
-
-    if (self->rng != NULL) {
-        vscf_key_provider_use_random(self->key_provider, self->rng);
-    }
-}
-
-//
-//  This method is called when interface 'random' was released.
-//
-static void
-vscr_ratchet_key_utils_did_release_rng(vscr_ratchet_key_utils_t *self) {
-
-    VSCR_ASSERT_PTR(self);
 }
 
 VSCR_PUBLIC vscr_status_t
@@ -357,28 +270,26 @@ vscr_ratchet_key_utils_import_private_key(vscr_ratchet_key_utils_t *self, const 
         const vscf_impl_t **private_key_second_signer_ref, bool enable_post_quantum, bool with_signer) {
 
     VSCR_ASSERT_PTR(self);
-    VSCR_ASSERT_PTR(self->key_provider);
     VSCR_ASSERT_PTR(private_key);
     VSCR_ASSERT_PTR(private_key_first);
     VSCR_ASSERT_PTR(private_key_second_ref);
 
     vscr_status_t status = vscr_status_SUCCESS;
 
-    vscf_key_info_t *key_info = vscf_key_info_new_with_alg_info(vscf_key_alg_info(private_key));
+    const vscf_impl_t *key = private_key;
 
-    const vscf_impl_t *key = NULL;
+    vscf_key_info_t *key_info = vscf_key_info_new_with_alg_info(vscf_key_alg_info(key));
 
-    if (vscf_key_info_is_compound(key_info) != with_signer) {
+    if (vscf_key_info_is_compound(key_info) && !with_signer) {
         status = vscr_status_ERROR_INVALID_KEY_TYPE;
         goto err1;
     }
 
     if (vscf_key_info_is_compound(key_info)) {
-        VSCR_ASSERT(vscf_impl_tag(private_key) == vscf_impl_tag_COMPOUND_PRIVATE_KEY);
+        VSCR_ASSERT(vscf_impl_tag(key) == vscf_impl_tag_COMPOUND_PRIVATE_KEY);
 
         if (enable_post_quantum && with_signer && private_key_second_signer_ref != NULL) {
-            const vscf_impl_t *signer_key =
-                    vscf_compound_private_key_signer_key((vscf_compound_private_key_t *)private_key);
+            const vscf_impl_t *signer_key = vscf_compound_private_key_signer_key((vscf_compound_private_key_t *)key);
 
             vscf_key_info_destroy(&key_info);
 
@@ -390,7 +301,7 @@ vscr_ratchet_key_utils_import_private_key(vscr_ratchet_key_utils_t *self, const 
             }
 
             if (vscf_key_info_is_hybrid(key_info)) {
-                VSCR_ASSERT(vscf_impl_tag(private_key) == vscf_impl_tag_HYBRID_PRIVATE_KEY);
+                VSCR_ASSERT(vscf_impl_tag(signer_key) == vscf_impl_tag_HYBRID_PRIVATE_KEY);
 
                 *private_key_second_signer_ref =
                         vscf_hybrid_private_key_first_key((vscf_hybrid_private_key_t *)signer_key);
@@ -413,7 +324,7 @@ vscr_ratchet_key_utils_import_private_key(vscr_ratchet_key_utils_t *self, const 
             }
         }
 
-        key = vscf_compound_private_key_cipher_key((vscf_compound_private_key_t *)private_key);
+        key = vscf_compound_private_key_cipher_key((vscf_compound_private_key_t *)key);
         VSCR_ASSERT_PTR(key);
 
         vscf_key_info_destroy(&key_info);
@@ -504,28 +415,26 @@ vscr_ratchet_key_utils_import_public_key(vscr_ratchet_key_utils_t *self, const v
         const vscf_impl_t **public_key_second_signer_ref, bool enable_post_quantum, bool with_signer) {
 
     VSCR_ASSERT_PTR(self);
-    VSCR_ASSERT_PTR(self->key_provider);
     VSCR_ASSERT_PTR(public_key);
     VSCR_ASSERT_PTR(public_key_first);
     VSCR_ASSERT_PTR(public_key_second_ref);
 
     vscr_status_t status = vscr_status_SUCCESS;
 
+    const vscf_impl_t *key = public_key;
+
     vscf_key_info_t *key_info = vscf_key_info_new_with_alg_info(vscf_key_alg_info(public_key));
 
-    const vscf_impl_t *key = NULL;
-
-    if (vscf_key_info_is_compound(key_info) != with_signer) {
+    if (vscf_key_info_is_compound(key_info) && !with_signer) {
         status = vscr_status_ERROR_INVALID_KEY_TYPE;
         goto err1;
     }
 
     if (vscf_key_info_is_compound(key_info)) {
-        VSCR_ASSERT(vscf_impl_tag(public_key) == vscf_impl_tag_COMPOUND_PUBLIC_KEY);
+        VSCR_ASSERT(vscf_impl_tag(key) == vscf_impl_tag_COMPOUND_PUBLIC_KEY);
 
         if (enable_post_quantum && with_signer && public_key_second_signer_ref != NULL) {
-            const vscf_impl_t *signer_key =
-                    vscf_compound_public_key_signer_key((vscf_compound_public_key_t *)public_key);
+            const vscf_impl_t *signer_key = vscf_compound_public_key_signer_key((vscf_compound_public_key_t *)key);
 
             vscf_key_info_destroy(&key_info);
 
@@ -537,7 +446,7 @@ vscr_ratchet_key_utils_import_public_key(vscr_ratchet_key_utils_t *self, const v
             }
 
             if (vscf_key_info_is_hybrid(key_info)) {
-                VSCR_ASSERT(vscf_impl_tag(public_key) == vscf_impl_tag_HYBRID_PUBLIC_KEY);
+                VSCR_ASSERT(vscf_impl_tag(signer_key) == vscf_impl_tag_HYBRID_PUBLIC_KEY);
 
                 *public_key_second_signer_ref =
                         vscf_hybrid_public_key_first_key((vscf_hybrid_public_key_t *)signer_key);
@@ -616,7 +525,7 @@ vscr_ratchet_key_utils_import_public_key(vscr_ratchet_key_utils_t *self, const v
             VSCR_ASSERT(vscf_impl_tag(key) == vscf_impl_tag_RAW_PUBLIC_KEY);
             vsc_data_t public_key_data = vscf_raw_public_key_data((vscf_raw_public_key_t *)key);
             VSCR_ASSERT_PTR(public_key_data.len == vscr_ratchet_common_hidden_KEY_LEN);
-            int curve25519_status = ed25519_key_to_curve25519(*public_key_first, public_key_data.bytes);
+            int curve25519_status = ed25519_pubkey_to_curve25519(*public_key_first, public_key_data.bytes);
 
             if (curve25519_status != 0) {
                 // FIXME
@@ -645,6 +554,29 @@ err1:
     vscf_key_info_destroy(&key_info);
 
     return status;
+}
+
+VSCR_PUBLIC void
+vscr_ratchet_key_utils_compute_public_key_id(vscr_ratchet_key_utils_t *self,
+        const vscr_ratchet_public_key_t public_key_first, vsc_data_t public_key_second, vscr_ratchet_key_id_t key_id) {
+
+    VSCR_ASSERT_PTR(self);
+
+    vscf_sha512_t *sha512 = vscf_sha512_new();
+
+    vscf_sha512_start(sha512);
+    vscf_sha512_update(sha512, vsc_data(public_key_first, vscr_ratchet_common_hidden_KEY_LEN));
+    vscf_sha512_update(sha512, public_key_second);
+
+    vsc_buffer_t *buffer = vsc_buffer_new_with_capacity(vscf_sha512_DIGEST_LEN);
+
+    vscf_sha512_finish(sha512, buffer);
+
+    vscf_sha512_destroy(&sha512);
+
+    memcpy(key_id, vsc_buffer_bytes(buffer), vscr_ratchet_common_KEY_ID_LEN);
+
+    vsc_buffer_destroy(&buffer);
 }
 
 VSCR_PUBLIC vsc_buffer_t *

@@ -20,9 +20,10 @@ message vscr_SenderChain {
 }
 
 message vscr_ReceiverChain {
-	required bytes public_key_first = 1;
-	optional bytes public_key_second = 2;
-	required vscr_ChainKey chain_key = 3;
+	required bytes public_key_id = 1;
+	required bytes public_key_first = 2;
+	optional bytes public_key_second = 3;
+	required vscr_ChainKey chain_key = 4;
 }
 
 message vscr_SkippedMessageKey {
@@ -43,18 +44,25 @@ message vscr_Ratchet {
 	required bool enable_post_quantum = 6;
 }
 
+message vscr_SessionPqcInfo {
+	required bytes encapsulated_key1 = 6;
+	required bytes encapsulated_key2 = 7;
+	optional bytes encapsulated_key3 = 8;
+	required bytes decapsulated_keys_signature = 9;
+}
+
 message vscr_Session {
 	required uint32 version = 1;
 	required bool received_first_response = 2;
 	required bool is_initiator = 3;
-	required bytes sender_identity_key_first = 4;
-	optional bytes sender_identity_key_second = 5;
-	required bytes sender_ephemeral_key_first = 6;
-	optional bytes sender_ephemeral_key_second = 7;
-	required bytes receiver_long_term_key_first = 8;
-	optional bytes receiver_long_term_key_second = 9;
-	optional bytes receiver_one_time_key_first = 10;
-	optional bytes receiver_one_time_key_second = 11;
+	required bool enable_post_quantum = 4;
+	required bool receiver_has_one_time_public_key = 5;
+	optional bytes sender_identity_key_id = 6;
+	optional bytes sender_ephemeral_key = 7;
+	optional bytes receiver_identity_key_id = 8;
+	optional bytes receiver_long_term_key_id = 9;
+	optional bytes receiver_one_time_key_id = 10;
+	optional vscr_SessionPqcInfo pqc_info = 11;
 	required vscr_Ratchet ratchet = 12;
 }
 
