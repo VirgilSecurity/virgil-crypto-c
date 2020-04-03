@@ -21,7 +21,7 @@ func (obj *PbeAlgInfo) KdfAlgInfo() (AlgInfo, error) {
 
     runtime.KeepAlive(obj)
 
-    return FoundationImplementationWrapAlgInfo(proxyResult) /* r4 */
+    return FoundationImplementationWrapAlgInfo(proxyResult) /* r4.1 */
 }
 
 /*
@@ -32,7 +32,7 @@ func (obj *PbeAlgInfo) CipherAlgInfo() (AlgInfo, error) {
 
     runtime.KeepAlive(obj)
 
-    return FoundationImplementationWrapAlgInfo(proxyResult) /* r4 */
+    return FoundationImplementationWrapAlgInfo(proxyResult) /* r4.1 */
 }
 
 /* Handle underlying C context. */

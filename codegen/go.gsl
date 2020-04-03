@@ -2504,7 +2504,11 @@ function go_wrap_c_returned_value (go_return, go_module, go_project)
         return "unsafe.Pointer($(my.name:)) /* r3 */"
 
     elsif is_true (0.is_interface)
-        return "$(my.go_project.name:Pascal)ImplementationWrap$(my.go_return.type:)($(my.name:)) /* r4 */"
+        if string_in (swift_return.access, "readonly, readwrite")
+            return "$(my.go_project.name:Pascal)ImplementationWrap$(my.go_return.type:)Copy($(my.name:)) /* r4 */"
+        else
+            return "$(my.go_project.name:Pascal)ImplementationWrap$(my.go_return.type:)($(my.name:)) /* r4.1 */"
+        endif
 
     elsif is_true (0.is_class) & is_false (0.is_buffer)
         if string_in (go_return.access, "readonly, readwrite")
@@ -2592,6 +2596,7 @@ function go_get_implementation_helper_interface_func (go_struct, interface, go_p
         .name = my.interface_func_name
         .throws = "1"
         .is_static = "1"
+        .is_primary = "1"
 
         new go_argument to go_func
             .name = "ctx"
@@ -2616,8 +2621,38 @@ function go_get_implementation_helper_interface_func (go_struct, interface, go_p
             ")
         endnew
 
-        return go_func
+        my.return_func = go_func
     endnew
+
+    new go_func to my.go_struct
+        my.interface_name = go_derive_interface_name (my.interface, my.go_project)
+        . = "\
+            /* Wrap C implementation object to the Go object that implements interface $(my.interface_name:). */
+        "
+        .name = "$(my.interface_func_name:)Copy"
+        .throws = "1"
+        .is_static = "1"
+
+        new go_argument to go_func
+            .name = "ctx"
+            .type = go_derive_struct_default_context_type()
+        endnew
+
+        new go_return to go_func
+            .type = go_derive_interface_name (my.interface, my.go_project)
+        endnew
+
+        new go_code to go_func
+            my.method_of_class = my.interface.of_class ? my.interface.name
+            my.method_is_implemented = make_ref_c (make_id ("class", my.method_of_class, "method", "is_implemented"))
+            . = format_left("\
+                shallowCopy := C..(c_class_impl_method_shallow_copy)(ctx)
+                return $(my.go_struct.name:)$(my.interface_func_name:)(shallowCopy)
+            ")
+        endnew
+    endnew
+
+    return my.return_func
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -2650,7 +2685,7 @@ function go_finalize_implementation_helper_modules (go_project, meta)
 
     my.helper_class = go_get_implementation_helper_struct (my.go_project, my.meta)
 
-    for my.helper_class.go_func
+    for my.helper_class.go_func where is_true(go_func.is_primary)
         go_func->go_code.temp_code += format_left ("\
             default:
                 return nil, &$(go_derive_enum_status_name (my.go_project):){-1,\"Unexpected C implementation cast to the Go implementation.\"}

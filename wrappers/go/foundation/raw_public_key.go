@@ -97,7 +97,7 @@ func (obj *RawPublicKey) AlgInfo() (AlgInfo, error) {
 
     runtime.KeepAlive(obj)
 
-    return FoundationImplementationWrapAlgInfo(proxyResult) /* r4 */
+    return FoundationImplementationWrapAlgInfo(proxyResult) /* r4.1 */
 }
 
 /*

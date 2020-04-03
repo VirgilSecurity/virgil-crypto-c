@@ -86,7 +86,7 @@ func (obj *EccPrivateKey) AlgInfo() (AlgInfo, error) {
 
     runtime.KeepAlive(obj)
 
-    return FoundationImplementationWrapAlgInfo(proxyResult) /* r4 */
+    return FoundationImplementationWrapAlgInfo(proxyResult) /* r4.1 */
 }
 
 /*
@@ -131,5 +131,5 @@ func (obj *EccPrivateKey) ExtractPublicKey() (PublicKey, error) {
 
     runtime.KeepAlive(obj)
 
-    return FoundationImplementationWrapPublicKey(proxyResult) /* r4 */
+    return FoundationImplementationWrapPublicKey(proxyResult) /* r4.1 */
 }

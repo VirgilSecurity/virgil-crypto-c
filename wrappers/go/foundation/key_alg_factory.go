@@ -28,7 +28,7 @@ func KeyAlgFactoryCreateFromAlgId(algId AlgId, random Random) (KeyAlg, error) {
 
     runtime.KeepAlive(random)
 
-    return FoundationImplementationWrapKeyAlg(proxyResult) /* r4 */
+    return FoundationImplementationWrapKeyAlg(proxyResult) /* r4.1 */
 }
 
 /*
@@ -49,7 +49,7 @@ func KeyAlgFactoryCreateFromKey(key Key, random Random) (KeyAlg, error) {
 
     runtime.KeepAlive(random)
 
-    return FoundationImplementationWrapKeyAlg(proxyResult) /* r4 */
+    return FoundationImplementationWrapKeyAlg(proxyResult) /* r4.1 */
 }
 
 /*
@@ -70,7 +70,7 @@ func KeyAlgFactoryCreateFromRawPublicKey(publicKey *RawPublicKey, random Random)
 
     runtime.KeepAlive(random)
 
-    return FoundationImplementationWrapKeyAlg(proxyResult) /* r4 */
+    return FoundationImplementationWrapKeyAlg(proxyResult) /* r4.1 */
 }
 
 /*
@@ -91,5 +91,5 @@ func KeyAlgFactoryCreateFromRawPrivateKey(privateKey *RawPrivateKey, random Rand
 
     runtime.KeepAlive(random)
 
-    return FoundationImplementationWrapKeyAlg(proxyResult) /* r4 */
+    return FoundationImplementationWrapKeyAlg(proxyResult) /* r4.1 */
 }

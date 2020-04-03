@@ -94,7 +94,7 @@ func (obj *Hmac) ProduceAlgInfo() (AlgInfo, error) {
 
     runtime.KeepAlive(obj)
 
-    return FoundationImplementationWrapAlgInfo(proxyResult) /* r4 */
+    return FoundationImplementationWrapAlgInfo(proxyResult) /* r4.1 */
 }
 
 /*
