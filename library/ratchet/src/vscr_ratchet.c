@@ -440,7 +440,7 @@ vscr_ratchet_respond(vscr_ratchet_t *self, vscr_ratchet_symmetric_key_t shared_k
         status = vscr_ratchet_pb_utils_deserialize_public_key(
                 self->round5, regular_message_header->pqc_info.public_key, &receiver_chain->public_key_second);
 
-        if (status != vscf_status_SUCCESS) {
+        if (status != vscr_status_SUCCESS) {
             vscr_ratchet_receiver_chain_destroy(&receiver_chain);
             goto err;
         }
@@ -532,8 +532,7 @@ vscr_ratchet_encrypt(vscr_ratchet_t *self, vsc_data_t plain_text, vscr_RegularMe
         vscr_RegularMessageHeaderPqcInfo *pqc_info = &regular_message_header->pqc_info;
 
         vscr_ratchet_pb_utils_serialize_public_key(self->sender_chain->public_key_second, &pqc_info->public_key);
-        vscr_ratchet_pb_utils_serialize_buffer(
-                self->sender_chain->encapsulated_key, &regular_message_header->pqc_info.encapsulated_key);
+        vscr_ratchet_pb_utils_serialize_buffer(self->sender_chain->encapsulated_key, &pqc_info->encapsulated_key);
     } else {
         regular_message_header->has_pqc_info = false;
     }

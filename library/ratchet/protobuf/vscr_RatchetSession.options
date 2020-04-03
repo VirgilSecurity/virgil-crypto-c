@@ -31,7 +31,7 @@ vscr_SessionPqcInfo.encapsulated_key4 max_size:1092 type:FT_POINTER
 vscr_SessionPqcInfo.decapsulated_keys_signature max_size:1092 type:FT_POINTER
 
 vscr_ParticipantData.id max_size:32 fixed_length:true
-vscr_ParticipantData.pub_key max_size:1092 type:FT_POINTER
+vscr_ParticipantData.pub_key max_size:32 fixed_length:true
 vscr_ParticipantData.epochs max_count:5 fixed_count:true
 
 vscr_ParticipantEpoch.message_keys max_count:200 fixed_length:false type:FT_POINTER

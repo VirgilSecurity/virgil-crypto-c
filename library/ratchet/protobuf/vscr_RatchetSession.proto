@@ -45,10 +45,10 @@ message vscr_Ratchet {
 }
 
 message vscr_SessionPqcInfo {
-	required bytes encapsulated_key1 = 6;
-	required bytes encapsulated_key2 = 7;
-	optional bytes encapsulated_key3 = 8;
-	required bytes decapsulated_keys_signature = 9;
+	required bytes encapsulated_key1 = 1;
+	required bytes encapsulated_key2 = 2;
+	optional bytes encapsulated_key3 = 3;
+	required bytes decapsulated_keys_signature = 4;
 }
 
 message vscr_Session {

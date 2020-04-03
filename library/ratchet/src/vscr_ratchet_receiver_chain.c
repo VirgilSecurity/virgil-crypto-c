@@ -238,6 +238,8 @@ static void
 vscr_ratchet_receiver_chain_cleanup_ctx(vscr_ratchet_receiver_chain_t *self) {
 
     VSCR_ASSERT_PTR(self);
+
+    vscf_impl_destroy(&self->public_key_second);
 }
 
 VSCR_PUBLIC void

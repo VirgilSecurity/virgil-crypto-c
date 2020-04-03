@@ -88,7 +88,7 @@ struct vscr_ratchet_message_t {
 
     vscr_Message message_pb;
 
-    vscr_RegularMessageHeader *header_pb;
+    vscr_RegularMessageHeader header_pb;
 };
 
 

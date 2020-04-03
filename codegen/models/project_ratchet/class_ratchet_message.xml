@@ -12,7 +12,7 @@
     <require header="pb_encode.h" scope="private"/>
 
     <property name="message pb" class="vscr_Message" library="nanopb" access="readwrite" is_reference="0"/>
-    <property name="header pb" class="vscr_RegularMessageHeader" library="nanopb" access="readwrite"/>
+    <property name="header pb" class="vscr_RegularMessageHeader" library="nanopb" access="readwrite" is_reference="0"/>
 
     <method name="get type" is_const="1">
         Returns message type.

@@ -340,6 +340,16 @@ generate_raw_keypair(vscf_ctr_drbg_t *rng, vsc_buffer_t **priv, vsc_buffer_t **p
 }
 
 void
+generate_random_key_id(vscf_ctr_drbg_t *rng, vscr_ratchet_key_id_t id) {
+    vsc_buffer_t *buffer = vsc_buffer_new();
+    vsc_buffer_use(buffer, id, vscr_ratchet_common_KEY_ID_LEN);
+
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_ctr_drbg_random(rng, vscr_ratchet_common_KEY_ID_LEN, buffer));
+
+    vsc_buffer_destroy(&buffer);
+}
+
+void
 initialize(vscf_ctr_drbg_t *rng, vscr_ratchet_session_t **session_alice, vscr_ratchet_session_t **session_bob,
         bool enable_one_time, bool enable_pqc, bool should_restore) {
     TEST_ASSERT_EQUAL(vscr_status_SUCCESS, vscr_ratchet_session_setup_defaults(*session_alice));
@@ -427,7 +437,14 @@ initialize(vscf_ctr_drbg_t *rng, vscr_ratchet_session_t **session_alice, vscr_ra
         restore_session(rng, session_bob);
     }
 
+    vscf_key_provider_destroy(&key_provider);
+
     vscr_ratchet_message_destroy(&ratchet_message);
+
+    vsc_buffer_destroy(&alice_id);
+    vsc_buffer_destroy(&bob_id);
+    vsc_buffer_destroy(&bob_lt_id);
+    vsc_buffer_destroy(&bob_ot_id);
 
     vsc_buffer_destroy(&text);
     vsc_buffer_destroy(&plain_text);

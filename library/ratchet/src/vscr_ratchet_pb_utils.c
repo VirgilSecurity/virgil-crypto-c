@@ -286,7 +286,7 @@ vscr_ratchet_pb_utils_buffer_to_data(const pb_bytes_array_t *pb_buffer) {
 }
 
 VSCR_PUBLIC void
-vscr_ratchet_pb_utils_serialize_public_key(vscf_impl_t *key, pb_bytes_array_t **pb_buffer_ref) {
+vscr_ratchet_pb_utils_serialize_public_key(const vscf_impl_t *key, pb_bytes_array_t **pb_buffer_ref) {
 
     VSCR_ASSERT_PTR(key);
     VSCR_ASSERT_PTR(pb_buffer_ref);
@@ -303,6 +303,8 @@ vscr_ratchet_pb_utils_deserialize_public_key(
     VSCR_ASSERT_PTR(pb_buffer);
     VSCR_ASSERT_PTR(public_key_ref);
 
+    // FIXME: Double memory copy
+
     vsc_data_t data = vsc_data(pb_buffer->bytes, pb_buffer->size);
 
     vscf_impl_t *alg_info =
@@ -314,6 +316,8 @@ vscr_ratchet_pb_utils_deserialize_public_key(
 
     *public_key_ref = vscf_round5_import_public_key(round5, raw_public_key, &error_ctx);
 
+    vscf_raw_public_key_destroy(&raw_public_key);
+
     if (error_ctx.status != vscf_status_SUCCESS) {
         // FIXME
         return vscr_status_ERROR_RNG_FAILED;
@@ -323,7 +327,7 @@ vscr_ratchet_pb_utils_deserialize_public_key(
 }
 
 VSCR_PUBLIC void
-vscr_ratchet_pb_utils_serialize_private_key(vscf_impl_t *key, pb_bytes_array_t **pb_buffer_ref) {
+vscr_ratchet_pb_utils_serialize_private_key(const vscf_impl_t *key, pb_bytes_array_t **pb_buffer_ref) {
 
     VSCR_ASSERT_PTR(key);
     VSCR_ASSERT_PTR(pb_buffer_ref);
@@ -350,6 +354,8 @@ vscr_ratchet_pb_utils_deserialize_private_key(
     vscf_error_reset(&error_ctx);
 
     *private_key_ref = vscf_round5_import_private_key(round5, raw_private_key, &error_ctx);
+
+    vscf_raw_private_key_destroy(&raw_private_key);
 
     if (error_ctx.status != vscf_status_SUCCESS) {
         // FIXME

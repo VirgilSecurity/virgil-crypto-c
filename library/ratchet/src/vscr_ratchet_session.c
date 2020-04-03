@@ -616,7 +616,7 @@ vscr_ratchet_session_respond(vscr_ratchet_session_t *self, vscf_impl_t *sender_i
     }
 
     status = vscr_ratchet_respond(self->ratchet, shared_key, receiver_long_term_private_key_first,
-            receiver_long_term_private_key_second, &message->message_pb.regular_message, message->header_pb,
+            receiver_long_term_private_key_second, &message->message_pb.regular_message, &message->header_pb,
             enable_post_quantum);
 
     self->is_initiator = false;
@@ -732,7 +732,8 @@ vscr_ratchet_session_encrypt(vscr_ratchet_session_t *self, vsc_data_t plain_text
         }
     }
 
-    vscr_status_t result = vscr_ratchet_encrypt(self->ratchet, plain_text, regular_message, ratchet_message->header_pb);
+    vscr_status_t result =
+            vscr_ratchet_encrypt(self->ratchet, plain_text, regular_message, &ratchet_message->header_pb);
 
     if (result != vscr_status_SUCCESS) {
         VSCR_ERROR_SAFE_UPDATE(error, result);
@@ -785,7 +786,7 @@ vscr_ratchet_session_decrypt(
 
     VSCR_ASSERT(vsc_buffer_unused_len(plain_text) >= vscr_ratchet_session_decrypt_len(self, message));
 
-    vscr_status_t result = vscr_ratchet_decrypt(self->ratchet, regular_message, message->header_pb, plain_text);
+    vscr_status_t result = vscr_ratchet_decrypt(self->ratchet, regular_message, &message->header_pb, plain_text);
 
     if (result == vscr_status_SUCCESS)
         self->received_first_response = true;
@@ -868,11 +869,11 @@ vscr_ratchet_session_serialize(vscr_ratchet_session_t *self) {
     VSCR_ASSERT(pb_encode(&ostream, vscr_Session_fields, session_pb));
     vsc_buffer_inc_used(output, ostream.bytes_written);
 
-    // FIXME: Free memory
+    pb_release(vscr_Session_fields, session_pb);
 
-    for (size_t j = 0; j < session_pb->ratchet.skipped_messages.keys_count; j++) {
-        vscr_dealloc(session_pb->ratchet.skipped_messages.keys[j].message_keys);
-    }
+    //    for (size_t j = 0; j < session_pb->ratchet.skipped_messages.keys_count; j++) {
+    //        vscr_dealloc(session_pb->ratchet.skipped_messages.keys[j].message_keys);
+    //    }
 
     vscr_zeroize(session_pb, sizeof(vscr_Session));
     vscr_dealloc(session_pb);
@@ -969,7 +970,7 @@ vscr_ratchet_session_deserialize(vsc_data_t input, vscr_error_t *error) {
 
     vscr_status_t status = vscr_ratchet_deserialize(&session_pb->ratchet, session->ratchet);
 
-    if (status != vscf_status_SUCCESS) {
+    if (status != vscr_status_SUCCESS) {
         vscr_ratchet_session_destroy(&session);
         goto err;
     }

@@ -238,6 +238,9 @@ vscr_ratchet_sender_chain_cleanup_ctx(vscr_ratchet_sender_chain_t *self) {
     VSCR_ASSERT_PTR(self);
 
     vscr_ratchet_chain_key_cleanup(&self->chain_key);
+    vscf_impl_destroy(&self->private_key_second);
+    vscf_impl_destroy(&self->public_key_second);
+    vsc_buffer_destroy(&self->encapsulated_key);
 }
 
 VSCR_PUBLIC void

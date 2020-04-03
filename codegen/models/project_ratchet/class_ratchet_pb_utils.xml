@@ -30,7 +30,7 @@
     </method>
 
     <method name="serialize public key" is_static="1">
-        <argument name="key" interface="public key" project="foundation" access="readwrite"/>
+        <argument name="key" interface="public key" project="foundation"/>
         <argument name="pb buffer" class="pb_bytes_array_t" library="nanopb" access="disown"/>
     </method>
 
@@ -43,7 +43,7 @@
     </method>
 
     <method name="serialize private key" is_static="1">
-        <argument name="key" interface="private key" project="foundation" access="readwrite"/>
+        <argument name="key" interface="private key" project="foundation"/>
         <argument name="pb buffer" class="pb_bytes_array_t" library="nanopb" access="disown"/>
     </method>
 
