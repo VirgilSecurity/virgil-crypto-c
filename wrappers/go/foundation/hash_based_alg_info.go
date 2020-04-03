@@ -21,7 +21,7 @@ func (obj *HashBasedAlgInfo) HashAlgInfo() (AlgInfo, error) {
 
     runtime.KeepAlive(obj)
 
-    return FoundationImplementationWrapAlgInfoCopy(proxyResult) /* r4 */
+    return FoundationImplementationWrapAlgInfoCopy(proxyResult) /* r4.1 */
 }
 
 /* Handle underlying C context. */

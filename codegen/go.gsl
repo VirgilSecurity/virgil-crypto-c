@@ -2505,9 +2505,9 @@ function go_wrap_c_returned_value (go_return, go_module, go_project)
 
     elsif is_true (0.is_interface)
         if string_in (go_return.access, "readonly, readwrite")
-            return "$(my.go_project.name:Pascal)ImplementationWrap$(my.go_return.type:)Copy($(my.name:)) /* r4 */"
+            return "$(my.go_project.name:Pascal)ImplementationWrap$(my.go_return.type:)Copy($(my.name:)) /* r4.1 */"
         else
-            return "$(my.go_project.name:Pascal)ImplementationWrap$(my.go_return.type:)($(my.name:)) /* r4.1 */"
+            return "$(my.go_project.name:Pascal)ImplementationWrap$(my.go_return.type:)($(my.name:)) /* r4 */"
         endif
 
     elsif is_true (0.is_class) & is_false (0.is_buffer)

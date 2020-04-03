@@ -95,7 +95,7 @@ func (obj *PasswordRecipientInfo) KeyEncryptionAlgorithm() (AlgInfo, error) {
 
     runtime.KeepAlive(obj)
 
-    return FoundationImplementationWrapAlgInfoCopy(proxyResult) /* r4 */
+    return FoundationImplementationWrapAlgInfoCopy(proxyResult) /* r4.1 */
 }
 
 /*

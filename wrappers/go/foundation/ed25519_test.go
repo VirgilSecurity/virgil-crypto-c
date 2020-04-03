@@ -39,110 +39,110 @@ import (
 	"math/rand"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestNewEd25519(t *testing.T) {
 	ed := NewEd25519()
 
-	assert.NotNil(t, ed)
+	require.NotNil(t, ed)
 }
 
 func TestEd25519_GenerateKey(t *testing.T) {
 	ed := newEd25519()
 
 	privateKey, err := ed.GenerateKey()
-	assert.Nil(t, err)
-	assert.NotNil(t, privateKey)
+	require.Nil(t, err)
+	require.NotNil(t, privateKey)
 
 	edKey, ok := privateKey.(Key)
-	assert.True(t, ok)
-	assert.Equal(t, AlgIdEd25519, edKey.AlgId())
+	require.True(t, ok)
+	require.Equal(t, AlgIdEd25519, edKey.AlgId())
 }
 
 func TestEd25519_CanSign(t *testing.T) {
 	ed := newEd25519()
 	privateKey, err := ed.GenerateKey()
-	assert.Nil(t, err)
-	assert.True(t, ed.CanSign(privateKey))
+	require.Nil(t, err)
+	require.True(t, ed.CanSign(privateKey))
 }
 
 func TestEd25519_CanSign_WrongKey(t *testing.T) {
 	ed := newEd25519()
 	rsa := NewRsa()
 	err := rsa.SetupDefaults()
-	assert.Nil(t, err)
+	require.Nil(t, err)
 
 	privateKey, err := rsa.GenerateKey(2048)
-	assert.Nil(t, err)
-	assert.False(t, ed.CanSign(privateKey))
+	require.Nil(t, err)
+	require.False(t, ed.CanSign(privateKey))
 }
 
 func TestEd25519_GetCanExportPrivateKey(t *testing.T) {
 	ed := newEd25519()
 
-	assert.True(t, ed.GetCanExportPrivateKey())
+	require.True(t, ed.GetCanExportPrivateKey())
 }
 
 func TestEd25519_GetCanImportPrivateKey(t *testing.T) {
 	ed := newEd25519()
 
-	assert.True(t, ed.GetCanImportPrivateKey())
+	require.True(t, ed.GetCanImportPrivateKey())
 }
 
 func TestEd25519_ExportPrivateKey(t *testing.T) {
 	ed := newEd25519()
 	privateKey, err := ed.GenerateKey()
-	assert.Nil(t, err)
+	require.Nil(t, err)
 
 	// Export private key
 	rawPrivateKey, err := ed.ExportPrivateKey(privateKey)
-	assert.Nil(t, err)
-	assert.NotNil(t, rawPrivateKey)
+	require.Nil(t, err)
+	require.NotNil(t, rawPrivateKey)
 
 	exportedKeyData := rawPrivateKey.Data()
-	assert.NotNil(t, exportedKeyData)
+	require.NotNil(t, exportedKeyData)
 
 	importedPrivateKey, err := ed.ImportPrivateKey(rawPrivateKey)
-	assert.Nil(t, err)
+	require.Nil(t, err)
 
 	rawPrivateKey2, err := ed.ExportPrivateKey(importedPrivateKey)
-	assert.Nil(t, err)
-	assert.NotNil(t, rawPrivateKey2)
+	require.Nil(t, err)
+	require.NotNil(t, rawPrivateKey2)
 
 	exportedKeyData2 := rawPrivateKey2.Data()
 
-	assert.NotNil(t, exportedKeyData2)
-	assert.Equal(t, exportedKeyData, exportedKeyData2)
+	require.NotNil(t, exportedKeyData2)
+	require.Equal(t, exportedKeyData, exportedKeyData2)
 }
 
 func TestEd25519_ExportPublicKey(t *testing.T) {
 	ed := newEd25519()
 	privateKey, err := ed.GenerateKey()
-	assert.Nil(t, err)
+	require.Nil(t, err)
 
 	publicKey, err := privateKey.ExtractPublicKey()
-	assert.Nil(t, err)
+	require.Nil(t, err)
 
 	// Export public key
 	rawPublicKey, err := ed.ExportPublicKey(publicKey)
-	assert.Nil(t, err)
-	assert.NotNil(t, rawPublicKey)
+	require.Nil(t, err)
+	require.NotNil(t, rawPublicKey)
 
 	exportedKeyData := rawPublicKey.Data()
-	assert.NotNil(t, exportedKeyData)
+	require.NotNil(t, exportedKeyData)
 
 	importedPublicKey, err := ed.ImportPublicKey(rawPublicKey)
-	assert.Nil(t, err)
+	require.Nil(t, err)
 
 	rawPublicKey2, err := ed.ExportPublicKey(importedPublicKey)
-	assert.Nil(t, err)
-	assert.NotNil(t, rawPublicKey2)
+	require.Nil(t, err)
+	require.NotNil(t, rawPublicKey2)
 
 	exportedKeyData2 := rawPublicKey2.Data()
 
-	assert.NotNil(t, exportedKeyData2)
-	assert.Equal(t, exportedKeyData, exportedKeyData2)
+	require.NotNil(t, exportedKeyData2)
+	require.Equal(t, exportedKeyData, exportedKeyData2)
 }
 
 func TestEd25519_Encrypt(t *testing.T) {
@@ -151,24 +151,24 @@ func TestEd25519_Encrypt(t *testing.T) {
 
 	ed := newEd25519()
 	privateKey, err := ed.GenerateKey()
-	assert.Nil(t, err)
+	require.Nil(t, err)
 
 	publicKey, err := privateKey.ExtractPublicKey()
-	assert.Nil(t, err)
+	require.Nil(t, err)
 
-	assert.True(t, ed.CanEncrypt(publicKey, uint(len(data))))
+	require.True(t, ed.CanEncrypt(publicKey, uint(len(data))))
 
 	encryptedData, err := ed.Encrypt(publicKey, data)
-	assert.Nil(t, err)
-	assert.NotNil(t, encryptedData)
+	require.Nil(t, err)
+	require.NotNil(t, encryptedData)
 
-	assert.True(t, ed.CanDecrypt(privateKey, uint(len(encryptedData))))
+	require.True(t, ed.CanDecrypt(privateKey, uint(len(encryptedData))))
 
 	decryptedData, err := ed.Decrypt(privateKey, encryptedData)
-	assert.Nil(t, err)
-	assert.NotNil(t, decryptedData)
+	require.Nil(t, err)
+	require.NotNil(t, decryptedData)
 
-	assert.Equal(t, data, decryptedData)
+	require.Equal(t, data, decryptedData)
 }
 
 func TestEd25519_Decrypt(t *testing.T) {
@@ -179,12 +179,12 @@ func TestEd25519_Decrypt(t *testing.T) {
 	keyProvider := newKeyProvider()
 
 	privateKey, err := keyProvider.ImportPrivateKey(privateKeyData)
-	assert.Nil(t, err)
+	require.Nil(t, err)
 
 	decryptedData, err := ed.Decrypt(privateKey, encryptedData)
-	assert.Nil(t, err)
-	assert.NotNil(t, decryptedData)
-	assert.Equal(t, expectedDecryptedData, decryptedData)
+	require.Nil(t, err)
+	require.NotNil(t, decryptedData)
+	require.Equal(t, expectedDecryptedData, decryptedData)
 }
 
 func TestEd25519_SignHash(t *testing.T) {
@@ -194,18 +194,18 @@ func TestEd25519_SignHash(t *testing.T) {
 	keyProvider := newKeyProvider()
 
 	privateKey, err := keyProvider.ImportPrivateKey(privateKeyData)
-	assert.Nil(t, err)
+	require.Nil(t, err)
 
 	publicKey, err := privateKey.ExtractPublicKey()
-	assert.Nil(t, err)
-	assert.True(t, ed.CanSign(privateKey))
+	require.Nil(t, err)
+	require.True(t, ed.CanSign(privateKey))
 
 	signature, err := ed.SignHash(privateKey, AlgIdSha512, data)
-	assert.Nil(t, err)
-	assert.NotNil(t, signature)
-	assert.Equal(t, ed.SignatureLen(privateKey), uint(len(signature)))
+	require.Nil(t, err)
+	require.NotNil(t, signature)
+	require.Equal(t, ed.SignatureLen(privateKey), uint(len(signature)))
 
-	assert.True(t, ed.VerifyHash(publicKey, AlgIdSha512, data, signature))
+	require.True(t, ed.VerifyHash(publicKey, AlgIdSha512, data, signature))
 }
 
 func TestEd25519_VerifyHash(t *testing.T) {
@@ -216,9 +216,9 @@ func TestEd25519_VerifyHash(t *testing.T) {
 	keyProvider := newKeyProvider()
 
 	publicKey, err := keyProvider.ImportPublicKey(publicKeyData)
-	assert.Nil(t, err)
-	assert.True(t, ed.CanVerify(publicKey))
-	assert.True(t, ed.VerifyHash(publicKey, AlgIdSha512, data, signature))
+	require.Nil(t, err)
+	require.True(t, ed.CanVerify(publicKey))
+	require.True(t, ed.VerifyHash(publicKey, AlgIdSha512, data, signature))
 }
 
 func TestEd25519_VerifyHash_WrongHash(t *testing.T) {
@@ -229,8 +229,8 @@ func TestEd25519_VerifyHash_WrongHash(t *testing.T) {
 	keyProvider := newKeyProvider()
 
 	publicKey, err := keyProvider.ImportPublicKey(publicKeyData)
-	assert.Nil(t, err)
-	assert.False(t, ed.VerifyHash(publicKey, AlgIdSha512, data, signature))
+	require.Nil(t, err)
+	require.False(t, ed.VerifyHash(publicKey, AlgIdSha512, data, signature))
 
 }
 func newEd25519() *Ed25519 {

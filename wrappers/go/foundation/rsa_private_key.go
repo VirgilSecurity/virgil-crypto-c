@@ -86,7 +86,7 @@ func (obj *RsaPrivateKey) AlgInfo() (AlgInfo, error) {
 
     runtime.KeepAlive(obj)
 
-    return FoundationImplementationWrapAlgInfoCopy(proxyResult) /* r4 */
+    return FoundationImplementationWrapAlgInfoCopy(proxyResult) /* r4.1 */
 }
 
 /*
@@ -131,5 +131,5 @@ func (obj *RsaPrivateKey) ExtractPublicKey() (PublicKey, error) {
 
     runtime.KeepAlive(obj)
 
-    return FoundationImplementationWrapPublicKey(proxyResult) /* r4.1 */
+    return FoundationImplementationWrapPublicKey(proxyResult) /* r4 */
 }

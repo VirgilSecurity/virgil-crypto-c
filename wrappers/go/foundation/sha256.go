@@ -86,7 +86,7 @@ func (obj *Sha256) ProduceAlgInfo() (AlgInfo, error) {
 
     runtime.KeepAlive(obj)
 
-    return FoundationImplementationWrapAlgInfo(proxyResult) /* r4.1 */
+    return FoundationImplementationWrapAlgInfo(proxyResult) /* r4 */
 }
 
 /*

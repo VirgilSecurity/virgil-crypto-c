@@ -36,14 +36,14 @@ package foundation
 
 import (
 	b64 "encoding/base64"
-	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"testing"
 )
 
 func TestNewRecipientCipher(t *testing.T) {
 	recipientCipher := NewRecipientCipher()
 
-	assert.NotNil(t, recipientCipher)
+	require.NotNil(t, recipientCipher)
 }
 
 func TestRecipientCipher_Encrypt_ED25519(t *testing.T) {
@@ -53,50 +53,50 @@ func TestRecipientCipher_Encrypt_ED25519(t *testing.T) {
 	recipientCipher := NewRecipientCipher()
 	ed := NewEd25519()
 	err := ed.SetupDefaults()
-	assert.Nil(t, err)
+	require.Nil(t, err)
 
 	privateKey, err := ed.GenerateKey()
-	assert.Nil(t, err)
+	require.Nil(t, err)
 
 	// Encrypt
 	extractedPublicKey, err := privateKey.ExtractPublicKey()
-	assert.Nil(t, err)
+	require.Nil(t, err)
 
 	recipientCipher.AddKeyRecipient(recipientId, extractedPublicKey)
 	recipientCipher.CustomParams().AddData([]byte("VIRGIL-DATA-SIGNER-ID"), []byte("VIRGIL-DATA-SIGNER-ID"))
 	recipientCipher.CustomParams().AddData([]byte("VIRGIL-DATA-SIGNATURE"), []byte("VIRGIL-DATA-SIGNATURE"))
 
 	err = recipientCipher.StartEncryption()
-	assert.Nil(t, err)
+	require.Nil(t, err)
 
 	messageInfo := recipientCipher.PackMessageInfo()
-	assert.NotNil(t, messageInfo)
+	require.NotNil(t, messageInfo)
 
 	processEncryptionData, err := recipientCipher.ProcessEncryption(data)
-	assert.Nil(t, err)
-	assert.NotNil(t, processEncryptionData)
+	require.Nil(t, err)
+	require.NotNil(t, processEncryptionData)
 
 	finishEncryptionData, err := recipientCipher.FinishEncryption()
-	assert.Nil(t, err)
-	assert.NotNil(t, finishEncryptionData)
+	require.Nil(t, err)
+	require.NotNil(t, finishEncryptionData)
 
 	encryptedData := append(append(messageInfo, processEncryptionData...), finishEncryptionData...)
 
 	// Decrypt
 	cipher := NewRecipientCipher()
 	err = cipher.StartDecryptionWithKey(recipientId, privateKey, []byte{})
-	assert.Nil(t, err)
+	require.Nil(t, err)
 
 	processDecryptionData, err := cipher.ProcessDecryption(encryptedData)
-	assert.Nil(t, err)
-	assert.NotNil(t, processDecryptionData)
+	require.Nil(t, err)
+	require.NotNil(t, processDecryptionData)
 
 	finishDecryptionData, err := cipher.FinishDecryption()
-	assert.Nil(t, err)
-	assert.NotNil(t, finishDecryptionData)
+	require.Nil(t, err)
+	require.NotNil(t, finishDecryptionData)
 
 	decryptedData := append(processDecryptionData, finishDecryptionData...)
-	assert.Equal(t, data, decryptedData)
+	require.Equal(t, data, decryptedData)
 }
 
 func TestRecipientCipher_Encrypt_RSA(t *testing.T) {
@@ -106,50 +106,50 @@ func TestRecipientCipher_Encrypt_RSA(t *testing.T) {
 	recipientCipher := NewRecipientCipher()
 	rsa := NewRsa()
 	err := rsa.SetupDefaults()
-	assert.Nil(t, err)
+	require.Nil(t, err)
 
 	privateKey, err := rsa.GenerateKey(2048)
-	assert.Nil(t, err)
+	require.Nil(t, err)
 
 	// Encrypt
 	extractedPublicKey, err := privateKey.ExtractPublicKey()
-	assert.Nil(t, err)
+	require.Nil(t, err)
 
 	recipientCipher.AddKeyRecipient(recipientId, extractedPublicKey)
 	recipientCipher.CustomParams().AddData([]byte("VIRGIL-DATA-SIGNER-ID"), []byte("VIRGIL-DATA-SIGNER-ID"))
 	recipientCipher.CustomParams().AddData([]byte("VIRGIL-DATA-SIGNATURE"), []byte("VIRGIL-DATA-SIGNATURE"))
 
 	err = recipientCipher.StartEncryption()
-	assert.Nil(t, err)
+	require.Nil(t, err)
 
 	messageInfo := recipientCipher.PackMessageInfo()
-	assert.NotNil(t, messageInfo)
+	require.NotNil(t, messageInfo)
 
 	processEncryptionData, err := recipientCipher.ProcessEncryption(data)
-	assert.Nil(t, err)
-	assert.NotNil(t, processEncryptionData)
+	require.Nil(t, err)
+	require.NotNil(t, processEncryptionData)
 
 	finishEncryptionData, err := recipientCipher.FinishEncryption()
-	assert.Nil(t, err)
-	assert.NotNil(t, finishEncryptionData)
+	require.Nil(t, err)
+	require.NotNil(t, finishEncryptionData)
 
 	encryptedData := append(append(messageInfo, processEncryptionData...), finishEncryptionData...)
 
 	// Decrypt
 	cipher := NewRecipientCipher()
 	err = cipher.StartDecryptionWithKey(recipientId, privateKey, []byte{})
-	assert.Nil(t, err)
+	require.Nil(t, err)
 
 	processDecryptionData, err := cipher.ProcessDecryption(encryptedData)
-	assert.Nil(t, err)
-	assert.NotNil(t, processDecryptionData)
+	require.Nil(t, err)
+	require.NotNil(t, processDecryptionData)
 
 	finishDecryptionData, err := cipher.FinishDecryption()
-	assert.Nil(t, err)
-	assert.NotNil(t, finishDecryptionData)
+	require.Nil(t, err)
+	require.NotNil(t, finishDecryptionData)
 
 	decryptedData := append(processDecryptionData, finishDecryptionData...)
-	assert.Equal(t, data, decryptedData)
+	require.Equal(t, data, decryptedData)
 }
 
 func TestRecipientCipher_SetPaddingParams(t *testing.T) {
