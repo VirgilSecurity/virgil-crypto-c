@@ -21,7 +21,7 @@ func (obj *CompoundKeyAlgInfo) CipherAlgInfo() (AlgInfo, error) {
 
     runtime.KeepAlive(obj)
 
-    return FoundationImplementationWrapAlgInfo(proxyResult) /* r4.1 */
+    return FoundationImplementationWrapAlgInfoCopy(proxyResult) /* r4 */
 }
 
 /*
@@ -32,7 +32,7 @@ func (obj *CompoundKeyAlgInfo) SignerAlgInfo() (AlgInfo, error) {
 
     runtime.KeepAlive(obj)
 
-    return FoundationImplementationWrapAlgInfo(proxyResult) /* r4.1 */
+    return FoundationImplementationWrapAlgInfoCopy(proxyResult) /* r4 */
 }
 
 /* Handle underlying C context. */

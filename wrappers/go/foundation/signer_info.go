@@ -87,7 +87,7 @@ func (obj *SignerInfo) SignerAlgInfo() (AlgInfo, error) {
 
     runtime.KeepAlive(obj)
 
-    return FoundationImplementationWrapAlgInfo(proxyResult) /* r4.1 */
+    return FoundationImplementationWrapAlgInfoCopy(proxyResult) /* r4 */
 }
 
 /*

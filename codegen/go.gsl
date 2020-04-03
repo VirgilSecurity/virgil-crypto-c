@@ -2504,7 +2504,7 @@ function go_wrap_c_returned_value (go_return, go_module, go_project)
         return "unsafe.Pointer($(my.name:)) /* r3 */"
 
     elsif is_true (0.is_interface)
-        if string_in (swift_return.access, "readonly, readwrite")
+        if string_in (go_return.access, "readonly, readwrite")
             return "$(my.go_project.name:Pascal)ImplementationWrap$(my.go_return.type:)Copy($(my.name:)) /* r4 */"
         else
             return "$(my.go_project.name:Pascal)ImplementationWrap$(my.go_return.type:)($(my.name:)) /* r4.1 */"
