@@ -99,8 +99,13 @@ func (obj *RatchetSession) SetupDefaults() error {
 /*
 * Initiates session
 */
-func (obj *RatchetSession) Initiate(senderIdentityPrivateKey PrivateKey, receiverIdentityPublicKey PublicKey, receiverLongTermPublicKey PublicKey, receiverOneTimePublicKey PublicKey, enablePostQuantum bool) error {
-    proxyResult := /*pr4*/C.vscr_ratchet_session_initiate(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(senderIdentityPrivateKey.Ctx())), (*C.vscf_impl_t)(unsafe.Pointer(receiverIdentityPublicKey.Ctx())), (*C.vscf_impl_t)(unsafe.Pointer(receiverLongTermPublicKey.Ctx())), (*C.vscf_impl_t)(unsafe.Pointer(receiverOneTimePublicKey.Ctx())), (C.bool)(enablePostQuantum)/*pa10*/)
+func (obj *RatchetSession) Initiate(senderIdentityPrivateKey PrivateKey, senderIdentityKeyId []byte, receiverIdentityPublicKey PublicKey, receiverIdentityKeyId []byte, receiverLongTermPublicKey PublicKey, receiverLongTermKeyId []byte, receiverOneTimePublicKey PublicKey, receiverOneTimeKeyId []byte, enablePostQuantum bool) error {
+    senderIdentityKeyIdData := helperWrapData (senderIdentityKeyId)
+    receiverIdentityKeyIdData := helperWrapData (receiverIdentityKeyId)
+    receiverLongTermKeyIdData := helperWrapData (receiverLongTermKeyId)
+    receiverOneTimeKeyIdData := helperWrapData (receiverOneTimeKeyId)
+
+    proxyResult := /*pr4*/C.vscr_ratchet_session_initiate(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(senderIdentityPrivateKey.Ctx())), senderIdentityKeyIdData, (*C.vscf_impl_t)(unsafe.Pointer(receiverIdentityPublicKey.Ctx())), receiverIdentityKeyIdData, (*C.vscf_impl_t)(unsafe.Pointer(receiverLongTermPublicKey.Ctx())), receiverLongTermKeyIdData, (*C.vscf_impl_t)(unsafe.Pointer(receiverOneTimePublicKey.Ctx())), receiverOneTimeKeyIdData, (C.bool)(enablePostQuantum)/*pa10*/)
 
     err := RatchetErrorHandleStatus(proxyResult)
     if err != nil {
@@ -123,13 +128,8 @@ func (obj *RatchetSession) Initiate(senderIdentityPrivateKey PrivateKey, receive
 /*
 * Responds to session initiation
 */
-func (obj *RatchetSession) Respond(senderIdentityPublicKey PublicKey, senderIdentityKeyId []byte, receiverIdentityPrivateKey PrivateKey, receiverIdentityKeyId []byte, receiverLongTermPrivateKey PrivateKey, receiverLongTermKeyId []byte, receiverOneTimePrivateKey PrivateKey, receiverOneTimeKeyId []byte, message *RatchetMessage, enablePostQuantum bool) error {
-    senderIdentityKeyIdData := helperWrapData (senderIdentityKeyId)
-    receiverIdentityKeyIdData := helperWrapData (receiverIdentityKeyId)
-    receiverLongTermKeyIdData := helperWrapData (receiverLongTermKeyId)
-    receiverOneTimeKeyIdData := helperWrapData (receiverOneTimeKeyId)
-
-    proxyResult := /*pr4*/C.vscr_ratchet_session_respond(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(senderIdentityPublicKey.Ctx())), senderIdentityKeyIdData, (*C.vscf_impl_t)(unsafe.Pointer(receiverIdentityPrivateKey.Ctx())), receiverIdentityKeyIdData, (*C.vscf_impl_t)(unsafe.Pointer(receiverLongTermPrivateKey.Ctx())), receiverLongTermKeyIdData, (*C.vscf_impl_t)(unsafe.Pointer(receiverOneTimePrivateKey.Ctx())), receiverOneTimeKeyIdData, (*C.vscr_ratchet_message_t)(unsafe.Pointer(message.Ctx())), (C.bool)(enablePostQuantum)/*pa10*/)
+func (obj *RatchetSession) Respond(senderIdentityPublicKey PublicKey, receiverIdentityPrivateKey PrivateKey, receiverLongTermPrivateKey PrivateKey, receiverOneTimePrivateKey PrivateKey, message *RatchetMessage, enablePostQuantum bool) error {
+    proxyResult := /*pr4*/C.vscr_ratchet_session_respond(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(senderIdentityPublicKey.Ctx())), (*C.vscf_impl_t)(unsafe.Pointer(receiverIdentityPrivateKey.Ctx())), (*C.vscf_impl_t)(unsafe.Pointer(receiverLongTermPrivateKey.Ctx())), (*C.vscf_impl_t)(unsafe.Pointer(receiverOneTimePrivateKey.Ctx())), (*C.vscr_ratchet_message_t)(unsafe.Pointer(message.Ctx())), (C.bool)(enablePostQuantum)/*pa10*/)
 
     err := RatchetErrorHandleStatus(proxyResult)
     if err != nil {

@@ -78,19 +78,33 @@ class VscrRatchetMessage(object):
         vscr_ratchet_message_get_counter.restype = c_uint
         return vscr_ratchet_message_get_counter(ctx)
 
-    def vscr_ratchet_message_get_long_term_public_key(self, ctx):
+    def vscr_ratchet_message_get_sender_identity_key_id(self, ctx):
         """Returns long-term public key, if message is prekey message."""
-        vscr_ratchet_message_get_long_term_public_key = self._lib.vscr_ratchet_message_get_long_term_public_key
-        vscr_ratchet_message_get_long_term_public_key.argtypes = [POINTER(vscr_ratchet_message_t)]
-        vscr_ratchet_message_get_long_term_public_key.restype = vsc_data_t
-        return vscr_ratchet_message_get_long_term_public_key(ctx)
+        vscr_ratchet_message_get_sender_identity_key_id = self._lib.vscr_ratchet_message_get_sender_identity_key_id
+        vscr_ratchet_message_get_sender_identity_key_id.argtypes = [POINTER(vscr_ratchet_message_t)]
+        vscr_ratchet_message_get_sender_identity_key_id.restype = vsc_data_t
+        return vscr_ratchet_message_get_sender_identity_key_id(ctx)
 
-    def vscr_ratchet_message_get_one_time_public_key(self, ctx):
+    def vscr_ratchet_message_get_receiver_identity_key_id(self, ctx):
+        """Returns long-term public key, if message is prekey message."""
+        vscr_ratchet_message_get_receiver_identity_key_id = self._lib.vscr_ratchet_message_get_receiver_identity_key_id
+        vscr_ratchet_message_get_receiver_identity_key_id.argtypes = [POINTER(vscr_ratchet_message_t)]
+        vscr_ratchet_message_get_receiver_identity_key_id.restype = vsc_data_t
+        return vscr_ratchet_message_get_receiver_identity_key_id(ctx)
+
+    def vscr_ratchet_message_get_receiver_long_term_key_id(self, ctx):
+        """Returns long-term public key, if message is prekey message."""
+        vscr_ratchet_message_get_receiver_long_term_key_id = self._lib.vscr_ratchet_message_get_receiver_long_term_key_id
+        vscr_ratchet_message_get_receiver_long_term_key_id.argtypes = [POINTER(vscr_ratchet_message_t)]
+        vscr_ratchet_message_get_receiver_long_term_key_id.restype = vsc_data_t
+        return vscr_ratchet_message_get_receiver_long_term_key_id(ctx)
+
+    def vscr_ratchet_message_get_receiver_one_time_key_id(self, ctx):
         """Returns one-time public key, if message is prekey message and if one-time key is present, empty result otherwise."""
-        vscr_ratchet_message_get_one_time_public_key = self._lib.vscr_ratchet_message_get_one_time_public_key
-        vscr_ratchet_message_get_one_time_public_key.argtypes = [POINTER(vscr_ratchet_message_t)]
-        vscr_ratchet_message_get_one_time_public_key.restype = vsc_data_t
-        return vscr_ratchet_message_get_one_time_public_key(ctx)
+        vscr_ratchet_message_get_receiver_one_time_key_id = self._lib.vscr_ratchet_message_get_receiver_one_time_key_id
+        vscr_ratchet_message_get_receiver_one_time_key_id.argtypes = [POINTER(vscr_ratchet_message_t)]
+        vscr_ratchet_message_get_receiver_one_time_key_id.restype = vsc_data_t
+        return vscr_ratchet_message_get_receiver_one_time_key_id(ctx)
 
     def vscr_ratchet_message_serialize_len(self, ctx):
         """Buffer len to serialize this class."""

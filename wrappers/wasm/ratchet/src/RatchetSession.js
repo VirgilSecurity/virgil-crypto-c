@@ -111,31 +111,16 @@ const initRatchetSession = (Module, modules) => {
         /**
          * Initiates session
          */
-        initiate(senderIdentityPrivateKey, receiverIdentityPublicKey, receiverLongTermPublicKey, receiverOneTimePublicKey, enablePostQuantum) {
+        initiate(senderIdentityPrivateKey, senderIdentityKeyId, receiverIdentityPublicKey, receiverIdentityKeyId, receiverLongTermPublicKey, receiverLongTermKeyId, receiverOneTimePublicKey, receiverOneTimeKeyId, enablePostQuantum) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureImplementInterface('senderIdentityPrivateKey', senderIdentityPrivateKey, 'Foundation.PrivateKey', modules.FoundationInterfaceTag.PRIVATE_KEY, modules.FoundationInterface);
-            precondition.ensureImplementInterface('receiverIdentityPublicKey', receiverIdentityPublicKey, 'Foundation.PublicKey', modules.FoundationInterfaceTag.PUBLIC_KEY, modules.FoundationInterface);
-            precondition.ensureImplementInterface('receiverLongTermPublicKey', receiverLongTermPublicKey, 'Foundation.PublicKey', modules.FoundationInterfaceTag.PUBLIC_KEY, modules.FoundationInterface);
-            precondition.ensureImplementInterface('receiverOneTimePublicKey', receiverOneTimePublicKey, 'Foundation.PublicKey', modules.FoundationInterfaceTag.PUBLIC_KEY, modules.FoundationInterface);
-            precondition.ensureBoolean('enablePostQuantum', enablePostQuantum);
-            const proxyResult = Module._vscr_ratchet_session_initiate(this.ctxPtr, senderIdentityPrivateKey.ctxPtr, receiverIdentityPublicKey.ctxPtr, receiverLongTermPublicKey.ctxPtr, receiverOneTimePublicKey.ctxPtr, enablePostQuantum);
-            modules.RatchetError.handleStatusCode(proxyResult);
-        }
-
-        /**
-         * Responds to session initiation
-         */
-        respond(senderIdentityPublicKey, senderIdentityKeyId, receiverIdentityPrivateKey, receiverIdentityKeyId, receiverLongTermPrivateKey, receiverLongTermKeyId, receiverOneTimePrivateKey, receiverOneTimeKeyId, message, enablePostQuantum) {
-            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-            precondition.ensureImplementInterface('senderIdentityPublicKey', senderIdentityPublicKey, 'Foundation.PublicKey', modules.FoundationInterfaceTag.PUBLIC_KEY, modules.FoundationInterface);
             precondition.ensureByteArray('senderIdentityKeyId', senderIdentityKeyId);
-            precondition.ensureImplementInterface('receiverIdentityPrivateKey', receiverIdentityPrivateKey, 'Foundation.PrivateKey', modules.FoundationInterfaceTag.PRIVATE_KEY, modules.FoundationInterface);
+            precondition.ensureImplementInterface('receiverIdentityPublicKey', receiverIdentityPublicKey, 'Foundation.PublicKey', modules.FoundationInterfaceTag.PUBLIC_KEY, modules.FoundationInterface);
             precondition.ensureByteArray('receiverIdentityKeyId', receiverIdentityKeyId);
-            precondition.ensureImplementInterface('receiverLongTermPrivateKey', receiverLongTermPrivateKey, 'Foundation.PrivateKey', modules.FoundationInterfaceTag.PRIVATE_KEY, modules.FoundationInterface);
+            precondition.ensureImplementInterface('receiverLongTermPublicKey', receiverLongTermPublicKey, 'Foundation.PublicKey', modules.FoundationInterfaceTag.PUBLIC_KEY, modules.FoundationInterface);
             precondition.ensureByteArray('receiverLongTermKeyId', receiverLongTermKeyId);
-            precondition.ensureImplementInterface('receiverOneTimePrivateKey', receiverOneTimePrivateKey, 'Foundation.PrivateKey', modules.FoundationInterfaceTag.PRIVATE_KEY, modules.FoundationInterface);
+            precondition.ensureImplementInterface('receiverOneTimePublicKey', receiverOneTimePublicKey, 'Foundation.PublicKey', modules.FoundationInterfaceTag.PUBLIC_KEY, modules.FoundationInterface);
             precondition.ensureByteArray('receiverOneTimeKeyId', receiverOneTimeKeyId);
-            precondition.ensureClass('message', message, modules.RatchetMessage);
             precondition.ensureBoolean('enablePostQuantum', enablePostQuantum);
 
             //  Copy bytes from JS memory to the WASM memory.
@@ -187,7 +172,7 @@ const initRatchetSession = (Module, modules) => {
             Module._vsc_data(receiverOneTimeKeyIdCtxPtr, receiverOneTimeKeyIdPtr, receiverOneTimeKeyIdSize);
 
             try {
-                const proxyResult = Module._vscr_ratchet_session_respond(this.ctxPtr, senderIdentityPublicKey.ctxPtr, senderIdentityKeyIdCtxPtr, receiverIdentityPrivateKey.ctxPtr, receiverIdentityKeyIdCtxPtr, receiverLongTermPrivateKey.ctxPtr, receiverLongTermKeyIdCtxPtr, receiverOneTimePrivateKey.ctxPtr, receiverOneTimeKeyIdCtxPtr, message.ctxPtr, enablePostQuantum);
+                const proxyResult = Module._vscr_ratchet_session_initiate(this.ctxPtr, senderIdentityPrivateKey.ctxPtr, senderIdentityKeyIdCtxPtr, receiverIdentityPublicKey.ctxPtr, receiverIdentityKeyIdCtxPtr, receiverLongTermPublicKey.ctxPtr, receiverLongTermKeyIdCtxPtr, receiverOneTimePublicKey.ctxPtr, receiverOneTimeKeyIdCtxPtr, enablePostQuantum);
                 modules.RatchetError.handleStatusCode(proxyResult);
             } finally {
                 Module._free(senderIdentityKeyIdPtr);
@@ -199,6 +184,21 @@ const initRatchetSession = (Module, modules) => {
                 Module._free(receiverOneTimeKeyIdPtr);
                 Module._free(receiverOneTimeKeyIdCtxPtr);
             }
+        }
+
+        /**
+         * Responds to session initiation
+         */
+        respond(senderIdentityPublicKey, receiverIdentityPrivateKey, receiverLongTermPrivateKey, receiverOneTimePrivateKey, message, enablePostQuantum) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureImplementInterface('senderIdentityPublicKey', senderIdentityPublicKey, 'Foundation.PublicKey', modules.FoundationInterfaceTag.PUBLIC_KEY, modules.FoundationInterface);
+            precondition.ensureImplementInterface('receiverIdentityPrivateKey', receiverIdentityPrivateKey, 'Foundation.PrivateKey', modules.FoundationInterfaceTag.PRIVATE_KEY, modules.FoundationInterface);
+            precondition.ensureImplementInterface('receiverLongTermPrivateKey', receiverLongTermPrivateKey, 'Foundation.PrivateKey', modules.FoundationInterfaceTag.PRIVATE_KEY, modules.FoundationInterface);
+            precondition.ensureImplementInterface('receiverOneTimePrivateKey', receiverOneTimePrivateKey, 'Foundation.PrivateKey', modules.FoundationInterfaceTag.PRIVATE_KEY, modules.FoundationInterface);
+            precondition.ensureClass('message', message, modules.RatchetMessage);
+            precondition.ensureBoolean('enablePostQuantum', enablePostQuantum);
+            const proxyResult = Module._vscr_ratchet_session_respond(this.ctxPtr, senderIdentityPublicKey.ctxPtr, receiverIdentityPrivateKey.ctxPtr, receiverLongTermPrivateKey.ctxPtr, receiverOneTimePrivateKey.ctxPtr, message.ctxPtr, enablePostQuantum);
+            modules.RatchetError.handleStatusCode(proxyResult);
         }
 
         /**

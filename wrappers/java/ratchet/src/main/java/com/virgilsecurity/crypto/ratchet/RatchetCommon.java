@@ -54,7 +54,7 @@ public class RatchetCommon {
     * Max message length
     */
     public int getMaxMessageLen() {
-        return 32975;
+        return 37578;
     }
 
     /*

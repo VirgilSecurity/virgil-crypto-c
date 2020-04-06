@@ -102,15 +102,15 @@ public class RatchetSession implements AutoCloseable {
     /*
     * Initiates session
     */
-    public void initiate(PrivateKey senderIdentityPrivateKey, PublicKey receiverIdentityPublicKey, PublicKey receiverLongTermPublicKey, PublicKey receiverOneTimePublicKey, boolean enablePostQuantum) throws RatchetException {
-        RatchetJNI.INSTANCE.ratchetSession_initiate(this.cCtx, senderIdentityPrivateKey, receiverIdentityPublicKey, receiverLongTermPublicKey, receiverOneTimePublicKey, enablePostQuantum);
+    public void initiate(PrivateKey senderIdentityPrivateKey, byte[] senderIdentityKeyId, PublicKey receiverIdentityPublicKey, byte[] receiverIdentityKeyId, PublicKey receiverLongTermPublicKey, byte[] receiverLongTermKeyId, PublicKey receiverOneTimePublicKey, byte[] receiverOneTimeKeyId, boolean enablePostQuantum) throws RatchetException {
+        RatchetJNI.INSTANCE.ratchetSession_initiate(this.cCtx, senderIdentityPrivateKey, senderIdentityKeyId, receiverIdentityPublicKey, receiverIdentityKeyId, receiverLongTermPublicKey, receiverLongTermKeyId, receiverOneTimePublicKey, receiverOneTimeKeyId, enablePostQuantum);
     }
 
     /*
     * Responds to session initiation
     */
-    public void respond(PublicKey senderIdentityPublicKey, byte[] senderIdentityKeyId, PrivateKey receiverIdentityPrivateKey, byte[] receiverIdentityKeyId, PrivateKey receiverLongTermPrivateKey, byte[] receiverLongTermKeyId, PrivateKey receiverOneTimePrivateKey, byte[] receiverOneTimeKeyId, RatchetMessage message, boolean enablePostQuantum) throws RatchetException {
-        RatchetJNI.INSTANCE.ratchetSession_respond(this.cCtx, senderIdentityPublicKey, senderIdentityKeyId, receiverIdentityPrivateKey, receiverIdentityKeyId, receiverLongTermPrivateKey, receiverLongTermKeyId, receiverOneTimePrivateKey, receiverOneTimeKeyId, message, enablePostQuantum);
+    public void respond(PublicKey senderIdentityPublicKey, PrivateKey receiverIdentityPrivateKey, PrivateKey receiverLongTermPrivateKey, PrivateKey receiverOneTimePrivateKey, RatchetMessage message, boolean enablePostQuantum) throws RatchetException {
+        RatchetJNI.INSTANCE.ratchetSession_respond(this.cCtx, senderIdentityPublicKey, receiverIdentityPrivateKey, receiverLongTermPrivateKey, receiverOneTimePrivateKey, message, enablePostQuantum);
     }
 
     /*

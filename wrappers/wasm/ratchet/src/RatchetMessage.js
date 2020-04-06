@@ -113,7 +113,7 @@ const initRatchetMessage = (Module, modules) => {
         /**
          * Returns long-term public key, if message is prekey message.
          */
-        getLongTermPublicKey() {
+        getSenderIdentityKeyId() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
             //  Create C structure vsc_data_t.
@@ -121,7 +121,51 @@ const initRatchetMessage = (Module, modules) => {
             const dataResultCtxPtr = Module._malloc(dataResultCtxSize);
 
             try {
-                Module._vscr_ratchet_message_get_long_term_public_key(dataResultCtxPtr, this.ctxPtr);
+                Module._vscr_ratchet_message_get_sender_identity_key_id(dataResultCtxPtr, this.ctxPtr);
+
+                const dataResultSize = Module._vsc_data_len(dataResultCtxPtr);
+                const dataResultPtr = Module._vsc_data_bytes(dataResultCtxPtr);
+                const dataResult = Module.HEAPU8.slice(dataResultPtr, dataResultPtr + dataResultSize);
+                return dataResult;
+            } finally {
+                Module._free(dataResultCtxPtr);
+            }
+        }
+
+        /**
+         * Returns long-term public key, if message is prekey message.
+         */
+        getReceiverIdentityKeyId() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
+            //  Create C structure vsc_data_t.
+            const dataResultCtxSize = Module._vsc_data_ctx_size();
+            const dataResultCtxPtr = Module._malloc(dataResultCtxSize);
+
+            try {
+                Module._vscr_ratchet_message_get_receiver_identity_key_id(dataResultCtxPtr, this.ctxPtr);
+
+                const dataResultSize = Module._vsc_data_len(dataResultCtxPtr);
+                const dataResultPtr = Module._vsc_data_bytes(dataResultCtxPtr);
+                const dataResult = Module.HEAPU8.slice(dataResultPtr, dataResultPtr + dataResultSize);
+                return dataResult;
+            } finally {
+                Module._free(dataResultCtxPtr);
+            }
+        }
+
+        /**
+         * Returns long-term public key, if message is prekey message.
+         */
+        getReceiverLongTermKeyId() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
+            //  Create C structure vsc_data_t.
+            const dataResultCtxSize = Module._vsc_data_ctx_size();
+            const dataResultCtxPtr = Module._malloc(dataResultCtxSize);
+
+            try {
+                Module._vscr_ratchet_message_get_receiver_long_term_key_id(dataResultCtxPtr, this.ctxPtr);
 
                 const dataResultSize = Module._vsc_data_len(dataResultCtxPtr);
                 const dataResultPtr = Module._vsc_data_bytes(dataResultCtxPtr);
@@ -135,7 +179,7 @@ const initRatchetMessage = (Module, modules) => {
         /**
          * Returns one-time public key, if message is prekey message and if one-time key is present, empty result otherwise.
          */
-        getOneTimePublicKey() {
+        getReceiverOneTimeKeyId() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
             //  Create C structure vsc_data_t.
@@ -143,7 +187,7 @@ const initRatchetMessage = (Module, modules) => {
             const dataResultCtxPtr = Module._malloc(dataResultCtxSize);
 
             try {
-                Module._vscr_ratchet_message_get_one_time_public_key(dataResultCtxPtr, this.ctxPtr);
+                Module._vscr_ratchet_message_get_receiver_one_time_key_id(dataResultCtxPtr, this.ctxPtr);
 
                 const dataResultSize = Module._vsc_data_len(dataResultCtxPtr);
                 const dataResultPtr = Module._vsc_data_bytes(dataResultCtxPtr);
