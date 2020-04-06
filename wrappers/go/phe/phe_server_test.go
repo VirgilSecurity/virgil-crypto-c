@@ -35,13 +35,13 @@
 package phe
 
 import (
-	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"testing"
 )
 
 func TestNewPheServer(t *testing.T) {
 	server := NewPheServer()
-    assert.NotNil(t, server)
+    require.NotNil(t, server)
 
 	server.Delete()
 }

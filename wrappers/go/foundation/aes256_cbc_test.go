@@ -36,7 +36,7 @@ package foundation
 
 import (
 	b64 "encoding/base64"
-	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"reflect"
 	"testing"
 )
@@ -44,7 +44,7 @@ import (
 func TestNewAes256Cbc(t *testing.T) {
 	aes256Cbc := NewAes256Cbc()
 
-	assert.NotNil(t, aes256Cbc)
+	require.NotNil(t, aes256Cbc)
 }
 
 func TestAes256Cbc_Encrypt(t *testing.T) {
@@ -59,9 +59,9 @@ func TestAes256Cbc_Encrypt(t *testing.T) {
 
 	encryptedData, err := aes256Cbc.Encrypt(data)
 
-	assert.Nil(t, err)
-	assert.NotNil(t, encryptedData)
-	assert.Equal(t, expectedEncryptedData, encryptedData)
+	require.Nil(t, err)
+	require.NotNil(t, encryptedData)
+	require.Equal(t, expectedEncryptedData, encryptedData)
 }
 
 func TestAes256Cbc_Encrypt_WithCipher(t *testing.T) {
@@ -86,12 +86,12 @@ func TestAes256Cbc_Encrypt_WithCipher(t *testing.T) {
 		startIndex += blockLen
 	}
 	finishData, err := aes256Cbc.Finish()
-	assert.Nil(t, err)
+	require.Nil(t, err)
 
 	encryptedData := append(updateData, finishData...)
 
-	assert.NotNil(t, encryptedData)
-	assert.Equal(t, expectedEncryptedData, encryptedData)
+	require.NotNil(t, encryptedData)
+	require.Equal(t, expectedEncryptedData, encryptedData)
 }
 
 func TestAes256Cbc_Decrypt(t *testing.T) {
@@ -106,9 +106,9 @@ func TestAes256Cbc_Decrypt(t *testing.T) {
 
 	decryptedData, err := aes256Cbc.Decrypt(encryptedData)
 
-	assert.Nil(t, err)
-	assert.NotNil(t, decryptedData)
-	assert.True(t, reflect.DeepEqual(expectedDecryptedData, decryptedData))
+	require.Nil(t, err)
+	require.NotNil(t, decryptedData)
+	require.True(t, reflect.DeepEqual(expectedDecryptedData, decryptedData))
 }
 
 func TestAes256Cbc_Decrypt_WitCipher(t *testing.T) {
@@ -124,30 +124,30 @@ func TestAes256Cbc_Decrypt_WitCipher(t *testing.T) {
 	aes256Cbc.StartDecryption()
 	updateData := aes256Cbc.Update(encryptedData)
 	finishData, err := aes256Cbc.Finish()
-	assert.Nil(t, err)
+	require.Nil(t, err)
 
 	decryptedData := append(updateData, finishData...)
 
-	assert.NotNil(t, decryptedData)
-	assert.True(t, reflect.DeepEqual(expectedDecryptedData, decryptedData))
+	require.NotNil(t, decryptedData)
+	require.True(t, reflect.DeepEqual(expectedDecryptedData, decryptedData))
 }
 
 func TestAes256Cbc_GetNonceLen(t *testing.T) {
 	aes256Cbc := NewAes256Cbc()
-	assert.Equal(t, TEST_AES256_CBC_NONCE_LEN, aes256Cbc.GetNonceLen())
+	require.Equal(t, TEST_AES256_CBC_NONCE_LEN, aes256Cbc.GetNonceLen())
 }
 
 func TestAes256Cbc_GetKeyLen(t *testing.T) {
 	aes256Cbc := NewAes256Cbc()
-	assert.Equal(t, TEST_AES256_CBC_KEY_LEN, aes256Cbc.GetKeyLen())
+	require.Equal(t, TEST_AES256_CBC_KEY_LEN, aes256Cbc.GetKeyLen())
 }
 
 func TestAes256Cbc_GetKeyBitLen(t *testing.T) {
 	aes256Cbc := NewAes256Cbc()
-	assert.Equal(t, TEST_AES256_CBC_KEY_BIT_LEN, aes256Cbc.GetKeyBitlen())
+	require.Equal(t, TEST_AES256_CBC_KEY_BIT_LEN, aes256Cbc.GetKeyBitlen())
 }
 
 func TestAes256Cbc_GetBlockLen(t *testing.T) {
 	aes256Cbc := NewAes256Cbc()
-	assert.Equal(t, TEST_AES256_CBC_BLOCK_LEN, aes256Cbc.GetBlockLen())
+	require.Equal(t, TEST_AES256_CBC_BLOCK_LEN, aes256Cbc.GetBlockLen())
 }

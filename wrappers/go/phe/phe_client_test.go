@@ -35,13 +35,13 @@
 package phe
 
 import (
-	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"testing"
 )
 
 func TestNewPheClient(t *testing.T) {
 	client := NewPheClient()
-    assert.NotNil(t, client)
+    require.NotNil(t, client)
 
 	client.Delete()
 }
@@ -56,42 +56,42 @@ func TestFullFlowRandomCorrectPwdShouldSucceed(t *testing.T) {
 	defer server.Delete()
 
 	serverPrivateKey, serverPublicKey, err := server.GenerateServerKeyPair()
-	assert.Nil(t, err)
-	assert.Equal(t, 32, len(serverPrivateKey))
-	assert.Equal(t, 65, len(serverPublicKey))
+	require.Nil(t, err)
+	require.Equal(t, 32, len(serverPrivateKey))
+	require.Equal(t, 65, len(serverPublicKey))
 
 	clientPrivateKey, err := client.GenerateClientPrivateKey()
-	assert.Nil(t, err)
-	assert.NotNil(t, clientPrivateKey)
+	require.Nil(t, err)
+	require.NotNil(t, clientPrivateKey)
 
 	err = client.SetKeys(clientPrivateKey, serverPublicKey)
-	assert.Nil(t, err)
+	require.Nil(t, err)
 
 	serverEnrollment, err := server.GetEnrollment(serverPrivateKey, serverPublicKey)
-	assert.Nil(t, err)
-	assert.NotNil(t, serverEnrollment)
-	assert.True(t, len(serverEnrollment) > 0)
+	require.Nil(t, err)
+	require.NotNil(t, serverEnrollment)
+	require.True(t, len(serverEnrollment) > 0)
 
 	clientEnrollmentRecord, clientAccountKey, err := client.EnrollAccount(serverEnrollment, password)
-	assert.Nil(t, err);
-	assert.NotNil(t, clientEnrollmentRecord)
-	assert.NotNil(t, clientAccountKey)
-	assert.Equal(t, 32, len(clientAccountKey))
+	require.Nil(t, err);
+	require.NotNil(t, clientEnrollmentRecord)
+	require.NotNil(t, clientAccountKey)
+	require.Equal(t, 32, len(clientAccountKey))
 
 	clientCreateVerifyPasswordRequest, err := client.CreateVerifyPasswordRequest(password, clientEnrollmentRecord)
-	assert.Nil(t, err)
-	assert.NotNil(t, clientCreateVerifyPasswordRequest)
-	assert.True(t, len(clientCreateVerifyPasswordRequest) > 0)
+	require.Nil(t, err)
+	require.NotNil(t, clientCreateVerifyPasswordRequest)
+	require.True(t, len(clientCreateVerifyPasswordRequest) > 0)
 
 	serverVerifyPassword, err := server.VerifyPassword(serverPrivateKey, serverPublicKey, clientCreateVerifyPasswordRequest)
-	assert.Nil(t, err)
-	assert.NotNil(t, serverVerifyPassword)
+	require.Nil(t, err)
+	require.NotNil(t, serverVerifyPassword)
 
 	clientCheckResponseAndDecrypt, err := client.CheckResponseAndDecrypt(password, clientEnrollmentRecord, serverVerifyPassword)
-	assert.Nil(t, err)
-	assert.NotNil(t, clientCheckResponseAndDecrypt)
-	assert.Equal(t, 32, len(clientCheckResponseAndDecrypt))
-	assert.Equal(t, clientAccountKey, clientCheckResponseAndDecrypt)
+	require.Nil(t, err)
+	require.NotNil(t, clientCheckResponseAndDecrypt)
+	require.Equal(t, 32, len(clientCheckResponseAndDecrypt))
+	require.Equal(t, clientAccountKey, clientCheckResponseAndDecrypt)
 }
 
 func TestRotationRandomRotationServerPublicKeysMatch(t *testing.T) {
@@ -102,41 +102,41 @@ func TestRotationRandomRotationServerPublicKeysMatch(t *testing.T) {
 	defer server.Delete()
 
 	serverPrivateKey, serverPublicKey, err := server.GenerateServerKeyPair()
-	assert.Nil(t, err)
-	assert.NotNil(t, serverPrivateKey)
-	assert.NotNil(t, serverPublicKey)
+	require.Nil(t, err)
+	require.NotNil(t, serverPrivateKey)
+	require.NotNil(t, serverPublicKey)
 
 	serverRotatedPrivateKey, serverRotatedPublicKey, serverUpdateToken, err := server.RotateKeys(serverPrivateKey)
-	assert.Nil(t, err)
+	require.Nil(t, err)
 
-	assert.NotNil(t, serverRotatedPrivateKey)
-	assert.Equal(t,32, len(serverRotatedPrivateKey))
+	require.NotNil(t, serverRotatedPrivateKey)
+	require.Equal(t,32, len(serverRotatedPrivateKey))
 
-	assert.NotNil(t, serverRotatedPublicKey)
-	assert.Equal(t, 65, len(serverRotatedPublicKey))
+	require.NotNil(t, serverRotatedPublicKey)
+	require.Equal(t, 65, len(serverRotatedPublicKey))
 
-	assert.NotNil(t, serverUpdateToken)
-	assert.True(t, len(serverUpdateToken) > 0)
+	require.NotNil(t, serverUpdateToken)
+	require.True(t, len(serverUpdateToken) > 0)
 
 	clientPrivateKey, err := client.GenerateClientPrivateKey()
-	assert.Nil(t, err)
-	assert.NotNil(t, clientPrivateKey)
-	assert.Equal(t, 32, len(clientPrivateKey))
+	require.Nil(t, err)
+	require.NotNil(t, clientPrivateKey)
+	require.Equal(t, 32, len(clientPrivateKey))
 
 	err = client.SetKeys(clientPrivateKey, serverRotatedPublicKey)
-	assert.Nil(t, err)
+	require.Nil(t, err)
 
 	clientNewPrivateKey, serverNewPublicKey, err := client.RotateKeys(serverUpdateToken)
-	assert.Nil(t, err)
+	require.Nil(t, err)
 
-	assert.NotNil(t, clientNewPrivateKey)
-	assert.Equal(t, 32, len(clientNewPrivateKey))
+	require.NotNil(t, clientNewPrivateKey)
+	require.Equal(t, 32, len(clientNewPrivateKey))
 
-	assert.NotNil(t, serverNewPublicKey)
-	assert.Equal(t,65, len(serverNewPublicKey))
+	require.NotNil(t, serverNewPublicKey)
+	require.Equal(t,65, len(serverNewPublicKey))
 
-	assert.Equal(t, len(serverPublicKey), len(serverNewPublicKey))
-	assert.Equal(t, len(clientPrivateKey), len(clientNewPrivateKey))
+	require.Equal(t, len(serverPublicKey), len(serverNewPublicKey))
+	require.Equal(t, len(clientPrivateKey), len(clientNewPrivateKey))
 }
 
 func newPheClient() *PheClient {

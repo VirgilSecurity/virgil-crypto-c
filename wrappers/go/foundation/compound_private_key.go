@@ -25,7 +25,7 @@ func (obj *CompoundPrivateKey) CipherKey() (PrivateKey, error) {
 
     runtime.KeepAlive(obj)
 
-    return FoundationImplementationWrapPrivateKey(proxyResult) /* r4 */
+    return FoundationImplementationWrapPrivateKeyCopy(proxyResult) /* r4.1 */
 }
 
 /*
@@ -36,7 +36,7 @@ func (obj *CompoundPrivateKey) SignerKey() (PrivateKey, error) {
 
     runtime.KeepAlive(obj)
 
-    return FoundationImplementationWrapPrivateKey(proxyResult) /* r4 */
+    return FoundationImplementationWrapPrivateKeyCopy(proxyResult) /* r4.1 */
 }
 
 /* Handle underlying C context. */
@@ -112,7 +112,7 @@ func (obj *CompoundPrivateKey) AlgInfo() (AlgInfo, error) {
 
     runtime.KeepAlive(obj)
 
-    return FoundationImplementationWrapAlgInfo(proxyResult) /* r4 */
+    return FoundationImplementationWrapAlgInfoCopy(proxyResult) /* r4.1 */
 }
 
 /*
