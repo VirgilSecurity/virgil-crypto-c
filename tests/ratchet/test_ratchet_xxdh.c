@@ -44,70 +44,291 @@
 #include <virgil/crypto/foundation/vscf_key_provider.h>
 #include <vscf_falcon_internal.h>
 #include <virgil/crypto/foundation/vscf_private_key.h>
+#include <virgil/crypto/foundation/vscf_fake_random.h>
+#include <virgil/crypto/ratchet/vscr_memory.h>
 #include "vscr_ratchet_xxdh.h"
-#include "test_data_ratchet_x3dh.h"
+#include "test_data_ratchet_xxdh.h"
 #include "test_utils_ratchet.h"
 
-// void
-// test__initiator_x3dh__fixed_keys__should_match(void) {
-//    vscr_ratchet_symmetric_key_t shared_secret;
-//
-//    vscr_status_t status =
-//            vscr_ratchet_x3dh_compute_initiator_x3dh_secret(test_data_ratchet_x3dh_sender_identity_private_key.bytes,
-//                    test_data_ratchet_x3dh_sender_ephemeral_private_key.bytes,
-//                    test_data_ratchet_x3dh_receiver_identity_public_key.bytes,
-//                    test_data_ratchet_x3dh_receiver_long_term_public_key.bytes, true,
-//                    test_data_ratchet_x3dh_receiver_one_time_public_key.bytes, shared_secret);
-//
-//    TEST_ASSERT_EQUAL(vscr_status_SUCCESS, status);
-//    TEST_ASSERT_EQUAL_DATA(test_data_ratchet_x3dh_shared_secret, vsc_data(shared_secret, sizeof(shared_secret)));
-//}
-//
-// void
-// test__initiator_x3dh__fixed_keys_weak__should_match(void) {
-//    vscr_ratchet_symmetric_key_t shared_secret;
-//
-//    vscr_status_t status =
-//            vscr_ratchet_x3dh_compute_initiator_x3dh_secret(test_data_ratchet_x3dh_sender_identity_private_key.bytes,
-//                    test_data_ratchet_x3dh_sender_ephemeral_private_key.bytes,
-//                    test_data_ratchet_x3dh_receiver_identity_public_key.bytes,
-//                    test_data_ratchet_x3dh_receiver_long_term_public_key.bytes, false, NULL, shared_secret);
-//
-//    TEST_ASSERT_EQUAL(vscr_status_SUCCESS, status);
-//    TEST_ASSERT_EQUAL_DATA(test_data_ratchet_x3dh_shared_secret_weak, vsc_data(shared_secret, sizeof(shared_secret)));
-//}
-//
-// void
-// test__responder_x3dh__fixed_keys__should_match(void) {
-//    vscr_ratchet_symmetric_key_t shared_secret;
-//
-//    vscr_status_t status =
-//            vscr_ratchet_x3dh_compute_responder_x3dh_secret(test_data_ratchet_x3dh_sender_identity_public_key.bytes,
-//                    test_data_ratchet_x3dh_sender_ephemeral_public_key.bytes,
-//                    test_data_ratchet_x3dh_receiver_identity_private_key.bytes,
-//                    test_data_ratchet_x3dh_receiver_long_term_private_key.bytes, true,
-//                    test_data_ratchet_x3dh_receiver_one_time_private_key.bytes, shared_secret);
-//
-//    TEST_ASSERT_EQUAL(vscr_status_SUCCESS, status);
-//    TEST_ASSERT_EQUAL_DATA(test_data_ratchet_x3dh_shared_secret, vsc_data(shared_secret, sizeof(shared_secret)));
-//}
-//
-// void
-// test__responder_x3dh__fixed_keys_weak__should_match(void) {
-//    vscr_ratchet_symmetric_key_t shared_secret;
-//
-//    vscr_status_t status =
-//            vscr_ratchet_x3dh_compute_responder_x3dh_secret(test_data_ratchet_x3dh_sender_identity_public_key.bytes,
-//                    test_data_ratchet_x3dh_sender_ephemeral_public_key.bytes,
-//                    test_data_ratchet_x3dh_receiver_identity_private_key.bytes,
-//                    test_data_ratchet_x3dh_receiver_long_term_private_key.bytes, false, NULL, shared_secret);
-//
-//    TEST_ASSERT_EQUAL(vscr_status_SUCCESS, status);
-//    TEST_ASSERT_EQUAL_DATA(test_data_ratchet_x3dh_shared_secret_weak, vsc_data(shared_secret, sizeof(shared_secret)));
-//}
+void
+test__curve25519_xxdh__fixed_keys__should_match(void) {
+    vscr_ratchet_xxdh_t *xxdh = vscr_ratchet_xxdh_new();
+
+    vscf_fake_random_t *rng = vscf_fake_random_new();
+    vscf_fake_random_setup_source_data(rng, test_data_ratchet_xxdh_random);
+
+    vscr_ratchet_xxdh_use_rng(xxdh, vscf_fake_random_impl(rng));
+
+    vscr_ratchet_symmetric_key_t shared_secret;
+
+    vscr_ratchet_public_key_t ephemeral_public_key_first;
+
+    vscr_status_t status = vscr_ratchet_xxdh_compute_initiator_xxdh_secret(xxdh,
+            test_data_ratchet_xxdh_sender_identity_private_key_first.bytes,
+            test_data_ratchet_xxdh_receiver_identity_public_key_first.bytes,
+            test_data_ratchet_xxdh_receiver_long_term_public_key_first.bytes, true,
+            test_data_ratchet_xxdh_receiver_one_time_public_key_first.bytes, ephemeral_public_key_first, NULL, NULL,
+            NULL, NULL, NULL, NULL, NULL, NULL, shared_secret);
+
+    TEST_ASSERT_EQUAL(vscr_status_SUCCESS, status);
+    TEST_ASSERT_EQUAL_DATA(test_data_ratchet_xxdh_shared_secret_first, vsc_data(shared_secret, sizeof(shared_secret)));
+    TEST_ASSERT_EQUAL_DATA(test_data_ratchet_xxdh_sender_ephemeral_public_key_first,
+            vsc_data(ephemeral_public_key_first, sizeof(ephemeral_public_key_first)));
+    vscr_zeroize(shared_secret, sizeof(shared_secret));
+
+    status = vscr_ratchet_xxdh_compute_responder_xxdh_secret(xxdh,
+            test_data_ratchet_xxdh_sender_identity_public_key_first.bytes,
+            test_data_ratchet_xxdh_receiver_identity_private_key_first.bytes,
+            test_data_ratchet_xxdh_receiver_long_term_private_key_first.bytes, true,
+            test_data_ratchet_xxdh_receiver_one_time_private_key_first.bytes,
+            test_data_ratchet_xxdh_sender_ephemeral_public_key_first.bytes, NULL, NULL, NULL, NULL, vsc_data_empty(),
+            vsc_data_empty(), vsc_data_empty(), vsc_data_empty(), shared_secret);
+
+    TEST_ASSERT_EQUAL(vscr_status_SUCCESS, status);
+    TEST_ASSERT_EQUAL_DATA(test_data_ratchet_xxdh_shared_secret_first, vsc_data(shared_secret, sizeof(shared_secret)));
+
+    vscr_ratchet_xxdh_destroy(&xxdh);
+    vscf_fake_random_destroy(&rng);
+}
 
 void
-test__x3dh__random_keys__should_match(void) {
+test__curve25519_xxdh__fixed_keys_weak__should_match(void) {
+    vscr_ratchet_xxdh_t *xxdh = vscr_ratchet_xxdh_new();
+
+    vscf_fake_random_t *rng = vscf_fake_random_new();
+    vscf_fake_random_setup_source_data(rng, test_data_ratchet_xxdh_random);
+
+    vscr_ratchet_xxdh_use_rng(xxdh, vscf_fake_random_impl(rng));
+
+    vscr_ratchet_symmetric_key_t shared_secret;
+
+    vscr_ratchet_public_key_t ephemeral_public_key_first;
+
+    vscr_status_t status = vscr_ratchet_xxdh_compute_initiator_xxdh_secret(xxdh,
+            test_data_ratchet_xxdh_sender_identity_private_key_first.bytes,
+            test_data_ratchet_xxdh_receiver_identity_public_key_first.bytes,
+            test_data_ratchet_xxdh_receiver_long_term_public_key_first.bytes, false, NULL, ephemeral_public_key_first,
+            NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, shared_secret);
+
+    TEST_ASSERT_EQUAL(vscr_status_SUCCESS, status);
+    TEST_ASSERT_EQUAL_DATA(
+            test_data_ratchet_xxdh_shared_secret_weak_first, vsc_data(shared_secret, sizeof(shared_secret)));
+    TEST_ASSERT_EQUAL_DATA(test_data_ratchet_xxdh_sender_ephemeral_public_key_first,
+            vsc_data(ephemeral_public_key_first, sizeof(ephemeral_public_key_first)));
+    vscr_zeroize(shared_secret, sizeof(shared_secret));
+
+    status = vscr_ratchet_xxdh_compute_responder_xxdh_secret(xxdh,
+            test_data_ratchet_xxdh_sender_identity_public_key_first.bytes,
+            test_data_ratchet_xxdh_receiver_identity_private_key_first.bytes,
+            test_data_ratchet_xxdh_receiver_long_term_private_key_first.bytes, false, NULL,
+            test_data_ratchet_xxdh_sender_ephemeral_public_key_first.bytes, NULL, NULL, NULL, NULL, vsc_data_empty(),
+            vsc_data_empty(), vsc_data_empty(), vsc_data_empty(), shared_secret);
+
+    TEST_ASSERT_EQUAL(vscr_status_SUCCESS, status);
+    TEST_ASSERT_EQUAL_DATA(
+            test_data_ratchet_xxdh_shared_secret_weak_first, vsc_data(shared_secret, sizeof(shared_secret)));
+
+    vscr_ratchet_xxdh_destroy(&xxdh);
+    vscf_fake_random_destroy(&rng);
+}
+
+void
+test__pqc_xxdh__fixed_keys__should_match(void) {
+    vscr_ratchet_xxdh_t *xxdh = vscr_ratchet_xxdh_new();
+
+    vscf_fake_random_t *rng = vscf_fake_random_new();
+    vscf_fake_random_setup_source_data(rng, test_data_ratchet_xxdh_random);
+
+    vscr_ratchet_xxdh_use_rng(xxdh, vscf_fake_random_impl(rng));
+
+    vscf_key_provider_t *key_provider = vscf_key_provider_new();
+    vscf_key_provider_use_random(key_provider, vscf_fake_random_impl(rng));
+
+    vscf_error_t error_ctx;
+    vscf_error_reset(&error_ctx);
+
+    vscf_impl_t *sender_identity_private_key_second_signer =
+            vscf_key_provider_generate_private_key(key_provider, vscf_alg_id_FALCON, &error_ctx);
+    TEST_ASSERT_EQUAL(vscr_status_SUCCESS, error_ctx.status);
+    vscf_impl_t *sender_identity_public_key_second_verifier =
+            vscf_private_key_extract_public_key(sender_identity_private_key_second_signer);
+
+    vscf_impl_t *receiver_identity_private_key_second =
+            vscf_key_provider_generate_private_key(key_provider, vscf_alg_id_ROUND5_ND_5KEM_5D, &error_ctx);
+    TEST_ASSERT_EQUAL(vscr_status_SUCCESS, error_ctx.status);
+    vscf_impl_t *receiver_identity_public_key_second =
+            vscf_private_key_extract_public_key(receiver_identity_private_key_second);
+
+    vscf_impl_t *receiver_long_term_private_key_second =
+            vscf_key_provider_generate_private_key(key_provider, vscf_alg_id_ROUND5_ND_5KEM_5D, &error_ctx);
+    TEST_ASSERT_EQUAL(vscr_status_SUCCESS, error_ctx.status);
+    vscf_impl_t *receiver_long_term_public_key_second =
+            vscf_private_key_extract_public_key(receiver_long_term_private_key_second);
+
+    vscf_impl_t *receiver_one_time_private_key_second =
+            vscf_key_provider_generate_private_key(key_provider, vscf_alg_id_ROUND5_ND_5KEM_5D, &error_ctx);
+    TEST_ASSERT_EQUAL(vscr_status_SUCCESS, error_ctx.status);
+    vscf_impl_t *receiver_one_time_public_key_second =
+            vscf_private_key_extract_public_key(receiver_one_time_private_key_second);
+
+    vsc_buffer_t *encapsulated_key1, *encapsulated_key2, *encapsulated_key3;
+    vsc_buffer_t *decapsulated_keys_signature;
+
+    vscr_ratchet_symmetric_key_t shared_secret;
+
+    vscr_ratchet_public_key_t ephemeral_public_key_first;
+
+    vscr_status_t status = vscr_ratchet_xxdh_compute_initiator_xxdh_secret(xxdh,
+            test_data_ratchet_xxdh_sender_identity_private_key_first.bytes,
+            test_data_ratchet_xxdh_receiver_identity_public_key_first.bytes,
+            test_data_ratchet_xxdh_receiver_long_term_public_key_first.bytes, true,
+            test_data_ratchet_xxdh_receiver_one_time_public_key_first.bytes, ephemeral_public_key_first,
+            sender_identity_private_key_second_signer, receiver_identity_public_key_second,
+            receiver_long_term_public_key_second, receiver_one_time_public_key_second, &encapsulated_key1,
+            &encapsulated_key2, &encapsulated_key3, &decapsulated_keys_signature, shared_secret);
+
+    TEST_ASSERT_EQUAL(vscr_status_SUCCESS, status);
+    TEST_ASSERT_EQUAL_DATA(test_data_ratchet_xxdh_shared_secret_pqc, vsc_data(shared_secret, sizeof(shared_secret)));
+    TEST_ASSERT_EQUAL_DATA(test_data_ratchet_xxdh_ephemeral_public_key_pqc_first,
+            vsc_data(ephemeral_public_key_first, sizeof(ephemeral_public_key_first)));
+
+    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_data_ratchet_xxdh_encapsulated_key1, encapsulated_key1);
+    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_data_ratchet_xxdh_encapsulated_key2, encapsulated_key2);
+    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_data_ratchet_xxdh_encapsulated_key3, encapsulated_key3);
+    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_data_ratchet_xxdh_decapsulated_keys_signature, decapsulated_keys_signature);
+
+    vscr_zeroize(shared_secret, sizeof(shared_secret));
+
+    status = vscr_ratchet_xxdh_compute_responder_xxdh_secret(xxdh,
+            test_data_ratchet_xxdh_sender_identity_public_key_first.bytes,
+            test_data_ratchet_xxdh_receiver_identity_private_key_first.bytes,
+            test_data_ratchet_xxdh_receiver_long_term_private_key_first.bytes, true,
+            test_data_ratchet_xxdh_receiver_one_time_private_key_first.bytes,
+            test_data_ratchet_xxdh_ephemeral_public_key_pqc_first.bytes, sender_identity_public_key_second_verifier,
+            receiver_identity_private_key_second, receiver_long_term_private_key_second,
+            receiver_one_time_private_key_second, vsc_buffer_data(encapsulated_key1),
+            vsc_buffer_data(encapsulated_key2), vsc_buffer_data(encapsulated_key3),
+            vsc_buffer_data(decapsulated_keys_signature), shared_secret);
+
+    TEST_ASSERT_EQUAL(vscr_status_SUCCESS, status);
+    TEST_ASSERT_EQUAL_DATA(test_data_ratchet_xxdh_shared_secret_pqc, vsc_data(shared_secret, sizeof(shared_secret)));
+
+    vscf_impl_destroy(&sender_identity_private_key_second_signer);
+    vscf_impl_destroy(&sender_identity_public_key_second_verifier);
+    vscf_impl_destroy(&receiver_identity_private_key_second);
+    vscf_impl_destroy(&receiver_identity_public_key_second);
+    vscf_impl_destroy(&receiver_long_term_private_key_second);
+    vscf_impl_destroy(&receiver_long_term_public_key_second);
+    vscf_impl_destroy(&receiver_one_time_private_key_second);
+    vscf_impl_destroy(&receiver_one_time_public_key_second);
+
+    vsc_buffer_destroy(&encapsulated_key1);
+    vsc_buffer_destroy(&encapsulated_key2);
+    vsc_buffer_destroy(&encapsulated_key3);
+    vsc_buffer_destroy(&decapsulated_keys_signature);
+
+    vscf_key_provider_destroy(&key_provider);
+    vscr_ratchet_xxdh_destroy(&xxdh);
+    vscf_fake_random_destroy(&rng);
+}
+
+void
+test__pqc_xxdh__fixed_keys_weak__should_match(void) {
+    vscr_ratchet_xxdh_t *xxdh = vscr_ratchet_xxdh_new();
+
+    vscf_fake_random_t *rng = vscf_fake_random_new();
+    vscf_fake_random_setup_source_data(rng, test_data_ratchet_xxdh_random);
+
+    vscr_ratchet_xxdh_use_rng(xxdh, vscf_fake_random_impl(rng));
+
+    vscf_key_provider_t *key_provider = vscf_key_provider_new();
+    vscf_key_provider_use_random(key_provider, vscf_fake_random_impl(rng));
+
+    vscf_error_t error_ctx;
+    vscf_error_reset(&error_ctx);
+
+    vscf_impl_t *sender_identity_private_key_second_signer =
+            vscf_key_provider_generate_private_key(key_provider, vscf_alg_id_FALCON, &error_ctx);
+    TEST_ASSERT_EQUAL(vscr_status_SUCCESS, error_ctx.status);
+    vscf_impl_t *sender_identity_public_key_second_verifier =
+            vscf_private_key_extract_public_key(sender_identity_private_key_second_signer);
+
+    vscf_impl_t *receiver_identity_private_key_second =
+            vscf_key_provider_generate_private_key(key_provider, vscf_alg_id_ROUND5_ND_5KEM_5D, &error_ctx);
+    TEST_ASSERT_EQUAL(vscr_status_SUCCESS, error_ctx.status);
+    vscf_impl_t *receiver_identity_public_key_second =
+            vscf_private_key_extract_public_key(receiver_identity_private_key_second);
+
+    vscf_impl_t *receiver_long_term_private_key_second =
+            vscf_key_provider_generate_private_key(key_provider, vscf_alg_id_ROUND5_ND_5KEM_5D, &error_ctx);
+    TEST_ASSERT_EQUAL(vscr_status_SUCCESS, error_ctx.status);
+    vscf_impl_t *receiver_long_term_public_key_second =
+            vscf_private_key_extract_public_key(receiver_long_term_private_key_second);
+
+    vscf_impl_t *receiver_one_time_private_key_second =
+            vscf_key_provider_generate_private_key(key_provider, vscf_alg_id_ROUND5_ND_5KEM_5D, &error_ctx);
+    TEST_ASSERT_EQUAL(vscr_status_SUCCESS, error_ctx.status);
+    vscf_impl_destroy(&receiver_one_time_private_key_second);
+
+    vsc_buffer_t *encapsulated_key1, *encapsulated_key2;
+    vsc_buffer_t *decapsulated_keys_signature;
+
+    vscr_ratchet_symmetric_key_t shared_secret;
+
+    vscr_ratchet_public_key_t ephemeral_public_key_first;
+
+    vscr_status_t status = vscr_ratchet_xxdh_compute_initiator_xxdh_secret(xxdh,
+            test_data_ratchet_xxdh_sender_identity_private_key_first.bytes,
+            test_data_ratchet_xxdh_receiver_identity_public_key_first.bytes,
+            test_data_ratchet_xxdh_receiver_long_term_public_key_first.bytes, false, NULL, ephemeral_public_key_first,
+            sender_identity_private_key_second_signer, receiver_identity_public_key_second,
+            receiver_long_term_public_key_second, NULL, &encapsulated_key1, &encapsulated_key2, NULL,
+            &decapsulated_keys_signature, shared_secret);
+
+    TEST_ASSERT_EQUAL(vscr_status_SUCCESS, status);
+    TEST_ASSERT_EQUAL_DATA(
+            test_data_ratchet_xxdh_shared_secret_weak_pqc, vsc_data(shared_secret, sizeof(shared_secret)));
+    TEST_ASSERT_EQUAL_DATA(test_data_ratchet_xxdh_ephemeral_public_key_pqc_first,
+            vsc_data(ephemeral_public_key_first, sizeof(ephemeral_public_key_first)));
+
+    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_data_ratchet_xxdh_encapsulated_key1, encapsulated_key1);
+    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_data_ratchet_xxdh_encapsulated_key2, encapsulated_key2);
+    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(
+            test_data_ratchet_xxdh_decapsulated_keys_signature_weak, decapsulated_keys_signature);
+
+    vscr_zeroize(shared_secret, sizeof(shared_secret));
+
+    status = vscr_ratchet_xxdh_compute_responder_xxdh_secret(xxdh,
+            test_data_ratchet_xxdh_sender_identity_public_key_first.bytes,
+            test_data_ratchet_xxdh_receiver_identity_private_key_first.bytes,
+            test_data_ratchet_xxdh_receiver_long_term_private_key_first.bytes, false, NULL,
+            test_data_ratchet_xxdh_ephemeral_public_key_pqc_first.bytes, sender_identity_public_key_second_verifier,
+            receiver_identity_private_key_second, receiver_long_term_private_key_second, NULL,
+            vsc_buffer_data(encapsulated_key1), vsc_buffer_data(encapsulated_key2), vsc_data_empty(),
+            vsc_buffer_data(decapsulated_keys_signature), shared_secret);
+
+    TEST_ASSERT_EQUAL(vscr_status_SUCCESS, status);
+    TEST_ASSERT_EQUAL_DATA(
+            test_data_ratchet_xxdh_shared_secret_weak_pqc, vsc_data(shared_secret, sizeof(shared_secret)));
+
+    vscf_impl_destroy(&sender_identity_private_key_second_signer);
+    vscf_impl_destroy(&sender_identity_public_key_second_verifier);
+    vscf_impl_destroy(&receiver_identity_private_key_second);
+    vscf_impl_destroy(&receiver_identity_public_key_second);
+    vscf_impl_destroy(&receiver_long_term_private_key_second);
+    vscf_impl_destroy(&receiver_long_term_public_key_second);
+
+    vsc_buffer_destroy(&encapsulated_key1);
+    vsc_buffer_destroy(&encapsulated_key2);
+    vsc_buffer_destroy(&decapsulated_keys_signature);
+
+    vscf_key_provider_destroy(&key_provider);
+    vscr_ratchet_xxdh_destroy(&xxdh);
+    vscf_fake_random_destroy(&rng);
+}
+
+void
+test__xxdh__random_keys__should_match(void) {
     vscf_ctr_drbg_t *rng = vscf_ctr_drbg_new();
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_ctr_drbg_setup_defaults(rng));
 
@@ -160,7 +381,7 @@ test__x3dh__random_keys__should_match(void) {
 }
 
 void
-test__x3dh__random_keys_weak__should_match(void) {
+test__xxdh__random_keys_weak__should_match(void) {
     vscf_ctr_drbg_t *rng = vscf_ctr_drbg_new();
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_ctr_drbg_setup_defaults(rng));
 
@@ -209,7 +430,7 @@ test__x3dh__random_keys_weak__should_match(void) {
 }
 
 void
-test__x3dh__random_keys_pqc__should_match(void) {
+test__xxdh__random_keys_pqc__should_match(void) {
     vscf_ctr_drbg_t *rng = vscf_ctr_drbg_new();
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_ctr_drbg_setup_defaults(rng));
 
@@ -290,6 +511,7 @@ test__x3dh__random_keys_pqc__should_match(void) {
     vscf_impl_destroy(&receiver_one_time_private_key_second);
     vscf_impl_destroy(&receiver_one_time_public_key_second);
     vscf_impl_destroy(&sender_identity_signer_priv_second);
+    vscf_impl_destroy(&sender_identity_signer_pub_second);
     vscf_impl_destroy(&receiver_one_time_public_key_second);
 
     vscf_ctr_drbg_destroy(&rng);
@@ -306,13 +528,13 @@ main(void) {
     UNITY_BEGIN();
 
 #if TEST_DEPENDENCIES_AVAILABLE
-    //    RUN_TEST(test__initiator_x3dh__fixed_keys__should_match);
-    //    RUN_TEST(test__initiator_x3dh__fixed_keys_weak__should_match);
-    //    RUN_TEST(test__responder_x3dh__fixed_keys__should_match);
-    //    RUN_TEST(test__responder_x3dh__fixed_keys_weak__should_match);
-    RUN_TEST(test__x3dh__random_keys__should_match);
-    RUN_TEST(test__x3dh__random_keys_weak__should_match);
-    RUN_TEST(test__x3dh__random_keys_pqc__should_match);
+    RUN_TEST(test__curve25519_xxdh__fixed_keys__should_match);
+    RUN_TEST(test__curve25519_xxdh__fixed_keys_weak__should_match);
+    RUN_TEST(test__pqc_xxdh__fixed_keys__should_match);
+    RUN_TEST(test__pqc_xxdh__fixed_keys_weak__should_match);
+    RUN_TEST(test__xxdh__random_keys__should_match);
+    RUN_TEST(test__xxdh__random_keys_weak__should_match);
+    RUN_TEST(test__xxdh__random_keys_pqc__should_match);
 #else
     RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
 #endif
