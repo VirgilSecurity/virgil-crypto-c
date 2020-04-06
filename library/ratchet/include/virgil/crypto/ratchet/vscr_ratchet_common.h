@@ -81,7 +81,7 @@ enum {
     //
     //  Max message length
     //
-    vscr_ratchet_common_MAX_MESSAGE_LEN = 32975,
+    vscr_ratchet_common_MAX_MESSAGE_LEN = 37578,
     //
     //  Key pair id length
     //

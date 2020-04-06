@@ -37,11 +37,18 @@
 
 #include "vsc_data.h"
 
-extern const vsc_data_t test_data_ratchet_message_raw_key1;
-extern const vsc_data_t test_data_ratchet_message_raw_key2;
-extern const vsc_data_t test_data_ratchet_message_raw_key3;
-extern const vsc_data_t test_data_ratchet_message_raw_key4;
-extern const vsc_data_t test_data_ratchet_message_raw_key5;
+extern const vsc_data_t test_data_ratchet_message_id1;
+extern const vsc_data_t test_data_ratchet_message_id2;
+extern const vsc_data_t test_data_ratchet_message_id3;
+extern const vsc_data_t test_data_ratchet_message_id4;
+extern const vsc_data_t test_data_ratchet_message_pub_key1;
+extern const vsc_data_t test_data_ratchet_message_pub_key2;
 extern const vsc_data_t test_data_ratchet_message_data;
+extern const vsc_data_t test_data_ratchet_message_pub_key_pqc;
+extern const vsc_data_t test_data_ratchet_message_encapsulated_key1_pqc;
+extern const vsc_data_t test_data_ratchet_message_encapsulated_key2_pqc;
+extern const vsc_data_t test_data_ratchet_message_encapsulated_key3_pqc;
+extern const vsc_data_t test_data_ratchet_message_encapsulated_key4_pqc;
+extern const vsc_data_t test_data_ratchet_message_decapsulated_keys_signature_pqc;
 
 #endif //VIRGIL_CRYPTO_TEST_DATA_RATCHET_MESSAGE_H

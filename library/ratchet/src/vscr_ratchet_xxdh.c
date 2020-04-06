@@ -405,7 +405,7 @@ vscr_ratchet_xxdh_compute_initiator_xxdh_secret(vscr_ratchet_xxdh_t *self,
         vsc_buffer_t **decapsulated_keys_signature_ref, vscr_ratchet_symmetric_key_t shared_key) {
 
     vsc_buffer_t *shared_secret = vsc_buffer_new_with_capacity(
-            4 * vscr_ratchet_common_hidden_SHARED_KEY_LEN + 4 * vscf_round5_kem_shared_key_len(self->round5, NULL));
+            4 * vscr_ratchet_common_hidden_SHARED_KEY_LEN + 3 * vscf_round5_kem_shared_key_len(self->round5, NULL));
     vsc_buffer_make_secure(shared_secret);
 
     vscr_status_t status = vscr_status_SUCCESS;
@@ -571,7 +571,7 @@ vscr_ratchet_xxdh_compute_responder_xxdh_secret(vscr_ratchet_xxdh_t *self,
         vscr_ratchet_symmetric_key_t shared_key) {
 
     vsc_buffer_t *shared_secret = vsc_buffer_new_with_capacity(
-            4 * vscr_ratchet_common_hidden_SHARED_KEY_LEN + 4 * vscf_round5_kem_shared_key_len(self->round5, NULL));
+            4 * vscr_ratchet_common_hidden_SHARED_KEY_LEN + 3 * vscf_round5_kem_shared_key_len(self->round5, NULL));
     vsc_buffer_make_secure(shared_secret);
 
     vscr_status_t status = vscr_status_SUCCESS;

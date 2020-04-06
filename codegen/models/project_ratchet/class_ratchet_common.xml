@@ -5,7 +5,7 @@
         Max plain text length allowed to be encrypted
     </constant>
 
-    <constant name="max message len" value="32975">
+    <constant name="max message len" value="37578">
         Max message length
     </constant>
 

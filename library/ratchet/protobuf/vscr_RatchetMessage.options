@@ -2,9 +2,9 @@ vscr_RegularMessageHeader.public_key_id max_size:8 fixed_length:true
 vscr_RegularMessageHeader.public_key max_size:32 fixed_length:true
 
 vscr_RegularMessageHeaderPqcInfo.encapsulated_key max_size:1285 type:FT_POINTER
-vscr_RegularMessageHeaderPqcInfo.public_key max_size:1037 type:FT_POINTER
+vscr_RegularMessageHeaderPqcInfo.public_key max_size:978 type:FT_POINTER
 
-vscr_RegularMessage.header max_size:4096 type:FT_POINTER
+vscr_RegularMessage.header max_size:2310 type:FT_POINTER
 
 vscr_PrekeyMessage.sender_identity_key_id max_size:8 fixed_length:true
 vscr_PrekeyMessage.sender_ephemeral_key max_size:32 fixed_length:true
@@ -12,10 +12,10 @@ vscr_PrekeyMessage.receiver_identity_key_id max_size:8 fixed_length:true
 vscr_PrekeyMessage.receiver_long_term_key_id max_size:8 fixed_length:true
 vscr_PrekeyMessage.receiver_one_time_key_id max_size:8 fixed_length:true
 
-vscr_PrekeyMessagePqcInfo.encapsulated_key1 max_size:1092 type:FT_POINTER
-vscr_PrekeyMessagePqcInfo.encapsulated_key2 max_size:1092 type:FT_POINTER
-vscr_PrekeyMessagePqcInfo.encapsulated_key3 max_size:1092 type:FT_POINTER
-vscr_PrekeyMessagePqcInfo.encapsulated_key4 max_size:1092 type:FT_POINTER
-vscr_PrekeyMessagePqcInfo.decapsulated_keys_signature max_size:1092 type:FT_POINTER
+vscr_PrekeyMessagePqcInfo.encapsulated_key1 max_size:1285 type:FT_POINTER
+vscr_PrekeyMessagePqcInfo.encapsulated_key2 max_size:1285 type:FT_POINTER
+vscr_PrekeyMessagePqcInfo.encapsulated_key3 max_size:1285 type:FT_POINTER
+vscr_PrekeyMessagePqcInfo.encapsulated_key4 max_size:1285 type:FT_POINTER
+vscr_PrekeyMessagePqcInfo.decapsulated_keys_signature max_size:809 type:FT_POINTER
 
 vscr_RegularMessage.cipher_text max_size:32975 type:FT_POINTER
