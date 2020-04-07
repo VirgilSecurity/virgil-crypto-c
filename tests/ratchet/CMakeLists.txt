@@ -54,7 +54,7 @@ endmacro()
 
 _add_test (test_ratchet_message)
 _add_test (test_ratchet_session_integration)
-#_add_test (test_ratchet_session_serialization)
+_add_test (test_ratchet_session_serialization)
 _add_test (test_ratchet_key_utils)
 _add_test (test_ratchet_cipher)
 _add_test (test_ratchet_xxdh)

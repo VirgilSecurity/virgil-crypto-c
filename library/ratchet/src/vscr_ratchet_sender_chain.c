@@ -300,6 +300,12 @@ vscr_ratchet_sender_chain_deserialize(
         }
     }
 
+    if (sender_chain_pb->encapsulated_key != NULL &&
+            sender_chain_pb->encapsulated_key->size != vscr_ratchet_common_hidden_ROUND5_ENCAPSULATED_KEY_LEN) {
+        status = vscr_status_ERROR_PROTOBUF_DECODE;
+        goto err;
+    }
+
     sender_chain->encapsulated_key = vscr_ratchet_pb_utils_deserialize_buffer(sender_chain_pb->encapsulated_key);
 
 err:

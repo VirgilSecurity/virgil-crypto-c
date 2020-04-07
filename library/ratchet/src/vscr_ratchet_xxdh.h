@@ -198,9 +198,6 @@ vscr_ratchet_xxdh_compute_responder_xxdh_secret(vscr_ratchet_xxdh_t *self,
         vsc_data_t encapsulated_key_2, vsc_data_t encapsulated_key_3, vsc_data_t decapsulated_keys_signature,
         vscr_ratchet_symmetric_key_t shared_key) VSCR_NODISCARD;
 
-//
-//  Z
-//
 VSCR_PUBLIC vscr_status_t
 vscr_ratchet_xxdh_compute_responder_pqc_shared_secret(vscr_ratchet_xxdh_t *self,
         const vscf_impl_t *sender_identity_public_key_second_verifier,

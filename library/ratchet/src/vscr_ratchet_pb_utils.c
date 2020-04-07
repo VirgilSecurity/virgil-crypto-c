@@ -303,24 +303,18 @@ vscr_ratchet_pb_utils_deserialize_public_key(
     VSCR_ASSERT_PTR(pb_buffer);
     VSCR_ASSERT_PTR(public_key_ref);
 
-    // FIXME: Double memory copy
-
     vsc_data_t data = vsc_data(pb_buffer->bytes, pb_buffer->size);
 
     vscf_impl_t *alg_info =
             vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_ROUND5_ND_5KEM_5D));
-    vscf_raw_public_key_t *raw_public_key = vscf_raw_public_key_new_with_data(data, &alg_info);
 
     vscf_error_t error_ctx;
     vscf_error_reset(&error_ctx);
 
-    *public_key_ref = vscf_round5_import_public_key(round5, raw_public_key, &error_ctx);
-
-    vscf_raw_public_key_destroy(&raw_public_key);
+    *public_key_ref = vscf_round5_import_public_key_data(round5, data, alg_info, &error_ctx);
 
     if (error_ctx.status != vscf_status_SUCCESS) {
-        // FIXME
-        return vscr_status_ERROR_RNG_FAILED;
+        return vscr_status_ERROR_ROUND5_IMPORT_KEY;
     }
 
     return vscr_status_SUCCESS;
@@ -348,18 +342,14 @@ vscr_ratchet_pb_utils_deserialize_private_key(
 
     vscf_impl_t *alg_info =
             vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_ROUND5_ND_5KEM_5D));
-    vscf_raw_private_key_t *raw_private_key = vscf_raw_private_key_new_with_data(data, &alg_info);
 
     vscf_error_t error_ctx;
     vscf_error_reset(&error_ctx);
 
-    *private_key_ref = vscf_round5_import_private_key(round5, raw_private_key, &error_ctx);
-
-    vscf_raw_private_key_destroy(&raw_private_key);
+    *private_key_ref = vscf_round5_import_private_key_data(round5, data, alg_info, &error_ctx);
 
     if (error_ctx.status != vscf_status_SUCCESS) {
-        // FIXME
-        return vscr_status_ERROR_RNG_FAILED;
+        return vscr_status_ERROR_ROUND5_IMPORT_KEY;
     }
 
     return vscr_status_SUCCESS;

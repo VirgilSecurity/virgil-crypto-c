@@ -191,7 +191,23 @@ enum vscr_status_t {
     //
     //  Myself is included in info.
     //
-    vscr_status_ERROR_MYSELF_IS_INCLUDED_IN_INFO = -29
+    vscr_status_ERROR_MYSELF_IS_INCLUDED_IN_INFO = -29,
+    //
+    //  Round5 error.
+    //
+    vscr_status_ERROR_ROUND5 = -30,
+    //
+    //  Falcon error.
+    //
+    vscr_status_ERROR_FALCON = -31,
+    //
+    //  Decaps signature is invalid.
+    //
+    vscr_status_ERROR_DECAPS_SIGNATURE_INVALID = -32,
+    //
+    //  Error importing round5 key.
+    //
+    vscr_status_ERROR_ROUND5_IMPORT_KEY = -33
 };
 typedef enum vscr_status_t vscr_status_t;
 

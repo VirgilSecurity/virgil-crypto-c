@@ -126,6 +126,18 @@ import VSCRatchet
     /// Myself is included in info.
     case errorMyselfIsIncludedInInfo = -29
 
+    /// Round5 error.
+    case errorRound5 = -30
+
+    /// Falcon error.
+    case errorFalcon = -31
+
+    /// Decaps signature is invalid.
+    case errorDecapsSignatureInvalid = -32
+
+    /// Error importing round5 key.
+    case errorRound5ImportKey = -33
+
     /// Create enumeration value from the correspond C enumeration value.
     internal init(fromC status: vscr_status_t) {
         self.init(rawValue: Int(status.rawValue))!

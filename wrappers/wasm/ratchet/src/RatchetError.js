@@ -171,6 +171,22 @@ const initRatchetError = (Module, modules) => {
                 throw new RatchetError("Myself is included in info.");
             }
 
+            if (statusCode == -30) {
+                throw new RatchetError("Round5 error.");
+            }
+
+            if (statusCode == -31) {
+                throw new RatchetError("Falcon error.");
+            }
+
+            if (statusCode == -32) {
+                throw new RatchetError("Decaps signature is invalid.");
+            }
+
+            if (statusCode == -33) {
+                throw new RatchetError("Error importing round5 key.");
+            }
+
             throw new RatchetError("Unexpected status code:" + statusCode);
         }
     }

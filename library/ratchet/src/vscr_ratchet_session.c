@@ -321,6 +321,7 @@ vscr_ratchet_session_init_ctx(vscr_ratchet_session_t *self) {
     VSCR_ASSERT_PTR(self);
     self->received_first_response = false;
     self->is_initiator = false;
+    self->enable_post_quantum = false;
     self->ratchet = vscr_ratchet_new();
     self->key_utils = vscr_ratchet_key_utils_new();
     self->xxdh = vscr_ratchet_xxdh_new();
@@ -871,10 +872,6 @@ vscr_ratchet_session_serialize(vscr_ratchet_session_t *self) {
 
     pb_release(vscr_Session_fields, session_pb);
 
-    //    for (size_t j = 0; j < session_pb->ratchet.skipped_messages.keys_count; j++) {
-    //        vscr_dealloc(session_pb->ratchet.skipped_messages.keys[j].message_keys);
-    //    }
-
     vscr_zeroize(session_pb, sizeof(vscr_Session));
     vscr_dealloc(session_pb);
 
@@ -916,17 +913,23 @@ vscr_ratchet_session_deserialize(vsc_data_t input, vscr_error_t *error) {
 
             goto err;
         }
-    }
 
-    // FIXME
-    //    if (session_pb->enable_post_quantum) {
-    //        if (!session_pb->has_pqc_info ||
-    //                (session_pb->has_receiver_one_time_key_id != (session_pb->pqc_info.encapsulated_key3 != NULL))) {
-    //            VSCR_ERROR_SAFE_UPDATE(error, vscr_status_ERROR_PROTOBUF_DECODE);
-    //
-    //            goto err;
-    //        }
-    //    }
+        if (session_pb->enable_post_quantum) {
+            if (!session_pb->has_pqc_info ||
+                    (session_pb->has_receiver_one_time_key_id != (session_pb->pqc_info.encapsulated_key3 != NULL))) {
+                VSCR_ERROR_SAFE_UPDATE(error, vscr_status_ERROR_PROTOBUF_DECODE);
+
+                goto err;
+            }
+
+            if (session_pb->pqc_info.encapsulated_key1 == NULL || session_pb->pqc_info.encapsulated_key2 == NULL ||
+                    session_pb->pqc_info.decapsulated_keys_signature == NULL) {
+                VSCR_ERROR_SAFE_UPDATE(error, vscr_status_ERROR_PROTOBUF_DECODE);
+
+                goto err;
+            }
+        }
+    }
 
     session = vscr_ratchet_session_new();
 
@@ -957,6 +960,28 @@ vscr_ratchet_session_deserialize(vsc_data_t input, vscr_error_t *error) {
         }
 
         if (session->enable_post_quantum) {
+            if (session_pb->pqc_info.encapsulated_key1->size !=
+                    vscr_ratchet_common_hidden_ROUND5_ENCAPSULATED_KEY_LEN) {
+                VSCR_ERROR_SAFE_UPDATE(error, vscr_status_ERROR_PROTOBUF_DECODE);
+                goto err;
+            }
+            if (session_pb->pqc_info.encapsulated_key2->size !=
+                    vscr_ratchet_common_hidden_ROUND5_ENCAPSULATED_KEY_LEN) {
+                VSCR_ERROR_SAFE_UPDATE(error, vscr_status_ERROR_PROTOBUF_DECODE);
+                goto err;
+            }
+            if (session_pb->pqc_info.encapsulated_key3 != NULL &&
+                    session_pb->pqc_info.encapsulated_key3->size !=
+                            vscr_ratchet_common_hidden_ROUND5_ENCAPSULATED_KEY_LEN) {
+                VSCR_ERROR_SAFE_UPDATE(error, vscr_status_ERROR_PROTOBUF_DECODE);
+                goto err;
+            }
+            if (session_pb->pqc_info.decapsulated_keys_signature->size !=
+                    vscr_ratchet_common_hidden_FALCON_SIGNATURE_LEN) {
+                VSCR_ERROR_SAFE_UPDATE(error, vscr_status_ERROR_PROTOBUF_DECODE);
+                goto err;
+            }
+
             session->encapsulated_key_1 =
                     vscr_ratchet_pb_utils_deserialize_buffer(session_pb->pqc_info.encapsulated_key1);
             session->encapsulated_key_2 =

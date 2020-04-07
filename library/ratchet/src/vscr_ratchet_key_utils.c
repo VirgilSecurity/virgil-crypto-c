@@ -374,15 +374,13 @@ vscr_ratchet_key_utils_import_private_key(vscr_ratchet_key_utils_t *self, const 
         curve25519_private_key = (vscf_raw_private_key_t *)first_key;
     } else {
         if (vscf_key_info_alg_id(key_info) == vscf_alg_id_ED25519) {
-            // TODO: convert ed25519 to curve25519
             VSCR_ASSERT(vscf_impl_tag(key) == vscf_impl_tag_RAW_PRIVATE_KEY);
             vsc_data_t private_key_data = vscf_raw_private_key_data((vscf_raw_private_key_t *)key);
             VSCR_ASSERT_PTR(private_key_data.len == vscr_ratchet_common_hidden_KEY_LEN);
             int curve25519_status = ed25519_key_to_curve25519(*private_key_first, private_key_data.bytes);
 
             if (curve25519_status != 0) {
-                // FIXME
-                status = vscr_status_ERROR_INVALID_KEY_TYPE;
+                status = vscr_status_ERROR_CURVE25519;
                 goto err1;
             }
 
@@ -521,15 +519,13 @@ vscr_ratchet_key_utils_import_public_key(vscr_ratchet_key_utils_t *self, const v
         curve25519_public_key = (vscf_raw_public_key_t *)first_key;
     } else {
         if (vscf_key_info_alg_id(key_info) == vscf_alg_id_ED25519) {
-            // TODO: convert ed25519 to curve25519
             VSCR_ASSERT(vscf_impl_tag(key) == vscf_impl_tag_RAW_PUBLIC_KEY);
             vsc_data_t public_key_data = vscf_raw_public_key_data((vscf_raw_public_key_t *)key);
             VSCR_ASSERT_PTR(public_key_data.len == vscr_ratchet_common_hidden_KEY_LEN);
             int curve25519_status = ed25519_pubkey_to_curve25519(*public_key_first, public_key_data.bytes);
 
             if (curve25519_status != 0) {
-                // FIXME
-                status = vscr_status_ERROR_INVALID_KEY_TYPE;
+                status = vscr_status_ERROR_CURVE25519;
                 goto err1;
             }
 

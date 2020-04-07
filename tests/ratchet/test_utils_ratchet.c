@@ -63,6 +63,7 @@
 
 #include <ed25519/ed25519.h>
 #include <virgil/crypto/ratchet/vscr_assert.h>
+#include <virgil/crypto/common/private/vsc_buffer_defs.h>
 
 size_t
 pick_element_uniform(vscf_ctr_drbg_t *rng, size_t size) {
@@ -1337,20 +1338,178 @@ encrypt_decrypt(vscf_ctr_drbg_t *rng, size_t group_size, size_t number_of_iterat
     vscr_dealloc(channels);
 }
 
+vscr_ratchet_skipped_messages_t *
+generate_full_skipped_messages(vscf_ctr_drbg_t *rng) {
+    vscr_ratchet_skipped_messages_t *skipped_messages = vscr_ratchet_skipped_messages_new();
+
+    skipped_messages->roots_count = vscr_ratchet_common_hidden_MAX_SKIPPED_DH;
+    for (size_t i = 0; i < vscr_ratchet_common_hidden_MAX_SKIPPED_DH; i++) {
+        generate_random_c(rng, skipped_messages->key_ids[i], vscr_ratchet_common_KEY_ID_LEN);
+        skipped_messages->root_nodes[i] = generate_full_root_node(rng, true);
+    }
+
+    return skipped_messages;
+}
+
+vscr_ratchet_t *
+generate_full_ratchet(vscf_ctr_drbg_t *rng) {
+    vscr_ratchet_t *ratchet = vscr_ratchet_new();
+
+    vscr_ratchet_receiver_chain_destroy(&ratchet->receiver_chain);
+    ratchet->receiver_chain = generate_full_receiver_chain(rng);
+    ratchet->prev_sender_chain_count = UINT32_MAX;
+    generate_random_c(rng, ratchet->root_key, vscr_ratchet_common_hidden_SHARED_KEY_LEN);
+
+    vscr_ratchet_sender_chain_destroy(&ratchet->sender_chain);
+    ratchet->sender_chain = generate_full_sender_chain(rng);
+
+    vscr_ratchet_skipped_messages_destroy(&ratchet->skipped_messages);
+    ratchet->skipped_messages = generate_full_skipped_messages(rng);
+
+    return ratchet;
+}
+
+vscf_impl_t *
+generate_public_key(vscf_ctr_drbg_t *rng) {
+    vscf_key_provider_t *key_provider = vscf_key_provider_new();
+    vscf_key_provider_use_random(key_provider, vscf_ctr_drbg_impl(rng));
+
+    vscf_error_t error_ctx;
+    vscf_error_reset(&error_ctx);
+
+    vscf_impl_t *priv = vscf_key_provider_generate_private_key(key_provider, vscf_alg_id_ROUND5_ND_5KEM_5D, &error_ctx);
+
+    TEST_ASSERT(!vscf_error_has_error(&error_ctx));
+
+    vscf_impl_t *pub = vscf_private_key_extract_public_key(priv);
+
+    vscf_key_provider_destroy(&key_provider);
+    vscf_impl_destroy(&priv);
+
+    return pub;
+}
+
+vscf_impl_t *
+generate_private_key(vscf_ctr_drbg_t *rng) {
+    vscf_key_provider_t *key_provider = vscf_key_provider_new();
+    vscf_key_provider_use_random(key_provider, vscf_ctr_drbg_impl(rng));
+
+    vscf_error_t error_ctx;
+    vscf_error_reset(&error_ctx);
+
+    vscf_impl_t *priv = vscf_key_provider_generate_private_key(key_provider, vscf_alg_id_ROUND5_ND_5KEM_5D, &error_ctx);
+
+    TEST_ASSERT(!vscf_error_has_error(&error_ctx));
+
+    vscf_key_provider_destroy(&key_provider);
+
+    return priv;
+}
+
+void
+generate_random_c(vscf_ctr_drbg_t *rng, byte *data, size_t len) {
+    vsc_buffer_t buffer;
+    vsc_buffer_init(&buffer);
+    vsc_buffer_use(&buffer, data, len);
+
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_ctr_drbg_random(rng, len, &buffer));
+
+    vsc_buffer_delete(&buffer);
+}
+
+vscr_ratchet_session_t *
+generate_full_session(vscf_ctr_drbg_t *rng) {
+    vscr_ratchet_session_t *session = vscr_ratchet_session_new();
+
+    generate_random_c(rng, session->sender_identity_key_id, vscr_ratchet_common_KEY_ID_LEN);
+    generate_random_c(rng, session->sender_ephemeral_public_key_first, vscr_ratchet_common_hidden_KEY_LEN);
+    generate_random_c(rng, session->receiver_identity_key_id, vscr_ratchet_common_KEY_ID_LEN);
+    generate_random_c(rng, session->receiver_long_term_key_id, vscr_ratchet_common_KEY_ID_LEN);
+    session->receiver_has_one_time_key_first = true;
+    generate_random_c(rng, session->receiver_one_time_key_id, vscr_ratchet_common_KEY_ID_LEN);
+
+    session->decapsulated_keys_signature = generate_random_buff(rng, vscr_ratchet_common_hidden_FALCON_SIGNATURE_LEN);
+    session->encapsulated_key_1 = generate_random_buff(rng, vscr_ratchet_common_hidden_ROUND5_ENCAPSULATED_KEY_LEN);
+    session->encapsulated_key_2 = generate_random_buff(rng, vscr_ratchet_common_hidden_ROUND5_ENCAPSULATED_KEY_LEN);
+    session->encapsulated_key_3 = generate_random_buff(rng, vscr_ratchet_common_hidden_ROUND5_ENCAPSULATED_KEY_LEN);
+
+    vscr_ratchet_destroy(&session->ratchet);
+    session->ratchet = generate_full_ratchet(rng);
+
+    return session;
+}
+
 vscr_ratchet_message_key_t *
-generate_full_message_key(void) {
+generate_full_message_key(vscf_ctr_drbg_t *rng) {
     vscr_ratchet_message_key_t *message_key = vscr_ratchet_message_key_new();
 
     message_key->index = UINT32_MAX;
 
+    generate_random_c(rng, message_key->key, sizeof(message_key->key));
+
     return message_key;
 }
 
+vsc_buffer_t *
+generate_random_buff(vscf_ctr_drbg_t *rng, size_t len) {
+    vsc_buffer_t *buffer = vsc_buffer_new_with_capacity(len);
+
+    while (len != 0) {
+        size_t requested = len > 1024 ? 1024 : len;
+        TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_ctr_drbg_random(rng, requested, buffer));
+        len -= requested;
+    }
+
+    return buffer;
+}
+
+vscr_ratchet_sender_chain_t *
+generate_full_sender_chain(vscf_ctr_drbg_t *rng) {
+    vscr_ratchet_sender_chain_t *sender_chain = vscr_ratchet_sender_chain_new();
+
+    sender_chain->public_key_second = generate_public_key(rng);
+    sender_chain->private_key_second = generate_private_key(rng);
+    generate_random_c(rng, sender_chain->public_key_first, sizeof(sender_chain->public_key_first));
+    generate_random_c(rng, sender_chain->private_key_first, sizeof(sender_chain->private_key_first));
+
+    sender_chain->encapsulated_key = generate_random_buff(rng, vscr_ratchet_common_hidden_ROUND5_ENCAPSULATED_KEY_LEN);
+    generate_full_chain_key_s(rng, &sender_chain->chain_key);
+
+    return sender_chain;
+}
+
+
+vscr_ratchet_receiver_chain_t *
+generate_full_receiver_chain(vscf_ctr_drbg_t *rng) {
+    vscr_ratchet_receiver_chain_t *receiver_chain = vscr_ratchet_receiver_chain_new();
+
+    generate_full_chain_key_s(rng, &receiver_chain->chain_key);
+
+    generate_random_c(rng, receiver_chain->public_key_id, sizeof(receiver_chain->public_key_id));
+    generate_random_c(rng, receiver_chain->public_key_first, sizeof(receiver_chain->public_key_first));
+    receiver_chain->public_key_second = generate_public_key(rng);
+
+    return receiver_chain;
+}
+
+void
+generate_full_chain_key_s(vscf_ctr_drbg_t *rng, vscr_ratchet_chain_key_t *chain_key) {
+    chain_key->index = UINT32_MAX;
+
+    vsc_buffer_t buffer;
+    vsc_buffer_init(&buffer);
+    vsc_buffer_use(&buffer, chain_key->key, sizeof(chain_key->key));
+
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_ctr_drbg_random(rng, sizeof(chain_key->key), &buffer));
+
+    vsc_buffer_delete(&buffer);
+}
+
 vscr_ratchet_chain_key_t *
-generate_full_chain_key(void) {
+generate_full_chain_key(vscf_ctr_drbg_t *rng) {
     vscr_ratchet_chain_key_t *chain_key = vscr_ratchet_chain_key_new();
 
-    chain_key->index = UINT32_MAX;
+    generate_full_chain_key_s(rng, chain_key);
 
     return chain_key;
 }
@@ -1367,7 +1526,7 @@ generate_full_root_node(vscf_ctr_drbg_t *rng, bool max) {
     }
 
     for (size_t i = 0; i < number; i++) {
-        vscr_ratchet_message_key_t *key = generate_full_message_key();
+        vscr_ratchet_message_key_t *key = generate_full_message_key(rng);
         vscr_ratchet_skipped_messages_root_node_add_key(skipped_messages, key);
     }
 
@@ -1379,7 +1538,7 @@ generate_full_epoch(vscf_ctr_drbg_t *rng, bool max) {
     vscr_ratchet_group_participant_epoch_t *epoch = vscr_ratchet_group_participant_epoch_new();
 
     epoch->epoch = UINT32_MAX;
-    epoch->chain_key = generate_full_chain_key();
+    epoch->chain_key = generate_full_chain_key(rng);
     vscr_ratchet_skipped_messages_root_node_destroy(&epoch->skipped_messages);
     epoch->skipped_messages = generate_full_root_node(rng, max);
 

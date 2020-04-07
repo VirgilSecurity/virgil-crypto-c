@@ -358,14 +358,13 @@ vscr_ratchet_xxdh_encapsulate_pqc_key(vscr_ratchet_xxdh_t *self, const vscf_impl
     VSCR_ASSERT_PTR(encapsulated_key_ref);
     VSCR_ASSERT_PTR(shared_secret);
 
-    size_t len = vscf_round5_kem_encapsulated_key_len(self->round5, NULL);
+    size_t len = vscr_ratchet_common_hidden_ROUND5_ENCAPSULATED_KEY_LEN;
     *encapsulated_key_ref = vsc_buffer_new_with_capacity(len);
     vscf_status_t f_status =
             vscf_round5_kem_encapsulate(self->round5, public_key, shared_secret, *encapsulated_key_ref);
 
     if (f_status != vscf_status_SUCCESS) {
-        // FIXME
-        return vscr_status_ERROR_CURVE25519;
+        return vscr_status_ERROR_ROUND5;
     }
 
     return vscr_status_SUCCESS;
@@ -384,8 +383,7 @@ vscr_ratchet_xxdh_decapsulate_pqc_key(vscr_ratchet_xxdh_t *self, const vscf_impl
     vscf_status_t f_status = vscf_round5_kem_decapsulate(self->round5, encapsulated_key, private_key, shared_secret);
 
     if (f_status != vscf_status_SUCCESS) {
-        // FIXME
-        return vscr_status_ERROR_CURVE25519;
+        return vscr_status_ERROR_ROUND5;
     }
 
     return vscr_status_SUCCESS;
@@ -404,8 +402,24 @@ vscr_ratchet_xxdh_compute_initiator_xxdh_secret(vscr_ratchet_xxdh_t *self,
         vsc_buffer_t **encapsulated_key_2_ref, vsc_buffer_t **encapsulated_key_3_ref,
         vsc_buffer_t **decapsulated_keys_signature_ref, vscr_ratchet_symmetric_key_t shared_key) {
 
-    vsc_buffer_t *shared_secret = vsc_buffer_new_with_capacity(
-            4 * vscr_ratchet_common_hidden_SHARED_KEY_LEN + 3 * vscf_round5_kem_shared_key_len(self->round5, NULL));
+    size_t shared_secret_size = 3 * vscr_ratchet_common_hidden_SHARED_KEY_LEN;
+    if (receiver_has_one_time_key) {
+        shared_secret_size += vscr_ratchet_common_hidden_SHARED_KEY_LEN;
+    }
+
+    if (receiver_identity_public_key_second != NULL) {
+        shared_secret_size += vscr_ratchet_common_hidden_ROUND5_SHARED_KEY_LEN;
+    }
+
+    if (receiver_long_term_public_key_second != NULL) {
+        shared_secret_size += vscr_ratchet_common_hidden_ROUND5_SHARED_KEY_LEN;
+    }
+
+    if (receiver_one_time_public_key_second != NULL) {
+        shared_secret_size += vscr_ratchet_common_hidden_ROUND5_SHARED_KEY_LEN;
+    }
+
+    vsc_buffer_t *shared_secret = vsc_buffer_new_with_capacity(shared_secret_size);
     vsc_buffer_make_secure(shared_secret);
 
     vscr_status_t status = vscr_status_SUCCESS;
@@ -479,6 +493,8 @@ vscr_ratchet_xxdh_compute_initiator_xxdh_secret(vscr_ratchet_xxdh_t *self,
         goto err;
     }
 
+    VSCR_ASSERT(vsc_buffer_unused_len(shared_secret) == 0);
+
     vscr_ratchet_xxdh_derive_key(vsc_buffer_data(shared_secret), shared_key);
 
 err:
@@ -537,17 +553,15 @@ vscr_ratchet_xxdh_compute_initiator_pqc_shared_secret(vscr_ratchet_xxdh_t *self,
         vsc_buffer_t *hash = vsc_buffer_new_with_capacity(vscf_sha512_DIGEST_LEN);
         vscf_sha512_hash(pqc_shared_secret, hash);
 
-        size_t signature_len = vscf_falcon_signature_len(self->falcon, sender_identity_private_key_second_signer);
-
-        *decapsulated_keys_signature_ref = vsc_buffer_new_with_capacity(signature_len);
+        *decapsulated_keys_signature_ref =
+                vsc_buffer_new_with_capacity(vscr_ratchet_common_hidden_FALCON_SIGNATURE_LEN);
         vscf_status_t f_status = vscf_falcon_sign_hash(self->falcon, sender_identity_private_key_second_signer,
                 vscf_alg_id_SHA512, vsc_buffer_data(hash), *decapsulated_keys_signature_ref);
 
         vsc_buffer_destroy(&hash);
 
         if (f_status != vscf_status_SUCCESS) {
-            // FIXME
-            status = vscr_status_ERROR_CURVE25519;
+            status = vscr_status_ERROR_FALCON;
             goto err;
         }
     }
@@ -570,8 +584,24 @@ vscr_ratchet_xxdh_compute_responder_xxdh_secret(vscr_ratchet_xxdh_t *self,
         vsc_data_t encapsulated_key_2, vsc_data_t encapsulated_key_3, vsc_data_t decapsulated_keys_signature,
         vscr_ratchet_symmetric_key_t shared_key) {
 
-    vsc_buffer_t *shared_secret = vsc_buffer_new_with_capacity(
-            4 * vscr_ratchet_common_hidden_SHARED_KEY_LEN + 3 * vscf_round5_kem_shared_key_len(self->round5, NULL));
+    size_t shared_secret_size = 3 * vscr_ratchet_common_hidden_SHARED_KEY_LEN;
+    if (receiver_has_one_time_key) {
+        shared_secret_size += vscr_ratchet_common_hidden_SHARED_KEY_LEN;
+    }
+
+    if (receiver_identity_private_key_second != NULL) {
+        shared_secret_size += vscr_ratchet_common_hidden_ROUND5_SHARED_KEY_LEN;
+    }
+
+    if (receiver_long_term_private_key_second != NULL) {
+        shared_secret_size += vscr_ratchet_common_hidden_ROUND5_SHARED_KEY_LEN;
+    }
+
+    if (receiver_one_time_private_key_second != NULL) {
+        shared_secret_size += vscr_ratchet_common_hidden_ROUND5_SHARED_KEY_LEN;
+    }
+
+    vsc_buffer_t *shared_secret = vsc_buffer_new_with_capacity(shared_secret_size);
     vsc_buffer_make_secure(shared_secret);
 
     vscr_status_t status = vscr_status_SUCCESS;
@@ -623,6 +653,8 @@ vscr_ratchet_xxdh_compute_responder_xxdh_secret(vscr_ratchet_xxdh_t *self,
         goto err;
     }
 
+    VSCR_ASSERT(vsc_buffer_unused_len(shared_secret) == 0);
+
     vscr_ratchet_xxdh_derive_key(vsc_buffer_data(shared_secret), shared_key);
 
 err:
@@ -631,9 +663,6 @@ err:
     return status;
 }
 
-//
-//  Z
-//
 VSCR_PUBLIC vscr_status_t
 vscr_ratchet_xxdh_compute_responder_pqc_shared_secret(vscr_ratchet_xxdh_t *self,
         const vscf_impl_t *sender_identity_public_key_second_verifier,
@@ -689,8 +718,7 @@ vscr_ratchet_xxdh_compute_responder_pqc_shared_secret(vscr_ratchet_xxdh_t *self,
         vsc_buffer_destroy(&hash);
 
         if (!verified) {
-            // FIXME
-            status = vscr_status_ERROR_CURVE25519;
+            status = vscr_status_ERROR_DECAPS_SIGNATURE_INVALID;
             goto err;
         }
     }

@@ -109,7 +109,7 @@
         <argument name="encapsulated key 1" class="data"/>
         <argument name="encapsulated key 2" class="data"/>
         <argument name="encapsulated key 3" class="data"/>
-        <argument name="decapsulated keys signature" class="data"/>Z
+        <argument name="decapsulated keys signature" class="data"/>
 
         <argument name="shared secret" class="buffer"  access="readwrite"/>
 

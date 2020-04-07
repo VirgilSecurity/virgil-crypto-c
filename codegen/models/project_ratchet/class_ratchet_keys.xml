@@ -28,6 +28,14 @@
     <dependency name="rng" interface="random" project="foundation" has_observers="1"/>
     <property name="round5" class="round5" project="foundation"/>
 
+    <method name="create chain key finish" is_static="1" declaration="private">
+        <argument name="root key" class="const vscr_ratchet_symmetric_key_t" is_reference="0" library="internal" access="readonly"/>
+        <argument name="shared secret" class="buffer" access="readonly"/>
+
+        <argument name="new root key" class="vscr_ratchet_symmetric_key_t" is_reference="0" library="internal" access="readwrite"/>
+        <argument name="chain key" class="ratchet chain key" access="readwrite"/>
+    </method>
+
     <method name="create chain key sender">
         <argument name="root key" class="const vscr_ratchet_symmetric_key_t" is_reference="0" library="internal" access="readonly"/>
         <argument name="private key first" class="const vscr_ratchet_private_key_t" is_reference="0" library="internal" access="readonly"/>

@@ -416,7 +416,7 @@ vscr_ratchet_respond(vscr_ratchet_t *self, vscr_ratchet_symmetric_key_t shared_k
     vscr_status_t status = vscr_status_SUCCESS;
 
     if (enable_post_quantum != regular_message_header->has_pqc_info) {
-        // TODO: Error
+        status = vscr_status_ERROR_BAD_MESSAGE_TYPE;
         goto err;
     }
 
@@ -588,12 +588,18 @@ vscr_ratchet_decrypt(vscr_ratchet_t *self, const vscr_RegularMessage *regular_me
     vscr_ratchet_receiver_chain_t *receiver_chain = NULL;
 
     if (self->enable_post_quantum != regular_message_header->has_pqc_info) {
-        status = vscr_status_ERROR_INVALID_KEY_TYPE;
+        status = vscr_status_ERROR_BAD_MESSAGE_TYPE;
         goto err;
     }
 
     vsc_data_t public_key_second;
     if (self->enable_post_quantum) {
+        if (regular_message_header->pqc_info.encapsulated_key == NULL ||
+                regular_message_header->pqc_info.public_key == NULL) {
+            status = vscr_status_ERROR_BAD_MESSAGE_TYPE;
+            goto err;
+        }
+
         public_key_second = vscr_ratchet_pb_utils_buffer_to_data(regular_message_header->pqc_info.public_key);
     } else {
         public_key_second = vsc_data_empty();
@@ -606,8 +612,6 @@ vscr_ratchet_decrypt(vscr_ratchet_t *self, const vscr_RegularMessage *regular_me
     if (self->receiver_chain && memcmp(key_id, self->receiver_chain->public_key_id, sizeof(key_id)) == 0) {
         receiver_chain = self->receiver_chain;
     }
-
-    // TODO: Check enable_post_quantum
 
     if (!receiver_chain || receiver_chain->chain_key.index > regular_message_header->counter) {
         vscr_ratchet_message_key_t *skipped_message_key =
