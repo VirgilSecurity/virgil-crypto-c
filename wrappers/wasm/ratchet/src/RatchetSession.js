@@ -187,6 +187,68 @@ const initRatchetSession = (Module, modules) => {
         }
 
         /**
+         * Initiates session
+         */
+        initiateNoOneTimeKey(senderIdentityPrivateKey, senderIdentityKeyId, receiverIdentityPublicKey, receiverIdentityKeyId, receiverLongTermPublicKey, receiverLongTermKeyId, enablePostQuantum) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureImplementInterface('senderIdentityPrivateKey', senderIdentityPrivateKey, 'Foundation.PrivateKey', modules.FoundationInterfaceTag.PRIVATE_KEY, modules.FoundationInterface);
+            precondition.ensureByteArray('senderIdentityKeyId', senderIdentityKeyId);
+            precondition.ensureImplementInterface('receiverIdentityPublicKey', receiverIdentityPublicKey, 'Foundation.PublicKey', modules.FoundationInterfaceTag.PUBLIC_KEY, modules.FoundationInterface);
+            precondition.ensureByteArray('receiverIdentityKeyId', receiverIdentityKeyId);
+            precondition.ensureImplementInterface('receiverLongTermPublicKey', receiverLongTermPublicKey, 'Foundation.PublicKey', modules.FoundationInterfaceTag.PUBLIC_KEY, modules.FoundationInterface);
+            precondition.ensureByteArray('receiverLongTermKeyId', receiverLongTermKeyId);
+            precondition.ensureBoolean('enablePostQuantum', enablePostQuantum);
+
+            //  Copy bytes from JS memory to the WASM memory.
+            const senderIdentityKeyIdSize = senderIdentityKeyId.length * senderIdentityKeyId.BYTES_PER_ELEMENT;
+            const senderIdentityKeyIdPtr = Module._malloc(senderIdentityKeyIdSize);
+            Module.HEAP8.set(senderIdentityKeyId, senderIdentityKeyIdPtr);
+
+            //  Create C structure vsc_data_t.
+            const senderIdentityKeyIdCtxSize = Module._vsc_data_ctx_size();
+            const senderIdentityKeyIdCtxPtr = Module._malloc(senderIdentityKeyIdCtxSize);
+
+            //  Point created vsc_data_t object to the copied bytes.
+            Module._vsc_data(senderIdentityKeyIdCtxPtr, senderIdentityKeyIdPtr, senderIdentityKeyIdSize);
+
+            //  Copy bytes from JS memory to the WASM memory.
+            const receiverIdentityKeyIdSize = receiverIdentityKeyId.length * receiverIdentityKeyId.BYTES_PER_ELEMENT;
+            const receiverIdentityKeyIdPtr = Module._malloc(receiverIdentityKeyIdSize);
+            Module.HEAP8.set(receiverIdentityKeyId, receiverIdentityKeyIdPtr);
+
+            //  Create C structure vsc_data_t.
+            const receiverIdentityKeyIdCtxSize = Module._vsc_data_ctx_size();
+            const receiverIdentityKeyIdCtxPtr = Module._malloc(receiverIdentityKeyIdCtxSize);
+
+            //  Point created vsc_data_t object to the copied bytes.
+            Module._vsc_data(receiverIdentityKeyIdCtxPtr, receiverIdentityKeyIdPtr, receiverIdentityKeyIdSize);
+
+            //  Copy bytes from JS memory to the WASM memory.
+            const receiverLongTermKeyIdSize = receiverLongTermKeyId.length * receiverLongTermKeyId.BYTES_PER_ELEMENT;
+            const receiverLongTermKeyIdPtr = Module._malloc(receiverLongTermKeyIdSize);
+            Module.HEAP8.set(receiverLongTermKeyId, receiverLongTermKeyIdPtr);
+
+            //  Create C structure vsc_data_t.
+            const receiverLongTermKeyIdCtxSize = Module._vsc_data_ctx_size();
+            const receiverLongTermKeyIdCtxPtr = Module._malloc(receiverLongTermKeyIdCtxSize);
+
+            //  Point created vsc_data_t object to the copied bytes.
+            Module._vsc_data(receiverLongTermKeyIdCtxPtr, receiverLongTermKeyIdPtr, receiverLongTermKeyIdSize);
+
+            try {
+                const proxyResult = Module._vscr_ratchet_session_initiate_no_one_time_key(this.ctxPtr, senderIdentityPrivateKey.ctxPtr, senderIdentityKeyIdCtxPtr, receiverIdentityPublicKey.ctxPtr, receiverIdentityKeyIdCtxPtr, receiverLongTermPublicKey.ctxPtr, receiverLongTermKeyIdCtxPtr, enablePostQuantum);
+                modules.RatchetError.handleStatusCode(proxyResult);
+            } finally {
+                Module._free(senderIdentityKeyIdPtr);
+                Module._free(senderIdentityKeyIdCtxPtr);
+                Module._free(receiverIdentityKeyIdPtr);
+                Module._free(receiverIdentityKeyIdCtxPtr);
+                Module._free(receiverLongTermKeyIdPtr);
+                Module._free(receiverLongTermKeyIdCtxPtr);
+            }
+        }
+
+        /**
          * Responds to session initiation
          */
         respond(senderIdentityPublicKey, receiverIdentityPrivateKey, receiverLongTermPrivateKey, receiverOneTimePrivateKey, message, enablePostQuantum) {
@@ -202,6 +264,20 @@ const initRatchetSession = (Module, modules) => {
         }
 
         /**
+         * Responds to session initiation
+         */
+        respondNoOneTimeKey(senderIdentityPublicKey, receiverIdentityPrivateKey, receiverLongTermPrivateKey, message, enablePostQuantum) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureImplementInterface('senderIdentityPublicKey', senderIdentityPublicKey, 'Foundation.PublicKey', modules.FoundationInterfaceTag.PUBLIC_KEY, modules.FoundationInterface);
+            precondition.ensureImplementInterface('receiverIdentityPrivateKey', receiverIdentityPrivateKey, 'Foundation.PrivateKey', modules.FoundationInterfaceTag.PRIVATE_KEY, modules.FoundationInterface);
+            precondition.ensureImplementInterface('receiverLongTermPrivateKey', receiverLongTermPrivateKey, 'Foundation.PrivateKey', modules.FoundationInterfaceTag.PRIVATE_KEY, modules.FoundationInterface);
+            precondition.ensureClass('message', message, modules.RatchetMessage);
+            precondition.ensureBoolean('enablePostQuantum', enablePostQuantum);
+            const proxyResult = Module._vscr_ratchet_session_respond_no_one_time_key(this.ctxPtr, senderIdentityPublicKey.ctxPtr, receiverIdentityPrivateKey.ctxPtr, receiverLongTermPrivateKey.ctxPtr, message.ctxPtr, enablePostQuantum);
+            modules.RatchetError.handleStatusCode(proxyResult);
+        }
+
+        /**
          * Returns flag that indicates is this session was initiated or responded
          */
         isInitiator() {
@@ -209,6 +285,19 @@ const initRatchetSession = (Module, modules) => {
 
             let proxyResult;
             proxyResult = Module._vscr_ratchet_session_is_initiator(this.ctxPtr);
+
+            const booleanResult = !!proxyResult;
+            return booleanResult;
+        }
+
+        /**
+         * Returns flag that indicates if session is post-quantum
+         */
+        isPqcEnabled() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
+            let proxyResult;
+            proxyResult = Module._vscr_ratchet_session_is_pqc_enabled(this.ctxPtr);
 
             const booleanResult = !!proxyResult;
             return booleanResult;

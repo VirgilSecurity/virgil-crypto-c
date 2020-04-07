@@ -245,7 +245,7 @@ vscf_falcon_import_public_key(const vscf_falcon_t *self, const vscf_raw_public_k
 //
 //  Import public key from the raw binary format.
 //
-VSCF_PRIVATE vscf_impl_t *
+VSCF_PUBLIC vscf_impl_t *
 vscf_falcon_import_public_key_data(const vscf_falcon_t *self, vsc_data_t key_data, const vscf_impl_t *key_alg_info,
         vscf_error_t *error);
 
@@ -262,7 +262,7 @@ vscf_falcon_export_public_key(const vscf_falcon_t *self, const vscf_impl_t *publ
 //
 //  Return length in bytes required to hold exported public key.
 //
-VSCF_PRIVATE size_t
+VSCF_PUBLIC size_t
 vscf_falcon_exported_public_key_data_len(const vscf_falcon_t *self, const vscf_impl_t *public_key);
 
 //
@@ -272,7 +272,7 @@ vscf_falcon_exported_public_key_data_len(const vscf_falcon_t *self, const vscf_i
 //  For instance, RSA public key must be exported in format defined in
 //  RFC 3447 Appendix A.1.1.
 //
-VSCF_PRIVATE vscf_status_t
+VSCF_PUBLIC vscf_status_t
 vscf_falcon_export_public_key_data(const vscf_falcon_t *self, const vscf_impl_t *public_key,
         vsc_buffer_t *out) VSCF_NODISCARD;
 
@@ -292,7 +292,7 @@ vscf_falcon_import_private_key(const vscf_falcon_t *self, const vscf_raw_private
 //
 //  Import private key from the raw binary format.
 //
-VSCF_PRIVATE vscf_impl_t *
+VSCF_PUBLIC vscf_impl_t *
 vscf_falcon_import_private_key_data(const vscf_falcon_t *self, vsc_data_t key_data, const vscf_impl_t *key_alg_info,
         vscf_error_t *error);
 
@@ -309,7 +309,7 @@ vscf_falcon_export_private_key(const vscf_falcon_t *self, const vscf_impl_t *pri
 //
 //  Return length in bytes required to hold exported private key.
 //
-VSCF_PRIVATE size_t
+VSCF_PUBLIC size_t
 vscf_falcon_exported_private_key_data_len(const vscf_falcon_t *self, const vscf_impl_t *private_key);
 
 //
@@ -319,7 +319,7 @@ vscf_falcon_exported_private_key_data_len(const vscf_falcon_t *self, const vscf_
 //  For instance, RSA private key must be exported in format defined in
 //  RFC 3447 Appendix A.1.2.
 //
-VSCF_PRIVATE vscf_status_t
+VSCF_PUBLIC vscf_status_t
 vscf_falcon_export_private_key_data(const vscf_falcon_t *self, const vscf_impl_t *private_key,
         vsc_buffer_t *out) VSCF_NODISCARD;
 

@@ -122,14 +122,29 @@ public class RatchetJNI {
     public native void ratchetSession_initiate(long cCtx, PrivateKey senderIdentityPrivateKey, byte[] senderIdentityKeyId, PublicKey receiverIdentityPublicKey, byte[] receiverIdentityKeyId, PublicKey receiverLongTermPublicKey, byte[] receiverLongTermKeyId, PublicKey receiverOneTimePublicKey, byte[] receiverOneTimeKeyId, boolean enablePostQuantum) throws RatchetException;
 
     /*
+    * Initiates session
+    */
+    public native void ratchetSession_initiateNoOneTimeKey(long cCtx, PrivateKey senderIdentityPrivateKey, byte[] senderIdentityKeyId, PublicKey receiverIdentityPublicKey, byte[] receiverIdentityKeyId, PublicKey receiverLongTermPublicKey, byte[] receiverLongTermKeyId, boolean enablePostQuantum) throws RatchetException;
+
+    /*
     * Responds to session initiation
     */
     public native void ratchetSession_respond(long cCtx, PublicKey senderIdentityPublicKey, PrivateKey receiverIdentityPrivateKey, PrivateKey receiverLongTermPrivateKey, PrivateKey receiverOneTimePrivateKey, RatchetMessage message, boolean enablePostQuantum) throws RatchetException;
 
     /*
+    * Responds to session initiation
+    */
+    public native void ratchetSession_respondNoOneTimeKey(long cCtx, PublicKey senderIdentityPublicKey, PrivateKey receiverIdentityPrivateKey, PrivateKey receiverLongTermPrivateKey, RatchetMessage message, boolean enablePostQuantum) throws RatchetException;
+
+    /*
     * Returns flag that indicates is this session was initiated or responded
     */
     public native boolean ratchetSession_isInitiator(long cCtx);
+
+    /*
+    * Returns flag that indicates if session is post-quantum
+    */
+    public native boolean ratchetSession_isPqcEnabled(long cCtx);
 
     /*
     * Returns true if at least 1 response was successfully decrypted, false - otherwise

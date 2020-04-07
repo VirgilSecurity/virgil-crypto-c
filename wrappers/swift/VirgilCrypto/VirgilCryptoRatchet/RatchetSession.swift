@@ -98,6 +98,20 @@ import VirgilCryptoFoundation
         try RatchetError.handleStatus(fromC: proxyResult)
     }
 
+    /// Initiates session
+    @objc public func initiateNoOneTimeKey(senderIdentityPrivateKey: PrivateKey, senderIdentityKeyId: Data, receiverIdentityPublicKey: PublicKey, receiverIdentityKeyId: Data, receiverLongTermPublicKey: PublicKey, receiverLongTermKeyId: Data, enablePostQuantum: Bool) throws {
+        let proxyResult = senderIdentityKeyId.withUnsafeBytes({ (senderIdentityKeyIdPointer: UnsafeRawBufferPointer) -> vscr_status_t in
+            receiverIdentityKeyId.withUnsafeBytes({ (receiverIdentityKeyIdPointer: UnsafeRawBufferPointer) -> vscr_status_t in
+                receiverLongTermKeyId.withUnsafeBytes({ (receiverLongTermKeyIdPointer: UnsafeRawBufferPointer) -> vscr_status_t in
+
+                    return vscr_ratchet_session_initiate_no_one_time_key(self.c_ctx, senderIdentityPrivateKey.c_ctx, vsc_data(senderIdentityKeyIdPointer.bindMemory(to: byte.self).baseAddress, senderIdentityKeyId.count), receiverIdentityPublicKey.c_ctx, vsc_data(receiverIdentityKeyIdPointer.bindMemory(to: byte.self).baseAddress, receiverIdentityKeyId.count), receiverLongTermPublicKey.c_ctx, vsc_data(receiverLongTermKeyIdPointer.bindMemory(to: byte.self).baseAddress, receiverLongTermKeyId.count), enablePostQuantum)
+                })
+            })
+        })
+
+        try RatchetError.handleStatus(fromC: proxyResult)
+    }
+
     /// Responds to session initiation
     @objc public func respond(senderIdentityPublicKey: PublicKey, receiverIdentityPrivateKey: PrivateKey, receiverLongTermPrivateKey: PrivateKey, receiverOneTimePrivateKey: PrivateKey, message: RatchetMessage, enablePostQuantum: Bool) throws {
         let proxyResult = vscr_ratchet_session_respond(self.c_ctx, senderIdentityPublicKey.c_ctx, receiverIdentityPrivateKey.c_ctx, receiverLongTermPrivateKey.c_ctx, receiverOneTimePrivateKey.c_ctx, message.c_ctx, enablePostQuantum)
@@ -105,9 +119,23 @@ import VirgilCryptoFoundation
         try RatchetError.handleStatus(fromC: proxyResult)
     }
 
+    /// Responds to session initiation
+    @objc public func respondNoOneTimeKey(senderIdentityPublicKey: PublicKey, receiverIdentityPrivateKey: PrivateKey, receiverLongTermPrivateKey: PrivateKey, message: RatchetMessage, enablePostQuantum: Bool) throws {
+        let proxyResult = vscr_ratchet_session_respond_no_one_time_key(self.c_ctx, senderIdentityPublicKey.c_ctx, receiverIdentityPrivateKey.c_ctx, receiverLongTermPrivateKey.c_ctx, message.c_ctx, enablePostQuantum)
+
+        try RatchetError.handleStatus(fromC: proxyResult)
+    }
+
     /// Returns flag that indicates is this session was initiated or responded
     @objc public func isInitiator() -> Bool {
         let proxyResult = vscr_ratchet_session_is_initiator(self.c_ctx)
+
+        return proxyResult
+    }
+
+    /// Returns flag that indicates if session is post-quantum
+    @objc public func isPqcEnabled() -> Bool {
+        let proxyResult = vscr_ratchet_session_is_pqc_enabled(self.c_ctx)
 
         return proxyResult
     }

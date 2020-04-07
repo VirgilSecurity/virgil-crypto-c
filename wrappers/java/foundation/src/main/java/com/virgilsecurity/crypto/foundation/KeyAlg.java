@@ -80,6 +80,11 @@ public interface KeyAlg {
     PublicKey importPublicKey(RawPublicKey rawKey) throws FoundationException;
 
     /*
+    * Import public key from the raw binary format.
+    */
+    PublicKey importPublicKeyData(byte[] keyData, AlgInfo keyAlgInfo) throws FoundationException;
+
+    /*
     * Export public key to the raw binary format.
     *
     * Binary format must be defined in the key specification.
@@ -87,6 +92,20 @@ public interface KeyAlg {
     * RFC 3447 Appendix A.1.1.
     */
     RawPublicKey exportPublicKey(PublicKey publicKey) throws FoundationException;
+
+    /*
+    * Return length in bytes required to hold exported public key.
+    */
+    int exportedPublicKeyDataLen(PublicKey publicKey);
+
+    /*
+    * Export public key to the raw binary format without algorithm information.
+    *
+    * Binary format must be defined in the key specification.
+    * For instance, RSA public key must be exported in format defined in
+    * RFC 3447 Appendix A.1.1.
+    */
+    byte[] exportPublicKeyData(PublicKey publicKey) throws FoundationException;
 
     /*
     * Import private key from the raw binary format.
@@ -101,6 +120,11 @@ public interface KeyAlg {
     PrivateKey importPrivateKey(RawPrivateKey rawKey) throws FoundationException;
 
     /*
+    * Import private key from the raw binary format.
+    */
+    PrivateKey importPrivateKeyData(byte[] keyData, AlgInfo keyAlgInfo) throws FoundationException;
+
+    /*
     * Export private key in the raw binary format.
     *
     * Binary format must be defined in the key specification.
@@ -108,5 +132,19 @@ public interface KeyAlg {
     * RFC 3447 Appendix A.1.2.
     */
     RawPrivateKey exportPrivateKey(PrivateKey privateKey) throws FoundationException;
+
+    /*
+    * Return length in bytes required to hold exported private key.
+    */
+    int exportedPrivateKeyDataLen(PrivateKey privateKey);
+
+    /*
+    * Export private key to the raw binary format without algorithm information.
+    *
+    * Binary format must be defined in the key specification.
+    * For instance, RSA private key must be exported in format defined in
+    * RFC 3447 Appendix A.1.2.
+    */
+    byte[] exportPrivateKeyData(PrivateKey privateKey) throws FoundationException;
 }
 

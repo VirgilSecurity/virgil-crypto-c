@@ -511,6 +511,20 @@ err1:
 }
 
 //
+//  Initiates session
+//
+VSCR_PUBLIC vscr_status_t
+vscr_ratchet_session_initiate_no_one_time_key(vscr_ratchet_session_t *self,
+        const vscf_impl_t *sender_identity_private_key, vsc_data_t sender_identity_key_id,
+        const vscf_impl_t *receiver_identity_public_key, vsc_data_t receiver_identity_key_id,
+        vscf_impl_t *receiver_long_term_public_key, vsc_data_t receiver_long_term_key_id, bool enable_post_quantum) {
+
+    return vscr_ratchet_session_initiate(self, sender_identity_private_key, sender_identity_key_id,
+            receiver_identity_public_key, receiver_identity_key_id, receiver_long_term_public_key,
+            receiver_long_term_key_id, NULL, vsc_data_empty(), enable_post_quantum);
+}
+
+//
 //  Responds to session initiation
 //
 VSCR_PUBLIC vscr_status_t
@@ -639,12 +653,35 @@ err1:
 }
 
 //
+//  Responds to session initiation
+//
+VSCR_PUBLIC vscr_status_t
+vscr_ratchet_session_respond_no_one_time_key(vscr_ratchet_session_t *self, vscf_impl_t *sender_identity_public_key,
+        const vscf_impl_t *receiver_identity_private_key, const vscf_impl_t *receiver_long_term_private_key,
+        const vscr_ratchet_message_t *message, bool enable_post_quantum) {
+
+    return vscr_ratchet_session_respond(self, sender_identity_public_key, receiver_identity_private_key,
+            receiver_long_term_private_key, NULL, message, enable_post_quantum);
+}
+
+//
 //  Returns flag that indicates is this session was initiated or responded
 //
 VSCR_PUBLIC bool
 vscr_ratchet_session_is_initiator(vscr_ratchet_session_t *self) {
 
     return self->is_initiator;
+}
+
+//
+//  Returns flag that indicates if session is post-quantum
+//
+VSCR_PUBLIC bool
+vscr_ratchet_session_is_pqc_enabled(vscr_ratchet_session_t *self) {
+
+    VSCR_ASSERT_PTR(self);
+
+    return self->enable_post_quantum;
 }
 
 //

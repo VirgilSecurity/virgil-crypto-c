@@ -101,6 +101,37 @@
         </return>
     </method>
 
+    <method name="initiate no one time key">
+        Initiates session
+
+        <argument name="sender identity private key" interface="private key" project="foundation">
+            Sender identity private key
+        </argument>
+        <argument name="sender identity key id" class="data">
+            Sender identity key id
+        </argument>
+        <argument name="receiver identity public key" interface="public key" project="foundation">
+            Receiver identity public key
+        </argument>
+        <argument name="receiver identity key id" class="data">
+            Sender identity key id
+        </argument>
+        <argument name="receiver long term public key" interface="public key" project="foundation" access="retain">
+            Receiver long-term public key
+        </argument>
+        <argument name="receiver long term key id" class="data">
+            Receiver long-term key id
+        </argument>
+        <argument name="enable post quantum" type="boolean">
+            Ephemeral keys will consist of curve25519 and round5 keys.
+            Ephemeral keys without round5 key won't be accepted
+        </argument>
+
+        <return enum="status">
+            Error
+        </return>
+    </method>
+
     <method name="respond">
         Responds to session initiation
 
@@ -129,11 +160,44 @@
         </return>
     </method>
 
+    <method name="respond no one time key">
+        Responds to session initiation
+
+        <argument name="sender identity public key" interface="public key" project="foundation" access="retain">
+            Sender identity public key
+        </argument>
+        <argument name="receiver identity private key" interface="private key" project="foundation">
+            Receiver identity private key
+        </argument>
+        <argument name="receiver long term private key" interface="private key" project="foundation">
+            Receiver long-term private key
+        </argument>
+        <argument name="message" class="ratchet message">
+            Message received from initiator
+        </argument>
+        <argument name="enable post quantum" type="boolean">
+            Ephemeral keys will consist of curve25519 and round5 keys.
+            Ephemeral keys without round5 key won't be accepted
+        </argument>
+
+        <return enum="status">
+            Error
+        </return>
+    </method>
+
     <method name="is initiator">
         Returns flag that indicates is this session was initiated or responded
 
         <return type="boolean">
             True is session was initiated, false if responded
+        </return>
+    </method>
+
+    <method name="is pqc enabled">
+        Returns flag that indicates if session is post-quantum
+
+        <return type="boolean">
+            True is session is pqc, false otherwise
         </return>
     </method>
 

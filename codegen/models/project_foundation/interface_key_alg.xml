@@ -46,7 +46,7 @@
     </method>
 
 
-    <method name="import public key data" is_const="1" visibility="private">
+    <method name="import public key data" is_const="1" scope="private">
         Import public key from the raw binary format.
 
         <argument name="key data" class="data"/>
@@ -71,7 +71,7 @@
     </method>
 
 
-    <method name="exported public key data len" is_const="1" visibility="private">
+    <method name="exported public key data len" is_const="1" scope="private">
         Return length in bytes required to hold exported public key.
 
         <argument name="public key" interface="public key"/>
@@ -80,7 +80,7 @@
     </method>
 
 
-    <method name="export public key data" is_const="1" visibility="private">
+    <method name="export public key data" is_const="1" scope="private">
         Export public key to the raw binary format without algorithm information.
 
         Binary format must be defined in the key specification.
@@ -115,7 +115,7 @@
     </method>
 
 
-    <method name="import private key data" is_const="1" visibility="private">
+    <method name="import private key data" is_const="1" scope="private">
         Import private key from the raw binary format.
 
         <argument name="key data" class="data"/>
@@ -140,7 +140,7 @@
     </method>
 
 
-    <method name="exported private key data len" is_const="1" visibility="private">
+    <method name="exported private key data len" is_const="1" scope="private">
         Return length in bytes required to hold exported private key.
 
         <argument name="private key" interface="private key"/>
@@ -149,7 +149,7 @@
     </method>
 
 
-    <method name="export private key data" is_const="1" visibility="private">
+    <method name="export private key data" is_const="1" scope="private">
         Export private key to the raw binary format without algorithm information.
 
         Binary format must be defined in the key specification.

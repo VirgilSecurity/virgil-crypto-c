@@ -107,6 +107,13 @@ public class RatchetSession implements AutoCloseable {
     }
 
     /*
+    * Initiates session
+    */
+    public void initiateNoOneTimeKey(PrivateKey senderIdentityPrivateKey, byte[] senderIdentityKeyId, PublicKey receiverIdentityPublicKey, byte[] receiverIdentityKeyId, PublicKey receiverLongTermPublicKey, byte[] receiverLongTermKeyId, boolean enablePostQuantum) throws RatchetException {
+        RatchetJNI.INSTANCE.ratchetSession_initiateNoOneTimeKey(this.cCtx, senderIdentityPrivateKey, senderIdentityKeyId, receiverIdentityPublicKey, receiverIdentityKeyId, receiverLongTermPublicKey, receiverLongTermKeyId, enablePostQuantum);
+    }
+
+    /*
     * Responds to session initiation
     */
     public void respond(PublicKey senderIdentityPublicKey, PrivateKey receiverIdentityPrivateKey, PrivateKey receiverLongTermPrivateKey, PrivateKey receiverOneTimePrivateKey, RatchetMessage message, boolean enablePostQuantum) throws RatchetException {
@@ -114,10 +121,24 @@ public class RatchetSession implements AutoCloseable {
     }
 
     /*
+    * Responds to session initiation
+    */
+    public void respondNoOneTimeKey(PublicKey senderIdentityPublicKey, PrivateKey receiverIdentityPrivateKey, PrivateKey receiverLongTermPrivateKey, RatchetMessage message, boolean enablePostQuantum) throws RatchetException {
+        RatchetJNI.INSTANCE.ratchetSession_respondNoOneTimeKey(this.cCtx, senderIdentityPublicKey, receiverIdentityPrivateKey, receiverLongTermPrivateKey, message, enablePostQuantum);
+    }
+
+    /*
     * Returns flag that indicates is this session was initiated or responded
     */
     public boolean isInitiator() {
         return RatchetJNI.INSTANCE.ratchetSession_isInitiator(this.cCtx);
+    }
+
+    /*
+    * Returns flag that indicates if session is post-quantum
+    */
+    public boolean isPqcEnabled() {
+        return RatchetJNI.INSTANCE.ratchetSession_isPqcEnabled(this.cCtx);
     }
 
     /*

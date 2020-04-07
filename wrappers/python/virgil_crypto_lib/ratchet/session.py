@@ -74,14 +74,32 @@ class Session(object):
         status = self._lib_vscr_ratchet_session.vscr_ratchet_session_initiate(self.ctx, sender_identity_private_key.c_impl, d_sender_identity_key_id.data, receiver_identity_public_key.c_impl, d_receiver_identity_key_id.data, receiver_long_term_public_key.c_impl, d_receiver_long_term_key_id.data, receiver_one_time_public_key.c_impl, d_receiver_one_time_key_id.data, enable_post_quantum)
         VscrStatus.handle_status(status)
 
+    def initiate_no_one_time_key(self, sender_identity_private_key, sender_identity_key_id, receiver_identity_public_key, receiver_identity_key_id, receiver_long_term_public_key, receiver_long_term_key_id, enable_post_quantum):
+        """Initiates session"""
+        d_sender_identity_key_id = Data(sender_identity_key_id)
+        d_receiver_identity_key_id = Data(receiver_identity_key_id)
+        d_receiver_long_term_key_id = Data(receiver_long_term_key_id)
+        status = self._lib_vscr_ratchet_session.vscr_ratchet_session_initiate_no_one_time_key(self.ctx, sender_identity_private_key.c_impl, d_sender_identity_key_id.data, receiver_identity_public_key.c_impl, d_receiver_identity_key_id.data, receiver_long_term_public_key.c_impl, d_receiver_long_term_key_id.data, enable_post_quantum)
+        VscrStatus.handle_status(status)
+
     def respond(self, sender_identity_public_key, receiver_identity_private_key, receiver_long_term_private_key, receiver_one_time_private_key, message, enable_post_quantum):
         """Responds to session initiation"""
         status = self._lib_vscr_ratchet_session.vscr_ratchet_session_respond(self.ctx, sender_identity_public_key.c_impl, receiver_identity_private_key.c_impl, receiver_long_term_private_key.c_impl, receiver_one_time_private_key.c_impl, message.ctx, enable_post_quantum)
         VscrStatus.handle_status(status)
 
+    def respond_no_one_time_key(self, sender_identity_public_key, receiver_identity_private_key, receiver_long_term_private_key, message, enable_post_quantum):
+        """Responds to session initiation"""
+        status = self._lib_vscr_ratchet_session.vscr_ratchet_session_respond_no_one_time_key(self.ctx, sender_identity_public_key.c_impl, receiver_identity_private_key.c_impl, receiver_long_term_private_key.c_impl, message.ctx, enable_post_quantum)
+        VscrStatus.handle_status(status)
+
     def is_initiator(self):
         """Returns flag that indicates is this session was initiated or responded"""
         result = self._lib_vscr_ratchet_session.vscr_ratchet_session_is_initiator(self.ctx)
+        return result
+
+    def is_pqc_enabled(self):
+        """Returns flag that indicates if session is post-quantum"""
+        result = self._lib_vscr_ratchet_session.vscr_ratchet_session_is_pqc_enabled(self.ctx)
         return result
 
     def received_first_response(self):

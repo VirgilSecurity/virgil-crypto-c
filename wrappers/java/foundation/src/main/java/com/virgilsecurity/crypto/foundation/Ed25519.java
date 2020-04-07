@@ -156,6 +156,13 @@ public class Ed25519 implements AutoCloseable, KeyAlg, KeyCipher, KeySigner, Com
     }
 
     /*
+    * Import public key from the raw binary format.
+    */
+    public PublicKey importPublicKeyData(byte[] keyData, AlgInfo keyAlgInfo) throws FoundationException {
+        return FoundationJNI.INSTANCE.ed25519_importPublicKeyData(this.cCtx, keyData, keyAlgInfo);
+    }
+
+    /*
     * Export public key to the raw binary format.
     *
     * Binary format must be defined in the key specification.
@@ -164,6 +171,24 @@ public class Ed25519 implements AutoCloseable, KeyAlg, KeyCipher, KeySigner, Com
     */
     public RawPublicKey exportPublicKey(PublicKey publicKey) throws FoundationException {
         return FoundationJNI.INSTANCE.ed25519_exportPublicKey(this.cCtx, publicKey);
+    }
+
+    /*
+    * Return length in bytes required to hold exported public key.
+    */
+    public int exportedPublicKeyDataLen(PublicKey publicKey) {
+        return FoundationJNI.INSTANCE.ed25519_exportedPublicKeyDataLen(this.cCtx, publicKey);
+    }
+
+    /*
+    * Export public key to the raw binary format without algorithm information.
+    *
+    * Binary format must be defined in the key specification.
+    * For instance, RSA public key must be exported in format defined in
+    * RFC 3447 Appendix A.1.1.
+    */
+    public byte[] exportPublicKeyData(PublicKey publicKey) throws FoundationException {
+        return FoundationJNI.INSTANCE.ed25519_exportPublicKeyData(this.cCtx, publicKey);
     }
 
     /*
@@ -181,6 +206,13 @@ public class Ed25519 implements AutoCloseable, KeyAlg, KeyCipher, KeySigner, Com
     }
 
     /*
+    * Import private key from the raw binary format.
+    */
+    public PrivateKey importPrivateKeyData(byte[] keyData, AlgInfo keyAlgInfo) throws FoundationException {
+        return FoundationJNI.INSTANCE.ed25519_importPrivateKeyData(this.cCtx, keyData, keyAlgInfo);
+    }
+
+    /*
     * Export private key in the raw binary format.
     *
     * Binary format must be defined in the key specification.
@@ -189,6 +221,24 @@ public class Ed25519 implements AutoCloseable, KeyAlg, KeyCipher, KeySigner, Com
     */
     public RawPrivateKey exportPrivateKey(PrivateKey privateKey) throws FoundationException {
         return FoundationJNI.INSTANCE.ed25519_exportPrivateKey(this.cCtx, privateKey);
+    }
+
+    /*
+    * Return length in bytes required to hold exported private key.
+    */
+    public int exportedPrivateKeyDataLen(PrivateKey privateKey) {
+        return FoundationJNI.INSTANCE.ed25519_exportedPrivateKeyDataLen(this.cCtx, privateKey);
+    }
+
+    /*
+    * Export private key to the raw binary format without algorithm information.
+    *
+    * Binary format must be defined in the key specification.
+    * For instance, RSA private key must be exported in format defined in
+    * RFC 3447 Appendix A.1.2.
+    */
+    public byte[] exportPrivateKeyData(PrivateKey privateKey) throws FoundationException {
+        return FoundationJNI.INSTANCE.ed25519_exportPrivateKeyData(this.cCtx, privateKey);
     }
 
     /*

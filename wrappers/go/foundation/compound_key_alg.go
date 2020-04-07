@@ -238,6 +238,28 @@ func (obj *CompoundKeyAlg) ImportPublicKey(rawKey *RawPublicKey) (PublicKey, err
 }
 
 /*
+* Import public key from the raw binary format.
+*/
+func (obj *CompoundKeyAlg) ImportPublicKeyData(keyData []byte, keyAlgInfo AlgInfo) (PublicKey, error) {
+    var error C.vscf_error_t
+    C.vscf_error_reset(&error)
+    keyDataData := helperWrapData (keyData)
+
+    proxyResult := /*pr4*/C.vscf_compound_key_alg_import_public_key_data(obj.cCtx, keyDataData, (*C.vscf_impl_t)(unsafe.Pointer(keyAlgInfo.Ctx())), &error)
+
+    err := FoundationErrorHandleStatus(error.status)
+    if err != nil {
+        return nil, err
+    }
+
+    runtime.KeepAlive(obj)
+
+    runtime.KeepAlive(keyAlgInfo)
+
+    return FoundationImplementationWrapPublicKey(proxyResult) /* r4 */
+}
+
+/*
 * Export public key to the raw binary format.
 *
 * Binary format must be defined in the key specification.
@@ -260,6 +282,48 @@ func (obj *CompoundKeyAlg) ExportPublicKey(publicKey PublicKey) (*RawPublicKey, 
     runtime.KeepAlive(publicKey)
 
     return newRawPublicKeyWithCtx(proxyResult) /* r6 */, nil
+}
+
+/*
+* Return length in bytes required to hold exported public key.
+*/
+func (obj *CompoundKeyAlg) ExportedPublicKeyDataLen(publicKey PublicKey) uint {
+    proxyResult := /*pr4*/C.vscf_compound_key_alg_exported_public_key_data_len(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(publicKey.Ctx())))
+
+    runtime.KeepAlive(obj)
+
+    runtime.KeepAlive(publicKey)
+
+    return uint(proxyResult) /* r9 */
+}
+
+/*
+* Export public key to the raw binary format without algorithm information.
+*
+* Binary format must be defined in the key specification.
+* For instance, RSA public key must be exported in format defined in
+* RFC 3447 Appendix A.1.1.
+*/
+func (obj *CompoundKeyAlg) ExportPublicKeyData(publicKey PublicKey) ([]byte, error) {
+    outBuf, outBufErr := newBuffer(int(obj.ExportedPublicKeyDataLen(publicKey.(PublicKey)) /* lg2 */))
+    if outBufErr != nil {
+        return nil, outBufErr
+    }
+    defer outBuf.delete()
+
+
+    proxyResult := /*pr4*/C.vscf_compound_key_alg_export_public_key_data(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(publicKey.Ctx())), outBuf.ctx)
+
+    err := FoundationErrorHandleStatus(proxyResult)
+    if err != nil {
+        return nil, err
+    }
+
+    runtime.KeepAlive(obj)
+
+    runtime.KeepAlive(publicKey)
+
+    return outBuf.getData() /* r7 */, nil
 }
 
 /*
@@ -291,6 +355,28 @@ func (obj *CompoundKeyAlg) ImportPrivateKey(rawKey *RawPrivateKey) (PrivateKey, 
 }
 
 /*
+* Import private key from the raw binary format.
+*/
+func (obj *CompoundKeyAlg) ImportPrivateKeyData(keyData []byte, keyAlgInfo AlgInfo) (PrivateKey, error) {
+    var error C.vscf_error_t
+    C.vscf_error_reset(&error)
+    keyDataData := helperWrapData (keyData)
+
+    proxyResult := /*pr4*/C.vscf_compound_key_alg_import_private_key_data(obj.cCtx, keyDataData, (*C.vscf_impl_t)(unsafe.Pointer(keyAlgInfo.Ctx())), &error)
+
+    err := FoundationErrorHandleStatus(error.status)
+    if err != nil {
+        return nil, err
+    }
+
+    runtime.KeepAlive(obj)
+
+    runtime.KeepAlive(keyAlgInfo)
+
+    return FoundationImplementationWrapPrivateKey(proxyResult) /* r4 */
+}
+
+/*
 * Export private key in the raw binary format.
 *
 * Binary format must be defined in the key specification.
@@ -313,6 +399,48 @@ func (obj *CompoundKeyAlg) ExportPrivateKey(privateKey PrivateKey) (*RawPrivateK
     runtime.KeepAlive(privateKey)
 
     return newRawPrivateKeyWithCtx(proxyResult) /* r6 */, nil
+}
+
+/*
+* Return length in bytes required to hold exported private key.
+*/
+func (obj *CompoundKeyAlg) ExportedPrivateKeyDataLen(privateKey PrivateKey) uint {
+    proxyResult := /*pr4*/C.vscf_compound_key_alg_exported_private_key_data_len(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(privateKey.Ctx())))
+
+    runtime.KeepAlive(obj)
+
+    runtime.KeepAlive(privateKey)
+
+    return uint(proxyResult) /* r9 */
+}
+
+/*
+* Export private key to the raw binary format without algorithm information.
+*
+* Binary format must be defined in the key specification.
+* For instance, RSA private key must be exported in format defined in
+* RFC 3447 Appendix A.1.2.
+*/
+func (obj *CompoundKeyAlg) ExportPrivateKeyData(privateKey PrivateKey) ([]byte, error) {
+    outBuf, outBufErr := newBuffer(int(obj.ExportedPrivateKeyDataLen(privateKey.(PrivateKey)) /* lg2 */))
+    if outBufErr != nil {
+        return nil, outBufErr
+    }
+    defer outBuf.delete()
+
+
+    proxyResult := /*pr4*/C.vscf_compound_key_alg_export_private_key_data(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(privateKey.Ctx())), outBuf.ctx)
+
+    err := FoundationErrorHandleStatus(proxyResult)
+    if err != nil {
+        return nil, err
+    }
+
+    runtime.KeepAlive(obj)
+
+    runtime.KeepAlive(privateKey)
+
+    return outBuf.getData() /* r7 */, nil
 }
 
 /*
