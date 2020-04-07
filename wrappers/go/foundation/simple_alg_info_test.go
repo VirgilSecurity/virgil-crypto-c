@@ -35,18 +35,18 @@
 package foundation
 
 import (
-	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"testing"
 )
 
 func TestNewSimpleAlgInfoWithAlgId(t *testing.T) {
 	simpleAlgInfo := NewSimpleAlgInfoWithAlgId(AlgIdAes256Cbc)
 
-	assert.Equal(t, AlgIdAes256Cbc, simpleAlgInfo.AlgId())
+	require.Equal(t, AlgIdAes256Cbc, simpleAlgInfo.AlgId())
 }
 
 func TestSimpleAlgInfo_AlgId(t *testing.T) {
 	simpleAlgInfo := NewSimpleAlgInfo()
 
-	assert.Equal(t, AlgIdNone, simpleAlgInfo.AlgId())
+	require.Equal(t, AlgIdNone, simpleAlgInfo.AlgId())
 }

@@ -35,20 +35,20 @@
 package foundation
 
 import (
-	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"testing"
 )
 
 func TestNewFakeRandom(t *testing.T) {
 	fakeRandom := NewFakeRandom()
 
-	assert.NotNil(t, fakeRandom)
+	require.NotNil(t, fakeRandom)
 }
 
 func TestFakeRandom_Random(t *testing.T) {
 	fakeRandom := NewFakeRandom()
 	bytes, err := fakeRandom.Random(10)
-	assert.Nil(t, err)
-	assert.NotNil(t, bytes)
-	assert.Equal(t, 10, len(bytes))
+	require.Nil(t, err)
+	require.NotNil(t, bytes)
+	require.Equal(t, 10, len(bytes))
 }

@@ -263,8 +263,15 @@ class KeyProviderTest extends \PHPUnit\Framework\TestCase
 
         $testData = "Lorem Ipsum is simply dummy text of the printing and typesetting industry.";
 
-        $this->expectException(\Exception::class);
-        $keyProvider->importPublicKey($testData);
+        try {
+            $keyProvider->importPublicKey($testData);
+
+        } catch (\FoundationException $exception) {
+            $this->assertEquals("ASN.1 representation of a public key is corrupted.", $exception->getMessage());
+            $this->assertEquals(-223, $exception->getCode());
+        } catch (\Exception $exception) {
+            $this->fail($exception->getMessage());
+        }
     }
 
     public function test_KeyProvider_importPrivateKeyEd25519AndThenExport()

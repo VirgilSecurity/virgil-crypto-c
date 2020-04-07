@@ -242,16 +242,23 @@ endfunction
 function python_derive_high_level_instance_type (instance, python_project)
     check_arguments (my, "instance, python_project", my)
 
-    if defined (my.instance.class)
-        if is_ref (my.instance.class) | defined (my.instance.library)
-            return python_lang_ref (my.instance.class)
+    my.class = get_one_of_attribute (my.instance, "class, impl, interface") ?
+
+    if defined (my.class)
+        if is_ref (my.class) | defined (my.instance.library)
+            return python_lang_ref (my.class)
         else
-            raw_class_name = my.instance.class
-            class_name = string.search_replace (raw_class_name, my.python_project.name, "")
-            return "$(class_name:Pascal)"
+            #
+            #  Remove project name prefixes for classes with BAD names, i.e "ratchet group message"
+            #
+            my.class = string.search_replace (my.class, my.python_project.name, "")
+            my.class = string_trim(my.class)
+
+            return "$(my.class:Pascal)"
         endif
     endif
-    return ""
+
+    return
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -260,18 +267,25 @@ endfunction
 function python_derive_class_module_name (instance, python_project)
     check_arguments (my, "instance, python_project", my)
 
-    if defined (my.instance.class)
-        if is_ref (my.instance.class) | defined (my.instance.library)
-            return python_lang_ref (my.instance.class)
+    my.class = get_one_of_attribute (my.instance, "class, impl, interface") ?
+
+    if defined (my.class)
+        if is_ref (my.class) | defined (my.instance.library)
+            return python_lang_ref (my.class)
         else
-            raw_class_name = my.instance.class
-            class_name = string.search_replace (raw_class_name, "$(my.python_project.name:) ", "")
-            return "$(class_name:c)"
+            #
+            #  Remove project name prefixes for models with BAD names, i.e "ratchet group message"
+            #
+            my.class = string.search_replace (my.class, my.python_project.name, "")
+            my.class = string_trim(my.class)
+
+            return "$(my.class:c)"
         endif
     elsif defined (my.instance.enum)
         return "$(my.instance.enum:c)"
     endif
-    return ""
+
+    return
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -422,12 +436,8 @@ function python_class_derive_buffer_length_getter (class, method, argument, pyth
     endfor
 
     my.specified_proxy_object = get_one_of_attribute (my.length, "class, interface, impl") ?
-    if defined (my.specified_proxy_object)
-        if my.specified_proxy_object <> "self"
-            my.proxy_object = python_derive_class_name_str (my.specified_proxy_object, my.python_project)
-        else
-            my.proxy_object = my.specified_proxy_object
-        endif
+    if defined (my.specified_proxy_object) & (my.specified_proxy_object <> my.class.name)
+        my.proxy_object = python_derive_class_name_str (my.specified_proxy_object, my.python_project)
     else
         my.proxy_object = "self"
     endif
@@ -441,9 +451,9 @@ function python_class_derive_buffer_length_getter (class, method, argument, pyth
 
         if my.proxy_object <> "self"
             new python_import to my.python_class
-                module_name = python_derive_class_module_name (my.proxy_object, my.python_project)
-                if ! string_empty (module_name)
-                    .framework = ".$(module_name:)"
+                my.module_name = python_derive_class_module_name (my.proxy_object, my.python_project) ?
+                if defined (my.module_name)
+                    .framework = ".$(my.module_name:)"
                 else
                     .framework = ".$(my.proxy_object:c)"
                 endif
@@ -525,15 +535,15 @@ function python_map_instance_type (python_instance, instance, python_project)
 
     my.python_instance.type = python_derive_instance_type (my.instance)
 
-    high_level_type = python_derive_high_level_instance_type (my.instance, my.python_project)
-    if ! string_empty (high_level_type)
-        my.python_instance.high_level_type = high_level_type
+    my.high_level_type = python_derive_high_level_instance_type (my.instance, my.python_project) ?
+    if defined (my.high_level_type)
+        my.python_instance.high_level_type = my.high_level_type
     endif
 
-    class_module_name = python_derive_class_module_name (my.instance, my.python_project)
+    my.class_module_name = python_derive_class_module_name (my.instance, my.python_project) ?
 
-    if ! string_empty (class_module_name)
-        my.python_instance.class_module_name = class_module_name
+    if defined (my.class_module_name)
+        my.python_instance.class_module_name = my.class_module_name
     endif
 
     low_level_class_module_name = python_derive_low_level_class_module_name (my.instance)

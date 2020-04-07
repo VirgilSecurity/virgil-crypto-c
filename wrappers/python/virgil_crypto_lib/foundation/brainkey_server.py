@@ -36,7 +36,6 @@
 from ctypes import *
 from ._c_bridge import VscfBrainkeyServer
 from ._c_bridge import VscfStatus
-from .brainkeyserver import BrainkeyServer
 from virgil_crypto_lib.common._c_bridge import Buffer
 from virgil_crypto_lib.common._c_bridge import Data
 
@@ -68,7 +67,7 @@ class BrainkeyServer(object):
         VscfStatus.handle_status(status)
 
     def generate_identity_secret(self):
-        identity_secret = Buffer(BrainkeyServer.MPI_LEN)
+        identity_secret = Buffer(self.MPI_LEN)
         status = self._lib_vscf_brainkey_server.vscf_brainkey_server_generate_identity_secret(self.ctx, identity_secret.c_buffer)
         VscfStatus.handle_status(status)
         return identity_secret.get_bytes()
@@ -76,7 +75,7 @@ class BrainkeyServer(object):
     def harden(self, identity_secret, blinded_point):
         d_identity_secret = Data(identity_secret)
         d_blinded_point = Data(blinded_point)
-        hardened_point = Buffer(BrainkeyServer.POINT_LEN)
+        hardened_point = Buffer(self.POINT_LEN)
         status = self._lib_vscf_brainkey_server.vscf_brainkey_server_harden(self.ctx, d_identity_secret.data, d_blinded_point.data, hardened_point.c_buffer)
         VscfStatus.handle_status(status)
         return hardened_point.get_bytes()

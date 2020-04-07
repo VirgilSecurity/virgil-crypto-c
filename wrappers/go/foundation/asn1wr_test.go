@@ -35,14 +35,14 @@
 package foundation
 
 import (
-	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"testing"
 )
 
 func TestNewAsn1wr(t *testing.T) {
 	asn1wr := NewAsn1wr()
 
-	assert.NotNil(t, asn1wr)
+	require.NotNil(t, asn1wr)
 }
 
 func TestAsn1wr_Finish(t *testing.T) {
@@ -56,6 +56,6 @@ func TestAsn1wr_Finish(t *testing.T) {
 	writteneLen := asn1wr.WriteInt(2)
 	writtenBytes := asn1wr.Finish(false)
 
-	assert.Equal(t, uint(3), writtenBytes)
-	assert.Equal(t, uint(len(asn1_encoded_INT_2)), writteneLen)
+	require.Equal(t, uint(3), writtenBytes)
+	require.Equal(t, uint(len(asn1_encoded_INT_2)), writteneLen)
 }

@@ -124,228 +124,231 @@
 
 #define VSCF_HANDLE_STATUS(status) do { if(status != vscf_status_SUCCESS) { vscf_handle_throw_exception(status); } } while (false)
 
+zend_class_entry* vscf_exception_ce;
+
 void
 vscf_handle_throw_exception(vscf_status_t status) {
+
     switch(status) {
 
     case vscf_status_ERROR_BAD_ARGUMENTS:
-        zend_throw_exception(NULL, "VSCF: This error should not be returned if assertions is enabled.", -1);
+        zend_throw_exception_ex(vscf_exception_ce, -1, "This error should not be returned if assertions is enabled.");
         break;
     case vscf_status_ERROR_UNINITIALIZED:
-        zend_throw_exception(NULL, "VSCF: Can be used to define that not all context prerequisites are satisfied. Note, this error should not be returned if assertions is enabled.", -2);
+        zend_throw_exception_ex(vscf_exception_ce, -2, "Can be used to define that not all context prerequisites are satisfied. Note, this error should not be returned if assertions is enabled.");
         break;
     case vscf_status_ERROR_UNHANDLED_THIRDPARTY_ERROR:
-        zend_throw_exception(NULL, "VSCF: Define that error code from one of third-party module was not handled. Note, this error should not be returned if assertions is enabled.", -3);
+        zend_throw_exception_ex(vscf_exception_ce, -3, "Define that error code from one of third-party module was not handled. Note, this error should not be returned if assertions is enabled.");
         break;
     case vscf_status_ERROR_SMALL_BUFFER:
-        zend_throw_exception(NULL, "VSCF: Buffer capacity is not enough to hold result.", -101);
+        zend_throw_exception_ex(vscf_exception_ce, -101, "Buffer capacity is not enough to hold result.");
         break;
     case vscf_status_ERROR_UNSUPPORTED_ALGORITHM:
-        zend_throw_exception(NULL, "VSCF: Unsupported algorithm.", -200);
+        zend_throw_exception_ex(vscf_exception_ce, -200, "Unsupported algorithm.");
         break;
     case vscf_status_ERROR_AUTH_FAILED:
-        zend_throw_exception(NULL, "VSCF: Authentication failed during decryption.", -201);
+        zend_throw_exception_ex(vscf_exception_ce, -201, "Authentication failed during decryption.");
         break;
     case vscf_status_ERROR_OUT_OF_DATA:
-        zend_throw_exception(NULL, "VSCF: Attempt to read data out of buffer bounds.", -202);
+        zend_throw_exception_ex(vscf_exception_ce, -202, "Attempt to read data out of buffer bounds.");
         break;
     case vscf_status_ERROR_BAD_ASN1:
-        zend_throw_exception(NULL, "VSCF: ASN.1 encoded data is corrupted.", -203);
+        zend_throw_exception_ex(vscf_exception_ce, -203, "ASN.1 encoded data is corrupted.");
         break;
     case vscf_status_ERROR_ASN1_LOSSY_TYPE_NARROWING:
-        zend_throw_exception(NULL, "VSCF: Attempt to read ASN.1 type that is bigger then requested C type.", -204);
+        zend_throw_exception_ex(vscf_exception_ce, -204, "Attempt to read ASN.1 type that is bigger then requested C type.");
         break;
     case vscf_status_ERROR_BAD_PKCS1_PUBLIC_KEY:
-        zend_throw_exception(NULL, "VSCF: ASN.1 representation of PKCS#1 public key is corrupted.", -205);
+        zend_throw_exception_ex(vscf_exception_ce, -205, "ASN.1 representation of PKCS#1 public key is corrupted.");
         break;
     case vscf_status_ERROR_BAD_PKCS1_PRIVATE_KEY:
-        zend_throw_exception(NULL, "VSCF: ASN.1 representation of PKCS#1 private key is corrupted.", -206);
+        zend_throw_exception_ex(vscf_exception_ce, -206, "ASN.1 representation of PKCS#1 private key is corrupted.");
         break;
     case vscf_status_ERROR_BAD_PKCS8_PUBLIC_KEY:
-        zend_throw_exception(NULL, "VSCF: ASN.1 representation of PKCS#8 public key is corrupted.", -207);
+        zend_throw_exception_ex(vscf_exception_ce, -207, "ASN.1 representation of PKCS#8 public key is corrupted.");
         break;
     case vscf_status_ERROR_BAD_PKCS8_PRIVATE_KEY:
-        zend_throw_exception(NULL, "VSCF: ASN.1 representation of PKCS#8 private key is corrupted.", -208);
+        zend_throw_exception_ex(vscf_exception_ce, -208, "ASN.1 representation of PKCS#8 private key is corrupted.");
         break;
     case vscf_status_ERROR_BAD_ENCRYPTED_DATA:
-        zend_throw_exception(NULL, "VSCF: Encrypted data is corrupted.", -209);
+        zend_throw_exception_ex(vscf_exception_ce, -209, "Encrypted data is corrupted.");
         break;
     case vscf_status_ERROR_RANDOM_FAILED:
-        zend_throw_exception(NULL, "VSCF: Underlying random operation returns error.", -210);
+        zend_throw_exception_ex(vscf_exception_ce, -210, "Underlying random operation returns error.");
         break;
     case vscf_status_ERROR_KEY_GENERATION_FAILED:
-        zend_throw_exception(NULL, "VSCF: Generation of the private or secret key failed.", -211);
+        zend_throw_exception_ex(vscf_exception_ce, -211, "Generation of the private or secret key failed.");
         break;
     case vscf_status_ERROR_ENTROPY_SOURCE_FAILED:
-        zend_throw_exception(NULL, "VSCF: One of the entropy sources failed.", -212);
+        zend_throw_exception_ex(vscf_exception_ce, -212, "One of the entropy sources failed.");
         break;
     case vscf_status_ERROR_RNG_REQUESTED_DATA_TOO_BIG:
-        zend_throw_exception(NULL, "VSCF: Requested data to be generated is too big.", -213);
+        zend_throw_exception_ex(vscf_exception_ce, -213, "Requested data to be generated is too big.");
         break;
     case vscf_status_ERROR_BAD_BASE64:
-        zend_throw_exception(NULL, "VSCF: Base64 encoded string contains invalid characters.", -214);
+        zend_throw_exception_ex(vscf_exception_ce, -214, "Base64 encoded string contains invalid characters.");
         break;
     case vscf_status_ERROR_BAD_PEM:
-        zend_throw_exception(NULL, "VSCF: PEM data is corrupted.", -215);
+        zend_throw_exception_ex(vscf_exception_ce, -215, "PEM data is corrupted.");
         break;
     case vscf_status_ERROR_SHARED_KEY_EXCHANGE_FAILED:
-        zend_throw_exception(NULL, "VSCF: Exchange key return zero.", -216);
+        zend_throw_exception_ex(vscf_exception_ce, -216, "Exchange key return zero.");
         break;
     case vscf_status_ERROR_BAD_ED25519_PUBLIC_KEY:
-        zend_throw_exception(NULL, "VSCF: Ed25519 public key is corrupted.", -217);
+        zend_throw_exception_ex(vscf_exception_ce, -217, "Ed25519 public key is corrupted.");
         break;
     case vscf_status_ERROR_BAD_ED25519_PRIVATE_KEY:
-        zend_throw_exception(NULL, "VSCF: Ed25519 private key is corrupted.", -218);
+        zend_throw_exception_ex(vscf_exception_ce, -218, "Ed25519 private key is corrupted.");
         break;
     case vscf_status_ERROR_BAD_CURVE25519_PUBLIC_KEY:
-        zend_throw_exception(NULL, "VSCF: CURVE25519 public key is corrupted.", -219);
+        zend_throw_exception_ex(vscf_exception_ce, -219, "CURVE25519 public key is corrupted.");
         break;
     case vscf_status_ERROR_BAD_CURVE25519_PRIVATE_KEY:
-        zend_throw_exception(NULL, "VSCF: CURVE25519 private key is corrupted.", -220);
+        zend_throw_exception_ex(vscf_exception_ce, -220, "CURVE25519 private key is corrupted.");
         break;
     case vscf_status_ERROR_BAD_SEC1_PUBLIC_KEY:
-        zend_throw_exception(NULL, "VSCF: Elliptic curve public key format is corrupted see RFC 5480.", -221);
+        zend_throw_exception_ex(vscf_exception_ce, -221, "Elliptic curve public key format is corrupted see RFC 5480.");
         break;
     case vscf_status_ERROR_BAD_SEC1_PRIVATE_KEY:
-        zend_throw_exception(NULL, "VSCF: Elliptic curve public key format is corrupted see RFC 5915.", -222);
+        zend_throw_exception_ex(vscf_exception_ce, -222, "Elliptic curve public key format is corrupted see RFC 5915.");
         break;
     case vscf_status_ERROR_BAD_DER_PUBLIC_KEY:
-        zend_throw_exception(NULL, "VSCF: ASN.1 representation of a public key is corrupted.", -223);
+        zend_throw_exception_ex(vscf_exception_ce, -223, "ASN.1 representation of a public key is corrupted.");
         break;
     case vscf_status_ERROR_BAD_DER_PRIVATE_KEY:
-        zend_throw_exception(NULL, "VSCF: ASN.1 representation of a private key is corrupted.", -224);
+        zend_throw_exception_ex(vscf_exception_ce, -224, "ASN.1 representation of a private key is corrupted.");
         break;
     case vscf_status_ERROR_MISMATCH_PUBLIC_KEY_AND_ALGORITHM:
-        zend_throw_exception(NULL, "VSCF: Key algorithm does not accept given type of public key.", -225);
+        zend_throw_exception_ex(vscf_exception_ce, -225, "Key algorithm does not accept given type of public key.");
         break;
     case vscf_status_ERROR_MISMATCH_PRIVATE_KEY_AND_ALGORITHM:
-        zend_throw_exception(NULL, "VSCF: Key algorithm does not accept given type of private key.", -226);
+        zend_throw_exception_ex(vscf_exception_ce, -226, "Key algorithm does not accept given type of private key.");
         break;
     case vscf_status_ERROR_BAD_FALCON_PUBLIC_KEY:
-        zend_throw_exception(NULL, "VSCF: Post-quantum Falcon-Sign public key is corrupted.", -227);
+        zend_throw_exception_ex(vscf_exception_ce, -227, "Post-quantum Falcon-Sign public key is corrupted.");
         break;
     case vscf_status_ERROR_BAD_FALCON_PRIVATE_KEY:
-        zend_throw_exception(NULL, "VSCF: Post-quantum Falcon-Sign private key is corrupted.", -228);
+        zend_throw_exception_ex(vscf_exception_ce, -228, "Post-quantum Falcon-Sign private key is corrupted.");
         break;
     case vscf_status_ERROR_ROUND5:
-        zend_throw_exception(NULL, "VSCF: Generic Round5 library error.", -229);
+        zend_throw_exception_ex(vscf_exception_ce, -229, "Generic Round5 library error.");
         break;
     case vscf_status_ERROR_BAD_ROUND5_PUBLIC_KEY:
-        zend_throw_exception(NULL, "VSCF: Post-quantum NIST Round5 public key is corrupted.", -230);
+        zend_throw_exception_ex(vscf_exception_ce, -230, "Post-quantum NIST Round5 public key is corrupted.");
         break;
     case vscf_status_ERROR_BAD_ROUND5_PRIVATE_KEY:
-        zend_throw_exception(NULL, "VSCF: Post-quantum NIST Round5 private key is corrupted.", -231);
+        zend_throw_exception_ex(vscf_exception_ce, -231, "Post-quantum NIST Round5 private key is corrupted.");
         break;
     case vscf_status_ERROR_BAD_COMPOUND_PUBLIC_KEY:
-        zend_throw_exception(NULL, "VSCF: Compound public key is corrupted.", -232);
+        zend_throw_exception_ex(vscf_exception_ce, -232, "Compound public key is corrupted.");
         break;
     case vscf_status_ERROR_BAD_COMPOUND_PRIVATE_KEY:
-        zend_throw_exception(NULL, "VSCF: Compound private key is corrupted.", -233);
+        zend_throw_exception_ex(vscf_exception_ce, -233, "Compound private key is corrupted.");
         break;
     case vscf_status_ERROR_BAD_HYBRID_PUBLIC_KEY:
-        zend_throw_exception(NULL, "VSCF: Compound public hybrid key is corrupted.", -234);
+        zend_throw_exception_ex(vscf_exception_ce, -234, "Compound public hybrid key is corrupted.");
         break;
     case vscf_status_ERROR_BAD_HYBRID_PRIVATE_KEY:
-        zend_throw_exception(NULL, "VSCF: Compound private hybrid key is corrupted.", -235);
+        zend_throw_exception_ex(vscf_exception_ce, -235, "Compound private hybrid key is corrupted.");
         break;
     case vscf_status_ERROR_BAD_ASN1_ALGORITHM:
-        zend_throw_exception(NULL, "VSCF: ASN.1 AlgorithmIdentifer is corrupted.", -236);
+        zend_throw_exception_ex(vscf_exception_ce, -236, "ASN.1 AlgorithmIdentifer is corrupted.");
         break;
     case vscf_status_ERROR_BAD_ASN1_ALGORITHM_ECC:
-        zend_throw_exception(NULL, "VSCF: ASN.1 AlgorithmIdentifer with ECParameters is corrupted.", -237);
+        zend_throw_exception_ex(vscf_exception_ce, -237, "ASN.1 AlgorithmIdentifer with ECParameters is corrupted.");
         break;
     case vscf_status_ERROR_BAD_ASN1_ALGORITHM_COMPOUND_KEY:
-        zend_throw_exception(NULL, "VSCF: ASN.1 AlgorithmIdentifer with CompoundKeyParams is corrupted.", -238);
+        zend_throw_exception_ex(vscf_exception_ce, -238, "ASN.1 AlgorithmIdentifer with CompoundKeyParams is corrupted.");
         break;
     case vscf_status_ERROR_BAD_ASN1_ALGORITHM_HYBRID_KEY:
-        zend_throw_exception(NULL, "VSCF: ASN.1 AlgorithmIdentifer with HybridKeyParams is corrupted.", -239);
+        zend_throw_exception_ex(vscf_exception_ce, -239, "ASN.1 AlgorithmIdentifer with HybridKeyParams is corrupted.");
         break;
     case vscf_status_ERROR_NO_MESSAGE_INFO:
-        zend_throw_exception(NULL, "VSCF: Decryption failed, because message info was not given explicitly, and was not part of an encrypted message.", -301);
+        zend_throw_exception_ex(vscf_exception_ce, -301, "Decryption failed, because message info was not given explicitly, and was not part of an encrypted message.");
         break;
     case vscf_status_ERROR_BAD_MESSAGE_INFO:
-        zend_throw_exception(NULL, "VSCF: Message Info is corrupted.", -302);
+        zend_throw_exception_ex(vscf_exception_ce, -302, "Message Info is corrupted.");
         break;
     case vscf_status_ERROR_KEY_RECIPIENT_IS_NOT_FOUND:
-        zend_throw_exception(NULL, "VSCF: Recipient defined with id is not found within message info during data decryption.", -303);
+        zend_throw_exception_ex(vscf_exception_ce, -303, "Recipient defined with id is not found within message info during data decryption.");
         break;
     case vscf_status_ERROR_KEY_RECIPIENT_PRIVATE_KEY_IS_WRONG:
-        zend_throw_exception(NULL, "VSCF: Content encryption key can not be decrypted with a given private key.", -304);
+        zend_throw_exception_ex(vscf_exception_ce, -304, "Content encryption key can not be decrypted with a given private key.");
         break;
     case vscf_status_ERROR_PASSWORD_RECIPIENT_PASSWORD_IS_WRONG:
-        zend_throw_exception(NULL, "VSCF: Content encryption key can not be decrypted with a given password.", -305);
+        zend_throw_exception_ex(vscf_exception_ce, -305, "Content encryption key can not be decrypted with a given password.");
         break;
     case vscf_status_ERROR_MESSAGE_INFO_CUSTOM_PARAM_NOT_FOUND:
-        zend_throw_exception(NULL, "VSCF: Custom parameter with a given key is not found within message info.", -306);
+        zend_throw_exception_ex(vscf_exception_ce, -306, "Custom parameter with a given key is not found within message info.");
         break;
     case vscf_status_ERROR_MESSAGE_INFO_CUSTOM_PARAM_TYPE_MISMATCH:
-        zend_throw_exception(NULL, "VSCF: A custom parameter with a given key is found, but the requested value type does not correspond to the actual type.", -307);
+        zend_throw_exception_ex(vscf_exception_ce, -307, "A custom parameter with a given key is found, but the requested value type does not correspond to the actual type.");
         break;
     case vscf_status_ERROR_BAD_SIGNATURE:
-        zend_throw_exception(NULL, "VSCF: Signature format is corrupted.", -308);
+        zend_throw_exception_ex(vscf_exception_ce, -308, "Signature format is corrupted.");
         break;
     case vscf_status_ERROR_BAD_MESSAGE_INFO_FOOTER:
-        zend_throw_exception(NULL, "VSCF: Message Info footer is corrupted.", -309);
+        zend_throw_exception_ex(vscf_exception_ce, -309, "Message Info footer is corrupted.");
         break;
     case vscf_status_ERROR_INVALID_BRAINKEY_PASSWORD_LEN:
-        zend_throw_exception(NULL, "VSCF: Brainkey password length is out of range.", -401);
+        zend_throw_exception_ex(vscf_exception_ce, -401, "Brainkey password length is out of range.");
         break;
     case vscf_status_ERROR_INVALID_BRAINKEY_FACTOR_LEN:
-        zend_throw_exception(NULL, "VSCF: Brainkey number length should be 32 byte.", -402);
+        zend_throw_exception_ex(vscf_exception_ce, -402, "Brainkey number length should be 32 byte.");
         break;
     case vscf_status_ERROR_INVALID_BRAINKEY_POINT_LEN:
-        zend_throw_exception(NULL, "VSCF: Brainkey point length should be 65 bytes.", -403);
+        zend_throw_exception_ex(vscf_exception_ce, -403, "Brainkey point length should be 65 bytes.");
         break;
     case vscf_status_ERROR_INVALID_BRAINKEY_KEY_NAME_LEN:
-        zend_throw_exception(NULL, "VSCF: Brainkey name is out of range.", -404);
+        zend_throw_exception_ex(vscf_exception_ce, -404, "Brainkey name is out of range.");
         break;
     case vscf_status_ERROR_BRAINKEY_INTERNAL:
-        zend_throw_exception(NULL, "VSCF: Brainkey internal error.", -405);
+        zend_throw_exception_ex(vscf_exception_ce, -405, "Brainkey internal error.");
         break;
     case vscf_status_ERROR_BRAINKEY_INVALID_POINT:
-        zend_throw_exception(NULL, "VSCF: Brainkey point is invalid.", -406);
+        zend_throw_exception_ex(vscf_exception_ce, -406, "Brainkey point is invalid.");
         break;
     case vscf_status_ERROR_INVALID_BRAINKEY_FACTOR_BUFFER_LEN:
-        zend_throw_exception(NULL, "VSCF: Brainkey number buffer length capacity should be >= 32 byte.", -407);
+        zend_throw_exception_ex(vscf_exception_ce, -407, "Brainkey number buffer length capacity should be >= 32 byte.");
         break;
     case vscf_status_ERROR_INVALID_BRAINKEY_POINT_BUFFER_LEN:
-        zend_throw_exception(NULL, "VSCF: Brainkey point buffer length capacity should be >= 32 byte.", -408);
+        zend_throw_exception_ex(vscf_exception_ce, -408, "Brainkey point buffer length capacity should be >= 32 byte.");
         break;
     case vscf_status_ERROR_INVALID_BRAINKEY_SEED_BUFFER_LEN:
-        zend_throw_exception(NULL, "VSCF: Brainkey seed buffer length capacity should be >= 32 byte.", -409);
+        zend_throw_exception_ex(vscf_exception_ce, -409, "Brainkey seed buffer length capacity should be >= 32 byte.");
         break;
     case vscf_status_ERROR_INVALID_IDENTITY_SECRET:
-        zend_throw_exception(NULL, "VSCF: Brainkey identity secret is invalid.", -410);
+        zend_throw_exception_ex(vscf_exception_ce, -410, "Brainkey identity secret is invalid.");
         break;
     case vscf_status_ERROR_INVALID_KEM_ENCAPSULATED_KEY:
-        zend_throw_exception(NULL, "VSCF: KEM encapsulated key is invalid or does not correspond to the private key.", -411);
+        zend_throw_exception_ex(vscf_exception_ce, -411, "KEM encapsulated key is invalid or does not correspond to the private key.");
         break;
     case vscf_status_ERROR_INVALID_PADDING:
-        zend_throw_exception(NULL, "VSCF: Invalid padding.", -501);
+        zend_throw_exception_ex(vscf_exception_ce, -501, "Invalid padding.");
         break;
     case vscf_status_ERROR_PROTOBUF:
-        zend_throw_exception(NULL, "VSCF: Protobuf error.", -601);
+        zend_throw_exception_ex(vscf_exception_ce, -601, "Protobuf error.");
         break;
     case vscf_status_ERROR_SESSION_ID_DOESNT_MATCH:
-        zend_throw_exception(NULL, "VSCF: Session id doesnt match.", -701);
+        zend_throw_exception_ex(vscf_exception_ce, -701, "Session id doesnt match.");
         break;
     case vscf_status_ERROR_EPOCH_NOT_FOUND:
-        zend_throw_exception(NULL, "VSCF: Epoch not found.", -702);
+        zend_throw_exception_ex(vscf_exception_ce, -702, "Epoch not found.");
         break;
     case vscf_status_ERROR_WRONG_KEY_TYPE:
-        zend_throw_exception(NULL, "VSCF: Wrong key type.", -703);
+        zend_throw_exception_ex(vscf_exception_ce, -703, "Wrong key type.");
         break;
     case vscf_status_ERROR_INVALID_SIGNATURE:
-        zend_throw_exception(NULL, "VSCF: Invalid signature.", -704);
+        zend_throw_exception_ex(vscf_exception_ce, -704, "Invalid signature.");
         break;
     case vscf_status_ERROR_ED25519:
-        zend_throw_exception(NULL, "VSCF: Ed25519 error.", -705);
+        zend_throw_exception_ex(vscf_exception_ce, -705, "Ed25519 error.");
         break;
     case vscf_status_ERROR_DUPLICATE_EPOCH:
-        zend_throw_exception(NULL, "VSCF: Duplicate epoch.", -706);
+        zend_throw_exception_ex(vscf_exception_ce, -706, "Duplicate epoch.");
         break;
     case vscf_status_ERROR_PLAIN_TEXT_TOO_LONG:
-        zend_throw_exception(NULL, "VSCF: Plain text too long.", -707);
+        zend_throw_exception_ex(vscf_exception_ce, -707, "Plain text too long.");
         break;
     }
 }
@@ -353,7 +356,7 @@ vscf_handle_throw_exception(vscf_status_t status) {
 //
 // Constants
 //
-const char VSCF_FOUNDATION_PHP_VERSION[] = "0.13.2";
+const char VSCF_FOUNDATION_PHP_VERSION[] = "0.13.3";
 const char VSCF_FOUNDATION_PHP_EXTNAME[] = "vscf_foundation_php";
 
 static const char VSCF_IMPL_T_PHP_RES_NAME[] = "vscf_impl_t";
@@ -41990,6 +41993,9 @@ static void vscf_padding_params_dtor_php(zend_resource *rsrc) {
     vscf_padding_params_delete((vscf_padding_params_t *)rsrc->ptr);
 }
 PHP_MINIT_FUNCTION(vscf_foundation_php) {
+    zend_class_entry vscf_ce;
+    INIT_CLASS_ENTRY(vscf_ce, "FoundationException", NULL);
+    vscf_exception_ce = zend_register_internal_class_ex(&vscf_ce, zend_exception_get_default());
     LE_VSCF_IMPL_T = zend_register_list_destructors_ex(vscf_impl_dtor_php, NULL, vscf_impl_t_php_res_name(), module_number);
     LE_VSCF_MESSAGE_INFO_T = zend_register_list_destructors_ex(vscf_message_info_dtor_php, NULL, vscf_message_info_t_php_res_name(), module_number);
     LE_VSCF_KEY_RECIPIENT_INFO_T = zend_register_list_destructors_ex(vscf_key_recipient_info_dtor_php, NULL, vscf_key_recipient_info_t_php_res_name(), module_number);

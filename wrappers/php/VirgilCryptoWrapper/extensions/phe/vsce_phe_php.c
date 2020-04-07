@@ -50,30 +50,33 @@
 
 #define VSCE_HANDLE_STATUS(status) do { if(status != vsce_status_SUCCESS) { vsce_handle_throw_exception(status); } } while (false)
 
+zend_class_entry* vsce_exception_ce;
+
 void
 vsce_handle_throw_exception(vsce_status_t status) {
+
     switch(status) {
 
     case vsce_status_ERROR_INVALID_SUCCESS_PROOF:
-        zend_throw_exception(NULL, "VSCE: Success proof check failed.", -1);
+        zend_throw_exception_ex(vsce_exception_ce, -1, "Success proof check failed.");
         break;
     case vsce_status_ERROR_INVALID_FAIL_PROOF:
-        zend_throw_exception(NULL, "VSCE: Failure proof check failed.", -2);
+        zend_throw_exception_ex(vsce_exception_ce, -2, "Failure proof check failed.");
         break;
     case vsce_status_ERROR_RNG_FAILED:
-        zend_throw_exception(NULL, "VSCE: RNG returned error.", -3);
+        zend_throw_exception_ex(vsce_exception_ce, -3, "RNG returned error.");
         break;
     case vsce_status_ERROR_PROTOBUF_DECODE_FAILED:
-        zend_throw_exception(NULL, "VSCE: Protobuf decode failed.", -4);
+        zend_throw_exception_ex(vsce_exception_ce, -4, "Protobuf decode failed.");
         break;
     case vsce_status_ERROR_INVALID_PUBLIC_KEY:
-        zend_throw_exception(NULL, "VSCE: Invalid public key.", -5);
+        zend_throw_exception_ex(vsce_exception_ce, -5, "Invalid public key.");
         break;
     case vsce_status_ERROR_INVALID_PRIVATE_KEY:
-        zend_throw_exception(NULL, "VSCE: Invalid private key.", -6);
+        zend_throw_exception_ex(vsce_exception_ce, -6, "Invalid private key.");
         break;
     case vsce_status_ERROR_AES_FAILED:
-        zend_throw_exception(NULL, "VSCE: AES error occurred.", -7);
+        zend_throw_exception_ex(vsce_exception_ce, -7, "AES error occurred.");
         break;
     }
 }
@@ -81,7 +84,7 @@ vsce_handle_throw_exception(vsce_status_t status) {
 //
 // Constants
 //
-const char VSCE_PHE_PHP_VERSION[] = "0.13.2";
+const char VSCE_PHE_PHP_VERSION[] = "0.13.3";
 const char VSCE_PHE_PHP_EXTNAME[] = "vsce_phe_php";
 
 static const char VSCE_PHE_SERVER_T_PHP_RES_NAME[] = "vsce_phe_server_t";
@@ -3921,6 +3924,9 @@ static void vsce_uokms_wrap_rotation_dtor_php(zend_resource *rsrc) {
     vsce_uokms_wrap_rotation_delete((vsce_uokms_wrap_rotation_t *)rsrc->ptr);
 }
 PHP_MINIT_FUNCTION(vsce_phe_php) {
+    zend_class_entry vsce_ce;
+    INIT_CLASS_ENTRY(vsce_ce, "PheException", NULL);
+    vsce_exception_ce = zend_register_internal_class_ex(&vsce_ce, zend_exception_get_default());
     LE_VSCE_PHE_SERVER_T = zend_register_list_destructors_ex(vsce_phe_server_dtor_php, NULL, vsce_phe_server_t_php_res_name(), module_number);
     LE_VSCE_PHE_CLIENT_T = zend_register_list_destructors_ex(vsce_phe_client_dtor_php, NULL, vsce_phe_client_t_php_res_name(), module_number);
     LE_VSCE_PHE_CIPHER_T = zend_register_list_destructors_ex(vsce_phe_cipher_dtor_php, NULL, vsce_phe_cipher_t_php_res_name(), module_number);

@@ -36,28 +36,28 @@ package foundation
 
 import (
 	b64 "encoding/base64"
-	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"testing"
 )
 
 func TestNewSha512(t *testing.T) {
 	sha := NewSha512()
 
-	assert.NotNil(t, sha)
+	require.NotNil(t, sha)
 }
 
 func TestSha512_AlgId(t *testing.T) {
 	sha := NewSha512()
 	algId := sha.AlgId()
 
-	assert.NotNil(t, algId)
-	assert.Equal(t, AlgIdSha512, algId)
+	require.NotNil(t, algId)
+	require.Equal(t, AlgIdSha512, algId)
 }
 
 func TestSha512_GetDigestLen(t *testing.T) {
 	sha := NewSha512()
 
-	assert.Equal(t, TEST_SHA512_DIGEST_LEN, sha.GetDigestLen())
+	require.Equal(t, TEST_SHA512_DIGEST_LEN, sha.GetDigestLen())
 }
 
 func TestSha512_Hash(t *testing.T) {
@@ -67,9 +67,9 @@ func TestSha512_Hash(t *testing.T) {
 	sha := NewSha512()
 	hash := sha.Hash(data)
 
-	assert.NotNil(t, hash)
-	assert.Equal(t, len(expectedHash), len(hash))
-	assert.Equal(t, expectedHash, hash)
+	require.NotNil(t, hash)
+	require.Equal(t, len(expectedHash), len(hash))
+	require.Equal(t, expectedHash, hash)
 }
 
 func TestSha512_Hash_Stream(t *testing.T) {
@@ -89,15 +89,15 @@ func TestSha512_Hash_Stream(t *testing.T) {
 
 	hash := sha.Finish()
 
-	assert.NotNil(t, hash)
-	assert.Equal(t, len(expectedHash), len(hash))
-	assert.Equal(t, expectedHash, hash)
+	require.NotNil(t, hash)
+	require.Equal(t, len(expectedHash), len(hash))
+	require.Equal(t, expectedHash, hash)
 }
 
 func TestSha512_ProduceAlgInfo(t *testing.T) {
 	sha := NewSha512()
 	algInfo, err := sha.ProduceAlgInfo()
-	assert.Nil(t, err)
-	assert.NotNil(t, algInfo)
-	assert.Equal(t, AlgIdSha512, algInfo.AlgId())
+	require.Nil(t, err)
+	require.NotNil(t, algInfo)
+	require.Equal(t, AlgIdSha512, algInfo.AlgId())
 }
