@@ -313,6 +313,8 @@ vscr_ratchet_pb_utils_deserialize_public_key(
 
     *public_key_ref = vscf_round5_import_public_key_data(round5, data, alg_info, &error_ctx);
 
+    vscf_impl_destroy(&alg_info);
+
     if (error_ctx.status != vscf_status_SUCCESS) {
         return vscr_status_ERROR_ROUND5_IMPORT_KEY;
     }
@@ -347,6 +349,8 @@ vscr_ratchet_pb_utils_deserialize_private_key(
     vscf_error_reset(&error_ctx);
 
     *private_key_ref = vscf_round5_import_private_key_data(round5, data, alg_info, &error_ctx);
+
+    vscf_impl_destroy(&alg_info);
 
     if (error_ctx.status != vscf_status_SUCCESS) {
         return vscr_status_ERROR_ROUND5_IMPORT_KEY;
