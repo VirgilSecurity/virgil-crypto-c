@@ -615,7 +615,7 @@ vscr_ratchet_key_utils_extract_ratchet_public_key(vscr_ratchet_key_utils_t *self
         if (convert_to_curve25519) {
             result = vsc_buffer_new_with_capacity(vscr_ratchet_common_hidden_KEY_LEN);
 
-            int curve25519_status = ed25519_key_to_curve25519(
+            int curve25519_status = ed25519_pubkey_to_curve25519(
                     vsc_buffer_unused_bytes(result), vscf_raw_public_key_data(raw_public_key).bytes);
 
             if (curve25519_status != 0) {
