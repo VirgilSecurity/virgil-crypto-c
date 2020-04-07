@@ -107,7 +107,7 @@ test__serialization__big_session__overflow_doesnt_happen(void) {
     }
 
     vscr_ratchet_chain_key_destroy(&session->my_chain_key);
-    session->my_chain_key = generate_full_chain_key();
+    session->my_chain_key = generate_full_chain_key(rng);
     session->my_epoch = UINT32_MAX;
 
     for (size_t i = 0; i < vscr_ratchet_common_hidden_MAX_SKIPPED_DH - 1; i++) {
@@ -160,7 +160,7 @@ test__serialization__random_big_session__overflow_doesnt_happen(void) {
     }
 
     vscr_ratchet_chain_key_destroy(&session->my_chain_key);
-    session->my_chain_key = generate_full_chain_key();
+    session->my_chain_key = generate_full_chain_key(rng);
     session->my_epoch = UINT32_MAX;
 
     for (size_t i = 0; i < vscr_ratchet_common_hidden_MAX_SKIPPED_DH - 1; i++) {
