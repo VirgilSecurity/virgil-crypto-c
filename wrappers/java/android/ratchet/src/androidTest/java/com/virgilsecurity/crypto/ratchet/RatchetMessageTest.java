@@ -70,24 +70,4 @@ public class RatchetMessageTest {
 		assertNotNull(msgType);
 		assertEquals(MsgType.PREKEY, msgType);
 	}
-
-	@Test
-	public void getLongTermPublicKey() {
-		byte[] key = this.ratchetMessage.getLongTermPublicKey();
-		assertNull(key);
-	}
-
-	@Test
-	public void getOneTimePublicKey() {
-		byte[] key = this.ratchetMessage.getOneTimePublicKey();
-		assertNull(key);
-	}
-
-	@Test
-	@Ignore
-	public void serialize_deserialize() {
-		byte[] serializedMessage = this.ratchetMessage.serialize();
-		assertNotNull(serializedMessage);
-	}
-
 }
