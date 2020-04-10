@@ -2053,11 +2053,6 @@ public class FoundationJNI {
     public native PublicKey rsa_importPublicKey(long cCtx, RawPublicKey rawKey) throws FoundationException;
 
     /*
-    * Import public key from the raw binary format.
-    */
-    public native PublicKey rsa_importPublicKeyData(long cCtx, byte[] keyData, AlgInfo keyAlgInfo) throws FoundationException;
-
-    /*
     * Export public key to the raw binary format.
     *
     * Binary format must be defined in the key specification.
@@ -2065,20 +2060,6 @@ public class FoundationJNI {
     * RFC 3447 Appendix A.1.1.
     */
     public native RawPublicKey rsa_exportPublicKey(long cCtx, PublicKey publicKey) throws FoundationException;
-
-    /*
-    * Return length in bytes required to hold exported public key.
-    */
-    public native int rsa_exportedPublicKeyDataLen(long cCtx, PublicKey publicKey);
-
-    /*
-    * Export public key to the raw binary format without algorithm information.
-    *
-    * Binary format must be defined in the key specification.
-    * For instance, RSA public key must be exported in format defined in
-    * RFC 3447 Appendix A.1.1.
-    */
-    public native byte[] rsa_exportPublicKeyData(long cCtx, PublicKey publicKey) throws FoundationException;
 
     /*
     * Import private key from the raw binary format.
@@ -2093,11 +2074,6 @@ public class FoundationJNI {
     public native PrivateKey rsa_importPrivateKey(long cCtx, RawPrivateKey rawKey) throws FoundationException;
 
     /*
-    * Import private key from the raw binary format.
-    */
-    public native PrivateKey rsa_importPrivateKeyData(long cCtx, byte[] keyData, AlgInfo keyAlgInfo) throws FoundationException;
-
-    /*
     * Export private key in the raw binary format.
     *
     * Binary format must be defined in the key specification.
@@ -2105,20 +2081,6 @@ public class FoundationJNI {
     * RFC 3447 Appendix A.1.2.
     */
     public native RawPrivateKey rsa_exportPrivateKey(long cCtx, PrivateKey privateKey) throws FoundationException;
-
-    /*
-    * Return length in bytes required to hold exported private key.
-    */
-    public native int rsa_exportedPrivateKeyDataLen(long cCtx, PrivateKey privateKey);
-
-    /*
-    * Export private key to the raw binary format without algorithm information.
-    *
-    * Binary format must be defined in the key specification.
-    * For instance, RSA private key must be exported in format defined in
-    * RFC 3447 Appendix A.1.2.
-    */
-    public native byte[] rsa_exportPrivateKeyData(long cCtx, PrivateKey privateKey) throws FoundationException;
 
     /*
     * Check if algorithm can encrypt data with a given key.
@@ -2283,11 +2245,6 @@ public class FoundationJNI {
     public native PublicKey ecc_importPublicKey(long cCtx, RawPublicKey rawKey) throws FoundationException;
 
     /*
-    * Import public key from the raw binary format.
-    */
-    public native PublicKey ecc_importPublicKeyData(long cCtx, byte[] keyData, AlgInfo keyAlgInfo) throws FoundationException;
-
-    /*
     * Export public key to the raw binary format.
     *
     * Binary format must be defined in the key specification.
@@ -2295,20 +2252,6 @@ public class FoundationJNI {
     * RFC 3447 Appendix A.1.1.
     */
     public native RawPublicKey ecc_exportPublicKey(long cCtx, PublicKey publicKey) throws FoundationException;
-
-    /*
-    * Return length in bytes required to hold exported public key.
-    */
-    public native int ecc_exportedPublicKeyDataLen(long cCtx, PublicKey publicKey);
-
-    /*
-    * Export public key to the raw binary format without algorithm information.
-    *
-    * Binary format must be defined in the key specification.
-    * For instance, RSA public key must be exported in format defined in
-    * RFC 3447 Appendix A.1.1.
-    */
-    public native byte[] ecc_exportPublicKeyData(long cCtx, PublicKey publicKey) throws FoundationException;
 
     /*
     * Import private key from the raw binary format.
@@ -2323,11 +2266,6 @@ public class FoundationJNI {
     public native PrivateKey ecc_importPrivateKey(long cCtx, RawPrivateKey rawKey) throws FoundationException;
 
     /*
-    * Import private key from the raw binary format.
-    */
-    public native PrivateKey ecc_importPrivateKeyData(long cCtx, byte[] keyData, AlgInfo keyAlgInfo) throws FoundationException;
-
-    /*
     * Export private key in the raw binary format.
     *
     * Binary format must be defined in the key specification.
@@ -2335,20 +2273,6 @@ public class FoundationJNI {
     * RFC 3447 Appendix A.1.2.
     */
     public native RawPrivateKey ecc_exportPrivateKey(long cCtx, PrivateKey privateKey) throws FoundationException;
-
-    /*
-    * Return length in bytes required to hold exported private key.
-    */
-    public native int ecc_exportedPrivateKeyDataLen(long cCtx, PrivateKey privateKey);
-
-    /*
-    * Export private key to the raw binary format without algorithm information.
-    *
-    * Binary format must be defined in the key specification.
-    * For instance, RSA private key must be exported in format defined in
-    * RFC 3447 Appendix A.1.2.
-    */
-    public native byte[] ecc_exportPrivateKeyData(long cCtx, PrivateKey privateKey) throws FoundationException;
 
     /*
     * Check if algorithm can encrypt data with a given key.
@@ -3139,11 +3063,6 @@ public class FoundationJNI {
     public native PublicKey ed25519_importPublicKey(long cCtx, RawPublicKey rawKey) throws FoundationException;
 
     /*
-    * Import public key from the raw binary format.
-    */
-    public native PublicKey ed25519_importPublicKeyData(long cCtx, byte[] keyData, AlgInfo keyAlgInfo) throws FoundationException;
-
-    /*
     * Export public key to the raw binary format.
     *
     * Binary format must be defined in the key specification.
@@ -3151,20 +3070,6 @@ public class FoundationJNI {
     * RFC 3447 Appendix A.1.1.
     */
     public native RawPublicKey ed25519_exportPublicKey(long cCtx, PublicKey publicKey) throws FoundationException;
-
-    /*
-    * Return length in bytes required to hold exported public key.
-    */
-    public native int ed25519_exportedPublicKeyDataLen(long cCtx, PublicKey publicKey);
-
-    /*
-    * Export public key to the raw binary format without algorithm information.
-    *
-    * Binary format must be defined in the key specification.
-    * For instance, RSA public key must be exported in format defined in
-    * RFC 3447 Appendix A.1.1.
-    */
-    public native byte[] ed25519_exportPublicKeyData(long cCtx, PublicKey publicKey) throws FoundationException;
 
     /*
     * Import private key from the raw binary format.
@@ -3179,11 +3084,6 @@ public class FoundationJNI {
     public native PrivateKey ed25519_importPrivateKey(long cCtx, RawPrivateKey rawKey) throws FoundationException;
 
     /*
-    * Import private key from the raw binary format.
-    */
-    public native PrivateKey ed25519_importPrivateKeyData(long cCtx, byte[] keyData, AlgInfo keyAlgInfo) throws FoundationException;
-
-    /*
     * Export private key in the raw binary format.
     *
     * Binary format must be defined in the key specification.
@@ -3191,20 +3091,6 @@ public class FoundationJNI {
     * RFC 3447 Appendix A.1.2.
     */
     public native RawPrivateKey ed25519_exportPrivateKey(long cCtx, PrivateKey privateKey) throws FoundationException;
-
-    /*
-    * Return length in bytes required to hold exported private key.
-    */
-    public native int ed25519_exportedPrivateKeyDataLen(long cCtx, PrivateKey privateKey);
-
-    /*
-    * Export private key to the raw binary format without algorithm information.
-    *
-    * Binary format must be defined in the key specification.
-    * For instance, RSA private key must be exported in format defined in
-    * RFC 3447 Appendix A.1.2.
-    */
-    public native byte[] ed25519_exportPrivateKeyData(long cCtx, PrivateKey privateKey) throws FoundationException;
 
     /*
     * Check if algorithm can encrypt data with a given key.
@@ -3333,11 +3219,6 @@ public class FoundationJNI {
     public native PublicKey curve25519_importPublicKey(long cCtx, RawPublicKey rawKey) throws FoundationException;
 
     /*
-    * Import public key from the raw binary format.
-    */
-    public native PublicKey curve25519_importPublicKeyData(long cCtx, byte[] keyData, AlgInfo keyAlgInfo) throws FoundationException;
-
-    /*
     * Export public key to the raw binary format.
     *
     * Binary format must be defined in the key specification.
@@ -3345,20 +3226,6 @@ public class FoundationJNI {
     * RFC 3447 Appendix A.1.1.
     */
     public native RawPublicKey curve25519_exportPublicKey(long cCtx, PublicKey publicKey) throws FoundationException;
-
-    /*
-    * Return length in bytes required to hold exported public key.
-    */
-    public native int curve25519_exportedPublicKeyDataLen(long cCtx, PublicKey publicKey);
-
-    /*
-    * Export public key to the raw binary format without algorithm information.
-    *
-    * Binary format must be defined in the key specification.
-    * For instance, RSA public key must be exported in format defined in
-    * RFC 3447 Appendix A.1.1.
-    */
-    public native byte[] curve25519_exportPublicKeyData(long cCtx, PublicKey publicKey) throws FoundationException;
 
     /*
     * Import private key from the raw binary format.
@@ -3373,11 +3240,6 @@ public class FoundationJNI {
     public native PrivateKey curve25519_importPrivateKey(long cCtx, RawPrivateKey rawKey) throws FoundationException;
 
     /*
-    * Import private key from the raw binary format.
-    */
-    public native PrivateKey curve25519_importPrivateKeyData(long cCtx, byte[] keyData, AlgInfo keyAlgInfo) throws FoundationException;
-
-    /*
     * Export private key in the raw binary format.
     *
     * Binary format must be defined in the key specification.
@@ -3385,20 +3247,6 @@ public class FoundationJNI {
     * RFC 3447 Appendix A.1.2.
     */
     public native RawPrivateKey curve25519_exportPrivateKey(long cCtx, PrivateKey privateKey) throws FoundationException;
-
-    /*
-    * Return length in bytes required to hold exported private key.
-    */
-    public native int curve25519_exportedPrivateKeyDataLen(long cCtx, PrivateKey privateKey);
-
-    /*
-    * Export private key to the raw binary format without algorithm information.
-    *
-    * Binary format must be defined in the key specification.
-    * For instance, RSA private key must be exported in format defined in
-    * RFC 3447 Appendix A.1.2.
-    */
-    public native byte[] curve25519_exportPrivateKeyData(long cCtx, PrivateKey privateKey) throws FoundationException;
 
     /*
     * Check if algorithm can encrypt data with a given key.
@@ -3514,11 +3362,6 @@ public class FoundationJNI {
     public native PublicKey falcon_importPublicKey(long cCtx, RawPublicKey rawKey) throws FoundationException;
 
     /*
-    * Import public key from the raw binary format.
-    */
-    public native PublicKey falcon_importPublicKeyData(long cCtx, byte[] keyData, AlgInfo keyAlgInfo) throws FoundationException;
-
-    /*
     * Export public key to the raw binary format.
     *
     * Binary format must be defined in the key specification.
@@ -3526,20 +3369,6 @@ public class FoundationJNI {
     * RFC 3447 Appendix A.1.1.
     */
     public native RawPublicKey falcon_exportPublicKey(long cCtx, PublicKey publicKey) throws FoundationException;
-
-    /*
-    * Return length in bytes required to hold exported public key.
-    */
-    public native int falcon_exportedPublicKeyDataLen(long cCtx, PublicKey publicKey);
-
-    /*
-    * Export public key to the raw binary format without algorithm information.
-    *
-    * Binary format must be defined in the key specification.
-    * For instance, RSA public key must be exported in format defined in
-    * RFC 3447 Appendix A.1.1.
-    */
-    public native byte[] falcon_exportPublicKeyData(long cCtx, PublicKey publicKey) throws FoundationException;
 
     /*
     * Import private key from the raw binary format.
@@ -3554,11 +3383,6 @@ public class FoundationJNI {
     public native PrivateKey falcon_importPrivateKey(long cCtx, RawPrivateKey rawKey) throws FoundationException;
 
     /*
-    * Import private key from the raw binary format.
-    */
-    public native PrivateKey falcon_importPrivateKeyData(long cCtx, byte[] keyData, AlgInfo keyAlgInfo) throws FoundationException;
-
-    /*
     * Export private key in the raw binary format.
     *
     * Binary format must be defined in the key specification.
@@ -3566,20 +3390,6 @@ public class FoundationJNI {
     * RFC 3447 Appendix A.1.2.
     */
     public native RawPrivateKey falcon_exportPrivateKey(long cCtx, PrivateKey privateKey) throws FoundationException;
-
-    /*
-    * Return length in bytes required to hold exported private key.
-    */
-    public native int falcon_exportedPrivateKeyDataLen(long cCtx, PrivateKey privateKey);
-
-    /*
-    * Export private key to the raw binary format without algorithm information.
-    *
-    * Binary format must be defined in the key specification.
-    * For instance, RSA private key must be exported in format defined in
-    * RFC 3447 Appendix A.1.2.
-    */
-    public native byte[] falcon_exportPrivateKeyData(long cCtx, PrivateKey privateKey) throws FoundationException;
 
     /*
     * Check if algorithm can sign data digest with a given key.
@@ -3643,11 +3453,6 @@ public class FoundationJNI {
     public native PublicKey round5_importPublicKey(long cCtx, RawPublicKey rawKey) throws FoundationException;
 
     /*
-    * Import public key from the raw binary format.
-    */
-    public native PublicKey round5_importPublicKeyData(long cCtx, byte[] keyData, AlgInfo keyAlgInfo) throws FoundationException;
-
-    /*
     * Export public key to the raw binary format.
     *
     * Binary format must be defined in the key specification.
@@ -3655,20 +3460,6 @@ public class FoundationJNI {
     * RFC 3447 Appendix A.1.1.
     */
     public native RawPublicKey round5_exportPublicKey(long cCtx, PublicKey publicKey) throws FoundationException;
-
-    /*
-    * Return length in bytes required to hold exported public key.
-    */
-    public native int round5_exportedPublicKeyDataLen(long cCtx, PublicKey publicKey);
-
-    /*
-    * Export public key to the raw binary format without algorithm information.
-    *
-    * Binary format must be defined in the key specification.
-    * For instance, RSA public key must be exported in format defined in
-    * RFC 3447 Appendix A.1.1.
-    */
-    public native byte[] round5_exportPublicKeyData(long cCtx, PublicKey publicKey) throws FoundationException;
 
     /*
     * Import private key from the raw binary format.
@@ -3683,11 +3474,6 @@ public class FoundationJNI {
     public native PrivateKey round5_importPrivateKey(long cCtx, RawPrivateKey rawKey) throws FoundationException;
 
     /*
-    * Import private key from the raw binary format.
-    */
-    public native PrivateKey round5_importPrivateKeyData(long cCtx, byte[] keyData, AlgInfo keyAlgInfo) throws FoundationException;
-
-    /*
     * Export private key in the raw binary format.
     *
     * Binary format must be defined in the key specification.
@@ -3695,20 +3481,6 @@ public class FoundationJNI {
     * RFC 3447 Appendix A.1.2.
     */
     public native RawPrivateKey round5_exportPrivateKey(long cCtx, PrivateKey privateKey) throws FoundationException;
-
-    /*
-    * Return length in bytes required to hold exported private key.
-    */
-    public native int round5_exportedPrivateKeyDataLen(long cCtx, PrivateKey privateKey);
-
-    /*
-    * Export private key to the raw binary format without algorithm information.
-    *
-    * Binary format must be defined in the key specification.
-    * For instance, RSA private key must be exported in format defined in
-    * RFC 3447 Appendix A.1.2.
-    */
-    public native byte[] round5_exportPrivateKeyData(long cCtx, PrivateKey privateKey) throws FoundationException;
 
     /*
     * Return length in bytes required to hold encapsulated shared key.
@@ -3886,11 +3658,6 @@ public class FoundationJNI {
     public native PublicKey compoundKeyAlg_importPublicKey(long cCtx, RawPublicKey rawKey) throws FoundationException;
 
     /*
-    * Import public key from the raw binary format.
-    */
-    public native PublicKey compoundKeyAlg_importPublicKeyData(long cCtx, byte[] keyData, AlgInfo keyAlgInfo) throws FoundationException;
-
-    /*
     * Export public key to the raw binary format.
     *
     * Binary format must be defined in the key specification.
@@ -3898,20 +3665,6 @@ public class FoundationJNI {
     * RFC 3447 Appendix A.1.1.
     */
     public native RawPublicKey compoundKeyAlg_exportPublicKey(long cCtx, PublicKey publicKey) throws FoundationException;
-
-    /*
-    * Return length in bytes required to hold exported public key.
-    */
-    public native int compoundKeyAlg_exportedPublicKeyDataLen(long cCtx, PublicKey publicKey);
-
-    /*
-    * Export public key to the raw binary format without algorithm information.
-    *
-    * Binary format must be defined in the key specification.
-    * For instance, RSA public key must be exported in format defined in
-    * RFC 3447 Appendix A.1.1.
-    */
-    public native byte[] compoundKeyAlg_exportPublicKeyData(long cCtx, PublicKey publicKey) throws FoundationException;
 
     /*
     * Import private key from the raw binary format.
@@ -3926,11 +3679,6 @@ public class FoundationJNI {
     public native PrivateKey compoundKeyAlg_importPrivateKey(long cCtx, RawPrivateKey rawKey) throws FoundationException;
 
     /*
-    * Import private key from the raw binary format.
-    */
-    public native PrivateKey compoundKeyAlg_importPrivateKeyData(long cCtx, byte[] keyData, AlgInfo keyAlgInfo) throws FoundationException;
-
-    /*
     * Export private key in the raw binary format.
     *
     * Binary format must be defined in the key specification.
@@ -3938,20 +3686,6 @@ public class FoundationJNI {
     * RFC 3447 Appendix A.1.2.
     */
     public native RawPrivateKey compoundKeyAlg_exportPrivateKey(long cCtx, PrivateKey privateKey) throws FoundationException;
-
-    /*
-    * Return length in bytes required to hold exported private key.
-    */
-    public native int compoundKeyAlg_exportedPrivateKeyDataLen(long cCtx, PrivateKey privateKey);
-
-    /*
-    * Export private key to the raw binary format without algorithm information.
-    *
-    * Binary format must be defined in the key specification.
-    * For instance, RSA private key must be exported in format defined in
-    * RFC 3447 Appendix A.1.2.
-    */
-    public native byte[] compoundKeyAlg_exportPrivateKeyData(long cCtx, PrivateKey privateKey) throws FoundationException;
 
     /*
     * Check if algorithm can encrypt data with a given key.
@@ -4153,11 +3887,6 @@ public class FoundationJNI {
     public native PublicKey hybridKeyAlg_importPublicKey(long cCtx, RawPublicKey rawKey) throws FoundationException;
 
     /*
-    * Import public key from the raw binary format.
-    */
-    public native PublicKey hybridKeyAlg_importPublicKeyData(long cCtx, byte[] keyData, AlgInfo keyAlgInfo) throws FoundationException;
-
-    /*
     * Export public key to the raw binary format.
     *
     * Binary format must be defined in the key specification.
@@ -4165,20 +3894,6 @@ public class FoundationJNI {
     * RFC 3447 Appendix A.1.1.
     */
     public native RawPublicKey hybridKeyAlg_exportPublicKey(long cCtx, PublicKey publicKey) throws FoundationException;
-
-    /*
-    * Return length in bytes required to hold exported public key.
-    */
-    public native int hybridKeyAlg_exportedPublicKeyDataLen(long cCtx, PublicKey publicKey);
-
-    /*
-    * Export public key to the raw binary format without algorithm information.
-    *
-    * Binary format must be defined in the key specification.
-    * For instance, RSA public key must be exported in format defined in
-    * RFC 3447 Appendix A.1.1.
-    */
-    public native byte[] hybridKeyAlg_exportPublicKeyData(long cCtx, PublicKey publicKey) throws FoundationException;
 
     /*
     * Import private key from the raw binary format.
@@ -4193,11 +3908,6 @@ public class FoundationJNI {
     public native PrivateKey hybridKeyAlg_importPrivateKey(long cCtx, RawPrivateKey rawKey) throws FoundationException;
 
     /*
-    * Import private key from the raw binary format.
-    */
-    public native PrivateKey hybridKeyAlg_importPrivateKeyData(long cCtx, byte[] keyData, AlgInfo keyAlgInfo) throws FoundationException;
-
-    /*
     * Export private key in the raw binary format.
     *
     * Binary format must be defined in the key specification.
@@ -4205,20 +3915,6 @@ public class FoundationJNI {
     * RFC 3447 Appendix A.1.2.
     */
     public native RawPrivateKey hybridKeyAlg_exportPrivateKey(long cCtx, PrivateKey privateKey) throws FoundationException;
-
-    /*
-    * Return length in bytes required to hold exported private key.
-    */
-    public native int hybridKeyAlg_exportedPrivateKeyDataLen(long cCtx, PrivateKey privateKey);
-
-    /*
-    * Export private key to the raw binary format without algorithm information.
-    *
-    * Binary format must be defined in the key specification.
-    * For instance, RSA private key must be exported in format defined in
-    * RFC 3447 Appendix A.1.2.
-    */
-    public native byte[] hybridKeyAlg_exportPrivateKeyData(long cCtx, PrivateKey privateKey) throws FoundationException;
 
     /*
     * Check if algorithm can encrypt data with a given key.

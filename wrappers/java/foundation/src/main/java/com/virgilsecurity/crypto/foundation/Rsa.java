@@ -152,13 +152,6 @@ public class Rsa implements AutoCloseable, KeyAlg, KeyCipher, KeySigner {
     }
 
     /*
-    * Import public key from the raw binary format.
-    */
-    public PublicKey importPublicKeyData(byte[] keyData, AlgInfo keyAlgInfo) throws FoundationException {
-        return FoundationJNI.INSTANCE.rsa_importPublicKeyData(this.cCtx, keyData, keyAlgInfo);
-    }
-
-    /*
     * Export public key to the raw binary format.
     *
     * Binary format must be defined in the key specification.
@@ -167,24 +160,6 @@ public class Rsa implements AutoCloseable, KeyAlg, KeyCipher, KeySigner {
     */
     public RawPublicKey exportPublicKey(PublicKey publicKey) throws FoundationException {
         return FoundationJNI.INSTANCE.rsa_exportPublicKey(this.cCtx, publicKey);
-    }
-
-    /*
-    * Return length in bytes required to hold exported public key.
-    */
-    public int exportedPublicKeyDataLen(PublicKey publicKey) {
-        return FoundationJNI.INSTANCE.rsa_exportedPublicKeyDataLen(this.cCtx, publicKey);
-    }
-
-    /*
-    * Export public key to the raw binary format without algorithm information.
-    *
-    * Binary format must be defined in the key specification.
-    * For instance, RSA public key must be exported in format defined in
-    * RFC 3447 Appendix A.1.1.
-    */
-    public byte[] exportPublicKeyData(PublicKey publicKey) throws FoundationException {
-        return FoundationJNI.INSTANCE.rsa_exportPublicKeyData(this.cCtx, publicKey);
     }
 
     /*
@@ -202,13 +177,6 @@ public class Rsa implements AutoCloseable, KeyAlg, KeyCipher, KeySigner {
     }
 
     /*
-    * Import private key from the raw binary format.
-    */
-    public PrivateKey importPrivateKeyData(byte[] keyData, AlgInfo keyAlgInfo) throws FoundationException {
-        return FoundationJNI.INSTANCE.rsa_importPrivateKeyData(this.cCtx, keyData, keyAlgInfo);
-    }
-
-    /*
     * Export private key in the raw binary format.
     *
     * Binary format must be defined in the key specification.
@@ -217,24 +185,6 @@ public class Rsa implements AutoCloseable, KeyAlg, KeyCipher, KeySigner {
     */
     public RawPrivateKey exportPrivateKey(PrivateKey privateKey) throws FoundationException {
         return FoundationJNI.INSTANCE.rsa_exportPrivateKey(this.cCtx, privateKey);
-    }
-
-    /*
-    * Return length in bytes required to hold exported private key.
-    */
-    public int exportedPrivateKeyDataLen(PrivateKey privateKey) {
-        return FoundationJNI.INSTANCE.rsa_exportedPrivateKeyDataLen(this.cCtx, privateKey);
-    }
-
-    /*
-    * Export private key to the raw binary format without algorithm information.
-    *
-    * Binary format must be defined in the key specification.
-    * For instance, RSA private key must be exported in format defined in
-    * RFC 3447 Appendix A.1.2.
-    */
-    public byte[] exportPrivateKeyData(PrivateKey privateKey) throws FoundationException {
-        return FoundationJNI.INSTANCE.rsa_exportPrivateKeyData(this.cCtx, privateKey);
     }
 
     /*
