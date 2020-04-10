@@ -61,25 +61,12 @@ import VSCFoundation
     /// RFC 3447 Appendix A.1.1.
     @objc func importPublicKey(rawKey: RawPublicKey) throws -> PublicKey
 
-    /// Import public key from the raw binary format.
-    @objc func importPublicKeyData(keyData: Data, keyAlgInfo: AlgInfo) throws -> PublicKey
-
     /// Export public key to the raw binary format.
     ///
     /// Binary format must be defined in the key specification.
     /// For instance, RSA public key must be exported in format defined in
     /// RFC 3447 Appendix A.1.1.
     @objc func exportPublicKey(publicKey: PublicKey) throws -> RawPublicKey
-
-    /// Return length in bytes required to hold exported public key.
-    @objc func exportedPublicKeyDataLen(publicKey: PublicKey) -> Int
-
-    /// Export public key to the raw binary format without algorithm information.
-    ///
-    /// Binary format must be defined in the key specification.
-    /// For instance, RSA public key must be exported in format defined in
-    /// RFC 3447 Appendix A.1.1.
-    @objc func exportPublicKeyData(publicKey: PublicKey) throws -> Data
 
     /// Import private key from the raw binary format.
     ///
@@ -91,23 +78,10 @@ import VSCFoundation
     /// RFC 3447 Appendix A.1.2.
     @objc func importPrivateKey(rawKey: RawPrivateKey) throws -> PrivateKey
 
-    /// Import private key from the raw binary format.
-    @objc func importPrivateKeyData(keyData: Data, keyAlgInfo: AlgInfo) throws -> PrivateKey
-
     /// Export private key in the raw binary format.
     ///
     /// Binary format must be defined in the key specification.
     /// For instance, RSA private key must be exported in format defined in
     /// RFC 3447 Appendix A.1.2.
     @objc func exportPrivateKey(privateKey: PrivateKey) throws -> RawPrivateKey
-
-    /// Return length in bytes required to hold exported private key.
-    @objc func exportedPrivateKeyDataLen(privateKey: PrivateKey) -> Int
-
-    /// Export private key to the raw binary format without algorithm information.
-    ///
-    /// Binary format must be defined in the key specification.
-    /// For instance, RSA private key must be exported in format defined in
-    /// RFC 3447 Appendix A.1.2.
-    @objc func exportPrivateKeyData(privateKey: PrivateKey) throws -> Data
 }

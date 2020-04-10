@@ -158,21 +158,6 @@ import VSCFoundation
         return FoundationImplementation.wrapPublicKey(take: proxyResult!)
     }
 
-    /// Import public key from the raw binary format.
-    @objc public func importPublicKeyData(keyData: Data, keyAlgInfo: AlgInfo) throws -> PublicKey {
-        var error: vscf_error_t = vscf_error_t()
-        vscf_error_reset(&error)
-
-        let proxyResult = keyData.withUnsafeBytes({ (keyDataPointer: UnsafeRawBufferPointer) in
-
-            return vscf_falcon_import_public_key_data(self.c_ctx, vsc_data(keyDataPointer.bindMemory(to: byte.self).baseAddress, keyData.count), keyAlgInfo.c_ctx, &error)
-        })
-
-        try FoundationError.handleStatus(fromC: error.status)
-
-        return FoundationImplementation.wrapPublicKey(take: proxyResult!)
-    }
-
     /// Export public key to the raw binary format.
     ///
     /// Binary format must be defined in the key specification.
@@ -187,38 +172,6 @@ import VSCFoundation
         try FoundationError.handleStatus(fromC: error.status)
 
         return RawPublicKey.init(take: proxyResult!)
-    }
-
-    /// Return length in bytes required to hold exported public key.
-    @objc public func exportedPublicKeyDataLen(publicKey: PublicKey) -> Int {
-        let proxyResult = vscf_falcon_exported_public_key_data_len(self.c_ctx, publicKey.c_ctx)
-
-        return proxyResult
-    }
-
-    /// Export public key to the raw binary format without algorithm information.
-    ///
-    /// Binary format must be defined in the key specification.
-    /// For instance, RSA public key must be exported in format defined in
-    /// RFC 3447 Appendix A.1.1.
-    @objc public func exportPublicKeyData(publicKey: PublicKey) throws -> Data {
-        let outCount = self.exportedPublicKeyDataLen(publicKey: publicKey)
-        var out = Data(count: outCount)
-        var outBuf = vsc_buffer_new()
-        defer {
-            vsc_buffer_delete(outBuf)
-        }
-
-        let proxyResult = out.withUnsafeMutableBytes({ (outPointer: UnsafeMutableRawBufferPointer) -> vscf_status_t in
-            vsc_buffer_use(outBuf, outPointer.bindMemory(to: byte.self).baseAddress, outCount)
-
-            return vscf_falcon_export_public_key_data(self.c_ctx, publicKey.c_ctx, outBuf)
-        })
-        out.count = vsc_buffer_len(outBuf)
-
-        try FoundationError.handleStatus(fromC: proxyResult)
-
-        return out
     }
 
     /// Import private key from the raw binary format.
@@ -240,21 +193,6 @@ import VSCFoundation
         return FoundationImplementation.wrapPrivateKey(take: proxyResult!)
     }
 
-    /// Import private key from the raw binary format.
-    @objc public func importPrivateKeyData(keyData: Data, keyAlgInfo: AlgInfo) throws -> PrivateKey {
-        var error: vscf_error_t = vscf_error_t()
-        vscf_error_reset(&error)
-
-        let proxyResult = keyData.withUnsafeBytes({ (keyDataPointer: UnsafeRawBufferPointer) in
-
-            return vscf_falcon_import_private_key_data(self.c_ctx, vsc_data(keyDataPointer.bindMemory(to: byte.self).baseAddress, keyData.count), keyAlgInfo.c_ctx, &error)
-        })
-
-        try FoundationError.handleStatus(fromC: error.status)
-
-        return FoundationImplementation.wrapPrivateKey(take: proxyResult!)
-    }
-
     /// Export private key in the raw binary format.
     ///
     /// Binary format must be defined in the key specification.
@@ -269,38 +207,6 @@ import VSCFoundation
         try FoundationError.handleStatus(fromC: error.status)
 
         return RawPrivateKey.init(take: proxyResult!)
-    }
-
-    /// Return length in bytes required to hold exported private key.
-    @objc public func exportedPrivateKeyDataLen(privateKey: PrivateKey) -> Int {
-        let proxyResult = vscf_falcon_exported_private_key_data_len(self.c_ctx, privateKey.c_ctx)
-
-        return proxyResult
-    }
-
-    /// Export private key to the raw binary format without algorithm information.
-    ///
-    /// Binary format must be defined in the key specification.
-    /// For instance, RSA private key must be exported in format defined in
-    /// RFC 3447 Appendix A.1.2.
-    @objc public func exportPrivateKeyData(privateKey: PrivateKey) throws -> Data {
-        let outCount = self.exportedPrivateKeyDataLen(privateKey: privateKey)
-        var out = Data(count: outCount)
-        var outBuf = vsc_buffer_new()
-        defer {
-            vsc_buffer_delete(outBuf)
-        }
-
-        let proxyResult = out.withUnsafeMutableBytes({ (outPointer: UnsafeMutableRawBufferPointer) -> vscf_status_t in
-            vsc_buffer_use(outBuf, outPointer.bindMemory(to: byte.self).baseAddress, outCount)
-
-            return vscf_falcon_export_private_key_data(self.c_ctx, privateKey.c_ctx, outBuf)
-        })
-        out.count = vsc_buffer_len(outBuf)
-
-        try FoundationError.handleStatus(fromC: proxyResult)
-
-        return out
     }
 
     /// Check if algorithm can sign data digest with a given key.
