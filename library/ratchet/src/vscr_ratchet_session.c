@@ -752,7 +752,7 @@ vscr_ratchet_session_encrypt(vscr_ratchet_session_t *self, vsc_data_t plain_text
                 sizeof(prekey_message->receiver_long_term_key_id));
         if (self->receiver_has_one_time_key_first) {
             prekey_message->has_receiver_one_time_key_id = true;
-            memcpy(prekey_message->receiver_one_time_key_id, self->sender_identity_key_id,
+            memcpy(prekey_message->receiver_one_time_key_id, self->receiver_one_time_key_id,
                     sizeof(prekey_message->receiver_one_time_key_id));
         } else {
             prekey_message->has_receiver_one_time_key_id = false;
@@ -998,7 +998,7 @@ vscr_ratchet_session_deserialize(vsc_data_t input, vscr_error_t *error) {
                 sizeof(session_pb->receiver_long_term_key_id));
 
         if (session_pb->has_receiver_one_time_key_id) {
-            memcpy(session_pb->receiver_one_time_key_id, session->receiver_one_time_key_id,
+            memcpy(session->receiver_one_time_key_id, session_pb->receiver_one_time_key_id,
                     sizeof(session_pb->receiver_one_time_key_id));
         }
 

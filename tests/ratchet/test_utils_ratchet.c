@@ -407,9 +407,22 @@ initialize(vscf_ctr_drbg_t *rng, vscr_ratchet_session_t **session_alice, vscr_ra
 
     vscr_ratchet_message_t *ratchet_message =
             vscr_ratchet_session_encrypt(*session_alice, vsc_buffer_data(text), &error);
+
     TEST_ASSERT_FALSE(vscr_error_has_error(&error));
-    TEST_ASSERT((vscr_ratchet_message_get_receiver_one_time_key_id(ratchet_message).len == 0) == !enable_one_time);
+
     TEST_ASSERT_EQUAL(vscr_msg_type_PREKEY, vscr_ratchet_message_get_type(ratchet_message));
+
+    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(vscr_ratchet_message_get_sender_identity_key_id(ratchet_message), alice_id);
+    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(vscr_ratchet_message_get_receiver_identity_key_id(ratchet_message), bob_id);
+    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(vscr_ratchet_message_get_receiver_long_term_key_id(ratchet_message), bob_lt_id);
+
+    if (enable_one_time) {
+        TEST_ASSERT_EQUAL_DATA_AND_BUFFER(
+                vscr_ratchet_message_get_receiver_one_time_key_id(ratchet_message), bob_ot_id);
+    } else {
+        TEST_ASSERT((vscr_ratchet_message_get_receiver_one_time_key_id(ratchet_message).len == 0));
+    }
+
 
     if (should_restore) {
         restore_session(rng, session_alice);
@@ -807,7 +820,7 @@ ratchet_session_cmp(vscr_ratchet_session_t *ratchet_session1, vscr_ratchet_sessi
                  memcmp(ratchet_session1->receiver_long_term_key_id, ratchet_session2->receiver_long_term_key_id,
                          sizeof(ratchet_session1->receiver_long_term_key_id)) == 0 &&
                  memcmp(ratchet_session1->receiver_one_time_key_id, ratchet_session2->receiver_one_time_key_id,
-                         sizeof(ratchet_session1->receiver_identity_key_id)) == 0 &&
+                         sizeof(ratchet_session1->receiver_one_time_key_id)) == 0 &&
                  buffer_equal_or_null(ratchet_session1->encapsulated_key_1, ratchet_session2->encapsulated_key_1) &&
                  buffer_equal_or_null(ratchet_session1->encapsulated_key_2, ratchet_session2->encapsulated_key_2) &&
                  buffer_equal_or_null(ratchet_session1->encapsulated_key_3, ratchet_session2->encapsulated_key_3) &&
