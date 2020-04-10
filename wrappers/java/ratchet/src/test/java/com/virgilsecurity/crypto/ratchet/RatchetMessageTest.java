@@ -45,7 +45,7 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
-public class RatchetMessageTest extends SampleBasedTest {
+public class RatchetMessageTest {
 
 	private RatchetMessage ratchetMessage;
 
@@ -69,21 +69,7 @@ public class RatchetMessageTest extends SampleBasedTest {
 
 	@Test
 	public void getLongTermPublicKey() {
-		byte[] key = this.ratchetMessage.getLongTermPublicKey();
+		byte[] key = this.ratchetMessage.getReceiverLongTermKeyId();
 		assertNull(key);
 	}
-
-	@Test
-	public void getOneTimePublicKey() {
-		byte[] key = this.ratchetMessage.getOneTimePublicKey();
-		assertNull(key);
-	}
-
-	@Test
-	@Ignore
-	public void serialize_deserialize() {
-		byte[] serializedMessage = this.ratchetMessage.serialize();
-		assertNotNull(serializedMessage);
-	}
-
 }
