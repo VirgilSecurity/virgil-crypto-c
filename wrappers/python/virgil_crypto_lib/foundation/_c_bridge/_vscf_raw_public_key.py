@@ -91,13 +91,6 @@ class VscfRawPublicKey(object):
         vscf_raw_public_key_bitlen.restype = c_size_t
         return vscf_raw_public_key_bitlen(ctx)
 
-    def vscf_raw_public_key_impl_tag(self, ctx):
-        """Return tag of an associated algorithm that can handle this key."""
-        vscf_raw_public_key_impl_tag = self._lib.vscf_raw_public_key_impl_tag
-        vscf_raw_public_key_impl_tag.argtypes = [POINTER(vscf_raw_public_key_t)]
-        vscf_raw_public_key_impl_tag.restype = c_int
-        return vscf_raw_public_key_impl_tag(ctx)
-
     def vscf_raw_public_key_is_valid(self, ctx):
         """Check that key is valid.
         Note, this operation can be slow."""

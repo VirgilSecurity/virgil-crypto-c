@@ -92,13 +92,6 @@ class VscfHybridPrivateKey(object):
         vscf_hybrid_private_key_bitlen.restype = c_size_t
         return vscf_hybrid_private_key_bitlen(ctx)
 
-    def vscf_hybrid_private_key_impl_tag(self, ctx):
-        """Return tag of an associated algorithm that can handle this key."""
-        vscf_hybrid_private_key_impl_tag = self._lib.vscf_hybrid_private_key_impl_tag
-        vscf_hybrid_private_key_impl_tag.argtypes = [POINTER(vscf_hybrid_private_key_t)]
-        vscf_hybrid_private_key_impl_tag.restype = c_int
-        return vscf_hybrid_private_key_impl_tag(ctx)
-
     def vscf_hybrid_private_key_is_valid(self, ctx):
         """Check that key is valid.
         Note, this operation can be slow."""

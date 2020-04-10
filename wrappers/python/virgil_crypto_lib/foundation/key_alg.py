@@ -69,27 +69,8 @@ class KeyAlg(object):
         raise NotImplementedError()
 
     @abstractmethod
-    def import_public_key_data(self, key_data, key_alg_info):
-        """Import public key from the raw binary format."""
-        raise NotImplementedError()
-
-    @abstractmethod
     def export_public_key(self, public_key):
         """Export public key to the raw binary format.
-
-        Binary format must be defined in the key specification.
-        For instance, RSA public key must be exported in format defined in
-        RFC 3447 Appendix A.1.1."""
-        raise NotImplementedError()
-
-    @abstractmethod
-    def exported_public_key_data_len(self, public_key):
-        """Return length in bytes required to hold exported public key."""
-        raise NotImplementedError()
-
-    @abstractmethod
-    def export_public_key_data(self, public_key):
-        """Export public key to the raw binary format without algorithm information.
 
         Binary format must be defined in the key specification.
         For instance, RSA public key must be exported in format defined in
@@ -109,27 +90,8 @@ class KeyAlg(object):
         raise NotImplementedError()
 
     @abstractmethod
-    def import_private_key_data(self, key_data, key_alg_info):
-        """Import private key from the raw binary format."""
-        raise NotImplementedError()
-
-    @abstractmethod
     def export_private_key(self, private_key):
         """Export private key in the raw binary format.
-
-        Binary format must be defined in the key specification.
-        For instance, RSA private key must be exported in format defined in
-        RFC 3447 Appendix A.1.2."""
-        raise NotImplementedError()
-
-    @abstractmethod
-    def exported_private_key_data_len(self, private_key):
-        """Return length in bytes required to hold exported private key."""
-        raise NotImplementedError()
-
-    @abstractmethod
-    def export_private_key_data(self, private_key):
-        """Export private key to the raw binary format without algorithm information.
 
         Binary format must be defined in the key specification.
         For instance, RSA private key must be exported in format defined in
