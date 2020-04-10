@@ -36,14 +36,12 @@
 
 package com.virgilsecurity.crypto.ratchet;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 public class RatchetMessageTest {
 
@@ -60,16 +58,9 @@ public class RatchetMessageTest {
 	}
 
 	@Test
-	@Ignore
 	public void getType() {
 		MsgType msgType = this.ratchetMessage.getType();
 		assertNotNull(msgType);
-		assertEquals(MsgType.PREKEY, msgType);
-	}
-
-	@Test
-	public void getLongTermPublicKey() {
-		byte[] key = this.ratchetMessage.getReceiverLongTermKeyId();
-		assertNull(key);
+		assertTrue(MsgType.PREKEY == msgType || MsgType.REGULAR == msgType);
 	}
 }
