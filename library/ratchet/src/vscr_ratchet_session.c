@@ -459,6 +459,8 @@ vscr_ratchet_session_initiate(vscr_ratchet_session_t *self, const vscf_impl_t *s
         goto err1;
     }
 
+    memcpy(self->receiver_identity_key_id, receiver_identity_key_id.bytes, sizeof(self->receiver_identity_key_id));
+
     vscr_ratchet_public_key_t receiver_long_term_public_key_first;
     const vscf_impl_t *receiver_long_term_public_key_second = NULL;
     status = vscr_ratchet_key_utils_import_public_key(self->key_utils, receiver_long_term_public_key,
@@ -467,6 +469,8 @@ vscr_ratchet_session_initiate(vscr_ratchet_session_t *self, const vscf_impl_t *s
     if (status != vscr_status_SUCCESS) {
         goto err1;
     }
+
+    memcpy(self->receiver_long_term_key_id, receiver_long_term_key_id.bytes, sizeof(self->receiver_long_term_key_id));
 
     vscr_ratchet_public_key_t receiver_one_time_public_key_first;
     const vscf_impl_t *receiver_one_time_public_key_second = NULL;
@@ -478,6 +482,8 @@ vscr_ratchet_session_initiate(vscr_ratchet_session_t *self, const vscf_impl_t *s
         if (status != vscr_status_SUCCESS) {
             goto err1;
         }
+
+        memcpy(self->receiver_one_time_key_id, receiver_one_time_key_id.bytes, sizeof(self->receiver_one_time_key_id));
 
         self->receiver_has_one_time_key_first = true;
     } else {
