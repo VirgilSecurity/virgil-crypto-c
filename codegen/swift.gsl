@@ -2258,7 +2258,7 @@ function swift_create_class_module (class, swift_project, meta)
                 swift_create_method_from_dependency (dependency, my.class, swift_class, my.swift_project, my.meta)
             endfor
 
-            for my.class.method where 0.scope = "public" & 0.declaration = "public" & 0.visibility = "public"
+            for my.class.method where wrapper_should_wrap_method(method)
                 swift_create_class_method (my.class, method, swift_class, my.swift_project, my.meta)
             endfor
 
