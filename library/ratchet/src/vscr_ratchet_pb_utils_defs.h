@@ -37,12 +37,6 @@
 // clang-format off
 
 
-//  @description
-// --------------------------------------------------------------------------
-//  Class 'ratchet key id' types definition.
-// --------------------------------------------------------------------------
-
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -50,10 +44,25 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#include "vscr_ratchet_key_id_defs.h"
+
+//  @description
+// --------------------------------------------------------------------------
+//  Class 'ratchet pb utils' types definition.
+// --------------------------------------------------------------------------
+
+#ifndef VSCR_RATCHET_PB_UTILS_DEFS_H_INCLUDED
+#define VSCR_RATCHET_PB_UTILS_DEFS_H_INCLUDED
+
+#include "vscr_library.h"
+#include "vscr_atomic.h"
 
 // clang-format on
 //  @end
+
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 
 //  @generated
@@ -62,9 +71,33 @@
 //  Generated section start.
 // --------------------------------------------------------------------------
 
+//
+//  Handle 'ratchet pb utils' context.
+//
+struct vscr_ratchet_pb_utils_t {
+    //
+    //  Function do deallocate self context.
+    //
+    vscr_dealloc_fn self_dealloc_cb;
+    //
+    //  Reference counter.
+    //
+    VSCR_ATOMIC size_t refcnt;
+};
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
+//  @end
+
+
+#ifdef __cplusplus
+}
+#endif
+
+
+//  @footer
+#endif // VSCR_RATCHET_PB_UTILS_DEFS_H_INCLUDED
 //  @end

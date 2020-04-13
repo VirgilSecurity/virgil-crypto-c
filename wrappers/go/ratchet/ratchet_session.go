@@ -99,13 +99,13 @@ func (obj *RatchetSession) SetupDefaults() error {
 /*
 * Initiates session
 */
-func (obj *RatchetSession) Initiate(senderIdentityPrivateKey []byte, receiverIdentityPublicKey []byte, receiverLongTermPublicKey []byte, receiverOneTimePublicKey []byte) error {
-    senderIdentityPrivateKeyData := helperWrapData (senderIdentityPrivateKey)
-    receiverIdentityPublicKeyData := helperWrapData (receiverIdentityPublicKey)
-    receiverLongTermPublicKeyData := helperWrapData (receiverLongTermPublicKey)
-    receiverOneTimePublicKeyData := helperWrapData (receiverOneTimePublicKey)
+func (obj *RatchetSession) Initiate(senderIdentityPrivateKey PrivateKey, senderIdentityKeyId []byte, receiverIdentityPublicKey PublicKey, receiverIdentityKeyId []byte, receiverLongTermPublicKey PublicKey, receiverLongTermKeyId []byte, receiverOneTimePublicKey PublicKey, receiverOneTimeKeyId []byte, enablePostQuantum bool) error {
+    senderIdentityKeyIdData := helperWrapData (senderIdentityKeyId)
+    receiverIdentityKeyIdData := helperWrapData (receiverIdentityKeyId)
+    receiverLongTermKeyIdData := helperWrapData (receiverLongTermKeyId)
+    receiverOneTimeKeyIdData := helperWrapData (receiverOneTimeKeyId)
 
-    proxyResult := /*pr4*/C.vscr_ratchet_session_initiate(obj.cCtx, senderIdentityPrivateKeyData, receiverIdentityPublicKeyData, receiverLongTermPublicKeyData, receiverOneTimePublicKeyData)
+    proxyResult := /*pr4*/C.vscr_ratchet_session_initiate(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(senderIdentityPrivateKey.Ctx())), senderIdentityKeyIdData, (*C.vscf_impl_t)(unsafe.Pointer(receiverIdentityPublicKey.Ctx())), receiverIdentityKeyIdData, (*C.vscf_impl_t)(unsafe.Pointer(receiverLongTermPublicKey.Ctx())), receiverLongTermKeyIdData, (*C.vscf_impl_t)(unsafe.Pointer(receiverOneTimePublicKey.Ctx())), receiverOneTimeKeyIdData, (C.bool)(enablePostQuantum)/*pa10*/)
 
     err := RatchetErrorHandleStatus(proxyResult)
     if err != nil {
@@ -113,6 +113,40 @@ func (obj *RatchetSession) Initiate(senderIdentityPrivateKey []byte, receiverIde
     }
 
     runtime.KeepAlive(obj)
+
+    runtime.KeepAlive(senderIdentityPrivateKey)
+
+    runtime.KeepAlive(receiverIdentityPublicKey)
+
+    runtime.KeepAlive(receiverLongTermPublicKey)
+
+    runtime.KeepAlive(receiverOneTimePublicKey)
+
+    return nil
+}
+
+/*
+* Initiates session
+*/
+func (obj *RatchetSession) InitiateNoOneTimeKey(senderIdentityPrivateKey PrivateKey, senderIdentityKeyId []byte, receiverIdentityPublicKey PublicKey, receiverIdentityKeyId []byte, receiverLongTermPublicKey PublicKey, receiverLongTermKeyId []byte, enablePostQuantum bool) error {
+    senderIdentityKeyIdData := helperWrapData (senderIdentityKeyId)
+    receiverIdentityKeyIdData := helperWrapData (receiverIdentityKeyId)
+    receiverLongTermKeyIdData := helperWrapData (receiverLongTermKeyId)
+
+    proxyResult := /*pr4*/C.vscr_ratchet_session_initiate_no_one_time_key(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(senderIdentityPrivateKey.Ctx())), senderIdentityKeyIdData, (*C.vscf_impl_t)(unsafe.Pointer(receiverIdentityPublicKey.Ctx())), receiverIdentityKeyIdData, (*C.vscf_impl_t)(unsafe.Pointer(receiverLongTermPublicKey.Ctx())), receiverLongTermKeyIdData, (C.bool)(enablePostQuantum)/*pa10*/)
+
+    err := RatchetErrorHandleStatus(proxyResult)
+    if err != nil {
+        return err
+    }
+
+    runtime.KeepAlive(obj)
+
+    runtime.KeepAlive(senderIdentityPrivateKey)
+
+    runtime.KeepAlive(receiverIdentityPublicKey)
+
+    runtime.KeepAlive(receiverLongTermPublicKey)
 
     return nil
 }
@@ -120,13 +154,8 @@ func (obj *RatchetSession) Initiate(senderIdentityPrivateKey []byte, receiverIde
 /*
 * Responds to session initiation
 */
-func (obj *RatchetSession) Respond(senderIdentityPublicKey []byte, receiverIdentityPrivateKey []byte, receiverLongTermPrivateKey []byte, receiverOneTimePrivateKey []byte, message *RatchetMessage) error {
-    senderIdentityPublicKeyData := helperWrapData (senderIdentityPublicKey)
-    receiverIdentityPrivateKeyData := helperWrapData (receiverIdentityPrivateKey)
-    receiverLongTermPrivateKeyData := helperWrapData (receiverLongTermPrivateKey)
-    receiverOneTimePrivateKeyData := helperWrapData (receiverOneTimePrivateKey)
-
-    proxyResult := /*pr4*/C.vscr_ratchet_session_respond(obj.cCtx, senderIdentityPublicKeyData, receiverIdentityPrivateKeyData, receiverLongTermPrivateKeyData, receiverOneTimePrivateKeyData, (*C.vscr_ratchet_message_t)(unsafe.Pointer(message.Ctx())))
+func (obj *RatchetSession) Respond(senderIdentityPublicKey PublicKey, receiverIdentityPrivateKey PrivateKey, receiverLongTermPrivateKey PrivateKey, receiverOneTimePrivateKey PrivateKey, message *RatchetMessage, enablePostQuantum bool) error {
+    proxyResult := /*pr4*/C.vscr_ratchet_session_respond(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(senderIdentityPublicKey.Ctx())), (*C.vscf_impl_t)(unsafe.Pointer(receiverIdentityPrivateKey.Ctx())), (*C.vscf_impl_t)(unsafe.Pointer(receiverLongTermPrivateKey.Ctx())), (*C.vscf_impl_t)(unsafe.Pointer(receiverOneTimePrivateKey.Ctx())), (*C.vscr_ratchet_message_t)(unsafe.Pointer(message.Ctx())), (C.bool)(enablePostQuantum)/*pa10*/)
 
     err := RatchetErrorHandleStatus(proxyResult)
     if err != nil {
@@ -134,6 +163,38 @@ func (obj *RatchetSession) Respond(senderIdentityPublicKey []byte, receiverIdent
     }
 
     runtime.KeepAlive(obj)
+
+    runtime.KeepAlive(senderIdentityPublicKey)
+
+    runtime.KeepAlive(receiverIdentityPrivateKey)
+
+    runtime.KeepAlive(receiverLongTermPrivateKey)
+
+    runtime.KeepAlive(receiverOneTimePrivateKey)
+
+    runtime.KeepAlive(message)
+
+    return nil
+}
+
+/*
+* Responds to session initiation
+*/
+func (obj *RatchetSession) RespondNoOneTimeKey(senderIdentityPublicKey PublicKey, receiverIdentityPrivateKey PrivateKey, receiverLongTermPrivateKey PrivateKey, message *RatchetMessage, enablePostQuantum bool) error {
+    proxyResult := /*pr4*/C.vscr_ratchet_session_respond_no_one_time_key(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(senderIdentityPublicKey.Ctx())), (*C.vscf_impl_t)(unsafe.Pointer(receiverIdentityPrivateKey.Ctx())), (*C.vscf_impl_t)(unsafe.Pointer(receiverLongTermPrivateKey.Ctx())), (*C.vscr_ratchet_message_t)(unsafe.Pointer(message.Ctx())), (C.bool)(enablePostQuantum)/*pa10*/)
+
+    err := RatchetErrorHandleStatus(proxyResult)
+    if err != nil {
+        return err
+    }
+
+    runtime.KeepAlive(obj)
+
+    runtime.KeepAlive(senderIdentityPublicKey)
+
+    runtime.KeepAlive(receiverIdentityPrivateKey)
+
+    runtime.KeepAlive(receiverLongTermPrivateKey)
 
     runtime.KeepAlive(message)
 
@@ -145,6 +206,17 @@ func (obj *RatchetSession) Respond(senderIdentityPublicKey []byte, receiverIdent
 */
 func (obj *RatchetSession) IsInitiator() bool {
     proxyResult := /*pr4*/C.vscr_ratchet_session_is_initiator(obj.cCtx)
+
+    runtime.KeepAlive(obj)
+
+    return bool(proxyResult) /* r9 */
+}
+
+/*
+* Returns flag that indicates if session is post-quantum
+*/
+func (obj *RatchetSession) IsPqcEnabled() bool {
+    proxyResult := /*pr4*/C.vscr_ratchet_session_is_pqc_enabled(obj.cCtx)
 
     runtime.KeepAlive(obj)
 

@@ -89,14 +89,6 @@ const vsc_data_t test_data_ratchet_curve_public_key = {
         test_data_ratchet_curve_public_key_BYTES, sizeof(test_data_ratchet_curve_public_key_BYTES)
 };
 
-const vsc_data_t test_data_ratchet_curve_public_key_raw = {
-        test_data_ratchet_curve_public_key_raw_BYTES, sizeof(test_data_ratchet_curve_public_key_raw_BYTES)
-};
-
-const vsc_data_t test_data_ratchet_curve_public_key_id = {
-        test_data_ratchet_curve_public_key_id_BYTES, sizeof(test_data_ratchet_curve_public_key_id_BYTES)
-};
-
 const vsc_data_t test_data_ratchet_ed_private_key = {
         test_data_ratchet_ed_private_key_BYTES, sizeof(test_data_ratchet_ed_private_key_BYTES)
 };

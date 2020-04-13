@@ -101,15 +101,29 @@ public class RatchetMessage implements AutoCloseable {
     /*
     * Returns long-term public key, if message is prekey message.
     */
-    public byte[] getLongTermPublicKey() {
-        return RatchetJNI.INSTANCE.ratchetMessage_getLongTermPublicKey(this.cCtx);
+    public byte[] getSenderIdentityKeyId() {
+        return RatchetJNI.INSTANCE.ratchetMessage_getSenderIdentityKeyId(this.cCtx);
+    }
+
+    /*
+    * Returns long-term public key, if message is prekey message.
+    */
+    public byte[] getReceiverIdentityKeyId() {
+        return RatchetJNI.INSTANCE.ratchetMessage_getReceiverIdentityKeyId(this.cCtx);
+    }
+
+    /*
+    * Returns long-term public key, if message is prekey message.
+    */
+    public byte[] getReceiverLongTermKeyId() {
+        return RatchetJNI.INSTANCE.ratchetMessage_getReceiverLongTermKeyId(this.cCtx);
     }
 
     /*
     * Returns one-time public key, if message is prekey message and if one-time key is present, empty result otherwise.
     */
-    public byte[] getOneTimePublicKey() {
-        return RatchetJNI.INSTANCE.ratchetMessage_getOneTimePublicKey(this.cCtx);
+    public byte[] getReceiverOneTimeKeyId() {
+        return RatchetJNI.INSTANCE.ratchetMessage_getReceiverOneTimeKeyId(this.cCtx);
     }
 
     /*

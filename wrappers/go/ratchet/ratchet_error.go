@@ -129,6 +129,22 @@ const (
     * Myself is included in info.
     */
     RatchetErrorErrorMyselfIsIncludedInInfo int = -29
+    /*
+    * Round5 error.
+    */
+    RatchetErrorErrorRound5 int = -30
+    /*
+    * Falcon error.
+    */
+    RatchetErrorErrorFalcon int = -31
+    /*
+    * Decaps signature is invalid.
+    */
+    RatchetErrorErrorDecapsSignatureInvalid int = -32
+    /*
+    * Error importing round5 key.
+    */
+    RatchetErrorErrorRound5ImportKey int = -33
 )
 
 func (obj *RatchetError) Error() string {
@@ -197,6 +213,14 @@ func RatchetErrorHandleStatus(status C.vscr_status_t) error {
             return &RatchetError {int(status), "Simultaneous group user operation."}
         case C.vscr_status_ERROR_MYSELF_IS_INCLUDED_IN_INFO:
             return &RatchetError {int(status), "Myself is included in info."}
+        case C.vscr_status_ERROR_ROUND5:
+            return &RatchetError {int(status), "Round5 error."}
+        case C.vscr_status_ERROR_FALCON:
+            return &RatchetError {int(status), "Falcon error."}
+        case C.vscr_status_ERROR_DECAPS_SIGNATURE_INVALID:
+            return &RatchetError {int(status), "Decaps signature is invalid."}
+        case C.vscr_status_ERROR_ROUND5_IMPORT_KEY:
+            return &RatchetError {int(status), "Error importing round5 key."}
         }
     }
     return nil

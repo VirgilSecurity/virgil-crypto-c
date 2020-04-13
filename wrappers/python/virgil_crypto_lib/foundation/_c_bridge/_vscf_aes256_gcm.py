@@ -147,13 +147,6 @@ class VscfAes256Gcm(object):
         vscf_aes256_gcm_set_key.restype = None
         return vscf_aes256_gcm_set_key(ctx, key)
 
-    def vscf_aes256_gcm_state(self, ctx):
-        """Return cipher's current state."""
-        vscf_aes256_gcm_state = self._lib.vscf_aes256_gcm_state
-        vscf_aes256_gcm_state.argtypes = [POINTER(vscf_aes256_gcm_t)]
-        vscf_aes256_gcm_state.restype = c_int
-        return vscf_aes256_gcm_state(ctx)
-
     def vscf_aes256_gcm_start_encryption(self, ctx):
         """Start sequential encryption."""
         vscf_aes256_gcm_start_encryption = self._lib.vscf_aes256_gcm_start_encryption

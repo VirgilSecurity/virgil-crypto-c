@@ -55,10 +55,10 @@
         <require impl="sha512"/>
     </require>
 
-    <cgo_link platform="darwin" libraries="-lvsc_ratchet -lvsc_ratchet_pb -lvsc_foundation -lvsc_foundation_pb -led25519 -lprotobuf-nanopb -lvsc_common -lmbedcrypto"/>
-    <cgo_link platform="linux,!legacy" path="linux_amd64" libraries="-lvsc_ratchet -lvsc_ratchet_pb -lvsc_foundation -lvsc_foundation_pb -led25519 -lprotobuf-nanopb -lvsc_common -lmbedcrypto"/>
-    <cgo_link platform="linux,legacy" path="linux_amd64__legacy_os" libraries="-lvsc_ratchet -lvsc_ratchet_pb -lvsc_foundation -lvsc_foundation_pb -led25519 -lprotobuf-nanopb -lvsc_common -lmbedcrypto"/>
-    <cgo_link platform="windows" libraries="-lvsc_ratchet -lvsc_ratchet_pb -lvsc_foundation -lvsc_foundation_pb -led25519 -lprotobuf-nanopb -lvsc_common -lmbedcrypto"/>
+    <cgo_link platform="darwin" libraries="-lvsc_ratchet -lvsc_ratchet_pb -lvsc_foundation -lvsc_foundation_pb -led25519 -lprotobuf-nanopb -lvsc_common -lmbedcrypto -lround5 -lfalcon -lkeccak"/>
+    <cgo_link platform="linux,!legacy" path="linux_amd64" libraries="-lvsc_ratchet -lvsc_ratchet_pb -lvsc_foundation -lvsc_foundation_pb -led25519 -lprotobuf-nanopb -lvsc_common -lmbedcrypto -lround5 -lfalcon -lkeccak"/>
+    <cgo_link platform="linux,legacy" path="linux_amd64__legacy_os" libraries="-lvsc_ratchet -lvsc_ratchet_pb -lvsc_foundation -lvsc_foundation_pb -led25519 -lprotobuf-nanopb -lvsc_common -lmbedcrypto -lround5 -lfalcon -lkeccak"/>
+    <cgo_link platform="windows" libraries="-lvsc_ratchet -lvsc_ratchet_pb -lvsc_foundation -lvsc_foundation_pb -led25519 -lprotobuf-nanopb -lvsc_common -lmbedcrypto -lround5 -lfalcon -lkeccak"/>
 
     <feature name="multi threading" default="on">
         Enable multi-threading safety for ratchet library.
@@ -79,9 +79,8 @@
     <class name="ratchet common"/>
     <class name="ratchet common hidden"/>
     <class name="ratchet key utils"/>
-    <class name="ratchet key id"/>
     <class name="error"/>
-    <class name="ratchet x3dh"/>
+    <class name="ratchet xxdh"/>
     <class name="ratchet message"/>
     <class name="ratchet cipher"/>
     <class name="ratchet chain key"/>
@@ -92,6 +91,7 @@
     <class name="ratchet receiver chain"/>
     <class name="ratchet sender chain"/>
     <class name="ratchet keys"/>
+    <class name="ratchet pb utils"/>
     <class name="ratchet"/>
     <class name="ratchet session"/>
     <class name="ratchet group participant epoch"/>

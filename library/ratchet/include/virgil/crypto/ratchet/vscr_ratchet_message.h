@@ -148,13 +148,25 @@ vscr_ratchet_message_get_counter(const vscr_ratchet_message_t *self);
 //  Returns long-term public key, if message is prekey message.
 //
 VSCR_PUBLIC vsc_data_t
-vscr_ratchet_message_get_long_term_public_key(vscr_ratchet_message_t *self);
+vscr_ratchet_message_get_sender_identity_key_id(vscr_ratchet_message_t *self);
+
+//
+//  Returns long-term public key, if message is prekey message.
+//
+VSCR_PUBLIC vsc_data_t
+vscr_ratchet_message_get_receiver_identity_key_id(vscr_ratchet_message_t *self);
+
+//
+//  Returns long-term public key, if message is prekey message.
+//
+VSCR_PUBLIC vsc_data_t
+vscr_ratchet_message_get_receiver_long_term_key_id(vscr_ratchet_message_t *self);
 
 //
 //  Returns one-time public key, if message is prekey message and if one-time key is present, empty result otherwise.
 //
 VSCR_PUBLIC vsc_data_t
-vscr_ratchet_message_get_one_time_public_key(vscr_ratchet_message_t *self);
+vscr_ratchet_message_get_receiver_one_time_key_id(vscr_ratchet_message_t *self);
 
 //
 //  Buffer len to serialize this class.

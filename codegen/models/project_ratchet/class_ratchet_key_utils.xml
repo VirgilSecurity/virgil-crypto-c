@@ -1,6 +1,16 @@
 <class name="ratchet key utils" scope="internal" context="internal">
     Utils class for working with keys formats.
 
+    <require class="key info" scope="private" project="foundation"/>
+    <require class="compound private key" scope="private" project="foundation"/>
+    <require class="hybrid private key" scope="private" project="foundation"/>
+    <require class="private key" scope="private" project="foundation"/>
+    <require class="compound public key" scope="private" project="foundation"/>
+    <require class="hybrid public key" scope="private" project="foundation"/>
+    <require class="public key" scope="private" project="foundation"/>
+    <require class="raw public key" scope="private" project="foundation"/>
+    <require class="raw private key" scope="private" project="foundation"/>
+
     <require class="ratchet common" scope="public"/>
     <require class="ratchet common hidden" scope="context"/>
     <require impl="key asn1 deserializer" scope="private" project="foundation"/>
@@ -11,6 +21,38 @@
     <require module="buffer defs" scope="private" project="common"/>
 
     <property name="key asn1 deserializer" impl="key asn1 deserializer" project="foundation"/>
+
+    <method name="import private key">
+        <argument name="private key" interface="private key" project="foundation"/>
+
+        <argument name="private key first" class="vscr_ratchet_private_key_t" library="internal" access="readwrite"/>
+        <argument name="private key second ref" class="vscf_impl_t *" is_reference="1" access="readonly" library="internal"/>
+        <argument name="private key second signer ref" class="vscf_impl_t *" is_reference="1" access="readonly" library="internal"/>
+
+        <argument name="enable post quantum" type="boolean"/>
+        <argument name="with signer" type="boolean"/>
+
+        <return enum="status"/>
+    </method>
+
+    <method name="import public key">
+        <argument name="public key" interface="public key" project="foundation"/>
+
+        <argument name="public key first" class="vscr_ratchet_public_key_t" library="internal" access="readwrite"/>
+        <argument name="public key second ref" class="vscf_impl_t *" is_reference="1" access="readonly" library="internal"/>
+        <argument name="public key second signer ref" class="vscf_impl_t *" is_reference="1" access="readonly" library="internal"/>
+
+        <argument name="enable post quantum" type="boolean"/>
+        <argument name="with signer" type="boolean"/>
+
+        <return enum="status"/>
+    </method>
+
+    <method name="compute public key id">
+        <argument name="public key first" class="const vscr_ratchet_public_key_t" is_reference="0" library="internal"/>
+        <argument name="public key second" class="data"/>
+        <argument name="key id" class="vscr_ratchet_key_id_t" is_reference="0" library="internal"/>
+    </method>
 
     <method name="extract ratchet public key">
         <argument name="data" class="data"/>

@@ -80,6 +80,11 @@ extern "C" {
     typedef uint8_t vscr_ratchet_private_key_t[32];
 #endif // VSCR_RATCHET_PRIVATE_KEY_T_32__DEFINED
 
+#ifndef VSCR_RATCHET_KEY_ID_T_8__DEFINED
+#define VSCR_RATCHET_KEY_ID_T_8__DEFINED
+    typedef uint8_t vscr_ratchet_key_id_t[8];
+#endif // VSCR_RATCHET_KEY_ID_T_8__DEFINED
+
 #ifndef VSCR_RATCHET_SYMMETRIC_KEY_T_32__DEFINED
 #define VSCR_RATCHET_SYMMETRIC_KEY_T_32__DEFINED
     typedef uint8_t vscr_ratchet_symmetric_key_t[32];

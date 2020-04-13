@@ -6,12 +6,15 @@
 
     <require module="ratchet typedefs" scope="context"/>
 
-    <require header="ed25519/ed25519.h" is_system="1" scope="private"/>
+    <require class="ratchet pb utils" scope="context"/>
 
     <require class="ratchet common hidden" scope="context"/>
 
-    <property name="private key" class="vscr_ratchet_private_key_t" is_reference="0" library="internal" access="readwrite"/>
-    <property name="public key" class="vscr_ratchet_public_key_t" is_reference="0" library="internal" access="readwrite"/>
+    <property name="private key first" class="vscr_ratchet_private_key_t" is_reference="0" library="internal" access="readwrite"/>
+    <property name="public key first" class="vscr_ratchet_public_key_t" is_reference="0" library="internal" access="readwrite"/>
+    <property name="private key second" interface="private key" project="foundation" access="readwrite"/>
+    <property name="public key second" interface="private key" project="foundation" access="readwrite"/>
+    <property name="encapsulated key" class="buffer" access="readwrite"/>
     <property name="chain key" class="ratchet chain key" access="readwrite" is_reference="0"/>
 
     <method name="serialize" is_const="1">
@@ -21,6 +24,9 @@
     <method name="deserialize" is_static="1">
         <argument name="sender chain pb" class="vscr_SenderChain" library="nanopb"/>
         <argument name="sender chain" class="self" access="readwrite"/>
+        <argument name="round5" class="round5" project="foundation" access="readwrite"/>
+
+        <return enum="status"/>
     </method>
 
 </class>

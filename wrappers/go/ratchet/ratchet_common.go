@@ -17,7 +17,7 @@ const (
     /*
     * Max message length
     */
-    RatchetCommonMaxMessageLen uint = 32975
+    RatchetCommonMaxMessageLen uint = 37578
     /*
     * Key pair id length
     */

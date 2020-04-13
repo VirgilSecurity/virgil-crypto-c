@@ -37,12 +37,9 @@
 
 #include "vsc_data.h"
 
-extern const vsc_data_t test_data_ratchet_keys_shared_secret;
+extern const vsc_data_t test_data_ratchet_keys_random;
 extern const vsc_data_t test_data_ratchet_keys_root_key;
 extern const vsc_data_t test_data_ratchet_keys_chain_key;
-extern const vsc_data_t test_data_ratchet_keys_shared_secret_weak;
-extern const vsc_data_t test_data_ratchet_keys_root_key_weak;
-extern const vsc_data_t test_data_ratchet_keys_chain_key_weak;
 extern const vsc_data_t test_data_ratchet_keys_private_key;
 extern const vsc_data_t test_data_ratchet_keys_public;
 extern const vsc_data_t test_data_ratchet_keys_new_root_key;
@@ -52,5 +49,8 @@ extern const uint32_t test_data_ratchet_keys_message_key_index;
 extern const uint32_t test_data_ratchet_keys_chain_key_index;
 extern const vsc_data_t test_data_ratchet_keys_next_chain_key;
 extern const vsc_data_t test_data_ratchet_keys_next_chain_key2;
+extern const vsc_data_t test_data_ratchet_keys_root_key_pqc;
+extern const vsc_data_t test_data_ratchet_keys_chain_key_pqc;
+extern const vsc_data_t test_data_ratchet_keys_encapsulated_key_pqc;
 
 #endif //VIRGIL_CRYPTO_TEST_DATA_RATCHET_KEYS_H

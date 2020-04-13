@@ -38,10 +38,10 @@ from ._c_bridge import VscfFalcon
 from ._c_bridge import VscfImplTag
 from ._c_bridge import VscfStatus
 from ._c_bridge._vscf_error import vscf_error_t
-from virgil_crypto_lib.common._c_bridge import Data
 from .raw_public_key import RawPublicKey
-from virgil_crypto_lib.common._c_bridge import Buffer
 from .raw_private_key import RawPrivateKey
+from virgil_crypto_lib.common._c_bridge import Data
+from virgil_crypto_lib.common._c_bridge import Buffer
 from .alg import Alg
 from .key_alg import KeyAlg
 from .key_signer import KeySigner
@@ -114,15 +114,6 @@ class Falcon(Alg, KeyAlg, KeySigner):
         instance = VscfImplTag.get_type(result)[0].take_c_ctx(cast(result, POINTER(VscfImplTag.get_type(result)[1])))
         return instance
 
-    def import_public_key_data(self, key_data, key_alg_info):
-        """Import public key from the raw binary format."""
-        d_key_data = Data(key_data)
-        error = vscf_error_t()
-        result = self._lib_vscf_falcon.vscf_falcon_import_public_key_data(self.ctx, d_key_data.data, key_alg_info.c_impl, error)
-        VscfStatus.handle_status(error.status)
-        instance = VscfImplTag.get_type(result)[0].take_c_ctx(cast(result, POINTER(VscfImplTag.get_type(result)[1])))
-        return instance
-
     def export_public_key(self, public_key):
         """Export public key to the raw binary format.
 
@@ -134,22 +125,6 @@ class Falcon(Alg, KeyAlg, KeySigner):
         VscfStatus.handle_status(error.status)
         instance = RawPublicKey.take_c_ctx(result)
         return instance
-
-    def exported_public_key_data_len(self, public_key):
-        """Return length in bytes required to hold exported public key."""
-        result = self._lib_vscf_falcon.vscf_falcon_exported_public_key_data_len(self.ctx, public_key.c_impl)
-        return result
-
-    def export_public_key_data(self, public_key):
-        """Export public key to the raw binary format without algorithm information.
-
-        Binary format must be defined in the key specification.
-        For instance, RSA public key must be exported in format defined in
-        RFC 3447 Appendix A.1.1."""
-        out = Buffer(self.exported_public_key_data_len(public_key=public_key))
-        status = self._lib_vscf_falcon.vscf_falcon_export_public_key_data(self.ctx, public_key.c_impl, out.c_buffer)
-        VscfStatus.handle_status(status)
-        return out.get_bytes()
 
     def import_private_key(self, raw_key):
         """Import private key from the raw binary format.
@@ -166,15 +141,6 @@ class Falcon(Alg, KeyAlg, KeySigner):
         instance = VscfImplTag.get_type(result)[0].take_c_ctx(cast(result, POINTER(VscfImplTag.get_type(result)[1])))
         return instance
 
-    def import_private_key_data(self, key_data, key_alg_info):
-        """Import private key from the raw binary format."""
-        d_key_data = Data(key_data)
-        error = vscf_error_t()
-        result = self._lib_vscf_falcon.vscf_falcon_import_private_key_data(self.ctx, d_key_data.data, key_alg_info.c_impl, error)
-        VscfStatus.handle_status(error.status)
-        instance = VscfImplTag.get_type(result)[0].take_c_ctx(cast(result, POINTER(VscfImplTag.get_type(result)[1])))
-        return instance
-
     def export_private_key(self, private_key):
         """Export private key in the raw binary format.
 
@@ -186,22 +152,6 @@ class Falcon(Alg, KeyAlg, KeySigner):
         VscfStatus.handle_status(error.status)
         instance = RawPrivateKey.take_c_ctx(result)
         return instance
-
-    def exported_private_key_data_len(self, private_key):
-        """Return length in bytes required to hold exported private key."""
-        result = self._lib_vscf_falcon.vscf_falcon_exported_private_key_data_len(self.ctx, private_key.c_impl)
-        return result
-
-    def export_private_key_data(self, private_key):
-        """Export private key to the raw binary format without algorithm information.
-
-        Binary format must be defined in the key specification.
-        For instance, RSA private key must be exported in format defined in
-        RFC 3447 Appendix A.1.2."""
-        out = Buffer(self.exported_private_key_data_len(private_key=private_key))
-        status = self._lib_vscf_falcon.vscf_falcon_export_private_key_data(self.ctx, private_key.c_impl, out.c_buffer)
-        VscfStatus.handle_status(status)
-        return out.get_bytes()
 
     def can_sign(self, private_key):
         """Check if algorithm can sign data digest with a given key."""

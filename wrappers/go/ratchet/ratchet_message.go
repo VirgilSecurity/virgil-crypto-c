@@ -92,8 +92,30 @@ func (obj *RatchetMessage) GetCounter() uint32 {
 /*
 * Returns long-term public key, if message is prekey message.
 */
-func (obj *RatchetMessage) GetLongTermPublicKey() []byte {
-    proxyResult := /*pr4*/C.vscr_ratchet_message_get_long_term_public_key(obj.cCtx)
+func (obj *RatchetMessage) GetSenderIdentityKeyId() []byte {
+    proxyResult := /*pr4*/C.vscr_ratchet_message_get_sender_identity_key_id(obj.cCtx)
+
+    runtime.KeepAlive(obj)
+
+    return helperExtractData(proxyResult) /* r1 */
+}
+
+/*
+* Returns long-term public key, if message is prekey message.
+*/
+func (obj *RatchetMessage) GetReceiverIdentityKeyId() []byte {
+    proxyResult := /*pr4*/C.vscr_ratchet_message_get_receiver_identity_key_id(obj.cCtx)
+
+    runtime.KeepAlive(obj)
+
+    return helperExtractData(proxyResult) /* r1 */
+}
+
+/*
+* Returns long-term public key, if message is prekey message.
+*/
+func (obj *RatchetMessage) GetReceiverLongTermKeyId() []byte {
+    proxyResult := /*pr4*/C.vscr_ratchet_message_get_receiver_long_term_key_id(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
@@ -103,8 +125,8 @@ func (obj *RatchetMessage) GetLongTermPublicKey() []byte {
 /*
 * Returns one-time public key, if message is prekey message and if one-time key is present, empty result otherwise.
 */
-func (obj *RatchetMessage) GetOneTimePublicKey() []byte {
-    proxyResult := /*pr4*/C.vscr_ratchet_message_get_one_time_public_key(obj.cCtx)
+func (obj *RatchetMessage) GetReceiverOneTimeKeyId() []byte {
+    proxyResult := /*pr4*/C.vscr_ratchet_message_get_receiver_one_time_key_id(obj.cCtx)
 
     runtime.KeepAlive(obj)
 

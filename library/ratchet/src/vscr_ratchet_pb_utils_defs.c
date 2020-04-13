@@ -1,3 +1,5 @@
+//  @license
+// --------------------------------------------------------------------------
 //  Copyright (C) 2015-2020 Virgil Security, Inc.
 //
 //  All rights reserved.
@@ -31,23 +33,38 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
+// --------------------------------------------------------------------------
+// clang-format off
 
-#ifndef VIRGIL_CRYPTO_TEST_DATA_RATCHET_X3DH_H
-#define VIRGIL_CRYPTO_TEST_DATA_RATCHET_X3DH_H
 
-#include "vsc_data.h"
+//  @description
+// --------------------------------------------------------------------------
+//  Class 'ratchet pb utils' types definition.
+// --------------------------------------------------------------------------
 
-extern const vsc_data_t test_data_ratchet_x3dh_sender_identity_private_key;
-extern const vsc_data_t test_data_ratchet_x3dh_sender_identity_public_key;
-extern const vsc_data_t test_data_ratchet_x3dh_sender_ephemeral_private_key;
-extern const vsc_data_t test_data_ratchet_x3dh_sender_ephemeral_public_key;
-extern const vsc_data_t test_data_ratchet_x3dh_receiver_identity_private_key;
-extern const vsc_data_t test_data_ratchet_x3dh_receiver_identity_public_key;
-extern const vsc_data_t test_data_ratchet_x3dh_receiver_long_term_private_key;
-extern const vsc_data_t test_data_ratchet_x3dh_receiver_long_term_public_key;
-extern const vsc_data_t test_data_ratchet_x3dh_receiver_one_time_private_key;
-extern const vsc_data_t test_data_ratchet_x3dh_receiver_one_time_public_key;
-extern const vsc_data_t test_data_ratchet_x3dh_shared_secret;
-extern const vsc_data_t test_data_ratchet_x3dh_shared_secret_weak;
 
-#endif //VIRGIL_CRYPTO_TEST_DATA_RATCHET_X3DH_H
+//  @warning
+// --------------------------------------------------------------------------
+//  This file is partially generated.
+//  Generated blocks are enclosed between tags [@<tag>, @end].
+//  User's code can be added between tags [@end, @<tag>].
+// --------------------------------------------------------------------------
+
+#include "vscr_ratchet_pb_utils_defs.h"
+
+// clang-format on
+//  @end
+
+
+//  @generated
+// --------------------------------------------------------------------------
+// clang-format off
+//  Generated section start.
+// --------------------------------------------------------------------------
+
+
+// --------------------------------------------------------------------------
+//  Generated section end.
+// clang-format on
+// --------------------------------------------------------------------------
+//  @end

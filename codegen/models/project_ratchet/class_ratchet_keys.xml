@@ -1,5 +1,10 @@
 <class name="ratchet keys" context="internal" scope="internal">
 
+    <require interface="private key" project="foundation"/>
+    <require interface="public key" project="foundation"/>
+
+    <require header="ed25519/ed25519.h" scope="private"/>
+
     <require impl="sha512" project="foundation" scope="private"/>
     <require impl="hmac" project="foundation" scope="private"/>
     <require impl="hkdf" project="foundation" scope="private"/>
@@ -9,8 +14,6 @@
 
     <require class="ratchet common hidden" scope="context"/>
     <require class="ratchet chain key" scope="private"/>
-
-    <require header="ed25519/ed25519.h" scope="private"/>
 
     <variable name="ratchet chain key seed" type="unsigned" size="1" declaration="private" definition="private">
         <array length="derived"/>
@@ -22,10 +25,36 @@
         <value value="0x01"/>
     </variable>
 
-    <method name="create chain key" is_static="1">
+    <dependency name="rng" interface="random" project="foundation" has_observers="1"/>
+    <property name="round5" class="round5" project="foundation"/>
+
+    <method name="create chain key finish" is_static="1" declaration="private">
         <argument name="root key" class="const vscr_ratchet_symmetric_key_t" is_reference="0" library="internal" access="readonly"/>
-        <argument name="private key" class="const vscr_ratchet_private_key_t" is_reference="0" library="internal" access="readonly"/>
-        <argument name="public key" class="const vscr_ratchet_public_key_t" is_reference="0" library="internal" access="readonly"/>
+        <argument name="shared secret" class="buffer" access="readonly"/>
+
+        <argument name="new root key" class="vscr_ratchet_symmetric_key_t" is_reference="0" library="internal" access="readwrite"/>
+        <argument name="chain key" class="ratchet chain key" access="readwrite"/>
+    </method>
+
+    <method name="create chain key sender">
+        <argument name="root key" class="const vscr_ratchet_symmetric_key_t" is_reference="0" library="internal" access="readonly"/>
+        <argument name="private key first" class="const vscr_ratchet_private_key_t" is_reference="0" library="internal" access="readonly"/>
+        <argument name="public key first" class="const vscr_ratchet_public_key_t" is_reference="0" library="internal" access="readonly"/>
+        <argument name="public key second" interface="public key" project="foundation" access="readonly"/>
+
+        <argument name="encapsulated key" class="buffer" access="disown"/>
+        <argument name="new root key" class="vscr_ratchet_symmetric_key_t" is_reference="0" library="internal" access="readwrite"/>
+        <argument name="chain key" class="ratchet chain key" access="readwrite"/>
+
+        <return enum="status"/>
+    </method>
+
+    <method name="create chain key receiver">
+        <argument name="root key" class="const vscr_ratchet_symmetric_key_t" is_reference="0" library="internal" access="readonly"/>
+        <argument name="private key first" class="const vscr_ratchet_private_key_t" is_reference="0" library="internal" access="readonly"/>
+        <argument name="public key first" class="const vscr_ratchet_public_key_t" is_reference="0" library="internal" access="readonly"/>
+        <argument name="private key second" interface="private key" project="foundation" access="readonly"/>
+        <argument name="encapsulated key" class="data"/>
 
         <argument name="new root key" class="vscr_ratchet_symmetric_key_t" is_reference="0" library="internal" access="readwrite"/>
         <argument name="chain key" class="ratchet chain key" access="readwrite"/>

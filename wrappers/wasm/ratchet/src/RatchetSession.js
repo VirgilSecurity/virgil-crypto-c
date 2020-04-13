@@ -111,148 +111,170 @@ const initRatchetSession = (Module, modules) => {
         /**
          * Initiates session
          */
-        initiate(senderIdentityPrivateKey, receiverIdentityPublicKey, receiverLongTermPublicKey, receiverOneTimePublicKey) {
+        initiate(senderIdentityPrivateKey, senderIdentityKeyId, receiverIdentityPublicKey, receiverIdentityKeyId, receiverLongTermPublicKey, receiverLongTermKeyId, receiverOneTimePublicKey, receiverOneTimeKeyId, enablePostQuantum) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-            precondition.ensureByteArray('senderIdentityPrivateKey', senderIdentityPrivateKey);
-            precondition.ensureByteArray('receiverIdentityPublicKey', receiverIdentityPublicKey);
-            precondition.ensureByteArray('receiverLongTermPublicKey', receiverLongTermPublicKey);
-            precondition.ensureByteArray('receiverOneTimePublicKey', receiverOneTimePublicKey);
+            precondition.ensureImplementInterface('senderIdentityPrivateKey', senderIdentityPrivateKey, 'Foundation.PrivateKey', modules.FoundationInterfaceTag.PRIVATE_KEY, modules.FoundationInterface);
+            precondition.ensureByteArray('senderIdentityKeyId', senderIdentityKeyId);
+            precondition.ensureImplementInterface('receiverIdentityPublicKey', receiverIdentityPublicKey, 'Foundation.PublicKey', modules.FoundationInterfaceTag.PUBLIC_KEY, modules.FoundationInterface);
+            precondition.ensureByteArray('receiverIdentityKeyId', receiverIdentityKeyId);
+            precondition.ensureImplementInterface('receiverLongTermPublicKey', receiverLongTermPublicKey, 'Foundation.PublicKey', modules.FoundationInterfaceTag.PUBLIC_KEY, modules.FoundationInterface);
+            precondition.ensureByteArray('receiverLongTermKeyId', receiverLongTermKeyId);
+            precondition.ensureImplementInterface('receiverOneTimePublicKey', receiverOneTimePublicKey, 'Foundation.PublicKey', modules.FoundationInterfaceTag.PUBLIC_KEY, modules.FoundationInterface);
+            precondition.ensureByteArray('receiverOneTimeKeyId', receiverOneTimeKeyId);
+            precondition.ensureBoolean('enablePostQuantum', enablePostQuantum);
 
             //  Copy bytes from JS memory to the WASM memory.
-            const senderIdentityPrivateKeySize = senderIdentityPrivateKey.length * senderIdentityPrivateKey.BYTES_PER_ELEMENT;
-            const senderIdentityPrivateKeyPtr = Module._malloc(senderIdentityPrivateKeySize);
-            Module.HEAP8.set(senderIdentityPrivateKey, senderIdentityPrivateKeyPtr);
+            const senderIdentityKeyIdSize = senderIdentityKeyId.length * senderIdentityKeyId.BYTES_PER_ELEMENT;
+            const senderIdentityKeyIdPtr = Module._malloc(senderIdentityKeyIdSize);
+            Module.HEAP8.set(senderIdentityKeyId, senderIdentityKeyIdPtr);
 
             //  Create C structure vsc_data_t.
-            const senderIdentityPrivateKeyCtxSize = Module._vsc_data_ctx_size();
-            const senderIdentityPrivateKeyCtxPtr = Module._malloc(senderIdentityPrivateKeyCtxSize);
+            const senderIdentityKeyIdCtxSize = Module._vsc_data_ctx_size();
+            const senderIdentityKeyIdCtxPtr = Module._malloc(senderIdentityKeyIdCtxSize);
 
             //  Point created vsc_data_t object to the copied bytes.
-            Module._vsc_data(senderIdentityPrivateKeyCtxPtr, senderIdentityPrivateKeyPtr, senderIdentityPrivateKeySize);
+            Module._vsc_data(senderIdentityKeyIdCtxPtr, senderIdentityKeyIdPtr, senderIdentityKeyIdSize);
 
             //  Copy bytes from JS memory to the WASM memory.
-            const receiverIdentityPublicKeySize = receiverIdentityPublicKey.length * receiverIdentityPublicKey.BYTES_PER_ELEMENT;
-            const receiverIdentityPublicKeyPtr = Module._malloc(receiverIdentityPublicKeySize);
-            Module.HEAP8.set(receiverIdentityPublicKey, receiverIdentityPublicKeyPtr);
+            const receiverIdentityKeyIdSize = receiverIdentityKeyId.length * receiverIdentityKeyId.BYTES_PER_ELEMENT;
+            const receiverIdentityKeyIdPtr = Module._malloc(receiverIdentityKeyIdSize);
+            Module.HEAP8.set(receiverIdentityKeyId, receiverIdentityKeyIdPtr);
 
             //  Create C structure vsc_data_t.
-            const receiverIdentityPublicKeyCtxSize = Module._vsc_data_ctx_size();
-            const receiverIdentityPublicKeyCtxPtr = Module._malloc(receiverIdentityPublicKeyCtxSize);
+            const receiverIdentityKeyIdCtxSize = Module._vsc_data_ctx_size();
+            const receiverIdentityKeyIdCtxPtr = Module._malloc(receiverIdentityKeyIdCtxSize);
 
             //  Point created vsc_data_t object to the copied bytes.
-            Module._vsc_data(receiverIdentityPublicKeyCtxPtr, receiverIdentityPublicKeyPtr, receiverIdentityPublicKeySize);
+            Module._vsc_data(receiverIdentityKeyIdCtxPtr, receiverIdentityKeyIdPtr, receiverIdentityKeyIdSize);
 
             //  Copy bytes from JS memory to the WASM memory.
-            const receiverLongTermPublicKeySize = receiverLongTermPublicKey.length * receiverLongTermPublicKey.BYTES_PER_ELEMENT;
-            const receiverLongTermPublicKeyPtr = Module._malloc(receiverLongTermPublicKeySize);
-            Module.HEAP8.set(receiverLongTermPublicKey, receiverLongTermPublicKeyPtr);
+            const receiverLongTermKeyIdSize = receiverLongTermKeyId.length * receiverLongTermKeyId.BYTES_PER_ELEMENT;
+            const receiverLongTermKeyIdPtr = Module._malloc(receiverLongTermKeyIdSize);
+            Module.HEAP8.set(receiverLongTermKeyId, receiverLongTermKeyIdPtr);
 
             //  Create C structure vsc_data_t.
-            const receiverLongTermPublicKeyCtxSize = Module._vsc_data_ctx_size();
-            const receiverLongTermPublicKeyCtxPtr = Module._malloc(receiverLongTermPublicKeyCtxSize);
+            const receiverLongTermKeyIdCtxSize = Module._vsc_data_ctx_size();
+            const receiverLongTermKeyIdCtxPtr = Module._malloc(receiverLongTermKeyIdCtxSize);
 
             //  Point created vsc_data_t object to the copied bytes.
-            Module._vsc_data(receiverLongTermPublicKeyCtxPtr, receiverLongTermPublicKeyPtr, receiverLongTermPublicKeySize);
+            Module._vsc_data(receiverLongTermKeyIdCtxPtr, receiverLongTermKeyIdPtr, receiverLongTermKeyIdSize);
 
             //  Copy bytes from JS memory to the WASM memory.
-            const receiverOneTimePublicKeySize = receiverOneTimePublicKey.length * receiverOneTimePublicKey.BYTES_PER_ELEMENT;
-            const receiverOneTimePublicKeyPtr = Module._malloc(receiverOneTimePublicKeySize);
-            Module.HEAP8.set(receiverOneTimePublicKey, receiverOneTimePublicKeyPtr);
+            const receiverOneTimeKeyIdSize = receiverOneTimeKeyId.length * receiverOneTimeKeyId.BYTES_PER_ELEMENT;
+            const receiverOneTimeKeyIdPtr = Module._malloc(receiverOneTimeKeyIdSize);
+            Module.HEAP8.set(receiverOneTimeKeyId, receiverOneTimeKeyIdPtr);
 
             //  Create C structure vsc_data_t.
-            const receiverOneTimePublicKeyCtxSize = Module._vsc_data_ctx_size();
-            const receiverOneTimePublicKeyCtxPtr = Module._malloc(receiverOneTimePublicKeyCtxSize);
+            const receiverOneTimeKeyIdCtxSize = Module._vsc_data_ctx_size();
+            const receiverOneTimeKeyIdCtxPtr = Module._malloc(receiverOneTimeKeyIdCtxSize);
 
             //  Point created vsc_data_t object to the copied bytes.
-            Module._vsc_data(receiverOneTimePublicKeyCtxPtr, receiverOneTimePublicKeyPtr, receiverOneTimePublicKeySize);
+            Module._vsc_data(receiverOneTimeKeyIdCtxPtr, receiverOneTimeKeyIdPtr, receiverOneTimeKeyIdSize);
 
             try {
-                const proxyResult = Module._vscr_ratchet_session_initiate(this.ctxPtr, senderIdentityPrivateKeyCtxPtr, receiverIdentityPublicKeyCtxPtr, receiverLongTermPublicKeyCtxPtr, receiverOneTimePublicKeyCtxPtr);
+                const proxyResult = Module._vscr_ratchet_session_initiate(this.ctxPtr, senderIdentityPrivateKey.ctxPtr, senderIdentityKeyIdCtxPtr, receiverIdentityPublicKey.ctxPtr, receiverIdentityKeyIdCtxPtr, receiverLongTermPublicKey.ctxPtr, receiverLongTermKeyIdCtxPtr, receiverOneTimePublicKey.ctxPtr, receiverOneTimeKeyIdCtxPtr, enablePostQuantum);
                 modules.RatchetError.handleStatusCode(proxyResult);
             } finally {
-                Module._free(senderIdentityPrivateKeyPtr);
-                Module._free(senderIdentityPrivateKeyCtxPtr);
-                Module._free(receiverIdentityPublicKeyPtr);
-                Module._free(receiverIdentityPublicKeyCtxPtr);
-                Module._free(receiverLongTermPublicKeyPtr);
-                Module._free(receiverLongTermPublicKeyCtxPtr);
-                Module._free(receiverOneTimePublicKeyPtr);
-                Module._free(receiverOneTimePublicKeyCtxPtr);
+                Module._free(senderIdentityKeyIdPtr);
+                Module._free(senderIdentityKeyIdCtxPtr);
+                Module._free(receiverIdentityKeyIdPtr);
+                Module._free(receiverIdentityKeyIdCtxPtr);
+                Module._free(receiverLongTermKeyIdPtr);
+                Module._free(receiverLongTermKeyIdCtxPtr);
+                Module._free(receiverOneTimeKeyIdPtr);
+                Module._free(receiverOneTimeKeyIdCtxPtr);
+            }
+        }
+
+        /**
+         * Initiates session
+         */
+        initiateNoOneTimeKey(senderIdentityPrivateKey, senderIdentityKeyId, receiverIdentityPublicKey, receiverIdentityKeyId, receiverLongTermPublicKey, receiverLongTermKeyId, enablePostQuantum) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureImplementInterface('senderIdentityPrivateKey', senderIdentityPrivateKey, 'Foundation.PrivateKey', modules.FoundationInterfaceTag.PRIVATE_KEY, modules.FoundationInterface);
+            precondition.ensureByteArray('senderIdentityKeyId', senderIdentityKeyId);
+            precondition.ensureImplementInterface('receiverIdentityPublicKey', receiverIdentityPublicKey, 'Foundation.PublicKey', modules.FoundationInterfaceTag.PUBLIC_KEY, modules.FoundationInterface);
+            precondition.ensureByteArray('receiverIdentityKeyId', receiverIdentityKeyId);
+            precondition.ensureImplementInterface('receiverLongTermPublicKey', receiverLongTermPublicKey, 'Foundation.PublicKey', modules.FoundationInterfaceTag.PUBLIC_KEY, modules.FoundationInterface);
+            precondition.ensureByteArray('receiverLongTermKeyId', receiverLongTermKeyId);
+            precondition.ensureBoolean('enablePostQuantum', enablePostQuantum);
+
+            //  Copy bytes from JS memory to the WASM memory.
+            const senderIdentityKeyIdSize = senderIdentityKeyId.length * senderIdentityKeyId.BYTES_PER_ELEMENT;
+            const senderIdentityKeyIdPtr = Module._malloc(senderIdentityKeyIdSize);
+            Module.HEAP8.set(senderIdentityKeyId, senderIdentityKeyIdPtr);
+
+            //  Create C structure vsc_data_t.
+            const senderIdentityKeyIdCtxSize = Module._vsc_data_ctx_size();
+            const senderIdentityKeyIdCtxPtr = Module._malloc(senderIdentityKeyIdCtxSize);
+
+            //  Point created vsc_data_t object to the copied bytes.
+            Module._vsc_data(senderIdentityKeyIdCtxPtr, senderIdentityKeyIdPtr, senderIdentityKeyIdSize);
+
+            //  Copy bytes from JS memory to the WASM memory.
+            const receiverIdentityKeyIdSize = receiverIdentityKeyId.length * receiverIdentityKeyId.BYTES_PER_ELEMENT;
+            const receiverIdentityKeyIdPtr = Module._malloc(receiverIdentityKeyIdSize);
+            Module.HEAP8.set(receiverIdentityKeyId, receiverIdentityKeyIdPtr);
+
+            //  Create C structure vsc_data_t.
+            const receiverIdentityKeyIdCtxSize = Module._vsc_data_ctx_size();
+            const receiverIdentityKeyIdCtxPtr = Module._malloc(receiverIdentityKeyIdCtxSize);
+
+            //  Point created vsc_data_t object to the copied bytes.
+            Module._vsc_data(receiverIdentityKeyIdCtxPtr, receiverIdentityKeyIdPtr, receiverIdentityKeyIdSize);
+
+            //  Copy bytes from JS memory to the WASM memory.
+            const receiverLongTermKeyIdSize = receiverLongTermKeyId.length * receiverLongTermKeyId.BYTES_PER_ELEMENT;
+            const receiverLongTermKeyIdPtr = Module._malloc(receiverLongTermKeyIdSize);
+            Module.HEAP8.set(receiverLongTermKeyId, receiverLongTermKeyIdPtr);
+
+            //  Create C structure vsc_data_t.
+            const receiverLongTermKeyIdCtxSize = Module._vsc_data_ctx_size();
+            const receiverLongTermKeyIdCtxPtr = Module._malloc(receiverLongTermKeyIdCtxSize);
+
+            //  Point created vsc_data_t object to the copied bytes.
+            Module._vsc_data(receiverLongTermKeyIdCtxPtr, receiverLongTermKeyIdPtr, receiverLongTermKeyIdSize);
+
+            try {
+                const proxyResult = Module._vscr_ratchet_session_initiate_no_one_time_key(this.ctxPtr, senderIdentityPrivateKey.ctxPtr, senderIdentityKeyIdCtxPtr, receiverIdentityPublicKey.ctxPtr, receiverIdentityKeyIdCtxPtr, receiverLongTermPublicKey.ctxPtr, receiverLongTermKeyIdCtxPtr, enablePostQuantum);
+                modules.RatchetError.handleStatusCode(proxyResult);
+            } finally {
+                Module._free(senderIdentityKeyIdPtr);
+                Module._free(senderIdentityKeyIdCtxPtr);
+                Module._free(receiverIdentityKeyIdPtr);
+                Module._free(receiverIdentityKeyIdCtxPtr);
+                Module._free(receiverLongTermKeyIdPtr);
+                Module._free(receiverLongTermKeyIdCtxPtr);
             }
         }
 
         /**
          * Responds to session initiation
          */
-        respond(senderIdentityPublicKey, receiverIdentityPrivateKey, receiverLongTermPrivateKey, receiverOneTimePrivateKey, message) {
+        respond(senderIdentityPublicKey, receiverIdentityPrivateKey, receiverLongTermPrivateKey, receiverOneTimePrivateKey, message, enablePostQuantum) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-            precondition.ensureByteArray('senderIdentityPublicKey', senderIdentityPublicKey);
-            precondition.ensureByteArray('receiverIdentityPrivateKey', receiverIdentityPrivateKey);
-            precondition.ensureByteArray('receiverLongTermPrivateKey', receiverLongTermPrivateKey);
-            precondition.ensureByteArray('receiverOneTimePrivateKey', receiverOneTimePrivateKey);
+            precondition.ensureImplementInterface('senderIdentityPublicKey', senderIdentityPublicKey, 'Foundation.PublicKey', modules.FoundationInterfaceTag.PUBLIC_KEY, modules.FoundationInterface);
+            precondition.ensureImplementInterface('receiverIdentityPrivateKey', receiverIdentityPrivateKey, 'Foundation.PrivateKey', modules.FoundationInterfaceTag.PRIVATE_KEY, modules.FoundationInterface);
+            precondition.ensureImplementInterface('receiverLongTermPrivateKey', receiverLongTermPrivateKey, 'Foundation.PrivateKey', modules.FoundationInterfaceTag.PRIVATE_KEY, modules.FoundationInterface);
+            precondition.ensureImplementInterface('receiverOneTimePrivateKey', receiverOneTimePrivateKey, 'Foundation.PrivateKey', modules.FoundationInterfaceTag.PRIVATE_KEY, modules.FoundationInterface);
             precondition.ensureClass('message', message, modules.RatchetMessage);
+            precondition.ensureBoolean('enablePostQuantum', enablePostQuantum);
+            const proxyResult = Module._vscr_ratchet_session_respond(this.ctxPtr, senderIdentityPublicKey.ctxPtr, receiverIdentityPrivateKey.ctxPtr, receiverLongTermPrivateKey.ctxPtr, receiverOneTimePrivateKey.ctxPtr, message.ctxPtr, enablePostQuantum);
+            modules.RatchetError.handleStatusCode(proxyResult);
+        }
 
-            //  Copy bytes from JS memory to the WASM memory.
-            const senderIdentityPublicKeySize = senderIdentityPublicKey.length * senderIdentityPublicKey.BYTES_PER_ELEMENT;
-            const senderIdentityPublicKeyPtr = Module._malloc(senderIdentityPublicKeySize);
-            Module.HEAP8.set(senderIdentityPublicKey, senderIdentityPublicKeyPtr);
-
-            //  Create C structure vsc_data_t.
-            const senderIdentityPublicKeyCtxSize = Module._vsc_data_ctx_size();
-            const senderIdentityPublicKeyCtxPtr = Module._malloc(senderIdentityPublicKeyCtxSize);
-
-            //  Point created vsc_data_t object to the copied bytes.
-            Module._vsc_data(senderIdentityPublicKeyCtxPtr, senderIdentityPublicKeyPtr, senderIdentityPublicKeySize);
-
-            //  Copy bytes from JS memory to the WASM memory.
-            const receiverIdentityPrivateKeySize = receiverIdentityPrivateKey.length * receiverIdentityPrivateKey.BYTES_PER_ELEMENT;
-            const receiverIdentityPrivateKeyPtr = Module._malloc(receiverIdentityPrivateKeySize);
-            Module.HEAP8.set(receiverIdentityPrivateKey, receiverIdentityPrivateKeyPtr);
-
-            //  Create C structure vsc_data_t.
-            const receiverIdentityPrivateKeyCtxSize = Module._vsc_data_ctx_size();
-            const receiverIdentityPrivateKeyCtxPtr = Module._malloc(receiverIdentityPrivateKeyCtxSize);
-
-            //  Point created vsc_data_t object to the copied bytes.
-            Module._vsc_data(receiverIdentityPrivateKeyCtxPtr, receiverIdentityPrivateKeyPtr, receiverIdentityPrivateKeySize);
-
-            //  Copy bytes from JS memory to the WASM memory.
-            const receiverLongTermPrivateKeySize = receiverLongTermPrivateKey.length * receiverLongTermPrivateKey.BYTES_PER_ELEMENT;
-            const receiverLongTermPrivateKeyPtr = Module._malloc(receiverLongTermPrivateKeySize);
-            Module.HEAP8.set(receiverLongTermPrivateKey, receiverLongTermPrivateKeyPtr);
-
-            //  Create C structure vsc_data_t.
-            const receiverLongTermPrivateKeyCtxSize = Module._vsc_data_ctx_size();
-            const receiverLongTermPrivateKeyCtxPtr = Module._malloc(receiverLongTermPrivateKeyCtxSize);
-
-            //  Point created vsc_data_t object to the copied bytes.
-            Module._vsc_data(receiverLongTermPrivateKeyCtxPtr, receiverLongTermPrivateKeyPtr, receiverLongTermPrivateKeySize);
-
-            //  Copy bytes from JS memory to the WASM memory.
-            const receiverOneTimePrivateKeySize = receiverOneTimePrivateKey.length * receiverOneTimePrivateKey.BYTES_PER_ELEMENT;
-            const receiverOneTimePrivateKeyPtr = Module._malloc(receiverOneTimePrivateKeySize);
-            Module.HEAP8.set(receiverOneTimePrivateKey, receiverOneTimePrivateKeyPtr);
-
-            //  Create C structure vsc_data_t.
-            const receiverOneTimePrivateKeyCtxSize = Module._vsc_data_ctx_size();
-            const receiverOneTimePrivateKeyCtxPtr = Module._malloc(receiverOneTimePrivateKeyCtxSize);
-
-            //  Point created vsc_data_t object to the copied bytes.
-            Module._vsc_data(receiverOneTimePrivateKeyCtxPtr, receiverOneTimePrivateKeyPtr, receiverOneTimePrivateKeySize);
-
-            try {
-                const proxyResult = Module._vscr_ratchet_session_respond(this.ctxPtr, senderIdentityPublicKeyCtxPtr, receiverIdentityPrivateKeyCtxPtr, receiverLongTermPrivateKeyCtxPtr, receiverOneTimePrivateKeyCtxPtr, message.ctxPtr);
-                modules.RatchetError.handleStatusCode(proxyResult);
-            } finally {
-                Module._free(senderIdentityPublicKeyPtr);
-                Module._free(senderIdentityPublicKeyCtxPtr);
-                Module._free(receiverIdentityPrivateKeyPtr);
-                Module._free(receiverIdentityPrivateKeyCtxPtr);
-                Module._free(receiverLongTermPrivateKeyPtr);
-                Module._free(receiverLongTermPrivateKeyCtxPtr);
-                Module._free(receiverOneTimePrivateKeyPtr);
-                Module._free(receiverOneTimePrivateKeyCtxPtr);
-            }
+        /**
+         * Responds to session initiation
+         */
+        respondNoOneTimeKey(senderIdentityPublicKey, receiverIdentityPrivateKey, receiverLongTermPrivateKey, message, enablePostQuantum) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureImplementInterface('senderIdentityPublicKey', senderIdentityPublicKey, 'Foundation.PublicKey', modules.FoundationInterfaceTag.PUBLIC_KEY, modules.FoundationInterface);
+            precondition.ensureImplementInterface('receiverIdentityPrivateKey', receiverIdentityPrivateKey, 'Foundation.PrivateKey', modules.FoundationInterfaceTag.PRIVATE_KEY, modules.FoundationInterface);
+            precondition.ensureImplementInterface('receiverLongTermPrivateKey', receiverLongTermPrivateKey, 'Foundation.PrivateKey', modules.FoundationInterfaceTag.PRIVATE_KEY, modules.FoundationInterface);
+            precondition.ensureClass('message', message, modules.RatchetMessage);
+            precondition.ensureBoolean('enablePostQuantum', enablePostQuantum);
+            const proxyResult = Module._vscr_ratchet_session_respond_no_one_time_key(this.ctxPtr, senderIdentityPublicKey.ctxPtr, receiverIdentityPrivateKey.ctxPtr, receiverLongTermPrivateKey.ctxPtr, message.ctxPtr, enablePostQuantum);
+            modules.RatchetError.handleStatusCode(proxyResult);
         }
 
         /**
@@ -263,6 +285,19 @@ const initRatchetSession = (Module, modules) => {
 
             let proxyResult;
             proxyResult = Module._vscr_ratchet_session_is_initiator(this.ctxPtr);
+
+            const booleanResult = !!proxyResult;
+            return booleanResult;
+        }
+
+        /**
+         * Returns flag that indicates if session is post-quantum
+         */
+        isPqcEnabled() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
+            let proxyResult;
+            proxyResult = Module._vscr_ratchet_session_is_pqc_enabled(this.ctxPtr);
 
             const booleanResult = !!proxyResult;
             return booleanResult;

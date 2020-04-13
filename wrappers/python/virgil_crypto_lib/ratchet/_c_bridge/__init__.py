@@ -38,8 +38,6 @@ from ._vscr_status import VscrStatus
 from ._vscr_msg_type import VscrMsgType
 from ._vscr_group_msg_type import VscrGroupMsgType
 from ._vscr_ratchet_common import VscrRatchetCommon
-from ._vscr_ratchet_key_id import vscr_ratchet_key_id_t
-from ._vscr_ratchet_key_id import VscrRatchetKeyId
 from ._vscr_error import vscr_error_t
 from ._vscr_error import VscrError
 from ._vscr_ratchet_message import vscr_ratchet_message_t

@@ -308,7 +308,7 @@ vscf_compound_key_alg_import_public_key(
 //
 //  Import public key from the raw binary format.
 //
-VSCF_PRIVATE vscf_impl_t *
+VSCF_PUBLIC vscf_impl_t *
 vscf_compound_key_alg_import_public_key_data(const vscf_compound_key_alg_t *self, vsc_data_t key_data,
         const vscf_impl_t *key_alg_info, vscf_error_t *error) {
 
@@ -472,7 +472,7 @@ vscf_compound_key_alg_export_public_key(
 //
 //  Return length in bytes required to hold exported public key.
 //
-VSCF_PRIVATE size_t
+VSCF_PUBLIC size_t
 vscf_compound_key_alg_exported_public_key_data_len(const vscf_compound_key_alg_t *self, const vscf_impl_t *public_key) {
 
     VSCF_ASSERT_PTR(self);
@@ -517,7 +517,7 @@ vscf_compound_key_alg_exported_public_key_data_len(const vscf_compound_key_alg_t
 //  For instance, RSA public key must be exported in format defined in
 //  RFC 3447 Appendix A.1.1.
 //
-VSCF_PRIVATE vscf_status_t
+VSCF_PUBLIC vscf_status_t
 vscf_compound_key_alg_export_public_key_data(
         const vscf_compound_key_alg_t *self, const vscf_impl_t *public_key, vsc_buffer_t *out) {
 
@@ -637,7 +637,7 @@ vscf_compound_key_alg_import_private_key(
 //
 //  Import private key from the raw binary format.
 //
-VSCF_PRIVATE vscf_impl_t *
+VSCF_PUBLIC vscf_impl_t *
 vscf_compound_key_alg_import_private_key_data(const vscf_compound_key_alg_t *self, vsc_data_t key_data,
         const vscf_impl_t *key_alg_info, vscf_error_t *error) {
 
@@ -796,7 +796,7 @@ vscf_compound_key_alg_export_private_key(
 //
 //  Return length in bytes required to hold exported private key.
 //
-VSCF_PRIVATE size_t
+VSCF_PUBLIC size_t
 vscf_compound_key_alg_exported_private_key_data_len(
         const vscf_compound_key_alg_t *self, const vscf_impl_t *private_key) {
 
@@ -842,7 +842,7 @@ vscf_compound_key_alg_exported_private_key_data_len(
 //  For instance, RSA private key must be exported in format defined in
 //  RFC 3447 Appendix A.1.2.
 //
-VSCF_PRIVATE vscf_status_t
+VSCF_PUBLIC vscf_status_t
 vscf_compound_key_alg_export_private_key_data(
         const vscf_compound_key_alg_t *self, const vscf_impl_t *private_key, vsc_buffer_t *out) {
 
