@@ -280,46 +280,43 @@ vscr_ratchet_key_utils_import_private_key(vscr_ratchet_key_utils_t *self, const 
 
     vscf_key_info_t *key_info = vscf_key_info_new_with_alg_info(vscf_key_alg_info(key));
 
-    if (vscf_key_info_is_compound(key_info) && !with_signer) {
-        status = vscr_status_ERROR_INVALID_KEY_TYPE;
-        goto err1;
-    }
-
     if (vscf_key_info_is_compound(key_info)) {
         VSCR_ASSERT(vscf_impl_tag(key) == vscf_impl_tag_COMPOUND_PRIVATE_KEY);
 
-        if (enable_post_quantum && with_signer && private_key_second_signer_ref != NULL) {
+        if (!with_signer) {
+            status = vscr_status_ERROR_INVALID_KEY_TYPE;
+            goto err1;
+        }
+
+        if (enable_post_quantum && private_key_second_signer_ref != NULL) {
             const vscf_impl_t *signer_key = vscf_compound_private_key_signer_key((vscf_compound_private_key_t *)key);
 
             vscf_key_info_destroy(&key_info);
 
             key_info = vscf_key_info_new_with_alg_info(vscf_key_alg_info(signer_key));
 
-            if (enable_post_quantum != vscf_key_info_is_hybrid(key_info)) {
+            if (!vscf_key_info_is_hybrid(key_info)) {
                 status = vscr_status_ERROR_INVALID_KEY_TYPE;
                 goto err1;
             }
 
-            if (vscf_key_info_is_hybrid(key_info)) {
-                VSCR_ASSERT(vscf_impl_tag(signer_key) == vscf_impl_tag_HYBRID_PRIVATE_KEY);
+            VSCR_ASSERT(vscf_impl_tag(signer_key) == vscf_impl_tag_HYBRID_PRIVATE_KEY);
 
+            *private_key_second_signer_ref = vscf_hybrid_private_key_first_key((vscf_hybrid_private_key_t *)signer_key);
+
+            vscf_key_info_destroy(&key_info);
+            key_info = vscf_key_info_new_with_alg_info(vscf_key_alg_info(*private_key_second_signer_ref));
+
+            if (vscf_key_info_alg_id(key_info) != vscf_alg_id_FALCON) {
                 *private_key_second_signer_ref =
-                        vscf_hybrid_private_key_first_key((vscf_hybrid_private_key_t *)signer_key);
+                        vscf_hybrid_private_key_second_key((vscf_hybrid_private_key_t *)signer_key);
 
                 vscf_key_info_destroy(&key_info);
                 key_info = vscf_key_info_new_with_alg_info(vscf_key_alg_info(*private_key_second_signer_ref));
 
                 if (vscf_key_info_alg_id(key_info) != vscf_alg_id_FALCON) {
-                    *private_key_second_signer_ref =
-                            vscf_hybrid_private_key_second_key((vscf_hybrid_private_key_t *)signer_key);
-
-                    vscf_key_info_destroy(&key_info);
-                    key_info = vscf_key_info_new_with_alg_info(vscf_key_alg_info(*private_key_second_signer_ref));
-
-                    if (vscf_key_info_alg_id(key_info) != vscf_alg_id_FALCON) {
-                        status = vscr_status_ERROR_INVALID_KEY_TYPE;
-                        goto err1;
-                    }
+                    status = vscr_status_ERROR_INVALID_KEY_TYPE;
+                    goto err1;
                 }
             }
         }
@@ -331,11 +328,6 @@ vscr_ratchet_key_utils_import_private_key(vscr_ratchet_key_utils_t *self, const 
 
         key_info = vscf_key_info_new_with_alg_info(vscf_key_alg_info(key));
         VSCR_ASSERT(!vscf_key_info_is_compound(key_info));
-    }
-
-    if (enable_post_quantum != vscf_key_info_is_hybrid(key_info)) {
-        status = vscr_status_ERROR_INVALID_KEY_TYPE;
-        goto err1;
     }
 
     const vscf_raw_private_key_t *curve25519_private_key;
@@ -361,18 +353,28 @@ vscr_ratchet_key_utils_import_private_key(vscr_ratchet_key_utils_t *self, const 
             goto err1;
         }
 
-        vscf_key_info_destroy(&key_info);
-        key_info = vscf_key_info_new_with_alg_info(vscf_key_alg_info(second_key));
+        VSCR_ASSERT(vscf_impl_tag(first_key) == vscf_impl_tag_RAW_PRIVATE_KEY);
+        curve25519_private_key = (vscf_raw_private_key_t *)first_key;
 
-        if (vscf_key_info_alg_id(key_info) != vscf_alg_id_ROUND5_ND_5KEM_5D) {
+        if (enable_post_quantum) {
+            vscf_key_info_destroy(&key_info);
+            key_info = vscf_key_info_new_with_alg_info(vscf_key_alg_info(second_key));
+
+            if (vscf_key_info_alg_id(key_info) != vscf_alg_id_ROUND5_ND_5KEM_5D) {
+                status = vscr_status_ERROR_INVALID_KEY_TYPE;
+                goto err1;
+            }
+
+            *private_key_second_ref = second_key;
+        } else {
+            *private_key_second_ref = NULL;
+        }
+    } else {
+        if (enable_post_quantum) {
             status = vscr_status_ERROR_INVALID_KEY_TYPE;
             goto err1;
         }
 
-        *private_key_second_ref = second_key;
-        VSCR_ASSERT(vscf_impl_tag(first_key) == vscf_impl_tag_RAW_PRIVATE_KEY);
-        curve25519_private_key = (vscf_raw_private_key_t *)first_key;
-    } else {
         if (vscf_key_info_alg_id(key_info) == vscf_alg_id_ED25519) {
             VSCR_ASSERT(vscf_impl_tag(key) == vscf_impl_tag_RAW_PRIVATE_KEY);
             vsc_data_t private_key_data = vscf_raw_private_key_data((vscf_raw_private_key_t *)key);
@@ -423,46 +425,43 @@ vscr_ratchet_key_utils_import_public_key(vscr_ratchet_key_utils_t *self, const v
 
     vscf_key_info_t *key_info = vscf_key_info_new_with_alg_info(vscf_key_alg_info(public_key));
 
-    if (vscf_key_info_is_compound(key_info) && !with_signer) {
-        status = vscr_status_ERROR_INVALID_KEY_TYPE;
-        goto err1;
-    }
-
     if (vscf_key_info_is_compound(key_info)) {
         VSCR_ASSERT(vscf_impl_tag(key) == vscf_impl_tag_COMPOUND_PUBLIC_KEY);
 
-        if (enable_post_quantum && with_signer && public_key_second_signer_ref != NULL) {
+        if (!with_signer) {
+            status = vscr_status_ERROR_INVALID_KEY_TYPE;
+            goto err1;
+        }
+
+        if (enable_post_quantum && public_key_second_signer_ref != NULL) {
             const vscf_impl_t *signer_key = vscf_compound_public_key_signer_key((vscf_compound_public_key_t *)key);
 
             vscf_key_info_destroy(&key_info);
 
             key_info = vscf_key_info_new_with_alg_info(vscf_key_alg_info(signer_key));
 
-            if (enable_post_quantum != vscf_key_info_is_hybrid(key_info)) {
+            if (!vscf_key_info_is_hybrid(key_info)) {
                 status = vscr_status_ERROR_INVALID_KEY_TYPE;
                 goto err1;
             }
 
-            if (vscf_key_info_is_hybrid(key_info)) {
-                VSCR_ASSERT(vscf_impl_tag(signer_key) == vscf_impl_tag_HYBRID_PUBLIC_KEY);
+            VSCR_ASSERT(vscf_impl_tag(signer_key) == vscf_impl_tag_HYBRID_PUBLIC_KEY);
 
+            *public_key_second_signer_ref = vscf_hybrid_public_key_first_key((vscf_hybrid_public_key_t *)signer_key);
+
+            vscf_key_info_destroy(&key_info);
+            key_info = vscf_key_info_new_with_alg_info(vscf_key_alg_info(*public_key_second_signer_ref));
+
+            if (vscf_key_info_alg_id(key_info) != vscf_alg_id_FALCON) {
                 *public_key_second_signer_ref =
-                        vscf_hybrid_public_key_first_key((vscf_hybrid_public_key_t *)signer_key);
+                        vscf_hybrid_public_key_second_key((vscf_hybrid_public_key_t *)signer_key);
 
                 vscf_key_info_destroy(&key_info);
                 key_info = vscf_key_info_new_with_alg_info(vscf_key_alg_info(*public_key_second_signer_ref));
 
                 if (vscf_key_info_alg_id(key_info) != vscf_alg_id_FALCON) {
-                    *public_key_second_signer_ref =
-                            vscf_hybrid_public_key_second_key((vscf_hybrid_public_key_t *)signer_key);
-
-                    vscf_key_info_destroy(&key_info);
-                    key_info = vscf_key_info_new_with_alg_info(vscf_key_alg_info(*public_key_second_signer_ref));
-
-                    if (vscf_key_info_alg_id(key_info) != vscf_alg_id_FALCON) {
-                        status = vscr_status_ERROR_INVALID_KEY_TYPE;
-                        goto err1;
-                    }
+                    status = vscr_status_ERROR_INVALID_KEY_TYPE;
+                    goto err1;
                 }
             }
         }
@@ -474,11 +473,6 @@ vscr_ratchet_key_utils_import_public_key(vscr_ratchet_key_utils_t *self, const v
 
         key_info = vscf_key_info_new_with_alg_info(vscf_key_alg_info(key));
         VSCR_ASSERT(!vscf_key_info_is_compound(key_info));
-    }
-
-    if (enable_post_quantum != vscf_key_info_is_hybrid(key_info)) {
-        status = vscr_status_ERROR_INVALID_KEY_TYPE;
-        goto err1;
     }
 
     const vscf_raw_public_key_t *curve25519_public_key;
@@ -506,18 +500,28 @@ vscr_ratchet_key_utils_import_public_key(vscr_ratchet_key_utils_t *self, const v
             goto err1;
         }
 
-        vscf_key_info_destroy(&key_info);
-        key_info = vscf_key_info_new_with_alg_info(vscf_key_alg_info(second_key));
+        VSCR_ASSERT(vscf_impl_tag(first_key) == vscf_impl_tag_RAW_PUBLIC_KEY);
+        curve25519_public_key = (vscf_raw_public_key_t *)first_key;
 
-        if (vscf_key_info_alg_id(key_info) != vscf_alg_id_ROUND5_ND_5KEM_5D) {
+        if (enable_post_quantum) {
+            vscf_key_info_destroy(&key_info);
+            key_info = vscf_key_info_new_with_alg_info(vscf_key_alg_info(second_key));
+
+            if (vscf_key_info_alg_id(key_info) != vscf_alg_id_ROUND5_ND_5KEM_5D) {
+                status = vscr_status_ERROR_INVALID_KEY_TYPE;
+                goto err1;
+            }
+
+            *public_key_second_ref = second_key;
+        } else {
+            *public_key_second_ref = NULL;
+        }
+    } else {
+        if (enable_post_quantum) {
             status = vscr_status_ERROR_INVALID_KEY_TYPE;
             goto err1;
         }
 
-        *public_key_second_ref = second_key;
-        VSCR_ASSERT(vscf_impl_tag(first_key) == vscf_impl_tag_RAW_PUBLIC_KEY);
-        curve25519_public_key = (vscf_raw_public_key_t *)first_key;
-    } else {
         if (vscf_key_info_alg_id(key_info) == vscf_alg_id_ED25519) {
             VSCR_ASSERT(vscf_impl_tag(key) == vscf_impl_tag_RAW_PUBLIC_KEY);
             vsc_data_t public_key_data = vscf_raw_public_key_data((vscf_raw_public_key_t *)key);
