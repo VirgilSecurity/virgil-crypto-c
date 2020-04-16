@@ -1,6 +1,17 @@
 # virgil-crypto-c ChangeLog (Sorted by date)
 
 
+## Version 0.14.0 released 2020-04-16
+
+### Features
+
+- Lib/Ratchet: Added PQC to double ratchet
+
+### Bugfix
+
+- Wrapper/Go: Fixed double de-allocation of C context in functions that return an interface
+
+
 ## Version 0.13.2 released 2020-03-30
 
 
