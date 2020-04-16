@@ -39,7 +39,7 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Utils class for working with keys formats.
+//  Utils class for working with protobug.
 // --------------------------------------------------------------------------
 
 
@@ -50,13 +50,14 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#include "vscr_ratchet_key_id.h"
+#include "vscr_ratchet_pb_utils.h"
 #include "vscr_memory.h"
 #include "vscr_assert.h"
-#include "vscr_ratchet_key_id_defs.h"
+#include "vscr_ratchet_pb_utils_defs.h"
 
-#include <virgil/crypto/foundation/vscf_sha512.h>
-#include <virgil/crypto/common/private/vsc_buffer_defs.h>
+#include <pb_decode.h>
+#include <pb_encode.h>
+#include <virgil/crypto/foundation/vscf_simple_alg_info.h>
 
 // clang-format on
 //  @end
@@ -70,11 +71,11 @@
 
 //
 //  Perform context specific initialization.
-//  Note, this method is called automatically when method vscr_ratchet_key_id_init() is called.
+//  Note, this method is called automatically when method vscr_ratchet_pb_utils_init() is called.
 //  Note, that context is already zeroed.
 //
 static void
-vscr_ratchet_key_id_init_ctx(vscr_ratchet_key_id_t *self);
+vscr_ratchet_pb_utils_init_ctx(vscr_ratchet_pb_utils_t *self);
 
 //
 //  Release all inner resources.
@@ -82,57 +83,57 @@ vscr_ratchet_key_id_init_ctx(vscr_ratchet_key_id_t *self);
 //  Note, that context will be zeroed automatically next this method.
 //
 static void
-vscr_ratchet_key_id_cleanup_ctx(vscr_ratchet_key_id_t *self);
+vscr_ratchet_pb_utils_cleanup_ctx(vscr_ratchet_pb_utils_t *self);
 
 //
-//  Return size of 'vscr_ratchet_key_id_t'.
+//  Return size of 'vscr_ratchet_pb_utils_t'.
 //
 VSCR_PUBLIC size_t
-vscr_ratchet_key_id_ctx_size(void) {
+vscr_ratchet_pb_utils_ctx_size(void) {
 
-    return sizeof(vscr_ratchet_key_id_t);
+    return sizeof(vscr_ratchet_pb_utils_t);
 }
 
 //
 //  Perform initialization of pre-allocated context.
 //
 VSCR_PUBLIC void
-vscr_ratchet_key_id_init(vscr_ratchet_key_id_t *self) {
+vscr_ratchet_pb_utils_init(vscr_ratchet_pb_utils_t *self) {
 
     VSCR_ASSERT_PTR(self);
 
-    vscr_zeroize(self, sizeof(vscr_ratchet_key_id_t));
+    vscr_zeroize(self, sizeof(vscr_ratchet_pb_utils_t));
 
     self->refcnt = 1;
 
-    vscr_ratchet_key_id_init_ctx(self);
+    vscr_ratchet_pb_utils_init_ctx(self);
 }
 
 //
 //  Release all inner resources including class dependencies.
 //
 VSCR_PUBLIC void
-vscr_ratchet_key_id_cleanup(vscr_ratchet_key_id_t *self) {
+vscr_ratchet_pb_utils_cleanup(vscr_ratchet_pb_utils_t *self) {
 
     if (self == NULL) {
         return;
     }
 
-    vscr_ratchet_key_id_cleanup_ctx(self);
+    vscr_ratchet_pb_utils_cleanup_ctx(self);
 
-    vscr_zeroize(self, sizeof(vscr_ratchet_key_id_t));
+    vscr_zeroize(self, sizeof(vscr_ratchet_pb_utils_t));
 }
 
 //
 //  Allocate context and perform it's initialization.
 //
-VSCR_PUBLIC vscr_ratchet_key_id_t *
-vscr_ratchet_key_id_new(void) {
+VSCR_PUBLIC vscr_ratchet_pb_utils_t *
+vscr_ratchet_pb_utils_new(void) {
 
-    vscr_ratchet_key_id_t *self = (vscr_ratchet_key_id_t *) vscr_alloc(sizeof (vscr_ratchet_key_id_t));
+    vscr_ratchet_pb_utils_t *self = (vscr_ratchet_pb_utils_t *) vscr_alloc(sizeof (vscr_ratchet_pb_utils_t));
     VSCR_ASSERT_ALLOC(self);
 
-    vscr_ratchet_key_id_init(self);
+    vscr_ratchet_pb_utils_init(self);
 
     self->self_dealloc_cb = vscr_dealloc;
 
@@ -144,7 +145,7 @@ vscr_ratchet_key_id_new(void) {
 //  It is safe to call this method even if the context was statically allocated.
 //
 VSCR_PUBLIC void
-vscr_ratchet_key_id_delete(vscr_ratchet_key_id_t *self) {
+vscr_ratchet_pb_utils_delete(vscr_ratchet_pb_utils_t *self) {
 
     if (self == NULL) {
         return;
@@ -171,7 +172,7 @@ vscr_ratchet_key_id_delete(vscr_ratchet_key_id_t *self) {
 
     vscr_dealloc_fn self_dealloc_cb = self->self_dealloc_cb;
 
-    vscr_ratchet_key_id_cleanup(self);
+    vscr_ratchet_pb_utils_cleanup(self);
 
     if (self_dealloc_cb != NULL) {
         self_dealloc_cb(self);
@@ -180,24 +181,24 @@ vscr_ratchet_key_id_delete(vscr_ratchet_key_id_t *self) {
 
 //
 //  Delete given context and nullifies reference.
-//  This is a reverse action of the function 'vscr_ratchet_key_id_new ()'.
+//  This is a reverse action of the function 'vscr_ratchet_pb_utils_new ()'.
 //
 VSCR_PUBLIC void
-vscr_ratchet_key_id_destroy(vscr_ratchet_key_id_t **self_ref) {
+vscr_ratchet_pb_utils_destroy(vscr_ratchet_pb_utils_t **self_ref) {
 
     VSCR_ASSERT_PTR(self_ref);
 
-    vscr_ratchet_key_id_t *self = *self_ref;
+    vscr_ratchet_pb_utils_t *self = *self_ref;
     *self_ref = NULL;
 
-    vscr_ratchet_key_id_delete(self);
+    vscr_ratchet_pb_utils_delete(self);
 }
 
 //
 //  Copy given class context by increasing reference counter.
 //
-VSCR_PUBLIC vscr_ratchet_key_id_t *
-vscr_ratchet_key_id_shallow_copy(vscr_ratchet_key_id_t *self) {
+VSCR_PUBLIC vscr_ratchet_pb_utils_t *
+vscr_ratchet_pb_utils_shallow_copy(vscr_ratchet_pb_utils_t *self) {
 
     VSCR_ASSERT_PTR(self);
 
@@ -226,15 +227,13 @@ vscr_ratchet_key_id_shallow_copy(vscr_ratchet_key_id_t *self) {
 
 //
 //  Perform context specific initialization.
-//  Note, this method is called automatically when method vscr_ratchet_key_id_init() is called.
+//  Note, this method is called automatically when method vscr_ratchet_pb_utils_init() is called.
 //  Note, that context is already zeroed.
 //
 static void
-vscr_ratchet_key_id_init_ctx(vscr_ratchet_key_id_t *self) {
+vscr_ratchet_pb_utils_init_ctx(vscr_ratchet_pb_utils_t *self) {
 
     VSCR_ASSERT_PTR(self);
-
-    self->key_utils = vscr_ratchet_key_utils_new();
 }
 
 //
@@ -243,48 +242,119 @@ vscr_ratchet_key_id_init_ctx(vscr_ratchet_key_id_t *self) {
 //  Note, that context will be zeroed automatically next this method.
 //
 static void
-vscr_ratchet_key_id_cleanup_ctx(vscr_ratchet_key_id_t *self) {
+vscr_ratchet_pb_utils_cleanup_ctx(vscr_ratchet_pb_utils_t *self) {
 
     VSCR_ASSERT_PTR(self);
-
-    vscr_ratchet_key_utils_destroy(&self->key_utils);
 }
 
-//
-//  Computes 8 bytes key pair id from Curve25519 (in PKCS8 or raw format) public key
-//
+VSCR_PUBLIC void
+vscr_ratchet_pb_utils_serialize_data(vsc_data_t data, pb_bytes_array_t **pb_buffer_ref) {
+
+    VSCR_ASSERT_PTR(pb_buffer_ref);
+
+    *pb_buffer_ref = vscr_alloc(PB_BYTES_ARRAY_T_ALLOCSIZE(data.len));
+    memcpy((*pb_buffer_ref)->bytes, data.bytes, data.len);
+    (*pb_buffer_ref)->size = data.len;
+}
+
+VSCR_PUBLIC void
+vscr_ratchet_pb_utils_serialize_buffer(vsc_buffer_t *buffer, pb_bytes_array_t **pb_buffer_ref) {
+
+    VSCR_ASSERT_PTR(buffer);
+
+    vscr_ratchet_pb_utils_serialize_data(vsc_buffer_data(buffer), pb_buffer_ref);
+}
+
+VSCR_PUBLIC vsc_buffer_t *
+vscr_ratchet_pb_utils_deserialize_buffer(const pb_bytes_array_t *pb_buffer) {
+
+    if (pb_buffer == NULL) {
+        return NULL;
+    }
+
+    return vsc_buffer_new_with_data(vsc_data(pb_buffer->bytes, pb_buffer->size));
+}
+
+VSCR_PUBLIC vsc_data_t
+vscr_ratchet_pb_utils_buffer_to_data(const pb_bytes_array_t *pb_buffer) {
+
+    if (pb_buffer == NULL) {
+        return vsc_data_empty();
+    }
+
+    return vsc_data(pb_buffer->bytes, pb_buffer->size);
+}
+
+VSCR_PUBLIC void
+vscr_ratchet_pb_utils_serialize_public_key(const vscf_impl_t *key, pb_bytes_array_t **pb_buffer_ref) {
+
+    VSCR_ASSERT_PTR(key);
+    VSCR_ASSERT_PTR(pb_buffer_ref);
+
+    VSCR_ASSERT(vscf_impl_tag(key) == vscf_impl_tag_RAW_PUBLIC_KEY);
+    vscr_ratchet_pb_utils_serialize_data(vscf_raw_public_key_data((vscf_raw_public_key_t *)key), pb_buffer_ref);
+}
+
 VSCR_PUBLIC vscr_status_t
-vscr_ratchet_key_id_compute_public_key_id(vscr_ratchet_key_id_t *self, vsc_data_t public_key, vsc_buffer_t *key_id) {
+vscr_ratchet_pb_utils_deserialize_public_key(
+        vscf_round5_t *round5, const pb_bytes_array_t *pb_buffer, vscf_impl_t **public_key_ref) {
 
-    if (public_key.len == vscr_ratchet_common_hidden_KEY_LEN) {
-        byte digest[vscf_sha512_DIGEST_LEN];
+    VSCR_ASSERT_PTR(round5);
+    VSCR_ASSERT_PTR(pb_buffer);
+    VSCR_ASSERT_PTR(public_key_ref);
 
-        vsc_buffer_t digest_buf;
-        vsc_buffer_init(&digest_buf);
-        vsc_buffer_use(&digest_buf, digest, sizeof(digest));
+    vsc_data_t data = vsc_data(pb_buffer->bytes, pb_buffer->size);
 
-        vscf_sha512_hash(public_key, &digest_buf);
+    vscf_impl_t *alg_info =
+            vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_ROUND5_ND_5KEM_5D));
 
-        vsc_buffer_delete(&digest_buf);
+    vscf_error_t error_ctx;
+    vscf_error_reset(&error_ctx);
 
-        vsc_buffer_write_data(key_id, vsc_data(digest, vscr_ratchet_common_KEY_ID_LEN));
+    *public_key_ref = vscf_round5_import_public_key_data(round5, data, alg_info, &error_ctx);
 
-        return vscr_status_SUCCESS;
+    vscf_impl_destroy(&alg_info);
+
+    if (error_ctx.status != vscf_status_SUCCESS) {
+        return vscr_status_ERROR_ROUND5_IMPORT_KEY;
     }
 
-    vscr_error_t error_ctx;
-    vscr_error_reset(&error_ctx);
+    return vscr_status_SUCCESS;
+}
 
-    vsc_buffer_t *raw_public_key = vscr_ratchet_key_utils_extract_ratchet_public_key(
-            self->key_utils, public_key, true, true, false, &error_ctx);
+VSCR_PUBLIC void
+vscr_ratchet_pb_utils_serialize_private_key(const vscf_impl_t *key, pb_bytes_array_t **pb_buffer_ref) {
 
-    if (vscr_error_has_error(&error_ctx)) {
-        return vscr_error_status(&error_ctx);
+    VSCR_ASSERT_PTR(key);
+    VSCR_ASSERT_PTR(pb_buffer_ref);
+
+    VSCR_ASSERT(vscf_impl_tag(key) == vscf_impl_tag_RAW_PRIVATE_KEY);
+    vscr_ratchet_pb_utils_serialize_data(vscf_raw_public_key_data((vscf_raw_public_key_t *)key), pb_buffer_ref);
+}
+
+VSCR_PUBLIC vscr_status_t
+vscr_ratchet_pb_utils_deserialize_private_key(
+        vscf_round5_t *round5, const pb_bytes_array_t *pb_buffer, vscf_impl_t **private_key_ref) {
+
+    VSCR_ASSERT_PTR(round5);
+    VSCR_ASSERT_PTR(pb_buffer);
+    VSCR_ASSERT_PTR(private_key_ref);
+
+    vsc_data_t data = vsc_data(pb_buffer->bytes, pb_buffer->size);
+
+    vscf_impl_t *alg_info =
+            vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_ROUND5_ND_5KEM_5D));
+
+    vscf_error_t error_ctx;
+    vscf_error_reset(&error_ctx);
+
+    *private_key_ref = vscf_round5_import_private_key_data(round5, data, alg_info, &error_ctx);
+
+    vscf_impl_destroy(&alg_info);
+
+    if (error_ctx.status != vscf_status_SUCCESS) {
+        return vscr_status_ERROR_ROUND5_IMPORT_KEY;
     }
 
-    vscr_status_t result = vscr_ratchet_key_id_compute_public_key_id(self, vsc_buffer_data(raw_public_key), key_id);
-
-    vsc_buffer_destroy(&raw_public_key);
-
-    return result;
+    return vscr_status_SUCCESS;
 }

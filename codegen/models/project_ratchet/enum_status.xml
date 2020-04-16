@@ -121,4 +121,21 @@
         Myself is included in info.
     </constant>
 
+    <constant name="error round5" value="-30">
+        Round5 error.
+    </constant>
+
+    <constant name="error falcon" value="-31">
+        Falcon error.
+    </constant>
+
+    <constant name="error decaps signature invalid" value="-32">
+        Decaps signature is invalid.
+    </constant>
+
+    <constant name="error round5 import key" value="-33">
+        Error importing round5 key.
+    </constant>
+
+
 </enum>

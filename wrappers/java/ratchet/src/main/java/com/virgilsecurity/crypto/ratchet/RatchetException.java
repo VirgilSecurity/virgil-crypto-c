@@ -103,6 +103,14 @@ public class RatchetException extends RuntimeException {
 
     public static final int ERROR_MYSELF_IS_INCLUDED_IN_INFO = -29;
 
+    public static final int ERROR_ROUND5 = -30;
+
+    public static final int ERROR_FALCON = -31;
+
+    public static final int ERROR_DECAPS_SIGNATURE_INVALID = -32;
+
+    public static final int ERROR_ROUND5_IMPORT_KEY = -33;
+
     private int statusCode;
 
     /* Create new instance. */
@@ -177,6 +185,14 @@ public class RatchetException extends RuntimeException {
             return "Simultaneous group user operation.";
         case ERROR_MYSELF_IS_INCLUDED_IN_INFO:
             return "Myself is included in info.";
+        case ERROR_ROUND5:
+            return "Round5 error.";
+        case ERROR_FALCON:
+            return "Falcon error.";
+        case ERROR_DECAPS_SIGNATURE_INVALID:
+            return "Decaps signature is invalid.";
+        case ERROR_ROUND5_IMPORT_KEY:
+            return "Error importing round5 key.";
         default:
             return "Unknown error";
         }

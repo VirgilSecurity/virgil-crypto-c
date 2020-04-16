@@ -36,13 +36,13 @@ package ratchet
 
 import (
 	b64 "encoding/base64"
-	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"testing"
 )
 
 func TestNewRatchetKeyId(t *testing.T) {
 	keyId := NewRatchetKeyId()
-    assert.NotNil(t, keyId)
+    require.NotNil(t, keyId)
 
 	keyId.Delete()
 }
@@ -55,7 +55,7 @@ func TestRatchetKeyId_ComputePublicKeyId(t *testing.T) {
 	defer ratchetKeyId.Delete()
 
 	publicKeyId, err := ratchetKeyId.ComputePublicKeyId(publicKeyData)
-	assert.Nil(t, err)
-	assert.NotNil(t, publicKeyId)
-	assert.Equal(t, expectedPublicKeyId, publicKeyId)
+	require.Nil(t, err)
+	require.NotNil(t, publicKeyId)
+	require.Equal(t, expectedPublicKeyId, publicKeyId)
 }

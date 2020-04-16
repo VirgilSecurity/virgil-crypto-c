@@ -50,13 +50,33 @@
 #include "vscr_library.h"
 #include "vscr_atomic.h"
 #include "vscr_ratchet_typedefs.h"
+#include "vscr_ratchet_pb_utils.h"
 #include "vscr_ratchet_common_hidden.h"
 #include "vscr_ratchet_sender_chain.h"
 #include "vscr_ratchet_chain_key.h"
+#include "vscr_status.h"
 
 #include <vscr_RatchetSession.pb.h>
 #include <pb_decode.h>
 #include <pb_encode.h>
+
+#if !VSCR_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <virgil/crypto/common/vsc_buffer.h>
+#endif
+
+#if !VSCR_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
+#   include <virgil/crypto/foundation/vscf_round5.h>
+#   include <virgil/crypto/foundation/vscf_impl.h>
+#endif
+
+#if VSCR_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <VSCCommon/vsc_buffer.h>
+#endif
+
+#if VSCR_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
+#   include <VSCFoundation/vscf_impl.h>
+#   include <VSCFoundation/vscf_round5.h>
+#endif
 
 // clang-format on
 //  @end
@@ -87,9 +107,15 @@ struct vscr_ratchet_sender_chain_t {
     //
     VSCR_ATOMIC size_t refcnt;
 
-    vscr_ratchet_private_key_t private_key;
+    vscr_ratchet_private_key_t private_key_first;
 
-    vscr_ratchet_public_key_t public_key;
+    vscr_ratchet_public_key_t public_key_first;
+
+    vscf_impl_t *private_key_second;
+
+    vscf_impl_t *public_key_second;
+
+    vsc_buffer_t *encapsulated_key;
 
     vscr_ratchet_chain_key_t chain_key;
 };
@@ -141,9 +167,9 @@ vscr_ratchet_sender_chain_shallow_copy(vscr_ratchet_sender_chain_t *self);
 VSCR_PUBLIC void
 vscr_ratchet_sender_chain_serialize(const vscr_ratchet_sender_chain_t *self, vscr_SenderChain *sender_chain_pb);
 
-VSCR_PUBLIC void
+VSCR_PUBLIC vscr_status_t
 vscr_ratchet_sender_chain_deserialize(const vscr_SenderChain *sender_chain_pb,
-        vscr_ratchet_sender_chain_t *sender_chain);
+        vscr_ratchet_sender_chain_t *sender_chain, vscf_round5_t *round5) VSCR_NODISCARD;
 
 
 // --------------------------------------------------------------------------

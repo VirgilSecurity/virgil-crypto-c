@@ -35,7 +35,7 @@
 package foundation
 
 import (
-	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"math/rand"
 	"testing"
 )
@@ -43,105 +43,105 @@ import (
 func TestNewEcc(t *testing.T) {
 	ecc := NewEcc()
 
-	assert.NotNil(t, ecc)
+	require.NotNil(t, ecc)
 }
 
 func TestEcc_GenerateKey(t *testing.T) {
 	ecc := newEcc()
 
 	privateKey, err := ecc.GenerateKey(AlgIdSecp256r1)
-	assert.Nil(t, err)
-	assert.NotNil(t, privateKey)
+	require.Nil(t, err)
+	require.NotNil(t, privateKey)
 
 	eccKey, ok := privateKey.(Key)
-	assert.True(t, ok)
-	assert.Equal(t, AlgIdSecp256r1, eccKey.AlgId())
+	require.True(t, ok)
+	require.Equal(t, AlgIdSecp256r1, eccKey.AlgId())
 }
 
 func TestEcc_CanSign(t *testing.T) {
 	ecc := newEcc()
 	privateKey, err := ecc.GenerateKey(AlgIdSecp256r1)
 
-	assert.Nil(t, err)
-	assert.True(t, ecc.CanSign(privateKey))
+	require.Nil(t, err)
+	require.True(t, ecc.CanSign(privateKey))
 }
 
 func TestEcc_CanSign_WrongKey(t *testing.T) {
 	ecc := newEcc()
 	rsa := NewRsa()
 	err := rsa.SetupDefaults()
-	assert.Nil(t, err)
+	require.Nil(t, err)
 
 	privateKey, err := rsa.GenerateKey(2048)
-	assert.Nil(t, err)
-	assert.False(t, ecc.CanSign(privateKey))
+	require.Nil(t, err)
+	require.False(t, ecc.CanSign(privateKey))
 }
 
 func TestEcc_GetCanExportPrivateKey(t *testing.T) {
 	ecc := newEcc()
 
-	assert.True(t, ecc.GetCanExportPrivateKey())
+	require.True(t, ecc.GetCanExportPrivateKey())
 }
 
 func TestEcc_GetCanImportPrivateKey(t *testing.T) {
 	ecc := newEcc()
 
-	assert.True(t, ecc.GetCanImportPrivateKey())
+	require.True(t, ecc.GetCanImportPrivateKey())
 }
 
 func TestEcc_ExportPrivateKey(t *testing.T) {
 	ecc := newEcc()
 	privateKey, err := ecc.GenerateKey(AlgIdSecp256r1)
-	assert.Nil(t, err)
+	require.Nil(t, err)
 
 	// Export private key
 	rawPrivateKey, err := ecc.ExportPrivateKey(privateKey)
-	assert.Nil(t, err)
-	assert.NotNil(t, rawPrivateKey)
+	require.Nil(t, err)
+	require.NotNil(t, rawPrivateKey)
 
 	exportedEccKeyData := rawPrivateKey.Data()
-	assert.NotNil(t, exportedEccKeyData)
+	require.NotNil(t, exportedEccKeyData)
 
 	importedEccPrivateKey, err := ecc.ImportPrivateKey(rawPrivateKey)
-	assert.Nil(t, err)
+	require.Nil(t, err)
 
 	rawPrivateKey2, err := ecc.ExportPrivateKey(importedEccPrivateKey)
-	assert.Nil(t, err)
-	assert.NotNil(t, rawPrivateKey2)
+	require.Nil(t, err)
+	require.NotNil(t, rawPrivateKey2)
 
 	exportedEccKeyData2 := rawPrivateKey2.Data()
 
-	assert.NotNil(t, exportedEccKeyData2)
-	assert.Equal(t, exportedEccKeyData, exportedEccKeyData2)
+	require.NotNil(t, exportedEccKeyData2)
+	require.Equal(t, exportedEccKeyData, exportedEccKeyData2)
 }
 
 func TestEcc_ExportPublicKey(t *testing.T) {
 	ecc := newEcc()
 	privateKey, err := ecc.GenerateKey(AlgIdSecp256r1)
-	assert.Nil(t, err)
+	require.Nil(t, err)
 
 	publicKey, err := privateKey.ExtractPublicKey()
-	assert.Nil(t, err)
+	require.Nil(t, err)
 
 	// Export public key
 	rawPublicKey, err := ecc.ExportPublicKey(publicKey)
-	assert.Nil(t, err)
-	assert.NotNil(t, rawPublicKey)
+	require.Nil(t, err)
+	require.NotNil(t, rawPublicKey)
 
 	exportedEccKeyData := rawPublicKey.Data()
-	assert.NotNil(t, exportedEccKeyData)
+	require.NotNil(t, exportedEccKeyData)
 
 	importedEccPublicKey, err := ecc.ImportPublicKey(rawPublicKey)
-	assert.Nil(t, err)
+	require.Nil(t, err)
 
 	rawPublicKey2, err := ecc.ExportPublicKey(importedEccPublicKey)
-	assert.Nil(t, err)
-	assert.NotNil(t, rawPublicKey2)
+	require.Nil(t, err)
+	require.NotNil(t, rawPublicKey2)
 
 	exportedEccKeyData2 := rawPublicKey2.Data()
 
-	assert.NotNil(t, exportedEccKeyData2)
-	assert.Equal(t, exportedEccKeyData, exportedEccKeyData2)
+	require.NotNil(t, exportedEccKeyData2)
+	require.Equal(t, exportedEccKeyData, exportedEccKeyData2)
 }
 
 func TestEcc_Encrypt(t *testing.T) {
@@ -150,23 +150,23 @@ func TestEcc_Encrypt(t *testing.T) {
 
 	ecc := newEcc()
 	privateKey, err := ecc.GenerateKey(AlgIdSecp256r1)
-	assert.Nil(t, err)
+	require.Nil(t, err)
 
 	publicKey, err := privateKey.ExtractPublicKey()
-	assert.Nil(t, err)
-	assert.True(t, ecc.CanEncrypt(publicKey, uint(len(data))))
+	require.Nil(t, err)
+	require.True(t, ecc.CanEncrypt(publicKey, uint(len(data))))
 
 	encrypteccData, err := ecc.Encrypt(publicKey, data)
-	assert.Nil(t, err)
-	assert.NotNil(t, encrypteccData)
+	require.Nil(t, err)
+	require.NotNil(t, encrypteccData)
 
-	assert.True(t, ecc.CanDecrypt(privateKey, uint(len(encrypteccData))))
+	require.True(t, ecc.CanDecrypt(privateKey, uint(len(encrypteccData))))
 
 	decrypteccData, err := ecc.Decrypt(privateKey, encrypteccData)
-	assert.Nil(t, err)
-	assert.NotNil(t, decrypteccData)
+	require.Nil(t, err)
+	require.NotNil(t, decrypteccData)
 
-	assert.Equal(t, data, decrypteccData)
+	require.Equal(t, data, decrypteccData)
 }
 
 //func TestEcc_Decrypt(t *testing.T) {
@@ -179,8 +179,8 @@ func TestEcc_Encrypt(t *testing.T) {
 //    privateKey := keyProvider.ImportPrivateKey(privateKeyData)
 //
 //    decrypteccData := ecc.Decrypt(privateKey, encrypteccData)
-//    assert.NotNil(t, decrypteccData)
-//    assert.Equal(t, expecteccDecrypteccData, decrypteccData)
+//    require.NotNil(t, decrypteccData)
+//    require.Equal(t, expecteccDecrypteccData, decrypteccData)
 //}
 //
 //func TestEcc_SignHash(t *testing.T) {
@@ -192,13 +192,13 @@ func TestEcc_Encrypt(t *testing.T) {
 //    privateKey, _ := keyProvider.ImportPrivateKey(privateKeyData).(EccPrivateKey)
 //    publicKey := privateKey.ExtractPublicKey()
 //
-//    assert.True(t, ecc.CanSign(privateKey))
+//    require.True(t, ecc.CanSign(privateKey))
 //
 //    signature := ecc.SignHash(privateKey, ALG_ID_SHA512, data)
-//    assert.NotNil(t, signature);
-//    assert.Equal(t, ecc.SignatureLen(privateKey), len(signature))
+//    require.NotNil(t, signature);
+//    require.Equal(t, ecc.SignatureLen(privateKey), len(signature))
 //
-//    assert.True(t, ecc.VerifyHash(publicKey, ALG_ID_SHA512, data, signature))
+//    require.True(t, ecc.VerifyHash(publicKey, ALG_ID_SHA512, data, signature))
 //}
 //
 //func TestEcc_VerifyHash(t *testing.T) {
@@ -210,8 +210,8 @@ func TestEcc_Encrypt(t *testing.T) {
 //
 //    publicKey := keyProvider.ImportPublicKey(publicKeyData)
 //
-//    assert.True(t, ecc.CanVerify(publicKey))
-//    assert.True(t, ecc.VerifyHash(publicKey, ALG_ID_SHA512, data, signature))
+//    require.True(t, ecc.CanVerify(publicKey))
+//    require.True(t, ecc.VerifyHash(publicKey, ALG_ID_SHA512, data, signature))
 //}
 //
 //func TestEcc_VerifyHash_WrongHash(t *testing.T) {
@@ -223,7 +223,7 @@ func TestEcc_Encrypt(t *testing.T) {
 //
 //    publicKey := keyProvider.ImportPublicKey(publicKeyData)
 //
-//    assert.False(t, ecc.VerifyHash(publicKey, ALG_ID_SHA512, data, signature))
+//    require.False(t, ecc.VerifyHash(publicKey, ALG_ID_SHA512, data, signature))
 //}
 
 func newEcc() *Ecc {

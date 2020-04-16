@@ -55,7 +55,6 @@
 
 #include "vscr_library.h"
 #include "vscr_atomic.h"
-#include "vscr_ratchet_key_id.h"
 
 #include <vscr_RatchetGroupMessage.pb.h>
 
@@ -86,8 +85,6 @@ struct vscr_ratchet_group_message_t {
     //  Reference counter.
     //
     VSCR_ATOMIC size_t refcnt;
-
-    vscr_ratchet_key_id_t *key_id;
 
     vscr_GroupMessage message_pb;
 

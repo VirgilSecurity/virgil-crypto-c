@@ -12,7 +12,7 @@
     <require header="pb_encode.h" scope="private"/>
 
     <property name="message pb" class="vscr_Message" library="nanopb" access="readwrite" is_reference="0"/>
-    <property name="header pb" class="vscr_RegularMessageHeader" library="nanopb" access="readwrite"/>
+    <property name="header pb" class="vscr_RegularMessageHeader" library="nanopb" access="readwrite" is_reference="0"/>
 
     <method name="get type" is_const="1">
         Returns message type.
@@ -30,7 +30,7 @@
         </return>
     </method>
 
-    <method name="get long-term public key">
+    <method name="get sender identity key id">
         Returns long-term public key, if message is prekey message.
 
         <return class="data" access="readwrite">
@@ -38,7 +38,23 @@
         </return>
     </method>
 
-    <method name="get one-time public key">
+    <method name="get receiver identity key id">
+        Returns long-term public key, if message is prekey message.
+
+        <return class="data" access="readwrite">
+            Long-term public key, if message is prekey message.
+        </return>
+    </method>
+
+    <method name="get receiver long term key id">
+        Returns long-term public key, if message is prekey message.
+
+        <return class="data" access="readwrite">
+            Long-term public key, if message is prekey message.
+        </return>
+    </method>
+
+    <method name="get receiver one time key id">
         Returns one-time public key, if message is prekey message and if one-time key is present, empty result otherwise.
 
         <return class="data" access="readwrite">

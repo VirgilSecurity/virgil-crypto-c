@@ -52,15 +52,6 @@ public class RatchetJNI {
     private RatchetJNI() {
     }
 
-    public native long ratchetKeyId_new();
-
-    public native void ratchetKeyId_close(long cCtx);
-
-    /*
-    * Computes 8 bytes key pair id from Curve25519 (in PKCS8 or raw format) public key
-    */
-    public native byte[] ratchetKeyId_computePublicKeyId(long cCtx, byte[] publicKey) throws RatchetException;
-
     public native long ratchetMessage_new();
 
     public native void ratchetMessage_close(long cCtx);
@@ -78,12 +69,22 @@ public class RatchetJNI {
     /*
     * Returns long-term public key, if message is prekey message.
     */
-    public native byte[] ratchetMessage_getLongTermPublicKey(long cCtx);
+    public native byte[] ratchetMessage_getSenderIdentityKeyId(long cCtx);
+
+    /*
+    * Returns long-term public key, if message is prekey message.
+    */
+    public native byte[] ratchetMessage_getReceiverIdentityKeyId(long cCtx);
+
+    /*
+    * Returns long-term public key, if message is prekey message.
+    */
+    public native byte[] ratchetMessage_getReceiverLongTermKeyId(long cCtx);
 
     /*
     * Returns one-time public key, if message is prekey message and if one-time key is present, empty result otherwise.
     */
-    public native byte[] ratchetMessage_getOneTimePublicKey(long cCtx);
+    public native byte[] ratchetMessage_getReceiverOneTimeKeyId(long cCtx);
 
     /*
     * Buffer len to serialize this class.
@@ -118,17 +119,32 @@ public class RatchetJNI {
     /*
     * Initiates session
     */
-    public native void ratchetSession_initiate(long cCtx, byte[] senderIdentityPrivateKey, byte[] receiverIdentityPublicKey, byte[] receiverLongTermPublicKey, byte[] receiverOneTimePublicKey) throws RatchetException;
+    public native void ratchetSession_initiate(long cCtx, PrivateKey senderIdentityPrivateKey, byte[] senderIdentityKeyId, PublicKey receiverIdentityPublicKey, byte[] receiverIdentityKeyId, PublicKey receiverLongTermPublicKey, byte[] receiverLongTermKeyId, PublicKey receiverOneTimePublicKey, byte[] receiverOneTimeKeyId, boolean enablePostQuantum) throws RatchetException;
+
+    /*
+    * Initiates session
+    */
+    public native void ratchetSession_initiateNoOneTimeKey(long cCtx, PrivateKey senderIdentityPrivateKey, byte[] senderIdentityKeyId, PublicKey receiverIdentityPublicKey, byte[] receiverIdentityKeyId, PublicKey receiverLongTermPublicKey, byte[] receiverLongTermKeyId, boolean enablePostQuantum) throws RatchetException;
 
     /*
     * Responds to session initiation
     */
-    public native void ratchetSession_respond(long cCtx, byte[] senderIdentityPublicKey, byte[] receiverIdentityPrivateKey, byte[] receiverLongTermPrivateKey, byte[] receiverOneTimePrivateKey, RatchetMessage message) throws RatchetException;
+    public native void ratchetSession_respond(long cCtx, PublicKey senderIdentityPublicKey, PrivateKey receiverIdentityPrivateKey, PrivateKey receiverLongTermPrivateKey, PrivateKey receiverOneTimePrivateKey, RatchetMessage message, boolean enablePostQuantum) throws RatchetException;
+
+    /*
+    * Responds to session initiation
+    */
+    public native void ratchetSession_respondNoOneTimeKey(long cCtx, PublicKey senderIdentityPublicKey, PrivateKey receiverIdentityPrivateKey, PrivateKey receiverLongTermPrivateKey, RatchetMessage message, boolean enablePostQuantum) throws RatchetException;
 
     /*
     * Returns flag that indicates is this session was initiated or responded
     */
     public native boolean ratchetSession_isInitiator(long cCtx);
+
+    /*
+    * Returns flag that indicates if session is post-quantum
+    */
+    public native boolean ratchetSession_isPqcEnabled(long cCtx);
 
     /*
     * Returns true if at least 1 response was successfully decrypted, false - otherwise

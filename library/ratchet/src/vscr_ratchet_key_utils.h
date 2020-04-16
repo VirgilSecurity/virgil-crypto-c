@@ -57,15 +57,24 @@
 #include "vscr_ratchet_common.h"
 #include "vscr_error.h"
 #include "vscr_ratchet_chain_key.h"
+#include "vscr_status.h"
 
 #if !VSCR_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <virgil/crypto/common/vsc_data.h>
 #   include <virgil/crypto/common/vsc_buffer.h>
+#   include <virgil/crypto/common/vsc_data.h>
+#endif
+
+#if !VSCR_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
+#   include <virgil/crypto/foundation/vscf_impl.h>
 #endif
 
 #if VSCR_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <VSCCommon/vsc_data.h>
 #   include <VSCCommon/vsc_buffer.h>
+#endif
+
+#if VSCR_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
+#   include <VSCFoundation/vscf_impl.h>
 #endif
 
 // clang-format on
@@ -131,6 +140,20 @@ vscr_ratchet_key_utils_destroy(vscr_ratchet_key_utils_t **self_ref);
 //
 VSCR_PUBLIC vscr_ratchet_key_utils_t *
 vscr_ratchet_key_utils_shallow_copy(vscr_ratchet_key_utils_t *self);
+
+VSCR_PUBLIC vscr_status_t
+vscr_ratchet_key_utils_import_private_key(vscr_ratchet_key_utils_t *self, const vscf_impl_t *private_key,
+        vscr_ratchet_private_key_t *private_key_first, const vscf_impl_t **private_key_second_ref,
+        const vscf_impl_t **private_key_second_signer_ref, bool enable_post_quantum, bool with_signer) VSCR_NODISCARD;
+
+VSCR_PUBLIC vscr_status_t
+vscr_ratchet_key_utils_import_public_key(vscr_ratchet_key_utils_t *self, const vscf_impl_t *public_key,
+        vscr_ratchet_public_key_t *public_key_first, const vscf_impl_t **public_key_second_ref,
+        const vscf_impl_t **public_key_second_signer_ref, bool enable_post_quantum, bool with_signer) VSCR_NODISCARD;
+
+VSCR_PUBLIC void
+vscr_ratchet_key_utils_compute_public_key_id(vscr_ratchet_key_utils_t *self,
+        const vscr_ratchet_public_key_t public_key_first, vsc_data_t public_key_second, vscr_ratchet_key_id_t key_id);
 
 VSCR_PUBLIC vsc_buffer_t *
 vscr_ratchet_key_utils_extract_ratchet_public_key(vscr_ratchet_key_utils_t *self, vsc_data_t data, bool ed25519,

@@ -51,17 +51,15 @@ test__skipped_messages__adding_chains__should_be_correct(void) {
 
     vscr_ratchet_skipped_messages_t *msgs = vscr_ratchet_skipped_messages_new();
 
-    vsc_buffer_t *priv1, *pub1;
-    vsc_buffer_t *priv2, *pub2;
-    vsc_buffer_t *priv3, *pub3;
+    vscr_ratchet_key_id_t id1, id2, id3;
 
-    generate_raw_keypair(rng, &priv1, &pub1, true);
-    generate_raw_keypair(rng, &priv2, &pub2, true);
-    generate_raw_keypair(rng, &priv3, &pub3, true);
+    generate_random_key_id(rng, id1);
+    generate_random_key_id(rng, id2);
+    generate_random_key_id(rng, id3);
 
-    TEST_ASSERT_EQUAL(NULL, vscr_ratchet_skipped_messages_find_key(msgs, 1, vsc_buffer_bytes(pub1)));
-    TEST_ASSERT_EQUAL(NULL, vscr_ratchet_skipped_messages_find_key(msgs, 2, vsc_buffer_bytes(pub2)));
-    TEST_ASSERT_EQUAL(NULL, vscr_ratchet_skipped_messages_find_key(msgs, 3, vsc_buffer_bytes(pub3)));
+    TEST_ASSERT_EQUAL(NULL, vscr_ratchet_skipped_messages_find_key(msgs, 1, id1));
+    TEST_ASSERT_EQUAL(NULL, vscr_ratchet_skipped_messages_find_key(msgs, 2, id2));
+    TEST_ASSERT_EQUAL(NULL, vscr_ratchet_skipped_messages_find_key(msgs, 3, id3));
 
     vscr_ratchet_message_key_t *key1 = vscr_ratchet_message_key_new();
     key1->index = 1;
@@ -72,61 +70,54 @@ test__skipped_messages__adding_chains__should_be_correct(void) {
     vscr_ratchet_message_key_t *key3 = vscr_ratchet_message_key_new();
     key3->index = 3;
 
-    vscr_ratchet_skipped_messages_add_public_key(msgs, vsc_buffer_bytes(pub1));
-    vscr_ratchet_skipped_messages_add_public_key(msgs, vsc_buffer_bytes(pub2));
-    vscr_ratchet_skipped_messages_add_public_key(msgs, vsc_buffer_bytes(pub3));
+    vscr_ratchet_skipped_messages_add_public_key(msgs, id1);
+    vscr_ratchet_skipped_messages_add_public_key(msgs, id2);
+    vscr_ratchet_skipped_messages_add_public_key(msgs, id3);
 
-    vscr_ratchet_skipped_messages_add_key(msgs, vsc_buffer_bytes(pub1), key1);
+    vscr_ratchet_skipped_messages_add_key(msgs, id1, key1);
 
-    TEST_ASSERT_EQUAL(key1, vscr_ratchet_skipped_messages_find_key(msgs, 1, vsc_buffer_bytes(pub1)));
-    TEST_ASSERT_EQUAL(NULL, vscr_ratchet_skipped_messages_find_key(msgs, 2, vsc_buffer_bytes(pub1)));
-    TEST_ASSERT_EQUAL(NULL, vscr_ratchet_skipped_messages_find_key(msgs, 2, vsc_buffer_bytes(pub2)));
-    TEST_ASSERT_EQUAL(NULL, vscr_ratchet_skipped_messages_find_key(msgs, 3, vsc_buffer_bytes(pub3)));
+    TEST_ASSERT_EQUAL(key1, vscr_ratchet_skipped_messages_find_key(msgs, 1, id1));
+    TEST_ASSERT_EQUAL(NULL, vscr_ratchet_skipped_messages_find_key(msgs, 2, id1));
+    TEST_ASSERT_EQUAL(NULL, vscr_ratchet_skipped_messages_find_key(msgs, 2, id2));
+    TEST_ASSERT_EQUAL(NULL, vscr_ratchet_skipped_messages_find_key(msgs, 3, id3));
 
-    vscr_ratchet_skipped_messages_add_key(msgs, vsc_buffer_bytes(pub2), key2);
+    vscr_ratchet_skipped_messages_add_key(msgs, id2, key2);
 
-    TEST_ASSERT_EQUAL(key1, vscr_ratchet_skipped_messages_find_key(msgs, 1, vsc_buffer_bytes(pub1)));
-    TEST_ASSERT_EQUAL(NULL, vscr_ratchet_skipped_messages_find_key(msgs, 2, vsc_buffer_bytes(pub1)));
-    TEST_ASSERT_EQUAL(NULL, vscr_ratchet_skipped_messages_find_key(msgs, 3, vsc_buffer_bytes(pub2)));
-    TEST_ASSERT_EQUAL(key2, vscr_ratchet_skipped_messages_find_key(msgs, 2, vsc_buffer_bytes(pub2)));
-    TEST_ASSERT_EQUAL(NULL, vscr_ratchet_skipped_messages_find_key(msgs, 3, vsc_buffer_bytes(pub3)));
+    TEST_ASSERT_EQUAL(key1, vscr_ratchet_skipped_messages_find_key(msgs, 1, id1));
+    TEST_ASSERT_EQUAL(NULL, vscr_ratchet_skipped_messages_find_key(msgs, 2, id1));
+    TEST_ASSERT_EQUAL(NULL, vscr_ratchet_skipped_messages_find_key(msgs, 3, id2));
+    TEST_ASSERT_EQUAL(key2, vscr_ratchet_skipped_messages_find_key(msgs, 2, id2));
+    TEST_ASSERT_EQUAL(NULL, vscr_ratchet_skipped_messages_find_key(msgs, 3, id3));
 
-    vscr_ratchet_skipped_messages_add_key(msgs, vsc_buffer_bytes(pub3), key3);
+    vscr_ratchet_skipped_messages_add_key(msgs, id3, key3);
 
-    TEST_ASSERT_EQUAL(key1, vscr_ratchet_skipped_messages_find_key(msgs, 1, vsc_buffer_bytes(pub1)));
-    TEST_ASSERT_EQUAL(NULL, vscr_ratchet_skipped_messages_find_key(msgs, 2, vsc_buffer_bytes(pub1)));
-    TEST_ASSERT_EQUAL(NULL, vscr_ratchet_skipped_messages_find_key(msgs, 3, vsc_buffer_bytes(pub2)));
-    TEST_ASSERT_EQUAL(key2, vscr_ratchet_skipped_messages_find_key(msgs, 2, vsc_buffer_bytes(pub2)));
-    TEST_ASSERT_EQUAL(NULL, vscr_ratchet_skipped_messages_find_key(msgs, 1, vsc_buffer_bytes(pub3)));
-    TEST_ASSERT_EQUAL(key3, vscr_ratchet_skipped_messages_find_key(msgs, 3, vsc_buffer_bytes(pub3)));
+    TEST_ASSERT_EQUAL(key1, vscr_ratchet_skipped_messages_find_key(msgs, 1, id1));
+    TEST_ASSERT_EQUAL(NULL, vscr_ratchet_skipped_messages_find_key(msgs, 2, id1));
+    TEST_ASSERT_EQUAL(NULL, vscr_ratchet_skipped_messages_find_key(msgs, 3, id2));
+    TEST_ASSERT_EQUAL(key2, vscr_ratchet_skipped_messages_find_key(msgs, 2, id2));
+    TEST_ASSERT_EQUAL(NULL, vscr_ratchet_skipped_messages_find_key(msgs, 1, id3));
+    TEST_ASSERT_EQUAL(key3, vscr_ratchet_skipped_messages_find_key(msgs, 3, id3));
 
-    vscr_ratchet_skipped_messages_delete_key(msgs, vsc_buffer_bytes(pub2), key2);
+    vscr_ratchet_skipped_messages_delete_key(msgs, id2, key2);
 
-    TEST_ASSERT_EQUAL(key1, vscr_ratchet_skipped_messages_find_key(msgs, 1, vsc_buffer_bytes(pub1)));
-    TEST_ASSERT_EQUAL(NULL, vscr_ratchet_skipped_messages_find_key(msgs, 2, vsc_buffer_bytes(pub1)));
-    TEST_ASSERT_EQUAL(NULL, vscr_ratchet_skipped_messages_find_key(msgs, 2, vsc_buffer_bytes(pub2)));
-    TEST_ASSERT_EQUAL(NULL, vscr_ratchet_skipped_messages_find_key(msgs, 1, vsc_buffer_bytes(pub3)));
-    TEST_ASSERT_EQUAL(key3, vscr_ratchet_skipped_messages_find_key(msgs, 3, vsc_buffer_bytes(pub3)));
+    TEST_ASSERT_EQUAL(key1, vscr_ratchet_skipped_messages_find_key(msgs, 1, id1));
+    TEST_ASSERT_EQUAL(NULL, vscr_ratchet_skipped_messages_find_key(msgs, 2, id1));
+    TEST_ASSERT_EQUAL(NULL, vscr_ratchet_skipped_messages_find_key(msgs, 2, id2));
+    TEST_ASSERT_EQUAL(NULL, vscr_ratchet_skipped_messages_find_key(msgs, 1, id3));
+    TEST_ASSERT_EQUAL(key3, vscr_ratchet_skipped_messages_find_key(msgs, 3, id3));
 
-    vscr_ratchet_skipped_messages_delete_key(msgs, vsc_buffer_bytes(pub3), key3);
+    vscr_ratchet_skipped_messages_delete_key(msgs, id3, key3);
 
-    TEST_ASSERT_EQUAL(key1, vscr_ratchet_skipped_messages_find_key(msgs, 1, vsc_buffer_bytes(pub1)));
-    TEST_ASSERT_EQUAL(NULL, vscr_ratchet_skipped_messages_find_key(msgs, 2, vsc_buffer_bytes(pub1)));
-    TEST_ASSERT_EQUAL(NULL, vscr_ratchet_skipped_messages_find_key(msgs, 2, vsc_buffer_bytes(pub2)));
-    TEST_ASSERT_EQUAL(NULL, vscr_ratchet_skipped_messages_find_key(msgs, 3, vsc_buffer_bytes(pub3)));
+    TEST_ASSERT_EQUAL(key1, vscr_ratchet_skipped_messages_find_key(msgs, 1, id1));
+    TEST_ASSERT_EQUAL(NULL, vscr_ratchet_skipped_messages_find_key(msgs, 2, id1));
+    TEST_ASSERT_EQUAL(NULL, vscr_ratchet_skipped_messages_find_key(msgs, 2, id2));
+    TEST_ASSERT_EQUAL(NULL, vscr_ratchet_skipped_messages_find_key(msgs, 3, id3));
 
-    vscr_ratchet_skipped_messages_delete_key(msgs, vsc_buffer_bytes(pub1), key1);
+    vscr_ratchet_skipped_messages_delete_key(msgs, id1, key1);
 
-    TEST_ASSERT_EQUAL(NULL, vscr_ratchet_skipped_messages_find_key(msgs, 1, vsc_buffer_bytes(pub1)));
-    TEST_ASSERT_EQUAL(NULL, vscr_ratchet_skipped_messages_find_key(msgs, 2, vsc_buffer_bytes(pub2)));
-    TEST_ASSERT_EQUAL(NULL, vscr_ratchet_skipped_messages_find_key(msgs, 3, vsc_buffer_bytes(pub3)));
-
-    vsc_buffer_destroy(&priv1);
-    vsc_buffer_destroy(&pub1);
-    vsc_buffer_destroy(&priv2);
-    vsc_buffer_destroy(&pub2);
-    vsc_buffer_destroy(&priv3);
-    vsc_buffer_destroy(&pub3);
+    TEST_ASSERT_EQUAL(NULL, vscr_ratchet_skipped_messages_find_key(msgs, 1, id1));
+    TEST_ASSERT_EQUAL(NULL, vscr_ratchet_skipped_messages_find_key(msgs, 2, id2));
+    TEST_ASSERT_EQUAL(NULL, vscr_ratchet_skipped_messages_find_key(msgs, 3, id3));
 
     vscr_ratchet_skipped_messages_destroy(&msgs);
 
@@ -140,11 +131,10 @@ test__add_key__many_keys__keys_number_should_be_limited(void) {
 
     vscr_ratchet_skipped_messages_t *msgs = vscr_ratchet_skipped_messages_new();
 
-    vsc_buffer_t *priv, *pub;
+    vscr_ratchet_key_id_t id;
+    generate_random_key_id(rng, id);
 
-    generate_raw_keypair(rng, &priv, &pub, true);
-
-    vscr_ratchet_skipped_messages_add_public_key(msgs, vsc_buffer_bytes(pub));
+    vscr_ratchet_skipped_messages_add_public_key(msgs, id);
 
     vscr_ratchet_message_key_t *keys_arr[vscr_ratchet_common_hidden_MAX_SKIPPED_MESSAGES + 1];
 
@@ -153,10 +143,10 @@ test__add_key__many_keys__keys_number_should_be_limited(void) {
         key->index = (uint32_t)i;
         keys_arr[i] = key;
 
-        vscr_ratchet_skipped_messages_add_key(msgs, vsc_buffer_bytes(pub), key);
+        vscr_ratchet_skipped_messages_add_key(msgs, id, key);
 
         for (size_t j = 0; j <= i; j++) {
-            TEST_ASSERT_EQUAL(keys_arr[j], vscr_ratchet_skipped_messages_find_key(msgs, j, vsc_buffer_bytes(pub)));
+            TEST_ASSERT_EQUAL(keys_arr[j], vscr_ratchet_skipped_messages_find_key(msgs, j, id));
         }
     }
 
@@ -164,16 +154,13 @@ test__add_key__many_keys__keys_number_should_be_limited(void) {
     key->index = (uint32_t)vscr_ratchet_common_hidden_MAX_SKIPPED_MESSAGES;
     keys_arr[vscr_ratchet_common_hidden_MAX_SKIPPED_MESSAGES] = key;
 
-    vscr_ratchet_skipped_messages_add_key(msgs, vsc_buffer_bytes(pub), key);
+    vscr_ratchet_skipped_messages_add_key(msgs, id, key);
 
-    TEST_ASSERT_EQUAL(NULL, vscr_ratchet_skipped_messages_find_key(msgs, 0, vsc_buffer_bytes(pub)));
+    TEST_ASSERT_EQUAL(NULL, vscr_ratchet_skipped_messages_find_key(msgs, 0, id));
 
     for (size_t j = 1; j <= vscr_ratchet_common_hidden_MAX_SKIPPED_MESSAGES; j++) {
-        TEST_ASSERT_EQUAL(keys_arr[j], vscr_ratchet_skipped_messages_find_key(msgs, j, vsc_buffer_bytes(pub)));
+        TEST_ASSERT_EQUAL(keys_arr[j], vscr_ratchet_skipped_messages_find_key(msgs, j, id));
     }
-
-    vsc_buffer_destroy(&pub);
-    vsc_buffer_destroy(&priv);
 
     vscr_ratchet_skipped_messages_destroy(&msgs);
 
@@ -187,12 +174,10 @@ test__add_chains__many_keys__chains_number_should_be_limited(void) {
 
     vscr_ratchet_skipped_messages_t *msgs = vscr_ratchet_skipped_messages_new();
 
-    vsc_buffer_t *pub[vscr_ratchet_common_hidden_MAX_SKIPPED_DH + 1];
+    vscr_ratchet_key_id_t id[vscr_ratchet_common_hidden_MAX_SKIPPED_DH + 1];
 
     for (size_t i = 0; i < vscr_ratchet_common_hidden_MAX_SKIPPED_DH + 1; i++) {
-        vsc_buffer_t *priv;
-        generate_raw_keypair(rng, &priv, &pub[i], true);
-        vsc_buffer_destroy(&priv);
+        generate_random_key_id(rng, id[i]);
     }
 
     vscr_ratchet_message_key_t *keys_arr[vscr_ratchet_common_hidden_MAX_SKIPPED_DH + 1];
@@ -200,23 +185,18 @@ test__add_chains__many_keys__chains_number_should_be_limited(void) {
     for (size_t i = 0; i < vscr_ratchet_common_hidden_MAX_SKIPPED_DH + 1; i++) {
         vscr_ratchet_message_key_t *key = vscr_ratchet_message_key_new();
 
-        vscr_ratchet_skipped_messages_add_public_key(msgs, vsc_buffer_bytes(pub[i]));
-        vscr_ratchet_skipped_messages_add_key(msgs, vsc_buffer_bytes(pub[i]), key);
+        vscr_ratchet_skipped_messages_add_public_key(msgs, id[i]);
+        vscr_ratchet_skipped_messages_add_key(msgs, id[i], key);
 
         keys_arr[i] = key;
 
         for (size_t j = 0; j <= i; j++) {
             if (j == 0 && i == vscr_ratchet_common_hidden_MAX_SKIPPED_DH) {
-                TEST_ASSERT_EQUAL(NULL, vscr_ratchet_skipped_messages_find_key(msgs, 0, vsc_buffer_bytes(pub[j])));
+                TEST_ASSERT_EQUAL(NULL, vscr_ratchet_skipped_messages_find_key(msgs, 0, id[j]));
             } else {
-                TEST_ASSERT_EQUAL(
-                        keys_arr[j], vscr_ratchet_skipped_messages_find_key(msgs, 0, vsc_buffer_bytes(pub[j])));
+                TEST_ASSERT_EQUAL(keys_arr[j], vscr_ratchet_skipped_messages_find_key(msgs, 0, id[j]));
             }
         }
-    }
-
-    for (size_t i = 0; i < vscr_ratchet_common_hidden_MAX_SKIPPED_DH + 1; i++) {
-        vsc_buffer_destroy(&pub[i]);
     }
 
     vscr_ratchet_skipped_messages_destroy(&msgs);

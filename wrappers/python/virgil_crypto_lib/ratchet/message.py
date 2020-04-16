@@ -64,16 +64,30 @@ class Message(object):
         result = self._lib_vscr_ratchet_message.vscr_ratchet_message_get_counter(self.ctx)
         return result
 
-    def get_long_term_public_key(self):
+    def get_sender_identity_key_id(self):
         """Returns long-term public key, if message is prekey message."""
-        result = self._lib_vscr_ratchet_message.vscr_ratchet_message_get_long_term_public_key(self.ctx)
+        result = self._lib_vscr_ratchet_message.vscr_ratchet_message_get_sender_identity_key_id(self.ctx)
         instance = Data.take_c_ctx(result)
         cleaned_bytes = bytearray(instance)
         return cleaned_bytes
 
-    def get_one_time_public_key(self):
+    def get_receiver_identity_key_id(self):
+        """Returns long-term public key, if message is prekey message."""
+        result = self._lib_vscr_ratchet_message.vscr_ratchet_message_get_receiver_identity_key_id(self.ctx)
+        instance = Data.take_c_ctx(result)
+        cleaned_bytes = bytearray(instance)
+        return cleaned_bytes
+
+    def get_receiver_long_term_key_id(self):
+        """Returns long-term public key, if message is prekey message."""
+        result = self._lib_vscr_ratchet_message.vscr_ratchet_message_get_receiver_long_term_key_id(self.ctx)
+        instance = Data.take_c_ctx(result)
+        cleaned_bytes = bytearray(instance)
+        return cleaned_bytes
+
+    def get_receiver_one_time_key_id(self):
         """Returns one-time public key, if message is prekey message and if one-time key is present, empty result otherwise."""
-        result = self._lib_vscr_ratchet_message.vscr_ratchet_message_get_one_time_public_key(self.ctx)
+        result = self._lib_vscr_ratchet_message.vscr_ratchet_message_get_receiver_one_time_key_id(self.ctx)
         instance = Data.take_c_ctx(result)
         cleaned_bytes = bytearray(instance)
         return cleaned_bytes

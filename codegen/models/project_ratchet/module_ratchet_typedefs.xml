@@ -7,6 +7,8 @@
 
     <c_alias name="vscr_ratchet_private_key_t[32]" type="uint8_t" declaration="public"/>
 
+    <c_alias name="vscr_ratchet_key_id_t[8]" type="uint8_t" declaration="public"/>
+
     <c_alias name="vscr_ratchet_symmetric_key_t[32]" type="uint8_t" declaration="public"/>
 
     <c_alias name="vscr_ratchet_participant_id_t[32]" type="uint8_t" declaration="public"/>

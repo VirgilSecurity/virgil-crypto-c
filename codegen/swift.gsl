@@ -1495,7 +1495,7 @@ function swift_create_interface_implementation (implementation, swift_class, swi
             swift_create_property_from_constant (constant, my.swift_class, my.swift_project, my.meta)
         endfor
 
-        for interface.method where method.declaration = "public" & method.visibility = "public"
+        for interface.method where wrapper_should_wrap_method(method)
             swift_create_class_method (my.implementation, method, my.swift_class, my.swift_project, my.meta)
         endfor
     endfor
@@ -2080,7 +2080,7 @@ function swift_create_interface_module (interface, swift_project, meta)
                 swift_create_property_from_constant (constant, swift_protocol, my.swift_project, my.meta)
             endfor
 
-            for my.interface.method where method.declaration = "public" & method.visibility = "public"
+            for my.interface.method where wrapper_should_wrap_method(method)
                 my.swift_method = \
                         swift_create_interface_method (my.interface, method, swift_protocol, my.swift_project, my.meta)
 
@@ -2140,7 +2140,7 @@ function swift_create_implementation_module (implementation, swift_project, meta
                 swift_create_method_from_dependency (dependency, my.implementation, swift_class, my.swift_project, my.meta)
             endfor
 
-            for my.implementation.method where method.declaration = "public" & method.visibility = "public"
+            for my.implementation.method where wrapper_should_wrap_method(method)
                 swift_create_class_method (my.implementation, method, swift_class, my.swift_project, my.meta)
             endfor
 
@@ -2258,7 +2258,7 @@ function swift_create_class_module (class, swift_project, meta)
                 swift_create_method_from_dependency (dependency, my.class, swift_class, my.swift_project, my.meta)
             endfor
 
-            for my.class.method where 0.scope = "public" & 0.declaration = "public" & 0.visibility = "public"
+            for my.class.method where wrapper_should_wrap_method(method)
                 swift_create_class_method (my.class, method, swift_class, my.swift_project, my.meta)
             endfor
 

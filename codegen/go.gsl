@@ -45,6 +45,7 @@ gsl from "interface.gsl"
 gsl from "component.gsl"
 gsl from "c_component.gsl"
 gsl from "go_codegen.gsl"
+gsl from "wrapper_helpers.gsl"
 
 # ===========================================================================
 #   C types derivation. TODO: extract this functions to separate GSL module.
@@ -116,7 +117,7 @@ function go_derive_buffer_length_getter (class, method, argument)
         endif
 
         if defined (proxy.argument)
-        
+
             my.arg_name = go_derive_argument_name_str (proxy.argument)
 
             if string_in (proxy.cast, "data_length")
@@ -201,7 +202,7 @@ function go_derive_constant_name (constant, instance, go_project)
 
     assert_attribute (my.constant, "name", my)
     assert_attribute (my.instance, "name", my)
-    
+
     if (my.instance.name = "status")
         return "$(my.go_project.name:Pascal)Error$(my.constant.name:Pascal)"
     else
@@ -306,7 +307,7 @@ function go_derive_dependency_type (dependency)
     if defined (my.dependency.project)
         return "$(my.dependency.project:).$(make_ref_go (make_id(my.project_uid, my.type_uid)))"
     endif
-    
+
     if is_true (my.is_pointer)
         return "*$(make_ref_go (make_id(my.project_uid, my.type_uid)))"
     else
@@ -321,7 +322,7 @@ function go_derive_enum_module_name (enum, go_project)
     check_arguments (my, "enum, go_project", my)
 
     assert_attribute (my.enum, "name", my)
-    
+
     if my.enum.name = "status"
         return "$(my.go_project.name:C)_error"
     else
@@ -919,7 +920,7 @@ endfunction
 # ---------------------------------------------------------------------------
 function go_map_enum_status (go_struct, enum, go_module, go_project, meta)
     check_arguments (my, "go_struct, enum, go_module, go_project, meta")
-    
+
     go_create_import ("", "fmt", my.go_module)
 
     new go_field to my.go_struct
@@ -937,7 +938,7 @@ function go_map_enum_status (go_struct, enum, go_module, go_project, meta)
     my.switch_case = format_left ("switch (status) {")
     for my.enum.constant where 0.name <> "success"
         go_create_constant (constant, my.enum, my.go_struct, my.go_project, my.meta)
-        
+
         my.case_value = \
                 make_ref_c (make_id ("class", my.enum.name, "enum", my.enum.name, "constant", constant.name))
         my.msg = go_format_string (constant.)
@@ -1069,7 +1070,7 @@ function go_map_instance_type (go_instance, instance)
 
     my.go_instance.type = go_derive_instance_type (my.instance)
     my.go_instance.c_type = go_derive_instance_c_type (my.instance) ?
-    
+
 
     if defined (my.instance.type)
         my.go_instance.is_primitive_type = "1"
@@ -1252,7 +1253,7 @@ function go_create_context_module (go_project, meta)
         new go_license to go_module
             . = go_format_license (my.go_project->license) ?
         endnew
-        
+
         go_create_cgo_include_instructions (go_module, my.go_project)
 
         for my.go_project.go_import
@@ -1358,7 +1359,7 @@ function go_create_constant (constant, instance, go_instance, go_project, meta)
         .type = go_derive_constant_type (my.constant, my.instance, my.go_project)
         .value = the_value
     endnew
-    
+
     return my.go_constant
 endfunction
 
@@ -1403,7 +1404,7 @@ function go_create_func_declaration (class, method, destination, go_project, met
         .throws = go_derive_func_throws (my.method)
         .handle_proxy_status = go_derive_handle_proxy_status (my.method)
         .interface = my.method.interface ?
-        
+
         if ! defined (my.method.interface) & is_true (my.method.is_static)
             .is_static = "1"
         endif
@@ -1553,7 +1554,7 @@ function go_create_interface_implementation (implementation, go_struct, go_modul
             go_create_func_from_constant (interface, constant, my.go_struct, my.go_project, my.meta)
         endfor
 
-        for interface.method where method.declaration = "public" & method.visibility = "public"
+        for interface.method where wrapper_should_wrap_method(method)
             go_create_import_to_common (method, my.go_module)
             go_create_struct_func (my.implementation, method, my.go_struct, my.go_module, my.go_project, my.meta)
         endfor
@@ -1650,7 +1651,7 @@ function go_create_struct_close (go_struct, class, go_project, meta)
     else
         my.dtor_invocation = "C.$(class_derive_c_destructor (my.class))($(my.self_ctx:))"
     endif
-    
+
     my.func_clear = go_create_func_clear_declaration (my.go_struct, my.go_project, my.meta)
     new go_code to my.func_clear
         . = "\
@@ -1712,7 +1713,7 @@ function go_create_struct_constructor (class, constructor, destination, go_modul
 
             . = my.method_body
         endnew
-        
+
         new go_return to go_func
             .type = "*$(my.struct_name:)"
         endnew
@@ -1728,7 +1729,7 @@ function go_create_struct_default_constructor (go_struct, class, go_module, go_p
     check_arguments (my, "go_struct, class, go_module, go_project, meta", my)
 
     echo_debug ("Create constructor '$(my.go_struct.name:)'", my)
-    
+
     go_create_import ("", "runtime", my.go_module)
 
     if string_in (my.class.context, "public") & string_in (my.class.lifecycle, "none")
@@ -1755,7 +1756,7 @@ function go_create_struct_default_constructor (go_struct, class, go_module, go_p
                 return obj
             "
         endnew
-        
+
         new go_return to go_func
             .type = "*$(my.struct_name:)"
         endnew
@@ -1987,7 +1988,7 @@ function go_create_class_module (class, go_project, meta)
                 go_create_func_from_dependency (dependency, my.class, go_struct, go_module, my.go_project, my.meta)
             endfor
 
-            for my.class.method where 0.scope = "public" & method.declaration = "public" & method.visibility = "public"
+            for my.class.method where wrapper_should_wrap_method(method)
                 go_create_import_to_common (method, go_module)
                 go_create_struct_func (my.class, method, go_struct, go_module, my.go_project, my.meta)
             endfor
@@ -2029,7 +2030,7 @@ function go_create_enum_module (enum, go_project, meta)
         for my.go_project.go_import
             copy go_import to go_module
         endfor
-        
+
         if my.enum.name = "status"
             go_create_cgo_include_instructions (go_module, my.go_project)
 
@@ -2044,10 +2045,10 @@ function go_create_enum_module (enum, go_project, meta)
                 . = go_format_description (my.enum) ?
                 .name = go_derive_enum_name (my.enum, my.go_project)
                 .type = go_derive_enum_type (my.enum, my.go_project)
-    
+
                 go_map_attr_visibility (go_enum, my.enum)
                 go_map_attr_scope (go_enum, my.enum)
-    
+
                 go_map_enum_default (go_enum, my.enum, my.go_project, my.meta)
             endnew
         endif
@@ -2096,7 +2097,7 @@ function go_create_interface_module (interface, go_project, meta)
                 go_create_func_from_constant (my.interface, constant, go_interface, my.go_project, my.meta)
             endfor
 
-            for my.interface.method where method.declaration = "public" & method.visibility = "public"
+            for my.interface.method where wrapper_should_wrap_method(method)
                 go_create_interface_func (my.interface, method, go_interface, my.go_project, my.meta)
             endfor
 
@@ -2104,7 +2105,7 @@ function go_create_interface_module (interface, go_project, meta)
                 # TODO no needs in result class
                 #go_create_result_class (go_interface, go_field, my.go_project, my.meta)
             endfor
-            
+
             for go_interface.go_func
                 for go_func.go_return
                     if string_equal (go_return.type, "unsafe.Pointer")
@@ -2112,7 +2113,7 @@ function go_create_interface_module (interface, go_project, meta)
                     endif
                 endfor
             endfor
-            
+
             go_create_func_clear_declaration (go_interface, my.go_project, my.meta)
         endnew
     endnew
@@ -2140,7 +2141,7 @@ function go_create_project_module (project, wrapper)
         .package_dir = go_derive_package_dir(my.project, my.wrapper)
         .source_dir = cat_path (my.wrapper.source_dir, my.project.name)
         .c_umbrella_header = make_ref_c (make_id ("header", my.project.name, "public"))
-        
+
         for my.project.cgo_link
             copy cgo_link to go_project
         endfor
@@ -2151,7 +2152,7 @@ function go_create_project_module (project, wrapper)
             .name = go_project.package
             .uid = "go_import_name"
         endnew
-        
+
         go_create_import("", "C", go_project)
 
         return go_project
@@ -2201,20 +2202,20 @@ function go_create_implementation_module (implementation, go_project, meta)
                 go_create_func_from_dependency (dependency, my.implementation, go_struct, go_module, my.go_project, my.meta)
             endfor
 
-            for my.implementation.method where 0.scope = "public" & method.declaration = "public" & method.visibility = "public"
+            for my.implementation.method where wrapper_should_wrap_method(method)
                 go_create_import_to_common (method, go_module)
                 go_create_struct_func (my.implementation, method, go_struct, go_module, my.go_project, my.meta)
             endfor
 
             if my.implementation.context <> "none"
-            
+
                 go_create_struct_field_context (go_struct, my.implementation, go_module)
 
                 go_create_struct_default_constructor (go_struct, my.implementation, go_module, my.go_project, my.meta)
                 go_create_struct_close (go_struct, my.implementation, my.go_project, my.meta)
 
                 if my.implementation.lifecycle <> "none"
-                    for my.implementation.constructor where 0.declaration = "public" & 0.visibility = "public"
+                    for my.implementation.constructor where wrapper_should_wrap_method(constructor)
                         go_create_struct_constructor (my.implementation, constructor, go_struct, go_module, my.go_project, my.meta)
                     endfor
                 endif
@@ -2373,7 +2374,7 @@ function go_wrap_c_proxy_call (go_func, proxy_call, proxy_return_type, proxy_ret
         my.buffers_init ?= ""
         my.buffers_shrink ?= ""
     endfor
-    
+
     #  Wrap input data.
     my.data_method_data = "C..(c_project_common_class_data_method_data)"
     for my.go_func.go_argument where 0.type = "Data" & is_true (0.is_data)
@@ -2504,7 +2505,11 @@ function go_wrap_c_returned_value (go_return, go_module, go_project)
         return "unsafe.Pointer($(my.name:)) /* r3 */"
 
     elsif is_true (0.is_interface)
-        return "$(my.go_project.name:Pascal)ImplementationWrap$(my.go_return.type:)($(my.name:)) /* r4 */"
+        if string_in (go_return.access, "readonly, readwrite")
+            return "$(my.go_project.name:Pascal)ImplementationWrap$(my.go_return.type:)Copy($(my.name:)) /* r4.1 */"
+        else
+            return "$(my.go_project.name:Pascal)ImplementationWrap$(my.go_return.type:)($(my.name:)) /* r4 */"
+        endif
 
     elsif is_true (0.is_class) & is_false (0.is_buffer)
         if string_in (go_return.access, "readonly, readwrite")
@@ -2592,6 +2597,7 @@ function go_get_implementation_helper_interface_func (go_struct, interface, go_p
         .name = my.interface_func_name
         .throws = "1"
         .is_static = "1"
+        .is_primary = "1"
 
         new go_argument to go_func
             .name = "ctx"
@@ -2616,8 +2622,38 @@ function go_get_implementation_helper_interface_func (go_struct, interface, go_p
             ")
         endnew
 
-        return go_func
+        my.return_func = go_func
     endnew
+
+    new go_func to my.go_struct
+        my.interface_name = go_derive_interface_name (my.interface, my.go_project)
+        . = "\
+            /* Wrap C implementation object to the Go object that implements interface $(my.interface_name:). */
+        "
+        .name = "$(my.interface_func_name:)Copy"
+        .throws = "1"
+        .is_static = "1"
+
+        new go_argument to go_func
+            .name = "ctx"
+            .type = go_derive_struct_default_context_type()
+        endnew
+
+        new go_return to go_func
+            .type = go_derive_interface_name (my.interface, my.go_project)
+        endnew
+
+        new go_code to go_func
+            my.method_of_class = my.interface.of_class ? my.interface.name
+            my.method_is_implemented = make_ref_c (make_id ("class", my.method_of_class, "method", "is_implemented"))
+            . = format_left("\
+                shallowCopy := C..(c_class_impl_method_shallow_copy)(ctx)
+                return $(my.go_struct.name:)$(my.interface_func_name:)(shallowCopy)
+            ")
+        endnew
+    endnew
+
+    return my.return_func
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -2628,7 +2664,7 @@ function go_update_implementation_helper_module (implementation, go_project, met
 
     my.helper_class = go_get_implementation_helper_struct (my.go_project, my.meta)
     my.refs = meta_refs (my.meta)
-    
+
     my.c_type = go_derive_c_type (my.implementation)
 
     for my.implementation.interface
@@ -2650,7 +2686,7 @@ function go_finalize_implementation_helper_modules (go_project, meta)
 
     my.helper_class = go_get_implementation_helper_struct (my.go_project, my.meta)
 
-    for my.helper_class.go_func
+    for my.helper_class.go_func where is_true(go_func.is_primary)
         go_func->go_code.temp_code += format_left ("\
             default:
                 return nil, &$(go_derive_enum_status_name (my.go_project):){-1,\"Unexpected C implementation cast to the Go implementation.\"}
@@ -2660,7 +2696,7 @@ function go_finalize_implementation_helper_modules (go_project, meta)
         go_func->go_code. = go_func->go_code.temp_code
         go_func->go_code.temp_code = # undefined
     endfor
-    
+
     new go_module to my.go_project
         . = "/* Helper. */"
         .name = "helper"
@@ -2678,7 +2714,7 @@ function go_finalize_implementation_helper_modules (go_project, meta)
         for my.go_project.go_import
             copy go_import to go_module
         endfor
-        
+
         go_create_import ("unsafe", "unsafe", go_module)
 
         new go_struct to go_module
@@ -2688,7 +2724,7 @@ function go_finalize_implementation_helper_modules (go_project, meta)
             new go_func to go_struct
                 .name = "BytesToBytePtr"
                 .is_static = "1"
-        
+
                 new go_argument to go_func
                     .name = "data"
                     .type = "[]byte"
@@ -2709,7 +2745,7 @@ function go_finalize_implementation_helper_modules (go_project, meta)
             new go_func to go_struct
                 .name = "WrapData"
                 .is_static = "1"
-        
+
                 new go_argument to go_func
                     .name = "data"
                     .type = "[]byte"
@@ -2732,7 +2768,7 @@ function go_finalize_implementation_helper_modules (go_project, meta)
             new go_func to go_struct
                 .name = "ExtractData"
                 .is_static = "1"
-        
+
                 new go_argument to go_func
                     .name = "data"
                     .type = "C.vsc_data_t"
@@ -2758,7 +2794,7 @@ function go_finalize_implementation_helper_modules (go_project, meta)
         new go_struct to go_module
             .name = "buffer"
             .visibility = "private"
-            
+
             new go_field to go_struct
                 .name = "memory"
                 .type = "[]byte"
@@ -2779,7 +2815,7 @@ function go_finalize_implementation_helper_modules (go_project, meta)
                 .is_static = "1"
                 .is_skip_struct_name = "1"
                 .throws = "1"
-        
+
                 new go_argument to go_func
                     .name = "cap"
                     .type = "int"
@@ -2886,7 +2922,7 @@ function go_finalize_implementation_helper_modules (go_project, meta)
             copy go_import to go_module
         endfor
     endnew
-    
+
     go_create_context_module (my.go_project, my.meta)
 endfunction
 

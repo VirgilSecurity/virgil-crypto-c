@@ -1,0 +1,58 @@
+<class name="ratchet pb utils" scope="internal" context="internal">
+    Utils class for working with protobug.
+
+    <require header="pb.h" scope="public"/>
+    <require header="pb_decode.h" scope="private"/>
+    <require header="pb_encode.h" scope="private"/>
+
+    <require class="simple alg info" project="foundation"/>
+
+    <method name="serialize data" is_static="1">
+        <argument name="data" class="data"/>
+        <argument name="pb buffer" class="pb_bytes_array_t" library="nanopb" access="disown"/>
+    </method>
+
+    <method name="serialize buffer" is_static="1">
+        <argument name="buffer" class="buffer" project="common"/>
+        <argument name="pb buffer" class="pb_bytes_array_t" library="nanopb" access="disown"/>
+    </method>
+
+    <method name="deserialize buffer" is_static="1">
+        <argument name="pb buffer" class="pb_bytes_array_t" library="nanopb"/>
+
+        <return class="buffer" project="common"/>
+    </method>
+
+    <method name="buffer to data" is_static="1">
+        <argument name="pb buffer" class="pb_bytes_array_t" library="nanopb"/>
+
+        <return class="data" project="common"/>
+    </method>
+
+    <method name="serialize public key" is_static="1">
+        <argument name="key" interface="public key" project="foundation"/>
+        <argument name="pb buffer" class="pb_bytes_array_t" library="nanopb" access="disown"/>
+    </method>
+
+    <method name="deserialize public key" is_static="1">
+        <argument name="round5" class="round5" project="foundation" access="readwrite"/>
+        <argument name="pb buffer" class="pb_bytes_array_t" library="nanopb"/>
+        <argument name="public key" interface="public key" project="foundation" access="disown"/>
+
+        <return enum="status"/>
+    </method>
+
+    <method name="serialize private key" is_static="1">
+        <argument name="key" interface="private key" project="foundation"/>
+        <argument name="pb buffer" class="pb_bytes_array_t" library="nanopb" access="disown"/>
+    </method>
+
+    <method name="deserialize private key" is_static="1">
+        <argument name="round5" class="round5" project="foundation" access="readwrite"/>
+        <argument name="pb buffer" class="pb_bytes_array_t" library="nanopb"/>
+        <argument name="private key" interface="public key" project="foundation" access="disown"/>
+
+        <return enum="status"/>
+    </method>
+
+</class>

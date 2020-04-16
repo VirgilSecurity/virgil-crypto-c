@@ -11,18 +11,23 @@ message vscr_MessageKey {
 }
 
 message vscr_SenderChain {
-	required bytes private_key = 1;
-	required bytes public_key = 2;
-	required vscr_ChainKey chain_key = 3;
+	required bytes private_key_first = 1;
+	required bytes public_key_first = 2;
+	optional bytes private_key_second = 3;
+	optional bytes public_key_second = 4;
+	optional bytes encapsulated_key = 5;
+	required vscr_ChainKey chain_key = 6;
 }
 
 message vscr_ReceiverChain {
-	required bytes public_key = 1;
-	required vscr_ChainKey chain_key = 2;
+	required bytes public_key_id = 1;
+	required bytes public_key_first = 2;
+	optional bytes public_key_second = 3;
+	required vscr_ChainKey chain_key = 4;
 }
 
 message vscr_SkippedMessageKey {
-	required bytes public_key = 1;
+	required bytes public_key_id = 1;
 	repeated vscr_MessageKey message_keys = 2;
 }
 
@@ -36,17 +41,29 @@ message vscr_Ratchet {
 	optional vscr_ReceiverChain receiver_chain = 3;
 	required bytes root_key = 4;
 	required vscr_SkippedMessages skipped_messages = 5;
+	required bool enable_post_quantum = 6;
+}
+
+message vscr_SessionPqcInfo {
+	required bytes encapsulated_key1 = 1;
+	required bytes encapsulated_key2 = 2;
+	optional bytes encapsulated_key3 = 3;
+	required bytes decapsulated_keys_signature = 4;
 }
 
 message vscr_Session {
 	required uint32 version = 1;
 	required bool received_first_response = 2;
 	required bool is_initiator = 3;
-	required bytes sender_identity_key = 4;
-	required bytes sender_ephemeral_key = 5;
-	required bytes receiver_long_term_key = 6;
-	optional bytes receiver_one_time_key = 7;
-	required vscr_Ratchet ratchet = 8;
+	required bool enable_post_quantum = 4;
+	required bool receiver_has_one_time_public_key = 5;
+	optional bytes sender_identity_key_id = 6;
+	optional bytes sender_ephemeral_key = 7;
+	optional bytes receiver_identity_key_id = 8;
+	optional bytes receiver_long_term_key_id = 9;
+	optional bytes receiver_one_time_key_id = 10;
+	optional vscr_SessionPqcInfo pqc_info = 11;
+	required vscr_Ratchet ratchet = 12;
 }
 
 message vscr_ParticipantEpoch {

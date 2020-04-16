@@ -103,6 +103,14 @@ class Status(object):
     ERROR_SIMULTANEOUS_GROUP_USER_OPERATION = -28
     # Myself is included in info.
     ERROR_MYSELF_IS_INCLUDED_IN_INFO = -29
+    # Round5 error.
+    ERROR_ROUND5 = -30
+    # Falcon error.
+    ERROR_FALCON = -31
+    # Decaps signature is invalid.
+    ERROR_DECAPS_SIGNATURE_INVALID = -32
+    # Error importing round5 key.
+    ERROR_ROUND5_IMPORT_KEY = -33
 
     STATUS_DICT = {
         0: "No errors was occurred.",
@@ -134,7 +142,11 @@ class Status(object):
         -26: "Epoch not found.",
         -27: "Session id mismatch.",
         -28: "Simultaneous group user operation.",
-        -29: "Myself is included in info."
+        -29: "Myself is included in info.",
+        -30: "Round5 error.",
+        -31: "Falcon error.",
+        -32: "Decaps signature is invalid.",
+        -33: "Error importing round5 key."
     }
 
     @classmethod

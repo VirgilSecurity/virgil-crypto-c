@@ -35,14 +35,14 @@
 package phe
 
 import (
-	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"testing"
 	"virgil/foundation"
 )
 
 func TestNewPheCipher(t *testing.T) {
 	cipher := NewPheCipher()
-    assert.NotNil(t, cipher)
+	require.NotNil(t, cipher)
 
 	cipher.Delete()
 }
@@ -52,52 +52,52 @@ func TestNewPheCipherWithCtx(t *testing.T) {
 	defer cipher.Delete()
 
 	newCipher := newPheCipherWithCtx(cipher.cCtx)
-	assert.NotNil(t, newCipher)
-	assert.Equal(t, cipher.cCtx, newCipher.cCtx)
+	require.NotNil(t, newCipher)
+	require.Equal(t, cipher.cCtx, newCipher.cCtx)
 }
 
 func TestFullFlowShouldSucceed(t *testing.T) {
 	plainText := []byte("plain text")
 	accountKey := []byte("Gjg-Ap7Qa5BjpuZ22FhZsairw^ZS5KjC") // 32 bytes string
-	assert.Equal(t, 32, len(accountKey))
+	require.Equal(t, 32, len(accountKey))
 
 	cipher := NewPheCipher()
 	defer cipher.Delete()
 	err := cipher.SetupDefaults()
-	assert.Nil(t, err)
+	require.Nil(t, err)
 
 	encryptedData, err := cipher.Encrypt(plainText, accountKey)
-	assert.Nil(t, err)
+	require.Nil(t, err)
 
 	decryptedData, err := cipher.Decrypt(encryptedData, accountKey)
-	assert.Nil(t, err)
+	require.Nil(t, err)
 
-	assert.Equal(t, plainText, decryptedData)
+	require.Equal(t, plainText, decryptedData)
 }
 
 func TestFullFlowShouldSucceed_customRandom(t *testing.T) {
 	plainText := []byte("plain text")
 	accountKey := []byte("Gjg-Ap7Qa5BjpuZ22FhZsairw^ZS5KjC") // 32 bytes string
-	assert.Equal(t, 32, len(accountKey))
+	require.Equal(t, 32, len(accountKey))
 
 	random := foundation.NewCtrDrbg()
 	err := random.SetupDefaults()
-	assert.Nil(t, err)
+	require.Nil(t, err)
 
 	cipher := NewPheCipher()
 	defer cipher.Delete()
 
 	cipher.SetRandom(random)
 	//err := cipher.SetupDefaults()
-	//assert.Nil(t, err)
+	//require.Nil(t, err)
 
 	encryptedData, err := cipher.Encrypt(plainText, accountKey)
-	assert.Nil(t, err)
+	require.Nil(t, err)
 
 	decryptedData, err := cipher.Decrypt(encryptedData, accountKey)
-	assert.Nil(t, err)
+	require.Nil(t, err)
 
-	assert.Equal(t, plainText, decryptedData)
+	require.Equal(t, plainText, decryptedData)
 }
 
 func TestFullFlowWrongKeyShouldFail(t *testing.T) {
@@ -108,13 +108,13 @@ func TestFullFlowWrongKeyShouldFail(t *testing.T) {
 	cipher := NewPheCipher()
 	defer cipher.Delete()
 	err := cipher.SetupDefaults()
-	assert.Nil(t, err)
+	require.Nil(t, err)
 
 	encryptedData, err := cipher.Encrypt(plainText, accountKey)
-	assert.Nil(t, err)
+	require.Nil(t, err)
 
 	decryptedData, err := cipher.Decrypt(encryptedData, wrongAccountKey)
-	assert.Nil(t, decryptedData)
-	assert.NotNil(t, err)
-	//FIXME assert.Equal(t, PHE_ERROR_ERROR_AES_FAILED, err.(PheError).Code)
+	require.Nil(t, decryptedData)
+	require.NotNil(t, err)
+	//FIXME require.Equal(t, PHE_ERROR_ERROR_AES_FAILED, err.(PheError).Code)
 }

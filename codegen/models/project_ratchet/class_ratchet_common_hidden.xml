@@ -1,8 +1,13 @@
 <class name="ratchet common hidden" context="none" scope="private">
-    <constant name="message version" value="1"/>
+    <constant name="message version" value="2"/>
     <constant name="group message version" value="1"/>
-    <constant name="session version" value="1"/>
+    <constant name="session version" value="2"/>
     <constant name="group session version" value="1"/>
+
+    <constant name="falcon signature len" value="809"/>
+    <constant name="round5 encapsulated key len" value="1285"/>
+    <constant name="round5 public key len" value="978"/>
+    <constant name="round5 shared key len" value="32"/>
 
     <constant name="shared key len" value="32"/>
     <constant name="key len" value="32"/>
@@ -21,7 +26,7 @@
     <constant name="max cipher text len" value="32768"/>
 
     <constant name="max group session len" value="4191503"/>
-    <constant name="max session len" value="42531"/>
+    <constant name="max session len" value="46622"/>
 
     <require header="pb_decode.h" scope="public"/>
     <require header="pb_encode.h" scope="public"/>

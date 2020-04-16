@@ -35,6 +35,10 @@
 #ifndef VIRGIL_CRYPTO_TEST_UTILS_RATCHET_H
 #define VIRGIL_CRYPTO_TEST_UTILS_RATCHET_H
 
+#include <virgil/crypto/foundation/vscf_key_provider.h>
+#include <vscr_ratchet_receiver_chain.h>
+#include <vscr_ratchet_sender_chain.h>
+#include <vscr_ratchet.h>
 #include "virgil/crypto/common/vsc_buffer.h"
 #include "virgil/crypto/foundation/vscf_ctr_drbg.h"
 #include "vscr_ratchet_session.h"
@@ -52,8 +56,17 @@ void generate_permutation(vscf_ctr_drbg_t *rng, size_t n, size_t *buffer);
 void generate_PKCS8_ed_keypair(vscf_ctr_drbg_t *rng, vsc_buffer_t **priv, vsc_buffer_t **pub);
 void generate_PKCS8_curve_keypair(vscf_ctr_drbg_t *rng, vsc_buffer_t **priv, vsc_buffer_t **pub);
 void generate_random_participant_id(vscf_ctr_drbg_t *rng, vsc_buffer_t **id);
+vscf_impl_t *
+generate_identity_private_key(vscf_key_provider_t *key_provider, bool enable_pqc);
+vscf_impl_t *
+generate_ephemeral_private_key(vscf_key_provider_t *key_provider, bool enable_pqc);
+void
+generate_falcon_keypair(vscf_ctr_drbg_t *rng, vscf_impl_t **priv, vscf_impl_t **pub);
+void
+generate_round5_keypair(vscf_ctr_drbg_t *rng, vscf_impl_t **priv, vscf_impl_t **pub);
 void generate_raw_keypair(vscf_ctr_drbg_t *rng, vsc_buffer_t **priv, vsc_buffer_t **pub, bool curve25519);
-void initialize(vscf_ctr_drbg_t *rng, vscr_ratchet_session_t **session_alice, vscr_ratchet_session_t **session_bob, bool enable_one_time, bool should_restore);
+void generate_random_key_id(vscf_ctr_drbg_t *rng, vscr_ratchet_key_id_t id);
+void initialize(vscf_ctr_drbg_t *rng, vscr_ratchet_session_t **session_alice, vscr_ratchet_session_t **session_bob, bool enable_one_time, bool enable_pqc, bool should_restore);
 void encrypt_decrypt__100_plain_texts_random_order(vscf_ctr_drbg_t *rng, vscr_ratchet_session_t *session_alice, vscr_ratchet_session_t *session_bob);
 void encrypt_decrypt__100_plain_texts_random_order_with_producers(vscf_ctr_drbg_t *rng, vscr_ratchet_session_t **session_alice, vscr_ratchet_session_t **session_bob, bool should_restore);
 void restore_session(vscf_ctr_drbg_t *rng, vscr_ratchet_session_t **session);
@@ -65,10 +78,21 @@ void remove_random_members(vscf_ctr_drbg_t *rng, size_t size, size_t remove_size
 void encrypt_decrypt(vscf_ctr_drbg_t *rng, size_t group_size, size_t number_of_iterations, vscr_ratchet_group_session_t **sessions, double lost_rate, double distribution_factor, double generate_distribution, vsc_buffer_t **priv);
 void restore_group_session(vscf_ctr_drbg_t *rng, vscr_ratchet_group_session_t **session, vsc_buffer_t *priv);
 
+vscr_ratchet_t *generate_full_ratchet(vscf_ctr_drbg_t *rng);
+vscf_impl_t *generate_public_key(vscf_ctr_drbg_t *rng);
+void
+generate_random_c(vscf_ctr_drbg_t *rng, byte *data, size_t len);
+vscr_ratchet_session_t *generate_full_session(vscf_ctr_drbg_t *rng);
+vsc_buffer_t *
+generate_random_buff(vscf_ctr_drbg_t *rng, size_t len);
+vscr_ratchet_receiver_chain_t *generate_full_receiver_chain(vscf_ctr_drbg_t *rng);
+vscr_ratchet_sender_chain_t *generate_full_sender_chain(vscf_ctr_drbg_t *rng);
 vscr_ratchet_message_key_t *
-generate_full_message_key(void);
+generate_full_message_key(vscf_ctr_drbg_t *rng);
+void
+generate_full_chain_key_s(vscf_ctr_drbg_t *rng, vscr_ratchet_chain_key_t *chain_key);
 vscr_ratchet_chain_key_t *
-generate_full_chain_key(void);
+generate_full_chain_key(vscf_ctr_drbg_t *rng);
 vscr_ratchet_skipped_messages_root_node_t *
 generate_full_root_node(vscf_ctr_drbg_t *rng, bool max);
 vscr_ratchet_group_participant_epoch_t * generate_full_epoch(vscf_ctr_drbg_t *rng, bool max);

@@ -42,7 +42,7 @@ class Common(object):
     # Max plain text length allowed to be encrypted
     MAX_PLAIN_TEXT_LEN = 30000
     # Max message length
-    MAX_MESSAGE_LEN = 32975
+    MAX_MESSAGE_LEN = 37578
     # Key pair id length
     KEY_ID_LEN = 8
     # Participant id length

@@ -44,19 +44,28 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#ifndef VSCR_RATCHET_X3DH_H_INCLUDED
-#define VSCR_RATCHET_X3DH_H_INCLUDED
+
+//  @description
+// --------------------------------------------------------------------------
+//  Class 'ratchet xxdh' types definition.
+// --------------------------------------------------------------------------
+
+#ifndef VSCR_RATCHET_XXDH_DEFS_H_INCLUDED
+#define VSCR_RATCHET_XXDH_DEFS_H_INCLUDED
 
 #include "vscr_library.h"
-#include "vscr_ratchet_typedefs.h"
-#include "vscr_status.h"
+#include "vscr_atomic.h"
 
-#if !VSCR_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <virgil/crypto/common/vsc_data.h>
+#if !VSCR_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
+#   include <virgil/crypto/foundation/vscf_impl.h>
+#   include <virgil/crypto/foundation/vscf_falcon.h>
+#   include <virgil/crypto/foundation/vscf_round5.h>
 #endif
 
-#if VSCR_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <VSCCommon/vsc_data.h>
+#if VSCR_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
+#   include <VSCFoundation/vscf_round5.h>
+#   include <VSCFoundation/vscf_impl.h>
+#   include <VSCFoundation/vscf_falcon.h>
 #endif
 
 // clang-format on
@@ -74,24 +83,27 @@ extern "C" {
 //  Generated section start.
 // --------------------------------------------------------------------------
 
-VSCR_PUBLIC vscr_status_t
-vscr_ratchet_x3dh_compute_initiator_x3dh_secret(const vscr_ratchet_private_key_t sender_identity_private_key,
-        const vscr_ratchet_private_key_t sender_ephemeral_private_key,
-        const vscr_ratchet_public_key_t receiver_identity_public_key,
-        const vscr_ratchet_public_key_t receiver_long_term_public_key, bool receiver_has_one_time_key,
-        const vscr_ratchet_public_key_t receiver_one_time_public_key,
-        vscr_ratchet_symmetric_key_t shared_key) VSCR_NODISCARD;
+//
+//  Handle 'ratchet xxdh' context.
+//
+struct vscr_ratchet_xxdh_t {
+    //
+    //  Function do deallocate self context.
+    //
+    vscr_dealloc_fn self_dealloc_cb;
+    //
+    //  Reference counter.
+    //
+    VSCR_ATOMIC size_t refcnt;
+    //
+    //  Dependency to the interface 'random'.
+    //
+    vscf_impl_t *rng;
 
-VSCR_PUBLIC vscr_status_t
-vscr_ratchet_x3dh_compute_responder_x3dh_secret(const vscr_ratchet_public_key_t sender_identity_public_key,
-        const vscr_ratchet_public_key_t sender_ephemeral_public_key,
-        const vscr_ratchet_private_key_t receiver_identity_private_key,
-        const vscr_ratchet_private_key_t receiver_long_term_private_key, bool receiver_has_one_time_key,
-        const vscr_ratchet_private_key_t receiver_one_time_private_key,
-        vscr_ratchet_symmetric_key_t shared_key) VSCR_NODISCARD;
+    vscf_round5_t *round5;
 
-VSCR_PUBLIC void
-vscr_ratchet_x3dh_derive_key(vsc_data_t shared_secret, vscr_ratchet_symmetric_key_t shared_key);
+    vscf_falcon_t *falcon;
+};
 
 
 // --------------------------------------------------------------------------
@@ -107,5 +119,5 @@ vscr_ratchet_x3dh_derive_key(vsc_data_t shared_secret, vscr_ratchet_symmetric_ke
 
 
 //  @footer
-#endif // VSCR_RATCHET_X3DH_H_INCLUDED
+#endif // VSCR_RATCHET_XXDH_DEFS_H_INCLUDED
 //  @end

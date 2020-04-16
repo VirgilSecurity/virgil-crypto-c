@@ -241,7 +241,6 @@ vscr_ratchet_group_message_init_ctx(vscr_ratchet_group_message_t *self) {
 
     self->message_pb = msg;
     self->message_pb.version = vscr_ratchet_common_hidden_GROUP_MESSAGE_VERSION;
-    self->key_id = vscr_ratchet_key_id_new();
 }
 
 //
@@ -256,8 +255,6 @@ vscr_ratchet_group_message_cleanup_ctx(vscr_ratchet_group_message_t *self) {
 
     vscr_dealloc(self->header_pb);
     pb_release(vscr_GroupMessage_fields, &self->message_pb);
-
-    vscr_ratchet_key_id_destroy(&self->key_id);
 }
 
 //

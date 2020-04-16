@@ -35,13 +35,13 @@
 package ratchet
 
 import (
-    "github.com/stretchr/testify/assert"
+    "github.com/stretchr/testify/require"
     "testing"
 )
 
 func TestNewRatchetMessage(t *testing.T) {
     ratchetMessage := NewRatchetMessage()
-    assert.NotNil(t, ratchetMessage)
+    require.NotNil(t, ratchetMessage)
 
     ratchetMessage.Delete()
 }
@@ -51,8 +51,8 @@ func TestRatchetMessage_GetLongTermPublicKey(t *testing.T) {
     defer ratchetMessage.Delete()
 
     key := ratchetMessage.GetLongTermPublicKey()
-    assert.NotNil(t, key)
-    assert.Equal(t, 0, len(key))
+    require.NotNil(t, key)
+    require.Equal(t, 0, len(key))
 }
 
 func TestRatchetMessage_GetOneTimePublicKey(t *testing.T) {
@@ -60,6 +60,6 @@ func TestRatchetMessage_GetOneTimePublicKey(t *testing.T) {
     defer ratchetMessage.Delete()
 
     key := ratchetMessage.GetOneTimePublicKey()
-    assert.NotNil(t, key)
-    assert.Equal(t, 0, len(key))
+    require.NotNil(t, key)
+    require.Equal(t, 0, len(key))
 }

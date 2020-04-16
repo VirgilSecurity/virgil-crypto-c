@@ -86,7 +86,7 @@ func (obj *EccPrivateKey) AlgInfo() (AlgInfo, error) {
 
     runtime.KeepAlive(obj)
 
-    return FoundationImplementationWrapAlgInfo(proxyResult) /* r4 */
+    return FoundationImplementationWrapAlgInfoCopy(proxyResult) /* r4.1 */
 }
 
 /*

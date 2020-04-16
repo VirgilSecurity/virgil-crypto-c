@@ -36,22 +36,22 @@ package foundation
 
 import (
 	b64 "encoding/base64"
-	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"testing"
 )
 
 func TestNewKeyProvider(t *testing.T) {
 	keyProvider := NewKeyProvider()
 
-	assert.NotNil(t, keyProvider)
+	require.NotNil(t, keyProvider)
 }
 
 func TestKeyProvider_ImportPrivateKey_EmptyData(t *testing.T) {
 	keyProvider := newKeyProvider()
 
 	importedKey, err := keyProvider.ImportPrivateKey([]byte{})
-	assert.NotNil(t, err)
-	assert.Nil(t, importedKey)
+	require.NotNil(t, err)
+	require.Nil(t, importedKey)
 }
 
 func TestKeyProvider_ImportPrivateKey_WrongData(t *testing.T) {
@@ -59,8 +59,8 @@ func TestKeyProvider_ImportPrivateKey_WrongData(t *testing.T) {
 	keyProvider := newKeyProvider()
 
 	importedKey, err := keyProvider.ImportPrivateKey(wrongKeyData)
-	assert.NotNil(t, err)
-	assert.Nil(t, importedKey)
+	require.NotNil(t, err)
+	require.Nil(t, importedKey)
 }
 
 func TestKeyProvider_ImportPrivateKey(t *testing.T) {
@@ -68,18 +68,18 @@ func TestKeyProvider_ImportPrivateKey(t *testing.T) {
 	keyProvider := newKeyProvider()
 
 	privateKey, err := keyProvider.ImportPrivateKey(keyData)
-	assert.Nil(t, err)
-	assert.NotNil(t, privateKey)
+	require.Nil(t, err)
+	require.NotNil(t, privateKey)
 
 	iKey, _ := privateKey.(Key)
-	assert.True(t, iKey.IsValid())
+	require.True(t, iKey.IsValid())
 
 	exportedPrivateKeyData, err := keyProvider.ExportPrivateKey(privateKey)
-	assert.Nil(t, err)
+	require.Nil(t, err)
 
 	pk, err := keyProvider.ImportPrivateKey(exportedPrivateKeyData)
-	assert.Nil(t, err)
+	require.Nil(t, err)
 
 	importedPrivateKey := pk.(Key)
-	assert.True(t, importedPrivateKey.IsValid())
+	require.True(t, importedPrivateKey.IsValid())
 }

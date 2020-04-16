@@ -83,15 +83,29 @@ import VirgilCryptoFoundation
     }
 
     /// Returns long-term public key, if message is prekey message.
-    @objc public func getLongTermPublicKey() -> Data {
-        let proxyResult = vscr_ratchet_message_get_long_term_public_key(self.c_ctx)
+    @objc public func getSenderIdentityKeyId() -> Data {
+        let proxyResult = vscr_ratchet_message_get_sender_identity_key_id(self.c_ctx)
+
+        return Data.init(bytes: proxyResult.bytes, count: proxyResult.len)
+    }
+
+    /// Returns long-term public key, if message is prekey message.
+    @objc public func getReceiverIdentityKeyId() -> Data {
+        let proxyResult = vscr_ratchet_message_get_receiver_identity_key_id(self.c_ctx)
+
+        return Data.init(bytes: proxyResult.bytes, count: proxyResult.len)
+    }
+
+    /// Returns long-term public key, if message is prekey message.
+    @objc public func getReceiverLongTermKeyId() -> Data {
+        let proxyResult = vscr_ratchet_message_get_receiver_long_term_key_id(self.c_ctx)
 
         return Data.init(bytes: proxyResult.bytes, count: proxyResult.len)
     }
 
     /// Returns one-time public key, if message is prekey message and if one-time key is present, empty result otherwise.
-    @objc public func getOneTimePublicKey() -> Data {
-        let proxyResult = vscr_ratchet_message_get_one_time_public_key(self.c_ctx)
+    @objc public func getReceiverOneTimeKeyId() -> Data {
+        let proxyResult = vscr_ratchet_message_get_receiver_one_time_key_id(self.c_ctx)
 
         return Data.init(bytes: proxyResult.bytes, count: proxyResult.len)
     }

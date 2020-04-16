@@ -81,19 +81,33 @@ class VscrRatchetSession(object):
         vscr_ratchet_session_setup_defaults.restype = c_int
         return vscr_ratchet_session_setup_defaults(ctx)
 
-    def vscr_ratchet_session_initiate(self, ctx, sender_identity_private_key, receiver_identity_public_key, receiver_long_term_public_key, receiver_one_time_public_key):
+    def vscr_ratchet_session_initiate(self, ctx, sender_identity_private_key, sender_identity_key_id, receiver_identity_public_key, receiver_identity_key_id, receiver_long_term_public_key, receiver_long_term_key_id, receiver_one_time_public_key, receiver_one_time_key_id, enable_post_quantum):
         """Initiates session"""
         vscr_ratchet_session_initiate = self._lib.vscr_ratchet_session_initiate
-        vscr_ratchet_session_initiate.argtypes = [POINTER(vscr_ratchet_session_t), vsc_data_t, vsc_data_t, vsc_data_t, vsc_data_t]
+        vscr_ratchet_session_initiate.argtypes = [POINTER(vscr_ratchet_session_t), POINTER(vscf_impl_t), vsc_data_t, POINTER(vscf_impl_t), vsc_data_t, POINTER(vscf_impl_t), vsc_data_t, POINTER(vscf_impl_t), vsc_data_t, c_bool]
         vscr_ratchet_session_initiate.restype = c_int
-        return vscr_ratchet_session_initiate(ctx, sender_identity_private_key, receiver_identity_public_key, receiver_long_term_public_key, receiver_one_time_public_key)
+        return vscr_ratchet_session_initiate(ctx, sender_identity_private_key, sender_identity_key_id, receiver_identity_public_key, receiver_identity_key_id, receiver_long_term_public_key, receiver_long_term_key_id, receiver_one_time_public_key, receiver_one_time_key_id, enable_post_quantum)
 
-    def vscr_ratchet_session_respond(self, ctx, sender_identity_public_key, receiver_identity_private_key, receiver_long_term_private_key, receiver_one_time_private_key, message):
+    def vscr_ratchet_session_initiate_no_one_time_key(self, ctx, sender_identity_private_key, sender_identity_key_id, receiver_identity_public_key, receiver_identity_key_id, receiver_long_term_public_key, receiver_long_term_key_id, enable_post_quantum):
+        """Initiates session"""
+        vscr_ratchet_session_initiate_no_one_time_key = self._lib.vscr_ratchet_session_initiate_no_one_time_key
+        vscr_ratchet_session_initiate_no_one_time_key.argtypes = [POINTER(vscr_ratchet_session_t), POINTER(vscf_impl_t), vsc_data_t, POINTER(vscf_impl_t), vsc_data_t, POINTER(vscf_impl_t), vsc_data_t, c_bool]
+        vscr_ratchet_session_initiate_no_one_time_key.restype = c_int
+        return vscr_ratchet_session_initiate_no_one_time_key(ctx, sender_identity_private_key, sender_identity_key_id, receiver_identity_public_key, receiver_identity_key_id, receiver_long_term_public_key, receiver_long_term_key_id, enable_post_quantum)
+
+    def vscr_ratchet_session_respond(self, ctx, sender_identity_public_key, receiver_identity_private_key, receiver_long_term_private_key, receiver_one_time_private_key, message, enable_post_quantum):
         """Responds to session initiation"""
         vscr_ratchet_session_respond = self._lib.vscr_ratchet_session_respond
-        vscr_ratchet_session_respond.argtypes = [POINTER(vscr_ratchet_session_t), vsc_data_t, vsc_data_t, vsc_data_t, vsc_data_t, POINTER(vscr_ratchet_message_t)]
+        vscr_ratchet_session_respond.argtypes = [POINTER(vscr_ratchet_session_t), POINTER(vscf_impl_t), POINTER(vscf_impl_t), POINTER(vscf_impl_t), POINTER(vscf_impl_t), POINTER(vscr_ratchet_message_t), c_bool]
         vscr_ratchet_session_respond.restype = c_int
-        return vscr_ratchet_session_respond(ctx, sender_identity_public_key, receiver_identity_private_key, receiver_long_term_private_key, receiver_one_time_private_key, message)
+        return vscr_ratchet_session_respond(ctx, sender_identity_public_key, receiver_identity_private_key, receiver_long_term_private_key, receiver_one_time_private_key, message, enable_post_quantum)
+
+    def vscr_ratchet_session_respond_no_one_time_key(self, ctx, sender_identity_public_key, receiver_identity_private_key, receiver_long_term_private_key, message, enable_post_quantum):
+        """Responds to session initiation"""
+        vscr_ratchet_session_respond_no_one_time_key = self._lib.vscr_ratchet_session_respond_no_one_time_key
+        vscr_ratchet_session_respond_no_one_time_key.argtypes = [POINTER(vscr_ratchet_session_t), POINTER(vscf_impl_t), POINTER(vscf_impl_t), POINTER(vscf_impl_t), POINTER(vscr_ratchet_message_t), c_bool]
+        vscr_ratchet_session_respond_no_one_time_key.restype = c_int
+        return vscr_ratchet_session_respond_no_one_time_key(ctx, sender_identity_public_key, receiver_identity_private_key, receiver_long_term_private_key, message, enable_post_quantum)
 
     def vscr_ratchet_session_is_initiator(self, ctx):
         """Returns flag that indicates is this session was initiated or responded"""
@@ -101,6 +115,13 @@ class VscrRatchetSession(object):
         vscr_ratchet_session_is_initiator.argtypes = [POINTER(vscr_ratchet_session_t)]
         vscr_ratchet_session_is_initiator.restype = c_bool
         return vscr_ratchet_session_is_initiator(ctx)
+
+    def vscr_ratchet_session_is_pqc_enabled(self, ctx):
+        """Returns flag that indicates if session is post-quantum"""
+        vscr_ratchet_session_is_pqc_enabled = self._lib.vscr_ratchet_session_is_pqc_enabled
+        vscr_ratchet_session_is_pqc_enabled.argtypes = [POINTER(vscr_ratchet_session_t)]
+        vscr_ratchet_session_is_pqc_enabled.restype = c_bool
+        return vscr_ratchet_session_is_pqc_enabled(ctx)
 
     def vscr_ratchet_session_received_first_response(self, ctx):
         """Returns true if at least 1 response was successfully decrypted, false - otherwise"""

@@ -75,11 +75,6 @@ class EccPublicKey(Key, PublicKey):
         result = self._lib_vscf_ecc_public_key.vscf_ecc_public_key_bitlen(self.ctx)
         return result
 
-    def impl_tag(self):
-        """Return tag of an associated algorithm that can handle this key."""
-        result = self._lib_vscf_ecc_public_key.vscf_ecc_public_key_impl_tag(self.ctx)
-        return result
-
     def is_valid(self):
         """Check that key is valid.
         Note, this operation can be slow."""

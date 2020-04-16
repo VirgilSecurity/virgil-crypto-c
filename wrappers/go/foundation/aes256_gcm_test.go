@@ -36,14 +36,14 @@ package foundation
 
 import (
 	b64 "encoding/base64"
-	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"testing"
 )
 
 func TestNewAes256Gcm(t *testing.T) {
 	aes256Gcm := NewAes256Gcm()
 
-	assert.NotNil(t, aes256Gcm)
+	require.NotNil(t, aes256Gcm)
 }
 
 func TestAes256Gcm_AuthEncrypt(t *testing.T) {
@@ -60,9 +60,9 @@ func TestAes256Gcm_AuthEncrypt(t *testing.T) {
 
 	out, tag, err := aes256Gcm.AuthEncrypt(data, authData)
 
-	assert.Nil(t, err)
-	assert.Equal(t, expectedOut, out)
-	assert.Equal(t, expectedTag, tag)
+	require.Nil(t, err)
+	require.Equal(t, expectedOut, out)
+	require.Equal(t, expectedTag, tag)
 }
 
 func TestAes256Gcm_Encrypt(t *testing.T) {
@@ -77,9 +77,9 @@ func TestAes256Gcm_Encrypt(t *testing.T) {
 
 	encryptedData, err := aes256Gcm.Encrypt(data)
 
-	assert.Nil(t, err)
-	assert.NotNil(t, encryptedData)
-	assert.Equal(t, expectedEncryptedData, encryptedData)
+	require.Nil(t, err)
+	require.NotNil(t, encryptedData)
+	require.Equal(t, expectedEncryptedData, encryptedData)
 }
 
 func TestAes256Gcm_Encrypt_WithCipher(t *testing.T) {
@@ -103,12 +103,12 @@ func TestAes256Gcm_Encrypt_WithCipher(t *testing.T) {
 		startIndex += blockLen
 	}
 	finishData, err := aes256Gcm.Finish()
-	assert.Nil(t, err)
+	require.Nil(t, err)
 
 	encryptedData := append(updateData, finishData...)
 
-	assert.NotNil(t, encryptedData)
-	assert.Equal(t, expectedEncryptedData, encryptedData)
+	require.NotNil(t, encryptedData)
+	require.Equal(t, expectedEncryptedData, encryptedData)
 }
 
 func TestAes256Gcm_Decrypt(t *testing.T) {
@@ -123,9 +123,9 @@ func TestAes256Gcm_Decrypt(t *testing.T) {
 
 	decryptedData, err := aes256Gcm.Decrypt(encryptedData)
 
-	assert.Nil(t, err)
-	assert.NotNil(t, decryptedData)
-	assert.Equal(t, expectedDecryptedData, decryptedData)
+	require.Nil(t, err)
+	require.NotNil(t, decryptedData)
+	require.Equal(t, expectedDecryptedData, decryptedData)
 }
 
 func TestAes256Gcm_Decrypt_WitCipher(t *testing.T) {
@@ -149,35 +149,35 @@ func TestAes256Gcm_Decrypt_WitCipher(t *testing.T) {
 		startIndex += blockLen
 	}
 	finishData, err := aes256Gcm.Finish()
-	assert.Nil(t, err)
+	require.Nil(t, err)
 
 	decryptedData := append(updateData, finishData...)
 
-	assert.NotNil(t, decryptedData)
-	assert.Equal(t, expectedDecryptedData, decryptedData)
+	require.NotNil(t, decryptedData)
+	require.Equal(t, expectedDecryptedData, decryptedData)
 }
 
 func TestAes256Gcm_GetNonceLen(t *testing.T) {
 	aes256Gcm := NewAes256Gcm()
-	assert.Equal(t, TEST_AES256_GCM_NONCE_LEN, aes256Gcm.GetNonceLen())
+	require.Equal(t, TEST_AES256_GCM_NONCE_LEN, aes256Gcm.GetNonceLen())
 }
 
 func TestAes256Gcm_GetKeyLen(t *testing.T) {
 	aes256Gcm := NewAes256Gcm()
-	assert.Equal(t, TEST_AES256_GCM_KEY_LEN, aes256Gcm.GetKeyLen())
+	require.Equal(t, TEST_AES256_GCM_KEY_LEN, aes256Gcm.GetKeyLen())
 }
 
 func TestAes256Gcm_GetKeyBitLen(t *testing.T) {
 	aes256Gcm := NewAes256Gcm()
-	assert.Equal(t, TEST_AES256_GCM_KEY_BIT_LEN, aes256Gcm.GetKeyBitlen())
+	require.Equal(t, TEST_AES256_GCM_KEY_BIT_LEN, aes256Gcm.GetKeyBitlen())
 }
 
 func TestAes256Gcm_GetBlockLen(t *testing.T) {
 	aes256Gcm := NewAes256Gcm()
-	assert.Equal(t, TEST_AES256_GCM_BLOCK_LEN, aes256Gcm.GetBlockLen())
+	require.Equal(t, TEST_AES256_GCM_BLOCK_LEN, aes256Gcm.GetBlockLen())
 }
 
 func TestAes256Gcm_GetAuthTagLen(t *testing.T) {
 	aes256Gcm := NewAes256Gcm()
-	assert.Equal(t, TEST_AES256_GCM_AUTH_TAG_LEN, aes256Gcm.GetAuthTagLen())
+	require.Equal(t, TEST_AES256_GCM_AUTH_TAG_LEN, aes256Gcm.GetAuthTagLen())
 }
