@@ -112,6 +112,10 @@ ExternalProject_Add(round5-ext
                     -D "SOURCE_FILE=<SOURCE_DIR>/optimized/src/r5_parameter_sets.h"
                     -P "${CMAKE_CURRENT_LIST_DIR}/fix_global_non_extern_variables.cmake"
 
+            ${CMAKE_COMMAND}
+                    -D "SOURCE_FILE=<SOURCE_DIR>/optimized/src/r5_parameter_sets.h"
+                    -P "${CMAKE_CURRENT_LIST_DIR}/fix_warning_pragma_for_msvc.cmake"
+
         CMAKE_ARGS
             "${TRANSITIVE_ARGS}"
             "-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}"
@@ -151,7 +155,6 @@ set_property(TARGET round5
         PROPERTY INTERFACE_COMPILE_DEFINITIONS
             R5ND_5CCA_5d
             STANDALONE
-            __AVX2__ # hack
         )
 
 set_property(TARGET round5
