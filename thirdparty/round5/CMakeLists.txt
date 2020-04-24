@@ -40,28 +40,9 @@ if(NOT ROUND5_LIBRARY)
     message(STATUS "Skip building library 'round5' - option ROUND5_LIBRARY is OFF.")
 endif()
 
-#
-#  The optimized version is used for now.
-#  The reference implementation of the round5 can be built, however,
-#  the "foundation" library build will be broken.
-#
-set(ROUND5_OPTIMIZED YES)
-if(ROUND5_OPTIMIZED)
-    set(ROUND5_REFERENCE NO)
-else()
-    set(ROUND5_REFERENCE YES)
-endif()
-
 # ---------------------------------------------------------------------------
 #   Check dependencies
 # ---------------------------------------------------------------------------
-#
-# keccak
-#
-if(NOT TARGET XKCP::keccak)
-    message(FATAL_ERROR "Required library 'keccak' is not found - looking for target 'XKCP::keccak'.")
-endif()
-
 if(ROUND5_USE_MBEDTLS)
     #
     # mbedTLS
@@ -97,9 +78,9 @@ set(ROUND5_INSTALL_LOCATION ${CMAKE_CURRENT_BINARY_DIR}/round5)
 include(ExternalProject)
 ExternalProject_Add(round5-ext
         GIT_REPOSITORY
-            https://github.com/round5/code
+            https://github.com/VirgilSecurity/code
         GIT_TAG
-            24b9738b0e39ce2115cc6b1f639359f5f459bd3e
+            4c6a6544829892b2bc510bcf4897913029ded800
         GIT_CONFIG
             core.symlinks=true
         UPDATE_COMMAND
@@ -110,14 +91,9 @@ ExternalProject_Add(round5-ext
             #   Patch reference implementation.
             #
             ${CMAKE_COMMAND} -E copy_if_different
-                    "${CMAKE_CURRENT_LIST_DIR}/round5.reference.CMakeLists.txt"
-                    "<SOURCE_DIR>/reference/CMakeLists.txt" &&
-            ${CMAKE_COMMAND} -E copy_if_different
-                    "${CMAKE_CURRENT_LIST_DIR}/round5.reference.r5_dem_mbedtls.c"
-                    "<SOURCE_DIR>/reference/src/r5_dem_mbedtls.c" &&
-            ${CMAKE_COMMAND}
-                    -D "SOURCE_FILE=<SOURCE_DIR>/reference/src/r5_parameter_sets.h"
-                    -P "${CMAKE_CURRENT_LIST_DIR}/fix_global_non_extern_variables.cmake" &&
+                    "${CMAKE_CURRENT_LIST_DIR}/round5.reference.nist_rng_mbedtls.c"
+                    "<SOURCE_DIR>/reference/src/common/rng/nist_rng_mbedtls.c" &&
+
             ${CMAKE_COMMAND}
                     -D "SOURCE_FILE=<SOURCE_DIR>/reference/src/r5_memory.h"
                     -P "${CMAKE_CURRENT_LIST_DIR}/fix_restrict_keyword_for_msvc.cmake" &&
@@ -127,15 +103,14 @@ ExternalProject_Add(round5-ext
             ${CMAKE_COMMAND} -E copy_if_different
                     "${CMAKE_CURRENT_LIST_DIR}/round5.optimized.CMakeLists.txt"
                     "<SOURCE_DIR>/optimized/CMakeLists.txt" &&
+
             ${CMAKE_COMMAND} -E copy_if_different
                     "${CMAKE_CURRENT_LIST_DIR}/round5.optimized.r5_dem_mbedtls.c"
                     "<SOURCE_DIR>/optimized/src/r5_dem_mbedtls.c" &&
+
             ${CMAKE_COMMAND}
                     -D "SOURCE_FILE=<SOURCE_DIR>/optimized/src/r5_parameter_sets.h"
-                    -P "${CMAKE_CURRENT_LIST_DIR}/fix_global_non_extern_variables.cmake" &&
-            ${CMAKE_COMMAND}
-                    -D "SOURCE_FILE=<SOURCE_DIR>/optimized/src/r5_memory.h"
-                    -P "${CMAKE_CURRENT_LIST_DIR}/fix_restrict_keyword_for_msvc.cmake"
+                    -P "${CMAKE_CURRENT_LIST_DIR}/fix_global_non_extern_variables.cmake"
 
         CMAKE_ARGS
             "${TRANSITIVE_ARGS}"
@@ -143,21 +118,23 @@ ExternalProject_Add(round5-ext
             "-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}"
             "-DCMAKE_INSTALL_PREFIX=${ROUND5_INSTALL_LOCATION}"
             "-DCMAKE_INSTALL_LIBDIR=lib"
-            "-DALG=R5ND_5PKE_5d"
-            "-DNO_OPENSSL_SHAKE=YES"
+            "-DMBEDTLS_INSTALL_LOCATION=${MBEDTLS_INSTALL_LOCATION}"
+            # Pick algorithm
+            "-DALG=R5ND_5CCA_5d"
+            # Config
             "-DUSE_AES_DRBG=NO"
-            "-DREFERENCE=${ROUND5_REFERENCE}"
-            "-DOPTIMIZED=${ROUND5_OPTIMIZED}"
-            "-DCONFIGURABLE=OFF"
-            "-DCM_CACHE=ON"
-            "-DSHIFT_LEFT64_CONSTANT_TIME=ON"
+            "-DSTANDALONE=YES"
+            "-DUSE_NIST_RNG=${ROUND5_USE_NIST_RNG}"
             "-DCRYPTO_ENGINE_MBEDTLS=${ROUND5_USE_MBEDTLS}"
             "-DCRYPTO_ENGINE_OPENSSL=${ROUND5_USE_OPENSSL}"
             "-DNIST_KAT_GENERATION=${ROUND5_NIST_KAT_GEN}"
             "-DBUILD_EXAMPLES=${ROUND5_BUILD_EXAMPLES}"
-            "-DBUILD_SPEEDTEST=${ROUND5_BUILD_SPEEDTEST}"
-            "-DKECCAK_INSTALL_LOCATION=${KECCAK_INSTALL_LOCATION}"
-            "-DMBEDTLS_INSTALL_LOCATION=${MBEDTLS_INSTALL_LOCATION}"
+            # Optimizations
+            "-DOPTIMIZED=YES"
+            "-DCM_CACHE=OFF"
+            "-DCM_CT=OFF"
+            "-DCM_MALFORMED=OFF"
+            "-DSHIFT_LEFT64_CONSTANT_TIME=OFF"
         )
 
 # ---------------------------------------------------------------------------
@@ -167,19 +144,18 @@ file(MAKE_DIRECTORY ${ROUND5_INSTALL_LOCATION}/include)
 
 add_library(round5 STATIC IMPORTED GLOBAL)
 
-add_dependencies(round5-ext XKCP::keccak)
 add_dependencies(round5-ext mbed::crypto)
 add_dependencies(round5 round5-ext)
 
 set_property(TARGET round5
         PROPERTY INTERFACE_COMPILE_DEFINITIONS
-            R5ND_5PKE_5d
-            "ROUND5_OPTIMIZED=$<BOOL:${ROUND5_OPTIMIZED}>"
+            R5ND_5CCA_5d
+            STANDALONE
+            __AVX2__ # hack
         )
 
 set_property(TARGET round5
         PROPERTY INTERFACE_LINK_LIBRARIES
-            XKCP::keccak
             $<$<BOOL:${ROUND5_USE_MBEDTLS}>:mbed::crypto>
             $<$<BOOL:${ROUND5_USE_OPENSSL}>:OpenSSL::Crypto>
         )

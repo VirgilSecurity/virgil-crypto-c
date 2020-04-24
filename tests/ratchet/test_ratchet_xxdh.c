@@ -154,19 +154,19 @@ test__pqc_xxdh__fixed_keys__should_match(void) {
             vscf_private_key_extract_public_key(sender_identity_private_key_second_signer);
 
     vscf_impl_t *receiver_identity_private_key_second =
-            vscf_key_provider_generate_private_key(key_provider, vscf_alg_id_ROUND5_ND_5KEM_5D, &error_ctx);
+            vscf_key_provider_generate_private_key(key_provider, vscf_alg_id_ROUND5_ND_5CCA_5D, &error_ctx);
     TEST_ASSERT_EQUAL(vscr_status_SUCCESS, error_ctx.status);
     vscf_impl_t *receiver_identity_public_key_second =
             vscf_private_key_extract_public_key(receiver_identity_private_key_second);
 
     vscf_impl_t *receiver_long_term_private_key_second =
-            vscf_key_provider_generate_private_key(key_provider, vscf_alg_id_ROUND5_ND_5KEM_5D, &error_ctx);
+            vscf_key_provider_generate_private_key(key_provider, vscf_alg_id_ROUND5_ND_5CCA_5D, &error_ctx);
     TEST_ASSERT_EQUAL(vscr_status_SUCCESS, error_ctx.status);
     vscf_impl_t *receiver_long_term_public_key_second =
             vscf_private_key_extract_public_key(receiver_long_term_private_key_second);
 
     vscf_impl_t *receiver_one_time_private_key_second =
-            vscf_key_provider_generate_private_key(key_provider, vscf_alg_id_ROUND5_ND_5KEM_5D, &error_ctx);
+            vscf_key_provider_generate_private_key(key_provider, vscf_alg_id_ROUND5_ND_5CCA_5D, &error_ctx);
     TEST_ASSERT_EQUAL(vscr_status_SUCCESS, error_ctx.status);
     vscf_impl_t *receiver_one_time_public_key_second =
             vscf_private_key_extract_public_key(receiver_one_time_private_key_second);
@@ -254,19 +254,19 @@ test__pqc_xxdh__fixed_keys_weak__should_match(void) {
             vscf_private_key_extract_public_key(sender_identity_private_key_second_signer);
 
     vscf_impl_t *receiver_identity_private_key_second =
-            vscf_key_provider_generate_private_key(key_provider, vscf_alg_id_ROUND5_ND_5KEM_5D, &error_ctx);
+            vscf_key_provider_generate_private_key(key_provider, vscf_alg_id_ROUND5_ND_5CCA_5D, &error_ctx);
     TEST_ASSERT_EQUAL(vscr_status_SUCCESS, error_ctx.status);
     vscf_impl_t *receiver_identity_public_key_second =
             vscf_private_key_extract_public_key(receiver_identity_private_key_second);
 
     vscf_impl_t *receiver_long_term_private_key_second =
-            vscf_key_provider_generate_private_key(key_provider, vscf_alg_id_ROUND5_ND_5KEM_5D, &error_ctx);
+            vscf_key_provider_generate_private_key(key_provider, vscf_alg_id_ROUND5_ND_5CCA_5D, &error_ctx);
     TEST_ASSERT_EQUAL(vscr_status_SUCCESS, error_ctx.status);
     vscf_impl_t *receiver_long_term_public_key_second =
             vscf_private_key_extract_public_key(receiver_long_term_private_key_second);
 
     vscf_impl_t *receiver_one_time_private_key_second =
-            vscf_key_provider_generate_private_key(key_provider, vscf_alg_id_ROUND5_ND_5KEM_5D, &error_ctx);
+            vscf_key_provider_generate_private_key(key_provider, vscf_alg_id_ROUND5_ND_5CCA_5D, &error_ctx);
     TEST_ASSERT_EQUAL(vscr_status_SUCCESS, error_ctx.status);
     vscf_impl_destroy(&receiver_one_time_private_key_second);
 

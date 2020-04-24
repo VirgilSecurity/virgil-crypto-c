@@ -11,15 +11,15 @@
         Use missed crypto primitives from the OpenSSL library.
     </feature>
 
+    <feature name="USE NIST RNG" default="on">
+        Use NIST RNG instead of system RNG.
+    </feature>
+
     <feature name="NIST KAT GEN" default="off">
         On/Off Generating NIST KATs (debug).
     </feature>
 
     <feature name="BUILD EXAMPLES" default="off">
         On/Off builds of example programs.
-    </feature>
-
-    <feature name="BUILD SPEEDTEST" default="off">
-        On/Off build of the speedtest program.
     </feature>
 </library>

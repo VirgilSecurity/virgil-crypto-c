@@ -27,6 +27,6 @@
     <constant name="compound key"/>
     <constant name="hybrid key"/>
     <constant name="falcon"/>
-    <constant name="round5 nd 5kem 5d"/>
+    <constant name="round5 nd 5cca 5d"/>
     <constant name="random padding"/>
 </enum>

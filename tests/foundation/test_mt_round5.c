@@ -88,7 +88,7 @@ impl_generate_key(void *ctx) {
     vscf_error_reset(&error);
 
     for (size_t i = 0; i < 300; ++i) {
-        vscf_impl_t *private_key = vscf_round5_generate_key(round5, vscf_alg_id_ROUND5_ND_5KEM_5D, &error);
+        vscf_impl_t *private_key = vscf_round5_generate_key(round5, vscf_alg_id_ROUND5_ND_5CCA_5D, &error);
         TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
         vscf_impl_destroy(&private_key);
     }

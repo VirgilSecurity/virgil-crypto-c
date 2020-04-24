@@ -703,7 +703,7 @@ vscf_alg_info_der_deserializer_deserialize_inplace(vscf_alg_info_der_deserialize
     case vscf_oid_id_ED25519:
     case vscf_oid_id_CURVE25519:
     case vscf_oid_id_FALCON:
-    case vscf_oid_id_ROUND5_ND_5KEM_5D:
+    case vscf_oid_id_ROUND5_ND_5CCA_5D:
     case vscf_oid_id_RANDOM_PADDING:
         return vscf_alg_info_der_deserializer_deserialize_simple_alg_info(self, oid_id, error);
 

@@ -188,7 +188,7 @@ test__curve25519_round5_ed25519_falcon_compound_hybrid_key_alg_info__is_valid(vo
     vscf_impl_t *ed25519_info = vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_ED25519));
 
     vscf_impl_t *round5_info =
-            vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_ROUND5_ND_5KEM_5D));
+            vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_ROUND5_ND_5CCA_5D));
 
     vscf_impl_t *falcon_info = vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_FALCON));
 
@@ -221,7 +221,7 @@ test__curve25519_round5_ed25519_falcon_compound_hybrid_key_alg_info__is_valid(vo
     TEST_ASSERT_EQUAL(vscf_alg_id_NONE, vscf_key_info_hybrid_first_key_alg_id(key_info));
     TEST_ASSERT_EQUAL(vscf_alg_id_NONE, vscf_key_info_hybrid_second_key_alg_id(key_info));
     TEST_ASSERT_EQUAL(vscf_alg_id_CURVE25519, vscf_key_info_compound_hybrid_cipher_first_key_alg_id(key_info));
-    TEST_ASSERT_EQUAL(vscf_alg_id_ROUND5_ND_5KEM_5D, vscf_key_info_compound_hybrid_cipher_second_key_alg_id(key_info));
+    TEST_ASSERT_EQUAL(vscf_alg_id_ROUND5_ND_5CCA_5D, vscf_key_info_compound_hybrid_cipher_second_key_alg_id(key_info));
     TEST_ASSERT_EQUAL(vscf_alg_id_ED25519, vscf_key_info_compound_hybrid_signer_first_key_alg_id(key_info));
     TEST_ASSERT_EQUAL(vscf_alg_id_FALCON, vscf_key_info_compound_hybrid_signer_second_key_alg_id(key_info));
 

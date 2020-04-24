@@ -819,7 +819,7 @@ vscr_ratchet_generate_sender_chain_keypair(vscr_ratchet_t *self, vscr_ratchet_se
         vscf_error_reset(&error_ctx);
 
         sender_chain->private_key_second =
-                vscf_round5_generate_key(self->round5, vscf_alg_id_ROUND5_ND_5KEM_5D, &error_ctx);
+                vscf_round5_generate_key(self->round5, vscf_alg_id_ROUND5_ND_5CCA_5D, &error_ctx);
 
         if (error_ctx.status != vscf_status_SUCCESS) {
             status = vscr_status_ERROR_RNG_FAILED;

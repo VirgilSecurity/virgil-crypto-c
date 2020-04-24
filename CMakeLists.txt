@@ -96,6 +96,11 @@ option(VIRGIL_LIB_RATCHET "Build 'ratchet' library" ON)
 option(VIRGIL_LIB_PHE "Build 'phe' library" ON)
 
 #
+# Programs
+#
+option(VIRGIL_PROGRAMS "Build programs." OFF)
+
+#
 # Features
 #
 option(VIRGIL_POST_QUANTUM "Enable post-quantum cryptography [experimental]." ON)
@@ -188,7 +193,6 @@ add_subdirectory("thirdparty/nanopb")
 # Post-quantum
 #
 if(VIRGIL_POST_QUANTUM)
-    add_subdirectory("thirdparty/keccak")
     add_subdirectory("thirdparty/round5")
     add_subdirectory("thirdparty/falcon")
 endif()
@@ -237,6 +241,13 @@ endif()
 
 if(ENABLE_BENCHMARKING AND NOT CMAKE_CROSSCOMPILING)
     add_subdirectory("benchmarks")
+endif()
+
+# ---------------------------------------------------------------------------
+#   Programs / Examples
+# ---------------------------------------------------------------------------
+if(VIRGIL_PROGRAMS)
+    add_subdirectory("programs")
 endif()
 
 # ---------------------------------------------------------------------------
