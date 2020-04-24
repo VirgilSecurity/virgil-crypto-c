@@ -80,7 +80,7 @@ ExternalProject_Add(round5-ext
         GIT_REPOSITORY
             https://github.com/VirgilSecurity/code
         GIT_TAG
-            4c6a6544829892b2bc510bcf4897913029ded800
+            b4bb05e661119b42b9373e64a58e7072be2aba8c
         GIT_CONFIG
             core.symlinks=true
         UPDATE_COMMAND
