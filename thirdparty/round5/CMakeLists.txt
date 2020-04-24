@@ -80,7 +80,7 @@ ExternalProject_Add(round5-ext
         GIT_REPOSITORY
             https://github.com/VirgilSecurity/code
         GIT_TAG
-            b4bb05e661119b42b9373e64a58e7072be2aba8c
+            faffa5b1b17d09079cf299fd8b023006dece9541
         GIT_CONFIG
             core.symlinks=true
         UPDATE_COMMAND
@@ -111,10 +111,6 @@ ExternalProject_Add(round5-ext
             ${CMAKE_COMMAND}
                     -D "SOURCE_FILE=<SOURCE_DIR>/optimized/src/r5_parameter_sets.h"
                     -P "${CMAKE_CURRENT_LIST_DIR}/fix_global_non_extern_variables.cmake"
-
-            ${CMAKE_COMMAND}
-                    -D "SOURCE_FILE=<SOURCE_DIR>/optimized/src/r5_parameter_sets.h"
-                    -P "${CMAKE_CURRENT_LIST_DIR}/fix_warning_pragma_for_msvc.cmake"
 
         CMAKE_ARGS
             "${TRANSITIVE_ARGS}"
