@@ -123,10 +123,10 @@ ExternalProject_Add(round5-ext
             "-DBUILD_EXAMPLES=${ROUND5_BUILD_EXAMPLES}"
             # Optimizations
             "-DOPTIMIZED=YES"
-            "-DCM_CACHE=OFF"
-            "-DCM_CT=OFF"
-            "-DCM_MALFORMED=OFF"
-            "-DSHIFT_LEFT64_CONSTANT_TIME=OFF"
+            "-DCM_CACHE=ON"
+            "-DCM_CT=ON"
+            "-DCM_MALFORMED=ON"
+            "-DSHIFT_LEFT64_CONSTANT_TIME=ON"
         )
 
 # ---------------------------------------------------------------------------
@@ -143,6 +143,9 @@ set_property(TARGET round5
         PROPERTY INTERFACE_COMPILE_DEFINITIONS
             R5ND_5CCA_5d
             STANDALONE
+            CM_CT
+            CM_CACHE
+            CM_MALFORMED
         )
 
 set_property(TARGET round5
