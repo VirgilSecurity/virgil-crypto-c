@@ -80,7 +80,7 @@ ExternalProject_Add(round5-ext
         GIT_REPOSITORY
             https://github.com/VirgilSecurity/code
         GIT_TAG
-            faffa5b1b17d09079cf299fd8b023006dece9541
+            b80e458a8e944e60b90148969b0818fccddd3ea1
         GIT_CONFIG
             core.symlinks=true
         UPDATE_COMMAND
@@ -93,10 +93,6 @@ ExternalProject_Add(round5-ext
             ${CMAKE_COMMAND} -E copy_if_different
                     "${CMAKE_CURRENT_LIST_DIR}/round5.reference.nist_rng_mbedtls.c"
                     "<SOURCE_DIR>/reference/src/common/rng/nist_rng_mbedtls.c" &&
-
-            ${CMAKE_COMMAND}
-                    -D "SOURCE_FILE=<SOURCE_DIR>/reference/src/r5_memory.h"
-                    -P "${CMAKE_CURRENT_LIST_DIR}/fix_restrict_keyword_for_msvc.cmake" &&
             #
             #   Patch optimized implementation.
             #
@@ -106,11 +102,7 @@ ExternalProject_Add(round5-ext
 
             ${CMAKE_COMMAND} -E copy_if_different
                     "${CMAKE_CURRENT_LIST_DIR}/round5.optimized.r5_dem_mbedtls.c"
-                    "<SOURCE_DIR>/optimized/src/r5_dem_mbedtls.c" &&
-
-            ${CMAKE_COMMAND}
-                    -D "SOURCE_FILE=<SOURCE_DIR>/optimized/src/r5_parameter_sets.h"
-                    -P "${CMAKE_CURRENT_LIST_DIR}/fix_global_non_extern_variables.cmake"
+                    "<SOURCE_DIR>/optimized/src/r5_dem_mbedtls.c"
 
         CMAKE_ARGS
             "${TRANSITIVE_ARGS}"
