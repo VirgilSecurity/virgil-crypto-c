@@ -1,0 +1,6 @@
+<library
+        name="json_c"
+        path="../thirdparty/json_c/">
+
+    External library: https://github.com/json-c/json-c
+</library>

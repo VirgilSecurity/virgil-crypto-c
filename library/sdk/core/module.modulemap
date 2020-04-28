@@ -1,0 +1,9 @@
+framework module VSCSCore {
+    header "vscs_core_assert.h"
+    header "vscs_core_library.h"
+    header "vscs_core_memory.h"
+    header "vscs_core_platform.h"
+    header "vscs_core_status.h"
+    header "vscs_core_core_sdk_public.h"
+    export *
+}

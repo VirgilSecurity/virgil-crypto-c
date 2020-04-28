@@ -1,4 +1,15 @@
-<main script="main.gsl" work_path="generated/main" echo_level="debug">
+<project
+        name="core sdk"
+        brief="Virgil Security Core SDK"
+        namespace="virgi sdk core"
+        framework="VSCSCore"
+        prefix="vscs_core"
+        path="../library/sdk/core/"
+        work_path="generated/sdk/core/"
+        >
+
+    <version major="0" minor="14" patch="1"/>
+
     <license>
         Copyright (C) 2015-2020 Virgil Security, Inc.
 
@@ -35,28 +46,24 @@
         Lead Maintainer: Virgil Security Inc. &lt;support@virgilsecurity.com&gt;
     </license>
 
-    <library name="mbedtls"/>
-    <library name="ed25519"/>
-    <library name="nanopb"/>
-    <library name="relic"/>
-    <library name="keccak"/>
-    <library name="round5"/>
-    <library name="falcon"/>
-    <library name="json_c"/>
+    <require project="common" feature="library"/>
+    <require project="foundation" feature="library"/>
 
-    <version major="0" minor="14" patch="1" label="dev1"/>
+    <feature name="multi threading" default="on">
+        Enable multi-threading safety for Cards Core SDK.
+    </feature>
 
-    <project name="common" skip_codegen="0" skip_codegen_c="0" skip_codegen_wrappers="0"/>
-    <project name="foundation" skip_codegen="0" skip_codegen_c="0" skip_codegen_wrappers="0"/>
-    <project name="pythia" skip_codegen="0" skip_codegen_c="0" skip_codegen_wrappers="0"/>
-    <project name="ratchet" skip_codegen="0" skip_codegen_c="0" skip_codegen_wrappers="0"/>
-    <project name="phe" skip_codegen="0" skip_codegen_c="0" skip_codegen_wrappers="0"/>
-    <project name="core sdk" skip_codegen="0" skip_codegen_c="0" skip_codegen_wrappers="0"/>
+    <module name="assert" from="shared"/>
+    <module name="library" from="shared"/>
+    <module name="memory" from="shared"/>
+    <module name="atomic" from="shared"/>
 
-    <wrapper lang="swift"/>
-    <wrapper lang="java"/>
-    <wrapper lang="wasm"/>
-    <wrapper lang="python"/>
-    <wrapper lang="go"/>
-    <wrapper lang="php"/>
-</main>
+    <enum name="status"/>
+
+    <error_message_getter success="0">
+        <require enum="status"/>
+
+        char error_message[48] = {0x00};
+        snprintf(error_message, sizeof(error_message), "Unhandled vsc::cards_core error -0x%04x", error);
+    </error_message_getter>
+</project>

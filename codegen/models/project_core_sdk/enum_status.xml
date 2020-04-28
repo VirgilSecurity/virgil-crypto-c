@@ -1,0 +1,7 @@
+<enum name="status" definition="public">
+    Defines the library status codes.
+
+    <constant name="success" value="0">
+        No errors was occurred.
+    </constant>
+</enum>

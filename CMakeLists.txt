@@ -94,6 +94,7 @@ option(VIRGIL_LIB_PYTHIA "Build 'pythia' library" ON)
 option(VIRGIL_LIB_ED25519 "Build 'ed25519' library" ON)
 option(VIRGIL_LIB_RATCHET "Build 'ratchet' library" ON)
 option(VIRGIL_LIB_PHE "Build 'phe' library" ON)
+option(VIRGIL_SDK_CORE "Build 'core' SDK" ON)
 
 #
 # Features
@@ -177,6 +178,13 @@ endif()
 #
 if(VIRGIL_LIB_ED25519)
     add_subdirectory("thirdparty/ed25519")
+endif()
+
+#
+# JSON-c
+#
+if(VIRGIL_SDK_CORE)
+    add_subdirectory("thirdparty/json_c")
 endif()
 
 #
