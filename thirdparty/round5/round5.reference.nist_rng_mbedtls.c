@@ -36,6 +36,7 @@ AES256_CTR_DRBG_Update(unsigned char *provided_data, unsigned char *Key, unsigne
 //  Copyright © 2017 Bassham, Lawrence E (Fed). All rights reserved.
 //
 
+#include <stdlib.h>
 #include <string.h>
 #include "rng.h"
 #include <mbedtls/aes.h>

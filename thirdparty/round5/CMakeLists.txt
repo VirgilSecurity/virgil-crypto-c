@@ -80,7 +80,7 @@ ExternalProject_Add(round5-ext
         GIT_REPOSITORY
             https://github.com/VirgilSecurity/code
         GIT_TAG
-            e10973165c54eb9c83c840b94bd239bfd0b739ee
+            8a9e96b189134b40f026cd2b356eea1d1aa75c27
         GIT_CONFIG
             core.symlinks=true
         UPDATE_COMMAND
@@ -123,7 +123,6 @@ ExternalProject_Add(round5-ext
             "-DBUILD_EXAMPLES=${ROUND5_BUILD_EXAMPLES}"
             # Optimizations
             "-DOPTIMIZED=YES"
-            "-DCM_CACHE=ON"
             "-DCM_CT=ON"
             "-DCM_MALFORMED=ON"
             "-DSHIFT_LEFT64_CONSTANT_TIME=ON"
@@ -144,7 +143,6 @@ set_property(TARGET round5
             R5ND_5CCA_5d
             STANDALONE
             CM_CT
-            CM_CACHE
             CM_MALFORMED
         )
 
