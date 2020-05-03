@@ -78,9 +78,9 @@ set(ROUND5_INSTALL_LOCATION ${CMAKE_CURRENT_BINARY_DIR}/round5)
 include(ExternalProject)
 ExternalProject_Add(round5-ext
         GIT_REPOSITORY
-            https://github.com/VirgilSecurity/code
+            https://github.com/round5/code
         GIT_TAG
-            8a9e96b189134b40f026cd2b356eea1d1aa75c27
+            35e97f07c313ecd651ac66fb55127218f7933dba
         GIT_CONFIG
             core.symlinks=true
         UPDATE_COMMAND
