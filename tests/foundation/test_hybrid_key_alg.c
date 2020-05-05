@@ -195,7 +195,7 @@ void
 test__make_key__curve25519_round5__is_valid_alg(void) {
 #if VSCF_POST_QUANTUM
     inner_test__make_key__expect_status(test_curve25519_PRIVATE_KEY_PKCS8_DER,
-            test_data_round5_ND_5CCA_5D_PRIVATE_KEY_PKCS8_DER, vscf_status_SUCCESS);
+            test_data_round5_ND_1CCA_5D_PRIVATE_KEY_PKCS8_DER, vscf_status_SUCCESS);
 #else
     TEST_IGNORE_MESSAGE("Feature VSCF_POST_QUANTUM is disabled");
 #endif
@@ -369,8 +369,8 @@ test__import_private_key_then_export_public_key__curve25519_curve25519__should_m
 void
 test__import_public_key_then_export__curve25519_round5__should_match(void) {
 #if VSCF_POST_QUANTUM
-    inner_test__import_public_key_then_export__should_match(vscf_alg_id_CURVE25519, vscf_alg_id_ROUND5_ND_5CCA_5D,
-            test_data_hybrid_key_CURVE25519_ROUND5_ND_5CCA_5D_PUBLIC_KEY);
+    inner_test__import_public_key_then_export__should_match(vscf_alg_id_CURVE25519, vscf_alg_id_ROUND5_ND_1CCA_5D,
+            test_data_hybrid_key_CURVE25519_ROUND5_ND_1CCA_5D_PUBLIC_KEY);
 #else
     TEST_IGNORE_MESSAGE("Feature VSCF_POST_QUANTUM is disabled");
 #endif
@@ -379,8 +379,8 @@ test__import_public_key_then_export__curve25519_round5__should_match(void) {
 void
 test__import_private_key_then_export__curve25519_round5__should_match(void) {
 #if VSCF_POST_QUANTUM
-    inner_test__import_private_key_then_export__should_match(vscf_alg_id_CURVE25519, vscf_alg_id_ROUND5_ND_5CCA_5D,
-            test_data_hybrid_key_CURVE25519_ROUND5_ND_5CCA_5D_PRIVATE_KEY);
+    inner_test__import_private_key_then_export__should_match(vscf_alg_id_CURVE25519, vscf_alg_id_ROUND5_ND_1CCA_5D,
+            test_data_hybrid_key_CURVE25519_ROUND5_ND_1CCA_5D_PRIVATE_KEY);
 #else
     TEST_IGNORE_MESSAGE("Feature VSCF_POST_QUANTUM is disabled");
 #endif
@@ -390,8 +390,8 @@ void
 test__import_private_key_then_export_public_key__curve25519_round5__should_match(void) {
 #if VSCF_POST_QUANTUM
     inner_test__import_private_key_then_export_public_key__should_match(vscf_alg_id_CURVE25519,
-            vscf_alg_id_ROUND5_ND_5CCA_5D, test_data_hybrid_key_CURVE25519_ROUND5_ND_5CCA_5D_PRIVATE_KEY,
-            test_data_hybrid_key_CURVE25519_ROUND5_ND_5CCA_5D_PUBLIC_KEY);
+            vscf_alg_id_ROUND5_ND_1CCA_5D, test_data_hybrid_key_CURVE25519_ROUND5_ND_1CCA_5D_PRIVATE_KEY,
+            test_data_hybrid_key_CURVE25519_ROUND5_ND_1CCA_5D_PUBLIC_KEY);
 #else
     TEST_IGNORE_MESSAGE("Feature VSCF_POST_QUANTUM is disabled");
 #endif
@@ -459,12 +459,12 @@ test__encrypt_decrypt__with_curve25519_and_curve25519_keys__plain_text_match(voi
 void
 test__encrypt_decrypt__with_curve25519_and_round5_keys__plain_text_match(void) {
 #if VSCF_POST_QUANTUM
-    vscf_impl_t *public_key = inner_import_raw_public_key(test_data_hybrid_key_CURVE25519_ROUND5_ND_5CCA_5D_PUBLIC_KEY,
-            vscf_alg_id_CURVE25519, vscf_alg_id_ROUND5_ND_5CCA_5D);
+    vscf_impl_t *public_key = inner_import_raw_public_key(test_data_hybrid_key_CURVE25519_ROUND5_ND_1CCA_5D_PUBLIC_KEY,
+            vscf_alg_id_CURVE25519, vscf_alg_id_ROUND5_ND_1CCA_5D);
 
     vscf_impl_t *private_key =
-            inner_import_raw_private_key(test_data_hybrid_key_CURVE25519_ROUND5_ND_5CCA_5D_PRIVATE_KEY,
-                    vscf_alg_id_CURVE25519, vscf_alg_id_ROUND5_ND_5CCA_5D);
+            inner_import_raw_private_key(test_data_hybrid_key_CURVE25519_ROUND5_ND_1CCA_5D_PRIVATE_KEY,
+                    vscf_alg_id_CURVE25519, vscf_alg_id_ROUND5_ND_1CCA_5D);
 
     inner_test__encrypt_decrypt__plain_text_match(public_key, private_key);
 

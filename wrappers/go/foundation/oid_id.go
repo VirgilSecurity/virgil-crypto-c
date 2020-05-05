@@ -32,6 +32,6 @@ const (
     OidIdCompoundKey OidId = 25
     OidIdHybridKey OidId = 26
     OidIdFalcon OidId = 27
-    OidIdRound5Nd5kem5d OidId = 28
+    OidIdRound5Nd1cca5d OidId = 28
     OidIdRandomPadding OidId = 29
 )

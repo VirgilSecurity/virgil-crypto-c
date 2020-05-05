@@ -261,7 +261,7 @@ generate_identity_private_key(vscf_key_provider_t *key_provider, bool enable_pqc
 
     if (enable_pqc) {
         private_key = vscf_key_provider_generate_compound_hybrid_private_key(key_provider, vscf_alg_id_CURVE25519,
-                vscf_alg_id_ROUND5_ND_5CCA_5D, vscf_alg_id_ED25519, vscf_alg_id_FALCON, &error_ctx);
+                vscf_alg_id_ROUND5_ND_1CCA_5D, vscf_alg_id_ED25519, vscf_alg_id_FALCON, &error_ctx);
     } else {
         private_key = vscf_key_provider_generate_private_key(key_provider, vscf_alg_id_ED25519, &error_ctx);
     }
@@ -280,7 +280,7 @@ generate_ephemeral_private_key(vscf_key_provider_t *key_provider, bool enable_pq
 
     if (enable_pqc) {
         private_key = vscf_key_provider_generate_hybrid_private_key(
-                key_provider, vscf_alg_id_CURVE25519, vscf_alg_id_ROUND5_ND_5CCA_5D, &error_ctx);
+                key_provider, vscf_alg_id_CURVE25519, vscf_alg_id_ROUND5_ND_1CCA_5D, &error_ctx);
     } else {
         private_key = vscf_key_provider_generate_private_key(key_provider, vscf_alg_id_CURVE25519, &error_ctx);
     }
@@ -315,7 +315,7 @@ generate_round5_keypair(vscf_ctr_drbg_t *rng, vscf_impl_t **priv, vscf_impl_t **
     vscf_error_t error_ctx;
     vscf_error_reset(&error_ctx);
 
-    *priv = vscf_key_provider_generate_private_key(key_provider, vscf_alg_id_ROUND5_ND_5CCA_5D, &error_ctx);
+    *priv = vscf_key_provider_generate_private_key(key_provider, vscf_alg_id_ROUND5_ND_1CCA_5D, &error_ctx);
 
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, error_ctx.status);
 
@@ -1390,7 +1390,7 @@ generate_public_key(vscf_ctr_drbg_t *rng) {
     vscf_error_t error_ctx;
     vscf_error_reset(&error_ctx);
 
-    vscf_impl_t *priv = vscf_key_provider_generate_private_key(key_provider, vscf_alg_id_ROUND5_ND_5CCA_5D, &error_ctx);
+    vscf_impl_t *priv = vscf_key_provider_generate_private_key(key_provider, vscf_alg_id_ROUND5_ND_1CCA_5D, &error_ctx);
 
     TEST_ASSERT(!vscf_error_has_error(&error_ctx));
 
@@ -1410,7 +1410,7 @@ generate_private_key(vscf_ctr_drbg_t *rng) {
     vscf_error_t error_ctx;
     vscf_error_reset(&error_ctx);
 
-    vscf_impl_t *priv = vscf_key_provider_generate_private_key(key_provider, vscf_alg_id_ROUND5_ND_5CCA_5D, &error_ctx);
+    vscf_impl_t *priv = vscf_key_provider_generate_private_key(key_provider, vscf_alg_id_ROUND5_ND_1CCA_5D, &error_ctx);
 
     TEST_ASSERT(!vscf_error_has_error(&error_ctx));
 

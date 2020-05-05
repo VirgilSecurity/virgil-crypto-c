@@ -125,7 +125,7 @@ vscf_round5_generate_key(const vscf_round5_t *self, vscf_alg_id_t alg_id, vscf_e
     VSCF_ASSERT_PTR(self->random);
     VSCF_ASSERT_PTR(alg_id != vscf_alg_id_NONE);
 
-    if (alg_id != vscf_alg_id_ROUND5_ND_5CCA_5D) {
+    if (alg_id != vscf_alg_id_ROUND5_ND_1CCA_5D) {
         VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_UNSUPPORTED_ALGORITHM);
         return NULL;
     }
@@ -173,7 +173,7 @@ vscf_round5_generate_key(const vscf_round5_t *self, vscf_alg_id_t alg_id, vscf_e
     vsc_buffer_inc_used(sk, sk_len);
 
     vscf_impl_t *pub_alg_info =
-            vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_ROUND5_ND_5CCA_5D));
+            vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_ROUND5_ND_1CCA_5D));
     vscf_impl_t *priv_alg_info = vscf_impl_shallow_copy(pub_alg_info);
 
     vscf_raw_public_key_t *raw_public_key = vscf_raw_public_key_new_with_buffer(&pk, &pub_alg_info);
@@ -238,7 +238,7 @@ vscf_round5_import_public_key_data(
     VSCF_ASSERT(vsc_data_is_valid(key_data));
     VSCF_ASSERT_PTR(key_alg_info);
 
-    if (vscf_alg_info_alg_id(key_alg_info) != vscf_alg_id_ROUND5_ND_5CCA_5D) {
+    if (vscf_alg_info_alg_id(key_alg_info) != vscf_alg_id_ROUND5_ND_1CCA_5D) {
         VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_MISMATCH_PUBLIC_KEY_AND_ALGORITHM);
         return NULL;
     }
@@ -356,7 +356,7 @@ vscf_round5_import_private_key_data(
     VSCF_ASSERT(vsc_data_is_valid(key_data));
     VSCF_ASSERT_PTR(key_alg_info);
 
-    if (vscf_alg_info_alg_id(key_alg_info) != vscf_alg_id_ROUND5_ND_5CCA_5D) {
+    if (vscf_alg_info_alg_id(key_alg_info) != vscf_alg_id_ROUND5_ND_1CCA_5D) {
         VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_MISMATCH_PRIVATE_KEY_AND_ALGORITHM);
         return NULL;
     }

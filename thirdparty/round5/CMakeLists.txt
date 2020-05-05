@@ -112,7 +112,7 @@ ExternalProject_Add(round5-ext
             "-DCMAKE_INSTALL_LIBDIR=lib"
             "-DMBEDTLS_INSTALL_LOCATION=${MBEDTLS_INSTALL_LOCATION}"
             # Pick algorithm
-            "-DALG=R5ND_5CCA_5d"
+            "-DALG=R5ND_1CCA_5d"
             # Config
             "-DUSE_AES_DRBG=NO"
             "-DSTANDALONE=YES"
@@ -140,7 +140,7 @@ add_dependencies(round5 round5-ext)
 
 set_property(TARGET round5
         PROPERTY INTERFACE_COMPILE_DEFINITIONS
-            R5ND_5CCA_5d
+            R5ND_1CCA_5d
             STANDALONE
             CM_CT
             CM_MALFORMED

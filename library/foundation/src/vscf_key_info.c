@@ -431,11 +431,11 @@ vscf_key_info_is_hybrid_post_quantum_cipher(const vscf_key_info_t *self) {
     VSCF_ASSERT_PTR(self);
 
     const bool is_first_post_quantum =
-            (vscf_alg_id_ROUND5_ND_5CCA_5D == self->compound_hybrid_cipher_first_key_alg_id) &&
+            (vscf_alg_id_ROUND5_ND_1CCA_5D == self->compound_hybrid_cipher_first_key_alg_id) &&
             (self->compound_hybrid_cipher_first_key_alg_id != self->compound_hybrid_cipher_second_key_alg_id);
 
     const bool is_second_post_quantum =
-            (vscf_alg_id_ROUND5_ND_5CCA_5D == self->compound_hybrid_cipher_second_key_alg_id) &&
+            (vscf_alg_id_ROUND5_ND_1CCA_5D == self->compound_hybrid_cipher_second_key_alg_id) &&
             (self->compound_hybrid_cipher_first_key_alg_id != self->compound_hybrid_cipher_second_key_alg_id);
 
     return vscf_key_info_is_compound_hybrid_signer(self) && (is_first_post_quantum || is_second_post_quantum);

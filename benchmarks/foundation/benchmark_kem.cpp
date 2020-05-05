@@ -154,7 +154,7 @@ kem_decapsulate(benchmark::State &state) {
 }
 
 BENCHMARK(kem_encapsulate)->ArgNames({"Curve25519"})->Arg(vscf_alg_id_CURVE25519);
-BENCHMARK(kem_encapsulate)->ArgNames({"Round5"})->Arg(vscf_alg_id_ROUND5_ND_5CCA_5D);
+BENCHMARK(kem_encapsulate)->ArgNames({"Round5"})->Arg(vscf_alg_id_ROUND5_ND_1CCA_5D);
 
 BENCHMARK(kem_decapsulate)->ArgNames({"Curve25519"})->Arg(vscf_alg_id_CURVE25519);
-BENCHMARK(kem_decapsulate)->ArgNames({"Round5"})->Arg(vscf_alg_id_ROUND5_ND_5CCA_5D);
+BENCHMARK(kem_decapsulate)->ArgNames({"Round5"})->Arg(vscf_alg_id_ROUND5_ND_1CCA_5D);

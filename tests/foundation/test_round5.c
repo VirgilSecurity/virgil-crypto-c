@@ -63,20 +63,20 @@ test__generate_key__exported_keys_are_equals_expected(void) {
     vscf_error_t error;
     vscf_error_reset(&error);
 
-    vscf_impl_t *private_key = vscf_round5_generate_key(round5, vscf_alg_id_ROUND5_ND_5CCA_5D, &error);
+    vscf_impl_t *private_key = vscf_round5_generate_key(round5, vscf_alg_id_ROUND5_ND_1CCA_5D, &error);
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
 
     //
     //  Check private key
     //
     const vscf_alg_id_t private_key_alg_id = vscf_key_alg_id(private_key);
-    TEST_ASSERT_EQUAL(vscf_alg_id_ROUND5_ND_5CCA_5D, private_key_alg_id);
+    TEST_ASSERT_EQUAL(vscf_alg_id_ROUND5_ND_1CCA_5D, private_key_alg_id);
 
     vscf_raw_private_key_t *raw_private_key = vscf_round5_export_private_key(round5, private_key, &error);
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
 
     vsc_data_t raw_private_key_data = vscf_raw_private_key_data(raw_private_key);
-    TEST_ASSERT_EQUAL_DATA(test_data_round5_NIST_RNG_ND_5CCA_5D_PRIVATE_KEY, raw_private_key_data);
+    TEST_ASSERT_EQUAL_DATA(test_data_round5_NIST_RNG_ND_1CCA_5D_PRIVATE_KEY, raw_private_key_data);
 
     //
     // Check public key
@@ -84,13 +84,13 @@ test__generate_key__exported_keys_are_equals_expected(void) {
     vscf_impl_t *public_key = vscf_private_key_extract_public_key(private_key);
 
     const vscf_alg_id_t public_key_alg_id = vscf_key_alg_id(public_key);
-    TEST_ASSERT_EQUAL(vscf_alg_id_ROUND5_ND_5CCA_5D, public_key_alg_id);
+    TEST_ASSERT_EQUAL(vscf_alg_id_ROUND5_ND_1CCA_5D, public_key_alg_id);
 
     vscf_raw_public_key_t *raw_public_key = vscf_round5_export_public_key(round5, public_key, &error);
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
 
     vsc_data_t raw_public_key_data = vscf_raw_public_key_data(raw_public_key);
-    TEST_ASSERT_EQUAL_DATA(test_data_round5_NIST_RNG_ND_5CCA_5D_PUBLIC_KEY, raw_public_key_data);
+    TEST_ASSERT_EQUAL_DATA(test_data_round5_NIST_RNG_ND_1CCA_5D_PUBLIC_KEY, raw_public_key_data);
 
     vscf_impl_destroy(&private_key);
     vscf_impl_destroy(&public_key);
@@ -114,9 +114,9 @@ test__encapsulate__success(void) {
     //  Import public key.
     //
     vscf_impl_t *alg_info =
-            vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_ROUND5_ND_5CCA_5D));
+            vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_ROUND5_ND_1CCA_5D));
     vscf_raw_public_key_t *raw_public_key =
-            vscf_raw_public_key_new_with_data(test_data_round5_NIST_RNG_ND_5CCA_5D_PUBLIC_KEY, &alg_info);
+            vscf_raw_public_key_new_with_data(test_data_round5_NIST_RNG_ND_1CCA_5D_PUBLIC_KEY, &alg_info);
 
     vscf_error_t error;
     vscf_error_reset(&error);
@@ -138,8 +138,8 @@ test__encapsulate__success(void) {
     const vscf_status_t status = vscf_round5_kem_encapsulate(round5, public_key, shared_key, encapsulated_key);
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, status);
 
-    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_data_round5_NIST_RNG_ND_5CCA_5D_KEM_ENCAPSULATED_KEY, encapsulated_key);
-    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_data_round5_NIST_RNG_ND_5CCA_5D_KEM_SHARED_KEY, shared_key);
+    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_data_round5_NIST_RNG_ND_1CCA_5D_KEM_ENCAPSULATED_KEY, encapsulated_key);
+    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_data_round5_NIST_RNG_ND_1CCA_5D_KEM_SHARED_KEY, shared_key);
 
     vsc_buffer_destroy(&encapsulated_key);
     vsc_buffer_destroy(&shared_key);
@@ -160,9 +160,9 @@ test__decapsulate__success(void) {
     //  Import private key.
     //
     vscf_impl_t *alg_info =
-            vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_ROUND5_ND_5CCA_5D));
+            vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_ROUND5_ND_1CCA_5D));
     vscf_raw_private_key_t *raw_private_key =
-            vscf_raw_private_key_new_with_data(test_data_round5_NIST_RNG_ND_5CCA_5D_PRIVATE_KEY, &alg_info);
+            vscf_raw_private_key_new_with_data(test_data_round5_NIST_RNG_ND_1CCA_5D_PRIVATE_KEY, &alg_info);
 
     vscf_error_t error;
     vscf_error_reset(&error);
@@ -178,10 +178,10 @@ test__decapsulate__success(void) {
     vsc_buffer_t *shared_key = vsc_buffer_new_with_capacity(shared_key_len);
 
     const vscf_status_t status = vscf_round5_kem_decapsulate(
-            round5, test_data_round5_NIST_RNG_ND_5CCA_5D_KEM_ENCAPSULATED_KEY, private_key, shared_key);
+            round5, test_data_round5_NIST_RNG_ND_1CCA_5D_KEM_ENCAPSULATED_KEY, private_key, shared_key);
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, status);
 
-    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_data_round5_NIST_RNG_ND_5CCA_5D_KEM_SHARED_KEY, shared_key);
+    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_data_round5_NIST_RNG_ND_1CCA_5D_KEM_SHARED_KEY, shared_key);
 
     vsc_buffer_destroy(&shared_key);
     vscf_impl_destroy(&private_key);
@@ -193,9 +193,9 @@ void
 test__extract_public_key__from_imported_private_key__equals_expected(void) {
     //  Create raw private key
     vscf_impl_t *alg_info =
-            vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_ROUND5_ND_5CCA_5D));
+            vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_ROUND5_ND_1CCA_5D));
     vscf_raw_private_key_t *raw_private_key =
-            vscf_raw_private_key_new_with_data(test_data_round5_NIST_RNG_ND_5CCA_5D_PRIVATE_KEY, &alg_info);
+            vscf_raw_private_key_new_with_data(test_data_round5_NIST_RNG_ND_1CCA_5D_PRIVATE_KEY, &alg_info);
 
     //  Configure key algorithm
     vscf_round5_t *round5 = vscf_round5_new();
@@ -222,7 +222,7 @@ test__extract_public_key__from_imported_private_key__equals_expected(void) {
     TEST_ASSERT_NOT_NULL(raw_public_key);
 
     //   Check
-    TEST_ASSERT_EQUAL_DATA(test_data_round5_NIST_RNG_ND_5CCA_5D_PUBLIC_KEY, vscf_raw_public_key_data(raw_public_key));
+    TEST_ASSERT_EQUAL_DATA(test_data_round5_NIST_RNG_ND_1CCA_5D_PUBLIC_KEY, vscf_raw_public_key_data(raw_public_key));
 
     //  Cleanup
     vscf_round5_destroy(&round5);

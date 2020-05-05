@@ -196,7 +196,7 @@ vscf_key_alg_factory_create_from_alg_id(vscf_alg_id_t alg_id, const vscf_impl_t 
 #endif // VSCF_FALCON
 
 #if VSCF_ROUND5
-    case vscf_alg_id_ROUND5_ND_5CCA_5D: {
+    case vscf_alg_id_ROUND5_ND_1CCA_5D: {
         vscf_round5_t *round5 = vscf_round5_new();
         if (random) {
             vscf_round5_use_random(round5, (vscf_impl_t *)random);
@@ -251,7 +251,7 @@ vscf_key_alg_factory_create_from_key(const vscf_impl_t *key, const vscf_impl_t *
         return vscf_key_alg_factory_create_from_alg_id(vscf_alg_id_FALCON, random, error);
 
     case vscf_impl_tag_ROUND5:
-        return vscf_key_alg_factory_create_from_alg_id(vscf_alg_id_ROUND5_ND_5CCA_5D, random, error);
+        return vscf_key_alg_factory_create_from_alg_id(vscf_alg_id_ROUND5_ND_1CCA_5D, random, error);
 
     default:
         VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_UNSUPPORTED_ALGORITHM);

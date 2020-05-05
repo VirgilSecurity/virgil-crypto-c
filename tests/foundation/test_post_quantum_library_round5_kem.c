@@ -58,8 +58,8 @@ test__kem_keygen__with_nist_rng__equals_expected(void) {
     int status = crypto_kem_keypair(pk, sk);
     TEST_ASSERT_EQUAL(0, status);
 
-    TEST_ASSERT_EQUAL_DATA(test_data_round5_NIST_RNG_ND_5CCA_5D_PUBLIC_KEY, vsc_data(pk, sizeof(pk)));
-    TEST_ASSERT_EQUAL_DATA(test_data_round5_NIST_RNG_ND_5CCA_5D_PRIVATE_KEY, vsc_data(sk, sizeof(sk)));
+    TEST_ASSERT_EQUAL_DATA(test_data_round5_NIST_RNG_ND_1CCA_5D_PUBLIC_KEY, vsc_data(pk, sizeof(pk)));
+    TEST_ASSERT_EQUAL_DATA(test_data_round5_NIST_RNG_ND_1CCA_5D_PRIVATE_KEY, vsc_data(sk, sizeof(sk)));
 }
 
 void
@@ -69,28 +69,28 @@ test__kem_encapsulate__with_nist_rng__cipher_text_and_shared_key_equals_to_expec
 
     randombytes_init((unsigned char *)test_data_round5_RNG_SEED.bytes, NULL, 1);
 
-    int status = crypto_kem_enc(ciphertext, shared_secret, test_data_round5_NIST_RNG_ND_5CCA_5D_PUBLIC_KEY.bytes);
+    int status = crypto_kem_enc(ciphertext, shared_secret, test_data_round5_NIST_RNG_ND_1CCA_5D_PUBLIC_KEY.bytes);
     TEST_ASSERT_EQUAL(0, status);
 
     vsc_data_t ciphertext_data = vsc_data(ciphertext, sizeof(ciphertext));
-    TEST_ASSERT_EQUAL_DATA(test_data_round5_NIST_RNG_ND_5CCA_5D_KEM_ENCAPSULATED_KEY, ciphertext_data);
+    TEST_ASSERT_EQUAL_DATA(test_data_round5_NIST_RNG_ND_1CCA_5D_KEM_ENCAPSULATED_KEY, ciphertext_data);
 
     vsc_data_t shared_secret_data = vsc_data(shared_secret, sizeof(shared_secret));
-    TEST_ASSERT_EQUAL_DATA(test_data_round5_NIST_RNG_ND_5CCA_5D_KEM_SHARED_KEY, shared_secret_data);
+    TEST_ASSERT_EQUAL_DATA(test_data_round5_NIST_RNG_ND_1CCA_5D_KEM_SHARED_KEY, shared_secret_data);
 }
 
 void
 test__kem_decapsulate__with_nist_rng__shared_key_equals_to_expected(void) {
     unsigned char shared_secret[CRYPTO_BYTES] = {0x00};
 
-    const byte *sk = test_data_round5_NIST_RNG_ND_5CCA_5D_PRIVATE_KEY.bytes;
-    const byte *ct = test_data_round5_NIST_RNG_ND_5CCA_5D_KEM_ENCAPSULATED_KEY.bytes;
+    const byte *sk = test_data_round5_NIST_RNG_ND_1CCA_5D_PRIVATE_KEY.bytes;
+    const byte *ct = test_data_round5_NIST_RNG_ND_1CCA_5D_KEM_ENCAPSULATED_KEY.bytes;
 
     int status = crypto_kem_dec(shared_secret, ct, sk);
     TEST_ASSERT_EQUAL(0, status);
 
     vsc_data_t shared_secret_data = vsc_data(shared_secret, sizeof(shared_secret));
-    TEST_ASSERT_EQUAL_DATA(test_data_round5_NIST_RNG_ND_5CCA_5D_KEM_SHARED_KEY, shared_secret_data);
+    TEST_ASSERT_EQUAL_DATA(test_data_round5_NIST_RNG_ND_1CCA_5D_KEM_SHARED_KEY, shared_secret_data);
 }
 
 void
