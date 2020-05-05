@@ -306,7 +306,7 @@ vscr_ratchet_pb_utils_deserialize_public_key(
     vsc_data_t data = vsc_data(pb_buffer->bytes, pb_buffer->size);
 
     vscf_impl_t *alg_info =
-            vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_ROUND5_ND_5CCA_5D));
+            vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_ROUND5_ND_1CCA_5D));
 
     vscf_error_t error_ctx;
     vscf_error_reset(&error_ctx);
@@ -343,7 +343,7 @@ vscr_ratchet_pb_utils_deserialize_private_key(
     vsc_data_t data = vsc_data(pb_buffer->bytes, pb_buffer->size);
 
     vscf_impl_t *alg_info =
-            vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_ROUND5_ND_5CCA_5D));
+            vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_ROUND5_ND_1CCA_5D));
 
     vscf_error_t error_ctx;
     vscf_error_reset(&error_ctx);
