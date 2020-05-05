@@ -335,7 +335,7 @@ int main(int argc, const char *const *const argv) {
         break;
 
     case key_alg_id_ROUND5:
-        private_key = vscf_key_provider_generate_private_key(key_provider, vscf_alg_id_ROUND5_ND_5CCA_5D, NULL);
+        private_key = vscf_key_provider_generate_private_key(key_provider, vscf_alg_id_ROUND5_ND_1CCA_5D, NULL);
         break;
 
     case key_alg_id_CURVE25519_ED25519:
@@ -345,18 +345,18 @@ int main(int argc, const char *const *const argv) {
 
     case key_alg_id_CURVE25519_ROUND5:
         private_key = vscf_key_provider_generate_hybrid_private_key(
-                key_provider, vscf_alg_id_CURVE25519, vscf_alg_id_ROUND5_ND_5CCA_5D, NULL);
+                key_provider, vscf_alg_id_CURVE25519, vscf_alg_id_ROUND5_ND_1CCA_5D, NULL);
         break;
 
     case key_alg_id_CURVE25519_ROUND5_ED25519:
         private_key = vscf_key_provider_generate_compound_hybrid_private_key(
-                key_provider, vscf_alg_id_CURVE25519, vscf_alg_id_ROUND5_ND_5CCA_5D,
+                key_provider, vscf_alg_id_CURVE25519, vscf_alg_id_ROUND5_ND_1CCA_5D,
                 vscf_alg_id_ED25519, vscf_alg_id_NONE, NULL);
         break;
 
     case key_alg_id_CURVE25519_ROUND5_FALCON:
         private_key = vscf_key_provider_generate_compound_hybrid_private_key(
-                key_provider, vscf_alg_id_CURVE25519, vscf_alg_id_ROUND5_ND_5CCA_5D,
+                key_provider, vscf_alg_id_CURVE25519, vscf_alg_id_ROUND5_ND_1CCA_5D,
                 vscf_alg_id_FALCON, vscf_alg_id_NONE, NULL);
         break;
 
@@ -367,7 +367,7 @@ int main(int argc, const char *const *const argv) {
 
     case key_alg_id_CURVE25519_ROUND5_ED25519_FALCON:
         private_key = vscf_key_provider_generate_compound_hybrid_private_key(
-                key_provider, vscf_alg_id_CURVE25519, vscf_alg_id_ROUND5_ND_5CCA_5D,
+                key_provider, vscf_alg_id_CURVE25519, vscf_alg_id_ROUND5_ND_1CCA_5D,
                 vscf_alg_id_ED25519, vscf_alg_id_FALCON, NULL);
         break;
 

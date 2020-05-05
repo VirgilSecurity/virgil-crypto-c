@@ -94,7 +94,7 @@ const initOidId = (Module, modules) => {
 
         FALCON: 27,
 
-        ROUND5_ND_5KEM_5D: 28,
+        ROUND5_ND_1CCA_5D: 28,
 
         RANDOM_PADDING: 29
     });

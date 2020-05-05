@@ -420,10 +420,10 @@ vscf_key_provider_generate_private_key(vscf_key_provider_t *self, vscf_alg_id_t 
 #endif // VSCF_FALCON
 
 #if VSCF_ROUND5
-    case vscf_alg_id_ROUND5_ND_5CCA_5D: {
+    case vscf_alg_id_ROUND5_ND_1CCA_5D: {
         vscf_round5_t *round5 = vscf_round5_new();
         vscf_round5_use_random(round5, self->random);
-        key = vscf_round5_generate_key(round5, vscf_alg_id_ROUND5_ND_5CCA_5D, error);
+        key = vscf_round5_generate_key(round5, vscf_alg_id_ROUND5_ND_1CCA_5D, error);
         vscf_round5_destroy(&round5);
         break;
     }
@@ -457,7 +457,7 @@ vscf_key_provider_generate_post_quantum_private_key(vscf_key_provider_t *self, v
 
 #if VSCF_POST_QUANTUM && VSCF_CURVE25519 && VSCF_ED25519 && VSCF_FALCON && VSCF_ROUND5
     return vscf_key_provider_generate_compound_hybrid_private_key(self, vscf_alg_id_CURVE25519,
-            vscf_alg_id_ROUND5_ND_5CCA_5D, vscf_alg_id_ED25519, vscf_alg_id_FALCON, error);
+            vscf_alg_id_ROUND5_ND_1CCA_5D, vscf_alg_id_ED25519, vscf_alg_id_FALCON, error);
 #else
     VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_UNSUPPORTED_ALGORITHM);
     return NULL;

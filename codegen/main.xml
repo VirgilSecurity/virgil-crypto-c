@@ -39,7 +39,6 @@
     <library name="ed25519"/>
     <library name="nanopb"/>
     <library name="relic"/>
-    <library name="keccak"/>
     <library name="round5"/>
     <library name="falcon"/>
 
