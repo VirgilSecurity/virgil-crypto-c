@@ -1,6 +1,16 @@
 # virgil-crypto-c ChangeLog (Sorted by date)
 
 
+## Version 0.15.0 released 2020-05-06
+
+### Changes
+
+- Ext/Round5: Updated to the latest changes:
+  -  improved domain separation (previously generated keys won't work!)
+- Lib/Foundation: Changed Round5 parameter set: R5ND_5CCA_5d -> R5ND_1CCA_5d
+- Lib/Ratchet: Changed Round5 parameter set: R5ND_5CCA_5d -> R5ND_1CCA_5d
+
+
 ## Version 0.14.0 released 2020-04-16
 
 ### Features
