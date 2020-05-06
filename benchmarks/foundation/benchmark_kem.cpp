@@ -138,7 +138,8 @@ kem_decapsulate(benchmark::State &state) {
     //  Measure
     //
     for (auto _ : state) {
-        const vscf_status_t status = vscf_kem_kem_decapsulate(key_alg, vsc_buffer_data(encapsulated_key), private_key, shared_key);
+        const vscf_status_t status =
+                vscf_kem_kem_decapsulate(key_alg, vsc_buffer_data(encapsulated_key), private_key, shared_key);
         vsc_buffer_reset(shared_key);
         VSCF_ASSERT(status == vscf_status_SUCCESS);
     }
@@ -153,7 +154,7 @@ kem_decapsulate(benchmark::State &state) {
 }
 
 BENCHMARK(kem_encapsulate)->ArgNames({"Curve25519"})->Arg(vscf_alg_id_CURVE25519);
-BENCHMARK(kem_encapsulate)->ArgNames({"Round5"})->Arg(vscf_alg_id_ROUND5_ND_5KEM_5D);
+BENCHMARK(kem_encapsulate)->ArgNames({"Round5"})->Arg(vscf_alg_id_ROUND5_ND_1CCA_5D);
 
 BENCHMARK(kem_decapsulate)->ArgNames({"Curve25519"})->Arg(vscf_alg_id_CURVE25519);
-BENCHMARK(kem_decapsulate)->ArgNames({"Round5"})->Arg(vscf_alg_id_ROUND5_ND_5KEM_5D);
+BENCHMARK(kem_decapsulate)->ArgNames({"Round5"})->Arg(vscf_alg_id_ROUND5_ND_1CCA_5D);

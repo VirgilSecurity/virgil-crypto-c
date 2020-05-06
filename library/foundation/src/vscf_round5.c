@@ -64,8 +64,7 @@
 #include "vscf_round5_internal.h"
 
 #include <round5/rng.h>
-#include <round5/r5_cca_kem.h>
-#include <round5/r5_parameter_sets.h>
+#include <round5/kem.h>
 
 // clang-format on
 //  @end
@@ -126,7 +125,7 @@ vscf_round5_generate_key(const vscf_round5_t *self, vscf_alg_id_t alg_id, vscf_e
     VSCF_ASSERT_PTR(self->random);
     VSCF_ASSERT_PTR(alg_id != vscf_alg_id_NONE);
 
-    if (alg_id != vscf_alg_id_ROUND5_ND_5KEM_5D) {
+    if (alg_id != vscf_alg_id_ROUND5_ND_1CCA_5D) {
         VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_UNSUPPORTED_ALGORITHM);
         return NULL;
     }
@@ -159,7 +158,7 @@ vscf_round5_generate_key(const vscf_round5_t *self, vscf_alg_id_t alg_id, vscf_e
     //
     //  Generate keys
     //
-    const int gen_status = r5_cca_kem_keygen(vsc_buffer_unused_bytes(pk), vsc_buffer_unused_bytes(sk));
+    const int gen_status = crypto_kem_keypair(vsc_buffer_unused_bytes(pk), vsc_buffer_unused_bytes(sk));
     VSCF_ATOMIC_CRITICAL_SECTION_END(keygen);
     vsc_buffer_destroy(&seed);
 
@@ -174,7 +173,7 @@ vscf_round5_generate_key(const vscf_round5_t *self, vscf_alg_id_t alg_id, vscf_e
     vsc_buffer_inc_used(sk, sk_len);
 
     vscf_impl_t *pub_alg_info =
-            vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_ROUND5_ND_5KEM_5D));
+            vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_ROUND5_ND_1CCA_5D));
     vscf_impl_t *priv_alg_info = vscf_impl_shallow_copy(pub_alg_info);
 
     vscf_raw_public_key_t *raw_public_key = vscf_raw_public_key_new_with_buffer(&pk, &pub_alg_info);
@@ -239,7 +238,7 @@ vscf_round5_import_public_key_data(
     VSCF_ASSERT(vsc_data_is_valid(key_data));
     VSCF_ASSERT_PTR(key_alg_info);
 
-    if (vscf_alg_info_alg_id(key_alg_info) != vscf_alg_id_ROUND5_ND_5KEM_5D) {
+    if (vscf_alg_info_alg_id(key_alg_info) != vscf_alg_id_ROUND5_ND_1CCA_5D) {
         VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_MISMATCH_PUBLIC_KEY_AND_ALGORITHM);
         return NULL;
     }
@@ -357,7 +356,7 @@ vscf_round5_import_private_key_data(
     VSCF_ASSERT(vsc_data_is_valid(key_data));
     VSCF_ASSERT_PTR(key_alg_info);
 
-    if (vscf_alg_info_alg_id(key_alg_info) != vscf_alg_id_ROUND5_ND_5KEM_5D) {
+    if (vscf_alg_info_alg_id(key_alg_info) != vscf_alg_id_ROUND5_ND_1CCA_5D) {
         VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_MISMATCH_PRIVATE_KEY_AND_ALGORITHM);
         return NULL;
     }
@@ -468,7 +467,7 @@ vscf_round5_kem_shared_key_len(const vscf_round5_t *self, const vscf_impl_t *key
     VSCF_ASSERT_PTR(self);
     VSCF_UNUSED(key);
 
-    return PARAMS_KAPPA_BYTES;
+    return CRYPTO_BYTES;
 }
 
 //
@@ -480,7 +479,7 @@ vscf_round5_kem_encapsulated_key_len(const vscf_round5_t *self, const vscf_impl_
     VSCF_ASSERT_PTR(self);
     VSCF_UNUSED(public_key);
 
-    return PARAMS_CT_SIZE + PARAMS_KAPPA_BYTES;
+    return CRYPTO_CIPHERTEXTBYTES;
 }
 
 //
@@ -523,7 +522,7 @@ vscf_round5_kem_encapsulate(const vscf_round5_t *self, const vscf_impl_t *public
     //
     //  Encrypt
     //
-    const int enc_status = r5_cca_kem_encapsulate(
+    const int enc_status = crypto_kem_enc(
             vsc_buffer_unused_bytes(encapsulated_key), vsc_buffer_unused_bytes(shared_key), public_key_data.bytes);
 
     VSCF_ATOMIC_CRITICAL_SECTION_END(encapsulate);
@@ -557,7 +556,7 @@ vscf_round5_kem_decapsulate(const vscf_round5_t *self, vsc_data_t encapsulated_k
 
     vsc_data_t private_key_data = vscf_raw_private_key_data((vscf_raw_private_key_t *)private_key);
     const int status =
-            r5_cca_kem_decapsulate(vsc_buffer_unused_bytes(shared_key), encapsulated_key.bytes, private_key_data.bytes);
+            crypto_kem_dec(vsc_buffer_unused_bytes(shared_key), encapsulated_key.bytes, private_key_data.bytes);
 
     if (status == 0) {
         vsc_buffer_inc_used(shared_key, vscf_round5_kem_shared_key_len(self, private_key));

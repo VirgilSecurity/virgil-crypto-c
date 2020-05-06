@@ -147,7 +147,7 @@ test__generate_private_key__falcon__success(void) {
 void
 test__generate_private_key__round5__success(void) {
 #if VSCF_POST_QUANTUM && VSCF_ROUND5
-    inner_test__generate_private_key__success(vscf_alg_id_ROUND5_ND_5KEM_5D, 8336);
+    inner_test__generate_private_key__success(vscf_alg_id_ROUND5_ND_1CCA_5D, 3944);
 #else
     TEST_IGNORE_MESSAGE("Feature VSCF_POST_QUANTUM and/or VSCF_ROUND5 are disabled");
 #endif
@@ -194,7 +194,7 @@ test__generate_post_quantum_key__with_default_rng__success(void) {
 
     const vscf_impl_t *hybrid_cipher_second_private_key = vscf_hybrid_private_key_second_key(cipher_hybrid_private_key);
     TEST_ASSERT_NOT_NULL(hybrid_cipher_second_private_key);
-    TEST_ASSERT_EQUAL(vscf_alg_id_ROUND5_ND_5KEM_5D, vscf_key_alg_id(hybrid_cipher_second_private_key));
+    TEST_ASSERT_EQUAL(vscf_alg_id_ROUND5_ND_1CCA_5D, vscf_key_alg_id(hybrid_cipher_second_private_key));
 
     const vscf_impl_t *signer_private_key = vscf_compound_private_key_signer_key(compound_private_key);
     TEST_ASSERT_NOT_NULL(signer_private_key);
@@ -231,7 +231,7 @@ test__generate_post_quantum_key__with_default_rng__success(void) {
 
     const vscf_impl_t *hybrid_cipher_second_public_key = vscf_hybrid_public_key_second_key(hybrid_public_key);
     TEST_ASSERT_NOT_NULL(hybrid_cipher_second_public_key);
-    TEST_ASSERT_EQUAL(vscf_alg_id_ROUND5_ND_5KEM_5D, vscf_key_alg_id(hybrid_cipher_second_public_key));
+    TEST_ASSERT_EQUAL(vscf_alg_id_ROUND5_ND_1CCA_5D, vscf_key_alg_id(hybrid_cipher_second_public_key));
 
     const vscf_impl_t *signer_public_key = vscf_compound_public_key_signer_key(compound_public_key);
     TEST_ASSERT_NOT_NULL(signer_public_key);
@@ -611,7 +611,7 @@ test__import_public_key__rsa2048_and_then_export__are_equals(void) {
 void
 test__import_public_key__round5_and_then_export__are_equals(void) {
 #if VSCF_POST_QUANTUM && VSCF_ROUND5
-    inner_test__import_public_key__then_export__are_equals(test_data_round5_ND_5KEM_5D_PUBLIC_KEY_PKCS8_DER);
+    inner_test__import_public_key__then_export__are_equals(test_data_round5_ND_1CCA_5D_PUBLIC_KEY_PKCS8_DER);
 #else
     TEST_IGNORE_MESSAGE("Feature VSCF_POST_QUANTUM and/or VSCF_ROUND5 are disabled");
 #endif
@@ -630,7 +630,7 @@ void
 test__import_public_key__curve25519_round5_falcon_and_then_export__are_equals(void) {
 #if VSCF_POST_QUANTUM && VSCF_ROUND5 && VSCF_FALCON
     inner_test__import_public_key__then_export__are_equals(
-            test_data_pqc_CURVE25519_ROUND5_ND_5KEM_5D_FALCON_PUBLIC_KEY_PKCS8_DER);
+            test_data_pqc_CURVE25519_ROUND5_ND_1CCA_5D_FALCON_PUBLIC_KEY_PKCS8_DER);
 #else
     TEST_IGNORE_MESSAGE("Feature VSCF_POST_QUANTUM and/or VSCF_ROUND5 and/or VSCF_FALCON are disabled");
 #endif
@@ -640,7 +640,7 @@ void
 test__import_public_key__curve25519_round5_ed25519_falcon_and_then_export__are_equals(void) {
 #if VSCF_POST_QUANTUM && VSCF_ROUND5 && VSCF_FALCON
     inner_test__import_public_key__then_export__are_equals(
-            test_data_pqc_CURVE25519_ROUND5_ND_5KEM_5D_ED25519_FALCON_PUBLIC_KEY_PKCS8_DER);
+            test_data_pqc_CURVE25519_ROUND5_ND_1CCA_5D_ED25519_FALCON_PUBLIC_KEY_PKCS8_DER);
 #else
     TEST_IGNORE_MESSAGE("Feature VSCF_POST_QUANTUM and/or VSCF_ROUND5 and/or VSCF_FALCON are disabled");
 #endif
@@ -678,7 +678,7 @@ test__import_private_key__rsa2048_and_then_export__are_equals(void) {
 void
 test__import_private_key__round5_and_then_export__are_equals(void) {
 #if VSCF_POST_QUANTUM && VSCF_ROUND5
-    inner_test__import_private_key__then_export__are_equals(test_data_round5_ND_5KEM_5D_PRIVATE_KEY_PKCS8_DER);
+    inner_test__import_private_key__then_export__are_equals(test_data_round5_ND_1CCA_5D_PRIVATE_KEY_PKCS8_DER);
 #else
     TEST_IGNORE_MESSAGE("Feature VSCF_POST_QUANTUM and/or VSCF_ROUND5 are disabled");
 #endif
@@ -697,7 +697,7 @@ void
 test__import_private_key__curve25519_round5_falcon_and_then_export__are_equals(void) {
 #if VSCF_POST_QUANTUM && VSCF_ROUND5 && VSCF_FALCON
     inner_test__import_private_key__then_export__are_equals(
-            test_data_pqc_CURVE25519_ROUND5_ND_5KEM_5D_FALCON_PRIVATE_KEY_PKCS8_DER);
+            test_data_pqc_CURVE25519_ROUND5_ND_1CCA_5D_FALCON_PRIVATE_KEY_PKCS8_DER);
 #else
     TEST_IGNORE_MESSAGE("Feature VSCF_POST_QUANTUM and/or VSCF_ROUND5 and/or VSCF_FALCON are disabled");
 #endif
@@ -707,7 +707,7 @@ void
 test__import_private_key__curve25519_round5_ed25519_falcon_and_then_export__are_equals(void) {
 #if VSCF_POST_QUANTUM && VSCF_ROUND5 && VSCF_FALCON
     inner_test__import_private_key__then_export__are_equals(
-            test_data_pqc_CURVE25519_ROUND5_ND_5KEM_5D_ED25519_FALCON_PRIVATE_KEY_PKCS8_DER);
+            test_data_pqc_CURVE25519_ROUND5_ND_1CCA_5D_ED25519_FALCON_PRIVATE_KEY_PKCS8_DER);
 #else
     TEST_IGNORE_MESSAGE("Feature VSCF_POST_QUANTUM and/or VSCF_ROUND5 and/or VSCF_FALCON are disabled");
 #endif
@@ -717,8 +717,8 @@ void
 test__import_private_key__curve25519_round5_ed25519_falcon_and_then_export_public_key__are_equals(void) {
 #if VSCF_POST_QUANTUM && VSCF_ROUND5 && VSCF_FALCON
     inner_test__import_private_key__then_export_public_key__are_equals(
-            test_data_pqc_CURVE25519_ROUND5_ND_5KEM_5D_ED25519_FALCON_PRIVATE_KEY_PKCS8_DER,
-            test_data_pqc_CURVE25519_ROUND5_ND_5KEM_5D_ED25519_FALCON_PUBLIC_KEY_PKCS8_DER);
+            test_data_pqc_CURVE25519_ROUND5_ND_1CCA_5D_ED25519_FALCON_PRIVATE_KEY_PKCS8_DER,
+            test_data_pqc_CURVE25519_ROUND5_ND_1CCA_5D_ED25519_FALCON_PUBLIC_KEY_PKCS8_DER);
 #else
     TEST_IGNORE_MESSAGE("Feature VSCF_POST_QUANTUM and/or VSCF_ROUND5 and/or VSCF_FALCON are disabled");
 #endif
