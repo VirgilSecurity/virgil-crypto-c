@@ -127,13 +127,13 @@ public class RecipientCipherBenchmark {
 
 	@Test
 	public void encrypt_curve25519_round5() {
-		setup(new HybridKeyType(AlgId.CURVE25519, AlgId.ROUND5_ND_5KEM_5D));
+		setup(new HybridKeyType(AlgId.CURVE25519, AlgId.ROUND5_ND_1CCA_5D));
 		encrypt();
 	}
 
 	@Test
 	public void decrypt_curve25519_round5() {
-		setup(new HybridKeyType(AlgId.CURVE25519, AlgId.ROUND5_ND_5KEM_5D));
+		setup(new HybridKeyType(AlgId.CURVE25519, AlgId.ROUND5_ND_1CCA_5D));
 		decrypt();
 	}
 

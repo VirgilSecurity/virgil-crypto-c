@@ -73,7 +73,7 @@ public class RecipientCipherWithHybridKeysBenchmark {
 	@Param({ "CURVE25519" })
 	private AlgId firstAlgId;
 
-	@Param({ "ROUND5_ND_5KEM_5D" })
+	@Param({ "ROUND5_ND_1CCA_5D" })
 	private AlgId secondAlgId;
 
 	@Setup(Level.Invocation)

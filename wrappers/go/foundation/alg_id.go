@@ -27,6 +27,6 @@ const (
     AlgIdCompoundKey AlgId = 17
     AlgIdHybridKey AlgId = 18
     AlgIdFalcon AlgId = 19
-    AlgIdRound5Nd5kem5d AlgId = 20
+    AlgIdRound5Nd1cca5d AlgId = 20
     AlgIdRandomPadding AlgId = 21
 )

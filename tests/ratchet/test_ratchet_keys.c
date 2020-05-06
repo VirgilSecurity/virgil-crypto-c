@@ -97,7 +97,7 @@ test__create_chain_key_pqc__fixed_keys__should_match(void) {
     vscf_error_reset(&error_ctx);
 
     vscf_impl_t *private_key =
-            vscf_key_provider_generate_private_key(key_provider, vscf_alg_id_ROUND5_ND_5KEM_5D, &error_ctx);
+            vscf_key_provider_generate_private_key(key_provider, vscf_alg_id_ROUND5_ND_1CCA_5D, &error_ctx);
 
     TEST_ASSERT(!vscf_error_has_error(&error_ctx));
 

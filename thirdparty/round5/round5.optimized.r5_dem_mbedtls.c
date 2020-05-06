@@ -36,7 +36,7 @@ int round5_dem(unsigned char *c2, unsigned long long *c2_len, const unsigned cha
 
     /* Hash key to obtain final key and IV */
     assert(PARAMS_KAPPA_BYTES == 32 || PARAMS_KAPPA_BYTES == 24 || PARAMS_KAPPA_BYTES == 16);
-    hash(final_key_iv, (size_t) (PARAMS_KAPPA_BYTES + 12), key, PARAMS_KAPPA_BYTES, PARAMS_KAPPA_BYTES);
+    HashR5DEM(final_key_iv, (size_t) (PARAMS_KAPPA_BYTES + 12), key, PARAMS_KAPPA_BYTES);
 
     /* Initialise AES GCM */
     switch (PARAMS_KAPPA_BYTES) {
@@ -112,7 +112,7 @@ int round5_dem_inverse(unsigned char *m, unsigned long long *m_len, const unsign
 
     /* Hash key to obtain final key and IV */
     assert(PARAMS_KAPPA_BYTES == 32 || PARAMS_KAPPA_BYTES == 24 || PARAMS_KAPPA_BYTES == 16);
-    hash(final_key_iv, (size_t) (PARAMS_KAPPA_BYTES + 12), key, PARAMS_KAPPA_BYTES, PARAMS_KAPPA_BYTES);
+    HashR5DEM(final_key_iv, (size_t) (PARAMS_KAPPA_BYTES + 12), key, PARAMS_KAPPA_BYTES);
 
     /* Get tag */
     memcpy(tag, c2 + c2_len_no_tag, 16);

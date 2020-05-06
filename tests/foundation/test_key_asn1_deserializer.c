@@ -541,7 +541,7 @@ test__deserialize_public_key__hybrid_curve25519_round5_der__success(void) {
     vscf_error_reset(&error);
 
     vscf_raw_public_key_t *raw_public_key = vscf_key_asn1_deserializer_deserialize_public_key(
-            key_deserializer, test_data_hybrid_key_CURVE25519_ROUND5_ND_5KEM_5D_PUBLIC_KEY_PKCS8_DER, &error);
+            key_deserializer, test_data_hybrid_key_CURVE25519_ROUND5_ND_1CCA_5D_PUBLIC_KEY_PKCS8_DER, &error);
 
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
     TEST_ASSERT_NOT_NULL(raw_public_key);
@@ -554,9 +554,9 @@ test__deserialize_public_key__hybrid_curve25519_round5_der__success(void) {
 
     TEST_ASSERT_EQUAL(vscf_alg_id_HYBRID_KEY, vscf_alg_info_alg_id(alg_info));
     TEST_ASSERT_EQUAL(vscf_alg_id_CURVE25519, vscf_alg_info_alg_id(first_key_alg_info));
-    TEST_ASSERT_EQUAL(vscf_alg_id_ROUND5_ND_5KEM_5D, vscf_alg_info_alg_id(second_key_alg_info));
+    TEST_ASSERT_EQUAL(vscf_alg_id_ROUND5_ND_1CCA_5D, vscf_alg_info_alg_id(second_key_alg_info));
     TEST_ASSERT_EQUAL_DATA(
-            test_data_hybrid_key_CURVE25519_ROUND5_ND_5KEM_5D_PUBLIC_KEY, vscf_raw_public_key_data(raw_public_key));
+            test_data_hybrid_key_CURVE25519_ROUND5_ND_1CCA_5D_PUBLIC_KEY, vscf_raw_public_key_data(raw_public_key));
 
     vscf_raw_public_key_destroy(&raw_public_key);
     vscf_key_asn1_deserializer_destroy(&key_deserializer);
@@ -575,7 +575,7 @@ test__deserialize_private_key__hybrid_curve25519_round5_der__success(void) {
     vscf_error_reset(&error);
 
     vscf_raw_private_key_t *raw_private_key = vscf_key_asn1_deserializer_deserialize_private_key(
-            key_deserializer, test_data_hybrid_key_CURVE25519_ROUND5_ND_5KEM_5D_PRIVATE_KEY_PKCS8_DER, &error);
+            key_deserializer, test_data_hybrid_key_CURVE25519_ROUND5_ND_1CCA_5D_PRIVATE_KEY_PKCS8_DER, &error);
 
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
     TEST_ASSERT_NOT_NULL(raw_private_key);
@@ -588,9 +588,9 @@ test__deserialize_private_key__hybrid_curve25519_round5_der__success(void) {
 
     TEST_ASSERT_EQUAL(vscf_alg_id_HYBRID_KEY, vscf_alg_info_alg_id(alg_info));
     TEST_ASSERT_EQUAL(vscf_alg_id_CURVE25519, vscf_alg_info_alg_id(first_key_alg_info));
-    TEST_ASSERT_EQUAL(vscf_alg_id_ROUND5_ND_5KEM_5D, vscf_alg_info_alg_id(second_key_alg_info));
+    TEST_ASSERT_EQUAL(vscf_alg_id_ROUND5_ND_1CCA_5D, vscf_alg_info_alg_id(second_key_alg_info));
     TEST_ASSERT_EQUAL_DATA(
-            test_data_hybrid_key_CURVE25519_ROUND5_ND_5KEM_5D_PRIVATE_KEY, vscf_raw_private_key_data(raw_private_key));
+            test_data_hybrid_key_CURVE25519_ROUND5_ND_1CCA_5D_PRIVATE_KEY, vscf_raw_private_key_data(raw_private_key));
 
     vscf_raw_private_key_destroy(&raw_private_key);
     vscf_key_asn1_deserializer_destroy(&key_deserializer);
