@@ -94,12 +94,4 @@
     <class name="ratchet pb utils"/>
     <class name="ratchet"/>
     <class name="ratchet session"/>
-    <class name="ratchet group participant epoch"/>
-    <class name="ratchet group participant info"/>
-    <class name="ratchet group participants info"/>
-    <class name="ratchet group participant"/>
-    <class name="ratchet group message"/>
-    <class name="ratchet group ticket"/>
-    <class name="ratchet group participants ids"/>
-    <class name="ratchet group session"/>
 </project>
