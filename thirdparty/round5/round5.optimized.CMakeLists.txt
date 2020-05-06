@@ -32,101 +32,115 @@
 
 cmake_minimum_required(VERSION 3.12 FATAL_ERROR)
 
-project(round5-optimized VERSION 0.0.1 LANGUAGES C)
+project(round5-optimized VERSION 0.0.2 LANGUAGES C)
 
 # ---------------------------------------------------------------------------
 #   Options.
 # ---------------------------------------------------------------------------
-option(CM_CACHE "On/Off timing and cache attack countermeasures" YES)
+option(CM_CACHE "On/Off cache attack counter measures" OFF)
+option(CM_CT "On/Off constant-time countermeasures" OFF)
+option(CM_MALFORMED "On/Off constant-time countermeasures" OFF)
 option(SHIFT_LEFT64_CONSTANT_TIME
         "Indicate that the 64-bit shift left operator with a variable amount can be considered constant-time" OFF)
-
-# ---------------------------------------------------------------------------
-#   Helpers.
-# ---------------------------------------------------------------------------
-include(GNUInstallDirs)
 
 # ---------------------------------------------------------------------------
 #   Define sources.
 # ---------------------------------------------------------------------------
 add_library(round5-optimized)
+target_sources(round5-optimized
+        PRIVATE
+            "${CMAKE_CURRENT_LIST_DIR}/../reference/src/common/rng/rng.h"
+            "${CMAKE_CURRENT_LIST_DIR}/../reference/src/common/drbg/drbg.h"
+            "${CMAKE_CURRENT_LIST_DIR}/../reference/src/common/fips202/1x/keccakf1600.h"
+            "${CMAKE_CURRENT_LIST_DIR}/../reference/src/common/fips202/1x/keccakf1600.c"
+            "${CMAKE_CURRENT_LIST_DIR}/../reference/src/common/fips202/f202sp800185.c"
+            "${CMAKE_CURRENT_LIST_DIR}/../reference/src/common/fips202/f202sp800185.h"
+            "${CMAKE_CURRENT_LIST_DIR}/../reference/src/common/hash/r5_hash.c"
+            "${CMAKE_CURRENT_LIST_DIR}/../reference/src/common/hash/r5_hash.h"
+            "${CMAKE_CURRENT_LIST_DIR}/../reference/src/misc.c"
+            "${CMAKE_CURRENT_LIST_DIR}/../reference/src/misc.h"
+            "${CMAKE_CURRENT_LIST_DIR}/../reference/src/little_endian.c"
+            "${CMAKE_CURRENT_LIST_DIR}/../reference/src/little_endian.h"
+            "${CMAKE_CURRENT_LIST_DIR}/../reference/src/r5_memory.c"
+            "${CMAKE_CURRENT_LIST_DIR}/../reference/src/r5_memory.h"
+            "${CMAKE_CURRENT_LIST_DIR}/../reference/src/xef_ref.c"
+            "${CMAKE_CURRENT_LIST_DIR}/../reference/src/xef.h"
 
-set(HEADERS
-        "${CMAKE_CURRENT_LIST_DIR}/../configurable/src/r5_hash.h"
+            "${CMAKE_CURRENT_LIST_DIR}/../configurable/src/xe2_c16.c"
+            "${CMAKE_CURRENT_LIST_DIR}/../configurable/src/xe4_c64.c"
+            "${CMAKE_CURRENT_LIST_DIR}/../configurable/src/xe5_c64.c"
 
-        "${CMAKE_CURRENT_LIST_DIR}/../reference/src/little_endian.h"
-        "${CMAKE_CURRENT_LIST_DIR}/../reference/src/r5_memory.h"
-        "${CMAKE_CURRENT_LIST_DIR}/../reference/src/rng.h"
-        "${CMAKE_CURRENT_LIST_DIR}/../reference/src/misc.h"
-        "${CMAKE_CURRENT_LIST_DIR}/../reference/src/xef.h"
-        "${CMAKE_CURRENT_LIST_DIR}/../reference/src/shake.h"
-
-        "${CMAKE_CURRENT_LIST_DIR}/src/r5_parameter_sets.h"
-        "${CMAKE_CURRENT_LIST_DIR}/src/ringmul.h"
-        "${CMAKE_CURRENT_LIST_DIR}/src/probe_cm.h"
-        "${CMAKE_CURRENT_LIST_DIR}/src/r5_cca_kem.h"
-        "${CMAKE_CURRENT_LIST_DIR}/src/r5_cca_pke.h"
-        "${CMAKE_CURRENT_LIST_DIR}/src/r5_cpa_kem.h"
-        "${CMAKE_CURRENT_LIST_DIR}/src/r5_cpa_pke.h"
-        "${CMAKE_CURRENT_LIST_DIR}/src/r5_dem.h"
-        "${CMAKE_CURRENT_LIST_DIR}/src/matmul.h"
-        "${CMAKE_CURRENT_LIST_DIR}/src/drbg.h"
-        "${CMAKE_CURRENT_LIST_DIR}/src/a_fixed.h"
-        "${CMAKE_CURRENT_LIST_DIR}/src/a_random.h"
-        "${CMAKE_CURRENT_LIST_DIR}/src/cca_encrypt.h"
-        "${CMAKE_CURRENT_LIST_DIR}/src/cpa_kem.h"
-    )
-
-set(SOURCES
-        "${CMAKE_CURRENT_LIST_DIR}/../configurable/src/xe2_c16.c"
-        "${CMAKE_CURRENT_LIST_DIR}/../configurable/src/xe4_c64.c"
-        "${CMAKE_CURRENT_LIST_DIR}/../configurable/src/xe5_c64.c"
-
-        "${CMAKE_CURRENT_LIST_DIR}/../reference/src/little_endian.c"
-        "${CMAKE_CURRENT_LIST_DIR}/../reference/src/misc.c"
-        "${CMAKE_CURRENT_LIST_DIR}/../reference/src/r5_hash.c"
-        "${CMAKE_CURRENT_LIST_DIR}/../reference/src/r5_memory.c"
-        "${CMAKE_CURRENT_LIST_DIR}/../reference/src/shake.c"
-        "${CMAKE_CURRENT_LIST_DIR}/../reference/src/xef_ref.c"
-
-        "${CMAKE_CURRENT_LIST_DIR}/src/ringmul.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/ringmul_cm.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/probe_cm.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/probe_cm_avx2.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/r5_cca_kem.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/r5_cca_pke.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/r5_cpa_kem.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/r5_cpa_pke_n1.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/r5_cpa_pke_nd.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/matmul.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/matmul_avx2.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/matmul_cm.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/drbg.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/a_fixed.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/a_random.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/cca_encrypt.c"
-        "${CMAKE_CURRENT_LIST_DIR}/src/cpa_kem.c"
-    )
+            "${CMAKE_CURRENT_LIST_DIR}/src/a_fixed.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/a_fixed.h"
+            "${CMAKE_CURRENT_LIST_DIR}/src/a_random.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/a_random.h"
+            "${CMAKE_CURRENT_LIST_DIR}/src/checkPublicParameter.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/checkPublicParameter.h"
+            "${CMAKE_CURRENT_LIST_DIR}/src/chooseparameters.h"
+            "${CMAKE_CURRENT_LIST_DIR}/src/kem.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/kem.h"
+            "${CMAKE_CURRENT_LIST_DIR}/src/matmul.h"
+            "${CMAKE_CURRENT_LIST_DIR}/src/matmul_avx2.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/matmul_cacheless.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/matmul_ct.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/pack.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/pack.h"
+            "${CMAKE_CURRENT_LIST_DIR}/src/pke.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/pke.h"
+            "${CMAKE_CURRENT_LIST_DIR}/src/r5_cca_kem.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/r5_cca_kem.h"
+            "${CMAKE_CURRENT_LIST_DIR}/src/r5_cca_pke.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/r5_cca_pke.h"
+            "${CMAKE_CURRENT_LIST_DIR}/src/r5_cpa_kem.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/r5_cpa_kem.h"
+            "${CMAKE_CURRENT_LIST_DIR}/src/r5_cpa_pke.h"
+            "${CMAKE_CURRENT_LIST_DIR}/src/r5_cpa_pke_n1.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/r5_cpa_pke_nd.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/r5_dem.h"
+            "${CMAKE_CURRENT_LIST_DIR}/src/r5_parameter_sets.h"
+            "${CMAKE_CURRENT_LIST_DIR}/src/r5_secretkeygen.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/r5_secretkeygen.h"
+            "${CMAKE_CURRENT_LIST_DIR}/src/ringmul.h"
+            "${CMAKE_CURRENT_LIST_DIR}/src/ringmul_avx2.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/ringmul_cacheless.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/ringmul_cm.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/ringmul_ct.c"
+        )
 
 if(CRYPTO_ENGINE_MBEDTLS)
-    list(APPEND SOURCES "${CMAKE_CURRENT_LIST_DIR}/src/r5_dem_mbedtls.c")
+    target_sources(round5-optimized PRIVATE "${CMAKE_CURRENT_LIST_DIR}/src/r5_dem_mbedtls.c")
 else()
-    list(APPEND SOURCES "${CMAKE_CURRENT_LIST_DIR}/src/r5_dem.c")
+    target_sources(round5-optimized PRIVATE "${CMAKE_CURRENT_LIST_DIR}/src/r5_dem.c")
 endif()
 
-if(NIST_KAT_GENERATION)
-    if(NOT CRYPTO_ENGINE_OPENSSL)
-        message(FATAL_ERROR "NIST_KAT_GENERATION requires CRYPTO_ENGINE_OPENSSL to be enabled")
+if(USE_AES_DRBG)
+    target_sources(round5-optimized
+            PRIVATE
+                "${CMAKE_CURRENT_LIST_DIR}/../reference/src/common/aesctr/aesdrbg.h"
+                "${CMAKE_CURRENT_LIST_DIR}/../reference/src/common/aesctr/aesdrbg.c"
+            )
+endif()
+
+
+if(USE_NIST_RNG)
+    if(CRYPTO_ENGINE_MBEDTLS)
+        target_sources(round5-optimized PRIVATE "${CMAKE_CURRENT_LIST_DIR}/../reference/src/common/rng/nist_rng_mbedtls.c")
+    else()
+        target_sources(round5-optimized PRIVATE "${CMAKE_CURRENT_LIST_DIR}/../reference/src/common/rng/nist_rng.c")
     endif()
-    list(APPEND SOURCES "${CMAKE_CURRENT_LIST_DIR}/../reference/src/rng/nist_rng.c")
 else()
-    list(APPEND SOURCES "${CMAKE_CURRENT_LIST_DIR}/../reference/src/rng/shake_rng.c")
+    target_sources(round5-optimized PUBLIC "${CMAKE_CURRENT_LIST_DIR}/../reference/src/common/rng/true_rng.c")
 endif()
-
-target_sources(round5-optimized PRIVATE ${HEADERS} ${SOURCES})
 
 target_include_directories(round5-optimized
         PUBLIC
+            $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../reference/src/common>
+            $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../reference/src/common/rng>
+            $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../reference/src/common/hash>
+            $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../reference/src/common/drbg>
+            $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../reference/src/common/fips202>
+            $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../reference/src/common/fips202/1x>
+            $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../reference/src/common/aesctr>
             $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/src>
             $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
         )
@@ -152,27 +166,37 @@ if(TAU_LEN)
     target_compile_definitions(round5-optimized PUBLIC ROUND5_API_TAU2_LEN=${TAU2_LEN})
 endif()
 
-if(NO_OPENSSL_SHAKE)
-    target_compile_definitions(round5-optimized PUBLIC NO_OPENSSL_SHAKE)
-endif()
-
 if(USE_AES_DRBG)
     target_compile_definitions(round5-optimized PUBLIC USE_AES_DRBG)
+endif()
+
+if(STANDALONE)
+    target_compile_definitions(round5-optimized PUBLIC STANDALONE)
 endif()
 
 if(CM_CACHE)
     target_compile_definitions(round5-optimized PUBLIC CM_CACHE)
 endif()
 
+if(CM_CT)
+    target_compile_definitions(round5-optimized PUBLIC CM_CT)
+endif()
+
+if(CM_MALFORMED)
+    target_compile_definitions(round5-optimized PUBLIC CM_MALFORMED)
+endif()
+
 if(SHIFT_LEFT64_CONSTANT_TIME)
     target_compile_definitions(round5-optimized PUBLIC SHIFT_LEFT64_CONSTANT_TIME)
 endif()
-
 
 # ---------------------------------------------------------------------------
 #   Define compilation flags.
 # ---------------------------------------------------------------------------
 target_compile_options(round5-optimized
+        PUBLIC
+            $<$<OR:$<C_COMPILER_ID:GNU>,$<C_COMPILER_ID:Clang>,$<C_COMPILER_ID:AppleClang>>:
+                    -fomit-frame-pointer -fwrapv>
         PRIVATE
             $<$<OR:$<C_COMPILER_ID:GNU>,$<C_COMPILER_ID:Clang>,$<C_COMPILER_ID:AppleClang>>:
                     -pedantic -Wall -Wextra -Wconversion -Wcast-qual -Wcast-align>
@@ -180,7 +204,6 @@ target_compile_options(round5-optimized
 
 target_link_libraries(round5-optimized
         PUBLIC
-            XKCP::keccak
             $<$<BOOL:${CRYPTO_ENGINE_OPENSSL}>:OpenSSL::Crypto>
             $<$<BOOL:${CRYPTO_ENGINE_MBEDTLS}>:mbed::crypto>
             $<$<OR:$<C_COMPILER_ID:GNU>,$<C_COMPILER_ID:Clang>,$<C_COMPILER_ID:AppleClang>>:-lm>
@@ -192,8 +215,12 @@ target_link_libraries(round5-optimized
 #
 # Install headers.
 #
-
-install(FILES ${HEADERS} DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/round5")
+get_target_property(ROUND5_OPTIMIZED_SOURCES round5-optimized SOURCES)
+foreach(file IN LISTS ROUND5_OPTIMIZED_SOURCES)
+    if(file MATCHES "\\.h$")
+        install(FILES "${file}" DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/round5")
+    endif()
+endforeach()
 
 #
 # Install libraries.
@@ -211,29 +238,22 @@ install(
 #   Build examples.
 # ---------------------------------------------------------------------------
 if(BUILD_EXAMPLES)
-    add_executable(example "${CMAKE_CURRENT_LIST_DIR}/src/examples/example.c")
-    target_link_libraries(example round5-optimized)
+    add_executable(PQCgenKAT_kem "${CMAKE_CURRENT_LIST_DIR}/src/examples/PQCgenKAT_kem.c")
+    add_executable(sample_pke "${CMAKE_CURRENT_LIST_DIR}/src/examples/sample_pke.c")
+    add_executable(sample_kem "${CMAKE_CURRENT_LIST_DIR}/src/examples/sample_kem.c")
+    add_executable(PQCgenKAT_encrypt "${CMAKE_CURRENT_LIST_DIR}/src/examples/PQCgenKAT_encrypt.c")
 
-    add_executable(createAfixed "${CMAKE_CURRENT_LIST_DIR}/src/createAfixed/createAfixed.c")
-    target_link_libraries(createAfixed round5-optimized)
-
-    install(
-            TARGETS example createAfixed
-            RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}"
-            )
-endif()
-
-if(BUILD_SPEEDTEST)
-    add_executable(speedtest)
-    target_sources(speedtest
-            PRIVATE
-                "${CMAKE_CURRENT_LIST_DIR}/../speedtest/src/speedtest_optimized.c"
-                "${CMAKE_CURRENT_LIST_DIR}/../speedtest/src/test_utils.c"
-            )
-    target_link_libraries(speedtest round5-optimized)
+    target_link_libraries(PQCgenKAT_kem round5-optimized)
+    target_link_libraries(sample_pke round5-optimized)
+    target_link_libraries(sample_kem round5-optimized)
+    target_link_libraries(PQCgenKAT_encrypt round5-optimized)
 
     install(
-            TARGETS speedtest
+            TARGETS
+                PQCgenKAT_kem
+                sample_pke
+                sample_kem
+                PQCgenKAT_encrypt
             RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}"
             )
 endif()

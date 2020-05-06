@@ -24,10 +24,9 @@ vscr_Session.receiver_identity_key_id max_size:8 fixed_length:true
 vscr_Session.receiver_long_term_key_id max_size:8 fixed_length:true
 vscr_Session.receiver_one_time_key_id max_size:8 fixed_length:true
 
-vscr_SessionPqcInfo.encapsulated_key1 max_size:1092 type:FT_POINTER
-vscr_SessionPqcInfo.encapsulated_key2 max_size:1092 type:FT_POINTER
-vscr_SessionPqcInfo.encapsulated_key3 max_size:1092 type:FT_POINTER
-vscr_SessionPqcInfo.encapsulated_key4 max_size:1092 type:FT_POINTER
+vscr_SessionPqcInfo.encapsulated_key1 max_size:620 type:FT_POINTER
+vscr_SessionPqcInfo.encapsulated_key2 max_size:620 type:FT_POINTER
+vscr_SessionPqcInfo.encapsulated_key3 max_size:620 type:FT_POINTER
 vscr_SessionPqcInfo.decapsulated_keys_signature max_size:1092 type:FT_POINTER
 
 vscr_ParticipantData.id max_size:32 fixed_length:true

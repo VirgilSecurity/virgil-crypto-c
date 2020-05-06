@@ -48,14 +48,14 @@ include_guard()
 option(ROUND5_LIBRARY "Enable build of the 'round5' library" ${VIRGIL_POST_QUANTUM})
 option(ROUND5_USE_MBEDTLS "Use missed crypto primitives from the mbedTLS library." ON)
 option(ROUND5_USE_OPENSSL "Use missed crypto primitives from the OpenSSL library." OFF)
+option(ROUND5_USE_NIST_RNG "Use NIST RNG instead of system RNG." ON)
 option(ROUND5_NIST_KAT_GEN "On/Off Generating NIST KATs (debug)." OFF)
 option(ROUND5_BUILD_EXAMPLES "On/Off builds of example programs." OFF)
-option(ROUND5_BUILD_SPEEDTEST "On/Off build of the speedtest program." OFF)
 mark_as_advanced(
         ROUND5_LIBRARY
         ROUND5_USE_MBEDTLS
         ROUND5_USE_OPENSSL
+        ROUND5_USE_NIST_RNG
         ROUND5_NIST_KAT_GEN
         ROUND5_BUILD_EXAMPLES
-        ROUND5_BUILD_SPEEDTEST
         )

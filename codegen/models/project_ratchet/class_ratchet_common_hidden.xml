@@ -5,9 +5,9 @@
     <constant name="group session version" value="1"/>
 
     <constant name="falcon signature len" value="809"/>
-    <constant name="round5 encapsulated key len" value="1285"/>
-    <constant name="round5 public key len" value="978"/>
-    <constant name="round5 shared key len" value="32"/>
+    <constant name="round5 encapsulated key len" value="620"/>
+    <constant name="round5 public key len" value="461"/>
+    <constant name="round5 shared key len" value="16"/>
 
     <constant name="shared key len" value="32"/>
     <constant name="key len" value="32"/>

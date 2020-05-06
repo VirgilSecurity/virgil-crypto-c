@@ -35,18 +35,18 @@
 #include "vsc_data.h"
 
 extern const vsc_data_t test_data_round5_RNG_SEED;
+extern const vsc_data_t test_data_round5_MESSAGE;
 
-extern const vsc_data_t test_data_round5_ND_5KEM_5D_PUBLIC_KEY;
-extern const vsc_data_t test_data_round5_ND_5KEM_5D_PRIVATE_KEY;
+extern const vsc_data_t test_data_round5_ND_1CCA_5D_PUBLIC_KEY;
+extern const vsc_data_t test_data_round5_ND_1CCA_5D_PRIVATE_KEY;
+extern const vsc_data_t test_data_round5_ND_1CCA_5D_PUBLIC_KEY_PKCS8_DER;
+extern const vsc_data_t test_data_round5_ND_1CCA_5D_PRIVATE_KEY_PKCS8_DER;
 
-extern const vsc_data_t test_data_round5_ND_5KEM_5D_PUBLIC_KEY_PKCS8_DER;
-extern const vsc_data_t test_data_round5_ND_5KEM_5D_PRIVATE_KEY_PKCS8_DER;
+extern const vsc_data_t test_data_round5_ND_1CCA_5D_ENCAPSULATED_KEY;
+extern const vsc_data_t test_data_round5_ND_1CCA_5D_ENCAPSULATED_SHARED_KEY;
 
-extern const vsc_data_t test_data_round5_ND_5KEM_5D_ENCAPSULATED_KEY;
-extern const vsc_data_t test_data_round5_ND_5KEM_5D_ENCAPSULATED_SHARED_KEY;
+extern const vsc_data_t test_data_round5_NIST_RNG_ND_1CCA_5D_PUBLIC_KEY;
+extern const vsc_data_t test_data_round5_NIST_RNG_ND_1CCA_5D_PRIVATE_KEY;
 
-extern const vsc_data_t test_data_round5_ND_5PKE_5D_PUBLIC_KEY;
-extern const vsc_data_t test_data_round5_ND_5PKE_5D_PRIVATE_KEY;
-
-extern const vsc_data_t test_data_round5_ND_5PKE_5D_MESSAGE;
-extern const vsc_data_t test_data_round5_ND_5PKE_5D_ENC_MESSAGE;
+extern const vsc_data_t test_data_round5_NIST_RNG_ND_1CCA_5D_KEM_ENCAPSULATED_KEY;
+extern const vsc_data_t test_data_round5_NIST_RNG_ND_1CCA_5D_KEM_SHARED_KEY;
