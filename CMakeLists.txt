@@ -34,7 +34,7 @@
 
 cmake_minimum_required(VERSION 3.12 FATAL_ERROR)
 
-project(virgil_crypto VERSION 0.15.0 LANGUAGES C)
+project(virgil_crypto VERSION 0.15.1 LANGUAGES C)
 
 
 # ---------------------------------------------------------------------------

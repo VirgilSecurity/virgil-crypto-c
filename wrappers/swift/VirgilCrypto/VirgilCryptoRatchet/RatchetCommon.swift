@@ -43,7 +43,7 @@ import VirgilCryptoFoundation
     /// Max plain text length allowed to be encrypted
     @objc public static let maxPlainTextLen: Int = 30000
     /// Max message length
-    @objc public static let maxMessageLen: Int = 37578
+    @objc public static let maxMessageLen: Int = 35583
     /// Key pair id length
     @objc public static let keyIdLen: Int = 8
     /// Participant id length

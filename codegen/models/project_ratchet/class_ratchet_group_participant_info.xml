@@ -1,9 +1,0 @@
-<class name="ratchet group participant info" context="public" scope="internal">
-
-    <require class="ratchet common" scope="context"/>
-    <require module="ratchet typedefs" scope="context"/>
-
-    <property name="id" class="vscr_ratchet_participant_id_t" is_reference="0" library="internal" access="readwrite"/>
-    <property name="pub key" class="vscr_ratchet_public_key_t" is_reference="0" library="internal" access="readwrite"/>
-
-</class>
