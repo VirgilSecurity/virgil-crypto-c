@@ -4,8 +4,6 @@
         namespace="virgil crypto common"
         framework="VSCCommon"
         prefix="vsc"
-        path="../library/common/"
-        work_path="generated/common/"
         wrappers="python"
         >
 

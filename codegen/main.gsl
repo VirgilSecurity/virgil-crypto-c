@@ -366,9 +366,13 @@ function run_main ()
         my.loaded_project.skip_codegen_wrappers = is_true (project.skip_codegen_wrappers)
         project_resolve (my.loaded_project)
 
-        for main.wrapper where my.loaded_project.wrappers = "all" | string_in (wrapper.lang, my.loaded_project.wrappers)
-            copy wrapper to my.loaded_project
-        endfor
+        if !string_empty(my.loaded_project.wrappers)
+            for main.wrapper where my.loaded_project.wrappers = "all" \
+                                   | string_in (wrapper.lang, my.loaded_project.wrappers)
+
+                copy wrapper to my.loaded_project
+            endfor
+        endif
 
         process_project (my.loaded_project, my.features_list, my.projects_api, my.wrappers, main.echo_level)
         projects_api_save (my.projects_api, main.work_path)

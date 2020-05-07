@@ -4,8 +4,6 @@
         namespace="virgil crypto pythia"
         framework="VSCPythia"
         prefix="vscp"
-        path="../library/pythia/"
-        work_path="generated/pythia/"
         wrappers="java,swift,python,wasm,php"
         >
 

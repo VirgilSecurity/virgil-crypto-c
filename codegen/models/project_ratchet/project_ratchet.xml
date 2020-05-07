@@ -4,8 +4,6 @@
         namespace="virgil crypto ratchet"
         framework="VSCRatchet"
         prefix="vscr"
-        path="../library/ratchet"
-        work_path = "generated/ratchet/"
         wrappers="java,swift,wasm"
         >
 

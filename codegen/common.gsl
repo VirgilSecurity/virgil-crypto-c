@@ -365,6 +365,21 @@ function string_to_singleline (str)
 endfunction
 
 # ---------------------------------------------------------------------------
+#   Return a string converted to a path, aka "one two" -> "one/two"
+# ---------------------------------------------------------------------------
+function string_to_path(str)
+    my.str = string_collapse_spaces (my.str)
+
+    if string_empty(my.str)
+        return my.str
+    endif
+
+    my.path = string.replace ("$(my.str:c,lower)", "_|/")
+
+    return my.path
+endfunction
+
+# ---------------------------------------------------------------------------
 #   Collapse spaces between words to 1 space in the code.
 #   Note, do not collapse spaces in macro formatting.
 #   Note, work for both single line and multiline strings.

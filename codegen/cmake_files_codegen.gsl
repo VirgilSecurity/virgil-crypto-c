@@ -308,7 +308,7 @@ endfunction
 function cmake_generate_sources (source, project)
     check_arguments (my, "source, project", my)
 
-    my.cmake_file = "$(directory.resolve (my.project.path))sources.cmake"
+    my.cmake_file = "$(directory.resolve (my.project.lib_path))sources.cmake"
 
     echo_trace ("Generate '$(my.cmake_file:)'", my)
 
@@ -407,7 +407,7 @@ endfunction
 function cmake_generate_modulemap (source, project)
     check_arguments (my, "source, project", my)
 
-    my.modulemap_file = "$(directory.resolve (my.project.path))module.modulemap"
+    my.modulemap_file = "$(directory.resolve (my.project.lib_path))module.modulemap"
 
     echo_trace ("Generate '$(my.modulemap_file:)'", my)
 

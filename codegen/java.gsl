@@ -108,9 +108,10 @@ function java_derive_package_name (project, wrapper)
     check_arguments (my, "project, wrapper", my)
 
     assert_attribute (my.project, "name", my)
+    assert_attribute (my.project, "package", my)
     assert_attribute (my.wrapper, "package", my)
 
-    return my.wrapper.package + "." + string.replace ("$(my.project.name:c,lower)", "_|.")
+    return my.wrapper.package + "." + string.replace ("$(my.project.package:c,lower)", "_|.")
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -119,12 +120,41 @@ endfunction
 function java_derive_package_dir (project, wrapper)
     check_arguments (my, "project, wrapper", my)
 
-    assert_attribute (my.project, "name", my)
-    assert_attribute (my.wrapper, "package", my)
-
     my.package = java_derive_package_name (my.project, my.wrapper)
 
     return string.replace (my.package, ".|/")
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return path to the src directory.
+# ---------------------------------------------------------------------------
+function java_derive_src_dir (project, wrapper)
+    check_arguments (my, "project, wrapper", my)
+
+    assert_attribute (my.project, "name", my)
+
+    my.package_dir = java_derive_package_dir (my.project, my.wrapper)
+    my.project_dir = "$(my.project.name:c)"
+
+    my.src_path = cat_path (my.wrapper.source_dir, my.project_dir, "src/main/java", my.package_dir)
+
+    return my.src_path
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return path to the src directory.
+# ---------------------------------------------------------------------------
+function java_derive_jni_dir (project, wrapper)
+    check_arguments (my, "project, wrapper", my)
+
+    assert_attribute (my.project, "name", my)
+    assert_attribute (my.wrapper, "package", my)
+
+    my.project_dir = "$(my.project.name:c)"
+
+    my.src_path = cat_path (my.wrapper.source_dir, my.project_dir, "jni")
+
+    return my.src_path
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -1350,8 +1380,8 @@ function java_create_project_module (project, wrapper)
         .prefix = my.project.prefix
         .package = java_derive_package_name(my.project, my.wrapper)
         .package_dir = java_derive_package_dir(my.project, my.wrapper)
-        .source_dir = cat_path (my.wrapper.source_dir, my.project.name, "src/main/java", java_project.package_dir)
-        .jni_source_dir = cat_path (my.wrapper.source_dir, my.project.name, "jni")
+        .source_dir = java_derive_src_dir(my.project, my.wrapper)
+        .jni_source_dir = java_derive_jni_dir(my.project, my.wrapper)
         .class_native_utils = "com.virgilsecurity.crypto.common.utils.NativeUtils"
         .c_umbrella_header = make_ref_c (make_id ("header", my.project.name, "public"))
 
@@ -1432,7 +1462,8 @@ function java_create_enum_module (enum, java_project, meta)
 
     if my.enum.name = "status"
         java_create_exception_module (my.enum, my.java_project, my.meta)
-    else
+        return
+    endif
 
     echo_info ("Create <java_module/> from enum: '$(my.enum.name:)'", my)
 
@@ -1502,7 +1533,6 @@ function java_create_enum_module (enum, java_project, meta)
     endnew
 
     echo_debug ("Done", my)
-    endif
 endfunction
 
 # ---------------------------------------------------------------------------

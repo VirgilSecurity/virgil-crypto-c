@@ -242,7 +242,7 @@ function features_list_update_from_project (features_list, project)
     #   Grab features
     new features to my.features_list
         .prefix = my.project.prefix ?
-        .path = my.project.path
+        .path = my.project.lib_path
         .project = my.project.name
         .cmake_target = my.project.cmake_target
 

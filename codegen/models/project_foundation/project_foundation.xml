@@ -4,9 +4,7 @@
         namespace="virgil crypto foundation"
         framework="VSCFoundation"
         prefix="vscf"
-        path="../library/foundation/"
-        work_path="generated/foundation/"
-        wrappers="swift,java,python,wasm,go,php"
+        wrappers="all"
         >
 
     <version major="0" minor="16" patch="0"/>
