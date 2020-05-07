@@ -75,7 +75,11 @@ enum vscs_core_status_t {
     //
     //  No errors was occurred.
     //
-    vscs_core_status_SUCCESS = 0
+    vscs_core_status_SUCCESS = 0,
+    //
+    //  Met internal inconsistency.
+    //
+    vscs_core_status_INTERNAL_ERROR = -1
 };
 typedef enum vscs_core_status_t vscs_core_status_t;
 

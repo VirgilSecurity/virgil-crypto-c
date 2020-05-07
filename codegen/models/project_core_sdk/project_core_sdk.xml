@@ -1,14 +1,14 @@
 <project
         name="core sdk"
         brief="Virgil Security Core SDK"
-        namespace="virgi sdk core"
+        package="sdk core"
+        namespace="virgil sdk core"
         framework="VSCSCore"
         prefix="vscs_core"
-        path="../library/sdk/core/"
-        work_path="generated/sdk/core/"
+        wrappers="java"
         >
 
-    <version major="0" minor="14" patch="1"/>
+    <version major="0" minor="16" patch="0"/>
 
     <license>
         Copyright (C) 2015-2020 Virgil Security, Inc.
@@ -59,6 +59,8 @@
     <module name="atomic" from="shared"/>
 
     <enum name="status"/>
+
+    <class name="jwt generator"/>
 
     <error_message_getter success="0">
         <require enum="status"/>

@@ -55,4 +55,5 @@ target_compile_definitions(core_sdk
             "VSCS_CORE_SHARED_LIBRARY=$<BOOL:${BUILD_SHARED_LIBS}>"
             "VSCS_CORE_LIBRARY=$<BOOL:${VSCS_CORE_LIBRARY}>"
             "VSCS_CORE_MULTI_THREADING=$<BOOL:${VSCS_CORE_MULTI_THREADING}>"
+            "VSCS_CORE_JWT_GENERATOR=$<BOOL:${VSCS_CORE_JWT_GENERATOR}>"
         )
