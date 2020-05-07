@@ -5,7 +5,7 @@
         namespace="virgil sdk core"
         framework="VSCCoreSDK"
         prefix="vscs_core"
-        wrappers="all"
+        wrappers=""
         >
 
     <version major="0" minor="16" patch="0"/>
