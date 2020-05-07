@@ -231,6 +231,14 @@ if(VIRGIL_LIB_PHE)
     add_subdirectory("library/phe")
 endif()
 
+# ---------------------------------------------------------------------------
+#   Library SDK libraries
+# ---------------------------------------------------------------------------
+
+if(VIRGIL_SDK_CORE)
+    add_subdirectory("library/sdk/core")
+endif()
+
 
 # ---------------------------------------------------------------------------
 #   Integration tests
