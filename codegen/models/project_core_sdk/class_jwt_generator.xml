@@ -1,3 +1,19 @@
 <class name="jwt generator">
     Class responsible for JWT generation.
+
+    <require interface="private key" project="foundation"/>
+
+    <property name="api key" interface="private key" project="foundation" access="readonly"/>
+
+    <constructor name="with credentials">
+        Create JWT generator with an application credentials.
+
+        <argument name="api key" interface="private key" project="foundation"/>
+    </constructor>
+
+    <method name="generate token" is_const="1">
+        Generate new JWT.
+
+        <return class="buffer" access="disown"/>
+    </method>
 </class>

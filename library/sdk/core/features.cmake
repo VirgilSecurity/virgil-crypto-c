@@ -53,3 +53,12 @@ mark_as_advanced(
         VSCS_CORE_MULTI_THREADING
         VSCS_CORE_JWT_GENERATOR
         )
+
+if(VSCS_CORE_JWT_GENERATOR AND NOT VSCF_PRIVATE_KEY)
+    message("-- error --")
+    message("--")
+    message("Feature VSCS_CORE_JWT_GENERATOR depends on the feature:")
+    message("     VSCF_PRIVATE_KEY - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()

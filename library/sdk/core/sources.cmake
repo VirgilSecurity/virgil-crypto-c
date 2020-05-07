@@ -54,64 +54,73 @@ check_include_files(assert.h VSCS_CORE_HAVE_ASSERT_H)
 check_include_files(stdatomic.h VSCS_CORE_HAVE_STDATOMIC_H)
 
 configure_file(
-        "${CMAKE_CURRENT_LIST_DIR}/include/virgi/sdk/core/vscs_core_platform.h.in"
-        "${CMAKE_CURRENT_BINARY_DIR}/include/virgi/sdk/core/vscs_core_platform.h"
+        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vscs_core_platform.h.in"
+        "${CMAKE_CURRENT_BINARY_DIR}/include/virgil/sdk/core/vscs_core_platform.h"
         )
 
 set_property(
-    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgi/sdk/core/vscs_core_assert.h"
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vscs_core_assert.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
 
 set_property(
-    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgi/sdk/core/vscs_core_library.h"
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vscs_core_library.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
 
 set_property(
-    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgi/sdk/core/vscs_core_memory.h"
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vscs_core_memory.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
 
 set_property(
-    SOURCE "${CMAKE_CURRENT_BINARY_DIR}/include/virgi/sdk/core/vscs_core_platform.h"
+    SOURCE "${CMAKE_CURRENT_BINARY_DIR}/include/virgil/sdk/core/vscs_core_platform.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
 
 set_property(
-    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgi/sdk/core/vscs_core_status.h"
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vscs_core_jwt_generator.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
 
 set_property(
-    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgi/sdk/core/vscs_core_core_sdk_public.h"
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vscs_core_status.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
+)
+
+set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vscs_core_core_sdk_public.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
 
 target_sources(core_sdk
     PRIVATE
-            "${CMAKE_CURRENT_LIST_DIR}/include/virgi/sdk/core/vscs_core_assert.h"
-            "${CMAKE_CURRENT_LIST_DIR}/include/virgi/sdk/core/vscs_core_library.h"
-            "${CMAKE_CURRENT_LIST_DIR}/include/virgi/sdk/core/vscs_core_memory.h"
-            "${CMAKE_CURRENT_LIST_DIR}/include/virgi/sdk/core/private/vscs_core_atomic.h"
-            "${CMAKE_CURRENT_BINARY_DIR}/include/virgi/sdk/core/vscs_core_platform.h"
-            "${CMAKE_CURRENT_LIST_DIR}/include/virgi/sdk/core/vscs_core_status.h"
-            "${CMAKE_CURRENT_LIST_DIR}/include/virgi/sdk/core/vscs_core_core_sdk_public.h"
-            "${CMAKE_CURRENT_LIST_DIR}/include/virgi/sdk/core/private/vscs_core_core_sdk_private.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vscs_core_assert.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vscs_core_library.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vscs_core_memory.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/private/vscs_core_atomic.h"
+            "${CMAKE_CURRENT_BINARY_DIR}/include/virgil/sdk/core/vscs_core_platform.h"
+            "$<$<BOOL:${VSCS_CORE_JWT_GENERATOR}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vscs_core_jwt_generator.h>"
+            "$<$<BOOL:${VSCS_CORE_JWT_GENERATOR}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/private/vscs_core_jwt_generator_defs.h>"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vscs_core_status.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vscs_core_core_sdk_public.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/private/vscs_core_core_sdk_private.h"
 
             "${CMAKE_CURRENT_LIST_DIR}/src/vscs_core_assert.c"
             "${CMAKE_CURRENT_LIST_DIR}/src/vscs_core_library.c"
             "${CMAKE_CURRENT_LIST_DIR}/src/vscs_core_memory.c"
+            "$<$<BOOL:${VSCS_CORE_JWT_GENERATOR}>:${CMAKE_CURRENT_LIST_DIR}/src/vscs_core_jwt_generator.c>"
+            "$<$<BOOL:${VSCS_CORE_JWT_GENERATOR}>:${CMAKE_CURRENT_LIST_DIR}/src/vscs_core_jwt_generator_defs.c>"
             "${CMAKE_CURRENT_LIST_DIR}/src/vscs_core_status.c"
         )
 
 target_include_directories(core_sdk
         PUBLIC
             $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
-            $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include/virgi/sdk/core>
-            $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include/virgi/sdk/core/private>
-            $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include/virgi/sdk/core>
-            $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include/virgi/sdk/core/private>
+            $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core>
+            $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/private>
+            $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include/virgil/sdk/core>
+            $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include/virgil/sdk/core/private>
             $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/src>
             $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
         )
