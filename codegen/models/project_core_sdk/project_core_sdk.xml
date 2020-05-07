@@ -3,9 +3,9 @@
         brief="Virgil Security Core SDK"
         package="sdk core"
         namespace="virgil sdk core"
-        framework="VSCSCore"
+        framework="VSCCoreSDK"
         prefix="vscs_core"
-        wrappers="java"
+        wrappers="all"
         >
 
     <version major="0" minor="16" patch="0"/>
