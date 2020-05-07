@@ -1,5 +1,17 @@
 # virgil-crypto-c ChangeLog (Sorted by date)
 
+## Version 0.15.1 released 2020-05-07
+
+### Bugfix
+
+- Wrappers: Updated Ratchet constant: VscrRatchetCommon.MAX_MESSAGE_LEN
+
+### Changes
+
+- Lib/Ratchet: Removed Ratchet Groups
+- Wrapper/Go: Removed wrapper for the Ratchet library
+- Wrapper/Python: Removed wrapper for the Ratchet library
+
 
 ## Version 0.15.0 released 2020-05-06
 
