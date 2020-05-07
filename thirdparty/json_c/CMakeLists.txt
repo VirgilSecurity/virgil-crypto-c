@@ -34,7 +34,7 @@
 # ---------------------------------------------------------------------------
 #   Options
 # ---------------------------------------------------------------------------
-# include("${CMAKE_CURRENT_LIST_DIR}/features.cmake")
+include("${CMAKE_CURRENT_LIST_DIR}/features.cmake")
 
 if(NOT JSON_C_LIBRARY)
     message(STATUS "Skip building library 'json_c' - option JSON_C_LIBRARY is OFF.")
