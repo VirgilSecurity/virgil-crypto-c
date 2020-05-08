@@ -79,6 +79,11 @@ set_property(
 )
 
 set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vscs_core_jwt.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
+)
+
+set_property(
     SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vscs_core_jwt_generator.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
@@ -100,6 +105,8 @@ target_sources(core_sdk
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vscs_core_memory.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/private/vscs_core_atomic.h"
             "${CMAKE_CURRENT_BINARY_DIR}/include/virgil/sdk/core/vscs_core_platform.h"
+            "$<$<BOOL:${VSCS_CORE_JWT}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vscs_core_jwt.h>"
+            "$<$<BOOL:${VSCS_CORE_JWT}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/private/vscs_core_jwt_defs.h>"
             "$<$<BOOL:${VSCS_CORE_JWT_GENERATOR}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vscs_core_jwt_generator.h>"
             "$<$<BOOL:${VSCS_CORE_JWT_GENERATOR}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/private/vscs_core_jwt_generator_defs.h>"
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vscs_core_status.h"
@@ -109,6 +116,8 @@ target_sources(core_sdk
             "${CMAKE_CURRENT_LIST_DIR}/src/vscs_core_assert.c"
             "${CMAKE_CURRENT_LIST_DIR}/src/vscs_core_library.c"
             "${CMAKE_CURRENT_LIST_DIR}/src/vscs_core_memory.c"
+            "$<$<BOOL:${VSCS_CORE_JWT}>:${CMAKE_CURRENT_LIST_DIR}/src/vscs_core_jwt.c>"
+            "$<$<BOOL:${VSCS_CORE_JWT}>:${CMAKE_CURRENT_LIST_DIR}/src/vscs_core_jwt_defs.c>"
             "$<$<BOOL:${VSCS_CORE_JWT_GENERATOR}>:${CMAKE_CURRENT_LIST_DIR}/src/vscs_core_jwt_generator.c>"
             "$<$<BOOL:${VSCS_CORE_JWT_GENERATOR}>:${CMAKE_CURRENT_LIST_DIR}/src/vscs_core_jwt_generator_defs.c>"
             "${CMAKE_CURRENT_LIST_DIR}/src/vscs_core_status.c"

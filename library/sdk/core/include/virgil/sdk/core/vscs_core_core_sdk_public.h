@@ -54,6 +54,7 @@
 #define VSCS_CORE_CORE_SDK_PUBLIC_H_INCLUDED
 
 #include "vscs_core_assert.h"
+#include "vscs_core_jwt.h"
 #include "vscs_core_jwt_generator.h"
 #include "vscs_core_library.h"
 #include "vscs_core_memory.h"

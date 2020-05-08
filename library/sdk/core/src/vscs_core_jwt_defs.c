@@ -1,3 +1,5 @@
+//  @license
+// --------------------------------------------------------------------------
 //  Copyright (C) 2015-2020 Virgil Security, Inc.
 //
 //  All rights reserved.
@@ -31,63 +33,38 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
+// --------------------------------------------------------------------------
+// clang-format off
 
 
-#define UNITY_BEGIN() UnityBegin(__FILENAME__)
-
-#include "unity.h"
-#include "test_utils.h"
-
-
-#define TEST_DEPENDENCIES_AVAILABLE VSCS_CORE_JWT_GENERATOR
-#if TEST_DEPENDENCIES_AVAILABLE
-
-#include <virgil/crypto/foundation/vscf_private_key.h>
-#include <virgil/crypto/foundation/vscf_key_provider.h>
-#include <virgil/crypto/foundation/vscf_fake_random.h>
-
-#include "vscs_core_jwt_generator.h"
-
-#include "test_data_jwt.h"
+//  @description
+// --------------------------------------------------------------------------
+//  Class 'jwt' types definition.
+// --------------------------------------------------------------------------
 
 
-void
-test__generate__success(void) {
+//  @warning
+// --------------------------------------------------------------------------
+//  This file is partially generated.
+//  Generated blocks are enclosed between tags [@<tag>, @end].
+//  User's code can be added between tags [@end, @<tag>].
+// --------------------------------------------------------------------------
 
-    vscf_fake_random_t *fake_random = vscf_fake_random_new();
-    vscf_fake_random_setup_source_byte(fake_random, 0xAB);
+#include "vscs_core_jwt_defs.h"
 
-    vscf_key_provider_t *key_provider = vscf_key_provider_new();
-    vscf_key_provider_take_random(key_provider, vscf_fake_random_impl(fake_random));
+// clang-format on
+//  @end
 
-    vscf_impl_t *private_key = vscf_key_provider_import_private_key(key_provider, test_data_JWT_API_KEY, NULL);
-    TEST_ASSERT_NOT_NULL(private_key);
 
-    vscs_core_jwt_generator_t *jwt_generator = vscs_core_jwt_generator_new_with_credentials(private_key);
-
-    vscs_core_jwt_t *jwt = vscs_core_jwt_generator_generate_token(jwt_generator);
-    TEST_ASSERT_NOT_NULL(jwt);
-
-    vscf_key_provider_destroy(&key_provider);
-    vscs_core_jwt_generator_destroy(&jwt_generator);
-    vscs_core_jwt_destroy(&jwt);
-}
-
-#endif // TEST_DEPENDENCIES_AVAILABLE
+//  @generated
+// --------------------------------------------------------------------------
+// clang-format off
+//  Generated section start.
+// --------------------------------------------------------------------------
 
 
 // --------------------------------------------------------------------------
-// Entrypoint.
+//  Generated section end.
+// clang-format on
 // --------------------------------------------------------------------------
-int
-main(void) {
-    UNITY_BEGIN();
-
-#if TEST_DEPENDENCIES_AVAILABLE
-    RUN_TEST(test__generate__success);
-#else
-    RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
-#endif
-
-    return UNITY_END();
-}
+//  @end

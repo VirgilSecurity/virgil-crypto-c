@@ -60,6 +60,7 @@
 
     <enum name="status"/>
 
+    <class name="jwt"/>
     <class name="jwt generator"/>
 
     <error_message_getter success="0">

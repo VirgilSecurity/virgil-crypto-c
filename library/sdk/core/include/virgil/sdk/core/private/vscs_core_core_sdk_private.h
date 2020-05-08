@@ -54,6 +54,7 @@
 #define VSCS_CORE_CORE_SDK_PRIVATE_H_INCLUDED
 
 #include "vscs_core_atomic.h"
+#include "vscs_core_jwt_defs.h"
 #include "vscs_core_jwt_generator_defs.h"
 
 // clang-format on

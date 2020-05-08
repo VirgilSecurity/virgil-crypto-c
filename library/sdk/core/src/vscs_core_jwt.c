@@ -39,7 +39,7 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Class responsible for JWT generation.
+//  Class that handles JWT.
 // --------------------------------------------------------------------------
 
 
@@ -50,12 +50,10 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#include "vscs_core_jwt_generator.h"
+#include "vscs_core_jwt.h"
 #include "vscs_core_memory.h"
 #include "vscs_core_assert.h"
-#include "vscs_core_jwt_generator_defs.h"
-
-#include <virgil/crypto/foundation/vscf_private_key.h>
+#include "vscs_core_jwt_defs.h"
 
 // clang-format on
 //  @end
@@ -69,11 +67,11 @@
 
 //
 //  Perform context specific initialization.
-//  Note, this method is called automatically when method vscs_core_jwt_generator_init() is called.
+//  Note, this method is called automatically when method vscs_core_jwt_init() is called.
 //  Note, that context is already zeroed.
 //
 static void
-vscs_core_jwt_generator_init_ctx(vscs_core_jwt_generator_t *self);
+vscs_core_jwt_init_ctx(vscs_core_jwt_t *self);
 
 //
 //  Release all inner resources.
@@ -81,96 +79,57 @@ vscs_core_jwt_generator_init_ctx(vscs_core_jwt_generator_t *self);
 //  Note, that context will be zeroed automatically next this method.
 //
 static void
-vscs_core_jwt_generator_cleanup_ctx(vscs_core_jwt_generator_t *self);
+vscs_core_jwt_cleanup_ctx(vscs_core_jwt_t *self);
 
 //
-//  Create JWT generator with an application credentials.
-//
-static void
-vscs_core_jwt_generator_init_ctx_with_credentials(vscs_core_jwt_generator_t *self, const vscf_impl_t *api_key);
-
-//
-//  Return size of 'vscs_core_jwt_generator_t'.
+//  Return size of 'vscs_core_jwt_t'.
 //
 VSCS_CORE_PUBLIC size_t
-vscs_core_jwt_generator_ctx_size(void) {
+vscs_core_jwt_ctx_size(void) {
 
-    return sizeof(vscs_core_jwt_generator_t);
+    return sizeof(vscs_core_jwt_t);
 }
 
 //
 //  Perform initialization of pre-allocated context.
 //
 VSCS_CORE_PUBLIC void
-vscs_core_jwt_generator_init(vscs_core_jwt_generator_t *self) {
+vscs_core_jwt_init(vscs_core_jwt_t *self) {
 
     VSCS_CORE_ASSERT_PTR(self);
 
-    vscs_core_zeroize(self, sizeof(vscs_core_jwt_generator_t));
+    vscs_core_zeroize(self, sizeof(vscs_core_jwt_t));
 
     self->refcnt = 1;
 
-    vscs_core_jwt_generator_init_ctx(self);
+    vscs_core_jwt_init_ctx(self);
 }
 
 //
 //  Release all inner resources including class dependencies.
 //
 VSCS_CORE_PUBLIC void
-vscs_core_jwt_generator_cleanup(vscs_core_jwt_generator_t *self) {
+vscs_core_jwt_cleanup(vscs_core_jwt_t *self) {
 
     if (self == NULL) {
         return;
     }
 
-    vscs_core_jwt_generator_cleanup_ctx(self);
+    vscs_core_jwt_cleanup_ctx(self);
 
-    vscs_core_zeroize(self, sizeof(vscs_core_jwt_generator_t));
+    vscs_core_zeroize(self, sizeof(vscs_core_jwt_t));
 }
 
 //
 //  Allocate context and perform it's initialization.
 //
-VSCS_CORE_PUBLIC vscs_core_jwt_generator_t *
-vscs_core_jwt_generator_new(void) {
+VSCS_CORE_PUBLIC vscs_core_jwt_t *
+vscs_core_jwt_new(void) {
 
-    vscs_core_jwt_generator_t *self = (vscs_core_jwt_generator_t *) vscs_core_alloc(sizeof (vscs_core_jwt_generator_t));
+    vscs_core_jwt_t *self = (vscs_core_jwt_t *) vscs_core_alloc(sizeof (vscs_core_jwt_t));
     VSCS_CORE_ASSERT_ALLOC(self);
 
-    vscs_core_jwt_generator_init(self);
-
-    self->self_dealloc_cb = vscs_core_dealloc;
-
-    return self;
-}
-
-//
-//  Perform initialization of pre-allocated context.
-//  Create JWT generator with an application credentials.
-//
-VSCS_CORE_PUBLIC void
-vscs_core_jwt_generator_init_with_credentials(vscs_core_jwt_generator_t *self, const vscf_impl_t *api_key) {
-
-    VSCS_CORE_ASSERT_PTR(self);
-
-    vscs_core_zeroize(self, sizeof(vscs_core_jwt_generator_t));
-
-    self->refcnt = 1;
-
-    vscs_core_jwt_generator_init_ctx_with_credentials(self, api_key);
-}
-
-//
-//  Allocate class context and perform it's initialization.
-//  Create JWT generator with an application credentials.
-//
-VSCS_CORE_PUBLIC vscs_core_jwt_generator_t *
-vscs_core_jwt_generator_new_with_credentials(const vscf_impl_t *api_key) {
-
-    vscs_core_jwt_generator_t *self = (vscs_core_jwt_generator_t *) vscs_core_alloc(sizeof (vscs_core_jwt_generator_t));
-    VSCS_CORE_ASSERT_ALLOC(self);
-
-    vscs_core_jwt_generator_init_with_credentials(self, api_key);
+    vscs_core_jwt_init(self);
 
     self->self_dealloc_cb = vscs_core_dealloc;
 
@@ -182,7 +141,7 @@ vscs_core_jwt_generator_new_with_credentials(const vscf_impl_t *api_key) {
 //  It is safe to call this method even if the context was statically allocated.
 //
 VSCS_CORE_PUBLIC void
-vscs_core_jwt_generator_delete(vscs_core_jwt_generator_t *self) {
+vscs_core_jwt_delete(vscs_core_jwt_t *self) {
 
     if (self == NULL) {
         return;
@@ -209,7 +168,7 @@ vscs_core_jwt_generator_delete(vscs_core_jwt_generator_t *self) {
 
     vscs_core_dealloc_fn self_dealloc_cb = self->self_dealloc_cb;
 
-    vscs_core_jwt_generator_cleanup(self);
+    vscs_core_jwt_cleanup(self);
 
     if (self_dealloc_cb != NULL) {
         self_dealloc_cb(self);
@@ -218,24 +177,24 @@ vscs_core_jwt_generator_delete(vscs_core_jwt_generator_t *self) {
 
 //
 //  Delete given context and nullifies reference.
-//  This is a reverse action of the function 'vscs_core_jwt_generator_new ()'.
+//  This is a reverse action of the function 'vscs_core_jwt_new ()'.
 //
 VSCS_CORE_PUBLIC void
-vscs_core_jwt_generator_destroy(vscs_core_jwt_generator_t **self_ref) {
+vscs_core_jwt_destroy(vscs_core_jwt_t **self_ref) {
 
     VSCS_CORE_ASSERT_PTR(self_ref);
 
-    vscs_core_jwt_generator_t *self = *self_ref;
+    vscs_core_jwt_t *self = *self_ref;
     *self_ref = NULL;
 
-    vscs_core_jwt_generator_delete(self);
+    vscs_core_jwt_delete(self);
 }
 
 //
 //  Copy given class context by increasing reference counter.
 //
-VSCS_CORE_PUBLIC vscs_core_jwt_generator_t *
-vscs_core_jwt_generator_shallow_copy(vscs_core_jwt_generator_t *self) {
+VSCS_CORE_PUBLIC vscs_core_jwt_t *
+vscs_core_jwt_shallow_copy(vscs_core_jwt_t *self) {
 
     VSCS_CORE_ASSERT_PTR(self);
 
@@ -264,11 +223,11 @@ vscs_core_jwt_generator_shallow_copy(vscs_core_jwt_generator_t *self) {
 
 //
 //  Perform context specific initialization.
-//  Note, this method is called automatically when method vscs_core_jwt_generator_init() is called.
+//  Note, this method is called automatically when method vscs_core_jwt_init() is called.
 //  Note, that context is already zeroed.
 //
 static void
-vscs_core_jwt_generator_init_ctx(vscs_core_jwt_generator_t *self) {
+vscs_core_jwt_init_ctx(vscs_core_jwt_t *self) {
 
     VSCS_CORE_ASSERT_PTR(self);
 }
@@ -279,30 +238,15 @@ vscs_core_jwt_generator_init_ctx(vscs_core_jwt_generator_t *self) {
 //  Note, that context will be zeroed automatically next this method.
 //
 static void
-vscs_core_jwt_generator_cleanup_ctx(vscs_core_jwt_generator_t *self) {
-
-    VSCS_CORE_ASSERT_PTR(self);
-}
-
-//
-//  Create JWT generator with an application credentials.
-//
-static void
-vscs_core_jwt_generator_init_ctx_with_credentials(vscs_core_jwt_generator_t *self, const vscf_impl_t *api_key) {
-
-    VSCS_CORE_ASSERT_PTR(self);
-    VSCS_CORE_ASSERT_PTR(api_key);
-
-    self->api_key = vscf_impl_shallow_copy_const(api_key);
-}
-
-//
-//  Generate new JWT.
-//
-VSCS_CORE_PUBLIC vscs_core_jwt_t *
-vscs_core_jwt_generator_generate_token(const vscs_core_jwt_generator_t *self) {
+vscs_core_jwt_cleanup_ctx(vscs_core_jwt_t *self) {
 
     VSCS_CORE_ASSERT_PTR(self);
 
-    return NULL;
+    vsc_str_buffer_destroy(&self->algorithm);
+    vsc_str_buffer_destroy(&self->type);
+    vsc_str_buffer_destroy(&self->content_type);
+    vsc_str_buffer_destroy(&self->key_identifier);
+    vsc_str_buffer_destroy(&self->app_id);
+    vsc_str_buffer_destroy(&self->identity);
+    vsc_buffer_destroy(&self->signature);
 }

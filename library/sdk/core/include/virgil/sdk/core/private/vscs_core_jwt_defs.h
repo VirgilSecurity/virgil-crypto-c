@@ -47,11 +47,24 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  This file contains platform specific information that is known during compilation.
+//  Class 'jwt' types definition.
 // --------------------------------------------------------------------------
 
-#ifndef VSCS_CORE_PLATFORM_H_INCLUDED
-#define VSCS_CORE_PLATFORM_H_INCLUDED
+#ifndef VSCS_CORE_JWT_DEFS_H_INCLUDED
+#define VSCS_CORE_JWT_DEFS_H_INCLUDED
+
+#include "vscs_core_library.h"
+#include "vscs_core_atomic.h"
+
+#if !VSCS_CORE_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <virgil/crypto/common/vsc_str_buffer.h>
+#   include <virgil/crypto/common/vsc_buffer.h>
+#endif
+
+#if VSCS_CORE_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <VSCCommon/vsc_str_buffer.h>
+#   include <VSCCommon/vsc_buffer.h>
+#endif
 
 // clang-format on
 //  @end
@@ -68,49 +81,57 @@ extern "C" {
 //  Generated section start.
 // --------------------------------------------------------------------------
 
-#cmakedefine01 VSCS_CORE_HAVE_ASSERT_H
-#if VSCS_CORE_HAVE_ASSERT_H
-#   include <assert.h>
-#endif
-
-#cmakedefine01 VSCS_CORE_HAVE_STDATOMIC_H
-#if VSCS_CORE_HAVE_STDATOMIC_H
-#   include <stdatomic.h>
-#endif
-
-#ifndef VSCS_CORE_SHARED_LIBRARY
-#cmakedefine01 VSCS_CORE_SHARED_LIBRARY
-#endif
-
-#ifndef VSCS_CORE_MULTI_THREADING
-#cmakedefine01 VSCS_CORE_MULTI_THREADING
-#endif
-
-#ifndef VSCS_CORE_JWT
-#cmakedefine01 VSCS_CORE_JWT
-#endif
-
-#ifndef VSCS_CORE_JWT_GENERATOR
-#cmakedefine01 VSCS_CORE_JWT_GENERATOR
-#endif
-
 //
-//  Defines namespace include prefix for project 'common'.
+//  Handle 'jwt' context.
 //
-#if !defined(VSCS_CORE_INTERNAL_BUILD)
-#cmakedefine01 VSCS_CORE_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#else
-#define VSCS_CORE_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK 0
-#endif
-
-//
-//  Defines namespace include prefix for project 'foundation'.
-//
-#if !defined(VSCS_CORE_INTERNAL_BUILD)
-#cmakedefine01 VSCS_CORE_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
-#else
-#define VSCS_CORE_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK 0
-#endif
+struct vscs_core_jwt_t {
+    //
+    //  Function do deallocate self context.
+    //
+    vscs_core_dealloc_fn self_dealloc_cb;
+    //
+    //  Reference counter.
+    //
+    VSCS_CORE_ATOMIC size_t refcnt;
+    //
+    //  Represents used signature algorithm.
+    //
+    vsc_str_buffer_t *algorithm;
+    //
+    //  Represents token type.
+    //
+    vsc_str_buffer_t *type;
+    //
+    //  Represents content type for this JWT.
+    //
+    vsc_str_buffer_t *content_type;
+    //
+    //  Represents identifier of public key which should be used to verify signature.
+    //  Note: Can be taken from [here](https://dashboard.virgilsecurity.com/api-keys)
+    //
+    vsc_str_buffer_t *key_identifier;
+    //
+    //  Issuer containing application id.
+    //  Note: Can be taken [here](https://dashboard.virgilsecurity.com)
+    //
+    vsc_str_buffer_t *app_id;
+    //
+    //  Subject as identity.
+    //
+    vsc_str_buffer_t *identity;
+    //
+    //  Signature data.
+    //
+    vsc_buffer_t *signature;
+    //
+    //  Timestamp in seconds with expiration date.
+    //
+    size_t expires_at;
+    //
+    //  Timestamp in seconds with issued date.
+    //
+    size_t issued_at;
+};
 
 
 // --------------------------------------------------------------------------
@@ -126,5 +147,5 @@ extern "C" {
 
 
 //  @footer
-#endif // VSCS_CORE_PLATFORM_H_INCLUDED
+#endif // VSCS_CORE_JWT_DEFS_H_INCLUDED
 //  @end

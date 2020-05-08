@@ -47,11 +47,13 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  This file contains platform specific information that is known during compilation.
+//  Class that handles JWT.
 // --------------------------------------------------------------------------
 
-#ifndef VSCS_CORE_PLATFORM_H_INCLUDED
-#define VSCS_CORE_PLATFORM_H_INCLUDED
+#ifndef VSCS_CORE_JWT_H_INCLUDED
+#define VSCS_CORE_JWT_H_INCLUDED
+
+#include "vscs_core_library.h"
 
 // clang-format on
 //  @end
@@ -68,49 +70,54 @@ extern "C" {
 //  Generated section start.
 // --------------------------------------------------------------------------
 
-#cmakedefine01 VSCS_CORE_HAVE_ASSERT_H
-#if VSCS_CORE_HAVE_ASSERT_H
-#   include <assert.h>
-#endif
-
-#cmakedefine01 VSCS_CORE_HAVE_STDATOMIC_H
-#if VSCS_CORE_HAVE_STDATOMIC_H
-#   include <stdatomic.h>
-#endif
-
-#ifndef VSCS_CORE_SHARED_LIBRARY
-#cmakedefine01 VSCS_CORE_SHARED_LIBRARY
-#endif
-
-#ifndef VSCS_CORE_MULTI_THREADING
-#cmakedefine01 VSCS_CORE_MULTI_THREADING
-#endif
-
-#ifndef VSCS_CORE_JWT
-#cmakedefine01 VSCS_CORE_JWT
-#endif
-
-#ifndef VSCS_CORE_JWT_GENERATOR
-#cmakedefine01 VSCS_CORE_JWT_GENERATOR
-#endif
+//
+//  Handle 'jwt' context.
+//
+typedef struct vscs_core_jwt_t vscs_core_jwt_t;
 
 //
-//  Defines namespace include prefix for project 'common'.
+//  Return size of 'vscs_core_jwt_t'.
 //
-#if !defined(VSCS_CORE_INTERNAL_BUILD)
-#cmakedefine01 VSCS_CORE_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#else
-#define VSCS_CORE_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK 0
-#endif
+VSCS_CORE_PUBLIC size_t
+vscs_core_jwt_ctx_size(void);
 
 //
-//  Defines namespace include prefix for project 'foundation'.
+//  Perform initialization of pre-allocated context.
 //
-#if !defined(VSCS_CORE_INTERNAL_BUILD)
-#cmakedefine01 VSCS_CORE_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
-#else
-#define VSCS_CORE_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK 0
-#endif
+VSCS_CORE_PUBLIC void
+vscs_core_jwt_init(vscs_core_jwt_t *self);
+
+//
+//  Release all inner resources including class dependencies.
+//
+VSCS_CORE_PUBLIC void
+vscs_core_jwt_cleanup(vscs_core_jwt_t *self);
+
+//
+//  Allocate context and perform it's initialization.
+//
+VSCS_CORE_PUBLIC vscs_core_jwt_t *
+vscs_core_jwt_new(void);
+
+//
+//  Release all inner resources and deallocate context if needed.
+//  It is safe to call this method even if the context was statically allocated.
+//
+VSCS_CORE_PUBLIC void
+vscs_core_jwt_delete(vscs_core_jwt_t *self);
+
+//
+//  Delete given context and nullifies reference.
+//  This is a reverse action of the function 'vscs_core_jwt_new ()'.
+//
+VSCS_CORE_PUBLIC void
+vscs_core_jwt_destroy(vscs_core_jwt_t **self_ref);
+
+//
+//  Copy given class context by increasing reference counter.
+//
+VSCS_CORE_PUBLIC vscs_core_jwt_t *
+vscs_core_jwt_shallow_copy(vscs_core_jwt_t *self);
 
 
 // --------------------------------------------------------------------------
@@ -126,5 +133,5 @@ extern "C" {
 
 
 //  @footer
-#endif // VSCS_CORE_PLATFORM_H_INCLUDED
+#endif // VSCS_CORE_JWT_H_INCLUDED
 //  @end

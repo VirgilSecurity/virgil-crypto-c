@@ -47,10 +47,12 @@ include_guard()
 
 option(VSCS_CORE_LIBRARY "Enable build of the 'core sdk' library" ON)
 option(VSCS_CORE_MULTI_THREADING "Enable multi-threading safety for Cards Core SDK." ON)
+option(VSCS_CORE_JWT "Enable class 'jwt'." ON)
 option(VSCS_CORE_JWT_GENERATOR "Enable class 'jwt generator'." ON)
 mark_as_advanced(
         VSCS_CORE_LIBRARY
         VSCS_CORE_MULTI_THREADING
+        VSCS_CORE_JWT
         VSCS_CORE_JWT_GENERATOR
         )
 

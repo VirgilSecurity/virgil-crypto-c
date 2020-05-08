@@ -54,17 +54,10 @@
 #define VSCS_CORE_JWT_GENERATOR_H_INCLUDED
 
 #include "vscs_core_library.h"
-
-#if !VSCS_CORE_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <virgil/crypto/common/vsc_buffer.h>
-#endif
+#include "vscs_core_jwt.h"
 
 #if !VSCS_CORE_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
 #   include <virgil/crypto/foundation/vscf_impl.h>
-#endif
-
-#if VSCS_CORE_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <VSCCommon/vsc_buffer.h>
 #endif
 
 #if VSCS_CORE_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
@@ -152,7 +145,7 @@ vscs_core_jwt_generator_shallow_copy(vscs_core_jwt_generator_t *self);
 //
 //  Generate new JWT.
 //
-VSCS_CORE_PUBLIC vsc_buffer_t *
+VSCS_CORE_PUBLIC vscs_core_jwt_t *
 vscs_core_jwt_generator_generate_token(const vscs_core_jwt_generator_t *self);
 
 
