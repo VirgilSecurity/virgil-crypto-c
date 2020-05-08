@@ -37,6 +37,12 @@
 // clang-format off
 
 
+//  @description
+// --------------------------------------------------------------------------
+//  Encapsulates readonly array of characters, aka string view.
+// --------------------------------------------------------------------------
+
+
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -44,31 +50,12 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-
-//  @description
-// --------------------------------------------------------------------------
-//  This ia an umbrella header that includes library public headers.
-// --------------------------------------------------------------------------
-
-#ifndef VSC_COMMON_PUBLIC_H_INCLUDED
-#define VSC_COMMON_PUBLIC_H_INCLUDED
-
-#include "vsc_assert.h"
-#include "vsc_buffer.h"
-#include "vsc_data.h"
-#include "vsc_library.h"
-#include "vsc_memory.h"
-#include "vsc_platform.h"
 #include "vsc_str.h"
-#include "vsc_str_buffer.h"
+#include "vsc_memory.h"
+#include "vsc_assert.h"
 
 // clang-format on
 //  @end
-
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 
 //  @generated
@@ -76,6 +63,15 @@ extern "C" {
 // clang-format off
 //  Generated section start.
 // --------------------------------------------------------------------------
+
+//
+//  Return size of 'vsc_str_t'.
+//
+VSC_PUBLIC size_t
+vsc_str_ctx_size(void) {
+
+    return sizeof(vsc_str_t);
+}
 
 
 // --------------------------------------------------------------------------
@@ -85,11 +81,116 @@ extern "C" {
 //  @end
 
 
-#ifdef __cplusplus
+//
+//  Create string.
+//
+VSC_PUBLIC vsc_str_t
+vsc_str(const char *str, size_t len) {
+
+    vsc_str_t self;
+
+    self.data = vsc_data_from_str(str, len);
+
+    return self;
 }
-#endif
 
+//
+//  Create an empty string.
+//
+VSC_PUBLIC vsc_str_t
+vsc_str_empty(void) {
 
-//  @footer
-#endif // VSC_COMMON_PUBLIC_H_INCLUDED
-//  @end
+    vsc_str_t self;
+
+    self.data = vsc_data_empty();
+
+    return self;
+}
+
+//
+//  Returns true if underlying string is defined.
+//
+VSC_PUBLIC bool
+vsc_str_is_valid(vsc_str_t self) {
+
+    return vsc_data_is_valid(self.data);
+}
+
+//
+//  Returns true if underlying string is empty.
+//
+VSC_PUBLIC bool
+vsc_str_is_empty(vsc_str_t self) {
+
+    return vsc_data_is_empty(self.data);
+}
+
+//
+//  Return true if given string is equal.
+//
+VSC_PUBLIC bool
+vsc_str_equal(vsc_str_t self, vsc_str_t rhs) {
+
+    return vsc_data_equal(self.data, rhs.data);
+}
+
+//
+//  Return string length.
+//
+//  Note, this method can be used for wrappers where direct access
+//  to the structure fields is prohibited.
+//
+VSC_PUBLIC size_t
+vsc_str_len(vsc_str_t self) {
+
+    return vsc_data_len(self.data);
+}
+
+//
+//  Returns underlying string characters.
+//
+//  Note, this method can be used for wrappers where direct access
+//  to the structure fields is prohibited.
+//
+VSC_PUBLIC const char *
+vsc_str_chars(vsc_str_t self) {
+
+    return (const char *)vsc_data_bytes(self.data);
+}
+
+//
+//  Perform constant-time string comparison.
+//  The time depends on the given length but not on the string itself.
+//  Return true if given string is equal.
+//
+VSC_PUBLIC bool
+vsc_str_secure_equal(vsc_str_t self, vsc_str_t rhs) {
+
+    return vsc_data_secure_equal(self.data, rhs.data);
+}
+
+//
+//  Return underlying string slice starting from beginning.
+//
+VSC_PUBLIC vsc_str_t
+vsc_str_slice_beg(vsc_str_t self, size_t offset, size_t len) {
+
+    vsc_str_t slice;
+
+    slice.data = vsc_data_slice_beg(self.data, offset, len);
+
+    return slice;
+}
+
+//
+//  Return underlying string slice starting from ending.
+//
+VSC_PUBLIC vsc_str_t
+vsc_str_slice_end(vsc_str_t self, size_t offset, size_t len) {
+
+    vsc_str_t slice;
+
+    slice.data = vsc_data_slice_end(self.data, offset, len);
+
+    return slice;
+}

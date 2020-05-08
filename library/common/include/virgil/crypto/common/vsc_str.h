@@ -47,11 +47,15 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  This file contains platform specific information that is known during compilation.
+//  Encapsulates readonly array of characters, aka string view.
 // --------------------------------------------------------------------------
 
-#ifndef VSC_PLATFORM_H_INCLUDED
-#define VSC_PLATFORM_H_INCLUDED
+#ifndef VSC_STR_H_INCLUDED
+#define VSC_STR_H_INCLUDED
+
+#include "vsc_library.h"
+#include "vsc_str.h"
+#include "vsc_data.h"
 
 // clang-format on
 //  @end
@@ -68,39 +72,90 @@ extern "C" {
 //  Generated section start.
 // --------------------------------------------------------------------------
 
-#cmakedefine01 VSC_HAVE_ASSERT_H
-#if VSC_HAVE_ASSERT_H
-#   include <assert.h>
-#endif
+//
+//  Handle 'str' context.
+//
+typedef struct vsc_str_t vsc_str_t;
+struct vsc_str_t {
+    //
+    //  Underlying characters array.
+    //
+    vsc_data_t data;
+};
 
-#cmakedefine01 VSC_HAVE_STDATOMIC_H
-#if VSC_HAVE_STDATOMIC_H
-#   include <stdatomic.h>
-#endif
+//
+//  Return size of 'vsc_str_t'.
+//
+VSC_PUBLIC size_t
+vsc_str_ctx_size(void);
 
-#ifndef VSC_SHARED_LIBRARY
-#cmakedefine01 VSC_SHARED_LIBRARY
-#endif
+//
+//  Create string.
+//
+VSC_PUBLIC vsc_str_t
+vsc_str(const char *str, size_t len);
 
-#ifndef VSC_MULTI_THREADING
-#cmakedefine01 VSC_MULTI_THREADING
-#endif
+//
+//  Create an empty string.
+//
+VSC_PUBLIC vsc_str_t
+vsc_str_empty(void);
 
-#ifndef VSC_DATA
-#cmakedefine01 VSC_DATA
-#endif
+//
+//  Returns true if underlying string is defined.
+//
+VSC_PUBLIC bool
+vsc_str_is_valid(vsc_str_t self);
 
-#ifndef VSC_BUFFER
-#cmakedefine01 VSC_BUFFER
-#endif
+//
+//  Returns true if underlying string is empty.
+//
+VSC_PUBLIC bool
+vsc_str_is_empty(vsc_str_t self);
 
-#ifndef VSC_STR
-#cmakedefine01 VSC_STR
-#endif
+//
+//  Return true if given string is equal.
+//
+VSC_PUBLIC bool
+vsc_str_equal(vsc_str_t self, vsc_str_t rhs);
 
-#ifndef VSC_STR_BUFFER
-#cmakedefine01 VSC_STR_BUFFER
-#endif
+//
+//  Return string length.
+//
+//  Note, this method can be used for wrappers where direct access
+//  to the structure fields is prohibited.
+//
+VSC_PUBLIC size_t
+vsc_str_len(vsc_str_t self);
+
+//
+//  Returns underlying string characters.
+//
+//  Note, this method can be used for wrappers where direct access
+//  to the structure fields is prohibited.
+//
+VSC_PUBLIC const char *
+vsc_str_chars(vsc_str_t self);
+
+//
+//  Perform constant-time string comparison.
+//  The time depends on the given length but not on the string itself.
+//  Return true if given string is equal.
+//
+VSC_PUBLIC bool
+vsc_str_secure_equal(vsc_str_t self, vsc_str_t rhs);
+
+//
+//  Return underlying string slice starting from beginning.
+//
+VSC_PUBLIC vsc_str_t
+vsc_str_slice_beg(vsc_str_t self, size_t offset, size_t len);
+
+//
+//  Return underlying string slice starting from ending.
+//
+VSC_PUBLIC vsc_str_t
+vsc_str_slice_end(vsc_str_t self, size_t offset, size_t len);
 
 
 // --------------------------------------------------------------------------
@@ -116,5 +171,5 @@ extern "C" {
 
 
 //  @footer
-#endif // VSC_PLATFORM_H_INCLUDED
+#endif // VSC_STR_H_INCLUDED
 //  @end

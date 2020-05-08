@@ -47,11 +47,16 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  This file contains platform specific information that is known during compilation.
+//  Class 'str buffer' types definition.
 // --------------------------------------------------------------------------
 
-#ifndef VSC_PLATFORM_H_INCLUDED
-#define VSC_PLATFORM_H_INCLUDED
+#ifndef VSC_STR_BUFFER_DEFS_H_INCLUDED
+#define VSC_STR_BUFFER_DEFS_H_INCLUDED
+
+#include "vsc_library.h"
+#include "vsc_atomic.h"
+#include "vsc_buffer_defs.h"
+#include "vsc_buffer.h"
 
 // clang-format on
 //  @end
@@ -68,39 +73,23 @@ extern "C" {
 //  Generated section start.
 // --------------------------------------------------------------------------
 
-#cmakedefine01 VSC_HAVE_ASSERT_H
-#if VSC_HAVE_ASSERT_H
-#   include <assert.h>
-#endif
-
-#cmakedefine01 VSC_HAVE_STDATOMIC_H
-#if VSC_HAVE_STDATOMIC_H
-#   include <stdatomic.h>
-#endif
-
-#ifndef VSC_SHARED_LIBRARY
-#cmakedefine01 VSC_SHARED_LIBRARY
-#endif
-
-#ifndef VSC_MULTI_THREADING
-#cmakedefine01 VSC_MULTI_THREADING
-#endif
-
-#ifndef VSC_DATA
-#cmakedefine01 VSC_DATA
-#endif
-
-#ifndef VSC_BUFFER
-#cmakedefine01 VSC_BUFFER
-#endif
-
-#ifndef VSC_STR
-#cmakedefine01 VSC_STR
-#endif
-
-#ifndef VSC_STR_BUFFER
-#cmakedefine01 VSC_STR_BUFFER
-#endif
+//
+//  Handle 'str buffer' context.
+//
+struct vsc_str_buffer_t {
+    //
+    //  Function do deallocate self context.
+    //
+    vsc_dealloc_fn self_dealloc_cb;
+    //
+    //  Reference counter.
+    //
+    VSC_ATOMIC size_t refcnt;
+    //
+    //  Underlying characters buffer.
+    //
+    vsc_buffer_t buffer;
+};
 
 
 // --------------------------------------------------------------------------
@@ -116,5 +105,5 @@ extern "C" {
 
 
 //  @footer
-#endif // VSC_PLATFORM_H_INCLUDED
+#endif // VSC_STR_BUFFER_DEFS_H_INCLUDED
 //  @end

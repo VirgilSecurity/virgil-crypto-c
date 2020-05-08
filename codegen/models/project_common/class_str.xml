@@ -1,36 +1,14 @@
-<class name="string" context="public" lifecycle="none" is_value_type="1">
+<class name="str" context="public" lifecycle="none" is_value_type="1">
     Encapsulates readonly array of characters, aka string view.
 
 
-    <property name="str" type="char" access="readonly">
-        Underlying string.
-
-        <array length="given"/>
+    <property name="data" class="data">
+        Underlying characters array.
     </property>
-
-
-    <property name="len" type="size">
-        String length.
-    </property>
-
-
-    <variable name="empty string" type="char" declaration="private" definition="private">
-        String that is used as "empty string" mark.
-
-        <array length="derived"/>
-        <value value="\0"/>
-    </variable>
 
 
     <method name="is valid">
         Returns true if underlying string is defined.
-
-        <return type="boolean"/>
-    </method>
-
-
-    <method name="is null terminated">
-        Returns true if underlying string is null-terminated.
 
         <return type="boolean"/>
     </method>
@@ -62,13 +40,13 @@
     </method>
 
 
-    <method name="str" is_const="1">
+    <method name="chars" is_const="1">
         Returns underlying string characters.
 
         Note, this method can be used for wrappers where direct access
         to the structure fields is prohibited.
 
-        <return type="byte" is_reference="1"/>
+        <return type="char" is_reference="1"/>
     </method>
 
 
@@ -77,14 +55,14 @@
         The time depends on the given length but not on the string itself.
         Return true if given string is equal.
 
-        <argument name="rhs" class="string"/>
+        <argument name="rhs" class="self"/>
 
         <return type="boolean"/>
     </method>
 
 
-    <constructor name="string">
-        Creates string.
+    <constructor name="str">
+        Create string.
 
         <argument name="str" type="char">
             <array length="given"/>
@@ -94,17 +72,8 @@
     </constructor>
 
 
-    <constructor name="from null terminated">
-        Creates string from the null-terminated string.
-
-        <argument name="str" type="char">
-            <string length="null_terminated"/>
-        </argument>
-    </constructor>
-
-
     <constructor name="empty">
-        Creates an empty string.
+        Create an empty string.
     </constructor>
 
 

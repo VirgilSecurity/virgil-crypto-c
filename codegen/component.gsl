@@ -686,14 +686,14 @@ function component_resolve_instance_attr_class (instance, parent)
 
     component_require_attr_class (my.instance, my)
 
-    if my.instance.class = "data"
+    if my.instance.class = "data" | my.instance.class = "str"
         my.instance.project ?= "common"
         my.instance.access ?= "readonly"
         my.instance.is_reference = "0"
 
-    elsif my.instance.class = "buffer"
+    elsif my.instance.class = "buffer" | my.instance.class = "str buffer"
         my.instance.project ?= "common"
-        my.instance.is_reference = "1"
+        my.instance.is_reference ?= "1"
 
         if item_in (my.instance, "property, variable")
             my.instance.access ?= "readwrite"

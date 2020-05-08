@@ -37,6 +37,12 @@
 // clang-format off
 
 
+//  @description
+// --------------------------------------------------------------------------
+//  Class 'str buffer' types definition.
+// --------------------------------------------------------------------------
+
+
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -44,22 +50,10 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-
-//  @description
-// --------------------------------------------------------------------------
-//  This file contains platform specific information that is known during compilation.
-// --------------------------------------------------------------------------
-
-#ifndef VSC_PLATFORM_H_INCLUDED
-#define VSC_PLATFORM_H_INCLUDED
+#include "vsc_str_buffer_defs.h"
 
 // clang-format on
 //  @end
-
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 
 //  @generated
@@ -68,53 +62,9 @@ extern "C" {
 //  Generated section start.
 // --------------------------------------------------------------------------
 
-#cmakedefine01 VSC_HAVE_ASSERT_H
-#if VSC_HAVE_ASSERT_H
-#   include <assert.h>
-#endif
-
-#cmakedefine01 VSC_HAVE_STDATOMIC_H
-#if VSC_HAVE_STDATOMIC_H
-#   include <stdatomic.h>
-#endif
-
-#ifndef VSC_SHARED_LIBRARY
-#cmakedefine01 VSC_SHARED_LIBRARY
-#endif
-
-#ifndef VSC_MULTI_THREADING
-#cmakedefine01 VSC_MULTI_THREADING
-#endif
-
-#ifndef VSC_DATA
-#cmakedefine01 VSC_DATA
-#endif
-
-#ifndef VSC_BUFFER
-#cmakedefine01 VSC_BUFFER
-#endif
-
-#ifndef VSC_STR
-#cmakedefine01 VSC_STR
-#endif
-
-#ifndef VSC_STR_BUFFER
-#cmakedefine01 VSC_STR_BUFFER
-#endif
-
 
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
-//  @end
-
-
-#ifdef __cplusplus
-}
-#endif
-
-
-//  @footer
-#endif // VSC_PLATFORM_H_INCLUDED
 //  @end

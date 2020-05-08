@@ -57,4 +57,6 @@ target_compile_definitions(common
             "VSC_MULTI_THREADING=$<BOOL:${VSC_MULTI_THREADING}>"
             "VSC_DATA=$<BOOL:${VSC_DATA}>"
             "VSC_BUFFER=$<BOOL:${VSC_BUFFER}>"
+            "VSC_STR=$<BOOL:${VSC_STR}>"
+            "VSC_STR_BUFFER=$<BOOL:${VSC_STR_BUFFER}>"
         )

@@ -55,6 +55,7 @@
 
 #include "vsc_atomic.h"
 #include "vsc_buffer_defs.h"
+#include "vsc_str_buffer_defs.h"
 
 // clang-format on
 //  @end

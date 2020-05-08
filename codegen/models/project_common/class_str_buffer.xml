@@ -1,0 +1,204 @@
+<class name="str buffer" context="private">
+    Encapsulates fixed characters array with variable effective length.
+
+    <require module="buffer defs" scope="context"/>
+
+
+    <property name="buffer" class="buffer" is_reference="0">
+        Underlying characters buffer.
+    </property>
+
+
+    <method name="is empty" is_const="1">
+        Returns true if string length is zero.
+
+        <return type="boolean"/>
+    </method>
+
+
+    <method name="equal" is_const="1">
+        Return true if strings are equal.
+
+        <argument name="rhs" class="self" access="readonly"/>
+
+        <return type="boolean"/>
+    </method>
+
+
+    <method name="secure equal" is_const="1">
+        Perform constant-time string comparison.
+        The time depends on the string length but not on the characters.
+        Return true if strings are equal.
+
+        <argument name="rhs" class="self" access="readonly"/>
+
+        <return type="boolean"/>
+    </method>
+
+
+    <constructor name="with capacity">
+        Allocate inner character buffer of given capacity.
+
+        <argument name="capacity" type="size"/>
+    </constructor>
+
+
+    <constructor name="with str">
+        Allocate inner character buffer as copy of given string.
+
+        <argument name="str" class="str"/>
+    </constructor>
+
+
+    <method name="alloc">
+        Allocates inner characters array with a given capacity.
+        Precondition: characters array is initialized.
+        Precondition: characters array does not hold any character.
+        Postcondition: inner characters array is allocated.
+
+        <argument name="capacity" type="size"/>
+    </method>
+
+
+    <method name="release">
+        Release inner characters array.
+    </method>
+
+
+    <method name="use">
+        Use given characters array as underlying string buffer.
+        Precondition: buffer is initialized.
+        Precondition: buffer does not hold any characters array.
+        Note, caller is responsible for given characters array deallocation.
+
+        <argument name="chars" type="char" access="readwrite" is_reference="1"/>
+        <argument name="chars len" type="size"/>
+    </method>
+
+
+    <method name="take">
+        Take given characters array as underlying string buffer.
+        Precondition: buffer is initialized.
+        Precondition: buffer does not hold any characters array.
+        Note, this class is responsible for given characters array deallocation.
+
+        <argument name="chars" type="char" access="readwrite" is_reference="1"/>
+        <argument name="chars len" type="size"/>
+        <argument name="dealloc" callback=".(global_callback_dealloc)"/>
+    </method>
+
+
+    <method name="make secure">
+        Mark string buffer as it holds sensitive data that must be erased
+        in a secure manner during destruction.
+    </method>
+
+
+    <method name="is full" is_const="1">
+        Returns true if string buffer is full.
+
+        <return type="boolean"/>
+    </method>
+
+
+    <method name="is valid" is_const="1">
+        Returns true if string buffer is configured and has valid internal states.
+
+        <return type="boolean"/>
+    </method>
+
+
+    <method name="chars" is_const="1">
+        Returns underlying characters array.
+
+        <return type="char" is_reference="1"/>
+    </method>
+
+
+    <method name="str" is_const="1">
+        Returns underlying string buffer bytes as string.
+
+        <return class="str"/>
+    </method>
+
+
+    <method name="capacity" is_const="1">
+        Returns string buffer capacity.
+
+        <return type="size"/>
+    </method>
+
+
+    <method name="len" is_const="1">
+        Returns string buffer effective length - length of characters that are actually used.
+
+        <return type="size"/>
+    </method>
+
+
+    <method name="unused len" is_const="1">
+        Returns length of the characters array that are not in use yet.
+
+        <return type="size"/>
+    </method>
+
+
+    <method name="begin">
+        Returns writable pointer to the string buffer first element.
+
+        <return type="char" access="readwrite" is_reference="1"/>
+    </method>
+
+
+    <method name="unused chars">
+        Returns pointer to the first unused character in the string buffer.
+
+        <return type="char" access="readwrite" is_reference="1"/>
+    </method>
+
+
+    <method name="inc used">
+        Increase used characters by given length.
+
+        <argument name="len" type="size"/>
+    </method>
+
+
+    <method name="dec used">
+        Decrease used characters by given length.
+
+        <argument name="len" type="size"/>
+    </method>
+
+
+    <method name="write str">
+        Copy string to the string buffer.
+
+        <argument name="str" class="str"/>
+    </method>
+
+
+    <method name="append str">
+        Copy string to the string buffer and reallocate if needed by coping.
+
+        Precondition: string buffer should be an owner of the underlying characters array.
+
+        Note, this operation can be slow if copy operation occurred.
+        Note, string buffer capacity is doubled.
+
+        <argument name="str" class="str"/>
+    </method>
+
+
+    <method name="reset">
+        Reset to the initial state.
+        After reset underlying characters array can be re-used.
+
+    </method>
+
+
+    <method name="erase">
+        Zeroing output buffer in secure manner.
+        And reset it to the initial state.
+    </method>
+</class>

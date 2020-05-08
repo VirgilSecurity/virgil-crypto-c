@@ -89,6 +89,16 @@ set_property(
 )
 
 set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/common/vsc_str.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
+)
+
+set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/common/vsc_str_buffer.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
+)
+
+set_property(
     SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/common/vsc_common_public.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
@@ -103,6 +113,9 @@ target_sources(common
             "$<$<BOOL:${VSC_BUFFER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/common/vsc_buffer.h>"
             "$<$<BOOL:${VSC_BUFFER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/common/private/vsc_buffer_defs.h>"
             "$<$<BOOL:${VSC_DATA}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/common/vsc_data.h>"
+            "$<$<BOOL:${VSC_STR}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/common/vsc_str.h>"
+            "$<$<BOOL:${VSC_STR_BUFFER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/common/vsc_str_buffer.h>"
+            "$<$<BOOL:${VSC_STR_BUFFER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/common/private/vsc_str_buffer_defs.h>"
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/common/vsc_common_public.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/common/private/vsc_common_private.h"
 
@@ -112,6 +125,9 @@ target_sources(common
             "$<$<BOOL:${VSC_BUFFER}>:${CMAKE_CURRENT_LIST_DIR}/src/vsc_buffer.c>"
             "$<$<BOOL:${VSC_BUFFER}>:${CMAKE_CURRENT_LIST_DIR}/src/vsc_buffer_defs.c>"
             "$<$<BOOL:${VSC_DATA}>:${CMAKE_CURRENT_LIST_DIR}/src/vsc_data.c>"
+            "$<$<BOOL:${VSC_STR}>:${CMAKE_CURRENT_LIST_DIR}/src/vsc_str.c>"
+            "$<$<BOOL:${VSC_STR_BUFFER}>:${CMAKE_CURRENT_LIST_DIR}/src/vsc_str_buffer.c>"
+            "$<$<BOOL:${VSC_STR_BUFFER}>:${CMAKE_CURRENT_LIST_DIR}/src/vsc_str_buffer_defs.c>"
         )
 
 target_include_directories(common

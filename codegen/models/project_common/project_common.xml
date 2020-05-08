@@ -56,4 +56,6 @@
 
     <class name="data"/>
     <class name="buffer"/>
+    <class name="str"/>
+    <class name="str buffer"/>
 </project>
