@@ -42,3 +42,11 @@ extern const vsc_data_t test_alg_info_AES256_GCM_DER;
 extern const vsc_data_t test_alg_info_AES256_GCM_DER_V2_COMPAT;
 extern const vsc_data_t test_alg_info_AES256_GCM_NONCE;
 extern const vsc_data_t test_alg_info_PADDING_CIPHER_WITH_RANDOM_PADDING_AND_AES256_GCM;
+
+extern const vsc_data_t test_alg_info_COMPOUND_KEY_CURVE25519_ED25519;
+extern const vsc_data_t test_alg_info_COMPOUND_KEY_UNSUPPORTED_ED25519;
+extern const vsc_data_t test_alg_info_COMPOUND_KEY_CURVE25519_UNSUPPORTED;
+
+extern const vsc_data_t test_alg_info_HYBRID_KEY_CURVE25519_ED25519;
+extern const vsc_data_t test_alg_info_HYBRID_KEY_UNSUPPORTED_ED25519;
+extern const vsc_data_t test_alg_info_HYBRID_KEY_CURVE25519_UNSUPPORTED;
