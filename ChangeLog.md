@@ -1,5 +1,12 @@
 # virgil-crypto-c ChangeLog (Sorted by date)
 
+## Version 0.15.2 released 2020-05-12
+
+### Bugfix
+
+- Lib/Foundation: Fixed abort() when import "compound" or "hybrid" key with unsupported algorithm(s)
+
+
 ## Version 0.15.1 released 2020-05-07
 
 ### Bugfix
