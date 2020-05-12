@@ -611,6 +611,12 @@ vscf_alg_info_der_deserializer_deserialize_compound_key_alg_info(
         return NULL;
     }
 
+    if (NULL == cipher_alg_info || NULL == signer_alg_info) {
+        vscf_impl_destroy(&cipher_alg_info);
+        vscf_impl_destroy(&signer_alg_info);
+        return NULL;
+    }
+
     vscf_compound_key_alg_info_t *alg_info = vscf_compound_key_alg_info_new_with_infos_disown(
             vscf_alg_id_COMPOUND_KEY, &cipher_alg_info, &signer_alg_info);
     return vscf_compound_key_alg_info_impl(alg_info);
@@ -646,10 +652,16 @@ vscf_alg_info_der_deserializer_deserialize_hybrid_key_alg_info(
     vscf_impl_t *first_key_alg_info = vscf_alg_info_der_deserializer_deserialize_inplace(self, error);
     vscf_impl_t *second_key_alg_info = vscf_alg_info_der_deserializer_deserialize_inplace(self, error);
 
-    if (vscf_asn1_reader_has_error(self->asn1_reader) || vscf_error_has_error(error)) {
+    if (vscf_asn1_reader_has_error(self->asn1_reader)) {
         vscf_impl_destroy(&first_key_alg_info);
         vscf_impl_destroy(&second_key_alg_info);
         VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_BAD_ASN1_ALGORITHM_HYBRID_KEY);
+        return NULL;
+    }
+
+    if (NULL == first_key_alg_info || NULL == second_key_alg_info) {
+        vscf_impl_destroy(&first_key_alg_info);
+        vscf_impl_destroy(&second_key_alg_info);
         return NULL;
     }
 
