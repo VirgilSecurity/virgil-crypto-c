@@ -65,7 +65,7 @@ vscp_handle_throw_exception(vscp_status_t status) {
 //
 // Constants
 //
-const char VSCP_PYTHIA_PHP_VERSION[] = "0.15.1";
+const char VSCP_PYTHIA_PHP_VERSION[] = "0.15.2";
 const char VSCP_PYTHIA_PHP_EXTNAME[] = "vscp_pythia_php";
 
 //

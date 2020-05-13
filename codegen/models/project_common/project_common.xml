@@ -9,7 +9,7 @@
         wrappers="python"
         >
 
-    <version major="0" minor="15" patch="1"/>
+    <version major="0" minor="15" patch="2"/>
 
     <license>
         Copyright (C) 2015-2020 Virgil Security, Inc.
