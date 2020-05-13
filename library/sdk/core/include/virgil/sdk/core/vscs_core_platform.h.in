@@ -86,8 +86,28 @@ extern "C" {
 #cmakedefine01 VSCS_CORE_MULTI_THREADING
 #endif
 
+#ifndef VSCS_CORE_ERROR
+#cmakedefine01 VSCS_CORE_ERROR
+#endif
+
+#ifndef VSCS_CORE_BASE64_URL
+#cmakedefine01 VSCS_CORE_BASE64_URL
+#endif
+
 #ifndef VSCS_CORE_JWT
 #cmakedefine01 VSCS_CORE_JWT
+#endif
+
+#ifndef VSCS_CORE_JWT_HEADER
+#cmakedefine01 VSCS_CORE_JWT_HEADER
+#endif
+
+#ifndef VSCS_CORE_JWT_PAYLOAD
+#cmakedefine01 VSCS_CORE_JWT_PAYLOAD
+#endif
+
+#ifndef VSCS_CORE_JWT_PAYLOAD
+#cmakedefine01 VSCS_CORE_JWT_PAYLOAD
 #endif
 
 #ifndef VSCS_CORE_JWT_GENERATOR

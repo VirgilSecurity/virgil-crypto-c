@@ -559,7 +559,9 @@ vsc_buffer_is_full(const vsc_buffer_t *self) {
 VSC_PUBLIC bool
 vsc_buffer_is_valid(const vsc_buffer_t *self) {
 
-    VSC_ASSERT_PTR(self);
+    if (NULL == self) {
+        return false;
+    }
 
     return (self->bytes != NULL) && (self->len <= self->capacity);
 }

@@ -8,4 +8,8 @@
     <constant name="internal error" value="-1">
         Met internal inconsistency.
     </constant>
+
+    <constant name="bad base64 url" value="-101">
+        Faled to decode Base64URL string.
+    </constant>
 </enum>

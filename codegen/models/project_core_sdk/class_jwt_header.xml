@@ -1,0 +1,23 @@
+<class name="jwt header" scope="private">
+    Class that handles JWT Header.
+
+    <property name="algorithm" class="str buffer">
+        Represents used signature algorithm.
+    </property>
+
+
+    <property name="type" class="str buffer">
+        Represents token type.
+    </property>
+
+
+    <property name="content type" class="str buffer">
+        Represents content type for this JWT.
+    </property>
+
+
+    <property name="key identifier" class="str buffer">
+        Represents identifier of public key which should be used to verify signature.
+        Note: Can be taken from [here](https://dashboard.virgilsecurity.com/api-keys)
+    </property>
+</class>

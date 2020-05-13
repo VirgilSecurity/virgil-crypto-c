@@ -54,8 +54,8 @@
 #define VSC_STR_H_INCLUDED
 
 #include "vsc_library.h"
-#include "vsc_str.h"
 #include "vsc_data.h"
+#include "vsc_str.h"
 
 // clang-format on
 //  @end
@@ -80,7 +80,11 @@ struct vsc_str_t {
     //
     //  Underlying characters array.
     //
-    vsc_data_t data;
+    const char *chars;
+    //
+    //  Characters array length.
+    //
+    size_t len;
 };
 
 //
@@ -94,6 +98,12 @@ vsc_str_ctx_size(void);
 //
 VSC_PUBLIC vsc_str_t
 vsc_str(const char *str, size_t len);
+
+//
+//  Create string from data.
+//
+VSC_PRIVATE vsc_str_t
+vsc_str_from_data(vsc_data_t data);
 
 //
 //  Create an empty string.
@@ -120,6 +130,14 @@ VSC_PUBLIC bool
 vsc_str_equal(vsc_str_t self, vsc_str_t rhs);
 
 //
+//  Perform constant-time string comparison.
+//  The time depends on the given length but not on the string itself.
+//  Return true if given string is equal.
+//
+VSC_PUBLIC bool
+vsc_str_secure_equal(vsc_str_t self, vsc_str_t rhs);
+
+//
 //  Return string length.
 //
 //  Note, this method can be used for wrappers where direct access
@@ -138,12 +156,10 @@ VSC_PUBLIC const char *
 vsc_str_chars(vsc_str_t self);
 
 //
-//  Perform constant-time string comparison.
-//  The time depends on the given length but not on the string itself.
-//  Return true if given string is equal.
+//  Returns underlying characters array as bytes object.
 //
-VSC_PUBLIC bool
-vsc_str_secure_equal(vsc_str_t self, vsc_str_t rhs);
+VSC_PUBLIC vsc_data_t
+vsc_str_as_data(vsc_str_t self);
 
 //
 //  Return underlying string slice starting from beginning.

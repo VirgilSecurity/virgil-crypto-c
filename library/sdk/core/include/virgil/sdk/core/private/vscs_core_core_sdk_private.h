@@ -56,6 +56,12 @@
 #include "vscs_core_atomic.h"
 #include "vscs_core_jwt_defs.h"
 #include "vscs_core_jwt_generator_defs.h"
+#include "vscs_core_jwt_header.h"
+#include "vscs_core_jwt_header_defs.h"
+#include "vscs_core_jwt_payload.h"
+#include "vscs_core_jwt_payload.h"
+#include "vscs_core_jwt_payload_defs.h"
+#include "vscs_core_jwt_payload_defs.h"
 
 // clang-format on
 //  @end

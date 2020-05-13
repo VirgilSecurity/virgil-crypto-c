@@ -47,11 +47,22 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Defines the library status codes.
+//  Class 'jwt header' types definition.
 // --------------------------------------------------------------------------
 
-#ifndef VSCS_CORE_STATUS_H_INCLUDED
-#define VSCS_CORE_STATUS_H_INCLUDED
+#ifndef VSCS_CORE_JWT_HEADER_DEFS_H_INCLUDED
+#define VSCS_CORE_JWT_HEADER_DEFS_H_INCLUDED
+
+#include "vscs_core_library.h"
+#include "vscs_core_atomic.h"
+
+#if !VSCS_CORE_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <virgil/crypto/common/vsc_str_buffer.h>
+#endif
+
+#if VSCS_CORE_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <VSCCommon/vsc_str_buffer.h>
+#endif
 
 // clang-format on
 //  @end
@@ -69,23 +80,35 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Defines the library status codes.
+//  Handle 'jwt header' context.
 //
-enum vscs_core_status_t {
+struct vscs_core_jwt_header_t {
     //
-    //  No errors was occurred.
+    //  Function do deallocate self context.
     //
-    vscs_core_status_SUCCESS = 0,
+    vscs_core_dealloc_fn self_dealloc_cb;
     //
-    //  Met internal inconsistency.
+    //  Reference counter.
     //
-    vscs_core_status_INTERNAL_ERROR = -1,
+    VSCS_CORE_ATOMIC size_t refcnt;
     //
-    //  Faled to decode Base64URL string.
+    //  Represents used signature algorithm.
     //
-    vscs_core_status_BAD_BASE64_URL = -101
+    vsc_str_buffer_t *algorithm;
+    //
+    //  Represents token type.
+    //
+    vsc_str_buffer_t *type;
+    //
+    //  Represents content type for this JWT.
+    //
+    vsc_str_buffer_t *content_type;
+    //
+    //  Represents identifier of public key which should be used to verify signature.
+    //  Note: Can be taken from [here](https://dashboard.virgilsecurity.com/api-keys)
+    //
+    vsc_str_buffer_t *key_identifier;
 };
-typedef enum vscs_core_status_t vscs_core_status_t;
 
 
 // --------------------------------------------------------------------------
@@ -101,5 +124,5 @@ typedef enum vscs_core_status_t vscs_core_status_t;
 
 
 //  @footer
-#endif // VSCS_CORE_STATUS_H_INCLUDED
+#endif // VSCS_CORE_JWT_HEADER_DEFS_H_INCLUDED
 //  @end

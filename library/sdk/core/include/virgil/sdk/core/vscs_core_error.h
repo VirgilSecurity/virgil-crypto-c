@@ -47,11 +47,17 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Defines the library status codes.
+//  Error context.
+//  Can be used for sequential operations, i.e. parsers, to accumulate error.
+//  In this way operation is successful if all steps are successful, otherwise
+//  last occurred error code can be obtained.
 // --------------------------------------------------------------------------
 
-#ifndef VSCS_CORE_STATUS_H_INCLUDED
-#define VSCS_CORE_STATUS_H_INCLUDED
+#ifndef VSCS_CORE_ERROR_H_INCLUDED
+#define VSCS_CORE_ERROR_H_INCLUDED
+
+#include "vscs_core_library.h"
+#include "vscs_core_status.h"
 
 // clang-format on
 //  @end
@@ -69,23 +75,55 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Defines the library status codes.
+//  Perform update only if context defined, otherwise log error.
 //
-enum vscs_core_status_t {
-    //
-    //  No errors was occurred.
-    //
-    vscs_core_status_SUCCESS = 0,
-    //
-    //  Met internal inconsistency.
-    //
-    vscs_core_status_INTERNAL_ERROR = -1,
-    //
-    //  Faled to decode Base64URL string.
-    //
-    vscs_core_status_BAD_BASE64_URL = -101
+#define VSCS_CORE_ERROR_SAFE_UPDATE(CTX, ERR)                       \
+    do {                                                            \
+        if (NULL != (CTX)) {                                        \
+            vscs_core_error_update ((CTX), (ERR));                  \
+        } else {                                                    \
+            /* TODO: Log this error, when logging will be added. */ \
+        }                                                           \
+    } while (false)
+
+//
+//  Handle 'error' context.
+//
+typedef struct vscs_core_error_t vscs_core_error_t;
+struct vscs_core_error_t {
+    vscs_core_status_t status;
 };
-typedef enum vscs_core_status_t vscs_core_status_t;
+
+//
+//  Return size of 'vscs_core_error_t'.
+//
+VSCS_CORE_PUBLIC size_t
+vscs_core_error_ctx_size(void);
+
+//
+//  Reset context to the "no error" state.
+//
+VSCS_CORE_PUBLIC void
+vscs_core_error_reset(vscs_core_error_t *self);
+
+//
+//  Update context with given status.
+//  If status is "success" then do nothing.
+//
+VSCS_CORE_PRIVATE void
+vscs_core_error_update(vscs_core_error_t *self, vscs_core_status_t status);
+
+//
+//  Return true if status is not "success".
+//
+VSCS_CORE_PUBLIC bool
+vscs_core_error_has_error(const vscs_core_error_t *self);
+
+//
+//  Return error code.
+//
+VSCS_CORE_PUBLIC vscs_core_status_t
+vscs_core_error_status(const vscs_core_error_t *self) VSCS_CORE_NODISCARD;
 
 
 // --------------------------------------------------------------------------
@@ -101,5 +139,5 @@ typedef enum vscs_core_status_t vscs_core_status_t;
 
 
 //  @footer
-#endif // VSCS_CORE_STATUS_H_INCLUDED
+#endif // VSCS_CORE_ERROR_H_INCLUDED
 //  @end

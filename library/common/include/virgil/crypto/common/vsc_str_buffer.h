@@ -56,6 +56,7 @@
 #include "vsc_library.h"
 #include "vsc_str.h"
 #include "vsc_str_buffer.h"
+#include "vsc_data.h"
 
 // clang-format on
 //  @end
@@ -228,10 +229,16 @@ VSC_PUBLIC const char *
 vsc_str_buffer_chars(const vsc_str_buffer_t *self);
 
 //
-//  Returns underlying string buffer bytes as string.
+//  Returns underlying string buffer characters as string.
 //
 VSC_PUBLIC vsc_str_t
 vsc_str_buffer_str(const vsc_str_buffer_t *self);
+
+//
+//  Returns underlying string buffer characters as data.
+//
+VSC_PUBLIC vsc_data_t
+vsc_str_buffer_data(const vsc_str_buffer_t *self);
 
 //
 //  Returns string buffer capacity.
@@ -291,6 +298,18 @@ vsc_str_buffer_write_str(vsc_str_buffer_t *self, vsc_str_t str);
 //
 VSC_PUBLIC void
 vsc_str_buffer_append_str(vsc_str_buffer_t *self, vsc_str_t str);
+
+//
+//  Replace all occurences of one character to another character.
+//
+VSC_PUBLIC void
+vsc_str_buffer_replace_char(vsc_str_buffer_t *self, char char_old, char char_new);
+
+//
+//  Remove all occurences of given character from the string end.
+//
+VSC_PUBLIC void
+vsc_str_buffer_rtrim(vsc_str_buffer_t *self, char char_to_trim);
 
 //
 //  Reset to the initial state.

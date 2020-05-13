@@ -56,8 +56,16 @@
 #include "vscs_core_library.h"
 #include "vscs_core_atomic.h"
 
+#if !VSCS_CORE_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <virgil/crypto/common/vsc_str_buffer.h>
+#endif
+
 #if !VSCS_CORE_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
 #   include <virgil/crypto/foundation/vscf_impl.h>
+#endif
+
+#if VSCS_CORE_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <VSCCommon/vsc_str_buffer.h>
 #endif
 
 #if VSCS_CORE_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
@@ -91,8 +99,18 @@ struct vscs_core_jwt_generator_t {
     //  Reference counter.
     //
     VSCS_CORE_ATOMIC size_t refcnt;
+    //
+    //  Dependency to the interface 'random'.
+    //
+    vscf_impl_t *random;
+
+    vsc_str_buffer_t *api_id;
 
     const vscf_impl_t *api_key;
+
+    vsc_str_buffer_t *api_public_key_identifier;
+
+    size_t ttl;
 };
 
 

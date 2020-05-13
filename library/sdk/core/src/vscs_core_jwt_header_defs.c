@@ -37,6 +37,12 @@
 // clang-format off
 
 
+//  @description
+// --------------------------------------------------------------------------
+//  Class 'jwt header' types definition.
+// --------------------------------------------------------------------------
+
+
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -44,22 +50,10 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-
-//  @description
-// --------------------------------------------------------------------------
-//  Defines the library status codes.
-// --------------------------------------------------------------------------
-
-#ifndef VSCS_CORE_STATUS_H_INCLUDED
-#define VSCS_CORE_STATUS_H_INCLUDED
+#include "vscs_core_jwt_header_defs.h"
 
 // clang-format on
 //  @end
-
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 
 //  @generated
@@ -68,38 +62,9 @@ extern "C" {
 //  Generated section start.
 // --------------------------------------------------------------------------
 
-//
-//  Defines the library status codes.
-//
-enum vscs_core_status_t {
-    //
-    //  No errors was occurred.
-    //
-    vscs_core_status_SUCCESS = 0,
-    //
-    //  Met internal inconsistency.
-    //
-    vscs_core_status_INTERNAL_ERROR = -1,
-    //
-    //  Faled to decode Base64URL string.
-    //
-    vscs_core_status_BAD_BASE64_URL = -101
-};
-typedef enum vscs_core_status_t vscs_core_status_t;
-
 
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
-//  @end
-
-
-#ifdef __cplusplus
-}
-#endif
-
-
-//  @footer
-#endif // VSCS_CORE_STATUS_H_INCLUDED
 //  @end

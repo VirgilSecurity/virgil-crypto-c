@@ -1,0 +1,29 @@
+<class name="jwt payload" scope="private">
+    Class that handles JWT Payload.
+
+    <property name="app id" class="str buffer">
+        Issuer containing application id.
+        Note: Can be taken [here](https://dashboard.virgilsecurity.com)
+    </property>
+
+
+    <property name="identity" class="str buffer">
+        Subject as identity.
+    </property>
+
+<!-- NOT SUPPORTED YET
+    <property name="additional data" class="...">
+        Dictionary with additional data.
+    </property>
+ -->
+
+    <property name="expires at" type="size">
+        UNIX Timestamp in seconds with expiration date.
+    </property>
+
+
+    <property name="issued at" type="size">
+        UNIX Timestamp in seconds with issued date.
+    </property>
+
+</class>

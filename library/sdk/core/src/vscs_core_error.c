@@ -37,6 +37,15 @@
 // clang-format off
 
 
+//  @description
+// --------------------------------------------------------------------------
+//  Error context.
+//  Can be used for sequential operations, i.e. parsers, to accumulate error.
+//  In this way operation is successful if all steps are successful, otherwise
+//  last occurred error code can be obtained.
+// --------------------------------------------------------------------------
+
+
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -44,22 +53,12 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-
-//  @description
-// --------------------------------------------------------------------------
-//  Defines the library status codes.
-// --------------------------------------------------------------------------
-
-#ifndef VSCS_CORE_STATUS_H_INCLUDED
-#define VSCS_CORE_STATUS_H_INCLUDED
+#include "vscs_core_error.h"
+#include "vscs_core_memory.h"
+#include "vscs_core_assert.h"
 
 // clang-format on
 //  @end
-
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 
 //  @generated
@@ -69,37 +68,61 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Defines the library status codes.
+//  Return size of 'vscs_core_error_t'.
 //
-enum vscs_core_status_t {
-    //
-    //  No errors was occurred.
-    //
-    vscs_core_status_SUCCESS = 0,
-    //
-    //  Met internal inconsistency.
-    //
-    vscs_core_status_INTERNAL_ERROR = -1,
-    //
-    //  Faled to decode Base64URL string.
-    //
-    vscs_core_status_BAD_BASE64_URL = -101
-};
-typedef enum vscs_core_status_t vscs_core_status_t;
+VSCS_CORE_PUBLIC size_t
+vscs_core_error_ctx_size(void) {
+
+    return sizeof(vscs_core_error_t);
+}
+
+//
+//  Reset context to the "no error" state.
+//
+VSCS_CORE_PUBLIC void
+vscs_core_error_reset(vscs_core_error_t *self) {
+
+    VSCS_CORE_ASSERT_PTR(self);
+    self->status = vscs_core_status_SUCCESS;
+}
+
+//
+//  Update context with given status.
+//  If status is "success" then do nothing.
+//
+VSCS_CORE_PRIVATE void
+vscs_core_error_update(vscs_core_error_t *self, vscs_core_status_t status) {
+
+    VSCS_CORE_ASSERT_PTR(self);
+
+    if (status != vscs_core_status_SUCCESS) {
+        self->status = status;
+    }
+}
+
+//
+//  Return true if status is not "success".
+//
+VSCS_CORE_PUBLIC bool
+vscs_core_error_has_error(const vscs_core_error_t *self) {
+
+    VSCS_CORE_ASSERT_PTR(self);
+    return self->status != vscs_core_status_SUCCESS;
+}
+
+//
+//  Return error code.
+//
+VSCS_CORE_PUBLIC vscs_core_status_t
+vscs_core_error_status(const vscs_core_error_t *self) {
+
+    VSCS_CORE_ASSERT_PTR(self);
+    return self->status;
+}
 
 
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
-//  @end
-
-
-#ifdef __cplusplus
-}
-#endif
-
-
-//  @footer
-#endif // VSCS_CORE_STATUS_H_INCLUDED
 //  @end

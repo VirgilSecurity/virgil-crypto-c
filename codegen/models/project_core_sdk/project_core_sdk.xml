@@ -60,7 +60,13 @@
 
     <enum name="status"/>
 
+    <class name="error" from="shared"/>
+
+    <class name="base64 url"/>
     <class name="jwt"/>
+    <class name="jwt header"/>
+    <class name="jwt payload"/>
+    <class name="jwt signature"/>
     <class name="jwt generator"/>
 
     <error_message_getter success="0">

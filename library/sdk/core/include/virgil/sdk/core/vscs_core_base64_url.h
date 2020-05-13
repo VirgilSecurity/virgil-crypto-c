@@ -47,11 +47,28 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Defines the library status codes.
+//  Prvodes Base64URL encoding and decoding suitable for JWT.
 // --------------------------------------------------------------------------
 
-#ifndef VSCS_CORE_STATUS_H_INCLUDED
-#define VSCS_CORE_STATUS_H_INCLUDED
+#ifndef VSCS_CORE_BASE64_URL_H_INCLUDED
+#define VSCS_CORE_BASE64_URL_H_INCLUDED
+
+#include "vscs_core_library.h"
+#include "vscs_core_status.h"
+
+#if !VSCS_CORE_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <virgil/crypto/common/vsc_data.h>
+#   include <virgil/crypto/common/vsc_str.h>
+#   include <virgil/crypto/common/vsc_str_buffer.h>
+#   include <virgil/crypto/common/vsc_buffer.h>
+#endif
+
+#if VSCS_CORE_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <VSCCommon/vsc_data.h>
+#   include <VSCCommon/vsc_str.h>
+#   include <VSCCommon/vsc_str_buffer.h>
+#   include <VSCCommon/vsc_buffer.h>
+#endif
 
 // clang-format on
 //  @end
@@ -69,23 +86,29 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Defines the library status codes.
+//  Calculate length in bytes required to hold an encoded base64url string.
 //
-enum vscs_core_status_t {
-    //
-    //  No errors was occurred.
-    //
-    vscs_core_status_SUCCESS = 0,
-    //
-    //  Met internal inconsistency.
-    //
-    vscs_core_status_INTERNAL_ERROR = -1,
-    //
-    //  Faled to decode Base64URL string.
-    //
-    vscs_core_status_BAD_BASE64_URL = -101
-};
-typedef enum vscs_core_status_t vscs_core_status_t;
+VSCS_CORE_PUBLIC size_t
+vscs_core_base64_url_encoded_len(size_t data_len);
+
+//
+//  Encode given data to the base64url format.
+//  Note, written buffer is NOT null-terminated.
+//
+VSCS_CORE_PUBLIC void
+vscs_core_base64_url_encode(vsc_data_t data, vsc_str_buffer_t *str);
+
+//
+//  Calculate length in bytes required to hold a decoded base64url string.
+//
+VSCS_CORE_PUBLIC size_t
+vscs_core_base64_url_decoded_len(size_t str_len);
+
+//
+//  Decode given data from the base64url format.
+//
+VSCS_CORE_PUBLIC vscs_core_status_t
+vscs_core_base64_url_decode(vsc_str_t str, vsc_buffer_t *data) VSCS_CORE_NODISCARD;
 
 
 // --------------------------------------------------------------------------
@@ -101,5 +124,5 @@ typedef enum vscs_core_status_t vscs_core_status_t;
 
 
 //  @footer
-#endif // VSCS_CORE_STATUS_H_INCLUDED
+#endif // VSCS_CORE_BASE64_URL_H_INCLUDED
 //  @end

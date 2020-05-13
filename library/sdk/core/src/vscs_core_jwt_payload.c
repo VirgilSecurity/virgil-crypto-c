@@ -39,7 +39,7 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Class that handles JWT.
+//  Class that handles JWT Payload.
 // --------------------------------------------------------------------------
 
 
@@ -50,10 +50,10 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#include "vscs_core_jwt.h"
+#include "vscs_core_jwt_payload.h"
 #include "vscs_core_memory.h"
 #include "vscs_core_assert.h"
-#include "vscs_core_jwt_defs.h"
+#include "vscs_core_jwt_payload_defs.h"
 
 // clang-format on
 //  @end
@@ -67,11 +67,11 @@
 
 //
 //  Perform context specific initialization.
-//  Note, this method is called automatically when method vscs_core_jwt_init() is called.
+//  Note, this method is called automatically when method vscs_core_jwt_payload_init() is called.
 //  Note, that context is already zeroed.
 //
 static void
-vscs_core_jwt_init_ctx(vscs_core_jwt_t *self);
+vscs_core_jwt_payload_init_ctx(vscs_core_jwt_payload_t *self);
 
 //
 //  Release all inner resources.
@@ -79,99 +79,57 @@ vscs_core_jwt_init_ctx(vscs_core_jwt_t *self);
 //  Note, that context will be zeroed automatically next this method.
 //
 static void
-vscs_core_jwt_cleanup_ctx(vscs_core_jwt_t *self);
+vscs_core_jwt_payload_cleanup_ctx(vscs_core_jwt_payload_t *self);
 
 //
-//  Build JWT from it's parts.
-//
-static void
-vscs_core_jwt_init_ctx_with_members_disown(vscs_core_jwt_t *self, vscs_core_jwt_header_t **header_ref,
-        vscs_core_jwt_payload_t **payload_ref, vscs_core_jwt_payload_t **signature_ref);
-
-//
-//  Return size of 'vscs_core_jwt_t'.
+//  Return size of 'vscs_core_jwt_payload_t'.
 //
 VSCS_CORE_PUBLIC size_t
-vscs_core_jwt_ctx_size(void) {
+vscs_core_jwt_payload_ctx_size(void) {
 
-    return sizeof(vscs_core_jwt_t);
+    return sizeof(vscs_core_jwt_payload_t);
 }
 
 //
 //  Perform initialization of pre-allocated context.
 //
 VSCS_CORE_PUBLIC void
-vscs_core_jwt_init(vscs_core_jwt_t *self) {
+vscs_core_jwt_payload_init(vscs_core_jwt_payload_t *self) {
 
     VSCS_CORE_ASSERT_PTR(self);
 
-    vscs_core_zeroize(self, sizeof(vscs_core_jwt_t));
+    vscs_core_zeroize(self, sizeof(vscs_core_jwt_payload_t));
 
     self->refcnt = 1;
 
-    vscs_core_jwt_init_ctx(self);
+    vscs_core_jwt_payload_init_ctx(self);
 }
 
 //
 //  Release all inner resources including class dependencies.
 //
 VSCS_CORE_PUBLIC void
-vscs_core_jwt_cleanup(vscs_core_jwt_t *self) {
+vscs_core_jwt_payload_cleanup(vscs_core_jwt_payload_t *self) {
 
     if (self == NULL) {
         return;
     }
 
-    vscs_core_jwt_cleanup_ctx(self);
+    vscs_core_jwt_payload_cleanup_ctx(self);
 
-    vscs_core_zeroize(self, sizeof(vscs_core_jwt_t));
+    vscs_core_zeroize(self, sizeof(vscs_core_jwt_payload_t));
 }
 
 //
 //  Allocate context and perform it's initialization.
 //
-VSCS_CORE_PUBLIC vscs_core_jwt_t *
-vscs_core_jwt_new(void) {
+VSCS_CORE_PUBLIC vscs_core_jwt_payload_t *
+vscs_core_jwt_payload_new(void) {
 
-    vscs_core_jwt_t *self = (vscs_core_jwt_t *) vscs_core_alloc(sizeof (vscs_core_jwt_t));
+    vscs_core_jwt_payload_t *self = (vscs_core_jwt_payload_t *) vscs_core_alloc(sizeof (vscs_core_jwt_payload_t));
     VSCS_CORE_ASSERT_ALLOC(self);
 
-    vscs_core_jwt_init(self);
-
-    self->self_dealloc_cb = vscs_core_dealloc;
-
-    return self;
-}
-
-//
-//  Perform initialization of pre-allocated context.
-//  Build JWT from it's parts.
-//
-VSCS_CORE_PRIVATE void
-vscs_core_jwt_init_with_members_disown(vscs_core_jwt_t *self, vscs_core_jwt_header_t **header_ref,
-        vscs_core_jwt_payload_t **payload_ref, vscs_core_jwt_payload_t **signature_ref) {
-
-    VSCS_CORE_ASSERT_PTR(self);
-
-    vscs_core_zeroize(self, sizeof(vscs_core_jwt_t));
-
-    self->refcnt = 1;
-
-    vscs_core_jwt_init_ctx_with_members_disown(self, header_ref, payload_ref, signature_ref);
-}
-
-//
-//  Allocate class context and perform it's initialization.
-//  Build JWT from it's parts.
-//
-VSCS_CORE_PRIVATE vscs_core_jwt_t *
-vscs_core_jwt_new_with_members_disown(vscs_core_jwt_header_t **header_ref, vscs_core_jwt_payload_t **payload_ref,
-        vscs_core_jwt_payload_t **signature_ref) {
-
-    vscs_core_jwt_t *self = (vscs_core_jwt_t *) vscs_core_alloc(sizeof (vscs_core_jwt_t));
-    VSCS_CORE_ASSERT_ALLOC(self);
-
-    vscs_core_jwt_init_with_members_disown(self, header_ref, payload_ref, signature_ref);
+    vscs_core_jwt_payload_init(self);
 
     self->self_dealloc_cb = vscs_core_dealloc;
 
@@ -183,7 +141,7 @@ vscs_core_jwt_new_with_members_disown(vscs_core_jwt_header_t **header_ref, vscs_
 //  It is safe to call this method even if the context was statically allocated.
 //
 VSCS_CORE_PUBLIC void
-vscs_core_jwt_delete(vscs_core_jwt_t *self) {
+vscs_core_jwt_payload_delete(vscs_core_jwt_payload_t *self) {
 
     if (self == NULL) {
         return;
@@ -210,7 +168,7 @@ vscs_core_jwt_delete(vscs_core_jwt_t *self) {
 
     vscs_core_dealloc_fn self_dealloc_cb = self->self_dealloc_cb;
 
-    vscs_core_jwt_cleanup(self);
+    vscs_core_jwt_payload_cleanup(self);
 
     if (self_dealloc_cb != NULL) {
         self_dealloc_cb(self);
@@ -219,24 +177,24 @@ vscs_core_jwt_delete(vscs_core_jwt_t *self) {
 
 //
 //  Delete given context and nullifies reference.
-//  This is a reverse action of the function 'vscs_core_jwt_new ()'.
+//  This is a reverse action of the function 'vscs_core_jwt_payload_new ()'.
 //
 VSCS_CORE_PUBLIC void
-vscs_core_jwt_destroy(vscs_core_jwt_t **self_ref) {
+vscs_core_jwt_payload_destroy(vscs_core_jwt_payload_t **self_ref) {
 
     VSCS_CORE_ASSERT_PTR(self_ref);
 
-    vscs_core_jwt_t *self = *self_ref;
+    vscs_core_jwt_payload_t *self = *self_ref;
     *self_ref = NULL;
 
-    vscs_core_jwt_delete(self);
+    vscs_core_jwt_payload_delete(self);
 }
 
 //
 //  Copy given class context by increasing reference counter.
 //
-VSCS_CORE_PUBLIC vscs_core_jwt_t *
-vscs_core_jwt_shallow_copy(vscs_core_jwt_t *self) {
+VSCS_CORE_PUBLIC vscs_core_jwt_payload_t *
+vscs_core_jwt_payload_shallow_copy(vscs_core_jwt_payload_t *self) {
 
     VSCS_CORE_ASSERT_PTR(self);
 
@@ -265,13 +223,13 @@ vscs_core_jwt_shallow_copy(vscs_core_jwt_t *self) {
 
 //
 //  Perform context specific initialization.
-//  Note, this method is called automatically when method vscs_core_jwt_init() is called.
+//  Note, this method is called automatically when method vscs_core_jwt_payload_init() is called.
 //  Note, that context is already zeroed.
 //
 static void
-vscs_core_jwt_init_ctx(vscs_core_jwt_t *self) {
+vscs_core_jwt_payload_init_ctx(vscs_core_jwt_payload_t *self) {
 
-    VSCS_CORE_ASSERT_PTR(self);
+    //  TODO: This is STUB. Implement me.
 }
 
 //
@@ -280,39 +238,9 @@ vscs_core_jwt_init_ctx(vscs_core_jwt_t *self) {
 //  Note, that context will be zeroed automatically next this method.
 //
 static void
-vscs_core_jwt_cleanup_ctx(vscs_core_jwt_t *self) {
+vscs_core_jwt_payload_cleanup_ctx(vscs_core_jwt_payload_t *self) {
 
     VSCS_CORE_ASSERT_PTR(self);
 
-    vscs_core_jwt_header_destroy(&self->header);
-    vscs_core_jwt_payload_destroy(&self->payload);
-    vscs_core_jwt_payload_destroy(&self->signature);
-}
-
-//
-//  Build JWT from it's parts.
-//
-static void
-vscs_core_jwt_init_ctx_with_members_disown(vscs_core_jwt_t *self, vscs_core_jwt_header_t **header_ref,
-        vscs_core_jwt_payload_t **payload_ref, vscs_core_jwt_payload_t **signature_ref) {
-
-    //   TODO: Perform initialization.
-}
-
-//
-//  Return length for JWT string representation buffer.
-//
-VSCS_CORE_PUBLIC void
-vscs_core_jwt_as_string_len(const vscs_core_jwt_t *self) {
-
-    //  TODO: This is STUB. Implement me.
-}
-
-//
-//  Return JWT string representation.
-//
-VSCS_CORE_PUBLIC void
-vscs_core_jwt_as_string(const vscs_core_jwt_t *self, vsc_str_buffer_t *str_buffer) {
-
-    //  TODO: This is STUB. Implement me.
+    //  TODO: Release all inner resources.
 }

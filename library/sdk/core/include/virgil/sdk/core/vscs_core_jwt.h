@@ -54,6 +54,16 @@
 #define VSCS_CORE_JWT_H_INCLUDED
 
 #include "vscs_core_library.h"
+#include "vscs_core_jwt_header.h"
+#include "vscs_core_jwt_payload.h"
+
+#if !VSCS_CORE_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <virgil/crypto/common/vsc_str_buffer.h>
+#endif
+
+#if VSCS_CORE_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <VSCCommon/vsc_str_buffer.h>
+#endif
 
 // clang-format on
 //  @end
@@ -100,6 +110,22 @@ VSCS_CORE_PUBLIC vscs_core_jwt_t *
 vscs_core_jwt_new(void);
 
 //
+//  Perform initialization of pre-allocated context.
+//  Build JWT from it's parts.
+//
+VSCS_CORE_PRIVATE void
+vscs_core_jwt_init_with_members_disown(vscs_core_jwt_t *self, vscs_core_jwt_header_t **header_ref,
+        vscs_core_jwt_payload_t **payload_ref, vscs_core_jwt_payload_t **signature_ref);
+
+//
+//  Allocate class context and perform it's initialization.
+//  Build JWT from it's parts.
+//
+VSCS_CORE_PRIVATE vscs_core_jwt_t *
+vscs_core_jwt_new_with_members_disown(vscs_core_jwt_header_t **header_ref, vscs_core_jwt_payload_t **payload_ref,
+        vscs_core_jwt_payload_t **signature_ref);
+
+//
 //  Release all inner resources and deallocate context if needed.
 //  It is safe to call this method even if the context was statically allocated.
 //
@@ -118,6 +144,18 @@ vscs_core_jwt_destroy(vscs_core_jwt_t **self_ref);
 //
 VSCS_CORE_PUBLIC vscs_core_jwt_t *
 vscs_core_jwt_shallow_copy(vscs_core_jwt_t *self);
+
+//
+//  Return length for JWT string representation buffer.
+//
+VSCS_CORE_PUBLIC void
+vscs_core_jwt_as_string_len(const vscs_core_jwt_t *self);
+
+//
+//  Return JWT string representation.
+//
+VSCS_CORE_PUBLIC void
+vscs_core_jwt_as_string(const vscs_core_jwt_t *self, vsc_str_buffer_t *str_buffer);
 
 
 // --------------------------------------------------------------------------

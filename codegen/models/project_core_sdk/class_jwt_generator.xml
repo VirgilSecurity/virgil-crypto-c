@@ -3,16 +3,50 @@
 
     <require interface="private key" project="foundation"/>
 
+    <constant name="default ttl" type="size" value="15 * 60"/>
+
+    <dependency name="random" interface="random" project="foundation"/>
+
+    <property name="api id" class="str buffer"/>
+
     <property name="api key" interface="private key" project="foundation" access="readonly"/>
+
+    <property name="api public key identifier" class="str buffer"/>
+
+    <property name="ttl" type="size"/>
+
 
     <constructor name="with credentials">
         Create JWT generator with an application credentials.
 
-        <argument name="api key" interface="private key" project="foundation"/>
+
+        <argument name="api id" class="str buffer"/>
+
+        <argument name="api key" interface="private key" project="foundation" access="readonly"/>
+
+        <argument name="api public key identifier" class="str buffer"/>
     </constructor>
+
+
+    <method name="setup defaults">
+        Setup predefined values to the uninitialized class dependencies.
+
+        <return enum="status"/>
+    </method>
+
+
+    <method name="set ttl">
+        Set JWT TTL.
+
+        <argument name="ttl" type="size"/>
+    </method>
+
 
     <method name="generate token" is_const="1">
         Generate new JWT.
+
+        <argument name="identity" class="str"/>
+        <argument name="error" class="error"/>
 
         <return class="jwt" access="disown"/>
     </method>

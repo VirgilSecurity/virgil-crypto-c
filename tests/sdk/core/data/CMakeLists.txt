@@ -39,9 +39,11 @@ project(test_data_core_sdk VERSION ${virgil_crypto_c_core_sdk_tests_VERSION} LAN
 add_library(test_data_core_sdk "")
 target_sources(test_data_core_sdk
         PRIVATE
+            "${CMAKE_CURRENT_LIST_DIR}/include/test_data_base64_url.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/test_data_jwt.h"
 
         PRIVATE
+            "${CMAKE_CURRENT_LIST_DIR}/src/test_data_base64_url.c"
             "${CMAKE_CURRENT_LIST_DIR}/src/test_data_jwt.c"
         )
 

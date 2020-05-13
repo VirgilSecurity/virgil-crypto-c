@@ -47,11 +47,13 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Defines the library status codes.
+//  Class that handles JWT Payload.
 // --------------------------------------------------------------------------
 
-#ifndef VSCS_CORE_STATUS_H_INCLUDED
-#define VSCS_CORE_STATUS_H_INCLUDED
+#ifndef VSCS_CORE_JWT_PAYLOAD_H_INCLUDED
+#define VSCS_CORE_JWT_PAYLOAD_H_INCLUDED
+
+#include "vscs_core_library.h"
 
 // clang-format on
 //  @end
@@ -69,23 +71,53 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Defines the library status codes.
+//  Handle 'jwt payload' context.
 //
-enum vscs_core_status_t {
-    //
-    //  No errors was occurred.
-    //
-    vscs_core_status_SUCCESS = 0,
-    //
-    //  Met internal inconsistency.
-    //
-    vscs_core_status_INTERNAL_ERROR = -1,
-    //
-    //  Faled to decode Base64URL string.
-    //
-    vscs_core_status_BAD_BASE64_URL = -101
-};
-typedef enum vscs_core_status_t vscs_core_status_t;
+typedef struct vscs_core_jwt_payload_t vscs_core_jwt_payload_t;
+
+//
+//  Return size of 'vscs_core_jwt_payload_t'.
+//
+VSCS_CORE_PUBLIC size_t
+vscs_core_jwt_payload_ctx_size(void);
+
+//
+//  Perform initialization of pre-allocated context.
+//
+VSCS_CORE_PUBLIC void
+vscs_core_jwt_payload_init(vscs_core_jwt_payload_t *self);
+
+//
+//  Release all inner resources including class dependencies.
+//
+VSCS_CORE_PUBLIC void
+vscs_core_jwt_payload_cleanup(vscs_core_jwt_payload_t *self);
+
+//
+//  Allocate context and perform it's initialization.
+//
+VSCS_CORE_PUBLIC vscs_core_jwt_payload_t *
+vscs_core_jwt_payload_new(void);
+
+//
+//  Release all inner resources and deallocate context if needed.
+//  It is safe to call this method even if the context was statically allocated.
+//
+VSCS_CORE_PUBLIC void
+vscs_core_jwt_payload_delete(vscs_core_jwt_payload_t *self);
+
+//
+//  Delete given context and nullifies reference.
+//  This is a reverse action of the function 'vscs_core_jwt_payload_new ()'.
+//
+VSCS_CORE_PUBLIC void
+vscs_core_jwt_payload_destroy(vscs_core_jwt_payload_t **self_ref);
+
+//
+//  Copy given class context by increasing reference counter.
+//
+VSCS_CORE_PUBLIC vscs_core_jwt_payload_t *
+vscs_core_jwt_payload_shallow_copy(vscs_core_jwt_payload_t *self);
 
 
 // --------------------------------------------------------------------------
@@ -101,5 +133,5 @@ typedef enum vscs_core_status_t vscs_core_status_t;
 
 
 //  @footer
-#endif // VSCS_CORE_STATUS_H_INCLUDED
+#endif // VSCS_CORE_JWT_PAYLOAD_H_INCLUDED
 //  @end

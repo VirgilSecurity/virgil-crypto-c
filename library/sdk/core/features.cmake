@@ -47,14 +47,33 @@ include_guard()
 
 option(VSCS_CORE_LIBRARY "Enable build of the 'core sdk' library" ON)
 option(VSCS_CORE_MULTI_THREADING "Enable multi-threading safety for Cards Core SDK." ON)
+option(VSCS_CORE_ERROR "Enable class 'error'." ON)
+option(VSCS_CORE_BASE64_URL "Enable class 'base64 url'." ON)
 option(VSCS_CORE_JWT "Enable class 'jwt'." ON)
+option(VSCS_CORE_JWT_HEADER "Enable class 'jwt header'." ON)
+option(VSCS_CORE_JWT_PAYLOAD "Enable class 'jwt payload'." ON)
+option(VSCS_CORE_JWT_PAYLOAD "Enable class 'jwt payload'." ON)
 option(VSCS_CORE_JWT_GENERATOR "Enable class 'jwt generator'." ON)
 mark_as_advanced(
         VSCS_CORE_LIBRARY
         VSCS_CORE_MULTI_THREADING
+        VSCS_CORE_ERROR
+        VSCS_CORE_BASE64_URL
         VSCS_CORE_JWT
+        VSCS_CORE_JWT_HEADER
+        VSCS_CORE_JWT_PAYLOAD
+        VSCS_CORE_JWT_PAYLOAD
         VSCS_CORE_JWT_GENERATOR
         )
+
+if(VSCS_CORE_BASE64_URL AND NOT VSCF_BASE64)
+    message("-- error --")
+    message("--")
+    message("Feature VSCS_CORE_BASE64_URL depends on the feature:")
+    message("     VSCF_BASE64 - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
 
 if(VSCS_CORE_JWT_GENERATOR AND NOT VSCF_PRIVATE_KEY)
     message("-- error --")

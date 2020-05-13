@@ -2,9 +2,39 @@
     Encapsulates readonly array of characters, aka string view.
 
 
-    <property name="data" class="data">
+    <property name="chars" type="char" access="readonly">
         Underlying characters array.
+
+        <array length="given"/>
     </property>
+
+
+    <property name="len" type="size">
+        Characters array length.
+    </property>
+
+
+    <constructor name="str">
+        Create string.
+
+        <argument name="str" type="char">
+            <array length="given"/>
+        </argument>
+
+        <argument name="len" type="size"/>
+    </constructor>
+
+
+    <constructor name="from data" visibility="private">
+        Create string from data.
+
+        <argument name="data" class="data"/>
+    </constructor>
+
+
+    <constructor name="empty">
+        Create an empty string.
+    </constructor>
 
 
     <method name="is valid">
@@ -22,6 +52,17 @@
 
 
     <method name="equal">
+        Return true if given string is equal.
+
+        <argument name="rhs" class="self"/>
+
+        <return type="boolean"/>
+    </method>
+
+
+    <method name="secure equal">
+        Perform constant-time string comparison.
+        The time depends on the given length but not on the string itself.
         Return true if given string is equal.
 
         <argument name="rhs" class="self"/>
@@ -50,31 +91,11 @@
     </method>
 
 
-    <method name="secure equal">
-        Perform constant-time string comparison.
-        The time depends on the given length but not on the string itself.
-        Return true if given string is equal.
+    <method name="as data" is_const="1">
+        Returns underlying characters array as bytes object.
 
-        <argument name="rhs" class="self"/>
-
-        <return type="boolean"/>
+        <return class="data" is_reference="0" access="readwrite"/>
     </method>
-
-
-    <constructor name="str">
-        Create string.
-
-        <argument name="str" type="char">
-            <array length="given"/>
-        </argument>
-
-        <argument name="len" type="size"/>
-    </constructor>
-
-
-    <constructor name="empty">
-        Create an empty string.
-    </constructor>
 
 
     <method name="slice beg" >

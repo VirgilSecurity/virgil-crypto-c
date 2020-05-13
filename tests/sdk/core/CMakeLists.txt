@@ -55,4 +55,5 @@ macro(_add_test test)
     endif()
 endmacro()
 
+_add_test (test_base64_url)
 _add_test (test_jwt_generator)

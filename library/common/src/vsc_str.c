@@ -87,11 +87,16 @@ vsc_str_ctx_size(void) {
 VSC_PUBLIC vsc_str_t
 vsc_str(const char *str, size_t len) {
 
-    vsc_str_t self;
+    return (vsc_str_t){str, len};
+}
 
-    self.data = vsc_data_from_str(str, len);
+//
+//  Create string from data.
+//
+VSC_PRIVATE vsc_str_t
+vsc_str_from_data(vsc_data_t data) {
 
-    return self;
+    return vsc_str((const char *)data.bytes, data.len);
 }
 
 //
@@ -100,11 +105,7 @@ vsc_str(const char *str, size_t len) {
 VSC_PUBLIC vsc_str_t
 vsc_str_empty(void) {
 
-    vsc_str_t self;
-
-    self.data = vsc_data_empty();
-
-    return self;
+    return vsc_str("", 0);
 }
 
 //
@@ -113,7 +114,7 @@ vsc_str_empty(void) {
 VSC_PUBLIC bool
 vsc_str_is_valid(vsc_str_t self) {
 
-    return vsc_data_is_valid(self.data);
+    return self.chars != NULL;
 }
 
 //
@@ -122,7 +123,7 @@ vsc_str_is_valid(vsc_str_t self) {
 VSC_PUBLIC bool
 vsc_str_is_empty(vsc_str_t self) {
 
-    return vsc_data_is_empty(self.data);
+    return 0 == self.len;
 }
 
 //
@@ -131,7 +132,21 @@ vsc_str_is_empty(vsc_str_t self) {
 VSC_PUBLIC bool
 vsc_str_equal(vsc_str_t self, vsc_str_t rhs) {
 
-    return vsc_data_equal(self.data, rhs.data);
+    return vsc_data_equal(vsc_str_as_data(self), vsc_str_as_data(rhs));
+}
+
+//
+//  Perform constant-time string comparison.
+//  The time depends on the given length but not on the string itself.
+//  Return true if given string is equal.
+//
+VSC_PUBLIC bool
+vsc_str_secure_equal(vsc_str_t self, vsc_str_t rhs) {
+
+    VSC_ASSERT(vsc_str_is_valid(self));
+    VSC_ASSERT(vsc_str_is_valid(rhs));
+
+    return vsc_data_secure_equal(vsc_str_as_data(self), vsc_str_as_data(rhs));
 }
 
 //
@@ -143,7 +158,7 @@ vsc_str_equal(vsc_str_t self, vsc_str_t rhs) {
 VSC_PUBLIC size_t
 vsc_str_len(vsc_str_t self) {
 
-    return vsc_data_len(self.data);
+    return self.len;
 }
 
 //
@@ -155,18 +170,20 @@ vsc_str_len(vsc_str_t self) {
 VSC_PUBLIC const char *
 vsc_str_chars(vsc_str_t self) {
 
-    return (const char *)vsc_data_bytes(self.data);
+    VSC_ASSERT(vsc_str_is_valid(self));
+
+    return self.chars;
 }
 
 //
-//  Perform constant-time string comparison.
-//  The time depends on the given length but not on the string itself.
-//  Return true if given string is equal.
+//  Returns underlying characters array as bytes object.
 //
-VSC_PUBLIC bool
-vsc_str_secure_equal(vsc_str_t self, vsc_str_t rhs) {
+VSC_PUBLIC vsc_data_t
+vsc_str_as_data(vsc_str_t self) {
 
-    return vsc_data_secure_equal(self.data, rhs.data);
+    VSC_ASSERT(vsc_str_is_valid(self));
+
+    return vsc_data_from_str(self.chars, self.len);
 }
 
 //
@@ -175,11 +192,10 @@ vsc_str_secure_equal(vsc_str_t self, vsc_str_t rhs) {
 VSC_PUBLIC vsc_str_t
 vsc_str_slice_beg(vsc_str_t self, size_t offset, size_t len) {
 
-    vsc_str_t slice;
+    VSC_ASSERT(vsc_str_is_valid(self));
+    VSC_ASSERT(self.len >= offset + len);
 
-    slice.data = vsc_data_slice_beg(self.data, offset, len);
-
-    return slice;
+    return (vsc_str_t){self.chars + offset, len};
 }
 
 //
@@ -188,9 +204,8 @@ vsc_str_slice_beg(vsc_str_t self, size_t offset, size_t len) {
 VSC_PUBLIC vsc_str_t
 vsc_str_slice_end(vsc_str_t self, size_t offset, size_t len) {
 
-    vsc_str_t slice;
+    VSC_ASSERT(vsc_str_is_valid(self));
+    VSC_ASSERT(self.len >= offset + len);
 
-    slice.data = vsc_data_slice_end(self.data, offset, len);
-
-    return slice;
+    return (vsc_str_t){self.chars + self.len - offset - len, len};
 }

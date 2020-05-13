@@ -3,6 +3,8 @@ framework module VSCCoreSDK {
     header "vscs_core_library.h"
     header "vscs_core_memory.h"
     header "vscs_core_platform.h"
+    header "vscs_core_base64_url.h"
+    header "vscs_core_error.h"
     header "vscs_core_jwt.h"
     header "vscs_core_jwt_generator.h"
     header "vscs_core_status.h"

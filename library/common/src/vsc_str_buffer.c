@@ -345,7 +345,7 @@ vsc_str_buffer_init_ctx_with_str(vsc_str_buffer_t *self, vsc_str_t str) {
     VSC_ASSERT_PTR(self);
     VSC_ASSERT(vsc_str_is_valid(str));
 
-    vsc_buffer_init_with_data(&self->buffer, str.data);
+    vsc_buffer_init_with_data(&self->buffer, vsc_str_as_data(str));
 }
 
 //
@@ -469,7 +469,9 @@ vsc_str_buffer_is_full(const vsc_str_buffer_t *self) {
 VSC_PUBLIC bool
 vsc_str_buffer_is_valid(const vsc_str_buffer_t *self) {
 
-    VSC_ASSERT_PTR(self);
+    if (NULL == self) {
+        return false;
+    }
 
     return vsc_buffer_is_valid(&self->buffer);
 }
@@ -486,18 +488,25 @@ vsc_str_buffer_chars(const vsc_str_buffer_t *self) {
 }
 
 //
-//  Returns underlying string buffer bytes as string.
+//  Returns underlying string buffer characters as string.
 //
 VSC_PUBLIC vsc_str_t
 vsc_str_buffer_str(const vsc_str_buffer_t *self) {
 
     VSC_ASSERT_PTR(self);
 
-    vsc_str_t str;
+    return vsc_str_from_data(vsc_buffer_data(&self->buffer));
+}
 
-    str.data = vsc_buffer_data(&self->buffer);
+//
+//  Returns underlying string buffer characters as data.
+//
+VSC_PUBLIC vsc_data_t
+vsc_str_buffer_data(const vsc_str_buffer_t *self) {
 
-    return str;
+    VSC_ASSERT_PTR(self);
+
+    return vsc_buffer_data(&self->buffer);
 }
 
 //
@@ -585,7 +594,7 @@ vsc_str_buffer_write_str(vsc_str_buffer_t *self, vsc_str_t str) {
 
     VSC_ASSERT_PTR(self);
 
-    vsc_buffer_write_data(&self->buffer, str.data);
+    vsc_buffer_write_data(&self->buffer, vsc_str_as_data(str));
 }
 
 //
@@ -601,7 +610,37 @@ vsc_str_buffer_append_str(vsc_str_buffer_t *self, vsc_str_t str) {
 
     VSC_ASSERT_PTR(self);
 
-    vsc_buffer_append_data(&self->buffer, str.data);
+    vsc_buffer_append_data(&self->buffer, vsc_str_as_data(str));
+}
+
+//
+//  Replace all occurences of one character to another character.
+//
+VSC_PUBLIC void
+vsc_str_buffer_replace_char(vsc_str_buffer_t *self, char char_old, char char_new) {
+
+    VSC_ASSERT(vsc_str_buffer_is_valid(self));
+
+    char *str = vsc_str_buffer_begin(self);
+
+    for (size_t pos = 0; pos < vsc_str_buffer_len(self); ++pos) {
+        if (str[pos] == char_old) {
+            str[pos] = char_new;
+        }
+    }
+}
+
+//
+//  Remove all occurences of given character from the string end.
+//
+VSC_PUBLIC void
+vsc_str_buffer_rtrim(vsc_str_buffer_t *self, char char_to_trim) {
+
+    char *str = vsc_str_buffer_chars(self);
+
+    for (size_t len = vsc_str_buffer_len(self); len != 0 && str[len - 1] == char_to_trim; --len) {
+        vsc_str_buffer_dec_used(self, 1);
+    }
 }
 
 //

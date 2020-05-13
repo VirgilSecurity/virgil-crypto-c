@@ -55,16 +55,8 @@
 
 #include "vscs_core_library.h"
 #include "vscs_core_atomic.h"
-
-#if !VSCS_CORE_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <virgil/crypto/common/vsc_str_buffer.h>
-#   include <virgil/crypto/common/vsc_buffer.h>
-#endif
-
-#if VSCS_CORE_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <VSCCommon/vsc_str_buffer.h>
-#   include <VSCCommon/vsc_buffer.h>
-#endif
+#include "vscs_core_jwt_header.h"
+#include "vscs_core_jwt_payload.h"
 
 // clang-format on
 //  @end
@@ -94,43 +86,17 @@ struct vscs_core_jwt_t {
     //
     VSCS_CORE_ATOMIC size_t refcnt;
     //
-    //  Represents used signature algorithm.
+    //  Handles JWT Header.
     //
-    vsc_str_buffer_t *algorithm;
+    vscs_core_jwt_header_t *header;
     //
-    //  Represents token type.
+    //  Handles JWT Payload.
     //
-    vsc_str_buffer_t *type;
+    vscs_core_jwt_payload_t *payload;
     //
-    //  Represents content type for this JWT.
+    //  Handles JWT Signature.
     //
-    vsc_str_buffer_t *content_type;
-    //
-    //  Represents identifier of public key which should be used to verify signature.
-    //  Note: Can be taken from [here](https://dashboard.virgilsecurity.com/api-keys)
-    //
-    vsc_str_buffer_t *key_identifier;
-    //
-    //  Issuer containing application id.
-    //  Note: Can be taken [here](https://dashboard.virgilsecurity.com)
-    //
-    vsc_str_buffer_t *app_id;
-    //
-    //  Subject as identity.
-    //
-    vsc_str_buffer_t *identity;
-    //
-    //  Signature data.
-    //
-    vsc_buffer_t *signature;
-    //
-    //  Timestamp in seconds with expiration date.
-    //
-    size_t expires_at;
-    //
-    //  Timestamp in seconds with issued date.
-    //
-    size_t issued_at;
+    vscs_core_jwt_payload_t *signature;
 };
 
 

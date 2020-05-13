@@ -1,54 +1,35 @@
 <class name="jwt">
     Class that handles JWT.
 
-    <property name="algorithm" class="str buffer">
-        Represents used signature algorithm.
+    <property name="header" class="jwt header">
+        Handles JWT Header.
     </property>
 
-
-    <property name="type" class="str buffer">
-        Represents token type.
+    <property name="payload" class="jwt payload">
+        Handles JWT Payload.
     </property>
 
-
-    <property name="content type" class="str buffer">
-        Represents content type for this JWT.
+    <property name="signature" class="jwt payload">
+        Handles JWT Signature.
     </property>
 
+    <constructor name="with members disown" visibility="private">
+        Build JWT from it's parts.
 
-    <property name="key identifier" class="str buffer">
-        Represents identifier of public key which should be used to verify signature.
-        Note: Can be taken from [here](https://dashboard.virgilsecurity.com/api-keys)
-    </property>
+        <argument name="header" class="jwt header" access="disown"/>
+        <argument name="payload" class="jwt payload" access="disown"/>
+        <argument name="signature" class="jwt payload" access="disown"/>
+    </constructor>
 
+    <method name="as string len" is_const="1">
+        Return length for JWT string representation buffer.
+    </method>
 
-    <property name="app id" class="str buffer">
-        Issuer containing application id.
-        Note: Can be taken [here](https://dashboard.virgilsecurity.com)
-    </property>
+    <method name="as string" is_const="1">
+        Return JWT string representation.
 
-
-    <property name="identity" class="str buffer">
-        Subject as identity.
-    </property>
-
-<!--
-    <property name="additional data" class="...">
-        Dictionary with additional data.
-    </property>
- -->
-
-    <property name="signature" class="buffer">
-        Signature data.
-    </property>
-
-
-    <property name="expires at" type="size">
-        Timestamp in seconds with expiration date.
-    </property>
-
-
-    <property name="issued at" type="size">
-        Timestamp in seconds with issued date.
-    </property>
+        <argument name="str buffer" class="str buffer">
+            <length method="as string len"/>
+        </argument>
+    </method>
 </class>

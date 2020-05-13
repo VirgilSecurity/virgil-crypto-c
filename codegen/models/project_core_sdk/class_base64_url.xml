@@ -1,0 +1,50 @@
+<class name="base64 url">
+    Prvodes Base64URL encoding and decoding suitable for JWT.
+
+    <require class="base64" project="foundation" scope="private"/>
+    <require module="str buffer defs" project="common" scope="private"/>
+
+    <method name="encoded len">
+        Calculate length in bytes required to hold an encoded base64url string.
+
+        <argument name="data len" type="size"/>
+        <return type="size"/>
+    </method>
+
+
+    <method name="encode">
+        Encode given data to the base64url format.
+        Note, written buffer is NOT null-terminated.
+
+        <argument name="data" class="data"/>
+
+        <argument name="str" class="str buffer">
+            <length method="encoded len">
+                <proxy argument="data" to="data len" cast="data_length"/>
+            </length>
+        </argument>
+    </method>
+
+
+    <method name="decoded len">
+        Calculate length in bytes required to hold a decoded base64url string.
+
+        <argument name="str len" type="size"/>
+        <return type="size"/>
+    </method>
+
+
+    <method name="decode">
+        Decode given data from the base64url format.
+
+        <argument name="str" class="str"/>
+
+        <argument name="data" class="buffer">
+            <length method="decoded len">
+                <proxy argument="str" to="str len" cast="data_length"/>
+            </length>
+        </argument>
+
+        <return enum="status"/>
+    </method>
+</class>

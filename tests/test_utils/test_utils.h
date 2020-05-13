@@ -37,6 +37,8 @@
 
 #include <virgil/crypto/common/vsc_data.h>
 #include <virgil/crypto/common/vsc_buffer.h>
+#include <virgil/crypto/common/vsc_str.h>
+#include <virgil/crypto/common/vsc_str_buffer.h>
 
 #include <stdint.h>
 #include <stdbool.h>
@@ -135,6 +137,18 @@ void
 print_buffer(vsc_buffer_t *buffer);
 
 //
+//  Print string.
+//
+void
+print_str(vsc_str_t *str);
+
+//
+//  Print string buffer.
+//
+void
+print_str_buffer(vsc_str_buffer_t *str_buffer);
+
+//
 //  Use Unity to check given data.
 //
 #define TEST_ASSERT_EQUAL_DATA(lhs, rhs)                                                                               \
@@ -149,5 +163,21 @@ print_buffer(vsc_buffer_t *buffer);
 //  Use Unity to check given data with buffer.
 //
 #define TEST_ASSERT_EQUAL_DATA_AND_BUFFER(data, buffer) TEST_ASSERT_EQUAL_DATA((data), vsc_buffer_data((buffer)))
+
+//
+//  Use Unity to check given string.
+//
+#define TEST_ASSERT_EQUAL_STR(lhs, rhs)                                                                                \
+    do {                                                                                                               \
+        TEST_ASSERT_EQUAL((lhs).len, (rhs).len);                                                                       \
+        if ((lhs).len > 0) {                                                                                           \
+            TEST_ASSERT_EQUAL_STRING_LEN((lhs).chars, (rhs).chars, (rhs).len);                                         \
+        }                                                                                                              \
+    } while (0)
+
+//
+//  Use Unity to check given string with string buffer.
+//
+#define TEST_ASSERT_EQUAL_STR_AND_BUFFER(str, str_buffer) TEST_ASSERT_EQUAL_STR((str), vsc_str_buffer_str((str_buffer)))
 
 #endif /* TEST_UTILS_H_INCLUDED */

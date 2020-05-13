@@ -54,6 +54,8 @@
 #define VSCS_CORE_CORE_SDK_PUBLIC_H_INCLUDED
 
 #include "vscs_core_assert.h"
+#include "vscs_core_base64_url.h"
+#include "vscs_core_error.h"
 #include "vscs_core_jwt.h"
 #include "vscs_core_jwt_generator.h"
 #include "vscs_core_library.h"

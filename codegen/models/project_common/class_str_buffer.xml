@@ -116,9 +116,16 @@
 
 
     <method name="str" is_const="1">
-        Returns underlying string buffer bytes as string.
+        Returns underlying string buffer characters as string.
 
         <return class="str"/>
+    </method>
+
+
+    <method name="data" is_const="1">
+        Returns underlying string buffer characters as data.
+
+        <return class="data"/>
     </method>
 
 
@@ -187,6 +194,21 @@
         Note, string buffer capacity is doubled.
 
         <argument name="str" class="str"/>
+    </method>
+
+
+    <method name="replace char">
+        Replace all occurences of one character to another character.
+
+        <argument name="char old" type="char"/>
+        <argument name="char new" type="char"/>
+    </method>
+
+
+    <method name="rtrim">
+        Remove all occurences of given character from the string end.
+
+        <argument name="char to trim" type="char"/>
     </method>
 
 
