@@ -9,7 +9,19 @@
         Met internal inconsistency.
     </constant>
 
-    <constant name="bad base64 url" value="-101">
+    <constant name="decode base64 url failed" value="-101">
         Faled to decode Base64URL string.
+    </constant>
+
+    <constant name="init random failed" value="-102">
+        Faled to initialize random module.
+    </constant>
+
+    <constant name="parse jwt failed" value="-201">
+        Failed to parse JWT.
+    </constant>
+
+    <constant name="sign jwt failed" value="-202">
+        Failed to produce JWT signature.
     </constant>
 </enum>

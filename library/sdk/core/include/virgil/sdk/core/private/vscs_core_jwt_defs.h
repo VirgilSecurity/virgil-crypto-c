@@ -58,6 +58,16 @@
 #include "vscs_core_jwt_header.h"
 #include "vscs_core_jwt_payload.h"
 
+#if !VSCS_CORE_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <virgil/crypto/common/vsc_buffer.h>
+#   include <virgil/crypto/common/vsc_str_buffer.h>
+#endif
+
+#if VSCS_CORE_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <VSCCommon/vsc_buffer.h>
+#   include <VSCCommon/vsc_str_buffer.h>
+#endif
+
 // clang-format on
 //  @end
 
@@ -94,9 +104,13 @@ struct vscs_core_jwt_t {
     //
     vscs_core_jwt_payload_t *payload;
     //
-    //  Handles JWT Signature.
+    //  Handles JWT Header.
     //
-    vscs_core_jwt_payload_t *signature;
+    vsc_buffer_t *signature;
+    //
+    //  Handles JWT string representation.
+    //
+    vsc_str_buffer_t *jwt_string;
 };
 
 

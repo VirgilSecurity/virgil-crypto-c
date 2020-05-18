@@ -1,7 +1,0 @@
-<class name="jwt payload" scope="private">
-    Class that handles JWT Signature.
-
-    <property name="signature" class="buffer">
-        Signature data.
-    </property>
-</class>

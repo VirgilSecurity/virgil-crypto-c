@@ -54,6 +54,9 @@
 #include "vscs_core_memory.h"
 #include "vscs_core_assert.h"
 #include "vscs_core_jwt_defs.h"
+#include "vscs_core_base64_url.h"
+
+#include <time.h>
 
 // clang-format on
 //  @end
@@ -82,11 +85,11 @@ static void
 vscs_core_jwt_cleanup_ctx(vscs_core_jwt_t *self);
 
 //
-//  Build JWT from it's parts.
+//  Create object with all members defined.
 //
 static void
 vscs_core_jwt_init_ctx_with_members_disown(vscs_core_jwt_t *self, vscs_core_jwt_header_t **header_ref,
-        vscs_core_jwt_payload_t **payload_ref, vscs_core_jwt_payload_t **signature_ref);
+        vscs_core_jwt_payload_t **payload_ref, vsc_buffer_t **signature_ref, vsc_str_buffer_t **jwt_string_ref);
 
 //
 //  Return size of 'vscs_core_jwt_t'.
@@ -145,11 +148,11 @@ vscs_core_jwt_new(void) {
 
 //
 //  Perform initialization of pre-allocated context.
-//  Build JWT from it's parts.
+//  Create object with all members defined.
 //
-VSCS_CORE_PRIVATE void
+VSCS_CORE_PUBLIC void
 vscs_core_jwt_init_with_members_disown(vscs_core_jwt_t *self, vscs_core_jwt_header_t **header_ref,
-        vscs_core_jwt_payload_t **payload_ref, vscs_core_jwt_payload_t **signature_ref) {
+        vscs_core_jwt_payload_t **payload_ref, vsc_buffer_t **signature_ref, vsc_str_buffer_t **jwt_string_ref) {
 
     VSCS_CORE_ASSERT_PTR(self);
 
@@ -157,21 +160,21 @@ vscs_core_jwt_init_with_members_disown(vscs_core_jwt_t *self, vscs_core_jwt_head
 
     self->refcnt = 1;
 
-    vscs_core_jwt_init_ctx_with_members_disown(self, header_ref, payload_ref, signature_ref);
+    vscs_core_jwt_init_ctx_with_members_disown(self, header_ref, payload_ref, signature_ref, jwt_string_ref);
 }
 
 //
 //  Allocate class context and perform it's initialization.
-//  Build JWT from it's parts.
+//  Create object with all members defined.
 //
-VSCS_CORE_PRIVATE vscs_core_jwt_t *
+VSCS_CORE_PUBLIC vscs_core_jwt_t *
 vscs_core_jwt_new_with_members_disown(vscs_core_jwt_header_t **header_ref, vscs_core_jwt_payload_t **payload_ref,
-        vscs_core_jwt_payload_t **signature_ref) {
+        vsc_buffer_t **signature_ref, vsc_str_buffer_t **jwt_string_ref) {
 
     vscs_core_jwt_t *self = (vscs_core_jwt_t *) vscs_core_alloc(sizeof (vscs_core_jwt_t));
     VSCS_CORE_ASSERT_ALLOC(self);
 
-    vscs_core_jwt_init_with_members_disown(self, header_ref, payload_ref, signature_ref);
+    vscs_core_jwt_init_with_members_disown(self, header_ref, payload_ref, signature_ref, jwt_string_ref);
 
     self->self_dealloc_cb = vscs_core_dealloc;
 
@@ -286,33 +289,179 @@ vscs_core_jwt_cleanup_ctx(vscs_core_jwt_t *self) {
 
     vscs_core_jwt_header_destroy(&self->header);
     vscs_core_jwt_payload_destroy(&self->payload);
-    vscs_core_jwt_payload_destroy(&self->signature);
+    vsc_buffer_destroy(&self->signature);
 }
 
 //
-//  Build JWT from it's parts.
+//  Create object with all members defined.
 //
 static void
 vscs_core_jwt_init_ctx_with_members_disown(vscs_core_jwt_t *self, vscs_core_jwt_header_t **header_ref,
-        vscs_core_jwt_payload_t **payload_ref, vscs_core_jwt_payload_t **signature_ref) {
+        vscs_core_jwt_payload_t **payload_ref, vsc_buffer_t **signature_ref, vsc_str_buffer_t **jwt_string_ref) {
 
-    //   TODO: Perform initialization.
+    VSCS_CORE_ASSERT_PTR(self);
+    VSCS_CORE_ASSERT_REF(header_ref);
+    VSCS_CORE_ASSERT_REF(payload_ref);
+    VSCS_CORE_ASSERT_REF(signature_ref);
+    VSCS_CORE_ASSERT_REF(jwt_string_ref);
+
+    self->header = *header_ref;
+    self->payload = *payload_ref;
+    self->signature = *signature_ref;
+    self->jwt_string = *jwt_string_ref;
+
+    *header_ref = NULL;
+    *payload_ref = NULL;
+    *signature_ref = NULL;
+    *jwt_string_ref = NULL;
 }
 
 //
-//  Return length for JWT string representation buffer.
+//  Parse JWT from a string representation.
 //
-VSCS_CORE_PUBLIC void
-vscs_core_jwt_as_string_len(const vscs_core_jwt_t *self) {
+VSCS_CORE_PUBLIC vscs_core_jwt_t *
+vscs_core_jwt_parse(vsc_str_t str, vscs_core_error_t *error) {
 
-    //  TODO: This is STUB. Implement me.
+    VSCS_CORE_ASSERT(vsc_str_is_valid(str));
+
+    if (vsc_str_is_empty(str)) {
+        VSCS_CORE_ERROR_SAFE_UPDATE(error, vscs_core_status_PARSE_JWT_FAILED);
+        return NULL;
+    }
+
+    vsc_str_t header_str = vsc_str_empty();
+    vsc_str_t payload_str = vsc_str_empty();
+    vsc_str_t signature_str = vsc_str_empty();
+
+    const char *curr = str.chars;
+    const char *end = str.chars + str.len;
+
+    //
+    //  Extract JWT Header as string.
+    //
+    for (size_t len = 0; curr + len < end; ++len) {
+        if (curr[len] == '.') {
+            header_str = vsc_str(curr, len);
+            curr += len + 1;
+            break;
+        }
+    }
+
+    if (vsc_str_is_empty(header_str)) {
+        VSCS_CORE_ERROR_SAFE_UPDATE(error, vscs_core_status_PARSE_JWT_FAILED);
+        return NULL;
+    }
+
+    //
+    //  Extract JWT Payload as string.
+    //
+    for (size_t len = 0; curr + len < end; ++len) {
+        if (curr[len] == '.') {
+            payload_str = vsc_str(curr, len);
+            curr += len + 1;
+            break;
+        }
+    }
+
+    if (vsc_str_is_empty(payload_str)) {
+        VSCS_CORE_ERROR_SAFE_UPDATE(error, vscs_core_status_PARSE_JWT_FAILED);
+        return NULL;
+    }
+
+    //
+    //  Extract JWT Signature as string.
+    //
+    if (curr < end) {
+        signature_str = vsc_str(curr, (size_t)(end - curr));
+    }
+
+    if (vsc_str_is_empty(signature_str)) {
+        VSCS_CORE_ERROR_SAFE_UPDATE(error, vscs_core_status_PARSE_JWT_FAILED);
+        return NULL;
+    }
+
+    vscs_core_jwt_header_t *header = NULL;
+    vscs_core_jwt_payload_t *payload = NULL;
+    vsc_buffer_t *signature = NULL;
+    vsc_str_buffer_t *str_buf = NULL;
+
+    //
+    //  Parse JWT Header.
+    //
+    header = vscs_core_jwt_header_parse(header_str, NULL);
+    if (NULL == header) {
+        goto error;
+    }
+
+    //
+    //  Parse JWT Payload.
+    //
+    payload = vscs_core_jwt_payload_parse(payload_str, NULL);
+    if (NULL == payload) {
+        goto error;
+    }
+
+    //
+    //  Parse JWT Signature.
+    //
+    const size_t signature_buf_len = vscs_core_base64_url_decoded_len(signature_str.len);
+    signature = vsc_buffer_new_with_capacity(signature_buf_len);
+
+    const vscs_core_status_t signature_parse_status = vscs_core_base64_url_decode(signature_str, signature);
+    if (signature_parse_status != vscs_core_status_SUCCESS) {
+        goto error;
+    }
+
+    str_buf = vsc_str_buffer_new_with_str(str);
+
+    return vscs_core_jwt_new_with_members_disown(&header, &payload, &signature, &str_buf);
+
+
+error:
+    vscs_core_jwt_header_destroy(&header);
+    vscs_core_jwt_payload_destroy(&payload);
+    vsc_buffer_destroy(&signature);
+
+    VSCS_CORE_ERROR_SAFE_UPDATE(error, vscs_core_status_PARSE_JWT_FAILED);
+
+    return NULL;
 }
 
 //
 //  Return JWT string representation.
 //
-VSCS_CORE_PUBLIC void
-vscs_core_jwt_as_string(const vscs_core_jwt_t *self, vsc_str_buffer_t *str_buffer) {
+VSCS_CORE_PUBLIC vsc_str_t
+vscs_core_jwt_as_string(const vscs_core_jwt_t *self) {
 
-    //  TODO: This is STUB. Implement me.
+    VSCS_CORE_ASSERT_PTR(self);
+    VSCS_CORE_ASSERT_PTR(self->jwt_string);
+
+    return vsc_str_buffer_str(self->jwt_string);
+}
+
+//
+//  Return identity to whom this token was issued.
+//
+VSCS_CORE_PUBLIC vsc_str_t
+vscs_core_jwt_identity(const vscs_core_jwt_t *self) {
+
+    VSCS_CORE_ASSERT_PTR(self);
+    VSCS_CORE_ASSERT_PTR(self->payload);
+
+    return vscs_core_jwt_payload_identity(self->payload);
+}
+
+//
+//  Return true if token is expired.
+//
+VSCS_CORE_PUBLIC bool
+vscs_core_jwt_is_expired(const vscs_core_jwt_t *self) {
+
+    VSCS_CORE_ASSERT_PTR(self);
+    VSCS_CORE_ASSERT_PTR(self->payload);
+
+    size_t now = (size_t)time(NULL);
+    size_t expires_at = vscs_core_jwt_payload_expires_at(self->payload);
+
+    return now >= expires_at;
 }

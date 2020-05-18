@@ -175,6 +175,26 @@ print_buffer(vsc_buffer_t *buffer) {
     print_data(vsc_buffer_data(buffer));
 }
 
+//
+//  Print string.
+//
+void
+print_str(vsc_str_t str) {
+    for (size_t i = 0; i < str.len; ++i) {
+        fprintf(stdout, "%c", str.chars[i]);
+    }
+    fprintf(stdout, "\r\n");
+}
+
+//
+//  Print string buffer.
+//
+void
+print_str_buffer(vsc_str_buffer_t *str_buffer) {
+    print_str(vsc_str_buffer_str(str_buffer));
+}
+
+
 // --------------------------------------------------------------------------
 //  Should have it to prevent linkage erros in MSVC.
 // --------------------------------------------------------------------------

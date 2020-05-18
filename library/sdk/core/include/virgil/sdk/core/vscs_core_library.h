@@ -140,6 +140,11 @@ extern "C" {
 #define VSCS_CORE_CEIL(x,y) (0 == (x) ? 0 : 1 + (((x) - 1) / (y)))
 
 //
+//  Returns max of two numbers.
+//
+#define VSCS_CORE_MAX(x,y) ((x) > (y) ? (x) : (y))
+
+//
 //  Mark argument or function return value as "unused".
 //
 #define VSCS_CORE_UNUSED(x) (void)(x)

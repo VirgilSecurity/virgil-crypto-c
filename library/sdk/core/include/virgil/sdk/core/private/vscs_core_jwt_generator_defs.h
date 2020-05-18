@@ -61,6 +61,7 @@
 #endif
 
 #if !VSCS_CORE_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
+#   include <virgil/crypto/foundation/vscf_signer.h>
 #   include <virgil/crypto/foundation/vscf_impl.h>
 #endif
 
@@ -70,6 +71,7 @@
 
 #if VSCS_CORE_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
 #   include <VSCFoundation/vscf_impl.h>
+#   include <VSCFoundation/vscf_signer.h>
 #endif
 
 // clang-format on
@@ -104,13 +106,15 @@ struct vscs_core_jwt_generator_t {
     //
     vscf_impl_t *random;
 
-    vsc_str_buffer_t *api_id;
+    vsc_str_buffer_t *app_id;
 
-    const vscf_impl_t *api_key;
+    vsc_str_buffer_t *app_key_id;
 
-    vsc_str_buffer_t *api_public_key_identifier;
+    const vscf_impl_t *app_key;
 
     size_t ttl;
+
+    vscf_signer_t *signer;
 };
 
 

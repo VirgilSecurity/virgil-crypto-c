@@ -75,7 +75,7 @@ add_dependencies(json_c json_c-ext)
 set_target_properties(json_c
         PROPERTIES
         IMPORTED_LOCATION
-            "${JSON_C_INSTALL_LOCATION}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}json_c${CMAKE_STATIC_LIBRARY_SUFFIX}"
+            "${JSON_C_INSTALL_LOCATION}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}json-c${CMAKE_STATIC_LIBRARY_SUFFIX}"
 
         INTERFACE_INCLUDE_DIRECTORIES
             "${JSON_C_INSTALL_LOCATION}/include"

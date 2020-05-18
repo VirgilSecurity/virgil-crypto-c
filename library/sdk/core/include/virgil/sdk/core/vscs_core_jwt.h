@@ -56,13 +56,19 @@
 #include "vscs_core_library.h"
 #include "vscs_core_jwt_header.h"
 #include "vscs_core_jwt_payload.h"
+#include "vscs_core_error.h"
+#include "vscs_core_jwt.h"
 
 #if !VSCS_CORE_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <virgil/crypto/common/vsc_buffer.h>
+#   include <virgil/crypto/common/vsc_str.h>
 #   include <virgil/crypto/common/vsc_str_buffer.h>
 #endif
 
 #if VSCS_CORE_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <VSCCommon/vsc_str_buffer.h>
+#   include <VSCCommon/vsc_buffer.h>
+#   include <VSCCommon/vsc_str.h>
 #endif
 
 // clang-format on
@@ -111,19 +117,19 @@ vscs_core_jwt_new(void);
 
 //
 //  Perform initialization of pre-allocated context.
-//  Build JWT from it's parts.
+//  Create object with all members defined.
 //
-VSCS_CORE_PRIVATE void
+VSCS_CORE_PUBLIC void
 vscs_core_jwt_init_with_members_disown(vscs_core_jwt_t *self, vscs_core_jwt_header_t **header_ref,
-        vscs_core_jwt_payload_t **payload_ref, vscs_core_jwt_payload_t **signature_ref);
+        vscs_core_jwt_payload_t **payload_ref, vsc_buffer_t **signature_ref, vsc_str_buffer_t **jwt_string_ref);
 
 //
 //  Allocate class context and perform it's initialization.
-//  Build JWT from it's parts.
+//  Create object with all members defined.
 //
-VSCS_CORE_PRIVATE vscs_core_jwt_t *
+VSCS_CORE_PUBLIC vscs_core_jwt_t *
 vscs_core_jwt_new_with_members_disown(vscs_core_jwt_header_t **header_ref, vscs_core_jwt_payload_t **payload_ref,
-        vscs_core_jwt_payload_t **signature_ref);
+        vsc_buffer_t **signature_ref, vsc_str_buffer_t **jwt_string_ref);
 
 //
 //  Release all inner resources and deallocate context if needed.
@@ -146,16 +152,28 @@ VSCS_CORE_PUBLIC vscs_core_jwt_t *
 vscs_core_jwt_shallow_copy(vscs_core_jwt_t *self);
 
 //
-//  Return length for JWT string representation buffer.
+//  Parse JWT from a string representation.
 //
-VSCS_CORE_PUBLIC void
-vscs_core_jwt_as_string_len(const vscs_core_jwt_t *self);
+VSCS_CORE_PUBLIC vscs_core_jwt_t *
+vscs_core_jwt_parse(vsc_str_t str, vscs_core_error_t *error);
 
 //
 //  Return JWT string representation.
 //
-VSCS_CORE_PUBLIC void
-vscs_core_jwt_as_string(const vscs_core_jwt_t *self, vsc_str_buffer_t *str_buffer);
+VSCS_CORE_PUBLIC vsc_str_t
+vscs_core_jwt_as_string(const vscs_core_jwt_t *self);
+
+//
+//  Return identity to whom this token was issued.
+//
+VSCS_CORE_PUBLIC vsc_str_t
+vscs_core_jwt_identity(const vscs_core_jwt_t *self);
+
+//
+//  Return true if token is expired.
+//
+VSCS_CORE_PUBLIC bool
+vscs_core_jwt_is_expired(const vscs_core_jwt_t *self);
 
 
 // --------------------------------------------------------------------------

@@ -54,9 +54,12 @@
 #include "vscs_core_memory.h"
 #include "vscs_core_assert.h"
 #include "vscs_core_jwt_generator_defs.h"
+#include "vscs_core_base64_url.h"
 
 #include <virgil/crypto/foundation/vscf_random.h>
-#include <virgil/crypto/foundation/vscf_private_key.h>
+#include <time.h>
+#include <virgil/crypto/foundation/vscf_sha512.h>
+#include <virgil/crypto/foundation/vscf_ctr_drbg.h>
 
 // clang-format on
 //  @end
@@ -88,8 +91,20 @@ vscs_core_jwt_generator_cleanup_ctx(vscs_core_jwt_generator_t *self);
 //  Create JWT generator with an application credentials.
 //
 static void
-vscs_core_jwt_generator_init_ctx_with_credentials(vscs_core_jwt_generator_t *self, vsc_str_buffer_t *api_id,
-        const vscf_impl_t *api_key, vsc_str_buffer_t *api_public_key_identifier);
+vscs_core_jwt_generator_init_ctx_with_credentials(vscs_core_jwt_generator_t *self, vsc_str_t app_id,
+        vsc_str_t app_key_id, const vscf_impl_t *app_key);
+
+//
+//  This method is called when interface 'random' was setup.
+//
+static void
+vscs_core_jwt_generator_did_setup_random(vscs_core_jwt_generator_t *self);
+
+//
+//  This method is called when interface 'random' was released.
+//
+static void
+vscs_core_jwt_generator_did_release_random(vscs_core_jwt_generator_t *self);
 
 //
 //  Return size of 'vscs_core_jwt_generator_t'.
@@ -153,8 +168,8 @@ vscs_core_jwt_generator_new(void) {
 //  Create JWT generator with an application credentials.
 //
 VSCS_CORE_PUBLIC void
-vscs_core_jwt_generator_init_with_credentials(vscs_core_jwt_generator_t *self, vsc_str_buffer_t *api_id,
-        const vscf_impl_t *api_key, vsc_str_buffer_t *api_public_key_identifier) {
+vscs_core_jwt_generator_init_with_credentials(vscs_core_jwt_generator_t *self, vsc_str_t app_id, vsc_str_t app_key_id,
+        const vscf_impl_t *app_key) {
 
     VSCS_CORE_ASSERT_PTR(self);
 
@@ -162,7 +177,7 @@ vscs_core_jwt_generator_init_with_credentials(vscs_core_jwt_generator_t *self, v
 
     self->refcnt = 1;
 
-    vscs_core_jwt_generator_init_ctx_with_credentials(self, api_id, api_key, api_public_key_identifier);
+    vscs_core_jwt_generator_init_ctx_with_credentials(self, app_id, app_key_id, app_key);
 }
 
 //
@@ -170,13 +185,12 @@ vscs_core_jwt_generator_init_with_credentials(vscs_core_jwt_generator_t *self, v
 //  Create JWT generator with an application credentials.
 //
 VSCS_CORE_PUBLIC vscs_core_jwt_generator_t *
-vscs_core_jwt_generator_new_with_credentials(vsc_str_buffer_t *api_id, const vscf_impl_t *api_key,
-        vsc_str_buffer_t *api_public_key_identifier) {
+vscs_core_jwt_generator_new_with_credentials(vsc_str_t app_id, vsc_str_t app_key_id, const vscf_impl_t *app_key) {
 
     vscs_core_jwt_generator_t *self = (vscs_core_jwt_generator_t *) vscs_core_alloc(sizeof (vscs_core_jwt_generator_t));
     VSCS_CORE_ASSERT_ALLOC(self);
 
-    vscs_core_jwt_generator_init_with_credentials(self, api_id, api_key, api_public_key_identifier);
+    vscs_core_jwt_generator_init_with_credentials(self, app_id, app_key_id, app_key);
 
     self->self_dealloc_cb = vscs_core_dealloc;
 
@@ -273,6 +287,8 @@ vscs_core_jwt_generator_use_random(vscs_core_jwt_generator_t *self, vscf_impl_t 
     VSCS_CORE_ASSERT(vscf_random_is_implemented(random));
 
     self->random = vscf_impl_shallow_copy(random);
+
+    vscs_core_jwt_generator_did_setup_random(self);
 }
 
 //
@@ -289,6 +305,8 @@ vscs_core_jwt_generator_take_random(vscs_core_jwt_generator_t *self, vscf_impl_t
     VSCS_CORE_ASSERT(vscf_random_is_implemented(random));
 
     self->random = random;
+
+    vscs_core_jwt_generator_did_setup_random(self);
 }
 
 //
@@ -300,6 +318,8 @@ vscs_core_jwt_generator_release_random(vscs_core_jwt_generator_t *self) {
     VSCS_CORE_ASSERT_PTR(self);
 
     vscf_impl_destroy(&self->random);
+
+    vscs_core_jwt_generator_did_release_random(self);
 }
 
 
@@ -330,19 +350,54 @@ static void
 vscs_core_jwt_generator_cleanup_ctx(vscs_core_jwt_generator_t *self) {
 
     VSCS_CORE_ASSERT_PTR(self);
+
+    vsc_str_buffer_destroy(&self->app_id);
+    vsc_str_buffer_destroy(&self->app_key_id);
+    vscf_impl_destroy((vscf_impl_t **)&self->app_key);
+    vscf_signer_destroy(&self->signer);
 }
 
 //
 //  Create JWT generator with an application credentials.
 //
 static void
-vscs_core_jwt_generator_init_ctx_with_credentials(vscs_core_jwt_generator_t *self, vsc_str_buffer_t *api_id,
-        const vscf_impl_t *api_key, vsc_str_buffer_t *api_public_key_identifier) {
+vscs_core_jwt_generator_init_ctx_with_credentials(
+        vscs_core_jwt_generator_t *self, vsc_str_t app_id, vsc_str_t app_key_id, const vscf_impl_t *app_key) {
 
     VSCS_CORE_ASSERT_PTR(self);
-    VSCS_CORE_ASSERT_PTR(api_key);
+    VSCS_CORE_ASSERT_PTR(app_key);
 
-    self->api_key = vscf_impl_shallow_copy_const(api_key);
+    self->app_id = vsc_str_buffer_new_with_str(app_id);
+    self->app_key_id = vsc_str_buffer_new_with_str(app_key_id);
+    self->app_key = vscf_impl_shallow_copy_const(app_key);
+    self->ttl = vscs_core_jwt_generator_DEFAULT_TTL;
+    self->signer = vscf_signer_new();
+    vscf_signer_take_hash(self->signer, vscf_sha512_impl(vscf_sha512_new()));
+}
+
+//
+//  This method is called when interface 'random' was setup.
+//
+static void
+vscs_core_jwt_generator_did_setup_random(vscs_core_jwt_generator_t *self) {
+
+    VSCS_CORE_ASSERT_PTR(self);
+
+    vscf_signer_release_random(self->signer);
+    vscf_signer_use_random(self->signer, self->random);
+}
+
+//
+//  This method is called when interface 'random' was released.
+//
+static void
+vscs_core_jwt_generator_did_release_random(vscs_core_jwt_generator_t *self) {
+
+    VSCS_CORE_ASSERT_PTR(self);
+
+    if (self->signer) {
+        vscf_signer_release_random(self->signer);
+    }
 }
 
 //
@@ -351,7 +406,20 @@ vscs_core_jwt_generator_init_ctx_with_credentials(vscs_core_jwt_generator_t *sel
 VSCS_CORE_PUBLIC vscs_core_status_t
 vscs_core_jwt_generator_setup_defaults(vscs_core_jwt_generator_t *self) {
 
-    //  TODO: This is STUB. Implement me.
+    VSCS_CORE_ASSERT_PTR(self);
+
+    if (NULL == self->random) {
+        vscf_ctr_drbg_t *random = vscf_ctr_drbg_new();
+        vscf_status_t status = vscf_ctr_drbg_setup_defaults(random);
+        if (status != vscf_status_SUCCESS) {
+            vscf_ctr_drbg_destroy(&random);
+            return vscs_core_status_INIT_RANDOM_FAILED;
+        }
+
+        vscs_core_jwt_generator_take_random(self, vscf_ctr_drbg_impl(random));
+    }
+
+    return vscs_core_status_SUCCESS;
 }
 
 //
@@ -360,7 +428,9 @@ vscs_core_jwt_generator_setup_defaults(vscs_core_jwt_generator_t *self) {
 VSCS_CORE_PUBLIC void
 vscs_core_jwt_generator_set_ttl(vscs_core_jwt_generator_t *self, size_t ttl) {
 
-    //  TODO: This is STUB. Implement me.
+    VSCS_CORE_ASSERT_PTR(self);
+
+    self->ttl = ttl;
 }
 
 //
@@ -368,9 +438,54 @@ vscs_core_jwt_generator_set_ttl(vscs_core_jwt_generator_t *self, size_t ttl) {
 //
 VSCS_CORE_PUBLIC vscs_core_jwt_t *
 vscs_core_jwt_generator_generate_token(
-        const vscs_core_jwt_generator_t *self, vsc_str_t identity, const vscs_core_error_t *error) {
+        const vscs_core_jwt_generator_t *self, vsc_str_t identity, vscs_core_error_t *error) {
 
     VSCS_CORE_ASSERT_PTR(self);
+    VSCS_CORE_ASSERT_PTR(self->signer);
+
+    const size_t issued_at = (size_t)time(NULL);
+    const size_t expires_at = issued_at + self->ttl;
+
+    vscs_core_jwt_header_t *jwt_header = vscs_core_jwt_header_new_with_app_key_id(vsc_str_buffer_str(self->app_key_id));
+
+    vscs_core_jwt_payload_t *jwt_payload =
+            vscs_core_jwt_payload_new_with_members(vsc_str_buffer_str(self->app_id), identity, issued_at, expires_at);
+
+
+    const size_t jwt_header_encoded_len = vscs_core_jwt_header_as_string_len(jwt_header);
+    const size_t jwt_payload_encoded_len = vscs_core_jwt_payload_as_string_len(jwt_payload);
+    const size_t jwt_signature_len = vscf_signer_signature_len(self->signer, self->app_key);
+    const size_t jwt_signature_encoded_len = vscs_core_base64_url_encoded_len(jwt_signature_len);
+    const size_t jwt_string_len = jwt_header_encoded_len + jwt_payload_encoded_len + jwt_signature_encoded_len + 2;
+
+    vsc_buffer_t *jwt_signature = vsc_buffer_new_with_capacity(jwt_signature_len);
+    vsc_str_buffer_t *jwt_string = vsc_str_buffer_new_with_capacity(jwt_string_len);
+
+    vscs_core_jwt_header_as_string(jwt_header, jwt_string);
+
+    vsc_str_buffer_write_char(jwt_string, '.');
+
+    vscs_core_jwt_payload_as_string(jwt_payload, jwt_string);
+
+    vsc_str_buffer_write_char(jwt_string, '.');
+
+    vscf_signer_reset(self->signer);
+    vscf_signer_append_data(self->signer, vsc_str_buffer_data(jwt_string));
+
+    const vscf_status_t signer_status = vscf_signer_sign(self->signer, self->app_key, jwt_signature);
+
+    if (signer_status == vscf_status_SUCCESS) {
+        vscs_core_base64_url_encode(vsc_buffer_data(jwt_signature), jwt_string);
+
+        return vscs_core_jwt_new_with_members_disown(&jwt_header, &jwt_payload, &jwt_signature, &jwt_string);
+    }
+
+    vscs_core_jwt_header_destroy(&jwt_header);
+    vscs_core_jwt_payload_destroy(&jwt_payload);
+    vsc_buffer_destroy(&jwt_signature);
+    vsc_str_buffer_destroy(&jwt_string);
+
+    VSCS_CORE_ERROR_SAFE_UPDATE(error, vscs_core_status_SIGN_JWT_FAILED);
 
     return NULL;
 }

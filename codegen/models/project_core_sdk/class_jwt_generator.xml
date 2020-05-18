@@ -1,30 +1,30 @@
 <class name="jwt generator">
     Class responsible for JWT generation.
 
-    <require interface="private key" project="foundation"/>
+    <require header="time.h" is_system="1" scope="private"/>
+    <require class="base64 url" scope="private"/>
+    <require impl="sha512" project="foundation" scope="private"/>
+    <require impl="ctr drbg" project="foundation" scope="private"/>
 
     <constant name="default ttl" type="size" value="15 * 60"/>
 
-    <dependency name="random" interface="random" project="foundation"/>
-
-    <property name="api id" class="str buffer"/>
-
-    <property name="api key" interface="private key" project="foundation" access="readonly"/>
-
-    <property name="api public key identifier" class="str buffer"/>
-
+    <property name="app id" class="str buffer"/>
+    <property name="app key id" class="str buffer"/>
+    <property name="app key" interface="private key" project="foundation" access="readonly"/>
     <property name="ttl" type="size"/>
+    <property name="signer" class="signer" project="foundation"/>
 
+    <dependency name="random" interface="random" project="foundation" has_observers="1"/>
 
     <constructor name="with credentials">
         Create JWT generator with an application credentials.
 
 
-        <argument name="api id" class="str buffer"/>
+        <argument name="app id" class="str"/>
 
-        <argument name="api key" interface="private key" project="foundation" access="readonly"/>
+        <argument name="app key id" class="str"/>
 
-        <argument name="api public key identifier" class="str buffer"/>
+        <argument name="app key" interface="private key" project="foundation" access="readonly"/>
     </constructor>
 
 
@@ -46,7 +46,7 @@
         Generate new JWT.
 
         <argument name="identity" class="str"/>
-        <argument name="error" class="error"/>
+        <argument name="error" class="error" access="readwrite"/>
 
         <return class="jwt" access="disown"/>
     </method>

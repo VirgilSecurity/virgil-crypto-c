@@ -1,6 +1,10 @@
 <class name="jwt">
     Class that handles JWT.
 
+    <require header="time.h" is_system="1" scope="private"/>
+    <require class="base64 url" scope="private"/>
+
+
     <property name="header" class="jwt header">
         Handles JWT Header.
     </property>
@@ -9,27 +13,52 @@
         Handles JWT Payload.
     </property>
 
-    <property name="signature" class="jwt payload">
-        Handles JWT Signature.
+    <property name="signature" class="buffer">
+        Handles JWT Header.
     </property>
 
-    <constructor name="with members disown" visibility="private">
-        Build JWT from it's parts.
+    <property name="jwt string" class="str buffer">
+        Handles JWT string representation.
+    </property>
+
+
+    <constructor name="with members disown" scope="private">
+        Create object with all members defined.
 
         <argument name="header" class="jwt header" access="disown"/>
         <argument name="payload" class="jwt payload" access="disown"/>
-        <argument name="signature" class="jwt payload" access="disown"/>
+        <argument name="signature" class="buffer" access="disown"/>
+        <argument name="jwt string" class="str buffer" access="disown"/>
     </constructor>
 
-    <method name="as string len" is_const="1">
-        Return length for JWT string representation buffer.
+
+    <method name="parse" is_static="1">
+        Parse JWT from a string representation.
+
+        <argument name="str" class="str"/>
+        <argument name="error" class="error" access="readwrite"/>
+
+        <return class="self" access="disown"/>
     </method>
+
 
     <method name="as string" is_const="1">
         Return JWT string representation.
 
-        <argument name="str buffer" class="str buffer">
-            <length method="as string len"/>
-        </argument>
+        <return class="str"/>
+    </method>
+
+
+    <method name="identity" is_const="1">
+        Return identity to whom this token was issued.
+
+        <return class="str"/>
+    </method>
+
+
+    <method name="is expired" is_const="1">
+        Return true if token is expired.
+
+        <return type="boolean"/>
     </method>
 </class>

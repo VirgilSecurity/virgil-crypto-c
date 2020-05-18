@@ -54,6 +54,18 @@
 #define VSCS_CORE_JWT_PAYLOAD_H_INCLUDED
 
 #include "vscs_core_library.h"
+#include "vscs_core_error.h"
+#include "vscs_core_jwt_payload.h"
+
+#if !VSCS_CORE_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <virgil/crypto/common/vsc_str.h>
+#   include <virgil/crypto/common/vsc_str_buffer.h>
+#endif
+
+#if VSCS_CORE_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <VSCCommon/vsc_str.h>
+#   include <VSCCommon/vsc_str_buffer.h>
+#endif
 
 // clang-format on
 //  @end
@@ -100,6 +112,21 @@ VSCS_CORE_PUBLIC vscs_core_jwt_payload_t *
 vscs_core_jwt_payload_new(void);
 
 //
+//  Perform initialization of pre-allocated context.
+//  Create fully defined JWT Payload.
+//
+VSCS_CORE_PUBLIC void
+vscs_core_jwt_payload_init_with_members(vscs_core_jwt_payload_t *self, vsc_str_t app_id, vsc_str_t identity,
+        size_t issued_at, size_t expires_at);
+
+//
+//  Allocate class context and perform it's initialization.
+//  Create fully defined JWT Payload.
+//
+VSCS_CORE_PUBLIC vscs_core_jwt_payload_t *
+vscs_core_jwt_payload_new_with_members(vsc_str_t app_id, vsc_str_t identity, size_t issued_at, size_t expires_at);
+
+//
 //  Release all inner resources and deallocate context if needed.
 //  It is safe to call this method even if the context was statically allocated.
 //
@@ -118,6 +145,55 @@ vscs_core_jwt_payload_destroy(vscs_core_jwt_payload_t **self_ref);
 //
 VSCS_CORE_PUBLIC vscs_core_jwt_payload_t *
 vscs_core_jwt_payload_shallow_copy(vscs_core_jwt_payload_t *self);
+
+//
+//  Parse JWT Payload from a string representation.
+//
+VSCS_CORE_PUBLIC vscs_core_jwt_payload_t *
+vscs_core_jwt_payload_parse(vsc_str_t payload_str, vscs_core_error_t *error);
+
+//
+//  Return lengh for buffer that can hold JWT Payload string representation.
+//
+VSCS_CORE_PUBLIC size_t
+vscs_core_jwt_payload_as_string_len(const vscs_core_jwt_payload_t *self);
+
+//
+//  Return JWT Payload string representation.
+//  Representations is base64url.encode(json).
+//
+VSCS_CORE_PUBLIC void
+vscs_core_jwt_payload_as_string(const vscs_core_jwt_payload_t *self, vsc_str_buffer_t *str_buffer);
+
+//
+//  Return JWT Payload as JSON string.
+//
+VSCS_CORE_PRIVATE vsc_str_t
+vscs_core_jwt_payload_as_json_string(const vscs_core_jwt_payload_t *self);
+
+//
+//  Issuer application id.
+//
+VSCS_CORE_PUBLIC vsc_str_t
+vscs_core_jwt_payload_app_id(const vscs_core_jwt_payload_t *self);
+
+//
+//  Return identity to whom this token was issued.
+//
+VSCS_CORE_PUBLIC vsc_str_t
+vscs_core_jwt_payload_identity(const vscs_core_jwt_payload_t *self);
+
+//
+//  Return UNIX Timestamp in seconds with issued date.
+//
+VSCS_CORE_PUBLIC size_t
+vscs_core_jwt_payload_issued_at(vscs_core_jwt_payload_t *self);
+
+//
+//  Return UNIX Timestamp in seconds with expiration date.
+//
+VSCS_CORE_PUBLIC size_t
+vscs_core_jwt_payload_expires_at(vscs_core_jwt_payload_t *self);
 
 
 // --------------------------------------------------------------------------

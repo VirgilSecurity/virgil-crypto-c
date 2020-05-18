@@ -97,11 +97,19 @@
         </code>
     </macros>
 
-    <macros name="ceil">
+    <macros name="ceil" is_method="1">
         Custom implementation of the number ceil algorithm.
 
         <code>
             #define .(c_global_macros_ceil) (x,y) (0 == (x) ? 0 : 1 + (((x) - 1) / (y)))
+        </code>
+    </macros>
+
+    <macros name="max" is_method="1">
+        Returns max of two numbers.
+
+        <code>
+            #define .(c_global_macros_max) (x,y) ((x) > (y) ? (x) : (y))
         </code>
     </macros>
 

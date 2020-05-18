@@ -123,6 +123,16 @@ extern "C" {
     } while (false)
 
 //
+//  Assert that given reference is not NULL. And reference pointer is not NULL too.
+//  It is enabled in debug mode.
+//
+#define VSCS_CORE_ASSERT_REF(X)   \
+    do {                          \
+        VSCS_CORE_ASSERT_PTR(X);  \
+        VSCS_CORE_ASSERT_PTR(*X); \
+    } while (false)
+
+//
 //  Assert that given pointer is NULL. It is enabled in debug mode.
 //
 #define VSCS_CORE_ASSERT_NULL(X)                                                            \
@@ -142,6 +152,26 @@ extern "C" {
             vscs_core_assert_trigger ("No memory", VSCS_CORE_FILE_PATH_OR_NAME, __LINE__); \
         }                                                                                  \
     } while (false)
+
+//
+//  This macros can be used as library 'json_c' error handlind post-condition.
+//
+#define VSCS_CORE_ASSERT_LIBRARY_JSON_C_UNHANDLED_ERROR(error)                                                           \
+    do {                                                                                                                 \
+        VSCS_CORE_ASSERT((error) != 0);                                                                                  \
+        vscs_core_assert_trigger_unhandled_error_of_library_json_c((int)(error), VSCS_CORE_FILE_PATH_OR_NAME, __LINE__); \
+    } while (0)
+
+//
+//  This macros can be used to ensure that library 'json_c' operation
+//  returns success status code.
+//
+#define VSCS_CORE_ASSERT_LIBRARY_JSON_C_SUCCESS(status)              \
+    do {                                                             \
+        if ((status) != 0) {                                         \
+            VSCS_CORE_ASSERT_LIBRARY_JSON_C_UNHANDLED_ERROR(status); \
+        }                                                            \
+    } while (0)
 
 //
 //  This macros can be used as project 'foundation' error handlind post-condition.
@@ -186,6 +216,12 @@ vscs_core_assert_abort(const char *message, const char *file, int line);
 //
 VSCS_CORE_PUBLIC void
 vscs_core_assert_trigger(const char *message, const char *file, int line);
+
+//
+//  Tell assertion handler that error of library 'json_c' is not handled.
+//
+VSCS_CORE_PUBLIC void
+vscs_core_assert_trigger_unhandled_error_of_library_json_c(int error, const char *file, int line);
 
 //
 //  Tell assertion handler that error of project 'foundation' is not handled.

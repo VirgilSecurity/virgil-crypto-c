@@ -1,5 +1,3 @@
-//  @license
-// --------------------------------------------------------------------------
 //  Copyright (C) 2015-2020 Virgil Security, Inc.
 //
 //  All rights reserved.
@@ -33,56 +31,12 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
-// --------------------------------------------------------------------------
-// clang-format off
 
+#include "test_data_jwt_header.h"
 
-//  @warning
-// --------------------------------------------------------------------------
-//  This file is partially generated.
-//  Generated blocks are enclosed between tags [@<tag>, @end].
-//  User's code can be added between tags [@end, @<tag>].
-// --------------------------------------------------------------------------
+static const char VALID[] =
+    "eyJraWQiOiJiNzEyNmMzYTc4NDUyNGE1IiwiY3R5IjoidmlyZ2lsLWp3dDt2PTEiLCJ0eXAiOiJKV1QiLCJhbGciOiJWRURTNTEyIn0";
 
-
-//  @description
-// --------------------------------------------------------------------------
-//  This is an umbrella header that includes library private headers.
-// --------------------------------------------------------------------------
-
-#ifndef VSCS_CORE_CORE_SDK_PRIVATE_H_INCLUDED
-#define VSCS_CORE_CORE_SDK_PRIVATE_H_INCLUDED
-
-#include "vscs_core_atomic.h"
-
-// clang-format on
-//  @end
-
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-
-//  @generated
-// --------------------------------------------------------------------------
-// clang-format off
-//  Generated section start.
-// --------------------------------------------------------------------------
-
-
-// --------------------------------------------------------------------------
-//  Generated section end.
-// clang-format on
-// --------------------------------------------------------------------------
-//  @end
-
-
-#ifdef __cplusplus
-}
-#endif
-
-
-//  @footer
-#endif // VSCS_CORE_CORE_SDK_PRIVATE_H_INCLUDED
-//  @end
+const vsc_str_t test_data_jwt_header_VALID = {
+    VALID, sizeof(VALID) - 1
+};

@@ -106,10 +106,6 @@ extern "C" {
 #cmakedefine01 VSCS_CORE_JWT_PAYLOAD
 #endif
 
-#ifndef VSCS_CORE_JWT_PAYLOAD
-#cmakedefine01 VSCS_CORE_JWT_PAYLOAD
-#endif
-
 #ifndef VSCS_CORE_JWT_GENERATOR
 #cmakedefine01 VSCS_CORE_JWT_GENERATOR
 #endif

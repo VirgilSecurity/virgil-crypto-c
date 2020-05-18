@@ -1,29 +1,151 @@
 <class name="jwt payload" scope="private">
     Class that handles JWT Payload.
 
-    <property name="app id" class="str buffer">
-        Issuer containing application id.
-        Note: Can be taken [here](https://dashboard.virgilsecurity.com)
+    <require class="base64 url" scope="private"/>
+    <require header="json-c/json.h" library="json_c" scope="context"/>
+
+
+    <property name="json obj" class="json_object" library="json_c">
+        Root JSON object that represents JWT Header.
     </property>
 
 
-    <property name="identity" class="str buffer">
-        Subject as identity.
-    </property>
+    <variable name="k json value prefix app id" type="string" declaration="private">
+        Prefix for JSON value under the key "iss".
 
-<!-- NOT SUPPORTED YET
-    <property name="additional data" class="...">
-        Dictionary with additional data.
-    </property>
- -->
-
-    <property name="expires at" type="size">
-        UNIX Timestamp in seconds with expiration date.
-    </property>
+        <value value="virgil-" type="string"/>
+        <string access="readonly"/>
+    </variable>
 
 
-    <property name="issued at" type="size">
-        UNIX Timestamp in seconds with issued date.
-    </property>
+    <variable name="k json value prefix identity" type="string" declaration="private">
+        Prefix for JSON value under the key "sub".
 
+        <value value="identity-" type="string"/>
+        <string access="readonly"/>
+    </variable>
+
+
+    <variable name="k json key app id" type="string" declaration="private">
+        JSON key of application id JWT belongs to.
+
+        <value value="iss" type="string"/>
+        <string access="readonly"/>
+    </variable>
+
+
+    <variable name="k json key identity"  type="string" declaration="private">
+        JSON key of JWT identity.
+
+        <value value="sub" type="string"/>
+        <string access="readonly"/>
+    </variable>
+
+
+    <variable name="k json key issued at"  type="string" declaration="private">
+        JSON key of JWT issued at date.
+
+        <value value="iat" type="string"/>
+        <string access="readonly"/>
+    </variable>
+
+
+    <variable name="k json key expires at"  type="string" declaration="private">
+        JSON key of JWT expires at date.
+
+        <value value="exp" type="string"/>
+        <string access="readonly"/>
+    </variable>
+
+
+    <constructor name="with members">
+        Create fully defined JWT Payload.
+
+        <argument name="app id" class="str">
+            Issuer application id.
+            Note: Can be taken [here](https://dashboard.virgilsecurity.com)
+        </argument>
+
+        <argument name="identity" class="str">
+            Subject as identity.
+        </argument>
+
+        <argument name="issued at" type="size">
+            UNIX Timestamp in seconds with issued date.
+        </argument>
+
+        <argument name="expires at" type="size">
+            UNIX Timestamp in seconds with expiration date.
+        </argument>
+    </constructor>
+
+
+    <constructor name="with json object" declaration="private">
+        Create JWT Payload defined with a JSON object.
+        Prerequisite: The JSON object SHOULD be already validated.
+
+        <argument name="json obj" class="json_object" library="json_c" access="disown"/>
+    </constructor>
+
+
+    <method name="parse" is_static="1">
+        Parse JWT Payload from a string representation.
+
+        <argument name="payload str" class="str"/>
+        <argument name="error" class="error" access="readwrite"/>
+
+        <return class="self" access="disown"/>
+    </method>
+
+
+    <method name="as string len" is_const="1">
+        Return lengh for buffer that can hold JWT Payload string representation.
+
+        <return type="size"/>
+    </method>
+
+
+    <method name="as string" is_const="1">
+        Return JWT Payload string representation.
+        Representations is base64url.encode(json).
+
+        <argument name="str buffer" class="str buffer">
+            <length method="as string len"/>
+        </argument>
+    </method>
+
+
+    <method name="as json string" is_const="1" visibility="private">
+        Return JWT Payload as JSON string.
+
+        <return class="str"/>
+    </method>
+
+
+    <method name="app id" is_const="1">
+        Issuer application id.
+
+        <return class="str"/>
+    </method>
+
+
+    <method name="identity" is_const="1">
+        Return identity to whom this token was issued.
+
+        <return class="str"/>
+    </method>
+
+
+    <method name="issued at">
+        Return UNIX Timestamp in seconds with issued date.
+
+        <return type="size"/>
+    </method>
+
+
+    <method name="expires at">
+        Return UNIX Timestamp in seconds with expiration date.
+
+        <return type="size"/>
+    </method>
 </class>

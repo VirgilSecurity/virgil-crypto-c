@@ -59,7 +59,6 @@
 #include "vscs_core_status.h"
 
 #if !VSCS_CORE_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <virgil/crypto/common/vsc_str_buffer.h>
 #   include <virgil/crypto/common/vsc_str.h>
 #endif
 
@@ -69,7 +68,6 @@
 
 #if VSCS_CORE_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <VSCCommon/vsc_str.h>
-#   include <VSCCommon/vsc_str_buffer.h>
 #endif
 
 #if VSCS_CORE_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
@@ -132,16 +130,15 @@ vscs_core_jwt_generator_new(void);
 //  Create JWT generator with an application credentials.
 //
 VSCS_CORE_PUBLIC void
-vscs_core_jwt_generator_init_with_credentials(vscs_core_jwt_generator_t *self, vsc_str_buffer_t *api_id,
-        const vscf_impl_t *api_key, vsc_str_buffer_t *api_public_key_identifier);
+vscs_core_jwt_generator_init_with_credentials(vscs_core_jwt_generator_t *self, vsc_str_t app_id, vsc_str_t app_key_id,
+        const vscf_impl_t *app_key);
 
 //
 //  Allocate class context and perform it's initialization.
 //  Create JWT generator with an application credentials.
 //
 VSCS_CORE_PUBLIC vscs_core_jwt_generator_t *
-vscs_core_jwt_generator_new_with_credentials(vsc_str_buffer_t *api_id, const vscf_impl_t *api_key,
-        vsc_str_buffer_t *api_public_key_identifier);
+vscs_core_jwt_generator_new_with_credentials(vsc_str_t app_id, vsc_str_t app_key_id, const vscf_impl_t *app_key);
 
 //
 //  Release all inner resources and deallocate context if needed.
@@ -199,7 +196,7 @@ vscs_core_jwt_generator_set_ttl(vscs_core_jwt_generator_t *self, size_t ttl);
 //
 VSCS_CORE_PUBLIC vscs_core_jwt_t *
 vscs_core_jwt_generator_generate_token(const vscs_core_jwt_generator_t *self, vsc_str_t identity,
-        const vscs_core_error_t *error);
+        vscs_core_error_t *error);
 
 
 // --------------------------------------------------------------------------

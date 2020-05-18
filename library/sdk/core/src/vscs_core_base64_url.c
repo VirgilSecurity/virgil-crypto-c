@@ -128,7 +128,7 @@ vscs_core_base64_url_decode(vsc_str_t str, vsc_buffer_t *data) {
     vsc_str_buffer_replace_char(str_buffer, '_', '/');
 
     while (!vsc_str_buffer_is_full(str_buffer)) {
-        vsc_str_buffer_write_str(str_buffer, vsc_str("=", 1));
+        vsc_str_buffer_write_char(str_buffer, '=');
     }
 
     const vscf_status_t status = vscf_base64_decode(vsc_str_buffer_data(str_buffer), data);
@@ -136,7 +136,7 @@ vscs_core_base64_url_decode(vsc_str_t str, vsc_buffer_t *data) {
     vsc_str_buffer_destroy(&str_buffer);
 
     if (status != vscf_status_SUCCESS) {
-        return vscs_core_status_BAD_BASE64_URL;
+        return vscs_core_status_DECODE_BASE64_URL_FAILED;
     }
 
     return vscs_core_status_SUCCESS;

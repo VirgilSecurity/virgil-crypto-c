@@ -32,25 +32,11 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef VIRGIL_SDK_CORE_TEST_DATA_JWT_H
-#define VIRGIL_SDK_CORE_TEST_DATA_JWT_H
+#include "test_data_jwt_payload.h"
 
-#include "vsc_data.h"
-#include "vsc_str.h"
+static const char VALID[] =
+    "eyJpc3MiOiJ2aXJnaWwtOTdhNDg1MmM4NTc0NDdiNjNkNWExZWViNzI4MmUzZjEiLCJzdWIiOiJpZGVudGl0eS1hbGljZSIsImlhdCI6MTU4OTgxNDQxNSwiZXhwIjoxNTg5ODE1MzE1fQ";
 
-extern const size_t test_data_jwt_ISSUED_AT;
-extern const size_t test_data_jwt_EXPIRES_AT;
-
-extern const vsc_str_t test_data_jwt_IDENTITY;
-extern const vsc_str_t test_data_jwt_APP_ID;
-extern const vsc_str_t test_data_jwt_APP_KEY_ID;
-
-extern const vsc_data_t test_data_jwt_APP_PUBLIC_KEY;
-extern const vsc_data_t test_data_jwt_APP_KEY;
-
-extern const vsc_str_t test_data_jwt_HEADER_VALID;
-extern const vsc_str_t test_data_jwt_PAYLOAD_VALID;
-extern const vsc_str_t test_data_jwt_SIGNATURE_VALID;
-extern const vsc_str_t test_data_jwt_VALID;
-
-#endif //VIRGIL_SDK_CORE_TEST_DATA_JWT_H
+const vsc_str_t test_data_jwt_payload_VALID = {
+    VALID, sizeof(VALID) - 1
+};

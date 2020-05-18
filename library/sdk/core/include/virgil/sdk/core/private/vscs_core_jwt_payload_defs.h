@@ -56,13 +56,7 @@
 #include "vscs_core_library.h"
 #include "vscs_core_atomic.h"
 
-#if !VSCS_CORE_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <virgil/crypto/common/vsc_str_buffer.h>
-#endif
-
-#if VSCS_CORE_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <VSCCommon/vsc_str_buffer.h>
-#endif
+#include <json-c/json.h>
 
 // clang-format on
 //  @end
@@ -92,22 +86,9 @@ struct vscs_core_jwt_payload_t {
     //
     VSCS_CORE_ATOMIC size_t refcnt;
     //
-    //  Issuer containing application id.
-    //  Note: Can be taken [here](https://dashboard.virgilsecurity.com)
+    //  Root JSON object that represents JWT Header.
     //
-    vsc_str_buffer_t *app_id;
-    //
-    //  Subject as identity.
-    //
-    vsc_str_buffer_t *identity;
-    //
-    //  UNIX Timestamp in seconds with expiration date.
-    //
-    size_t expires_at;
-    //
-    //  UNIX Timestamp in seconds with issued date.
-    //
-    size_t issued_at;
+    json_object *json_obj;
 };
 
 

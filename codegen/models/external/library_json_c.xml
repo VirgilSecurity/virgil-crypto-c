@@ -3,4 +3,9 @@
         path="../thirdparty/json_c/">
 
     External library: https://github.com/json-c/json-c
+
+    <error_message_getter success="0">
+        char error_message[32] = {0x00};
+        snprintf(error_message, sizeof(error_message), "Unhandled JSON-C error %4d", error);
+    </error_message_getter>
 </library>

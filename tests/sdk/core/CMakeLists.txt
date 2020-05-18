@@ -57,3 +57,6 @@ endmacro()
 
 _add_test (test_base64_url)
 _add_test (test_jwt_generator)
+_add_test (test_jwt_header)
+_add_test (test_jwt_payload)
+_add_test (test_jwt)

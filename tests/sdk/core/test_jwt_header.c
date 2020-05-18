@@ -1,5 +1,3 @@
-//  @license
-// --------------------------------------------------------------------------
 //  Copyright (C) 2015-2020 Virgil Security, Inc.
 //
 //  All rights reserved.
@@ -33,69 +31,51 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
-// --------------------------------------------------------------------------
-// clang-format off
 
 
-//  @warning
-// --------------------------------------------------------------------------
-//  This file is partially generated.
-//  Generated blocks are enclosed between tags [@<tag>, @end].
-//  User's code can be added between tags [@end, @<tag>].
-// --------------------------------------------------------------------------
+#define UNITY_BEGIN() UnityBegin(__FILENAME__)
+
+#include "unity.h"
+#include "test_utils.h"
 
 
-//  @description
-// --------------------------------------------------------------------------
-//  Defines the library status codes.
-// --------------------------------------------------------------------------
-
-#ifndef VSCS_CORE_STATUS_H_INCLUDED
-#define VSCS_CORE_STATUS_H_INCLUDED
-
-// clang-format on
-//  @end
+#define TEST_DEPENDENCIES_AVAILABLE VSCS_CORE_JWT_HEADER
+#if TEST_DEPENDENCIES_AVAILABLE
 
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+#include "vscs_core_jwt_header.h"
+
+#include "test_data_jwt.h"
 
 
-//  @generated
-// --------------------------------------------------------------------------
-// clang-format off
-//  Generated section start.
-// --------------------------------------------------------------------------
+void
+test__parse__valid__success(void) {
 
-//
-//  Defines the library status codes.
-//
-enum vscs_core_status_t {
-    //
-    //  No errors was occurred.
-    //
-    vscs_core_status_SUCCESS = 0,
-    //
-    //  Met internal inconsistency.
-    //
-    vscs_core_status_INTERNAL_ERROR = -1
-};
-typedef enum vscs_core_status_t vscs_core_status_t;
+    vscs_core_error_t error;
+    vscs_core_error_reset(&error);
 
+    vscs_core_jwt_header_t *jwt_header = vscs_core_jwt_header_parse(test_data_jwt_HEADER_VALID, &error);
+    TEST_ASSERT_EQUAL(vscs_core_status_SUCCESS, vscs_core_error_status(&error));
+    TEST_ASSERT_NOT_NULL(jwt_header);
 
-// --------------------------------------------------------------------------
-//  Generated section end.
-// clang-format on
-// --------------------------------------------------------------------------
-//  @end
-
-
-#ifdef __cplusplus
+    vscs_core_jwt_header_destroy(&jwt_header);
 }
+
+#endif // TEST_DEPENDENCIES_AVAILABLE
+
+
+// --------------------------------------------------------------------------
+// Entrypoint.
+// --------------------------------------------------------------------------
+int
+main(void) {
+    UNITY_BEGIN();
+
+#if TEST_DEPENDENCIES_AVAILABLE
+    RUN_TEST(test__parse__valid__success);
+#else
+    RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
 #endif
 
-
-//  @footer
-#endif // VSCS_CORE_STATUS_H_INCLUDED
-//  @end
+    return UNITY_END();
+}

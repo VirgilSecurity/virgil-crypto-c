@@ -179,6 +179,20 @@
     </macros>
 
 
+    <macros name="ref" is_method="1">
+        Assert that given reference is not NULL. And reference pointer is not NULL too.
+        It is enabled in debug mode.
+
+        <code lang="c">
+            #define .(c_class_assert_macros_ref)(X)
+                do {
+                    .(c_class_assert_macros_ptr)(X);
+                    .(c_class_assert_macros_ptr)(*X);
+                } while (false)
+        </code>
+    </macros>
+
+
     <macros name="null" is_method="1">
         Assert that given pointer is NULL. It is enabled in debug mode.
 

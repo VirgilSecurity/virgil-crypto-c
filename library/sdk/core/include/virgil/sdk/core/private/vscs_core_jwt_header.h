@@ -54,6 +54,18 @@
 #define VSCS_CORE_JWT_HEADER_H_INCLUDED
 
 #include "vscs_core_library.h"
+#include "vscs_core_error.h"
+#include "vscs_core_jwt_header.h"
+
+#if !VSCS_CORE_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <virgil/crypto/common/vsc_str.h>
+#   include <virgil/crypto/common/vsc_str_buffer.h>
+#endif
+
+#if VSCS_CORE_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <VSCCommon/vsc_str.h>
+#   include <VSCCommon/vsc_str_buffer.h>
+#endif
 
 // clang-format on
 //  @end
@@ -100,6 +112,20 @@ VSCS_CORE_PUBLIC vscs_core_jwt_header_t *
 vscs_core_jwt_header_new(void);
 
 //
+//  Perform initialization of pre-allocated context.
+//  Create JWT Header with application key identifier.
+//
+VSCS_CORE_PUBLIC void
+vscs_core_jwt_header_init_with_app_key_id(vscs_core_jwt_header_t *self, vsc_str_t app_key_id);
+
+//
+//  Allocate class context and perform it's initialization.
+//  Create JWT Header with application key identifier.
+//
+VSCS_CORE_PUBLIC vscs_core_jwt_header_t *
+vscs_core_jwt_header_new_with_app_key_id(vsc_str_t app_key_id);
+
+//
 //  Release all inner resources and deallocate context if needed.
 //  It is safe to call this method even if the context was statically allocated.
 //
@@ -118,6 +144,31 @@ vscs_core_jwt_header_destroy(vscs_core_jwt_header_t **self_ref);
 //
 VSCS_CORE_PUBLIC vscs_core_jwt_header_t *
 vscs_core_jwt_header_shallow_copy(vscs_core_jwt_header_t *self);
+
+//
+//  Parse JWT Header from a string representation.
+//
+VSCS_CORE_PUBLIC vscs_core_jwt_header_t *
+vscs_core_jwt_header_parse(vsc_str_t header_str, vscs_core_error_t *error);
+
+//
+//  Return lengh for buffer that can hold JWT Header string representation.
+//
+VSCS_CORE_PUBLIC size_t
+vscs_core_jwt_header_as_string_len(const vscs_core_jwt_header_t *self);
+
+//
+//  Return JWT Header string representation.
+//  Representations is base64url.encode(json).
+//
+VSCS_CORE_PUBLIC void
+vscs_core_jwt_header_as_string(const vscs_core_jwt_header_t *self, vsc_str_buffer_t *str_buffer);
+
+//
+//  Return JWT Header as JSON string.
+//
+VSCS_CORE_PRIVATE vsc_str_t
+vscs_core_jwt_header_as_json_string(const vscs_core_jwt_header_t *self);
 
 
 // --------------------------------------------------------------------------

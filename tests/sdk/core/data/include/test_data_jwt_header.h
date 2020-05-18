@@ -32,25 +32,12 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef VIRGIL_SDK_CORE_TEST_DATA_JWT_H
-#define VIRGIL_SDK_CORE_TEST_DATA_JWT_H
+#ifndef VIRGIL_SDK_CORE_TEST_DATA_JWT_HEADER_H
+#define VIRGIL_SDK_CORE_TEST_DATA_JWT_HEADER_H
 
 #include "vsc_data.h"
 #include "vsc_str.h"
 
-extern const size_t test_data_jwt_ISSUED_AT;
-extern const size_t test_data_jwt_EXPIRES_AT;
+extern const vsc_str_t test_data_jwt_header_VALID;
 
-extern const vsc_str_t test_data_jwt_IDENTITY;
-extern const vsc_str_t test_data_jwt_APP_ID;
-extern const vsc_str_t test_data_jwt_APP_KEY_ID;
-
-extern const vsc_data_t test_data_jwt_APP_PUBLIC_KEY;
-extern const vsc_data_t test_data_jwt_APP_KEY;
-
-extern const vsc_str_t test_data_jwt_HEADER_VALID;
-extern const vsc_str_t test_data_jwt_PAYLOAD_VALID;
-extern const vsc_str_t test_data_jwt_SIGNATURE_VALID;
-extern const vsc_str_t test_data_jwt_VALID;
-
-#endif //VIRGIL_SDK_CORE_TEST_DATA_JWT_H
+#endif //VIRGIL_SDK_CORE_TEST_DATA_JWT_HEADER_H

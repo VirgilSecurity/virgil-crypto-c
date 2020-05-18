@@ -83,7 +83,19 @@ enum vscs_core_status_t {
     //
     //  Faled to decode Base64URL string.
     //
-    vscs_core_status_BAD_BASE64_URL = -101
+    vscs_core_status_DECODE_BASE64_URL_FAILED = -101,
+    //
+    //  Faled to initialize random module.
+    //
+    vscs_core_status_INIT_RANDOM_FAILED = -102,
+    //
+    //  Failed to parse JWT.
+    //
+    vscs_core_status_PARSE_JWT_FAILED = -201,
+    //
+    //  Failed to produce JWT signature.
+    //
+    vscs_core_status_SIGN_JWT_FAILED = -202
 };
 typedef enum vscs_core_status_t vscs_core_status_t;
 

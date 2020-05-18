@@ -1,23 +1,118 @@
 <class name="jwt header" scope="private">
     Class that handles JWT Header.
 
-    <property name="algorithm" class="str buffer">
-        Represents used signature algorithm.
+    <require class="base64 url" scope="private"/>
+    <require header="json-c/json.h" library="json_c" scope="context"/>
+
+    <property name="json obj" class="json_object" library="json_c">
+        Root JSON object that represents JWT Header.
     </property>
 
 
-    <property name="type" class="str buffer">
-        Represents token type.
-    </property>
+    <variable name="k json key app key id" type="string" declaration="private">
+        JSON key of JWT signature algorithm.
+
+        <value value="kid" type="string"/>
+        <string access="readonly"/>
+    </variable>
 
 
-    <property name="content type" class="str buffer">
-        Represents content type for this JWT.
-    </property>
+    <variable name="k json key signature algorithm" type="string" declaration="private">
+        JSON key of JWT signature algorithm.
+
+        <value value="alg" type="string"/>
+        <string access="readonly"/>
+    </variable>
 
 
-    <property name="key identifier" class="str buffer">
-        Represents identifier of public key which should be used to verify signature.
-        Note: Can be taken from [here](https://dashboard.virgilsecurity.com/api-keys)
-    </property>
+    <variable name="k json key type" type="string" declaration="private">
+        JSON key of JWT type.
+
+        <value value="typ" type="string"/>
+        <string access="readonly"/>
+    </variable>
+
+
+    <variable name="k json key content type" type="string" declaration="private">
+        JSON key of JWT content type.
+
+        <value value="cty" type="string"/>
+        <string access="readonly"/>
+    </variable>
+
+
+    <variable name="k signature algorithm default" type="string" declaration="private">
+        Represents default JWT signature algorithm.
+
+        <value value="VEDS512" type="string"/>
+        <string access="readonly"/>
+    </variable>
+
+
+    <variable name="k type default" type="string" declaration="private">
+        Represents default JWT token type.
+
+        <value value="JWT" type="string"/>
+        <string access="readonly"/>
+    </variable>
+
+
+    <variable name="k content type default" type="string" declaration="private">
+        Represents default JWT content type.
+
+        <value value="virgil-jwt;v=1" type="string"/>
+        <string access="readonly"/>
+    </variable>
+
+
+    <constructor name="with app key id">
+        Create JWT Header with application key identifier.
+
+        <argument name="app key id" class="str">
+            Represents application key identifier.
+            Note: Can be taken from [here](https://dashboard.virgilsecurity.com/)
+        </argument>
+    </constructor>
+
+
+    <constructor name="with json object" declaration="private">
+        Create JWT Header defined with a JSON object.
+        Prerequisite: The JSON object SHOULD be already validated.
+
+        <argument name="json obj" class="json_object" library="json_c" access="disown"/>
+    </constructor>
+
+
+    <method name="parse" is_static="1">
+        Parse JWT Header from a string representation.
+
+        <argument name="header str" class="str"/>
+        <argument name="error" class="error" access="readwrite"/>
+
+        <return class="self" access="disown"/>
+    </method>
+
+
+    <method name="as string len" is_const="1">
+        Return lengh for buffer that can hold JWT Header string representation.
+
+        <return type="size"/>
+    </method>
+
+
+    <method name="as string" is_const="1">
+        Return JWT Header string representation.
+        Representations is base64url.encode(json).
+
+        <argument name="str buffer" class="str buffer">
+            <length method="as string len"/>
+        </argument>
+    </method>
+
+
+    <method name="as json string" is_const="1" visibility="private">
+        Return JWT Header as JSON string.
+
+        <return class="str"/>
+    </method>
 </class>

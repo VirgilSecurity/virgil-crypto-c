@@ -140,7 +140,7 @@ print_buffer(vsc_buffer_t *buffer);
 //  Print string.
 //
 void
-print_str(vsc_str_t *str);
+print_str(vsc_str_t str);
 
 //
 //  Print string buffer.

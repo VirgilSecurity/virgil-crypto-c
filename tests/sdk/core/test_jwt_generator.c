@@ -54,19 +54,26 @@
 void
 test__generate__success(void) {
 
+    vscs_core_error_t error;
+    vscs_core_error_reset(&error);
+
     vscf_fake_random_t *fake_random = vscf_fake_random_new();
     vscf_fake_random_setup_source_byte(fake_random, 0xAB);
 
     vscf_key_provider_t *key_provider = vscf_key_provider_new();
     vscf_key_provider_take_random(key_provider, vscf_fake_random_impl(fake_random));
 
-    vscf_impl_t *private_key = vscf_key_provider_import_private_key(key_provider, test_data_JWT_API_KEY, NULL);
+    vscf_impl_t *private_key = vscf_key_provider_import_private_key(key_provider, test_data_jwt_APP_KEY, NULL);
     TEST_ASSERT_NOT_NULL(private_key);
 
-    vscs_core_jwt_generator_t *jwt_generator = vscs_core_jwt_generator_new_with_credentials(private_key);
+    vscs_core_jwt_generator_t *jwt_generator =
+            vscs_core_jwt_generator_new_with_credentials(test_data_jwt_APP_ID, test_data_jwt_APP_KEY_ID, private_key);
 
-    vscs_core_jwt_t *jwt = vscs_core_jwt_generator_generate_token(jwt_generator);
+    vscs_core_jwt_t *jwt = vscs_core_jwt_generator_generate_token(jwt_generator, test_data_jwt_IDENTITY, &error);
+    TEST_ASSERT_EQUAL(vscs_core_status_SUCCESS, vscs_core_error_status(&error));
     TEST_ASSERT_NOT_NULL(jwt);
+
+    print_str(vscs_core_jwt_as_string(jwt));
 
     vscf_key_provider_destroy(&key_provider);
     vscs_core_jwt_generator_destroy(&jwt_generator);

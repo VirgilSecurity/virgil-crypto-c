@@ -1,5 +1,3 @@
-//  @license
-// --------------------------------------------------------------------------
 //  Copyright (C) 2015-2020 Virgil Security, Inc.
 //
 //  All rights reserved.
@@ -33,62 +31,54 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
-// --------------------------------------------------------------------------
-// clang-format off
 
 
-//  @warning
-// --------------------------------------------------------------------------
-//  This file is partially generated.
-//  Generated blocks are enclosed between tags [@<tag>, @end].
-//  User's code can be added between tags [@end, @<tag>].
-// --------------------------------------------------------------------------
+#define UNITY_BEGIN() UnityBegin(__FILENAME__)
+
+#include "unity.h"
+#include "test_utils.h"
 
 
-//  @description
-// --------------------------------------------------------------------------
-//  This is an umbrella header that includes library private headers.
-// --------------------------------------------------------------------------
-
-#ifndef VSCS_CORE_CORE_SDK_PRIVATE_H_INCLUDED
-#define VSCS_CORE_CORE_SDK_PRIVATE_H_INCLUDED
-
-#include "vscs_core_atomic.h"
-#include "vscs_core_jwt_defs.h"
-#include "vscs_core_jwt_generator_defs.h"
-#include "vscs_core_jwt_header.h"
-#include "vscs_core_jwt_header_defs.h"
-#include "vscs_core_jwt_payload.h"
-#include "vscs_core_jwt_payload_defs.h"
-
-// clang-format on
-//  @end
+#define TEST_DEPENDENCIES_AVAILABLE VSCS_CORE_JWT_HEADER
+#if TEST_DEPENDENCIES_AVAILABLE
 
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+#include "vscs_core_jwt.h"
+
+#include "test_data_jwt.h"
 
 
-//  @generated
-// --------------------------------------------------------------------------
-// clang-format off
-//  Generated section start.
-// --------------------------------------------------------------------------
+void
+test__parse__valid__success(void) {
 
+    vscs_core_error_t error;
+    vscs_core_error_reset(&error);
 
-// --------------------------------------------------------------------------
-//  Generated section end.
-// clang-format on
-// --------------------------------------------------------------------------
-//  @end
+    vscs_core_jwt_t *jwt = vscs_core_jwt_parse(test_data_jwt_VALID, &error);
+    TEST_ASSERT_EQUAL(vscs_core_status_SUCCESS, vscs_core_error_status(&error));
+    TEST_ASSERT_NOT_NULL(jwt);
 
+    TEST_ASSERT_EQUAL_STR(test_data_jwt_IDENTITY, vscs_core_jwt_identity(jwt));
+    TEST_ASSERT_TRUE(vscs_core_jwt_is_expired(jwt));
 
-#ifdef __cplusplus
+    vscs_core_jwt_destroy(&jwt);
 }
+
+#endif // TEST_DEPENDENCIES_AVAILABLE
+
+
+// --------------------------------------------------------------------------
+// Entrypoint.
+// --------------------------------------------------------------------------
+int
+main(void) {
+    UNITY_BEGIN();
+
+#if TEST_DEPENDENCIES_AVAILABLE
+    RUN_TEST(test__parse__valid__success);
+#else
+    RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
 #endif
 
-
-//  @footer
-#endif // VSCS_CORE_CORE_SDK_PRIVATE_H_INCLUDED
-//  @end
+    return UNITY_END();
+}

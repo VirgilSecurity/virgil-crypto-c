@@ -60,6 +60,5 @@ target_compile_definitions(core_sdk
             "VSCS_CORE_JWT=$<BOOL:${VSCS_CORE_JWT}>"
             "VSCS_CORE_JWT_HEADER=$<BOOL:${VSCS_CORE_JWT_HEADER}>"
             "VSCS_CORE_JWT_PAYLOAD=$<BOOL:${VSCS_CORE_JWT_PAYLOAD}>"
-            "VSCS_CORE_JWT_PAYLOAD=$<BOOL:${VSCS_CORE_JWT_PAYLOAD}>"
             "VSCS_CORE_JWT_GENERATOR=$<BOOL:${VSCS_CORE_JWT_GENERATOR}>"
         )

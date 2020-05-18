@@ -97,7 +97,7 @@ target_include_directories(core_sdk
 #
 # Link to dependencies
 #
-target_link_libraries(core_sdk PUBLIC vsc::common vsc::foundation)
+target_link_libraries(core_sdk PUBLIC vsc::common vsc::foundation json_c)
 
 #
 # Define specific compilation and linkage flags.

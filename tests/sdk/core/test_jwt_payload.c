@@ -1,5 +1,3 @@
-//  @license
-// --------------------------------------------------------------------------
 //  Copyright (C) 2015-2020 Virgil Security, Inc.
 //
 //  All rights reserved.
@@ -33,62 +31,56 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
-// --------------------------------------------------------------------------
-// clang-format off
 
 
-//  @warning
-// --------------------------------------------------------------------------
-//  This file is partially generated.
-//  Generated blocks are enclosed between tags [@<tag>, @end].
-//  User's code can be added between tags [@end, @<tag>].
-// --------------------------------------------------------------------------
+#define UNITY_BEGIN() UnityBegin(__FILENAME__)
+
+#include "unity.h"
+#include "test_utils.h"
 
 
-//  @description
-// --------------------------------------------------------------------------
-//  This is an umbrella header that includes library private headers.
-// --------------------------------------------------------------------------
+#define TEST_DEPENDENCIES_AVAILABLE VSCS_CORE_JWT_PAYLOAD
+#if TEST_DEPENDENCIES_AVAILABLE
 
-#ifndef VSCS_CORE_CORE_SDK_PRIVATE_H_INCLUDED
-#define VSCS_CORE_CORE_SDK_PRIVATE_H_INCLUDED
 
-#include "vscs_core_atomic.h"
-#include "vscs_core_jwt_defs.h"
-#include "vscs_core_jwt_generator_defs.h"
-#include "vscs_core_jwt_header.h"
-#include "vscs_core_jwt_header_defs.h"
 #include "vscs_core_jwt_payload.h"
-#include "vscs_core_jwt_payload_defs.h"
 
-// clang-format on
-//  @end
+#include "test_data_jwt.h"
 
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+void
+test__parse__valid__success(void) {
 
+    vscs_core_error_t error;
+    vscs_core_error_reset(&error);
 
-//  @generated
-// --------------------------------------------------------------------------
-// clang-format off
-//  Generated section start.
-// --------------------------------------------------------------------------
+    vscs_core_jwt_payload_t *jwt_payload = vscs_core_jwt_payload_parse(test_data_jwt_PAYLOAD_VALID, &error);
+    TEST_ASSERT_EQUAL(vscs_core_status_SUCCESS, vscs_core_error_status(&error));
+    TEST_ASSERT_NOT_NULL(jwt_payload);
 
+    TEST_ASSERT_EQUAL(test_data_jwt_ISSUED_AT, vscs_core_jwt_payload_issued_at(jwt_payload));
+    TEST_ASSERT_EQUAL(test_data_jwt_EXPIRES_AT, vscs_core_jwt_payload_expires_at(jwt_payload));
+    TEST_ASSERT_EQUAL_STR(test_data_jwt_APP_ID, vscs_core_jwt_payload_app_id(jwt_payload));
+    TEST_ASSERT_EQUAL_STR(test_data_jwt_IDENTITY, vscs_core_jwt_payload_identity(jwt_payload));
 
-// --------------------------------------------------------------------------
-//  Generated section end.
-// clang-format on
-// --------------------------------------------------------------------------
-//  @end
-
-
-#ifdef __cplusplus
+    vscs_core_jwt_payload_destroy(&jwt_payload);
 }
+
+#endif // TEST_DEPENDENCIES_AVAILABLE
+
+
+// --------------------------------------------------------------------------
+// Entrypoint.
+// --------------------------------------------------------------------------
+int
+main(void) {
+    UNITY_BEGIN();
+
+#if TEST_DEPENDENCIES_AVAILABLE
+    RUN_TEST(test__parse__valid__success);
+#else
+    RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
 #endif
 
-
-//  @footer
-#endif // VSCS_CORE_CORE_SDK_PRIVATE_H_INCLUDED
-//  @end
+    return UNITY_END();
+}

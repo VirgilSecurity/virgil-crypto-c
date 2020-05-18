@@ -1,5 +1,3 @@
-//  @license
-// --------------------------------------------------------------------------
 //  Copyright (C) 2015-2020 Virgil Security, Inc.
 //
 //  All rights reserved.
@@ -33,60 +31,13 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
-// --------------------------------------------------------------------------
-// clang-format off
 
+#ifndef VIRGIL_SDK_CORE_TEST_DATA_JWT_PAYLOAD_H
+#define VIRGIL_SDK_CORE_TEST_DATA_JWT_PAYLOAD_H
 
-//  @warning
-// --------------------------------------------------------------------------
-//  This file is partially generated.
-//  Generated blocks are enclosed between tags [@<tag>, @end].
-//  User's code can be added between tags [@end, @<tag>].
-// --------------------------------------------------------------------------
+#include "vsc_data.h"
+#include "vsc_str.h"
 
+extern const vsc_str_t test_data_jwt_payload_VALID;
 
-//  @description
-// --------------------------------------------------------------------------
-//  This ia an umbrella header that includes library public headers.
-// --------------------------------------------------------------------------
-
-#ifndef VSCS_CORE_CORE_SDK_PUBLIC_H_INCLUDED
-#define VSCS_CORE_CORE_SDK_PUBLIC_H_INCLUDED
-
-#include "vscs_core_assert.h"
-#include "vscs_core_library.h"
-#include "vscs_core_memory.h"
-#include "vscs_core_platform.h"
-#include "vscs_core_status.h"
-
-// clang-format on
-//  @end
-
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-
-//  @generated
-// --------------------------------------------------------------------------
-// clang-format off
-//  Generated section start.
-// --------------------------------------------------------------------------
-
-
-// --------------------------------------------------------------------------
-//  Generated section end.
-// clang-format on
-// --------------------------------------------------------------------------
-//  @end
-
-
-#ifdef __cplusplus
-}
-#endif
-
-
-//  @footer
-#endif // VSCS_CORE_CORE_SDK_PUBLIC_H_INCLUDED
-//  @end
+#endif //VIRGIL_SDK_CORE_TEST_DATA_JWT_PAYLOAD_H

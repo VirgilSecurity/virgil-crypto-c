@@ -134,6 +134,18 @@ vscs_core_assert_path_basename(const char *path) {
 }
 
 //
+//  Tell assertion handler that error of library 'json_c' is not handled.
+//
+VSCS_CORE_PUBLIC void
+vscs_core_assert_trigger_unhandled_error_of_library_json_c(int error, const char *file, int line) {
+
+    char error_message[32] = {0x00};
+    snprintf(error_message, sizeof(error_message), "Unhandled JSON-C error %4d", error);
+
+    vscs_core_assert_trigger(error_message, file, line);
+}
+
+//
 //  Tell assertion handler that error of project 'foundation' is not handled.
 //
 VSCS_CORE_PUBLIC void
