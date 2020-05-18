@@ -178,6 +178,13 @@
     </method>
 
 
+    <method name="write char">
+        Copy char to the string buffer.
+
+        <argument name="ch" type="char"/>
+    </method>
+
+
     <method name="write str">
         Copy string to the string buffer.
 

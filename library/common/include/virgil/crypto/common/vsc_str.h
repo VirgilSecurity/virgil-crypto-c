@@ -173,6 +173,12 @@ vsc_str_slice_beg(vsc_str_t self, size_t offset, size_t len);
 VSC_PUBLIC vsc_str_t
 vsc_str_slice_end(vsc_str_t self, size_t offset, size_t len);
 
+//
+//  Return underlying string slice without given prefix.
+//
+VSC_PUBLIC vsc_str_t
+vsc_str_trim_prefix(vsc_str_t self, vsc_str_t prefix);
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.

@@ -294,6 +294,12 @@ VSC_PUBLIC void
 vsc_buffer_dec_used(vsc_buffer_t *self, size_t len);
 
 //
+//  Copy one byte to the buffer.
+//
+VSC_PUBLIC void
+vsc_buffer_write_byte(vsc_buffer_t *self, byte b);
+
+//
 //  Copy data to the buffer.
 //
 VSC_PUBLIC void

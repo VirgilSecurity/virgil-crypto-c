@@ -116,4 +116,13 @@
 
         <return class="self" is_reference="0"/>
     </method>
+
+
+    <method name="trim prefix" >
+        Return underlying string slice without given prefix.
+
+        <argument name="prefix" class="self"/>
+
+        <return class="self" is_reference="0"/>
+    </method>
 </class>

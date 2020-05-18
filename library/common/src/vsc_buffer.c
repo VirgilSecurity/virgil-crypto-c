@@ -683,6 +683,23 @@ vsc_buffer_dec_used(vsc_buffer_t *self, size_t len) {
 }
 
 //
+//  Copy one byte to the buffer.
+//
+VSC_PUBLIC void
+vsc_buffer_write_byte(vsc_buffer_t *self, byte b) {
+
+    VSC_ASSERT_PTR(self);
+    VSC_ASSERT(vsc_buffer_is_valid(self));
+    VSC_ASSERT(vsc_buffer_unused_len(self) > 0);
+
+    byte *bytes = vsc_buffer_unused_bytes(self);
+
+    *bytes = b;
+
+    ++self->len;
+}
+
+//
 //  Copy data to the buffer.
 //
 VSC_PUBLIC void

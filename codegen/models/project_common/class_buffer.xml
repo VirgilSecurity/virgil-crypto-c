@@ -220,6 +220,13 @@
     </method>
 
 
+    <method name="write byte">
+        Copy one byte to the buffer.
+
+        <argument name="b" type="byte"/>
+    </method>
+
+
     <method name="write data">
         Copy data to the buffer.
 

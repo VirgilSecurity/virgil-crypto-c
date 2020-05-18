@@ -587,6 +587,17 @@ vsc_str_buffer_dec_used(vsc_str_buffer_t *self, size_t len) {
 }
 
 //
+//  Copy char to the string buffer.
+//
+VSC_PUBLIC void
+vsc_str_buffer_write_char(vsc_str_buffer_t *self, char ch) {
+
+    VSC_ASSERT_PTR(self);
+
+    vsc_buffer_write_byte(&self->buffer, (byte)ch);
+}
+
+//
 //  Copy string to the string buffer.
 //
 VSC_PUBLIC void
@@ -636,7 +647,7 @@ vsc_str_buffer_replace_char(vsc_str_buffer_t *self, char char_old, char char_new
 VSC_PUBLIC void
 vsc_str_buffer_rtrim(vsc_str_buffer_t *self, char char_to_trim) {
 
-    char *str = vsc_str_buffer_chars(self);
+    const char *str = vsc_str_buffer_chars(self);
 
     for (size_t len = vsc_str_buffer_len(self); len != 0 && str[len - 1] == char_to_trim; --len) {
         vsc_str_buffer_dec_used(self, 1);

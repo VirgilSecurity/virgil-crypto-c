@@ -209,3 +209,30 @@ vsc_str_slice_end(vsc_str_t self, size_t offset, size_t len) {
 
     return (vsc_str_t){self.chars + self.len - offset - len, len};
 }
+
+//
+//  Return underlying string slice without given prefix.
+//
+VSC_PUBLIC vsc_str_t
+vsc_str_trim_prefix(vsc_str_t self, vsc_str_t prefix) {
+
+    VSC_ASSERT(vsc_str_is_valid(self));
+    VSC_ASSERT(vsc_str_is_valid(prefix));
+
+    if (0 == prefix.len || 0 == self.len || prefix.len > self.len) {
+        return self;
+    }
+
+    const char *self_chars = self.chars;
+    const char *prefix_chars = prefix.chars;
+    size_t prefix_len = prefix.len + 1;
+
+    while (--prefix_len != 0 && *self_chars++ == *prefix_chars++) {
+    }
+
+    if (prefix_len != 0) {
+        return self;
+    }
+
+    return vsc_str(self_chars, (size_t)(self.len - prefix.len));
+}

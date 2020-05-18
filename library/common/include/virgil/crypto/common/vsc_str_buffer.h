@@ -283,6 +283,12 @@ VSC_PUBLIC void
 vsc_str_buffer_dec_used(vsc_str_buffer_t *self, size_t len);
 
 //
+//  Copy char to the string buffer.
+//
+VSC_PUBLIC void
+vsc_str_buffer_write_char(vsc_str_buffer_t *self, char ch);
+
+//
 //  Copy string to the string buffer.
 //
 VSC_PUBLIC void

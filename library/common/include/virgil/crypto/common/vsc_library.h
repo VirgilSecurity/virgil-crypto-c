@@ -140,6 +140,11 @@ extern "C" {
 #define VSC_CEIL(x,y) (0 == (x) ? 0 : 1 + (((x) - 1) / (y)))
 
 //
+//  Returns max of two numbers.
+//
+#define VSC_MAX(x,y) ((x) > (y) ? (x) : (y))
+
+//
 //  Mark argument or function return value as "unused".
 //
 #define VSC_UNUSED(x) (void)(x)
