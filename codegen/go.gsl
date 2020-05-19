@@ -2780,12 +2780,7 @@ function go_finalize_implementation_helper_modules (go_project, meta)
 
                 new go_code to go_func
                     . = format_left("\
-                        newSize := data.len
-                        //FIXME Verify data is not corrupted
-                        //if newSize < len(data.bytes) {
-                        //    panic(\"Underlying C buffer corrupt the memory.\")
-                        //}
-                        return C.GoBytes(unsafe.Pointer(data.bytes), C.int(newSize))
+                        return C.GoBytes(unsafe.Pointer(data.bytes), C.int(data.len))
                     ")
                 endnew
             endnew
