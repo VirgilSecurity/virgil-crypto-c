@@ -73,8 +73,7 @@ test__generate__success(void) {
     TEST_ASSERT_EQUAL(vscs_core_status_SUCCESS, vscs_core_error_status(&error));
     TEST_ASSERT_NOT_NULL(jwt);
 
-    print_str(vscs_core_jwt_as_string(jwt));
-
+    vscf_impl_destroy(&private_key);
     vscf_key_provider_destroy(&key_provider);
     vscs_core_jwt_generator_destroy(&jwt_generator);
     vscs_core_jwt_destroy(&jwt);
