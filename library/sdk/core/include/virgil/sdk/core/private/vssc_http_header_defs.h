@@ -47,23 +47,22 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  This is an umbrella header that includes library private headers.
+//  Class 'http header' types definition.
 // --------------------------------------------------------------------------
 
-#ifndef VSSC_CORE_SDK_PRIVATE_H_INCLUDED
-#define VSSC_CORE_SDK_PRIVATE_H_INCLUDED
+#ifndef VSSC_HTTP_HEADER_DEFS_H_INCLUDED
+#define VSSC_HTTP_HEADER_DEFS_H_INCLUDED
 
+#include "vssc_library.h"
 #include "vssc_atomic.h"
-#include "vssc_http_header_defs.h"
-#include "vssc_http_header_list_defs.h"
-#include "vssc_http_request_defs.h"
-#include "vssc_jwt_defs.h"
-#include "vssc_jwt_generator_defs.h"
-#include "vssc_jwt_header.h"
-#include "vssc_jwt_header_defs.h"
-#include "vssc_jwt_payload.h"
-#include "vssc_jwt_payload_defs.h"
-#include "vssc_jwt_private.h"
+
+#if !VSSC_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <virgil/crypto/common/vsc_str_mutable.h>
+#endif
+
+#if VSSC_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <VSCCommon/vsc_str_mutable.h>
+#endif
 
 // clang-format on
 //  @end
@@ -80,6 +79,24 @@ extern "C" {
 //  Generated section start.
 // --------------------------------------------------------------------------
 
+//
+//  Handle 'http header' context.
+//
+struct vssc_http_header_t {
+    //
+    //  Function do deallocate self context.
+    //
+    vssc_dealloc_fn self_dealloc_cb;
+    //
+    //  Reference counter.
+    //
+    VSSC_ATOMIC size_t refcnt;
+
+    vsc_str_mutable_t name;
+
+    vsc_str_mutable_t value;
+};
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.
@@ -94,5 +111,5 @@ extern "C" {
 
 
 //  @footer
-#endif // VSSC_CORE_SDK_PRIVATE_H_INCLUDED
+#endif // VSSC_HTTP_HEADER_DEFS_H_INCLUDED
 //  @end

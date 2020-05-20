@@ -37,6 +37,12 @@
 // clang-format off
 
 
+//  @description
+// --------------------------------------------------------------------------
+//  Class 'http header list' types definition.
+// --------------------------------------------------------------------------
+
+
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -44,34 +50,10 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-
-//  @description
-// --------------------------------------------------------------------------
-//  This is an umbrella header that includes library private headers.
-// --------------------------------------------------------------------------
-
-#ifndef VSSC_CORE_SDK_PRIVATE_H_INCLUDED
-#define VSSC_CORE_SDK_PRIVATE_H_INCLUDED
-
-#include "vssc_atomic.h"
-#include "vssc_http_header_defs.h"
 #include "vssc_http_header_list_defs.h"
-#include "vssc_http_request_defs.h"
-#include "vssc_jwt_defs.h"
-#include "vssc_jwt_generator_defs.h"
-#include "vssc_jwt_header.h"
-#include "vssc_jwt_header_defs.h"
-#include "vssc_jwt_payload.h"
-#include "vssc_jwt_payload_defs.h"
-#include "vssc_jwt_private.h"
 
 // clang-format on
 //  @end
-
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 
 //  @generated
@@ -85,14 +67,4 @@ extern "C" {
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
-//  @end
-
-
-#ifdef __cplusplus
-}
-#endif
-
-
-//  @footer
-#endif // VSSC_CORE_SDK_PRIVATE_H_INCLUDED
 //  @end

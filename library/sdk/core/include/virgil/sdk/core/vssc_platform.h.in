@@ -110,6 +110,18 @@ extern "C" {
 #cmakedefine01 VSSC_JWT_GENERATOR
 #endif
 
+#ifndef VSSC_HTTP_HEADER
+#cmakedefine01 VSSC_HTTP_HEADER
+#endif
+
+#ifndef VSSC_HTTP_HEADER_LIST
+#cmakedefine01 VSSC_HTTP_HEADER_LIST
+#endif
+
+#ifndef VSSC_HTTP_REQUEST
+#cmakedefine01 VSSC_HTTP_REQUEST
+#endif
+
 //
 //  Defines namespace include prefix for project 'common'.
 //

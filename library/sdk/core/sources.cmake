@@ -89,6 +89,21 @@ set_property(
 )
 
 set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vssc_http_header.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
+)
+
+set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vssc_http_header_list.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
+)
+
+set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vssc_http_request.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
+)
+
+set_property(
     SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vssc_jwt.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
@@ -117,6 +132,12 @@ target_sources(core_sdk
             "${CMAKE_CURRENT_BINARY_DIR}/include/virgil/sdk/core/vssc_platform.h"
             "$<$<BOOL:${VSSC_BASE64_URL}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vssc_base64_url.h>"
             "$<$<BOOL:${VSSC_ERROR}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vssc_error.h>"
+            "$<$<BOOL:${VSSC_HTTP_HEADER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vssc_http_header.h>"
+            "$<$<BOOL:${VSSC_HTTP_HEADER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/private/vssc_http_header_defs.h>"
+            "$<$<BOOL:${VSSC_HTTP_HEADER_LIST}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vssc_http_header_list.h>"
+            "$<$<BOOL:${VSSC_HTTP_HEADER_LIST}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/private/vssc_http_header_list_defs.h>"
+            "$<$<BOOL:${VSSC_HTTP_REQUEST}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vssc_http_request.h>"
+            "$<$<BOOL:${VSSC_HTTP_REQUEST}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/private/vssc_http_request_defs.h>"
             "$<$<BOOL:${VSSC_JWT}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vssc_jwt.h>"
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/private/vssc_jwt_private.h"
             "$<$<BOOL:${VSSC_JWT}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/private/vssc_jwt_defs.h>"
@@ -135,6 +156,12 @@ target_sources(core_sdk
             "${CMAKE_CURRENT_LIST_DIR}/src/vssc_memory.c"
             "$<$<BOOL:${VSSC_BASE64_URL}>:${CMAKE_CURRENT_LIST_DIR}/src/vssc_base64_url.c>"
             "$<$<BOOL:${VSSC_ERROR}>:${CMAKE_CURRENT_LIST_DIR}/src/vssc_error.c>"
+            "$<$<BOOL:${VSSC_HTTP_HEADER}>:${CMAKE_CURRENT_LIST_DIR}/src/vssc_http_header.c>"
+            "$<$<BOOL:${VSSC_HTTP_HEADER}>:${CMAKE_CURRENT_LIST_DIR}/src/vssc_http_header_defs.c>"
+            "$<$<BOOL:${VSSC_HTTP_HEADER_LIST}>:${CMAKE_CURRENT_LIST_DIR}/src/vssc_http_header_list.c>"
+            "$<$<BOOL:${VSSC_HTTP_HEADER_LIST}>:${CMAKE_CURRENT_LIST_DIR}/src/vssc_http_header_list_defs.c>"
+            "$<$<BOOL:${VSSC_HTTP_REQUEST}>:${CMAKE_CURRENT_LIST_DIR}/src/vssc_http_request.c>"
+            "$<$<BOOL:${VSSC_HTTP_REQUEST}>:${CMAKE_CURRENT_LIST_DIR}/src/vssc_http_request_defs.c>"
             "$<$<BOOL:${VSSC_JWT}>:${CMAKE_CURRENT_LIST_DIR}/src/vssc_jwt.c>"
             "$<$<BOOL:${VSSC_JWT}>:${CMAKE_CURRENT_LIST_DIR}/src/vssc_jwt_defs.c>"
             "$<$<BOOL:${VSSC_JWT_GENERATOR}>:${CMAKE_CURRENT_LIST_DIR}/src/vssc_jwt_generator.c>"

@@ -47,23 +47,15 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  This is an umbrella header that includes library private headers.
+//  Handles a list of "http header" class objects.
 // --------------------------------------------------------------------------
 
-#ifndef VSSC_CORE_SDK_PRIVATE_H_INCLUDED
-#define VSSC_CORE_SDK_PRIVATE_H_INCLUDED
+#ifndef VSSC_HTTP_HEADER_LIST_H_INCLUDED
+#define VSSC_HTTP_HEADER_LIST_H_INCLUDED
 
-#include "vssc_atomic.h"
-#include "vssc_http_header_defs.h"
-#include "vssc_http_header_list_defs.h"
-#include "vssc_http_request_defs.h"
-#include "vssc_jwt_defs.h"
-#include "vssc_jwt_generator_defs.h"
-#include "vssc_jwt_header.h"
-#include "vssc_jwt_header_defs.h"
-#include "vssc_jwt_payload.h"
-#include "vssc_jwt_payload_defs.h"
-#include "vssc_jwt_private.h"
+#include "vssc_library.h"
+#include "vssc_http_header.h"
+#include "vssc_http_header_list.h"
 
 // clang-format on
 //  @end
@@ -80,6 +72,110 @@ extern "C" {
 //  Generated section start.
 // --------------------------------------------------------------------------
 
+//
+//  Handle 'http header list' context.
+//
+typedef struct vssc_http_header_list_t vssc_http_header_list_t;
+
+//
+//  Return size of 'vssc_http_header_list_t'.
+//
+VSSC_PUBLIC size_t
+vssc_http_header_list_ctx_size(void);
+
+//
+//  Perform initialization of pre-allocated context.
+//
+VSSC_PUBLIC void
+vssc_http_header_list_init(vssc_http_header_list_t *self);
+
+//
+//  Release all inner resources including class dependencies.
+//
+VSSC_PUBLIC void
+vssc_http_header_list_cleanup(vssc_http_header_list_t *self);
+
+//
+//  Allocate context and perform it's initialization.
+//
+VSSC_PUBLIC vssc_http_header_list_t *
+vssc_http_header_list_new(void);
+
+//
+//  Release all inner resources and deallocate context if needed.
+//  It is safe to call this method even if the context was statically allocated.
+//
+VSSC_PUBLIC void
+vssc_http_header_list_delete(vssc_http_header_list_t *self);
+
+//
+//  Delete given context and nullifies reference.
+//  This is a reverse action of the function 'vssc_http_header_list_new ()'.
+//
+VSSC_PUBLIC void
+vssc_http_header_list_destroy(vssc_http_header_list_t **self_ref);
+
+//
+//  Copy given class context by increasing reference counter.
+//
+VSSC_PUBLIC vssc_http_header_list_t *
+vssc_http_header_list_shallow_copy(vssc_http_header_list_t *self);
+
+//
+//  Add new item to the list.
+//  Note, ownership is transfered.
+//
+VSSC_PRIVATE void
+vssc_http_header_list_add(vssc_http_header_list_t *self, vssc_http_header_t **http_header_ref);
+
+//
+//  Remove current node.
+//
+VSSC_PRIVATE void
+vssc_http_header_list_remove_self(vssc_http_header_list_t *self);
+
+//
+//  Return true if given list has item.
+//
+VSSC_PUBLIC bool
+vssc_http_header_list_has_item(const vssc_http_header_list_t *self);
+
+//
+//  Return list item.
+//
+VSSC_PUBLIC const vssc_http_header_t *
+vssc_http_header_list_item(const vssc_http_header_list_t *self);
+
+//
+//  Return true if list has next item.
+//
+VSSC_PUBLIC bool
+vssc_http_header_list_has_next(const vssc_http_header_list_t *self);
+
+//
+//  Return next list node if exists, or NULL otherwise.
+//
+VSSC_PUBLIC vssc_http_header_list_t *
+vssc_http_header_list_next(const vssc_http_header_list_t *self);
+
+//
+//  Return true if list has previous item.
+//
+VSSC_PUBLIC bool
+vssc_http_header_list_has_prev(const vssc_http_header_list_t *self);
+
+//
+//  Return previous list node if exists, or NULL otherwise.
+//
+VSSC_PUBLIC vssc_http_header_list_t *
+vssc_http_header_list_prev(const vssc_http_header_list_t *self);
+
+//
+//  Remove all items.
+//
+VSSC_PUBLIC void
+vssc_http_header_list_clear(vssc_http_header_list_t *self);
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.
@@ -94,5 +190,5 @@ extern "C" {
 
 
 //  @footer
-#endif // VSSC_CORE_SDK_PRIVATE_H_INCLUDED
+#endif // VSSC_HTTP_HEADER_LIST_H_INCLUDED
 //  @end

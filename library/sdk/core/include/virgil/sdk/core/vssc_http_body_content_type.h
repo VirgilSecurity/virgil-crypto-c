@@ -47,23 +47,11 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  This is an umbrella header that includes library private headers.
+//  HTTP body content type.
 // --------------------------------------------------------------------------
 
-#ifndef VSSC_CORE_SDK_PRIVATE_H_INCLUDED
-#define VSSC_CORE_SDK_PRIVATE_H_INCLUDED
-
-#include "vssc_atomic.h"
-#include "vssc_http_header_defs.h"
-#include "vssc_http_header_list_defs.h"
-#include "vssc_http_request_defs.h"
-#include "vssc_jwt_defs.h"
-#include "vssc_jwt_generator_defs.h"
-#include "vssc_jwt_header.h"
-#include "vssc_jwt_header_defs.h"
-#include "vssc_jwt_payload.h"
-#include "vssc_jwt_payload_defs.h"
-#include "vssc_jwt_private.h"
+#ifndef VSSC_HTTP_BODY_CONTENT_TYPE_H_INCLUDED
+#define VSSC_HTTP_BODY_CONTENT_TYPE_H_INCLUDED
 
 // clang-format on
 //  @end
@@ -80,6 +68,14 @@ extern "C" {
 //  Generated section start.
 // --------------------------------------------------------------------------
 
+//
+//  HTTP body content type.
+//
+enum vssc_http_body_content_type_t {
+    vssc_http_body_content_type_APPLICATION_JSON
+};
+typedef enum vssc_http_body_content_type_t vssc_http_body_content_type_t;
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.
@@ -94,5 +90,5 @@ extern "C" {
 
 
 //  @footer
-#endif // VSSC_CORE_SDK_PRIVATE_H_INCLUDED
+#endif // VSSC_HTTP_BODY_CONTENT_TYPE_H_INCLUDED
 //  @end

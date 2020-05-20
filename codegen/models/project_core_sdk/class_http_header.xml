@@ -1,0 +1,29 @@
+<class name="http header">
+    Handles HTTP header in a most generic way.
+
+    <property name="name" class="str mutable"/>
+    <property name="value" class="str mutable"/>
+
+    <constructor name="with">
+        Create fully defined HTTP header.
+
+        Prerequisite: name is not empty.
+        Prerequisite: value is not empty.
+
+        <argument name="name" class="str"/>
+        <argument name="value" class="str"/>
+    </constructor>
+
+    <method name="name">
+        Return HTTP header name.
+
+        <return class="str"/>
+    </method>
+
+
+    <method name="value">
+        Return HTTP header value.
+
+        <return class="str"/>
+    </method>
+</class>

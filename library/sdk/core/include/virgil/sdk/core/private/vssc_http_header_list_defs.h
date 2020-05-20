@@ -47,23 +47,16 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  This is an umbrella header that includes library private headers.
+//  Class 'http header list' types definition.
 // --------------------------------------------------------------------------
 
-#ifndef VSSC_CORE_SDK_PRIVATE_H_INCLUDED
-#define VSSC_CORE_SDK_PRIVATE_H_INCLUDED
+#ifndef VSSC_HTTP_HEADER_LIST_DEFS_H_INCLUDED
+#define VSSC_HTTP_HEADER_LIST_DEFS_H_INCLUDED
 
+#include "vssc_library.h"
 #include "vssc_atomic.h"
-#include "vssc_http_header_defs.h"
-#include "vssc_http_header_list_defs.h"
-#include "vssc_http_request_defs.h"
-#include "vssc_jwt_defs.h"
-#include "vssc_jwt_generator_defs.h"
-#include "vssc_jwt_header.h"
-#include "vssc_jwt_header_defs.h"
-#include "vssc_jwt_payload.h"
-#include "vssc_jwt_payload_defs.h"
-#include "vssc_jwt_private.h"
+#include "vssc_http_header.h"
+#include "vssc_http_header_list.h"
 
 // clang-format on
 //  @end
@@ -80,6 +73,30 @@ extern "C" {
 //  Generated section start.
 // --------------------------------------------------------------------------
 
+//
+//  Handle 'http header list' context.
+//
+struct vssc_http_header_list_t {
+    //
+    //  Function do deallocate self context.
+    //
+    vssc_dealloc_fn self_dealloc_cb;
+    //
+    //  Reference counter.
+    //
+    VSSC_ATOMIC size_t refcnt;
+
+    vssc_http_header_t *item;
+    //
+    //  Class specific context.
+    //
+    vssc_http_header_list_t *next;
+    //
+    //  Class specific context.
+    //
+    vssc_http_header_list_t *prev;
+};
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.
@@ -94,5 +111,5 @@ extern "C" {
 
 
 //  @footer
-#endif // VSSC_CORE_SDK_PRIVATE_H_INCLUDED
+#endif // VSSC_HTTP_HEADER_LIST_DEFS_H_INCLUDED
 //  @end

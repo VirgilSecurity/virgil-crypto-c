@@ -61,4 +61,7 @@ target_compile_definitions(core_sdk
             "VSSC_JWT_HEADER=$<BOOL:${VSSC_JWT_HEADER}>"
             "VSSC_JWT_PAYLOAD=$<BOOL:${VSSC_JWT_PAYLOAD}>"
             "VSSC_JWT_GENERATOR=$<BOOL:${VSSC_JWT_GENERATOR}>"
+            "VSSC_HTTP_HEADER=$<BOOL:${VSSC_HTTP_HEADER}>"
+            "VSSC_HTTP_HEADER_LIST=$<BOOL:${VSSC_HTTP_HEADER_LIST}>"
+            "VSSC_HTTP_REQUEST=$<BOOL:${VSSC_HTTP_REQUEST}>"
         )

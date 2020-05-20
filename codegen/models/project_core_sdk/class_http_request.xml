@@ -1,0 +1,61 @@
+<class name="http request">
+    Handles HTTP request in a most generic way.
+
+    <property name="method" class="str mutable"/>
+    <property name="url" class="str mutable"/>
+    <property name="body" class="str mutable"/>
+    <property name="headers" class="http header list"/>
+
+
+    <constructor name="with url">
+        Create HTTP request with URL.
+
+        <argument name="method" class="str"/>
+        <argument name="url" class="str"/>
+    </constructor>
+
+
+    <constructor name="with body">
+        Create HTTP request with URL and body.
+
+        <argument name="method" class="str"/>
+        <argument name="url" class="str"/>
+        <argument name="body" class="str"/>
+    </constructor>
+
+
+    <method name="add header">
+        Add HTTP header.
+
+        <argument name="name" class="str"/>
+        <argument name="value" class="str"/>
+    </method>
+
+
+    <method name="method">
+        Return HTTP method.
+
+        <return class="str"/>
+    </method>
+
+
+    <method name="url">
+        Return HTTP url.
+
+        <return class="str"/>
+    </method>
+
+
+    <method name="body">
+        Return HTTP body.
+
+        <return class="str"/>
+    </method>
+
+
+    <method name="headers">
+        Return HTTP headers.
+
+        <return class="http header list"/>
+    </method>
+</class>
