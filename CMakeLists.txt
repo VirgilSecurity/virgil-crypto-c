@@ -236,6 +236,7 @@ endif()
 # ---------------------------------------------------------------------------
 
 if(VIRGIL_SDK_CORE)
+    find_package(CURL)
     add_subdirectory("library/sdk/core")
 endif()
 

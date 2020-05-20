@@ -99,6 +99,10 @@ target_include_directories(core_sdk
 #
 target_link_libraries(core_sdk PUBLIC vsc::common vsc::foundation json_c)
 
+if(CURL_FOUND)
+    target_link_libraries(core_sdk PUBLIC CURL::libcurl)
+endif()
+
 #
 # Define specific compilation and linkage flags.
 #
