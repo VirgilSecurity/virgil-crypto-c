@@ -61,4 +61,26 @@
 
         <return type="boolean"/>
     </method>
+
+
+    <method name="get header string" is_const="1" scope="private">
+        Return JWT Header string representation.
+
+        <return class="str"/>
+    </method>
+
+
+    <method name="get payload string" is_const="1" scope="private">
+        Return JWT Payload string representation.
+
+        <return class="str"/>
+    </method>
+
+
+    <method name="get signature string" is_const="1" scope="private">
+        Return JWT Signature string representation.
+
+        <return class="str"/>
+    </method>
+
 </class>

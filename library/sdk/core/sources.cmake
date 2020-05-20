@@ -118,6 +118,7 @@ target_sources(core_sdk
             "$<$<BOOL:${VSCS_CORE_BASE64_URL}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vscs_core_base64_url.h>"
             "$<$<BOOL:${VSCS_CORE_ERROR}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vscs_core_error.h>"
             "$<$<BOOL:${VSCS_CORE_JWT}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vscs_core_jwt.h>"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/private/vscs_core_jwt_private.h"
             "$<$<BOOL:${VSCS_CORE_JWT}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/private/vscs_core_jwt_defs.h>"
             "$<$<BOOL:${VSCS_CORE_JWT_GENERATOR}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vscs_core_jwt_generator.h>"
             "$<$<BOOL:${VSCS_CORE_JWT_GENERATOR}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/private/vscs_core_jwt_generator_defs.h>"

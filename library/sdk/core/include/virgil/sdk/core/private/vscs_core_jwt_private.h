@@ -44,23 +44,18 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
+#ifndef VSCS_CORE_JWT_PRIVATE_H_INCLUDED
+#define VSCS_CORE_JWT_PRIVATE_H_INCLUDED
 
-//  @description
-// --------------------------------------------------------------------------
-//  This is an umbrella header that includes library private headers.
-// --------------------------------------------------------------------------
+#include "vscs_core_jwt.h"
 
-#ifndef VSCS_CORE_CORE_SDK_PRIVATE_H_INCLUDED
-#define VSCS_CORE_CORE_SDK_PRIVATE_H_INCLUDED
+#if !VSCS_CORE_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <virgil/crypto/common/vsc_str.h>
+#endif
 
-#include "vscs_core_atomic.h"
-#include "vscs_core_jwt_defs.h"
-#include "vscs_core_jwt_generator_defs.h"
-#include "vscs_core_jwt_header.h"
-#include "vscs_core_jwt_header_defs.h"
-#include "vscs_core_jwt_payload.h"
-#include "vscs_core_jwt_payload_defs.h"
-#include "vscs_core_jwt_private.h"
+#if VSCS_CORE_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <VSCCommon/vsc_str.h>
+#endif
 
 // clang-format on
 //  @end
@@ -77,6 +72,24 @@ extern "C" {
 //  Generated section start.
 // --------------------------------------------------------------------------
 
+//
+//  Return JWT Header string representation.
+//
+VSCS_CORE_PUBLIC vsc_str_t
+vscs_core_jwt_get_header_string(const vscs_core_jwt_t *self);
+
+//
+//  Return JWT Payload string representation.
+//
+VSCS_CORE_PUBLIC vsc_str_t
+vscs_core_jwt_get_payload_string(const vscs_core_jwt_t *self);
+
+//
+//  Return JWT Signature string representation.
+//
+VSCS_CORE_PUBLIC vsc_str_t
+vscs_core_jwt_get_signature_string(const vscs_core_jwt_t *self);
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.
@@ -91,5 +104,5 @@ extern "C" {
 
 
 //  @footer
-#endif // VSCS_CORE_CORE_SDK_PRIVATE_H_INCLUDED
+#endif // VSCS_CORE_JWT_PRIVATE_H_INCLUDED
 //  @end

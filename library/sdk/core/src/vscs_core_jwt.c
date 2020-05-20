@@ -53,6 +53,7 @@
 #include "vscs_core_jwt.h"
 #include "vscs_core_memory.h"
 #include "vscs_core_assert.h"
+#include "vscs_core_jwt_private.h"
 #include "vscs_core_jwt_defs.h"
 #include "vscs_core_base64_url.h"
 
@@ -464,4 +465,63 @@ vscs_core_jwt_is_expired(const vscs_core_jwt_t *self) {
     size_t expires_at = vscs_core_jwt_payload_expires_at(self->payload);
 
     return now >= expires_at;
+}
+
+//
+//  Return JWT Header string representation.
+//
+VSCS_CORE_PUBLIC vsc_str_t
+vscs_core_jwt_get_header_string(const vscs_core_jwt_t *self) {
+
+    VSCS_CORE_ASSERT_PTR(self);
+    VSCS_CORE_ASSERT_PTR(self->jwt_string);
+
+    const char *begin = vsc_str_buffer_begin(self->jwt_string);
+    const size_t len = vsc_str_buffer_len(self->jwt_string);
+
+    const char *first_dot = vscs_core_strnstr(begin, ".", len);
+    VSCS_CORE_ASSERT(first_dot);
+    VSCS_CORE_ASSERT(begin < first_dot);
+
+    vsc_str_t result = vsc_str(begin, (size_t)(first_dot - begin));
+
+    return result;
+}
+
+//
+//  Return JWT Payload string representation.
+//
+VSCS_CORE_PUBLIC vsc_str_t
+vscs_core_jwt_get_payload_string(const vscs_core_jwt_t *self) {
+
+    VSCS_CORE_ASSERT_PTR(self);
+    VSCS_CORE_ASSERT_PTR(self->jwt_string);
+
+    const char *begin = vsc_str_buffer_begin(self->jwt_string);
+    const char *end = begin + vsc_str_buffer_len(self->jwt_string);
+
+    const char *first_dot = vscs_core_strnstr(begin, ".", (size_t)(end - begin));
+    VSCS_CORE_ASSERT(first_dot);
+    VSCS_CORE_ASSERT(begin < first_dot);
+
+    const char *payload_begin = first_dot + 1;
+
+    const char *second_dot = vscs_core_strnstr(payload_begin, ".", (size_t)(end - payload_begin));
+    VSCS_CORE_ASSERT(second_dot);
+    VSCS_CORE_ASSERT(payload_begin < second_dot);
+
+    vsc_str_t result = vsc_str(payload_begin, (size_t)(second_dot - payload_begin));
+
+    return result;
+}
+
+//
+//  Return JWT Signature string representation.
+//
+VSCS_CORE_PUBLIC vsc_str_t
+vscs_core_jwt_get_signature_string(const vscs_core_jwt_t *self) {
+
+    VSCS_CORE_ASSERT_PTR(self);
+
+    return vsc_str_empty();
 }

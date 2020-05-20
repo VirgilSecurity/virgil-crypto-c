@@ -36,6 +36,13 @@ cmake_minimum_required(VERSION 3.12)
 
 project(virgil_crypto_c_programs VERSION ${virgil_crypto_VERSION} LANGUAGES C)
 
-add_executable(generate_keypair "${CMAKE_CURRENT_LIST_DIR}/generate_keypair.c")
+if(TARGET vsc::foundation)
+    add_executable(generate_keypair "${CMAKE_CURRENT_LIST_DIR}/generate_keypair.c")
+    target_link_libraries(generate_keypair PRIVATE vsc::foundation)
+endif()
 
-target_link_libraries(generate_keypair PRIVATE vsc::foundation)
+
+if(TARGET vsc::core_sdk)
+    add_executable(generate_jwt "${CMAKE_CURRENT_LIST_DIR}/generate_jwt.c")
+    target_link_libraries(generate_jwt PRIVATE vsc::core_sdk)
+endif()
