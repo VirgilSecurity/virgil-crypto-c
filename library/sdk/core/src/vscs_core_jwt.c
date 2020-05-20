@@ -291,6 +291,7 @@ vscs_core_jwt_cleanup_ctx(vscs_core_jwt_t *self) {
     vscs_core_jwt_header_destroy(&self->header);
     vscs_core_jwt_payload_destroy(&self->payload);
     vsc_buffer_destroy(&self->signature);
+    vsc_str_buffer_destroy(&self->jwt_string);
 }
 
 //
