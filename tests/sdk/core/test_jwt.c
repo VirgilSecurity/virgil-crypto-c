@@ -39,11 +39,11 @@
 #include "test_utils.h"
 
 
-#define TEST_DEPENDENCIES_AVAILABLE VSCS_CORE_JWT_HEADER
+#define TEST_DEPENDENCIES_AVAILABLE VSSC_JWT_HEADER
 #if TEST_DEPENDENCIES_AVAILABLE
 
 
-#include "vscs_core_jwt.h"
+#include "vssc_jwt.h"
 
 #include "test_data_jwt.h"
 
@@ -51,17 +51,17 @@
 void
 test__parse__valid__success(void) {
 
-    vscs_core_error_t error;
-    vscs_core_error_reset(&error);
+    vssc_error_t error;
+    vssc_error_reset(&error);
 
-    vscs_core_jwt_t *jwt = vscs_core_jwt_parse(test_data_jwt_VALID, &error);
-    TEST_ASSERT_EQUAL(vscs_core_status_SUCCESS, vscs_core_error_status(&error));
+    vssc_jwt_t *jwt = vssc_jwt_parse(test_data_jwt_VALID, &error);
+    TEST_ASSERT_EQUAL(vssc_status_SUCCESS, vssc_error_status(&error));
     TEST_ASSERT_NOT_NULL(jwt);
 
-    TEST_ASSERT_EQUAL_STR(test_data_jwt_IDENTITY, vscs_core_jwt_identity(jwt));
-    TEST_ASSERT_TRUE(vscs_core_jwt_is_expired(jwt));
+    TEST_ASSERT_EQUAL_STR(test_data_jwt_IDENTITY, vssc_jwt_identity(jwt));
+    TEST_ASSERT_TRUE(vssc_jwt_is_expired(jwt));
 
-    vscs_core_jwt_destroy(&jwt);
+    vssc_jwt_destroy(&jwt);
 }
 
 #endif // TEST_DEPENDENCIES_AVAILABLE

@@ -45,83 +45,83 @@
 
 include_guard()
 
-option(VSCS_CORE_LIBRARY "Enable build of the 'core sdk' library" ON)
-option(VSCS_CORE_MULTI_THREADING "Enable multi-threading safety for Cards Core SDK." ON)
-option(VSCS_CORE_ERROR "Enable class 'error'." ON)
-option(VSCS_CORE_BASE64_URL "Enable class 'base64 url'." ON)
-option(VSCS_CORE_JWT "Enable class 'jwt'." ON)
-option(VSCS_CORE_JWT_HEADER "Enable class 'jwt header'." ON)
-option(VSCS_CORE_JWT_PAYLOAD "Enable class 'jwt payload'." ON)
-option(VSCS_CORE_JWT_GENERATOR "Enable class 'jwt generator'." ON)
+option(VSSC_LIBRARY "Enable build of the 'core sdk' library" ON)
+option(VSSC_MULTI_THREADING "Enable multi-threading safety for Cards Core SDK." ON)
+option(VSSC_ERROR "Enable class 'error'." ON)
+option(VSSC_BASE64_URL "Enable class 'base64 url'." ON)
+option(VSSC_JWT "Enable class 'jwt'." ON)
+option(VSSC_JWT_HEADER "Enable class 'jwt header'." ON)
+option(VSSC_JWT_PAYLOAD "Enable class 'jwt payload'." ON)
+option(VSSC_JWT_GENERATOR "Enable class 'jwt generator'." ON)
 mark_as_advanced(
-        VSCS_CORE_LIBRARY
-        VSCS_CORE_MULTI_THREADING
-        VSCS_CORE_ERROR
-        VSCS_CORE_BASE64_URL
-        VSCS_CORE_JWT
-        VSCS_CORE_JWT_HEADER
-        VSCS_CORE_JWT_PAYLOAD
-        VSCS_CORE_JWT_GENERATOR
+        VSSC_LIBRARY
+        VSSC_MULTI_THREADING
+        VSSC_ERROR
+        VSSC_BASE64_URL
+        VSSC_JWT
+        VSSC_JWT_HEADER
+        VSSC_JWT_PAYLOAD
+        VSSC_JWT_GENERATOR
         )
 
-if(VSCS_CORE_BASE64_URL AND NOT VSCF_BASE64)
+if(VSSC_BASE64_URL AND NOT VSCF_BASE64)
     message("-- error --")
     message("--")
-    message("Feature VSCS_CORE_BASE64_URL depends on the feature:")
+    message("Feature VSSC_BASE64_URL depends on the feature:")
     message("     VSCF_BASE64 - which is disabled.")
     message("--")
     message(FATAL_ERROR)
 endif()
 
-if(VSCS_CORE_JWT AND NOT VSCS_CORE_BASE64_URL)
+if(VSSC_JWT AND NOT VSSC_BASE64_URL)
     message("-- error --")
     message("--")
-    message("Feature VSCS_CORE_JWT depends on the feature:")
-    message("     VSCS_CORE_BASE64_URL - which is disabled.")
+    message("Feature VSSC_JWT depends on the feature:")
+    message("     VSSC_BASE64_URL - which is disabled.")
     message("--")
     message(FATAL_ERROR)
 endif()
 
-if(VSCS_CORE_JWT_HEADER AND NOT VSCS_CORE_BASE64_URL)
+if(VSSC_JWT_HEADER AND NOT VSSC_BASE64_URL)
     message("-- error --")
     message("--")
-    message("Feature VSCS_CORE_JWT_HEADER depends on the feature:")
-    message("     VSCS_CORE_BASE64_URL - which is disabled.")
+    message("Feature VSSC_JWT_HEADER depends on the feature:")
+    message("     VSSC_BASE64_URL - which is disabled.")
     message("--")
     message(FATAL_ERROR)
 endif()
 
-if(VSCS_CORE_JWT_PAYLOAD AND NOT VSCS_CORE_BASE64_URL)
+if(VSSC_JWT_PAYLOAD AND NOT VSSC_BASE64_URL)
     message("-- error --")
     message("--")
-    message("Feature VSCS_CORE_JWT_PAYLOAD depends on the feature:")
-    message("     VSCS_CORE_BASE64_URL - which is disabled.")
+    message("Feature VSSC_JWT_PAYLOAD depends on the feature:")
+    message("     VSSC_BASE64_URL - which is disabled.")
     message("--")
     message(FATAL_ERROR)
 endif()
 
-if(VSCS_CORE_JWT_GENERATOR AND NOT VSCS_CORE_BASE64_URL)
+if(VSSC_JWT_GENERATOR AND NOT VSSC_BASE64_URL)
     message("-- error --")
     message("--")
-    message("Feature VSCS_CORE_JWT_GENERATOR depends on the feature:")
-    message("     VSCS_CORE_BASE64_URL - which is disabled.")
+    message("Feature VSSC_JWT_GENERATOR depends on the feature:")
+    message("     VSSC_BASE64_URL - which is disabled.")
     message("--")
     message(FATAL_ERROR)
 endif()
 
-if(VSCS_CORE_JWT_GENERATOR AND NOT VSCF_SHA512)
+if(VSSC_JWT_GENERATOR AND NOT VSCF_SHA512)
     message("-- error --")
     message("--")
-    message("Feature VSCS_CORE_JWT_GENERATOR depends on the feature:")
+    message("Feature VSSC_JWT_GENERATOR depends on the feature:")
     message("     VSCF_SHA512 - which is disabled.")
     message("--")
     message(FATAL_ERROR)
 endif()
 
-if(VSCS_CORE_JWT_GENERATOR AND NOT VSCF_CTR_DRBG)
+if(VSSC_JWT_GENERATOR AND NOT VSCF_CTR_DRBG)
     message("-- error --")
     message("--")
-    message("Feature VSCS_CORE_JWT_GENERATOR depends on the feature:")
+    message("Feature VSSC_JWT_GENERATOR depends on the feature:")
     message("     VSCF_CTR_DRBG - which is disabled.")
     message("--")
     message(FATAL_ERROR)

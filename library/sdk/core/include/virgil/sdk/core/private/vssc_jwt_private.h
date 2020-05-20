@@ -1,3 +1,5 @@
+//  @license
+// --------------------------------------------------------------------------
 //  Copyright (C) 2015-2020 Virgil Security, Inc.
 //
 //  All rights reserved.
@@ -31,56 +33,76 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
-
-
-#define UNITY_BEGIN() UnityBegin(__FILENAME__)
-
-#include "unity.h"
-#include "test_utils.h"
-
-
-#define TEST_DEPENDENCIES_AVAILABLE VSSC_JWT_PAYLOAD
-#if TEST_DEPENDENCIES_AVAILABLE
-
-
-#include "vssc_jwt_payload.h"
-
-#include "test_data_jwt.h"
-
-
-void
-test__parse__valid__success(void) {
-
-    vssc_error_t error;
-    vssc_error_reset(&error);
-
-    vssc_jwt_payload_t *jwt_payload = vssc_jwt_payload_parse(test_data_jwt_PAYLOAD_VALID, &error);
-    TEST_ASSERT_EQUAL(vssc_status_SUCCESS, vssc_error_status(&error));
-    TEST_ASSERT_NOT_NULL(jwt_payload);
-
-    TEST_ASSERT_EQUAL(test_data_jwt_ISSUED_AT, vssc_jwt_payload_issued_at(jwt_payload));
-    TEST_ASSERT_EQUAL(test_data_jwt_EXPIRES_AT, vssc_jwt_payload_expires_at(jwt_payload));
-    TEST_ASSERT_EQUAL_STR(test_data_jwt_APP_ID, vssc_jwt_payload_app_id(jwt_payload));
-    TEST_ASSERT_EQUAL_STR(test_data_jwt_IDENTITY, vssc_jwt_payload_identity(jwt_payload));
-
-    vssc_jwt_payload_destroy(&jwt_payload);
-}
-
-#endif // TEST_DEPENDENCIES_AVAILABLE
-
-
 // --------------------------------------------------------------------------
-// Entrypoint.
-// --------------------------------------------------------------------------
-int
-main(void) {
-    UNITY_BEGIN();
+// clang-format off
 
-#if TEST_DEPENDENCIES_AVAILABLE
-    RUN_TEST(test__parse__valid__success);
-#else
-    RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
+
+//  @warning
+// --------------------------------------------------------------------------
+//  This file is partially generated.
+//  Generated blocks are enclosed between tags [@<tag>, @end].
+//  User's code can be added between tags [@end, @<tag>].
+// --------------------------------------------------------------------------
+
+#ifndef VSSC_JWT_PRIVATE_H_INCLUDED
+#define VSSC_JWT_PRIVATE_H_INCLUDED
+
+#include "vssc_jwt.h"
+
+#if !VSSC_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <virgil/crypto/common/vsc_str.h>
 #endif
 
-    return UNITY_END();
+#if VSSC_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <VSCCommon/vsc_str.h>
+#endif
+
+// clang-format on
+//  @end
+
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+
+//  @generated
+// --------------------------------------------------------------------------
+// clang-format off
+//  Generated section start.
+// --------------------------------------------------------------------------
+
+//
+//  Return JWT Header string representation.
+//
+VSSC_PUBLIC vsc_str_t
+vssc_jwt_get_header_string(const vssc_jwt_t *self);
+
+//
+//  Return JWT Payload string representation.
+//
+VSSC_PUBLIC vsc_str_t
+vssc_jwt_get_payload_string(const vssc_jwt_t *self);
+
+//
+//  Return JWT Signature string representation.
+//
+VSSC_PUBLIC vsc_str_t
+vssc_jwt_get_signature_string(const vssc_jwt_t *self);
+
+
+// --------------------------------------------------------------------------
+//  Generated section end.
+// clang-format on
+// --------------------------------------------------------------------------
+//  @end
+
+
+#ifdef __cplusplus
 }
+#endif
+
+
+//  @footer
+#endif // VSSC_JWT_PRIVATE_H_INCLUDED
+//  @end

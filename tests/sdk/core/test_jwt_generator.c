@@ -39,14 +39,14 @@
 #include "test_utils.h"
 
 
-#define TEST_DEPENDENCIES_AVAILABLE VSCS_CORE_JWT_GENERATOR
+#define TEST_DEPENDENCIES_AVAILABLE VSSC_JWT_GENERATOR
 #if TEST_DEPENDENCIES_AVAILABLE
 
 #include <virgil/crypto/foundation/vscf_private_key.h>
 #include <virgil/crypto/foundation/vscf_key_provider.h>
 #include <virgil/crypto/foundation/vscf_fake_random.h>
 
-#include "vscs_core_jwt_generator.h"
+#include "vssc_jwt_generator.h"
 
 #include "test_data_jwt.h"
 
@@ -54,8 +54,8 @@
 void
 test__generate__success(void) {
 
-    vscs_core_error_t error;
-    vscs_core_error_reset(&error);
+    vssc_error_t error;
+    vssc_error_reset(&error);
 
     vscf_fake_random_t *fake_random = vscf_fake_random_new();
     vscf_fake_random_setup_source_byte(fake_random, 0xAB);
@@ -66,17 +66,17 @@ test__generate__success(void) {
     vscf_impl_t *private_key = vscf_key_provider_import_private_key(key_provider, test_data_jwt_APP_KEY, NULL);
     TEST_ASSERT_NOT_NULL(private_key);
 
-    vscs_core_jwt_generator_t *jwt_generator =
-            vscs_core_jwt_generator_new_with_credentials(test_data_jwt_APP_ID, test_data_jwt_APP_KEY_ID, private_key);
+    vssc_jwt_generator_t *jwt_generator =
+            vssc_jwt_generator_new_with_credentials(test_data_jwt_APP_ID, test_data_jwt_APP_KEY_ID, private_key);
 
-    vscs_core_jwt_t *jwt = vscs_core_jwt_generator_generate_token(jwt_generator, test_data_jwt_IDENTITY, &error);
-    TEST_ASSERT_EQUAL(vscs_core_status_SUCCESS, vscs_core_error_status(&error));
+    vssc_jwt_t *jwt = vssc_jwt_generator_generate_token(jwt_generator, test_data_jwt_IDENTITY, &error);
+    TEST_ASSERT_EQUAL(vssc_status_SUCCESS, vssc_error_status(&error));
     TEST_ASSERT_NOT_NULL(jwt);
 
     vscf_impl_destroy(&private_key);
     vscf_key_provider_destroy(&key_provider);
-    vscs_core_jwt_generator_destroy(&jwt_generator);
-    vscs_core_jwt_destroy(&jwt);
+    vssc_jwt_generator_destroy(&jwt_generator);
+    vssc_jwt_destroy(&jwt);
 }
 
 #endif // TEST_DEPENDENCIES_AVAILABLE

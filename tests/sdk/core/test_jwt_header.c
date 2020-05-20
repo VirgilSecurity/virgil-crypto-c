@@ -39,11 +39,11 @@
 #include "test_utils.h"
 
 
-#define TEST_DEPENDENCIES_AVAILABLE VSCS_CORE_JWT_HEADER
+#define TEST_DEPENDENCIES_AVAILABLE VSSC_JWT_HEADER
 #if TEST_DEPENDENCIES_AVAILABLE
 
 
-#include "vscs_core_jwt_header.h"
+#include "vssc_jwt_header.h"
 
 #include "test_data_jwt.h"
 
@@ -51,14 +51,14 @@
 void
 test__parse__valid__success(void) {
 
-    vscs_core_error_t error;
-    vscs_core_error_reset(&error);
+    vssc_error_t error;
+    vssc_error_reset(&error);
 
-    vscs_core_jwt_header_t *jwt_header = vscs_core_jwt_header_parse(test_data_jwt_HEADER_VALID, &error);
-    TEST_ASSERT_EQUAL(vscs_core_status_SUCCESS, vscs_core_error_status(&error));
+    vssc_jwt_header_t *jwt_header = vssc_jwt_header_parse(test_data_jwt_HEADER_VALID, &error);
+    TEST_ASSERT_EQUAL(vssc_status_SUCCESS, vssc_error_status(&error));
     TEST_ASSERT_NOT_NULL(jwt_header);
 
-    vscs_core_jwt_header_destroy(&jwt_header);
+    vssc_jwt_header_destroy(&jwt_header);
 }
 
 #endif // TEST_DEPENDENCIES_AVAILABLE

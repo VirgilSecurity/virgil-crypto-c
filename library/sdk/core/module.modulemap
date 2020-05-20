@@ -1,13 +1,13 @@
-framework module VSCCoreSDK {
-    header "vscs_core_assert.h"
-    header "vscs_core_library.h"
-    header "vscs_core_memory.h"
-    header "vscs_core_platform.h"
-    header "vscs_core_base64_url.h"
-    header "vscs_core_error.h"
-    header "vscs_core_jwt.h"
-    header "vscs_core_jwt_generator.h"
-    header "vscs_core_status.h"
-    header "vscs_core_core_sdk_public.h"
+framework module VSSC {
+    header "vssc_assert.h"
+    header "vssc_library.h"
+    header "vssc_memory.h"
+    header "vssc_platform.h"
+    header "vssc_base64_url.h"
+    header "vssc_error.h"
+    header "vssc_jwt.h"
+    header "vssc_jwt_generator.h"
+    header "vssc_status.h"
+    header "vssc_core_sdk_public.h"
     export *
 }

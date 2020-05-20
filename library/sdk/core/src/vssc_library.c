@@ -1,3 +1,5 @@
+//  @license
+// --------------------------------------------------------------------------
 //  Copyright (C) 2015-2020 Virgil Security, Inc.
 //
 //  All rights reserved.
@@ -31,56 +33,42 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
+// --------------------------------------------------------------------------
+// clang-format off
 
 
-#define UNITY_BEGIN() UnityBegin(__FILENAME__)
-
-#include "unity.h"
-#include "test_utils.h"
-
-
-#define TEST_DEPENDENCIES_AVAILABLE VSSC_JWT_PAYLOAD
-#if TEST_DEPENDENCIES_AVAILABLE
-
-
-#include "vssc_jwt_payload.h"
-
-#include "test_data_jwt.h"
+//  @description
+// --------------------------------------------------------------------------
+//  This module contains:
+//      - library version;
+//      - portable API visibility attributes;
+//      - common constants;
+//      - common types;
+// --------------------------------------------------------------------------
 
 
-void
-test__parse__valid__success(void) {
+//  @warning
+// --------------------------------------------------------------------------
+//  This file is partially generated.
+//  Generated blocks are enclosed between tags [@<tag>, @end].
+//  User's code can be added between tags [@end, @<tag>].
+// --------------------------------------------------------------------------
 
-    vssc_error_t error;
-    vssc_error_reset(&error);
+#include "vssc_library.h"
 
-    vssc_jwt_payload_t *jwt_payload = vssc_jwt_payload_parse(test_data_jwt_PAYLOAD_VALID, &error);
-    TEST_ASSERT_EQUAL(vssc_status_SUCCESS, vssc_error_status(&error));
-    TEST_ASSERT_NOT_NULL(jwt_payload);
+// clang-format on
+//  @end
 
-    TEST_ASSERT_EQUAL(test_data_jwt_ISSUED_AT, vssc_jwt_payload_issued_at(jwt_payload));
-    TEST_ASSERT_EQUAL(test_data_jwt_EXPIRES_AT, vssc_jwt_payload_expires_at(jwt_payload));
-    TEST_ASSERT_EQUAL_STR(test_data_jwt_APP_ID, vssc_jwt_payload_app_id(jwt_payload));
-    TEST_ASSERT_EQUAL_STR(test_data_jwt_IDENTITY, vssc_jwt_payload_identity(jwt_payload));
 
-    vssc_jwt_payload_destroy(&jwt_payload);
-}
-
-#endif // TEST_DEPENDENCIES_AVAILABLE
+//  @generated
+// --------------------------------------------------------------------------
+// clang-format off
+//  Generated section start.
+// --------------------------------------------------------------------------
 
 
 // --------------------------------------------------------------------------
-// Entrypoint.
+//  Generated section end.
+// clang-format on
 // --------------------------------------------------------------------------
-int
-main(void) {
-    UNITY_BEGIN();
-
-#if TEST_DEPENDENCIES_AVAILABLE
-    RUN_TEST(test__parse__valid__success);
-#else
-    RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
-#endif
-
-    return UNITY_END();
-}
+//  @end

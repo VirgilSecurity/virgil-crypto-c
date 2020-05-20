@@ -3,8 +3,8 @@
         brief="Virgil Security Core SDK"
         package="sdk core"
         namespace="virgil sdk core"
-        framework="VSCCoreSDK"
-        prefix="vscs_core"
+        framework="VSSC"
+        prefix="vssc"
         wrappers=""
         >
 

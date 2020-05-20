@@ -39,9 +39,9 @@
 
 #include <virgil/crypto/foundation/vscf_base64.h>
 #include <virgil/crypto/foundation/vscf_key_provider.h>
-#include <virgil/sdk/core/vscs_core_jwt_generator.h>
-#include <virgil/sdk/core/vscs_core_base64_url.h>
-#include <virgil/sdk/core/private/vscs_core_jwt_private.h>
+#include <virgil/sdk/core/vssc_jwt_generator.h>
+#include <virgil/sdk/core/vssc_base64_url.h>
+#include <virgil/sdk/core/private/vssc_jwt_private.h>
 #include <json-c/json.h>
 
 
@@ -138,16 +138,16 @@ int main(int argc, const char *const *const argv) {
     json_object *json_obj = NULL;
 
     vscf_impl_t *app_key = NULL;
-    vscs_core_jwt_generator_t *jwt_generator = NULL;
-    vscs_core_jwt_t *jwt = NULL;
+    vssc_jwt_generator_t *jwt_generator = NULL;
+    vssc_jwt_t *jwt = NULL;
     vsc_buffer_t *app_key_buf = NULL;
     vsc_buffer_t *tmp_buf = NULL;
 
     //
     //  Init crypto engine.
     //
-    vscs_core_error_t error;
-    vscs_core_error_reset(&error);
+    vssc_error_t error;
+    vssc_error_reset(&error);
 
     vscf_key_provider_t *key_provider = vscf_key_provider_new();
     const vscf_status_t init_status = vscf_key_provider_setup_defaults(key_provider);
@@ -229,30 +229,30 @@ int main(int argc, const char *const *const argv) {
         goto fail;
     }
 
-    jwt_generator = vscs_core_jwt_generator_new_with_credentials(app_id, app_key_id, app_key);
+    jwt_generator = vssc_jwt_generator_new_with_credentials(app_id, app_key_id, app_key);
     if (is_ttl_exists) {
         const size_t ttl = (size_t)json_object_get_int64(ttl_obj);
-        vscs_core_jwt_generator_set_ttl(jwt_generator, ttl);
+        vssc_jwt_generator_set_ttl(jwt_generator, ttl);
     }
 
-    jwt = vscs_core_jwt_generator_generate_token(jwt_generator, identity_str, &error);
-    if (vscs_core_error_has_error(&error)) {
+    jwt = vssc_jwt_generator_generate_token(jwt_generator, identity_str, &error);
+    if (vssc_error_has_error(&error)) {
         print_error(k_error_msg_FAILED_TO_GENERATE_JWT);
         goto fail;
     }
 
-    print_str(vscs_core_jwt_as_string(jwt));
+    print_str(vssc_jwt_as_string(jwt));
 
 
     tmp_buf = vsc_buffer_new_with_capacity(1024);
 
-    if (vscs_core_base64_url_decode(vscs_core_jwt_get_header_string(jwt), tmp_buf) == vscs_core_status_SUCCESS) {
+    if (vssc_base64_url_decode(vssc_jwt_get_header_string(jwt), tmp_buf) == vssc_status_SUCCESS) {
         fprintf(stdout, "\n----- HEADER -----\n");
         print_data_as_str(vsc_buffer_data(tmp_buf));
         vsc_buffer_reset(tmp_buf);
     }
 
-    if (vscs_core_base64_url_decode(vscs_core_jwt_get_payload_string(jwt), tmp_buf) == vscs_core_status_SUCCESS) {
+    if (vssc_base64_url_decode(vssc_jwt_get_payload_string(jwt), tmp_buf) == vssc_status_SUCCESS) {
         fprintf(stdout, "\n----- PAYLOAD -----\n");
         print_data_as_str(vsc_buffer_data(tmp_buf));
         vsc_buffer_reset(tmp_buf);
@@ -260,8 +260,8 @@ int main(int argc, const char *const *const argv) {
 
 fail:
     vscf_key_provider_destroy(&key_provider);
-    vscs_core_jwt_generator_destroy(&jwt_generator);
-    vscs_core_jwt_destroy(&jwt);
+    vssc_jwt_generator_destroy(&jwt_generator);
+    vssc_jwt_destroy(&jwt);
     vscf_impl_destroy(&app_key);
     vsc_buffer_destroy(&app_key_buf);
     vsc_buffer_destroy(&tmp_buf);
