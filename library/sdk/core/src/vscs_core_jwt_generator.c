@@ -467,14 +467,14 @@ vscs_core_jwt_generator_generate_token(
 
     vscs_core_jwt_payload_as_string(jwt_payload, jwt_string);
 
-    vsc_str_buffer_write_char(jwt_string, '.');
-
     vscf_signer_reset(self->signer);
     vscf_signer_append_data(self->signer, vsc_str_buffer_data(jwt_string));
 
     const vscf_status_t signer_status = vscf_signer_sign(self->signer, self->app_key, jwt_signature);
 
     if (signer_status == vscf_status_SUCCESS) {
+        vsc_str_buffer_write_char(jwt_string, '.');
+
         vscs_core_base64_url_encode(vsc_buffer_data(jwt_signature), jwt_string);
 
         return vscs_core_jwt_new_with_members_disown(&jwt_header, &jwt_payload, &jwt_signature, &jwt_string);
