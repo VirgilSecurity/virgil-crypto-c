@@ -50,6 +50,8 @@ macro(_add_test test)
     add_test (NAME ${test} COMMAND ${test})
     enable_target_pedantic(${test})
 
+    set_tests_properties(${test} PROPERTIES LABELS "sdk;core")
+
     if(COMMAND add_clangformat AND ENABLE_CLANGFORMAT)
         add_clangformat(${test})
     endif()
