@@ -1,0 +1,46 @@
+<class name="str mutable" context="public" lifecycle="none" is_value_type="1">
+    Light version of the class "str  buffer".
+
+    Note, this class might be used to store copied strings within objects.
+    Note, this class' ownership can not be retained.
+    Note, this class can not be used as part of any public interface.
+
+    <property name="chars" type="char" access="readwrite">
+        Underlying characters array.
+
+        <array length="given"/>
+    </property>
+
+
+    <property name="len" type="size">
+        Characters array length.
+    </property>
+
+
+    <constructor name="from str">
+        Create a mutable string by copying a given string.
+
+        <argument name="str" class="str"/>
+    </constructor>
+
+
+    <method name="as str">
+        Returns immutable str.
+
+        <return class="str"/>
+    </method>
+
+
+    <method name="init" is_static="1">
+        Init underlying structure.
+
+        <argument name="self" class="self" access="readwrite" is_reference="1"/>
+    </method>
+
+
+    <method name="release" is_static="1">
+        Deallocate underlying string.
+
+        <argument name="self" class="self" access="readwrite" is_reference="1"/>
+    </method>
+</class>

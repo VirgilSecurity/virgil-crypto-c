@@ -61,6 +61,7 @@
 #include "vsc_platform.h"
 #include "vsc_str.h"
 #include "vsc_str_buffer.h"
+#include "vsc_str_mutable.h"
 
 // clang-format on
 //  @end

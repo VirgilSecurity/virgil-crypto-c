@@ -59,4 +59,5 @@ target_compile_definitions(common
             "VSC_BUFFER=$<BOOL:${VSC_BUFFER}>"
             "VSC_STR=$<BOOL:${VSC_STR}>"
             "VSC_STR_BUFFER=$<BOOL:${VSC_STR_BUFFER}>"
+            "VSC_STR_MUTABLE=$<BOOL:${VSC_STR_MUTABLE}>"
         )

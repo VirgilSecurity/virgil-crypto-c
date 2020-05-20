@@ -37,6 +37,16 @@
 // clang-format off
 
 
+//  @description
+// --------------------------------------------------------------------------
+//  Light version of the class "str  buffer".
+//
+//  Note, this class might be used to store copied strings within objects.
+//  Note, this class' ownership can not be retained.
+//  Note, this class can not be used as part of any public interface.
+// --------------------------------------------------------------------------
+
+
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -44,22 +54,12 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-
-//  @description
-// --------------------------------------------------------------------------
-//  This file contains platform specific information that is known during compilation.
-// --------------------------------------------------------------------------
-
-#ifndef VSC_PLATFORM_H_INCLUDED
-#define VSC_PLATFORM_H_INCLUDED
+#include "vsc_str_mutable.h"
+#include "vsc_memory.h"
+#include "vsc_assert.h"
 
 // clang-format on
 //  @end
-
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 
 //  @generated
@@ -68,43 +68,14 @@ extern "C" {
 //  Generated section start.
 // --------------------------------------------------------------------------
 
-#cmakedefine01 VSC_HAVE_ASSERT_H
-#if VSC_HAVE_ASSERT_H
-#   include <assert.h>
-#endif
+//
+//  Return size of 'vsc_str_mutable_t'.
+//
+VSC_PUBLIC size_t
+vsc_str_mutable_ctx_size(void) {
 
-#cmakedefine01 VSC_HAVE_STDATOMIC_H
-#if VSC_HAVE_STDATOMIC_H
-#   include <stdatomic.h>
-#endif
-
-#ifndef VSC_SHARED_LIBRARY
-#cmakedefine01 VSC_SHARED_LIBRARY
-#endif
-
-#ifndef VSC_MULTI_THREADING
-#cmakedefine01 VSC_MULTI_THREADING
-#endif
-
-#ifndef VSC_DATA
-#cmakedefine01 VSC_DATA
-#endif
-
-#ifndef VSC_BUFFER
-#cmakedefine01 VSC_BUFFER
-#endif
-
-#ifndef VSC_STR
-#cmakedefine01 VSC_STR
-#endif
-
-#ifndef VSC_STR_BUFFER
-#cmakedefine01 VSC_STR_BUFFER
-#endif
-
-#ifndef VSC_STR_MUTABLE
-#cmakedefine01 VSC_STR_MUTABLE
-#endif
+    return sizeof(vsc_str_mutable_t);
+}
 
 
 // --------------------------------------------------------------------------
@@ -114,11 +85,58 @@ extern "C" {
 //  @end
 
 
-#ifdef __cplusplus
+//
+//  Create a mutable string by copying a given string.
+//
+VSC_PUBLIC vsc_str_mutable_t
+vsc_str_mutable_from_str(vsc_str_t str) {
+
+    VSC_ASSERT(vsc_str_is_valid(str));
+
+    if (0 == str.len) {
+        return (vsc_str_mutable_t){NULL, 0};
+    }
+
+    char *chars_copy = vsc_alloc(str.len);
+    VSC_ASSERT_ALLOC(chars_copy);
+
+    memcpy(chars_copy, str.chars, str.len);
+
+    return (vsc_str_mutable_t){chars_copy, str.len};
 }
-#endif
 
+//
+//  Returns immutable str.
+//
+VSC_PUBLIC vsc_str_t
+vsc_str_mutable_as_str(vsc_str_mutable_t self) {
 
-//  @footer
-#endif // VSC_PLATFORM_H_INCLUDED
-//  @end
+    VSC_ASSERT_PTR(self.chars);
+
+    return vsc_str(self.chars, self.len);
+}
+
+//
+//  Init underlying structure.
+//
+VSC_PUBLIC void
+vsc_str_mutable_init(vsc_str_mutable_t *self) {
+
+    VSC_ASSERT_PTR(self);
+
+    vsc_erase(self, sizeof(vsc_str_mutable_t));
+}
+
+//
+//  Deallocate underlying string.
+//
+VSC_PUBLIC void
+vsc_str_mutable_release(vsc_str_mutable_t *self) {
+
+    if (NULL == self || NULL == self->chars) {
+        return;
+    }
+
+    vsc_dealloc(self->chars);
+    vsc_erase(self, sizeof(vsc_str_mutable_t));
+}

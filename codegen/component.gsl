@@ -691,6 +691,11 @@ function component_resolve_instance_attr_class (instance, parent)
         my.instance.access ?= "readonly"
         my.instance.is_reference = "0"
 
+    elsif my.instance.class = "str mutable"
+        my.instance.project ?= "common"
+        my.instance.access ?= "readwrite"
+        my.instance.is_reference ?= "0"
+
     elsif my.instance.class = "buffer" | my.instance.class = "str buffer"
         my.instance.project ?= "common"
         my.instance.is_reference ?= "1"

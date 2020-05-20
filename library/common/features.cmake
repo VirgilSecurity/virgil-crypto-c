@@ -51,6 +51,7 @@ option(VSC_DATA "Enable class 'data'." ON)
 option(VSC_BUFFER "Enable class 'buffer'." ON)
 option(VSC_STR "Enable class 'str'." ON)
 option(VSC_STR_BUFFER "Enable class 'str buffer'." ON)
+option(VSC_STR_MUTABLE "Enable class 'str mutable'." ON)
 mark_as_advanced(
         VSC_LIBRARY
         VSC_MULTI_THREADING
@@ -58,4 +59,5 @@ mark_as_advanced(
         VSC_BUFFER
         VSC_STR
         VSC_STR_BUFFER
+        VSC_STR_MUTABLE
         )

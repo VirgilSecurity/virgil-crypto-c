@@ -7,6 +7,7 @@ framework module VSCCommon {
     header "vsc_data.h"
     header "vsc_str.h"
     header "vsc_str_buffer.h"
+    header "vsc_str_mutable.h"
     header "vsc_common_public.h"
     export *
 }
