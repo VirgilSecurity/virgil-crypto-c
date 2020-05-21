@@ -1,6 +1,7 @@
 <class name="str mutable" context="public" lifecycle="none" is_value_type="1">
-    Light version of the class "str  buffer".
+    Light version of the class "str buffer".
 
+    Note, this class always handles a null-terminated string.
     Note, this class might be used to store copied strings within objects.
     Note, this class' ownership can not be retained.
     Note, this class can not be used as part of any public interface.
@@ -22,6 +23,13 @@
 
         <argument name="str" class="str"/>
     </constructor>
+
+
+    <method name="is valid">
+        Returns true if underlying string is defined.
+
+        <return type="boolean"/>
+    </method>
 
 
     <method name="as str">

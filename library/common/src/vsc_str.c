@@ -127,6 +127,26 @@ vsc_str_is_empty(vsc_str_t self) {
 }
 
 //
+//  Returns true if underlying string is defined and not empty.
+//
+VSC_PUBLIC bool
+vsc_str_is_valid_and_non_empty(vsc_str_t self) {
+
+    return vsc_str_is_valid(self) && !vsc_str_is_empty(self);
+}
+
+//
+//  Returns true if underlying string is null-terminated.
+//
+VSC_PUBLIC bool
+vsc_str_is_null_terminated(vsc_str_t self) {
+
+    VSC_ASSERT(vsc_str_is_valid(self));
+
+    return '\0' == self.chars[self.len];
+}
+
+//
 //  Return true if given string is equal.
 //
 VSC_PUBLIC bool

@@ -47,8 +47,9 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Light version of the class "str  buffer".
+//  Light version of the class "str buffer".
 //
+//  Note, this class always handles a null-terminated string.
 //  Note, this class might be used to store copied strings within objects.
 //  Note, this class' ownership can not be retained.
 //  Note, this class can not be used as part of any public interface.
@@ -102,6 +103,12 @@ vsc_str_mutable_ctx_size(void);
 //
 VSC_PUBLIC vsc_str_mutable_t
 vsc_str_mutable_from_str(vsc_str_t str);
+
+//
+//  Returns true if underlying string is defined.
+//
+VSC_PUBLIC bool
+vsc_str_mutable_is_valid(vsc_str_mutable_t self);
 
 //
 //  Returns immutable str.

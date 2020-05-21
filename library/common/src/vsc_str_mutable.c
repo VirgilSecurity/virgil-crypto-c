@@ -39,8 +39,9 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Light version of the class "str  buffer".
+//  Light version of the class "str buffer".
 //
+//  Note, this class always handles a null-terminated string.
 //  Note, this class might be used to store copied strings within objects.
 //  Note, this class' ownership can not be retained.
 //  Note, this class can not be used as part of any public interface.
@@ -93,16 +94,22 @@ vsc_str_mutable_from_str(vsc_str_t str) {
 
     VSC_ASSERT(vsc_str_is_valid(str));
 
-    if (0 == str.len) {
-        return (vsc_str_mutable_t){NULL, 0};
-    }
-
-    char *chars_copy = vsc_alloc(str.len);
+    char *chars_copy = vsc_alloc(str.len + 1);
     VSC_ASSERT_ALLOC(chars_copy);
 
     memcpy(chars_copy, str.chars, str.len);
+    chars_copy[str.len] = '\0';
 
     return (vsc_str_mutable_t){chars_copy, str.len};
+}
+
+//
+//  Returns true if underlying string is defined.
+//
+VSC_PUBLIC bool
+vsc_str_mutable_is_valid(vsc_str_mutable_t self) {
+
+    return self.chars != NULL;
 }
 
 //
@@ -111,9 +118,7 @@ vsc_str_mutable_from_str(vsc_str_t str) {
 VSC_PUBLIC vsc_str_t
 vsc_str_mutable_as_str(vsc_str_mutable_t self) {
 
-    if (NULL == self.chars) {
-        return vsc_str_empty();
-    }
+    VSC_ASSERT(vsc_str_mutable_is_valid(self));
 
     return vsc_str(self.chars, self.len);
 }

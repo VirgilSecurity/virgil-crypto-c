@@ -51,6 +51,20 @@
     </method>
 
 
+    <method name="is valid and non empty">
+        Returns true if underlying string is defined and not empty.
+
+        <return type="boolean"/>
+    </method>
+
+
+    <method name="is null terminated">
+        Returns true if underlying string is null-terminated.
+
+        <return type="boolean"/>
+    </method>
+
+
     <method name="equal">
         Return true if given string is equal.
 

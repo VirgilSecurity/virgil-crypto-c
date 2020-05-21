@@ -124,6 +124,18 @@ VSC_PUBLIC bool
 vsc_str_is_empty(vsc_str_t self);
 
 //
+//  Returns true if underlying string is defined and not empty.
+//
+VSC_PUBLIC bool
+vsc_str_is_valid_and_non_empty(vsc_str_t self);
+
+//
+//  Returns true if underlying string is null-terminated.
+//
+VSC_PUBLIC bool
+vsc_str_is_null_terminated(vsc_str_t self);
+
+//
 //  Return true if given string is equal.
 //
 VSC_PUBLIC bool
