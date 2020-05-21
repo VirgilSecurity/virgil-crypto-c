@@ -37,16 +37,6 @@
 // clang-format off
 
 
-//  @description
-// --------------------------------------------------------------------------
-//  Light version of the class "str  buffer".
-//
-//  Note, this class might be used to store copied strings within objects.
-//  Note, this class' ownership can not be retained.
-//  Note, this class can not be used as part of any public interface.
-// --------------------------------------------------------------------------
-
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -54,12 +44,34 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#include "vsc_str_mutable.h"
-#include "vsc_memory.h"
-#include "vsc_assert.h"
+
+//  @description
+// --------------------------------------------------------------------------
+//  Class 'http response' types definition.
+// --------------------------------------------------------------------------
+
+#ifndef VSSC_HTTP_RESPONSE_DEFS_H_INCLUDED
+#define VSSC_HTTP_RESPONSE_DEFS_H_INCLUDED
+
+#include "vssc_library.h"
+#include "vssc_atomic.h"
+#include "vssc_http_header_list.h"
+
+#if !VSSC_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <virgil/crypto/common/vsc_str_buffer.h>
+#endif
+
+#if VSSC_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <VSCCommon/vsc_str_buffer.h>
+#endif
 
 // clang-format on
 //  @end
+
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 
 //  @generated
@@ -69,13 +81,24 @@
 // --------------------------------------------------------------------------
 
 //
-//  Return size of 'vsc_str_mutable_t'.
+//  Handle 'http response' context.
 //
-VSC_PUBLIC size_t
-vsc_str_mutable_ctx_size(void) {
+struct vssc_http_response_t {
+    //
+    //  Function do deallocate self context.
+    //
+    vssc_dealloc_fn self_dealloc_cb;
+    //
+    //  Reference counter.
+    //
+    VSSC_ATOMIC size_t refcnt;
 
-    return sizeof(vsc_str_mutable_t);
-}
+    size_t status_code;
+
+    vsc_str_buffer_t *body;
+
+    vssc_http_header_list_t *headers;
+};
 
 
 // --------------------------------------------------------------------------
@@ -85,60 +108,11 @@ vsc_str_mutable_ctx_size(void) {
 //  @end
 
 
-//
-//  Create a mutable string by copying a given string.
-//
-VSC_PUBLIC vsc_str_mutable_t
-vsc_str_mutable_from_str(vsc_str_t str) {
-
-    VSC_ASSERT(vsc_str_is_valid(str));
-
-    if (0 == str.len) {
-        return (vsc_str_mutable_t){NULL, 0};
-    }
-
-    char *chars_copy = vsc_alloc(str.len);
-    VSC_ASSERT_ALLOC(chars_copy);
-
-    memcpy(chars_copy, str.chars, str.len);
-
-    return (vsc_str_mutable_t){chars_copy, str.len};
+#ifdef __cplusplus
 }
+#endif
 
-//
-//  Returns immutable str.
-//
-VSC_PUBLIC vsc_str_t
-vsc_str_mutable_as_str(vsc_str_mutable_t self) {
 
-    if (NULL == self.chars) {
-        return vsc_str_empty();
-    }
-
-    return vsc_str(self.chars, self.len);
-}
-
-//
-//  Init underlying structure.
-//
-VSC_PUBLIC void
-vsc_str_mutable_init(vsc_str_mutable_t *self) {
-
-    VSC_ASSERT_PTR(self);
-
-    vsc_erase(self, sizeof(vsc_str_mutable_t));
-}
-
-//
-//  Deallocate underlying string.
-//
-VSC_PUBLIC void
-vsc_str_mutable_release(vsc_str_mutable_t *self) {
-
-    if (NULL == self || NULL == self->chars) {
-        return;
-    }
-
-    vsc_dealloc(self->chars);
-    vsc_erase(self, sizeof(vsc_str_mutable_t));
-}
+//  @footer
+#endif // VSSC_HTTP_RESPONSE_DEFS_H_INCLUDED
+//  @end

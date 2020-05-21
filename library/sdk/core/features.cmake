@@ -56,6 +56,7 @@ option(VSSC_JWT_GENERATOR "Enable class 'jwt generator'." ON)
 option(VSSC_HTTP_HEADER "Enable class 'http header'." ON)
 option(VSSC_HTTP_HEADER_LIST "Enable class 'http header list'." ON)
 option(VSSC_HTTP_REQUEST "Enable class 'http request'." ON)
+option(VSSC_HTTP_RESPONSE "Enable class 'http response'." ON)
 mark_as_advanced(
         VSSC_LIBRARY
         VSSC_MULTI_THREADING
@@ -68,6 +69,7 @@ mark_as_advanced(
         VSSC_HTTP_HEADER
         VSSC_HTTP_HEADER_LIST
         VSSC_HTTP_REQUEST
+        VSSC_HTTP_RESPONSE
         )
 
 if(VSSC_BASE64_URL AND NOT VSCF_BASE64)

@@ -76,6 +76,7 @@
     <class name="http header"/>
     <class name="http header list"/>
     <class name="http request"/>
+    <class name="http response"/>
 
     <error_message_getter success="0">
         <require enum="status"/>

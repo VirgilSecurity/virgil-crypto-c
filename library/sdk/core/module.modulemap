@@ -8,6 +8,7 @@ framework module VSSC {
     header "vssc_http_header.h"
     header "vssc_http_header_list.h"
     header "vssc_http_request.h"
+    header "vssc_http_response.h"
     header "vssc_jwt.h"
     header "vssc_jwt_generator.h"
     header "vssc_status.h"

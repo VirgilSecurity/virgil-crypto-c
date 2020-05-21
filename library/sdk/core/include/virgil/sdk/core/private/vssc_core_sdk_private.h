@@ -57,6 +57,7 @@
 #include "vssc_http_header_defs.h"
 #include "vssc_http_header_list_defs.h"
 #include "vssc_http_request_defs.h"
+#include "vssc_http_response_defs.h"
 #include "vssc_jwt_defs.h"
 #include "vssc_jwt_generator_defs.h"
 #include "vssc_jwt_header.h"

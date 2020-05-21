@@ -1,0 +1,51 @@
+<class name="http response">
+    Handles HTTP request in a most generic way.
+
+    <property name="status code" type="size"/>
+    <property name="body" class="str buffer"/>
+    <property name="headers" class="http header list"/>
+
+
+    <constructor name="with status">
+        Create response with a status only.
+
+        <argument name="status code" type="size"/>
+    </constructor>
+
+
+    <constructor name="with body">
+        Create response with a status and body.
+
+        <argument name="status code" type="size"/>
+        <argument name="body" class="str"/>
+    </constructor>
+
+
+    <method name="add header">
+        Add HTTP header.
+
+        <argument name="name" class="str"/>
+        <argument name="value" class="str"/>
+    </method>
+
+
+    <method name="status code">
+        Return HTTP status code.
+
+        <return type="size"/>
+    </method>
+
+
+    <method name="body">
+        Return HTTP body.
+
+        <return class="str"/>
+    </method>
+
+
+    <method name="headers">
+        Return HTTP headers.
+
+        <return class="http header list"/>
+    </method>
+</class>

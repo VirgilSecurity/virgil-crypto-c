@@ -122,6 +122,10 @@ extern "C" {
 #cmakedefine01 VSSC_HTTP_REQUEST
 #endif
 
+#ifndef VSSC_HTTP_RESPONSE
+#cmakedefine01 VSSC_HTTP_RESPONSE
+#endif
+
 //
 //  Defines namespace include prefix for project 'common'.
 //
