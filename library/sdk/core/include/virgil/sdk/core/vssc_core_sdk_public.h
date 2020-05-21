@@ -58,6 +58,7 @@
 #include "vssc_error.h"
 #include "vssc_http_header.h"
 #include "vssc_http_header_list.h"
+#include "vssc_http_json_body.h"
 #include "vssc_http_request.h"
 #include "vssc_http_response.h"
 #include "vssc_jwt.h"

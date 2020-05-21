@@ -1,0 +1,70 @@
+<class name="http json body">
+    Handle HTTP body with 'application/json' content type .
+
+    <require header="json-c/json.h" library="json-c" scope="context"/>
+    <require class="str mutable" project="common"/>
+
+    <property name="json obj" class="json_object" library="json-c"/>
+
+
+    <constructor name="with json obj" declaration="private">
+        Create with predefined JSON object.
+
+        <argument name="json obj" class="json_object" library="json-c" access="disown"/>
+    </constructor>
+
+
+    <method name="add string value">
+        Add string value with a given key.
+
+        <argument name="key" class="str"/>
+        <argument name="value" class="str"/>
+    </method>
+
+
+    <method name="get string value" is_const="1">
+        Return a string value for a given key.
+        Returns error, if given key is not found or type mismatch.
+
+        <argument name="key" class="str"/>
+        <argument name="error" class="error" access="readwrite"/>
+
+        <return class="str"/>
+    </method>
+
+
+    <method name="add int value">
+        Add integer value with a given key.
+
+        <argument name="key" class="str"/>
+        <argument name="value" type="integer"/>
+    </method>
+
+
+    <method name="get int value" is_const="1">
+        Return a integer value for a given key.
+        Returns error, if given key is not found or type mismatch.
+
+        <argument name="key" class="str"/>
+        <argument name="error" class="error" access="readwrite"/>
+
+        <return type="integer"/>
+    </method>
+
+
+    <method name="as str" is_const="1">
+        Return JSON body as string.
+
+        <return class="str"/>
+    </method>
+
+
+    <method name="parse" is_static="1">
+        Parse a given JSON string.
+
+        <argument name="json" class="str"/>
+        <argument name="error" class="error" access="readwrite"/>
+
+        <return class="self"/>
+    </method>
+</class>

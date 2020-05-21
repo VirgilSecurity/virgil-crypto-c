@@ -37,6 +37,12 @@
 // clang-format off
 
 
+//  @description
+// --------------------------------------------------------------------------
+//  Class 'http json body' types definition.
+// --------------------------------------------------------------------------
+
+
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -44,22 +50,10 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-
-//  @description
-// --------------------------------------------------------------------------
-//  Defines the library status codes.
-// --------------------------------------------------------------------------
-
-#ifndef VSSC_STATUS_H_INCLUDED
-#define VSSC_STATUS_H_INCLUDED
+#include "vssc_http_json_body_defs.h"
 
 // clang-format on
 //  @end
-
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 
 //  @generated
@@ -68,62 +62,9 @@ extern "C" {
 //  Generated section start.
 // --------------------------------------------------------------------------
 
-//
-//  Defines the library status codes.
-//
-enum vssc_status_t {
-    //
-    //  No errors was occurred.
-    //
-    vssc_status_SUCCESS = 0,
-    //
-    //  Met internal inconsistency.
-    //
-    vssc_status_INTERNAL_ERROR = -1,
-    //
-    //  Faled to decode Base64URL string.
-    //
-    vssc_status_DECODE_BASE64_URL_FAILED = -101,
-    //
-    //  Faled to initialize random module.
-    //
-    vssc_status_INIT_RANDOM_FAILED = -102,
-    //
-    //  Failed to parse JWT.
-    //
-    vssc_status_PARSE_JWT_FAILED = -201,
-    //
-    //  Failed to produce JWT signature.
-    //
-    vssc_status_SIGN_JWT_FAILED = -202,
-    //
-    //  Failed to parse JWT HTTP body.
-    //
-    vssc_status_HTTP_BODY_PARSE_FAILED = -301,
-    //
-    //  Requested value is not found within HTTP body.
-    //
-    vssc_status_HTTP_BODY_VALUE_NOT_FOUND = -302,
-    //
-    //  Requested value from the HTTP body has unexpected type.
-    //
-    vssc_status_HTTP_BODY_VALUE_MISMATCH = -303
-};
-typedef enum vssc_status_t vssc_status_t;
-
 
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
-//  @end
-
-
-#ifdef __cplusplus
-}
-#endif
-
-
-//  @footer
-#endif // VSSC_STATUS_H_INCLUDED
 //  @end

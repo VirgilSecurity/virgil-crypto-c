@@ -47,11 +47,16 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Defines the library status codes.
+//  Class 'http json body' types definition.
 // --------------------------------------------------------------------------
 
-#ifndef VSSC_STATUS_H_INCLUDED
-#define VSSC_STATUS_H_INCLUDED
+#ifndef VSSC_HTTP_JSON_BODY_DEFS_H_INCLUDED
+#define VSSC_HTTP_JSON_BODY_DEFS_H_INCLUDED
+
+#include "vssc_library.h"
+#include "vssc_atomic.h"
+
+#include <json-c/json.h>
 
 // clang-format on
 //  @end
@@ -69,47 +74,20 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Defines the library status codes.
+//  Handle 'http json body' context.
 //
-enum vssc_status_t {
+struct vssc_http_json_body_t {
     //
-    //  No errors was occurred.
+    //  Function do deallocate self context.
     //
-    vssc_status_SUCCESS = 0,
+    vssc_dealloc_fn self_dealloc_cb;
     //
-    //  Met internal inconsistency.
+    //  Reference counter.
     //
-    vssc_status_INTERNAL_ERROR = -1,
-    //
-    //  Faled to decode Base64URL string.
-    //
-    vssc_status_DECODE_BASE64_URL_FAILED = -101,
-    //
-    //  Faled to initialize random module.
-    //
-    vssc_status_INIT_RANDOM_FAILED = -102,
-    //
-    //  Failed to parse JWT.
-    //
-    vssc_status_PARSE_JWT_FAILED = -201,
-    //
-    //  Failed to produce JWT signature.
-    //
-    vssc_status_SIGN_JWT_FAILED = -202,
-    //
-    //  Failed to parse JWT HTTP body.
-    //
-    vssc_status_HTTP_BODY_PARSE_FAILED = -301,
-    //
-    //  Requested value is not found within HTTP body.
-    //
-    vssc_status_HTTP_BODY_VALUE_NOT_FOUND = -302,
-    //
-    //  Requested value from the HTTP body has unexpected type.
-    //
-    vssc_status_HTTP_BODY_VALUE_MISMATCH = -303
+    VSSC_ATOMIC size_t refcnt;
+
+    json_object *json_obj;
 };
-typedef enum vssc_status_t vssc_status_t;
 
 
 // --------------------------------------------------------------------------
@@ -125,5 +103,5 @@ typedef enum vssc_status_t vssc_status_t;
 
 
 //  @footer
-#endif // VSSC_STATUS_H_INCLUDED
+#endif // VSSC_HTTP_JSON_BODY_DEFS_H_INCLUDED
 //  @end

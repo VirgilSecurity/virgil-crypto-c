@@ -126,6 +126,10 @@ extern "C" {
 #cmakedefine01 VSSC_HTTP_RESPONSE
 #endif
 
+#ifndef VSSC_HTTP_JSON_BODY
+#cmakedefine01 VSSC_HTTP_JSON_BODY
+#endif
+
 //
 //  Defines namespace include prefix for project 'common'.
 //

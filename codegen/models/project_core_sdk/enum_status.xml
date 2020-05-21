@@ -24,4 +24,16 @@
     <constant name="sign jwt failed" value="-202">
         Failed to produce JWT signature.
     </constant>
+
+    <constant name="http body parse failed" value="-301">
+        Failed to parse JWT HTTP body.
+    </constant>
+
+    <constant name="http body value not found" value="-302">
+        Requested value is not found within HTTP body.
+    </constant>
+
+    <constant name="http body value mismatch" value="-303">
+        Requested value from the HTTP body has unexpected type.
+    </constant>
 </enum>

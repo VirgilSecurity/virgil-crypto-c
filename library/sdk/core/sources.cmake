@@ -99,6 +99,11 @@ set_property(
 )
 
 set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vssc_http_json_body.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
+)
+
+set_property(
     SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vssc_http_request.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
@@ -141,6 +146,8 @@ target_sources(core_sdk
             "$<$<BOOL:${VSSC_HTTP_HEADER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/private/vssc_http_header_defs.h>"
             "$<$<BOOL:${VSSC_HTTP_HEADER_LIST}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vssc_http_header_list.h>"
             "$<$<BOOL:${VSSC_HTTP_HEADER_LIST}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/private/vssc_http_header_list_defs.h>"
+            "$<$<BOOL:${VSSC_HTTP_JSON_BODY}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vssc_http_json_body.h>"
+            "$<$<BOOL:${VSSC_HTTP_JSON_BODY}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/private/vssc_http_json_body_defs.h>"
             "$<$<BOOL:${VSSC_HTTP_REQUEST}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vssc_http_request.h>"
             "$<$<BOOL:${VSSC_HTTP_REQUEST}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/private/vssc_http_request_defs.h>"
             "$<$<BOOL:${VSSC_HTTP_RESPONSE}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vssc_http_response.h>"
@@ -167,6 +174,8 @@ target_sources(core_sdk
             "$<$<BOOL:${VSSC_HTTP_HEADER}>:${CMAKE_CURRENT_LIST_DIR}/src/vssc_http_header_defs.c>"
             "$<$<BOOL:${VSSC_HTTP_HEADER_LIST}>:${CMAKE_CURRENT_LIST_DIR}/src/vssc_http_header_list.c>"
             "$<$<BOOL:${VSSC_HTTP_HEADER_LIST}>:${CMAKE_CURRENT_LIST_DIR}/src/vssc_http_header_list_defs.c>"
+            "$<$<BOOL:${VSSC_HTTP_JSON_BODY}>:${CMAKE_CURRENT_LIST_DIR}/src/vssc_http_json_body.c>"
+            "$<$<BOOL:${VSSC_HTTP_JSON_BODY}>:${CMAKE_CURRENT_LIST_DIR}/src/vssc_http_json_body_defs.c>"
             "$<$<BOOL:${VSSC_HTTP_REQUEST}>:${CMAKE_CURRENT_LIST_DIR}/src/vssc_http_request.c>"
             "$<$<BOOL:${VSSC_HTTP_REQUEST}>:${CMAKE_CURRENT_LIST_DIR}/src/vssc_http_request_defs.c>"
             "$<$<BOOL:${VSSC_HTTP_RESPONSE}>:${CMAKE_CURRENT_LIST_DIR}/src/vssc_http_response.c>"

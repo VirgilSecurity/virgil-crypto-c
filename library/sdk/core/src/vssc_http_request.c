@@ -367,10 +367,8 @@ VSSC_PUBLIC void
 vssc_http_request_add_header(vssc_http_request_t *self, vsc_str_t name, vsc_str_t value) {
 
     VSSC_ASSERT_PTR(self);
-    VSSC_ASSERT(vsc_str_is_valid(name));
-    VSSC_ASSERT(!vsc_str_is_empty(name));
-    VSSC_ASSERT(vsc_str_is_valid(value));
-    VSSC_ASSERT(!vsc_str_is_empty(value));
+    VSSC_ASSERT(vsc_str_is_valid_and_non_empty(name));
+    VSSC_ASSERT(vsc_str_is_valid_and_non_empty(value));
 
     vssc_http_header_t *header = vssc_http_header_new_with(name, value);
     vssc_http_header_list_add(self->headers, &header);
