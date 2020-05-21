@@ -404,16 +404,18 @@ vssc_jwt_header_init_ctx_with_app_key_id(vssc_jwt_header_t *self, vsc_str_t app_
     VSSC_ASSERT_ALLOC(root_obj);
 
     int result = 0;
-    result = json_object_object_add(root_obj, k_json_key_app_key_id, app_key_id_obj);
+    result = json_object_object_add_ex(root_obj, k_json_key_app_key_id, app_key_id_obj, JSON_C_OBJECT_KEY_IS_CONSTANT);
     VSSC_ASSERT_LIBRARY_JSON_C_SUCCESS(result);
 
-    result = json_object_object_add(root_obj, k_json_key_content_type, content_type_obj);
+    result = json_object_object_add_ex(
+            root_obj, k_json_key_content_type, content_type_obj, JSON_C_OBJECT_KEY_IS_CONSTANT);
     VSSC_ASSERT_LIBRARY_JSON_C_SUCCESS(result);
 
-    result = json_object_object_add(root_obj, k_json_key_type, type_obj);
+    result = json_object_object_add_ex(root_obj, k_json_key_type, type_obj, JSON_C_OBJECT_KEY_IS_CONSTANT);
     VSSC_ASSERT_LIBRARY_JSON_C_SUCCESS(result);
 
-    result = json_object_object_add(root_obj, k_json_key_signature_algorithm, signature_algorithm_obj);
+    result = json_object_object_add_ex(
+            root_obj, k_json_key_signature_algorithm, signature_algorithm_obj, JSON_C_OBJECT_KEY_IS_CONSTANT);
     VSSC_ASSERT_LIBRARY_JSON_C_SUCCESS(result);
 
     self->json_obj = root_obj;

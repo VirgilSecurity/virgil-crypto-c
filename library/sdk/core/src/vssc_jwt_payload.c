@@ -421,16 +421,16 @@ vssc_jwt_payload_init_ctx_with_members(
     VSSC_ASSERT_ALLOC(root_obj);
 
     int result = 0;
-    result = json_object_object_add(root_obj, k_json_key_app_id, app_id_obj);
+    result = json_object_object_add_ex(root_obj, k_json_key_app_id, app_id_obj, JSON_C_OBJECT_KEY_IS_CONSTANT);
     VSSC_ASSERT_LIBRARY_JSON_C_SUCCESS(result);
 
-    result = json_object_object_add(root_obj, k_json_key_identity, identity_obj);
+    result = json_object_object_add_ex(root_obj, k_json_key_identity, identity_obj, JSON_C_OBJECT_KEY_IS_CONSTANT);
     VSSC_ASSERT_LIBRARY_JSON_C_SUCCESS(result);
 
-    result = json_object_object_add(root_obj, k_json_key_issued_at, issued_at_obj);
+    result = json_object_object_add_ex(root_obj, k_json_key_issued_at, issued_at_obj, JSON_C_OBJECT_KEY_IS_CONSTANT);
     VSSC_ASSERT_LIBRARY_JSON_C_SUCCESS(result);
 
-    result = json_object_object_add(root_obj, k_json_key_expires_at, expires_at_obj);
+    result = json_object_object_add_ex(root_obj, k_json_key_expires_at, expires_at_obj, JSON_C_OBJECT_KEY_IS_CONSTANT);
     VSSC_ASSERT_LIBRARY_JSON_C_SUCCESS(result);
 
     self->json_obj = root_obj;
