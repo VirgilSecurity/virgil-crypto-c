@@ -48,6 +48,7 @@ include_guard()
 option(VSSC_LIBRARY "Enable build of the 'core sdk' library" ON)
 option(VSSC_MULTI_THREADING "Enable multi-threading safety for Cards Core SDK." ON)
 option(VSSC_ERROR "Enable class 'error'." ON)
+option(VSSC_JSON_OBJECT "Enable class 'json object'." ON)
 option(VSSC_BASE64_URL "Enable class 'base64 url'." ON)
 option(VSSC_JWT "Enable class 'jwt'." ON)
 option(VSSC_JWT_HEADER "Enable class 'jwt header'." ON)
@@ -57,11 +58,11 @@ option(VSSC_HTTP_HEADER "Enable class 'http header'." ON)
 option(VSSC_HTTP_HEADER_LIST "Enable class 'http header list'." ON)
 option(VSSC_HTTP_REQUEST "Enable class 'http request'." ON)
 option(VSSC_HTTP_RESPONSE "Enable class 'http response'." ON)
-option(VSSC_HTTP_JSON_BODY "Enable class 'http json body'." ON)
 mark_as_advanced(
         VSSC_LIBRARY
         VSSC_MULTI_THREADING
         VSSC_ERROR
+        VSSC_JSON_OBJECT
         VSSC_BASE64_URL
         VSSC_JWT
         VSSC_JWT_HEADER
@@ -71,8 +72,16 @@ mark_as_advanced(
         VSSC_HTTP_HEADER_LIST
         VSSC_HTTP_REQUEST
         VSSC_HTTP_RESPONSE
-        VSSC_HTTP_JSON_BODY
         )
+
+if(VSSC_JSON_OBJECT AND NOT VSC_STR_MUTABLE)
+    message("-- error --")
+    message("--")
+    message("Feature VSSC_JSON_OBJECT depends on the feature:")
+    message("     VSC_STR_MUTABLE - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
 
 if(VSSC_BASE64_URL AND NOT VSCF_BASE64)
     message("-- error --")
@@ -133,15 +142,6 @@ if(VSSC_JWT_GENERATOR AND NOT VSCF_CTR_DRBG)
     message("--")
     message("Feature VSSC_JWT_GENERATOR depends on the feature:")
     message("     VSCF_CTR_DRBG - which is disabled.")
-    message("--")
-    message(FATAL_ERROR)
-endif()
-
-if(VSSC_HTTP_JSON_BODY AND NOT VSC_STR_MUTABLE)
-    message("-- error --")
-    message("--")
-    message("Feature VSSC_HTTP_JSON_BODY depends on the feature:")
-    message("     VSC_STR_MUTABLE - which is disabled.")
     message("--")
     message(FATAL_ERROR)
 endif()

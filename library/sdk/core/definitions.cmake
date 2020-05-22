@@ -56,6 +56,7 @@ target_compile_definitions(core_sdk
             "VSSC_LIBRARY=$<BOOL:${VSSC_LIBRARY}>"
             "VSSC_MULTI_THREADING=$<BOOL:${VSSC_MULTI_THREADING}>"
             "VSSC_ERROR=$<BOOL:${VSSC_ERROR}>"
+            "VSSC_JSON_OBJECT=$<BOOL:${VSSC_JSON_OBJECT}>"
             "VSSC_BASE64_URL=$<BOOL:${VSSC_BASE64_URL}>"
             "VSSC_JWT=$<BOOL:${VSSC_JWT}>"
             "VSSC_JWT_HEADER=$<BOOL:${VSSC_JWT_HEADER}>"
@@ -65,5 +66,4 @@ target_compile_definitions(core_sdk
             "VSSC_HTTP_HEADER_LIST=$<BOOL:${VSSC_HTTP_HEADER_LIST}>"
             "VSSC_HTTP_REQUEST=$<BOOL:${VSSC_HTTP_REQUEST}>"
             "VSSC_HTTP_RESPONSE=$<BOOL:${VSSC_HTTP_RESPONSE}>"
-            "VSSC_HTTP_JSON_BODY=$<BOOL:${VSSC_HTTP_JSON_BODY}>"
         )

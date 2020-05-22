@@ -39,7 +39,7 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Handle HTTP body with 'application/json' content type .
+//  Minimal JSON object.
 // --------------------------------------------------------------------------
 
 
@@ -50,10 +50,10 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#include "vssc_http_json_body.h"
+#include "vssc_json_object.h"
 #include "vssc_memory.h"
 #include "vssc_assert.h"
-#include "vssc_http_json_body_defs.h"
+#include "vssc_json_object_defs.h"
 
 #include <virgil/crypto/common/vsc_str_mutable.h>
 
@@ -69,11 +69,11 @@
 
 //
 //  Perform context specific initialization.
-//  Note, this method is called automatically when method vssc_http_json_body_init() is called.
+//  Note, this method is called automatically when method vssc_json_object_init() is called.
 //  Note, that context is already zeroed.
 //
 static void
-vssc_http_json_body_init_ctx(vssc_http_json_body_t *self);
+vssc_json_object_init_ctx(vssc_json_object_t *self);
 
 //
 //  Release all inner resources.
@@ -81,77 +81,77 @@ vssc_http_json_body_init_ctx(vssc_http_json_body_t *self);
 //  Note, that context will be zeroed automatically next this method.
 //
 static void
-vssc_http_json_body_cleanup_ctx(vssc_http_json_body_t *self);
+vssc_json_object_cleanup_ctx(vssc_json_object_t *self);
 
 //
 //  Perform initialization of pre-allocated context.
 //  Create with predefined JSON object.
 //
 static void
-vssc_http_json_body_init_with_json_obj(vssc_http_json_body_t *self, json_object **json_obj_ref);
+vssc_json_object_init_with_json_obj(vssc_json_object_t *self, json_object **json_obj_ref);
 
 //
 //  Create with predefined JSON object.
 //
 static void
-vssc_http_json_body_init_ctx_with_json_obj(vssc_http_json_body_t *self, json_object **json_obj_ref);
+vssc_json_object_init_ctx_with_json_obj(vssc_json_object_t *self, json_object **json_obj_ref);
 
 //
 //  Allocate class context and perform it's initialization.
 //  Create with predefined JSON object.
 //
-static vssc_http_json_body_t *
-vssc_http_json_body_new_with_json_obj(json_object **json_obj_ref);
+static vssc_json_object_t *
+vssc_json_object_new_with_json_obj(json_object **json_obj_ref);
 
 //
-//  Return size of 'vssc_http_json_body_t'.
+//  Return size of 'vssc_json_object_t'.
 //
 VSSC_PUBLIC size_t
-vssc_http_json_body_ctx_size(void) {
+vssc_json_object_ctx_size(void) {
 
-    return sizeof(vssc_http_json_body_t);
+    return sizeof(vssc_json_object_t);
 }
 
 //
 //  Perform initialization of pre-allocated context.
 //
 VSSC_PUBLIC void
-vssc_http_json_body_init(vssc_http_json_body_t *self) {
+vssc_json_object_init(vssc_json_object_t *self) {
 
     VSSC_ASSERT_PTR(self);
 
-    vssc_zeroize(self, sizeof(vssc_http_json_body_t));
+    vssc_zeroize(self, sizeof(vssc_json_object_t));
 
     self->refcnt = 1;
 
-    vssc_http_json_body_init_ctx(self);
+    vssc_json_object_init_ctx(self);
 }
 
 //
 //  Release all inner resources including class dependencies.
 //
 VSSC_PUBLIC void
-vssc_http_json_body_cleanup(vssc_http_json_body_t *self) {
+vssc_json_object_cleanup(vssc_json_object_t *self) {
 
     if (self == NULL) {
         return;
     }
 
-    vssc_http_json_body_cleanup_ctx(self);
+    vssc_json_object_cleanup_ctx(self);
 
-    vssc_zeroize(self, sizeof(vssc_http_json_body_t));
+    vssc_zeroize(self, sizeof(vssc_json_object_t));
 }
 
 //
 //  Allocate context and perform it's initialization.
 //
-VSSC_PUBLIC vssc_http_json_body_t *
-vssc_http_json_body_new(void) {
+VSSC_PUBLIC vssc_json_object_t *
+vssc_json_object_new(void) {
 
-    vssc_http_json_body_t *self = (vssc_http_json_body_t *) vssc_alloc(sizeof (vssc_http_json_body_t));
+    vssc_json_object_t *self = (vssc_json_object_t *) vssc_alloc(sizeof (vssc_json_object_t));
     VSSC_ASSERT_ALLOC(self);
 
-    vssc_http_json_body_init(self);
+    vssc_json_object_init(self);
 
     self->self_dealloc_cb = vssc_dealloc;
 
@@ -163,28 +163,28 @@ vssc_http_json_body_new(void) {
 //  Create with predefined JSON object.
 //
 static void
-vssc_http_json_body_init_with_json_obj(vssc_http_json_body_t *self, json_object **json_obj_ref) {
+vssc_json_object_init_with_json_obj(vssc_json_object_t *self, json_object **json_obj_ref) {
 
     VSSC_ASSERT_PTR(self);
 
-    vssc_zeroize(self, sizeof(vssc_http_json_body_t));
+    vssc_zeroize(self, sizeof(vssc_json_object_t));
 
     self->refcnt = 1;
 
-    vssc_http_json_body_init_ctx_with_json_obj(self, json_obj_ref);
+    vssc_json_object_init_ctx_with_json_obj(self, json_obj_ref);
 }
 
 //
 //  Allocate class context and perform it's initialization.
 //  Create with predefined JSON object.
 //
-static vssc_http_json_body_t *
-vssc_http_json_body_new_with_json_obj(json_object **json_obj_ref) {
+static vssc_json_object_t *
+vssc_json_object_new_with_json_obj(json_object **json_obj_ref) {
 
-    vssc_http_json_body_t *self = (vssc_http_json_body_t *) vssc_alloc(sizeof (vssc_http_json_body_t));
+    vssc_json_object_t *self = (vssc_json_object_t *) vssc_alloc(sizeof (vssc_json_object_t));
     VSSC_ASSERT_ALLOC(self);
 
-    vssc_http_json_body_init_with_json_obj(self, json_obj_ref);
+    vssc_json_object_init_with_json_obj(self, json_obj_ref);
 
     self->self_dealloc_cb = vssc_dealloc;
 
@@ -196,7 +196,7 @@ vssc_http_json_body_new_with_json_obj(json_object **json_obj_ref) {
 //  It is safe to call this method even if the context was statically allocated.
 //
 VSSC_PUBLIC void
-vssc_http_json_body_delete(vssc_http_json_body_t *self) {
+vssc_json_object_delete(vssc_json_object_t *self) {
 
     if (self == NULL) {
         return;
@@ -223,7 +223,7 @@ vssc_http_json_body_delete(vssc_http_json_body_t *self) {
 
     vssc_dealloc_fn self_dealloc_cb = self->self_dealloc_cb;
 
-    vssc_http_json_body_cleanup(self);
+    vssc_json_object_cleanup(self);
 
     if (self_dealloc_cb != NULL) {
         self_dealloc_cb(self);
@@ -232,24 +232,24 @@ vssc_http_json_body_delete(vssc_http_json_body_t *self) {
 
 //
 //  Delete given context and nullifies reference.
-//  This is a reverse action of the function 'vssc_http_json_body_new ()'.
+//  This is a reverse action of the function 'vssc_json_object_new ()'.
 //
 VSSC_PUBLIC void
-vssc_http_json_body_destroy(vssc_http_json_body_t **self_ref) {
+vssc_json_object_destroy(vssc_json_object_t **self_ref) {
 
     VSSC_ASSERT_PTR(self_ref);
 
-    vssc_http_json_body_t *self = *self_ref;
+    vssc_json_object_t *self = *self_ref;
     *self_ref = NULL;
 
-    vssc_http_json_body_delete(self);
+    vssc_json_object_delete(self);
 }
 
 //
 //  Copy given class context by increasing reference counter.
 //
-VSSC_PUBLIC vssc_http_json_body_t *
-vssc_http_json_body_shallow_copy(vssc_http_json_body_t *self) {
+VSSC_PUBLIC vssc_json_object_t *
+vssc_json_object_shallow_copy(vssc_json_object_t *self) {
 
     VSSC_ASSERT_PTR(self);
 
@@ -278,11 +278,11 @@ vssc_http_json_body_shallow_copy(vssc_http_json_body_t *self) {
 
 //
 //  Perform context specific initialization.
-//  Note, this method is called automatically when method vssc_http_json_body_init() is called.
+//  Note, this method is called automatically when method vssc_json_object_init() is called.
 //  Note, that context is already zeroed.
 //
 static void
-vssc_http_json_body_init_ctx(vssc_http_json_body_t *self) {
+vssc_json_object_init_ctx(vssc_json_object_t *self) {
 
     VSSC_ASSERT_PTR(self);
 
@@ -295,7 +295,7 @@ vssc_http_json_body_init_ctx(vssc_http_json_body_t *self) {
 //  Note, that context will be zeroed automatically next this method.
 //
 static void
-vssc_http_json_body_cleanup_ctx(vssc_http_json_body_t *self) {
+vssc_json_object_cleanup_ctx(vssc_json_object_t *self) {
 
     VSSC_ASSERT_PTR(self);
 
@@ -306,7 +306,7 @@ vssc_http_json_body_cleanup_ctx(vssc_http_json_body_t *self) {
 //  Create with predefined JSON object.
 //
 static void
-vssc_http_json_body_init_ctx_with_json_obj(vssc_http_json_body_t *self, json_object **json_obj_ref) {
+vssc_json_object_init_ctx_with_json_obj(vssc_json_object_t *self, json_object **json_obj_ref) {
 
     VSSC_ASSERT_PTR(self);
     VSSC_ASSERT_REF(json_obj_ref);
@@ -319,7 +319,7 @@ vssc_http_json_body_init_ctx_with_json_obj(vssc_http_json_body_t *self, json_obj
 //  Add string value with a given key.
 //
 VSSC_PUBLIC void
-vssc_http_json_body_add_string_value(vssc_http_json_body_t *self, vsc_str_t key, vsc_str_t value) {
+vssc_json_object_add_string_value(vssc_json_object_t *self, vsc_str_t key, vsc_str_t value) {
 
     VSSC_ASSERT_PTR(self);
     VSSC_ASSERT_PTR(self->json_obj);
@@ -347,7 +347,7 @@ vssc_http_json_body_add_string_value(vssc_http_json_body_t *self, vsc_str_t key,
 //  Returns error, if given key is not found or type mismatch.
 //
 VSSC_PUBLIC vsc_str_t
-vssc_http_json_body_get_string_value(const vssc_http_json_body_t *self, vsc_str_t key, vssc_error_t *error) {
+vssc_json_object_get_string_value(const vssc_json_object_t *self, vsc_str_t key, vssc_error_t *error) {
 
     VSSC_ASSERT_PTR(self);
     VSSC_ASSERT_PTR(self->json_obj);
@@ -380,7 +380,7 @@ vssc_http_json_body_get_string_value(const vssc_http_json_body_t *self, vsc_str_
 //  Add integer value with a given key.
 //
 VSSC_PUBLIC void
-vssc_http_json_body_add_int_value(vssc_http_json_body_t *self, vsc_str_t key, int value) {
+vssc_json_object_add_int_value(vssc_json_object_t *self, vsc_str_t key, int value) {
 
     VSSC_ASSERT_PTR(self);
     VSSC_ASSERT_PTR(self->json_obj);
@@ -407,7 +407,7 @@ vssc_http_json_body_add_int_value(vssc_http_json_body_t *self, vsc_str_t key, in
 //  Returns error, if given key is not found or type mismatch.
 //
 VSSC_PUBLIC int
-vssc_http_json_body_get_int_value(const vssc_http_json_body_t *self, vsc_str_t key, vssc_error_t *error) {
+vssc_json_object_get_int_value(const vssc_json_object_t *self, vsc_str_t key, vssc_error_t *error) {
 
     VSSC_ASSERT_PTR(self);
     VSSC_ASSERT_PTR(self->json_obj);
@@ -440,7 +440,7 @@ vssc_http_json_body_get_int_value(const vssc_http_json_body_t *self, vsc_str_t k
 //  Return JSON body as string.
 //
 VSSC_PUBLIC vsc_str_t
-vssc_http_json_body_as_str(const vssc_http_json_body_t *self) {
+vssc_json_object_as_str(const vssc_json_object_t *self) {
 
     VSSC_ASSERT_PTR(self);
     VSSC_ASSERT_PTR(self->json_obj);
@@ -454,8 +454,8 @@ vssc_http_json_body_as_str(const vssc_http_json_body_t *self) {
 //
 //  Parse a given JSON string.
 //
-VSSC_PUBLIC vssc_http_json_body_t *
-vssc_http_json_body_parse(vsc_str_t json, vssc_error_t *error) {
+VSSC_PUBLIC vssc_json_object_t *
+vssc_json_object_parse(vsc_str_t json, vssc_error_t *error) {
 
     json_tokener *tokener = json_tokener_new();
     VSSC_ASSERT_ALLOC(tokener);
@@ -469,5 +469,5 @@ vssc_http_json_body_parse(vsc_str_t json, vssc_error_t *error) {
         return NULL;
     }
 
-    return vssc_http_json_body_new_with_json_obj(&json_obj);
+    return vssc_json_object_new_with_json_obj(&json_obj);
 }

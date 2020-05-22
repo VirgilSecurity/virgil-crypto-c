@@ -99,17 +99,17 @@ set_property(
 )
 
 set_property(
-    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vssc_http_json_body.h"
-    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
-)
-
-set_property(
     SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vssc_http_request.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
 
 set_property(
     SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vssc_http_response.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
+)
+
+set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vssc_json_object.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
 
@@ -146,12 +146,12 @@ target_sources(core_sdk
             "$<$<BOOL:${VSSC_HTTP_HEADER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/private/vssc_http_header_defs.h>"
             "$<$<BOOL:${VSSC_HTTP_HEADER_LIST}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vssc_http_header_list.h>"
             "$<$<BOOL:${VSSC_HTTP_HEADER_LIST}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/private/vssc_http_header_list_defs.h>"
-            "$<$<BOOL:${VSSC_HTTP_JSON_BODY}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vssc_http_json_body.h>"
-            "$<$<BOOL:${VSSC_HTTP_JSON_BODY}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/private/vssc_http_json_body_defs.h>"
             "$<$<BOOL:${VSSC_HTTP_REQUEST}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vssc_http_request.h>"
             "$<$<BOOL:${VSSC_HTTP_REQUEST}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/private/vssc_http_request_defs.h>"
             "$<$<BOOL:${VSSC_HTTP_RESPONSE}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vssc_http_response.h>"
             "$<$<BOOL:${VSSC_HTTP_RESPONSE}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/private/vssc_http_response_defs.h>"
+            "$<$<BOOL:${VSSC_JSON_OBJECT}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vssc_json_object.h>"
+            "$<$<BOOL:${VSSC_JSON_OBJECT}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/private/vssc_json_object_defs.h>"
             "$<$<BOOL:${VSSC_JWT}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vssc_jwt.h>"
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/private/vssc_jwt_private.h"
             "$<$<BOOL:${VSSC_JWT}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/private/vssc_jwt_defs.h>"
@@ -174,12 +174,12 @@ target_sources(core_sdk
             "$<$<BOOL:${VSSC_HTTP_HEADER}>:${CMAKE_CURRENT_LIST_DIR}/src/vssc_http_header_defs.c>"
             "$<$<BOOL:${VSSC_HTTP_HEADER_LIST}>:${CMAKE_CURRENT_LIST_DIR}/src/vssc_http_header_list.c>"
             "$<$<BOOL:${VSSC_HTTP_HEADER_LIST}>:${CMAKE_CURRENT_LIST_DIR}/src/vssc_http_header_list_defs.c>"
-            "$<$<BOOL:${VSSC_HTTP_JSON_BODY}>:${CMAKE_CURRENT_LIST_DIR}/src/vssc_http_json_body.c>"
-            "$<$<BOOL:${VSSC_HTTP_JSON_BODY}>:${CMAKE_CURRENT_LIST_DIR}/src/vssc_http_json_body_defs.c>"
             "$<$<BOOL:${VSSC_HTTP_REQUEST}>:${CMAKE_CURRENT_LIST_DIR}/src/vssc_http_request.c>"
             "$<$<BOOL:${VSSC_HTTP_REQUEST}>:${CMAKE_CURRENT_LIST_DIR}/src/vssc_http_request_defs.c>"
             "$<$<BOOL:${VSSC_HTTP_RESPONSE}>:${CMAKE_CURRENT_LIST_DIR}/src/vssc_http_response.c>"
             "$<$<BOOL:${VSSC_HTTP_RESPONSE}>:${CMAKE_CURRENT_LIST_DIR}/src/vssc_http_response_defs.c>"
+            "$<$<BOOL:${VSSC_JSON_OBJECT}>:${CMAKE_CURRENT_LIST_DIR}/src/vssc_json_object.c>"
+            "$<$<BOOL:${VSSC_JSON_OBJECT}>:${CMAKE_CURRENT_LIST_DIR}/src/vssc_json_object_defs.c>"
             "$<$<BOOL:${VSSC_JWT}>:${CMAKE_CURRENT_LIST_DIR}/src/vssc_jwt.c>"
             "$<$<BOOL:${VSSC_JWT}>:${CMAKE_CURRENT_LIST_DIR}/src/vssc_jwt_defs.c>"
             "$<$<BOOL:${VSSC_JWT_GENERATOR}>:${CMAKE_CURRENT_LIST_DIR}/src/vssc_jwt_generator.c>"

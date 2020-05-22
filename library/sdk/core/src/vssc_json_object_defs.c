@@ -37,6 +37,12 @@
 // clang-format off
 
 
+//  @description
+// --------------------------------------------------------------------------
+//  Class 'json object' types definition.
+// --------------------------------------------------------------------------
+
+
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -44,27 +50,10 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-
-//  @description
-// --------------------------------------------------------------------------
-//  Class 'http json body' types definition.
-// --------------------------------------------------------------------------
-
-#ifndef VSSC_HTTP_JSON_BODY_DEFS_H_INCLUDED
-#define VSSC_HTTP_JSON_BODY_DEFS_H_INCLUDED
-
-#include "vssc_library.h"
-#include "vssc_atomic.h"
-
-#include <json-c/json.h>
+#include "vssc_json_object_defs.h"
 
 // clang-format on
 //  @end
-
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 
 //  @generated
@@ -73,35 +62,9 @@ extern "C" {
 //  Generated section start.
 // --------------------------------------------------------------------------
 
-//
-//  Handle 'http json body' context.
-//
-struct vssc_http_json_body_t {
-    //
-    //  Function do deallocate self context.
-    //
-    vssc_dealloc_fn self_dealloc_cb;
-    //
-    //  Reference counter.
-    //
-    VSSC_ATOMIC size_t refcnt;
-
-    json_object *json_obj;
-};
-
 
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
-//  @end
-
-
-#ifdef __cplusplus
-}
-#endif
-
-
-//  @footer
-#endif // VSSC_HTTP_JSON_BODY_DEFS_H_INCLUDED
 //  @end

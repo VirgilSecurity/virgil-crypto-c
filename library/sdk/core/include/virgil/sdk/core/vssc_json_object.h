@@ -47,25 +47,23 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  This is an umbrella header that includes library private headers.
+//  Minimal JSON object.
 // --------------------------------------------------------------------------
 
-#ifndef VSSC_CORE_SDK_PRIVATE_H_INCLUDED
-#define VSSC_CORE_SDK_PRIVATE_H_INCLUDED
+#ifndef VSSC_JSON_OBJECT_H_INCLUDED
+#define VSSC_JSON_OBJECT_H_INCLUDED
 
-#include "vssc_atomic.h"
-#include "vssc_http_header_defs.h"
-#include "vssc_http_header_list_defs.h"
-#include "vssc_http_request_defs.h"
-#include "vssc_http_response_defs.h"
-#include "vssc_json_object_defs.h"
-#include "vssc_jwt_defs.h"
-#include "vssc_jwt_generator_defs.h"
-#include "vssc_jwt_header.h"
-#include "vssc_jwt_header_defs.h"
-#include "vssc_jwt_payload.h"
-#include "vssc_jwt_payload_defs.h"
-#include "vssc_jwt_private.h"
+#include "vssc_library.h"
+#include "vssc_error.h"
+#include "vssc_json_object.h"
+
+#if !VSSC_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <virgil/crypto/common/vsc_str.h>
+#endif
+
+#if VSSC_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <VSCCommon/vsc_str.h>
+#endif
 
 // clang-format on
 //  @end
@@ -82,6 +80,93 @@ extern "C" {
 //  Generated section start.
 // --------------------------------------------------------------------------
 
+//
+//  Handle 'json object' context.
+//
+typedef struct vssc_json_object_t vssc_json_object_t;
+
+//
+//  Return size of 'vssc_json_object_t'.
+//
+VSSC_PUBLIC size_t
+vssc_json_object_ctx_size(void);
+
+//
+//  Perform initialization of pre-allocated context.
+//
+VSSC_PUBLIC void
+vssc_json_object_init(vssc_json_object_t *self);
+
+//
+//  Release all inner resources including class dependencies.
+//
+VSSC_PUBLIC void
+vssc_json_object_cleanup(vssc_json_object_t *self);
+
+//
+//  Allocate context and perform it's initialization.
+//
+VSSC_PUBLIC vssc_json_object_t *
+vssc_json_object_new(void);
+
+//
+//  Release all inner resources and deallocate context if needed.
+//  It is safe to call this method even if the context was statically allocated.
+//
+VSSC_PUBLIC void
+vssc_json_object_delete(vssc_json_object_t *self);
+
+//
+//  Delete given context and nullifies reference.
+//  This is a reverse action of the function 'vssc_json_object_new ()'.
+//
+VSSC_PUBLIC void
+vssc_json_object_destroy(vssc_json_object_t **self_ref);
+
+//
+//  Copy given class context by increasing reference counter.
+//
+VSSC_PUBLIC vssc_json_object_t *
+vssc_json_object_shallow_copy(vssc_json_object_t *self);
+
+//
+//  Add string value with a given key.
+//
+VSSC_PUBLIC void
+vssc_json_object_add_string_value(vssc_json_object_t *self, vsc_str_t key, vsc_str_t value);
+
+//
+//  Return a string value for a given key.
+//  Returns error, if given key is not found or type mismatch.
+//
+VSSC_PUBLIC vsc_str_t
+vssc_json_object_get_string_value(const vssc_json_object_t *self, vsc_str_t key, vssc_error_t *error);
+
+//
+//  Add integer value with a given key.
+//
+VSSC_PUBLIC void
+vssc_json_object_add_int_value(vssc_json_object_t *self, vsc_str_t key, int value);
+
+//
+//  Return a integer value for a given key.
+//  Returns error, if given key is not found or type mismatch.
+//
+VSSC_PUBLIC int
+vssc_json_object_get_int_value(const vssc_json_object_t *self, vsc_str_t key, vssc_error_t *error);
+
+//
+//  Return JSON body as string.
+//
+VSSC_PUBLIC vsc_str_t
+vssc_json_object_as_str(const vssc_json_object_t *self);
+
+//
+//  Parse a given JSON string.
+//
+VSSC_PUBLIC vssc_json_object_t *
+vssc_json_object_parse(vsc_str_t json, vssc_error_t *error);
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.
@@ -96,5 +181,5 @@ extern "C" {
 
 
 //  @footer
-#endif // VSSC_CORE_SDK_PRIVATE_H_INCLUDED
+#endif // VSSC_JSON_OBJECT_H_INCLUDED
 //  @end
