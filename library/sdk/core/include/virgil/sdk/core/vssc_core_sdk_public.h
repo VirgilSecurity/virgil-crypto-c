@@ -66,6 +66,7 @@
 #include "vssc_library.h"
 #include "vssc_memory.h"
 #include "vssc_platform.h"
+#include "vssc_raw_service_response.h"
 #include "vssc_status.h"
 
 // clang-format on

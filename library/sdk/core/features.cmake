@@ -58,6 +58,7 @@ option(VSSC_HTTP_HEADER "Enable class 'http header'." ON)
 option(VSSC_HTTP_HEADER_LIST "Enable class 'http header list'." ON)
 option(VSSC_HTTP_REQUEST "Enable class 'http request'." ON)
 option(VSSC_HTTP_RESPONSE "Enable class 'http response'." ON)
+option(VSSC_RAW_SERVICE_RESPONSE "Enable class 'raw service response'." ON)
 mark_as_advanced(
         VSSC_LIBRARY
         VSSC_MULTI_THREADING
@@ -72,6 +73,7 @@ mark_as_advanced(
         VSSC_HTTP_HEADER_LIST
         VSSC_HTTP_REQUEST
         VSSC_HTTP_RESPONSE
+        VSSC_RAW_SERVICE_RESPONSE
         )
 
 if(VSSC_JSON_OBJECT AND NOT VSC_STR_MUTABLE)

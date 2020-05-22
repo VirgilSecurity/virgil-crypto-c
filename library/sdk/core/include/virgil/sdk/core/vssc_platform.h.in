@@ -130,6 +130,10 @@ extern "C" {
 #cmakedefine01 VSSC_HTTP_RESPONSE
 #endif
 
+#ifndef VSSC_RAW_SERVICE_RESPONSE
+#cmakedefine01 VSSC_RAW_SERVICE_RESPONSE
+#endif
+
 //
 //  Defines namespace include prefix for project 'common'.
 //

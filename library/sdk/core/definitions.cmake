@@ -66,4 +66,5 @@ target_compile_definitions(core_sdk
             "VSSC_HTTP_HEADER_LIST=$<BOOL:${VSSC_HTTP_HEADER_LIST}>"
             "VSSC_HTTP_REQUEST=$<BOOL:${VSSC_HTTP_REQUEST}>"
             "VSSC_HTTP_RESPONSE=$<BOOL:${VSSC_HTTP_RESPONSE}>"
+            "VSSC_RAW_SERVICE_RESPONSE=$<BOOL:${VSSC_RAW_SERVICE_RESPONSE}>"
         )

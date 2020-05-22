@@ -66,6 +66,7 @@
 #include "vssc_jwt_payload.h"
 #include "vssc_jwt_payload_defs.h"
 #include "vssc_jwt_private.h"
+#include "vssc_raw_service_response_defs.h"
 
 // clang-format on
 //  @end

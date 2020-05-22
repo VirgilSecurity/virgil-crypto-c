@@ -1,5 +1,5 @@
-<class name="http json body">
-    Handle HTTP body with 'application/json' content type .
+<class name="json object">
+    Minimal JSON object.
 
     <require header="json-c/json.h" library="json-c" scope="context"/>
     <require class="str mutable" project="common"/>

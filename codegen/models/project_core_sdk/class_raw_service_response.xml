@@ -1,0 +1,115 @@
+<class name="raw service response">
+    This class contains HTTP response information alongside with information
+    that is specific for Virgil services.
+
+
+    <property name="http body" class="json object"/>
+    <property name="http status code" type="size"/>
+
+
+    <variable name="k json key service error code" type="string" declaration="private">
+        <value value="code" type="string"/>
+        <string access="readonly" length="derived"/>
+    </variable>
+
+
+    <variable name="k json key service error code str" class="str" declaration="private">
+        <value value=".(class_raw_service_response_variable_k_json_key_service_error_code)">
+            <array length="derived"/>
+        </value>
+
+        <value value="sizeof(.(class_raw_service_response_variable_k_json_key_service_error_code)) - 1" type="size"/>
+    </variable>
+
+
+    <variable name="k json key service error message" type="string" declaration="private">
+        <value value="message" type="string"/>
+        <string access="readonly" length="derived"/>
+    </variable>
+
+
+    <variable name="k json key service error message str" class="str" declaration="private">
+        <value value=".(class_raw_service_response_variable_k_json_key_service_error_message)">
+            <array length="derived"/>
+        </value>
+
+        <value value="sizeof(.(class_raw_service_response_variable_k_json_key_service_error_message)) - 1" type="size"/>
+    </variable>
+
+
+    <constructor name="with" declaration="private">
+        Creat fully defined object.
+
+        <argument name="http status code" type="size"/>
+        <argument name="http body" class="json object" access="disown"/>
+    </constructor>
+
+
+    <method name="create with http response" is_static="1">
+        Create self from the parsed HTTP response.
+
+        <argument name="http response" class="http response" access="readwrite"/>
+        <argument name="error" class="error" access="readwrite"/>
+
+        <return class="self" access="disown"/>
+    </method>
+
+
+    <method name="http status code" is_const="1">
+        Return HTTP status code.
+
+        <return type="size"/>
+    </method>
+
+
+    <method name="is success" is_const="1">
+        Return true if correspond HTTP request was succeed.
+
+        <return type="boolean"/>
+    </method>
+
+
+    <method name="has body" is_const="1">
+        Return true if response contains a valid body.
+
+        <return type="boolean"/>
+    </method>
+
+
+    <method name="http body" is_const="1">
+        Return response body as JSON object.
+
+        <return class="json object"/>
+    </method>
+
+
+    <method name="has service error" is_const="1">
+        Return true if response handles a service error and it's description.
+
+        <return type="boolean"/>
+    </method>
+
+
+    <method name="service error code" is_const="1">
+        Return service error code.
+
+        <return type="size"/>
+    </method>
+
+
+    <method name="service error description" is_const="1">
+        Return service error description.
+        Note, empty string can be returned.
+
+        <return class="str"/>
+    </method>
+
+
+    <method name="is http status code success" is_static="1" declaration="private">
+        Check status code range [200..299].
+
+        <argument name="http status code" type="size"/>
+
+        <return type="boolean"/>
+    </method>
+</class>
