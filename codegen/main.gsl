@@ -326,7 +326,7 @@ function run_main ()
     global.interfaces = XML.new ("interfaces")
     for main.project
         my.loaded_project = load_project_model (project, project)
-        project_resolve (my.loaded_project)
+        project_resolve (my.loaded_project, main)
         for my.loaded_project.interface
             my.loaded_interface = load_project_model (my.loaded_project, interface, global.interfaces)
             my.loaded_interface.project = my.loaded_project.name
@@ -364,7 +364,7 @@ function run_main ()
         my.loaded_project = load_project_model (project, project)
         my.loaded_project.skip_codegen_c = is_true (project.skip_codegen_c)
         my.loaded_project.skip_codegen_wrappers = is_true (project.skip_codegen_wrappers)
-        project_resolve (my.loaded_project)
+        project_resolve (my.loaded_project, main)
 
         if !string_empty(my.loaded_project.wrappers)
             for main.wrapper where my.loaded_project.wrappers = "all" \

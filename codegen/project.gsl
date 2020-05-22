@@ -46,12 +46,17 @@ gsl from "common.gsl"
 # ---------------------------------------------------------------------------
 #   Add missed attributes and components to the 'project'.
 # ---------------------------------------------------------------------------
-function project_resolve (project)
+function project_resolve (project, main)
     check_argument (my, "project")
 
     if count (my.project.version) = 0
         new version to my.project
         endnew
+    endif
+
+    if count (my.project.license) = 0
+        check_argument (my, "main")
+        copy main->license to my.project
     endif
 
     assert_item (my.project, "version", my)
