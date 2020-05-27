@@ -5,6 +5,13 @@
     <property name="value" class="str mutable"/>
 
 
+    <constant name="name authorization" type="string" visibility="public" definition="private">
+        Header name: Authorization
+
+        <value value="Authorization"/>
+    </constant>
+
+
     <constant name="name content type" type="string" visibility="public" definition="private">
         Header name: Content-Type
 
@@ -30,14 +37,14 @@
     </constructor>
 
 
-    <method name="name">
+    <method name="name" is_const="1">
         Return HTTP header name.
 
         <return class="str"/>
     </method>
 
 
-    <method name="value">
+    <method name="value" is_const="1">
         Return HTTP header value.
 
         <return class="str"/>

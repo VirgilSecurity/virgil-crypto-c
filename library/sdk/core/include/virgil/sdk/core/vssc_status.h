@@ -109,13 +109,17 @@ enum vssc_status_t {
     //
     vssc_status_JSON_VALUE_IS_NOT_BASE64 = -204,
     //
+    //  Failed to send HTTP request.
+    //
+    vssc_status_HTTP_SEND_REQUEST_FAILED = -301,
+    //
     //  Got invalid HTTP status code.
     //
-    vssc_status_HTTP_STATUS_CODE_INVALID = -301,
+    vssc_status_HTTP_STATUS_CODE_INVALID = -302,
     //
     //  Failed to parse JWT HTTP body.
     //
-    vssc_status_HTTP_BODY_PARSE_FAILED = -302
+    vssc_status_HTTP_BODY_PARSE_FAILED = -303
 };
 typedef enum vssc_status_t vssc_status_t;
 

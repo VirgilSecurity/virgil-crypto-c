@@ -88,21 +88,22 @@ vssc_virgil_http_response_cleanup_ctx(vssc_virgil_http_response_t *self);
 //
 static void
 vssc_virgil_http_response_init_with(vssc_virgil_http_response_t *self, size_t http_status_code,
-        vssc_json_object_t **http_body_ref);
+        vssc_http_header_list_t **http_headers_ref, vssc_json_object_t **http_body_ref);
 
 //
 //  Creat fully defined object.
 //
 static void
 vssc_virgil_http_response_init_ctx_with(vssc_virgil_http_response_t *self, size_t http_status_code,
-        vssc_json_object_t **http_body_ref);
+        vssc_http_header_list_t **http_headers_ref, vssc_json_object_t **http_body_ref);
 
 //
 //  Allocate class context and perform it's initialization.
 //  Creat fully defined object.
 //
 static vssc_virgil_http_response_t *
-vssc_virgil_http_response_new_with(size_t http_status_code, vssc_json_object_t **http_body_ref);
+vssc_virgil_http_response_new_with(size_t http_status_code, vssc_http_header_list_t **http_headers_ref,
+        vssc_json_object_t **http_body_ref);
 
 //
 //  Check status code range [200..299].
@@ -185,7 +186,7 @@ vssc_virgil_http_response_new(void) {
 //
 static void
 vssc_virgil_http_response_init_with(vssc_virgil_http_response_t *self, size_t http_status_code,
-        vssc_json_object_t **http_body_ref) {
+        vssc_http_header_list_t **http_headers_ref, vssc_json_object_t **http_body_ref) {
 
     VSSC_ASSERT_PTR(self);
 
@@ -193,7 +194,7 @@ vssc_virgil_http_response_init_with(vssc_virgil_http_response_t *self, size_t ht
 
     self->refcnt = 1;
 
-    vssc_virgil_http_response_init_ctx_with(self, http_status_code, http_body_ref);
+    vssc_virgil_http_response_init_ctx_with(self, http_status_code, http_headers_ref, http_body_ref);
 }
 
 //
@@ -201,12 +202,13 @@ vssc_virgil_http_response_init_with(vssc_virgil_http_response_t *self, size_t ht
 //  Creat fully defined object.
 //
 static vssc_virgil_http_response_t *
-vssc_virgil_http_response_new_with(size_t http_status_code, vssc_json_object_t **http_body_ref) {
+vssc_virgil_http_response_new_with(size_t http_status_code, vssc_http_header_list_t **http_headers_ref,
+        vssc_json_object_t **http_body_ref) {
 
     vssc_virgil_http_response_t *self = (vssc_virgil_http_response_t *) vssc_alloc(sizeof (vssc_virgil_http_response_t));
     VSSC_ASSERT_ALLOC(self);
 
-    vssc_virgil_http_response_init_with(self, http_status_code, http_body_ref);
+    vssc_virgil_http_response_init_with(self, http_status_code, http_headers_ref, http_body_ref);
 
     self->self_dealloc_cb = vssc_dealloc;
 
@@ -321,19 +323,24 @@ vssc_virgil_http_response_cleanup_ctx(vssc_virgil_http_response_t *self) {
     VSSC_ASSERT_PTR(self);
 
     vssc_json_object_destroy(&self->http_body);
+    vssc_http_header_list_destroy(&self->http_headers);
 }
 
 //
 //  Creat fully defined object.
 //
 static void
-vssc_virgil_http_response_init_ctx_with(
-        vssc_virgil_http_response_t *self, size_t http_status_code, vssc_json_object_t **http_body_ref) {
+vssc_virgil_http_response_init_ctx_with(vssc_virgil_http_response_t *self, size_t http_status_code,
+        vssc_http_header_list_t **http_headers_ref, vssc_json_object_t **http_body_ref) {
 
     VSSC_ASSERT_PTR(self);
+    VSSC_ASSERT_REF(http_headers_ref);
     VSSC_ASSERT(100 <= http_status_code && http_status_code <= 599);
 
     self->http_status_code = http_status_code;
+
+    self->http_headers = *http_headers_ref;
+    *http_headers_ref = NULL;
 
     if (http_body_ref) {
         self->http_body = *http_body_ref;
@@ -355,17 +362,24 @@ vssc_virgil_http_response_create_from_http_response(const vssc_http_response_t *
         return NULL;
     }
 
+    const vssc_http_header_list_t *headers = vssc_http_response_headers(http_response);
+    VSSC_ASSERT_PTR(headers);
+
+    vssc_http_header_list_t *headers_copy = vssc_http_header_list_shallow_copy((vssc_http_header_list_t *)headers);
+
     // TODO: check that header content-type = application/json
 
     vsc_str_t http_body_str = vssc_http_response_body(http_response);
     if (vsc_str_is_empty(http_body_str)) {
-        return vssc_virgil_http_response_new_with(http_status_code, NULL);
+        return vssc_virgil_http_response_new_with(http_status_code, &headers_copy, NULL);
     }
 
     vssc_json_object_t *http_body = vssc_json_object_parse(http_body_str, error);
     if (http_body) {
-        return vssc_virgil_http_response_new_with(http_status_code, &http_body);
+        return vssc_virgil_http_response_new_with(http_status_code, &headers_copy, &http_body);
     }
+
+    vssc_http_header_list_destroy(&headers_copy);
 
     return NULL;
 }
@@ -473,6 +487,18 @@ vssc_virgil_http_response_service_error_description(const vssc_virgil_http_respo
     }
 
     return vssc_json_object_get_string_value(self->http_body, k_json_key_service_error_message_str, NULL);
+}
+
+//
+//  Return HTTP headers.
+//
+VSSC_PUBLIC const vssc_http_header_list_t *
+vssc_virgil_http_response_headers(const vssc_virgil_http_response_t *self) {
+
+    VSSC_ASSERT_PTR(self);
+    VSSC_ASSERT_PTR(self->http_headers);
+
+    return self->http_headers;
 }
 
 //

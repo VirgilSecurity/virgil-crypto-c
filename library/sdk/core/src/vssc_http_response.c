@@ -307,8 +307,9 @@ vssc_http_response_shallow_copy(vssc_http_response_t *self) {
 static void
 vssc_http_response_init_ctx(vssc_http_response_t *self) {
 
-    VSSC_UNUSED(self);
-    VSSC_ASSERT(0 && "The default constructor is forbidden.");
+    VSSC_ASSERT_PTR(self);
+
+    self->headers = vssc_http_header_list_new();
 }
 
 //
@@ -343,8 +344,7 @@ static void
 vssc_http_response_init_ctx_with_body(vssc_http_response_t *self, size_t status_code, vsc_str_t body) {
 
     VSSC_ASSERT_PTR(self);
-    VSSC_ASSERT(vsc_str_is_valid(body));
-    VSSC_ASSERT(!vsc_str_is_empty(body));
+    VSSC_ASSERT(vsc_str_is_valid_and_non_empty(body));
 
     vssc_http_response_init_ctx_with_status(self, status_code);
 
@@ -359,7 +359,7 @@ vssc_http_response_add_header(vssc_http_response_t *self, vsc_str_t name, vsc_st
 
     VSSC_ASSERT_PTR(self);
     VSSC_ASSERT(vsc_str_is_valid_and_non_empty(name));
-    VSSC_ASSERT(vsc_str_is_valid_and_non_empty(value));
+    VSSC_ASSERT(vsc_str_is_valid(value));
 
     vssc_http_header_t *header = vssc_http_header_new_with(name, value);
     vssc_http_header_list_add(self->headers, &header);

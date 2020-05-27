@@ -3,6 +3,7 @@
     that is specific for Virgil services.
 
 
+    <property name="http headers" class="http header list"/>
     <property name="http body" class="json object"/>
     <property name="http status code" type="size"/>
 
@@ -21,6 +22,7 @@
         Creat fully defined object.
 
         <argument name="http status code" type="size"/>
+        <argument name="http headers" class="http header list" access="disown"/>
         <argument name="http body" class="json object" access="disown"/>
     </constructor>
 
@@ -82,6 +84,13 @@
         Note, empty string can be returned.
 
         <return class="str"/>
+    </method>
+
+
+    <method name="headers" is_const="1">
+        Return HTTP headers.
+
+        <return class="http header list"/>
     </method>
 
 

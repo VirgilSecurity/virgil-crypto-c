@@ -59,6 +59,16 @@
 #include "vssc_error.h"
 #include "vssc_virgil_http_response.h"
 
+#if !VSSC_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <virgil/crypto/common/vsc_str.h>
+#   include <virgil/crypto/common/vsc_str_buffer.h>
+#endif
+
+#if VSSC_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <VSCCommon/vsc_str.h>
+#   include <VSCCommon/vsc_str_buffer.h>
+#endif
+
 // clang-format on
 //  @end
 
@@ -77,8 +87,24 @@ extern "C" {
 //
 //  Send request over HTTP.
 //
-VSSC_PUBLIC const vssc_virgil_http_response_t *
+VSSC_PUBLIC vssc_virgil_http_response_t *
 vssc_virgil_http_client_send(const vssc_http_request_t *http_request, const vssc_jwt_t *jwt, vssc_error_t *error);
+
+//
+//  Concatenate header name and header value as "NAME: VALUE".
+//  Note, given buffer is reset first and then strings are appended.
+//  Note, written string is null-terminated.
+//
+VSSC_PUBLIC void
+vssc_virgil_http_client_format_header(vsc_str_t name, vsc_str_t value, vsc_str_buffer_t *out_str);
+
+//
+//  Make authorization header as "Authorization: TYPE CREDENTIALS".
+//  Note, given buffer is reset first and then strings are appended.
+//  Note, written string is null-terminated.
+//
+VSSC_PUBLIC void
+vssc_virgil_http_client_format_authorization_header(vsc_str_t type, vsc_str_t credentials, vsc_str_buffer_t *out_str);
 
 
 // --------------------------------------------------------------------------

@@ -55,6 +55,7 @@
 #define VSSC_VIRGIL_HTTP_RESPONSE_H_INCLUDED
 
 #include "vssc_library.h"
+#include "vssc_http_header_list.h"
 #include "vssc_json_object.h"
 #include "vssc_http_response.h"
 #include "vssc_error.h"
@@ -180,6 +181,12 @@ vssc_virgil_http_response_service_error_code(const vssc_virgil_http_response_t *
 //
 VSSC_PUBLIC vsc_str_t
 vssc_virgil_http_response_service_error_description(const vssc_virgil_http_response_t *self);
+
+//
+//  Return HTTP headers.
+//
+VSSC_PUBLIC const vssc_http_header_list_t *
+vssc_virgil_http_response_headers(const vssc_virgil_http_response_t *self);
 
 
 // --------------------------------------------------------------------------

@@ -62,3 +62,5 @@ _add_test (test_jwt_generator)
 _add_test (test_jwt_header)
 _add_test (test_jwt_payload)
 _add_test (test_jwt)
+
+_add_test (integration_test_virgil_http_client)

@@ -41,10 +41,12 @@ target_sources(test_data_core_sdk
         PRIVATE
             "${CMAKE_CURRENT_LIST_DIR}/include/test_data_base64_url.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/test_data_jwt.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/test_data_virgil_http_client.h"
 
         PRIVATE
             "${CMAKE_CURRENT_LIST_DIR}/src/test_data_base64_url.c"
             "${CMAKE_CURRENT_LIST_DIR}/src/test_data_jwt.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/test_data_virgil_http_client.c"
         )
 
 target_include_directories(test_data_core_sdk

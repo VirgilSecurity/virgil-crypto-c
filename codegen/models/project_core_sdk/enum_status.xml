@@ -37,11 +37,15 @@
         Requested JSON binary value is not base64 encoded.
     </constant>
 
-    <constant name="http status code invalid" value="-301">
+    <constant name="http send request failed" value="-301">
+        Failed to send HTTP request.
+    </constant>
+
+    <constant name="http status code invalid" value="-302">
         Got invalid HTTP status code.
     </constant>
 
-    <constant name="http body parse failed" value="-302">
+    <constant name="http body parse failed" value="-303">
         Failed to parse JWT HTTP body.
     </constant>
 </enum>

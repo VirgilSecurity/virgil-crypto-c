@@ -430,7 +430,7 @@ vssc_http_request_add_header(vssc_http_request_t *self, vsc_str_t name, vsc_str_
 //  Return HTTP method.
 //
 VSSC_PUBLIC vsc_str_t
-vssc_http_request_method(vssc_http_request_t *self) {
+vssc_http_request_method(const vssc_http_request_t *self) {
 
     VSSC_ASSERT_PTR(self);
 
@@ -441,7 +441,7 @@ vssc_http_request_method(vssc_http_request_t *self) {
 //  Return HTTP url.
 //
 VSSC_PUBLIC vsc_str_t
-vssc_http_request_url(vssc_http_request_t *self) {
+vssc_http_request_url(const vssc_http_request_t *self) {
 
     VSSC_ASSERT_PTR(self);
 
@@ -452,7 +452,7 @@ vssc_http_request_url(vssc_http_request_t *self) {
 //  Return HTTP body.
 //
 VSSC_PUBLIC vsc_str_t
-vssc_http_request_body(vssc_http_request_t *self) {
+vssc_http_request_body(const vssc_http_request_t *self) {
 
     VSSC_ASSERT_PTR(self);
 
@@ -463,7 +463,7 @@ vssc_http_request_body(vssc_http_request_t *self) {
 //  Return HTTP headers.
 //
 VSSC_PUBLIC const vssc_http_header_list_t *
-vssc_http_request_headers(vssc_http_request_t *self) {
+vssc_http_request_headers(const vssc_http_request_t *self) {
 
     VSSC_ASSERT_PTR(self);
     VSSC_ASSERT_PTR(self->headers);

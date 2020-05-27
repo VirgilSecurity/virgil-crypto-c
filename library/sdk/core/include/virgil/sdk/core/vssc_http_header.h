@@ -84,6 +84,16 @@ extern "C" {
 typedef struct vssc_http_header_t vssc_http_header_t;
 
 //
+//  Header name: Authorization
+//
+VSSC_PUBLIC extern const char vssc_http_header_name_authorization[];
+
+//
+//  Header name: Authorization
+//
+VSSC_PUBLIC extern const vsc_str_t vssc_http_header_name_authorization_str;
+
+//
 //  Header name: Content-Type
 //
 VSSC_PUBLIC extern const char vssc_http_header_name_content_type[];
@@ -171,13 +181,13 @@ vssc_http_header_shallow_copy(vssc_http_header_t *self);
 //  Return HTTP header name.
 //
 VSSC_PUBLIC vsc_str_t
-vssc_http_header_name(vssc_http_header_t *self);
+vssc_http_header_name(const vssc_http_header_t *self);
 
 //
 //  Return HTTP header value.
 //
 VSSC_PUBLIC vsc_str_t
-vssc_http_header_value(vssc_http_header_t *self);
+vssc_http_header_value(const vssc_http_header_t *self);
 
 
 // --------------------------------------------------------------------------

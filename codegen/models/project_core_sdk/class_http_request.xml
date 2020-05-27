@@ -60,28 +60,28 @@
     </method>
 
 
-    <method name="method">
+    <method name="method" is_const="1">
         Return HTTP method.
 
         <return class="str"/>
     </method>
 
 
-    <method name="url">
+    <method name="url" is_const="1">
         Return HTTP url.
 
         <return class="str"/>
     </method>
 
 
-    <method name="body">
+    <method name="body" is_const="1">
         Return HTTP body.
 
         <return class="str"/>
     </method>
 
 
-    <method name="headers">
+    <method name="headers" is_const="1">
         Return HTTP headers.
 
         <return class="http header list"/>

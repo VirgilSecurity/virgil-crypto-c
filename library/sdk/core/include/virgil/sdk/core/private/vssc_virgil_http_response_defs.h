@@ -55,6 +55,7 @@
 
 #include "vssc_library.h"
 #include "vssc_atomic.h"
+#include "vssc_http_header_list.h"
 #include "vssc_json_object.h"
 
 // clang-format on
@@ -84,6 +85,8 @@ struct vssc_virgil_http_response_t {
     //  Reference counter.
     //
     VSSC_ATOMIC size_t refcnt;
+
+    vssc_http_header_list_t *http_headers;
 
     vssc_json_object_t *http_body;
 

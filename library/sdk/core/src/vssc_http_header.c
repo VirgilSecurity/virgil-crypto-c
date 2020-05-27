@@ -91,6 +91,19 @@ static void
 vssc_http_header_init_ctx_with(vssc_http_header_t *self, vsc_str_t name, vsc_str_t value);
 
 //
+//  Header name: Authorization
+//
+VSSC_PUBLIC const char vssc_http_header_name_authorization[] = "Authorization";
+
+//
+//  Header name: Authorization
+//
+VSSC_PUBLIC const vsc_str_t vssc_http_header_name_authorization_str = {
+    vssc_http_header_name_authorization,
+    sizeof(vssc_http_header_name_authorization) - 1
+};
+
+//
 //  Header name: Content-Type
 //
 VSSC_PUBLIC const char vssc_http_header_name_content_type[] = "Content-Type";
@@ -341,7 +354,7 @@ vssc_http_header_init_ctx_with(vssc_http_header_t *self, vsc_str_t name, vsc_str
 //  Return HTTP header name.
 //
 VSSC_PUBLIC vsc_str_t
-vssc_http_header_name(vssc_http_header_t *self) {
+vssc_http_header_name(const vssc_http_header_t *self) {
 
     VSSC_ASSERT_PTR(self);
 
@@ -352,7 +365,7 @@ vssc_http_header_name(vssc_http_header_t *self) {
 //  Return HTTP header value.
 //
 VSSC_PUBLIC vsc_str_t
-vssc_http_header_value(vssc_http_header_t *self) {
+vssc_http_header_value(const vssc_http_header_t *self) {
 
     VSSC_ASSERT_PTR(self);
 

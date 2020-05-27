@@ -155,7 +155,7 @@ vssc_http_header_list_has_next(const vssc_http_header_list_t *self);
 //
 //  Return next list node if exists, or NULL otherwise.
 //
-VSSC_PUBLIC vssc_http_header_list_t *
+VSSC_PUBLIC const vssc_http_header_list_t *
 vssc_http_header_list_next(const vssc_http_header_list_t *self);
 
 //
@@ -167,7 +167,7 @@ vssc_http_header_list_has_prev(const vssc_http_header_list_t *self);
 //
 //  Return previous list node if exists, or NULL otherwise.
 //
-VSSC_PUBLIC vssc_http_header_list_t *
+VSSC_PUBLIC const vssc_http_header_list_t *
 vssc_http_header_list_prev(const vssc_http_header_list_t *self);
 
 //
