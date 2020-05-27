@@ -1,0 +1,19 @@
+<enum name="status" definition="public">
+    Defines the library status codes.
+
+    <constant name="success" value="0">
+        No errors was occurred.
+    </constant>
+
+    <constant name="internal error" value="-1">
+        Met internal inconsistency.
+    </constant>
+
+    <constant name="virgil http response contains error" value="-101">
+        Response processing failed because given Virgil HTTP Response handles error.
+    </constant>
+
+    <constant name="unexpected http response body" value="-102">
+        Unexpectable body within given HTTP response.
+    </constant>
+</enum>

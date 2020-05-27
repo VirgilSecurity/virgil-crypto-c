@@ -95,6 +95,7 @@ option(VIRGIL_LIB_ED25519 "Build 'ed25519' library" ON)
 option(VIRGIL_LIB_RATCHET "Build 'ratchet' library" ON)
 option(VIRGIL_LIB_PHE "Build 'phe' library" ON)
 option(VIRGIL_SDK_CORE "Build 'core' SDK" ON)
+option(VIRGIL_SDK_PYTHIA "Build 'pythia' SDK" ON)
 
 #
 # Programs
@@ -238,6 +239,10 @@ endif()
 if(VIRGIL_SDK_CORE)
     find_package(CURL)
     add_subdirectory("library/sdk/core")
+endif()
+
+if(VIRGIL_SDK_PYTHIA)
+    add_subdirectory("library/sdk/pythia")
 endif()
 
 

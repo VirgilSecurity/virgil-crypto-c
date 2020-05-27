@@ -34,44 +34,27 @@
 
 cmake_minimum_required(VERSION 3.12 FATAL_ERROR)
 
-project(virgil_crypto_c_tests VERSION ${virgil_crypto_VERSION} LANGUAGES C)
+project(virgil_crypto_c_pythia_sdk_tests VERSION ${virgil_crypto_c_tests_VERSION} LANGUAGES C)
 
-if (VIRGIL_C_MT_TESTING)
-    find_package(Threads)
-endif()
+add_subdirectory(data)
 
-add_subdirectory("${CMAKE_CURRENT_LIST_DIR}/unity")
-add_subdirectory("${CMAKE_CURRENT_LIST_DIR}/test_utils")
+# ---------------------------------------------------------------------------
+#   Single thread tests
+# ---------------------------------------------------------------------------
+macro(_add_test test)
+    add_executable(${test} ${test}.c)
+    target_add_filename_definitions(${test})
+    target_compile_definitions(${test} PRIVATE "ENABLE_HEAVY_TESTS=$<BOOL:${ENABLE_HEAVY_TESTS}>")
+    target_link_libraries(${test} test_utils test_data_pythia_sdk vsc::pythia_sdk)
+    set_target_properties(${test} PROPERTIES C_STANDARD "99")
+    add_test (NAME ${test} COMMAND ${test})
+    enable_target_pedantic(${test})
 
-if(TARGET vsc::common)
-    add_subdirectory("${CMAKE_CURRENT_LIST_DIR}/common")
-endif()
+    set_tests_properties(${test} PROPERTIES LABELS "sdk;pythia")
 
-if(TARGET vsc::foundation)
-    add_subdirectory("${CMAKE_CURRENT_LIST_DIR}/foundation")
-endif()
+    if(COMMAND add_clangformat AND ENABLE_CLANGFORMAT)
+        add_clangformat(${test})
+    endif()
+endmacro()
 
-if(TARGET vsc::pythia)
-    add_subdirectory("${CMAKE_CURRENT_LIST_DIR}/pythia")
-endif()
-
-if(TARGET vsc::ratchet)
-    add_subdirectory("${CMAKE_CURRENT_LIST_DIR}/ratchet")
-endif()
-
-if(TARGET vsc::phe)
-    add_subdirectory("${CMAKE_CURRENT_LIST_DIR}/phe")
-endif()
-
-if(TARGET vsc::core_sdk)
-    add_subdirectory("${CMAKE_CURRENT_LIST_DIR}/sdk/core")
-endif()
-
-if(TARGET vsc::pythia_sdk)
-    add_subdirectory("${CMAKE_CURRENT_LIST_DIR}/sdk/pythia")
-endif()
-
-if(ENABLE_FUZZY_TESTING)
-    add_subdirectory("${CMAKE_CURRENT_LIST_DIR}/fuzzy")
-endif(ENABLE_FUZZY_TESTING)
-
+_add_test(test_sdk_pythia_client)

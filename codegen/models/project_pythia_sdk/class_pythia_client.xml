@@ -1,0 +1,78 @@
+<class name="pythia client">
+    Helps to communicate with Virgil Pythia Service.
+
+
+    <property name="brain key url" class="str buffer"/>
+
+
+    <constant name="k base url" type="string" visibility="private">
+        Base service URL.
+
+        <value value="https://api.virgilsecurity.com"/>
+    </constant>
+
+
+    <constant name="k brain key url path" type="string" visibility="private" >
+        POST /brainkey
+
+        <value value="/pythia/v1/brainkey"/>
+    </constant>
+
+
+    <constant name="k json key blinded password" type="string" visibility="private" >
+        JSON key: blinded_password
+
+        <value value="blinded_password"/>
+    </constant>
+
+
+    <constant name="k json key brainkey id" type="string" visibility="private" >
+        JSON key: brainkey_id
+
+        <value value="brainkey_id"/>
+    </constant>
+
+
+    <constant name="k json key seed" type="string" visibility="private" >
+        JSON key: seed
+
+        <value value="seed"/>
+    </constant>
+
+
+    <constructor name="with base url">
+        Create Pythia Client with a given Virgil Base URL, aka https://api.virgilsecurity.com
+
+        <argument name="url" class="str"/>
+    </constructor>
+
+
+    <method name="request generate seed" is_const="1">
+         Create request that generates seed using given blinded password.
+
+        <argument name="blinded password" class="data"/>
+
+        <return class="http request" project="core sdk" access="disown"/>
+    </method>
+
+
+    <method name="request generate seed with id" is_const="1">
+        Create request that generates seed using given blinded password and brainkey id.
+        Note, BrainKeyID can be empty.
+
+        <argument name="blinded password" class="data"/>
+        <argument name="brain key id" class="str"/>
+
+        <return class="http request" project="core sdk" access="disown"/>
+    </method>
+
+
+    <method name="process response from generate seed" is_const="1">
+        Map response to the correspond model.
+
+        <argument name="response" class="virgil http response" project="core sdk"/>
+        <argument name="error" class="error" access="readwrite"/>
+
+        <return class="brain key seed" access="disown"/>
+    </method>
+</class>

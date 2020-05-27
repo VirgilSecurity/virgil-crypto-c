@@ -1,0 +1,19 @@
+<class name="brain key seed">
+    Handles seed returned by the servie.
+
+    <property name="seed" class="buffer"/>
+
+
+    <constructor name="with seed disown" scope="private">
+        Create object with a given seed.
+
+        <argument name="seed" class="buffer" access="disown"/>
+    </constructor>
+
+
+    <method name="get" is_const="1">
+        Return BrainKey seed.
+
+        <return class="data"/>
+    </method>
+</class>
