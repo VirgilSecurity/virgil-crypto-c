@@ -369,7 +369,7 @@ vssc_http_response_add_header(vssc_http_response_t *self, vsc_str_t name, vsc_st
 //  Return HTTP status code.
 //
 VSSC_PUBLIC size_t
-vssc_http_response_status_code(vssc_http_response_t *self) {
+vssc_http_response_status_code(const vssc_http_response_t *self) {
 
     VSSC_ASSERT_PTR(self);
 
@@ -380,7 +380,7 @@ vssc_http_response_status_code(vssc_http_response_t *self) {
 //  Return HTTP body.
 //
 VSSC_PUBLIC vsc_str_t
-vssc_http_response_body(vssc_http_response_t *self) {
+vssc_http_response_body(const vssc_http_response_t *self) {
 
     VSSC_ASSERT_PTR(self);
 
@@ -395,7 +395,7 @@ vssc_http_response_body(vssc_http_response_t *self) {
 //  Return HTTP headers.
 //
 VSSC_PUBLIC const vssc_http_header_list_t *
-vssc_http_response_headers(vssc_http_response_t *self) {
+vssc_http_response_headers(const vssc_http_response_t *self) {
 
     VSSC_ASSERT_PTR(self);
 

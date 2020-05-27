@@ -136,13 +136,13 @@ vssc_virgil_http_response_shallow_copy(vssc_virgil_http_response_t *self);
 //  Create self from the parsed HTTP response.
 //
 VSSC_PUBLIC vssc_virgil_http_response_t *
-vssc_virgil_http_response_create_with_http_response(vssc_http_response_t *http_response, vssc_error_t *error);
+vssc_virgil_http_response_create_from_http_response(const vssc_http_response_t *http_response, vssc_error_t *error);
 
 //
 //  Return HTTP status code.
 //
 VSSC_PUBLIC size_t
-vssc_virgil_http_response_http_status_code(const vssc_virgil_http_response_t *self);
+vssc_virgil_http_response_status_code(const vssc_virgil_http_response_t *self);
 
 //
 //  Return true if correspond HTTP request was succeed.
@@ -160,7 +160,7 @@ vssc_virgil_http_response_has_body(const vssc_virgil_http_response_t *self);
 //  Return response body as JSON object.
 //
 VSSC_PUBLIC const vssc_json_object_t *
-vssc_virgil_http_response_http_body(const vssc_virgil_http_response_t *self);
+vssc_virgil_http_response_body(const vssc_virgil_http_response_t *self);
 
 //
 //  Return true if response handles a service error and it's description.

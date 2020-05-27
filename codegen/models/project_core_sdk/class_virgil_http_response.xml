@@ -25,17 +25,17 @@
     </constructor>
 
 
-    <method name="create with http response" is_static="1">
+    <method name="create from http response" is_static="1">
         Create self from the parsed HTTP response.
 
-        <argument name="http response" class="http response" access="readwrite"/>
+        <argument name="http response" class="http response"/>
         <argument name="error" class="error" access="readwrite"/>
 
         <return class="self" access="disown"/>
     </method>
 
 
-    <method name="http status code" is_const="1">
+    <method name="status code" is_const="1">
         Return HTTP status code.
 
         <return type="size"/>
@@ -56,7 +56,7 @@
     </method>
 
 
-    <method name="http body" is_const="1">
+    <method name="body" is_const="1">
         Return response body as JSON object.
 
         <return class="json object"/>

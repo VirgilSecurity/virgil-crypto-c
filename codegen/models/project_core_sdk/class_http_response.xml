@@ -29,21 +29,21 @@
     </method>
 
 
-    <method name="status code">
+    <method name="status code" is_const="1">
         Return HTTP status code.
 
         <return type="size"/>
     </method>
 
 
-    <method name="body">
+    <method name="body" is_const="1">
         Return HTTP body.
 
         <return class="str"/>
     </method>
 
 
-    <method name="headers">
+    <method name="headers" is_const="1">
         Return HTTP headers.
 
         <return class="http header list"/>
