@@ -37,7 +37,7 @@ script:
   - cmake -H. -Bbuild
       -DENABLE_HEAVY_TESTS=OFF
       -DVIRGIL_C_MT_TESTING=OFF
-      -DENABLE_INTEGRATION_TESTING=OFF
+      -DENABLE_INTEGRATION_TESTS=OFF
       -DENABLE_BENCHMARKING=ON
       -DVIRGIL_POST_QUANTUM=ON
       -DVIRGIL_PROGRAMS=ON
@@ -47,10 +47,11 @@ script:
     && popd
   - cmake -H. -Bbuild
       -DVIRGIL_C_MT_TESTING=ON
-      -DENABLE_INTEGRATION_TESTING=ON
+      -DENABLE_INTEGRATION_TESTS=ON
   - cmake --build build -- -j8
     && pushd build
     && ctest -L multi-threading --output-on-failure
+    && ctest -L integration  --output-on-failure
     && ./benchmarks/foundation/bench
     && popd
   - cat build/Testing/Temporary/MemoryChecker.*.log
