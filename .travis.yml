@@ -37,6 +37,7 @@ script:
   - cmake -H. -Bbuild
       -DENABLE_HEAVY_TESTS=OFF
       -DVIRGIL_C_MT_TESTING=OFF
+      -DENABLE_INTEGRATION_TESTING=OFF
       -DENABLE_BENCHMARKING=ON
       -DVIRGIL_POST_QUANTUM=ON
       -DVIRGIL_PROGRAMS=ON
@@ -44,7 +45,9 @@ script:
     && pushd build
     && ctest -T memcheck --output-on-failure
     && popd
-  - cmake -H. -Bbuild -DVIRGIL_C_MT_TESTING=ON
+  - cmake -H. -Bbuild
+      -DVIRGIL_C_MT_TESTING=ON
+      -DENABLE_INTEGRATION_TESTING=ON
   - cmake --build build -- -j8
     && pushd build
     && ctest -L multi-threading --output-on-failure

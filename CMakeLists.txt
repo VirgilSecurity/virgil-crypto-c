@@ -75,6 +75,7 @@ option(ENABLE_TESTING "On/Off integration tests." ON)
 option(ENABLE_HEAVY_TESTS "On/Off execution of heavy tests." OFF)
 option(ENABLE_PROFILING "On/Off GProf compilation options." OFF)
 option(ENABLE_FUZZY_TESTING "On/Off fyzzy tests." OFF)
+option(ENABLE_INTEGRATION_TESTING "On/Off integration tests." OFF)
 option(ENABLE_BENCHMARKING "On/Off execution of benchmarks." OFF)
 
 #

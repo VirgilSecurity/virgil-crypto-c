@@ -63,4 +63,6 @@ _add_test (test_jwt_header)
 _add_test (test_jwt_payload)
 _add_test (test_jwt)
 
-_add_test (integration_test_virgil_http_client)
+if(ENABLE_INTEGRATION_TESTING)
+    _add_test (integration_test_virgil_http_client)
+endif()
