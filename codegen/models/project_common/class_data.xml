@@ -29,6 +29,13 @@
     </method>
 
 
+    <method name="is valid and non empty">
+        Returns true if underlying byte array is defined and not empty.
+
+        <return type="boolean"/>
+    </method>
+
+
     <method name="is zero">
         Returns true if underlying byte array contains only zeros.
 

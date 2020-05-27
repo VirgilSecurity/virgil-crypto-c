@@ -129,6 +129,15 @@ vsc_data_is_valid(vsc_data_t self) {
 }
 
 //
+//  Returns true if underlying byte array is defined and not empty.
+//
+VSC_PUBLIC bool
+vsc_data_is_valid_and_non_empty(vsc_data_t self) {
+
+    return vsc_data_is_valid(self) && !vsc_data_is_empty(self);
+}
+
+//
 //  Returns true if underlying byte array contains only zeros.
 //
 VSC_PUBLIC bool
