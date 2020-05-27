@@ -73,8 +73,50 @@ endfunction
 function class_add_scoped_components_to_main_module (class, add_method_callback, module, meta)
     check_arguments (my, "class, add_method_callback, module, meta", my)
 
-    for my.class.constant where 0.scope = my.module.scope
+    for my.class.constant where 0.scope = my.module.scope & constant.type <> "string"
         my.component = component_clean_copy (constant, my.module)
+    endfor
+
+    for my.class.constant where 0.scope = my.module.scope & constant.type = "string"
+        new variable to my.module
+            . = constant. ?
+            .name = constant.name
+            .type = "char"
+            .declaration = constant.visibility
+
+            new string to variable
+                .access = "readonly"
+                .length = "derived"
+            endnew
+
+            new value to variable
+                .value = constant.value ? constant->value.value
+                .type = "string"
+            endnew
+        endnew
+
+        my.base_variable_ref = ref(make_id ("class", my.class.name, "variable", constant.name))
+
+        new variable to my.module
+            . = constant. ?
+            .name = constant.name + " str"
+            .class = "str"
+            .declaration = constant.visibility
+
+            new value to variable
+                .value = my.base_variable_ref
+                .type = "char"
+
+                new array to value
+                    .length = "derived"
+                endnew
+            endnew
+
+            new value to variable
+                .value = "sizeof($(my.base_variable_ref:)) - 1"
+                .type = "size"
+            endnew
+        endnew
     endfor
 
     for my.class.enum where 0.scope = my.module.scope
