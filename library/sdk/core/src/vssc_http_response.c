@@ -334,6 +334,8 @@ vssc_http_response_init_ctx_with_status(vssc_http_response_t *self, size_t statu
 
     VSSC_ASSERT_PTR(self);
 
+    vssc_http_response_init_ctx(self);
+
     self->status_code = status_code;
 }
 
