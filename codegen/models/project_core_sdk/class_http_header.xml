@@ -4,6 +4,21 @@
     <property name="name" class="str mutable"/>
     <property name="value" class="str mutable"/>
 
+
+    <constant name="name content type" type="string" visibility="public" definition="private">
+        Header name: Content-Type
+
+        <value value="Content-Type"/>
+    </constant>
+
+
+    <constant name="value application json" type="string"  visibility="public" definition="private">
+        Header value: application/json
+
+        <value value="application/json"/>
+    </constant>
+
+
     <constructor name="with">
         Create fully defined HTTP header.
 
@@ -13,6 +28,7 @@
         <argument name="name" class="str"/>
         <argument name="value" class="str"/>
     </constructor>
+
 
     <method name="name">
         Return HTTP header name.

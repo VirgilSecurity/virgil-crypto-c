@@ -37,12 +37,6 @@
 // clang-format off
 
 
-//  @description
-// --------------------------------------------------------------------------
-//  Class 'raw service response' types definition.
-// --------------------------------------------------------------------------
-
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -50,10 +44,28 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#include "vssc_raw_service_response_defs.h"
+
+//  @description
+// --------------------------------------------------------------------------
+//  Virgil HTTP client.
+// --------------------------------------------------------------------------
+
+#ifndef VSSC_VIRGIL_HTTP_CLIENT_H_INCLUDED
+#define VSSC_VIRGIL_HTTP_CLIENT_H_INCLUDED
+
+#include "vssc_library.h"
+#include "vssc_http_request.h"
+#include "vssc_jwt.h"
+#include "vssc_error.h"
+#include "vssc_virgil_http_response.h"
 
 // clang-format on
 //  @end
+
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 
 //  @generated
@@ -62,9 +74,25 @@
 //  Generated section start.
 // --------------------------------------------------------------------------
 
+//
+//  Send request over HTTP.
+//
+VSSC_PUBLIC const vssc_virgil_http_response_t *
+vssc_virgil_http_client_send(const vssc_http_request_t *http_request, const vssc_jwt_t *jwt, vssc_error_t *error);
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
+//  @end
+
+
+#ifdef __cplusplus
+}
+#endif
+
+
+//  @footer
+#endif // VSSC_VIRGIL_HTTP_CLIENT_H_INCLUDED
 //  @end

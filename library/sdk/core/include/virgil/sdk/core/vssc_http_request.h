@@ -85,6 +85,46 @@ extern "C" {
 typedef struct vssc_http_request_t vssc_http_request_t;
 
 //
+//  HTTP method: GET
+//
+VSSC_PUBLIC extern const char vssc_http_request_method_get[];
+
+//
+//  HTTP method: GET
+//
+VSSC_PUBLIC extern const vsc_str_t vssc_http_request_method_get_str;
+
+//
+//  HTTP method: POST
+//
+VSSC_PUBLIC extern const char vssc_http_request_method_post[];
+
+//
+//  HTTP method: POST
+//
+VSSC_PUBLIC extern const vsc_str_t vssc_http_request_method_post_str;
+
+//
+//  HTTP method: PUT
+//
+VSSC_PUBLIC extern const char vssc_http_request_method_put[];
+
+//
+//  HTTP method: PUT
+//
+VSSC_PUBLIC extern const vsc_str_t vssc_http_request_method_put_str;
+
+//
+//  HTTP method: DELETE
+//
+VSSC_PUBLIC extern const char vssc_http_request_method_delete[];
+
+//
+//  HTTP method: DELETE
+//
+VSSC_PUBLIC extern const vsc_str_t vssc_http_request_method_delete_str;
+
+//
 //  Return size of 'vssc_http_request_t'.
 //
 VSSC_PUBLIC size_t

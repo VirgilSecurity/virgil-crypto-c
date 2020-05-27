@@ -1,4 +1,4 @@
-<class name="raw service response">
+<class name="virgil http response">
     This class contains HTTP response information alongside with information
     that is specific for Virgil services.
 
@@ -7,34 +7,14 @@
     <property name="http status code" type="size"/>
 
 
-    <variable name="k json key service error code" type="string" declaration="private">
-        <value value="code" type="string"/>
-        <string access="readonly" length="derived"/>
-    </variable>
+    <constant name="k json key service error code" type="string" visibility="private">
+        <value value="code"/>
+    </constant>
 
 
-    <variable name="k json key service error code str" class="str" declaration="private">
-        <value value=".(class_raw_service_response_variable_k_json_key_service_error_code)">
-            <array length="derived"/>
-        </value>
-
-        <value value="sizeof(.(class_raw_service_response_variable_k_json_key_service_error_code)) - 1" type="size"/>
-    </variable>
-
-
-    <variable name="k json key service error message" type="string" declaration="private">
-        <value value="message" type="string"/>
-        <string access="readonly" length="derived"/>
-    </variable>
-
-
-    <variable name="k json key service error message str" class="str" declaration="private">
-        <value value=".(class_raw_service_response_variable_k_json_key_service_error_message)">
-            <array length="derived"/>
-        </value>
-
-        <value value="sizeof(.(class_raw_service_response_variable_k_json_key_service_error_message)) - 1" type="size"/>
-    </variable>
+    <constant name="k json key service error message" type="string" visibility="private">
+        <value value="message"/>
+    </constant>
 
 
     <constructor name="with" declaration="private">

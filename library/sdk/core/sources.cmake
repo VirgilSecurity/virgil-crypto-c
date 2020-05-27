@@ -124,7 +124,12 @@ set_property(
 )
 
 set_property(
-    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vssc_raw_service_response.h"
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vssc_virgil_http_client.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
+)
+
+set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vssc_virgil_http_response.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
 
@@ -166,8 +171,9 @@ target_sources(core_sdk
             "$<$<BOOL:${VSSC_JWT_HEADER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/private/vssc_jwt_header_defs.h>"
             "$<$<BOOL:${VSSC_JWT_PAYLOAD}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/private/vssc_jwt_payload.h>"
             "$<$<BOOL:${VSSC_JWT_PAYLOAD}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/private/vssc_jwt_payload_defs.h>"
-            "$<$<BOOL:${VSSC_RAW_SERVICE_RESPONSE}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vssc_raw_service_response.h>"
-            "$<$<BOOL:${VSSC_RAW_SERVICE_RESPONSE}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/private/vssc_raw_service_response_defs.h>"
+            "$<$<BOOL:${VSSC_VIRGIL_HTTP_CLIENT}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vssc_virgil_http_client.h>"
+            "$<$<BOOL:${VSSC_VIRGIL_HTTP_RESPONSE}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vssc_virgil_http_response.h>"
+            "$<$<BOOL:${VSSC_VIRGIL_HTTP_RESPONSE}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/private/vssc_virgil_http_response_defs.h>"
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vssc_status.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vssc_core_sdk_public.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/private/vssc_core_sdk_private.h"
@@ -195,8 +201,9 @@ target_sources(core_sdk
             "$<$<BOOL:${VSSC_JWT_HEADER}>:${CMAKE_CURRENT_LIST_DIR}/src/vssc_jwt_header_defs.c>"
             "$<$<BOOL:${VSSC_JWT_PAYLOAD}>:${CMAKE_CURRENT_LIST_DIR}/src/vssc_jwt_payload.c>"
             "$<$<BOOL:${VSSC_JWT_PAYLOAD}>:${CMAKE_CURRENT_LIST_DIR}/src/vssc_jwt_payload_defs.c>"
-            "$<$<BOOL:${VSSC_RAW_SERVICE_RESPONSE}>:${CMAKE_CURRENT_LIST_DIR}/src/vssc_raw_service_response.c>"
-            "$<$<BOOL:${VSSC_RAW_SERVICE_RESPONSE}>:${CMAKE_CURRENT_LIST_DIR}/src/vssc_raw_service_response_defs.c>"
+            "$<$<BOOL:${VSSC_VIRGIL_HTTP_CLIENT}>:${CMAKE_CURRENT_LIST_DIR}/src/vssc_virgil_http_client.c>"
+            "$<$<BOOL:${VSSC_VIRGIL_HTTP_RESPONSE}>:${CMAKE_CURRENT_LIST_DIR}/src/vssc_virgil_http_response.c>"
+            "$<$<BOOL:${VSSC_VIRGIL_HTTP_RESPONSE}>:${CMAKE_CURRENT_LIST_DIR}/src/vssc_virgil_http_response_defs.c>"
             "${CMAKE_CURRENT_LIST_DIR}/src/vssc_status.c"
         )
 

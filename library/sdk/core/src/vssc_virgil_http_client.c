@@ -37,6 +37,12 @@
 // clang-format off
 
 
+//  @description
+// --------------------------------------------------------------------------
+//  Virgil HTTP client.
+// --------------------------------------------------------------------------
+
+
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -44,22 +50,14 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
+#include "vssc_virgil_http_client.h"
+#include "vssc_memory.h"
+#include "vssc_assert.h"
 
-//  @description
-// --------------------------------------------------------------------------
-//  Defines the library status codes.
-// --------------------------------------------------------------------------
-
-#ifndef VSSC_STATUS_H_INCLUDED
-#define VSSC_STATUS_H_INCLUDED
+#include <curl/curl.h>
 
 // clang-format on
 //  @end
-
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 
 //  @generated
@@ -67,57 +65,6 @@ extern "C" {
 // clang-format off
 //  Generated section start.
 // --------------------------------------------------------------------------
-
-//
-//  Defines the library status codes.
-//
-enum vssc_status_t {
-    //
-    //  No errors was occurred.
-    //
-    vssc_status_SUCCESS = 0,
-    //
-    //  Met internal inconsistency.
-    //
-    vssc_status_INTERNAL_ERROR = -1,
-    //
-    //  Faled to decode Base64URL string.
-    //
-    vssc_status_DECODE_BASE64_URL_FAILED = -101,
-    //
-    //  Faled to initialize random module.
-    //
-    vssc_status_INIT_RANDOM_FAILED = -102,
-    //
-    //  Failed to parse JWT.
-    //
-    vssc_status_PARSE_JWT_FAILED = -201,
-    //
-    //  Failed to produce JWT signature.
-    //
-    vssc_status_SIGN_JWT_FAILED = -202,
-    //
-    //  Requested value is not found within JSON object.
-    //
-    vssc_status_JSON_VALUE_NOT_FOUND = -203,
-    //
-    //  Actual JSON value type differs from the requested.
-    //
-    vssc_status_JSON_VALUE_TYPE_MISMATCH = -204,
-    //
-    //  Requested JSON binary value is not base64 encoded.
-    //
-    vssc_status_JSON_VALUE_IS_NOT_BASE64 = -204,
-    //
-    //  Got invalid HTTP status code.
-    //
-    vssc_status_HTTP_STATUS_CODE_INVALID = -301,
-    //
-    //  Failed to parse JWT HTTP body.
-    //
-    vssc_status_HTTP_BODY_PARSE_FAILED = -302
-};
-typedef enum vssc_status_t vssc_status_t;
 
 
 // --------------------------------------------------------------------------
@@ -127,11 +74,15 @@ typedef enum vssc_status_t vssc_status_t;
 //  @end
 
 
-#ifdef __cplusplus
+//
+//  Send request over HTTP.
+//
+VSSC_PUBLIC const vssc_virgil_http_response_t *
+vssc_virgil_http_client_send(const vssc_http_request_t *http_request, const vssc_jwt_t *jwt, vssc_error_t *error) {
+
+    VSSC_ASSERT_PTR(http_request);
+    VSSC_ASSERT_PTR(jwt);
+    VSSC_UNUSED(error);
+
+    return NULL;
 }
-#endif
-
-
-//  @footer
-#endif // VSSC_STATUS_H_INCLUDED
-//  @end

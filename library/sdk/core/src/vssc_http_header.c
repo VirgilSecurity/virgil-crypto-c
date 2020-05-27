@@ -91,6 +91,32 @@ static void
 vssc_http_header_init_ctx_with(vssc_http_header_t *self, vsc_str_t name, vsc_str_t value);
 
 //
+//  Header name: Content-Type
+//
+VSSC_PUBLIC const char vssc_http_header_name_content_type[] = "Content-Type";
+
+//
+//  Header name: Content-Type
+//
+VSSC_PUBLIC const vsc_str_t vssc_http_header_name_content_type_str = {
+    vssc_http_header_name_content_type,
+    sizeof(vssc_http_header_name_content_type) - 1
+};
+
+//
+//  Header value: application/json
+//
+VSSC_PUBLIC const char vssc_http_header_value_application_json[] = "application/json";
+
+//
+//  Header value: application/json
+//
+VSSC_PUBLIC const vsc_str_t vssc_http_header_value_application_json_str = {
+    vssc_http_header_value_application_json,
+    sizeof(vssc_http_header_value_application_json) - 1
+};
+
+//
 //  Return size of 'vssc_http_header_t'.
 //
 VSSC_PUBLIC size_t

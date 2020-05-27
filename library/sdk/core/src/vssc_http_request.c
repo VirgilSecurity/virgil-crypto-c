@@ -94,6 +94,58 @@ static void
 vssc_http_request_init_ctx_with_body(vssc_http_request_t *self, vsc_str_t method, vsc_str_t url, vsc_str_t body);
 
 //
+//  HTTP method: GET
+//
+VSSC_PUBLIC const char vssc_http_request_method_get[] = "GET";
+
+//
+//  HTTP method: GET
+//
+VSSC_PUBLIC const vsc_str_t vssc_http_request_method_get_str = {
+    vssc_http_request_method_get,
+    sizeof(vssc_http_request_method_get) - 1
+};
+
+//
+//  HTTP method: POST
+//
+VSSC_PUBLIC const char vssc_http_request_method_post[] = "POST";
+
+//
+//  HTTP method: POST
+//
+VSSC_PUBLIC const vsc_str_t vssc_http_request_method_post_str = {
+    vssc_http_request_method_post,
+    sizeof(vssc_http_request_method_post) - 1
+};
+
+//
+//  HTTP method: PUT
+//
+VSSC_PUBLIC const char vssc_http_request_method_put[] = "PUT";
+
+//
+//  HTTP method: PUT
+//
+VSSC_PUBLIC const vsc_str_t vssc_http_request_method_put_str = {
+    vssc_http_request_method_put,
+    sizeof(vssc_http_request_method_put) - 1
+};
+
+//
+//  HTTP method: DELETE
+//
+VSSC_PUBLIC const char vssc_http_request_method_delete[] = "DELETE";
+
+//
+//  HTTP method: DELETE
+//
+VSSC_PUBLIC const vsc_str_t vssc_http_request_method_delete_str = {
+    vssc_http_request_method_delete,
+    sizeof(vssc_http_request_method_delete) - 1
+};
+
+//
 //  Return size of 'vssc_http_request_t'.
 //
 VSSC_PUBLIC size_t

@@ -51,14 +51,14 @@
 //  that is specific for Virgil services.
 // --------------------------------------------------------------------------
 
-#ifndef VSSC_RAW_SERVICE_RESPONSE_H_INCLUDED
-#define VSSC_RAW_SERVICE_RESPONSE_H_INCLUDED
+#ifndef VSSC_VIRGIL_HTTP_RESPONSE_H_INCLUDED
+#define VSSC_VIRGIL_HTTP_RESPONSE_H_INCLUDED
 
 #include "vssc_library.h"
 #include "vssc_json_object.h"
 #include "vssc_http_response.h"
 #include "vssc_error.h"
-#include "vssc_raw_service_response.h"
+#include "vssc_virgil_http_response.h"
 
 #if !VSSC_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_str.h>
@@ -84,102 +84,102 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Handle 'raw service response' context.
+//  Handle 'virgil http response' context.
 //
-typedef struct vssc_raw_service_response_t vssc_raw_service_response_t;
+typedef struct vssc_virgil_http_response_t vssc_virgil_http_response_t;
 
 //
-//  Return size of 'vssc_raw_service_response_t'.
+//  Return size of 'vssc_virgil_http_response_t'.
 //
 VSSC_PUBLIC size_t
-vssc_raw_service_response_ctx_size(void);
+vssc_virgil_http_response_ctx_size(void);
 
 //
 //  Perform initialization of pre-allocated context.
 //
 VSSC_PUBLIC void
-vssc_raw_service_response_init(vssc_raw_service_response_t *self);
+vssc_virgil_http_response_init(vssc_virgil_http_response_t *self);
 
 //
 //  Release all inner resources including class dependencies.
 //
 VSSC_PUBLIC void
-vssc_raw_service_response_cleanup(vssc_raw_service_response_t *self);
+vssc_virgil_http_response_cleanup(vssc_virgil_http_response_t *self);
 
 //
 //  Allocate context and perform it's initialization.
 //
-VSSC_PUBLIC vssc_raw_service_response_t *
-vssc_raw_service_response_new(void);
+VSSC_PUBLIC vssc_virgil_http_response_t *
+vssc_virgil_http_response_new(void);
 
 //
 //  Release all inner resources and deallocate context if needed.
 //  It is safe to call this method even if the context was statically allocated.
 //
 VSSC_PUBLIC void
-vssc_raw_service_response_delete(vssc_raw_service_response_t *self);
+vssc_virgil_http_response_delete(vssc_virgil_http_response_t *self);
 
 //
 //  Delete given context and nullifies reference.
-//  This is a reverse action of the function 'vssc_raw_service_response_new ()'.
+//  This is a reverse action of the function 'vssc_virgil_http_response_new ()'.
 //
 VSSC_PUBLIC void
-vssc_raw_service_response_destroy(vssc_raw_service_response_t **self_ref);
+vssc_virgil_http_response_destroy(vssc_virgil_http_response_t **self_ref);
 
 //
 //  Copy given class context by increasing reference counter.
 //
-VSSC_PUBLIC vssc_raw_service_response_t *
-vssc_raw_service_response_shallow_copy(vssc_raw_service_response_t *self);
+VSSC_PUBLIC vssc_virgil_http_response_t *
+vssc_virgil_http_response_shallow_copy(vssc_virgil_http_response_t *self);
 
 //
 //  Create self from the parsed HTTP response.
 //
-VSSC_PUBLIC vssc_raw_service_response_t *
-vssc_raw_service_response_create_with_http_response(vssc_http_response_t *http_response, vssc_error_t *error);
+VSSC_PUBLIC vssc_virgil_http_response_t *
+vssc_virgil_http_response_create_with_http_response(vssc_http_response_t *http_response, vssc_error_t *error);
 
 //
 //  Return HTTP status code.
 //
 VSSC_PUBLIC size_t
-vssc_raw_service_response_http_status_code(const vssc_raw_service_response_t *self);
+vssc_virgil_http_response_http_status_code(const vssc_virgil_http_response_t *self);
 
 //
 //  Return true if correspond HTTP request was succeed.
 //
 VSSC_PUBLIC bool
-vssc_raw_service_response_is_success(const vssc_raw_service_response_t *self);
+vssc_virgil_http_response_is_success(const vssc_virgil_http_response_t *self);
 
 //
 //  Return true if response contains a valid body.
 //
 VSSC_PUBLIC bool
-vssc_raw_service_response_has_body(const vssc_raw_service_response_t *self);
+vssc_virgil_http_response_has_body(const vssc_virgil_http_response_t *self);
 
 //
 //  Return response body as JSON object.
 //
 VSSC_PUBLIC const vssc_json_object_t *
-vssc_raw_service_response_http_body(const vssc_raw_service_response_t *self);
+vssc_virgil_http_response_http_body(const vssc_virgil_http_response_t *self);
 
 //
 //  Return true if response handles a service error and it's description.
 //
 VSSC_PUBLIC bool
-vssc_raw_service_response_has_service_error(const vssc_raw_service_response_t *self);
+vssc_virgil_http_response_has_service_error(const vssc_virgil_http_response_t *self);
 
 //
 //  Return service error code.
 //
 VSSC_PUBLIC size_t
-vssc_raw_service_response_service_error_code(const vssc_raw_service_response_t *self);
+vssc_virgil_http_response_service_error_code(const vssc_virgil_http_response_t *self);
 
 //
 //  Return service error description.
 //  Note, empty string can be returned.
 //
 VSSC_PUBLIC vsc_str_t
-vssc_raw_service_response_service_error_description(const vssc_raw_service_response_t *self);
+vssc_virgil_http_response_service_error_description(const vssc_virgil_http_response_t *self);
 
 
 // --------------------------------------------------------------------------
@@ -195,5 +195,5 @@ vssc_raw_service_response_service_error_description(const vssc_raw_service_respo
 
 
 //  @footer
-#endif // VSSC_RAW_SERVICE_RESPONSE_H_INCLUDED
+#endif // VSSC_VIRGIL_HTTP_RESPONSE_H_INCLUDED
 //  @end

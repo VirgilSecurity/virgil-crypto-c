@@ -7,6 +7,34 @@
     <property name="headers" class="http header list"/>
 
 
+    <constant name="method get" type="string" visibility="public" definition="private">
+        HTTP method: GET
+
+        <value value="GET"/>
+    </constant>
+
+
+    <constant name="method post" type="string" visibility="public" definition="private">
+        HTTP method: POST
+
+        <value value="POST"/>
+    </constant>
+
+
+    <constant name="method put" type="string" visibility="public" definition="private">
+        HTTP method: PUT
+
+        <value value="PUT"/>
+    </constant>
+
+
+    <constant name="method delete" type="string" visibility="public" definition="private">
+        HTTP method: DELETE
+
+        <value value="DELETE"/>
+    </constant>
+
+
     <constructor name="with url">
         Create HTTP request with URL.
 

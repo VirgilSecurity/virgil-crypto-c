@@ -47,21 +47,15 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Handles HTTP header in a most generic way.
+//  Class 'virgil http response' types definition.
 // --------------------------------------------------------------------------
 
-#ifndef VSSC_HTTP_HEADER_H_INCLUDED
-#define VSSC_HTTP_HEADER_H_INCLUDED
+#ifndef VSSC_VIRGIL_HTTP_RESPONSE_DEFS_H_INCLUDED
+#define VSSC_VIRGIL_HTTP_RESPONSE_DEFS_H_INCLUDED
 
 #include "vssc_library.h"
-
-#if !VSSC_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <virgil/crypto/common/vsc_str.h>
-#endif
-
-#if VSSC_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <VSCCommon/vsc_str.h>
-#endif
+#include "vssc_atomic.h"
+#include "vssc_json_object.h"
 
 // clang-format on
 //  @end
@@ -79,105 +73,22 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Handle 'http header' context.
+//  Handle 'virgil http response' context.
 //
-typedef struct vssc_http_header_t vssc_http_header_t;
+struct vssc_virgil_http_response_t {
+    //
+    //  Function do deallocate self context.
+    //
+    vssc_dealloc_fn self_dealloc_cb;
+    //
+    //  Reference counter.
+    //
+    VSSC_ATOMIC size_t refcnt;
 
-//
-//  Header name: Content-Type
-//
-VSSC_PUBLIC extern const char vssc_http_header_name_content_type[];
+    vssc_json_object_t *http_body;
 
-//
-//  Header name: Content-Type
-//
-VSSC_PUBLIC extern const vsc_str_t vssc_http_header_name_content_type_str;
-
-//
-//  Header value: application/json
-//
-VSSC_PUBLIC extern const char vssc_http_header_value_application_json[];
-
-//
-//  Header value: application/json
-//
-VSSC_PUBLIC extern const vsc_str_t vssc_http_header_value_application_json_str;
-
-//
-//  Return size of 'vssc_http_header_t'.
-//
-VSSC_PUBLIC size_t
-vssc_http_header_ctx_size(void);
-
-//
-//  Perform initialization of pre-allocated context.
-//
-VSSC_PUBLIC void
-vssc_http_header_init(vssc_http_header_t *self);
-
-//
-//  Release all inner resources including class dependencies.
-//
-VSSC_PUBLIC void
-vssc_http_header_cleanup(vssc_http_header_t *self);
-
-//
-//  Allocate context and perform it's initialization.
-//
-VSSC_PUBLIC vssc_http_header_t *
-vssc_http_header_new(void);
-
-//
-//  Perform initialization of pre-allocated context.
-//  Create fully defined HTTP header.
-//
-//  Prerequisite: name is not empty.
-//  Prerequisite: value is not empty.
-//
-VSSC_PUBLIC void
-vssc_http_header_init_with(vssc_http_header_t *self, vsc_str_t name, vsc_str_t value);
-
-//
-//  Allocate class context and perform it's initialization.
-//  Create fully defined HTTP header.
-//
-//  Prerequisite: name is not empty.
-//  Prerequisite: value is not empty.
-//
-VSSC_PUBLIC vssc_http_header_t *
-vssc_http_header_new_with(vsc_str_t name, vsc_str_t value);
-
-//
-//  Release all inner resources and deallocate context if needed.
-//  It is safe to call this method even if the context was statically allocated.
-//
-VSSC_PUBLIC void
-vssc_http_header_delete(vssc_http_header_t *self);
-
-//
-//  Delete given context and nullifies reference.
-//  This is a reverse action of the function 'vssc_http_header_new ()'.
-//
-VSSC_PUBLIC void
-vssc_http_header_destroy(vssc_http_header_t **self_ref);
-
-//
-//  Copy given class context by increasing reference counter.
-//
-VSSC_PUBLIC vssc_http_header_t *
-vssc_http_header_shallow_copy(vssc_http_header_t *self);
-
-//
-//  Return HTTP header name.
-//
-VSSC_PUBLIC vsc_str_t
-vssc_http_header_name(vssc_http_header_t *self);
-
-//
-//  Return HTTP header value.
-//
-VSSC_PUBLIC vsc_str_t
-vssc_http_header_value(vssc_http_header_t *self);
+    size_t http_status_code;
+};
 
 
 // --------------------------------------------------------------------------
@@ -193,5 +104,5 @@ vssc_http_header_value(vssc_http_header_t *self);
 
 
 //  @footer
-#endif // VSSC_HTTP_HEADER_H_INCLUDED
+#endif // VSSC_VIRGIL_HTTP_RESPONSE_DEFS_H_INCLUDED
 //  @end

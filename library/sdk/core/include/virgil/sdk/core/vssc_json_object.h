@@ -56,13 +56,18 @@
 #include "vssc_library.h"
 #include "vssc_error.h"
 #include "vssc_json_object.h"
+#include "vssc_status.h"
 
 #if !VSSC_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_str.h>
+#   include <virgil/crypto/common/vsc_buffer.h>
+#   include <virgil/crypto/common/vsc_data.h>
 #endif
 
 #if VSSC_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <VSCCommon/vsc_data.h>
 #   include <VSCCommon/vsc_str.h>
+#   include <VSCCommon/vsc_buffer.h>
 #endif
 
 // clang-format on
@@ -141,6 +146,28 @@ vssc_json_object_add_string_value(vssc_json_object_t *self, vsc_str_t key, vsc_s
 //
 VSSC_PUBLIC vsc_str_t
 vssc_json_object_get_string_value(const vssc_json_object_t *self, vsc_str_t key, vssc_error_t *error);
+
+//
+//  Add binary value with a given key.
+//  Given binary value is base64 encoded first
+//
+VSSC_PUBLIC void
+vssc_json_object_add_binary_value(vssc_json_object_t *self, vsc_str_t key, vsc_data_t value);
+
+//
+//  Return buffer length required to hold a binary value for a given key.
+//  Returns 0, if given key is not found or type mismatch.
+//
+VSSC_PUBLIC size_t
+vssc_json_object_get_binary_value_len(const vssc_json_object_t *self, vsc_str_t key);
+
+//
+//  Return a binary value for a given key.
+//  Returns error, if given key is not found or type mismatch.
+//  Returns error, if base64 decode failed.
+//
+VSSC_PUBLIC vssc_status_t
+vssc_json_object_get_binary_value(const vssc_json_object_t *self, vsc_str_t key, vsc_buffer_t *value) VSSC_NODISCARD;
 
 //
 //  Add integer value with a given key.

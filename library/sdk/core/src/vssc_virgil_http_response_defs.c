@@ -37,6 +37,12 @@
 // clang-format off
 
 
+//  @description
+// --------------------------------------------------------------------------
+//  Class 'virgil http response' types definition.
+// --------------------------------------------------------------------------
+
+
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -44,26 +50,10 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-
-//  @description
-// --------------------------------------------------------------------------
-//  Class 'raw service response' types definition.
-// --------------------------------------------------------------------------
-
-#ifndef VSSC_RAW_SERVICE_RESPONSE_DEFS_H_INCLUDED
-#define VSSC_RAW_SERVICE_RESPONSE_DEFS_H_INCLUDED
-
-#include "vssc_library.h"
-#include "vssc_atomic.h"
-#include "vssc_json_object.h"
+#include "vssc_virgil_http_response_defs.h"
 
 // clang-format on
 //  @end
-
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 
 //  @generated
@@ -72,37 +62,9 @@ extern "C" {
 //  Generated section start.
 // --------------------------------------------------------------------------
 
-//
-//  Handle 'raw service response' context.
-//
-struct vssc_raw_service_response_t {
-    //
-    //  Function do deallocate self context.
-    //
-    vssc_dealloc_fn self_dealloc_cb;
-    //
-    //  Reference counter.
-    //
-    VSSC_ATOMIC size_t refcnt;
-
-    vssc_json_object_t *http_body;
-
-    size_t http_status_code;
-};
-
 
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
-//  @end
-
-
-#ifdef __cplusplus
-}
-#endif
-
-
-//  @footer
-#endif // VSSC_RAW_SERVICE_RESPONSE_DEFS_H_INCLUDED
 //  @end

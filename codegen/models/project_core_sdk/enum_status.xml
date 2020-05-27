@@ -25,19 +25,23 @@
         Failed to produce JWT signature.
     </constant>
 
+    <constant name="json value not found" value="-203">
+        Requested value is not found within JSON object.
+    </constant>
+
+    <constant name="json value type mismatch" value="-204">
+        Actual JSON value type differs from the requested.
+    </constant>
+
+    <constant name="json value is not base64" value="-204">
+        Requested JSON binary value is not base64 encoded.
+    </constant>
+
     <constant name="http status code invalid" value="-301">
         Got invalid HTTP status code.
     </constant>
 
     <constant name="http body parse failed" value="-302">
         Failed to parse JWT HTTP body.
-    </constant>
-
-    <constant name="http body value not found" value="-303">
-        Requested value is not found within HTTP body.
-    </constant>
-
-    <constant name="http body value mismatch" value="-304">
-        Requested value from the HTTP body has unexpected type.
     </constant>
 </enum>

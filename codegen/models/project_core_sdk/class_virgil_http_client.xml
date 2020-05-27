@@ -1,0 +1,15 @@
+<class name="virgil http client">
+    Virgil HTTP client.
+
+    <require header="curl/curl.h" is_system="1"/>
+
+    <method name="send">
+        Send request over HTTP.
+
+        <argument name="http request" class="http request"/>
+        <argument name="jwt" class="jwt"/>
+        <argument name="error" class="error" access="readwrite"/>
+
+        <return class="virgil http response"/>
+    </method>
+</class>

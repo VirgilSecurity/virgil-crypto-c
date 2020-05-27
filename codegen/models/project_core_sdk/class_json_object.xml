@@ -3,6 +3,7 @@
 
     <require header="json-c/json.h" library="json-c" scope="context"/>
     <require class="str mutable" project="common"/>
+    <require class="base64" project="foundation"/>
 
     <property name="json obj" class="json_object" library="json-c"/>
 
@@ -30,6 +31,42 @@
         <argument name="error" class="error" access="readwrite"/>
 
         <return class="str"/>
+    </method>
+
+
+    <method name="add binary value">
+        Add binary value with a given key.
+        Given binary value is base64 encoded first
+
+        <argument name="key" class="str"/>
+        <argument name="value" class="data"/>
+    </method>
+
+
+    <method name="get binary value len" is_const="1">
+        Return buffer length required to hold a binary value for a given key.
+        Returns 0, if given key is not found or type mismatch.
+
+        <argument name="key" class="str"/>
+
+        <return type="size"/>
+    </method>
+
+
+    <method name="get binary value" is_const="1">
+        Return a binary value for a given key.
+        Returns error, if given key is not found or type mismatch.
+        Returns error, if base64 decode failed.
+
+        <argument name="key" class="str"/>
+
+        <argument name="value" class="buffer">
+            <length method="get binary value len">
+                <proxy argument="key" to="key"/>
+            </length>
+        </argument>
+
+        <return enum="status"/>
     </method>
 
 

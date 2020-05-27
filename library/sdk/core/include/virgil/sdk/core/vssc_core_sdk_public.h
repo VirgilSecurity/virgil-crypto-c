@@ -66,8 +66,9 @@
 #include "vssc_library.h"
 #include "vssc_memory.h"
 #include "vssc_platform.h"
-#include "vssc_raw_service_response.h"
 #include "vssc_status.h"
+#include "vssc_virgil_http_client.h"
+#include "vssc_virgil_http_response.h"
 
 // clang-format on
 //  @end

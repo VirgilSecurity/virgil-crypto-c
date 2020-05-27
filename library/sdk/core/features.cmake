@@ -58,7 +58,8 @@ option(VSSC_HTTP_HEADER "Enable class 'http header'." ON)
 option(VSSC_HTTP_HEADER_LIST "Enable class 'http header list'." ON)
 option(VSSC_HTTP_REQUEST "Enable class 'http request'." ON)
 option(VSSC_HTTP_RESPONSE "Enable class 'http response'." ON)
-option(VSSC_RAW_SERVICE_RESPONSE "Enable class 'raw service response'." ON)
+option(VSSC_VIRGIL_HTTP_CLIENT "Enable class 'virgil http client'." ON)
+option(VSSC_VIRGIL_HTTP_RESPONSE "Enable class 'virgil http response'." ON)
 mark_as_advanced(
         VSSC_LIBRARY
         VSSC_MULTI_THREADING
@@ -73,7 +74,8 @@ mark_as_advanced(
         VSSC_HTTP_HEADER_LIST
         VSSC_HTTP_REQUEST
         VSSC_HTTP_RESPONSE
-        VSSC_RAW_SERVICE_RESPONSE
+        VSSC_VIRGIL_HTTP_CLIENT
+        VSSC_VIRGIL_HTTP_RESPONSE
         )
 
 if(VSSC_JSON_OBJECT AND NOT VSC_STR_MUTABLE)
@@ -81,6 +83,15 @@ if(VSSC_JSON_OBJECT AND NOT VSC_STR_MUTABLE)
     message("--")
     message("Feature VSSC_JSON_OBJECT depends on the feature:")
     message("     VSC_STR_MUTABLE - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSSC_JSON_OBJECT AND NOT VSCF_BASE64)
+    message("-- error --")
+    message("--")
+    message("Feature VSSC_JSON_OBJECT depends on the feature:")
+    message("     VSCF_BASE64 - which is disabled.")
     message("--")
     message(FATAL_ERROR)
 endif()

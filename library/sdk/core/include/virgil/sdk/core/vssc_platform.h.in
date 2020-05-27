@@ -130,8 +130,12 @@ extern "C" {
 #cmakedefine01 VSSC_HTTP_RESPONSE
 #endif
 
-#ifndef VSSC_RAW_SERVICE_RESPONSE
-#cmakedefine01 VSSC_RAW_SERVICE_RESPONSE
+#ifndef VSSC_VIRGIL_HTTP_CLIENT
+#cmakedefine01 VSSC_VIRGIL_HTTP_CLIENT
+#endif
+
+#ifndef VSSC_VIRGIL_HTTP_RESPONSE
+#cmakedefine01 VSSC_VIRGIL_HTTP_RESPONSE
 #endif
 
 //

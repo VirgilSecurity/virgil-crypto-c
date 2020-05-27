@@ -12,7 +12,8 @@ framework module VSSC {
     header "vssc_json_object.h"
     header "vssc_jwt.h"
     header "vssc_jwt_generator.h"
-    header "vssc_raw_service_response.h"
+    header "vssc_virgil_http_client.h"
+    header "vssc_virgil_http_response.h"
     header "vssc_status.h"
     header "vssc_core_sdk_public.h"
     export *
