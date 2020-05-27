@@ -469,11 +469,7 @@ vsc_str_buffer_is_full(const vsc_str_buffer_t *self) {
 VSC_PUBLIC bool
 vsc_str_buffer_is_valid(const vsc_str_buffer_t *self) {
 
-    if (NULL == self) {
-        return false;
-    }
-
-    return vsc_buffer_is_valid(&self->buffer);
+    return (self != NULL) && vsc_buffer_is_valid(&self->buffer);
 }
 
 //
@@ -606,6 +602,22 @@ vsc_str_buffer_write_str(vsc_str_buffer_t *self, vsc_str_t str) {
     VSC_ASSERT_PTR(self);
 
     vsc_buffer_write_data(&self->buffer, vsc_str_as_data(str));
+}
+
+//
+//  Append char to the string buffer and reallocate if needed by coping.
+//
+//  Precondition: string buffer should be an owner of the underlying characters array.
+//
+//  Note, this operation can be slow if copy operation occurred.
+//  Note, string buffer capacity is doubled.
+//
+VSC_PUBLIC void
+vsc_str_buffer_append_char(vsc_str_buffer_t *self, char ch) {
+
+    VSC_ASSERT_PTR(self);
+
+    vsc_buffer_append_byte(&self->buffer, (byte)ch);
 }
 
 //

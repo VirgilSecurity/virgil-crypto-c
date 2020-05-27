@@ -718,6 +718,22 @@ vsc_buffer_write_data(vsc_buffer_t *self, vsc_data_t data) {
 }
 
 //
+//  Copy byte to the buffer and reallocate if needed by coping.
+//
+//  Precondition: buffer should be an owner of the bytes.
+//
+//  Note, this operation can be slow if copy operation occurred.
+//  Note, buffer capacity is doubled.
+//
+VSC_PUBLIC void
+vsc_buffer_append_byte(vsc_buffer_t *self, byte b) {
+
+    VSC_ASSERT(vsc_buffer_is_valid(self));
+
+    vsc_buffer_append_data(self, vsc_data(&b, 1));
+}
+
+//
 //  Copy data to the buffer and reallocate if needed by coping.
 //
 //  Precondition: buffer should be an owner of the bytes.

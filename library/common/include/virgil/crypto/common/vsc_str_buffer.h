@@ -295,6 +295,17 @@ VSC_PUBLIC void
 vsc_str_buffer_write_str(vsc_str_buffer_t *self, vsc_str_t str);
 
 //
+//  Append char to the string buffer and reallocate if needed by coping.
+//
+//  Precondition: string buffer should be an owner of the underlying characters array.
+//
+//  Note, this operation can be slow if copy operation occurred.
+//  Note, string buffer capacity is doubled.
+//
+VSC_PUBLIC void
+vsc_str_buffer_append_char(vsc_str_buffer_t *self, char ch);
+
+//
 //  Copy string to the string buffer and reallocate if needed by coping.
 //
 //  Precondition: string buffer should be an owner of the underlying characters array.

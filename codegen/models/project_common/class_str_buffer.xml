@@ -192,6 +192,18 @@
     </method>
 
 
+    <method name="append char">
+        Append char to the string buffer and reallocate if needed by coping.
+
+        Precondition: string buffer should be an owner of the underlying characters array.
+
+        Note, this operation can be slow if copy operation occurred.
+        Note, string buffer capacity is doubled.
+
+        <argument name="ch" type="char"/>
+    </method>
+
+
     <method name="append str">
         Copy string to the string buffer and reallocate if needed by coping.
 
