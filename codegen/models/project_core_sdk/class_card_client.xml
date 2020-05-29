@@ -1,0 +1,77 @@
+<class name="card client">
+    Helps to communicate with Virgil Card Service.
+
+
+    <property name="publish card url" class="str buffer"/>
+
+
+    <constant name="k base url" type="string" visibility="private">
+        Base service URL.
+
+        <value value="https://api.virgilsecurity.com"/>
+    </constant>
+
+
+    <constant name="k card url path" type="string" visibility="private" >
+        POST|GET /card
+
+        <value value="/card/v5"/>
+    </constant>
+
+
+    <constant name="k header name x virgil is superseeded" type="string" visibility="private" >
+        HTTP Header name: X-Virgil-Is-Superseeded
+
+        <value value="X-Virgil-Is-Superseeded"/>
+    </constant>
+
+
+    <constructor name="with base url">
+        Create Card Client with a given Virgil Base URL, aka https://api.virgilsecurity.com
+
+        <argument name="url" class="str"/>
+    </constructor>
+
+
+    <method name="request publish card" is_const="1">
+         Create request that creates Virgil Card instance on the Virgil Cards Service.
+
+         Also makes the Card accessible for search/get queries from other users.
+         Note, "raw card" should contain appropriate signatures.
+
+        <argument name="raw card" class="raw card"/>
+
+        <return class="http request" access="disown"/>
+    </method>
+
+
+    <method name="process publish card response" is_const="1">
+        Map response to the correspond model.
+        Return "raw card" of published Card.
+
+        <argument name="response" class="virgil http response"/>
+        <argument name="error" class="error" access="readwrite"/>
+
+        <return class="raw card" access="disown"/>
+    </method>
+
+
+    <method name="request get card" is_const="1">
+         Create request that returns card from the Virgil Cards Service with given ID, if exists.
+
+        <argument name="card id" class="str"/>
+
+        <return class="http request" access="disown"/>
+    </method>
+
+
+    <method name="process get card response" is_const="1">
+        Map response to the correspond model.
+        Return "raw card" of if Card was found.
+
+        <argument name="response" class="virgil http response"/>
+        <argument name="error" class="error" access="readwrite"/>
+
+        <return class="raw card" access="disown"/>
+    </method>
+</class>

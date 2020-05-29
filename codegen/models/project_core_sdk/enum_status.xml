@@ -33,7 +33,7 @@
         Actual JSON value type differs from the requested.
     </constant>
 
-    <constant name="json value is not base64" value="-204">
+    <constant name="json value is not base64" value="-205">
         Requested JSON binary value is not base64 encoded.
     </constant>
 
@@ -47,5 +47,9 @@
 
     <constant name="http body parse failed" value="-303">
         Failed to parse JWT HTTP body.
+    </constant>
+
+    <constant name="card content snapshot parse failed" value="-401">
+        Failed to parse card content snapshot.
     </constant>
 </enum>

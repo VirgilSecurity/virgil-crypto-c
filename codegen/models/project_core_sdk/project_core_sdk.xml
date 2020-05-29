@@ -65,6 +65,7 @@
     <!-- Common modules -->
     <class name="error" from="shared"/>
     <class name="json object"/>
+    <class name="unix time"/>
 
     <!-- JWT modules -->
     <class name="base64 url"/>
@@ -82,6 +83,17 @@
     <!-- Common client modules -->
     <class name="virgil http client"/>
     <class name="virgil http response"/>
+
+    <!-- Cards modules -->
+    <class name="card client"/>
+    <class name="get card response"/>
+    <class name="raw card"/>
+    <class name="raw card signer"/>
+    <class name="raw card verifier"/>
+    <class name="raw card signature"/>
+    <class name="raw card signature list"/>
+    <class name="card"/>
+    <class name="card manager"/>
 
     <error_message_getter success="0">
         <require enum="status"/>

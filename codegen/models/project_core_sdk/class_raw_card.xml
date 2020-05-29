@@ -1,0 +1,167 @@
+<class name="raw card">
+    Represent model in binary form which can have signatures and corresponds to Virgil Cards Service model.
+
+
+    <require class="base64" project="foundation"/>
+
+
+    <property name="content type" class="json object"/>
+    <property name="signatures" class="raw card signature list"/>
+    <property name="public_key" class="buffer"/>
+
+
+    <constant name="k default version" type="string">
+        Default Virgil Card version.
+
+        <value value="5.0"/>
+    </constant>
+
+
+    <constant name="k json key public key" type="string">
+        JSON key: public_key
+
+        <value value="public_key"/>
+    </constant>
+
+
+    <constant name="k json key identity" type="string">
+        JSON key: identity
+
+        <value value="identity"/>
+    </constant>
+
+
+    <constant name="k json key card type" type="string">
+        JSON key: card_type
+
+        <value value="card_type"/>
+    </constant>
+
+
+    <constant name="k json key previous card id" type="string">
+        JSON key: previous_card_id
+
+        <value value="previous_card_id"/>
+    </constant>
+
+
+    <constant name="k json key version" type="string">
+        JSON key: version
+
+        <value value="version"/>
+    </constant>
+
+
+    <constant name="k json key created at" type="string">
+        JSON key: created_at
+
+        <value value="created_at"/>
+    </constant>
+
+
+    <constructor name="with">
+        Create raw card with mandatory info.
+
+        <argument name="identity" class="str"/>
+        <argument name="public key" class="data"/>
+        <argument name="created at" type="size"/>
+    </constructor>
+
+
+    <constructor name="with disown" visibility="private">
+        Create raw card with mandatory info.
+
+        <argument name="identity" class="str"/>
+        <argument name="public key" class="buffer" access="disown"/>
+        <argument name="created at" type="size"/>
+    </constructor>
+
+
+    <method name="set previous card id">
+        Set optional previous card identifier.
+
+        Note, previous card identity and the current one should be the same.
+
+        <argument name="previous card id" class="str"/>
+    </method>
+
+
+    <method name="set card type">
+        Set optional card type.
+
+        <argument name="previous card id" class="str"/>
+    </method>
+
+
+    <method name="add signature">
+        Add new signature.
+
+        <argument name="signature" class="raw card signature"/>
+    </method>
+
+
+    <method name="add signature disown" visibility="private">
+        Add new signature.
+
+        <argument name="signature" class="raw card signature" access="disown"/>
+    </method>
+
+
+    <method name="import fron json" is_static="1">
+        Create raw card from JSON representation.
+
+        <argument name="json str" class="str">
+        <argument name="error" class="error" access="readwrite">
+
+        <return class="self" access="disown"/>
+    </method>
+
+
+    <method name="version" is_const="1">
+        Return version of Card.
+
+        <return class="str"/>
+    </method>
+
+
+    <method name="identity" is_const="1">
+        Return identity of Card.
+
+        <return class="str"/>
+    </method>
+
+
+    <method name="public key" is_const="1">
+        Return Public Key data of Card.
+
+        Note, public key can be empty.
+
+        <return class="data"/>
+    </method>
+
+
+    <method name="created at" is_const="1">
+        Return date of Card creation.
+
+        <return type="size"/>
+    </method>
+
+
+    <method name="previous card id" is_const="1">
+        Return identifier of previous Card with same identity.
+
+        Note, return empty string if there is no previous card.
+
+        <return class="str"/>
+    </method>
+
+
+    <method name="content snapshot" is_const="1">
+        <return class="data"/>
+    </method>
+
+
+    <method name="signatures" is_const="1">
+        <return class="raw card signature list"/>
+    </method>
+</class>

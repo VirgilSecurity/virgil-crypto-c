@@ -1,0 +1,47 @@
+<class name="raw card signature">
+    Represent signature of "raw card content" snapshot.
+
+
+    <property name="signer" class="str mutable"/>
+    <property name="signature" class="buffer"/>
+    <property name="snapshot" class="buffer"/>
+
+
+    <constructor name="with">
+        Create a fully defined object.
+
+        <argument name="signer" class="str"/>
+        <argument name="signature" class="data"/>
+        <argument name="snapshot" class="data"/>
+    </constructor>
+
+
+    <constructor name="with disown">
+        Create a fully defined object.
+
+        <argument name="signer" class="str"/>
+        <argument name="signature" class="buffer" access="disown"/>
+        <argument name="snapshot" class="buffer" access="disown"/>
+    </constructor>
+
+
+    <method name="signer" is_const="1">
+        Return identifier of signer.
+
+        <return class="str"/>
+    </method>
+
+
+    <method name="signature" is_const="1">
+        Return signature.
+
+        <return class="data"/>
+    </method>
+
+
+    <method name="snapshot" is_const="1">
+        Return snaphot of additional data.
+
+        <return class="data"/>
+    </method>
+</class>

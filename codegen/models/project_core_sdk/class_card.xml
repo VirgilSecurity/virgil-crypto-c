@@ -1,0 +1,139 @@
+<class name="card">
+    Represent Virgil Card.
+
+    Virgil Card is a central entity of Virgil Cards Service.
+
+
+    <property name="raw card" class="raw card"/>
+    <property name="public key" class="public key" project="foundation"/>
+    <property name="is outdated" type="boolean"/>
+    <property name="previous card" class="self"/>
+
+
+    <constructor name="with">
+        Create Virgil Card with mandatory properties.
+
+        <argument name="raw card" class="raw card"/>
+        <argument name="public key" class="public key" project="foundation"/>
+    </constructor>
+
+
+    <constructor name="with disown" visibility="private">
+        Create Virgil Card with mandatory properties.
+
+        <argument name="raw card" class="raw card" access="disown"/>
+        <argument name="public key" class="public key" project="foundation" access="disown"/>
+    </constructor>
+
+
+    <method name="set outdated">
+        Set whether a Card is outdated or not.
+
+        <argument name="is outdated" type="boolean"/>
+    </method>
+
+
+    <method name="set previous card identifier">
+        Set unique identifier of a previous Card.
+
+        <argument name="previous card id" type="str"/>
+    </method>
+
+
+    <method name="set previous card">
+        Set previous Card.
+
+        <argument name="previous card" class="self"/>
+    </method>
+
+
+    <method name="set previous card disown" visibility="private">
+        Set previous Card.
+
+        <argument name="previous card" class="self"/>
+    </method>
+
+
+    <method name="identifier" is_const="1">
+        Return Card unique identifier.
+
+        <return class="str"/>
+    </method>
+
+
+    <method name="identity" is_const="1">
+        Return Card identity.
+
+        <return class="str"/>
+    </method>
+
+
+    <method name="public key" is_const="1">
+        Return Card public key.
+
+        <return interface="public key" project="foundation"/>
+    </method>
+
+
+    <method name="version" is_const="1">
+        Return Card version.
+
+        <return class="str"/>
+    </method>
+
+
+    <method name="created at" is_const="1">
+        Return timestamp of Card creation.
+
+        <return type="size"/>
+    </method>
+
+
+    <method name="content snapshot" is_const="1">
+        Return Card content snapshot.
+
+        <return class="data"/>
+    </method>
+
+
+    <method name="is outdated" is_const="1">
+        Return whether Card is outdated or not.
+
+        <return type="boolean"/>
+    </method>
+
+
+    <method name="has previous card" is_const="1">
+        Return whether previous card exists or not.
+
+        <return type="boolean"/>
+    </method>
+
+
+    <method name="previous card id" is_const="1">
+        Return identifier of previous card if exists.
+
+        <return class="str"/>
+    </method>
+
+
+    <method name="previous card" is_const="1">
+        Return previous card if exists, NULL otherwise.
+
+        <return class="self"/>
+    </method>
+
+
+    <method name="signatures" is_const="1">
+        Return Card signatures,
+
+        <return class="raw card signature list"/>
+    </method>
+
+
+    <method name="get raw card" is_const="1">
+        Return raw card.
+
+        <return class="raw card"/>
+    </method>
+</class>

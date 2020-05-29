@@ -1,0 +1,34 @@
+<class name="raw card signer">
+    Class responsible for signing "raw card".
+
+
+    <dependency name="signer" class="signer" project="foundation"/>
+
+
+    <constant name="k self signer id" type="string" visibility="private">
+        Identifier of self-signature.
+
+        <value value="self"/>
+    </constant>
+
+
+    <method name="sign" is_const="1">
+        Adds signature to given "raw card" with provided signer and private key.
+
+        <argument name="raw card" class="raw card" access="readwrite"/>
+        <argument name="signer" class="str"/>
+        <argument name="private key" interface="private key" project="foundation"/>
+
+        <return enum="status"/>
+    </method>
+
+
+    <method name="self sign" is_const="1">
+        Adds self-signature to given "raw card".
+
+        <argument name="raw card" class="raw card" access="readwrite"/>
+        <argument name="private key" interface="private key" project="foundation"/>
+
+        <return enum="status"/>
+    </method>
+</class>

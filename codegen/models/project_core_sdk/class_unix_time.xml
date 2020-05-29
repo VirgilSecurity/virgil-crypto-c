@@ -1,0 +1,24 @@
+<class name="unix time">
+    Utility class for working with Unix time / Epoch time /  POSIX time.
+
+
+    <require header="time.h" is_system="1"/>
+
+
+    <method name="now">
+        Returns current timestamp.
+
+        <return type="size"/>
+    </method>
+
+
+    <method name="distance from now">
+        Returns distance between now and given timestamp.
+
+        Note, always return non-negative value.
+
+        <argument name="to timestamp" type="size"/>
+
+        <return type="size"/>
+    </method>
+</class>

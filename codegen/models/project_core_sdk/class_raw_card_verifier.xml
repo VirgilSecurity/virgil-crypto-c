@@ -1,0 +1,57 @@
+<class name="raw card verifier">
+    Class responsible for verifying "raw card".
+
+
+    <require class="verifier" project="foundation"/>
+    <require module="verifier defs" project="foundation"/>
+
+
+    <constant name="k virgil signer id" type="string" visibility="private">
+        Identifier of virgil signature.
+
+        <value value="virgil"/>
+    </constant>
+
+
+    <constant name="k self signer id" type="string" visibility="private">
+        Identifier of self-signature.
+
+        <value value="self"/>
+    </constant>
+
+
+    <constant name="k virgil public key" type="string" visibility="public">
+        Public Key of Virgil Cards Service.
+
+        <value value="MCowBQYDK2VwAyEAljOYGANYiVq1WbvVvoYIKtvZi2ji9bAhxyu6iV/LF8M="/>
+    </constant>
+
+
+    <method name="verify" is_const="1">
+        Verifies given "raw card" with provided signer and public key.
+
+        <argument name="raw card" class="raw card"/>
+        <argument name="signer" class="str"/>
+        <argument name="public key" interface="public key" project="foundation"/>
+
+        <return type="boolean"/>
+    </method>
+
+
+    <method name="verify self" is_const="1">
+        Verifies self-signature.
+
+        <argument name="raw card" class="raw card"/>
+
+        <return type="boolean"/>
+    </method>
+
+
+    <method name="verify virgil" is_const="1">
+        Verifies signature of Virgil Cards Service.
+
+        <argument name="raw card" class="raw card"/>
+
+        <return type="boolean"/>
+    </method>
+</class>
