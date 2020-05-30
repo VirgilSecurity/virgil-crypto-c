@@ -131,7 +131,7 @@ vscf_kdf2_new(void);
 //  This is a reverse action of the function 'vscf_kdf2_new()'.
 //
 VSCF_PUBLIC void
-vscf_kdf2_delete(vscf_kdf2_t *self);
+vscf_kdf2_delete(const vscf_kdf2_t *self);
 
 //
 //  Destroy given implementation context and it's dependencies.
@@ -146,6 +146,13 @@ vscf_kdf2_destroy(vscf_kdf2_t **self_ref);
 //
 VSCF_PUBLIC vscf_kdf2_t *
 vscf_kdf2_shallow_copy(vscf_kdf2_t *self);
+
+//
+//  Copy given implementation context by increasing reference counter.
+//  Reference counter is internally synchronized, so constness is presumed.
+//
+VSCF_PUBLIC const vscf_kdf2_t *
+vscf_kdf2_shallow_copy_const(const vscf_kdf2_t *self);
 
 //
 //  Setup dependency to the interface 'hash' with shared ownership.

@@ -156,7 +156,7 @@ vscf_round5_new(void);
 //  This is a reverse action of the function 'vscf_round5_new()'.
 //
 VSCF_PUBLIC void
-vscf_round5_delete(vscf_round5_t *self);
+vscf_round5_delete(const vscf_round5_t *self);
 
 //
 //  Destroy given implementation context and it's dependencies.
@@ -171,6 +171,13 @@ vscf_round5_destroy(vscf_round5_t **self_ref);
 //
 VSCF_PUBLIC vscf_round5_t *
 vscf_round5_shallow_copy(vscf_round5_t *self);
+
+//
+//  Copy given implementation context by increasing reference counter.
+//  Reference counter is internally synchronized, so constness is presumed.
+//
+VSCF_PUBLIC const vscf_round5_t *
+vscf_round5_shallow_copy_const(const vscf_round5_t *self);
 
 //
 //  Setup dependency to the interface 'random' with shared ownership.

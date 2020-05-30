@@ -127,7 +127,7 @@ vscf_alg_info_der_serializer_new(void);
 //  This is a reverse action of the function 'vscf_alg_info_der_serializer_new()'.
 //
 VSCF_PUBLIC void
-vscf_alg_info_der_serializer_delete(vscf_alg_info_der_serializer_t *self);
+vscf_alg_info_der_serializer_delete(const vscf_alg_info_der_serializer_t *self);
 
 //
 //  Destroy given implementation context and it's dependencies.
@@ -142,6 +142,13 @@ vscf_alg_info_der_serializer_destroy(vscf_alg_info_der_serializer_t **self_ref);
 //
 VSCF_PUBLIC vscf_alg_info_der_serializer_t *
 vscf_alg_info_der_serializer_shallow_copy(vscf_alg_info_der_serializer_t *self);
+
+//
+//  Copy given implementation context by increasing reference counter.
+//  Reference counter is internally synchronized, so constness is presumed.
+//
+VSCF_PUBLIC const vscf_alg_info_der_serializer_t *
+vscf_alg_info_der_serializer_shallow_copy_const(const vscf_alg_info_der_serializer_t *self);
 
 //
 //  Setup dependency to the interface 'asn1 writer' with shared ownership.

@@ -116,7 +116,7 @@ vscr_ratchet_cipher_new(void);
 //  It is safe to call this method even if the context was statically allocated.
 //
 VSCR_PUBLIC void
-vscr_ratchet_cipher_delete(vscr_ratchet_cipher_t *self);
+vscr_ratchet_cipher_delete(const vscr_ratchet_cipher_t *self);
 
 //
 //  Delete given context and nullifies reference.
@@ -130,6 +130,13 @@ vscr_ratchet_cipher_destroy(vscr_ratchet_cipher_t **self_ref);
 //
 VSCR_PUBLIC vscr_ratchet_cipher_t *
 vscr_ratchet_cipher_shallow_copy(vscr_ratchet_cipher_t *self);
+
+//
+//  Copy given class context by increasing reference counter.
+//  Reference counter is internally synchronized, so constness is presumed.
+//
+VSCR_PUBLIC const vscr_ratchet_cipher_t *
+vscr_ratchet_cipher_shallow_copy_const(const vscr_ratchet_cipher_t *self);
 
 VSCR_PUBLIC size_t
 vscr_ratchet_cipher_encrypt_len(vscr_ratchet_cipher_t *self, size_t plain_text_len);

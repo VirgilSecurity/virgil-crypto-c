@@ -117,7 +117,7 @@ vscf_padding_cipher_new(void);
 //  It is safe to call this method even if the context was statically allocated.
 //
 VSCF_PUBLIC void
-vscf_padding_cipher_delete(vscf_padding_cipher_t *self);
+vscf_padding_cipher_delete(const vscf_padding_cipher_t *self);
 
 //
 //  Delete given context and nullifies reference.
@@ -131,6 +131,13 @@ vscf_padding_cipher_destroy(vscf_padding_cipher_t **self_ref);
 //
 VSCF_PUBLIC vscf_padding_cipher_t *
 vscf_padding_cipher_shallow_copy(vscf_padding_cipher_t *self);
+
+//
+//  Copy given class context by increasing reference counter.
+//  Reference counter is internally synchronized, so constness is presumed.
+//
+VSCF_PUBLIC const vscf_padding_cipher_t *
+vscf_padding_cipher_shallow_copy_const(const vscf_padding_cipher_t *self);
 
 //
 //  Setup dependency to the interface 'cipher' with shared ownership.

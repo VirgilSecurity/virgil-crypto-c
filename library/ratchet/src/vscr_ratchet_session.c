@@ -178,37 +178,39 @@ vscr_ratchet_session_new(void) {
 //  It is safe to call this method even if the context was statically allocated.
 //
 VSCR_PUBLIC void
-vscr_ratchet_session_delete(vscr_ratchet_session_t *self) {
+vscr_ratchet_session_delete(const vscr_ratchet_session_t *self) {
 
-    if (self == NULL) {
+    vscr_ratchet_session_t *local_self = (vscr_ratchet_session_t *)self;
+
+    if (local_self == NULL) {
         return;
     }
 
-    size_t old_counter = self->refcnt;
+    size_t old_counter = local_self->refcnt;
     VSCR_ASSERT(old_counter != 0);
     size_t new_counter = old_counter - 1;
 
     #if defined(VSCR_ATOMIC_COMPARE_EXCHANGE_WEAK)
     //  CAS loop
-    while (!VSCR_ATOMIC_COMPARE_EXCHANGE_WEAK(&self->refcnt, &old_counter, new_counter)) {
-        old_counter = self->refcnt;
+    while (!VSCR_ATOMIC_COMPARE_EXCHANGE_WEAK(&local_self->refcnt, &old_counter, new_counter)) {
+        old_counter = local_self->refcnt;
         VSCR_ASSERT(old_counter != 0);
         new_counter = old_counter - 1;
     }
     #else
-    self->refcnt = new_counter;
+    local_self->refcnt = new_counter;
     #endif
 
     if (new_counter > 0) {
         return;
     }
 
-    vscr_dealloc_fn self_dealloc_cb = self->self_dealloc_cb;
+    vscr_dealloc_fn self_dealloc_cb = local_self->self_dealloc_cb;
 
-    vscr_ratchet_session_cleanup(self);
+    vscr_ratchet_session_cleanup(local_self);
 
     if (self_dealloc_cb != NULL) {
-        self_dealloc_cb(self);
+        self_dealloc_cb(local_self);
     }
 }
 
@@ -248,6 +250,16 @@ vscr_ratchet_session_shallow_copy(vscr_ratchet_session_t *self) {
     #endif
 
     return self;
+}
+
+//
+//  Copy given class context by increasing reference counter.
+//  Reference counter is internally synchronized, so constness is presumed.
+//
+VSCR_PUBLIC const vscr_ratchet_session_t *
+vscr_ratchet_session_shallow_copy_const(const vscr_ratchet_session_t *self) {
+
+    return vscr_ratchet_session_shallow_copy((vscr_ratchet_session_t *)self);
 }
 
 //

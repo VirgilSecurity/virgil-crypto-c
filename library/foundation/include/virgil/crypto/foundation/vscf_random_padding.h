@@ -132,7 +132,7 @@ vscf_random_padding_new(void);
 //  This is a reverse action of the function 'vscf_random_padding_new()'.
 //
 VSCF_PUBLIC void
-vscf_random_padding_delete(vscf_random_padding_t *self);
+vscf_random_padding_delete(const vscf_random_padding_t *self);
 
 //
 //  Destroy given implementation context and it's dependencies.
@@ -147,6 +147,13 @@ vscf_random_padding_destroy(vscf_random_padding_t **self_ref);
 //
 VSCF_PUBLIC vscf_random_padding_t *
 vscf_random_padding_shallow_copy(vscf_random_padding_t *self);
+
+//
+//  Copy given implementation context by increasing reference counter.
+//  Reference counter is internally synchronized, so constness is presumed.
+//
+VSCF_PUBLIC const vscf_random_padding_t *
+vscf_random_padding_shallow_copy_const(const vscf_random_padding_t *self);
 
 //
 //  Setup dependency to the interface 'random' with shared ownership.

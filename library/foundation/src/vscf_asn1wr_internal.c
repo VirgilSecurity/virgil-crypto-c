@@ -317,34 +317,36 @@ vscf_asn1wr_new(void) {
 //  This is a reverse action of the function 'vscf_asn1wr_new()'.
 //
 VSCF_PUBLIC void
-vscf_asn1wr_delete(vscf_asn1wr_t *self) {
+vscf_asn1wr_delete(const vscf_asn1wr_t *self) {
 
-    if (self == NULL) {
+    vscf_asn1wr_t *local_self = (vscf_asn1wr_t *)self;
+
+    if (local_self == NULL) {
         return;
     }
 
-    size_t old_counter = self->refcnt;
+    size_t old_counter = local_self->refcnt;
     VSCF_ASSERT(old_counter != 0);
     size_t new_counter = old_counter - 1;
 
     #if defined(VSCF_ATOMIC_COMPARE_EXCHANGE_WEAK)
     //  CAS loop
-    while (!VSCF_ATOMIC_COMPARE_EXCHANGE_WEAK(&self->refcnt, &old_counter, new_counter)) {
-        old_counter = self->refcnt;
+    while (!VSCF_ATOMIC_COMPARE_EXCHANGE_WEAK(&local_self->refcnt, &old_counter, new_counter)) {
+        old_counter = local_self->refcnt;
         VSCF_ASSERT(old_counter != 0);
         new_counter = old_counter - 1;
     }
     #else
-    self->refcnt = new_counter;
+    local_self->refcnt = new_counter;
     #endif
 
     if (new_counter > 0) {
         return;
     }
 
-    vscf_asn1wr_cleanup(self);
+    vscf_asn1wr_cleanup(local_self);
 
-    vscf_dealloc(self);
+    vscf_dealloc(local_self);
 }
 
 //
@@ -368,6 +370,17 @@ vscf_asn1wr_destroy(vscf_asn1wr_t **self_ref) {
 //
 VSCF_PUBLIC vscf_asn1wr_t *
 vscf_asn1wr_shallow_copy(vscf_asn1wr_t *self) {
+
+    // Proxy to the parent implementation.
+    return (vscf_asn1wr_t *)vscf_impl_shallow_copy((vscf_impl_t *)self);
+}
+
+//
+//  Copy given implementation context by increasing reference counter.
+//  Reference counter is internally synchronized, so constness is presumed.
+//
+VSCF_PUBLIC const vscf_asn1wr_t *
+vscf_asn1wr_shallow_copy_const(const vscf_asn1wr_t *self) {
 
     // Proxy to the parent implementation.
     return (vscf_asn1wr_t *)vscf_impl_shallow_copy((vscf_impl_t *)self);

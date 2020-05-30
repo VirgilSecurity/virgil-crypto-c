@@ -128,7 +128,7 @@ vscf_password_recipient_info_new_with_members(vscf_impl_t **key_encryption_algor
 //  It is safe to call this method even if the context was statically allocated.
 //
 VSCF_PUBLIC void
-vscf_password_recipient_info_delete(vscf_password_recipient_info_t *self);
+vscf_password_recipient_info_delete(const vscf_password_recipient_info_t *self);
 
 //
 //  Delete given context and nullifies reference.
@@ -142,6 +142,13 @@ vscf_password_recipient_info_destroy(vscf_password_recipient_info_t **self_ref);
 //
 VSCF_PUBLIC vscf_password_recipient_info_t *
 vscf_password_recipient_info_shallow_copy(vscf_password_recipient_info_t *self);
+
+//
+//  Copy given class context by increasing reference counter.
+//  Reference counter is internally synchronized, so constness is presumed.
+//
+VSCF_PUBLIC const vscf_password_recipient_info_t *
+vscf_password_recipient_info_shallow_copy_const(const vscf_password_recipient_info_t *self);
 
 //
 //  Return algorithm information that was used for encryption

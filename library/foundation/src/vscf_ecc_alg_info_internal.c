@@ -167,34 +167,36 @@ vscf_ecc_alg_info_new(void) {
 //  This is a reverse action of the function 'vscf_ecc_alg_info_new()'.
 //
 VSCF_PUBLIC void
-vscf_ecc_alg_info_delete(vscf_ecc_alg_info_t *self) {
+vscf_ecc_alg_info_delete(const vscf_ecc_alg_info_t *self) {
 
-    if (self == NULL) {
+    vscf_ecc_alg_info_t *local_self = (vscf_ecc_alg_info_t *)self;
+
+    if (local_self == NULL) {
         return;
     }
 
-    size_t old_counter = self->refcnt;
+    size_t old_counter = local_self->refcnt;
     VSCF_ASSERT(old_counter != 0);
     size_t new_counter = old_counter - 1;
 
     #if defined(VSCF_ATOMIC_COMPARE_EXCHANGE_WEAK)
     //  CAS loop
-    while (!VSCF_ATOMIC_COMPARE_EXCHANGE_WEAK(&self->refcnt, &old_counter, new_counter)) {
-        old_counter = self->refcnt;
+    while (!VSCF_ATOMIC_COMPARE_EXCHANGE_WEAK(&local_self->refcnt, &old_counter, new_counter)) {
+        old_counter = local_self->refcnt;
         VSCF_ASSERT(old_counter != 0);
         new_counter = old_counter - 1;
     }
     #else
-    self->refcnt = new_counter;
+    local_self->refcnt = new_counter;
     #endif
 
     if (new_counter > 0) {
         return;
     }
 
-    vscf_ecc_alg_info_cleanup(self);
+    vscf_ecc_alg_info_cleanup(local_self);
 
-    vscf_dealloc(self);
+    vscf_dealloc(local_self);
 }
 
 //
@@ -218,6 +220,17 @@ vscf_ecc_alg_info_destroy(vscf_ecc_alg_info_t **self_ref) {
 //
 VSCF_PUBLIC vscf_ecc_alg_info_t *
 vscf_ecc_alg_info_shallow_copy(vscf_ecc_alg_info_t *self) {
+
+    // Proxy to the parent implementation.
+    return (vscf_ecc_alg_info_t *)vscf_impl_shallow_copy((vscf_impl_t *)self);
+}
+
+//
+//  Copy given implementation context by increasing reference counter.
+//  Reference counter is internally synchronized, so constness is presumed.
+//
+VSCF_PUBLIC const vscf_ecc_alg_info_t *
+vscf_ecc_alg_info_shallow_copy_const(const vscf_ecc_alg_info_t *self) {
 
     // Proxy to the parent implementation.
     return (vscf_ecc_alg_info_t *)vscf_impl_shallow_copy((vscf_impl_t *)self);

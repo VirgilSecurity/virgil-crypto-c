@@ -144,7 +144,7 @@ vscf_key_material_rng_new(void);
 //  This is a reverse action of the function 'vscf_key_material_rng_new()'.
 //
 VSCF_PUBLIC void
-vscf_key_material_rng_delete(vscf_key_material_rng_t *self);
+vscf_key_material_rng_delete(const vscf_key_material_rng_t *self);
 
 //
 //  Destroy given implementation context and it's dependencies.
@@ -159,6 +159,13 @@ vscf_key_material_rng_destroy(vscf_key_material_rng_t **self_ref);
 //
 VSCF_PUBLIC vscf_key_material_rng_t *
 vscf_key_material_rng_shallow_copy(vscf_key_material_rng_t *self);
+
+//
+//  Copy given implementation context by increasing reference counter.
+//  Reference counter is internally synchronized, so constness is presumed.
+//
+VSCF_PUBLIC const vscf_key_material_rng_t *
+vscf_key_material_rng_shallow_copy_const(const vscf_key_material_rng_t *self);
 
 //
 //  Set a new key material.

@@ -104,7 +104,7 @@ vscr_ratchet_skipped_messages_new(void);
 //  It is safe to call this method even if the context was statically allocated.
 //
 VSCR_PUBLIC void
-vscr_ratchet_skipped_messages_delete(vscr_ratchet_skipped_messages_t *self);
+vscr_ratchet_skipped_messages_delete(const vscr_ratchet_skipped_messages_t *self);
 
 //
 //  Delete given context and nullifies reference.
@@ -118,6 +118,13 @@ vscr_ratchet_skipped_messages_destroy(vscr_ratchet_skipped_messages_t **self_ref
 //
 VSCR_PUBLIC vscr_ratchet_skipped_messages_t *
 vscr_ratchet_skipped_messages_shallow_copy(vscr_ratchet_skipped_messages_t *self);
+
+//
+//  Copy given class context by increasing reference counter.
+//  Reference counter is internally synchronized, so constness is presumed.
+//
+VSCR_PUBLIC const vscr_ratchet_skipped_messages_t *
+vscr_ratchet_skipped_messages_shallow_copy_const(const vscr_ratchet_skipped_messages_t *self);
 
 VSCR_PUBLIC vscr_ratchet_message_key_t *
 vscr_ratchet_skipped_messages_find_key(const vscr_ratchet_skipped_messages_t *self, uint32_t counter,

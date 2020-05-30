@@ -147,7 +147,7 @@ vscf_key_recipient_info_new_with_data(vsc_data_t recipient_id, const vscf_impl_t
 //  It is safe to call this method even if the context was statically allocated.
 //
 VSCF_PUBLIC void
-vscf_key_recipient_info_delete(vscf_key_recipient_info_t *self);
+vscf_key_recipient_info_delete(const vscf_key_recipient_info_t *self);
 
 //
 //  Delete given context and nullifies reference.
@@ -161,6 +161,13 @@ vscf_key_recipient_info_destroy(vscf_key_recipient_info_t **self_ref);
 //
 VSCF_PUBLIC vscf_key_recipient_info_t *
 vscf_key_recipient_info_shallow_copy(vscf_key_recipient_info_t *self);
+
+//
+//  Copy given class context by increasing reference counter.
+//  Reference counter is internally synchronized, so constness is presumed.
+//
+VSCF_PUBLIC const vscf_key_recipient_info_t *
+vscf_key_recipient_info_shallow_copy_const(const vscf_key_recipient_info_t *self);
 
 //
 //  Return recipient identifier.

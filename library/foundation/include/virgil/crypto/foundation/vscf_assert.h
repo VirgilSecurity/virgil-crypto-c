@@ -123,6 +123,16 @@ extern "C" {
     } while (false)
 
 //
+//  Assert that given reference is not NULL. And reference pointer is not NULL too.
+//  It is enabled in debug mode.
+//
+#define VSCF_ASSERT_REF(X)   \
+    do {                     \
+        VSCF_ASSERT_PTR(X);  \
+        VSCF_ASSERT_PTR(*X); \
+    } while (false)
+
+//
 //  Assert that given pointer is NULL. It is enabled in debug mode.
 //
 #define VSCF_ASSERT_NULL(X)                                                       \

@@ -824,6 +824,7 @@ function _Z19_add_method_delete (impl, declaration, definition, destination, met
         .name = my.names.method_delete
         .declaration = my.declaration
         .definition = my.definition
+        .is_const = "1"
 
         . = "\
         Delete given implementation context and it's dependencies.
@@ -834,10 +835,13 @@ function _Z19_add_method_delete (impl, declaration, definition, destination, met
 
         new code
             my.arg_impl = ".(_argument_$(make_id (my.names.implementation_argument_impl)))"
-            my.counter = "$(my.arg_impl)->$(my.names.c_property_ref_counter:)"
+            my.type_impl = my.refs.c_implementation_struct_impl
+            my.counter = "local_self->$(my.names.c_property_ref_counter:)"
 
             . = "
-                if ($(my.arg_impl) == NULL) {
+                $(my.type_impl:) *local_self = ($(my.type_impl) *)$(my.arg_impl);
+
+                if (local_self == NULL) {
                     return;
                 }
 
@@ -860,9 +864,9 @@ function _Z19_add_method_delete (impl, declaration, definition, destination, met
                     return;
                 }
 
-                $(my.refs.c_implementation_method_cleanup)($(my.arg_impl));
+                $(my.refs.c_implementation_method_cleanup)(local_self);
 
-                .(c_global_method_dealloc)($(my.arg_impl));
+                .(c_global_method_dealloc)(local_self);
             "
         endnew
     endnew
@@ -933,6 +937,7 @@ function _Z19_implement_method_shallow_copy(impl, method, meta)
     endscope
 endfunction
 
+
 # ---------------------------------------------------------------------------
 function _Z19_add_method_shallow_copy (impl, declaration, definition, destination, meta)
     check_arguments (my, "impl, declaration, definition, destination, meta", my)
@@ -948,6 +953,28 @@ function _Z19_add_method_shallow_copy (impl, declaration, definition, destinatio
 
         . = "
             Copy given implementation context by increasing reference counter.
+        "
+
+        _Z19_implement_method_shallow_copy (my.impl, method, my.meta)
+    endnew
+endfunction
+
+
+function _Z19_add_method_shallow_copy_const (impl, declaration, definition, destination, meta)
+    check_arguments (my, "impl, declaration, definition, destination, meta", my)
+
+    my.names = meta_names (my.meta)
+    my.refs = meta_refs (my.meta)
+
+    new method to my.destination
+        .name = my.names.method_shallow_copy_const
+        .declaration = my.declaration
+        .definition = my.definition
+        .is_const = "1"
+
+        . = "
+            Copy given implementation context by increasing reference counter.
+            Reference counter is internally synchronized, so constness is presumed.
         "
 
         _Z19_implement_method_shallow_copy (my.impl, method, my.meta)
@@ -1014,6 +1041,7 @@ function _Z19_add_lifecycle_methods (impl, declaration, definition, destination,
     _Z19_add_method_delete (my.impl, my.declaration, my.definition, my.destination, my.meta)
     _Z19_add_method_destroy (my.impl, my.declaration, my.definition, my.destination, my.meta)
     _Z19_add_method_shallow_copy (my.impl, my.declaration, my.definition, my.destination, my.meta)
+    _Z19_add_method_shallow_copy_const (my.impl, my.declaration, my.definition, my.destination, my.meta)
 endfunction
 
 

@@ -185,6 +185,8 @@ function _X13_add_argument_ctx_ref (class, method, meta)
         .access = "disown"
         .is_reference = "1"
     endscope
+
+    return my.argument
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -591,7 +593,7 @@ function _X13_add_method_delete (class, destination, meta)
 
     new method to my.destination
         .name = my.names.method_delete
-        .is_const = "0"
+        .is_const = "1"
         .is_static = "0"
 
         . = "\
@@ -603,10 +605,13 @@ function _X13_add_method_delete (class, destination, meta)
 
         new code to method
             my.arg_ctx = my.refs.class_argument_ctx
-            my.counter = "$(my.arg_ctx)->$(my.names.c_property_ref_counter:)"
+            my.type_ctx = my.refs.c_class_struct_ctx
+            my.counter = "local_self->$(my.names.c_property_ref_counter:)"
 
             . = "\
-            if ($(my.arg_ctx) == NULL) {
+            $(my.type_ctx:) *local_self = ($(my.type_ctx:) *)$(my.arg_ctx);
+
+            if (local_self == NULL) {
                 return;
             }
 
@@ -629,12 +634,12 @@ function _X13_add_method_delete (class, destination, meta)
                 return;
             }
 
-            .(c_global_callback_dealloc) self_dealloc_cb = $(my.arg_ctx:)->$(my.refs.c_class_property_self_dealloc);
+            .(c_global_callback_dealloc) self_dealloc_cb = local_self->$(my.refs.c_class_property_self_dealloc);
 
-            $(my.refs.c_class_method_cleanup)($(my.arg_ctx));
+            $(my.refs.c_class_method_cleanup)(local_self);
 
             if (self_dealloc_cb != NULL) {
-                self_dealloc_cb($(my.arg_ctx));
+                self_dealloc_cb(local_self);
             }
             "
         endnew
@@ -722,6 +727,38 @@ function _X13_add_method_shallow_copy (class, destination, meta)
 endfunction
 
 # ---------------------------------------------------------------------------
+#   Add function that 'copy' class object by increasing ref counter
+#   with const semantic.
+# ---------------------------------------------------------------------------
+function _X13_add_method_shallow_copy_const (class, destination, meta)
+    check_arguments (my, "class, destination, meta", my)
+
+    my.names = meta_names (my.meta)
+    my.refs = meta_refs (my.meta)
+
+    new method to my.destination
+        .name = my.names.method_shallow_copy_const
+        .is_const = "1"
+
+        . = "
+        Copy given class context by increasing reference counter.
+        Reference counter is internally synchronized, so constness is presumed.
+        "
+
+        _X13_add_argument_ctx (my.class, method, my.meta)
+        _X13_add_return_ctx (my.class, method, my.meta)
+
+        new code
+            my.arg_ctx = my.refs.class_argument_ctx
+            my.type_ctx = my.refs.c_class_struct_ctx
+            . = "\
+                return $(my.refs.c_class_method_shallow_copy:)(($(my.type_ctx:) *)$(my.arg_ctx:));
+            "
+        endnew
+    endnew
+endfunction
+
+# ---------------------------------------------------------------------------
 #   Copy class methods with context resolution.
 # ---------------------------------------------------------------------------
 function _X13_add_method (class, method, module, meta)
@@ -767,6 +804,7 @@ function _X13_add_lifecycle_methods (class, destination, meta)
     _X13_add_method_delete (my.class, my.destination, my.meta)
     _X13_add_method_destroy (my.class, my.destination, my.meta)
     _X13_add_method_shallow_copy (my.class, my.destination, my.meta)
+    _X13_add_method_shallow_copy_const (my.class, my.destination, my.meta)
 
     c_dependency_add_lifecycle_methods (my.class, "public", "private", my.destination, my.meta)
     c_dependency_add_observer_methods (my.class, "private", "private", my.destination, my.meta)

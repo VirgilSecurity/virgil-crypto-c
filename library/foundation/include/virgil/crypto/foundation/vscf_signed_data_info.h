@@ -105,7 +105,7 @@ vscf_signed_data_info_new(void);
 //  It is safe to call this method even if the context was statically allocated.
 //
 VSCF_PUBLIC void
-vscf_signed_data_info_delete(vscf_signed_data_info_t *self);
+vscf_signed_data_info_delete(const vscf_signed_data_info_t *self);
 
 //
 //  Delete given context and nullifies reference.
@@ -119,6 +119,13 @@ vscf_signed_data_info_destroy(vscf_signed_data_info_t **self_ref);
 //
 VSCF_PUBLIC vscf_signed_data_info_t *
 vscf_signed_data_info_shallow_copy(vscf_signed_data_info_t *self);
+
+//
+//  Copy given class context by increasing reference counter.
+//  Reference counter is internally synchronized, so constness is presumed.
+//
+VSCF_PUBLIC const vscf_signed_data_info_t *
+vscf_signed_data_info_shallow_copy_const(const vscf_signed_data_info_t *self);
 
 //
 //  Set information about algorithm that was used to produce data digest.

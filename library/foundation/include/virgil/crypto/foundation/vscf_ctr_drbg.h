@@ -142,7 +142,7 @@ vscf_ctr_drbg_new(void);
 //  This is a reverse action of the function 'vscf_ctr_drbg_new()'.
 //
 VSCF_PUBLIC void
-vscf_ctr_drbg_delete(vscf_ctr_drbg_t *self);
+vscf_ctr_drbg_delete(const vscf_ctr_drbg_t *self);
 
 //
 //  Destroy given implementation context and it's dependencies.
@@ -157,6 +157,13 @@ vscf_ctr_drbg_destroy(vscf_ctr_drbg_t **self_ref);
 //
 VSCF_PUBLIC vscf_ctr_drbg_t *
 vscf_ctr_drbg_shallow_copy(vscf_ctr_drbg_t *self);
+
+//
+//  Copy given implementation context by increasing reference counter.
+//  Reference counter is internally synchronized, so constness is presumed.
+//
+VSCF_PUBLIC const vscf_ctr_drbg_t *
+vscf_ctr_drbg_shallow_copy_const(const vscf_ctr_drbg_t *self);
 
 //
 //  Setup dependency to the interface 'entropy source' with shared ownership.

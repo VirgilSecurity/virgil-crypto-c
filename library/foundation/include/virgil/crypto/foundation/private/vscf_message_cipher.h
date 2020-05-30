@@ -111,7 +111,7 @@ vscf_message_cipher_new(void);
 //  It is safe to call this method even if the context was statically allocated.
 //
 VSCF_PUBLIC void
-vscf_message_cipher_delete(vscf_message_cipher_t *self);
+vscf_message_cipher_delete(const vscf_message_cipher_t *self);
 
 //
 //  Delete given context and nullifies reference.
@@ -125,6 +125,13 @@ vscf_message_cipher_destroy(vscf_message_cipher_t **self_ref);
 //
 VSCF_PUBLIC vscf_message_cipher_t *
 vscf_message_cipher_shallow_copy(vscf_message_cipher_t *self);
+
+//
+//  Copy given class context by increasing reference counter.
+//  Reference counter is internally synchronized, so constness is presumed.
+//
+VSCF_PUBLIC const vscf_message_cipher_t *
+vscf_message_cipher_shallow_copy_const(const vscf_message_cipher_t *self);
 
 VSCF_PUBLIC size_t
 vscf_message_cipher_encrypt_len(vscf_message_cipher_t *self, size_t plain_text_len);

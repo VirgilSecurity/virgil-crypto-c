@@ -156,7 +156,7 @@ vscf_falcon_new(void);
 //  This is a reverse action of the function 'vscf_falcon_new()'.
 //
 VSCF_PUBLIC void
-vscf_falcon_delete(vscf_falcon_t *self);
+vscf_falcon_delete(const vscf_falcon_t *self);
 
 //
 //  Destroy given implementation context and it's dependencies.
@@ -171,6 +171,13 @@ vscf_falcon_destroy(vscf_falcon_t **self_ref);
 //
 VSCF_PUBLIC vscf_falcon_t *
 vscf_falcon_shallow_copy(vscf_falcon_t *self);
+
+//
+//  Copy given implementation context by increasing reference counter.
+//  Reference counter is internally synchronized, so constness is presumed.
+//
+VSCF_PUBLIC const vscf_falcon_t *
+vscf_falcon_shallow_copy_const(const vscf_falcon_t *self);
 
 //
 //  Setup dependency to the interface 'random' with shared ownership.

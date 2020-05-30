@@ -149,7 +149,7 @@ vscr_ratchet_sender_chain_new(void);
 //  It is safe to call this method even if the context was statically allocated.
 //
 VSCR_PUBLIC void
-vscr_ratchet_sender_chain_delete(vscr_ratchet_sender_chain_t *self);
+vscr_ratchet_sender_chain_delete(const vscr_ratchet_sender_chain_t *self);
 
 //
 //  Delete given context and nullifies reference.
@@ -163,6 +163,13 @@ vscr_ratchet_sender_chain_destroy(vscr_ratchet_sender_chain_t **self_ref);
 //
 VSCR_PUBLIC vscr_ratchet_sender_chain_t *
 vscr_ratchet_sender_chain_shallow_copy(vscr_ratchet_sender_chain_t *self);
+
+//
+//  Copy given class context by increasing reference counter.
+//  Reference counter is internally synchronized, so constness is presumed.
+//
+VSCR_PUBLIC const vscr_ratchet_sender_chain_t *
+vscr_ratchet_sender_chain_shallow_copy_const(const vscr_ratchet_sender_chain_t *self);
 
 VSCR_PUBLIC void
 vscr_ratchet_sender_chain_serialize(const vscr_ratchet_sender_chain_t *self, vscr_SenderChain *sender_chain_pb);

@@ -130,7 +130,7 @@ vscf_key_asn1_deserializer_new(void);
 //  This is a reverse action of the function 'vscf_key_asn1_deserializer_new()'.
 //
 VSCF_PUBLIC void
-vscf_key_asn1_deserializer_delete(vscf_key_asn1_deserializer_t *self);
+vscf_key_asn1_deserializer_delete(const vscf_key_asn1_deserializer_t *self);
 
 //
 //  Destroy given implementation context and it's dependencies.
@@ -145,6 +145,13 @@ vscf_key_asn1_deserializer_destroy(vscf_key_asn1_deserializer_t **self_ref);
 //
 VSCF_PUBLIC vscf_key_asn1_deserializer_t *
 vscf_key_asn1_deserializer_shallow_copy(vscf_key_asn1_deserializer_t *self);
+
+//
+//  Copy given implementation context by increasing reference counter.
+//  Reference counter is internally synchronized, so constness is presumed.
+//
+VSCF_PUBLIC const vscf_key_asn1_deserializer_t *
+vscf_key_asn1_deserializer_shallow_copy_const(const vscf_key_asn1_deserializer_t *self);
 
 //
 //  Setup dependency to the interface 'asn1 reader' with shared ownership.

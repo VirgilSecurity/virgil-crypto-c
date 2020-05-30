@@ -132,7 +132,7 @@ vscf_raw_private_key_new(void);
 //  This is a reverse action of the function 'vscf_raw_private_key_new()'.
 //
 VSCF_PUBLIC void
-vscf_raw_private_key_delete(vscf_raw_private_key_t *self);
+vscf_raw_private_key_delete(const vscf_raw_private_key_t *self);
 
 //
 //  Destroy given implementation context and it's dependencies.
@@ -147,6 +147,13 @@ vscf_raw_private_key_destroy(vscf_raw_private_key_t **self_ref);
 //
 VSCF_PUBLIC vscf_raw_private_key_t *
 vscf_raw_private_key_shallow_copy(vscf_raw_private_key_t *self);
+
+//
+//  Copy given implementation context by increasing reference counter.
+//  Reference counter is internally synchronized, so constness is presumed.
+//
+VSCF_PUBLIC const vscf_raw_private_key_t *
+vscf_raw_private_key_shallow_copy_const(const vscf_raw_private_key_t *self);
 
 //
 //  Perform initialization of pre-allocated context.

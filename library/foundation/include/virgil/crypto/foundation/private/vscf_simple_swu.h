@@ -116,7 +116,7 @@ vscf_simple_swu_new(void);
 //  It is safe to call this method even if the context was statically allocated.
 //
 VSCF_PUBLIC void
-vscf_simple_swu_delete(vscf_simple_swu_t *self);
+vscf_simple_swu_delete(const vscf_simple_swu_t *self);
 
 //
 //  Delete given context and nullifies reference.
@@ -130,6 +130,13 @@ vscf_simple_swu_destroy(vscf_simple_swu_t **self_ref);
 //
 VSCF_PUBLIC vscf_simple_swu_t *
 vscf_simple_swu_shallow_copy(vscf_simple_swu_t *self);
+
+//
+//  Copy given class context by increasing reference counter.
+//  Reference counter is internally synchronized, so constness is presumed.
+//
+VSCF_PUBLIC const vscf_simple_swu_t *
+vscf_simple_swu_shallow_copy_const(const vscf_simple_swu_t *self);
 
 VSCF_PUBLIC void
 vscf_simple_swu_bignum_to_point(vscf_simple_swu_t *self, const mbedtls_mpi *t, mbedtls_ecp_point *p);

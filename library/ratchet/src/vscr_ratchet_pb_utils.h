@@ -127,7 +127,7 @@ vscr_ratchet_pb_utils_new(void);
 //  It is safe to call this method even if the context was statically allocated.
 //
 VSCR_PUBLIC void
-vscr_ratchet_pb_utils_delete(vscr_ratchet_pb_utils_t *self);
+vscr_ratchet_pb_utils_delete(const vscr_ratchet_pb_utils_t *self);
 
 //
 //  Delete given context and nullifies reference.
@@ -141,6 +141,13 @@ vscr_ratchet_pb_utils_destroy(vscr_ratchet_pb_utils_t **self_ref);
 //
 VSCR_PUBLIC vscr_ratchet_pb_utils_t *
 vscr_ratchet_pb_utils_shallow_copy(vscr_ratchet_pb_utils_t *self);
+
+//
+//  Copy given class context by increasing reference counter.
+//  Reference counter is internally synchronized, so constness is presumed.
+//
+VSCR_PUBLIC const vscr_ratchet_pb_utils_t *
+vscr_ratchet_pb_utils_shallow_copy_const(const vscr_ratchet_pb_utils_t *self);
 
 VSCR_PUBLIC void
 vscr_ratchet_pb_utils_serialize_data(vsc_data_t data, pb_bytes_array_t **pb_buffer_ref);

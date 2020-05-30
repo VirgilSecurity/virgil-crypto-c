@@ -104,7 +104,7 @@ vscf_list_key_value_node_new(void);
 //  It is safe to call this method even if the context was statically allocated.
 //
 VSCF_PUBLIC void
-vscf_list_key_value_node_delete(vscf_list_key_value_node_t *self);
+vscf_list_key_value_node_delete(const vscf_list_key_value_node_t *self);
 
 //
 //  Delete given context and nullifies reference.
@@ -118,6 +118,13 @@ vscf_list_key_value_node_destroy(vscf_list_key_value_node_t **self_ref);
 //
 VSCF_PUBLIC vscf_list_key_value_node_t *
 vscf_list_key_value_node_shallow_copy(vscf_list_key_value_node_t *self);
+
+//
+//  Copy given class context by increasing reference counter.
+//  Reference counter is internally synchronized, so constness is presumed.
+//
+VSCF_PUBLIC const vscf_list_key_value_node_t *
+vscf_list_key_value_node_shallow_copy_const(const vscf_list_key_value_node_t *self);
 
 
 // --------------------------------------------------------------------------

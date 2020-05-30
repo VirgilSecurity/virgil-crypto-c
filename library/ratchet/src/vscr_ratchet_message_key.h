@@ -120,7 +120,7 @@ vscr_ratchet_message_key_new(void);
 //  It is safe to call this method even if the context was statically allocated.
 //
 VSCR_PUBLIC void
-vscr_ratchet_message_key_delete(vscr_ratchet_message_key_t *self);
+vscr_ratchet_message_key_delete(const vscr_ratchet_message_key_t *self);
 
 //
 //  Delete given context and nullifies reference.
@@ -134,6 +134,13 @@ vscr_ratchet_message_key_destroy(vscr_ratchet_message_key_t **self_ref);
 //
 VSCR_PUBLIC vscr_ratchet_message_key_t *
 vscr_ratchet_message_key_shallow_copy(vscr_ratchet_message_key_t *self);
+
+//
+//  Copy given class context by increasing reference counter.
+//  Reference counter is internally synchronized, so constness is presumed.
+//
+VSCR_PUBLIC const vscr_ratchet_message_key_t *
+vscr_ratchet_message_key_shallow_copy_const(const vscr_ratchet_message_key_t *self);
 
 VSCR_PUBLIC void
 vscr_ratchet_message_key_serialize(const vscr_ratchet_message_key_t *self, vscr_MessageKey *message_key_pb);

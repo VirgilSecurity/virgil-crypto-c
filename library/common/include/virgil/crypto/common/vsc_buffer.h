@@ -134,7 +134,7 @@ vsc_buffer_new_with_data(vsc_data_t data);
 //  It is safe to call this method even if the context was statically allocated.
 //
 VSC_PUBLIC void
-vsc_buffer_delete(vsc_buffer_t *self);
+vsc_buffer_delete(const vsc_buffer_t *self);
 
 //
 //  Delete given context and nullifies reference.
@@ -148,6 +148,13 @@ vsc_buffer_destroy(vsc_buffer_t **self_ref);
 //
 VSC_PUBLIC vsc_buffer_t *
 vsc_buffer_shallow_copy(vsc_buffer_t *self);
+
+//
+//  Copy given class context by increasing reference counter.
+//  Reference counter is internally synchronized, so constness is presumed.
+//
+VSC_PUBLIC const vsc_buffer_t *
+vsc_buffer_shallow_copy_const(const vsc_buffer_t *self);
 
 //
 //  Returns true if buffer has no data written.

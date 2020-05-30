@@ -122,7 +122,7 @@ vscf_rsa_private_key_new(void);
 //  This is a reverse action of the function 'vscf_rsa_private_key_new()'.
 //
 VSCF_PUBLIC void
-vscf_rsa_private_key_delete(vscf_rsa_private_key_t *self);
+vscf_rsa_private_key_delete(const vscf_rsa_private_key_t *self);
 
 //
 //  Destroy given implementation context and it's dependencies.
@@ -137,6 +137,13 @@ vscf_rsa_private_key_destroy(vscf_rsa_private_key_t **self_ref);
 //
 VSCF_PUBLIC vscf_rsa_private_key_t *
 vscf_rsa_private_key_shallow_copy(vscf_rsa_private_key_t *self);
+
+//
+//  Copy given implementation context by increasing reference counter.
+//  Reference counter is internally synchronized, so constness is presumed.
+//
+VSCF_PUBLIC const vscf_rsa_private_key_t *
+vscf_rsa_private_key_shallow_copy_const(const vscf_rsa_private_key_t *self);
 
 //
 //  Import public key from the raw binary format.

@@ -126,7 +126,7 @@ vscr_ratchet_key_utils_new(void);
 //  It is safe to call this method even if the context was statically allocated.
 //
 VSCR_PUBLIC void
-vscr_ratchet_key_utils_delete(vscr_ratchet_key_utils_t *self);
+vscr_ratchet_key_utils_delete(const vscr_ratchet_key_utils_t *self);
 
 //
 //  Delete given context and nullifies reference.
@@ -140,6 +140,13 @@ vscr_ratchet_key_utils_destroy(vscr_ratchet_key_utils_t **self_ref);
 //
 VSCR_PUBLIC vscr_ratchet_key_utils_t *
 vscr_ratchet_key_utils_shallow_copy(vscr_ratchet_key_utils_t *self);
+
+//
+//  Copy given class context by increasing reference counter.
+//  Reference counter is internally synchronized, so constness is presumed.
+//
+VSCR_PUBLIC const vscr_ratchet_key_utils_t *
+vscr_ratchet_key_utils_shallow_copy_const(const vscr_ratchet_key_utils_t *self);
 
 VSCR_PUBLIC vscr_status_t
 vscr_ratchet_key_utils_import_private_key(vscr_ratchet_key_utils_t *self, const vscf_impl_t *private_key,

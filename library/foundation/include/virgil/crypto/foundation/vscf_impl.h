@@ -163,7 +163,7 @@ vscf_impl_cleanup(vscf_impl_t *impl);
 //  Delete implementation object and it's dependencies.
 //
 VSCF_PUBLIC void
-vscf_impl_delete(vscf_impl_t *impl);
+vscf_impl_delete(const vscf_impl_t *impl);
 
 //
 //  Destroy implementation object and it's dependencies.

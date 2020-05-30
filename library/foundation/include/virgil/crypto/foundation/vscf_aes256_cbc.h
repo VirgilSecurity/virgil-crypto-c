@@ -155,7 +155,7 @@ vscf_aes256_cbc_new(void);
 //  This is a reverse action of the function 'vscf_aes256_cbc_new()'.
 //
 VSCF_PUBLIC void
-vscf_aes256_cbc_delete(vscf_aes256_cbc_t *self);
+vscf_aes256_cbc_delete(const vscf_aes256_cbc_t *self);
 
 //
 //  Destroy given implementation context and it's dependencies.
@@ -170,6 +170,13 @@ vscf_aes256_cbc_destroy(vscf_aes256_cbc_t **self_ref);
 //
 VSCF_PUBLIC vscf_aes256_cbc_t *
 vscf_aes256_cbc_shallow_copy(vscf_aes256_cbc_t *self);
+
+//
+//  Copy given implementation context by increasing reference counter.
+//  Reference counter is internally synchronized, so constness is presumed.
+//
+VSCF_PUBLIC const vscf_aes256_cbc_t *
+vscf_aes256_cbc_shallow_copy_const(const vscf_aes256_cbc_t *self);
 
 //
 //  Returns instance of the implemented interface 'cipher info'.

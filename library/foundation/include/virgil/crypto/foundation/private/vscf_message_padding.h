@@ -118,7 +118,7 @@ vscf_message_padding_new(void);
 //  It is safe to call this method even if the context was statically allocated.
 //
 VSCF_PUBLIC void
-vscf_message_padding_delete(vscf_message_padding_t *self);
+vscf_message_padding_delete(const vscf_message_padding_t *self);
 
 //
 //  Delete given context and nullifies reference.
@@ -132,6 +132,13 @@ vscf_message_padding_destroy(vscf_message_padding_t **self_ref);
 //
 VSCF_PUBLIC vscf_message_padding_t *
 vscf_message_padding_shallow_copy(vscf_message_padding_t *self);
+
+//
+//  Copy given class context by increasing reference counter.
+//  Reference counter is internally synchronized, so constness is presumed.
+//
+VSCF_PUBLIC const vscf_message_padding_t *
+vscf_message_padding_shallow_copy_const(const vscf_message_padding_t *self);
 
 //
 //  Setup dependency to the interface 'random' with shared ownership.

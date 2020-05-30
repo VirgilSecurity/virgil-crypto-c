@@ -185,37 +185,39 @@ vscf_signer_info_new_with_members(vsc_data_t signer_id, vscf_impl_t **signer_alg
 //  It is safe to call this method even if the context was statically allocated.
 //
 VSCF_PUBLIC void
-vscf_signer_info_delete(vscf_signer_info_t *self) {
+vscf_signer_info_delete(const vscf_signer_info_t *self) {
 
-    if (self == NULL) {
+    vscf_signer_info_t *local_self = (vscf_signer_info_t *)self;
+
+    if (local_self == NULL) {
         return;
     }
 
-    size_t old_counter = self->refcnt;
+    size_t old_counter = local_self->refcnt;
     VSCF_ASSERT(old_counter != 0);
     size_t new_counter = old_counter - 1;
 
     #if defined(VSCF_ATOMIC_COMPARE_EXCHANGE_WEAK)
     //  CAS loop
-    while (!VSCF_ATOMIC_COMPARE_EXCHANGE_WEAK(&self->refcnt, &old_counter, new_counter)) {
-        old_counter = self->refcnt;
+    while (!VSCF_ATOMIC_COMPARE_EXCHANGE_WEAK(&local_self->refcnt, &old_counter, new_counter)) {
+        old_counter = local_self->refcnt;
         VSCF_ASSERT(old_counter != 0);
         new_counter = old_counter - 1;
     }
     #else
-    self->refcnt = new_counter;
+    local_self->refcnt = new_counter;
     #endif
 
     if (new_counter > 0) {
         return;
     }
 
-    vscf_dealloc_fn self_dealloc_cb = self->self_dealloc_cb;
+    vscf_dealloc_fn self_dealloc_cb = local_self->self_dealloc_cb;
 
-    vscf_signer_info_cleanup(self);
+    vscf_signer_info_cleanup(local_self);
 
     if (self_dealloc_cb != NULL) {
-        self_dealloc_cb(self);
+        self_dealloc_cb(local_self);
     }
 }
 
@@ -255,6 +257,16 @@ vscf_signer_info_shallow_copy(vscf_signer_info_t *self) {
     #endif
 
     return self;
+}
+
+//
+//  Copy given class context by increasing reference counter.
+//  Reference counter is internally synchronized, so constness is presumed.
+//
+VSCF_PUBLIC const vscf_signer_info_t *
+vscf_signer_info_shallow_copy_const(const vscf_signer_info_t *self) {
+
+    return vscf_signer_info_shallow_copy((vscf_signer_info_t *)self);
 }
 
 

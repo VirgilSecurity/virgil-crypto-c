@@ -128,7 +128,7 @@ vscf_asn1rd_new(void);
 //  This is a reverse action of the function 'vscf_asn1rd_new()'.
 //
 VSCF_PUBLIC void
-vscf_asn1rd_delete(vscf_asn1rd_t *self);
+vscf_asn1rd_delete(const vscf_asn1rd_t *self);
 
 //
 //  Destroy given implementation context and it's dependencies.
@@ -143,6 +143,13 @@ vscf_asn1rd_destroy(vscf_asn1rd_t **self_ref);
 //
 VSCF_PUBLIC vscf_asn1rd_t *
 vscf_asn1rd_shallow_copy(vscf_asn1rd_t *self);
+
+//
+//  Copy given implementation context by increasing reference counter.
+//  Reference counter is internally synchronized, so constness is presumed.
+//
+VSCF_PUBLIC const vscf_asn1rd_t *
+vscf_asn1rd_shallow_copy_const(const vscf_asn1rd_t *self);
 
 //
 //  Reset all internal states and prepare to new ASN.1 reading operations.

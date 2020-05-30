@@ -184,37 +184,39 @@ vsce_phe_client_new(void) {
 //  It is safe to call this method even if the context was statically allocated.
 //
 VSCE_PUBLIC void
-vsce_phe_client_delete(vsce_phe_client_t *self) {
+vsce_phe_client_delete(const vsce_phe_client_t *self) {
 
-    if (self == NULL) {
+    vsce_phe_client_t *local_self = (vsce_phe_client_t *)self;
+
+    if (local_self == NULL) {
         return;
     }
 
-    size_t old_counter = self->refcnt;
+    size_t old_counter = local_self->refcnt;
     VSCE_ASSERT(old_counter != 0);
     size_t new_counter = old_counter - 1;
 
     #if defined(VSCE_ATOMIC_COMPARE_EXCHANGE_WEAK)
     //  CAS loop
-    while (!VSCE_ATOMIC_COMPARE_EXCHANGE_WEAK(&self->refcnt, &old_counter, new_counter)) {
-        old_counter = self->refcnt;
+    while (!VSCE_ATOMIC_COMPARE_EXCHANGE_WEAK(&local_self->refcnt, &old_counter, new_counter)) {
+        old_counter = local_self->refcnt;
         VSCE_ASSERT(old_counter != 0);
         new_counter = old_counter - 1;
     }
     #else
-    self->refcnt = new_counter;
+    local_self->refcnt = new_counter;
     #endif
 
     if (new_counter > 0) {
         return;
     }
 
-    vsce_dealloc_fn self_dealloc_cb = self->self_dealloc_cb;
+    vsce_dealloc_fn self_dealloc_cb = local_self->self_dealloc_cb;
 
-    vsce_phe_client_cleanup(self);
+    vsce_phe_client_cleanup(local_self);
 
     if (self_dealloc_cb != NULL) {
-        self_dealloc_cb(self);
+        self_dealloc_cb(local_self);
     }
 }
 
@@ -254,6 +256,16 @@ vsce_phe_client_shallow_copy(vsce_phe_client_t *self) {
     #endif
 
     return self;
+}
+
+//
+//  Copy given class context by increasing reference counter.
+//  Reference counter is internally synchronized, so constness is presumed.
+//
+VSCE_PUBLIC const vsce_phe_client_t *
+vsce_phe_client_shallow_copy_const(const vsce_phe_client_t *self) {
+
+    return vsce_phe_client_shallow_copy((vsce_phe_client_t *)self);
 }
 
 //

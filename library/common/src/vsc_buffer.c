@@ -219,37 +219,39 @@ vsc_buffer_new_with_data(vsc_data_t data) {
 //  It is safe to call this method even if the context was statically allocated.
 //
 VSC_PUBLIC void
-vsc_buffer_delete(vsc_buffer_t *self) {
+vsc_buffer_delete(const vsc_buffer_t *self) {
 
-    if (self == NULL) {
+    vsc_buffer_t *local_self = (vsc_buffer_t *)self;
+
+    if (local_self == NULL) {
         return;
     }
 
-    size_t old_counter = self->refcnt;
+    size_t old_counter = local_self->refcnt;
     VSC_ASSERT(old_counter != 0);
     size_t new_counter = old_counter - 1;
 
     #if defined(VSC_ATOMIC_COMPARE_EXCHANGE_WEAK)
     //  CAS loop
-    while (!VSC_ATOMIC_COMPARE_EXCHANGE_WEAK(&self->refcnt, &old_counter, new_counter)) {
-        old_counter = self->refcnt;
+    while (!VSC_ATOMIC_COMPARE_EXCHANGE_WEAK(&local_self->refcnt, &old_counter, new_counter)) {
+        old_counter = local_self->refcnt;
         VSC_ASSERT(old_counter != 0);
         new_counter = old_counter - 1;
     }
     #else
-    self->refcnt = new_counter;
+    local_self->refcnt = new_counter;
     #endif
 
     if (new_counter > 0) {
         return;
     }
 
-    vsc_dealloc_fn self_dealloc_cb = self->self_dealloc_cb;
+    vsc_dealloc_fn self_dealloc_cb = local_self->self_dealloc_cb;
 
-    vsc_buffer_cleanup(self);
+    vsc_buffer_cleanup(local_self);
 
     if (self_dealloc_cb != NULL) {
-        self_dealloc_cb(self);
+        self_dealloc_cb(local_self);
     }
 }
 
@@ -289,6 +291,16 @@ vsc_buffer_shallow_copy(vsc_buffer_t *self) {
     #endif
 
     return self;
+}
+
+//
+//  Copy given class context by increasing reference counter.
+//  Reference counter is internally synchronized, so constness is presumed.
+//
+VSC_PUBLIC const vsc_buffer_t *
+vsc_buffer_shallow_copy_const(const vsc_buffer_t *self) {
+
+    return vsc_buffer_shallow_copy((vsc_buffer_t *)self);
 }
 
 

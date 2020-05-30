@@ -157,7 +157,7 @@ vscf_ed25519_new(void);
 //  This is a reverse action of the function 'vscf_ed25519_new()'.
 //
 VSCF_PUBLIC void
-vscf_ed25519_delete(vscf_ed25519_t *self);
+vscf_ed25519_delete(const vscf_ed25519_t *self);
 
 //
 //  Destroy given implementation context and it's dependencies.
@@ -172,6 +172,13 @@ vscf_ed25519_destroy(vscf_ed25519_t **self_ref);
 //
 VSCF_PUBLIC vscf_ed25519_t *
 vscf_ed25519_shallow_copy(vscf_ed25519_t *self);
+
+//
+//  Copy given implementation context by increasing reference counter.
+//  Reference counter is internally synchronized, so constness is presumed.
+//
+VSCF_PUBLIC const vscf_ed25519_t *
+vscf_ed25519_shallow_copy_const(const vscf_ed25519_t *self);
 
 //
 //  Setup dependency to the interface 'random' with shared ownership.

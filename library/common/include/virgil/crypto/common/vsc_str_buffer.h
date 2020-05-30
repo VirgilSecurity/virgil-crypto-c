@@ -135,7 +135,7 @@ vsc_str_buffer_new_with_str(vsc_str_t str);
 //  It is safe to call this method even if the context was statically allocated.
 //
 VSC_PUBLIC void
-vsc_str_buffer_delete(vsc_str_buffer_t *self);
+vsc_str_buffer_delete(const vsc_str_buffer_t *self);
 
 //
 //  Delete given context and nullifies reference.
@@ -149,6 +149,13 @@ vsc_str_buffer_destroy(vsc_str_buffer_t **self_ref);
 //
 VSC_PUBLIC vsc_str_buffer_t *
 vsc_str_buffer_shallow_copy(vsc_str_buffer_t *self);
+
+//
+//  Copy given class context by increasing reference counter.
+//  Reference counter is internally synchronized, so constness is presumed.
+//
+VSC_PUBLIC const vsc_str_buffer_t *
+vsc_str_buffer_shallow_copy_const(const vsc_str_buffer_t *self);
 
 //
 //  Returns true if string length is zero.

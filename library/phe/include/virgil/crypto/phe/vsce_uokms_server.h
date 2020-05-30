@@ -124,7 +124,7 @@ vsce_uokms_server_new(void);
 //  It is safe to call this method even if the context was statically allocated.
 //
 VSCE_PUBLIC void
-vsce_uokms_server_delete(vsce_uokms_server_t *self);
+vsce_uokms_server_delete(const vsce_uokms_server_t *self);
 
 //
 //  Delete given context and nullifies reference.
@@ -138,6 +138,13 @@ vsce_uokms_server_destroy(vsce_uokms_server_t **self_ref);
 //
 VSCE_PUBLIC vsce_uokms_server_t *
 vsce_uokms_server_shallow_copy(vsce_uokms_server_t *self);
+
+//
+//  Copy given class context by increasing reference counter.
+//  Reference counter is internally synchronized, so constness is presumed.
+//
+VSCE_PUBLIC const vsce_uokms_server_t *
+vsce_uokms_server_shallow_copy_const(const vsce_uokms_server_t *self);
 
 //
 //  Random used for key generation, proofs, etc.

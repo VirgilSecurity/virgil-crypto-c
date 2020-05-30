@@ -131,7 +131,7 @@ vscf_hkdf_new(void);
 //  This is a reverse action of the function 'vscf_hkdf_new()'.
 //
 VSCF_PUBLIC void
-vscf_hkdf_delete(vscf_hkdf_t *self);
+vscf_hkdf_delete(const vscf_hkdf_t *self);
 
 //
 //  Destroy given implementation context and it's dependencies.
@@ -146,6 +146,13 @@ vscf_hkdf_destroy(vscf_hkdf_t **self_ref);
 //
 VSCF_PUBLIC vscf_hkdf_t *
 vscf_hkdf_shallow_copy(vscf_hkdf_t *self);
+
+//
+//  Copy given implementation context by increasing reference counter.
+//  Reference counter is internally synchronized, so constness is presumed.
+//
+VSCF_PUBLIC const vscf_hkdf_t *
+vscf_hkdf_shallow_copy_const(const vscf_hkdf_t *self);
 
 //
 //  Setup dependency to the interface 'hash' with shared ownership.

@@ -206,15 +206,16 @@ function _L24_add_method_delete (meta, destination)
         "
 
         .name = my.names.method_delete
+        .is_const = "1"
 
         component_create_argument_impl (method, my.meta)
 
         new code
             . = "\
             if (.(_argument_impl)) {
-                .(c_class_assert_macros_ptr) (.(_argument_impl)->info);
-                .(c_class_assert_macros_ptr) (.(_argument_impl)->info->self_delete_cb);
-                .(_argument_impl)->info->self_delete_cb (.(_argument_impl));
+                .(c_class_assert_macros_ptr)(.(_argument_impl)->info);
+                .(c_class_assert_macros_ptr)(.(_argument_impl)->info->self_delete_cb);
+                .(_argument_impl)->info->self_delete_cb((.(c_class_impl_struct_impl) *).(_argument_impl));
             }
             "
         endnew

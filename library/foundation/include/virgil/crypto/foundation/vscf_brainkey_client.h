@@ -121,7 +121,7 @@ vscf_brainkey_client_new(void);
 //  It is safe to call this method even if the context was statically allocated.
 //
 VSCF_PUBLIC void
-vscf_brainkey_client_delete(vscf_brainkey_client_t *self);
+vscf_brainkey_client_delete(const vscf_brainkey_client_t *self);
 
 //
 //  Delete given context and nullifies reference.
@@ -135,6 +135,13 @@ vscf_brainkey_client_destroy(vscf_brainkey_client_t **self_ref);
 //
 VSCF_PUBLIC vscf_brainkey_client_t *
 vscf_brainkey_client_shallow_copy(vscf_brainkey_client_t *self);
+
+//
+//  Copy given class context by increasing reference counter.
+//  Reference counter is internally synchronized, so constness is presumed.
+//
+VSCF_PUBLIC const vscf_brainkey_client_t *
+vscf_brainkey_client_shallow_copy_const(const vscf_brainkey_client_t *self);
 
 //
 //  Random used for key generation, proofs, etc.

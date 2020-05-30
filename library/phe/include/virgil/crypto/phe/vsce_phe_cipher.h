@@ -125,7 +125,7 @@ vsce_phe_cipher_new(void);
 //  It is safe to call this method even if the context was statically allocated.
 //
 VSCE_PUBLIC void
-vsce_phe_cipher_delete(vsce_phe_cipher_t *self);
+vsce_phe_cipher_delete(const vsce_phe_cipher_t *self);
 
 //
 //  Delete given context and nullifies reference.
@@ -139,6 +139,13 @@ vsce_phe_cipher_destroy(vsce_phe_cipher_t **self_ref);
 //
 VSCE_PUBLIC vsce_phe_cipher_t *
 vsce_phe_cipher_shallow_copy(vsce_phe_cipher_t *self);
+
+//
+//  Copy given class context by increasing reference counter.
+//  Reference counter is internally synchronized, so constness is presumed.
+//
+VSCE_PUBLIC const vsce_phe_cipher_t *
+vsce_phe_cipher_shallow_copy_const(const vsce_phe_cipher_t *self);
 
 //
 //  Random used for salt generation

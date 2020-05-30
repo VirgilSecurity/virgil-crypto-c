@@ -130,7 +130,7 @@ vscf_fake_random_new(void);
 //  This is a reverse action of the function 'vscf_fake_random_new()'.
 //
 VSCF_PUBLIC void
-vscf_fake_random_delete(vscf_fake_random_t *self);
+vscf_fake_random_delete(const vscf_fake_random_t *self);
 
 //
 //  Destroy given implementation context and it's dependencies.
@@ -145,6 +145,13 @@ vscf_fake_random_destroy(vscf_fake_random_t **self_ref);
 //
 VSCF_PUBLIC vscf_fake_random_t *
 vscf_fake_random_shallow_copy(vscf_fake_random_t *self);
+
+//
+//  Copy given implementation context by increasing reference counter.
+//  Reference counter is internally synchronized, so constness is presumed.
+//
+VSCF_PUBLIC const vscf_fake_random_t *
+vscf_fake_random_shallow_copy_const(const vscf_fake_random_t *self);
 
 //
 //  Configure random number generator to generate sequence filled with given byte.

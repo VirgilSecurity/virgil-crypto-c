@@ -131,7 +131,7 @@ vscf_sec1_serializer_new(void);
 //  This is a reverse action of the function 'vscf_sec1_serializer_new()'.
 //
 VSCF_PUBLIC void
-vscf_sec1_serializer_delete(vscf_sec1_serializer_t *self);
+vscf_sec1_serializer_delete(const vscf_sec1_serializer_t *self);
 
 //
 //  Destroy given implementation context and it's dependencies.
@@ -146,6 +146,13 @@ vscf_sec1_serializer_destroy(vscf_sec1_serializer_t **self_ref);
 //
 VSCF_PUBLIC vscf_sec1_serializer_t *
 vscf_sec1_serializer_shallow_copy(vscf_sec1_serializer_t *self);
+
+//
+//  Copy given implementation context by increasing reference counter.
+//  Reference counter is internally synchronized, so constness is presumed.
+//
+VSCF_PUBLIC const vscf_sec1_serializer_t *
+vscf_sec1_serializer_shallow_copy_const(const vscf_sec1_serializer_t *self);
 
 //
 //  Setup dependency to the interface 'asn1 writer' with shared ownership.

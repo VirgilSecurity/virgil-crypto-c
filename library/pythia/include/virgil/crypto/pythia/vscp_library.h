@@ -140,6 +140,11 @@ extern "C" {
 #define VSCP_CEIL(x,y) (0 == (x) ? 0 : 1 + (((x) - 1) / (y)))
 
 //
+//  Returns max of two numbers.
+//
+#define VSCP_MAX(x,y) ((x) > (y) ? (x) : (y))
+
+//
 //  Mark argument or function return value as "unused".
 //
 #define VSCP_UNUSED(x) (void)(x)

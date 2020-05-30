@@ -145,7 +145,7 @@ vscf_sha256_new(void);
 //  This is a reverse action of the function 'vscf_sha256_new()'.
 //
 VSCF_PUBLIC void
-vscf_sha256_delete(vscf_sha256_t *self);
+vscf_sha256_delete(const vscf_sha256_t *self);
 
 //
 //  Destroy given implementation context and it's dependencies.
@@ -160,6 +160,13 @@ vscf_sha256_destroy(vscf_sha256_t **self_ref);
 //
 VSCF_PUBLIC vscf_sha256_t *
 vscf_sha256_shallow_copy(vscf_sha256_t *self);
+
+//
+//  Copy given implementation context by increasing reference counter.
+//  Reference counter is internally synchronized, so constness is presumed.
+//
+VSCF_PUBLIC const vscf_sha256_t *
+vscf_sha256_shallow_copy_const(const vscf_sha256_t *self);
 
 //
 //  Provide algorithm identificator.
