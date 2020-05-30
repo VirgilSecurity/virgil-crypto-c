@@ -9,7 +9,7 @@
         <argument name="public key" interface="public key" project="foundation"/>
         <argument name="previous card id" class="str"/>
 
-        <return class="raw card" access="disown">
+        <return class="raw card" access="disown"/>
     </method>
 
 

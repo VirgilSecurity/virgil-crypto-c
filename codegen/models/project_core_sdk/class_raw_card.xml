@@ -10,49 +10,49 @@
     <property name="public_key" class="buffer"/>
 
 
-    <constant name="k default version" type="string">
+    <constant name="k default version" type="string" visibility="private">
         Default Virgil Card version.
 
         <value value="5.0"/>
     </constant>
 
 
-    <constant name="k json key public key" type="string">
+    <constant name="k json key public key" type="string" visibility="private">
         JSON key: public_key
 
         <value value="public_key"/>
     </constant>
 
 
-    <constant name="k json key identity" type="string">
+    <constant name="k json key identity" type="string" visibility="private">
         JSON key: identity
 
         <value value="identity"/>
     </constant>
 
 
-    <constant name="k json key card type" type="string">
+    <constant name="k json key card type" type="string" visibility="private">
         JSON key: card_type
 
         <value value="card_type"/>
     </constant>
 
 
-    <constant name="k json key previous card id" type="string">
+    <constant name="k json key previous card id" type="string" visibility="private">
         JSON key: previous_card_id
 
         <value value="previous_card_id"/>
     </constant>
 
 
-    <constant name="k json key version" type="string">
+    <constant name="k json key version" type="string" visibility="private">
         JSON key: version
 
         <value value="version"/>
     </constant>
 
 
-    <constant name="k json key created at" type="string">
+    <constant name="k json key created at" type="string" visibility="private">
         JSON key: created_at
 
         <value value="created_at"/>
@@ -110,8 +110,8 @@
     <method name="import fron json" is_static="1">
         Create raw card from JSON representation.
 
-        <argument name="json str" class="str">
-        <argument name="error" class="error" access="readwrite">
+        <argument name="json str" class="str"/>
+        <argument name="error" class="error" access="readwrite"/>
 
         <return class="self" access="disown"/>
     </method>

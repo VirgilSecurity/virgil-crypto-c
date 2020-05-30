@@ -4,17 +4,20 @@
     Virgil Card is a central entity of Virgil Cards Service.
 
 
-    <property name="raw card" class="raw card"/>
-    <property name="public key" class="public key" project="foundation"/>
+    <require interface="public key" project="foundation"/>
+
+
+    <property name="raw card" class="raw card" access="readonly"/>
+    <property name="public key" interface="public key" access="readonly" project="foundation"/>
     <property name="is outdated" type="boolean"/>
-    <property name="previous card" class="self"/>
+    <property name="previous card" class="self" access="readonly"/>
 
 
     <constructor name="with">
         Create Virgil Card with mandatory properties.
 
         <argument name="raw card" class="raw card"/>
-        <argument name="public key" class="public key" project="foundation"/>
+        <argument name="public key" interface="public key" project="foundation"/>
     </constructor>
 
 
@@ -22,7 +25,7 @@
         Create Virgil Card with mandatory properties.
 
         <argument name="raw card" class="raw card" access="disown"/>
-        <argument name="public key" class="public key" project="foundation" access="disown"/>
+        <argument name="public key" interface="public key" project="foundation" access="disown"/>
     </constructor>
 
 
@@ -36,7 +39,7 @@
     <method name="set previous card identifier">
         Set unique identifier of a previous Card.
 
-        <argument name="previous card id" type="str"/>
+        <argument name="previous card id" class="str"/>
     </method>
 
 
