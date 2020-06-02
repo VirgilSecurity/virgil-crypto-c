@@ -366,10 +366,18 @@ vsc_buffer_init_ctx_with_data(vsc_buffer_t *self, vsc_data_t data) {
 
     VSC_ASSERT_PTR(self);
 
-    vsc_buffer_init_ctx_with_capacity(self, data.len);
-    memcpy(self->bytes, data.bytes, data.len);
-    self->len = data.len;
-    self->is_owner = true;
+    if (vsc_data_is_empty(data)) {
+        self->bytes = (byte *)data.bytes;
+        self->capacity = 0;
+        self->len = 0;
+        self->bytes_dealloc_cb = NULL;
+        self->is_owner = false;
+    } else {
+        vsc_buffer_init_ctx_with_capacity(self, data.len);
+        memcpy(self->bytes, data.bytes, data.len);
+        self->len = data.len;
+        self->is_owner = true;
+    }
 }
 
 //
