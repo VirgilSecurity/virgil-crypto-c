@@ -919,6 +919,11 @@ function c_module_class_create_module_private (class, destination, meta)
         .scope = "private"
         .is_header_only = "1"
 
+        for my.class.require where require.scope = "private"
+            my.component = component_clean_copy (require, module)
+            my.component.scope = "public"
+        endfor
+
         class_add_scoped_components_to_extended_module (my.class, "_X13_add_method", module, my.meta)
     endnew
 endfunction
@@ -941,6 +946,11 @@ function c_module_class_create_module_internal (class, destination, meta)
         new require to module
             .module = my.names.class_module
         endnew
+
+        for my.class.require where require.scope = "internal"
+            my.component = component_clean_copy (require, module)
+            my.component.scope = "public"
+        endfor
 
         class_add_scoped_components_to_extended_module (my.class, "_X13_add_method", module, my.meta)
     endnew
