@@ -649,6 +649,21 @@ vsc_str_buffer_append_str(vsc_str_buffer_t *self, vsc_str_t str) {
 }
 
 //
+//  Write a null-termination character without increasing length.
+//
+//  Precondition: "unused len" must be at least 1.
+//
+VSC_PUBLIC void
+vsc_str_buffer_make_null_terminated(vsc_str_buffer_t *self) {
+
+    VSC_ASSERT_PTR(self);
+    VSC_ASSERT(vsc_str_buffer_unused_len(self) >= 1);
+
+    char *end = vsc_str_buffer_unused_chars(self);
+    *end = '\0';
+}
+
+//
 //  Replace all occurences of one character to another character.
 //
 VSC_PUBLIC void

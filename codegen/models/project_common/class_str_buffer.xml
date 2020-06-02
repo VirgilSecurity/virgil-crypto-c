@@ -216,6 +216,13 @@
     </method>
 
 
+    <method name="make null terminated">
+        Write a null-termination character without increasing length.
+
+        Precondition: "unused len" must be at least 1.
+    </method>
+
+
     <method name="replace char">
         Replace all occurences of one character to another character.
 
