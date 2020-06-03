@@ -23,6 +23,10 @@
         Buffer capacity is not enough to hold result.
     </constant>
 
+    <constant name="hex to bytes failed" value="-102">
+        Convertion from HEX string to the byte array failed.
+    </constant>
+
     <constant name="error unsupported algorithm" value="-200">
         Unsupported algorithm.
     </constant>
