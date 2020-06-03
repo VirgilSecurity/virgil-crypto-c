@@ -65,6 +65,7 @@
     <!-- Common modules -->
     <class name="error" from="shared"/>
     <class name="json object"/>
+    <class name="json array"/>
     <class name="unix time"/>
 
     <!-- JWT modules -->
@@ -86,7 +87,6 @@
 
     <!-- Cards modules -->
     <class name="card client"/>
-    <class name="get card response"/>
     <class name="raw card"/>
     <class name="raw card signer"/>
     <class name="raw card verifier"/>

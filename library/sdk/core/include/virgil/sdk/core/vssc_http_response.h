@@ -141,7 +141,7 @@ vssc_http_response_new_with_body(size_t status_code, vsc_str_t body);
 //  It is safe to call this method even if the context was statically allocated.
 //
 VSSC_PUBLIC void
-vssc_http_response_delete(vssc_http_response_t *self);
+vssc_http_response_delete(const vssc_http_response_t *self);
 
 //
 //  Delete given context and nullifies reference.
@@ -155,6 +155,13 @@ vssc_http_response_destroy(vssc_http_response_t **self_ref);
 //
 VSSC_PUBLIC vssc_http_response_t *
 vssc_http_response_shallow_copy(vssc_http_response_t *self);
+
+//
+//  Copy given class context by increasing reference counter.
+//  Reference counter is internally synchronized, so constness is presumed.
+//
+VSSC_PUBLIC const vssc_http_response_t *
+vssc_http_response_shallow_copy_const(const vssc_http_response_t *self);
 
 //
 //  Add HTTP header.

@@ -2,12 +2,13 @@
     Represent model in binary form which can have signatures and corresponds to Virgil Cards Service model.
 
 
-    <require class="base64" project="foundation"/>
+    <require class="json array"/>
 
-
-    <property name="content type" class="json object"/>
+    <property name="content" class="json object"/>
+    <property name="content snapshot" class="buffer"/>
     <property name="signatures" class="raw card signature list"/>
     <property name="public_key" class="buffer"/>
+    <property name="is outdated" type="boolean"/>
 
 
     <constant name="k default version" type="string" visibility="private">
@@ -59,6 +60,20 @@
     </constant>
 
 
+    <constant name="k json key content snapshot" type="string" visibility="private">
+        JSON key: content_snapshot
+
+        <value value="content_snapshot"/>
+    </constant>
+
+
+    <constant name="k json key signatures" type="string" visibility="private">
+        JSON key: signatures
+
+        <value value="signatures"/>
+    </constant>
+
+
     <constructor name="with">
         Create raw card with mandatory info.
 
@@ -77,6 +92,33 @@
     </constructor>
 
 
+    <constructor name="with imported" declaration="private">
+        Create raw card with imported values.
+
+        <argument name="content" class="json object" access="disown"/>
+        <argument name="content snapshot" class="buffer" access="disown"/>
+        <argument name="public key" class="buffer" access="disown"/>
+        <argument name="signatures" class="raw card signature list" access="disown"/>
+    </constructor>
+
+
+    <method name="import from json" is_static="1">
+        Create raw card from JSON representation.
+
+        <argument name="json" class="json object"/>
+        <argument name="error" class="error" access="readwrite"/>
+
+        <return class="self" access="disown"/>
+    </method>
+
+
+    <method name="export as json" is_const="1">
+        Export Raw Card as JSON.
+
+        <return class="json object" access="disown"/>
+    </method>
+
+
     <method name="set previous card id">
         Set optional previous card identifier.
 
@@ -89,7 +131,7 @@
     <method name="set card type">
         Set optional card type.
 
-        <argument name="previous card id" class="str"/>
+        <argument name="card type" class="str"/>
     </method>
 
 
@@ -107,13 +149,10 @@
     </method>
 
 
-    <method name="import fron json" is_static="1">
-        Create raw card from JSON representation.
+    <method name="set is outdated">
+        Set whether a Card is outdated or not.
 
-        <argument name="json str" class="str"/>
-        <argument name="error" class="error" access="readwrite"/>
-
-        <return class="self" access="disown"/>
+        <argument name="is outdated" type="boolean"/>
     </method>
 
 
@@ -147,6 +186,13 @@
     </method>
 
 
+    <method name="is outdated" is_const="1">
+        Return whether Card is outdated or not.
+
+        <return type="boolean"/>
+    </method>
+
+
     <method name="previous card id" is_const="1">
         Return identifier of previous Card with same identity.
 
@@ -157,11 +203,21 @@
 
 
     <method name="content snapshot" is_const="1">
+        Return Card's content snapshot.
+
         <return class="data"/>
     </method>
 
 
     <method name="signatures" is_const="1">
+        Return Card's signatures.
+
         <return class="raw card signature list"/>
+    </method>
+
+
+    <method name="invalidate content snapshot">
+        This method invalidates content snapshot.
+        It should be called when content is modified.
     </method>
 </class>

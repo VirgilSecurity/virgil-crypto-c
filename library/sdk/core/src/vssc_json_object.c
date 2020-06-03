@@ -53,8 +53,12 @@
 #include "vssc_json_object.h"
 #include "vssc_memory.h"
 #include "vssc_assert.h"
+#include "vssc_json_object_private.h"
 #include "vssc_json_object_defs.h"
+#include "vssc_json_array_defs.h"
+#include "vssc_json_array_private.h"
 
+#include <json-c/json.h>
 #include <virgil/crypto/common/vsc_str_mutable.h>
 #include <virgil/crypto/foundation/vscf_base64.h>
 
@@ -197,37 +201,39 @@ vssc_json_object_new_with_json_obj(json_object **json_obj_ref) {
 //  It is safe to call this method even if the context was statically allocated.
 //
 VSSC_PUBLIC void
-vssc_json_object_delete(vssc_json_object_t *self) {
+vssc_json_object_delete(const vssc_json_object_t *self) {
 
-    if (self == NULL) {
+    vssc_json_object_t *local_self = (vssc_json_object_t *)self;
+
+    if (local_self == NULL) {
         return;
     }
 
-    size_t old_counter = self->refcnt;
+    size_t old_counter = local_self->refcnt;
     VSSC_ASSERT(old_counter != 0);
     size_t new_counter = old_counter - 1;
 
     #if defined(VSSC_ATOMIC_COMPARE_EXCHANGE_WEAK)
     //  CAS loop
-    while (!VSSC_ATOMIC_COMPARE_EXCHANGE_WEAK(&self->refcnt, &old_counter, new_counter)) {
-        old_counter = self->refcnt;
+    while (!VSSC_ATOMIC_COMPARE_EXCHANGE_WEAK(&local_self->refcnt, &old_counter, new_counter)) {
+        old_counter = local_self->refcnt;
         VSSC_ASSERT(old_counter != 0);
         new_counter = old_counter - 1;
     }
     #else
-    self->refcnt = new_counter;
+    local_self->refcnt = new_counter;
     #endif
 
     if (new_counter > 0) {
         return;
     }
 
-    vssc_dealloc_fn self_dealloc_cb = self->self_dealloc_cb;
+    vssc_dealloc_fn self_dealloc_cb = local_self->self_dealloc_cb;
 
-    vssc_json_object_cleanup(self);
+    vssc_json_object_cleanup(local_self);
 
     if (self_dealloc_cb != NULL) {
-        self_dealloc_cb(self);
+        self_dealloc_cb(local_self);
     }
 }
 
@@ -267,6 +273,16 @@ vssc_json_object_shallow_copy(vssc_json_object_t *self) {
     #endif
 
     return self;
+}
+
+//
+//  Copy given class context by increasing reference counter.
+//  Reference counter is internally synchronized, so constness is presumed.
+//
+VSSC_PUBLIC const vssc_json_object_t *
+vssc_json_object_shallow_copy_const(const vssc_json_object_t *self) {
+
+    return vssc_json_object_shallow_copy((vssc_json_object_t *)self);
 }
 
 
@@ -317,6 +333,31 @@ vssc_json_object_init_ctx_with_json_obj(vssc_json_object_t *self, json_object **
 }
 
 //
+//  Create with predefined JSON object.
+//
+VSSC_PUBLIC vssc_json_object_t *
+vssc_json_object_create_with_json_obj(json_object **json_obj_ref) {
+
+    VSSC_ASSERT_REF(json_obj_ref);
+
+    return vssc_json_object_new_with_json_obj(json_obj_ref);
+}
+
+//
+//  Return true if object has no fields.
+//
+VSSC_PUBLIC bool
+vssc_json_object_is_empty(const vssc_json_object_t *self) {
+
+    VSSC_ASSERT_PTR(self);
+    VSSC_ASSERT_PTR(self->json_obj);
+
+    lh_table *ht = json_object_get_object(self->json_obj);
+
+    return 0 == ht->count;
+}
+
+//
 //  Add string value with a given key.
 //
 VSSC_PUBLIC void
@@ -345,7 +386,7 @@ vssc_json_object_add_string_value(vssc_json_object_t *self, vsc_str_t key, vsc_s
 
 //
 //  Return a string value for a given key.
-//  Returns error, if given key is not found or type mismatch.
+//  Return error, if given key is not found or type mismatch.
 //
 VSSC_PUBLIC vsc_str_t
 vssc_json_object_get_string_value(const vssc_json_object_t *self, vsc_str_t key, vssc_error_t *error) {
@@ -415,8 +456,8 @@ vssc_json_object_get_binary_value_len(const vssc_json_object_t *self, vsc_str_t 
 
 //
 //  Return a binary value for a given key.
-//  Returns error, if given key is not found or type mismatch.
-//  Returns error, if base64 decode failed.
+//  Return error, if given key is not found or type mismatch.
+//  Return error, if base64 decode failed.
 //
 VSSC_PUBLIC vssc_status_t
 vssc_json_object_get_binary_value(const vssc_json_object_t *self, vsc_str_t key, vsc_buffer_t *value) {
@@ -468,8 +509,8 @@ vssc_json_object_add_int_value(vssc_json_object_t *self, vsc_str_t key, int valu
 }
 
 //
-//  Return a integer value for a given key.
-//  Returns error, if given key is not found or type mismatch.
+//  Return an integer value for a given key.
+//  Return error, if given key is not found or type mismatch.
 //
 VSSC_PUBLIC int
 vssc_json_object_get_int_value(const vssc_json_object_t *self, vsc_str_t key, vssc_error_t *error) {
@@ -502,6 +543,94 @@ vssc_json_object_get_int_value(const vssc_json_object_t *self, vsc_str_t key, vs
 }
 
 //
+//  Add array value with a given key.
+//
+VSSC_PUBLIC void
+vssc_json_object_add_array_value(vssc_json_object_t *self, vsc_str_t key, const vssc_json_array_t *value) {
+
+    VSSC_ASSERT_PTR(self);
+    VSSC_ASSERT_PTR(self->json_obj);
+    VSSC_ASSERT_PTR(value);
+    VSSC_ASSERT_PTR(value->json_obj);
+
+    int add_result = 0;
+    if (vsc_str_is_null_terminated(key)) {
+        add_result = json_object_object_add(self->json_obj, key.chars, json_object_get((json_object *)value->json_obj));
+
+    } else {
+        vsc_str_mutable_t key_nt = vsc_str_mutable_from_str(key);
+        add_result =
+                json_object_object_add(self->json_obj, key_nt.chars, json_object_get((json_object *)value->json_obj));
+        vsc_str_mutable_release(&key_nt);
+    }
+
+    VSSC_ASSERT_LIBRARY_JSON_C_SUCCESS(add_result);
+}
+
+//
+//  Add array value with a given key.
+//
+VSSC_PRIVATE void
+vssc_json_object_add_array_value_disown(vssc_json_object_t *self, vsc_str_t key, vssc_json_array_t **value_ref) {
+
+    VSSC_ASSERT_PTR(self);
+    VSSC_ASSERT_PTR(self->json_obj);
+    VSSC_ASSERT_REF(value_ref);
+    VSSC_ASSERT_PTR((*value_ref)->json_obj);
+
+    int add_result = 0;
+    if (vsc_str_is_null_terminated(key)) {
+        add_result = json_object_object_add(self->json_obj, key.chars, json_object_get((*value_ref)->json_obj));
+
+    } else {
+        vsc_str_mutable_t key_nt = vsc_str_mutable_from_str(key);
+        add_result = json_object_object_add(self->json_obj, key_nt.chars, json_object_get((*value_ref)->json_obj));
+        vsc_str_mutable_release(&key_nt);
+    }
+
+    VSSC_ASSERT_LIBRARY_JSON_C_SUCCESS(add_result);
+
+    vssc_json_array_destroy(value_ref);
+}
+
+//
+//  Return an array value for a given key.
+//  Return error, if given key is not found or type mismatch.
+//
+VSSC_PUBLIC vssc_json_array_t *
+vssc_json_object_get_array_value(const vssc_json_object_t *self, vsc_str_t key, vssc_error_t *error) {
+
+    VSSC_ASSERT_PTR(self);
+    VSSC_ASSERT_PTR(self->json_obj);
+
+    json_object *json_obj = NULL;
+    json_bool is_found = false;
+
+    if (vsc_str_is_null_terminated(key)) {
+        is_found = json_object_object_get_ex(self->json_obj, key.chars, &json_obj);
+    } else {
+        vsc_str_mutable_t key_nt = vsc_str_mutable_from_str(key);
+        is_found = json_object_object_get_ex(self->json_obj, key_nt.chars, &json_obj);
+        vsc_str_mutable_release(&key_nt);
+    }
+
+    if (!is_found) {
+        VSSC_ERROR_SAFE_UPDATE(error, vssc_status_JSON_VALUE_NOT_FOUND);
+        return 0;
+    }
+
+    if (!json_object_is_type(json_obj, json_type_array)) {
+        VSSC_ERROR_SAFE_UPDATE(error, vssc_status_JSON_VALUE_TYPE_MISMATCH);
+        return 0;
+    }
+
+
+    json_obj = json_object_get(json_obj); // increase ref counter.
+
+    return vssc_json_array_create_with_json_obj(&json_obj);
+}
+
+//
 //  Return JSON body as string.
 //
 VSSC_PUBLIC vsc_str_t
@@ -522,15 +651,16 @@ vssc_json_object_as_str(const vssc_json_object_t *self) {
 VSSC_PUBLIC vssc_json_object_t *
 vssc_json_object_parse(vsc_str_t json, vssc_error_t *error) {
 
+    VSSC_ASSERT(vsc_str_is_valid(json));
+
     json_tokener *tokener = json_tokener_new();
     VSSC_ASSERT_ALLOC(tokener);
-
 
     json_object *json_obj = json_tokener_parse_ex(tokener, json.chars, json.len);
     json_tokener_free(tokener);
 
-    if (NULL == json_obj) {
-        VSSC_ERROR_SAFE_UPDATE(error, vssc_status_HTTP_BODY_PARSE_FAILED);
+    if (NULL == json_obj || !json_object_is_type(json_obj, json_type_object)) {
+        VSSC_ERROR_SAFE_UPDATE(error, vssc_status_PARSE_JSON_FAILED);
         return NULL;
     }
 

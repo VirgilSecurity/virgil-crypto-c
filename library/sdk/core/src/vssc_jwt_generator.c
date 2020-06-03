@@ -54,10 +54,10 @@
 #include "vssc_memory.h"
 #include "vssc_assert.h"
 #include "vssc_jwt_generator_defs.h"
+#include "vssc_unix_time.h"
 #include "vssc_base64_url.h"
 
 #include <virgil/crypto/foundation/vscf_random.h>
-#include <time.h>
 #include <virgil/crypto/foundation/vscf_sha512.h>
 #include <virgil/crypto/foundation/vscf_ctr_drbg.h>
 
@@ -202,37 +202,39 @@ vssc_jwt_generator_new_with_credentials(vsc_str_t app_id, vsc_str_t app_key_id, 
 //  It is safe to call this method even if the context was statically allocated.
 //
 VSSC_PUBLIC void
-vssc_jwt_generator_delete(vssc_jwt_generator_t *self) {
+vssc_jwt_generator_delete(const vssc_jwt_generator_t *self) {
 
-    if (self == NULL) {
+    vssc_jwt_generator_t *local_self = (vssc_jwt_generator_t *)self;
+
+    if (local_self == NULL) {
         return;
     }
 
-    size_t old_counter = self->refcnt;
+    size_t old_counter = local_self->refcnt;
     VSSC_ASSERT(old_counter != 0);
     size_t new_counter = old_counter - 1;
 
     #if defined(VSSC_ATOMIC_COMPARE_EXCHANGE_WEAK)
     //  CAS loop
-    while (!VSSC_ATOMIC_COMPARE_EXCHANGE_WEAK(&self->refcnt, &old_counter, new_counter)) {
-        old_counter = self->refcnt;
+    while (!VSSC_ATOMIC_COMPARE_EXCHANGE_WEAK(&local_self->refcnt, &old_counter, new_counter)) {
+        old_counter = local_self->refcnt;
         VSSC_ASSERT(old_counter != 0);
         new_counter = old_counter - 1;
     }
     #else
-    self->refcnt = new_counter;
+    local_self->refcnt = new_counter;
     #endif
 
     if (new_counter > 0) {
         return;
     }
 
-    vssc_dealloc_fn self_dealloc_cb = self->self_dealloc_cb;
+    vssc_dealloc_fn self_dealloc_cb = local_self->self_dealloc_cb;
 
-    vssc_jwt_generator_cleanup(self);
+    vssc_jwt_generator_cleanup(local_self);
 
     if (self_dealloc_cb != NULL) {
-        self_dealloc_cb(self);
+        self_dealloc_cb(local_self);
     }
 }
 
@@ -272,6 +274,16 @@ vssc_jwt_generator_shallow_copy(vssc_jwt_generator_t *self) {
     #endif
 
     return self;
+}
+
+//
+//  Copy given class context by increasing reference counter.
+//  Reference counter is internally synchronized, so constness is presumed.
+//
+VSSC_PUBLIC const vssc_jwt_generator_t *
+vssc_jwt_generator_shallow_copy_const(const vssc_jwt_generator_t *self) {
+
+    return vssc_jwt_generator_shallow_copy((vssc_jwt_generator_t *)self);
 }
 
 //
@@ -442,7 +454,7 @@ vssc_jwt_generator_generate_token(const vssc_jwt_generator_t *self, vsc_str_t id
     VSSC_ASSERT_PTR(self);
     VSSC_ASSERT_PTR(self->signer);
 
-    const size_t issued_at = (size_t)time(NULL);
+    const size_t issued_at = vssc_unix_time_now();
     const size_t expires_at = issued_at + self->ttl;
 
     vssc_jwt_header_t *jwt_header = vssc_jwt_header_new_with_app_key_id(vsc_str_buffer_str(self->app_key_id));

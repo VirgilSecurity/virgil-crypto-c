@@ -1,11 +1,19 @@
 <class name="raw card signature list">
     Handles a list of "raw card signature" class objects.
 
-    <property name="item" class="raw card signature"/>
+    <property name="item" class="raw card signature" access="readonly"/>
     <property name="next" class="self"/>
     <property name="prev" class="self"/>
 
     <method name="add" visibility="private">
+        Add new item to the list.
+        Note, ownership is transfered.
+
+        <argument name="raw card signature" class="raw card signature"/>
+    </method>
+
+
+    <method name="add disown" visibility="private">
         Add new item to the list.
         Note, ownership is transfered.
 

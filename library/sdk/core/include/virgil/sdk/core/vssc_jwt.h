@@ -136,7 +136,7 @@ vssc_jwt_new_with_members_disown(vssc_jwt_header_t **header_ref, vssc_jwt_payloa
 //  It is safe to call this method even if the context was statically allocated.
 //
 VSSC_PUBLIC void
-vssc_jwt_delete(vssc_jwt_t *self);
+vssc_jwt_delete(const vssc_jwt_t *self);
 
 //
 //  Delete given context and nullifies reference.
@@ -150,6 +150,13 @@ vssc_jwt_destroy(vssc_jwt_t **self_ref);
 //
 VSSC_PUBLIC vssc_jwt_t *
 vssc_jwt_shallow_copy(vssc_jwt_t *self);
+
+//
+//  Copy given class context by increasing reference counter.
+//  Reference counter is internally synchronized, so constness is presumed.
+//
+VSSC_PUBLIC const vssc_jwt_t *
+vssc_jwt_shallow_copy_const(const vssc_jwt_t *self);
 
 //
 //  Parse JWT from a string representation.

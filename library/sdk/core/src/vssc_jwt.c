@@ -55,9 +55,8 @@
 #include "vssc_assert.h"
 #include "vssc_jwt_private.h"
 #include "vssc_jwt_defs.h"
+#include "vssc_unix_time.h"
 #include "vssc_base64_url.h"
-
-#include <time.h>
 
 // clang-format on
 //  @end
@@ -187,37 +186,39 @@ vssc_jwt_new_with_members_disown(vssc_jwt_header_t **header_ref, vssc_jwt_payloa
 //  It is safe to call this method even if the context was statically allocated.
 //
 VSSC_PUBLIC void
-vssc_jwt_delete(vssc_jwt_t *self) {
+vssc_jwt_delete(const vssc_jwt_t *self) {
 
-    if (self == NULL) {
+    vssc_jwt_t *local_self = (vssc_jwt_t *)self;
+
+    if (local_self == NULL) {
         return;
     }
 
-    size_t old_counter = self->refcnt;
+    size_t old_counter = local_self->refcnt;
     VSSC_ASSERT(old_counter != 0);
     size_t new_counter = old_counter - 1;
 
     #if defined(VSSC_ATOMIC_COMPARE_EXCHANGE_WEAK)
     //  CAS loop
-    while (!VSSC_ATOMIC_COMPARE_EXCHANGE_WEAK(&self->refcnt, &old_counter, new_counter)) {
-        old_counter = self->refcnt;
+    while (!VSSC_ATOMIC_COMPARE_EXCHANGE_WEAK(&local_self->refcnt, &old_counter, new_counter)) {
+        old_counter = local_self->refcnt;
         VSSC_ASSERT(old_counter != 0);
         new_counter = old_counter - 1;
     }
     #else
-    self->refcnt = new_counter;
+    local_self->refcnt = new_counter;
     #endif
 
     if (new_counter > 0) {
         return;
     }
 
-    vssc_dealloc_fn self_dealloc_cb = self->self_dealloc_cb;
+    vssc_dealloc_fn self_dealloc_cb = local_self->self_dealloc_cb;
 
-    vssc_jwt_cleanup(self);
+    vssc_jwt_cleanup(local_self);
 
     if (self_dealloc_cb != NULL) {
-        self_dealloc_cb(self);
+        self_dealloc_cb(local_self);
     }
 }
 
@@ -257,6 +258,16 @@ vssc_jwt_shallow_copy(vssc_jwt_t *self) {
     #endif
 
     return self;
+}
+
+//
+//  Copy given class context by increasing reference counter.
+//  Reference counter is internally synchronized, so constness is presumed.
+//
+VSSC_PUBLIC const vssc_jwt_t *
+vssc_jwt_shallow_copy_const(const vssc_jwt_t *self) {
+
+    return vssc_jwt_shallow_copy((vssc_jwt_t *)self);
 }
 
 
@@ -462,7 +473,7 @@ vssc_jwt_is_expired(const vssc_jwt_t *self) {
     VSSC_ASSERT_PTR(self);
     VSSC_ASSERT_PTR(self->payload);
 
-    size_t now = (size_t)time(NULL);
+    size_t now = vssc_unix_time_now();
     size_t expires_at = vssc_jwt_payload_expires_at(self->payload);
 
     return now >= expires_at;

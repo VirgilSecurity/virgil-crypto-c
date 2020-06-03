@@ -1,0 +1,81 @@
+<class name="json array">
+    Minimal JSON array.
+    Currently only objects array are supported
+
+    <require header="json-c/json.h" library="json-c" scope="context"/>
+    <require header="json-c/json.h" library="json-c" scope="private"/>
+    <require module="json object defs"/>
+    <require module="json object private"/>
+
+    <property name="json obj" class="json_object" library="json-c"/>
+
+
+    <struct name="json object" of_class="json object" declaration="public" definition="external">
+        Forward declaration.
+    </struct>
+
+
+    <constructor name="with json obj" declaration="private">
+        Create with predefined JSON object.
+
+        <argument name="json obj" class="json_object" library="json-c" access="disown"/>
+    </constructor>
+
+
+    <method name="create with json obj" is_static="1" scope="private">
+        Create with predefined JSON object.
+
+        <argument name="json obj" class="json_object" library="json-c" access="disown"/>
+
+        <return class="self" access="disown"/>
+    </method>
+
+
+    <method name="len" is_const="1">
+        Return array length.
+
+        <return type="size"/>
+    </method>
+
+
+    <method name="add object value">
+        Add object value .
+
+        <argument name="value" class="json object"/>
+    </method>
+
+
+    <method name="add object value disown" visibility="private">
+        Add object value .
+
+        <argument name="value" class="json object" access="disown"/>
+    </method>
+
+
+    <method name="get object value" is_const="1">
+        Return a object value for a given index.
+        Check array length before call this method.
+
+        <argument name="index" type="size"/>
+        <argument name="error" class="error" access="readwrite"/>
+
+        <return class="json object" access="disown"/>
+    </method>
+
+
+    <method name="as str" is_const="1">
+        Return JSON body as string.
+
+        <return class="str"/>
+    </method>
+
+
+    <method name="parse" is_static="1">
+        Parse a given JSON string.
+
+        <argument name="json" class="str"/>
+        <argument name="error" class="error" access="readwrite"/>
+
+        <return class="self"/>
+    </method>
+</class>

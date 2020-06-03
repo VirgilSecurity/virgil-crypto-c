@@ -274,37 +274,39 @@ vssc_jwt_header_new_with_json_object(json_object **json_obj_ref) {
 //  It is safe to call this method even if the context was statically allocated.
 //
 VSSC_PUBLIC void
-vssc_jwt_header_delete(vssc_jwt_header_t *self) {
+vssc_jwt_header_delete(const vssc_jwt_header_t *self) {
 
-    if (self == NULL) {
+    vssc_jwt_header_t *local_self = (vssc_jwt_header_t *)self;
+
+    if (local_self == NULL) {
         return;
     }
 
-    size_t old_counter = self->refcnt;
+    size_t old_counter = local_self->refcnt;
     VSSC_ASSERT(old_counter != 0);
     size_t new_counter = old_counter - 1;
 
     #if defined(VSSC_ATOMIC_COMPARE_EXCHANGE_WEAK)
     //  CAS loop
-    while (!VSSC_ATOMIC_COMPARE_EXCHANGE_WEAK(&self->refcnt, &old_counter, new_counter)) {
-        old_counter = self->refcnt;
+    while (!VSSC_ATOMIC_COMPARE_EXCHANGE_WEAK(&local_self->refcnt, &old_counter, new_counter)) {
+        old_counter = local_self->refcnt;
         VSSC_ASSERT(old_counter != 0);
         new_counter = old_counter - 1;
     }
     #else
-    self->refcnt = new_counter;
+    local_self->refcnt = new_counter;
     #endif
 
     if (new_counter > 0) {
         return;
     }
 
-    vssc_dealloc_fn self_dealloc_cb = self->self_dealloc_cb;
+    vssc_dealloc_fn self_dealloc_cb = local_self->self_dealloc_cb;
 
-    vssc_jwt_header_cleanup(self);
+    vssc_jwt_header_cleanup(local_self);
 
     if (self_dealloc_cb != NULL) {
-        self_dealloc_cb(self);
+        self_dealloc_cb(local_self);
     }
 }
 
@@ -344,6 +346,16 @@ vssc_jwt_header_shallow_copy(vssc_jwt_header_t *self) {
     #endif
 
     return self;
+}
+
+//
+//  Copy given class context by increasing reference counter.
+//  Reference counter is internally synchronized, so constness is presumed.
+//
+VSSC_PUBLIC const vssc_jwt_header_t *
+vssc_jwt_header_shallow_copy_const(const vssc_jwt_header_t *self) {
+
+    return vssc_jwt_header_shallow_copy((vssc_jwt_header_t *)self);
 }
 
 

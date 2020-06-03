@@ -145,7 +145,7 @@ vssc_jwt_generator_new_with_credentials(vsc_str_t app_id, vsc_str_t app_key_id, 
 //  It is safe to call this method even if the context was statically allocated.
 //
 VSSC_PUBLIC void
-vssc_jwt_generator_delete(vssc_jwt_generator_t *self);
+vssc_jwt_generator_delete(const vssc_jwt_generator_t *self);
 
 //
 //  Delete given context and nullifies reference.
@@ -159,6 +159,13 @@ vssc_jwt_generator_destroy(vssc_jwt_generator_t **self_ref);
 //
 VSSC_PUBLIC vssc_jwt_generator_t *
 vssc_jwt_generator_shallow_copy(vssc_jwt_generator_t *self);
+
+//
+//  Copy given class context by increasing reference counter.
+//  Reference counter is internally synchronized, so constness is presumed.
+//
+VSSC_PUBLIC const vssc_jwt_generator_t *
+vssc_jwt_generator_shallow_copy_const(const vssc_jwt_generator_t *self);
 
 //
 //  Setup dependency to the interface 'random' with shared ownership.

@@ -4,13 +4,20 @@
     Virgil Card is a central entity of Virgil Cards Service.
 
 
+    <require module="buffer defs" project="common"/>
     <require interface="public key" project="foundation"/>
+    <require module="sha512 defs" project="foundation"/>
+    <require class="binary" project="foundation"/>
 
 
+    <property name="identifier" class="str buffer"/>
     <property name="raw card" class="raw card" access="readonly"/>
     <property name="public key" interface="public key" access="readonly" project="foundation"/>
-    <property name="is outdated" type="boolean"/>
     <property name="previous card" class="self" access="readonly"/>
+
+
+    <constant name="identifier binary len" value="32" definition="private"/>
+    <constant name="identifier hex len" value="64" definition="private"/>
 
 
     <constructor name="with">
@@ -29,31 +36,17 @@
     </constructor>
 
 
-    <method name="set outdated">
-        Set whether a Card is outdated or not.
-
-        <argument name="is outdated" type="boolean"/>
-    </method>
-
-
-    <method name="set previous card identifier">
-        Set unique identifier of a previous Card.
-
-        <argument name="previous card id" class="str"/>
-    </method>
-
-
     <method name="set previous card">
         Set previous Card.
 
-        <argument name="previous card" class="self"/>
+        <argument name="previous card" class="self" access="readonly"/>
     </method>
 
 
     <method name="set previous card disown" visibility="private">
         Set previous Card.
 
-        <argument name="previous card" class="self"/>
+        <argument name="previous card" class="self" access="disown"/>
     </method>
 
 
@@ -106,13 +99,6 @@
     </method>
 
 
-    <method name="has previous card" is_const="1">
-        Return whether previous card exists or not.
-
-        <return type="boolean"/>
-    </method>
-
-
     <method name="previous card id" is_const="1">
         Return identifier of previous card if exists.
 
@@ -120,10 +106,17 @@
     </method>
 
 
+    <method name="has previous card" is_const="1">
+        Return whether previous card exists or not.
+
+        <return type="boolean"/>
+    </method>
+
+
     <method name="previous card" is_const="1">
         Return previous card if exists, NULL otherwise.
 
-        <return class="self"/>
+        <return class="self" access="readonly"/>
     </method>
 
 
@@ -138,5 +131,10 @@
         Return raw card.
 
         <return class="raw card"/>
+    </method>
+
+
+    <method name="derive identifier" declaration="private">
+        Perfrom derivation of the public key identifier from its binary representation.
     </method>
 </class>

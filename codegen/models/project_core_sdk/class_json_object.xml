@@ -2,10 +2,18 @@
     Minimal JSON object.
 
     <require header="json-c/json.h" library="json-c" scope="context"/>
+    <require header="json-c/json.h" library="json-c" scope="private"/>
     <require class="str mutable" project="common"/>
     <require class="base64" project="foundation"/>
+    <require module="json array defs"/>
+    <require module="json array private"/>
 
     <property name="json obj" class="json_object" library="json-c"/>
+
+
+    <struct name="json array" of_class="json array" declaration="public" definition="external">
+        Forward declaration.
+    </struct>
 
 
     <constructor name="with json obj" declaration="private">
@@ -13,6 +21,22 @@
 
         <argument name="json obj" class="json_object" library="json-c" access="disown"/>
     </constructor>
+
+
+    <method name="create with json obj" is_static="1" scope="private">
+        Create with predefined JSON object.
+
+        <argument name="json obj" class="json_object" library="json-c" access="disown"/>
+
+        <return class="self" access="disown"/>
+    </method>
+
+
+    <method name="is empty" is_const="1">
+        Return true if object has no fields.
+
+        <return type="boolean"/>
+    </method>
 
 
     <method name="add string value">
@@ -25,7 +49,7 @@
 
     <method name="get string value" is_const="1">
         Return a string value for a given key.
-        Returns error, if given key is not found or type mismatch.
+        Return error, if given key is not found or type mismatch.
 
         <argument name="key" class="str"/>
         <argument name="error" class="error" access="readwrite"/>
@@ -55,8 +79,8 @@
 
     <method name="get binary value" is_const="1">
         Return a binary value for a given key.
-        Returns error, if given key is not found or type mismatch.
-        Returns error, if base64 decode failed.
+        Return error, if given key is not found or type mismatch.
+        Return error, if base64 decode failed.
 
         <argument name="key" class="str"/>
 
@@ -79,13 +103,40 @@
 
 
     <method name="get int value" is_const="1">
-        Return a integer value for a given key.
-        Returns error, if given key is not found or type mismatch.
+        Return an integer value for a given key.
+        Return error, if given key is not found or type mismatch.
 
         <argument name="key" class="str"/>
         <argument name="error" class="error" access="readwrite"/>
 
         <return type="integer"/>
+    </method>
+
+
+    <method name="add array value">
+        Add array value with a given key.
+
+        <argument name="key" class="str"/>
+        <argument name="value" class="json array"/>
+    </method>
+
+
+    <method name="add array value disown" visibility="private">
+        Add array value with a given key.
+
+        <argument name="key" class="str"/>
+        <argument name="value" class="json array" access="disown"/>
+    </method>
+
+
+    <method name="get array value" is_const="1">
+        Return an array value for a given key.
+        Return error, if given key is not found or type mismatch.
+
+        <argument name="key" class="str"/>
+        <argument name="error" class="error" access="readwrite"/>
+
+        <return class="json array" access="disown"/>
     </method>
 
 

@@ -1,7 +1,7 @@
 <class name="jwt generator">
     Class responsible for JWT generation.
 
-    <require header="time.h" is_system="1" scope="private"/>
+    <require class="unix time" sscope="private"/>
     <require class="base64 url" scope="private"/>
     <require impl="sha512" project="foundation" scope="private"/>
     <require impl="ctr drbg" project="foundation" scope="private"/>

@@ -2,30 +2,81 @@
     Represent signature of "raw card content" snapshot.
 
 
-    <property name="signer" class="str mutable"/>
+    <property name="signer id" class="str mutable"/>
     <property name="signature" class="buffer"/>
     <property name="snapshot" class="buffer"/>
+    <property name="extra fields" class="json object" access="readonly"/>
 
 
-    <constructor name="with">
-        Create a fully defined object.
+    <constant name="k json key signer id" type="string" visibility="private">
+        JSON key: signer
 
-        <argument name="signer" class="str"/>
+        <value value="signer"/>
+    </constant>
+
+    <constant name="k json key snapshot" type="string" visibility="private">
+        JSON key: snapshot
+
+        <value value="snapshot"/>
+    </constant>
+
+
+    <constant name="k json key signature" type="string" visibility="private">
+        JSON key: signature
+
+        <value value="signature"/>
+    </constant>
+
+
+    <constructor name="with signature">
+        Create Raw Card Signature with mandatory properties.
+
+        <argument name="signer id" class="str"/>
         <argument name="signature" class="data"/>
-        <argument name="snapshot" class="data"/>
     </constructor>
 
 
-    <constructor name="with disown">
-        Create a fully defined object.
+    <constructor name="with signature disown" visibility="private">
+        Create Raw Card Signature with mandatory properties.
 
-        <argument name="signer" class="str"/>
+        <argument name="signer id" class="str"/>
+        <argument name="signature" class="buffer" access="disown"/>
+    </constructor>
+
+
+    <constructor name="with extra fields">
+        Create Raw Card Signature with extra fields.
+
+        Note, snapshot is taken from the extra fields.
+
+        <argument name="signer id" class="str"/>
+        <argument name="signature" class="data"/>
+        <argument name="extra fields" class="json object"/>
+    </constructor>
+
+
+    <constructor name="with extra fields disown" visibility="private">
+        Create Raw Card Signature with extra fields.
+
+        Note, snapshot is taken from the extra fields.
+
+        <argument name="signer id" class="str"/>
+        <argument name="signature" class="buffer" access="disown"/>
+        <argument name="extra fields" class="json object" access="disown"/>
+    </constructor>
+
+
+    <constructor name="with imported" declaration="private">
+        Create raw card signature with imported values.
+
+        <argument name="signer id" class="str"/>
         <argument name="signature" class="buffer" access="disown"/>
         <argument name="snapshot" class="buffer" access="disown"/>
+        <argument name="extra fields" class="json object" access="disown"/>
     </constructor>
 
 
-    <method name="signer" is_const="1">
+    <method name="signer id" is_const="1">
         Return identifier of signer.
 
         <return class="str"/>
@@ -43,5 +94,29 @@
         Return snaphot of additional data.
 
         <return class="data"/>
+    </method>
+
+
+    <method name="extra fields" is_const="1">
+        Return signed extra fields.
+
+        <return class="json object"/>
+    </method>
+
+
+    <method name="import from json" is_static="1">
+        Create raw card signature from JSON representation.
+
+        <argument name="json" class="json object"/>
+        <argument name="error" class="error" access="readwrite"/>
+
+        <return class="self" access="disown"/>
+    </method>
+
+
+    <method name="export as json" is_const="1">
+        Export Raw Card Signature as JSON.
+
+        <return class="json object" access="disown"/>
     </method>
 </class>

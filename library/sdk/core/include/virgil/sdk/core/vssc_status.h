@@ -89,6 +89,18 @@ enum vssc_status_t {
     //
     vssc_status_INIT_RANDOM_FAILED = -102,
     //
+    //  Faled to export public key, underlying crypto returned an error.
+    //
+    vssc_status_EXPORT_PUBLIC_KEY_FAILED = -103,
+    //
+    //  Faled to import public key, underlying crypto returned an error.
+    //
+    vssc_status_IMPORT_PUBLIC_KEY_FAILED = -104,
+    //
+    //  Faled produce signature, underlying crypto returned an error.
+    //
+    vssc_status_PRODUCE_SIGNATURE_FAILED = -105,
+    //
     //  Failed to parse JWT.
     //
     vssc_status_PARSE_JWT_FAILED = -201,
@@ -107,7 +119,11 @@ enum vssc_status_t {
     //
     //  Requested JSON binary value is not base64 encoded.
     //
-    vssc_status_JSON_VALUE_IS_NOT_BASE64 = -204,
+    vssc_status_JSON_VALUE_IS_NOT_BASE64 = -205,
+    //
+    //  Parse JSON string failed.
+    //
+    vssc_status_PARSE_JSON_FAILED = -206,
     //
     //  Failed to send HTTP request.
     //
@@ -119,7 +135,35 @@ enum vssc_status_t {
     //
     //  Failed to parse JWT HTTP body.
     //
-    vssc_status_HTTP_BODY_PARSE_FAILED = -303
+    vssc_status_HTTP_BODY_PARSE_FAILED = -303,
+    //
+    //  Response processing failed because given HTTP Response contains Virgil Service error.
+    //
+    vssc_status_HTTP_RESPONSE_CONTAINS_SERVICE_ERROR = -401,
+    //
+    //  Given HTTP response body can not be parsed in an expected way.
+    //
+    vssc_status_HTTP_RESPONSE_BODY_PARSE_FAILED = -402,
+    //
+    //  Failed to parse card content.
+    //
+    vssc_status_RAW_CARD_CONTENT_PARSE_FAILED = -501,
+    //
+    //  Failed to parse card signature.
+    //
+    vssc_status_RAW_CARD_SIGNATURE_PARSE_FAILED = -502,
+    //
+    //  Failed to verify one of the Raw Card signatures.
+    //
+    vssc_status_RAW_CARD_SIGNATURE_VERIFICATION_FAILED = -503,
+    //
+    //  Failed to parse card, found card's version is not supported.
+    //
+    vssc_status_CARD_VERSION_IS_NOT_SUPPORTED = -504,
+    //
+    //  The Card returned by Virgil Cards Service is not what was requested.
+    //
+    vssc_status_SERVICE_RETURNED_INVALID_CARD = -505
 };
 typedef enum vssc_status_t vssc_status_t;
 

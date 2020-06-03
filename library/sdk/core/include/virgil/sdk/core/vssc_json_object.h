@@ -55,6 +55,7 @@
 
 #include "vssc_library.h"
 #include "vssc_error.h"
+#include "vssc_json_array.h"
 #include "vssc_json_object.h"
 #include "vssc_status.h"
 
@@ -91,6 +92,11 @@ extern "C" {
 typedef struct vssc_json_object_t vssc_json_object_t;
 
 //
+//  Forward declaration.
+//
+typedef struct vssc_json_array_t vssc_json_array_t;
+
+//
 //  Return size of 'vssc_json_object_t'.
 //
 VSSC_PUBLIC size_t
@@ -119,7 +125,7 @@ vssc_json_object_new(void);
 //  It is safe to call this method even if the context was statically allocated.
 //
 VSSC_PUBLIC void
-vssc_json_object_delete(vssc_json_object_t *self);
+vssc_json_object_delete(const vssc_json_object_t *self);
 
 //
 //  Delete given context and nullifies reference.
@@ -135,6 +141,19 @@ VSSC_PUBLIC vssc_json_object_t *
 vssc_json_object_shallow_copy(vssc_json_object_t *self);
 
 //
+//  Copy given class context by increasing reference counter.
+//  Reference counter is internally synchronized, so constness is presumed.
+//
+VSSC_PUBLIC const vssc_json_object_t *
+vssc_json_object_shallow_copy_const(const vssc_json_object_t *self);
+
+//
+//  Return true if object has no fields.
+//
+VSSC_PUBLIC bool
+vssc_json_object_is_empty(const vssc_json_object_t *self);
+
+//
 //  Add string value with a given key.
 //
 VSSC_PUBLIC void
@@ -142,7 +161,7 @@ vssc_json_object_add_string_value(vssc_json_object_t *self, vsc_str_t key, vsc_s
 
 //
 //  Return a string value for a given key.
-//  Returns error, if given key is not found or type mismatch.
+//  Return error, if given key is not found or type mismatch.
 //
 VSSC_PUBLIC vsc_str_t
 vssc_json_object_get_string_value(const vssc_json_object_t *self, vsc_str_t key, vssc_error_t *error);
@@ -163,8 +182,8 @@ vssc_json_object_get_binary_value_len(const vssc_json_object_t *self, vsc_str_t 
 
 //
 //  Return a binary value for a given key.
-//  Returns error, if given key is not found or type mismatch.
-//  Returns error, if base64 decode failed.
+//  Return error, if given key is not found or type mismatch.
+//  Return error, if base64 decode failed.
 //
 VSSC_PUBLIC vssc_status_t
 vssc_json_object_get_binary_value(const vssc_json_object_t *self, vsc_str_t key, vsc_buffer_t *value) VSSC_NODISCARD;
@@ -176,11 +195,30 @@ VSSC_PUBLIC void
 vssc_json_object_add_int_value(vssc_json_object_t *self, vsc_str_t key, int value);
 
 //
-//  Return a integer value for a given key.
-//  Returns error, if given key is not found or type mismatch.
+//  Return an integer value for a given key.
+//  Return error, if given key is not found or type mismatch.
 //
 VSSC_PUBLIC int
 vssc_json_object_get_int_value(const vssc_json_object_t *self, vsc_str_t key, vssc_error_t *error);
+
+//
+//  Add array value with a given key.
+//
+VSSC_PUBLIC void
+vssc_json_object_add_array_value(vssc_json_object_t *self, vsc_str_t key, const vssc_json_array_t *value);
+
+//
+//  Add array value with a given key.
+//
+VSSC_PRIVATE void
+vssc_json_object_add_array_value_disown(vssc_json_object_t *self, vsc_str_t key, vssc_json_array_t **value_ref);
+
+//
+//  Return an array value for a given key.
+//  Return error, if given key is not found or type mismatch.
+//
+VSSC_PUBLIC vssc_json_array_t *
+vssc_json_object_get_array_value(const vssc_json_object_t *self, vsc_str_t key, vssc_error_t *error);
 
 //
 //  Return JSON body as string.

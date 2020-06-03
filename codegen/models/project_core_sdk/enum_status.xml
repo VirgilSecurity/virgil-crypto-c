@@ -17,6 +17,18 @@
         Faled to initialize random module.
     </constant>
 
+    <constant name="export public key failed" value="-103">
+        Faled to export public key, underlying crypto returned an error.
+    </constant>
+
+    <constant name="import public key failed" value="-104">
+        Faled to import public key, underlying crypto returned an error.
+    </constant>
+
+    <constant name="produce signature failed" value="-105">
+        Faled produce signature, underlying crypto returned an error.
+    </constant>
+
     <constant name="parse jwt failed" value="-201">
         Failed to parse JWT.
     </constant>
@@ -37,6 +49,10 @@
         Requested JSON binary value is not base64 encoded.
     </constant>
 
+    <constant name="parse json failed" value="-206">
+        Parse JSON string failed.
+    </constant>
+
     <constant name="http send request failed" value="-301">
         Failed to send HTTP request.
     </constant>
@@ -49,7 +65,31 @@
         Failed to parse JWT HTTP body.
     </constant>
 
-    <constant name="card content snapshot parse failed" value="-401">
-        Failed to parse card content snapshot.
+    <constant name="http response contains service error" value="-401">
+        Response processing failed because given HTTP Response contains Virgil Service error.
+    </constant>
+
+    <constant name="http response body parse failed" value="-402">
+        Given HTTP response body can not be parsed in an expected way.
+    </constant>
+
+    <constant name="raw card content parse failed" value="-501">
+        Failed to parse card content.
+    </constant>
+
+    <constant name="raw card signature parse failed" value="-502">
+        Failed to parse card signature.
+    </constant>
+
+    <constant name="raw card signature verification failed" value="-503">
+        Failed to verify one of the Raw Card signatures.
+    </constant>
+
+    <constant name="card version is not supported" value="-504">
+        Failed to parse card, found card's version is not supported.
+    </constant>
+
+    <constant name="service returned invalid card" value="-505">
+        The Card returned by Virgil Cards Service is not what was requested.
     </constant>
 </enum>

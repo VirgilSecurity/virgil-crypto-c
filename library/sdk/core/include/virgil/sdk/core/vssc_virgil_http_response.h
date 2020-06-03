@@ -56,10 +56,10 @@
 
 #include "vssc_library.h"
 #include "vssc_http_header_list.h"
-#include "vssc_json_object.h"
 #include "vssc_http_response.h"
 #include "vssc_error.h"
 #include "vssc_virgil_http_response.h"
+#include "vssc_json_array.h"
 
 #if !VSSC_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_str.h>
@@ -118,7 +118,7 @@ vssc_virgil_http_response_new(void);
 //  It is safe to call this method even if the context was statically allocated.
 //
 VSSC_PUBLIC void
-vssc_virgil_http_response_delete(vssc_virgil_http_response_t *self);
+vssc_virgil_http_response_delete(const vssc_virgil_http_response_t *self);
 
 //
 //  Delete given context and nullifies reference.
@@ -132,6 +132,13 @@ vssc_virgil_http_response_destroy(vssc_virgil_http_response_t **self_ref);
 //
 VSSC_PUBLIC vssc_virgil_http_response_t *
 vssc_virgil_http_response_shallow_copy(vssc_virgil_http_response_t *self);
+
+//
+//  Copy given class context by increasing reference counter.
+//  Reference counter is internally synchronized, so constness is presumed.
+//
+VSSC_PUBLIC const vssc_virgil_http_response_t *
+vssc_virgil_http_response_shallow_copy_const(const vssc_virgil_http_response_t *self);
 
 //
 //  Create self from the parsed HTTP response.

@@ -2,7 +2,11 @@
     Class responsible for signing "raw card".
 
 
-    <dependency name="signer" class="signer" project="foundation"/>
+    <require class="signer" project="foundation"/>
+    <require class="sha512" project="foundation"/>
+    <require interface="private key" project="foundation"/>
+
+    <dependency name="random" interface="random" project="foundation"/>
 
 
     <constant name="k self signer id" type="string" visibility="private">
@@ -12,11 +16,18 @@
     </constant>
 
 
+    <constant name="k virgil signer id" type="string" visibility="private">
+        Identifier of Virgil signature.
+
+        <value value="virgil"/>
+    </constant>
+
+
     <method name="sign" is_const="1">
         Adds signature to given "raw card" with provided signer and private key.
 
         <argument name="raw card" class="raw card" access="readwrite"/>
-        <argument name="signer" class="str"/>
+        <argument name="signer id" class="str"/>
         <argument name="private key" interface="private key" project="foundation"/>
 
         <return enum="status"/>
@@ -30,5 +41,22 @@
         <argument name="private key" interface="private key" project="foundation"/>
 
         <return enum="status"/>
+    </method>
+
+
+    <method name="virgil sign" is_const="1">
+        Adds Virgil Signature to given "raw card".
+
+        <argument name="raw card" class="raw card" access="readwrite"/>
+        <argument name="private key" interface="private key" project="foundation"/>
+
+        <return enum="status"/>
+    </method>
+
+
+    <method name="create signer" is_const="1" declaration="private">
+        Create Signer with a default configuration.
+
+        <return class="signer" project="foundation" access="disown"/>
     </method>
 </class>

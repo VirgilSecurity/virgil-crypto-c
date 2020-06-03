@@ -130,7 +130,7 @@ vssc_jwt_header_new_with_app_key_id(vsc_str_t app_key_id);
 //  It is safe to call this method even if the context was statically allocated.
 //
 VSSC_PUBLIC void
-vssc_jwt_header_delete(vssc_jwt_header_t *self);
+vssc_jwt_header_delete(const vssc_jwt_header_t *self);
 
 //
 //  Delete given context and nullifies reference.
@@ -144,6 +144,13 @@ vssc_jwt_header_destroy(vssc_jwt_header_t **self_ref);
 //
 VSSC_PUBLIC vssc_jwt_header_t *
 vssc_jwt_header_shallow_copy(vssc_jwt_header_t *self);
+
+//
+//  Copy given class context by increasing reference counter.
+//  Reference counter is internally synchronized, so constness is presumed.
+//
+VSSC_PUBLIC const vssc_jwt_header_t *
+vssc_jwt_header_shallow_copy_const(const vssc_jwt_header_t *self);
 
 //
 //  Parse JWT Header from a string representation.

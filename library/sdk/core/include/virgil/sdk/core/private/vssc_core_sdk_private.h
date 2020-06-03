@@ -54,11 +54,17 @@
 #define VSSC_CORE_SDK_PRIVATE_H_INCLUDED
 
 #include "vssc_atomic.h"
+#include "vssc_card_client_defs.h"
+#include "vssc_card_defs.h"
+#include "vssc_card_manager_defs.h"
 #include "vssc_http_header_defs.h"
 #include "vssc_http_header_list_defs.h"
 #include "vssc_http_request_defs.h"
 #include "vssc_http_response_defs.h"
+#include "vssc_json_array_defs.h"
+#include "vssc_json_array_private.h"
 #include "vssc_json_object_defs.h"
+#include "vssc_json_object_private.h"
 #include "vssc_jwt_defs.h"
 #include "vssc_jwt_generator_defs.h"
 #include "vssc_jwt_header.h"
@@ -66,6 +72,10 @@
 #include "vssc_jwt_payload.h"
 #include "vssc_jwt_payload_defs.h"
 #include "vssc_jwt_private.h"
+#include "vssc_raw_card_defs.h"
+#include "vssc_raw_card_signature_defs.h"
+#include "vssc_raw_card_signature_list_defs.h"
+#include "vssc_raw_card_signer_defs.h"
 #include "vssc_virgil_http_response_defs.h"
 
 // clang-format on

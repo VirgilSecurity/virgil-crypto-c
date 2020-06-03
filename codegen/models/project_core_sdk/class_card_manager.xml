@@ -2,18 +2,42 @@
     Class responsible for operations with Virgil Cards and it's representations.
 
 
-    <method name="generate raw card" is_static="1">
+    <require class="unix time"/>
+    <require class="raw card verifier"/>
+    <require class="raw card signer"/>
+
+    <require interface="private key" project="foundation"/>
+    <require class="key provider" project="foundation"/>
+    <require class="signer" project="foundation"/>
+    <require class="ctr drbg" project="foundation"/>
+
+    <property name="key provider" class="key provider" project="foundation"/>
+    <property name="virgil public key" interface="public key" project="foundation"/>
+    <property name="raw card signer" class="raw card signer"/>
+
+    <dependency name="random" interface="random" project="foundation" has_observers="1"/>
+
+
+    <method name="configure">
+        Configure internal states and dependencies.
+
+        <return enum="status"/>
+    </method>
+
+
+    <method name="generate raw card" is_const="1">
         Generates self signed "raw card".
 
         <argument name="identity" class="str"/>
-        <argument name="public key" interface="public key" project="foundation"/>
+        <argument name="private key" interface="private key" project="foundation"/>
         <argument name="previous card id" class="str"/>
+        <argument name="error" class="error" access="readwrite"/>
 
         <return class="raw card" access="disown"/>
     </method>
 
 
-    <method name="import raw card" is_static="1">
+    <method name="import raw card" is_const="1">
         Create Card from "raw card" and verify it.
 
         Note, only self signature and Virgil Cards Service signatures are verified.
@@ -25,7 +49,7 @@
     </method>
 
 
-    <method name="import raw card with id" is_static="1">
+    <method name="import raw card with id" is_const="1">
         Create Card with expected card identifier from "raw card" and verify it.
 
         Note, only self signature and Virgil Cards Service signatures are verified.
@@ -38,7 +62,7 @@
     </method>
 
 
-    <method name="import raw card with initial raw card" is_static="1">
+    <method name="import raw card with initial raw card" is_const="1">
         Create Card from "raw card" with additional check which ensures
         that Virgil Cards Service do not change self-signature.
 
