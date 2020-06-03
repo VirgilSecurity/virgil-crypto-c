@@ -335,6 +335,12 @@ VSC_PUBLIC void
 vsc_buffer_append_data(vsc_buffer_t *self, vsc_data_t data);
 
 //
+//  Reset buffer and increase capacity if given value less then current.
+//
+VSC_PUBLIC void
+vsc_buffer_reset_with_capacity(vsc_buffer_t *self, size_t min_capacity);
+
+//
 //  Reset to the initial state.
 //  After reset inner buffer can be re-used.
 //

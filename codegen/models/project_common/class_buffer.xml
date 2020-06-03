@@ -258,6 +258,13 @@
     </method>
 
 
+    <method name="reset with capacity">
+        Reset buffer and increase capacity if given value less then current.
+
+        <argument name="min capacity" type="size"/>
+    </method>
+
+
     <method name="reset">
         Reset to the initial state.
         After reset inner buffer can be re-used.

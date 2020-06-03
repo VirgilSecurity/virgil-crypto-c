@@ -809,6 +809,23 @@ vsc_buffer_append_data(vsc_buffer_t *self, vsc_data_t data) {
 }
 
 //
+//  Reset buffer and increase capacity if given value less then current.
+//
+VSC_PUBLIC void
+vsc_buffer_reset_with_capacity(vsc_buffer_t *self, size_t min_capacity) {
+
+    VSC_ASSERT_PTR(self);
+    VSC_ASSERT(min_capacity > 0);
+
+    if (self->capacity < min_capacity) {
+        vsc_buffer_cleanup_ctx(self);
+        vsc_buffer_init_ctx_with_capacity(self, min_capacity);
+    } else {
+        vsc_buffer_reset(self);
+    }
+}
+
+//
 //  Reset to the initial state.
 //  After reset inner buffer can be re-used.
 //
