@@ -180,37 +180,39 @@ vssp_brain_key_seed_new_with_seed_disown(vsc_buffer_t **seed_ref) {
 //  It is safe to call this method even if the context was statically allocated.
 //
 VSSP_PUBLIC void
-vssp_brain_key_seed_delete(vssp_brain_key_seed_t *self) {
+vssp_brain_key_seed_delete(const vssp_brain_key_seed_t *self) {
 
-    if (self == NULL) {
+    vssp_brain_key_seed_t *local_self = (vssp_brain_key_seed_t *)self;
+
+    if (local_self == NULL) {
         return;
     }
 
-    size_t old_counter = self->refcnt;
+    size_t old_counter = local_self->refcnt;
     VSSP_ASSERT(old_counter != 0);
     size_t new_counter = old_counter - 1;
 
     #if defined(VSSP_ATOMIC_COMPARE_EXCHANGE_WEAK)
     //  CAS loop
-    while (!VSSP_ATOMIC_COMPARE_EXCHANGE_WEAK(&self->refcnt, &old_counter, new_counter)) {
-        old_counter = self->refcnt;
+    while (!VSSP_ATOMIC_COMPARE_EXCHANGE_WEAK(&local_self->refcnt, &old_counter, new_counter)) {
+        old_counter = local_self->refcnt;
         VSSP_ASSERT(old_counter != 0);
         new_counter = old_counter - 1;
     }
     #else
-    self->refcnt = new_counter;
+    local_self->refcnt = new_counter;
     #endif
 
     if (new_counter > 0) {
         return;
     }
 
-    vssp_dealloc_fn self_dealloc_cb = self->self_dealloc_cb;
+    vssp_dealloc_fn self_dealloc_cb = local_self->self_dealloc_cb;
 
-    vssp_brain_key_seed_cleanup(self);
+    vssp_brain_key_seed_cleanup(local_self);
 
     if (self_dealloc_cb != NULL) {
-        self_dealloc_cb(self);
+        self_dealloc_cb(local_self);
     }
 }
 
@@ -250,6 +252,16 @@ vssp_brain_key_seed_shallow_copy(vssp_brain_key_seed_t *self) {
     #endif
 
     return self;
+}
+
+//
+//  Copy given class context by increasing reference counter.
+//  Reference counter is internally synchronized, so constness is presumed.
+//
+VSSP_PUBLIC const vssp_brain_key_seed_t *
+vssp_brain_key_seed_shallow_copy_const(const vssp_brain_key_seed_t *self) {
+
+    return vssp_brain_key_seed_shallow_copy((vssp_brain_key_seed_t *)self);
 }
 
 

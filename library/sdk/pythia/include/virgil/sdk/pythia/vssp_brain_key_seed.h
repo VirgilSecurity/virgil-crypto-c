@@ -128,7 +128,7 @@ vssp_brain_key_seed_new_with_seed_disown(vsc_buffer_t **seed_ref);
 //  It is safe to call this method even if the context was statically allocated.
 //
 VSSP_PUBLIC void
-vssp_brain_key_seed_delete(vssp_brain_key_seed_t *self);
+vssp_brain_key_seed_delete(const vssp_brain_key_seed_t *self);
 
 //
 //  Delete given context and nullifies reference.
@@ -142,6 +142,13 @@ vssp_brain_key_seed_destroy(vssp_brain_key_seed_t **self_ref);
 //
 VSSP_PUBLIC vssp_brain_key_seed_t *
 vssp_brain_key_seed_shallow_copy(vssp_brain_key_seed_t *self);
+
+//
+//  Copy given class context by increasing reference counter.
+//  Reference counter is internally synchronized, so constness is presumed.
+//
+VSSP_PUBLIC const vssp_brain_key_seed_t *
+vssp_brain_key_seed_shallow_copy_const(const vssp_brain_key_seed_t *self);
 
 //
 //  Return BrainKey seed.

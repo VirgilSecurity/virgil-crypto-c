@@ -140,7 +140,7 @@ vssp_pythia_client_new_with_base_url(vsc_str_t url);
 //  It is safe to call this method even if the context was statically allocated.
 //
 VSSP_PUBLIC void
-vssp_pythia_client_delete(vssp_pythia_client_t *self);
+vssp_pythia_client_delete(const vssp_pythia_client_t *self);
 
 //
 //  Delete given context and nullifies reference.
@@ -156,24 +156,31 @@ VSSP_PUBLIC vssp_pythia_client_t *
 vssp_pythia_client_shallow_copy(vssp_pythia_client_t *self);
 
 //
+//  Copy given class context by increasing reference counter.
+//  Reference counter is internally synchronized, so constness is presumed.
+//
+VSSP_PUBLIC const vssp_pythia_client_t *
+vssp_pythia_client_shallow_copy_const(const vssp_pythia_client_t *self);
+
+//
 //  Create request that generates seed using given blinded password.
 //
 VSSP_PUBLIC vssc_http_request_t *
-vssp_pythia_client_request_generate_seed(const vssp_pythia_client_t *self, vsc_data_t blinded_password);
+vssp_pythia_client_make_request_generate_seed(const vssp_pythia_client_t *self, vsc_data_t blinded_password);
 
 //
 //  Create request that generates seed using given blinded password and brainkey id.
 //  Note, BrainKeyID can be empty.
 //
 VSSP_PUBLIC vssc_http_request_t *
-vssp_pythia_client_request_generate_seed_with_id(const vssp_pythia_client_t *self, vsc_data_t blinded_password,
+vssp_pythia_client_make_request_generate_seed_with_id(const vssp_pythia_client_t *self, vsc_data_t blinded_password,
         vsc_str_t brain_key_id);
 
 //
 //  Map response to the correspond model.
 //
 VSSP_PUBLIC vssp_brain_key_seed_t *
-vssp_pythia_client_process_response_from_generate_seed(const vssp_pythia_client_t *self,
+vssp_pythia_client_process_response_generate_seed(const vssp_pythia_client_t *self,
         const vssc_virgil_http_response_t *response, vssp_error_t *error);
 
 

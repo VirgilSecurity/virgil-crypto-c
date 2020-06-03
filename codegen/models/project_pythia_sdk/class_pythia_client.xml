@@ -47,7 +47,7 @@
     </constructor>
 
 
-    <method name="request generate seed" is_const="1">
+    <method name="make request generate seed" is_const="1">
          Create request that generates seed using given blinded password.
 
         <argument name="blinded password" class="data"/>
@@ -56,7 +56,7 @@
     </method>
 
 
-    <method name="request generate seed with id" is_const="1">
+    <method name="make request generate seed with id" is_const="1">
         Create request that generates seed using given blinded password and brainkey id.
         Note, BrainKeyID can be empty.
 
@@ -67,7 +67,7 @@
     </method>
 
 
-    <method name="process response from generate seed" is_const="1">
+    <method name="process response generate seed" is_const="1">
         Map response to the correspond model.
 
         <argument name="response" class="virgil http response" project="core sdk"/>

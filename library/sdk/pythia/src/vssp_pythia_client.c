@@ -245,37 +245,39 @@ vssp_pythia_client_new_with_base_url(vsc_str_t url) {
 //  It is safe to call this method even if the context was statically allocated.
 //
 VSSP_PUBLIC void
-vssp_pythia_client_delete(vssp_pythia_client_t *self) {
+vssp_pythia_client_delete(const vssp_pythia_client_t *self) {
 
-    if (self == NULL) {
+    vssp_pythia_client_t *local_self = (vssp_pythia_client_t *)self;
+
+    if (local_self == NULL) {
         return;
     }
 
-    size_t old_counter = self->refcnt;
+    size_t old_counter = local_self->refcnt;
     VSSP_ASSERT(old_counter != 0);
     size_t new_counter = old_counter - 1;
 
     #if defined(VSSP_ATOMIC_COMPARE_EXCHANGE_WEAK)
     //  CAS loop
-    while (!VSSP_ATOMIC_COMPARE_EXCHANGE_WEAK(&self->refcnt, &old_counter, new_counter)) {
-        old_counter = self->refcnt;
+    while (!VSSP_ATOMIC_COMPARE_EXCHANGE_WEAK(&local_self->refcnt, &old_counter, new_counter)) {
+        old_counter = local_self->refcnt;
         VSSP_ASSERT(old_counter != 0);
         new_counter = old_counter - 1;
     }
     #else
-    self->refcnt = new_counter;
+    local_self->refcnt = new_counter;
     #endif
 
     if (new_counter > 0) {
         return;
     }
 
-    vssp_dealloc_fn self_dealloc_cb = self->self_dealloc_cb;
+    vssp_dealloc_fn self_dealloc_cb = local_self->self_dealloc_cb;
 
-    vssp_pythia_client_cleanup(self);
+    vssp_pythia_client_cleanup(local_self);
 
     if (self_dealloc_cb != NULL) {
-        self_dealloc_cb(self);
+        self_dealloc_cb(local_self);
     }
 }
 
@@ -315,6 +317,16 @@ vssp_pythia_client_shallow_copy(vssp_pythia_client_t *self) {
     #endif
 
     return self;
+}
+
+//
+//  Copy given class context by increasing reference counter.
+//  Reference counter is internally synchronized, so constness is presumed.
+//
+VSSP_PUBLIC const vssp_pythia_client_t *
+vssp_pythia_client_shallow_copy_const(const vssp_pythia_client_t *self) {
+
+    return vssp_pythia_client_shallow_copy((vssp_pythia_client_t *)self);
 }
 
 
@@ -372,12 +384,12 @@ vssp_pythia_client_init_ctx_with_base_url(vssp_pythia_client_t *self, vsc_str_t 
 //  Create request that generates seed using given blinded password.
 //
 VSSP_PUBLIC vssc_http_request_t *
-vssp_pythia_client_request_generate_seed(const vssp_pythia_client_t *self, vsc_data_t blinded_password) {
+vssp_pythia_client_make_request_generate_seed(const vssp_pythia_client_t *self, vsc_data_t blinded_password) {
 
     VSSP_ASSERT_PTR(self);
     VSSP_ASSERT(vsc_data_is_valid_and_non_empty(blinded_password));
 
-    return vssp_pythia_client_request_generate_seed_with_id(self, blinded_password, vsc_str_empty());
+    return vssp_pythia_client_make_request_generate_seed_with_id(self, blinded_password, vsc_str_empty());
 }
 
 //
@@ -385,7 +397,7 @@ vssp_pythia_client_request_generate_seed(const vssp_pythia_client_t *self, vsc_d
 //  Note, BrainKeyID can be empty.
 //
 VSSP_PUBLIC vssc_http_request_t *
-vssp_pythia_client_request_generate_seed_with_id(
+vssp_pythia_client_make_request_generate_seed_with_id(
         const vssp_pythia_client_t *self, vsc_data_t blinded_password, vsc_str_t brain_key_id) {
 
     VSSP_ASSERT_PTR(self);
@@ -416,21 +428,21 @@ vssp_pythia_client_request_generate_seed_with_id(
 //  Map response to the correspond model.
 //
 VSSP_PUBLIC vssp_brain_key_seed_t *
-vssp_pythia_client_process_response_from_generate_seed(
+vssp_pythia_client_process_response_generate_seed(
         const vssp_pythia_client_t *self, const vssc_virgil_http_response_t *response, vssp_error_t *error) {
 
     VSSP_ASSERT_PTR(self);
     VSSP_ASSERT_PTR(response);
 
     if (!vssc_virgil_http_response_is_success(response)) {
-        VSSP_ERROR_SAFE_UPDATE(error, vssp_status_VIRGIL_HTTP_RESPONSE_CONTAINS_ERROR);
+        VSSP_ERROR_SAFE_UPDATE(error, vssp_status_HTTP_RESPONSE_CONTAINS_SERVICE_ERROR);
         return NULL;
     }
 
     // TODO: Check Content-Type to be equal application/json
 
     if (!vssc_virgil_http_response_has_body(response)) {
-        VSSP_ERROR_SAFE_UPDATE(error, vssp_status_UNEXPECTED_HTTP_RESPONSE_BODY);
+        VSSP_ERROR_SAFE_UPDATE(error, vssp_status_HTTP_RESPONSE_BODY_PARSE_FAILED);
         return NULL;
     }
 
@@ -438,7 +450,7 @@ vssp_pythia_client_process_response_from_generate_seed(
 
     const size_t seed_len = vssc_json_object_get_binary_value_len(response_body, k_json_key_seed_str);
     if (0 == seed_len) {
-        VSSP_ERROR_SAFE_UPDATE(error, vssp_status_UNEXPECTED_HTTP_RESPONSE_BODY);
+        VSSP_ERROR_SAFE_UPDATE(error, vssp_status_HTTP_RESPONSE_BODY_PARSE_FAILED);
         return NULL;
     }
 
@@ -452,6 +464,6 @@ vssp_pythia_client_process_response_from_generate_seed(
 
     vsc_buffer_destroy(&seed);
 
-    VSSP_ERROR_SAFE_UPDATE(error, vssp_status_UNEXPECTED_HTTP_RESPONSE_BODY);
+    VSSP_ERROR_SAFE_UPDATE(error, vssp_status_HTTP_RESPONSE_BODY_PARSE_FAILED);
     return NULL;
 }

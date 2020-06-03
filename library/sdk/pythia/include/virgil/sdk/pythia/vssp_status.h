@@ -81,13 +81,13 @@ enum vssp_status_t {
     //
     vssp_status_INTERNAL_ERROR = -1,
     //
-    //  Response processing failed because given Virgil HTTP Response handles error.
+    //  Response processing failed because given HTTP Response contains Virgil Service error.
     //
-    vssp_status_VIRGIL_HTTP_RESPONSE_CONTAINS_ERROR = -101,
+    vssp_status_HTTP_RESPONSE_CONTAINS_SERVICE_ERROR = -402,
     //
-    //  Unexpectable body within given HTTP response.
+    //  Given HTTP response body can not be parsed in an expected way.
     //
-    vssp_status_UNEXPECTED_HTTP_RESPONSE_BODY = -102
+    vssp_status_HTTP_RESPONSE_BODY_PARSE_FAILED = -403
 };
 typedef enum vssp_status_t vssp_status_t;
 

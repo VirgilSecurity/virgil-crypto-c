@@ -9,11 +9,11 @@
         Met internal inconsistency.
     </constant>
 
-    <constant name="virgil http response contains error" value="-101">
-        Response processing failed because given Virgil HTTP Response handles error.
+    <constant name="http response contains service error" value="-402">
+        Response processing failed because given HTTP Response contains Virgil Service error.
     </constant>
 
-    <constant name="unexpected http response body" value="-102">
-        Unexpectable body within given HTTP response.
+    <constant name="http response body parse failed" value="-403">
+        Given HTTP response body can not be parsed in an expected way.
     </constant>
 </enum>
