@@ -61,6 +61,7 @@
 
 #if !VSSC_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_str.h>
+#   include <virgil/crypto/common/vsc_data.h>
 #endif
 
 #if !VSSC_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
@@ -68,6 +69,7 @@
 #endif
 
 #if VSSC_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <VSCCommon/vsc_data.h>
 #   include <VSCCommon/vsc_str.h>
 #endif
 
@@ -170,6 +172,14 @@ vssc_card_manager_release_random(vssc_card_manager_t *self);
 //
 VSSC_PUBLIC vssc_status_t
 vssc_card_manager_configure(vssc_card_manager_t *self) VSSC_NODISCARD;
+
+//
+//  Configure internal states and dependencies.
+//  Virgil Service Public Key can be customized (i.e. for stage env).
+//
+VSSC_PUBLIC vssc_status_t
+vssc_card_manager_configure_with_service_public_key(vssc_card_manager_t *self,
+        vsc_data_t public_key_data) VSSC_NODISCARD;
 
 //
 //  Generates self signed "raw card".

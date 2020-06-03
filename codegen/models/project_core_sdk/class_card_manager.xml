@@ -25,6 +25,16 @@
     </method>
 
 
+    <method name="configure with service public key">
+        Configure internal states and dependencies.
+        Virgil Service Public Key can be customized (i.e. for stage env).
+
+        <argument name="public key data" class="data"/>
+
+        <return enum="status"/>
+    </method>
+
+
     <method name="generate raw card" is_const="1">
         Generates self signed "raw card".
 

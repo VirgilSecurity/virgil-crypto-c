@@ -365,6 +365,23 @@ vssc_card_manager_configure(vssc_card_manager_t *self) {
 
     VSSC_ASSERT_PTR(self);
 
+    static const byte k_virgil_public_key[] = {0x30, 0x2a, 0x30, 0x05, 0x06, 0x03, 0x2b, 0x65, 0x70, 0x03, 0x21, 0x00,
+            0x96, 0x33, 0x98, 0x18, 0x03, 0x58, 0x89, 0x5a, 0xb5, 0x59, 0xbb, 0xd5, 0xbe, 0x86, 0x08, 0x2a, 0xdb, 0xd9,
+            0x8b, 0x68, 0xe2, 0xf5, 0xb0, 0x21, 0xc7, 0x2b, 0xba, 0x89, 0x5f, 0xcb, 0x17, 0xc3};
+
+    return vssc_card_manager_configure_with_service_public_key(
+            self, vsc_data(k_virgil_public_key, sizeof(k_virgil_public_key)));
+}
+
+//
+//  Configure internal states and dependencies.
+//  Virgil Service Public Key can be customized (i.e. for stage env).
+//
+VSSC_PUBLIC vssc_status_t
+vssc_card_manager_configure_with_service_public_key(vssc_card_manager_t *self, vsc_data_t public_key_data) {
+
+    VSSC_ASSERT_PTR(self);
+
     //
     //  Setup dependencies.
     //
@@ -378,18 +395,11 @@ vssc_card_manager_configure(vssc_card_manager_t *self) {
         vssc_card_manager_take_random(self, vscf_ctr_drbg_impl(random));
     }
 
-    //
-    //  Import Public Key of the Virgil Cards Service
-    //
-    static const byte k_virgil_public_key[] = {0x30, 0x2a, 0x30, 0x05, 0x06, 0x03, 0x2b, 0x65, 0x70, 0x03, 0x21, 0x00,
-            0x96, 0x33, 0x98, 0x18, 0x03, 0x58, 0x89, 0x5a, 0xb5, 0x59, 0xbb, 0xd5, 0xbe, 0x86, 0x08, 0x2a, 0xdb, 0xd9,
-            0x8b, 0x68, 0xe2, 0xf5, 0xb0, 0x21, 0xc7, 0x2b, 0xba, 0x89, 0x5f, 0xcb, 0x17, 0xc3};
-
     vscf_error_t foundation_error;
     vscf_error_reset(&foundation_error);
 
-    self->virgil_public_key = vscf_key_provider_import_public_key(
-            self->key_provider, vsc_data(k_virgil_public_key, sizeof(k_virgil_public_key)), &foundation_error);
+    self->virgil_public_key =
+            vscf_key_provider_import_public_key(self->key_provider, public_key_data, &foundation_error);
 
     if (vscf_error_has_error(&foundation_error)) {
         return vssc_status_IMPORT_PUBLIC_KEY_FAILED;
