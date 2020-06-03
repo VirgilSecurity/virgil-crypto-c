@@ -59,6 +59,7 @@
 
 #include "vsce_platform.h"
 
+#include <limits.h>
 #include <stdint.h>
 #include <stddef.h>
 #include <string.h>
