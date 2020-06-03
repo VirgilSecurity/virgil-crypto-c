@@ -438,6 +438,10 @@ extern "C" {
 #cmakedefine01 VSCF_ERROR
 #endif
 
+#ifndef VSCF_BINARY
+#cmakedefine01 VSCF_BINARY
+#endif
+
 #ifndef VSCF_MBEDTLS_BIGNUM_ASN1_WRITER
 #cmakedefine01 VSCF_MBEDTLS_BIGNUM_ASN1_WRITER
 #endif

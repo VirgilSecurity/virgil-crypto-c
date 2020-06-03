@@ -95,6 +95,10 @@ enum vscf_status_t {
     //
     vscf_status_ERROR_SMALL_BUFFER = -101,
     //
+    //  Convertion from HEX string to the byte array failed.
+    //
+    vscf_status_HEX_TO_BYTES_FAILED = -102,
+    //
     //  Unsupported algorithm.
     //
     vscf_status_ERROR_UNSUPPORTED_ALGORITHM = -200,

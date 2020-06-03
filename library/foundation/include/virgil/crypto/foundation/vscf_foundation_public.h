@@ -73,6 +73,7 @@
 #include "vscf_auth_decrypt.h"
 #include "vscf_auth_encrypt.h"
 #include "vscf_base64.h"
+#include "vscf_binary.h"
 #include "vscf_brainkey_client.h"
 #include "vscf_brainkey_server.h"
 #include "vscf_cipher.h"

@@ -1,0 +1,50 @@
+<class name="binary">
+    Contains utils for convertion from bytes to HEX and vice-versa.
+
+
+    <method name="to hex len" is_static="1">
+        Return buffer length enaugh to hold hexed data.
+
+        <argument name="data len" type="size"/>
+
+        <return type="size"/>
+    </method>
+
+
+    <method name="to hex" is_static="1">
+        Converts byte array to hex.
+        Output length should be twice bigger then input.
+
+        <argument name="data" class="data"/>
+        <argument name="hex str" class="str buffer">
+            <length method="to hex len">
+                <propxy argument="data" to="data len" cast="data_length"/>
+            </length>
+        </argument>
+    </method>
+
+
+    <method name="from hex len" is_static="1">
+        Return buffer length enaugh to hold unhexed data.
+
+        <argument name="hex len" type="size"/>
+
+        <return type="size"/>
+    </method>
+
+
+    <method name="from hex" is_static="1">
+        Converts hex string to byte array.
+        Output length should be at least half of the input hex string.
+
+        <argument name="hex str" class="str"/>
+
+        <argument name="data" class="buffer">
+            <length method="from hex len">
+                <propxy argument="hex str" to="hex len" cast="str_length"/>
+            </length>
+        </argument>
+
+        <return enum="status"/>
+    </method>
+</class>

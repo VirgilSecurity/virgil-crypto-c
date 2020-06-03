@@ -529,6 +529,11 @@ set_property(
 )
 
 set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_binary.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
+)
+
+set_property(
     SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_brainkey_client.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
@@ -946,6 +951,7 @@ target_sources(foundation
             "$<$<BOOL:${VSCF_SIMPLE_ALG_INFO}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_simple_alg_info_defs.h>"
             "$<$<BOOL:${VSCF_ALG_FACTORY}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_alg_factory.h>"
             "$<$<BOOL:${VSCF_BASE64}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_base64.h>"
+            "$<$<BOOL:${VSCF_BINARY}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_binary.h>"
             "$<$<BOOL:${VSCF_BRAINKEY_CLIENT}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_brainkey_client.h>"
             "$<$<BOOL:${VSCF_BRAINKEY_CLIENT}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_brainkey_client_defs.h>"
             "$<$<BOOL:${VSCF_BRAINKEY_SERVER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_brainkey_server.h>"
@@ -1273,6 +1279,7 @@ target_sources(foundation
             "$<$<BOOL:${VSCF_SIMPLE_ALG_INFO}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_simple_alg_info_defs.c>"
             "$<$<BOOL:${VSCF_ALG_FACTORY}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_alg_factory.c>"
             "$<$<BOOL:${VSCF_BASE64}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_base64.c>"
+            "$<$<BOOL:${VSCF_BINARY}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_binary.c>"
             "$<$<BOOL:${VSCF_BRAINKEY_CLIENT}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_brainkey_client.c>"
             "$<$<BOOL:${VSCF_BRAINKEY_CLIENT}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_brainkey_client_defs.c>"
             "$<$<BOOL:${VSCF_BRAINKEY_SERVER}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_brainkey_server.c>"

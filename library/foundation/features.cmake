@@ -135,6 +135,7 @@ option(VSCF_ALG_INFO_DER_DESERIALIZER "Enable class 'alg info der deserializer'.
 option(VSCF_MESSAGE_INFO_DER_SERIALIZER "Enable class 'message info der serializer'." ON)
 option(VSCF_RANDOM_PADDING "Enable class 'random padding'." ON)
 option(VSCF_ERROR "Enable class 'error'." ON)
+option(VSCF_BINARY "Enable class 'binary'." ON)
 option(VSCF_MBEDTLS_BIGNUM_ASN1_WRITER "Enable class 'mbedtls bignum asn1 writer'." ON)
 option(VSCF_MBEDTLS_BIGNUM_ASN1_READER "Enable class 'mbedtls bignum asn1 reader'." ON)
 option(VSCF_MBEDTLS_MD "Enable class 'mbedtls md'." ON)
@@ -271,6 +272,7 @@ mark_as_advanced(
         VSCF_MESSAGE_INFO_DER_SERIALIZER
         VSCF_RANDOM_PADDING
         VSCF_ERROR
+        VSCF_BINARY
         VSCF_MBEDTLS_BIGNUM_ASN1_WRITER
         VSCF_MBEDTLS_BIGNUM_ASN1_READER
         VSCF_MBEDTLS_MD
