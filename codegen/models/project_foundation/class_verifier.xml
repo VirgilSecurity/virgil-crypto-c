@@ -33,7 +33,7 @@
     <method name="verify">
         Verify accumulated data.
 
-        <argument name="public key" interface="public key" access="readwrite"/>
+        <argument name="public key" interface="public key"/>
 
         <return type="boolean"/>
     </method>

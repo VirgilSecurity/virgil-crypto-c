@@ -153,7 +153,7 @@ vscf_verifier_append_data(vscf_verifier_t *self, vsc_data_t data);
 //  Verify accumulated data.
 //
 VSCF_PUBLIC bool
-vscf_verifier_verify(vscf_verifier_t *self, vscf_impl_t *public_key);
+vscf_verifier_verify(vscf_verifier_t *self, const vscf_impl_t *public_key);
 
 
 // --------------------------------------------------------------------------
