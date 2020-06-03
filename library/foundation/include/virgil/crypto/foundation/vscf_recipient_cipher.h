@@ -91,7 +91,10 @@ extern "C" {
 //
 //  Handle 'recipient cipher' context.
 //
-typedef struct vscf_recipient_cipher_t vscf_recipient_cipher_t;
+#ifndef VSCF_RECIPIENT_CIPHER_T_DEFINED
+#define VSCF_RECIPIENT_CIPHER_T_DEFINED
+    typedef struct vscf_recipient_cipher_t vscf_recipient_cipher_t;
+#endif // VSCF_RECIPIENT_CIPHER_T_DEFINED
 
 //
 //  Return size of 'vscf_recipient_cipher_t'.

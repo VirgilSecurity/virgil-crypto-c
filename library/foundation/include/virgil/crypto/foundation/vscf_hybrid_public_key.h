@@ -76,7 +76,10 @@ extern "C" {
 //
 //  Handles implementation details.
 //
-typedef struct vscf_hybrid_public_key_t vscf_hybrid_public_key_t;
+#ifndef VSCF_HYBRID_PUBLIC_KEY_T_DEFINED
+#define VSCF_HYBRID_PUBLIC_KEY_T_DEFINED
+    typedef struct vscf_hybrid_public_key_t vscf_hybrid_public_key_t;
+#endif // VSCF_HYBRID_PUBLIC_KEY_T_DEFINED
 
 //
 //  Return size of 'vscf_hybrid_public_key_t' type.

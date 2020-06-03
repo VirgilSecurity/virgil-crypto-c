@@ -75,7 +75,10 @@ extern "C" {
 //
 //  Handle 'ratchet chain key' context.
 //
-typedef struct vscr_ratchet_chain_key_t vscr_ratchet_chain_key_t;
+#ifndef VSCR_RATCHET_CHAIN_KEY_T_DEFINED
+#define VSCR_RATCHET_CHAIN_KEY_T_DEFINED
+    typedef struct vscr_ratchet_chain_key_t vscr_ratchet_chain_key_t;
+#endif // VSCR_RATCHET_CHAIN_KEY_T_DEFINED
 struct vscr_ratchet_chain_key_t {
     //
     //  Function do deallocate self context.

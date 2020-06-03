@@ -86,7 +86,10 @@ extern "C" {
 //
 //  Handles implementation details.
 //
-typedef struct vscf_sec1_serializer_t vscf_sec1_serializer_t;
+#ifndef VSCF_SEC1_SERIALIZER_T_DEFINED
+#define VSCF_SEC1_SERIALIZER_T_DEFINED
+    typedef struct vscf_sec1_serializer_t vscf_sec1_serializer_t;
+#endif // VSCF_SEC1_SERIALIZER_T_DEFINED
 
 //
 //  Return size of 'vscf_sec1_serializer_t' type.

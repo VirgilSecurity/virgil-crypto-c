@@ -96,7 +96,10 @@ extern "C" {
 //
 //  Handle 'ratchet session' context.
 //
-typedef struct vscr_ratchet_session_t vscr_ratchet_session_t;
+#ifndef VSCR_RATCHET_SESSION_T_DEFINED
+#define VSCR_RATCHET_SESSION_T_DEFINED
+    typedef struct vscr_ratchet_session_t vscr_ratchet_session_t;
+#endif // VSCR_RATCHET_SESSION_T_DEFINED
 
 //
 //  Return size of 'vscr_ratchet_session_t'.

@@ -85,7 +85,10 @@ extern "C" {
 //
 //  Handles implementation details.
 //
-typedef struct vscf_seed_entropy_source_t vscf_seed_entropy_source_t;
+#ifndef VSCF_SEED_ENTROPY_SOURCE_T_DEFINED
+#define VSCF_SEED_ENTROPY_SOURCE_T_DEFINED
+    typedef struct vscf_seed_entropy_source_t vscf_seed_entropy_source_t;
+#endif // VSCF_SEED_ENTROPY_SOURCE_T_DEFINED
 
 //
 //  Return size of 'vscf_seed_entropy_source_t' type.

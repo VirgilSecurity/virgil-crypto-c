@@ -85,7 +85,10 @@ extern "C" {
 //
 //  Handle 'signer' context.
 //
-typedef struct vscf_signer_t vscf_signer_t;
+#ifndef VSCF_SIGNER_T_DEFINED
+#define VSCF_SIGNER_T_DEFINED
+    typedef struct vscf_signer_t vscf_signer_t;
+#endif // VSCF_SIGNER_T_DEFINED
 
 //
 //  Return size of 'vscf_signer_t'.

@@ -74,7 +74,10 @@ extern "C" {
 //
 //  Handle 'data' context.
 //
-typedef struct vsc_data_t vsc_data_t;
+#ifndef VSC_DATA_T_DEFINED
+#define VSC_DATA_T_DEFINED
+    typedef struct vsc_data_t vsc_data_t;
+#endif // VSC_DATA_T_DEFINED
 struct vsc_data_t {
     //
     //  Underlying byte array.

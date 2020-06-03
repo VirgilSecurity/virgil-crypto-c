@@ -83,7 +83,10 @@ extern "C" {
 //
 //  Handles implementation details.
 //
-typedef struct vscf_salted_kdf_alg_info_t vscf_salted_kdf_alg_info_t;
+#ifndef VSCF_SALTED_KDF_ALG_INFO_T_DEFINED
+#define VSCF_SALTED_KDF_ALG_INFO_T_DEFINED
+    typedef struct vscf_salted_kdf_alg_info_t vscf_salted_kdf_alg_info_t;
+#endif // VSCF_SALTED_KDF_ALG_INFO_T_DEFINED
 
 //
 //  Return size of 'vscf_salted_kdf_alg_info_t' type.

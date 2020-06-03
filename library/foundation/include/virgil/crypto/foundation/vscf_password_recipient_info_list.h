@@ -75,7 +75,10 @@ extern "C" {
 //
 //  Handle 'password recipient info list' context.
 //
-typedef struct vscf_password_recipient_info_list_t vscf_password_recipient_info_list_t;
+#ifndef VSCF_PASSWORD_RECIPIENT_INFO_LIST_T_DEFINED
+#define VSCF_PASSWORD_RECIPIENT_INFO_LIST_T_DEFINED
+    typedef struct vscf_password_recipient_info_list_t vscf_password_recipient_info_list_t;
+#endif // VSCF_PASSWORD_RECIPIENT_INFO_LIST_T_DEFINED
 
 //
 //  Return size of 'vscf_password_recipient_info_list_t'.

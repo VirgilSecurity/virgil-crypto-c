@@ -87,7 +87,10 @@ extern "C" {
 //
 //  Contains API requirements of the interface 'message info footer serializer'.
 //
-typedef struct vscf_message_info_footer_serializer_api_t vscf_message_info_footer_serializer_api_t;
+#ifndef VSCF_MESSAGE_INFO_FOOTER_SERIALIZER_API_T_DEFINED
+#define VSCF_MESSAGE_INFO_FOOTER_SERIALIZER_API_T_DEFINED
+    typedef struct vscf_message_info_footer_serializer_api_t vscf_message_info_footer_serializer_api_t;
+#endif // VSCF_MESSAGE_INFO_FOOTER_SERIALIZER_API_T_DEFINED
 
 //
 //  Return buffer size enough to hold serialized message info footer.

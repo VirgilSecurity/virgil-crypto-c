@@ -83,7 +83,10 @@ extern "C" {
 //
 //  Handle 'brain key seed' context.
 //
-typedef struct vssp_brain_key_seed_t vssp_brain_key_seed_t;
+#ifndef VSSP_BRAIN_KEY_SEED_T_DEFINED
+#define VSSP_BRAIN_KEY_SEED_T_DEFINED
+    typedef struct vssp_brain_key_seed_t vssp_brain_key_seed_t;
+#endif // VSSP_BRAIN_KEY_SEED_T_DEFINED
 
 //
 //  Return size of 'vssp_brain_key_seed_t'.

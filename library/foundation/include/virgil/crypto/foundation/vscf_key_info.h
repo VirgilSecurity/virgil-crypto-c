@@ -69,7 +69,10 @@ extern "C" {
 //
 //  Handle 'key info' context.
 //
-typedef struct vscf_key_info_t vscf_key_info_t;
+#ifndef VSCF_KEY_INFO_T_DEFINED
+#define VSCF_KEY_INFO_T_DEFINED
+    typedef struct vscf_key_info_t vscf_key_info_t;
+#endif // VSCF_KEY_INFO_T_DEFINED
 
 //
 //  Return size of 'vscf_key_info_t'.

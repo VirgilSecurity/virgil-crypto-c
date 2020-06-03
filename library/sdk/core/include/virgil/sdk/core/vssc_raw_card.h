@@ -90,7 +90,10 @@ extern "C" {
 //
 //  Handle 'raw card' context.
 //
-typedef struct vssc_raw_card_t vssc_raw_card_t;
+#ifndef VSSC_RAW_CARD_T_DEFINED
+#define VSSC_RAW_CARD_T_DEFINED
+    typedef struct vssc_raw_card_t vssc_raw_card_t;
+#endif // VSSC_RAW_CARD_T_DEFINED
 
 //
 //  Return size of 'vssc_raw_card_t'.

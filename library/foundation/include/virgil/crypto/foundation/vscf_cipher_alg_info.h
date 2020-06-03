@@ -83,7 +83,10 @@ extern "C" {
 //
 //  Handles implementation details.
 //
-typedef struct vscf_cipher_alg_info_t vscf_cipher_alg_info_t;
+#ifndef VSCF_CIPHER_ALG_INFO_T_DEFINED
+#define VSCF_CIPHER_ALG_INFO_T_DEFINED
+    typedef struct vscf_cipher_alg_info_t vscf_cipher_alg_info_t;
+#endif // VSCF_CIPHER_ALG_INFO_T_DEFINED
 
 //
 //  Return size of 'vscf_cipher_alg_info_t' type.

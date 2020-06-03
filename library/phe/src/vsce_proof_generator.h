@@ -79,7 +79,10 @@ extern "C" {
 //
 //  Handle 'proof generator' context.
 //
-typedef struct vsce_proof_generator_t vsce_proof_generator_t;
+#ifndef VSCE_PROOF_GENERATOR_T_DEFINED
+#define VSCE_PROOF_GENERATOR_T_DEFINED
+    typedef struct vsce_proof_generator_t vsce_proof_generator_t;
+#endif // VSCE_PROOF_GENERATOR_T_DEFINED
 
 //
 //  Return size of 'vsce_proof_generator_t'.

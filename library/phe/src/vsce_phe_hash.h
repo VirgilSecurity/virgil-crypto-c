@@ -80,7 +80,10 @@ extern "C" {
 //
 //  Handle 'phe hash' context.
 //
-typedef struct vsce_phe_hash_t vsce_phe_hash_t;
+#ifndef VSCE_PHE_HASH_T_DEFINED
+#define VSCE_PHE_HASH_T_DEFINED
+    typedef struct vsce_phe_hash_t vsce_phe_hash_t;
+#endif // VSCE_PHE_HASH_T_DEFINED
 
 //
 //  Return size of 'vsce_phe_hash_t'.

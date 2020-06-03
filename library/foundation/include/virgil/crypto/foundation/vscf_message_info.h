@@ -81,7 +81,10 @@ extern "C" {
 //
 //  Handle 'message info' context.
 //
-typedef struct vscf_message_info_t vscf_message_info_t;
+#ifndef VSCF_MESSAGE_INFO_T_DEFINED
+#define VSCF_MESSAGE_INFO_T_DEFINED
+    typedef struct vscf_message_info_t vscf_message_info_t;
+#endif // VSCF_MESSAGE_INFO_T_DEFINED
 
 //
 //  Return size of 'vscf_message_info_t'.

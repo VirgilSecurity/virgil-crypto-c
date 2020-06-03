@@ -86,7 +86,10 @@ extern "C" {
 //
 //  Contains API requirements of the interface 'asn1 reader'.
 //
-typedef struct vscf_asn1_reader_api_t vscf_asn1_reader_api_t;
+#ifndef VSCF_ASN1_READER_API_T_DEFINED
+#define VSCF_ASN1_READER_API_T_DEFINED
+    typedef struct vscf_asn1_reader_api_t vscf_asn1_reader_api_t;
+#endif // VSCF_ASN1_READER_API_T_DEFINED
 
 //
 //  Reset all internal states and prepare to new ASN.1 reading operations.

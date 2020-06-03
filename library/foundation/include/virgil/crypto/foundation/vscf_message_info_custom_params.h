@@ -76,7 +76,10 @@ extern "C" {
 //
 //  Handle 'message info custom params' context.
 //
-typedef struct vscf_message_info_custom_params_t vscf_message_info_custom_params_t;
+#ifndef VSCF_MESSAGE_INFO_CUSTOM_PARAMS_T_DEFINED
+#define VSCF_MESSAGE_INFO_CUSTOM_PARAMS_T_DEFINED
+    typedef struct vscf_message_info_custom_params_t vscf_message_info_custom_params_t;
+#endif // VSCF_MESSAGE_INFO_CUSTOM_PARAMS_T_DEFINED
 
 //
 //  Return size of 'vscf_message_info_custom_params_t'.

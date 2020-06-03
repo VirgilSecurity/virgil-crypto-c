@@ -87,7 +87,10 @@ extern "C" {
 //
 //  Handles implementation details.
 //
-typedef struct vscf_raw_private_key_t vscf_raw_private_key_t;
+#ifndef VSCF_RAW_PRIVATE_KEY_T_DEFINED
+#define VSCF_RAW_PRIVATE_KEY_T_DEFINED
+    typedef struct vscf_raw_private_key_t vscf_raw_private_key_t;
+#endif // VSCF_RAW_PRIVATE_KEY_T_DEFINED
 
 //
 //  Return size of 'vscf_raw_private_key_t' type.

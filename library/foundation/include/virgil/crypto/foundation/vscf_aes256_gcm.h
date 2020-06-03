@@ -115,7 +115,10 @@ enum {
 //
 //  Handles implementation details.
 //
-typedef struct vscf_aes256_gcm_t vscf_aes256_gcm_t;
+#ifndef VSCF_AES256_GCM_T_DEFINED
+#define VSCF_AES256_GCM_T_DEFINED
+    typedef struct vscf_aes256_gcm_t vscf_aes256_gcm_t;
+#endif // VSCF_AES256_GCM_T_DEFINED
 
 //
 //  Return size of 'vscf_aes256_gcm_t' type.

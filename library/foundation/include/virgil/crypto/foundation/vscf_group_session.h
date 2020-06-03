@@ -110,7 +110,10 @@ enum {
 //
 //  Handle 'group session' context.
 //
-typedef struct vscf_group_session_t vscf_group_session_t;
+#ifndef VSCF_GROUP_SESSION_T_DEFINED
+#define VSCF_GROUP_SESSION_T_DEFINED
+    typedef struct vscf_group_session_t vscf_group_session_t;
+#endif // VSCF_GROUP_SESSION_T_DEFINED
 
 //
 //  Return size of 'vscf_group_session_t'.

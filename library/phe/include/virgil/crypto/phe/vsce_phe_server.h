@@ -94,7 +94,10 @@ extern "C" {
 //
 //  Handle 'phe server' context.
 //
-typedef struct vsce_phe_server_t vsce_phe_server_t;
+#ifndef VSCE_PHE_SERVER_T_DEFINED
+#define VSCE_PHE_SERVER_T_DEFINED
+    typedef struct vsce_phe_server_t vsce_phe_server_t;
+#endif // VSCE_PHE_SERVER_T_DEFINED
 
 //
 //  Return size of 'vsce_phe_server_t'.

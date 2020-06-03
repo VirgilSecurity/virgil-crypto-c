@@ -93,7 +93,10 @@ extern "C" {
 //
 //  Handle 'uokms wrap rotation' context.
 //
-typedef struct vsce_uokms_wrap_rotation_t vsce_uokms_wrap_rotation_t;
+#ifndef VSCE_UOKMS_WRAP_ROTATION_T_DEFINED
+#define VSCE_UOKMS_WRAP_ROTATION_T_DEFINED
+    typedef struct vsce_uokms_wrap_rotation_t vsce_uokms_wrap_rotation_t;
+#endif // VSCE_UOKMS_WRAP_ROTATION_T_DEFINED
 
 //
 //  Return size of 'vsce_uokms_wrap_rotation_t'.

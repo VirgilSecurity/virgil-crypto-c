@@ -99,7 +99,10 @@ enum {
 //
 //  Handles implementation details.
 //
-typedef struct vscf_key_material_rng_t vscf_key_material_rng_t;
+#ifndef VSCF_KEY_MATERIAL_RNG_T_DEFINED
+#define VSCF_KEY_MATERIAL_RNG_T_DEFINED
+    typedef struct vscf_key_material_rng_t vscf_key_material_rng_t;
+#endif // VSCF_KEY_MATERIAL_RNG_T_DEFINED
 
 //
 //  Return size of 'vscf_key_material_rng_t' type.

@@ -111,7 +111,10 @@ enum {
 //
 //  Handles implementation details.
 //
-typedef struct vscf_hybrid_key_alg_t vscf_hybrid_key_alg_t;
+#ifndef VSCF_HYBRID_KEY_ALG_T_DEFINED
+#define VSCF_HYBRID_KEY_ALG_T_DEFINED
+    typedef struct vscf_hybrid_key_alg_t vscf_hybrid_key_alg_t;
+#endif // VSCF_HYBRID_KEY_ALG_T_DEFINED
 
 //
 //  Return size of 'vscf_hybrid_key_alg_t' type.

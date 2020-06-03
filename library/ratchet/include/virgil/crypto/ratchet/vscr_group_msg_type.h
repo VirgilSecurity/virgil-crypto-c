@@ -82,7 +82,10 @@ enum vscr_group_msg_type_t {
     //
     vscr_group_msg_type_REGULAR = 2
 };
-typedef enum vscr_group_msg_type_t vscr_group_msg_type_t;
+#ifndef VSCR_GROUP_MSG_TYPE_T_DEFINED
+#define VSCR_GROUP_MSG_TYPE_T_DEFINED
+    typedef enum vscr_group_msg_type_t vscr_group_msg_type_t;
+#endif // VSCR_GROUP_MSG_TYPE_T_DEFINED
 
 
 // --------------------------------------------------------------------------

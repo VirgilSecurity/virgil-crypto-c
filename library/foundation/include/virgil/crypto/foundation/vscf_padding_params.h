@@ -82,7 +82,10 @@ enum {
 //
 //  Handle 'padding params' context.
 //
-typedef struct vscf_padding_params_t vscf_padding_params_t;
+#ifndef VSCF_PADDING_PARAMS_T_DEFINED
+#define VSCF_PADDING_PARAMS_T_DEFINED
+    typedef struct vscf_padding_params_t vscf_padding_params_t;
+#endif // VSCF_PADDING_PARAMS_T_DEFINED
 
 //
 //  Return size of 'vscf_padding_params_t'.

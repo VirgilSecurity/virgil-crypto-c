@@ -86,7 +86,10 @@ extern "C" {
 //
 //  Handles implementation details.
 //
-typedef struct vscf_hkdf_t vscf_hkdf_t;
+#ifndef VSCF_HKDF_T_DEFINED
+#define VSCF_HKDF_T_DEFINED
+    typedef struct vscf_hkdf_t vscf_hkdf_t;
+#endif // VSCF_HKDF_T_DEFINED
 
 //
 //  Return size of 'vscf_hkdf_t' type.

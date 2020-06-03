@@ -87,7 +87,10 @@ extern "C" {
 //
 //  Contains API requirements of the interface 'padding'.
 //
-typedef struct vscf_padding_api_t vscf_padding_api_t;
+#ifndef VSCF_PADDING_API_T_DEFINED
+#define VSCF_PADDING_API_T_DEFINED
+    typedef struct vscf_padding_api_t vscf_padding_api_t;
+#endif // VSCF_PADDING_API_T_DEFINED
 
 //
 //  Set new padding parameters.

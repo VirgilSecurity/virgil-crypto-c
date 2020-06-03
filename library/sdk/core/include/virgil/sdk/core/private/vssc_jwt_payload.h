@@ -85,7 +85,10 @@ extern "C" {
 //
 //  Handle 'jwt payload' context.
 //
-typedef struct vssc_jwt_payload_t vssc_jwt_payload_t;
+#ifndef VSSC_JWT_PAYLOAD_T_DEFINED
+#define VSSC_JWT_PAYLOAD_T_DEFINED
+    typedef struct vssc_jwt_payload_t vssc_jwt_payload_t;
+#endif // VSSC_JWT_PAYLOAD_T_DEFINED
 
 //
 //  Return size of 'vssc_jwt_payload_t'.

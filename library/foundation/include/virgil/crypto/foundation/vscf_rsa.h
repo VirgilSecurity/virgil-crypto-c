@@ -111,7 +111,10 @@ enum {
 //
 //  Handles implementation details.
 //
-typedef struct vscf_rsa_t vscf_rsa_t;
+#ifndef VSCF_RSA_T_DEFINED
+#define VSCF_RSA_T_DEFINED
+    typedef struct vscf_rsa_t vscf_rsa_t;
+#endif // VSCF_RSA_T_DEFINED
 
 //
 //  Return size of 'vscf_rsa_t' type.

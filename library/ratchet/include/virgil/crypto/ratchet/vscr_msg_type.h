@@ -81,7 +81,10 @@ enum vscr_msg_type_t {
     //
     vscr_msg_type_PREKEY = 2
 };
-typedef enum vscr_msg_type_t vscr_msg_type_t;
+#ifndef VSCR_MSG_TYPE_T_DEFINED
+#define VSCR_MSG_TYPE_T_DEFINED
+    typedef enum vscr_msg_type_t vscr_msg_type_t;
+#endif // VSCR_MSG_TYPE_T_DEFINED
 
 
 // --------------------------------------------------------------------------

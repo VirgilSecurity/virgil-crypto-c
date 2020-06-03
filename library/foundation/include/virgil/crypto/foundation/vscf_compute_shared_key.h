@@ -85,7 +85,10 @@ extern "C" {
 //
 //  Contains API requirements of the interface 'compute shared key'.
 //
-typedef struct vscf_compute_shared_key_api_t vscf_compute_shared_key_api_t;
+#ifndef VSCF_COMPUTE_SHARED_KEY_API_T_DEFINED
+#define VSCF_COMPUTE_SHARED_KEY_API_T_DEFINED
+    typedef struct vscf_compute_shared_key_api_t vscf_compute_shared_key_api_t;
+#endif // VSCF_COMPUTE_SHARED_KEY_API_T_DEFINED
 
 //
 //  Compute shared key for 2 asymmetric keys.

@@ -86,7 +86,10 @@ extern "C" {
 //
 //  Handles implementation details.
 //
-typedef struct vscf_key_asn1_serializer_t vscf_key_asn1_serializer_t;
+#ifndef VSCF_KEY_ASN1_SERIALIZER_T_DEFINED
+#define VSCF_KEY_ASN1_SERIALIZER_T_DEFINED
+    typedef struct vscf_key_asn1_serializer_t vscf_key_asn1_serializer_t;
+#endif // VSCF_KEY_ASN1_SERIALIZER_T_DEFINED
 
 //
 //  Return size of 'vscf_key_asn1_serializer_t' type.

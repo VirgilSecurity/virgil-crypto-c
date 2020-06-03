@@ -89,7 +89,10 @@ enum vssp_status_t {
     //
     vssp_status_HTTP_RESPONSE_BODY_PARSE_FAILED = -403
 };
-typedef enum vssp_status_t vssp_status_t;
+#ifndef VSSP_STATUS_T_DEFINED
+#define VSSP_STATUS_T_DEFINED
+    typedef enum vssp_status_t vssp_status_t;
+#endif // VSSP_STATUS_T_DEFINED
 
 
 // --------------------------------------------------------------------------

@@ -83,7 +83,10 @@ extern "C" {
 //
 //  Handle 'signer list' context.
 //
-typedef struct vscf_signer_list_t vscf_signer_list_t;
+#ifndef VSCF_SIGNER_LIST_T_DEFINED
+#define VSCF_SIGNER_LIST_T_DEFINED
+    typedef struct vscf_signer_list_t vscf_signer_list_t;
+#endif // VSCF_SIGNER_LIST_T_DEFINED
 
 //
 //  Return size of 'vscf_signer_list_t'.

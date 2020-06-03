@@ -73,7 +73,10 @@ extern "C" {
 //
 //  Handle 'ratchet skipped messages root node' context.
 //
-typedef struct vscr_ratchet_skipped_messages_root_node_t vscr_ratchet_skipped_messages_root_node_t;
+#ifndef VSCR_RATCHET_SKIPPED_MESSAGES_ROOT_NODE_T_DEFINED
+#define VSCR_RATCHET_SKIPPED_MESSAGES_ROOT_NODE_T_DEFINED
+    typedef struct vscr_ratchet_skipped_messages_root_node_t vscr_ratchet_skipped_messages_root_node_t;
+#endif // VSCR_RATCHET_SKIPPED_MESSAGES_ROOT_NODE_T_DEFINED
 struct vscr_ratchet_skipped_messages_root_node_t {
     //
     //  Function do deallocate self context.

@@ -75,7 +75,10 @@ extern "C" {
 //
 //  Handle 'signer info list' context.
 //
-typedef struct vscf_signer_info_list_t vscf_signer_info_list_t;
+#ifndef VSCF_SIGNER_INFO_LIST_T_DEFINED
+#define VSCF_SIGNER_INFO_LIST_T_DEFINED
+    typedef struct vscf_signer_info_list_t vscf_signer_info_list_t;
+#endif // VSCF_SIGNER_INFO_LIST_T_DEFINED
 
 //
 //  Return size of 'vscf_signer_info_list_t'.

@@ -85,12 +85,18 @@ extern "C" {
 //
 //  Handle 'json array' context.
 //
-typedef struct vssc_json_array_t vssc_json_array_t;
+#ifndef VSSC_JSON_ARRAY_T_DEFINED
+#define VSSC_JSON_ARRAY_T_DEFINED
+    typedef struct vssc_json_array_t vssc_json_array_t;
+#endif // VSSC_JSON_ARRAY_T_DEFINED
 
 //
 //  Forward declaration.
 //
-typedef struct vssc_json_object_t vssc_json_object_t;
+#ifndef VSSC_JSON_OBJECT_T_DEFINED
+#define VSSC_JSON_OBJECT_T_DEFINED
+    typedef struct vssc_json_object_t vssc_json_object_t;
+#endif // VSSC_JSON_OBJECT_T_DEFINED
 
 //
 //  Return size of 'vssc_json_array_t'.

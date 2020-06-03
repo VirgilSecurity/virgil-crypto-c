@@ -85,7 +85,10 @@ extern "C" {
 //
 //  Handle 'ecies' context.
 //
-typedef struct vscf_ecies_t vscf_ecies_t;
+#ifndef VSCF_ECIES_T_DEFINED
+#define VSCF_ECIES_T_DEFINED
+    typedef struct vscf_ecies_t vscf_ecies_t;
+#endif // VSCF_ECIES_T_DEFINED
 
 //
 //  Return size of 'vscf_ecies_t'.

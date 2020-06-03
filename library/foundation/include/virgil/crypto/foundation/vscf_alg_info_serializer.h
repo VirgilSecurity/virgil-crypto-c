@@ -83,7 +83,10 @@ extern "C" {
 //
 //  Contains API requirements of the interface 'alg info serializer'.
 //
-typedef struct vscf_alg_info_serializer_api_t vscf_alg_info_serializer_api_t;
+#ifndef VSCF_ALG_INFO_SERIALIZER_API_T_DEFINED
+#define VSCF_ALG_INFO_SERIALIZER_API_T_DEFINED
+    typedef struct vscf_alg_info_serializer_api_t vscf_alg_info_serializer_api_t;
+#endif // VSCF_ALG_INFO_SERIALIZER_API_T_DEFINED
 
 //
 //  Return buffer size enough to hold serialized algorithm.

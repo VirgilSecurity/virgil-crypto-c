@@ -83,7 +83,10 @@ extern "C" {
 //
 //  Handles implementation details.
 //
-typedef struct vscf_alg_info_der_deserializer_t vscf_alg_info_der_deserializer_t;
+#ifndef VSCF_ALG_INFO_DER_DESERIALIZER_T_DEFINED
+#define VSCF_ALG_INFO_DER_DESERIALIZER_T_DEFINED
+    typedef struct vscf_alg_info_der_deserializer_t vscf_alg_info_der_deserializer_t;
+#endif // VSCF_ALG_INFO_DER_DESERIALIZER_T_DEFINED
 
 //
 //  Return size of 'vscf_alg_info_der_deserializer_t' type.

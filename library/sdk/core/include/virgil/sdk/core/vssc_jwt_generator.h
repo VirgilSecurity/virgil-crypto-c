@@ -99,7 +99,10 @@ enum {
 //
 //  Handle 'jwt generator' context.
 //
-typedef struct vssc_jwt_generator_t vssc_jwt_generator_t;
+#ifndef VSSC_JWT_GENERATOR_T_DEFINED
+#define VSSC_JWT_GENERATOR_T_DEFINED
+    typedef struct vssc_jwt_generator_t vssc_jwt_generator_t;
+#endif // VSSC_JWT_GENERATOR_T_DEFINED
 
 //
 //  Return size of 'vssc_jwt_generator_t'.

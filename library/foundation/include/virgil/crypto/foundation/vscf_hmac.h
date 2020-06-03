@@ -86,7 +86,10 @@ extern "C" {
 //
 //  Handles implementation details.
 //
-typedef struct vscf_hmac_t vscf_hmac_t;
+#ifndef VSCF_HMAC_T_DEFINED
+#define VSCF_HMAC_T_DEFINED
+    typedef struct vscf_hmac_t vscf_hmac_t;
+#endif // VSCF_HMAC_T_DEFINED
 
 //
 //  Return size of 'vscf_hmac_t' type.

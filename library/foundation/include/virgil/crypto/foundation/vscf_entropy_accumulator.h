@@ -90,7 +90,10 @@ enum {
 //
 //  Handles implementation details.
 //
-typedef struct vscf_entropy_accumulator_t vscf_entropy_accumulator_t;
+#ifndef VSCF_ENTROPY_ACCUMULATOR_T_DEFINED
+#define VSCF_ENTROPY_ACCUMULATOR_T_DEFINED
+    typedef struct vscf_entropy_accumulator_t vscf_entropy_accumulator_t;
+#endif // VSCF_ENTROPY_ACCUMULATOR_T_DEFINED
 
 //
 //  Return size of 'vscf_entropy_accumulator_t' type.

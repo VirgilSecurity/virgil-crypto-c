@@ -83,7 +83,10 @@ extern "C" {
 //
 //  Handle 'tail filter' context.
 //
-typedef struct vscf_tail_filter_t vscf_tail_filter_t;
+#ifndef VSCF_TAIL_FILTER_T_DEFINED
+#define VSCF_TAIL_FILTER_T_DEFINED
+    typedef struct vscf_tail_filter_t vscf_tail_filter_t;
+#endif // VSCF_TAIL_FILTER_T_DEFINED
 
 //
 //  Return size of 'vscf_tail_filter_t'.

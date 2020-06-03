@@ -88,7 +88,10 @@ extern "C" {
 //
 //  Handle 'key provider' context.
 //
-typedef struct vscf_key_provider_t vscf_key_provider_t;
+#ifndef VSCF_KEY_PROVIDER_T_DEFINED
+#define VSCF_KEY_PROVIDER_T_DEFINED
+    typedef struct vscf_key_provider_t vscf_key_provider_t;
+#endif // VSCF_KEY_PROVIDER_T_DEFINED
 
 //
 //  Return size of 'vscf_key_provider_t'.

@@ -85,7 +85,10 @@ extern "C" {
 //
 //  Contains API requirements of the interface 'hash'.
 //
-typedef struct vscf_hash_api_t vscf_hash_api_t;
+#ifndef VSCF_HASH_API_T_DEFINED
+#define VSCF_HASH_API_T_DEFINED
+    typedef struct vscf_hash_api_t vscf_hash_api_t;
+#endif // VSCF_HASH_API_T_DEFINED
 
 //
 //  Start a new hashing.

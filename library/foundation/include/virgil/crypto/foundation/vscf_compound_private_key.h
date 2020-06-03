@@ -75,7 +75,10 @@ extern "C" {
 //
 //  Handles implementation details.
 //
-typedef struct vscf_compound_private_key_t vscf_compound_private_key_t;
+#ifndef VSCF_COMPOUND_PRIVATE_KEY_T_DEFINED
+#define VSCF_COMPOUND_PRIVATE_KEY_T_DEFINED
+    typedef struct vscf_compound_private_key_t vscf_compound_private_key_t;
+#endif // VSCF_COMPOUND_PRIVATE_KEY_T_DEFINED
 
 //
 //  Return size of 'vscf_compound_private_key_t' type.

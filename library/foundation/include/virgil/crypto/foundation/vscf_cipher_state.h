@@ -85,7 +85,10 @@ enum vscf_cipher_state_t {
     //
     vscf_cipher_state_DECRYPTION
 };
-typedef enum vscf_cipher_state_t vscf_cipher_state_t;
+#ifndef VSCF_CIPHER_STATE_T_DEFINED
+#define VSCF_CIPHER_STATE_T_DEFINED
+    typedef enum vscf_cipher_state_t vscf_cipher_state_t;
+#endif // VSCF_CIPHER_STATE_T_DEFINED
 
 
 // --------------------------------------------------------------------------

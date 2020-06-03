@@ -90,7 +90,10 @@ extern "C" {
 //
 //  Handle 'message info editor' context.
 //
-typedef struct vscf_message_info_editor_t vscf_message_info_editor_t;
+#ifndef VSCF_MESSAGE_INFO_EDITOR_T_DEFINED
+#define VSCF_MESSAGE_INFO_EDITOR_T_DEFINED
+    typedef struct vscf_message_info_editor_t vscf_message_info_editor_t;
+#endif // VSCF_MESSAGE_INFO_EDITOR_T_DEFINED
 
 //
 //  Return size of 'vscf_message_info_editor_t'.

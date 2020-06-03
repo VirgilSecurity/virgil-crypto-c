@@ -73,7 +73,10 @@ extern "C" {
 //
 //  Handle 'list key value node' context.
 //
-typedef struct vscf_list_key_value_node_t vscf_list_key_value_node_t;
+#ifndef VSCF_LIST_KEY_VALUE_NODE_T_DEFINED
+#define VSCF_LIST_KEY_VALUE_NODE_T_DEFINED
+    typedef struct vscf_list_key_value_node_t vscf_list_key_value_node_t;
+#endif // VSCF_LIST_KEY_VALUE_NODE_T_DEFINED
 
 //
 //  Return size of 'vscf_list_key_value_node_t'.

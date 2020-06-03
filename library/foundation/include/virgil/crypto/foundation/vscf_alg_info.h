@@ -76,7 +76,10 @@ extern "C" {
 //
 //  Contains API requirements of the interface 'alg info'.
 //
-typedef struct vscf_alg_info_api_t vscf_alg_info_api_t;
+#ifndef VSCF_ALG_INFO_API_T_DEFINED
+#define VSCF_ALG_INFO_API_T_DEFINED
+    typedef struct vscf_alg_info_api_t vscf_alg_info_api_t;
+#endif // VSCF_ALG_INFO_API_T_DEFINED
 
 //
 //  Provide algorithm identificator.

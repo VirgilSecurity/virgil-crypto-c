@@ -105,7 +105,10 @@ enum vsce_status_t {
     //
     vsce_status_ERROR_AES_FAILED = -7
 };
-typedef enum vsce_status_t vsce_status_t;
+#ifndef VSCE_STATUS_T_DEFINED
+#define VSCE_STATUS_T_DEFINED
+    typedef enum vsce_status_t vsce_status_t;
+#endif // VSCE_STATUS_T_DEFINED
 
 
 // --------------------------------------------------------------------------

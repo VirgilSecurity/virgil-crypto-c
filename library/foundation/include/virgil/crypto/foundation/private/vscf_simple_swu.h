@@ -85,7 +85,10 @@ enum {
 //
 //  Handle 'simple swu' context.
 //
-typedef struct vscf_simple_swu_t vscf_simple_swu_t;
+#ifndef VSCF_SIMPLE_SWU_T_DEFINED
+#define VSCF_SIMPLE_SWU_T_DEFINED
+    typedef struct vscf_simple_swu_t vscf_simple_swu_t;
+#endif // VSCF_SIMPLE_SWU_T_DEFINED
 
 //
 //  Return size of 'vscf_simple_swu_t'.

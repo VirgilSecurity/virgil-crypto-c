@@ -110,7 +110,10 @@ enum {
 //
 //  Handles implementation details.
 //
-typedef struct vscf_aes256_cbc_t vscf_aes256_cbc_t;
+#ifndef VSCF_AES256_CBC_T_DEFINED
+#define VSCF_AES256_CBC_T_DEFINED
+    typedef struct vscf_aes256_cbc_t vscf_aes256_cbc_t;
+#endif // VSCF_AES256_CBC_T_DEFINED
 
 //
 //  Return size of 'vscf_aes256_cbc_t' type.

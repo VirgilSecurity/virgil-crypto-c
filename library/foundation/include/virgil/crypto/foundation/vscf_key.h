@@ -76,7 +76,10 @@ extern "C" {
 //
 //  Contains API requirements of the interface 'key'.
 //
-typedef struct vscf_key_api_t vscf_key_api_t;
+#ifndef VSCF_KEY_API_T_DEFINED
+#define VSCF_KEY_API_T_DEFINED
+    typedef struct vscf_key_api_t vscf_key_api_t;
+#endif // VSCF_KEY_API_T_DEFINED
 
 //
 //  Algorithm identifier the key belongs to.

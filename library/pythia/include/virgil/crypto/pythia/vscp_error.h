@@ -89,7 +89,10 @@ extern "C" {
 //
 //  Handle 'error' context.
 //
-typedef struct vscp_error_t vscp_error_t;
+#ifndef VSCP_ERROR_T_DEFINED
+#define VSCP_ERROR_T_DEFINED
+    typedef struct vscp_error_t vscp_error_t;
+#endif // VSCP_ERROR_T_DEFINED
 struct vscp_error_t {
     vscp_status_t status;
 };

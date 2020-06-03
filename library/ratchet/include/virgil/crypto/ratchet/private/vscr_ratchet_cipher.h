@@ -85,7 +85,10 @@ extern "C" {
 //
 //  Handle 'ratchet cipher' context.
 //
-typedef struct vscr_ratchet_cipher_t vscr_ratchet_cipher_t;
+#ifndef VSCR_RATCHET_CIPHER_T_DEFINED
+#define VSCR_RATCHET_CIPHER_T_DEFINED
+    typedef struct vscr_ratchet_cipher_t vscr_ratchet_cipher_t;
+#endif // VSCR_RATCHET_CIPHER_T_DEFINED
 
 //
 //  Return size of 'vscr_ratchet_cipher_t'.

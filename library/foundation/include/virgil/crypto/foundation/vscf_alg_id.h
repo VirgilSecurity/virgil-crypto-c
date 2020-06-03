@@ -95,7 +95,10 @@ enum vscf_alg_id_t {
     vscf_alg_id_ROUND5_ND_1CCA_5D,
     vscf_alg_id_RANDOM_PADDING
 };
-typedef enum vscf_alg_id_t vscf_alg_id_t;
+#ifndef VSCF_ALG_ID_T_DEFINED
+#define VSCF_ALG_ID_T_DEFINED
+    typedef enum vscf_alg_id_t vscf_alg_id_t;
+#endif // VSCF_ALG_ID_T_DEFINED
 
 
 // --------------------------------------------------------------------------

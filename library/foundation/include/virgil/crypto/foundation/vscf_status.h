@@ -378,7 +378,10 @@ enum vscf_status_t {
     //
     vscf_status_ERROR_PLAIN_TEXT_TOO_LONG = -707
 };
-typedef enum vscf_status_t vscf_status_t;
+#ifndef VSCF_STATUS_T_DEFINED
+#define VSCF_STATUS_T_DEFINED
+    typedef enum vscf_status_t vscf_status_t;
+#endif // VSCF_STATUS_T_DEFINED
 
 
 // --------------------------------------------------------------------------

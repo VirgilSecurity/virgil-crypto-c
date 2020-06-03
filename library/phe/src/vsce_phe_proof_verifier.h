@@ -88,7 +88,10 @@ extern "C" {
 //
 //  Handle 'phe proof verifier' context.
 //
-typedef struct vsce_phe_proof_verifier_t vsce_phe_proof_verifier_t;
+#ifndef VSCE_PHE_PROOF_VERIFIER_T_DEFINED
+#define VSCE_PHE_PROOF_VERIFIER_T_DEFINED
+    typedef struct vsce_phe_proof_verifier_t vsce_phe_proof_verifier_t;
+#endif // VSCE_PHE_PROOF_VERIFIER_T_DEFINED
 
 //
 //  Return size of 'vsce_phe_proof_verifier_t'.

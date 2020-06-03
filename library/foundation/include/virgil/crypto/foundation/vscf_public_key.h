@@ -76,7 +76,10 @@ extern "C" {
 //
 //  Contains API requirements of the interface 'public key'.
 //
-typedef struct vscf_public_key_api_t vscf_public_key_api_t;
+#ifndef VSCF_PUBLIC_KEY_API_T_DEFINED
+#define VSCF_PUBLIC_KEY_API_T_DEFINED
+    typedef struct vscf_public_key_api_t vscf_public_key_api_t;
+#endif // VSCF_PUBLIC_KEY_API_T_DEFINED
 
 //
 //  Return public key API, or NULL if it is not implemented.

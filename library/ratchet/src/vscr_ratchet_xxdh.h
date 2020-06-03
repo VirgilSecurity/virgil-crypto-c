@@ -88,7 +88,10 @@ extern "C" {
 //
 //  Handle 'ratchet xxdh' context.
 //
-typedef struct vscr_ratchet_xxdh_t vscr_ratchet_xxdh_t;
+#ifndef VSCR_RATCHET_XXDH_T_DEFINED
+#define VSCR_RATCHET_XXDH_T_DEFINED
+    typedef struct vscr_ratchet_xxdh_t vscr_ratchet_xxdh_t;
+#endif // VSCR_RATCHET_XXDH_T_DEFINED
 
 //
 //  Return size of 'vscr_ratchet_xxdh_t'.

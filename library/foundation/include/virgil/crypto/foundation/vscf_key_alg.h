@@ -89,7 +89,10 @@ extern "C" {
 //
 //  Contains API requirements of the interface 'key alg'.
 //
-typedef struct vscf_key_alg_api_t vscf_key_alg_api_t;
+#ifndef VSCF_KEY_ALG_API_T_DEFINED
+#define VSCF_KEY_ALG_API_T_DEFINED
+    typedef struct vscf_key_alg_api_t vscf_key_alg_api_t;
+#endif // VSCF_KEY_ALG_API_T_DEFINED
 
 //
 //  Generate ephemeral private key of the same type.

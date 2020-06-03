@@ -90,7 +90,10 @@ extern "C" {
 //
 //  Contains API requirements of the interface 'cipher'.
 //
-typedef struct vscf_cipher_api_t vscf_cipher_api_t;
+#ifndef VSCF_CIPHER_API_T_DEFINED
+#define VSCF_CIPHER_API_T_DEFINED
+    typedef struct vscf_cipher_api_t vscf_cipher_api_t;
+#endif // VSCF_CIPHER_API_T_DEFINED
 
 //
 //  Setup IV or nonce.

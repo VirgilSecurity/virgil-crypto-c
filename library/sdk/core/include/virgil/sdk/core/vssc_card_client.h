@@ -85,7 +85,10 @@ extern "C" {
 //
 //  Handle 'card client' context.
 //
-typedef struct vssc_card_client_t vssc_card_client_t;
+#ifndef VSSC_CARD_CLIENT_T_DEFINED
+#define VSSC_CARD_CLIENT_T_DEFINED
+    typedef struct vssc_card_client_t vssc_card_client_t;
+#endif // VSSC_CARD_CLIENT_T_DEFINED
 
 //
 //  Return size of 'vssc_card_client_t'.

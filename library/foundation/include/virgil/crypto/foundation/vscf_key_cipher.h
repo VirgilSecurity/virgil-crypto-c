@@ -87,7 +87,10 @@ extern "C" {
 //
 //  Contains API requirements of the interface 'key cipher'.
 //
-typedef struct vscf_key_cipher_api_t vscf_key_cipher_api_t;
+#ifndef VSCF_KEY_CIPHER_API_T_DEFINED
+#define VSCF_KEY_CIPHER_API_T_DEFINED
+    typedef struct vscf_key_cipher_api_t vscf_key_cipher_api_t;
+#endif // VSCF_KEY_CIPHER_API_T_DEFINED
 
 //
 //  Check if algorithm can encrypt data with a given key.

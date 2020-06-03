@@ -88,7 +88,10 @@ extern "C" {
 //
 //  Handle 'phe proof generator' context.
 //
-typedef struct vsce_phe_proof_generator_t vsce_phe_proof_generator_t;
+#ifndef VSCE_PHE_PROOF_GENERATOR_T_DEFINED
+#define VSCE_PHE_PROOF_GENERATOR_T_DEFINED
+    typedef struct vsce_phe_proof_generator_t vsce_phe_proof_generator_t;
+#endif // VSCE_PHE_PROOF_GENERATOR_T_DEFINED
 
 //
 //  Return size of 'vsce_phe_proof_generator_t'.

@@ -86,7 +86,10 @@ extern "C" {
 //
 //  Handle 'padding cipher' context.
 //
-typedef struct vscf_padding_cipher_t vscf_padding_cipher_t;
+#ifndef VSCF_PADDING_CIPHER_T_DEFINED
+#define VSCF_PADDING_CIPHER_T_DEFINED
+    typedef struct vscf_padding_cipher_t vscf_padding_cipher_t;
+#endif // VSCF_PADDING_CIPHER_T_DEFINED
 
 //
 //  Return size of 'vscf_padding_cipher_t'.

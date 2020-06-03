@@ -209,7 +209,10 @@ enum vscr_status_t {
     //
     vscr_status_ERROR_ROUND5_IMPORT_KEY = -33
 };
-typedef enum vscr_status_t vscr_status_t;
+#ifndef VSCR_STATUS_T_DEFINED
+#define VSCR_STATUS_T_DEFINED
+    typedef enum vscr_status_t vscr_status_t;
+#endif // VSCR_STATUS_T_DEFINED
 
 
 // --------------------------------------------------------------------------

@@ -97,7 +97,10 @@ enum {
 //
 //  Handles implementation details.
 //
-typedef struct vscf_ctr_drbg_t vscf_ctr_drbg_t;
+#ifndef VSCF_CTR_DRBG_T_DEFINED
+#define VSCF_CTR_DRBG_T_DEFINED
+    typedef struct vscf_ctr_drbg_t vscf_ctr_drbg_t;
+#endif // VSCF_CTR_DRBG_T_DEFINED
 
 //
 //  Return size of 'vscf_ctr_drbg_t' type.

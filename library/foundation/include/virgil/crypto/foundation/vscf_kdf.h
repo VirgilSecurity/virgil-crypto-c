@@ -85,7 +85,10 @@ extern "C" {
 //
 //  Contains API requirements of the interface 'kdf'.
 //
-typedef struct vscf_kdf_api_t vscf_kdf_api_t;
+#ifndef VSCF_KDF_API_T_DEFINED
+#define VSCF_KDF_API_T_DEFINED
+    typedef struct vscf_kdf_api_t vscf_kdf_api_t;
+#endif // VSCF_KDF_API_T_DEFINED
 
 //
 //  Derive key of the requested length from the given data.

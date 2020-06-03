@@ -80,7 +80,10 @@ extern "C" {
 //
 //  Handle 'str mutable' context.
 //
-typedef struct vsc_str_mutable_t vsc_str_mutable_t;
+#ifndef VSC_STR_MUTABLE_T_DEFINED
+#define VSC_STR_MUTABLE_T_DEFINED
+    typedef struct vsc_str_mutable_t vsc_str_mutable_t;
+#endif // VSC_STR_MUTABLE_T_DEFINED
 struct vsc_str_mutable_t {
     //
     //  Underlying characters array.

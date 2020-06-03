@@ -86,7 +86,10 @@ extern "C" {
 //
 //  Handles implementation details.
 //
-typedef struct vscf_pkcs5_pbkdf2_t vscf_pkcs5_pbkdf2_t;
+#ifndef VSCF_PKCS5_PBKDF2_T_DEFINED
+#define VSCF_PKCS5_PBKDF2_T_DEFINED
+    typedef struct vscf_pkcs5_pbkdf2_t vscf_pkcs5_pbkdf2_t;
+#endif // VSCF_PKCS5_PBKDF2_T_DEFINED
 
 //
 //  Return size of 'vscf_pkcs5_pbkdf2_t' type.

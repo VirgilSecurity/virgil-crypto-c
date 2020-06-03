@@ -69,7 +69,10 @@ extern "C" {
 //
 //  Handle 'group session epoch' context.
 //
-typedef struct vscf_group_session_epoch_t vscf_group_session_epoch_t;
+#ifndef VSCF_GROUP_SESSION_EPOCH_T_DEFINED
+#define VSCF_GROUP_SESSION_EPOCH_T_DEFINED
+    typedef struct vscf_group_session_epoch_t vscf_group_session_epoch_t;
+#endif // VSCF_GROUP_SESSION_EPOCH_T_DEFINED
 struct vscf_group_session_epoch_t {
     //
     //  Function do deallocate self context.

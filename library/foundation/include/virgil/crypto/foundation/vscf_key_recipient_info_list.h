@@ -75,7 +75,10 @@ extern "C" {
 //
 //  Handle 'key recipient info list' context.
 //
-typedef struct vscf_key_recipient_info_list_t vscf_key_recipient_info_list_t;
+#ifndef VSCF_KEY_RECIPIENT_INFO_LIST_T_DEFINED
+#define VSCF_KEY_RECIPIENT_INFO_LIST_T_DEFINED
+    typedef struct vscf_key_recipient_info_list_t vscf_key_recipient_info_list_t;
+#endif // VSCF_KEY_RECIPIENT_INFO_LIST_T_DEFINED
 
 //
 //  Return size of 'vscf_key_recipient_info_list_t'.

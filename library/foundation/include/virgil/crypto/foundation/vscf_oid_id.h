@@ -94,7 +94,10 @@ enum vscf_oid_id_t {
     vscf_oid_id_ROUND5_ND_1CCA_5D,
     vscf_oid_id_RANDOM_PADDING
 };
-typedef enum vscf_oid_id_t vscf_oid_id_t;
+#ifndef VSCF_OID_ID_T_DEFINED
+#define VSCF_OID_ID_T_DEFINED
+    typedef enum vscf_oid_id_t vscf_oid_id_t;
+#endif // VSCF_OID_ID_T_DEFINED
 
 
 // --------------------------------------------------------------------------

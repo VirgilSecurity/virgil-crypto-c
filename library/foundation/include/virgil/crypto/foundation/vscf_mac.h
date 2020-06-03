@@ -85,7 +85,10 @@ extern "C" {
 //
 //  Contains API requirements of the interface 'mac'.
 //
-typedef struct vscf_mac_api_t vscf_mac_api_t;
+#ifndef VSCF_MAC_API_T_DEFINED
+#define VSCF_MAC_API_T_DEFINED
+    typedef struct vscf_mac_api_t vscf_mac_api_t;
+#endif // VSCF_MAC_API_T_DEFINED
 
 //
 //  Size of the digest (mac output) in bytes.

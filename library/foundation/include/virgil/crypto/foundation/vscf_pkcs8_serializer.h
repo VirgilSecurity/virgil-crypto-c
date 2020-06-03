@@ -86,7 +86,10 @@ extern "C" {
 //
 //  Handles implementation details.
 //
-typedef struct vscf_pkcs8_serializer_t vscf_pkcs8_serializer_t;
+#ifndef VSCF_PKCS8_SERIALIZER_T_DEFINED
+#define VSCF_PKCS8_SERIALIZER_T_DEFINED
+    typedef struct vscf_pkcs8_serializer_t vscf_pkcs8_serializer_t;
+#endif // VSCF_PKCS8_SERIALIZER_T_DEFINED
 
 //
 //  Return size of 'vscf_pkcs8_serializer_t' type.

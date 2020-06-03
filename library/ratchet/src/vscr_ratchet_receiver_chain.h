@@ -88,7 +88,10 @@ extern "C" {
 //
 //  Handle 'ratchet receiver chain' context.
 //
-typedef struct vscr_ratchet_receiver_chain_t vscr_ratchet_receiver_chain_t;
+#ifndef VSCR_RATCHET_RECEIVER_CHAIN_T_DEFINED
+#define VSCR_RATCHET_RECEIVER_CHAIN_T_DEFINED
+    typedef struct vscr_ratchet_receiver_chain_t vscr_ratchet_receiver_chain_t;
+#endif // VSCR_RATCHET_RECEIVER_CHAIN_T_DEFINED
 struct vscr_ratchet_receiver_chain_t {
     //
     //  Function do deallocate self context.

@@ -89,7 +89,10 @@ extern "C" {
 //
 //  Contains API requirements of the interface 'key signer'.
 //
-typedef struct vscf_key_signer_api_t vscf_key_signer_api_t;
+#ifndef VSCF_KEY_SIGNER_API_T_DEFINED
+#define VSCF_KEY_SIGNER_API_T_DEFINED
+    typedef struct vscf_key_signer_api_t vscf_key_signer_api_t;
+#endif // VSCF_KEY_SIGNER_API_T_DEFINED
 
 //
 //  Check if algorithm can sign data digest with a given key.

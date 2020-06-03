@@ -75,7 +75,10 @@ extern "C" {
 //
 //  Handle 'raw card signature list' context.
 //
-typedef struct vssc_raw_card_signature_list_t vssc_raw_card_signature_list_t;
+#ifndef VSSC_RAW_CARD_SIGNATURE_LIST_T_DEFINED
+#define VSSC_RAW_CARD_SIGNATURE_LIST_T_DEFINED
+    typedef struct vssc_raw_card_signature_list_t vssc_raw_card_signature_list_t;
+#endif // VSSC_RAW_CARD_SIGNATURE_LIST_T_DEFINED
 
 //
 //  Return size of 'vssc_raw_card_signature_list_t'.

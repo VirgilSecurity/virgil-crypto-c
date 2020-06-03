@@ -86,7 +86,10 @@ extern "C" {
 //
 //  Contains API requirements of the interface 'kem'.
 //
-typedef struct vscf_kem_api_t vscf_kem_api_t;
+#ifndef VSCF_KEM_API_T_DEFINED
+#define VSCF_KEM_API_T_DEFINED
+    typedef struct vscf_kem_api_t vscf_kem_api_t;
+#endif // VSCF_KEM_API_T_DEFINED
 
 //
 //  Return length in bytes required to hold encapsulated shared key.

@@ -100,7 +100,10 @@ enum {
 //
 //  Handle 'group session message' context.
 //
-typedef struct vscf_group_session_message_t vscf_group_session_message_t;
+#ifndef VSCF_GROUP_SESSION_MESSAGE_T_DEFINED
+#define VSCF_GROUP_SESSION_MESSAGE_T_DEFINED
+    typedef struct vscf_group_session_message_t vscf_group_session_message_t;
+#endif // VSCF_GROUP_SESSION_MESSAGE_T_DEFINED
 
 //
 //  Return size of 'vscf_group_session_message_t'.

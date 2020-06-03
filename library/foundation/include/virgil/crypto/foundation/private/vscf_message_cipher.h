@@ -80,7 +80,10 @@ extern "C" {
 //
 //  Handle 'message cipher' context.
 //
-typedef struct vscf_message_cipher_t vscf_message_cipher_t;
+#ifndef VSCF_MESSAGE_CIPHER_T_DEFINED
+#define VSCF_MESSAGE_CIPHER_T_DEFINED
+    typedef struct vscf_message_cipher_t vscf_message_cipher_t;
+#endif // VSCF_MESSAGE_CIPHER_T_DEFINED
 
 //
 //  Return size of 'vscf_message_cipher_t'.

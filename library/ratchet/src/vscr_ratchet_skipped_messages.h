@@ -73,7 +73,10 @@ extern "C" {
 //
 //  Handle 'ratchet skipped messages' context.
 //
-typedef struct vscr_ratchet_skipped_messages_t vscr_ratchet_skipped_messages_t;
+#ifndef VSCR_RATCHET_SKIPPED_MESSAGES_T_DEFINED
+#define VSCR_RATCHET_SKIPPED_MESSAGES_T_DEFINED
+    typedef struct vscr_ratchet_skipped_messages_t vscr_ratchet_skipped_messages_t;
+#endif // VSCR_RATCHET_SKIPPED_MESSAGES_T_DEFINED
 
 //
 //  Return size of 'vscr_ratchet_skipped_messages_t'.

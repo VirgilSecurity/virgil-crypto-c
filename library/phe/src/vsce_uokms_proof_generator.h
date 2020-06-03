@@ -80,7 +80,10 @@ extern "C" {
 //
 //  Handle 'uokms proof generator' context.
 //
-typedef struct vsce_uokms_proof_generator_t vsce_uokms_proof_generator_t;
+#ifndef VSCE_UOKMS_PROOF_GENERATOR_T_DEFINED
+#define VSCE_UOKMS_PROOF_GENERATOR_T_DEFINED
+    typedef struct vsce_uokms_proof_generator_t vsce_uokms_proof_generator_t;
+#endif // VSCE_UOKMS_PROOF_GENERATOR_T_DEFINED
 
 //
 //  Return size of 'vsce_uokms_proof_generator_t'.

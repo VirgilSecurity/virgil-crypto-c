@@ -86,7 +86,10 @@ extern "C" {
 //
 //  Contains API requirements of the interface 'key deserializer'.
 //
-typedef struct vscf_key_deserializer_api_t vscf_key_deserializer_api_t;
+#ifndef VSCF_KEY_DESERIALIZER_API_T_DEFINED
+#define VSCF_KEY_DESERIALIZER_API_T_DEFINED
+    typedef struct vscf_key_deserializer_api_t vscf_key_deserializer_api_t;
+#endif // VSCF_KEY_DESERIALIZER_API_T_DEFINED
 
 //
 //  Deserialize given public key as an interchangeable format to the object.

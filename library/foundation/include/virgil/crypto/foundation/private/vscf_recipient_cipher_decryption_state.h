@@ -71,7 +71,10 @@ enum vscf_recipient_cipher_decryption_state_t {
     vscf_recipient_cipher_decryption_state_FINISHED,
     vscf_recipient_cipher_decryption_state_FAILED
 };
-typedef enum vscf_recipient_cipher_decryption_state_t vscf_recipient_cipher_decryption_state_t;
+#ifndef VSCF_RECIPIENT_CIPHER_DECRYPTION_STATE_T_DEFINED
+#define VSCF_RECIPIENT_CIPHER_DECRYPTION_STATE_T_DEFINED
+    typedef enum vscf_recipient_cipher_decryption_state_t vscf_recipient_cipher_decryption_state_t;
+#endif // VSCF_RECIPIENT_CIPHER_DECRYPTION_STATE_T_DEFINED
 
 
 // --------------------------------------------------------------------------

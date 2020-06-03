@@ -75,7 +75,10 @@ extern "C" {
 //
 //  Contains API requirements of the interface 'cipher info'.
 //
-typedef struct vscf_cipher_info_api_t vscf_cipher_info_api_t;
+#ifndef VSCF_CIPHER_INFO_API_T_DEFINED
+#define VSCF_CIPHER_INFO_API_T_DEFINED
+    typedef struct vscf_cipher_info_api_t vscf_cipher_info_api_t;
+#endif // VSCF_CIPHER_INFO_API_T_DEFINED
 
 //
 //  Returns constant 'nonce len'.

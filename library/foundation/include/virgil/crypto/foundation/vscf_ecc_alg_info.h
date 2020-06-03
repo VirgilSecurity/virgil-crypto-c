@@ -76,7 +76,10 @@ extern "C" {
 //
 //  Handles implementation details.
 //
-typedef struct vscf_ecc_alg_info_t vscf_ecc_alg_info_t;
+#ifndef VSCF_ECC_ALG_INFO_T_DEFINED
+#define VSCF_ECC_ALG_INFO_T_DEFINED
+    typedef struct vscf_ecc_alg_info_t vscf_ecc_alg_info_t;
+#endif // VSCF_ECC_ALG_INFO_T_DEFINED
 
 //
 //  Return size of 'vscf_ecc_alg_info_t' type.

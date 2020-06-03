@@ -85,7 +85,10 @@ extern "C" {
 //
 //  Handle 'group session ticket' context.
 //
-typedef struct vscf_group_session_ticket_t vscf_group_session_ticket_t;
+#ifndef VSCF_GROUP_SESSION_TICKET_T_DEFINED
+#define VSCF_GROUP_SESSION_TICKET_T_DEFINED
+    typedef struct vscf_group_session_ticket_t vscf_group_session_ticket_t;
+#endif // VSCF_GROUP_SESSION_TICKET_T_DEFINED
 
 //
 //  Return size of 'vscf_group_session_ticket_t'.

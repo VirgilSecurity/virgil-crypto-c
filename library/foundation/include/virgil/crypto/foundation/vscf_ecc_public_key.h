@@ -77,7 +77,10 @@ extern "C" {
 //
 //  Handles implementation details.
 //
-typedef struct vscf_ecc_public_key_t vscf_ecc_public_key_t;
+#ifndef VSCF_ECC_PUBLIC_KEY_T_DEFINED
+#define VSCF_ECC_PUBLIC_KEY_T_DEFINED
+    typedef struct vscf_ecc_public_key_t vscf_ecc_public_key_t;
+#endif // VSCF_ECC_PUBLIC_KEY_T_DEFINED
 
 //
 //  Return size of 'vscf_ecc_public_key_t' type.

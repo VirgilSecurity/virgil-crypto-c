@@ -82,7 +82,10 @@ extern "C" {
 //
 //  Handle 'http response' context.
 //
-typedef struct vssc_http_response_t vssc_http_response_t;
+#ifndef VSSC_HTTP_RESPONSE_T_DEFINED
+#define VSSC_HTTP_RESPONSE_T_DEFINED
+    typedef struct vssc_http_response_t vssc_http_response_t;
+#endif // VSSC_HTTP_RESPONSE_T_DEFINED
 
 //
 //  Return size of 'vssc_http_response_t'.

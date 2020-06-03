@@ -85,7 +85,10 @@ extern "C" {
 //
 //  Contains API requirements of the interface 'salted kdf'.
 //
-typedef struct vscf_salted_kdf_api_t vscf_salted_kdf_api_t;
+#ifndef VSCF_SALTED_KDF_API_T_DEFINED
+#define VSCF_SALTED_KDF_API_T_DEFINED
+    typedef struct vscf_salted_kdf_api_t vscf_salted_kdf_api_t;
+#endif // VSCF_SALTED_KDF_API_T_DEFINED
 
 //
 //  Prepare algorithm to derive new key.

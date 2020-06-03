@@ -87,7 +87,10 @@ enum {
 //
 //  Handle 'brainkey server' context.
 //
-typedef struct vscf_brainkey_server_t vscf_brainkey_server_t;
+#ifndef VSCF_BRAINKEY_SERVER_T_DEFINED
+#define VSCF_BRAINKEY_SERVER_T_DEFINED
+    typedef struct vscf_brainkey_server_t vscf_brainkey_server_t;
+#endif // VSCF_BRAINKEY_SERVER_T_DEFINED
 
 //
 //  Return size of 'vscf_brainkey_server_t'.

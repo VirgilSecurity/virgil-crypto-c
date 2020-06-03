@@ -75,7 +75,10 @@ extern "C" {
 //
 //  Handles implementation details.
 //
-typedef struct vscf_hybrid_key_alg_info_t vscf_hybrid_key_alg_info_t;
+#ifndef VSCF_HYBRID_KEY_ALG_INFO_T_DEFINED
+#define VSCF_HYBRID_KEY_ALG_INFO_T_DEFINED
+    typedef struct vscf_hybrid_key_alg_info_t vscf_hybrid_key_alg_info_t;
+#endif // VSCF_HYBRID_KEY_ALG_INFO_T_DEFINED
 
 //
 //  Return size of 'vscf_hybrid_key_alg_info_t' type.

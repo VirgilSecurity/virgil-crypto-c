@@ -84,7 +84,10 @@ extern "C" {
 //
 //  Handle 'verifier' context.
 //
-typedef struct vscf_verifier_t vscf_verifier_t;
+#ifndef VSCF_VERIFIER_T_DEFINED
+#define VSCF_VERIFIER_T_DEFINED
+    typedef struct vscf_verifier_t vscf_verifier_t;
+#endif // VSCF_VERIFIER_T_DEFINED
 
 //
 //  Return size of 'vscf_verifier_t'.

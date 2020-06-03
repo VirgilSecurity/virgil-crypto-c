@@ -74,7 +74,10 @@ extern "C" {
 //
 //  Handle 'signed data info' context.
 //
-typedef struct vscf_signed_data_info_t vscf_signed_data_info_t;
+#ifndef VSCF_SIGNED_DATA_INFO_T_DEFINED
+#define VSCF_SIGNED_DATA_INFO_T_DEFINED
+    typedef struct vscf_signed_data_info_t vscf_signed_data_info_t;
+#endif // VSCF_SIGNED_DATA_INFO_T_DEFINED
 
 //
 //  Return size of 'vscf_signed_data_info_t'.

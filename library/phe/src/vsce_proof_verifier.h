@@ -79,7 +79,10 @@ extern "C" {
 //
 //  Handle 'proof verifier' context.
 //
-typedef struct vsce_proof_verifier_t vsce_proof_verifier_t;
+#ifndef VSCE_PROOF_VERIFIER_T_DEFINED
+#define VSCE_PROOF_VERIFIER_T_DEFINED
+    typedef struct vsce_proof_verifier_t vsce_proof_verifier_t;
+#endif // VSCE_PROOF_VERIFIER_T_DEFINED
 
 //
 //  Return size of 'vsce_proof_verifier_t'.

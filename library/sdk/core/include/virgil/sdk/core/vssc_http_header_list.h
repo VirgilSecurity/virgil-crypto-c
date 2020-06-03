@@ -75,7 +75,10 @@ extern "C" {
 //
 //  Handle 'http header list' context.
 //
-typedef struct vssc_http_header_list_t vssc_http_header_list_t;
+#ifndef VSSC_HTTP_HEADER_LIST_T_DEFINED
+#define VSSC_HTTP_HEADER_LIST_T_DEFINED
+    typedef struct vssc_http_header_list_t vssc_http_header_list_t;
+#endif // VSSC_HTTP_HEADER_LIST_T_DEFINED
 
 //
 //  Return size of 'vssc_http_header_list_t'.

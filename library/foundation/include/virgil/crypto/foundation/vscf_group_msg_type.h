@@ -82,7 +82,10 @@ enum vscf_group_msg_type_t {
     //
     vscf_group_msg_type_REGULAR = 2
 };
-typedef enum vscf_group_msg_type_t vscf_group_msg_type_t;
+#ifndef VSCF_GROUP_MSG_TYPE_T_DEFINED
+#define VSCF_GROUP_MSG_TYPE_T_DEFINED
+    typedef enum vscf_group_msg_type_t vscf_group_msg_type_t;
+#endif // VSCF_GROUP_MSG_TYPE_T_DEFINED
 
 
 // --------------------------------------------------------------------------

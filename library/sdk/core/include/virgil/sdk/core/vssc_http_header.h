@@ -81,7 +81,10 @@ extern "C" {
 //
 //  Handle 'http header' context.
 //
-typedef struct vssc_http_header_t vssc_http_header_t;
+#ifndef VSSC_HTTP_HEADER_T_DEFINED
+#define VSSC_HTTP_HEADER_T_DEFINED
+    typedef struct vssc_http_header_t vssc_http_header_t;
+#endif // VSSC_HTTP_HEADER_T_DEFINED
 
 //
 //  Header name: Authorization

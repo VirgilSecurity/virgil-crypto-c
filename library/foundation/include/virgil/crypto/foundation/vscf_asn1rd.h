@@ -83,7 +83,10 @@ extern "C" {
 //
 //  Handles implementation details.
 //
-typedef struct vscf_asn1rd_t vscf_asn1rd_t;
+#ifndef VSCF_ASN1RD_T_DEFINED
+#define VSCF_ASN1RD_T_DEFINED
+    typedef struct vscf_asn1rd_t vscf_asn1rd_t;
+#endif // VSCF_ASN1RD_T_DEFINED
 
 //
 //  Return size of 'vscf_asn1rd_t' type.

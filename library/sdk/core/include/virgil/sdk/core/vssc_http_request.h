@@ -82,7 +82,10 @@ extern "C" {
 //
 //  Handle 'http request' context.
 //
-typedef struct vssc_http_request_t vssc_http_request_t;
+#ifndef VSSC_HTTP_REQUEST_T_DEFINED
+#define VSSC_HTTP_REQUEST_T_DEFINED
+    typedef struct vssc_http_request_t vssc_http_request_t;
+#endif // VSSC_HTTP_REQUEST_T_DEFINED
 
 //
 //  HTTP method: GET

@@ -89,7 +89,10 @@ enum vscp_status_t {
     //
     vscp_status_ERROR_RNG_FAILED = -202
 };
-typedef enum vscp_status_t vscp_status_t;
+#ifndef VSCP_STATUS_T_DEFINED
+#define VSCP_STATUS_T_DEFINED
+    typedef enum vscp_status_t vscp_status_t;
+#endif // VSCP_STATUS_T_DEFINED
 
 
 // --------------------------------------------------------------------------

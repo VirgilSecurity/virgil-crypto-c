@@ -96,7 +96,10 @@ extern "C" {
 //
 //  Handle 'card' context.
 //
-typedef struct vssc_card_t vssc_card_t;
+#ifndef VSSC_CARD_T_DEFINED
+#define VSSC_CARD_T_DEFINED
+    typedef struct vssc_card_t vssc_card_t;
+#endif // VSSC_CARD_T_DEFINED
 
 //
 //  Return size of 'vssc_card_t'.

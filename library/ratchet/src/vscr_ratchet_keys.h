@@ -88,7 +88,10 @@ extern "C" {
 //
 //  Handle 'ratchet keys' context.
 //
-typedef struct vscr_ratchet_keys_t vscr_ratchet_keys_t;
+#ifndef VSCR_RATCHET_KEYS_T_DEFINED
+#define VSCR_RATCHET_KEYS_T_DEFINED
+    typedef struct vscr_ratchet_keys_t vscr_ratchet_keys_t;
+#endif // VSCR_RATCHET_KEYS_T_DEFINED
 
 //
 //  Return size of 'vscr_ratchet_keys_t'.

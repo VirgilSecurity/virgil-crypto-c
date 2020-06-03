@@ -87,7 +87,10 @@ extern "C" {
 //
 //  Handle 'virgil http response' context.
 //
-typedef struct vssc_virgil_http_response_t vssc_virgil_http_response_t;
+#ifndef VSSC_VIRGIL_HTTP_RESPONSE_T_DEFINED
+#define VSSC_VIRGIL_HTTP_RESPONSE_T_DEFINED
+    typedef struct vssc_virgil_http_response_t vssc_virgil_http_response_t;
+#endif // VSSC_VIRGIL_HTTP_RESPONSE_T_DEFINED
 
 //
 //  Return size of 'vssc_virgil_http_response_t'.

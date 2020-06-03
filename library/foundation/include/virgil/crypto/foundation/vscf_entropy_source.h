@@ -84,7 +84,10 @@ extern "C" {
 //
 //  Contains API requirements of the interface 'entropy source'.
 //
-typedef struct vscf_entropy_source_api_t vscf_entropy_source_api_t;
+#ifndef VSCF_ENTROPY_SOURCE_API_T_DEFINED
+#define VSCF_ENTROPY_SOURCE_API_T_DEFINED
+    typedef struct vscf_entropy_source_api_t vscf_entropy_source_api_t;
+#endif // VSCF_ENTROPY_SOURCE_API_T_DEFINED
 
 //
 //  Defines that implemented source is strong.

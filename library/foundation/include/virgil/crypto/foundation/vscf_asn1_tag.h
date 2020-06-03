@@ -92,7 +92,10 @@ enum vscf_asn1_tag_t {
     vscf_asn1_tag_CONSTRUCTED = 0x20,
     vscf_asn1_tag_CONTEXT_SPECIFIC = 0x80
 };
-typedef enum vscf_asn1_tag_t vscf_asn1_tag_t;
+#ifndef VSCF_ASN1_TAG_T_DEFINED
+#define VSCF_ASN1_TAG_T_DEFINED
+    typedef enum vscf_asn1_tag_t vscf_asn1_tag_t;
+#endif // VSCF_ASN1_TAG_T_DEFINED
 
 
 // --------------------------------------------------------------------------

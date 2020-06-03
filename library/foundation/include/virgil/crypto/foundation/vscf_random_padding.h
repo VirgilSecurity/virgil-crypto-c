@@ -87,7 +87,10 @@ extern "C" {
 //
 //  Handles implementation details.
 //
-typedef struct vscf_random_padding_t vscf_random_padding_t;
+#ifndef VSCF_RANDOM_PADDING_T_DEFINED
+#define VSCF_RANDOM_PADDING_T_DEFINED
+    typedef struct vscf_random_padding_t vscf_random_padding_t;
+#endif // VSCF_RANDOM_PADDING_T_DEFINED
 
 //
 //  Return size of 'vscf_random_padding_t' type.

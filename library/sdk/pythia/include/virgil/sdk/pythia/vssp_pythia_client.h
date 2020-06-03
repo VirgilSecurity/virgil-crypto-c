@@ -95,7 +95,10 @@ extern "C" {
 //
 //  Handle 'pythia client' context.
 //
-typedef struct vssp_pythia_client_t vssp_pythia_client_t;
+#ifndef VSSP_PYTHIA_CLIENT_T_DEFINED
+#define VSSP_PYTHIA_CLIENT_T_DEFINED
+    typedef struct vssp_pythia_client_t vssp_pythia_client_t;
+#endif // VSSP_PYTHIA_CLIENT_T_DEFINED
 
 //
 //  Return size of 'vssp_pythia_client_t'.

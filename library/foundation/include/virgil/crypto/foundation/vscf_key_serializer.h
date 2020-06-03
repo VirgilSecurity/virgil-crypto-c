@@ -86,7 +86,10 @@ extern "C" {
 //
 //  Contains API requirements of the interface 'key serializer'.
 //
-typedef struct vscf_key_serializer_api_t vscf_key_serializer_api_t;
+#ifndef VSCF_KEY_SERIALIZER_API_T_DEFINED
+#define VSCF_KEY_SERIALIZER_API_T_DEFINED
+    typedef struct vscf_key_serializer_api_t vscf_key_serializer_api_t;
+#endif // VSCF_KEY_SERIALIZER_API_T_DEFINED
 
 //
 //  Calculate buffer size enough to hold serialized public key.

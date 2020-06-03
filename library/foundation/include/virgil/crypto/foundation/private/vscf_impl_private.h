@@ -92,7 +92,10 @@ typedef const vscf_api_t * (*vscf_impl_find_api_fn)(vscf_api_tag_t api_tag);
 //
 //  Contains common properties for any 'API' implementation object.
 //
-typedef struct vscf_impl_info_t vscf_impl_info_t;
+#ifndef VSCF_IMPL_INFO_T_DEFINED
+#define VSCF_IMPL_INFO_T_DEFINED
+    typedef struct vscf_impl_info_t vscf_impl_info_t;
+#endif // VSCF_IMPL_INFO_T_DEFINED
 struct vscf_impl_info_t {
     //
     //  Implementation unique identifier, MUST be first in the structure.

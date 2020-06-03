@@ -111,7 +111,10 @@ enum {
 //
 //  Handles implementation details.
 //
-typedef struct vscf_curve25519_t vscf_curve25519_t;
+#ifndef VSCF_CURVE25519_T_DEFINED
+#define VSCF_CURVE25519_T_DEFINED
+    typedef struct vscf_curve25519_t vscf_curve25519_t;
+#endif // VSCF_CURVE25519_T_DEFINED
 
 //
 //  Return size of 'vscf_curve25519_t' type.

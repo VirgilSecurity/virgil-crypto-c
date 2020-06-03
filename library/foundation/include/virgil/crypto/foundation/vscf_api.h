@@ -111,12 +111,18 @@ enum vscf_api_tag_t {
     vscf_api_tag_SALTED_KDF,
     vscf_api_tag_END
 };
-typedef enum vscf_api_tag_t vscf_api_tag_t;
+#ifndef VSCF_API_TAG_T_DEFINED
+#define VSCF_API_TAG_T_DEFINED
+    typedef enum vscf_api_tag_t vscf_api_tag_t;
+#endif // VSCF_API_TAG_T_DEFINED
 
 //
 //  Generic type for any 'API' object.
 //
-typedef struct vscf_api_t vscf_api_t;
+#ifndef VSCF_API_T_DEFINED
+#define VSCF_API_T_DEFINED
+    typedef struct vscf_api_t vscf_api_t;
+#endif // VSCF_API_T_DEFINED
 
 
 // --------------------------------------------------------------------------

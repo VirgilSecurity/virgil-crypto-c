@@ -86,7 +86,10 @@ extern "C" {
 //
 //  Handle 'ratchet message' context.
 //
-typedef struct vscr_ratchet_message_t vscr_ratchet_message_t;
+#ifndef VSCR_RATCHET_MESSAGE_T_DEFINED
+#define VSCR_RATCHET_MESSAGE_T_DEFINED
+    typedef struct vscr_ratchet_message_t vscr_ratchet_message_t;
+#endif // VSCR_RATCHET_MESSAGE_T_DEFINED
 
 //
 //  Return size of 'vscr_ratchet_message_t'.

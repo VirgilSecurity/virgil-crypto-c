@@ -165,7 +165,10 @@ enum vssc_status_t {
     //
     vssc_status_SERVICE_RETURNED_INVALID_CARD = -505
 };
-typedef enum vssc_status_t vssc_status_t;
+#ifndef VSSC_STATUS_T_DEFINED
+#define VSSC_STATUS_T_DEFINED
+    typedef enum vssc_status_t vssc_status_t;
+#endif // VSSC_STATUS_T_DEFINED
 
 
 // --------------------------------------------------------------------------

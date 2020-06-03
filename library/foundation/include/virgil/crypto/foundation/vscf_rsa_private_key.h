@@ -77,7 +77,10 @@ extern "C" {
 //
 //  Handles implementation details.
 //
-typedef struct vscf_rsa_private_key_t vscf_rsa_private_key_t;
+#ifndef VSCF_RSA_PRIVATE_KEY_T_DEFINED
+#define VSCF_RSA_PRIVATE_KEY_T_DEFINED
+    typedef struct vscf_rsa_private_key_t vscf_rsa_private_key_t;
+#endif // VSCF_RSA_PRIVATE_KEY_T_DEFINED
 
 //
 //  Return size of 'vscf_rsa_private_key_t' type.

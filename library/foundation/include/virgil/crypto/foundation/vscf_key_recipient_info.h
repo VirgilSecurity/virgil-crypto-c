@@ -84,7 +84,10 @@ extern "C" {
 //
 //  Handle 'key recipient info' context.
 //
-typedef struct vscf_key_recipient_info_t vscf_key_recipient_info_t;
+#ifndef VSCF_KEY_RECIPIENT_INFO_T_DEFINED
+#define VSCF_KEY_RECIPIENT_INFO_T_DEFINED
+    typedef struct vscf_key_recipient_info_t vscf_key_recipient_info_t;
+#endif // VSCF_KEY_RECIPIENT_INFO_T_DEFINED
 
 //
 //  Return size of 'vscf_key_recipient_info_t'.

@@ -75,7 +75,10 @@ extern "C" {
 //
 //  Handle 'str' context.
 //
-typedef struct vsc_str_t vsc_str_t;
+#ifndef VSC_STR_T_DEFINED
+#define VSC_STR_T_DEFINED
+    typedef struct vsc_str_t vsc_str_t;
+#endif // VSC_STR_T_DEFINED
 struct vsc_str_t {
     //
     //  Underlying characters array.

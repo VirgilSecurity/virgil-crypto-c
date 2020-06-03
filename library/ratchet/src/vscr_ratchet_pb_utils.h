@@ -96,7 +96,10 @@ extern "C" {
 //
 //  Handle 'ratchet pb utils' context.
 //
-typedef struct vscr_ratchet_pb_utils_t vscr_ratchet_pb_utils_t;
+#ifndef VSCR_RATCHET_PB_UTILS_T_DEFINED
+#define VSCR_RATCHET_PB_UTILS_T_DEFINED
+    typedef struct vscr_ratchet_pb_utils_t vscr_ratchet_pb_utils_t;
+#endif // VSCR_RATCHET_PB_UTILS_T_DEFINED
 
 //
 //  Return size of 'vscr_ratchet_pb_utils_t'.

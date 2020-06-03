@@ -513,7 +513,12 @@ function c_insert_enum_declaration (c_enum, no_description)
         c_insert_description (my.c_enum)
     endif
 
-    insert_code ("typedef enum $(my.name:) $(my.type:);")
+
+    my.definition_guard = c_format_macros_name (my.name, "defined")
+    insert_code ("#ifndef " + my.definition_guard)
+    insert_code ("#define " + my.definition_guard)
+    insert_code ("typedef enum $(my.name:) $(my.type:);", 1)
+    insert_code ("#endif // " + my.definition_guard)
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -589,7 +594,12 @@ function c_insert_struct_declaration (c_struct, no_description)
         c_insert_description (my.c_struct)
     endif
 
-    insert_code ("typedef struct $(my.name:) $(my.type:);")
+
+    my.definition_guard = c_format_macros_name (my.name, "defined")
+    insert_code ("#ifndef " + my.definition_guard)
+    insert_code ("#define " + my.definition_guard)
+    insert_code ("typedef struct $(my.name:) $(my.type:);", 1)
+    insert_code ("#endif // " + my.definition_guard)
 endfunction
 
 # ---------------------------------------------------------------------------

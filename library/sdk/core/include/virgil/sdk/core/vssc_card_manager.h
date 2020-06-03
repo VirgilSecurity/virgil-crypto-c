@@ -95,7 +95,10 @@ extern "C" {
 //
 //  Handle 'card manager' context.
 //
-typedef struct vssc_card_manager_t vssc_card_manager_t;
+#ifndef VSSC_CARD_MANAGER_T_DEFINED
+#define VSSC_CARD_MANAGER_T_DEFINED
+    typedef struct vssc_card_manager_t vssc_card_manager_t;
+#endif // VSSC_CARD_MANAGER_T_DEFINED
 
 //
 //  Return size of 'vssc_card_manager_t'.

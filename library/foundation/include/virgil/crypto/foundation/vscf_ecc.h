@@ -112,7 +112,10 @@ enum {
 //
 //  Handles implementation details.
 //
-typedef struct vscf_ecc_t vscf_ecc_t;
+#ifndef VSCF_ECC_T_DEFINED
+#define VSCF_ECC_T_DEFINED
+    typedef struct vscf_ecc_t vscf_ecc_t;
+#endif // VSCF_ECC_T_DEFINED
 
 //
 //  Return size of 'vscf_ecc_t' type.

@@ -76,7 +76,10 @@ extern "C" {
 //
 //  Handle 'str buffer' context.
 //
-typedef struct vsc_str_buffer_t vsc_str_buffer_t;
+#ifndef VSC_STR_BUFFER_T_DEFINED
+#define VSC_STR_BUFFER_T_DEFINED
+    typedef struct vsc_str_buffer_t vsc_str_buffer_t;
+#endif // VSC_STR_BUFFER_T_DEFINED
 
 //
 //  Return size of 'vsc_str_buffer_t'.

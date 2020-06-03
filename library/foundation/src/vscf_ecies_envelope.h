@@ -137,7 +137,10 @@ extern "C" {
 //
 //  Handle 'ecies envelope' context.
 //
-typedef struct vscf_ecies_envelope_t vscf_ecies_envelope_t;
+#ifndef VSCF_ECIES_ENVELOPE_T_DEFINED
+#define VSCF_ECIES_ENVELOPE_T_DEFINED
+    typedef struct vscf_ecies_envelope_t vscf_ecies_envelope_t;
+#endif // VSCF_ECIES_ENVELOPE_T_DEFINED
 struct vscf_ecies_envelope_t {
     vscf_raw_public_key_t *ephemeral_public_key;
 

@@ -111,7 +111,10 @@ enum {
 //
 //  Handles implementation details.
 //
-typedef struct vscf_round5_t vscf_round5_t;
+#ifndef VSCF_ROUND5_T_DEFINED
+#define VSCF_ROUND5_T_DEFINED
+    typedef struct vscf_round5_t vscf_round5_t;
+#endif // VSCF_ROUND5_T_DEFINED
 
 //
 //  Return size of 'vscf_round5_t' type.

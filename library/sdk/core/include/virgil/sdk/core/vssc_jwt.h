@@ -89,7 +89,10 @@ extern "C" {
 //
 //  Handle 'jwt' context.
 //
-typedef struct vssc_jwt_t vssc_jwt_t;
+#ifndef VSSC_JWT_T_DEFINED
+#define VSSC_JWT_T_DEFINED
+    typedef struct vssc_jwt_t vssc_jwt_t;
+#endif // VSSC_JWT_T_DEFINED
 
 //
 //  Return size of 'vssc_jwt_t'.

@@ -100,7 +100,10 @@ enum {
 //
 //  Handles implementation details.
 //
-typedef struct vscf_sha384_t vscf_sha384_t;
+#ifndef VSCF_SHA384_T_DEFINED
+#define VSCF_SHA384_T_DEFINED
+    typedef struct vscf_sha384_t vscf_sha384_t;
+#endif // VSCF_SHA384_T_DEFINED
 
 //
 //  Return size of 'vscf_sha384_t' type.

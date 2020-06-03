@@ -94,7 +94,10 @@ enum {
 //
 //  Handles implementation details.
 //
-typedef struct vscf_message_info_der_serializer_t vscf_message_info_der_serializer_t;
+#ifndef VSCF_MESSAGE_INFO_DER_SERIALIZER_T_DEFINED
+#define VSCF_MESSAGE_INFO_DER_SERIALIZER_T_DEFINED
+    typedef struct vscf_message_info_der_serializer_t vscf_message_info_der_serializer_t;
+#endif // VSCF_MESSAGE_INFO_DER_SERIALIZER_T_DEFINED
 
 //
 //  Return size of 'vscf_message_info_der_serializer_t' type.

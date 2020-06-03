@@ -85,7 +85,10 @@ extern "C" {
 //
 //  Handles implementation details.
 //
-typedef struct vscf_fake_random_t vscf_fake_random_t;
+#ifndef VSCF_FAKE_RANDOM_T_DEFINED
+#define VSCF_FAKE_RANDOM_T_DEFINED
+    typedef struct vscf_fake_random_t vscf_fake_random_t;
+#endif // VSCF_FAKE_RANDOM_T_DEFINED
 
 //
 //  Return size of 'vscf_fake_random_t' type.

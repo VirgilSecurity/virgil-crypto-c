@@ -580,7 +580,7 @@ vssc_card_derive_identifier(vssc_card_t *self) {
     VSSC_ASSERT_PTR(self);
     VSSC_ASSERT_PTR(self->raw_card);
 
-    VSSC_ASSERT(vscf_sha512_DIGEST_LEN >= vssc_card_IDENTIFIER_BINARY_LEN);
+    VSSC_ASSERT((size_t)vscf_sha512_DIGEST_LEN >= (size_t)vssc_card_IDENTIFIER_BINARY_LEN);
 
     if (NULL == self->identifier) {
         self->identifier = vsc_str_buffer_new_with_capacity(vssc_card_IDENTIFIER_HEX_LEN);

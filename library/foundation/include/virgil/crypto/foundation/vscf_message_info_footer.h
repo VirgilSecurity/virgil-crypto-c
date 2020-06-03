@@ -86,7 +86,10 @@ extern "C" {
 //
 //  Handle 'message info footer' context.
 //
-typedef struct vscf_message_info_footer_t vscf_message_info_footer_t;
+#ifndef VSCF_MESSAGE_INFO_FOOTER_T_DEFINED
+#define VSCF_MESSAGE_INFO_FOOTER_T_DEFINED
+    typedef struct vscf_message_info_footer_t vscf_message_info_footer_t;
+#endif // VSCF_MESSAGE_INFO_FOOTER_T_DEFINED
 
 //
 //  Return size of 'vscf_message_info_footer_t'.

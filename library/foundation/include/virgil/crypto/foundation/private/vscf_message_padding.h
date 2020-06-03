@@ -87,7 +87,10 @@ enum {
 //
 //  Handle 'message padding' context.
 //
-typedef struct vscf_message_padding_t vscf_message_padding_t;
+#ifndef VSCF_MESSAGE_PADDING_T_DEFINED
+#define VSCF_MESSAGE_PADDING_T_DEFINED
+    typedef struct vscf_message_padding_t vscf_message_padding_t;
+#endif // VSCF_MESSAGE_PADDING_T_DEFINED
 
 //
 //  Return size of 'vscf_message_padding_t'.

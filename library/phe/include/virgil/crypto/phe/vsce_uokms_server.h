@@ -93,7 +93,10 @@ extern "C" {
 //
 //  Handle 'uokms server' context.
 //
-typedef struct vsce_uokms_server_t vsce_uokms_server_t;
+#ifndef VSCE_UOKMS_SERVER_T_DEFINED
+#define VSCE_UOKMS_SERVER_T_DEFINED
+    typedef struct vsce_uokms_server_t vsce_uokms_server_t;
+#endif // VSCE_UOKMS_SERVER_T_DEFINED
 
 //
 //  Return size of 'vsce_uokms_server_t'.

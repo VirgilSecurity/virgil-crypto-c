@@ -90,7 +90,10 @@ extern "C" {
 //
 //  Contains API requirements of the interface 'cipher auth'.
 //
-typedef struct vscf_cipher_auth_api_t vscf_cipher_auth_api_t;
+#ifndef VSCF_CIPHER_AUTH_API_T_DEFINED
+#define VSCF_CIPHER_AUTH_API_T_DEFINED
+    typedef struct vscf_cipher_auth_api_t vscf_cipher_auth_api_t;
+#endif // VSCF_CIPHER_AUTH_API_T_DEFINED
 
 //
 //  Set additional data for for AEAD ciphers.

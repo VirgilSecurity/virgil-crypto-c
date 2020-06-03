@@ -87,7 +87,10 @@ extern "C" {
 //
 //  Contains API requirements of the interface 'auth decrypt'.
 //
-typedef struct vscf_auth_decrypt_api_t vscf_auth_decrypt_api_t;
+#ifndef VSCF_AUTH_DECRYPT_API_T_DEFINED
+#define VSCF_AUTH_DECRYPT_API_T_DEFINED
+    typedef struct vscf_auth_decrypt_api_t vscf_auth_decrypt_api_t;
+#endif // VSCF_AUTH_DECRYPT_API_T_DEFINED
 
 //
 //  Decrypt given data.

@@ -84,7 +84,10 @@ extern "C" {
 //
 //  Contains API requirements of the interface 'random'.
 //
-typedef struct vscf_random_api_t vscf_random_api_t;
+#ifndef VSCF_RANDOM_API_T_DEFINED
+#define VSCF_RANDOM_API_T_DEFINED
+    typedef struct vscf_random_api_t vscf_random_api_t;
+#endif // VSCF_RANDOM_API_T_DEFINED
 
 //
 //  Generate random bytes.

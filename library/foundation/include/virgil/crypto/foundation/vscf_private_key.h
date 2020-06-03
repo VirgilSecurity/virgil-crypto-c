@@ -76,7 +76,10 @@ extern "C" {
 //
 //  Contains API requirements of the interface 'private key'.
 //
-typedef struct vscf_private_key_api_t vscf_private_key_api_t;
+#ifndef VSCF_PRIVATE_KEY_API_T_DEFINED
+#define VSCF_PRIVATE_KEY_API_T_DEFINED
+    typedef struct vscf_private_key_api_t vscf_private_key_api_t;
+#endif // VSCF_PRIVATE_KEY_API_T_DEFINED
 
 //
 //  Extract public key from the private key.

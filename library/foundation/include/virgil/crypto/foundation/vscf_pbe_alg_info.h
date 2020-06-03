@@ -75,7 +75,10 @@ extern "C" {
 //
 //  Handles implementation details.
 //
-typedef struct vscf_pbe_alg_info_t vscf_pbe_alg_info_t;
+#ifndef VSCF_PBE_ALG_INFO_T_DEFINED
+#define VSCF_PBE_ALG_INFO_T_DEFINED
+    typedef struct vscf_pbe_alg_info_t vscf_pbe_alg_info_t;
+#endif // VSCF_PBE_ALG_INFO_T_DEFINED
 
 //
 //  Return size of 'vscf_pbe_alg_info_t' type.
