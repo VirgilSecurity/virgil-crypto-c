@@ -37,17 +37,14 @@ cmake_minimum_required(VERSION 3.12 FATAL_ERROR)
 project(test_env VERSION 0.0.1 LANGUAGES C)
 
 set(VIRGIL_INTEGRATION_ENV "PROD" CACHE STRING "Environment for inetgration tests {prod, stg, dev}.")
-set(VIRGIL_INTEGRATION_ENV_FILE "${CMAKE_CURRENT_LIST_DIR}/../env.json" CACHE STRING "Path to env.json.enc file.")
-set(VIRGIL_INTEGRATION_ENV_FILE_PWD "" CACHE STRING "Password to decrypt 'env.json.enc' file.")
+string(TOLOWER "${VIRGIL_INTEGRATION_ENV}" VIRGIL_INTEGRATION_ENV_LOWER)
 
 
-
+set(VIRGIL_INTEGRATION_ENV_FILE "${CMAKE_CURRENT_LIST_DIR}/../env.json")
 if(NOT EXISTS "${VIRGIL_INTEGRATION_ENV_FILE}")
     message(FATAL_ERROR "Can not find env file: ${VIRGIL_INTEGRATION_ENV_FILE}")
 endif()
 
-
-string(TOLOWER "${VIRGIL_INTEGRATION_ENV}" VIRGIL_INTEGRATION_ENV_LOWER)
 
 if(NOT TARGET vsc::foundation)
     message(FATAL_ERROR "Required library 'common' is not found - looking for target 'vsc::common'.")
@@ -59,9 +56,9 @@ add_library(test_env test_env.h test_env.c)
 target_link_libraries(test_env PUBLIC vsc::common vsc::foundation vsc::core_sdk)
 target_compile_definitions(test_env
         PRIVATE
-            VIRGIL_INTEGRATION_ENV_FILE="${VIRGIL_INTEGRATION_ENV_FILE}"
             VIRGIL_INTEGRATION_ENV="${VIRGIL_INTEGRATION_ENV_LOWER}"
-            VIRGIL_INTEGRATION_ENV_PWD="${VIRGIL_INTEGRATION_ENV_PWD}"
+            VIRGIL_INTEGRATION_ENV_FILE="${VIRGIL_INTEGRATION_ENV_FILE}"
+            VIRGIL_INTEGRATION_ENV_FILE_PWD="${VIRGIL_INTEGRATION_ENV_FILE_PWD}"
         )
 
 set_target_properties(test_env PROPERTIES C_STANDARD "99")
