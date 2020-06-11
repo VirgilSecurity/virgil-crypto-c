@@ -543,6 +543,68 @@ vssc_json_object_get_int_value(const vssc_json_object_t *self, vsc_str_t key, vs
 }
 
 //
+//  Add object value with a given key.
+//
+VSSC_PUBLIC void
+vssc_json_object_add_object_value(vssc_json_object_t *self, vsc_str_t key, const vssc_json_object_t *value) {
+
+    VSSC_ASSERT_PTR(self);
+    VSSC_ASSERT_PTR(self->json_obj);
+    VSSC_ASSERT_PTR(value);
+    VSSC_ASSERT_PTR(value->json_obj);
+
+    int add_result = 0;
+    if (vsc_str_is_null_terminated(key)) {
+        add_result = json_object_object_add(self->json_obj, key.chars, json_object_get((json_object *)value->json_obj));
+
+    } else {
+        vsc_str_mutable_t key_nt = vsc_str_mutable_from_str(key);
+        add_result =
+                json_object_object_add(self->json_obj, key_nt.chars, json_object_get((json_object *)value->json_obj));
+        vsc_str_mutable_release(&key_nt);
+    }
+
+    VSSC_ASSERT_LIBRARY_JSON_C_SUCCESS(add_result);
+}
+
+//
+//  Return an object value for a given key.
+//  Return error, if given key is not found or type mismatch.
+//
+VSSC_PUBLIC vssc_json_object_t *
+vssc_json_object_get_object_value(const vssc_json_object_t *self, vsc_str_t key, vssc_error_t *error) {
+
+    VSSC_ASSERT_PTR(self);
+    VSSC_ASSERT_PTR(self->json_obj);
+
+    json_object *json_obj = NULL;
+    json_bool is_found = false;
+
+    if (vsc_str_is_null_terminated(key)) {
+        is_found = json_object_object_get_ex(self->json_obj, key.chars, &json_obj);
+    } else {
+        vsc_str_mutable_t key_nt = vsc_str_mutable_from_str(key);
+        is_found = json_object_object_get_ex(self->json_obj, key_nt.chars, &json_obj);
+        vsc_str_mutable_release(&key_nt);
+    }
+
+    if (!is_found) {
+        VSSC_ERROR_SAFE_UPDATE(error, vssc_status_JSON_VALUE_NOT_FOUND);
+        return 0;
+    }
+
+    if (!json_object_is_type(json_obj, json_type_object)) {
+        VSSC_ERROR_SAFE_UPDATE(error, vssc_status_JSON_VALUE_TYPE_MISMATCH);
+        return 0;
+    }
+
+
+    json_obj = json_object_get(json_obj); // increase ref counter.
+
+    return vssc_json_object_create_with_json_obj(&json_obj);
+}
+
+//
 //  Add array value with a given key.
 //
 VSSC_PUBLIC void

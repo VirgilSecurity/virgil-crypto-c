@@ -55,8 +55,8 @@
 
 #include "vssc_library.h"
 #include "vssc_error.h"
-#include "vssc_json_array.h"
 #include "vssc_json_object.h"
+#include "vssc_json_array.h"
 #include "vssc_status.h"
 
 #if !VSSC_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
@@ -206,6 +206,19 @@ vssc_json_object_add_int_value(vssc_json_object_t *self, vsc_str_t key, int valu
 //
 VSSC_PUBLIC int
 vssc_json_object_get_int_value(const vssc_json_object_t *self, vsc_str_t key, vssc_error_t *error);
+
+//
+//  Add object value with a given key.
+//
+VSSC_PUBLIC void
+vssc_json_object_add_object_value(vssc_json_object_t *self, vsc_str_t key, const vssc_json_object_t *value);
+
+//
+//  Return an object value for a given key.
+//  Return error, if given key is not found or type mismatch.
+//
+VSSC_PUBLIC vssc_json_object_t *
+vssc_json_object_get_object_value(const vssc_json_object_t *self, vsc_str_t key, vssc_error_t *error);
 
 //
 //  Add array value with a given key.
