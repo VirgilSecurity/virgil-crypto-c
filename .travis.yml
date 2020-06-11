@@ -14,8 +14,11 @@ addons:
       cloc
 
 before_install:
-  - openssl aes-256-cbc -K $encrypted_2b3503d872ac_key -iv $encrypted_2b3503d872ac_iv
-    -in tests/integration/env.json.enc -out tests/integration/env.json -d
+  - openssl aes-256-cbc
+    -K $encrypted_c65e062c6180_key
+    -iv $encrypted_c65e062c6180_iv
+    -in ./tests/integration/env.json.enc
+    -out ./tests/integration/env.json -d
 
 install:
   - travis_retry wget https://cmake.org/files/v3.12/cmake-3.12.4-Linux-x86_64.sh
