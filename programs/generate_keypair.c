@@ -45,6 +45,11 @@
 #include <virgil/crypto/foundation/vscf_key_alg_factory.h>
 #include <virgil/crypto/foundation/vscf_key_asn1_serializer.h>
 #include <virgil/crypto/foundation/vscf_pem.h>
+#include <virgil/crypto/foundation/vscf_key_material_rng.h>
+#include <virgil/crypto/foundation/vscf_sha512.h>
+
+#include <virgil/crypto/common/private/vsc_buffer_defs.h>
+
 
 const char k_error_msg_CRYPTO_INIT_FAILED[] = "Failed to initialize crypto engine.";
 const char k_error_msg_CRYPTO_KEYGEN_FAILED[] = "Failed to generate private key.";
@@ -73,7 +78,7 @@ typedef enum {
 
 void print_help(const char* prog_name) {
     printf("USAGE:\n");
-    printf("    %s [<key_alg>]\n", prog_name);
+    printf("    %s [<key_alg> [<seed>]]\n", prog_name);
     printf("OPTIONS:\n");
     printf("    <key_alg>:\n"
            "      - ed25519 (default)\n"
@@ -87,6 +92,7 @@ void print_help(const char* prog_name) {
            "      - curve25519_round5_ed25519\n"
            "      - ed25519_falcon\n"
            "      - curve25519_round5_ed25519_falcon\n"
+           "    <seed> to generate deterministic key pair\n"
            );
 }
 
@@ -304,10 +310,26 @@ int main(int argc, const char *const *const argv) {
 
     bool has_error = false;
 
-    vscf_key_provider_t *key_provider = vscf_key_provider_new();
-    const vscf_status_t init_status = vscf_key_provider_setup_defaults(key_provider);
-
     vscf_impl_t *private_key = NULL;
+
+    vscf_key_provider_t *key_provider = vscf_key_provider_new();
+    if (argc > 2) {
+        const char *seed = argv[2];
+        byte key_material_bytes[vscf_sha512_DIGEST_LEN] = {0x00};
+        vsc_buffer_t key_material;
+        vsc_buffer_init(&key_material);
+        vsc_buffer_use(&key_material, key_material_bytes, sizeof(key_material_bytes));
+
+        vscf_sha512_hash(vsc_data_from_str(seed, strlen(seed)), &key_material);
+
+        vscf_key_material_rng_t *key_material_rng = vscf_key_material_rng_new();
+        vscf_key_material_rng_reset_key_material(key_material_rng, vsc_buffer_data(&key_material));
+        vscf_key_provider_take_random(key_provider, vscf_key_material_rng_impl(key_material_rng));
+
+        vsc_buffer_cleanup(&key_material);
+    }
+
+    const vscf_status_t init_status = vscf_key_provider_setup_defaults(key_provider);
 
     if (init_status != vscf_status_SUCCESS) {
         print_error(k_error_msg_CRYPTO_INIT_FAILED);
@@ -316,6 +338,7 @@ int main(int argc, const char *const *const argv) {
 
     const char* key_alg_arg = (argc == 2) ? argv[1] : "ed25519";
     const key_alg_id_t key_alg_id = convert_arg_to_key_alg_id(key_alg_arg);
+
 
     switch(key_alg_id) {
     case key_alg_id_ED25519:
