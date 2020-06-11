@@ -118,17 +118,21 @@ vssc_raw_card_verifier_verify(const vssc_raw_card_t *raw_card, vsc_str_t signer_
             (signature_it != NULL) && vssc_raw_card_signature_list_has_item(signature_it);
             signature_it = vssc_raw_card_signature_list_next(signature_it)) {
 
-        const vssc_raw_card_signature_t *signature = vssc_raw_card_signature_list_item(signature_it);
-        vsc_str_t signature_signer_id = vssc_raw_card_signature_signer_id(signature);
+        const vssc_raw_card_signature_t *raw_card_signature = vssc_raw_card_signature_list_item(signature_it);
+        vsc_str_t signature_signer_id = vssc_raw_card_signature_signer_id(raw_card_signature);
 
         if (vsc_str_equal(signer_id, signature_signer_id)) {
             vsc_data_t content_snapshot = vssc_raw_card_content_snapshot(raw_card);
-            vsc_data_t signature_snapshot = vssc_raw_card_content_snapshot(raw_card);
 
-            vscf_verifier_append_data(verifier, content_snapshot);
-            vscf_verifier_append_data(verifier, signature_snapshot);
+            vsc_data_t signature = vssc_raw_card_signature_signature(raw_card_signature);
+            vsc_data_t signature_snapshot = vssc_raw_card_signature_snapshot(raw_card_signature);
 
-            verified = vscf_verifier_verify(verifier, public_key);
+            const vscf_status_t status = vscf_verifier_reset(verifier, signature);
+            if (status == vscf_status_SUCCESS) {
+                vscf_verifier_append_data(verifier, content_snapshot);
+                vscf_verifier_append_data(verifier, signature_snapshot);
+                verified = vscf_verifier_verify(verifier, public_key);
+            }
 
             break;
         }
