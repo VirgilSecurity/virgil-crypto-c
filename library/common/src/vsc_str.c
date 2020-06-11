@@ -91,6 +91,15 @@ vsc_str(const char *str, size_t len) {
 }
 
 //
+//  Create string from null-terminated string.
+//
+VSC_PUBLIC vsc_str_t
+vsc_str_from_str(const char *str) {
+
+    return (vsc_str_t){str, strlen(str)};
+}
+
+//
 //  Create string from data.
 //
 VSC_PRIVATE vsc_str_t

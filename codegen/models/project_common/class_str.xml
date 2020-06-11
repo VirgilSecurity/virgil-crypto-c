@@ -18,10 +18,19 @@
         Create string.
 
         <argument name="str" type="char">
-            <array length="given"/>
+            <string length="given"/>
         </argument>
 
         <argument name="len" type="size"/>
+    </constructor>
+
+
+    <constructor name="from str">
+        Create string from null-terminated string.
+
+        <argument name="str" type="char">
+            <string length="null_terminated"/>
+        </argument>
     </constructor>
 
 
