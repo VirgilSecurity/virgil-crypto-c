@@ -13,6 +13,11 @@ addons:
       valgrind
       cloc
 
+before_install:
+  - pushd tests/integration
+    && openssl aes-256-cbc -K $encrypted_2b3503d872ac_key -iv $encrypted_2b3503d872ac_iv -in env.json.enc -out env.json -d
+    && popd
+
 install:
   - travis_retry wget https://cmake.org/files/v3.12/cmake-3.12.4-Linux-x86_64.sh
   - sudo bash cmake-3.12.4-Linux-x86_64.sh --skip-license --exclude-subdir --prefix=/usr/local
