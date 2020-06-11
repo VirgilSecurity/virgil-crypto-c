@@ -335,6 +335,8 @@ test_env_load(void) {
     g_env.jwt = g_env_inner.jwt;
     g_env.inner = &g_env_inner;
 
+    free(buffer);
+
     vssc_json_object_destroy(&root_json);
     vssc_json_object_destroy(&env_json);
 
@@ -343,6 +345,8 @@ test_env_load(void) {
     return 0;
 
 fail:
+    free(buffer);
+
     vssc_json_object_destroy(&root_json);
     vssc_json_object_destroy(&env_json);
 
