@@ -56,20 +56,3 @@ macro(_add_test test)
         add_clangformat(${test})
     endif()
 endmacro()
-
-
-macro(_add_integration_test test)
-    _add_test(${test})
-
-    set_tests_properties(${test} PROPERTIES LABELS "integration")
-endmacro()
-
-_add_test(test_base64_url)
-_add_test(test_jwt_generator)
-_add_test(test_jwt_header)
-_add_test(test_jwt_payload)
-_add_test(test_jwt)
-
-if(ENABLE_INTEGRATION_TESTS)
-    _add_integration_test(integration_test_virgil_http_client)
-endif()
