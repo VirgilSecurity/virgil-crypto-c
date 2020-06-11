@@ -143,9 +143,9 @@ vscr_ratchet_xxdh_cleanup(vscr_ratchet_xxdh_t *self) {
         return;
     }
 
-    vscr_ratchet_xxdh_cleanup_ctx(self);
-
     vscr_ratchet_xxdh_release_rng(self);
+
+    vscr_ratchet_xxdh_cleanup_ctx(self);
 
     vscr_zeroize(self, sizeof(vscr_ratchet_xxdh_t));
 }
@@ -409,177 +409,179 @@ vscr_ratchet_xxdh_compute_initiator_xxdh_secret(vscr_ratchet_xxdh_t *self,
         const vscr_ratchet_public_key_t receiver_one_time_public_key_first,
         vscr_ratchet_public_key_t ephemeral_public_key_first,
         const vscf_impl_t *sender_identity_private_key_second_signer,
-        const vscf_impl_t *receiver_identity_public_key_second, const vscf_impl_t *receiver_long_term_public_key_second,
+        const vscf_impl_t *receiver_identity_public_key_second,
+        const vscf_impl_t *receiver_long_term_public_key_second,
         const vscf_impl_t *receiver_one_time_public_key_second, vsc_buffer_t **encapsulated_key_1_ref,
         vsc_buffer_t **encapsulated_key_2_ref, vsc_buffer_t **encapsulated_key_3_ref,
         vsc_buffer_t **decapsulated_keys_signature_ref, vscr_ratchet_symmetric_key_t shared_key) {
 
     size_t shared_secret_size = 3 * vscr_ratchet_common_hidden_SHARED_KEY_LEN;
-    if (receiver_has_one_time_key) {
-        shared_secret_size += vscr_ratchet_common_hidden_SHARED_KEY_LEN;
-    }
+        if (receiver_has_one_time_key) {
+            shared_secret_size += vscr_ratchet_common_hidden_SHARED_KEY_LEN;
+        }
 
-    if (receiver_identity_public_key_second != NULL) {
-        shared_secret_size += vscr_ratchet_common_hidden_ROUND5_SHARED_KEY_LEN;
-    }
+        if (receiver_identity_public_key_second != NULL) {
+            shared_secret_size += vscr_ratchet_common_hidden_ROUND5_SHARED_KEY_LEN;
+        }
 
-    if (receiver_long_term_public_key_second != NULL) {
-        shared_secret_size += vscr_ratchet_common_hidden_ROUND5_SHARED_KEY_LEN;
-    }
+        if (receiver_long_term_public_key_second != NULL) {
+            shared_secret_size += vscr_ratchet_common_hidden_ROUND5_SHARED_KEY_LEN;
+        }
 
-    if (receiver_one_time_public_key_second != NULL) {
-        shared_secret_size += vscr_ratchet_common_hidden_ROUND5_SHARED_KEY_LEN;
-    }
+        if (receiver_one_time_public_key_second != NULL) {
+            shared_secret_size += vscr_ratchet_common_hidden_ROUND5_SHARED_KEY_LEN;
+        }
 
-    vsc_buffer_t *shared_secret = vsc_buffer_new_with_capacity(shared_secret_size);
-    vsc_buffer_make_secure(shared_secret);
+        vsc_buffer_t *shared_secret = vsc_buffer_new_with_capacity(shared_secret_size);
+        vsc_buffer_make_secure(shared_secret);
 
-    vscr_status_t status = vscr_status_SUCCESS;
+        vscr_status_t status = vscr_status_SUCCESS;
 
-    vscr_ratchet_private_key_t ephemeral_private_key_first;
+        vscr_ratchet_private_key_t ephemeral_private_key_first;
 
-    vsc_buffer_t buff;
-    vsc_buffer_init(&buff);
-    vsc_buffer_use(&buff, ephemeral_private_key_first, sizeof(ephemeral_private_key_first));
+        vsc_buffer_t buff;
+        vsc_buffer_init(&buff);
+        vsc_buffer_use(&buff, ephemeral_private_key_first, sizeof(ephemeral_private_key_first));
 
-    vscf_status_t f_status = vscf_random(self->rng, sizeof(ephemeral_private_key_first), &buff);
+        vscf_status_t f_status = vscf_random(self->rng, sizeof(ephemeral_private_key_first), &buff);
 
-    vsc_buffer_delete(&buff);
+        vsc_buffer_delete(&buff);
 
-    if (f_status != vscf_status_SUCCESS) {
-        status = vscr_status_ERROR_RNG_FAILED;
-        goto err;
-    }
+        if (f_status != vscf_status_SUCCESS) {
+            status = vscr_status_ERROR_RNG_FAILED;
+            goto err;
+        }
 
-    int curve_status = curve25519_get_pubkey(ephemeral_public_key_first, ephemeral_private_key_first);
+        int curve_status = curve25519_get_pubkey(ephemeral_public_key_first, ephemeral_private_key_first);
 
-    if (curve_status != 0) {
-        status = vscr_status_ERROR_CURVE25519;
-        goto err;
-    }
+        if (curve_status != 0) {
+            status = vscr_status_ERROR_CURVE25519;
+            goto err;
+        }
 
-    curve_status = curve25519_key_exchange(vsc_buffer_unused_bytes(shared_secret), receiver_long_term_public_key_first,
-            sender_identity_private_key_first);
-    vsc_buffer_inc_used(shared_secret, ED25519_DH_LEN);
-
-    if (curve_status != 0) {
-        status = vscr_status_ERROR_CURVE25519;
-        goto err;
-    }
-
-    curve_status = curve25519_key_exchange(
-            vsc_buffer_unused_bytes(shared_secret), receiver_identity_public_key_first, ephemeral_private_key_first);
-    vsc_buffer_inc_used(shared_secret, ED25519_DH_LEN);
-
-    if (curve_status != 0) {
-        status = vscr_status_ERROR_CURVE25519;
-        goto err;
-    }
-
-    curve_status = curve25519_key_exchange(
-            vsc_buffer_unused_bytes(shared_secret), receiver_long_term_public_key_first, ephemeral_private_key_first);
-    vsc_buffer_inc_used(shared_secret, ED25519_DH_LEN);
-
-    if (curve_status != 0) {
-        status = vscr_status_ERROR_CURVE25519;
-        goto err;
-    }
-
-    if (receiver_has_one_time_key) {
-        curve_status = curve25519_key_exchange(vsc_buffer_unused_bytes(shared_secret),
-                receiver_one_time_public_key_first, ephemeral_private_key_first);
+        curve_status = curve25519_key_exchange(vsc_buffer_unused_bytes(shared_secret), receiver_long_term_public_key_first,
+                sender_identity_private_key_first);
         vsc_buffer_inc_used(shared_secret, ED25519_DH_LEN);
 
         if (curve_status != 0) {
             status = vscr_status_ERROR_CURVE25519;
             goto err;
         }
-    }
 
-    status = vscr_ratchet_xxdh_compute_initiator_pqc_shared_secret(self, sender_identity_private_key_second_signer,
-            receiver_identity_public_key_second, receiver_long_term_public_key_second,
-            receiver_one_time_public_key_second, encapsulated_key_1_ref, encapsulated_key_2_ref, encapsulated_key_3_ref,
-            decapsulated_keys_signature_ref, shared_secret);
+        curve_status = curve25519_key_exchange(
+                vsc_buffer_unused_bytes(shared_secret), receiver_identity_public_key_first, ephemeral_private_key_first);
+        vsc_buffer_inc_used(shared_secret, ED25519_DH_LEN);
 
-    if (status != vscr_status_SUCCESS) {
-        goto err;
-    }
+        if (curve_status != 0) {
+            status = vscr_status_ERROR_CURVE25519;
+            goto err;
+        }
 
-    VSCR_ASSERT(vsc_buffer_unused_len(shared_secret) == 0);
+        curve_status = curve25519_key_exchange(
+                vsc_buffer_unused_bytes(shared_secret), receiver_long_term_public_key_first, ephemeral_private_key_first);
+        vsc_buffer_inc_used(shared_secret, ED25519_DH_LEN);
 
-    vscr_ratchet_xxdh_derive_key(vsc_buffer_data(shared_secret), shared_key);
+        if (curve_status != 0) {
+            status = vscr_status_ERROR_CURVE25519;
+            goto err;
+        }
 
-err:
-    vscr_zeroize(ephemeral_private_key_first, sizeof(ephemeral_private_key_first));
-    vsc_buffer_destroy(&shared_secret);
+        if (receiver_has_one_time_key) {
+            curve_status = curve25519_key_exchange(vsc_buffer_unused_bytes(shared_secret),
+                    receiver_one_time_public_key_first, ephemeral_private_key_first);
+            vsc_buffer_inc_used(shared_secret, ED25519_DH_LEN);
 
-    return status;
+            if (curve_status != 0) {
+                status = vscr_status_ERROR_CURVE25519;
+                goto err;
+            }
+        }
+
+        status = vscr_ratchet_xxdh_compute_initiator_pqc_shared_secret(self, sender_identity_private_key_second_signer,
+                receiver_identity_public_key_second, receiver_long_term_public_key_second,
+                receiver_one_time_public_key_second, encapsulated_key_1_ref, encapsulated_key_2_ref, encapsulated_key_3_ref,
+                decapsulated_keys_signature_ref, shared_secret);
+
+        if (status != vscr_status_SUCCESS) {
+            goto err;
+        }
+
+        VSCR_ASSERT(vsc_buffer_unused_len(shared_secret) == 0);
+
+        vscr_ratchet_xxdh_derive_key(vsc_buffer_data(shared_secret), shared_key);
+
+    err:
+        vscr_zeroize(ephemeral_private_key_first, sizeof(ephemeral_private_key_first));
+        vsc_buffer_destroy(&shared_secret);
+
+        return status;
 }
 
 VSCR_PUBLIC vscr_status_t
 vscr_ratchet_xxdh_compute_initiator_pqc_shared_secret(vscr_ratchet_xxdh_t *self,
         const vscf_impl_t *sender_identity_private_key_second_signer,
-        const vscf_impl_t *receiver_identity_public_key_second, const vscf_impl_t *receiver_long_term_public_key_second,
+        const vscf_impl_t *receiver_identity_public_key_second,
+        const vscf_impl_t *receiver_long_term_public_key_second,
         const vscf_impl_t *receiver_one_time_public_key_second, vsc_buffer_t **encapsulated_key_1_ref,
         vsc_buffer_t **encapsulated_key_2_ref, vsc_buffer_t **encapsulated_key_3_ref,
         vsc_buffer_t **decapsulated_keys_signature_ref, vsc_buffer_t *shared_secret) {
 
     vscr_status_t status = vscr_status_SUCCESS;
 
-    size_t pqc_begin_index = vsc_buffer_len(shared_secret);
+        size_t pqc_begin_index = vsc_buffer_len(shared_secret);
 
-    if (receiver_identity_public_key_second != NULL) {
-        status = vscr_ratchet_xxdh_encapsulate_pqc_key(
-                self, receiver_identity_public_key_second, encapsulated_key_1_ref, shared_secret);
+        if (receiver_identity_public_key_second != NULL) {
+            status = vscr_ratchet_xxdh_encapsulate_pqc_key(
+                    self, receiver_identity_public_key_second, encapsulated_key_1_ref, shared_secret);
 
-        if (status != vscr_status_SUCCESS) {
-            goto err;
+            if (status != vscr_status_SUCCESS) {
+                goto err;
+            }
         }
-    }
 
-    if (receiver_long_term_public_key_second != NULL) {
-        status = vscr_ratchet_xxdh_encapsulate_pqc_key(
-                self, receiver_long_term_public_key_second, encapsulated_key_2_ref, shared_secret);
+        if (receiver_long_term_public_key_second != NULL) {
+            status = vscr_ratchet_xxdh_encapsulate_pqc_key(
+                    self, receiver_long_term_public_key_second, encapsulated_key_2_ref, shared_secret);
 
-        if (status != vscr_status_SUCCESS) {
-            goto err;
+            if (status != vscr_status_SUCCESS) {
+                goto err;
+            }
         }
-    }
 
-    if (receiver_one_time_public_key_second != NULL) {
-        status = vscr_ratchet_xxdh_encapsulate_pqc_key(
-                self, receiver_one_time_public_key_second, encapsulated_key_3_ref, shared_secret);
+        if (receiver_one_time_public_key_second != NULL) {
+            status = vscr_ratchet_xxdh_encapsulate_pqc_key(
+                    self, receiver_one_time_public_key_second, encapsulated_key_3_ref, shared_secret);
 
-        if (status != vscr_status_SUCCESS) {
-            goto err;
+            if (status != vscr_status_SUCCESS) {
+                goto err;
+            }
         }
-    }
 
-    if (sender_identity_private_key_second_signer != NULL) {
-        size_t length = vsc_buffer_len(shared_secret);
+        if (sender_identity_private_key_second_signer != NULL) {
+            size_t length = vsc_buffer_len(shared_secret);
 
-        vsc_data_t pqc_shared_secret =
-                vsc_data_slice_beg(vsc_buffer_data(shared_secret), pqc_begin_index, length - pqc_begin_index);
-        VSCR_ASSERT(!vsc_data_is_empty(pqc_shared_secret));
+            vsc_data_t pqc_shared_secret =
+                    vsc_data_slice_beg(vsc_buffer_data(shared_secret), pqc_begin_index, length - pqc_begin_index);
+            VSCR_ASSERT(!vsc_data_is_empty(pqc_shared_secret));
 
-        vsc_buffer_t *hash = vsc_buffer_new_with_capacity(vscf_sha512_DIGEST_LEN);
-        vscf_sha512_hash(pqc_shared_secret, hash);
+            vsc_buffer_t *hash = vsc_buffer_new_with_capacity(vscf_sha512_DIGEST_LEN);
+            vscf_sha512_hash(pqc_shared_secret, hash);
 
-        *decapsulated_keys_signature_ref =
-                vsc_buffer_new_with_capacity(vscr_ratchet_common_hidden_FALCON_SIGNATURE_LEN);
-        vscf_status_t f_status = vscf_falcon_sign_hash(self->falcon, sender_identity_private_key_second_signer,
-                vscf_alg_id_SHA512, vsc_buffer_data(hash), *decapsulated_keys_signature_ref);
+            *decapsulated_keys_signature_ref =
+                    vsc_buffer_new_with_capacity(vscr_ratchet_common_hidden_FALCON_SIGNATURE_LEN);
+            vscf_status_t f_status = vscf_falcon_sign_hash(self->falcon, sender_identity_private_key_second_signer,
+                    vscf_alg_id_SHA512, vsc_buffer_data(hash), *decapsulated_keys_signature_ref);
 
-        vsc_buffer_destroy(&hash);
+            vsc_buffer_destroy(&hash);
 
-        if (f_status != vscf_status_SUCCESS) {
-            status = vscr_status_ERROR_FALCON;
-            goto err;
+            if (f_status != vscf_status_SUCCESS) {
+                status = vscr_status_ERROR_FALCON;
+                goto err;
+            }
         }
-    }
 
-err:
-    return status;
+    err:
+        return status;
 }
 
 VSCR_PUBLIC vscr_status_t
@@ -597,82 +599,82 @@ vscr_ratchet_xxdh_compute_responder_xxdh_secret(vscr_ratchet_xxdh_t *self,
         vscr_ratchet_symmetric_key_t shared_key) {
 
     size_t shared_secret_size = 3 * vscr_ratchet_common_hidden_SHARED_KEY_LEN;
-    if (receiver_has_one_time_key) {
-        shared_secret_size += vscr_ratchet_common_hidden_SHARED_KEY_LEN;
-    }
+        if (receiver_has_one_time_key) {
+            shared_secret_size += vscr_ratchet_common_hidden_SHARED_KEY_LEN;
+        }
 
-    if (receiver_identity_private_key_second != NULL) {
-        shared_secret_size += vscr_ratchet_common_hidden_ROUND5_SHARED_KEY_LEN;
-    }
+        if (receiver_identity_private_key_second != NULL) {
+            shared_secret_size += vscr_ratchet_common_hidden_ROUND5_SHARED_KEY_LEN;
+        }
 
-    if (receiver_long_term_private_key_second != NULL) {
-        shared_secret_size += vscr_ratchet_common_hidden_ROUND5_SHARED_KEY_LEN;
-    }
+        if (receiver_long_term_private_key_second != NULL) {
+            shared_secret_size += vscr_ratchet_common_hidden_ROUND5_SHARED_KEY_LEN;
+        }
 
-    if (receiver_one_time_private_key_second != NULL) {
-        shared_secret_size += vscr_ratchet_common_hidden_ROUND5_SHARED_KEY_LEN;
-    }
+        if (receiver_one_time_private_key_second != NULL) {
+            shared_secret_size += vscr_ratchet_common_hidden_ROUND5_SHARED_KEY_LEN;
+        }
 
-    vsc_buffer_t *shared_secret = vsc_buffer_new_with_capacity(shared_secret_size);
-    vsc_buffer_make_secure(shared_secret);
+        vsc_buffer_t *shared_secret = vsc_buffer_new_with_capacity(shared_secret_size);
+        vsc_buffer_make_secure(shared_secret);
 
-    vscr_status_t status = vscr_status_SUCCESS;
+        vscr_status_t status = vscr_status_SUCCESS;
 
-    int curve_status = curve25519_key_exchange(vsc_buffer_unused_bytes(shared_secret), sender_identity_public_key_first,
-            receiver_long_term_private_key_first);
-    vsc_buffer_inc_used(shared_secret, ED25519_DH_LEN);
-
-    if (curve_status != 0) {
-        status = vscr_status_ERROR_CURVE25519;
-        goto err;
-    }
-
-    curve_status = curve25519_key_exchange(vsc_buffer_unused_bytes(shared_secret), sender_ephemeral_public_key_first,
-            receiver_identity_private_key_first);
-    vsc_buffer_inc_used(shared_secret, ED25519_DH_LEN);
-
-    if (curve_status != 0) {
-        status = vscr_status_ERROR_CURVE25519;
-        goto err;
-    }
-
-    curve_status = curve25519_key_exchange(vsc_buffer_unused_bytes(shared_secret), sender_ephemeral_public_key_first,
-            receiver_long_term_private_key_first);
-    vsc_buffer_inc_used(shared_secret, ED25519_DH_LEN);
-
-    if (curve_status != 0) {
-        status = vscr_status_ERROR_CURVE25519;
-        goto err;
-    }
-
-    if (receiver_has_one_time_key) {
-        curve_status = curve25519_key_exchange(vsc_buffer_unused_bytes(shared_secret),
-                sender_ephemeral_public_key_first, receiver_one_time_private_key_first);
+        int curve_status = curve25519_key_exchange(vsc_buffer_unused_bytes(shared_secret), sender_identity_public_key_first,
+                receiver_long_term_private_key_first);
         vsc_buffer_inc_used(shared_secret, ED25519_DH_LEN);
 
         if (curve_status != 0) {
             status = vscr_status_ERROR_CURVE25519;
             goto err;
         }
-    }
 
-    status = vscr_ratchet_xxdh_compute_responder_pqc_shared_secret(self, sender_identity_public_key_second_verifier,
-            receiver_identity_private_key_second, receiver_long_term_private_key_second,
-            receiver_one_time_private_key_second, encapsulated_key_1, encapsulated_key_2, encapsulated_key_3,
-            decapsulated_keys_signature, shared_secret);
+        curve_status = curve25519_key_exchange(vsc_buffer_unused_bytes(shared_secret), sender_ephemeral_public_key_first,
+                receiver_identity_private_key_first);
+        vsc_buffer_inc_used(shared_secret, ED25519_DH_LEN);
 
-    if (status != vscr_status_SUCCESS) {
-        goto err;
-    }
+        if (curve_status != 0) {
+            status = vscr_status_ERROR_CURVE25519;
+            goto err;
+        }
 
-    VSCR_ASSERT(vsc_buffer_unused_len(shared_secret) == 0);
+        curve_status = curve25519_key_exchange(vsc_buffer_unused_bytes(shared_secret), sender_ephemeral_public_key_first,
+                receiver_long_term_private_key_first);
+        vsc_buffer_inc_used(shared_secret, ED25519_DH_LEN);
 
-    vscr_ratchet_xxdh_derive_key(vsc_buffer_data(shared_secret), shared_key);
+        if (curve_status != 0) {
+            status = vscr_status_ERROR_CURVE25519;
+            goto err;
+        }
 
-err:
-    vsc_buffer_destroy(&shared_secret);
+        if (receiver_has_one_time_key) {
+            curve_status = curve25519_key_exchange(vsc_buffer_unused_bytes(shared_secret),
+                    sender_ephemeral_public_key_first, receiver_one_time_private_key_first);
+            vsc_buffer_inc_used(shared_secret, ED25519_DH_LEN);
 
-    return status;
+            if (curve_status != 0) {
+                status = vscr_status_ERROR_CURVE25519;
+                goto err;
+            }
+        }
+
+        status = vscr_ratchet_xxdh_compute_responder_pqc_shared_secret(self, sender_identity_public_key_second_verifier,
+                receiver_identity_private_key_second, receiver_long_term_private_key_second,
+                receiver_one_time_private_key_second, encapsulated_key_1, encapsulated_key_2, encapsulated_key_3,
+                decapsulated_keys_signature, shared_secret);
+
+        if (status != vscr_status_SUCCESS) {
+            goto err;
+        }
+
+        VSCR_ASSERT(vsc_buffer_unused_len(shared_secret) == 0);
+
+        vscr_ratchet_xxdh_derive_key(vsc_buffer_data(shared_secret), shared_key);
+
+    err:
+        vsc_buffer_destroy(&shared_secret);
+
+        return status;
 }
 
 VSCR_PUBLIC vscr_status_t
@@ -686,57 +688,57 @@ vscr_ratchet_xxdh_compute_responder_pqc_shared_secret(vscr_ratchet_xxdh_t *self,
 
     vscr_status_t status = vscr_status_SUCCESS;
 
-    size_t pqc_begin_index = vsc_buffer_len(shared_secret);
+        size_t pqc_begin_index = vsc_buffer_len(shared_secret);
 
-    if (receiver_identity_private_key_second != NULL) {
-        status = vscr_ratchet_xxdh_decapsulate_pqc_key(
-                self, receiver_identity_private_key_second, encapsulated_key_1, shared_secret);
+        if (receiver_identity_private_key_second != NULL) {
+            status = vscr_ratchet_xxdh_decapsulate_pqc_key(
+                    self, receiver_identity_private_key_second, encapsulated_key_1, shared_secret);
 
-        if (status != vscr_status_SUCCESS) {
-            goto err;
+            if (status != vscr_status_SUCCESS) {
+                goto err;
+            }
         }
-    }
 
-    if (receiver_long_term_private_key_second != NULL) {
-        status = vscr_ratchet_xxdh_decapsulate_pqc_key(
-                self, receiver_long_term_private_key_second, encapsulated_key_2, shared_secret);
+        if (receiver_long_term_private_key_second != NULL) {
+            status = vscr_ratchet_xxdh_decapsulate_pqc_key(
+                    self, receiver_long_term_private_key_second, encapsulated_key_2, shared_secret);
 
-        if (status != vscr_status_SUCCESS) {
-            goto err;
+            if (status != vscr_status_SUCCESS) {
+                goto err;
+            }
         }
-    }
 
-    if (receiver_one_time_private_key_second != NULL) {
-        status = vscr_ratchet_xxdh_decapsulate_pqc_key(
-                self, receiver_one_time_private_key_second, encapsulated_key_3, shared_secret);
+        if (receiver_one_time_private_key_second != NULL) {
+            status = vscr_ratchet_xxdh_decapsulate_pqc_key(
+                    self, receiver_one_time_private_key_second, encapsulated_key_3, shared_secret);
 
-        if (status != vscr_status_SUCCESS) {
-            goto err;
+            if (status != vscr_status_SUCCESS) {
+                goto err;
+            }
         }
-    }
-    if (sender_identity_public_key_second_verifier != NULL) {
-        size_t length = vsc_buffer_len(shared_secret);
+        if (sender_identity_public_key_second_verifier != NULL) {
+            size_t length = vsc_buffer_len(shared_secret);
 
-        vsc_data_t pqc_shared_secret =
-                vsc_data_slice_beg(vsc_buffer_data(shared_secret), pqc_begin_index, length - pqc_begin_index);
-        VSCR_ASSERT(!vsc_data_is_empty(pqc_shared_secret));
+            vsc_data_t pqc_shared_secret =
+                    vsc_data_slice_beg(vsc_buffer_data(shared_secret), pqc_begin_index, length - pqc_begin_index);
+            VSCR_ASSERT(!vsc_data_is_empty(pqc_shared_secret));
 
-        vsc_buffer_t *hash = vsc_buffer_new_with_capacity(vscf_sha512_DIGEST_LEN);
-        vscf_sha512_hash(pqc_shared_secret, hash);
+            vsc_buffer_t *hash = vsc_buffer_new_with_capacity(vscf_sha512_DIGEST_LEN);
+            vscf_sha512_hash(pqc_shared_secret, hash);
 
-        bool verified = vscf_falcon_verify_hash(self->falcon, sender_identity_public_key_second_verifier,
-                vscf_alg_id_SHA512, vsc_buffer_data(hash), decapsulated_keys_signature);
+            bool verified = vscf_falcon_verify_hash(self->falcon, sender_identity_public_key_second_verifier,
+                    vscf_alg_id_SHA512, vsc_buffer_data(hash), decapsulated_keys_signature);
 
-        vsc_buffer_destroy(&hash);
+            vsc_buffer_destroy(&hash);
 
-        if (!verified) {
-            status = vscr_status_ERROR_DECAPS_SIGNATURE_INVALID;
-            goto err;
+            if (!verified) {
+                status = vscr_status_ERROR_DECAPS_SIGNATURE_INVALID;
+                goto err;
+            }
         }
-    }
 
-err:
-    return status;
+    err:
+        return status;
 }
 
 VSCR_PUBLIC void

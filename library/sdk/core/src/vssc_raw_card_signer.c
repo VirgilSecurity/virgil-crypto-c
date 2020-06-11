@@ -156,9 +156,9 @@ vssc_raw_card_signer_cleanup(vssc_raw_card_signer_t *self) {
         return;
     }
 
-    vssc_raw_card_signer_cleanup_ctx(self);
-
     vssc_raw_card_signer_release_random(self);
+
+    vssc_raw_card_signer_cleanup_ctx(self);
 
     vssc_zeroize(self, sizeof(vssc_raw_card_signer_t));
 }

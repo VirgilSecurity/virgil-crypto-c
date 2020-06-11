@@ -260,13 +260,13 @@ vscf_recipient_cipher_cleanup(vscf_recipient_cipher_t *self) {
         return;
     }
 
-    vscf_recipient_cipher_cleanup_ctx(self);
-
     vscf_recipient_cipher_release_random(self);
     vscf_recipient_cipher_release_encryption_cipher(self);
     vscf_recipient_cipher_release_encryption_padding(self);
     vscf_recipient_cipher_release_padding_params(self);
     vscf_recipient_cipher_release_signer_hash(self);
+
+    vscf_recipient_cipher_cleanup_ctx(self);
 
     vscf_zeroize(self, sizeof(vscf_recipient_cipher_t));
 }

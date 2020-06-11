@@ -136,9 +136,9 @@ vscf_key_provider_cleanup(vscf_key_provider_t *self) {
         return;
     }
 
-    vscf_key_provider_cleanup_ctx(self);
-
     vscf_key_provider_release_random(self);
+
+    vscf_key_provider_cleanup_ctx(self);
 
     vscf_zeroize(self, sizeof(vscf_key_provider_t));
 }

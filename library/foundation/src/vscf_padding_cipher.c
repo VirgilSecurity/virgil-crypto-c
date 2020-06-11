@@ -133,10 +133,10 @@ vscf_padding_cipher_cleanup(vscf_padding_cipher_t *self) {
         return;
     }
 
-    vscf_padding_cipher_cleanup_ctx(self);
-
     vscf_padding_cipher_release_cipher(self);
     vscf_padding_cipher_release_padding(self);
+
+    vscf_padding_cipher_cleanup_ctx(self);
 
     vscf_zeroize(self, sizeof(vscf_padding_cipher_t));
 }

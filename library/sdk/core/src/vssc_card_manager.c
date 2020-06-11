@@ -136,9 +136,9 @@ vssc_card_manager_cleanup(vssc_card_manager_t *self) {
         return;
     }
 
-    vssc_card_manager_cleanup_ctx(self);
-
     vssc_card_manager_release_random(self);
+
+    vssc_card_manager_cleanup_ctx(self);
 
     vssc_zeroize(self, sizeof(vssc_card_manager_t));
 }

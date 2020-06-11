@@ -131,9 +131,9 @@ vscf_group_session_ticket_cleanup(vscf_group_session_ticket_t *self) {
         return;
     }
 
-    vscf_group_session_ticket_cleanup_ctx(self);
-
     vscf_group_session_ticket_release_rng(self);
+
+    vscf_group_session_ticket_cleanup_ctx(self);
 
     vscf_zeroize(self, sizeof(vscf_group_session_ticket_t));
 }

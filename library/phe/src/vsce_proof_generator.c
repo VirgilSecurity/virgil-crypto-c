@@ -113,10 +113,10 @@ vsce_proof_generator_cleanup(vsce_proof_generator_t *self) {
         return;
     }
 
-    vsce_proof_generator_cleanup_ctx(self);
-
     vsce_proof_generator_release_random(self);
     vsce_proof_generator_release_operation_random(self);
+
+    vsce_proof_generator_cleanup_ctx(self);
 
     vsce_zeroize(self, sizeof(vsce_proof_generator_t));
 }
@@ -351,60 +351,60 @@ vsce_proof_generator_prove_success(vsce_proof_generator_t *self, mbedtls_ecp_gro
         mbedtls_ecp_point *term2, mbedtls_ecp_point *term3) {
 
     VSCE_ASSERT_PTR(self);
-    VSCE_ASSERT_PTR(op_group);
-    VSCE_ASSERT_PTR(priv);
-    VSCE_ASSERT_PTR(pub);
-    VSCE_ASSERT_PTR(p1);
-    VSCE_ASSERT_PTR(p2);
-    VSCE_ASSERT_PTR(blind_x);
-    VSCE_ASSERT_PTR(term1);
-    VSCE_ASSERT_PTR(term2);
-    VSCE_ASSERT((q1 == NULL && q2 == NULL && term3 == NULL) || (q1 != NULL && q2 != NULL && term3 != NULL));
+        VSCE_ASSERT_PTR(op_group);
+        VSCE_ASSERT_PTR(priv);
+        VSCE_ASSERT_PTR(pub);
+        VSCE_ASSERT_PTR(p1);
+        VSCE_ASSERT_PTR(p2);
+        VSCE_ASSERT_PTR(blind_x);
+        VSCE_ASSERT_PTR(term1);
+        VSCE_ASSERT_PTR(term2);
+        VSCE_ASSERT((q1 == NULL && q2 == NULL && term3 == NULL) || (q1 != NULL && q2 != NULL && term3 != NULL));
 
-    bool tp_mode = false;
+        bool tp_mode = false;
 
-    if (q1 != NULL) {
-        tp_mode = true;
-    }
+        if (q1 != NULL) {
+            tp_mode = true;
+        }
 
-    vsce_status_t status = vsce_status_SUCCESS;
+        vsce_status_t status = vsce_status_SUCCESS;
 
-    int mbedtls_status = 0;
-    mbedtls_status = mbedtls_ecp_gen_privkey(op_group, blind_x, vscf_mbedtls_bridge_random, self->random);
+        int mbedtls_status = 0;
+        mbedtls_status = mbedtls_ecp_gen_privkey(op_group, blind_x, vscf_mbedtls_bridge_random, self->random);
 
-    if (mbedtls_status != 0) {
-        status = vsce_status_ERROR_RNG_FAILED;
-        goto err;
-    }
+        if (mbedtls_status != 0) {
+            status = vsce_status_ERROR_RNG_FAILED;
+            goto err;
+        }
 
-    mbedtls_status =
-            mbedtls_ecp_mul(op_group, term1, blind_x, &op_group->G, vscf_mbedtls_bridge_random, self->operation_random);
-    VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
-    mbedtls_status = mbedtls_ecp_mul(op_group, term2, blind_x, p1, vscf_mbedtls_bridge_random, self->operation_random);
-    VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
-
-    if (tp_mode) {
         mbedtls_status =
-                mbedtls_ecp_mul(op_group, term3, blind_x, q1, vscf_mbedtls_bridge_random, self->operation_random);
+                mbedtls_ecp_mul(op_group, term1, blind_x, &op_group->G, vscf_mbedtls_bridge_random, self->operation_random);
         VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
-    }
+        mbedtls_status = mbedtls_ecp_mul(op_group, term2, blind_x, p1, vscf_mbedtls_bridge_random, self->operation_random);
+        VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
 
-    mbedtls_mpi challenge;
-    mbedtls_mpi_init(&challenge);
+        if (tp_mode) {
+            mbedtls_status =
+                    mbedtls_ecp_mul(op_group, term3, blind_x, q1, vscf_mbedtls_bridge_random, self->operation_random);
+            VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
+        }
 
-    vsce_phe_hash_hash_z_success(self->phe_hash, pub, p2, q2, term1, term2, term3, &challenge);
+        mbedtls_mpi challenge;
+        mbedtls_mpi_init(&challenge);
 
-    mbedtls_status = mbedtls_mpi_mul_mpi(&challenge, &challenge, priv);
-    VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
+        vsce_phe_hash_hash_z_success(self->phe_hash, pub, p2, q2, term1, term2, term3, &challenge);
 
-    mbedtls_status = mbedtls_mpi_add_mpi(blind_x, blind_x, &challenge);
-    VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
+        mbedtls_status = mbedtls_mpi_mul_mpi(&challenge, &challenge, priv);
+        VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
 
-    mbedtls_status = mbedtls_mpi_mod_mpi(blind_x, blind_x, &op_group->N);
-    VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
+        mbedtls_status = mbedtls_mpi_add_mpi(blind_x, blind_x, &challenge);
+        VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
 
-    mbedtls_mpi_free(&challenge);
+        mbedtls_status = mbedtls_mpi_mod_mpi(blind_x, blind_x, &op_group->N);
+        VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
 
-err:
-    return status;
+        mbedtls_mpi_free(&challenge);
+
+    err:
+        return status;
 }

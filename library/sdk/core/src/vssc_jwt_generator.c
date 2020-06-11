@@ -140,9 +140,9 @@ vssc_jwt_generator_cleanup(vssc_jwt_generator_t *self) {
         return;
     }
 
-    vssc_jwt_generator_cleanup_ctx(self);
-
     vssc_jwt_generator_release_random(self);
+
+    vssc_jwt_generator_cleanup_ctx(self);
 
     vssc_zeroize(self, sizeof(vssc_jwt_generator_t));
 }

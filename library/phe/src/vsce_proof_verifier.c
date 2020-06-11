@@ -113,10 +113,10 @@ vsce_proof_verifier_cleanup(vsce_proof_verifier_t *self) {
         return;
     }
 
-    vsce_proof_verifier_cleanup_ctx(self);
-
     vsce_proof_verifier_release_random(self);
     vsce_proof_verifier_release_operation_random(self);
+
+    vsce_proof_verifier_cleanup_ctx(self);
 
     vsce_zeroize(self, sizeof(vsce_proof_verifier_t));
 }
@@ -358,89 +358,89 @@ vsce_proof_verifier_check_success_proof(vsce_proof_verifier_t *self, mbedtls_ecp
         const mbedtls_ecp_point *p2, const mbedtls_ecp_point *q1, const mbedtls_ecp_point *q2) {
 
     VSCE_ASSERT_PTR(self);
-    VSCE_ASSERT_PTR(op_group);
-    VSCE_ASSERT_PTR(pub);
-    VSCE_ASSERT_PTR(blind_x);
-    VSCE_ASSERT_PTR(term1);
-    VSCE_ASSERT_PTR(term2);
-    VSCE_ASSERT_PTR(p1);
-    VSCE_ASSERT_PTR(p2);
-    VSCE_ASSERT((term3 == NULL && q1 == NULL && q2 == NULL) || (term3 != NULL && q1 != NULL && q2 != NULL));
+        VSCE_ASSERT_PTR(op_group);
+        VSCE_ASSERT_PTR(pub);
+        VSCE_ASSERT_PTR(blind_x);
+        VSCE_ASSERT_PTR(term1);
+        VSCE_ASSERT_PTR(term2);
+        VSCE_ASSERT_PTR(p1);
+        VSCE_ASSERT_PTR(p2);
+        VSCE_ASSERT((term3 == NULL && q1 == NULL && q2 == NULL) || (term3 != NULL && q1 != NULL && q2 != NULL));
 
-    vsce_status_t status = vsce_status_SUCCESS;
+        vsce_status_t status = vsce_status_SUCCESS;
 
-    bool tp_mode = false;
+        bool tp_mode = false;
 
-    if (term3 != NULL) {
-        tp_mode = true;
-    }
+        if (term3 != NULL) {
+            tp_mode = true;
+        }
 
-    mbedtls_mpi challenge;
-    mbedtls_mpi_init(&challenge);
+        mbedtls_mpi challenge;
+        mbedtls_mpi_init(&challenge);
 
-    vsce_phe_hash_hash_z_success(self->phe_hash, pub, p2, q2, term1, term2, term3, &challenge);
+        vsce_phe_hash_hash_z_success(self->phe_hash, pub, p2, q2, term1, term2, term3, &challenge);
 
-    mbedtls_ecp_point t1, t2;
-    mbedtls_ecp_point_init(&t1);
-    mbedtls_ecp_point_init(&t2);
+        mbedtls_ecp_point t1, t2;
+        mbedtls_ecp_point_init(&t1);
+        mbedtls_ecp_point_init(&t2);
 
-    // if term1 * (self.X ** challenge) != self.G ** blind_x:
-    // return False
-
-    int mbedtls_status = mbedtls_ecp_muladd(op_group, &t1, &self->one, term1, &challenge, pub);
-    VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
-
-    mbedtls_status =
-            mbedtls_ecp_mul(op_group, &t2, blind_x, &op_group->G, vscf_mbedtls_bridge_random, self->operation_random);
-    VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
-
-    if (mbedtls_ecp_point_cmp(&t1, &t2) != 0) {
-        status = vsce_status_ERROR_INVALID_SUCCESS_PROOF;
-        goto err;
-    }
-
-    mbedtls_ecp_point_free(&t1);
-    mbedtls_ecp_point_free(&t2);
-
-    // if term2 * (c0 ** challenge) != hs0 ** blind_x:
-    // return False
-
-    mbedtls_status = mbedtls_ecp_muladd(op_group, &t1, &self->one, term2, &challenge, p2);
-    VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
-
-    mbedtls_status = mbedtls_ecp_mul(op_group, &t2, blind_x, p1, vscf_mbedtls_bridge_random, self->operation_random);
-    VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
-
-    if (mbedtls_ecp_point_cmp(&t1, &t2) != 0) {
-        status = vsce_status_ERROR_INVALID_SUCCESS_PROOF;
-        goto err;
-    }
-
-    if (tp_mode) {
-        mbedtls_ecp_point_free(&t1);
-        mbedtls_ecp_point_free(&t2);
-
-        // if term3 * (c1 ** challenge) != hs1 ** blind_x:
+        // if term1 * (self.X ** challenge) != self.G ** blind_x:
         // return False
 
-        mbedtls_status = mbedtls_ecp_muladd(op_group, &t1, &self->one, term3, &challenge, q2);
+        int mbedtls_status = mbedtls_ecp_muladd(op_group, &t1, &self->one, term1, &challenge, pub);
         VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
 
         mbedtls_status =
-                mbedtls_ecp_mul(op_group, &t2, blind_x, q1, vscf_mbedtls_bridge_random, self->operation_random);
+                mbedtls_ecp_mul(op_group, &t2, blind_x, &op_group->G, vscf_mbedtls_bridge_random, self->operation_random);
         VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
 
         if (mbedtls_ecp_point_cmp(&t1, &t2) != 0) {
             status = vsce_status_ERROR_INVALID_SUCCESS_PROOF;
             goto err;
         }
-    }
 
-err:
-    mbedtls_ecp_point_free(&t1);
-    mbedtls_ecp_point_free(&t2);
+        mbedtls_ecp_point_free(&t1);
+        mbedtls_ecp_point_free(&t2);
 
-    mbedtls_mpi_free(&challenge);
+        // if term2 * (c0 ** challenge) != hs0 ** blind_x:
+        // return False
 
-    return status;
+        mbedtls_status = mbedtls_ecp_muladd(op_group, &t1, &self->one, term2, &challenge, p2);
+        VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
+
+        mbedtls_status = mbedtls_ecp_mul(op_group, &t2, blind_x, p1, vscf_mbedtls_bridge_random, self->operation_random);
+        VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
+
+        if (mbedtls_ecp_point_cmp(&t1, &t2) != 0) {
+            status = vsce_status_ERROR_INVALID_SUCCESS_PROOF;
+            goto err;
+        }
+
+        if (tp_mode) {
+            mbedtls_ecp_point_free(&t1);
+            mbedtls_ecp_point_free(&t2);
+
+            // if term3 * (c1 ** challenge) != hs1 ** blind_x:
+            // return False
+
+            mbedtls_status = mbedtls_ecp_muladd(op_group, &t1, &self->one, term3, &challenge, q2);
+            VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
+
+            mbedtls_status =
+                    mbedtls_ecp_mul(op_group, &t2, blind_x, q1, vscf_mbedtls_bridge_random, self->operation_random);
+            VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
+
+            if (mbedtls_ecp_point_cmp(&t1, &t2) != 0) {
+                status = vsce_status_ERROR_INVALID_SUCCESS_PROOF;
+                goto err;
+            }
+        }
+
+    err:
+        mbedtls_ecp_point_free(&t1);
+        mbedtls_ecp_point_free(&t2);
+
+        mbedtls_mpi_free(&challenge);
+
+        return status;
 }

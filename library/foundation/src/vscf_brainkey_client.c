@@ -121,10 +121,10 @@ vscf_brainkey_client_cleanup(vscf_brainkey_client_t *self) {
         return;
     }
 
-    vscf_brainkey_client_cleanup_ctx(self);
-
     vscf_brainkey_client_release_random(self);
     vscf_brainkey_client_release_operation_random(self);
+
+    vscf_brainkey_client_cleanup_ctx(self);
 
     vscf_zeroize(self, sizeof(vscf_brainkey_client_t));
 }

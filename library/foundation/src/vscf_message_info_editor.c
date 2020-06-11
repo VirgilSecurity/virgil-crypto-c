@@ -132,9 +132,9 @@ vscf_message_info_editor_cleanup(vscf_message_info_editor_t *self) {
         return;
     }
 
-    vscf_message_info_editor_cleanup_ctx(self);
-
     vscf_message_info_editor_release_random(self);
+
+    vscf_message_info_editor_cleanup_ctx(self);
 
     vscf_zeroize(self, sizeof(vscf_message_info_editor_t));
 }

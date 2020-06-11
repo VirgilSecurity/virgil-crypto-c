@@ -114,9 +114,9 @@ vscf_message_padding_cleanup(vscf_message_padding_t *self) {
         return;
     }
 
-    vscf_message_padding_cleanup_ctx(self);
-
     vscf_message_padding_release_rng(self);
+
+    vscf_message_padding_cleanup_ctx(self);
 
     vscf_zeroize(self, sizeof(vscf_message_padding_t));
 }

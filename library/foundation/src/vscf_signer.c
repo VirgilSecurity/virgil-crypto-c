@@ -125,10 +125,10 @@ vscf_signer_cleanup(vscf_signer_t *self) {
         return;
     }
 
-    vscf_signer_cleanup_ctx(self);
-
     vscf_signer_release_hash(self);
     vscf_signer_release_random(self);
+
+    vscf_signer_cleanup_ctx(self);
 
     vscf_zeroize(self, sizeof(vscf_signer_t));
 }
