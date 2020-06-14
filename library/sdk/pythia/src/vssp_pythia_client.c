@@ -397,8 +397,8 @@ vssp_pythia_client_make_request_generate_seed(const vssp_pythia_client_t *self, 
 //  Note, BrainKeyID can be empty.
 //
 VSSP_PUBLIC vssc_http_request_t *
-vssp_pythia_client_make_request_generate_seed_with_id(const vssp_pythia_client_t *self, vsc_data_t blinded_password,
-        vsc_str_t brain_key_id) {
+vssp_pythia_client_make_request_generate_seed_with_id(
+        const vssp_pythia_client_t *self, vsc_data_t blinded_password, vsc_str_t brain_key_id) {
 
     VSSP_ASSERT_PTR(self);
     VSSP_ASSERT(vsc_data_is_valid_and_non_empty(blinded_password));
@@ -428,8 +428,8 @@ vssp_pythia_client_make_request_generate_seed_with_id(const vssp_pythia_client_t
 //  Map response to the correspond model.
 //
 VSSP_PUBLIC vssp_brain_key_seed_t *
-vssp_pythia_client_process_response_generate_seed(const vssp_pythia_client_t *self,
-        const vssc_virgil_http_response_t *response, vssp_error_t *error) {
+vssp_pythia_client_process_response_generate_seed(
+        const vssp_pythia_client_t *self, const vssc_virgil_http_response_t *response, vssp_error_t *error) {
 
     VSSP_ASSERT_PTR(self);
     VSSP_ASSERT_PTR(response);
