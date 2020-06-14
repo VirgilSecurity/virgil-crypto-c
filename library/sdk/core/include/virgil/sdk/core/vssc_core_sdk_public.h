@@ -76,6 +76,7 @@
 #include "vssc_raw_card_signer.h"
 #include "vssc_raw_card_verifier.h"
 #include "vssc_status.h"
+#include "vssc_string_list.h"
 #include "vssc_unix_time.h"
 #include "vssc_virgil_http_client.h"
 #include "vssc_virgil_http_response.h"

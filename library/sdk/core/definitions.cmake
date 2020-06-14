@@ -59,6 +59,7 @@ target_compile_definitions(core_sdk
             "VSSC_JSON_OBJECT=$<BOOL:${VSSC_JSON_OBJECT}>"
             "VSSC_JSON_ARRAY=$<BOOL:${VSSC_JSON_ARRAY}>"
             "VSSC_UNIX_TIME=$<BOOL:${VSSC_UNIX_TIME}>"
+            "VSSC_STRING_LIST=$<BOOL:${VSSC_STRING_LIST}>"
             "VSSC_BASE64_URL=$<BOOL:${VSSC_BASE64_URL}>"
             "VSSC_JWT=$<BOOL:${VSSC_JWT}>"
             "VSSC_JWT_HEADER=$<BOOL:${VSSC_JWT_HEADER}>"

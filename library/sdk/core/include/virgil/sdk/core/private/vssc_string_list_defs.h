@@ -47,37 +47,23 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  This is an umbrella header that includes library private headers.
+//  Class 'string list' types definition.
 // --------------------------------------------------------------------------
 
-#ifndef VSSC_CORE_SDK_PRIVATE_H_INCLUDED
-#define VSSC_CORE_SDK_PRIVATE_H_INCLUDED
+#ifndef VSSC_STRING_LIST_DEFS_H_INCLUDED
+#define VSSC_STRING_LIST_DEFS_H_INCLUDED
 
+#include "vssc_library.h"
 #include "vssc_atomic.h"
-#include "vssc_card_client_defs.h"
-#include "vssc_card_defs.h"
-#include "vssc_card_manager_defs.h"
-#include "vssc_http_header_defs.h"
-#include "vssc_http_header_list_defs.h"
-#include "vssc_http_request_defs.h"
-#include "vssc_http_response_defs.h"
-#include "vssc_json_array_defs.h"
-#include "vssc_json_array_private.h"
-#include "vssc_json_object_defs.h"
-#include "vssc_json_object_private.h"
-#include "vssc_jwt_defs.h"
-#include "vssc_jwt_generator_defs.h"
-#include "vssc_jwt_header.h"
-#include "vssc_jwt_header_defs.h"
-#include "vssc_jwt_payload.h"
-#include "vssc_jwt_payload_defs.h"
-#include "vssc_jwt_private.h"
-#include "vssc_raw_card_defs.h"
-#include "vssc_raw_card_signature_defs.h"
-#include "vssc_raw_card_signature_list_defs.h"
-#include "vssc_raw_card_signer_defs.h"
-#include "vssc_string_list_defs.h"
-#include "vssc_virgil_http_response_defs.h"
+#include "vssc_string_list.h"
+
+#if !VSSC_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <virgil/crypto/common/vsc_str_mutable.h>
+#endif
+
+#if VSSC_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <VSCCommon/vsc_str_mutable.h>
+#endif
 
 // clang-format on
 //  @end
@@ -94,6 +80,30 @@ extern "C" {
 //  Generated section start.
 // --------------------------------------------------------------------------
 
+//
+//  Handle 'string list' context.
+//
+struct vssc_string_list_t {
+    //
+    //  Function do deallocate self context.
+    //
+    vssc_dealloc_fn self_dealloc_cb;
+    //
+    //  Reference counter.
+    //
+    VSSC_ATOMIC size_t refcnt;
+
+    vsc_str_mutable_t item;
+    //
+    //  Class specific context.
+    //
+    vssc_string_list_t *next;
+    //
+    //  Class specific context.
+    //
+    vssc_string_list_t *prev;
+};
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.
@@ -108,5 +118,5 @@ extern "C" {
 
 
 //  @footer
-#endif // VSSC_CORE_SDK_PRIVATE_H_INCLUDED
+#endif // VSSC_STRING_LIST_DEFS_H_INCLUDED
 //  @end

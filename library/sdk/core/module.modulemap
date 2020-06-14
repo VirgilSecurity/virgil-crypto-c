@@ -21,6 +21,7 @@ framework module VSSC {
     header "vssc_raw_card_signature_list.h"
     header "vssc_raw_card_signer.h"
     header "vssc_raw_card_verifier.h"
+    header "vssc_string_list.h"
     header "vssc_unix_time.h"
     header "vssc_virgil_http_client.h"
     header "vssc_virgil_http_response.h"

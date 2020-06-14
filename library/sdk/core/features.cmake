@@ -51,6 +51,7 @@ option(VSSC_ERROR "Enable class 'error'." ON)
 option(VSSC_JSON_OBJECT "Enable class 'json object'." ON)
 option(VSSC_JSON_ARRAY "Enable class 'json array'." ON)
 option(VSSC_UNIX_TIME "Enable class 'unix time'." ON)
+option(VSSC_STRING_LIST "Enable class 'string list'." ON)
 option(VSSC_BASE64_URL "Enable class 'base64 url'." ON)
 option(VSSC_JWT "Enable class 'jwt'." ON)
 option(VSSC_JWT_HEADER "Enable class 'jwt header'." ON)
@@ -77,6 +78,7 @@ mark_as_advanced(
         VSSC_JSON_OBJECT
         VSSC_JSON_ARRAY
         VSSC_UNIX_TIME
+        VSSC_STRING_LIST
         VSSC_BASE64_URL
         VSSC_JWT
         VSSC_JWT_HEADER

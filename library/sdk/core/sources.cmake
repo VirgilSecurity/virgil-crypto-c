@@ -169,6 +169,11 @@ set_property(
 )
 
 set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vssc_string_list.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
+)
+
+set_property(
     SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vssc_unix_time.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
@@ -240,6 +245,8 @@ target_sources(core_sdk
             "$<$<BOOL:${VSSC_RAW_CARD_SIGNER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vssc_raw_card_signer.h>"
             "$<$<BOOL:${VSSC_RAW_CARD_SIGNER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/private/vssc_raw_card_signer_defs.h>"
             "$<$<BOOL:${VSSC_RAW_CARD_VERIFIER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vssc_raw_card_verifier.h>"
+            "$<$<BOOL:${VSSC_STRING_LIST}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vssc_string_list.h>"
+            "$<$<BOOL:${VSSC_STRING_LIST}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/private/vssc_string_list_defs.h>"
             "$<$<BOOL:${VSSC_UNIX_TIME}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vssc_unix_time.h>"
             "$<$<BOOL:${VSSC_VIRGIL_HTTP_CLIENT}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vssc_virgil_http_client.h>"
             "$<$<BOOL:${VSSC_VIRGIL_HTTP_RESPONSE}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vssc_virgil_http_response.h>"
@@ -288,6 +295,8 @@ target_sources(core_sdk
             "$<$<BOOL:${VSSC_RAW_CARD_SIGNER}>:${CMAKE_CURRENT_LIST_DIR}/src/vssc_raw_card_signer.c>"
             "$<$<BOOL:${VSSC_RAW_CARD_SIGNER}>:${CMAKE_CURRENT_LIST_DIR}/src/vssc_raw_card_signer_defs.c>"
             "$<$<BOOL:${VSSC_RAW_CARD_VERIFIER}>:${CMAKE_CURRENT_LIST_DIR}/src/vssc_raw_card_verifier.c>"
+            "$<$<BOOL:${VSSC_STRING_LIST}>:${CMAKE_CURRENT_LIST_DIR}/src/vssc_string_list.c>"
+            "$<$<BOOL:${VSSC_STRING_LIST}>:${CMAKE_CURRENT_LIST_DIR}/src/vssc_string_list_defs.c>"
             "$<$<BOOL:${VSSC_UNIX_TIME}>:${CMAKE_CURRENT_LIST_DIR}/src/vssc_unix_time.c>"
             "$<$<BOOL:${VSSC_VIRGIL_HTTP_CLIENT}>:${CMAKE_CURRENT_LIST_DIR}/src/vssc_virgil_http_client.c>"
             "$<$<BOOL:${VSSC_VIRGIL_HTTP_RESPONSE}>:${CMAKE_CURRENT_LIST_DIR}/src/vssc_virgil_http_response.c>"
