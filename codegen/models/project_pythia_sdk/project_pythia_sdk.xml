@@ -22,7 +22,7 @@
 
 
     <feature name="multi threading" default="on">
-        Enable multi-threading safety for Cards Core SDK.
+        Enable multi-threading safety for Pythia SDK.
     </feature>
 
     <module name="assert" from="shared"/>
