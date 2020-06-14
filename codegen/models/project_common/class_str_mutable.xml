@@ -25,6 +25,14 @@
     </constructor>
 
 
+    <constructor name="concat">
+        Create a mutable string by concatenating 2 strings.
+
+        <argument name="lhs" class="str"/>
+        <argument name="rhs" class="str"/>
+    </constructor>
+
+
     <method name="is valid">
         Returns true if underlying string is defined.
 

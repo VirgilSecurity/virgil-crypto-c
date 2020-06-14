@@ -108,6 +108,12 @@ VSC_PUBLIC vsc_str_mutable_t
 vsc_str_mutable_from_str(vsc_str_t str);
 
 //
+//  Create a mutable string by concatenating 2 strings.
+//
+VSC_PUBLIC vsc_str_mutable_t
+vsc_str_mutable_concat(vsc_str_t lhs, vsc_str_t rhs);
+
+//
 //  Returns true if underlying string is defined.
 //
 VSC_PUBLIC bool
