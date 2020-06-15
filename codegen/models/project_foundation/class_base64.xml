@@ -47,4 +47,27 @@
 
         <return enum="status"/>
     </method>
+
+
+    <method name="encode new" scope="private">
+        Encode given data to the base64 format.
+        Return created buffer with encoded data.
+
+        Note, written buffer is NOT null-terminated.
+
+        <argument name="data" class="data"/>
+
+        <return class="buffer" access="disown"/>
+    </method>
+
+
+    <method name="decode new" scope="private">
+        Decode given data from the base64 format.
+        Return created buffer with decoded data.
+
+        <argument name="str" class="data"/>
+        <argument name="error" class="error" access="readwrite"/>
+
+        <return class="buffer"/>
+    </method>
 </class>

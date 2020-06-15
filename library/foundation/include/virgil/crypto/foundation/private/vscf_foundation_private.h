@@ -69,6 +69,7 @@
 #include "vscf_atomic.h"
 #include "vscf_auth_decrypt_api.h"
 #include "vscf_auth_encrypt_api.h"
+#include "vscf_base64_private.h"
 #include "vscf_cipher_alg_info_defs.h"
 #include "vscf_cipher_api.h"
 #include "vscf_cipher_auth_api.h"

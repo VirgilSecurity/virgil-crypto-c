@@ -53,6 +53,8 @@
 #include "vscf_base64.h"
 #include "vscf_memory.h"
 #include "vscf_assert.h"
+#include "vscf_base64_private.h"
+#include "vscf_error.h"
 
 #include <mbedtls/base64.h>
 
@@ -154,4 +156,46 @@ vscf_base64_decode(vsc_data_t str, vsc_buffer_t *data) {
     vsc_buffer_inc_used(data, len);
 
     return vscf_status_SUCCESS;
+}
+
+//
+//  Encode given data to the base64 format.
+//  Return created buffer with encoded data.
+//
+//  Note, written buffer is NOT null-terminated.
+//
+VSCF_PUBLIC vsc_buffer_t *
+vscf_base64_encode_new(vsc_data_t data) {
+
+    VSCF_ASSERT(vsc_data_is_valid(data));
+
+    const size_t encoded_len = vscf_base64_encoded_len(data.len);
+    const size_t buf_len = encoded_len > 0 ? encoded_len : 1;
+    vsc_buffer_t *buf = vsc_buffer_new_with_capacity(buf_len);
+    vscf_base64_encode(data, buf);
+
+    return buf;
+}
+
+//
+//  Decode given data from the base64 format.
+//  Return created buffer with decoded data.
+//
+VSCF_PUBLIC vsc_buffer_t *
+vscf_base64_decode_new(vsc_data_t str, vscf_error_t *error) {
+
+    VSCF_ASSERT(vsc_data_is_valid(str));
+
+    const size_t decoded_len = vscf_base64_decoded_len(str.len);
+    const size_t buf_len = decoded_len > 0 ? decoded_len : 1;
+    vsc_buffer_t *buf = vsc_buffer_new_with_capacity(buf_len);
+
+    const vscf_status_t status = vscf_base64_decode(str, buf);
+    if (status != vscf_status_SUCCESS) {
+        VSCF_ERROR_SAFE_UPDATE(error, status);
+        vsc_buffer_destroy(&buf);
+        return NULL;
+    }
+
+    return buf;
 }
