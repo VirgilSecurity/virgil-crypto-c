@@ -583,6 +583,15 @@ vsc_buffer_is_valid(const vsc_buffer_t *self) {
 }
 
 //
+//  Returns true if buffer is defined and handles at least one byte.
+//
+VSC_PUBLIC bool
+vsc_buffer_is_valid_and_non_empty(vsc_buffer_t *self) {
+
+    return (self != NULL) && (self->bytes != NULL) && (self->len <= self->capacity) && (self->len > 0);
+}
+
+//
 //  Returns underlying buffer bytes.
 //
 VSC_PUBLIC const byte *

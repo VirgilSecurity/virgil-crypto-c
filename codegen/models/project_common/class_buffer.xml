@@ -158,6 +158,12 @@
     </method>
 
 
+    <method name="is valid and non empty">
+        Returns true if buffer is defined and handles at least one byte.
+
+        <return type="boolean"/>
+    </method>
+
     <method name="bytes" is_const="1">
         Returns underlying buffer bytes.
 

@@ -117,7 +117,7 @@ vsc_str_mutable_concat(vsc_str_t lhs, vsc_str_t rhs) {
     VSC_ASSERT_ALLOC(chars_copy);
 
     memcpy(chars_copy, lhs.chars, lhs.len);
-    memcpy(chars_copy, rhs.chars, rhs.len);
+    memcpy(chars_copy + lhs.len, rhs.chars, rhs.len);
     chars_copy[chars_len] = '\0';
 
     return (vsc_str_mutable_t){chars_copy, chars_len};

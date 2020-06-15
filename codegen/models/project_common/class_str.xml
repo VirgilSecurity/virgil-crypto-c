@@ -1,6 +1,8 @@
 <class name="str" context="public" lifecycle="none" is_value_type="1">
     Encapsulates readonly array of characters, aka string view.
 
+    <require header="ctype.h" is_system="1"/>
+
 
     <property name="chars" type="char" access="readonly">
         Underlying characters array.
@@ -76,6 +78,15 @@
 
     <method name="equal">
         Return true if given string is equal.
+
+        <argument name="rhs" class="self"/>
+
+        <return type="boolean"/>
+    </method>
+
+
+    <method name="icase equal">
+        Return true if given string is equal (case-insensitive).
 
         <argument name="rhs" class="self"/>
 

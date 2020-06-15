@@ -151,6 +151,12 @@ VSC_PUBLIC bool
 vsc_str_equal(vsc_str_t self, vsc_str_t rhs);
 
 //
+//  Return true if given string is equal (case-insensitive).
+//
+VSC_PUBLIC bool
+vsc_str_icase_equal(vsc_str_t self, vsc_str_t rhs);
+
+//
 //  Perform constant-time string comparison.
 //  The time depends on the given length but not on the string itself.
 //  Return true if given string is equal.

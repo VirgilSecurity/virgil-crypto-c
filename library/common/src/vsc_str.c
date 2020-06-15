@@ -54,6 +54,8 @@
 #include "vsc_memory.h"
 #include "vsc_assert.h"
 
+#include <ctype.h>
+
 // clang-format on
 //  @end
 
@@ -162,6 +164,30 @@ VSC_PUBLIC bool
 vsc_str_equal(vsc_str_t self, vsc_str_t rhs) {
 
     return vsc_data_equal(vsc_str_as_data(self), vsc_str_as_data(rhs));
+}
+
+//
+//  Return true if given string is equal (case-insensitive).
+//
+VSC_PUBLIC bool
+vsc_str_icase_equal(vsc_str_t self, vsc_str_t rhs) {
+
+    VSC_ASSERT(vsc_str_is_valid(self));
+    VSC_ASSERT(vsc_str_is_valid(rhs));
+
+    if (self.len != rhs.len) {
+        return false;
+    }
+
+    for (size_t pos = 0; pos < self.len; ++pos) {
+        const char lhs_ch = self.chars[pos];
+        const char rhs_ch = rhs.chars[pos];
+        if (tolower(lhs_ch) != tolower(rhs_ch)) {
+            return false;
+        }
+    }
+
+    return true;
 }
 
 //
