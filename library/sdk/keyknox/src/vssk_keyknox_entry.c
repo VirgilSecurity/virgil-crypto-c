@@ -114,6 +114,13 @@ vssk_keyknox_entry_init_ctx_with_owner_disown(vssk_keyknox_entry_t *self, vsc_st
         vsc_buffer_t **value_ref, vsc_buffer_t **hash_ref);
 
 //
+//  Create Keyknox entry that was reset.
+//
+static void
+vssk_keyknox_entry_init_ctx_with_reset_entry(vssk_keyknox_entry_t *self, vsc_str_t owner, vsc_str_t root,
+        vsc_str_t path, vsc_str_t key);
+
+//
 //  Return size of 'vssk_keyknox_entry_t'.
 //
 VSSK_PUBLIC size_t
@@ -309,6 +316,40 @@ vssk_keyknox_entry_new_with_owner_disown(vsc_str_t owner, vsc_str_t root, vsc_st
     VSSK_ASSERT_ALLOC(self);
 
     vssk_keyknox_entry_init_with_owner_disown(self, owner, root, path, key, identities_ref, meta_ref, value_ref, hash_ref);
+
+    self->self_dealloc_cb = vssk_dealloc;
+
+    return self;
+}
+
+//
+//  Perform initialization of pre-allocated context.
+//  Create Keyknox entry that was reset.
+//
+VSSK_PUBLIC void
+vssk_keyknox_entry_init_with_reset_entry(vssk_keyknox_entry_t *self, vsc_str_t owner, vsc_str_t root, vsc_str_t path,
+        vsc_str_t key) {
+
+    VSSK_ASSERT_PTR(self);
+
+    vssk_zeroize(self, sizeof(vssk_keyknox_entry_t));
+
+    self->refcnt = 1;
+
+    vssk_keyknox_entry_init_ctx_with_reset_entry(self, owner, root, path, key);
+}
+
+//
+//  Allocate class context and perform it's initialization.
+//  Create Keyknox entry that was reset.
+//
+VSSK_PUBLIC vssk_keyknox_entry_t *
+vssk_keyknox_entry_new_with_reset_entry(vsc_str_t owner, vsc_str_t root, vsc_str_t path, vsc_str_t key) {
+
+    vssk_keyknox_entry_t *self = (vssk_keyknox_entry_t *) vssk_alloc(sizeof (vssk_keyknox_entry_t));
+    VSSK_ASSERT_ALLOC(self);
+
+    vssk_keyknox_entry_init_with_reset_entry(self, owner, root, path, key);
 
     self->self_dealloc_cb = vssk_dealloc;
 
@@ -598,6 +639,27 @@ vssk_keyknox_entry_init_ctx_with_owner_disown(vssk_keyknox_entry_t *self, vsc_st
 }
 
 //
+//  Create Keyknox entry that was reset.
+//
+static void
+vssk_keyknox_entry_init_ctx_with_reset_entry(
+        vssk_keyknox_entry_t *self, vsc_str_t owner, vsc_str_t root, vsc_str_t path, vsc_str_t key) {
+
+    VSSK_ASSERT_PTR(self);
+
+    VSSK_ASSERT(vsc_str_is_valid_and_non_empty(owner));
+    VSSK_ASSERT(vsc_str_is_valid(root));
+    VSSK_ASSERT(vsc_str_is_valid(path));
+    VSSK_ASSERT(vsc_str_is_valid(key));
+
+    self->owner = vsc_str_mutable_from_str(owner);
+    self->root = vsc_str_mutable_from_str(root);
+    self->path = vsc_str_mutable_from_str(path);
+    self->key = vsc_str_mutable_from_str(key);
+    self->identities = vssc_string_list_new();
+}
+
+//
 //  Return owner.
 //
 VSSK_PUBLIC vsc_str_t
@@ -667,9 +729,12 @@ VSSK_PUBLIC vsc_data_t
 vssk_keyknox_entry_meta(const vssk_keyknox_entry_t *self) {
 
     VSSK_ASSERT_PTR(self);
-    VSSK_ASSERT_PTR(self->meta);
 
-    return vsc_buffer_data(self->meta);
+    if (self->meta != NULL) {
+        return vsc_buffer_data(self->meta);
+    } else {
+        return vsc_data_empty();
+    }
 }
 
 //
@@ -679,9 +744,12 @@ VSSK_PUBLIC vsc_data_t
 vssk_keyknox_entry_value(const vssk_keyknox_entry_t *self) {
 
     VSSK_ASSERT_PTR(self);
-    VSSK_ASSERT_PTR(self->value);
 
-    return vsc_buffer_data(self->value);
+    if (self->value != NULL) {
+        return vsc_buffer_data(self->value);
+    } else {
+        return vsc_data_empty();
+    }
 }
 
 //

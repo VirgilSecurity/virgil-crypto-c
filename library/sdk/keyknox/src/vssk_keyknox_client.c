@@ -522,7 +522,6 @@ vssk_keyknox_client_init_ctx_with_base_url(vssk_keyknox_client_t *self, vsc_str_
 
 //
 //  Create request that performs push operation.
-//  Note, previous hash can be empty.
 //
 VSSK_PUBLIC vssc_http_request_t *
 vssk_keyknox_client_make_request_push(const vssk_keyknox_client_t *self, const vssk_keyknox_entry_t *new_entry) {
@@ -603,6 +602,165 @@ vssk_keyknox_client_process_response_push(
     VSSK_ASSERT_PTR(response);
 
     return vssk_keyknox_client_parse_keyknox_entry(response, error);
+}
+
+//
+//  Create request that performs pull operation.
+//  Note, identity can be empty.
+//
+VSSK_PUBLIC vssc_http_request_t *
+vssk_keyknox_client_make_request_pull(
+        const vssk_keyknox_client_t *self, vsc_str_t root, vsc_str_t path, vsc_str_t key, vsc_str_t identity) {
+
+    VSSK_ASSERT_PTR(self);
+    VSSK_ASSERT(vsc_str_is_valid_and_non_empty(root));
+    VSSK_ASSERT(vsc_str_is_valid_and_non_empty(path));
+    VSSK_ASSERT(vsc_str_is_valid_and_non_empty(key));
+    VSSK_ASSERT(vsc_str_is_valid(identity));
+
+    //
+    //  Create json body.
+    //
+    vssc_json_object_t *json = vssc_json_object_new();
+    vssc_json_object_add_string_value(json, k_json_key_root_str, root);
+    vssc_json_object_add_string_value(json, k_json_key_path_str, path);
+    vssc_json_object_add_string_value(json, k_json_key_key_str, key);
+
+    if (!vsc_str_is_empty(identity)) {
+        vssc_json_object_add_string_value(json, k_json_key_identity_str, identity);
+    }
+
+    //
+    //  Create request.
+    //
+    vsc_str_t json_body = vssc_json_object_as_str(json);
+    vssc_http_request_t *http_request = vssc_http_request_new_with_body(
+            vssc_http_request_method_post_str, vsc_str_mutable_as_str(self->pull_url), json_body);
+
+    vssc_json_object_destroy(&json);
+
+    return http_request;
+}
+
+//
+//  Map response to the correspond model.
+//
+VSSK_PUBLIC vssk_keyknox_entry_t *
+vssk_keyknox_client_process_response_pull(
+        const vssk_keyknox_client_t *self, const vssc_virgil_http_response_t *response, vssk_error_t *error) {
+
+    VSSK_ASSERT_PTR(self);
+    VSSK_ASSERT_PTR(response);
+
+    return vssk_keyknox_client_parse_keyknox_entry(response, error);
+}
+
+//
+//  Create request that performs reset operation.
+//
+//  Note, all parameters can be empty.
+//  Note, if identity is given, only "key" parameter can be optional.
+//
+VSSK_PUBLIC vssc_http_request_t *
+vssk_keyknox_client_make_request_reset(
+        const vssk_keyknox_client_t *self, vsc_str_t root, vsc_str_t path, vsc_str_t key, vsc_str_t identity) {
+
+    VSSK_ASSERT(vsc_str_is_valid(identity));
+    VSSK_ASSERT(vsc_str_is_valid(key));
+
+    if (vsc_str_is_empty(identity)) {
+        VSSK_ASSERT(vsc_str_is_valid(root));
+        VSSK_ASSERT(vsc_str_is_valid(path));
+    } else {
+        VSSK_ASSERT(vsc_str_is_valid_and_non_empty(root));
+        VSSK_ASSERT(vsc_str_is_valid_and_non_empty(path));
+    }
+
+    //
+    //  Create json body.
+    //
+    vssc_json_object_t *json = vssc_json_object_new();
+
+    if (!vsc_str_is_empty(root)) {
+        vssc_json_object_add_string_value(json, k_json_key_root_str, root);
+    }
+
+    if (!vsc_str_is_empty(path)) {
+        vssc_json_object_add_string_value(json, k_json_key_path_str, path);
+    }
+
+    if (!vsc_str_is_empty(key)) {
+        vssc_json_object_add_string_value(json, k_json_key_key_str, key);
+    }
+
+    if (!vsc_str_is_empty(identity)) {
+        vssc_json_object_add_string_value(json, k_json_key_identity_str, identity);
+    }
+
+    //
+    //  Create request.
+    //
+    vsc_str_t json_body = vssc_json_object_as_str(json);
+    vssc_http_request_t *http_request = vssc_http_request_new_with_body(
+            vssc_http_request_method_post_str, vsc_str_mutable_as_str(self->reset_url), json_body);
+
+    vssc_json_object_destroy(&json);
+
+    return http_request;
+}
+
+//
+//  Map response to the correspond model.
+//
+VSSK_PUBLIC vssk_keyknox_entry_t *
+vssk_keyknox_client_process_response_reset(
+        const vssk_keyknox_client_t *self, const vssc_virgil_http_response_t *response, vssk_error_t *error) {
+
+    VSSK_ASSERT_PTR(self);
+    VSSK_ASSERT_PTR(response);
+
+    vssc_error_t core_error;
+    vssc_error_reset(&core_error);
+
+    if (!vssc_virgil_http_response_is_success(response)) {
+        VSSK_ERROR_SAFE_UPDATE(error, vssk_status_HTTP_RESPONSE_CONTAINS_SERVICE_ERROR);
+        return NULL;
+    }
+
+    // TODO: Check Content-Type to be equal application/json
+
+    if (!vssc_virgil_http_response_has_body(response)) {
+        VSSK_ERROR_SAFE_UPDATE(error, vssk_status_HTTP_RESPONSE_BODY_PARSE_FAILED);
+        return NULL;
+    }
+
+    const vssc_json_object_t *json = vssc_virgil_http_response_body(response);
+
+    vsc_str_t owner = vssc_json_object_get_string_value(json, k_json_key_owner_str, &core_error);
+    if (vsc_str_is_empty(owner)) {
+        VSSK_ERROR_SAFE_UPDATE(error, vssk_status_KEYKNOX_ENTRY_PARSE_FAILED);
+        return NULL;
+    };
+
+    vsc_str_t root = vssc_json_object_get_string_value(json, k_json_key_root_str, &core_error);
+    if (vssc_error_has_error(&core_error)) {
+        VSSK_ERROR_SAFE_UPDATE(error, vssk_status_KEYKNOX_ENTRY_PARSE_FAILED);
+        return NULL;
+    };
+
+    vsc_str_t path = vssc_json_object_get_string_value(json, k_json_key_path_str, &core_error);
+    if (vssc_error_has_error(&core_error)) {
+        VSSK_ERROR_SAFE_UPDATE(error, vssk_status_KEYKNOX_ENTRY_PARSE_FAILED);
+        return NULL;
+    };
+
+    vsc_str_t key = vssc_json_object_get_string_value(json, k_json_key_key_str, &core_error);
+    if (vssc_error_has_error(&core_error)) {
+        VSSK_ERROR_SAFE_UPDATE(error, vssk_status_KEYKNOX_ENTRY_PARSE_FAILED);
+        return NULL;
+    };
+
+    return vssk_keyknox_entry_new_with_reset_entry(owner, root, path, key);
 }
 
 //
@@ -716,8 +874,6 @@ fail:
     vsc_buffer_destroy(&meta);
     vsc_buffer_destroy(&value);
     vsc_buffer_destroy(&hash);
-
-    VSSK_UNUSED(k_json_key_identity_str); // FIXME
 
     return NULL;
 }

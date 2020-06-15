@@ -68,6 +68,16 @@
     </constructor>
 
 
+    <constructor name="with reset entry">
+        Create Keyknox entry that was reset.
+
+        <argument name="owner" class="str"/>
+        <argument name="root" class="str"/>
+        <argument name="path" class="str"/>
+        <argument name="key" class="str"/>
+    </constructor>
+
+
     <method name="owner" is_const="1">
         Return owner.
 

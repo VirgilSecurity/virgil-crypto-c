@@ -165,7 +165,6 @@ vssk_keyknox_client_shallow_copy_const(const vssk_keyknox_client_t *self);
 
 //
 //  Create request that performs push operation.
-//  Note, previous hash can be empty.
 //
 VSSK_PUBLIC vssc_http_request_t *
 vssk_keyknox_client_make_request_push(const vssk_keyknox_client_t *self, const vssk_keyknox_entry_t *new_entry);
@@ -175,6 +174,38 @@ vssk_keyknox_client_make_request_push(const vssk_keyknox_client_t *self, const v
 //
 VSSK_PUBLIC vssk_keyknox_entry_t *
 vssk_keyknox_client_process_response_push(const vssk_keyknox_client_t *self,
+        const vssc_virgil_http_response_t *response, vssk_error_t *error);
+
+//
+//  Create request that performs pull operation.
+//  Note, identity can be empty.
+//
+VSSK_PUBLIC vssc_http_request_t *
+vssk_keyknox_client_make_request_pull(const vssk_keyknox_client_t *self, vsc_str_t root, vsc_str_t path, vsc_str_t key,
+        vsc_str_t identity);
+
+//
+//  Map response to the correspond model.
+//
+VSSK_PUBLIC vssk_keyknox_entry_t *
+vssk_keyknox_client_process_response_pull(const vssk_keyknox_client_t *self,
+        const vssc_virgil_http_response_t *response, vssk_error_t *error);
+
+//
+//  Create request that performs reset operation.
+//
+//  Note, all parameters can be empty.
+//  Note, if identity is given, only "key" parameter can be optional.
+//
+VSSK_PUBLIC vssc_http_request_t *
+vssk_keyknox_client_make_request_reset(const vssk_keyknox_client_t *self, vsc_str_t root, vsc_str_t path, vsc_str_t key,
+        vsc_str_t identity);
+
+//
+//  Map response to the correspond model.
+//
+VSSK_PUBLIC vssk_keyknox_entry_t *
+vssk_keyknox_client_process_response_reset(const vssk_keyknox_client_t *self,
         const vssc_virgil_http_response_t *response, vssk_error_t *error);
 
 

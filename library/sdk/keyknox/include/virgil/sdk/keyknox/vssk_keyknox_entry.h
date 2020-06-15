@@ -194,6 +194,21 @@ vssk_keyknox_entry_new_with_owner_disown(vsc_str_t owner, vsc_str_t root, vsc_st
         vsc_buffer_t **hash_ref);
 
 //
+//  Perform initialization of pre-allocated context.
+//  Create Keyknox entry that was reset.
+//
+VSSK_PUBLIC void
+vssk_keyknox_entry_init_with_reset_entry(vssk_keyknox_entry_t *self, vsc_str_t owner, vsc_str_t root, vsc_str_t path,
+        vsc_str_t key);
+
+//
+//  Allocate class context and perform it's initialization.
+//  Create Keyknox entry that was reset.
+//
+VSSK_PUBLIC vssk_keyknox_entry_t *
+vssk_keyknox_entry_new_with_reset_entry(vsc_str_t owner, vsc_str_t root, vsc_str_t path, vsc_str_t key);
+
+//
 //  Release all inner resources and deallocate context if needed.
 //  It is safe to call this method even if the context was statically allocated.
 //

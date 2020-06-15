@@ -124,7 +124,6 @@
 
     <method name="make request push" is_const="1">
          Create request that performs push operation.
-         Note, previous hash can be empty.
 
         <argument name="new entry" class="keyknox entry"/>
 
@@ -133,6 +132,54 @@
 
 
     <method name="process response push" is_const="1">
+        Map response to the correspond model.
+
+        <argument name="response" class="virgil http response" project="core sdk"/>
+        <argument name="error" class="error" access="readwrite"/>
+
+        <return class="keyknox entry" access="disown"/>
+    </method>
+
+
+    <method name="make request pull" is_const="1">
+         Create request that performs pull operation.
+         Note, identity can be empty.
+
+        <argument name="root" class="str"/>
+        <argument name="path" class="str"/>
+        <argument name="key" class="str"/>
+        <argument name="identity" class="str"/>
+
+        <return class="http request" project="core sdk" access="disown"/>
+    </method>
+
+
+    <method name="process response pull" is_const="1">
+        Map response to the correspond model.
+
+        <argument name="response" class="virgil http response" project="core sdk"/>
+        <argument name="error" class="error" access="readwrite"/>
+
+        <return class="keyknox entry" access="disown"/>
+    </method>
+
+
+    <method name="make request reset" is_const="1">
+         Create request that performs reset operation.
+
+         Note, all parameters can be empty.
+         Note, if identity is given, only "key" parameter can be optional.
+
+        <argument name="root" class="str"/>
+        <argument name="path" class="str"/>
+        <argument name="key" class="str"/>
+        <argument name="identity" class="str"/>
+
+        <return class="http request" project="core sdk" access="disown"/>
+    </method>
+
+
+    <method name="process response reset" is_const="1">
         Map response to the correspond model.
 
         <argument name="response" class="virgil http response" project="core sdk"/>
