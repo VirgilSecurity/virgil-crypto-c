@@ -356,7 +356,7 @@ vssc_http_header_init_ctx_with(vssc_http_header_t *self, vsc_str_t name, vsc_str
 
     VSSC_ASSERT_PTR(self);
     VSSC_ASSERT(vsc_str_is_valid_and_non_empty(name));
-    VSSC_ASSERT(vsc_str_is_valid_and_non_empty(value));
+    VSSC_ASSERT(vsc_str_is_valid(value));
 
     self->name = vsc_str_mutable_from_str(name);
     self->value = vsc_str_mutable_from_str(value);
