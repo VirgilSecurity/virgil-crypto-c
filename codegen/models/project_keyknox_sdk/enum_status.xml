@@ -1,0 +1,24 @@
+<enum name="status" definition="public">
+    Defines the library status codes.
+
+    <constant name="success" value="0">
+        No errors was occurred.
+    </constant>
+
+    <constant name="internal error" value="-1">
+        Met internal inconsistency.
+    </constant>
+
+    <constant name="http response contains service error" value="-401">
+        Response processing failed because given HTTP response contains Virgil Service error.
+    </constant>
+
+    <constant name="http response body parse failed" value="-402">
+        Given HTTP response body can not be parsed in an expected way.
+    </constant>
+
+    <constant name="keyknox entry parse failed" value="-403">
+        Failed to parse Keyknox entry from the service response.
+    </constant>
+
+</enum>

@@ -1,0 +1,49 @@
+<project
+        name="keyknox sdk"
+        brief="Virgil Security Keyknox SDK"
+        package="sdk keyknox"
+        namespace="virgil sdk keyknox"
+        framework="VSSK"
+        prefix="vssk"
+        wrappers=""
+        >
+
+    <version major="0" minor="16" patch="0"/>
+
+    Keyknox helps safeguard cryptographic keys and secrets used by your users in your software.
+    By using Keyknox, your users can securely store keys and secrets (such as authentication keys,
+    identity keys, chat thread keys, passwords, etc..) as well as sync and share them between users' and devices.
+    Keyknox is designed so that only your users can have access to their keys. All keys and secrets are stored in
+    encrypted format and the only user is able to decrypt them on their own authorized devices.
+
+    <require project="common" feature="library"/>
+    <require project="foundation" feature="library"/>
+    <require project="core sdk" feature="library"/>
+
+
+    <feature name="multi threading" default="on">
+        Enable multi-threading safety for Keyknox SDK.
+    </feature>
+
+
+    <module name="assert" from="shared"/>
+    <module name="library" from="shared"/>
+    <module name="memory" from="shared"/>
+    <module name="atomic" from="shared"/>
+
+    <enum name="status"/>
+
+    <!-- Common modules -->
+    <class name="error" from="shared"/>
+
+    <!-- Keyknox Client -->
+    <class name="keyknox client"/>
+    <class name="keyknox entry"/>
+
+    <error_message_getter success="0">
+        <require enum="status"/>
+
+        char error_message[48] = {0x00};
+        snprintf(error_message, sizeof(error_message), "Unhandled vsc::keyknox_sdk error -0x%04x", error);
+    </error_message_getter>
+</project>

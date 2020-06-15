@@ -97,6 +97,7 @@ option(VIRGIL_LIB_RATCHET "Build 'ratchet' library" ON)
 option(VIRGIL_LIB_PHE "Build 'phe' library" ON)
 option(VIRGIL_SDK_CORE "Build 'core' SDK" ON)
 option(VIRGIL_SDK_PYTHIA "Build 'pythia' SDK" ON)
+option(VIRGIL_SDK_KEYKNOX "Build 'keyknox' SDK" ON)
 
 #
 # Programs
@@ -244,6 +245,10 @@ endif()
 
 if(VIRGIL_SDK_PYTHIA)
     add_subdirectory("library/sdk/pythia")
+endif()
+
+if(VIRGIL_SDK_KEYKNOX)
+    add_subdirectory("library/sdk/keyknox")
 endif()
 
 

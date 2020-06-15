@@ -1,0 +1,153 @@
+<class name="keyknox client">
+    Helps to communicate with Virgil Keyknox Service.
+
+    <require module="base64 private" project="foundation"/>
+    <require module="json object private" project="core sdk"/>
+
+    <property name="push url" class="str mutable"/>
+    <property name="pull url" class="str mutable"/>
+    <property name="keys url" class="str mutable"/>
+    <property name="reset url" class="str mutable"/>
+
+
+    <constant name="k base url" type="string" visibility="private">
+        Base service URL.
+
+        <value value="https://api.virgilsecurity.com"/>
+    </constant>
+
+
+    <constant name="k url path push" type="string" visibility="private" >
+        POST /push
+
+        <value value="/keyknox/v2/push"/>
+    </constant>
+
+
+    <constant name="k url path pull" type="string" visibility="private" >
+        POST /pull
+
+        <value value="/keyknox/v2/pull"/>
+    </constant>
+
+
+    <constant name="k url path keys" type="string" visibility="private" >
+        POST /keys
+
+        <value value="/keyknox/v2/keys"/>
+    </constant>
+
+
+    <constant name="k url path reset" type="string" visibility="private" >
+        POST /reset
+
+        <value value="/keyknox/v2/reset"/>
+    </constant>
+
+
+    <constant name="k json key owner" type="string" visibility="private" >
+        JSON key: owner
+
+        <value value="owner"/>
+    </constant>
+
+
+    <constant name="k json key root" type="string" visibility="private" >
+        JSON key: root
+
+        <value value="root"/>
+    </constant>
+
+
+    <constant name="k json key path" type="string" visibility="private" >
+        JSON key: path
+
+        <value value="path"/>
+    </constant>
+
+
+    <constant name="k json key key" type="string" visibility="private" >
+        JSON key: key
+
+        <value value="key"/>
+    </constant>
+
+
+    <constant name="k json key identity" type="string" visibility="private" >
+        JSON key: identity
+
+        <value value="identity"/>
+    </constant>
+
+
+    <constant name="k json key identities" type="string" visibility="private" >
+        JSON key: identities
+
+        <value value="identities"/>
+    </constant>
+
+
+    <constant name="k json key meta" type="string" visibility="private" >
+        JSON key: meta
+
+        <value value="meta"/>
+    </constant>
+
+
+    <constant name="k json key value" type="string" visibility="private" >
+        JSON key: value
+
+        <value value="value"/>
+    </constant>
+
+
+    <constant name="k header name virgil keyknox hash" type="string" visibility="private" >
+        Custom HTTP header: Virgil-Keyknox-Hash
+
+        <value value="Virgil-Keyknox-Hash"/>
+    </constant>
+
+
+    <constant name="k header name virgil keyknox previous hash" type="string" visibility="private" >
+        Custom HTTP header: Virgil-Keyknox-Previous-Hash
+
+        <value value="Virgil-Keyknox-Previous-Hash"/>
+    </constant>
+
+
+    <constructor name="with base url">
+        Create Keyknox Client with a given Virgil Base URL, aka https://api.virgilsecurity.com
+
+        <argument name="url" class="str"/>
+    </constructor>
+
+
+    <method name="make request push" is_const="1">
+         Create request that performs push operation.
+         Note, previous hash can be empty.
+
+        <argument name="new entry" class="keyknox entry"/>
+
+        <return class="http request" project="core sdk" access="disown"/>
+    </method>
+
+
+    <method name="process response push" is_const="1">
+        Map response to the correspond model.
+
+        <argument name="response" class="virgil http response" project="core sdk"/>
+        <argument name="error" class="error" access="readwrite"/>
+
+        <return class="keyknox entry" access="disown"/>
+    </method>
+
+
+    <method name="parse keyknox entry" is_static="1" declaration="private">
+        Parse keyknox entry from json object.
+
+        <argument name="response" class="virgil http response" project="core sdk"/>
+        <argument name="error" class="error"/>
+
+        <return class="keyknox entry" access="disown"/>
+    </method>
+</class>

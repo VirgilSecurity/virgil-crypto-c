@@ -1,0 +1,126 @@
+<class name="keyknox entry">
+    A new or stored record within the Virgil Keyknox Service.
+
+
+    <property name="owner" class="str mutable"/>
+    <property name="root" class="str mutable"/>
+    <property name="path" class="str mutable"/>
+    <property name="key" class="str mutable"/>
+    <property name="identities" class="string list" access="readonly" project="core sdk"/>
+    <property name="meta" class="buffer"/>
+    <property name="value" class="buffer"/>
+    <property name="hash" class="buffer"/>
+
+
+    <constructor name="with">
+        Create Keyknox entry without "owner".
+        Suitable for the push operation to the the Keyknox Service.
+
+        <argument name="root" class="str"/>
+        <argument name="path" class="str"/>
+        <argument name="key" class="str"/>
+        <argument name="identities" class="string list" project="core sdk"/>
+        <argument name="meta" class="data"/>
+        <argument name="value" class="data"/>
+        <argument name="hash" class="data"/>
+    </constructor>
+
+
+    <constructor name="with disown" visibility="private">
+        Create Keyknox entry without "owner".
+        Suitable for the push operation to the the Keyknox Service.
+
+        <argument name="root" class="str"/>
+        <argument name="path" class="str"/>
+        <argument name="key" class="str"/>
+        <argument name="identities" class="string list" project="core sdk" access="disown"/>
+        <argument name="meta" class="buffer" access="disown"/>
+        <argument name="value" class="buffer" access="disown"/>
+        <argument name="hash" class="buffer" access="disown"/>
+    </constructor>
+
+
+    <constructor name="with owner">
+        Create fully defined Keyknox entry.
+
+        <argument name="owner" class="str"/>
+        <argument name="root" class="str"/>
+        <argument name="path" class="str"/>
+        <argument name="key" class="str"/>
+        <argument name="identities" class="string list" project="core sdk"/>
+        <argument name="meta" class="data"/>
+        <argument name="value" class="data"/>
+        <argument name="hash" class="data"/>
+    </constructor>
+
+
+    <constructor name="with owner disown" visibility="private">
+        Create fully defined Keyknox entry.
+
+        <argument name="owner" class="str"/>
+        <argument name="root" class="str"/>
+        <argument name="path" class="str"/>
+        <argument name="key" class="str"/>
+        <argument name="identities" class="string list" project="core sdk" access="disown"/>
+        <argument name="meta" class="buffer" access="disown"/>
+        <argument name="value" class="buffer" access="disown"/>
+        <argument name="hash" class="buffer" access="disown"/>
+    </constructor>
+
+
+    <method name="owner" is_const="1">
+        Return owner.
+
+        <return class="str"/>
+    </method>
+
+
+    <method name="root" is_const="1">
+        Return root path.
+
+        <return class="str"/>
+    </method>
+
+
+    <method name="path" is_const="1">
+        Return second path.
+
+
+        <return class="str"/>
+    </method>
+
+
+    <method name="key" is_const="1">
+        Return key.
+
+        <return class="str"/>
+    </method>
+
+
+    <method name="identities" is_const="1">
+        Return list of users that have access to the entry.
+
+        <return class="string list" project="core sdk"/>
+    </method>
+
+
+    <method name="meta" is_const="1">
+        Return meta.
+
+        <return class="data"/>
+    </method>
+
+
+    <method name="value" is_const="1">
+        Return value.
+
+        <return class="data"/>
+    </method>
+
+
+    <method name="hash" is_const="1">
+        Return hash.
+
+        <return class="data"/>
+    </method>
+</class>
