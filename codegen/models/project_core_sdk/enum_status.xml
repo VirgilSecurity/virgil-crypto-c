@@ -62,7 +62,11 @@
     </constant>
 
     <constant name="http body parse failed" value="-303">
-        Failed to parse JWT HTTP body.
+        Failed to parse HTTP body.
+    </constant>
+
+    <constant name="http header not found" value="-304">
+        Cannot find HTTP header with a given name.
     </constant>
 
     <constant name="http response contains service error" value="-401">

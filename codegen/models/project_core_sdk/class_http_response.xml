@@ -48,4 +48,14 @@
 
         <return class="http header list"/>
     </method>
+
+
+    <method name="find header" is_const="1">
+        Find header by it's name.
+
+        <argument name="name" class="str"/>
+        <argument name="error" class="error"/>
+
+        <return class="str"/>
+    </method>
 </class>

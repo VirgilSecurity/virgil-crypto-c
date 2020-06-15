@@ -175,6 +175,19 @@ VSSC_PUBLIC vssc_json_object_t *
 vssc_json_array_get_object_value(const vssc_json_array_t *self, size_t index, vssc_error_t *error);
 
 //
+//  Add string value.
+//
+VSSC_PUBLIC void
+vssc_json_array_add_string_value(vssc_json_array_t *self, vsc_str_t value);
+
+//
+//  Return a string value for a given index.
+//  Check array length before call this method.
+//
+VSSC_PUBLIC vsc_str_t
+vssc_json_array_get_string_value(const vssc_json_array_t *self, size_t index, vssc_error_t *error);
+
+//
 //  Return JSON body as string.
 //
 VSSC_PUBLIC vsc_str_t

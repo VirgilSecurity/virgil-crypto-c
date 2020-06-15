@@ -61,6 +61,7 @@
 #include <json-c/json.h>
 #include <virgil/crypto/common/vsc_str_mutable.h>
 #include <virgil/crypto/foundation/vscf_base64.h>
+#include <virgil/crypto/foundation/private/vscf_base64_private.h>
 
 // clang-format on
 //  @end
@@ -480,6 +481,38 @@ vssc_json_object_get_binary_value(const vssc_json_object_t *self, vsc_str_t key,
     const vscf_status_t base64_status = vscf_base64_decode(vsc_str_as_data(base64_str), value);
 
     return (base64_status == vscf_status_SUCCESS) ? vssc_status_SUCCESS : vssc_status_JSON_VALUE_IS_NOT_BASE64;
+}
+
+//
+//  Return a binary value for a given key.
+//  Return error, if given key is not found or type mismatch.
+//  Return error, if base64 decode failed.
+//
+VSSC_PUBLIC vsc_buffer_t *
+vssc_json_object_get_binary_value_new(const vssc_json_object_t *self, vsc_str_t key, vssc_error_t *error) {
+
+    VSSC_ASSERT_PTR(self);
+    VSSC_ASSERT(vsc_str_is_valid_and_non_empty(key));
+
+    vssc_error_t core_error;
+    vssc_error_reset(&core_error);
+
+    vsc_str_t base64_str = vssc_json_object_get_string_value(self, key, &core_error);
+    if (vssc_error_has_error(&core_error)) {
+        VSSC_ERROR_SAFE_UPDATE(error, vssc_error_status(&core_error));
+        return NULL;
+    }
+
+    vscf_error_t foundation_error;
+    vscf_error_reset(&foundation_error);
+
+    vsc_buffer_t *data = vscf_base64_decode_new(vsc_str_as_data(base64_str), &foundation_error);
+    if (vscf_error_has_error(&foundation_error)) {
+        VSSC_ERROR_SAFE_UPDATE(error, vssc_status_JSON_VALUE_IS_NOT_BASE64);
+        return NULL;
+    }
+
+    return data;
 }
 
 //

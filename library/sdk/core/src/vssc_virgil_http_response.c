@@ -515,6 +515,18 @@ vssc_virgil_http_response_headers(const vssc_virgil_http_response_t *self) {
 }
 
 //
+//  Find header by it's name.
+//
+VSSC_PUBLIC vsc_str_t
+vssc_virgil_http_response_find_header(const vssc_virgil_http_response_t *self, vsc_str_t name, vssc_error_t *error) {
+
+    VSSC_ASSERT_PTR(self);
+    VSSC_ASSERT_PTR(self->http_headers);
+
+    return vssc_http_header_list_find(self->http_headers, name, error);
+}
+
+//
 //  Check status code range [200..299].
 //
 static bool

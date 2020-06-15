@@ -198,6 +198,12 @@ vssc_virgil_http_response_service_error_description(const vssc_virgil_http_respo
 VSSC_PUBLIC const vssc_http_header_list_t *
 vssc_virgil_http_response_headers(const vssc_virgil_http_response_t *self);
 
+//
+//  Find header by it's name.
+//
+VSSC_PUBLIC vsc_str_t
+vssc_virgil_http_response_find_header(const vssc_virgil_http_response_t *self, vsc_str_t name, vssc_error_t *error);
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.

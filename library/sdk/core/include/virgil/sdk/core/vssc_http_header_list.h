@@ -56,6 +56,15 @@
 #include "vssc_library.h"
 #include "vssc_http_header.h"
 #include "vssc_http_header_list.h"
+#include "vssc_error.h"
+
+#if !VSSC_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <virgil/crypto/common/vsc_str.h>
+#endif
+
+#if VSSC_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <VSCCommon/vsc_str.h>
+#endif
 
 // clang-format on
 //  @end
@@ -185,6 +194,12 @@ vssc_http_header_list_prev(const vssc_http_header_list_t *self);
 //
 VSSC_PUBLIC void
 vssc_http_header_list_clear(vssc_http_header_list_t *self);
+
+//
+//  Find header by it's name.
+//
+VSSC_PUBLIC vsc_str_t
+vssc_http_header_list_find(const vssc_http_header_list_t *self, vsc_str_t name, vssc_error_t *error);
 
 
 // --------------------------------------------------------------------------

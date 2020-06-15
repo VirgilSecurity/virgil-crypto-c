@@ -63,4 +63,14 @@
     <method name="clear">
         Remove all items.
     </method>
+
+
+    <method name="find" is_const="1">
+        Find header by it's name.
+
+        <argument name="name" class="str"/>
+        <argument name="error" class="error"/>
+
+        <return class="str"/>
+    </method>
 </class>

@@ -468,24 +468,11 @@ vssc_card_client_process_response_get_card(
     //
     //  Check if Card is outdated
     //
-    for (const vssc_http_header_list_t *header_it = vssc_virgil_http_response_headers(response);
-            (header_it != NULL) && vssc_http_header_list_has_item(header_it);
-            header_it = vssc_http_header_list_next(header_it)) {
+    vsc_str_t is_outdated_str =
+            vssc_virgil_http_response_find_header(response, k_header_name_x_virgil_is_superseeded_str, NULL);
 
-        const vssc_http_header_t *header = vssc_http_header_list_item(header_it);
-
-
-        vsc_str_t header_name = vssc_http_header_name(header);
-        if (vsc_str_equal(header_name, k_header_name_x_virgil_is_superseeded_str)) {
-            vsc_str_t header_value = vssc_http_header_value(header);
-
-            const bool is_outdated = vsc_str_equal(header_value, vsc_str("true", 4));
-
-            vssc_raw_card_set_is_outdated(raw_card, is_outdated);
-
-            break;
-        }
-    }
+    const bool is_outdated = vsc_str_equal(is_outdated_str, vsc_str("true", 4));
+    vssc_raw_card_set_is_outdated(raw_card, is_outdated);
 
     return raw_card;
 }

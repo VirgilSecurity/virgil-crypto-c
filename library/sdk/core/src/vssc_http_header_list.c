@@ -378,3 +378,28 @@ vssc_http_header_list_clear(vssc_http_header_list_t *self) {
     vssc_http_header_destroy(&self->item);
     vssc_http_header_list_destroy(&self->next);
 }
+
+//
+//  Find header by it's name.
+//
+VSSC_PUBLIC vsc_str_t
+vssc_http_header_list_find(const vssc_http_header_list_t *self, vsc_str_t name, vssc_error_t *error) {
+
+    VSSC_ASSERT_PTR(self);
+    VSSC_ASSERT(vsc_str_is_valid_and_non_empty(name));
+
+    for (const vssc_http_header_list_t *it = self; (it != NULL) && (it->item != NULL); it = it->next) {
+
+        const vssc_http_header_t *header = it->item;
+
+        vsc_str_t candidate_name = vssc_http_header_name(header);
+        if (vsc_str_icase_equal(candidate_name, name)) {
+            vsc_str_t value = vssc_http_header_value(header);
+            return value;
+        }
+    }
+
+    VSSC_ERROR_SAFE_UPDATE(error, vssc_status_HTTP_HEADER_NOT_FOUND);
+
+    return vsc_str_empty();
+}

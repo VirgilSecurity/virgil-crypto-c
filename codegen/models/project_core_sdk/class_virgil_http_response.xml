@@ -94,6 +94,16 @@
     </method>
 
 
+    <method name="find header" is_const="1">
+        Find header by it's name.
+
+        <argument name="name" class="str"/>
+        <argument name="error" class="error"/>
+
+        <return class="str"/>
+    </method>
+
+
     <method name="is http status code success" is_static="1" declaration="private">
         Check status code range [200..299].
 

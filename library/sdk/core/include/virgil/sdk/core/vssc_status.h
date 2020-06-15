@@ -133,9 +133,13 @@ enum vssc_status_t {
     //
     vssc_status_HTTP_STATUS_CODE_INVALID = -302,
     //
-    //  Failed to parse JWT HTTP body.
+    //  Failed to parse HTTP body.
     //
     vssc_status_HTTP_BODY_PARSE_FAILED = -303,
+    //
+    //  Cannot find HTTP header with a given name.
+    //
+    vssc_status_HTTP_HEADER_NOT_FOUND = -304,
     //
     //  Response processing failed because given HTTP Response contains Virgil Service error.
     //

@@ -63,6 +63,24 @@
     </method>
 
 
+    <method name="add string value">
+        Add string value.
+
+        <argument name="value" class="str"/>
+    </method>
+
+
+    <method name="get string value" is_const="1">
+        Return a string value for a given index.
+        Check array length before call this method.
+
+        <argument name="index" type="size"/>
+        <argument name="error" class="error" access="readwrite"/>
+
+        <return class="str"/>
+    </method>
+
+
     <method name="as str" is_const="1">
         Return JSON body as string.
 

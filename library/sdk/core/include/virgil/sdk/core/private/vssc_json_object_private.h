@@ -50,11 +50,22 @@
 #include "vssc_json_array_defs.h"
 #include "vssc_json_array_private.h"
 #include "vssc_json_object.h"
+#include "vssc_error.h"
 #include "vssc_json_array.h"
 
 #include <json-c/json.h>
 #include <virgil/crypto/common/vsc_str_mutable.h>
 #include <virgil/crypto/foundation/vscf_base64.h>
+
+#if !VSSC_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <virgil/crypto/common/vsc_str.h>
+#   include <virgil/crypto/common/vsc_buffer.h>
+#endif
+
+#if VSSC_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <VSCCommon/vsc_str.h>
+#   include <VSCCommon/vsc_buffer.h>
+#endif
 
 // clang-format on
 //  @end
@@ -76,6 +87,14 @@ extern "C" {
 //
 VSSC_PUBLIC vssc_json_object_t *
 vssc_json_object_create_with_json_obj(json_object **json_obj_ref);
+
+//
+//  Return a binary value for a given key.
+//  Return error, if given key is not found or type mismatch.
+//  Return error, if base64 decode failed.
+//
+VSSC_PUBLIC vsc_buffer_t *
+vssc_json_object_get_binary_value_new(const vssc_json_object_t *self, vsc_str_t key, vssc_error_t *error);
 
 
 // --------------------------------------------------------------------------

@@ -107,15 +107,15 @@ test__publish_card__with_new_jwt_and_new_keypair__returned_card_is_valid(void) {
 
     vssc_virgil_http_response_t *publish_card_response =
             vssc_virgil_http_client_send(publish_card_request, env->jwt, &core_sdk_error);
+    TEST_ASSERT_EQUAL(vssc_status_SUCCESS, core_sdk_error.status);
 
     if (vssc_virgil_http_response_has_service_error(publish_card_response)) {
         const size_t error_code = vssc_virgil_http_response_service_error_code(publish_card_response);
         vsc_str_t error_message = vssc_virgil_http_response_service_error_description(publish_card_response);
 
         printf("GOT SERVICE ERROR: %lu - %s\n", error_code, error_message.chars);
+        TEST_FAIL();
     }
-
-    TEST_ASSERT_EQUAL(vssc_status_SUCCESS, core_sdk_error.status);
 
     vssc_raw_card_t *published_raw_card =
             vssc_card_client_process_response_publish_card(card_client, publish_card_response, &core_sdk_error);

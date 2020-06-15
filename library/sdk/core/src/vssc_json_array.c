@@ -408,6 +408,49 @@ vssc_json_array_get_object_value(const vssc_json_array_t *self, size_t index, vs
 }
 
 //
+//  Add string value.
+//
+VSSC_PUBLIC void
+vssc_json_array_add_string_value(vssc_json_array_t *self, vsc_str_t value) {
+
+    VSSC_ASSERT_PTR(self);
+    VSSC_ASSERT_PTR(self->json_obj);
+    VSSC_ASSERT(vsc_str_is_valid(value));
+
+    json_object *str_obj = json_object_new_string_len(value.chars, value.len);
+    VSSC_ASSERT_ALLOC(str_obj);
+
+    const int add_result = json_object_array_add(self->json_obj, str_obj);
+
+    VSSC_ASSERT_LIBRARY_JSON_C_SUCCESS(add_result);
+}
+
+//
+//  Return a string value for a given index.
+//  Check array length before call this method.
+//
+VSSC_PUBLIC vsc_str_t
+vssc_json_array_get_string_value(const vssc_json_array_t *self, size_t index, vssc_error_t *error) {
+
+    VSSC_ASSERT_PTR(self);
+    VSSC_ASSERT_PTR(self->json_obj);
+
+    json_object *str_obj = json_object_array_get_idx(self->json_obj, index);
+
+    if (NULL == str_obj) {
+        VSSC_ERROR_SAFE_UPDATE(error, vssc_status_JSON_VALUE_NOT_FOUND);
+        return vsc_str_empty();
+    }
+
+    if (!json_object_is_type(str_obj, json_type_string)) {
+        VSSC_ERROR_SAFE_UPDATE(error, vssc_status_JSON_VALUE_TYPE_MISMATCH);
+        return vsc_str_empty();
+    }
+
+    return vsc_str(json_object_get_string(str_obj), json_object_get_string_len(str_obj));
+}
+
+//
 //  Return JSON body as string.
 //
 VSSC_PUBLIC vsc_str_t
