@@ -339,6 +339,7 @@ vssc_virgil_http_response_cleanup_ctx(vssc_virgil_http_response_t *self) {
     VSSC_ASSERT_PTR(self);
 
     vssc_json_object_destroy(&self->http_body);
+    vssc_json_array_destroy(&self->http_array_body);
     vssc_http_header_list_destroy(&self->http_headers);
 }
 
