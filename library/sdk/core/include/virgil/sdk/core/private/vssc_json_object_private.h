@@ -56,6 +56,7 @@
 #include <json-c/json.h>
 #include <virgil/crypto/common/vsc_str_mutable.h>
 #include <virgil/crypto/foundation/vscf_base64.h>
+#include <virgil/crypto/foundation/private/vscf_base64_private.h>
 
 #if !VSSC_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_str.h>

@@ -479,7 +479,13 @@ vssc_json_array_parse(vsc_str_t json, vssc_error_t *error) {
     json_object *json_obj = json_tokener_parse_ex(tokener, json.chars, json.len);
     json_tokener_free(tokener);
 
-    if (NULL == json_obj || !json_object_is_type(json_obj, json_type_array)) {
+    if (NULL == json_obj) {
+        VSSC_ERROR_SAFE_UPDATE(error, vssc_status_PARSE_JSON_FAILED);
+        return NULL;
+    }
+
+    if (!json_object_is_type(json_obj, json_type_array)) {
+        json_object_put(json_obj);
         VSSC_ERROR_SAFE_UPDATE(error, vssc_status_PARSE_JSON_FAILED);
         return NULL;
     }

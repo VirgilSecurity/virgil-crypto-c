@@ -56,10 +56,10 @@
 
 #include "vssc_library.h"
 #include "vssc_http_header_list.h"
+#include "vssc_json_array.h"
 #include "vssc_http_response.h"
 #include "vssc_error.h"
 #include "vssc_virgil_http_response.h"
-#include "vssc_json_array.h"
 
 #if !VSSC_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_str.h>
@@ -168,10 +168,22 @@ VSSC_PUBLIC bool
 vssc_virgil_http_response_has_body(const vssc_virgil_http_response_t *self);
 
 //
+//  Return true if response contains a valid body as array.
+//
+VSSC_PUBLIC bool
+vssc_virgil_http_response_has_array_body(const vssc_virgil_http_response_t *self);
+
+//
 //  Return response body as JSON object.
 //
 VSSC_PUBLIC const vssc_json_object_t *
 vssc_virgil_http_response_body(const vssc_virgil_http_response_t *self);
+
+//
+//  Return response body as JSON array.
+//
+VSSC_PUBLIC const vssc_json_array_t *
+vssc_virgil_http_response_array_body(const vssc_virgil_http_response_t *self);
 
 //
 //  Return true if response handles a service error and it's description.

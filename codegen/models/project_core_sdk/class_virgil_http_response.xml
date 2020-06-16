@@ -5,6 +5,7 @@
 
     <property name="http headers" class="http header list"/>
     <property name="http body" class="json object"/>
+    <property name="http array body" class="json array"/>
     <property name="http status code" type="size"/>
 
 
@@ -24,6 +25,7 @@
         <argument name="http status code" type="size"/>
         <argument name="http headers" class="http header list" access="disown"/>
         <argument name="http body" class="json object" access="disown"/>
+        <argument name="http array body" class="json array" access="disown"/>
     </constructor>
 
 
@@ -58,10 +60,24 @@
     </method>
 
 
+    <method name="has array body" is_const="1">
+        Return true if response contains a valid body as array.
+
+        <return type="boolean"/>
+    </method>
+
+
     <method name="body" is_const="1">
         Return response body as JSON object.
 
         <return class="json object"/>
+    </method>
+
+
+    <method name="array body" is_const="1">
+        Return response body as JSON array.
+
+        <return class="json array"/>
     </method>
 
 

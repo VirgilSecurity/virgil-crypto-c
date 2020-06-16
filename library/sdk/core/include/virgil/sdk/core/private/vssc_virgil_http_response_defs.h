@@ -91,6 +91,8 @@ struct vssc_virgil_http_response_t {
 
     vssc_json_object_t *http_body;
 
+    vssc_json_array_t *http_array_body;
+
     size_t http_status_code;
 };
 
