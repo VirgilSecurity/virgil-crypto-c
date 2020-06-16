@@ -138,7 +138,12 @@ test__publish_card__with_new_jwt_and_new_keypair__returned_card_is_valid(void) {
     vscf_key_provider_destroy(&key_provider);
     vssc_card_manager_destroy(&card_manager);
     vssc_card_client_destroy(&card_client);
+    vssc_http_request_destroy(&publish_card_request);
+    vssc_virgil_http_response_destroy(&publish_card_response);
     vscf_impl_destroy(&private_key);
+    vssc_raw_card_destroy(&initial_raw_card);
+    vssc_raw_card_destroy(&published_raw_card);
+    vssc_card_destroy(&card);
 }
 
 #endif // TEST_DEPENDENCIES_AVAILABLE
