@@ -193,6 +193,12 @@ vssc_string_list_prev(const vssc_string_list_t *self);
 VSSC_PUBLIC void
 vssc_string_list_clear(vssc_string_list_t *self);
 
+//
+//  Return true if list contains a given value.
+//
+VSSC_PUBLIC bool
+vssc_string_list_contains(const vssc_string_list_t *self, vsc_str_t str);
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.

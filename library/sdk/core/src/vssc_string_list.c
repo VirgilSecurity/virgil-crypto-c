@@ -377,3 +377,22 @@ vssc_string_list_clear(vssc_string_list_t *self) {
     vsc_str_mutable_release(&self->item);
     vssc_string_list_destroy(&self->next);
 }
+
+//
+//  Return true if list contains a given value.
+//
+VSSC_PUBLIC bool
+vssc_string_list_contains(const vssc_string_list_t *self, vsc_str_t str) {
+
+    VSSC_ASSERT_PTR(self);
+    VSSC_ASSERT(vsc_str_is_valid(str));
+
+    for (const vssc_string_list_t *it = self; (it != NULL) && (it->item.chars != NULL); it = it->next) {
+
+        if (vsc_str_equal(vsc_str_mutable_as_str(it->item), str)) {
+            return true;
+        }
+    }
+
+    return false;
+}

@@ -64,4 +64,13 @@
     <method name="clear">
         Remove all items.
     </method>
+
+
+    <method name="contains" is_const="1">
+        Return true if list contains a given value.
+
+        <argument name="str" class="str"/>
+
+        <return type="boolean"/>
+    </method>
 </class>
