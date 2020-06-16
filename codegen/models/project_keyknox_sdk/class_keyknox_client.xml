@@ -189,6 +189,29 @@
     </method>
 
 
+    <method name="make request get keys" is_const="1">
+         Create request that performs get keys operation.
+
+         Note, all parameters can be empty.
+
+        <argument name="root" class="str"/>
+        <argument name="path" class="str"/>
+        <argument name="identity" class="str"/>
+
+        <return class="http request" project="core sdk" access="disown"/>
+    </method>
+
+
+    <method name="process response get keys" is_const="1">
+        Map response to the correspond model.
+
+        <argument name="response" class="virgil http response" project="core sdk"/>
+        <argument name="error" class="error" access="readwrite"/>
+
+        <return class="string list" access="disown" project="core sdk"/>
+    </method>
+
+
     <method name="parse keyknox entry" is_static="1" declaration="private">
         Parse keyknox entry from json object.
 

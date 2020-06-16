@@ -46,7 +46,7 @@
 include_guard()
 
 option(VSSP_LIBRARY "Enable build of the 'pythia sdk' library" ON)
-option(VSSP_MULTI_THREADING "Enable multi-threading safety for Cards Core SDK." ON)
+option(VSSP_MULTI_THREADING "Enable multi-threading safety for Pythia SDK." ON)
 option(VSSP_ERROR "Enable class 'error'." ON)
 option(VSSP_PYTHIA_CLIENT "Enable class 'pythia client'." ON)
 option(VSSP_BRAIN_KEY_SEED "Enable class 'brain key seed'." ON)

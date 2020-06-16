@@ -764,6 +764,94 @@ vssk_keyknox_client_process_response_reset(
 }
 
 //
+//  Create request that performs get keys operation.
+//
+//  Note, all parameters can be empty.
+//
+VSSK_PUBLIC vssc_http_request_t *
+vssk_keyknox_client_make_request_get_keys(
+        const vssk_keyknox_client_t *self, vsc_str_t root, vsc_str_t path, vsc_str_t identity) {
+
+    VSSK_ASSERT_PTR(self);
+    VSSK_ASSERT(vsc_str_is_valid(root));
+    VSSK_ASSERT(vsc_str_is_valid(path));
+    VSSK_ASSERT(vsc_str_is_valid(identity));
+
+    //
+    //  Create json body.
+    //
+    vssc_json_object_t *json = vssc_json_object_new();
+
+    if (!vsc_str_is_empty(root)) {
+        vssc_json_object_add_string_value(json, k_json_key_root_str, root);
+    }
+
+    if (!vsc_str_is_empty(path)) {
+        vssc_json_object_add_string_value(json, k_json_key_path_str, path);
+    }
+
+    if (!vsc_str_is_empty(identity)) {
+        vssc_json_object_add_string_value(json, k_json_key_identity_str, identity);
+    }
+
+    //
+    //  Create request.
+    //
+    vsc_str_t json_body = vssc_json_object_as_str(json);
+    vssc_http_request_t *http_request = vssc_http_request_new_with_body(
+            vssc_http_request_method_post_str, vsc_str_mutable_as_str(self->keys_url), json_body);
+
+    vssc_json_object_destroy(&json);
+
+    return http_request;
+}
+
+//
+//  Map response to the correspond model.
+//
+VSSK_PUBLIC vssc_string_list_t *
+vssk_keyknox_client_process_response_get_keys(
+        const vssk_keyknox_client_t *self, const vssc_virgil_http_response_t *response, vssk_error_t *error) {
+
+    VSSK_ASSERT_PTR(self);
+    VSSK_ASSERT_PTR(response);
+
+    vssc_error_t core_error;
+    vssc_error_reset(&core_error);
+
+    if (!vssc_virgil_http_response_is_success(response)) {
+        VSSK_ERROR_SAFE_UPDATE(error, vssk_status_HTTP_RESPONSE_CONTAINS_SERVICE_ERROR);
+        return NULL;
+    }
+
+    // TODO: Check Content-Type to be equal application/json
+
+    if (!vssc_virgil_http_response_has_array_body(response)) {
+        VSSK_ERROR_SAFE_UPDATE(error, vssk_status_HTTP_RESPONSE_BODY_PARSE_FAILED);
+        return NULL;
+    }
+
+    const vssc_json_array_t *json_array = vssc_virgil_http_response_array_body(response);
+
+    vssc_string_list_t *keys = vssc_string_list_new();
+    for (size_t pos = 0; pos < vssc_json_array_len(json_array); ++pos) {
+        vsc_str_t key = vssc_json_array_get_string_value(json_array, pos, &core_error);
+
+        if (vsc_str_is_empty(key)) {
+            vssc_string_list_destroy(&keys);
+
+            VSSK_ERROR_SAFE_UPDATE(error, vssk_status_KEYKNOX_ENTRY_PARSE_FAILED);
+
+            return NULL;
+        }
+
+        vssc_string_list_add(keys, key);
+    }
+
+    return keys;
+}
+
+//
 //  Parse keyknox entry from json object.
 //
 static vssk_keyknox_entry_t *
