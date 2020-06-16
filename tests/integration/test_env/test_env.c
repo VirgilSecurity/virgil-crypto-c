@@ -337,6 +337,8 @@ test_env_load(void) {
 
     free(buffer);
 
+    vscf_key_provider_destroy(&key_provider);
+
     vssc_json_object_destroy(&root_json);
     vssc_json_object_destroy(&env_json);
 
@@ -346,6 +348,8 @@ test_env_load(void) {
 
 fail:
     free(buffer);
+
+    vscf_key_provider_destroy(&key_provider);
 
     vssc_json_object_destroy(&root_json);
     vssc_json_object_destroy(&env_json);

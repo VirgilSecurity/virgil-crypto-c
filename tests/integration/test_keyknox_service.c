@@ -45,6 +45,8 @@
 
 #include "test_env.h"
 
+#include <virgil/crypto/common/vsc_str_buffer.h>
+
 #include <virgil/sdk/core/vssc_unix_time.h>
 #include <virgil/sdk/core/vssc_virgil_http_client.h>
 
@@ -69,10 +71,27 @@ MAKE_STR_CONSTANT(test_data_PATH4, "path4")
 MAKE_DATA_CONSTANT_FROM_STR(test_data_META, "d5b1f64f-75b2-45ef-adc7-1b095b0677d5")
 MAKE_DATA_CONSTANT_FROM_STR(test_data_VALUE, "4bc0ff31-cb8e-42da-a19a-8b8decdf63ed")
 
-void
-test__push__with_random_key_id__returns_expected_keyknox_entry(void) {
-    const test_env_t *env = test_env_get();
+static vsc_str_buffer_t *
+create_random_key(void) {
 
+    vsc_str_buffer_t *key = vsc_str_buffer_new_with_capacity(32);
+
+    const int key_len =
+            snprintf(vsc_str_buffer_unused_chars(key), vsc_str_buffer_unused_len(key), "key-%lu", vssc_unix_time_now());
+
+    vsc_str_buffer_inc_used(key, key_len);
+
+    return key;
+}
+
+
+//
+//  Return pushed keyknox entry.
+//  If 'key' is empty then it will be generated.
+//  If 'identity' is empty then it will be taken from JWT.
+//
+static vssk_keyknox_entry_t *
+push_new_keyknox_entry(const test_env_t *env, vsc_str_t root, vsc_str_t path, vsc_str_t key, vsc_str_t identity) {
     //
     //  Init.
     //
@@ -82,25 +101,29 @@ test__push__with_random_key_id__returns_expected_keyknox_entry(void) {
     vssc_error_t core_sdk_error;
     vssc_error_reset(&core_sdk_error);
 
-    vssc_string_list_t *identities = vssc_string_list_new();
-    vsc_str_t my_identity = vssc_jwt_identity(env->jwt);
-    vssc_string_list_add(identities, my_identity);
+    if (vsc_str_is_empty(identity)) {
+        identity = vssc_jwt_identity(env->jwt);
+    }
 
     // Make key with timestamp.
-    const size_t key_chars_capacity = 32;
-    char *key_chars = calloc(1, key_chars_capacity + 1);
-    const int key_chars_len = snprintf(key_chars, key_chars_capacity, "key-%lu", vssc_unix_time_now());
-    TEST_ASSERT_GREATER_THAN(0, key_chars_len);
-    TEST_ASSERT_LESS_THAN(key_chars_capacity, key_chars_len);
-
-    vsc_str_t key = vsc_str(key_chars, (size_t)key_chars_len);
-    vsc_data_t previous_hash = vsc_data_empty();
-
-    vssk_keyknox_entry_t *new_entry = vssk_keyknox_entry_new_with(
-            test_data_ROOT, test_data_PATH1, key, identities, test_data_META, test_data_VALUE, previous_hash);
-
+    vsc_str_buffer_t *key_buf = NULL;
+    if (vsc_str_is_empty(key)) {
+        key_buf = create_random_key();
+        key = vsc_str_buffer_str(key_buf);
+    }
 
     vssk_keyknox_client_t *keyknox_client = vssk_keyknox_client_new_with_base_url(env->url);
+
+    //
+    //  Make Keyknox entry.
+    //
+    vssc_string_list_t *identities = vssc_string_list_new();
+    vssc_string_list_add(identities, identity);
+
+    vsc_data_t empty_previous_hash = vsc_data_empty();
+
+    vssk_keyknox_entry_t *new_entry = vssk_keyknox_entry_new_with(
+            root, path, key, identities, test_data_META, test_data_VALUE, empty_previous_hash);
 
     //
     //  Push Keyknox entry.
@@ -120,7 +143,6 @@ test__push__with_random_key_id__returns_expected_keyknox_entry(void) {
         TEST_FAIL();
     }
 
-
     vssk_keyknox_entry_t *pushed_keyknox_entry =
             vssk_keyknox_client_process_response_push(keyknox_client, push_keyknox_entry_response, &keyknox_error);
     TEST_ASSERT_EQUAL(vssk_status_SUCCESS, keyknox_error.status);
@@ -129,24 +151,39 @@ test__push__with_random_key_id__returns_expected_keyknox_entry(void) {
     //
     //  Check fields.
     //
-    TEST_ASSERT_EQUAL_STR(my_identity, vssk_keyknox_entry_owner(pushed_keyknox_entry));
-    TEST_ASSERT_EQUAL_STR(test_data_ROOT, vssk_keyknox_entry_root(pushed_keyknox_entry));
-    TEST_ASSERT_EQUAL_STR(test_data_PATH1, vssk_keyknox_entry_path(pushed_keyknox_entry));
+    TEST_ASSERT_EQUAL_STR(identity, vssk_keyknox_entry_owner(pushed_keyknox_entry));
+    TEST_ASSERT_EQUAL_STR(root, vssk_keyknox_entry_root(pushed_keyknox_entry));
+    TEST_ASSERT_EQUAL_STR(path, vssk_keyknox_entry_path(pushed_keyknox_entry));
     TEST_ASSERT_EQUAL_STR(key, vssk_keyknox_entry_key(pushed_keyknox_entry));
     TEST_ASSERT_EQUAL_DATA(test_data_META, vssk_keyknox_entry_meta(pushed_keyknox_entry));
     TEST_ASSERT_EQUAL_DATA(test_data_VALUE, vssk_keyknox_entry_value(pushed_keyknox_entry));
 
     const vssc_string_list_t *pushed_identities = vssk_keyknox_entry_identities(pushed_keyknox_entry);
     TEST_ASSERT_TRUE(vssc_string_list_has_item(pushed_identities));
-    TEST_ASSERT_EQUAL_STR(my_identity, vssc_string_list_item(pushed_identities));
+    TEST_ASSERT_EQUAL_STR(identity, vssc_string_list_item(pushed_identities));
 
     //
     //  Cleanup.
     //
     vssc_string_list_destroy(&identities);
     vssk_keyknox_entry_destroy(&new_entry);
-    vssk_keyknox_entry_destroy(&pushed_keyknox_entry);
     vssk_keyknox_client_destroy(&keyknox_client);
+    vssc_http_request_destroy(&push_keyknox_entry_request);
+    vssc_virgil_http_response_destroy(&push_keyknox_entry_response);
+    vsc_str_buffer_destroy(&key_buf);
+
+    return pushed_keyknox_entry;
+}
+
+
+void
+test__push__with_random_key_id__returns_expected_keyknox_entry(void) {
+    const test_env_t *env = test_env_get();
+
+    vssk_keyknox_entry_t *pushed_keyknox_entry =
+            push_new_keyknox_entry(env, test_data_ROOT, test_data_PATH1, vsc_str_empty(), vsc_str_empty());
+
+    vssk_keyknox_entry_destroy(&pushed_keyknox_entry);
 }
 
 void
@@ -162,55 +199,24 @@ test__pull__pushed_entry__returns_expected_keyknox_entry(void) {
     vssc_error_t core_sdk_error;
     vssc_error_reset(&core_sdk_error);
 
-    vssc_string_list_t *identities = vssc_string_list_new();
-    vsc_str_t my_identity = vssc_jwt_identity(env->jwt);
-    vssc_string_list_add(identities, my_identity);
-
-    // Make key with timestamp.
-    const size_t key_chars_capacity = 32;
-    char *key_chars = calloc(1, key_chars_capacity + 1);
-    const int key_chars_len = snprintf(key_chars, key_chars_capacity, "key-%lu", vssc_unix_time_now());
-    TEST_ASSERT_GREATER_THAN(0, key_chars_len);
-    TEST_ASSERT_LESS_THAN(key_chars_capacity, key_chars_len);
-
-    vsc_str_t key = vsc_str(key_chars, (size_t)key_chars_len);
-    vsc_data_t previous_hash = vsc_data_empty();
-
-    vssk_keyknox_entry_t *new_entry = vssk_keyknox_entry_new_with(
-            test_data_ROOT, test_data_PATH2, key, identities, test_data_META, test_data_VALUE, previous_hash);
-
-
     vssk_keyknox_client_t *keyknox_client = vssk_keyknox_client_new_with_base_url(env->url);
 
     //
     //  Push Keyknox entry.
     //
-    vssc_http_request_t *push_keyknox_entry_request = vssk_keyknox_client_make_request_push(keyknox_client, new_entry);
-    TEST_ASSERT_EQUAL(vssk_status_SUCCESS, core_sdk_error.status);
-
-    vssc_virgil_http_response_t *push_keyknox_entry_response =
-            vssc_virgil_http_client_send(push_keyknox_entry_request, env->jwt, &core_sdk_error);
-    TEST_ASSERT_EQUAL(vssc_status_SUCCESS, core_sdk_error.status);
-
-    if (vssc_virgil_http_response_has_service_error(push_keyknox_entry_response)) {
-        const size_t error_code = vssc_virgil_http_response_service_error_code(push_keyknox_entry_response);
-        vsc_str_t error_message = vssc_virgil_http_response_service_error_description(push_keyknox_entry_response);
-
-        printf("GOT SERVICE ERROR: %lu - %s\n", error_code, error_message.chars);
-        TEST_FAIL();
-    }
+    vsc_str_t identity = vssc_jwt_identity(env->jwt);
+    vsc_str_buffer_t *key_buf = create_random_key();
+    vsc_str_t key = vsc_str_buffer_str(key_buf);
 
     vssk_keyknox_entry_t *pushed_keyknox_entry =
-            vssk_keyknox_client_process_response_push(keyknox_client, push_keyknox_entry_response, &keyknox_error);
-    TEST_ASSERT_EQUAL(vssk_status_SUCCESS, keyknox_error.status);
-    TEST_ASSERT_NOT_NULL(pushed_keyknox_entry);
+            push_new_keyknox_entry(env, test_data_ROOT, test_data_PATH2, key, identity);
 
 
     //
     //  Pull Keyknox entry.
     //
     vssc_http_request_t *pull_keyknox_entry_request =
-            vssk_keyknox_client_make_request_pull(keyknox_client, test_data_ROOT, test_data_PATH2, key, my_identity);
+            vssk_keyknox_client_make_request_pull(keyknox_client, test_data_ROOT, test_data_PATH2, key, identity);
 
     vssc_virgil_http_response_t *pull_keyknox_entry_response =
             vssc_virgil_http_client_send(pull_keyknox_entry_request, env->jwt, &core_sdk_error);
@@ -233,7 +239,7 @@ test__pull__pushed_entry__returns_expected_keyknox_entry(void) {
     //
     //  Check fields.
     //
-    TEST_ASSERT_EQUAL_STR(my_identity, vssk_keyknox_entry_owner(pulled_keyknox_entry));
+    TEST_ASSERT_EQUAL_STR(identity, vssk_keyknox_entry_owner(pulled_keyknox_entry));
     TEST_ASSERT_EQUAL_STR(test_data_ROOT, vssk_keyknox_entry_root(pulled_keyknox_entry));
     TEST_ASSERT_EQUAL_STR(test_data_PATH2, vssk_keyknox_entry_path(pulled_keyknox_entry));
     TEST_ASSERT_EQUAL_STR(key, vssk_keyknox_entry_key(pulled_keyknox_entry));
@@ -242,16 +248,17 @@ test__pull__pushed_entry__returns_expected_keyknox_entry(void) {
 
     const vssc_string_list_t *pulled_identities = vssk_keyknox_entry_identities(pulled_keyknox_entry);
     TEST_ASSERT_TRUE(vssc_string_list_has_item(pulled_identities));
-    TEST_ASSERT_EQUAL_STR(my_identity, vssc_string_list_item(pulled_identities));
+    TEST_ASSERT_EQUAL_STR(identity, vssc_string_list_item(pulled_identities));
 
     //
     //  Cleanup.
     //
-    vssc_string_list_destroy(&identities);
-    vssk_keyknox_entry_destroy(&new_entry);
     vssk_keyknox_entry_destroy(&pushed_keyknox_entry);
     vssk_keyknox_entry_destroy(&pulled_keyknox_entry);
     vssk_keyknox_client_destroy(&keyknox_client);
+    vssc_http_request_destroy(&pull_keyknox_entry_request);
+    vssc_virgil_http_response_destroy(&pull_keyknox_entry_response);
+    vsc_str_buffer_destroy(&key_buf);
 }
 
 void
@@ -267,49 +274,17 @@ test__reset__pushed_entry_with_defined_root_and_path__returns_expected_keyknox_e
     vssc_error_t core_sdk_error;
     vssc_error_reset(&core_sdk_error);
 
-    vssc_string_list_t *identities = vssc_string_list_new();
-    vsc_str_t my_identity = vssc_jwt_identity(env->jwt);
-    vssc_string_list_add(identities, my_identity);
-
-    // Make key with timestamp.
-    const size_t key_chars_capacity = 32;
-    char *key_chars = calloc(1, key_chars_capacity + 1);
-    const int key_chars_len = snprintf(key_chars, key_chars_capacity, "key-%lu", vssc_unix_time_now());
-    TEST_ASSERT_GREATER_THAN(0, key_chars_len);
-    TEST_ASSERT_LESS_THAN(key_chars_capacity, key_chars_len);
-
-    vsc_str_t key = vsc_str(key_chars, (size_t)key_chars_len);
-    vsc_data_t previous_hash = vsc_data_empty();
-
-    vssk_keyknox_entry_t *new_entry = vssk_keyknox_entry_new_with(
-            test_data_ROOT, test_data_PATH3, key, identities, test_data_META, test_data_VALUE, previous_hash);
-
-
     vssk_keyknox_client_t *keyknox_client = vssk_keyknox_client_new_with_base_url(env->url);
 
     //
     //  Push Keyknox entry.
     //
-    vssc_http_request_t *push_keyknox_entry_request = vssk_keyknox_client_make_request_push(keyknox_client, new_entry);
-    TEST_ASSERT_EQUAL(vssk_status_SUCCESS, core_sdk_error.status);
-
-    vssc_virgil_http_response_t *push_keyknox_entry_response =
-            vssc_virgil_http_client_send(push_keyknox_entry_request, env->jwt, &core_sdk_error);
-    TEST_ASSERT_EQUAL(vssc_status_SUCCESS, core_sdk_error.status);
-
-    if (vssc_virgil_http_response_has_service_error(push_keyknox_entry_response)) {
-        const size_t error_code = vssc_virgil_http_response_service_error_code(push_keyknox_entry_response);
-        vsc_str_t error_message = vssc_virgil_http_response_service_error_description(push_keyknox_entry_response);
-
-        printf("GOT SERVICE ERROR: %lu - %s\n", error_code, error_message.chars);
-        TEST_FAIL();
-    }
+    vsc_str_t identity = vssc_jwt_identity(env->jwt);
+    vsc_str_buffer_t *key_buf = create_random_key();
+    vsc_str_t key = vsc_str_buffer_str(key_buf);
 
     vssk_keyknox_entry_t *pushed_keyknox_entry =
-            vssk_keyknox_client_process_response_push(keyknox_client, push_keyknox_entry_response, &keyknox_error);
-    TEST_ASSERT_EQUAL(vssk_status_SUCCESS, keyknox_error.status);
-    TEST_ASSERT_NOT_NULL(pushed_keyknox_entry);
-
+            push_new_keyknox_entry(env, test_data_ROOT, test_data_PATH3, key, identity);
 
     //
     //  Reset Keyknox entry.
@@ -331,7 +306,6 @@ test__reset__pushed_entry_with_defined_root_and_path__returns_expected_keyknox_e
         TEST_FAIL();
     }
 
-
     vssk_keyknox_entry_t *reset_keyknox_entry =
             vssk_keyknox_client_process_response_reset(keyknox_client, reset_keyknox_entry_response, &keyknox_error);
     TEST_ASSERT_EQUAL(vssk_status_SUCCESS, keyknox_error.status);
@@ -340,7 +314,7 @@ test__reset__pushed_entry_with_defined_root_and_path__returns_expected_keyknox_e
     //
     //  Check fields.
     //
-    TEST_ASSERT_EQUAL_STR(my_identity, vssk_keyknox_entry_owner(reset_keyknox_entry));
+    TEST_ASSERT_EQUAL_STR(identity, vssk_keyknox_entry_owner(reset_keyknox_entry));
     TEST_ASSERT_EQUAL_STR(test_data_ROOT, vssk_keyknox_entry_root(reset_keyknox_entry));
     TEST_ASSERT_EQUAL_STR(test_data_PATH3, vssk_keyknox_entry_path(reset_keyknox_entry));
     TEST_ASSERT_EQUAL_STR(empty_key, vssk_keyknox_entry_key(reset_keyknox_entry));
@@ -351,11 +325,12 @@ test__reset__pushed_entry_with_defined_root_and_path__returns_expected_keyknox_e
     //
     //  Cleanup.
     //
-    vssc_string_list_destroy(&identities);
-    vssk_keyknox_entry_destroy(&new_entry);
     vssk_keyknox_entry_destroy(&pushed_keyknox_entry);
     vssk_keyknox_entry_destroy(&reset_keyknox_entry);
     vssk_keyknox_client_destroy(&keyknox_client);
+    vssc_http_request_destroy(&reset_keyknox_entry_request);
+    vssc_virgil_http_response_destroy(&reset_keyknox_entry_response);
+    vsc_str_buffer_destroy(&key_buf);
 }
 
 void
@@ -371,49 +346,17 @@ test__get_keys__pushed_1_entry__returns_list_with_1_key(void) {
     vssc_error_t core_sdk_error;
     vssc_error_reset(&core_sdk_error);
 
-    vssc_string_list_t *identities = vssc_string_list_new();
-    vsc_str_t my_identity = vssc_jwt_identity(env->jwt);
-    vssc_string_list_add(identities, my_identity);
-
-    // Make key with timestamp.
-    const size_t key_chars_capacity = 32;
-    char *key_chars = calloc(1, key_chars_capacity + 1);
-    const int key_chars_len = snprintf(key_chars, key_chars_capacity, "key-%lu", vssc_unix_time_now());
-    TEST_ASSERT_GREATER_THAN(0, key_chars_len);
-    TEST_ASSERT_LESS_THAN(key_chars_capacity, key_chars_len);
-
-    vsc_str_t key = vsc_str(key_chars, (size_t)key_chars_len);
-    vsc_data_t previous_hash = vsc_data_empty();
-
-    vssk_keyknox_entry_t *new_entry = vssk_keyknox_entry_new_with(
-            test_data_ROOT, test_data_PATH4, key, identities, test_data_META, test_data_VALUE, previous_hash);
-
-
     vssk_keyknox_client_t *keyknox_client = vssk_keyknox_client_new_with_base_url(env->url);
 
     //
     //  Push Keyknox entry.
     //
-    vssc_http_request_t *push_keyknox_entry_request = vssk_keyknox_client_make_request_push(keyknox_client, new_entry);
-    TEST_ASSERT_EQUAL(vssk_status_SUCCESS, core_sdk_error.status);
-
-    vssc_virgil_http_response_t *push_keyknox_entry_response =
-            vssc_virgil_http_client_send(push_keyknox_entry_request, env->jwt, &core_sdk_error);
-    TEST_ASSERT_EQUAL(vssc_status_SUCCESS, core_sdk_error.status);
-
-    if (vssc_virgil_http_response_has_service_error(push_keyknox_entry_response)) {
-        const size_t error_code = vssc_virgil_http_response_service_error_code(push_keyknox_entry_response);
-        vsc_str_t error_message = vssc_virgil_http_response_service_error_description(push_keyknox_entry_response);
-
-        printf("GOT SERVICE ERROR: %lu - %s\n", error_code, error_message.chars);
-        TEST_FAIL();
-    }
+    vsc_str_t identity = vssc_jwt_identity(env->jwt);
+    vsc_str_buffer_t *key_buf = create_random_key();
+    vsc_str_t key = vsc_str_buffer_str(key_buf);
 
     vssk_keyknox_entry_t *pushed_keyknox_entry =
-            vssk_keyknox_client_process_response_push(keyknox_client, push_keyknox_entry_response, &keyknox_error);
-    TEST_ASSERT_EQUAL(vssk_status_SUCCESS, keyknox_error.status);
-    TEST_ASSERT_NOT_NULL(pushed_keyknox_entry);
-
+            push_new_keyknox_entry(env, test_data_ROOT, test_data_PATH4, key, identity);
 
     //
     //  Get Keyknox keys.
@@ -434,7 +377,6 @@ test__get_keys__pushed_1_entry__returns_list_with_1_key(void) {
         TEST_FAIL();
     }
 
-
     vssc_string_list_t *keys =
             vssk_keyknox_client_process_response_get_keys(keyknox_client, get_keys_response, &keyknox_error);
     TEST_ASSERT_EQUAL(vssk_status_SUCCESS, keyknox_error.status);
@@ -445,11 +387,12 @@ test__get_keys__pushed_1_entry__returns_list_with_1_key(void) {
     //
     //  Cleanup.
     //
-    vssc_string_list_destroy(&identities);
     vssc_string_list_destroy(&keys);
-    vssk_keyknox_entry_destroy(&new_entry);
     vssk_keyknox_entry_destroy(&pushed_keyknox_entry);
     vssk_keyknox_client_destroy(&keyknox_client);
+    vssc_http_request_destroy(&get_keys_request);
+    vssc_virgil_http_response_destroy(&get_keys_response);
+    vsc_str_buffer_destroy(&key_buf);
 }
 
 void
