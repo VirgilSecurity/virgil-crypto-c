@@ -729,6 +729,8 @@ vssc_raw_card_import_from_json(const vssc_json_object_t *json, vssc_error_t *err
         vssc_raw_card_signature_list_add_disown(signatures, &signature);
     }
 
+    vssc_json_array_destroy(&signatures_json);
+
     //
     //  Create Raw Card
     //
