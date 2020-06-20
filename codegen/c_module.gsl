@@ -320,6 +320,7 @@ function c_module_add_system_include_from_header (c_module, header, is_public_in
             .scope = "private"
             .is_system = "1"
             .if = my.condition ?
+            .has_framework_guard = defined(my.condition)
 
             my.c_include = c_include
         endnew
@@ -350,6 +351,7 @@ function c_module_add_framework_include_from_header (c_module, header, is_public
             .scope = "private"
             .is_system = "1"
             .if = my.condition
+            .is_framework = "1"
 
             my.c_include = c_include
         endnew
@@ -402,6 +404,20 @@ function c_module_add_include_from_definition_header (c_module, header, is_publi
     endif
 endfunction
 
+# ---------------------------------------------------------------------------
+#   Remove c_include framework guards if scope is "private".
+# ---------------------------------------------------------------------------
+function c_module_reduce_includes(c_module)
+    check_arguments (my, "c_module", my)
+
+    for my.c_module.c_include where c_include.scope = "private" & defined(c_include.if)
+        if is_true(c_include.is_framework)
+            delete c_include
+        elsif is_true(c_include.has_framework_guard)
+            c_include.if = # undefined
+        endif
+    endfor
+endfunction
 
 # ---------------------------------------------------------------------------
 #   Add missed headers based on the used types.
@@ -435,6 +451,8 @@ function c_module_add_headers (c_module, projects_api)
             endif
         endfor
     endfor
+
+    c_module_reduce_includes(my.c_module)
 endfunction
 
 .endtemplate

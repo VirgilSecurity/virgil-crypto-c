@@ -111,6 +111,7 @@ target_sources(pythia_sdk
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/pythia/private/vssp_atomic.h"
             "${CMAKE_CURRENT_BINARY_DIR}/include/virgil/sdk/pythia/vssp_platform.h"
             "$<$<BOOL:${VSSP_BRAIN_KEY_SEED}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/pythia/vssp_brain_key_seed.h>"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/pythia/private/vssp_brain_key_seed_private.h"
             "$<$<BOOL:${VSSP_BRAIN_KEY_SEED}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/pythia/private/vssp_brain_key_seed_defs.h>"
             "$<$<BOOL:${VSSP_ERROR}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/pythia/vssp_error.h>"
             "$<$<BOOL:${VSSP_PYTHIA_CLIENT}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/pythia/vssp_pythia_client.h>"

@@ -62,6 +62,8 @@ function class_has_scoped_item_with_scope (class, scope)
         return "1"
     elsif count (my.class.variable, scope = my.scope) & my.scope <> my.class.scope
         return "1"
+    elsif count (my.class.constructor, scope = my.scope) & my.scope <> my.class.scope
+        return "1"
     else
         return "0"
     endif
@@ -186,6 +188,22 @@ function class_add_scoped_components_to_extended_module (class, add_method_callb
         my.component.declaration = "public"
         my.component.definition = "external"
     endfor
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Resolve method declaration and definition depends on the scope.
+# ---------------------------------------------------------------------------
+function class_resolve_scoped_method (scoped_method, method, module)
+    check_arguments (my, "scoped_method, method, module", my)
+
+    if is_true(my.module.is_main) & my.scoped_method.scope <> my.module.scope
+        my.method.declaration = "external"
+        my.method.definition = "private"
+
+    elsif is_false(my.module.is_main) & my.scoped_method.scope = my.module.scope
+        my.method.declaration = "public"
+        my.method.definition = "external"
+    endif
 endfunction
 
 .endtemplate

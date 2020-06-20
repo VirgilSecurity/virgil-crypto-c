@@ -56,6 +56,7 @@
 #include "vssc_jwt_generator_defs.h"
 #include "vssc_unix_time.h"
 #include "vssc_base64_url.h"
+#include "vssc_jwt_private.h"
 
 #include <virgil/crypto/foundation/vscf_random.h>
 #include <virgil/crypto/foundation/vscf_sha512.h>

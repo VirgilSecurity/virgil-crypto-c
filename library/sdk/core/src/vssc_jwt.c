@@ -57,6 +57,11 @@
 #include "vssc_jwt_defs.h"
 #include "vssc_unix_time.h"
 #include "vssc_base64_url.h"
+#include "vssc_jwt_header.h"
+#include "vssc_jwt_payload.h"
+
+#include <virgil/crypto/common/vsc_buffer.h>
+#include <virgil/crypto/common/vsc_str_buffer.h>
 
 // clang-format on
 //  @end

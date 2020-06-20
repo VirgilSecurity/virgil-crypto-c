@@ -44,19 +44,18 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
+#ifndef VSSP_BRAIN_KEY_SEED_PRIVATE_H_INCLUDED
+#define VSSP_BRAIN_KEY_SEED_PRIVATE_H_INCLUDED
 
-//  @description
-// --------------------------------------------------------------------------
-//  This is an umbrella header that includes library private headers.
-// --------------------------------------------------------------------------
+#include "vssp_brain_key_seed.h"
 
-#ifndef VSSP_PYTHIA_SDK_PRIVATE_H_INCLUDED
-#define VSSP_PYTHIA_SDK_PRIVATE_H_INCLUDED
+#if !VSSP_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <virgil/crypto/common/vsc_buffer.h>
+#endif
 
-#include "vssp_atomic.h"
-#include "vssp_brain_key_seed_defs.h"
-#include "vssp_brain_key_seed_private.h"
-#include "vssp_pythia_client_defs.h"
+#if VSSP_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <VSCCommon/vsc_buffer.h>
+#endif
 
 // clang-format on
 //  @end
@@ -73,6 +72,20 @@ extern "C" {
 //  Generated section start.
 // --------------------------------------------------------------------------
 
+//
+//  Perform initialization of pre-allocated context.
+//  Create object with a given seed.
+//
+VSSP_PUBLIC void
+vssp_brain_key_seed_init_with_seed_disown(vssp_brain_key_seed_t *self, vsc_buffer_t **seed_ref);
+
+//
+//  Allocate class context and perform it's initialization.
+//  Create object with a given seed.
+//
+VSSP_PUBLIC vssp_brain_key_seed_t *
+vssp_brain_key_seed_new_with_seed_disown(vsc_buffer_t **seed_ref);
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.
@@ -87,5 +100,5 @@ extern "C" {
 
 
 //  @footer
-#endif // VSSP_PYTHIA_SDK_PRIVATE_H_INCLUDED
+#endif // VSSP_BRAIN_KEY_SEED_PRIVATE_H_INCLUDED
 //  @end

@@ -53,7 +53,10 @@
 #include "vssp_brain_key_seed.h"
 #include "vssp_memory.h"
 #include "vssp_assert.h"
+#include "vssp_brain_key_seed_private.h"
 #include "vssp_brain_key_seed_defs.h"
+
+#include <virgil/crypto/common/vsc_buffer.h>
 
 // clang-format on
 //  @end

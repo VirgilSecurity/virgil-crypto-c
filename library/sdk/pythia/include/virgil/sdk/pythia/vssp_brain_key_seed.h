@@ -56,12 +56,10 @@
 #include "vssp_library.h"
 
 #if !VSSP_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <virgil/crypto/common/vsc_buffer.h>
 #   include <virgil/crypto/common/vsc_data.h>
 #endif
 
 #if VSSP_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <VSCCommon/vsc_buffer.h>
 #   include <VSCCommon/vsc_data.h>
 #endif
 
@@ -111,20 +109,6 @@ vssp_brain_key_seed_cleanup(vssp_brain_key_seed_t *self);
 //
 VSSP_PUBLIC vssp_brain_key_seed_t *
 vssp_brain_key_seed_new(void);
-
-//
-//  Perform initialization of pre-allocated context.
-//  Create object with a given seed.
-//
-VSSP_PUBLIC void
-vssp_brain_key_seed_init_with_seed_disown(vssp_brain_key_seed_t *self, vsc_buffer_t **seed_ref);
-
-//
-//  Allocate class context and perform it's initialization.
-//  Create object with a given seed.
-//
-VSSP_PUBLIC vssp_brain_key_seed_t *
-vssp_brain_key_seed_new_with_seed_disown(vsc_buffer_t **seed_ref);
 
 //
 //  Release all inner resources and deallocate context if needed.

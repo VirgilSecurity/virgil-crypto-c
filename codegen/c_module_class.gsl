@@ -421,6 +421,8 @@ function _X13_add_method_custom_init (class, constructor, destination, meta)
         .definition ?= my.constructor.definition ?
         .visibility ?= my.constructor.visibility ?
 
+        class_resolve_scoped_method(my.constructor, method, my.destination)
+
         _X13_add_argument_ctx (my.class, method, my.meta)
 
         for my.constructor.argument
@@ -453,6 +455,10 @@ function _X13_add_method_custom_init_ctx (class, constructor, destination, meta)
 
     my.names = meta_names (my.meta)
     my.refs = meta_refs (my.meta)
+
+    if is_false(my.destination.is_main)
+        return
+    endif
 
     new method to my.destination
         . = my.constructor. ?
@@ -495,6 +501,8 @@ function _X13_add_custom_new (class, constructor, destination, meta)
         .definition ?= my.constructor.definition ?
         .visibility ?= my.constructor.visibility ?
 
+        class_resolve_scoped_method(my.constructor, method, my.destination)
+
         _X13_add_return_ctx (my.class, method, my.meta)
 
         for my.constructor.argument
@@ -535,6 +543,8 @@ function _X13_add_value_type_constructor (class, constructor, destination, meta)
         .declaration ?= my.constructor.declaration ?
         .definition ?= my.constructor.definition ?
         .visibility ?= my.constructor.visibility ?
+
+        class_resolve_scoped_method(my.constructor, method, my.destination)
 
         for my.constructor.argument
             component_clean_copy (argument, method)
@@ -822,6 +832,7 @@ function c_module_class_create_module (class, destination, meta)
         .of_class = my.class.name
         .c_prefix = my.class.c_prefix
         .scope = my.class.scope ?
+        .is_main = "1"
 
         new require to module
             .module = my.names.module_library
@@ -915,10 +926,15 @@ function c_module_class_create_module_private (class, destination, meta)
         .c_prefix = my.class.c_prefix
         .scope = "private"
         .is_header_only = "1"
+        .is_main = "0"
 
         for my.class.require where require.scope = "private"
             my.component = component_clean_copy (require, module)
             my.component.scope = "public"
+        endfor
+
+        for my.class.constructor where constructor.scope = "private"
+            _X13_add_constructor (my.class, constructor, module, my.meta)
         endfor
 
         class_add_scoped_components_to_extended_module (my.class, "_X13_add_method", module, my.meta)
@@ -939,6 +955,7 @@ function c_module_class_create_module_internal (class, destination, meta)
         .c_prefix = my.class.c_prefix
         .scope = "internal"
         .is_header_only = "1"
+        .is_main = "0"
 
         new require to module
             .module = my.names.class_module
@@ -947,6 +964,10 @@ function c_module_class_create_module_internal (class, destination, meta)
         for my.class.require where require.scope = "internal"
             my.component = component_clean_copy (require, module)
             my.component.scope = "public"
+        endfor
+
+        for my.class.constructor where constructor.scope = "internal"
+            _X13_add_constructor (my.class, constructor, module, my.meta)
         endfor
 
         class_add_scoped_components_to_extended_module (my.class, "_X13_add_method", module, my.meta)

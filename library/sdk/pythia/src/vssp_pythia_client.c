@@ -54,6 +54,7 @@
 #include "vssp_memory.h"
 #include "vssp_assert.h"
 #include "vssp_pythia_client_defs.h"
+#include "vssp_brain_key_seed_private.h"
 
 // clang-format on
 //  @end

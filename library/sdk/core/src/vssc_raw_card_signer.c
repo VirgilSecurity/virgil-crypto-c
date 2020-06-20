@@ -60,10 +60,6 @@
 #include <virgil/crypto/foundation/vscf_sha512.h>
 #include <virgil/crypto/foundation/vscf_private_key.h>
 
-#if VSSC_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
-#   include <VSCFoundation/vscf_signer.h>
-#endif
-
 // clang-format on
 //  @end
 

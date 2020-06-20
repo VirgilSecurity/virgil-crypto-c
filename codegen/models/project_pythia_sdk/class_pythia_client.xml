@@ -1,6 +1,8 @@
 <class name="pythia client">
     Helps to communicate with Virgil Pythia Service.
 
+    <require module="brain key seed private"/>
+
 
     <property name="brain key url" class="str buffer"/>
 

@@ -3,6 +3,7 @@
 
     <require class="unix time" sscope="private"/>
     <require class="base64 url" scope="private"/>
+    <require module="jwt private" scope="private"/>
     <require impl="sha512" project="foundation" scope="private"/>
     <require impl="ctr drbg" project="foundation" scope="private"/>
 

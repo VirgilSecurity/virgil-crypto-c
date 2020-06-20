@@ -49,13 +49,19 @@
 
 #include "vssc_unix_time.h"
 #include "vssc_base64_url.h"
+#include "vssc_jwt_header.h"
+#include "vssc_jwt_payload.h"
 #include "vssc_jwt.h"
 
 #if !VSSC_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <virgil/crypto/common/vsc_buffer.h>
 #   include <virgil/crypto/common/vsc_str.h>
+#   include <virgil/crypto/common/vsc_str_buffer.h>
 #endif
 
 #if VSSC_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <VSCCommon/vsc_str_buffer.h>
+#   include <VSCCommon/vsc_buffer.h>
 #   include <VSCCommon/vsc_str.h>
 #endif
 
@@ -73,6 +79,22 @@ extern "C" {
 // clang-format off
 //  Generated section start.
 // --------------------------------------------------------------------------
+
+//
+//  Perform initialization of pre-allocated context.
+//  Create object with all members defined.
+//
+VSSC_PUBLIC void
+vssc_jwt_init_with_members_disown(vssc_jwt_t *self, vssc_jwt_header_t **header_ref, vssc_jwt_payload_t **payload_ref,
+        vsc_buffer_t **signature_ref, vsc_str_buffer_t **jwt_string_ref);
+
+//
+//  Allocate class context and perform it's initialization.
+//  Create object with all members defined.
+//
+VSSC_PUBLIC vssc_jwt_t *
+vssc_jwt_new_with_members_disown(vssc_jwt_header_t **header_ref, vssc_jwt_payload_t **payload_ref,
+        vsc_buffer_t **signature_ref, vsc_str_buffer_t **jwt_string_ref);
 
 //
 //  Return JWT Header string representation.
