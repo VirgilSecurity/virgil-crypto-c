@@ -5,6 +5,7 @@
     <require header="ctype.h" is_system="1"/>
     <require module="str buffer defs" project="common"/>
     <require module="http response defs"/>
+    <require class="str mutable" project="common"/>
 
 
     <constant name="k header name value separator" type="string" visibility="private">
@@ -31,7 +32,21 @@
     </method>
 
 
-    <method name="format header" is_static="1">
+    <method name="send with custom ca">
+        Send request over HTTP with a custom CA Certificate.
+
+        Note, argument ca can be empty.
+
+        <argument name="http request" class="http request"/>
+        <argument name="jwt" class="jwt"/>
+        <argument name="ca" class="str"/>
+        <argument name="error" class="error" access="readwrite"/>
+
+        <return class="virgil http response" access="disown"/>
+    </method>
+
+
+    <method name="format header" is_static="1" declaration="private">
         Concatenate header name and header value as "NAME: VALUE".
         Note, given buffer is reset first and then strings are appended.
         Note, written string is null-terminated.
@@ -42,7 +57,7 @@
     </method>
 
 
-    <method name="format authorization header" is_static="1">
+    <method name="format authorization header" is_static="1" declaration="private">
         Make authorization header as "Authorization: TYPE CREDENTIALS".
         Note, given buffer is reset first and then strings are appended.
         Note, written string is null-terminated.

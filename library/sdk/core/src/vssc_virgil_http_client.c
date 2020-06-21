@@ -59,6 +59,8 @@
 #include <curl/curl.h>
 #include <ctype.h>
 #include <virgil/crypto/common/private/vsc_str_buffer_defs.h>
+#include <virgil/crypto/common/vsc_str_mutable.h>
+#include <virgil/crypto/common/vsc_str_buffer.h>
 
 // clang-format on
 //  @end
@@ -69,6 +71,22 @@
 // clang-format off
 //  Generated section start.
 // --------------------------------------------------------------------------
+
+//
+//  Concatenate header name and header value as "NAME: VALUE".
+//  Note, given buffer is reset first and then strings are appended.
+//  Note, written string is null-terminated.
+//
+static void
+vssc_virgil_http_client_format_header(vsc_str_t name, vsc_str_t value, vsc_str_buffer_t *out_str);
+
+//
+//  Make authorization header as "Authorization: TYPE CREDENTIALS".
+//  Note, given buffer is reset first and then strings are appended.
+//  Note, written string is null-terminated.
+//
+static void
+vssc_virgil_http_client_format_authorization_header(vsc_str_t type, vsc_str_t credentials, vsc_str_buffer_t *out_str);
 
 //
 //  Callback for CURL body writing fucntion.
@@ -125,7 +143,22 @@ vssc_virgil_http_client_send(const vssc_http_request_t *http_request, const vssc
 
     VSSC_ASSERT_PTR(http_request);
     VSSC_ASSERT_PTR(jwt);
-    VSSC_UNUSED(error);
+
+    return vssc_virgil_http_client_send_with_custom_ca(http_request, jwt, vsc_str_empty(), error);
+}
+
+//
+//  Send request over HTTP with a custom CA Certificate.
+//
+//  Note, argument ca can be empty.
+//
+VSSC_PUBLIC vssc_virgil_http_response_t *
+vssc_virgil_http_client_send_with_custom_ca(
+        const vssc_http_request_t *http_request, const vssc_jwt_t *jwt, vsc_str_t ca, vssc_error_t *error) {
+
+    VSSC_ASSERT_PTR(http_request);
+    VSSC_ASSERT_PTR(jwt);
+    VSSC_ASSERT(vsc_str_is_valid(ca));
 
     //
     //  Set URL and method.
@@ -133,6 +166,12 @@ vssc_virgil_http_client_send(const vssc_http_request_t *http_request, const vssc
     CURL *curl = curl_easy_init();
     curl_easy_setopt(curl, CURLOPT_URL, vssc_http_request_url(http_request).chars);
     curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, vssc_http_request_method(http_request).chars);
+
+    if (!vsc_str_is_empty(ca)) {
+        vsc_str_mutable_t ca_null_terminates = vsc_str_mutable_from_str(ca);
+        curl_easy_setopt(curl, CURLOPT_CAINFO, vsc_str_mutable_as_str(ca_null_terminates));
+        vsc_str_mutable_release(&ca_null_terminates);
+    }
 
     //
     //  Add headers.
@@ -220,7 +259,7 @@ maybe_succ:
 //  Note, given buffer is reset first and then strings are appended.
 //  Note, written string is null-terminated.
 //
-VSSC_PUBLIC void
+static void
 vssc_virgil_http_client_format_header(vsc_str_t name, vsc_str_t value, vsc_str_buffer_t *out_str) {
 
     VSSC_ASSERT(vsc_str_buffer_is_valid(out_str));
@@ -238,7 +277,7 @@ vssc_virgil_http_client_format_header(vsc_str_t name, vsc_str_t value, vsc_str_b
 //  Note, given buffer is reset first and then strings are appended.
 //  Note, written string is null-terminated.
 //
-VSSC_PUBLIC void
+static void
 vssc_virgil_http_client_format_authorization_header(vsc_str_t type, vsc_str_t credentials, vsc_str_buffer_t *out_str) {
 
     VSSC_ASSERT(vsc_str_buffer_is_valid(out_str));
