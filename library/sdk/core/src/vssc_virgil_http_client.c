@@ -371,6 +371,7 @@ vssc_virgil_http_client_write_recevied_header(
                 parse_state = parse_state_FOUND_SEP;
                 is_found_sep = true;
             }
+            break;
         }
 
         case parse_state_FOUND_SEP: {
