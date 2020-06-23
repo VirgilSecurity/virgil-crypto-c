@@ -55,6 +55,10 @@
 
 #include "vssp_library.h"
 
+#if VSSP_HAVE_STDATOMIC_H
+#   include <stdatomic.h>
+#endif
+
 // clang-format on
 //  @end
 

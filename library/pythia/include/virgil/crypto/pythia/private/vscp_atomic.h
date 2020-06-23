@@ -55,6 +55,10 @@
 
 #include "vscp_library.h"
 
+#if VSCP_HAVE_STDATOMIC_H
+#   include <stdatomic.h>
+#endif
+
 // clang-format on
 //  @end
 

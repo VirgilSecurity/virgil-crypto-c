@@ -154,7 +154,7 @@ vscf_binary_from_hex(vsc_str_t hex_str, vsc_buffer_t *data) {
         } else if (c2 >= 'A' && c2 <= 'F') {
             c2 -= 'A' - 10;
         } else {
-            assert(0);
+            return vscf_status_HEX_TO_BYTES_FAILED;
         }
 
         vsc_buffer_write_byte(data, (c1 << 4) | c2);

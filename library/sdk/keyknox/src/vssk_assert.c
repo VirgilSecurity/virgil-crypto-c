@@ -59,6 +59,10 @@
 #include <virgil/sdk/core/vssc_status.h>
 #include <stdio.h>
 
+#if VSSK_HAVE_ASSERT_H
+#   include <assert.h>
+#endif
+
 // clang-format on
 //  @end
 

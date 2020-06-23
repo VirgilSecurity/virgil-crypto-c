@@ -60,6 +60,10 @@
 #include <mbedtls/error.h>
 #include <stdio.h>
 
+#if VSCE_HAVE_ASSERT_H
+#   include <assert.h>
+#endif
+
 // clang-format on
 //  @end
 

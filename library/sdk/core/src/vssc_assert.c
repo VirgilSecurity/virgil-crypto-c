@@ -58,6 +58,10 @@
 #include <virgil/crypto/foundation/vscf_status.h>
 #include <stdio.h>
 
+#if VSSC_HAVE_ASSERT_H
+#   include <assert.h>
+#endif
+
 // clang-format on
 //  @end
 

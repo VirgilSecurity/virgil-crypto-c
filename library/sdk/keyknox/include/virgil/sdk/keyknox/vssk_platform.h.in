@@ -68,14 +68,12 @@ extern "C" {
 //  Generated section start.
 // --------------------------------------------------------------------------
 
+#ifndef VSSK_HAVE_ASSERT_H
 #cmakedefine01 VSSK_HAVE_ASSERT_H
-#if VSSK_HAVE_ASSERT_H
-#   include <assert.h>
 #endif
 
+#ifndef VSSK_HAVE_STDATOMIC_H
 #cmakedefine01 VSSK_HAVE_STDATOMIC_H
-#if VSSK_HAVE_STDATOMIC_H
-#   include <stdatomic.h>
 #endif
 
 #ifndef VSSK_SHARED_LIBRARY

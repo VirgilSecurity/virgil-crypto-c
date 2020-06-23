@@ -55,6 +55,10 @@
 
 #include "vssk_library.h"
 
+#if VSSK_HAVE_STDATOMIC_H
+#   include <stdatomic.h>
+#endif
+
 // clang-format on
 //  @end
 
