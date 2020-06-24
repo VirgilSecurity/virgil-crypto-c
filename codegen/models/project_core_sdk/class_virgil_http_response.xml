@@ -119,13 +119,4 @@
 
         <return class="str"/>
     </method>
-
-
-    <method name="is http status code success" is_static="1" declaration="private">
-        Check status code range [200..299].
-
-        <argument name="http status code" type="size"/>
-
-        <return type="boolean"/>
-    </method>
 </class>

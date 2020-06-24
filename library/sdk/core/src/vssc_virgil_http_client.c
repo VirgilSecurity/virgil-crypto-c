@@ -54,7 +54,6 @@
 #include "vssc_memory.h"
 #include "vssc_assert.h"
 #include "vssc_http_response_defs.h"
-#include "vssc_http_response.h"
 
 #include <curl/curl.h>
 #include <ctype.h>
@@ -144,21 +143,21 @@ vssc_virgil_http_client_send(const vssc_http_request_t *http_request, const vssc
     VSSC_ASSERT_PTR(http_request);
     VSSC_ASSERT_PTR(jwt);
 
-    return vssc_virgil_http_client_send_with_custom_ca(http_request, jwt, vsc_str_empty(), error);
+    return vssc_virgil_http_client_send_with_ca(http_request, jwt, vsc_str_empty(), error);
 }
 
 //
-//  Send request over HTTP with a custom CA Certificate.
+//  Send request over HTTP with a path to Certificate Authority bundle.
 //
-//  Note, argument ca can be empty.
+//  Note, argument ca_bundle can be empty.
 //
 VSSC_PUBLIC vssc_virgil_http_response_t *
-vssc_virgil_http_client_send_with_custom_ca(
-        const vssc_http_request_t *http_request, const vssc_jwt_t *jwt, vsc_str_t ca, vssc_error_t *error) {
+vssc_virgil_http_client_send_with_ca(
+        const vssc_http_request_t *http_request, const vssc_jwt_t *jwt, vsc_str_t ca_bundle, vssc_error_t *error) {
 
     VSSC_ASSERT_PTR(http_request);
     VSSC_ASSERT_PTR(jwt);
-    VSSC_ASSERT(vsc_str_is_valid(ca));
+    VSSC_ASSERT(vsc_str_is_valid(ca_bundle));
 
     //
     //  Set URL and method.
@@ -167,8 +166,8 @@ vssc_virgil_http_client_send_with_custom_ca(
     curl_easy_setopt(curl, CURLOPT_URL, vssc_http_request_url(http_request).chars);
     curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, vssc_http_request_method(http_request).chars);
 
-    if (!vsc_str_is_empty(ca)) {
-        vsc_str_mutable_t ca_null_terminates = vsc_str_mutable_from_str(ca);
+    if (!vsc_str_is_empty(ca_bundle)) {
+        vsc_str_mutable_t ca_null_terminates = vsc_str_mutable_from_str(ca_bundle);
         curl_easy_setopt(curl, CURLOPT_CAINFO, vsc_str_mutable_as_str(ca_null_terminates));
         vsc_str_mutable_release(&ca_null_terminates);
     }
@@ -252,6 +251,114 @@ maybe_succ:
     curl_slist_free_all(headers);
 
     return virgil_http_response;
+}
+
+//
+//  Send custom request over HTTP.
+//
+VSSC_PUBLIC vssc_http_response_t *
+vssc_virgil_http_client_send_custom(const vssc_http_request_t *http_request, vssc_error_t *error) {
+
+    VSSC_ASSERT_PTR(http_request);
+
+    return vssc_virgil_http_client_send_custom_with_ca(http_request, vsc_str_empty(), error);
+}
+
+//
+//  Send custom request over HTTP with a path to Certificate Authority bundle.
+//
+//  Note, argument ca_bundle can be empty.
+//
+VSSC_PUBLIC vssc_http_response_t *
+vssc_virgil_http_client_send_custom_with_ca(
+        const vssc_http_request_t *http_request, vsc_str_t ca_bundle, vssc_error_t *error) {
+
+    VSSC_ASSERT_PTR(http_request);
+    VSSC_ASSERT(vsc_str_is_valid(ca_bundle));
+
+    //
+    //  Set URL and method.
+    //
+    CURL *curl = curl_easy_init();
+    curl_easy_setopt(curl, CURLOPT_URL, vssc_http_request_url(http_request).chars);
+    curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, vssc_http_request_method(http_request).chars);
+
+    if (!vsc_str_is_empty(ca_bundle)) {
+        vsc_str_mutable_t ca_null_terminates = vsc_str_mutable_from_str(ca_bundle);
+        curl_easy_setopt(curl, CURLOPT_CAINFO, vsc_str_mutable_as_str(ca_null_terminates));
+        vsc_str_mutable_release(&ca_null_terminates);
+    }
+
+    //
+    //  Add headers.
+    //
+    vsc_str_buffer_t *header_buf = vsc_str_buffer_new_with_capacity(512);
+    struct curl_slist *headers = NULL;
+
+    // Custom headers.
+    for (const vssc_http_header_list_t *header_it = vssc_http_request_headers(http_request);
+            header_it != NULL && vssc_http_header_list_has_item(header_it);
+            header_it = vssc_http_header_list_next(header_it)) {
+
+        const vssc_http_header_t *header = vssc_http_header_list_item(header_it);
+        vsc_str_t header_name = vssc_http_header_name(header);
+        vsc_str_t header_value = vssc_http_header_value(header);
+
+        vssc_virgil_http_client_format_header(header_name, header_value, header_buf);
+        headers = curl_slist_append(headers, vsc_str_buffer_str(header_buf).chars);
+        VSSC_ASSERT_ALLOC(headers);
+    }
+
+    curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
+
+    vsc_str_buffer_destroy(&header_buf);
+
+    //
+    //  Set body.
+    //
+    vsc_str_t body = vssc_http_request_body(http_request);
+    if (!vsc_str_is_empty(body)) {
+        curl_easy_setopt(curl, CURLOPT_POSTFIELDS, body.chars);
+    }
+    //
+    //  Set callbacks to build response.
+    //
+    vssc_http_response_t *response = vssc_http_response_new();
+
+    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, vssc_virgil_http_client_write_recevied_data);
+    curl_easy_setopt(curl, CURLOPT_WRITEDATA, response);
+
+    curl_easy_setopt(curl, CURLOPT_HEADERFUNCTION, vssc_virgil_http_client_write_recevied_header);
+    curl_easy_setopt(curl, CURLOPT_HEADERDATA, response);
+
+    //
+    //  Perform the request.
+    //
+    const CURLcode send_status = curl_easy_perform(curl);
+    if (send_status != CURLE_OK) {
+        goto send_fail;
+    }
+
+    //
+    //  Parse response.
+    //
+    long response_code;
+    curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &response_code);
+
+    response->status_code = response_code;
+
+    goto maybe_succ;
+
+send_fail:
+    VSSC_ERROR_SAFE_UPDATE(error, vssc_status_HTTP_SEND_REQUEST_FAILED);
+
+    vssc_http_response_destroy(&response);
+
+maybe_succ:
+    curl_easy_cleanup(curl);
+    curl_slist_free_all(headers);
+
+    return response;
 }
 
 //

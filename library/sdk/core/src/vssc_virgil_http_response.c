@@ -108,12 +108,6 @@ static vssc_virgil_http_response_t *
 vssc_virgil_http_response_new_with(size_t http_status_code, vssc_http_header_list_t **http_headers_ref,
         vssc_json_object_t **http_body_ref, vssc_json_array_t **http_array_body_ref);
 
-//
-//  Check status code range [200..299].
-//
-static bool
-vssc_virgil_http_response_is_http_status_code_success(size_t http_status_code);
-
 static const char k_json_key_service_error_code[] = "code";
 
 static const vsc_str_t k_json_key_service_error_code_str = {
@@ -431,7 +425,7 @@ vssc_virgil_http_response_is_success(const vssc_virgil_http_response_t *self) {
 
     VSSC_ASSERT_PTR(self);
 
-    return vssc_virgil_http_response_is_http_status_code_success(self->http_status_code);
+    return vssc_http_response_is_status_code_success(self->http_status_code);
 }
 
 //
@@ -561,13 +555,4 @@ vssc_virgil_http_response_find_header(const vssc_virgil_http_response_t *self, v
     VSSC_ASSERT_PTR(self->http_headers);
 
     return vssc_http_header_list_find(self->http_headers, name, error);
-}
-
-//
-//  Check status code range [200..299].
-//
-static bool
-vssc_virgil_http_response_is_http_status_code_success(size_t http_status_code) {
-
-    return 200 <= http_status_code && http_status_code <= 299;
 }

@@ -174,6 +174,12 @@ VSSC_PUBLIC void
 vssc_http_response_add_header(vssc_http_response_t *self, vsc_str_t name, vsc_str_t value);
 
 //
+//  Return true if underlying status code is in range [200..299].
+//
+VSSC_PUBLIC bool
+vssc_http_response_is_success(const vssc_http_response_t *self);
+
+//
 //  Return HTTP status code.
 //
 VSSC_PUBLIC size_t
@@ -196,6 +202,12 @@ vssc_http_response_headers(const vssc_http_response_t *self);
 //
 VSSC_PUBLIC vsc_str_t
 vssc_http_response_find_header(const vssc_http_response_t *self, vsc_str_t name, vssc_error_t *error);
+
+//
+//  Check status code range [200..299].
+//
+VSSC_PUBLIC bool
+vssc_http_response_is_status_code_success(size_t http_status_code);
 
 
 // --------------------------------------------------------------------------

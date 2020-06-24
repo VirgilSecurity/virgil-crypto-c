@@ -58,6 +58,7 @@
 #include "vssc_jwt.h"
 #include "vssc_error.h"
 #include "vssc_virgil_http_response.h"
+#include "vssc_http_response.h"
 
 #if !VSSC_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_str.h>
@@ -89,13 +90,28 @@ VSSC_PUBLIC vssc_virgil_http_response_t *
 vssc_virgil_http_client_send(const vssc_http_request_t *http_request, const vssc_jwt_t *jwt, vssc_error_t *error);
 
 //
-//  Send request over HTTP with a custom CA Certificate.
+//  Send request over HTTP with a path to Certificate Authority bundle.
 //
-//  Note, argument ca can be empty.
+//  Note, argument ca_bundle can be empty.
 //
 VSSC_PUBLIC vssc_virgil_http_response_t *
-vssc_virgil_http_client_send_with_custom_ca(const vssc_http_request_t *http_request, const vssc_jwt_t *jwt,
-        vsc_str_t ca, vssc_error_t *error);
+vssc_virgil_http_client_send_with_ca(const vssc_http_request_t *http_request, const vssc_jwt_t *jwt,
+        vsc_str_t ca_bundle, vssc_error_t *error);
+
+//
+//  Send custom request over HTTP.
+//
+VSSC_PUBLIC vssc_http_response_t *
+vssc_virgil_http_client_send_custom(const vssc_http_request_t *http_request, vssc_error_t *error);
+
+//
+//  Send custom request over HTTP with a path to Certificate Authority bundle.
+//
+//  Note, argument ca_bundle can be empty.
+//
+VSSC_PUBLIC vssc_http_response_t *
+vssc_virgil_http_client_send_custom_with_ca(const vssc_http_request_t *http_request, vsc_str_t ca_bundle,
+        vssc_error_t *error);
 
 
 // --------------------------------------------------------------------------

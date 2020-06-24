@@ -32,17 +32,40 @@
     </method>
 
 
-    <method name="send with custom ca">
-        Send request over HTTP with a custom CA Certificate.
+    <method name="send with ca">
+        Send request over HTTP with a path to Certificate Authority bundle.
 
-        Note, argument ca can be empty.
+        Note, argument ca_bundle can be empty.
 
         <argument name="http request" class="http request"/>
         <argument name="jwt" class="jwt"/>
-        <argument name="ca" class="str"/>
+        <argument name="ca bundle" class="str"/>
         <argument name="error" class="error" access="readwrite"/>
 
         <return class="virgil http response" access="disown"/>
+    </method>
+
+
+    <method name="send custom">
+        Send custom request over HTTP.
+
+        <argument name="http request" class="http request"/>
+        <argument name="error" class="error" access="readwrite"/>
+
+        <return class="http response" access="disown"/>
+    </method>
+
+
+    <method name="send custom with ca">
+        Send custom request over HTTP with a path to Certificate Authority bundle.
+
+        Note, argument ca_bundle can be empty.
+
+        <argument name="http request" class="http request"/>
+        <argument name="ca bundle" class="str"/>
+        <argument name="error" class="error" access="readwrite"/>
+
+        <return class="http response" access="disown"/>
     </method>
 
 
