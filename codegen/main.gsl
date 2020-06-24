@@ -326,6 +326,11 @@ function run_main ()
     global.interfaces = XML.new ("interfaces")
     for main.project
         my.loaded_project = load_project_model (project, project)
+
+        # This property is used to correctly resolve shortcuts for classes
+        # from the "common" project (data, buffer, etc).
+        global.current_project = my.loaded_project.name
+
         project_resolve (my.loaded_project, main)
         for my.loaded_project.interface
             my.loaded_interface = load_project_model (my.loaded_project, interface, global.interfaces)
@@ -364,6 +369,11 @@ function run_main ()
         my.loaded_project = load_project_model (project, project)
         my.loaded_project.skip_codegen_c = is_true (project.skip_codegen_c)
         my.loaded_project.skip_codegen_wrappers = is_true (project.skip_codegen_wrappers)
+
+        # This property is used to correctly resolve shortcuts for classes
+        # from the "common" project (data, buffer, etc).
+        global.current_project = my.loaded_project.name
+
         project_resolve (my.loaded_project, main)
 
         if !string_empty(my.loaded_project.wrappers)

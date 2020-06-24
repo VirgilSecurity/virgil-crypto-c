@@ -184,17 +184,14 @@ function projects_api_build_type_resolution_map (projects_api, lang_name)
 
     for my.projects_api.project
 
-        my.project_prefix = make_id ("project", project.name)
-        my.no_project_prefix = # empty
+        my.project_prefix = (project.name <> my.projects_api.active_project) ?? make_id ("project", project.name) ?
 
         #   Process project UIDs.
         for project.uid
             if defined (my.project_prefix) & defined (uid.full_ref)
                 my.resolution_map.$(uid_insert_prefix (uid.uid, my.project_prefix)) = uid.full_ref
-                my.resolution_map.$(uid_insert_prefix (uid.uid, my.no_project_prefix)) = uid.full_ref
             else
                 my.resolution_map.$(uid_insert_prefix (uid.uid, my.project_prefix)) = uid.ref
-                my.resolution_map.$(uid_insert_prefix (uid.uid, my.no_project_prefix)) = uid.ref
             endif
         endfor
 
@@ -203,10 +200,8 @@ function projects_api_build_type_resolution_map (projects_api, lang_name)
             for lang.uid
                 if defined (my.project_prefix) & defined (uid.full_ref)
                     my.resolution_map.$(uid_insert_prefix (uid.uid, my.project_prefix)) = uid.full_ref
-                    my.resolution_map.$(uid_insert_prefix (uid.uid, my.no_project_prefix)) = uid.full_ref
                 else
                     my.resolution_map.$(uid_insert_prefix (uid.uid, my.project_prefix)) = uid.ref
-                    my.resolution_map.$(uid_insert_prefix (uid.uid, my.no_project_prefix)) = uid.ref
                 endif
             endfor
 
@@ -229,12 +224,7 @@ function projects_api_build_type_resolution_map (projects_api, lang_name)
                     my.header_file = header.file
                 endif
 
-                if project.name <> my.projects_api.active_project
-                    my.key = make_id ("c", my.project_prefix, "header", header.name)
-                else
-                    my.key = make_id ("c", my.no_project_prefix, "header", header.name)
-                endif
-
+                my.key = make_id ("c", my.project_prefix, "header", header.name)
                 my.resolution_map.$(my.key:) = my.header_file
             endfor
         endfor

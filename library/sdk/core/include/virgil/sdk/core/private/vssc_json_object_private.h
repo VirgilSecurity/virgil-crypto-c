@@ -48,7 +48,6 @@
 #define VSSC_JSON_OBJECT_PRIVATE_H_INCLUDED
 
 #include "vssc_json_array.h"
-#include "vssc_json_object.h"
 #include "vssc_error.h"
 
 #include <json-c/json.h>

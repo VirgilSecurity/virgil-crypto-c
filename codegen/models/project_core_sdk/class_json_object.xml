@@ -3,7 +3,6 @@
 
     <require header="json-c/json.h" library="json-c" scope="context"/>
     <require header="json-c/json.h" library="json-c" scope="private" definition="public"/>
-    <require class="json object" scope="private"/>
     <require class="str mutable" project="common"/>
     <require class="base64" project="foundation"/>
     <require module="base64 private" project="foundation"/>
