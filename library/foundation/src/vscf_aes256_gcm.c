@@ -53,10 +53,10 @@
 #include "vscf_aes256_gcm.h"
 #include "vscf_assert.h"
 #include "vscf_memory.h"
-#include "vscf_alg_info.h"
-#include "vscf_cipher_alg_info.h"
 #include "vscf_aes256_gcm_defs.h"
 #include "vscf_aes256_gcm_internal.h"
+#include "vscf_alg_info.h"
+#include "vscf_cipher_alg_info.h"
 
 // clang-format on
 //  @end

@@ -57,9 +57,9 @@
 #define VSCF_CIPHER_ALG_INFO_DEFS_H_INCLUDED
 
 #include "vscf_library.h"
-#include "vscf_impl_private.h"
 #include "vscf_cipher_alg_info.h"
 #include "vscf_atomic.h"
+#include "vscf_impl_private.h"
 #include "vscf_alg_id.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK

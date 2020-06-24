@@ -51,6 +51,7 @@
 #include "vscr_ratchet_typedefs.h"
 #include "vscr_status.h"
 
+#include <virgil/crypto/foundation/vscf_random.h>
 #include <virgil/crypto/common/vsc_buffer.h>
 
 #if !VSCR_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK

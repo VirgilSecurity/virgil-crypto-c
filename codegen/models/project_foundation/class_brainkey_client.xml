@@ -1,10 +1,10 @@
 <class name="brainkey client" context="internal">
 
-    <require impl="ctr drbg" scope="private"/>
+    <require impl="ctr drbg"/>
 
-    <require module="mbedtls bridge random" scope="private"/>
-    <require impl="hkdf" scope="private"/>
-    <require impl="sha512" scope="private"/>
+    <require module="mbedtls bridge random"/>
+    <require impl="hkdf"/>
+    <require impl="sha512"/>
 
     <property name="group" class="mbedtls_ecp_group" library="mbedtls" access="readwrite" is_reference="0"/>
     <property name="simple swu" class="simple swu" project="foundation"/>

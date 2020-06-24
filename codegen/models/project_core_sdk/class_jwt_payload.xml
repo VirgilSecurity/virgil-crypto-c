@@ -1,7 +1,7 @@
 <class name="jwt payload" scope="private">
     Class that handles JWT Payload.
 
-    <require class="base64 url" scope="private"/>
+    <require class="base64 url"/>
     <require header="json-c/json.h" library="json_c" scope="context"/>
 
 

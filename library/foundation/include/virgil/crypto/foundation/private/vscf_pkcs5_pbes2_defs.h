@@ -57,9 +57,9 @@
 #define VSCF_PKCS5_PBES2_DEFS_H_INCLUDED
 
 #include "vscf_library.h"
-#include "vscf_impl_private.h"
 #include "vscf_pkcs5_pbes2.h"
 #include "vscf_atomic.h"
+#include "vscf_impl_private.h"
 #include "vscf_impl.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK

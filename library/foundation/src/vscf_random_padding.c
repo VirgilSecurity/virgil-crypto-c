@@ -53,11 +53,10 @@
 #include "vscf_random_padding.h"
 #include "vscf_assert.h"
 #include "vscf_memory.h"
-#include "vscf_alg_info.h"
-#include "vscf_simple_alg_info.h"
-#include "vscf_random.h"
 #include "vscf_random_padding_defs.h"
 #include "vscf_random_padding_internal.h"
+#include "vscf_alg_info.h"
+#include "vscf_simple_alg_info.h"
 
 #include <pb_decode.h>
 #include <pb_encode.h>

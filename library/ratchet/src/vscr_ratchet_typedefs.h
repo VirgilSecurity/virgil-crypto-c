@@ -53,7 +53,7 @@
 #ifndef VSCR_RATCHET_TYPEDEFS_H_INCLUDED
 #define VSCR_RATCHET_TYPEDEFS_H_INCLUDED
 
-#include <stdint.h>
+#include "vscr_library.h"
 
 // clang-format on
 //  @end

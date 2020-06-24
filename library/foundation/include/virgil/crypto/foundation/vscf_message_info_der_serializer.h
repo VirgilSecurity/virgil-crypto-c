@@ -54,10 +54,12 @@
 #define VSCF_MESSAGE_INFO_DER_SERIALIZER_H_INCLUDED
 
 #include "vscf_library.h"
+#include "vscf_asn1_reader.h"
+#include "vscf_asn1_writer.h"
+#include "vscf_impl.h"
 #include "vscf_message_info.h"
 #include "vscf_message_info_footer.h"
 #include "vscf_error.h"
-#include "vscf_impl.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_buffer.h>

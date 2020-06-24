@@ -2,6 +2,7 @@
     This class contains HTTP response information alongside with information
     that is specific for Virgil services.
 
+    <require class="json object"/>
 
     <property name="http headers" class="http header list"/>
     <property name="http body" class="json object"/>

@@ -54,7 +54,6 @@
 #include "vscf_key_provider.h"
 #include "vscf_memory.h"
 #include "vscf_assert.h"
-#include "vscf_random.h"
 #include "vscf_key_provider_defs.h"
 #include "vscf_key_alg.h"
 #include "vscf_public_key.h"

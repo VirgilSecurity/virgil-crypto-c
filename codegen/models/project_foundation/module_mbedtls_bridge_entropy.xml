@@ -1,10 +1,11 @@
 <module name="mbedtls bridge entropy" scope="private">
-    <require module="library"/>
-    <require module="assert" scope="private"/>
-    <require class="impl" scope="private"/>
-    <require interface="entropy source" scope="private"/>
-    <require module="buffer defs" project="common" scope="private"/>
-    <require header="mbedtls/entropy.h" library="mbedtls" scope="private"/>
+
+    <require module="library" definition="public"/>
+    <require module="assert"/>
+    <require class="impl"/>
+    <require interface="entropy source"/>
+    <require module="buffer defs" project="common"/>
+    <require header="mbedtls/entropy.h" library="mbedtls"/>
 
     <method name="mbedtls bridge entropy" visibility="public">
         <argument name="ctx" class="any" access="readwrite"/>

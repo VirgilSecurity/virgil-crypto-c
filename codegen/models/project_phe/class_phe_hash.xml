@@ -1,15 +1,15 @@
 <class name="phe hash" context="internal" scope="internal">
 
-    <require header="stdarg.h" scope="private" is_system="1"/>
+    <require header="stdarg.h" is_system="1"/>
 
-    <require module="const" scope="private"/>
-    <require class="phe common" scope="public"/>
-    <require impl="hkdf" project="foundation" scope="private"/>
-    <require impl="sha512" project="foundation" scope="private"/>
-    <require header="mbedtls/ecp.h" scope="public"/>
+    <require module="const"/>
+    <require class="phe common" definition="public"/>
+    <require impl="hkdf" project="foundation"/>
+    <require impl="sha512" project="foundation"/>
+    <require header="mbedtls/ecp.h" definition="public"/>
     <require header="mbedtls/bignum.h" scope="context"/>
 
-    <require module="buffer defs" scope="private" project="common"/>
+    <require module="buffer defs" project="common"/>
 
     <property name="group" class="mbedtls_ecp_group" library="mbedtls" access="readwrite" is_reference="0"/>
     <property name="simple swu" class="simple swu" project="foundation"/>

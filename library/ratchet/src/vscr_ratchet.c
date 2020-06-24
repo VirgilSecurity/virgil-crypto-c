@@ -53,7 +53,6 @@
 #include "vscr_ratchet_message_defs.h"
 #include "vscr_ratchet_sender_chain.h"
 
-#include <virgil/crypto/foundation/vscf_random.h>
 #include <virgil/crypto/foundation/vscf_private_key.h>
 #include <virgil/crypto/foundation/vscf_public_key.h>
 #include <virgil/crypto/foundation/vscf_sha512.h>

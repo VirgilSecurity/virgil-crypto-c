@@ -161,7 +161,7 @@
 
         <require header="mbedtls/ecp.h" scope="context"/>
         <require class="mbedtls ecp"/>
-        <require interface="alg info" scope="public"/>
+        <require interface="alg info" definition="public"/>
 
         <property name="impl tag" enum="impl/tag"/>
         <property name="alg info" interface="alg info"/>
@@ -179,7 +179,7 @@
         <require header="mbedtls/ecp.h" scope="context"/>
         <require class="mbedtls ecp"/>
         <require module="ecc public key defs"/>
-        <require interface="alg info" scope="public"/>
+        <require interface="alg info" definition="public"/>
 
         <property name="impl tag" enum="impl/tag"/>
         <property name="alg info" interface="alg info"/>

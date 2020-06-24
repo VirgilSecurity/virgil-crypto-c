@@ -53,8 +53,6 @@
 #ifndef VSCF_ATOMIC_H_INCLUDED
 #define VSCF_ATOMIC_H_INCLUDED
 
-#include "vscf_library.h"
-
 #if VSCF_HAVE_STDATOMIC_H
 #   include <stdatomic.h>
 #endif

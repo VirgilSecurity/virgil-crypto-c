@@ -53,8 +53,8 @@
 // --------------------------------------------------------------------------
 
 #include "vscf_asn1_reader.h"
-#include "vscf_assert.h"
 #include "vscf_asn1_reader_api.h"
+#include "vscf_assert.h"
 
 // clang-format on
 //  @end

@@ -55,7 +55,6 @@
 
 #include "vssc_library.h"
 #include "vssc_error.h"
-#include "vssc_jwt_payload.h"
 
 #if !VSSC_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_str.h>

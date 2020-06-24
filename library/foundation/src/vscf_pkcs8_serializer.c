@@ -53,12 +53,11 @@
 #include "vscf_pkcs8_serializer.h"
 #include "vscf_assert.h"
 #include "vscf_memory.h"
+#include "vscf_pkcs8_serializer_defs.h"
+#include "vscf_pkcs8_serializer_internal.h"
 #include "vscf_asn1_tag.h"
 #include "vscf_oid.h"
 #include "vscf_asn1wr.h"
-#include "vscf_asn1_writer.h"
-#include "vscf_pkcs8_serializer_defs.h"
-#include "vscf_pkcs8_serializer_internal.h"
 
 // clang-format on
 //  @end

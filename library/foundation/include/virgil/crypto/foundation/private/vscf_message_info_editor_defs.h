@@ -55,8 +55,8 @@
 
 #include "vscf_library.h"
 #include "vscf_atomic.h"
-#include "vscf_message_info.h"
 #include "vscf_impl.h"
+#include "vscf_message_info.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_buffer.h>

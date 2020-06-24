@@ -1,15 +1,15 @@
 <class name="ratchet message" context="private">
     Class represents ratchet message
 
-    <require class="ratchet common hidden" scope="private"/>
-    <require class="ratchet common" scope="private"/>
+    <require class="ratchet common hidden"/>
+    <require class="ratchet common"/>
 
-    <require impl="sha512" project="foundation" scope="private"/>
-    <require module="buffer defs" scope="private" project="common"/>
+    <require impl="sha512" project="foundation"/>
+    <require module="buffer defs" project="common"/>
 
     <require header="vscr_RatchetMessage.pb.h" scope="context"/>
-    <require header="pb_decode.h" scope="private"/>
-    <require header="pb_encode.h" scope="private"/>
+    <require header="pb_decode.h"/>
+    <require header="pb_encode.h"/>
 
     <property name="message pb" class="vscr_Message" library="nanopb" access="readwrite" is_reference="0"/>
     <property name="header pb" class="vscr_RegularMessageHeader" library="nanopb" access="readwrite" is_reference="0"/>

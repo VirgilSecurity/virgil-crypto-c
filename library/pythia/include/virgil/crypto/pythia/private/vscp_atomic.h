@@ -53,8 +53,6 @@
 #ifndef VSCP_ATOMIC_H_INCLUDED
 #define VSCP_ATOMIC_H_INCLUDED
 
-#include "vscp_library.h"
-
 #if VSCP_HAVE_STDATOMIC_H
 #   include <stdatomic.h>
 #endif

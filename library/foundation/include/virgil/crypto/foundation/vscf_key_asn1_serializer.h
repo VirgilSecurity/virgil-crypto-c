@@ -54,9 +54,10 @@
 #define VSCF_KEY_ASN1_SERIALIZER_H_INCLUDED
 
 #include "vscf_library.h"
-#include "vscf_error.h"
+#include "vscf_asn1_writer.h"
 #include "vscf_impl.h"
 #include "vscf_raw_public_key.h"
+#include "vscf_error.h"
 #include "vscf_raw_private_key.h"
 #include "vscf_status.h"
 

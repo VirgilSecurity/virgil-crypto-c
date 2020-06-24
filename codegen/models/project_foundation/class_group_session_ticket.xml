@@ -3,17 +3,17 @@
 
     <require module="group session typedefs" scope="context"/>
 
-    <require module="buffer defs" project="common" scope="private"/>
-    <require module="group session message" scope="private"/>
+    <require module="buffer defs" project="common"/>
+    <require module="group session message"/>
 
-    <require module="group session message defs" scope="private"/>
-    <require module="group session message internal" scope="private"/>
+    <require module="group session message defs"/>
+    <require module="group session message internal"/>
 
-    <require header="vscf_GroupMessage.pb.h" scope="private"/>
-    <require header="pb_decode.h" scope="private"/>
-    <require header="pb_encode.h" scope="private"/>
+    <require header="vscf_GroupMessage.pb.h"/>
+    <require header="pb_decode.h"/>
+    <require header="pb_encode.h"/>
 
-    <require impl="ctr drbg" scope="private"/>
+    <require impl="ctr drbg"/>
 
     <dependency name="rng" interface="random">
         Random used to generate keys

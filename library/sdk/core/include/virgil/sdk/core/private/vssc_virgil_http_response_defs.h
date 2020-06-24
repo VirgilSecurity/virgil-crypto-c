@@ -56,7 +56,6 @@
 #include "vssc_library.h"
 #include "vssc_atomic.h"
 #include "vssc_http_header_list.h"
-#include "vssc_json_object.h"
 #include "vssc_json_array.h"
 
 // clang-format on

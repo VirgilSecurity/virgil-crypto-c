@@ -54,7 +54,6 @@
 #include "vscf_memory.h"
 #include "vscf_assert.h"
 #include "vscf_group_session_ticket_internal.h"
-#include "vscf_random.h"
 #include "vscf_group_session_ticket_defs.h"
 #include "vscf_group_session_message_defs.h"
 #include "vscf_group_session_message_internal.h"

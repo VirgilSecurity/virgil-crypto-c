@@ -57,9 +57,9 @@
 #define VSCF_FAKE_RANDOM_DEFS_H_INCLUDED
 
 #include "vscf_library.h"
-#include "vscf_impl_private.h"
 #include "vscf_fake_random.h"
 #include "vscf_atomic.h"
+#include "vscf_impl_private.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_buffer.h>

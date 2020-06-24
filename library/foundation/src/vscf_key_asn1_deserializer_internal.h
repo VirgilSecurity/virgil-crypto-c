@@ -56,6 +56,7 @@
 
 #include "vscf_library.h"
 #include "vscf_key_asn1_deserializer.h"
+#include "vscf_asn1_reader.h"
 
 // clang-format on
 //  @end

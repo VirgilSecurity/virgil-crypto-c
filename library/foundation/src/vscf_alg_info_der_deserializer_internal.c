@@ -57,7 +57,6 @@
 #include "vscf_alg_info_der_deserializer_defs.h"
 #include "vscf_alg_info_deserializer.h"
 #include "vscf_alg_info_deserializer_api.h"
-#include "vscf_asn1_reader.h"
 #include "vscf_impl.h"
 #include "vscf_api.h"
 

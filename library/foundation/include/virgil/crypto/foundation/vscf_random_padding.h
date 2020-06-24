@@ -54,10 +54,11 @@
 #define VSCF_RANDOM_PADDING_H_INCLUDED
 
 #include "vscf_library.h"
-#include "vscf_padding_params.h"
+#include "vscf_random.h"
 #include "vscf_impl.h"
 #include "vscf_alg_id.h"
 #include "vscf_status.h"
+#include "vscf_padding_params.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_data.h>

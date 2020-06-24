@@ -57,6 +57,8 @@
 #include "vssc_raw_card.h"
 #include "vssc_status.h"
 
+#include <virgil/crypto/foundation/vscf_random.h>
+
 #if !VSSC_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_str.h>
 #endif

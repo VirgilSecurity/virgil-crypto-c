@@ -57,9 +57,9 @@
 #define VSCF_SHA384_DEFS_H_INCLUDED
 
 #include "vscf_library.h"
-#include "vscf_impl_private.h"
 #include "vscf_sha384.h"
 #include "vscf_atomic.h"
+#include "vscf_impl_private.h"
 
 #include <mbedtls/sha512.h>
 

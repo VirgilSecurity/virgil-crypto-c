@@ -54,7 +54,6 @@
 #define VSCF_KEY_RECIPIENT_LIST_H_INCLUDED
 
 #include "vscf_library.h"
-#include "vscf_key_recipient_list.h"
 #include "vscf_impl.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK

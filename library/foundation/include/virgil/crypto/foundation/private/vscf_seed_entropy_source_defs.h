@@ -57,9 +57,9 @@
 #define VSCF_SEED_ENTROPY_SOURCE_DEFS_H_INCLUDED
 
 #include "vscf_library.h"
-#include "vscf_impl_private.h"
 #include "vscf_seed_entropy_source.h"
 #include "vscf_atomic.h"
+#include "vscf_impl_private.h"
 #include "vscf_impl.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK

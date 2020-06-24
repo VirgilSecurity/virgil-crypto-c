@@ -53,6 +53,8 @@
 #include "vscf_ecc.h"
 #include "vscf_assert.h"
 #include "vscf_memory.h"
+#include "vscf_ecc_defs.h"
+#include "vscf_ecc_internal.h"
 #include "vscf_asn1rd.h"
 #include "vscf_asn1wr.h"
 #include "vscf_mbedtls_bignum_asn1_reader.h"
@@ -72,9 +74,6 @@
 #include "vscf_ecc_private_key_defs.h"
 #include "vscf_ecc_public_key_defs.h"
 #include "vscf_mbedtls_bridge_random.h"
-#include "vscf_random.h"
-#include "vscf_ecc_defs.h"
-#include "vscf_ecc_internal.h"
 
 // clang-format on
 //  @end

@@ -53,15 +53,14 @@
 #include "vscf_falcon.h"
 #include "vscf_assert.h"
 #include "vscf_memory.h"
+#include "vscf_falcon_defs.h"
+#include "vscf_falcon_internal.h"
 #include "vscf_public_key.h"
 #include "vscf_private_key.h"
 #include "vscf_ctr_drbg.h"
 #include "vscf_simple_alg_info.h"
 #include "vscf_raw_public_key_defs.h"
 #include "vscf_raw_private_key_defs.h"
-#include "vscf_random.h"
-#include "vscf_falcon_defs.h"
-#include "vscf_falcon_internal.h"
 
 #include <falcon/falcon.h>
 

@@ -49,8 +49,6 @@
 #include "vsce_assert.h"
 #include "vsce_uokms_proof_generator_defs.h"
 
-#include <virgil/crypto/foundation/vscf_random.h>
-#include <virgil/crypto/foundation/vscf_random.h>
 #include <virgil/crypto/foundation/private/vscf_mbedtls_bridge_random.h>
 
 // clang-format on

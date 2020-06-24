@@ -57,7 +57,6 @@
 
 #include "vssc_library.h"
 #include "vssc_raw_card.h"
-#include "vssc_card.h"
 #include "vssc_raw_card_signature_list.h"
 
 #if !VSSC_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK

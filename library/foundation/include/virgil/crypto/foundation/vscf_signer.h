@@ -54,6 +54,8 @@
 #define VSCF_SIGNER_H_INCLUDED
 
 #include "vscf_library.h"
+#include "vscf_hash.h"
+#include "vscf_random.h"
 #include "vscf_impl.h"
 #include "vscf_status.h"
 

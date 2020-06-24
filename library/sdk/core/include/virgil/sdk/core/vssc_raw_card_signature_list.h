@@ -55,7 +55,6 @@
 
 #include "vssc_library.h"
 #include "vssc_raw_card_signature.h"
-#include "vssc_raw_card_signature_list.h"
 
 // clang-format on
 //  @end

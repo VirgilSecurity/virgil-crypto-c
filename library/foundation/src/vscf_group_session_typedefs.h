@@ -53,7 +53,7 @@
 #ifndef VSCF_GROUP_SESSION_TYPEDEFS_H_INCLUDED
 #define VSCF_GROUP_SESSION_TYPEDEFS_H_INCLUDED
 
-#include <stdint.h>
+#include "vscf_library.h"
 
 // clang-format on
 //  @end

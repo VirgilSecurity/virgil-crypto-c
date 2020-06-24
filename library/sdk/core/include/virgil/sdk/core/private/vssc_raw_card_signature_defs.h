@@ -55,7 +55,6 @@
 
 #include "vssc_library.h"
 #include "vssc_atomic.h"
-#include "vssc_json_object.h"
 #include "vssc_json_array.h"
 
 #if !VSSC_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK

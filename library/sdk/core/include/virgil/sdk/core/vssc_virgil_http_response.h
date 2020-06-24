@@ -59,7 +59,6 @@
 #include "vssc_json_array.h"
 #include "vssc_http_response.h"
 #include "vssc_error.h"
-#include "vssc_virgil_http_response.h"
 
 #if !VSSC_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_str.h>

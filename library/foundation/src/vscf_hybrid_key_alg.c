@@ -53,6 +53,8 @@
 #include "vscf_hybrid_key_alg.h"
 #include "vscf_assert.h"
 #include "vscf_memory.h"
+#include "vscf_hybrid_key_alg_defs.h"
+#include "vscf_hybrid_key_alg_internal.h"
 #include "vscf_oid.h"
 #include "vscf_alg_factory.h"
 #include "vscf_key_alg_factory.h"
@@ -74,11 +76,6 @@
 #include "vscf_asn1rd_defs.h"
 #include "vscf_asn1wr_defs.h"
 #include "vscf_hkdf_private.h"
-#include "vscf_random.h"
-#include "vscf_cipher_auth.h"
-#include "vscf_hash.h"
-#include "vscf_hybrid_key_alg_defs.h"
-#include "vscf_hybrid_key_alg_internal.h"
 
 // clang-format on
 //  @end

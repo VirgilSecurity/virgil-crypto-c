@@ -57,9 +57,9 @@
 #define VSCF_KDF1_DEFS_H_INCLUDED
 
 #include "vscf_library.h"
-#include "vscf_impl_private.h"
 #include "vscf_kdf1.h"
 #include "vscf_atomic.h"
+#include "vscf_impl_private.h"
 #include "vscf_impl.h"
 
 // clang-format on

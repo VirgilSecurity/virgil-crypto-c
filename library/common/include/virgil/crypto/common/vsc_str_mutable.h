@@ -60,7 +60,6 @@
 
 #include "vsc_library.h"
 #include "vsc_str.h"
-#include "vsc_str_mutable.h"
 
 // clang-format on
 //  @end

@@ -54,6 +54,8 @@
 #define VSCF_PKCS5_PBES2_H_INCLUDED
 
 #include "vscf_library.h"
+#include "vscf_salted_kdf.h"
+#include "vscf_cipher.h"
 #include "vscf_impl.h"
 #include "vscf_alg_id.h"
 #include "vscf_status.h"

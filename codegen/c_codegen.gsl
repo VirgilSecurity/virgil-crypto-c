@@ -145,12 +145,12 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Insert formatted block of public 'include' statements.
 # ---------------------------------------------------------------------------
-function c_insert_includes (component, scope)
-    check_arguments (my, "component, scope", my)
+function c_insert_includes (component, definition)
+    check_arguments (my, "component, definition", my)
 
     #   Insert required non-system includes.
     for my.component.c_include where ! defined (c_include.if) & \
-                string_equal (0.scope ?, my.scope) & is_false (is_system)
+                string_equal (0.definition ?, my.definition) & is_false (is_system)
 
         newline_if (first () & is_true (my.was_inserted))
         c_insert_include (c_include)
@@ -159,7 +159,8 @@ function c_insert_includes (component, scope)
 
     #   Insert optional non-system includes.
     for my.component.c_include where defined (c_include.if) & \
-                string_equal (0.scope ?, my.scope) & is_false (is_system) by c_include.if
+                string_equal (0.definition ?, my.definition) & \
+                is_false (is_system) by c_include.if
 
         newline_if (first () & is_true (my.was_inserted))
 
@@ -184,7 +185,7 @@ function c_insert_includes (component, scope)
 
     #   Insert required system includes.
     for my.component.c_include where ! defined (c_include.if) & \
-                string_equal (0.scope ?, my.scope) & is_true (is_system)
+                string_equal (0.definition ?, my.definition) & is_true (is_system)
 
         newline_if (first () & is_true (my.was_inserted))
         c_insert_include (c_include)
@@ -193,7 +194,7 @@ function c_insert_includes (component, scope)
 
     #   Insert optional system includes.
     for my.component.c_include where defined (c_include.if) & \
-                string_equal (0.scope ?, my.scope) & is_true (is_system) by c_include.if
+                string_equal (0.definition ?, my.definition) & is_true (is_system) by c_include.if
 
         newline_if (first () & is_true (my.was_inserted))
 
@@ -235,7 +236,7 @@ function c_insert_header_prologue (component, content_before)
     out ("#ifndef $(my.component.ONCE_GUARD)")
     out ("#define $(my.component.ONCE_GUARD)")
 
-    newline_if (count (my.component.c_include, scope = "public"))
+    newline_if (count (my.component.c_include, definition = "public"))
     c_insert_includes (my.component, "public")
     newline ()
     out ("// clang-format on")
@@ -287,7 +288,7 @@ function c_insert_source_prologue (component, content_before)
         c_insert_block (my.component->c_caution., "warning")
     endif
 
-    newline_if (count (my.component.c_include, scope = "private"))
+    newline_if (count (my.component.c_include, definition = "private"))
     c_insert_includes (my.component, "private")
     newline ()
     out ("// clang-format on")

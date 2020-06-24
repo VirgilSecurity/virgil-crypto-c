@@ -58,7 +58,6 @@
 #include "vscf_message_info_editor.h"
 #include "vscf_memory.h"
 #include "vscf_assert.h"
-#include "vscf_random.h"
 #include "vscf_message_info_editor_defs.h"
 #include "vscf_encrypt.h"
 #include "vscf_decrypt.h"

@@ -59,7 +59,6 @@
 #include "vscf_alg_api.h"
 #include "vscf_kdf.h"
 #include "vscf_kdf_api.h"
-#include "vscf_hash.h"
 #include "vscf_impl.h"
 #include "vscf_api.h"
 

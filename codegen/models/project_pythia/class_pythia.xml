@@ -1,13 +1,13 @@
 <class name="pythia" context="none">
     Provide Pythia implementation based on the Virgil Security.
 
-    <require header="pythia_init.h" scope="private" is_system="0"/>
-    <require header="pythia_wrapper.h" scope="private" is_system="0"/>
-    <require header="pythia_buf_sizes.h" scope="private" is_system="0"/>
+    <require header="pythia_init.h" is_system="0"/>
+    <require header="pythia_wrapper.h" is_system="0"/>
+    <require header="pythia_buf_sizes.h" is_system="0"/>
 
-    <require header="mbedtls/ctr_drbg.h" scope="private"/>
-    <require header="mbedtls/entropy.h" scope="private"/>
-    <require header="mbedtls/entropy_poll.h" scope="private"/>
+    <require header="mbedtls/ctr_drbg.h"/>
+    <require header="mbedtls/entropy.h"/>
+    <require header="mbedtls/entropy_poll.h"/>
 
 
     <macros name="buffer from data" definition="private" is_method="1">

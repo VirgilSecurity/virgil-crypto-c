@@ -54,6 +54,7 @@
 #define VSCF_ALG_INFO_DER_SERIALIZER_H_INCLUDED
 
 #include "vscf_library.h"
+#include "vscf_asn1_writer.h"
 #include "vscf_impl.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK

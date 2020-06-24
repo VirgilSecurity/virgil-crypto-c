@@ -53,6 +53,8 @@
 #include "vscf_compound_key_alg.h"
 #include "vscf_assert.h"
 #include "vscf_memory.h"
+#include "vscf_compound_key_alg_defs.h"
+#include "vscf_compound_key_alg_internal.h"
 #include "vscf_simple_alg_info.h"
 #include "vscf_alg_factory.h"
 #include "vscf_key_alg_factory.h"
@@ -71,9 +73,6 @@
 #include "vscf_asn1wr.h"
 #include "vscf_asn1rd_defs.h"
 #include "vscf_asn1wr_defs.h"
-#include "vscf_random.h"
-#include "vscf_compound_key_alg_defs.h"
-#include "vscf_compound_key_alg_internal.h"
 
 // clang-format on
 //  @end

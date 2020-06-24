@@ -53,10 +53,10 @@
 #include "vscf_entropy_accumulator.h"
 #include "vscf_assert.h"
 #include "vscf_memory.h"
-#include "vscf_entropy_source.h"
-#include "vscf_mbedtls_bridge_entropy_poll.h"
 #include "vscf_entropy_accumulator_defs.h"
 #include "vscf_entropy_accumulator_internal.h"
+#include "vscf_entropy_source.h"
+#include "vscf_mbedtls_bridge_entropy_poll.h"
 
 // clang-format on
 //  @end

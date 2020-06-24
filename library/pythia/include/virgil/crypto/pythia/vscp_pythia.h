@@ -54,8 +54,8 @@
 #define VSCP_PYTHIA_H_INCLUDED
 
 #include "vscp_library.h"
-#include "vscp_error.h"
 #include "vscp_status.h"
+#include "vscp_error.h"
 
 #if !VSCP_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_data.h>

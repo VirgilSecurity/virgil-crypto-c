@@ -54,9 +54,11 @@
 #define VSSC_JWT_GENERATOR_H_INCLUDED
 
 #include "vssc_library.h"
+#include "vssc_status.h"
 #include "vssc_error.h"
 #include "vssc_jwt.h"
-#include "vssc_status.h"
+
+#include <virgil/crypto/foundation/vscf_random.h>
 
 #if !VSSC_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_str.h>

@@ -56,6 +56,9 @@
 
 #include "vscf_library.h"
 #include "vscf_hybrid_key_alg.h"
+#include "vscf_random.h"
+#include "vscf_cipher_auth.h"
+#include "vscf_hash.h"
 
 // clang-format on
 //  @end

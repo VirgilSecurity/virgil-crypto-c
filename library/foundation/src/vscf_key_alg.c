@@ -51,8 +51,8 @@
 // --------------------------------------------------------------------------
 
 #include "vscf_key_alg.h"
-#include "vscf_assert.h"
 #include "vscf_key_alg_api.h"
+#include "vscf_assert.h"
 
 // clang-format on
 //  @end

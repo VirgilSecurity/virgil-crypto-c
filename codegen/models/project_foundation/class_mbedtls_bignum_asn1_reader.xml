@@ -2,10 +2,10 @@
     Provide method to read type 'mbedtls_mpi' from ASN.1 INTEGER representation.
 
     <require library="mbedtls" feature="BIGNUM C"/>
-    <require header="mbedtls/bignum.h" scope="public"/>
+    <require header="mbedtls/bignum.h" definition="public"/>
 
-    <require interface="asn1 reader" scope="private"/>
-    <require enum="asn1 tag" scope="private"/>
+    <require interface="asn1 reader"/>
+    <require enum="asn1 tag"/>
 
     <method name="read asn1" of_class="mbedtls bignum" is_static="1">
         Restore state of given MbedTLS big number from ASN.1 INTEGER representation.

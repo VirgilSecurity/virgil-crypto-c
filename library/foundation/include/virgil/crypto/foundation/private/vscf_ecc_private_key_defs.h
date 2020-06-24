@@ -57,9 +57,9 @@
 #define VSCF_ECC_PRIVATE_KEY_DEFS_H_INCLUDED
 
 #include "vscf_library.h"
-#include "vscf_impl_private.h"
 #include "vscf_ecc_private_key.h"
 #include "vscf_atomic.h"
+#include "vscf_impl_private.h"
 #include "vscf_impl.h"
 
 #include <mbedtls/ecp.h>

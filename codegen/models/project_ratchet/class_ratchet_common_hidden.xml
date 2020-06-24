@@ -28,8 +28,8 @@
     <constant name="max group session len" value="4191503"/>
     <constant name="max session len" value="46622"/>
 
-    <require header="pb_decode.h" scope="public"/>
-    <require header="pb_encode.h" scope="public"/>
+    <require header="pb_decode.h" definition="public"/>
+    <require header="pb_encode.h" definition="public"/>
 
-    <require class="buffer" project="common" scope="private"/>
+    <require class="buffer" project="common"/>
 </class>

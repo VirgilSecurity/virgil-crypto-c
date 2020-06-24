@@ -109,6 +109,7 @@ function c_module_api_create (meta, destination)
 
         new require
             .module = my.names.module_library
+            .definition = "public"
         endnew
 
         _N24_add_type_self (my.meta, module)

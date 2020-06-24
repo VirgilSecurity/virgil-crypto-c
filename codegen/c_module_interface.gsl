@@ -461,25 +461,26 @@ function c_module_interface_create_module_public (interface, destination, meta)
 
         new require to module
             .module = my.names.module_library
-        endnew
-
-        new require to module
-            .module = my.names.module_assert
-            .scope = "private"
+            .definition = "public"
         endnew
 
         new require to module
             .module = my.names.module_impl
+            .definition = "public"
         endnew
 
         new require to module
             .module = my.names.interface_module_api
-            .scope = "private"
+        endnew
+
+        new require to module
+            .module = my.names.module_assert
         endnew
 
         for my.interface.inherit
             new require to module
                 .module = inherit.interface
+                .definition = "public"
             endnew
         endfor
 
@@ -520,19 +521,23 @@ function c_module_interface_create_module_api (interface, destination, meta)
 
         new require to module
             .module = my.names.module_library
+            .definition = "public"
         endnew
 
         new require to module
             .module = my.names.module_api
+            .definition = "public"
         endnew
 
         new require to module
             .module = my.names.module_impl
+            .definition = "public"
         endnew
 
         for my.interface.inherit
             new require to module
                 .module = inherit.interface
+                .definition = "public"
             endnew
         endfor
 

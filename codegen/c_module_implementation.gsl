@@ -207,41 +207,33 @@ function _Z19_add_includes_for_module_public (impl, destination, meta)
 
     new require to my.destination
         .module = my.names.module_library
+        .definition = "public"
     endnew
 
     new require to my.destination
         .module = my.names.module_assert
-        .scope = "private"
     endnew
 
     new require to my.destination
         .module = my.names.module_memory
-        .scope = "private"
     endnew
-
-    for my.impl.require
-        component_clean_copy (require, my.destination)
-    endfor
 
     c_dependency_add_requirements (my.impl, my.destination)
 
     if my.impl.context <> "none"
         new require to my.destination
             .module = my.names.implementation_module_defs
-            .scope = "private"
         endnew
     endif
 
     if _Z19_has_module_private (my.impl)
         new require to my.destination
             .module = my.names.implementation_module_private
-            .scope = "private"
         endnew
     endif
 
     new require to my.destination
         .module = my.names.implementation_module_internal
-        .scope = "private"
     endnew
 endfunction
 
@@ -255,32 +247,29 @@ function _Z19_add_includes_for_module_internal (impl, destination, meta)
 
     new require to my.destination
         .module = my.names.module_library
+        .definition = "public"
     endnew
 
     new require to my.destination
         .module = my.names.module_memory
-        .scope = "private"
     endnew
 
     new require to my.destination
         .module = my.names.module_assert
-        .scope = "private"
     endnew
 
     if my.impl.context <> "none"
         new require to my.destination
             .module = my.names.implementation_module
-            .scope = "public"
+            .definition = "public"
         endnew
 
         new require to my.destination
             .module = my.names.implementation_module_defs
-            .scope = "private"
         endnew
     else
         new require to my.destination
             .module = my.names.implementation_module
-            .scope = "private"
         endnew
     endif
 
@@ -289,12 +278,10 @@ function _Z19_add_includes_for_module_internal (impl, destination, meta)
 
         new require to my.destination
             .module = my.entity_names.interface_module
-            .scope = "private"
         endnew
 
         new require to my.destination
             .module = my.entity_names.interface_module_api
-            .scope = "private"
         endnew
     endfor
 
@@ -415,19 +402,22 @@ function _Z19_add_type_impl (impl, declaration, definition, destination, meta)
     if my.definition <> "external"
         new require to my.destination
             .module = my.names.module_atomic
-            .scope = my.definition
+            .definition = my.definition
+            .scope = my.destination.scope
         endnew
 
         for my.impl.context
             for context.require
                 my.copied_require = item_copy_to(require, my.destination)
-                my.copied_require.scope = my.definition
+                my.copied_require.definition = my.definition
+                my.copied_require.scope = my.destination.scope
             endfor
         endfor
 
         for my.impl.require where 0.scope="context"
             my.copied_require = item_copy_to(require, my.destination)
-            my.copied_require.scope = my.definition
+            my.copied_require.definition = my.definition
+            my.copied_require.scope = my.destination.scope
         endfor
     endif
 endfunction
@@ -1311,14 +1301,12 @@ function c_module_implementation_create_module_impl (impl, destination, meta)
 
         new require to module
             .module = my.names.module_library
-        endnew
-
-        new require to module
-            .module = my.names.module_impl_private
+            .definition = "public"
         endnew
 
         new require to module
             .module = my.names.implementation_module
+            .definition = "public"
         endnew
 
         _Z19_add_type_impl (my.impl, "external", "public", module, my.meta)

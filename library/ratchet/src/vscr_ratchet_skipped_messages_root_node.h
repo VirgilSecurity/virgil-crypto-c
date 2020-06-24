@@ -51,9 +51,8 @@
 #include "vscr_atomic.h"
 #include "vscr_ratchet_typedefs.h"
 #include "vscr_ratchet_common.h"
-#include "vscr_ratchet_message_key.h"
-#include "vscr_ratchet_skipped_messages_root_node.h"
 #include "vscr_ratchet_message_key_node.h"
+#include "vscr_ratchet_message_key.h"
 
 // clang-format on
 //  @end

@@ -55,7 +55,6 @@
 
 #include "vssc_library.h"
 #include "vssc_http_header.h"
-#include "vssc_http_header_list.h"
 #include "vssc_error.h"
 
 #if !VSSC_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK

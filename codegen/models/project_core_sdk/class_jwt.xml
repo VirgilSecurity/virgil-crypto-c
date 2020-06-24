@@ -1,8 +1,8 @@
 <class name="jwt">
     Class that handles JWT.
 
-    <require class="unix time" scope="private"/>
-    <require class="base64 url" scope="private"/>
+    <require class="unix time"/>
+    <require class="base64 url"/>
 
 
     <property name="header" class="jwt header">

@@ -3,26 +3,26 @@
     <require interface="private key" project="foundation"/>
     <require interface="public key" project="foundation"/>
 
-    <require impl="sha512" project="foundation" scope="private"/>
-    <require impl="hmac" project="foundation" scope="private"/>
-    <require impl="hkdf" project="foundation" scope="private"/>
-    <require module="buffer defs" scope="private" project="common"/>
+    <require impl="sha512" project="foundation"/>
+    <require impl="hmac" project="foundation"/>
+    <require impl="hkdf" project="foundation"/>
+    <require module="buffer defs" project="common"/>
 
-    <require module="ratchet typedefs" scope="public"/>
+    <require module="ratchet typedefs" definition="public"/>
 
     <require class="ratchet pb utils" scope="context"/>
     <require class="ratchet common hidden" scope="context"/>
-    <require class="ratchet chain key" scope="private"/>
-    <require class="ratchet receiver chain" scope="private"/>
-    <require module="ratchet message defs" scope="private"/>
+    <require class="ratchet chain key"/>
+    <require class="ratchet receiver chain"/>
+    <require module="ratchet message defs"/>
     <require class="ratchet keys" scope="context"/>
 
-    <require header="vscr_RatchetSession.pb.h" scope="public"/>
-    <require header="vscr_RatchetMessage.pb.h" scope="public"/>
-    <require header="pb_decode.h" scope="public"/>
-    <require header="pb_encode.h" scope="public"/>
+    <require header="vscr_RatchetSession.pb.h" definition="public"/>
+    <require header="vscr_RatchetMessage.pb.h" definition="public"/>
+    <require header="pb_decode.h" definition="public"/>
+    <require header="pb_encode.h" definition="public"/>
 
-    <require header="ed25519/ed25519.h" scope="private"/>
+    <require header="ed25519/ed25519.h"/>
 
     <dependency name="rng" interface="random" project="foundation" has_observers="1"/>
     <property name="ratchet key utils" class="ratchet key utils"/>

@@ -53,10 +53,10 @@
 #include "vscf_key_material_rng.h"
 #include "vscf_assert.h"
 #include "vscf_memory.h"
-#include "vscf_ctr_drbg.h"
-#include "vscf_seed_entropy_source.h"
 #include "vscf_key_material_rng_defs.h"
 #include "vscf_key_material_rng_internal.h"
+#include "vscf_ctr_drbg.h"
+#include "vscf_seed_entropy_source.h"
 
 // clang-format on
 //  @end

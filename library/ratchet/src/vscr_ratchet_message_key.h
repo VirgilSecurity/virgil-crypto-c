@@ -51,7 +51,6 @@
 #include "vscr_atomic.h"
 #include "vscr_ratchet_typedefs.h"
 #include "vscr_ratchet_common_hidden.h"
-#include "vscr_ratchet_message_key.h"
 
 #include <vscr_RatchetSession.pb.h>
 #include <pb_decode.h>

@@ -50,7 +50,6 @@
 #include "vscf_library.h"
 #include "vscf_atomic.h"
 #include "vscf_group_session_epoch.h"
-#include "vscf_group_session_epoch_node.h"
 
 // clang-format on
 //  @end

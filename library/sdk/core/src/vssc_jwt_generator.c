@@ -58,7 +58,6 @@
 #include "vssc_base64_url.h"
 #include "vssc_jwt_private.h"
 
-#include <virgil/crypto/foundation/vscf_random.h>
 #include <virgil/crypto/foundation/vscf_sha512.h>
 #include <virgil/crypto/foundation/vscf_ctr_drbg.h>
 

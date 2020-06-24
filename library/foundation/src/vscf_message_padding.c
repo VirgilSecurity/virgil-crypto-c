@@ -47,7 +47,6 @@
 #include "vscf_message_padding.h"
 #include "vscf_memory.h"
 #include "vscf_assert.h"
-#include "vscf_random.h"
 #include "vscf_message_padding_defs.h"
 
 #include <virgil/crypto/common/private/vsc_buffer_defs.h>

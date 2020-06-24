@@ -3,7 +3,8 @@
     Currently only objects array are supported
 
     <require header="json-c/json.h" library="json-c" scope="context"/>
-    <require header="json-c/json.h" library="json-c" scope="private"/>
+    <require header="json-c/json.h" library="json-c" scope="private" definition="public"/>
+    <require class="json object"/>
     <require module="json object defs"/>
     <require module="json object private"/>
 

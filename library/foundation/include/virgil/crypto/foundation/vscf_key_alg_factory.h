@@ -54,9 +54,9 @@
 #define VSCF_KEY_ALG_FACTORY_H_INCLUDED
 
 #include "vscf_library.h"
-#include "vscf_error.h"
 #include "vscf_alg_id.h"
 #include "vscf_impl.h"
+#include "vscf_error.h"
 #include "vscf_raw_public_key.h"
 #include "vscf_raw_private_key.h"
 

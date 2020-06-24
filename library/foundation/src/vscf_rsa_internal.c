@@ -61,7 +61,6 @@
 #include "vscf_key_cipher_api.h"
 #include "vscf_key_signer.h"
 #include "vscf_key_signer_api.h"
-#include "vscf_random.h"
 #include "vscf_impl.h"
 #include "vscf_api.h"
 

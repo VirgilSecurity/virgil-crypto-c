@@ -18,22 +18,22 @@
         Salt size
     </constant>
 
-    <require module="buffer defs" scope="private" project="common"/>
+    <require module="buffer defs" project="common"/>
 
     <require module="group session typedefs" scope="context"/>
 
-    <require impl="ctr drbg" scope="private"/>
-    <require impl="ed25519" scope="private"/>
-    <require interface="private key" scope="private"/>
-    <require interface="public key" scope="private"/>
+    <require impl="ctr drbg"/>
+    <require impl="ed25519"/>
+    <require interface="private key"/>
+    <require interface="public key"/>
 
-    <require header="vscf_GroupMessage.pb.h" scope="private"/>
-    <require header="pb_decode.h" scope="private"/>
-    <require header="pb_encode.h" scope="private"/>
+    <require header="vscf_GroupMessage.pb.h"/>
+    <require header="pb_decode.h"/>
+    <require header="pb_encode.h"/>
 
-    <require module="group session message defs" scope="private"/>
-    <require module="group session message internal" scope="private"/>
-    <require module="group session ticket internal" scope="private"/>
+    <require module="group session message defs"/>
+    <require module="group session message internal"/>
+    <require module="group session ticket internal"/>
 
     <dependency name="rng" interface="random" has_observers="1">
         Random

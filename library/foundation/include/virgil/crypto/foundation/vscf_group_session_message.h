@@ -54,9 +54,8 @@
 #define VSCF_GROUP_SESSION_MESSAGE_H_INCLUDED
 
 #include "vscf_library.h"
-#include "vscf_error.h"
-#include "vscf_group_session_message.h"
 #include "vscf_group_msg_type.h"
+#include "vscf_error.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_data.h>

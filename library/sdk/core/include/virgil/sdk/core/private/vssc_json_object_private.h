@@ -47,16 +47,11 @@
 #ifndef VSSC_JSON_OBJECT_PRIVATE_H_INCLUDED
 #define VSSC_JSON_OBJECT_PRIVATE_H_INCLUDED
 
-#include "vssc_json_array_defs.h"
-#include "vssc_json_array_private.h"
+#include "vssc_json_array.h"
 #include "vssc_json_object.h"
 #include "vssc_error.h"
-#include "vssc_json_array.h"
 
 #include <json-c/json.h>
-#include <virgil/crypto/common/vsc_str_mutable.h>
-#include <virgil/crypto/foundation/vscf_base64.h>
-#include <virgil/crypto/foundation/private/vscf_base64_private.h>
 
 #if !VSSC_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_str.h>

@@ -61,7 +61,6 @@
 #include "vscf_kdf_api.h"
 #include "vscf_salted_kdf.h"
 #include "vscf_salted_kdf_api.h"
-#include "vscf_mac.h"
 #include "vscf_impl.h"
 #include "vscf_api.h"
 

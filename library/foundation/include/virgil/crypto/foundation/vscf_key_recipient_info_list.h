@@ -55,7 +55,6 @@
 
 #include "vscf_library.h"
 #include "vscf_key_recipient_info.h"
-#include "vscf_key_recipient_info_list.h"
 
 // clang-format on
 //  @end

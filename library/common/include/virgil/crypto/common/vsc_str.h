@@ -55,7 +55,6 @@
 
 #include "vsc_library.h"
 #include "vsc_data.h"
-#include "vsc_str.h"
 
 // clang-format on
 //  @end

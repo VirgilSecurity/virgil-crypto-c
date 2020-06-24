@@ -2,8 +2,8 @@
     Wraps any symmetric cipher algorithm to add padding to plaintext
     to prevent message guessing attacks based on a ciphertext length.
 
-    <require header="pb_decode.h" scope="private"/>
-    <require header="pb_encode.h" scope="private"/>
+    <require header="pb_decode.h"/>
+    <require header="pb_encode.h"/>
 
     <dependency name="cipher" interface="cipher"/>
     <dependency name="padding" interface="padding"/>

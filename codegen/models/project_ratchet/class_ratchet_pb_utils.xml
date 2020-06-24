@@ -1,9 +1,9 @@
 <class name="ratchet pb utils" scope="internal" context="internal">
     Utils class for working with protobug.
 
-    <require header="pb.h" scope="public"/>
-    <require header="pb_decode.h" scope="private"/>
-    <require header="pb_encode.h" scope="private"/>
+    <require header="pb.h" definition="public"/>
+    <require header="pb_decode.h"/>
+    <require header="pb_encode.h"/>
 
     <require class="simple alg info" project="foundation"/>
 

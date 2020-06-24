@@ -61,8 +61,6 @@
 #include "vscf_encrypt_api.h"
 #include "vscf_decrypt.h"
 #include "vscf_decrypt_api.h"
-#include "vscf_salted_kdf.h"
-#include "vscf_cipher.h"
 #include "vscf_impl.h"
 #include "vscf_api.h"
 

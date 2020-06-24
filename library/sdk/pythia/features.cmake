@@ -57,3 +57,12 @@ mark_as_advanced(
         VSSP_PYTHIA_CLIENT
         VSSP_BRAIN_KEY_SEED
         )
+
+if(VSSP_PYTHIA_CLIENT AND NOT VSSC_JSON_OBJECT)
+    message("-- error --")
+    message("--")
+    message("Feature VSSP_PYTHIA_CLIENT depends on the feature:")
+    message("     VSSC_JSON_OBJECT - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()

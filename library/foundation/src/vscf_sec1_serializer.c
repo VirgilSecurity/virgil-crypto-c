@@ -53,15 +53,14 @@
 #include "vscf_sec1_serializer.h"
 #include "vscf_assert.h"
 #include "vscf_memory.h"
+#include "vscf_sec1_serializer_defs.h"
+#include "vscf_sec1_serializer_internal.h"
 #include "vscf_key.h"
 #include "vscf_asn1_tag.h"
 #include "vscf_oid.h"
 #include "vscf_asn1wr.h"
 #include "vscf_alg_info_der_serializer.h"
 #include "vscf_ecc_alg_info.h"
-#include "vscf_asn1_writer.h"
-#include "vscf_sec1_serializer_defs.h"
-#include "vscf_sec1_serializer_internal.h"
 
 // clang-format on
 //  @end

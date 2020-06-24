@@ -2,15 +2,15 @@
     Class for client-side PHE crypto operations.
     This class is thread-safe in case if .(c_global_macros_multi_threading) defined.
 
-    <require class="phe common" scope="public"/>
-    <require impl="ctr drbg" project="foundation" scope="private"/>
+    <require class="phe common" definition="public"/>
+    <require impl="ctr drbg" project="foundation"/>
 
-    <require header="PHEModels.pb.h" scope="private"/>
-    <require header="pb_decode.h" scope="private"/>
-    <require header="pb_encode.h" scope="private"/>
+    <require header="PHEModels.pb.h"/>
+    <require header="pb_decode.h"/>
+    <require header="pb_encode.h"/>
 
-    <require module="buffer defs" scope="private" project="common"/>
-    <require module="mbedtls bridge random" scope="private" project="foundation"/>
+    <require module="buffer defs" project="common"/>
+    <require module="mbedtls bridge random" project="foundation"/>
 
     <dependency name="random" interface="random" project="foundation" has_observers="1">
         Random used for key generation, proofs, etc.

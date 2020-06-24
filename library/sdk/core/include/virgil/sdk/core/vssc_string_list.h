@@ -54,7 +54,6 @@
 #define VSSC_STRING_LIST_H_INCLUDED
 
 #include "vssc_library.h"
-#include "vssc_string_list.h"
 
 #if !VSSC_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_str.h>

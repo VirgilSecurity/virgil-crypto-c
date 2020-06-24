@@ -57,10 +57,10 @@
 #define VSCF_CTR_DRBG_DEFS_H_INCLUDED
 
 #include "vscf_library.h"
-#include "vscf_impl_private.h"
 #include "vscf_ctr_drbg.h"
 #include "vscf_atomic.h"
 #include "vscf_mbedtls_bridge_entropy.h"
+#include "vscf_impl_private.h"
 #include "vscf_impl.h"
 
 #include <mbedtls/ctr_drbg.h>

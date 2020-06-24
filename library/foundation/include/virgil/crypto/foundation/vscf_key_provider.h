@@ -55,10 +55,11 @@
 #define VSCF_KEY_PROVIDER_H_INCLUDED
 
 #include "vscf_library.h"
-#include "vscf_error.h"
+#include "vscf_random.h"
 #include "vscf_impl.h"
 #include "vscf_status.h"
 #include "vscf_alg_id.h"
+#include "vscf_error.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_data.h>

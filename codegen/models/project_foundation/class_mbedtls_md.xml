@@ -1,7 +1,7 @@
 <class name="mbedtls md" scope="internal">
     Bridge between MbedTLS MD module and virgil foundation.
 
-    <require header="mbedtls/md.h" scope="public"/>
+    <require header="mbedtls/md.h" definition="public"/>
 
     <method name="from alg id" is_static="1">
         Map alg id to correspond 'mbedtls_md_type_t'.

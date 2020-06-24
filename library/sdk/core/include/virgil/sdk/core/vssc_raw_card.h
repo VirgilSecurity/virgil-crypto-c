@@ -57,7 +57,6 @@
 #include "vssc_json_array.h"
 #include "vssc_raw_card_signature_list.h"
 #include "vssc_error.h"
-#include "vssc_raw_card.h"
 #include "vssc_raw_card_signature.h"
 
 #if !VSSC_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK

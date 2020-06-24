@@ -53,10 +53,9 @@
 #include "vscf_ctr_drbg.h"
 #include "vscf_assert.h"
 #include "vscf_memory.h"
-#include "vscf_entropy_accumulator.h"
-#include "vscf_entropy_source.h"
 #include "vscf_ctr_drbg_defs.h"
 #include "vscf_ctr_drbg_internal.h"
+#include "vscf_entropy_accumulator.h"
 
 // clang-format on
 //  @end

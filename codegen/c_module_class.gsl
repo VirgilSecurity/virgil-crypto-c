@@ -117,13 +117,13 @@ function _X13_add_context_struct (class, declaration, definition, destination, m
         if my.class.lifecycle <> "none" & my.class.context <> "none"
             new require to my.destination
                 .module = my.names.module_atomic
-                .scope = my.definition
+                .definition = my.definition
             endnew
         endif
 
         for my.class.require where 0.scope="context"
             my.copied_require = item_copy_to(require, my.destination)
-            my.copied_require.scope = my.definition
+            my.copied_require.definition = my.definition
         endfor
     endif
 endfunction
@@ -831,34 +831,31 @@ function c_module_class_create_module (class, destination, meta)
         .feature = my.class.name
         .of_class = my.class.name
         .c_prefix = my.class.c_prefix
-        .scope = my.class.scope ?
+        .scope = my.class.scope
         .is_main = "1"
 
         new require to module
             .module = my.names.module_library
+            .definition = "public"
         endnew
 
         new require to module
             .module = my.names.module_memory
-            .scope = "private"
         endnew
 
         new require to module
             .module = my.names.module_assert
-            .scope = "private"
         endnew
 
         if _X13_has_module_private (my.class)
             new require to module
                 .module = my.names.class_module_private
-                .scope = "private"
             endnew
         endif
 
         if _X13_has_module_internal (my.class)
             new require to module
                 .module = my.names.class_module_internal
-                .scope = "private"
             endnew
         endif
 
@@ -872,7 +869,6 @@ function c_module_class_create_module (class, destination, meta)
 
             new require to module
                 .module = my.names.class_module_defs
-                .scope = "private"
             endnew
         endif
 
@@ -891,14 +887,6 @@ function c_module_class_create_module (class, destination, meta)
             endfor
         endif
 
-
-        for my.class.require
-            component_clean_copy (require, module)
-        endfor
-
-        for my.class.c_include
-            component_clean_copy (c_include, module)
-        endfor
 
         for my.class.macros
             component_clean_copy (macros, module)
@@ -928,11 +916,6 @@ function c_module_class_create_module_private (class, destination, meta)
         .is_header_only = "1"
         .is_main = "0"
 
-        for my.class.require where require.scope = "private"
-            my.component = component_clean_copy (require, module)
-            my.component.scope = "public"
-        endfor
-
         for my.class.constructor where constructor.scope = "private"
             _X13_add_constructor (my.class, constructor, module, my.meta)
         endfor
@@ -960,11 +943,6 @@ function c_module_class_create_module_internal (class, destination, meta)
         new require to module
             .module = my.names.class_module
         endnew
-
-        for my.class.require where require.scope = "internal"
-            my.component = component_clean_copy (require, module)
-            my.component.scope = "public"
-        endfor
 
         for my.class.constructor where constructor.scope = "internal"
             _X13_add_constructor (my.class, constructor, module, my.meta)

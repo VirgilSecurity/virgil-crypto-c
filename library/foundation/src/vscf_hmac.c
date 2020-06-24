@@ -53,13 +53,12 @@
 #include "vscf_hmac.h"
 #include "vscf_assert.h"
 #include "vscf_memory.h"
+#include "vscf_hmac_defs.h"
+#include "vscf_hmac_internal.h"
 #include "vscf_alg.h"
 #include "vscf_alg_info.h"
 #include "vscf_alg_factory.h"
 #include "vscf_hash_based_alg_info.h"
-#include "vscf_hash.h"
-#include "vscf_hmac_defs.h"
-#include "vscf_hmac_internal.h"
 
 // clang-format on
 //  @end

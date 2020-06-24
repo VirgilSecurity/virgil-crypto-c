@@ -74,8 +74,8 @@ function c_module_assert_extend (module, project, projects_api)
 
         for my.message_getter.require
             my.dependency_require = item_copy_to (require, my.module)
-            my.dependency_require.scope = "private"
             my.dependency_require.$(my.dependency_id) = my.dependency_name
+            my.dependency_require.definition = "private"
         endfor
 
         my.method_name = cat ("trigger unhandled error of", my.dependency_id, my.dependency_name)

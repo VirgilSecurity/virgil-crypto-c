@@ -65,8 +65,6 @@
 #include "vscf_compute_shared_key_api.h"
 #include "vscf_kem.h"
 #include "vscf_kem_api.h"
-#include "vscf_random.h"
-#include "vscf_ecies.h"
 #include "vscf_impl.h"
 #include "vscf_api.h"
 

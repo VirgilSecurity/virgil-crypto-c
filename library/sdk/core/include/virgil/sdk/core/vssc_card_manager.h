@@ -54,10 +54,12 @@
 #define VSSC_CARD_MANAGER_H_INCLUDED
 
 #include "vssc_library.h"
+#include "vssc_status.h"
 #include "vssc_error.h"
 #include "vssc_raw_card.h"
 #include "vssc_card.h"
-#include "vssc_status.h"
+
+#include <virgil/crypto/foundation/vscf_random.h>
 
 #if !VSSC_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_str.h>

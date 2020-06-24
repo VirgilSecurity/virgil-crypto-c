@@ -56,6 +56,7 @@
 
 #include "vscf_library.h"
 #include "vscf_pkcs5_pbkdf2.h"
+#include "vscf_mac.h"
 
 // clang-format on
 //  @end

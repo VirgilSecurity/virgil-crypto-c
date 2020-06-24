@@ -57,9 +57,9 @@
 #define VSCF_AES256_CBC_DEFS_H_INCLUDED
 
 #include "vscf_library.h"
-#include "vscf_impl_private.h"
 #include "vscf_aes256_cbc.h"
 #include "vscf_atomic.h"
+#include "vscf_impl_private.h"
 #include "vscf_cipher_state.h"
 
 #include <mbedtls/cipher.h>

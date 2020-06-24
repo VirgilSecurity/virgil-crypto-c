@@ -55,7 +55,6 @@
 #include "vsce_assert.h"
 #include "vsce_uokms_wrap_rotation_defs.h"
 
-#include <virgil/crypto/foundation/vscf_random.h>
 #include <virgil/crypto/foundation/vscf_ctr_drbg.h>
 #include <virgil/crypto/common/private/vsc_buffer_defs.h>
 #include <virgil/crypto/foundation/private/vscf_mbedtls_bridge_random.h>

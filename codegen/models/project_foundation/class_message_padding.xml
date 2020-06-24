@@ -1,12 +1,12 @@
 <class name="message padding" context="internal" scope="private">
 
-    <require module="buffer defs" scope="private" project="common"/>
+    <require module="buffer defs" project="common"/>
 
     <constant name="padding size len" value="4" declararion="internal"/>
     <constant name="padding factor" value="160" declararion="internal"/>
 
-    <require header="pb_decode.h" scope="private"/>
-    <require header="pb_encode.h" scope="private"/>
+    <require header="pb_decode.h"/>
+    <require header="pb_encode.h"/>
 
     <dependency name="rng" interface="random"/>
 

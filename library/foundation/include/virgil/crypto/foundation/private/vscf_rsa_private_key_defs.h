@@ -57,9 +57,9 @@
 #define VSCF_RSA_PRIVATE_KEY_DEFS_H_INCLUDED
 
 #include "vscf_library.h"
-#include "vscf_impl_private.h"
 #include "vscf_rsa_private_key.h"
 #include "vscf_atomic.h"
+#include "vscf_impl_private.h"
 #include "vscf_impl.h"
 
 #include <mbedtls/rsa.h>

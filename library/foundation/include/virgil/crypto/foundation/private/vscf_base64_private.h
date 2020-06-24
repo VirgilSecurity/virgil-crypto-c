@@ -49,8 +49,6 @@
 
 #include "vscf_error.h"
 
-#include <mbedtls/base64.h>
-
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_data.h>
 #   include <virgil/crypto/common/vsc_buffer.h>

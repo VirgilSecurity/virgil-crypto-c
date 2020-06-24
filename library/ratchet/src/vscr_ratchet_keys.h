@@ -49,8 +49,10 @@
 
 #include "vscr_library.h"
 #include "vscr_ratchet_chain_key.h"
-#include "vscr_ratchet_message_key.h"
 #include "vscr_status.h"
+#include "vscr_ratchet_message_key.h"
+
+#include <virgil/crypto/foundation/vscf_random.h>
 
 #if !VSCR_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_data.h>

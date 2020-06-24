@@ -53,7 +53,6 @@
 #include "vscf_group_session.h"
 #include "vscf_memory.h"
 #include "vscf_assert.h"
-#include "vscf_random.h"
 #include "vscf_group_session_defs.h"
 #include "vscf_ctr_drbg.h"
 #include "vscf_ed25519.h"

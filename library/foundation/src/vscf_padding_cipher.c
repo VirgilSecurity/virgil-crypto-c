@@ -54,8 +54,6 @@
 #include "vscf_padding_cipher.h"
 #include "vscf_memory.h"
 #include "vscf_assert.h"
-#include "vscf_cipher.h"
-#include "vscf_padding.h"
 #include "vscf_padding_cipher_defs.h"
 
 #include <pb_decode.h>

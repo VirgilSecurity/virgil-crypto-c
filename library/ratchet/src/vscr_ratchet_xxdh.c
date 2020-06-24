@@ -50,7 +50,6 @@
 #include "vscr_ratchet_xxdh_defs.h"
 #include "vscr_ratchet_common_hidden.h"
 
-#include <virgil/crypto/foundation/vscf_random.h>
 #include <virgil/crypto/foundation/vscf_private_key.h>
 #include <virgil/crypto/foundation/vscf_public_key.h>
 #include <ed25519/ed25519.h>

@@ -3,17 +3,17 @@
     <require interface="private key" project="foundation"/>
     <require interface="public key" project="foundation"/>
 
-    <require header="ed25519/ed25519.h" scope="private"/>
+    <require header="ed25519/ed25519.h"/>
 
-    <require impl="sha512" project="foundation" scope="private"/>
-    <require impl="hmac" project="foundation" scope="private"/>
-    <require impl="hkdf" project="foundation" scope="private"/>
-    <require module="buffer defs" scope="private" project="common"/>
+    <require impl="sha512" project="foundation"/>
+    <require impl="hmac" project="foundation"/>
+    <require impl="hkdf" project="foundation"/>
+    <require module="buffer defs" project="common"/>
 
     <require module="ratchet typedefs" scope="context"/>
 
     <require class="ratchet common hidden" scope="context"/>
-    <require class="ratchet chain key" scope="private"/>
+    <require class="ratchet chain key"/>
 
     <variable name="ratchet chain key seed" type="unsigned" size="1" declaration="private" definition="private">
         <array length="derived"/>

@@ -57,7 +57,6 @@
 #include "vscf_key_asn1_serializer_defs.h"
 #include "vscf_key_serializer.h"
 #include "vscf_key_serializer_api.h"
-#include "vscf_asn1_writer.h"
 #include "vscf_impl.h"
 #include "vscf_api.h"
 

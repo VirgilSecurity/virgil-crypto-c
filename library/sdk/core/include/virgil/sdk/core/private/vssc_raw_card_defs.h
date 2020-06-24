@@ -55,9 +55,8 @@
 
 #include "vssc_library.h"
 #include "vssc_atomic.h"
-#include "vssc_json_object.h"
-#include "vssc_raw_card_signature_list.h"
 #include "vssc_json_array.h"
+#include "vssc_raw_card_signature_list.h"
 
 #if !VSSC_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_buffer.h>

@@ -56,6 +56,8 @@
 
 #include "vscf_library.h"
 #include "vscf_ecc.h"
+#include "vscf_random.h"
+#include "vscf_ecies.h"
 
 // clang-format on
 //  @end

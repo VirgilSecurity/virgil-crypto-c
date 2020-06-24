@@ -12,8 +12,8 @@
         <require interface="private key"/>
         <require impl="ctr drbg"/>
         <require module="buffer defs" project="common"/>
-        <require module="raw public key defs" scope="private"/>
-        <require module="raw private key defs" scope="private"/>
+        <require module="raw public key defs"/>
+        <require module="raw private key defs"/>
 
         <dependency name="random" interface="random"/>
         <dependency name="ecies" class="ecies" has_observers="1"/>
@@ -58,8 +58,8 @@
         <require interface="private key"/>
         <require impl="ctr drbg"/>
         <require module="buffer defs" project="common"/>
-        <require module="raw public key defs" scope="private"/>
-        <require module="raw private key defs" scope="private"/>
+        <require module="raw public key defs"/>
+        <require module="raw private key defs"/>
 
         <dependency name="random" interface="random"/>
         <dependency name="ecies" class="ecies" has_observers="1"/>

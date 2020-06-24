@@ -360,7 +360,7 @@ function c_component_resolve_include (c_include)
     check_argument (my, "c_include", my)
 
     c_component_require_attr_file (my.c_include, my)
-    c_component_resolve_attr_scope (my.c_include)
+    c_component_resolve_attr_definition (my.c_include)
     c_component_resolve_attr_is_system (my.c_include)
 endfunction
 
@@ -843,7 +843,7 @@ function c_component_create_include (require, destination)
         endif
 
         c_component_resolve_include (c_include)
-        c_component_map_attr_scope (c_include, my.require)
+        c_component_map_attr_definition (c_include, my.require)
         c_component_map_attr_feature (c_include, my.require)
     endnew
 endfunction

@@ -50,6 +50,7 @@
 #include "vscf_message_info_custom_params_internal.h"
 #include "vscf_message_info_custom_params_defs.h"
 #include "vscf_list_key_value_node_defs.h"
+#include "vscf_list_key_value_node.h"
 
 // clang-format on
 //  @end

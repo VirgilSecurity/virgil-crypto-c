@@ -49,8 +49,8 @@
 
 #include "vscf_library.h"
 #include "vscf_group_session_typedefs.h"
-#include "vscf_message_padding.h"
 #include "vscf_status.h"
+#include "vscf_message_padding.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_data.h>

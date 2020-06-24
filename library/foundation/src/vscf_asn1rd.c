@@ -53,9 +53,9 @@
 #include "vscf_asn1rd.h"
 #include "vscf_assert.h"
 #include "vscf_memory.h"
-#include "vscf_asn1_tag.h"
 #include "vscf_asn1rd_defs.h"
 #include "vscf_asn1rd_internal.h"
+#include "vscf_asn1_tag.h"
 
 #include <mbedtls/asn1.h>
 #include <virgil/crypto/common/private/vsc_buffer_defs.h>

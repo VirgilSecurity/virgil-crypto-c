@@ -173,14 +173,15 @@ function c_module_create (source, destination, project)
             .source_file = cat_path (my.project.src_path, 0.c_source_file)
             .once_guard = c_format_name (0.c_include_file, "included")
 
-            new c_include
-                .file = .c_include_file
-                .is_system = "0"
-                .scope = "private"
-            endnew
-
             c_module_add_license (my.project, c_module)
             c_module_add_caution (module, c_module)
+
+            new c_include
+                .file = .c_include_file
+                .definition = "private"
+                .is_system = "0"
+            endnew
+
             c_module_add_includes (module, c_module)
 
             for module.c_alias
@@ -263,14 +264,16 @@ endfunction
 
 
 # ---------------------------------------------------------------------------
-#   Change scope of the include file if type appears in the header.
+#   Change definition of the include file if type appears in the header.
 # ---------------------------------------------------------------------------
-function _M20_c_include_resolve_scope (c_module, c_include, is_public_instance, require_definition)
+function _M20_c_include_resolve_definition (c_module, c_include, is_public_instance, require_definition)
     check_arguments (my, "c_module, c_include, is_public_instance", my)
 
-    if my.is_public_instance & (my.c_include.scope = "private") & (my.c_include.file <> my.c_module.c_include_file) & \
-             (! defined (my.require_definition) | my.require_definition = "public")
-        my.c_include.scope = "public"
+    if my.is_public_instance & (my.c_include.definition = "private") & \
+            (my.c_include.file <> my.c_module.c_include_file) & \
+            (! defined (my.require_definition) | my.require_definition = "public")
+
+        my.c_include.definition = "public"
     endif
 endfunction
 
@@ -286,14 +289,14 @@ function c_module_add_in_project_include_from_header (c_module, header, is_publi
     if ! defined (my.c_include)
         new c_include to my.c_module
             .file = my.header.file
-            .scope = "private"
+            .definition = "private"
             .is_system = "0"
 
             my.c_include = c_include
         endnew
     endif
 
-    _M20_c_include_resolve_scope (my.c_module, my.c_include, my.is_public_instance, my.require_definition)
+    _M20_c_include_resolve_definition (my.c_module, my.c_include, my.is_public_instance, my.require_definition)
 endfunction
 
 
@@ -317,7 +320,7 @@ function c_module_add_system_include_from_header (c_module, header, is_public_in
 
         new c_include to my.c_module
             .file = my.header.system
-            .scope = "private"
+            .definition = "private"
             .is_system = "1"
             .if = my.condition ?
             .has_framework_guard = defined(my.condition)
@@ -326,7 +329,7 @@ function c_module_add_system_include_from_header (c_module, header, is_public_in
         endnew
     endif
 
-    _M20_c_include_resolve_scope (my.c_module, my.c_include, my.is_public_instance, my.require_definition)
+    _M20_c_include_resolve_definition (my.c_module, my.c_include, my.is_public_instance, my.require_definition)
 endfunction
 
 
@@ -348,7 +351,7 @@ function c_module_add_framework_include_from_header (c_module, header, is_public
 
         new c_include to my.c_module
             .file = my.header.framework
-            .scope = "private"
+            .definition = "private"
             .is_system = "1"
             .if = my.condition
             .is_framework = "1"
@@ -357,7 +360,7 @@ function c_module_add_framework_include_from_header (c_module, header, is_public
         endnew
     endif
 
-    _M20_c_include_resolve_scope (my.c_module, my.c_include, my.is_public_instance, my.require_definition)
+    _M20_c_include_resolve_definition (my.c_module, my.c_include, my.is_public_instance, my.require_definition)
 endfunction
 
 
@@ -410,7 +413,7 @@ endfunction
 function c_module_reduce_includes(c_module)
     check_arguments (my, "c_module", my)
 
-    for my.c_module.c_include where c_include.scope = "private" & defined(c_include.if)
+    for my.c_module.c_include where c_include.definition = "private" & defined(c_include.if)
         if is_true(c_include.is_framework)
             delete c_include
         elsif is_true(c_include.has_framework_guard)
@@ -439,12 +442,12 @@ function c_module_add_headers (c_module, projects_api)
             my.declaration_header = projects_api_find_declaration_header (my.projects_api, c_instance.type) ?
             my.definition_header = projects_api_find_definition_header (my.projects_api, c_instance.type) ?
 
-            if defined (my.declaration_header)
+            if defined (my.declaration_header) & my.declaration_header.file <> my.c_module.c_include_file
                 c_module_add_include_from_declaration_header (\
                         my.c_module, my.declaration_header, my.is_public_instance, my.projects_api)
             endif
 
-            if defined (my.definition_header)
+            if defined (my.definition_header) & my.definition_header.file <> my.c_module.c_include_file
                 c_module_add_include_from_definition_header (\
                         my.c_module, my.definition_header, my.is_public_instance, my.projects_api,\
                         c_instance.require_definition)

@@ -59,7 +59,6 @@
 #include "vscf_alg_api.h"
 #include "vscf_mac.h"
 #include "vscf_mac_api.h"
-#include "vscf_hash.h"
 #include "vscf_impl.h"
 #include "vscf_api.h"
 

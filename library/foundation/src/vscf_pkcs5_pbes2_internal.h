@@ -56,6 +56,8 @@
 
 #include "vscf_library.h"
 #include "vscf_pkcs5_pbes2.h"
+#include "vscf_salted_kdf.h"
+#include "vscf_cipher.h"
 
 // clang-format on
 //  @end

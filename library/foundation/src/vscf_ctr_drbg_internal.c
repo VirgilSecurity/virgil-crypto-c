@@ -57,7 +57,6 @@
 #include "vscf_ctr_drbg_defs.h"
 #include "vscf_random.h"
 #include "vscf_random_api.h"
-#include "vscf_entropy_source.h"
 #include "vscf_impl.h"
 #include "vscf_status.h"
 #include "vscf_api.h"

@@ -55,8 +55,8 @@
 
 #include "vscf_library.h"
 #include "vscf_atomic.h"
-#include "vscf_simple_swu.h"
 #include "vscf_impl.h"
+#include "vscf_simple_swu.h"
 
 // clang-format on
 //  @end

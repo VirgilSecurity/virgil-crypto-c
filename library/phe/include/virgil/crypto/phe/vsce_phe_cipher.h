@@ -58,6 +58,8 @@
 #include "vsce_phe_common.h"
 #include "vsce_status.h"
 
+#include <virgil/crypto/foundation/vscf_random.h>
+
 #if !VSCE_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_buffer.h>
 #   include <virgil/crypto/common/vsc_data.h>

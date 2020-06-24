@@ -53,15 +53,14 @@
 #include "vscf_pkcs5_pbkdf2.h"
 #include "vscf_assert.h"
 #include "vscf_memory.h"
+#include "vscf_pkcs5_pbkdf2_defs.h"
+#include "vscf_pkcs5_pbkdf2_internal.h"
 #include "vscf_alg.h"
 #include "vscf_alg_info.h"
 #include "vscf_alg_factory.h"
 #include "vscf_hmac.h"
 #include "vscf_sha384.h"
 #include "vscf_salted_kdf_alg_info.h"
-#include "vscf_mac.h"
-#include "vscf_pkcs5_pbkdf2_defs.h"
-#include "vscf_pkcs5_pbkdf2_internal.h"
 
 // clang-format on
 //  @end

@@ -57,9 +57,9 @@
 #define VSCF_CURVE25519_DEFS_H_INCLUDED
 
 #include "vscf_library.h"
-#include "vscf_impl_private.h"
 #include "vscf_curve25519.h"
 #include "vscf_atomic.h"
+#include "vscf_impl_private.h"
 #include "vscf_impl.h"
 #include "vscf_ecies.h"
 

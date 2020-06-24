@@ -57,9 +57,9 @@
 #define VSCF_KEY_MATERIAL_RNG_DEFS_H_INCLUDED
 
 #include "vscf_library.h"
-#include "vscf_impl_private.h"
 #include "vscf_key_material_rng.h"
 #include "vscf_atomic.h"
+#include "vscf_impl_private.h"
 #include "vscf_ctr_drbg.h"
 #include "vscf_seed_entropy_source.h"
 

@@ -2,13 +2,13 @@
     Class for encryption using PHE account key
     This class is thread-safe.
 
-    <require module="const" scope="private"/>
-    <require class="phe common" scope="public"/>
-    <require impl="ctr drbg" project="foundation" scope="private"/>
-    <require impl="sha512" project="foundation" scope="private"/>
-    <require impl="hkdf" project="foundation" scope="private"/>
+    <require module="const"/>
+    <require class="phe common" definition="public"/>
+    <require impl="ctr drbg" project="foundation"/>
+    <require impl="sha512" project="foundation"/>
+    <require impl="hkdf" project="foundation"/>
     <require impl="aes256 gcm" project="foundation"/>
-    <require module="buffer defs" scope="private" project="common"/>
+    <require module="buffer defs" project="common"/>
 
     <constant name="salt len" value="32" definition="private"/>
     <constant name="key len" value="32" definition="private"/>

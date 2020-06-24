@@ -56,8 +56,6 @@
 #include "vsce_assert.h"
 #include "vsce_phe_client_defs.h"
 
-#include <virgil/crypto/foundation/vscf_random.h>
-#include <virgil/crypto/foundation/vscf_random.h>
 #include <virgil/crypto/foundation/vscf_ctr_drbg.h>
 #include <PHEModels.pb.h>
 #include <pb_decode.h>

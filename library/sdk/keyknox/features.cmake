@@ -57,3 +57,12 @@ mark_as_advanced(
         VSSK_KEYKNOX_CLIENT
         VSSK_KEYKNOX_ENTRY
         )
+
+if(VSSK_KEYKNOX_CLIENT AND NOT VSSC_JSON_OBJECT)
+    message("-- error --")
+    message("--")
+    message("Feature VSSK_KEYKNOX_CLIENT depends on the feature:")
+    message("     VSSC_JSON_OBJECT - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()

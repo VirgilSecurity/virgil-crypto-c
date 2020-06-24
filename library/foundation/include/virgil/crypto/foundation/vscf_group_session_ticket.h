@@ -54,7 +54,7 @@
 #define VSCF_GROUP_SESSION_TICKET_H_INCLUDED
 
 #include "vscf_library.h"
-#include "vscf_group_session_message.h"
+#include "vscf_random.h"
 #include "vscf_group_session_message.h"
 #include "vscf_impl.h"
 #include "vscf_status.h"

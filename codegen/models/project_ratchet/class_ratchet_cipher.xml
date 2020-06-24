@@ -1,15 +1,15 @@
 <class name="ratchet cipher" context="internal" scope="private">
 
-    <require impl="sha512" project="foundation" scope="private"/>
-    <require impl="hkdf" project="foundation" scope="private"/>
-    <require module="buffer defs" scope="private" project="common"/>
+    <require impl="sha512" project="foundation"/>
+    <require impl="hkdf" project="foundation"/>
+    <require module="buffer defs" project="common"/>
 
     <require class="ratchet common hidden" scope="context"/>
-    <require module="ratchet typedefs" scope="public"/>
+    <require module="ratchet typedefs" definition="public"/>
 
-    <require header="vscr_RatchetMessage.pb.h" scope="public"/>
-    <require header="pb_decode.h" scope="public"/>
-    <require header="pb_encode.h" scope="public"/>
+    <require header="vscr_RatchetMessage.pb.h" definition="public"/>
+    <require header="pb_decode.h" definition="public"/>
+    <require header="pb_encode.h" definition="public"/>
 
     <property name="aes256 gcm" impl="aes256 gcm" project="foundation"/>
 

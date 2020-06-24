@@ -56,6 +56,7 @@
 
 #include "vscf_library.h"
 #include "vscf_compound_key_alg.h"
+#include "vscf_random.h"
 
 // clang-format on
 //  @end

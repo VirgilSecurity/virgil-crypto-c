@@ -53,11 +53,11 @@
 #include "vscf_hybrid_private_key.h"
 #include "vscf_assert.h"
 #include "vscf_memory.h"
+#include "vscf_hybrid_private_key_defs.h"
+#include "vscf_hybrid_private_key_internal.h"
 #include "vscf_alg_info.h"
 #include "vscf_private_key.h"
 #include "vscf_hybrid_public_key.h"
-#include "vscf_hybrid_private_key_defs.h"
-#include "vscf_hybrid_private_key_internal.h"
 
 // clang-format on
 //  @end

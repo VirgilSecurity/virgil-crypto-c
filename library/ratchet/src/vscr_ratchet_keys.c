@@ -49,7 +49,6 @@
 #include "vscr_assert.h"
 #include "vscr_ratchet_keys_defs.h"
 
-#include <virgil/crypto/foundation/vscf_random.h>
 #include <virgil/crypto/foundation/vscf_private_key.h>
 #include <virgil/crypto/foundation/vscf_public_key.h>
 #include <ed25519/ed25519.h>

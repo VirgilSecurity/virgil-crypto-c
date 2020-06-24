@@ -1,12 +1,12 @@
 <class name="ratchet message key" context="public" scope="internal">
 
-    <require class="ratchet common hidden" scope="public"/>
+    <require class="ratchet common hidden" definition="public"/>
 
     <require module="ratchet typedefs" scope="context"/>
 
-    <require header="vscr_RatchetSession.pb.h" scope="public"/>
-    <require header="pb_decode.h" scope="public"/>
-    <require header="pb_encode.h" scope="public"/>
+    <require header="vscr_RatchetSession.pb.h" definition="public"/>
+    <require header="pb_decode.h" definition="public"/>
+    <require header="pb_encode.h" definition="public"/>
 
     <property name="index" type="unsigned" size="4"/>
     <property name="key" class="vscr_ratchet_symmetric_key_t" is_reference="0" library="internal" access="readwrite"/>

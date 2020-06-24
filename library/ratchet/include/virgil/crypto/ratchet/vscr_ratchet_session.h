@@ -55,10 +55,11 @@
 
 #include "vscr_library.h"
 #include "vscr_ratchet_common.h"
+#include "vscr_status.h"
 #include "vscr_ratchet_message.h"
 #include "vscr_error.h"
-#include "vscr_ratchet_session.h"
-#include "vscr_status.h"
+
+#include <virgil/crypto/foundation/vscf_random.h>
 
 #if !VSCR_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_buffer.h>

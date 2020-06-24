@@ -53,10 +53,10 @@
 #include "vscf_sha384.h"
 #include "vscf_assert.h"
 #include "vscf_memory.h"
-#include "vscf_alg_info.h"
-#include "vscf_simple_alg_info.h"
 #include "vscf_sha384_defs.h"
 #include "vscf_sha384_internal.h"
+#include "vscf_alg_info.h"
+#include "vscf_simple_alg_info.h"
 
 // clang-format on
 //  @end

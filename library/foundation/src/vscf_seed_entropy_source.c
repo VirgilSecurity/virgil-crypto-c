@@ -53,12 +53,12 @@
 #include "vscf_seed_entropy_source.h"
 #include "vscf_assert.h"
 #include "vscf_memory.h"
+#include "vscf_seed_entropy_source_defs.h"
+#include "vscf_seed_entropy_source_internal.h"
 #include "vscf_kdf2.h"
 #include "vscf_sha512.h"
 #include "vscf_hash.h"
 #include "vscf_kdf.h"
-#include "vscf_seed_entropy_source_defs.h"
-#include "vscf_seed_entropy_source_internal.h"
 
 // clang-format on
 //  @end

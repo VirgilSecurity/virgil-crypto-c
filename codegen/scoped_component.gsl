@@ -75,6 +75,10 @@ endfunction
 function class_add_scoped_components_to_main_module (class, add_method_callback, module, meta)
     check_arguments (my, "class, add_method_callback, module, meta", my)
 
+    for my.class.require where 0.scope = my.module.scope
+        component_clean_copy (require, my.module)
+    endfor
+
     for my.class.constant where 0.scope = my.module.scope & constant.type <> "string"
         my.component = component_clean_copy (constant, my.module)
     endfor
@@ -155,6 +159,10 @@ endfunction
 # ---------------------------------------------------------------------------
 function class_add_scoped_components_to_extended_module (class, add_method_callback, module, meta)
     check_arguments (my, "class, add_method_callback, module, meta", my)
+
+    for my.class.require where 0.scope = my.module.scope
+        component_clean_copy (require, my.module)
+    endfor
 
     for my.class.constant where 0.scope = my.module.scope
         my.component = component_clean_copy (constant, my.module)

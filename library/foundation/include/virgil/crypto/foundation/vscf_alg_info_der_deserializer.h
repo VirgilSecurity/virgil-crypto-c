@@ -54,8 +54,9 @@
 #define VSCF_ALG_INFO_DER_DESERIALIZER_H_INCLUDED
 
 #include "vscf_library.h"
-#include "vscf_error.h"
+#include "vscf_asn1_reader.h"
 #include "vscf_impl.h"
+#include "vscf_error.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_data.h>

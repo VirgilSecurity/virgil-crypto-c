@@ -92,6 +92,16 @@ function interface_resolve_inherit (inherit, source, destination)
 endfunction
 
 # ---------------------------------------------------------------------------
+#   Resolve entity: require.
+# ---------------------------------------------------------------------------
+function interface_resolve_require (require, interface)
+    check_arguments (my, "require, interface", my)
+
+    my.require.definition ?= "public"
+    my.require.scope ?= my.interface.scope
+endfunction
+
+# ---------------------------------------------------------------------------
 #   Resolve component: constant.
 # ---------------------------------------------------------------------------
 function interface_resolve_constant (constant, parent)
@@ -124,6 +134,10 @@ function interface_resolve (interface, project)
     my.interface.visibility ?= "public"
     my.interface.uid = make_id ("interface", interface.name)
     my.interface.c_prefix ?= my.project.prefix
+
+    for my.interface.require
+        interface_resolve_require (constant, my.interface)
+    endfor
 
     for my.interface.constant
         interface_resolve_constant (constant, my.interface)
@@ -198,7 +212,6 @@ function interface_create_feature (interface, project, destination)
         for my.interface.require where has_one_of_attribute (require, "class, interface, impl")
             new require to feature
                 .feature = -1.class ? -1.interface ? -1.impl
-                .scope = -1.scope ?
                 .project = -1.project ?
             endnew
         endfor

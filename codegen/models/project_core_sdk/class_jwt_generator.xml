@@ -2,10 +2,10 @@
     Class responsible for JWT generation.
 
     <require class="unix time" sscope="private"/>
-    <require class="base64 url" scope="private"/>
-    <require module="jwt private" scope="private"/>
-    <require impl="sha512" project="foundation" scope="private"/>
-    <require impl="ctr drbg" project="foundation" scope="private"/>
+    <require class="base64 url"/>
+    <require module="jwt private"/>
+    <require impl="sha512" project="foundation"/>
+    <require impl="ctr drbg" project="foundation"/>
 
     <constant name="default ttl" type="size" value="15 * 60"/>
 

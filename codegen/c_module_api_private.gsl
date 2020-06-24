@@ -95,14 +95,17 @@ function c_module_api_private_create (meta, destination)
 
         new require
             .module = my.names.module_library
+            .definition = "public"
         endnew
 
         new require
             .module = my.names.module_api
+            .definition = "public"
         endnew
 
         new require
             .module = my.names.module_impl
+            .definition = "public"
         endnew
 
         _C12_add_type_self (my.meta, module)

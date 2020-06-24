@@ -53,9 +53,9 @@
 #include "vscf_ecc_public_key.h"
 #include "vscf_assert.h"
 #include "vscf_memory.h"
-#include "vscf_mbedtls_ecp.h"
 #include "vscf_ecc_public_key_defs.h"
 #include "vscf_ecc_public_key_internal.h"
+#include "vscf_mbedtls_ecp.h"
 
 // clang-format on
 //  @end

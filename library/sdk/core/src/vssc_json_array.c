@@ -56,10 +56,9 @@
 #include "vssc_assert.h"
 #include "vssc_json_array_private.h"
 #include "vssc_json_array_defs.h"
+#include "vssc_json_object.h"
 #include "vssc_json_object_defs.h"
 #include "vssc_json_object_private.h"
-
-#include <json-c/json.h>
 
 // clang-format on
 //  @end

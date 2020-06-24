@@ -2,6 +2,7 @@
     Represent model in binary form which can have signatures and corresponds to Virgil Cards Service model.
 
 
+    <require class="json object"/>
     <require class="json array"/>
 
     <property name="content" class="json object"/>

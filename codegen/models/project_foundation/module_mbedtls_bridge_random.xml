@@ -1,9 +1,10 @@
 <module name="mbedtls bridge random" scope="private">
-    <require module="library"/>
-    <require module="assert" scope="private"/>
-    <require class="impl" scope="private"/>
-    <require interface="random" scope="private"/>
-    <require module="buffer defs" project="common" scope="private"/>
+
+    <require module="library" definition="public"/>
+    <require module="assert"/>
+    <require class="impl"/>
+    <require interface="random"/>
+    <require module="buffer defs" project="common"/>
 
     <method name="mbedtls bridge random" visibility="public">
         <argument name="ctx" class="any" access="readwrite"/>

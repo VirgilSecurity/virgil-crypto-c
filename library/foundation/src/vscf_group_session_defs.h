@@ -56,10 +56,10 @@
 #include "vscf_library.h"
 #include "vscf_atomic.h"
 #include "vscf_group_session_typedefs.h"
+#include "vscf_impl.h"
 #include "vscf_message_cipher.h"
 #include "vscf_message_padding.h"
 #include "vscf_group_session_epoch_node.h"
-#include "vscf_impl.h"
 
 // clang-format on
 //  @end

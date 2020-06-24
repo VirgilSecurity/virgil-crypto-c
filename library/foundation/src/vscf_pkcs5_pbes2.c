@@ -53,6 +53,8 @@
 #include "vscf_pkcs5_pbes2.h"
 #include "vscf_assert.h"
 #include "vscf_memory.h"
+#include "vscf_pkcs5_pbes2_defs.h"
+#include "vscf_pkcs5_pbes2_internal.h"
 #include "vscf_alg.h"
 #include "vscf_alg_info.h"
 #include "vscf_encrypt.h"
@@ -60,10 +62,6 @@
 #include "vscf_pkcs5_pbkdf2.h"
 #include "vscf_aes256_gcm.h"
 #include "vscf_pbe_alg_info.h"
-#include "vscf_salted_kdf.h"
-#include "vscf_cipher.h"
-#include "vscf_pkcs5_pbes2_defs.h"
-#include "vscf_pkcs5_pbes2_internal.h"
 
 // clang-format on
 //  @end

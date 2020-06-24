@@ -47,11 +47,9 @@
 #ifndef VSSC_JWT_PRIVATE_H_INCLUDED
 #define VSSC_JWT_PRIVATE_H_INCLUDED
 
-#include "vssc_unix_time.h"
-#include "vssc_base64_url.h"
+#include "vssc_jwt.h"
 #include "vssc_jwt_header.h"
 #include "vssc_jwt_payload.h"
-#include "vssc_jwt.h"
 
 #if !VSSC_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_buffer.h>

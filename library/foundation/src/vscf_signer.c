@@ -53,8 +53,6 @@
 #include "vscf_signer.h"
 #include "vscf_memory.h"
 #include "vscf_assert.h"
-#include "vscf_hash.h"
-#include "vscf_random.h"
 #include "vscf_signer_defs.h"
 #include "vscf_alg.h"
 #include "vscf_key.h"

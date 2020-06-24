@@ -122,7 +122,7 @@ endfunction
 function implementation_resolve_context_require (require, parent)
     check_arguments (my, "require, parent", my)
 
-    my.require.scope ?= "public"
+    my.require.definition ?= "public"
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -283,10 +283,10 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Resolve model: implementation.require.
 # ---------------------------------------------------------------------------
-function implementation_resolve_require (require, parent)
-    check_arguments (my, "require, parent", my)
+function implementation_resolve_require (require, impl)
+    check_arguments (my, "require, impl", my)
 
-    my.require.scope ?= "private"
+    my.require.scope ?= my.impl.scope
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -304,10 +304,6 @@ function implementation_resolve (implementation, parent, project)
     my.implementation.c_prefix ?= my.project.prefix
     my.implementation.uid = make_id ("implelemntation", my.implementation.name)
     my.implementation.is_default = "1"
-
-    for my.implementation.c_include
-        implementation_resolve_c_include (c_include, my.implementation)
-    endfor
 
     for my.implementation.interface as implemented_interface
         implementation_check_interface_hierarchy (implemented_interface, my.implementation, my.parent)
@@ -410,7 +406,6 @@ function implementation_create_feature (impl, project, destination)
     for my.impl.require where has_one_of_attribute (require, "class, interface, impl")
         new require to my.impl_feature
             .feature = -1.class ? -1.interface ? -1.impl
-            .scope = -1.scope ?
             .project = -1.project ?
             .is_optional = -1.is_optional ?
         endnew

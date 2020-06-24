@@ -1,6 +1,7 @@
 <class name="pythia client">
     Helps to communicate with Virgil Pythia Service.
 
+    <require class="json object" project="core sdk"/>
     <require module="brain key seed private"/>
 
 

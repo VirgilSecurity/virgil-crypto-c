@@ -59,7 +59,6 @@
 #include "vscf_alg_api.h"
 #include "vscf_padding.h"
 #include "vscf_padding_api.h"
-#include "vscf_random.h"
 #include "vscf_impl.h"
 #include "vscf_api.h"
 

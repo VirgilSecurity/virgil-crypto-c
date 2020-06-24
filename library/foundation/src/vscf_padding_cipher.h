@@ -55,6 +55,8 @@
 #define VSCF_PADDING_CIPHER_H_INCLUDED
 
 #include "vscf_library.h"
+#include "vscf_cipher.h"
+#include "vscf_padding.h"
 #include "vscf_impl.h"
 #include "vscf_status.h"
 

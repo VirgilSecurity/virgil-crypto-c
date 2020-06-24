@@ -56,6 +56,7 @@
 
 #include "vscf_library.h"
 #include "vscf_pkcs8_serializer.h"
+#include "vscf_asn1_writer.h"
 
 // clang-format on
 //  @end

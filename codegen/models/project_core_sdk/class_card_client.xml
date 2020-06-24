@@ -2,6 +2,9 @@
     Helps to communicate with Virgil Card Service.
 
 
+    <require class="json object"/>
+
+
     <property name="card url" class="str buffer"/>
 
 

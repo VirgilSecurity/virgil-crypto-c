@@ -1,8 +1,8 @@
 <class name="base64 url">
     Prvodes Base64URL encoding and decoding suitable for JWT.
 
-    <require class="base64" project="foundation" scope="private"/>
-    <require module="str buffer defs" project="common" scope="private"/>
+    <require class="base64" project="foundation"/>
+    <require module="str buffer defs" project="common"/>
 
     <method name="encoded len">
         Calculate length in bytes required to hold an encoded base64url string.

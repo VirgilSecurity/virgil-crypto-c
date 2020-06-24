@@ -47,8 +47,6 @@
 #include "vscf_brainkey_server.h"
 #include "vscf_memory.h"
 #include "vscf_assert.h"
-#include "vscf_random.h"
-#include "vscf_random.h"
 #include "vscf_brainkey_server_defs.h"
 #include "vscf_ctr_drbg.h"
 #include "vscf_mbedtls_bridge_random.h"

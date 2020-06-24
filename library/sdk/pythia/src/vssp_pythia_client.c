@@ -56,6 +56,8 @@
 #include "vssp_pythia_client_defs.h"
 #include "vssp_brain_key_seed_private.h"
 
+#include <virgil/sdk/core/vssc_json_object.h>
+
 // clang-format on
 //  @end
 

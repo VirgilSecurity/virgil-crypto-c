@@ -1,7 +1,7 @@
 <module name="const" scope="internal" of_class="global">
     Internal constants for PHE library.
 
-    <require module="library"/>
+    <require module="library" definition="public"/>
 
     <macros name="COMMON_PREFIX" definition="private" c_prefix="">
         <code>

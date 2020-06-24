@@ -56,12 +56,16 @@
 #define VSCF_RECIPIENT_CIPHER_H_INCLUDED
 
 #include "vscf_library.h"
+#include "vscf_random.h"
+#include "vscf_cipher.h"
+#include "vscf_padding.h"
+#include "vscf_hash.h"
 #include "vscf_padding_params.h"
+#include "vscf_impl.h"
+#include "vscf_status.h"
 #include "vscf_message_info_custom_params.h"
 #include "vscf_signer_info_list.h"
 #include "vscf_signer_info.h"
-#include "vscf_impl.h"
-#include "vscf_status.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_data.h>

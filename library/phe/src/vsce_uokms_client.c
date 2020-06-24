@@ -56,8 +56,6 @@
 #include "vsce_uokms_client_defs.h"
 #include "vsce_const.h"
 
-#include <virgil/crypto/foundation/vscf_random.h>
-#include <virgil/crypto/foundation/vscf_random.h>
 #include <virgil/crypto/foundation/vscf_ctr_drbg.h>
 #include <UOKMSModels.pb.h>
 #include <pb_decode.h>

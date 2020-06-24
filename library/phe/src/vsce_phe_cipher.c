@@ -57,7 +57,6 @@
 #include "vsce_phe_cipher_defs.h"
 #include "vsce_const.h"
 
-#include <virgil/crypto/foundation/vscf_random.h>
 #include <virgil/crypto/foundation/vscf_ctr_drbg.h>
 #include <virgil/crypto/foundation/vscf_sha512.h>
 #include <virgil/crypto/foundation/vscf_hkdf.h>

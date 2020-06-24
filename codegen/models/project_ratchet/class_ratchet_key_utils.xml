@@ -1,24 +1,24 @@
 <class name="ratchet key utils" scope="internal" context="internal">
     Utils class for working with keys formats.
 
-    <require class="key info" scope="private" project="foundation"/>
-    <require class="compound private key" scope="private" project="foundation"/>
-    <require class="hybrid private key" scope="private" project="foundation"/>
-    <require class="private key" scope="private" project="foundation"/>
-    <require class="compound public key" scope="private" project="foundation"/>
-    <require class="hybrid public key" scope="private" project="foundation"/>
-    <require class="public key" scope="private" project="foundation"/>
-    <require class="raw public key" scope="private" project="foundation"/>
-    <require class="raw private key" scope="private" project="foundation"/>
+    <require class="key info" project="foundation"/>
+    <require class="compound private key" project="foundation"/>
+    <require class="hybrid private key" project="foundation"/>
+    <require class="private key" project="foundation"/>
+    <require class="compound public key" project="foundation"/>
+    <require class="hybrid public key" project="foundation"/>
+    <require class="public key" project="foundation"/>
+    <require class="raw public key" project="foundation"/>
+    <require class="raw private key" project="foundation"/>
 
-    <require class="ratchet common" scope="public"/>
+    <require class="ratchet common" definition="public"/>
     <require class="ratchet common hidden" scope="context"/>
-    <require impl="key asn1 deserializer" scope="private" project="foundation"/>
-    <require header="ed25519/ed25519.h" is_system="1" scope="private"/>
-    <require impl="sha512" project="foundation" scope="private"/>
-    <require impl="hkdf" project="foundation" scope="private"/>
-    <require module="hkdf private" scope="private" project="foundation"/>
-    <require module="buffer defs" scope="private" project="common"/>
+    <require impl="key asn1 deserializer" project="foundation"/>
+    <require header="ed25519/ed25519.h" is_system="1"/>
+    <require impl="sha512" project="foundation"/>
+    <require impl="hkdf" project="foundation"/>
+    <require module="hkdf private" project="foundation"/>
+    <require module="buffer defs" project="common"/>
 
     <property name="key asn1 deserializer" impl="key asn1 deserializer" project="foundation"/>
 

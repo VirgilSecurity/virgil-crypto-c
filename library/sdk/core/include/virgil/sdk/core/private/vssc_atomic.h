@@ -53,8 +53,6 @@
 #ifndef VSSC_ATOMIC_H_INCLUDED
 #define VSSC_ATOMIC_H_INCLUDED
 
-#include "vssc_library.h"
-
 #if VSSC_HAVE_STDATOMIC_H
 #   include <stdatomic.h>
 #endif

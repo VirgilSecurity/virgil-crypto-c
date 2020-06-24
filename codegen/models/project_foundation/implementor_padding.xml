@@ -6,8 +6,8 @@
 
         <require interface="alg info"/>
         <require impl="simple alg info"/>
-        <require header="pb_decode.h" scope="private"/>
-        <require header="pb_encode.h" scope="private"/>
+        <require header="pb_decode.h"/>
+        <require header="pb_encode.h"/>
 
         <interface name="alg"/>
         <interface name="padding"/>

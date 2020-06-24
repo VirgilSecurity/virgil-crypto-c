@@ -59,7 +59,6 @@
 #include "vscr_ratchet_message_defs.h"
 #include "vscr_ratchet_skipped_messages_defs.h"
 
-#include <virgil/crypto/foundation/vscf_random.h>
 #include <virgil/crypto/foundation/vscf_key_info.h>
 #include <virgil/crypto/foundation/vscf_compound_private_key.h>
 #include <virgil/crypto/foundation/vscf_hybrid_private_key.h>

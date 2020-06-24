@@ -51,6 +51,8 @@
 #include "vsce_phe_common.h"
 #include "vsce_status.h"
 
+#include <virgil/crypto/foundation/vscf_random.h>
+#include <virgil/crypto/foundation/vscf_random.h>
 #include <mbedtls/ecp.h>
 
 #if !VSCE_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK

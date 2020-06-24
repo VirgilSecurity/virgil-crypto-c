@@ -54,6 +54,7 @@
 #define VSCF_CTR_DRBG_H_INCLUDED
 
 #include "vscf_library.h"
+#include "vscf_entropy_source.h"
 #include "vscf_impl.h"
 #include "vscf_status.h"
 

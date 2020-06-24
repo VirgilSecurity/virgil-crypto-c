@@ -56,6 +56,8 @@
 
 #include "vscf_library.h"
 #include "vscf_message_info_der_serializer.h"
+#include "vscf_asn1_reader.h"
+#include "vscf_asn1_writer.h"
 #include "vscf_signed_data_info.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK

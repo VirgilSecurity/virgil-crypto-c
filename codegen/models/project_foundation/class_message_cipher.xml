@@ -1,10 +1,10 @@
 <class name="message cipher" context="internal" scope="private" visibility="private">
 
-    <require impl="sha512" scope="private"/>
-    <require impl="hkdf" scope="private"/>
-    <require module="buffer defs" scope="private" project="common"/>
+    <require impl="sha512"/>
+    <require impl="hkdf"/>
+    <require module="buffer defs" project="common"/>
 
-    <require module="group session typedefs" scope="public"/>
+    <require module="group session typedefs" definition="public"/>
 
     <property name="aes256 gcm" impl="aes256 gcm"/>
 

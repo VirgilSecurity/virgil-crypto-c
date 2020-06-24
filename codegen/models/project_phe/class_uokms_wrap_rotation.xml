@@ -1,14 +1,14 @@
 <class name="uokms wrap rotation" context="internal">
     Implements wrap rotation.
 
-    <require class="phe common" scope="public"/>
-    <require impl="ctr drbg" project="foundation" scope="private"/>
+    <require class="phe common" definition="public"/>
+    <require impl="ctr drbg" project="foundation"/>
 
     <require header="mbedtls/ecp.h" scope="context"/>
     <require header="mbedtls/bignum.h" scope="context"/>
 
-    <require module="buffer defs" scope="private" project="common"/>
-    <require module="mbedtls bridge random" scope="private" project="foundation"/>
+    <require module="buffer defs" project="common"/>
+    <require module="mbedtls bridge random" project="foundation"/>
 
     <dependency name="operation random" interface="random" project="foundation">
         Random used for crypto operations to make them const-time

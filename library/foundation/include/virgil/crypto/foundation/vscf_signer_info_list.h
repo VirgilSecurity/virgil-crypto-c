@@ -55,7 +55,6 @@
 
 #include "vscf_library.h"
 #include "vscf_signer_info.h"
-#include "vscf_signer_info_list.h"
 
 // clang-format on
 //  @end

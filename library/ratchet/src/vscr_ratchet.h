@@ -49,9 +49,9 @@
 
 #include "vscr_library.h"
 #include "vscr_ratchet_typedefs.h"
-#include "vscr_ratchet.h"
 #include "vscr_status.h"
 
+#include <virgil/crypto/foundation/vscf_random.h>
 #include <vscr_RatchetSession.pb.h>
 #include <vscr_RatchetMessage.pb.h>
 #include <pb_decode.h>

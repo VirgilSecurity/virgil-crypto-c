@@ -49,7 +49,6 @@
 
 #include "vscr_library.h"
 #include "vscr_ratchet_message_key.h"
-#include "vscr_ratchet_skipped_messages.h"
 
 #include <vscr_RatchetSession.pb.h>
 #include <pb_decode.h>

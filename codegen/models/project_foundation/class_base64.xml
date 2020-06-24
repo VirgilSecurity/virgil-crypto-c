@@ -1,7 +1,7 @@
 <class name="base64" context="none">
     Implementation of the Base64 algorithm RFC 1421 and RFC 2045.
 
-    <require header="mbedtls/base64.h" scope="private"/>
+    <require header="mbedtls/base64.h"/>
 
 
     <method name="encoded len">

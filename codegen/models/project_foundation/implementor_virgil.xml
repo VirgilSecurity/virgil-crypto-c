@@ -231,7 +231,7 @@
     <implementation name="raw public key">
         Handles interchangeable public key representation.
 
-        <require interface="alg info" scope="public"/>
+        <require interface="alg info" definition="public"/>
 
         <property name="buffer" class="buffer"/>
         <property name="alg info" interface="alg info"/>
@@ -283,7 +283,7 @@
     <implementation name="raw private key">
         Handles interchangeable private key representation.
 
-        <require interface="alg info" scope="public"/>
+        <require interface="alg info" definition="public"/>
 
         <property name="buffer" class="buffer"/>
         <property name="alg info" interface="alg info"/>

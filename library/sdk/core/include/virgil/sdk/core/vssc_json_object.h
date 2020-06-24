@@ -54,9 +54,8 @@
 #define VSSC_JSON_OBJECT_H_INCLUDED
 
 #include "vssc_library.h"
-#include "vssc_error.h"
-#include "vssc_json_object.h"
 #include "vssc_json_array.h"
+#include "vssc_error.h"
 #include "vssc_status.h"
 
 #if !VSSC_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK

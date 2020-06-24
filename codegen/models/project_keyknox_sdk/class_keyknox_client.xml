@@ -2,6 +2,7 @@
     Helps to communicate with Virgil Keyknox Service.
 
     <require module="base64 private" project="foundation"/>
+    <require class="json object" project="core sdk"/>
     <require module="json object private" project="core sdk"/>
 
     <property name="push url" class="str mutable"/>

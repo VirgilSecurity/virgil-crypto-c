@@ -221,14 +221,17 @@ function c_module_impl_private_create (meta, destination)
 
         new require
             .module = my.names.module_library
+            .definition = "public"
         endnew
 
         new require
             .module = my.names.module_impl
+            .definition = "public"
         endnew
 
         new require
             .module = my.names.module_atomic
+            .definition = "public"
         endnew
 
         _A12_add_struct_info (my.meta, module)

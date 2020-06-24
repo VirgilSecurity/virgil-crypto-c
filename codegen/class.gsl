@@ -241,7 +241,7 @@ endfunction
 function class_resolve_require (require, class)
     check_arguments (my, "require, class", my)
 
-    my.require.scope ?= "private"
+    my.require.scope ?= my.class.scope
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -329,7 +329,6 @@ function class_create_feature (class, project, destination)
     for my.class.require where has_one_of_attribute (require, "class, interface, impl")
         new require to my.class_feature
             .feature = -1.class ? -1.interface ? -1.impl
-            .scope = -1.scope ?
             .project = -1.project ?
             .is_optional = -1.is_optional ?
         endnew

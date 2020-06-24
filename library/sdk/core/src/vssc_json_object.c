@@ -58,7 +58,6 @@
 #include "vssc_json_array_defs.h"
 #include "vssc_json_array_private.h"
 
-#include <json-c/json.h>
 #include <virgil/crypto/common/vsc_str_mutable.h>
 #include <virgil/crypto/foundation/vscf_base64.h>
 #include <virgil/crypto/foundation/private/vscf_base64_private.h>

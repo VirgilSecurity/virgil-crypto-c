@@ -5,14 +5,14 @@
         - common constants;
         - common types;
 
-    <c_include file="limits.h" is_system="1" />
-    <c_include file="stdint.h" is_system="1" />
-    <c_include file="stddef.h" is_system="1" />
-    <c_include file="string.h" is_system="1" />
-    <c_include file="stdlib.h" is_system="1" />
-    <c_include file="stdbool.h" is_system="1" />
+    <c_include file="limits.h" is_system="1" definition="public"/>
+    <c_include file="stdint.h" is_system="1" definition="public"/>
+    <c_include file="stddef.h" is_system="1" definition="public"/>
+    <c_include file="string.h" is_system="1" definition="public"/>
+    <c_include file="stdlib.h" is_system="1" definition="public"/>
+    <c_include file="stdbool.h" is_system="1" definition="public"/>
 
-    <require module="platform"/>
+    <require module="platform" definition="public"/>
 
     <c_alias name="byte" type="uint8_t" declaration="public">
         //  Portable representation of the byte.

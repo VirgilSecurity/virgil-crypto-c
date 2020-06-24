@@ -56,6 +56,7 @@
 #include "vssk_keyknox_client_defs.h"
 
 #include <virgil/crypto/foundation/private/vscf_base64_private.h>
+#include <virgil/sdk/core/vssc_json_object.h>
 #include <virgil/sdk/core/private/vssc_json_object_private.h>
 
 // clang-format on

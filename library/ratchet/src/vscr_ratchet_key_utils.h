@@ -55,9 +55,9 @@
 
 #include "vscr_library.h"
 #include "vscr_ratchet_common.h"
+#include "vscr_status.h"
 #include "vscr_error.h"
 #include "vscr_ratchet_chain_key.h"
-#include "vscr_status.h"
 
 #if !VSCR_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_buffer.h>

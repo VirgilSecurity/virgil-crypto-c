@@ -54,9 +54,10 @@
 #define VSCF_RSA_H_INCLUDED
 
 #include "vscf_library.h"
-#include "vscf_error.h"
+#include "vscf_random.h"
 #include "vscf_impl.h"
 #include "vscf_status.h"
+#include "vscf_error.h"
 #include "vscf_raw_public_key.h"
 #include "vscf_raw_private_key.h"
 #include "vscf_alg_id.h"

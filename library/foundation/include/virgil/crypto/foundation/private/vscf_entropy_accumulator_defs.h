@@ -57,9 +57,9 @@
 #define VSCF_ENTROPY_ACCUMULATOR_DEFS_H_INCLUDED
 
 #include "vscf_library.h"
-#include "vscf_impl_private.h"
 #include "vscf_entropy_accumulator.h"
 #include "vscf_atomic.h"
+#include "vscf_impl_private.h"
 #include "vscf_impl.h"
 
 #include <mbedtls/entropy.h>

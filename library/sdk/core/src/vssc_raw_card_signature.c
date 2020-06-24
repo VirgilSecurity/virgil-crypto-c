@@ -54,6 +54,7 @@
 #include "vssc_memory.h"
 #include "vssc_assert.h"
 #include "vssc_raw_card_signature_defs.h"
+#include "vssc_json_object.h"
 
 // clang-format on
 //  @end

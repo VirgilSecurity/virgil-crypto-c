@@ -1,38 +1,38 @@
 <class name="ratchet session" context="internal">
     Class for ratchet session between 2 participants
 
-    <require class="key info" scope="private" project="foundation"/>
-    <require class="compound private key" scope="private" project="foundation"/>
-    <require class="hybrid private key" scope="private" project="foundation"/>
-    <require class="private key" scope="private" project="foundation"/>
-    <require class="compound public key" scope="private" project="foundation"/>
-    <require class="hybrid public key" scope="private" project="foundation"/>
-    <require class="public key" scope="private" project="foundation"/>
-    <require class="raw public key" scope="private" project="foundation"/>
-    <require class="raw private key" scope="private" project="foundation"/>
+    <require class="key info" project="foundation"/>
+    <require class="compound private key" project="foundation"/>
+    <require class="hybrid private key" project="foundation"/>
+    <require class="private key" project="foundation"/>
+    <require class="compound public key" project="foundation"/>
+    <require class="hybrid public key" project="foundation"/>
+    <require class="public key" project="foundation"/>
+    <require class="raw public key" project="foundation"/>
+    <require class="raw private key" project="foundation"/>
 
     <require class="key info" project="foundation"/>
 
     <require class="ratchet pb utils" scope="context"/>
-    <require class="ratchet common" scope="public"/>
+    <require class="ratchet common" definition="public"/>
     <require class="ratchet common hidden" scope="context"/>
-    <require class="ratchet xxdh" scope="private"/>
+    <require class="ratchet xxdh"/>
 
-    <require module="buffer defs" scope="private" project="common"/>
+    <require module="buffer defs" project="common"/>
 
-    <require module="ratchet defs" scope="private"/>
-    <require module="ratchet message defs" scope="private"/>
+    <require module="ratchet defs"/>
+    <require module="ratchet message defs"/>
     <require module="ratchet typedefs" scope="context"/>
-    <require module="ratchet skipped messages defs" scope="private"/>
+    <require module="ratchet skipped messages defs"/>
 
-    <require impl="ctr drbg" project="foundation" scope="private"/>
+    <require impl="ctr drbg" project="foundation"/>
 
-    <require header="vscr_RatchetSession.pb.h" scope="private"/>
-    <require header="vscr_RatchetMessage.pb.h" scope="private"/>
-    <require header="pb_decode.h" scope="private"/>
-    <require header="pb_encode.h" scope="private"/>
+    <require header="vscr_RatchetSession.pb.h"/>
+    <require header="vscr_RatchetMessage.pb.h"/>
+    <require header="pb_decode.h"/>
+    <require header="pb_encode.h"/>
 
-    <require header="ed25519/ed25519.h" is_system="1" scope="private"/>
+    <require header="ed25519/ed25519.h" is_system="1"/>
 
     <dependency name="rng" interface="random" project="foundation" has_observers="1">
         Random used to generate keys

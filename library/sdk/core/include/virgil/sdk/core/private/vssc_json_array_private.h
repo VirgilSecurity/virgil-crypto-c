@@ -47,8 +47,6 @@
 #ifndef VSSC_JSON_ARRAY_PRIVATE_H_INCLUDED
 #define VSSC_JSON_ARRAY_PRIVATE_H_INCLUDED
 
-#include "vssc_json_object_defs.h"
-#include "vssc_json_object_private.h"
 #include "vssc_json_array.h"
 
 #include <json-c/json.h>

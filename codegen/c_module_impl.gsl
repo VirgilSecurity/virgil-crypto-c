@@ -346,30 +346,28 @@ function c_module_impl_create (meta, destination)
 
         new require
             .module = my.names.module_library
+            .definition = "public"
         endnew
 
         new require
             .module = my.names.module_api
+            .definition = "public"
         endnew
 
         new require
             .module = my.names.module_api_private
-            .scope = "private"
         endnew
 
         new require
             .module = my.names.module_impl_private
-            .scope = "private"
         endnew
 
         new require
             .module = my.names.module_assert
-            .scope = "private"
         endnew
 
         new require
             .module = my.names.module_atomic
-            .scope = "private"
         endnew
 
         _L24_add_type_self (my.meta, module)

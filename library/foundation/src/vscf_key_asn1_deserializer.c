@@ -53,6 +53,8 @@
 #include "vscf_key_asn1_deserializer.h"
 #include "vscf_assert.h"
 #include "vscf_memory.h"
+#include "vscf_key_asn1_deserializer_defs.h"
+#include "vscf_key_asn1_deserializer_internal.h"
 #include "vscf_alg_info.h"
 #include "vscf_alg_info_der_deserializer.h"
 #include "vscf_asn1_tag.h"
@@ -61,9 +63,6 @@
 #include "vscf_pem.h"
 #include "vscf_pem_title.h"
 #include "vscf_ecc_alg_info.h"
-#include "vscf_asn1_reader.h"
-#include "vscf_key_asn1_deserializer_defs.h"
-#include "vscf_key_asn1_deserializer_internal.h"
 
 // clang-format on
 //  @end

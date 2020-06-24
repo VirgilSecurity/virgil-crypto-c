@@ -57,9 +57,9 @@
 #define VSCF_ALG_INFO_DER_DESERIALIZER_DEFS_H_INCLUDED
 
 #include "vscf_library.h"
-#include "vscf_impl_private.h"
 #include "vscf_alg_info_der_deserializer.h"
 #include "vscf_atomic.h"
+#include "vscf_impl_private.h"
 #include "vscf_impl.h"
 
 // clang-format on

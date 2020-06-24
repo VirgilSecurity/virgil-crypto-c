@@ -55,7 +55,6 @@
 #include "vssc_assert.h"
 #include "vssc_raw_card_signer_defs.h"
 
-#include <virgil/crypto/foundation/vscf_random.h>
 #include <virgil/crypto/foundation/vscf_signer.h>
 #include <virgil/crypto/foundation/vscf_sha512.h>
 #include <virgil/crypto/foundation/vscf_private_key.h>

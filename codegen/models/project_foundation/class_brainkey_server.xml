@@ -1,8 +1,8 @@
 <class name="brainkey server" context="internal">
 
-    <require impl="ctr drbg" scope="private"/>
+    <require impl="ctr drbg"/>
 
-    <require module="mbedtls bridge random" scope="private"/>
+    <require module="mbedtls bridge random"/>
 
     <require header="mbedtls/ecp.h" scope="context"/>
     <require header="mbedtls/bignum.h" scope="context"/>

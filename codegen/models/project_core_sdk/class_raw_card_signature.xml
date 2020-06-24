@@ -1,6 +1,7 @@
 <class name="raw card signature">
     Represent signature of "raw card content" snapshot.
 
+    <require class="json object"/>
 
     <property name="signer id" class="str mutable"/>
     <property name="signature" class="buffer"/>

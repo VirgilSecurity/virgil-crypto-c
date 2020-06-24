@@ -1,6 +1,6 @@
 <class name="ratchet skipped messages root node" context="public" scope="internal">
 
-    <require class="ratchet common" scope="public"/>
+    <require class="ratchet common" definition="public"/>
 
     <require module="ratchet typedefs" scope="context"/>
 

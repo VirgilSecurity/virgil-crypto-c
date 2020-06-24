@@ -53,9 +53,9 @@
 #include "vscf_compound_public_key.h"
 #include "vscf_assert.h"
 #include "vscf_memory.h"
-#include "vscf_alg_info.h"
 #include "vscf_compound_public_key_defs.h"
 #include "vscf_compound_public_key_internal.h"
+#include "vscf_alg_info.h"
 
 // clang-format on
 //  @end

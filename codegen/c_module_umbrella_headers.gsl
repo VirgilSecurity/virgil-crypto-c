@@ -64,7 +64,7 @@ function c_module_umbrella_headers_create (source, destination, meta)
 
             new require to module_umbrella
                 .module = module.name
-                .scope = "public"
+                .definition = "public"
             endnew
         endfor
     endnew
@@ -81,7 +81,7 @@ function c_module_umbrella_headers_create (source, destination, meta)
 
             new require to module_umbrella
                 .module = module.name
-                .scope = "public"
+                .definition = "public"
             endnew
         endfor
     endnew

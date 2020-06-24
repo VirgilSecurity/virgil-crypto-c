@@ -54,6 +54,7 @@
 #define VSCF_HMAC_H_INCLUDED
 
 #include "vscf_library.h"
+#include "vscf_hash.h"
 #include "vscf_impl.h"
 #include "vscf_alg_id.h"
 #include "vscf_status.h"

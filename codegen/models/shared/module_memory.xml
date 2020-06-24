@@ -1,8 +1,8 @@
 <module name="memory" of_class="global">
     Provides configurable memory management model.
 
-    <require module="library" scope="public"/>
-    <require module="assert" scope="private"/>
+    <require module="library" definition="public"/>
+    <require module="assert"/>
 
 
     <macroses definition="private">
