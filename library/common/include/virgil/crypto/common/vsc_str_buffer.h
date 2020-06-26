@@ -346,6 +346,12 @@ VSC_PUBLIC void
 vsc_str_buffer_rtrim(vsc_str_buffer_t *self, char char_to_trim);
 
 //
+//  Reset strung buffer and increase capacity if given value less then current.
+//
+VSC_PUBLIC void
+vsc_str_buffer_reset_with_capacity(vsc_str_buffer_t *self, size_t min_capacity);
+
+//
 //  Reset to the initial state.
 //  After reset underlying characters array can be re-used.
 //
