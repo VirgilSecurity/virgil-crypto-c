@@ -187,11 +187,18 @@ vssc_card_manager_configure_with_service_public_key(vssc_card_manager_t *self,
         vsc_data_t public_key_data) VSSC_NODISCARD;
 
 //
-//  Generates self signed "raw card".
+//  Generates self-signed "raw card".
 //
 VSSC_PUBLIC vssc_raw_card_t *
 vssc_card_manager_generate_raw_card(const vssc_card_manager_t *self, vsc_str_t identity, const vscf_impl_t *private_key,
-        vsc_str_t previous_card_id, vssc_error_t *error);
+        vssc_error_t *error);
+
+//
+//  Generates self-signed "raw card" with a defined previous card id.
+//
+VSSC_PUBLIC vssc_raw_card_t *
+vssc_card_manager_generate_replacement_raw_card(const vssc_card_manager_t *self, vsc_str_t identity,
+        const vscf_impl_t *private_key, vsc_str_t previous_card_id, vssc_error_t *error);
 
 //
 //  Create Card from "raw card" and verify it.

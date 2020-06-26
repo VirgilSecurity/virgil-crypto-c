@@ -36,7 +36,30 @@
 
 
     <method name="generate raw card" is_const="1">
-        Generates self signed "raw card".
+        Generates self-signed "raw card".
+
+        <argument name="identity" class="str"/>
+        <argument name="private key" interface="private key" project="foundation"/>
+        <argument name="error" class="error" access="readwrite"/>
+
+        <return class="raw card" access="disown"/>
+    </method>
+
+
+    <method name="generate replacement raw card" is_const="1">
+        Generates self-signed "raw card" with a defined previous card id.
+
+        <argument name="identity" class="str"/>
+        <argument name="private key" interface="private key" project="foundation"/>
+        <argument name="previous card id" class="str"/>
+        <argument name="error" class="error" access="readwrite"/>
+
+        <return class="raw card" access="disown"/>
+    </method>
+
+
+    <method name="generate raw card inner" is_const="1" declaration="private">
+        Generates self-signed "raw card" with an optional previous card id.
 
         <argument name="identity" class="str"/>
         <argument name="private key" interface="private key" project="foundation"/>

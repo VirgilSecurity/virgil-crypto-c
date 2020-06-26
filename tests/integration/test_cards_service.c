@@ -94,9 +94,8 @@ test__publish_card__with_new_jwt_and_new_keypair__returned_card_is_valid(void) {
     //  Generate a Raw Card.
     //
     vsc_str_t identity = vssc_jwt_identity(env->jwt);
-    vsc_str_t previous_card_id = vsc_str_empty();
     vssc_raw_card_t *initial_raw_card =
-            vssc_card_manager_generate_raw_card(card_manager, identity, private_key, previous_card_id, &core_sdk_error);
+            vssc_card_manager_generate_raw_card(card_manager, identity, private_key, &core_sdk_error);
 
 
     //

@@ -102,6 +102,13 @@ static void
 vssc_card_manager_did_release_random(vssc_card_manager_t *self);
 
 //
+//  Generates self-signed "raw card" with an optional previous card id.
+//
+static vssc_raw_card_t *
+vssc_card_manager_generate_raw_card_inner(const vssc_card_manager_t *self, vsc_str_t identity,
+        const vscf_impl_t *private_key, vsc_str_t previous_card_id, vssc_error_t *error);
+
+//
 //  Return size of 'vssc_card_manager_t'.
 //
 VSSC_PUBLIC size_t
@@ -408,11 +415,40 @@ vssc_card_manager_configure_with_service_public_key(vssc_card_manager_t *self, v
 }
 
 //
-//  Generates self signed "raw card".
+//  Generates self-signed "raw card".
 //
 VSSC_PUBLIC vssc_raw_card_t *
-vssc_card_manager_generate_raw_card(const vssc_card_manager_t *self, vsc_str_t identity, const vscf_impl_t *private_key,
-        vsc_str_t previous_card_id, vssc_error_t *error) {
+vssc_card_manager_generate_raw_card(
+        const vssc_card_manager_t *self, vsc_str_t identity, const vscf_impl_t *private_key, vssc_error_t *error) {
+
+    VSSC_ASSERT(vsc_str_is_valid_and_non_empty(identity));
+    VSSC_ASSERT_PTR(private_key);
+    VSSC_ASSERT(vscf_private_key_is_implemented(private_key));
+
+    return vssc_card_manager_generate_raw_card_inner(self, identity, private_key, vsc_str_empty(), error);
+}
+
+//
+//  Generates self-signed "raw card" with a defined previous card id.
+//
+VSSC_PUBLIC vssc_raw_card_t *
+vssc_card_manager_generate_replacement_raw_card(const vssc_card_manager_t *self, vsc_str_t identity,
+        const vscf_impl_t *private_key, vsc_str_t previous_card_id, vssc_error_t *error) {
+
+    VSSC_ASSERT(vsc_str_is_valid_and_non_empty(identity));
+    VSSC_ASSERT(vsc_str_is_valid_and_non_empty(previous_card_id));
+    VSSC_ASSERT_PTR(private_key);
+    VSSC_ASSERT(vscf_private_key_is_implemented(private_key));
+
+    return vssc_card_manager_generate_raw_card_inner(self, identity, private_key, previous_card_id, error);
+}
+
+//
+//  Generates self-signed "raw card" with an optional previous card id.
+//
+static vssc_raw_card_t *
+vssc_card_manager_generate_raw_card_inner(const vssc_card_manager_t *self, vsc_str_t identity,
+        const vscf_impl_t *private_key, vsc_str_t previous_card_id, vssc_error_t *error) {
 
     VSSC_ASSERT(vsc_str_is_valid_and_non_empty(identity));
     VSSC_ASSERT(vsc_str_is_valid(previous_card_id));
@@ -446,6 +482,9 @@ vssc_card_manager_generate_raw_card(const vssc_card_manager_t *self, vsc_str_t i
     const size_t now_timestamp = vssc_unix_time_now();
     vssc_raw_card_t *raw_card = vssc_raw_card_new_with_disown(identity, &public_key_data, now_timestamp);
 
+    if (!vsc_str_is_empty(previous_card_id)) {
+        vssc_raw_card_set_previous_card_id(raw_card, previous_card_id);
+    }
 
     //
     //  Add self-signature.
