@@ -457,6 +457,7 @@ VSSC_PUBLIC const vssc_json_object_t *
 vssc_virgil_http_response_body(const vssc_virgil_http_response_t *self) {
 
     VSSC_ASSERT_PTR(self);
+    VSSC_ASSERT_PTR(self->http_body);
 
     return self->http_body;
 }
@@ -468,6 +469,7 @@ VSSC_PUBLIC const vssc_json_array_t *
 vssc_virgil_http_response_array_body(const vssc_virgil_http_response_t *self) {
 
     VSSC_ASSERT_PTR(self);
+    VSSC_ASSERT_PTR(self->http_array_body);
 
     return self->http_array_body;
 }
