@@ -431,10 +431,8 @@ vssp_pythia_client_make_request_generate_seed_with_id(
 //  Map response to the correspond model.
 //
 VSSP_PUBLIC vssp_brain_key_seed_t *
-vssp_pythia_client_process_response_generate_seed(
-        const vssp_pythia_client_t *self, const vssc_virgil_http_response_t *response, vssp_error_t *error) {
+vssp_pythia_client_process_response_generate_seed(const vssc_virgil_http_response_t *response, vssp_error_t *error) {
 
-    VSSP_ASSERT_PTR(self);
     VSSP_ASSERT_PTR(response);
 
     if (!vssc_virgil_http_response_is_success(response)) {

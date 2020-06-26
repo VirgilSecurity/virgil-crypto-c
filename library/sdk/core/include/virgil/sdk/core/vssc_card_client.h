@@ -169,8 +169,7 @@ vssc_card_client_make_request_publish_card(const vssc_card_client_t *self, const
 //  Return "raw card" of published Card.
 //
 VSSC_PUBLIC vssc_raw_card_t *
-vssc_card_client_process_response_publish_card(const vssc_card_client_t *self,
-        const vssc_virgil_http_response_t *response, vssc_error_t *error);
+vssc_card_client_process_response_publish_card(const vssc_virgil_http_response_t *response, vssc_error_t *error);
 
 //
 //  Create request that returns card from the Virgil Cards Service with given ID, if exists.
@@ -183,8 +182,7 @@ vssc_card_client_make_request_get_card(const vssc_card_client_t *self, vsc_str_t
 //  Return "raw card" of if Card was found.
 //
 VSSC_PUBLIC vssc_raw_card_t *
-vssc_card_client_process_response_get_card(const vssc_card_client_t *self, const vssc_virgil_http_response_t *response,
-        vssc_error_t *error);
+vssc_card_client_process_response_get_card(const vssc_virgil_http_response_t *response, vssc_error_t *error);
 
 
 // --------------------------------------------------------------------------

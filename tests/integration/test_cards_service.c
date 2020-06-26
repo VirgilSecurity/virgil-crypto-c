@@ -117,7 +117,7 @@ test__publish_card__with_new_jwt_and_new_keypair__returned_card_is_valid(void) {
     }
 
     vssc_raw_card_t *published_raw_card =
-            vssc_card_client_process_response_publish_card(card_client, publish_card_response, &core_sdk_error);
+            vssc_card_client_process_response_publish_card(publish_card_response, &core_sdk_error);
     TEST_ASSERT_EQUAL(vssc_status_SUCCESS, core_sdk_error.status);
 
     vssc_card_t *card = vssc_card_manager_import_raw_card_with_initial_raw_card(

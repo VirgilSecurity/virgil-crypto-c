@@ -144,7 +144,7 @@ push_new_keyknox_entry(const test_env_t *env, vsc_str_t root, vsc_str_t path, vs
     }
 
     vssk_keyknox_entry_t *pushed_keyknox_entry =
-            vssk_keyknox_client_process_response_push(keyknox_client, push_keyknox_entry_response, &keyknox_error);
+            vssk_keyknox_client_process_response_push(push_keyknox_entry_response, &keyknox_error);
     TEST_ASSERT_EQUAL(vssk_status_SUCCESS, keyknox_error.status);
     TEST_ASSERT_NOT_NULL(pushed_keyknox_entry);
 
@@ -232,7 +232,7 @@ test__pull__pushed_entry__returns_expected_keyknox_entry(void) {
 
 
     vssk_keyknox_entry_t *pulled_keyknox_entry =
-            vssk_keyknox_client_process_response_pull(keyknox_client, pull_keyknox_entry_response, &keyknox_error);
+            vssk_keyknox_client_process_response_pull(pull_keyknox_entry_response, &keyknox_error);
     TEST_ASSERT_EQUAL(vssk_status_SUCCESS, keyknox_error.status);
     TEST_ASSERT_NOT_NULL(pulled_keyknox_entry);
 
@@ -307,7 +307,7 @@ test__reset__pushed_entry_with_defined_root_and_path__returns_expected_keyknox_e
     }
 
     vssk_keyknox_entry_t *reset_keyknox_entry =
-            vssk_keyknox_client_process_response_reset(keyknox_client, reset_keyknox_entry_response, &keyknox_error);
+            vssk_keyknox_client_process_response_reset(reset_keyknox_entry_response, &keyknox_error);
     TEST_ASSERT_EQUAL(vssk_status_SUCCESS, keyknox_error.status);
     TEST_ASSERT_NOT_NULL(reset_keyknox_entry);
 
@@ -377,8 +377,7 @@ test__get_keys__pushed_1_entry__returns_list_with_1_key(void) {
         TEST_FAIL();
     }
 
-    vssc_string_list_t *keys =
-            vssk_keyknox_client_process_response_get_keys(keyknox_client, get_keys_response, &keyknox_error);
+    vssc_string_list_t *keys = vssk_keyknox_client_process_response_get_keys(get_keys_response, &keyknox_error);
     TEST_ASSERT_EQUAL(vssk_status_SUCCESS, keyknox_error.status);
     TEST_ASSERT_NOT_NULL(keys);
     TEST_ASSERT_TRUE(vssc_string_list_has_item(keys));
@@ -425,7 +424,7 @@ test__reset__all_entries__success(void) {
     TEST_ASSERT_EQUAL(vssc_status_SUCCESS, core_sdk_error.status);
 
     vssk_keyknox_entry_t *reset_keyknox_entry =
-            vssk_keyknox_client_process_response_reset(keyknox_client, reset_response, &keyknox_error);
+            vssk_keyknox_client_process_response_reset(reset_response, &keyknox_error);
     TEST_ASSERT_EQUAL(vssk_status_SUCCESS, keyknox_error.status);
     TEST_ASSERT_NOT_NULL(reset_keyknox_entry);
 

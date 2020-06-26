@@ -48,7 +48,7 @@
     </method>
 
 
-    <method name="process response publish card" is_const="1">
+    <method name="process response publish card" is_static="1">
         Map response to the correspond model.
         Return "raw card" of published Card.
 
@@ -68,7 +68,7 @@
     </method>
 
 
-    <method name="process response get card" is_const="1">
+    <method name="process response get card" is_static="1">
         Map response to the correspond model.
         Return "raw card" of if Card was found.
 

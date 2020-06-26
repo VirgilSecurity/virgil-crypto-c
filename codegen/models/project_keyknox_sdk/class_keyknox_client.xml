@@ -132,7 +132,7 @@
     </method>
 
 
-    <method name="process response push" is_const="1">
+    <method name="process response push" is_static="1">
         Map response to the correspond model.
 
         <argument name="response" class="virgil http response" project="core sdk"/>
@@ -155,7 +155,7 @@
     </method>
 
 
-    <method name="process response pull" is_const="1">
+    <method name="process response pull" is_static="1">
         Map response to the correspond model.
 
         <argument name="response" class="virgil http response" project="core sdk"/>
@@ -180,7 +180,7 @@
     </method>
 
 
-    <method name="process response reset" is_const="1">
+    <method name="process response reset" is_static="1">
         Map response to the correspond model.
 
         <argument name="response" class="virgil http response" project="core sdk"/>
@@ -203,7 +203,7 @@
     </method>
 
 
-    <method name="process response get keys" is_const="1">
+    <method name="process response get keys" is_static="1">
         Map response to the correspond model.
 
         <argument name="response" class="virgil http response" project="core sdk"/>
