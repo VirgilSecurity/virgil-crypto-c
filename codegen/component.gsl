@@ -577,6 +577,23 @@ function component_resolve_attr_require_definition (require_base, parent)
 endfunction
 
 # ---------------------------------------------------------------------------
+#   Resolve attribute: require.api.
+# ---------------------------------------------------------------------------
+function component_resolve_attr_require_api (require_base, parent)
+    check_argument (my, "require_base", my)
+
+    my.require_base.api ?= "public" #   must not be inherited
+
+    my.valid_apis = "public, private, internal, defs"
+    if ! string_in (my.require_base.api, my.valid_apis)
+        my.component_dump = component_dump (my.require_base)
+
+        echo_fatal ("Invalid required component api '$(my.component_dump:)'. " + \
+                    "Expected {$(my.valid_apis)}", my)
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
 #   Resolve attribute: class.
 # ---------------------------------------------------------------------------
 function component_resolve_attr_of_class (component, parent)
@@ -1581,6 +1598,7 @@ function component_resolve_require_base (require_base, parent)
     component_resolve_landlord (my.require_base, my.parent)
     component_resolve_attr_require_scope (my.require_base, my.parent)
     component_resolve_attr_require_definition (my.require_base, my.parent)
+    component_resolve_attr_require_api (my.require_base, my.parent)
 endfunction
 
 # ---------------------------------------------------------------------------

@@ -2,60 +2,54 @@
     Class that handles JWT Payload.
 
     <require class="base64 url"/>
-    <require header="json-c/json.h" library="json_c" scope="context"/>
+    <require class="json object" scope="context"/>
 
 
-    <property name="json obj" class="json_object" library="json_c">
+    <property name="json obj" class="json object">
         Root JSON object that represents JWT Header.
     </property>
 
 
-    <variable name="k json value prefix app id" type="string" declaration="private">
+    <constant name="k json value prefix app id" type="string" visibility="private">
         Prefix for JSON value under the key "iss".
 
-        <value value="virgil-" type="string"/>
-        <string access="readonly"/>
-    </variable>
+        <value value="virgil-"/>
+    </constant>
 
 
-    <variable name="k json value prefix identity" type="string" declaration="private">
+    <constant name="k json value prefix identity" type="string" visibility="private">
         Prefix for JSON value under the key "sub".
 
-        <value value="identity-" type="string"/>
-        <string access="readonly"/>
-    </variable>
+        <value value="identity-"/>
+    </constant>
 
 
-    <variable name="k json key app id" type="string" declaration="private">
+    <constant name="k json key app id" type="string" visibility="private">
         JSON key of application id JWT belongs to.
 
-        <value value="iss" type="string"/>
-        <string access="readonly"/>
-    </variable>
+        <value value="iss"/>
+    </constant>
 
 
-    <variable name="k json key identity"  type="string" declaration="private">
+    <constant name="k json key identity" type="string" visibility="private">
         JSON key of JWT identity.
 
-        <value value="sub" type="string"/>
-        <string access="readonly"/>
-    </variable>
+        <value value="sub"/>
+    </constant>
 
 
-    <variable name="k json key issued at"  type="string" declaration="private">
+    <constant name="k json key issued at" type="string" visibility="private">
         JSON key of JWT issued at date.
 
-        <value value="iat" type="string"/>
-        <string access="readonly"/>
-    </variable>
+        <value value="iat"/>
+    </constant>
 
 
-    <variable name="k json key expires at"  type="string" declaration="private">
+    <constant name="k json key expires at" type="string" visibility="private">
         JSON key of JWT expires at date.
 
-        <value value="exp" type="string"/>
-        <string access="readonly"/>
-    </variable>
+        <value value="exp"/>
+    </constant>
 
 
     <constructor name="with members">
@@ -84,7 +78,7 @@
         Create JWT Payload defined with a JSON object.
         Prerequisite: The JSON object SHOULD be already validated.
 
-        <argument name="json obj" class="json_object" library="json_c" access="disown"/>
+        <argument name="json obj" class="json object" access="disown"/>
     </constructor>
 
 

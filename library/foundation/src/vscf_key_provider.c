@@ -74,6 +74,7 @@
 #include "vscf_compound_key_alg_defs.h"
 #include "vscf_hybrid_key_alg.h"
 #include "vscf_hybrid_key_alg_defs.h"
+#include "vscf_sha512.h"
 
 // clang-format on
 //  @end
@@ -859,4 +860,52 @@ vscf_key_provider_export_private_key(vscf_key_provider_t *self, const vscf_impl_
     vscf_raw_private_key_destroy(&raw_private_key);
 
     return status;
+}
+
+//
+//  Calculate identifier based on the given public key or private key.
+//
+//  Note, that public key identifier equals to the private key identifier.
+//
+VSCF_PUBLIC vscf_status_t
+vscf_key_provider_calculate_key_id(vscf_key_provider_t *self, const vscf_impl_t *key, vsc_buffer_t *key_id) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(key);
+    VSCF_ASSERT(vsc_buffer_is_valid(key_id));
+    VSCF_ASSERT(vsc_buffer_unused_len(key_id) >= vscf_key_provider_KEY_ID_LEN);
+
+    const vscf_impl_t *public_key = vscf_public_key_is_implemented(key) ? vscf_impl_shallow_copy_const(key)
+                                                                        : vscf_private_key_extract_public_key(key);
+
+    vsc_buffer_t *exported_public_key =
+            vsc_buffer_new_with_capacity(vscf_key_provider_exported_public_key_len(self, public_key));
+
+    const vscf_status_t export_status = vscf_key_provider_export_public_key(self, public_key, exported_public_key);
+
+    vscf_impl_delete(public_key);
+    public_key = NULL;
+
+    if (export_status != vscf_status_SUCCESS) {
+        vsc_buffer_destroy(&exported_public_key);
+        return export_status;
+    }
+
+    //
+    //  Compute hash.
+    //
+    vsc_buffer_t *exported_public_key_digest = vsc_buffer_new_with_capacity(vscf_sha512_DIGEST_LEN);
+    vscf_sha512_hash(vsc_buffer_data(exported_public_key), exported_public_key_digest);
+
+    //
+    //  Write ID.
+    //
+    vsc_data_t public_key_id =
+            vsc_data_slice_beg(vsc_buffer_data(exported_public_key_digest), 0, vscf_key_provider_KEY_ID_LEN);
+    vsc_buffer_write_data(key_id, public_key_id);
+
+    vsc_buffer_destroy(&exported_public_key);
+    vsc_buffer_destroy(&exported_public_key_digest);
+
+    return vscf_status_SUCCESS;
 }

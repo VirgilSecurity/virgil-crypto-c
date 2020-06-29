@@ -9,6 +9,10 @@
         Met internal inconsistency.
     </constant>
 
+    <constant name="list item not found" value="-2">
+        Requested list item is not found.
+    </constant>
+
     <constant name="decode base64 url failed" value="-101">
         Faled to decode Base64URL string.
     </constant>
@@ -26,7 +30,11 @@
     </constant>
 
     <constant name="produce signature failed" value="-105">
-        Faled produce signature, underlying crypto returned an error.
+        Faled to produce signature, underlying crypto returned an error.
+    </constant>
+
+    <constant name="produce public key id failed" value="-106">
+        Faled to produce public key id.
     </constant>
 
     <constant name="parse jwt failed" value="-201">

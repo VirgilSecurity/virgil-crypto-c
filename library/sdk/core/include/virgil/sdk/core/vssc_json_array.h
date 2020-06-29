@@ -148,10 +148,10 @@ VSSC_PUBLIC const vssc_json_array_t *
 vssc_json_array_shallow_copy_const(const vssc_json_array_t *self);
 
 //
-//  Return array length.
+//  Return how many objects an array handles.
 //
 VSSC_PUBLIC size_t
-vssc_json_array_len(const vssc_json_array_t *self);
+vssc_json_array_count(const vssc_json_array_t *self);
 
 //
 //  Add object value .

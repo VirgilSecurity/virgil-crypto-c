@@ -816,29 +816,30 @@ function c_component_create_include (require, destination)
     new c_include to my.destination
         my.is_system = defined (my.require.project) ?? "1" ? "0"
         my.project_uid = defined (my.require.project) ?? make_id ("project", my.require.project) ?
+        my.api = (defined(my.require.api) & my.require.api <> "public") ?? my.require.api ?
 
         if defined (my.require.header)
             .file = my.require.header
             .is_system = "1"
 
         elsif defined (my.require.module)
-            .file = make_ref (make_id (my.project_uid, "header", my.require.module), "c")
+            .file = make_ref (make_id (my.project_uid, "header", my.require.module, my.api), "c")
             .is_system = my.is_system
 
         elsif defined (my.require.interface)
-            .file = make_ref (make_id (my.project_uid, "header", my.require.interface), "c")
+            .file = make_ref (make_id (my.project_uid, "header", my.require.interface, my.api), "c")
             .is_system = my.is_system
 
         elsif defined (my.require.class)
-            .file = make_ref (make_id (my.project_uid, "header", my.require.class), "c")
+            .file = make_ref (make_id (my.project_uid, "header", my.require.class, my.api), "c")
             .is_system = my.is_system
 
         elsif defined (my.require.impl)
-            .file = make_ref (make_id (my.project_uid, "header", my.require.impl), "c")
+            .file = make_ref (make_id (my.project_uid, "header", my.require.impl, my.api), "c")
             .is_system = my.is_system
 
         elsif defined (my.require.enum)
-            .file = make_ref (make_id (my.project_uid, "header", my.require.enum), "c")
+            .file = make_ref (make_id (my.project_uid, "header", my.require.enum, my.api), "c")
             .is_system = my.is_system
         endif
 

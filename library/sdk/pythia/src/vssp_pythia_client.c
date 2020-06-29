@@ -93,66 +93,66 @@ vssp_pythia_client_init_ctx_with_base_url(vssp_pythia_client_t *self, vsc_str_t 
 //
 //  Base service URL.
 //
-static const char k_base_url[] = "https://api.virgilsecurity.com";
+static const char k_base_url_chars[] = "https://api.virgilsecurity.com";
 
 //
 //  Base service URL.
 //
-static const vsc_str_t k_base_url_str = {
-    k_base_url,
-    sizeof(k_base_url) - 1
+static const vsc_str_t k_base_url = {
+    k_base_url_chars,
+    sizeof(k_base_url_chars) - 1
 };
 
 //
 //  POST /brainkey
 //
-static const char k_brain_key_url_path[] = "/pythia/v1/brainkey";
+static const char k_brain_key_url_path_chars[] = "/pythia/v1/brainkey";
 
 //
 //  POST /brainkey
 //
-static const vsc_str_t k_brain_key_url_path_str = {
-    k_brain_key_url_path,
-    sizeof(k_brain_key_url_path) - 1
+static const vsc_str_t k_brain_key_url_path = {
+    k_brain_key_url_path_chars,
+    sizeof(k_brain_key_url_path_chars) - 1
 };
 
 //
 //  JSON key: blinded_password
 //
-static const char k_json_key_blinded_password[] = "blinded_password";
+static const char k_json_key_blinded_password_chars[] = "blinded_password";
 
 //
 //  JSON key: blinded_password
 //
-static const vsc_str_t k_json_key_blinded_password_str = {
-    k_json_key_blinded_password,
-    sizeof(k_json_key_blinded_password) - 1
+static const vsc_str_t k_json_key_blinded_password = {
+    k_json_key_blinded_password_chars,
+    sizeof(k_json_key_blinded_password_chars) - 1
 };
 
 //
 //  JSON key: brainkey_id
 //
-static const char k_json_key_brainkey_id[] = "brainkey_id";
+static const char k_json_key_brainkey_id_chars[] = "brainkey_id";
 
 //
 //  JSON key: brainkey_id
 //
-static const vsc_str_t k_json_key_brainkey_id_str = {
-    k_json_key_brainkey_id,
-    sizeof(k_json_key_brainkey_id) - 1
+static const vsc_str_t k_json_key_brainkey_id = {
+    k_json_key_brainkey_id_chars,
+    sizeof(k_json_key_brainkey_id_chars) - 1
 };
 
 //
 //  JSON key: seed
 //
-static const char k_json_key_seed[] = "seed";
+static const char k_json_key_seed_chars[] = "seed";
 
 //
 //  JSON key: seed
 //
-static const vsc_str_t k_json_key_seed_str = {
-    k_json_key_seed,
-    sizeof(k_json_key_seed) - 1
+static const vsc_str_t k_json_key_seed = {
+    k_json_key_seed_chars,
+    sizeof(k_json_key_seed_chars) - 1
 };
 
 //
@@ -350,7 +350,7 @@ vssp_pythia_client_init_ctx(vssp_pythia_client_t *self) {
 
     VSSP_ASSERT_PTR(self);
 
-    vssp_pythia_client_init_ctx_with_base_url(self, k_base_url_str);
+    vssp_pythia_client_init_ctx_with_base_url(self, k_base_url);
 }
 
 //
@@ -375,11 +375,11 @@ vssp_pythia_client_init_ctx_with_base_url(vssp_pythia_client_t *self, vsc_str_t 
     VSSP_ASSERT_PTR(self);
     VSSP_ASSERT(vsc_str_is_valid_and_non_empty(url));
 
-    const size_t brain_key_url_len = url.len + k_brain_key_url_path_str.len + 1;
+    const size_t brain_key_url_len = url.len + k_brain_key_url_path.len + 1;
     self->brain_key_url = vsc_str_buffer_new_with_capacity(brain_key_url_len);
 
     vsc_str_buffer_write_str(self->brain_key_url, url);
-    vsc_str_buffer_write_str(self->brain_key_url, k_brain_key_url_path_str);
+    vsc_str_buffer_write_str(self->brain_key_url, k_brain_key_url_path);
     vsc_str_buffer_write_char(self->brain_key_url, '\0');
 }
 
@@ -408,21 +408,21 @@ vssp_pythia_client_make_request_generate_seed_with_id(
     VSSP_ASSERT(vsc_str_is_valid(brain_key_id));
 
     vssc_json_object_t *json_obj = vssc_json_object_new();
-    vssc_json_object_add_binary_value(json_obj, k_json_key_blinded_password_str, blinded_password);
+    vssc_json_object_add_binary_value(json_obj, k_json_key_blinded_password, blinded_password);
 
     if (!vsc_str_is_empty(brain_key_id)) {
-        vssc_json_object_add_string_value(json_obj, k_json_key_brainkey_id_str, brain_key_id);
+        vssc_json_object_add_string_value(json_obj, k_json_key_brainkey_id, brain_key_id);
     }
 
     vsc_str_t body = vssc_json_object_as_str(json_obj);
 
     vssc_http_request_t *http_request = vssc_http_request_new_with_body(
-            vssc_http_request_method_post_str, vsc_str_buffer_str(self->brain_key_url), body);
+            vssc_http_request_method_post, vsc_str_buffer_str(self->brain_key_url), body);
 
     vssc_json_object_destroy(&json_obj);
 
     vssc_http_request_add_header(
-            http_request, vssc_http_header_name_content_type_str, vssc_http_header_value_application_json_str);
+            http_request, vssc_http_header_name_content_type, vssc_http_header_value_application_json);
 
     return http_request;
 }
@@ -442,14 +442,14 @@ vssp_pythia_client_process_response_generate_seed(const vssc_virgil_http_respons
 
     // TODO: Check Content-Type to be equal application/json
 
-    if (!vssc_virgil_http_response_has_body(response)) {
+    if (!vssc_virgil_http_response_body_is_json_object(response)) {
         VSSP_ERROR_SAFE_UPDATE(error, vssp_status_HTTP_RESPONSE_BODY_PARSE_FAILED);
         return NULL;
     }
 
-    const vssc_json_object_t *response_body = vssc_virgil_http_response_body(response);
+    const vssc_json_object_t *response_body = vssc_virgil_http_response_body_as_json_object(response);
 
-    const size_t seed_len = vssc_json_object_get_binary_value_len(response_body, k_json_key_seed_str);
+    const size_t seed_len = vssc_json_object_get_binary_value_len(response_body, k_json_key_seed);
     if (0 == seed_len) {
         VSSP_ERROR_SAFE_UPDATE(error, vssp_status_HTTP_RESPONSE_BODY_PARSE_FAILED);
         return NULL;
@@ -457,7 +457,7 @@ vssp_pythia_client_process_response_generate_seed(const vssc_virgil_http_respons
 
     vsc_buffer_t *seed = vsc_buffer_new_with_capacity(seed_len);
 
-    const vssc_status_t parse_status = vssc_json_object_get_binary_value(response_body, k_json_key_seed_str, seed);
+    const vssc_status_t parse_status = vssc_json_object_get_binary_value(response_body, k_json_key_seed, seed);
 
     if (parse_status == vssc_status_SUCCESS) {
         return vssp_brain_key_seed_new_with_seed_disown(&seed);

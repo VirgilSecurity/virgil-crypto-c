@@ -123,118 +123,118 @@ vssc_raw_card_new_with_imported(vssc_json_object_t **content_ref, vsc_buffer_t *
 //
 //  Default Virgil Card version.
 //
-static const char k_default_version[] = "5.0";
+static const char k_default_version_chars[] = "5.0";
 
 //
 //  Default Virgil Card version.
 //
-static const vsc_str_t k_default_version_str = {
-    k_default_version,
-    sizeof(k_default_version) - 1
+static const vsc_str_t k_default_version = {
+    k_default_version_chars,
+    sizeof(k_default_version_chars) - 1
 };
 
 //
 //  JSON key: public_key
 //
-static const char k_json_key_public_key[] = "public_key";
+static const char k_json_key_public_key_chars[] = "public_key";
 
 //
 //  JSON key: public_key
 //
-static const vsc_str_t k_json_key_public_key_str = {
-    k_json_key_public_key,
-    sizeof(k_json_key_public_key) - 1
+static const vsc_str_t k_json_key_public_key = {
+    k_json_key_public_key_chars,
+    sizeof(k_json_key_public_key_chars) - 1
 };
 
 //
 //  JSON key: identity
 //
-static const char k_json_key_identity[] = "identity";
+static const char k_json_key_identity_chars[] = "identity";
 
 //
 //  JSON key: identity
 //
-static const vsc_str_t k_json_key_identity_str = {
-    k_json_key_identity,
-    sizeof(k_json_key_identity) - 1
+static const vsc_str_t k_json_key_identity = {
+    k_json_key_identity_chars,
+    sizeof(k_json_key_identity_chars) - 1
 };
 
 //
 //  JSON key: card_type
 //
-static const char k_json_key_card_type[] = "card_type";
+static const char k_json_key_card_type_chars[] = "card_type";
 
 //
 //  JSON key: card_type
 //
-static const vsc_str_t k_json_key_card_type_str = {
-    k_json_key_card_type,
-    sizeof(k_json_key_card_type) - 1
+static const vsc_str_t k_json_key_card_type = {
+    k_json_key_card_type_chars,
+    sizeof(k_json_key_card_type_chars) - 1
 };
 
 //
 //  JSON key: previous_card_id
 //
-static const char k_json_key_previous_card_id[] = "previous_card_id";
+static const char k_json_key_previous_card_id_chars[] = "previous_card_id";
 
 //
 //  JSON key: previous_card_id
 //
-static const vsc_str_t k_json_key_previous_card_id_str = {
-    k_json_key_previous_card_id,
-    sizeof(k_json_key_previous_card_id) - 1
+static const vsc_str_t k_json_key_previous_card_id = {
+    k_json_key_previous_card_id_chars,
+    sizeof(k_json_key_previous_card_id_chars) - 1
 };
 
 //
 //  JSON key: version
 //
-static const char k_json_key_version[] = "version";
+static const char k_json_key_version_chars[] = "version";
 
 //
 //  JSON key: version
 //
-static const vsc_str_t k_json_key_version_str = {
-    k_json_key_version,
-    sizeof(k_json_key_version) - 1
+static const vsc_str_t k_json_key_version = {
+    k_json_key_version_chars,
+    sizeof(k_json_key_version_chars) - 1
 };
 
 //
 //  JSON key: created_at
 //
-static const char k_json_key_created_at[] = "created_at";
+static const char k_json_key_created_at_chars[] = "created_at";
 
 //
 //  JSON key: created_at
 //
-static const vsc_str_t k_json_key_created_at_str = {
-    k_json_key_created_at,
-    sizeof(k_json_key_created_at) - 1
+static const vsc_str_t k_json_key_created_at = {
+    k_json_key_created_at_chars,
+    sizeof(k_json_key_created_at_chars) - 1
 };
 
 //
 //  JSON key: content_snapshot
 //
-static const char k_json_key_content_snapshot[] = "content_snapshot";
+static const char k_json_key_content_snapshot_chars[] = "content_snapshot";
 
 //
 //  JSON key: content_snapshot
 //
-static const vsc_str_t k_json_key_content_snapshot_str = {
-    k_json_key_content_snapshot,
-    sizeof(k_json_key_content_snapshot) - 1
+static const vsc_str_t k_json_key_content_snapshot = {
+    k_json_key_content_snapshot_chars,
+    sizeof(k_json_key_content_snapshot_chars) - 1
 };
 
 //
 //  JSON key: signatures
 //
-static const char k_json_key_signatures[] = "signatures";
+static const char k_json_key_signatures_chars[] = "signatures";
 
 //
 //  JSON key: signatures
 //
-static const vsc_str_t k_json_key_signatures_str = {
-    k_json_key_signatures,
-    sizeof(k_json_key_signatures) - 1
+static const vsc_str_t k_json_key_signatures = {
+    k_json_key_signatures_chars,
+    sizeof(k_json_key_signatures_chars) - 1
 };
 
 //
@@ -562,12 +562,12 @@ vssc_raw_card_init_ctx_with_disown(
     //  Build content.
     //
     self->content = vssc_json_object_new();
-    vssc_json_object_add_int_value(self->content, k_json_key_created_at_str, (int)created_at);
-    vssc_json_object_add_string_value(self->content, k_json_key_identity_str, identity);
-    vssc_json_object_add_string_value(self->content, k_json_key_version_str, k_default_version_str);
+    vssc_json_object_add_int_value(self->content, k_json_key_created_at, (int)created_at);
+    vssc_json_object_add_string_value(self->content, k_json_key_identity, identity);
+    vssc_json_object_add_string_value(self->content, k_json_key_version, k_default_version);
 
     if (self->public_key) {
-        vssc_json_object_add_binary_value(self->content, k_json_key_public_key_str, vsc_buffer_data(self->public_key));
+        vssc_json_object_add_binary_value(self->content, k_json_key_public_key, vsc_buffer_data(self->public_key));
     }
 
     //
@@ -624,7 +624,7 @@ vssc_raw_card_import_from_json(const vssc_json_object_t *json, vssc_error_t *err
     //
     //  Import content-snapshot.
     //
-    const size_t content_snapshot_len = vssc_json_object_get_binary_value_len(json, k_json_key_content_snapshot_str);
+    const size_t content_snapshot_len = vssc_json_object_get_binary_value_len(json, k_json_key_content_snapshot);
     if (content_snapshot_len == 0) {
         VSSC_ERROR_SAFE_UPDATE(error, vssc_status_RAW_CARD_CONTENT_PARSE_FAILED);
         goto fail;
@@ -632,7 +632,7 @@ vssc_raw_card_import_from_json(const vssc_json_object_t *json, vssc_error_t *err
 
     content_snapshot = vsc_buffer_new_with_capacity(content_snapshot_len);
 
-    local_error.status = vssc_json_object_get_binary_value(json, k_json_key_content_snapshot_str, content_snapshot);
+    local_error.status = vssc_json_object_get_binary_value(json, k_json_key_content_snapshot, content_snapshot);
     if (local_error.status != vssc_status_SUCCESS) {
         VSSC_ERROR_SAFE_UPDATE(error, vssc_status_RAW_CARD_CONTENT_PARSE_FAILED);
         goto fail;
@@ -649,43 +649,43 @@ vssc_raw_card_import_from_json(const vssc_json_object_t *json, vssc_error_t *err
     //  Validate content-snapshot fileds.
     //
 
-    vsc_str_t version_str = vssc_json_object_get_string_value(content_json, k_json_key_version_str, &local_error);
+    vsc_str_t version_str = vssc_json_object_get_string_value(content_json, k_json_key_version, &local_error);
     if (vsc_str_is_empty(version_str)) {
         VSSC_ERROR_SAFE_UPDATE(error, vssc_status_RAW_CARD_CONTENT_PARSE_FAILED);
         goto fail;
     }
 
-    if (!vsc_str_equal(version_str, k_default_version_str)) {
+    if (!vsc_str_equal(version_str, k_default_version)) {
         VSSC_ERROR_SAFE_UPDATE(error, vssc_status_CARD_VERSION_IS_NOT_SUPPORTED);
         goto fail;
     }
 
-    const size_t public_key_len = vssc_json_object_get_binary_value_len(content_json, k_json_key_public_key_str);
+    const size_t public_key_len = vssc_json_object_get_binary_value_len(content_json, k_json_key_public_key);
     if (public_key_len == 0) {
         VSSC_ERROR_SAFE_UPDATE(error, vssc_status_RAW_CARD_CONTENT_PARSE_FAILED);
         goto fail;
     }
 
     public_key = vsc_buffer_new_with_capacity(public_key_len);
-    local_error.status = vssc_json_object_get_binary_value(content_json, k_json_key_public_key_str, public_key);
+    local_error.status = vssc_json_object_get_binary_value(content_json, k_json_key_public_key, public_key);
     if (local_error.status != vssc_status_SUCCESS) {
         VSSC_ERROR_SAFE_UPDATE(error, vssc_status_RAW_CARD_CONTENT_PARSE_FAILED);
         goto fail;
     }
 
-    vsc_str_t identity_str = vssc_json_object_get_string_value(content_json, k_json_key_identity_str, &local_error);
+    vsc_str_t identity_str = vssc_json_object_get_string_value(content_json, k_json_key_identity, &local_error);
     if (vsc_str_is_empty(identity_str)) {
         VSSC_ERROR_SAFE_UPDATE(error, vssc_status_RAW_CARD_CONTENT_PARSE_FAILED);
         goto fail;
     }
 
-    const int created_at = vssc_json_object_get_int_value(content_json, k_json_key_created_at_str, &local_error);
+    const int created_at = vssc_json_object_get_int_value(content_json, k_json_key_created_at, &local_error);
     if (created_at <= 0) {
         VSSC_ERROR_SAFE_UPDATE(error, vssc_status_RAW_CARD_CONTENT_PARSE_FAILED);
         goto fail;
     }
 
-    vsc_str_t card_type_str = vssc_json_object_get_string_value(content_json, k_json_key_card_type_str, &local_error);
+    vsc_str_t card_type_str = vssc_json_object_get_string_value(content_json, k_json_key_card_type, &local_error);
     if (vssc_error_status(&local_error) == vssc_status_JSON_VALUE_TYPE_MISMATCH) {
         VSSC_ERROR_SAFE_UPDATE(error, vssc_status_RAW_CARD_CONTENT_PARSE_FAILED);
         goto fail;
@@ -693,7 +693,7 @@ vssc_raw_card_import_from_json(const vssc_json_object_t *json, vssc_error_t *err
     VSSC_UNUSED(card_type_str);
 
     vsc_str_t previous_card_id_str =
-            vssc_json_object_get_string_value(content_json, k_json_key_previous_card_id_str, &local_error);
+            vssc_json_object_get_string_value(content_json, k_json_key_previous_card_id, &local_error);
     if (vssc_error_status(&local_error) == vssc_status_JSON_VALUE_TYPE_MISMATCH) {
         VSSC_ERROR_SAFE_UPDATE(error, vssc_status_RAW_CARD_CONTENT_PARSE_FAILED);
         goto fail;
@@ -703,14 +703,14 @@ vssc_raw_card_import_from_json(const vssc_json_object_t *json, vssc_error_t *err
     //
     //  Import signatures.
     //
-    signatures_json = vssc_json_object_get_array_value(json, k_json_key_signatures_str, &local_error);
+    signatures_json = vssc_json_object_get_array_value(json, k_json_key_signatures, &local_error);
     if (local_error.status == vssc_status_JSON_VALUE_TYPE_MISMATCH) {
         VSSC_ERROR_SAFE_UPDATE(error, vssc_status_RAW_CARD_SIGNATURE_PARSE_FAILED);
         goto fail;
     }
 
     signatures = vssc_raw_card_signature_list_new();
-    for (size_t i = 0; i < vssc_json_array_len(signatures_json); ++i) {
+    for (size_t i = 0; i < vssc_json_array_count(signatures_json); ++i) {
         signature_json = vssc_json_array_get_object_value(signatures_json, i, &local_error);
         if (NULL == signature_json) {
             VSSC_ERROR_SAFE_UPDATE(error, vssc_status_RAW_CARD_SIGNATURE_PARSE_FAILED);
@@ -763,8 +763,8 @@ vssc_raw_card_export_as_json(const vssc_raw_card_t *self) {
     }
 
     vssc_json_object_t *json = vssc_json_object_new();
-    vssc_json_object_add_binary_value(json, k_json_key_content_snapshot_str, vssc_raw_card_content_snapshot(self));
-    vssc_json_object_add_array_value_disown(json, k_json_key_signatures_str, &json_signatures);
+    vssc_json_object_add_binary_value(json, k_json_key_content_snapshot, vssc_raw_card_content_snapshot(self));
+    vssc_json_object_add_array_value_disown(json, k_json_key_signatures, &json_signatures);
 
     return json;
 }
@@ -781,7 +781,7 @@ vssc_raw_card_set_previous_card_id(vssc_raw_card_t *self, vsc_str_t previous_car
     VSSC_ASSERT_PTR(self->content);
     VSSC_ASSERT(vsc_str_is_valid_and_non_empty(previous_card_id));
 
-    vssc_json_object_add_string_value(self->content, k_json_key_previous_card_id_str, previous_card_id);
+    vssc_json_object_add_string_value(self->content, k_json_key_previous_card_id, previous_card_id);
     vssc_raw_card_invalidate_content_snapshot(self);
 }
 
@@ -791,7 +791,7 @@ vssc_raw_card_set_previous_card_id(vssc_raw_card_t *self, vsc_str_t previous_car
 VSSC_PUBLIC void
 vssc_raw_card_set_card_type(vssc_raw_card_t *self, vsc_str_t card_type) {
 
-    vssc_json_object_add_string_value(self->content, k_json_key_card_type_str, card_type);
+    vssc_json_object_add_string_value(self->content, k_json_key_card_type, card_type);
     vssc_raw_card_invalidate_content_snapshot(self);
 }
 
@@ -841,7 +841,7 @@ vssc_raw_card_version(const vssc_raw_card_t *self) {
     VSSC_ASSERT_PTR(self);
     VSSC_ASSERT_PTR(self->content);
 
-    vsc_str_t result = vssc_json_object_get_string_value(self->content, k_json_key_version_str, NULL);
+    vsc_str_t result = vssc_json_object_get_string_value(self->content, k_json_key_version, NULL);
 
     return result;
 }
@@ -855,7 +855,7 @@ vssc_raw_card_identity(const vssc_raw_card_t *self) {
     VSSC_ASSERT_PTR(self);
     VSSC_ASSERT_PTR(self->content);
 
-    vsc_str_t result = vssc_json_object_get_string_value(self->content, k_json_key_identity_str, NULL);
+    vsc_str_t result = vssc_json_object_get_string_value(self->content, k_json_key_identity, NULL);
 
     return result;
 }
@@ -886,7 +886,7 @@ vssc_raw_card_created_at(const vssc_raw_card_t *self) {
     VSSC_ASSERT_PTR(self);
     VSSC_ASSERT_PTR(self->content);
 
-    const int result = vssc_json_object_get_int_value(self->content, k_json_key_created_at_str, NULL);
+    const int result = vssc_json_object_get_int_value(self->content, k_json_key_created_at, NULL);
     VSSC_ASSERT(result > 0);
 
     return (size_t)result;
@@ -914,7 +914,7 @@ vssc_raw_card_previous_card_id(const vssc_raw_card_t *self) {
     VSSC_ASSERT_PTR(self);
     VSSC_ASSERT_PTR(self->content);
 
-    vsc_str_t result = vssc_json_object_get_string_value(self->content, k_json_key_previous_card_id_str, NULL);
+    vsc_str_t result = vssc_json_object_get_string_value(self->content, k_json_key_previous_card_id, NULL);
 
     return result;
 }

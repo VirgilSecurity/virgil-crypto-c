@@ -55,8 +55,8 @@
 
 #include "vssc_library.h"
 #include "vssc_atomic.h"
-
-#include <json-c/json.h>
+#include "vssc_json_object.h"
+#include "vssc_json_array.h"
 
 // clang-format on
 //  @end
@@ -88,7 +88,7 @@ struct vssc_jwt_header_t {
     //
     //  Root JSON object that represents JWT Header.
     //
-    json_object *json_obj;
+    vssc_json_object_t *json_obj;
 };
 
 

@@ -108,18 +108,18 @@ static vssc_virgil_http_response_t *
 vssc_virgil_http_response_new_with(size_t http_status_code, vssc_http_header_list_t **http_headers_ref,
         vssc_json_object_t **http_body_ref, vssc_json_array_t **http_array_body_ref);
 
-static const char k_json_key_service_error_code[] = "code";
+static const char k_json_key_service_error_code_chars[] = "code";
 
-static const vsc_str_t k_json_key_service_error_code_str = {
-    k_json_key_service_error_code,
-    sizeof(k_json_key_service_error_code) - 1
+static const vsc_str_t k_json_key_service_error_code = {
+    k_json_key_service_error_code_chars,
+    sizeof(k_json_key_service_error_code_chars) - 1
 };
 
-static const char k_json_key_service_error_message[] = "message";
+static const char k_json_key_service_error_message_chars[] = "message";
 
-static const vsc_str_t k_json_key_service_error_message_str = {
-    k_json_key_service_error_message,
-    sizeof(k_json_key_service_error_message) - 1
+static const vsc_str_t k_json_key_service_error_message = {
+    k_json_key_service_error_message_chars,
+    sizeof(k_json_key_service_error_message_chars) - 1
 };
 
 //
@@ -429,10 +429,10 @@ vssc_virgil_http_response_is_success(const vssc_virgil_http_response_t *self) {
 }
 
 //
-//  Return true if response contains a valid body.
+//  Return true if response handles a valid body as JSON object.
 //
 VSSC_PUBLIC bool
-vssc_virgil_http_response_has_body(const vssc_virgil_http_response_t *self) {
+vssc_virgil_http_response_body_is_json_object(const vssc_virgil_http_response_t *self) {
 
     VSSC_ASSERT_PTR(self);
 
@@ -440,10 +440,10 @@ vssc_virgil_http_response_has_body(const vssc_virgil_http_response_t *self) {
 }
 
 //
-//  Return true if response contains a valid body as array.
+//  Return true if response handles a valid body as JSON array.
 //
 VSSC_PUBLIC bool
-vssc_virgil_http_response_has_array_body(const vssc_virgil_http_response_t *self) {
+vssc_virgil_http_response_body_is_json_array(const vssc_virgil_http_response_t *self) {
 
     VSSC_ASSERT_PTR(self);
 
@@ -454,7 +454,7 @@ vssc_virgil_http_response_has_array_body(const vssc_virgil_http_response_t *self
 //  Return response body as JSON object.
 //
 VSSC_PUBLIC const vssc_json_object_t *
-vssc_virgil_http_response_body(const vssc_virgil_http_response_t *self) {
+vssc_virgil_http_response_body_as_json_object(const vssc_virgil_http_response_t *self) {
 
     VSSC_ASSERT_PTR(self);
     VSSC_ASSERT_PTR(self->http_body);
@@ -466,7 +466,7 @@ vssc_virgil_http_response_body(const vssc_virgil_http_response_t *self) {
 //  Return response body as JSON array.
 //
 VSSC_PUBLIC const vssc_json_array_t *
-vssc_virgil_http_response_array_body(const vssc_virgil_http_response_t *self) {
+vssc_virgil_http_response_body_as_json_array(const vssc_virgil_http_response_t *self) {
 
     VSSC_ASSERT_PTR(self);
     VSSC_ASSERT_PTR(self->http_array_body);
@@ -482,14 +482,14 @@ vssc_virgil_http_response_has_service_error(const vssc_virgil_http_response_t *s
 
     VSSC_ASSERT_PTR(self);
 
-    if (vssc_virgil_http_response_is_success(self) || !vssc_virgil_http_response_has_body(self)) {
+    if (vssc_virgil_http_response_is_success(self) || !vssc_virgil_http_response_body_is_json_object(self)) {
         return false;
     }
 
     vssc_error_t error;
     vssc_error_reset(&error);
 
-    const int error_code = vssc_json_object_get_int_value(self->http_body, k_json_key_service_error_code_str, &error);
+    const int error_code = vssc_json_object_get_int_value(self->http_body, k_json_key_service_error_code, &error);
     VSSC_UNUSED(error_code);
 
     return !vssc_error_has_error(&error);
@@ -503,14 +503,14 @@ vssc_virgil_http_response_service_error_code(const vssc_virgil_http_response_t *
 
     VSSC_ASSERT_PTR(self);
 
-    if (vssc_virgil_http_response_is_success(self) || !vssc_virgil_http_response_has_body(self)) {
+    if (vssc_virgil_http_response_is_success(self) || !vssc_virgil_http_response_body_is_json_object(self)) {
         return 0;
     }
 
     vssc_error_t error;
     vssc_error_reset(&error);
 
-    const int error_code = vssc_json_object_get_int_value(self->http_body, k_json_key_service_error_code_str, &error);
+    const int error_code = vssc_json_object_get_int_value(self->http_body, k_json_key_service_error_code, &error);
 
     if (!vssc_error_has_error(&error) && error_code > 0) {
         return (size_t)error_code;
@@ -528,11 +528,11 @@ vssc_virgil_http_response_service_error_description(const vssc_virgil_http_respo
 
     VSSC_ASSERT_PTR(self);
 
-    if (vssc_virgil_http_response_is_success(self) || !vssc_virgil_http_response_has_body(self)) {
+    if (vssc_virgil_http_response_is_success(self) || !vssc_virgil_http_response_body_is_json_object(self)) {
         return vsc_str_empty();
     }
 
-    return vssc_json_object_get_string_value(self->http_body, k_json_key_service_error_message_str, NULL);
+    return vssc_json_object_get_string_value(self->http_body, k_json_key_service_error_message, NULL);
 }
 
 //

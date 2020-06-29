@@ -1,0 +1,50 @@
+<class name="key handler">
+    Handles public key or private key and it's identifier.
+
+    Note, that public key identifier equals to the private key identifier.
+    Note, a key identifier can be calculated with "key provider" class from the foundation library.
+
+
+    <property name="key" interface="key" project="foundation" access="readonly"/>
+    <property name="identity" class="str mutable"/>
+    <property name="key id" class="buffer"/>
+
+
+    <constructor name="with">
+        Constructor.
+
+        <argument name="identity" class="str"/>
+        <argument name="key id" class="data"/>
+        <argument name="key" interface="key" project="foundation"/>
+    </constructor>
+
+
+    <constructor name="with disown" scope="private">
+        Constructor.
+
+        <argument name="identity" class="str"/>
+        <argument name="key id" class="buffer" access="disown"/>
+        <argument name="key" interface="key" project="foundation" access="disown"/>
+    </constructor>
+
+
+    <method name="identity" is_const="1">
+        Return user's identity associated with the key.
+
+        <return class="str"/>
+    </method>
+
+
+    <method name="key id" is_const="1">
+        Return public key identifier regardless of the underlying key - public or private.
+
+        <return class="data"/>
+    </method>
+
+
+    <method name="key" is_const="1">
+        Return key.
+
+        <return interface="key" project="foundation"/>
+    </method>
+</class>

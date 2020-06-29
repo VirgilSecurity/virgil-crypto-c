@@ -140,40 +140,40 @@ vssc_raw_card_signature_new_with_imported(vsc_str_t signer_id, vsc_buffer_t **si
 //
 //  JSON key: signer
 //
-static const char k_json_key_signer_id[] = "signer";
+static const char k_json_key_signer_id_chars[] = "signer";
 
 //
 //  JSON key: signer
 //
-static const vsc_str_t k_json_key_signer_id_str = {
-    k_json_key_signer_id,
-    sizeof(k_json_key_signer_id) - 1
+static const vsc_str_t k_json_key_signer_id = {
+    k_json_key_signer_id_chars,
+    sizeof(k_json_key_signer_id_chars) - 1
 };
 
 //
 //  JSON key: snapshot
 //
-static const char k_json_key_snapshot[] = "snapshot";
+static const char k_json_key_snapshot_chars[] = "snapshot";
 
 //
 //  JSON key: snapshot
 //
-static const vsc_str_t k_json_key_snapshot_str = {
-    k_json_key_snapshot,
-    sizeof(k_json_key_snapshot) - 1
+static const vsc_str_t k_json_key_snapshot = {
+    k_json_key_snapshot_chars,
+    sizeof(k_json_key_snapshot_chars) - 1
 };
 
 //
 //  JSON key: signature
 //
-static const char k_json_key_signature[] = "signature";
+static const char k_json_key_signature_chars[] = "signature";
 
 //
 //  JSON key: signature
 //
-static const vsc_str_t k_json_key_signature_str = {
-    k_json_key_signature,
-    sizeof(k_json_key_signature) - 1
+static const vsc_str_t k_json_key_signature = {
+    k_json_key_signature_chars,
+    sizeof(k_json_key_signature_chars) - 1
 };
 
 //
@@ -726,7 +726,7 @@ vssc_raw_card_signature_import_from_json(const vssc_json_object_t *json, vssc_er
     //
     //  Get json: signer_id
     //
-    vsc_str_t signer_id = vssc_json_object_get_string_value(json, k_json_key_signer_id_str, &local_error);
+    vsc_str_t signer_id = vssc_json_object_get_string_value(json, k_json_key_signer_id, &local_error);
     if (local_error.status != vssc_status_SUCCESS) {
         VSSC_ERROR_SAFE_UPDATE(error, vssc_status_RAW_CARD_SIGNATURE_PARSE_FAILED);
         goto fail;
@@ -735,7 +735,7 @@ vssc_raw_card_signature_import_from_json(const vssc_json_object_t *json, vssc_er
     //
     //  Get json: signature
     //
-    const size_t signature_len = vssc_json_object_get_binary_value_len(json, k_json_key_signature_str);
+    const size_t signature_len = vssc_json_object_get_binary_value_len(json, k_json_key_signature);
     if (signature_len == 0) {
         VSSC_ERROR_SAFE_UPDATE(error, vssc_status_RAW_CARD_SIGNATURE_PARSE_FAILED);
         goto fail;
@@ -743,7 +743,7 @@ vssc_raw_card_signature_import_from_json(const vssc_json_object_t *json, vssc_er
 
     signature = vsc_buffer_new_with_capacity(signature_len);
 
-    local_error.status = vssc_json_object_get_binary_value(json, k_json_key_signature_str, signature);
+    local_error.status = vssc_json_object_get_binary_value(json, k_json_key_signature, signature);
     if (local_error.status != vssc_status_SUCCESS) {
         VSSC_ERROR_SAFE_UPDATE(error, vssc_status_RAW_CARD_SIGNATURE_PARSE_FAILED);
         goto fail;
@@ -752,11 +752,11 @@ vssc_raw_card_signature_import_from_json(const vssc_json_object_t *json, vssc_er
     //
     //  Get json: snapshot
     //
-    const size_t snapshot_len = vssc_json_object_get_binary_value_len(json, k_json_key_snapshot_str);
+    const size_t snapshot_len = vssc_json_object_get_binary_value_len(json, k_json_key_snapshot);
     if (snapshot_len != 0) {
         snapshot = vsc_buffer_new_with_capacity(snapshot_len);
 
-        local_error.status = vssc_json_object_get_binary_value(json, k_json_key_snapshot_str, snapshot);
+        local_error.status = vssc_json_object_get_binary_value(json, k_json_key_snapshot, snapshot);
         if (local_error.status != vssc_status_SUCCESS) {
             VSSC_ERROR_SAFE_UPDATE(error, vssc_status_RAW_CARD_SIGNATURE_PARSE_FAILED);
             goto fail;
@@ -789,11 +789,11 @@ vssc_raw_card_signature_export_as_json(const vssc_raw_card_signature_t *self) {
     VSSC_ASSERT_PTR(self);
 
     vssc_json_object_t *json = vssc_json_object_new();
-    vssc_json_object_add_string_value(json, k_json_key_signer_id_str, vssc_raw_card_signature_signer_id(self));
-    vssc_json_object_add_binary_value(json, k_json_key_signature_str, vssc_raw_card_signature_signature(self));
+    vssc_json_object_add_string_value(json, k_json_key_signer_id, vssc_raw_card_signature_signer_id(self));
+    vssc_json_object_add_binary_value(json, k_json_key_signature, vssc_raw_card_signature_signature(self));
 
     if (self->snapshot) {
-        vssc_json_object_add_binary_value(json, k_json_key_snapshot_str, vsc_buffer_data(self->snapshot));
+        vssc_json_object_add_binary_value(json, k_json_key_snapshot, vsc_buffer_data(self->snapshot));
     }
 
     return json;

@@ -55,6 +55,7 @@
 #include "vssc_assert.h"
 #include "vssc_jwt_payload_defs.h"
 #include "vssc_base64_url.h"
+#include "vssc_json_array.h"
 
 // clang-format on
 //  @end
@@ -95,14 +96,14 @@ vssc_jwt_payload_init_ctx_with_members(vssc_jwt_payload_t *self, vsc_str_t app_i
 //  Prerequisite: The JSON object SHOULD be already validated.
 //
 static void
-vssc_jwt_payload_init_with_json_object(vssc_jwt_payload_t *self, json_object **json_obj_ref);
+vssc_jwt_payload_init_with_json_object(vssc_jwt_payload_t *self, vssc_json_object_t **json_obj_ref);
 
 //
 //  Create JWT Payload defined with a JSON object.
 //  Prerequisite: The JSON object SHOULD be already validated.
 //
 static void
-vssc_jwt_payload_init_ctx_with_json_object(vssc_jwt_payload_t *self, json_object **json_obj_ref);
+vssc_jwt_payload_init_ctx_with_json_object(vssc_jwt_payload_t *self, vssc_json_object_t **json_obj_ref);
 
 //
 //  Allocate class context and perform it's initialization.
@@ -110,37 +111,85 @@ vssc_jwt_payload_init_ctx_with_json_object(vssc_jwt_payload_t *self, json_object
 //  Prerequisite: The JSON object SHOULD be already validated.
 //
 static vssc_jwt_payload_t *
-vssc_jwt_payload_new_with_json_object(json_object **json_obj_ref);
+vssc_jwt_payload_new_with_json_object(vssc_json_object_t **json_obj_ref);
 
 //
 //  Prefix for JSON value under the key "iss".
 //
-static const char *const k_json_value_prefix_app_id = "virgil-";
+static const char k_json_value_prefix_app_id_chars[] = "virgil-";
+
+//
+//  Prefix for JSON value under the key "iss".
+//
+static const vsc_str_t k_json_value_prefix_app_id = {
+    k_json_value_prefix_app_id_chars,
+    sizeof(k_json_value_prefix_app_id_chars) - 1
+};
 
 //
 //  Prefix for JSON value under the key "sub".
 //
-static const char *const k_json_value_prefix_identity = "identity-";
+static const char k_json_value_prefix_identity_chars[] = "identity-";
+
+//
+//  Prefix for JSON value under the key "sub".
+//
+static const vsc_str_t k_json_value_prefix_identity = {
+    k_json_value_prefix_identity_chars,
+    sizeof(k_json_value_prefix_identity_chars) - 1
+};
 
 //
 //  JSON key of application id JWT belongs to.
 //
-static const char *const k_json_key_app_id = "iss";
+static const char k_json_key_app_id_chars[] = "iss";
+
+//
+//  JSON key of application id JWT belongs to.
+//
+static const vsc_str_t k_json_key_app_id = {
+    k_json_key_app_id_chars,
+    sizeof(k_json_key_app_id_chars) - 1
+};
 
 //
 //  JSON key of JWT identity.
 //
-static const char *const k_json_key_identity = "sub";
+static const char k_json_key_identity_chars[] = "sub";
+
+//
+//  JSON key of JWT identity.
+//
+static const vsc_str_t k_json_key_identity = {
+    k_json_key_identity_chars,
+    sizeof(k_json_key_identity_chars) - 1
+};
 
 //
 //  JSON key of JWT issued at date.
 //
-static const char *const k_json_key_issued_at = "iat";
+static const char k_json_key_issued_at_chars[] = "iat";
+
+//
+//  JSON key of JWT issued at date.
+//
+static const vsc_str_t k_json_key_issued_at = {
+    k_json_key_issued_at_chars,
+    sizeof(k_json_key_issued_at_chars) - 1
+};
 
 //
 //  JSON key of JWT expires at date.
 //
-static const char *const k_json_key_expires_at = "exp";
+static const char k_json_key_expires_at_chars[] = "exp";
+
+//
+//  JSON key of JWT expires at date.
+//
+static const vsc_str_t k_json_key_expires_at = {
+    k_json_key_expires_at_chars,
+    sizeof(k_json_key_expires_at_chars) - 1
+};
 
 //
 //  Return size of 'vssc_jwt_payload_t'.
@@ -237,7 +286,7 @@ vssc_jwt_payload_new_with_members(vsc_str_t app_id, vsc_str_t identity, size_t i
 //  Prerequisite: The JSON object SHOULD be already validated.
 //
 static void
-vssc_jwt_payload_init_with_json_object(vssc_jwt_payload_t *self, json_object **json_obj_ref) {
+vssc_jwt_payload_init_with_json_object(vssc_jwt_payload_t *self, vssc_json_object_t **json_obj_ref) {
 
     VSSC_ASSERT_PTR(self);
 
@@ -254,7 +303,7 @@ vssc_jwt_payload_init_with_json_object(vssc_jwt_payload_t *self, json_object **j
 //  Prerequisite: The JSON object SHOULD be already validated.
 //
 static vssc_jwt_payload_t *
-vssc_jwt_payload_new_with_json_object(json_object **json_obj_ref) {
+vssc_jwt_payload_new_with_json_object(vssc_json_object_t **json_obj_ref) {
 
     vssc_jwt_payload_t *self = (vssc_jwt_payload_t *) vssc_alloc(sizeof (vssc_jwt_payload_t));
     VSSC_ASSERT_ALLOC(self);
@@ -385,7 +434,7 @@ vssc_jwt_payload_cleanup_ctx(vssc_jwt_payload_t *self) {
 
     VSSC_ASSERT_PTR(self);
 
-    json_object_put(self->json_obj);
+    vssc_json_object_destroy(&self->json_obj);
 }
 
 //
@@ -398,54 +447,33 @@ vssc_jwt_payload_init_ctx_with_members(
     VSSC_ASSERT_PTR(self);
     VSSC_ASSERT(vsc_str_is_valid(app_id));
     VSSC_ASSERT(vsc_str_is_valid(identity));
+    VSSC_ASSERT(0 < issued_at && issued_at < INT_MAX);
+    VSSC_ASSERT(0 < expires_at && expires_at < INT_MAX);
+    VSSC_ASSERT(issued_at <= expires_at);
 
-    const size_t k_json_value_prefix_app_id_len = strlen(k_json_value_prefix_app_id);
-    const size_t app_id_str_len = k_json_value_prefix_app_id_len + app_id.len;
+    const size_t app_id_str_len = k_json_value_prefix_app_id.len + app_id.len;
+    const size_t identity_str_len = k_json_value_prefix_identity.len + identity.len;
 
-    const size_t k_json_value_prefix_identity_len = strlen(k_json_value_prefix_identity);
-    const size_t identity_str_len = k_json_value_prefix_identity_len + identity.len;
+    self->json_obj = vssc_json_object_new();
 
     vsc_str_buffer_t *tmp_str = vsc_str_buffer_new_with_capacity(VSSC_MAX(app_id_str_len, identity_str_len));
 
     vsc_str_buffer_reset(tmp_str);
-    vsc_str_buffer_write_str(tmp_str, vsc_str(k_json_value_prefix_app_id, k_json_value_prefix_app_id_len));
+    vsc_str_buffer_write_str(tmp_str, k_json_value_prefix_app_id);
     vsc_str_buffer_write_str(tmp_str, app_id);
     vsc_str_t prefixed_app_id = vsc_str_buffer_str(tmp_str);
-    json_object *app_id_obj = json_object_new_string_len(prefixed_app_id.chars, prefixed_app_id.len);
-    VSSC_ASSERT_ALLOC(app_id_obj);
+    vssc_json_object_add_string_value(self->json_obj, k_json_key_app_id, prefixed_app_id);
 
     vsc_str_buffer_reset(tmp_str);
-    vsc_str_buffer_write_str(tmp_str, vsc_str(k_json_value_prefix_identity, k_json_value_prefix_identity_len));
+    vsc_str_buffer_write_str(tmp_str, k_json_value_prefix_identity);
     vsc_str_buffer_write_str(tmp_str, identity);
     vsc_str_t prefixed_identity = vsc_str_buffer_str(tmp_str);
-    json_object *identity_obj = json_object_new_string_len(prefixed_identity.chars, prefixed_identity.len);
-    VSSC_ASSERT_ALLOC(identity_obj);
+    vssc_json_object_add_string_value(self->json_obj, k_json_key_identity, prefixed_identity);
 
     vsc_str_buffer_destroy(&tmp_str);
 
-    json_object *issued_at_obj = json_object_new_int64((int64_t)issued_at);
-    VSSC_ASSERT_ALLOC(issued_at_obj);
-
-    json_object *expires_at_obj = json_object_new_int64((int64_t)expires_at);
-    VSSC_ASSERT_ALLOC(expires_at_obj);
-
-    json_object *root_obj = json_object_new_object();
-    VSSC_ASSERT_ALLOC(root_obj);
-
-    int result = 0;
-    result = json_object_object_add_ex(root_obj, k_json_key_app_id, app_id_obj, JSON_C_OBJECT_KEY_IS_CONSTANT);
-    VSSC_ASSERT_LIBRARY_JSON_C_SUCCESS(result);
-
-    result = json_object_object_add_ex(root_obj, k_json_key_identity, identity_obj, JSON_C_OBJECT_KEY_IS_CONSTANT);
-    VSSC_ASSERT_LIBRARY_JSON_C_SUCCESS(result);
-
-    result = json_object_object_add_ex(root_obj, k_json_key_issued_at, issued_at_obj, JSON_C_OBJECT_KEY_IS_CONSTANT);
-    VSSC_ASSERT_LIBRARY_JSON_C_SUCCESS(result);
-
-    result = json_object_object_add_ex(root_obj, k_json_key_expires_at, expires_at_obj, JSON_C_OBJECT_KEY_IS_CONSTANT);
-    VSSC_ASSERT_LIBRARY_JSON_C_SUCCESS(result);
-
-    self->json_obj = root_obj;
+    vssc_json_object_add_int_value(self->json_obj, k_json_key_issued_at, (int)issued_at);
+    vssc_json_object_add_int_value(self->json_obj, k_json_key_expires_at, (int)expires_at);
 }
 
 //
@@ -453,7 +481,7 @@ vssc_jwt_payload_init_ctx_with_members(
 //  Prerequisite: The JSON object SHOULD be already validated.
 //
 static void
-vssc_jwt_payload_init_ctx_with_json_object(vssc_jwt_payload_t *self, json_object **json_obj_ref) {
+vssc_jwt_payload_init_ctx_with_json_object(vssc_jwt_payload_t *self, vssc_json_object_t **json_obj_ref) {
 
     VSSC_ASSERT_PTR(self);
     VSSC_ASSERT_REF(json_obj_ref);
@@ -470,73 +498,63 @@ vssc_jwt_payload_parse(vsc_str_t payload_str, vssc_error_t *error) {
 
     VSSC_ASSERT(vsc_str_is_valid(payload_str));
 
+    //
+    //  Declare vars.
+    //
+    vssc_error_t inner_error;
+    vssc_error_reset(&inner_error);
+
     const size_t payload_json_str_len = vssc_base64_url_decoded_len(payload_str.len);
     vsc_buffer_t *payload_json_buff = vsc_buffer_new_with_capacity(payload_json_str_len);
 
-    json_tokener *tokener = json_tokener_new();
-    VSSC_ASSERT_ALLOC(tokener);
+    vssc_json_object_t *json_obj = NULL;
 
-    json_object *json_obj = NULL;
-    json_object *json_obj_curr = NULL; // SHOULD not be released.
-
-    const vssc_status_t base64url_decode_status = vssc_base64_url_decode(payload_str, payload_json_buff);
-    if (base64url_decode_status != vssc_status_SUCCESS) {
+    inner_error.status = vssc_base64_url_decode(payload_str, payload_json_buff);
+    if (vssc_error_has_error(&inner_error)) {
         goto fail;
     }
 
-    vsc_data_t payload_json_data = vsc_buffer_data(payload_json_buff);
-    json_obj = json_tokener_parse_ex(tokener, (const char *)payload_json_data.bytes, payload_json_data.len);
-    if (NULL == json_obj) {
+    json_obj = vssc_json_object_parse(vsc_str_from_data(vsc_buffer_data(payload_json_buff)), &inner_error);
+    if (vssc_error_has_error(&inner_error)) {
         goto fail;
     }
 
-    if (!json_object_is_type(json_obj, json_type_object)) {
+    //
+    //  Check fields.
+    //
+    vsc_str_t app_id = vssc_json_object_get_string_value(json_obj, k_json_key_app_id, &inner_error);
+    if (vssc_error_has_error(&inner_error) || vsc_str_is_empty(app_id)) {
         goto fail;
     }
 
-    json_obj_curr = NULL;
-    if (!json_object_object_get_ex(json_obj, k_json_key_app_id, &json_obj_curr) ||
-            !json_object_is_type(json_obj_curr, json_type_string)) {
 
+    vsc_str_t identity = vssc_json_object_get_string_value(json_obj, k_json_key_identity, &inner_error);
+    if (vssc_error_has_error(&inner_error) || vsc_str_is_empty(identity)) {
         goto fail;
     }
 
-    json_obj_curr = NULL;
-    if (!json_object_object_get_ex(json_obj, k_json_key_identity, &json_obj_curr) ||
-            !json_object_is_type(json_obj_curr, json_type_string)) {
 
+    const int issued_at = vssc_json_object_get_int_value(json_obj, k_json_key_issued_at, &inner_error);
+    if (vssc_error_has_error(&inner_error) || issued_at <= 0) {
         goto fail;
     }
 
-    json_obj_curr = NULL;
-    if (!json_object_object_get_ex(json_obj, k_json_key_issued_at, &json_obj_curr) ||
-            !json_object_is_type(json_obj_curr, json_type_int) || json_object_get_int64(json_obj_curr) < 0 ||
-            (uint64_t)json_object_get_int64(json_obj_curr) > (uint64_t)SIZE_MAX) {
 
-        goto fail;
-    }
-
-    json_obj_curr = NULL;
-    if (!json_object_object_get_ex(json_obj, k_json_key_expires_at, &json_obj_curr) ||
-            !json_object_is_type(json_obj_curr, json_type_int) || json_object_get_int64(json_obj_curr) < 0 ||
-            (uint64_t)json_object_get_int64(json_obj_curr) > (uint64_t)SIZE_MAX) {
-
+    const int expires_at = vssc_json_object_get_int_value(json_obj, k_json_key_expires_at, &inner_error);
+    if (vssc_error_has_error(&inner_error) || expires_at <= 0) {
         goto fail;
     }
 
     goto succ;
 
 fail:
-    if (json_obj) {
-        json_object_put(json_obj);
-        json_obj = NULL;
-    }
+
+    vssc_json_object_destroy(&json_obj);
 
     VSSC_ERROR_SAFE_UPDATE(error, vssc_status_PARSE_JWT_FAILED);
 
 succ:
     vsc_buffer_destroy(&payload_json_buff);
-    json_tokener_free(tokener);
 
     if (json_obj) {
         return vssc_jwt_payload_new_with_json_object(&json_obj);
@@ -581,13 +599,9 @@ VSSC_PRIVATE vsc_str_t
 vssc_jwt_payload_as_json_string(const vssc_jwt_payload_t *self) {
 
     VSSC_ASSERT_PTR(self);
+    VSSC_ASSERT_PTR(self->json_obj);
 
-    size_t json_len = 0;
-
-    const char *json_chars = json_object_to_json_string_length(self->json_obj, JSON_C_TO_STRING_PLAIN, &json_len);
-    VSSC_ASSERT_ALLOC(json_chars);
-
-    return vsc_str(json_chars, json_len);
+    return vssc_json_object_as_str(self->json_obj);
 }
 
 //
@@ -599,19 +613,14 @@ vssc_jwt_payload_app_id(const vssc_jwt_payload_t *self) {
     VSSC_ASSERT_PTR(self);
     VSSC_ASSERT_PTR(self->json_obj);
 
-    json_object *inner_obj = NULL;
+    vssc_error_t error;
+    vssc_error_reset(&error);
 
-    const json_bool is_exist = json_object_object_get_ex(self->json_obj, k_json_key_app_id, &inner_obj);
-    VSSC_ASSERT(is_exist);
-    VSSC_ASSERT(json_object_is_type(inner_obj, json_type_string));
+    vsc_str_t prefixed_app_id = vssc_json_object_get_string_value(self->json_obj, k_json_key_app_id, &error);
+    VSSC_ASSERT(!vssc_error_has_error(&error));
+    VSSC_ASSERT(!vsc_str_is_empty(prefixed_app_id));
 
-    vsc_str_t result = vsc_str(json_object_get_string(inner_obj), json_object_get_string_len(inner_obj));
-
-    vsc_str_t prefix_str = vsc_str(k_json_value_prefix_app_id, strlen(k_json_value_prefix_app_id));
-
-    return vsc_str_trim_prefix(result, prefix_str);
-
-    return result;
+    return vsc_str_trim_prefix(prefixed_app_id, k_json_value_prefix_app_id);
 }
 
 //
@@ -623,17 +632,14 @@ vssc_jwt_payload_identity(const vssc_jwt_payload_t *self) {
     VSSC_ASSERT_PTR(self);
     VSSC_ASSERT_PTR(self->json_obj);
 
-    json_object *inner_obj = NULL;
+    vssc_error_t error;
+    vssc_error_reset(&error);
 
-    const json_bool is_exist = json_object_object_get_ex(self->json_obj, k_json_key_identity, &inner_obj);
-    VSSC_ASSERT(is_exist);
-    VSSC_ASSERT(json_object_is_type(inner_obj, json_type_string));
+    vsc_str_t prefixed_identity = vssc_json_object_get_string_value(self->json_obj, k_json_key_identity, &error);
+    VSSC_ASSERT(!vssc_error_has_error(&error));
+    VSSC_ASSERT(!vsc_str_is_empty(prefixed_identity));
 
-    vsc_str_t result = vsc_str(json_object_get_string(inner_obj), json_object_get_string_len(inner_obj));
-
-    vsc_str_t prefix_str = vsc_str(k_json_value_prefix_identity, strlen(k_json_value_prefix_identity));
-
-    return vsc_str_trim_prefix(result, prefix_str);
+    return vsc_str_trim_prefix(prefixed_identity, k_json_value_prefix_identity);
 }
 
 //
@@ -645,16 +651,14 @@ vssc_jwt_payload_issued_at(vssc_jwt_payload_t *self) {
     VSSC_ASSERT_PTR(self);
     VSSC_ASSERT_PTR(self->json_obj);
 
-    json_object *inner_obj = NULL;
+    vssc_error_t error;
+    vssc_error_reset(&error);
 
-    const json_bool is_exist = json_object_object_get_ex(self->json_obj, k_json_key_issued_at, &inner_obj);
-    VSSC_ASSERT(is_exist);
-    VSSC_ASSERT(json_object_is_type(inner_obj, json_type_int));
+    const int issued_at = vssc_json_object_get_int_value(self->json_obj, k_json_key_issued_at, &error);
+    VSSC_ASSERT(!vssc_error_has_error(&error));
+    VSSC_ASSERT(0 < issued_at);
 
-    int64_t result = json_object_get_int64(inner_obj);
-    VSSC_ASSERT(result >= 0 && (uint64_t)result <= (uint64_t)SIZE_MAX);
-
-    return (size_t)result;
+    return (size_t)issued_at;
 }
 
 //
@@ -666,14 +670,12 @@ vssc_jwt_payload_expires_at(vssc_jwt_payload_t *self) {
     VSSC_ASSERT_PTR(self);
     VSSC_ASSERT_PTR(self->json_obj);
 
-    json_object *inner_obj = NULL;
+    vssc_error_t error;
+    vssc_error_reset(&error);
 
-    const json_bool is_exist = json_object_object_get_ex(self->json_obj, k_json_key_expires_at, &inner_obj);
-    VSSC_ASSERT(is_exist);
-    VSSC_ASSERT(json_object_is_type(inner_obj, json_type_int));
+    const int expires_at = vssc_json_object_get_int_value(self->json_obj, k_json_key_expires_at, &error);
+    VSSC_ASSERT(!vssc_error_has_error(&error));
+    VSSC_ASSERT(0 < expires_at);
 
-    int64_t result = json_object_get_int64(inner_obj);
-    VSSC_ASSERT(result >= 0 && (uint64_t)result <= (uint64_t)SIZE_MAX);
-
-    return (size_t)result;
+    return (size_t)expires_at;
 }

@@ -148,12 +148,24 @@ extern "C" {
 #cmakedefine01 VSSC_VIRGIL_HTTP_RESPONSE
 #endif
 
+#ifndef VSSC_KEY_HANDLER
+#cmakedefine01 VSSC_KEY_HANDLER
+#endif
+
+#ifndef VSSC_KEY_HANDLER_LIST
+#cmakedefine01 VSSC_KEY_HANDLER_LIST
+#endif
+
 #ifndef VSSC_CARD_CLIENT
 #cmakedefine01 VSSC_CARD_CLIENT
 #endif
 
 #ifndef VSSC_RAW_CARD
 #cmakedefine01 VSSC_RAW_CARD
+#endif
+
+#ifndef VSSC_RAW_CARD_LIST
+#cmakedefine01 VSSC_RAW_CARD_LIST
 #endif
 
 #ifndef VSSC_RAW_CARD_SIGNER
@@ -174,6 +186,10 @@ extern "C" {
 
 #ifndef VSSC_CARD
 #cmakedefine01 VSSC_CARD
+#endif
+
+#ifndef VSSC_CARD_LIST
+#cmakedefine01 VSSC_CARD_LIST
 #endif
 
 #ifndef VSSC_CARD_MANAGER

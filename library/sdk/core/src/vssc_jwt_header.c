@@ -55,6 +55,7 @@
 #include "vssc_assert.h"
 #include "vssc_jwt_header_defs.h"
 #include "vssc_base64_url.h"
+#include "vssc_json_array.h"
 
 // clang-format on
 //  @end
@@ -94,14 +95,14 @@ vssc_jwt_header_init_ctx_with_app_key_id(vssc_jwt_header_t *self, vsc_str_t app_
 //  Prerequisite: The JSON object SHOULD be already validated.
 //
 static void
-vssc_jwt_header_init_with_json_object(vssc_jwt_header_t *self, json_object **json_obj_ref);
+vssc_jwt_header_init_with_json_object(vssc_jwt_header_t *self, vssc_json_object_t **json_obj_ref);
 
 //
 //  Create JWT Header defined with a JSON object.
 //  Prerequisite: The JSON object SHOULD be already validated.
 //
 static void
-vssc_jwt_header_init_ctx_with_json_object(vssc_jwt_header_t *self, json_object **json_obj_ref);
+vssc_jwt_header_init_ctx_with_json_object(vssc_jwt_header_t *self, vssc_json_object_t **json_obj_ref);
 
 //
 //  Allocate class context and perform it's initialization.
@@ -109,42 +110,98 @@ vssc_jwt_header_init_ctx_with_json_object(vssc_jwt_header_t *self, json_object *
 //  Prerequisite: The JSON object SHOULD be already validated.
 //
 static vssc_jwt_header_t *
-vssc_jwt_header_new_with_json_object(json_object **json_obj_ref);
+vssc_jwt_header_new_with_json_object(vssc_json_object_t **json_obj_ref);
 
 //
 //  JSON key of JWT signature algorithm.
 //
-static const char *const k_json_key_app_key_id = "kid";
+static const char k_json_key_app_key_id_chars[] = "kid";
 
 //
 //  JSON key of JWT signature algorithm.
 //
-static const char *const k_json_key_signature_algorithm = "alg";
+static const vsc_str_t k_json_key_app_key_id = {
+    k_json_key_app_key_id_chars,
+    sizeof(k_json_key_app_key_id_chars) - 1
+};
+
+//
+//  JSON key of JWT signature algorithm.
+//
+static const char k_json_key_signature_algorithm_chars[] = "alg";
+
+//
+//  JSON key of JWT signature algorithm.
+//
+static const vsc_str_t k_json_key_signature_algorithm = {
+    k_json_key_signature_algorithm_chars,
+    sizeof(k_json_key_signature_algorithm_chars) - 1
+};
 
 //
 //  JSON key of JWT type.
 //
-static const char *const k_json_key_type = "typ";
+static const char k_json_key_type_chars[] = "typ";
+
+//
+//  JSON key of JWT type.
+//
+static const vsc_str_t k_json_key_type = {
+    k_json_key_type_chars,
+    sizeof(k_json_key_type_chars) - 1
+};
 
 //
 //  JSON key of JWT content type.
 //
-static const char *const k_json_key_content_type = "cty";
+static const char k_json_key_content_type_chars[] = "cty";
+
+//
+//  JSON key of JWT content type.
+//
+static const vsc_str_t k_json_key_content_type = {
+    k_json_key_content_type_chars,
+    sizeof(k_json_key_content_type_chars) - 1
+};
 
 //
 //  Represents default JWT signature algorithm.
 //
-static const char *const k_signature_algorithm_default = "VEDS512";
+static const char k_signature_algorithm_default_chars[] = "VEDS512";
+
+//
+//  Represents default JWT signature algorithm.
+//
+static const vsc_str_t k_signature_algorithm_default = {
+    k_signature_algorithm_default_chars,
+    sizeof(k_signature_algorithm_default_chars) - 1
+};
 
 //
 //  Represents default JWT token type.
 //
-static const char *const k_type_default = "JWT";
+static const char k_type_default_chars[] = "JWT";
+
+//
+//  Represents default JWT token type.
+//
+static const vsc_str_t k_type_default = {
+    k_type_default_chars,
+    sizeof(k_type_default_chars) - 1
+};
 
 //
 //  Represents default JWT content type.
 //
-static const char *const k_content_type_default = "virgil-jwt;v=1";
+static const char k_content_type_default_chars[] = "virgil-jwt;v=1";
+
+//
+//  Represents default JWT content type.
+//
+static const vsc_str_t k_content_type_default = {
+    k_content_type_default_chars,
+    sizeof(k_content_type_default_chars) - 1
+};
 
 //
 //  Return size of 'vssc_jwt_header_t'.
@@ -240,7 +297,7 @@ vssc_jwt_header_new_with_app_key_id(vsc_str_t app_key_id) {
 //  Prerequisite: The JSON object SHOULD be already validated.
 //
 static void
-vssc_jwt_header_init_with_json_object(vssc_jwt_header_t *self, json_object **json_obj_ref) {
+vssc_jwt_header_init_with_json_object(vssc_jwt_header_t *self, vssc_json_object_t **json_obj_ref) {
 
     VSSC_ASSERT_PTR(self);
 
@@ -257,7 +314,7 @@ vssc_jwt_header_init_with_json_object(vssc_jwt_header_t *self, json_object **jso
 //  Prerequisite: The JSON object SHOULD be already validated.
 //
 static vssc_jwt_header_t *
-vssc_jwt_header_new_with_json_object(json_object **json_obj_ref) {
+vssc_jwt_header_new_with_json_object(vssc_json_object_t **json_obj_ref) {
 
     vssc_jwt_header_t *self = (vssc_jwt_header_t *) vssc_alloc(sizeof (vssc_jwt_header_t));
     VSSC_ASSERT_ALLOC(self);
@@ -388,7 +445,7 @@ vssc_jwt_header_cleanup_ctx(vssc_jwt_header_t *self) {
 
     VSSC_ASSERT_PTR(self);
 
-    json_object_put(self->json_obj);
+    vssc_json_object_destroy(&self->json_obj);
 }
 
 //
@@ -400,37 +457,11 @@ vssc_jwt_header_init_ctx_with_app_key_id(vssc_jwt_header_t *self, vsc_str_t app_
     VSSC_ASSERT_PTR(self);
     VSSC_ASSERT(vsc_str_is_valid(app_key_id));
 
-    json_object *type_obj = json_object_new_string(k_type_default);
-    VSSC_ASSERT_ALLOC(type_obj);
-
-    json_object *content_type_obj = json_object_new_string(k_content_type_default);
-    VSSC_ASSERT_ALLOC(content_type_obj);
-
-    json_object *signature_algorithm_obj = json_object_new_string(k_signature_algorithm_default);
-    VSSC_ASSERT_ALLOC(signature_algorithm_obj);
-
-    json_object *app_key_id_obj = json_object_new_string_len(app_key_id.chars, app_key_id.len);
-    VSSC_ASSERT_ALLOC(app_key_id_obj);
-
-    json_object *root_obj = json_object_new_object();
-    VSSC_ASSERT_ALLOC(root_obj);
-
-    int result = 0;
-    result = json_object_object_add_ex(root_obj, k_json_key_app_key_id, app_key_id_obj, JSON_C_OBJECT_KEY_IS_CONSTANT);
-    VSSC_ASSERT_LIBRARY_JSON_C_SUCCESS(result);
-
-    result = json_object_object_add_ex(
-            root_obj, k_json_key_content_type, content_type_obj, JSON_C_OBJECT_KEY_IS_CONSTANT);
-    VSSC_ASSERT_LIBRARY_JSON_C_SUCCESS(result);
-
-    result = json_object_object_add_ex(root_obj, k_json_key_type, type_obj, JSON_C_OBJECT_KEY_IS_CONSTANT);
-    VSSC_ASSERT_LIBRARY_JSON_C_SUCCESS(result);
-
-    result = json_object_object_add_ex(
-            root_obj, k_json_key_signature_algorithm, signature_algorithm_obj, JSON_C_OBJECT_KEY_IS_CONSTANT);
-    VSSC_ASSERT_LIBRARY_JSON_C_SUCCESS(result);
-
-    self->json_obj = root_obj;
+    self->json_obj = vssc_json_object_new();
+    vssc_json_object_add_string_value(self->json_obj, k_json_key_app_key_id, app_key_id);
+    vssc_json_object_add_string_value(self->json_obj, k_json_key_content_type, k_content_type_default);
+    vssc_json_object_add_string_value(self->json_obj, k_json_key_type, k_type_default);
+    vssc_json_object_add_string_value(self->json_obj, k_json_key_signature_algorithm, k_signature_algorithm_default);
 }
 
 //
@@ -438,7 +469,7 @@ vssc_jwt_header_init_ctx_with_app_key_id(vssc_jwt_header_t *self, vsc_str_t app_
 //  Prerequisite: The JSON object SHOULD be already validated.
 //
 static void
-vssc_jwt_header_init_ctx_with_json_object(vssc_jwt_header_t *self, json_object **json_obj_ref) {
+vssc_jwt_header_init_ctx_with_json_object(vssc_jwt_header_t *self, vssc_json_object_t **json_obj_ref) {
 
     VSSC_ASSERT_PTR(self);
     VSSC_ASSERT_REF(json_obj_ref);
@@ -455,83 +486,64 @@ vssc_jwt_header_parse(vsc_str_t header_str, vssc_error_t *error) {
 
     VSSC_ASSERT(vsc_str_is_valid(header_str));
 
+    //
+    //  Declare vars.
+    //
+    vssc_error_t inner_error;
+    vssc_error_reset(&inner_error);
+
     const size_t header_json_str_len = vssc_base64_url_decoded_len(header_str.len);
     vsc_buffer_t *header_json_buff = vsc_buffer_new_with_capacity(header_json_str_len);
 
-    json_tokener *tokener = json_tokener_new();
-    VSSC_ASSERT_ALLOC(tokener);
+    vssc_json_object_t *json_obj = NULL;
 
-    json_object *json_obj = NULL;
-    json_object *json_obj_curr = NULL; // SHOULD not be released.
-
-    vsc_str_t k_type_default_str = vsc_str(k_type_default, strlen(k_type_default));
-    vsc_str_t k_content_type_default_str = vsc_str(k_content_type_default, strlen(k_content_type_default));
-    vsc_str_t k_signature_algorithm_default_str =
-            vsc_str(k_signature_algorithm_default, strlen(k_signature_algorithm_default));
-
-
-    const vssc_status_t base64url_decode_status = vssc_base64_url_decode(header_str, header_json_buff);
-    if (base64url_decode_status != vssc_status_SUCCESS) {
+    inner_error.status = vssc_base64_url_decode(header_str, header_json_buff);
+    if (vssc_error_has_error(&inner_error)) {
         goto fail;
     }
 
-    vsc_data_t header_json_data = vsc_buffer_data(header_json_buff);
-    json_obj = json_tokener_parse_ex(tokener, (const char *)header_json_data.bytes, header_json_data.len);
-    if (NULL == json_obj) {
+    json_obj = vssc_json_object_parse(vsc_str_from_data(vsc_buffer_data(header_json_buff)), &inner_error);
+    if (vssc_error_has_error(&inner_error)) {
         goto fail;
     }
 
-    if (!json_object_is_type(json_obj, json_type_object)) {
+    //
+    //  Check fields.
+    //
+    vsc_str_t app_key_id = vssc_json_object_get_string_value(json_obj, k_json_key_app_key_id, &inner_error);
+    if (vssc_error_has_error(&inner_error) || vsc_str_is_empty(app_key_id)) {
         goto fail;
     }
 
-    json_obj_curr = NULL;
-    if (!json_object_object_get_ex(json_obj, k_json_key_app_key_id, &json_obj_curr) ||
-            !json_object_is_type(json_obj_curr, json_type_string)) {
 
+    vsc_str_t type = vssc_json_object_get_string_value(json_obj, k_json_key_type, &inner_error);
+    if (vssc_error_has_error(&inner_error) || !vsc_str_equal(k_type_default, type)) {
         goto fail;
     }
 
-    json_obj_curr = NULL;
-    if (!json_object_object_get_ex(json_obj, k_json_key_type, &json_obj_curr) ||
-            !json_object_is_type(json_obj_curr, json_type_string) ||
-            !vsc_str_equal(k_type_default_str,
-                    vsc_str(json_object_get_string(json_obj_curr), json_object_get_string_len(json_obj_curr)))) {
 
+    vsc_str_t content_type = vssc_json_object_get_string_value(json_obj, k_json_key_content_type, &inner_error);
+    if (vssc_error_has_error(&inner_error) || !vsc_str_equal(k_content_type_default, content_type)) {
         goto fail;
     }
 
-    json_obj_curr = NULL;
-    if (!json_object_object_get_ex(json_obj, k_json_key_content_type, &json_obj_curr) ||
-            !json_object_is_type(json_obj_curr, json_type_string) ||
-            !vsc_str_equal(k_content_type_default_str,
-                    vsc_str(json_object_get_string(json_obj_curr), json_object_get_string_len(json_obj_curr)))) {
 
-        goto fail;
-    }
-
-    json_obj_curr = NULL;
-    if (!json_object_object_get_ex(json_obj, k_json_key_signature_algorithm, &json_obj_curr) ||
-            !json_object_is_type(json_obj_curr, json_type_string) ||
-            !vsc_str_equal(k_signature_algorithm_default_str,
-                    vsc_str(json_object_get_string(json_obj_curr), json_object_get_string_len(json_obj_curr)))) {
-
+    vsc_str_t signature_algorithm =
+            vssc_json_object_get_string_value(json_obj, k_json_key_signature_algorithm, &inner_error);
+    if (vssc_error_has_error(&inner_error) || !vsc_str_equal(k_signature_algorithm_default, signature_algorithm)) {
         goto fail;
     }
 
     goto succ;
 
 fail:
-    if (json_obj) {
-        json_object_put(json_obj);
-        json_obj = NULL;
-    }
+
+    vssc_json_object_destroy(&json_obj);
 
     VSSC_ERROR_SAFE_UPDATE(error, vssc_status_PARSE_JWT_FAILED);
 
 succ:
     vsc_buffer_destroy(&header_json_buff);
-    json_tokener_free(tokener);
 
     if (json_obj) {
         return vssc_jwt_header_new_with_json_object(&json_obj);
@@ -576,11 +588,7 @@ VSSC_PRIVATE vsc_str_t
 vssc_jwt_header_as_json_string(const vssc_jwt_header_t *self) {
 
     VSSC_ASSERT_PTR(self);
+    VSSC_ASSERT_PTR(self->json_obj);
 
-    size_t json_len = 0;
-
-    const char *json_chars = json_object_to_json_string_length(self->json_obj, JSON_C_TO_STRING_PLAIN, &json_len);
-    VSSC_ASSERT_ALLOC(json_chars);
-
-    return vsc_str(json_chars, json_len);
+    return vssc_json_object_as_str(self->json_obj);
 }

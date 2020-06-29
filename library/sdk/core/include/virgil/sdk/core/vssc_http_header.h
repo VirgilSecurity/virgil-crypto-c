@@ -89,32 +89,32 @@ extern "C" {
 //
 //  Header name: Authorization
 //
-VSSC_PUBLIC extern const char vssc_http_header_name_authorization[];
+VSSC_PUBLIC extern const char vssc_http_header_name_authorization_chars[];
 
 //
 //  Header name: Authorization
 //
-VSSC_PUBLIC extern const vsc_str_t vssc_http_header_name_authorization_str;
+VSSC_PUBLIC extern const vsc_str_t vssc_http_header_name_authorization;
 
 //
 //  Header name: Content-Type
 //
-VSSC_PUBLIC extern const char vssc_http_header_name_content_type[];
+VSSC_PUBLIC extern const char vssc_http_header_name_content_type_chars[];
 
 //
 //  Header name: Content-Type
 //
-VSSC_PUBLIC extern const vsc_str_t vssc_http_header_name_content_type_str;
+VSSC_PUBLIC extern const vsc_str_t vssc_http_header_name_content_type;
 
 //
 //  Header value: application/json
 //
-VSSC_PUBLIC extern const char vssc_http_header_value_application_json[];
+VSSC_PUBLIC extern const char vssc_http_header_value_application_json_chars[];
 
 //
 //  Header value: application/json
 //
-VSSC_PUBLIC extern const vsc_str_t vssc_http_header_value_application_json_str;
+VSSC_PUBLIC extern const vsc_str_t vssc_http_header_value_application_json;
 
 //
 //  Return size of 'vssc_http_header_t'.

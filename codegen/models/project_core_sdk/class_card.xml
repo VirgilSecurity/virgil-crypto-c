@@ -4,14 +4,17 @@
     Virgil Card is a central entity of Virgil Cards Service.
 
 
-    <require module="buffer defs" project="common"/>
     <require interface="public key" project="foundation"/>
-    <require module="sha512 defs" project="foundation"/>
+    <require class="buffer" api="defs" project="common"/>
+    <require class="sha512" api="defs" project="foundation"/>
     <require class="binary" project="foundation"/>
+
+    <require class="card list" api="private"/>
 
 
     <property name="identifier" class="str buffer"/>
     <property name="raw card" class="raw card" access="readonly"/>
+    <property name="public key id" class="buffer"/>
     <property name="public key" interface="public key" access="readonly" project="foundation"/>
     <property name="previous card" class="self" access="readonly"/>
 
@@ -24,14 +27,16 @@
         Create Virgil Card with mandatory properties.
 
         <argument name="raw card" class="raw card"/>
+        <argument name="public key id" class="data"/>
         <argument name="public key" interface="public key" project="foundation"/>
     </constructor>
 
 
-    <constructor name="with disown" visibility="private">
+    <constructor name="with disown" scope="private">
         Create Virgil Card with mandatory properties.
 
-        <argument name="raw card" class="raw card" access="disown"/>
+        <argument name="raw card" class="raw card"/>
+        <argument name="public key id" class="buffer" access="disown"/>
         <argument name="public key" interface="public key" project="foundation" access="disown"/>
     </constructor>
 
@@ -68,6 +73,13 @@
         Return Card public key.
 
         <return interface="public key" project="foundation"/>
+    </method>
+
+
+    <method name="public key id" is_const="1">
+        Return Card public key identifier.
+
+        <return class="data"/>
     </method>
 
 

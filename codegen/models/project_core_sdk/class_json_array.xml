@@ -32,8 +32,8 @@
     </method>
 
 
-    <method name="len" is_const="1">
-        Return array length.
+    <method name="count" is_const="1">
+        Return how many objects an array handles.
 
         <return type="size"/>
     </method>

@@ -86,7 +86,7 @@ function class_add_scoped_components_to_main_module (class, add_method_callback,
     for my.class.constant where 0.scope = my.module.scope & constant.type = "string"
         new variable to my.module
             . = constant. ?
-            .name = constant.name
+            .name = constant.name + " chars"
             .type = "char"
             .declaration = constant.visibility
 
@@ -101,11 +101,11 @@ function class_add_scoped_components_to_main_module (class, add_method_callback,
             endnew
         endnew
 
-        my.base_variable_ref = ref(make_id ("class", my.class.name, "variable", constant.name))
+        my.base_variable_ref = ref(make_id ("class", my.class.name, "variable", constant.name + " chars"))
 
         new variable to my.module
             . = constant. ?
-            .name = constant.name + " str"
+            .name = constant.name
             .class = "str"
             .declaration = constant.visibility
 

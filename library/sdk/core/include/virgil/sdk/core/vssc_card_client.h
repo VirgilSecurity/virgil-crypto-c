@@ -58,6 +58,7 @@
 #include "vssc_http_request.h"
 #include "vssc_virgil_http_response.h"
 #include "vssc_error.h"
+#include "vssc_raw_card_list.h"
 
 #if !VSSC_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_str.h>
@@ -179,10 +180,23 @@ vssc_card_client_make_request_get_card(const vssc_card_client_t *self, vsc_str_t
 
 //
 //  Map response to the correspond model.
-//  Return "raw card" of if Card was found.
+//  Return "raw card" if Card was found.
 //
 VSSC_PUBLIC vssc_raw_card_t *
 vssc_card_client_process_response_get_card(const vssc_virgil_http_response_t *response, vssc_error_t *error);
+
+//
+//  Create request that returns cards list from the Virgil Cards Service for given identity.
+//
+VSSC_PUBLIC vssc_http_request_t *
+vssc_card_client_make_request_search_cards_with_identity(const vssc_card_client_t *self, vsc_str_t identity);
+
+//
+//  Map response to the correspond model.
+//  Return "raw card list" if founded Cards.
+//
+VSSC_PUBLIC vssc_raw_card_list_t *
+vssc_card_client_process_response_search_cards(const vssc_virgil_http_response_t *response, vssc_error_t *error);
 
 
 // --------------------------------------------------------------------------

@@ -161,28 +161,28 @@ VSSC_PUBLIC bool
 vssc_virgil_http_response_is_success(const vssc_virgil_http_response_t *self);
 
 //
-//  Return true if response contains a valid body.
+//  Return true if response handles a valid body as JSON object.
 //
 VSSC_PUBLIC bool
-vssc_virgil_http_response_has_body(const vssc_virgil_http_response_t *self);
+vssc_virgil_http_response_body_is_json_object(const vssc_virgil_http_response_t *self);
 
 //
-//  Return true if response contains a valid body as array.
+//  Return true if response handles a valid body as JSON array.
 //
 VSSC_PUBLIC bool
-vssc_virgil_http_response_has_array_body(const vssc_virgil_http_response_t *self);
+vssc_virgil_http_response_body_is_json_array(const vssc_virgil_http_response_t *self);
 
 //
 //  Return response body as JSON object.
 //
 VSSC_PUBLIC const vssc_json_object_t *
-vssc_virgil_http_response_body(const vssc_virgil_http_response_t *self);
+vssc_virgil_http_response_body_as_json_object(const vssc_virgil_http_response_t *self);
 
 //
 //  Return response body as JSON array.
 //
 VSSC_PUBLIC const vssc_json_array_t *
-vssc_virgil_http_response_array_body(const vssc_virgil_http_response_t *self);
+vssc_virgil_http_response_body_as_json_array(const vssc_virgil_http_response_t *self);
 
 //
 //  Return true if response handles a service error and it's description.

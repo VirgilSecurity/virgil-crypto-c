@@ -100,196 +100,196 @@ vssk_keyknox_client_parse_keyknox_entry(const vssc_virgil_http_response_t *respo
 //
 //  Base service URL.
 //
-static const char k_base_url[] = "https://api.virgilsecurity.com";
+static const char k_base_url_chars[] = "https://api.virgilsecurity.com";
 
 //
 //  Base service URL.
 //
-static const vsc_str_t k_base_url_str = {
-    k_base_url,
-    sizeof(k_base_url) - 1
+static const vsc_str_t k_base_url = {
+    k_base_url_chars,
+    sizeof(k_base_url_chars) - 1
 };
 
 //
 //  POST /push
 //
-static const char k_url_path_push[] = "/keyknox/v2/push";
+static const char k_url_path_push_chars[] = "/keyknox/v2/push";
 
 //
 //  POST /push
 //
-static const vsc_str_t k_url_path_push_str = {
-    k_url_path_push,
-    sizeof(k_url_path_push) - 1
+static const vsc_str_t k_url_path_push = {
+    k_url_path_push_chars,
+    sizeof(k_url_path_push_chars) - 1
 };
 
 //
 //  POST /pull
 //
-static const char k_url_path_pull[] = "/keyknox/v2/pull";
+static const char k_url_path_pull_chars[] = "/keyknox/v2/pull";
 
 //
 //  POST /pull
 //
-static const vsc_str_t k_url_path_pull_str = {
-    k_url_path_pull,
-    sizeof(k_url_path_pull) - 1
+static const vsc_str_t k_url_path_pull = {
+    k_url_path_pull_chars,
+    sizeof(k_url_path_pull_chars) - 1
 };
 
 //
 //  POST /keys
 //
-static const char k_url_path_keys[] = "/keyknox/v2/keys";
+static const char k_url_path_keys_chars[] = "/keyknox/v2/keys";
 
 //
 //  POST /keys
 //
-static const vsc_str_t k_url_path_keys_str = {
-    k_url_path_keys,
-    sizeof(k_url_path_keys) - 1
+static const vsc_str_t k_url_path_keys = {
+    k_url_path_keys_chars,
+    sizeof(k_url_path_keys_chars) - 1
 };
 
 //
 //  POST /reset
 //
-static const char k_url_path_reset[] = "/keyknox/v2/reset";
+static const char k_url_path_reset_chars[] = "/keyknox/v2/reset";
 
 //
 //  POST /reset
 //
-static const vsc_str_t k_url_path_reset_str = {
-    k_url_path_reset,
-    sizeof(k_url_path_reset) - 1
+static const vsc_str_t k_url_path_reset = {
+    k_url_path_reset_chars,
+    sizeof(k_url_path_reset_chars) - 1
 };
 
 //
 //  JSON key: owner
 //
-static const char k_json_key_owner[] = "owner";
+static const char k_json_key_owner_chars[] = "owner";
 
 //
 //  JSON key: owner
 //
-static const vsc_str_t k_json_key_owner_str = {
-    k_json_key_owner,
-    sizeof(k_json_key_owner) - 1
+static const vsc_str_t k_json_key_owner = {
+    k_json_key_owner_chars,
+    sizeof(k_json_key_owner_chars) - 1
 };
 
 //
 //  JSON key: root
 //
-static const char k_json_key_root[] = "root";
+static const char k_json_key_root_chars[] = "root";
 
 //
 //  JSON key: root
 //
-static const vsc_str_t k_json_key_root_str = {
-    k_json_key_root,
-    sizeof(k_json_key_root) - 1
+static const vsc_str_t k_json_key_root = {
+    k_json_key_root_chars,
+    sizeof(k_json_key_root_chars) - 1
 };
 
 //
 //  JSON key: path
 //
-static const char k_json_key_path[] = "path";
+static const char k_json_key_path_chars[] = "path";
 
 //
 //  JSON key: path
 //
-static const vsc_str_t k_json_key_path_str = {
-    k_json_key_path,
-    sizeof(k_json_key_path) - 1
+static const vsc_str_t k_json_key_path = {
+    k_json_key_path_chars,
+    sizeof(k_json_key_path_chars) - 1
 };
 
 //
 //  JSON key: key
 //
-static const char k_json_key_key[] = "key";
+static const char k_json_key_key_chars[] = "key";
 
 //
 //  JSON key: key
 //
-static const vsc_str_t k_json_key_key_str = {
-    k_json_key_key,
-    sizeof(k_json_key_key) - 1
+static const vsc_str_t k_json_key_key = {
+    k_json_key_key_chars,
+    sizeof(k_json_key_key_chars) - 1
 };
 
 //
 //  JSON key: identity
 //
-static const char k_json_key_identity[] = "identity";
+static const char k_json_key_identity_chars[] = "identity";
 
 //
 //  JSON key: identity
 //
-static const vsc_str_t k_json_key_identity_str = {
-    k_json_key_identity,
-    sizeof(k_json_key_identity) - 1
+static const vsc_str_t k_json_key_identity = {
+    k_json_key_identity_chars,
+    sizeof(k_json_key_identity_chars) - 1
 };
 
 //
 //  JSON key: identities
 //
-static const char k_json_key_identities[] = "identities";
+static const char k_json_key_identities_chars[] = "identities";
 
 //
 //  JSON key: identities
 //
-static const vsc_str_t k_json_key_identities_str = {
-    k_json_key_identities,
-    sizeof(k_json_key_identities) - 1
+static const vsc_str_t k_json_key_identities = {
+    k_json_key_identities_chars,
+    sizeof(k_json_key_identities_chars) - 1
 };
 
 //
 //  JSON key: meta
 //
-static const char k_json_key_meta[] = "meta";
+static const char k_json_key_meta_chars[] = "meta";
 
 //
 //  JSON key: meta
 //
-static const vsc_str_t k_json_key_meta_str = {
-    k_json_key_meta,
-    sizeof(k_json_key_meta) - 1
+static const vsc_str_t k_json_key_meta = {
+    k_json_key_meta_chars,
+    sizeof(k_json_key_meta_chars) - 1
 };
 
 //
 //  JSON key: value
 //
-static const char k_json_key_value[] = "value";
+static const char k_json_key_value_chars[] = "value";
 
 //
 //  JSON key: value
 //
-static const vsc_str_t k_json_key_value_str = {
-    k_json_key_value,
-    sizeof(k_json_key_value) - 1
+static const vsc_str_t k_json_key_value = {
+    k_json_key_value_chars,
+    sizeof(k_json_key_value_chars) - 1
 };
 
 //
 //  Custom HTTP header: Virgil-Keyknox-Hash
 //
-static const char k_header_name_virgil_keyknox_hash[] = "Virgil-Keyknox-Hash";
+static const char k_header_name_virgil_keyknox_hash_chars[] = "Virgil-Keyknox-Hash";
 
 //
 //  Custom HTTP header: Virgil-Keyknox-Hash
 //
-static const vsc_str_t k_header_name_virgil_keyknox_hash_str = {
-    k_header_name_virgil_keyknox_hash,
-    sizeof(k_header_name_virgil_keyknox_hash) - 1
+static const vsc_str_t k_header_name_virgil_keyknox_hash = {
+    k_header_name_virgil_keyknox_hash_chars,
+    sizeof(k_header_name_virgil_keyknox_hash_chars) - 1
 };
 
 //
 //  Custom HTTP header: Virgil-Keyknox-Previous-Hash
 //
-static const char k_header_name_virgil_keyknox_previous_hash[] = "Virgil-Keyknox-Previous-Hash";
+static const char k_header_name_virgil_keyknox_previous_hash_chars[] = "Virgil-Keyknox-Previous-Hash";
 
 //
 //  Custom HTTP header: Virgil-Keyknox-Previous-Hash
 //
-static const vsc_str_t k_header_name_virgil_keyknox_previous_hash_str = {
-    k_header_name_virgil_keyknox_previous_hash,
-    sizeof(k_header_name_virgil_keyknox_previous_hash) - 1
+static const vsc_str_t k_header_name_virgil_keyknox_previous_hash = {
+    k_header_name_virgil_keyknox_previous_hash_chars,
+    sizeof(k_header_name_virgil_keyknox_previous_hash_chars) - 1
 };
 
 //
@@ -487,7 +487,7 @@ vssk_keyknox_client_init_ctx(vssk_keyknox_client_t *self) {
 
     VSSK_ASSERT_PTR(self);
 
-    vssk_keyknox_client_init_ctx_with_base_url(self, k_base_url_str);
+    vssk_keyknox_client_init_ctx_with_base_url(self, k_base_url);
 }
 
 //
@@ -515,10 +515,10 @@ vssk_keyknox_client_init_ctx_with_base_url(vssk_keyknox_client_t *self, vsc_str_
     VSSK_ASSERT_PTR(self);
     VSSK_ASSERT(vsc_str_is_valid_and_non_empty(url));
 
-    self->push_url = vsc_str_mutable_concat(url, k_url_path_push_str);
-    self->pull_url = vsc_str_mutable_concat(url, k_url_path_pull_str);
-    self->keys_url = vsc_str_mutable_concat(url, k_url_path_keys_str);
-    self->reset_url = vsc_str_mutable_concat(url, k_url_path_reset_str);
+    self->push_url = vsc_str_mutable_concat(url, k_url_path_push);
+    self->pull_url = vsc_str_mutable_concat(url, k_url_path_pull);
+    self->keys_url = vsc_str_mutable_concat(url, k_url_path_keys);
+    self->reset_url = vsc_str_mutable_concat(url, k_url_path_reset);
 }
 
 //
@@ -551,11 +551,11 @@ vssk_keyknox_client_make_request_push(const vssk_keyknox_client_t *self, const v
     //  Create json body.
     //
     vssc_json_object_t *json = vssc_json_object_new();
-    vssc_json_object_add_string_value(json, k_json_key_root_str, root);
-    vssc_json_object_add_string_value(json, k_json_key_path_str, path);
-    vssc_json_object_add_string_value(json, k_json_key_key_str, key);
-    vssc_json_object_add_binary_value(json, k_json_key_meta_str, meta);
-    vssc_json_object_add_binary_value(json, k_json_key_value_str, value);
+    vssc_json_object_add_string_value(json, k_json_key_root, root);
+    vssc_json_object_add_string_value(json, k_json_key_path, path);
+    vssc_json_object_add_string_value(json, k_json_key_key, key);
+    vssc_json_object_add_binary_value(json, k_json_key_meta, meta);
+    vssc_json_object_add_binary_value(json, k_json_key_value, value);
 
     vssc_json_array_t *identities_json = vssc_json_array_new();
     for (const vssc_string_list_t *identity_it = identities;
@@ -564,7 +564,7 @@ vssk_keyknox_client_make_request_push(const vssk_keyknox_client_t *self, const v
 
         vssc_json_array_add_string_value(identities_json, vssc_string_list_item(identity_it));
     }
-    vssc_json_object_add_array_value(json, k_json_key_identities_str, identities_json);
+    vssc_json_object_add_array_value(json, k_json_key_identities, identities_json);
     vssc_json_array_destroy(&identities_json);
 
     //
@@ -572,7 +572,7 @@ vssk_keyknox_client_make_request_push(const vssk_keyknox_client_t *self, const v
     //
     vsc_str_t json_body = vssc_json_object_as_str(json);
     vssc_http_request_t *http_request = vssc_http_request_new_with_body(
-            vssc_http_request_method_post_str, vsc_str_mutable_as_str(self->push_url), json_body);
+            vssc_http_request_method_post, vsc_str_mutable_as_str(self->push_url), json_body);
 
     vssc_json_object_destroy(&json);
 
@@ -584,7 +584,7 @@ vssk_keyknox_client_make_request_push(const vssk_keyknox_client_t *self, const v
         vsc_buffer_t *previous_hash_buf = vscf_base64_encode_new(previous_hash);
         vsc_str_t previous_hash_str = vsc_str_from_data(vsc_buffer_data(previous_hash_buf));
 
-        vssc_http_request_add_header(http_request, k_header_name_virgil_keyknox_previous_hash_str, previous_hash_str);
+        vssc_http_request_add_header(http_request, k_header_name_virgil_keyknox_previous_hash, previous_hash_str);
 
         vsc_buffer_destroy(&previous_hash_buf);
     }
@@ -621,12 +621,12 @@ vssk_keyknox_client_make_request_pull(
     //  Create json body.
     //
     vssc_json_object_t *json = vssc_json_object_new();
-    vssc_json_object_add_string_value(json, k_json_key_root_str, root);
-    vssc_json_object_add_string_value(json, k_json_key_path_str, path);
-    vssc_json_object_add_string_value(json, k_json_key_key_str, key);
+    vssc_json_object_add_string_value(json, k_json_key_root, root);
+    vssc_json_object_add_string_value(json, k_json_key_path, path);
+    vssc_json_object_add_string_value(json, k_json_key_key, key);
 
     if (!vsc_str_is_empty(identity)) {
-        vssc_json_object_add_string_value(json, k_json_key_identity_str, identity);
+        vssc_json_object_add_string_value(json, k_json_key_identity, identity);
     }
 
     //
@@ -634,7 +634,7 @@ vssk_keyknox_client_make_request_pull(
     //
     vsc_str_t json_body = vssc_json_object_as_str(json);
     vssc_http_request_t *http_request = vssc_http_request_new_with_body(
-            vssc_http_request_method_post_str, vsc_str_mutable_as_str(self->pull_url), json_body);
+            vssc_http_request_method_post, vsc_str_mutable_as_str(self->pull_url), json_body);
 
     vssc_json_object_destroy(&json);
 
@@ -679,19 +679,19 @@ vssk_keyknox_client_make_request_reset(
     vssc_json_object_t *json = vssc_json_object_new();
 
     if (!vsc_str_is_empty(root)) {
-        vssc_json_object_add_string_value(json, k_json_key_root_str, root);
+        vssc_json_object_add_string_value(json, k_json_key_root, root);
     }
 
     if (!vsc_str_is_empty(path)) {
-        vssc_json_object_add_string_value(json, k_json_key_path_str, path);
+        vssc_json_object_add_string_value(json, k_json_key_path, path);
     }
 
     if (!vsc_str_is_empty(key)) {
-        vssc_json_object_add_string_value(json, k_json_key_key_str, key);
+        vssc_json_object_add_string_value(json, k_json_key_key, key);
     }
 
     if (!vsc_str_is_empty(identity)) {
-        vssc_json_object_add_string_value(json, k_json_key_identity_str, identity);
+        vssc_json_object_add_string_value(json, k_json_key_identity, identity);
     }
 
     //
@@ -699,7 +699,7 @@ vssk_keyknox_client_make_request_reset(
     //
     vsc_str_t json_body = vssc_json_object_as_str(json);
     vssc_http_request_t *http_request = vssc_http_request_new_with_body(
-            vssc_http_request_method_post_str, vsc_str_mutable_as_str(self->reset_url), json_body);
+            vssc_http_request_method_post, vsc_str_mutable_as_str(self->reset_url), json_body);
 
     vssc_json_object_destroy(&json);
 
@@ -724,32 +724,32 @@ vssk_keyknox_client_process_response_reset(const vssc_virgil_http_response_t *re
 
     // TODO: Check Content-Type to be equal application/json
 
-    if (!vssc_virgil_http_response_has_body(response)) {
+    if (!vssc_virgil_http_response_body_is_json_object(response)) {
         VSSK_ERROR_SAFE_UPDATE(error, vssk_status_HTTP_RESPONSE_BODY_PARSE_FAILED);
         return NULL;
     }
 
-    const vssc_json_object_t *json = vssc_virgil_http_response_body(response);
+    const vssc_json_object_t *json = vssc_virgil_http_response_body_as_json_object(response);
 
-    vsc_str_t owner = vssc_json_object_get_string_value(json, k_json_key_owner_str, &core_error);
+    vsc_str_t owner = vssc_json_object_get_string_value(json, k_json_key_owner, &core_error);
     if (vsc_str_is_empty(owner)) {
         VSSK_ERROR_SAFE_UPDATE(error, vssk_status_KEYKNOX_ENTRY_PARSE_FAILED);
         return NULL;
     };
 
-    vsc_str_t root = vssc_json_object_get_string_value(json, k_json_key_root_str, &core_error);
+    vsc_str_t root = vssc_json_object_get_string_value(json, k_json_key_root, &core_error);
     if (vssc_error_has_error(&core_error)) {
         VSSK_ERROR_SAFE_UPDATE(error, vssk_status_KEYKNOX_ENTRY_PARSE_FAILED);
         return NULL;
     };
 
-    vsc_str_t path = vssc_json_object_get_string_value(json, k_json_key_path_str, &core_error);
+    vsc_str_t path = vssc_json_object_get_string_value(json, k_json_key_path, &core_error);
     if (vssc_error_has_error(&core_error)) {
         VSSK_ERROR_SAFE_UPDATE(error, vssk_status_KEYKNOX_ENTRY_PARSE_FAILED);
         return NULL;
     };
 
-    vsc_str_t key = vssc_json_object_get_string_value(json, k_json_key_key_str, &core_error);
+    vsc_str_t key = vssc_json_object_get_string_value(json, k_json_key_key, &core_error);
     if (vssc_error_has_error(&core_error)) {
         VSSK_ERROR_SAFE_UPDATE(error, vssk_status_KEYKNOX_ENTRY_PARSE_FAILED);
         return NULL;
@@ -778,15 +778,15 @@ vssk_keyknox_client_make_request_get_keys(
     vssc_json_object_t *json = vssc_json_object_new();
 
     if (!vsc_str_is_empty(root)) {
-        vssc_json_object_add_string_value(json, k_json_key_root_str, root);
+        vssc_json_object_add_string_value(json, k_json_key_root, root);
     }
 
     if (!vsc_str_is_empty(path)) {
-        vssc_json_object_add_string_value(json, k_json_key_path_str, path);
+        vssc_json_object_add_string_value(json, k_json_key_path, path);
     }
 
     if (!vsc_str_is_empty(identity)) {
-        vssc_json_object_add_string_value(json, k_json_key_identity_str, identity);
+        vssc_json_object_add_string_value(json, k_json_key_identity, identity);
     }
 
     //
@@ -794,7 +794,7 @@ vssk_keyknox_client_make_request_get_keys(
     //
     vsc_str_t json_body = vssc_json_object_as_str(json);
     vssc_http_request_t *http_request = vssc_http_request_new_with_body(
-            vssc_http_request_method_post_str, vsc_str_mutable_as_str(self->keys_url), json_body);
+            vssc_http_request_method_post, vsc_str_mutable_as_str(self->keys_url), json_body);
 
     vssc_json_object_destroy(&json);
 
@@ -819,15 +819,15 @@ vssk_keyknox_client_process_response_get_keys(const vssc_virgil_http_response_t 
 
     // TODO: Check Content-Type to be equal application/json
 
-    if (!vssc_virgil_http_response_has_array_body(response)) {
+    if (!vssc_virgil_http_response_body_is_json_array(response)) {
         VSSK_ERROR_SAFE_UPDATE(error, vssk_status_HTTP_RESPONSE_BODY_PARSE_FAILED);
         return NULL;
     }
 
-    const vssc_json_array_t *json_array = vssc_virgil_http_response_array_body(response);
+    const vssc_json_array_t *json_array = vssc_virgil_http_response_body_as_json_array(response);
 
     vssc_string_list_t *keys = vssc_string_list_new();
-    for (size_t pos = 0; pos < vssc_json_array_len(json_array); ++pos) {
+    for (size_t pos = 0; pos < vssc_json_array_count(json_array); ++pos) {
         vsc_str_t key = vssc_json_array_get_string_value(json_array, pos, &core_error);
 
         if (vsc_str_is_empty(key)) {
@@ -869,46 +869,46 @@ vssk_keyknox_client_parse_keyknox_entry(const vssc_virgil_http_response_t *respo
 
     // TODO: Check Content-Type to be equal application/json
 
-    if (!vssc_virgil_http_response_has_body(response)) {
+    if (!vssc_virgil_http_response_body_is_json_object(response)) {
         VSSK_ERROR_SAFE_UPDATE(error, vssk_status_HTTP_RESPONSE_BODY_PARSE_FAILED);
         goto fail;
     }
 
-    const vssc_json_object_t *json = vssc_virgil_http_response_body(response);
+    const vssc_json_object_t *json = vssc_virgil_http_response_body_as_json_object(response);
 
-    vsc_str_t owner = vssc_json_object_get_string_value(json, k_json_key_owner_str, &core_error);
+    vsc_str_t owner = vssc_json_object_get_string_value(json, k_json_key_owner, &core_error);
     if (vsc_str_is_empty(owner)) {
         VSSK_ERROR_SAFE_UPDATE(error, vssk_status_KEYKNOX_ENTRY_PARSE_FAILED);
         goto fail;
     };
 
-    vsc_str_t root = vssc_json_object_get_string_value(json, k_json_key_root_str, &core_error);
+    vsc_str_t root = vssc_json_object_get_string_value(json, k_json_key_root, &core_error);
     if (vsc_str_is_empty(root)) {
         VSSK_ERROR_SAFE_UPDATE(error, vssk_status_KEYKNOX_ENTRY_PARSE_FAILED);
         goto fail;
     };
 
-    vsc_str_t path = vssc_json_object_get_string_value(json, k_json_key_path_str, &core_error);
+    vsc_str_t path = vssc_json_object_get_string_value(json, k_json_key_path, &core_error);
     if (vsc_str_is_empty(path)) {
         VSSK_ERROR_SAFE_UPDATE(error, vssk_status_KEYKNOX_ENTRY_PARSE_FAILED);
         goto fail;
     };
 
-    vsc_str_t key = vssc_json_object_get_string_value(json, k_json_key_key_str, &core_error);
+    vsc_str_t key = vssc_json_object_get_string_value(json, k_json_key_key, &core_error);
     if (vsc_str_is_empty(key)) {
         VSSK_ERROR_SAFE_UPDATE(error, vssk_status_KEYKNOX_ENTRY_PARSE_FAILED);
         goto fail;
     };
 
 
-    identities_json = vssc_json_object_get_array_value(json, k_json_key_identities_str, &core_error);
+    identities_json = vssc_json_object_get_array_value(json, k_json_key_identities, &core_error);
     if (NULL == identities_json) {
         VSSK_ERROR_SAFE_UPDATE(error, vssk_status_KEYKNOX_ENTRY_PARSE_FAILED);
         goto fail;
     }
 
     identities = vssc_string_list_new();
-    for (size_t pos = 0; pos < vssc_json_array_len(identities_json); ++pos) {
+    for (size_t pos = 0; pos < vssc_json_array_count(identities_json); ++pos) {
         vsc_str_t identity = vssc_json_array_get_string_value(identities_json, pos, &core_error);
 
         if (vssc_error_has_error(&core_error)) {
@@ -919,20 +919,20 @@ vssk_keyknox_client_parse_keyknox_entry(const vssc_virgil_http_response_t *respo
         vssc_string_list_add(identities, identity);
     }
 
-    meta = vssc_json_object_get_binary_value_new(json, k_json_key_meta_str, &core_error);
+    meta = vssc_json_object_get_binary_value_new(json, k_json_key_meta, &core_error);
     if (NULL == meta) {
         VSSK_ERROR_SAFE_UPDATE(error, vssk_status_KEYKNOX_ENTRY_PARSE_FAILED);
         goto fail;
     }
 
-    value = vssc_json_object_get_binary_value_new(json, k_json_key_value_str, &core_error);
+    value = vssc_json_object_get_binary_value_new(json, k_json_key_value, &core_error);
     if (NULL == value) {
         VSSK_ERROR_SAFE_UPDATE(error, vssk_status_KEYKNOX_ENTRY_PARSE_FAILED);
         goto fail;
     }
 
     vsc_str_t hash_str =
-            vssc_virgil_http_response_find_header(response, k_header_name_virgil_keyknox_hash_str, &core_error);
+            vssc_virgil_http_response_find_header(response, k_header_name_virgil_keyknox_hash, &core_error);
 
     if (vssc_error_has_error(&core_error)) {
         VSSK_ERROR_SAFE_UPDATE(error, vssk_status_KEYKNOX_ENTRY_PARSE_FAILED);

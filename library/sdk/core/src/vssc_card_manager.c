@@ -57,6 +57,8 @@
 #include "vssc_unix_time.h"
 #include "vssc_raw_card_verifier.h"
 #include "vssc_raw_card_signer.h"
+#include "vssc_card_private.h"
+#include "vssc_card_list_private.h"
 
 #include <virgil/crypto/foundation/vscf_private_key.h>
 #include <virgil/crypto/foundation/vscf_key_provider.h>
@@ -320,7 +322,6 @@ vssc_card_manager_init_ctx(vssc_card_manager_t *self) {
 
     VSSC_ASSERT_PTR(self);
 
-    self->key_provider = vscf_key_provider_new();
     self->raw_card_signer = vssc_raw_card_signer_new();
 }
 
@@ -334,7 +335,6 @@ vssc_card_manager_cleanup_ctx(vssc_card_manager_t *self) {
 
     VSSC_ASSERT_PTR(self);
 
-    vscf_key_provider_destroy(&self->key_provider);
     vssc_raw_card_signer_destroy(&self->raw_card_signer);
     vscf_impl_destroy(&self->virgil_public_key);
 }
@@ -347,7 +347,6 @@ vssc_card_manager_did_setup_random(vssc_card_manager_t *self) {
 
     VSSC_ASSERT_PTR(self);
 
-    vscf_key_provider_use_random(self->key_provider, self->random);
     vssc_raw_card_signer_use_random(self->raw_card_signer, self->random);
 }
 
@@ -359,7 +358,6 @@ vssc_card_manager_did_release_random(vssc_card_manager_t *self) {
 
     VSSC_ASSERT_PTR(self);
 
-    vscf_key_provider_release_random(self->key_provider);
     vssc_raw_card_signer_release_random(self->raw_card_signer);
 }
 
@@ -387,6 +385,7 @@ VSSC_PUBLIC vssc_status_t
 vssc_card_manager_configure_with_service_public_key(vssc_card_manager_t *self, vsc_data_t public_key_data) {
 
     VSSC_ASSERT_PTR(self);
+    VSSC_ASSERT_PTR(self->random);
 
     //
     //  Setup dependencies.
@@ -404,8 +403,12 @@ vssc_card_manager_configure_with_service_public_key(vssc_card_manager_t *self, v
     vscf_error_t foundation_error;
     vscf_error_reset(&foundation_error);
 
-    self->virgil_public_key =
-            vscf_key_provider_import_public_key(self->key_provider, public_key_data, &foundation_error);
+    vscf_key_provider_t *key_provider = vscf_key_provider_new();
+    vscf_key_provider_use_random(key_provider, self->random);
+
+    self->virgil_public_key = vscf_key_provider_import_public_key(key_provider, public_key_data, &foundation_error);
+
+    vscf_key_provider_destroy(&key_provider);
 
     if (vscf_error_has_error(&foundation_error)) {
         return vssc_status_IMPORT_PUBLIC_KEY_FAILED;
@@ -450,6 +453,8 @@ static vssc_raw_card_t *
 vssc_card_manager_generate_raw_card_inner(const vssc_card_manager_t *self, vsc_str_t identity,
         const vscf_impl_t *private_key, vsc_str_t previous_card_id, vssc_error_t *error) {
 
+    VSSC_ASSERT_PTR(self);
+    VSSC_ASSERT_PTR(self->random);
     VSSC_ASSERT(vsc_str_is_valid_and_non_empty(identity));
     VSSC_ASSERT(vsc_str_is_valid(previous_card_id));
     VSSC_ASSERT_PTR(private_key);
@@ -460,13 +465,16 @@ vssc_card_manager_generate_raw_card_inner(const vssc_card_manager_t *self, vsc_s
     //
     vscf_impl_t *public_key = vscf_private_key_extract_public_key(private_key);
 
-    const size_t public_key_len = vscf_key_provider_exported_public_key_len(self->key_provider, public_key);
+    vscf_key_provider_t *key_provider = vscf_key_provider_new();
+    vscf_key_provider_use_random(key_provider, self->random);
+
+    const size_t public_key_len = vscf_key_provider_exported_public_key_len(key_provider, public_key);
     vsc_buffer_t *public_key_data = vsc_buffer_new_with_capacity(public_key_len);
 
-    const vscf_status_t export_status =
-            vscf_key_provider_export_public_key(self->key_provider, public_key, public_key_data);
+    const vscf_status_t export_status = vscf_key_provider_export_public_key(key_provider, public_key, public_key_data);
 
     vscf_impl_destroy(&public_key);
+    vscf_key_provider_destroy(&key_provider);
 
     if (export_status != vscf_status_SUCCESS) {
         vsc_buffer_destroy(&public_key_data);
@@ -509,6 +517,7 @@ vssc_card_manager_import_raw_card(
         const vssc_card_manager_t *self, const vssc_raw_card_t *raw_card, vssc_error_t *error) {
 
     VSSC_ASSERT_PTR(self);
+    VSSC_ASSERT_PTR(self->random);
     VSSC_ASSERT_PTR(raw_card);
 
     //
@@ -517,12 +526,17 @@ vssc_card_manager_import_raw_card(
     vscf_error_t foundation_error;
     vscf_error_reset(&foundation_error);
 
-    vscf_impl_t *public_key = vscf_key_provider_import_public_key(
-            self->key_provider, vssc_raw_card_public_key(raw_card), &foundation_error);
+    vscf_key_provider_t *key_provider = vscf_key_provider_new();
+    vscf_key_provider_use_random(key_provider, self->random);
+
+    vscf_impl_t *public_key =
+            vscf_key_provider_import_public_key(key_provider, vssc_raw_card_public_key(raw_card), &foundation_error);
+
+    vsc_buffer_t *public_key_id = NULL;
 
     if (vscf_error_has_error(&foundation_error)) {
         VSSC_ERROR_SAFE_UPDATE(error, vssc_status_IMPORT_PUBLIC_KEY_FAILED);
-        return NULL;
+        goto error;
     }
 
     //
@@ -531,25 +545,73 @@ vssc_card_manager_import_raw_card(
     const bool self_signaure_is_verified = vssc_raw_card_verifier_verify_self(raw_card, public_key);
     if (!self_signaure_is_verified) {
         VSSC_ERROR_SAFE_UPDATE(error, vssc_status_RAW_CARD_SIGNATURE_VERIFICATION_FAILED);
-        return NULL;
+        goto error;
     }
 
     const bool virgil_signaure_is_verified = vssc_raw_card_verifier_verify_virgil(raw_card, self->virgil_public_key);
     if (!virgil_signaure_is_verified) {
         VSSC_ERROR_SAFE_UPDATE(error, vssc_status_RAW_CARD_SIGNATURE_VERIFICATION_FAILED);
-        return NULL;
+        goto error;
     }
 
-
     //
-    //  Create card without signature checks.
+    //  Create card without check of custom signatures.
     //  They should be verified outside.
     //
-    vssc_card_t *card = vssc_card_new_with(raw_card, public_key);
+    public_key_id = vsc_buffer_new_with_capacity(vscf_key_provider_KEY_ID_LEN);
 
+    foundation_error.status = vscf_key_provider_calculate_key_id(key_provider, public_key, public_key_id);
+
+    if (vscf_error_has_error(&foundation_error)) {
+        VSSC_ERROR_SAFE_UPDATE(error, vssc_status_PRODUCE_PUBLIC_KEY_ID_FAILED);
+        goto error;
+    }
+
+    vscf_key_provider_destroy(&key_provider);
+
+    return vssc_card_new_with_disown(raw_card, &public_key_id, &public_key);
+
+error:
+
+    vscf_key_provider_destroy(&key_provider);
     vscf_impl_destroy(&public_key);
+    vsc_buffer_destroy(&public_key_id);
 
-    return card;
+    return NULL;
+}
+
+//
+//  Create list of Cards from "raw card list" and verify it.
+//
+//  Note, only self signature and Virgil Cards Service signatures are verified.
+//
+VSSC_PUBLIC vssc_card_list_t *
+vssc_card_manager_import_raw_card_list(
+        const vssc_card_manager_t *self, const vssc_raw_card_list_t *raw_card_list, vssc_error_t *error) {
+
+    VSSC_ASSERT_PTR(self);
+    VSSC_ASSERT_PTR(raw_card_list);
+
+    vssc_card_list_t *cards = vssc_card_list_new();
+
+    for (const vssc_raw_card_list_t *raw_card_it = raw_card_list;
+            (raw_card_it != NULL) && vssc_raw_card_list_has_item(raw_card_it);
+            raw_card_it = vssc_raw_card_list_next(raw_card_it)) {
+
+        const vssc_raw_card_t *raw_card = vssc_raw_card_list_item(raw_card_it);
+
+        vssc_card_t *card = vssc_card_manager_import_raw_card(self, raw_card, error);
+
+        if (card != NULL) {
+            vssc_card_list_add(cards, &card);
+
+        } else {
+            vssc_card_list_destroy(&cards);
+            return NULL;
+        }
+    }
+
+    return cards;
 }
 
 //

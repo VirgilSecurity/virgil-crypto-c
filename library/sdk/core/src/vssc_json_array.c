@@ -342,10 +342,10 @@ vssc_json_array_create_with_json_obj(json_object **json_obj_ref) {
 }
 
 //
-//  Return array length.
+//  Return how many objects an array handles.
 //
 VSSC_PUBLIC size_t
-vssc_json_array_len(const vssc_json_array_t *self) {
+vssc_json_array_count(const vssc_json_array_t *self) {
 
     VSSC_ASSERT_PTR(self);
     VSSC_ASSERT_PTR(self->json_obj);

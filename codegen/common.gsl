@@ -231,6 +231,25 @@ function get_one_of_attribute (item, attribute_list)
     return
 endfunction
 
+
+# ---------------------------------------------------------------------------
+#   Return attribute of the first defined attribute, or nothing if all
+#   attributes are not defined.
+# ---------------------------------------------------------------------------
+function get_one_of_attribute_name (item, attribute_list)
+    check_arguments (my, "item, attribute_list", my)
+
+    while regexp.match ("([\\w]+)", my.attribute_list, my.attribute_name)
+        my.attribute_list = string.search_replace (my.attribute_list, my.attribute_name, "")
+
+        if defined (my.item.$(my.attribute_name:))
+            return my.attribute_name
+        endif
+    endwhile
+
+    return
+endfunction
+
 # ---------------------------------------------------------------------------
 #   Transform number of tabs to correspond spaces.
 # ---------------------------------------------------------------------------

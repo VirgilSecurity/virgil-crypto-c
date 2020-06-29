@@ -94,6 +94,11 @@ set_property(
 )
 
 set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vssc_card_list.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
+)
+
+set_property(
     SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vssc_card_manager.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
@@ -144,7 +149,22 @@ set_property(
 )
 
 set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vssc_key_handler.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
+)
+
+set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vssc_key_handler_list.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
+)
+
+set_property(
     SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vssc_raw_card.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
+)
+
+set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vssc_raw_card_list.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
 
@@ -207,9 +227,13 @@ target_sources(core_sdk
             "${CMAKE_CURRENT_BINARY_DIR}/include/virgil/sdk/core/vssc_platform.h"
             "$<$<BOOL:${VSSC_BASE64_URL}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vssc_base64_url.h>"
             "$<$<BOOL:${VSSC_CARD}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vssc_card.h>"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/private/vssc_card_private.h"
             "$<$<BOOL:${VSSC_CARD}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/private/vssc_card_defs.h>"
             "$<$<BOOL:${VSSC_CARD_CLIENT}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vssc_card_client.h>"
             "$<$<BOOL:${VSSC_CARD_CLIENT}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/private/vssc_card_client_defs.h>"
+            "$<$<BOOL:${VSSC_CARD_LIST}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vssc_card_list.h>"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/private/vssc_card_list_private.h"
+            "$<$<BOOL:${VSSC_CARD_LIST}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/private/vssc_card_list_defs.h>"
             "$<$<BOOL:${VSSC_CARD_MANAGER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vssc_card_manager.h>"
             "$<$<BOOL:${VSSC_CARD_MANAGER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/private/vssc_card_manager_defs.h>"
             "$<$<BOOL:${VSSC_ERROR}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vssc_error.h>"
@@ -236,8 +260,17 @@ target_sources(core_sdk
             "$<$<BOOL:${VSSC_JWT_HEADER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/private/vssc_jwt_header_defs.h>"
             "$<$<BOOL:${VSSC_JWT_PAYLOAD}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/private/vssc_jwt_payload.h>"
             "$<$<BOOL:${VSSC_JWT_PAYLOAD}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/private/vssc_jwt_payload_defs.h>"
+            "$<$<BOOL:${VSSC_KEY_HANDLER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vssc_key_handler.h>"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/private/vssc_key_handler_private.h"
+            "$<$<BOOL:${VSSC_KEY_HANDLER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/private/vssc_key_handler_defs.h>"
+            "$<$<BOOL:${VSSC_KEY_HANDLER_LIST}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vssc_key_handler_list.h>"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/private/vssc_key_handler_list_private.h"
+            "$<$<BOOL:${VSSC_KEY_HANDLER_LIST}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/private/vssc_key_handler_list_defs.h>"
             "$<$<BOOL:${VSSC_RAW_CARD}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vssc_raw_card.h>"
             "$<$<BOOL:${VSSC_RAW_CARD}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/private/vssc_raw_card_defs.h>"
+            "$<$<BOOL:${VSSC_RAW_CARD_LIST}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vssc_raw_card_list.h>"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/private/vssc_raw_card_list_private.h"
+            "$<$<BOOL:${VSSC_RAW_CARD_LIST}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/private/vssc_raw_card_list_defs.h>"
             "$<$<BOOL:${VSSC_RAW_CARD_SIGNATURE}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vssc_raw_card_signature.h>"
             "$<$<BOOL:${VSSC_RAW_CARD_SIGNATURE}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/private/vssc_raw_card_signature_defs.h>"
             "$<$<BOOL:${VSSC_RAW_CARD_SIGNATURE_LIST}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vssc_raw_card_signature_list.h>"
@@ -263,6 +296,8 @@ target_sources(core_sdk
             "$<$<BOOL:${VSSC_CARD}>:${CMAKE_CURRENT_LIST_DIR}/src/vssc_card_defs.c>"
             "$<$<BOOL:${VSSC_CARD_CLIENT}>:${CMAKE_CURRENT_LIST_DIR}/src/vssc_card_client.c>"
             "$<$<BOOL:${VSSC_CARD_CLIENT}>:${CMAKE_CURRENT_LIST_DIR}/src/vssc_card_client_defs.c>"
+            "$<$<BOOL:${VSSC_CARD_LIST}>:${CMAKE_CURRENT_LIST_DIR}/src/vssc_card_list.c>"
+            "$<$<BOOL:${VSSC_CARD_LIST}>:${CMAKE_CURRENT_LIST_DIR}/src/vssc_card_list_defs.c>"
             "$<$<BOOL:${VSSC_CARD_MANAGER}>:${CMAKE_CURRENT_LIST_DIR}/src/vssc_card_manager.c>"
             "$<$<BOOL:${VSSC_CARD_MANAGER}>:${CMAKE_CURRENT_LIST_DIR}/src/vssc_card_manager_defs.c>"
             "$<$<BOOL:${VSSC_ERROR}>:${CMAKE_CURRENT_LIST_DIR}/src/vssc_error.c>"
@@ -286,8 +321,14 @@ target_sources(core_sdk
             "$<$<BOOL:${VSSC_JWT_HEADER}>:${CMAKE_CURRENT_LIST_DIR}/src/vssc_jwt_header_defs.c>"
             "$<$<BOOL:${VSSC_JWT_PAYLOAD}>:${CMAKE_CURRENT_LIST_DIR}/src/vssc_jwt_payload.c>"
             "$<$<BOOL:${VSSC_JWT_PAYLOAD}>:${CMAKE_CURRENT_LIST_DIR}/src/vssc_jwt_payload_defs.c>"
+            "$<$<BOOL:${VSSC_KEY_HANDLER}>:${CMAKE_CURRENT_LIST_DIR}/src/vssc_key_handler.c>"
+            "$<$<BOOL:${VSSC_KEY_HANDLER}>:${CMAKE_CURRENT_LIST_DIR}/src/vssc_key_handler_defs.c>"
+            "$<$<BOOL:${VSSC_KEY_HANDLER_LIST}>:${CMAKE_CURRENT_LIST_DIR}/src/vssc_key_handler_list.c>"
+            "$<$<BOOL:${VSSC_KEY_HANDLER_LIST}>:${CMAKE_CURRENT_LIST_DIR}/src/vssc_key_handler_list_defs.c>"
             "$<$<BOOL:${VSSC_RAW_CARD}>:${CMAKE_CURRENT_LIST_DIR}/src/vssc_raw_card.c>"
             "$<$<BOOL:${VSSC_RAW_CARD}>:${CMAKE_CURRENT_LIST_DIR}/src/vssc_raw_card_defs.c>"
+            "$<$<BOOL:${VSSC_RAW_CARD_LIST}>:${CMAKE_CURRENT_LIST_DIR}/src/vssc_raw_card_list.c>"
+            "$<$<BOOL:${VSSC_RAW_CARD_LIST}>:${CMAKE_CURRENT_LIST_DIR}/src/vssc_raw_card_list_defs.c>"
             "$<$<BOOL:${VSSC_RAW_CARD_SIGNATURE}>:${CMAKE_CURRENT_LIST_DIR}/src/vssc_raw_card_signature.c>"
             "$<$<BOOL:${VSSC_RAW_CARD_SIGNATURE}>:${CMAKE_CURRENT_LIST_DIR}/src/vssc_raw_card_signature_defs.c>"
             "$<$<BOOL:${VSSC_RAW_CARD_SIGNATURE_LIST}>:${CMAKE_CURRENT_LIST_DIR}/src/vssc_raw_card_signature_list.c>"

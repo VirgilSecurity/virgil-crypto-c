@@ -90,42 +90,42 @@ extern "C" {
 //
 //  HTTP method: GET
 //
-VSSC_PUBLIC extern const char vssc_http_request_method_get[];
+VSSC_PUBLIC extern const char vssc_http_request_method_get_chars[];
 
 //
 //  HTTP method: GET
 //
-VSSC_PUBLIC extern const vsc_str_t vssc_http_request_method_get_str;
+VSSC_PUBLIC extern const vsc_str_t vssc_http_request_method_get;
 
 //
 //  HTTP method: POST
 //
-VSSC_PUBLIC extern const char vssc_http_request_method_post[];
+VSSC_PUBLIC extern const char vssc_http_request_method_post_chars[];
 
 //
 //  HTTP method: POST
 //
-VSSC_PUBLIC extern const vsc_str_t vssc_http_request_method_post_str;
+VSSC_PUBLIC extern const vsc_str_t vssc_http_request_method_post;
 
 //
 //  HTTP method: PUT
 //
-VSSC_PUBLIC extern const char vssc_http_request_method_put[];
+VSSC_PUBLIC extern const char vssc_http_request_method_put_chars[];
 
 //
 //  HTTP method: PUT
 //
-VSSC_PUBLIC extern const vsc_str_t vssc_http_request_method_put_str;
+VSSC_PUBLIC extern const vsc_str_t vssc_http_request_method_put;
 
 //
 //  HTTP method: DELETE
 //
-VSSC_PUBLIC extern const char vssc_http_request_method_delete[];
+VSSC_PUBLIC extern const char vssc_http_request_method_delete_chars[];
 
 //
 //  HTTP method: DELETE
 //
-VSSC_PUBLIC extern const vsc_str_t vssc_http_request_method_delete_str;
+VSSC_PUBLIC extern const vsc_str_t vssc_http_request_method_delete;
 
 //
 //  Return size of 'vssc_http_request_t'.

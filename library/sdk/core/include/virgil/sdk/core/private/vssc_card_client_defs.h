@@ -57,11 +57,11 @@
 #include "vssc_atomic.h"
 
 #if !VSSC_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <virgil/crypto/common/vsc_str_buffer.h>
+#   include <virgil/crypto/common/vsc_str_mutable.h>
 #endif
 
 #if VSSC_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <VSCCommon/vsc_str_buffer.h>
+#   include <VSCCommon/vsc_str_mutable.h>
 #endif
 
 // clang-format on
@@ -92,7 +92,7 @@ struct vssc_card_client_t {
     //
     VSSC_ATOMIC size_t refcnt;
 
-    vsc_str_buffer_t *card_url;
+    vsc_str_mutable_t base_url;
 };
 
 

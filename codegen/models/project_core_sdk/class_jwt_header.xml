@@ -2,67 +2,61 @@
     Class that handles JWT Header.
 
     <require class="base64 url"/>
-    <require header="json-c/json.h" library="json_c" scope="context"/>
+    <require class="json object" scope="context"/>
 
-    <property name="json obj" class="json_object" library="json_c">
+
+    <property name="json obj" class="json object">
         Root JSON object that represents JWT Header.
     </property>
 
 
-    <variable name="k json key app key id" type="string" declaration="private">
+    <constant name="k json key app key id" type="string" visibility="private">
         JSON key of JWT signature algorithm.
 
-        <value value="kid" type="string"/>
-        <string access="readonly"/>
-    </variable>
+        <value value="kid"/>
+    </constant>
 
 
-    <variable name="k json key signature algorithm" type="string" declaration="private">
+    <constant name="k json key signature algorithm" type="string" visibility="private">
         JSON key of JWT signature algorithm.
 
-        <value value="alg" type="string"/>
-        <string access="readonly"/>
-    </variable>
+        <value value="alg"/>
+    </constant>
 
 
-    <variable name="k json key type" type="string" declaration="private">
+    <constant name="k json key type" type="string" visibility="private">
         JSON key of JWT type.
 
-        <value value="typ" type="string"/>
-        <string access="readonly"/>
-    </variable>
+        <value value="typ"/>
+    </constant>
 
 
-    <variable name="k json key content type" type="string" declaration="private">
+    <constant name="k json key content type" type="string" visibility="private">
         JSON key of JWT content type.
 
-        <value value="cty" type="string"/>
-        <string access="readonly"/>
-    </variable>
+        <value value="cty"/>
+    </constant>
 
 
-    <variable name="k signature algorithm default" type="string" declaration="private">
+    <constant name="k signature algorithm default" type="string" visibility="private">
         Represents default JWT signature algorithm.
 
-        <value value="VEDS512" type="string"/>
-        <string access="readonly"/>
-    </variable>
+        <value value="VEDS512"/>
+    </constant>
 
 
-    <variable name="k type default" type="string" declaration="private">
+    <constant name="k type default" type="string" visibility="private">
         Represents default JWT token type.
 
-        <value value="JWT" type="string"/>
-        <string access="readonly"/>
-    </variable>
+        <value value="JWT"/>
+    </constant>
 
 
-    <variable name="k content type default" type="string" declaration="private">
+    <constant name="k content type default" type="string" visibility="private">
         Represents default JWT content type.
 
-        <value value="virgil-jwt;v=1" type="string"/>
-        <string access="readonly"/>
-    </variable>
+        <value value="virgil-jwt;v=1"/>
+    </constant>
 
 
     <constructor name="with app key id">
@@ -79,7 +73,7 @@
         Create JWT Header defined with a JSON object.
         Prerequisite: The JSON object SHOULD be already validated.
 
-        <argument name="json obj" class="json_object" library="json_c" access="disown"/>
+        <argument name="json obj" class="json object" access="disown"/>
     </constructor>
 
 

@@ -55,6 +55,10 @@
 #include "vssc_assert.h"
 #include "vssc_card_client_defs.h"
 #include "vssc_json_object.h"
+#include "vssc_json_array.h"
+#include "vssc_raw_card_list_private.h"
+
+#include <virgil/crypto/common/vsc_str_buffer.h>
 
 // clang-format on
 //  @end
@@ -91,40 +95,66 @@ vssc_card_client_init_ctx_with_base_url(vssc_card_client_t *self, vsc_str_t url)
 //
 //  Base service URL.
 //
-static const char k_base_url[] = "https://api.virgilsecurity.com";
+static const char k_base_url_chars[] = "https://api.virgilsecurity.com";
 
 //
 //  Base service URL.
 //
-static const vsc_str_t k_base_url_str = {
-    k_base_url,
-    sizeof(k_base_url) - 1
+static const vsc_str_t k_base_url = {
+    k_base_url_chars,
+    sizeof(k_base_url_chars) - 1
 };
 
 //
-//  POST|GET /card
+//  POST|GET /card.
 //
-static const char k_card_url_path[] = "/card/v5";
+static const char k_card_url_path_chars[] = "/card/v5";
 
 //
-//  POST|GET /card
+//  POST|GET /card.
 //
-static const vsc_str_t k_card_url_path_str = {
-    k_card_url_path,
-    sizeof(k_card_url_path) - 1
+static const vsc_str_t k_card_url_path = {
+    k_card_url_path_chars,
+    sizeof(k_card_url_path_chars) - 1
+};
+
+//
+//  POST /actions/search.
+//
+static const char k_search_url_path_chars[] = "/card/v5/actions/search";
+
+//
+//  POST /actions/search.
+//
+static const vsc_str_t k_search_url_path = {
+    k_search_url_path_chars,
+    sizeof(k_search_url_path_chars) - 1
+};
+
+//
+//  Json KEY: identity.
+//
+static const char k_json_key_identity_chars[] = "identity";
+
+//
+//  Json KEY: identity.
+//
+static const vsc_str_t k_json_key_identity = {
+    k_json_key_identity_chars,
+    sizeof(k_json_key_identity_chars) - 1
 };
 
 //
 //  HTTP Header name: X-Virgil-Is-Superseeded
 //
-static const char k_header_name_x_virgil_is_superseeded[] = "X-Virgil-Is-Superseeded";
+static const char k_header_name_x_virgil_is_superseeded_chars[] = "X-Virgil-Is-Superseeded";
 
 //
 //  HTTP Header name: X-Virgil-Is-Superseeded
 //
-static const vsc_str_t k_header_name_x_virgil_is_superseeded_str = {
-    k_header_name_x_virgil_is_superseeded,
-    sizeof(k_header_name_x_virgil_is_superseeded) - 1
+static const vsc_str_t k_header_name_x_virgil_is_superseeded = {
+    k_header_name_x_virgil_is_superseeded_chars,
+    sizeof(k_header_name_x_virgil_is_superseeded_chars) - 1
 };
 
 //
@@ -322,7 +352,7 @@ vssc_card_client_init_ctx(vssc_card_client_t *self) {
 
     VSSC_ASSERT_PTR(self);
 
-    vssc_card_client_init_ctx_with_base_url(self, k_base_url_str);
+    vssc_card_client_init_ctx_with_base_url(self, k_base_url);
 }
 
 //
@@ -335,7 +365,7 @@ vssc_card_client_cleanup_ctx(vssc_card_client_t *self) {
 
     VSSC_ASSERT_PTR(self);
 
-    vsc_str_buffer_delete(self->card_url);
+    vsc_str_mutable_release(&self->base_url);
 }
 
 //
@@ -347,13 +377,7 @@ vssc_card_client_init_ctx_with_base_url(vssc_card_client_t *self, vsc_str_t url)
     VSSC_ASSERT_PTR(self);
     VSSC_ASSERT(vsc_str_is_valid_and_non_empty(url));
 
-    const size_t card_url_len = url.len + k_card_url_path_str.len + 1;
-
-    self->card_url = vsc_str_buffer_new_with_capacity(card_url_len);
-
-    vsc_str_buffer_write_str(self->card_url, url);
-    vsc_str_buffer_write_str(self->card_url, k_card_url_path_str);
-    vsc_str_buffer_make_null_terminated(self->card_url);
+    self->base_url = vsc_str_mutable_from_str(url);
 }
 
 //
@@ -366,19 +390,22 @@ VSSC_PUBLIC vssc_http_request_t *
 vssc_card_client_make_request_publish_card(const vssc_card_client_t *self, const vssc_raw_card_t *raw_card) {
 
     VSSC_ASSERT_PTR(self);
-    VSSC_ASSERT_PTR(self->card_url);
     VSSC_ASSERT_PTR(raw_card);
 
     vssc_json_object_t *json = vssc_raw_card_export_as_json(raw_card);
     vsc_str_t json_body = vssc_json_object_as_str(json);
 
-    vssc_http_request_t *http_request = vssc_http_request_new_with_body(
-            vssc_http_request_method_post_str, vsc_str_buffer_str(self->card_url), json_body);
+    vsc_str_mutable_t card_url = vsc_str_mutable_concat(vsc_str_mutable_as_str(self->base_url), k_card_url_path);
+
+    vssc_http_request_t *http_request =
+            vssc_http_request_new_with_body(vssc_http_request_method_post, vsc_str_mutable_as_str(card_url), json_body);
 
     vssc_json_object_destroy(&json);
 
     vssc_http_request_add_header(
-            http_request, vssc_http_header_name_content_type_str, vssc_http_header_value_application_json_str);
+            http_request, vssc_http_header_name_content_type, vssc_http_header_value_application_json);
+
+    vsc_str_mutable_release(&card_url);
 
     return http_request;
 }
@@ -399,12 +426,12 @@ vssc_card_client_process_response_publish_card(const vssc_virgil_http_response_t
 
     // TODO: Check Content-Type to be equal application/json
 
-    if (!vssc_virgil_http_response_has_body(response)) {
+    if (!vssc_virgil_http_response_body_is_json_object(response)) {
         VSSC_ERROR_SAFE_UPDATE(error, vssc_status_HTTP_RESPONSE_BODY_PARSE_FAILED);
         return NULL;
     }
 
-    const vssc_json_object_t *response_body = vssc_virgil_http_response_body(response);
+    const vssc_json_object_t *response_body = vssc_virgil_http_response_body_as_json_object(response);
 
     vssc_raw_card_t *result = vssc_raw_card_import_from_json(response_body, error);
 
@@ -418,19 +445,19 @@ VSSC_PUBLIC vssc_http_request_t *
 vssc_card_client_make_request_get_card(const vssc_card_client_t *self, vsc_str_t card_id) {
 
     VSSC_ASSERT_PTR(self);
-    VSSC_ASSERT_PTR(self->card_url);
     VSSC_ASSERT(vsc_str_is_valid_and_non_empty(card_id));
 
-    const size_t url_len = vsc_str_buffer_len(self->card_url) + 1 /* slash */ + card_id.len + 1 /* null */;
+    const size_t url_len = self->base_url.len + k_card_url_path.len + 1 /* slash */ + card_id.len + 1 /* null */;
     vsc_str_buffer_t *url = vsc_str_buffer_new_with_capacity(url_len);
 
-    vsc_str_buffer_write_str(url, vsc_str_buffer_str(self->card_url));
+    vsc_str_buffer_write_str(url, vsc_str_mutable_as_str(self->base_url));
+    vsc_str_buffer_write_str(url, k_card_url_path);
     vsc_str_buffer_write_char(url, '/');
     vsc_str_buffer_write_str(url, card_id);
     vsc_str_buffer_make_null_terminated(url);
 
     vssc_http_request_t *http_request =
-            vssc_http_request_new_with_url(vssc_http_request_method_get_str, vsc_str_buffer_str(url));
+            vssc_http_request_new_with_url(vssc_http_request_method_get, vsc_str_buffer_str(url));
 
     vsc_str_buffer_destroy(&url);
 
@@ -439,7 +466,7 @@ vssc_card_client_make_request_get_card(const vssc_card_client_t *self, vsc_str_t
 
 //
 //  Map response to the correspond model.
-//  Return "raw card" of if Card was found.
+//  Return "raw card" if Card was found.
 //
 VSSC_PUBLIC vssc_raw_card_t *
 vssc_card_client_process_response_get_card(const vssc_virgil_http_response_t *response, vssc_error_t *error) {
@@ -453,23 +480,99 @@ vssc_card_client_process_response_get_card(const vssc_virgil_http_response_t *re
 
     // TODO: Check Content-Type to be equal application/json
 
-    if (!vssc_virgil_http_response_has_body(response)) {
+    if (!vssc_virgil_http_response_body_is_json_object(response)) {
         VSSC_ERROR_SAFE_UPDATE(error, vssc_status_HTTP_RESPONSE_BODY_PARSE_FAILED);
         return NULL;
     }
 
-    const vssc_json_object_t *response_body = vssc_virgil_http_response_body(response);
+    const vssc_json_object_t *response_body = vssc_virgil_http_response_body_as_json_object(response);
 
     vssc_raw_card_t *raw_card = vssc_raw_card_import_from_json(response_body, error);
+    if (NULL == raw_card) {
+        return NULL;
+    }
 
     //
     //  Check if Card is outdated
     //
     vsc_str_t is_outdated_str =
-            vssc_virgil_http_response_find_header(response, k_header_name_x_virgil_is_superseeded_str, NULL);
+            vssc_virgil_http_response_find_header(response, k_header_name_x_virgil_is_superseeded, NULL);
 
     const bool is_outdated = vsc_str_equal(is_outdated_str, vsc_str("true", 4));
     vssc_raw_card_set_is_outdated(raw_card, is_outdated);
 
     return raw_card;
+}
+
+//
+//  Create request that returns cards list from the Virgil Cards Service for given identity.
+//
+VSSC_PUBLIC vssc_http_request_t *
+vssc_card_client_make_request_search_cards_with_identity(const vssc_card_client_t *self, vsc_str_t identity) {
+
+    VSSC_ASSERT_PTR(self);
+    VSSC_ASSERT(vsc_str_is_valid_and_non_empty(identity));
+
+    vsc_str_mutable_t search_url = vsc_str_mutable_concat(vsc_str_mutable_as_str(self->base_url), k_search_url_path);
+
+    vssc_json_object_t *json_body = vssc_json_object_new();
+    vssc_json_object_add_string_value(json_body, k_json_key_identity, identity);
+
+    vsc_str_t json_body_str = vssc_json_object_as_str(json_body);
+
+    vssc_http_request_t *http_request = vssc_http_request_new_with_body(
+            vssc_http_request_method_post, vsc_str_mutable_as_str(search_url), json_body_str);
+
+    vsc_str_mutable_release(&search_url);
+    vssc_json_object_destroy(&json_body);
+
+    return http_request;
+}
+
+//
+//  Map response to the correspond model.
+//  Return "raw card list" if founded Cards.
+//
+VSSC_PUBLIC vssc_raw_card_list_t *
+vssc_card_client_process_response_search_cards(const vssc_virgil_http_response_t *response, vssc_error_t *error) {
+
+    VSSC_ASSERT_PTR(response);
+
+    if (!vssc_virgil_http_response_is_success(response)) {
+        VSSC_ERROR_SAFE_UPDATE(error, vssc_status_HTTP_RESPONSE_CONTAINS_SERVICE_ERROR);
+        return NULL;
+    }
+
+    // TODO: Check Content-Type to be equal application/json
+
+    if (!vssc_virgil_http_response_body_is_json_array(response)) {
+        VSSC_ERROR_SAFE_UPDATE(error, vssc_status_HTTP_RESPONSE_BODY_PARSE_FAILED);
+        return NULL;
+    }
+
+    const vssc_json_array_t *response_body = vssc_virgil_http_response_body_as_json_array(response);
+
+    vssc_raw_card_list_t *raw_cards = vssc_raw_card_list_new();
+
+    for (size_t pos = 0; pos < vssc_json_array_count(response_body); ++pos) {
+        vssc_json_object_t *raw_card_json = vssc_json_array_get_object_value(response_body, pos, NULL);
+
+        if (NULL == raw_card_json) {
+            vssc_raw_card_list_destroy(&raw_cards);
+            VSSC_ERROR_SAFE_UPDATE(error, vssc_status_RAW_CARD_CONTENT_PARSE_FAILED);
+            return NULL;
+        }
+
+        vssc_raw_card_t *raw_card = vssc_raw_card_import_from_json(raw_card_json, error);
+        vssc_json_object_destroy(&raw_card_json);
+
+        if (NULL == raw_card) {
+            vssc_raw_card_list_destroy(&raw_cards);
+            return NULL;
+        }
+
+        vssc_raw_card_list_add(raw_cards, &raw_card);
+    }
+
+    return raw_cards;
 }

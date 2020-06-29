@@ -21,12 +21,17 @@
     <require module="compound key alg defs" is_optional="1"/>
     <require impl="hybrid key alg" is_optional="1"/>
     <require module="hybrid key alg defs" is_optional="1"/>
+    <require impl="sha512"/>
 
     <dependency name="random" interface="random"/>
 
     <property name="rsa bitlen" type="size"/>
     <property name="key asn1 serializer" interface="key serialzier"/>
     <property name="key asn1 deserializer" interface="key deserialzier"/>
+
+    <constant name="key id len" value="8">
+        Length of the public key identifier.
+    </constant>
 
     <method name="setup defaults">
         Setup predefined values to the uninitialized class dependencies.
@@ -170,6 +175,20 @@
             <length method="exported private key len">
                 <proxy argument="private key" to="private key"/>
             </length>
+        </argument>
+
+        <return enum="status"/>
+    </method>
+
+
+    <method name="calculate key id">
+        Calculate identifier based on the given public key or private key.
+
+        Note, that public key identifier equals to the private key identifier.
+
+        <argument name="key" interface="key"/>
+        <argument name="key id" class="buffer">
+            <length constant="key id len" class="self"/>
         </argument>
 
         <return enum="status"/>

@@ -93,40 +93,40 @@ vssc_http_header_init_ctx_with(vssc_http_header_t *self, vsc_str_t name, vsc_str
 //
 //  Header name: Authorization
 //
-VSSC_PUBLIC const char vssc_http_header_name_authorization[] = "Authorization";
+VSSC_PUBLIC const char vssc_http_header_name_authorization_chars[] = "Authorization";
 
 //
 //  Header name: Authorization
 //
-VSSC_PUBLIC const vsc_str_t vssc_http_header_name_authorization_str = {
-    vssc_http_header_name_authorization,
-    sizeof(vssc_http_header_name_authorization) - 1
+VSSC_PUBLIC const vsc_str_t vssc_http_header_name_authorization = {
+    vssc_http_header_name_authorization_chars,
+    sizeof(vssc_http_header_name_authorization_chars) - 1
 };
 
 //
 //  Header name: Content-Type
 //
-VSSC_PUBLIC const char vssc_http_header_name_content_type[] = "Content-Type";
+VSSC_PUBLIC const char vssc_http_header_name_content_type_chars[] = "Content-Type";
 
 //
 //  Header name: Content-Type
 //
-VSSC_PUBLIC const vsc_str_t vssc_http_header_name_content_type_str = {
-    vssc_http_header_name_content_type,
-    sizeof(vssc_http_header_name_content_type) - 1
+VSSC_PUBLIC const vsc_str_t vssc_http_header_name_content_type = {
+    vssc_http_header_name_content_type_chars,
+    sizeof(vssc_http_header_name_content_type_chars) - 1
 };
 
 //
 //  Header value: application/json
 //
-VSSC_PUBLIC const char vssc_http_header_value_application_json[] = "application/json";
+VSSC_PUBLIC const char vssc_http_header_value_application_json_chars[] = "application/json";
 
 //
 //  Header value: application/json
 //
-VSSC_PUBLIC const vsc_str_t vssc_http_header_value_application_json_str = {
-    vssc_http_header_value_application_json,
-    sizeof(vssc_http_header_value_application_json) - 1
+VSSC_PUBLIC const vsc_str_t vssc_http_header_value_application_json = {
+    vssc_http_header_value_application_json_chars,
+    sizeof(vssc_http_header_value_application_json_chars) - 1
 };
 
 //

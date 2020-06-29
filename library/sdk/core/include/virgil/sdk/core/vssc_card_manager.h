@@ -58,6 +58,8 @@
 #include "vssc_error.h"
 #include "vssc_raw_card.h"
 #include "vssc_card.h"
+#include "vssc_raw_card_list.h"
+#include "vssc_card_list.h"
 
 #include <virgil/crypto/foundation/vscf_random.h>
 
@@ -207,6 +209,15 @@ vssc_card_manager_generate_replacement_raw_card(const vssc_card_manager_t *self,
 //
 VSSC_PUBLIC vssc_card_t *
 vssc_card_manager_import_raw_card(const vssc_card_manager_t *self, const vssc_raw_card_t *raw_card,
+        vssc_error_t *error);
+
+//
+//  Create list of Cards from "raw card list" and verify it.
+//
+//  Note, only self signature and Virgil Cards Service signatures are verified.
+//
+VSSC_PUBLIC vssc_card_list_t *
+vssc_card_manager_import_raw_card_list(const vssc_card_manager_t *self, const vssc_raw_card_list_t *raw_card_list,
         vssc_error_t *error);
 
 //

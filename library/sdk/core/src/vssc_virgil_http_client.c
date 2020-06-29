@@ -103,27 +103,27 @@ vssc_virgil_http_client_write_recevied_header(char *ptr, size_t size, size_t nme
 //
 //  Separator between header name and header value.
 //
-static const char k_header_name_value_separator[] = ": ";
+static const char k_header_name_value_separator_chars[] = ": ";
 
 //
 //  Separator between header name and header value.
 //
-static const vsc_str_t k_header_name_value_separator_str = {
-    k_header_name_value_separator,
-    sizeof(k_header_name_value_separator) - 1
+static const vsc_str_t k_header_name_value_separator = {
+    k_header_name_value_separator_chars,
+    sizeof(k_header_name_value_separator_chars) - 1
 };
 
 //
 //  Authorization type: Virgil
 //
-static const char k_header_authorization_type[] = "Virgil";
+static const char k_header_authorization_type_chars[] = "Virgil";
 
 //
 //  Authorization type: Virgil
 //
-static const vsc_str_t k_header_authorization_type_str = {
-    k_header_authorization_type,
-    sizeof(k_header_authorization_type) - 1
+static const vsc_str_t k_header_authorization_type = {
+    k_header_authorization_type_chars,
+    sizeof(k_header_authorization_type_chars) - 1
 };
 
 
@@ -180,7 +180,7 @@ vssc_virgil_http_client_send_with_ca(
 
     // Authorization
     vssc_virgil_http_client_format_authorization_header(
-            k_header_authorization_type_str, vssc_jwt_as_string(jwt), header_buf);
+            k_header_authorization_type, vssc_jwt_as_string(jwt), header_buf);
 
     headers = curl_slist_append(headers, vsc_str_buffer_str(header_buf).chars);
     VSSC_ASSERT_ALLOC(headers);
@@ -373,7 +373,7 @@ vssc_virgil_http_client_format_header(vsc_str_t name, vsc_str_t value, vsc_str_b
 
     vsc_str_buffer_reset(out_str);
     vsc_str_buffer_append_str(out_str, name);
-    vsc_str_buffer_append_str(out_str, k_header_name_value_separator_str);
+    vsc_str_buffer_append_str(out_str, k_header_name_value_separator);
     vsc_str_buffer_append_str(out_str, value);
     vsc_str_buffer_append_char(out_str, '\0');
     vsc_str_buffer_dec_used(out_str, 1);
@@ -390,8 +390,8 @@ vssc_virgil_http_client_format_authorization_header(vsc_str_t type, vsc_str_t cr
     VSSC_ASSERT(vsc_str_buffer_is_valid(out_str));
 
     vsc_str_buffer_reset(out_str);
-    vsc_str_buffer_append_str(out_str, vssc_http_header_name_authorization_str);
-    vsc_str_buffer_append_str(out_str, k_header_name_value_separator_str);
+    vsc_str_buffer_append_str(out_str, vssc_http_header_name_authorization);
+    vsc_str_buffer_append_str(out_str, k_header_name_value_separator);
     vsc_str_buffer_append_str(out_str, type);
     vsc_str_buffer_append_char(out_str, ' ');
     vsc_str_buffer_append_str(out_str, credentials);

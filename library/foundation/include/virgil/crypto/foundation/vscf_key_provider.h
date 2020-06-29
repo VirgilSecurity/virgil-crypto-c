@@ -87,6 +87,16 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
+//  Public integral constants.
+//
+enum {
+    //
+    //  Length of the public key identifier.
+    //
+    vscf_key_provider_KEY_ID_LEN = 8
+};
+
+//
 //  Handle 'key provider' context.
 //
 #ifndef VSCF_KEY_PROVIDER_T_DEFINED
@@ -267,6 +277,15 @@ vscf_key_provider_exported_private_key_len(vscf_key_provider_t *self, const vscf
 VSCF_PUBLIC vscf_status_t
 vscf_key_provider_export_private_key(vscf_key_provider_t *self, const vscf_impl_t *private_key,
         vsc_buffer_t *out) VSCF_NODISCARD;
+
+//
+//  Calculate identifier based on the given public key or private key.
+//
+//  Note, that public key identifier equals to the private key identifier.
+//
+VSCF_PUBLIC vscf_status_t
+vscf_key_provider_calculate_key_id(vscf_key_provider_t *self, const vscf_impl_t *key,
+        vsc_buffer_t *key_id) VSCF_NODISCARD;
 
 
 // --------------------------------------------------------------------------

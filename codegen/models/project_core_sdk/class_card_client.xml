@@ -2,10 +2,13 @@
     Helps to communicate with Virgil Card Service.
 
 
+    <require class="str buffer" project="common"/>
     <require class="json object"/>
+    <require class="json array"/>
+    <require class="raw card list" api="private"/>
 
 
-    <property name="card url" class="str buffer"/>
+    <property name="base url" class="str mutable"/>
 
 
     <constant name="k base url" type="string" visibility="private">
@@ -16,9 +19,23 @@
 
 
     <constant name="k card url path" type="string" visibility="private" >
-        POST|GET /card
+        POST|GET /card.
 
         <value value="/card/v5"/>
+    </constant>
+
+
+    <constant name="k search url path" type="string" visibility="private" >
+        POST /actions/search.
+
+        <value value="/card/v5/actions/search"/>
+    </constant>
+
+
+    <constant name="k json key identity" type="string" visibility="private" >
+        Json KEY: identity.
+
+        <value value="identity"/>
     </constant>
 
 
@@ -70,11 +87,31 @@
 
     <method name="process response get card" is_static="1">
         Map response to the correspond model.
-        Return "raw card" of if Card was found.
+        Return "raw card" if Card was found.
 
         <argument name="response" class="virgil http response"/>
         <argument name="error" class="error" access="readwrite"/>
 
         <return class="raw card" access="disown"/>
+    </method>
+
+
+    <method name="make request search cards with identity" is_const="1">
+         Create request that returns cards list from the Virgil Cards Service for given identity.
+
+        <argument name="identity" class="str"/>
+
+        <return class="http request" access="disown"/>
+    </method>
+
+
+    <method name="process response search cards" is_static="1">
+        Map response to the correspond model.
+        Return "raw card list" if founded Cards.
+
+        <argument name="response" class="virgil http response"/>
+        <argument name="error" class="error" access="readwrite"/>
+
+        <return class="raw card list" access="disown"/>
     </method>
 </class>

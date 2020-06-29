@@ -54,28 +54,28 @@
     </method>
 
 
-    <method name="has body" is_const="1">
-        Return true if response contains a valid body.
+    <method name="body is json object" is_const="1">
+        Return true if response handles a valid body as JSON object.
 
         <return type="boolean"/>
     </method>
 
 
-    <method name="has array body" is_const="1">
-        Return true if response contains a valid body as array.
+    <method name="body is json array" is_const="1">
+        Return true if response handles a valid body as JSON array.
 
         <return type="boolean"/>
     </method>
 
 
-    <method name="body" is_const="1">
+    <method name="body as json object" is_const="1">
         Return response body as JSON object.
 
         <return class="json object"/>
     </method>
 
 
-    <method name="array body" is_const="1">
+    <method name="body as json array" is_const="1">
         Return response body as JSON array.
 
         <return class="json array"/>

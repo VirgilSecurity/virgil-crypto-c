@@ -81,6 +81,10 @@ enum vssc_status_t {
     //
     vssc_status_INTERNAL_ERROR = -1,
     //
+    //  Requested list item is not found.
+    //
+    vssc_status_LIST_ITEM_NOT_FOUND = -2,
+    //
     //  Faled to decode Base64URL string.
     //
     vssc_status_DECODE_BASE64_URL_FAILED = -101,
@@ -97,9 +101,13 @@ enum vssc_status_t {
     //
     vssc_status_IMPORT_PUBLIC_KEY_FAILED = -104,
     //
-    //  Faled produce signature, underlying crypto returned an error.
+    //  Faled to produce signature, underlying crypto returned an error.
     //
     vssc_status_PRODUCE_SIGNATURE_FAILED = -105,
+    //
+    //  Faled to produce public key id.
+    //
+    vssc_status_PRODUCE_PUBLIC_KEY_ID_FAILED = -106,
     //
     //  Failed to parse JWT.
     //

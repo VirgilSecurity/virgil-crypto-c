@@ -70,27 +70,27 @@
 //
 //  Identifier of virgil signature.
 //
-static const char k_virgil_signer_id[] = "virgil";
+static const char k_virgil_signer_id_chars[] = "virgil";
 
 //
 //  Identifier of virgil signature.
 //
-static const vsc_str_t k_virgil_signer_id_str = {
-    k_virgil_signer_id,
-    sizeof(k_virgil_signer_id) - 1
+static const vsc_str_t k_virgil_signer_id = {
+    k_virgil_signer_id_chars,
+    sizeof(k_virgil_signer_id_chars) - 1
 };
 
 //
 //  Identifier of self-signature.
 //
-static const char k_self_signer_id[] = "self";
+static const char k_self_signer_id_chars[] = "self";
 
 //
 //  Identifier of self-signature.
 //
-static const vsc_str_t k_self_signer_id_str = {
-    k_self_signer_id,
-    sizeof(k_self_signer_id) - 1
+static const vsc_str_t k_self_signer_id = {
+    k_self_signer_id_chars,
+    sizeof(k_self_signer_id_chars) - 1
 };
 
 
@@ -152,7 +152,7 @@ vssc_raw_card_verifier_verify_self(const vssc_raw_card_t *raw_card, const vscf_i
     VSSC_ASSERT_PTR(raw_card);
     VSSC_ASSERT_PTR(public_key);
 
-    return vssc_raw_card_verifier_verify(raw_card, k_self_signer_id_str, public_key);
+    return vssc_raw_card_verifier_verify(raw_card, k_self_signer_id, public_key);
 }
 
 //
@@ -164,5 +164,5 @@ vssc_raw_card_verifier_verify_virgil(const vssc_raw_card_t *raw_card, const vscf
     VSSC_ASSERT_PTR(raw_card);
     VSSC_ASSERT_PTR(public_key);
 
-    return vssc_raw_card_verifier_verify(raw_card, k_virgil_signer_id_str, public_key);
+    return vssc_raw_card_verifier_verify(raw_card, k_virgil_signer_id, public_key);
 }

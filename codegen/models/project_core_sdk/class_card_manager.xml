@@ -5,13 +5,14 @@
     <require class="unix time"/>
     <require class="raw card verifier"/>
     <require class="raw card signer"/>
+    <require class="card" api="private"/>
+    <require class="card list" api="private"/>
 
     <require interface="private key" project="foundation"/>
     <require class="key provider" project="foundation"/>
     <require class="signer" project="foundation"/>
     <require class="ctr drbg" project="foundation"/>
 
-    <property name="key provider" class="key provider" project="foundation"/>
     <property name="virgil public key" interface="public key" project="foundation"/>
     <property name="raw card signer" class="raw card signer"/>
 
@@ -79,6 +80,18 @@
         <argument name="error" class="error" access="readwrite"/>
 
         <return class="card" access="disown"/>
+    </method>
+
+
+    <method name="import raw card list" is_const="1">
+        Create list of Cards from "raw card list" and verify it.
+
+        Note, only self signature and Virgil Cards Service signatures are verified.
+
+        <argument name="raw card list" class="raw card list"/>
+        <argument name="error" class="error" access="readwrite"/>
+
+        <return class="card list" access="disown"/>
     </method>
 
 

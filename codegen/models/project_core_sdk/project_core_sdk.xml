@@ -86,14 +86,20 @@
     <class name="virgil http client"/>
     <class name="virgil http response"/>
 
+    <!-- Key Handlers -->
+    <class name="key handler"/>
+    <class name="key handler list"/>
+
     <!-- Cards modules -->
     <class name="card client"/>
     <class name="raw card"/>
+    <class name="raw card list"/>
     <class name="raw card signer"/>
     <class name="raw card verifier"/>
     <class name="raw card signature"/>
     <class name="raw card signature list"/>
     <class name="card"/>
+    <class name="card list"/>
     <class name="card manager"/>
 
     <error_message_getter success="0">

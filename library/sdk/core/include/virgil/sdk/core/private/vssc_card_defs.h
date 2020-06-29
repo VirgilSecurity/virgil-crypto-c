@@ -60,6 +60,7 @@
 
 #if !VSSC_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_str_buffer.h>
+#   include <virgil/crypto/common/vsc_buffer.h>
 #endif
 
 #if !VSSC_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
@@ -67,6 +68,7 @@
 #endif
 
 #if VSSC_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <VSCCommon/vsc_buffer.h>
 #   include <VSCCommon/vsc_str_buffer.h>
 #endif
 
@@ -105,6 +107,8 @@ struct vssc_card_t {
     vsc_str_buffer_t *identifier;
 
     const vssc_raw_card_t *raw_card;
+
+    vsc_buffer_t *public_key_id;
 
     const vscf_impl_t *public_key;
     //

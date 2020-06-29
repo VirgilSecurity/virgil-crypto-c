@@ -129,28 +129,15 @@ vssc_card_new(void);
 //  Create Virgil Card with mandatory properties.
 //
 VSSC_PUBLIC void
-vssc_card_init_with(vssc_card_t *self, const vssc_raw_card_t *raw_card, const vscf_impl_t *public_key);
+vssc_card_init_with(vssc_card_t *self, const vssc_raw_card_t *raw_card, vsc_data_t public_key_id,
+        const vscf_impl_t *public_key);
 
 //
 //  Allocate class context and perform it's initialization.
 //  Create Virgil Card with mandatory properties.
 //
 VSSC_PUBLIC vssc_card_t *
-vssc_card_new_with(const vssc_raw_card_t *raw_card, const vscf_impl_t *public_key);
-
-//
-//  Perform initialization of pre-allocated context.
-//  Create Virgil Card with mandatory properties.
-//
-VSSC_PRIVATE void
-vssc_card_init_with_disown(vssc_card_t *self, vssc_raw_card_t **raw_card_ref, vscf_impl_t **public_key_ref);
-
-//
-//  Allocate class context and perform it's initialization.
-//  Create Virgil Card with mandatory properties.
-//
-VSSC_PRIVATE vssc_card_t *
-vssc_card_new_with_disown(vssc_raw_card_t **raw_card_ref, vscf_impl_t **public_key_ref);
+vssc_card_new_with(const vssc_raw_card_t *raw_card, vsc_data_t public_key_id, const vscf_impl_t *public_key);
 
 //
 //  Release all inner resources and deallocate context if needed.
@@ -208,6 +195,12 @@ vssc_card_identity(const vssc_card_t *self);
 //
 VSSC_PUBLIC const vscf_impl_t *
 vssc_card_public_key(const vssc_card_t *self);
+
+//
+//  Return Card public key identifier.
+//
+VSSC_PUBLIC vsc_data_t
+vssc_card_public_key_id(const vssc_card_t *self);
 
 //
 //  Return Card version.

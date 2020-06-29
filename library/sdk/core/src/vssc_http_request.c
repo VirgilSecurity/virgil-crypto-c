@@ -96,53 +96,53 @@ vssc_http_request_init_ctx_with_body(vssc_http_request_t *self, vsc_str_t method
 //
 //  HTTP method: GET
 //
-VSSC_PUBLIC const char vssc_http_request_method_get[] = "GET";
+VSSC_PUBLIC const char vssc_http_request_method_get_chars[] = "GET";
 
 //
 //  HTTP method: GET
 //
-VSSC_PUBLIC const vsc_str_t vssc_http_request_method_get_str = {
-    vssc_http_request_method_get,
-    sizeof(vssc_http_request_method_get) - 1
+VSSC_PUBLIC const vsc_str_t vssc_http_request_method_get = {
+    vssc_http_request_method_get_chars,
+    sizeof(vssc_http_request_method_get_chars) - 1
 };
 
 //
 //  HTTP method: POST
 //
-VSSC_PUBLIC const char vssc_http_request_method_post[] = "POST";
+VSSC_PUBLIC const char vssc_http_request_method_post_chars[] = "POST";
 
 //
 //  HTTP method: POST
 //
-VSSC_PUBLIC const vsc_str_t vssc_http_request_method_post_str = {
-    vssc_http_request_method_post,
-    sizeof(vssc_http_request_method_post) - 1
+VSSC_PUBLIC const vsc_str_t vssc_http_request_method_post = {
+    vssc_http_request_method_post_chars,
+    sizeof(vssc_http_request_method_post_chars) - 1
 };
 
 //
 //  HTTP method: PUT
 //
-VSSC_PUBLIC const char vssc_http_request_method_put[] = "PUT";
+VSSC_PUBLIC const char vssc_http_request_method_put_chars[] = "PUT";
 
 //
 //  HTTP method: PUT
 //
-VSSC_PUBLIC const vsc_str_t vssc_http_request_method_put_str = {
-    vssc_http_request_method_put,
-    sizeof(vssc_http_request_method_put) - 1
+VSSC_PUBLIC const vsc_str_t vssc_http_request_method_put = {
+    vssc_http_request_method_put_chars,
+    sizeof(vssc_http_request_method_put_chars) - 1
 };
 
 //
 //  HTTP method: DELETE
 //
-VSSC_PUBLIC const char vssc_http_request_method_delete[] = "DELETE";
+VSSC_PUBLIC const char vssc_http_request_method_delete_chars[] = "DELETE";
 
 //
 //  HTTP method: DELETE
 //
-VSSC_PUBLIC const vsc_str_t vssc_http_request_method_delete_str = {
-    vssc_http_request_method_delete,
-    sizeof(vssc_http_request_method_delete) - 1
+VSSC_PUBLIC const vsc_str_t vssc_http_request_method_delete = {
+    vssc_http_request_method_delete_chars,
+    sizeof(vssc_http_request_method_delete_chars) - 1
 };
 
 //
@@ -445,6 +445,7 @@ VSSC_PUBLIC vsc_str_t
 vssc_http_request_method(const vssc_http_request_t *self) {
 
     VSSC_ASSERT_PTR(self);
+    VSSC_ASSERT(vsc_str_mutable_is_valid(self->method));
 
     return vsc_str_mutable_as_str(self->method);
 }
@@ -456,6 +457,7 @@ VSSC_PUBLIC vsc_str_t
 vssc_http_request_url(const vssc_http_request_t *self) {
 
     VSSC_ASSERT_PTR(self);
+    VSSC_ASSERT(vsc_str_mutable_is_valid(self->url));
 
     return vsc_str_mutable_as_str(self->url);
 }
@@ -468,7 +470,11 @@ vssc_http_request_body(const vssc_http_request_t *self) {
 
     VSSC_ASSERT_PTR(self);
 
-    return vsc_str_mutable_as_str(self->body);
+    if (vsc_str_mutable_is_valid(self->body)) {
+        return vsc_str_mutable_as_str(self->body);
+    }
+
+    return vsc_str_empty();
 }
 
 //

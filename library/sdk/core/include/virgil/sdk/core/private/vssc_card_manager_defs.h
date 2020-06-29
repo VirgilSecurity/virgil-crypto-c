@@ -59,12 +59,10 @@
 
 #if !VSSC_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
 #   include <virgil/crypto/foundation/vscf_impl.h>
-#   include <virgil/crypto/foundation/vscf_key_provider.h>
 #endif
 
 #if VSSC_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
 #   include <VSCFoundation/vscf_impl.h>
-#   include <VSCFoundation/vscf_key_provider.h>
 #endif
 
 // clang-format on
@@ -98,8 +96,6 @@ struct vssc_card_manager_t {
     //  Dependency to the interface 'random'.
     //
     vscf_impl_t *random;
-
-    vscf_key_provider_t *key_provider;
 
     vscf_impl_t *virgil_public_key;
 

@@ -55,12 +55,15 @@
 #include "vssc_card.h"
 #include "vssc_memory.h"
 #include "vssc_assert.h"
+#include "vssc_card_private.h"
 #include "vssc_card_defs.h"
+#include "vssc_card_list_private.h"
 
-#include <virgil/crypto/common/private/vsc_buffer_defs.h>
 #include <virgil/crypto/foundation/vscf_public_key.h>
+#include <virgil/crypto/common/private/vsc_buffer_defs.h>
 #include <virgil/crypto/foundation/private/vscf_sha512_defs.h>
 #include <virgil/crypto/foundation/vscf_binary.h>
+#include <virgil/crypto/common/vsc_buffer.h>
 
 // clang-format on
 //  @end
@@ -100,13 +103,15 @@ vssc_card_cleanup_ctx(vssc_card_t *self);
 //  Create Virgil Card with mandatory properties.
 //
 static void
-vssc_card_init_ctx_with(vssc_card_t *self, const vssc_raw_card_t *raw_card, const vscf_impl_t *public_key);
+vssc_card_init_ctx_with(vssc_card_t *self, const vssc_raw_card_t *raw_card, vsc_data_t public_key_id,
+        const vscf_impl_t *public_key);
 
 //
 //  Create Virgil Card with mandatory properties.
 //
 static void
-vssc_card_init_ctx_with_disown(vssc_card_t *self, vssc_raw_card_t **raw_card_ref, vscf_impl_t **public_key_ref);
+vssc_card_init_ctx_with_disown(vssc_card_t *self, const vssc_raw_card_t *raw_card, vsc_buffer_t **public_key_id_ref,
+        vscf_impl_t **public_key_ref);
 
 //
 //  Perfrom derivation of the public key identifier from its binary representation.
@@ -174,7 +179,8 @@ vssc_card_new(void) {
 //  Create Virgil Card with mandatory properties.
 //
 VSSC_PUBLIC void
-vssc_card_init_with(vssc_card_t *self, const vssc_raw_card_t *raw_card, const vscf_impl_t *public_key) {
+vssc_card_init_with(vssc_card_t *self, const vssc_raw_card_t *raw_card, vsc_data_t public_key_id,
+        const vscf_impl_t *public_key) {
 
     VSSC_ASSERT_PTR(self);
 
@@ -182,7 +188,7 @@ vssc_card_init_with(vssc_card_t *self, const vssc_raw_card_t *raw_card, const vs
 
     self->refcnt = 1;
 
-    vssc_card_init_ctx_with(self, raw_card, public_key);
+    vssc_card_init_ctx_with(self, raw_card, public_key_id, public_key);
 }
 
 //
@@ -190,12 +196,12 @@ vssc_card_init_with(vssc_card_t *self, const vssc_raw_card_t *raw_card, const vs
 //  Create Virgil Card with mandatory properties.
 //
 VSSC_PUBLIC vssc_card_t *
-vssc_card_new_with(const vssc_raw_card_t *raw_card, const vscf_impl_t *public_key) {
+vssc_card_new_with(const vssc_raw_card_t *raw_card, vsc_data_t public_key_id, const vscf_impl_t *public_key) {
 
     vssc_card_t *self = (vssc_card_t *) vssc_alloc(sizeof (vssc_card_t));
     VSSC_ASSERT_ALLOC(self);
 
-    vssc_card_init_with(self, raw_card, public_key);
+    vssc_card_init_with(self, raw_card, public_key_id, public_key);
 
     self->self_dealloc_cb = vssc_dealloc;
 
@@ -206,8 +212,9 @@ vssc_card_new_with(const vssc_raw_card_t *raw_card, const vscf_impl_t *public_ke
 //  Perform initialization of pre-allocated context.
 //  Create Virgil Card with mandatory properties.
 //
-VSSC_PRIVATE void
-vssc_card_init_with_disown(vssc_card_t *self, vssc_raw_card_t **raw_card_ref, vscf_impl_t **public_key_ref) {
+VSSC_PUBLIC void
+vssc_card_init_with_disown(vssc_card_t *self, const vssc_raw_card_t *raw_card, vsc_buffer_t **public_key_id_ref,
+        vscf_impl_t **public_key_ref) {
 
     VSSC_ASSERT_PTR(self);
 
@@ -215,20 +222,21 @@ vssc_card_init_with_disown(vssc_card_t *self, vssc_raw_card_t **raw_card_ref, vs
 
     self->refcnt = 1;
 
-    vssc_card_init_ctx_with_disown(self, raw_card_ref, public_key_ref);
+    vssc_card_init_ctx_with_disown(self, raw_card, public_key_id_ref, public_key_ref);
 }
 
 //
 //  Allocate class context and perform it's initialization.
 //  Create Virgil Card with mandatory properties.
 //
-VSSC_PRIVATE vssc_card_t *
-vssc_card_new_with_disown(vssc_raw_card_t **raw_card_ref, vscf_impl_t **public_key_ref) {
+VSSC_PUBLIC vssc_card_t *
+vssc_card_new_with_disown(const vssc_raw_card_t *raw_card, vsc_buffer_t **public_key_id_ref,
+        vscf_impl_t **public_key_ref) {
 
     vssc_card_t *self = (vssc_card_t *) vssc_alloc(sizeof (vssc_card_t));
     VSSC_ASSERT_ALLOC(self);
 
-    vssc_card_init_with_disown(self, raw_card_ref, public_key_ref);
+    vssc_card_init_with_disown(self, raw_card, public_key_id_ref, public_key_ref);
 
     self->self_dealloc_cb = vssc_dealloc;
 
@@ -357,6 +365,7 @@ vssc_card_cleanup_ctx(vssc_card_t *self) {
     vsc_str_buffer_delete(self->identifier);
     vssc_raw_card_delete(self->raw_card);
     vscf_impl_delete(self->public_key);
+    vsc_buffer_destroy(&self->public_key_id);
     vssc_card_delete(self->previous_card);
 }
 
@@ -364,15 +373,18 @@ vssc_card_cleanup_ctx(vssc_card_t *self) {
 //  Create Virgil Card with mandatory properties.
 //
 static void
-vssc_card_init_ctx_with(vssc_card_t *self, const vssc_raw_card_t *raw_card, const vscf_impl_t *public_key) {
+vssc_card_init_ctx_with(
+        vssc_card_t *self, const vssc_raw_card_t *raw_card, vsc_data_t public_key_id, const vscf_impl_t *public_key) {
 
     VSSC_ASSERT_PTR(self);
     VSSC_ASSERT_PTR(raw_card);
     VSSC_ASSERT_PTR(public_key);
+    VSSC_ASSERT(vsc_data_is_valid_and_non_empty(public_key_id));
     VSSC_ASSERT_PTR(vscf_public_key_is_implemented(public_key));
 
     self->raw_card = vssc_raw_card_shallow_copy_const(raw_card);
     self->public_key = vscf_impl_shallow_copy_const(public_key);
+    self->public_key_id = vsc_buffer_new_with_data(public_key_id);
 
     vssc_card_derive_identifier(self);
 
@@ -383,18 +395,22 @@ vssc_card_init_ctx_with(vssc_card_t *self, const vssc_raw_card_t *raw_card, cons
 //  Create Virgil Card with mandatory properties.
 //
 static void
-vssc_card_init_ctx_with_disown(vssc_card_t *self, vssc_raw_card_t **raw_card_ref, vscf_impl_t **public_key_ref) {
+vssc_card_init_ctx_with_disown(vssc_card_t *self, const vssc_raw_card_t *raw_card, vsc_buffer_t **public_key_id_ref,
+        vscf_impl_t **public_key_ref) {
 
     VSSC_ASSERT_PTR(self);
-    VSSC_ASSERT_REF(raw_card_ref);
+    VSSC_ASSERT_PTR(raw_card);
     VSSC_ASSERT_REF(public_key_ref);
+    VSSC_ASSERT_REF(public_key_id_ref);
+    VSSC_ASSERT(vsc_buffer_is_valid(*public_key_id_ref));
     VSSC_ASSERT_PTR(vscf_public_key_is_implemented(*public_key_ref));
 
-    self->raw_card = *raw_card_ref;
+    self->raw_card = vssc_raw_card_shallow_copy_const(raw_card);
     self->public_key = *public_key_ref;
+    self->public_key_id = *public_key_id_ref;
 
-    *raw_card_ref = NULL;
     *public_key_ref = NULL;
+    *public_key_id_ref = NULL;
 
     vssc_card_derive_identifier(self);
 
@@ -461,6 +477,18 @@ vssc_card_public_key(const vssc_card_t *self) {
     VSSC_ASSERT_PTR(self->public_key);
 
     return self->public_key;
+}
+
+//
+//  Return Card public key identifier.
+//
+VSSC_PUBLIC vsc_data_t
+vssc_card_public_key_id(const vssc_card_t *self) {
+
+    VSSC_ASSERT_PTR(self);
+    VSSC_ASSERT_PTR(self->public_key_id);
+
+    return vsc_buffer_data(self->public_key_id);
 }
 
 //

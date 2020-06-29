@@ -57,7 +57,7 @@ test__send__with_stale_jwt__returns_response_with_service_error(void) {
     TEST_ASSERT_EQUAL(vssc_status_SUCCESS, vssc_error_status(&error));
     TEST_ASSERT_NOT_NULL(jwt);
 
-    vssc_http_request_t *request = vssc_http_request_new_with_body(vssc_http_request_method_post_str,
+    vssc_http_request_t *request = vssc_http_request_new_with_body(vssc_http_request_method_post,
             test_data_virgil_http_client_HTTP_URL, test_data_virgil_http_client_HTTP_BODY);
 
     vssc_virgil_http_response_t *response = vssc_virgil_http_client_send(request, jwt, &error);
