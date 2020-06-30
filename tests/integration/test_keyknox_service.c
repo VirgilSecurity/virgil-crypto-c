@@ -44,8 +44,10 @@
 
 
 #include "test_env.h"
+#include "test_sdk_utils.h"
 
 #include <virgil/crypto/common/vsc_str_buffer.h>
+#include <virgil/crypto/foundation/vscf_binary.h>
 
 #include <virgil/sdk/core/vssc_unix_time.h>
 #include <virgil/sdk/core/vssc_virgil_http_client.h>
@@ -72,16 +74,26 @@ MAKE_DATA_CONSTANT_FROM_STR(test_data_META, "d5b1f64f-75b2-45ef-adc7-1b095b0677d
 MAKE_DATA_CONSTANT_FROM_STR(test_data_VALUE, "4bc0ff31-cb8e-42da-a19a-8b8decdf63ed")
 
 static vsc_str_buffer_t *
-create_random_key(void) {
+create_random_key(const test_env_t *env) {
 
-    vsc_str_buffer_t *key = vsc_str_buffer_new_with_capacity(32);
+    const size_t random_bytes_len = 8;
+    vsc_buffer_t *random_bytes = vsc_buffer_new_with_capacity(random_bytes_len);
 
-    const int key_len =
-            snprintf(vsc_str_buffer_unused_chars(key), vsc_str_buffer_unused_len(key), "key-%lu", vssc_unix_time_now());
+    const vscf_status_t rng_status = vscf_random(env->random, random_bytes_len, random_bytes);
+    if (rng_status != vscf_status_SUCCESS) {
+        vsc_buffer_destroy(&random_bytes);
+        TEST_FAIL_MESSAGE("Random function failed");
+        return NULL;
+    }
 
-    vsc_str_buffer_inc_used(key, key_len);
+    vsc_str_t key_prefix = vsc_str_from_str("key-");
 
-    return key;
+    vsc_str_buffer_t *key_str = vsc_str_buffer_new_with_capacity(key_prefix.len + 2 * random_bytes_len);
+    vsc_str_buffer_write_str(key_str, key_prefix);
+
+    vscf_binary_to_hex(vsc_buffer_data(random_bytes), key_str);
+
+    return key_str;
 }
 
 
@@ -108,7 +120,7 @@ push_new_keyknox_entry(const test_env_t *env, vsc_str_t root, vsc_str_t path, vs
     // Make key with timestamp.
     vsc_str_buffer_t *key_buf = NULL;
     if (vsc_str_is_empty(key)) {
-        key_buf = create_random_key();
+        key_buf = create_random_key(env);
         key = vsc_str_buffer_str(key_buf);
     }
 
@@ -135,13 +147,7 @@ push_new_keyknox_entry(const test_env_t *env, vsc_str_t root, vsc_str_t path, vs
             vssc_virgil_http_client_send(push_keyknox_entry_request, env->jwt, &core_sdk_error);
     TEST_ASSERT_EQUAL(vssc_status_SUCCESS, core_sdk_error.status);
 
-    if (vssc_virgil_http_response_has_service_error(push_keyknox_entry_response)) {
-        const size_t error_code = vssc_virgil_http_response_service_error_code(push_keyknox_entry_response);
-        vsc_str_t error_message = vssc_virgil_http_response_service_error_description(push_keyknox_entry_response);
-
-        printf("GOT SERVICE ERROR: %lu - %s\n", error_code, error_message.chars);
-        TEST_FAIL();
-    }
+    TEST_ASSERT_VIRGIL_HTTP_RESPONSE(push_keyknox_entry_response);
 
     vssk_keyknox_entry_t *pushed_keyknox_entry =
             vssk_keyknox_client_process_response_push(push_keyknox_entry_response, &keyknox_error);
@@ -205,7 +211,7 @@ test__pull__pushed_entry__returns_expected_keyknox_entry(void) {
     //  Push Keyknox entry.
     //
     vsc_str_t identity = vssc_jwt_identity(env->jwt);
-    vsc_str_buffer_t *key_buf = create_random_key();
+    vsc_str_buffer_t *key_buf = create_random_key(env);
     vsc_str_t key = vsc_str_buffer_str(key_buf);
 
     vssk_keyknox_entry_t *pushed_keyknox_entry =
@@ -222,14 +228,7 @@ test__pull__pushed_entry__returns_expected_keyknox_entry(void) {
             vssc_virgil_http_client_send(pull_keyknox_entry_request, env->jwt, &core_sdk_error);
     TEST_ASSERT_EQUAL(vssc_status_SUCCESS, core_sdk_error.status);
 
-    if (vssc_virgil_http_response_has_service_error(pull_keyknox_entry_response)) {
-        const size_t error_code = vssc_virgil_http_response_service_error_code(pull_keyknox_entry_response);
-        vsc_str_t error_message = vssc_virgil_http_response_service_error_description(pull_keyknox_entry_response);
-
-        printf("GOT SERVICE ERROR: %lu - %s\n", error_code, error_message.chars);
-        TEST_FAIL();
-    }
-
+    TEST_ASSERT_VIRGIL_HTTP_RESPONSE(pull_keyknox_entry_response);
 
     vssk_keyknox_entry_t *pulled_keyknox_entry =
             vssk_keyknox_client_process_response_pull(pull_keyknox_entry_response, &keyknox_error);
@@ -280,7 +279,7 @@ test__reset__pushed_entry_with_defined_root_and_path__returns_expected_keyknox_e
     //  Push Keyknox entry.
     //
     vsc_str_t identity = vssc_jwt_identity(env->jwt);
-    vsc_str_buffer_t *key_buf = create_random_key();
+    vsc_str_buffer_t *key_buf = create_random_key(env);
     vsc_str_t key = vsc_str_buffer_str(key_buf);
 
     vssk_keyknox_entry_t *pushed_keyknox_entry =
@@ -298,13 +297,7 @@ test__reset__pushed_entry_with_defined_root_and_path__returns_expected_keyknox_e
             vssc_virgil_http_client_send(reset_keyknox_entry_request, env->jwt, &core_sdk_error);
     TEST_ASSERT_EQUAL(vssc_status_SUCCESS, core_sdk_error.status);
 
-    if (vssc_virgil_http_response_has_service_error(reset_keyknox_entry_response)) {
-        const size_t error_code = vssc_virgil_http_response_service_error_code(reset_keyknox_entry_response);
-        vsc_str_t error_message = vssc_virgil_http_response_service_error_description(reset_keyknox_entry_response);
-
-        printf("GOT SERVICE ERROR: %lu - %s\n", error_code, error_message.chars);
-        TEST_FAIL();
-    }
+    TEST_ASSERT_VIRGIL_HTTP_RESPONSE(reset_keyknox_entry_response);
 
     vssk_keyknox_entry_t *reset_keyknox_entry =
             vssk_keyknox_client_process_response_reset(reset_keyknox_entry_response, &keyknox_error);
@@ -352,7 +345,7 @@ test__get_keys__pushed_1_entry__returns_list_with_1_key(void) {
     //  Push Keyknox entry.
     //
     vsc_str_t identity = vssc_jwt_identity(env->jwt);
-    vsc_str_buffer_t *key_buf = create_random_key();
+    vsc_str_buffer_t *key_buf = create_random_key(env);
     vsc_str_t key = vsc_str_buffer_str(key_buf);
 
     vssk_keyknox_entry_t *pushed_keyknox_entry =
@@ -369,13 +362,7 @@ test__get_keys__pushed_1_entry__returns_list_with_1_key(void) {
             vssc_virgil_http_client_send(get_keys_request, env->jwt, &core_sdk_error);
     TEST_ASSERT_EQUAL(vssc_status_SUCCESS, core_sdk_error.status);
 
-    if (vssc_virgil_http_response_has_service_error(get_keys_response)) {
-        const size_t error_code = vssc_virgil_http_response_service_error_code(get_keys_response);
-        vsc_str_t error_message = vssc_virgil_http_response_service_error_description(get_keys_response);
-
-        printf("GOT SERVICE ERROR: %lu - %s\n", error_code, error_message.chars);
-        TEST_FAIL();
-    }
+    TEST_ASSERT_VIRGIL_HTTP_RESPONSE(get_keys_response);
 
     vssc_string_list_t *keys = vssk_keyknox_client_process_response_get_keys(get_keys_response, &keyknox_error);
     TEST_ASSERT_EQUAL(vssk_status_SUCCESS, keyknox_error.status);

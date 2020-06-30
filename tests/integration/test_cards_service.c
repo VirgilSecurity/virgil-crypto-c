@@ -44,6 +44,7 @@
 
 
 #include "test_env.h"
+#include "test_sdk_utils.h"
 
 #include <virgil/crypto/foundation/vscf_ctr_drbg.h>
 #include <virgil/crypto/foundation/vscf_key_provider.h>
@@ -51,15 +52,6 @@
 #include <virgil/sdk/core/vssc_virgil_http_client.h>
 #include <virgil/sdk/core/vssc_card_manager.h>
 #include <virgil/sdk/core/vssc_card_client.h>
-
-#define TEST_ASSERT_VIRGIL_HTTP_RESPONSE(VR)                                                                           \
-    if (vssc_virgil_http_response_has_service_error(publish_card_response)) {                                          \
-        const size_t error_code = vssc_virgil_http_response_service_error_code(publish_card_response);                 \
-        vsc_str_t error_message = vssc_virgil_http_response_service_error_description(publish_card_response);          \
-        char message[256] = {'\0'};                                                                                    \
-        snprintf(message, sizeof(message) - 1, "GOT SERVICE ERROR: %lu - %s\n", error_code, error_message.chars);      \
-        TEST_FAIL_MESSAGE(message);                                                                                    \
-    }
 
 
 void

@@ -40,6 +40,7 @@
 
 #include <virgil/crypto/foundation/vscf_key_provider.h>
 #include <virgil/crypto/foundation/vscf_impl.h>
+#include <virgil/crypto/foundation/vscf_ctr_drbg.h>
 #include <virgil/crypto/foundation/private/vscf_atomic.h>
 
 #include <virgil/sdk/core/vssc_json_object.h>
@@ -62,6 +63,7 @@ typedef struct {
     vscf_impl_t *app_public_key;
     vscf_impl_t *virgil_public_key;
     vssc_jwt_t *jwt;
+    vscf_impl_t *random;
     size_t refcnt;
 } test_env_inner_t;
 
@@ -190,13 +192,16 @@ test_env_load(void) {
     vssc_error_t error;
     vssc_error_reset(&error);
 
-    vscf_key_provider_t *key_provider = vscf_key_provider_new();
-    const vscf_status_t init_status = vscf_key_provider_setup_defaults(key_provider);
+    vscf_ctr_drbg_t *ctr_drbg = vscf_ctr_drbg_new();
+    const vscf_status_t rng_init_status = vscf_ctr_drbg_setup_defaults(ctr_drbg);
 
-    if (init_status != vscf_status_SUCCESS) {
+    if (rng_init_status != vscf_status_SUCCESS) {
         print_error(k_error_msg_CRYPTO_INIT_FAILED);
         goto fail;
     }
+
+    vscf_key_provider_t *key_provider = vscf_key_provider_new();
+    vscf_key_provider_use_random(key_provider, vscf_ctr_drbg_impl(ctr_drbg));
 
     //
     //  Parse env.json.
@@ -322,6 +327,7 @@ test_env_load(void) {
     g_env_inner.app_public_key = app_public_key;
     g_env_inner.virgil_public_key = virgil_public_key;
     g_env_inner.jwt = jwt;
+    g_env_inner.random = vscf_ctr_drbg_impl(ctr_drbg);
 
     g_env.url = vsc_str_mutable_as_str(g_env_inner.url);
     g_env.app_id = vsc_str_mutable_as_str(g_env_inner.app_id);
@@ -333,6 +339,7 @@ test_env_load(void) {
     g_env.app_public_key = g_env_inner.app_public_key;
     g_env.virgil_public_key = g_env_inner.virgil_public_key;
     g_env.jwt = g_env_inner.jwt;
+    g_env.random = g_env_inner.random;
     g_env.inner = &g_env_inner;
 
     free(buffer);
@@ -348,6 +355,8 @@ test_env_load(void) {
 
 fail:
     free(buffer);
+
+    vscf_ctr_drbg_destroy(&ctr_drbg);
 
     vscf_key_provider_destroy(&key_provider);
 
@@ -383,6 +392,7 @@ test_env_release(void) {
     vscf_impl_destroy(&g_env_inner.app_public_key);
     vscf_impl_destroy(&g_env_inner.virgil_public_key);
     vssc_jwt_destroy(&g_env_inner.jwt);
+    vscf_impl_destroy(&g_env_inner.random);
 
     vsc_zeroize(&g_env_inner, sizeof(test_env_inner_t));
     vsc_zeroize(&g_env, sizeof(test_env_t));

@@ -32,50 +32,24 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef VIRGIL_INTEGRATION_TEST_ENV_H_INCLUDED
-#define VIRGIL_INTEGRATION_TEST_ENV_H_INCLUDED
+#ifndef VIRGIL_INTEGRATION_TEST_SDK_UTILS_H_INCLUDED
+#define VIRGIL_INTEGRATION_TEST_SDK_UTILS_H_INCLUDED
+
+#include <virgil/sdk/core/vssc_virgil_http_response.h>
+
+#include <stdio.h>
+#include <string.h>
+
+#include "unity.h"
 
 
-#include <virgil/crypto/common/vsc_data.h>
-#include <virgil/crypto/common/vsc_str.h>
-#include <virgil/crypto/foundation/vscf_impl.h>
-#include <virgil/crypto/foundation/vscf_random.h>
-#include <virgil/sdk/core/vssc_jwt.h>
+#define TEST_ASSERT_VIRGIL_HTTP_RESPONSE(VR)                                                                           \
+    if (vssc_virgil_http_response_has_service_error(VR)) {                                                             \
+        const size_t error_code = vssc_virgil_http_response_service_error_code(VR);                                    \
+        vsc_str_t error_message = vssc_virgil_http_response_service_error_description(VR);                             \
+        char message[256] = {'\0'};                                                                                    \
+        snprintf(message, sizeof(message) - 1, "GOT SERVICE ERROR: %lu - %s\n", error_code, error_message.chars);      \
+        TEST_FAIL_MESSAGE(message);                                                                                    \
+    }
 
-
-typedef struct {
-    vsc_str_t url;
-    vsc_str_t app_id;
-    vsc_str_t app_key_id;
-    vsc_data_t app_key_data;
-    vsc_data_t app_public_key_data;
-    vsc_data_t virgil_public_key_data;
-    const vscf_impl_t *app_key;
-    const vscf_impl_t *app_public_key;
-    const vscf_impl_t *random;
-    const vscf_impl_t *virgil_public_key;
-    const vssc_jwt_t *jwt;
-    const void *inner;
-} test_env_t;
-
-
-//
-//  Load test environment.
-//  Return non-zero if error.
-//
-int
-test_env_load(void);
-
-//
-//  Release test environment.
-//
-void
-test_env_release(void);
-
-//
-//  Return loaded test environment.
-//
-const test_env_t *
-test_env_get(void);
-
-#endif // VIRGIL_INTEGRATION_TEST_ENV_H_INCLUDED
+#endif // VIRGIL_INTEGRATION_TEST_SDK_UTILS_H_INCLUDED

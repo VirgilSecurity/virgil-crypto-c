@@ -41,6 +41,7 @@ add_subdirectory("${CMAKE_CURRENT_LIST_DIR}/test_env")
 
 macro(_add_test test)
     add_executable(${test} ${test}.c)
+    target_sources(${test} PRIVATE "${CMAKE_CURRENT_LIST_DIR}/test_sdk_utils.h")
     target_add_filename_definitions(${test})
     target_link_libraries(${test} test_utils test_env "${ARGN}")
     set_target_properties(${test} PROPERTIES C_STANDARD "99")
