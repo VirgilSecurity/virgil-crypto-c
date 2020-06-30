@@ -518,6 +518,7 @@ vssc_card_manager_import_raw_card(
 
     VSSC_ASSERT_PTR(self);
     VSSC_ASSERT_PTR(self->random);
+    VSSC_ASSERT_PTR(self->virgil_public_key);
     VSSC_ASSERT_PTR(raw_card);
 
     //
