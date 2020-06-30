@@ -701,7 +701,7 @@ vsc_str_buffer_rtrim(vsc_str_buffer_t *self, char char_to_trim) {
 VSC_PUBLIC void
 vsc_str_buffer_reset_with_capacity(vsc_str_buffer_t *self, size_t min_capacity) {
 
-    VSC_ASSERT(vsc_str_buffer_is_valid(self));
+    VSC_ASSERT(self);
     VSC_ASSERT(min_capacity > 0);
 
     vsc_buffer_reset_with_capacity(&self->buffer, min_capacity);
