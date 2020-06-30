@@ -320,7 +320,7 @@ static void
 vsc_buffer_init_ctx(vsc_buffer_t *self) {
 
     VSC_ASSERT_PTR(self);
-    self->is_reverse = false;
+    self->is_owner = true;
 }
 
 //
@@ -353,9 +353,11 @@ vsc_buffer_init_ctx_with_capacity(vsc_buffer_t *self, size_t capacity) {
     self->bytes = (byte *)vsc_alloc(capacity);
     VSC_ASSERT_ALLOC(self->bytes);
 
+    self->len = 0;
     self->capacity = capacity;
     self->bytes_dealloc_cb = vsc_dealloc;
     self->is_owner = true;
+    self->is_secure = false;
 }
 
 //
@@ -824,11 +826,18 @@ VSC_PUBLIC void
 vsc_buffer_reset_with_capacity(vsc_buffer_t *self, size_t min_capacity) {
 
     VSC_ASSERT_PTR(self);
+    VSC_ASSERT_PTR(self->is_owner);
     VSC_ASSERT(min_capacity > 0);
 
     if (self->capacity < min_capacity) {
-        vsc_buffer_cleanup_ctx(self);
+        const bool is_secure = self->is_secure;
+        const bool is_reverse = self->is_reverse;
+
+        vsc_buffer_cleanup(self);
         vsc_buffer_init_ctx_with_capacity(self, min_capacity);
+
+        self->is_secure = is_secure;
+        self->is_reverse = is_reverse;
     } else {
         vsc_buffer_reset(self);
     }
