@@ -65,7 +65,7 @@
         Add recipient defined with id and public key.
 
         <argument name="recipient id" class="data"/>
-        <argument name="public key" interface="public key" access="retain"/>
+        <argument name="public key" interface="public key"/>
     </method>
 
     <method name="clear recipients">
@@ -77,7 +77,7 @@
         Return error if the private key can not sign.
 
         <argument name="signer id" class="data"/>
-        <argument name="private key" interface="private key" access="retain"/>
+        <argument name="private key" interface="private key"/>
 
         <return enum="status"/>
     </method>

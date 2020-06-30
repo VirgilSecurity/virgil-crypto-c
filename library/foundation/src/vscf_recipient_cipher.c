@@ -664,7 +664,7 @@ vscf_recipient_cipher_has_key_recipient(const vscf_recipient_cipher_t *self, vsc
 //
 VSCF_PUBLIC void
 vscf_recipient_cipher_add_key_recipient(
-        vscf_recipient_cipher_t *self, vsc_data_t recipient_id, vscf_impl_t *public_key) {
+        vscf_recipient_cipher_t *self, vsc_data_t recipient_id, const vscf_impl_t *public_key) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT(vsc_data_is_valid(recipient_id));
@@ -694,7 +694,7 @@ vscf_recipient_cipher_clear_recipients(vscf_recipient_cipher_t *self) {
 //  Return error if the private key can not sign.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_recipient_cipher_add_signer(vscf_recipient_cipher_t *self, vsc_data_t signer_id, vscf_impl_t *private_key) {
+vscf_recipient_cipher_add_signer(vscf_recipient_cipher_t *self, vsc_data_t signer_id, const vscf_impl_t *private_key) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT(vsc_data_is_valid(signer_id));
@@ -2063,7 +2063,7 @@ vscf_recipient_cipher_encrypt_cipher_key_for_recipients(vscf_recipient_cipher_t 
         vscf_error_reset(&error);
 
         vsc_data_t recipient_id = vscf_key_recipient_list_recipient_id(curr);
-        vscf_impl_t *recipient_public_key = vscf_key_recipient_list_recipient_public_key(curr);
+        const vscf_impl_t *recipient_public_key = vscf_key_recipient_list_recipient_public_key(curr);
 
         vscf_impl_t *key_alg = vscf_key_alg_factory_create_from_key(recipient_public_key, self->random, &error);
         if (vscf_error_has_error(&error)) {

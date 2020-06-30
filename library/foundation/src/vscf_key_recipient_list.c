@@ -256,7 +256,7 @@ vscf_key_recipient_list_cleanup_ctx(vscf_key_recipient_list_t *self) {
     VSCF_ASSERT_PTR(self);
 
     vsc_buffer_destroy(&self->recipient_id);
-    vscf_impl_destroy(&self->recipient_public_key);
+    vscf_impl_delete(self->recipient_public_key);
     vscf_key_recipient_list_destroy(&self->next);
 }
 
@@ -266,7 +266,7 @@ vscf_key_recipient_list_cleanup_ctx(vscf_key_recipient_list_t *self) {
 //
 VSCF_PUBLIC void
 vscf_key_recipient_list_add(
-        vscf_key_recipient_list_t *self, vsc_data_t recipient_id, vscf_impl_t *recipient_public_key) {
+        vscf_key_recipient_list_t *self, vsc_data_t recipient_id, const vscf_impl_t *recipient_public_key) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT(vsc_data_is_valid(recipient_id));
@@ -276,7 +276,7 @@ vscf_key_recipient_list_add(
     if (NULL == self->recipient_id) {
         VSCF_ASSERT_NULL(self->recipient_public_key);
         self->recipient_id = vsc_buffer_new_with_data(recipient_id);
-        self->recipient_public_key = vscf_impl_shallow_copy(recipient_public_key);
+        self->recipient_public_key = vscf_impl_shallow_copy_const(recipient_public_key);
     } else {
         if (NULL == self->next) {
             self->next = vscf_key_recipient_list_new();
@@ -312,7 +312,7 @@ vscf_key_recipient_list_recipient_id(const vscf_key_recipient_list_t *self) {
 //
 //  Return recipient public key.
 //
-VSCF_PUBLIC vscf_impl_t *
+VSCF_PUBLIC const vscf_impl_t *
 vscf_key_recipient_list_recipient_public_key(const vscf_key_recipient_list_t *self) {
 
     VSCF_ASSERT_PTR(self);

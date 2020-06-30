@@ -4,7 +4,7 @@
     <require interface="public key"/>
 
     <property name="recipient id" class="buffer"/>
-    <property name="recipient public key" interface="public key"/>
+    <property name="recipient public key" interface="public key" access="readonly"/>
     <property name="next" class="key recipient list"/>
     <property name="prev" class="key recipient list"/>
 
@@ -13,7 +13,7 @@
         Note, ownership is transfered.
 
         <argument name="recipient id" class="data"/>
-        <argument name="recipient public key" interface="public key" access="retain"/>
+        <argument name="recipient public key" interface="public key"/>
     </method>
 
 
@@ -32,7 +32,7 @@
     <method name="recipient public key" is_const="1">
         Return recipient public key.
 
-        <return interface="public key" access="readwrite"/>
+        <return interface="public key"/>
     </method>
 
 

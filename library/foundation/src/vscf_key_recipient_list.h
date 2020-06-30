@@ -144,7 +144,7 @@ vscf_key_recipient_list_shallow_copy_const(const vscf_key_recipient_list_t *self
 //
 VSCF_PUBLIC void
 vscf_key_recipient_list_add(vscf_key_recipient_list_t *self, vsc_data_t recipient_id,
-        vscf_impl_t *recipient_public_key);
+        const vscf_impl_t *recipient_public_key);
 
 //
 //  Return true if given list has key recipient.
@@ -161,7 +161,7 @@ vscf_key_recipient_list_recipient_id(const vscf_key_recipient_list_t *self);
 //
 //  Return recipient public key.
 //
-VSCF_PUBLIC vscf_impl_t *
+VSCF_PUBLIC const vscf_impl_t *
 vscf_key_recipient_list_recipient_public_key(const vscf_key_recipient_list_t *self);
 
 //

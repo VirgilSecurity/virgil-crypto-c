@@ -143,7 +143,7 @@ vscf_signer_list_shallow_copy_const(const vscf_signer_list_t *self);
 //  Note, ownership is transfered.
 //
 VSCF_PUBLIC void
-vscf_signer_list_add(vscf_signer_list_t *self, vsc_data_t signer_id, vscf_impl_t *signer_private_key);
+vscf_signer_list_add(vscf_signer_list_t *self, vsc_data_t signer_id, const vscf_impl_t *signer_private_key);
 
 //
 //  Remove all items.
@@ -166,7 +166,7 @@ vscf_signer_list_signer_id(const vscf_signer_list_t *self);
 //
 //  Return signer private key.
 //
-VSCF_PUBLIC vscf_impl_t *
+VSCF_PUBLIC const vscf_impl_t *
 vscf_signer_list_signer_private_key(const vscf_signer_list_t *self);
 
 //

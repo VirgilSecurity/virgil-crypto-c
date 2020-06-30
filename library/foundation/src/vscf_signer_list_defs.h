@@ -96,7 +96,7 @@ struct vscf_signer_list_t {
 
     vsc_buffer_t *signer_id;
 
-    vscf_impl_t *signer_private_key;
+    const vscf_impl_t *signer_private_key;
     //
     //  Class specific context.
     //

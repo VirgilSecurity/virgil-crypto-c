@@ -96,7 +96,7 @@ struct vscf_key_recipient_list_t {
 
     vsc_buffer_t *recipient_id;
 
-    vscf_impl_t *recipient_public_key;
+    const vscf_impl_t *recipient_public_key;
 
     vscf_key_recipient_list_t *next;
 

@@ -256,7 +256,7 @@ vscf_signer_list_cleanup_ctx(vscf_signer_list_t *self) {
     VSCF_ASSERT_PTR(self);
 
     vsc_buffer_destroy(&self->signer_id);
-    vscf_impl_destroy(&self->signer_private_key);
+    vscf_impl_delete(self->signer_private_key);
     vscf_signer_list_destroy(&self->next);
 }
 
@@ -265,7 +265,7 @@ vscf_signer_list_cleanup_ctx(vscf_signer_list_t *self) {
 //  Note, ownership is transfered.
 //
 VSCF_PUBLIC void
-vscf_signer_list_add(vscf_signer_list_t *self, vsc_data_t signer_id, vscf_impl_t *signer_private_key) {
+vscf_signer_list_add(vscf_signer_list_t *self, vsc_data_t signer_id, const vscf_impl_t *signer_private_key) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT(vsc_data_is_valid(signer_id));
@@ -275,7 +275,7 @@ vscf_signer_list_add(vscf_signer_list_t *self, vsc_data_t signer_id, vscf_impl_t
     if (NULL == self->signer_id) {
         VSCF_ASSERT_NULL(self->signer_private_key);
         self->signer_id = vsc_buffer_new_with_data(signer_id);
-        self->signer_private_key = vscf_impl_shallow_copy(signer_private_key);
+        self->signer_private_key = vscf_impl_shallow_copy_const(signer_private_key);
     } else {
         if (NULL == self->next) {
             self->next = vscf_signer_list_new();
@@ -322,7 +322,7 @@ vscf_signer_list_signer_id(const vscf_signer_list_t *self) {
 //
 //  Return signer private key.
 //
-VSCF_PUBLIC vscf_impl_t *
+VSCF_PUBLIC const vscf_impl_t *
 vscf_signer_list_signer_private_key(const vscf_signer_list_t *self) {
 
     VSCF_ASSERT_PTR(self);

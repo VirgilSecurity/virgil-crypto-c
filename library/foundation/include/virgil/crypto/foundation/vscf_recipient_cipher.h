@@ -258,7 +258,7 @@ vscf_recipient_cipher_has_key_recipient(const vscf_recipient_cipher_t *self, vsc
 //
 VSCF_PUBLIC void
 vscf_recipient_cipher_add_key_recipient(vscf_recipient_cipher_t *self, vsc_data_t recipient_id,
-        vscf_impl_t *public_key);
+        const vscf_impl_t *public_key);
 
 //
 //  Remove all recipients.
@@ -272,7 +272,7 @@ vscf_recipient_cipher_clear_recipients(vscf_recipient_cipher_t *self);
 //
 VSCF_PUBLIC vscf_status_t
 vscf_recipient_cipher_add_signer(vscf_recipient_cipher_t *self, vsc_data_t signer_id,
-        vscf_impl_t *private_key) VSCF_NODISCARD;
+        const vscf_impl_t *private_key) VSCF_NODISCARD;
 
 //
 //  Remove all signers.
