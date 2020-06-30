@@ -796,7 +796,7 @@ vsc_buffer_append_data(vsc_buffer_t *self, vsc_data_t data) {
         vsc_buffer_alloc(self, data.len);
     }
 
-    VSC_ASSERT_PTR(self->is_owner);
+    VSC_ASSERT(self->is_owner);
     VSC_ASSERT(vsc_buffer_is_valid(self));
 
     if (data.len <= vsc_buffer_unused_len(self)) {
@@ -850,6 +850,82 @@ vsc_buffer_reset_with_capacity(vsc_buffer_t *self, size_t min_capacity) {
     } else {
         vsc_buffer_reset(self);
     }
+}
+
+//
+//  Increase buffer capacity if needed.
+//
+//  Precondition: buffer should be an owner of the bytes.
+//
+//  Note, this operation can be slow if copy operation occurred.
+//
+VSC_PUBLIC void
+vsc_buffer_reserve(vsc_buffer_t *self, size_t capacity) {
+
+    VSC_ASSERT_PTR(self);
+    VSC_ASSERT(capacity > 0);
+
+    if (NULL == self->bytes) {
+        vsc_buffer_alloc(self, capacity);
+    }
+
+    VSC_ASSERT(self->is_owner);
+    VSC_ASSERT(vsc_buffer_is_valid(self));
+
+    if (capacity <= self->capacity) {
+        return;
+    }
+
+    byte *new_bytes = vsc_alloc(capacity);
+    VSC_ASSERT_ALLOC(new_bytes);
+
+    memcpy(new_bytes, self->bytes, self->len);
+
+    if (self->is_secure) {
+        vsc_erase(self->bytes, self->len);
+    }
+
+    if (self->bytes_dealloc_cb != NULL) {
+        self->bytes_dealloc_cb(self->bytes);
+    }
+
+    self->capacity = capacity;
+    self->bytes = new_bytes;
+    self->bytes_dealloc_cb = vsc_dealloc;
+    self->is_owner = true;
+}
+
+//
+//  Increase buffer capacity if needed to have at least given unused bytes.
+//
+//  Precondition: buffer should be an owner of the bytes.
+//
+//  Note, this operation can be slow if copy operation occurred.
+//
+VSC_PUBLIC void
+vsc_buffer_reserve_unused(vsc_buffer_t *self, size_t requested_unused_len) {
+
+    VSC_ASSERT_PTR(self);
+
+    if (NULL == self->bytes) {
+        vsc_buffer_alloc(self, requested_unused_len);
+    }
+
+    VSC_ASSERT(self->is_owner);
+    VSC_ASSERT(vsc_buffer_is_valid(self));
+
+    const size_t unused_len = vsc_buffer_unused_len(self);
+
+    if (requested_unused_len <= unused_len) {
+        return;
+    }
+
+    const size_t required_unused_len = requested_unused_len - unused_len;
+    VSC_ASSERT_ALLOC(SIZE_MAX - required_unused_len >= self->capacity);
+
+    const size_t new_capacity = self->capacity + required_unused_len;
+
+    vsc_buffer_reserve(self, new_capacity);
 }
 
 //

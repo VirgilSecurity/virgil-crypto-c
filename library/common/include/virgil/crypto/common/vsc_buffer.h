@@ -349,6 +349,26 @@ VSC_PUBLIC void
 vsc_buffer_reset_with_capacity(vsc_buffer_t *self, size_t min_capacity);
 
 //
+//  Increase buffer capacity if needed.
+//
+//  Precondition: buffer should be an owner of the bytes.
+//
+//  Note, this operation can be slow if copy operation occurred.
+//
+VSC_PUBLIC void
+vsc_buffer_reserve(vsc_buffer_t *self, size_t capacity);
+
+//
+//  Increase buffer capacity if needed to have at least given unused bytes.
+//
+//  Precondition: buffer should be an owner of the bytes.
+//
+//  Note, this operation can be slow if copy operation occurred.
+//
+VSC_PUBLIC void
+vsc_buffer_reserve_unused(vsc_buffer_t *self, size_t requested_unused_len);
+
+//
 //  Reset to the initial state.
 //  After reset inner buffer can be re-used.
 //
