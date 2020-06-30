@@ -400,6 +400,9 @@ vssc_card_client_make_request_publish_card(const vssc_card_client_t *self, const
     vssc_http_request_t *http_request =
             vssc_http_request_new_with_body(vssc_http_request_method_post, vsc_str_mutable_as_str(card_url), json_body);
 
+    vssc_http_request_add_header(
+            http_request, vssc_http_header_name_content_type, vssc_http_header_value_application_json);
+
     vssc_json_object_destroy(&json);
 
     vssc_http_request_add_header(
@@ -522,6 +525,9 @@ vssc_card_client_make_request_search_cards_with_identity(const vssc_card_client_
 
     vssc_http_request_t *http_request = vssc_http_request_new_with_body(
             vssc_http_request_method_post, vsc_str_mutable_as_str(search_url), json_body_str);
+
+    vssc_http_request_add_header(
+            http_request, vssc_http_header_name_content_type, vssc_http_header_value_application_json);
 
     vsc_str_mutable_release(&search_url);
     vssc_json_object_destroy(&json_body);
