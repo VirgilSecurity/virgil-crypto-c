@@ -351,7 +351,7 @@ vscf_recipient_cipher_finish_encryption(vscf_recipient_cipher_t *self, vsc_buffe
 //
 VSCF_PUBLIC vscf_status_t
 vscf_recipient_cipher_start_decryption_with_key(vscf_recipient_cipher_t *self, vsc_data_t recipient_id,
-        vscf_impl_t *private_key, vsc_data_t message_info) VSCF_NODISCARD;
+        const vscf_impl_t *private_key, vsc_data_t message_info) VSCF_NODISCARD;
 
 //
 //  Initiate decryption process with a recipient private key.
@@ -361,7 +361,7 @@ vscf_recipient_cipher_start_decryption_with_key(vscf_recipient_cipher_t *self, v
 //
 VSCF_PUBLIC vscf_status_t
 vscf_recipient_cipher_start_verified_decryption_with_key(vscf_recipient_cipher_t *self, vsc_data_t recipient_id,
-        vscf_impl_t *private_key, vsc_data_t message_info, vsc_data_t message_info_footer) VSCF_NODISCARD;
+        const vscf_impl_t *private_key, vsc_data_t message_info, vsc_data_t message_info_footer) VSCF_NODISCARD;
 
 //
 //  Return buffer length required to hold output of the method

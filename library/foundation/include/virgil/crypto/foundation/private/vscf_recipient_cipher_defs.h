@@ -133,7 +133,7 @@ struct vscf_recipient_cipher_t {
 
     vsc_buffer_t *decryption_recipient_id;
 
-    vscf_impl_t *decryption_recipient_key;
+    const vscf_impl_t *decryption_recipient_key;
 
     vsc_buffer_t *decryption_password;
 

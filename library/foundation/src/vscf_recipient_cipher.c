@@ -627,7 +627,7 @@ vscf_recipient_cipher_cleanup_ctx(vscf_recipient_cipher_t *self) {
     vscf_impl_destroy(&self->verifier_hash);
     vscf_impl_destroy(&self->decryption_cipher);
     vscf_impl_destroy(&self->decryption_padding);
-    vscf_impl_destroy(&self->decryption_recipient_key);
+    vscf_impl_delete(self->decryption_recipient_key);
     vscf_key_recipient_list_destroy(&self->key_recipients);
     vscf_signer_list_destroy(&self->signers);
     vscf_message_info_der_serializer_destroy(&self->message_info_der_serializer);
@@ -985,8 +985,8 @@ cleanup:
 //  Message Info can be empty if it was embedded to encrypted data.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_recipient_cipher_start_decryption_with_key(
-        vscf_recipient_cipher_t *self, vsc_data_t recipient_id, vscf_impl_t *private_key, vsc_data_t message_info) {
+vscf_recipient_cipher_start_decryption_with_key(vscf_recipient_cipher_t *self, vsc_data_t recipient_id,
+        const vscf_impl_t *private_key, vsc_data_t message_info) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(vsc_data_is_valid(recipient_id));
@@ -1005,11 +1005,11 @@ vscf_recipient_cipher_start_decryption_with_key(
 
     vsc_buffer_destroy(&self->decryption_recipient_id);
     vsc_buffer_destroy(&self->message_info_buffer);
-    vscf_impl_destroy(&self->decryption_recipient_key);
     vscf_impl_destroy(&self->decryption_cipher);
+    vscf_impl_delete(self->decryption_recipient_key);
 
     self->decryption_recipient_id = vsc_buffer_new_with_data(recipient_id);
-    self->decryption_recipient_key = vscf_impl_shallow_copy(private_key);
+    self->decryption_recipient_key = vscf_impl_shallow_copy_const(private_key);
 
     vscf_status_t status = vscf_status_SUCCESS;
 
@@ -1039,7 +1039,7 @@ vscf_recipient_cipher_start_decryption_with_key(
 //
 VSCF_PUBLIC vscf_status_t
 vscf_recipient_cipher_start_verified_decryption_with_key(vscf_recipient_cipher_t *self, vsc_data_t recipient_id,
-        vscf_impl_t *private_key, vsc_data_t message_info, vsc_data_t message_info_footer) {
+        const vscf_impl_t *private_key, vsc_data_t message_info, vsc_data_t message_info_footer) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(vsc_data_is_valid(recipient_id));

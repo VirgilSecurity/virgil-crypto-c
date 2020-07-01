@@ -36,7 +36,7 @@
     <property name="derived keys" class="buffer"/>
     <property name="data digest" class="buffer"/>
     <property name="decryption recipient id" class="buffer"/>
-    <property name="decryption recipient key" interface="private key"/>
+    <property name="decryption recipient key" interface="private key" access="readonly"/>
     <property name="decryption password" class="buffer"/>
     <property name="decryption cipher" interface="cipher"/>
     <property name="decryption padding" interface="padding"/>
@@ -174,7 +174,7 @@
         Message Info can be empty if it was embedded to encrypted data.
 
         <argument name="recipient id" class="data"/>
-        <argument name="private key" interface="private key" access="retain"/>
+        <argument name="private key" interface="private key"/>
         <argument name="message info" class="data"/>
 
         <return enum="status"/>
@@ -187,7 +187,7 @@
         If footer was embedded, method "start decryption with key" can be used.
 
         <argument name="recipient id" class="data"/>
-        <argument name="private key" interface="private key" access="retain"/>
+        <argument name="private key" interface="private key"/>
         <argument name="message info" class="data"/>
         <argument name="message info footer" class="data"/>
 
