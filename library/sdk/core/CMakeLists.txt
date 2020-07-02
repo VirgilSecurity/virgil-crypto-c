@@ -61,6 +61,10 @@ endif()
 #
 include("${CMAKE_CURRENT_LIST_DIR}/features.cmake")
 
+if(VSSC_VIRGIL_HTTP_CLIENT AND NOT TARGET CURL::libcurl)
+    message(FATAL_ERROR "Required library 'CURL' is not found - looking for target 'CURL::libcurl'.")
+endif()
+
 # --------------------------------------------------------------------------
 #   Define library
 # ---------------------------------------------------------------------------
@@ -99,7 +103,7 @@ target_include_directories(core_sdk
 #
 target_link_libraries(core_sdk PUBLIC vsc::common vsc::foundation json_c)
 
-if(CURL_FOUND)
+if(TARGET CURL::libcurl)
     target_link_libraries(core_sdk PUBLIC CURL::libcurl)
 endif()
 
