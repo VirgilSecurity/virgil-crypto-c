@@ -165,9 +165,9 @@ endif()
 # ---------------------------------------------------------------------------
 if(CMAKE_CROSSCOMPILING AND APPLE AND COMMAND target_apple_framework)
     target_apple_framework(pythia_sdk
-            NAME VSCCoreSDK
+            NAME VSSPythia
             VERSION "A"
-            IDENTIFIER com.virgilsecurity.VSCCoreSDK
+            IDENTIFIER com.virgilsecurity.VSSPythia
             )
 endif()
 

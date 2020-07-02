@@ -169,9 +169,9 @@ endif()
 # ---------------------------------------------------------------------------
 if(CMAKE_CROSSCOMPILING AND APPLE AND COMMAND target_apple_framework)
     target_apple_framework(core_sdk
-            NAME VSCCoreSDK
+            NAME VSSCore
             VERSION "A"
-            IDENTIFIER com.virgilsecurity.VSCCoreSDK
+            IDENTIFIER com.virgilsecurity.VSSCore
             )
 endif()
 
