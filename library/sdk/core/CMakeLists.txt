@@ -167,7 +167,7 @@ endif()
 # ---------------------------------------------------------------------------
 #   Apple specific
 # ---------------------------------------------------------------------------
-if(CMAKE_CROSSCOMPILING AND APPLE AND COMMAND target_apple_framework)
+if(CMAKE_CROSSCOMPILING AND APPLE AND BUILD_APPLE_FRAMEWORKS AND COMMAND target_apple_framework)
     target_apple_framework(core_sdk
             NAME VSSCore
             VERSION "A"

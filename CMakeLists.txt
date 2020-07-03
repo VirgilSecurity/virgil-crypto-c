@@ -67,6 +67,8 @@ set(VIRGIL_CRYPTO_VERSION_LABEL "dev1" CACHE STRING "Version label, i.e. beta, r
 # Global
 #
 option(BUILD_SHARED_LIBS "On/Off build shared libraries." OFF)
+option(BUILD_APPLE_FRAMEWORKS
+        "On/Off build Apple Frameworks for iOS, if OFF then regular libraries are built." ON)
 
 #
 # Test
