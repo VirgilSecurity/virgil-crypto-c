@@ -1173,7 +1173,7 @@ vscf_recipient_cipher_finish_decryption(vscf_recipient_cipher_t *self, vsc_buffe
         vscf_hash_update(self->verifier_hash, vsc_data_slice_beg(vsc_buffer_data(out), len_before, written_len));
     }
 
-    if (vscf_status_SUCCESS == status && vscf_message_info_has_footer_info(self->message_info)) {
+    if (vscf_message_info_has_footer_info(self->message_info)) {
         status = vscf_recipient_cipher_unpack_message_info_footer(self);
     }
 

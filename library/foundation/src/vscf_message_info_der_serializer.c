@@ -2121,7 +2121,7 @@ vscf_message_info_der_serializer_serialized_len(
         const vscf_message_info_custom_params_t *custom_params =
                 vscf_message_info_custom_params((vscf_message_info_t *)message_info);
         custom_params_len += 1 + 8; //  [0] OPTIONAL
-        custom_params_len = vscf_message_info_der_serializer_serialized_custom_params_len(self, custom_params);
+        custom_params_len += vscf_message_info_der_serializer_serialized_custom_params_len(self, custom_params);
     }
 
     size_t footer_info_len = 0;
@@ -2135,14 +2135,14 @@ vscf_message_info_der_serializer_serialized_len(
     if (vscf_message_info_has_cipher_kdf_alg_info(message_info)) {
         const vscf_impl_t *alg_info = vscf_message_info_cipher_kdf_alg_info((vscf_message_info_t *)message_info);
         kdf_alg_info_len += 1 + 1; //  [2] OPTIONAL
-        kdf_alg_info_len = vscf_alg_info_der_serializer_serialized_len(self->alg_info_serializer, alg_info);
+        kdf_alg_info_len += vscf_alg_info_der_serializer_serialized_len(self->alg_info_serializer, alg_info);
     }
 
     size_t padding_alg_info_len = 0;
     if (vscf_message_info_has_cipher_padding_alg_info(message_info)) {
         const vscf_impl_t *alg_info = vscf_message_info_cipher_padding_alg_info((vscf_message_info_t *)message_info);
         padding_alg_info_len += 1 + 1; //  [3] OPTIONAL
-        padding_alg_info_len = vscf_alg_info_der_serializer_serialized_len(self->alg_info_serializer, alg_info);
+        padding_alg_info_len += vscf_alg_info_der_serializer_serialized_len(self->alg_info_serializer, alg_info);
     }
 
     size_t len = 1 + 1 + 8 +            //  VirgilMessageInfo ::= SEQUENCE {

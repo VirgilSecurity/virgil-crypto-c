@@ -167,9 +167,9 @@ vssc_virgil_http_client_send_with_ca(
     curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, vssc_http_request_method(http_request).chars);
 
     if (!vsc_str_is_empty(ca_bundle)) {
-        vsc_str_mutable_t ca_null_terminates = vsc_str_mutable_from_str(ca_bundle);
-        curl_easy_setopt(curl, CURLOPT_CAINFO, vsc_str_mutable_as_str(ca_null_terminates));
-        vsc_str_mutable_release(&ca_null_terminates);
+        vsc_str_mutable_t ca_null_terminated = vsc_str_mutable_from_str(ca_bundle);
+        curl_easy_setopt(curl, CURLOPT_CAINFO, ca_null_terminated.chars);
+        vsc_str_mutable_release(&ca_null_terminated);
     }
 
     //
