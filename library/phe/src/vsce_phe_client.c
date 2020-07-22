@@ -850,7 +850,7 @@ ecp_err:
     mbedtls_ecp_point_free(&t0);
 
 pb_err:
-    vsce_zeroize(&record, sizeof(&record));
+    vsce_zeroize(&record, sizeof(EnrollmentRecord));
     vsce_phe_client_free_op_group(op_group);
 
     return status;
