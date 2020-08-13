@@ -37,7 +37,7 @@ if(NOT DEFINED ENV{EMSDK})
     message(FATAL_ERROR "Expected EMSDK environment variable to be set.")
 endif()
 
-set(CMAKE_TOOLCHAIN_FILE "$ENV{EMSDK}/fastcomp/emscripten/cmake/Modules/Platform/Emscripten.cmake" CACHE PATH "")
+set(CMAKE_TOOLCHAIN_FILE "$ENV{EMSDK}/upstream/emscripten/cmake/Modules/Platform/Emscripten.cmake" CACHE PATH "")
 set(VIRGIL_WRAP_WASM ON CACHE BOOL "")
 set(VIRGIL_C_TESTING OFF CACHE BOOL "")
 set(VIRGIL_INSTALL_WRAP_SRCS OFF CACHE BOOL "")
