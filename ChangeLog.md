@@ -1,5 +1,13 @@
 # virgil-crypto-c ChangeLog (Sorted by date)
 
+## Version 0.15.3 released 2020-08-13
+
+### Bugfix
+
+- Wrapper/JS: Fixed generation of NodeJS "es" files
+- Wrapper/JS/Build: Fixed path to the emsdk toolchain file
+
+
 ## Version 0.15.2 released 2020-05-12
 
 ### Bugfix
