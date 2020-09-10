@@ -47,6 +47,8 @@
 #include "vscf_hash_based_alg_info.h"
 #include "vscf_simple_alg_info.h"
 #include "vscf_cipher_alg_info.h"
+#include "vscf_compound_key_alg_info.h"
+#include "vscf_hybrid_key_alg_info.h"
 
 #include "test_data_alg_info_der.h"
 
@@ -155,6 +157,129 @@ test__deserialize__aes256_gcm_v2_compat__returns_valid_cipher_alg_info(void) {
     vscf_alg_info_der_deserializer_destroy(&deserializer);
 }
 
+void
+test__deserialize__valid_compound_key_alg_info___success(void) {
+    vscf_alg_info_der_deserializer_t *deserializer = vscf_alg_info_der_deserializer_new();
+    vscf_alg_info_der_deserializer_setup_defaults(deserializer);
+
+    vscf_impl_t *alg_info = vscf_alg_info_der_deserializer_deserialize(
+            deserializer, test_alg_info_COMPOUND_KEY_CURVE25519_ED25519, NULL);
+
+    TEST_ASSERT_NOT_NULL(alg_info);
+    TEST_ASSERT_EQUAL(vscf_alg_id_COMPOUND_KEY, vscf_alg_info_alg_id(alg_info));
+
+    vscf_compound_key_alg_info_t *compound_alg_info = (vscf_compound_key_alg_info_t *)alg_info;
+
+    const vscf_impl_t *cipher_alg_info = vscf_compound_key_alg_info_cipher_alg_info(compound_alg_info);
+    TEST_ASSERT_NOT_NULL(cipher_alg_info);
+    TEST_ASSERT_EQUAL(vscf_alg_id_CURVE25519, vscf_alg_info_alg_id(cipher_alg_info));
+
+    const vscf_impl_t *signer_alg_info = vscf_compound_key_alg_info_signer_alg_info(compound_alg_info);
+    TEST_ASSERT_NOT_NULL(signer_alg_info);
+    TEST_ASSERT_EQUAL(vscf_alg_id_ED25519, vscf_alg_info_alg_id(signer_alg_info));
+
+    vscf_impl_destroy(&alg_info);
+    vscf_alg_info_der_deserializer_destroy(&deserializer);
+}
+
+void
+test__deserialize__valid_hybrid_key_alg_info___success(void) {
+    vscf_alg_info_der_deserializer_t *deserializer = vscf_alg_info_der_deserializer_new();
+    vscf_alg_info_der_deserializer_setup_defaults(deserializer);
+
+    vscf_impl_t *alg_info =
+            vscf_alg_info_der_deserializer_deserialize(deserializer, test_alg_info_HYBRID_KEY_CURVE25519_ED25519, NULL);
+
+    TEST_ASSERT_NOT_NULL(alg_info);
+    TEST_ASSERT_EQUAL(vscf_alg_id_HYBRID_KEY, vscf_alg_info_alg_id(alg_info));
+
+    vscf_hybrid_key_alg_info_t *hybrid_alg_info = (vscf_hybrid_key_alg_info_t *)alg_info;
+
+    const vscf_impl_t *first_alg_info = vscf_hybrid_key_alg_info_first_key_alg_info(hybrid_alg_info);
+    TEST_ASSERT_NOT_NULL(first_alg_info);
+    TEST_ASSERT_EQUAL(vscf_alg_id_CURVE25519, vscf_alg_info_alg_id(first_alg_info));
+
+    const vscf_impl_t *second_alg_info = vscf_hybrid_key_alg_info_second_key_alg_info(hybrid_alg_info);
+    TEST_ASSERT_NOT_NULL(second_alg_info);
+    TEST_ASSERT_EQUAL(vscf_alg_id_ED25519, vscf_alg_info_alg_id(second_alg_info));
+
+    vscf_impl_destroy(&alg_info);
+    vscf_alg_info_der_deserializer_destroy(&deserializer);
+}
+
+void
+test__deserialize__compound_key_alg_info_with_unsupported_cipher_alg_info___error_unsupported_algorithm(void) {
+    vscf_alg_info_der_deserializer_t *deserializer = vscf_alg_info_der_deserializer_new();
+    vscf_alg_info_der_deserializer_setup_defaults(deserializer);
+
+    vscf_error_t error;
+    vscf_error_reset(&error);
+
+    vscf_impl_t *alg_info = vscf_alg_info_der_deserializer_deserialize(
+            deserializer, test_alg_info_COMPOUND_KEY_UNSUPPORTED_ED25519, &error);
+
+    TEST_ASSERT_NULL(alg_info);
+    TEST_ASSERT_EQUAL(vscf_status_ERROR_UNSUPPORTED_ALGORITHM, vscf_error_status(&error));
+
+    vscf_impl_destroy(&alg_info);
+    vscf_alg_info_der_deserializer_destroy(&deserializer);
+}
+
+void
+test__deserialize__compound_key_alg_info_with_unsupported_signer_alg_info___error_unsupported_algorithm(void) {
+    vscf_alg_info_der_deserializer_t *deserializer = vscf_alg_info_der_deserializer_new();
+    vscf_alg_info_der_deserializer_setup_defaults(deserializer);
+
+    vscf_error_t error;
+    vscf_error_reset(&error);
+
+    vscf_impl_t *alg_info = vscf_alg_info_der_deserializer_deserialize(
+            deserializer, test_alg_info_COMPOUND_KEY_CURVE25519_UNSUPPORTED, &error);
+
+    TEST_ASSERT_NULL(alg_info);
+    TEST_ASSERT_EQUAL(vscf_status_ERROR_UNSUPPORTED_ALGORITHM, vscf_error_status(&error));
+
+    vscf_impl_destroy(&alg_info);
+    vscf_alg_info_der_deserializer_destroy(&deserializer);
+}
+
+void
+test__deserialize__hybrid_key_alg_info_with_unsupported_first_alg_info___error_unsupported_algorithm(void) {
+    vscf_alg_info_der_deserializer_t *deserializer = vscf_alg_info_der_deserializer_new();
+    vscf_alg_info_der_deserializer_setup_defaults(deserializer);
+
+    vscf_error_t error;
+    vscf_error_reset(&error);
+
+    vscf_impl_t *alg_info = vscf_alg_info_der_deserializer_deserialize(
+            deserializer, test_alg_info_HYBRID_KEY_UNSUPPORTED_ED25519, &error);
+
+    TEST_ASSERT_NULL(alg_info);
+    TEST_ASSERT_EQUAL(vscf_status_ERROR_UNSUPPORTED_ALGORITHM, vscf_error_status(&error));
+
+    vscf_impl_destroy(&alg_info);
+    vscf_alg_info_der_deserializer_destroy(&deserializer);
+}
+
+void
+test__deserialize__hybrid_key_alg_info_with_unsupported_second_alg_info___error_unsupported_algorithm(void) {
+    vscf_alg_info_der_deserializer_t *deserializer = vscf_alg_info_der_deserializer_new();
+    vscf_alg_info_der_deserializer_setup_defaults(deserializer);
+
+    vscf_error_t error;
+    vscf_error_reset(&error);
+
+    vscf_impl_t *alg_info = vscf_alg_info_der_deserializer_deserialize(
+            deserializer, test_alg_info_HYBRID_KEY_CURVE25519_UNSUPPORTED, &error);
+
+    TEST_ASSERT_NULL(alg_info);
+    TEST_ASSERT_EQUAL(vscf_status_ERROR_UNSUPPORTED_ALGORITHM, vscf_error_status(&error));
+
+    vscf_impl_destroy(&alg_info);
+    vscf_alg_info_der_deserializer_destroy(&deserializer);
+}
+
+
 #endif // TEST_DEPENDENCIES_AVAILABLE
 
 
@@ -172,6 +297,12 @@ main(void) {
     RUN_TEST(test__deserialize__kdf1_sha256_v2_compat__returns_valid_hash_based_alg_info);
     RUN_TEST(test__deserialize__aes256_gcm__returns_valid_cipher_alg_info);
     RUN_TEST(test__deserialize__aes256_gcm_v2_compat__returns_valid_cipher_alg_info);
+    RUN_TEST(test__deserialize__valid_compound_key_alg_info___success);
+    RUN_TEST(test__deserialize__valid_hybrid_key_alg_info___success);
+    RUN_TEST(test__deserialize__compound_key_alg_info_with_unsupported_cipher_alg_info___error_unsupported_algorithm);
+    RUN_TEST(test__deserialize__compound_key_alg_info_with_unsupported_signer_alg_info___error_unsupported_algorithm);
+    RUN_TEST(test__deserialize__hybrid_key_alg_info_with_unsupported_first_alg_info___error_unsupported_algorithm);
+    RUN_TEST(test__deserialize__hybrid_key_alg_info_with_unsupported_second_alg_info___error_unsupported_algorithm);
 #else
     RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
 #endif

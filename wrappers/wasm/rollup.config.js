@@ -62,7 +62,7 @@ const createEntries = format => [
     path.join(sourcePath, `lib${project}.js`),
     path.join(sourcePath, `lib${project}.wasm`),
     format,
-    path.join(outputPath, `node.${format}.js`),
+    path.join(outputPath, `node.${format}.${format === 'cjs' ? 'js' : 'mjs'}`),
   ),
   createWasmEntry(
     path.join(sourcePath, 'index.js'),
@@ -82,7 +82,7 @@ const createEntries = format => [
     path.join(sourcePath, 'index.js'),
     path.join(sourcePath, `lib${project}.asmjs.js`),
     format,
-    path.join(outputPath, `node.asmjs.${format}.js`),
+    path.join(outputPath, `node.asmjs.${format}.${format === 'cjs' ? 'js' : 'mjs'}`),
   ),
   createAsmjsEntry(
     path.join(sourcePath, 'index.js'),
@@ -98,4 +98,22 @@ const createEntries = format => [
   ),
 ];
 
-module.exports = formats.map(createEntries).reduce((result, entries) => result.concat(entries), []);
+
+module.exports = [
+  ...formats.map(createEntries).reduce((result, entries) => result.concat(entries), []),
+  // Remove this code in the next major release
+  createAsmjsEntry(
+    path.join(sourcePath, 'index.js'),
+    path.join(sourcePath, `lib${project}.asmjs.js`),
+    'es',
+    path.join(outputPath, `node.asmjs.es.js`),
+  ),
+  createWasmEntry(
+    path.join(sourcePath, 'index.js'),
+    path.join(sourcePath, `lib${project}.js`),
+    path.join(sourcePath, `lib${project}.wasm`),
+    'es',
+    path.join(outputPath, `node.es.js`),
+  ),
+  // ------------------------------------------
+];
