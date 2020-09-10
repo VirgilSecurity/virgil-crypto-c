@@ -25,7 +25,6 @@
 
 #include "pythia_c.h"
 #include "pythia_init.h"
-#include "pythia_init_c.h"
 #include "vscp_pythia.h"
 
 static const char deblinded_hex[769] =
@@ -107,7 +106,7 @@ test1_DeblindStability() {
         gt_new(deblinded2);
         blind_eval_deblind(deblinded2);
 
-        TEST_ASSERT_EQUAL_INT(gt_cmp(deblinded1, deblinded2), CMP_EQ);
+        TEST_ASSERT_EQUAL_INT(gt_cmp(deblinded1, deblinded2), RLC_EQ);
         gt_free(deblinded2);
     }
 
@@ -249,7 +248,7 @@ test3_UpdateDelta() {
 
     pythia_deblind(y1, rInv1, deblinded2);
 
-    TEST_ASSERT_EQUAL_INT(gt_cmp(deblinded1, deblinded2), CMP_EQ);
+    TEST_ASSERT_EQUAL_INT(gt_cmp(deblinded1, deblinded2), RLC_EQ);
 
     gt_free(deblinded2);
     g2_free(tTilde1);

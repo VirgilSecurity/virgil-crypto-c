@@ -30,7 +30,6 @@
 #include <pthread.h>
 #include <unistd.h>
 #include <memory.h>
-#include <pythia_init_c.h>
 
 static int finished = 0;
 
@@ -133,19 +132,20 @@ deblind_stability() {
 
 void *
 pythia_succ(void *ptr) {
+    TEST_ASSERT_EQUAL(vscp_status_SUCCESS, vscp_pythia_configure());
     while (!finished) {
         deblind_stability();
     }
 
     return NULL;
+    vscp_pythia_cleanup();
 }
 
 void *
 pythia_err(void *ptr) {
+    TEST_ASSERT_EQUAL(vscp_status_SUCCESS, vscp_pythia_configure());
     while (!finished) {
         int caught = 0;
-
-        pythia_err_init();
 
         TRY {
             THROW(ERR_CAUGHT);
@@ -159,12 +159,11 @@ pythia_err(void *ptr) {
     }
 
     return NULL;
+    vscp_pythia_cleanup();
 }
 
 void
 test(void) {
-    TEST_ASSERT_EQUAL(vscp_status_SUCCESS, vscp_pythia_configure());
-
     pthread_t t1, t2;
 
     pthread_create(&t1, NULL, pythia_succ, NULL);
@@ -185,8 +184,6 @@ test(void) {
 
     pthread_join(t1, NULL);
     pthread_join(t2, NULL);
-
-    vscp_pythia_cleanup();
 }
 
 #endif

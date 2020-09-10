@@ -106,17 +106,14 @@ void
 test1_DeblindStability() {
     TEST_ASSERT_EQUAL(vscp_status_SUCCESS, vscp_pythia_configure());
 
-    uint8_t deblinded_bin[384];
-    const char *pos = deblinded_hex;
-    for (size_t count = 0; count < 384; count++) {
-        sscanf(pos, "%2hhx", &deblinded_bin[count]);
-        pos += 2;
-    }
+    uint8_t deblinded_bin[384] = {0x00};
 
-    const int iterations = 10;
+    const size_t unhexed_len = unhexify(deblinded_hex, deblinded_bin);
+    TEST_ASSERT_EQUAL(sizeof(deblinded_bin), unhexed_len);
 
     pythia_buf_t deblinded_password;
 
+    const int iterations = 10;
     for (int i = 0; i < iterations; i++) {
         deblinded_password.p = (uint8_t *)malloc(PYTHIA_GT_BUF_SIZE);
         deblinded_password.allocated = PYTHIA_GT_BUF_SIZE;

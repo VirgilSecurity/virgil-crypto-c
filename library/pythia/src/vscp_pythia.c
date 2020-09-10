@@ -65,9 +65,9 @@
 //  @end
 
 
-static bool g_globally_inited = false;
-static mbedtls_entropy_context g_entropy;
-static mbedtls_ctr_drbg_context g_rng;
+static __thread bool g_globally_inited = false;
+static __thread mbedtls_entropy_context g_entropy;
+static __thread mbedtls_ctr_drbg_context g_rng;
 
 
 //  @generated

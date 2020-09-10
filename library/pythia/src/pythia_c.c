@@ -15,33 +15,38 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <stdint.h>
 #include "pythia_c.h"
 #include "pythia_init.h"
-#include "pythia_init_c.h"
 #include "pythia_buf_sizes_c.h"
 
-static bn_t g1_ord;
-static g1_t g1_gen;
-static bn_t gt_ord;
-static gt_t gt_gen;
+#include <stdint.h>
+#include <relic/relic_label.h>
+
+#if MULTI == PTHREAD
+#define thread __thread
+#else
+#define thread /* */
+#endif
+
+static __thread bn_t g1_ord;
+static __thread g1_t g1_gen;
+static __thread bn_t gt_ord;
+static __thread gt_t gt_gen;
 
 int
 pythia_init(const pythia_init_args_t *init_args) {
     if (core_get())
         return 0;
 
-    if (core_init() != STS_OK)
+    if (core_init() != RLC_OK)
         return -1;
-
-    pythia_err_init();
 
     if (!init_args || !init_args->callback)
         return -1;
 
     rand_seed(init_args->callback, init_args->args);
 
-    if (ep_param_set_any_pairf() != STS_OK)
+    if (ep_param_set_any_pairf() != RLC_OK)
         return -1;
 
     bn_null(g1_ord);
@@ -84,15 +89,10 @@ pythia_deinit(void) {
     bn_free(g1_ord);
 }
 
-void
-pythia_err_init(void) {
-    err_core_reset_default();
-}
-
 static void
 random_bn_mod(bn_t r, bn_t max) {
     if (!max) {
-        bn_rand(r, BN_POS, 256);
+        bn_rand(r, RLC_POS, 256);
     } else {
         bn_rand_mod(r, max);
     }
@@ -111,7 +111,7 @@ hashG2(g2_t g2, const uint8_t *msg, size_t msg_size) {
 static void
 compute_kw(bn_t kw, const uint8_t *w, size_t w_size, const uint8_t *msk, size_t msk_size, const uint8_t *s,
         size_t s_size) {
-    uint8_t mac[MD_LEN];
+    uint8_t mac[RLC_MD_LEN];
     uint8_t *zw = NULL;
 
     bn_t b;
@@ -125,7 +125,7 @@ compute_kw(bn_t kw, const uint8_t *w, size_t w_size, const uint8_t *msk, size_t 
         md_hmac(mac, zw, (int)(s_size + w_size), msk, (int)msk_size);
 
         bn_new(b);
-        bn_read_bin(b, mac, MD_LEN);
+        bn_read_bin(b, mac, RLC_MD_LEN);
 
         bn_mod(kw, b, gt_ord);
     }
@@ -204,10 +204,10 @@ hashZ(bn_t hash, const uint8_t *const *args, size_t args_size, const size_t *arg
             p += args_sizes[i];
         }
 
-        uint8_t mac[MD_LEN];
+        uint8_t mac[RLC_MD_LEN];
         md_hmac(mac, c, (int)total_size, tag_msg, 31);
 
-        bn_read_bin(hash, mac, MD_LEN_SH256); // We need only 256 bits from that number
+        bn_read_bin(hash, mac, RLC_MD_LEN_SH256); // We need only 256 bits from that number
     }
     CATCH_ANY {
         THROW(ERR_CAUGHT);
@@ -252,7 +252,7 @@ pythia_blind(const uint8_t *m, size_t m_size, g1_t x, bn_t rInv) {
 
         random_bn_mod(r, NULL);
         bn_gcd_ext(gcd, rInv, NULL, r, g1_ord);
-        if (bn_cmp_dig(gcd, (dig_t)1) != CMP_EQ) {
+        if (bn_cmp_dig(gcd, (dig_t)1) != RLC_EQ) {
             THROW(ERR_NO_VALID);
         }
 
@@ -477,7 +477,7 @@ pythia_verify(gt_t y, g1_t x, const uint8_t *t, size_t t_size, g1_t pi_p, bn_t p
         bn_new(cPrime);
         hashZ(cPrime, args, 6, args_sizes);
 
-        *verified = bn_cmp(cPrime, pi_c) == CMP_EQ;
+        *verified = bn_cmp(cPrime, pi_c) == RLC_EQ;
     }
     CATCH_ANY {
         THROW(ERR_CAUGHT);
@@ -517,7 +517,7 @@ get_delta(bn_t kw0, bn_t kw1, bn_t delta) {
         bn_new(gcd);
 
         bn_gcd_ext(gcd, kw0Inv, NULL, kw0, gt_ord);
-        if (bn_cmp_dig(gcd, (dig_t)1) != CMP_EQ) {
+        if (bn_cmp_dig(gcd, (dig_t)1) != RLC_EQ) {
             THROW(ERR_NO_VALID);
         }
 

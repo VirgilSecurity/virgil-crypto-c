@@ -17,6 +17,7 @@
 
 #include <relic/relic.h>
 #include <relic/relic_err.h>
+#include <relic/relic_label.h>
 #include <pythia.h>
 #include "pythia_buf.h"
 #include "pythia_buf_exports.h"
@@ -39,7 +40,7 @@ bn_read_buf(bn_t b, const pythia_buf_t *buf) {
 
     uint8_t sign = buf->p[0];
 
-    if (sign != BN_POS && sign != BN_NEG)
+    if (sign != RLC_POS && sign != RLC_NEG)
         THROW(ERR_NO_VALID);
 
     bn_read_bin(b, buf->p + 1, (int)(buf->len - 1));

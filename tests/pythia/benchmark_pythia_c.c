@@ -26,7 +26,6 @@
 #include "pythia.h"
 #include "pythia_c.h"
 #include "pythia_init.h"
-#include "pythia_init_c.h"
 #include "vscp_pythia.h"
 
 #include <relic/relic.h>
