@@ -93,6 +93,8 @@ create_random_key(const test_env_t *env) {
 
     vscf_binary_to_hex(vsc_buffer_data(random_bytes), key_str);
 
+    vsc_buffer_destroy(&random_bytes);
+
     return key_str;
 }
 
