@@ -37,6 +37,12 @@
 // clang-format off
 
 
+//  @description
+// --------------------------------------------------------------------------
+//  HTTP client interface.
+// --------------------------------------------------------------------------
+
+
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -44,58 +50,12 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-
-//  @description
-// --------------------------------------------------------------------------
-//  This ia an umbrella header that includes library public headers.
-// --------------------------------------------------------------------------
-
-#ifndef VSSC_CORE_SDK_PUBLIC_H_INCLUDED
-#define VSSC_CORE_SDK_PUBLIC_H_INCLUDED
-
-#include "vssc_api.h"
-#include "vssc_assert.h"
-#include "vssc_base64_url.h"
-#include "vssc_card.h"
-#include "vssc_card_client.h"
-#include "vssc_card_list.h"
-#include "vssc_card_manager.h"
-#include "vssc_error.h"
 #include "vssc_http_client.h"
-#include "vssc_http_client_curl.h"
-#include "vssc_http_header.h"
-#include "vssc_http_header_list.h"
-#include "vssc_http_request.h"
-#include "vssc_http_response.h"
-#include "vssc_impl.h"
-#include "vssc_json_array.h"
-#include "vssc_json_object.h"
-#include "vssc_jwt.h"
-#include "vssc_jwt_generator.h"
-#include "vssc_key_handler.h"
-#include "vssc_key_handler_list.h"
-#include "vssc_library.h"
-#include "vssc_memory.h"
-#include "vssc_platform.h"
-#include "vssc_raw_card.h"
-#include "vssc_raw_card_list.h"
-#include "vssc_raw_card_signature.h"
-#include "vssc_raw_card_signature_list.h"
-#include "vssc_raw_card_signer.h"
-#include "vssc_raw_card_verifier.h"
-#include "vssc_status.h"
-#include "vssc_string_list.h"
-#include "vssc_unix_time.h"
-#include "vssc_virgil_http_client.h"
-#include "vssc_virgil_http_response.h"
+#include "vssc_http_client_api.h"
+#include "vssc_assert.h"
 
 // clang-format on
 //  @end
-
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 
 //  @generated
@@ -104,19 +64,70 @@ extern "C" {
 //  Generated section start.
 // --------------------------------------------------------------------------
 
+//
+//  Send given request over HTTP.
+//
+VSSC_PUBLIC vssc_http_response_t *
+vssc_http_client_send(vssc_impl_t *impl, const vssc_http_request_t *http_request, vssc_error_t *error) {
+
+    const vssc_http_client_api_t *http_client_api = vssc_http_client_api(impl);
+    VSSC_ASSERT_PTR (http_client_api);
+
+    VSSC_ASSERT_PTR (http_client_api->send_cb);
+    return http_client_api->send_cb (impl, http_request, error);
+}
+
+//
+//  Send given request over HTTP.
+//
+VSSC_PUBLIC vssc_http_response_t *
+vssc_http_client_auth_send(vssc_impl_t *impl, const vssc_http_request_t *http_request, vsc_str_t auth_type,
+        vsc_str_t auth_credentials, vssc_error_t *error) {
+
+    const vssc_http_client_api_t *http_client_api = vssc_http_client_api(impl);
+    VSSC_ASSERT_PTR (http_client_api);
+
+    VSSC_ASSERT_PTR (http_client_api->auth_send_cb);
+    return http_client_api->auth_send_cb (impl, http_request, auth_type, auth_credentials, error);
+}
+
+//
+//  Return http client API, or NULL if it is not implemented.
+//
+VSSC_PUBLIC const vssc_http_client_api_t *
+vssc_http_client_api(const vssc_impl_t *impl) {
+
+    VSSC_ASSERT_PTR (impl);
+
+    const vssc_api_t *api = vssc_impl_api(impl, vssc_api_tag_HTTP_CLIENT);
+    return (const vssc_http_client_api_t *) api;
+}
+
+//
+//  Check if given object implements interface 'http client'.
+//
+VSSC_PUBLIC bool
+vssc_http_client_is_implemented(const vssc_impl_t *impl) {
+
+    VSSC_ASSERT_PTR (impl);
+
+    return vssc_impl_api(impl, vssc_api_tag_HTTP_CLIENT) != NULL;
+}
+
+//
+//  Returns interface unique identifier.
+//
+VSSC_PUBLIC vssc_api_tag_t
+vssc_http_client_api_tag(const vssc_http_client_api_t *http_client_api) {
+
+    VSSC_ASSERT_PTR (http_client_api);
+
+    return http_client_api->api_tag;
+}
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
-//  @end
-
-
-#ifdef __cplusplus
-}
-#endif
-
-
-//  @footer
-#endif // VSSC_CORE_SDK_PUBLIC_H_INCLUDED
 //  @end

@@ -37,6 +37,15 @@
 // clang-format off
 
 
+//  @description
+// --------------------------------------------------------------------------
+//  Types of the 'http client curl' implementation.
+//  This types SHOULD NOT be used directly.
+//  The only purpose of including this module is to place implementation
+//  object in the stack memory.
+// --------------------------------------------------------------------------
+
+
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -44,58 +53,10 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-
-//  @description
-// --------------------------------------------------------------------------
-//  This ia an umbrella header that includes library public headers.
-// --------------------------------------------------------------------------
-
-#ifndef VSSC_CORE_SDK_PUBLIC_H_INCLUDED
-#define VSSC_CORE_SDK_PUBLIC_H_INCLUDED
-
-#include "vssc_api.h"
-#include "vssc_assert.h"
-#include "vssc_base64_url.h"
-#include "vssc_card.h"
-#include "vssc_card_client.h"
-#include "vssc_card_list.h"
-#include "vssc_card_manager.h"
-#include "vssc_error.h"
-#include "vssc_http_client.h"
-#include "vssc_http_client_curl.h"
-#include "vssc_http_header.h"
-#include "vssc_http_header_list.h"
-#include "vssc_http_request.h"
-#include "vssc_http_response.h"
-#include "vssc_impl.h"
-#include "vssc_json_array.h"
-#include "vssc_json_object.h"
-#include "vssc_jwt.h"
-#include "vssc_jwt_generator.h"
-#include "vssc_key_handler.h"
-#include "vssc_key_handler_list.h"
-#include "vssc_library.h"
-#include "vssc_memory.h"
-#include "vssc_platform.h"
-#include "vssc_raw_card.h"
-#include "vssc_raw_card_list.h"
-#include "vssc_raw_card_signature.h"
-#include "vssc_raw_card_signature_list.h"
-#include "vssc_raw_card_signer.h"
-#include "vssc_raw_card_verifier.h"
-#include "vssc_status.h"
-#include "vssc_string_list.h"
-#include "vssc_unix_time.h"
-#include "vssc_virgil_http_client.h"
-#include "vssc_virgil_http_response.h"
+#include "vssc_http_client_curl_defs.h"
 
 // clang-format on
 //  @end
-
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 
 //  @generated
@@ -109,14 +70,4 @@ extern "C" {
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
-//  @end
-
-
-#ifdef __cplusplus
-}
-#endif
-
-
-//  @footer
-#endif // VSSC_CORE_SDK_PUBLIC_H_INCLUDED
 //  @end

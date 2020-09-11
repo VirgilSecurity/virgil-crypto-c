@@ -53,6 +53,7 @@
 #ifndef VSSC_CORE_SDK_PRIVATE_H_INCLUDED
 #define VSSC_CORE_SDK_PRIVATE_H_INCLUDED
 
+#include "vssc_api_private.h"
 #include "vssc_atomic.h"
 #include "vssc_card_client_defs.h"
 #include "vssc_card_defs.h"
@@ -60,10 +61,13 @@
 #include "vssc_card_list_private.h"
 #include "vssc_card_manager_defs.h"
 #include "vssc_card_private.h"
+#include "vssc_http_client_api.h"
+#include "vssc_http_client_curl_defs.h"
 #include "vssc_http_header_defs.h"
 #include "vssc_http_header_list_defs.h"
 #include "vssc_http_request_defs.h"
 #include "vssc_http_response_defs.h"
+#include "vssc_impl_private.h"
 #include "vssc_json_array_defs.h"
 #include "vssc_json_array_private.h"
 #include "vssc_json_object_defs.h"

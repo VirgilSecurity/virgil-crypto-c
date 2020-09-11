@@ -79,6 +79,26 @@ set_property(
 )
 
 set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vssc_api.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
+)
+
+set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vssc_impl.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
+)
+
+set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vssc_http_client.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
+)
+
+set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vssc_http_client_curl.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
+)
+
+set_property(
     SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vssc_base64_url.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
@@ -225,6 +245,15 @@ target_sources(core_sdk
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vssc_memory.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/private/vssc_atomic.h"
             "${CMAKE_CURRENT_BINARY_DIR}/include/virgil/sdk/core/vssc_platform.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vssc_api.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/private/vssc_api_private.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vssc_impl.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/private/vssc_impl_private.h"
+            "$<$<BOOL:${VSSC_HTTP_CLIENT}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vssc_http_client.h>"
+            "$<$<BOOL:${VSSC_HTTP_CLIENT}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/private/vssc_http_client_api.h>"
+            "$<$<BOOL:${VSSC_HTTP_CLIENT_CURL}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vssc_http_client_curl.h>"
+            "$<$<BOOL:${VSSC_HTTP_CLIENT_CURL}>:${CMAKE_CURRENT_LIST_DIR}/src/vssc_http_client_curl_internal.h>"
+            "$<$<BOOL:${VSSC_HTTP_CLIENT_CURL}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/private/vssc_http_client_curl_defs.h>"
             "$<$<BOOL:${VSSC_BASE64_URL}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vssc_base64_url.h>"
             "$<$<BOOL:${VSSC_CARD}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vssc_card.h>"
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/private/vssc_card_private.h"
@@ -291,6 +320,15 @@ target_sources(core_sdk
             "${CMAKE_CURRENT_LIST_DIR}/src/vssc_assert.c"
             "${CMAKE_CURRENT_LIST_DIR}/src/vssc_library.c"
             "${CMAKE_CURRENT_LIST_DIR}/src/vssc_memory.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/vssc_api.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/vssc_api_private.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/vssc_impl.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/vssc_impl_private.c"
+            "$<$<BOOL:${VSSC_HTTP_CLIENT}>:${CMAKE_CURRENT_LIST_DIR}/src/vssc_http_client.c>"
+            "$<$<BOOL:${VSSC_HTTP_CLIENT}>:${CMAKE_CURRENT_LIST_DIR}/src/vssc_http_client_api.c>"
+            "$<$<BOOL:${VSSC_HTTP_CLIENT_CURL}>:${CMAKE_CURRENT_LIST_DIR}/src/vssc_http_client_curl.c>"
+            "$<$<BOOL:${VSSC_HTTP_CLIENT_CURL}>:${CMAKE_CURRENT_LIST_DIR}/src/vssc_http_client_curl_internal.c>"
+            "$<$<BOOL:${VSSC_HTTP_CLIENT_CURL}>:${CMAKE_CURRENT_LIST_DIR}/src/vssc_http_client_curl_defs.c>"
             "$<$<BOOL:${VSSC_BASE64_URL}>:${CMAKE_CURRENT_LIST_DIR}/src/vssc_base64_url.c>"
             "$<$<BOOL:${VSSC_CARD}>:${CMAKE_CURRENT_LIST_DIR}/src/vssc_card.c>"
             "$<$<BOOL:${VSSC_CARD}>:${CMAKE_CURRENT_LIST_DIR}/src/vssc_card_defs.c>"

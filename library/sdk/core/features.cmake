@@ -47,6 +47,9 @@ include_guard()
 
 option(VSSC_LIBRARY "Enable build of the 'core sdk' library" ON)
 option(VSSC_MULTI_THREADING "Enable multi-threading safety for Cards Core SDK." ON)
+option(VSSC_USE_DEFAULT_HTTP_CLIENT "" ON)
+option(VSSC_HTTP_CLIENT "Enable interface 'http client'." ON)
+option(VSSC_HTTP_CLIENT_CURL "Enable class 'http client curl'." ON)
 option(VSSC_ERROR "Enable class 'error'." ON)
 option(VSSC_JSON_OBJECT "Enable class 'json object'." ON)
 option(VSSC_JSON_ARRAY "Enable class 'json array'." ON)
@@ -78,6 +81,9 @@ option(VSSC_CARD_MANAGER "Enable class 'card manager'." ON)
 mark_as_advanced(
         VSSC_LIBRARY
         VSSC_MULTI_THREADING
+        VSSC_USE_DEFAULT_HTTP_CLIENT
+        VSSC_HTTP_CLIENT
+        VSSC_HTTP_CLIENT_CURL
         VSSC_ERROR
         VSSC_JSON_OBJECT
         VSSC_JSON_ARRAY
@@ -107,6 +113,24 @@ mark_as_advanced(
         VSSC_CARD_LIST
         VSSC_CARD_MANAGER
         )
+
+if(VSSC_USE_DEFAULT_HTTP_CLIENT AND NOT VSSC_HTTP_CLIENT_CURL)
+    message("-- error --")
+    message("--")
+    message("Feature VSSC_USE_DEFAULT_HTTP_CLIENT depends on one of the features:")
+    message("     VSSC_HTTP_CLIENT_CURL - which are disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSSC_HTTP_CLIENT_CURL AND NOT VSC_STR_MUTABLE)
+    message("-- error --")
+    message("--")
+    message("Feature VSSC_HTTP_CLIENT_CURL depends on the feature:")
+    message("     VSC_STR_MUTABLE - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
 
 if(VSSC_JSON_OBJECT AND NOT VSC_STR_MUTABLE)
     message("-- error --")
@@ -243,11 +267,20 @@ if(VSSC_JWT_GENERATOR AND NOT VSCF_CTR_DRBG)
     message(FATAL_ERROR)
 endif()
 
-if(VSSC_VIRGIL_HTTP_CLIENT AND NOT VSC_STR_MUTABLE)
+if(VSSC_VIRGIL_HTTP_CLIENT AND NOT VSSC_USE_DEFAULT_HTTP_CLIENT)
     message("-- error --")
     message("--")
     message("Feature VSSC_VIRGIL_HTTP_CLIENT depends on the feature:")
-    message("     VSC_STR_MUTABLE - which is disabled.")
+    message("     VSSC_USE_DEFAULT_HTTP_CLIENT - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSSC_VIRGIL_HTTP_CLIENT AND NOT VSSC_HTTP_CLIENT)
+    message("-- error --")
+    message("--")
+    message("Feature VSSC_VIRGIL_HTTP_CLIENT depends on the feature:")
+    message("     VSSC_HTTP_CLIENT - which is disabled.")
     message("--")
     message(FATAL_ERROR)
 endif()

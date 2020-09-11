@@ -47,47 +47,15 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  This ia an umbrella header that includes library public headers.
+//  This module contains common functionality for all 'implementation' object.
+//  It is also enumerate all available implementations within crypto libary.
 // --------------------------------------------------------------------------
 
-#ifndef VSSC_CORE_SDK_PUBLIC_H_INCLUDED
-#define VSSC_CORE_SDK_PUBLIC_H_INCLUDED
+#ifndef VSSC_IMPL_H_INCLUDED
+#define VSSC_IMPL_H_INCLUDED
 
-#include "vssc_api.h"
-#include "vssc_assert.h"
-#include "vssc_base64_url.h"
-#include "vssc_card.h"
-#include "vssc_card_client.h"
-#include "vssc_card_list.h"
-#include "vssc_card_manager.h"
-#include "vssc_error.h"
-#include "vssc_http_client.h"
-#include "vssc_http_client_curl.h"
-#include "vssc_http_header.h"
-#include "vssc_http_header_list.h"
-#include "vssc_http_request.h"
-#include "vssc_http_response.h"
-#include "vssc_impl.h"
-#include "vssc_json_array.h"
-#include "vssc_json_object.h"
-#include "vssc_jwt.h"
-#include "vssc_jwt_generator.h"
-#include "vssc_key_handler.h"
-#include "vssc_key_handler_list.h"
 #include "vssc_library.h"
-#include "vssc_memory.h"
-#include "vssc_platform.h"
-#include "vssc_raw_card.h"
-#include "vssc_raw_card_list.h"
-#include "vssc_raw_card_signature.h"
-#include "vssc_raw_card_signature_list.h"
-#include "vssc_raw_card_signer.h"
-#include "vssc_raw_card_verifier.h"
-#include "vssc_status.h"
-#include "vssc_string_list.h"
-#include "vssc_unix_time.h"
-#include "vssc_virgil_http_client.h"
-#include "vssc_virgil_http_response.h"
+#include "vssc_api.h"
 
 // clang-format on
 //  @end
@@ -104,6 +72,72 @@ extern "C" {
 //  Generated section start.
 // --------------------------------------------------------------------------
 
+//
+//  Enumerates all possible implementations within crypto library.
+//
+enum vssc_impl_tag_t {
+    vssc_impl_tag_BEGIN = 0,
+    vssc_impl_tag_HTTP_CLIENT_CURL,
+    vssc_impl_tag_END
+};
+#ifndef VSSC_IMPL_TAG_T_DEFINED
+#define VSSC_IMPL_TAG_T_DEFINED
+    typedef enum vssc_impl_tag_t vssc_impl_tag_t;
+#endif // VSSC_IMPL_TAG_T_DEFINED
+
+//
+//  Generic type for any 'implementation'.
+//
+#ifndef VSSC_IMPL_T_DEFINED
+#define VSSC_IMPL_T_DEFINED
+    typedef struct vssc_impl_t vssc_impl_t;
+#endif // VSSC_IMPL_T_DEFINED
+
+//
+//  Return 'API' object that is fulfiled with a meta information
+//  specific to the given implementation object.
+//  Or NULL if object does not implement requested 'API'.
+//
+VSSC_PUBLIC const vssc_api_t *
+vssc_impl_api(const vssc_impl_t *impl, vssc_api_tag_t api_tag);
+
+//
+//  Return unique 'Implementation TAG'.
+//
+VSSC_PUBLIC vssc_impl_tag_t
+vssc_impl_tag(const vssc_impl_t *impl);
+
+//
+//  Cleanup implementation object and it's dependencies.
+//
+VSSC_PUBLIC void
+vssc_impl_cleanup(vssc_impl_t *impl);
+
+//
+//  Delete implementation object and it's dependencies.
+//
+VSSC_PUBLIC void
+vssc_impl_delete(const vssc_impl_t *impl);
+
+//
+//  Destroy implementation object and it's dependencies.
+//
+VSSC_PUBLIC void
+vssc_impl_destroy(vssc_impl_t **impl_ref);
+
+//
+//  Copy implementation object by increasing reference counter.
+//
+VSSC_PUBLIC vssc_impl_t *
+vssc_impl_shallow_copy(vssc_impl_t *impl);
+
+//
+//  Copy implementation object by increasing reference counter.
+//  Reference counter is internally synchronized, so constness is presumed.
+//
+VSSC_PUBLIC const vssc_impl_t *
+vssc_impl_shallow_copy_const(const vssc_impl_t *impl);
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.
@@ -118,5 +152,5 @@ extern "C" {
 
 
 //  @footer
-#endif // VSSC_CORE_SDK_PUBLIC_H_INCLUDED
+#endif // VSSC_IMPL_H_INCLUDED
 //  @end

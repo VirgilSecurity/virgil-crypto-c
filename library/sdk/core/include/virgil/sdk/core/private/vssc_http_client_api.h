@@ -47,47 +47,26 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  This ia an umbrella header that includes library public headers.
+//  Interface 'http client' API.
 // --------------------------------------------------------------------------
 
-#ifndef VSSC_CORE_SDK_PUBLIC_H_INCLUDED
-#define VSSC_CORE_SDK_PUBLIC_H_INCLUDED
+#ifndef VSSC_HTTP_CLIENT_API_H_INCLUDED
+#define VSSC_HTTP_CLIENT_API_H_INCLUDED
 
-#include "vssc_api.h"
-#include "vssc_assert.h"
-#include "vssc_base64_url.h"
-#include "vssc_card.h"
-#include "vssc_card_client.h"
-#include "vssc_card_list.h"
-#include "vssc_card_manager.h"
-#include "vssc_error.h"
-#include "vssc_http_client.h"
-#include "vssc_http_client_curl.h"
-#include "vssc_http_header.h"
-#include "vssc_http_header_list.h"
-#include "vssc_http_request.h"
-#include "vssc_http_response.h"
-#include "vssc_impl.h"
-#include "vssc_json_array.h"
-#include "vssc_json_object.h"
-#include "vssc_jwt.h"
-#include "vssc_jwt_generator.h"
-#include "vssc_key_handler.h"
-#include "vssc_key_handler_list.h"
 #include "vssc_library.h"
-#include "vssc_memory.h"
-#include "vssc_platform.h"
-#include "vssc_raw_card.h"
-#include "vssc_raw_card_list.h"
-#include "vssc_raw_card_signature.h"
-#include "vssc_raw_card_signature_list.h"
-#include "vssc_raw_card_signer.h"
-#include "vssc_raw_card_verifier.h"
-#include "vssc_status.h"
-#include "vssc_string_list.h"
-#include "vssc_unix_time.h"
-#include "vssc_virgil_http_client.h"
-#include "vssc_virgil_http_response.h"
+#include "vssc_api.h"
+#include "vssc_impl.h"
+#include "vssc_http_request.h"
+#include "vssc_error.h"
+#include "vssc_http_response.h"
+
+#if !VSSC_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <virgil/crypto/common/vsc_str.h>
+#endif
+
+#if VSSC_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <VSCCommon/vsc_str.h>
+#endif
 
 // clang-format on
 //  @end
@@ -104,6 +83,41 @@ extern "C" {
 //  Generated section start.
 // --------------------------------------------------------------------------
 
+//
+//  Callback. Send given request over HTTP.
+//
+typedef vssc_http_response_t * (*vssc_http_client_api_send_fn)(vssc_impl_t *impl,
+        const vssc_http_request_t *http_request, vssc_error_t *error);
+
+//
+//  Callback. Send given request over HTTP.
+//
+typedef vssc_http_response_t * (*vssc_http_client_api_auth_send_fn)(vssc_impl_t *impl,
+        const vssc_http_request_t *http_request, vsc_str_t auth_type, vsc_str_t auth_credentials, vssc_error_t *error);
+
+//
+//  Contains API requirements of the interface 'http client'.
+//
+struct vssc_http_client_api_t {
+    //
+    //  API's unique identifier, MUST be first in the structure.
+    //  For interface 'http_client' MUST be equal to the 'vssc_api_tag_HTTP_CLIENT'.
+    //
+    vssc_api_tag_t api_tag;
+    //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vssc_impl_tag_t impl_tag;
+    //
+    //  Send given request over HTTP.
+    //
+    vssc_http_client_api_send_fn send_cb;
+    //
+    //  Send given request over HTTP.
+    //
+    vssc_http_client_api_auth_send_fn auth_send_cb;
+};
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.
@@ -118,5 +132,5 @@ extern "C" {
 
 
 //  @footer
-#endif // VSSC_CORE_SDK_PUBLIC_H_INCLUDED
+#endif // VSSC_HTTP_CLIENT_API_H_INCLUDED
 //  @end

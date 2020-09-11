@@ -47,47 +47,16 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  This ia an umbrella header that includes library public headers.
+//  This module contains Private API common for all 'implementation' objects.
 // --------------------------------------------------------------------------
 
-#ifndef VSSC_CORE_SDK_PUBLIC_H_INCLUDED
-#define VSSC_CORE_SDK_PUBLIC_H_INCLUDED
+#ifndef VSSC_IMPL_PRIVATE_H_INCLUDED
+#define VSSC_IMPL_PRIVATE_H_INCLUDED
 
-#include "vssc_api.h"
-#include "vssc_assert.h"
-#include "vssc_base64_url.h"
-#include "vssc_card.h"
-#include "vssc_card_client.h"
-#include "vssc_card_list.h"
-#include "vssc_card_manager.h"
-#include "vssc_error.h"
-#include "vssc_http_client.h"
-#include "vssc_http_client_curl.h"
-#include "vssc_http_header.h"
-#include "vssc_http_header_list.h"
-#include "vssc_http_request.h"
-#include "vssc_http_response.h"
-#include "vssc_impl.h"
-#include "vssc_json_array.h"
-#include "vssc_json_object.h"
-#include "vssc_jwt.h"
-#include "vssc_jwt_generator.h"
-#include "vssc_key_handler.h"
-#include "vssc_key_handler_list.h"
 #include "vssc_library.h"
-#include "vssc_memory.h"
-#include "vssc_platform.h"
-#include "vssc_raw_card.h"
-#include "vssc_raw_card_list.h"
-#include "vssc_raw_card_signature.h"
-#include "vssc_raw_card_signature_list.h"
-#include "vssc_raw_card_signer.h"
-#include "vssc_raw_card_verifier.h"
-#include "vssc_status.h"
-#include "vssc_string_list.h"
-#include "vssc_unix_time.h"
-#include "vssc_virgil_http_client.h"
-#include "vssc_virgil_http_response.h"
+#include "vssc_impl.h"
+#include "vssc_atomic.h"
+#include "vssc_api.h"
 
 // clang-format on
 //  @end
@@ -104,6 +73,64 @@ extern "C" {
 //  Generated section start.
 // --------------------------------------------------------------------------
 
+//
+//  Callback type for cleanup action.
+//
+typedef void (*vssc_impl_cleanup_fn)(vssc_impl_t *impl);
+
+//
+//  Callback type for delete action.
+//
+typedef void (*vssc_impl_delete_fn)(vssc_impl_t *impl);
+
+//
+//  Returns API of the requested interface if implemented,
+//  otherwise - NULL.
+//
+typedef const vssc_api_t * (*vssc_impl_find_api_fn)(vssc_api_tag_t api_tag);
+
+//
+//  Contains common properties for any 'API' implementation object.
+//
+#ifndef VSSC_IMPL_INFO_T_DEFINED
+#define VSSC_IMPL_INFO_T_DEFINED
+    typedef struct vssc_impl_info_t vssc_impl_info_t;
+#endif // VSSC_IMPL_INFO_T_DEFINED
+struct vssc_impl_info_t {
+    //
+    //  Implementation unique identifier, MUST be first in the structure.
+    //
+    vssc_impl_tag_t impl_tag;
+    //
+    //  Callback that returns API of the requested interface if implemented, otherwise - NULL.
+    //  MUST be second in the structure.
+    //
+    vssc_impl_find_api_fn find_api_cb;
+    //
+    //  Release acquired inner resources.
+    //
+    vssc_impl_cleanup_fn self_cleanup_cb;
+    //
+    //  Self destruction, according to destruction policy.
+    //
+    vssc_impl_delete_fn self_delete_cb;
+};
+
+//
+//  Contains header of any 'API' implementation structure.
+//  It is used for runtime type casting and checking.
+//
+struct vssc_impl_t {
+    //
+    //  Compile-time known information.
+    //
+    const vssc_impl_info_t *info;
+    //
+    //  Reference counter.
+    //
+    VSSC_ATOMIC size_t refcnt;
+};
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.
@@ -118,5 +145,5 @@ extern "C" {
 
 
 //  @footer
-#endif // VSSC_CORE_SDK_PUBLIC_H_INCLUDED
+#endif // VSSC_IMPL_PRIVATE_H_INCLUDED
 //  @end

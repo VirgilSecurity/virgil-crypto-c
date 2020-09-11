@@ -47,47 +47,15 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  This ia an umbrella header that includes library public headers.
+//  Interface Private API.
 // --------------------------------------------------------------------------
 
-#ifndef VSSC_CORE_SDK_PUBLIC_H_INCLUDED
-#define VSSC_CORE_SDK_PUBLIC_H_INCLUDED
+#ifndef VSSC_API_PRIVATE_H_INCLUDED
+#define VSSC_API_PRIVATE_H_INCLUDED
 
-#include "vssc_api.h"
-#include "vssc_assert.h"
-#include "vssc_base64_url.h"
-#include "vssc_card.h"
-#include "vssc_card_client.h"
-#include "vssc_card_list.h"
-#include "vssc_card_manager.h"
-#include "vssc_error.h"
-#include "vssc_http_client.h"
-#include "vssc_http_client_curl.h"
-#include "vssc_http_header.h"
-#include "vssc_http_header_list.h"
-#include "vssc_http_request.h"
-#include "vssc_http_response.h"
-#include "vssc_impl.h"
-#include "vssc_json_array.h"
-#include "vssc_json_object.h"
-#include "vssc_jwt.h"
-#include "vssc_jwt_generator.h"
-#include "vssc_key_handler.h"
-#include "vssc_key_handler_list.h"
 #include "vssc_library.h"
-#include "vssc_memory.h"
-#include "vssc_platform.h"
-#include "vssc_raw_card.h"
-#include "vssc_raw_card_list.h"
-#include "vssc_raw_card_signature.h"
-#include "vssc_raw_card_signature_list.h"
-#include "vssc_raw_card_signer.h"
-#include "vssc_raw_card_verifier.h"
-#include "vssc_status.h"
-#include "vssc_string_list.h"
-#include "vssc_unix_time.h"
-#include "vssc_virgil_http_client.h"
-#include "vssc_virgil_http_response.h"
+#include "vssc_api.h"
+#include "vssc_impl.h"
 
 // clang-format on
 //  @end
@@ -104,6 +72,21 @@ extern "C" {
 //  Generated section start.
 // --------------------------------------------------------------------------
 
+//
+//  This structure contains common part of any 'API' interface structure.
+//  It is used for runtime type casting and checking.
+//
+struct vssc_api_t {
+    //
+    //  Interface unique identifier.
+    //
+    vssc_api_tag_t api_tag;
+    //
+    //  Implementation unique identifier.
+    //
+    vssc_impl_tag_t impl_tag;
+};
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.
@@ -118,5 +101,5 @@ extern "C" {
 
 
 //  @footer
-#endif // VSSC_CORE_SDK_PUBLIC_H_INCLUDED
+#endif // VSSC_API_PRIVATE_H_INCLUDED
 //  @end

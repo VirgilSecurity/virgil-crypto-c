@@ -84,6 +84,18 @@ extern "C" {
 #cmakedefine01 VSSC_MULTI_THREADING
 #endif
 
+#ifndef VSSC_USE_DEFAULT_HTTP_CLIENT
+#cmakedefine01 VSSC_USE_DEFAULT_HTTP_CLIENT
+#endif
+
+#ifndef VSSC_HTTP_CLIENT
+#cmakedefine01 VSSC_HTTP_CLIENT
+#endif
+
+#ifndef VSSC_HTTP_CLIENT_CURL
+#cmakedefine01 VSSC_HTTP_CLIENT_CURL
+#endif
+
 #ifndef VSSC_ERROR
 #cmakedefine01 VSSC_ERROR
 #endif

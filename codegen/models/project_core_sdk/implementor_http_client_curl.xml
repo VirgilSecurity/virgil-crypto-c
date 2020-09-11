@@ -1,0 +1,94 @@
+<implementor name="http client curl" is_default="1">
+    Provide implementation based on the library LIBCURL.
+
+    <implementation name="http client curl">
+        HTTP client based on the library LIBCURL.
+
+        <require header="curl/curl.h" is_system="1"/>
+        <require header="ctype.h" is_system="1"/>
+        <require module="str buffer defs" project="common"/>
+        <require module="http response defs"/>
+        <require class="str mutable" project="common"/>
+
+
+        <interface name="http client"/>
+
+
+        <constant name="k header name value separator" type="string" visibility="private">
+            Separator between header name and header value.
+
+            <value value=": "/>
+        </constant>
+
+
+        <property name="ca bundle path" class="str mutable"/>
+
+
+        <constructor name="with ca">
+            Use custom CA bundle.
+
+            <argument name="ca bundle path" class="str"/>
+        </constructor>
+
+
+        <method name="send internal" declaration="private">
+            Send given request over HTTP.
+            Note, "auth type" and "auth credentials" can be empty.
+
+            <argument name="http request" class="http request"/>
+            <argument name="auth type" class="str"/>
+            <argument name="auth credentials" class="str"/>
+            <argument name="error" class="error" access="readwrite"/>
+
+            <return class="http response" access="disown"/>
+        </method>
+
+
+        <method name="format header" is_static="1" declaration="private">
+            Concatenate header name and header value as "NAME: VALUE".
+            Note, given buffer is reset first and then strings are appended.
+            Note, written string is null-terminated.
+
+            <argument name="name" class="str"/>
+            <argument name="value" class="str"/>
+            <argument name="out str" class="str buffer"/>
+        </method>
+
+
+        <method name="format authorization header" is_static="1" declaration="private">
+            Make authorization header as "Authorization: TYPE CREDENTIALS".
+            Note, given buffer is reset first and then strings are appended.
+            Note, written string is null-terminated.
+
+            <argument name="type" class="str"/>
+            <argument name="credentials" class="str"/>
+            <argument name="out str" class="str buffer"/>
+        </method>
+
+
+        <method name="write recevied data" is_static="1" declaration="private">
+            Callback for CURL body writing fucntion.
+
+            <argument name="ptr" class="any" access="readwrite"/>
+            <argument name="size" type="size"/>
+            <argument name="nmemb" type="size"/>
+            <argument name="http response" class="http response" access="readwrite"/>
+
+            <return type="size"/>
+        </method>
+
+
+        <method name="write recevied header" is_static="1" declaration="private">
+            Callback for CURL header writing fucntion.
+
+            <argument name="ptr" type="string" access="readwrite">
+                <string length="given"/>
+            </argument>
+            <argument name="size" type="size"/>
+            <argument name="nmemb" type="size"/>
+            <argument name="http response" class="http response" access="readwrite"/>
+
+            <return type="size"/>
+        </method>
+    </implementation>
+</implementor>

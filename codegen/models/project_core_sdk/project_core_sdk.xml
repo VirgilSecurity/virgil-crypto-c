@@ -55,6 +55,12 @@
         Enable multi-threading safety for Cards Core SDK.
     </feature>
 
+    <feature name="use default http client">
+        <require>
+            <alternative feature="http client curl"/>
+        </require>
+    </feature>
+
     <module name="assert" from="shared"/>
     <module name="library" from="shared"/>
     <module name="memory" from="shared"/>
@@ -81,6 +87,10 @@
     <class name="http header list"/>
     <class name="http request"/>
     <class name="http response"/>
+
+    <interface name="http client"/>
+    <implementor name="http client curl"/>
+    <!-- <implementor name="http client x"/> -->
 
     <!-- Common client modules -->
     <class name="virgil http client"/>
