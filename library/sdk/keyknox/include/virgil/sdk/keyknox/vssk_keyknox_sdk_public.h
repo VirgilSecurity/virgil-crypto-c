@@ -53,14 +53,23 @@
 #ifndef VSSK_KEYKNOX_SDK_PUBLIC_H_INCLUDED
 #define VSSK_KEYKNOX_SDK_PUBLIC_H_INCLUDED
 
+#include "vssk_platform.h"
 #include "vssk_assert.h"
-#include "vssk_error.h"
-#include "vssk_keyknox_client.h"
-#include "vssk_keyknox_entry.h"
 #include "vssk_library.h"
 #include "vssk_memory.h"
-#include "vssk_platform.h"
 #include "vssk_status.h"
+
+#if VSSK_ERROR
+#   include "vssk_error.h"
+#endif
+
+#if VSSK_KEYKNOX_CLIENT
+#   include "vssk_keyknox_client.h"
+#endif
+
+#if VSSK_KEYKNOX_ENTRY
+#   include "vssk_keyknox_entry.h"
+#endif
 
 // clang-format on
 //  @end

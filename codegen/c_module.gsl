@@ -152,6 +152,8 @@ function c_module_create (source, destination, project)
             .scope = module.scope
             .has_cmakedefine = module.has_cmakedefine
             .is_header_only = module.is_header_only ?
+            .is_umbrella = module.is_umbrella ?
+
 
             if string_equal(module.platform, "apple")
                 .lang = "ObjC"

@@ -854,6 +854,10 @@ function c_component_create_include (require, destination)
             .if = make_ref_c (make_id (my.project_uid, "global macros", my.feature_name))
         endif
 
+        if defined(my.require.if_feature)
+            .if = make_ref_c (make_id (my.project_uid, "global macros", my.require.if_feature))
+        endif
+
         c_component_resolve_include (c_include)
         c_component_map_attr_definition (c_include, my.require)
         c_component_map_attr_feature (c_include, my.require)

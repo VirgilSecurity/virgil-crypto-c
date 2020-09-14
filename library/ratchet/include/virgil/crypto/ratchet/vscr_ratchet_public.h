@@ -53,17 +53,29 @@
 #ifndef VSCR_RATCHET_PUBLIC_H_INCLUDED
 #define VSCR_RATCHET_PUBLIC_H_INCLUDED
 
+#include "vscr_platform.h"
 #include "vscr_assert.h"
-#include "vscr_error.h"
 #include "vscr_group_msg_type.h"
 #include "vscr_library.h"
 #include "vscr_memory.h"
 #include "vscr_msg_type.h"
-#include "vscr_platform.h"
-#include "vscr_ratchet_common.h"
-#include "vscr_ratchet_message.h"
-#include "vscr_ratchet_session.h"
 #include "vscr_status.h"
+
+#if VSCR_ERROR
+#   include "vscr_error.h"
+#endif
+
+#if VSCR_RATCHET_COMMON
+#   include "vscr_ratchet_common.h"
+#endif
+
+#if VSCR_RATCHET_MESSAGE
+#   include "vscr_ratchet_message.h"
+#endif
+
+#if VSCR_RATCHET_SESSION
+#   include "vscr_ratchet_session.h"
+#endif
 
 // clang-format on
 //  @end

@@ -1,12 +1,4 @@
 framework module VSSP {
-    header "vssp_assert.h"
-    header "vssp_library.h"
-    header "vssp_memory.h"
-    header "vssp_platform.h"
-    header "vssp_brain_key_seed.h"
-    header "vssp_error.h"
-    header "vssp_pythia_client.h"
-    header "vssp_status.h"
     header "vssp_pythia_sdk_public.h"
     export *
 }

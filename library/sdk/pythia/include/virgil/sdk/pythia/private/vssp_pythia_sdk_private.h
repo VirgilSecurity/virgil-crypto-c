@@ -53,10 +53,17 @@
 #ifndef VSSP_PYTHIA_SDK_PRIVATE_H_INCLUDED
 #define VSSP_PYTHIA_SDK_PRIVATE_H_INCLUDED
 
+#include "vssp_platform.h"
 #include "vssp_atomic.h"
-#include "vssp_brain_key_seed_defs.h"
 #include "vssp_brain_key_seed_private.h"
-#include "vssp_pythia_client_defs.h"
+
+#if VSSP_BRAIN_KEY_SEED
+#   include "vssp_brain_key_seed_defs.h"
+#endif
+
+#if VSSP_PYTHIA_CLIENT
+#   include "vssp_pythia_client_defs.h"
+#endif
 
 // clang-format on
 //  @end

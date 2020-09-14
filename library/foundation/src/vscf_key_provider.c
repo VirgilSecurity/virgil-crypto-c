@@ -64,12 +64,11 @@
 #include "vscf_ctr_drbg.h"
 #include "vscf_key_asn1_deserializer.h"
 #include "vscf_key_asn1_serializer.h"
-#include "vscf_compound_key_alg_defs.h"
-#include "vscf_hybrid_key_alg_defs.h"
 #include "vscf_sha512.h"
 
 #if VSCF_COMPOUND_KEY_ALG
 #   include "vscf_compound_key_alg.h"
+#   include "vscf_compound_key_alg_defs.h"
 #endif
 
 #if VSCF_CURVE25519
@@ -89,6 +88,7 @@
 #endif
 
 #if VSCF_HYBRID_KEY_ALG
+#   include "vscf_hybrid_key_alg_defs.h"
 #   include "vscf_hybrid_key_alg.h"
 #endif
 

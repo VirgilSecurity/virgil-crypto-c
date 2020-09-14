@@ -53,9 +53,16 @@
 #ifndef VSSK_KEYKNOX_SDK_PRIVATE_H_INCLUDED
 #define VSSK_KEYKNOX_SDK_PRIVATE_H_INCLUDED
 
+#include "vssk_platform.h"
 #include "vssk_atomic.h"
-#include "vssk_keyknox_client_defs.h"
-#include "vssk_keyknox_entry_defs.h"
+
+#if VSSK_KEYKNOX_CLIENT
+#   include "vssk_keyknox_client_defs.h"
+#endif
+
+#if VSSK_KEYKNOX_ENTRY
+#   include "vssk_keyknox_entry_defs.h"
+#endif
 
 // clang-format on
 //  @end

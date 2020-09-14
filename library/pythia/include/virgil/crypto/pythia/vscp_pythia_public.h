@@ -53,13 +53,19 @@
 #ifndef VSCP_PYTHIA_PUBLIC_H_INCLUDED
 #define VSCP_PYTHIA_PUBLIC_H_INCLUDED
 
+#include "vscp_platform.h"
 #include "vscp_assert.h"
-#include "vscp_error.h"
 #include "vscp_library.h"
 #include "vscp_memory.h"
-#include "vscp_platform.h"
-#include "vscp_pythia.h"
 #include "vscp_status.h"
+
+#if VSCP_ERROR
+#   include "vscp_error.h"
+#endif
+
+#if VSCP_PYTHIA
+#   include "vscp_pythia.h"
+#endif
 
 // clang-format on
 //  @end

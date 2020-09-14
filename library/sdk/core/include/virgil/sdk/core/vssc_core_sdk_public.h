@@ -53,42 +53,129 @@
 #ifndef VSSC_CORE_SDK_PUBLIC_H_INCLUDED
 #define VSSC_CORE_SDK_PUBLIC_H_INCLUDED
 
+#include "vssc_platform.h"
 #include "vssc_api.h"
 #include "vssc_assert.h"
-#include "vssc_base64_url.h"
-#include "vssc_card.h"
-#include "vssc_card_client.h"
-#include "vssc_card_list.h"
-#include "vssc_card_manager.h"
-#include "vssc_error.h"
-#include "vssc_http_client.h"
-#include "vssc_http_client_curl.h"
-#include "vssc_http_client_x.h"
-#include "vssc_http_header.h"
-#include "vssc_http_header_list.h"
-#include "vssc_http_request.h"
-#include "vssc_http_response.h"
 #include "vssc_impl.h"
-#include "vssc_json_array.h"
-#include "vssc_json_object.h"
-#include "vssc_jwt.h"
-#include "vssc_jwt_generator.h"
-#include "vssc_key_handler.h"
-#include "vssc_key_handler_list.h"
 #include "vssc_library.h"
 #include "vssc_memory.h"
-#include "vssc_platform.h"
-#include "vssc_raw_card.h"
-#include "vssc_raw_card_list.h"
-#include "vssc_raw_card_signature.h"
-#include "vssc_raw_card_signature_list.h"
-#include "vssc_raw_card_signer.h"
-#include "vssc_raw_card_verifier.h"
 #include "vssc_status.h"
-#include "vssc_string_list.h"
-#include "vssc_unix_time.h"
-#include "vssc_virgil_http_client.h"
-#include "vssc_virgil_http_response.h"
+
+#if VSSC_BASE64_URL
+#   include "vssc_base64_url.h"
+#endif
+
+#if VSSC_CARD
+#   include "vssc_card.h"
+#endif
+
+#if VSSC_CARD_CLIENT
+#   include "vssc_card_client.h"
+#endif
+
+#if VSSC_CARD_LIST
+#   include "vssc_card_list.h"
+#endif
+
+#if VSSC_CARD_MANAGER
+#   include "vssc_card_manager.h"
+#endif
+
+#if VSSC_ERROR
+#   include "vssc_error.h"
+#endif
+
+#if VSSC_HTTP_CLIENT
+#   include "vssc_http_client.h"
+#endif
+
+#if VSSC_HTTP_CLIENT_CURL
+#   include "vssc_http_client_curl.h"
+#endif
+
+#if VSSC_HTTP_CLIENT_X
+#   include "vssc_http_client_x.h"
+#endif
+
+#if VSSC_HTTP_HEADER
+#   include "vssc_http_header.h"
+#endif
+
+#if VSSC_HTTP_HEADER_LIST
+#   include "vssc_http_header_list.h"
+#endif
+
+#if VSSC_HTTP_REQUEST
+#   include "vssc_http_request.h"
+#endif
+
+#if VSSC_HTTP_RESPONSE
+#   include "vssc_http_response.h"
+#endif
+
+#if VSSC_JSON_ARRAY
+#   include "vssc_json_array.h"
+#endif
+
+#if VSSC_JSON_OBJECT
+#   include "vssc_json_object.h"
+#endif
+
+#if VSSC_JWT
+#   include "vssc_jwt.h"
+#endif
+
+#if VSSC_JWT_GENERATOR
+#   include "vssc_jwt_generator.h"
+#endif
+
+#if VSSC_KEY_HANDLER
+#   include "vssc_key_handler.h"
+#endif
+
+#if VSSC_KEY_HANDLER_LIST
+#   include "vssc_key_handler_list.h"
+#endif
+
+#if VSSC_RAW_CARD
+#   include "vssc_raw_card.h"
+#endif
+
+#if VSSC_RAW_CARD_LIST
+#   include "vssc_raw_card_list.h"
+#endif
+
+#if VSSC_RAW_CARD_SIGNATURE
+#   include "vssc_raw_card_signature.h"
+#endif
+
+#if VSSC_RAW_CARD_SIGNATURE_LIST
+#   include "vssc_raw_card_signature_list.h"
+#endif
+
+#if VSSC_RAW_CARD_SIGNER
+#   include "vssc_raw_card_signer.h"
+#endif
+
+#if VSSC_RAW_CARD_VERIFIER
+#   include "vssc_raw_card_verifier.h"
+#endif
+
+#if VSSC_STRING_LIST
+#   include "vssc_string_list.h"
+#endif
+
+#if VSSC_UNIX_TIME
+#   include "vssc_unix_time.h"
+#endif
+
+#if VSSC_VIRGIL_HTTP_CLIENT
+#   include "vssc_virgil_http_client.h"
+#endif
+
+#if VSSC_VIRGIL_HTTP_RESPONSE
+#   include "vssc_virgil_http_response.h"
+#endif
 
 // clang-format on
 //  @end

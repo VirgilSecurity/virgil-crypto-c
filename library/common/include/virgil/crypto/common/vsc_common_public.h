@@ -53,15 +53,30 @@
 #ifndef VSC_COMMON_PUBLIC_H_INCLUDED
 #define VSC_COMMON_PUBLIC_H_INCLUDED
 
+#include "vsc_platform.h"
 #include "vsc_assert.h"
-#include "vsc_buffer.h"
-#include "vsc_data.h"
 #include "vsc_library.h"
 #include "vsc_memory.h"
-#include "vsc_platform.h"
-#include "vsc_str.h"
-#include "vsc_str_buffer.h"
-#include "vsc_str_mutable.h"
+
+#if VSC_BUFFER
+#   include "vsc_buffer.h"
+#endif
+
+#if VSC_DATA
+#   include "vsc_data.h"
+#endif
+
+#if VSC_STR
+#   include "vsc_str.h"
+#endif
+
+#if VSC_STR_BUFFER
+#   include "vsc_str_buffer.h"
+#endif
+
+#if VSC_STR_MUTABLE
+#   include "vsc_str_mutable.h"
+#endif
 
 // clang-format on
 //  @end

@@ -69,7 +69,7 @@
 static NSString *
 vssc_http_client_x_create_obj_ascii_string(vsc_str_t str);
 
-static  NSString *
+static NSString *
 vssc_http_client_x_create_obj_utf8_string(vsc_str_t str);
 
 //

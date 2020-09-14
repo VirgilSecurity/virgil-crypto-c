@@ -1,12 +1,4 @@
 framework module VSSK {
-    header "vssk_assert.h"
-    header "vssk_library.h"
-    header "vssk_memory.h"
-    header "vssk_platform.h"
-    header "vssk_error.h"
-    header "vssk_keyknox_client.h"
-    header "vssk_keyknox_entry.h"
-    header "vssk_status.h"
     header "vssk_keyknox_sdk_public.h"
     export *
 }

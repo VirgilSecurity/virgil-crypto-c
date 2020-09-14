@@ -53,14 +53,23 @@
 #ifndef VSSP_PYTHIA_SDK_PUBLIC_H_INCLUDED
 #define VSSP_PYTHIA_SDK_PUBLIC_H_INCLUDED
 
+#include "vssp_platform.h"
 #include "vssp_assert.h"
-#include "vssp_brain_key_seed.h"
-#include "vssp_error.h"
 #include "vssp_library.h"
 #include "vssp_memory.h"
-#include "vssp_platform.h"
-#include "vssp_pythia_client.h"
 #include "vssp_status.h"
+
+#if VSSP_BRAIN_KEY_SEED
+#   include "vssp_brain_key_seed.h"
+#endif
+
+#if VSSP_ERROR
+#   include "vssp_error.h"
+#endif
+
+#if VSSP_PYTHIA_CLIENT
+#   include "vssp_pythia_client.h"
+#endif
 
 // clang-format on
 //  @end

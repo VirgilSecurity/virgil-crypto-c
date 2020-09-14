@@ -53,19 +53,43 @@
 #ifndef VSCE_PHE_PUBLIC_H_INCLUDED
 #define VSCE_PHE_PUBLIC_H_INCLUDED
 
+#include "vsce_platform.h"
 #include "vsce_assert.h"
-#include "vsce_error.h"
 #include "vsce_library.h"
 #include "vsce_memory.h"
-#include "vsce_phe_cipher.h"
-#include "vsce_phe_client.h"
-#include "vsce_phe_common.h"
-#include "vsce_phe_server.h"
-#include "vsce_platform.h"
 #include "vsce_status.h"
-#include "vsce_uokms_client.h"
-#include "vsce_uokms_server.h"
-#include "vsce_uokms_wrap_rotation.h"
+
+#if VSCE_ERROR
+#   include "vsce_error.h"
+#endif
+
+#if VSCE_PHE_CIPHER
+#   include "vsce_phe_cipher.h"
+#endif
+
+#if VSCE_PHE_CLIENT
+#   include "vsce_phe_client.h"
+#endif
+
+#if VSCE_PHE_COMMON
+#   include "vsce_phe_common.h"
+#endif
+
+#if VSCE_PHE_SERVER
+#   include "vsce_phe_server.h"
+#endif
+
+#if VSCE_UOKMS_CLIENT
+#   include "vsce_uokms_client.h"
+#endif
+
+#if VSCE_UOKMS_SERVER
+#   include "vsce_uokms_server.h"
+#endif
+
+#if VSCE_UOKMS_WRAP_ROTATION
+#   include "vsce_uokms_wrap_rotation.h"
+#endif
 
 // clang-format on
 //  @end
