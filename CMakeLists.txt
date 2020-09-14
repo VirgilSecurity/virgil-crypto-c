@@ -242,24 +242,24 @@ endif()
 # ---------------------------------------------------------------------------
 
 if(VIRGIL_SDK_CORE)
-    if (VSSC_HTTP_CLIENT_CURL)
-        if(NOT CURL_ROOT_DIR)
-            find_package (CURL REQUIRED)
-        else()
-            # Look for the library (sorted from most current/relevant entry to least).
-            find_library(CURL_LIBRARY_RELEASE NAMES
-                curl
-                # Windows MSVC prebuilts:
-                curllib
-                libcurl_imp
-                curllib_static
-                # Windows older "Win32 - MSVC" prebuilts (libcurl.lib, e.g. libcurl-7.15.5-win32-msvc.zip):
-                libcurl
-                HINTS ${CURL_ROOT_DIR}/lib
-                NO_DEFAULT_PATH NO_CMAKE_FIND_ROOT_PATH
-            )
-            mark_as_advanced(CURL_LIBRARY_RELEASE)
+    if(NOT CURL_ROOT_DIR)
+        find_package (CURL)
+    else()
+        # Look for the library (sorted from most current/relevant entry to least).
+        find_library(CURL_LIBRARY_RELEASE NAMES
+            curl
+            # Windows MSVC prebuilts:
+            curllib
+            libcurl_imp
+            curllib_static
+            # Windows older "Win32 - MSVC" prebuilts (libcurl.lib, e.g. libcurl-7.15.5-win32-msvc.zip):
+            libcurl
+            HINTS ${CURL_ROOT_DIR}/lib
+            NO_DEFAULT_PATH NO_CMAKE_FIND_ROOT_PATH
+        )
+        mark_as_advanced(CURL_LIBRARY_RELEASE)
 
+        if(CURL_LIBRARY_RELEASE)
             set(CURL_LIBRARIES "${CURL_LIBRARY_RELEASE}")
             set(CURL_INCLUDE_DIRS "${CURL_ROOT_DIR}/include" "${CURL_ROOT_DIR}/include/curl")
 
@@ -278,7 +278,7 @@ if(VIRGIL_SDK_CORE)
                 add_library(CURL::libcurl ALIAS libcurl)
             endif()
         endif()
-    endif(VSSC_HTTP_CLIENT_CURL)
+    endif()
 
     add_subdirectory("library/sdk/core")
 endif()
