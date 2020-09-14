@@ -146,13 +146,18 @@ function c_module_create (source, destination, project)
 
         new c_module to my.destination
             . = c_format_comment (module.) ?
-            .lang = "C"
             .id = module.name
             .name = c_format_name (module.c_prefix, module.name)
             .class = c_format_name (module.class)
             .scope = module.scope
             .has_cmakedefine = module.has_cmakedefine
             .is_header_only = module.is_header_only ?
+
+            if string_equal(module.platform, "apple")
+                .lang = "ObjC"
+            else
+                .lang = "C"
+            endif
 
             c_component_map_attr_uid (c_module, module)
             c_component_map_attr_feature (c_module, module)
@@ -168,7 +173,13 @@ function c_module_create (source, destination, project)
             my.configuration_suffix = c_module.has_cmakedefine ?? ".in" ? ""
 
             .c_include_file = 0.name + ".h"
-            .c_source_file = 0.name + ".c"
+
+            if 0.lang = "ObjC"
+                .c_source_file = 0.name + ".m"
+            else
+                .c_source_file = 0.name + ".c"
+            endif
+
             .header_file = cat_path (my.resolved_header_path, 0.c_include_file + my.configuration_suffix)
             .source_file = cat_path (my.project.src_path, 0.c_source_file)
             .once_guard = c_format_name (0.c_include_file, "included")

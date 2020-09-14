@@ -40,6 +40,7 @@
 //  @description
 // --------------------------------------------------------------------------
 //  Virgil HTTP client.
+//  TODO: Add "virgil-agent" header.
 // --------------------------------------------------------------------------
 
 
@@ -56,8 +57,12 @@
 #include "vssc_http_client.h"
 #include "vssc_impl.h"
 
-#if VSSC_VIRGIL_HTTP_CLIENT
+#if VSSC_HTTP_CLIENT_CURL
 #   include "vssc_http_client_curl.h"
+#endif
+
+#if VSSC_HTTP_CLIENT_X
+#   include "vssc_http_client_x.h"
 #endif
 
 // clang-format on
@@ -188,7 +193,12 @@ vssc_virgil_http_client_send_custom_with_ca(
 static vssc_impl_t *
 vssc_virgil_http_client_create_http_client_impl(vsc_str_t ca_bundle_path) {
 
-#if VSSC_VIRGIL_HTTP_CLIENT
+#if VSSC_HTTP_CLIENT_X
+    VSSC_UNUSED(ca_bundle_path);
+    return vssc_http_client_x_impl(vssc_http_client_x_new());
+#endif
+
+#if VSSC_HTTP_CLIENT_CURL
     if (vsc_str_is_valid_and_non_empty(ca_bundle_path)) {
         return vssc_http_client_curl_impl(vssc_http_client_curl_new_with_ca(ca_bundle_path));
     } else {

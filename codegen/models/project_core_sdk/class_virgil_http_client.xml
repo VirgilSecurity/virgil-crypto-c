@@ -1,10 +1,12 @@
 <class name="virgil http client">
     Virgil HTTP client.
+    TODO: Add "virgil-agent" header.
 
 
     <require feature="use default http client"/>
     <require interface="http client"/>
     <require impl="http client curl" is_optional="1"/>
+    <require impl="http client x" is_optional="1"/>
 
 
     <constant name="k header authorization type" type="string" visibility="private">

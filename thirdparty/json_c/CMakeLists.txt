@@ -61,6 +61,8 @@ ExternalProject_Add(json_c-ext
             "-DENABLE_THREADING=OFF"
             "-DENABLE_TESTING=${JSON_C_ENABLE_TESTING}"
             "-DBUILD_SPEEDTEST=${JSON_C_BUILD_SPEEDTEST}"
+        BUILD_BYPRODUCTS
+            "${JSON_C_INSTALL_LOCATION}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}json-c${CMAKE_STATIC_LIBRARY_SUFFIX}"
         )
 
 # ---------------------------------------------------------------------------

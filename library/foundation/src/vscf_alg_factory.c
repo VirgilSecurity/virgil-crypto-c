@@ -58,28 +58,88 @@
 #include "vscf_public_key.h"
 #include "vscf_private_key.h"
 
-#if VSCF_ALG_FACTORY
-#   include "vscf_sha224.h"
-#   include "vscf_sha256.h"
-#   include "vscf_sha384.h"
-#   include "vscf_sha512.h"
-#   include "vscf_kdf1.h"
-#   include "vscf_kdf2.h"
-#   include "vscf_hmac.h"
-#   include "vscf_hkdf.h"
-#   include "vscf_aes256_gcm.h"
+#if VSCF_AES256_CBC
 #   include "vscf_aes256_cbc.h"
-#   include "vscf_hash_based_alg_info.h"
+#endif
+
+#if VSCF_AES256_GCM
+#   include "vscf_aes256_gcm.h"
+#endif
+
+#if VSCF_CIPHER_ALG_INFO
 #   include "vscf_cipher_alg_info.h"
-#   include "vscf_salted_kdf_alg_info.h"
-#   include "vscf_pbe_alg_info.h"
-#   include "vscf_pkcs5_pbkdf2.h"
-#   include "vscf_pkcs5_pbes2.h"
-#   include "vscf_rsa.h"
-#   include "vscf_ed25519.h"
+#endif
+
+#if VSCF_CURVE25519
 #   include "vscf_curve25519.h"
+#endif
+
+#if VSCF_ECC
 #   include "vscf_ecc.h"
+#endif
+
+#if VSCF_ED25519
+#   include "vscf_ed25519.h"
+#endif
+
+#if VSCF_HASH_BASED_ALG_INFO
+#   include "vscf_hash_based_alg_info.h"
+#endif
+
+#if VSCF_HKDF
+#   include "vscf_hkdf.h"
+#endif
+
+#if VSCF_HMAC
+#   include "vscf_hmac.h"
+#endif
+
+#if VSCF_KDF1
+#   include "vscf_kdf1.h"
+#endif
+
+#if VSCF_KDF2
+#   include "vscf_kdf2.h"
+#endif
+
+#if VSCF_PBE_ALG_INFO
+#   include "vscf_pbe_alg_info.h"
+#endif
+
+#if VSCF_PKCS5_PBES2
+#   include "vscf_pkcs5_pbes2.h"
+#endif
+
+#if VSCF_PKCS5_PBKDF2
+#   include "vscf_pkcs5_pbkdf2.h"
+#endif
+
+#if VSCF_RANDOM_PADDING
 #   include "vscf_random_padding.h"
+#endif
+
+#if VSCF_RSA
+#   include "vscf_rsa.h"
+#endif
+
+#if VSCF_SALTED_KDF_ALG_INFO
+#   include "vscf_salted_kdf_alg_info.h"
+#endif
+
+#if VSCF_SHA224
+#   include "vscf_sha224.h"
+#endif
+
+#if VSCF_SHA256
+#   include "vscf_sha256.h"
+#endif
+
+#if VSCF_SHA384
+#   include "vscf_sha384.h"
+#endif
+
+#if VSCF_SHA512
+#   include "vscf_sha512.h"
 #endif
 
 // clang-format on

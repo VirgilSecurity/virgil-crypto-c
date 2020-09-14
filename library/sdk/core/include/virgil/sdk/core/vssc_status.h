@@ -149,6 +149,10 @@ enum vssc_status_t {
     //
     vssc_status_HTTP_HEADER_NOT_FOUND = -304,
     //
+    //  Failed to parse HTTP URL.
+    //
+    vssc_status_HTTP_URL_INVALID_FORMAT = -305,
+    //
     //  Response processing failed because given HTTP Response contains Virgil Service error.
     //
     vssc_status_HTTP_RESPONSE_CONTAINS_SERVICE_ERROR = -401,

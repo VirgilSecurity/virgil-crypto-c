@@ -59,6 +59,8 @@ ExternalProject_Add(relic-ext
                 "-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}"
                 "-DCMAKE_INSTALL_PREFIX=${RELIC_LOCATION}"
                 -DRAND=CALL ${RELIC_CMAKE_ARGS} -C "${RELIC_ARGS_FILE}"
+        BUILD_BYPRODUCTS
+            "${RELIC_LOCATION}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}relic_s${CMAKE_STATIC_LIBRARY_SUFFIX}"
         )
 
 # ---------------------------------------------------------------------------
@@ -66,10 +68,11 @@ ExternalProject_Add(relic-ext
 # ---------------------------------------------------------------------------
 add_library(relic STATIC IMPORTED GLOBAL)
 add_dependencies(relic relic-ext)
-file(MAKE_DIRECTORY ${RELIC_LOCATION}/include)
+file(MAKE_DIRECTORY "${RELIC_LOCATION}/include")
 set_target_properties(relic PROPERTIES
-        IMPORTED_LOCATION ${RELIC_LOCATION}/lib/librelic_s.a
-        INTERFACE_INCLUDE_DIRECTORIES ${RELIC_LOCATION}/include)
+        IMPORTED_LOCATION "${RELIC_LOCATION}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}relic_s${CMAKE_STATIC_LIBRARY_SUFFIX}"
+        INTERFACE_INCLUDE_DIRECTORIES "${RELIC_LOCATION}/include"
+        )
 
 # ---------------------------------------------------------------------------
 #   Install

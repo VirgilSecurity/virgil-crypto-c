@@ -7,6 +7,7 @@ framework module VSSC {
     header "vssc_impl.h"
     header "vssc_http_client.h"
     header "vssc_http_client_curl.h"
+    header "vssc_http_client_x.h"
     header "vssc_base64_url.h"
     header "vssc_card.h"
     header "vssc_card_client.h"

@@ -48,6 +48,7 @@
 //  @description
 // --------------------------------------------------------------------------
 //  Virgil HTTP client.
+//  TODO: Add "virgil-agent" header.
 // --------------------------------------------------------------------------
 
 #ifndef VSSC_VIRGIL_HTTP_CLIENT_H_INCLUDED

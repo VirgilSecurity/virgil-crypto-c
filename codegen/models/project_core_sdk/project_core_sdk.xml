@@ -58,6 +58,7 @@
     <feature name="use default http client">
         <require>
             <alternative feature="http client curl"/>
+            <alternative feature="http client x"/>
         </require>
     </feature>
 
@@ -90,7 +91,7 @@
 
     <interface name="http client"/>
     <implementor name="http client curl"/>
-    <!-- <implementor name="http client x"/> -->
+    <implementor name="http client x"/>
 
     <!-- Common client modules -->
     <class name="virgil http client"/>

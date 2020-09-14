@@ -77,6 +77,10 @@
         Cannot find HTTP header with a given name.
     </constant>
 
+    <constant name="http url invalid format" value="-305">
+        Failed to parse HTTP URL.
+    </constant>
+
     <constant name="http response contains service error" value="-401">
         Response processing failed because given HTTP Response contains Virgil Service error.
     </constant>

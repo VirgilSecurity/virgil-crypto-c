@@ -61,7 +61,7 @@ endif()
 #
 include("${CMAKE_CURRENT_LIST_DIR}/features.cmake")
 
-if(VSSC_VIRGIL_HTTP_CLIENT AND NOT TARGET CURL::libcurl)
+if(VSSC_HTTP_CLIENT_CURL AND NOT TARGET CURL::libcurl)
     message(FATAL_ERROR "Required library 'CURL' is not found - looking for target 'CURL::libcurl'.")
 endif()
 
@@ -77,6 +77,9 @@ if(CMAKE_CROSSCOMPILING AND APPLE AND BUILD_APPLE_FRAMEWORKS)
     set(VSSC_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK YES CACHE INTERNAL "")
 endif()
 
+if (APPLE AND CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+    enable_language(OBJC)
+endif()
 
 #
 # Define sources
@@ -103,8 +106,12 @@ target_include_directories(core_sdk
 #
 target_link_libraries(core_sdk PUBLIC vsc::common vsc::foundation json_c)
 
-if(TARGET CURL::libcurl)
+if(VSSC_HTTP_CLIENT_CURL)
     target_link_libraries(core_sdk PUBLIC CURL::libcurl)
+endif()
+
+if (APPLE AND CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+    target_link_libraries(core_sdk PUBLIC "-framework Foundation")
 endif()
 
 #
@@ -156,14 +163,6 @@ endif()
 #
 add_library(vsc::core_sdk ALIAS core_sdk)
 
-#
-# Format code
-#
-if(COMMAND add_clangformat AND ENABLE_CLANGFORMAT)
-    add_clangformat(core_sdk)
-endif()
-
-
 # ---------------------------------------------------------------------------
 #   Apple specific
 # ---------------------------------------------------------------------------
@@ -175,6 +174,12 @@ if(CMAKE_CROSSCOMPILING AND APPLE AND BUILD_APPLE_FRAMEWORKS AND COMMAND target_
             )
 endif()
 
+# ---------------------------------------------------------------------------
+# Format code
+# ---------------------------------------------------------------------------
+if(COMMAND add_clangformat AND ENABLE_CLANGFORMAT)
+    add_clangformat(core_sdk)
+endif()
 
 # ---------------------------------------------------------------------------
 #   Install library

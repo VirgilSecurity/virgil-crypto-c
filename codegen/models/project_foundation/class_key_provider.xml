@@ -18,9 +18,9 @@
     <require impl="falcon" is_optional="1"/>
     <require impl="round5" is_optional="1"/>
     <require impl="compound key alg" is_optional="1"/>
-    <require module="compound key alg defs" is_optional="1"/>
+    <require module="compound key alg defs"/>
     <require impl="hybrid key alg" is_optional="1"/>
-    <require module="hybrid key alg defs" is_optional="1"/>
+    <require module="hybrid key alg defs"/>
     <require impl="sha512"/>
 
     <dependency name="random" interface="random"/>

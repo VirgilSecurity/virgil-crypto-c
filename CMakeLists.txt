@@ -46,12 +46,13 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 # ---------------------------------------------------------------------------
 #   Helper modules
 # ---------------------------------------------------------------------------
-include("cmake/find_host_utils.cmake")
-include("cmake/clangformat.cmake")
-include("cmake/helpers.cmake")
-include("cmake/TransitiveArgs.cmake")
-include("cmake/TransitiveToolchainArgs.cmake")
-include("cmake/protobuf.cmake")
+include("${CMAKE_CURRENT_LIST_DIR}/cmake/find_host_utils.cmake")
+include("${CMAKE_CURRENT_LIST_DIR}/cmake/clangformat.cmake")
+include("${CMAKE_CURRENT_LIST_DIR}/cmake/helpers.cmake")
+include("${CMAKE_CURRENT_LIST_DIR}/cmake/TransitiveArgs.cmake")
+include("${CMAKE_CURRENT_LIST_DIR}/cmake/TransitiveToolchainArgs.cmake")
+include("${CMAKE_CURRENT_LIST_DIR}/cmake/protobuf.cmake")
+include("${CMAKE_CURRENT_LIST_DIR}/cmake/apple_framework.cmake")
 
 
 # ---------------------------------------------------------------------------
@@ -241,41 +242,43 @@ endif()
 # ---------------------------------------------------------------------------
 
 if(VIRGIL_SDK_CORE)
-    if(NOT CURL_ROOT_DIR)
-        find_package (CURL REQUIRED)
-    else()
-        # Look for the library (sorted from most current/relevant entry to least).
-        find_library(CURL_LIBRARY_RELEASE NAMES
-            curl
-            # Windows MSVC prebuilts:
-            curllib
-            libcurl_imp
-            curllib_static
-            # Windows older "Win32 - MSVC" prebuilts (libcurl.lib, e.g. libcurl-7.15.5-win32-msvc.zip):
-            libcurl
-            HINTS ${CURL_ROOT_DIR}/lib
-            NO_DEFAULT_PATH NO_CMAKE_FIND_ROOT_PATH
-        )
-        mark_as_advanced(CURL_LIBRARY_RELEASE)
+    if (VSSC_HTTP_CLIENT_CURL)
+        if(NOT CURL_ROOT_DIR)
+            find_package (CURL REQUIRED)
+        else()
+            # Look for the library (sorted from most current/relevant entry to least).
+            find_library(CURL_LIBRARY_RELEASE NAMES
+                curl
+                # Windows MSVC prebuilts:
+                curllib
+                libcurl_imp
+                curllib_static
+                # Windows older "Win32 - MSVC" prebuilts (libcurl.lib, e.g. libcurl-7.15.5-win32-msvc.zip):
+                libcurl
+                HINTS ${CURL_ROOT_DIR}/lib
+                NO_DEFAULT_PATH NO_CMAKE_FIND_ROOT_PATH
+            )
+            mark_as_advanced(CURL_LIBRARY_RELEASE)
 
-        set(CURL_LIBRARIES "${CURL_LIBRARY_RELEASE}")
-        set(CURL_INCLUDE_DIRS "${CURL_ROOT_DIR}/include" "${CURL_ROOT_DIR}/include/curl")
+            set(CURL_LIBRARIES "${CURL_LIBRARY_RELEASE}")
+            set(CURL_INCLUDE_DIRS "${CURL_ROOT_DIR}/include" "${CURL_ROOT_DIR}/include/curl")
 
-        add_library(libcurl STATIC IMPORTED GLOBAL)
+            add_library(libcurl STATIC IMPORTED GLOBAL)
 
-        set_target_properties(libcurl
-            PROPERTIES
-            IMPORTED_LOCATION
-                "${CURL_LIBRARY_RELEASE}"
+            set_target_properties(libcurl
+                PROPERTIES
+                IMPORTED_LOCATION
+                    "${CURL_LIBRARY_RELEASE}"
 
-            INTERFACE_INCLUDE_DIRECTORIES
-                "${CURL_INCLUDE_DIRS}"
-        )
+                INTERFACE_INCLUDE_DIRECTORIES
+                    "${CURL_INCLUDE_DIRS}"
+            )
 
-        if(NOT TARGET CURL::libcurl)
-            add_library(CURL::libcurl ALIAS libcurl)
+            if(NOT TARGET CURL::libcurl)
+                add_library(CURL::libcurl ALIAS libcurl)
+            endif()
         endif()
-    endif()
+    endif(VSSC_HTTP_CLIENT_CURL)
 
     add_subdirectory("library/sdk/core")
 endif()

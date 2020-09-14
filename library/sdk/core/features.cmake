@@ -50,6 +50,7 @@ option(VSSC_MULTI_THREADING "Enable multi-threading safety for Cards Core SDK." 
 option(VSSC_USE_DEFAULT_HTTP_CLIENT "" ON)
 option(VSSC_HTTP_CLIENT "Enable interface 'http client'." ON)
 option(VSSC_HTTP_CLIENT_CURL "Enable class 'http client curl'." ON)
+option(VSSC_HTTP_CLIENT_X "Enable class 'http client x'." OFF)
 option(VSSC_ERROR "Enable class 'error'." ON)
 option(VSSC_JSON_OBJECT "Enable class 'json object'." ON)
 option(VSSC_JSON_ARRAY "Enable class 'json array'." ON)
@@ -84,6 +85,7 @@ mark_as_advanced(
         VSSC_USE_DEFAULT_HTTP_CLIENT
         VSSC_HTTP_CLIENT
         VSSC_HTTP_CLIENT_CURL
+        VSSC_HTTP_CLIENT_X
         VSSC_ERROR
         VSSC_JSON_OBJECT
         VSSC_JSON_ARRAY
@@ -114,11 +116,11 @@ mark_as_advanced(
         VSSC_CARD_MANAGER
         )
 
-if(VSSC_USE_DEFAULT_HTTP_CLIENT AND NOT VSSC_HTTP_CLIENT_CURL)
+if(VSSC_USE_DEFAULT_HTTP_CLIENT AND NOT VSSC_HTTP_CLIENT_CURL AND NOT VSSC_HTTP_CLIENT_X)
     message("-- error --")
     message("--")
     message("Feature VSSC_USE_DEFAULT_HTTP_CLIENT depends on one of the features:")
-    message("     VSSC_HTTP_CLIENT_CURL - which are disabled.")
+    message("     VSSC_HTTP_CLIENT_CURL, VSSC_HTTP_CLIENT_X - which are disabled.")
     message("--")
     message(FATAL_ERROR)
 endif()
@@ -128,6 +130,15 @@ if(VSSC_HTTP_CLIENT_CURL AND NOT VSC_STR_MUTABLE)
     message("--")
     message("Feature VSSC_HTTP_CLIENT_CURL depends on the feature:")
     message("     VSC_STR_MUTABLE - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSSC_HTTP_CLIENT_X AND NOT APPLE)
+    message("-- error --")
+    message("--")
+    message("Feature VSSC_HTTP_CLIENT_X depends on the feature:")
+    message("     APPLE - which is disabled.")
     message("--")
     message(FATAL_ERROR)
 endif()

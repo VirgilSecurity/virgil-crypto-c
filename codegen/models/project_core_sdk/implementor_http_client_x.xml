@@ -1,0 +1,43 @@
+<implementor name="http client x" is_default="1">
+    Provide implementation based on the library Apple Frameworks.
+
+
+    <implementation name="http client x" platform="apple">
+
+        Provide implementation based on the library URLSession.
+
+        <feature name="http client x" default="off">
+            <require feature="APPLE" is_external="1"/>
+        </feature>
+
+        <require header="Foundation/Foundation.h" is_objc="1" scope="context"/>
+
+        <property name="session objc" class="__strong NSURLSession" library="apple"/>
+
+        <interface name="http client"/>
+
+        <method name="create obj ascii string" declaration="private" is_static="1">
+            <argument name="str" class="str"/>
+
+            <return class="NSString" access="disown" library="apple"/>
+        </method>
+
+        <method name="create obj utf8 string" declaration="private" is_static="1">
+            <argument name="str" class="str"/>
+
+            <return class="NSString" access="disown" library="apple"/>
+        </method>
+
+        <method name="send internal" declaration="private">
+            Send given request over HTTP.
+            Note, "auth type" and "auth credentials" can be empty.
+
+            <argument name="http request" class="http request"/>
+            <argument name="auth type" class="str"/>
+            <argument name="auth credentials" class="str"/>
+            <argument name="error" class="error" access="readwrite"/>
+
+            <return class="http response" access="disown"/>
+        </method>
+    </implementation>
+</implementor>

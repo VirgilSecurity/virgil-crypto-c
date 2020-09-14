@@ -78,6 +78,7 @@ extern "C" {
 enum vssc_impl_tag_t {
     vssc_impl_tag_BEGIN = 0,
     vssc_impl_tag_HTTP_CLIENT_CURL,
+    vssc_impl_tag_HTTP_CLIENT_X,
     vssc_impl_tag_END
 };
 #ifndef VSSC_IMPL_TAG_T_DEFINED

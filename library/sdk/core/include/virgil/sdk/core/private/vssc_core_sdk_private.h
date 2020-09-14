@@ -63,6 +63,7 @@
 #include "vssc_card_private.h"
 #include "vssc_http_client_api.h"
 #include "vssc_http_client_curl_defs.h"
+#include "vssc_http_client_x_defs.h"
 #include "vssc_http_header_defs.h"
 #include "vssc_http_header_list_defs.h"
 #include "vssc_http_request_defs.h"

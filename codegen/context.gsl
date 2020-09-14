@@ -53,15 +53,18 @@ gsl from "common.gsl"
 .   check_arguments (my, "resolution_map, source_file, destination_file", my)
 .   my.default_gsl_substitute = [gsl].substitute
 .   my.default_gsl_ignorecase = [gsl].ignorecase
+.   my.destination_file_tmp = my.destination_file + ".tmp"
 .   [gsl].substitute = ".("
 .   [gsl].ignorecase = "0"
-.   output my.destination_file
+.   output my.destination_file_tmp
 .       scope my.resolution_map
 .           gsl from my.source_file
 .       endscope
 .   close
 .   [gsl].substitute = my.default_gsl_substitute
 .   [gsl].ignorecase = my.default_gsl_ignorecase
+.   file.delete(my.destination_file)
+.   file.rename(my.destination_file_tmp, my.destination_file)
 .endmacro
 
 

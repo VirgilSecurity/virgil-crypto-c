@@ -99,6 +99,11 @@ set_property(
 )
 
 set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vssc_http_client_x.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
+)
+
+set_property(
     SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vssc_base64_url.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
@@ -238,6 +243,21 @@ set_property(
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
 
+set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/src/vssc_http_client_x.m"
+    APPEND_STRING PROPERTY COMPILE_FLAGS "-fobjc-arc"
+)
+
+set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/src/vssc_http_client_x_internal.m"
+    APPEND_STRING PROPERTY COMPILE_FLAGS "-fobjc-arc"
+)
+
+set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/src/vssc_http_client_x_defs.m"
+    APPEND_STRING PROPERTY COMPILE_FLAGS "-fobjc-arc"
+)
+
 target_sources(core_sdk
     PRIVATE
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vssc_assert.h"
@@ -254,6 +274,9 @@ target_sources(core_sdk
             "$<$<BOOL:${VSSC_HTTP_CLIENT_CURL}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vssc_http_client_curl.h>"
             "$<$<BOOL:${VSSC_HTTP_CLIENT_CURL}>:${CMAKE_CURRENT_LIST_DIR}/src/vssc_http_client_curl_internal.h>"
             "$<$<BOOL:${VSSC_HTTP_CLIENT_CURL}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/private/vssc_http_client_curl_defs.h>"
+            "$<$<BOOL:${VSSC_HTTP_CLIENT_X}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vssc_http_client_x.h>"
+            "$<$<BOOL:${VSSC_HTTP_CLIENT_X}>:${CMAKE_CURRENT_LIST_DIR}/src/vssc_http_client_x_internal.h>"
+            "$<$<BOOL:${VSSC_HTTP_CLIENT_X}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/private/vssc_http_client_x_defs.h>"
             "$<$<BOOL:${VSSC_BASE64_URL}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vssc_base64_url.h>"
             "$<$<BOOL:${VSSC_CARD}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vssc_card.h>"
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/private/vssc_card_private.h"
@@ -329,6 +352,9 @@ target_sources(core_sdk
             "$<$<BOOL:${VSSC_HTTP_CLIENT_CURL}>:${CMAKE_CURRENT_LIST_DIR}/src/vssc_http_client_curl.c>"
             "$<$<BOOL:${VSSC_HTTP_CLIENT_CURL}>:${CMAKE_CURRENT_LIST_DIR}/src/vssc_http_client_curl_internal.c>"
             "$<$<BOOL:${VSSC_HTTP_CLIENT_CURL}>:${CMAKE_CURRENT_LIST_DIR}/src/vssc_http_client_curl_defs.c>"
+            "$<$<BOOL:${VSSC_HTTP_CLIENT_X}>:${CMAKE_CURRENT_LIST_DIR}/src/vssc_http_client_x.m>"
+            "$<$<BOOL:${VSSC_HTTP_CLIENT_X}>:${CMAKE_CURRENT_LIST_DIR}/src/vssc_http_client_x_internal.m>"
+            "$<$<BOOL:${VSSC_HTTP_CLIENT_X}>:${CMAKE_CURRENT_LIST_DIR}/src/vssc_http_client_x_defs.m>"
             "$<$<BOOL:${VSSC_BASE64_URL}>:${CMAKE_CURRENT_LIST_DIR}/src/vssc_base64_url.c>"
             "$<$<BOOL:${VSSC_CARD}>:${CMAKE_CURRENT_LIST_DIR}/src/vssc_card.c>"
             "$<$<BOOL:${VSSC_CARD}>:${CMAKE_CURRENT_LIST_DIR}/src/vssc_card_defs.c>"

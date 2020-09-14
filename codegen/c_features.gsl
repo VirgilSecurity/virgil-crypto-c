@@ -78,6 +78,9 @@ endfunction
 function _F21_derive_require_name (require)
     check_argument (my, "require", my)
 
+    if is_true(my.require.is_external)
+        return my.require.feature
+    endif
 
     component_require_landlord (my.require, my)
 

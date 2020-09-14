@@ -48,9 +48,9 @@ gsl from "cmake_codegen.gsl"
 
 
 # ---------------------------------------------------------------------------
-#   Return formatted file path for CMake
+#   Return CMake file path of module include file.
 # ---------------------------------------------------------------------------
-function _Z23_derive_cmake_file_path (c_module, project)
+function _Z23_derive_cmake_file_path_for_module_header (c_module, project)
     check_arguments (my, "c_module, project", my)
 
     my.base_path = my.c_module.has_cmakedefine ?? "${CMAKE_CURRENT_BINARY_DIR}" ? "${CMAKE_CURRENT_LIST_DIR}"
@@ -67,6 +67,18 @@ function _Z23_derive_cmake_file_path (c_module, project)
     else
         echo_fatal ("Unexpected c_module.scope=$(my.c_module.scope:)", my)
     endif
+endfunction
+
+
+# ---------------------------------------------------------------------------
+#   Return CMake file path of module source file.
+# ---------------------------------------------------------------------------
+function _Z23_derive_cmake_file_path_for_module_source (c_module, project)
+    check_arguments (my, "c_module, project", my)
+
+    my.base_path = my.c_module.has_cmakedefine ?? "${CMAKE_CURRENT_BINARY_DIR}" ? "${CMAKE_CURRENT_LIST_DIR}"
+
+    return "$(my.base_path:)/src/$(my.c_module.c_source_file:)"
 endfunction
 
 
@@ -92,7 +104,7 @@ function _Z23_insert_header_file_path (c_module, project, tab_count)
     check_arguments (my, "c_module, project", my)
 
     _Z23_insert_featured_file_path (\
-            _Z23_derive_cmake_file_path (my.c_module, my.project), my.c_module.feature, my.tab_count)
+            _Z23_derive_cmake_file_path_for_module_header (my.c_module, my.project), my.c_module.feature, my.tab_count)
 endfunction
 
 
@@ -157,18 +169,28 @@ endfunction
 function _Z23_insert_files_apple_configuration (source, project)
     check_arguments (my, "source, project", my)
 
-    for my.source.c_module
-        my.file_path = _Z23_derive_cmake_file_path (c_module, my.project)
+    for my.source.c_module where c_module.scope = "public"
+        my.file_path = _Z23_derive_cmake_file_path_for_module_header (c_module, my.project)
 
-        if c_module.scope = "public"
-            cmake_insert ("\
-                set_property(
-                    SOURCE \"$(my.file_path:)\"
-                    PROPERTY MACOSX_PACKAGE_LOCATION \"Headers\"
-                )
-            ")
-            newline ()
-        endif
+        cmake_insert ("\
+            set_property(
+                SOURCE \"$(my.file_path:)\"
+                PROPERTY MACOSX_PACKAGE_LOCATION \"Headers\"
+            )
+        ")
+        newline ()
+    endfor
+
+    for my.source.c_module where c_module.lang = "ObjC"
+        my.file_path = _Z23_derive_cmake_file_path_for_module_source (c_module, my.project)
+
+        cmake_insert ("\
+            set_property(
+                SOURCE \"$(my.file_path:)\"
+                APPEND_STRING PROPERTY COMPILE_FLAGS \"-fobjc-arc\"
+            )
+        ")
+        newline ()
     endfor
 endfunction
 

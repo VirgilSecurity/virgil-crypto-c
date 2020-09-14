@@ -56,15 +56,36 @@
 #include "vscf_key.h"
 #include "vscf_random.h"
 
-#if VSCF_KEY_ALG_FACTORY
-#   include "vscf_rsa.h"
-#   include "vscf_ecc.h"
-#   include "vscf_ed25519.h"
-#   include "vscf_curve25519.h"
+#if VSCF_COMPOUND_KEY_ALG
 #   include "vscf_compound_key_alg.h"
-#   include "vscf_hybrid_key_alg.h"
+#endif
+
+#if VSCF_CURVE25519
+#   include "vscf_curve25519.h"
+#endif
+
+#if VSCF_ECC
+#   include "vscf_ecc.h"
+#endif
+
+#if VSCF_ED25519
+#   include "vscf_ed25519.h"
+#endif
+
+#if VSCF_FALCON
 #   include "vscf_falcon.h"
+#endif
+
+#if VSCF_HYBRID_KEY_ALG
+#   include "vscf_hybrid_key_alg.h"
+#endif
+
+#if VSCF_ROUND5
 #   include "vscf_round5.h"
+#endif
+
+#if VSCF_RSA
+#   include "vscf_rsa.h"
 #endif
 
 // clang-format on

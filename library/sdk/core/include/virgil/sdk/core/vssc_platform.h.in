@@ -96,6 +96,10 @@ extern "C" {
 #cmakedefine01 VSSC_HTTP_CLIENT_CURL
 #endif
 
+#ifndef VSSC_HTTP_CLIENT_X
+#cmakedefine01 VSSC_HTTP_CLIENT_X
+#endif
+
 #ifndef VSSC_ERROR
 #cmakedefine01 VSSC_ERROR
 #endif

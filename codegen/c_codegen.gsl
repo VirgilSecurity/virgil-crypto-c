@@ -135,10 +135,12 @@ function c_insert_include (c_include, tab_count, tab_size)
 
     my.spaces = " " * my.spaces_count
 
+    my.include_keyyword = is_true(my.c_include.is_objc) ?? "import" ? "include"
+
     if is_true (my.c_include.is_system)
-        out ("#$(my.spaces)include <$(my.c_include.file:)>")
+        out ("#$(my.spaces)$(my.include_keyyword:) <$(my.c_include.file:)>")
     else
-        out ("#$(my.spaces)include \"$(my.c_include.file:)\"")
+        out ("#$(my.spaces)$(my.include_keyyword:) \"$(my.c_include.file:)\"")
     endif
 endfunction
 

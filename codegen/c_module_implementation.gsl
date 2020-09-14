@@ -1246,6 +1246,7 @@ function c_module_implementation_create_module_public (impl, enum_impl_tag, dest
         .of_class = my.names.implementation_class
         .feature = my.impl.name
         .scope = my.impl.scope
+        .platform = my.impl.platform ?
 
         _Z19_add_includes_for_module_public (my.impl, module, my.meta)
         _Z19_add_self_tag (my.impl, my.enum_impl_tag, my.meta)
@@ -1298,6 +1299,7 @@ function c_module_implementation_create_module_impl (impl, destination, meta)
         .of_class = my.names.implementation_class
         .scope = "private"
         .feature = my.impl.name
+        .platform = my.impl.platform ?
 
         new require to module
             .module = my.names.module_library
@@ -1359,6 +1361,7 @@ function c_module_implementation_create_module_internal (impl, source, destinati
         .of_class = my.names.implementation_class
         .scope = "internal"
         .feature = my.impl.name
+        .platform = my.impl.platform ?
 
         if my.impl.context <> "none"
             _Z19_add_includes_for_module_internal (my.impl, module, my.meta)
