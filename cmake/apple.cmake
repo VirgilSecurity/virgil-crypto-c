@@ -98,6 +98,7 @@ set(APPLE TRUE)
 # Force the compilers to clang for Apple *OS
 set(CMAKE_C_COMPILER /usr/bin/clang)
 set(CMAKE_CXX_COMPILER /usr/bin/clang++)
+set(CMAKE_INSTALL_NAME_TOOL /usr/bin/install_name_tool)
 set(CMAKE_AR ar CACHE FILEPATH "" FORCE)
 set(CMAKE_RANLIB ranlib CACHE FILEPATH "" FORCE)
 
