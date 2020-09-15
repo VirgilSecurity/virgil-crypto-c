@@ -60,7 +60,7 @@ include("${CMAKE_CURRENT_LIST_DIR}/features.cmake")
 #
 # Internal configuration
 #
-if(CMAKE_CROSSCOMPILING AND APPLE AND BUILD_APPLE_FRAMEWORKS)
+if(APPLE AND BUILD_APPLE_FRAMEWORKS)
     set(VSSK_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK YES CACHE INTERNAL "")
     set(VSSK_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK YES CACHE INTERNAL "")
     set(VSSK_IMPORT_PROJECT_CORE_SDK_FROM_FRAMEWORK YES CACHE INTERNAL "")
@@ -152,7 +152,7 @@ endif()
 # ---------------------------------------------------------------------------
 #   Apple specific
 # ---------------------------------------------------------------------------
-if(CMAKE_CROSSCOMPILING AND APPLE AND BUILD_APPLE_FRAMEWORKS AND COMMAND target_apple_framework)
+if(APPLE AND BUILD_APPLE_FRAMEWORKS AND COMMAND target_apple_framework)
     target_apple_framework(keyknox_sdk
             NAME VSSKeyKnox
             VERSION "A"

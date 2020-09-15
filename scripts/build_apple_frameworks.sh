@@ -140,6 +140,7 @@ mkdir -p "${TVOS_DESTINATION_DIR}"
 mkdir -p "${WATCHOS_DESTINATION_DIR}"
 
 CMAKE_ARGS=""
+CMAKE_ARGS+=" -DCMAKE_XCODE_ATTRIBUTE_ONLY_ACTIVE_ARCH=NO"
 CMAKE_ARGS+=" -DCMAKE_BUILD_TYPE=Release"
 CMAKE_ARGS+=" -DBUILD_SHARED_LIBS=YES"
 CMAKE_ARGS+=" -DPB_NO_PACKED_STRUCTS=YES"
@@ -149,7 +150,8 @@ CMAKE_ARGS+=" -DVIRGIL_INSTALL_CMAKE=NO"
 CMAKE_ARGS+=" -DVIRGIL_INSTALL_DEPS_HDRS=NO"
 CMAKE_ARGS+=" -DVIRGIL_INSTALL_DEPS_LIBS=NO"
 CMAKE_ARGS+=" -DVIRGIL_INSTALL_DEPS_CMAKE=NO"
-CMAKE_ARGS+=" -DCMAKE_TOOLCHAIN_FILE='${ROOT_DIR}/cmake/apple.cmake'"
+CMAKE_ARGS+=" -DVSSC_HTTP_CLIENT_CURL=OFF"
+CMAKE_ARGS+=" -DVSSC_HTTP_CLIENT_X=ON"
 
 
 function build_ios {
@@ -163,14 +165,20 @@ function build_ios {
     mkdir -p "${BUILD_DIR}"
 
     cmake ${CMAKE_ARGS} -DCMAKE_INSTALL_PREFIX="${INSTALL_DIR}" \
-                        -DAPPLE_PLATFORM=IOS \
+                        -DCMAKE_SYSTEM_NAME="iOS" \
+                        -DCMAKE_OSX_SYSROOT="iphoneos" \
+                        -DCMAKE_OSX_ARCHITECTURES="armv7;armv7s;arm64" \
+                        -DCMAKE_OSX_DEPLOYMENT_TARGET="9.0" \
                         -DRELIC_USE_PTHREAD=ON \
                         -DCMAKE_INSTALL_LIBDIR=lib/dev \
                         -H"${SRC_DIR}" -B"${BUILD_DIR}/dev"
     cmake --build "${BUILD_DIR}/dev" --target install -- -j8
 
     cmake ${CMAKE_ARGS} -DCMAKE_INSTALL_PREFIX="${INSTALL_DIR}" \
-                        -DAPPLE_PLATFORM=IOS_SIM \
+                        -DCMAKE_SYSTEM_NAME="iOS" \
+                        -DCMAKE_OSX_SYSROOT="iphonesimulator" \
+                        -DCMAKE_OSX_ARCHITECTURES="i386;x86_64" \
+                        -DCMAKE_OSX_DEPLOYMENT_TARGET="9.0" \
                         -DRELIC_USE_PTHREAD=OFF \
                         -DCMAKE_INSTALL_LIBDIR=lib/sim \
                         -H"${SRC_DIR}" -B"${BUILD_DIR}/sim"
@@ -180,6 +188,9 @@ function build_ios {
     make_fat_framework VSCFoundation "${INSTALL_DIR}" "${INSTALL_DIR}"
     make_fat_framework VSCPythia "${INSTALL_DIR}" "${INSTALL_DIR}"
     make_fat_framework VSCRatchet "${INSTALL_DIR}" "${INSTALL_DIR}"
+    make_fat_framework VSSCore "${INSTALL_DIR}" "${INSTALL_DIR}"
+    make_fat_framework VSSPythia "${INSTALL_DIR}" "${INSTALL_DIR}"
+    make_fat_framework VSSKeyKnox "${INSTALL_DIR}" "${INSTALL_DIR}"
 
     rm -fr -- "${INSTALL_DIR}/lib"
     cp -fa "${INSTALL_DIR}/." "${FRAMEWORKS_DIR}/"
@@ -198,14 +209,20 @@ function build_tvos {
     mkdir -p "${BUILD_DIR}"
 
     cmake ${CMAKE_ARGS} -DCMAKE_INSTALL_PREFIX="${INSTALL_DIR}" \
-                        -DAPPLE_PLATFORM=TVOS \
+                        -DCMAKE_SYSTEM_NAME="tvOS" \
+                        -DCMAKE_OSX_SYSROOT="appletvos" \
+                        -DCMAKE_OSX_ARCHITECTURES="arm64" \
+                        -DCMAKE_OSX_DEPLOYMENT_TARGET="9.0" \
                         -DRELIC_USE_PTHREAD=ON \
                         -DCMAKE_INSTALL_LIBDIR=lib/dev \
                         -H"${SRC_DIR}" -B"${BUILD_DIR}/dev"
     cmake --build "${BUILD_DIR}/dev" --target install -- -j8
 
     cmake ${CMAKE_ARGS} -DCMAKE_INSTALL_PREFIX="${INSTALL_DIR}" \
-                        -DAPPLE_PLATFORM=TVOS_SIM \
+                        -DCMAKE_SYSTEM_NAME="tvOS" \
+                        -DCMAKE_OSX_SYSROOT="appletvsimulator" \
+                        -DCMAKE_OSX_ARCHITECTURES="x86_64" \
+                        -DCMAKE_OSX_DEPLOYMENT_TARGET="9.0" \
                         -DRELIC_USE_PTHREAD=ON \
                         -DCMAKE_INSTALL_LIBDIR=lib/sim \
                         -H"${SRC_DIR}" -B"${BUILD_DIR}/sim"
@@ -215,6 +232,9 @@ function build_tvos {
     make_fat_framework VSCFoundation "${INSTALL_DIR}" "${INSTALL_DIR}"
     make_fat_framework VSCPythia "${INSTALL_DIR}" "${INSTALL_DIR}"
     make_fat_framework VSCRatchet "${INSTALL_DIR}" "${INSTALL_DIR}"
+    make_fat_framework VSSCore "${INSTALL_DIR}" "${INSTALL_DIR}"
+    make_fat_framework VSSPythia "${INSTALL_DIR}" "${INSTALL_DIR}"
+    make_fat_framework VSSKeyKnox "${INSTALL_DIR}" "${INSTALL_DIR}"
 
     rm -fr -- "${INSTALL_DIR}/lib"
     cp -fa "${INSTALL_DIR}/." "${FRAMEWORKS_DIR}/"
@@ -233,14 +253,20 @@ function build_watchos {
     mkdir -p "${BUILD_DIR}"
 
     cmake ${CMAKE_ARGS} -DCMAKE_INSTALL_PREFIX="${INSTALL_DIR}" \
-                        -DAPPLE_PLATFORM=WATCHOS \
+                        -DCMAKE_SYSTEM_NAME="watchOS" \
+                        -DCMAKE_OSX_SYSROOT="watchos" \
+                        -DCMAKE_OSX_ARCHITECTURES="armv7k;arm64_32" \
+                        -DCMAKE_OSX_DEPLOYMENT_TARGET="2.0" \
                         -DRELIC_USE_PTHREAD=ON \
                         -DCMAKE_INSTALL_LIBDIR=lib/dev \
                         -H"${SRC_DIR}" -B"${BUILD_DIR}/dev"
     cmake --build "${BUILD_DIR}/dev" --target install -- -j8
 
     cmake ${CMAKE_ARGS} -DCMAKE_INSTALL_PREFIX="${INSTALL_DIR}" \
-                        -DAPPLE_PLATFORM=WATCHOS_SIM \
+                        -DCMAKE_SYSTEM_NAME="watchOS" \
+                        -DCMAKE_OSX_SYSROOT="watchsimulator" \
+                        -DCMAKE_OSX_ARCHITECTURES="i386;x86_64" \
+                        -DCMAKE_OSX_DEPLOYMENT_TARGET="2.0" \
                         -DRELIC_USE_PTHREAD=OFF \
                         -DCMAKE_INSTALL_LIBDIR=lib/sim \
                         -H"${SRC_DIR}" -B"${BUILD_DIR}/sim"
@@ -250,6 +276,9 @@ function build_watchos {
     make_fat_framework VSCFoundation "${INSTALL_DIR}" "${INSTALL_DIR}"
     make_fat_framework VSCPythia "${INSTALL_DIR}" "${INSTALL_DIR}"
     make_fat_framework VSCRatchet "${INSTALL_DIR}" "${INSTALL_DIR}"
+    make_fat_framework VSSCore "${INSTALL_DIR}" "${INSTALL_DIR}"
+    make_fat_framework VSSPythia "${INSTALL_DIR}" "${INSTALL_DIR}"
+    make_fat_framework VSSKeyKnox "${INSTALL_DIR}" "${INSTALL_DIR}"
 
     rm -fr -- "${INSTALL_DIR}/lib"
     cp -fa "${INSTALL_DIR}/." "${FRAMEWORKS_DIR}/"
@@ -268,7 +297,6 @@ function build_macosx {
     mkdir -p "${BUILD_DIR}"
 
     cmake ${CMAKE_ARGS} -DCMAKE_INSTALL_PREFIX="${INSTALL_DIR}" \
-                        -DAPPLE_PLATFORM=MACOS \
                         -DRELIC_USE_PTHREAD=ON \
                         -DCMAKE_INSTALL_LIBDIR=lib/dev \
                         -H"${SRC_DIR}" -B"${BUILD_DIR}/dev"
@@ -278,6 +306,9 @@ function build_macosx {
     make_fat_framework VSCFoundation "${INSTALL_DIR}" "${INSTALL_DIR}"
     make_fat_framework VSCPythia "${INSTALL_DIR}" "${INSTALL_DIR}"
     make_fat_framework VSCRatchet "${INSTALL_DIR}" "${INSTALL_DIR}"
+    make_fat_framework VSSCore "${INSTALL_DIR}" "${INSTALL_DIR}"
+    make_fat_framework VSSPythia "${INSTALL_DIR}" "${INSTALL_DIR}"
+    make_fat_framework VSSKeyKnox "${INSTALL_DIR}" "${INSTALL_DIR}"
 
     rm -fr -- "${INSTALL_DIR}/lib"
     cp -fa "${INSTALL_DIR}/." "${FRAMEWORKS_DIR}/"

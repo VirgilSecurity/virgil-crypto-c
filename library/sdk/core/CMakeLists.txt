@@ -72,7 +72,7 @@ endif()
 #
 # Internal configuration
 #
-if(CMAKE_CROSSCOMPILING AND APPLE AND BUILD_APPLE_FRAMEWORKS)
+if(APPLE AND BUILD_APPLE_FRAMEWORKS)
     set(VSSC_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK YES CACHE INTERNAL "")
     set(VSSC_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK YES CACHE INTERNAL "")
 endif()
@@ -104,13 +104,13 @@ target_include_directories(core_sdk
 #
 # Link to dependencies
 #
-target_link_libraries(core_sdk PUBLIC vsc::common vsc::foundation json_c)
+target_link_libraries(core_sdk PUBLIC vsc::foundation vsc::common json_c)
 
 if(VSSC_HTTP_CLIENT_CURL)
     target_link_libraries(core_sdk PUBLIC CURL::libcurl)
 endif()
 
-if (APPLE AND CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+if (VSSC_HTTP_CLIENT_X)
     target_link_libraries(core_sdk PUBLIC "-framework Foundation")
 endif()
 
@@ -166,7 +166,7 @@ add_library(vsc::core_sdk ALIAS core_sdk)
 # ---------------------------------------------------------------------------
 #   Apple specific
 # ---------------------------------------------------------------------------
-if(CMAKE_CROSSCOMPILING AND APPLE AND BUILD_APPLE_FRAMEWORKS AND COMMAND target_apple_framework)
+if(APPLE AND BUILD_APPLE_FRAMEWORKS AND COMMAND target_apple_framework)
     target_apple_framework(core_sdk
             NAME VSSCore
             VERSION "A"
