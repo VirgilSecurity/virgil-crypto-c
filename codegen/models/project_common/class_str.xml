@@ -36,7 +36,7 @@
     </constructor>
 
 
-    <constructor name="from data" visibility="private">
+    <constructor name="from data">
         Create string from data.
 
         <argument name="data" class="data"/>

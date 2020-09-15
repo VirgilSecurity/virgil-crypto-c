@@ -110,7 +110,7 @@ vsc_str_from_str(const char *str);
 //
 //  Create string from data.
 //
-VSC_PRIVATE vsc_str_t
+VSC_PUBLIC vsc_str_t
 vsc_str_from_data(vsc_data_t data);
 
 //
