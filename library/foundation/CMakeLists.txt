@@ -67,7 +67,7 @@ include("${CMAKE_CURRENT_LIST_DIR}/features.cmake")
 #
 # Internal configuration
 #
-if(APPLE AND BUILD_APPLE_FRAMEWORKS)
+if(CMAKE_CROSSCOMPILING AND APPLE AND BUILD_APPLE_FRAMEWORKS)
     set(VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK YES CACHE INTERNAL "")
 endif()
 
@@ -160,7 +160,7 @@ endif()
 # ---------------------------------------------------------------------------
 #   Apple specific
 # ---------------------------------------------------------------------------
-if(APPLE AND BUILD_APPLE_FRAMEWORKS AND COMMAND target_apple_framework)
+if(CMAKE_CROSSCOMPILING AND APPLE AND BUILD_APPLE_FRAMEWORKS AND COMMAND target_apple_framework)
     target_apple_framework(foundation
             NAME VSCFoundation
             VERSION "A"

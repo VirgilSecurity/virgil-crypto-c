@@ -68,7 +68,7 @@ include("${CMAKE_CURRENT_LIST_DIR}/features.cmake")
 #
 # Internal configuration
 #
-if(APPLE AND BUILD_APPLE_FRAMEWORKS)
+if(CMAKE_CROSSCOMPILING AND APPLE AND BUILD_APPLE_FRAMEWORKS)
     set(VSSP_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK YES CACHE INTERNAL "")
     set(VSSP_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK YES CACHE INTERNAL "")
     set(VSSP_IMPORT_PROJECT_PYTHIA_FROM_FRAMEWORK YES CACHE INTERNAL "")
@@ -165,7 +165,7 @@ endif()
 # ---------------------------------------------------------------------------
 #   Apple specific
 # ---------------------------------------------------------------------------
-if(APPLE AND BUILD_APPLE_FRAMEWORKS AND COMMAND target_apple_framework)
+if(CMAKE_CROSSCOMPILING AND APPLE AND BUILD_APPLE_FRAMEWORKS AND COMMAND target_apple_framework)
     target_apple_framework(pythia_sdk
             NAME VSSPythia
             VERSION "A"

@@ -79,18 +79,22 @@ endfunction()
 #   Known APPLE toolchain configuration arguments.
 # ---------------------------------------------------------------------------
 function(TRANSITIVE_APPLE_ARGS_ADD)
-    if (APPLE)
-        if(CMAKE_CROSSCOMPILING)
-            transitive_args_add(CMAKE_SYSTEM_NAME)
-        endif()
-
+    if(CMAKE_CROSSCOMPILING AND APPLE)
         transitive_args_add(
-                CMAKE_OSX_SYSROOT
-                CMAKE_OSX_ARCHITECTURES
-                CMAKE_OSX_DEPLOYMENT_TARGET
-                CMAKE_XCODE_ATTRIBUTE_ONLY_ACTIVE_ARCH
-                )
-    endif()
+                APPLE_PLATFORM
+                APPLE_BITCODE
+                APPLE_EXTENSION
+                IOS_DEVICE_FAMILY
+                IOS_DEPLOYMENT_TARGET
+                WATCHOS_DEPLOYMENT_TARGET
+                WATCHOS_DEVICE_FAMILY
+                TVOS_DEPLOYMENT_TARGET
+                TVOS_DEVICE_FAMILY
+                MACOS_DEPLOYMENT_TARGET
+                CMAKE_APPLE_PLATFORM_DEVELOPER_ROOT
+                CMAKE_APPLE_SDK_ROOT
+                CMAKE_OSX_ARCHITECTURES)
+    endif ()
 endfunction()
 
 
