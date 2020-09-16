@@ -299,7 +299,11 @@ if(ENABLE_TESTING)
     include(CTest)
 endif()
 
-if(ENABLE_TESTING AND VIRGIL_C_TESTING AND NOT CMAKE_CROSSCOMPILING AND NOT BUILD_APPLE_FRAMEWORKS)
+if(ENABLE_TESTING AND VIRGIL_C_TESTING AND NOT CMAKE_CROSSCOMPILING)
+    if (BUILD_SHARED_LIBS)
+        message(FATAL_ERROR "Tests can not built with BUILD_SHARED_LIBS=ON because of using private (hidden) API.")
+    endif()
+
     add_subdirectory(tests)
 endif()
 
