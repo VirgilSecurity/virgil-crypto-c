@@ -5,7 +5,7 @@
     <require module="brain key seed private"/>
 
 
-    <property name="brain key url" class="str buffer"/>
+    <property name="brain key url" class="str mutable"/>
 
 
     <constant name="k base url" type="string" visibility="private">

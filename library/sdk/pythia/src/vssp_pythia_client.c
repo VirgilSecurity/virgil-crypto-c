@@ -363,7 +363,7 @@ vssp_pythia_client_cleanup_ctx(vssp_pythia_client_t *self) {
 
     VSSP_ASSERT_PTR(self);
 
-    vsc_str_buffer_destroy(&self->brain_key_url);
+    vsc_str_mutable_release(&self->brain_key_url);
 }
 
 //
@@ -375,12 +375,7 @@ vssp_pythia_client_init_ctx_with_base_url(vssp_pythia_client_t *self, vsc_str_t 
     VSSP_ASSERT_PTR(self);
     VSSP_ASSERT(vsc_str_is_valid_and_non_empty(url));
 
-    const size_t brain_key_url_len = url.len + k_brain_key_url_path.len + 1;
-    self->brain_key_url = vsc_str_buffer_new_with_capacity(brain_key_url_len);
-
-    vsc_str_buffer_write_str(self->brain_key_url, url);
-    vsc_str_buffer_write_str(self->brain_key_url, k_brain_key_url_path);
-    vsc_str_buffer_write_char(self->brain_key_url, '\0');
+    self->brain_key_url = vsc_str_mutable_concat(url, k_brain_key_url_path);
 }
 
 //
@@ -417,7 +412,7 @@ vssp_pythia_client_make_request_generate_seed_with_id(
     vsc_str_t body = vssc_json_object_as_str(json_obj);
 
     vssc_http_request_t *http_request = vssc_http_request_new_with_body(
-            vssc_http_request_method_post, vsc_str_buffer_str(self->brain_key_url), body);
+            vssc_http_request_method_post, vsc_str_mutable_as_str(self->brain_key_url), body);
 
     vssc_http_request_add_header(
             http_request, vssc_http_header_name_content_type, vssc_http_header_value_application_json);

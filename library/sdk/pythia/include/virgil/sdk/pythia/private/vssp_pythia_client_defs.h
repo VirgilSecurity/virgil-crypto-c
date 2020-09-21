@@ -57,11 +57,11 @@
 #include "vssp_atomic.h"
 
 #if !VSSP_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <virgil/crypto/common/vsc_str_buffer.h>
+#   include <virgil/crypto/common/vsc_str_mutable.h>
 #endif
 
 #if VSSP_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <VSCCommon/vsc_str_buffer.h>
+#   include <VSCCommon/vsc_str_mutable.h>
 #endif
 
 // clang-format on
@@ -92,7 +92,7 @@ struct vssp_pythia_client_t {
     //
     VSSP_ATOMIC size_t refcnt;
 
-    vsc_str_buffer_t *brain_key_url;
+    vsc_str_mutable_t brain_key_url;
 };
 
 

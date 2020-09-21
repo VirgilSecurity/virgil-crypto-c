@@ -148,11 +148,12 @@ vssc_http_client_x_send_internal(vssc_http_client_x_t *self, const vssc_http_req
     //
     vsc_str_t url = vssc_http_request_url(http_request);
     NSURL *url_objc = [[NSURL alloc] initWithString:vssc_http_client_x_create_obj_ascii_string(url)];
-    NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:url_objc];
     if (nil == url_objc) {
         VSSC_ERROR_SAFE_UPDATE(error, vssc_status_HTTP_URL_INVALID_FORMAT);
         return NULL;
     }
+
+    NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:url_objc];
 
     //
     //  Set HTTP method: GET, POST, etc.
