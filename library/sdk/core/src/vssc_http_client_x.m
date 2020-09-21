@@ -229,7 +229,7 @@ vssc_http_client_x_send_internal(vssc_http_client_x_t *self, const vssc_http_req
     }
 
     vssc_http_response_t *http_response = NULL;
-    if (nil == data) {
+    if (nil == data || 0 == data.length) {
         http_response = vssc_http_response_new_with_status((size_t)status_code);
     } else {
         // TODO: Check if body is a string.
