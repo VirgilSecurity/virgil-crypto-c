@@ -1,0 +1,42 @@
+<project
+        name="comm kit"
+        brief="Virgil Security Communications Platform (CommKit)"
+        package="sdk comm-kit"
+        namespace="virgil commkit"
+        framework="VSSQ"
+        prefix="vssq"
+        wrappers=""
+        >
+
+    <version major="0" minor="16" patch="0"/>
+
+    <require project="common" feature="library"/>
+    <require project="foundation" feature="library"/>
+    <require project="core sdk" feature="library"/>
+    <require project="pythia sdk" feature="library"/>
+    <require project="keyknox sdk" feature="library"/>
+
+    <feature name="multi threading" default="on">
+        Enable multi-threading safety for CommKit.
+    </feature>
+
+    <module name="assert" from="shared"/>
+    <module name="library" from="shared"/>
+    <module name="memory" from="shared"/>
+    <module name="atomic" from="shared"/>
+
+    <enum name="status"/>
+
+    <!-- Common modules -->
+    <class name="error" from="shared"/>
+
+    <!-- Entrypoint -->
+    <!-- <class name="comm kit"/> -->
+
+    <error_message_getter success="0">
+        <require enum="status"/>
+
+        char error_message[48] = {0x00};
+        snprintf(error_message, sizeof(error_message), "Unhandled vsc::comm_kit error -0x%04x", error);
+    </error_message_getter>
+</project>

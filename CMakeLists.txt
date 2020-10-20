@@ -101,6 +101,7 @@ option(VIRGIL_LIB_PHE "Build 'phe' library" ON)
 option(VIRGIL_SDK_CORE "Build 'core' SDK" ON)
 option(VIRGIL_SDK_PYTHIA "Build 'pythia' SDK" ON)
 option(VIRGIL_SDK_KEYKNOX "Build 'keyknox' SDK" ON)
+option(VIRGIL_SDK_COMM_KIT "Build 'comm-kit' SDK" ON)
 
 #
 # Programs
@@ -289,6 +290,10 @@ endif()
 
 if(VIRGIL_SDK_KEYKNOX)
     add_subdirectory("library/sdk/keyknox")
+endif()
+
+if(VIRGIL_SDK_COMM_KIT)
+    add_subdirectory("library/sdk/comm-kit")
 endif()
 
 

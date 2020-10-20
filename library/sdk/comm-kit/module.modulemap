@@ -1,0 +1,4 @@
+framework module VSSQ {
+    header "vssq_comm_kit_public.h"
+    export *
+}
