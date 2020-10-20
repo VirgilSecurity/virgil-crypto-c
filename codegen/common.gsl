@@ -393,7 +393,7 @@ function string_to_path(str)
         return my.str
     endif
 
-    my.path = string.replace ("$(my.str:c,lower)", "_|/")
+    my.path = string.replace (my.str, " |/")
 
     return my.path
 endfunction
