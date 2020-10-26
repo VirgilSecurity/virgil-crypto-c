@@ -34,10 +34,5 @@ type MessageInfoSerializer interface {
     * Deserialize class "message info".
     */
     Deserialize (data []byte) (*MessageInfo, error)
-
-    /*
-    * Release underlying C context.
-    */
-    Delete ()
 }
 

@@ -1,5 +1,5 @@
 .template 0
-#   Copyright (C) 2015-2019 Virgil Security Inc.
+#   Copyright (C) 2015-2020 Virgil Security Inc.
 #
 #   All rights reserved.
 #
@@ -470,7 +470,6 @@ function go_derive_instance_c_type (instance)
             if count(my.instance.string)
                 my.primitive_type = "*C.char"
             else
-                #TODO verify char type
                 my.primitive_type = "C.uint8"
             endif
         else
@@ -527,7 +526,6 @@ function go_derive_instance_type (instance)
             if count(my.instance.string)
                 my.primitive_type = "string"
             else
-                #TODO verify char type
                 my.primitive_type = "uint8"
             endif
         else
@@ -537,10 +535,8 @@ function go_derive_instance_type (instance)
         if is_true (my.instance.is_reference)
             if string_in (my.instance.access, "readonly")
                 my.primitive_type = "unsafe.Pointer"
-                #my.primitive_type = "[]$(my.primitive_type:)"
             else
                 my.primitive_type = "unsafe.Pointer"
-                #my.primitive_type = "[]$(my.primitive_type:)"
             endif
         endif
 
@@ -574,6 +570,11 @@ function go_derive_instance_type (instance)
         else
             my.project_uid = component_derive_project_uid (my.instance)
             my.type_uid = make_id ("struct", "$(my.instance.class:Pascal)")
+
+            if defined (my.instance.project)
+                return "$(my.instance.project:).$(make_ref_go (make_id(my.project_uid, my.type_uid)))"
+            endif
+
             return make_ref_go (make_id(my.project_uid, my.type_uid))
         endif
 
@@ -585,6 +586,11 @@ function go_derive_instance_type (instance)
     elsif defined (my.instance.interface)
         my.project_uid = component_derive_project_uid (my.instance)
         my.type_uid = make_id ("interface", "$(my.instance.interface:Pascal)")
+
+        if defined (my.instance.project)
+            return "$(my.instance.project:).$(make_ref_go (make_id(my.project_uid, my.type_uid)))"
+        endif
+
         return make_ref_go (make_id(my.project_uid, my.type_uid))
 
     elsif defined (my.instance.enum)
@@ -679,7 +685,16 @@ function go_derive_module_name (type)
 
     assert_attribute (my.type, "name", my)
 
-    return "$(my.type.name:C)"
+    return go_derive_module_name_str (my.type.name)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return formatted module name.
+# ---------------------------------------------------------------------------
+function go_derive_module_name_str (name)
+    check_arguments (my, "name", my)
+
+    return "$(my.name:C)"
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -1278,6 +1293,8 @@ function go_create_context_module (go_project, meta)
                     .is_reference = "0"
                 endnew
             endnew
+
+            go_create_func_clear_declaration (go_interface, my.go_project, my.meta)
         endnew
     endnew
 endfunction
@@ -1573,16 +1590,26 @@ function go_create_promoted (inherit, destination, go_project, meta)
         .type = my.interface_name
     endnew
 
-    #my.promoted_go_interface = my.go_project->go_interface(go_interface.name = my.interface_name) ?
-    #if defined (my.promoted_go_interface)
-    #    echo_debug ("Promote Go '$(my.destination.name:)' with '$(my.interface_name:)'", my)
-    #    for my.promoted_go_interface.go_func
-    #        echo_trace ("Copy Go function '$(go_func.name:)' to '$(my.destination.name:)'", my)
-    #        copy go_func to my.destination
-    #    endfor
-    #else
-    #    echo_debug ("Go interface '$(my.interface_name:)' not found", my)
-    #endif
+    # Copy methods from inherited interface
+    if defined (my.inherit.interface)
+        my.inherit_module_name = go_derive_module_name_str (my.inherit.interface)
+        my.promoted_go_module = my.go_project->go_module(go_module.name = my.inherit_module_name) ?
+        if defined (my.promoted_go_module)
+            echo_debug ("Using '$(my.inherit_module_name:)' Go module", my)
+            my.promoted_go_interface = my.promoted_go_module->go_interface(go_interface.name = my.interface_name) ?
+            if defined (my.promoted_go_interface)
+                echo_debug ("Promote Go '$(my.destination.name:)' with '$(my.interface_name:)'", my)
+                for my.promoted_go_interface.go_func
+                    echo_trace ("Copy Go function '$(go_func.name:)' to '$(my.destination.name:)'", my)
+                    copy go_func to my.destination
+                endfor
+            else
+                echo_debug ("Go interface '$(my.interface_name:)' not found", my)
+            endif
+        else
+            echo_debug ("Go module '$(my.inherit_module_name:)' not found", my)
+        endif
+    endif
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -2087,11 +2114,11 @@ function go_create_interface_module (interface, go_project, meta)
             go_map_attr_visibility (go_interface, my.interface)
 
             go_create_promoted_c_context (go_interface)
-            #for my.interface.inherit
-            #    go_create_promoted (inherit, go_interface, my.go_project, my.meta)
+            for my.interface.inherit
+                go_create_promoted (inherit, go_interface, my.go_project, my.meta)
             #else
             #    go_create_promoted_c_context (go_interface)
-            #endfor
+            endfor
 
             for my.interface.constant
                 go_create_func_from_constant (my.interface, constant, go_interface, my.go_project, my.meta)
@@ -2113,8 +2140,8 @@ function go_create_interface_module (interface, go_project, meta)
                     endif
                 endfor
             endfor
-
-            go_create_func_clear_declaration (go_interface, my.go_project, my.meta)
+            
+            #go_create_func_clear_declaration (go_interface, my.go_project, my.meta)
         endnew
     endnew
 

@@ -67,10 +67,5 @@ type Padding interface {
     * Accomplish padded data processing and return left data without a padding.
     */
     FinishPaddedDataProcessing () ([]byte, error)
-
-    /*
-    * Release underlying C context.
-    */
-    Delete ()
 }
 

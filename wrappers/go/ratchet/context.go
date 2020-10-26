@@ -1,6 +1,6 @@
-package phe
+package ratchet
 
-// #include <virgil/crypto/phe/vsce_phe_public.h>
+// #include <virgil/crypto/ratchet/vscr_ratchet_public.h>
 import "C"
 
 type context interface {

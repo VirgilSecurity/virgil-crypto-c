@@ -20,10 +20,5 @@ type SaltedKdf interface {
     * Can be empty.
     */
     SetInfo (info []byte)
-
-    /*
-    * Release underlying C context.
-    */
-    Delete ()
 }
 

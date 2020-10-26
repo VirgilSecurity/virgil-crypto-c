@@ -7,5 +7,10 @@ type context interface {
 
     /* Get C context */
     Ctx () uintptr
+
+    /*
+    * Release underlying C context.
+    */
+    Delete ()
 }
 

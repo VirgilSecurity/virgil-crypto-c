@@ -23,10 +23,5 @@ type Encrypt interface {
     * Precise length calculation of encrypted data.
     */
     PreciseEncryptedLen (dataLen uint) uint
-
-    /*
-    * Release underlying C context.
-    */
-    Delete ()
 }
 

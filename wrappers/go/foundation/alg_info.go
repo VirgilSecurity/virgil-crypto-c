@@ -13,10 +13,5 @@ type AlgInfo interface {
     * Provide algorithm identificator.
     */
     AlgId () AlgId
-
-    /*
-    * Release underlying C context.
-    */
-    Delete ()
 }
 

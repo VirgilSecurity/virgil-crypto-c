@@ -24,10 +24,5 @@ type Alg interface {
     * Restore algorithm configuration from the given object.
     */
     RestoreAlgInfo (algInfo AlgInfo) error
-
-    /*
-    * Release underlying C context.
-    */
-    Delete ()
 }
 
