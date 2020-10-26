@@ -19,10 +19,5 @@ type AuthEncrypt interface {
     * Calculate required buffer length to hold the authenticated encrypted data.
     */
     AuthEncryptedLen (dataLen uint) uint
-
-    /*
-    * Release underlying C context.
-    */
-    Delete ()
 }
 

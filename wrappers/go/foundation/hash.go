@@ -38,10 +38,5 @@ type Hash interface {
     * Accompilsh hashing and return it's result (a message digest).
     */
     Finish () []byte
-
-    /*
-    * Release underlying C context.
-    */
-    Delete ()
 }
 

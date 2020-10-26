@@ -23,10 +23,5 @@ type MessageInfoFooterSerializer interface {
     * Deserialize class "message info footer".
     */
     DeserializeFooter (data []byte) (*MessageInfoFooter, error)
-
-    /*
-    * Release underlying C context.
-    */
-    Delete ()
 }
 

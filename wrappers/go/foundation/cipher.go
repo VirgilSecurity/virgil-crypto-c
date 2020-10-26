@@ -59,10 +59,5 @@ type Cipher interface {
     * Accomplish encryption or decryption process.
     */
     Finish () ([]byte, error)
-
-    /*
-    * Release underlying C context.
-    */
-    Delete ()
 }
 

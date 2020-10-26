@@ -18,10 +18,5 @@ type Decrypt interface {
     * Calculate required buffer length to hold the decrypted data.
     */
     DecryptedLen (dataLen uint) uint
-
-    /*
-    * Release underlying C context.
-    */
-    Delete ()
 }
 

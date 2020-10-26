@@ -13,10 +13,5 @@ type Kdf interface {
     * Derive key of the requested length from the given data.
     */
     Derive (data []byte, keyLen uint) []byte
-
-    /*
-    * Release underlying C context.
-    */
-    Delete ()
 }
 

@@ -28,10 +28,5 @@ type Kem interface {
     * Decapsulate the shared key.
     */
     KemDecapsulate (encapsulatedKey []byte, privateKey PrivateKey) ([]byte, error)
-
-    /*
-    * Release underlying C context.
-    */
-    Delete ()
 }
 

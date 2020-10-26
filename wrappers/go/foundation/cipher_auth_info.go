@@ -10,10 +10,5 @@ type CipherAuthInfo interface {
     * Defines authentication tag length in bytes.
     */
     GetAuthTagLen () uint
-
-    /*
-    * Release underlying C context.
-    */
-    Delete ()
 }
 

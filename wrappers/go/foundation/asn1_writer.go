@@ -196,10 +196,5 @@ type Asn1Writer interface {
     * Return count of written bytes.
     */
     WriteSet (len uint) uint
-
-    /*
-    * Release underlying C context.
-    */
-    Delete ()
 }
 

@@ -161,10 +161,5 @@ type Asn1Reader interface {
     * Return element length.
     */
     ReadSet () uint
-
-    /*
-    * Release underlying C context.
-    */
-    Delete ()
 }
 

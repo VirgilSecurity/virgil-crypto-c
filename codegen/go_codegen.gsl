@@ -471,7 +471,7 @@ function go_insert_interface (go_interface)
     go_insert_description(my.go_interface)
     go_insert_code ("type $(my.go_interface.name:) interface {")
 
-    for my.go_interface.go_promoted
+    for my.go_interface.go_promoted where string_equal ("context", go_promoted.type)
         newline ()
         go_insert_code ("$(go_promoted.type:)", 1)
     endfor

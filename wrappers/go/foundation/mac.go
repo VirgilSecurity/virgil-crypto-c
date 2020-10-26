@@ -39,10 +39,5 @@ type Mac interface {
     * as the previous MAC operation.
     */
     Reset ()
-
-    /*
-    * Release underlying C context.
-    */
-    Delete ()
 }
 
