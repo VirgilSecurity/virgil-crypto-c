@@ -6,7 +6,7 @@
         prefix="vscr"
         path="../library/ratchet"
         work_path = "generated/ratchet/"
-        wrappers="java,swift,wasm"
+        wrappers="java,swift,wasm,go"
         >
 
     <version major="0" minor="16" patch="0"/>
