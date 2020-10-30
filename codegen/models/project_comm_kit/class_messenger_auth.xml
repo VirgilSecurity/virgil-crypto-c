@@ -1,0 +1,418 @@
+<class name="messenger auth">
+    Provides access to the messenger authentication endpoints.
+
+    <require header="stdio.h" is_system="1"/>
+    <require class="data" project="common"/>
+    <require class="buffer" project="common"/>
+    <require class="str mutable" project="common"/>
+    <require class="str buffer" project="common" api="defs"/>
+    <require class="buffer" project="common" api="defs"/>
+    <require impl="sha256" project="foundation"/>
+    <require impl="sha512" project="foundation"/>
+    <require impl="ctr drbg" project="foundation"/>
+    <require impl="key material rng" project="foundation"/>
+    <require interface="random" project="foundation"/>
+    <require interface="private key" project="foundation"/>
+    <require class="key provider" project="foundation"/>
+    <require class="recipient cipher" project="foundation"/>
+    <require class="signer" project="foundation"/>
+    <require class="base64" project="foundation"/>
+    <require class="base64" project="foundation" api="private"/>
+    <require class="binary" project="foundation"/>
+    <require class="pythia" project="pythia"/>
+    <require class="unix time" project="core sdk"/>
+    <require class="virgil http client" project="core sdk"/>
+    <require class="card client" project="core sdk"/>
+    <require class="card manager" project="core sdk"/>
+    <require class="raw card" project="core sdk"/>
+    <require class="json object" project="core sdk"/>
+    <require class="json object" project="core sdk" api="private"/>
+    <require class="keyknox client" project="keyknox sdk"/>
+    <require class="pythia client" project="pythia sdk"/>
+    <require class="messenger creds" api="private"/>
+    <require class="contact utils"/>
+
+    <property name="config" class="messenger config" access="readonly"/>
+    <property name="creds" class="messenger creds" access="readonly"/>
+    <property name="card" class="card" project="core sdk"/>
+    <property name="base jwt" class="jwt" project="core sdk"/> <!-- cache -->
+    <property name="ejabberd jwt" class="ejabberd jwt"/> <!-- cache -->
+
+    <dependency name="random" interface="random" project="foundation"/>
+
+    <constant name="card identity len" value="16" definition="private"/>
+    <constant name="card identity len hex" value="32" definition="private"/>
+    <constant name="base jwt len max" value="512" definition="private"/>
+    <constant name="ejabberd jwt len max" value="256" definition="private"/>
+    <constant name="auth header len max" value="256" definition="private"/>
+    <constant name="username digest len" value="64" definition="private"/>
+
+    <!-- URL paths -->
+    <constant name="k url path virgil jwt" type="string" visibility="private">
+        <value value="/virgil-jwt"/>
+    </constant>
+
+    <constant name="k url path ejabberd jwt" type="string" visibility="private">
+        <value value="/ejabberd-jwt"/>
+    </constant>
+
+    <constant name="k url path signup" type="string" visibility="private">
+        <value value="/signup"/>
+    </constant>
+
+    <constant name="k url path set password" type="string" visibility="private">
+        <value value="/set-password"/>
+    </constant>
+
+    <constant name="k url path pwd virgil jwt" type="string" visibility="private">
+        <value value="/pwd-virgil-jwt"/>
+    </constant>
+
+    <!-- HTTP Header names and values -->
+    <constant name="k http header value prefix bearer" type="string" visibility="private">
+        <value value="Bearer "/>
+    </constant>
+
+    <constant name="k http header value prefix virgil msg pwd" type="string" visibility="private">
+        <value value="VirgilMsgPwd "/>
+    </constant>
+
+    <!-- Auth JSON keys -->
+    <constant name="k json key token" type="string" visibility="private">
+        <value value="token"/>
+    </constant>
+
+    <constant name="k json key raw card" type="string" visibility="private">
+        <value value="raw_card"/>
+    </constant>
+
+    <constant name="k json key virgil card" type="string" visibility="private">
+        <value value="virgil_card"/>
+    </constant>
+
+    <constant name="k json key password" type="string" visibility="private">
+        <value value="password"/>
+    </constant>
+
+    <constant name="k json key username" type="string" visibility="private">
+        <value value="username"/>
+    </constant>
+
+    <!-- Brainkey JSON keys -->
+    <constant name="k brain key json version" type="string" visibility="private">
+        <value value="version"/>
+    </constant>
+
+    <constant name="k brain key json card id" type="string" visibility="private">
+        <value value="card_id"/>
+    </constant>
+
+    <constant name="k brain key json private key" type="string" visibility="private">
+        <value value="private_key"/>
+    </constant>
+
+    <constant name="k brain v1" type="string" visibility="private">
+        <value value="v1"/>
+    </constant>
+
+    <!-- Keyknox folder keys -->
+    <constant name="k brain key recipient id" type="string" visibility="private">
+        <value value="brain_key"/>
+    </constant>
+
+    <constant name="k keyknox root messenger" type="string" visibility="private">
+        <value value="messenger"/>
+    </constant>
+
+    <constant name="k keyknox path credentials" type="string" visibility="private">
+        <value value="credentials"/>
+    </constant>
+
+    <constant name="k keyknox alias sign in" type="string" visibility="private">
+        <value value="sign_in"/>
+    </constant>
+
+    <!-- Methods  -->
+    <constructor name="with config">
+        Initialze messenger with a custom config.
+
+        <argument name="config" class="messenger config"/>
+    </constructor>
+
+
+    <method name="setup defaults">
+        Setup predefined values to the uninitialized class dependencies.
+
+        <return enum="status"/>
+    </method>
+
+
+    <method name="register">
+        Register a new user with a give name.
+
+        <argument name="username" class="str"/>
+
+        <return enum="status"/>
+    </method>
+
+
+    <method name="authenticate">
+        Register a new user with a give name.
+
+        <argument name="creds" class="messenger creds" access="readonly"/>
+
+        <return enum="status"/>
+    </method>
+
+
+    <method name="has creds" is_const="1">
+        Return true if user credentials are defined.
+
+        <return type="boolean"/>
+    </method>
+
+
+    <method name="creds" is_const="1">
+        Return user credentials.
+
+        <return class="messenger creds"/>
+    </method>
+
+
+    <method name="has backup creds" is_const="1">
+        Check whether current credentials were backed up.
+
+        Prerequisites: credentials must be set.
+
+        <argument name="error" class="error" access="readwrite"/>
+
+        <return type="boolean"/>
+    </method>
+
+
+    <method name="backup creds" is_const="1">
+        Encrypt the user credentials and push them to the secure cloud storage (Keyknox).
+
+        Prerequisites: credentials must be set.
+
+        <argument name="pwd" class="str"/>
+
+        <return enum="status"/>
+    </method>
+
+
+    <method name="restore creds">
+        Pull an encrypted user credentials from the Keyknox and decrypt it.
+
+        <argument name="username" class="str"/>
+        <argument name="pwd" class="str"/>
+
+        <return enum="status"/>
+    </method>
+
+
+    <method name="base token len" is_const="1">
+        Return JWT length if it exists and not expired, or max - otherwise.
+
+        <return type="size"/>
+    </method>
+
+
+    <method name="base token" is_const="1">
+        Get JWT to use with Messenger Backend based on the credentials.
+
+        Prerequisites: credentials must be set.
+
+        Note, the cached token is returned if it is exist and not expired.
+
+        <argument name="token" class="str buffer">
+            <length method="base token len"/>
+        </argument>
+
+        <return enum="status"/>
+    </method>
+
+
+    <method name="ejabberd token len" is_const="1">
+        Return Ejabberd token length if token exists and not expired, or max - otherwise.
+
+        <return type="size"/>
+    </method>
+
+
+    <method name="ejabberd token" is_const="1">
+        Return JWT to aceess ejabberd server.
+
+        Format: https://docs.ejabberd.im/admin/configuration/authentication/#jwt-authentication
+
+        Prerequisites: credentials must be set.
+
+        Note, the cached token is returned if it is exist and not expired.
+
+        <argument name="token" class="str buffer">
+            <length method="ejabberd token len"/>
+        </argument>
+
+        <return enum="status"/>
+    </method>
+
+
+    <method name="reset creds" declaration="private">
+        Reset credentials and invalidate cache if credentials are new.
+
+        <argument name="creds" class="messenger creds" access="readonly"/>
+    </method>
+
+
+
+    <method name="auth header len" is_const="1" scope="private">
+        Return buffer length enough to handle HTTP authorization header value.
+
+        <return type="size"/>
+    </method>
+
+
+    <method name="generate auth header" is_const="1" scope="private">
+        Generate HTTP autoization header value.
+
+        Format: "Bearer cardId.unixTimestamp.signature(cardId.unixTimestamp)"
+
+        Prerequisites: credentials must be set.
+
+        <argument name="auth header" class="str buffer">
+            <length method="auth header len"/>
+        </argument>
+
+        <return enum="status"/>
+    </method>
+
+
+    <method name="refresh base token with password" is_const="1" declaration="private">
+        Get JWT to use with Messenger Backend based on the password.
+
+        Note, cache is not used.
+
+        <argument name="username" class="str"/>
+        <argument name="pwd" class="data"/>
+
+        <return enum="status"/>
+    </method>
+
+
+    <method name="request token" is_const="1" declaration="private">
+        Request base JWt or Ejabberd JWT depends on the given endpoint.
+
+        <argument name="endpoint" class="str"/>
+        <argument name="jwt str" class="str buffer"/>
+
+        <return enum="status"/>
+    </method>
+
+
+    <method name="refresh base token" is_const="1" declaration="private">
+        Refresh Virgil JWT if it absent or expired.
+
+        <return enum="status"/>
+    </method>
+
+
+    <method name="refresh ejabberd token" is_const="1" declaration="private">
+        Refresh Ejabberd JWT if it absent or expired.
+
+        <return enum="status"/>
+    </method>
+
+
+    <method name="reset sign in password" is_const="1" declaration="private">
+        Set a new password to the messenger backend to get base token when try to restore key.
+
+        Note, password must be 32 bytes.
+
+        <argument name="pwd" class="data"/>
+
+        <return enum="status"/>
+    </method>
+
+
+    <method name="generate brain key" is_const="1" declaration="private">
+        Set a new password to the messenger backend to get base token when try to restore key.
+
+        Note, password must be 32 bytes.
+
+        <argument name="pwd" class="data"/>
+        <argument name="error" class="error" access="readwrite"/>
+
+        <return interface="private key" project="foundation" access="disown"/>
+    </method>
+
+
+    <method name="keyknox pack creds" is_const="1" declaration="private">
+
+        Encrypt credentials and put it to the Keyknox entries.
+
+        <argument name="brain private key" interface="private_key" project="foundation"/>
+        <argument name="keyknox meta" class="buffer"/>
+        <argument name="keyknox value" class="buffer"/>
+
+        <return enum="status"/>
+    </method>
+
+
+    <method name="keyknox unpack creds" is_const="1" declaration="private">
+
+        Decrypt Keyknox entries and get credentials from it.
+
+        <argument name="username" class="str"/>
+        <argument name="brain private key" interface="private_key" project="foundation"/>
+        <argument name="keyknox meta" class="data"/>
+        <argument name="keyknox value" class="data"/>
+        <argument name="error" class="error" access="readwrite"/>
+
+        <return class="messenger creds" access="disown"/>
+    </method>
+
+
+    <method name="keyknox push creds" is_const="1" declaration="private">
+
+        Push Keyknox entries with crdentials to the service.
+
+        <argument name="keyknox meta" class="data"/>
+        <argument name="keyknox value" class="data"/>
+
+        <return enum="status"/>
+    </method>
+
+
+    <method name="keyknox pull creds" is_const="1" declaration="private">
+
+        Pull Keyknox entries with crdentials from the service.
+
+        <argument name="keyknox meta" class="buffer"/>
+        <argument name="keyknox value" class="buffer"/>
+
+        <return enum="status"/>
+    </method>
+
+
+    <method name="reset base jwt" is_const="1" declaration="private">
+        Methhod is thread-safe.
+
+        <argument name="base jwt" class="jwt" project="core sdk" access="disown"/>
+    </method>
+
+
+    <method name="reset ejabberd jwt" is_const="1" declaration="private">
+        Methhod is thread-safe.
+
+        <argument name="ejabberd jwt" class="ejabberd jwt" access="disown"/>
+    </method>
+
+    <method name="fetch self card" declaration="private">
+        Fetch and store self card or error.
+
+        Prerequisites: credentials must be set.
+        Prerequisites: base token should be set and not expired.
+
+        <return enum="status"/>
+    </method>
+</class>

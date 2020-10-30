@@ -1,0 +1,101 @@
+<class name="messenger creds">
+    Contains user private key and credentials (JWT) to the messenger services.
+
+    <require class="key provider" project="foundation"/>
+    <require class="json object" project="core sdk"/>
+    <require class="json object" project="core sdk" api="private"/>
+
+
+    <property name="private key" interface="private key" project="foundation" access="readonly"/>
+    <property name="username" class="str mutable"/>
+    <property name="card id" class="str mutable"/>
+
+
+    <constant name="k json key version" type="string" visibility="private">
+        <value value="version"/>
+    </constant>
+
+    <constant name="k json key card id" type="string" visibility="private">
+        <value value="card_id"/>
+    </constant>
+
+    <constant name="k json key username" type="string" visibility="private">
+        <value value="username"/>
+    </constant>
+
+    <constant name="k json key private key" type="string" visibility="private">
+        <value value="private_key"/>
+    </constant>
+
+    <constant name="k version v1" type="string" visibility="private">
+        <value value="v1"/>
+    </constant>
+
+
+    <constructor name="with">
+        Create fully defined object.
+
+        <argument name="card id" class="str"/>
+        <argument name="username" class="str"/>
+        <argument name="private key" interface="private key" project="foundation"/>
+    </constructor>
+
+
+    <constructor name="with disown" scope="private">
+        Create fully defined object.
+
+        <argument name="username" class="str"/>
+        <argument name="card id" class="str"/>
+        <argument name="private key" interface="private key" project="foundation" access="disown"/>
+    </constructor>
+
+
+    <method name="card id" is_const="1">
+        Return identifier of the user Virgil Card.
+
+        <return class="str"/>
+    </method>
+
+
+    <method name="username" is_const="1">
+        Return the username.
+
+        <return class="str"/>
+    </method>
+
+
+    <method name="private key" is_const="1">
+        Return the user private key.
+
+        <return interface="private key" project="foundation"/>
+    </method>
+
+
+    <method name="to json" is_const="1">
+        Return credentials as JSON object.
+
+        <argument name="error" class="error" access="readwrite"/>
+
+        <return class="json object" project="core sdk" access="disown"/>
+    </method>
+
+
+    <method name="from json" is_static="1">
+        Parse credentials from JSON.
+
+        <argument name="json obj" class="json object" project="core sdk"/>
+        <argument name="error" class="error" access="readwrite"/>
+
+        <return class="self" access="disown"/>
+    </method>
+
+
+    <method name="from json str" is_static="1">
+        Parse credentials from JSON string.
+
+        <argument name="json str" class="str"/>
+        <argument name="error" class="error" access="readwrite"/>
+
+        <return class="self" access="disown"/>
+    </method>
+</class>

@@ -88,6 +88,34 @@ extern "C" {
 #cmakedefine01 VSSQ_ERROR
 #endif
 
+#ifndef VSSQ_EJABBERD_JWT
+#cmakedefine01 VSSQ_EJABBERD_JWT
+#endif
+
+#ifndef VSSQ_MESSENGER
+#cmakedefine01 VSSQ_MESSENGER
+#endif
+
+#ifndef VSSQ_MESSENGER_AUTH
+#cmakedefine01 VSSQ_MESSENGER_AUTH
+#endif
+
+#ifndef VSSQ_MESSENGER_CONFIG
+#cmakedefine01 VSSQ_MESSENGER_CONFIG
+#endif
+
+#ifndef VSSQ_MESSENGER_CREDS
+#cmakedefine01 VSSQ_MESSENGER_CREDS
+#endif
+
+#ifndef VSSQ_MESSENGER_USER
+#cmakedefine01 VSSQ_MESSENGER_USER
+#endif
+
+#ifndef VSSQ_CONTACT_UTILS
+#cmakedefine01 VSSQ_CONTACT_UTILS
+#endif
+
 //
 //  Defines namespace include prefix for project 'common'.
 //

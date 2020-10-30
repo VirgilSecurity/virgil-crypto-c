@@ -37,6 +37,12 @@
 // clang-format off
 
 
+//  @description
+// --------------------------------------------------------------------------
+//  Class 'messenger creds' types definition.
+// --------------------------------------------------------------------------
+
+
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -44,60 +50,10 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-
-//  @description
-// --------------------------------------------------------------------------
-//  This ia an umbrella header that includes library public headers.
-// --------------------------------------------------------------------------
-
-#ifndef VSSQ_COMM_KIT_PUBLIC_H_INCLUDED
-#define VSSQ_COMM_KIT_PUBLIC_H_INCLUDED
-
-#include "vssq_platform.h"
-#include "vssq_assert.h"
-#include "vssq_library.h"
-#include "vssq_memory.h"
-#include "vssq_status.h"
-
-#if VSSQ_CONTACT_UTILS
-#   include "vssq_contact_utils.h"
-#endif
-
-#if VSSQ_EJABBERD_JWT
-#   include "vssq_ejabberd_jwt.h"
-#endif
-
-#if VSSQ_ERROR
-#   include "vssq_error.h"
-#endif
-
-#if VSSQ_MESSENGER
-#   include "vssq_messenger.h"
-#endif
-
-#if VSSQ_MESSENGER_AUTH
-#   include "vssq_messenger_auth.h"
-#endif
-
-#if VSSQ_MESSENGER_CONFIG
-#   include "vssq_messenger_config.h"
-#endif
-
-#if VSSQ_MESSENGER_CREDS
-#   include "vssq_messenger_creds.h"
-#endif
-
-#if VSSQ_MESSENGER_USER
-#   include "vssq_messenger_user.h"
-#endif
+#include "vssq_messenger_creds_defs.h"
 
 // clang-format on
 //  @end
-
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 
 //  @generated
@@ -111,14 +67,4 @@ extern "C" {
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
-//  @end
-
-
-#ifdef __cplusplus
-}
-#endif
-
-
-//  @footer
-#endif // VSSQ_COMM_KIT_PUBLIC_H_INCLUDED
 //  @end

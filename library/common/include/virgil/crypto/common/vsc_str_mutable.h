@@ -60,6 +60,7 @@
 
 #include "vsc_library.h"
 #include "vsc_str.h"
+#include "vsc_data.h"
 
 // clang-format on
 //  @end
@@ -107,6 +108,12 @@ VSC_PUBLIC vsc_str_mutable_t
 vsc_str_mutable_from_str(vsc_str_t str);
 
 //
+//  Create a mutable string by converting a given string to lower case.
+//
+VSC_PUBLIC vsc_str_mutable_t
+vsc_str_mutable_lowercase_from_str(vsc_str_t str);
+
+//
 //  Create a mutable string by concatenating 2 strings.
 //
 VSC_PUBLIC vsc_str_mutable_t
@@ -123,6 +130,12 @@ vsc_str_mutable_is_valid(vsc_str_mutable_t self);
 //
 VSC_PUBLIC vsc_str_t
 vsc_str_mutable_as_str(vsc_str_mutable_t self);
+
+//
+//  Returns immutable str as bytes.
+//
+VSC_PUBLIC vsc_data_t
+vsc_str_mutable_as_data(vsc_str_mutable_t self);
 
 //
 //  Init underlying structure.

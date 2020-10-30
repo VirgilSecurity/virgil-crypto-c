@@ -1,0 +1,47 @@
+<class name="messenger config">
+    Contains messenger configuration.
+
+    <property name="base url" class="str mutable"/>
+    <property name="ejabberd url" class="str mutable"/>
+    <property name="ca bundle" class="str mutable"/>
+
+
+    <constant name="k base url virgil" type="string" visibility="public">
+        <value value="https://messenger.virgilsecurity.com"/>
+    </constant>
+
+
+    <constant name="k ejabberd url virgil" type="string" visibility="public">
+        <value value="xmpp.virgilsecurity.com"/>
+    </constant>
+
+
+    <constructor name="with">
+        Create object with required fields.
+
+        <argument name="base url" class="str"/>
+        <argument name="ejabberd url" class="str"/>
+    </constructor>
+
+
+    <method name="set ca bundle">
+        Set path to the custom CA bundle.
+
+        <argument name="ca bundle" class="str"/>
+    </method>
+
+
+    <method name="base url" is_const="1">
+         <return class="str"/>
+    </method>
+
+
+    <method name="ejabberd url" is_const="1">
+         <return class="str"/>
+    </method>
+
+
+    <method name="ca bundle" is_const="1">
+         <return class="str"/>
+    </method>
+</class>

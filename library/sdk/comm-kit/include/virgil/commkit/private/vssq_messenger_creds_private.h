@@ -44,51 +44,25 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
+#ifndef VSSQ_MESSENGER_CREDS_PRIVATE_H_INCLUDED
+#define VSSQ_MESSENGER_CREDS_PRIVATE_H_INCLUDED
 
-//  @description
-// --------------------------------------------------------------------------
-//  This ia an umbrella header that includes library public headers.
-// --------------------------------------------------------------------------
+#include "vssq_messenger_creds.h"
 
-#ifndef VSSQ_COMM_KIT_PUBLIC_H_INCLUDED
-#define VSSQ_COMM_KIT_PUBLIC_H_INCLUDED
-
-#include "vssq_platform.h"
-#include "vssq_assert.h"
-#include "vssq_library.h"
-#include "vssq_memory.h"
-#include "vssq_status.h"
-
-#if VSSQ_CONTACT_UTILS
-#   include "vssq_contact_utils.h"
+#if !VSSQ_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <virgil/crypto/common/vsc_str.h>
 #endif
 
-#if VSSQ_EJABBERD_JWT
-#   include "vssq_ejabberd_jwt.h"
+#if !VSSQ_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
+#   include <virgil/crypto/foundation/vscf_impl.h>
 #endif
 
-#if VSSQ_ERROR
-#   include "vssq_error.h"
+#if VSSQ_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <VSCCommon/vsc_str.h>
 #endif
 
-#if VSSQ_MESSENGER
-#   include "vssq_messenger.h"
-#endif
-
-#if VSSQ_MESSENGER_AUTH
-#   include "vssq_messenger_auth.h"
-#endif
-
-#if VSSQ_MESSENGER_CONFIG
-#   include "vssq_messenger_config.h"
-#endif
-
-#if VSSQ_MESSENGER_CREDS
-#   include "vssq_messenger_creds.h"
-#endif
-
-#if VSSQ_MESSENGER_USER
-#   include "vssq_messenger_user.h"
+#if VSSQ_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
+#   include <VSCFoundation/vscf_impl.h>
 #endif
 
 // clang-format on
@@ -106,6 +80,21 @@ extern "C" {
 //  Generated section start.
 // --------------------------------------------------------------------------
 
+//
+//  Perform initialization of pre-allocated context.
+//  Create fully defined object.
+//
+VSSQ_PUBLIC void
+vssq_messenger_creds_init_with_disown(vssq_messenger_creds_t *self, vsc_str_t username, vsc_str_t card_id,
+        vscf_impl_t **private_key_ref);
+
+//
+//  Allocate class context and perform it's initialization.
+//  Create fully defined object.
+//
+VSSQ_PUBLIC vssq_messenger_creds_t *
+vssq_messenger_creds_new_with_disown(vsc_str_t username, vsc_str_t card_id, vscf_impl_t **private_key_ref);
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.
@@ -120,5 +109,5 @@ extern "C" {
 
 
 //  @footer
-#endif // VSSQ_COMM_KIT_PUBLIC_H_INCLUDED
+#endif // VSSQ_MESSENGER_CREDS_PRIVATE_H_INCLUDED
 //  @end

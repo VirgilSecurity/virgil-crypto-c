@@ -8,4 +8,212 @@
     <constant name="internal error" value="-1">
         Met internal inconsistency.
     </constant>
+
+    <constant name="rng failed" value="-101">
+        Failed to initialze RNG.
+    </constant>
+
+    <constant name="parse ejabberd jwt failed" value="-201">
+        Failed to parse Ejabberd JWT.
+    </constant>
+
+    <constant name="generate identity failed" value="-301">
+        Failed to generate identity.
+    </constant>
+
+    <constant name="generate private key failed" value="-302">
+        Failed to generate private key.
+    </constant>
+
+    <constant name="import private key failed" value="-303">
+        Failed to import private key.
+    </constant>
+
+    <constant name="export private key failed" value="-304">
+        Failed to export private key.
+    </constant>
+
+    <constant name="calculate key id failed" value="-305">
+        Failed to calculate key id.
+    </constant>
+
+    <constant name="create card manager failed" value="-306">
+        Failed to create card manager.
+    </constant>
+
+    <constant name="generate card failed" value="-306">
+        Failed to generate card.
+    </constant>
+
+    <constant name="generate auth header failed" value="-308">
+        Failed to generate HTTP authentication header.
+    </constant>
+
+    <constant name="register card failed request failed" value="-401">
+        Failed to register card because send operation failed.
+    </constant>
+
+    <constant name="register card failed invalid response" value="-402">
+        Failed to register card because of invalid response.
+    </constant>
+
+    <constant name="register card failed response with error" value="-403">
+        Failed to register card because response with error was returned.
+    </constant>
+
+    <constant name="register card failed parse failed" value="-404">
+        Failed to register card because parsing raw card failed.
+    </constant>
+
+    <constant name="register card failed import failed" value="-405">
+        Failed to register card because import raw card failed.
+    </constant>
+
+    <constant name="generate brainkey failed crypto failed" value="-501">
+        Failed to generate brain key because of crypto fail.
+    </constant>
+
+    <constant name="generate brainkey failed rng failed" value="-502">
+        Failed to generate brain key because of RNG fail.
+    </constant>
+
+    <constant name="generate brainkey failed blind failed" value="-503">
+        Failed to generate brain key because of deblind fail.
+    </constant>
+
+    <constant name="generate brainkey failed deblind failed" value="-504">
+        Failed to generate brain key because of blind fail.
+    </constant>
+
+    <constant name="generate brainkey failed seed request failed" value="-505">
+        Failed to generate brain key because requesting seed from the service failed.
+    </constant>
+
+    <constant name="generate brainkey failed seed response with error" value="-506">
+        Failed to generate brain key because seed response was returned with error.
+    </constant>
+
+    <constant name="generate brainkey failed seed parse failed" value="-507">
+        Failed to generate brain key because parsing seed response failed.
+    </constant>
+
+    <constant name="keyknox failed request failed" value="-601">
+        Failed to process Keyknox entry because send operation failed.
+    </constant>
+
+    <constant name="keyknox failed response with error" value="-602">
+        Failed to process Keyknox entry because response with error was returned.
+    </constant>
+
+    <constant name="keyknox failed parse response failed" value="-603">
+        Failed to process Keyknox entry because response parsing failed.
+    </constant>
+
+    <constant name="keyknox pack creds failed export private key failed" value="-604">
+        Failed to pack Keyknox entry because export private key failed.
+    </constant>
+
+    <constant name="keyknox pack creds failed encrypt failed" value="-605">
+        Failed to pack Keyknox entry because encrypt operation failed.
+    </constant>
+
+    <constant name="keyknox unpack creds failed decrypt failed" value="-606">
+        Failed to unpack Keyknox entry because decrypt operation failed.
+    </constant>
+
+    <constant name="keyknox unpack creds failed verify signature failed" value="-607">
+        Failed to unpack Keyknox entry because verifying signature failed.
+    </constant>
+
+    <constant name="keyknox unpack creds failed parse failed" value="-608">
+        Failed to unpack Keyknox entry because parse operation failed.
+    </constant>
+
+    <constant name="keyknox unpack creds failed import private key failed" value="-609">
+        Failed to unpack Keyknox entry because import private key failed.
+    </constant>
+
+    <constant name="refresh token failed request failed" value="-701">
+        Failed to refresh JWT because send operation failed.
+    </constant>
+
+    <constant name="refresh token failed response with error" value="-702">
+        Failed to refresh JWT because response with error was returned.
+    </constant>
+
+    <constant name="refresh token failed parse response failed" value="-703">
+        Failed to refresh JWT because response parsing failed.
+    </constant>
+
+    <constant name="refresh token failed parse failed" value="-704">
+        Failed to refresh JWT because JWT parsing failed.
+    </constant>
+
+    <constant name="reset password failed request failed" value="-801">
+        Failed to reset password because send operation failed.
+    </constant>
+
+    <constant name="reset password failed response with error" value="-802">
+        Failed to reset password because response with error was returned.
+    </constant>
+
+    <constant name="search card failed init failed" value="-900">
+        Failed to search card because a card manager initialization failed.
+    </constant>
+
+    <constant name="search card failed request failed" value="-901">
+        Failed to search card because send operation failed.
+    </constant>
+
+    <constant name="search card failed response with error" value="-902">
+        Failed to search card because response with error was returned.
+    </constant>
+
+    <constant name="search card failed required not found" value="-903">
+        Failed to search card because required card was not found.
+    </constant>
+
+    <constant name="search card failed multiple found" value="-904">
+        Failed to search card because found more then one active card.
+    </constant>
+
+    <constant name="search card failed parse failed" value="-905">
+        Failed to search card because parsing raw card failed.
+    </constant>
+
+    <constant name="search card failed import failed" value="-906">
+        Failed to search card because import raw card failed.
+    </constant>
+
+    <constant name="search card failed required is outdated" value="-907">
+        Failed to search card because required card is outdated.
+    </constant>
+
+    <constant name="export creds failed init crypto failed" value="-1000">
+        Failed to export creentials because initializing crypto module failed.
+    </constant>
+
+    <constant name="export creds failed export private key failed" value="-1001">
+        Failed to export creentials because exporting private key failed.
+    </constant>
+
+    <constant name="import creds failed init crypto failed" value="-1002">
+        Failed to import creentials because initializing crypto module failed.
+    </constant>
+
+    <constant name="import creds failed parse failed" value="-1003">
+        Failed to import creentials because parsing json failed.
+    </constant>
+
+    <constant name="import creds failed import private key failed" value="-1004">
+        Failed to import creentials because importing private key failed.
+    </constant>
+
+    <constant name="contact validation failed username too long" value="-1100">
+        Username validation failed because it's length exceeds the allowed maximum (20).
+    </constant>
+
+    <constant name="contact validation failed username bad chars" value="-1101">
+        Username validation failed because it contains invalid characters.
+    </constant>
 </enum>

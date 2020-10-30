@@ -47,48 +47,31 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  This ia an umbrella header that includes library public headers.
+//  Class 'messenger' types definition.
 // --------------------------------------------------------------------------
 
-#ifndef VSSQ_COMM_KIT_PUBLIC_H_INCLUDED
-#define VSSQ_COMM_KIT_PUBLIC_H_INCLUDED
+#ifndef VSSQ_MESSENGER_DEFS_H_INCLUDED
+#define VSSQ_MESSENGER_DEFS_H_INCLUDED
 
-#include "vssq_platform.h"
-#include "vssq_assert.h"
 #include "vssq_library.h"
-#include "vssq_memory.h"
-#include "vssq_status.h"
+#include "vssq_atomic.h"
+#include "vssq_messenger_config.h"
+#include "vssq_messenger_auth.h"
 
-#if VSSQ_CONTACT_UTILS
-#   include "vssq_contact_utils.h"
+#if !VSSQ_IMPORT_PROJECT_CORE_SDK_FROM_FRAMEWORK
+#   include <virgil/sdk/core/vssc_key_handler_list.h>
 #endif
 
-#if VSSQ_EJABBERD_JWT
-#   include "vssq_ejabberd_jwt.h"
+#if !VSSQ_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
+#   include <virgil/crypto/foundation/vscf_impl.h>
 #endif
 
-#if VSSQ_ERROR
-#   include "vssq_error.h"
+#if VSSQ_IMPORT_PROJECT_CORE_SDK_FROM_FRAMEWORK
+#   include <VSSC/vssc_key_handler_list.h>
 #endif
 
-#if VSSQ_MESSENGER
-#   include "vssq_messenger.h"
-#endif
-
-#if VSSQ_MESSENGER_AUTH
-#   include "vssq_messenger_auth.h"
-#endif
-
-#if VSSQ_MESSENGER_CONFIG
-#   include "vssq_messenger_config.h"
-#endif
-
-#if VSSQ_MESSENGER_CREDS
-#   include "vssq_messenger_creds.h"
-#endif
-
-#if VSSQ_MESSENGER_USER
-#   include "vssq_messenger_user.h"
+#if VSSQ_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
+#   include <VSCFoundation/vscf_impl.h>
 #endif
 
 // clang-format on
@@ -106,6 +89,30 @@ extern "C" {
 //  Generated section start.
 // --------------------------------------------------------------------------
 
+//
+//  Handle 'messenger' context.
+//
+struct vssq_messenger_t {
+    //
+    //  Function do deallocate self context.
+    //
+    vssq_dealloc_fn self_dealloc_cb;
+    //
+    //  Reference counter.
+    //
+    VSSQ_ATOMIC size_t refcnt;
+    //
+    //  Dependency to the interface 'random'.
+    //
+    vscf_impl_t *random;
+
+    const vssq_messenger_config_t *config;
+
+    vssq_messenger_auth_t *auth;
+
+    vssc_key_handler_list_t *cards_cache;
+};
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.
@@ -120,5 +127,5 @@ extern "C" {
 
 
 //  @footer
-#endif // VSSQ_COMM_KIT_PUBLIC_H_INCLUDED
+#endif // VSSQ_MESSENGER_DEFS_H_INCLUDED
 //  @end

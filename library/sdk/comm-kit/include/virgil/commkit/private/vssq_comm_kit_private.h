@@ -55,6 +55,28 @@
 
 #include "vssq_platform.h"
 #include "vssq_atomic.h"
+#include "vssq_messenger_auth_private.h"
+#include "vssq_messenger_creds_private.h"
+
+#if VSSQ_EJABBERD_JWT
+#   include "vssq_ejabberd_jwt_defs.h"
+#endif
+
+#if VSSQ_MESSENGER
+#   include "vssq_messenger_defs.h"
+#endif
+
+#if VSSQ_MESSENGER_AUTH
+#   include "vssq_messenger_auth_defs.h"
+#endif
+
+#if VSSQ_MESSENGER_CONFIG
+#   include "vssq_messenger_config_defs.h"
+#endif
+
+#if VSSQ_MESSENGER_CREDS
+#   include "vssq_messenger_creds_defs.h"
+#endif
 
 // clang-format on
 //  @end

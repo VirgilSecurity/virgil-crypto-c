@@ -6,6 +6,9 @@
     Note, this class' ownership can not be retained.
     Note, this class can not be used as part of any public interface.
 
+    <require header="ctype.h" is_system="1"/>
+
+
     <property name="chars" type="char" access="readwrite">
         Underlying characters array.
 
@@ -20,6 +23,13 @@
 
     <constructor name="from str">
         Create a mutable string by copying a given string.
+
+        <argument name="str" class="str"/>
+    </constructor>
+
+
+    <constructor name="lowercase from str">
+        Create a mutable string by converting a given string to lower case.
 
         <argument name="str" class="str"/>
     </constructor>
@@ -44,6 +54,13 @@
         Returns immutable str.
 
         <return class="str"/>
+    </method>
+
+
+    <method name="as data">
+        Returns immutable str as bytes.
+
+        <return class="data"/>
     </method>
 
 

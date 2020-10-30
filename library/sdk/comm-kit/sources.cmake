@@ -79,7 +79,42 @@ set_property(
 )
 
 set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/commkit/vssq_contact_utils.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
+)
+
+set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/commkit/vssq_ejabberd_jwt.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
+)
+
+set_property(
     SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/commkit/vssq_error.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
+)
+
+set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/commkit/vssq_messenger.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
+)
+
+set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/commkit/vssq_messenger_auth.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
+)
+
+set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/commkit/vssq_messenger_config.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
+)
+
+set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/commkit/vssq_messenger_creds.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
+)
+
+set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/commkit/vssq_messenger_user.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
 
@@ -100,7 +135,21 @@ target_sources(comm_kit
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/commkit/vssq_memory.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/commkit/private/vssq_atomic.h"
             "${CMAKE_CURRENT_BINARY_DIR}/include/virgil/commkit/vssq_platform.h"
+            "$<$<BOOL:${VSSQ_CONTACT_UTILS}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/commkit/vssq_contact_utils.h>"
+            "$<$<BOOL:${VSSQ_EJABBERD_JWT}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/commkit/vssq_ejabberd_jwt.h>"
+            "$<$<BOOL:${VSSQ_EJABBERD_JWT}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/commkit/private/vssq_ejabberd_jwt_defs.h>"
             "$<$<BOOL:${VSSQ_ERROR}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/commkit/vssq_error.h>"
+            "$<$<BOOL:${VSSQ_MESSENGER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/commkit/vssq_messenger.h>"
+            "$<$<BOOL:${VSSQ_MESSENGER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/commkit/private/vssq_messenger_defs.h>"
+            "$<$<BOOL:${VSSQ_MESSENGER_AUTH}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/commkit/vssq_messenger_auth.h>"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/commkit/private/vssq_messenger_auth_private.h"
+            "$<$<BOOL:${VSSQ_MESSENGER_AUTH}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/commkit/private/vssq_messenger_auth_defs.h>"
+            "$<$<BOOL:${VSSQ_MESSENGER_CONFIG}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/commkit/vssq_messenger_config.h>"
+            "$<$<BOOL:${VSSQ_MESSENGER_CONFIG}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/commkit/private/vssq_messenger_config_defs.h>"
+            "$<$<BOOL:${VSSQ_MESSENGER_CREDS}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/commkit/vssq_messenger_creds.h>"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/commkit/private/vssq_messenger_creds_private.h"
+            "$<$<BOOL:${VSSQ_MESSENGER_CREDS}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/commkit/private/vssq_messenger_creds_defs.h>"
+            "$<$<BOOL:${VSSQ_MESSENGER_USER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/commkit/vssq_messenger_user.h>"
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/commkit/vssq_status.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/commkit/vssq_comm_kit_public.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/commkit/private/vssq_comm_kit_private.h"
@@ -108,7 +157,18 @@ target_sources(comm_kit
             "${CMAKE_CURRENT_LIST_DIR}/src/vssq_assert.c"
             "${CMAKE_CURRENT_LIST_DIR}/src/vssq_library.c"
             "${CMAKE_CURRENT_LIST_DIR}/src/vssq_memory.c"
+            "$<$<BOOL:${VSSQ_CONTACT_UTILS}>:${CMAKE_CURRENT_LIST_DIR}/src/vssq_contact_utils.c>"
+            "$<$<BOOL:${VSSQ_EJABBERD_JWT}>:${CMAKE_CURRENT_LIST_DIR}/src/vssq_ejabberd_jwt.c>"
+            "$<$<BOOL:${VSSQ_EJABBERD_JWT}>:${CMAKE_CURRENT_LIST_DIR}/src/vssq_ejabberd_jwt_defs.c>"
             "$<$<BOOL:${VSSQ_ERROR}>:${CMAKE_CURRENT_LIST_DIR}/src/vssq_error.c>"
+            "$<$<BOOL:${VSSQ_MESSENGER}>:${CMAKE_CURRENT_LIST_DIR}/src/vssq_messenger.c>"
+            "$<$<BOOL:${VSSQ_MESSENGER}>:${CMAKE_CURRENT_LIST_DIR}/src/vssq_messenger_defs.c>"
+            "$<$<BOOL:${VSSQ_MESSENGER_AUTH}>:${CMAKE_CURRENT_LIST_DIR}/src/vssq_messenger_auth.c>"
+            "$<$<BOOL:${VSSQ_MESSENGER_AUTH}>:${CMAKE_CURRENT_LIST_DIR}/src/vssq_messenger_auth_defs.c>"
+            "$<$<BOOL:${VSSQ_MESSENGER_CONFIG}>:${CMAKE_CURRENT_LIST_DIR}/src/vssq_messenger_config.c>"
+            "$<$<BOOL:${VSSQ_MESSENGER_CONFIG}>:${CMAKE_CURRENT_LIST_DIR}/src/vssq_messenger_config_defs.c>"
+            "$<$<BOOL:${VSSQ_MESSENGER_CREDS}>:${CMAKE_CURRENT_LIST_DIR}/src/vssq_messenger_creds.c>"
+            "$<$<BOOL:${VSSQ_MESSENGER_CREDS}>:${CMAKE_CURRENT_LIST_DIR}/src/vssq_messenger_creds_defs.c>"
             "${CMAKE_CURRENT_LIST_DIR}/src/vssq_status.c"
         )
 

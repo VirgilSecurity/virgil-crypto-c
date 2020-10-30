@@ -1,0 +1,71 @@
+<class name="messenger">
+    Entrypoint to the messenger user management, authentication and encryption.
+
+    <require class="card client" project="core sdk"/>
+    <require class="card manager" project="core sdk"/>
+    <require class="key handler list" project="core sdk" api="private"/>
+
+    <property name="config" class="messenger config" access="readonly"/>
+    <property name="auth" class="messenger auth"/>
+    <property name="cards cache" class="key handler list" project="core sdk"/> <!-- cache -->
+
+    <dependency name="random" interface="random" project="foundation" has_observers="1"/>
+
+<!--DO WE REALY NEED THIS within comm-kit?
+    <constant name="k json key ciphertext" type="string" visibility="private">
+        <value value="ciphertext"/>
+    </constant>
+
+    <constant name="k json key date" type="string" visibility="private">
+        <value value="date"/>
+    </constant>
+
+    <constant name="k json key version" type="string" visibility="private">
+        <value value="version"/>
+    </constant>
+
+    <constant name="k json value v2" type="string" visibility="private">
+        <value value="v2"/>
+    </constant>
+ -->
+
+    <constructor name="with config">
+        Initialze messenger with a custom config.
+
+        <argument name="config" class="messenger config"/>
+    </constructor>
+
+
+    <method name="setup defaults">
+        Setup predefined values to the uninitialized class dependencies.
+
+        <return enum="status"/>
+    </method>
+
+
+    <method name="register">
+        Register a new user with a given name.
+
+        <argument name="username" class="str"/>
+
+        <return enum="status"/>
+    </method>
+
+
+    <method name="authenticate">
+        Authenticate a user with a given credentials.
+
+        <argument name="creds" class="messenger creds" access="readonly"/>
+
+        <return enum="status"/>
+    </method>
+
+
+    <method name="auth" is_const="1">
+        Return authentication module.
+
+        It should be used with great carefulness and responsibility.
+
+        <return class="messenger auth"/>
+    </method>
+</class>

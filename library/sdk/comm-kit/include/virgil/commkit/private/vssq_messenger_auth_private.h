@@ -44,51 +44,18 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
+#ifndef VSSQ_MESSENGER_AUTH_PRIVATE_H_INCLUDED
+#define VSSQ_MESSENGER_AUTH_PRIVATE_H_INCLUDED
 
-//  @description
-// --------------------------------------------------------------------------
-//  This ia an umbrella header that includes library public headers.
-// --------------------------------------------------------------------------
-
-#ifndef VSSQ_COMM_KIT_PUBLIC_H_INCLUDED
-#define VSSQ_COMM_KIT_PUBLIC_H_INCLUDED
-
-#include "vssq_platform.h"
-#include "vssq_assert.h"
-#include "vssq_library.h"
-#include "vssq_memory.h"
+#include "vssq_messenger_auth.h"
 #include "vssq_status.h"
 
-#if VSSQ_CONTACT_UTILS
-#   include "vssq_contact_utils.h"
+#if !VSSQ_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <virgil/crypto/common/vsc_str_buffer.h>
 #endif
 
-#if VSSQ_EJABBERD_JWT
-#   include "vssq_ejabberd_jwt.h"
-#endif
-
-#if VSSQ_ERROR
-#   include "vssq_error.h"
-#endif
-
-#if VSSQ_MESSENGER
-#   include "vssq_messenger.h"
-#endif
-
-#if VSSQ_MESSENGER_AUTH
-#   include "vssq_messenger_auth.h"
-#endif
-
-#if VSSQ_MESSENGER_CONFIG
-#   include "vssq_messenger_config.h"
-#endif
-
-#if VSSQ_MESSENGER_CREDS
-#   include "vssq_messenger_creds.h"
-#endif
-
-#if VSSQ_MESSENGER_USER
-#   include "vssq_messenger_user.h"
+#if VSSQ_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <VSCCommon/vsc_str_buffer.h>
 #endif
 
 // clang-format on
@@ -106,6 +73,23 @@ extern "C" {
 //  Generated section start.
 // --------------------------------------------------------------------------
 
+//
+//  Return buffer length enough to handle HTTP authorization header value.
+//
+VSSQ_PUBLIC size_t
+vssq_messenger_auth_auth_header_len(const vssq_messenger_auth_t *self);
+
+//
+//  Generate HTTP autoization header value.
+//
+//  Format: "Bearer cardId.unixTimestamp.signature(cardId.unixTimestamp)"
+//
+//  Prerequisites: credentials must be set.
+//
+VSSQ_PUBLIC vssq_status_t
+vssq_messenger_auth_generate_auth_header(const vssq_messenger_auth_t *self,
+        vsc_str_buffer_t *auth_header) VSSQ_NODISCARD;
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.
@@ -120,5 +104,5 @@ extern "C" {
 
 
 //  @footer
-#endif // VSSQ_COMM_KIT_PUBLIC_H_INCLUDED
+#endif // VSSQ_MESSENGER_AUTH_PRIVATE_H_INCLUDED
 //  @end

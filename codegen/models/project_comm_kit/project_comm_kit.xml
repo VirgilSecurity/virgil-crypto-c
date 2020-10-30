@@ -30,8 +30,16 @@
     <!-- Common modules -->
     <class name="error" from="shared"/>
 
-    <!-- Entrypoint -->
-    <!-- <class name="comm kit"/> -->
+    <!-- Messenger -->
+    <class name="ejabberd jwt"/>
+    <class name="messenger"/>
+    <class name="messenger auth"/>
+    <class name="messenger config"/>
+    <class name="messenger creds"/>
+    <class name="messenger user"/>
+
+    <!-- Contact discovery -->
+    <class name="contact utils"/>
 
     <error_message_getter success="0">
         <require enum="status"/>

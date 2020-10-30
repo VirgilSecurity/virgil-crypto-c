@@ -1,0 +1,49 @@
+<class name="contact utils">
+    Helps to normalize and hash user contacts: username, email, phone, etc.
+
+
+    <require header="ctype.h" is_system="1"/>
+    <require class="buffer" project="common" api="defs"/>
+    <require class="sha256" project="foundation"/>
+    <require class="sha256" project="foundation" api="defs"/>
+    <require class="binary" project="foundation"/>
+
+
+    <constant name="digest hex len" value="64"/>
+    <constant name="username len max" value="20"/>
+
+
+    <method name="normalize username">
+        Validate and normalize username.
+
+        Valudation rules:
+            1. Length in the range: [1..20]
+            2. Do not start or end with an underscore
+            3. Do not start with a number
+            4. Match regex: ^[a-zA-Z0-9_]+$
+
+        Normalization rules:
+            1. All characters lowercase
+
+        <argument name="username" class="str"/>
+
+        <argument name="normalized" class="str buffer">
+            <length argument="username" cast="str_length"/>
+        </argument>
+
+        <return enum="status"/>
+    </method>
+
+
+    <method name="hash username">
+        Validate, normalize, and hash username.
+
+        <argument name="username" class="str"/>
+
+        <argument name="digest hex" class="str buffer">
+            <length constant="digest len"/>
+        </argument>
+
+        <return enum="status"/>
+    </method>
+</class>

@@ -59,6 +59,8 @@
 #include "vsc_memory.h"
 #include "vsc_assert.h"
 
+#include <ctype.h>
+
 // clang-format on
 //  @end
 
@@ -104,6 +106,26 @@ vsc_str_mutable_from_str(vsc_str_t str) {
 }
 
 //
+//  Create a mutable string by converting a given string to lower case.
+//
+VSC_PUBLIC vsc_str_mutable_t
+vsc_str_mutable_lowercase_from_str(vsc_str_t str) {
+
+    VSC_ASSERT(vsc_str_is_valid(str));
+
+    char *chars_copy = vsc_alloc(str.len + 1);
+    VSC_ASSERT_ALLOC(chars_copy);
+
+    for (size_t pos = 0; pos < str.len; ++pos) {
+        chars_copy[pos] = (char)tolower(str.chars[pos]);
+    }
+
+    chars_copy[str.len] = '\0';
+
+    return (vsc_str_mutable_t){chars_copy, str.len};
+}
+
+//
 //  Create a mutable string by concatenating 2 strings.
 //
 VSC_PUBLIC vsc_str_mutable_t
@@ -141,6 +163,17 @@ vsc_str_mutable_as_str(vsc_str_mutable_t self) {
     VSC_ASSERT(vsc_str_mutable_is_valid(self));
 
     return vsc_str(self.chars, self.len);
+}
+
+//
+//  Returns immutable str as bytes.
+//
+VSC_PUBLIC vsc_data_t
+vsc_str_mutable_as_data(vsc_str_mutable_t self) {
+
+    VSC_ASSERT(vsc_str_mutable_is_valid(self));
+
+    return vsc_data((const byte *)self.chars, self.len);
 }
 
 //

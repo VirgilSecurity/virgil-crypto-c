@@ -1,0 +1,74 @@
+<class name="ejabberd jwt">
+    Class that handles Ejabberd JWT.
+
+    <require class="unix time" project="core sdk"/>
+    <require class="base64 url" project="core sdk"/>
+    <require class="json object" project="core sdk"/>
+
+
+    <property name="jwt string" class="str mutable">
+        Handles Ejabberd JWT string representation.
+    </property>
+
+    <property name="jid" class="str mutable">
+        Handles Ejabberd JID.
+    </property>
+
+    <property name="expires at" type="size">
+        JWT expiration unix timestamp.
+    </property>
+
+
+    <constant name="k json key jid" type="string" visibility="private">
+        JSON key of JWT Ejabberd JID.
+
+        <value value="jid"/>
+    </constant>
+
+
+    <constant name="k json key expires at" type="string" visibility="private">
+        JSON key of JWT expires at date.
+
+        <value value="exp"/>
+    </constant>
+
+
+    <constructor name="with members" declaration="private">
+        Create fully defined object.
+
+        <argument name="jwt string" class="str"/>
+        <argument name="jid" class="str"/>
+        <argument name="expires at" type="size"/>
+    </constructor>
+
+
+    <method name="parse" is_static="1">
+        Parse Ejabberd JWT from a string representation.
+
+        <argument name="str" class="str"/>
+        <argument name="error" class="error" access="readwrite"/>
+
+        <return class="self" access="disown"/>
+    </method>
+
+
+    <method name="as string" is_const="1">
+        Return Ejabberd JWT string representation.
+
+        <return class="str"/>
+    </method>
+
+
+    <method name="jid" is_const="1">
+        Return identity to whom this token was issued.
+
+        <return class="str"/>
+    </method>
+
+
+    <method name="is expired" is_const="1">
+        Return true if token is expired.
+
+        <return type="boolean"/>
+    </method>
+</class>
