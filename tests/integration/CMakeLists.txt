@@ -68,3 +68,9 @@ if(TARGET vsc::keyknox_sdk)
 
     _add_test(test_keyknox_service ${DEPENDENCIES})
 endif()
+
+if(TARGET vsc::comm_kit)
+    set(DEPENDENCIES vsc::comm_kit)
+
+    _add_test(test_comm_kit_messenger_auth ${DEPENDENCIES})
+endif()
