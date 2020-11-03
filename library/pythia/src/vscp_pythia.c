@@ -53,6 +53,7 @@
 #include "vscp_pythia.h"
 #include "vscp_memory.h"
 #include "vscp_assert.h"
+#include "vscp_atomic.h"
 
 #include <pythia_init.h>
 #include <pythia_wrapper.h>
@@ -65,7 +66,7 @@
 //  @end
 
 
-static bool g_globally_inited = false;
+static VSCP_ATOMIC size_t g_init_counter = false;
 static mbedtls_entropy_context g_entropy;
 static mbedtls_ctr_drbg_context g_rng;
 
@@ -102,16 +103,31 @@ vscp_pythia_random_handler(byte *out, int out_len, void *ctx);
 
 //
 //  Performs global initialization of the pythia library.
-//  Must be called once for entire application at startup.
+//
+//  Note, can be called multiple times, but actual configuration takes place once.
+//  Note, this method is thread-safe.
 //
 VSCP_PUBLIC vscp_status_t
 vscp_pythia_configure(void) {
 
-    if (g_globally_inited) {
+    size_t new_counter;
+#if defined(VSCP_ATOMIC_COMPARE_EXCHANGE_WEAK)
+    //  CAS loop
+    size_t old_counter;
+    do {
+        old_counter = g_init_counter;
+        new_counter = old_counter + 1;
+    } while (!VSCP_ATOMIC_COMPARE_EXCHANGE_WEAK(&g_init_counter, &old_counter, new_counter));
+#else
+    new_counter = g_init_counter + 1;
+    g_init_counter = new_counter;
+#endif
+
+
+    if (new_counter > 1) {
         return vscp_status_SUCCESS;
     }
 
-    g_globally_inited = true;
     pythia_init_args_t init_args;
     init_args.callback = vscp_pythia_random_handler;
     init_args.args = NULL;
@@ -150,15 +166,32 @@ vscp_pythia_configure(void) {
 
 //
 //  Performs global cleanup of the pythia library.
-//  Must be called once for entire application before exit.
+//
+//  Note, can be called multiple times, but actual cleanup takes place once.
+//  Note, should be called as many times, as "configure()" method called".
+//  Note, this method is thread-safe.
 //
 VSCP_PUBLIC void
 vscp_pythia_cleanup(void) {
 
-    if (!g_globally_inited) {
+    size_t old_counter = g_init_counter;
+    VSCP_ASSERT(old_counter != 0);
+    size_t new_counter = old_counter - 1;
+
+#if defined(VSCP_ATOMIC_COMPARE_EXCHANGE_WEAK)
+    //  CAS loop
+    while (!VSCP_ATOMIC_COMPARE_EXCHANGE_WEAK(&g_init_counter, &old_counter, new_counter)) {
+        old_counter = g_init_counter;
+        VSCP_ASSERT(old_counter != 0);
+        new_counter = old_counter - 1;
+    }
+#else
+    g_init_counter = new_counter;
+#endif
+
+    if (new_counter > 0) {
         return;
     }
-    g_globally_inited = false;
 
     pythia_deinit();
 

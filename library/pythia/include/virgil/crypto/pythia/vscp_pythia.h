@@ -84,14 +84,19 @@ extern "C" {
 
 //
 //  Performs global initialization of the pythia library.
-//  Must be called once for entire application at startup.
+//
+//  Note, can be called multiple times, but actual configuration takes place once.
+//  Note, this method is thread-safe.
 //
 VSCP_PUBLIC vscp_status_t
 vscp_pythia_configure(void) VSCP_NODISCARD;
 
 //
 //  Performs global cleanup of the pythia library.
-//  Must be called once for entire application before exit.
+//
+//  Note, can be called multiple times, but actual cleanup takes place once.
+//  Note, should be called as many times, as "configure()" method called".
+//  Note, this method is thread-safe.
 //
 VSCP_PUBLIC void
 vscp_pythia_cleanup(void);
