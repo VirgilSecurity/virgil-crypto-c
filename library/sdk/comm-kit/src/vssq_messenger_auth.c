@@ -53,7 +53,6 @@
 #include "vssq_messenger_auth.h"
 #include "vssq_memory.h"
 #include "vssq_assert.h"
-#include "vssq_messenger_auth_private.h"
 #include "vssq_messenger_auth_defs.h"
 #include "vssq_messenger_creds_private.h"
 #include "vssq_contact_utils.h"
@@ -628,6 +627,8 @@ vssq_messenger_auth_cleanup_ctx(vssq_messenger_auth_t *self) {
     vssc_card_destroy(&self->card);
     vssc_jwt_destroy(&self->base_jwt);
     vssq_ejabberd_jwt_destroy(&self->ejabberd_jwt);
+
+    vscp_pythia_cleanup();
 }
 
 //
@@ -640,6 +641,9 @@ vssq_messenger_auth_init_ctx_with_config(vssq_messenger_auth_t *self, const vssq
     VSSQ_ASSERT_PTR(config);
 
     self->config = vssq_messenger_config_shallow_copy_const(config);
+
+    const vscp_status_t pythia_config_status = vscp_pythia_configure();
+    VSSQ_ASSERT_PROJECT_PYTHIA_SUCCESS(pythia_config_status);
 }
 
 //
@@ -1066,7 +1070,13 @@ cleanup:
 }
 
 //
-//  Pull an encrypted user credentials from the Keyknox and decrypt it.
+//  Restore redentials from the backup and authenticate user.
+//
+//  Perfrom next steps:
+//    1. Get base JWT usging part of pwd.
+//    2. Pull encrypted credentials from the Keyknox.
+//    3. Decrypt credentials using another part of pwd.
+//    4. Use cerdentials to authenticate within XMPP server (Ejabberd).
 //
 VSSQ_PUBLIC vssq_status_t
 vssq_messenger_auth_restore_creds(vssq_messenger_auth_t *self, vsc_str_t username, vsc_str_t pwd) {
@@ -1152,6 +1162,67 @@ cleanup:
     vssq_messenger_creds_destroy(&restored_creds);
 
     return error.status;
+}
+
+//
+//  Remove credentials beckup from the secure cloud storage (Keyknox).
+//
+//  Prerequisites: credentials must be set.
+//
+VSSQ_PUBLIC vssq_status_t
+vssq_messenger_auth_remove_creds_backup(const vssq_messenger_auth_t *self) {
+
+    VSSQ_ASSERT_PTR(self);
+    VSSQ_ASSERT(vssq_messenger_auth_has_creds(self));
+
+    //
+    //  Declare vars.
+    //
+    vssc_error_t core_sdk_error;
+    vssc_error_reset(&core_sdk_error);
+
+    vssk_keyknox_client_t *keyknox_client = NULL;
+    vssc_string_list_t *keyknox_identities = NULL;
+    vssc_http_request_t *http_request = NULL;
+    vssc_virgil_http_response_t *http_response = NULL;
+    vssk_keyknox_entry_t *keyknox_entry = NULL;
+
+    vsc_str_t identity = vssc_jwt_identity(self->base_jwt);
+
+    //
+    //  Reset previous record.
+    //
+    vssq_status_t status = vssq_status_SUCCESS;
+
+    keyknox_client = vssk_keyknox_client_new();
+
+    http_request = vssk_keyknox_client_make_request_reset(
+            keyknox_client, k_keyknox_root_messenger, k_keyknox_path_credentials, k_keyknox_alias_sign_in, identity);
+
+    http_response = vssc_virgil_http_client_send_with_ca(
+            http_request, self->base_jwt, vssq_messenger_config_ca_bundle(self->config), &core_sdk_error);
+
+    if (vssc_error_has_error(&core_sdk_error)) {
+        status = vssq_status_KEYKNOX_FAILED_REQUEST_FAILED;
+        goto cleanup;
+    }
+
+    if (!vssc_virgil_http_response_is_success(http_response)) {
+        status = vssq_status_KEYKNOX_FAILED_RESPONSE_WITH_ERROR;
+        goto cleanup;
+    }
+
+    vssc_http_request_destroy(&http_request);
+    vssc_virgil_http_response_destroy(&http_response);
+
+cleanup:
+    vssk_keyknox_client_destroy(&keyknox_client);
+    vssc_string_list_destroy(&keyknox_identities);
+    vssc_http_request_destroy(&http_request);
+    vssc_virgil_http_response_destroy(&http_response);
+    vssk_keyknox_entry_destroy(&keyknox_entry);
+
+    return status;
 }
 
 //
@@ -1824,9 +1895,7 @@ vssq_messenger_auth_keyknox_pack_creds(const vssq_messenger_auth_t *self, const 
     VSSQ_ASSERT(vssq_messenger_auth_has_creds(self));
     VSSQ_ASSERT_PTR(brain_private_key);
     VSSQ_ASSERT_PTR(keyknox_meta);
-    VSSQ_ASSERT(vsc_buffer_is_valid(keyknox_meta));
     VSSQ_ASSERT_PTR(keyknox_value);
-    VSSQ_ASSERT(vsc_buffer_is_valid(keyknox_value));
 
     //
     //  Declare vars.
@@ -2209,9 +2278,7 @@ vssq_messenger_auth_keyknox_pull_creds(
 
     VSSQ_ASSERT_PTR(self);
     VSSQ_ASSERT_PTR(keyknox_meta);
-    VSSQ_ASSERT(vsc_buffer_is_valid(keyknox_meta));
     VSSQ_ASSERT_PTR(keyknox_value);
-    VSSQ_ASSERT(vsc_buffer_is_valid(keyknox_value));
     VSSQ_ASSERT_PTR(self->base_jwt);
     VSSQ_ASSERT(!vssc_jwt_is_expired(self->base_jwt));
 

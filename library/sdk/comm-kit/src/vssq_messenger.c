@@ -53,7 +53,9 @@
 #include "vssq_messenger.h"
 #include "vssq_memory.h"
 #include "vssq_assert.h"
+#include "vssq_messenger_private.h"
 #include "vssq_messenger_defs.h"
+#include "vssq_messenger_auth.h"
 
 #include <virgil/sdk/core/vssc_card_client.h>
 #include <virgil/sdk/core/vssc_card_manager.h>
@@ -435,6 +437,78 @@ vssq_messenger_authenticate(vssq_messenger_t *self, const vssq_messenger_creds_t
     VSSQ_ASSERT_PTR(creds);
 
     return vssq_messenger_auth_authenticate(self->auth, creds);
+}
+
+//
+//  Return true if user credentials are defined.
+//
+VSSQ_PUBLIC bool
+vssq_messenger_has_creds(const vssq_messenger_t *self) {
+
+    VSSQ_ASSERT_PTR(self);
+
+    return vssq_messenger_auth_has_creds(self->auth);
+}
+
+//
+//  Return user credentials.
+//
+VSSQ_PUBLIC const vssq_messenger_creds_t *
+vssq_messenger_creds(const vssq_messenger_t *self) {
+
+    VSSQ_ASSERT_PTR(self);
+
+    return vssq_messenger_auth_creds(self->auth);
+}
+
+//
+//  Check whether current credentials were backed up.
+//
+//  Prerequisites: credentials must be set.
+//
+VSSQ_PUBLIC bool
+vssq_messenger_has_backup_creds(const vssq_messenger_t *self, vssq_error_t *error) {
+
+    VSSQ_ASSERT_PTR(self);
+
+    return vssq_messenger_auth_has_backup_creds(self->auth, error);
+}
+
+//
+//  Encrypt the user credentials and push them to the secure cloud storage (Keyknox).
+//
+//  Prerequisites: credentials must be set.
+//
+VSSQ_PUBLIC vssq_status_t
+vssq_messenger_backup_creds(const vssq_messenger_t *self, vsc_str_t pwd) {
+
+    VSSQ_ASSERT_PTR(self);
+
+    return vssq_messenger_auth_backup_creds(self->auth, pwd);
+}
+
+//
+//  Authenticate user by using backup cerdentials.
+//
+VSSQ_PUBLIC vssq_status_t
+vssq_messenger_authenticate_with_backup_creds(vssq_messenger_t *self, vsc_str_t username, vsc_str_t pwd) {
+
+    VSSQ_ASSERT_PTR(self);
+
+    return vssq_messenger_auth_restore_creds(self->auth, username, pwd);
+}
+
+//
+//  Remove credentials beckup from the secure cloud storage (Keyknox).
+//
+//  Prerequisites: credentials must be set.
+//
+VSSQ_PUBLIC vssq_status_t
+vssq_messenger_remove_creds_backup(const vssq_messenger_t *self) {
+
+    VSSQ_ASSERT_PTR(self);
+
+    return vssq_messenger_auth_remove_creds_backup(self->auth);
 }
 
 //

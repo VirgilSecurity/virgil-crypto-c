@@ -57,7 +57,7 @@
 #include "vssq_messenger_config.h"
 #include "vssq_status.h"
 #include "vssq_messenger_creds.h"
-#include "vssq_messenger_auth.h"
+#include "vssq_error.h"
 
 #include <virgil/crypto/foundation/vscf_random.h>
 
@@ -203,12 +203,46 @@ VSSQ_PUBLIC vssq_status_t
 vssq_messenger_authenticate(vssq_messenger_t *self, const vssq_messenger_creds_t *creds) VSSQ_NODISCARD;
 
 //
-//  Return authentication module.
+//  Return true if user credentials are defined.
 //
-//  It should be used with great carefulness and responsibility.
+VSSQ_PUBLIC bool
+vssq_messenger_has_creds(const vssq_messenger_t *self);
+
 //
-VSSQ_PUBLIC const vssq_messenger_auth_t *
-vssq_messenger_auth(const vssq_messenger_t *self);
+//  Return user credentials.
+//
+VSSQ_PUBLIC const vssq_messenger_creds_t *
+vssq_messenger_creds(const vssq_messenger_t *self);
+
+//
+//  Check whether current credentials were backed up.
+//
+//  Prerequisites: credentials must be set.
+//
+VSSQ_PUBLIC bool
+vssq_messenger_has_backup_creds(const vssq_messenger_t *self, vssq_error_t *error);
+
+//
+//  Encrypt the user credentials and push them to the secure cloud storage (Keyknox).
+//
+//  Prerequisites: credentials must be set.
+//
+VSSQ_PUBLIC vssq_status_t
+vssq_messenger_backup_creds(const vssq_messenger_t *self, vsc_str_t pwd) VSSQ_NODISCARD;
+
+//
+//  Authenticate user by using backup cerdentials.
+//
+VSSQ_PUBLIC vssq_status_t
+vssq_messenger_authenticate_with_backup_creds(vssq_messenger_t *self, vsc_str_t username, vsc_str_t pwd) VSSQ_NODISCARD;
+
+//
+//  Remove credentials beckup from the secure cloud storage (Keyknox).
+//
+//  Prerequisites: credentials must be set.
+//
+VSSQ_PUBLIC vssq_status_t
+vssq_messenger_remove_creds_backup(const vssq_messenger_t *self) VSSQ_NODISCARD;
 
 
 // --------------------------------------------------------------------------

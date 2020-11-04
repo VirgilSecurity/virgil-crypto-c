@@ -233,10 +233,24 @@ VSSQ_PUBLIC vssq_status_t
 vssq_messenger_auth_backup_creds(const vssq_messenger_auth_t *self, vsc_str_t pwd) VSSQ_NODISCARD;
 
 //
-//  Pull an encrypted user credentials from the Keyknox and decrypt it.
+//  Restore redentials from the backup and authenticate user.
+//
+//  Perfrom next steps:
+//    1. Get base JWT usging part of pwd.
+//    2. Pull encrypted credentials from the Keyknox.
+//    3. Decrypt credentials using another part of pwd.
+//    4. Use cerdentials to authenticate within XMPP server (Ejabberd).
 //
 VSSQ_PUBLIC vssq_status_t
 vssq_messenger_auth_restore_creds(vssq_messenger_auth_t *self, vsc_str_t username, vsc_str_t pwd) VSSQ_NODISCARD;
+
+//
+//  Remove credentials beckup from the secure cloud storage (Keyknox).
+//
+//  Prerequisites: credentials must be set.
+//
+VSSQ_PUBLIC vssq_status_t
+vssq_messenger_auth_remove_creds_backup(const vssq_messenger_auth_t *self) VSSQ_NODISCARD;
 
 //
 //  Return JWT length if it exists and not expired, or max - otherwise.
@@ -271,6 +285,23 @@ vssq_messenger_auth_ejabberd_token_len(const vssq_messenger_auth_t *self);
 //
 VSSQ_PUBLIC vssq_status_t
 vssq_messenger_auth_ejabberd_token(const vssq_messenger_auth_t *self, vsc_str_buffer_t *token) VSSQ_NODISCARD;
+
+//
+//  Return buffer length enough to handle HTTP authorization header value.
+//
+VSSQ_PUBLIC size_t
+vssq_messenger_auth_auth_header_len(const vssq_messenger_auth_t *self);
+
+//
+//  Generate HTTP autoization header value.
+//
+//  Format: "Bearer cardId.unixTimestamp.signature(cardId.unixTimestamp)"
+//
+//  Prerequisites: credentials must be set.
+//
+VSSQ_PUBLIC vssq_status_t
+vssq_messenger_auth_generate_auth_header(const vssq_messenger_auth_t *self,
+        vsc_str_buffer_t *auth_header) VSSQ_NODISCARD;
 
 
 // --------------------------------------------------------------------------

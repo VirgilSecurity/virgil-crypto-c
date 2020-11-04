@@ -174,6 +174,26 @@ extern "C" {
     } while (0)
 
 //
+//  This macros can be used as project 'pythia' error handlind post-condition.
+//
+#define VSSQ_ASSERT_PROJECT_PYTHIA_UNHANDLED_ERROR(error)                                                      \
+    do {                                                                                                       \
+        VSSQ_ASSERT((error) != 0);                                                                             \
+        vssq_assert_trigger_unhandled_error_of_project_pythia((int)(error), VSSQ_FILE_PATH_OR_NAME, __LINE__); \
+    } while (0)
+
+//
+//  This macros can be used to ensure that project 'pythia' operation
+//  returns success status code.
+//
+#define VSSQ_ASSERT_PROJECT_PYTHIA_SUCCESS(status)              \
+    do {                                                        \
+        if ((status) != 0) {                                    \
+            VSSQ_ASSERT_PROJECT_PYTHIA_UNHANDLED_ERROR(status); \
+        }                                                       \
+    } while (0)
+
+//
 //  This macros can be used as project 'core sdk' error handlind post-condition.
 //
 #define VSSQ_ASSERT_PROJECT_CORE_SDK_UNHANDLED_ERROR(error)                                                      \
@@ -262,6 +282,12 @@ vssq_assert_trigger(const char *message, const char *file, int line);
 //
 VSSQ_PUBLIC void
 vssq_assert_trigger_unhandled_error_of_project_foundation(int error, const char *file, int line);
+
+//
+//  Tell assertion handler that error of project 'pythia' is not handled.
+//
+VSSQ_PUBLIC void
+vssq_assert_trigger_unhandled_error_of_project_pythia(int error, const char *file, int line);
 
 //
 //  Tell assertion handler that error of project 'core sdk' is not handled.

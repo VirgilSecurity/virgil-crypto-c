@@ -138,8 +138,7 @@ test__messenger_register_then_authenticate__random_user__success(void) {
     //
     //  Authenticate.
     //
-    const vssq_messenger_auth_t *auth = vssq_messenger_auth(messenger_for_registration);
-    const vssq_messenger_creds_t *creds = vssq_messenger_auth_creds(auth);
+    const vssq_messenger_creds_t *creds = vssq_messenger_creds(messenger_for_registration);
     const vssq_status_t authenticate_status = vssq_messenger_authenticate(messenger_for_authentication, creds);
     TEST_ASSERT_EQUAL(vssq_status_SUCCESS, authenticate_status);
 
@@ -148,6 +147,50 @@ test__messenger_register_then_authenticate__random_user__success(void) {
     //
     vssq_messenger_destroy(&messenger_for_registration);
     vssq_messenger_destroy(&messenger_for_authentication);
+    vsc_str_buffer_destroy(&username);
+}
+
+void
+test__messenger_creds_backup_then_resotore_then_remove__random_user__success(void) {
+    //
+    //  Create messenger and random username.
+    //
+    vssq_messenger_t *messenger_for_backup = create_messenger();
+    vssq_messenger_t *messenger_for_restore = create_messenger();
+    vsc_str_buffer_t *username = generate_random_username();
+
+    vsc_str_t pwd = vsc_str_from_str("password");
+
+    //
+    //  Resgister.
+    //
+    const vssq_status_t register_status = vssq_messenger_register(messenger_for_backup, vsc_str_buffer_str(username));
+    TEST_ASSERT_EQUAL(vssq_status_SUCCESS, register_status);
+
+    //
+    //  Backup.
+    //
+    const vssq_status_t backup_status = vssq_messenger_backup_creds(messenger_for_backup, pwd);
+    TEST_ASSERT_EQUAL(vssq_status_SUCCESS, backup_status);
+
+    //
+    //  Restore.
+    //
+    const vssq_status_t restore_status =
+            vssq_messenger_authenticate_with_backup_creds(messenger_for_restore, vsc_str_buffer_str(username), pwd);
+    TEST_ASSERT_EQUAL(vssq_status_SUCCESS, restore_status);
+
+    //
+    //  Remove.
+    //
+    const vssq_status_t remove_status = vssq_messenger_remove_creds_backup(messenger_for_restore);
+    TEST_ASSERT_EQUAL(vssq_status_SUCCESS, remove_status);
+
+    //
+    //  Cleanup.
+    //
+    vssq_messenger_destroy(&messenger_for_backup);
+    vssq_messenger_destroy(&messenger_for_restore);
     vsc_str_buffer_destroy(&username);
 }
 
@@ -164,6 +207,7 @@ main(void) {
 #if TEST_DEPENDENCIES_AVAILABLE
     RUN_TEST(test__messenger_register__random_user__success);
     RUN_TEST(test__messenger_register_then_authenticate__random_user__success);
+    RUN_TEST(test__messenger_creds_backup_then_resotore_then_remove__random_user__success);
 
 #else
     RUN_TEST(test__nothing__feature_disabled__must_be_ignored);

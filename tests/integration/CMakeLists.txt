@@ -72,5 +72,5 @@ endif()
 if(TARGET vsc::comm_kit)
     set(DEPENDENCIES vsc::comm_kit)
 
-    _add_test(test_comm_kit_messenger_auth ${DEPENDENCIES})
+    _add_test(test_comm_kit_messenger ${DEPENDENCIES})
 endif()

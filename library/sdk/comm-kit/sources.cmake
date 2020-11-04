@@ -99,11 +99,6 @@ set_property(
 )
 
 set_property(
-    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/commkit/vssq_messenger_auth.h"
-    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
-)
-
-set_property(
     SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/commkit/vssq_messenger_config.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
@@ -140,9 +135,9 @@ target_sources(comm_kit
             "$<$<BOOL:${VSSQ_EJABBERD_JWT}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/commkit/private/vssq_ejabberd_jwt_defs.h>"
             "$<$<BOOL:${VSSQ_ERROR}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/commkit/vssq_error.h>"
             "$<$<BOOL:${VSSQ_MESSENGER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/commkit/vssq_messenger.h>"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/commkit/private/vssq_messenger_private.h"
             "$<$<BOOL:${VSSQ_MESSENGER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/commkit/private/vssq_messenger_defs.h>"
-            "$<$<BOOL:${VSSQ_MESSENGER_AUTH}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/commkit/vssq_messenger_auth.h>"
-            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/commkit/private/vssq_messenger_auth_private.h"
+            "$<$<BOOL:${VSSQ_MESSENGER_AUTH}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/commkit/private/vssq_messenger_auth.h>"
             "$<$<BOOL:${VSSQ_MESSENGER_AUTH}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/commkit/private/vssq_messenger_auth_defs.h>"
             "$<$<BOOL:${VSSQ_MESSENGER_CONFIG}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/commkit/vssq_messenger_config.h>"
             "$<$<BOOL:${VSSQ_MESSENGER_CONFIG}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/commkit/private/vssq_messenger_config_defs.h>"

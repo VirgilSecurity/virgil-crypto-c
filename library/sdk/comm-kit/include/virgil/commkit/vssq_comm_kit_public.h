@@ -75,10 +75,6 @@
 #   include "vssq_messenger.h"
 #endif
 
-#if VSSQ_MESSENGER_AUTH
-#   include "vssq_messenger_auth.h"
-#endif
-
 #if VSSQ_MESSENGER_CONFIG
 #   include "vssq_messenger_config.h"
 #endif

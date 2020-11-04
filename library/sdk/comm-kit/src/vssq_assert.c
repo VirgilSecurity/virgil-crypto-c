@@ -56,6 +56,7 @@
 #include "vssq_assert.h"
 
 #include <virgil/crypto/foundation/vscf_status.h>
+#include <virgil/crypto/pythia/vscp_status.h>
 #include <virgil/sdk/core/vssc_status.h>
 #include <virgil/sdk/pythia/vssp_status.h>
 #include <virgil/sdk/keyknox/vssk_status.h>
@@ -148,6 +149,18 @@ vssq_assert_trigger_unhandled_error_of_project_foundation(int error, const char 
 
     char error_message[48] = {0x00};
     snprintf(error_message, sizeof(error_message), "Unhandled vsc::foundation error -0x%04x", error);
+
+    vssq_assert_trigger(error_message, file, line);
+}
+
+//
+//  Tell assertion handler that error of project 'pythia' is not handled.
+//
+VSSQ_PUBLIC void
+vssq_assert_trigger_unhandled_error_of_project_pythia(int error, const char *file, int line) {
+
+    char error_message[48] = {0x00};
+    snprintf(error_message, sizeof(error_message), "Unhandled vsc::pythia error -0x%04x", error);
 
     vssq_assert_trigger(error_message, file, line);
 }

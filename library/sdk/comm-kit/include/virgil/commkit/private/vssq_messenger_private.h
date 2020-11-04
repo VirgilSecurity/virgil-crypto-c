@@ -44,40 +44,11 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
+#ifndef VSSQ_MESSENGER_PRIVATE_H_INCLUDED
+#define VSSQ_MESSENGER_PRIVATE_H_INCLUDED
 
-//  @description
-// --------------------------------------------------------------------------
-//  This is an umbrella header that includes library private headers.
-// --------------------------------------------------------------------------
-
-#ifndef VSSQ_COMM_KIT_PRIVATE_H_INCLUDED
-#define VSSQ_COMM_KIT_PRIVATE_H_INCLUDED
-
-#include "vssq_platform.h"
-#include "vssq_atomic.h"
-#include "vssq_messenger_creds_private.h"
-#include "vssq_messenger_private.h"
-
-#if VSSQ_EJABBERD_JWT
-#   include "vssq_ejabberd_jwt_defs.h"
-#endif
-
-#if VSSQ_MESSENGER
-#   include "vssq_messenger_defs.h"
-#endif
-
-#if VSSQ_MESSENGER_AUTH
-#   include "vssq_messenger_auth_defs.h"
-#   include "vssq_messenger_auth.h"
-#endif
-
-#if VSSQ_MESSENGER_CONFIG
-#   include "vssq_messenger_config_defs.h"
-#endif
-
-#if VSSQ_MESSENGER_CREDS
-#   include "vssq_messenger_creds_defs.h"
-#endif
+#include "vssq_messenger.h"
+#include "vssq_messenger_auth.h"
 
 // clang-format on
 //  @end
@@ -94,6 +65,14 @@ extern "C" {
 //  Generated section start.
 // --------------------------------------------------------------------------
 
+//
+//  Return authentication module.
+//
+//  It should be used with great carefulness and responsibility.
+//
+VSSQ_PUBLIC const vssq_messenger_auth_t *
+vssq_messenger_auth(const vssq_messenger_t *self);
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.
@@ -108,5 +87,5 @@ extern "C" {
 
 
 //  @footer
-#endif // VSSQ_COMM_KIT_PRIVATE_H_INCLUDED
+#endif // VSSQ_MESSENGER_PRIVATE_H_INCLUDED
 //  @end

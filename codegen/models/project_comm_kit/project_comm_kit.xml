@@ -12,6 +12,7 @@
 
     <require project="common" feature="library"/>
     <require project="foundation" feature="library"/>
+    <require project="pythia" feature="library"/>
     <require project="core sdk" feature="library"/>
     <require project="pythia sdk" feature="library"/>
     <require project="keyknox sdk" feature="library"/>

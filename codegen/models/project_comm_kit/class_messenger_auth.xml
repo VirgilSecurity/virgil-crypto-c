@@ -1,4 +1,4 @@
-<class name="messenger auth">
+<class name="messenger auth" scope="private">
     Provides access to the messenger authentication endpoints.
 
     <require header="stdio.h" is_system="1"/>
@@ -202,10 +202,25 @@
 
 
     <method name="restore creds">
-        Pull an encrypted user credentials from the Keyknox and decrypt it.
+        Restore redentials from the backup and authenticate user.
+
+        Perfrom next steps:
+          1. Get base JWT usging part of pwd.
+          2. Pull encrypted credentials from the Keyknox.
+          3. Decrypt credentials using another part of pwd.
+          4. Use cerdentials to authenticate within XMPP server (Ejabberd).
 
         <argument name="username" class="str"/>
         <argument name="pwd" class="str"/>
+
+        <return enum="status"/>
+    </method>
+
+
+    <method name="remove creds backup" is_const="1">
+        Remove credentials beckup from the secure cloud storage (Keyknox).
+
+        Prerequisites: credentials must be set.
 
         <return enum="status"/>
     </method>

@@ -43,6 +43,7 @@
     </method>
 
 
+    <!-- Duplicate auth interface for convinience -->
     <method name="register">
         Register a new user with a given name.
 
@@ -61,7 +62,62 @@
     </method>
 
 
-    <method name="auth" is_const="1">
+    <method name="has creds" is_const="1">
+        Return true if user credentials are defined.
+
+        <return type="boolean"/>
+    </method>
+
+
+    <method name="creds" is_const="1">
+        Return user credentials.
+
+        <return class="messenger creds"/>
+    </method>
+
+
+    <method name="has backup creds" is_const="1">
+        Check whether current credentials were backed up.
+
+        Prerequisites: credentials must be set.
+
+        <argument name="error" class="error" access="readwrite"/>
+
+        <return type="boolean"/>
+    </method>
+
+
+    <method name="backup creds" is_const="1">
+        Encrypt the user credentials and push them to the secure cloud storage (Keyknox).
+
+        Prerequisites: credentials must be set.
+
+        <argument name="pwd" class="str"/>
+
+        <return enum="status"/>
+    </method>
+
+
+    <method name="authenticate with backup creds">
+        Authenticate user by using backup cerdentials.
+
+        <argument name="username" class="str"/>
+        <argument name="pwd" class="str"/>
+
+        <return enum="status"/>
+    </method>
+
+
+    <method name="remove creds backup" is_const="1">
+        Remove credentials beckup from the secure cloud storage (Keyknox).
+
+        Prerequisites: credentials must be set.
+
+        <return enum="status"/>
+    </method>
+
+
+    <method name="auth" is_const="1" scope="private">
         Return authentication module.
 
         It should be used with great carefulness and responsibility.
