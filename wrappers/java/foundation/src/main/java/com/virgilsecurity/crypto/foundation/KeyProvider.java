@@ -56,6 +56,13 @@ public class KeyProvider implements AutoCloseable {
     }
 
     /*
+    * Length of the public key identifier.
+    */
+    public int getKeyIdLen() {
+        return 8;
+    }
+
+    /*
     * Acquire C context.
     * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     */
@@ -196,6 +203,15 @@ public class KeyProvider implements AutoCloseable {
     */
     public byte[] exportPrivateKey(PrivateKey privateKey) throws FoundationException {
         return FoundationJNI.INSTANCE.keyProvider_exportPrivateKey(this.cCtx, privateKey);
+    }
+
+    /*
+    * Calculate identifier based on the given public key or private key.
+    *
+    * Note, that public key identifier equals to the private key identifier.
+    */
+    public byte[] calculateKeyId(Key key) throws FoundationException {
+        return FoundationJNI.INSTANCE.keyProvider_calculateKeyId(this.cCtx, key);
     }
 }
 

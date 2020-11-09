@@ -1683,6 +1683,56 @@ jobject wrapPadding (JNIEnv *jenv, jobject jobj, const vscf_impl_t /*1*/* c_obj)
     return (*jenv)->CallStaticObjectMethod(jenv, cls, methodID, c_ctx);
 }
 
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_binary_1toHexLen (JNIEnv *jenv, jobject jobj, jint jdataLen) {
+    jint ret = (jint) vscf_binary_to_hex_len(jdataLen /*a9*/);
+    return ret;
+}
+
+JNIEXPORT jstring JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_binary_1toHex (JNIEnv *jenv, jobject jobj, jbyteArray jdata) {
+    // Wrap input data
+    byte* data_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jdata, NULL);
+    vsc_data_t data = vsc_data(data_arr, (*jenv)->GetArrayLength(jenv, jdata));
+
+    // Wrap strings
+    vsc_str_buffer_t *hex_str = vsc_str_buffer_new_with_capacity(vscf_binary_to_hex_len(data.len/*a*/));
+
+    vscf_binary_to_hex(data /*a3*/, hex_str /*a6*/);
+    jstring ret = (*jenv)->NewStringUTF(jenv, vsc_str_buffer_chars(hex_str));
+    // Free resources
+    (*jenv)->ReleaseByteArrayElements(jenv, jdata, (jbyte*) data_arr, 0);
+
+    vsc_str_buffer_delete(hex_str);
+
+    return ret;
+}
+
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_binary_1fromHexLen (JNIEnv *jenv, jobject jobj, jint jhexLen) {
+    jint ret = (jint) vscf_binary_from_hex_len(jhexLen /*a9*/);
+    return ret;
+}
+
+JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_binary_1fromHex (JNIEnv *jenv, jobject jobj, jstring jhexStr) {
+    // Wrap strings
+    const char *hex_str_chr = (*jenv)->GetStringUTFChars(jenv, jhexStr, NULL);
+    vsc_str_t hex_str = vsc_str_from_str(hex_str_chr);
+
+    vsc_buffer_t *data = vsc_buffer_new_with_capacity(vscf_binary_from_hex_len(hex_str.len/*a*/));
+
+    vscf_status_t status = vscf_binary_from_hex(hex_str /*a6*/, data /*a3*/);
+    if (status != vscf_status_SUCCESS) {
+        throwFoundationException(jenv, jobj, status);
+        return NULL;
+    }
+    jbyteArray ret = (*jenv)->NewByteArray(jenv, vsc_buffer_len(data));
+    (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(data), (jbyte*) vsc_buffer_bytes(data));
+    // Free resources
+    (*jenv)->ReleaseStringUTFChars(jenv, jhexStr, (jbyte*) hex_str_chr);
+
+    vsc_buffer_delete(data);
+
+    return ret;
+}
+
 JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_oid_1fromAlgId (JNIEnv *jenv, jobject jobj, jobject jalgId) {
     // Wrap enums
     jclass alg_id_cls = (*jenv)->GetObjectClass(jenv, jalgId);
@@ -3854,6 +3904,37 @@ JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_Foundatio
     (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(out), (jbyte*) vsc_buffer_bytes(out));
     // Free resources
     vsc_buffer_delete(out);
+
+    return ret;
+}
+
+JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyProvider_1calculateKeyId (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jkey) {
+    // Cast class context
+    vscf_key_provider_t /*2*/* key_provider_ctx = *(vscf_key_provider_t /*2*/**) &c_ctx;
+    // Wrap Java interfaces
+    jclass key_cls = (*jenv)->GetObjectClass(jenv, jkey);
+    if (NULL == key_cls) {
+        VSCF_ASSERT("Class Key not found.");
+    }
+    jfieldID key_fidCtx = (*jenv)->GetFieldID(jenv, key_cls, "cCtx", "J");
+    if (NULL == key_fidCtx) {
+        VSCF_ASSERT("Class 'Key' has no field 'cCtx'.");
+    }
+    jlong key_c_ctx = (*jenv)->GetLongField(jenv, jkey, key_fidCtx);
+    vscf_impl_t */*6*/ key = *(vscf_impl_t */*6*/*)&key_c_ctx;
+
+    // Wrap input buffers
+    vsc_buffer_t *key_id = vsc_buffer_new_with_capacity(vscf_key_provider_KEY_ID_LEN);
+
+    vscf_status_t status = vscf_key_provider_calculate_key_id(key_provider_ctx /*a1*/, key /*a6*/, key_id /*a3*/);
+    if (status != vscf_status_SUCCESS) {
+        throwFoundationException(jenv, jobj, status);
+        return NULL;
+    }
+    jbyteArray ret = (*jenv)->NewByteArray(jenv, vsc_buffer_len(key_id));
+    (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(key_id), (jbyte*) vsc_buffer_bytes(key_id));
+    // Free resources
+    vsc_buffer_delete(key_id);
 
     return ret;
 }

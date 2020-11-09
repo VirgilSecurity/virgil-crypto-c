@@ -1,5 +1,5 @@
 .template 0
-#   Copyright (C) 2015-2019 Virgil Security Inc.
+#   Copyright (C) 2015-2010 Virgil Security Inc.
 #
 #   All rights reserved.
 #
@@ -120,7 +120,7 @@ function go_derive_buffer_length_getter (class, method, argument)
 
             my.arg_name = go_derive_argument_name_str (proxy.argument)
 
-            if string_in (proxy.cast, "data_length")
+            if string_in (proxy.cast, "data_length, str_length")
                 my.proxy_args += "uint(len($(my.arg_name:)))"
             else
                 my.is_interface = "0"
@@ -564,6 +564,9 @@ function go_derive_instance_type (instance)
 
         elsif my.instance.class = "buffer"
             return "Data"
+
+        elsif my.instance.class = "str" | my.instance.class = "str buffer"
+            return "string"
 
         elsif my.instance.class = "error"
             return class_derive_c_instance_type (my.instance)
@@ -1087,6 +1090,9 @@ function go_map_instance_type (go_instance, instance)
         elsif my.instance.class = "buffer"
             my.go_instance.is_buffer = "1"
 
+        elsif my.instance.class = "str buffer"
+            my.go_instance.is_buffer = "1"
+
         elsif my.instance.class = "error"
             my.go_instance.is_error = "1"
             my.go_instance.method_reset = make_ref_c (make_id ("class error method reset"))
@@ -1416,7 +1422,9 @@ function go_create_func_declaration (class, method, destination, go_project, met
                 go_create_argument (argument, go_func, my.go_project, my.meta)
             endif
 
-            if string_in (argument.class, "buffer") & string_in (argument.access, "readwrite, writeonly")
+            if (string_in (argument.class, "buffer") & string_in (argument.access, "readwrite, writeonly")) \
+                | string_equal (argument.class, "str buffer")
+
                 go_create_return_from_argument (my.class, my.method, argument, go_func, my.go_project, my.meta)
             endif
         endfor
@@ -1630,7 +1638,7 @@ function go_create_return_from_argument (class, method, argument, destination, g
         go_map_instance (go_return, my.argument)
         go_return.was_argument = "1"
 
-        if string_equal (my.argument.class, "buffer")
+        if string_equal (my.argument.class, "buffer") | string_equal (my.argument.class, "str buffer")
             go_return.length_getter = go_derive_buffer_length_getter (my.class, my.method, my.argument)
         endif
 
@@ -2271,6 +2279,9 @@ function go_format_c_proxy_args (class, method)
         elsif string_equal (argument.class, "buffer")
             my.proxy_arg = "$(my.arg_name:)Buf.ctx"
 
+        elsif string_equal (argument.class, "str buffer")
+            my.proxy_arg = "$(my.arg_name:)Buf"
+
         elsif string_equal (argument.class, "error")
             my.proxy_arg = "&$(my.arg_name:)"
 
@@ -2279,7 +2290,11 @@ function go_format_c_proxy_args (class, method)
                 my.proxy_arg = "$(my.arg_name:)Copy"
             else
                 my.arg_c_type = class_derive_c_instance_type (argument)
-                my.proxy_arg = "(*C.$(my.arg_c_type:))(unsafe.Pointer($(my.arg_name:).Ctx()))"
+                if string_equal (argument.class, "str")
+                  my.proxy_arg = "$(my.arg_name:)Str"
+                else
+                  my.proxy_arg = "(*C.$(my.arg_c_type:))(unsafe.Pointer($(my.arg_name:).Ctx()))"
+                endif
             endif
 
         elsif defined (argument.enum)
@@ -2338,22 +2353,36 @@ function go_wrap_c_proxy_call (go_func, proxy_call, proxy_return_type, proxy_ret
     endfor
 
     # Wrap strings.
-    for my.go_func.go_argument where is_true (0.is_string)
+    my.str_method_from_str = "C.$(make_ref_c (make_id ("project", "common", "class", "str", "method", "from str")))"
+    for my.go_func.go_argument where string_equal (0.type, "string")
         go_create_import ("unsafe", "unsafe", go_module)
 
         my.string_name = "$(go_argument.name:)Str"
 
-        my.strings_init ?= ""
-        my.strings_init += format_left("\
-            $(my.string_name:) := C.CString($(go_argument.name:))
-            defer C.free(unsafe.Pointer($(my.string_name:)))
-        ")
+        if is_true (go_argument.is_string)
+          # type = string
+          my.strings_init ?= ""
+          my.strings_init += format_left("\
+              $(my.string_name:) := C.CString($(go_argument.name:))
+              defer C.free(unsafe.Pointer($(my.string_name:)))
+          ")
+        else
+          # class = str
+          my.strings_init ?= ""
+          my.strings_init += format_left("\
+              $(go_argument.name:)Char := C.CString($(go_argument.name:))
+              defer C.free(unsafe.Pointer($(go_argument.name:)Char))
+              $(my.string_name:) := $(my.str_method_from_str:)($(go_argument.name:)Char)
+          ")
+        endif
     endfor
 
     # Wrap output buffers.
     my.buffer_method_init = "C..(c_project_common_class_buffer_method_init)"
     my.buffer_method_use = "C..(c_project_common_class_buffer_method_use)"
-    for my.go_func.go_return where 0.type = "Data" & is_true_both (0.is_buffer, 0.was_argument)
+    my.str_buffer_method_init = "C.$(make_ref_c (make_id ("project", "common", "class", "str buffer", "method", "new with capacity")))"
+    my.str_buffer_method_delete = "C.$(make_ref_c (make_id ("project", "common", "class", "str buffer", "method", "delete")))"
+    for my.go_func.go_return where string_in (0.type, "Data, string") & is_true_both (0.is_buffer, 0.was_argument)
         if ! defined (go_return.length_getter)
             echo_debug_item (my.go_func)
         endif
@@ -2362,14 +2391,21 @@ function go_wrap_c_proxy_call (go_func, proxy_call, proxy_return_type, proxy_ret
         my.buffer_name = go_return.name ? "result"
 
         my.buffers_instantiation ?= ""
-        my.buffer_err_args = go_format_result_nil_args ("$(my.buffer_name:)BufErr", my.go_func, my.go_project)
-        my.buffers_instantiation += terminator + format_left ("\
-            $(my.buffer_name:)Buf, $(my.buffer_name:)BufErr := newBuffer(int($(go_return.length_getter:)))
-            if $(my.buffer_name:)BufErr != nil {
-                return $(my.buffer_err_args:)
-            }
-            defer $(my.buffer_name:)Buf.delete()
-        ")
+        if go_return.type = "string"
+          my.buffers_instantiation += terminator + format_left ("\
+              $(my.buffer_name:)Buf := $(my.str_buffer_method_init:)((C.size_t)($(go_return.length_getter:)))
+              defer $(my.str_buffer_method_delete:)($(my.buffer_name:)Buf)
+          ")
+        else
+          my.buffer_err_args = go_format_result_nil_args ("$(my.buffer_name:)BufErr", my.go_func, my.go_project)
+          my.buffers_instantiation += terminator + format_left ("\
+              $(my.buffer_name:)Buf, $(my.buffer_name:)BufErr := newBuffer(int($(go_return.length_getter:)))
+              if $(my.buffer_name:)BufErr != nil {
+                  return $(my.buffer_err_args:)
+              }
+              defer $(my.buffer_name:)Buf.delete()
+          ")
+        endif
 
         my.buffers_init ?= ""
         my.buffers_shrink ?= ""
@@ -2414,7 +2450,7 @@ function go_wrap_c_proxy_call (go_func, proxy_call, proxy_return_type, proxy_ret
         my.keep_alive += terminator + format_left("\
             runtime.KeepAlive(obj)")
     endif
-    for my.go_func.go_argument where (is_true (0.is_class) | is_true (0.is_interface)) & ! string_in (0.type, "Data") & ! is_true (0.is_error)
+    for my.go_func.go_argument where (is_true (0.is_class) | is_true (0.is_interface)) & ! string_in (0.type, "Data, str") & ! is_true (0.is_error)
         go_create_import ("", "runtime", my.go_module)
 
         my.keep_alive ?= ""
@@ -2519,7 +2555,12 @@ function go_wrap_c_returned_value (go_return, go_module, go_project)
         endif
 
     elsif is_true (0.is_class) & is_true (0.is_buffer)
-        return "$(my.name:)Buf.getData() /* r7 */"
+        if string_equal(0.type, "string")
+            my.str_buffer_method_chars = "$(make_ref_c (make_id ("project", "common", "class", "str buffer", "method", "chars")))"
+            return "C.GoString(C.$(my.str_buffer_method_chars:)($(my.name:)Buf)) /* r7.1 */"
+        else
+            return "$(my.name:)Buf.getData() /* r7 */"
+        endif
 
     elsif is_true (0.is_enum)
         return "$(my.type:)($(my.name:)) /* r8 */"

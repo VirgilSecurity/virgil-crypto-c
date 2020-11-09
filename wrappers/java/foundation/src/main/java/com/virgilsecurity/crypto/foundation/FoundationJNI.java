@@ -51,6 +51,28 @@ public class FoundationJNI {
     }
 
     /*
+    * Return buffer length enaugh to hold hexed data.
+    */
+    public native int binary_toHexLen(int dataLen);
+
+    /*
+    * Converts byte array to hex.
+    * Output length should be twice bigger then input.
+    */
+    public native String binary_toHex(byte[] data);
+
+    /*
+    * Return buffer length enaugh to hold unhexed data.
+    */
+    public native int binary_fromHexLen(int hexLen);
+
+    /*
+    * Converts hex string to byte array.
+    * Output length should be at least half of the input hex string.
+    */
+    public native byte[] binary_fromHex(String hexStr) throws FoundationException;
+
+    /*
     * Return OID for given algorithm identifier.
     */
     public native byte[] oid_fromAlgId(AlgId algId);
@@ -724,6 +746,13 @@ public class FoundationJNI {
     * Precondition: private key must be exportable.
     */
     public native byte[] keyProvider_exportPrivateKey(long cCtx, PrivateKey privateKey) throws FoundationException;
+
+    /*
+    * Calculate identifier based on the given public key or private key.
+    *
+    * Note, that public key identifier equals to the private key identifier.
+    */
+    public native byte[] keyProvider_calculateKeyId(long cCtx, Key key) throws FoundationException;
 
     public native long signer_new();
 

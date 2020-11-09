@@ -51,6 +51,8 @@ public class FoundationException extends RuntimeException {
 
     public static final int ERROR_SMALL_BUFFER = -101;
 
+    public static final int HEX_TO_BYTES_FAILED = -102;
+
     public static final int ERROR_UNSUPPORTED_ALGORITHM = -200;
 
     public static final int ERROR_AUTH_FAILED = -201;
@@ -213,6 +215,8 @@ public class FoundationException extends RuntimeException {
             return "Define that error code from one of third-party module was not handled. Note, this error should not be returned if assertions is enabled.";
         case ERROR_SMALL_BUFFER:
             return "Buffer capacity is not enough to hold result.";
+        case HEX_TO_BYTES_FAILED:
+            return "Convertion from HEX string to the byte array failed.";
         case ERROR_UNSUPPORTED_ALGORITHM:
             return "Unsupported algorithm.";
         case ERROR_AUTH_FAILED:

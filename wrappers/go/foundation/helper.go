@@ -20,12 +20,7 @@ func helperWrapData(data []byte) C.vsc_data_t {
 }
 
 func helperExtractData(data C.vsc_data_t) []byte {
-    newSize := data.len
-    //FIXME Verify data is not corrupted
-    //if newSize < len(data.bytes) {
-    //    panic("Underlying C buffer corrupt the memory.")
-    //}
-    return C.GoBytes(unsafe.Pointer(data.bytes), C.int(newSize))
+    return C.GoBytes(unsafe.Pointer(data.bytes), C.int(data.len))
 }
 
 type buffer struct {

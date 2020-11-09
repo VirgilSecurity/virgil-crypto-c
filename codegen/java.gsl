@@ -1,5 +1,5 @@
 .template 0
-#   Copyright (C) 2015-2019 Virgil Security Inc.
+#   Copyright (C) 2015-2020 Virgil Security Inc.
 #
 #   All rights reserved.
 #
@@ -487,6 +487,9 @@ function java_derive_instance_type (instance)
         elsif my.instance.class = "buffer"
             return "byte[]"
 
+        elsif string_in (my.instance.class, "str") | string_equal (my.instance.class, "str buffer")
+            return "String"
+
         elsif is_ref (my.instance.class) | defined (my.instance.library)
             return java_lang_ref (my.instance.class)
 
@@ -639,6 +642,9 @@ function java_map_instance_type (java_instance, instance)
             my.java_instance.is_data = "1"
 
         elsif my.instance.class = "buffer"
+            my.java_instance.is_buffer = "1"
+
+        elsif my.instance.class = "str buffer"
             my.java_instance.is_buffer = "1"
 
         elsif my.instance.class = "error"
@@ -1028,10 +1034,13 @@ function java_create_method_declaration (class, method, destination, java_projec
 
         for my.method.argument
             if argument.access <> "writeonly"
+                echo_debug ("Create argument '$(argument.name:)' for method '$(my.method.name:)'", my)
                 java_create_argument (argument, java_method, my.java_project, my.meta)
             endif
 
-            if string_in (argument.class, "buffer") & string_in (argument.access, "readwrite, writeonly")
+            if (string_in (argument.class, "buffer") & string_in (argument.access, "readwrite, writeonly")) \
+                | string_equal (argument.class, "str buffer")
+
                 java_create_return_from_argument (my.class, my.method, argument, java_method, my.java_project, my.meta)
             endif
         endfor

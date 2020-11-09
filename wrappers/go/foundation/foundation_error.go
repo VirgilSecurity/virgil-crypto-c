@@ -32,6 +32,10 @@ const (
     */
     FoundationErrorErrorSmallBuffer int = -101
     /*
+    * Convertion from HEX string to the byte array failed.
+    */
+    FoundationErrorHexToBytesFailed int = -102
+    /*
     * Unsupported algorithm.
     */
     FoundationErrorErrorUnsupportedAlgorithm int = -200
@@ -328,6 +332,8 @@ func FoundationErrorHandleStatus(status C.vscf_status_t) error {
             return &FoundationError {int(status), "Define that error code from one of third-party module was not handled. Note, this error should not be returned if assertions is enabled."}
         case C.vscf_status_ERROR_SMALL_BUFFER:
             return &FoundationError {int(status), "Buffer capacity is not enough to hold result."}
+        case C.vscf_status_HEX_TO_BYTES_FAILED:
+            return &FoundationError {int(status), "Convertion from HEX string to the byte array failed."}
         case C.vscf_status_ERROR_UNSUPPORTED_ALGORITHM:
             return &FoundationError {int(status), "Unsupported algorithm."}
         case C.vscf_status_ERROR_AUTH_FAILED:

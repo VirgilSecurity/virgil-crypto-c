@@ -1,5 +1,5 @@
 .template 0
-#   Copyright (C) 2015-2019 Virgil Security Inc.
+#   Copyright (C) 2015-2020 Virgil Security Inc.
 #
 #   All rights reserved.
 #
@@ -131,7 +131,7 @@ function java_create_class_method (class, method, java_class, java_project, meta
     check_arguments (my, "class, method, java_class, java_project, meta", my)
 
     # Create declaration
-    echo_debug ("Create method $(my.method.name:) for Java class $(my.java_class.name:) by class $(my.class.name:)", my)
+    echo_debug ("Create method '$(my.method.name:)' for Java class '$(my.java_class.name:)' by class '$(my.class.name:)'", my)
     my.java_method = java_create_method_declaration (my.class, my.method, my.java_class, my.java_project, my.meta)
 
     #   Wrap proxy call

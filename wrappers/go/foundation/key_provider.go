@@ -13,6 +13,12 @@ import "runtime"
 type KeyProvider struct {
     cCtx *C.vscf_key_provider_t /*ct2*/
 }
+const (
+    /*
+    * Length of the public key identifier.
+    */
+    KeyProviderKeyIdLen uint = 8
+)
 
 /* Handle underlying C context. */
 func (obj *KeyProvider) Ctx() uintptr {
@@ -332,4 +338,31 @@ func (obj *KeyProvider) ExportPrivateKey(privateKey PrivateKey) ([]byte, error) 
     runtime.KeepAlive(privateKey)
 
     return outBuf.getData() /* r7 */, nil
+}
+
+/*
+* Calculate identifier based on the given public key or private key.
+*
+* Note, that public key identifier equals to the private key identifier.
+*/
+func (obj *KeyProvider) CalculateKeyId(key Key) ([]byte, error) {
+    keyIdBuf, keyIdBufErr := newBuffer(int(KeyProviderKeyIdLen /* lg4 */))
+    if keyIdBufErr != nil {
+        return nil, keyIdBufErr
+    }
+    defer keyIdBuf.delete()
+
+
+    proxyResult := /*pr4*/C.vscf_key_provider_calculate_key_id(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(key.Ctx())), keyIdBuf.ctx)
+
+    err := FoundationErrorHandleStatus(proxyResult)
+    if err != nil {
+        return nil, err
+    }
+
+    runtime.KeepAlive(obj)
+
+    runtime.KeepAlive(key)
+
+    return keyIdBuf.getData() /* r7 */, nil
 }

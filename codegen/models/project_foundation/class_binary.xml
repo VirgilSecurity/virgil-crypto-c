@@ -18,7 +18,7 @@
         <argument name="data" class="data"/>
         <argument name="hex str" class="str buffer">
             <length method="to hex len">
-                <propxy argument="data" to="data len" cast="data_length"/>
+                <proxy argument="data" to="data len" cast="data_length"/>
             </length>
         </argument>
     </method>
@@ -41,7 +41,7 @@
 
         <argument name="data" class="buffer">
             <length method="from hex len">
-                <propxy argument="hex str" to="hex len" cast="str_length"/>
+                <proxy argument="hex str" to="hex len" cast="str_length"/>
             </length>
         </argument>
 

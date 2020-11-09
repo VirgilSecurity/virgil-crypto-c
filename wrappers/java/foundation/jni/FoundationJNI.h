@@ -41,6 +41,14 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_binary_1toHexLen (JNIEnv *, jobject, jint);
+
+JNIEXPORT jstring JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_binary_1toHex (JNIEnv *, jobject, jbyteArray);
+
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_binary_1fromHexLen (JNIEnv *, jobject, jint);
+
+JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_binary_1fromHex (JNIEnv *, jobject, jstring);
+
 JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_oid_1fromAlgId (JNIEnv *, jobject, jobject);
 
 JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_oid_1toAlgId (JNIEnv *, jobject, jbyteArray);
@@ -318,6 +326,8 @@ JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_Foundatio
 JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyProvider_1exportedPrivateKeyLen (JNIEnv *, jobject, jlong, jobject);
 
 JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyProvider_1exportPrivateKey (JNIEnv *, jobject, jlong, jobject);
+
+JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyProvider_1calculateKeyId (JNIEnv *, jobject, jlong, jobject);
 
 JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_signer_1new__ (JNIEnv *, jobject);
 

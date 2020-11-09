@@ -1,5 +1,5 @@
 .template 0
-#   Copyright (C) 2015-2019 Virgil Security Inc.
+#   Copyright (C) 2015-2020 Virgil Security Inc.
 #
 #   All rights reserved.
 #
@@ -177,6 +177,9 @@ function java_derive_c_instance_type (instance)
         elsif my.instance.class = "buffer"
             return "jbyteArray"
 
+        elsif my.instance.class = "str" | my.instance.class = "str buffer"
+            return "jstring"
+
         else
             return "jobject"
 
@@ -243,6 +246,9 @@ function java_derive_c_field_descriptor (instance, java_project)
 
         elsif my.instance.class = "buffer"
             return "_3B"
+
+        elsif my.instance.class = "str | my.instance.class = str buffer"
+            return "S"
 
         else
             return "L$(my.java_project.package:c)_$(my.instance.class:Pascal)_2"
@@ -533,7 +539,7 @@ function java_derive_buffer_length_getter (class, method, argument, java_project
 
             my.proxy_args += java_derive_c_argument_name_str (proxy.argument)
 
-            if string_in (proxy.cast, "data_length")
+            if string_in (proxy.cast, "data_length, str_length")
                 my.proxy_args += ".len"
             endif
 
@@ -571,7 +577,7 @@ function java_derive_buffer_length_getter (class, method, argument, java_project
             return "$(my.proxy_constant:)"
         endif
     elsif defined (my.length.argument)
-        if string_in (my.length.cast, "data_length")
+        if string_in (my.length.cast, "data_length, str_length")
             my.proxy_argument = "$(java_derive_argument_name_str (my.length.argument):).len"
         else
             my.proxy_argument = "j$(java_derive_argument_name_str (my.length.argument):)"
@@ -811,7 +817,7 @@ function java_wrap_c_method_arguments (method, java_project, meta)
     endfor
 
     # Wrap Java interfaces
-    for my.method.argument where defined (0.interface) & ! string_in (0.class, "data, buffer, error")
+    for my.method.argument where defined (0.interface) & ! string_in (0.class, "data, buffer, error, str") & ! string_equal (0.class, "str buffer")
         my.init_interfaces ?= "// Wrap Java interfaces"
         my.class_path = my.java_project.package_dir
         #TODO get class name by ctx
@@ -833,7 +839,7 @@ function java_wrap_c_method_arguments (method, java_project, meta)
     endfor
 
     # Wrap Java classes
-    for my.method.argument where is_instance_of_generic_class(argument)
+    for my.method.argument where is_instance_of_generic_class(argument) & ! string_equal (0.class, "str") & ! string_equal (0.class, "str buffer")
         my.init_classes ?= "// Wrap Java classes"
         my.class_path = my.java_project.package_dir
         my.class_name = java_derive_class_name_str(argument.class ? argument.impl)
@@ -918,6 +924,44 @@ function java_create_c_class_method_call (class, method, java_class, java_method
         my.free_resources += format_left("\
             (*jenv)->ReleaseByteArrayElements(jenv, $(my.data_jni_name:), (jbyte*) $(my.data_name:)_arr, 0);
         ") + terminator
+    endfor
+
+    # Wrap strings
+    for my.method.argument where defined (0.class) & (string_equal (0.class, "str") |  string_equal (0.class, "str buffer"))
+        my.init_data ?= ""
+        my.init_data += terminator + "// Wrap strings"
+        my.free_resources ?= terminator + "// Free resources"
+
+        my.str_name = java_derive_c_instance_name (argument)
+        my.str_jni_name = "j$(argument.name:Camel)"
+
+        if argument.class = "str"
+            # Input argument
+            my.struct_str = "$(make_ref_c (make_id ("project", "common", "class", "str", "struct", "str")))"
+            my.method_str_from_str = "$(make_ref_c (make_id ("project", "common", "class", "str", "method", "from str")))"
+            my.init_data += format_left("\
+                const char *$(my.str_name:)_chr = (*jenv)->GetStringUTFChars(jenv, $(my.str_jni_name:), NULL);
+                $(my.struct_str:) $(my.str_name:) = $(my.method_str_from_str:)($(my.str_name:)_chr);
+            ") + terminator
+
+            my.free_resources += format_left("\
+                (*jenv)->ReleaseStringUTFChars(jenv, $(my.str_jni_name:), (jbyte*) $(my.str_name:)_chr);
+            ") + terminator
+        else
+            # Output argument
+            my.struct_str_buffer = "$(make_ref_c (make_id ("project", "common", "class", "str buffer", "struct", "str buffer")))"
+            my.method_str_buffer_init = "$(make_ref_c (make_id ("project", "common", "class", "str buffer", "method", "new with capacity")))"
+            my.method_str_buffer_delete = "$(make_ref_c (make_id ("project", "common", "class", "str buffer", "method", "delete")))"
+            my.length_getter = java_derive_buffer_length_getter (my.class, my.method, argument, my.java_project)
+
+            my.init_data += format_left("\
+                $(my.struct_str_buffer:) *$(my.str_name:) = $(my.method_str_buffer_init:)($(my.length_getter:));
+            ") + terminator
+            
+            my.free_resources += format_left("\
+                $(my.method_str_buffer_delete:)($(my.str_name:));
+            ") + terminator
+        endif
     endfor
 
     # Wrap input buffers
@@ -1075,7 +1119,7 @@ function java_create_c_class_method_call (class, method, java_class, java_method
         else
             my.c_return_type = c_method->c_return.type
 
-            if string_in (my.c_return_type, "jbyte, jint, jlong, jboolean, jstring")
+            if string_in (my.c_return_type, "jbyte, jint, jlong, jboolean")
                 # Just return the value
                 my.operation_call = format_left("\
                     $(my.c_return_type:) ret = ($(my.c_return_type:)) $(my.proxy_call:);
@@ -1106,6 +1150,25 @@ function java_create_c_class_method_call (class, method, java_class, java_method
                             ret = (*jenv)->NewByteArray(jenv, proxyResult.len);
                             (*jenv)->SetByteArrayRegion (jenv, ret, 0, proxyResult.len, (jbyte*) proxyResult.bytes);
                         }
+                    ")
+                endif
+            elsif string_in (my.c_return_type, "jstring")
+                # Create and fill a char array
+                if defined (my.method->return) & string_equal (my.method->return.class, "str buffer")
+                    my.result_str_name = "proxyResult"
+                else
+                    for my.method.argument
+                        if string_equal (argument.class, "str buffer")
+                            my.result_str_name = java_derive_c_instance_name (argument)
+                        endif
+                    endfor
+                endif
+
+                if defined (my.result_str_name)
+                    # Buffer
+                    my.method_str_buffer_chars = "$(make_ref_c (make_id ("project", "common", "class", "str buffer", "method", "chars")))"
+                    my.prepare_result = format_left("\
+                        jstring ret = (*jenv)->NewStringUTF(jenv, $(my.method_str_buffer_chars:)($(my.result_str_name:)));
                     ")
                 endif
             elsif string_in (my.c_return_type, "jobject")
@@ -1292,7 +1355,9 @@ function java_create_c_class_method (class, method, java_class, java_method, jav
                 java_create_c_argument (argument, c_method, my.java_project, my.meta)
             endif
 
-            if string_in (argument.class, "buffer") & string_in (argument.access, "readwrite, writeonly")
+            if (string_in (argument.class, "buffer") & string_in (argument.access, "readwrite, writeonly")) \
+                | string_equal (argument.class, "str buffer")
+
                 java_create_h_return_from_argument (my.class, my.method, argument, c_method, my.java_project, my.meta)
             endif
         endfor
@@ -1318,7 +1383,9 @@ function java_create_c_class_method (class, method, java_class, java_method, jav
                 java_create_c_argument (argument, c_method, my.java_project, my.meta)
             endif
 
-            if string_in (argument.class, "buffer") & string_in (argument.access, "readwrite, writeonly")
+            if (string_in (argument.class, "buffer") & string_in (argument.access, "readwrite, writeonly")) \
+                | string_equal (argument.class, "str buffer")
+
                 java_create_c_return_from_argument (my.class, my.method, argument, c_method, my.java_project, my.meta)
             endif
         endfor
@@ -1357,6 +1424,9 @@ function java_map_c_instance_type (c_instance, instance)
             my.c_instance.is_data = "1"
 
         elsif my.instance.class = "buffer"
+            my.c_instance.is_buffer = "1"
+
+        elsif my.instance.class = "str buffer"
             my.c_instance.is_buffer = "1"
 
         elsif my.instance.class = "error"
