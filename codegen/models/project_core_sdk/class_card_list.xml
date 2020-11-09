@@ -81,4 +81,5 @@
         <argument name="error" class="error"/>
 
         <return class="card"/>
-    </method></class>
+    </method>
+</class>
