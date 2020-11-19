@@ -664,7 +664,7 @@ vssc_json_object_add_array_value(vssc_json_object_t *self, vsc_str_t key, const 
 //
 //  Add array value with a given key.
 //
-VSSC_PRIVATE void
+VSSC_PUBLIC void
 vssc_json_object_add_array_value_disown(vssc_json_object_t *self, vsc_str_t key, vssc_json_array_t **value_ref) {
 
     VSSC_ASSERT_PTR(self);

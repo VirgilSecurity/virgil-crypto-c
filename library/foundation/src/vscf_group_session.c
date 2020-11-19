@@ -496,7 +496,7 @@ err:
 //
 VSCF_PUBLIC vscf_group_session_message_t *
 vscf_group_session_encrypt(
-        vscf_group_session_t *self, vsc_data_t plain_text, const vscf_impl_t *private_key, vscf_error_t *error) {
+        const vscf_group_session_t *self, vsc_data_t plain_text, const vscf_impl_t *private_key, vscf_error_t *error) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(self->last_epoch);
@@ -597,7 +597,7 @@ err1:
 //  Calculates size of buffer sufficient to store decrypted message
 //
 VSCF_PUBLIC size_t
-vscf_group_session_decrypt_len(vscf_group_session_t *self, const vscf_group_session_message_t *message) {
+vscf_group_session_decrypt_len(const vscf_group_session_t *self, const vscf_group_session_message_t *message) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(message);
@@ -611,7 +611,7 @@ vscf_group_session_decrypt_len(vscf_group_session_t *self, const vscf_group_sess
 //  Decrypts message
 //
 VSCF_PUBLIC vscf_status_t
-vscf_group_session_decrypt(vscf_group_session_t *self, const vscf_group_session_message_t *message,
+vscf_group_session_decrypt(const vscf_group_session_t *self, const vscf_group_session_message_t *message,
         const vscf_impl_t *public_key, vsc_buffer_t *plain_text) {
 
     VSCF_ASSERT_PTR(self);

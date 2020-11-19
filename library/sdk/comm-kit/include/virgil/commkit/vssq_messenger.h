@@ -57,7 +57,10 @@
 #include "vssq_messenger_config.h"
 #include "vssq_status.h"
 #include "vssq_messenger_creds.h"
+#include "vssq_messenger_user.h"
 #include "vssq_error.h"
+#include "vssq_messenger_user_list.h"
+#include "vssq_messenger_group.h"
 
 #include <virgil/crypto/foundation/vscf_random.h>
 
@@ -203,10 +206,18 @@ VSSQ_PUBLIC vssq_status_t
 vssq_messenger_authenticate(vssq_messenger_t *self, const vssq_messenger_creds_t *creds) VSSQ_NODISCARD;
 
 //
-//  Return true if user credentials are defined.
+//  Return true if a user is authenticated.
 //
 VSSQ_PUBLIC bool
-vssq_messenger_has_creds(const vssq_messenger_t *self);
+vssq_messenger_is_authenticated(const vssq_messenger_t *self);
+
+//
+//  Return information about current user.
+//
+//  Prerequisites: user should be authenticated.
+//
+VSSQ_PUBLIC const vssq_messenger_user_t *
+vssq_messenger_user(const vssq_messenger_t *self);
 
 //
 //  Return user credentials.
@@ -217,7 +228,7 @@ vssq_messenger_creds(const vssq_messenger_t *self);
 //
 //  Check whether current credentials were backed up.
 //
-//  Prerequisites: credentials must be set.
+//  Prerequisites: user should be authenticated.
 //
 VSSQ_PUBLIC bool
 vssq_messenger_has_backup_creds(const vssq_messenger_t *self, vssq_error_t *error);
@@ -225,7 +236,7 @@ vssq_messenger_has_backup_creds(const vssq_messenger_t *self, vssq_error_t *erro
 //
 //  Encrypt the user credentials and push them to the secure cloud storage (Keyknox).
 //
-//  Prerequisites: credentials must be set.
+//  Prerequisites: user should be authenticated.
 //
 VSSQ_PUBLIC vssq_status_t
 vssq_messenger_backup_creds(const vssq_messenger_t *self, vsc_str_t pwd) VSSQ_NODISCARD;
@@ -239,10 +250,29 @@ vssq_messenger_authenticate_with_backup_creds(vssq_messenger_t *self, vsc_str_t 
 //
 //  Remove credentials beckup from the secure cloud storage (Keyknox).
 //
-//  Prerequisites: credentials must be set.
+//  Prerequisites: user should be authenticated.
 //
 VSSQ_PUBLIC vssq_status_t
 vssq_messenger_remove_creds_backup(const vssq_messenger_t *self) VSSQ_NODISCARD;
+
+//
+//  Create a new group for a group messenging.
+//
+//  Prerequisites: user should be authenticated.
+//  Note, group owner is added to the participants automatically.
+//
+VSSQ_PUBLIC vssq_messenger_group_t *
+vssq_messenger_create_group(const vssq_messenger_t *self, vsc_str_t group_id,
+        const vssq_messenger_user_list_t *participants, vssq_error_t *error);
+
+//
+//  Load an existing group for a group messenging.
+//
+//  Prerequisites: user should be authenticated.
+//
+VSSQ_PUBLIC vssq_messenger_group_t *
+vssq_messenger_load_group(const vssq_messenger_t *self, vsc_str_t group_id, const vssq_messenger_user_t *owner,
+        vssq_error_t *error);
 
 
 // --------------------------------------------------------------------------

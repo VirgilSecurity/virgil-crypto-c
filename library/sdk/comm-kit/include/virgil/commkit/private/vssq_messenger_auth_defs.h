@@ -57,11 +57,11 @@
 #include "vssq_atomic.h"
 #include "vssq_messenger_config.h"
 #include "vssq_messenger_creds.h"
+#include "vssq_messenger_user.h"
 #include "vssq_ejabberd_jwt.h"
 
 #if !VSSQ_IMPORT_PROJECT_CORE_SDK_FROM_FRAMEWORK
 #   include <virgil/sdk/core/vssc_jwt.h>
-#   include <virgil/sdk/core/vssc_card.h>
 #endif
 
 #if !VSSQ_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
@@ -69,7 +69,6 @@
 #endif
 
 #if VSSQ_IMPORT_PROJECT_CORE_SDK_FROM_FRAMEWORK
-#   include <VSSC/vssc_card.h>
 #   include <VSSC/vssc_jwt.h>
 #endif
 
@@ -113,7 +112,7 @@ struct vssq_messenger_auth_t {
 
     const vssq_messenger_creds_t *creds;
 
-    vssc_card_t *card;
+    vssq_messenger_user_t *user;
 
     vssc_jwt_t *base_jwt;
 

@@ -1,0 +1,155 @@
+<class name="messenger group">
+    Contains information about the group and performs encryption and decryption operations.
+
+    <require class="str buffer" project="common" api="defs"/>
+    <require impl="sha512" project="foundation"/>
+    <require class="group session" project="foundation"/>
+    <require class="group session ticket" project="foundation"/>
+    <require class="string list" project="core sdk"/>
+    <require class="messenger group epoch list" api="private"/>
+    <require module="atomic"/>
+
+    <property name="epoch keyknox storage" class="messenger group epoch keyknox storage"/>
+    <property name="owner" class="messenger user" access="readonly"/>
+    <property name="epochs" class="messenger group epoch list"/>
+    <property name="group id" class="str mutable"/>
+    <property name="group session" class="group session" project="foundation"/>
+
+    <dependency name="random" interface="random" project="foundation" has_observers="1"/>
+    <dependency name="auth" class="messenger auth" has_observers="1"/>
+
+
+    <constant name="session id len" value="32"/>
+
+
+    <method name="owner" is_const="1">
+        Return user info of the group owner.
+
+        <return class="messenger user"/>
+    </method>
+
+
+    <method name="create" scope="private">
+        Create a new group and register it in the cloud (Keyknox).
+
+        <argument name="group id" class="str"/>
+        <argument name="participants" class="messenger user list"/>
+
+        <return enum="status"/>
+    </method>
+
+
+    <method name="load" scope="private">
+        Load an existing group from the cloud (Keyknox).
+
+        <argument name="group id" class="str"/>
+        <argument name="owner" class="messenger user"/>
+
+        <return enum="status"/>
+    </method>
+
+
+    <method name="remove">
+        Delete group.
+
+        <return enum="status"/>
+    </method>
+
+
+    <method name="encrypted message len" is_const="1">
+        Return a buffer length enough to hold an encrypted message.
+
+        <argument name="plaintext len" type="size"/>
+
+        <return type="size"/>
+    </method>
+
+
+    <method name="encrypt message" is_const="1">
+        Encrypt a group message.
+
+        <argument name="plaintext" class="str"/>
+
+        <argument name="out" class="buffer">
+            <length method="encrypted message len">
+                <proxy argument="plaintext" to="plaintext len" cast="str_length"/>
+            </length>
+        </argument>
+
+        <return enum="status"/>
+    </method>
+
+
+    <method name="decrypted message len" is_const="1">
+        Return a buffer length enough to hold a decrypted message.
+
+        <argument name="encrypted len" type="size"/>
+
+        <return type="size"/>
+    </method>
+
+
+    <method name="decrypt message" is_const="1">
+        Decrypt a group message.
+
+        <argument name="encrypted message" class="data"/>
+
+        <argument name="from user" class="messenger user"/>
+
+        <argument name="out" class="str buffer">
+            <length method="decrypted message len">
+                <proxy argument="encrypted message" to="encrypted len" cast="data_length"/>
+            </length>
+        </argument>
+
+        <return enum="status"/>
+    </method>
+
+
+    <!-- Private -->
+    <method name="calculate session id" is_static="1" declaration="private">
+        Calculate session id based on the group id.
+
+        <argument name="group id" class="str"/>
+
+        <return class="buffer" access="disown"/>
+    </method>
+
+
+    <method name="generate initial epoch" is_const="1" declaration="private">
+        Generate initial epoch for a new group.
+
+        <argument name="session id" class="data"/>
+        <argument name="participants" class="messenger user list"/>
+        <argument name="error" class="error" access="readwrite"/>
+
+        <return class="messenger group epoch" access="disown"/>
+    </method>
+
+
+    <method name="load epoch if needed" is_const="1" scope="private">
+        Load requested epoch if needed and store it within cache.
+
+        Note, method is thread-safe.
+
+        <argument name="epoch num" type="size"/>
+
+        <return enum="status"/>
+    </method>
+
+
+    <method name="map foundation status" is_static="1" declaration="private">
+        Map status from the "foundation" library to a status related to the groups.
+
+        <argument name="foundation status" enum="status" project="foundation"/>
+
+        <return enum="status"/>
+    </method>
+
+
+    <method name="check permission modify" is_const="1">
+        Check if current user can modify a group.
+
+        <return type="boolean"/>
+    </method>
+</class>

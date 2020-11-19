@@ -1,0 +1,106 @@
+<class name="messenger group epoch" scope="internal">
+    Contains credentials of a group session related to the specifc epoch.
+
+    <require class="json object" project="core sdk"/>
+    <require class="json object" project="core sdk" api="private"/>
+    <require class="json array" project="core sdk"/>
+    <require class="json array" project="core sdk" api="private"/>
+
+    <constant name="k json key group message" type="string" visibility="private">
+        JSON key: group_message
+
+        <value value="group_message"/>
+    </constant>
+
+    <constant name="k json key participants" type="string" visibility="private">
+        JSON key: participants
+
+        <value value="participants"/>
+    </constant>
+
+
+    <property name="group info message" class="group session message" project="foundation" access="readonly"/>
+    <property name="participant identities" class="string list" project="core sdk"/>
+
+
+    <constructor name="with disown" scope="private">
+        Create fully defined object.
+
+        <argument name="group info message" class="group session message" project="foundation"/>
+        <argument name="participant identities" class="string list" project="core sdk" access="disown"/>
+    </constructor>
+
+
+    <constructor name="with all disown" declaration="private">
+        Create fully defined object.
+
+        <argument name="group info message" class="group session message" project="foundation" access="disown"/>
+        <argument name="participant identities" class="string list" project="core sdk" access="disown"/>
+    </constructor>
+
+
+    <method name="num" is_const="1">
+        Return group epoch serial number.
+
+        <return type="size"/>
+    </method>
+
+
+    <method name="group info message" is_const="1">
+        Return group epoch info and credentials.
+
+        <return class="group session message" project="foundation"/>
+    </method>
+
+
+    <method name="participant identities" is_const="1">
+        Return participant identities (Card's identities) that have access to this epoch.
+
+        <return class="string list" project="core sdk"/>
+    </method>
+
+
+    <method name="to json" is_const="1">
+        Return epoch as JSON object.
+
+        JSON format:
+        {
+            "group_message" : "BASE64(GroupMessage)"
+            "participants" : ["identity1", "identity2", ...]
+        }
+
+        <return class="json object" project="core sdk" access="disown"/>
+    </method>
+
+
+    <method name="from json" is_static="1">
+        Parse epoch from JSON.
+
+        JSON format:
+        {
+            "group_message" : "BASE64(GroupMessage)"
+            "participants" : ["identity1", "identity2", ...]
+        }
+
+        <argument name="json obj" class="json object" project="core sdk"/>
+        <argument name="error" class="error" access="readwrite"/>
+
+        <return class="self" access="disown"/>
+    </method>
+
+
+    <method name="from json str" is_static="1">
+        Parse epoch from JSON string.
+
+        JSON format:
+        {
+            "group_message" : "BASE64(GroupMessage)"
+            "participants" : ["identity1", "identity2", ...]
+        }
+
+        <argument name="json str" class="str"/>
+        <argument name="error" class="error" access="readwrite"/>
+
+        <return class="self" access="disown"/>
+    </method>
+</class>

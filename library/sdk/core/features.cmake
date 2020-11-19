@@ -56,6 +56,7 @@ option(VSSC_JSON_OBJECT "Enable class 'json object'." ON)
 option(VSSC_JSON_ARRAY "Enable class 'json array'." ON)
 option(VSSC_UNIX_TIME "Enable class 'unix time'." ON)
 option(VSSC_STRING_LIST "Enable class 'string list'." ON)
+option(VSSC_NUMBER_LIST "Enable class 'number list'." ON)
 option(VSSC_BASE64_URL "Enable class 'base64 url'." ON)
 option(VSSC_JWT "Enable class 'jwt'." ON)
 option(VSSC_JWT_HEADER "Enable class 'jwt header'." ON)
@@ -91,6 +92,7 @@ mark_as_advanced(
         VSSC_JSON_ARRAY
         VSSC_UNIX_TIME
         VSSC_STRING_LIST
+        VSSC_NUMBER_LIST
         VSSC_BASE64_URL
         VSSC_JWT
         VSSC_JWT_HEADER
@@ -346,6 +348,24 @@ if(VSSC_RAW_CARD AND NOT VSSC_JSON_OBJECT)
     message("--")
     message("Feature VSSC_RAW_CARD depends on the feature:")
     message("     VSSC_JSON_OBJECT - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSSC_RAW_CARD AND NOT VSSC_JSON_OBJECT)
+    message("-- error --")
+    message("--")
+    message("Feature VSSC_RAW_CARD depends on the feature:")
+    message("     VSSC_JSON_OBJECT - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSSC_RAW_CARD AND NOT VSSC_JSON_ARRAY)
+    message("-- error --")
+    message("--")
+    message("Feature VSSC_RAW_CARD depends on the feature:")
+    message("     VSSC_JSON_ARRAY - which is disabled.")
     message("--")
     message(FATAL_ERROR)
 endif()

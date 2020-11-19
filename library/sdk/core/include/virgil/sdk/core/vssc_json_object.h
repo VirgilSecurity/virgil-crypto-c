@@ -226,12 +226,6 @@ VSSC_PUBLIC void
 vssc_json_object_add_array_value(vssc_json_object_t *self, vsc_str_t key, const vssc_json_array_t *value);
 
 //
-//  Add array value with a given key.
-//
-VSSC_PRIVATE void
-vssc_json_object_add_array_value_disown(vssc_json_object_t *self, vsc_str_t key, vssc_json_array_t **value_ref);
-
-//
 //  Return an array value for a given key.
 //  Return error, if given key is not found or type mismatch.
 //

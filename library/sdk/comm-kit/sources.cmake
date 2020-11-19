@@ -109,7 +109,22 @@ set_property(
 )
 
 set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/commkit/vssq_messenger_group.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
+)
+
+set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/commkit/vssq_messenger_group_epoch_list.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
+)
+
+set_property(
     SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/commkit/vssq_messenger_user.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
+)
+
+set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/commkit/vssq_messenger_user_list.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
 
@@ -144,7 +159,22 @@ target_sources(comm_kit
             "$<$<BOOL:${VSSQ_MESSENGER_CREDS}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/commkit/vssq_messenger_creds.h>"
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/commkit/private/vssq_messenger_creds_private.h"
             "$<$<BOOL:${VSSQ_MESSENGER_CREDS}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/commkit/private/vssq_messenger_creds_defs.h>"
+            "$<$<BOOL:${VSSQ_MESSENGER_GROUP}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/commkit/vssq_messenger_group.h>"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/commkit/private/vssq_messenger_group_private.h"
+            "$<$<BOOL:${VSSQ_MESSENGER_GROUP}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/commkit/private/vssq_messenger_group_defs.h>"
+            "$<$<BOOL:${VSSQ_MESSENGER_GROUP_EPOCH}>:${CMAKE_CURRENT_LIST_DIR}/src/vssq_messenger_group_epoch.h>"
+            "$<$<BOOL:${VSSQ_MESSENGER_GROUP_EPOCH}>:${CMAKE_CURRENT_LIST_DIR}/src/vssq_messenger_group_epoch_defs.h>"
+            "$<$<BOOL:${VSSQ_MESSENGER_GROUP_EPOCH_KEYKNOX_STORAGE}>:${CMAKE_CURRENT_LIST_DIR}/src/vssq_messenger_group_epoch_keyknox_storage.h>"
+            "$<$<BOOL:${VSSQ_MESSENGER_GROUP_EPOCH_KEYKNOX_STORAGE}>:${CMAKE_CURRENT_LIST_DIR}/src/vssq_messenger_group_epoch_keyknox_storage_defs.h>"
+            "$<$<BOOL:${VSSQ_MESSENGER_GROUP_EPOCH_LIST}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/commkit/vssq_messenger_group_epoch_list.h>"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/commkit/private/vssq_messenger_group_epoch_list_private.h"
+            "$<$<BOOL:${VSSQ_MESSENGER_GROUP_EPOCH_LIST}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/commkit/private/vssq_messenger_group_epoch_list_defs.h>"
             "$<$<BOOL:${VSSQ_MESSENGER_USER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/commkit/vssq_messenger_user.h>"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/commkit/private/vssq_messenger_user_private.h"
+            "$<$<BOOL:${VSSQ_MESSENGER_USER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/commkit/private/vssq_messenger_user_defs.h>"
+            "$<$<BOOL:${VSSQ_MESSENGER_USER_LIST}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/commkit/vssq_messenger_user_list.h>"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/commkit/private/vssq_messenger_user_list_private.h"
+            "$<$<BOOL:${VSSQ_MESSENGER_USER_LIST}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/commkit/private/vssq_messenger_user_list_defs.h>"
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/commkit/vssq_status.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/commkit/vssq_comm_kit_public.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/commkit/private/vssq_comm_kit_private.h"
@@ -164,6 +194,18 @@ target_sources(comm_kit
             "$<$<BOOL:${VSSQ_MESSENGER_CONFIG}>:${CMAKE_CURRENT_LIST_DIR}/src/vssq_messenger_config_defs.c>"
             "$<$<BOOL:${VSSQ_MESSENGER_CREDS}>:${CMAKE_CURRENT_LIST_DIR}/src/vssq_messenger_creds.c>"
             "$<$<BOOL:${VSSQ_MESSENGER_CREDS}>:${CMAKE_CURRENT_LIST_DIR}/src/vssq_messenger_creds_defs.c>"
+            "$<$<BOOL:${VSSQ_MESSENGER_GROUP}>:${CMAKE_CURRENT_LIST_DIR}/src/vssq_messenger_group.c>"
+            "$<$<BOOL:${VSSQ_MESSENGER_GROUP}>:${CMAKE_CURRENT_LIST_DIR}/src/vssq_messenger_group_defs.c>"
+            "$<$<BOOL:${VSSQ_MESSENGER_GROUP_EPOCH}>:${CMAKE_CURRENT_LIST_DIR}/src/vssq_messenger_group_epoch.c>"
+            "$<$<BOOL:${VSSQ_MESSENGER_GROUP_EPOCH}>:${CMAKE_CURRENT_LIST_DIR}/src/vssq_messenger_group_epoch_defs.c>"
+            "$<$<BOOL:${VSSQ_MESSENGER_GROUP_EPOCH_KEYKNOX_STORAGE}>:${CMAKE_CURRENT_LIST_DIR}/src/vssq_messenger_group_epoch_keyknox_storage.c>"
+            "$<$<BOOL:${VSSQ_MESSENGER_GROUP_EPOCH_KEYKNOX_STORAGE}>:${CMAKE_CURRENT_LIST_DIR}/src/vssq_messenger_group_epoch_keyknox_storage_defs.c>"
+            "$<$<BOOL:${VSSQ_MESSENGER_GROUP_EPOCH_LIST}>:${CMAKE_CURRENT_LIST_DIR}/src/vssq_messenger_group_epoch_list.c>"
+            "$<$<BOOL:${VSSQ_MESSENGER_GROUP_EPOCH_LIST}>:${CMAKE_CURRENT_LIST_DIR}/src/vssq_messenger_group_epoch_list_defs.c>"
+            "$<$<BOOL:${VSSQ_MESSENGER_USER}>:${CMAKE_CURRENT_LIST_DIR}/src/vssq_messenger_user.c>"
+            "$<$<BOOL:${VSSQ_MESSENGER_USER}>:${CMAKE_CURRENT_LIST_DIR}/src/vssq_messenger_user_defs.c>"
+            "$<$<BOOL:${VSSQ_MESSENGER_USER_LIST}>:${CMAKE_CURRENT_LIST_DIR}/src/vssq_messenger_user_list.c>"
+            "$<$<BOOL:${VSSQ_MESSENGER_USER_LIST}>:${CMAKE_CURRENT_LIST_DIR}/src/vssq_messenger_user_list_defs.c>"
             "${CMAKE_CURRENT_LIST_DIR}/src/vssq_status.c"
         )
 

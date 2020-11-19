@@ -9,7 +9,6 @@
     <require class="buffer" project="common" api="defs"/>
     <require impl="sha256" project="foundation"/>
     <require impl="sha512" project="foundation"/>
-    <require impl="ctr drbg" project="foundation"/>
     <require impl="key material rng" project="foundation"/>
     <require interface="random" project="foundation"/>
     <require interface="private key" project="foundation"/>
@@ -30,11 +29,12 @@
     <require class="keyknox client" project="keyknox sdk"/>
     <require class="pythia client" project="pythia sdk"/>
     <require class="messenger creds" api="private"/>
+    <require class="messenger user" api="private"/>
     <require class="contact utils"/>
 
     <property name="config" class="messenger config" access="readonly"/>
     <property name="creds" class="messenger creds" access="readonly"/>
-    <property name="card" class="card" project="core sdk"/>
+    <property name="user" class="messenger user"/>
     <property name="base jwt" class="jwt" project="core sdk"/> <!-- cache -->
     <property name="ejabberd jwt" class="ejabberd jwt"/> <!-- cache -->
 
@@ -140,10 +140,10 @@
     </constructor>
 
 
-    <method name="setup defaults">
-        Setup predefined values to the uninitialized class dependencies.
+    <method name="config" is_const="1">
+        Return messenger config.
 
-        <return enum="status"/>
+        <return class="messenger config"/>
     </method>
 
 
@@ -165,10 +165,19 @@
     </method>
 
 
-    <method name="has creds" is_const="1">
-        Return true if user credentials are defined.
+    <method name="is authenticated" is_const="1">
+        Return true if a user is authenticated.
 
         <return type="boolean"/>
+    </method>
+
+
+    <method name="user" is_const="1">
+        Return information about current user.
+
+        Prerequisites: user should be authenticated.
+
+        <return class="messenger user"/>
     </method>
 
 
@@ -182,7 +191,7 @@
     <method name="has backup creds" is_const="1">
         Check whether current credentials were backed up.
 
-        Prerequisites: credentials must be set.
+        Prerequisites: user should be authenticated.
 
         <argument name="error" class="error" access="readwrite"/>
 
@@ -193,7 +202,7 @@
     <method name="backup creds" is_const="1">
         Encrypt the user credentials and push them to the secure cloud storage (Keyknox).
 
-        Prerequisites: credentials must be set.
+        Prerequisites: user should be authenticated.
 
         <argument name="pwd" class="str"/>
 
@@ -220,38 +229,22 @@
     <method name="remove creds backup" is_const="1">
         Remove credentials beckup from the secure cloud storage (Keyknox).
 
-        Prerequisites: credentials must be set.
+        Prerequisites: user should be authenticated.
 
         <return enum="status"/>
-    </method>
-
-
-    <method name="base token len" is_const="1">
-        Return JWT length if it exists and not expired, or max - otherwise.
-
-        <return type="size"/>
     </method>
 
 
     <method name="base token" is_const="1">
         Get JWT to use with Messenger Backend based on the credentials.
 
-        Prerequisites: credentials must be set.
+        Prerequisites: user should be authenticated.
 
         Note, the cached token is returned if it is exist and not expired.
 
-        <argument name="token" class="str buffer">
-            <length method="base token len"/>
-        </argument>
+        <argument name="error" class="error" access="readwrite"/>
 
-        <return enum="status"/>
-    </method>
-
-
-    <method name="ejabberd token len" is_const="1">
-        Return Ejabberd token length if token exists and not expired, or max - otherwise.
-
-        <return type="size"/>
+        <return class="jwt" project="core sdk"/>
     </method>
 
 
@@ -260,15 +253,13 @@
 
         Format: https://docs.ejabberd.im/admin/configuration/authentication/#jwt-authentication
 
-        Prerequisites: credentials must be set.
+        Prerequisites: user should be authenticated.
 
         Note, the cached token is returned if it is exist and not expired.
 
-        <argument name="token" class="str buffer">
-            <length method="ejabberd token len"/>
-        </argument>
+        <argument name="error" class="error" access="readwrite"/>
 
-        <return enum="status"/>
+        <return class="ejabberd jwt"/>
     </method>
 
 
@@ -292,7 +283,7 @@
 
         Format: "Bearer cardId.unixTimestamp.signature(cardId.unixTimestamp)"
 
-        Prerequisites: credentials must be set.
+        Prerequisites: user should be authenticated.
 
         <argument name="auth header" class="str buffer">
             <length method="auth header len"/>
@@ -422,12 +413,22 @@
         <argument name="ejabberd jwt" class="ejabberd jwt" access="disown"/>
     </method>
 
+
     <method name="fetch self card" declaration="private">
         Fetch and store self card or error.
 
-        Prerequisites: credentials must be set.
+        Prerequisites: user should be authenticated.
         Prerequisites: base token should be set and not expired.
 
         <return enum="status"/>
+    </method>
+
+
+    <method name="update user" declaration="private">
+        Create a new user based on the given card and credentials.
+
+        Prerequisites: user should be authenticated.
+
+        <argument name="card" class="card" project="core sdk" access="disown"/>
     </method>
 </class>

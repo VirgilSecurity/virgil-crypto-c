@@ -84,7 +84,7 @@
         </return>
     </method>
 
-    <method name="encrypt">
+    <method name="encrypt" is_const="1">
         Encrypts data
 
         <argument name="plain text" class="data">
@@ -105,7 +105,7 @@
         </return>
     </method>
 
-    <method name="decrypt len">
+    <method name="decrypt len" is_const="1">
         Calculates size of buffer sufficient to store decrypted message
 
         <argument name="message" class="group session message">
@@ -117,7 +117,7 @@
         </return>
     </method>
 
-    <method name="decrypt">
+    <method name="decrypt" is_const="1">
         Decrypts message
 
         <argument name="message" class="group session message">

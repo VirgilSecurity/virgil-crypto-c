@@ -13,6 +13,10 @@
         Failed to initialze RNG.
     </constant>
 
+    <constant name="not found" value="-102">
+        Generic error for any find operation.
+    </constant>
+
     <constant name="parse ejabberd jwt failed" value="-201">
         Failed to parse Ejabberd JWT.
     </constant>
@@ -109,27 +113,27 @@
         Failed to process Keyknox entry because response parsing failed.
     </constant>
 
-    <constant name="keyknox pack creds failed export private key failed" value="-604">
+    <constant name="keyknox pack entry failed export private key failed" value="-604">
         Failed to pack Keyknox entry because export private key failed.
     </constant>
 
-    <constant name="keyknox pack creds failed encrypt failed" value="-605">
+    <constant name="keyknox pack entry failed encrypt failed" value="-605">
         Failed to pack Keyknox entry because encrypt operation failed.
     </constant>
 
-    <constant name="keyknox unpack creds failed decrypt failed" value="-606">
+    <constant name="keyknox unpack entry failed decrypt failed" value="-606">
         Failed to unpack Keyknox entry because decrypt operation failed.
     </constant>
 
-    <constant name="keyknox unpack creds failed verify signature failed" value="-607">
+    <constant name="keyknox unpack entry failed verify signature failed" value="-607">
         Failed to unpack Keyknox entry because verifying signature failed.
     </constant>
 
-    <constant name="keyknox unpack creds failed parse failed" value="-608">
+    <constant name="keyknox unpack entry failed parse failed" value="-608">
         Failed to unpack Keyknox entry because parse operation failed.
     </constant>
 
-    <constant name="keyknox unpack creds failed import private key failed" value="-609">
+    <constant name="keyknox unpack entry failed import private key failed" value="-609">
         Failed to unpack Keyknox entry because import private key failed.
     </constant>
 
@@ -215,5 +219,53 @@
 
     <constant name="contact validation failed username bad chars" value="-1101">
         Username validation failed because it contains invalid characters.
+    </constant>
+
+    <constant name="modify group failed permission violation" value="-1200">
+        The current user can not modify the group - permission violation.
+    </constant>
+
+    <constant name="access group failed permission violation" value="-1201">
+        The current user can not access the group - permission violation.
+    </constant>
+
+    <constant name="create group failed crypto failed" value="-1202">
+        Failed to create group because underlying crypo module failed.
+    </constant>
+
+    <constant name="import group epoch failed parse failed" value="-1203">
+        Failed to import group epoch because parsing json failed.
+    </constant>
+
+    <constant name="process group message failed session id doesnt match" value="-1204">
+        Failed to process group message because session id doesnt match.
+    </constant>
+
+    <constant name="process group message failed epoch not found" value="-1205">
+        Failed to process group message because epoch not found.
+    </constant>
+
+    <constant name="process group message failed wrong key type" value="-1206">
+        Failed to process group message because wrong key type.
+    </constant>
+
+    <constant name="process group message failed invalid signature" value="-1207">
+        Failed to process group message because of invalid signature.
+    </constant>
+
+    <constant name="process group message failed ed25519 failed" value="-1208">
+        Failed to process group message because ed25519 failed.
+    </constant>
+
+    <constant name="process group message failed duplicate epoch" value="-1209">
+        Failed to process group message because of duplicated epoch.
+    </constant>
+
+    <constant name="process group message failed plain text too long" value="-1210">
+        Failed to process group message because plain text too long.
+    </constant>
+
+    <constant name="process group message failed crypto failed" value="-1299">
+        Failed to process group message because underlying crypo module failed.
     </constant>
 </enum>

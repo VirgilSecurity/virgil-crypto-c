@@ -38,6 +38,13 @@
     <class name="messenger config"/>
     <class name="messenger creds"/>
     <class name="messenger user"/>
+    <class name="messenger user list"/>
+
+    <!-- Group Messenger -->
+    <class name="messenger group"/>
+    <class name="messenger group epoch"/>
+    <class name="messenger group epoch list"/>
+    <class name="messenger group epoch keyknox storage"/>
 
     <!-- Contact discovery -->
     <class name="contact utils"/>

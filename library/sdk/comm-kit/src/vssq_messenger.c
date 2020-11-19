@@ -55,8 +55,10 @@
 #include "vssq_assert.h"
 #include "vssq_messenger_private.h"
 #include "vssq_messenger_defs.h"
+#include "vssq_messenger_group_private.h"
 #include "vssq_messenger_auth.h"
 
+#include <virgil/crypto/foundation/vscf_ctr_drbg.h>
 #include <virgil/sdk/core/vssc_card_client.h>
 #include <virgil/sdk/core/vssc_card_manager.h>
 #include <virgil/sdk/core/private/vssc_key_handler_list_private.h>
@@ -412,7 +414,17 @@ vssq_messenger_setup_defaults(vssq_messenger_t *self) {
 
     VSSQ_ASSERT_PTR(self);
 
-    return vssq_messenger_auth_setup_defaults(self->auth);
+    if (NULL == self->random) {
+        vscf_ctr_drbg_t *random = vscf_ctr_drbg_new();
+        const vscf_status_t status = vscf_ctr_drbg_setup_defaults(random);
+        if (status != vscf_status_SUCCESS) {
+            vscf_ctr_drbg_destroy(&random);
+            return vssq_status_RNG_FAILED;
+        }
+        vssq_messenger_take_random(self, vscf_ctr_drbg_impl(random));
+    }
+
+    return vssq_status_SUCCESS;
 }
 
 //
@@ -440,14 +452,28 @@ vssq_messenger_authenticate(vssq_messenger_t *self, const vssq_messenger_creds_t
 }
 
 //
-//  Return true if user credentials are defined.
+//  Return true if a user is authenticated.
 //
 VSSQ_PUBLIC bool
-vssq_messenger_has_creds(const vssq_messenger_t *self) {
+vssq_messenger_is_authenticated(const vssq_messenger_t *self) {
 
     VSSQ_ASSERT_PTR(self);
 
-    return vssq_messenger_auth_has_creds(self->auth);
+    return vssq_messenger_auth_is_authenticated(self->auth);
+}
+
+//
+//  Return information about current user.
+//
+//  Prerequisites: user should be authenticated.
+//
+VSSQ_PUBLIC const vssq_messenger_user_t *
+vssq_messenger_user(const vssq_messenger_t *self) {
+
+    VSSQ_ASSERT_PTR(self);
+    VSSQ_ASSERT(vssq_messenger_is_authenticated(self));
+
+    return vssq_messenger_auth_user(self->auth);
 }
 
 //
@@ -464,7 +490,7 @@ vssq_messenger_creds(const vssq_messenger_t *self) {
 //
 //  Check whether current credentials were backed up.
 //
-//  Prerequisites: credentials must be set.
+//  Prerequisites: user should be authenticated.
 //
 VSSQ_PUBLIC bool
 vssq_messenger_has_backup_creds(const vssq_messenger_t *self, vssq_error_t *error) {
@@ -477,7 +503,7 @@ vssq_messenger_has_backup_creds(const vssq_messenger_t *self, vssq_error_t *erro
 //
 //  Encrypt the user credentials and push them to the secure cloud storage (Keyknox).
 //
-//  Prerequisites: credentials must be set.
+//  Prerequisites: user should be authenticated.
 //
 VSSQ_PUBLIC vssq_status_t
 vssq_messenger_backup_creds(const vssq_messenger_t *self, vsc_str_t pwd) {
@@ -501,7 +527,7 @@ vssq_messenger_authenticate_with_backup_creds(vssq_messenger_t *self, vsc_str_t 
 //
 //  Remove credentials beckup from the secure cloud storage (Keyknox).
 //
-//  Prerequisites: credentials must be set.
+//  Prerequisites: user should be authenticated.
 //
 VSSQ_PUBLIC vssq_status_t
 vssq_messenger_remove_creds_backup(const vssq_messenger_t *self) {
@@ -523,4 +549,63 @@ vssq_messenger_auth(const vssq_messenger_t *self) {
     VSSQ_ASSERT_PTR(self->auth);
 
     return self->auth;
+}
+
+//
+//  Create a new group for a group messenging.
+//
+//  Prerequisites: user should be authenticated.
+//  Note, group owner is added to the participants automatically.
+//
+VSSQ_PUBLIC vssq_messenger_group_t *
+vssq_messenger_create_group(const vssq_messenger_t *self, vsc_str_t group_id,
+        const vssq_messenger_user_list_t *participants, vssq_error_t *error) {
+
+    VSSQ_ASSERT_PTR(self);
+    VSSQ_ASSERT_PTR(self->random);
+    VSSQ_ASSERT(vsc_str_is_valid_and_non_empty(group_id));
+    VSSQ_ASSERT_PTR(participants);
+    VSSQ_ASSERT(vssq_messenger_is_authenticated(self));
+
+    vssq_messenger_group_t *group = vssq_messenger_group_new();
+    vssq_messenger_group_use_random(group, self->random);
+    vssq_messenger_group_use_auth(group, self->auth);
+
+    const vssq_status_t status = vssq_messenger_group_create(group, group_id, participants);
+    if (status != vssq_status_SUCCESS) {
+        VSSQ_ERROR_SAFE_UPDATE(error, status);
+        vssq_messenger_group_destroy(&group);
+        return NULL;
+    }
+
+    return group;
+}
+
+//
+//  Load an existing group for a group messenging.
+//
+//  Prerequisites: user should be authenticated.
+//
+VSSQ_PUBLIC vssq_messenger_group_t *
+vssq_messenger_load_group(
+        const vssq_messenger_t *self, vsc_str_t group_id, const vssq_messenger_user_t *owner, vssq_error_t *error) {
+
+    VSSQ_ASSERT_PTR(self);
+    VSSQ_ASSERT_PTR(self->random);
+    VSSQ_ASSERT(vsc_str_is_valid_and_non_empty(group_id));
+    VSSQ_ASSERT_PTR(owner);
+    VSSQ_ASSERT(vssq_messenger_is_authenticated(self));
+
+    vssq_messenger_group_t *group = vssq_messenger_group_new();
+    vssq_messenger_group_use_random(group, self->random);
+    vssq_messenger_group_use_auth(group, self->auth);
+
+    const vssq_status_t status = vssq_messenger_group_load(group, group_id, owner);
+    if (status != vssq_status_SUCCESS) {
+        VSSQ_ERROR_SAFE_UPDATE(error, status);
+        vssq_messenger_group_destroy(&group);
+        return NULL;
+    }
+
+    return group;
 }

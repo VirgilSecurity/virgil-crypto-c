@@ -18,17 +18,24 @@
     </constant>
 
 
-    <constant name="k card url path" type="string" visibility="private" >
+    <constant name="k url path card" type="string" visibility="private" >
         POST|GET /card.
 
         <value value="/card/v5"/>
     </constant>
 
 
-    <constant name="k search url path" type="string" visibility="private" >
+    <constant name="k url path search" type="string" visibility="private" >
         POST /actions/search.
 
         <value value="/card/v5/actions/search"/>
+    </constant>
+
+
+    <constant name="k url path revoke" type="string" visibility="private" >
+        POST /actions/revoke.
+
+        <value value="/card/v5/actions/revoke"/>
     </constant>
 
 
@@ -113,5 +120,16 @@
         <argument name="error" class="error" access="readwrite"/>
 
         <return class="raw card list" access="disown"/>
+    </method>
+
+
+    <method name="make request revoke card with id" is_const="1">
+        Revoke an active Virgil Card using its ID only.
+
+        Note, only HTTP status might be checked within a correspond response.
+
+        <argument name="card id" class="str"/>
+
+        <return class="http request" access="disown"/>
     </method>
 </class>

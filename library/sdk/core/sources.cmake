@@ -184,6 +184,11 @@ set_property(
 )
 
 set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vssc_number_list.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
+)
+
+set_property(
     SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vssc_raw_card.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
@@ -318,6 +323,8 @@ target_sources(core_sdk
             "$<$<BOOL:${VSSC_KEY_HANDLER_LIST}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vssc_key_handler_list.h>"
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/private/vssc_key_handler_list_private.h"
             "$<$<BOOL:${VSSC_KEY_HANDLER_LIST}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/private/vssc_key_handler_list_defs.h>"
+            "$<$<BOOL:${VSSC_NUMBER_LIST}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vssc_number_list.h>"
+            "$<$<BOOL:${VSSC_NUMBER_LIST}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/private/vssc_number_list_defs.h>"
             "$<$<BOOL:${VSSC_RAW_CARD}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vssc_raw_card.h>"
             "$<$<BOOL:${VSSC_RAW_CARD}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/private/vssc_raw_card_defs.h>"
             "$<$<BOOL:${VSSC_RAW_CARD_LIST}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vssc_raw_card_list.h>"
@@ -389,6 +396,8 @@ target_sources(core_sdk
             "$<$<BOOL:${VSSC_KEY_HANDLER}>:${CMAKE_CURRENT_LIST_DIR}/src/vssc_key_handler_defs.c>"
             "$<$<BOOL:${VSSC_KEY_HANDLER_LIST}>:${CMAKE_CURRENT_LIST_DIR}/src/vssc_key_handler_list.c>"
             "$<$<BOOL:${VSSC_KEY_HANDLER_LIST}>:${CMAKE_CURRENT_LIST_DIR}/src/vssc_key_handler_list_defs.c>"
+            "$<$<BOOL:${VSSC_NUMBER_LIST}>:${CMAKE_CURRENT_LIST_DIR}/src/vssc_number_list.c>"
+            "$<$<BOOL:${VSSC_NUMBER_LIST}>:${CMAKE_CURRENT_LIST_DIR}/src/vssc_number_list_defs.c>"
             "$<$<BOOL:${VSSC_RAW_CARD}>:${CMAKE_CURRENT_LIST_DIR}/src/vssc_raw_card.c>"
             "$<$<BOOL:${VSSC_RAW_CARD}>:${CMAKE_CURRENT_LIST_DIR}/src/vssc_raw_card_defs.c>"
             "$<$<BOOL:${VSSC_RAW_CARD_LIST}>:${CMAKE_CURRENT_LIST_DIR}/src/vssc_raw_card_list.c>"

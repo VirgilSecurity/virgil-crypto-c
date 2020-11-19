@@ -56,7 +56,11 @@
 #include "vssq_platform.h"
 #include "vssq_atomic.h"
 #include "vssq_messenger_creds_private.h"
+#include "vssq_messenger_group_epoch_list_private.h"
+#include "vssq_messenger_group_private.h"
 #include "vssq_messenger_private.h"
+#include "vssq_messenger_user_list_private.h"
+#include "vssq_messenger_user_private.h"
 
 #if VSSQ_EJABBERD_JWT
 #   include "vssq_ejabberd_jwt_defs.h"
@@ -77,6 +81,22 @@
 
 #if VSSQ_MESSENGER_CREDS
 #   include "vssq_messenger_creds_defs.h"
+#endif
+
+#if VSSQ_MESSENGER_GROUP
+#   include "vssq_messenger_group_defs.h"
+#endif
+
+#if VSSQ_MESSENGER_GROUP_EPOCH_LIST
+#   include "vssq_messenger_group_epoch_list_defs.h"
+#endif
+
+#if VSSQ_MESSENGER_USER
+#   include "vssq_messenger_user_defs.h"
+#endif
+
+#if VSSQ_MESSENGER_USER_LIST
+#   include "vssq_messenger_user_list_defs.h"
 #endif
 
 // clang-format on

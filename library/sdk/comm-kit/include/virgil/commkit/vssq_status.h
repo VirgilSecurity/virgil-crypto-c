@@ -85,6 +85,10 @@ enum vssq_status_t {
     //
     vssq_status_RNG_FAILED = -101,
     //
+    //  Generic error for any find operation.
+    //
+    vssq_status_NOT_FOUND = -102,
+    //
     //  Failed to parse Ejabberd JWT.
     //
     vssq_status_PARSE_EJABBERD_JWT_FAILED = -201,
@@ -183,27 +187,27 @@ enum vssq_status_t {
     //
     //  Failed to pack Keyknox entry because export private key failed.
     //
-    vssq_status_KEYKNOX_PACK_CREDS_FAILED_EXPORT_PRIVATE_KEY_FAILED = -604,
+    vssq_status_KEYKNOX_PACK_ENTRY_FAILED_EXPORT_PRIVATE_KEY_FAILED = -604,
     //
     //  Failed to pack Keyknox entry because encrypt operation failed.
     //
-    vssq_status_KEYKNOX_PACK_CREDS_FAILED_ENCRYPT_FAILED = -605,
+    vssq_status_KEYKNOX_PACK_ENTRY_FAILED_ENCRYPT_FAILED = -605,
     //
     //  Failed to unpack Keyknox entry because decrypt operation failed.
     //
-    vssq_status_KEYKNOX_UNPACK_CREDS_FAILED_DECRYPT_FAILED = -606,
+    vssq_status_KEYKNOX_UNPACK_ENTRY_FAILED_DECRYPT_FAILED = -606,
     //
     //  Failed to unpack Keyknox entry because verifying signature failed.
     //
-    vssq_status_KEYKNOX_UNPACK_CREDS_FAILED_VERIFY_SIGNATURE_FAILED = -607,
+    vssq_status_KEYKNOX_UNPACK_ENTRY_FAILED_VERIFY_SIGNATURE_FAILED = -607,
     //
     //  Failed to unpack Keyknox entry because parse operation failed.
     //
-    vssq_status_KEYKNOX_UNPACK_CREDS_FAILED_PARSE_FAILED = -608,
+    vssq_status_KEYKNOX_UNPACK_ENTRY_FAILED_PARSE_FAILED = -608,
     //
     //  Failed to unpack Keyknox entry because import private key failed.
     //
-    vssq_status_KEYKNOX_UNPACK_CREDS_FAILED_IMPORT_PRIVATE_KEY_FAILED = -609,
+    vssq_status_KEYKNOX_UNPACK_ENTRY_FAILED_IMPORT_PRIVATE_KEY_FAILED = -609,
     //
     //  Failed to refresh JWT because send operation failed.
     //
@@ -287,7 +291,55 @@ enum vssq_status_t {
     //
     //  Username validation failed because it contains invalid characters.
     //
-    vssq_status_CONTACT_VALIDATION_FAILED_USERNAME_BAD_CHARS = -1101
+    vssq_status_CONTACT_VALIDATION_FAILED_USERNAME_BAD_CHARS = -1101,
+    //
+    //  The current user can not modify the group - permission violation.
+    //
+    vssq_status_MODIFY_GROUP_FAILED_PERMISSION_VIOLATION = -1200,
+    //
+    //  The current user can not access the group - permission violation.
+    //
+    vssq_status_ACCESS_GROUP_FAILED_PERMISSION_VIOLATION = -1201,
+    //
+    //  Failed to create group because underlying crypo module failed.
+    //
+    vssq_status_CREATE_GROUP_FAILED_CRYPTO_FAILED = -1202,
+    //
+    //  Failed to import group epoch because parsing json failed.
+    //
+    vssq_status_IMPORT_GROUP_EPOCH_FAILED_PARSE_FAILED = -1203,
+    //
+    //  Failed to process group message because session id doesnt match.
+    //
+    vssq_status_PROCESS_GROUP_MESSAGE_FAILED_SESSION_ID_DOESNT_MATCH = -1204,
+    //
+    //  Failed to process group message because epoch not found.
+    //
+    vssq_status_PROCESS_GROUP_MESSAGE_FAILED_EPOCH_NOT_FOUND = -1205,
+    //
+    //  Failed to process group message because wrong key type.
+    //
+    vssq_status_PROCESS_GROUP_MESSAGE_FAILED_WRONG_KEY_TYPE = -1206,
+    //
+    //  Failed to process group message because of invalid signature.
+    //
+    vssq_status_PROCESS_GROUP_MESSAGE_FAILED_INVALID_SIGNATURE = -1207,
+    //
+    //  Failed to process group message because ed25519 failed.
+    //
+    vssq_status_PROCESS_GROUP_MESSAGE_FAILED_ED25519_FAILED = -1208,
+    //
+    //  Failed to process group message because of duplicated epoch.
+    //
+    vssq_status_PROCESS_GROUP_MESSAGE_FAILED_DUPLICATE_EPOCH = -1209,
+    //
+    //  Failed to process group message because plain text too long.
+    //
+    vssq_status_PROCESS_GROUP_MESSAGE_FAILED_PLAIN_TEXT_TOO_LONG = -1210,
+    //
+    //  Failed to process group message because underlying crypo module failed.
+    //
+    vssq_status_PROCESS_GROUP_MESSAGE_FAILED_CRYPTO_FAILED = -1299
 };
 #ifndef VSSQ_STATUS_T_DEFINED
 #define VSSQ_STATUS_T_DEFINED

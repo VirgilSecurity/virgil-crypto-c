@@ -57,7 +57,9 @@
 #include "vssq_messenger_config.h"
 #include "vssq_status.h"
 #include "vssq_messenger_creds.h"
+#include "vssq_messenger_user.h"
 #include "vssq_error.h"
+#include "vssq_ejabberd_jwt.h"
 
 #include <virgil/crypto/foundation/vscf_random.h>
 
@@ -66,13 +68,21 @@
 #   include <virgil/crypto/common/vsc_str.h>
 #endif
 
+#if !VSSQ_IMPORT_PROJECT_CORE_SDK_FROM_FRAMEWORK
+#   include <virgil/sdk/core/vssc_jwt.h>
+#endif
+
 #if !VSSQ_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
 #   include <virgil/crypto/foundation/vscf_impl.h>
 #endif
 
 #if VSSQ_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <VSCCommon/vsc_str.h>
 #   include <VSCCommon/vsc_str_buffer.h>
+#   include <VSCCommon/vsc_str.h>
+#endif
+
+#if VSSQ_IMPORT_PROJECT_CORE_SDK_FROM_FRAMEWORK
+#   include <VSSC/vssc_jwt.h>
 #endif
 
 #if VSSQ_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
@@ -187,10 +197,10 @@ VSSQ_PUBLIC void
 vssq_messenger_auth_release_random(vssq_messenger_auth_t *self);
 
 //
-//  Setup predefined values to the uninitialized class dependencies.
+//  Return messenger config.
 //
-VSSQ_PUBLIC vssq_status_t
-vssq_messenger_auth_setup_defaults(vssq_messenger_auth_t *self) VSSQ_NODISCARD;
+VSSQ_PUBLIC const vssq_messenger_config_t *
+vssq_messenger_auth_config(const vssq_messenger_auth_t *self);
 
 //
 //  Register a new user with a give name.
@@ -205,10 +215,18 @@ VSSQ_PUBLIC vssq_status_t
 vssq_messenger_auth_authenticate(vssq_messenger_auth_t *self, const vssq_messenger_creds_t *creds) VSSQ_NODISCARD;
 
 //
-//  Return true if user credentials are defined.
+//  Return true if a user is authenticated.
 //
 VSSQ_PUBLIC bool
-vssq_messenger_auth_has_creds(const vssq_messenger_auth_t *self);
+vssq_messenger_auth_is_authenticated(const vssq_messenger_auth_t *self);
+
+//
+//  Return information about current user.
+//
+//  Prerequisites: user should be authenticated.
+//
+VSSQ_PUBLIC const vssq_messenger_user_t *
+vssq_messenger_auth_user(const vssq_messenger_auth_t *self);
 
 //
 //  Return user credentials.
@@ -219,7 +237,7 @@ vssq_messenger_auth_creds(const vssq_messenger_auth_t *self);
 //
 //  Check whether current credentials were backed up.
 //
-//  Prerequisites: credentials must be set.
+//  Prerequisites: user should be authenticated.
 //
 VSSQ_PUBLIC bool
 vssq_messenger_auth_has_backup_creds(const vssq_messenger_auth_t *self, vssq_error_t *error);
@@ -227,7 +245,7 @@ vssq_messenger_auth_has_backup_creds(const vssq_messenger_auth_t *self, vssq_err
 //
 //  Encrypt the user credentials and push them to the secure cloud storage (Keyknox).
 //
-//  Prerequisites: credentials must be set.
+//  Prerequisites: user should be authenticated.
 //
 VSSQ_PUBLIC vssq_status_t
 vssq_messenger_auth_backup_creds(const vssq_messenger_auth_t *self, vsc_str_t pwd) VSSQ_NODISCARD;
@@ -247,44 +265,32 @@ vssq_messenger_auth_restore_creds(vssq_messenger_auth_t *self, vsc_str_t usernam
 //
 //  Remove credentials beckup from the secure cloud storage (Keyknox).
 //
-//  Prerequisites: credentials must be set.
+//  Prerequisites: user should be authenticated.
 //
 VSSQ_PUBLIC vssq_status_t
 vssq_messenger_auth_remove_creds_backup(const vssq_messenger_auth_t *self) VSSQ_NODISCARD;
 
 //
-//  Return JWT length if it exists and not expired, or max - otherwise.
-//
-VSSQ_PUBLIC size_t
-vssq_messenger_auth_base_token_len(const vssq_messenger_auth_t *self);
-
-//
 //  Get JWT to use with Messenger Backend based on the credentials.
 //
-//  Prerequisites: credentials must be set.
+//  Prerequisites: user should be authenticated.
 //
 //  Note, the cached token is returned if it is exist and not expired.
 //
-VSSQ_PUBLIC vssq_status_t
-vssq_messenger_auth_base_token(const vssq_messenger_auth_t *self, vsc_str_buffer_t *token) VSSQ_NODISCARD;
-
-//
-//  Return Ejabberd token length if token exists and not expired, or max - otherwise.
-//
-VSSQ_PUBLIC size_t
-vssq_messenger_auth_ejabberd_token_len(const vssq_messenger_auth_t *self);
+VSSQ_PUBLIC const vssc_jwt_t *
+vssq_messenger_auth_base_token(const vssq_messenger_auth_t *self, vssq_error_t *error);
 
 //
 //  Return JWT to aceess ejabberd server.
 //
 //  Format: https://docs.ejabberd.im/admin/configuration/authentication/#jwt-authentication
 //
-//  Prerequisites: credentials must be set.
+//  Prerequisites: user should be authenticated.
 //
 //  Note, the cached token is returned if it is exist and not expired.
 //
-VSSQ_PUBLIC vssq_status_t
-vssq_messenger_auth_ejabberd_token(const vssq_messenger_auth_t *self, vsc_str_buffer_t *token) VSSQ_NODISCARD;
+VSSQ_PUBLIC const vssq_ejabberd_jwt_t *
+vssq_messenger_auth_ejabberd_token(const vssq_messenger_auth_t *self, vssq_error_t *error);
 
 //
 //  Return buffer length enough to handle HTTP authorization header value.
@@ -297,7 +303,7 @@ vssq_messenger_auth_auth_header_len(const vssq_messenger_auth_t *self);
 //
 //  Format: "Bearer cardId.unixTimestamp.signature(cardId.unixTimestamp)"
 //
-//  Prerequisites: credentials must be set.
+//  Prerequisites: user should be authenticated.
 //
 VSSQ_PUBLIC vssq_status_t
 vssq_messenger_auth_generate_auth_header(const vssq_messenger_auth_t *self,

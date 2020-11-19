@@ -1,9 +1,11 @@
 <class name="messenger">
     Entrypoint to the messenger user management, authentication and encryption.
 
+    <require impl="ctr drbg" project="foundation"/>
     <require class="card client" project="core sdk"/>
     <require class="card manager" project="core sdk"/>
     <require class="key handler list" project="core sdk" api="private"/>
+    <require class="messenger group" api="private"/>
 
     <property name="config" class="messenger config" access="readonly"/>
     <property name="auth" class="messenger auth"/>
@@ -62,10 +64,19 @@
     </method>
 
 
-    <method name="has creds" is_const="1">
-        Return true if user credentials are defined.
+    <method name="is authenticated" is_const="1">
+        Return true if a user is authenticated.
 
         <return type="boolean"/>
+    </method>
+
+
+    <method name="user" is_const="1">
+        Return information about current user.
+
+        Prerequisites: user should be authenticated.
+
+        <return class="messenger user"/>
     </method>
 
 
@@ -79,7 +90,7 @@
     <method name="has backup creds" is_const="1">
         Check whether current credentials were backed up.
 
-        Prerequisites: credentials must be set.
+        Prerequisites: user should be authenticated.
 
         <argument name="error" class="error" access="readwrite"/>
 
@@ -90,7 +101,7 @@
     <method name="backup creds" is_const="1">
         Encrypt the user credentials and push them to the secure cloud storage (Keyknox).
 
-        Prerequisites: credentials must be set.
+        Prerequisites: user should be authenticated.
 
         <argument name="pwd" class="str"/>
 
@@ -111,7 +122,7 @@
     <method name="remove creds backup" is_const="1">
         Remove credentials beckup from the secure cloud storage (Keyknox).
 
-        Prerequisites: credentials must be set.
+        Prerequisites: user should be authenticated.
 
         <return enum="status"/>
     </method>
@@ -123,5 +134,33 @@
         It should be used with great carefulness and responsibility.
 
         <return class="messenger auth"/>
+    </method>
+
+
+    <!-- Working with messenger groups -->
+    <method name="create group" is_const="1">
+        Create a new group for a group messenging.
+
+        Prerequisites: user should be authenticated.
+        Note, group owner is added to the participants automatically.
+
+        <argument name="group id" class="str"/>
+        <argument name="participants" class="messenger user list"/>
+        <argument name="error" class="error" access="readwrite"/>
+
+        <return class="messenger group" access="disown"/>
+    </method>
+
+
+    <method name="load group" is_const="1">
+        Load an existing group for a group messenging.
+
+        Prerequisites: user should be authenticated.
+
+        <argument name="group id" class="str"/>
+        <argument name="owner" class="messenger user"/>
+        <argument name="error" class="error" access="readwrite"/>
+
+        <return class="messenger group" access="disown"/>
     </method>
 </class>

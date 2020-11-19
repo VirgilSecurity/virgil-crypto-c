@@ -120,6 +120,10 @@ extern "C" {
 #cmakedefine01 VSSC_STRING_LIST
 #endif
 
+#ifndef VSSC_NUMBER_LIST
+#cmakedefine01 VSSC_NUMBER_LIST
+#endif
+
 #ifndef VSSC_BASE64_URL
 #cmakedefine01 VSSC_BASE64_URL
 #endif

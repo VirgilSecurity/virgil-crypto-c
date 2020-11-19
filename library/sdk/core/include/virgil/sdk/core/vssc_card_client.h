@@ -198,6 +198,14 @@ vssc_card_client_make_request_search_cards_with_identity(const vssc_card_client_
 VSSC_PUBLIC vssc_raw_card_list_t *
 vssc_card_client_process_response_search_cards(const vssc_virgil_http_response_t *response, vssc_error_t *error);
 
+//
+//  Revoke an active Virgil Card using its ID only.
+//
+//  Note, only HTTP status might be checked within a correspond response.
+//
+VSSC_PUBLIC vssc_http_request_t *
+vssc_card_client_make_request_revoke_card_with_id(const vssc_card_client_t *self, vsc_str_t card_id);
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.

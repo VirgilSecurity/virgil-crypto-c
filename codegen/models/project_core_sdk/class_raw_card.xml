@@ -3,7 +3,9 @@
 
 
     <require class="json object"/>
+    <require class="json object" api="private"/>
     <require class="json array"/>
+    <require class="json array" api="private"/>
 
     <property name="content" class="json object"/>
     <property name="content snapshot" class="buffer"/>

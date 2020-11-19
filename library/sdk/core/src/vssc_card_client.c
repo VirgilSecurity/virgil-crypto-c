@@ -108,27 +108,40 @@ static const vsc_str_t k_base_url = {
 //
 //  POST|GET /card.
 //
-static const char k_card_url_path_chars[] = "/card/v5";
+static const char k_url_path_card_chars[] = "/card/v5";
 
 //
 //  POST|GET /card.
 //
-static const vsc_str_t k_card_url_path = {
-    k_card_url_path_chars,
-    sizeof(k_card_url_path_chars) - 1
+static const vsc_str_t k_url_path_card = {
+    k_url_path_card_chars,
+    sizeof(k_url_path_card_chars) - 1
 };
 
 //
 //  POST /actions/search.
 //
-static const char k_search_url_path_chars[] = "/card/v5/actions/search";
+static const char k_url_path_search_chars[] = "/card/v5/actions/search";
 
 //
 //  POST /actions/search.
 //
-static const vsc_str_t k_search_url_path = {
-    k_search_url_path_chars,
-    sizeof(k_search_url_path_chars) - 1
+static const vsc_str_t k_url_path_search = {
+    k_url_path_search_chars,
+    sizeof(k_url_path_search_chars) - 1
+};
+
+//
+//  POST /actions/revoke.
+//
+static const char k_url_path_revoke_chars[] = "/card/v5/actions/revoke";
+
+//
+//  POST /actions/revoke.
+//
+static const vsc_str_t k_url_path_revoke = {
+    k_url_path_revoke_chars,
+    sizeof(k_url_path_revoke_chars) - 1
 };
 
 //
@@ -395,7 +408,7 @@ vssc_card_client_make_request_publish_card(const vssc_card_client_t *self, const
     vssc_json_object_t *json = vssc_raw_card_export_as_json(raw_card);
     vsc_str_t json_body = vssc_json_object_as_str(json);
 
-    vsc_str_mutable_t card_url = vsc_str_mutable_concat(vsc_str_mutable_as_str(self->base_url), k_card_url_path);
+    vsc_str_mutable_t card_url = vsc_str_mutable_concat(vsc_str_mutable_as_str(self->base_url), k_url_path_card);
 
     vssc_http_request_t *http_request =
             vssc_http_request_new_with_body(vssc_http_request_method_post, vsc_str_mutable_as_str(card_url), json_body);
@@ -450,11 +463,11 @@ vssc_card_client_make_request_get_card(const vssc_card_client_t *self, vsc_str_t
     VSSC_ASSERT_PTR(self);
     VSSC_ASSERT(vsc_str_is_valid_and_non_empty(card_id));
 
-    const size_t url_len = self->base_url.len + k_card_url_path.len + 1 /* slash */ + card_id.len + 1 /* null */;
+    const size_t url_len = self->base_url.len + k_url_path_card.len + 1 /* slash */ + card_id.len + 1 /* null */;
     vsc_str_buffer_t *url = vsc_str_buffer_new_with_capacity(url_len);
 
     vsc_str_buffer_write_str(url, vsc_str_mutable_as_str(self->base_url));
-    vsc_str_buffer_write_str(url, k_card_url_path);
+    vsc_str_buffer_write_str(url, k_url_path_card);
     vsc_str_buffer_write_char(url, '/');
     vsc_str_buffer_write_str(url, card_id);
     vsc_str_buffer_make_null_terminated(url);
@@ -516,7 +529,7 @@ vssc_card_client_make_request_search_cards_with_identity(const vssc_card_client_
     VSSC_ASSERT_PTR(self);
     VSSC_ASSERT(vsc_str_is_valid_and_non_empty(identity));
 
-    vsc_str_mutable_t search_url = vsc_str_mutable_concat(vsc_str_mutable_as_str(self->base_url), k_search_url_path);
+    vsc_str_mutable_t search_url = vsc_str_mutable_concat(vsc_str_mutable_as_str(self->base_url), k_url_path_search);
 
     vssc_json_object_t *json_body = vssc_json_object_new();
     vssc_json_object_add_string_value(json_body, k_json_key_identity, identity);
@@ -581,4 +594,37 @@ vssc_card_client_process_response_search_cards(const vssc_virgil_http_response_t
     }
 
     return raw_cards;
+}
+
+//
+//  Revoke an active Virgil Card using its ID only.
+//
+//  Note, only HTTP status might be checked within a correspond response.
+//
+VSSC_PUBLIC vssc_http_request_t *
+vssc_card_client_make_request_revoke_card_with_id(const vssc_card_client_t *self, vsc_str_t card_id) {
+
+    VSSC_ASSERT_PTR(self);
+    VSSC_ASSERT(vsc_str_is_valid_and_non_empty(card_id));
+
+    vsc_str_t base_url = vsc_str_mutable_as_str(self->base_url);
+
+    const size_t revoke_url_len = base_url.len + k_url_path_revoke.len + 1 /* slash */ + card_id.len + 1 /* null */;
+    vsc_str_buffer_t *revoke_url = vsc_str_buffer_new_with_capacity(revoke_url_len);
+
+    vsc_str_buffer_write_str(revoke_url, base_url);
+    vsc_str_buffer_write_str(revoke_url, k_url_path_revoke);
+    vsc_str_buffer_write_char(revoke_url, '/');
+    vsc_str_buffer_write_str(revoke_url, card_id);
+    vsc_str_buffer_make_null_terminated(revoke_url);
+
+    vssc_http_request_t *http_request = vssc_http_request_new_with_body(
+            vssc_http_request_method_post, vsc_str_buffer_str(revoke_url), vsc_str_empty());
+
+    vssc_http_request_add_header(
+            http_request, vssc_http_header_name_content_type, vssc_http_header_value_application_json);
+
+    vsc_str_buffer_destroy(&revoke_url);
+
+    return http_request;
 }

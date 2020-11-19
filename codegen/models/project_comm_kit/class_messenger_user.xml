@@ -1,5 +1,47 @@
 <class name="messenger user">
-    Information about the messenger user, i.e. username, Virgil Card, etc.
+    Information about a messenger user, i.e. username, Virgil Card, etc.
+
+    <property name="card" class="card" project="core sdk" access="readonly"/>
+    <property name="username" class="str mutable"/>
+
+    <constructor name="with card">
+        Create an object with required fields.
+
+        <argument name="card" class="card" project="core sdk"/>
+    </constructor>
 
 
+    <constructor name="with card disown" scope="private">
+        Create an object with required fields.
+
+        <argument name="card" class="card" project="core sdk" access="disown"/>
+    </constructor>
+
+
+    <method name="card" is_const="1">
+        Return a user's Card.
+
+        <return class="card" project="core sdk"/>
+    </method>
+
+
+    <method name="has username" is_const="1">
+        Return true if a username defined.
+
+        <return type="boolean"/>
+    </method>
+
+
+    <method name="username" is_const="1">
+        Return username, or an empty string if username not defined.
+
+        <return class="str"/>
+    </method>
+
+
+    <method name="set username">
+        Set an optional username.
+
+        <argument name="username" class="str"/>
+    </method>
 </class>

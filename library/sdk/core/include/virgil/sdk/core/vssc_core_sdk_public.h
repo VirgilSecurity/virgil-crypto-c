@@ -137,6 +137,10 @@
 #   include "vssc_key_handler_list.h"
 #endif
 
+#if VSSC_NUMBER_LIST
+#   include "vssc_number_list.h"
+#endif
+
 #if VSSC_RAW_CARD
 #   include "vssc_raw_card.h"
 #endif
