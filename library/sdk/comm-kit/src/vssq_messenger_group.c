@@ -518,6 +518,9 @@ vssq_messenger_group_create(
 
     self->group_id = vsc_str_mutable_from_str(group_id);
     self->owner = vssq_messenger_user_shallow_copy_const(vssq_messenger_auth_user(self->auth));
+    const vscf_status_t foundation_status = vscf_group_session_add_epoch(
+            self->group_session, vssq_messenger_group_epoch_group_info_message(initial_epoch));
+    VSSQ_ASSERT_PROJECT_FOUNDATION_SUCCESS(foundation_status);
     self->epochs = vssq_messenger_group_epoch_list_new();
     vssq_messenger_group_epoch_list_add(self->epochs, &initial_epoch);
 
@@ -554,6 +557,16 @@ vssq_messenger_group_load(vssq_messenger_group_t *self, vsc_str_t group_id, cons
 
     self->epochs = vssq_messenger_group_epoch_keyknox_storage_read_all(
             self->epoch_keyknox_storage, vsc_buffer_data(session_id), owner, &error);
+
+    for (const vssq_messenger_group_epoch_list_t *epoch_it = self->epochs;
+            (epoch_it != NULL) && vssq_messenger_group_epoch_list_has_item(epoch_it);
+            epoch_it = vssq_messenger_group_epoch_list_next(epoch_it)) {
+
+        const vssq_messenger_group_epoch_t *group_epoch = vssq_messenger_group_epoch_list_item(epoch_it);
+        const vscf_status_t foundation_status = vscf_group_session_add_epoch(
+                self->group_session, vssq_messenger_group_epoch_group_info_message(group_epoch));
+        VSSQ_ASSERT_PROJECT_FOUNDATION_SUCCESS(foundation_status);
+    }
 
     //
     //  Store state.
@@ -600,7 +613,7 @@ vssq_messenger_group_encrypted_message_len(const vssq_messenger_group_t *self, s
 
     VSSQ_ASSERT_PTR(self);
 
-    return 128 + plaintext_len;
+    return 320 + plaintext_len;
 }
 
 //
@@ -716,7 +729,7 @@ vssq_messenger_group_calculate_session_id(vsc_str_t group_id) {
 
     vscf_sha512_hash(vsc_str_as_data(group_id), session_id);
 
-    VSSQ_ASSERT(vscf_sha512_DIGEST_LEN >= vssq_messenger_group_SESSION_ID_LEN);
+    VSSQ_ASSERT((size_t)vscf_sha512_DIGEST_LEN >= (size_t)vssq_messenger_group_SESSION_ID_LEN);
     vsc_buffer_dec_used(session_id, vscf_sha512_DIGEST_LEN - vssq_messenger_group_SESSION_ID_LEN);
 
     return session_id;
@@ -805,6 +818,10 @@ vssq_messenger_group_load_epoch_if_needed(const vssq_messenger_group_t *self, si
     if (vssq_error_has_error(&error)) {
         goto cleanup;
     }
+
+    const vscf_status_t foundation_status = vscf_group_session_add_epoch(
+            self->group_session, vssq_messenger_group_epoch_group_info_message(group_epoch));
+    VSSQ_ASSERT_PROJECT_FOUNDATION_SUCCESS(foundation_status);
 
     vssq_messenger_group_epoch_list_add(self->epochs, &group_epoch);
 

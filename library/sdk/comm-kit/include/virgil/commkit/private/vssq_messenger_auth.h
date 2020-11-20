@@ -203,13 +203,13 @@ VSSQ_PUBLIC const vssq_messenger_config_t *
 vssq_messenger_auth_config(const vssq_messenger_auth_t *self);
 
 //
-//  Register a new user with a give name.
+//  Register a new user with a given name.
 //
 VSSQ_PUBLIC vssq_status_t
 vssq_messenger_auth_register(vssq_messenger_auth_t *self, vsc_str_t username) VSSQ_NODISCARD;
 
 //
-//  Register a new user with a give name.
+//  Authenticate existing user with a given credentials.
 //
 VSSQ_PUBLIC vssq_status_t
 vssq_messenger_auth_authenticate(vssq_messenger_auth_t *self, const vssq_messenger_creds_t *creds) VSSQ_NODISCARD;
@@ -227,6 +227,12 @@ vssq_messenger_auth_is_authenticated(const vssq_messenger_auth_t *self);
 //
 VSSQ_PUBLIC const vssq_messenger_user_t *
 vssq_messenger_auth_user(const vssq_messenger_auth_t *self);
+
+//
+//  Return true if user credentials are defined.
+//
+VSSQ_PUBLIC bool
+vssq_messenger_auth_has_creds(const vssq_messenger_auth_t *self);
 
 //
 //  Return user credentials.

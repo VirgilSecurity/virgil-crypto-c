@@ -119,7 +119,7 @@ enum vssq_status_t {
     //
     //  Failed to generate card.
     //
-    vssq_status_GENERATE_CARD_FAILED = -306,
+    vssq_status_GENERATE_CARD_FAILED = -307,
     //
     //  Failed to generate HTTP authentication header.
     //

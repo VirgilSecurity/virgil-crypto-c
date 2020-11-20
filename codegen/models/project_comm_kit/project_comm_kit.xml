@@ -21,6 +21,7 @@
         Enable multi-threading safety for CommKit.
     </feature>
 
+    <!-- Common modules -->
     <module name="assert" from="shared"/>
     <module name="library" from="shared"/>
     <module name="memory" from="shared"/>
@@ -28,8 +29,8 @@
 
     <enum name="status"/>
 
-    <!-- Common modules -->
     <class name="error" from="shared"/>
+    <class name="error message" from="shared"/>
 
     <!-- Messenger -->
     <class name="ejabberd jwt"/>

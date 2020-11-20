@@ -534,7 +534,8 @@ vssc_json_array_get_number_value(const vssc_json_array_t *self, size_t index, vs
 
     errno = 0;
     const uint64_t number = json_object_get_uint64(number_obj);
-    if (errno != 0 || number > SIZE_MAX) {
+    const int errnum = errno;
+    if (errnum == EINVAL || number > SIZE_MAX) {
         VSSC_ERROR_SAFE_UPDATE(error, vssc_status_JSON_VALUE_TYPE_MISMATCH);
         return 0;
     }

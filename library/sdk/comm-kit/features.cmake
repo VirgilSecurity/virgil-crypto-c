@@ -48,6 +48,7 @@ include_guard()
 option(VSSQ_LIBRARY "Enable build of the 'comm kit' library" ON)
 option(VSSQ_MULTI_THREADING "Enable multi-threading safety for CommKit." ON)
 option(VSSQ_ERROR "Enable class 'error'." ON)
+option(VSSQ_ERROR_MESSAGE "Enable class 'error message'." ON)
 option(VSSQ_EJABBERD_JWT "Enable class 'ejabberd jwt'." ON)
 option(VSSQ_MESSENGER "Enable class 'messenger'." ON)
 option(VSSQ_MESSENGER_AUTH "Enable class 'messenger auth'." ON)
@@ -64,6 +65,7 @@ mark_as_advanced(
         VSSQ_LIBRARY
         VSSQ_MULTI_THREADING
         VSSQ_ERROR
+        VSSQ_ERROR_MESSAGE
         VSSQ_EJABBERD_JWT
         VSSQ_MESSENGER
         VSSQ_MESSENGER_AUTH

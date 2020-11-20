@@ -71,6 +71,10 @@
 #   include "vssq_error.h"
 #endif
 
+#if VSSQ_ERROR_MESSAGE
+#   include "vssq_error_message.h"
+#endif
+
 #if VSSQ_MESSENGER
 #   include "vssq_messenger.h"
 #endif

@@ -56,6 +56,7 @@ target_compile_definitions(comm_kit
             "VSSQ_LIBRARY=$<BOOL:${VSSQ_LIBRARY}>"
             "VSSQ_MULTI_THREADING=$<BOOL:${VSSQ_MULTI_THREADING}>"
             "VSSQ_ERROR=$<BOOL:${VSSQ_ERROR}>"
+            "VSSQ_ERROR_MESSAGE=$<BOOL:${VSSQ_ERROR_MESSAGE}>"
             "VSSQ_EJABBERD_JWT=$<BOOL:${VSSQ_EJABBERD_JWT}>"
             "VSSQ_MESSENGER=$<BOOL:${VSSQ_MESSENGER}>"
             "VSSQ_MESSENGER_AUTH=$<BOOL:${VSSQ_MESSENGER_AUTH}>"

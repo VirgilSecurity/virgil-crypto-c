@@ -522,6 +522,8 @@ vssq_messenger_group_epoch_keyknox_storage_read_all(const vssq_messenger_group_e
         }
     }
 
+    vssc_number_list_destroy(&epoch_nums);
+
     return group_epoch_list;
 }
 
@@ -687,14 +689,13 @@ cleanup:
 VSSQ_PUBLIC vsc_str_buffer_t *
 vssq_messenger_group_epoch_keyknox_storage_stringify_epoch_num(size_t num) {
 
-    // NUM_CHARS(2^64) = NUM_CHARS(18446744073709551616) = 20
-    const static size_t num_chars_max = 20 + 1 /* for a null-termination */;
-    vsc_str_buffer_t *num_str_buf = vsc_str_buffer_new_with_capacity(num_chars_max);
+    vsc_str_buffer_t *num_str_buf =
+            vsc_str_buffer_new_with_capacity(vssq_messenger_group_epoch_keyknox_storage_NUM_STR_LEN_MAX);
 
     const int len =
             snprintf(vsc_str_buffer_unused_chars(num_str_buf), vsc_str_buffer_unused_len(num_str_buf), "%zu", num);
 
-    VSSQ_ASSERT(len > 0 && (size_t)len < num_chars_max);
+    VSSQ_ASSERT(len > 0 && (size_t)len < (size_t)vssq_messenger_group_epoch_keyknox_storage_NUM_STR_LEN_MAX);
     vsc_str_buffer_inc_used(num_str_buf, (size_t)len);
 
     return num_str_buf;
@@ -786,9 +787,9 @@ vssq_messenger_group_epoch_keyknox_storage_keyknox_pack_group_epoch(
     keyknox_meta = vsc_buffer_new_with_capacity(vscf_recipient_cipher_message_info_len(cipher));
     vscf_recipient_cipher_pack_message_info(cipher, keyknox_meta);
 
-    vsc_buffer_reset_with_capacity(
-            keyknox_value, vscf_recipient_cipher_encryption_out_len(cipher, group_epoch_json_data.len) +
-                                   vscf_recipient_cipher_encryption_out_len(cipher, 0));
+    keyknox_value =
+            vsc_buffer_new_with_capacity(vscf_recipient_cipher_encryption_out_len(cipher, group_epoch_json_data.len) +
+                                         vscf_recipient_cipher_encryption_out_len(cipher, 0));
 
     foundation_status = vscf_recipient_cipher_process_encryption(cipher, group_epoch_json_data, keyknox_value);
 
@@ -897,11 +898,6 @@ vssq_messenger_group_epoch_keyknox_storage_keyknox_unpack_group_epoch(
             vsc_buffer_new_with_capacity(vscf_recipient_cipher_decryption_out_len(cipher, keyknox_value.len) +
                                          vscf_recipient_cipher_decryption_out_len(cipher, 0));
 
-    if (foundation_status != vscf_status_SUCCESS) {
-        VSSQ_ERROR_SAFE_UPDATE(error, vssq_status_KEYKNOX_UNPACK_ENTRY_FAILED_DECRYPT_FAILED);
-        goto cleanup;
-    }
-
     foundation_status = vscf_recipient_cipher_process_decryption(cipher, keyknox_value, group_epoch_data);
 
     if (foundation_status != vscf_status_SUCCESS) {
@@ -931,7 +927,7 @@ vssq_messenger_group_epoch_keyknox_storage_keyknox_unpack_group_epoch(
     }
 
     const vscf_signer_info_t *signer_info = vscf_signer_info_list_item(signer_infos);
-    if (vsc_data_equal(owner_id, vscf_signer_info_signer_id(signer_info))) {
+    if (!vsc_data_equal(owner_id, vscf_signer_info_signer_id(signer_info))) {
         VSSQ_ERROR_SAFE_UPDATE(error, vssq_status_KEYKNOX_UNPACK_ENTRY_FAILED_VERIFY_SIGNATURE_FAILED);
         goto cleanup;
     }
@@ -947,7 +943,6 @@ vssq_messenger_group_epoch_keyknox_storage_keyknox_unpack_group_epoch(
 cleanup:
     vscf_recipient_cipher_destroy(&cipher);
     vsc_buffer_destroy(&group_epoch_data);
-    vssq_messenger_group_epoch_destroy(&group_epoch);
 
     return group_epoch;
 }
@@ -1058,7 +1053,7 @@ vssq_messenger_group_epoch_keyknox_storage_keyknox_pull_entry(const vssq_messeng
 
     keyknox_entry = vssk_keyknox_client_process_response_pull(http_response, &keyknox_sdk_error);
 
-    if (!vssc_virgil_http_response_is_success(http_response)) {
+    if (vssk_error_has_error(&keyknox_sdk_error)) {
         VSSQ_ERROR_SAFE_UPDATE(error, vssq_status_KEYKNOX_FAILED_PARSE_RESPONSE_FAILED);
         goto cleanup;
     }

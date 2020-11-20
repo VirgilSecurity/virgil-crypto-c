@@ -45,6 +45,7 @@
 
 #include "vssq_messenger.h"
 #include "vssq_contact_utils.h"
+#include "vssq_error_message.h"
 
 #include <virgil/crypto/foundation/vscf_ctr_drbg.h>
 #include <virgil/crypto/foundation/vscf_binary.h>
@@ -91,7 +92,7 @@ create_messenger(void) {
 
     vssq_messenger_t *messenger = vssq_messenger_new_with_config(config);
     const vssq_status_t status = vssq_messenger_setup_defaults(messenger);
-    TEST_ASSERT_EQUAL(vssq_status_SUCCESS, status);
+    TEST_ASSERT_EQUAL_MESSAGE(vssq_status_SUCCESS, status, vssq_error_message_from_status(status).chars);
 
     vssq_messenger_config_destroy(&config);
 
@@ -105,7 +106,7 @@ create_messenger_and_register_user(void) {
     vsc_str_buffer_t *username = generate_random_username();
 
     const vssq_status_t status = vssq_messenger_register(messenger, vsc_str_buffer_str(username));
-    TEST_ASSERT_EQUAL(vssq_status_SUCCESS, status);
+    TEST_ASSERT_EQUAL_MESSAGE(vssq_status_SUCCESS, status, vssq_error_message_from_status(status).chars);
 
     vsc_str_buffer_destroy(&username);
 
@@ -139,14 +140,16 @@ test__messenger_register_then_authenticate__random_user__success(void) {
     //
     const vssq_status_t register_status =
             vssq_messenger_register(messenger_for_registration, vsc_str_buffer_str(username));
-    TEST_ASSERT_EQUAL(vssq_status_SUCCESS, register_status);
+    TEST_ASSERT_EQUAL_MESSAGE(
+            vssq_status_SUCCESS, register_status, vssq_error_message_from_status(register_status).chars);
 
     //
     //  Authenticate.
     //
     const vssq_messenger_creds_t *creds = vssq_messenger_creds(messenger_for_registration);
     const vssq_status_t authenticate_status = vssq_messenger_authenticate(messenger_for_authentication, creds);
-    TEST_ASSERT_EQUAL(vssq_status_SUCCESS, authenticate_status);
+    TEST_ASSERT_EQUAL_MESSAGE(
+            vssq_status_SUCCESS, authenticate_status, vssq_error_message_from_status(authenticate_status).chars);
 
     //
     //  Cleanup.
@@ -157,7 +160,7 @@ test__messenger_register_then_authenticate__random_user__success(void) {
 }
 
 void
-test__messenger_creds_backup_then_resotore_then_remove__random_user__success(void) {
+test__messenger_creds_backup_then_restore_then_remove__random_user__success(void) {
     //
     //  Create messenger and random username.
     //
@@ -171,26 +174,28 @@ test__messenger_creds_backup_then_resotore_then_remove__random_user__success(voi
     //  Resgister.
     //
     const vssq_status_t register_status = vssq_messenger_register(messenger_for_backup, vsc_str_buffer_str(username));
-    TEST_ASSERT_EQUAL(vssq_status_SUCCESS, register_status);
+    TEST_ASSERT_EQUAL_MESSAGE(
+            vssq_status_SUCCESS, register_status, vssq_error_message_from_status(register_status).chars);
 
     //
     //  Backup.
     //
     const vssq_status_t backup_status = vssq_messenger_backup_creds(messenger_for_backup, pwd);
-    TEST_ASSERT_EQUAL(vssq_status_SUCCESS, backup_status);
+    TEST_ASSERT_EQUAL_MESSAGE(vssq_status_SUCCESS, backup_status, vssq_error_message_from_status(backup_status).chars);
 
     //
     //  Restore.
     //
     const vssq_status_t restore_status =
             vssq_messenger_authenticate_with_backup_creds(messenger_for_restore, vsc_str_buffer_str(username), pwd);
-    TEST_ASSERT_EQUAL(vssq_status_SUCCESS, restore_status);
+    TEST_ASSERT_EQUAL_MESSAGE(
+            vssq_status_SUCCESS, restore_status, vssq_error_message_from_status(restore_status).chars);
 
     //
     //  Remove.
     //
     const vssq_status_t remove_status = vssq_messenger_remove_creds_backup(messenger_for_restore);
-    TEST_ASSERT_EQUAL(vssq_status_SUCCESS, remove_status);
+    TEST_ASSERT_EQUAL_MESSAGE(vssq_status_SUCCESS, remove_status, vssq_error_message_from_status(remove_status).chars);
 
     //
     //  Cleanup.
@@ -217,7 +222,8 @@ test__messenger_create_group__then_encrypt_decrypt_message_then_delete_group__su
     vsc_str_t group_id = vsc_str_from_str("GROUP-AT-LEAST-10-SYMBOLS");
     vssq_messenger_group_t *owner_group =
             vssq_messenger_create_group(owner_messenger, group_id, other_participants, &error);
-    TEST_ASSERT_EQUAL(vssq_status_SUCCESS, vssq_error_status(&error));
+    TEST_ASSERT_EQUAL_MESSAGE(
+            vssq_status_SUCCESS, vssq_error_status(&error), vssq_error_message_from_error(&error).chars);
     TEST_ASSERT_NOT_NULL(owner_group);
 
     const vssq_messenger_user_t *owner = vssq_messenger_group_owner(owner_group);
@@ -231,13 +237,15 @@ test__messenger_create_group__then_encrypt_decrypt_message_then_delete_group__su
     vsc_buffer_t *encrypted_message = vsc_buffer_new_with_capacity(encrypted_message_len);
 
     error.status = vssq_messenger_group_encrypt_message(owner_group, message, encrypted_message);
-    TEST_ASSERT_EQUAL(vssq_status_SUCCESS, vssq_error_status(&error));
+    TEST_ASSERT_EQUAL_MESSAGE(
+            vssq_status_SUCCESS, vssq_error_status(&error), vssq_error_message_from_error(&error).chars);
 
     //
     //  Load group.
     //
     vssq_messenger_group_t *alice_group = vssq_messenger_load_group(alice_messenger, group_id, owner, &error);
-    TEST_ASSERT_EQUAL(vssq_status_SUCCESS, vssq_error_status(&error));
+    TEST_ASSERT_EQUAL_MESSAGE(
+            vssq_status_SUCCESS, vssq_error_status(&error), vssq_error_message_from_error(&error).chars);
     TEST_ASSERT_NOT_NULL(owner_group);
 
     //
@@ -250,7 +258,8 @@ test__messenger_create_group__then_encrypt_decrypt_message_then_delete_group__su
 
     error.status = vssq_messenger_group_decrypt_message(
             alice_group, vsc_buffer_data(encrypted_message), owner, decrypted_message);
-    TEST_ASSERT_EQUAL(vssq_status_SUCCESS, vssq_error_status(&error));
+    TEST_ASSERT_EQUAL_MESSAGE(
+            vssq_status_SUCCESS, vssq_error_status(&error), vssq_error_message_from_error(&error).chars);
 
     //
     //  Check
@@ -261,7 +270,8 @@ test__messenger_create_group__then_encrypt_decrypt_message_then_delete_group__su
     //  Delete group.
     //
     error.status = vssq_messenger_group_remove(owner_group);
-    TEST_ASSERT_EQUAL(vssq_status_SUCCESS, vssq_error_status(&error));
+    TEST_ASSERT_EQUAL_MESSAGE(
+            vssq_status_SUCCESS, vssq_error_status(&error), vssq_error_message_from_error(&error).chars);
 
     //
     //  Cleanup.
@@ -288,7 +298,7 @@ main(void) {
 #if TEST_DEPENDENCIES_AVAILABLE
     RUN_TEST(test__messenger_register__random_user__success);
     RUN_TEST(test__messenger_register_then_authenticate__random_user__success);
-    RUN_TEST(test__messenger_creds_backup_then_resotore_then_remove__random_user__success);
+    RUN_TEST(test__messenger_creds_backup_then_restore_then_remove__random_user__success);
     RUN_TEST(test__messenger_create_group__then_encrypt_decrypt_message_then_delete_group__success);
 
 #else

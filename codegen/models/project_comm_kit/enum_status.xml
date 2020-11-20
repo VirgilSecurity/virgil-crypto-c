@@ -45,7 +45,7 @@
         Failed to create card manager.
     </constant>
 
-    <constant name="generate card failed" value="-306">
+    <constant name="generate card failed" value="-307">
         Failed to generate card.
     </constant>
 

@@ -350,7 +350,8 @@ vscf_group_session_message_serialize_len(const vscf_group_session_message_t *sel
     VSCF_ASSERT(self->message_pb.has_group_info != self->message_pb.has_regular_message);
 
     size_t len = 0;
-    VSCF_ASSERT(pb_get_encoded_size(&len, vscf_GroupMessage_fields, &self->message_pb));
+    const bool is_success = pb_get_encoded_size(&len, vscf_GroupMessage_fields, &self->message_pb);
+    VSCF_ASSERT(is_success);
 
     return len;
 }

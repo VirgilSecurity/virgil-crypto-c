@@ -148,7 +148,7 @@
 
 
     <method name="register">
-        Register a new user with a give name.
+        Register a new user with a given name.
 
         <argument name="username" class="str"/>
 
@@ -157,7 +157,7 @@
 
 
     <method name="authenticate">
-        Register a new user with a give name.
+        Authenticate existing user with a given credentials.
 
         <argument name="creds" class="messenger creds" access="readonly"/>
 
@@ -178,6 +178,13 @@
         Prerequisites: user should be authenticated.
 
         <return class="messenger user"/>
+    </method>
+
+
+    <method name="has creds" is_const="1">
+        Return true if user credentials are defined.
+
+        <return type="boolean"/>
     </method>
 
 

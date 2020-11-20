@@ -47,11 +47,23 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  This file contains platform specific information that is known during compilation.
+//  Provide error and status messages.
 // --------------------------------------------------------------------------
 
-#ifndef VSSQ_PLATFORM_H_INCLUDED
-#define VSSQ_PLATFORM_H_INCLUDED
+#ifndef VSSQ_ERROR_MESSAGE_H_INCLUDED
+#define VSSQ_ERROR_MESSAGE_H_INCLUDED
+
+#include "vssq_library.h"
+#include "vssq_status.h"
+#include "vssq_error.h"
+
+#if !VSSQ_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <virgil/crypto/common/vsc_str.h>
+#endif
+
+#if VSSQ_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <VSCCommon/vsc_str.h>
+#endif
 
 // clang-format on
 //  @end
@@ -68,131 +80,17 @@ extern "C" {
 //  Generated section start.
 // --------------------------------------------------------------------------
 
-#ifndef VSSQ_HAVE_ASSERT_H
-#cmakedefine01 VSSQ_HAVE_ASSERT_H
-#endif
-
-#ifndef VSSQ_HAVE_STDATOMIC_H
-#cmakedefine01 VSSQ_HAVE_STDATOMIC_H
-#endif
-
-#ifndef VSSQ_SHARED_LIBRARY
-#cmakedefine01 VSSQ_SHARED_LIBRARY
-#endif
-
-#ifndef VSSQ_MULTI_THREADING
-#cmakedefine01 VSSQ_MULTI_THREADING
-#endif
-
-#ifndef VSSQ_ERROR
-#cmakedefine01 VSSQ_ERROR
-#endif
-
-#ifndef VSSQ_ERROR_MESSAGE
-#cmakedefine01 VSSQ_ERROR_MESSAGE
-#endif
-
-#ifndef VSSQ_EJABBERD_JWT
-#cmakedefine01 VSSQ_EJABBERD_JWT
-#endif
-
-#ifndef VSSQ_MESSENGER
-#cmakedefine01 VSSQ_MESSENGER
-#endif
-
-#ifndef VSSQ_MESSENGER_AUTH
-#cmakedefine01 VSSQ_MESSENGER_AUTH
-#endif
-
-#ifndef VSSQ_MESSENGER_CONFIG
-#cmakedefine01 VSSQ_MESSENGER_CONFIG
-#endif
-
-#ifndef VSSQ_MESSENGER_CREDS
-#cmakedefine01 VSSQ_MESSENGER_CREDS
-#endif
-
-#ifndef VSSQ_MESSENGER_USER
-#cmakedefine01 VSSQ_MESSENGER_USER
-#endif
-
-#ifndef VSSQ_MESSENGER_USER_LIST
-#cmakedefine01 VSSQ_MESSENGER_USER_LIST
-#endif
-
-#ifndef VSSQ_MESSENGER_GROUP
-#cmakedefine01 VSSQ_MESSENGER_GROUP
-#endif
-
-#ifndef VSSQ_MESSENGER_GROUP_EPOCH
-#cmakedefine01 VSSQ_MESSENGER_GROUP_EPOCH
-#endif
-
-#ifndef VSSQ_MESSENGER_GROUP_EPOCH_LIST
-#cmakedefine01 VSSQ_MESSENGER_GROUP_EPOCH_LIST
-#endif
-
-#ifndef VSSQ_MESSENGER_GROUP_EPOCH_KEYKNOX_STORAGE
-#cmakedefine01 VSSQ_MESSENGER_GROUP_EPOCH_KEYKNOX_STORAGE
-#endif
-
-#ifndef VSSQ_CONTACT_UTILS
-#cmakedefine01 VSSQ_CONTACT_UTILS
-#endif
+//
+//  Return a message string from the given status.
+//
+VSSQ_PUBLIC vsc_str_t
+vssq_error_message_from_status(vssq_status_t status);
 
 //
-//  Defines namespace include prefix for project 'common'.
+//  Return a message string from the given status.
 //
-#if !defined(VSSQ_INTERNAL_BUILD)
-#cmakedefine01 VSSQ_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#else
-#define VSSQ_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK 0
-#endif
-
-//
-//  Defines namespace include prefix for project 'foundation'.
-//
-#if !defined(VSSQ_INTERNAL_BUILD)
-#cmakedefine01 VSSQ_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
-#else
-#define VSSQ_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK 0
-#endif
-
-//
-//  Defines namespace include prefix for project 'pythia'.
-//
-#if !defined(VSSQ_INTERNAL_BUILD)
-#cmakedefine01 VSSQ_IMPORT_PROJECT_PYTHIA_FROM_FRAMEWORK
-#else
-#define VSSQ_IMPORT_PROJECT_PYTHIA_FROM_FRAMEWORK 0
-#endif
-
-//
-//  Defines namespace include prefix for project 'core sdk'.
-//
-#if !defined(VSSQ_INTERNAL_BUILD)
-#cmakedefine01 VSSQ_IMPORT_PROJECT_CORE_SDK_FROM_FRAMEWORK
-#else
-#define VSSQ_IMPORT_PROJECT_CORE_SDK_FROM_FRAMEWORK 0
-#endif
-
-//
-//  Defines namespace include prefix for project 'pythia sdk'.
-//
-#if !defined(VSSQ_INTERNAL_BUILD)
-#cmakedefine01 VSSQ_IMPORT_PROJECT_PYTHIA_SDK_FROM_FRAMEWORK
-#else
-#define VSSQ_IMPORT_PROJECT_PYTHIA_SDK_FROM_FRAMEWORK 0
-#endif
-
-//
-//  Defines namespace include prefix for project 'keyknox sdk'.
-//
-#if !defined(VSSQ_INTERNAL_BUILD)
-#cmakedefine01 VSSQ_IMPORT_PROJECT_KEYKNOX_SDK_FROM_FRAMEWORK
-#else
-#define VSSQ_IMPORT_PROJECT_KEYKNOX_SDK_FROM_FRAMEWORK 0
-#endif
+VSSQ_PUBLIC vsc_str_t
+vssq_error_message_from_error(const vssq_error_t *error);
 
 
 // --------------------------------------------------------------------------
@@ -208,5 +106,5 @@ extern "C" {
 
 
 //  @footer
-#endif // VSSQ_PLATFORM_H_INCLUDED
+#endif // VSSQ_ERROR_MESSAGE_H_INCLUDED
 //  @end

@@ -634,7 +634,6 @@ vssq_messenger_auth_cleanup_ctx(vssq_messenger_auth_t *self) {
     vssq_messenger_user_destroy(&self->user);
     vssc_jwt_destroy(&self->base_jwt);
     vssq_ejabberd_jwt_destroy(&self->ejabberd_jwt);
-    vssq_messenger_user_destroy(&self->user);
 
     vscp_pythia_cleanup();
 }
@@ -667,7 +666,7 @@ vssq_messenger_auth_config(const vssq_messenger_auth_t *self) {
 }
 
 //
-//  Register a new user with a give name.
+//  Register a new user with a given name.
 //
 VSSQ_PUBLIC vssq_status_t
 vssq_messenger_auth_register(vssq_messenger_auth_t *self, vsc_str_t username) {
@@ -857,7 +856,7 @@ cleanup:
 }
 
 //
-//  Register a new user with a give name.
+//  Authenticate existing user with a given credentials.
 //
 VSSQ_PUBLIC vssq_status_t
 vssq_messenger_auth_authenticate(vssq_messenger_auth_t *self, const vssq_messenger_creds_t *creds) {
@@ -914,13 +913,24 @@ vssq_messenger_auth_user(const vssq_messenger_auth_t *self) {
 }
 
 //
+//  Return true if user credentials are defined.
+//
+VSSQ_PUBLIC bool
+vssq_messenger_auth_has_creds(const vssq_messenger_auth_t *self) {
+
+    VSSQ_ASSERT_PTR(self);
+
+    return self->creds != NULL;
+}
+
+//
 //  Return user credentials.
 //
 VSSQ_PUBLIC const vssq_messenger_creds_t *
 vssq_messenger_auth_creds(const vssq_messenger_auth_t *self) {
 
     VSSQ_ASSERT_PTR(self);
-    VSSQ_ASSERT(vssq_messenger_auth_is_authenticated(self));
+    VSSQ_ASSERT(vssq_messenger_auth_has_creds(self));
 
     return self->creds;
 }
@@ -1008,8 +1018,8 @@ VSSQ_PUBLIC vssq_status_t
 vssq_messenger_auth_backup_creds(const vssq_messenger_auth_t *self, vsc_str_t pwd) {
 
     VSSQ_ASSERT_PTR(self);
+    VSSQ_ASSERT(vssq_messenger_auth_has_creds(self));
     VSSQ_ASSERT(vsc_str_is_valid_and_non_empty(pwd));
-    VSSQ_ASSERT(vssq_messenger_auth_is_authenticated(self));
 
     //
     //  Update Virgil JWT first.
@@ -1188,7 +1198,7 @@ VSSQ_PUBLIC vssq_status_t
 vssq_messenger_auth_remove_creds_backup(const vssq_messenger_auth_t *self) {
 
     VSSQ_ASSERT_PTR(self);
-    VSSQ_ASSERT(vssq_messenger_auth_is_authenticated(self));
+    VSSQ_ASSERT(vssq_messenger_auth_has_creds(self));
 
     //
     //  Declare vars.
@@ -1432,6 +1442,8 @@ vssq_messenger_auth_refresh_base_token_with_password(
 
     authorization_header = vsc_str_buffer_new_with_capacity(authorization_header_len);
 
+    vsc_str_buffer_write_str(authorization_header, k_http_header_value_prefix_virgil_msg_pwd);
+
     status = vssq_contact_utils_hash_username(username, authorization_header);
 
     if (status != vssq_status_SUCCESS) {
@@ -1455,7 +1467,7 @@ vssq_messenger_auth_refresh_base_token_with_password(
         goto cleanup;
     }
 
-    if (vssc_error_has_error(&core_sdk_error)) {
+    if (!vssc_http_response_is_success(http_response)) {
         status = vssq_status_REFRESH_TOKEN_FAILED_RESPONSE_WITH_ERROR;
         goto cleanup;
     }
@@ -1505,7 +1517,7 @@ static vssq_status_t
 vssq_messenger_auth_request_token(const vssq_messenger_auth_t *self, vsc_str_t endpoint, vsc_str_buffer_t *jwt_str) {
 
     VSSQ_ASSERT_PTR(self);
-    VSSQ_ASSERT_PTR(vssq_messenger_auth_is_authenticated(self));
+    VSSQ_ASSERT(vssq_messenger_auth_has_creds(self));
     VSSQ_ASSERT(vsc_str_is_valid_and_non_empty(endpoint));
     VSSQ_ASSERT(vsc_str_buffer_is_valid(jwt_str));
 
@@ -1547,7 +1559,7 @@ vssq_messenger_auth_request_token(const vssq_messenger_auth_t *self, vsc_str_t e
         goto cleanup;
     }
 
-    if (vssc_error_has_error(&core_sdk_error)) {
+    if (!vssc_http_response_is_success(http_response)) {
         status = vssq_status_REFRESH_TOKEN_FAILED_RESPONSE_WITH_ERROR;
         goto cleanup;
     }
@@ -1588,7 +1600,7 @@ static vssq_status_t
 vssq_messenger_auth_refresh_base_token(const vssq_messenger_auth_t *self) {
 
     VSSQ_ASSERT_PTR(self);
-    VSSQ_ASSERT_PTR(vssq_messenger_auth_is_authenticated(self));
+    VSSQ_ASSERT(vssq_messenger_auth_has_creds(self));
 
     //
     //  Check if the current token is up to date.
@@ -1633,7 +1645,7 @@ static vssq_status_t
 vssq_messenger_auth_refresh_ejabberd_token(const vssq_messenger_auth_t *self) {
 
     VSSQ_ASSERT_PTR(self);
-    VSSQ_ASSERT_PTR(vssq_messenger_auth_is_authenticated(self));
+    VSSQ_ASSERT(vssq_messenger_auth_has_creds(self));
 
     //
     //  Check if the current token is up to date.
@@ -1680,7 +1692,7 @@ static vssq_status_t
 vssq_messenger_auth_reset_sign_in_password(const vssq_messenger_auth_t *self, vsc_data_t pwd) {
 
     VSSQ_ASSERT_PTR(self);
-    VSSQ_ASSERT(vssq_messenger_auth_is_authenticated(self));
+    VSSQ_ASSERT(vssq_messenger_auth_has_creds(self));
     VSSQ_ASSERT(vsc_data_is_valid_and_non_empty(pwd));
     VSSQ_ASSERT(pwd.len == 32);
 
@@ -1758,7 +1770,7 @@ static vscf_impl_t *
 vssq_messenger_auth_generate_brain_key(const vssq_messenger_auth_t *self, vsc_data_t pwd, vssq_error_t *error) {
 
     VSSQ_ASSERT_PTR(self);
-    VSSQ_ASSERT(vssq_messenger_auth_is_authenticated(self));
+    VSSQ_ASSERT(vssq_messenger_auth_has_creds(self));
     VSSQ_ASSERT(vsc_data_is_valid_and_non_empty(pwd));
     VSSQ_ASSERT(pwd.len == 32);
 
@@ -1885,7 +1897,7 @@ vssq_messenger_auth_keyknox_pack_creds(const vssq_messenger_auth_t *self, const 
 
     VSSQ_ASSERT_PTR(self);
     VSSQ_ASSERT_PTR(self->random);
-    VSSQ_ASSERT(vssq_messenger_auth_is_authenticated(self));
+    VSSQ_ASSERT(vssq_messenger_auth_has_creds(self));
     VSSQ_ASSERT_PTR(brain_private_key);
     VSSQ_ASSERT_PTR(keyknox_meta);
     VSSQ_ASSERT_PTR(keyknox_value);
@@ -2184,7 +2196,7 @@ vssq_messenger_auth_keyknox_push_creds(
         const vssq_messenger_auth_t *self, vsc_data_t keyknox_meta, vsc_data_t keyknox_value) {
 
     VSSQ_ASSERT_PTR(self);
-    VSSQ_ASSERT(vssq_messenger_auth_is_authenticated(self));
+    VSSQ_ASSERT(vssq_messenger_auth_has_creds(self));
     VSSQ_ASSERT(vsc_data_is_valid_and_non_empty(keyknox_meta));
     VSSQ_ASSERT(vsc_data_is_valid_and_non_empty(keyknox_value));
 

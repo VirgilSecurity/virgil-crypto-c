@@ -483,6 +483,7 @@ vssq_messenger_group_epoch_to_json(const vssq_messenger_group_epoch_t *self) {
     vsc_buffer_t *group_message_data = vsc_buffer_new_with_capacity(group_message_data_len);
     vscf_group_session_message_serialize(self->group_info_message, group_message_data);
     vssc_json_object_add_binary_value(json_obj, k_json_key_group_message, vsc_buffer_data(group_message_data));
+    vsc_buffer_destroy(&group_message_data);
 
     //
     //  Write 'participants'.

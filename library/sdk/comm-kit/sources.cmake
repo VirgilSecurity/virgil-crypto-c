@@ -94,6 +94,11 @@ set_property(
 )
 
 set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/commkit/vssq_error_message.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
+)
+
+set_property(
     SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/commkit/vssq_messenger.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
@@ -149,6 +154,7 @@ target_sources(comm_kit
             "$<$<BOOL:${VSSQ_EJABBERD_JWT}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/commkit/vssq_ejabberd_jwt.h>"
             "$<$<BOOL:${VSSQ_EJABBERD_JWT}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/commkit/private/vssq_ejabberd_jwt_defs.h>"
             "$<$<BOOL:${VSSQ_ERROR}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/commkit/vssq_error.h>"
+            "$<$<BOOL:${VSSQ_ERROR_MESSAGE}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/commkit/vssq_error_message.h>"
             "$<$<BOOL:${VSSQ_MESSENGER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/commkit/vssq_messenger.h>"
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/commkit/private/vssq_messenger_private.h"
             "$<$<BOOL:${VSSQ_MESSENGER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/commkit/private/vssq_messenger_defs.h>"
@@ -186,6 +192,7 @@ target_sources(comm_kit
             "$<$<BOOL:${VSSQ_EJABBERD_JWT}>:${CMAKE_CURRENT_LIST_DIR}/src/vssq_ejabberd_jwt.c>"
             "$<$<BOOL:${VSSQ_EJABBERD_JWT}>:${CMAKE_CURRENT_LIST_DIR}/src/vssq_ejabberd_jwt_defs.c>"
             "$<$<BOOL:${VSSQ_ERROR}>:${CMAKE_CURRENT_LIST_DIR}/src/vssq_error.c>"
+            "$<$<BOOL:${VSSQ_ERROR_MESSAGE}>:${CMAKE_CURRENT_LIST_DIR}/src/vssq_error_message.c>"
             "$<$<BOOL:${VSSQ_MESSENGER}>:${CMAKE_CURRENT_LIST_DIR}/src/vssq_messenger.c>"
             "$<$<BOOL:${VSSQ_MESSENGER}>:${CMAKE_CURRENT_LIST_DIR}/src/vssq_messenger_defs.c>"
             "$<$<BOOL:${VSSQ_MESSENGER_AUTH}>:${CMAKE_CURRENT_LIST_DIR}/src/vssq_messenger_auth.c>"
