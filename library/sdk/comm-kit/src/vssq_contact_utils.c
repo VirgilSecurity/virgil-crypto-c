@@ -177,6 +177,7 @@ vssq_contact_utils_hash_username(vsc_str_t username, vsc_str_buffer_t *digest_he
     //
     vscf_sha256_t hash;
     vscf_sha256_init(&hash);
+    vscf_sha256_start(&hash);
 
     for (size_t pos = 0; pos < username.len; ++pos) {
         const int ch = username.chars[pos];

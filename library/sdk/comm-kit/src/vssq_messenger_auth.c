@@ -1018,6 +1018,7 @@ VSSQ_PUBLIC vssq_status_t
 vssq_messenger_auth_backup_creds(const vssq_messenger_auth_t *self, vsc_str_t pwd) {
 
     VSSQ_ASSERT_PTR(self);
+    VSSQ_ASSERT_PTR(self->user);
     VSSQ_ASSERT(vssq_messenger_auth_has_creds(self));
     VSSQ_ASSERT(vsc_str_is_valid_and_non_empty(pwd));
 
@@ -1168,7 +1169,12 @@ vssq_messenger_auth_restore_creds(vssq_messenger_auth_t *self, vsc_str_t usernam
         goto cleanup;
     }
 
+    //
+    //  Preserve base token before reset credentials, as they will be destroyed.
+    //
+    vssc_jwt_t *stored_jwt = vssc_jwt_shallow_copy(self->base_jwt);
     vssq_messenger_auth_reset_creds(self, restored_creds);
+    vssq_messenger_auth_reset_base_jwt(self, &stored_jwt);
 
     //
     //  Fetch our Virgil Card.
@@ -1770,7 +1776,8 @@ static vscf_impl_t *
 vssq_messenger_auth_generate_brain_key(const vssq_messenger_auth_t *self, vsc_data_t pwd, vssq_error_t *error) {
 
     VSSQ_ASSERT_PTR(self);
-    VSSQ_ASSERT(vssq_messenger_auth_has_creds(self));
+    VSSQ_ASSERT_PTR(self->config);
+    VSSQ_ASSERT_PTR(self->base_jwt);
     VSSQ_ASSERT(vsc_data_is_valid_and_non_empty(pwd));
     VSSQ_ASSERT(pwd.len == 32);
 
@@ -2047,6 +2054,7 @@ vssq_messenger_auth_keyknox_unpack_creds(const vssq_messenger_auth_t *self, vsc_
     vssc_json_object_t *credentials_json = NULL;
     vsc_buffer_t *credentials_data = NULL;
     vsc_buffer_t *credentials_private_key_buf = NULL;
+    vssq_messenger_creds_t *creds = NULL;
 
     //
     //  Decrypt Credentials.
@@ -2102,7 +2110,7 @@ vssq_messenger_auth_keyknox_unpack_creds(const vssq_messenger_auth_t *self, vsc_
     }
 
     const vscf_signer_info_t *signer_info = vscf_signer_info_list_item(signer_infos);
-    if (vsc_data_equal(vsc_str_as_data(k_brain_key_recipient_id), vscf_signer_info_signer_id(signer_info))) {
+    if (!vsc_data_equal(vsc_str_as_data(k_brain_key_recipient_id), vscf_signer_info_signer_id(signer_info))) {
         VSSQ_ERROR_SAFE_UPDATE(error, vssq_status_KEYKNOX_UNPACK_ENTRY_FAILED_VERIFY_SIGNATURE_FAILED);
         goto cleanup;
     }
@@ -2142,7 +2150,7 @@ vssq_messenger_auth_keyknox_unpack_creds(const vssq_messenger_auth_t *self, vsc_
         goto cleanup;
     }
 
-    if (vsc_str_equal(k_brain_v1, credentials_version)) {
+    if (!vsc_str_equal(k_brain_v1, credentials_version)) {
         VSSQ_ERROR_SAFE_UPDATE(error, vssq_status_KEYKNOX_UNPACK_ENTRY_FAILED_PARSE_FAILED);
         goto cleanup;
     }
@@ -2171,6 +2179,13 @@ vssq_messenger_auth_keyknox_unpack_creds(const vssq_messenger_auth_t *self, vsc_
     credentials_private_key =
             vscf_key_provider_import_private_key(key_provider, vsc_buffer_data(credentials_private_key_buf), NULL);
 
+    if (NULL == credentials_private_key) {
+        VSSQ_ERROR_SAFE_UPDATE(error, vssq_status_KEYKNOX_UNPACK_ENTRY_FAILED_IMPORT_PRIVATE_KEY_FAILED);
+        goto cleanup;
+    }
+
+    creds = vssq_messenger_creds_new_with_disown(username, card_id, &credentials_private_key);
+
 cleanup:
     vscf_impl_destroy(&brain_public_key);
     vscf_recipient_cipher_destroy(&cipher);
@@ -2179,13 +2194,7 @@ cleanup:
     vsc_buffer_destroy(&credentials_data);
     vsc_buffer_destroy(&credentials_private_key_buf);
 
-    if (credentials_private_key) {
-        return vssq_messenger_creds_new_with_disown(username, card_id, &credentials_private_key);
-
-    } else {
-        VSSQ_ERROR_SAFE_UPDATE(error, vssq_status_KEYKNOX_UNPACK_ENTRY_FAILED_IMPORT_PRIVATE_KEY_FAILED);
-        return NULL;
-    }
+    return creds;
 }
 
 //
@@ -2403,8 +2412,8 @@ static vssq_status_t
 vssq_messenger_auth_fetch_self_card(vssq_messenger_auth_t *self) {
 
     VSSQ_ASSERT_PTR(self);
-    VSSQ_ASSERT_PTR(self->base_jwt);
     VSSQ_ASSERT_PTR(self->random);
+    VSSQ_ASSERT_PTR(self->base_jwt);
     VSSQ_ASSERT(!vssc_jwt_is_expired(self->base_jwt));
 
     //
