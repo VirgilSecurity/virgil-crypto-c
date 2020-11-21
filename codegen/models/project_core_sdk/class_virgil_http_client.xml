@@ -8,6 +8,9 @@
     <require impl="http client curl" is_optional="1"/>
     <require impl="http client x" is_optional="1"/>
 
+    <require header="stdio.h" is_system="1" if_feature="virgil http client debug"/>
+
+    <feature name="debug" default="off"/>
 
     <constant name="k header authorization type" type="string" visibility="private">
         Authorization type: Virgil
@@ -72,5 +75,22 @@
         <argument name="ca bundle path" class="str"/>
 
         <return interface="http client" access="disown"/>
+    </method>
+
+
+    <method name="debug print request" is_static="1" declaration="private">
+        Print HTTP request.
+        Note, available only if VSSC_VIRGIL_HTTP_CLIENT_DEBUG option is ON.
+
+        <argument name="http request" class="http request"/>
+        <argument name="jwt" class="jwt"/>
+    </method>
+
+
+    <method name="debug print response" is_static="1" declaration="private">
+        Print HTTP response.
+        Note, available only if VSSC_VIRGIL_HTTP_CLIENT_DEBUG option is ON.
+
+        <argument name="http response" class="http response"/>
     </method>
 </class>

@@ -164,6 +164,10 @@ extern "C" {
 #cmakedefine01 VSSC_VIRGIL_HTTP_CLIENT
 #endif
 
+#ifndef VSSC_VIRGIL_HTTP_CLIENT_DEBUG
+#cmakedefine01 VSSC_VIRGIL_HTTP_CLIENT_DEBUG
+#endif
+
 #ifndef VSSC_VIRGIL_HTTP_RESPONSE
 #cmakedefine01 VSSC_VIRGIL_HTTP_RESPONSE
 #endif

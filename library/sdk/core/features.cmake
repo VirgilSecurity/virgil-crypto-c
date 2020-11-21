@@ -67,6 +67,7 @@ option(VSSC_HTTP_HEADER_LIST "Enable class 'http header list'." ON)
 option(VSSC_HTTP_REQUEST "Enable class 'http request'." ON)
 option(VSSC_HTTP_RESPONSE "Enable class 'http response'." ON)
 option(VSSC_VIRGIL_HTTP_CLIENT "Enable class 'virgil http client'." ON)
+option(VSSC_VIRGIL_HTTP_CLIENT_DEBUG "" OFF)
 option(VSSC_VIRGIL_HTTP_RESPONSE "Enable class 'virgil http response'." ON)
 option(VSSC_KEY_HANDLER "Enable class 'key handler'." ON)
 option(VSSC_KEY_HANDLER_LIST "Enable class 'key handler list'." ON)
@@ -103,6 +104,7 @@ mark_as_advanced(
         VSSC_HTTP_REQUEST
         VSSC_HTTP_RESPONSE
         VSSC_VIRGIL_HTTP_CLIENT
+        VSSC_VIRGIL_HTTP_CLIENT_DEBUG
         VSSC_VIRGIL_HTTP_RESPONSE
         VSSC_KEY_HANDLER
         VSSC_KEY_HANDLER_LIST
