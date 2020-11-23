@@ -138,14 +138,14 @@ vssq_messenger_auth_new(void);
 
 //
 //  Perform initialization of pre-allocated context.
-//  Initialze messenger with a custom config.
+//  Initialize messenger with a custom configuration.
 //
 VSSQ_PUBLIC void
 vssq_messenger_auth_init_with_config(vssq_messenger_auth_t *self, const vssq_messenger_config_t *config);
 
 //
 //  Allocate class context and perform it's initialization.
-//  Initialze messenger with a custom config.
+//  Initialize messenger with a custom configuration.
 //
 VSSQ_PUBLIC vssq_messenger_auth_t *
 vssq_messenger_auth_new_with_config(const vssq_messenger_config_t *config);
@@ -197,7 +197,7 @@ VSSQ_PUBLIC void
 vssq_messenger_auth_release_random(vssq_messenger_auth_t *self);
 
 //
-//  Return messenger config.
+//  Return messenger configuration.
 //
 VSSQ_PUBLIC const vssq_messenger_config_t *
 vssq_messenger_auth_config(const vssq_messenger_auth_t *self);
@@ -257,19 +257,19 @@ VSSQ_PUBLIC vssq_status_t
 vssq_messenger_auth_backup_creds(const vssq_messenger_auth_t *self, vsc_str_t pwd) VSSQ_NODISCARD;
 
 //
-//  Restore redentials from the backup and authenticate user.
+//  Restore credentials from the backup and authenticate user.
 //
-//  Perfrom next steps:
-//    1. Get base JWT usging part of pwd.
+//  Perform next steps:
+//    1. Get base JWT using part of pwd.
 //    2. Pull encrypted credentials from the Keyknox.
 //    3. Decrypt credentials using another part of pwd.
-//    4. Use cerdentials to authenticate within XMPP server (Ejabberd).
+//    4. Use credentials to authenticate within XMPP server (Ejabberd).
 //
 VSSQ_PUBLIC vssq_status_t
 vssq_messenger_auth_restore_creds(vssq_messenger_auth_t *self, vsc_str_t username, vsc_str_t pwd) VSSQ_NODISCARD;
 
 //
-//  Remove credentials beckup from the secure cloud storage (Keyknox).
+//  Remove credentials backup from the secure cloud storage (Keyknox).
 //
 //  Prerequisites: user should be authenticated.
 //
@@ -287,7 +287,7 @@ VSSQ_PUBLIC const vssc_jwt_t *
 vssq_messenger_auth_base_token(const vssq_messenger_auth_t *self, vssq_error_t *error);
 
 //
-//  Return JWT to aceess ejabberd server.
+//  Return JWT to access ejabberd server.
 //
 //  Format: https://docs.ejabberd.im/admin/configuration/authentication/#jwt-authentication
 //
@@ -305,7 +305,7 @@ VSSQ_PUBLIC size_t
 vssq_messenger_auth_auth_header_len(const vssq_messenger_auth_t *self);
 
 //
-//  Generate HTTP autoization header value.
+//  Generate HTTP authorization header value.
 //
 //  Format: "Bearer cardId.unixTimestamp.signature(cardId.unixTimestamp)"
 //

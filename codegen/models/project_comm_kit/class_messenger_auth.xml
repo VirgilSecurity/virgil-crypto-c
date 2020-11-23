@@ -134,14 +134,14 @@
 
     <!-- Methods  -->
     <constructor name="with config">
-        Initialze messenger with a custom config.
+        Initialize messenger with a custom configuration.
 
         <argument name="config" class="messenger config"/>
     </constructor>
 
 
     <method name="config" is_const="1">
-        Return messenger config.
+        Return messenger configuration.
 
         <return class="messenger config"/>
     </method>
@@ -218,13 +218,13 @@
 
 
     <method name="restore creds">
-        Restore redentials from the backup and authenticate user.
+        Restore credentials from the backup and authenticate user.
 
-        Perfrom next steps:
-          1. Get base JWT usging part of pwd.
+        Perform next steps:
+          1. Get base JWT using part of pwd.
           2. Pull encrypted credentials from the Keyknox.
           3. Decrypt credentials using another part of pwd.
-          4. Use cerdentials to authenticate within XMPP server (Ejabberd).
+          4. Use credentials to authenticate within XMPP server (Ejabberd).
 
         <argument name="username" class="str"/>
         <argument name="pwd" class="str"/>
@@ -234,7 +234,7 @@
 
 
     <method name="remove creds backup" is_const="1">
-        Remove credentials beckup from the secure cloud storage (Keyknox).
+        Remove credentials backup from the secure cloud storage (Keyknox).
 
         Prerequisites: user should be authenticated.
 
@@ -256,7 +256,7 @@
 
 
     <method name="ejabberd token" is_const="1">
-        Return JWT to aceess ejabberd server.
+        Return JWT to access ejabberd server.
 
         Format: https://docs.ejabberd.im/admin/configuration/authentication/#jwt-authentication
 
@@ -286,7 +286,7 @@
 
 
     <method name="generate auth header" is_const="1" scope="private">
-        Generate HTTP autoization header value.
+        Generate HTTP authorization header value.
 
         Format: "Bearer cardId.unixTimestamp.signature(cardId.unixTimestamp)"
 
@@ -387,7 +387,7 @@
 
     <method name="keyknox push creds" is_const="1" declaration="private">
 
-        Push Keyknox entries with crdentials to the service.
+        Push Keyknox entries with credentials to the service.
 
         <argument name="keyknox meta" class="data"/>
         <argument name="keyknox value" class="data"/>
@@ -398,7 +398,7 @@
 
     <method name="keyknox pull creds" is_const="1" declaration="private">
 
-        Pull Keyknox entries with crdentials from the service.
+        Pull Keyknox entries with credentials from the service.
 
         <argument name="keyknox meta" class="buffer"/>
         <argument name="keyknox value" class="buffer"/>

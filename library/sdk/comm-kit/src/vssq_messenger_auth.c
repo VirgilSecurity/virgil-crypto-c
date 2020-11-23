@@ -126,7 +126,7 @@ static void
 vssq_messenger_auth_cleanup_ctx(vssq_messenger_auth_t *self);
 
 //
-//  Initialze messenger with a custom config.
+//  Initialize messenger with a custom configuration.
 //
 static void
 vssq_messenger_auth_init_ctx_with_config(vssq_messenger_auth_t *self, const vssq_messenger_config_t *config);
@@ -196,14 +196,14 @@ vssq_messenger_auth_keyknox_unpack_creds(const vssq_messenger_auth_t *self, vsc_
         const vscf_impl_t *brain_private_key, vsc_data_t keyknox_meta, vsc_data_t keyknox_value, vssq_error_t *error);
 
 //
-//  Push Keyknox entries with crdentials to the service.
+//  Push Keyknox entries with credentials to the service.
 //
 static vssq_status_t
 vssq_messenger_auth_keyknox_push_creds(const vssq_messenger_auth_t *self, vsc_data_t keyknox_meta,
         vsc_data_t keyknox_value) VSSQ_NODISCARD;
 
 //
-//  Pull Keyknox entries with crdentials from the service.
+//  Pull Keyknox entries with credentials from the service.
 //
 static vssq_status_t
 vssq_messenger_auth_keyknox_pull_creds(const vssq_messenger_auth_t *self, vsc_buffer_t *keyknox_meta,
@@ -437,7 +437,7 @@ vssq_messenger_auth_new(void) {
 
 //
 //  Perform initialization of pre-allocated context.
-//  Initialze messenger with a custom config.
+//  Initialize messenger with a custom configuration.
 //
 VSSQ_PUBLIC void
 vssq_messenger_auth_init_with_config(vssq_messenger_auth_t *self, const vssq_messenger_config_t *config) {
@@ -453,7 +453,7 @@ vssq_messenger_auth_init_with_config(vssq_messenger_auth_t *self, const vssq_mes
 
 //
 //  Allocate class context and perform it's initialization.
-//  Initialze messenger with a custom config.
+//  Initialize messenger with a custom configuration.
 //
 VSSQ_PUBLIC vssq_messenger_auth_t *
 vssq_messenger_auth_new_with_config(const vssq_messenger_config_t *config) {
@@ -639,7 +639,7 @@ vssq_messenger_auth_cleanup_ctx(vssq_messenger_auth_t *self) {
 }
 
 //
-//  Initialze messenger with a custom config.
+//  Initialize messenger with a custom configuration.
 //
 static void
 vssq_messenger_auth_init_ctx_with_config(vssq_messenger_auth_t *self, const vssq_messenger_config_t *config) {
@@ -654,7 +654,7 @@ vssq_messenger_auth_init_ctx_with_config(vssq_messenger_auth_t *self, const vssq
 }
 
 //
-//  Return messenger config.
+//  Return messenger configuration.
 //
 VSSQ_PUBLIC const vssq_messenger_config_t *
 vssq_messenger_auth_config(const vssq_messenger_auth_t *self) {
@@ -1096,13 +1096,13 @@ cleanup:
 }
 
 //
-//  Restore redentials from the backup and authenticate user.
+//  Restore credentials from the backup and authenticate user.
 //
-//  Perfrom next steps:
-//    1. Get base JWT usging part of pwd.
+//  Perform next steps:
+//    1. Get base JWT using part of pwd.
 //    2. Pull encrypted credentials from the Keyknox.
 //    3. Decrypt credentials using another part of pwd.
-//    4. Use cerdentials to authenticate within XMPP server (Ejabberd).
+//    4. Use credentials to authenticate within XMPP server (Ejabberd).
 //
 VSSQ_PUBLIC vssq_status_t
 vssq_messenger_auth_restore_creds(vssq_messenger_auth_t *self, vsc_str_t username, vsc_str_t pwd) {
@@ -1196,7 +1196,7 @@ cleanup:
 }
 
 //
-//  Remove credentials beckup from the secure cloud storage (Keyknox).
+//  Remove credentials backup from the secure cloud storage (Keyknox).
 //
 //  Prerequisites: user should be authenticated.
 //
@@ -1282,7 +1282,7 @@ vssq_messenger_auth_base_token(const vssq_messenger_auth_t *self, vssq_error_t *
 }
 
 //
-//  Return JWT to aceess ejabberd server.
+//  Return JWT to access ejabberd server.
 //
 //  Format: https://docs.ejabberd.im/admin/configuration/authentication/#jwt-authentication
 //
@@ -1336,7 +1336,7 @@ vssq_messenger_auth_auth_header_len(const vssq_messenger_auth_t *self) {
 }
 
 //
-//  Generate HTTP autoization header value.
+//  Generate HTTP authorization header value.
 //
 //  Format: "Bearer cardId.unixTimestamp.signature(cardId.unixTimestamp)"
 //
@@ -2198,7 +2198,7 @@ cleanup:
 }
 
 //
-//  Push Keyknox entries with crdentials to the service.
+//  Push Keyknox entries with credentials to the service.
 //
 static vssq_status_t
 vssq_messenger_auth_keyknox_push_creds(
@@ -2287,7 +2287,7 @@ cleanup:
 }
 
 //
-//  Pull Keyknox entries with crdentials from the service.
+//  Pull Keyknox entries with credentials from the service.
 //
 static vssq_status_t
 vssq_messenger_auth_keyknox_pull_creds(

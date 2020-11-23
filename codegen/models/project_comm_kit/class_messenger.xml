@@ -32,7 +32,7 @@
  -->
 
     <constructor name="with config">
-        Initialze messenger with a custom config.
+        Initialize messenger with a custom configuration.
 
         <argument name="config" class="messenger config"/>
     </constructor>
@@ -45,7 +45,7 @@
     </method>
 
 
-    <!-- Duplicate auth interface for convinience -->
+    <!-- Duplicate auth interface for convenience -->
     <method name="register">
         Register a new user with a given name.
 
@@ -119,7 +119,7 @@
 
 
     <method name="authenticate with backup creds">
-        Authenticate user by using backup cerdentials.
+        Authenticate user by using backup credentials.
 
         <argument name="username" class="str"/>
         <argument name="pwd" class="str"/>
@@ -129,7 +129,7 @@
 
 
     <method name="remove creds backup" is_const="1">
-        Remove credentials beckup from the secure cloud storage (Keyknox).
+        Remove credentials backup from the secure cloud storage (Keyknox).
 
         Prerequisites: user should be authenticated.
 
@@ -148,7 +148,7 @@
 
     <!-- Working with messenger groups -->
     <method name="create group" is_const="1">
-        Create a new group for a group messenging.
+        Create a new group for a group messaging.
 
         Prerequisites: user should be authenticated.
         Note, group owner is added to the participants automatically.
@@ -162,7 +162,7 @@
 
 
     <method name="load group" is_const="1">
-        Load an existing group for a group messenging.
+        Load an existing group for a group messaging.
 
         Prerequisites: user should be authenticated.
 

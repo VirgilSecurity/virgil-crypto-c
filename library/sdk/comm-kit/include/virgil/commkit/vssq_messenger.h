@@ -129,14 +129,14 @@ vssq_messenger_new(void);
 
 //
 //  Perform initialization of pre-allocated context.
-//  Initialze messenger with a custom config.
+//  Initialize messenger with a custom configuration.
 //
 VSSQ_PUBLIC void
 vssq_messenger_init_with_config(vssq_messenger_t *self, const vssq_messenger_config_t *config);
 
 //
 //  Allocate class context and perform it's initialization.
-//  Initialze messenger with a custom config.
+//  Initialize messenger with a custom configuration.
 //
 VSSQ_PUBLIC vssq_messenger_t *
 vssq_messenger_new_with_config(const vssq_messenger_config_t *config);
@@ -250,13 +250,13 @@ VSSQ_PUBLIC vssq_status_t
 vssq_messenger_backup_creds(const vssq_messenger_t *self, vsc_str_t pwd) VSSQ_NODISCARD;
 
 //
-//  Authenticate user by using backup cerdentials.
+//  Authenticate user by using backup credentials.
 //
 VSSQ_PUBLIC vssq_status_t
 vssq_messenger_authenticate_with_backup_creds(vssq_messenger_t *self, vsc_str_t username, vsc_str_t pwd) VSSQ_NODISCARD;
 
 //
-//  Remove credentials beckup from the secure cloud storage (Keyknox).
+//  Remove credentials backup from the secure cloud storage (Keyknox).
 //
 //  Prerequisites: user should be authenticated.
 //
@@ -264,7 +264,7 @@ VSSQ_PUBLIC vssq_status_t
 vssq_messenger_remove_creds_backup(const vssq_messenger_t *self) VSSQ_NODISCARD;
 
 //
-//  Create a new group for a group messenging.
+//  Create a new group for a group messaging.
 //
 //  Prerequisites: user should be authenticated.
 //  Note, group owner is added to the participants automatically.
@@ -274,7 +274,7 @@ vssq_messenger_create_group(const vssq_messenger_t *self, vsc_str_t group_id,
         const vssq_messenger_user_list_t *participants, vssq_error_t *error);
 
 //
-//  Load an existing group for a group messenging.
+//  Load an existing group for a group messaging.
 //
 //  Prerequisites: user should be authenticated.
 //

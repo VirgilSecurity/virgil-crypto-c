@@ -213,7 +213,7 @@ test__messenger_create_group__then_encrypt_decrypt_message_then_delete_group__su
     //
     //  Encrypt message.
     //
-    vsc_str_t message = vsc_str_from_str("Greatings!");
+    vsc_str_t message = vsc_str_from_str("Greetings!");
 
     const size_t encrypted_message_len = vssq_messenger_group_encrypted_message_len(owner_group, message.len);
     vsc_buffer_t *encrypted_message = vsc_buffer_new_with_capacity(encrypted_message_len);
