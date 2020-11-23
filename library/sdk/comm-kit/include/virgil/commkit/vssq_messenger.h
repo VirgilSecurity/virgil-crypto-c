@@ -220,6 +220,14 @@ VSSQ_PUBLIC const vssq_messenger_user_t *
 vssq_messenger_user(const vssq_messenger_t *self);
 
 //
+//  Return name of the current user.
+//
+//  Prerequisites: user should be authenticated.
+//
+VSSQ_PUBLIC vsc_str_t
+vssq_messenger_username(const vssq_messenger_t *self);
+
+//
 //  Return user credentials.
 //
 VSSQ_PUBLIC const vssq_messenger_creds_t *

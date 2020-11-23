@@ -80,6 +80,15 @@
     </method>
 
 
+    <method name="username" is_const="1">
+        Return name of the current user.
+
+        Prerequisites: user should be authenticated.
+
+        <return class="str"/>
+    </method>
+
+
     <method name="creds" is_const="1">
         Return user credentials.
 
