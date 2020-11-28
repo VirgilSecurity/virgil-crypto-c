@@ -35,7 +35,7 @@
 #ifndef VIRGIL_INTEGRATION_TEST_SDK_UTILS_H_INCLUDED
 #define VIRGIL_INTEGRATION_TEST_SDK_UTILS_H_INCLUDED
 
-#include <virgil/sdk/core/vssc_virgil_http_response.h>
+#include <virgil/sdk/core/vssc_http_response.h>
 
 #include <stdio.h>
 #include <string.h>
